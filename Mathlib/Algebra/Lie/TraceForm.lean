@@ -418,7 +418,7 @@ lemma range_traceForm_le_span_weight :
   rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coeFn_sum, Finset.sum_apply]
   refine Submodule.sum_mem _ fun χ _ ↦ ?_
   simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, Weight.toLinear_apply,
-    nsmul_eq_smul_cast (R := K)]
+    ← Nat.cast_smul_eq_nsmul K]
   exact Submodule.smul_mem _ _ <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self χ
 
 end LieModule

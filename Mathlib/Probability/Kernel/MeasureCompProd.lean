@@ -40,6 +40,16 @@ def compProd (μ : Measure α) (κ : Kernel α β) : Measure (α × β) :=
 @[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ⊗ₘ " => MeasureTheory.Measure.compProd
 
+lemma compProd_of_not_sfinite (μ : Measure α) (κ : Kernel α β) (h : ¬ SFinite μ) :
+    μ ⊗ₘ κ = 0 := by
+  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_left, Kernel.zero_apply]
+  rwa [Kernel.isSFiniteKernel_const]
+
+lemma compProd_of_not_isSFiniteKernel (μ : Measure α) (κ : Kernel α β) (h : ¬ IsSFiniteKernel κ) :
+    μ ⊗ₘ κ = 0 := by
+  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_right, Kernel.zero_apply]
+  rwa [Kernel.isSFiniteKernel_prodMkLeft_unit]
+
 @[simp] lemma compProd_zero_left (κ : Kernel α β) : (0 : Measure α) ⊗ₘ κ = 0 := by simp [compProd]
 @[simp] lemma compProd_zero_right (μ : Measure α) : μ ⊗ₘ (0 : Kernel α β) = 0 := by simp [compProd]
 

@@ -108,11 +108,11 @@ theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
     ⇑(⟨f, h⟩ : M [⋀^ι]→ₗ[R] N) = f :=
   rfl
 
-theorem congr_fun {f g : M [⋀^ι]→ₗ[R] N} (h : f = g) (x : ι → M) : f x = g x :=
+protected theorem congr_fun {f g : M [⋀^ι]→ₗ[R] N} (h : f = g) (x : ι → M) : f x = g x :=
   congr_arg (fun h : M [⋀^ι]→ₗ[R] N => h x) h
 
-theorem congr_arg (f : M [⋀^ι]→ₗ[R] N) {x y : ι → M} (h : x = y) : f x = f y :=
-  _root_.congr_arg (fun x : ι → M => f x) h
+protected theorem congr_arg (f : M [⋀^ι]→ₗ[R] N) {x y : ι → M} (h : x = y) : f x = f y :=
+  congr_arg (fun x : ι → M => f x) h
 
 theorem coe_injective : Injective ((↑) : M [⋀^ι]→ₗ[R] N → (ι → M) → N) :=
   DFunLike.coe_injective
@@ -125,7 +125,7 @@ theorem coe_inj {f g : M [⋀^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f
 theorem ext {f f' : M [⋀^ι]→ₗ[R] N} (H : ∀ x, f x = f' x) : f = f' :=
   DFunLike.ext _ _ H
 
-theorem ext_iff {f g : M [⋀^ι]→ₗ[R] N} : f = g ↔ ∀ x, f x = g x :=
+protected theorem ext_iff {f g : M [⋀^ι]→ₗ[R] N} : f = g ↔ ∀ x, f x = g x :=
   ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 
 attribute [coe] AlternatingMap.toMultilinearMap
@@ -505,7 +505,8 @@ theorem compLinearMap_id (f : M [⋀^ι]→ₗ[R] N) : f.compLinearMap LinearMap
 /-- Composing with a surjective linear map is injective. -/
 theorem compLinearMap_injective (f : M₂ →ₗ[R] M) (hf : Function.Surjective f) :
     Function.Injective fun g : M [⋀^ι]→ₗ[R] N => g.compLinearMap f := fun g₁ g₂ h =>
-  ext fun x => by simpa [Function.surjInv_eq hf] using ext_iff.mp h (Function.surjInv hf ∘ x)
+  ext fun x => by
+    simpa [Function.surjInv_eq hf] using AlternatingMap.ext_iff.mp h (Function.surjInv hf ∘ x)
 
 theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
     (g₁ g₂ : M [⋀^ι]→ₗ[R] N) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=

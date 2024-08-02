@@ -49,8 +49,9 @@ inductive StyleError where
   | lineLength (actual : Int) : StyleError
   /-- The current file was too large: this error contains the current number of lines
   as well as a size limit (slightly larger). On future runs, this linter will allow this file
-  to grow up to this limit. -/
-  | fileTooLong (number_lines : ℕ) (new_size_limit : ℕ) : StyleError
+  to grow up to this limit.
+  For diagnostic purposes, this may also contain a previous size limit, which is now exceeded. -/
+  | fileTooLong (number_lines : ℕ) (new_size_limit : ℕ) (previousLimit : Option ℕ) : StyleError
 deriving BEq
 
 /-- How to format style errors -/
@@ -80,10 +81,13 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
       e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
       benchmark it. If this is fine, feel free to allow this linter."
   | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
-  | StyleError.fileTooLong current_size size_limit =>
+  | StyleError.fileTooLong current_size size_limit previousLimit =>
     match style with
     | ErrorFormat.github =>
-        s!"file contains {current_size} lines (at most {size_limit} allowed), try to split it up"
+      if let some n := previousLimit then
+        s!"file contains {current_size} lines (at most {n} allowed), try to split it up"
+      else
+        s!"file contains {current_size} lines, try to split it up"
     | ErrorFormat.exceptionsFile =>
         s!"{size_limit} file contains {current_size} lines, try to split it up"
     | ErrorFormat.humanReadable => s!"file contains {current_size} lines, try to split it up"
@@ -97,7 +101,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.lineLength _ => "ERR_LIN"
-  | StyleError.fileTooLong _ _ => "ERR_NUM_LIN"
+  | StyleError.fileTooLong _ _ _ => "ERR_NUM_LIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -109,22 +113,52 @@ structure ErrorContext where
   /-- The path to the file which was linted -/
   path : FilePath
 
-/-- The parts of a `StyleError` which are considered when matching against the existing
-  style exceptions: for example, we ignore the particular line length of a "line too long" error. -/
-def StyleError.normalise (err : StyleError) : StyleError := match err with
-  -- NB: keep this in sync with `parse?_errorContext` below.
-  | StyleError.fileTooLong _ _ => StyleError.fileTooLong 0 0
-  -- We do *not* care about the *kind* of wrong copyright.
-  | StyleError.copyright _ => StyleError.copyright none
-  | _ => err
+/-- Possible results of comparing an `ErrorContext` to an `existing` entry:
+most often, they are different --- if the existing entry covers the new exception,
+depending on the error, we prefer the new or the existing entry. -/
+inductive ComparisonResult
+  /-- The contexts describe different errors: two separate style exceptions are required
+  to cover both. -/
+  | Different
+  /-- The existing exception also covers the new error.
+  Indicate whether we prefer keeping the existing exception (the more common case)
+  or would rather replace it by the new exception
+  (this is more rare, and currently only happens for particular file length errors). -/
+  | Comparable (preferExisting : Bool)
+  deriving BEq
 
-/-- Careful: we do not want to compare `ErrorContexts` exactly; we ignore some details. -/
-instance : BEq ErrorContext where
-  beq ctx ctx' :=
-      ctx.path == ctx'.path
-      -- We completely ignore line numbers of errors. Not sure if this is best.
-      -- We normalise errors before comparing them.
-      && (ctx.error).normalise == (ctx'.error).normalise
+/-- Determine whether a `new` `ErrorContext` is covered by an `existing` exception,
+and, if it is, if we prefer replacing the new exception or keeping the previous one. -/
+def compare (existing new : ErrorContext) : ComparisonResult :=
+  -- Two comparable error contexts must have the same path.
+  if existing.path != new.path then
+    ComparisonResult.Different
+  -- We entirely ignore their line numbers: not sure if this is best.
+
+  -- NB: keep the following in sync with `parse?_errorContext` below.
+  -- Generally, comparable errors must have equal `StyleError`s, but there are some exceptions.
+  else match (existing.error, new.error) with
+    -- File length errors are the biggest exceptions: generally, we prefer to keep the
+    -- existing entry, *except* when a newer entry is much shorter.
+  | (StyleError.fileTooLong n nLimit _, StyleError.fileTooLong m _mLimit _) =>
+    -- The only exception are "file too long" errors.
+    -- If a file got much longer, the existing exception does not apply;
+    if m > nLimit then ComparisonResult.Different
+    -- if it does apply, we prefer to keep the existing entry,
+    -- *unless* the newer entry is much shorter.
+    else if m + 200 <= n then ComparisonResult.Comparable false
+    else ComparisonResult.Comparable true
+  -- We do *not* care about the *kind* of wrong copyright,
+  -- nor about the particular length of a too long line.
+  | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.Comparable true
+  | (StyleError.lineLength _, StyleError.lineLength _) => ComparisonResult.Comparable true
+  -- In all other cases, `StyleErrors` must compare equal.
+  | (a, b) => if a == b then ComparisonResult.Comparable true else ComparisonResult.Different
+
+/-- Find the first style exception in `exceptions` (if any) which covers a style exception `e`. -/
+def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorContext) :
+    Option ErrorContext :=
+  (exceptions).find? (fun new ↦ compare e new matches ComparisonResult.Comparable _)
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
@@ -158,8 +192,8 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
       let err : Option StyleError := match error_code with
-        -- Use default values for parameters which are normalised.
-        -- NB: keep this in sync with `normalise` above!
+        -- Use default values for parameters which are ignored for comparing style exceptions.
+        -- NB: keep this in sync with `compare` above!
         | "ERR_COP" => some (StyleError.copyright none)
         | "ERR_LIN" =>
           if let some n := error_message.get? 2 then
@@ -181,7 +215,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
           | (some limit, some current) =>
             match (String.toNat? limit, String.toNat? current) with
             | (some size_limit, some current_size) =>
-              some (StyleError.fileTooLong current_size size_limit)
+              some (StyleError.fileTooLong current_size size_limit (some size_limit))
             | _ => none
           | _ => none
         | _ => none
@@ -328,7 +362,8 @@ def checkFileLength (lines : Array String) (existing_limit : Option ℕ) : Optio
     if is_larger then
       -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
       -- but sufficiently large PRs will get nudged towards splitting up this file.
-      return some (StyleError.fileTooLong lines.size ((Nat.div lines.size 100) * 100 + 200))
+      return some (StyleError.fileTooLong lines.size
+        ((Nat.div lines.size 100) * 100 + 200) existing_limit)
   none
 
 end
@@ -337,6 +372,18 @@ end
 def allLinters : Array TextbasedLinter := #[
     copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
   ]
+
+/-- Controls what kind of output this programme produces. -/
+inductive OutputSetting : Type
+  /-- Print any style error to standard output (the default) -/
+  | print (style : ErrorFormat)
+  /-- Update the style exceptions file (and still print style errors to standard output).
+  This adds entries for any new exceptions, removes any entries which are no longer necessary,
+  and tries to not modify exception entries unless necessary.
+  To fully regenerate the exceptions file, delete `style-exceptions.txt` and run again in this mode.
+  -/
+  | update
+  deriving BEq
 
 /-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
 `sizeLimit` is any pre-existing limit on this file's size.
@@ -349,41 +396,68 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   if isImportsOnlyFile lines then
     return #[]
   let mut errors := #[]
-  if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
-    errors := #[ErrorContext.mk (StyleError.fileTooLong n limit) 1 path]
+  if let some (StyleError.fileTooLong n limit ex) := checkFileLength lines sizeLimit then
+    errors := #[ErrorContext.mk (StyleError.fileTooLong n limit ex) 1 path]
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
-  errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
+  errors := errors.append (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return errors
 
 /-- Lint a collection of modules for style violations.
-Print formatted errors for all unexpected style violations to standard output.
+Print formatted errors for all unexpected style violations to standard output;
+update the list of style exceptions if configured so.
 Return the number of files which had new style errors.
-`style` specifies if the error should be formatted for humans to read, github problem matchers
-to consume or for the style exceptions file. -/
-def lintModules (moduleNames : Array String) (style : ErrorFormat) : IO UInt32 := do
+`moduleNames` are all the modules to lint,
+`mode` specifies what kind of output this script should produce. -/
+def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 := do
   -- Read the style exceptions file.
   -- We also have a `nolints` file with manual exceptions for the linter.
-  let exceptions ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
+  let exceptionsFilePath : FilePath := "scripts" / "style-exceptions.txt"
+  let exceptions ← IO.FS.lines exceptionsFilePath
   let mut styleExceptions := parseStyleExceptions exceptions
-  let nolints ← IO.FS.lines (mkFilePath ["scripts", "nolints-style.txt"])
+  let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
   styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
 
-  let mut numberErrorFiles := 0
+  let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
   for module in moduleNames do
     -- Convert the module name to a file name, then lint that file.
     let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
     -- Find all size limits for this given file.
     -- If several size limits are given (unlikely in practice), we use the first one.
-    let sizeLimits := (styleExceptions.filter (·.path == path)).filterMap (fun errctx ↦
+    let sizeLimits := (styleExceptions.filter (fun ex ↦ ex.path == path)).filterMap (fun errctx ↦
       match errctx.error with
-      | StyleError.fileTooLong _ limit => some limit
+      | StyleError.fileTooLong _ limit _ => some limit
       | _ => none)
-    let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
+    let errors :=
+    if let OutputSetting.print _ := mode then
+      ← lintFile path (sizeLimits.get? 0) styleExceptions
+    else
+      -- In "update" mode, we ignore the exceptions file (and only take `nolints` into account).
+      ← lintFile path none (parseStyleExceptions nolints)
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
-  formatErrors allUnexpectedErrors style
+  match mode with
+  | OutputSetting.print style =>
+    formatErrors allUnexpectedErrors style
+    if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
+      IO.println s!"error: found {numberErrorFiles} new style errors\n\
+        run `lake exe lint_style --update` to ignore all of them"
+  | OutputSetting.update =>
+    formatErrors allUnexpectedErrors ErrorFormat.humanReadable
+    -- Regenerate the style exceptions file, including the Python output.
+    IO.FS.writeFile exceptionsFilePath ""
+    let python_output ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
+    -- Combine style exception entries: for each new error, replace by a corresponding
+    -- previous exception if that is preferred.
+    let mut tweaked := allUnexpectedErrors.map fun err ↦
+      if let some existing := err.find?_comparable styleExceptions then
+        if let ComparisonResult.Comparable (true) := _root_.compare err existing then existing
+        else err
+      else err
+    let this_output := "\n".intercalate (tweaked.map
+        (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
+    IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
   return numberErrorFiles

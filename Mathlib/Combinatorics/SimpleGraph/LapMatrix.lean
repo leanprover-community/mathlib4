@@ -120,6 +120,8 @@ theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
 
+section
+
 variable [DecidableEq G.ConnectedComponent]
 
 lemma mem_ker_toLin'_lapMatrix_of_connectedComponent {G : SimpleGraph V} [DecidableRel G.Adj]
@@ -179,9 +181,12 @@ noncomputable def lapMatrix_ker_basis :=
   Basis.mk (linearIndependent_lapMatrix_ker_basis_aux G)
     (top_le_span_range_lapMatrix_ker_basis_aux G)
 
+end
+
 /-- The number of connected components in `G` is the dimension of the nullspace its Laplacian. -/
 theorem card_ConnectedComponent_eq_rank_ker_lapMatrix : Fintype.card G.ConnectedComponent =
     FiniteDimensional.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
+  classical
   rw [FiniteDimensional.finrank_eq_card_basis (lapMatrix_ker_basis G)]
 
 end SimpleGraph
