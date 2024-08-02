@@ -545,14 +545,14 @@ end cylinder
 
 /-- If a functor inverts homotopy equivalences, it sends homotopic maps to the same map. -/
 lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
-    {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁)
+    {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁)(hc : ∀ j, ∃ i, c.Rel i j)
     [∀ i, HasBinaryBiproduct (F.X i) (F.X i)]
     [HasHomotopyCofiber (biprod.lift (𝟙 F) (-𝟙 F))]
     {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)
     (hH : (homotopyEquivalences C c).IsInvertedBy H) :
     H.map φ₀ = H.map φ₁ := by
-  simp only [← cylinder.ι₀_desc _ _ h, ← cylinder.ι₁_desc _ _ h, H.map_comp]
-  rw [cylinder.map_ι₀_eq_map_ι₁ _ _ _ hH]
+  simp only [← cylinder.ι₀_desc _ _ h, ← cylinder.ι₁_desc _ _ h, H.map_comp,
+    cylinder.map_ι₀_eq_map_ι₁ _ hc _ hH]
 
 end
 
