@@ -25,7 +25,6 @@ jobs:
           ref: master
 
       - name: blog report
-        continue-on-error: true
         run: |
           yrMth=2024-07
           mth="$(date -d "${yrMth}-01" '+%B')"
