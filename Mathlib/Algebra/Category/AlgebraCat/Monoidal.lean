@@ -99,7 +99,7 @@ def toModuleCatMonoidalFunctor : MonoidalFunctor (AlgebraCat.{u} R) (ModuleCat.{
   unfold instMonoidalCategory
   exact Monoidal.fromInduced (forget₂ (AlgebraCat R) (ModuleCat R)) _
 
-instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
+instance : (toModuleCatMonoidalFunctor R).Faithful :=
   forget₂_faithful _ _
 
 end

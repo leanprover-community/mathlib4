@@ -38,7 +38,7 @@ Users should use the monoidal notation: `X ⊗ Y` for the product and `𝟙_ C` 
 the terminal object.
 -/
 class ChosenFiniteProducts (C : Type u) [Category.{v} C] where
-  /-- A choice of a limit binary fan for any two objects of the category.-/
+  /-- A choice of a limit binary fan for any two objects of the category. -/
   product : (X Y : C) → Limits.LimitCone (Limits.pair X Y)
   /-- A choice of a terminal object. -/
   terminal : Limits.LimitCone (Functor.empty.{0} C)

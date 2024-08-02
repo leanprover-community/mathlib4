@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.ModelTheory.Quotients
-import Mathlib.Order.Filter.Germ
+import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Order.Filter.Ultrafilter
-
-#align_import model_theory.ultraproducts from "leanprover-community/mathlib"@"f1ae620609496a37534c2ab3640b641d5be8b6f0"
 
 /-! # Ultraproducts and Łoś's Theorem
 
@@ -23,7 +21,6 @@ ultrafilter.
 ultraproduct, Los's theorem
 
 -/
-
 
 universe u v
 
@@ -49,36 +46,32 @@ instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :
       { funMap := fun {n} f x a => funMap f fun i => x i a
         RelMap := fun {n} r x => ∀ᶠ a : α in u, RelMap r fun i => x i a }
     fun_equiv := fun {n} f x y xy => by
-      refine' mem_of_superset (iInter_mem.2 xy) fun a ha => _
+      refine mem_of_superset (iInter_mem.2 xy) fun a ha => ?_
       simp only [Set.mem_iInter, Set.mem_setOf_eq] at ha
       simp only [Set.mem_setOf_eq, ha]
     rel_equiv := fun {n} r x y xy => by
       rw [← iff_eq_eq]
-      refine' ⟨fun hx => _, fun hy => _⟩
-      · refine' mem_of_superset (inter_mem hx (iInter_mem.2 xy)) _
+      refine ⟨fun hx => ?_, fun hy => ?_⟩
+      · refine mem_of_superset (inter_mem hx (iInter_mem.2 xy)) ?_
         rintro a ⟨ha1, ha2⟩
         simp only [Set.mem_iInter, Set.mem_setOf_eq] at *
         rw [← funext ha2]
         exact ha1
-      · refine' mem_of_superset (inter_mem hy (iInter_mem.2 xy)) _
+      · refine mem_of_superset (inter_mem hy (iInter_mem.2 xy)) ?_
         rintro a ⟨ha1, ha2⟩
         simp only [Set.mem_iInter, Set.mem_setOf_eq] at *
         rw [funext ha2]
         exact ha1 }
-#align first_order.language.ultraproduct.setoid_prestructure FirstOrder.Language.Ultraproduct.setoidPrestructure
 
 variable {M} {u}
 
 instance «structure» : L.Structure ((u : Filter α).Product M) :=
   Language.quotientStructure
-set_option linter.uppercaseLean3 false in
-#align first_order.language.ultraproduct.Structure FirstOrder.Language.Ultraproduct.structure
 
 theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
     (funMap f fun i => (x i : (u : Filter α).Product M)) =
       (fun a => funMap f fun i => x i a : (u : Filter α).Product M) := by
   apply funMap_quotient_mk'
-#align first_order.language.ultraproduct.fun_map_cast FirstOrder.Language.Ultraproduct.funMap_cast
 
 theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
     (t.realize fun i => (x i : (u : Filter α).Product M)) =
@@ -89,7 +82,6 @@ theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
   induction t with
   | var => rfl
   | func _ _ t_ih => simp only [Term.realize, t_ih]; rfl
-#align first_order.language.ultraproduct.term_realize_cast FirstOrder.Language.Ultraproduct.term_realize_cast
 
 variable [∀ a : α, Nonempty (M a)]
 
@@ -125,31 +117,29 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
       ∀ (m : ∀ a, M a) (a : α),
         (fun i : Fin (k + 1) => (Fin.snoc v m : _ → ∀ a, M a) i a) =
           Fin.snoc (fun i : Fin k => v i a) (m a) := by
-      refine' fun m a => funext (Fin.reverseInduction _ fun i _ => _)
+      refine fun m a => funext (Fin.reverseInduction ?_ fun i _ => ?_)
       · simp only [Fin.snoc_last]
       · simp only [Fin.snoc_castSucc]
     simp only [← Fin.comp_snoc]
     simp only [Function.comp, ih, h']
-    refine' ⟨fun h => _, fun h m => _⟩
+    refine ⟨fun h => ?_, fun h m => ?_⟩
     · contrapose! h
       simp_rw [← Ultrafilter.eventually_not, not_forall] at h
-      refine'
+      refine
         ⟨fun a : α =>
           Classical.epsilon fun m : M a =>
             ¬φ.Realize (fun i => x i a) (Fin.snoc (fun i => v i a) m),
-          _⟩
+          ?_⟩
       rw [← Ultrafilter.eventually_not]
       exact Filter.mem_of_superset h fun a ha => Classical.epsilon_spec ha
     · rw [Filter.eventually_iff] at *
       exact Filter.mem_of_superset h fun a ha => ha (m a)
-#align first_order.language.ultraproduct.bounded_formula_realize_cast FirstOrder.Language.Ultraproduct.boundedFormula_realize_cast
 
 theorem realize_formula_cast {β : Type*} (φ : L.Formula β) (x : β → ∀ a, M a) :
     (φ.Realize fun i => (x i : (u : Filter α).Product M)) ↔
       ∀ᶠ a : α in u, φ.Realize fun i => x i a := by
   simp_rw [Formula.Realize, ← boundedFormula_realize_cast φ x, iff_eq_eq]
   exact congr rfl (Subsingleton.elim _ _)
-#align first_order.language.ultraproduct.realize_formula_cast FirstOrder.Language.Ultraproduct.realize_formula_cast
 
 /-- **Łoś's Theorem**: A sentence is true in an ultraproduct if and only if the set of structures
 it is true in is in the ultrafilter. -/
@@ -158,12 +148,10 @@ theorem sentence_realize (φ : L.Sentence) :
   simp_rw [Sentence.Realize]
   erw [← realize_formula_cast φ, iff_eq_eq]
   exact congr rfl (Subsingleton.elim _ _)
-#align first_order.language.ultraproduct.sentence_realize FirstOrder.Language.Ultraproduct.sentence_realize
 
 nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=
   letI : ∀ a, Inhabited (M a) := fun _ => Classical.inhabited_of_nonempty'
-  instNonempty
-#align first_order.language.ultraproduct.product.nonempty FirstOrder.Language.Ultraproduct.Product.instNonempty
+  inferInstance
 
 end Ultraproduct
 

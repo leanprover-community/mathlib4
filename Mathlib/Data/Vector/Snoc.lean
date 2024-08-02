@@ -18,6 +18,8 @@ import Mathlib.Data.Vector.Basic
 
 set_option autoImplicit true
 
+namespace Mathlib
+
 namespace Vector
 
 /-- Append a single element to the end of a vector -/
@@ -28,7 +30,7 @@ def snoc : Vector α n → α → Vector α (n+1) :=
 ## Simplification lemmas
 -/
 section Simp
-  variable (xs : Vector α n)
+variable (xs : Vector α n)
 
 @[simp]
 theorem snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
@@ -124,7 +126,7 @@ variable (xs : Vector α n)
 
 @[simp]
 theorem map_snoc : map f (xs.snoc x) = (map f xs).snoc (f x) := by
-  induction xs using Vector.inductionOn <;> simp_all
+  induction xs <;> simp_all
 
 @[simp]
 theorem mapAccumr_nil : mapAccumr f Vector.nil s = (s, Vector.nil) :=
@@ -136,7 +138,7 @@ theorem mapAccumr_snoc :
     = let q := f x s
       let r := mapAccumr f xs q.1
       (r.1, r.2.snoc q.2) := by
-  induction xs using Vector.inductionOn
+  induction xs
   · rfl
   · simp [*]
 
@@ -160,3 +162,5 @@ theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) 
 
 end Simp
 end Vector
+
+end Mathlib

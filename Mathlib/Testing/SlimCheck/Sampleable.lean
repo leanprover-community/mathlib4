@@ -3,11 +3,9 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Testing.SlimCheck.Gen
-
-#align_import testing.slim_check.sampleable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
 /-!
 # `SampleableExt` Class
@@ -86,11 +84,12 @@ random testing
 
 -/
 
-set_option autoImplicit true
-
 namespace SlimCheck
 
 open Random Gen
+
+universe u v
+variable {α β : Type*}
 
 /-- Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
 and suggest simpler examples. -/
@@ -187,7 +186,7 @@ open Shrinkable
 /-- Shrink a list of a shrinkable type, either by discarding an element or shrinking an element. -/
 instance List.shrinkable [Shrinkable α] : Shrinkable (List α) where
   shrink := fun L =>
-    (L.mapIdx fun i _ => L.removeNth i) ++
+    (L.mapIdx fun i _ => L.eraseIdx i) ++
     (L.mapIdx fun i a => (shrink a).map fun a' => L.modifyNth (fun _ => a') i).join
 
 end Shrinkers
