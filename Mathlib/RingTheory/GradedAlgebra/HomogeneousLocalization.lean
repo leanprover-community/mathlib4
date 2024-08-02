@@ -73,9 +73,8 @@ open DirectSum Pointwise
 open DirectSum SetLike
 
 variable {ι R A : Type*}
-variable [AddCommMonoid ι] [DecidableEq ι]
 variable [CommRing R] [CommRing A] [Algebra R A]
-variable (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
+variable (𝒜 : ι → Submodule R A)
 variable (x : Submonoid A)
 
 local notation "at " x => Localization x
@@ -110,6 +109,44 @@ theorem ext {c1 c2 : NumDenSameDeg 𝒜 x} (hdeg : c1.deg = c2.deg) (hnum : (c1.
   dsimp only [Subtype.coe_mk] at *
   subst hdeg hnum hden
   congr
+
+instance : Neg (NumDenSameDeg 𝒜 x) where
+  neg c := ⟨c.deg, ⟨-c.num, neg_mem c.num.2⟩, c.den, c.den_mem⟩
+
+@[simp]
+theorem deg_neg (c : NumDenSameDeg 𝒜 x) : (-c).deg = c.deg :=
+  rfl
+
+@[simp]
+theorem num_neg (c : NumDenSameDeg 𝒜 x) : ((-c).num : A) = -c.num :=
+  rfl
+
+@[simp]
+theorem den_neg (c : NumDenSameDeg 𝒜 x) : ((-c).den : A) = c.den :=
+  rfl
+
+section SMul
+
+variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
+
+instance : SMul α (NumDenSameDeg 𝒜 x) where
+  smul m c := ⟨c.deg, m • c.num, c.den, c.den_mem⟩
+
+@[simp]
+theorem deg_smul (c : NumDenSameDeg 𝒜 x) (m : α) : (m • c).deg = c.deg :=
+  rfl
+
+@[simp]
+theorem num_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).num : A) = m • c.num :=
+  rfl
+
+@[simp]
+theorem den_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).den : A) = c.den :=
+  rfl
+
+end SMul
+
+variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 
 instance : One (NumDenSameDeg 𝒜 x) where
   one :=
@@ -188,21 +225,6 @@ theorem num_add (c1 c2 : NumDenSameDeg 𝒜 x) :
 theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * c2.den :=
   rfl
 
-instance : Neg (NumDenSameDeg 𝒜 x) where
-  neg c := ⟨c.deg, ⟨-c.num, neg_mem c.num.2⟩, c.den, c.den_mem⟩
-
-@[simp]
-theorem deg_neg (c : NumDenSameDeg 𝒜 x) : (-c).deg = c.deg :=
-  rfl
-
-@[simp]
-theorem num_neg (c : NumDenSameDeg 𝒜 x) : ((-c).num : A) = -c.num :=
-  rfl
-
-@[simp]
-theorem den_neg (c : NumDenSameDeg 𝒜 x) : ((-c).den : A) = c.den :=
-  rfl
-
 instance : CommMonoid (NumDenSameDeg 𝒜 x) where
   one := 1
   mul := (· * ·)
@@ -230,27 +252,6 @@ theorem num_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : ((c ^ n).num : A) = (c.nu
 @[simp]
 theorem den_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : ((c ^ n).den : A) = (c.den : A) ^ n :=
   rfl
-
-section SMul
-
-variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
-
-instance : SMul α (NumDenSameDeg 𝒜 x) where
-  smul m c := ⟨c.deg, m • c.num, c.den, c.den_mem⟩
-
-@[simp]
-theorem deg_smul (c : NumDenSameDeg 𝒜 x) (m : α) : (m • c).deg = c.deg :=
-  rfl
-
-@[simp]
-theorem num_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).num : A) = m • c.num :=
-  rfl
-
-@[simp]
-theorem den_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).den : A) = c.den :=
-  rfl
-
-end SMul
 
 variable (𝒜)
 
@@ -308,17 +309,6 @@ lemma subsingleton (hx : 0 ∈ x) : Subsingleton (HomogeneousLocalization 𝒜 x
   have := IsLocalization.subsingleton (S := at x) hx
   (HomogeneousLocalization.val_injective (𝒜 := 𝒜) (x := x)).subsingleton
 
-instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
-  pow z n :=
-    (Quotient.map' (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
-          change Localization.mk _ _ = Localization.mk _ _
-          simp only [num_pow, den_pow]
-          convert congr_arg (fun z : at x => z ^ n) h <;> erw [Localization.mk_pow] <;> rfl :
-        HomogeneousLocalization 𝒜 x → HomogeneousLocalization 𝒜 x)
-      z
-
-@[simp] lemma mk_pow (i : NumDenSameDeg 𝒜 x) (n : ℕ) : mk (i ^ n) = mk i ^ n := rfl
-
 section SMul
 
 variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
@@ -351,6 +341,23 @@ instance : Neg (HomogeneousLocalization 𝒜 x) where
     exact congr_arg Neg.neg h
 
 @[simp] lemma mk_neg (i : NumDenSameDeg 𝒜 x) : mk (-i) = -mk i := rfl
+
+@[simp]
+theorem val_neg {x} : ∀ y : HomogeneousLocalization 𝒜 x, (-y).val = -y.val :=
+  Quotient.ind' fun y ↦ by rw [← mk_neg, val_mk, val_mk, Localization.neg_mk]; rfl
+
+variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
+
+instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
+  pow z n :=
+    (Quotient.map' (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+          change Localization.mk _ _ = Localization.mk _ _
+          simp only [num_pow, den_pow]
+          convert congr_arg (fun z : at x => z ^ n) h <;> erw [Localization.mk_pow] <;> rfl :
+        HomogeneousLocalization 𝒜 x → HomogeneousLocalization 𝒜 x)
+      z
+
+@[simp] lemma mk_pow (i : NumDenSameDeg 𝒜 x) (n : ℕ) : mk (i ^ n) = mk i ^ n := rfl
 
 instance : Add (HomogeneousLocalization 𝒜 x) where
   add :=
@@ -407,10 +414,6 @@ theorem val_add : ∀ y1 y2 : HomogeneousLocalization 𝒜 x, (y1 + y2).val = y1
 @[simp]
 theorem val_mul : ∀ y1 y2 : HomogeneousLocalization 𝒜 x, (y1 * y2).val = y1.val * y2.val :=
   Quotient.ind₂' fun y1 y2 ↦ by rw [← mk_mul, val_mk, val_mk, val_mk, Localization.mk_mul]; rfl
-
-@[simp]
-theorem val_neg : ∀ y : HomogeneousLocalization 𝒜 x, (-y).val = -y.val :=
-  Quotient.ind' fun y ↦ by rw [← mk_neg, val_mk, val_mk, Localization.neg_mk]; rfl
 
 @[simp]
 theorem val_sub (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.val - y2.val := by
@@ -504,6 +507,7 @@ theorem ext_iff_val (f g : HomogeneousLocalization 𝒜 x) : f = g ↔ f.val = g
 
 section
 
+variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 variable (𝒜) (𝔭 : Ideal A) [Ideal.IsPrime 𝔭]
 
 /-- Localizing a ring homogeneously at a prime ideal. -/
@@ -544,6 +548,7 @@ variable (𝒜) (f : A)
 abbrev Away :=
   HomogeneousLocalization 𝒜 (Submonoid.powers f)
 
+variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 variable {𝒜} {f}
 
 theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
@@ -565,6 +570,7 @@ end
 
 section
 
+variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 variable (𝒜)
 variable {B : Type*} [CommRing B] [Algebra R B]
 variable (ℬ : ι → Submodule R B) [GradedAlgebra ℬ]

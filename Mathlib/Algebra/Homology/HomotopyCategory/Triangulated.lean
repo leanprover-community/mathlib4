@@ -16,7 +16,7 @@ the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is trian
 
 open CategoryTheory Category Limits Pretriangulated ComposableArrows
 
-variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+variable {C : Type*} [Category C] [Preadditive C] [HasBinaryBiproducts C]
   {X₁ X₂ X₃ : CochainComplex C ℤ} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
 
 namespace CochainComplex
@@ -175,6 +175,8 @@ lemma mappingConeCompTriangleh_comm₁ :
 end CochainComplex
 
 namespace HomotopyCategory
+
+variable [HasZeroObject C]
 
 lemma mappingConeCompTriangleh_distinguished :
     (CochainComplex.mappingConeCompTriangleh f g) ∈
