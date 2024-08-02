@@ -206,7 +206,7 @@ theorem LocallyFinite.optionElim (hf : LocallyFinite f) (s : Set X) :
   locallyFinite_option.2 hf
 
 set_option linter.deprecated false in
-@[deprecated LocallyFinite.option_elim (since := "2024-08-02")]
+@[deprecated LocallyFinite.optionElim (since := "2024-08-02")]
 theorem LocallyFinite.option_elim' (hf : LocallyFinite f) (s : Set X) :
     LocallyFinite (Option.elim' s f) :=
   hf.optionElim s
