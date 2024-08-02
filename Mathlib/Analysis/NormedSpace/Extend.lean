@@ -38,7 +38,7 @@ open ComplexConjugate
 variable {𝕜 : Type*} [RCLike 𝕜] {F : Type*}
 namespace LinearMap
 
-variable  [AddCommGroup F] [Module ℝ F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+variable [AddCommGroup F] [Module ℝ F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F]
 
 /-- Extend `fr : F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜` in a way that will also be continuous and have its norm
 bounded by `‖fr‖` if `fr` is continuous. -/
