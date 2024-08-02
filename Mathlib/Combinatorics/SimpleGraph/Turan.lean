@@ -283,6 +283,8 @@ theorem nonempty_iso_turanGraph (h : G.IsTuranMaximal r) :
 
 end IsTuranMaximal
 
+variable [DecidableEq V]
+
 /-- **Turán's theorem**, reverse direction.
 
 Any graph isomorphic to `turanGraph n r` is itself Turán-maximal if `0 < r`. -/

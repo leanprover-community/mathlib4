@@ -197,12 +197,12 @@ abbrev projectiveResolution (Z : C) [HasZeroObject C]
     ProjectiveResolution Z :=
   (HasProjectiveResolution.out (Z := Z)).some
 
-variable (C)
 variable [Abelian C]
 
 section
 variable [HasProjectiveResolutions C]
 
+variable (C) in
 /-- Taking projective resolutions is functorial,
 if considered with target the homotopy category
 (`ℕ`-indexed chain complexes and chain maps up to homotopy).
@@ -218,7 +218,6 @@ def projectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.down ℕ) whe
     rw [← (HomotopyCategory.quotient _ _).map_comp]
     apply HomotopyCategory.eq_of_homotopy
     apply ProjectiveResolution.liftCompHomotopy
-variable {C}
 
 /-- If `P : ProjectiveResolution X`, then the chosen `(projectiveResolutions C).obj X`
 is isomorphic (in the homotopy category) to `P.complex`. -/
@@ -275,7 +274,6 @@ applied to the previously constructed morphism,
 and the map from the `n`-th object as `Projective.d`.
 -/
 
-variable {C}
 variable (Z : C)
 
 -- The construction of the projective resolution `of` would be very, very slow
