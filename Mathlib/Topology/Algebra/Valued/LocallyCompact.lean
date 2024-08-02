@@ -37,7 +37,6 @@ lemma mem_integer_iff' {x : K} : x ∈ 𝒪[K] ↔ ‖x‖ ≤ 1 := by
 
 lemma norm_le_one (x : 𝒪[K]) : ‖x‖ ≤ 1 := mem_integer_iff'.mp x.prop
 
-@[simp]
 lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   rcases (norm_le_one u.val).eq_or_lt with hu|hu
   · exact hu
