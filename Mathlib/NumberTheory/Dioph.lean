@@ -52,7 +52,7 @@ Matiyasevic's theorem, Hilbert's tenth problem
 
 open Fin2 Function Nat Sum
 
-local infixr:67 " ::ₒ " => Option.elim'
+local infixr:67 " ::ₒ " => fun a f o ↦ Option.elim o a f
 
 local infixr:65 " ⊗ " => Sum.elim
 
@@ -454,7 +454,7 @@ theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
   ext (ex1_dioph <| reindex_dioph _ (none::some) d) fun v =>
     exists_congr fun x => by
       dsimp
-      rw [show Option.elim' x v ∘ cons none some = x::v from
+      rw [show (Option.elim · x v) ∘ cons none some = x::v from
           funext fun s => by cases' s with a b <;> rfl]
 
 theorem diophFn_vec (f : Vector3 ℕ n → ℕ) : DiophFn f ↔ Dioph {v | f (v ∘ fs) = v fz} :=
