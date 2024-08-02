@@ -223,13 +223,13 @@ lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
 
 lemma left_cont_inf [CompleteLinearOrder β] (a : β) : ScottContinuous fun b ↦ a ⊓ b := by
   refine ScottContinuous.of_map_sSup (fun d _ _ ↦ eq_of_forall_ge_iff fun e ↦ ?_)
-  simp only [inf_le_iff, sSup_le_iff, mem_image, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, ← forall_or_left, ← forall_or_right]
+  simp only [inf_le_iff, sSup_le_iff, ← forall_or_left, mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
 
 lemma right_cont_inf [CompleteLinearOrder β] (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
   refine ScottContinuous.of_map_sSup (fun d _ _ ↦ eq_of_forall_ge_iff fun e ↦ ?_)
-  simp only [inf_le_iff, sSup_le_iff, mem_image, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, ← forall_or_left, ← forall_or_right]
+  simp only [inf_le_iff, sSup_le_iff, ← forall_or_right, mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
 
 lemma ScottContinuousOn.inf₂ [CompleteLinearOrder β] :
     ScottContinuous fun (a, b) => (a ⊓ b : β) :=
