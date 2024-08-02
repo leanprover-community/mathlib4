@@ -43,6 +43,11 @@ only makes sense for nonnegative exponents, and hence we define it such that the
 
 open scoped NNReal
 
+@[fun_prop]
+lemma continuousOn_rpow_nnreal {y : ℝ≥0} {s : Set ℝ≥0} :
+    ContinuousOn (fun x : ℝ≥0 => x ^ (y : ℝ)) s :=
+  Continuous.continuousOn <| NNReal.continuous_rpow_const NNReal.zero_le_coe
+
 namespace CFC
 
 section NonUnital
@@ -58,7 +63,7 @@ noncomputable def nnrpow (a : A) (y : ℝ≥0) : A := cfcₙ (fun x : ℝ≥0 =>
 
 /-- Enable `a ^ y` notation for `CFC.nnrpow`. This is a low-priority instance to make sure it does
 not take priority over other instances when they are available. -/
-noncomputable instance (priority := 50) : Pow A ℝ≥0 where
+noncomputable instance (priority := 100) : Pow A ℝ≥0 where
   pow a y := nnrpow a y
 
 @[simp]
@@ -72,11 +77,9 @@ lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (fun x : ℝ≥0 => x ^ 
 lemma nnrpow_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
     a ^ (x + y) = a ^ x * a ^ y := by
   simp only [nnrpow_def]
-  rw [← cfcₙ_mul (fun z : ℝ≥0 => z ^ (x : ℝ)) (fun z : ℝ≥0 => z ^ (y : ℝ)) a]
-  congr
-  ext z
-  have : (x : ℝ) + (y : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt (add_pos hx hy))
-  simp [NNReal.rpow_add' _ this]
+  rw [← cfcₙ_mul _ _ a]
+  congr! 2 with z
+  exact_mod_cast NNReal.rpow_add' z <| ne_of_gt (add_pos hx hy)
 
 @[simp]
 lemma nnrpow_zero {a : A} : a ^ (0 : ℝ≥0) = 0 := by
@@ -105,31 +108,13 @@ lemma nnrpow_nnrpow [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
     {a : A} {x y : ℝ≥0} : (a ^ x) ^ y = a ^ (x * y) := by
   by_cases ha : 0 ≤ a
   case pos =>
-    by_cases hx : 0 < x
-    case neg =>
-      replace hx : x = 0 := eq_of_le_of_not_lt (le_of_not_lt hx) not_lt_zero'
-      simp [hx]
-    case pos =>
-      by_cases hy : 0 < y
-      case neg =>
-        replace hy : y = 0 := eq_of_le_of_not_lt (le_of_not_lt hy) not_lt_zero'
-        simp [hy]
-      case pos =>
-        simp only [nnrpow_def, NNReal.coe_mul]
-        have h₁ : ContinuousOn (fun z : ℝ≥0 => z ^ (y : ℝ))
-            ((fun z : ℝ≥0 => z ^ (x : ℝ)) '' quasispectrum ℝ≥0 a) :=
-          Continuous.continuousOn <| NNReal.continuous_rpow_const (le_of_lt hy)
-        have h₂ : ContinuousOn (fun z : ℝ≥0 => z ^ (x : ℝ)) (quasispectrum ℝ≥0 a) :=
-          Continuous.continuousOn <| NNReal.continuous_rpow_const (le_of_lt hx)
-        have hmapzero : ∀ r : ℝ≥0, 0 < r → (fun z : ℝ≥0 => z ^ (r : ℝ)) 0 = 0 := fun r hr => by
-          ext
-          simp only [NNReal.coe_rpow, NNReal.coe_zero, le_refl]
-          rw [Real.zero_rpow (by exact_mod_cast ne_of_gt hr)]
-        rw [← cfcₙ_comp (fun z : ℝ≥0 => z ^ (y : ℝ)) (fun z : ℝ≥0 => z ^ (x : ℝ)) a h₁
-          (hmapzero y hy) h₂ (hmapzero x hx)]
-        have : (fun z : ℝ≥0 => z ^ (y : ℝ)) ∘ (fun z : ℝ≥0 => z ^ (x : ℝ))
-            = fun z => z ^ ((x : ℝ) * y) := by ext; simp [Real.rpow_mul]
-        simp [this]
+    obtain (rfl | hx) := eq_zero_or_pos x <;> obtain (rfl | hy) := eq_zero_or_pos y
+    all_goals try simp
+    simp only [nnrpow_def, NNReal.coe_mul]
+    rw [← cfcₙ_comp _ _ a]
+    congr! 2 with u
+    ext
+    simp [Real.rpow_mul]
   case neg =>
     simp [nnrpow_def, cfcₙ_apply_of_not_predicate a ha]
 
@@ -275,13 +260,7 @@ variable [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)
   [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
 
 lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) := by
-  have hzero : NNReal.rpow 0 x = 0 := by
-    have : x ≠ 0 := ne_of_gt hx
-    simp [this]
-  have hcont : ContinuousOn (fun z : ℝ≥0 => z ^ (x : ℝ)) (quasispectrum ℝ≥0 a) :=
-    fun _ _ => ContinuousAt.continuousWithinAt
-      <| NNReal.continuousAt_rpow_const (Or.inr NNReal.zero_le_coe)
-  rw [nnrpow_def, rpow_def, cfcₙ_eq_cfc hcont hzero]
+  rw [nnrpow_def, rpow_def, cfcₙ_eq_cfc]
 
 lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
