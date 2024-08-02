@@ -532,7 +532,7 @@ theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
 
 section NonAssocSemiring
 
-variable (R) [NonAssocSemiring R]
+variable (R)
 
 /-- The center of a non-associative semiring `R` is the set of elements that commute and associate
 with everything in `R` -/
