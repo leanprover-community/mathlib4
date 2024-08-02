@@ -196,7 +196,7 @@ theorem maximal_iff_forall_lt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → �
 theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬ P y :=
   (minimal_iff_forall_lt.1 h).2 hlt
 
-theorem Maximal.not_prop_of_lt (h : Maximal P x) (hlt : x < y) : ¬ P y :=
+theorem Maximal.not_prop_of_gt (h : Maximal P x) (hlt : x < y) : ¬ P y :=
   (maximal_iff_forall_lt.1 h).2 hlt
 
 theorem Minimal.not_lt (h : Minimal P x) (hy : P y) : ¬ (y < x) :=
