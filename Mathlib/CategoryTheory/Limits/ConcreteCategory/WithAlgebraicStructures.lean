@@ -11,8 +11,8 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 
 # Colimits in concrete categories with algebraic structures
 
-Let `C` be a concrete category and `F : J ⥤ C` a filtered diagram in `C`. We discuss some results about
-`colimit F` when objects and morphisms in `C` have some algebraic structures.
+Let `C` be a concrete category and `F : J ⥤ C` a filtered diagram in `C`. We discuss some results
+about `colimit F` when objects and morphisms in `C` have some algebraic structures.
 
 ## Main results
 - `CategoryTheory.Limits.Concrete.colimit_rep_eq_zero`: Let `C` be a category where its objects have
