@@ -293,6 +293,7 @@ section ExistsPrimeFactors
 
 variable [CancelCommMonoidWithZero α]
 variable (pf : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a)
+include pf
 
 theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
   ⟨by
@@ -914,12 +915,11 @@ theorem pow_eq_pow_iff {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) {i j : ℕ} : 
 section multiplicity
 
 variable [NormalizationMonoid R]
-variable [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 open multiplicity Multiset
 
-theorem le_multiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (ha : Irreducible a)
-    (hb : b ≠ 0) :
+theorem le_multiplicity_iff_replicate_le_normalizedFactors [DecidableRel (Dvd.dvd : R → R → Prop)]
+    {a b : R} {n : ℕ} (ha : Irreducible a) (hb : b ≠ 0) :
     ↑n ≤ multiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
   rw [← pow_dvd_iff_le_multiplicity]
   revert b
@@ -942,7 +942,8 @@ the normalized factor occurs in the `normalizedFactors`.
 See also `count_normalizedFactors_eq` which expands the definition of `multiplicity`
 to produce a specification for `count (normalizedFactors _) _`..
 -/
-theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
+theorem multiplicity_eq_count_normalizedFactors [DecidableRel (Dvd.dvd : R → R → Prop)]
+    [DecidableEq R] {a b : R} (ha : Irreducible a)
     (hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
   · apply PartENat.le_of_lt_add_one
@@ -983,11 +984,6 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
     · rw [zero_pow (Nat.succ_ne_zero _)] at hle hlt
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt
-
-/-- Deprecated. Use `WfDvdMonoid.max_power_factor` instead. -/
-@[deprecated WfDvdMonoid.max_power_factor (since := "2024-03-01")]
-theorem max_power_factor {a₀ x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
-    ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := WfDvdMonoid.max_power_factor h hx
 
 end multiplicity
 
