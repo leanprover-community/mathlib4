@@ -1,7 +1,8 @@
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Fintype.Card
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrM
 
+private axiom test_sorry : ∀ {α}, α
 namespace Tests.Congrm
 
 set_option autoImplicit true
@@ -15,15 +16,15 @@ example {a b c d : ℕ} :
   congrm Nat.pred (Nat.succ ?h1) * (?h2 + ?h3)
   case h1 =>
     guard_target = a = b
-    sorry
+    exact test_sorry
   case h2 =>
     guard_target = d = b
-    sorry
+    exact test_sorry
   case h3 =>
     guard_target = c + a.pred = c + d.pred
-    sorry
+    exact test_sorry
 
-example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun _x => ∀ z, b + a = z) := by
+example {a b : ℕ} (h : a = b) : (fun _y : ℕ => ∀ z, a + a = z) = (fun _x => ∀ z, b + a = z) := by
   congrm fun x => ∀ w, ?_ + a = w
   guard_hyp x : ℕ
   guard_hyp w : ℕ
@@ -138,3 +139,7 @@ example (a b : Nat) (h : a = b) : 1 + a ≤ 1 + b := by
 example [Fintype α] [Fintype β] (h : α = β) : Fintype.card α = Fintype.card β := by
   congrm Fintype.card ?_
   exact h
+
+end Congrm
+
+end Tests

@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
+import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -59,7 +59,8 @@ def isLimitOfIsLimitπ (c : Cone F)
 
 section
 
-variable (F) [HasLimit (F ⋙ π₁)] [HasLimit (F ⋙ π₂)] [HasLimit (F ⋙ π₃)]
+variable (F)
+variable [HasLimit (F ⋙ π₁)] [HasLimit (F ⋙ π₂)] [HasLimit (F ⋙ π₃)]
 
 /-- Construction of a limit cone for a functor `J ⥤ ShortComplex C` using the limits
 of the three components `J ⥤ C`. -/
@@ -191,7 +192,8 @@ def isColimitOfIsColimitπ (c : Cocone F)
 
 section
 
-variable (F) [HasColimit (F ⋙ π₁)] [HasColimit (F ⋙ π₂)] [HasColimit (F ⋙ π₃)]
+variable (F)
+variable [HasColimit (F ⋙ π₁)] [HasColimit (F ⋙ π₂)] [HasColimit (F ⋙ π₃)]
 
 /-- Construction of a colimit cocone for a functor `J ⥤ ShortComplex C` using the colimits
 of the three components `J ⥤ C`. -/
