@@ -13,12 +13,12 @@ import Mathlib.Topology.Algebra.Algebra
 /-!
 # Exponential in a Banach algebra
 
-In this file, we define `NormedSpace.exp 𝕂 : 𝔸 → 𝔸`, the exponential map in a topological algebra `𝔸` over a
-field `𝕂`.
+In this file, we define `NormedSpace.exp 𝕂 : 𝔸 → 𝔸`,
+the exponential map in a topological algebra `𝔸` over a field `𝕂`.
 
 While for most interesting results we need `𝔸` to be normed algebra, we do not require this in the
-definition in order to make `NormedSpace.exp` independent of a particular choice of norm. The definition also
-does not require that `𝔸` be complete, but we need to assume it for most results.
+definition in order to make `NormedSpace.exp` independent of a particular choice of norm. The
+definition also does not require that `𝔸` be complete, but we need to assume it for most results.
 
 We then prove some basic results, but we avoid importing derivatives here to minimize dependencies.
 Results involving derivatives and comparisons with `Real.exp` and `Complex.exp` can be found in
@@ -37,18 +37,21 @@ We prove most result for an arbitrary field `𝕂`, and then specialize to `𝕂
   then given two elements `x` and `y` in the disk of convergence, we have
   `NormedSpace.exp 𝕂 (x+y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)`
 - `NormedSpace.exp_neg_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is a division ring,
-  then given an element `x` in the disk of convergence, we have `NormedSpace.exp 𝕂 (-x) = (NormedSpace.exp 𝕂 x)⁻¹`.
+  then given an element `x` in the disk of convergence,
+  we have `NormedSpace.exp 𝕂 (-x) = (NormedSpace.exp 𝕂 x)⁻¹`.
 
 ### `𝕂 = ℝ` or `𝕂 = ℂ`
 
-- `expSeries_radius_eq_top` : the `FormalMultilinearSeries` defining `NormedSpace.exp 𝕂` has infinite
-  radius of convergence
+- `expSeries_radius_eq_top` : the `FormalMultilinearSeries` defining `NormedSpace.exp 𝕂`
+  has infinite radius of convergence
 - `NormedSpace.exp_add_of_commute` : given two commuting elements `x` and `y`, we have
   `NormedSpace.exp 𝕂 (x+y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)`
-- `NormedSpace.exp_add` : if `𝔸` is commutative, then we have `NormedSpace.exp 𝕂 (x+y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)`
-  for any `x` and `y`
-- `NormedSpace.exp_neg` : if `𝔸` is a division ring, then we have `NormedSpace.exp 𝕂 (-x) = (NormedSpace.exp 𝕂 x)⁻¹`.
-- `NormedSpace.exp_sum_of_commute` : the analogous result to `NormedSpace.exp_add_of_commute` for `Finset.sum`.
+- `NormedSpace.exp_add` : if `𝔸` is commutative, then we have
+  `NormedSpace.exp 𝕂 (x+y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)` for any `x` and `y`
+- `NormedSpace.exp_neg` : if `𝔸` is a division ring, then we have
+  `NormedSpace.exp 𝕂 (-x) = (NormedSpace.exp 𝕂 x)⁻¹`.
+- `NormedSpace.exp_sum_of_commute` : the analogous result to `NormedSpace.exp_add_of_commute`
+  for `Finset.sum`.
 - `NormedSpace.exp_sum` : the analogous result to `NormedSpace.exp_add` for `Finset.sum`.
 - `NormedSpace.exp_nsmul` : repeated addition in the domain corresponds to
   repeated multiplication in the codomain.
@@ -252,7 +255,8 @@ theorem analyticAt_exp_of_mem_ball (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸
     exact (hasFPowerSeriesOnBall_exp_of_radius_pos h).analyticAt_of_mem hx
 
 /-- In a Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero, if `x` and `y` are
-in the disk of convergence and commute, then `NormedSpace.exp 𝕂 (x + y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)`. -/
+in the disk of convergence and commute, then
+`NormedSpace.exp 𝕂 (x + y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)`. -/
 theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commute x y)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius)
     (hy : y ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : exp 𝕂 (x + y) = exp 𝕂 x * exp 𝕂 y := by
@@ -352,7 +356,8 @@ variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸
   [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero,
-`NormedSpace.exp 𝕂 (x+y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)` for all `x`, `y` in the disk of convergence. -/
+`NormedSpace.exp 𝕂 (x+y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)`
+for all `x`, `y` in the disk of convergence. -/
 theorem exp_add_of_mem_ball [CharZero 𝕂] {x y : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius)
     (hy : y ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : exp 𝕂 (x + y) = exp 𝕂 x * exp 𝕂 y :=

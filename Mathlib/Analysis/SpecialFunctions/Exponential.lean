@@ -24,24 +24,26 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
   `1 : 𝔸 →L[𝕂] 𝔸` at zero, as long as it converges on a neighborhood of zero
   (see also `hasStrictDerivAt_exp_zero_of_radius_pos` for the case `𝔸 = 𝕂`)
 - `hasStrictFDerivAt_exp_of_lt_radius` : if `𝕂` has characteristic zero and `𝔸` is commutative,
-  then given a point `x` in the disk of convergence, `NormedSpace.exp 𝕂` has strict Fréchet derivative
-  `NormedSpace.exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at x (see also `hasStrictDerivAt_exp_of_lt_radius` for the case
-  `𝔸 = 𝕂`)
-- `hasStrictFDerivAt_exp_smul_const_of_mem_ball`: even when `𝔸` is non-commutative, if we have
-  an intermediate algebra `𝕊` which is commutative, then the function `(u : 𝕊) ↦ NormedSpace.exp 𝕂 (u • x)`,
-  still has strict Fréchet derivative `NormedSpace.exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x` at `t` if
+  then given a point `x` in the disk of convergence, `NormedSpace.exp 𝕂` has strict Fréchet
+  derivative `NormedSpace.exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at x
+  (see also `hasStrictDerivAt_exp_of_lt_radius` for the case `𝔸 = 𝕂`)
+- `hasStrictFDerivAt_exp_smul_const_of_mem_ball`: even when `𝔸` is non-commutative,
+  if we have an intermediate algebra `𝕊` which is commutative, the function
+  `(u : 𝕊) ↦ NormedSpace.exp 𝕂 (u • x)`, still has strict Fréchet derivative
+  `NormedSpace.exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x` at `t` if
   `t • x` is in the radius of convergence.
 
 ### `𝕂 = ℝ` or `𝕂 = ℂ`
 
-- `hasStrictFDerivAt_exp_zero` : `NormedSpace.exp 𝕂` has strict Fréchet derivative `1 : 𝔸 →L[𝕂] 𝔸` at zero
-  (see also `hasStrictDerivAt_exp_zero` for the case `𝔸 = 𝕂`)
-- `hasStrictFDerivAt_exp` : if `𝔸` is commutative, then given any point `x`, `NormedSpace.exp 𝕂` has strict
-  Fréchet derivative `NormedSpace.exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at x (see also `hasStrictDerivAt_exp` for the
-  case `𝔸 = 𝕂`)
+- `hasStrictFDerivAt_exp_zero` : `NormedSpace.exp 𝕂` has strict Fréchet derivative `1 : 𝔸 →L[𝕂] 𝔸`
+  at zero (see also `hasStrictDerivAt_exp_zero` for the case `𝔸 = 𝕂`)
+- `hasStrictFDerivAt_exp` : if `𝔸` is commutative, then given any point `x`, `NormedSpace.exp 𝕂`
+  has strict Fréchet derivative `NormedSpace.exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at x
+  (see also `hasStrictDerivAt_exp` for the case `𝔸 = 𝕂`)
 - `hasStrictFDerivAt_exp_smul_const`: even when `𝔸` is non-commutative, if we have
-  an intermediate algebra `𝕊` which is commutative, then the function `(u : 𝕊) ↦ NormedSpace.exp 𝕂 (u • x)`
-  still has strict Fréchet derivative `NormedSpace.exp 𝕂 (t • x) • (1 : 𝔸 →L[𝕂] 𝔸).smulRight x` at `t`.
+  an intermediate algebra `𝕊` which is commutative, the function
+  `(u : 𝕊) ↦ NormedSpace.exp 𝕂 (u • x)` still has strict Fréchet derivative
+  `NormedSpace.exp 𝕂 (t • x) • (1 : 𝔸 →L[𝕂] 𝔸).smulRight x` at `t`.
 
 ### Compatibility with `Real.exp` and `Complex.exp`
 
@@ -83,8 +85,8 @@ variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸
   [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
-characteristic zero has Fréchet derivative `NormedSpace.exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x` in the
-disk of convergence. -/
+characteristic zero has Fréchet derivative `NormedSpace.exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸`
+at any point `x`in the disk of convergence. -/
 theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasFDerivAt (exp 𝕂) (exp 𝕂 x • (1 : 𝔸 →L[𝕂] 𝔸)) x := by
@@ -103,8 +105,8 @@ theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
   ring
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
-characteristic zero has strict Fréchet derivative `NormedSpace.exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x` in
-the disk of convergence. -/
+characteristic zero has strict Fréchet derivative `NormedSpace.exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸`
+at any point `x` in the disk of convergence. -/
 theorem hasStrictFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasStrictFDerivAt (exp 𝕂) (exp 𝕂 x • (1 : 𝔸 →L[𝕂] 𝔸)) x :=
@@ -180,12 +182,13 @@ section DerivRCLike
 
 variable {𝕂 : Type*} [RCLike 𝕂]
 
-/-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `NormedSpace.exp 𝕂 x` at any point
-`x`. -/
+/-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `NormedSpace.exp 𝕂 x`
+at any point `x`. -/
 theorem hasStrictDerivAt_exp {x : 𝕂} : HasStrictDerivAt (exp 𝕂) (exp 𝕂 x) x :=
   hasStrictDerivAt_exp_of_mem_ball ((expSeries_radius_eq_top 𝕂 𝕂).symm ▸ edist_lt_top _ _)
 
-/-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has derivative `NormedSpace.exp 𝕂 x` at any point `x`. -/
+/-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has derivative `NormedSpace.exp 𝕂 x`
+at any point `x`. -/
 theorem hasDerivAt_exp {x : 𝕂} : HasDerivAt (exp 𝕂) (exp 𝕂 x) x :=
   hasStrictDerivAt_exp.hasDerivAt
 
