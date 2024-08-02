@@ -1021,19 +1021,14 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
 
 @[simp] lemma getVert_copy  {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
-  cases p with
-  | nil =>
+  subst_vars
+  match p, i with
+  | .nil, _ =>
     rw [getVert_of_length_le _ (by simp only [length_nil, Nat.zero_le] : nil.length ≤ _)]
     rw [getVert_of_length_le _ (by simp only [length_copy, length_nil, Nat.zero_le])]
-    exact h'.symm
-  | cons hadj q =>
-    by_cases hi : i = 0
-    · simp only [hi, getVert_zero, h.symm]
-    · simp only [copy_cons, getVert_cons_succ]
-      rw [getVert_cons _ _ hi]
-      rw [getVert_cons _ _ hi]
-      apply getVert_copy
-
+  | .cons hadj q, 0 => simp only [copy_rfl_rfl, getVert_zero]
+  | .cons hadj q, (n + 1) => simp only [copy_cons, getVert_cons_succ]; rfl
+  
 @[simp] lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
     p.tail.getVert n = p.getVert (n + 1) := by
   match p with
