@@ -532,6 +532,7 @@ noncomputable def homotopy₀₁ : Homotopy (ι₀ K) (ι₁ K) :=
   (Homotopy.ofEq (by simp)).trans (((πCompι₀Homotopy K hc).compLeft (ι₁ K)).trans
     (Homotopy.ofEq (by simp)))
 
+include hc in
 lemma map_ι₀_eq_map_ι₁ {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)
     (hH : (homotopyEquivalences C c).IsInvertedBy H) :
     H.map (ι₀ K) = H.map (ι₁ K) := by
@@ -551,7 +552,7 @@ lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
     (hH : (homotopyEquivalences C c).IsInvertedBy H) :
     H.map φ₀ = H.map φ₁ := by
   simp only [← cylinder.ι₀_desc _ _ h, ← cylinder.ι₁_desc _ _ h, H.map_comp]
-  rw [cylinder.map_ι₀_eq_map_ι₁ _ _ hH]
+  rw [cylinder.map_ι₀_eq_map_ι₁ _ _ _ hH]
 
 end
 

@@ -23,7 +23,7 @@ open TopologicalSpace Set Filter
 open Topology Filter
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
-variable {s : Set β} {ι : Type*} {U : ι → Opens β} (hU : iSup U = ⊤)
+variable {s : Set β} {ι : Type*} {U : ι → Opens β}
 
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
     Inducing (s.restrictPreimage f) := by
@@ -77,6 +77,9 @@ theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
 @[deprecated (since := "2024-04-02")]
 theorem Set.restrictPreimage_isOpenMap (s : Set β) (H : IsOpenMap f) :
     IsOpenMap (s.restrictPreimage f) := H.restrictPreimage s
+
+variable (hU : iSup U = ⊤)
+include hU
 
 theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpen (s ∩ U i) := by
   constructor
