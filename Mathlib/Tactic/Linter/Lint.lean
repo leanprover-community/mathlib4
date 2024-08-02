@@ -257,4 +257,55 @@ initialize addLinter longLineLinter
 
 end LongLine
 
+/-! # The "openClassical" linter -/
+
+/-- The "openClassical" linter emits a warning on `open Classical` statements which are not
+scoped to a single declaration. This can hide that some theorem statements would be better stated
+with explicit decidability statements.
+-/
+register_option linter.openClassical : Bool := {
+  defValue := true
+  descr := "enable the openClassical linter"
+}
+
+namespace OpenClassical
+
+/-- Gets the value of the `linter.openClassical` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.openClassical o
+
+@[inherit_doc Mathlib.Linter.linter.openClassical]
+def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+     return
+    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
+    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
+      return
+    -- If this is an open command, extract the list of opened namespaces.
+    let names : Option (Array Name) := match stx with
+    | `(command|open $name hiding $_) => some #[name.getId]
+    | `(command|open $name renaming $_) => some #[name.getId]
+    --| `(command|open $names:ident "(" $_ ")") => some names--.raw.getArgs
+    | `(command|open $openDecl) =>
+      let inner := openDecl.raw.getArgs
+      let names := s!"{inner.get! 0}"
+      -- remove [ and ]. TODO: also remove `... want a better parser!
+      let names := (names.stripPrefix "[").stripSuffix "]"
+      dbg_trace names
+      let names := names.split (· == ' ')
+    -- todo: turn into each part into a `Name, and return these
+      some ((openDecl.raw.getArgs).map (fun s ↦ s.getId))
+    | _ => none
+    if let some names := names then
+      -- We need to handle `open foo (bar)` commands also: ignore all anonymous names.
+      let names := names.filter fun n ↦ !(n matches .anonymous)
+      if names.contains `Classical then
+        -- TODO: add useful error message!
+        Linter.logLint linter.openClassical stx "foo"
+
+initialize addLinter openClassicalLinter
+
+end OpenClassical
+
 end Mathlib.Linter
