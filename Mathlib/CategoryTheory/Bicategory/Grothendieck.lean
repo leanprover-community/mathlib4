@@ -49,9 +49,9 @@ structure Pseudofunctor.Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒ
   /-- The object in the fiber of the base object. -/
   fiber : F.obj ⟨op base⟩
 
-/-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
 namespace Pseudofunctor.Grothendieck
 
+/-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
 scoped prefix:75 "∫ " => Pseudofunctor.Grothendieck
 
 @[simps]
