@@ -217,7 +217,7 @@ end CommSemiring
 section aeval
 
 variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
-variable [Algebra R A] [Algebra R A'] [Algebra R B]
+variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
