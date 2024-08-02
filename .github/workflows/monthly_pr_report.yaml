@@ -44,6 +44,6 @@ jobs:
             sed -z '
               s=</details><details><summary>=<details><summary>=
               s=\n---\nReports\n\n=\n</details>\n\n---\n<details><summary>Reports</summary>\n\n=
-              s=\n---[\n]*$=</details>&=
+              s=\n---[\n]*$=\n\n</details>\n&=
             ')"
           ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
