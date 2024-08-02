@@ -103,7 +103,6 @@ we actually verify that any pointwise right Kan extension of `F` along `G.op` is
 variable {C D : Type*} [Category C] [Category D] (G : C ⥤ D)
 variable {A : Type w} [Category.{w'} A]
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D} [G.IsCocontinuous J K]
-variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasPointwiseRightKanExtension F]
 
 namespace RanIsSheafOfIsCocontinuous
 
@@ -209,6 +208,7 @@ def isLimitMultifork : IsLimit (S.multifork R) :=
 end RanIsSheafOfIsCocontinuous
 
 variable (K)
+variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasPointwiseRightKanExtension F]
 
 /-- If `G` is cocontinuous, then `G.op.ran` pushes sheaves to sheaves.
 
@@ -255,7 +255,7 @@ left adjoint to `G.sheafPushforwardCocontinuous A J K`. This adjunction may repl
 
 namespace Functor
 
-variable [G.IsCocontinuous J K] [G.IsContinuous J K]
+variable [G.IsContinuous J K]
 
 /--
 Given a functor between sites that is continuous and cocontinuous,
@@ -303,10 +303,9 @@ lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf 
           Adjunction.homEquiv_unit])
 
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
-  [G.IsCocontinuous J K] [G.IsContinuous J K]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
-def pushforwardContinuousSheafificationCompatibility :
+def pushforwardContinuousSheafificationCompatibility [G.IsContinuous J K] :
     (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf J A ≅
     presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K :=
   ((G.op.ranAdjunction A).comp (sheafificationAdjunction J A)).leftAdjointUniq
