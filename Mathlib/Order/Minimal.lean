@@ -190,7 +190,7 @@ variable [Preorder α]
 theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
   simp [Minimal, lt_iff_le_not_le, not_imp_not, imp.swap]
 
-theorem maximal_iff_forall_lt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
+theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
   minimal_iff_forall_lt (α := αᵒᵈ)
 
 theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬ P y :=
@@ -347,13 +347,13 @@ theorem Set.exists_diff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t 
     (h : ¬ Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
   simpa [Set.minimal_iff_forall_diff_singleton hP, hs] using h
 
-theorem Set.maximal_iff_forall_ssubset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
+theorem Set.maximal_iff_forall_ssuperset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
   maximal_iff_forall_lt
 
-theorem Maximal.not_prop_of_ssubset (h : Maximal P s) (ht : s ⊂ t) : ¬ P t :=
+theorem Maximal.not_prop_of_ssuperset (h : Maximal P s) (ht : s ⊂ t) : ¬ P t :=
   (maximal_iff_forall_lt.1 h).2 ht
 
-theorem Maximal.not_ssubset (h : Maximal P s) (ht : P t) : ¬ s ⊂ t :=
+theorem Maximal.not_ssuperset (h : Maximal P s) (ht : P t) : ¬ s ⊂ t :=
   h.not_lt ht
 
 theorem Set.maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
