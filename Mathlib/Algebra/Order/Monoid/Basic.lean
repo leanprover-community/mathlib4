@@ -88,7 +88,7 @@ def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
 
 namespace OrderedCommMonoid
 
-/-- OrderedCommMonoids have always monotone mul -/
+/-- OrderedCommMonoids have always monotone mul, so especially nonnegative for some zero -/
 instance OrderedCommMonoid.toPosMulMono (M : Type*) [OrderedCommMonoid M] [Zero M] :
     PosMulMono M where
   elim a _ _ h := mul_le_mul_left' h ↑a
