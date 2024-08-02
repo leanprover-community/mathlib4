@@ -209,7 +209,6 @@ variable [RCLike 𝕜] [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGrou
   [Module 𝕜 E] [Module ℝ E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 /--Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
-@[simps!]
 noncomputable def extendTo𝕜'ₗ : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
   letI to𝕜 (fr : (E →L[ℝ] ℝ)) : (E →L[𝕜] 𝕜) :=
     { toLinearMap := LinearMap.extendTo𝕜' fr
@@ -219,6 +218,12 @@ noncomputable def extendTo𝕜'ₗ : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜]
     map_add' := by intros; ext; simp [h]; ring
     map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
 
+@[simp]
+lemma re_extendTo𝕜'ₗ (g : E →L[ℝ] ℝ) (x : E) :  re ((extendTo𝕜'ₗ g) x : 𝕜) = g x := by
+  have h g (x : E) : extendTo𝕜'ₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
+  simp only [h , map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
+    sub_self, sub_zero]
+
 variable [ContinuousSMul ℝ E]
 
 theorem separate_convex_open_set {s : Set E}
@@ -226,8 +231,7 @@ theorem separate_convex_open_set {s : Set E}
     ∃ f : E →L[𝕜] 𝕜, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
   obtain ⟨g, hg⟩ := _root_.separate_convex_open_set hs₀ hs₁ hs₂ hx₀
   use extendTo𝕜'ₗ g
-  simp only [extendTo𝕜'ₗ_apply_toFun, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im,
-    mul_zero, sub_self, sub_zero]
+  simp only [re_extendTo𝕜'ₗ]
   exact hg
 
 theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
@@ -235,16 +239,14 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
     ∀ b ∈ t, u ≤ re (f b) := by
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open hs₁ hs₂ ht disj
   use extendTo𝕜'ₗ f
-  simp only [extendTo𝕜'ₗ_apply_toFun, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im,
-    mul_zero, sub_self, sub_zero]
+  simp only [re_extendTo𝕜'ₗ]
   exact Exists.intro u h
 
 theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
     ∃ f : E →L[𝕜] 𝕜, ∀ a ∈ s, re (f a) < re (f x) := by
   obtain ⟨f, h⟩ := _root_.geometric_hahn_banach_open_point hs₁ hs₂ disj
   use extendTo𝕜'ₗ f
-  simp only [extendTo𝕜'ₗ_apply_toFun, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im,
-    mul_zero, sub_self, sub_zero]
+  simp only [re_extendTo𝕜'ₗ]
   exact fun a a_1 ↦ h a a_1
 
 theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
@@ -257,8 +259,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
     ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧ ∀ b ∈ t, u < re (f b) := by
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open_open hs₁ hs₂ ht₁ ht₃ disj
   use extendTo𝕜'ₗ f
-  simp only [extendTo𝕜'ₗ_apply_toFun, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im,
-    mul_zero, sub_self, sub_zero]
+  simp only [re_extendTo𝕜'ₗ]
   exact Exists.intro u h
 
 variable [LocallyConvexSpace ℝ E]
