@@ -22,6 +22,7 @@ variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
   [F.EffectivelyEnough]
   [Preregular D] [F.Full] [F.Faithful]
 
+include F in
 lemma Functor.reflects_preregular : Preregular C where
   exists_fac f g _ := by
     obtain ⟨W, f', _, i, w⟩ := Preregular.exists_fac (F.map f) (F.map g)
