@@ -1080,6 +1080,7 @@ import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unitary
 import Mathlib.Analysis.CstarAlgebra.Exponential
 import Mathlib.Analysis.CstarAlgebra.GelfandDuality
 import Mathlib.Analysis.CstarAlgebra.Matrix
+import Mathlib.Analysis.CstarAlgebra.Module
 import Mathlib.Analysis.CstarAlgebra.Multiplier
 import Mathlib.Analysis.CstarAlgebra.Spectrum
 import Mathlib.Analysis.CstarAlgebra.Unitization
@@ -1959,13 +1960,12 @@ import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Basic
-import Mathlib.Condensed.Discrete
+import Mathlib.Condensed.Discrete.Basic
 import Mathlib.Condensed.Epi
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Light.Basic
-import Mathlib.Condensed.Light.Discrete
 import Mathlib.Condensed.Light.Explicit
 import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Module
@@ -2012,7 +2012,6 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bool.Count
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Bracket
-import Mathlib.Data.Buffer.Basic
 import Mathlib.Data.Bundle
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
@@ -3543,6 +3542,7 @@ import Mathlib.Order.Irreducible
 import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
 import Mathlib.Order.JordanHolder
+import Mathlib.Order.KonigLemma
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Lattice
 import Mathlib.Order.LatticeIntervals
@@ -4367,6 +4367,7 @@ import Mathlib.Topology.ClopenBox
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.Compactness.Paracompact
