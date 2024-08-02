@@ -162,6 +162,10 @@ theorem fderiv_norm_smul (x : E) (t : ℝ) :
     rw [(hasFDerivAt_of_subsingleton _ _).fderiv, (hasFDerivAt_of_subsingleton _ _).fderiv]
     simp
 
+theorem fderiv_norm_smul_pos {x : E} {t : ℝ} (ht : t > 0) :
+    fderiv ℝ (‖·‖) (t • x) = fderiv ℝ (‖·‖) x := by
+  rw [fderiv_norm_smul, abs_of_pos ht, div_self ht.ne.symm, one_smul]
+
 theorem norm_fderiv_norm {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
     ‖fderiv ℝ (‖·‖) x‖ = 1 := by
   have : x ≠ 0 := by
@@ -239,7 +243,7 @@ theorem tendsto_differentiable
 theorem exists_inverse (h : finrank ℝ E = 1) (φ : E → F) (hφ : Isometry φ) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ ∀ x : E, f (φ x) = x := by sorry
 
-theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry φ) :
+theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   have main (x : E) (nx : ‖x‖ = 1) :
       ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ (t • x)) = t := by
@@ -308,9 +312,8 @@ theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry
         rw [← Finset.smul_sum]
         rfl }
   use T
-  constructor
-  · sorry
-  · have best i x : f i (φ x) = b i x := by
+  have Tφ x : T (φ x) = x := by
+    have best i x : f i (φ x) = b i x := by
       have : LipschitzWith 1 ((f i) ∘ φ) := by
         convert (f i).lipschitz.comp hφ.lipschitz
         rw [← norm_toNNReal, nf i, mul_one, toNNReal_one]
@@ -337,9 +340,17 @@ theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry
       simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearMap.id_coe, id_eq, g]
       simp_rw [mdr, ite_smul, one_smul, zero_smul]
       rw [Fintype.sum_ite_eq']
-    ext x
     convert LinearMap.congr_fun this x
-    ext x
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, T,
       g]
     simp_rw [best]
+  constructor
+  · apply le_antisymm
+    · sorry
+    · have nφ := hφ.norm_map_of_map_zero φz
+      rcases NormedSpace.exists_lt_norm ℝ E 0 with ⟨x, hx⟩
+      apply le_of_mul_le_mul_right _ hx
+      nth_rw 1 [← Tφ x]
+      rw [← nφ x, one_mul]
+      exact T.le_opNorm _
+  · sorry
