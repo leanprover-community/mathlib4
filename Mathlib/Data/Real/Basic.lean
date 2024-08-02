@@ -517,7 +517,9 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
   nnratCast_def q := by
     rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by
@@ -570,19 +572,6 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
           H.imp fun _ h j ij => sub_le_iff_le_add'.1 (abs_sub_le_iff.1 <| h j ij).1,
       sub_le_comm.1 <|
         le_mk_of_forall_le <| H.imp fun _ h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
-
-lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 ≤ (a + 1) ^ b := by
-  rcases ha.eq_or_lt with rfl|ha'
-  · simp
-  clear ha
-  induction b generalizing a with
-  | zero => simp
-  | succ b hb =>
-    rw [Nat.cast_add_one, mul_add, mul_one, add_right_comm, pow_succ, mul_add, mul_one, add_comm]
-    gcongr
-    · rw [le_mul_iff_one_le_left ha']
-      exact (pow_le_pow_left zero_le_one (by simpa using ha'.le) b).trans' (by simp)
-    · exact hb ha'
 
 end Real
 
