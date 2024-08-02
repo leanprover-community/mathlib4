@@ -8,7 +8,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.GroupTheory.Perm.Centralizer
 import Mathlib.GroupTheory.SpecificGroups.Alternating
 
-/-! #Centralizer of an alement in the alternating group
+/-! # Centralizer of an element in the alternating group
 Let `α : Type` with `Fintype α` (and `DecidableEq α`).
 The main goal of this file is to compute the cardinality of
 conjugacy classes in `alternatingGroup α`.
@@ -25,7 +25,6 @@ of the permutation induced given by `Equiv.Perm.Basis.θ`.
 
   TODO : deduce the formula for the cardinality of the centralizers
   and conjugacy classes in `alternatingGroup α`.
-
 
 -/
 variable {α : Type*} [Fintype α] [DecidableEq α] (g : Equiv.Perm α)
