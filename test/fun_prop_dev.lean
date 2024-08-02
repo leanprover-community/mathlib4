@@ -59,11 +59,8 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 -- this is to stress test detection of loops
 @[fun_prop]
 theorem kaboom (f : α → β) (hf : Con f) : Con f := hf
-
--- currently only trivial loops are detected
--- make it more sophisticated such that longer loops are detected
--- @[fun_prop]
--- theorem chabam (f : α → β) (hf : Con f) : Con f := hf
+@[fun_prop]
+theorem chabam (f : α → β) (hf : Con f) : Con f := hf
 
 
 -- transition theorem --
@@ -401,9 +398,13 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 end MultipleLambdaTheorems
 
 
--- These used to get into infinite loop
--- todo: how do I turn off warrnings?
--- #check_failure ((by fun_prop) : ?m)
+/-- warning: `?m` is not a `fun_prop` goal! -/
+#guard_msgs in
+#check_failure ((by fun_prop) : ?m)
+
+-- todo: warning should not have mvar id in it
+-- /-- warning: `?m.71721` is not a `fun_prop` goal! -/
+-- #guard_msgs in
 -- #check_failure (by exact add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))
 
 example : Con fun ((x, _, _) : α × α × α) => x := by fun_prop
@@ -415,3 +416,52 @@ example : let f := (by exact (fun x : α => x+x)); Con f := by
   let F := fun x : α => x+x
   have : Con F := by fun_prop -- this used to be problematic
   fun_prop
+
+
+def f1 (a : α) := a
+def f2 (a : α) := a
+
+/--
+error: `fun_prop` was unable to prove `Con fun x => x + f1 x`
+
+Issues:
+  No theorems found for `f1` in order to prove `Con fun a => f1 a`
+-/
+#guard_msgs in
+example : Con (fun x : α => x + f1 x) := by fun_prop
+
+/--
+error: `fun_prop` was unable to prove `Con fun x => f1 x + f1 x`
+
+Issues:
+  No theorems found for `f1` in order to prove `Con fun a => f1 a`
+-/
+#guard_msgs in
+example : Con (fun x : α => f1 x + f1 x) := by fun_prop
+
+/--
+error: `fun_prop` was unable to prove `Con fun x => f2 x + f1 x`
+
+Issues:
+  No theorems found for `f2` in order to prove `Con fun a => f2 a`
+-/
+#guard_msgs in
+example  : Con (fun x : α => f2 x + f1 x) := by fun_prop
+
+
+def f3 (a : α) := a
+
+@[fun_prop]
+theorem f3_lin : Lin (fun x : α => f3 x) := by
+  unfold f3; fun_prop (config:={maxTransitionDepth:=0,maxSteps:=10})
+
+example : Con (fun x : α => f3 x) := by fun_prop
+
+/--
+error: `fun_prop` was unable to prove `Con fun x => f3 x`
+
+Issues:
+  No theorems found for `f3` in order to prove `Con fun x => f3 x`
+-/
+#guard_msgs in
+example : Con (fun x : α => f3 x) := by fun_prop (config:={maxTransitionDepth:=0})

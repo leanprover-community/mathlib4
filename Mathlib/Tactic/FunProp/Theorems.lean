@@ -143,6 +143,10 @@ inductive TheoremForm where
   | uncurried | comp
   deriving Inhabited, BEq, Repr
 
+/-- TheoremForm to string -/
+instance : ToString TheoremForm :=
+  ⟨fun x => match x with | .uncurried => "uncurried" | .comp => "compositional"⟩
+
 /-- theorem about specific function (either declared constant or free variable) -/
 structure FunctionTheorem where
   /-- function property name -/
@@ -373,7 +377,7 @@ function property: {thm.funPropName}
 function name: {thm.funOrigin.name}
 main arguments: {thm.mainArgs}
 applied arguments: {thm.appliedArgs}
-form: {repr thm.form}"
+form: {toString thm.form} form"
     functionTheoremsExt.add thm attrKind
   | .mor thm =>
     trace[Meta.Tactic.fun_prop.attr] "\

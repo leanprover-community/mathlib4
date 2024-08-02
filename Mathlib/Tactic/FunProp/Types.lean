@@ -18,12 +18,10 @@ open Lean Meta
 
 namespace Meta.FunProp
 
-
 initialize registerTraceClass `Meta.Tactic.fun_prop
 initialize registerTraceClass `Meta.Tactic.fun_prop.attr
-initialize registerTraceClass `Meta.Tactic.fun_prop.cache
-initialize registerTraceClass `Meta.Tactic.fun_prop.errors
-initialize registerTraceClass `Meta.Tactic.fun_prop.step
+initialize registerTraceClass `Debug.Meta.Tactic.fun_prop
+
 
 /-- Indicated origin of a function or a statement. -/
 inductive Origin where
@@ -63,30 +61,26 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
   | .const name _ => .decl name
   | _ => .decl Name.anonymous
 
-/-- Error logging mode for `fun_prop`. Main mode is used for messages that should be directly
-displayed to the user and secondary mode is for messages that are displayed by setting option
-`Meta.Tactic.fun_prop.errors` to true. -/
-inductive LoggingMode where
-  /-- Main error logging mode, these messages will be diplayed to the user by default. -/
-  | main
-  /-- Secondary error logging mode, these messages will be diplayed to the user by setting option
-  `Meta.Tactic.fun_prop.errors` to true . -/
-  | secondary
-
 /-- Default names to be considered reducible by `fun_prop` -/
 def defaultNamesToUnfold : Array Name :=
   #[`id, `Function.comp, `Function.HasUncurry.uncurry, `Function.uncurry]
 
 /-- `fun_prop` configuration -/
 structure Config where
-  /-- Maximal number of transitions between function properties
-  e.g. inferring differentiability from linearity. -/
-  maxDepth := 200
+  /-- Maximum number of transitions between function properties. For example infering continuity
+  from differentiability and then differentiability from smoothness (`ContDiff ℝ ∞`) requires
+  `maxTransitionDepth = 2`. The default value of one expects that transition theorems are
+  transitively closed e.g. there is a transition theorem that infers continuity directly from
+  smoothenss.
+
+  Setting `maxTransitionDepth` to zero will disable all transition theorems. This can be very
+  usefull when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
+  `simp`.
+  -/
+  maxTransitionDepth := 1
   /-- Maximum number of steps `fun_prop` can take. -/
   maxSteps := 100000
-  /-- Use transition theorems. -/
-  useTransThms := true
-deriving Inhabited
+deriving Inhabited, BEq
 
 /-- `fun_prop` context -/
 structure Context where
@@ -97,13 +91,8 @@ structure Context where
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
-  /-- current depth -/
-  depth := 0
-  /-- Stack of used theorem, used to prevent trivial loops. -/
-  thmStack : List Origin := []
-  /-- Logging mode, determines whether logged messages will be diplayes to the user immediately or
-  on request by setting `Meta.Tactic.fun_prop.errors` to true. -/
-  loggingMode : LoggingMode := .main
+  /-- current transition depth -/
+  transitionDepth := 0
 
 /-- `fun_prop` state -/
 structure State where
@@ -113,18 +102,11 @@ structure State where
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
-  mainMsgLog : List String := []
-  /-- Log progress and failures messages that should be displayed to the user at the end when
-  the option `Meta.Tactic.fun_prop.errors` is set to true. -/
-  secondaryMsgLog : List String := []
-
-/-- Log used theorem -/
-def Context.addThm (ctx : Context) (thmId : Origin) : Context :=
-  {ctx with thmStack := thmId :: ctx.thmStack}
+  msgLog : List String := []
 
 /-- Increase depth -/
-def Context.increaseDepth (ctx : Context) : Context :=
-  {ctx with depth := ctx.depth + 1}
+def Context.increaseTransitionDepth (ctx : Context) : Context :=
+  {ctx with transitionDepth := ctx.transitionDepth + 1}
 
 /-- Monad to run `fun_prop` tactic in. -/
 abbrev FunPropM := ReaderT FunProp.Context $ StateT FunProp.State MetaM
@@ -133,19 +115,6 @@ abbrev FunPropM := ReaderT FunProp.Context $ StateT FunProp.State MetaM
 structure Result where
   /-- -/
   proof : Expr
-
-/-- Check if previously used theorem was `thmOrigin`. -/
-def previouslyUsedThm (thmOrigin : Origin) : FunPropM Bool := do
-  match (← read).thmStack.head? with
-  | .some thmOrigin' => return thmOrigin == thmOrigin'
-  | _ => return false
-
-/-- Puts the theorem to the stack of used theorems. -/
-def withTheorem {α} (thmOrigin : Origin) (go : FunPropM α) : FunPropM α := do
-  let ctx ← read
-  if ctx.depth > ctx.config.maxDepth then
-    throwError s!"fun_prop error, maximum depth({ctx.config.maxDepth}) reached!"
-  withReader (fun ctx => ctx.addThm thmOrigin |>.increaseDepth) do go
 
 /-- Default names to unfold -/
 def defaultUnfoldPred : Name → Bool :=
@@ -164,17 +133,28 @@ def increaseSteps : FunPropM Unit := do
      throwError s!"fun_prop failed, maximum number({maxSteps}) of steps exceeded"
   modify (fun s => {s with numSteps := s.numSteps + 1})
 
-/-- Run `fun_prop` but log all error messages as secondary. -/
-def withSecondaryLoggingMode {α} (x : FunPropM α) : FunPropM α := do
-  withReader (fun ctx => { ctx with loggingMode := .secondary })
-    x
+/-- Increase transition depth. Return `none` if maximum transition depth has been reached. -/
+def withIncreasedTransitionDepth {α} (go : FunPropM (Option α)) : FunPropM (Option α) := do
+  let maxDepth := (← read).config.maxTransitionDepth
+  let newDepth := (← read).transitionDepth + 1
+  if newDepth > maxDepth then
+    return none
+  else
+    withReader (fun s => {s with transitionDepth := newDepth}) go
 
-/-- Log error message that will displayed to the user at the end. -/
+/-- Log error message that will displayed to the user at the end.
+
+Messages are logged only when `transitionDepth = 0` i.e. when `fun_prop` is **not** trying to infer
+function property like consinuity from another property like differentiability.
+Them main reason is that if user forgets to add a continuity theorem for function `foo` then
+`fun_prop` should report that there is missing continuity theorem for `foo`. If we would log
+messages `transitionDepth > 0` then user will messages saying that thre is a missing theorem for
+differentiability, smoothness, ... for `foo`.  -/
 def logError (msg : String) : FunPropM Unit := do
-  match (← read).loggingMode with
-  | .main =>
+  if (← read).transitionDepth = 0 then
     modify fun s =>
-      {s with mainMsgLog := msg::s.mainMsgLog}
-  | .secondary =>
-    modify fun s =>
-      {s with secondaryMsgLog := msg::s.secondaryMsgLog}
+      {s with msgLog :=
+        if s.msgLog.contains msg then
+          s.msgLog
+        else
+          msg::s.msgLog}

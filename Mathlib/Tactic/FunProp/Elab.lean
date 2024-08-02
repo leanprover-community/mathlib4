@@ -50,10 +50,8 @@ def funPropTac : Tactic
             else ""
           throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
 
-      let cfg ←
-        match cfg with
-        | .some stx => elabFunPropConfig stx
-        | .none => pure {}
+      let cfg := cfg.map (fun c => mkNullNode #[c.raw]) |>.getD (mkNullNode #[])
+      let cfg ← elabFunPropConfig cfg
 
       let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
         match d with
@@ -72,7 +70,7 @@ def funPropTac : Tactic
 
       let ctx : Context :=
         { config := cfg,
-          disch := disch,
+          disch := disch
           constToUnfold := .ofArray namesToUnfold _}
       let (r?, s) ← funProp goalType ctx |>.run {}
       if let .some r := r? then
@@ -81,11 +79,7 @@ def funPropTac : Tactic
         let mut msg := s!"`fun_prop` was unable to prove `{← Meta.ppExpr goalType}`\n\n"
 
         msg := msg ++ "Issues:"
-        msg := s.mainMsgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
-
-        -- todo enable only when an option is set
-        msg := msg ++ "\n\nSecondary issues:"
-        msg := s.secondaryMsgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
+        msg := s.msgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
 
         throwError msg
 
