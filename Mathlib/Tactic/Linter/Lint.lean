@@ -280,16 +280,19 @@ def extractOpenNames : Syntax → Option (Syntax × (Array Name)) := fun stx ↦
   match stx with
     | `(command|open $name hiding $_) => some (name.raw, #[name.getId])
     | `(command|open $name renaming $_) => some (name.raw, #[name.getId])
-    -- XXX Is there a nicer way to parse "open Foo (bar)" syntax?
-    -- | `(command|open $names:ident "(" $_ ")") => some names--.raw.getArgs
+    | `(command|open $openOnly:openOnly) =>
+      -- The first argument is the identifier we care about.
+      some (openOnly.raw, #[(openOnly.raw.getArgs.get! 0).getId])
+    | `(command|open $openScoped:openScoped) =>
+      -- The first argument of `openScoped` is "scoped",
+      -- the second one is an array containing all the names we are interested in.
+      let namesSyntax := (openScoped.raw.getArgs).get! 1
+      some (namesSyntax, (namesSyntax.getArgs).map fun a ↦ a.getId)
     | `(command|open $openDecl) =>
-      let inner := openDecl.raw.getArgs
-      let names := s!"{inner.get! 0}"
-      -- remove [ and ], and a leading "`" of each name.
-      -- TODO: find a cleaner parser! was `inner.map (fun s ↦ s.getId)` doesn't quite work...
-      let names := ((names.stripPrefix "[").stripSuffix "]").split (· == ' ')
-      let names := (names.map (·.stripPrefix "`")).map String.toName
-      some (openDecl.raw, names.toArray)
+      -- The first and only argument of `openDecl` is an array containing all the names we
+      -- are interested in.
+      let namesSyntax := (openDecl.raw.getArgs).get! 0
+      some (namesSyntax, (namesSyntax.getArgs).map fun a ↦ a.getId)
     | _ => none
 
 @[inherit_doc Mathlib.Linter.linter.openClassical]
