@@ -597,6 +597,17 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
   simp only [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_mk, ← mk_mul,
     eq_iff_div_mem, mk_div]
 
+/-- A group is made up of a disjoint union of cosets of a subgroup. -/
+@[to_additive "A additive group is made up of a disjoint union of cosets of an additive
+subgroup. -/"]
+lemma univ_eq_iUnion_image_mul (H : Subgroup G) :
+    (Set.univ (α := G)) = ⋃ x : G ⧸ H, (x.out' * ·) '' H := by
+  ext x
+  simp only [Set.mem_univ, Set.image_add_right, Set.mem_iUnion, Set.mem_preimage, SetLike.mem_coe,
+    true_iff]
+  refine ⟨x, ?_⟩
+  simp [← QuotientGroup.eq]
+
 end QuotientGroup
 
 namespace Group
@@ -631,5 +642,12 @@ noncomputable def fintypeOfKerOfCodom [Fintype g.ker] : Fintype G :=
 @[to_additive "If `F` and `coker(F →+ G)` are finite, then `G` is finite."]
 noncomputable def fintypeOfDomOfCoker [Normal f.range] [Fintype <| G ⧸ f.range] : Fintype G :=
   fintypeOfKerLeRange _ (mk' f.range) fun x => (eq_one_iff x).mp
+
+@[to_additive]
+lemma _root_.Finite.of_finite_quot_finite_subgroup {H : Subgroup G}
+    (hH : Set.Finite (H : Set G)) (h : Finite (G ⧸ H)) : Finite G := by
+  rw [← Set.finite_univ_iff, QuotientGroup.univ_eq_iUnion_image_mul H]
+  rw [← Set.finite_univ_iff] at h
+  exact h.iUnion (fun _ _ ↦ hH.image _) (by simp)
 
 end Group

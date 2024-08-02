@@ -932,3 +932,47 @@ theorem quotQuotEquivQuotOfLE_symm_comp_mkₐ (h : I ≤ J) :
 
 end AlgebraQuotient
 end DoubleQuot
+
+namespace Ideal
+
+section PowQuot
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
+
+/-- I ^ n ⧸ I ^ (n + 1) is equivalent as a quotient of I ^ n or as an ideal of
+R ⧸ I ^ (n + 1). -/
+noncomputable
+def pow_quot_pow_succ_equiv_map_mk_pow_succ_pow :
+    ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃ₗ[R]
+    Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) := by
+  refine { LinearMap.codRestrict
+    (Submodule.restrictScalars _ (Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n)))
+    (Submodule.mapQ (I • ⊤) (I ^ (n + 1)) (Submodule.subtype (I ^ n)) ?_) ?_,
+    Equiv.ofBijective _ ⟨?_, ?_⟩ with }
+  · intro
+    simp [Submodule.mem_smul_top_iff, pow_succ']
+  · intro x
+    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ x
+    simp [Ideal.mem_sup_left hy]
+  · intro a b
+    obtain ⟨⟨x, hx⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ a
+    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ b
+    simp [Ideal.Quotient.eq, Submodule.Quotient.eq, Submodule.mem_smul_top_iff, pow_succ']
+  · intro ⟨x, hx⟩
+    rw [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective] at hx
+    obtain ⟨y, hy, rfl⟩ := hx
+    refine ⟨Submodule.Quotient.mk ⟨y, hy⟩, ?_⟩
+    simp
+
+/-- I ^ n ⧸ I ^ (n + 1) is equivalent as a quotient of I ^ n or as an ideal of
+R ⧸ I ^ (n + 1). Supplied as a plain equiv to bypass typeclass synthesis issues on complex
+`Module` goals. -/
+noncomputable
+def pow_quot_pow_succ_equiv_map_mk_pow_succ_pow_equiv :
+    ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃
+    Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) :=
+pow_quot_pow_succ_equiv_map_mk_pow_succ_pow I n
+
+end PowQuot
+
+end Ideal
