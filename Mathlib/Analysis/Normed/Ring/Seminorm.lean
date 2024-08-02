@@ -164,7 +164,7 @@ theorem map_pow_le_pow {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSeminor
 
 /-- If `f` is a ring seminorm on `a` with `f 1 ≤ `, then `∀ (n : ℕ), f (a ^ n) ≤ f a ^ n`. -/
 theorem map_pow_le_pow' {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
-  (hf1 : f 1 ≤ 1) (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
+    (hf1 : f 1 ≤ 1) (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
   | 0 => by simp only [pow_zero, hf1]
   | n + 1 => by
     simp only [pow_succ _ n];
