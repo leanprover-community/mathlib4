@@ -106,7 +106,7 @@ lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
 @[simps]
 def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length - 1
-  toFun i := x[i]'(by
+  toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil) i]
     convert ← i.2
     exact Nat.succ_pred_eq_of_pos (List.length_pos_of_ne_nil x_ne_nil))
   step i := List.chain'_iff_get.mp hx i i.2
