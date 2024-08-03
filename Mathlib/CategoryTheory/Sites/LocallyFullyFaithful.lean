@@ -50,6 +50,19 @@ def Functor.imageSieve {U V : C} (f : G.obj U ⟶ G.obj V) : Sieve U where
 lemma Functor.imageSieve_map {U V : C} (f : U ⟶ V) : G.imageSieve (G.map f) = ⊤ := by
   ext W g; simpa using ⟨g ≫ f, by simp⟩
 
+namespace Functor.imageSieve
+
+variable {G}
+variable {U V : C} {f : G.obj U ⟶ G.obj V}
+variable {W : C} {g : W ⟶ U} (hg : G.imageSieve f g)
+
+noncomputable def lift : W ⟶ V := hg.choose
+
+@[simp, reassoc]
+lemma fac : G.map (lift hg) = G.map g ≫ f := hg.choose_spec
+
+end Functor.imageSieve
+
 /--
 For two arrows `f₁ f₂ : U ⟶ V`, the arrows `i` such that `i ≫ f₁ = i ≫ f₂` forms a sieve.
 -/

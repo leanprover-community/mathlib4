@@ -135,6 +135,25 @@ variable {X : C} (data : F.OneHypercoverDenseData J₀ J X)
 
 lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) (p₂ : W ⟶ F.obj (data.X i₂))
     (w : p₁ ≫ data.f i₁ = p₂ ≫ data.f i₂) : data.toPreOneHypercover.sieve₁ p₁ p₂ ∈ J W := by
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  let R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ W⦄, Sieve.coverByImage F W f → Sieve Y :=
+    fun Y f hf ↦ ((F.imageSieve (hf.some.map ≫ p₁) ⊓
+        F.imageSieve (hf.some.map ≫ p₂)).functorPushforward F).pullback hf.some.lift
+  let S := Sieve.bind (Sieve.coverByImage F W).arrows
+    (fun Y f hf ↦ ((F.imageSieve (hf.some.map ≫ p₁) ⊓
+        F.imageSieve (hf.some.map ≫ p₂)).functorPushforward F).pullback hf.some.lift)
+  let T := Sieve.bind S.arrows (fun Z g hg ↦ by
+    apply Nonempty.some
+    cases hg
+    have := @PreOneHypercoverDenseData.sieve₁₀ (data := data.toPreOneHypercoverDenseData)
+      (i₁ := i₁) (i₂ := i₂)
+    --have := @Presieve.getFunctorPushforwardStructure
+    sorry)
+  refine J.superset_covering ?_
+    (J.bind_covering (F.is_cover_of_isCoverDense J W) (R := R) ?_)
+  · sorry
+  · sorry
+  #exit
   have : F.Full := sorry
   let data₁ := F.oneHypercoverDenseData J₀ J W
   let R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ W⦄, data₁.toPreOneHypercover.sieve₀.arrows f → Sieve Y :=
