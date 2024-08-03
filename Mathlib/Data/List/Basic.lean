@@ -2360,7 +2360,7 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
 
 @[deprecated erase_getElem (since := "2024-08-03")]
 theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
-    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) := 
+    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) :=
   erase_getElem i.isLt
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
