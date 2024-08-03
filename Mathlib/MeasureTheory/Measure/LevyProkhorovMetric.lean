@@ -28,10 +28,6 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
   probability measures on a separable space coincides with the topology of convergence in
   distribution, and in particular convergence in distribution is then pseudometrizable.
 
-## TODO
-
-* Show that in Borel spaces, the Lévy-Prokhorov distance is a metric; not just a pseudometric.
-
 ## Tags
 
 finite measure, probability measure, weak convergence, convergence in distribution, metrizability
