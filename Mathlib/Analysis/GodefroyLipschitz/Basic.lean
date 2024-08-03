@@ -1,7 +1,7 @@
 import Mathlib.Analysis.Calculus.Rademacher
 import Mathlib.LinearAlgebra.Dimension.Finrank
 
-open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory
+open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Submodule
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -12,55 +12,40 @@ theorem dense_of_ae {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
   rw [dense_iff_closure_eq, closure_eq_compl_interior_compl, compl_univ_iff]
   exact μ.interior_eq_empty_of_null hp
 
-theorem test [FiniteDimensional ℝ E]
+theorem basis_of_span [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E]
+    {n : ℕ} (hn : finrank ℝ E = n)
+    {s : Set E} (hs : span ℝ s = ⊤) :
+    ∃ b : Basis (Fin n) ℝ E, range b ⊆ s := by
+  let u := (linearIndependent_empty ℝ E).extend (empty_subset s)
+  let v : u → E := Subtype.val
+  have liv := (linearIndependent_empty ℝ E).linearIndependent_extend (empty_subset s)
+  have sv : ⊤ ≤ span ℝ (range v) := by
+    rw [Subtype.range_val_subtype, ← hs, span_le]
+    exact (linearIndependent_empty ℝ E).subset_span_extend (empty_subset s)
+  let w := Basis.mk liv sv
+  use w.reindex (w.indexEquiv (finBasisOfFinrankEq ℝ E hn))
+  rw [w.range_reindex, show range w = range v by simp [v, w], Subtype.range_val_subtype]
+  exact (linearIndependent_empty ℝ E).extend_subset (empty_subset s)
+
+theorem test [FiniteDimensional ℝ E] {n : ℕ} (hn : finrank ℝ (E →ₗ[ℝ] ℝ) = n)
     (h : ∀ z : E, z ≠ 0 → ∃ x : E, DifferentiableAt ℝ (‖·‖) x ∧ fderiv ℝ (‖·‖) x z ≠ 0) :
-    ∃ b : Basis (Fin (finrank ℝ (Module.Dual ℝ E))) ℝ (Module.Dual ℝ E),
+    ∃ b : Basis (Fin n) ℝ (E →ₗ[ℝ] ℝ),
       ∀ i, ∃ y : E, DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y := by
   let S := {f : E→ₗ[ℝ] ℝ | ∃ x : E, DifferentiableAt ℝ (‖·‖) x ∧ f = fderiv ℝ (‖·‖) x}
-  have : Submodule.span ℝ S = ⊤ := by
+  have : span ℝ S = ⊤ := by
     by_contra! hn
-    have hlt := hn.lt_top
-    rcases Submodule.exists_dual_map_eq_bot_of_lt_top hlt inferInstance with ⟨f, fne, hf⟩
+    rcases exists_dual_map_eq_bot_of_lt_top hn.lt_top inferInstance with ⟨f, fne, hf⟩
     let fs := (Module.evalEquiv ℝ E).symm f
     have : ∀ x : E, DifferentiableAt ℝ (‖·‖) x → fderiv ℝ (‖·‖) x fs = 0 := by
-      intro x hx
-      rw [← Submodule.mem_bot ℝ, ← hf, Submodule.mem_map]
-      use fderiv ℝ (‖·‖) x
-      refine ⟨Submodule.subset_span ⟨x, hx, rfl⟩, ?_⟩
-      simp only [fs]
-      convert (Module.apply_evalEquiv_symm_apply ℝ E (fderiv ℝ (‖·‖) x) f).symm
-    have fsn : fs ≠ 0 := by
-      simp only [ne_eq, AddEquivClass.map_eq_zero_iff, fne, not_false_eq_true, fs]
+      intro x dx
+      rw [← mem_bot ℝ, ← hf, Submodule.mem_map]
+      exact ⟨fderiv ℝ (‖·‖) x, Submodule.subset_span ⟨x, dx, rfl⟩,
+        (apply_evalEquiv_symm_apply ℝ E (fderiv ℝ (‖·‖) x) f).symm⟩
+    have fsn : fs ≠ 0 := by simp [fne, fs]
     rcases h fs fsn with ⟨x, dx, hx⟩
     exact hx <| this x dx
-  let u := LinearIndependent.extend (linearIndependent_empty ℝ (Module.Dual ℝ E)) (empty_subset S)
-  have liu := LinearIndependent.linearIndependent_extend
-    (linearIndependent_empty ℝ (Module.Dual ℝ E)) (empty_subset S)
-  have spu : ⊤ ≤ Submodule.span ℝ u := by
-    have aux := (linearIndependent_empty ℝ (Module.Dual ℝ E)).subset_span_extend (empty_subset S)
-    rw [← Submodule.span_le, this] at aux
-    exact aux
-  have hu : ∀ b ∈ u, ∃ y : E, DifferentiableAt ℝ (‖·‖) y ∧ b = fderiv ℝ (‖·‖) y := by
-    intro b hb
-    have := (linearIndependent_empty ℝ (Module.Dual ℝ E)).extend_subset (empty_subset S)
-    rcases this hb with ⟨x, dx, rfl⟩
-    exact ⟨x, dx, rfl⟩
-  let v : {x // x ∈ u} → Module.Dual ℝ E := Subtype.val
-  have rv : range v = u := Subtype.range_val_subtype
-  have spv : ⊤ ≤ Submodule.span ℝ (range v) := by rwa [rv]
-  let x := Basis.mk liu spv
-  let w := FiniteDimensional.finBasis ℝ (Module.Dual ℝ E)
-  let e := Basis.indexEquiv x w
-  let b := x.reindex e
-  use b
-  intro i
-  have aux1 : range b = range x := x.range_reindex e
-  have aux2 : range x = range v := by
-    simp [x, v]
-  have omg : b i ∈ u := by
-    rw [← rv, ← aux2, ← aux1]
-    exact ⟨i, rfl⟩
-  exact hu _ omg
+  rcases basis_of_span hn this with ⟨b, hb⟩
+  exact ⟨b, fun i ↦ hb ⟨i, rfl⟩⟩
 
 theorem lol (f : E → ℝ) (x y : E) (h : DifferentiableAt ℝ f x) :
     fderiv ℝ f x y = deriv (fun t : ℝ ↦ f (x + t • y)) 0 := by
@@ -74,12 +59,11 @@ theorem lol (f : E → ℝ) (x y : E) (h : DifferentiableAt ℝ f x) :
 theorem logique {x : E} {t : ℝ} (ht : t ≠ 0) {f : E →L[ℝ] ℝ} (hx : HasFDerivAt (‖·‖) f x) :
     HasFDerivAt (‖·‖) ((|t| / t) • f) (t • x) := by
   unfold HasFDerivAt at *
-  have := hx.isLittleO
+  have hx := hx.isLittleO
   constructor
-  rw [Asymptotics.isLittleO_iff] at this
-  rw [Asymptotics.isLittleO_iff]
+  rw [Asymptotics.isLittleO_iff] at *
   intro c hc
-  have := this hc
+  have := hx hc
   rw [eventually_iff, ← set_smul_mem_nhds_smul_iff ht] at this
   filter_upwards [this]
   rintro - ⟨ε, hε, rfl⟩
@@ -87,7 +71,7 @@ theorem logique {x : E} {t : ℝ} (ht : t ≠ 0) {f : E →L[ℝ] ℝ} (hx : Has
   rw [norm_smul, norm_smul, ← smul_sub, _root_.map_smul, ← ContinuousLinearMap.smul_apply,
     smul_smul, mul_div_cancel₀ _ ht, ContinuousLinearMap.smul_apply, ← norm_eq_abs, smul_eq_mul,
     ← mul_sub, ← mul_sub, norm_mul, norm_norm, norm_smul, ← mul_assoc, mul_comm c, mul_assoc,
-    mul_le_mul_left]
+    _root_.mul_le_mul_left]
   · exact hε
   · exact norm_pos_iff.2 ht
 
@@ -203,7 +187,7 @@ theorem unique1 [FiniteDimensional ℝ E] {x : E} (hx : ‖x‖ = 1) (h : Differ
           congr
           ring
         _ ≤ |t| * ‖y - (φ y + 1 / t) • x‖ := by
-          rw [mul_le_mul_left]
+          rw [_root_.mul_le_mul_left]
           convert hφ.dist_le_mul y ((φ y + 1 / t) • x) using 1
           · simp [dist_eq_norm]
           · exact abs_pos.2 ht
@@ -243,9 +227,8 @@ theorem tendsto_differentiable
 theorem exists_inverse (h : finrank ℝ E = 1) (φ : E → F) (hφ : Isometry φ) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ ∀ x : E, f (φ x) = x := by sorry
 
-set_option maxHeartbeats 400000
-
-theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
+theorem exists_inverse' [FiniteDimensional ℝ E] {n : ℕ} (hn : finrank ℝ (E →ₗ[ℝ] ℝ) = n)
+    (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
     (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   have main (x : E) (nx : ‖x‖ = 1) :
@@ -272,7 +255,7 @@ theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry
     rw [eventually_atTop] at this
     rcases this with ⟨N, hN⟩
     use u N, hu N, hN N (le_refl N)
-  rcases test aux3 with ⟨b, hb⟩
+  rcases test hn aux3 with ⟨b, hb⟩
   have hb i : ∃ y : E, ‖y‖ = 1 ∧ DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y := by
     rcases hb i with ⟨y, dy, hy⟩
     have bin := b.ne_zero i
@@ -313,7 +296,8 @@ theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry
         intro m y
         simp_rw [_root_.map_smul, smul_eq_mul, ← smul_smul]
         rw [← Finset.smul_sum]
-        rfl }
+        rfl
+      cont := continuous_finset_sum (@Finset.univ (Fin n) _) fun i ↦ by fun_prop }
   use T
   have Tφ x : T (φ x) = x := by
     have best i x : f i (φ x) = b i x := by
