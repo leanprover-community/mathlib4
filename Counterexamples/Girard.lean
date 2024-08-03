@@ -6,8 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Logic.Basic
 import Mathlib.Init.Set
 
-#align_import girard from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 # Girard's paradox
 
@@ -48,6 +46,5 @@ theorem girard.{u} (pi : (Type u → Type u) → Type u)
   let δ (S : Set (Set U)) := ∀ p, p ∈ S → τ S ∈ p
   have : δ ω := fun _p d => d (τ ω) <| στ.2 fun x h => d (τ (σ x)) (στ.2 h)
   this {y | ¬δ (σ y)} (fun _x e f => f _ e fun _p h => f _ (στ.1 h)) fun _p h => this _ (στ.1 h)
-#align counterexample.girard Counterexample.girard
 
 end Counterexample

@@ -3,7 +3,7 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Data.Int.Interval
 import Mathlib.Order.Disjointed
 import Mathlib.Tactic.AdaptationNote
@@ -24,13 +24,15 @@ We don't need the full ring structure, only that there is an order embedding `�
 /-! ### General locally finite ordered ring -/
 
 namespace Finset
-variable {α : Type*} [OrderedRing α] [LocallyFiniteOrder α] [DecidableEq α] {n : ℕ}
-
-/-- Hollow box centered at `0 : α` going from `-n` to `n`. -/
-def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
+variable {α : Type*} [OrderedRing α] [LocallyFiniteOrder α] {n : ℕ}
 
 private lemma Icc_neg_mono : Monotone fun n : ℕ ↦ Icc (-n : α) n := by
   refine fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
+
+variable [DecidableEq α]
+
+/-- Hollow box centered at `0 : α` going from `-n` to `n`. -/
+def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
 
 @[simp] lemma box_zero : (box 0 : Finset α) = {0} := by simp [box]
 
