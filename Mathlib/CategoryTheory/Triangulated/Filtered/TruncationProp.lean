@@ -459,94 +459,89 @@ lemma isIso_truncLEmap_iff {X Y : C} (g : X ⟶ Y) (a b : ℤ) (h : a + 1 = b) :
   subst h
   apply isIso_truncLTmap_iff
 
-#exit
-
-lemma isIso_truncGEmap_iff {Y Z : C} (g : Y ⟶ Z) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
-    IsIso ((t.truncGE n₁).map g) ↔
-      ∃ (X : C) (f : X ⟶ Y) (h : ((t.truncGE n₁).obj Z) ⟶ X⟦(1 : ℤ)⟧)
-        (_ : Triangle.mk f (g ≫ (t.truncGEπ n₁).app Z) h ∈ distTriang _), t.IsLE X n₀ := by
+lemma isIso_truncGEmap_iff {Y Z : C} (f : Y ⟶ Z) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    IsIso ((truncGE n₁).map f) ↔
+      ∃ (X : C) (g : Z ⟶ X) (h : X ⟶ ((truncGE n₁).obj Y)⟦(1 : ℤ)⟧)
+        (_ : Triangle.mk ((truncGEι n₁).app Y ≫ f) g h ∈ distTriang _), IsLE X n₀ := by
   constructor
   · intro hf
-    refine' ⟨(t.truncLE n₀).obj Y, (t.truncLEι n₀).app Y,
-      inv ((t.truncGE n₁).map g) ≫ (t.truncGEδLE n₀ n₁ hn₁).app Y,
-      isomorphic_distinguished _ (t.triangleLEGE_distinguished n₀ n₁ hn₁ Y) _ _,
+    refine ⟨(truncLE n₀).obj Z, (truncLEπ n₀).app Z,
+      (truncLEδGE n₀ n₁ hn₁).app Z ≫ inv ((truncGE n₁).map f)⟦1⟧',
+      isomorphic_distinguished _ (triangleGELE_distinguished n₀ n₁ hn₁ Z) _ ?_,
       inferInstance⟩
-    refine' Iso.symm (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-      (asIso ((t.truncGE n₁).map g)) _ _ _)
-    · aesop_cat
-    · dsimp
-      rw [id_comp]
-      exact ((t.truncGEπ n₁).naturality g).symm
-    · aesop_cat
-  · rintro ⟨X, f, h, mem, _⟩
-    obtain ⟨e, he⟩ := t.triangle_iso_exists n₀ n₁ (by linarith) _ _
-      (t.triangleLEGE_distinguished n₀ n₁ hn₁ Y) mem (Iso.refl _)
+    exact Triangle.isoMk _ _ (asIso ((truncGE n₁).map f)) (Iso.refl _) (Iso.refl _) (by aesop_cat)
+      (by aesop_cat) (by aesop_cat)
+  · rintro ⟨X, g, h, mem, _⟩
+    obtain ⟨e, he⟩ := triangle_iso_exists n₀ n₁ (by linarith) _ _ mem
+      (triangleGELE_distinguished n₀ n₁ hn₁ Z) (Iso.refl _)
       (by dsimp ; infer_instance) (by dsimp ; infer_instance)
       (by dsimp ; infer_instance) (by dsimp ; infer_instance)
-    suffices ((t.truncGE n₁).map g) = e.hom.hom₃ by
+    suffices ((truncGE n₁).map f) = e.hom.hom₁ by
       rw [this]
       infer_instance
-    apply from_truncGE_obj_ext
-    refine' Eq.trans _ e.hom.comm₂.symm
+    apply to_truncGE_obj_ext
+    refine Eq.trans ?_ e.hom.comm₁
     dsimp at he ⊢
-    rw [he, id_comp]
-    exact ((t.truncGEπ n₁).naturality g).symm
+    rw [he, comp_id]
+    exact (truncGEι n₁).naturality f
 
-lemma isIso_truncGTmap_iff {Y Z : C} (g : Y ⟶ Z) (n : ℤ) :
-    IsIso ((t.truncGT n).map g) ↔
-      ∃ (X : C) (f : X ⟶ Y) (h : ((t.truncGT n).obj Z) ⟶ X⟦(1 : ℤ)⟧)
-        (_ : Triangle.mk f (g ≫ (t.truncGTπ n).app Z) h ∈ distTriang _), t.IsLE X n :=
-  t.isIso_truncGEmap_iff g n (n+1) rfl
+lemma isIso_truncGTmap_iff {Y Z : C} (f : Y ⟶ Z) (n : ℤ) :
+    IsIso ((truncGT n).map f) ↔
+      ∃ (X : C) (g : Z ⟶ X) (h : X ⟶ ((truncGT n).obj Y)⟦(1 : ℤ)⟧)
+        (_ : Triangle.mk ((truncGTι n).app Y ≫ f) g h ∈ distTriang _), IsLE X n :=
+  isIso_truncGEmap_iff f n (n+1) rfl
 
-instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncLE a).obj X) b := by
+instance (X : C) (a b : ℤ) [IsLE X b] : IsLE ((truncLE a).obj X) b := by
   by_cases h : a ≤ b
-  · exact t.isLE_of_LE _ _ _ h
+  · exact isLE_of_LE _ _ _ h
   · simp only [not_le] at h
-    have : t.IsLE X a := t.isLE_of_LE X b a (by linarith)
-    apply t.isLE_of_iso (show X ≅ _ from (asIso ((t.truncLEι a).app X)).symm)
+    have : IsLE X a := isLE_of_LE X b a (by linarith)
+    apply isLE_of_iso (show X ≅ _ from (asIso ((truncLEπ a).app X)))
 
-instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncLT a).obj X) b :=
-  t.isLE_of_iso ((t.truncLEIsoTruncLT (a-1) a (by linarith)).app X) b
+instance (X : C) (a b : ℤ) [IsLE X b] : IsLE ((truncLT a).obj X) b :=
+  isLE_of_iso ((truncLEIsoTruncLT (a-1) a (by linarith)).app X) b
 
-instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGE b).obj X) a := by
+instance (X : C) (a b : ℤ) [IsGE X a] : IsGE ((truncGE b).obj X) a := by
   by_cases h : a ≤ b
-  · exact t.isGE_of_GE _ _ _ h
+  · exact isGE_of_GE _ _ _ h
   · simp only [not_le] at h
-    have : t.IsGE X b := t.isGE_of_GE X b a (by linarith)
-    apply t.isGE_of_iso (show X ≅ _ from asIso ((t.truncGEπ b).app X))
+    have : IsGE X b := isGE_of_GE X b a (by linarith)
+    apply isGE_of_iso (show X ≅ _ from (asIso ((truncGEι b).app X)).symm)
 
-instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGT b).obj X) a :=
-  t.isGE_of_iso ((t.truncGTIsoTruncGE b (b+1) (by linarith)).symm.app X) a
+instance (X : C) (a b : ℤ) [IsGE X a] : IsGE ((truncGT b).obj X) a :=
+  isGE_of_iso ((truncGTIsoTruncGE b (b+1) (by linarith)).symm.app X) a
 
-noncomputable def truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
+noncomputable def truncGELT (a b : ℤ) : C ⥤ C := truncLT b ⋙ truncGE a
 
-noncomputable def truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
+noncomputable def truncLTGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLT b
 
-noncomputable def truncLEGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLE b
+noncomputable def truncLEGE (a b : ℤ) : C ⥤ C := truncGE a ⋙ truncLE b
 
-noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
+noncomputable def truncGELE (a b : ℤ) : C ⥤ C := truncLE b ⋙ truncGE a
 
 noncomputable def truncGELEIsoTruncGELT (a b b' : ℤ) (hb' : b + 1 = b') :
-    t.truncGELE a b ≅ t.truncGELT a b' :=
-  isoWhiskerRight (t.truncLEIsoTruncLT b b' hb') _
+    truncGELE a b (C := C) ≅ truncGELT a b' :=
+  isoWhiskerRight (truncLEIsoTruncLT b b' hb') _
 
 /- Now, we need the octahedron axiom -/
 
 variable [IsTriangulated C]
 
-lemma isIso₁_truncLE_map_of_GE (T : Triangle C) (hT : T ∈ distTriang C)
-    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₃ : t.IsGE T.obj₃ n₁) :
-    IsIso ((t.truncLE n₀).map T.mor₁) := by
-  rw [isIso_truncLEmap_iff _ _ _ _ h]
-  obtain ⟨Z, g, k, mem⟩ := distinguished_cocone_triangle ((t.truncLEι n₀).app T.obj₁ ≫ T.mor₁)
-  refine' ⟨_, _, _, mem, _⟩
-  have H := someOctahedron rfl (t.triangleLEGE_distinguished n₀ n₁ h T.obj₁) hT mem
-  exact t.isGE₂ _ H.mem n₁ (by dsimp ; infer_instance) (by dsimp ; infer_instance)
+lemma isIso₁_truncGE_map_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₃ : IsLE T.obj₃ n₀) :
+    IsIso ((truncGE n₁).map T.mor₁) := by
+  change IsIso ((truncGE n₁).mapTriangle.obj T).mor₁
+  rw [← Triangle.isZero₃_iff_isIso₁ _ ((truncGE n₁).map_distinguished _ hT)]
+  simp only [Functor.mapTriangle_obj, Triangle.mk_obj₃]
+  rw [← isLE_iff_isZero_truncGE_obj (h := h)]
+  assumption
 
-lemma isIso₁_truncLT_map_of_GE (T : Triangle C) (hT : T ∈ distTriang C)
-    (n : ℤ) (h₃ : t.IsGE T.obj₃ n) : IsIso ((t.truncLT n).map T.mor₁) := by
-  rw [← NatIso.isIso_map_iff (t.truncLEIsoTruncLT (n-1) n (by linarith))]
-  exact t.isIso₁_truncLE_map_of_GE T hT (n-1) n (by linarith) h₃
+lemma isIso₁_truncGT_map_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n : ℤ) (h₃ : IsLE T.obj₃ n) : IsIso ((truncGT n).map T.mor₁) := by
+  rw [← NatIso.isIso_map_iff (truncGTIsoTruncGE n (n + 1) (by linarith)).symm]
+  exact isIso₁_truncGE_map_of_LE T hT n (n + 1) (by linarith) h₃
+
+#exit
 
 lemma isIso₂_truncGE_map_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
     (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) :
