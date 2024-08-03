@@ -379,7 +379,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p 
     intro b _ hb
     obtain ⟨k, hk, lt_k⟩ : ∃ (k : ℕ), k ∈ Composition.blocks b ∧ 1 < k :=
       Composition.ne_ones_iff.1 hb
-    obtain ⟨i, hi⟩ : ∃ (i : Fin b.blocks.length), b.blocks.get i = k :=
+    obtain ⟨i, hi⟩ : ∃ (i : Fin b.blocks.length), b.blocks[i] = k :=
       List.get_of_mem hk
 
     let j : Fin b.length := ⟨i.val, b.blocks_length ▸ i.prop⟩
