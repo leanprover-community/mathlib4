@@ -64,7 +64,7 @@ theorem ext_iff {s t : AList β} : s = t ↔ s.entries = t.entries :=
   ⟨congr_arg _, ext⟩
 
 instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fun xs ys => by
-  rw [ext_iff]; infer_instance
+  rw [AList.ext_iff]; infer_instance
 
 /-! ### keys -/
 
@@ -444,7 +444,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
     (s₁ ∪ s₂).entries ~ (s₂ ∪ s₁).entries :=
   lookup_ext (AList.nodupKeys _) (AList.nodupKeys _)
     (by
-      intros; simp
+      intros; simp only [union_entries, Option.mem_def, dlookup_kunion_eq_some]
       constructor <;> intro h'
       · cases' h' with h' h'
         · right
