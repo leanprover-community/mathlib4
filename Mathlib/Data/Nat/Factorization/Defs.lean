@@ -6,7 +6,7 @@ Authors: Stuart Presnell
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.PrimeFin
-import Mathlib.NumberTheory.Padics.PadicValDefs
+import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
 /-!
 # Prime factorizations

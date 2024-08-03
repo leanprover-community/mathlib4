@@ -6,7 +6,7 @@ Authors: Eric Rodriguez
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.Tactic.ByContra
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.Analysis.Complex.Arg
 
 /-!
