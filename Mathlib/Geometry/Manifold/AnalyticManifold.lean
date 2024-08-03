@@ -177,7 +177,7 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
     exact analyticGroupoid_prod (m.toHasGroupoid.compatible f2 g2)
       (n.toHasGroupoid.compatible hf2 hg2)
 
-/-- Complex manifolds are smooth manifolds -/
+/-- Analytic manifolds are smooth manifolds -/
 instance AnalyticManifold.smoothManifoldWithCorners [ChartedSpace H M] [cm : AnalyticManifold I M] :
     SmoothManifoldWithCorners I M where
   compatible := by
