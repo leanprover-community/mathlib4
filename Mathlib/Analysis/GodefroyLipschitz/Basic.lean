@@ -373,3 +373,43 @@ theorem exists_inverse' [FiniteDimensional ℝ E] {n : ℕ} (hn : finrank ℝ (E
       exact T.le_opNorm _
   · ext x
     exact Tφ x
+
+theorem isup_fin :
+    (⊤ : Submodule ℝ E) = ⨆ (F : Submodule ℝ E) (_ : Module.rank ℝ F < Cardinal.aleph0), F := by
+  ext x
+  simp only [Submodule.mem_top, true_iff]
+  apply mem_iSup_of_mem (span ℝ {x})
+  apply mem_iSup_of_mem
+  apply subset_span
+  exact mem_singleton _
+  have := Finite.span_singleton ℝ x
+  rw [← finrank_eq_rank]
+  rcases eq_or_ne x 0 with rfl | hx
+  · rw [span_singleton_eq_bot.2 rfl, finrank_bot]
+    exact Cardinal.nat_lt_aleph0 0
+  · rw [finrank_span_singleton hx]
+    exact Cardinal.one_lt_aleph0
+
+theorem span_constr {s : Set E} {f : s → F} (h0 : (h : 0 ∈ s) → f ⟨0, h⟩ = 0)
+    (hadd : ∀ x y : s, (h : x.1 + y.1 ∈ s) → f ⟨x.1 + y.1, h⟩ = f x + f y)
+    (hsmul : ∀ (x : s) (t : ℝ), (h : t • x.1 ∈ s) → f ⟨t • x.1, h⟩ = t • (f x)) :
+    ∃ g : span ℝ s →ₗ[ℝ] F, ∀ x : s, g ⟨x.1, subset_span x.2⟩ = f x := by
+  sorry
+
+-- theorem exists_inverse''
+--     (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
+--     (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
+--     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
+--   have fini (p : Submodule ℝ E) (hp : FiniteDimensional ℝ p) :
+--       ∃ T : F →L[ℝ] E, ∀ y ∈ p, T (φ y) = y := by
+--     sorry
+--   choose! T hT using fini
+--   have eq (p q : Submodule ℝ E) (hp : FiniteDimensional ℝ p) (hq : FiniteDimensional ℝ q) :
+--       ∀ y ∈ p ⊓ q, T p (φ y) = T q (φ y) := by sorry
+--   let f : (span ℝ (range φ)) →L[ℝ] E :=
+--     { toFun := by
+--         intro y
+--         apply span_induction
+--       map_add' := sorry
+--       map_smul' := sorry
+--       cont := sorry }
