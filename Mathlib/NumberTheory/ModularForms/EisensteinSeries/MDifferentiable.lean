@@ -19,25 +19,20 @@ MDifferentiable.
 
 noncomputable section
 
-open ModularForm EisensteinSeries UpperHalfPlane Set Filter Function Complex Manifold
-
-open scoped Topology BigOperators Nat Classical UpperHalfPlane
+open UpperHalfPlane Filter Function Complex Manifold CongruenceSubgroup
 
 namespace EisensteinSeries
 
 /-- Auxilary lemma showing that for any `k : ℤ` the function `z → 1/(c*z+d)^k` is
 differentiable on `{z : ℂ | 0 < z.im}`. -/
 lemma div_linear_zpow_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
-    DifferentiableOn ℂ (fun z : ℂ => 1 / (a 0 * z + a 1) ^ k) {z : ℂ | 0 < z.im} := by
+    DifferentiableOn ℂ (fun z : ℂ => (a 0 * z + a 1) ^ (-k)) {z : ℂ | 0 < z.im} := by
   rcases ne_or_eq a 0 with ha | rfl
-  · apply DifferentiableOn.div (differentiableOn_const 1)
-    · apply DifferentiableOn.zpow
-      · fun_prop
-      · left
-        exact fun z hz ↦ linear_ne_zero _ ⟨z, hz⟩
-          ((comp_ne_zero_iff _ Int.cast_injective Int.cast_zero).mpr ha)
-    ·  exact fun z hz ↦ zpow_ne_zero k (linear_ne_zero (a ·)
-        ⟨z, hz⟩ ((comp_ne_zero_iff _ Int.cast_injective Int.cast_zero).mpr ha))
+  · apply DifferentiableOn.zpow
+    · fun_prop
+    · left
+      exact fun z hz ↦ linear_ne_zero _ ⟨z, hz⟩
+        ((comp_ne_zero_iff _ Int.cast_injective Int.cast_zero).mpr ha)
   · simp only [Fin.isValue, Pi.zero_apply, Int.cast_zero, zero_mul, add_zero, one_div]
     apply differentiableOn_const
 
@@ -63,3 +58,5 @@ theorem eisensteinSeries_SIF_MDifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) 
     (eventually_of_forall fun s ↦ DifferentiableOn.sum
       fun _ _ ↦ eisSummand_extension_differentiableOn _ _)
         (isOpen_lt continuous_const continuous_im)
+
+end EisensteinSeries

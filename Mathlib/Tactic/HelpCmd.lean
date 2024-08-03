@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean.Elab.Syntax
+import Lean.DocString
 
 /-!
 
@@ -76,7 +77,7 @@ elab_rules : command | `(#help option $(id)?) => elabHelpOption id
 /--
 The command `#help attribute` (or the short form `#help attr`) shows all attributes that have been
 defined in the current environment.
-Each option has a format like:
+Each attribute has a format like:
 ```
 [inline]: mark definition to always be inlined
 ```
@@ -93,7 +94,12 @@ syntax withPosition("#help " colGt (&"attr" <|> &"attribute")
 private def elabHelpAttr (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
   let mut decls : Lean.RBMap _ _ compare := {}
-  for (name, decl) in ← attributeMapRef.get do
+  /-
+  #adaptation_note
+  On nightly-2024-06-21, added the `.toList` here:
+  without it the requisite `ForIn` instance can't be found.
+  -/
+  for (name, decl) in (← attributeMapRef.get).toList do
     let name := name.toString false
     if let some id := id then
       if !id.isPrefixOf name then
