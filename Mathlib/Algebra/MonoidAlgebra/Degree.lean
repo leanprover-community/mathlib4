@@ -20,8 +20,6 @@ variable {R R' A T B ι : Type*}
 
 namespace AddMonoidAlgebra
 
-open scoped Classical
-
 /-!
 
 # sup-degree and inf-degree of an `AddMonoidAlgebra`
@@ -82,8 +80,10 @@ a type with *b*ot or *t*op respectively.
 
 variable (degb : A → B) (degt : A → T) (f g : R[A])
 
-theorem sup_support_add_le : (f + g).support.sup degb ≤ f.support.sup degb ⊔ g.support.sup degb :=
-  (Finset.sup_mono Finsupp.support_add).trans_eq Finset.sup_union
+theorem sup_support_add_le :
+    (f + g).support.sup degb ≤ f.support.sup degb ⊔ g.support.sup degb := by
+  classical
+  exact (Finset.sup_mono Finsupp.support_add).trans_eq Finset.sup_union
 
 theorem le_inf_support_add : f.support.inf degt ⊓ g.support.inf degt ≤ (f + g).support.inf degt :=
   sup_support_add_le (fun a : A => OrderDual.toDual (degt a)) f g
@@ -98,8 +98,9 @@ variable [Add A] [Add B] [Add T] [CovariantClass B B (· + ·) (· ≤ ·)]
 
 theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
-    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb :=
-  (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
+    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
+  classical
+  exact (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
     degbm.trans <| add_le_add (Finset.le_sup fds) (Finset.le_sup gds)
 
 theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
@@ -232,13 +233,15 @@ theorem supDegree_sub_le {f g : R'[A]} :
   rw [sub_eq_add_neg, ← supDegree_neg (f := g)]; apply supDegree_add_le
 
 theorem supDegree_sum_le {ι} {s : Finset ι} {f : ι → R[A]} :
-    (∑ i ∈ s, f i).supDegree D ≤ s.sup (fun i => (f i).supDegree D) :=
-  (Finset.sup_mono Finsupp.support_finset_sum).trans_eq (Finset.sup_biUnion _ _)
+    (∑ i ∈ s, f i).supDegree D ≤ s.sup (fun i => (f i).supDegree D) := by
+  classical
+  exact (Finset.sup_mono Finsupp.support_finset_sum).trans_eq (Finset.sup_biUnion _ _)
 
 theorem supDegree_single_ne_zero (a : A) {r : R} (hr : r ≠ 0) :
     (single a r).supDegree D = D a := by
   rw [supDegree, Finsupp.support_single_ne_zero a hr, Finset.sup_singleton]
 
+open Classical in
 theorem supDegree_single (a : A) (r : R) :
     (single a r).supDegree D = if r = 0 then ⊥ else D a := by
   split_ifs with hr <;> simp [supDegree_single_ne_zero, hr]
@@ -270,6 +273,7 @@ theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [Ad
     {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     {ι} {s : Finset ι} {f : ι → R[A]} :
     (∏ i ∈ s, f i).supDegree D ≤ ∑ i ∈ s, (f i).supDegree D := by
+  classical
   refine s.induction ?_ ?_
   · rw [Finset.prod_empty, Finset.sum_empty, one_def, supDegree_single]
     split_ifs; exacts [bot_le, hzero.le]
@@ -282,6 +286,7 @@ variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.
 theorem apply_add_of_supDegree_le (hD : D.Injective) {ap aq : A}
     (hp : p.supDegree D ≤ D ap) (hq : q.supDegree D ≤ D aq) :
     (p * q) (ap + aq) = p ap * q aq := by
+  classical
   simp_rw [mul_apply, Finsupp.sum]
   rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, if_pos rfl]
   · refine fun a ha hne => if_neg (fun he => ?_)

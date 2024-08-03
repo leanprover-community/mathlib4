@@ -237,10 +237,9 @@ theorem exists_countablyGenerated_le_of_countablySeparated [m : MeasurableSpace 
   rw [@separatesPoints_iff]
   exact fun x y hxy ↦ hb _ trivial _ trivial fun _ hs ↦ hxy _ $ measurableSet_generateFrom hs
 
-open scoped Classical
-
 open Function
 
+open Classical in
 /-- A map from a measurable space to the Cantor space `ℕ → Bool` induced by a countable
 sequence of sets generating the measurable space. -/
 noncomputable

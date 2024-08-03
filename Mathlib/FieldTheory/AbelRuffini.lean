@@ -26,8 +26,6 @@ that is solvable by radicals has a solvable Galois group.
 
 noncomputable section
 
-open scoped Classical Polynomial IntermediateField
-
 open Polynomial IntermediateField
 
 section AbelRuffini

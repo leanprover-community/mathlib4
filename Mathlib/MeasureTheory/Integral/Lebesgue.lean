@@ -36,12 +36,9 @@ noncomputable section
 
 open Set hiding restrict restrict_apply
 
-open Filter ENNReal
+open Filter ENNReal Topology NNReal MeasureTheory
 
 open Function (support)
-
-open scoped Classical
-open Topology NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -591,6 +588,7 @@ alias set_lintegral_smul_measure := setLIntegral_smul_measure
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
+  classical
   simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum]
   rw [iSup_comm]
   congr; funext s
@@ -653,6 +651,7 @@ alias set_lintegral_measure_zero := setLIntegral_measure_zero
 theorem lintegral_finset_sum' (s : Finset β) {f : β → α → ℝ≥0∞}
     (hf : ∀ b ∈ s, AEMeasurable (f b) μ) :
     ∫⁻ a, ∑ b ∈ s, f b a ∂μ = ∑ b ∈ s, ∫⁻ a, f b a ∂μ := by
+  classical
   induction' s using Finset.induction_on with a s has ih
   · simp
   · simp only [Finset.sum_insert has]
@@ -932,6 +931,7 @@ theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
 /-- Weaker version of the monotone convergence theorem-/
 theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
     (h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f n.succ a) : ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
+  classical
   let ⟨s, hs⟩ := exists_measurable_superset_of_null (ae_iff.1 (ae_all_iff.2 h_mono))
   let g n a := if a ∈ s then 0 else f n a
   have g_eq_f : ∀ᵐ a ∂μ, ∀ n, g n a = f n a :=
@@ -1258,6 +1258,7 @@ end
 
 theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i, AEMeasurable (f i) μ) :
     ∫⁻ a, ∑' i, f i a ∂μ = ∑' i, ∫⁻ a, f i a ∂μ := by
+  classical
   simp only [ENNReal.tsum_eq_iSup_sum]
   rw [lintegral_iSup_directed]
   · simp [lintegral_finset_sum' _ fun i _ => hf i]

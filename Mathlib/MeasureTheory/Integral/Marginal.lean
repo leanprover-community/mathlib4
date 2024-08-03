@@ -55,7 +55,7 @@ since there is no well-behaved measure on the domain of `f`.
 -/
 
 
-open scoped Classical ENNReal
+open scoped ENNReal
 open Set Function Equiv Finset
 
 noncomputable section

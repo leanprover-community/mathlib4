@@ -35,8 +35,6 @@ and require `0⁻¹ = 0`.
 
 assert_not_exists DenselyOrdered
 
-open scoped Classical
-
 open Function
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
@@ -56,8 +54,9 @@ theorem right_ne_zero_of_mul : a * b ≠ 0 → b ≠ 0 :=
 theorem ne_zero_and_ne_zero_of_mul (h : a * b ≠ 0) : a ≠ 0 ∧ b ≠ 0 :=
   ⟨left_ne_zero_of_mul h, right_ne_zero_of_mul h⟩
 
-theorem mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) : a * b = 0 :=
-  if ha : a = 0 then by rw [ha, zero_mul] else by rw [h ha, mul_zero]
+theorem mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) : a * b = 0 := by
+  have : Decidable (a = 0) := Classical.propDecidable (a = 0)
+  exact if ha : a = 0 then by rw [ha, zero_mul] else by rw [h ha, mul_zero]
 
 /-- To match `one_mul_eq_id`. -/
 theorem zero_mul_eq_const : ((0 : M₀) * ·) = Function.const _ 0 :=

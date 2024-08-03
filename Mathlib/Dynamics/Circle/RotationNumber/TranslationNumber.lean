@@ -116,7 +116,6 @@ circle homeomorphism, rotation number
 -/
 
 
-open scoped Classical
 open Filter Set Int Topology
 open Function hiding Commute
 
