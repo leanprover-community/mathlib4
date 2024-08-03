@@ -563,7 +563,7 @@ theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = �
 alias int_cast_eq_int_cast_iff_dvd_sub := intCast_eq_intCast_iff_dvd_sub
 
 theorem natCast_zmod_eq_zero_iff_dvd (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
-  rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
+  rw [← val_eq_zero, val_natCast, ← Nat.dvd_iff_mod_eq_zero b a]
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_zmod_eq_zero_iff_dvd := natCast_zmod_eq_zero_iff_dvd
