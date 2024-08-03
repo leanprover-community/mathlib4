@@ -396,4 +396,93 @@ initialize addLinter longLineLinter
 
 end LongLine
 
+/-!
+#  The "pedanticWhitespace" linter
+
+The "pedanticWhitespace" linter emits a warning when the syntax of a command differs substantially
+from the pretty-printed version of itself.
+-/
+
+open Lean Elab
+
+namespace Mathlib.Linter
+
+/--
+The "pedanticWhitespace" linter emits a warning when the syntax of a command differs substantially
+from the pretty-printed version of itself.
+-/
+register_option linter.pedanticWhitespace : Bool := {
+  defValue := true
+  descr := "enable the pedanticWhitespace linter"
+}
+
+def dropTrailingComments (s : List String) : List String :=
+  Id.run do
+  let mut s := s
+  let mut repl := true
+  while repl do
+    let last := s.getLast?.getD ""
+    repl := "--".isPrefixOf last
+    if repl then
+      s := s.dropLast
+  return s
+
+def collapseWhitespace (s : String) : String :=
+  let s := s.split (·.isWhitespace)
+  (" ".intercalate (dropTrailingComments (s.filter (!·.isEmpty))))
+    |>.replace "/-!" "/-! "
+    |>.replace "`` " "``" -- weird pp ```#eval ``«Nat»``` pretty-prints as ```#eval `` «Nat»```
+    |>.replace "notation3(" "notation3 ("
+    --|>.replace "{" "{"   -- probably better?
+
+def collapseLineBreaksPlusSpaces (st : String) : String :=
+  let s := ((st.split (· == '\n')).map .trimLeft).filter (!· == "")
+  let s := dropTrailingComments s
+  " ".intercalate (s.filter (!·.isEmpty))
+
+def zoomString (str : String) (centre offset : Nat) : Substring :=
+  ({ str := str, startPos := ⟨centre - offset⟩, stopPos := ⟨centre + offset⟩ } : Substring)
+
+namespace PedanticWhitespace
+
+/-- Gets the value of the `linter.pedanticWhitespace` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.pedanticWhitespace o
+
+@[inherit_doc Mathlib.Linter.linter.pedanticWhitespace]
+def pedanticWhitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    let fmt ← liftCoreM do PrettyPrinter.ppCategory `command stx
+    let st := collapseWhitespace fmt.pretty
+    let real := collapseLineBreaksPlusSpaces (stx.getSubstring?.getD default).toString
+    if st != real then
+      let diff := real.firstDiffPos st
+      let srcCtxt := zoomString real diff.byteIdx 5 --({ str := real, startPos := diff - ⟨4⟩, stopPos := diff + ⟨5⟩ } : Substring)
+      let ppCtxt  := ({ str := st,   startPos := diff - ⟨4⟩, stopPos := diff + ⟨5⟩ } : Substring)
+      if srcCtxt.toString == ppCtxt.toString then logInfo m!"{diff}\n{real}\n{ppCtxt}"
+      --dbg_trace "{real}\n{st}"
+      Linter.logLint linter.pedanticWhitespace stx m!"---\n\
+        '{srcCtxt}' -- src\n\
+        '{ppCtxt}' -- pp\n---"
+      --Linter.logLint linter.pedanticWhitespace stx m!"pretty:\n'{st}'\n'{real}'"
+
+
+run_cmd
+  let s1 := "· 2"
+  let s2 := "·12"
+  let diff : String.Pos := s1.firstDiffPos s2
+  logInfo m!"Difference at: {diff}\n\
+        s1: '{({ str := s1, startPos := diff - ⟨1⟩, stopPos := diff + ⟨1⟩ } : Substring)}'\n\
+        s2: '{({ str := s2, startPos := diff - ⟨1⟩, stopPos := diff + ⟨1⟩ } : Substring)}'"
+
+
+initialize addLinter pedanticWhitespaceLinter
+
+end PedanticWhitespace
+
+end Mathlib.Linter
+
+
 end Mathlib.Linter
