@@ -99,21 +99,21 @@ def exception' (msg : MessageData) : TacticM Unit := do
     -- There might not be any goals
     throwError msg
 
-set_option quotPrecheck false in
+/-- Sending 2-morphisms in `FreeBicategory B` to those in `B`. -/
+def mkLiftMap₂LiftExprAux {a b : FreeBicategory B} {f g : a ⟶ b} (η : f ⟶ g) :=
+  (FreeBicategory.lift (Prefunctor.id _)).map₂ η
+
 /-- Auxiliary definition for `bicategorical_coherence`. -/
--- We could construct this expression directly without using `elabTerm`,
--- but it would require preparing many implicit arguments by hand.
-def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
-  Term.elabTerm
-    (← ``((FreeBicategory.lift (Prefunctor.id _)).map₂ (LiftHom₂.lift $(← Term.exprToSyntax e))))
-    none
+def mkLiftMap₂LiftExpr (e : Expr) : MetaM Expr := do
+  let f ← mkAppOptM ``LiftHom₂.lift #[none, none, none, none, none, none, none, none, e, none]
+  mkAppM ``mkLiftMap₂LiftExprAux #[f]
 
 /-- Coherence tactic for bicategories. -/
-def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
+def bicategory_coherence (g : MVarId) : MetaM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
-  -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
-  let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
+  let (ty, _) ← dsimp (← g.getType)
+    { simpTheorems := #[.addDeclToUnfoldCore {} ``BicategoricalCoherence.hom] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let lift_lhs ← mkLiftMap₂LiftExpr lhs
   let lift_rhs ← mkLiftMap₂LiftExpr rhs

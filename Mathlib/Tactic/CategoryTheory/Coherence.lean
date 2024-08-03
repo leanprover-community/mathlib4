@@ -109,20 +109,21 @@ def exception' (msg : MessageData) : TacticM Unit := do
     -- There might not be any goals
     throwError msg
 
+/-- Sending morphisms in `FreeMonoidalCategory C` to those in `C`. -/
+def mkProjectMapExprAux {X Y : FreeMonoidalCategory C} (f : X ⟶ Y) :=
+  FreeMonoidalCategory.projectMap id _ _ f
+
 /-- Auxiliary definition for `monoidal_coherence`. -/
--- We could construct this expression directly without using `elabTerm`,
--- but it would require preparing many implicit arguments by hand.
-def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
-  Term.elabTerm
-    (← ``(FreeMonoidalCategory.projectMap _root_.id _ _ (LiftHom.lift $(← Term.exprToSyntax e))))
-    none
+def mkProjectMapExpr (e : Expr) : MetaM Expr := do
+  let f ← mkAppOptM ``LiftHom.lift #[none, none, none, none, none, none, e, none]
+  mkAppM ``mkProjectMapExprAux #[f]
 
 /-- Coherence tactic for monoidal categories. -/
-def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
+def monoidal_coherence (g : MVarId) : MetaM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
-  -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
-  let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
+  let (ty, _) ← dsimp (← g.getType)
+    { simpTheorems := #[.addDeclToUnfoldCore {} ``MonoidalCoherence.hom] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let projectMap_lhs ← mkProjectMapExpr lhs
   let projectMap_rhs ← mkProjectMapExpr rhs
@@ -184,7 +185,7 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only
-      [monoidalComp, Category.assoc, MonoidalCoherence.hom]) <;>
+      [monoidalComp, Category.assoc, MonoidalCoherence.hom, BicategoricalCoherence.hom]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     (simp (config := {failIfUnchanged := false}) only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
@@ -284,9 +285,7 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
-      BicategoricalCoherence.hom,
-      monoidalComp]);
+    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp, monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
     monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop

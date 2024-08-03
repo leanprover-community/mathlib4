@@ -4,7 +4,7 @@ open CategoryTheory
 
 universe w v u
 
-section monoidal
+section Monoidal
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 open scoped MonoidalCategory
 
@@ -79,7 +79,7 @@ example (X₁ X₂ : C) :
     (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).inv) := by
   coherence
 
-end monoidal
+end Monoidal
 
 section Bicategory
 
@@ -106,6 +106,7 @@ example (f : a ⟶ b) (g : b ⟶ c) :
 example : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
   bicategory_coherence
 
+set_option linter.unusedVariables false in
 example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (w : false) :
   (λ_ (𝟙 a)).hom ≫ η ≫ θ = (ρ_ (𝟙 a)).hom ≫ η ≫ θ := by
   coherence
