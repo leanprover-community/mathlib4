@@ -18,7 +18,8 @@ open Lean Elab Term Meta
 
 /-- `delta% t` elaborates to a head-delta reduced version of `t`. -/
 elab "delta% " t:term : term <= expectedType => do
-  let t ← elabTerm t expectedType
+  let t ← withSynthesize do
+    elabTermEnsuringType t expectedType
   synthesizeSyntheticMVars
   let t ← instantiateMVars t
   let some t ← delta? t | throwError "cannot delta reduce {t}"
@@ -26,7 +27,8 @@ elab "delta% " t:term : term <= expectedType => do
 
 /-- `zeta% t` elaborates to a head-zeta reduced version of `t`. -/
 elab "zeta% " t:term : term <= expectedType => do
-  let t ← elabTerm t expectedType
+  let t ← withSynthesize do
+    elabTermEnsuringType t expectedType
   synthesizeSyntheticMVars
   let t ← instantiateMVars t
   let t ← zetaReduce t

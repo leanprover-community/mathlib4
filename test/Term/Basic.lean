@@ -12,6 +12,9 @@ set_option pp.unicode.fun true
 /-- info: true : Bool -/
 #guard_msgs in #check delta% delta% id (id true)
 
+/-- info: true : Bool -/
+#guard_msgs in #check delta% delta% by exact id (id true)
+
 /-- info: let x := true; x : Bool -/
 #guard_msgs in #check let x := true; x
 
@@ -23,6 +26,9 @@ set_option pp.unicode.fun true
 
 /-- info: true : Bool -/
 #guard_msgs in #check zeta% let x := true; let y := x; y
+
+/-- info: true : Bool -/
+#guard_msgs in #check zeta% by exact let x := true; let y := x; y
 
 class A where
 
