@@ -66,7 +66,7 @@ theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
 
 theorem nth_eq_orderEmbOfFin (hf : (setOf p).Finite) {n : ℕ} (hn : n < hf.toFinset.card) :
     nth p n = hf.toFinset.orderEmbOfFin rfl ⟨n, hn⟩ := by
-  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_get]
+  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_getElem, Fin.getElem_fin]
 
 theorem nth_strictMonoOn (hf : (setOf p).Finite) :
     StrictMonoOn (nth p) (Set.Iio hf.toFinset.card) := by
