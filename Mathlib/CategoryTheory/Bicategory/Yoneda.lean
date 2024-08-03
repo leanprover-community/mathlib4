@@ -107,12 +107,25 @@ def StrongNatTrans.representable {x y : B} (f : x ⟶ y) : representable x ⟶ r
       rw [NatTrans.comp_app, NatTrans.id_app]
       simp
   }
-  naturality_naturality := sorry
-  naturality_id := sorry
+  -- TODO: break out these as separate lemmas
+  naturality_naturality := by
+    intro a b f' g η
+    -- TODO: should be automatic...
+    apply NatTrans.ext; ext x
+    rw [NatTrans.comp_app, NatTrans.comp_app]
+    simp
+  naturality_id := by
+    intro a
+    apply NatTrans.ext; ext x
+    repeat rw [NatTrans.comp_app]
+    simp
+    repeat rw [NatTrans.id_app]
+    erw [comp_id, comp_id]
+    rw [@rightUnitor_comp, ← assoc, Iso.inv_hom_id, id_comp]
   naturality_comp := sorry
 
 -- TODO: invertible if f is?
-@[simps?]
+@[simps]
 def Modification.representable {x y : B} {f g : x ⟶ y} (η : f ⟶ g) :
     OplaxNatTrans.Modification (StrongNatTrans.representable f).toOplax
       (StrongNatTrans.representable g).toOplax where
@@ -141,7 +154,7 @@ def yoneda.prelaxFunctor : PrelaxFunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, 
     apply NatTrans.ext
     ext x
     -- why is this not applied by simp? (Q on zulip...)
-    rw [StrongNatTrans.homcategory_id]
+    rw [Pseudofunctor.homcategory_id]
     dsimp
     rw [NatTrans.id_app, id_whiskerRight]
     dsimp
@@ -160,8 +173,8 @@ def yoneda.prelaxFunctor : PrelaxFunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, 
 
 def yoneda : Pseudofunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁}) where
   toPrelaxFunctor := yoneda.prelaxFunctor
-  mapId a := StrongNatTrans.isoOfComponents (η := yoneda.prelaxFunctor.map (𝟙 a))
-      (θ := 𝟙 (yoneda.prelaxFunctor.obj a)) (fun b => leftUnitorNatIso (bop a) b) <| by
+  mapId a := Pseudofunctor.isoOfComponents (yoneda.prelaxFunctor.map (𝟙 a))
+      (𝟙 (yoneda.prelaxFunctor.obj a)) (fun b => leftUnitorNatIso (bop a) b) <| by
     intro a b f
     apply NatTrans.ext
     ext x
@@ -172,8 +185,34 @@ def yoneda : Pseudofunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁}) where
     simp only [Cat.comp_obj, postcomp_obj, eqToHom_refl, comp_id]
     rw [@leftUnitor_comp]
     rfl
-  mapComp := sorry
-  map₂_whisker_left := sorry
+  mapComp f g := Pseudofunctor.isoOfComponents (yoneda.prelaxFunctor.map (f ≫ g))
+      (yoneda.prelaxFunctor.map f ≫ yoneda.prelaxFunctor.map g)
+      (fun b ↦ associatorNatIsoRight _ _ b)
+        <| by
+    intro a b h
+    apply NatTrans.ext
+    ext x
+    dsimp
+    repeat rw [NatTrans.comp_app]
+    dsimp
+    rw [Cat.associator_hom_app, Cat.associator_inv_app, Cat.associator_inv_app]
+    simp only [Cat.comp_obj, postcomp_obj, precomp_obj, eqToHom_refl, comp_id, id_comp]
+    -- TODO: remove?
+    erw [pentagon_hom_inv_inv_inv_hom g.bop f.bop x h]
+    rfl
+  -- these should all be proven generally?
+  map₂_whisker_left := by
+    intros a b c f g h η
+    apply OplaxNatTrans.ext
+    intro d
+    apply NatTrans.ext
+    ext x
+    dsimp
+    repeat erw [NatTrans.comp_app]
+    simp
+    slice_rhs 2 4 =>
+      rw [associator_naturality_left, ← assoc, Iso.inv_hom_id, id_comp]
+    sorry -- almost done...!
   map₂_whisker_right := sorry
   map₂_associator := sorry
   map₂_left_unitor := sorry

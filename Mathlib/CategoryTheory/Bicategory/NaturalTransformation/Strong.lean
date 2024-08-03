@@ -203,6 +203,7 @@ instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
   id F := StrongOplaxNatTrans.id F.toOplax
   comp := StrongOplaxNatTrans.vcomp
 
+variable {B C}
 
 /-- Category structure on the strong natural transformations between pseudofunctors. -/
 @[simps]
@@ -217,6 +218,7 @@ lemma hom_ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w :
   OplaxNatTrans.ext w
 
 -- TODO: this should be deduced from functor to oplax modifications?
+@[simps]
 def isoOfComponents {F G : Pseudofunctor B C} (η θ : F ⟶ G) (app : ∀ a, η.app a ≅ θ.app a)
     (naturality : ∀ {a b} (f : a ⟶ b), F.toOplax.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
         (η.naturality f).hom ≫ (app a).hom ▷ G.toOplax.map f) : η ≅ θ where
