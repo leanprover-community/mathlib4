@@ -212,8 +212,7 @@ from `ProbabilityMeasure Ω`. -/
 def ProbabilityMeasure.toLevyProkhorov (μ : ProbabilityMeasure Ω) :
     LevyProkhorov (ProbabilityMeasure Ω) := μ
 
-/-- Coercion from the type synonym `LevyProkhorov (FiniteMeasure Ω)`
-to `FiniteMeasure Ω`. -/
+/-- Coercion to the type synonym `LevyProkhorov (FiniteMeasure Ω)` from `FiniteMeasure Ω`. -/
 def FiniteMeasure.toLevyProkhorov (μ : FiniteMeasure Ω) :
     LevyProkhorov (FiniteMeasure Ω) := μ
 
