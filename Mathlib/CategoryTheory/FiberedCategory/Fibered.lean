@@ -105,19 +105,19 @@ instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R
     -- Let `ψ` be a cartesian arrow lying over `g`
     let ψ := pullbackMap (domain_eq p f φ) g
     -- Let `τ` be the map induced by the universal property of `ψ ≫ φ`.
-    let τ := inducedMap p (g ≫ f) (ψ ≫ φ) φ'
+    let τ := IsCartesian.map p (g ≫ f) (ψ ≫ φ) φ'
     use τ ≫ ψ
     -- It is easily verified that `τ ≫ ψ` lifts `g` and `τ ≫ ψ ≫ φ = φ'`
-    refine ⟨⟨inferInstance, by simp only [assoc, inducedMap_comp, τ]⟩, ?_⟩
+    refine ⟨⟨inferInstance, by simp only [assoc, IsCartesian.fac, τ]⟩, ?_⟩
     -- It remains to check that `τ ≫ ψ` is unique.
     -- So fix another lift `π` of `g` satisfying `π ≫ φ = φ'`.
     intro π ⟨hπ, hπ_comp⟩
     -- Write `π` as `π = τ' ≫ ψ` for some `τ'` induced by the universal property of `ψ`.
-    rw [← inducedMap_comp p g ψ π]
+    rw [← fac p g ψ π]
     -- It remains to show that `τ' = τ`. This follows again from the universal property of `ψ`.
     congr 1
-    apply inducedMap_unique
-    rwa [← assoc, inducedMap_comp]
+    apply map_uniq
+    rwa [← assoc, IsCartesian.fac]
 
 /-- In a category which admits strongly cartesian pullbacks, any cartesian morphism is
 strongly cartesian. This is a helper-lemma for the fact that admitting strongly cartesian pullbacks
@@ -131,18 +131,20 @@ lemma isStronglyCartesian_of_has_pullbacks' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : �
   -- Let `ψ` be a cartesian arrow lying over `g`
   obtain ⟨a', ψ, hψ⟩ := h _ _ (p.map φ)
   -- Let `τ' : c ⟶ a'` be the map induced by the universal property of `ψ`
-  let τ' := IsStronglyCartesian.inducedMap p (p.map φ) ψ (f':= g ≫ p.map φ) rfl φ'
-  -- Let `Φ : a' ⟶ a` be natural isomorphism induced between `φ` and `ψ`.
-  let Φ := naturalIso p (p.map φ) φ ψ
+  let τ' := IsStronglyCartesian.map p (p.map φ) ψ (f':= g ≫ p.map φ) rfl φ'
+  -- Let `Φ : a' ≅ a` be natural isomorphism induced between `φ` and `ψ`.
+  let Φ := domainUniqueUpToIso p (p.map φ) φ ψ
   -- The map induced by `φ` will be `τ' ≫ Φ.hom`
   use τ' ≫ Φ.hom
   -- It is easily verified that `τ' ≫ Φ.hom` lifts `g` and `τ' ≫ Φ.hom ≫ φ = φ'`
-  refine ⟨⟨inferInstance, ?_⟩, ?_⟩
-  · simp [Φ, IsStronglyCartesian.inducedMap_comp p (p.map φ) ψ rfl φ']
+  refine ⟨⟨by simp only [domainUniqueUpToIso_hom, Φ]; infer_instance, ?_⟩, ?_⟩
+  · simp [τ', Φ, IsStronglyCartesian.map_uniq p (p.map φ) ψ rfl φ']
   -- It remains to check that it is unique. This follows from the universal property of `ψ`.
   intro π ⟨hπ, hπ_comp⟩
   rw [← Iso.comp_inv_eq]
-  apply IsStronglyCartesian.inducedMap_unique p (p.map φ) ψ rfl φ'
+  -- TODO: can I remove this?
+  dsimp [Φ]
+  apply IsStronglyCartesian.map_uniq p (p.map φ) ψ rfl φ'
   simp [Φ, hπ_comp]
 
 
@@ -170,7 +172,7 @@ we have an isomorphism `T ×_S a ≅ T ×_R (R ×_S a)` -/
 noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
     {R S T : 𝒮}  {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) (g : T ⟶ R) :
       pullbackObj ha (g ≫ f) ≅ pullbackObj (pullbackObj_proj ha f) g :=
-  naturalIso p (g ≫ f) (pullbackMap (pullbackObj_proj ha f) g ≫ pullbackMap ha f)
+  domainUniqueUpToIso p (g ≫ f) (pullbackMap (pullbackObj_proj ha f) g ≫ pullbackMap ha f)
     (pullbackMap ha (g ≫ f))
 
 end IsFibered
