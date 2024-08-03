@@ -5,8 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 
-#align_import algebra.monoid_algebra.degree from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
-
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
 
@@ -21,8 +19,6 @@ Next, the general lemmas get specialized for some yet-to-be-defined `degree`s.
 variable {R R' A T B ι : Type*}
 
 namespace AddMonoidAlgebra
-
-open scoped Classical
 
 /-!
 
@@ -84,13 +80,13 @@ a type with *b*ot or *t*op respectively.
 
 variable (degb : A → B) (degt : A → T) (f g : R[A])
 
-theorem sup_support_add_le : (f + g).support.sup degb ≤ f.support.sup degb ⊔ g.support.sup degb :=
-  (Finset.sup_mono Finsupp.support_add).trans_eq Finset.sup_union
-#align add_monoid_algebra.sup_support_add_le AddMonoidAlgebra.sup_support_add_le
+theorem sup_support_add_le :
+    (f + g).support.sup degb ≤ f.support.sup degb ⊔ g.support.sup degb := by
+  classical
+  exact (Finset.sup_mono Finsupp.support_add).trans_eq Finset.sup_union
 
 theorem le_inf_support_add : f.support.inf degt ⊓ g.support.inf degt ≤ (f + g).support.inf degt :=
   sup_support_add_le (fun a : A => OrderDual.toDual (degt a)) f g
-#align add_monoid_algebra.le_inf_support_add AddMonoidAlgebra.le_inf_support_add
 
 end ExplicitDegrees
 
@@ -102,16 +98,15 @@ variable [Add A] [Add B] [Add T] [CovariantClass B B (· + ·) (· ≤ ·)]
 
 theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
-    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb :=
-  (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
+    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
+  classical
+  exact (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
     degbm.trans <| add_le_add (Finset.le_sup fds) (Finset.le_sup gds)
-#align add_monoid_algebra.sup_support_mul_le AddMonoidAlgebra.sup_support_mul_le
 
 theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
     f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt :=
   sup_support_mul_le (B := Tᵒᵈ) degtm f g
-#align add_monoid_algebra.le_inf_support_mul AddMonoidAlgebra.le_inf_support_mul
 
 end AddOnly
 
@@ -133,7 +128,6 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
     rw [List.prod_cons, List.map_cons, List.sum_cons]
     exact (sup_support_mul_le (@fun a b => degbm a b) _ _).trans
         (add_le_add_left (sup_support_list_prod_le degb0 degbm fs) _)
-#align add_monoid_algebra.sup_support_list_prod_le AddMonoidAlgebra.sup_support_list_prod_le
 
 theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :
@@ -144,14 +138,12 @@ theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     exact degt0
   · refine (fun a b => OrderDual.ofDual_le_ofDual.mp ?_)
     exact degtm a b
-#align add_monoid_algebra.le_inf_support_list_prod AddMonoidAlgebra.le_inf_support_list_prod
 
 theorem sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
     (n : ℕ) (f : R[A]) : (f ^ n).support.sup degb ≤ n • f.support.sup degb := by
   rw [← List.prod_replicate, ← List.sum_replicate]
   refine (sup_support_list_prod_le degb0 degbm _).trans_eq ?_
   rw [List.map_replicate]
-#align add_monoid_algebra.sup_support_pow_le AddMonoidAlgebra.sup_support_pow_le
 
 theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (n : ℕ) (f : R[A]) : n • f.support.inf degt ≤ (f ^ n).support.inf degt := by
@@ -159,7 +151,6 @@ theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + deg
       (fun a b => OrderDual.ofDual_le_ofDual.mp ?_) n f
   · exact degt0
   · exact degtm _ _
-#align add_monoid_algebra.le_inf_support_pow AddMonoidAlgebra.le_inf_support_pow
 
 end AddMonoids
 
@@ -178,7 +169,6 @@ theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
   induction m using Quot.inductionOn
   rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
   exact sup_support_list_prod_le degb0 degbm _
-#align add_monoid_algebra.sup_support_multiset_prod_le AddMonoidAlgebra.sup_support_multiset_prod_le
 
 theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (m : Multiset R[A]) :
@@ -188,19 +178,16 @@ theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
       (fun a b => OrderDual.ofDual_le_ofDual.mp ?_) m
   · exact degt0
   · exact degtm _ _
-#align add_monoid_algebra.le_inf_support_multiset_prod AddMonoidAlgebra.le_inf_support_multiset_prod
 
 theorem sup_support_finset_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (s : Finset ι) (f : ι → R[A]) :
     (∏ i ∈ s, f i).support.sup degb ≤ ∑ i ∈ s, (f i).support.sup degb :=
   (sup_support_multiset_prod_le degb0 degbm _).trans_eq <| congr_arg _ <| Multiset.map_map _ _ _
-#align add_monoid_algebra.sup_support_finset_prod_le AddMonoidAlgebra.sup_support_finset_prod_le
 
 theorem le_inf_support_finset_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → R[A]) :
     (∑ i ∈ s, (f i).support.inf degt) ≤ (∏ i ∈ s, f i).support.inf degt :=
   le_of_eq_of_le (by rw [Multiset.map_map]; rfl) (le_inf_support_multiset_prod degt0 degtm _)
-#align add_monoid_algebra.le_inf_support_finset_prod AddMonoidAlgebra.le_inf_support_finset_prod
 
 end CommutativeLemmas
 
@@ -246,13 +233,15 @@ theorem supDegree_sub_le {f g : R'[A]} :
   rw [sub_eq_add_neg, ← supDegree_neg (f := g)]; apply supDegree_add_le
 
 theorem supDegree_sum_le {ι} {s : Finset ι} {f : ι → R[A]} :
-    (∑ i ∈ s, f i).supDegree D ≤ s.sup (fun i => (f i).supDegree D) :=
-  (Finset.sup_mono Finsupp.support_finset_sum).trans_eq (Finset.sup_biUnion _ _)
+    (∑ i ∈ s, f i).supDegree D ≤ s.sup (fun i => (f i).supDegree D) := by
+  classical
+  exact (Finset.sup_mono Finsupp.support_finset_sum).trans_eq (Finset.sup_biUnion _ _)
 
 theorem supDegree_single_ne_zero (a : A) {r : R} (hr : r ≠ 0) :
     (single a r).supDegree D = D a := by
   rw [supDegree, Finsupp.support_single_ne_zero a hr, Finset.sup_singleton]
 
+open Classical in
 theorem supDegree_single (a : A) (r : R) :
     (single a r).supDegree D = if r = 0 then ⊥ else D a := by
   split_ifs with hr <;> simp [supDegree_single_ne_zero, hr]
@@ -284,6 +273,7 @@ theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [Ad
     {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     {ι} {s : Finset ι} {f : ι → R[A]} :
     (∏ i ∈ s, f i).supDegree D ≤ ∑ i ∈ s, (f i).supDegree D := by
+  classical
   refine s.induction ?_ ?_
   · rw [Finset.prod_empty, Finset.sum_empty, one_def, supDegree_single]
     split_ifs; exacts [bot_le, hzero.le]
@@ -296,6 +286,7 @@ variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.
 theorem apply_add_of_supDegree_le (hD : D.Injective) {ap aq : A}
     (hp : p.supDegree D ≤ D ap) (hq : q.supDegree D ≤ D aq) :
     (p * q) (ap + aq) = p ap * q aq := by
+  classical
   simp_rw [mul_apply, Finsupp.sum]
   rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, if_pos rfl]
   · refine fun a ha hne => if_neg (fun he => ?_)

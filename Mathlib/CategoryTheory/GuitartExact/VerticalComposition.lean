@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.CatCommSq
 import Mathlib.CategoryTheory.GuitartExact.Basic
 
 /-!
@@ -118,6 +119,46 @@ instance vComp' [GuitartExact w] [GuitartExact w'] {L₁₂ : C₁ ⥤ C₃}
     (eR : R₁ ⋙ R₂ ≅ R₁₂) : (w.vComp' w' eL eR).GuitartExact := by
   dsimp only [TwoSquare.vComp']
   infer_instance
+
+lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
+    (w' : H₂ ⋙ eR.functor ≅ eL.functor ⋙ H₃) :
+    (w.vComp w'.hom).GuitartExact ↔ w.GuitartExact := by
+  constructor
+  · intro hww'
+    letI : CatCommSq H₂ eL.functor eR.functor H₃ := ⟨w'⟩
+    have hw' : CatCommSq.iso H₂ eL.functor eR.functor H₃ = w' := rfl
+    letI : CatCommSq H₃ eL.inverse eR.inverse H₂ := CatCommSq.vInvEquiv _ _ _ _ inferInstance
+    let w'' := CatCommSq.iso H₃ eL.inverse eR.inverse H₂
+    let α : (L₁ ⋙ eL.functor) ⋙ eL.inverse ≅ L₁ :=
+      Functor.associator _ _ _ ≪≫ isoWhiskerLeft L₁ eL.unitIso.symm ≪≫ L₁.rightUnitor
+    let β : (R₁ ⋙ eR.functor) ⋙ eR.inverse ≅ R₁ :=
+      Functor.associator _ _ _ ≪≫ isoWhiskerLeft R₁ eR.unitIso.symm ≪≫ R₁.rightUnitor
+    have : w = (w.vComp w'.hom).vComp' w''.hom α β := by
+      ext X₁
+      dsimp
+      simp? [w'', β, α] says
+        simp only [vComp'_app, Functor.comp_obj, Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv,
+          assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app, whiskerLeft_app,
+          Functor.associator_inv_app, comp_id, id_comp, vComp_app, Functor.map_comp,
+          Equivalence.inv_fun_map, Iso.trans_hom, isoWhiskerLeft_hom, Iso.symm_hom,
+          Functor.associator_hom_app, Functor.rightUnitor_hom_app, Iso.hom_inv_id_app_assoc,
+          w'', α, β]
+      erw [CatCommSq.vInv_iso'_hom_app]
+      simp only [hw', assoc, ← eR.inverse.map_comp_assoc]
+      rw [Equivalence.counitInv_app_functor]
+      erw [← NatTrans.naturality_assoc]
+      simp [← H₂.map_comp]
+    rw [this]
+    infer_instance
+  · intro
+    exact vComp w w'.hom
+
+lemma vComp'_iff_of_equivalences (E : C₂ ≌ C₃) (E' : D₂ ≌ D₃)
+    (w' : H₂ ⋙ E'.functor ≅ E.functor ⋙ H₃) {L₁₂ : C₁ ⥤ C₃}
+    {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ E.functor ≅ L₁₂)
+    (eR : R₁ ⋙ E'.functor ≅ R₁₂) :
+    (w.vComp' w'.hom eL eR).GuitartExact ↔ w.GuitartExact := by
+  rw [← vComp_iff_of_equivalences w E E' w', TwoSquare.vComp', whiskerVertical_iff]
 
 end GuitartExact
 

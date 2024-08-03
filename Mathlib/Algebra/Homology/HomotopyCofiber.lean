@@ -191,7 +191,7 @@ lemma inlX_d (i j k : ι) (hij : c.Rel i j) (hjk : c.Rel j k) :
   · simp [d_sndX φ _ _ hij]
 
 @[reassoc]
-lemma inlX_d' (i j : ι) (hij : c.Rel i j) (hj : ¬ c.Rel j (c.next j)):
+lemma inlX_d' (i j : ι) (hij : c.Rel i j) (hj : ¬ c.Rel j (c.next j)) :
     inlX φ j i hij ≫ d φ i j = φ.f j ≫ inrX φ j := by
   apply ext_to_X' _ _ hj
   simp [d_sndX φ i j hij]

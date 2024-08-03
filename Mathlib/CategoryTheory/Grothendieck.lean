@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Scott Morrison, Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Elements
-
-#align_import category_theory.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
+import Mathlib.CategoryTheory.Comma.Over
 
 /-!
 # The Grothendieck construction
@@ -15,6 +14,9 @@ Given a functor `F : C ⥤ Cat`, the objects of `Grothendieck F`
 consist of dependent pairs `(b, f)`, where `b : C` and `f : F.obj c`,
 and a morphism `(b, f) ⟶ (b', f')` is a pair `β : b ⟶ b'` in `C`, and
 `φ : (F.map β).obj f ⟶ f'`
+
+`Grothendieck.functor` makes the Grothendieck construction into a functor from the functor category
+`C ⥤ Cat` to the over category `Over C` in the category of categories.
 
 Categories such as `PresheafedSpace` are in fact examples of this construction,
 and it may be interesting to try to generalize some of the development there.
@@ -58,7 +60,6 @@ structure Grothendieck where
   base : C
   /-- The object in the fiber of the base object. -/
   fiber : F.obj base
-#align category_theory.grothendieck CategoryTheory.Grothendieck
 
 namespace Grothendieck
 
@@ -72,7 +73,6 @@ structure Hom (X Y : Grothendieck F) where
   base : X.base ⟶ Y.base
   /-- The morphism from the pushforward to the source fiber object to the target fiber object. -/
   fiber : (F.map base).obj X.fiber ⟶ Y.fiber
-#align category_theory.grothendieck.hom CategoryTheory.Grothendieck.Hom
 
 @[ext]
 theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
@@ -81,7 +81,6 @@ theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
   congr
   dsimp at w_base
   aesop_cat
-#align category_theory.grothendieck.ext CategoryTheory.Grothendieck.ext
 
 /-- The identity morphism in the Grothendieck category.
 -/
@@ -89,7 +88,6 @@ theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
 def id (X : Grothendieck F) : Hom X X where
   base := 𝟙 X.base
   fiber := eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber])
-#align category_theory.grothendieck.id CategoryTheory.Grothendieck.id
 
 instance (X : Grothendieck F) : Inhabited (Hom X X) :=
   ⟨id X⟩
@@ -101,7 +99,6 @@ def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
   base := f.base ≫ g.base
   fiber :=
     eqToHom (by erw [Functor.map_comp, Functor.comp_obj]) ≫ (F.map g.base).map f.fiber ≫ g.fiber
-#align category_theory.grothendieck.comp CategoryTheory.Grothendieck.comp
 
 attribute [local simp] eqToHom_map
 
@@ -127,14 +124,20 @@ instance : Category (Grothendieck F) where
 theorem id_fiber' (X : Grothendieck F) :
     Hom.fiber (𝟙 X) = eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber]) :=
   id_fiber X
-#align category_theory.grothendieck.id_fiber' CategoryTheory.Grothendieck.id_fiber'
+
+@[simp]
+theorem comp_fiber' {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    Hom.fiber (f ≫ g) =
+    eqToHom (by erw [Functor.map_comp, Functor.comp_obj]) ≫
+    (F.map g.base).map f.fiber ≫ g.fiber :=
+  comp_fiber f g
+
 
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
   subst h
   dsimp
   simp
-#align category_theory.grothendieck.congr CategoryTheory.Grothendieck.congr
 
 section
 
@@ -145,23 +148,111 @@ variable (F)
 def forget : Grothendieck F ⥤ C where
   obj X := X.1
   map := @fun X Y f => f.1
-#align category_theory.grothendieck.forget CategoryTheory.Grothendieck.forget
 
 end
+
+section
+
+variable {G : C ⥤ Cat}
+
+/-- The Grothendieck construction is functorial: a natural transformation `α : F ⟶ G` induces
+a functor `Grothendieck.map : Grothendieck F ⥤ Grothendieck G`.
+-/
+@[simps!]
+def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
+  obj X :=
+  { base := X.base
+    fiber := (α.app X.base).obj X.fiber }
+  map {X Y} f :=
+  { base := f.base
+    fiber := (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber }
+  map_id X := by
+    simp only [Cat.comp_obj, id_fiber', eqToHom_map]
+    congr 1
+    rw [eqToHom_app, eqToHom_trans]
+  map_comp {X Y Z} f g := by
+    dsimp
+    congr 1
+    simp only [comp_fiber' f g, ← Category.assoc, Functor.map_comp, eqToHom_map]
+    congr 1
+    simp only [Cat.comp_obj, eqToHom_trans, eqToHom_map, Cat.comp_map, eqToHom_trans_assoc,
+      Category.assoc]
+    rw [eqToHom_app, eqToHom_app, eqToHom_app]
+    erw [Functor.congr_hom (α.naturality g.base).symm f.fiber]
+    simp
+
+theorem map_obj {α : F ⟶ G} (X : Grothendieck F) :
+    (Grothendieck.map α).obj X = ⟨X.base, (α.app X.base).obj X.fiber⟩ := rfl
+
+theorem map_map {α : F ⟶ G} {X Y : Grothendieck F} {f : X ⟶ Y} :
+    (Grothendieck.map α).map f =
+    ⟨f.base, (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber⟩ := rfl
+
+/-- The functor `Grothendieck.map α : Grothendieck F ⥤ Grothendieck G` lies over `C`.-/
+theorem functor_comp_forget {α : F ⟶ G} :
+    Grothendieck.map α ⋙ Grothendieck.forget G = Grothendieck.forget F := rfl
+
+theorem map_id_eq : map (𝟙 F) = 𝟙 (Cat.of <| Grothendieck <| F) := by
+  fapply Functor.ext
+  · intro X
+    rfl
+  · intro X Y f
+    simp [map_map]
+    congr
+    rw [NatTrans.id_app]
+    simp
+
+/-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
+if possible, and we should prefer `map_id_iso` to `map_id_eq` whenever we can. -/
+def mapIdIso : map (𝟙 F) ≅ 𝟙 (Cat.of <| Grothendieck <| F) := eqToIso map_id_eq
+
+variable {H : C ⥤ Cat}
+
+theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
+    map (α ≫ β) = map α ⋙ map β := by
+  fapply Functor.ext
+  · intro X
+    rfl
+  · intro X Y f
+    simp only [map_map, map_obj_base, NatTrans.comp_app, Cat.comp_obj, Cat.comp_map,
+      eqToHom_refl, Functor.comp_map, Functor.map_comp, Category.comp_id, Category.id_comp]
+    fapply Grothendieck.ext
+    · rfl
+    · simp only [eqToHom_refl, Category.id_comp]
+      erw [eqToHom_app, eqToHom_app, eqToHom_app, eqToHom_map]
+      simp only [Cat.comp_obj, eqToHom_trans_assoc]
+
+/-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
+if possible, and we should prefer `map_comp_iso` to `map_comp_eq` whenever we can. -/
+def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β := eqToIso (map_comp_eq α β)
+
+end
+
+universe v
+
+/-- The Grothendieck construction as a functor from the functor category `E ⥤ Cat` to the
+over category `Over E`. -/
+def functor {E : Cat.{v,u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T := Cat.{v,u}) E where
+  obj F := Over.mk (X := E) (Y := Cat.of (Grothendieck F)) (Grothendieck.forget F)
+  map {F G} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
+  map_id F := by
+    ext
+    exact Grothendieck.map_id_eq (F := F)
+  map_comp α β := by
+    simp [Grothendieck.map_comp_eq α β]
+    rfl
 
 universe w
 
 variable (G : C ⥤ Type w)
 
-/-- Auxiliary definition for `grothendieck_Type_to_Cat`, to speed up elaboration. -/
+/-- Auxiliary definition for `grothendieckTypeToCat`, to speed up elaboration. -/
 @[simps!]
 def grothendieckTypeToCatFunctor : Grothendieck (G ⋙ typeToCat) ⥤ G.Elements where
   obj X := ⟨X.1, X.2.as⟩
-  map := @fun X Y f => ⟨f.1, f.2.1.1⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.grothendieck.grothendieck_Type_to_Cat_functor CategoryTheory.Grothendieck.grothendieckTypeToCatFunctor
+  map f := ⟨f.1, f.2.1.1⟩
 
-/-- Auxiliary definition for `grothendieck_Type_to_Cat`, to speed up elaboration. -/
+/-- Auxiliary definition for `grothendieckTypeToCat`, to speed up elaboration. -/
 -- Porting note:
 -- `simps` is incorrectly producing Prop-valued projections here,
 -- so we manually specify which ones to produce.
@@ -170,8 +261,6 @@ set_option linter.uppercaseLean3 false in
 def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat) where
   obj X := ⟨X.1, ⟨X.2⟩⟩
   map f := ⟨f.1, ⟨⟨f.2⟩⟩⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.grothendieck.grothendieck_Type_to_Cat_inverse CategoryTheory.Grothendieck.grothendieckTypeToCatInverse
 
 /-- The Grothendieck construction applied to a functor to `Type`
 (thought of as a functor to `Cat` by realising a type as a discrete category)
@@ -211,8 +300,6 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
     dsimp
     simp
     rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.grothendieck.grothendieck_Type_to_Cat CategoryTheory.Grothendieck.grothendieckTypeToCat
 
 end Grothendieck
 

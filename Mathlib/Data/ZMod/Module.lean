@@ -52,7 +52,7 @@ theorem map_smul (f : F) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
   exact map_intCast_smul f _ _ (cast c) x
 
 theorem smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
-  rw [← ZMod.intCast_zmod_cast c, ← zsmul_eq_smul_cast]
+  rw [← ZMod.intCast_zmod_cast c, Int.cast_smul_eq_nsmul]
   exact zsmul_mem hx (cast c)
 
 end ZMod
@@ -67,7 +67,7 @@ See also:
 `AddMonoidHom.toIntLinearMap`, `AddMonoidHom.toNatLinearMap`, `AddMonoidHom.toRatLinearMap` -/
 def toZModLinearMap (f : M →+ M₁) : M →ₗ[ZMod n] M₁ := { f with map_smul' := ZMod.map_smul f }
 
-theorem toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
+theorem toZModLinearMap_injective : Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
   fun _ _ h ↦ ext fun x ↦ congr($h x)
 
 @[simp]
