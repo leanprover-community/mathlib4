@@ -169,6 +169,13 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
   obtain ⟨p, h⟩ := hconn.exists_walk_of_dist u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
 
+/-- Supergraphs have smaller or equal distances to their subgraphs. -/
+theorem dist_le_subgraph_dist {G' : SimpleGraph V} {u v : V} (h : G ≤ G') (hr : G.Reachable u v) :
+    G'.dist u v ≤ G.dist u v := by
+  obtain ⟨_, hw⟩ := Reachable.exists_walk_of_dist hr
+  rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+  apply dist_le
+
 lemma dist_bot : ∀ u v, (⊥ : SimpleGraph V).dist u v = 0 :=
   fun u v => by by_cases h : u = v <;> simp [h]
 
