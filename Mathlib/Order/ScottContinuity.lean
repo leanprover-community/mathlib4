@@ -137,6 +137,13 @@ lemma d2 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) : DirectedOn (· �
   obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
   aesop
 
+lemma dconv {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≤ ·) d₁) (h₂ : DirectedOn (· ≤ ·) d₂) :
+    DirectedOn (· ≤ ·) (d₁ ×ˢ d₂) := fun _ hpd _ hqd => by
+  obtain ⟨r₁,hr₁⟩ := h₁ _ hpd.1 _ hqd.1
+  obtain ⟨r₂,hr₂⟩ := h₂ _ hpd.2 _ hqd.2
+  use (r₁, r₂)
+  aesop
+
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
@@ -221,11 +228,44 @@ lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     intro b₁ b₂ hb'
     exact sup_le_iff.mp (hb b₁ b₂ hb' rfl)
 
-lemma inf_sSup_eq_sSup_map [CompleteLinearOrder β] (a : β) (d : Set β) :
+lemma inf_sSup_eq_sSup_map  [CompleteLinearOrder β] (a : β) (d : Set β) :
     a ⊓ sSup d = sSup ((fun b ↦ a ⊓ b) '' d) := by
   apply eq_of_forall_ge_iff fun e ↦ ?_
   simp only [inf_le_iff, sSup_le_iff, ← forall_or_left, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
+
+lemma upperBounds_eq [CompleteLinearOrder β] (a : β) (s : Set β) :
+   (fun b ↦ a ⊓ b) '' (upperBounds s) = upperBounds ((fun b ↦ a ⊓ b) '' s) := sorry
+  --apply eq_of_forall_ge_iff fun e ↦ ?_
+  --simp only [le_eq_subset, image_subset_iff]
+/-
+  rw [upperBounds, upperBounds]
+  simp [← forall_or_right, ← forall_or_left]
+  apply le_antisymm
+  · intro u hu
+    simp only [mem_setOf_eq]
+    simp at hu
+    obtain ⟨x,⟨hx1,hx2⟩⟩ := hu
+    intro b hb
+    rw [← hx2]
+
+    aesop?
+-/
+
+
+
+lemma inf_IsLUB_iff_IsLUB_map [CompleteLinearOrder β] (a u : β) (d : Set β) :
+    IsLUB d u ↔ IsLUB ((fun b ↦ a ⊓ b) '' d) (a ⊓ u) := by
+  rw [IsLUB, IsLUB, IsLeast, IsLeast]
+  have e1 : u ∈ upperBounds d ↔ a ⊓ u ∈ upperBounds ((fun b ↦ a ⊓ b) '' d) := by
+    rw [← upperBounds_eq]
+    simp only [mem_image]
+
+    exact?
+  rw [upperBounds_eq]
+
+
+
 
 lemma sSup_inf_eq_sSup_map [CompleteLinearOrder β] (b : β) (d : Set β) :
     sSup d ⊓ b = sSup ((fun a ↦ a ⊓ b) '' d) := by
