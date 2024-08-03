@@ -1188,8 +1188,8 @@ theorem val_eq_ite_valMinAbs {n : ℕ} [NeZero n] (a : ZMod n) :
 
 theorem prime_ne_zero (p q : ℕ) [hp : Fact p.Prime] [hq : Fact q.Prime] (hpq : p ≠ q) :
     (q : ZMod p) ≠ 0 := by
-  rwa [← Nat.cast_zero, Ne, eq_iff_modEq_nat, Nat.modEq_zero_iff_dvd, ←
-    hp.1.coprime_iff_not_dvd, Nat.coprime_primes hp.1 hq.1]
+  rwa [Ne, natCast_zmod_eq_zero_iff_dvd, ← hp.1.coprime_iff_not_dvd,
+    Nat.coprime_primes hp.1 hq.1]
 
 variable {n a : ℕ}
 
