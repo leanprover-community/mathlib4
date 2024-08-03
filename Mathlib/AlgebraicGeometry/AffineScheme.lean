@@ -467,8 +467,7 @@ lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (hU : IsA
     {V : X.Opens} (hV : IsAffineOpen V) (e) (r : Γ(Y, U)) :
     letI := hU.isLocalization_basicOpen r
     letI := hV.isLocalization_basicOpen (f.appLE U V e r)
-    f.appLE (Y.basicOpen r) (X.basicOpen (f.appLE U V e r))
-      (by simpa [Scheme.Hom.appLE] using X.basicOpen_restrict _ _) =
+    f.appLE (Y.basicOpen r) (X.basicOpen (f.appLE U V e r)) (by simp [Scheme.Hom.appLE]) =
         IsLocalization.Away.map _ _ (f.appLE U V e) r := by
   letI := hU.isLocalization_basicOpen r
   letI := hV.isLocalization_basicOpen (f.appLE U V e r)
@@ -539,7 +538,7 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.b
     (@IsLocalization.isLocalization_iff_of_ringEquiv (R := Γ(X, U))
       (S := X.presheaf.stalk (hU.fromSpec.1.base y)) _ y.asIdeal.primeCompl _
       (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.1.base y, hy⟩) _ _
-      (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
+      (asIso <| hU.fromSpec.stalkMap y).commRingCatIsoToRingEquiv).mpr
   -- Porting note: need to know what the ring is and after convert, instead of equality
   -- we get an `iff`.
   convert StructureSheaf.IsLocalization.to_stalk Γ(X, U) y using 1
@@ -567,6 +566,10 @@ def _root_.AlgebraicGeometry.Scheme.affineBasicOpen
     (X : Scheme) {U : X.affineOpens} (f : Γ(X, U)) : X.affineOpens :=
   ⟨X.basicOpen f, U.prop.basicOpen f⟩
 
+/--
+In an affine open set `U`, a family of basic open covers `U` iff the sections span `Γ(X, U)`.
+See `iSup_basicOpen_of_span_eq_top` for the inverse direction without the affine-ness assuption.
+-/
 theorem basicOpen_union_eq_self_iff (s : Set Γ(X, U)) :
     ⨆ f : s, X.basicOpen (f : Γ(X, U)) = U ↔ Ideal.span s = ⊤ := by
   trans ⋃ i : s, (PrimeSpectrum.basicOpen i.1).1 = Set.univ
@@ -604,6 +607,26 @@ theorem self_le_basicOpen_union_iff (s : Set Γ(X, U)) :
   exact X.basicOpen_le x
 
 end IsAffineOpen
+
+/--
+Given a spanning set of `Γ(X, U)`, the corresponding basic open sets cover `U`.
+See `IsAffineOpen.basicOpen_union_eq_self_iff` for the inverse direction for affine open sets.
+-/
+lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
+    (hs : Ideal.span s = ⊤) : (⨆ i ∈ s, X.basicOpen i) = U := by
+  apply le_antisymm
+  · rw [iSup₂_le_iff]
+    exact fun i _ ↦ X.basicOpen_le i
+  · intro x hx
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open hx U.2
+    refine SetLike.mem_of_subset ?_ hxV
+    rw [← (hV.basicOpen_union_eq_self_iff (X.presheaf.map (homOfLE hVU).op '' s)).mpr
+      (by rw [← Ideal.map_span, hs, Ideal.map_top])]
+    simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Set.iUnion_coe_set, Set.mem_image,
+      Set.iUnion_exists, Set.biUnion_and', Set.iUnion_iUnion_eq_right, Scheme.basicOpen_res,
+      Opens.coe_inf, Opens.coe_mk, Set.iUnion_subset_iff]
+    exact fun i hi ↦ (Set.inter_subset_right.trans
+      (Set.subset_iUnion₂ (s := fun x _ ↦ (X.basicOpen x : Set X)) i hi))
 
 /-- Let `P` be a predicate on the affine open sets of `X` satisfying
 1. If `P` holds on `U`, then `P` holds on the basic open set of every section on `U`.
@@ -677,6 +700,29 @@ lemma Scheme.eq_zeroLocus_of_isClosed_of_isAffine (X : Scheme.{u}) [IsAffine X] 
     exact zeroLocus_isClosed X I.carrier
 
 end ZeroLocus
+
+section Stalks
+
+/-- Variant of `AlgebraicGeometry.localRingHom_comp_stalkIso` for `Spec.map`. -/
+@[elementwise]
+lemma Scheme.localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
+    (StructureSheaf.stalkIso R (PrimeSpectrum.comap f p)).hom ≫
+      (CommRingCat.ofHom <| Localization.localRingHom
+        (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl) ≫
+      (StructureSheaf.stalkIso S p).inv = (Spec.map f).stalkMap p :=
+  AlgebraicGeometry.localRingHom_comp_stalkIso f p
+
+/-- Given a morphism of rings `f : R ⟶ S`, the stalk map of `Spec S ⟶ Spec R` at
+a prime of `S` is isomorphic to the localized ring homomorphism. -/
+def Scheme.arrowStalkMapSpecIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
+    Arrow.mk ((Spec.map f).stalkMap p) ≅ Arrow.mk (CommRingCat.ofHom <| Localization.localRingHom
+      (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl) := Arrow.isoMk
+  (StructureSheaf.stalkIso R (PrimeSpectrum.comap f p))
+  (StructureSheaf.stalkIso S p) <| by
+    rw [← Scheme.localRingHom_comp_stalkIso]
+    simp
+
+end Stalks
 
 @[deprecated (since := "2024-06-21"), nolint defLemma]
 alias isAffineAffineScheme := isAffine_affineScheme

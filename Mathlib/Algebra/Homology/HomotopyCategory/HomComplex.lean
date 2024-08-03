@@ -604,7 +604,7 @@ instance : Coe (Cocycle F G n) (Cochain F G n) where
 lemma ext (z₁ z₂ : Cocycle F G n) (h : (z₁ : Cochain F G n) = z₂) : z₁ = z₂ :=
   Subtype.ext h
 
-lemma ext_iff (z₁ z₂ : Cocycle F G n) : z₁ = z₂ ↔ (z₁ : Cochain F G n) = z₂ :=
+protected lemma ext_iff (z₁ z₂ : Cocycle F G n) : z₁ = z₂ ↔ (z₁ : Cochain F G n) = z₂ :=
   Subtype.ext_iff
 
 instance : SMul R (Cocycle F G n) where
@@ -686,7 +686,7 @@ lemma ofHom_homOf_eq_self (z : Cocycle F G 0) : ofHom (homOf z) = z := by aesop_
 @[simp]
 lemma cochain_ofHom_homOf_eq_coe (z : Cocycle F G 0) :
     Cochain.ofHom (homOf z) = (z : Cochain F G 0) := by
-  simpa only [ext_iff] using ofHom_homOf_eq_self z
+  simpa only [Cocycle.ext_iff] using ofHom_homOf_eq_self z
 
 variable (F G)
 
