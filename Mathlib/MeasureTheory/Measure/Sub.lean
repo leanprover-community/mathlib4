@@ -90,6 +90,7 @@ theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν +
   ext1 s h_s_meas
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s)]
 
+@[simp]
 lemma add_sub_cancel [IsFiniteMeasure ν] : μ + ν - ν = μ := by
   ext1 s hs
   rw [sub_apply hs (Measure.le_add_left (le_refl _)), add_apply,
