@@ -181,25 +181,6 @@ note: this linter can be disabled with `set_option linter.openClassical false`
 open Classical (choose)
 
 -- `open scoped Classical` is also linted
-/--
-warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements
-which would be better stated with explicit decidability statements.
-Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
-For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-note: this linter can be disabled with `set_option linter.openClassical false`
--/
-#guard_msgs in
-open scoped Classical
-
-/--
-warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements
-which would be better stated with explicit decidability statements.
-Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
-For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-note: this linter can be disabled with `set_option linter.openClassical false`
--/
-#guard_msgs in
-open scoped Classical
 
 /--
 warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements

@@ -275,7 +275,7 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.openClass
 
 /-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
 returns syntax for the opened names as well as an array of all names opened
-(discarding renamed or hidden items). -/
+(omitting renamed or hidden items). -/
 def extractOpenNames : Syntax → Option (Syntax × (Array Name))
   | `(command|open $openHiding:openHiding) =>
     -- The first argument is the identifier we care about.
@@ -316,7 +316,8 @@ def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
         please avoid 'open (scoped) Classical' statements: this can hide theorem statements\n\
         which would be better stated with explicit decidability statements.\n\
         Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
-        for proofs.\nFor theorem statements, either add missing decidability assumptions or use `open Classical in`."
+        for proofs.\nFor theorem statements, \
+        either add missing decidability assumptions or use `open Classical in`."
 
 initialize addLinter openClassicalLinter
 
