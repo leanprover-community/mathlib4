@@ -278,20 +278,26 @@ returns syntax for the opened names as well as an array of all names opened
 (discarding renamed or hidden items). -/
 def extractOpenNames : Syntax → Option (Syntax × (Array Name)) := fun stx ↦ do
   match stx with
-    | `(command|open $name hiding $_) => some (name.raw, #[name.getId])
-    | `(command|open $name renaming $_) => some (name.raw, #[name.getId])
+    | `(command|open $openHiding:openHiding) =>
+      -- The first argument is the identifier we care about.
+      let arg := (openHiding.raw.getArgs).get! 0
+      some (arg, #[arg.getId])
+    | `(command|open $openRenaming:openRenaming) =>
+      -- The first argument is the identifier we care about.
+      let arg := (openRenaming.raw.getArgs).get! 0
+      some (arg, #[arg.getId])
     | `(command|open $openOnly:openOnly) =>
       -- The first argument is the identifier we care about.
       some (openOnly.raw, #[(openOnly.raw.getArgs.get! 0).getId])
+    | `(command|open $openDecl:openSimple) =>
+      -- The first and only argument of `openDecl` is an array containing all the names we
+      -- are interested in.
+      let namesSyntax := (openDecl.raw.getArgs).get! 0
+      some (namesSyntax, (namesSyntax.getArgs).map fun a ↦ a.getId)
     | `(command|open $openScoped:openScoped) =>
       -- The first argument of `openScoped` is "scoped",
       -- the second one is an array containing all the names we are interested in.
       let namesSyntax := (openScoped.raw.getArgs).get! 1
-      some (namesSyntax, (namesSyntax.getArgs).map fun a ↦ a.getId)
-    | `(command|open $openDecl) =>
-      -- The first and only argument of `openDecl` is an array containing all the names we
-      -- are interested in.
-      let namesSyntax := (openDecl.raw.getArgs).get! 0
       some (namesSyntax, (namesSyntax.getArgs).map fun a ↦ a.getId)
     | _ => none
 
@@ -306,8 +312,6 @@ def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
     if let some (stxN, names) := extractOpenNames stx then
-      -- We need to handle `open foo (bar)` commands also: ignore all anonymous names.
-      let names := names.filter fun n ↦ !(n matches .anonymous)
       if names.contains `Classical then
         Linter.logLint linter.openClassical stxN "\
         please avoid 'open (scoped) Classical' statements: this can hide theorem statements\n\
