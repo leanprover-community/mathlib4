@@ -205,7 +205,7 @@ variable [Semiring R] [Ring R']
 
 section SupDegree
 
-variable [AddZeroClass A] [SemilatticeSup B] [Add B] [OrderBot B] (D : A → B)
+variable [SemilatticeSup B] [OrderBot B] (D : A → B)
 
 /-- Let `R` be a semiring, let `A` be an `AddZeroClass`, let `B` be an `OrderBot`,
 and let `D : A → B` be a "degree" function.
@@ -246,7 +246,12 @@ theorem supDegree_single (a : A) (r : R) :
     (single a r).supDegree D = if r = 0 then ⊥ else D a := by
   split_ifs with hr <;> simp [supDegree_single_ne_zero, hr]
 
-variable {p q : R[A]}
+theorem apply_eq_zero_of_not_le_supDegree {p : R[A]} {a : A} (hlt : ¬ D a ≤ p.supDegree D) :
+    p a = 0 := by
+  contrapose! hlt
+  exact Finset.le_sup (Finsupp.mem_support_iff.2 hlt)
+
+variable [AddZeroClass A] {p q : R[A]}
 
 @[simp]
 theorem supDegree_zero : (0 : R[A]).supDegree D = ⊥ := by simp [supDegree]
@@ -256,11 +261,7 @@ theorem ne_zero_of_supDegree_ne_bot : p.supDegree D ≠ ⊥ → p ≠ 0 := mt (f
 theorem ne_zero_of_not_supDegree_le {b : B} (h : ¬ p.supDegree D ≤ b) : p ≠ 0 :=
   ne_zero_of_supDegree_ne_bot (fun he => h <| he ▸ bot_le)
 
-theorem apply_eq_zero_of_not_le_supDegree {a : A} (hlt : ¬ D a ≤ p.supDegree D) : p a = 0 := by
-  contrapose! hlt
-  exact Finset.le_sup (Finsupp.mem_support_iff.2 hlt)
-
-variable (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
+variable [Add B] (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
 
 theorem supDegree_mul_le [CovariantClass B B (· + ·) (· ≤ ·)]
     [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] :
