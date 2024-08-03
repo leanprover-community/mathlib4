@@ -442,6 +442,15 @@ theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSinglet
     (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
   ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
 
+lemma Integrable.of_isEmpty {α β : Type*} [MeasurableSpace α] [NormedAddCommGroup β]
+    [IsEmpty α] (f : α → β) (μ : Measure α) : Integrable f μ := Integrable.of_finite μ f
+
+@[simp]
+lemma Integrable.of_isEmpty_codomain {α β : Type*} [MeasurableSpace α] [NormedAddCommGroup β]
+    [IsEmpty β] (f : α → β) (μ : Measure α) : Integrable f μ :=
+  have : IsEmpty α := f.isEmpty
+  Integrable.of_isEmpty f μ
+
 @[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
