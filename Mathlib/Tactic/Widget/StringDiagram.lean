@@ -158,6 +158,17 @@ def WhiskerRightExpr.nodes (v h₁ h₂ : ℕ) : WhiskerRightExpr → MetaM (Lis
 
 /-- The list of nodes associated with a 2-morphism. The position is counted from the
 specified natural numbers. -/
+def TensorHomExpr.nodes (v h₁ h₂ : ℕ) : TensorHomExpr → MetaM (List Node)
+  | TensorHomExpr.of η => η.nodes v h₁ h₂
+  | TensorHomExpr.cons η ηs => do
+    let s₁ ← η.nodes v h₁ h₂
+    let k₁ := (← s₁.mapM (fun n ↦ n.srcList)).join.length
+    let k₂ := (← s₁.mapM (fun n ↦ n.tarList)).join.length
+    let s₂ ← ηs.nodes v (h₁ + k₁) (h₂ + k₂)
+    return s₁ ++ s₂
+
+/-- The list of nodes associated with a 2-morphism. The position is counted from the
+specified natural numbers. -/
 def WhiskerLeftExpr.nodes (v h₁ h₂ : ℕ) : WhiskerLeftExpr → MetaM (List Node)
   | WhiskerLeftExpr.of η => η.nodes v h₁ h₂
   | WhiskerLeftExpr.whisker f η => do

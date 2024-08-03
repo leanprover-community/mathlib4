@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Widget.StringDiagram
-import ProofWidgets.Component.Panel.SelectionPanel
 
 /-! ## Example use of string diagram widgets -/
 
@@ -56,5 +55,9 @@ example {X Y : C} (f : X ⟶ Y) (g : 𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y) (w : False
 example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ := by
   rw [MonoidalCategory.whisker_exchange]
   rw [MonoidalCategory.tensorHom_def]
+
+example {X₁ Y₁ X₂ Y₂ X₃ Y₃ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) (h : X₃ ⟶ Y₃) :
+    (f ⊗ g) ⊗ h = 𝟙 _ ⊗≫ (f ⊗ (g ⊗ h)) ⊗≫ 𝟙 _ := by
+  simp [monoidalComp]
 
 end MonoidalCategory

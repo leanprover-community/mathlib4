@@ -25,6 +25,7 @@ variable {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 #guard_expr normalize% (α_ X Y Z).hom = (α_ _ _ _).hom
 #guard_expr normalize% (α_ X Y Z).inv = (α_ _ _ _).inv
 #guard_expr normalize% 𝟙 (X ⊗ Y) = 𝟙 (X ⊗ Y)
+#guard_expr normalize% f ⊗ g = _ ≫ (f ⊗ g) ≫ _
 variable {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) in
 #guard_expr normalize% R V₁ V₂ ▷ V₃ ⊗≫ V₂ ◁ R V₁ V₃ = _ ≫ R V₁ V₂ ▷ V₃ ≫ _ ≫ V₂ ◁ R V₁ V₃ ≫ _
 
@@ -40,6 +41,11 @@ example : (X ⊗ Y) ◁ f = (α_ _ _ _).hom ≫ X ◁ Y ◁ f ≫ (α_ _ _ _).in
   all_goals pure_coherence
 
 example : f ≫ g = f ≫ g := by
+  monoidal_nf
+  repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
+  all_goals pure_coherence
+
+example : (f ⊗ g) ▷ X = (α_ _ _ _).hom ≫ (f ⊗ g ▷ X) ≫ (α_ _ _ _).inv := by
   monoidal_nf
   repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
   all_goals pure_coherence
