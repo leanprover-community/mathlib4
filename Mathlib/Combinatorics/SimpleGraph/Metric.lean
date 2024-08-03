@@ -235,10 +235,10 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
 
 lemma dist_bot : ∀ u v, (⊥ : SimpleGraph V).dist u v = 0 :=
-  fun u v => by by_cases h : u = v <;> simp [h]
+  fun u v ↦ by by_cases h : u = v <;> simp [h]
 
 lemma dist_top [DecidableEq V] : ∀ u v, (⊤ : SimpleGraph V).dist u v = (if u = v then 0 else 1) :=
-  fun u v => by by_cases h : u = v <;> simp [h]
+  fun u v ↦ by by_cases h : u = v <;> simp [h]
 
 end dist
 
