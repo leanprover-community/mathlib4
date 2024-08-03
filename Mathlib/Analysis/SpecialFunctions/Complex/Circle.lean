@@ -3,7 +3,6 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
@@ -155,6 +154,9 @@ theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
   induction y using QuotientAddGroup.induction_on'
   simp_rw [← coe_add, toCircle_apply_mk, mul_add, expMapCircle_add]
 
+lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
+  rw [← QuotientAddGroup.mk_zero, toCircle_apply_mk, mul_zero, expMapCircle_zero]
+
 theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (expMapCircle.continuous.comp <| continuous_const.mul continuous_id')
 
@@ -205,52 +207,3 @@ open AddCircle
 lemma isLocalHomeomorph_expMapCircle : IsLocalHomeomorph expMapCircle := by
   have : Fact (0 < 2 * π) := ⟨by positivity⟩
   exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
-
-namespace ZMod
-
-/-!
-### Additive characters valued in the complex circle
--/
-
-open scoped Real
-
-variable {N : ℕ} [NeZero N]
-
-/-- The additive character from `ZMod N` to the unit circle in `ℂ`, sending `j mod N` to
-`exp (2 * π * I * j / N)`. -/
-noncomputable def toCircle : AddChar (ZMod N) circle where
-  toFun := fun j ↦ (toAddCircle j).toCircle
-  map_add_eq_mul' a b := by simp_rw [map_add, AddCircle.toCircle_add]
-  map_zero_eq_one' := by simp_rw [map_zero, AddCircle.toCircle, ← QuotientAddGroup.mk_zero,
-    Function.Periodic.lift_coe, mul_zero, expMapCircle_zero]
-
-lemma toCircle_intCast (j : ℤ) :
-    toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
-  rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_intCast,
-    Function.Periodic.lift_coe, expMapCircle_apply]
-  push_cast
-  ring_nf
-
-lemma toCircle_natCast (j : ℕ) :
-    toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
-  simpa using toCircle_intCast (N := N) j
-
-/--
-Explicit formula for `toCircle j`. Note that this is "evil" because it uses `ZMod.val`. Where
-possible, it is recommended to lift `j` to `ℤ` and use `toCircle_intCast` instead.
--/
-lemma toCircle_apply (j : ZMod N) :
-    toCircle j = exp (2 * π * I * j.val / N) := by
-  rw [← toCircle_natCast, natCast_zmod_val]
-
-/-- The additive character from `ZMod N` to `ℂ`, sending `j mod N` to `exp (2 * π * I * j / N)`. -/
-noncomputable def stdAddChar : AddChar (ZMod N) ℂ := circle.subtype.compAddChar toCircle
-
-lemma stdAddChar_coe (j : ℤ) :
-    stdAddChar (j : ZMod N) = exp (2 * π * I * j / N) := by
-  simp only [stdAddChar, MonoidHom.coe_compAddChar, Function.comp_apply,
-    Submonoid.coe_subtype, toCircle_intCast]
-
-lemma stdAddChar_apply (j : ZMod N) : stdAddChar j = ↑(toCircle j) := rfl
-
-end ZMod
