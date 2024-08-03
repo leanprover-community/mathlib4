@@ -7,7 +7,6 @@ import Mathlib.Order.Interval.Basic
 Throughout this file, `B` is a type and `M : CoxeterMatrix B` is a Coxeter matrix.
 `cs : CoxeterSystem M W` is a Coxeter system. The Bruhat order is defined on `CoxeterSystem.Group`,
 not directly defined on the group W.
-See `Mathlib/GroupTheory/Coxeter/Basic.lean`
 
 ## Bruhat Order
 
