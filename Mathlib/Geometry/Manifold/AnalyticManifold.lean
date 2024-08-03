@@ -20,7 +20,7 @@ interior and smooth everywhere (including at the boundary).  The definition mirr
 analytic manifolds are smooth manifolds.
 
 Completeness is required throughout, but this is nonessential: it is due to many of the lemmas about
-`AnalyticWithinOn` requiring completeness for easy of proof.
+AnalyticWithinOn` requiring completeness for ease of proof.
 -/
 
 noncomputable section
