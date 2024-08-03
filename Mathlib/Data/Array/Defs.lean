@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Floris van Doorn
 -/
 
-import Lean
-
 /-!
 ## Definitions on Arrays
 
@@ -13,9 +11,10 @@ This file contains various definitions on `Array`. It does not contain
 proofs about these definitions, those are contained in other files in `Mathlib.Data.Array`.
 -/
 
-set_option autoImplicit true
-
 namespace Array
+
+universe u
+variable {α : Type u}
 
 /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then

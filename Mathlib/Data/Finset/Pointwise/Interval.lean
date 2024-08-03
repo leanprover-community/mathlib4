@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.Finset.Pointwise
-import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Set.Pointwise.Interval
-
 
 /-! # Pointwise operations on intervals
 

@@ -3,11 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # The monoidal category structure on R-algebras
@@ -83,6 +82,11 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
           Iso.refl_hom, MonoidalCategory.tensor_id]
         erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.id_comp]
+      leftUnitor_eq := fun X => by
+        dsimp only [forget₂_module_obj, forget₂_module_map, Iso.refl_symm, Iso.trans_hom,
+          Iso.refl_hom, tensorIso_hom]
+        erw [Category.id_comp, MonoidalCategory.tensor_id, Category.id_comp]
+        rfl
       rightUnitor_eq := fun X => by
         dsimp
         erw [Category.id_comp, MonoidalCategory.tensor_id, Category.id_comp]
@@ -95,7 +99,7 @@ def toModuleCatMonoidalFunctor : MonoidalFunctor (AlgebraCat.{u} R) (ModuleCat.{
   unfold instMonoidalCategory
   exact Monoidal.fromInduced (forget₂ (AlgebraCat R) (ModuleCat R)) _
 
-instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
+instance : (toModuleCatMonoidalFunctor R).Faithful :=
   forget₂_faithful _ _
 
 end

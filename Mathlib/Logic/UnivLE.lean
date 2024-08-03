@@ -59,5 +59,5 @@ instance univLE_of_max [UnivLE.{max u v, v}] : UnivLE.{u, v} := @UnivLE.trans un
 -- example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance
 
 example : ¬ UnivLE.{u+1, u} := by
-  simp only [Small_iff, not_forall, not_exists, not_nonempty_iff]
+  simp only [small_iff, not_forall, not_exists, not_nonempty_iff]
   exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩

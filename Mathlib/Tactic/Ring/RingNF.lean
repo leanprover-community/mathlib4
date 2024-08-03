@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
 import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Conv
 import Mathlib.Util.Qq
 
@@ -17,16 +18,13 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
 
-set_option autoImplicit true
-
--- In this file we would like to be able to use multi-character auto-implicits.
-set_option relaxedAutoImplicit true
-
 namespace Mathlib.Tactic
 open Lean hiding Rat
 open Qq Meta
 
 namespace Ring
+
+variable {u : Level} {arg : Q(Type u)} {sα : Q(CommSemiring $arg)} {a : Q($arg)}
 
 /-- True if this represents an atomic expression. -/
 def ExBase.isAtom : ExBase sα a → Bool
@@ -91,7 +89,7 @@ A tactic in the `RingNF.M` monad which will simplify expression `parent` to a no
 -/
 def rewrite (parent : Expr) (root := true) : M Simp.Result :=
   fun nctx rctx s ↦ do
-    let pre e :=
+    let pre : Simp.Simproc := fun e =>
       try
         guard <| root || parent != e -- recursion guard
         let e ← withReducible <| whnf e
@@ -106,11 +104,11 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         let r ← nctx.simp { expr := a, proof? := pa }
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
-      catch _ => pure <| .visit { expr := e }
-    let post := (Simp.postDefault · fun _ ↦ none)
+      catch _ => pure <| .continue
+    let post := Simp.postDefault #[]
     (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post })
 
-variable [CommSemiring R]
+variable {R : Type*} [CommSemiring R] {n d : ℕ}
 
 theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
 theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
@@ -134,7 +132,7 @@ Runs a tactic in the `RingNF.M` monad, given initial data:
 * `x`: the tactic to run
 -/
 partial def M.run
-    (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
+    {α : Type} (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
   let ctx := {
     simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
     congrTheorems := ← getSimpCongrTheorems
@@ -149,7 +147,7 @@ partial def M.run
       ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
     let ctx' := { ctx with simpTheorems := #[thms] }
     pure fun r' : Simp.Result ↦ do
-      Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
   let nctx := { ctx, simp }
   let rec
     /-- The recursive context. -/
@@ -164,7 +162,8 @@ partial def M.run
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
   M.run (← IO.mkRef {}) { recursive := false } fun nctx _ _ =>
-    return (← nctx.simp { expr := e } nctx.ctx |>.run {}).1.expr
+    return (← nctx.simp { expr := e } ({} : Lean.Meta.Simp.Methods).toMethodsRef nctx.ctx
+      |>.run {}).1.expr
 
 open Elab.Tactic Parser.Tactic
 /-- Use `ring_nf` to rewrite the main goal. -/
@@ -252,9 +251,9 @@ example (x y : ℕ) : x + id y = y + id x := by ring!
 ```
 -/
 macro (name := ring) "ring" : tactic =>
-  `(tactic| first | ring1 | ring_nf; trace "Try this: ring_nf")
+  `(tactic| first | ring1 | try_this ring_nf)
 @[inherit_doc ring] macro "ring!" : tactic =>
-  `(tactic| first | ring1! | ring_nf!; trace "Try this: ring_nf!")
+  `(tactic| first | ring1! | try_this ring_nf!)
 
 /--
 The tactic `ring` evaluates expressions in *commutative* (semi)rings.
@@ -263,6 +262,12 @@ This is the conv tactic version, which rewrites a target which is a ring equalit
 See also the `ring` tactic.
 -/
 macro (name := ringConv) "ring" : conv =>
-  `(conv| first | discharge => ring1 | ring_nf; tactic => trace "Try this: ring_nf")
+  `(conv| first | discharge => ring1 | try_this ring_nf)
 @[inherit_doc ringConv] macro "ring!" : conv =>
-  `(conv| first | discharge => ring1! | ring_nf!; tactic => trace "Try this: ring_nf!")
+  `(conv| first | discharge => ring1! | try_this ring_nf!)
+
+end RingNF
+
+end Tactic
+
+end Mathlib

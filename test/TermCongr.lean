@@ -119,6 +119,21 @@ example (f g : Nat → Nat → Prop) (h : f = g) :
     (∀ x, ∃ y, f x y) ↔ (∀ x, ∃ y, g x y) :=
   congr(∀ _, ∃ _, $(by rw [h]))
 
+namespace SubsingletonDependence
+/-!
+The congruence theorem generator had a bug that leaked fvars.
+Reported at https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/what.20the.20heq.2C.20PosSemidef/near/434202080
+-/
+
+def f {α : Type} [DecidableEq α] (n : α) (_ : n = n) : α := n
+
+lemma test (n n' : Nat) (h : n = n') (hn : n = n) (hn' : n' = n') :
+    f n hn = f n' hn' := by
+  have := congr(f $h ‹_›) -- without expected type
+  exact congr(f $h _) -- with expected type
+
+end SubsingletonDependence
+
 section limitations
 /-! Tests to document current limitations. -/
 

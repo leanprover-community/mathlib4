@@ -48,7 +48,7 @@ set `s` of integration variables is a `Finset`. We are assuming that the functio
 for most of this file. Note that asking whether it is `AEMeasurable` is not even well-posed,
 since there is no well-behaved measure on the domain of `f`.
 
-## Todo
+## TODO
 
 * Define the marginal function for functions taking values in a Banach space.
 
@@ -86,14 +86,12 @@ notation "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 variable (μ)
 
 theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫⁻_s, f ∂μ) := by
-  refine' Measurable.lintegral_prod_right _
-  refine' hf.comp _
+  refine Measurable.lintegral_prod_right ?_
+  refine hf.comp ?_
   rw [measurable_pi_iff]; intro i
   by_cases hi : i ∈ s
-  · simp [hi, updateFinset]
-    exact measurable_pi_iff.1 measurable_snd _
-  · simp [hi, updateFinset]
-    exact measurable_pi_iff.1 measurable_fst _
+  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_snd _
+  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_fst _
 
 @[simp] theorem lmarginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
   ext1 x
@@ -202,10 +200,10 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
     {f : (∀ i, π (e i)) → ℝ≥0∞} (hf : Measurable f) (x : ∀ i, π i) :
       (∫⋯∫⁻_s.image e, f ∘ (· ∘' e) ∂μ) x = (∫⋯∫⁻_s, f ∂μ ∘' e) (x ∘' e) := by
   have h : Measurable ((· ∘' e) : (∀ i, π i) → _) :=
-    measurable_pi_iff.mpr <| λ i ↦ measurable_pi_apply (e i)
-  induction s using Finset.induction generalizing x
-  case empty => simp
-  case insert i s hi ih =>
+    measurable_pi_iff.mpr <| fun i ↦ measurable_pi_apply (e i)
+  induction s using Finset.induction generalizing x with
+  | empty => simp
+  | insert hi ih =>
     rw [image_insert, lmarginal_insert _ (hf.comp h) (he.mem_finset_image.not.mpr hi),
       lmarginal_insert _ hf hi]
     simp_rw [ih, ← update_comp_eq_of_injective' x he]
@@ -213,9 +211,9 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
 theorem lmarginal_update_of_not_mem {i : δ}
     {f : (∀ i, π i) → ℝ≥0∞} (hf : Measurable f) (hi : i ∉ s) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∘ (Function.update · i y) ∂μ) x := by
-  induction s using Finset.induction generalizing x
-  case empty => simp
-  case insert i' s hi' ih =>
+  induction s using Finset.induction generalizing x with
+  | empty => simp
+  | @insert i' s hi' ih =>
     rw [lmarginal_insert _ hf hi', lmarginal_insert _ (hf.comp measurable_update_left) hi']
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]
@@ -248,3 +246,5 @@ theorem lintegral_le_of_lmarginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i,
   simp_rw [lintegral_eq_lmarginal_univ x, lmarginal_le_of_subset (Finset.subset_univ s) hf hg hfg x]
 
 end LMarginal
+
+end MeasureTheory

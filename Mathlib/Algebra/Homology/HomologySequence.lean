@@ -110,6 +110,12 @@ instance [K.HasHomology i] [K.HasHomology j] :
   dsimp
   infer_instance
 
+#adaptation_note /-- nightly-2024-03-11
+We turn off simprocs here.
+Ideally someone will investigate whether `simp` lemmas can be rearranged
+so that this works without the `set_option`,
+*or* come up with a proposal regarding finer control of disabling simprocs. -/
+set_option simprocs false in
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
   dsimp
@@ -145,6 +151,12 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
+#adaptation_note /-- nightly-2024-03-11
+We turn off simprocs here.
+Ideally someone will investigate whether `simp` lemmas can be rearranged
+so that this works without the `set_option`,
+*or* come up with a proposal regarding finer control of disabling simprocs. -/
+set_option simprocs false in
 /-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
 diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
 @[simps]
@@ -173,13 +185,13 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
   have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
   have hj := (hS.map (HomologicalComplex.eval C c i)).gIsCokernel
   apply ShortComplex.exact_of_g_is_cokernel
-  refine' CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
+  refine CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
     dsimp at k hk ⊢
     have H := CokernelCofork.IsColimit.desc' hj (S.X₂.pOpcycles i ≫ k) (by
       dsimp
       rw [← p_opcyclesMap_assoc, hk, comp_zero])
     dsimp at H
-    refine' ⟨S.X₃.descOpcycles H.1 _ rfl _, _⟩
+    refine ⟨S.X₃.descOpcycles H.1 _ rfl ?_, ?_⟩
     · rw [← cancel_epi (S.g.f (c.prev i)), comp_zero, Hom.comm_assoc, H.2,
         d_pOpcycles_assoc, zero_comp]
     · rw [← cancel_epi (S.X₂.pOpcycles i), opcyclesMap_comp_descOpcycles, p_descOpcycles, H.2])
@@ -201,7 +213,7 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
       dsimp
       rw [assoc, ← cyclesMap_i, reassoc_of% hk, zero_comp])
     dsimp at H
-    refine' ⟨S.X₁.liftCycles H.1 _ rfl _, _⟩
+    refine ⟨S.X₁.liftCycles H.1 _ rfl ?_, ?_⟩
     · rw [← cancel_mono (S.f.f _), assoc, zero_comp, ← Hom.comm, reassoc_of% H.2,
         iCycles_d, comp_zero]
     · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])
@@ -216,6 +228,7 @@ such that `c.Rel i j`, this is the snake diagram whose four lines are respective
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
 `cyclesFunctor C c j`, `homologyFunctor C c j` to `S`. Applying the snake lemma to this
 gives the homology sequence of `S`. -/
+@[simps]
 noncomputable def snakeInput : ShortComplex.SnakeInput C where
   L₀ := (homologyFunctor C c i).mapShortComplex.obj S
   L₁ := (opcyclesFunctor C c i).mapShortComplex.obj S
@@ -301,6 +314,32 @@ lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i
 /-- Exactness of `S.X₂.homology i ⟶ S.X₃.homology i ⟶ S.X₁.homology j`. -/
 lemma homology_exact₃ : (ShortComplex.mk _ _ (comp_δ hS i j hij)).Exact :=
   (snakeInput hS i j hij).L₁'_exact
+
+lemma δ_eq' {A : C} (x₃ : A ⟶ S.X₃.homology i) (x₂ : A ⟶ S.X₂.opcycles i)
+    (x₁ : A ⟶ S.X₁.cycles j)
+    (h₂ : x₂ ≫ HomologicalComplex.opcyclesMap S.g i = x₃ ≫ S.X₃.homologyι i)
+    (h₁ : x₁ ≫ HomologicalComplex.cyclesMap S.f j = x₂ ≫ S.X₂.opcyclesToCycles i j) :
+    x₃ ≫ hS.δ i j hij = x₁ ≫ S.X₁.homologyπ j :=
+  (snakeInput hS i j hij).δ_eq x₃ x₂ x₁ h₂ h₁
+
+lemma δ_eq {A : C} (x₃ : A ⟶ S.X₃.X i) (hx₃ : x₃ ≫ S.X₃.d i j = 0)
+    (x₂ : A ⟶ S.X₂.X i) (hx₂ : x₂ ≫ S.g.f i = x₃)
+    (x₁ : A ⟶ S.X₁.X j) (hx₁ : x₁ ≫ S.f.f j = x₂ ≫ S.X₂.d i j)
+    (k : ι) (hk : c.next j = k) :
+    S.X₃.liftCycles x₃ j (c.next_eq' hij) hx₃ ≫ S.X₃.homologyπ i ≫ hS.δ i j hij =
+      S.X₁.liftCycles x₁ k hk (by
+        have := hS.mono_f
+        rw [← cancel_mono (S.f.f k), assoc, ← S.f.comm, reassoc_of% hx₁,
+          d_comp_d, comp_zero, zero_comp]) ≫ S.X₁.homologyπ j := by
+  simpa only [assoc] using hS.δ_eq' i j hij (S.X₃.liftCycles x₃ j
+    (c.next_eq' hij) hx₃ ≫ S.X₃.homologyπ i)
+    (x₂ ≫ S.X₂.pOpcycles i) (S.X₁.liftCycles x₁ k hk _)
+      (by simp only [assoc, HomologicalComplex.p_opcyclesMap,
+        HomologicalComplex.homology_π_ι,
+        HomologicalComplex.liftCycles_i_assoc, reassoc_of% hx₂])
+      (by rw [← cancel_mono (S.X₂.iCycles j), HomologicalComplex.liftCycles_comp_cyclesMap,
+        HomologicalComplex.liftCycles_i, assoc, assoc, opcyclesToCycles_iCycles,
+        HomologicalComplex.p_fromOpcycles, hx₁])
 
 end ShortExact
 
