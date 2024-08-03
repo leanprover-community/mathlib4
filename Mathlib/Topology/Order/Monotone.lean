@@ -308,7 +308,6 @@ theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [Topolo
     {f : α → β} (Mf : Monotone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Iio x))) :=
   MonotoneOn.tendsto_nhdsWithin_Iio (Mf.monotoneOn _) (Mf.map_bddAbove bddAbove_Iio)
 
-
 /-- A monotone map has a limit to the right of any point `x`, equal to `sInf (f '' (Ioi x))`. -/
 theorem Monotone.tendsto_nhdsWithin_Ioi {α β : Type*} [LinearOrder α] [TopologicalSpace α]
     [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
