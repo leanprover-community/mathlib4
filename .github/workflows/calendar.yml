@@ -19,6 +19,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip requests icalendar
 
+    - name: checkout repo to get leanCal script
+    - uses: actions/checkout@v4
+
     - name: Collect calendar reminders
       id: collect_msg
       run: |
