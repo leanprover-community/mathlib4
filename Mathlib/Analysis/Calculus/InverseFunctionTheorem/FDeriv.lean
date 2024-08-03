@@ -40,7 +40,7 @@ derivative, strictly differentiable, continuously differentiable, smooth, invers
 
 open Function Set Filter Metric
 
-open scoped Topology Classical NNReal
+open scoped Topology NNReal
 
 noncomputable section
 

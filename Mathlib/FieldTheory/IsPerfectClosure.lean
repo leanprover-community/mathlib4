@@ -60,9 +60,7 @@ perfect ring, perfect closure, purely inseparable
 
 -/
 
-open scoped Classical Polynomial
-
-open FiniteDimensional Polynomial IntermediateField Field
+open FiniteDimensional IntermediateField Field
 
 noncomputable section
 

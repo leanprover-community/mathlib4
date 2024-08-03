@@ -146,8 +146,7 @@ end MvPolynomial
 
 namespace MvPolynomial
 
-open scoped Classical Cardinal
-
+open scoped Cardinal
 open LinearMap Submodule
 
 universe u
@@ -179,12 +178,14 @@ variable [CommRing K]
 
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
+  classical
   simp only [Set.mem_setOf_eq]; infer_instance
 
 end CommRing
 
 variable [Field K]
 
+open Classical in
 theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :=
   calc
     Module.rank K (R σ K) =
@@ -205,11 +206,13 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
 
 instance [Finite σ] : FiniteDimensional K (R σ K) := by
   cases nonempty_fintype σ
+  classical
   exact
     IsNoetherian.iff_fg.1
       (IsNoetherian.iff_rank_lt_aleph0.mpr <| by
         simpa only [rank_R] using Cardinal.nat_lt_aleph0 (Fintype.card (σ → K)))
 
+open Classical in
 theorem finrank_R [Fintype σ] : FiniteDimensional.finrank K (R σ K) = Fintype.card (σ → K) :=
   FiniteDimensional.finrank_eq_of_rank_eq (rank_R σ K)
 
@@ -222,6 +225,7 @@ theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
 theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
   cases nonempty_fintype σ
   refine (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank ?_).mpr (range_evalᵢ σ K)
+  classical
   rw [FiniteDimensional.finrank_fintype_fun_eq_card, finrank_R]
 
 theorem eq_zero_of_eval_eq_zero [Finite σ] (p : MvPolynomial σ K) (h : ∀ v : σ → K, eval v p = 0)

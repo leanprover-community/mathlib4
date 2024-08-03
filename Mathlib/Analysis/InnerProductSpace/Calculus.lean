@@ -28,8 +28,6 @@ noncomputable section
 
 open RCLike Real Filter
 
-open scoped Classical Topology
-
 section DerivInner
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
