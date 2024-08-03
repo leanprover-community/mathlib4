@@ -127,23 +127,6 @@ lemma monotone {f : α × β → γ} (h₁ : ∀ b, Monotone (fun a => f (a,b)))
 -- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
 --    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
 
-lemma d1 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) : DirectedOn (· ≤ ·) (Prod.fst '' d) := by
-  intro a ⟨p,hp⟩ b ⟨q,hq⟩
-  obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
-  aesop
-
-lemma d2 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) : DirectedOn (· ≤ ·) (Prod.snd '' d) := by
-  intro a ⟨p,hp⟩ b ⟨q,hq⟩
-  obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
-  aesop
-
-lemma dconv {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≤ ·) d₁) (h₂ : DirectedOn (· ≤ ·) d₂) :
-    DirectedOn (· ≤ ·) (d₁ ×ˢ d₂) := fun _ hpd _ hqd => by
-  obtain ⟨r₁,hr₁⟩ := h₁ _ hpd.1 _ hqd.1
-  obtain ⟨r₂,hr₂⟩ := h₂ _ hpd.2 _ hqd.2
-  use (r₁, r₂)
-  aesop
-
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
@@ -193,9 +176,9 @@ lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
   rw [Prod.IsLub (monotone (fun a => (h₂ a).monotone) (fun a => (h₁ a).monotone)) hd₂]
   rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
   apply IsLUB.iUnion
-  apply fun a => step1' (Nonempty.image Prod.snd hd₁) (d2 hd₂) hdp h₁
+  apply fun a => step1' (Nonempty.image Prod.snd hd₁) (DirectedOn.snd hd₂) hdp h₁
   have e2 : IsLUB ((fun a ↦ f (a, p.2)) '' (Prod.fst '' d)) (f (p.1,p.2)) :=
-    h₂ p.2 (Nonempty.image Prod.fst hd₁) (d1 hd₂) ((isLUB_prod (p.1,p.2)).mp hdp).1
+    h₂ p.2 (Nonempty.image Prod.fst hd₁) (DirectedOn.fst hd₂) ((isLUB_prod (p.1,p.2)).mp hdp).1
   rw [Set.range]
   rw [Set.image] at e2
   aesop
@@ -234,10 +217,14 @@ lemma inf_sSup_eq_sSup_map  [CompleteLinearOrder β] (a : β) (d : Set β) :
   simp only [inf_le_iff, sSup_le_iff, ← forall_or_left, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
 
+/-
 lemma upperBounds_eq [CompleteLinearOrder β] (a : β) (s : Set β) :
    (fun b ↦ a ⊓ b) '' (upperBounds s) = upperBounds ((fun b ↦ a ⊓ b) '' s) := sorry
   --apply eq_of_forall_ge_iff fun e ↦ ?_
   --simp only [le_eq_subset, image_subset_iff]
+
+-/
+
 /-
   rw [upperBounds, upperBounds]
   simp [← forall_or_right, ← forall_or_left]
@@ -253,7 +240,7 @@ lemma upperBounds_eq [CompleteLinearOrder β] (a : β) (s : Set β) :
 -/
 
 
-
+/-
 lemma inf_IsLUB_iff_IsLUB_map [CompleteLinearOrder β] (a u : β) (d : Set β) :
     IsLUB d u ↔ IsLUB ((fun b ↦ a ⊓ b) '' d) (a ⊓ u) := by
   rw [IsLUB, IsLUB, IsLeast, IsLeast]
@@ -263,7 +250,7 @@ lemma inf_IsLUB_iff_IsLUB_map [CompleteLinearOrder β] (a u : β) (d : Set β) :
 
     exact?
   rw [upperBounds_eq]
-
+-/
 
 
 
