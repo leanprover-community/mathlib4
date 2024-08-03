@@ -639,9 +639,8 @@ theorem intCast_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
 @[deprecated (since := "2024-05-25")] alias int_coe_zmod_eq_iff := intCast_eq_iff
 
 @[push_cast, simp]
-theorem intCast_mod (a : ℤ) (b : ℕ) : ((a % b : ℤ) : ZMod b) = (a : ZMod b) := by
-  rw [ZMod.intCast_eq_intCast_iff]
-  apply Int.mod_modEq
+theorem intCast_mod (a : ℤ) (b : ℕ) : ((a % b : ℤ) : ZMod b) = (a : ZMod b) :=
+  Eq.symm (CharP.intCast_eq_intCast_mod (ZMod b) b)
 
 @[deprecated (since := "2024-04-17")]
 alias int_cast_mod := intCast_mod
