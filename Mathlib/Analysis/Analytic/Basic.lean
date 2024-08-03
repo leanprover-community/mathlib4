@@ -378,7 +378,7 @@ def HasFPowerSeriesWithinAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F)
   ∃ r, HasFPowerSeriesWithinOnBall f p s x r
 
 -- Teach the `bound` tactic that power series have positive radius
-attribute [bound_forward] HasFPowerSeriesOnBall.r_pos HFPowerSeriesWithinOnBall.r_pos
+attribute [bound_forward] HasFPowerSeriesOnBall.r_pos HasFPowerSeriesWithinOnBall.r_pos
 
 variable (𝕜)
 
