@@ -205,8 +205,6 @@ theorem Monotone.mul [PosMulMono α] [MulPosMono α]
 
 end Monotone
 
-variable [ExistsAddOfLE α] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
-
 theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE α] [PosMulMono α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b := by
