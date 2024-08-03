@@ -195,8 +195,10 @@ open OplaxNatTrans
 
 variable (B C)
 
+namespace Pseudofunctor
+
 @[simps id comp]
-instance Pseudofunctor.categoryStruct : CategoryStruct (Pseudofunctor B C) where
+instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
   Hom F G := StrongOplaxNatTrans F.toOplax G.toOplax
   id F := StrongOplaxNatTrans.id F.toOplax
   comp := StrongOplaxNatTrans.vcomp
@@ -204,13 +206,13 @@ instance Pseudofunctor.categoryStruct : CategoryStruct (Pseudofunctor B C) where
 
 /-- Category structure on the strong natural transformations between pseudofunctors. -/
 @[simps]
-instance Pseudofunctor.homcategory (F G : Pseudofunctor B C) : Category (F ⟶ G) where
+instance homcategory (F G : Pseudofunctor B C) : Category (F ⟶ G) where
   Hom η θ := Modification η.toOplax θ.toOplax
   id η := Modification.id η.toOplax
   comp := Modification.vcomp
 
 @[ext]
-lemma ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
+lemma hom_ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
     m = n :=
   OplaxNatTrans.ext w
 
@@ -225,5 +227,7 @@ def isoOfComponents {F G : Pseudofunctor B C} (η θ : F ⟶ G) (app : ∀ a, η
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
 
   -- have := ModificationIso.ofComponents (η := η.toOplax) (θ := θ.toOplax) app naturality
+
+end Pseudofunctor
 
 end CategoryTheory
