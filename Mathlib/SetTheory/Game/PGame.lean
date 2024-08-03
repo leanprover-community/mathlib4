@@ -169,21 +169,21 @@ def toOfListsRightMoves {L R : List PGame} : Fin R.length ≃ (ofLists L R).Righ
   ((Equiv.cast (rightMoves_ofLists L R).symm).trans Equiv.ulift).symm
 
 theorem ofLists_moveLeft {L R : List PGame} (i : Fin L.length) :
-    (ofLists L R).moveLeft (toOfListsLeftMoves i) = L.get i :=
+    (ofLists L R).moveLeft (toOfListsLeftMoves i) = L[i] :=
   rfl
 
 @[simp]
 theorem ofLists_moveLeft' {L R : List PGame} (i : (ofLists L R).LeftMoves) :
-    (ofLists L R).moveLeft i = L.get (toOfListsLeftMoves.symm i) :=
+    (ofLists L R).moveLeft i = L[toOfListsLeftMoves.symm i] :=
   rfl
 
 theorem ofLists_moveRight {L R : List PGame} (i : Fin R.length) :
-    (ofLists L R).moveRight (toOfListsRightMoves i) = R.get i :=
+    (ofLists L R).moveRight (toOfListsRightMoves i) = R[i] :=
   rfl
 
 @[simp]
 theorem ofLists_moveRight' {L R : List PGame} (i : (ofLists L R).RightMoves) :
-    (ofLists L R).moveRight i = R.get (toOfListsRightMoves.symm i) :=
+    (ofLists L R).moveRight i = R[toOfListsRightMoves.symm i] :=
   rfl
 
 /-- A variant of `PGame.recOn` expressed in terms of `PGame.moveLeft` and `PGame.moveRight`.
