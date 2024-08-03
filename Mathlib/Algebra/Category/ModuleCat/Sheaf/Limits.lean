@@ -32,10 +32,10 @@ variable {R : Cᵒᵖ ⥤ RingCat.{u}}
   [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ forget _).sections]
   {c : Cone F} (hc : IsLimit c)
   (hF : ∀ j, Presheaf.IsSheaf J (F.obj j).presheaf)
-  [HasLimitsOfShape D AddCommGroupCat.{v}]
+  [HasLimitsOfShape D AddCommGrp.{v}]
 
 lemma isSheaf_of_isLimit : Presheaf.IsSheaf J (c.pt.presheaf) := by
-  let G : D ⥤ Sheaf J AddCommGroupCat.{v} :=
+  let G : D ⥤ Sheaf J AddCommGrp.{v} :=
     { obj := fun j => ⟨(F.obj j).presheaf, hF j⟩
       map := fun φ => ⟨(PresheafOfModules.toPresheaf R).map (F.map φ)⟩ }
   exact Sheaf.isSheaf_of_isLimit G _ (isLimitOfPreserves (toPresheaf R) hc)
@@ -50,7 +50,7 @@ section Limits
 
 variable (F : D ⥤ SheafOfModules.{v} R)
   [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ CategoryTheory.forget _).sections]
-  [HasLimitsOfShape D AddCommGroupCat.{v}]
+  [HasLimitsOfShape D AddCommGrp.{v}]
 
 instance (X : Cᵒᵖ) : Small.{v} (((F ⋙ forget _) ⋙ PresheafOfModules.evaluation _ X) ⋙
     CategoryTheory.forget _).sections := by

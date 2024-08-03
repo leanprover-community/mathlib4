@@ -82,11 +82,11 @@ theorem IsLindelof.inter_right (hs : IsLindelof s) (ht : IsClosed t) : IsLindelo
   have hxt : x ∈ t := ht.mem_of_nhdsWithin_neBot <| hx.mono hstf.2
   exact ⟨x, ⟨hsx, hxt⟩, hx⟩
 
-  /-- The intersection of a closed set and a Lindelöf set is a Lindelöf set. -/
+/-- The intersection of a closed set and a Lindelöf set is a Lindelöf set. -/
 theorem IsLindelof.inter_left (ht : IsLindelof t) (hs : IsClosed s) : IsLindelof (s ∩ t) :=
   inter_comm t s ▸ ht.inter_right hs
 
-  /-- The set difference of a Lindelöf set and an open set is a Lindelöf set. -/
+/-- The set difference of a Lindelöf set and an open set is a Lindelöf set. -/
 theorem IsLindelof.diff (hs : IsLindelof s) (ht : IsOpen t) : IsLindelof (s \ t) :=
   hs.inter_right (isClosed_compl_iff.mpr ht)
 
@@ -175,6 +175,20 @@ theorem IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
     tauto
   · have : ⋃ x ∈ t, U ↑x = ⋃ x ∈ Subtype.val '' t, U x := biUnion_image.symm
     rwa [← this]
+
+/-- For every nonempty open cover of a Lindelöf set, there exists a subcover indexed by ℕ. -/
+theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
+    (hs : IsLindelof s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
+    ∃ f : ℕ → ι, s ⊆ ⋃ n, U (f n) := by
+  obtain ⟨c, ⟨c_count, c_cov⟩⟩ := hs.elim_countable_subcover U hUo hsU
+  rcases c.eq_empty_or_nonempty with rfl | c_nonempty
+  · simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c_cov
+    simp only [subset_eq_empty c_cov rfl, empty_subset, exists_const]
+  obtain ⟨f, f_surj⟩ := (Set.countable_iff_exists_surjective c_nonempty).mp c_count
+  refine ⟨fun x ↦ f x, c_cov.trans <| iUnion₂_subset_iff.mpr (?_ : ∀ i ∈ c, U i ⊆ ⋃ n, U (f n))⟩
+  intro x hx
+  obtain ⟨n, hn⟩ := f_surj ⟨x, hx⟩
+  exact subset_iUnion_of_subset n <| subset_of_eq (by rw [hn])
 
 /-- The neighborhood filter of a Lindelöf set is disjoint with a filter `l` with the countable
 intersection property if and only if the neighborhood filter of each point of this set
@@ -693,7 +707,7 @@ instance (priority := 100) HereditarilyLindelof.to_Lindelof [HereditarilyLindelo
     LindelofSpace X where
   isLindelof_univ := HereditarilyLindelofSpace.isHereditarilyLindelof_univ.isLindelof
 
-theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X):
+theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X) :
     IsLindelof s := by
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
@@ -719,3 +733,5 @@ instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X
     LindelofSpace {x // p x} := by
   apply isLindelof_iff_LindelofSpace.mp
   exact HereditarilyLindelof_LindelofSets fun x ↦ p x
+
+end Lindelof

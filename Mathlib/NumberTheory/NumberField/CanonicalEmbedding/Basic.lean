@@ -7,8 +7,6 @@ import Mathlib.Algebra.Module.Zlattice.Basic
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 
-#align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
-
 /-!
 # Canonical embedding of a number field
 
@@ -41,7 +39,7 @@ variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 
-open NumberField
+--open NumberField
 
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
 def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
@@ -127,7 +125,7 @@ noncomputable def latticeBasis [NumberField K] :
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
       RingHom.equivRatAlgHom
-    rw [show M = N.transpose by { ext:2; rfl }]
+    rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
     convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
@@ -152,11 +150,35 @@ theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
   simp only [SetLike.mem_coe, mem_span_integralBasis K]
   rfl
 
+theorem mem_rat_span_latticeBasis [NumberField K] (x : K) :
+    canonicalEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
+  rw [← Basis.sum_repr (integralBasis K) x, map_sum]
+  simp_rw [map_rat_smul]
+  refine Submodule.sum_smul_mem _ _ (fun i _ ↦ Submodule.subset_span ?_)
+  rw [← latticeBasis_apply]
+  exact Set.mem_range_self i
+
+theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
+    (latticeBasis K).repr (canonicalEmbedding K x) i = (integralBasis K).repr x i := by
+  rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
+    Rat.cast_inj]
+  let f := (canonicalEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
+    (fun x ↦ mem_rat_span_latticeBasis K x)
+  suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
+    (integralBasis K).repr.toLinearMap from DFunLike.congr_fun (LinearMap.congr_fun this x) i
+  refine Basis.ext (integralBasis K) (fun i ↦ ?_)
+  have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
+    apply Subtype.val_injective
+    rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
+      latticeBasis_apply]
+    rfl
+  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
+
 end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
 
-open NumberField NumberField.InfinitePlace FiniteDimensional Finset
+open NumberField.InfinitePlace FiniteDimensional Finset
 
 /-- The space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 local notation "E" K =>
@@ -283,7 +305,7 @@ theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
   rw [show ((fun _ ↦ c, fun _ ↦ c) : (E K)) = c • 1 by ext <;> simp, normAtPlace_smul, map_one,
     mul_one]
 
-theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K):
+theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K) :
     normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
 
@@ -311,10 +333,12 @@ variable [NumberField K]
 
 theorem nnnorm_eq_sup_normAtPlace (x : E K) :
     ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
-  rw [show (univ : Finset (InfinitePlace K)) = (univ.image
-    (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
-    (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1))
-    by ext; simp [isReal_or_isComplex], sup_union, univ.sup_image, univ.sup_image, sup_eq_max,
+  have :
+      (univ : Finset (InfinitePlace K)) =
+      (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
+      (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1)) := by
+    ext; simp [isReal_or_isComplex]
+  rw [this, sup_union, univ.sup_image, univ.sup_image, sup_eq_max,
     Prod.nnnorm_def', Pi.nnnorm_def, Pi.nnnorm_def]
   congr
   · ext w
@@ -326,7 +350,7 @@ theorem norm_eq_sup'_normAtPlace (x : E K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
-  rfl
+  simp only [Function.comp_apply]
 
 /-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
@@ -379,7 +403,7 @@ noncomputable section stdBasis
 
 open scoped Classical
 
-open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators Finset ComplexConjugate
+open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix ComplexConjugate
 
 variable [NumberField K]
 
@@ -421,7 +445,7 @@ theorem volume_fundamentalDomain_stdBasis :
   rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
     Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi, Real.volume_Ico,
     sub_zero, ENNReal.ofReal_one, prod_const_one, prod_const_one, prod_const_one, one_mul]
-  exact MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)
+  exact (MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)).nullMeasurableSet
 
 /-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
@@ -519,7 +543,7 @@ noncomputable section integerLattice
 
 variable [NumberField K]
 
-open Module FiniteDimensional Module.Free
+open Module.Free
 
 open scoped nonZeroDivisors
 
