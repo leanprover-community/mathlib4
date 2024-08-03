@@ -43,10 +43,7 @@ in order to avoid using real exponents. For real exponents we prove both this an
 
 universe u v
 
-open Finset
-
-open scoped Classical
-open NNReal ENNReal
+open Finset NNReal ENNReal
 
 noncomputable section
 

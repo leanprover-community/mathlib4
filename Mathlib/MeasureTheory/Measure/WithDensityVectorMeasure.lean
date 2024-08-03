@@ -24,7 +24,7 @@ the Radon-Nikodym theorem for signed measures.
 
 noncomputable section
 
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped MeasureTheory NNReal ENNReal
 
 variable {α β : Type*} {m : MeasurableSpace α}
 
@@ -35,6 +35,7 @@ open TopologicalSpace
 variable {μ ν : Measure α}
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
+open Classical in
 /-- Given a measure `μ` and an integrable function `f`, `μ.withDensityᵥ f` is
 the vector measure which maps the set `s` to `∫ₛ f ∂μ`. -/
 def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α → E) : VectorMeasure α E :=

@@ -40,8 +40,6 @@ open CategoryTheory Limits
 
 namespace AddCommGrp
 
-open scoped Classical
-
 /-- The free functor `Type u ⥤ AddCommGroup` sending a type `X` to the
 free abelian group with generators `x : X`.
 -/

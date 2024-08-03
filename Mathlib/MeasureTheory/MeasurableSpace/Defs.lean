@@ -38,8 +38,6 @@ measurable space, σ-algebra, measurable function
 
 open Set Encodable Function Equiv
 
-open scoped Classical
-
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
@@ -195,6 +193,7 @@ protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t
     (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂) : MeasurableSet (t.ite s₁ s₂) :=
   (h₁.inter ht).union (h₂.diff ht)
 
+open Classical in
 theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s)
     (ht : ¬p → MeasurableSet t) : MeasurableSet (ite p s t) := by
   split_ifs with h
@@ -257,8 +256,10 @@ protected theorem MeasurableSet.insert {s : Set α} (hs : MeasurableSet s) (a : 
   .union (.singleton a) hs
 
 @[simp]
-theorem measurableSet_insert {a : α} {s : Set α} : MeasurableSet (insert a s) ↔ MeasurableSet s :=
-  ⟨fun h =>
+theorem measurableSet_insert {a : α} {s : Set α} :
+    MeasurableSet (insert a s) ↔ MeasurableSet s := by
+  classical
+  exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
     else insert_diff_self_of_not_mem ha ▸ h.diff (.singleton _),
     fun h => h.insert a⟩

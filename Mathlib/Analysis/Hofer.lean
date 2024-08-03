@@ -18,11 +18,7 @@ example of a proof needing to construct a sequence by induction in the middle of
 * H. Hofer and C. Viterbo, *The Weinstein conjecture in the presence of holomorphic spheres*
 -/
 
-
-open scoped Classical
-open Topology
-
-open Filter Finset
+open Topology Filter Finset
 
 local notation "d" => dist
 

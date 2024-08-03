@@ -40,7 +40,7 @@ arc-length, parameterization
 
 open scoped NNReal ENNReal
 
-open Set MeasureTheory Classical
+open Set MeasureTheory
 
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 variable (f : ℝ → E) (s : Set ℝ) (l : ℝ≥0)
