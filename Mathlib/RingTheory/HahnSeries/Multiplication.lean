@@ -67,6 +67,14 @@ theorem support_one_subset [Zero R] [One R] : support (1 : HahnSeries Γ R) ⊆ 
 theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries Γ R) = {0} :=
   support_single_of_ne one_ne_zero
 
+theorem orderTop_one_ite [Zero R] [One R] :
+    orderTop (1 : HahnSeries Γ R) = if (0 : R) = 1 then ⊤ else 0 := by
+  by_cases h : (0 : R) = 1
+  · simp only [orderTop, ← single_zero_one, ← h, map_zero, ↓reduceDIte, ↓reduceIte]
+  · haveI : Nontrivial R := by exact nontrivial_of_ne 0 1 h
+    rw [← single_zero_one, orderTop_single (fun a ↦ h a.symm)]
+    simp [h]
+
 @[simp]
 theorem orderTop_one [MulZeroOneClass R] [Nontrivial R] : orderTop (1 : HahnSeries Γ R) = 0 := by
   rw [← single_zero_one, orderTop_single one_ne_zero, WithTop.coe_eq_zero]
@@ -563,6 +571,49 @@ instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
 instance [Semiring R] : Semiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
+
+theorem leadingCoeff_pow_of_nonzero {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [Semiring R] {x : HahnSeries Γ R} {n : ℕ} (h : x.leadingCoeff ^ n ≠ 0) :
+    (x ^ n).leadingCoeff = x.leadingCoeff ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ] at h
+    specialize ih (left_ne_zero_of_mul h)
+    rw [pow_succ, pow_succ, leadingCoeff_mul_of_nonzero (ih ▸ h), ih]
+
+theorem orderTop_pow_of_nonzero {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [Semiring R] {x : HahnSeries Γ R} {n : ℕ} (h : x.leadingCoeff ^ n ≠ 0) :
+    (x ^ n).orderTop = n • x.orderTop := by
+  haveI : Nontrivial R := nontrivial_of_ne (x.leadingCoeff ^ n) 0 h
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ] at h
+    specialize ih (left_ne_zero_of_mul h)
+    rw [pow_succ, orderTop_mul_of_nonzero (leadingCoeff_pow_of_nonzero (left_ne_zero_of_mul h) ▸ h),
+      ih, succ_nsmul]
+
+theorem orderTop_nsmul_le_orderTop_pow {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [Semiring R] {x : HahnSeries Γ R} {n : ℕ} : n • x.orderTop ≤ (x ^ n).orderTop := by
+  induction n with
+  | zero =>
+    simp only [zero_smul, pow_zero]
+    by_cases h : (0 : R) = 1
+    · rw [orderTop, dif_pos ?_]
+      · exact OrderTop.le_top 0
+      refine leadingCoeff_eq_iff.mp ?_
+      rw [leadingCoeff_one, h]
+    · haveI : Nontrivial R := nontrivial_of_ne 0 1 h
+      rw [orderTop_one]
+  | succ n ih =>
+    rw [add_nsmul, pow_add]
+    calc
+      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop := by
+        exact add_le_add_right ih (1 • x.orderTop)
+      (x ^ n).orderTop + 1 • x.orderTop = (x ^ n).orderTop + x.orderTop := by rw [one_nsmul]
+      (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := by exact orderTop_add_le_mul
+      (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]
 
 instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) where
   __ : NonUnitalSemiring (HahnSeries Γ R) := inferInstance

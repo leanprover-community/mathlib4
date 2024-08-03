@@ -937,8 +937,9 @@ variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {x : HahnSeries Γ R
 
 -- Should I call this PowerSeries.heval?
 
-/-- The ring homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
+/-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
 variable `X` to a positive order element `x`. -/
+@[simps]
 def PowerSeriesSubst : PowerSeries R →ₐ[R] HahnSeries Γ R where
   toFun f := (PowerSeriesFamily hx f).hsum
   map_one' := by
@@ -967,11 +968,25 @@ theorem subst_mul {a b : PowerSeries R} :
     PowerSeriesSubst hx (a * b) = (PowerSeriesSubst hx a) * PowerSeriesSubst hx b :=
   map_mul (PowerSeriesSubst hx) a b
 
-theorem subst_power_series_unit (u : (PowerSeries R)ˣ) {x : HahnSeries Γ R} (hx : x.orderTop > 0) :
-    IsUnit (PowerSeriesSubst hx u) := by
+theorem subst_power_series_unit (u : (PowerSeries R)ˣ) : IsUnit (PowerSeriesSubst hx u) := by
   refine isUnit_iff_exists_inv.mpr ?_
   use PowerSeriesSubst hx u.inv
   rw [← subst_mul, Units.val_inv, map_one]
+
+theorem powerSeriesSubst_coeff (f : PowerSeries R) (g : Γ) :
+    (PowerSeriesSubst hx f).coeff g = ∑ᶠ n, ((PowerSeriesFamily hx f).coeff g) n := by
+  rw [PowerSeriesSubst_apply, hsum_coeff]
+  exact rfl
+
+theorem powerSeriesSubst_coeff_zero (f : PowerSeries R) :
+    (PowerSeriesSubst hx f).coeff 0 = PowerSeries.constantCoeff R f := by
+  rw [powerSeriesSubst_coeff, finsum_eq_single (fun n => ((PowerSeriesFamily hx f).coeff 0) n) 0,
+    ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
+  · simp_all
+  · intro n hn
+    simp_all only [ne_eq, coeff_toFun, PowerSeriesFamily_toFun, smul_coeff, smul_eq_mul]
+    exact mul_eq_zero_of_right ((PowerSeries.coeff R n) f) (coeff_eq_zero_of_lt_orderTop
+      (lt_of_lt_of_le ((nsmul_pos_iff hn).mpr hx) orderTop_nsmul_le_orderTop_pow))
 
 /-!
 theorem isUnit_of_leadingCoeff_one_order_zero {x : HahnSeries Γ R}

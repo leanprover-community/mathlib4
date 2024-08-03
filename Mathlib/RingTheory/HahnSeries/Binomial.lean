@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Aaron Anderson. All rights reserved.
+Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Scott Carnahan
+Authors: Scott Carnahan
 -/
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
@@ -21,10 +21,11 @@ We introduce binomial expansions using `embDomain`.
 
 ## To do
 
-  * negative powers.
+  * coefficients of negative powers.
   * Change API to use `R`-algebra hom `R[[X]] →ₐ[R] HahnSeries Γ R` given by substitution.  Then we
     can use the power series API for expansion of `1/(u-x)`.
-  * Move this to the PowerSeries file, eliminate use of Summable.
+  * Allow "arbitrary" powers of `1 - single g r`, where arbitrary means coming from a binomial ring
+    over which `R` is an algebra?
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
