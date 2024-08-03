@@ -417,6 +417,19 @@ theorem continuousAt_rpow_const {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 ≤ y
 theorem continuous_rpow_const {y : ℝ} (h : 0 ≤ y) : Continuous fun x : ℝ≥0 => x ^ y :=
   continuous_iff_continuousAt.2 fun _ => continuousAt_rpow_const (Or.inr h)
 
+@[fun_prop]
+theorem continuousOn_rpow_const_compl_zero {r : ℝ} :
+    ContinuousOn (fun z : ℝ≥0 => z ^ r) {0}ᶜ :=
+  fun _ h => ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const (.inl h)
+
+-- even though this follows from `ContinuousOn.mono` and the previous lemma, we include it for
+-- automation purposes with `fun_prop`, because the side goal `0 ∉ s ∨ 0 ≤ r` is often easy to check
+@[fun_prop]
+theorem continuousOn_rpow_const {r : ℝ} {s : Set ℝ≥0}
+    (h : 0 ∉ s ∨ 0 ≤ r) : ContinuousOn (fun z : ℝ≥0 => z ^ r) s :=
+  h.elim (fun _ ↦ ContinuousOn.mono (s := {0}ᶜ) (by fun_prop) (by aesop))
+    (NNReal.continuous_rpow_const · |>.continuousOn)
+
 end NNReal
 
 /-! ## Continuity for `ℝ≥0∞` powers -/

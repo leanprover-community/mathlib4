@@ -199,24 +199,19 @@ lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
 
 lemma rpow_natCast {a : A} {n : ℕ} (ha : 0 ≤ a := by cfc_tac) : a ^ (n : ℝ) = a ^ n := by
-  have h₁ : (fun x : ℝ≥0 => x ^ (n : ℝ)) = fun (x : ℝ≥0) => x ^ n := by ext; simp
-  simp_rw [rpow_def, h₁]
-  change cfc (fun x : ℝ≥0 => (id x) ^ n) a = a ^ n
-  rw [cfc_pow (id : ℝ≥0 → ℝ≥0) n a, cfc_id ℝ≥0 a]
+  rw [← cfc_pow_id (R := ℝ≥0) a n, rpow_def]
+  congr
+  simp
 
 @[simp]
 lemma rpow_algebraMap {x : ℝ≥0} {y : ℝ} :
     (algebraMap ℝ≥0 A x) ^ y = algebraMap ℝ≥0 A (x ^ y) := by
-  simp only [rpow_def]
-  rw [cfc_algebraMap x (fun z : ℝ≥0 => z ^ y)]
+  rw [rpow_def, cfc_algebraMap ..]
 
 lemma rpow_add_of_zero_not_mem_spectrum {a : A} {x y : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) :
     a ^ (x + y) = a ^ x * a ^ y := by
   simp only [rpow_def, NNReal.rpow_eq_pow]
-  have h : ∀ r, ContinuousOn (fun z : ℝ≥0 => z ^ (r : ℝ)) (spectrum ℝ≥0 a) := by
-    intro r z hz
-    exact ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const <| Or.inl <| by aesop
-  rw [← cfc_mul _ _ a (h x) (h y)]
+  rw [← cfc_mul _ _ a]
   refine cfc_congr ?_
   intro z hz
   have : z ≠ 0 := by aesop
@@ -227,33 +222,19 @@ lemma rpow_rpow_of_zero_not_mem_spectrum [UniqueContinuousFunctionalCalculus ℝ
     {a : A} {x y : ℝ} (ha₁ : 0 ∉ spectrum ℝ≥0 a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
     (a ^ x) ^ y = a ^ (x * y) := by
   simp only [rpow_def]
-  have h₁ : ContinuousOn (fun z : ℝ≥0 => z ^ (y : ℝ))
-      ((fun z : ℝ≥0 => z ^ (x : ℝ)) '' spectrum ℝ≥0 a) := by
-    intro z hz
-    exact ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const <| Or.inl <| by aesop
-  have h₂ : ContinuousOn (fun z : ℝ≥0 => z ^ (x : ℝ)) (spectrum ℝ≥0 a) := by
-    intro z hz
-    exact ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const <| Or.inl <| by aesop
-  rw [← cfc_comp _ _ a ha₂ h₁ h₂]
+  rw [← cfc_comp _ _ a ha₂]
   refine cfc_congr fun _ _ => ?_
   simp [NNReal.rpow_mul]
 
 lemma rpow_rpow_of_exponent_nonneg {a : A} {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y)
     (ha₂ : 0 ≤ a := by cfc_tac) : (a ^ x) ^ y = a ^ (x * y) := by
   simp only [rpow_def]
-  have h₁ : ContinuousOn (fun z : ℝ≥0 => z ^ (y : ℝ))
-      ((fun z : ℝ≥0 => z ^ (x : ℝ)) '' spectrum ℝ≥0 a) :=
-    fun _ _ => ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const (Or.inr hy)
-  have h₂ : ContinuousOn (fun z : ℝ≥0 => z ^ (x : ℝ)) (spectrum ℝ≥0 a) :=
-    fun _ _ => ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const (Or.inr hx)
-  rw [← cfc_comp _ _ a ha₂ h₁ h₂]
+  rw [← cfc_comp _ _ a]
   refine cfc_congr fun _ _ => ?_
   simp [NNReal.rpow_mul]
 
 lemma rpow_one {a : A} (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
-  simp only [rpow_def, NNReal.coe_one, NNReal.rpow_eq_pow, NNReal.rpow_one]
-  change cfc (id : ℝ≥0 → ℝ≥0) a = a
-  rw [cfc_id ℝ≥0 a]
+  simp only [rpow_def, NNReal.coe_one, NNReal.rpow_eq_pow, NNReal.rpow_one, cfc_id' ℝ≥0 a]
 
 @[simp]
 lemma one_rpow {x : ℝ} : (1 : A) ^ x = (1 : A) := by simp [rpow_def]
