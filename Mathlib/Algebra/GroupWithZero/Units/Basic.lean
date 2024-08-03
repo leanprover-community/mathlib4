@@ -72,8 +72,7 @@ theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
 
 namespace Ring
 
-open scoped Classical
-
+open Classical in
 /-- Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is
 invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather
 than partially) defined inverse function for some purposes, including for calculus.
@@ -454,10 +453,9 @@ end CommGroupWithZero
 
 section NoncomputableDefs
 
-open scoped Classical
-
 variable {M : Type*} [Nontrivial M]
 
+open Classical in
 /-- Constructs a `GroupWithZero` structure on a `MonoidWithZero`
   consisting only of units and 0. -/
 noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
