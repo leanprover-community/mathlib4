@@ -1192,7 +1192,7 @@ is already processed by `internalizeAC`, this operation does nothing. -/
 def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   let some op ← isAC e | return
   let parentOp? ← parent?.casesOn (pure none) isAC
-  if parentOp?.any (op == ·) then return
+  if parentOp?.any (· == op) then return
 
   unless (← internalizeACVar e) do return
 
