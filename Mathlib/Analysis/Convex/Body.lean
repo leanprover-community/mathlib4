@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul A. Reichert
 -/
 import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!

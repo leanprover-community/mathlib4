@@ -62,7 +62,7 @@ variable {C : Type u} [Category.{v} C] {I : Type w} {A B : I → C} (f : ∀ i, 
 
 section
 
-variable {S : C} {X Y Z : C} (πX : X ⟶ S) (πY : Y ⟶ S) (φ : X ⟶ Y) (hφ : φ ≫ πY = πX)
+variable {S : C} {X Y Z : C} (πX : X ⟶ S) (πY : Y ⟶ S) (φ : X ⟶ Y)
 
 /-- Given a family of morphisms `f i : A i ⟶ B i` and a morphism `πX : X ⟶ S`,
 this type parametrizes the commutative squares with a morphism `f i` on the left
@@ -101,8 +101,8 @@ noncomputable abbrev functorObjLeft :
     ∐ functorObjSrcFamily f πX ⟶ ∐ functorObjTgtFamily f πX :=
   Limits.Sigma.map (functorObjLeftFamily f πX)
 
+section
 variable [HasPushout (functorObjTop f πX) (functorObjLeft f πX)]
-  [HasPushout (functorObjTop f πY) (functorObjLeft f πY)]
 
 /-- The functor `SmallObject.functor f S : Over S ⥤ Over S` that is part of
 the small object argument for a family of morphisms `f`, on an object given
@@ -143,9 +143,13 @@ lemma ιFunctorObj_πFunctorObj : ιFunctorObj f πX ≫ πFunctorObj f πX = π
 
 /-- The canonical morphism `∐ (functorObjSrcFamily f πX) ⟶ ∐ (functorObjSrcFamily f πY)`
 induced by a morphism in `φ : X ⟶ Y` such that `φ ≫ πX = πY`. -/
-noncomputable def functorMapSrc :
+noncomputable def functorMapSrc  (hφ : φ ≫ πY = πX) :
     ∐ (functorObjSrcFamily f πX) ⟶ ∐ functorObjSrcFamily f πY :=
   Sigma.map' (fun x => FunctorObjIndex.mk x.i (x.t ≫ φ) x.b (by simp [hφ])) (fun _ => 𝟙 _)
+
+end
+
+variable (hφ : φ ≫ πY = πX)
 
 @[reassoc]
 lemma ι_functorMapSrc (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = f i ≫ b)
@@ -164,7 +168,7 @@ lemma functorMapSrc_functorObjTop :
 
 /-- The canonical morphism `∐ functorObjTgtFamily f πX ⟶ ∐ functorObjTgtFamily f πY`
 induced by a morphism in `φ : X ⟶ Y` such that `φ ≫ πX = πY`. -/
-noncomputable def functorMapTgt :
+noncomputable def functorMapTgt  (hφ : φ ≫ πY = πX) :
     ∐ functorObjTgtFamily f πX ⟶ ∐ functorObjTgtFamily f πY :=
   Sigma.map' (fun x => FunctorObjIndex.mk x.i (x.t ≫ φ) x.b (by simp [hφ])) (fun _ => 𝟙 _)
 
@@ -184,6 +188,9 @@ lemma functorMap_comm :
   simp only [ι_colimMap_assoc, Discrete.natTrans_app, ι_colimMap,
     ι_functorMapTgt f πX πY φ hφ i t b w _ rfl,
     ι_functorMapSrc_assoc f πX πY φ hφ i t b w _ rfl]
+
+variable [HasPushout (functorObjTop f πX) (functorObjLeft f πX)]
+  [HasPushout (functorObjTop f πY) (functorObjLeft f πY)]
 
 /-- The functor `SmallObject.functor f S : Over S ⥤ Over S` that is part of
 the small object argument for a family of morphisms `f`, on morphisms. -/
