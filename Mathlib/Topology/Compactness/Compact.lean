@@ -978,6 +978,9 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
 instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
   isCompact_univ := finite_univ.isCompact
 
+instance ULift.compactSpace [CompactSpace X] : CompactSpace (ULift.{v} X) :=
+  ULift.closedEmbedding_down.compactSpace
+
 /-- The product of two compact spaces is compact. -/
 instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X × Y) :=
   ⟨by rw [← univ_prod_univ]; exact isCompact_univ.prod isCompact_univ⟩

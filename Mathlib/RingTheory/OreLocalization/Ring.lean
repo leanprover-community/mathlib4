@@ -221,8 +221,6 @@ noncomputable section DivisionRing
 
 open nonZeroDivisors
 
-open scoped Classical
-
 variable {R : Type*} [Ring R] [Nontrivial R] [OreSet R⁰]
 
 instance nontrivial : Nontrivial R[R⁰⁻¹] :=
@@ -230,6 +228,7 @@ instance nontrivial : Nontrivial R[R⁰⁻¹] :=
 
 variable [NoZeroDivisors R]
 
+open Classical in
 /-- The inversion of Ore fractions for a ring without zero divisors, satisying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
 @[irreducible]
@@ -252,6 +251,7 @@ protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
 instance inv' : Inv R[R⁰⁻¹] :=
   ⟨OreLocalization.inv⟩
 
+open Classical in
 protected theorem inv_def {r : R} {s : R⁰} :
     (r /ₒ s)⁻¹ =
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
@@ -275,7 +275,9 @@ instance : DivisionRing R[R⁰⁻¹] where
   mul_inv_cancel := OreLocalization.mul_inv_cancel
   inv_zero := OreLocalization.inv_zero
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 end DivisionRing
 

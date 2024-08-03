@@ -88,6 +88,8 @@ attribute [reassoc (attr := simp)] StrongOplaxNatTrans.naturality_naturality
 
 namespace StrongOplaxNatTrans
 
+section
+
 /-- The underlying oplax natural transformation of a strong natural transformation. -/
 @[simps]
 def toOplax {F G : OplaxFunctor B C} (η : StrongOplaxNatTrans F G) : OplaxNatTrans F G where
@@ -185,6 +187,11 @@ def vcomp (η : StrongOplaxNatTrans F G) (θ : StrongOplaxNatTrans G H) : Strong
         (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
         (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
 
+end
+
+end StrongOplaxNatTrans
+
+open OplaxNatTrans
 
 variable (B C)
 
@@ -194,15 +201,10 @@ instance Pseudofunctor.categoryStruct : CategoryStruct (Pseudofunctor B C) where
   id F := StrongOplaxNatTrans.id F.toOplax
   comp := StrongOplaxNatTrans.vcomp
 
-end
-
-section
-
-open OplaxNatTrans
 
 /-- Category structure on the strong natural transformations between pseudofunctors. -/
 @[simps]
-instance homcategory (F G : Pseudofunctor B C) : Category (F ⟶ G) where
+instance Pseudofunctor.homcategory (F G : Pseudofunctor B C) : Category (F ⟶ G) where
   Hom η θ := Modification η.toOplax θ.toOplax
   id η := Modification.id η.toOplax
   comp := Modification.vcomp
@@ -223,9 +225,5 @@ def isoOfComponents {F G : Pseudofunctor B C} (η θ : F ⟶ G) (app : ∀ a, η
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
 
   -- have := ModificationIso.ofComponents (η := η.toOplax) (θ := θ.toOplax) app naturality
-
-end
-
-end StrongOplaxNatTrans
 
 end CategoryTheory
