@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
-
+import Mathlib.Algebra.Module.Submodule.EqLocus
 /-!
 # Adjoining elements to form subalgebras
 
@@ -428,12 +428,18 @@ theorem map_adjoin_singleton (e : A →ₐ[R] B) (x : A) :
   rw [map_adjoin, Set.image_singleton]
 
 theorem adjoin_le_equalizer (φ₁ φ₂ : A →ₐ[R] B) {s : Set A} (h : s.EqOn φ₁ φ₂) :
-    adjoin R s ≤ φ₁.equalizer φ₂ :=
+    adjoin R s ≤ equalizer φ₁ φ₂ :=
   adjoin_le h
 
 theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ : A →ₐ[R] B⦄
     (hs : s.EqOn φ₁ φ₂) : φ₁ = φ₂ :=
   ext fun _x => adjoin_le_equalizer φ₁ φ₂ hs <| h.symm ▸ trivial
+
+/-- Two algebra morphisms are equal on `Algebra.span s`iff they are equal on s -/
+theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A}  :
+    Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
+  have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
+  simp only [← this, Set.le_eq_subset, SetLike.coe_subset_coe, adjoin_le_iff]
 
 end AlgHom
 
@@ -510,3 +516,29 @@ theorem Algebra.restrictScalars_adjoin_of_algEquiv
   erw [hi, Set.range_comp, i.toEquiv.range_eq_univ, Set.image_univ]
 
 end
+
+namespace Subalgebra
+
+variable [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+theorem comap_map_eq (f : A →ₐ[R] B) (S : Subalgebra R A) :
+    (S.map f).comap f = S ⊔ Algebra.adjoin R (f ⁻¹' {0}) := by
+  apply le_antisymm
+  · intro x hx
+    rw [mem_comap, mem_map] at hx
+    obtain ⟨y, hy, hxy⟩ := hx
+    replace hxy : x - y ∈ f ⁻¹' {0} := by simp [hxy]
+    rw [← Algebra.adjoin_eq S, ← Algebra.adjoin_union, ← add_sub_cancel y x]
+    exact Subalgebra.add_mem _
+      (Algebra.subset_adjoin <| Or.inl hy) (Algebra.subset_adjoin <| Or.inr hxy)
+  · rw [← map_le, Algebra.map_sup, f.map_adjoin]
+    apply le_of_eq
+    rw [sup_eq_left, Algebra.adjoin_le_iff]
+    exact (Set.image_preimage_subset f {0}).trans (Set.singleton_subset_iff.2 (S.map f).zero_mem)
+
+theorem comap_map_eq_self {f : A →ₐ[R] B} {S : Subalgebra R A}
+    (h : f ⁻¹' {0} ⊆ S) : (S.map f).comap f = S := by
+  convert comap_map_eq f S
+  rwa [left_eq_sup, Algebra.adjoin_le_iff]
+
+end Subalgebra

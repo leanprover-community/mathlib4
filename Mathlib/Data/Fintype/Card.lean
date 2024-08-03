@@ -431,7 +431,8 @@ theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective 
   calc
     card α = (univ.map ⟨f, h⟩).card := (card_map _).symm
     _ < card β :=
-      Finset.card_lt_univ_of_not_mem <| by rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
+      Finset.card_lt_univ_of_not_mem (x := b) <| by
+        rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
@@ -755,7 +756,7 @@ theorem Fintype.card_subtype_le [Fintype α] (p : α → Prop) [DecidablePred p]
 
 theorem Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [DecidablePred p] {x : α} (hx : ¬p x) :
     Fintype.card { x // p x } < Fintype.card α :=
-  Fintype.card_lt_of_injective_of_not_mem (↑) Subtype.coe_injective <| by
+  Fintype.card_lt_of_injective_of_not_mem (b := x) (↑) Subtype.coe_injective <| by
     rwa [Subtype.range_coe_subtype]
 
 theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [DecidablePred p] :
@@ -908,6 +909,16 @@ theorem of_injective {α β} [Infinite β] (f : β → α) (hf : Injective f) : 
 
 theorem of_surjective {α β} [Infinite β] (f : α → β) (hf : Surjective f) : Infinite α :=
   ⟨fun _I => (Finite.of_surjective f hf).false⟩
+
+instance {β : α → Type*} [Infinite α] [∀ a, Nonempty (β a)] : Infinite ((a : α) × β a) :=
+  Infinite.of_surjective Sigma.fst Sigma.fst_surjective
+
+theorem sigma_of_right {β : α → Type*} {a : α} [Infinite (β a)] :
+    Infinite ((a : α) × β a) :=
+  Infinite.of_injective (f := fun x ↦ ⟨a,x⟩) fun _ _ ↦ by simp
+
+instance {β : α → Type*} [Nonempty α] [∀ a, Infinite (β a)] : Infinite ((a : α) × β a) :=
+  Infinite.sigma_of_right (a := Classical.arbitrary α)
 
 end Infinite
 
