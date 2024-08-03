@@ -636,11 +636,16 @@ theorem mem_of_mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h : a ∈ n • s
     exact h.elim ih id
 
 @[simp]
-theorem mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : a ∈ n • s ↔ a ∈ s := by
-  refine ⟨mem_of_mem_nsmul, fun h => ?_⟩
-  obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero h0
+theorem mem_nsmul {a : α} {s : Multiset α} {n : ℕ} : a ∈ n • s ↔ n ≠ 0 ∧ a ∈ s := by
+  refine ⟨fun ha ↦ ⟨?_, mem_of_mem_nsmul ha⟩, fun h => ?_⟩
+  · rintro rfl
+    simp [zero_nsmul] at ha
+  obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero h.1
   rw [succ_nsmul, mem_add]
-  exact Or.inr h
+  exact Or.inr h.2
+
+lemma mem_nsmul_of_ne_zero {a : α} {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : a ∈ n • s ↔ a ∈ s := by
+  simp [*]
 
 theorem nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
     n • (a ::ₘ s) = n • ({a} : Multiset α) + n • s := by
@@ -2200,6 +2205,9 @@ theorem ext {s t : Multiset α} : s = t ↔ ∀ a, count a s = count a t :=
 theorem ext' {s t : Multiset α} : (∀ a, count a s = count a t) → s = t :=
   ext.2
 
+lemma count_injective : Injective fun (s : Multiset α) a ↦ s.count a :=
+  fun _s _t hst ↦ ext' $ congr_fun hst
+
 @[simp]
 theorem coe_inter (s t : List α) : (s ∩ t : Multiset α) = (s.bagInter t : List α) := by ext; simp
 
@@ -2241,7 +2249,7 @@ theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (
     contradiction
 
 @[simp]
-theorem sub_filter_eq_filter_not [DecidableEq α] (p) [DecidablePred p] (s : Multiset α) :
+theorem sub_filter_eq_filter_not (p) [DecidablePred p] (s : Multiset α) :
     s - s.filter p = s.filter (fun a ↦ ¬ p a) := by
   ext a; by_cases h : p a <;> simp [h]
 

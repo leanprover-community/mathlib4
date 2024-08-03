@@ -5,28 +5,29 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Tactic.Common
 
-/-! # Group actions on and by `Mˣ`
+/-!
+# Multiplicative actions with zero on and by `Mˣ`
 
-This file provides the action of a unit on a type `α`, `SMul Mˣ α`, in the presence of
-`SMul M α`, with the obvious definition stated in `Units.smul_def`. This definition preserves
-`MulAction` and `DistribMulAction` structures too.
+This file provides the multiplicative actions with zero of a unit on a type `α`, `SMul Mˣ α`, in the
+presence of `SMulWithZero M α`, with the obvious definition stated in `Units.smul_def`.
 
-Additionally, a `MulAction G M` for some group `G` satisfying some additional properties admits a
-`MulAction G Mˣ` structure, again with the obvious definition stated in `Units.coe_smul`.
-These instances use a primed name.
+Additionally, a `MulDistribMulAction G M` for some group `G` satisfying some additional properties
+admits a `MulDistribMulAction G Mˣ` structure, again with the obvious definition stated in
+`Units.coe_smul`. This instance uses a primed name.
 
-The results are repeated for `AddUnits` and `VAdd` where relevant.
+## See also
+
+* `Algebra.GroupWithZero.Action.Opposite`
+* `Algebra.GroupWithZero.Action.Pi`
+* `Algebra.GroupWithZero.Action.Prod`
 -/
 
-
-variable {G H M N : Type*} {α : Type*}
+variable {G M α : Type*}
 
 namespace Units
 
 /-! ### Action of the units of `M` on a type `α` -/
-
 
 @[to_additive]
 instance [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
