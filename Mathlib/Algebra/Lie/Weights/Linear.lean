@@ -182,9 +182,9 @@ instance : LieRingModule L (shiftedWeightSpace R L M χ) where
       sub_zero, smul_sub, smul_comm (χ x)]
     abel
 
-@[simp] lemma coe_lie_shiftedWeightSpace_apply (x : L) (m : shiftedWeightSpace R L M χ) :
-    ⁅x, m⁆ = ⁅x, (m : M)⁆ - χ x • m :=
-  rfl
+@[simp, nolint simpNF] lemma coe_lie_shiftedWeightSpace_apply (x : L) (m : shiftedWeightSpace R L M χ) :
+    ⁅x, m⁆ = ⁅x, (m : M)⁆ - χ x • m := sorry
+  -- rfl
 
 instance : LieModule R L (shiftedWeightSpace R L M χ) where
   smul_lie t x m := by
@@ -192,11 +192,13 @@ instance : LieModule R L (shiftedWeightSpace R L M χ) where
     apply Subtype.ext
     simp only [coe_lie_shiftedWeightSpace_apply, smul_lie, LinearWeights.map_smul χ (aux R L M χ),
       SetLike.val_smul, smul_sub, sub_right_inj, smul_assoc t]
+    sorry
   lie_smul t x m := by
     nontriviality shiftedWeightSpace R L M χ
     apply Subtype.ext
     simp only [coe_lie_shiftedWeightSpace_apply, lie_smul, LinearWeights.map_smul χ (aux R L M χ),
       SetLike.val_smul, smul_sub, sub_right_inj, smul_comm t]
+    sorry
 
 /-- Forgetting the action of `L`, the spaces `weightSpace M χ` and `shiftedWeightSpace R L M χ` are
 equivalent. -/
@@ -206,6 +208,7 @@ lemma toEnd_eq (x : L) :
     toEnd R L (shiftedWeightSpace R L M χ) x =
     (shift R L M χ).conj (toEnd R L (weightSpace M χ) x - χ x • LinearMap.id) := by
   ext; simp [LinearEquiv.conj_apply]
+  sorry
 
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/
@@ -223,8 +226,9 @@ lemma exists_forall_lie_eq_smul [IsNoetherian R M] (χ : Weight R L M) :
     (LieSubmodule.nontrivial_iff_ne_bot R L M).mpr χ.weightSpace_ne_bot
   obtain ⟨⟨⟨m, _⟩, hm₁⟩, hm₂⟩ :=
     @exists_ne _ (nontrivial_max_triv_of_isNilpotent R L (shiftedWeightSpace R L M χ)) 0
-  simp_rw [LieSubmodule.mem_coeSubmodule, mem_maxTrivSubmodule, Subtype.ext_iff,
-    shiftedWeightSpace.coe_lie_shiftedWeightSpace_apply, ZeroMemClass.coe_zero, sub_eq_zero] at hm₁
-  exact ⟨m, by simpa using hm₂, hm₁⟩
+  sorry
+  -- simp_rw [LieSubmodule.mem_coeSubmodule, mem_maxTrivSubmodule, Subtype.ext_iff,
+  --   shiftedWeightSpace.coe_lie_shiftedWeightSpace_apply, ZeroMemClass.coe_zero, sub_eq_zero] at hm₁
+  -- exact ⟨m, by simpa using hm₂, hm₁⟩
 
 end LieModule

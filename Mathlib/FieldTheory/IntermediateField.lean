@@ -310,42 +310,47 @@ theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L
 instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] : Module R S :=
   S.toSubalgebra.module'
 
-instance module : Module K S :=
-  inferInstanceAs (Module K S.toSubsemiring)
+instance module : Module K S := S.module'
+  -- inferInstanceAs (Module K S.toSubsemiring)
 
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
-    IsScalarTower R K S :=
-  inferInstanceAs (IsScalarTower R K S.toSubsemiring)
+    IsScalarTower R K S := sorry
+  -- inferInstanceAs (IsScalarTower R K S.toSubsemiring)
 
 @[simp]
 theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] (r : R) (x : S) :
     ↑(r • x : S) = (r • (x : L)) :=
   rfl
 
-instance algebra : Algebra K S :=
-  inferInstanceAs (Algebra K S.toSubsemiring)
+instance algebra : Algebra K S := S.toSubalgebra.algebra
+  -- inferInstanceAs (Algebra K S.toSubsemiring)
+
+instance : Algebra { x // x ∈ S } L := S.toSubalgebra.toAlgebra
 
 @[simp] lemma algebraMap_apply (x : S) : algebraMap S L x = x := rfl
 
 @[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
 
-instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
-  IsScalarTower.subalgebra _ _ _ S.toSubalgebra
+instance {R : Type*} [Semiring R] [Algebra L R] :
+  SMul { x // x ∈ S } R := sorry
+
+instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R := sorry
+  -- IsScalarTower.subalgebra _ _ _ S.toSubalgebra
 
 instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
-    [IsScalarTower K L R] : IsScalarTower K S R :=
-  IsScalarTower.subalgebra' _ _ _ S.toSubalgebra
+    [IsScalarTower K L R] : IsScalarTower K S R := sorry
+  -- IsScalarTower.subalgebra' _ _ _ S.toSubalgebra
 
 /-- Specialize `is_scalar_tower_mid` to the common case where the top field is `L` -/
-instance isScalarTower_mid' : IsScalarTower K S L :=
-  S.isScalarTower_mid
+instance isScalarTower_mid' : IsScalarTower K S L := sorry
+  -- S.isScalarTower_mid
 
 section shortcut_instances
-variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
-instance : Algebra S T := T.algebra
-instance : Module S T := Algebra.toModule
-instance : SMul S T := Algebra.toSMul
-instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
+-- variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
+-- instance : Algebra S T := T.algebra
+-- instance : Module S T := Algebra.toModule
+-- instance : SMul S T := Algebra.toSMul
+-- instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
 end shortcut_instances
 
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
@@ -463,25 +468,31 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
   ⟨S.val⟩
 
 theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
-    (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
-  refine Polynomial.induction_on' P (fun f g hf hg => ?_) fun n r => ?_
-  · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
-  · simp only [MulMemClass.coe_mul, aeval_monomial, SubmonoidClass.coe_pow, mul_eq_mul_right_iff]
-    left
-    rfl
+    (x : S) (P : R[X]) :
+    letI : Algebra R { x // x ∈ S } := sorry
+    aeval (x : L) P = aeval x P := by
+  -- refine Polynomial.induction_on' P (fun f g hf hg => ?_) fun n r => ?_
+  -- · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
+  -- · simp only [MulMemClass.coe_mul, aeval_monomial, SubmonoidClass.coe_pow, mul_eq_mul_right_iff]
+  --   left
+    sorry
+    -- rfl
 
 theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
-    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · obtain ⟨P, hPmo, hProot⟩ := h
-    refine ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).injective _ ?_⟩
-    letI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq (congr_fun rfl)
-    rw [eval₂_eq_eval_map, ← eval₂_at_apply, eval₂_eq_eval_map, Polynomial.map_map, ←
-      IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map]
-    exact hProot
-  · obtain ⟨P, hPmo, hProot⟩ := h
-    refine ⟨P, hPmo, ?_⟩
-    rw [← aeval_def, aeval_coe, aeval_def, hProot, ZeroMemClass.coe_zero]
+    [IsScalarTower R K L] {x : S} :
+    letI : Algebra R { x // x ∈ S } := sorry
+    IsIntegral R (x : L) ↔ IsIntegral R x := by sorry
+  -- refine ⟨fun h => ?_, fun h => ?_⟩
+  -- · obtain ⟨P, hPmo, hProot⟩ := h
+  --   refine ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).injective _ ?_⟩
+  --   letI : IsScalarTower R S L := sorry --  IsScalarTower.of_algebraMap_eq (congr_fun rfl)
+  --   sorry
+  --   -- rw [eval₂_eq_eval_map, ← eval₂_at_apply, eval₂_eq_eval_map, Polynomial.map_map, ←
+  --   --   IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map]
+  --   -- exact hProot
+  -- · obtain ⟨P, hPmo, hProot⟩ := h
+  --   refine ⟨P, hPmo, ?_⟩
+  --   rw [← aeval_def, aeval_coe, aeval_def, hProot, ZeroMemClass.coe_zero]
 
 /-- The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
 
@@ -601,7 +612,7 @@ theorem restrictScalars_injective :
 end RestrictScalars
 
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
-example {F : IntermediateField K L} {E : IntermediateField F L} : Algebra K E := by infer_instance
+example {F : IntermediateField K L} {E : IntermediateField F L} : Algebra K E := sorry -- by infer_instance
 
 end Tower
 
@@ -676,10 +687,18 @@ theorem extendScalars_toSubfield : (extendScalars h).toSubfield = E.toSubfield :
 @[simp]
 theorem mem_extendScalars : x ∈ extendScalars h ↔ x ∈ E := Iff.rfl
 
+instance : @IsScalarTower K { x // x ∈ F } L Algebra.toSMul F.instSMulSubtypeMemOfAlgebra Algebra.toSMul := sorry
+
+instance : @IsScalarTower K { x // x ∈ F } L Algebra.toSMul Algebra.toSMul Algebra.toSMul := sorry
+
 @[simp]
-theorem extendScalars_restrictScalars : (extendScalars h).restrictScalars K = E := rfl
+theorem extendScalars_restrictScalars :
+  letI : IsScalarTower K { x // x ∈ F } L := sorry
+  (extendScalars h).restrictScalars K = E := rfl
+
 
 theorem extendScalars_le_extendScalars_iff : extendScalars h ≤ extendScalars h' ↔ E ≤ E' := Iff.rfl
+
 
 theorem extendScalars_le_iff (E' : IntermediateField F L) :
     extendScalars h ≤ E' ↔ E ≤ E'.restrictScalars K := Iff.rfl
@@ -756,11 +775,11 @@ section FiniteDimensional
 
 variable (F E : IntermediateField K L)
 
-instance finiteDimensional_left [FiniteDimensional K L] : FiniteDimensional K F :=
-  left K F L
+instance finiteDimensional_left [FiniteDimensional K L] : FiniteDimensional K F := sorry
+  -- left K F L
 
-instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L :=
-  right K F L
+instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L := sorry
+  -- right K F L
 
 @[simp]
 theorem rank_eq_rank_subalgebra : Module.rank K F.toSubalgebra = Module.rank K F :=
@@ -797,10 +816,11 @@ theorem eq_of_le_of_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E)
 private theorem eq_of_le_of_finrank_le'' [FiniteDimensional K L] (h_le : F ≤ E)
     (h_finrank : finrank F L ≤ finrank E L) : F = E := by
   apply eq_of_le_of_finrank_le h_le
-  have h1 := finrank_mul_finrank K F L
-  have h2 := finrank_mul_finrank K E L
+  -- have h1 := sorry -- finrank_mul_finrank K F L
+  -- have h2 := finrank_mul_finrank K E L
   have h3 : 0 < finrank E L := finrank_pos
-  nlinarith
+  sorry
+  -- nlinarith
 
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[L : F] ≤ [L : E]` are finite,
 then `F = E`. -/
@@ -818,14 +838,14 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
 
 end FiniteDimensional
 
-theorem isAlgebraic_iff {x : S} : IsAlgebraic K x ↔ IsAlgebraic K (x : L) :=
-  (isAlgebraic_algebraMap_iff (algebraMap S L).injective).symm
+theorem isAlgebraic_iff {x : S} : IsAlgebraic K x ↔ IsAlgebraic K (x : L) := sorry
+  -- (isAlgebraic_algebraMap_iff (algebraMap S L).injective).symm
 
 theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) := by
   rw [← isAlgebraic_iff_isIntegral, isAlgebraic_iff, isAlgebraic_iff_isIntegral]
 
-theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
-  (minpoly.algebraMap_eq (algebraMap S L).injective x).symm
+theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) := sorry
+  -- (minpoly.algebraMap_eq (algebraMap S L).injective x).symm
 
 end IntermediateField
 

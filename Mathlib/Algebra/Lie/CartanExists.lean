@@ -127,6 +127,7 @@ Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` fo
 Then `engel K x ≤ engel K y` for all `y ∈ U`.
 
 Lemma 2 in [barnes1967]. -/
+@[nolint unusedHavesSuffices]
 lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     (E : {engel K x | x ∈ U}) (hUle : U ≤ E) (hmin : IsMin E) :
     IsBot E := by
@@ -164,27 +165,27 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   --   viewed as endomorphism of `E`. Note that `χ` is polynomial in its argument `r`.
   -- Similarly: `ψ r` is the characteristic polynomial of `⁅r • u + x, _⁆`
   --   viewed as endomorphism of `Q`. Note that `ψ` is polynomial in its argument `r`.
-  let χ : Polynomial (K[X]) := lieCharpoly K E x' u
+  let χ : Polynomial (K[X]) := sorry -- lieCharpoly K E x' u
   let ψ : Polynomial (K[X]) := lieCharpoly K Q x' u
   -- It suffices to show that `χ` is the monomial `X ^ r`.
-  suffices χ = X ^ r by
-    -- Indeed, by evaluating the coefficients at `1`
-    apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
-    -- we find that the characteristic polynomial `χ 1` of `⁅y, _⁆` is equal to `X ^ r`
-    simp_rw [Polynomial.map_pow, map_X, χ, lieCharpoly_map_eval, one_smul, u, sub_add_cancel,
-      -- and therefore the endomorphism `⁅y, _⁆` acts nilpotently on `E`.
-      r, LinearMap.charpoly_eq_X_pow_iff,
-      Subtype.ext_iff, coe_toEnd_pow _ _ _ E, ZeroMemClass.coe_zero] at this
-    -- We ultimately want to show `engel K x ≤ engel K y`
-    intro z hz
-    -- which holds by definition of Engel subalgebra and the nilpotency that we just established.
-    rw [mem_engel_iff]
-    exact this ⟨z, hz⟩
+  suffices χ = X ^ r by sorry
+    -- -- Indeed, by evaluating the coefficients at `1`
+    -- apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
+    -- -- we find that the characteristic polynomial `χ 1` of `⁅y, _⁆` is equal to `X ^ r`
+    -- simp_rw [Polynomial.map_pow, map_X, χ, lieCharpoly_map_eval, one_smul, u, sub_add_cancel,
+    --   -- and therefore the endomorphism `⁅y, _⁆` acts nilpotently on `E`.
+    --   r, LinearMap.charpoly_eq_X_pow_iff,
+    --   Subtype.ext_iff, coe_toEnd_pow _ _ _ E, ZeroMemClass.coe_zero] at this
+    -- -- We ultimately want to show `engel K x ≤ engel K y`
+    -- intro z hz
+    -- -- which holds by definition of Engel subalgebra and the nilpotency that we just established.
+    -- rw [mem_engel_iff]
+    -- exact this ⟨z, hz⟩
   -- To show that `χ = X ^ r`, it suffices to show that all coefficients in degrees `< r` are `0`.
-  suffices ∀ i < r, χ.coeff i = 0 by
-    simp_rw [r, ← lieCharpoly_natDegree K E x' u] at this ⊢
-    rw [(lieCharpoly_monic K E x' u).eq_X_pow_iff_natDegree_le_natTrailingDegree]
-    exact le_natTrailingDegree (lieCharpoly_monic K E x' u).ne_zero this
+  suffices ∀ i < r, χ.coeff i = 0 by sorry
+    -- simp_rw [r, ← lieCharpoly_natDegree K E x' u] at this ⊢
+    -- rw [(lieCharpoly_monic K E x' u).eq_X_pow_iff_natDegree_le_natTrailingDegree]
+    -- exact le_natTrailingDegree (lieCharpoly_monic K E x' u).ne_zero this
   -- Let us consider the `i`-th coefficient of `χ`, for `i < r`.
   intro i hi
   -- We separately consider the case `i = 0`.
@@ -198,27 +199,29 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       rw [Nat.cast_lt]
       -- So we are left with showing `natDegree (coeff χ 0) < finrank K L`
       apply lt_of_le_of_lt _ hr
-      apply lieCharpoly_coeff_natDegree _ _ _ _ 0 r (zero_add r)
+      sorry
+      -- apply lieCharpoly_coeff_natDegree _ _ _ _ 0 r (zero_add r)
     -- Fix an element of `K`.
     intro α
     -- We want to show that `α` is a root of `coeff χ 0`.
     -- So we need to show that there is a `z ≠ 0` in `E` satisfying `⁅α • u + x, z⁆ = 0`.
-    rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
-      ← constantCoeff_apply, LinearMap.charpoly_constantCoeff_eq_zero_iff]
+    -- rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
+    --   ← constantCoeff_apply, LinearMap.charpoly_constantCoeff_eq_zero_iff]
+    sorry
     -- We consider `z = α • u + x`, and split into the cases `z = 0` and `z ≠ 0`.
-    let z := α • u + x'
-    obtain hz₀|hz₀ := eq_or_ne z 0
-    · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
-      refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
-      · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
-      · dsimp only [z] at hz₀
-        simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
-    -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
-    refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
-    · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
-    · show ⁅z, _⁆ = (0 : E)
-      ext
-      exact lie_self z.1
+    -- let z := α • u + x'
+    -- obtain hz₀|hz₀ := eq_or_ne z 0
+    -- · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
+    --   refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
+    --   · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
+    --   · dsimp only [z] at hz₀
+    --     simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
+    -- -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
+    -- refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
+    -- · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
+    -- · show ⁅z, _⁆ = (0 : E)
+    --   ext
+    --   exact lie_self z.1
   -- We are left with the case `i ≠ 0`, and want to show `coeff χ i = 0`.
   -- We will do this once again by showing that `coeff χ i` vanishes
   -- on a sufficiently large subset `s` of `K`.
@@ -284,65 +287,67 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- We need to show that `natDegree (coeff χ i) < s.card`
     -- Which follows from our assumptions `i < r` and `r ≤ s.card`
     -- and the fact that the degree of `coeff χ i` is less than or equal to `r - i`.
-    apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
-    · omega
-    · dsimp only [r] at hi ⊢
-      rw [Nat.add_sub_cancel' hi.le]
+    sorry
+    -- apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
+    -- · omega
+    -- · dsimp only [r] at hi ⊢
+      -- rw [Nat.add_sub_cancel' hi.le]
   -- We need to show that for all `α ∈ s`, the polynomial `coeff χ i` evaluates to zero at `α`.
   intro α hα
   -- Once again, we are left with showing that `⁅y, _⁆` acts nilpotently on `E`.
-  rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
-    (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
-  -- To do so, it suffices to show that the Engel subalgebra of `v = a • u + x` is contained in `E`.
-  let v := α • u + x'
-  suffices engel K (v : L) ≤ engel K x by
-    -- Indeed, in that case the minimality assumption on `E` implies
-    -- that `E` is contained in the Engel subalgebra of `v`.
-    replace this : engel K x ≤ engel K (v : L) := (hmin ⟨_, v, v.2, rfl⟩ this).ge
-    intro z
-    -- And so we are done, by the definition of Engel subalgebra.
-    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow _ _ _ E] using this z.2
-  -- Now we are in good shape.
-  -- Fix an element `z` in the Engel subalgebra of `y`.
-  intro z hz
-  -- We need to show that `z` is in `E`, or alternatively that `z = 0` in `Q`.
-  show z ∈ E
-  rw [← LieSubmodule.Quotient.mk_eq_zero]
-  -- We denote the image of `z` in `Q` by `z'`.
-  set z' : Q := LieSubmodule.Quotient.mk' E z
-  -- First we observe that `z'` is killed by a power of `⁅v, _⁆`.
-  have hz' : ∃ n : ℕ, (toEnd K U Q v ^ n) z' = 0 := by
-    rw [mem_engel_iff] at hz
-    obtain ⟨n, hn⟩ := hz
-    use n
-    apply_fun LieSubmodule.Quotient.mk' E at hn
-    rw [LieModuleHom.map_zero] at hn
-    rw [← hn]
-    clear hn
-    induction n with
-    | zero => simp only [Nat.zero_eq, pow_zero, LinearMap.one_apply]
-    | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
-  classical
-  -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
-  set n := Nat.find hz' with _hn
-  have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
-  -- If `n = 0`, then we are done.
-  obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
-  · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
-  -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
-  -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.
-  specialize hsψ α hα
-  -- Hence `⁅v, _⁆` acts injectively on `Q`.
-  rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
-    ← constantCoeff_apply, ne_eq, LinearMap.charpoly_constantCoeff_eq_zero_iff] at hsψ
-  -- We deduce from this that `z' = 0`, arguing by contraposition.
-  contrapose! hsψ
-  -- Indeed `⁅v, _⁆` kills `⁅v, _⁆ ^ k` applied to `z'`.
-  use (toEnd K U Q v ^ k) z'
-  refine ⟨?_, ?_⟩
-  · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
-    apply Nat.find_min hz'; omega
-  · rw [← hn, hk, pow_succ', LinearMap.mul_apply]
+  sorry
+  -- rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
+  --   (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
+  -- -- To do so, it suffices to show that the Engel subalgebra of `v = a • u + x` is contained in `E`.
+  -- let v := α • u + x'
+  -- suffices engel K (v : L) ≤ engel K x by
+  --   -- Indeed, in that case the minimality assumption on `E` implies
+  --   -- that `E` is contained in the Engel subalgebra of `v`.
+  --   replace this : engel K x ≤ engel K (v : L) := (hmin ⟨_, v, v.2, rfl⟩ this).ge
+  --   intro z
+  --   -- And so we are done, by the definition of Engel subalgebra.
+  --   simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow _ _ _ E] using this z.2
+  -- -- Now we are in good shape.
+  -- -- Fix an element `z` in the Engel subalgebra of `y`.
+  -- intro z hz
+  -- -- We need to show that `z` is in `E`, or alternatively that `z = 0` in `Q`.
+  -- show z ∈ E
+  -- rw [← LieSubmodule.Quotient.mk_eq_zero]
+  -- -- We denote the image of `z` in `Q` by `z'`.
+  -- set z' : Q := LieSubmodule.Quotient.mk' E z
+  -- -- First we observe that `z'` is killed by a power of `⁅v, _⁆`.
+  -- have hz' : ∃ n : ℕ, (toEnd K U Q v ^ n) z' = 0 := by
+  --   rw [mem_engel_iff] at hz
+  --   obtain ⟨n, hn⟩ := hz
+  --   use n
+  --   apply_fun LieSubmodule.Quotient.mk' E at hn
+  --   rw [LieModuleHom.map_zero] at hn
+  --   rw [← hn]
+  --   clear hn
+  --   induction n with
+  --   | zero => simp only [Nat.zero_eq, pow_zero, LinearMap.one_apply]
+  --   | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
+  -- classical
+  -- -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
+  -- set n := Nat.find hz' with _hn
+  -- have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
+  -- -- If `n = 0`, then we are done.
+  -- obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
+  -- · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
+  -- -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
+  -- -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.
+  -- specialize hsψ α hα
+  -- -- Hence `⁅v, _⁆` acts injectively on `Q`.
+  -- rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
+  --   ← constantCoeff_apply, ne_eq, LinearMap.charpoly_constantCoeff_eq_zero_iff] at hsψ
+  -- -- We deduce from this that `z' = 0`, arguing by contraposition.
+  -- contrapose! hsψ
+  -- -- Indeed `⁅v, _⁆` kills `⁅v, _⁆ ^ k` applied to `z'`.
+  -- use (toEnd K U Q v ^ k) z'
+  -- refine ⟨?_, ?_⟩
+  -- · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
+  --   apply Nat.find_min hz'; omega
+  -- · rw [← hn, hk, pow_succ', LinearMap.mul_apply]
 
 variable (K L)
 

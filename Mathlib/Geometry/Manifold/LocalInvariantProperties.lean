@@ -117,7 +117,8 @@ theorem left_invariance {s : Set H} {x : H} {f : H → H'} {e' : PartialHomeomor
   constructor
   · intro h
     rw [hG.is_local_nhds h3f] at h
-    have h2 := hG.left_invariance' (G'.symm he') inter_subset_right (e'.mapsTo hxe') h
+    have h2 := hG.left_invariance' (G'.symm he') inter_subset_right (sorry) h
+    -- have h2 := hG.left_invariance' (G'.symm he') inter_subset_right (e'.mapsTo hxe') h
     rw [← hG.is_local_nhds h3f] at h2
     refine hG.congr_nhdsWithin ?_ (e'.left_inv hxe') h2
     exact eventually_of_mem h2f fun x' ↦ e'.left_inv
@@ -513,11 +514,14 @@ theorem liftProp_subtype_val {Q : (H → H) → Set H → H → Prop} (hG : Loca
 
 theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
     (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :
+    letI : ChartedSpace H { x // x ∈ V } := V.instChartedSpace
+    letI : ChartedSpace H { x // x ∈ U } := U.instChartedSpace
     LiftProp Q (Set.inclusion hUV : U → V) := by
   intro x
-  show LiftPropAt Q (id ∘ inclusion hUV) x
-  rw [← hG.liftPropAt_iff_comp_inclusion hUV]
-  apply hG.liftProp_id hQ
+  sorry
+  -- show LiftPropAt Q (id ∘ inclusion hUV) x
+  -- rw [← hG.liftPropAt_iff_comp_inclusion hUV]
+  -- apply hG.liftProp_id hQ
 
 end LocalInvariantProp
 

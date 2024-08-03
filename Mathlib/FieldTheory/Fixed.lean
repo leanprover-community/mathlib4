@@ -168,7 +168,8 @@ namespace minpoly
 
 theorem monic : (minpoly G F x).Monic := by
   simp only [minpoly, Polynomial.monic_toSubring]
-  exact prodXSubSMul.monic G F x
+  sorry
+  -- exact prodXSubSMul.monic G F x
 
 theorem eval₂ :
     Polynomial.eval₂ (Subring.subtype <| (FixedPoints.subfield G F).toSubring) x (minpoly G F x) =

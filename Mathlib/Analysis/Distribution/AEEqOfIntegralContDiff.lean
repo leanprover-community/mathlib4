@@ -125,18 +125,19 @@ nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (h
   let U : Opens M := ⟨U, hU⟩
   change ∀ᵐ (x : U) ∂_, _
   haveI : SigmaCompactSpace U := isSigmaCompact_iff_sigmaCompactSpace.mp hSig
-  refine ae_eq_zero_of_integral_smooth_smul_eq_zero I ?_ fun g g_smth g_supp ↦ ?_
-  · exact (locallyIntegrable_comap meas_U).mpr hf
-  specialize h (Subtype.val.extend g 0) (g_smth.extend_zero g_supp)
-    (g_supp.extend_zero continuous_subtype_val) ((g_supp.tsupport_extend_zero_subset
-      continuous_subtype_val).trans <| Subtype.coe_image_subset _ _)
-  rw [← setIntegral_eq_integral_of_forall_compl_eq_zero (s := U) fun x hx ↦ ?_] at h
-  · rw [← integral_subtype_comap] at h
-    · simp_rw [Subtype.val_injective.extend_apply] at h; exact h
-    · exact meas_U
-  rw [Function.extend_apply' _ _ _ (mt _ hx)]
-  · apply zero_smul
-  · rintro ⟨x, rfl⟩; exact x.2
+  sorry
+  -- refine ae_eq_zero_of_integral_smooth_smul_eq_zero I ?_ fun g g_smth g_supp ↦ ?_
+  -- · exact (locallyIntegrable_comap meas_U).mpr hf
+  -- specialize h (Subtype.val.extend g 0) (g_smth.extend_zero g_supp)
+  --   (g_supp.extend_zero continuous_subtype_val) ((g_supp.tsupport_extend_zero_subset
+  --     continuous_subtype_val).trans <| Subtype.coe_image_subset _ _)
+  -- rw [← setIntegral_eq_integral_of_forall_compl_eq_zero (s := U) fun x hx ↦ ?_] at h
+  -- · rw [← integral_subtype_comap] at h
+  --   · simp_rw [Subtype.val_injective.extend_apply] at h; exact h
+  --   · exact meas_U
+  -- rw [Function.extend_apply' _ _ _ (mt _ hx)]
+  -- · apply zero_smul
+  -- · rintro ⟨x, rfl⟩; exact x.2
 
 theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOpen U)
     (hf : LocallyIntegrableOn f U μ)

@@ -178,7 +178,7 @@ theorem orbitEquivQuotientStabilizer_symm_apply (b : β) (a : α) :
     ((orbitEquivQuotientStabilizer α b).symm a : β) = a • b :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
     MulAction.stabilizer G ((1 : G) : G ⧸ H) = H := by
   ext

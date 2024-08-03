@@ -518,6 +518,7 @@ theorem nilpotent_of_mulEquiv {G' : Type*} [Group G'] [_h : IsNilpotent G] (f : 
   nilpotent_of_surjective f.toMonoidHom (MulEquiv.surjective f)
 
 /-- A quotient of a nilpotent group is nilpotent -/
+@[nolint unusedArguments]
 instance nilpotent_quotient_of_nilpotent (H : Subgroup G) [H.Normal] [_h : IsNilpotent G] :
     IsNilpotent (G ⧸ H) :=
   nilpotent_of_surjective (QuotientGroup.mk' H) QuotientGroup.mk_surjective

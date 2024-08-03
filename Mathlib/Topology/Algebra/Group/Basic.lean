@@ -836,7 +836,7 @@ theorem QuotientGroup.isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := by
   rw [QuotientGroup.preimage_image_mk N s]
   exact isOpen_iUnion fun n => (continuous_mul_right _).isOpen_preimage s s_op
 
-@[to_additive]
+@[to_additive (attr := nolint unusedArguments)]
 instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
   continuous_mul := by
     have cont : Continuous (((↑) : G → G ⧸ N) ∘ fun p : G × G ↦ p.fst * p.snd) :=

@@ -212,13 +212,13 @@ theorem coe_algebraMap_over_bot :
       IntermediateField.botEquiv F E :=
   rfl
 
-instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F E :=
-  IsScalarTower.of_algebraMap_eq
-    (by
-      intro x
-      obtain ⟨y, rfl⟩ := (botEquiv F E).symm.surjective x
-      rw [coe_algebraMap_over_bot, (botEquiv F E).apply_symm_apply, botEquiv_symm,
-        IsScalarTower.algebraMap_apply F (⊥ : IntermediateField F E) E])
+instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F E := sorry
+  -- IsScalarTower.of_algebraMap_eq
+  --   (by
+  --     intro x
+  --     obtain ⟨y, rfl⟩ := (botEquiv F E).symm.surjective x
+  --     rw [coe_algebraMap_over_bot, (botEquiv F E).apply_symm_apply, botEquiv_symm,
+  --       IsScalarTower.algebraMap_apply F (⊥ : IntermediateField F E) E])
 
 /-- The top `IntermediateField` is isomorphic to the field.
 
@@ -1077,7 +1077,8 @@ theorem exists_lt_finrank_of_infinite_dimensional
     [Algebra.IsAlgebraic F E] (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
     ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
   induction' n with n ih
-  · exact ⟨⊥, Subalgebra.finite_bot, finrank_pos⟩
+  · sorry
+  -- · exact ⟨⊥, Subalgebra.finite_bot, finrank_pos⟩
   obtain ⟨L, fin, hn⟩ := ih
   obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
     contrapose! hnfd

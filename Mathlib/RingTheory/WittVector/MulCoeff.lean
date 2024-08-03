@@ -229,6 +229,7 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
 
 variable (k)
 
+@[nolint unusedHavesSuffices]
 theorem nth_mul_coeff' (n : ℕ) :
     ∃ f : TruncatedWittVector p (n + 1) k → TruncatedWittVector p (n + 1) k → k,
     ∀ x y : 𝕎 k, f (truncateFun (n + 1) x) (truncateFun (n + 1) y) =

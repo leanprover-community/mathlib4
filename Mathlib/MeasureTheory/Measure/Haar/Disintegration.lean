@@ -40,7 +40,9 @@ instance : BorelSpace (LinearMap.ker L) := sorry
 
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure. The proportionality factor will be infinite if the linear map has a
-nontrivial kernel. -/
+nontrivia
+ul kernel. -/
+@[nolint unusedHavesSuffices]
 theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L) :
     ∃ (c : ℝ≥0∞), 0 < c ∧ c < ∞ ∧ μ.map L = (c * addHaar (univ : Set (LinearMap.ker L))) • ν := by
   /- This is true for the second projection in product spaces, as the projection of the Haar
@@ -127,6 +129,7 @@ lemma ae_comp_linearMap_mem_iff (h : Function.Surjective L) {s : Set F} (hs : Me
 /-- Given a linear map `L : E → F`, a property holds almost everywhere in `F` if and only if,
 almost everywhere in `F`, it holds almost everywhere along the subspace spanned by the
 image of `L`. This is an instance of a disintegration argument for additive Haar measures. -/
+@[nolint unusedHavesSuffices]
 lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : MeasurableSet s) :
     (∀ᵐ y ∂ν, ∀ᵐ x ∂μ, y + L x ∈ s) ↔ ∀ᵐ y ∂ν, y ∈ s := by
   have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜

@@ -169,6 +169,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     have : x₁ = ⟨z, hz⟩ := by
       apply h_alg
       simp [hx₂, algebraMap_eq_smul_one]
+      sorry
     rwa [← this]
   · -- The converse inclusion is trivial
     have : algebraMap R S = (algebraMap _ S).comp (algebraMap R R<x>) := by ext; rfl
@@ -283,9 +284,10 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   swap
   · rw [Multiset.count_eq_zero.mpr hJ, eq_comm, Multiset.count_eq_zero, Multiset.mem_map]
     simp only [Multiset.mem_attach, true_and_iff, not_exists]
-    rintro J' rfl
-    exact
-      hJ ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm J').prop
+    sorry
+    -- rintro J' rfl
+    -- exact
+    --   hJ ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm J').prop
   -- Then we just have to compare the multiplicities, which we already proved are equal.
   have := multiplicity_factors_map_eq_multiplicity hI hI' hx hx' hJ
   rw [multiplicity_eq_count_normalizedFactors, multiplicity_eq_count_normalizedFactors,

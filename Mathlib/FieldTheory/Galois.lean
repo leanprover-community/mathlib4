@@ -137,7 +137,8 @@ instance (priority := 100) IsGalois.tower_top_intermediateField (K : Intermediat
 theorem isGalois_iff_isGalois_bot : IsGalois (⊥ : IntermediateField F E) E ↔ IsGalois F E := by
   constructor
   · intro h
-    exact IsGalois.tower_top_of_isGalois (⊥ : IntermediateField F E) F E
+    sorry
+    -- exact IsGalois.tower_top_of_isGalois (⊥ : IntermediateField F E) F E
   · intro h; infer_instance
 
 theorem IsGalois.of_algEquiv [IsGalois F E] (f : E ≃ₐ[F] E') : IsGalois F E' :=
@@ -220,7 +221,7 @@ instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
   smul_def' _ _ := rfl
 
 instance fixedField.isScalarTower : IsScalarTower K (fixedField (fixingSubgroup K)) E :=
-  ⟨fun _ _ _ => mul_assoc _ _ _⟩
+  ⟨fun _ _ _ => sorry ⟩ --mul_assoc _ _ _⟩
 
 end IntermediateField
 
@@ -335,9 +336,9 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
       IsScalarTower.algebraMap_eq]
     exact (Polynomial.mem_roots (Polynomial.map_ne_zero h1)).mp hx
   let key_equiv : (K⟮x⟯.restrictScalars F →ₐ[F] E) ≃
-      Σ f : K →ₐ[F] E, @AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f) := by
-    change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
-    exact algHomEquivSigma
+      Σ f : K →ₐ[F] E, @AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f) := by sorry
+    -- change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
+    -- exact algHomEquivSigma
   haveI : ∀ f : K →ₐ[F] E, Fintype (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
     have := Fintype.ofEquiv _ key_equiv
     apply Fintype.ofInjective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2

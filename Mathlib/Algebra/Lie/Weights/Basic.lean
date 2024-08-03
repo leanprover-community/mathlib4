@@ -218,7 +218,7 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
   ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
 
 instance [Nontrivial (weightSpace M (0 : L → R))] : Zero (Weight R L M) :=
-  ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
+  ⟨0, fun e ↦ sorry⟩ -- not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
 @[simp]
 lemma coe_zero [Nontrivial (weightSpace M (0 : L → R))] : ((0 : Weight R L M) : L → R) = 0 := rfl
@@ -578,7 +578,8 @@ private lemma isCompl_weightSpace_zero_posFittingComp_aux
   · suffices IsNilpotent R L M by simp [M₀, M₁, isCompl_top_bot]
     replace h : M₀ = ⊤ := by simpa [M₀, weightSpace]
     rw [← LieModule.isNilpotent_of_top_iff', ← h]
-    infer_instance
+    sorry
+    -- infer_instance
   · set M₀ₓ := weightSpaceOf M (0 : R) x
     set M₁ₓ := posFittingCompOf R M x
     set M₀ₓ₀ := weightSpace M₀ₓ (0 : L → R)

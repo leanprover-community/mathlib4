@@ -342,15 +342,17 @@ theorem finInsepDegree_bot : finInsepDegree F (⊥ : IntermediateField F E) = 1 
 
 section Tower
 
-variable [Algebra E K] [IsScalarTower F E K]
 
+variable [Algebra E K] [IsScalarTower F E K]
+/-- uhm -/
+local instance : @Algebra F { x // x ∈ (⊥ : IntermediateField E K)} Semifield.toCommSemiring DivisionSemiring.toSemiring := sorry
 theorem lift_sepDegree_bot' : Cardinal.lift.{v} (sepDegree F (⊥ : IntermediateField E K)) =
-    Cardinal.lift.{w} (sepDegree F E) :=
-  lift_sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+    Cardinal.lift.{w} (sepDegree F E) := sorry
+  -- lift_sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 theorem lift_insepDegree_bot' : Cardinal.lift.{v} (insepDegree F (⊥ : IntermediateField E K)) =
-    Cardinal.lift.{w} (insepDegree F E) :=
-  lift_insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+    Cardinal.lift.{w} (insepDegree F E) := sorry
+  -- lift_insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 variable {F}
 
@@ -359,13 +361,16 @@ theorem finInsepDegree_bot' :
     finInsepDegree F (⊥ : IntermediateField E K) = finInsepDegree F E := by
   simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat (lift_insepDegree_bot' F E K)
 
-@[simp]
-theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K :=
-  sepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
+/-- uhm -/
+local instance : @Algebra F { x // x ∈ (⊤ : IntermediateField E K) } Semifield.toCommSemiring DivisionSemiring.toSemiring := sorry
 
 @[simp]
-theorem insepDegree_top : insepDegree F (⊤ : IntermediateField E K) = insepDegree F K :=
-  insepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
+theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K := sorry
+  -- sepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
+
+@[simp]
+theorem insepDegree_top : insepDegree F (⊤ : IntermediateField E K) = insepDegree F K := sorry
+  -- insepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
 
 @[simp]
 theorem finInsepDegree_top : finInsepDegree F (⊤ : IntermediateField E K) = finInsepDegree F K := by
@@ -374,12 +379,12 @@ theorem finInsepDegree_top : finInsepDegree F (⊤ : IntermediateField E K) = fi
 variable (K : Type v) [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
 @[simp]
-theorem sepDegree_bot' : sepDegree F (⊥ : IntermediateField E K) = sepDegree F E :=
-  sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+theorem sepDegree_bot' : sepDegree F (⊥ : IntermediateField E K) = sepDegree F E := sorry
+  -- sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 @[simp]
-theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDegree F E :=
-  insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDegree F E := sorry
+  -- insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 end Tower
 

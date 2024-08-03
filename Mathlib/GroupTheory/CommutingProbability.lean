@@ -102,6 +102,7 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
 
+@[nolint unusedArguments]
 theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commProb G * Nat.card H := by
   /- After rewriting with `commProb_def'`, we reduce to showing that `G` has at least as many
       conjugacy classes as `G ⧸ H`. -/

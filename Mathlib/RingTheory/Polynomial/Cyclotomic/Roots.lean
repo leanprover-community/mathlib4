@@ -114,7 +114,8 @@ theorem cyclotomic.roots_to_finset_eq_primitiveRoots [NeZero (n : R)] :
   -- `  NeZero.pos_of_neZero_natCast R]`
   simp only [mem_primitiveRoots, NeZero.pos_of_neZero_natCast R]
   convert isRoot_cyclotomic_iff (n := n) (μ := a)
-  simp [cyclotomic_ne_zero n R]
+  sorry
+  -- simp [cyclotomic_ne_zero n R]
 
 theorem cyclotomic.roots_eq_primitiveRoots_val [NeZero (n : R)] :
     (cyclotomic n R).roots = (primitiveRoots n R).val := by

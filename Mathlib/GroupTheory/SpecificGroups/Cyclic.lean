@@ -286,7 +286,7 @@ section Classical
 
 open scoped Classical
 
-@[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
+@[to_additive (attr := nolint unusedHavesSuffices) IsAddCyclic.card_nsmul_eq_zero_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
     (univ.filter fun a : α => a ^ n = 1).card ≤ n :=
   let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)

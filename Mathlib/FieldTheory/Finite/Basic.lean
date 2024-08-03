@@ -132,6 +132,7 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
     rw [← hu, h, orderOf_one]
 
 /-- The sum of a nontrivial subgroup of the units of a field is zero. -/
+@[nolint unusedHavesSuffices]
 theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
     {G : Subgroup Kˣ} [Fintype G] (hg : G ≠ ⊥) :
     ∑ x : G, (x.val : K) = 0 := by

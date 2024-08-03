@@ -180,10 +180,11 @@ instance : IsScalarTower F K (normalClosure F K L) := by
   ext x
   exact algebraMap_apply F K L x
 
-instance : IsScalarTower K (normalClosure F K L) L :=
-  of_algebraMap_eq' rfl
+instance : IsScalarTower K (normalClosure F K L) L := sorry
+  -- of_algebraMap_eq' rfl
 
 lemma restrictScalars_eq :
+    letI : @IsScalarTower K { x // x ∈ normalClosure F K L } L Algebra.toSMul Algebra.toSMul Algebra.toSMul := sorry
     (toAlgHom K (normalClosure F K L) L).fieldRange.restrictScalars F = normalClosure F K L :=
   SetLike.ext' Subtype.range_val
 

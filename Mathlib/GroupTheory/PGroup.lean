@@ -71,6 +71,7 @@ theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surj
   refine fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => ?_) (hG g)
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 
+@[nolint unusedArguments]
 theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
   hG.of_surjective (QuotientGroup.mk' H) Quotient.surjective_Quotient_mk''
 
@@ -268,6 +269,7 @@ theorem comap_subtype {H : Subgroup G} (hH : IsPGroup p H) {K : Subgroup G} :
     IsPGroup p (H.comap K.subtype) :=
   hH.comap_of_injective K.subtype Subtype.coe_injective
 
+@[nolint unusedArguments]
 theorem to_sup_of_normal_right {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
     [K.Normal] : IsPGroup p (H ⊔ K : Subgroup G) := by
   rw [← QuotientGroup.ker_mk' K, ← Subgroup.comap_map_eq]

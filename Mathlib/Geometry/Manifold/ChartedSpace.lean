@@ -1162,6 +1162,8 @@ theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
   exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn ⟨x⟩)
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
+    letI : ChartedSpace H { x // x ∈ V } := V.instChartedSpace
+    letI : ChartedSpace H { x // x ∈ U } := U.instChartedSpace
     (chartAt H (Set.inclusion hUV x)).symm
     =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
     Set.inclusion hUV ∘ (chartAt H x).symm := by

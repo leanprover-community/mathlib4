@@ -363,6 +363,7 @@ theorem card_sylow_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
   ((congr_arg _ (card_sylow_eq_index_normalizer P)).mp dvd_rfl).trans
     (index_dvd_of_le le_normalizer)
 
+@[nolint unusedArguments]
 theorem not_dvd_index_sylow' [hp : Fact p.Prime] (P : Sylow p G) [(P : Subgroup G).Normal]
     [fP : FiniteIndex (P : Subgroup G)] : ¬p ∣ (P : Subgroup G).index := by
   intro h

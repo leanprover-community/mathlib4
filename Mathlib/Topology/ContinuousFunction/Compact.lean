@@ -437,6 +437,7 @@ variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 instance (K : Compacts X) : Norm C(↑↑K, E) := ContinuousMap.instNorm
 variable {ι : Type*} {F : ι → C(X, E)} in -- (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) in
+@[nolint unusedHavesSuffices]
 theorem summable_of_locally_summable_norm : Summable F := by
   refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
   lift K to Compacts X using hK

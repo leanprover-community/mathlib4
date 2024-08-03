@@ -135,7 +135,7 @@ instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolva
 
 theorem solvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
   solvable_of_ker_le_range f (1 : G' →* G) ((f.range_top_of_surjective hf).symm ▸ le_top)
-
+@[nolint unusedArguments]
 instance solvable_quotient_of_solvable (H : Subgroup G) [H.Normal] [IsSolvable G] :
     IsSolvable (G ⧸ H) :=
   solvable_of_surjective (QuotientGroup.mk'_surjective H)

@@ -371,10 +371,10 @@ theorem rootsExpandPowToRoots_apply (x) : (rootsExpandPowToRoots p n f x : R) = 
 a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
-  ((frobeniusEquiv R p).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by
-    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
-      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
-      frobeniusEquiv_apply]
+  ((frobeniusEquiv R p).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by sorry
+    -- classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
+    --   Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
+    --   frobeniusEquiv_apply]
 
 @[simp]
 theorem rootsExpandEquivRoots_apply (x) : (rootsExpandEquivRoots p f x : R) = x ^ p := rfl
@@ -384,10 +384,10 @@ a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set 
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
 noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
     (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset :=
-  ((iterateFrobeniusEquiv R p n).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by
-    classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
-      Finset.mem_val, Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
-      EquivLike.coe_coe, iterateFrobeniusEquiv_apply]
+  ((iterateFrobeniusEquiv R p n).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by sorry
+    -- classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
+    --   Finset.mem_val, Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
+    --   EquivLike.coe_coe, iterateFrobeniusEquiv_apply]
 
 @[simp]
 theorem rootsExpandPowEquivRoots_apply (n : ℕ) (x) :

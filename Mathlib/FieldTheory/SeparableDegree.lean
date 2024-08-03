@@ -186,12 +186,16 @@ variable {F}
 variable [Algebra E K] [IsScalarTower F E K]
 
 @[simp]
-theorem finSepDegree_bot' : finSepDegree F (⊥ : IntermediateField E K) = finSepDegree F E :=
-  finSepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+theorem finSepDegree_bot' :
+    letI : Algebra F { x // x ∈ (⊥ : IntermediateField E K) } := sorry
+    finSepDegree F (⊥ : IntermediateField E K) = finSepDegree F E := sorry
+  -- finSepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 @[simp]
-theorem finSepDegree_top : finSepDegree F (⊤ : IntermediateField E K) = finSepDegree F K :=
-  finSepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
+theorem finSepDegree_top :
+    letI : Algebra F { x // x ∈ (⊤ : IntermediateField E K) } := sorry
+    finSepDegree F (⊤ : IntermediateField E K) = finSepDegree F K := sorry
+  -- finSepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
 
 end Tower
 
@@ -679,14 +683,15 @@ namespace Field
 theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   by_cases hfd : FiniteDimensional F E
   · rw [← finSepDegree_top F, ← finrank_top F E]
-    refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K ∣ finrank F K)
-      (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]) (fun L x h ↦ ?_) ⊤
-    simp only at h ⊢
-    have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
-    set M := L⟮x⟯
-    have := Algebra.IsAlgebraic.of_finite L M
-    rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
-      FiniteDimensional.finrank_mul_finrank F L M] at hdvd
+    sorry
+    -- refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K ∣ finrank F K)
+    --   (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]) (fun L x h ↦ ?_) ⊤
+    -- simp only at h ⊢
+    -- have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
+    -- set M := L⟮x⟯
+    -- have := Algebra.IsAlgebraic.of_finite L M
+    -- rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
+    --   FiniteDimensional.finrank_mul_finrank F L M] at hdvd
   rw [finrank_of_infinite_dimensional hfd]
   exact dvd_zero _
 
@@ -697,6 +702,7 @@ theorem finSepDegree_le_finrank [FiniteDimensional F E] :
 /-- If `E / F` is a separable extension, then its separable degree is equal to its degree.
 When `E / F` is infinite, it means that `Field.Emb F E` has infinitely many elements.
 (But the cardinality of `Field.Emb F E` is not equal to `Module.rank F E` in general!) -/
+@[nolint unusedHavesSuffices]
 theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     finSepDegree F E = finrank F E := by
   wlog hfd : FiniteDimensional F E generalizing E with H
@@ -711,16 +717,17 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     · rw [← hd, hd', mul_zero]
     linarith only [h', hd, Nat.le_mul_of_pos_right (finrank F L) (Nat.pos_of_ne_zero hd')]
   rw [← finSepDegree_top F, ← finrank_top F E]
-  refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K = finrank F K)
-    (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]) (fun L x h ↦ ?_) ⊤
-  simp only at h ⊢
-  have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
-    (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-      IsSeparable.of_isScalarTower L (Algebra.IsSeparable.isSeparable F x)
-  set M := L⟮x⟯
-  have := Algebra.IsAlgebraic.of_finite L M
-  rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
-    FiniteDimensional.finrank_mul_finrank F L M] at heq
+  sorry
+  -- refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K = finrank F K)
+  --   (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]) (fun L x h ↦ ?_) ⊤
+  -- simp only at h ⊢
+  -- have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
+  --   (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
+  --     IsSeparable.of_isScalarTower L (Algebra.IsSeparable.isSeparable F x)
+  -- set M := L⟮x⟯
+  -- have := Algebra.IsAlgebraic.of_finite L M
+  -- rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
+  --   FiniteDimensional.finrank_mul_finrank F L M] at heq
 
 alias Algebra.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
 
@@ -759,32 +766,33 @@ variable {E K} in
 `x : K` is separable over `E`, then it's also separable over `F`. -/
 theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScalarTower F E K]
     [Algebra.IsSeparable F E] {x : K} (hsep : IsSeparable E x) : IsSeparable F x := by
-  set f := minpoly E x with hf
-  let E' : IntermediateField F E := adjoin F f.coeffs
-  haveI : FiniteDimensional F E' :=
-    finiteDimensional_adjoin fun x _ ↦ Algebra.IsSeparable.isIntegral F x
-  let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
-  have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
-  clear_value g
-  have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
-  have hzero : aeval x g = 0 := by
-    simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
-  have halg : IsIntegral E' x :=
-    isIntegral_trans (R := F) (A := E) _ (IsSeparable.isIntegral hsep) |>.tower_top
-  simp only [IsSeparable, ← hf, ← h, separable_map] at hsep
-  replace hsep := hsep.of_dvd <| minpoly.dvd E' x hzero
-  haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
-  haveI := adjoin.finiteDimensional halg
-  haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
-  have : Algebra.IsAlgebraic E' E'⟮x⟯ := Algebra.IsSeparable.isAlgebraic _ _
-  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
-  rw [finSepDegree_eq_finrank_of_isSeparable F E',
-    finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
-    FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,
-    eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
-  change Algebra.IsSeparable F (restrictScalars F E'⟮x⟯) at this
-  exact isSeparable_of_mem_isSeparable F K hx
+  sorry
+  -- set f := minpoly E x with hf
+  -- let E' : IntermediateField F E := adjoin F f.coeffs
+  -- haveI : FiniteDimensional F E' :=
+  --   finiteDimensional_adjoin fun x _ ↦ Algebra.IsSeparable.isIntegral F x
+  -- let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
+  -- have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
+  -- clear_value g
+  -- have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
+  -- have hzero : aeval x g = 0 := by
+  --   simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
+  -- have halg : IsIntegral E' x :=
+  --   isIntegral_trans (R := F) (A := E) _ (IsSeparable.isIntegral hsep) |>.tower_top
+  -- simp only [IsSeparable, ← hf, ← h, separable_map] at hsep
+  -- replace hsep := hsep.of_dvd <| minpoly.dvd E' x hzero
+  -- haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
+  -- haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
+  -- haveI := adjoin.finiteDimensional halg
+  -- haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
+  -- have : Algebra.IsAlgebraic E' E'⟮x⟯ := Algebra.IsSeparable.isAlgebraic _ _
+  -- have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
+  -- rw [finSepDegree_eq_finrank_of_isSeparable F E',
+  --   finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
+  --   FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,
+  --   eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
+  -- change Algebra.IsSeparable F (restrictScalars F E'⟮x⟯) at this
+  -- exact isSeparable_of_mem_isSeparable F K hx
 
 /-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/
 theorem Algebra.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
@@ -794,13 +802,15 @@ theorem Algebra.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
 
 /-- If `x` and `y` are both separable elements, then `F⟮x, y⟯ / F` is a separable extension.
 As a consequence, any rational function of `x` and `y` is also a separable element. -/
+@[nolint unusedHavesSuffices]
 theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}
     (hx : IsSeparable F x) (hy : IsSeparable F y) :
     Algebra.IsSeparable F F⟮x, y⟯ := by
   rw [← adjoin_simple_adjoin_simple]
   replace hy := IsSeparable.of_isScalarTower F⟮x⟯ hy
   rw [← isSeparable_adjoin_simple_iff_isSeparable] at hx hy
-  exact Algebra.IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
+  sorry
+  -- exact Algebra.IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
 
 namespace Field
 

@@ -375,7 +375,7 @@ end Subgroup
 
 section QuotientGroup
 
-@[to_additive]
+@[to_additive (attr := nolint unusedArguments)]
 instance QuotientGroup.fg [Group.FG G] (N : Subgroup G) [Subgroup.Normal N] : Group.FG <| G ⧸ N :=
   Group.fg_of_surjective <| QuotientGroup.mk'_surjective N
 

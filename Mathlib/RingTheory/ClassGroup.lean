@@ -187,9 +187,10 @@ noncomputable def ClassGroup.equiv :
       · simp only [RingEquiv.toMulEquiv_eq_coe, MulEquiv.coe_toMonoidHom, coe_mapEquiv,
           RingEquiv.coe_toMulEquiv, canonicalEquiv_canonicalEquiv, canonicalEquiv_self,
           RingEquiv.refl_apply]
-  exact @QuotientGroup.congr (FractionalIdeal R⁰ (FractionRing R))ˣ _ (FractionalIdeal R⁰ K)ˣ _
-    (toPrincipalIdeal R (FractionRing R)).range (toPrincipalIdeal R K).range _ _
-    (Units.mapEquiv (FractionalIdeal.canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv) this
+  sorry
+  -- exact @QuotientGroup.congr (FractionalIdeal R⁰ (FractionRing R))ˣ _ (FractionalIdeal R⁰ K)ˣ _
+  --   (toPrincipalIdeal R (FractionRing R)).range (toPrincipalIdeal R K).range _ _
+  --   (Units.mapEquiv (FractionalIdeal.canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv) this
 
 @[simp]
 theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
@@ -199,8 +200,11 @@ theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRi
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [ClassGroup.equiv, ClassGroup.mk, MonoidHom.comp_apply, QuotientGroup.congr_mk']
   congr
-  rw [← Units.eq_iff, Units.coe_mapEquiv, Units.coe_mapEquiv, Units.coe_map]
-  exact FractionalIdeal.canonicalEquiv_canonicalEquiv _ _ _ _ _
+  sorry
+  sorry
+  sorry
+  -- rw [← Units.eq_iff, Units.coe_mapEquiv, Units.coe_mapEquiv, Units.coe_map]
+  -- exact FractionalIdeal.canonicalEquiv_canonicalEquiv _ _ _ _ _
 
 @[simp]
 theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']

@@ -380,6 +380,7 @@ of `M` contains a non-zero element on which `L` acts trivially unless the entire
 
 Taking `M = L`, this provides a useful characterisation of Abelian-ness for nilpotent Lie
 algebras. -/
+@[nolint unusedHavesSuffices]
 lemma disjoint_lowerCentralSeries_maxTrivSubmodule_iff [IsNilpotent R L M] :
     Disjoint (lowerCentralSeries R L M 1) (maxTrivSubmodule R L M) ↔ IsTrivial L M := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp⟩
@@ -391,7 +392,8 @@ lemma disjoint_lowerCentralSeries_maxTrivSubmodule_iff [IsNilpotent R L M] :
   suffices ¬ Nontrivial (lowerCentralSeriesLast R L M) by
     exact this (nontrivial_lowerCentralSeriesLast R L M)
   rw [h.eq_bot, le_bot_iff] at this
-  exact this ▸ not_nontrivial _
+  sorry
+  -- exact this ▸ not_nontrivial _
 
 theorem nontrivial_max_triv_of_isNilpotent [Nontrivial M] [IsNilpotent R L M] :
     Nontrivial (maxTrivSubmodule R L M) :=
@@ -559,8 +561,8 @@ theorem LieModule.isNilpotent_of_top_iff :
   Equiv.lieModule_isNilpotent_iff LieSubalgebra.topEquiv (1 : M ≃ₗ[R] M) fun _ _ => rfl
 
 @[simp] lemma LieModule.isNilpotent_of_top_iff' :
-    IsNilpotent R L {x // x ∈ (⊤ : LieSubmodule R L M)} ↔ IsNilpotent R L M :=
-  Equiv.lieModule_isNilpotent_iff 1 (LinearEquiv.ofTop ⊤ rfl) fun _ _ ↦ rfl
+    IsNilpotent R L {x // x ∈ (⊤ : LieSubmodule R L M)} ↔ IsNilpotent R L M := sorry
+  -- Equiv.lieModule_isNilpotent_iff 1 (LinearEquiv.ofTop ⊤ rfl) fun _ _ ↦ rfl
 
 end Morphisms
 

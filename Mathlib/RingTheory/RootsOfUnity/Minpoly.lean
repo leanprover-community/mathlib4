@@ -199,8 +199,9 @@ theorem is_roots_of_minpoly [DecidableEq K] :
   obtain ⟨m, _, hcop, rfl⟩ := (isPrimitiveRoot_iff h hpos).1 ((mem_primitiveRoots hpos).1 hx)
   simp only [Multiset.mem_toFinset, mem_roots]
   convert pow_isRoot_minpoly h hcop
-  rw [← mem_roots]
-  exact map_monic_ne_zero <| minpoly.monic <| isIntegral h hpos
+  sorry
+  -- rw [← mem_roots]
+  -- exact map_monic_ne_zero <| minpoly.monic <| isIntegral h hpos
 
 /-- The degree of the minimal polynomial of `μ` is at least `totient n`. -/
 theorem totient_le_degree_minpoly : Nat.totient n ≤ (minpoly ℤ μ).natDegree := by

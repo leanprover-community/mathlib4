@@ -113,6 +113,7 @@ theorem trans [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : 
 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a free algebra whose variables are indexed by a finset. -/
+@[nolint unusedHavesSuffices]
 theorem iff_quotient_freeAlgebra :
     FiniteType R A ↔
       ∃ (s : Finset A) (f : FreeAlgebra R s →ₐ[R] A), Surjective f := by
@@ -130,6 +131,7 @@ theorem iff_quotient_freeAlgebra :
 
 /-- A commutative algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a finset. -/
+@[nolint unusedHavesSuffices]
 theorem iff_quotient_mvPolynomial :
     FiniteType R S ↔
       ∃ (s : Finset S) (f : MvPolynomial { x // x ∈ s } R →ₐ[R] S), Surjective f := by

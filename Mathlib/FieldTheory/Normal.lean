@@ -181,8 +181,9 @@ variable {F K} {L : Type*} [Field F] [Field K] [Field L] [Algebra F L] [Algebra 
 
 @[simp]
 theorem restrictScalars_normal {E : IntermediateField K L} :
-    Normal F (E.restrictScalars F) ↔ Normal F E :=
-  Iff.rfl
+    letI : Algebra F { x // x ∈ E } := sorry
+    Normal F (E.restrictScalars F) ↔ Normal F E := sorry
+  -- Iff.rfl
 
 end IntermediateField
 

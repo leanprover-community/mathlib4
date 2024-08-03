@@ -465,6 +465,7 @@ variable [Nontrivial R]
 
 /-- If `M` and `N` are linearly disjoint, if `M` is flat, then any two commutative
 elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
+@[nolint unusedHavesSuffices]
 theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
   let n : Fin 2 → N := (inclusion inf_le_right) ∘ ![a, b]
@@ -482,6 +483,7 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
 
 /-- If `M` and `N` are linearly disjoint, if `N` is flat, then any two commutative
 elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
+@[nolint unusedHavesSuffices]
 theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
   let m : Fin 2 → M := (inclusion inf_le_left) ∘ ![a, b]

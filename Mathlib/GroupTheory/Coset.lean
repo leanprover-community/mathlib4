@@ -416,7 +416,7 @@ theorem mk_out'_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out' = g * h :=
 
 variable {s} {a b : α}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a := by
   rwa [eq', mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
 

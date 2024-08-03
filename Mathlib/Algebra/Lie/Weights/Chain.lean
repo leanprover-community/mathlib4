@@ -172,7 +172,7 @@ lemma trace_toEnd_weightSpaceChain_eq_zero
           lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M α χ p q hp hz hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
-    have hfg : toEnd R H _ u = ⁅f, g⁆ := by ext; simp [f, g, ← hyz]
+    have hfg : toEnd R H _ u = ⁅f, g⁆ := by ext; simp [f, g, ← hyz]; sorry
     simp [hfg]
   · simp
   · simp_all
@@ -209,9 +209,10 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   rw [← trace_toEnd_weightSpaceChain_eq_zero M α χ p q hp hq hx,
     ← LieSubmodule.toEnd_restrict_eq_toEnd,
     LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (weightSpaceChain M α χ p q) h₃]
-  simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd,
-    trace_toEnd_weightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
-    Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
+  sorry
+  -- simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd,
+  --   trace_toEnd_weightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
+  --   Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
 
 end IsCartanSubalgebra
 

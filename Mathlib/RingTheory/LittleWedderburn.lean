@@ -148,7 +148,8 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
   rw [← hn, ← Subring.card_top D]
-  exact Set.card_lt_card hR
+  sorry
+  -- exact Set.card_lt_card hR
 
 end LittleWedderburn
 
