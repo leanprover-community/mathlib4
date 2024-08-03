@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Commutative squares that are pushout or pullback squares
@@ -16,7 +17,7 @@ squares in a category `C`.
 
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 
@@ -106,10 +107,24 @@ lemma IsPullback.op {sq : Square C} (h : sq.IsPullback) : sq.op.IsPushout :=
 lemma IsPullback.unop {sq : Square Cᵒᵖ} (h : sq.IsPullback) : sq.unop.IsPushout :=
   CategoryTheory.IsPullback.unop h.flip
 
+variable {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
+
+lemma IsPullback.map {sq : Square C} [PreservesLimitsOfShape WalkingCospan F] (h : sq.IsPullback) :
+    (sq.map F).IsPullback :=
+  F.map_isPullback h
+
+lemma IsPullback.of_map {sq : Square C} [ReflectsLimitsOfShape WalkingCospan F]
+    (h : (sq.map F).IsPullback) : sq.IsPullback :=
+  CategoryTheory.IsPullback.of_map F sq.fac h
+
+lemma IsPullback.map_iff {sq : Square C} [PreservesLimitsOfShape WalkingCospan F]
+    [ReflectsLimitsOfShape WalkingCospan F] : (sq.map F).IsPullback ↔ sq.IsPullback :=
+  ⟨IsPullback.of_map _, IsPullback.map _⟩
+
 section
 
 variable
-  {sq₁ : Square (Type v)} (h₁ : sq₁.IsPullback)
+  {sq₁ : Square (Type v)}
   {sq₂ : Square (Type u)}
   (e₁ : sq₁.X₁ ≃ sq₂.X₁) (e₂ : sq₁.X₂ ≃ sq₂.X₂)
   (e₃ : sq₁.X₃ ≃ sq₂.X₃) (e₄ : sq₁.X₄ ≃ sq₂.X₄)
@@ -118,41 +133,25 @@ variable
   (comm₂₄ : e₄ ∘ sq₁.f₂₄ = sq₂.f₂₄ ∘ e₂)
   (comm₃₄ : e₄ ∘ sq₁.f₃₄ = sq₂.f₃₄ ∘ e₃)
 
-lemma IsPullback.of_equiv : sq₂.IsPullback := by
-  apply Square.IsPullback.mk
-  refine (PullbackCone.isLimitEquivBijective sq₂.pullbackCone).symm ?_
-  let e := Types.pullbackMapEquiv sq₁.f₂₄ sq₁.f₃₄ sq₂.f₂₄ sq₂.f₃₄ e₂ e₃ e₄
-    (congr_fun comm₂₄) (congr_fun comm₃₄)
-  have : e ∘ sq₁.pullbackCone.toPullbackObj =
-      sq₂.pullbackCone.toPullbackObj ∘ e₁ := by
-    ext x
-    · exact congr_fun comm₁₂ x
-    · exact congr_fun comm₁₃ x
-  apply (Function.Bijective.of_comp_iff sq₂.pullbackCone.toPullbackObj
-    e₁.bijective).1
-  rw [← this, EquivLike.comp_bijective]
-  exact (PullbackCone.isLimitEquivBijective sq₁.pullbackCone) h₁.isLimit
-
-variable (sq₁ sq₂)
-
+variable (sq₁ sq₂) in
 lemma IsPullback.iff_of_equiv : sq₁.IsPullback ↔ sq₂.IsPullback := by
-  constructor
-  · intro h₁
-    exact h₁.of_equiv e₁ e₂ e₃ e₄ comm₁₂ comm₁₃ comm₂₄ comm₃₄
-  · intro h₂
-    refine h₂.of_equiv e₁.symm e₂.symm e₃.symm e₄.symm ?_ ?_ ?_ ?_
-    · ext x
-      obtain ⟨x, rfl⟩ := e₁.surjective x
-      simpa using congr_arg e₂.symm (congr_fun comm₁₂.symm x)
-    · ext x
-      obtain ⟨x, rfl⟩ := e₁.surjective x
-      simpa using congr_arg e₃.symm (congr_fun comm₁₃.symm x)
-    · ext x
-      obtain ⟨x, rfl⟩ := e₂.surjective x
-      simpa using congr_arg e₄.symm (congr_fun comm₂₄.symm x)
-    · ext x
-      obtain ⟨x, rfl⟩ := e₃.surjective x
-      simpa using congr_arg e₄.symm (congr_fun comm₃₄.symm x)
+  rw [← IsPullback.map_iff (sq := sq₁) uliftFunctor.{max u v},
+      ← IsPullback.map_iff (sq := sq₂) uliftFunctor.{max u v}]
+  apply iff_of_iso
+  refine Square.isoMk
+    (((Equiv.trans Equiv.ulift e₁).trans Equiv.ulift.symm).toIso)
+    (((Equiv.trans Equiv.ulift e₂).trans Equiv.ulift.symm).toIso)
+    (((Equiv.trans Equiv.ulift e₃).trans Equiv.ulift.symm).toIso)
+    (((Equiv.trans Equiv.ulift e₄).trans Equiv.ulift.symm).toIso)
+    ?_ ?_ ?_ ?_
+  all_goals ext; apply ULift.down_injective
+  · simpa [types_comp, uliftFunctor_map] using congrFun comm₁₂ _
+  · simpa [types_comp, uliftFunctor_map] using congrFun comm₁₃ _
+  · simpa [types_comp, uliftFunctor_map] using congrFun comm₂₄ _
+  · simpa [types_comp, uliftFunctor_map] using congrFun comm₃₄ _
+
+lemma IsPullback.of_equiv (h₁ : sq₁.IsPullback) : sq₂.IsPullback :=
+  (iff_of_equiv sq₁ sq₂ e₁ e₂ e₃ e₄ comm₁₂ comm₁₃ comm₂₄ comm₃₄).1 h₁
 
 end
 
