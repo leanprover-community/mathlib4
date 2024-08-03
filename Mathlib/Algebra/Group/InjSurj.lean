@@ -6,8 +6,8 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Spread
+import Mathlib.Util.Term.Basic
 
 /-!
 # Lifting algebraic data classes along injective/surjective maps
