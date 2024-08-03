@@ -65,6 +65,7 @@ end Pseudofunctor.Bicategory
 
 variable (B C)
 
+
 /-- A bicategory structure on the pseudofunctors between two bicategories. -/
 @[simps!]
 instance Pseudofunctor.bicategory : Bicategory (Pseudofunctor B C) where
@@ -76,6 +77,5 @@ instance Pseudofunctor.bicategory : Bicategory (Pseudofunctor B C) where
   whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
   pentagon f g h i := by ext; exact pentagon _ _ _ _
   triangle f g := by ext; exact triangle _ _
-
 
 end CategoryTheory
