@@ -405,6 +405,17 @@ lemma rnDeriv_le_one_of_le (hμν : μ ≤ ν) [SigmaFinite ν] : μ.rnDeriv ν 
   simp only [Pi.one_apply, MeasureTheory.setLIntegral_one]
   exact (Measure.setLIntegral_rnDeriv_le s).trans (hμν s)
 
+lemma rnDeriv_le_one_iff_le [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    μ.rnDeriv ν ≤ᵐ[ν] 1 ↔ μ ≤ ν := by
+  refine ⟨fun h s ↦ ?_, fun h ↦ rnDeriv_le_one_of_le h⟩
+  rw [← withDensity_rnDeriv_eq _ _ hμν, withDensity_apply', ← setLIntegral_one]
+  exact setLIntegral_mono_ae aemeasurable_const (h.mono fun _ hh _ ↦ hh)
+
+lemma rnDeriv_eq_one_iff_eq [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    μ.rnDeriv ν =ᵐ[ν] 1 ↔ μ = ν := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ ν.rnDeriv_self⟩
+  rw [← withDensity_rnDeriv_eq _ _ hμν, withDensity_congr_ae h, withDensity_one]
+
 section MeasurableEmbedding
 
 variable {mβ : MeasurableSpace β} {f : α → β}
