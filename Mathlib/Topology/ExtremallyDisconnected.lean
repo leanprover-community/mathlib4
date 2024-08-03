@@ -6,8 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.StoneCech
 
-#align_import topology.extremally_disconnected from "leanprover-community/mathlib"@"7e281deff072232a3c5b3e90034bd65dde396312"
-
 /-!
 # Extremally disconnected spaces
 
@@ -37,8 +35,6 @@ open Function Set
 
 universe u
 
-section
-
 variable (X : Type u) [TopologicalSpace X]
 
 /-- An extremally disconnected topological space is a space
@@ -46,7 +42,12 @@ in which the closure of every open set is open. -/
 class ExtremallyDisconnected : Prop where
   /-- The closure of every open set is open. -/
   open_closure : ∀ U : Set X, IsOpen U → IsOpen (closure U)
-#align extremally_disconnected ExtremallyDisconnected
+
+theorem extremallyDisconnected_of_homeo {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [ExtremallyDisconnected X] (e : X ≃ₜ Y) : ExtremallyDisconnected Y where
+  open_closure U hU := by
+    rw [e.symm.inducing.closure_eq_preimage_closure_image, Homeomorph.isOpen_preimage]
+    exact ExtremallyDisconnected.open_closure _ (e.symm.isOpen_image.mpr hU)
 
 section TotallySeparated
 
@@ -76,7 +77,6 @@ def CompactT2.Projective : Prop :=
     ∀ [CompactSpace Y] [T2Space Y] [CompactSpace Z] [T2Space Z],
       ∀ {f : X → Z} {g : Y → Z} (_ : Continuous f) (_ : Continuous g) (_ : Surjective g),
         ∃ h : X → Y, Continuous h ∧ g ∘ h = f
-#align compact_t2.projective CompactT2.Projective
 
 variable {X}
 
@@ -90,7 +90,6 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
   have hh : Continuous h := continuous_stoneCechExtend ht
   refine ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf ?_⟩
   rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, id_comp]
-#align stone_cech.projective StoneCech.projective
 
 protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
     (h : CompactT2.Projective X) : ExtremallyDisconnected X := by
@@ -128,7 +127,6 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
     · exact hφ
   · rw [← hφ₁ x]
     exact hx.1
-#align compact_t2.projective.extremally_disconnected CompactT2.Projective.extremallyDisconnected
 
 end
 
@@ -308,3 +306,5 @@ instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, Top
     · rw [sigma_mk_preimage_image' ij]
       exact isOpen_empty
   · continuity
+
+end

@@ -29,8 +29,6 @@ Options:
   otherwise if the graph is not a tree nodes may be visited multiple times.
 -/
 
-set_option autoImplicit true
-
 open Batteries EstimatorData Estimator Set
 
 /-!
@@ -82,12 +80,14 @@ except in cases where the node arrives at the front of the queue.
 section
 
 /-- A node in a `BestFirstQueue`. -/
-structure BestFirstNode (prio : α → Thunk ω) (ε : α → Type) where
+structure BestFirstNode {α : Sort*} {ω : Type*} (prio : α → Thunk ω) (ε : α → Type) where
   /-- The data to store at a node, from which we can calculate a priority using `prio`. -/
   key : α
   /-- An estimator for the priority of the key.
   (We will assume we have `[∀ a : α, Estimator (prio a) (ε a)]`.) -/
   estimator : ε key
+
+set_option autoImplicit true
 
 variable {α : Type} {prio : α → Thunk ω} {ε : α → Type} [LinearOrder ω]
   [∀ a, Estimator (prio a) (ε a)]
@@ -303,11 +303,11 @@ def bestFirstSearchCore (f : α → MLList m α) (a : α)
 
 end
 
-variable [Monad m] [Alternative m] [LinearOrder α]
+variable {m : Type → Type} {α : Type} [Monad m] [Alternative m] [LinearOrder α]
 
 /-- A local instance that enables using "the actual value" as a priority estimator,
 for simple use cases. -/
-local instance instOrderBotEq : OrderBot { x : α // x = a } where
+local instance instOrderBotEq {a : α} : OrderBot { x : α // x = a } where
   bot := ⟨a, rfl⟩
   bot_le := by aesop
 
