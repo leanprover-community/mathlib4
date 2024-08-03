@@ -68,6 +68,7 @@ def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
   map f := ⟨toTopMap f, by continuity⟩
   map_id := by
+    classical
     intro Δ
     ext f
     apply toTopObj.ext
@@ -76,6 +77,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     change (Finset.univ.filter (· = i)).sum _ = _
     simp [Finset.sum_filter, CategoryTheory.id_apply]
   map_comp := fun f g => by
+    classical
     ext h
     apply toTopObj.ext
     funext i

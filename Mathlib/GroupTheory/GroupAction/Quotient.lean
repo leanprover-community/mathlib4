@@ -119,8 +119,8 @@ theorem _root_.MulActionHom.toQuotient_apply (H : Subgroup α) (g : α) :
 instance mulLeftCosetsCompSubtypeVal (H I : Subgroup α) : MulAction I (α ⧸ H) :=
   MulAction.compHom (α ⧸ H) (Subgroup.subtype I)
 
--- Porting note: Needed to insert [Group α] here
-variable (α) [Group α] [MulAction α β] (x : β)
+variable (α)
+variable [MulAction α β] (x : β)
 
 /-- The canonical map from the quotient of the stabilizer to the set. -/
 @[to_additive "The canonical map from the quotient of the stabilizer to the set. "]

@@ -511,6 +511,11 @@ protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := by
       _ = m := mod_add_div _ _
       _ ≤ k * n := h
 
+protected lemma div_le_div_of_mul_le_mul (hd : d ≠ 0) (hdc : d ∣ c) (h : a * d ≤ c * b) :
+    a / b ≤ c / d :=
+  Nat.div_le_of_le_mul' $ by
+    rwa [← Nat.mul_div_assoc _ hdc, Nat.le_div_iff_mul_le (Nat.pos_iff_ne_zero.2 hd), b.mul_comm]
+
 protected lemma div_le_self' (m n : ℕ) : m / n ≤ m := by
   obtain rfl | hn := n.eq_zero_or_pos
   · simp

@@ -60,7 +60,7 @@ perfect ring, perfect closure, purely inseparable
 
 -/
 
-open FiniteDimensional IntermediateField Field
+open FiniteDimensional Polynomial IntermediateField Field
 
 noncomputable section
 
