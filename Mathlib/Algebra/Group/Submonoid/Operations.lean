@@ -1182,3 +1182,18 @@ namespace Nat
   exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
 
 end Nat
+
+namespace Submonoid
+
+variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
+
+@[to_additive]
+theorem map_comap_eq (f : F) (S : Submonoid N) : (S.comap f).map f = S ⊓ MonoidHom.mrange f :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+@[to_additive]
+theorem map_comap_eq_self {f : F} {S : Submonoid N} (h : S ≤ MonoidHom.mrange f) :
+    (S.comap f).map f = S := by
+  simpa only [inf_of_le_left h] using map_comap_eq f S
+
+end Submonoid

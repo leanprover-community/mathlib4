@@ -122,7 +122,7 @@ theorem equivariantProjection_apply (v : W) :
 theorem equivariantProjection_condition (v : V) : (π.equivariantProjection G) (i v) = v := by
   rw [equivariantProjection_apply]
   simp only [conjugate_i π i h]
-  rw [Finset.sum_const, Finset.card_univ, nsmul_eq_smul_cast k, smul_smul,
+  rw [Finset.sum_const, Finset.card_univ, ← Nat.cast_smul_eq_nsmul k, smul_smul,
     Invertible.invOf_mul_self, one_smul]
 
 end
