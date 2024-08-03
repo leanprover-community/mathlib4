@@ -164,7 +164,7 @@ class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalS
 /-- Normed spaces are analytic manifolds over themselves -/
 instance AnalyticManifold.self : AnalyticManifold 𝓘(𝕜, E) E where
 
-/-- `M × N` is a analytic manifold if `M` and `N` are -/
+/-- `M × N` is an analytic manifold if `M` and `N` are -/
 instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [CompleteSpace E] [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     [CompleteSpace F] [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
