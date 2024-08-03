@@ -494,3 +494,29 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
       refine fun hif => hif.trans ?_
       exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
+
+variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
+
+lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
+    Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
+  rw [Real.singleton_eq_inter_Icc]
+  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc)
+  · intro r s _rpos hrs
+    exact Icc_subset_Icc (by linarith) (by linarith)
+  · exact ⟨1, zero_lt_one, isCompact_Icc.measure_ne_top⟩
+
+lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
+    Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[≥] (0 : ℝ)) (𝓝 (μ {b})) := by
+  simp only [← nhdsWithin_right_sup_nhds_singleton, nhdsWithin_singleton, tendsto_sup,
+    tendsto_measure_Icc_nhdsWithin_right' μ b, true_and, tendsto_pure_left]
+  intro s hs
+  simpa using mem_of_mem_nhds hs
+
+lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
+    Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝 (0 : ℝ)) (𝓝 0) := by
+  rw [← nhds_left'_sup_nhds_right, tendsto_sup]
+  constructor
+  · apply tendsto_const_nhds.congr'
+    filter_upwards [self_mem_nhdsWithin] with r (hr : r < 0)
+    rw [Icc_eq_empty (by linarith), measure_empty]
+  · simpa only [measure_singleton] using tendsto_measure_Icc_nhdsWithin_right μ b
