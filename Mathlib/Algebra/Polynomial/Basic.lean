@@ -253,7 +253,7 @@ instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 instance semiring : Semiring R[X] :=
   delta% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
     toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl
-、
+
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩
