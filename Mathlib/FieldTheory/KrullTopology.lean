@@ -52,7 +52,7 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `krullTopology K L` is defined as an instance for type class inference.
 -/
 
-open scoped Classical Pointwise
+open scoped Pointwise
 
 /-- Mapping intermediate fields along the identity does not change them -/
 theorem IntermediateField.map_id {K L : Type*} [Field K] [Field L] [Algebra K L]
