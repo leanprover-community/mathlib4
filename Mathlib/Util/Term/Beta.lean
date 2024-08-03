@@ -15,7 +15,7 @@ The purpose of this is to support substitutions in notations such as
 `∀ i, beta% p i` so that `p i` gets beta reduced when `p` is a lambda.
 -/
 
-namespace Mathlib.Util.TermBeta
+namespace Mathlib.Util.Term.Beta
 
 open Lean Elab Term
 
