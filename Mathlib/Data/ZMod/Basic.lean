@@ -551,7 +551,11 @@ theorem natCast_eq_natCast_iff' (a b c : ℕ) : (a : ZMod c) = (b : ZMod c) ↔ 
 alias nat_cast_eq_nat_cast_iff' := natCast_eq_natCast_iff'
 
 theorem intCast_zmod_eq_zero_iff_dvd (a : ℤ) (b : ℕ) : (a : ZMod b) = 0 ↔ (b : ℤ) ∣ a := by
-  rw [← Int.cast_zero, ZMod.intCast_eq_intCast_iff, Int.modEq_zero_iff_dvd]
+  rcases eq_or_ne b 0 with _ | h
+  · exact CharP.intCast_eq_zero_iff (ZMod b) b a
+  · haveI : NeZero b := { out := h }
+    rw [← val_eq_zero]; zify
+    rw [val_intCast, Int.dvd_iff_emod_eq_zero]
 
 @[deprecated (since := "2024-04-17")]
 alias int_cast_zmod_eq_zero_iff_dvd := intCast_zmod_eq_zero_iff_dvd
