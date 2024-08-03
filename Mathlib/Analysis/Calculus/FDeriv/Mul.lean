@@ -609,7 +609,7 @@ theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} 
   refine .congr_fderiv hasStrictFDerivAt_list_prod' ?_
   conv_rhs => arg 1; arg 2; rw [← List.finRange_map_get l]
   simp only [List.map_map, ← List.sum_toFinset _ (List.nodup_finRange _), List.toFinset_finRange,
-    Function.comp_def, ((List.erase_get _).map _).prod_eq, List.eraseIdx_eq_take_drop_succ,
+    Function.comp_def, ((List.erase_getElem _).map _).prod_eq, List.eraseIdx_eq_take_drop_succ,
     List.map_append, List.prod_append]
   exact Finset.sum_congr rfl fun i _ ↦ by
     ext; simp only [smul_apply, smulRight_apply, smul_eq_mul]; ring
