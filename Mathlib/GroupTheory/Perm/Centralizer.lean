@@ -104,6 +104,13 @@ theorem Subgroup.centralizer_card_eq :
   erw [Set.preimage_equiv_eq_image_symm]
   exact Set.ncard_image_of_injective _ ConjAct.ofConjAct.injective
 
+variable {g} in
+lemma Subgroup.mem_centralizer_singleton_iff {k : G} :
+    k ∈ Subgroup.centralizer {g} ↔ k * g = g * k := by
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
+  rw [eq_comm]
+
+
 end
 
 open scoped Pointwise
@@ -141,12 +148,6 @@ theorem CycleType.count_def (n : ℕ) :
 namespace OnCycleFactors
 
 variable (g)
-
-variable {g} in
-lemma Subgroup.mem_centralizer_singleton_iff {k : Perm α} :
-    k ∈ Subgroup.centralizer {g} ↔ k * g = g * k := by
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
-  rw [eq_comm]
 
 variable {g} in
 lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset
