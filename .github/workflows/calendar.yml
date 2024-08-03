@@ -3,6 +3,7 @@ name: Calendar event reminder
 on:
   schedule:
     - cron: '*/15 * * * *'  # Run every 15 minutes
+  push:
 
 jobs:
   run-script:
@@ -21,7 +22,7 @@ jobs:
     - name: Collect calendar reminders
       id: collect_msg
       run: |
-        printf $'summary<<EOF\n%s\nEOF' "$(python .scripts/leanCal.py ${{ secrets.MAINTAINER_CALENDAR_URL }})" >> "$GITHUB_OUTPUT"
+        printf $'summary<<EOF\n%s\nEOF' "$(python scripts/leanCal.py ${{ secrets.MAINTAINER_CALENDAR_URL }})" >> "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@v1
@@ -32,5 +33,5 @@ jobs:
         organization-url: 'https://leanprover.zulipchat.com'
         to: 'mathlib maintainers'
         type: 'stream'
-        topic: Events reminders
+        topic: 'Event reminders'
         content: ${{ steps.collect_msg.outputs.summary }}
