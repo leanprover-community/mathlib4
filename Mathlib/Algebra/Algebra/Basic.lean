@@ -223,8 +223,8 @@ section Nat
 variable {R : Type*} [Semiring R]
 
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
--- `ℕ`-algebras. This is only an issue since `Algebra.id` and `Semiring.toNatAlgebra` are not yet defeq.
--- TODO: fix this by adding an `ofNat` field to semirings.
+-- `ℕ`-algebras.
+-- TODO: is this still needed?
 /-- Semiring ⥤ ℕ-Alg -/
 instance (priority := 99) Semiring.toNatAlgebra : Algebra ℕ R where
   commutes' := Nat.cast_commute
