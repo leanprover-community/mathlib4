@@ -394,9 +394,9 @@ theorem msymm_one : msymm σ R (.indiscrete 1) = ∑ i, X i := by
 theorem rename_msymm (μ : n.Partition) (e : σ ≃ τ) :
     rename e (msymm σ R μ) = msymm τ R μ := by
   rw [msymm, map_sum]
-  apply Fintype.sum_equiv (Nat.Partition.ofSym_shape_equiv μ e)
+  apply Fintype.sum_equiv (Nat.Partition.ofSymShapeEquiv μ e)
   intro
-  rw [← Multiset.prod_hom, Multiset.map_map, Nat.Partition.ofSym_shape_equiv]
+  rw [← Multiset.prod_hom, Multiset.map_map, Nat.Partition.ofSymShapeEquiv]
   simp
 
 theorem msymm_isSymmetric (μ : n.Partition) : IsSymmetric (msymm σ R μ) :=
