@@ -48,8 +48,7 @@ type of linear trivializations is not even particularly well-behaved.
 -/
 
 open TopologicalSpace Filter Set Bundle Function
-
-open scoped Topology Classical Bundle
+open scoped Topology
 
 variable {ι : Type*} {B : Type*} {F : Type*} {E : B → Type*}
 variable (F) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
@@ -216,6 +215,7 @@ section Zero
 
 variable [∀ x, Zero (E x)]
 
+open Classical in
 /-- A fiberwise inverse to `e`. This is the function `F → E b` that induces a local inverse
 `B × F → TotalSpace F E` of `e` on `e.baseSet`. It is defined to be `0` outside `e.baseSet`. -/
 protected noncomputable def symm (e : Pretrivialization F (π F E)) (b : B) (y : F) : E b :=
@@ -666,6 +666,7 @@ theorem frontier_preimage (e : Trivialization F proj) (s : Set B) :
   rw [← (e.isImage_preimage_prod s).frontier.preimage_eq, frontier_prod_univ_eq,
     (e.isImage_preimage_prod _).preimage_eq, e.source_eq, preimage_inter]
 
+open Classical in
 /-- Given two bundle trivializations `e`, `e'` of `proj : Z → B` and a set `s : Set B` such that
 the base sets of `e` and `e'` intersect `frontier s` on the same set and `e p = e' p` whenever
 `proj p ∈ e.baseSet ∩ frontier s`, `e.piecewise e' s Hs Heq` is the bundle trivialization over
@@ -713,6 +714,7 @@ noncomputable def piecewiseLe [LinearOrder B] [OrderTopology B] (e e' : Triviali
     · simp [e.coe_fst', e'.coe_fst', *]
     · simp [coordChange_apply_snd, *]
 
+open Classical in
 /-- Given two bundle trivializations `e`, `e'` over disjoint sets, `e.disjoint_union e' H` is the
 bundle trivialization over the union of the base sets that agrees with `e` and `e'` over their
 base sets. -/

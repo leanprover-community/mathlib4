@@ -13,7 +13,8 @@ import Mathlib.Topology.Compactness.LocallyCompact
   of a countable collection of compact subspaces.
 
 -/
-open Set Filter Topology TopologicalSpace Classical
+
+open Set Filter Topology TopologicalSpace
 
 universe u v
 
@@ -367,15 +368,18 @@ theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s �
     exact mem_iUnion.2 ⟨k + 1, K.subset_interior_succ _ hk⟩
   · exact Monotone.directed_le fun _ _ h ↦ interior_mono <| K.subset h
 
+open Classical in
 /-- The minimal `n` such that `x ∈ K n`. -/
 protected noncomputable def find (x : X) : ℕ :=
   Nat.find (K.exists_mem x)
 
-theorem mem_find (x : X) : x ∈ K (K.find x) :=
-  Nat.find_spec (K.exists_mem x)
+theorem mem_find (x : X) : x ∈ K (K.find x) := by
+  classical
+  exact Nat.find_spec (K.exists_mem x)
 
-theorem mem_iff_find_le {x : X} {n : ℕ} : x ∈ K n ↔ K.find x ≤ n :=
-  ⟨fun h => Nat.find_min' (K.exists_mem x) h, fun h => K.subset h <| K.mem_find x⟩
+theorem mem_iff_find_le {x : X} {n : ℕ} : x ∈ K n ↔ K.find x ≤ n := by
+  classical
+  exact ⟨fun h => Nat.find_min' (K.exists_mem x) h, fun h => K.subset h <| K.mem_find x⟩
 
 /-- Prepend the empty set to a compact exhaustion `K n`. -/
 def shiftr : CompactExhaustion X where
@@ -385,8 +389,9 @@ def shiftr : CompactExhaustion X where
   iUnion_eq' := iUnion_eq_univ_iff.2 fun x => ⟨K.find x + 1, K.mem_find x⟩
 
 @[simp]
-theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 :=
-  Nat.find_comp_succ _ _ (not_mem_empty _)
+theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 := by
+  classical
+  exact Nat.find_comp_succ _ _ (not_mem_empty _)
 
 theorem mem_diff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,

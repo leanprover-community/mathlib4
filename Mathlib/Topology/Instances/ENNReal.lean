@@ -17,7 +17,7 @@ import Mathlib.Topology.Order.T5
 noncomputable section
 
 open Set Filter Metric Function
-open scoped Classical Topology ENNReal NNReal Filter
+open scoped Topology ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -348,6 +348,7 @@ protected theorem Tendsto.mul_const {f : Filter α} {m : α → ℝ≥0∞} {a b
 theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
+  classical
   induction' s using Finset.induction with a s has IH
   · simp [tendsto_const_nhds]
   simp only [Finset.prod_insert has]
@@ -920,6 +921,7 @@ theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
   calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
   _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
 
+open Classical in
 theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
     ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) :=
   tsum_eq_add_tsum_ite' b ENNReal.summable
@@ -1064,6 +1066,7 @@ theorem summable_sigma {β : α → Type*} {f : (Σ x, β x) → ℝ≥0} :
 
 theorem indicator_summable {f : α → ℝ≥0} (hf : Summable f) (s : Set α) :
     Summable (s.indicator f) := by
+  classical
   refine NNReal.summable_of_le (fun a => le_trans (le_of_eq (s.indicator_apply f a)) ?_) hf
   split_ifs
   · exact le_refl (f a)
@@ -1109,6 +1112,7 @@ theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) 
   rw [← tsum_zero]
   exact tsum_lt_tsum (fun a => zero_le _) hi hg
 
+open Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
   refine tsum_eq_add_tsum_ite' i (NNReal.summable_of_le (fun i' => ?_) hf)
