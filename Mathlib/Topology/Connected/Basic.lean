@@ -34,9 +34,7 @@ and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
 -/
 
-
 open Set Function Topology TopologicalSpace Relation
-open scoped Classical
 
 universe u v
 
@@ -425,6 +423,7 @@ theorem IsConnected.prod [TopologicalSpace β] {s : Set α} {t : Set β} (hs : I
 theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set (π i)}
     (hs : ∀ i, IsPreconnected (s i)) : IsPreconnected (pi univ s) := by
   rintro u v uo vo hsuv ⟨f, hfs, hfu⟩ ⟨g, hgs, hgv⟩
+  classical
   rcases exists_finset_piecewise_mem_of_mem_nhds (uo.mem_nhds hfu) g with ⟨I, hI⟩
   induction' I using Finset.induction_on with i I _ ihI
   · refine ⟨g, hgs, ⟨?_, hgv⟩⟩
@@ -457,6 +456,7 @@ that contains this point. -/
 def connectedComponent (x : α) : Set α :=
   ⋃₀ { s : Set α | IsPreconnected s ∧ x ∈ s }
 
+open Classical in
 /-- Given a set `F` in a topological space `α` and a point `x : α`, the connected
 component of `x` in `F` is the connected component of `x` in the subtype `F` seen as
 a set in `α`. This definition does not make sense if `x` is not in `F` so we return the
