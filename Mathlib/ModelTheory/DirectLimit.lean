@@ -10,15 +10,17 @@ import Mathlib.ModelTheory.FinitelyGenerated
 
 /-!
 # Direct Limits of First-Order Structures
+
 This file constructs the direct limit of a directed system of first-order embeddings.
 
 ## Main Definitions
-* `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
+
+- `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
   first-order embeddings between the structures indexed by `G`.
-* `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
+- `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
   from the components to another module that respect the directed system structure give rise to
   a unique map out of the direct limit.
-* `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
+- `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
   isomorphic direct systems.
 -/
 
