@@ -7,6 +7,7 @@ Authors: Calle Sönne
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 
 /-!
 # The Grothendieck construction
@@ -43,6 +44,7 @@ open CategoryTheory Functor Category Opposite Discrete Bicategory
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
 
 /-- The type of objects in the fibered category associated to a presheaf valued in types. -/
+@[ext]
 structure Pseudofunctor.Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
   base : 𝒮
@@ -129,6 +131,90 @@ factor. -/
 def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ F ⥤ 𝒮 where
   obj := fun X => X.1
   map := fun f => f.1
+
+section
+
+-- TODO: different universe?
+variable {G : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+
+/-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
+induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`.
+-/
+@[simps!]
+def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
+  obj a := {
+    base := a.base
+    fiber := (α.app ⟨op a.base⟩).obj a.fiber }
+  -- TODO: give names to structure for `f`
+  map {a b} f := {
+    fst := f.1
+    -- Now: f : a.fiber ⟶ (F.map f.1.op.toLoc).obj b.fiber
+    -- thus image of f through α.app.map should be a morphism from
+    -- α.app.obj a.fiber = obj (..).fiber to α.app.obj ((F.map f.1.op.toLoc).obj b.fiber)
+    -- Thus, need to commute this last thing. This is done using α.naturality somehow
+    -- this is PROBABLY correct...
+    snd := (α.app ⟨op a.base⟩).map f.2 ≫ (α.naturality f.1.op.toLoc).hom.app b.fiber
+  }
+  map_id a := by
+    ext
+    · simp
+    dsimp
+    rw [comp_id]
+    sorry -- this should follow from variation of naturality_id (after taking inverses)
+  map_comp {a b c} f g := by
+    ext
+    · simp
+    dsimp
+    sorry -- something something naturality_comp
+
+-- maybe some API here...!
+
+theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
+
+/-- TODO -/
+def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
+  hom := {
+    app := fun a ↦ eqToHom (by aesop_cat)
+    naturality := by
+      intros a b f
+      simp only [categoryStruct_id, id_obj, categoryStruct_Hom, map_obj_base, map_obj_fiber,
+        StrongOplaxNatTrans.id_app, toOplax_toPrelaxFunctor, eqToHom_refl, comp_id, Functor.id_map,
+        id_comp]
+      ext
+      · simp
+      simp only [map_obj_base, map_obj_fiber, StrongOplaxNatTrans.id_app, toOplax_toPrelaxFunctor,
+        map_map_fst, map_map_snd, Cat.id_map, StrongOplaxNatTrans.id_naturality_hom,
+        Strict.rightUnitor_eqToIso, eqToIso_refl, Iso.refl_hom, Strict.leftUnitor_eqToIso,
+        Iso.refl_inv, id_comp, heq_eq_eq]
+      rw [NatTrans.id_app]
+      erw [comp_id]
+  }
+  inv := {
+    app := fun a ↦ eqToHom (by aesop_cat)
+    naturality := by
+      intros a b f
+      simp only [id_obj, categoryStruct_id, categoryStruct_Hom, map_obj_base, map_obj_fiber,
+        StrongOplaxNatTrans.id_app, toOplax_toPrelaxFunctor, Functor.id_map, eqToHom_refl, comp_id,
+        id_comp]
+      ext
+      · simp
+      simp only [map_map_fst, map_map_snd, StrongOplaxNatTrans.id_app, toOplax_toPrelaxFunctor,
+        Cat.id_map, StrongOplaxNatTrans.id_naturality_hom, Strict.rightUnitor_eqToIso, eqToIso_refl,
+        Iso.refl_hom, Strict.leftUnitor_eqToIso, Iso.refl_inv, id_comp, heq_eq_eq]
+      rw [NatTrans.id_app]
+      erw [comp_id]
+  }
+  hom_inv_id := by
+    dsimp
+    ext
+    · simp
+    simp
+    sorry
+  inv_hom_id := sorry
+
+-- theorem mapIdIso, mapCompIso!
+
+end
 
 end Pseudofunctor.Grothendieck
 
