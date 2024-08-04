@@ -239,7 +239,7 @@ section
 open Sum
 
 /-- `PSum` is equivalent to `Sum`. -/
-def psumEquivSum (α β) : PSum α β ≃ Sum α β where
+def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
   toFun s := PSum.casesOn s inl inr
   invFun := Sum.elim PSum.inl PSum.inr
   left_inv s := by cases s <;> rfl
@@ -247,11 +247,11 @@ def psumEquivSum (α β) : PSum α β ≃ Sum α β where
 
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕ β ≃ α' ⊕ β'`. This is `Sum.map` as an equivalence. -/
 @[simps apply]
-def sumCongr (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : Sum α₁ β₁ ≃ Sum α₂ β₂ :=
+def sumCongr (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
   ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
 
-/-- If `α ≃ α'` and `β ≃ β'`, then `PSum α β ≃ PSum α' β'`. -/
-def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PSum α γ ≃ PSum β δ where
+/-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
+def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
   toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)
   invFun x := PSum.casesOn x (PSum.inl ∘ e₁.symm) (PSum.inr ∘ e₂.symm)
   left_inv := by rintro (x | x) <;> simp
@@ -259,12 +259,12 @@ def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PSum α γ ≃ PSum β δ 
 
 /-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
 def psumSum (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    PSum α₁ β₁ ≃ Sum α₂ β₂ :=
+    α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
   (ea.psumCongr eb).trans (psumEquivSum _ _)
 
 /-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
 def sumPSum (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    Sum α₁ β₁ ≃ PSum α₂ β₂ :=
+    α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
   (ea.symm.psumSum eb.symm).symm
 
 @[simp]
@@ -279,7 +279,7 @@ theorem sumCongr_symm (e : α ≃ β) (f : γ ≃ δ) :
   rfl
 
 @[simp]
-theorem sumCongr_refl : Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (Sum α β) := by
+theorem sumCongr_refl : Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ⊕ β) := by
   ext i
   cases i <;> rfl
 
@@ -297,11 +297,11 @@ def subtypeSum {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} �
 namespace Perm
 
 /-- Combine a permutation of `α` and of `β` into a permutation of `α ⊕ β`. -/
-abbrev sumCongr (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (Sum α β) :=
+abbrev sumCongr (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (α ⊕ β) :=
   Equiv.sumCongr ea eb
 
 @[simp]
-theorem sumCongr_apply (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : Sum α β) :
+theorem sumCongr_apply (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : α ⊕ β) :
     sumCongr ea eb x = Sum.map (⇑ea) (⇑eb) x :=
   Equiv.sumCongr_apply ea eb x
 
@@ -315,19 +315,19 @@ theorem sumCongr_symm (e : Equiv.Perm α) (f : Equiv.Perm β) :
     (sumCongr e f).symm = sumCongr e.symm f.symm :=
   Equiv.sumCongr_symm e f
 
-theorem sumCongr_refl : sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (Sum α β) :=
+theorem sumCongr_refl : sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ⊕ β) :=
   Equiv.sumCongr_refl
 
 end Perm
 
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
-def boolEquivPUnitSumPUnit : Bool ≃ Sum PUnit.{u + 1} PUnit.{v + 1} :=
+def boolEquivPUnitSumPUnit : Bool ≃ PUnit.{u + 1} ⊕ PUnit.{v + 1} :=
   ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
     fun b => by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/
 @[simps (config := .asFn) apply]
-def sumComm (α β) : Sum α β ≃ Sum β α :=
+def sumComm (α β) : α ⊕ β ≃ β ⊕ α :=
   ⟨Sum.swap, Sum.swap, Sum.swap_swap, Sum.swap_swap⟩
 
 @[simp]
@@ -335,7 +335,7 @@ theorem sumComm_symm (α β) : (sumComm α β).symm = sumComm β α :=
   rfl
 
 /-- Sum of types is associative up to an equivalence. -/
-def sumAssoc (α β γ) : Sum (Sum α β) γ ≃ Sum α (Sum β γ) :=
+def sumAssoc (α β γ) : (α ⊕ β) ⊕ γ ≃ α ⊕ (β ⊕ γ) :=
   ⟨Sum.elim (Sum.elim Sum.inl (Sum.inr ∘ Sum.inl)) (Sum.inr ∘ Sum.inr),
     Sum.elim (Sum.inl ∘ Sum.inl) <| Sum.elim (Sum.inl ∘ Sum.inr) Sum.inr,
       by rintro (⟨_ | _⟩ | _) <;> rfl, by
@@ -368,7 +368,7 @@ theorem sumAssoc_symm_apply_inr_inr {α β γ} (c) : (sumAssoc α β γ).symm (i
 
 /-- Sum with `IsEmpty` is equivalent to the original type. -/
 @[simps symm_apply]
-def sumEmpty (α β) [IsEmpty β] : Sum α β ≃ α where
+def sumEmpty (α β) [IsEmpty β] : α ⊕ β ≃ α where
   toFun := Sum.elim id isEmptyElim
   invFun := inl
   left_inv s := by
@@ -383,7 +383,7 @@ theorem sumEmpty_apply_inl [IsEmpty β] (a : α) : sumEmpty α β (Sum.inl a) = 
 
 /-- The sum of `IsEmpty` with any type is equivalent to that type. -/
 @[simps! symm_apply]
-def emptySum (α β) [IsEmpty α] : Sum α β ≃ β :=
+def emptySum (α β) [IsEmpty α] : α ⊕ β ≃ β :=
   (sumComm _ _).trans <| sumEmpty _ _
 
 @[simp]
@@ -391,7 +391,7 @@ theorem emptySum_apply_inr [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = 
   rfl
 
 /-- `Option α` is equivalent to `α ⊕ PUnit` -/
-def optionEquivSumPUnit (α) : Option α ≃ Sum α PUnit :=
+def optionEquivSumPUnit (α) : Option α ≃ α ⊕ PUnit :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
     fun o => by cases o <;> rfl,
     fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
@@ -438,7 +438,7 @@ def piOptionEquivProd {β : Option α → Type*} :
 `β` to be types from the same universe, so it cannot be used directly to transfer theorems about
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
-def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, b.casesOn α β :=
+def sumEquivSigmaBool (α β : Type u) : α ⊕ β ≃ Σ b : Bool, b.casesOn α β :=
   ⟨fun s => s.elim (fun x => ⟨false, x⟩) fun x => ⟨true, x⟩, fun s =>
     match s with
     | ⟨false, a⟩ => inl a
@@ -475,7 +475,7 @@ is naturally equivalent to `α`.
 See `subtypeOrEquiv` for sum types over subtypes `{x // p x}` and `{x // q x}`
 that are not necessarily `IsCompl p q`.  -/
 def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
-    Sum { a // p a } { a // ¬p a } ≃ α where
+    { a // p a } ⊕ { a // ¬p a } ≃ α where
   toFun := Sum.elim Subtype.val Subtype.val
   invFun a := if h : p a then Sum.inl ⟨a, h⟩ else Sum.inr ⟨a, h⟩
   left_inv := by
@@ -817,18 +817,18 @@ def prodPiEquivSumPi (π : ι → Type u) (π' : ι' → Type u) :
 
 /-- The type of functions on a sum type `α ⊕ β` is equivalent to the type of pairs of functions
 on `α` and on `β`. -/
-def sumArrowEquivProdArrow (α β γ : Type*) : (Sum α β → γ) ≃ (α → γ) × (β → γ) :=
+def sumArrowEquivProdArrow (α β γ : Type*) : (α ⊕ β → γ) ≃ (α → γ) × (β → γ) :=
   ⟨fun f => (f ∘ inl, f ∘ inr), fun p => Sum.elim p.1 p.2, fun f => by ext ⟨⟩ <;> rfl, fun p => by
     cases p
     rfl⟩
 
 @[simp]
-theorem sumArrowEquivProdArrow_apply_fst (f : Sum α β → γ) (a : α) :
+theorem sumArrowEquivProdArrow_apply_fst (f : α ⊕ β → γ) (a : α) :
     (sumArrowEquivProdArrow α β γ f).1 a = f (inl a) :=
   rfl
 
 @[simp]
-theorem sumArrowEquivProdArrow_apply_snd (f : Sum α β → γ) (b : β) :
+theorem sumArrowEquivProdArrow_apply_snd (f : α ⊕ β → γ) (b : β) :
     (sumArrowEquivProdArrow α β γ f).2 b = f (inr b) :=
   rfl
 
@@ -843,7 +843,7 @@ theorem sumArrowEquivProdArrow_symm_apply_inr (f : α → γ) (g : β → γ) (b
   rfl
 
 /-- Type product is right distributive with respect to type sum up to an equivalence. -/
-def sumProdDistrib (α β γ) : Sum α β × γ ≃ Sum (α × γ) (β × γ) :=
+def sumProdDistrib (α β γ) : (α ⊕ β) × γ ≃ α × γ ⊕ β × γ :=
   ⟨fun p => p.1.map (fun x => (x, p.2)) fun x => (x, p.2),
     fun s => s.elim (Prod.map inl id) (Prod.map inr id), by
       rintro ⟨_ | _, _⟩ <;> rfl, by rintro (⟨_, _⟩ | ⟨_, _⟩) <;> rfl⟩
@@ -869,11 +869,11 @@ theorem sumProdDistrib_symm_apply_right (b : β × γ) :
   rfl
 
 /-- Type product is left distributive with respect to type sum up to an equivalence. -/
-def prodSumDistrib (α β γ) : α × Sum β γ ≃ Sum (α × β) (α × γ) :=
+def prodSumDistrib (α β γ : Type*) : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ) :=
   calc
-    α × Sum β γ ≃ Sum β γ × α := prodComm _ _
-    _ ≃ Sum (β × α) (γ × α) := sumProdDistrib _ _ _
-    _ ≃ Sum (α × β) (α × γ) := sumCongr (prodComm _ _) (prodComm _ _)
+    α × (β ⊕ γ) ≃ (β ⊕ γ) × α := prodComm _ _
+    _ ≃ (β × α) ⊕ (γ × α) := sumProdDistrib _ _ _
+    _ ≃ (α × β) ⊕ (α × γ) := sumCongr (prodComm _ _) (prodComm _ _)
 
 @[simp]
 theorem prodSumDistrib_apply_left (a : α) (b : β) :
@@ -898,7 +898,7 @@ theorem prodSumDistrib_symm_apply_right (a : α × γ) :
 /-- An indexed sum of disjoint sums of types is equivalent to the sum of the indexed sums. -/
 @[simps]
 def sigmaSumDistrib (α β : ι → Type*) :
-    (Σ i, Sum (α i) (β i)) ≃ Sum (Σ i, α i) (Σ i, β i) :=
+    (Σ i, α i ⊕ β i) ≃ (Σ i, α i) ⊕ (Σ i, β i) :=
   ⟨fun p => p.2.map (Sigma.mk p.1) (Sigma.mk p.1),
     Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p => by
     rcases p with ⟨i, a | b⟩ <;> rfl, fun p => by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
@@ -913,17 +913,17 @@ def sigmaProdDistrib (α : ι → Type*) (β : Type*) : (Σ i, α i) × β ≃ �
     rfl⟩
 
 /-- An equivalence that separates out the 0th fiber of `(Σ (n : ℕ), f n)`. -/
-def sigmaNatSucc (f : ℕ → Type u) : (Σ n, f n) ≃ Sum (f 0) (Σ n, f (n + 1)) :=
+def sigmaNatSucc (f : ℕ → Type u) : (Σ n, f n) ≃ f 0 ⊕ Σ n, f (n + 1) :=
   ⟨fun x =>
-    @Sigma.casesOn ℕ f (fun _ => Sum (f 0) (Σn, f (n + 1))) x fun n =>
-      @Nat.casesOn (fun i => f i → Sum (f 0) (Σn : ℕ, f (n + 1))) n (fun x : f 0 => Sum.inl x)
+    @Sigma.casesOn ℕ f (fun _ => f 0 ⊕ Σ n, f (n + 1)) x fun n =>
+      @Nat.casesOn (fun i => f i → f 0 ⊕ Σ n : ℕ, f (n + 1)) n (fun x : f 0 => Sum.inl x)
         fun (n : ℕ) (x : f n.succ) => Sum.inr ⟨n, x⟩,
     Sum.elim (Sigma.mk 0) (Sigma.map Nat.succ fun _ => id), by rintro ⟨n | n, x⟩ <;> rfl, by
     rintro (x | ⟨n, x⟩) <;> rfl⟩
 
 /-- The product `Bool × α` is equivalent to `α ⊕ α`. -/
 @[simps]
-def boolProdEquivSum (α) : Bool × α ≃ Sum α α where
+def boolProdEquivSum (α) : Bool × α ≃ α ⊕ α where
   toFun p := p.1.casesOn (inl p.2) (inr p.2)
   invFun := Sum.elim (Prod.mk false) (Prod.mk true)
   left_inv := by rintro ⟨_ | _, _⟩ <;> rfl
@@ -944,18 +944,18 @@ section
 open Sum Nat
 
 /-- The set of natural numbers is equivalent to `ℕ ⊕ PUnit`. -/
-def natEquivNatSumPUnit : ℕ ≃ Sum ℕ PUnit where
+def natEquivNatSumPUnit : ℕ ≃ ℕ ⊕ PUnit where
   toFun n := Nat.casesOn n (inr PUnit.unit) inl
   invFun := Sum.elim Nat.succ fun _ => 0
   left_inv n := by cases n <;> rfl
   right_inv := by rintro (_ | _) <;> rfl
 
 /-- `ℕ ⊕ PUnit` is equivalent to `ℕ`. -/
-def natSumPUnitEquivNat : Sum ℕ PUnit ≃ ℕ :=
+def natSumPUnitEquivNat : ℕ ⊕ PUnit ≃ ℕ :=
   natEquivNatSumPUnit.symm
 
 /-- The type of integer numbers is equivalent to `ℕ ⊕ ℕ`. -/
-def intEquivNatSumNat : ℤ ≃ Sum ℕ ℕ where
+def intEquivNatSumNat : ℤ ≃ ℕ ⊕ ℕ where
   toFun z := Int.casesOn z inl inr
   invFun := Sum.elim Int.ofNat Int.negSucc
   left_inv := by rintro (m | n) <;> rfl

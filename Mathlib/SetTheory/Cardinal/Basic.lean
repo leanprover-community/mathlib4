@@ -382,7 +382,7 @@ alias ⟨_, _root_.Set.Subsingleton.cardinal_mk_le_one⟩ := mk_le_one_iff_set_s
 instance : Add Cardinal.{u} :=
   ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
 
-theorem add_def (α β : Type u) : #α + #β = #(Sum α β) :=
+theorem add_def (α β : Type u) : #α + #β = #(α ⊕ β) :=
   rfl
 
 instance : NatCast Cardinal.{u} :=
@@ -397,7 +397,7 @@ theorem mk_option {α : Type u} : #(Option α) = #α + 1 := by
   rw [(Equiv.optionEquivSumPUnit.{u, u} α).cardinal_eq, mk_sum, mk_eq_one PUnit, lift_id, lift_id]
 
 @[simp]
-theorem mk_psum (α : Type u) (β : Type v) : #(PSum α β) = lift.{v} #α + lift.{u} #β :=
+theorem mk_psum (α : Type u) (β : Type v) : #(α ⊕' β) = lift.{v} #α + lift.{u} #β :=
   (mk_congr (Equiv.psumEquivSum α β)).trans (mk_sum α β)
 
 @[simp]
@@ -551,7 +551,6 @@ protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
 
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
--- #align cardinal.add_le_add' Cardinal.add_le_add'
 
 instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ => add_le_add' le_rfl⟩
@@ -567,7 +566,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
     add_le_add_left := fun a b => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : Sum α ((range f)ᶜ : Set β) ≃ β :=
+        have : α ⊕ ((range f)ᶜ : Set β) ≃ β :=
           (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
         ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
@@ -809,7 +808,7 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
 /-- The range of an indexed cardinal function, whose outputs live in a higher universe than the
     inputs, is always bounded above. -/
 theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
-  ⟨_, by
+  ⟨sum f, by
     rintro a ⟨i, rfl⟩
     exact le_sum f i⟩
 
@@ -2001,6 +2000,5 @@ end Cardinal
 --   |-- We already know that `0 ≤ x` for all `x : Cardinal`
 --     _ =>
 --     failed
--- #align tactic.positivity_cardinal_pow tactic.positivity_cardinal_pow
 
 -- end Tactic

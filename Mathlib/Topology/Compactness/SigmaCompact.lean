@@ -183,6 +183,7 @@ instance (priority := 100) sigmaCompactSpace_of_locally_compact_second_countable
   refine SigmaCompactSpace.of_countable _ (hsc.image K) (forall_mem_image.2 fun x _ => hKc x) ?_
   rwa [sUnion_image]
 
+section
 -- Porting note: doesn't work on the same line
 variable (X)
 variable [SigmaCompactSpace X]
@@ -226,7 +227,7 @@ instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, 
   · simp only [iUnion_compactCovering, pi_univ]
   · exact fun i => compactCovering_subset (X i)
 
-instance [SigmaCompactSpace Y] : SigmaCompactSpace (Sum X Y) :=
+instance [SigmaCompactSpace Y] : SigmaCompactSpace (X ⊕ Y) :=
   ⟨⟨fun n => Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering Y n, fun n =>
       ((isCompact_compactCovering X n).image continuous_inl).union
         ((isCompact_compactCovering Y n).image continuous_inr),
@@ -299,7 +300,7 @@ theorem countable_cover_nhds_of_sigma_compact {f : X → Set X} (hf : ∀ x, f x
   rcases countable_cover_nhdsWithin_of_sigma_compact isClosed_univ fun x _ => hf x with
     ⟨s, -, hsc, hsU⟩
   exact ⟨s, hsc, univ_subset_iff.1 hsU⟩
-
+end
 
 
 
@@ -407,7 +408,7 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
   · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right⟩
 
-noncomputable instance [LocallyCompactSpace X] :
+noncomputable instance [SigmaCompactSpace X] [LocallyCompactSpace X] :
     Inhabited (CompactExhaustion X) :=
   ⟨CompactExhaustion.choice X⟩
 

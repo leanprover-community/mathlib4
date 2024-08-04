@@ -328,9 +328,6 @@ assumption by taking `S = nonZeroDivisors R`, `R`'s localization at which
 is a field because `R` is a domain.
 -/
 
-
-open scoped Classical
-
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
 variable [Algebra R₁ K] [frac : IsFractionRing R₁ K]
 
@@ -376,6 +373,7 @@ theorem fractional_div_of_nonzero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0
   I.isFractional.div_of_nonzero J.isFractional fun H =>
     h <| coeToSubmodule_injective <| H.trans coe_zero.symm
 
+open Classical in
 noncomputable instance : Div (FractionalIdeal R₁⁰ K) :=
   ⟨fun I J => if h : J = 0 then 0 else ⟨I / J, fractional_div_of_nonzero h⟩⟩
 
@@ -505,8 +503,6 @@ section PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
 variable [Algebra R₁ K] [IsFractionRing R₁ K]
-
-open scoped Classical
 
 variable (R₁)
 
@@ -715,8 +711,9 @@ theorem spanSingleton_mul_coeIdeal_eq_coeIdeal {I J : Ideal R₁} {z : K} :
 
 variable [IsDomain R₁]
 
-theorem one_div_spanSingleton (x : K) : 1 / spanSingleton R₁⁰ x = spanSingleton R₁⁰ x⁻¹ :=
-  if h : x = 0 then by simp [h] else (eq_one_div_of_mul_eq_one_right _ _ (by simp [h])).symm
+theorem one_div_spanSingleton (x : K) : 1 / spanSingleton R₁⁰ x = spanSingleton R₁⁰ x⁻¹ := by
+  classical
+  exact if h : x = 0 then by simp [h] else (eq_one_div_of_mul_eq_one_right _ _ (by simp [h])).symm
 
 @[simp]
 theorem div_spanSingleton (J : FractionalIdeal R₁⁰ K) (d : K) :

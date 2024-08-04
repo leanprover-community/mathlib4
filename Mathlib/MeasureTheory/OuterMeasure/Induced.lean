@@ -26,7 +26,7 @@ outer measure
 noncomputable section
 
 open Set Function Filter
-open scoped Classical NNReal Topology ENNReal
+open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory
 
@@ -50,6 +50,7 @@ theorem extend_eq_top {s : α} (h : ¬P s) : extend m s = ∞ := by simp [extend
 theorem smul_extend {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [NoZeroSMulDivisors R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
     c • extend m = extend fun s h => c • m s h := by
+  classical
   ext1 s
   dsimp [extend]
   by_cases h : P s
@@ -349,7 +350,7 @@ theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=
 
 theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim) ≤ (sum m).trim :=
   fun s => by
-  simp [trim_eq_iInf]
+  simp only [sum_apply, trim_eq_iInf, le_iInf_iff]
   exact fun t st ht =>
     ENNReal.tsum_le_tsum fun i => iInf_le_of_le t <| iInf_le_of_le st <| iInf_le _ ht
 

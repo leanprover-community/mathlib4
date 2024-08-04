@@ -28,7 +28,6 @@ variable {α : Type*} {β : α → Type*}
 
 open OmegaCompletePartialOrder
 
-/- Porting note: in `#align`s, mathport is putting some `fix`es where `Fix`es should be. -/
 /-- Intuitively, a fixed point operator `fix` is lawful if it satisfies `fix f = f (fix f)` for all
 `f`, but this is inconsistent / uninteresting in most cases due to the existence of "exotic"
 functions `f`, such as the function that is defined iff its argument is not, familiar from the
@@ -159,9 +158,8 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
     · apply hX
 
 variable {f}
-variable (hc : Continuous f)
 
-theorem fix_eq : Part.fix f = f (Part.fix f) := by
+theorem fix_eq (hc : Continuous f) : Part.fix f = f (Part.fix f) := by
   rw [fix_eq_ωSup f, hc]
   apply le_antisymm
   · apply ωSup_le_ωSup_of_le _
@@ -251,9 +249,8 @@ variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 section Curry
 
 variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
-variable (hc : Continuous f)
 
-theorem uncurry_curry_continuous :
+theorem uncurry_curry_continuous (hc : Continuous f) :
     Continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
   continuous_comp _ _ (continuous_comp _ _ (continuous_curry _ _ _) hc) (continuous_uncurry _ _ _)
 

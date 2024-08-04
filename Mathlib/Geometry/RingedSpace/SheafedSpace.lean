@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
+import Mathlib.Geometry.RingedSpace.Stalks
 import Mathlib.Topology.Sheaves.Functors
 
 /-!
@@ -56,7 +57,6 @@ def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
 -- @[simp]
 -- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
 --   rfl
--- set_option linter.uppercaseLean3 false in
 
 -- Porting note: this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
 -- so removed @[simp]
@@ -82,7 +82,7 @@ instance : Category (SheafedSpace C) :=
 
 -- Porting note (#5229): adding an `ext` lemma.
 @[ext]
-theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
+theorem ext {X Y : SheafedSpace C} {α β : X ⟶ Y} (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
   PresheafedSpace.ext α β w h
 
@@ -209,6 +209,39 @@ instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
 
 noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
   Limits.compPreservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
+
+section ConcreteCategory
+
+variable [ConcreteCategory.{v} C] [HasColimits C] [HasLimits C]
+variable  [PreservesLimits (CategoryTheory.forget C)]
+variable [PreservesFilteredColimits (CategoryTheory.forget C)]
+variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
+
+attribute [local instance] ConcreteCategory.instFunLike in
+lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
+    (h' : ∀ x, f.stalkMap x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ g.stalkMap x) :
+    f = g := by
+  obtain ⟨f, fc⟩ := f
+  obtain ⟨g, gc⟩ := g
+  obtain rfl : f = g := h
+  congr
+  ext U s
+  refine section_ext X.sheaf _ _ _ fun x ↦ show X.presheaf.germ x _ = X.presheaf.germ x _ from ?_
+  erw [← PresheafedSpace.stalkMap_germ_apply ⟨f, fc⟩, ← PresheafedSpace.stalkMap_germ_apply ⟨f, gc⟩]
+  simp [h']
+
+lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
+    (h₁ : Function.Injective f.base)
+    (h₂ : ∀ x, Epi (f.stalkMap x)) : Mono f := by
+  constructor
+  intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
+  obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun x ↦ h₁ congr(($e).base x)
+  refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun x ↦ ?_
+  rw [← cancel_epi (f.stalkMap (g x)), stalkCongr_hom, stalkSpecializes_refl, Category.id_comp,
+    ← PresheafedSpace.stalkMap.comp ⟨g, gc⟩ f, ← PresheafedSpace.stalkMap.comp ⟨g, hc⟩ f]
+  congr 1
+
+end ConcreteCategory
 
 end SheafedSpace
 

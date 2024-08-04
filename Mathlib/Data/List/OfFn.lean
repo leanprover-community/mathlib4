@@ -41,7 +41,7 @@ theorem length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h)
 theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
   simp [ofFn, length_ofFn_go]
 
-theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
+theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk : k < (ofFn.go f i j h).length) :
     (ofFn.go f i j h)[k] = f ⟨j + k, by simp at hk; omega⟩ := by
   let i+1 := i
   cases k <;> simp [ofFn.go, getElem_ofFn_go (i := i)]
@@ -100,7 +100,6 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
 --     from this
 --   intros; induction' m with m IH generalizing l; · rfl
 --   simp only [DArray.revIterateAux, of_fn_aux, IH]
--- #align list.array_eq_of_fn List.array_eq_of_fn
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :

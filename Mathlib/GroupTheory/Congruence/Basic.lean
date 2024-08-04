@@ -5,6 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Data.Setoid.Basic
 
 /-!
@@ -577,7 +578,7 @@ the order-preserving bijection between the set of additive congruence relations 
 the additive congruence relations on the quotient of `M` by `c`."]
 def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
   toFun d :=
-    d.1.mapOfSurjective (↑) _ (by rw [mul_ker_mk_eq]; exact d.2) <|
+    d.1.mapOfSurjective (↑) (fun x y => rfl) (by rw [mul_ker_mk_eq]; exact d.2) <|
       @Quotient.exists_rep _ c.toSetoid
   invFun d :=
     ⟨comap ((↑) : M → c.Quotient) (fun x y => rfl) d, fun x y h =>
