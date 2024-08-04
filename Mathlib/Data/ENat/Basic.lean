@@ -251,6 +251,14 @@ theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
+@[simp]
+lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
+  cases n <;> simp
+
+@[simp]
+lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
+  WithTop.coe_lt_top n
+
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
     (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
