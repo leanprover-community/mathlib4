@@ -20,7 +20,7 @@ of topological (semi)rings.
 ## Main Results
 
 - `Subring.topologicalClosure`/`Subsemiring.topologicalClosure`: the topological closure of a
-  `Subring`/`Subsemiring` is itself a `sub(semi)ring`.
+  `Subring`/`Subsemiring` is itself a `Sub(semi)ring`.
 - The product of two topological (semi)rings is a topological (semi)ring.
 - The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
