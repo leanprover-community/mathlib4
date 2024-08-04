@@ -397,7 +397,7 @@ lemma coe_corootSpace_eq_span_singleton (α : Weight K H L) :
     suffices (K ∙ coroot α) = K ∙ α' by rw [coe_corootSpace_eq_span_singleton']; exact this.symm
     have : IsUnit (2 * (α α')⁻¹) := by simpa using root_apply_cartanEquivDual_symm_ne_zero hα
     change (K ∙ (2 • (α α')⁻¹ • α')) = _
-    simpa [nsmul_eq_smul_cast (R := K), smul_smul] using Submodule.span_singleton_smul_eq this _
+    simpa [← Nat.cast_smul_eq_nsmul K, smul_smul] using Submodule.span_singleton_smul_eq this _
 
 @[simp]
 lemma corootSpace_eq_bot_iff {α : Weight K H L} :
