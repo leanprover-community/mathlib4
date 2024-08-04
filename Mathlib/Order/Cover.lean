@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Antisymmetrization
 
 /-!
@@ -522,3 +523,31 @@ theorem covBy_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.
   exact mk_covBy_mk_iff
 
 end Prod
+
+namespace WithTop
+
+variable [Preorder α] {a b : α}
+
+@[simp] lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
+  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withTopCoe <| by
+    simp [WithTop.range_coe, ordConnected_Iio]
+
+@[simp] lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
+  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withTopCoe <| by
+    simp [WithTop.range_coe, ordConnected_Iio]
+
+end WithTop
+
+namespace WithBot
+
+variable [Preorder α] {a b : α}
+
+@[simp] lemma coe_wcovBy_coe : (a : WithBot α) ⩿ b ↔ a ⩿ b :=
+  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withBotCoe <| by
+    simp [WithBot.range_coe, ordConnected_Ioi]
+
+@[simp] lemma coe_covBy_coe : (a : WithBot α) ⋖ b ↔ a ⋖ b :=
+  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withBotCoe <| by
+    simp [WithBot.range_coe, ordConnected_Ioi]
+
+end WithBot
