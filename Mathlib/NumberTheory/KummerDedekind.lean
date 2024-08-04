@@ -220,7 +220,7 @@ theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap 
 
 namespace KummerDedekind
 
-open scoped Polynomial Classical
+open scoped Polynomial
 
 variable [IsDomain R] [IsIntegrallyClosed R]
 variable [IsDedekindDomain S]
@@ -228,6 +228,7 @@ variable [NoZeroSMulDivisors R S]
 
 attribute [local instance] Ideal.Quotient.field
 
+open Classical in
 /-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
     factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
     over `R`, taken `mod I`. -/
@@ -253,9 +254,11 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
   · refine (normalizedFactorsEquivSpanNormalizedFactors ?_).symm
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 
+open Classical in
 /-- The second half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the
     bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
-theorem multiplicity_factors_map_eq_multiplicity (hI : IsMaximal I) (hI' : I ≠ ⊥)
+theorem multiplicity_factors_map_eq_multiplicity
+    (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) {J : Ideal S}
     (hJ : J ∈ normalizedFactors (I.map (algebraMap R S))) :
     multiplicity J (I.map (algebraMap R S)) =
@@ -265,6 +268,7 @@ theorem multiplicity_factors_map_eq_multiplicity (hI : IsMaximal I) (hI' : I ≠
     multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity,
     normalizedFactorsEquivOfQuotEquiv_multiplicity_eq_multiplicity]
 
+open Classical in
 /-- The **Kummer-Dedekind Theorem**. -/
 theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : IsMaximal I)
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
@@ -313,6 +317,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x)
     (hf : Irreducible (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))) :
     Irreducible (I.map (algebraMap R S)) := by
+  classical
   have mem_norm_factors : normalize (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) ∈
       normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
     simp [normalizedFactors_irreducible hf]

@@ -29,10 +29,7 @@ we get the more familiar semiring of formal power series with coefficients in `R
 -/
 
 
-open Finset Function
-
-open scoped Classical
-open Pointwise Polynomial
+open Finset Function Pointwise Polynomial
 
 noncomputable section
 

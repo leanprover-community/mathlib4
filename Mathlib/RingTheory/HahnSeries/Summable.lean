@@ -46,7 +46,6 @@ commutative domain.
 
 open Finset Function
 
-open scoped Classical
 open Pointwise
 
 noncomputable section
@@ -357,6 +356,7 @@ section EmbDomain
 
 variable [PartialOrder Γ] [AddCommMonoid R] {α β : Type*}
 
+open Classical in
 /-- A summable family can be reindexed by an embedding without changing its sum. -/
 def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where
   toFun b := if h : b ∈ Set.range f then s (Classical.choose h) else 0
@@ -378,6 +378,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
+open Classical in
 theorem embDomain_apply :
     s.embDomain f b = if h : b ∈ Set.range f then s (Classical.choose h) else 0 :=
   rfl
@@ -393,6 +394,7 @@ theorem embDomain_notin_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := b
 
 @[simp]
 theorem hsum_embDomain : (s.embDomain f).hsum = s.hsum := by
+  classical
   ext g
   simp only [hsum_coeff, embDomain_apply, apply_dite HahnSeries.coeff, dite_apply, zero_coeff]
   exact finsum_emb_domain f fun a => (s a).coeff g
@@ -527,6 +529,7 @@ theorem isUnit_iff [IsDomain R] {x : HahnSeries Γ R} :
 
 end CommRing
 
+open Classical in
 instance instField [Field R] : Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv x :=

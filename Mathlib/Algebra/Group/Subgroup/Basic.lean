@@ -1656,8 +1656,6 @@ theorem normalizer_eq_top : H.normalizer = ⊤ ↔ H.Normal :=
     ⟨fun h => ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
       ⟨fun hb => h.conj_mem b hb a, fun hb => by rwa [h.mem_comm_iff, inv_mul_cancel_left] at hb⟩⟩
 
-open scoped Classical
-
 @[to_additive]
 theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=
   fun x hx y =>
@@ -2882,7 +2880,7 @@ namespace ConjClasses
 def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
   {x | x.carrier.Nontrivial}
 
-@[simp] lemma mem_noncenter [Monoid G] (g : ConjClasses G) :
+@[simp] lemma mem_noncenter {G} [Monoid G] (g : ConjClasses G) :
   g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
 
 end ConjClasses
