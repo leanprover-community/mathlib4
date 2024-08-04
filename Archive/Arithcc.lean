@@ -141,6 +141,7 @@ def outcome : List Instruction → State → State
   | [], η => η
   | i :: is, η => outcome is (step i η)
 
+set_option linter.flexible false in
 /-- A lemma on the concatenation of two programs (3.13). -/
 @[simp]
 theorem outcome_append (p₁ p₂ : List Instruction) (η : State) :

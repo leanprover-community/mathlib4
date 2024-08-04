@@ -84,6 +84,7 @@ instance : LinearOrderedCommRing ℤ[ε] :=
     zero_le_one := Or.inr ⟨0, by simp⟩
     mul_pos := fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos}
 
+set_option linter.flexible false in
 instance : FloorRing ℤ[ε] :=
   FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
     fun p q => by
