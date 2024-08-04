@@ -269,9 +269,9 @@ section congr
 
 variable (G' : Subgroup G) (H' : Subgroup H) [Subgroup.Normal G'] [Subgroup.Normal H']
 
-/-- `QuotientGroup.congr` lifts the isomorphism `e : G ≃ H` to `G ⧸ G' ≃ H ⧸ H'`,
+/-- `QuotientGroup.congr` lifts the isomorphism `e : G ≃* H` to `G ⧸ G' ≃* H ⧸ H'`,
 given that `e` maps `G` to `H`. -/
-@[to_additive "`QuotientAddGroup.congr` lifts the isomorphism `e : G ≃ H` to `G ⧸ G' ≃ H ⧸ H'`,
+@[to_additive "`QuotientAddGroup.congr` lifts the isomorphism `e : G ≃+ H` to `G ⧸ G' ≃+ H ⧸ H'`,
  given that `e` maps `G` to `H`."]
 def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
   { map G' H' e (he ▸ G'.le_comap_map (e : G →* H)) with
