@@ -42,7 +42,7 @@ theorem orderedInsert_complexity (a : α) :
     ∀ l : List α, (orderedInsert r a l).snd ≤ l.length
   | []     => by simp
   | b :: l' => by
-    simp
+    simp only [orderedInsert, List.length_cons]
     split_ifs with h
     · simp
     · simp [orderedInsert_complexity a l']
@@ -51,7 +51,7 @@ theorem orderedInsert_equivalence (a : α) : ∀ l : List α,
     (orderedInsert r a l).fst = List.orderedInsert r a l
   | [] => by simp
   | b :: l' => by
-    simp
+    simp only [orderedInsert, List.orderedInsert]
     split_ifs with h
     · rfl
     · simp [orderedInsert_equivalence a l']
@@ -60,7 +60,7 @@ theorem orderedInsert_increases_length (a : α) : ∀ l : List α,
     (orderedInsert r a l).fst.length = l.length + 1
   | [] => by simp
   | b :: l' => by
-    simp
+    simp only [orderedInsert, List.length_cons]
     split_ifs with h
     · rfl
     · simp [orderedInsert_increases_length a l']
@@ -70,7 +70,7 @@ theorem insertionSort_preserves_length : ∀ l : List α,
   match l with
   | [] => by simp
   | a :: l' => by
-    simp
+    simp only [insertionSort, List.length_cons]
     rw [orderedInsert_increases_length r a (insertionSort r l').fst]
     simp [insertionSort_preserves_length l']
 
@@ -79,11 +79,11 @@ theorem insertionSort_complexity :
   | [] => by simp
   | a :: l' => by
     have same_lengths := insertionSort_preserves_length r l'
-    have mid :
+    have :
       (insertionSort r l').snd + (orderedInsert r a (insertionSort r l').fst).snd ≤
       l'.length * l'.length + (orderedInsert r a (insertionSort r l').fst).snd :=
         add_le_add (insertionSort_complexity l') le_rfl
-    have mid₂ :
+    have :
       l'.length * l'.length + (orderedInsert r a (insertionSort r l').fst).snd ≤
       l'.length * l'.length + l'.length := by
         apply add_le_add le_rfl
@@ -91,7 +91,7 @@ theorem insertionSort_complexity :
           orderedInsert_complexity r a (insertionSort r l').fst
         rw [same_lengths] at orderedInsert_compl
         exact orderedInsert_compl
-    simp
+    simp only [insertionSort, List.length_cons, ge_iff_le]
     linarith
 
 theorem insertionSort_equivalence : ∀ l : List α,
