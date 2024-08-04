@@ -296,6 +296,20 @@ instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsD
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
 
+namespace DirectedOn
+
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} {t : (Π i, α i) → (Π i, α i) → Prop} [∀ i, LE (α i)]
+
+lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) (i : ι) :
+    DirectedOn (· ≤ ·) ((fun a => a i) '' d) := by
+  intro p ⟨a, ha⟩ q ⟨b, hb⟩
+  obtain ⟨z,hz⟩ := hd a ha.1 b hb.1
+  use z i
+  aesop
+
+end Pi
 
 section Prod
 
@@ -305,8 +319,6 @@ variable {r₂ : β → β → Prop}
 local infixl:50 " ≼₁ " => r
 /-- Local notation for a relation -/
 local infixl:50 " ≼₂ " => r₂
-
-namespace DirectedOn
 
 lemma fst {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
     DirectedOn (· ≼₁ ·) (Prod.fst '' d) := by
@@ -327,6 +339,6 @@ lemma prodMk {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≼₁ ·) d
   use (r₁, r₂)
   aesop
 
-end DirectedOn
-
 end Prod
+
+end DirectedOn
