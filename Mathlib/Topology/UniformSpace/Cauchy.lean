@@ -11,14 +11,9 @@ import Mathlib.Topology.UniformSpace.Basic
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
 -/
 
-
 universe u v
 
-open scoped Classical
-open Filter TopologicalSpace Set UniformSpace Function
-
-open scoped Classical
-open Uniformity Topology Filter
+open Filter Function TopologicalSpace Topology Set UniformSpace Uniformity
 
 variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 

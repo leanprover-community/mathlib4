@@ -41,19 +41,15 @@ i.e., it is complete and second countable. We also prove the Gromov compactness 
 
 noncomputable section
 
-open scoped Classical Topology ENNReal Cardinal
+open scoped Topology ENNReal Cardinal
+open Set Function TopologicalSpace Filter Metric Quotient Bornology
+open BoundedContinuousFunction Nat Int kuratowskiEmbedding
 
+open Sum (inl inr)
 
 local notation "ℓ_infty_ℝ" => lp (fun n : ℕ => ℝ) ∞
 
 universe u v w
-
-open scoped Classical
-open Set Function TopologicalSpace Filter Metric Quotient Bornology
-
-open BoundedContinuousFunction Nat Int kuratowskiEmbedding
-
-open Sum (inl inr)
 
 attribute [local instance] metricSpaceSum
 

@@ -34,10 +34,8 @@ group naturally induces a uniform structure.
   the quotient of a Banach space by a subspace is complete.
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Uniformity Topology Filter Pointwise
 
 section UniformGroup
