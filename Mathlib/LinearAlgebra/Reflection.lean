@@ -174,6 +174,21 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
 variable {y}
 variable {g : Dual R M}
 
+/-- Composite of reflections in "parallel" hyperplanes is a shear (special case). -/
+lemma reflection_reflection_iterate (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4)
+    (n : ℕ) : ((Module.reflection hgy).trans (Module.reflection hfx))^[n] y =
+      (1 - (2 * n : ℤ)) • y + (n : ℤ) • f y • x := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    have hz : ∀ z : M, f y • g x • z = 2 • 2 • z := by
+      intro z
+      rw [smul_smul, hgxfy, smul_smul, ← Nat.cast_smul_eq_nsmul R (2 * 2), Nat.cast_eq_ofNat]
+    simp only [iterate_succ', comp_apply, ih, zsmul_sub, map_add, LinearEquiv.trans_apply, sub_smul,
+      reflection_apply_self, map_neg, reflection_apply, hz, two_smul, neg_sub, map_sub, smul_sub,
+      map_zsmul, smul_neg, smul_add, Nat.cast_succ, mul_add, mul_one, add_smul, map_smul, two_mul]
+    abel
+
 lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (hΦ : Φ.Finite)
     (hfx : f x = 2) (hgy : g y = 2) (hgx : g x = 2) (hfy : f y = 2)
     (hxfΦ : MapsTo (preReflection x f) Φ Φ)
@@ -186,13 +201,9 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
     (bijOn_reflection_of_mapsTo hfx hxfΦ).comp (bijOn_reflection_of_mapsTo hgy hygΦ)
   have hsxy : ∀ n : ℕ, (sxy^[n]) y = y + (2 * n : ℤ) • (x - y) := by
     intro n
-    induction n with
-    | zero => simp
-    | succ n ih =>
-      simp only [iterate_succ', comp_apply, ih, zsmul_sub, map_add, LinearEquiv.trans_apply,
-        reflection_apply_self, map_neg, reflection_apply, hfy, two_smul, neg_sub, map_sub,
-        map_zsmul, hgx, smul_neg, smul_add, Nat.cast_succ, mul_add, mul_one, add_smul, sxy]
-      abel
+    simp only [reflection_reflection_iterate hfx hgy (by rw [hgx, hfy]; norm_cast) n, hfy, two_mul,
+      two_smul, sub_smul, add_smul, smul_add, smul_sub]
+    abel
   set f' : ℕ → Φ := fun n ↦ ⟨(sxy^[n]) y, by
     rw [← IsFixedPt.image_iterate hb.image_eq n]; exact mem_image_of_mem _ hyΦ⟩
   have : ¬ Injective f' := not_injective_infinite_finite f'

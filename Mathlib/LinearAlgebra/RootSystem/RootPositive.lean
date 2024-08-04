@@ -97,6 +97,14 @@ lemma coxeterWeight_zero_iff_isOrthogonal : P.coxeterWeight i j = 0 ↔ P.IsOrth
   · exact ⟨h, (pairing_zero_iff B i j).mp h⟩
   · exact ⟨(pairing_zero_iff B j i).mp h, h⟩
 
+/-!
+lemma linear_independent_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j) :
+    LinearIndependent R ![P.root i, P.root j] := by
+  refine LinearIndependent.pair_iff.mpr fun a b hab => ?_
+
+  sorry
+-/
+
 lemma root_reflection_pos_coeff_left {a b : R} (ha : 0 < a) (hab : -2 * b < a)
     (hc : 4 < P.coxeterWeight i j) : a < ((a + b) * P.coxeterWeight i j - a) := by
   have hapb : 2 * a < (a + b) * 4 := by linarith
@@ -110,6 +118,7 @@ lemma root_reflection_pos_coeff_left {a b : R} (ha : 0 < a) (hab : -2 * b < a)
 lemma root_reflection_pos_coeff_right {a b : R} (hab : -2 * b < a) : -(a + b) < b := by
   linarith
 
+
 -- show coeff of P.root i is monotone!
 /-!
 lemma infinite_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j) : Infinite ι := by
@@ -120,6 +129,8 @@ lemma infinite_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j) : Infinit
       P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[n] i) :=
     congrArg (⇑P.root) hmn
   simp only [Equiv.coe_trans, EmbeddingLike.apply_eq_iff_eq] at h
+
+  sorry
 
   rw [sub_eq_sub_iff_sub_eq_sub, add_sub_add_right_eq_sub, ← sub_smul, ← sub_smul,
     ← sub_eq_zero, sub_eq_add_neg, ← neg_smul, smul_smul] at h
