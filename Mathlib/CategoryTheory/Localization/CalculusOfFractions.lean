@@ -262,9 +262,9 @@ end LeftFractionRel
 
 section
 
-variable [W.HasLeftCalculusOfFractions] (W)
+variable (W)
 
-lemma equivalenceLeftFractionRel (X Y : C) :
+lemma equivalenceLeftFractionRel [W.HasLeftCalculusOfFractions] (X Y : C) :
     @_root_.Equivalence (W.LeftFraction X Y) LeftFractionRel where
   refl := LeftFractionRel.refl
   symm := LeftFractionRel.symm
@@ -278,14 +278,15 @@ open HasLeftCalculusOfFractions
 
 /-- Auxiliary definition for the composition of left fractions. -/
 @[simp]
-def comp₀ {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
-    (z₃ : W.LeftFraction z₁.Y' z₂.Y') :
+def comp₀ [W.HasLeftCalculusOfFractions] {X Y Z : C}
+    (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z) (z₃ : W.LeftFraction z₁.Y' z₂.Y') :
     W.LeftFraction X Z :=
   mk (z₁.f ≫ z₃.f) (z₂.s ≫ z₃.s) (W.comp_mem _ _ z₂.hs z₃.hs)
 
 /-- The equivalence class of `z₁.comp₀ z₂ z₃` does not depend on the choice of `z₃` provided
 they satisfy the compatibility `z₂.f ≫ z₃.s = z₁.s ≫ z₃.f`. -/
-lemma comp₀_rel {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
+lemma comp₀_rel [W.HasLeftCalculusOfFractions]
+    {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
     (z₃ z₃' : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f)
     (h₃' : z₂.f ≫ z₃'.s = z₁.s ≫ z₃'.f) :
     LeftFractionRel (z₁.comp₀ z₂ z₃) (z₁.comp₀ z₂ z₃') := by
@@ -319,10 +320,13 @@ lemma Localization.Hom.mk_surjective {X Y : C} (f : Localization.Hom W X Y) :
   obtain ⟨z⟩ := f
   exact ⟨z, rfl⟩
 
+variable [W.HasLeftCalculusOfFractions]
+
 /-- Auxiliary definition towards the definition of the composition of morphisms
 in the constructed localized category for a morphism property that has
 left calculus of fractions. -/
-noncomputable def comp {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z) :
+noncomputable def comp
+    {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z) :
     Localization.Hom W X Z :=
   Localization.Hom.mk (z₁.comp₀ z₂ (RightFraction.mk z₁.s z₁.hs z₂.f).leftFraction)
 
@@ -337,7 +341,7 @@ namespace Localization
 /-- Composition of morphisms in the constructed localized category
 for a morphism property that has left calculus of fractions. -/
 noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : Hom W X Z := by
-  refine' Quot.lift₂ (fun a b => a.comp b) _ _ z₁ z₂
+  refine Quot.lift₂ (fun a b => a.comp b) ?_ ?_ z₁ z₂
   · rintro a b₁ b₂ ⟨U, t₁, t₂, hst, hft, ht⟩
     obtain ⟨z₁, fac₁⟩ := exists_leftFraction (RightFraction.mk a.s a.hs b₁.f)
     obtain ⟨z₂, fac₂⟩ := exists_leftFraction (RightFraction.mk a.s a.hs b₂.f)
@@ -352,7 +356,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
     simp only [assoc] at fac₄
     rw [comp_eq _ _ z₁ fac₁, comp_eq _ _ z₂ fac₂]
     apply Quot.sound
-    refine' ⟨Z, w₁.f ≫ u.f ≫ p, w₂.f ≫ u.s ≫ p, _, _, _⟩
+    refine ⟨Z, w₁.f ≫ u.f ≫ p, w₂.f ≫ u.s ≫ p, ?_, ?_, ?_⟩
     · dsimp
       simp only [assoc, ← reassoc_of% fac₁', ← reassoc_of% fac₂',
         reassoc_of% hst, reassoc_of% fac₃]
@@ -376,11 +380,11 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
     simp only [assoc] at fac₁' fac₂'
     rw [comp_eq _ _ z₁ fac₁, comp_eq _ _ z₂ fac₂]
     apply Quot.sound
-    refine' LeftFractionRel.trans _ ((_ : LeftFractionRel p₁ p₂).trans _)
+    refine LeftFractionRel.trans ?_ ((?_ : LeftFractionRel p₁ p₂).trans ?_)
     · have eq : a₁.s ≫ z₁.f ≫ w₁.s = a₁.s ≫ t₁ ≫ w₁.f := by rw [← fac₁', reassoc_of% fac₁]
       obtain ⟨Z, u, hu, fac₃⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₃
-      refine' ⟨Z, w₁.s ≫ u, u, _, _, _⟩
+      refine ⟨Z, w₁.s ≫ u, u, ?_, ?_, ?_⟩
       · dsimp
         simp only [assoc]
       · dsimp
@@ -396,7 +400,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
         rw [← reassoc_of% fac₁', ← fac₃, reassoc_of% hst, reassoc_of% fac₂']
       obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₄
-      refine' ⟨Z, q.f ≫ u, q.s ≫ u, _, _, _⟩
+      refine ⟨Z, q.f ≫ u, q.s ≫ u, ?_, ?_, ?_⟩
       · simp only [assoc, reassoc_of% fac₃]
       · rw [assoc, assoc, assoc, assoc, fac₄, reassoc_of% hft]
       · simp only [assoc, ← reassoc_of% fac₃]
@@ -406,7 +410,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
         rw [← fac₂', reassoc_of% fac₂]
       obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₂.hs eq
       simp only [assoc] at fac₄
-      refine' ⟨Z, u, w₂.s ≫ u, _, _, _⟩
+      refine ⟨Z, u, w₂.s ≫ u, ?_, ?_, ?_⟩
       · dsimp
         simp only [assoc]
       · dsimp
@@ -559,7 +563,7 @@ noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInve
       F.map_comp, map_comp_map_s_assoc]) f
 
 @[simp]
-lemma Hom.map_mk {X Y : C} (f : LeftFraction W X Y)
+lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y)
     (F : C ⥤ E) (hF : W.IsInvertedBy F) :
   Hom.map (Hom.mk f) F hF = f.map F hF := rfl
 
@@ -668,11 +672,11 @@ end Localization
 
 section
 
-lemma map_eq {X Y : C} (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
+lemma map_eq {W} {X Y : C} (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
     φ.map L (Localization.inverts L W) =
       L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv := rfl
 
-lemma map_compatibility {X Y : C}
+lemma map_compatibility {W} {X Y : C}
     (φ : W.LeftFraction X Y) {E : Type*} [Category E]
     (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W] :
     (Localization.uniq L₁ L₂ W).functor.map (φ.map L₁ (Localization.inverts L₁ W)) =
@@ -685,7 +689,7 @@ lemma map_compatibility {X Y : C}
     ← cancel_mono (L₂.map φ.s), assoc, assoc, map_comp_map_s, ← e.hom.naturality]
   simpa [← Functor.map_comp_assoc, map_comp_map_s] using e.hom.naturality φ.f
 
-lemma map_eq_of_map_eq {X Y : C}
+lemma map_eq_of_map_eq {W} {X Y : C}
     (φ₁ φ₂ : W.LeftFraction X Y) {E : Type*} [Category E]
     (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W]
     (h : φ₁.map L₁ (Localization.inverts L₁ W) = φ₂.map L₁ (Localization.inverts L₁ W)) :
@@ -764,7 +768,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
     simp only [← cancel_mono (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
-lemma Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions :
+lemma Localization.essSurj_mapArrow :
     L.mapArrow.EssSurj where
   mem_essImage f := by
     have := Localization.essSurj L W
@@ -972,10 +976,10 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
     simp only [← cancel_epi (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
-lemma Localization.essSurj_mapArrow_of_hasRightCalculusofFractions :
+lemma Localization.essSurj_mapArrow_of_hasRightCalculusOfFractions :
     L.mapArrow.EssSurj where
   mem_essImage f := by
-    have := Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions L.op W.op
+    have := Localization.essSurj_mapArrow L.op W.op
     obtain ⟨g, ⟨e⟩⟩ : ∃ (g : _), Nonempty (L.op.mapArrow.obj g ≅ Arrow.mk f.hom.op) :=
       ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
     exact ⟨Arrow.mk g.hom.unop, ⟨Arrow.isoMk (Arrow.rightFunc.mapIso e.symm).unop

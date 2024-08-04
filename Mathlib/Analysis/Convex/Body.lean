@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul A. Reichert
 -/
 import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-
-#align_import analysis.convex.body from "leanprover-community/mathlib"@"858a10cf68fd6c06872950fc58c4dcc68d465591"
 
 /-!
 # Convex bodies
@@ -48,7 +46,6 @@ structure ConvexBody (V : Type*) [TopologicalSpace V] [AddCommMonoid V] [SMul �
   isCompact' : IsCompact carrier
   /-- A convex body has non-empty carrier set -/
   nonempty' : carrier.Nonempty
-#align convex_body ConvexBody
 
 namespace ConvexBody
 
@@ -65,29 +62,23 @@ instance : SetLike (ConvexBody V) V where
 
 protected theorem convex (K : ConvexBody V) : Convex ℝ (K : Set V) :=
   K.convex'
-#align convex_body.convex ConvexBody.convex
 
 protected theorem isCompact (K : ConvexBody V) : IsCompact (K : Set V) :=
   K.isCompact'
-#align convex_body.is_compact ConvexBody.isCompact
 
--- Porting note (#10756): new theorem
 protected theorem isClosed [T2Space V] (K : ConvexBody V) : IsClosed (K : Set V) :=
   K.isCompact.isClosed
 
 protected theorem nonempty (K : ConvexBody V) : (K : Set V).Nonempty :=
   K.nonempty'
-#align convex_body.nonempty ConvexBody.nonempty
 
 @[ext]
 protected theorem ext {K L : ConvexBody V} (h : (K : Set V) = L) : K = L :=
   SetLike.ext' h
-#align convex_body.ext ConvexBody.ext
 
 @[simp]
 theorem coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s :=
   rfl
-#align convex_body.coe_mk ConvexBody.coe_mk
 
 /-- A convex body that is symmetric contains `0`. -/
 theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, - x ∈ K) : 0 ∈ K := by
@@ -122,12 +113,10 @@ instance : AddMonoid (ConvexBody V) :=
 @[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
-#align convex_body.coe_add ConvexBody.coe_add
 
 @[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
   rfl
-#align convex_body.coe_zero ConvexBody.coe_zero
 
 instance : Inhabited (ConvexBody V) :=
   ⟨0⟩
@@ -145,7 +134,6 @@ instance : SMul ℝ (ConvexBody V) where
 @[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
-#align convex_body.coe_smul ConvexBody.coe_smul
 
 variable [ContinuousAdd V]
 
@@ -155,7 +143,6 @@ instance : DistribMulAction ℝ (ConvexBody V) :=
 @[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
-#align convex_body.coe_smul' ConvexBody.coe_smul'
 
 /-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals.
 -/
@@ -183,12 +170,10 @@ variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] (K L : ConvexBody V)
 
 protected theorem isBounded : Bornology.IsBounded (K : Set V) :=
   K.isCompact.isBounded
-#align convex_body.bounded ConvexBody.isBounded
 
 theorem hausdorffEdist_ne_top {K L : ConvexBody V} : EMetric.hausdorffEdist (K : Set V) L ≠ ⊤ := by
   apply_rules [Metric.hausdorffEdist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
     ConvexBody.isBounded]
-#align convex_body.Hausdorff_edist_ne_top ConvexBody.hausdorffEdist_ne_top
 
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
 metric. -/
@@ -197,18 +182,15 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
   dist_triangle K L M := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
   rfl
-#align convex_body.Hausdorff_dist_coe ConvexBody.hausdorffDist_coe
 
 @[simp, norm_cast]
 theorem hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L := by
   rw [edist_dist]
   exact (ENNReal.ofReal_toReal hausdorffEdist_ne_top).symm
-#align convex_body.Hausdorff_edist_coe ConvexBody.hausdorffEdist_coe
 
 open Filter
 
@@ -234,7 +216,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     refine lt_of_le_of_lt ?_ hn
     exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
   · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
-    exact (le_add_iff_nonneg_right _).mpr (by positivity)
+    exact le_add_of_nonneg_right (by positivity)
 
 end SeminormedAddCommGroup
 

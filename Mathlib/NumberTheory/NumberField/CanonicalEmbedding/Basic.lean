@@ -7,8 +7,6 @@ import Mathlib.Algebra.Module.Zlattice.Basic
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 
-#align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
-
 /-!
 # Canonical embedding of a number field
 
@@ -41,7 +39,7 @@ variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 
-open NumberField
+--open NumberField
 
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
 def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
@@ -127,7 +125,7 @@ noncomputable def latticeBasis [NumberField K] :
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
       RingHom.equivRatAlgHom
-    rw [show M = N.transpose by { ext:2; rfl }]
+    rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
     convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
@@ -152,11 +150,35 @@ theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
   simp only [SetLike.mem_coe, mem_span_integralBasis K]
   rfl
 
+theorem mem_rat_span_latticeBasis [NumberField K] (x : K) :
+    canonicalEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
+  rw [← Basis.sum_repr (integralBasis K) x, map_sum]
+  simp_rw [map_rat_smul]
+  refine Submodule.sum_smul_mem _ _ (fun i _ ↦ Submodule.subset_span ?_)
+  rw [← latticeBasis_apply]
+  exact Set.mem_range_self i
+
+theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
+    (latticeBasis K).repr (canonicalEmbedding K x) i = (integralBasis K).repr x i := by
+  rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
+    Rat.cast_inj]
+  let f := (canonicalEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
+    (fun x ↦ mem_rat_span_latticeBasis K x)
+  suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
+    (integralBasis K).repr.toLinearMap from DFunLike.congr_fun (LinearMap.congr_fun this x) i
+  refine Basis.ext (integralBasis K) (fun i ↦ ?_)
+  have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
+    apply Subtype.val_injective
+    rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
+      latticeBasis_apply]
+    rfl
+  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
+
 end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
 
-open NumberField NumberField.InfinitePlace FiniteDimensional
+open NumberField.InfinitePlace FiniteDimensional Finset
 
 /-- The space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 local notation "E" K =>
@@ -177,9 +199,9 @@ instance [NumberField K] : Nontrivial (E K) := by
 
 protected theorem finrank [NumberField K] : finrank ℝ (E K) = finrank ℚ K := by
   classical
-  rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const,
-    Finset.card_univ, ← NrRealPlaces, ← NrComplexPlaces, ← card_real_embeddings,
-    Algebra.id.smul_eq_mul, mul_comm, ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ,
+  rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, sum_const,
+    card_univ, ← NrRealPlaces, ← NrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul,
+    mul_comm, ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ,
     Fintype.card_subtype_compl, Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
 theorem _root_.NumberField.mixedEmbedding_injective [NumberField K] :
@@ -246,57 +268,128 @@ noncomputable section norm
 
 open scoped Classical
 
-variable [NumberField K] {K}
+variable {K}
 
-/-- The norm of `x` is `∏ w real, ‖x‖_w * ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
-the norm of `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a`
-over `ℚ`, see `norm_eq_norm`. -/
+/-- The norm at the infinite place `w` of an element of
+`({w // IsReal w} → ℝ) × ({ w // IsComplex w } → ℂ)`. -/
+def normAtPlace (w : InfinitePlace K) : (E K) →*₀ ℝ where
+  toFun x := if hw : IsReal w then ‖x.1 ⟨w, hw⟩‖ else ‖x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩‖
+  map_zero' := by simp
+  map_one' := by simp
+  map_mul' x y := by split_ifs <;> simp
+
+theorem normAtPlace_nonneg  (w : InfinitePlace K) (x : E K) :
+    0 ≤ normAtPlace w x := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs <;> exact norm_nonneg _
+
+theorem normAtPlace_neg (w : InfinitePlace K) (x : E K)  :
+    normAtPlace w (- x) = normAtPlace w x := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs <;> simp
+
+theorem normAtPlace_add_le (w : InfinitePlace K) (x y : E K) :
+    normAtPlace w (x + y) ≤ normAtPlace w x + normAtPlace w y := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs <;> exact norm_add_le _ _
+
+theorem normAtPlace_smul (w : InfinitePlace K) (x : E K) (c : ℝ) :
+    normAtPlace w (c • x) = |c| * normAtPlace w x := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs
+  · rw [Prod.smul_fst, Pi.smul_apply, norm_smul, Real.norm_eq_abs]
+  · rw [Prod.smul_snd, Pi.smul_apply, norm_smul, Real.norm_eq_abs, Complex.norm_eq_abs]
+
+theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
+    normAtPlace w ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| := by
+  rw [show ((fun _ ↦ c, fun _ ↦ c) : (E K)) = c • 1 by ext <;> simp, normAtPlace_smul, map_one,
+    mul_one]
+
+theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K) :
+    normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
+
+theorem normAtPlace_apply_isComplex {w : InfinitePlace K} (hw : IsComplex w) (x : E K) :
+    normAtPlace w x = ‖x.2 ⟨w, hw⟩‖ := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+    dif_neg (not_isReal_iff_isComplex.mpr hw)]
+
+@[simp]
+theorem normAtPlace_apply (w : InfinitePlace K) (x : K) :
+    normAtPlace w (mixedEmbedding K x) = w x := by
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mixedEmbedding,
+    RingHom.prod_apply, Pi.ringHom_apply, norm_embedding_of_isReal, norm_embedding_eq, dite_eq_ite,
+    ite_id]
+
+theorem normAtPlace_eq_zero {x : E K} :
+    (∀ w, normAtPlace w x = 0) ↔ x = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · ext w
+    · exact norm_eq_zero'.mp (normAtPlace_apply_isReal w.prop _ ▸ h w.1)
+    · exact norm_eq_zero'.mp (normAtPlace_apply_isComplex w.prop _ ▸ h w.1)
+  · simp_rw [h, map_zero, implies_true]
+
+variable [NumberField K]
+
+theorem nnnorm_eq_sup_normAtPlace (x : E K) :
+    ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
+  have :
+      (univ : Finset (InfinitePlace K)) =
+      (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
+      (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1)) := by
+    ext; simp [isReal_or_isComplex]
+  rw [this, sup_union, univ.sup_image, univ.sup_image, sup_eq_max,
+    Prod.nnnorm_def', Pi.nnnorm_def, Pi.nnnorm_def]
+  congr
+  · ext w
+    simp [normAtPlace_apply_isReal w.prop]
+  · ext w
+    simp [normAtPlace_apply_isComplex w.prop]
+
+theorem norm_eq_sup'_normAtPlace (x : E K) :
+    ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
+  rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
+    ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
+  simp only [Function.comp_apply]
+
+/-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
+`mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
+see `norm_eq_norm`. -/
 protected def norm : (E K) →*₀ ℝ where
-  toFun := fun x ↦ (∏ w, ‖x.1 w‖) * ∏ w, ‖x.2 w‖ ^ 2
-  map_one' := by simp only [Prod.fst_one, Pi.one_apply, norm_one, Finset.prod_const_one,
-    Prod.snd_one, one_pow, mul_one]
-  map_zero' := by
-    simp_rw [Prod.fst_zero, Prod.snd_zero, Pi.zero_apply, norm_zero, zero_pow (two_ne_zero),
-      mul_eq_zero, Finset.prod_const, pow_eq_zero_iff', true_and, Finset.card_univ]
-    by_contra!
-    have : finrank ℚ K = 0 := by
-      rw [← card_add_two_mul_card_eq_rank, NrRealPlaces, NrComplexPlaces, this.1, this.2]
-    exact ne_of_gt finrank_pos this
-  map_mul' _ _ := by simp only [Prod.fst_mul, Pi.mul_apply, norm_mul, Real.norm_eq_abs,
-      Finset.prod_mul_distrib, Prod.snd_mul, Complex.norm_eq_abs, mul_pow]; ring
+  toFun x := ∏ w, (normAtPlace w x) ^ (mult w)
+  map_one' := by simp only [map_one, one_pow, prod_const_one]
+  map_zero' := by simp [mult]
+  map_mul' _ _ := by simp only [map_mul, mul_pow, prod_mul_distrib]
+
+protected theorem norm_apply (x : E K) :
+    mixedEmbedding.norm x = ∏ w, (normAtPlace w x) ^ (mult w) := rfl
+
+protected theorem norm_nonneg (x : E K) :
+    0 ≤ mixedEmbedding.norm x := univ.prod_nonneg fun _ _ ↦ pow_nonneg (normAtPlace_nonneg _ _) _
 
 protected theorem norm_eq_zero_iff {x : E K} :
-    mixedEmbedding.norm x = 0 ↔ (∃ w, x.1 w = 0) ∨ (∃ w, x.2 w = 0) := by
-  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_eq_zero,
-    Finset.prod_eq_zero_iff, Finset.mem_univ, true_and, pow_eq_zero_iff two_ne_zero, norm_eq_zero]
+    mixedEmbedding.norm x = 0 ↔ ∃ w, normAtPlace w x = 0 := by
+  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, prod_eq_zero_iff,
+    mem_univ, true_and, pow_eq_zero_iff mult_ne_zero]
 
 protected theorem norm_ne_zero_iff {x : E K} :
-    mixedEmbedding.norm x ≠ 0 ↔ (∀ w, x.1 w ≠ 0) ∧ (∀ w, x.2 w ≠ 0) := by
+    mixedEmbedding.norm x ≠ 0 ↔ ∀ w, normAtPlace w x ≠ 0 := by
   rw [← not_iff_not]
-  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_and_or, not_forall, not_not]
-
-theorem norm_real (c : ℝ) :
-    mixedEmbedding.norm ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| ^ finrank ℚ K := by
-  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Real.norm_eq_abs,
-    Complex.norm_eq_abs, Complex.abs_ofReal, Finset.prod_const, ← pow_mul,
-    ← card_add_two_mul_card_eq_rank, Finset.card_univ, pow_add]
+  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_not, not_forall, not_not]
 
 theorem norm_smul (c : ℝ) (x : E K) :
     mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
-  rw [show c • x = ((fun _ ↦ c, fun _ ↦ c) : (E K)) * x by rfl, map_mul, norm_real]
+  simp_rw [mixedEmbedding.norm_apply, normAtPlace_smul, mul_pow, prod_mul_distrib,
+    prod_pow_eq_pow_sum, sum_mult_eq]
+
+theorem norm_real (c : ℝ) :
+    mixedEmbedding.norm ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| ^ finrank ℚ K := by
+  rw [show ((fun _ ↦ c, fun _ ↦ c) : (E K)) = c • 1 by ext <;> simp, norm_smul, map_one, mul_one]
 
 @[simp]
 theorem norm_eq_norm (x : K) :
     mixedEmbedding.norm (mixedEmbedding K x) = |Algebra.norm ℚ x| := by
-  simp_rw [← prod_eq_abs_norm, mixedEmbedding.norm, mixedEmbedding, RingHom.prod_apply,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Pi.ringHom_apply, norm_embedding_eq,
-    norm_embedding_of_isReal]
-  rw [← Fintype.prod_subtype_mul_prod_subtype (fun w : InfinitePlace K ↦ IsReal w)]
-  congr 1
-  · exact Finset.prod_congr rfl (fun w _ ↦ by rw [mult, if_pos w.prop, pow_one])
-  · refine (Fintype.prod_equiv (Equiv.subtypeEquivRight ?_) _ _ (fun w ↦ ?_)).symm
-    · exact fun _ ↦ not_isReal_iff_isComplex
-    · rw [Equiv.subtypeEquivRight_apply_coe, mult, if_neg w.prop]
+  simp_rw [mixedEmbedding.norm_apply, normAtPlace_apply, prod_eq_abs_norm]
 
 theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
     mixedEmbedding.norm x = 0 ↔ x = 0 := by
@@ -310,8 +403,7 @@ noncomputable section stdBasis
 
 open scoped Classical
 
-open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
-  ComplexConjugate
+open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix ComplexConjugate
 
 variable [NumberField K]
 
@@ -352,9 +444,8 @@ theorem volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by
   rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
     Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi, Real.volume_Ico,
-    sub_zero, ENNReal.ofReal_one, Finset.prod_const_one, Finset.prod_const_one,
-    Finset.prod_const_one, one_mul]
-  exact MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)
+    sub_zero, ENNReal.ofReal_one, prod_const_one, prod_const_one, prod_const_one, one_mul]
+  exact (MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)).nullMeasurableSet
 
 /-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
@@ -403,13 +494,13 @@ theorem det_matrixToStdBasis :
     (matrixToStdBasis K).det = (2⁻¹ * I) ^ NrComplexPlaces K :=
   calc
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, det ((2 : ℂ)⁻¹ • !![1, 1; -I, I]) := by
-      rw [matrixToStdBasis, det_fromBlocks_zero₂₁, det_diagonal, Finset.prod_const_one, one_mul,
+      rw [matrixToStdBasis, det_fromBlocks_zero₂₁, det_diagonal, prod_const_one, one_mul,
           det_reindex_self, det_blockDiagonal]
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
-      refine Finset.prod_congr (Eq.refl _) (fun _ _ => ?_)
+      refine prod_congr (Eq.refl _) (fun _ _ => ?_)
       field_simp; ring
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
-      rw [Finset.prod_const, Fintype.card]
+      rw [prod_const, Fintype.card]
 
 /-- Let `x : (K →+* ℂ) → ℂ` such that `x_φ = conj x_(conj φ)` for all `φ : K →+* ℂ`, then the
 representation of `commMap K x` on `stdBasis` is given (up to reindexing) by the product of
@@ -420,32 +511,30 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
       (matrixToStdBasis K *ᵥ (x ∘ (indexEquiv K))) c := by
   simp_rw [commMap, matrixToStdBasis, LinearMap.coe_mk, AddHom.coe_mk,
     mulVec, dotProduct, Function.comp_apply, index, Fintype.sum_sum_type,
-    diagonal_one, reindex_apply, ← Finset.univ_product_univ, Finset.sum_product,
+    diagonal_one, reindex_apply, ← univ_product_univ, sum_product,
     indexEquiv_apply_ofIsReal, Fin.sum_univ_two, indexEquiv_apply_ofIsComplex_fst,
     indexEquiv_apply_ofIsComplex_snd, smul_of, smul_cons, smul_eq_mul,
-    mul_one, smul_empty, Equiv.prodComm_symm, Equiv.coe_prodComm]
+    mul_one, Matrix.smul_empty, Equiv.prodComm_symm, Equiv.coe_prodComm]
   cases c with
   | inl w =>
       simp_rw [stdBasis_apply_ofIsReal, fromBlocks_apply₁₁, fromBlocks_apply₁₂,
-        one_apply, Matrix.zero_apply, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq,
-        Finset.mem_univ, ite_true, add_zero, Finset.sum_const_zero, add_zero,
-        ← conj_eq_iff_re, hx (embedding w.val), conjugate_embedding_eq_of_isReal w.prop]
+        one_apply, Matrix.zero_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_univ, ite_true,
+        add_zero, sum_const_zero, add_zero, ← conj_eq_iff_re, hx (embedding w.val),
+        conjugate_embedding_eq_of_isReal w.prop]
   | inr c =>
     rcases c with ⟨w, j⟩
     fin_cases j
     · simp_rw [Fin.mk_zero, stdBasis_apply_ofIsComplex_fst, fromBlocks_apply₂₁,
         fromBlocks_apply₂₂, Matrix.zero_apply, submatrix_apply,
-        blockDiagonal_apply, Prod.swap_prod_mk, ite_mul, zero_mul, Finset.sum_const_zero,
-        zero_add, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, ite_true,
-        of_apply, cons_val', cons_val_zero, cons_val_one,
-        head_cons, ← hx (embedding w), re_eq_add_conj]
+        blockDiagonal_apply, Prod.swap_prod_mk, ite_mul, zero_mul, sum_const_zero, zero_add,
+        sum_add_distrib, sum_ite_eq, mem_univ, ite_true, of_apply, cons_val', cons_val_zero,
+        cons_val_one, head_cons, ← hx (embedding w), re_eq_add_conj]
       field_simp
     · simp_rw [Fin.mk_one, stdBasis_apply_ofIsComplex_snd, fromBlocks_apply₂₁,
-        fromBlocks_apply₂₂, Matrix.zero_apply, submatrix_apply,
-        blockDiagonal_apply, Prod.swap_prod_mk, ite_mul, zero_mul, Finset.sum_const_zero,
-        zero_add, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, ite_true,
-        of_apply, cons_val', cons_val_zero, cons_val_one,
-        head_cons, ← hx (embedding w), im_eq_sub_conj]
+        fromBlocks_apply₂₂, Matrix.zero_apply, submatrix_apply, blockDiagonal_apply,
+        Prod.swap_prod_mk, ite_mul, zero_mul, sum_const_zero, zero_add, sum_add_distrib, sum_ite_eq,
+        mem_univ, ite_true, of_apply, cons_val', cons_val_zero, cons_val_one, head_cons,
+        ← hx (embedding w), im_eq_sub_conj]
       ring_nf; field_simp
 
 end stdBasis
@@ -454,7 +543,7 @@ noncomputable section integerLattice
 
 variable [NumberField K]
 
-open Module FiniteDimensional Module.Free
+open Module.Free
 
 open scoped nonZeroDivisors
 
@@ -471,8 +560,8 @@ def latticeBasis :
     -- and it's a basis since it has the right cardinality
     refine basisOfLinearIndependentOfCardEqFinrank this ?_
     rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_prod, finrank_pi,
-      finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const, Finset.card_univ,
-      ← NrRealPlaces, ← NrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
+      finrank_pi_fintype, Complex.finrank_real_complex, sum_const, card_univ, ← NrRealPlaces,
+      ← NrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
       ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
       Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 

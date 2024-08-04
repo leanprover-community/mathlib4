@@ -6,7 +6,7 @@ Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.ChineseRemainder
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Pairing
 
 /-!

@@ -277,7 +277,7 @@ lemma quasispectrum_eq_spectrum_union (R : Type*) {A : Type*} [CommSemiring R]
 
 lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
     (a : A) : spectrum R a ⊆ quasispectrum R a :=
-  quasispectrum_eq_spectrum_union R a ▸ Set.subset_union_left _ _
+  quasispectrum_eq_spectrum_union R a ▸ Set.subset_union_left
 
 lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
@@ -416,21 +416,24 @@ theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
   rightInvOn := fun s hs => by obtain ⟨r, rfl⟩ := h hs; rw [hf r]
   left_inv := hf
 
-variable [IsScalarTower R S A] (h : QuasispectrumRestricts a f)
+variable [IsScalarTower R S A]
 
-theorem algebraMap_image : algebraMap R S '' quasispectrum R a = quasispectrum S a := by
+theorem algebraMap_image (h : QuasispectrumRestricts a f) :
+    algebraMap R S '' quasispectrum R a = quasispectrum S a := by
   refine Set.eq_of_subset_of_subset ?_ fun s hs => ⟨f s, ?_⟩
   · simpa only [quasispectrum.preimage_algebraMap] using
       (quasispectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨quasispectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
 
-theorem image : f '' quasispectrum S a = quasispectrum R a := by
+theorem image (h : QuasispectrumRestricts a f) : f '' quasispectrum S a = quasispectrum R a := by
   simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
 
-theorem apply_mem {s : S} (hs : s ∈ quasispectrum S a) : f s ∈ quasispectrum R a :=
+theorem apply_mem (h : QuasispectrumRestricts a f) {s : S} (hs : s ∈ quasispectrum S a) :
+    f s ∈ quasispectrum R a :=
   h.image ▸ ⟨s, hs, rfl⟩
 
-theorem subset_preimage : quasispectrum S a ⊆ f ⁻¹' quasispectrum R a :=
+theorem subset_preimage (h : QuasispectrumRestricts a f) :
+    quasispectrum S a ⊆ f ⁻¹' quasispectrum R a :=
   h.image ▸ (quasispectrum S a).subset_preimage_image f
 
 lemma of_quasispectrum_eq {a b : A} {f : S → R} (ha : QuasispectrumRestricts a f)
@@ -497,21 +500,23 @@ theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
       rw [hf r]
   left_inv := hf
 
-variable [IsScalarTower R S A] (h : SpectrumRestricts a f)
+variable [IsScalarTower R S A]
 
-theorem algebraMap_image : algebraMap R S '' spectrum R a = spectrum S a := by
+theorem algebraMap_image (h : SpectrumRestricts a f) :
+    algebraMap R S '' spectrum R a = spectrum S a := by
   refine Set.eq_of_subset_of_subset ?_ fun s hs => ⟨f s, ?_⟩
   · simpa only [spectrum.preimage_algebraMap] using
       (spectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
 
-theorem image : f '' spectrum S a = spectrum R a := by
+theorem image (h : SpectrumRestricts a f) : f '' spectrum S a = spectrum R a := by
   simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
 
-theorem apply_mem {s : S} (hs : s ∈ spectrum S a) : f s ∈ spectrum R a :=
+theorem apply_mem (h : SpectrumRestricts a f) {s : S} (hs : s ∈ spectrum S a) :
+    f s ∈ spectrum R a :=
   h.image ▸ ⟨s, hs, rfl⟩
 
-theorem subset_preimage : spectrum S a ⊆ f ⁻¹' spectrum R a :=
+theorem subset_preimage (h : SpectrumRestricts a f) : spectrum S a ⊆ f ⁻¹' spectrum R a :=
   h.image ▸ (spectrum S a).subset_preimage_image f
 
 lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
@@ -537,7 +542,7 @@ theorem quasispectrumRestricts_iff_spectrumRestricts {R S A : Type*} [Semifield 
     QuasispectrumRestricts a f ↔ SpectrumRestricts a f := by
   rw [quasispectrumRestricts_iff, spectrumRestricts_iff, quasispectrum_eq_spectrum_union_zero]
   refine and_congr_left fun h ↦ ?_
-  refine ⟨(Set.RightInvOn.mono · (Set.subset_union_left _ _)), fun h' x hx ↦ ?_⟩
+  refine ⟨(Set.RightInvOn.mono · Set.subset_union_left), fun h' x hx ↦ ?_⟩
   simp only [Set.union_singleton, Set.mem_insert_iff] at hx
   obtain (rfl | hx) := hx
   · simpa using h 0

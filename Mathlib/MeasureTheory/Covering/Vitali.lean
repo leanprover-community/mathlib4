@@ -7,8 +7,6 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Covering.VitaliFamily
 import Mathlib.Data.Set.Pairwise.Lattice
 
-#align_import measure_theory.covering.vitali from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
-
 /-!
 # Vitali covering theorems
 
@@ -39,7 +37,7 @@ This version is given in `Vitali.vitaliFamily`.
 variable {α ι : Type*}
 
 open Set Metric MeasureTheory TopologicalSpace Filter
-open scoped NNReal Classical ENNReal Topology
+open scoped NNReal ENNReal Topology
 
 namespace Vitali
 
@@ -151,34 +149,33 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
           _ ≤ τ * δ b := by gcongr
       · rw [← not_disjoint_iff_nonempty_inter] at hcb
         exact (hcb (H _ H')).elim
-#align vitali.exists_disjoint_subfamily_covering_enlargment Vitali.exists_disjoint_subfamily_covering_enlargment
 
 /-- Vitali covering theorem, closed balls version: given a family `t` of closed balls, one can
-extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the 5-times
-dilations of balls in `u`. -/
+extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the τ-times
+dilations of balls in `u`, for some `τ > 3`. -/
 theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α] (t : Set ι)
-    (x : ι → α) (r : ι → ℝ) (R : ℝ) (hr : ∀ a ∈ t, r a ≤ R) :
+    (x : ι → α) (r : ι → ℝ) (R : ℝ) (hr : ∀ a ∈ t, r a ≤ R) (τ : ℝ) (hτ : 3 < τ) :
     ∃ u ⊆ t,
       (u.PairwiseDisjoint fun a => closedBall (x a) (r a)) ∧
-        ∀ a ∈ t, ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (5 * r b) := by
+        ∀ a ∈ t, ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (τ * r b) := by
   rcases eq_empty_or_nonempty t with (rfl | _)
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases ht : ∀ a ∈ t, r a < 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
-      -- Adaptation note: nightly-2024-03-16
-      -- Previously `Function.onFun` unfolded in the following `simp only`,
-      -- but now needs a separate `rw`.
-      -- This may be a bug: a no import minimization may be required.
+      #adaptation_note /-- nightly-2024-03-16
+      Previously `Function.onFun` unfolded in the following `simp only`,
+      but now needs a separate `rw`.
+      This may be a bug: a no import minimization may be required. -/
       rw [Function.onFun]
       simp only [Function.onFun, closedBall_eq_empty.2 (ht a ha), empty_disjoint],
       fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
   push_neg at ht
   let t' := { a ∈ t | 0 ≤ r a }
-  rcases exists_disjoint_subfamily_covering_enlargment (fun a => closedBall (x a) (r a)) t' r 2
-      one_lt_two (fun a ha => ha.2) R (fun a ha => hr a ha.1) fun a ha =>
+  rcases exists_disjoint_subfamily_covering_enlargment (fun a => closedBall (x a) (r a)) t' r
+      ((τ - 1) / 2) (by linarith) (fun a ha => ha.2) R (fun a ha => hr a ha.1) fun a ha =>
       ⟨x a, mem_closedBall_self ha.2⟩ with
     ⟨u, ut', u_disj, hu⟩
-  have A : ∀ a ∈ t', ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (5 * r b) := by
+  have A : ∀ a ∈ t', ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (τ * r b) := by
     intro a ha
     rcases hu a ha with ⟨b, bu, hb, rb⟩
     refine ⟨b, bu, ?_⟩
@@ -191,7 +188,6 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
     exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
-#align vitali.exists_disjoint_subfamily_covering_enlargment_closed_ball Vitali.exists_disjoint_subfamily_covering_enlargment_closedBall
 
 /-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with
 nonempty interior, such that each `a ∈ t` is included in a ball `B (x, r)` and covers a definite
@@ -227,6 +223,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   use the whole family `t`, but a subfamily `t'` supported on small balls (which is possible since
   the family is assumed to be fine at every point of `s`).
   -/
+  classical
   -- choose around each `x` a small ball on which the measure is finite
   have : ∀ x, ∃ R, 0 < R ∧ R ≤ 1 ∧ μ (closedBall x (20 * R)) < ∞ := fun x ↦ by
     refine ((eventually_le_nhds one_pos).and ?_).exists_gt
@@ -343,7 +340,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       hf z ((mem_diff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
     have ax : B a ⊆ ball x (R x) := by
       refine (hB a hat).trans ?_
-      refine Subset.trans ?_ (hd.trans (diff_subset (ball x (R x)) k))
+      refine Subset.trans ?_ (hd.trans Set.diff_subset)
       exact closedBall_subset_closedBall (ad.trans (min_le_left _ _))
     -- it intersects an element `b` of `u` with comparable diameter, by definition of `u`
     obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b :=
@@ -386,7 +383,6 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
     _ ≤ C * (ε / C) := by gcongr
     _ ≤ ε := ENNReal.mul_div_le
-#align vitali.exists_disjoint_covering_ae Vitali.exists_disjoint_covering_ae
 
 /-- Assume that around every point there are arbitrarily small scales at which the measure is
 doubling. Then the set of closed sets `a` with nonempty interior contained in `closedBall x r` and
@@ -433,6 +429,5 @@ protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurabl
       exact (t't hq).2.2.2.2.1
     · convert μt' using 3
       rw [biUnion_image]
-#align vitali.vitali_family Vitali.vitaliFamily
 
 end Vitali

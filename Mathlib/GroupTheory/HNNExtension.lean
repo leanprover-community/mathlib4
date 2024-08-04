@@ -223,7 +223,7 @@ variable {d : TransversalPair G A B}
 
 @[ext]
 theorem ext {w w' : NormalWord d}
-    (h1 : w.head = w'.head) (h2 : w.toList = w'.toList): w = w' := by
+    (h1 : w.head = w'.head) (h2 : w.toList = w'.toList) : w = w' := by
   rcases w with ⟨⟨⟩, _⟩; cases w'; simp_all
 
 /-- The empty word -/
@@ -529,11 +529,11 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
       -- This used to be the end of the proof before leanprover/lean4#2644
-      erw [(d.compl _).equiv_snd_eq_inv_mul]
+      erw [(d.compl 1).equiv_snd_eq_inv_mul]
       simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
     · simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
       -- This used to be the end of the proof before leanprover/lean4#2644
-      erw [equiv_symm_eq_conj, (d.compl _).equiv_snd_eq_inv_mul]
+      erw [equiv_symm_eq_conj, (d.compl (-1)).equiv_snd_eq_inv_mul]
       simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
 
 @[simp]

@@ -9,8 +9,6 @@ import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
-#align_import number_theory.padics.hensel from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Hensel's lemma on ℤ_p
 
@@ -36,7 +34,6 @@ p-adic, p adic, padic, p-adic integer
 
 noncomputable section
 
-open scoped Classical
 open Topology
 
 -- We begin with some general lemmas that are used below in the computation.
@@ -47,8 +44,6 @@ theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] (F : Polynomial ℤ_[p]) 
     ‖F.eval x - F.eval y‖ = ‖z‖ * ‖x - y‖ := by simp [hz]
     _ ≤ 1 * ‖x - y‖ := by gcongr; apply PadicInt.norm_le_one
     _ = ‖x - y‖ := by simp
-
-#align padic_polynomial_dist padic_polynomial_dist
 
 open Filter Metric
 
@@ -86,7 +81,6 @@ private theorem tendsto_zero_of_norm_tendsto_zero : Tendsto (fun i => F.eval (nc
 
 theorem limit_zero_of_norm_tendsto_zero : F.eval ncs.lim = 0 :=
   tendsto_nhds_unique (comp_tendsto_lim _) (tendsto_zero_of_norm_tendsto_zero hnorm)
-#align limit_zero_of_norm_tendsto_zero limit_zero_of_norm_tendsto_zero
 
 end
 
@@ -330,8 +324,8 @@ private theorem newton_seq_dist_to_a :
   | 1, _h => by simp [sub_eq_add_neg, add_assoc, newton_seq_gen, newton_seq_aux, ih_n]
   | k + 2, _h =>
     have hlt : ‖newton_seq (k + 2) - newton_seq (k + 1)‖ < ‖newton_seq (k + 1) - a‖ := by
-      rw [newton_seq_dist_to_a (k + 1) (succ_pos _)]; apply newton_seq_succ_dist_weak;
-        assumption
+      rw [newton_seq_dist_to_a (k + 1) (succ_pos _)]; apply newton_seq_succ_dist_weak
+      assumption
     have hne' : ‖newton_seq (k + 2) - newton_seq (k + 1)‖ ≠ ‖newton_seq (k + 1) - a‖ := ne_of_lt hlt
     calc
       ‖newton_seq (k + 2) - a‖ =
@@ -479,9 +473,9 @@ theorem hensels_lemma :
       F.eval z = 0 ∧
         ‖z - a‖ < ‖F.derivative.eval a‖ ∧
           ‖F.derivative.eval z‖ = ‖F.derivative.eval a‖ ∧
-            ∀ z', F.eval z' = 0 → ‖z' - a‖ < ‖F.derivative.eval a‖ → z' = z :=
-  if ha : F.eval a = 0 then ⟨a, a_is_soln hnorm ha⟩
+            ∀ z', F.eval z' = 0 → ‖z' - a‖ < ‖F.derivative.eval a‖ → z' = z := by
+  classical
+  exact if ha : F.eval a = 0 then ⟨a, a_is_soln hnorm ha⟩
   else by
     exact ⟨soln_gen hnorm, eval_soln hnorm,
       soln_dist_to_a_lt_deriv hnorm ha, soln_deriv_norm hnorm, fun z => soln_unique hnorm ha z⟩
-#align hensels_lemma hensels_lemma
