@@ -558,6 +558,62 @@ theorem comp_coprod {Q : Type*} [CommMonoid Q] (h : P →* Q) (f : M →* P) (g 
 
 end Coprod
 
+section NonCommCoprod
+
+variable [Monoid P] {f : M →* P} {g : N →* P} (comm : ∀ m n, Commute (f m) (g n))
+
+/-- Noncommutative coproduct of two commuting `MonoidHom`s with the same codomain:
+  `noncommCoprod comm (p : M × N) = f p.1 * g p.2`.
+  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.)-/
+@[to_additive
+    "Noncommutative Coproduct of two commuting `AddMonoidHom`s with the same codomain:
+    `noncommCoprod comm (p : M × N) = f p.1 + g p.2`.
+    (Commutative case; for the general case, see `AddHom.noncommCoprod`.)"]
+def noncommCoprod : M × N →* P where
+  toFun := f.comp (fst M N) * g.comp (snd M N)
+  map_one' := by simp
+  map_mul' x y := by
+    simp only [coe_comp, coe_fst, coe_snd, Pi.mul_apply, Function.comp_apply,
+      Prod.fst_mul, map_mul, Prod.snd_mul]
+    rw [← mul_assoc, mul_assoc _ (f y.1), comm]
+    simp only [mul_assoc]
+
+@[to_additive (attr := simp)]
+theorem noncommCoprod_apply (p : M × N) : noncommCoprod comm p = f p.1 * g p.2 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem noncommCoprod_comp_inl : (noncommCoprod comm).comp (inl M N) = f :=
+  ext fun x => by simp
+
+@[to_additive (attr := simp)]
+theorem noncommCoprod_comp_inr : (noncommCoprod comm).comp (inr M N) = g :=
+  ext fun x => by simp
+
+@[to_additive (attr := simp)]
+theorem noncommCoprod_unique (φ : M × N →* P)
+    (comm := fun m n ↦ by
+      simp [commute_iff_eq, ← map_mul, Prod.mk_mul_mk, mul_one, one_mul]):
+    noncommCoprod comm (f := φ.comp (inl M N)) (g := φ.comp (inr M N)) = φ :=
+  ext fun x => by simp [← map_mul]
+
+@[to_additive (attr := simp)]
+theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N] :
+    noncommCoprod (f := inl M N) (g:= inr M N) (commute_inl_inr) = id (M × N) := by
+  apply noncommCoprod_unique (id <| M × N)
+
+@[to_additive]
+theorem comp_noncommCoprod {Q : Type*} [Monoid Q] (h : P →* Q)
+    (f : M →* P) (g : N →* P) (comm : ∀ m n, Commute (f m) (g n))
+    (comm' : ∀ m n, Commute (h.comp f m) (h.comp g n) := fun m n ↦ by
+      simp only [coe_comp, Function.comp_apply]
+      rw [commute_iff_eq, ← map_mul, comm, map_mul]) :
+    h.comp (noncommCoprod comm) =
+      noncommCoprod (f := h.comp f) (g := h.comp g) comm' :=
+  ext fun x => by simp
+
+end NonCommCoprod
+
 end MonoidHom
 
 namespace MulEquiv
