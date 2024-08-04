@@ -167,13 +167,13 @@ variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N
 (P : RootPairing ι R M N)
 
 -- should I just say positive semi-definite?
-theorem PolInner_self_non_neg [Finite ι] (x : M) : 0 ≤ P.PolInner x x := by
+theorem polInner_self_non_neg [Finite ι] (x : M) : 0 ≤ P.PolInner x x := by
   simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
     polarization_self]
   exact Finset.sum_nonneg fun i _ =>
     (sq (P.toLin x (P.coroot i))) ▸ sq_nonneg (P.toLin x (P.coroot i))
 
-theorem PolInner_root_self_pos [Finite ι] (j : ι) :
+theorem polInner_root_self_pos [Finite ι] (j : ι) :
     0 < P.PolInner (P.root j) (P.root j) := by
   simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
     polarization_root_self]
@@ -185,9 +185,9 @@ theorem PolInner_root_self_pos [Finite ι] (j : ι) :
   norm_num
 
 theorem polInner_root_positive [Finite ι] : IsRootPositive P P.PolInner where
-  root_pos i := P.PolInner_root_self_pos i
+  zero_lt_apply_root i := P.polInner_root_self_pos i
   symm := P.polInner_symmetric
-  refl_inv := P.polInner_reflection_invariant
+  apply_reflection_eq := P.polInner_reflection_invariant
 
 end
 
