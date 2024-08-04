@@ -276,9 +276,8 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
       right_inv := fun _ => rfl }
   exact (TopCat.isoOfHomeo t).isIso_hom
 
-instance stalk_iso [HasColimits C] (x : X) : IsIso (stalkMap f x) := by
-  rw [← H.isoRestrict_hom_ofRestrict]
-  rw [PresheafedSpace.stalkMap.comp]
+instance stalk_iso [HasColimits C] (x : X) : IsIso (f.stalkMap x) := by
+  rw [← H.isoRestrict_hom_ofRestrict, PresheafedSpace.stalkMap.comp]
   infer_instance
 
 end
@@ -377,12 +376,10 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
 
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
-                  erw [← this]
+                  rw [← this]
                   dsimp [s']
-                  -- Porting note: need a bit more hand holding here about function composition
-                  rw [show ∀ f g, f ∘ g = fun x => f (g x) from fun _ _ => rfl]
-                  erw [← Set.preimage_preimage]
-                erw [Set.preimage_image_eq _
+                  rw [Function.comp_def, ← Set.preimage_preimage]
+                rw [Set.preimage_image_eq _
                     (TopCat.snd_openEmbedding_of_left_openEmbedding hf.base_open g.base).inj]
                 rfl))
       naturality := fun U V i => by
@@ -567,8 +564,8 @@ variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 def toLocallyRingedSpace : LocallyRingedSpace where
   toSheafedSpace := toSheafedSpace Y.toSheafedSpace f
   localRing x :=
-    haveI : LocalRing (Y.stalk (f.base x)) := Y.localRing _
-    (asIso (stalkMap f x)).commRingCatIsoToRingEquiv.localRing
+    haveI : LocalRing (Y.presheaf.stalk (f.base x)) := Y.localRing _
+    (asIso (f.stalkMap x)).commRingCatIsoToRingEquiv.localRing
 
 @[simp]
 theorem toLocallyRingedSpace_toSheafedSpace :
@@ -733,7 +730,7 @@ Then a morphism `X ⟶ Y` that is a topological open embedding
 is an open immersion iff every stalk map is an iso.
 -/
 theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.base)
-    [H : ∀ x : X.1, IsIso (PresheafedSpace.stalkMap f x)] : SheafedSpace.IsOpenImmersion f :=
+    [H : ∀ x : X.1, IsIso (f.stalkMap x)] : SheafedSpace.IsOpenImmersion f :=
   { base_open := hf
     c_iso := fun U => by
       apply (config := {allowSynthFailures := true})
@@ -741,7 +738,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.
           (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward _ f.base).obj X.sheaf from ⟨f.c⟩)
       rintro ⟨_, y, hy, rfl⟩
       specialize H y
-      delta PresheafedSpace.stalkMap at H
+      delta PresheafedSpace.Hom.stalkMap at H
       haveI H' :=
         TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_openEmbedding C hf X.presheaf y
       have := @IsIso.comp_isIso _ _ _ _ _ _ _ H (@IsIso.inv_isIso _ _ _ _ _ H')
@@ -832,7 +829,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
   apply isIso_of_reflects_iso _ (SheafedSpace.forgetToPresheafedSpace)
 
 instance stalk_iso [HasColimits C] (x : X) :
-    IsIso (PresheafedSpace.stalkMap f x) :=
+    IsIso (f.stalkMap x) :=
   PresheafedSpace.IsOpenImmersion.stalk_iso f x
 
 end
@@ -984,7 +981,7 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
           (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1
             (PullbackCone.mk s.fst.1 s.snd.1 (congr_arg LocallyRingedSpace.Hom.val s.condition)))
           x
-      change _ = _ ≫ PresheafedSpace.stalkMap s.snd.1 x at this
+      change _ = _ ≫ s.snd.1.stalkMap x at this
       rw [PresheafedSpace.stalkMap.comp, ← IsIso.eq_inv_comp] at this
       rw [this]
       infer_instance
@@ -1157,7 +1154,7 @@ Then a morphism `X ⟶ Y` that is a topological open embedding
 is an open immersion iff every stalk map is an iso.
 -/
 theorem of_stalk_iso {X Y : LocallyRingedSpace} (f : X ⟶ Y) (hf : OpenEmbedding f.1.base)
-    [stalk_iso : ∀ x : X.1, IsIso (LocallyRingedSpace.stalkMap f x)] :
+    [stalk_iso : ∀ x : X.1, IsIso (f.stalkMap x)] :
     LocallyRingedSpace.IsOpenImmersion f :=
   SheafedSpace.IsOpenImmersion.of_stalk_iso hf (H := stalk_iso)
 
@@ -1234,7 +1231,7 @@ theorem ofRestrict_invApp (X : LocallyRingedSpace) {Y : TopCat}
     (LocallyRingedSpace.IsOpenImmersion.ofRestrict X h).invApp U = 𝟙 _ :=
   PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ h U
 
-instance stalk_iso (x : X) : IsIso (LocallyRingedSpace.stalkMap f x) :=
+instance stalk_iso (x : X) : IsIso (f.stalkMap x) :=
   PresheafedSpace.IsOpenImmersion.stalk_iso f.1 x
 
 theorem to_iso [h' : Epi f.1.base] : IsIso f := by

@@ -26,7 +26,7 @@ suppress_compilation
 
 universe u u'
 
-open CategoryTheory CategoryTheory.Limits TensorProduct
+open CategoryTheory Limits TensorProduct
 
 namespace CommRingCat
 
@@ -111,7 +111,7 @@ section Terminal
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
   · rfl
-  · intros; simp; ext
+  · intros; simp only [coe_of, Pi.one_apply, self_eq_add_right]; ext
   · intros f; ext; rfl
 
 instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by

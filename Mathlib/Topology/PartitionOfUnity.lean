@@ -97,10 +97,15 @@ that for every open covering `U : Set (Set X)` of `s` there exists a partition o
 subordinate to `U`.
 -/
 structure PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) where
+  /-- The collection of continuous functions underlying this partition of unity -/
   toFun : ι → C(X, ℝ)
+  /-- the supports of the underlying functions are a locally finite family of sets -/
   locallyFinite' : LocallyFinite fun i => support (toFun i)
+  /-- the functions are non-negative -/
   nonneg' : 0 ≤ toFun
+  /-- the functions sum up to one on `s` -/
   sum_eq_one' : ∀ x ∈ s, ∑ᶠ i, toFun i x = 1
+  /-- the functions sum up to at most one, globally -/
   sum_le_one' : ∀ x, ∑ᶠ i, toFun i x ≤ 1
 
 /-- A `BumpCovering ι X s` is an indexed family of functions `f i`, `i : ι`, such that
@@ -119,10 +124,15 @@ every open covering `U : Set (Set X)` of `s` there exists a `BumpCovering` of `s
 subordinate to `U`.
 -/
 structure BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) where
+  /-- The collections of continuous functions underlying this bump covering -/
   toFun : ι → C(X, ℝ)
+  /-- the supports of the underlying functions are a locally finite family of sets -/
   locallyFinite' : LocallyFinite fun i => support (toFun i)
+  /-- the functions are non-negative -/
   nonneg' : 0 ≤ toFun
+  /-- the functions are each at most one -/
   le_one' : toFun ≤ 1
+  /-- Each point `x ∈ s` belongs to the interior of `{x | f i x = 1}` for some `i`. -/
   eventuallyEq_one' : ∀ x ∈ s, ∃ i, toFun i =ᶠ[𝓝 x] 1
 
 variable {ι : Type u} {X : Type v} [TopologicalSpace X]

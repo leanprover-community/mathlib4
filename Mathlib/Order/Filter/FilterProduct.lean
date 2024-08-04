@@ -23,8 +23,6 @@ universe u v
 
 variable {α : Type u} {β : Type v} {φ : Ultrafilter α}
 
-open scoped Classical
-
 namespace Filter
 
 local notation3 "∀* "(...)", "r:(scoped p => Filter.Eventually p (Ultrafilter.toFilter φ)) => r
@@ -46,11 +44,13 @@ instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := instSemiring
   __ := instGroupWithZero
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
 
 instance instDivisionRing [DivisionRing β] : DivisionRing β* where
   __ := instRing
   __ := instDivisionSemiring
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 instance instSemifield [Semifield β] : Semifield β* where
   __ := instCommSemiring
@@ -81,6 +81,7 @@ instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
   ⟨fun f g =>
     inductionOn₂ f g fun _f _g => eventually_or.1 <| eventually_of_forall fun _x => total_of _ _ _⟩
 
+open Classical in
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
 noncomputable instance instLinearOrder [LinearOrder β] : LinearOrder β* :=
   Lattice.toLinearOrder _
