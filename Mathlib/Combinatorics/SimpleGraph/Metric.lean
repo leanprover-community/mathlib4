@@ -129,7 +129,7 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
   · exact le_antisymm (edist_le h.toWalk) (ENat.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
 /-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
-theorem dist_le_subgraph_edist {G' : SimpleGraph V} {u v : V} (h : G ≤ G') (hr : G.Reachable u v) :
+theorem edist_le_subgraph_edist {G' : SimpleGraph V} {u v : V} (h : G ≤ G') (hr : G.Reachable u v) :
     G'.edist u v ≤ G.edist u v := by
   obtain ⟨_, hw⟩ := exists_walk_of_edist_ne_top <| edist_ne_top_iff_reachable.mpr hr
   rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
