@@ -11,7 +11,7 @@ example : (AddCommGroup.toIntModule _ : Module ℤ (AlgebraicClosure k)) =
       @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) := by
   with_reducible_and_instances rfl
 
-example [CharZero k] : AlgebraicClosure.instAlgebra k = algebraRat :=
+example [CharZero k] : AlgebraicClosure.instAlgebra k = DivisionRing.toRatAlgebra :=
   rfl
   -- TODO: by with_reducible_and_instances rfl fails
 

@@ -81,7 +81,7 @@ variable (R : Type*) [Nontrivial R]
 /-- A nontrivial `ℚ`-algebra has `CharP` equal to zero.
 
 This cannot be a (local) instance because it would immediately form a loop with the
-instance `algebraRat`. It's probably easier to go the other way: prove `CharZero R` and
+instance `DivisionRing.toRatAlgebra`. It's probably easier to go the other way: prove `CharZero R` and
 automatically receive an `Algebra ℚ R` instance.
 -/
 theorem algebraRat.charP_zero [Semiring R] [Algebra ℚ R] : CharP R 0 :=
@@ -90,7 +90,7 @@ theorem algebraRat.charP_zero [Semiring R] [Algebra ℚ R] : CharP R 0 :=
 /-- A nontrivial `ℚ`-algebra has characteristic zero.
 
 This cannot be a (local) instance because it would immediately form a loop with the
-instance `algebraRat`. It's probably easier to go the other way: prove `CharZero R` and
+instance `DivisionRing.toRatAlgebra`. It's probably easier to go the other way: prove `CharZero R` and
 automatically receive an `Algebra ℚ R` instance.
 -/
 theorem algebraRat.charZero [Ring R] [Algebra ℚ R] : CharZero R :=

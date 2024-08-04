@@ -23,7 +23,7 @@ example :
       @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) := by
   with_reducible_and_instances rfl
 
-example [CharZero K] : SplittingField.algebra' f = algebraRat :=
+example [CharZero K] : SplittingField.algebra' f = DivisionRing.toRatAlgebra :=
   rfl
   -- TODO: by with_reducible_and_instances rfl fails
 

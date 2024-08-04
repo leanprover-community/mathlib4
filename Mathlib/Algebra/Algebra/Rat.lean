@@ -39,7 +39,7 @@ instance : Algebra NNRat ℚ :=
   NNRat.coeHom.toAlgebra
 
 /-- The two `Algebra ℚ ℚ` instances should coincide. -/
-example : algebraRat = Algebra.id ℚ :=
+example : DivisionRing.toRatAlgebra = Algebra.id ℚ :=
   rfl
 
 @[simp] theorem algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ := rfl
