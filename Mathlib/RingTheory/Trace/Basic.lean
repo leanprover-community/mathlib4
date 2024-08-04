@@ -125,7 +125,7 @@ theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
   conv =>
     lhs
     rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
-  rw [← trace_trace (L := K⟮x⟯), trace_algebraMap, LinearMap.map_smul_of_tower]
+  rw [← trace_trace (S := K⟮x⟯), trace_algebraMap, LinearMap.map_smul_of_tower]
 
 variable {K}
 

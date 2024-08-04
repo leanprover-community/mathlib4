@@ -24,7 +24,7 @@ open LinearMap
 section LinearIndependent
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
-variable [Fintype K] [Fintype V]
+variable [Fintype K] [Finite V]
 
 local notation "q" => Fintype.card K
 local notation "n" => FiniteDimensional.finrank K V

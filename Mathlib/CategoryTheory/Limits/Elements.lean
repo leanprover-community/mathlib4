@@ -27,8 +27,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace CategoryOfElements
 
-variable {A : C ⥤ Type w} {I : Type u₁} [Category.{v₁} I] [Small.{w} I] [HasLimitsOfShape I C]
-  [PreservesLimitsOfShape I A]
+variable {A : C ⥤ Type w} {I : Type u₁} [Category.{v₁} I] [Small.{w} I]
 
 namespace CreatesLimitsAux
 
@@ -42,6 +41,8 @@ noncomputable def liftedConeElement' : limit ((F ⋙ π A) ⋙ A) :=
 lemma π_liftedConeElement' (i : I) :
     limit.π ((F ⋙ π A) ⋙ A) i (liftedConeElement' F) = (F.obj i).2 :=
   Types.Limit.π_mk _ _ _ _
+
+variable [HasLimitsOfShape I C] [PreservesLimitsOfShape I A]
 
 /-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `A(lim_i Fi)`. -/
 noncomputable def liftedConeElement : A.obj (limit (F ⋙ π A)) :=
@@ -83,6 +84,8 @@ noncomputable def isLimit : IsLimit (liftedCone F) where
     fun i => by simpa using congrArg Subtype.val (h i)
 
 end CreatesLimitsAux
+
+variable [HasLimitsOfShape I C] [PreservesLimitsOfShape I A]
 
 section
 

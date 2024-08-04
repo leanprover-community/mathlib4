@@ -209,6 +209,10 @@ lemma singleton_le_singleton : (toColex {a} : Colex α) ≤ toColex {b} ↔ a �
 lemma singleton_lt_singleton : (toColex {a} : Colex α) < toColex {b} ↔ a < b := by
   simp [toColex_lt_singleton]
 
+lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
+    s ≤ t ↔ (ofColex s : Set α) \ ofColex t ⊆ lowerClosure (ofColex t \ ofColex s : Set α) := by
+  simp [le_def, Set.subset_def, and_assoc]
+
 section DecidableEq
 variable [DecidableEq α]
 
@@ -221,10 +225,6 @@ instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex �
 
 instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) :=
   decidableLTOfDecidableLE
-
-lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
-    s ≤ t ↔ (ofColex s : Set α) \ ofColex t ⊆ lowerClosure (ofColex t \ ofColex s : Set α) := by
-  simp [le_def, Set.subset_def, and_assoc]
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
@@ -338,7 +338,7 @@ lemma lt_iff_max'_mem {s t : Colex α} :
   rw [lt_iff_le_and_ne, le_iff_max'_mem]; aesop
 
 lemma lt_iff_exists_filter_lt :
-    toColex s < toColex t ↔ ∃ w ∈ t \ s, s.filter (w < .) = t.filter (w < .) := by
+    toColex s < toColex t ↔ ∃ w ∈ t \ s, s.filter (w < ·) = t.filter (w < ·) := by
   simp only [lt_iff_exists_forall_lt, mem_sdiff, filter_inj, and_assoc]
   refine ⟨fun h ↦ ?_, ?_⟩
   · let u := (t \ s).filter fun w ↦ ∀ a ∈ s, a ∉ t → a < w
@@ -421,8 +421,8 @@ instance instBoundedOrder : BoundedOrder (Colex α) where
   top := toColex univ
   le_top _x := toColex_le_toColex_of_subset <| subset_univ _
 
-@[simp] lemma toColex_univ [Fintype α] : toColex (univ : Finset α) = ⊤ := rfl
-@[simp] lemma ofColex_top [Fintype α] : ofColex (⊤ : Colex α) = univ := rfl
+@[simp] lemma toColex_univ : toColex (univ : Finset α) = ⊤ := rfl
+@[simp] lemma ofColex_top : ofColex (⊤ : Colex α) = univ := rfl
 
 end Fintype
 

@@ -665,7 +665,9 @@ instance instField : Field (center K) where
   inv_zero := Subtype.ext inv_zero
   -- TODO: use a nicer defeq
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q x => rfl
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
@@ -1284,3 +1286,41 @@ instance center.smulCommClass_right : SMulCommClass R (center R) R :=
 end Subring
 
 end Actions
+
+namespace Subring
+
+theorem map_comap_eq (f : R →+* S) (t : Subring S) : (t.comap f).map f = t ⊓ f.range :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self
+    {f : R →+* S} {t : Subring S} (h : t ≤ f.range) : (t.comap f).map f = t := by
+  simpa only [inf_of_le_left h] using Subring.map_comap_eq f t
+
+theorem map_comap_eq_self_of_surjective
+    {f : R →+* S} (hf : Function.Surjective f) (t : Subring S) : (t.comap f).map f = t :=
+  map_comap_eq_self <| by simp [hf]
+
+theorem comap_map_eq (f : R →+* S) (s : Subring R) :
+    (s.map f).comap f = s ⊔ closure (f ⁻¹' {0}) := by
+  apply le_antisymm
+  · intro x hx
+    rw [mem_comap, mem_map] at hx
+    obtain ⟨y, hy, hxy⟩ := hx
+    replace hxy : x - y ∈ f ⁻¹' {0} := by simp [hxy]
+    rw [← closure_eq s, ← closure_union, ← add_sub_cancel y x]
+    exact Subring.add_mem _ (subset_closure <| Or.inl hy) (subset_closure <| Or.inr hxy)
+  · rw [← map_le_iff_le_comap, map_sup, f.map_closure]
+    apply le_of_eq
+    rw [sup_eq_left, closure_le]
+    exact (Set.image_preimage_subset f {0}).trans (Set.singleton_subset_iff.2 (s.map f).zero_mem)
+
+theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
+    (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
+  convert comap_map_eq f s
+  rwa [left_eq_sup, closure_le]
+
+theorem comap_map_eq_self_of_injective
+    {f : R →+* S} (hf : Function.Injective f) (s : Subring R) : (s.map f).comap f = s :=
+  SetLike.coe_injective (Set.preimage_image_eq _ hf)
+
+end Subring
