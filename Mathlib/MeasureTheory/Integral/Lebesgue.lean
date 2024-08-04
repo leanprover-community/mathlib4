@@ -589,7 +589,6 @@ alias set_lintegral_smul_measure := setLIntegral_smul_measure
 theorem lintegral_zero_measure {m : MeasurableSpace α} (f : α → ℝ≥0∞) :
     ∫⁻ a, f a ∂(0 : Measure α) = 0 := by
   simp [lintegral]
-#align measure_theory.lintegral_zero_measure MeasureTheory.lintegral_zero_measure
 
 @[simp]
 theorem lintegral_add_measure (f : α → ℝ≥0∞) (μ ν : Measure α) :
@@ -598,9 +597,8 @@ theorem lintegral_add_measure (f : α → ℝ≥0∞) (μ ν : Measure α) :
   refine (ENNReal.iSup_add_iSup ?_).symm
   rintro ⟨φ, hφ⟩ ⟨ψ, hψ⟩
   refine ⟨⟨φ ⊔ ψ, sup_le hφ hψ⟩, ?_⟩
-  gcongr
+  apply_rules [add_le_add, SimpleFunc.lintegral_mono, le_rfl] -- TODO: use `gcongr`
   exacts [le_sup_left, le_sup_right]
-#align measure_theory.lintegral_add_measure MeasureTheory.lintegral_add_measure
 
 @[simp]
 theorem lintegral_finset_sum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞) (μ : ι → Measure α) :
@@ -610,7 +608,6 @@ theorem lintegral_finset_sum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞
       map_zero' := lintegral_zero_measure f,
       map_add' := lintegral_add_measure f }
   map_sum F μ s
-#align measure_theory.lintegral_finset_sum_measure MeasureTheory.lintegral_finset_sum_measure
 
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
