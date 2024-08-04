@@ -38,10 +38,6 @@ For the following results, we assume that `P : MorphismProperty C` is stable und
 * `presheaf_respectsIso`: `P.presheaf` respects isomorphisms
 * `presheaf_isStableUnderComp`: If `P` is stable under composition, then so is `P.presheaf`
 
-## TODO
-Can improve definitions & basic API
-converse of `presheaf_yoneda_map`
-
 -/
 
 
