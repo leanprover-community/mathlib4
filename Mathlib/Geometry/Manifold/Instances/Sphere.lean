@@ -475,6 +475,12 @@ theorem contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
   apply contDiff_neg.contMDiff.comp _
   exact contMDiff_coe_sphere
 
+private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+  stereographic' n (-v) v = 0 := by
+    dsimp [stereographic']
+    simp only [AddEquivClass.map_eq_zero_iff]
+    apply stereographic_neg_apply
+
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
 of `v` in `E`.
@@ -498,10 +504,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   suffices
       LinearMap.range (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) = (ℝ ∙ (v : E))ᗮ by
     convert this using 3
-    show stereographic' n (-v) v = 0
-    dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
-    apply stereographic_neg_apply
+    apply stereographic'_neg
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
@@ -535,10 +538,7 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
       (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
   suffices Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) by
     convert this using 3
-    show stereographic' n (-v) v = 0
-    dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
-    apply stereographic_neg_apply
+    apply stereographic'_neg
   have : HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
