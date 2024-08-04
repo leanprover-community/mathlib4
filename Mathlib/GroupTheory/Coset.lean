@@ -515,7 +515,7 @@ theorem quotientEquivOfEq_mk (h : s = t) (a : α) :
 of the quotient map `G/K → G`. The classical version is `Subgroup.quotientEquivProdOfLE`. -/
 @[to_additive (attr := simps) AddSubgroup.quotientEquivProdOfLE'
   "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
-  of the quotient map `G/K → G`. The classical version is `AddSubgroup.quotientEquivSumOfLE`."]
+  of the quotient map `G/K → G`. The classical version is `AddSubgroup.quotientEquivProdOfLE`."]
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t where
   toFun a :=
