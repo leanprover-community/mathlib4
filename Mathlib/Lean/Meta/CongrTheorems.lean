@@ -62,7 +62,7 @@ where
       | .eq | .heq =>
         forallBoundedTelescope type (some 3) fun params' type' => do
           let #[x, y, eq] := params' | unreachable!
-          -- See if we can prove `eq` from previous parameters.
+          -- See if we can prove `Eq` from previous parameters.
           let g := (← mkFreshExprMVar (← inferType eq)).mvarId!
           let g ← g.clear eq.fvarId!
           if (← observing? <| prove g args).isSome then

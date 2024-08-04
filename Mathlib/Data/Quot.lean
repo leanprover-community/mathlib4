@@ -83,7 +83,7 @@ theorem factor_mk_eq {α : Type*} (r s : α → α → Prop) (h : ∀ x y, r x y
 
 variable {γ : Sort*} {r : α → α → Prop} {s : β → β → Prop}
 
--- Porting note: used to be an Alias of `quot.lift_beta`.
+-- Porting note: used to be an Alias of `Quot.lift_mk`.
 theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) :
     Quot.lift f h (Quot.mk r a) = f a :=
   rfl

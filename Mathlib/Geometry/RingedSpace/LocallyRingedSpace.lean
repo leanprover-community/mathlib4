@@ -11,7 +11,7 @@ import Mathlib.Geometry.RingedSpace.Stalks
 
 We define (bundled) locally ringed spaces (as `SheafedSpace CommRing` along with the fact that the
 stalks are local rings), and morphisms between these (morphisms in `SheafedSpace` with
-`is_local_ring_hom` on the stalk maps).
+`IsLocalRingHom` on the stalk maps).
 -/
 
 -- Explicit universe annotations were used in this file to improve perfomance #12737
@@ -45,7 +45,7 @@ namespace LocallyRingedSpace
 
 variable (X : LocallyRingedSpace.{u})
 
-/-- An alias for `to_SheafedSpace`, where the result type is a `RingedSpace`.
+/-- An alias for `toSheafedSpace`, where the result type is a `RingedSpace`.
 This allows us to use dot-notation for the `RingedSpace` namespace.
  -/
 def toRingedSpace : RingedSpace :=
@@ -61,8 +61,8 @@ instance : CoeSort LocallyRingedSpace (Type u) :=
 instance (x : X) : LocalRing (X.presheaf.stalk x) :=
   X.localRing x
 
--- PROJECT: how about a typeclass "has_structure_sheaf" to mediate the 𝒪 notation, rather
--- than defining it over and over for PresheafedSpace, LRS, Scheme, etc.
+-- PROJECT: how about a typeclass "HasStructureSheaf" to mediate the 𝒪 notation, rather
+-- than defining it over and over for `PresheafedSpace`, `LocallyRingedSpace`, `Scheme`, etc.
 /-- The structure sheaf of a locally ringed space. -/
 def 𝒪 : Sheaf CommRingCat X.toTopCat :=
   X.sheaf
@@ -155,7 +155,7 @@ theorem comp_val_c_app {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to a morphism `X ⟶ Y` as locally ringed spaces.
 
-See also `iso_of_SheafedSpace_iso`.
+See also `isoOfSheafedSpaceIso`.
 -/
 @[simps]
 def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
@@ -170,7 +170,7 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to an isomorphism `X ⟶ Y` as locally ringed spaces.
 
-This is related to the property that the functor `forget_to_SheafedSpace` reflects isomorphisms.
+This is related to the property that the functor `forgetToSheafedSpace` reflects isomorphisms.
 In fact, it is slightly stronger as we do not require `f` to come from a morphism between
 _locally_ ringed spaces.
 -/

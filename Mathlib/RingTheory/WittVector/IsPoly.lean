@@ -7,7 +7,7 @@ import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.RingTheory.WittVector.Basic
 /-!
-# The `is_poly` predicate
+# The `IsPoly` predicate
 
 `WittVector.IsPoly` is a (type-valued) predicate on functions `f : Π R, 𝕎 R → 𝕎 R`.
 It asserts that there is a family of polynomials `φ : ℕ → MvPolynomial ℕ ℤ`,

@@ -608,7 +608,7 @@ def inrNonUnitalAlgHom (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Mod
   map_add' := inr_add R
   map_mul' := inr_mul R
 
-/-- The coercion from a non-unital `R`-algebra `A` to its unitization `unitization R A`
+/-- The coercion from a non-unital `R`-algebra `A` to its unitization `Unitization R A`
 realized as a non-unital star algebra homomorphism. -/
 @[simps!]
 def inrNonUnitalStarAlgHom (R A : Type*) [CommSemiring R] [StarAddMonoid R]
