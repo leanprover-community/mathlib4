@@ -201,6 +201,7 @@ theorem noncommProd_commute (s : Multiset α) (comm) (y : α) (h : ∀ x ∈ s, 
   simp only [quot_mk_to_coe, noncommProd_coe]
   exact Commute.list_prod_right _ _ h
 
+@[to_additive]
 theorem mul_noncommProd_erase [DecidableEq α] (s : Multiset α) {a : α} (h : a ∈ s) (comm)
     (comm' := fun x hx y hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     a * (s.erase a).noncommProd comm' = s.noncommProd comm := by
@@ -212,6 +213,7 @@ theorem mul_noncommProd_erase [DecidableEq α] (s : Multiset α) {a : α} (h : a
   · rfl
   exact comm hx hy hxy
 
+@[to_additive]
 theorem noncommProd_erase_mul [DecidableEq α] (s : Multiset α) {a : α} (h : a ∈ s) (comm)
     (comm' := fun x hx y hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     (s.erase a).noncommProd comm' * a = s.noncommProd comm := by
@@ -339,6 +341,7 @@ theorem noncommProd_commute (s : Finset α) (f : α → β) (comm) (y : β)
   rintro ⟨x, ⟨hx, rfl⟩⟩
   exact h x hx
 
+@[to_additive]
 theorem mul_noncommProd_erase [DecidableEq α] (s : Finset α) {a : α} (h : a ∈ s) (f : α → β) (comm)
     (comm' := fun x hx y hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     f a * (s.erase a).noncommProd f comm' = s.noncommProd f comm := by
@@ -346,12 +349,24 @@ theorem mul_noncommProd_erase [DecidableEq α] (s : Finset α) {a : α} (h : a �
   simpa only [← Multiset.map_erase_of_mem _ _ h] using
     Multiset.mul_noncommProd_erase (s.1.map f) (Multiset.mem_map_of_mem f h) _
 
+@[to_additive]
 theorem noncommProd_erase_mul [DecidableEq α] (s : Finset α) {a : α} (h : a ∈ s) (f : α → β) (comm)
     (comm' := fun x hx y hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     (s.erase a).noncommProd f comm' * f a = s.noncommProd f comm := by
   classical
   simpa only [← Multiset.map_erase_of_mem _ _ h] using
     Multiset.noncommProd_erase_mul (s.1.map f) (Multiset.mem_map_of_mem f h) _
+
+@[to_additive]
+theorem noncommProd_eq_one {s : Finset α} (f : α → β) (hf : ∀ i ∈ s, f i = 1) (comm) :
+    s.noncommProd f comm = 1 :=
+  noncommProd_induction s f comm (fun b ↦ b = 1) (by simp) rfl hf
+
+@[to_additive]
+theorem noncommProd_eq_single [DecidableEq α] {s : Finset α} (f : α → β) (comm)
+    {a : α} (ha : a ∈ s) (hfas : ∀ x ∈ s.erase a, f x = 1) :
+    s.noncommProd f comm = f a := by
+  rw [← noncommProd_erase_mul s ha, noncommProd_eq_one f hfas, one_mul]
 
 @[to_additive]
 theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α → β) :
@@ -403,12 +418,17 @@ theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) 
     (noncommProd_commute _ _ _ _ fun y hy => ?_).mul_mul_mul_comm]
   exact comm_gf (mem_cons_self x s) (mem_cons_of_mem hy) (ne_of_mem_of_not_mem hy hnmem).symm
 
+end Finset
+
 section FinitePi
 
+variable [Fintype ι] [DecidableEq ι] [Monoid γ]
 variable {M : ι → Type*} [∀ i, Monoid (M i)]
 
+open Finset
+
 @[to_additive]
-theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
+theorem Finset.noncommProd_mul_single (x : ∀ i, M i) :
     (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
         Pi.mulSingle_apply_commute x i j) = x := by
   ext i
@@ -431,14 +451,50 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
       intro h
       simp [*] at *
 
+namespace MonoidHom
+
 @[to_additive]
-theorem _root_.MonoidHom.pi_ext [Finite ι] [DecidableEq ι] {f g : (∀ i, M i) →* γ}
+theorem _root_.MonoidHom.pi_ext {f g : (∀ i, M i) →* γ}
     (h : ∀ i x, f (Pi.mulSingle i x) = g (Pi.mulSingle i x)) : f = g := by
   cases nonempty_fintype ι
   ext x
   rw [← noncommProd_mul_single x, univ.map_noncommProd, univ.map_noncommProd]
   congr 1 with i; exact h i (x i)
 
-end FinitePi
+/-- The coproduct property of finite products of monoids -/
+@[to_additive]
+def _root_.MonoidHom.pi_lift {f : ∀ i, (M i →* γ)}
+  (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n)):
+    (∀ i, M i) →* γ where
+  toFun m := univ.noncommProd (fun i ↦ f i (m i)) (fun x _ y _ ↦ comm x _ y _)
+  map_one' := by
+    simp only [Pi.one_apply, map_one]
+    apply noncommProd_eq_one _ (fun _ _ ↦ rfl)
+  map_mul' x y := by
+    simp only [Pi.mul_apply, map_mul]
+    simp only [← noncommProd_mul_distrib _ _ _ _ (fun _ _ _ _ ↦ comm _ _ _ _ )]
+    rfl
 
-end Finset
+@[to_additive]
+def pi_lift_apply {f : ∀ i, (M i →* γ)}
+    (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n))
+    (i : ι) (m : M i) :
+    pi_lift comm (Pi.mulSingle i m) = f i m := by
+  simp only [pi_lift, coe_mk, OneHom.coe_mk]
+  rw [noncommProd_eq_single _ _ (mem_univ _), Pi.mulSingle_eq_same]
+  intro x hx
+  rw [Pi.mulSingle_eq_of_ne (ne_of_mem_erase hx), map_one]
+
+@[to_additive]
+def pi_lift_unique {f : ∀ i, (M i →* γ)} (φ : (∀ i, M i) →* γ)
+    (h : ∀ i m, φ (Pi.mulSingle i m) = f i m)
+    (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n) :=
+      fun i m j n hij ↦ by
+      rw [← h i m, ← h j n]
+      exact Commute.map (Pi.mulSingle_commute hij m n) φ) :
+    φ = pi_lift comm :=
+  pi_ext (fun i m ↦ by rw [h i m, pi_lift_apply])
+
+end MonoidHom
+
+end FinitePi
