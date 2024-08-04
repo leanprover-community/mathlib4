@@ -133,12 +133,12 @@ inductive Key where
   /-- An opaque variable. This key only matches with itself or `Key.star`. -/
   | opaque : Key
   /-- A constant. It stores the name and the arity. -/
-  | const : (declName : Name) → (arity : Nat) → Key
+  | const : (declName : Name) → (nargs : Nat) → Key
   /-- A free variable. It stores the `FVarId` and the arity. -/
-  | fvar : (fvarId : FVarId) → (arity : Nat) → Key
+  | fvar : (fvarId : FVarId) → (nargs : Nat) → Key
   /-- A bound variable, from a lambda or forall binder.
   It stores the De Bruijn index and the arity. -/
-  | bvar : (deBruijnIndex arity : Nat) → Key
+  | bvar : (deBruijnIndex nargs : Nat) → Key
   /-- A literal. -/
   | lit : Literal → Key
   /-- A sort. Universe levels are ignored. -/
@@ -148,20 +148,20 @@ inductive Key where
   /-- A dependent arrow. -/
   | forall : Key
   /-- A projection. It stores the structure name, the projection index and the arity. -/
-  | proj : (typeName : Name) → (idx arity : Nat) → Key
+  | proj : (typeName : Name) → (idx nargs : Nat) → Key
   deriving Inhabited, BEq, Repr
 
 private nonrec def Key.hash : Key → UInt64
   | .star id             => mixHash 7883 $ hash id
   | .opaque              => 342
-  | .const name arity    => mixHash 5237 $ mixHash (hash name) (hash arity)
-  | .fvar fvarId arity   => mixHash 8765 $ mixHash (hash fvarId) (hash arity)
-  | .bvar idx arity      => mixHash 4323 $ mixHash (hash idx) (hash arity)
+  | .const name nargs    => mixHash 5237 $ mixHash (hash name) (hash nargs)
+  | .fvar fvarId nargs   => mixHash 8765 $ mixHash (hash fvarId) (hash nargs)
+  | .bvar idx nargs      => mixHash 4323 $ mixHash (hash idx) (hash nargs)
   | .lit v               => mixHash 1879 $ hash v
   | .sort                => 2411
   | .lam                 => 4742
   | .«forall»            => 9752
-  | .proj name idx arity => mixHash (hash arity) $ mixHash (hash name) (hash idx)
+  | .proj name idx nargs => mixHash (hash nargs) $ mixHash (hash name) (hash idx)
 
 instance : Hashable Key := ⟨Key.hash⟩
 
@@ -183,42 +183,91 @@ def Key.ctorIdx : Key → Nat
 /-- The order on `Key` used in the `RefinedDiscrTree`. -/
 private def Key.lt : Key → Key → Bool
   | .star id₁,               .star id₂               => id₁ < id₂
-  | .const name₁ arity₁,     .const name₂ arity₂     => Name.quickLt name₁ name₂ ||
-                                                          name₁ == name₂ && arity₁ < arity₂
-  | .fvar f₁ arity₁,         .fvar f₂ arity₂         => Name.quickLt f₁.name f₂.name ||
-                                                          f₁ == f₂ && arity₁ < arity₂
-  | .bvar i₁ arity₁,         .bvar i₂ arity₂         => i₁ < i₂ || (i₁ == i₂ && arity₁ < arity₂)
+  | .const name₁ nargs₁,     .const name₂ nargs₂     => Name.quickLt name₁ name₂ ||
+                                                          name₁ == name₂ && nargs₁ < nargs₂
+  | .fvar f₁ nargs₁,         .fvar f₂ nargs₂         => Name.quickLt f₁.name f₂.name ||
+                                                          f₁ == f₂ && nargs₁ < nargs₂
+  | .bvar i₁ nargs₁,         .bvar i₂ nargs₂         => i₁ < i₂ || (i₁ == i₂ && nargs₁ < nargs₂)
   | .lit v₁,                 .lit v₂                 => v₁ < v₂
-  | .proj name₁ idx₁ arity₁, .proj name₂ idx₂ arity₂ => Name.quickLt name₁ name₂ ||
-    name₁ == name₂ && (idx₁ < idx₂ || idx₁ == idx₂ && arity₁ < arity₂)
+  | .proj name₁ idx₁ nargs₁, .proj name₂ idx₂ nargs₂ => Name.quickLt name₁ name₂ ||
+    name₁ == name₂ && (idx₁ < idx₂ || idx₁ == idx₂ && nargs₁ < nargs₂)
   | k₁,             k₂             => k₁.ctorIdx < k₂.ctorIdx
 
 instance : LT Key := ⟨fun a b => Key.lt a b⟩
 instance (a b : Key) : Decidable (a < b) := inferInstanceAs (Decidable (Key.lt a b))
 
 private def Key.format : Key → Format
-  | .star id                => f!"*{id}"
+  | .star id                => f!"_{id}"
   | .opaque                 => "◾"
-  | .const name arity       => f!"⟨{name}, {arity}⟩"
-  | .fvar fvarId arity      => f!"⟨{fvarId.name}, {arity}⟩"
+  | .const name nargs       => f!"⟨{name}, {nargs}⟩"
+  | .fvar fvarId nargs      => f!"⟨{fvarId.name}, {nargs}⟩"
   | .lit (Literal.natVal n) => f!"{n}"
   | .lit (Literal.strVal s) => f!"{s.quote}"
   | .sort                   => "Sort"
-  | .bvar i arity           => f!"⟨#{i}, {arity}⟩"
+  | .bvar i nargs           => f!"⟨#{i}, {nargs}⟩"
   | .lam                    => "λ"
   | .forall                 => "∀"
-  | .proj name idx arity    => f!"⟨{name}.{idx}, {arity}⟩"
+  | .proj name idx nargs    => f!"⟨{name}.{idx}, {nargs}⟩"
 
 instance : ToFormat Key := ⟨Key.format⟩
 
+/--
+Helper function for converting an entry (i.e., `Array Key`) to the discrimination tree into
+`MessageData` that is more user-friendly. We use this function to implement diagnostic information.
+-/
+partial def keysAsPattern (keys : Array Key) : CoreM MessageData := do
+  go (parenIfNonAtomic := false) |>.run' keys.toList
+where
+  next? : StateRefT (List Key) CoreM (Option Key) := do
+    let key :: keys ← get | return none
+    set keys
+    return some key
+
+  mkApp (f : MessageData) (args : Array MessageData) (parenIfNonAtomic : Bool) : CoreM MessageData := do
+    if args.isEmpty then
+      return f
+    else
+      let mut r := f
+      for arg in args do
+        r := r ++ m!" {arg}"
+      if parenIfNonAtomic then
+        return m!"({r})"
+      else
+        return r
+
+  go (parenIfNonAtomic := true) : StateRefT (List Key) CoreM MessageData := do
+    let some key ← next? | return .nil
+    match key with
+    | .const declName nargs =>
+      mkApp m!"{← mkConstWithLevelParams declName}" (← goN nargs) parenIfNonAtomic
+    | .fvar fvarId nargs =>
+      mkApp m!"{mkFVar fvarId}" (← goN nargs) parenIfNonAtomic
+    | .proj _ i nargs =>
+      mkApp m!"{← go}.{i+1}" (← goN nargs) parenIfNonAtomic
+    | .bvar i nargs =>
+      mkApp m!"#{i}" (← goN nargs) parenIfNonAtomic
+    | .lam =>
+      let r := m!"λ, {← go false}"
+      if parenIfNonAtomic then return m!"({r})" else return r
+    | .forall =>
+      let r := m!"{← go} → {← go false}";
+      if parenIfNonAtomic then return m!"({r})" else return r
+    | _ => return key.format
+
+  goN (num : Nat) : StateRefT (List Key) CoreM (Array MessageData) := do
+    let mut r := #[]
+    for _ in [: num] do
+      r := r.push (← go)
+    return r
+
 /-- Return the number of arguments that the `Key` takes. -/
 def Key.arity : Key → Nat
-  | .const _ arity  => arity
-  | .fvar _ arity   => arity
-  | .bvar _ arity   => arity
+  | .const _ nargs  => nargs
+  | .fvar _ nargs   => nargs
+  | .bvar _ nargs   => nargs
   | .lam            => 1
   | .forall         => 2
-  | .proj _ _ arity => arity + 1
+  | .proj _ _ nargs => nargs + 1
   | _               => 0
 
 
@@ -367,16 +416,16 @@ def isStarWithArg (arg : Expr) : Expr → Bool
 of the next branch of the expression. -/
 private partial def hasLooseBVarsAux (keys : Array Key) (depth index : Nat) : Option Nat :=
   match keys[index]! with
-  | .const _ arity
-  | .fvar _ arity   => recurse arity
-  | .bvar i arity   => if i ≥ depth then none else recurse arity
+  | .const _ nargs
+  | .fvar _ nargs   => recurse nargs
+  | .bvar i nargs   => if i ≥ depth then none else recurse nargs
   | .lam            => hasLooseBVarsAux keys (depth + 1) (index + 1)
   | .forall         => hasLooseBVarsAux keys depth (index + 1) >>= hasLooseBVarsAux keys (depth + 1)
-  | .proj _ _ arity => recurse (arity + 1)
+  | .proj _ _ nargs => recurse (nargs + 1)
   | _               => some (index + 1)
 where
-  recurse (arity : Nat) : Option Nat :=
-    arity.foldM (init := index + 1) (fun _ => hasLooseBVarsAux keys depth)
+  recurse (nargs : Nat) : Option Nat :=
+    nargs.foldM (init := index + 1) (fun _ => hasLooseBVarsAux keys depth)
 
 /-- Determine whether `keys` contains a loose bound variable. -/
 def hasLooseBVars (keys : Array Key) : Bool :=
