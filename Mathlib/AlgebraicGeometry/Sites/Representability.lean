@@ -9,9 +9,13 @@ import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.GluingOneHypercover
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
-# Representability
+# Representability of schemes is a local property
+
+In this file we prove that a sheaf of types `F` on `Sch` is representable if it is
+locally representable.
 
 ## References
 * https://stacks.math.columbia.edu/tag/01JJ
@@ -26,7 +30,7 @@ universe u
 
 namespace Scheme
 
-/-- TODO -/
+/-- Open immersions as a morphism property -/
 abbrev openImmersion : MorphismProperty (Scheme.{u}) := @IsOpenImmersion
 
 lemma openImmersion_le_monomorphisms :
@@ -38,6 +42,13 @@ lemma mono_of_openImmersion_presheaf {F G : Scheme.{u}ᵒᵖ ⥤ Type u}
   MorphismProperty.presheaf_monomorphisms_le_monomorphisms _
     (MorphismProperty.presheaf_monotone (openImmersion_le_monomorphisms) _ hf)
 
+/-
+Consider the following setup:
+* F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
+* X : ι → Sch is a family of schemes
+* f : Π i, yoneda.obj (X i) ⟶ F is a family relatively representable open immersions
+* The family f is locally surjective with respect to the Zariski topology
+-/
 variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u)) {ι : Type u}
   {X : ι → Scheme.{u}} (f : (i : ι) → yoneda.obj (X i) ⟶ F.1)
   (hf : ∀ i, openImmersion.presheaf (f i))
@@ -48,50 +59,61 @@ namespace Representability
 variable {F f}
 variable (i j k : ι)
 
+/-- Let `V` denote an object representing `(X i) ×_{F} (X j)` -/
 noncomputable abbrev V := (hf i).rep.pullback (f j)
+/-- Let `p₁` denote the projection `V ⟶ X i` in the category `Sch`. -/
 noncomputable abbrev p₁ : V hf i j ⟶ X i := (hf i).rep.fst' (f j)
+/-- Let `p₂` denote the projection `V ⟶ X j` in the category `Sch`. -/
 noncomputable abbrev p₂ : V hf i j ⟶ X j := (hf i).rep.snd (f j)
 
-/-- TODO -/
+/-- The natural isomorphism `V i j ≅ V j i`. -/
 noncomputable abbrev symmetryIso : V hf i j ≅ V hf j i :=
   ((hf i).rep.symmetryIso (hf j).rep)
 
-lemma isOpenImmersion_p₂ (i j : ι) :
-    IsOpenImmersion (p₂ hf i j) := (hf i).property_snd (f j)
+lemma isOpenImmersion_p₂ (i j : ι) : IsOpenImmersion (p₂ hf i j) :=
+  (hf i).property_snd (f j)
 
 lemma symmetryIso_hom_comp_p₂ (i j : ι) :
     (symmetryIso hf i j).hom ≫ p₂ hf j i = p₁ hf i j := by
   simp
 
+-- TODO: this should also follow from a general statement about pulling back property
+-- through any choice pullback (no need to go through symmetryIso)
 lemma isOpenImmersion_p₁ (i j : ι) :
     IsOpenImmersion (p₁ hf i j) := by
   have := isOpenImmersion_p₂ hf j i
   rw [← symmetryIso_hom_comp_p₂ hf]
   infer_instance
 
+-- TODO: this should be a general statement about pullbacks of monomorphisms (might already be)
+-- add in terms of both PullbackCone and CommSq API
 lemma p₁_self_eq_p₂ (i : ι) :
     p₁ hf i i = p₂ hf i i := by
   have := mono_of_openImmersion_presheaf (hf i)
   apply yoneda.map_injective
   rw [← cancel_mono (f i), ((hf i).rep.isPullback' (f i)).w]
 
+-- not sure if this is needed? (alt. should go in other file)
 @[reassoc]
 lemma condition (i j : ι) : yoneda.map (p₁ hf i j) ≫ f i = yoneda.map (p₂ hf i j) ≫ f j :=
   ((hf i).rep.isPullback' (f j)).w
 
+-- again this should be a general lemma in terms of both PullbackCone and CommSq API
 lemma isIso_p₁_self (i : ι) :
     IsIso (p₁ hf i i) := by
-  refine ⟨(hf i).rep.lift' (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩
-  ext1
-  · simp
-  · simp [p₁_self_eq_p₂ hf i]
+  sorry
+  -- refine ⟨(hf i).rep.lift' (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩
+  -- ext1
+  -- · simp
+  -- · simp [p₁_self_eq_p₂ hf i]
 
 -- the "triple" intersections of `X i`, `X j` and `X k`,
 -- defined as a fibre product over `X i` of `V hf i j` and `V hf i k`
 noncomputable def W := pullback (p₁ hf i j) (p₁ hf i k)
 
 @[reassoc]
-lemma condition₃ : (pullback.fst _ _ ≫ p₁ hf i j : W hf i j k ⟶ _ ) = pullback.snd _ _ ≫ p₁ hf i k := by
+lemma condition₃ : (pullback.fst _ _ ≫ p₁ hf i j : W hf i j k ⟶ _ ) =
+    pullback.snd _ _ ≫ p₁ hf i k := by
   apply pullback.condition
 
 /-- TODO -/
@@ -132,11 +154,13 @@ lemma hom_ext_W {Z : Scheme} {α β : Z ⟶ W hf i j k}
     (h₂ : α ≫ q₂ hf i j k = β ≫ q₂ hf i j k)
     (h₃ : α ≫ q₃ hf i j k = β ≫ q₃ hf i j k) : α = β := by
   dsimp [W]
-  ext
-  · simpa using h₁
-  · simpa using h₂
-  · simpa [← eq_q₁] using h₁
-  · simpa using h₃
+  ext1
+  · apply (hf i).rep.hom_ext'
+    simpa using h₁
+    simpa using h₂
+  · apply (hf i).rep.hom_ext'
+    simpa [eq_q₁] using h₁
+    simpa using h₃
 
 section
 
