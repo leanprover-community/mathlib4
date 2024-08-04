@@ -27,7 +27,8 @@ end RingHom
 
 section Rat
 
-instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
+/-- Every division ring of characteristic zero is an algebra over the rationals. -/
+instance DivisionRing.toRatAlgebra {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   smul := (· • ·)
   smul_def' := Rat.smul_def
   toRingHom := Rat.castHom α

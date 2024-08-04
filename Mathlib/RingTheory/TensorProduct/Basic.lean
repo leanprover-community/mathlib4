@@ -399,7 +399,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     toRingHom := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
-example : (algebraNat : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
+example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
@@ -560,7 +560,7 @@ theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
   with_reducible_and_instances rfl
 -- fails at `with_reducible_and_instances rfl` #10906
-example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
+example : (Ring.toIntAlgebra _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
 
