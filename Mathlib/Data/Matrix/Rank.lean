@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.LinearAlgebra.Matrix.Dual
 
 /-!
 # Rank of matrices
@@ -17,12 +18,6 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 ## Main declarations
 
 * `Matrix.rank`: the rank of a matrix
-
-## TODO
-
-* Do a better job of generalizing over `ℚ`, `ℝ`, and `ℂ` in `Matrix.rank_transpose` and
-  `Matrix.rank_conjTranspose`. See
-  [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/row.20rank.20equals.20column.20rank/near/350462992).
 
 -/
 
@@ -250,22 +245,22 @@ theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank :=
   · rw [ker_mulVecLin_transpose_mul_self]
   · simp only [LinearMap.finrank_range_add_finrank_ker]
 
-/-- TODO: prove this in greater generality. -/
-@[simp]
-theorem rank_transpose (A : Matrix m n R) : Aᵀ.rank = A.rank :=
-  le_antisymm ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
-    ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
-
-@[simp]
-theorem rank_self_mul_transpose (A : Matrix m n R) : (A * Aᵀ).rank = A.rank := by
-  simpa only [rank_transpose, transpose_transpose] using rank_transpose_mul_self Aᵀ
-
 end LinearOrderedField
 
-/-- The rank of a matrix is the rank of the space spanned by its rows.
+@[simp]
+theorem rank_transpose [Field R] [Fintype m] (A : Matrix m n R) : Aᵀ.rank = A.rank := by
+  classical
+  rw [Aᵀ.rank_eq_finrank_range_toLin (Pi.basisFun R n).dualBasis (Pi.basisFun R m).dualBasis,
+      toLin_transpose, ← LinearMap.dualMap_def, LinearMap.finrank_range_dualMap_eq_finrank_range,
+      toLin_eq_toLin', toLin'_apply', rank]
 
-TODO: prove this in a generality that works for `ℂ` too, not just `ℚ` and `ℝ`. -/
-theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m n R) :
+@[simp]
+theorem rank_self_mul_transpose [LinearOrderedField R] [Fintype m] (A : Matrix m n R) :
+    (A * Aᵀ).rank = A.rank := by
+  simpa only [rank_transpose, transpose_transpose] using rank_transpose_mul_self Aᵀ
+
+/-- The rank of a matrix is the rank of the space spanned by its rows. -/
+theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range A)) := by
   cases nonempty_fintype m
   rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]
