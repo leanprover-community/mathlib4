@@ -216,13 +216,20 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     linarith
   -- the core of the problem is these two algebraic identities:
   have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
-    field_simp; simp only [Submodule.coe_norm] at *; nlinarith
+    -- TODO(#15486): used to be `field_simp`, but was really slow
+    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+    simp (disch := field_simp_discharge) only [AddSubgroupClass.coe_norm, div_mul_eq_mul_div,
+      div_add', inv_div, mul_div_assoc', div_div, div_eq_iff, one_mul]
+    simp only [Submodule.coe_norm] at *; nlinarith only [pythag]
   have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
-    field_simp
+    -- TODO(#15486): used to be `field_simp`, but was really slow
+    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+    simp (disch := field_simp_discharge) only [AddSubgroupClass.coe_norm, div_mul_eq_mul_div,
+      div_add', inv_div, div_sub', mul_div_assoc', div_div, div_eq_iff]
     transitivity (1 - a) ^ 2 * (a * (2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2))
     · congr
       simp only [Submodule.coe_norm] at *
-      nlinarith
+      nlinarith only [pythag]
     ring!
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
@@ -233,13 +240,18 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     ac_rfl
   -- Porting note: this branch did not exit in ml3
   · rw [split, add_comm]
-    congr!
+    congr
     dsimp
     rw [one_smul]
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   have : 2 / (1 - (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4)) * (‖(w : E)‖ ^ 2 + 4)⁻¹ * 4 = 1 := by
-    field_simp; ring
+    -- TODO(#15486): used to be `field_simp`, but was really slow
+    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+    simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
+      sub_div', add_sub_sub_cancel, div_div_eq_mul_div, mul_div_assoc', mul_one, div_div,
+      div_eq_iff]
+    ring
   convert congr_arg (· • w) this
   · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
       orthogonalProjection_orthogonalComplement_singleton_eq_zero v
