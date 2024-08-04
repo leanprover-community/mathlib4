@@ -191,20 +191,20 @@ end IntFractPair
 
 
 theorem coe_of_h_rat_eq (v_eq_q : v = (↑q : K)) : (↑((of q).h : ℚ) : K) = (of v).h := by
-  unfold of IntFractPair.seq1
+  unfold of IntFractPair.sequence1
   rw [← IntFractPair.coe_of_rat_eq v_eq_q]
   simp
 
 theorem coe_of_s_get?_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
     (((of q).s.get? n).map (Pair.map (↑)) : Option <| Pair K) = (of v).s.get? n := by
-  simp only [of, IntFractPair.seq1, Seq'.map_get?, Seq'.get?_tail]
-  simp only [Seq'.get?]
+  simp only [of, IntFractPair.sequence1, Sequence.map_get?, Sequence.get?_tail]
+  simp only [Sequence.get?]
   rw [← IntFractPair.coe_stream'_rat_eq v_eq_q]
   rcases succ_nth_stream_eq : IntFractPair.stream q (n + 1) with (_ | ⟨_, _⟩) <;>
     simp [Stream'.map, Stream'.get, succ_nth_stream_eq]
 
 theorem coe_of_s_rat_eq (v_eq_q : v = (↑q : K)) :
-    ((of q).s.map (Pair.map ((↑))) : Seq' <| Pair K) = (of v).s := by
+    ((of q).s.map (Pair.map ((↑))) : Sequence <| Pair K) = (of v).s := by
   ext n; rw [← coe_of_s_get?_rat_eq v_eq_q]; rfl
 
 /-- Given `(v : K), (q : ℚ), and v = q`, we have that `of q = of v` -/
@@ -221,7 +221,7 @@ theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :
     (of v).Terminates ↔ (of q).Terminates := by
   constructor <;> intro h <;> cases' h with n h <;> use n <;>
-    simp only [Seq'.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
+    simp only [Sequence.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
     cases h' : (of q).s.get? n <;>
     simp only [h'] at h <;> -- Porting note: added
     trivial
@@ -314,7 +314,8 @@ end IntFractPair
 theorem terminates_of_rat (q : ℚ) : (of q).Terminates :=
   Exists.elim (IntFractPair.exists_nth_stream_eq_none_of_rat q) fun n stream_nth_eq_none =>
     Exists.intro n
-      (have : IntFractPair.stream q (n + 1) = none := IntFractPair.stream_isSeq q stream_nth_eq_none
+      (have : IntFractPair.stream q (n + 1) = none :=
+        IntFractPair.stream_isSequence q stream_nth_eq_none
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none.mpr this)
 
 end TerminatesOfRat

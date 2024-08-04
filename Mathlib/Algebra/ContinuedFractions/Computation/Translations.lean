@@ -21,9 +21,9 @@ of three sections:
    continued fraction of a value `v` is `⌊v⌋` and how this head term is moved along the structures
    used in the computation process.
 3. Translation lemmas for the sequence: these lemmas show how the sequences of the involved
-   structures (`IntFractPair.stream`, `IntFractPair.seq1`, and `GenContFract.of`) are connected,
-   i.e. how the values are moved along the structures and the termination of one sequence implies
-   the termination of another sequence.
+   structures (`IntFractPair.stream`, `IntFractPair.sequence1`, and `GenContFract.of`) are
+   connected, i.e. how the values are moved along the structures and the termination of one
+   sequence implies the termination of another sequence.
 
 ## Main Theorems
 
@@ -145,17 +145,17 @@ process.
 
 /-- The head term of the sequence with head of `v` is just the integer part of `v`. -/
 @[simp]
-theorem IntFractPair.seq1_fst_eq_of : (IntFractPair.seq1 v).fst = IntFractPair.of v :=
+theorem IntFractPair.sequence1_fst_eq_of : (IntFractPair.sequence1 v).fst = IntFractPair.of v :=
   rfl
 
-theorem of_h_eq_intFractPair_seq1_fst_b : (of v).h = (IntFractPair.seq1 v).fst.b := by
-  cases aux_seq_eq : IntFractPair.seq1 v
+theorem of_h_eq_intFractPair_sequence1_fst_b : (of v).h = (IntFractPair.sequence1 v).fst.b := by
+  cases aux_seq_eq : IntFractPair.sequence1 v
   simp [of, aux_seq_eq]
 
 /-- The head term of the gcf of `v` is `⌊v⌋`. -/
 @[simp]
 theorem of_h_eq_floor : (of v).h = ⌊v⌋ := by
-  simp [of_h_eq_intFractPair_seq1_fst_b, IntFractPair.of]
+  simp [of_h_eq_intFractPair_sequence1_fst_b, IntFractPair.of]
 
 end Head
 
@@ -165,7 +165,7 @@ section sequence
 ### Translation of the Sequences
 
 Here we state some lemmas that show how the sequences of the involved structures
-(`IntFractPair.stream`, `IntFractPair.seq1`, and `GenContFract.of`) are connected, i.e. how the
+(`IntFractPair.stream`, `IntFractPair.sequence1`, and `GenContFract.of`) are connected, i.e. how the
 values are moved along the structures and how the termination of one sequence implies the
 termination of another sequence.
 -/
@@ -173,8 +173,8 @@ termination of another sequence.
 
 variable {n : ℕ}
 
-theorem IntFractPair.get?_seq1_eq_succ_get?_stream :
-    (IntFractPair.seq1 v).snd.get? n = (IntFractPair.stream v) (n + 1) :=
+theorem IntFractPair.get?_sequence1_eq_succ_get?_stream :
+    (IntFractPair.sequence1 v).snd.get? n = (IntFractPair.stream v) (n + 1) :=
   rfl
 
 section Termination
@@ -186,14 +186,14 @@ Let's first show how the termination of one sequence implies the termination of 
 -/
 
 
-theorem of_terminatedAt_iff_intFractPair_seq1_terminatedAt :
-    (of v).TerminatedAt n ↔ (IntFractPair.seq1 v).snd.TerminatedAt n :=
+theorem of_terminatedAt_iff_intFractPair_sequence1_terminatedAt :
+    (of v).TerminatedAt n ↔ (IntFractPair.sequence1 v).snd.TerminatedAt n :=
   Option.map_eq_none
 
 theorem of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none :
     (of v).TerminatedAt n ↔ IntFractPair.stream v (n + 1) = none := by
-  rw [of_terminatedAt_iff_intFractPair_seq1_terminatedAt, Seq'.TerminatedAt,
-    IntFractPair.get?_seq1_eq_succ_get?_stream]
+  rw [of_terminatedAt_iff_intFractPair_sequence1_terminatedAt, Sequence.TerminatedAt,
+    IntFractPair.get?_sequence1_eq_succ_get?_stream]
 
 end Termination
 
@@ -211,8 +211,8 @@ theorem IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair
     ∃ ifp : IntFractPair K, IntFractPair.stream v (n + 1) = some ifp ∧ (ifp.b : K) = gp_n.b := by
   obtain ⟨ifp, stream_succ_nth_eq, gp_n_eq⟩ :
     ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ Pair.mk 1 (ifp.b : K) = gp_n := by
-    unfold of IntFractPair.seq1 at s_nth_eq
-    simpa [Seq'.get?_tail, Seq'.map_get?] using s_nth_eq
+    unfold of IntFractPair.sequence1 at s_nth_eq
+    simpa [Sequence.get?_tail, Sequence.map_get?] using s_nth_eq
   cases gp_n_eq
   simp_all only [Option.some.injEq, exists_eq_left']
 
@@ -222,8 +222,8 @@ integer parts of the stream of integer and fractional parts.
 theorem get?_of_eq_some_of_succ_get?_intFractPair_stream {ifp_succ_n : IntFractPair K}
     (stream_succ_nth_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) :
     (of v).s.get? n = some ⟨1, ifp_succ_n.b⟩ := by
-  unfold of IntFractPair.seq1
-  simp [Seq'.map_tail, Seq'.get?_tail, Seq'.map_get?, stream_succ_nth_eq]
+  unfold of IntFractPair.sequence1
+  simp [Sequence.map_tail, Sequence.get?_tail, Sequence.map_get?, stream_succ_nth_eq]
 
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
 fractional parts of the stream of integer and fractional parts.
@@ -243,8 +243,9 @@ open Int IntFractPair
 theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind (some ∘ fun p =>
     { a := 1
       b := p.b }) := by
-  rw [of, IntFractPair.seq1]
-  simp only [of, Seq'.map_tail, Seq'.map, Seq'.tail, Seq'.head, Seq'.get?, Stream'.map]
+  rw [of, IntFractPair.sequence1]
+  simp only [of, Sequence.map_tail, Sequence.map, Sequence.tail, Sequence.head, Sequence.get?,
+    Stream'.map]
   rw [← Stream'.get_succ, Stream'.get, Option.map]
   split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
 
@@ -259,13 +260,13 @@ variable (K)
 
 /-- If `a` is an integer, then the coefficient sequence of its continued fraction is empty.
 -/
-theorem of_s_of_int (a : ℤ) : (of (a : K)).s = Seq'.nil :=
+theorem of_s_of_int (a : ℤ) : (of (a : K)).s = Sequence.nil :=
   haveI h : ∀ n, (of (a : K)).s.get? n = none := by
     intro n
     induction' n with n ih
     · rw [of_s_head_aux, stream_succ_of_int, Option.bind]
     · exact (of (a : K)).s.prop ih
-  Seq'.ext fun n => (h n).trans (Seq'.get?_nil n).symm
+  Sequence.ext fun n => (h n).trans (Sequence.get?_nil n).symm
 
 variable {K} (v)
 
@@ -276,7 +277,7 @@ theorem of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get?
   rcases eq_or_ne (fract v) 0 with h | h
   · obtain ⟨a, rfl⟩ : ∃ a : ℤ, v = a := ⟨⌊v⌋, eq_of_sub_eq_zero h⟩
     rw [fract_intCast, inv_zero, of_s_of_int, ← cast_zero, of_s_of_int,
-      Seq'.get?_nil, Seq'.get?_nil]
+      Sequence.get?_nil, Sequence.get?_nil]
   rcases eq_or_ne ((of (fract v)⁻¹).s.get? n) none with h₁ | h₁
   · rwa [h₁, ← terminatedAt_iff_s_none,
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none, stream_succ h, ←
@@ -291,7 +292,7 @@ theorem of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get?
 `K` as the coefficient sequence of that of the inverse of the fractional part of `v`.
 -/
 theorem of_s_tail : (of v).s.tail = (of (fract v)⁻¹).s :=
-  Seq'.ext fun n => Seq'.get?_tail (of v).s n ▸ of_s_succ v n
+  Sequence.ext fun n => Sequence.get?_tail (of v).s n ▸ of_s_succ v n
 
 variable (K) (n)
 
@@ -302,7 +303,7 @@ theorem convs'_of_int (a : ℤ) : (of (a : K)).convs' n = a := by
   induction' n with n
   · simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast, Nat.zero_eq]
   · rw [convs', of_h_eq_floor, floor_intCast, add_right_eq_self]
-    exact convs'Aux_succ_none ((of_s_of_int K a).symm ▸ Seq'.get?_nil 0) _
+    exact convs'Aux_succ_none ((of_s_of_int K a).symm ▸ Sequence.get?_nil 0) _
 
 variable {K}
 
