@@ -462,7 +462,7 @@ instance : Inhabited (Cycle α) :=
 theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
   Quotient.inductionOn' s fun l => by
-    refine List.recOn l ?_ ?_ <;> simp
+    refine List.recOn l ?_ ?_ <;> simp only [mk''_eq_coe, coe_nil]
     assumption'
 
 /-- For `x : α`, `s : Cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/
