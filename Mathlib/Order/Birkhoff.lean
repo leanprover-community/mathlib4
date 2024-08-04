@@ -238,7 +238,7 @@ set_option linter.flexible false in
 set_option linter.flexible false in
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  have : Subsingleton (OrderBot α) := inferInstance; simp [birkhoffSet]; exact rfl
+  simp [birkhoffSet]; exact rfl
 
 variable [DecidableEq α]
 
