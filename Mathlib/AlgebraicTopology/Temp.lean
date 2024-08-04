@@ -21,7 +21,7 @@ def StableUnderRetracts (P : MorphismProperty C) : Prop :=
   ∀ ⦃X Y Z W : C⦄ ⦃f : X ⟶ Y⦄ ⦃g : Z ⟶ W⦄ (_ : IsRetract f g)
     (_ : P g), P f
 
-instance : StableUnderRetracts (monomorphisms C) := by
+instance mono_retracts : StableUnderRetracts (monomorphisms C) := by
   intro X Y Z W f g H p
   refine ⟨fun {A} α β ω ↦ ?_⟩
   have := H.i.w
@@ -40,7 +40,7 @@ def llp_wrt (T : MorphismProperty C) : MorphismProperty C := fun _ _ f ↦
 def rlp_wrt (T : MorphismProperty C) : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ ⦃g : X ⟶ Y⦄ (_ : T g), HasLiftingProperty g f
 
-instance (T : MorphismProperty C) : StableUnderRetracts (llp_wrt T) := by
+instance llp_retract {T : MorphismProperty C} : StableUnderRetracts (llp_wrt T) := by
   intro C D C' D' f f' H L
   intro X Y g h
   refine ⟨?_⟩
@@ -59,35 +59,40 @@ instance (T : MorphismProperty C) : StableUnderRetracts (llp_wrt T) := by
     aesop
 
 open Limits.PushoutCocone in
-instance (T : MorphismProperty C) : StableUnderCobaseChange (llp_wrt T) := by
+instance llp_pushout {T : MorphismProperty C} : StableUnderCobaseChange (llp_wrt T) := by
   intro A B A' B' f s f' t P L
   intro X Y g hg
   refine ⟨?_⟩
   intro u v sq
-  have ω : (s ≫ u) ≫ g = f ≫ (t ≫ v) := by
+  have w : (s ≫ u) ≫ g = f ≫ (t ≫ v) := by
     rw [← Category.assoc, ← P.toCommSq.w, Category.assoc, Category.assoc, sq.w]
-  have newSq := CommSq.mk ω
-  obtain ⟨lift⟩ := ((L hg).sq_hasLift (newSq)).exists_lift
-  let fac_left : s ≫ u = f ≫ lift.l := by rw [lift.fac_left]
-  refine ⟨IsColimit.desc P.isColimit u lift.l fac_left,
-    IsColimit.inl_desc P.isColimit u lift.l fac_left, ?_⟩
-  let vcoc := mk (f' ≫ v) (t ≫ v) (by
-    have := P.w; apply_fun (fun f ↦ f ≫ v) at this; aesop)
-  refine (P.isColimit.uniq vcoc (IsColimit.desc P.isColimit u lift.l fac_left ≫ g) ?_).trans
-    (P.isColimit.uniq vcoc v ?_).symm
-  sorry
-  sorry
+  obtain ⟨lift⟩ := ((L hg).sq_hasLift (CommSq.mk w)).exists_lift
+  let lift' : B' ⟶ X := IsColimit.desc P.isColimit u lift.l (by rw [lift.fac_left])
+  let l : f' ≫ lift' = u := IsColimit.inl_desc P.isColimit u lift.l (by rw [lift.fac_left])
+  let l' : t ≫ lift' = lift.l := IsColimit.inr_desc P.isColimit u lift.l (by rw [lift.fac_left])
+  let newCocone := mk (f' ≫ v) (t ≫ v) (by have := P.w; apply_fun (fun f ↦ f ≫ v) at this; aesop)
+  refine ⟨lift', l,
+    (P.isColimit.uniq newCocone (lift' ≫ g) ?_).trans (P.isColimit.uniq newCocone v ?_).symm⟩
+  all_goals
+    dsimp [newCocone]
+    intro j
+    cases j
+    simp only [Limits.span_zero, condition_zero, IsPushout.cocone_inl, Category.assoc]
+  · rw [← Category.assoc, ← Category.assoc, Category.assoc s f' lift', l, ← sq.w, Category.assoc]
+  · rename_i k; cases k; all_goals dsimp
+    · rw [← Category.assoc, l, sq.w]
+    · rw [← Category.assoc, l', lift.fac_right]
+  · rename_i k; cases k; all_goals dsimp
 
 def StableUnderTransfiniteComposition (P : MorphismProperty C) : Prop := sorry
 
-instance (T : MorphismProperty C) : StableUnderTransfiniteComposition (llp_wrt T) := sorry
+instance llp_comp {T : MorphismProperty C} : StableUnderTransfiniteComposition (llp_wrt T) := sorry
 
-class WeaklySaturated (P : MorphismProperty C) where
-  pushouts := StableUnderCobaseChange P
-  retracts := StableUnderRetracts P
-  comp := StableUnderTransfiniteComposition P
+def WeaklySaturated (P : MorphismProperty C) : Prop :=
+  P.StableUnderCobaseChange ∧ P.StableUnderRetracts ∧ P.StableUnderTransfiniteComposition
 
-instance (T : MorphismProperty C) : WeaklySaturated (llp_wrt T) where
+instance llp_weakly_saturated (T : MorphismProperty C) : WeaklySaturated (llp_wrt T) :=
+  ⟨llp_pushout, llp_retract, llp_comp⟩
 
 end MorphismProperty
 

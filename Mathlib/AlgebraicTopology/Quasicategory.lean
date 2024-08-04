@@ -75,12 +75,6 @@ lemma quasicategory_of_filler (S : SSet)
 
 section
 
--- need to define weakly saturated MorphismProperty
--- need to define stability under retracts and transfinite composition
--- already have `CategoryTheory.MorphismProperty.StableUnderCobaseChange` for pushouts
-
--- probably want to define LLP/RLP wrt a `MorphismProperty`
-
 end
 
 section
@@ -96,7 +90,15 @@ class trivialKanFibration {X Y : SSet} (p : X ⟶ Y) : Prop where
 class rlp_mono {X Y : SSet} (p : X ⟶ Y) where
   has_rlp {A B : SSet} (i : A ⟶ B) [Mono i] : HasLiftingProperty i p
 
--- `006Y`, need weakly satured stuff to prove
+open MorphismProperty
+
+instance : StableUnderCobaseChange (monomorphisms SSet) := sorry
+instance : StableUnderRetracts (monomorphisms SSet) := mono_retracts
+instance : StableUnderTransfiniteComposition (monomorphisms SSet) := sorry
+
+instance : WeaklySaturated (monomorphisms SSet) where
+
+-- `006Y`, need weakly satured stuff to prove, and `0077`
 /- RLP wrt all monomorphisms iff trivial Kan fib -/
 instance tkf_iff_rlp_mono {X Y : SSet} (p : X ⟶ Y) : trivialKanFibration p ↔
     ∀ {A B : SSet} (i : A ⟶ B) [Mono i], HasLiftingProperty i p := sorry
