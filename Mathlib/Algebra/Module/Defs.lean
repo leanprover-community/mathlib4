@@ -350,7 +350,7 @@ theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) : @SMul.smul ℕ 
 
 /-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `AddCommMonoid`
 should normally have exactly one `ℕ`-module structure by design. -/
-def AddCommGroup.toNatModule.unique : Unique (Module ℕ M) where
+def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := by infer_instance
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
@@ -391,7 +391,7 @@ theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ 
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
 should normally have exactly one `ℤ`-module structure by design. -/
-def AddCommGroup.toIntModule.unique : Unique (Module ℤ M) where
+def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
   default := by infer_instance
   uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
 

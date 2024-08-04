@@ -188,7 +188,7 @@ lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
-  exact congr($(AddCommGroup.toIntModule.unique.2 inst).smul n x)
+  exact congr($(AddCommGroup.uniqueIntModule.2 inst).smul n x)
 
 open nonZeroDivisors
 
