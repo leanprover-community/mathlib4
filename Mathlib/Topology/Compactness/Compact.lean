@@ -26,7 +26,7 @@ We define the following properties for sets in a topological space:
   is compact.
 -/
 
-open Set Filter Topology TopologicalSpace Classical Function
+open Set Filter Topology TopologicalSpace Function
 
 universe u v
 
@@ -184,9 +184,10 @@ lemma IsCompact.elim_nhds_subcover_nhdsSet' (hs : IsCompact s) (U : ∀ x ∈ s,
   exact mem_interior_iff_mem_nhds.1 hy
 
 lemma IsCompact.elim_nhds_subcover_nhdsSet (hs : IsCompact s) {U : X → Set X}
-    (hU : ∀ x ∈ s, U x ∈ 𝓝 x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ (⋃ x ∈ t, U x) ∈ 𝓝ˢ s :=
+    (hU : ∀ x ∈ s, U x ∈ 𝓝 x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ (⋃ x ∈ t, U x) ∈ 𝓝ˢ s := by
   let ⟨t, ht⟩ := hs.elim_nhds_subcover_nhdsSet' (fun x _ => U x) hU
-  ⟨t.image (↑), fun x hx =>
+  classical
+  exact ⟨t.image (↑), fun x hx =>
     let ⟨y, _, hyx⟩ := Finset.mem_image.1 hx
     hyx ▸ y.2,
     by rwa [Finset.set_biUnion_finset_image]⟩
@@ -516,6 +517,7 @@ lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X
   subst this
   obtain ⟨t, ht⟩ :=
     hUc.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
+  classical
   refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
   · refine Set.Subset.trans ht ?_
     simp only [Set.iUnion_subset_iff]

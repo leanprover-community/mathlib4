@@ -12,7 +12,8 @@ We define the following classes of topological spaces:
 * `LocallyCompactSpace`: for every point `x`, every open neighborhood of `x` contains a compact
   neighborhood of `x`. The definition is formulated in terms of the neighborhood filter.
 -/
-open Set Filter Topology TopologicalSpace Classical
+
+open Set Filter Topology TopologicalSpace
 
 variable {X : Type*} {Y : Type*} {ι : Type*}
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
@@ -101,7 +102,8 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpac
     refine ⟨s.pi n'', ?_, subset_trans (fun _ => ?_) hsub, ?_⟩
     · exact (set_pi_mem_nhds_iff hs _).mpr fun i _ => hn'' i
     · exact forall₂_imp fun i _ hi' => hsub' i hi'
-    · rw [← Set.univ_pi_ite]
+    · classical
+      rw [← Set.univ_pi_ite]
       refine isCompact_univ_pi fun i => ?_
       by_cases h : i ∈ s
       · rw [if_pos h]
