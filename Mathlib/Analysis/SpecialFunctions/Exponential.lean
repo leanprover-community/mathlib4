@@ -3,7 +3,7 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
-import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
@@ -12,7 +12,7 @@ import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 In this file, we prove basic properties about the derivative of the exponential map `exp 𝕂`
 in a Banach algebra `𝔸` over a field `𝕂`. We keep them separate from the main file
-`Analysis/NormedSpace/Exponential` in order to minimize dependencies.
+`Analysis.Normed.Algebra.Exponential` in order to minimize dependencies.
 
 ## Main results
 
