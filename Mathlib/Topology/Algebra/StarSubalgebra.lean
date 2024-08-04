@@ -22,12 +22,6 @@ The topological closure of a star subalgebra is still a star subalgebra,
 which as a star algebra is a topological star algebra.
 -/
 
-
-open scoped Classical
-open Set TopologicalSpace
-
-open scoped Classical
-
 namespace StarSubalgebra
 
 section TopologicalStarAlgebra
