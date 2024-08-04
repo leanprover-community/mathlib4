@@ -226,10 +226,11 @@ lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := by
 lemma lt_one_iff_ne {x : I} : x < 1 ↔ x ≠ 1 := by
   rw [← coe_lt_one, ← coe_ne_one, lt_iff_le_and_ne, and_iff_right (le_one x)]
 
-lemma eq_one_of_le_mul {i j : I} (h_i : i ≠ 0) (h : i ≤ j * i) : j = 1 := by
+lemma one_or_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 := by
   contrapose! h
-  simp only [ne_eq, ← lt_one_iff_ne, ← coe_lt_one, ← pos_iff_ne_zero, ← coe_pos] at h h_i
-  exact Subtype.coe_lt_coe.mp <| by simpa using mul_lt_mul_of_pos_right h h_i
+  simp only [ne_eq, ← lt_one_iff_ne, ← coe_lt_one, ← pos_iff_ne_zero, ← coe_pos] at h
+  simp only [← Subtype.coe_lt_coe, coe_mul]
+  simpa using mul_lt_mul_of_pos_right h.right h.left
 
 instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
