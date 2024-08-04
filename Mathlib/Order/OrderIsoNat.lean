@@ -123,6 +123,8 @@ theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
     orderEmbeddingOfSet s n = Subtype.ofNat s n :=
   rfl
 
+-- Needs thought: simp followed by congr; medium size simp set
+set_option linter.flexible false in
 @[simp]
 theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
     Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by

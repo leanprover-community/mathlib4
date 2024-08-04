@@ -49,6 +49,8 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       use x
       rfl)
 
+-- simp followed by erw, related to lean4#2644
+set_option linter.flexible false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
     (cokernelCocone f).pt ⟶ s.pt := by
@@ -63,6 +65,8 @@ def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork 
   -- The lift has norm at most one:
   exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.2
 
+-- simp followed by erw, related to lean4#2644
+set_option linter.flexible false in
 instance : HasCokernels SemiNormedGrp₁.{u} where
   has_colimit f :=
     HasColimit.mk

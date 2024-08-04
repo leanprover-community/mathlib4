@@ -398,6 +398,8 @@ lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
   peel ha₁ with x hx _
   linarith [ha₂ (-x) ((neg_neg x).symm ▸ hx)]
 
+-- Needs thought: simp and exact can't be combined easily, as `hx` needs to be massaged first
+set_option linter.flexible false in
 lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ} (hr : 0 ≤ r) :
     SpectrumRestricts (r • a) ContinuousMap.realToNNReal := by

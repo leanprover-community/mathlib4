@@ -633,6 +633,8 @@ section
 
 variable (R M)
 
+-- Needs thought: simp followed by rw, medium large simp set
+set_option linter.flexible false in
 /-- The base ring is a left identity for the tensor product of modules, up to linear equivalence.
 -/
 protected def lid : R ⊗[R] M ≃ₗ[R] M :=

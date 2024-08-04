@@ -456,6 +456,8 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
     simpa [lt_iff_le_and_ne, Cardinal.zero_le] using fun h =>
       succ_ne_zero o (cof_eq_zero.1 (Eq.symm h))
 
+-- Needs thought: simp acts on multiple goals (exact on only one), with different simp sets
+set_option linter.flexible false in
 @[simp]
 theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
   ⟨inductionOn o fun α r _ z => by

@@ -234,6 +234,8 @@ set_option linter.flexible false in
 @[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
+-- Needs thought: simp and exact cannot be combined into simpa
+set_option linter.flexible false in
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
   simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl

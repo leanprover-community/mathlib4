@@ -156,6 +156,8 @@ lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
   ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self, inner_self] using h,
     fun h => by simp [norm, h]; rw [CstarModule.norm_zero] ⟩
 
+-- Needs thought: simp followed by positivity
+set_option linter.flexible false in
 protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]; positivity
 
 protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
