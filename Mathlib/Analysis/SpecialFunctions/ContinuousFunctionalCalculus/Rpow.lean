@@ -354,7 +354,6 @@ lemma sqrt_rpow {a : A} {x : ℝ} (h : 0 ∉ spectrum ℝ≥0 a)
     simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a hnonneg]
 
 -- TODO: relate to a strict positivity condition
-set_option diagnostics true in
 lemma rpow_sqrt (a : A) (x : ℝ) (h : 0 ∉ spectrum ℝ≥0 a)
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
