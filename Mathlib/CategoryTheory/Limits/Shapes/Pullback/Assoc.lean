@@ -6,8 +6,6 @@ Authors: Andrew Yang
 
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
-#align_import category_theory.limits.shapes.pullbacks from "leanprover-community/mathlib"@"7316286ff2942aa14e540add9058c6b0aa1c8070"
-
 /-!
 # Associativity of pullbacks
 
@@ -107,7 +105,6 @@ def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit 
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
   apply leftSquareIsPullback _ rfl (pullbackIsPullback f₃ f₄)
   simpa [PullbackCone.pasteHoriz] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ f₄)
-#align category_theory.limits.pullback_pullback_left_is_pullback CategoryTheory.Limits.pullbackPullbackLeftIsPullback
 
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
 def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
@@ -117,18 +114,15 @@ def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
           rw [pullback.lift_fst_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
   simpa using pasteVertIsPullback rfl (pullbackIsPullback _ _)
     (pullbackPullbackLeftIsPullback f₁ f₂ f₃ f₄)
-#align category_theory.limits.pullback_assoc_is_pullback CategoryTheory.Limits.pullbackAssocIsPullback
 
 theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ (g₃ ≫ f₂) :=
   ⟨⟨⟨_, pullbackAssocIsPullback f₁ f₂ f₃ f₄⟩⟩⟩
-#align category_theory.limits.has_pullback_assoc CategoryTheory.Limits.hasPullback_assoc
 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackRightIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
     IsLimit (PullbackCone.mk l₁' l₂' (show l₁' ≫ g₂ = l₂' ≫ g₃ from pullback.lift_snd _ _ _)) := by
-  apply topSquareIsPullback rfl (pullbackIsPullback f₁ f₂)
+  apply topSquareIsPullback _ rfl (pullbackIsPullback f₁ f₂)
   simpa [PullbackCone.pasteVert] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ _)
-#align category_theory.limits.pullback_pullback_right_is_pullback CategoryTheory.Limits.pullbackPullbackRightIsPullback
 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[Y₂] X₃`. -/
 def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
@@ -138,15 +132,9 @@ def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
           rw [pullback.lift_snd_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
   simpa [PullbackCone.pasteHoriz] using pasteHorizIsPullback rfl
     (pullbackIsPullback f₃ f₄) (pullbackPullbackRightIsPullback _ _ _ _)
-#align category_theory.limits.pullback_assoc_symm_is_pullback CategoryTheory.Limits.pullbackAssocSymmIsPullback
 
 theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback (g₂ ≫ f₃) f₄ :=
   ⟨⟨⟨_, pullbackAssocSymmIsPullback f₁ f₂ f₃ f₄⟩⟩⟩
-#align category_theory.limits.has_pullback_assoc_symm CategoryTheory.Limits.hasPullback_assoc_symm
-
-/- Porting note: these don't seem to be propagating change from
--- variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ (g₃ ≫ f₂)] -/
-variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)]
 
 /-- The canonical isomorphism `(X₁ ×[Y₁] X₂) ×[Y₂] X₃ ≅ X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
 noncomputable def pullbackAssoc [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
@@ -155,7 +143,6 @@ noncomputable def pullbackAssoc [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂)
       pullback f₁ (pullback.fst _ _ ≫ f₂ : pullback f₃ f₄ ⟶ _) :=
   (pullbackPullbackLeftIsPullback f₁ f₂ f₃ f₄).conePointUniqueUpToIso
     (pullbackPullbackRightIsPullback f₁ f₂ f₃ f₄)
-#align category_theory.limits.pullback_assoc CategoryTheory.Limits.pullbackAssoc
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_inv_fst_fst [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
@@ -166,14 +153,12 @@ theorem pullbackAssoc_inv_fst_fst [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X�
     congr 1
     exact IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.left
   · exact pullback.lift_fst _ _ _
-#align category_theory.limits.pullback_assoc_inv_fst_fst CategoryTheory.Limits.pullbackAssoc_inv_fst_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_hom_fst [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
     [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] :
     (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫ pullback.fst _ _ = pullback.fst _ _ ≫ pullback.fst _ _ := by
   rw [← Iso.eq_inv_comp, pullbackAssoc_inv_fst_fst]
-#align category_theory.limits.pullback_assoc_hom_fst CategoryTheory.Limits.pullbackAssoc_hom_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_hom_snd_fst [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
@@ -184,7 +169,6 @@ theorem pullbackAssoc_hom_snd_fst [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X�
     congr 1
     exact IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
   · exact pullback.lift_fst _ _ _
-#align category_theory.limits.pullback_assoc_hom_snd_fst CategoryTheory.Limits.pullbackAssoc_hom_snd_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_hom_snd_snd [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
@@ -195,21 +179,18 @@ theorem pullbackAssoc_hom_snd_snd [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X�
     congr 1
     exact IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
   · exact pullback.lift_snd _ _ _
-#align category_theory.limits.pullback_assoc_hom_snd_snd CategoryTheory.Limits.pullbackAssoc_hom_snd_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_inv_fst_snd [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
     [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] :
     (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
     pullback.snd _ _ ≫ pullback.fst _ _ := by rw [Iso.inv_comp_eq, pullbackAssoc_hom_snd_fst]
-#align category_theory.limits.pullback_assoc_inv_fst_snd CategoryTheory.Limits.pullbackAssoc_inv_fst_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_inv_snd [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
     [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] :
     (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.snd _ _ := by
   rw [Iso.inv_comp_eq, pullbackAssoc_hom_snd_snd]
-#align category_theory.limits.pullback_assoc_inv_snd CategoryTheory.Limits.pullbackAssoc_inv_snd
 
 end PullbackAssoc
 
@@ -292,10 +273,9 @@ local notation "l₂'" =>
 def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
     IsColimit
       (PushoutCocone.mk l₁' l₂' (show f₂ ≫ l₁' = f₃ ≫ l₂' from (pushout.inl_desc _ _ _).symm)) := by
-  apply botSquareIsPushout rfl (pushoutIsPushout _ g₄)
+  apply botSquareIsPushout _ rfl (pushoutIsPushout _ g₄)
   simpa [PushoutCocone.pasteVert] using
     PushoutCocone.mkSelfIsColimit (pushoutIsPushout (g₃ ≫ f₂) g₄)
-#align category_theory.limits.pushout_pushout_left_is_pushout CategoryTheory.Limits.pushoutPushoutLeftIsPushout
 
 /-- `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃` is the pushout `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
 def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
@@ -305,18 +285,15 @@ def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
           rw [Category.assoc, pushout.inl_desc, pushout.condition_assoc])) := by
   simpa using pasteHorizIsPushout rfl (pushoutIsPushout g₁ g₂)
     (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄)
-#align category_theory.limits.pushout_assoc_is_pushout CategoryTheory.Limits.pushoutAssocIsPushout
 
 theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g₂ ≫ f₃) :=
   ⟨⟨⟨_, pushoutAssocIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
-#align category_theory.limits.has_pushout_assoc CategoryTheory.Limits.hasPushout_assoc
 
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ×[X₂] (X₂ ⨿[Z₂] X₃)`. -/
 def pushoutPushoutRightIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
     IsColimit (PushoutCocone.mk l₁ l₂ (show f₂ ≫ l₁ = f₃ ≫ l₂ from pushout.inr_desc _ _ _)) := by
   apply rightSquareIsPushout _ rfl (pushoutIsPushout _ _)
   simpa [PushoutCocone.pasteHoriz] using PushoutCocone.mkSelfIsColimit (pushoutIsPushout _ _)
-#align category_theory.limits.pushout_pushout_right_is_pushout CategoryTheory.Limits.pushoutPushoutRightIsPushout
 
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃`. -/
 def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
@@ -325,11 +302,9 @@ def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
         (show (g₃ ≫ f₂) ≫ l₁ = g₄ ≫ f₄ ≫ l₂ by
           rw [Category.assoc, pushout.inr_desc, pushout.condition_assoc])) := by
   simpa using pasteVertIsPushout rfl (pushoutIsPushout _ _) (pushoutPushoutRightIsPushout _ _ _ _)
-#align category_theory.limits.pushout_assoc_symm_is_pushout CategoryTheory.Limits.pushoutAssocSymmIsPushout
 
 theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g₃ ≫ f₂) g₄ :=
   ⟨⟨⟨_, pushoutAssocSymmIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
-#align category_theory.limits.has_pushout_assoc_symm CategoryTheory.Limits.hasPushout_assoc_symm
 
 -- Porting note: these are not propagating so moved into statements
 -- variable [HasPushout (g₃ ≫ f₂) g₄] [HasPushout g₁ (g₂ ≫ f₃)]
@@ -341,7 +316,6 @@ noncomputable def pushoutAssoc [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶
       pushout g₁ (g₂ ≫ pushout.inl _ _ : _ ⟶ pushout g₃ g₄) :=
   (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄).coconePointUniqueUpToIso
     (pushoutPushoutRightIsPushout g₁ g₂ g₃ g₄)
-#align category_theory.limits.pushout_assoc CategoryTheory.Limits.pushoutAssoc
 
 @[reassoc (attr := simp)]
 theorem inl_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
@@ -353,7 +327,6 @@ theorem inl_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ �
       (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄).comp_coconePointUniqueUpToIso_hom _
         WalkingCospan.left
   · exact pushout.inl_desc _ _ _
-#align category_theory.limits.inl_inl_pushout_assoc_hom CategoryTheory.Limits.inl_inl_pushoutAssoc_hom
 
 @[reassoc (attr := simp)]
 theorem inr_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
@@ -366,7 +339,6 @@ theorem inr_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ �
       (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄).comp_coconePointUniqueUpToIso_hom _
         WalkingCospan.left
   · exact pushout.inr_desc _ _ _
-#align category_theory.limits.inr_inl_pushout_assoc_hom CategoryTheory.Limits.inr_inl_pushoutAssoc_hom
 
 @[reassoc (attr := simp)]
 theorem inr_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
@@ -378,14 +350,12 @@ theorem inr_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ �
       (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄).comp_coconePointUniqueUpToIso_inv
         (pushoutPushoutRightIsPushout g₁ g₂ g₃ g₄) WalkingCospan.right
   · exact pushout.inr_desc _ _ _
-#align category_theory.limits.inr_inr_pushout_assoc_inv CategoryTheory.Limits.inr_inr_pushoutAssoc_inv
 
 @[reassoc (attr := simp)]
 theorem inl_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
     [HasPushout g₁ (g₂ ≫ (pushout.inl _ _ : X₂ ⟶ Y₂))] :
     pushout.inl _ _ ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv = pushout.inl _ _ ≫ pushout.inl _ _ := by
   rw [Iso.comp_inv_eq, Category.assoc, inl_inl_pushoutAssoc_hom]
-#align category_theory.limits.inl_pushout_assoc_inv CategoryTheory.Limits.inl_pushoutAssoc_inv
 
 @[reassoc (attr := simp)]
 theorem inl_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
@@ -393,14 +363,12 @@ theorem inl_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ �
     pushout.inl _ _ ≫ pushout.inr _ _ ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv =
       pushout.inr _ _ ≫ pushout.inl _ _ := by
   rw [← Category.assoc, Iso.comp_inv_eq, Category.assoc, inr_inl_pushoutAssoc_hom]
-#align category_theory.limits.inl_inr_pushout_assoc_inv CategoryTheory.Limits.inl_inr_pushoutAssoc_inv
 
 @[reassoc (attr := simp)]
 theorem inr_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
     [HasPushout g₁ (g₂ ≫ (pushout.inl _ _ : X₂ ⟶ Y₂))] :
     pushout.inr _ _ ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom = pushout.inr _ _ ≫ pushout.inr _ _ := by
   rw [← Iso.eq_comp_inv, Category.assoc, inr_inr_pushoutAssoc_inv]
-#align category_theory.limits.inr_pushout_assoc_hom CategoryTheory.Limits.inr_pushoutAssoc_hom
 
 end PushoutAssoc
 
