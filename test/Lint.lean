@@ -1,3 +1,4 @@
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 
@@ -58,20 +59,7 @@ export Nat (add)
 
 end add
 
-set_option linter.cdot false in
-/--
-warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
----
-warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
----
-warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
--/
-#guard_msgs in
-#align to_align
-  toAlign
+set_option linter.pedantic false
 
 set_option linter.noInitialWhitespace false
 /--

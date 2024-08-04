@@ -397,9 +397,9 @@ initialize addLinter longLineLinter
 end LongLine
 
 /-!
-#  The "pedanticWhitespace" linter
+#  The "pedantic" linter
 
-The "pedanticWhitespace" linter emits a warning when the syntax of a command differs substantially
+The "pedantic" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 -/
 
@@ -408,28 +408,51 @@ open Lean Elab
 namespace Mathlib.Linter
 
 /--
-The "pedanticWhitespace" linter emits a warning when the syntax of a command differs substantially
+The "pedantic" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 -/
-register_option linter.pedanticWhitespace : Bool := {
+register_option linter.pedantic : Bool := {
   defValue := true
-  descr := "enable the pedanticWhitespace linter"
+  descr := "enable the pedantic linter"
 }
 
+#eval
+  "   -- comment".findSubstr? { str := "--", startPos := ⟨0⟩, stopPos := ⟨2⟩ }
+
 def dropTrailingComments (s : List String) : List String :=
+  let doubleDash : Substring := { str := "--", startPos := ⟨0⟩, stopPos := ⟨2⟩ }
   Id.run do
   let mut s := s
   let mut repl := true
   while repl do
-    let last := s.getLast?.getD ""
-    repl := "--".isPrefixOf last
-    if repl then
-      s := s.dropLast
+    if s.isEmpty then return s else
+    let last := (s.getLast?.getD "").trimRight
+    --dbg_trace "last: '{last}'"
+    if last.isEmpty then s := s.dropLast else
+    match last.findSubstr? doubleDash with
+      | some _ =>
+        let preNewLast := ((last.splitOn "--").getD 0 default).trimRight
+        if preNewLast.isEmpty then
+          repl := true
+          s := s.dropLast
+        else
+          repl := false
+          s := s.dropLast ++ [preNewLast]
+      | none => repl := false
   return s
 
+#eval
+  let str := "@[simp, norm_cast]
+theorem sqrt_natCast (n : ℕ) : Int.sqrt (n : ℤ) = Nat.sqrt n := by rw [sqrt, toNat_ofNat]
+
+ -- See note [no_index around OfNat.ofNat]
+"
+  dropTrailingComments (str.splitOn "\n")
+
+#check String.findSubstr?
 def collapseWhitespace (s : String) : String :=
   let s := s.split (·.isWhitespace)
-  (" ".intercalate (dropTrailingComments (s.filter (!·.isEmpty))))
+  (" ".intercalate (s.filter (!·.isEmpty)))
     |>.replace "/-!" "/-! "
     |>.replace "`` " "``" -- weird pp ```#eval ``«Nat»``` pretty-prints as ```#eval `` «Nat»```
     |>.replace "notation3(" "notation3 ("
@@ -437,36 +460,63 @@ def collapseWhitespace (s : String) : String :=
 
 def collapseLineBreaksPlusSpaces (st : String) : String :=
   let s := ((st.split (· == '\n')).map .trimLeft).filter (!· == "")
-  let s := dropTrailingComments s
+  --let s := dropTrailingComments s
   " ".intercalate (s.filter (!·.isEmpty))
 
 def zoomString (str : String) (centre offset : Nat) : Substring :=
   ({ str := str, startPos := ⟨centre - offset⟩, stopPos := ⟨centre + offset⟩ } : Substring)
 
-namespace PedanticWhitespace
+namespace Pedantic
 
-/-- Gets the value of the `linter.pedanticWhitespace` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.pedanticWhitespace o
+/-- Gets the value of the `linter.pedantic` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.pedantic o
 
-@[inherit_doc Mathlib.Linter.linter.pedanticWhitespace]
-def pedanticWhitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def capSourceInfo (s : SourceInfo) (p : Nat) : SourceInfo :=
+  match s with
+    | .original leading pos trailing endPos =>
+      .original leading pos {trailing with stopPos := ⟨min endPos.1 p⟩} ⟨min endPos.1 p⟩
+    | .synthetic pos endPos canonical =>
+      .synthetic pos ⟨min endPos.1 p⟩ canonical
+    | .none => s
+
+partial
+def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
+  match stx with
+    | .node si k args => .node (capSourceInfo si p) k (args.map (capSyntax · p))
+    | .atom si val => .atom (capSourceInfo si p) (val.take p)
+    | .ident si r v pr => .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.1 p⟩ } v pr
+    | s => s
+
+@[inherit_doc Mathlib.Linter.linter.pedantic]
+def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
+    --dbg_trace capSyntax stx 10
+    --dbg_trace ((capSyntax stx 10).getTailPos?, stx.getTailPos?)
     unless getLinterHash (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    let fmt ← liftCoreM do PrettyPrinter.ppCategory `command stx
-    let st := collapseWhitespace fmt.pretty
+    let stx:= capSyntax stx (stx.getTailPos?.getD default).1
     let real := collapseLineBreaksPlusSpaces (stx.getSubstring?.getD default).toString
+    let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
+      Linter.logLint linter.pedantic stx
+        m!"The pedantic linter had some parsing issues: \
+           feel free to silence it with `set_option linter.pedantic false in` \
+           and report this error!"
+      return real))
+    --dbg_trace "\nfmt.pretty:\n{fmt.pretty}"
+    let st := collapseWhitespace fmt.pretty
     if st != real then
       let diff := real.firstDiffPos st
+      --dbg_trace (diff, stx.getTailPos?.getD default, stx.getPos?.getD default)
+      --dbg_trace {stx.getSubstring?.getD default with stopPos := stx.getTailPos?.getD default}
       let srcCtxt := zoomString real diff.byteIdx 5 --({ str := real, startPos := diff - ⟨4⟩, stopPos := diff + ⟨5⟩ } : Substring)
       let ppCtxt  := ({ str := st,   startPos := diff - ⟨4⟩, stopPos := diff + ⟨5⟩ } : Substring)
       if srcCtxt.toString == ppCtxt.toString then logInfo m!"{diff}\n{real}\n{ppCtxt}"
       --dbg_trace "{real}\n{st}"
-      Linter.logLint linter.pedanticWhitespace stx m!"---\n\
-        '{srcCtxt}' -- src\n\
-        '{ppCtxt}' -- pp\n---"
-      --Linter.logLint linter.pedanticWhitespace stx m!"pretty:\n'{st}'\n'{real}'"
+      Linter.logLint linter.pedantic stx m!"---\n\
+        '{srcCtxt}' is in the source\n\
+        '{ppCtxt}' is how it is pretty-printed\n---"
+      --Linter.logLint linter.pedantic stx m!"pretty:\n'{st}'\n'{real}'"
 
 
 run_cmd
@@ -478,9 +528,9 @@ run_cmd
         s2: '{({ str := s2, startPos := diff - ⟨1⟩, stopPos := diff + ⟨1⟩ } : Substring)}'"
 
 
-initialize addLinter pedanticWhitespaceLinter
+initialize addLinter pedantic
 
-end PedanticWhitespace
+end Pedantic
 
 end Mathlib.Linter
 
