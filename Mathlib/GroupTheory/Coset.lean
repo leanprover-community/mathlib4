@@ -352,12 +352,12 @@ instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : F
   Quotient.fintype (leftRel s)
 
 /-- Reinterpret `x : Quotient (leftRel s)` as an element of `α ⧸ s`. -/
-@[to_additive]
+@[to_additive "Reinterpret `x : Quotient (leftRel s)` as an element of `α ⧸ s`."]
 def ofQuotient (x : Quotient (leftRel s)) : α ⧸ s :=
   x
 
 /-- Reinterpret `x : α ⧸ s` as an element of `Quotient (leftRel s)`. -/
-@[to_additive]
+@[to_additive "Reinterpret `x : α ⧸ s` as an element of `Quotient (leftRel s)`."]
 def toQuotient (x : α ⧸ s) : Quotient (leftRel s) :=
   x
 
