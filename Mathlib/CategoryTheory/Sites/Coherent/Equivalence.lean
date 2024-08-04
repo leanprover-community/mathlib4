@@ -35,8 +35,10 @@ instance [EssentiallySmall C] :
     Precoherent (SmallModel C) := (equivSmallModel C).precoherent
 
 instance : haveI := precoherent e
-    e.TransportsGrothendieckTopology (coherentTopology C) (coherentTopology D) where
-  eq_inducedTopology := coherentTopology.eq_induced e.inverse
+    e.inverse.IsDenseSubsite (coherentTopology D) (coherentTopology C) where
+  functorPushforward_mem_iff := by
+    rw [coherentTopology.eq_induced e.inverse]
+    rfl
 
 variable (A : Type*) [Category A]
 
@@ -81,8 +83,10 @@ instance [EssentiallySmall C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular
 
 instance : haveI := preregular e
-    e.TransportsGrothendieckTopology (regularTopology C) (regularTopology D) where
-  eq_inducedTopology := regularTopology.eq_induced e.inverse
+    e.inverse.IsDenseSubsite (regularTopology D) (regularTopology C) where
+  functorPushforward_mem_iff := by
+    rw [regularTopology.eq_induced e.inverse]
+    rfl
 
 variable (A : Type*) [Category A]
 

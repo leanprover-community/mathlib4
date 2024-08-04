@@ -7,8 +7,6 @@ import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Countable.Defs
 
-#align_import data.countable.basic from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
-
 /-!
 # Countable types
 
@@ -33,18 +31,15 @@ variable {α : Sort u} {β : Sort v}
 
 theorem countable_iff_nonempty_embedding : Countable α ↔ Nonempty (α ↪ ℕ) :=
   ⟨fun ⟨⟨f, hf⟩⟩ => ⟨⟨f, hf⟩⟩, fun ⟨f⟩ => ⟨⟨f, f.2⟩⟩⟩
-#align countable_iff_nonempty_embedding countable_iff_nonempty_embedding
 
 theorem uncountable_iff_isEmpty_embedding : Uncountable α ↔ IsEmpty (α ↪ ℕ) := by
   rw [← not_countable_iff, countable_iff_nonempty_embedding, not_nonempty_iff]
 
 theorem nonempty_embedding_nat (α) [Countable α] : Nonempty (α ↪ ℕ) :=
   countable_iff_nonempty_embedding.1 ‹_›
-#align nonempty_embedding_nat nonempty_embedding_nat
 
 protected theorem Function.Embedding.countable [Countable β] (f : α ↪ β) : Countable α :=
   f.injective.countable
-#align function.embedding.countable Function.Embedding.countable
 
 protected lemma Function.Embedding.uncountable [Uncountable α] (f : α ↪ β) : Uncountable β :=
   f.injective.uncountable
@@ -102,7 +97,6 @@ instance [Nonempty α] [∀ a, Uncountable (π a)] : Uncountable (Sigma π) := b
 
 instance (priority := 500) SetCoe.countable [Countable α] (s : Set α) : Countable s :=
   Subtype.countable
-#align set_coe.countable SetCoe.countable
 
 end type
 

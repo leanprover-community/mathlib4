@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.LineDeriv.Measurable
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.BoundedVariation
 import Mathlib.MeasureTheory.Group.Integral
@@ -377,5 +377,5 @@ end LipschitzOnWith
 differentiable almost everywhere. -/
 theorem LipschitzWith.ae_differentiableAt {f : E → F} (h : LipschitzWith C f) :
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
-  rw [← lipschitzOn_univ] at h
+  rw [← lipschitzOnWith_univ] at h
   simpa [differentiableWithinAt_univ] using h.ae_differentiableWithinAt_of_mem
