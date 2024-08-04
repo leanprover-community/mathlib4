@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CstarAlgebra.Spectrum
+import Mathlib.Analysis.CStarAlgebra.Spectrum
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Analysis.Normed.Algebra.Basic
 import Mathlib.Topology.ContinuousFunction.Units
@@ -122,10 +122,10 @@ instance [Nontrivial A] : Nonempty (characterSpace ℂ A) :=
 
 end ComplexBanachAlgebra
 
-section ComplexCstarAlgebra
+section ComplexCStarAlgebra
 
 variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-variable [StarRing A] [CstarRing A] [StarModule ℂ A]
+variable [StarRing A] [CStarRing A] [StarModule ℂ A]
 
 theorem gelfandTransform_map_star (a : A) :
     gelfandTransform ℂ A (star a) = star (gelfandTransform ℂ A a) :=
@@ -145,7 +145,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     unfold spectralRadius; rw [spectrum.gelfandTransform_eq]
   rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
-  simp only [ENNReal.coe_inj, CstarRing.nnnorm_star_mul_self, ← sq] at this
+  simp only [ENNReal.coe_inj, CStarRing.nnnorm_star_mul_self, ← sq] at this
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 
@@ -189,7 +189,7 @@ noncomputable def gelfandStarTransform : A ≃⋆ₐ[ℂ] C(characterSpace ℂ A
       { gelfandTransform ℂ A with map_star' := fun x => gelfandTransform_map_star x })
     (gelfandTransform_bijective A)
 
-end ComplexCstarAlgebra
+end ComplexCStarAlgebra
 
 section Functoriality
 
@@ -259,8 +259,8 @@ B  --- η B ---> C(characterSpace ℂ B, ℂ)
 ```
 -/
 theorem gelfandStarTransform_naturality {A B : Type*} [NormedCommRing A] [NormedAlgebra ℂ A]
-    [CompleteSpace A] [StarRing A] [CstarRing A] [StarModule ℂ A] [NormedCommRing B]
-    [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B] [StarModule ℂ B]
+    [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A] [NormedCommRing B]
+    [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B]
     (φ : A →⋆ₐ[ℂ] B) :
     (gelfandStarTransform B : _ →⋆ₐ[ℂ] _).comp φ =
       (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by
