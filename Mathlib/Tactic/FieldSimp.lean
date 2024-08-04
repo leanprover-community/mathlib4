@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, David Renshaw, Matthew Robert Ballard
 
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
+import Batteries.Lean.Meta.Simp
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
@@ -40,18 +41,17 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     if let some r ← Simp.dischargeUsingAssumption? prop then
       return some r
 
-    -- Discharge strategy 2: use normCast
-    -- TODO: please check this was merged correctly!!
-    /- Try to cast all hypotheses (that are proofs) and `prop` into normal form before checking -/
-    let r'' ← Tactic.NormCast.derive prop
+    -- Discharge strategy 2: use norm_cast
+    -- Try to cast all hypotheses (that are proofs) and `prop` into normal form before checking
+    let r'' ← NormCast.derive prop
     let hyps ← (← getLocalHyps).filterM fun hyp => isProof hyp
     for hyp in hyps do
-      -- If can be discharged quickly using an assumption, do so
+      -- If `hyp` can be discharged quickly using an assumption, do so.
       if (← isDefEq (← inferType hyp) prop) then
         return some hyp
       -- Otherwise, use normCast to normalize and then check
       let ty ← inferType hyp
-      let r' ← Tactic.NormCast.derive ty
+      let r' ← NormCast.derive ty
       if (← isDefEq r''.expr r'.expr) then
         let m ← mkFreshMVarId
         let r ← applySimpResultToProp m hyp ty r'
@@ -59,7 +59,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
           let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
           return some (← Lean.Meta.Simp.mkCast rsymm p.1)
 
-    -- Discharge strategy 2: Normalize inequalities using NormNum
+    -- Discharge strategy 3: normalize inequalities using norm_num
     let prop : Q(Prop) ← (do pure prop)
     let pf? ← match prop with
     | ~q(($e : $α) ≠ $b) =>
@@ -73,13 +73,13 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     | _ => pure none
     if let some pf := pf? then return some pf
 
-    -- Discharge strategy 3: Use positivity
+    -- Discharge strategy 4: use positivity
     let pf? ←
       try some <$> Mathlib.Meta.Positivity.solve prop
       catch _ => pure none
     if let some pf := pf? then return some pf
 
-    -- Discharge strategy 4: Use the simplifier
+    -- Discharge strategy 5: use the simplifier
     let ctx ← readThe Simp.Context
     let stats : Simp.Stats := { (← get) with }
 
