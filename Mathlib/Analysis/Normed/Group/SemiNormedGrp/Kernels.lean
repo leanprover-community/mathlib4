@@ -23,7 +23,6 @@ and in `SemiNormedGrp` one can always take a cokernel and rescale its norm
 
 -/
 
-
 open CategoryTheory CategoryTheory.Limits
 
 universe u
@@ -31,9 +30,6 @@ universe u
 namespace SemiNormedGrp₁
 
 noncomputable section
-
--- All current violations are covered by porting notes due to erw, simp and leanprover/lean4#2644.
-set_option linter.flexible false
 
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
