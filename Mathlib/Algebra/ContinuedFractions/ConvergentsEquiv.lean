@@ -68,7 +68,7 @@ variable {K : Type*} {n : ℕ}
 
 namespace GenContFract
 
-variable {g : GenContFract K} {s : Seq' <| Pair K}
+variable {g : GenContFract K} {s : Sequence <| Pair K}
 
 section Squash
 
@@ -88,10 +88,10 @@ combines `⟨aₙ, bₙ⟩` and `⟨aₙ₊₁, bₙ₊₁⟩` at position `n` t
 `squashSeq s 0 = [(a₀, bₒ + a₁ / b₁), (a₁, b₁),...]`.
 If `s.TerminatedAt (n + 1)`, then `squashSeq s n = s`.
 -/
-def squashSeq (s : Seq' <| Pair K) (n : ℕ) : Seq' (Pair K) :=
+def squashSeq (s : Sequence <| Pair K) (n : ℕ) : Sequence (Pair K) :=
   match Prod.mk (s.get? n) (s.get? (n + 1)) with
   | ⟨some gp_n, some gp_succ_n⟩ =>
-    Seq'.nats.zipWith
+    Sequence.nats.zipWith
       -- return the squashed value at position `n`; otherwise, do nothing.
       (fun n' gp => if n' = n then ⟨gp_n.a, gp_n.b + gp_succ_n.a / gp_succ_n.b⟩ else gp) s
   | _ => s
@@ -130,7 +130,7 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
   cases s_succ_succ_nth_eq : s.get? (n + 2) with
   | none =>
     cases s_succ_nth_eq : s.get? (n + 1) <;>
-      simp only [squashSeq, Seq'.get?_tail, s_succ_nth_eq, s_succ_succ_nth_eq]
+      simp only [squashSeq, Sequence.get?_tail, s_succ_nth_eq, s_succ_succ_nth_eq]
   | some gp_succ_succ_n =>
     obtain ⟨gp_succ_n, s_succ_nth_eq⟩ : ∃ gp_succ_n, s.get? (n + 1) = some gp_succ_n :=
       s.ge_stable (n + 1).le_succ s_succ_succ_nth_eq
@@ -139,7 +139,7 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
     cases' Decidable.em (m = n) with m_eq_n m_ne_n
     · simp [*, squashSeq]
     · cases s_succ_mth_eq : s.get? (m + 1)
-      · simp only [*, squashSeq, Seq'.get?_tail, Seq'.get?_zipWith,
+      · simp only [*, squashSeq, Sequence.get?_tail, Sequence.get?_zipWith,
           Option.map₂_none_right]
       · simp [*, squashSeq]
 
@@ -158,7 +158,7 @@ theorem succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq :
         s.ge_stable zero_le_one s_succ_nth_eq
       have : (squashSeq s 0).head = some ⟨gp_head.a, gp_head.b + gp_succ_n.a / gp_succ_n.b⟩ :=
         squashSeq_nth_of_not_terminated s_head_eq s_succ_nth_eq
-      simp_all [convs'Aux, Seq'.head, Seq'.get?_tail]
+      simp_all [convs'Aux, Sequence.head, Sequence.get?_tail]
     | succ m IH =>
       obtain ⟨gp_head, s_head_eq⟩ : ∃ gp_head, s.head = some gp_head :=
         s.ge_stable (m + 2).zero_le s_succ_nth_eq
@@ -168,7 +168,7 @@ theorem succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq :
         by simpa only [convs'Aux, s_head_eq]
       have : convs'Aux s.tail (m + 2) = convs'Aux (squashSeq s.tail m) (m + 1) := by
         refine IH gp_succ_n ?_
-        simpa [Seq'.get?_tail] using s_succ_nth_eq
+        simpa [Sequence.get?_tail] using s_succ_nth_eq
       have : (squashSeq s (m + 1)).head = some gp_head :=
         (squashSeq_nth_of_lt m.succ_pos).trans s_head_eq
       simp_all [convs'Aux, squashSeq_succ_n_tail_eq_squashSeq_tail_n]
@@ -215,7 +215,7 @@ theorem succ_nth_conv'_eq_squashGCF_nth_conv' :
   cases n with
   | zero =>
     cases g_s_head_eq : g.s.get? 0 <;>
-      simp [g_s_head_eq, squashGCF, convs', convs'Aux, Seq'.head]
+      simp [g_s_head_eq, squashGCF, convs', convs'Aux, Sequence.head]
   | succ =>
     simp only [succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq, convs',
       squashGCF]

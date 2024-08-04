@@ -37,22 +37,22 @@ theorem contsAux_stable_of_terminated (n_lt_m : n < m) (terminatedAt_n : g.Termi
   refine (contsAux_stable_step_of_terminated ?_).trans hk
   exact terminated_stable (Nat.le_add_right _ _) terminatedAt_n
 
-theorem convs'Aux_stable_step_of_terminated {s : Seq' <| Pair K}
+theorem convs'Aux_stable_step_of_terminated {s : Sequence <| Pair K}
     (terminatedAt_n : s.TerminatedAt n) : convs'Aux s (n + 1) = convs'Aux s n := by
   change s.get? n = none at terminatedAt_n
   induction n generalizing s with
-  | zero => simp only [convs'Aux, terminatedAt_n, Seq'.head]
+  | zero => simp only [convs'Aux, terminatedAt_n, Sequence.head]
   | succ n IH =>
     cases s_head_eq : s.head with
     | none => simp only [convs'Aux, s_head_eq]
     | some gp_head =>
       have : s.tail.TerminatedAt n := by
-        simp only [Seq'.TerminatedAt, s.get?_tail, terminatedAt_n]
+        simp only [Sequence.TerminatedAt, s.get?_tail, terminatedAt_n]
       have := IH this
       rw [convs'Aux] at this
       simp [this, Nat.add_eq, add_zero, convs'Aux, s_head_eq]
 
-theorem convs'Aux_stable_of_terminated {s : Seq' <| Pair K} (n_le_m : n ≤ m)
+theorem convs'Aux_stable_of_terminated {s : Sequence <| Pair K} (n_le_m : n ≤ m)
     (terminatedAt_n : s.TerminatedAt n) : convs'Aux s m = convs'Aux s n := by
   induction' n_le_m with m n_le_m IH
   · rfl
