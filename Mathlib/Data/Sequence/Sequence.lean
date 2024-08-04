@@ -501,7 +501,7 @@ def map (f : α → β) : Sequence α → Sequence β
   `a : α` satisfying `P`, then `pmap f s h` is essentially the same as `map f s`
   but is defined only when all members of `l` satisfy `P`, using the proof
   to apply `f`. -/
-def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Seq' α) (H : ∀ a ∈ s, P a) : Seq' β :=
+def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sequence α) (H : ∀ a ∈ s, P a) : Sequence β :=
   ⟨s.val.pmap (Option.pmap f) (fun o ho a ha => ha.symm.rec (H a) ho), fun {n} => by
     simpa only [Stream'.pmap, Option.pmap_eq_none_iff] using s.property⟩
 
