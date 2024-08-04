@@ -3,7 +3,6 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
