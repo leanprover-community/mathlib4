@@ -6,7 +6,7 @@ Authors: Brendan Murphy
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Artinian
 import Mathlib.Logic.Equiv.TransferInstance
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Regular sequences and weakly regular sequences
