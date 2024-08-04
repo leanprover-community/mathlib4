@@ -78,7 +78,7 @@ theorem degree_eq_sum_if_adj [AddCommMonoidWithOne R] (i : V) :
   rw [sum_boole, Set.toFinset_setOf]
 
 theorem lapMatrix_toLinearMap₂'_apply [CommRing R] (x y : V → R) :
-    toLinearMap₂' (G.lapMatrix R) x y = ∑ e in G.edgeFinset,
+    toLinearMap₂' R (G.lapMatrix R) x y = ∑ e in G.edgeFinset,
       Sym2.lift ⟨fun v w ↦ (x v - x w) * (y v - y w), fun _ _ ↦ by ring⟩ e := by
   simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
     dotProduct_mulVec_adjMatrix]
