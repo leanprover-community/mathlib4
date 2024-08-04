@@ -34,7 +34,7 @@ lemma split_halves_length_aux : ∀ {l l₁ l₂ : List α},
   | []       => by
     intros h
     unfold List.split at h
-    simp at h
+    simp only [Prod.mk.injEq] at h
     have ⟨h₁, h₂⟩ := h
     rw [← h₁, ← h₂]
     simp
@@ -50,7 +50,7 @@ lemma split_halves_length_aux : ∀ {l l₁ l₂ : List α},
       have ⟨ih₁, ih₂⟩ := split_halves_length_aux e
       apply And.intro
       · rw [← h₁]
-        simp
+        simp only [List.length_cons]
         linarith
       · rw [← h₂]
         simp [ih₁]
@@ -67,13 +67,14 @@ theorem split_lengths : ∀ (l l₁ l₂ : List α),
     List.split l = (l₁, l₂) → l₁.length + l₂.length = l.length
   | []  => by
     intros l₁ l₂
-    simp
+    simp only
+      [List.split, Prod.mk.injEq, List.length_nil, add_eq_zero, List.length_eq_zero, and_imp]
     intros h₁ h₂
     rw [← h₁, ← h₂]
     simp
   | [_] => by
     intros l₁ l₂
-    simp
+    simp only [List.split, Prod.mk.injEq, List.length_singleton, and_imp]
     intros h₁ h₂
     rw [← h₁, ← h₂]
     simp
@@ -81,12 +82,12 @@ theorem split_lengths : ∀ (l l₁ l₂ : List α),
     intros l₁ l₂ h
     cases e : List.split t with
     | mk l₁' l₂' =>
-      simp at h
+      simp only [List.split, Prod.mk.injEq] at h
       rw [e] at h
       have ih := split_lengths t l₁' l₂' e
       have ⟨h₁, h₂⟩ := h
       rw [← h₁, ← h₂]
-      simp
+      simp only [List.length_cons]
       linarith
 
 end Timed
