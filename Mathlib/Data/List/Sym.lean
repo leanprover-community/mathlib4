@@ -123,7 +123,7 @@ theorem map_mk_sublist_sym2 (x : α) (xs : List α) (h : x ∈ xs) :
   induction xs with
   | nil => simp
   | cons x' xs ih =>
-    simp [List.sym2]
+    simp only [map_cons, List.sym2, cons_append]
     cases h with
     | head =>
       exact (sublist_append_left _ _).cons₂ _

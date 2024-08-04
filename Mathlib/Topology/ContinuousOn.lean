@@ -1093,7 +1093,7 @@ theorem continuous_if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a
     (hg : ContinuousOn g (closure { x | ¬p x })) :
     Continuous fun a => if p a then f a else g a := by
   rw [continuous_iff_continuousOn_univ]
-  apply ContinuousOn.if <;> simp <;> assumption
+  apply ContinuousOn.if <;> simpa
 
 theorem Continuous.if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : Continuous f) (hg : Continuous g) :
