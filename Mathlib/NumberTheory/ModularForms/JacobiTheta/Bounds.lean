@@ -34,7 +34,7 @@ hence Dirichlet L-functions, etc).
   `∞`.
 -/
 
-open Set Filter Topology Asymptotics Real Classical
+open Set Filter Topology Asymptotics Real
 
 noncomputable section
 
@@ -244,6 +244,7 @@ lemma F_int_eq_of_mem_Icc (k : ℕ) {a : ℝ} (ha : a ∈ Icc 0 1) {t : ℝ} (ht
   · rw [f_int_ofNat _ ha.1]
   · rw [f_int_negSucc _ ha.2]
 
+open Classical in
 lemma isBigO_atTop_F_int_zero_sub (a : UnitAddCircle) : ∃ p, 0 < p ∧
     (fun t ↦ F_int 0 a t - (if a = 0 then 1 else 0)) =O[atTop] fun t ↦ exp (-p * t) := by
   obtain ⟨a, ha, rfl⟩ := a.eq_coe_Ico

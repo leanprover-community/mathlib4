@@ -46,7 +46,7 @@ multiples of `1 / s` and `1 / (1 - s)`.
 -/
 noncomputable section
 
-open Complex Filter Topology Asymptotics Real Set Classical MeasureTheory
+open Complex Filter Topology Asymptotics Real Set MeasureTheory
 
 namespace HurwitzZeta
 
@@ -189,6 +189,7 @@ lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   simp only [this]
   exact hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])
 
+open Classical in
 /-- Modified version of `hasSum_int_evenKernel` omitting the constant term at `∞`. -/
 lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ if n + a = 0 then 0 else rexp (-π * (n + a) ^ 2 * t))
@@ -234,6 +235,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 ## Asymptotics of the kernels as `t → ∞`
 -/
 
+open Classical in
 /-- The function `evenKernel a - L` has exponential decay at `+∞`, where `L = 1` if
 `a = 0` and `L = 0` otherwise. -/
 lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ p : ℝ, 0 < p ∧
@@ -267,6 +269,7 @@ section FEPair
 ## Construction of a FE-pair
 -/
 
+open Classical in
 /-- A `WeakFEPair` structure with `f = evenKernel a` and `g = cosKernel a`. -/
 def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   f := ofReal' ∘ evenKernel a
@@ -304,6 +307,7 @@ lemma hurwitzEvenFEPair_zero_symm :
 
 lemma hurwitzEvenFEPair_neg (a : UnitAddCircle) : hurwitzEvenFEPair (-a) = hurwitzEvenFEPair a := by
   unfold hurwitzEvenFEPair
+  classical
   congr 1 <;> simp only [Function.comp_def, evenKernel_neg, cosKernel_neg, neg_eq_zero]
 
 /-!
@@ -322,6 +326,7 @@ def completedHurwitzZetaEven (a : UnitAddCircle) (s : ℂ) : ℂ :=
 def completedHurwitzZetaEven₀ (a : UnitAddCircle) (s : ℂ) : ℂ :=
   ((hurwitzEvenFEPair a).Λ₀ (s / 2)) / 2
 
+open Classical in
 lemma completedHurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaEven a s =
     completedHurwitzZetaEven₀ a s - (if a = 0 then 1 else 0) / s - 1 / (1 - s) := by
@@ -346,6 +351,7 @@ def completedCosZeta (a : UnitAddCircle) (s : ℂ) : ℂ :=
 def completedCosZeta₀ (a : UnitAddCircle) (s : ℂ) : ℂ :=
   ((hurwitzEvenFEPair a).symm.Λ₀ (s / 2)) / 2
 
+open Classical in
 lemma completedCosZeta_eq (a : UnitAddCircle) (s : ℂ) :
     completedCosZeta a s =
     completedCosZeta₀ a s - 1 / s - (if a = 0 then 1 else 0) / (1 - s) := by
@@ -436,6 +442,7 @@ lemma differentiable_completedHurwitzZetaEven₀ (a : UnitAddCircle) :
     Differentiable ℂ (completedHurwitzZetaEven₀ a) :=
   ((hurwitzEvenFEPair a).differentiable_Λ₀.comp (differentiable_id.div_const _)).div_const _
 
+open Classical in
 /-- The difference of two completed even Hurwitz zeta functions is differentiable at `s = 1`. -/
 lemma differentiableAt_one_completedHurwitzZetaEven_sub_completedHurwitzZetaEven
     (a b : UnitAddCircle) :
@@ -455,7 +462,8 @@ lemma differentiableAt_completedCosZeta
   refine (((hurwitzEvenFEPair a).symm.differentiableAt_Λ (Or.inl ?_) ?_).comp s
       (differentiableAt_id.div_const _)).div_const _
   · exact div_ne_zero_iff.mpr ⟨hs, two_ne_zero⟩
-  · change s / 2 ≠ ↑(1 / 2 : ℝ) ∨ (if a = 0 then 1 else 0) = 0
+  · classical
+    change s / 2 ≠ ↑(1 / 2 : ℝ) ∨ (if a = 0 then 1 else 0) = 0
     refine Or.imp (fun h ↦ ?_) (fun ha ↦ ?_) hs'
     · simpa only [push_cast] using h ∘ (div_left_inj' two_ne_zero).mp
     · simp_rw [eq_false_intro ha, if_false]
@@ -477,6 +485,7 @@ lemma completedHurwitzZetaEven_residue_one (a : UnitAddCircle) :
   refine (h1.comp <| tendsto_div_two_punctured_nhds 1).congr (fun s ↦ ?_)
   rw [completedHurwitzZetaEven, Function.comp_apply, ← sub_div, div_mul_eq_mul_div, mul_div_assoc]
 
+open Classical in
 /-- The residue of `completedHurwitzZetaEven a s` at `s = 0` is equal to `-1` if `a = 0`, and `0`
 otherwise. -/
 lemma completedHurwitzZetaEven_residue_zero (a : UnitAddCircle) :
@@ -542,6 +551,7 @@ lemma hasSum_nat_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
       div_right_comm _ (2 : ℂ), Int.cast_natCast, Nat.abs_cast, Int.cast_neg, mul_neg, abs_neg, ←
       mul_add, ← add_div]
 
+open Classical in
 /-- Formula for `completedHurwitzZetaEven` as a Dirichlet series in the convergence range. -/
 lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℤ ↦ Gammaℝ s / (↑|n + a| : ℂ) ^ s / 2) (completedHurwitzZetaEven a s) := by
@@ -596,6 +606,7 @@ lemma differentiableAt_update_of_residue
     · exact Tendsto.congr (fun x ↦ by rw [← one_div, one_div_one_div]) nhdsWithin_le_nhds
     · exact eventually_of_mem self_mem_nhdsWithin fun x hx hx' ↦ (hx <| inv_eq_zero.mp hx').elim
 
+open Classical in
 /-- The even part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
 with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s`-/
 noncomputable def hurwitzZetaEven (a : UnitAddCircle) :=
@@ -611,10 +622,12 @@ lemma hurwitzZetaEven_def_of_ne_or_ne {a : UnitAddCircle} {s : ℂ} (h : a ≠ 0
     mul_zero, div_zero, ite_eq_right_iff, div_eq_zero_iff, neg_eq_zero, one_ne_zero,
     OfNat.ofNat_ne_zero, or_self, imp_false, ne_eq, not_true_eq_false, or_false] using h
 
+open Classical in
 lemma hurwitzZetaEven_apply_zero (a : UnitAddCircle) :
     hurwitzZetaEven a 0 = if a = 0 then -1 / 2 else 0 :=
   Function.update_same _ _ _
 
+open Classical in
 lemma hurwitzZetaEven_neg (a : UnitAddCircle) (s : ℂ) :
     hurwitzZetaEven (-a) s = hurwitzZetaEven a s := by
   simp_rw [hurwitzZetaEven, neg_eq_zero, completedHurwitzZetaEven_neg]

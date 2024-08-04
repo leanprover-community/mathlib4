@@ -266,10 +266,9 @@ end commMap
 
 noncomputable section norm
 
-open scoped Classical
-
 variable {K}
 
+open Classical in
 /-- The norm at the infinite place `w` of an element of
 `({w // IsReal w} → ℝ) × ({ w // IsComplex w } → ℂ)`. -/
 def normAtPlace (w : InfinitePlace K) : (E K) →*₀ ℝ where
@@ -331,6 +330,7 @@ theorem normAtPlace_eq_zero {x : E K} :
 
 variable [NumberField K]
 
+open Classical in
 theorem nnnorm_eq_sup_normAtPlace (x : E K) :
     ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
   have :
@@ -346,6 +346,7 @@ theorem nnnorm_eq_sup_normAtPlace (x : E K) :
   · ext w
     simp [normAtPlace_apply_isComplex w.prop]
 
+open Classical in
 theorem norm_eq_sup'_normAtPlace (x : E K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
@@ -401,8 +402,6 @@ end norm
 
 noncomputable section stdBasis
 
-open scoped Classical
-
 open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix ComplexConjugate
 
 variable [NumberField K]
@@ -410,6 +409,7 @@ variable [NumberField K]
 /-- The type indexing the basis `stdBasis`. -/
 abbrev index := {w : InfinitePlace K // IsReal w} ⊕ ({w : InfinitePlace K // IsComplex w}) × (Fin 2)
 
+open Classical in
 /-- The `ℝ`-basis of `({w // IsReal w} → ℝ) × ({ w // IsComplex w } → ℂ)` formed by the vector
 equal to `1` at `w` and `0` elsewhere for `IsReal w` and by the couple of vectors equal to `1`
 (resp. `I`) at `w` and `0` elsewhere for `IsComplex w`. -/
@@ -433,6 +433,7 @@ theorem stdBasis_apply_ofIsComplex_snd (x : E K) (w : {w : InfinitePlace K // Is
 
 variable (K)
 
+open Classical in
 theorem fundamentalDomain_stdBasis :
     fundamentalDomain (stdBasis K) =
         (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
@@ -440,6 +441,7 @@ theorem fundamentalDomain_stdBasis :
   ext
   simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
 
+open Classical in
 theorem volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by
   rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
@@ -451,6 +453,7 @@ theorem volume_fundamentalDomain_stdBasis :
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
 def indexEquiv : (index K) ≃ (K →+* ℂ) := by
+  classical
   refine Equiv.ofBijective (fun c => ?_)
     ((Fintype.bijective_iff_surjective_and_card _).mpr ⟨?_, ?_⟩)
   · cases c with
@@ -483,6 +486,7 @@ theorem indexEquiv_apply_ofIsComplex_snd (w : {w : InfinitePlace K // IsComplex 
 
 variable (K)
 
+open Classical in
 /-- The matrix that gives the representation on `stdBasis` of the image by `commMap` of an
 element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjugate φ)`,
 see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
@@ -490,6 +494,7 @@ def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
     (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
 
+open Classical in
 theorem det_matrixToStdBasis :
     (matrixToStdBasis K).det = (2⁻¹ * I) ^ NrComplexPlaces K :=
   calc
@@ -502,6 +507,7 @@ theorem det_matrixToStdBasis :
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [prod_const, Fintype.card]
 
+open Classical in
 /-- Let `x : (K →+* ℂ) → ℂ` such that `x_φ = conj x_(conj φ)` for all `φ : K →+* ℂ`, then the
 representation of `commMap K x` on `stdBasis` is given (up to reindexing) by the product of
 `matrixToStdBasis` by `x`. -/
