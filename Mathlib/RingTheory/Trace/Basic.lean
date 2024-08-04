@@ -248,7 +248,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
   let pb := adjoin.powerBasis hx
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← adjoin.powerBasis_gen hx,
     trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _)]
-  -- Porting note: the following `convert` was `exact`, with `← algebra.smul_def, algebra_map_smul`
+  -- Porting note: the following `convert` was `exact`, with `← Algebra.smul_def, algebraMap_smul`
   -- in the previous `rw`.
   · convert (sum_embeddings_eq_finrank_mul L E pb).symm
     ext
