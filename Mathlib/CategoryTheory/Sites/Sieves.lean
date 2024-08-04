@@ -74,6 +74,21 @@ abbrev cocone (S : Presieve X) : Cocone S.diagram :=
 def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y) : Presieve X := fun Z h =>
   ∃ (Y : C) (g : Z ⟶ Y) (f : Y ⟶ X) (H : S f), R H g ∧ g ≫ f = h
 
+structure BindStruct (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y)
+    {Z : C} (h : Z ⟶ X) where
+  Y : C
+  g : Z ⟶ Y
+  f : Y ⟶ X
+  hf : S f
+  hg : R hf g
+  fac : g ≫ f = h
+
+noncomputable def bindStruct {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y}
+    {Z : C} {h : Z ⟶ X} (H : bind S R h) : BindStruct S R h :=
+  Nonempty.some (by
+    obtain ⟨Y, g, f, hf, hg, fac⟩ := H
+    exact ⟨{ hf := hf, hg := hg, fac := fac }⟩)
+
 @[simp]
 theorem bind_comp {S : Presieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y} {g : Z ⟶ Y}
     (h₁ : S f) (h₂ : R h₁ g) : bind S R (g ≫ f) :=

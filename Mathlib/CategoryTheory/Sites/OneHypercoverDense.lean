@@ -136,23 +136,29 @@ variable {X : C} (data : F.OneHypercoverDenseData J₀ J X)
 lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) (p₂ : W ⟶ F.obj (data.X i₂))
     (w : p₁ ≫ data.f i₁ = p₂ ≫ data.f i₂) : data.toPreOneHypercover.sieve₁ p₁ p₂ ∈ J W := by
   have := IsDenseSubsite.isCoverDense J₀ J F
-  let R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ W⦄, Sieve.coverByImage F W f → Sieve Y :=
-    fun Y f hf ↦ ((F.imageSieve (hf.some.map ≫ p₁) ⊓
-        F.imageSieve (hf.some.map ≫ p₂)).functorPushforward F).pullback hf.some.lift
   let S := Sieve.bind (Sieve.coverByImage F W).arrows
     (fun Y f hf ↦ ((F.imageSieve (hf.some.map ≫ p₁) ⊓
         F.imageSieve (hf.some.map ≫ p₂)).functorPushforward F).pullback hf.some.lift)
   let T := Sieve.bind S.arrows (fun Z g hg ↦ by
-    apply Nonempty.some
-    cases hg
-    have := @PreOneHypercoverDenseData.sieve₁₀ (data := data.toPreOneHypercoverDenseData)
-      (i₁ := i₁) (i₂ := i₂)
-    --have := @Presieve.getFunctorPushforwardStructure
-    sorry)
-  refine J.superset_covering ?_
-    (J.bind_covering (F.is_cover_of_isCoverDense J W) (R := R) ?_)
-  · sorry
-  · sorry
+    letI str := Presieve.getFunctorPushforwardStructure (Presieve.bindStruct hg).hg
+    exact Sieve.pullback str.lift
+      (Sieve.functorPushforward F (data.sieve₁₀ str.cover.1.choose str.cover.2.choose)))
+  have hS : S ∈ J W := by
+    apply J.bind_covering
+    · apply is_cover_of_isCoverDense
+    · intro Y f hf
+      apply J.pullback_stable
+      rw [Functor.functorPushforward_mem_iff J₀]
+      apply J₀.intersection_covering
+      all_goals apply IsDenseSubsite.imageSieve_mem J₀ J
+  have hT : T ∈ J W := J.bind_covering hS (fun Z g hg ↦ by
+    apply J.pullback_stable
+    rw [Functor.functorPushforward_mem_iff J₀]
+    let str := Presieve.getFunctorPushforwardStructure (Presieve.bindStruct hg).hg
+    apply data.mem₁₀
+    simp only [str.cover.1.choose_spec, str.cover.2.choose_spec, assoc, w])
+  refine J.superset_covering ?_ hT
+  sorry
   #exit
   have : F.Full := sorry
   let data₁ := F.oneHypercoverDenseData J₀ J W
