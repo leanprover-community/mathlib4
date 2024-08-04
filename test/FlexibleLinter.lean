@@ -2,6 +2,7 @@ import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
+import Mathlib -- TODO: minimize this; *some* import is needed to make the 2 < 3 norm_num tests pass
 
 set_option linter.flexible false
 
@@ -152,7 +153,6 @@ info: ... and 'rw [add_comm]' uses '⊢'!
 set_option linter.flexible true in
 example {a : Rat} : a + (0 + 2 : Rat) < 3 + a := by
   simp
-  norm_num
   rw [add_comm]
   norm_num
 
@@ -308,7 +308,7 @@ set_option linter.flexible true in
 example {h : False} : 0 = 1 ∧ 0 = 1 := by
   constructor
   · simpa
-  . simp
+  · simp
     rw [← Classical.not_not (a := False)] at h
     rwa [← Classical.not_not (a := False)]
 
@@ -322,6 +322,7 @@ elab "flex? " tac:tactic : command => do
     | false => logInfoAt tac m!"{flexible? tac}"
 
 section set_option linter.unreachableTactic false
+set_option linter.unusedTactic false
 /-- info: false -/#guard_msgs in
 flex? done
 /-- info: false -/#guard_msgs in
@@ -339,3 +340,5 @@ end
   let h := mkIdent `h
   let hc : TSyntax `Lean.Parser.Tactic.casesTarget := ⟨h⟩
   IO.println s!"{(toStained (← `(tactic| cases $hc))).toArray}"
+
+end test_internals

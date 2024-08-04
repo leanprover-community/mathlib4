@@ -51,6 +51,7 @@ instance : Category PointedSpace where
 
 end PointedSpace
 
+set_option linter.flexible false in
 set_option maxHeartbeats 40000 in
 def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
   obj := fun X =>
