@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Zhouhang Zhou
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
-import Mathlib.Order.Filter.Germ
+import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
@@ -69,10 +69,7 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 noncomputable section
 
-open scoped Classical
-open ENNReal Topology
-
-open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
+open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
 variable {α β γ δ : Type*} [MeasurableSpace α] {μ ν : Measure α}
 

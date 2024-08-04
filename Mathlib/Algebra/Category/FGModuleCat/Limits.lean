@@ -28,9 +28,7 @@ noncomputable section
 
 universe v u
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 namespace FGModuleCat
 

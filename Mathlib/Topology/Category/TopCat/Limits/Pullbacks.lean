@@ -212,8 +212,8 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   apply Concrete.limit_ext
   rintro (_ | _ | _) <;>
   erw [← comp_apply, ← comp_apply] -- now `erw` after #13170
-  simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
-  · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
+  · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
+    simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
     erw [pullbackFst_apply, hx₁]
     rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
     rfl -- `rfl` was not needed before #13170

@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+import Mathlib.Tactic.Rify
 
 /-!
 # Number field discriminant
@@ -201,22 +202,15 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
-  have h₁ : 1 ≤ 3 * π / 4 := by
-    rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
-    linarith [Real.pi_gt_three]
-  have h₂ : (9 : ℝ) < π ^ 2 := by
-    rw [ ← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9 : ℝ) = 3 from
-    (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
-    exact Real.pi_gt_three
-  refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
-  rw [← _root_.div_lt_iff' (by positivity), Int.cast_ofNat]
-  refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
-  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow,
-    show (2 : ℝ) / (4 / 9) * 4 ^ 2 = 72 by norm_num,
-    show (3 : ℝ) ^ 2 = 9 by norm_num,
-    ← _root_.div_lt_iff' (by positivity),
-    show (72 : ℝ) / 9 = 8 by norm_num]
-  linarith [h₂]
+  rw [← Nat.succ_le_iff] at h
+  rify
+  calc
+    (2 : ℝ) < (4 / 9) * (3 * π / 4) ^ 2 := by
+      nlinarith [Real.pi_gt_three]
+    _ ≤ (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K := by
+      gcongr
+      linarith [Real.pi_gt_three]
+    _ ≤ |(discr K : ℝ)| := mod_cast abs_discr_ge h
 
 /-!
 ### Hermite Theorem

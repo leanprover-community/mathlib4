@@ -23,7 +23,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function
 
-open scoped Classical Topology Interval Filter ENNReal MeasureTheory
+open scoped Topology Interval Filter ENNReal MeasureTheory
 
 variable {α β E F : Type*} [MeasurableSpace α]
 
@@ -504,6 +504,7 @@ variable [NormedAddCommGroup E]
 theorem ContinuousOn.aemeasurable [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
     [TopologicalSpace β] [BorelSpace β] {f : α → β} {s : Set α} {μ : Measure α}
     (hf : ContinuousOn f s) (hs : MeasurableSet s) : AEMeasurable f (μ.restrict s) := by
+  classical
   nontriviality α; inhabit α
   have : (Set.piecewise s f fun _ => f default) =ᵐ[μ.restrict s] f := piecewise_ae_eq_restrict hs
   refine ⟨Set.piecewise s f fun _ => f default, ?_, this.symm⟩

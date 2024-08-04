@@ -209,7 +209,7 @@ theorem measurable_of_measurable_nnreal {f : ℝ≥0∞ → α} (h : Measurable 
     (MeasurableEquiv.ennrealEquivNNReal.symm.measurable_comp_iff.1 h)
 
 /-- `ℝ≥0∞` is `MeasurableEquiv` to `ℝ≥0 ⊕ Unit`. -/
-def ennrealEquivSum : ℝ≥0∞ ≃ᵐ Sum ℝ≥0 Unit :=
+def ennrealEquivSum : ℝ≥0∞ ≃ᵐ ℝ≥0 ⊕ Unit :=
   { Equiv.optionEquivSumPUnit ℝ≥0 with
     measurable_toFun := measurable_of_measurable_nnreal measurable_inl
     measurable_invFun :=
@@ -220,7 +220,7 @@ open Function (uncurry)
 theorem measurable_of_measurable_nnreal_prod [MeasurableSpace β] [MeasurableSpace γ]
     {f : ℝ≥0∞ × β → γ} (H₁ : Measurable fun p : ℝ≥0 × β => f (p.1, p.2))
     (H₂ : Measurable fun x => f (∞, x)) : Measurable f :=
-  let e : ℝ≥0∞ × β ≃ᵐ Sum (ℝ≥0 × β) (Unit × β) :=
+  let e : ℝ≥0∞ × β ≃ᵐ (ℝ≥0 × β) ⊕ (Unit × β) :=
     (ennrealEquivSum.prodCongr (MeasurableEquiv.refl β)).trans
       (MeasurableEquiv.sumProdDistrib _ _ _)
   e.symm.measurable_comp_iff.1 <| measurable_sum H₁ (H₂.comp measurable_id.snd)
@@ -494,3 +494,29 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
       refine fun hif => hif.trans ?_
       exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
+
+variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
+
+lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
+    Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
+  rw [Real.singleton_eq_inter_Icc]
+  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc)
+  · intro r s _rpos hrs
+    exact Icc_subset_Icc (by linarith) (by linarith)
+  · exact ⟨1, zero_lt_one, isCompact_Icc.measure_ne_top⟩
+
+lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
+    Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[≥] (0 : ℝ)) (𝓝 (μ {b})) := by
+  simp only [← nhdsWithin_right_sup_nhds_singleton, nhdsWithin_singleton, tendsto_sup,
+    tendsto_measure_Icc_nhdsWithin_right' μ b, true_and, tendsto_pure_left]
+  intro s hs
+  simpa using mem_of_mem_nhds hs
+
+lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
+    Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝 (0 : ℝ)) (𝓝 0) := by
+  rw [← nhds_left'_sup_nhds_right, tendsto_sup]
+  constructor
+  · apply tendsto_const_nhds.congr'
+    filter_upwards [self_mem_nhdsWithin] with r (hr : r < 0)
+    rw [Icc_eq_empty (by linarith), measure_empty]
+  · simpa only [measure_singleton] using tendsto_measure_Icc_nhdsWithin_right μ b
