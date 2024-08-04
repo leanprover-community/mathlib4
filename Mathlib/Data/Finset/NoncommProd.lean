@@ -464,7 +464,7 @@ theorem _root_.MonoidHom.pi_ext {f g : (∀ i, M i) →* γ}
 /-- The coproduct property of finite products of monoids -/
 @[to_additive]
 def _root_.MonoidHom.pi_lift {f : ∀ i, (M i →* γ)}
-  (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n)):
+    (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n)):
     (∀ i, M i) →* γ where
   toFun m := univ.noncommProd (fun i ↦ f i (m i)) (fun x _ y _ ↦ comm x _ y _)
   map_one' := by
