@@ -27,7 +27,7 @@ def resolveNamespace (ns : Name) : Name → Name
   | Name.anonymous => ns
 
 /-- Changes the current namespace without causing scoped things to go out of scope -/
-def withWeakNamespace (ns : Name) (m : CommandElabM α) : CommandElabM α := do
+def withWeakNamespace {α : Type} (ns : Name) (m : CommandElabM α) : CommandElabM α := do
   let old ← getCurrNamespace
   let ns := resolveNamespace old ns
   modify fun s ↦ { s with env := s.env.registerNamespace ns }

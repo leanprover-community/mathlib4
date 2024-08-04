@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.FinRange
-
-#align_import algebra.big_operators.norm_num from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # `norm_num` plugin for big operators
@@ -30,7 +28,7 @@ This plugin is noticeably less powerful than the equivalent version in Mathlib 3
 In particular, we can't use the plugin on sums containing variables.
 (See also the TODO note "To support variables".)
 
-## TODOs
+## TODO
 
  * Support intervals: `Finset.Ico`, `Finset.Icc`, ...
  * To support variables, like in Mathlib 3, turn this into a standalone tactic that unfolds
@@ -43,6 +41,8 @@ namespace Mathlib.Meta
 open Lean hiding Rat mkRat
 open Meta
 open Qq
+
+variable {u v : Level}
 
 /-- This represents the result of trying to determine whether the given expression `n : Q(ℕ)`
 is either `zero` or `succ`. -/
@@ -107,7 +107,7 @@ set_option linter.unusedVariables false in
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
-partial def List.proveNilOrCons {α : Q(Type u)} (s : Q(List $α)) :
+partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
     MetaM (List.ProveNilOrConsResult s) :=
   s.withApp fun e a =>
   match (e, e.constName, a) with
@@ -169,9 +169,9 @@ def Multiset.ProveZeroOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Multiset $
   | .zero pf => .zero q(Eq.trans $eq $pf)
   | .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
 
-lemma Multiset.insert_eq_cons {α : Type _} [DecidableEq α] (a : α) (s : Multiset α) :
-    insert a s = Multiset.cons a s := by
-  ext; simp
+lemma Multiset.insert_eq_cons {α : Type*} (a : α) (s : Multiset α) :
+    insert a s = Multiset.cons a s :=
+  rfl
 
 lemma Multiset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     Multiset.range n = 0 := by rw [pn.out, Nat.cast_zero, Multiset.range_zero]
@@ -238,7 +238,7 @@ def Finset.ProveEmptyOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Finset $α)
   | .empty pf => .empty q(Eq.trans $eq $pf)
   | .cons a s' h pf => .cons a s' h q(Eq.trans $eq $pf)
 
-lemma Finset.insert_eq_cons {α : Type _} [DecidableEq α] (a : α) (s : Finset α) (h : a ∉ s) :
+lemma Finset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Finset α) (h : a ∉ s) :
     insert a s = Finset.cons a s h := by
   ext; simp
 
@@ -249,7 +249,7 @@ lemma Finset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = N
     Finset.range n = Finset.cons n' (Finset.range n') Finset.not_mem_range_self := by
   rw [pn.out, Nat.cast_id, pn', Finset.range_succ, Finset.insert_eq_cons]
 
-lemma Finset.univ_eq_elems {α : Type _} [Fintype α] (elems : Finset α)
+lemma Finset.univ_eq_elems {α : Type*} [Fintype α] (elems : Finset α)
     (complete : ∀ x : α, x ∈ elems) :
     Finset.univ = elems := by
   ext x; simpa using complete x
@@ -317,11 +317,11 @@ def Result.eq_trans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b
   | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
   | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
 
-protected lemma Finset.sum_empty {β α : Type _} [CommSemiring β] (f : α → β) :
+protected lemma Finset.sum_empty {β α : Type*} [CommSemiring β] (f : α → β) :
     IsNat (Finset.sum ∅ f) 0 :=
   ⟨by simp⟩
 
-protected lemma Finset.prod_empty {β α : Type _} [CommSemiring β] (f : α → β) :
+protected lemma Finset.prod_empty {β α : Type*} [CommSemiring β] (f : α → β) :
     IsNat (Finset.prod ∅ f) 1 :=
   ⟨by simp⟩
 
@@ -339,7 +339,7 @@ partial def evalFinsetBigop {α : Q(Type u)} {β : Q(Type v)}
     match ← Finset.proveEmptyOrCons s with
     | .empty pf => pure <| res_empty.eq_trans q(congr_fun (congr_arg _ $pf) _)
     | .cons a s' h pf => do
-      let fa : Q($β) := Expr.app f a
+      let fa : Q($β) := Expr.betaRev f #[a]
       let res_fa ← derive fa
       let res_op_s' : Result q($op $s' $f) ← evalFinsetBigop op f res_empty @res_cons s'
       let res ← res_cons res_fa res_op_s'
@@ -352,9 +352,9 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.prod _ _ _ _ _]
 partial def evalFinsetProd : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const `Finset.prod [_, v]) β') α) _) s) f ←
+  let .app (.app (.app (.app (.app (.const ``Finset.prod [v, _]) α) β') _) s) f ←
     whnfR e | failure
-  guard <| ←withNewMCtxDepth <| isDefEq β β'
+  guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f
@@ -381,9 +381,9 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.sum _ _ _ _ _]
 partial def evalFinsetSum : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const `Finset.sum [_, v]) β') α) _) s) f ←
+  let .app (.app (.app (.app (.app (.const ``Finset.sum [v, _]) α) β') _) s) f ←
     whnfR e | failure
-  guard <| ←withNewMCtxDepth <| isDefEq β β'
+  guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f
@@ -400,3 +400,9 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)
     s
+
+end NormNum
+
+end Meta
+
+end Mathlib

@@ -1,6 +1,7 @@
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Util.WhatsNew
 
+set_option autoImplicit true
 /-- Add two natural numbers, but not during unification. -/
 irreducible_def frobnicate (a b : Nat) :=
   a + b

@@ -3,7 +3,8 @@ Copyright (c) 2022 Joshua Clune. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
-import Lean
+import Lean.Meta.Tactic.Clear
+import Lean.Elab.Tactic.Basic
 
 /-! # `clear_` tactic -/
 

@@ -16,6 +16,10 @@ import Mathlib.Data.Vector.Basic
   `snoc xs x` for its inductive case. Effectively doing induction from right-to-left
 -/
 
+set_option autoImplicit true
+
+namespace Mathlib
+
 namespace Vector
 
 /-- Append a single element to the end of a vector -/
@@ -26,7 +30,7 @@ def snoc : Vector α n → α → Vector α (n+1) :=
 ## Simplification lemmas
 -/
 section Simp
-  variable (xs : Vector α n)
+variable (xs : Vector α n)
 
 @[simp]
 theorem snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
@@ -47,20 +51,17 @@ theorem reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
   cases xs
   simp only [reverse, snoc, cons, toList_mk]
   congr
-  simp [toList, (·++·), Vector.append, Append.append]
-  rfl
+  simp [toList, Vector.append, Append.append]
 
 theorem replicate_succ_to_snoc (val : α) :
     replicate (n+1) val = (replicate n val).snoc val := by
   clear xs
-  induction n
-  case zero => rfl
-  case succ n ih =>
+  induction n with
+  | zero => rfl
+  | succ n ih =>
     rw [replicate_succ]
-    conv => {
-      rhs; rw [replicate_succ]
-    }
-    rw[snoc_cons, ih]
+    conv => rhs; rw [replicate_succ]
+    rw [snoc_cons, ih]
 
 end Simp
 
@@ -77,7 +78,7 @@ section Induction
 
     This can be used as `induction v using Vector.revInductionOn`. -/
 @[elab_as_elim]
-def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil)
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C xs → C (xs.snoc x)) :
     C v :=
@@ -90,7 +91,7 @@ def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Ve
 /-- Define `C v w` by *reverse* induction on a pair of vectors `v : Vector α n` and
     `w : Vector β n`. -/
 @[elab_as_elim]
-def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort _} {n : ℕ}
+def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort*} {n : ℕ}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil)
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (ys : Vector β n) (x : α) (y : β),
@@ -107,7 +108,7 @@ def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort _
 /-- Define `C v` by *reverse* case analysis, i.e. by handling the cases `nil` and `xs.snoc x`
     separately -/
 @[elab_as_elim]
-def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil)
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x)) :
     C v :=
@@ -125,7 +126,7 @@ variable (xs : Vector α n)
 
 @[simp]
 theorem map_snoc : map f (xs.snoc x) = (map f xs).snoc (f x) := by
-  induction xs using Vector.inductionOn <;> simp_all
+  induction xs <;> simp_all
 
 @[simp]
 theorem mapAccumr_nil : mapAccumr f Vector.nil s = (s, Vector.nil) :=
@@ -137,9 +138,9 @@ theorem mapAccumr_snoc :
     = let q := f x s
       let r := mapAccumr f xs q.1
       (r.1, r.2.snoc q.2) := by
-  induction xs using Vector.inductionOn
+  induction xs
   · rfl
-  · simp[*]
+  · simp [*]
 
 variable (ys : Vector β n)
 
@@ -161,3 +162,5 @@ theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) 
 
 end Simp
 end Vector
+
+end Mathlib

@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel, David Renshaw, Matthew Robert Ballard
 
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
-import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Util.DischargerAsTactic
 import Qq
 
 /-!
@@ -25,62 +26,83 @@ open Qq
 initialize registerTraceClass `Tactic.field_simp
 
 /-- Constructs a trace message for the `discharge` function. -/
-private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → SimpM MessageData
+private def dischargerTraceMessage {ε : Type*} (prop: Expr) :
+    Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
 
-/-- Discharge strategy for the field_simp tactic. -/
-partial def discharge (prop : Expr) : SimpM (Option Expr) := do
-  /- Try to cast all hypotheses (that are proofs) and `prop` into normal form before checking -/
-  let r'' ← Tactic.NormCast.derive prop
-  let hyps ← (← getLocalHyps).filterM fun hyp => isProof hyp
-  for hyp in hyps do
-  /- If can be discharged quickly using an assumption do it -/
-    if (← isDefEq (← inferType hyp) prop) then
-      return some hyp
-    /- Otherwise use normCast to normalize and then check -/
-    let ty ← inferType hyp
-    let r' ← Tactic.NormCast.derive ty
-    if (← isDefEq r''.expr r'.expr) then
-      let m ← mkFreshMVarId
-      let r ← applySimpResultToProp m hyp ty r'
-      if let some p := r then
-        let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
-        return some (← Lean.Meta.Simp.mkCast rsymm p.1)
+open private Simp.dischargeUsingAssumption? from Lean.Meta.Tactic.Simp.Rewrite
 
-  /- Next try to use normNum to discharge goals of the for `a ≠ 0` for `a` a "number", eg `2` -/
-  let prop : Q(Prop) ← (do pure prop)
-  let pf? ← match prop with
-  | ~q(($e : $α) ≠ $b) =>
+/-- Discharge strategy for the `field_simp` tactic. -/
+partial def discharge (prop : Expr) : SimpM (Option Expr) :=
+  withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
+    -- Discharge strategy 1: Use assumptions
+    if let some r ← Simp.dischargeUsingAssumption? prop then
+      return some r
+
+    -- Discharge strategy 2: use normCast
+    -- TODO: please check this was merged correctly!!
+    /- Try to cast all hypotheses (that are proofs) and `prop` into normal form before checking -/
+    let r'' ← Tactic.NormCast.derive prop
+    let hyps ← (← getLocalHyps).filterM fun hyp => isProof hyp
+    for hyp in hyps do
+      -- If can be discharged quickly using an assumption, do so
+      if (← isDefEq (← inferType hyp) prop) then
+        return some hyp
+      -- Otherwise, use normCast to normalize and then check
+      let ty ← inferType hyp
+      let r' ← Tactic.NormCast.derive ty
+      if (← isDefEq r''.expr r'.expr) then
+        let m ← mkFreshMVarId
+        let r ← applySimpResultToProp m hyp ty r'
+        if let some p := r then
+          let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
+          return some (← Lean.Meta.Simp.mkCast rsymm p.1)
+
+    -- Discharge strategy 2: Normalize inequalities using NormNum
+    let prop : Q(Prop) ← (do pure prop)
+    let pf? ← match prop with
+    | ~q(($e : $α) ≠ $b) =>
+        try
+          let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
+          match res with
+          | .isTrue pf => pure (some pf)
+          | _ => pure none
+        catch _ =>
+          pure none
+    | _ => pure none
+    if let some pf := pf? then return some pf
+
+    -- Discharge strategy 3: Use positivity
+    let pf? ←
+      try some <$> Mathlib.Meta.Positivity.solve prop
+      catch _ => pure none
+    if let some pf := pf? then return some pf
+
+    -- Discharge strategy 4: Use the simplifier
+    let ctx ← readThe Simp.Context
+    let stats : Simp.Stats := { (← get) with }
+
+    -- Porting note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
+    -- does not explicitly call `simp` recursively like this. It's unclear to me
+    -- whether this is because
+    --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
+    --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
+    --   3) some other reason?
+    let ⟨simpResult, stats'⟩ ←
+      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1 } #[(← Simp.getSimprocs)]
+        discharge stats
+    set { (← get) with usedTheorems := stats'.usedTheorems, diag := stats'.diag }
+    if simpResult.expr.isConstOf ``True then
       try
-        let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
-        match res with
-        | .isTrue pf => pure (some pf)
-        | _ => pure none
+        return some (← mkOfEqTrue (← simpResult.getProof))
       catch _ =>
-        pure none
-  | _ => pure none
-  if let some pf := pf? then return some pf
-
-  let ctx ← read
-  let usedTheorems := (← get).usedTheorems
-
-  -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
-  -- does not explicitly call `simp` recursively like this. It's unclear to me
-  -- whether this is because
-  --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
-  --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
-  --   3) some other reason?
-  let ⟨simpResult, usedTheorems'⟩ ←
-    simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
-  set {(← get) with usedTheorems := usedTheorems'}
-  if simpResult.expr.isConstOf ``True then
-    try
-      return some (← mkOfEqTrue (← simpResult.getProof))
-    catch _ =>
+        return none
+    else
       return none
-  else
-    return none
+
+@[inherit_doc discharge]
+elab "field_simp_discharge" : tactic => wrapSimpDischarger Mathlib.Tactic.FieldSimp.discharge
 
 /--
 The goal of `field_simp` is to reduce an expression in a field to an expression of the form `n / d`
@@ -95,16 +117,10 @@ iterating the following steps:
 - reduce a sum to a common denominator
 
 If the goal is an equality, this simpset will also clear the denominators, so that the proof
-can normally be concluded by an application of `ring` or `ring_exp`.
+can normally be concluded by an application of `ring`.
 
 `field_simp [hx, hy]` is a short form for
-`simp (discharger := Tactic.FieldSimp.discharge) [-one_div, -mul_eq_zero, hx, hy, field_simps]`
-
-If the goal is an equality, this simpset will also clear the denominators, so that the proof
-can normally be concluded by an application of `ring` or `ring_exp`.
-
-`field_simp [hx, hy]` is a short form for
-`simp (discharger := Tactic.FieldSimp.discharge) [-one_div, -mul_eq_zero, hx, hy, field_simps]`
+`simp (disch := field_simp_discharge) [-one_div, -one_divp, -mul_eq_zero, hx, hy, field_simps]`
 
 Note that this naive algorithm will not try to detect common factors in denominators to reduce the
 complexity of the resulting expression. Instead, it relies on the ability of `ring` to handle
@@ -140,7 +156,7 @@ a general (commutative) monoid/ring and partial division `/ₚ`, see `Algebra.Gr
 for the definition. Analogue to the case above, the lemma `one_divp` is removed from the simpset
 as this works against the algorithm. If you have objects with an `IsUnit x` instance like
 `(x : R) (hx : IsUnit x)`, you should lift them with
-`lift x to Rˣ using id hx, rw [IsUnit.unit_of_val_units] clear hx`
+`lift x to Rˣ using id hx; rw [IsUnit.unit_of_val_units] clear hx`
 before using `field_simp`.
 
 See also the `cancel_denoms` tactic, which tries to do a similar simplification for expressions
@@ -152,16 +168,20 @@ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
   (simpArgs)? (location)? : tactic
 
 elab_rules : tactic
-| `(tactic| field_simp $[$cfg:config]? $[$dis:discharger]? $[only%$only?]?
-    $[$sa:simpArgs]? $[$loc:location]?) => do
-  let cfg ← elabSimpConfig (cfg.getD ⟨.missing⟩) .simp
+| `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
+    $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
+  let cfg ← elabSimpConfig (mkOptionalNode cfg) .simp
+  -- The `field_simp` discharger relies on recursively calling the discharger.
+  -- Prior to https://github.com/leanprover/lean4/pull/3523,
+  -- the maxDischargeDepth wasn't actually being checked: now we have to set it higher.
+  let cfg := { cfg with maxDischargeDepth := max cfg.maxDischargeDepth 7 }
   let loc := expandOptLocation (mkOptionalNode loc)
 
   let dis ← match dis with
   | none => pure discharge
   | some d => do
-     let ⟨_,d⟩ ← tacticToDischarge d
-     pure d
+    let ⟨_, d⟩ ← tacticToDischarge d
+    pure d
 
   let thms0 ← if only?.isSome then
     simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)
@@ -176,10 +196,25 @@ elab_rules : tactic
 
   let ctx : Simp.Context := {
      simpTheorems := #[thms, thms0]
-     congrTheorems := (← getSimpCongrTheorems)
+     congrTheorems := ← getSimpCongrTheorems
      config := cfg
   }
-  let r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (eraseLocal := false) .simp
+  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp
+  if r.starArg then
+    r ← do
+      let ctx := r.ctx
+      let mut simpTheorems := ctx.simpTheorems
+      let hs ← getPropHyps
+      for h in hs do
+        unless simpTheorems.isErased (.fvar h) do
+          simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
+      let ctx := { ctx with simpTheorems }
+      pure { ctx, simprocs := {} }
 
-  _ ← simpLocation r.ctx dis loc
+  _ ← simpLocation r.ctx {} dis loc
 
+end FieldSimp
+
+end Tactic
+
+end Mathlib

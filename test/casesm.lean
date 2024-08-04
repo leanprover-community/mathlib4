@@ -1,5 +1,6 @@
 import Mathlib.Tactic.CasesM
-import Std.Tactic.GuardExpr
+
+set_option autoImplicit true
 
 example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
   casesm* _∨_, _∧_

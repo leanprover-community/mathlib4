@@ -3,15 +3,15 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Data.HashMap
-import Mathlib.Lean.SMap
-import Mathlib.Lean.Expr.Basic
+import Batteries.Data.HashMap.Basic
+import Batteries.Lean.SMap
+import Lean.Meta.Match.MatcherInfo
+import Lean.Meta.Tactic.Delta
 
 /-!
 # Additional functions on `Lean.Name`.
 
-We provide `Name.getModule : Name → CoreM (Option Name)`,
-and `allNames` and `allNamesByModule`.
+We provide `allNames` and `allNamesByModule`.
 -/
 
 open Lean Meta Elab
@@ -19,7 +19,7 @@ open Lean Meta Elab
 private def isBlackListed (declName : Name) : CoreM Bool := do
   if declName.toString.startsWith "Lean" then return true
   let env ← getEnv
-  pure $ declName.isInternal'
+  pure <| declName.isInternalDetail
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName
@@ -38,13 +38,27 @@ def allNames (p : Name → Bool) : CoreM (Array Name) := do
 Retrieve all names in the environment satisfying a predicate,
 gathered together into a `HashMap` according to the module they are defined in.
 -/
-def allNamesByModule (p : Name → Bool) : CoreM (Std.HashMap Name (Array Name)) := do
-  (← getEnv).constants.foldM (init := Std.HashMap.empty) fun names n _ => do
+def allNamesByModule (p : Name → Bool) : CoreM (Batteries.HashMap Name (Array Name)) := do
+  (← getEnv).constants.foldM (init := Batteries.HashMap.empty) fun names n _ => do
     if p n && !(← isBlackListed n) then
       let some m ← findModuleOf? n | return names
-      -- TODO use `Std.HashMap.modify` when we bump Std4 (or `alter` if that is written).
+      -- TODO use `Batteries.HashMap.modify` when we bump Batteries (or `alter` if that is written).
       match names.find? m with
       | some others => return names.insert m (others.push n)
       | none => return names.insert m #[n]
     else
       return names
+
+/-- Decapitalize the last component of a name. -/
+def Lean.Name.decapitalize (n : Name) : Name :=
+  n.modifyBase fun
+    | .str p s => .str p s.decapitalize
+    | n       => n
+
+/-- Whether the lemma has a name of the form produced by `Lean.Meta.mkAuxLemma`. -/
+def Lean.Name.isAuxLemma (n : Name) : Bool := n matches .num (.str _ "_auxLemma") _
+
+/-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`.
+The names of these lemmas end in `_auxLemma.nn` where `nn` is a number. -/
+def Lean.Meta.unfoldAuxLemmas (e : Expr) : MetaM Expr := do
+  deltaExpand e Lean.Name.isAuxLemma
