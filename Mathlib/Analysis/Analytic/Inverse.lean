@@ -399,8 +399,8 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
     _ = ∑ e ∈ compPartialSumSource 2 (n + 1) n, ∏ j : Fin e.1, r * (a ^ e.2 j * p (e.2 j)) := by
       symm
       apply compChangeOfVariables_sum
-      rintro ⟨k, blocks_fun⟩ H
-      have K : (compChangeOfVariables 2 (n + 1) n ⟨k, blocks_fun⟩ H).snd.length = k := by simp
+      rintro ⟨k, blocksFun⟩ H
+      have K : (compChangeOfVariables 2 (n + 1) n ⟨k, blocksFun⟩ H).snd.length = k := by simp
       congr 2 <;> try rw [K]
       rw [Fin.heq_fun_iff K.symm]
       intro j
