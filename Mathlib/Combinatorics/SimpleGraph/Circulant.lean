@@ -21,7 +21,7 @@ are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` 
 
 namespace SimpleGraph
 
-/- Circulant graph over additive group `G` with jumps `s` -/
+/-- Circulant graph over additive group `G` with jumps `s` -/
 @[simps!]
 def CirculantGraph {G : Type*} [AddGroup G] (s : Set G) : SimpleGraph G :=
   fromRel (· - · ∈ s)
@@ -55,7 +55,7 @@ instance [DecidableEq G] [DecidablePred (· ∈ s)] : DecidableRel (CirculantGra
 theorem circulantGraph_adj_translate {s : Set G} {x y d : G} :
     (CirculantGraph s).Adj (x + d) (y + d) ↔ (CirculantGraph s).Adj x y := by simp
 
-/- Cycle graph over `Fin n` -/
+/-- Cycle graph over `Fin n` -/
 def cycleGraph : (n : ℕ) → SimpleGraph (Fin n)
   | 0 => ⊥
   | _ + 1 => CirculantGraph {1}
