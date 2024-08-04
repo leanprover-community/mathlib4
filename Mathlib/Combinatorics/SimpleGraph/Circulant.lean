@@ -11,7 +11,7 @@ import Mathlib.Data.Set.Pointwise.Basic
 
 This file defines ans proves several fact about circulants graphs.
 A circulant graph over type `G` with jumps `s : Set G` is a graph in which two vertices `u` and `v`
-are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`.
+are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` are called jumps.
 
 ## Main declarations
 
@@ -21,6 +21,7 @@ are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`.
 
 namespace SimpleGraph
 
+/- Circulant graph over additive group `G` with jumps `s` -/
 @[simps!]
 def CirculantGraph {G : Type*} [AddGroup G] (s : Set G) : SimpleGraph G :=
   fromRel (· - · ∈ s)
@@ -54,6 +55,7 @@ instance [DecidableEq G] [DecidablePred (· ∈ s)] : DecidableRel (CirculantGra
 theorem circulantGraph_adj_translate {s : Set G} {x y d : G} :
     (CirculantGraph s).Adj (x + d) (y + d) ↔ (CirculantGraph s).Adj x y := by simp
 
+/- Cycle graph over `Fin n` -/
 def cycleGraph : (n : ℕ) → SimpleGraph (Fin n)
   | 0 => ⊥
   | _ + 1 => CirculantGraph {1}
