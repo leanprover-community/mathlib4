@@ -51,19 +51,26 @@ theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
   · rfl
   · exact if_neg h
 
+theorem nextOr_eq_getElem?_indexOf_succ :
+    ∀ (xs : List α) (x d : α), nextOr xs x d = xs[indexOf x xs + 1]?.getD d
+  | [], _, _ => rfl
+  | [y], x, d => by cases eq_or_ne x y <;> simp [*]
+  | y::z::l, x, d => by
+    if hxy : x = y then simp [hxy]
+    else simp [hxy, Ne.symm hxy, nextOr, indexOf_cons_ne, nextOr_eq_getElem?_indexOf_succ (z::l)]
+
+theorem nextOr_getLast {xs : List α} (h : xs ≠ []) (d : α) :
+    nextOr xs (xs.getLast h) d = xs.head h := by
+  simp_rw [nextOr_eq_getElem?_indexOf_succ, getLast_eq_get, get_eq_getElem, indexOf_getElem]
+
 /-- `nextOr` does not depend on the default value, if the next value appears. -/
 theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x ∈ xs)
     (x_ne : x ≠ xs.getLast (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' := by
-  induction' xs with y ys IH
-  · cases x_mem
-  cases' ys with z zs
-  · simp at x_mem x_ne
-    contradiction
-  by_cases h : x = y
-  · rw [h, nextOr_self_cons_cons, nextOr_self_cons_cons]
-  · rw [nextOr, nextOr, IH]
-    · simpa [h] using x_mem
-    · simpa using x_ne
+  simp only [nextOr_eq_getElem?_indexOf_succ]
+  have : indexOf x xs + 1 < xs.length := by
+    refine lt_of_le_of_ne (indexOf_lt_length.2 x_mem) fun h ↦ ?_
+    simp [getLast_eq_get, ← h] at x_ne
+  simp [this]
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
   induction' xs with y ys IH
