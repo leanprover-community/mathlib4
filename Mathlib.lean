@@ -2432,10 +2432,10 @@ import Mathlib.Data.Real.StarOrdered
 import Mathlib.Data.Rel
 import Mathlib.Data.SProd
 import Mathlib.Data.Semiquot
-import Mathlib.Data.Seq.Computation
-import Mathlib.Data.Seq.Parallel
-import Mathlib.Data.Seq.Seq
-import Mathlib.Data.Seq.WSeq
+import Mathlib.Data.Sequence.Computation
+import Mathlib.Data.Sequence.Parallel
+import Mathlib.Data.Sequence.Sequence
+import Mathlib.Data.Sequence.WSequence
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator

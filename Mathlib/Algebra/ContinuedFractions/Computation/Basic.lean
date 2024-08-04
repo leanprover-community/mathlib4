@@ -35,7 +35,7 @@ For an example, refer to `IntFractPair.stream`.
 
 ## Implementation Notes
 
-There is an intermediate definition `GenContFract.IntFractPair.seq1` between
+There is an intermediate definition `GenContFract.IntFractPair.sequence1` between
 `GenContFract.IntFractPair.stream` and `GenContFract.of` to wire up things. Users should not
 (need to) directly interact with it.
 
@@ -45,8 +45,8 @@ captured by a recursive computation of a stream of option pairs. This is done in
 `some` value, as expected by a continued fraction.
 
 To separate concerns, we first compute a single head term that always exists in
-`GenContFract.IntFractPair.seq1` followed by the remaining stream of option pairs. This sequence
-with a head term (`seq1`) is then transformed to a generalized continued fraction in
+`GenContFract.IntFractPair.sequence1` followed by the remaining stream of option pairs. This
+sequence with a head term (`sequence1`) is then transformed to a generalized continued fraction in
 `GenContFract.of` by extracting the wanted integer parts of the head term and the stream.
 
 ## References
@@ -145,26 +145,26 @@ protected def stream (v : K) : Stream' <| Option (IntFractPair K)
 /-- Shows that `IntFractPair.stream` has the sequence property, that is once we return `none` at
 position `n`, we also return `none` at `n + 1`.
 -/
-theorem stream_isSeq (v : K) : (IntFractPair.stream v).IsSeq := by
+theorem stream_isSequence (v : K) : (IntFractPair.stream v).IsSequence := by
   intro _ hyp
   simp [IntFractPair.stream, hyp]
 
 /--
-Uses `IntFractPair.stream` to create a sequence with head (i.e. `seq1`) of integer and fractional
-parts of a value `v`. The first value of `IntFractPair.stream` is never `none`, so we can safely
-extract it and put the tail of the stream in the sequence part.
+Uses `IntFractPair.stream` to create a sequence with head (i.e. `sequence1`) of integer and
+fractional parts of a value `v`. The first value of `IntFractPair.stream` is never `none`, so we
+can safely extract it and put the tail of the stream in the sequence part.
 
 This is just an intermediate representation and users should not (need to) directly interact with
 it. The setup of rewriting/simplification lemmas that make the definitions easy to use is done in
 `Algebra.ContinuedFractions.Computation.Translations`.
 -/
-protected def seq1 (v : K) : Seq1 <| IntFractPair K :=
+protected def sequence1 (v : K) : Sequence1 <| IntFractPair K :=
   ⟨IntFractPair.of v, -- the head
     -- take the tail of `IntFractPair.stream` since the first element is already in the head
-    Seq'.tail
+    Sequence.tail
       -- create a sequence from `IntFractPair.stream`
       ⟨IntFractPair.stream v, -- the underlying stream
-        @stream_isSeq _ _ _ v⟩⟩ -- the proof that the stream is a sequence
+        @stream_isSequence _ _ _ v⟩⟩ -- the proof that the stream is a sequence
 
 end IntFractPair
 
@@ -180,7 +180,7 @@ The implementation uses `IntFractPair.stream` to obtain the partial denominators
 fraction. Refer to said function for more details about the computation process.
 -/
 protected def of [LinearOrderedField K] [FloorRing K] (v : K) : GenContFract K :=
-  let ⟨h, s⟩ := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
+  let ⟨h, s⟩ := IntFractPair.sequence1 v -- get the sequence of integer and fractional parts.
   ⟨h.b, -- the head is just the first integer part
     s.map fun p => ⟨1, p.b⟩⟩ -- the sequence consists of the remaining integer parts as the partial
                             -- denominators; all partial numerators are simply 1

@@ -3,7 +3,7 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Data.Seq.Seq
+import Mathlib.Data.Sequence.Sequence
 import Mathlib.Algebra.Field.Defs
 
 /-!
@@ -26,7 +26,7 @@ convergents. We follow the naming conventions from Wikipedia and [wall2018analyt
 
 1. The most commonly used kind of continued fractions in the literature are regular continued
 fractions. We hence just call them `ContFract` in the library.
-2. We use sequences from `Data.Seq` to encode potentially infinite sequences.
+2. We use sequences from `Data.Sequence` to encode potentially infinite sequences.
 
 ## References
 
@@ -108,7 +108,7 @@ structure GenContFract where
   /-- Head term -/
   h : α
   /-- Sequence of partial numerator and denominator pairs. -/
-  s : Seq' <| Pair α
+  s : Sequence <| Pair α
 
 variable {α}
 
@@ -116,17 +116,17 @@ namespace GenContFract
 
 /-- Constructs a generalized continued fraction without fractional part. -/
 def ofInteger (a : α) : GenContFract α :=
-  ⟨a, Seq'.nil⟩
+  ⟨a, Sequence.nil⟩
 
 instance [Inhabited α] : Inhabited (GenContFract α) :=
   ⟨ofInteger default⟩
 
 /-- Returns the sequence of partial numerators `aᵢ` of `g`. -/
-def partNums (g : GenContFract α) : Seq' α :=
+def partNums (g : GenContFract α) : Sequence α :=
   g.s.map Pair.a
 
 /-- Returns the sequence of partial denominators `bᵢ` of `g`. -/
-def partDens (g : GenContFract α) : Seq' α :=
+def partDens (g : GenContFract α) : Sequence α :=
   g.s.map Pair.b
 
 /-- A gcf terminated at position `n` if its sequence terminates at position `n`. -/
@@ -155,7 +155,7 @@ variable {β : Type*} [Coe α β]
 and all numerator-denominator pairs componentwise. -/
 @[coe]
 def coeFn : GenContFract α → GenContFract β :=
-  fun g ↦ ⟨(g.h : β), (g.s.map (↑) : Seq' <| Pair β)⟩
+  fun g ↦ ⟨(g.h : β), (g.s.map (↑) : Sequence <| Pair β)⟩
 
 /-- Coerce a gcf by elementwise coercion. -/
 instance : Coe (GenContFract α) (GenContFract β) :=
@@ -164,7 +164,7 @@ instance : Coe (GenContFract α) (GenContFract β) :=
 @[simp, norm_cast]
 theorem coe_toGenContFract {g : GenContFract α} :
     (g : GenContFract β) =
-      ⟨(g.h : β), (g.s.map (↑) : Seq' <| Pair β)⟩ := rfl
+      ⟨(g.h : β), (g.s.map (↑) : Sequence <| Pair β)⟩ := rfl
 
 end coe
 
@@ -350,7 +350,7 @@ Returns the approximation of the fraction described by the given sequence up to 
 For example, `convs'Aux [(1, 2), (3, 4), (5, 6)] 2 = 1 / (2 + 3 / 4)` and
 `convs'Aux [(1, 2), (3, 4), (5, 6)] 0 = 0`.
 -/
-def convs'Aux : Seq' (Pair K) → ℕ → K
+def convs'Aux : Sequence (Pair K) → ℕ → K
   | _, 0 => 0
   | s, n + 1 =>
     match s.head with
