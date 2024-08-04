@@ -66,4 +66,14 @@ theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : opposite H) :
 #align subgroup.smul_opposite_mul Subgroup.smul_opposite_mul
 #align add_subgroup.vadd_opposite_add AddSubgroup.vadd_opposite_add
 
+@[to_additive]
+theorem Normal.opposite {H : Subgroup G} (h : H.Normal) : (opposite H).Normal where
+  conj_mem := fun x hx y => by
+    simpa only [mem_opposite, inv_inv, MulOpposite.unop_mul, mul_assoc]
+      using h.conj_mem x.unop hx y.unop⁻¹
+
+@[to_additive]
+instance normal_opposite {H : Subgroup G} [H.Normal] : (opposite H).Normal :=
+  Normal.opposite ‹_›
+
 end Subgroup
