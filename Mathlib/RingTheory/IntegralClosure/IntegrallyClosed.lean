@@ -287,7 +287,7 @@ lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (
   intro hx
   obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
   obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp ‹_› hy
-  refine' ⟨IsLocalization.mk' S z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr _⟩
+  refine ⟨IsLocalization.mk' S z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr ?_⟩
   rw [RingHom.comp_id, hz, ← Algebra.smul_def]
   rfl
 
