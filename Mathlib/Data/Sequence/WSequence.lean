@@ -455,6 +455,7 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSequence α} {t : WS
       apply Or.inl⟩⟩
 
 -- Porting note: To avoid ambiguous notation, `~` became `~ʷ`.
+@[inherit_doc Equiv]
 infixl:50 " ~ʷ " => Equiv
 
 theorem destruct_congr {s t : WSequence α} :
