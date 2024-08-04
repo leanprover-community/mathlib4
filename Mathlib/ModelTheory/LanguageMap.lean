@@ -7,24 +7,27 @@ import Mathlib.ModelTheory.Basic
 
 /-!
 # Language Maps
+
 Maps between first-order languages in the style of the
 [Flypitch project](https://flypitch.github.io/), as well as several important maps between
 structures.
 
 ## Main Definitions
-* A `FirstOrder.Language.LHom`, denoted `L →ᴸ L'`, is a map between languages, sending the symbols
+
+- A `FirstOrder.Language.LHom`, denoted `L →ᴸ L'`, is a map between languages, sending the symbols
   of one to symbols of the same kind and arity in the other.
-* A `FirstOrder.Language.LEquiv`, denoted `L ≃ᴸ L'`, is an invertible language homomorphism.
-* `FirstOrder.Language.withConstants` is defined so that if `M` is an `L.Structure` and
+- A `FirstOrder.Language.LEquiv`, denoted `L ≃ᴸ L'`, is an invertible language homomorphism.
+- `FirstOrder.Language.withConstants` is defined so that if `M` is an `L.Structure` and
   `A : Set M`, `L.withConstants A`, denoted `L[[A]]`, is a language which adds constant symbols for
   elements of `A` to `L`.
 
 ## References
+
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
+  the continuum hypothesis*][flypitch_itp]
 
 -/
 

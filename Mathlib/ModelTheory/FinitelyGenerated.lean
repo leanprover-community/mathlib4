@@ -7,17 +7,20 @@ import Mathlib.ModelTheory.Substructures
 
 /-!
 # Finitely Generated First-Order Structures
+
 This file defines what it means for a first-order (sub)structure to be finitely or countably
 generated, similarly to other finitely-generated objects in the algebra library.
 
 ## Main Definitions
-* `FirstOrder.Language.Substructure.FG` indicates that a substructure is finitely generated.
-* `FirstOrder.Language.Structure.FG` indicates that a structure is finitely generated.
-* `FirstOrder.Language.Substructure.CG` indicates that a substructure is countably generated.
-* `FirstOrder.Language.Structure.CG` indicates that a structure is countably generated.
+
+- `FirstOrder.Language.Substructure.FG` indicates that a substructure is finitely generated.
+- `FirstOrder.Language.Structure.FG` indicates that a structure is finitely generated.
+- `FirstOrder.Language.Substructure.CG` indicates that a substructure is countably generated.
+- `FirstOrder.Language.Structure.CG` indicates that a structure is countably generated.
 
 
 ## TODO
+
 Develop a more unified definition of finite generation using the theory of closure operators, or use
 this definition of finite generation to define the others.
 

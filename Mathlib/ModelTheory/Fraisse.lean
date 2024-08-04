@@ -18,39 +18,44 @@ ultrahomogeneous structures. To each is associated a unique (up to nonunique iso
 Fraïssé limit - the countable ultrahomogeneous structure with that age.
 
 ## Main Definitions
-* `FirstOrder.Language.age` is the class of finitely-generated structures that embed into a
-particular structure.
-* A class `K` is `FirstOrder.Language.Hereditary` when all finitely-generated
-structures that embed into structures in `K` are also in `K`.
-* A class `K` has `FirstOrder.Language.JointEmbedding` when for every `M`, `N` in
-`K`, there is another structure in `K` into which both `M` and `N` embed.
-* A class `K` has `FirstOrder.Language.Amalgamation` when for any pair of embeddings
-of a structure `M` in `K` into other structures in `K`, those two structures can be embedded into a
-fourth structure in `K` such that the resulting square of embeddings commutes.
-* `FirstOrder.Language.IsFraisse` indicates that a class is nonempty, isomorphism-invariant,
-essentially countable, and satisfies the hereditary, joint embedding, and amalgamation properties.
-* `FirstOrder.Language.IsFraisseLimit` indicates that a structure is a Fraïssé limit for a given
-class.
+
+- `FirstOrder.Language.age` is the class of finitely-generated structures that embed into a
+  particular structure.
+- A class `K` is `FirstOrder.Language.Hereditary` when all finitely-generated
+  structures that embed into structures in `K` are also in `K`.
+- A class `K` has `FirstOrder.Language.JointEmbedding` when for every `M`, `N` in
+  `K`, there is another structure in `K` into which both `M` and `N` embed.
+- A class `K` has `FirstOrder.Language.Amalgamation` when for any pair of embeddings
+  of a structure `M` in `K` into other structures in `K`, those two structures can be embedded into
+  a fourth structure in `K` such that the resulting square of embeddings commutes.
+- `FirstOrder.Language.IsFraisse` indicates that a class is nonempty, isomorphism-invariant,
+  essentially countable, and satisfies the hereditary, joint embedding, and amalgamation properties.
+- `FirstOrder.Language.IsFraisseLimit` indicates that a structure is a Fraïssé limit for a given
+  class.
 
 ## Main Results
-* We show that the age of any structure is isomorphism-invariant and satisfies the hereditary and
-joint-embedding properties.
-* `FirstOrder.Language.age.countable_quotient` shows that the age of any countable structure is
-essentially countable.
-* `FirstOrder.Language.exists_countable_is_age_of_iff` gives necessary and sufficient conditions
-for a class to be the age of a countable structure in a language with countably many functions.
+
+- We show that the age of any structure is isomorphism-invariant and satisfies the hereditary and
+  joint-embedding properties.
+- `FirstOrder.Language.age.countable_quotient` shows that the age of any countable structure is
+  essentially countable.
+- `FirstOrder.Language.exists_countable_is_age_of_iff` gives necessary and sufficient conditions
+  for a class to be the age of a countable structure in a language with countably many functions.
 
 ## Implementation Notes
-* Classes of structures are formalized with `Set (Bundled L.Structure)`.
-* Some results pertain to countable limit structures, others to countably-generated limit
-structures. In the case of a language with countably many function symbols, these are equivalent.
+
+- Classes of structures are formalized with `Set (Bundled L.Structure)`.
+- Some results pertain to countable limit structures, others to countably-generated limit
+  structures. In the case of a language with countably many function symbols, these are equivalent.
 
 ## References
+
 - [W. Hodges, *A Shorter Model Theory*][Hodges97]
 - [K. Tent, M. Ziegler, *A Course in Model Theory*][Tent_Ziegler]
 
 ## TODO
-* Show existence and uniqueness of Fraïssé limits
+
+- Show existence and uniqueness of Fraïssé limits
 
 -/
 
