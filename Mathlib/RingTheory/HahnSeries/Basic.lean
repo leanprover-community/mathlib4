@@ -335,6 +335,7 @@ theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r 
   simp only [leadingCoeff, single_eq_zero_iff]
   by_cases h : r = 0 <;> simp [h]
 
+open Classical in
 /-- A leading term of a Hahn series is a Hahn series with subsingleton support at minimal-order. -/
 def leadingTerm (x : HahnSeries Γ R) : HahnSeries Γ R :=
   if h : x = 0 then 0
@@ -522,13 +523,9 @@ theorem le_orderTop_iff [LinearOrder Γ] [Zero R] {x : HahnSeries Γ R} {i : Wit
 
 section LocallyFiniteLinearOrder
 
-variable [Zero R]
+variable [Zero R] [LinearOrder Γ]
 
-theorem suppBddBelow_supp_PWO [LinearOrder Γ] [LocallyFiniteOrder Γ] (f : Γ → R)
-    (hf : BddBelow (Function.support f)) : (Function.support f).IsPWO :=
-  Set.isWF_iff_isPWO.mp hf.wellFoundedOn_lt
-
-theorem forallLTEqZero_supp_BddBelow [LinearOrder Γ] (f : Γ → R) (n : Γ)
+theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ)
     (hn : ∀(m : Γ), m < n → f m = 0) : BddBelow (Function.support f) := by
   simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
@@ -542,26 +539,22 @@ theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R))
 variable [LocallyFiniteOrder Γ]
 
 theorem suppBddBelow_supp_PWO (f : Γ → R)
-    (hf : BddBelow (Function.support f)) :
-    (Function.support f).IsPWO :=
+    (hf : BddBelow (Function.support f)) : (Function.support f).IsPWO :=
   Set.isWF_iff_isPWO.mp hf.wellFoundedOn_lt
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
-def ofSuppBddBelow [LinearOrder Γ] [LocallyFiniteOrder Γ] (f : Γ → R)
+def ofSuppBddBelow (f : Γ → R)
     (hf : BddBelow (Function.support f)) : HahnSeries Γ R where
   coeff := f
   isPWO_support' := suppBddBelow_supp_PWO f hf
 
-theorem BddBelow_zero [Preorder Γ] [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
-  simp only [support_zero', bddBelow_empty]
-
 @[simp]
-theorem zero_ofSuppBddBelow [LinearOrder Γ] [LocallyFiniteOrder Γ] [Nonempty Γ] :
+theorem zero_ofSuppBddBelow [Nonempty Γ] :
     ofSuppBddBelow 0 BddBelow_zero = (0 : HahnSeries Γ R) :=
   rfl
 
-theorem order_ofForallLtEqZero [LinearOrder Γ] [LocallyFiniteOrder Γ] [Zero Γ] (f : Γ → R)
+theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R)
     (hf : f ≠ 0) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
   dsimp only [order]
