@@ -300,9 +300,9 @@ theorem le_of_succ_get?_den {b : K}
 theorem of_den_mono : (of v).dens n ≤ (of v).dens (n + 1) := by
   let g := of v
   cases' Decidable.em <| g.partDens.TerminatedAt n with terminated not_terminated
-  · have : g.partDens.get? n = none := by rwa [Seq'.TerminatedAt] at terminated
+  · have : g.partDens.get? n = none := by rwa [Sequence.TerminatedAt] at terminated
     have : g.TerminatedAt n :=
-      terminatedAt_iff_partDen_none.2 (by rwa [Seq'.TerminatedAt] at terminated)
+      terminatedAt_iff_partDen_none.2 (by rwa [Sequence.TerminatedAt] at terminated)
     have : g.dens (n + 1) = g.dens n :=
       dens_stable_of_terminated n.le_succ this
     rw [this]

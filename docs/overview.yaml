@@ -456,8 +456,8 @@ Data structures:
     difference list: 'Batteries.DList'
     lazy list: 'LazyList'
     stream: 'Stream'''
-    sequence: 'Seq'''
-    weak sequence: 'WSeq'
+    sequence: 'Sequence'
+    weak sequence: 'WSequence'
 
   Sets:
     set: 'Set'

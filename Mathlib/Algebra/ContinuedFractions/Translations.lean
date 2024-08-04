@@ -54,12 +54,12 @@ theorem partDen_eq_s_b {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
 
 theorem exists_s_a_of_partNum {a : α} (nth_partNum_eq : g.partNums.get? n = some a) :
     ∃ gp, g.s.get? n = some gp ∧ gp.a = a := by
-  simpa [partNums, Seq'.map_get?] using nth_partNum_eq
+  simpa [partNums, Sequence.map_get?] using nth_partNum_eq
 
 theorem exists_s_b_of_partDen {b : α}
     (nth_partDen_eq : g.partDens.get? n = some b) :
     ∃ gp, g.s.get? n = some gp ∧ gp.b = b := by
-  simpa [partDens, Seq'.map_get?] using nth_partDen_eq
+  simpa [partDens, Sequence.map_get?] using nth_partDen_eq
 
 end General
 
@@ -138,17 +138,17 @@ theorem first_den_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.dens 1 = gp.b := by simp [den_eq_conts_b, first_cont_eq zeroth_s_eq]
 
 @[simp]
-theorem zeroth_conv'Aux_eq_zero {s : Seq' <| Pair K} :
+theorem zeroth_conv'Aux_eq_zero {s : Sequence <| Pair K} :
     convs'Aux s 0 = (0 : K) :=
   rfl
 
 @[simp]
 theorem zeroth_conv'_eq_h : g.convs' 0 = g.h := by simp [convs']
 
-theorem convs'Aux_succ_none {s : Seq' (Pair K)} (h : s.head = none) (n : ℕ) :
+theorem convs'Aux_succ_none {s : Sequence (Pair K)} (h : s.head = none) (n : ℕ) :
     convs'Aux s (n + 1) = 0 := by simp [convs'Aux, h]
 
-theorem convs'Aux_succ_some {s : Seq' (Pair K)} {p : Pair K} (h : s.head = some p)
+theorem convs'Aux_succ_some {s : Sequence (Pair K)} {p : Pair K} (h : s.head = some p)
     (n : ℕ) : convs'Aux s (n + 1) = p.a / (p.b + convs'Aux s.tail n) := by
   simp [convs'Aux, h]
 
