@@ -367,6 +367,8 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
 
 theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 
+-- simp followed by rw; covered by porting notes
+set_option linter.flexible false in
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨Finsupp.single n t⟩
@@ -406,6 +408,8 @@ theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (
   · simp [pow_zero, monomial_zero_one]
   · simp [pow_succ, ih, monomial_mul_monomial, mul_add, add_comm]
 
+-- Needs thought: simp followed by rw
+set_option linter.flexible false in
 theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
     a • monomial n b = monomial n (a • b) :=
   toFinsupp_injective <| by simp; rw [smul_single]

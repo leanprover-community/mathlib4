@@ -641,6 +641,8 @@ theorem rightUnitor_monoidal (X₁ X₂ : C) :
   dsimp only [tensor_obj, prodMonoidal_tensorObj]
   coherence
 
+-- Needs thought: simp followed by coherence
+set_option linter.flexible false in
 theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
     tensor_μ C (X₁ ⊗ X₂, X₃) (Y₁ ⊗ Y₂, Y₃) ≫
         (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =

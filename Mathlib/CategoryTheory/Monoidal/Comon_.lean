@@ -156,6 +156,8 @@ def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.
         slice_rhs 1 2 => rw [f_comul]
         simp }
 
+-- Needs thought: simp followed by rw and erw
+set_option linter.flexible false in
 instance uniqueHomToTrivial (A : Comon_ C) : Unique (A ⟶ trivial C) where
   default :=
     { hom := A.counit

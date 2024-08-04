@@ -1080,6 +1080,8 @@ theorem ContinuousOn.piecewise {s t : Set α} {f g : α → β} [∀ a, Decidabl
     (hg : ContinuousOn g <| s ∩ closure tᶜ) : ContinuousOn (piecewise t f g) s :=
   hf.if ht hg
 
+-- simp acts on multiple goals; only two need `assumption`
+set_option linter.flexible false in
 theorem continuous_if' {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]
     (hpf : ∀ a ∈ frontier { x | p x }, Tendsto f (𝓝[{ x | p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))

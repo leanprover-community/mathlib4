@@ -30,6 +30,8 @@ open scoped Real
 namespace Complex
 variable {a x y : ℂ}
 
+-- Needs thought: simp followed by field_simp
+set_option linter.flexible false in
 /-- The angle between two non-zero complex numbers is the absolute value of the argument of their
 quotient.
 

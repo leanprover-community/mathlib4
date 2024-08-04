@@ -1118,6 +1118,8 @@ def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
   refine { @asIso _ _ _ _ _ (?_) with hom := prodComparisonNatTrans F A }
   apply NatIso.isIso_of_isIso_app
 
+-- Needs thought: simp acts on multiple goals, with medium long simp sets
+set_option linter.flexible false in
 theorem prodComparison_comp :
     prodComparison (F ⋙ G) A B =
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by

@@ -377,6 +377,8 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
     · apply Nat.div_lt_self <;> omega
     · assumption
 
+-- Needs thought: simp_all acts on multiple goals, with different simp sets
+set_option linter.flexible false in
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
 theorem digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < b := by
   rcases b with (_ | _ | b) <;> try simp_all
@@ -394,6 +396,8 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
     suffices ↑hd < b + 2 by linarith
     exact hl hd (List.mem_cons_self _ _)
 
+-- Needs thought: simp_all acts on multiple goals, with different simp sets
+set_option linter.flexible false in
 /-- an n-digit number in base b is less than b^n if b > 1 -/
 theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
     ofDigits b l < b ^ l.length := by
@@ -405,6 +409,8 @@ theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m
   convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
   rw [ofDigits_digits (b + 2) m]
 
+-- Needs thought: simp_all acts on multiple goals, with different simp sets
+set_option linter.flexible false in
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/
 theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m).length := by
   rcases b with (_ | _ | b) <;> try simp_all
@@ -478,6 +484,8 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
+-- Needs thought: simp_all acts on multiple goals, with different simp sets
+set_option linter.flexible false in
 /-- Any non-zero natural number `m` is greater than
 b^((number of digits in the base b representation of m) - 1)
 -/

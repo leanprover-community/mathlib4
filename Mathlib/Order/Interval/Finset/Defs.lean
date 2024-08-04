@@ -796,6 +796,8 @@ private lemma aux (x : α) (p : α → Prop) :
 
 variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 
+-- Needs thought: all four warnings are because of erw following simp, caused by lean4/#2644
+set_option linter.flexible false in
 instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finsetIcc a b :=
     match a, b with

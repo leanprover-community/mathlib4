@@ -560,6 +560,8 @@ def rightAdjointSquareConjugate.vcomp :
     (R₁ ⋙ G ⟶ H ⋙ R₂) → (R₂ ⟶ R₃) → (R₁ ⋙ G ⟶ H ⋙ R₃) :=
   fun α β ↦ α ≫ (whiskerLeft H β)
 
+-- Needs thought: large simp set
+set_option linter.flexible false in
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
 theorem mateEquiv_conjugateEquiv_vcomp
     (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (β : L₃ ⟶ L₂) :
@@ -599,6 +601,8 @@ def rightAdjointConjugateSquare.vcomp :
     (R₁ ⟶ R₂) → (R₂ ⋙ G ⟶ H ⋙ R₃) → (R₁ ⋙ G ⟶ H ⋙ R₃) :=
   fun α β ↦ (whiskerRight α G) ≫ β
 
+-- Needs thought: large simp set
+set_option linter.flexible false in
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
 theorem conjugateEquiv_mateEquiv_vcomp
     (α : L₂ ⟶ L₁) (β : G ⋙ L₃ ⟶ L₂ ⋙ H) :

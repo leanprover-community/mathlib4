@@ -802,6 +802,8 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
   right_inv := fun ⟨⟩ => rfl
 
+-- Needs thought: simp acts on multiple goals, with different medium large simp sets
+set_option linter.flexible false in
 /-- The bijection between the free group on a singleton, and the integers. -/
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by

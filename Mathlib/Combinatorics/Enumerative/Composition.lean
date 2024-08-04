@@ -285,6 +285,8 @@ def index (j : Fin n) : Fin c.length :=
 theorem lt_sizeUpTo_index_succ (j : Fin n) : (j : ℕ) < c.sizeUpTo (c.index j).succ :=
   (Nat.find_spec (c.index_exists j.2)).1
 
+-- Needs thought: simp and exact cannot be combined, as this needs to be modified
+set_option linter.flexible false in
 theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   by_contra H
   set i := c.index j
@@ -590,7 +592,8 @@ theorem length_splitWrtComposition (l : List α) (c : Composition n) :
     length (l.splitWrtComposition c) = c.length :=
   length_splitWrtCompositionAux _ _
 
-
+-- Needs thought: simp acts on multiple goals, with different simp sets
+set_option linter.flexible false in
 theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
   induction' ns with n ns IH <;> intro l h <;> simp at h
@@ -668,6 +671,8 @@ theorem get_splitWrtComposition (l : List α) (c : Composition n)
     get (l.splitWrtComposition c) i = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) := by
   simp [getElem_splitWrtComposition]
 
+-- Needs thought: simp acts on multiple goals, with different simp sets
+set_option linter.flexible false in
 theorem join_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).join = l := by
   induction' ns with n ns IH <;> intro l h <;> simp at h
