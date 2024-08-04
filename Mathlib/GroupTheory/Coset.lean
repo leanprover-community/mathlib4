@@ -408,13 +408,13 @@ variable (s)
   stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out'`. -/
 @[to_additive QuotientAddGroup.mk_out'_eq_mul]
 theorem mk_out'_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out' = g * h :=
-  ⟨⟨g⁻¹ * (mk g).out', eq'.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
+  ⟨⟨g⁻¹ * (mk g).out', QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
 
 variable {s} {a b : α}
 
 @[to_additive (attr := simp)]
 theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a := by
-  rwa [eq', mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
+  rwa [QuotientGroup.eq, mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
 
 @[to_additive]
 theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
