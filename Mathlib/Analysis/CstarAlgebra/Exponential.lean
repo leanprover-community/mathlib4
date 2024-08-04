@@ -6,8 +6,8 @@ Authors: Jireh Loreaux
 import Mathlib.Analysis.Normed.Algebra.Exponential
 
 /-! # The exponential map from selfadjoint to unitary
-In this file, we establish various properties related to the map `fun a ↦ exp ℂ A (I • a)`
-between the subtypes `selfAdjoint A` and `unitary A`.
+In this file, we establish various properties related to the map
+`fun a ↦ NormedSpace.exp ℂ A (I • a)` between the subtypes `selfAdjoint A` and `unitary A`.
 
 ## TODO
 

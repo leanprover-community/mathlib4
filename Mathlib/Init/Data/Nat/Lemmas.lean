@@ -59,7 +59,7 @@ theorem one_eq_succ_zero : 1 = succ 0 :=
 
 /-! subtraction
 
-Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
+Many lemmas are proven more generally in mathlib `Algebra/Order/Sub` -/
 
 /-! min -/
 

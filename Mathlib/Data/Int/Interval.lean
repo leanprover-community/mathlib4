@@ -114,7 +114,7 @@ theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans <| c
 theorem card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
   (card_map _).trans <|
     Int.ofNat.inj <| by
-      -- Porting note (#11215): TODO: Restore `int.coe_nat_inj` and remove the `change`
+      -- Porting note (#11215): TODO: Restore `Int.ofNat.inj` and remove the `change`
       change ((↑) : ℕ → ℤ) _ = ((↑) : ℕ → ℤ) _
       rw [card_range, sup_eq_max, inf_eq_min,
         Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.ofNat_add,

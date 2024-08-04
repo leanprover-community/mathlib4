@@ -14,7 +14,7 @@ This file proves lemmas about the action of multilinear maps on basis vectors.
 ## TODO
 
  * Refactor the proofs in terms of bases of tensor products, once there is an equivalent of
-   `Basis.tensorProduct` for `pi_tensor_product`.
+   `Basis.tensorProduct` for `PiTensorProduct`.
 
 -/
 

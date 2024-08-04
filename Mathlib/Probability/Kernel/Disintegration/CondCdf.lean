@@ -14,7 +14,7 @@ Given `ρ : Measure (α × ℝ)`, we define the conditional cumulative distribut
 measure, then for all `a : α` `condCDF ρ a` is monotone and right-continuous with limit 0 at -∞
 and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is measurable. For all
 `x : ℝ` and measurable set `s`, that function satisfies
-`∫⁻ a in s, ennreal.of_real (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
+`∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
 `condCDF` is build from the more general tools about kernel CDFs developed in the file
 `Probability.Kernel.Disintegration.CdfToKernel`. In that file, we build a function

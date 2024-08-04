@@ -300,7 +300,7 @@ open ProdAdicCompletions.IsFiniteAdele
 /-- The finite adèle ring of `R` is the restricted product over all maximal ideals `v` of `R`
 of `adicCompletion`, with respect to `adicCompletionIntegers`.
 
-Note that we make this a `Type` rather than a `Subtype` (e.g., a `subalgebra`) since we wish
+Note that we make this a `Type` rather than a `Subtype` (e.g., a `Subalgebra`) since we wish
 to endow it with a finer topology than that of the subspace topology. -/
 def FiniteAdeleRing : Type _ := {x : K_hat R K // x.IsFiniteAdele}
 

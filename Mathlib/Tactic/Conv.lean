@@ -72,7 +72,7 @@ open Elab Tactic
 /--
 The command `#conv tac => e` will run a conv tactic `tac` on `e`, and display the resulting
 expression (discarding the proof).
-For example, `#conv rw [true_and] => True ∧ False` displays `False`.
+For example, `#conv rw [true_and_iff] => True ∧ False` displays `False`.
 There are also shorthand commands for several common conv tactics:
 
 * `#whnf e` is short for `#conv whnf => e`

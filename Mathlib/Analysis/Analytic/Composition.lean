@@ -25,10 +25,10 @@ To formalize this, we use compositions of an integer `N`, i.e., its decompositio
 a sum `i₁ + ... + iₙ` of positive integers. Given such a composition `c` and two formal
 multilinear series `q` and `p`, let `q.comp_along_composition p c` be the above multilinear
 function. Then the `N`-th coefficient in the power series expansion of `g ∘ f` is the sum of these
-terms over all `c : composition N`.
+terms over all `c : Composition N`.
 
 To complete the proof, we need to show that this power series has a positive radius of convergence.
-This follows from the fact that `composition N` has cardinality `2^(N-1)` and estimates on
+This follows from the fact that `Composition N` has cardinality `2^(N-1)` and estimates on
 the norm of `qₙ` and `pₖ`, which give summability. We also need to show that it indeed converges to
 `g ∘ f`. For this, we note that the composition of partial sums converges to `g ∘ f`, and that it
 corresponds to a part of the whole sum, on a subset that increases to the whole space. By
@@ -49,7 +49,7 @@ The main technical difficulty is to write down things. In particular, we need to
 `q.comp_along_composition p c` and to show that it is indeed a continuous multilinear
 function. This requires a whole interface built on the class `Composition`. Once this is set,
 the main difficulty is to reorder the sums, writing the composition of the partial sums as a sum
-over some subset of `Σ n, composition n`. We need to check that the reordering is a bijection,
+over some subset of `Σ n, Composition n`. We need to check that the reordering is a bijection,
 running over difficulties due to the dependent nature of the types under consideration, that are
 controlled thanks to the interface for `Composition`.
 
@@ -58,8 +58,8 @@ follow from the associativity of composition of analytic functions, as there is 
 the formal multilinear series representing a function (and also, it holds even when the radius of
 convergence of the series is `0`). Instead, we give a direct proof, which amounts to reordering
 double sums in a careful way. The change of variables is a canonical (combinatorial) bijection
-`Composition.sigmaEquivSigmaPi` between `(Σ (a : composition n), composition a.length)` and
-`(Σ (c : composition n), Π (i : fin c.length), composition (c.blocks_fun i))`, and is described
+`Composition.sigmaEquivSigmaPi` between `(Σ (a : Composition n), Composition a.length)` and
+`(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocks_fun i))`, and is described
 in more details below in the paragraph on associativity.
 -/
 
@@ -94,9 +94,9 @@ possible compositions of `n`.
 
 
 /-- Given a formal multilinear series `p`, a composition `c` of `n` and the index `i` of a
-block of `c`, we may define a function on `fin n → E` by picking the variables in the `i`-th block
+block of `c`, we may define a function on `Fin n → E` by picking the variables in the `i`-th block
 of `n`, and applying the corresponding coefficient of `p` to these variables. This function is
-called `p.apply_composition c v i` for `v : fin n → E` and `i : fin c.length`. -/
+called `p.applyComposition c v i` for `v : Fin n → E` and `i : Fin c.length`. -/
 def applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (c : Composition n) :
     (Fin n → E) → Fin c.length → F := fun v i => p (c.blocksFun i) (v ∘ c.embedding i)
 
@@ -128,8 +128,8 @@ theorem removeZero_applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : 
   ext v i
   simp [applyComposition, zero_lt_one.trans_le (c.one_le_blocksFun i), removeZero_of_pos]
 
-/-- Technical lemma stating how `p.apply_composition` commutes with updating variables. This
-will be the key point to show that functions constructed from `apply_composition` retain
+/-- Technical lemma stating how `p.applyComposition` commutes with updating variables. This
+will be the key point to show that functions constructed from `applyComposition` retain
 multilinearity. -/
 theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (c : Composition n)
     (j : Fin n) (v : Fin n → E) (z : E) :
@@ -507,7 +507,7 @@ theorem le_comp_radius_of_summable (q : FormalMultilinearSeries 𝕜 F G)
 ### Composing analytic functions
 
 Now, we will prove that the composition of the partial sums of `q` and `p` up to order `N` is
-given by a sum over some large subset of `Σ n, composition n` of `q.comp_along_composition p`, to
+given by a sum over some large subset of `Σ n, Composition n` of `q.comp_along_composition p`, to
 deduce that the series for `q.comp p` indeed converges to `g ∘ f` when `q` is a power series for
 `g` and `p` is a power series for `f`.
 
@@ -835,28 +835,28 @@ By definition,
 ```
 (r.comp q).comp p n v
 = ∑_{i₁ + ... + iₖ = n} (r.comp q)ₖ (p_{i₁} (v₀, ..., v_{i₁ -1}), p_{i₂} (...), ..., p_{iₖ}(...))
-= ∑_{a : composition n} (r.comp q) a.length (apply_composition p a v)
+= ∑_{a : Composition n} (r.comp q) a.length (applyComposition p a v)
 ```
 decomposing `r.comp q` in the same way, we get
 ```
 (r.comp q).comp p n v
-= ∑_{a : composition n} ∑_{b : composition a.length}
-  r b.length (apply_composition q b (apply_composition p a v))
+= ∑_{a : Composition n} ∑_{b : Composition a.length}
+  r b.length (applyComposition q b (applyComposition p a v))
 ```
 On the other hand,
 ```
-r.comp (q.comp p) n v = ∑_{c : composition n} r c.length (apply_composition (q.comp p) c v)
+r.comp (q.comp p) n v = ∑_{c : Composition n} r c.length (applyComposition (q.comp p) c v)
 ```
-Here, `apply_composition (q.comp p) c v` is a vector of length `c.length`, whose `i`-th term is
+Here, `applyComposition (q.comp p) c v` is a vector of length `c.length`, whose `i`-th term is
 given by `(q.comp p) (c.blocks_fun i) (v_l, v_{l+1}, ..., v_{m-1})` where `{l, ..., m-1}` is the
 `i`-th block in the composition `c`, of length `c.blocks_fun i` by definition. To compute this term,
-we expand it as `∑_{dᵢ : composition (c.blocks_fun i)} q dᵢ.length (apply_composition p dᵢ v')`,
+we expand it as `∑_{dᵢ : Composition (c.blocks_fun i)} q dᵢ.length (applyComposition p dᵢ v')`,
 where `v' = (v_l, v_{l+1}, ..., v_{m-1})`. Therefore, we get
 ```
 r.comp (q.comp p) n v =
-∑_{c : composition n} ∑_{d₀ : composition (c.blocks_fun 0),
-  ..., d_{c.length - 1} : composition (c.blocks_fun (c.length - 1))}
-  r c.length (λ i, q dᵢ.length (apply_composition p dᵢ v'ᵢ))
+∑_{c : Composition n} ∑_{d₀ : Composition (c.blocks_fun 0),
+  ..., d_{c.length - 1} : Composition (c.blocks_fun (c.length - 1))}
+  r c.length (λ i, q dᵢ.length (applyComposition p dᵢ v'ᵢ))
 ```
 To show that these terms coincide, we need to explain how to reindex the sums to put them in
 bijection (and then the terms we are summing will correspond to each other). Suppose we have a
@@ -887,7 +887,7 @@ namespace Composition
 
 variable {n : ℕ}
 
-/-- Rewriting equality in the dependent type `Σ (a : composition n), composition a.length)` in
+/-- Rewriting equality in the dependent type `Σ (a : Composition n), Composition a.length)` in
 non-dependent terms with lists, requiring that the blocks coincide. -/
 theorem sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.length) :
     i = j ↔ i.1.blocks = j.1.blocks ∧ i.2.blocks = j.2.blocks := by
@@ -899,7 +899,7 @@ theorem sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.leng
   induction H; congr; ext1; exact h'
 
 /-- Rewriting equality in the dependent type
-`Σ (c : composition n), Π (i : fin c.length), composition (c.blocks_fun i)` in
+`Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocks_fun i)` in
 non-dependent terms with lists, requiring that the lists of blocks coincide. -/
 theorem sigma_pi_composition_eq_iff
     (u v : Σ c : Composition n, ∀ i : Fin c.length, Composition (c.blocksFun i)) :
@@ -1031,8 +1031,8 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
     rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop', getElem_take _ _ C]
 
-/-- Natural equivalence between `(Σ (a : composition n), composition a.length)` and
-`(Σ (c : composition n), Π (i : fin c.length), composition (c.blocks_fun i))`, that shows up as a
+/-- Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and
+`(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocks_fun i))`, that shows up as a
 change of variables in the proof that composition of formal multilinear series is associative.
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Then `b` indicates how to

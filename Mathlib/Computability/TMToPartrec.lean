@@ -427,7 +427,7 @@ def Cont.eval : Cont → List ℕ →. List ℕ
 /-- The set of configurations of the machine:
 
 * `halt v`: The machine is about to stop and `v : List ℕ` is the result.
-* `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : cont`.
+* `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : Cont`.
 
 We don't have a state corresponding to normal evaluation because these are evaluated immediately
 to a `ret` "in zero steps" using the `stepNormal` function. -/

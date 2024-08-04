@@ -30,7 +30,7 @@ functions are also called approximations of unity, or approximations of identity
   at `0` and integrable.
 
 Note that there are related results about convolution with respect to peak functions in the file
-`Analysis.Convolution`, such as `convolution_tendsto_right` there.
+`Analysis.Convolution`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
