@@ -507,7 +507,7 @@ theorem not_squarefree_mul (a aa b n : ℕ) (ha : a * a = aa) (hb : aa * b = n) 
   rw [← hb, ← ha]
   exact fun H => ne_of_gt h₁ (Nat.isUnit_iff.1 <| H _ ⟨_, rfl⟩)
 
-/-- Given `e` a natural numeral and `a : Nat` with `a^2 ∣ n`, return `⊢ ¬ Squarefree e`. -/
+/-- Given `e` a natural numeral and `a : ℕ` with `a^2 ∣ n`, return `⊢ ¬ Squarefree e`. -/
 unsafe def prove_non_squarefree (e : expr) (n a : ℕ) : tactic expr := do
   let ea := reflect a
   let eaa := reflect (a * a)
