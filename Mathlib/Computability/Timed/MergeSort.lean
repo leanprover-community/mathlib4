@@ -30,7 +30,7 @@ local infixl:50 " ≼ " => r
 
 lemma log_pred (n : Nat) : Nat.log 2 n - 1 = Nat.log 2 (n / 2) :=
   match n with
-  | 0 => by simp only [Nat.log_zero_right, Nat.zero_div]
+  | 0 => by simp
   | 1 => by norm_num
   | (n + 2) => by
     rw [Nat.log]
@@ -68,14 +68,14 @@ lemma sub_left_eq (n m k : Nat) (h : n = m) : n - k = m - k := by rw [h]
 theorem mergeSort_cons_cons {a b} {l l₁ l₂ : List α}
     (h : List.split (a :: b :: l) = (l₁, l₂)) :
     (mergeSort r (a :: b :: l)).1 = (merge (r · ·) (mergeSort r l₁).1 (mergeSort r l₂).1).1 := by
-  simp [mergeSort]
-  simp at h
+  simp only [mergeSort, merge, List.split]
+  simp only [List.split, Prod.mk.injEq] at h
   have ⟨h₁, h₂⟩ := h
   rw [← h₁, ← h₂]
 
 theorem mergeSort_equivalence : ∀ (l : List α), (mergeSort r l).fst = List.mergeSort r l
-  | []          => by simp [mergeSort]
-  | [a]         => by simp [mergeSort]
+  | []          => by simp only [mergeSort, List.mergeSort_nil]
+  | [a]         => by simp only [mergeSort, List.mergeSort_singleton]
   | a :: b :: l => by
       have : (l.split.1).length < l.length + 1 := Nat.lt_add_one_of_le (List.length_split_fst_le l)
       have : (l.split.2).length < l.length + 1 := Nat.lt_add_one_of_le (List.length_split_snd_le l)
@@ -92,7 +92,7 @@ theorem mergeSort_cons_cons_snd {a b} {l l₁ l₂ : List α}
     (mergeSort r (a :: b :: l)).snd =
     (mergeSort r l₁).snd + (mergeSort r l₂).snd +
     (merge (r · ·) (mergeSort r l₁).fst (mergeSort r l₂).fst).snd := by
-  simp at hs
+  simp only [List.split, Prod.mk.injEq] at hs
   simp [mergeSort, hs]
 
 theorem mergeSort_complexity : ∀ l : List α,
@@ -126,15 +126,13 @@ theorem mergeSort_complexity : ∀ l : List α,
           have ms2Length : ms2.length = l₂.length := by rw [ms2Ident, List.length_mergeSort]
 
           have ⟨l₁_small, l₂_small⟩ := split_halves_length e
-          simp at l₁_small
-          simp at l₂_small
+          simp only [List.length_cons] at l₁_small
+          simp only [List.length_cons] at l₂_small
 
           have ih1 := mergeSort_complexity l₁
           have ih2 := mergeSort_complexity l₂
           rw [e1] at ih1
-          simp at ih1
           rw [e2] at ih2
-          simp at ih2
 
           have : n1 + n2 + (merge.loop (r · ·) ms1 ms2 []).2 ≤
                    8 * ((l.length + 3) / 2) * Nat.log 2 ((l.length + 3) / 2) +
@@ -201,7 +199,7 @@ theorem mergeSort_complexity : ∀ l : List α,
           calc
             8 * ((N + 1) / 2) * (Nat.log 2 ((N + 1) / 2)) + 8 * (N / 2) * (Nat.log 2 N - 1) + N ≤
             8 * ((N + 1) / 2) * (Nat.log 2 N) + 8 * (N / 2) * (Nat.log 2 N - 1) + N
-              := by simp
+              := by simp only [Nat.log_div_base, add_le_add_iff_right]
                     rw [log_pred]
                     have : (N + 1) / 2 ≤ N := by omega
                     have : Nat.log 2 ((N + 1) / 2) ≤ Nat.log 2 N := Nat.log_monotone this
@@ -216,13 +214,15 @@ theorem mergeSort_complexity : ∀ l : List α,
               := by have := log_2_le N; linarith
             _ = 4 * N * Nat.log 2 N + 2 * N + 4 * N * Nat.log 2 N - (4 * N) + N
               := by rw [Nat.mul_sub_left_distrib, Nat.mul_one]
-                    simp
-                    have : 4 * N ≤ 4 * N * Nat.log 2 N :=
-                      by simp; exact Nat.log_pos (by simp) N_ge_2
+                    simp only [add_left_inj]
+                    have : 4 * N ≤ 4 * N * Nat.log 2 N := by
+                      simp only [Nat.ofNat_pos, mul_pos_iff_of_pos_left, Nat.zero_lt_succ,
+                        le_mul_iff_one_le_right]
+                      exact Nat.log_pos (by simp) N_ge_2
                     rw [Nat.add_sub_assoc this _]
             _ = 8 * N * Nat.log 2 N + 2 * N - 4 * N + N := by simp; apply sub_left_eq; linarith
             _ = 8 * N * Nat.log 2 N - 2 * N + N := by
-              simp
+              simp only [add_left_inj]
               apply simp_sub (8 * N * Nat.log 2 N)
               have : 1 ≤ Nat.log 2 N := Nat.log_pos (by simp) N_ge_2
               have := Nat.mul_le_mul_left (2 * N) this
