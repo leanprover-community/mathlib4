@@ -422,13 +422,13 @@ end Finset
 
 section FinitePi
 
-variable [Fintype ι] [DecidableEq ι] [Monoid γ]
+variable [DecidableEq ι] [Monoid γ]
 variable {M : ι → Type*} [∀ i, Monoid (M i)]
 
 open Finset
 
 @[to_additive]
-theorem Finset.noncommProd_mul_single (x : ∀ i, M i) :
+theorem Finset.noncommProd_mul_single [Fintype ι] (x : ∀ i, M i) :
     (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
         Pi.mulSingle_apply_commute x i j) = x := by
   ext i
@@ -454,7 +454,7 @@ theorem Finset.noncommProd_mul_single (x : ∀ i, M i) :
 namespace MonoidHom
 
 @[to_additive]
-theorem _root_.MonoidHom.pi_ext {f g : (∀ i, M i) →* γ}
+theorem pi_ext [Finite ι] {f g : (∀ i, M i) →* γ}
     (h : ∀ i x, f (Pi.mulSingle i x) = g (Pi.mulSingle i x)) : f = g := by
   cases nonempty_fintype ι
   ext x
@@ -463,7 +463,7 @@ theorem _root_.MonoidHom.pi_ext {f g : (∀ i, M i) →* γ}
 
 /-- The coproduct property of finite products of monoids -/
 @[to_additive]
-def _root_.MonoidHom.pi_lift {f : ∀ i, (M i →* γ)}
+def pi_lift [Fintype ι] {f : ∀ i, (M i →* γ)}
     (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n)):
     (∀ i, M i) →* γ where
   toFun m := univ.noncommProd (fun i ↦ f i (m i)) (fun x _ y _ ↦ comm x _ y _)
@@ -476,7 +476,7 @@ def _root_.MonoidHom.pi_lift {f : ∀ i, (M i →* γ)}
     rfl
 
 @[to_additive]
-def pi_lift_apply {f : ∀ i, (M i →* γ)}
+def pi_lift_apply [Fintype ι] {f : ∀ i, (M i →* γ)}
     (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n))
     (i : ι) (m : M i) :
     pi_lift comm (Pi.mulSingle i m) = f i m := by
@@ -486,7 +486,7 @@ def pi_lift_apply {f : ∀ i, (M i →* γ)}
   rw [Pi.mulSingle_eq_of_ne (ne_of_mem_erase hx), map_one]
 
 @[to_additive]
-def pi_lift_unique {f : ∀ i, (M i →* γ)} (φ : (∀ i, M i) →* γ)
+def pi_lift_unique [Fintype ι] {f : ∀ i, (M i →* γ)} (φ : (∀ i, M i) →* γ)
     (h : ∀ i m, φ (Pi.mulSingle i m) = f i m)
     (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n) :=
       fun i m j n hij ↦ by
