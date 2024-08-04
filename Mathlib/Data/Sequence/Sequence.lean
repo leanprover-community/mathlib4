@@ -368,14 +368,14 @@ coinductive All {α : Type u} (p : α → Prop) : Seq' α → Prop
 ```
 -/
 
-theorem all_nil (p : α → Prop) : ∀ a ∈ (nil : Seq' α), p a :=
+theorem all_nil (p : α → Prop) : ∀ a ∈ (nil : Sequence α), p a :=
   fun a ha => absurd ha (not_mem_nil a)
 
-theorem all_cons {p : α → Prop} {a : α} {s : Seq' α} :
+theorem all_cons {p : α → Prop} {a : α} {s : Sequence α} :
     (∀ b ∈ cons a s, p b) ↔ p a ∧ ∀ b ∈ s, p b := by
   simp only [mem_cons_iff, forall_eq_or_imp]
 
-theorem all_coind {p : α → Prop} (P : Seq' α → Prop)
+theorem all_coind {p : α → Prop} (P : Sequence α → Prop)
     (cons : ∀ ⦃a s⦄, P (cons a s) → p a ∧ P s) {s} (hs : P s) : ∀ a ∈ s, p a := by
   intro a ha
   induction ha using mem_rec_on with specialize cons hs
