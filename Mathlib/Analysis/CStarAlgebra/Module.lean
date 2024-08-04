@@ -61,6 +61,8 @@ class CStarModule (A : outParam <| Type*) (E : Type*) [NonUnitalSemiring A] [Sta
 attribute [simp] CStarModule.inner_add_right CStarModule.star_inner
   CStarModule.inner_op_smul_right CStarModule.inner_smul_right_complex
 
+@[deprecated (since := "2024-08-04")] alias CstarModule := CStarModule
+
 namespace CStarModule
 
 section general
