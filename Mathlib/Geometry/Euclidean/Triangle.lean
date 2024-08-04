@@ -335,8 +335,12 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
           mul_div_assoc', add_div', div_mul_cancel₀, div_div, eq_div_iff]
         ring
       _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
-        -- `field_simp` takes 1s, but is not easily replaced by an equivalent simp call
-        rw [hm]; field_simp; ring
+        rw [hm]
+        -- TODO(#15486): used to be `field_simp`, but was really slow
+        -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+        simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
+          mul_div_assoc', div_div, add_div', div_pow, eq_div_iff, div_eq_iff]
+        ring
 
 theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
     (hab : dist a' b' = r * dist a b) (hcb : dist c' b' = r * dist c b) :

@@ -178,7 +178,7 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
       rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy
       rw [hy, inner_zero_right, zero_mul, neg_zero]
-  · -- takes 500ms, but the equivalent simp call fails (as `field_simp` recurses deeper than `simp`)
+  · -- takes 600ms; squeezing the "equivalent" simp call yields an invalid result
     field_simp [h]
     ring_nf
 

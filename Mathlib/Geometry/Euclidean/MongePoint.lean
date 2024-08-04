@@ -144,7 +144,6 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     -- Porting note: replaced
     -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
     have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by norm_cast
-    -- takes xxx ms, but the "equivalent" simp call fails ()`field_simp` recurses deeper than `simp`)
     field_simp [hn1, hn3, mul_comm]
   · -- TODO(#15486): used to be `field_simp [hn1]`, but was really slow
   -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
