@@ -30,8 +30,6 @@ and Chris Hughes (on an earlier repository).
 
 noncomputable section
 
-open scoped Classical
-
 universe u v
 
 variable (R : Type u) (S : Type v)
