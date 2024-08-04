@@ -540,6 +540,7 @@ theorem pullbackLeftPullbackSndIso_inv_fst_snd :
   exact pullbackLeftPullbackSndIso_inv_snd_snd_assoc f g g' g'
 
 end
+
 section
 
 /- Let's consider the following diagram of pushouts
