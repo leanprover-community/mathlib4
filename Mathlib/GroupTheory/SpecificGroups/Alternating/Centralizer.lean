@@ -14,10 +14,13 @@ The main goal of this file is to compute the cardinality of
 conjugacy classes in `alternatingGroup α`.
 
 * `AlternatingGroup.of_cycleType_eq m` and `AlternatingGroup.card_of_cycleType m`
-give the analogous result in the subgroup `alternatingGroup α`
+compute the number of even permutations of given cycle type.
 
 * `Equiv.Perm.OnCycleFactors.sign_θ` computes the signature
 of the permutation induced given by `Equiv.Perm.Basis.θ`.
+
+* `Equiv.Perm.odd_of_centralizer_le_alternatingGroup`,
+`card_le_of_centralizer_le_alternating`
 
 * Finally, `Equiv.Perm.OnCycleFactors.kerφ_le_alternating_iff`
   establishes on which iff-condition the centralizer of an even permutation
@@ -190,12 +193,11 @@ theorem count_le_one_of_centralizer_le_alternating
   obtain ⟨c, hc, d, hd, hm, hm'⟩ := hm
   let τ : Equiv.Perm g.cycleFactorsFinset := Equiv.swap ⟨c, hc⟩ ⟨d, hd⟩
   obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
-  suffices hτ : τ ∈ range_toPerm' g by
-    set k := ofPerm a ⟨τ, hτ⟩
-    have : toPermHom g k = τ := sorry
-    have hk2 : ∀ c : g.cycleFactorsFinset, k • c = τ c := by
-      intro c
-      rw [← this, toPerm_apply]
+  suffices hτ : τ ∈ range_toPermHom' g by
+    set k := toCentralizer a ⟨τ, hτ⟩ with hk
+    have hk' : toPermHom g k = τ := toCentralizer_rightInverse a ⟨τ, hτ⟩
+    have hk2 (c : g.cycleFactorsFinset) : k • c = τ c := by
+      rw [← hk', toPermHom_apply]
     have hksup : (k : Perm α).support ≤ g.support := by
       intro x
       simp only [Equiv.Perm.mem_support, not_imp_not]
@@ -205,7 +207,7 @@ theorem count_le_one_of_centralizer_le_alternating
     suffices hsign_k : Equiv.Perm.sign (k : Perm α) = -1 by
       rw [h _, ← Units.eq_iff] at hsign_k
       exact Int.noConfusion hsign_k
-      exact (ofPerm a ⟨τ, hτ⟩).prop
+      exact (toCentralizer a ⟨τ, hτ⟩).prop
     /- to prove that `sign k = -1`,
       we could prove that it is the product
       of the transpositions with disjoint supports
@@ -234,13 +236,14 @@ theorem count_le_one_of_centralizer_le_alternating
         sum_cycleType _
       rw [this] at this'
       simp only [Multiset.sum_replicate, smul_eq_mul] at this'
-      rw [← mul_left_inj', this', a.card_ofPerm_support]
+      rw [← mul_left_inj', this', hk, toCentralizer]
+      simp only [MonoidHom.coe_mk, OneHom.coe_mk, a.card_ofPerm_support]
       simp only [τ]
       have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
       rw [Equiv.Perm.support_swap H]
       rw [Finset.sum_insert, Finset.sum_singleton]
       · simp only
-        rw [Equiv.Perm.OnCycleFactors.mem_range_toPerm'_iff] at hτ
+        rw [Equiv.Perm.OnCycleFactors.mem_range_toPermHom'_iff] at hτ
         specialize hτ ⟨c, hc⟩
         simp only [τ, Equiv.swap_apply_left] at hτ
         rw [hτ, mul_two]
@@ -259,7 +262,7 @@ theorem count_le_one_of_centralizer_le_alternating
     · -- k ^ 2 = 1,
       simp only [k]
       rw [← Subgroup.coe_pow, ← map_pow]
-      suffices  (⟨τ, hτ⟩ : range_toPerm' g) ^ 2 = 1  by
+      suffices  (⟨τ, hτ⟩ : range_toPermHom' g) ^ 2 = 1  by
         simp only [this, map_one, OneMemClass.coe_one]
       rw [← Subtype.coe_inj]
       simp only [SubmonoidClass.mk_pow, OneMemClass.coe_one, τ]
@@ -323,7 +326,7 @@ theorem centralizer_le_alternating_iff :
     -- x ∈ set.range (on_cycle_factors.ψ g)
     rw [mem_θ_range_iff]
     use hx
-    have that := mem_range_toPerm_iff (τ :=  (toPermHom g) ⟨x, hx⟩)
+    have that := mem_range_toPermHom_iff (τ :=  (toPermHom g) ⟨x, hx⟩)
     simp only [MonoidHom.mem_range, exists_apply_eq_apply, true_iff] at that
     simp only [MonoidHom.mem_ker]
     apply Equiv.ext
