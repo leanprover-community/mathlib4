@@ -18,9 +18,7 @@ by a tactic that analyses the shape of `CommRing` and `RingHom`.
 
 universe u v
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 
 namespace RingCat.Colimits

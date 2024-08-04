@@ -16,9 +16,7 @@ the underlying types are just the limits in the category of types.
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v w u t
 

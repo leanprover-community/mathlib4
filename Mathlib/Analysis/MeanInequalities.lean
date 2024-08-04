@@ -104,9 +104,7 @@ less than or equal to the sum of the maximum values of the summands.
 
 universe u v
 
-open scoped Classical
 open Finset NNReal ENNReal
-
 
 noncomputable section
 
