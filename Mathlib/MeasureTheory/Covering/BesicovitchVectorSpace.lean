@@ -187,7 +187,7 @@ theorem exists_goodδ :
     · exact
         ⟨fun _ => 0, by simp, fun i j _ => by
           simpa only [norm_zero, sub_nonpos, sub_self]⟩
-  -- For `δ > 0`, `F δ` is a function from `fin N` to the ball of radius `2` for which two points
+  -- For `δ > 0`, `F δ` is a function from `Fin N` to the ball of radius `2` for which two points
   -- in the image are separated by `1 - δ`.
   choose! F hF using this
   -- Choose a converging subsequence when `δ → 0`.
