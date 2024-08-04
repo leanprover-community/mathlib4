@@ -218,10 +218,12 @@ def MS.findLimitTrimmed (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis) (h_tr
       exact IsEquivalent.tendsto_nhds (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed).symm p
     })
 
-noncomputable def MS.findLimit (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis) :
+def MS.findLimit (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis) :
     TendstoM <| FindLimitResult ms.F := do
   let trimmed ← Trimming.MS.trim ms
   let r ← MS.findLimitTrimmed trimmed.result (trimmed.h_eq_basis ▸ h_basis) trimmed.h_trimmed
   return (trimmed.h_eq_F ▸ r)
+
+#print axioms MS.findLimit
 
 end TendstoTactic

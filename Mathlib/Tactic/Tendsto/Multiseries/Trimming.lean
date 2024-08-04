@@ -5,15 +5,8 @@ namespace TendstoTactic
 
 namespace Trimming
 
-structure PreMS.TrimmingResult (ms : PreMS) (n : ℕ) (F : ℝ → ℝ) (basis : Basis) where
-  result : PreMS
-  h_depth : result.hasDepth n
-  h_wo : result.wellOrdered
-  h_approx : result.isApproximation F basis
-  h_trimmed : result.isTrimmed
-
 -- structural recursion can't be used because PreMS is a nested type
-noncomputable def PreMS.isApproximation_of_EventuallyEq {ms : PreMS} {F F' : ℝ → ℝ} {basis : Basis}
+theorem PreMS.isApproximation_of_EventuallyEq {ms : PreMS} {F F' : ℝ → ℝ} {basis : Basis}
     (h_approx : ms.isApproximation F basis) (h_equiv : F =ᶠ[Filter.atTop] F') : ms.isApproximation F' basis := by
   induction ms using PreMS.rec' generalizing F F' with
   | nil =>
@@ -34,127 +27,146 @@ noncomputable def PreMS.isApproximation_of_EventuallyEq {ms : PreMS} {F F' : ℝ
       apply Filter.EventuallyEq.trans_isLittleO h_equiv.symm (h_comp _ _)
       assumption
 
-noncomputable def PreMS.isApproximation_sub_zero {ms : PreMS} {F C : ℝ → ℝ} {basis : Basis}
+theorem PreMS.isApproximation_sub_zero {ms : PreMS} {F C : ℝ → ℝ} {basis : Basis}
     (h_approx : ms.isApproximation (F - C) basis) (h_C : C =ᶠ[Filter.atTop] 0) : ms.isApproximation F basis := by
   apply isApproximation_of_EventuallyEq h_approx
   have := Filter.EventuallyEq.sub (Filter.EventuallyEq.refl _ F) h_C
   simpa using this
 
-noncomputable def PreMS.trim {ms : PreMS} {n : ℕ} {F : ℝ → ℝ} {basis : Basis}
-    (h_depth : ms.hasDepth n) (h_wo : ms.wellOrdered) (h_approx : ms.isApproximation F basis) :
-    TendstoM <| PreMS.TrimmingResult ms n F basis := do
-  match ms, basis, n, h_approx with
-  | .nil, _, _, .nil _ _ h => return {
+
+structure PreMS.TrimmingResult (ms : PreMS) where
+  result : PreMS
+  h_depth : ∀ n, ms.hasDepth n → result.hasDepth n
+  h_wo : ms.wellOrdered → result.wellOrdered
+  h_approx : ∀ F basis, ms.isApproximation F basis → result.isApproximation F basis
+  h_trimmed : result.isTrimmed
+
+def PreMS.trim (ms : PreMS) : TendstoM <| PreMS.TrimmingResult ms := do
+  match ms with
+  | .nil => return {
       result := .nil
-      h_depth := PreMS.hasDepth.nil _
+      h_depth := by intros; assumption
       h_wo := by simp [PreMS.wellOrdered]
-      h_approx := PreMS.isApproximation.nil _ _ h
+      h_approx := by intro _ _ h; cases h; apply PreMS.isApproximation.nil; assumption
       h_trimmed := by simp [PreMS.isTrimmed]
     }
-  | .const c, [], 0, .const _ _ h => return {
+  | .const c => return {
       result := .const c
-      h_depth := PreMS.hasDepth.const _
+      h_depth := by intros; assumption
       h_wo := by simp [PreMS.wellOrdered]
-      h_approx := PreMS.isApproximation.const _ _ h
+      h_approx := by intro _ _ h; cases h; apply PreMS.isApproximation.const; assumption
       h_trimmed := by simp [PreMS.isTrimmed]
     }
-  | .cons deg coef tl, .cons basis_hd basis_tl, m + 1, .cons _ _ _ _ C _ _ h_coef h_tl h_comp =>
-    let coef_trimmed ← PreMS.trim (by cases h_depth; assumption)
-      (by simp [PreMS.wellOrdered] at h_wo; exact h_wo.left) h_coef
+  | .cons deg coef tl =>
+    let coef_trimmed ← PreMS.trim coef
     match h_coef_trimmed : coef_trimmed.result with
     | .const c =>
       match ← TendstoTactic.runOracle c with
       | .zero h_c_zero =>
-        let tl_trimmed ← PreMS.trim (by cases h_depth; assumption)
-          (by simp [PreMS.wellOrdered] at h_wo; exact h_wo.right.left) h_tl
+        let tl_trimmed ← PreMS.trim tl.get
         return {
           result := tl_trimmed.result
-          h_trimmed := tl_trimmed.h_trimmed
-          h_depth := tl_trimmed.h_depth
-          h_wo := tl_trimmed.h_wo
+          h_depth := by intro _ h; cases h; apply tl_trimmed.h_depth; assumption
+          h_wo := by intro h_wo; simp [PreMS.wellOrdered] at h_wo; exact tl_trimmed.h_wo h_wo.right.left
           h_approx := by
-            cases h_coef_trimmed ▸ coef_trimmed.h_approx
+            intro F basis h_approx
+            cases h_approx with | cons _ _ _ _ C basis_hd basis_tl h_coef h_tl h_comp =>
+            cases h_coef_trimmed ▸ (coef_trimmed.h_approx _ _ h_coef)
             rename_i h_C
             simp_rw [h_c_zero] at h_C
-            apply isApproximation_sub_zero tl_trimmed.h_approx
+            apply isApproximation_sub_zero (tl_trimmed.h_approx _ _ h_tl)
             have := Filter.EventuallyEq.mul (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ deg)) h_C
             simpa using this
+          h_trimmed := tl_trimmed.h_trimmed
         }
       | .pos h_c_pos => return {
           result := .cons deg coef_trimmed.result tl
           h_depth := by
-            cases h_depth
+            intro _ h_depth
+            cases h_depth with | cons _ _ _ _ h_coef h_tl =>
             apply PreMS.hasDepth.cons
-            · exact coef_trimmed.h_depth
+            · exact coef_trimmed.h_depth _ h_coef
             · assumption
           h_wo := by
+            intro h_wo
+            simp [PreMS.wellOrdered] at h_wo
             unfold PreMS.wellOrdered
             constructor
-            · exact coef_trimmed.h_wo
-            · unfold PreMS.wellOrdered at h_wo
-              exact h_wo.right
+            · exact coef_trimmed.h_wo h_wo.left
+            · exact h_wo.right
           h_approx := by
+            intro F basis h_approx
+            cases h_approx with | cons _ _ _ _ C basis_hd basis_tl h_coef h_tl h_comp =>
             apply PreMS.isApproximation.cons
-            exacts [coef_trimmed.h_approx, h_tl, h_comp]
+            exacts [coef_trimmed.h_approx _ _ h_coef, h_tl, h_comp]
           h_trimmed := by
             simp [PreMS.isTrimmed]
             constructor
             · exact coef_trimmed.h_trimmed
             · simp [h_coef_trimmed, PreMS.isFlatZero, h_c_pos.ne.symm]
         }
-      | .neg h_c_neg => return { -- same as pos
+      | .neg h_c_neg => return { -- copypaste from pos
           result := .cons deg coef_trimmed.result tl
           h_depth := by
-            cases h_depth
+            intro _ h_depth
+            cases h_depth with | cons _ _ _ _ h_coef h_tl =>
             apply PreMS.hasDepth.cons
-            · exact coef_trimmed.h_depth
+            · exact coef_trimmed.h_depth _ h_coef
             · assumption
           h_wo := by
+            intro h_wo
+            simp [PreMS.wellOrdered] at h_wo
             unfold PreMS.wellOrdered
             constructor
-            · exact coef_trimmed.h_wo
-            · unfold PreMS.wellOrdered at h_wo
-              exact h_wo.right
+            · exact coef_trimmed.h_wo h_wo.left
+            · exact h_wo.right
           h_approx := by
+            intro F basis h_approx
+            cases h_approx with | cons _ _ _ _ C basis_hd basis_tl h_coef h_tl h_comp =>
             apply PreMS.isApproximation.cons
-            exacts [coef_trimmed.h_approx, h_tl, h_comp]
+            exacts [coef_trimmed.h_approx _ _ h_coef, h_tl, h_comp]
           h_trimmed := by
             simp [PreMS.isTrimmed]
             constructor
             · exact coef_trimmed.h_trimmed
             · simp [h_coef_trimmed, PreMS.isFlatZero, h_c_neg.ne]
         }
-    | .nil =>
-      let tl_trimmed ← PreMS.trim (by cases h_depth; assumption)
-          (by simp [PreMS.wellOrdered] at h_wo; exact h_wo.right.left) h_tl
-      return {
-        result := tl_trimmed.result
-        h_depth := tl_trimmed.h_depth
-        h_wo := tl_trimmed.h_wo
-        h_approx := by
-          cases h_coef_trimmed ▸ coef_trimmed.h_approx
-          rename_i h_C
-          apply isApproximation_sub_zero tl_trimmed.h_approx
-          have := Filter.EventuallyEq.mul (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ deg)) h_C
-          simpa using this
-        h_trimmed := tl_trimmed.h_trimmed
-      }
-    | .cons _ _ _ => return {
+    | .nil => -- copy from const zero
+      let tl_trimmed ← PreMS.trim tl.get
+        return {
+          result := tl_trimmed.result
+          h_depth := by intro _ h; cases h; apply tl_trimmed.h_depth; assumption
+          h_wo := by intro h_wo; simp [PreMS.wellOrdered] at h_wo; exact tl_trimmed.h_wo h_wo.right.left
+          h_approx := by
+            intro F basis h_approx
+            cases h_approx with | cons _ _ _ _ C basis_hd basis_tl h_coef h_tl h_comp =>
+            cases h_coef_trimmed ▸ (coef_trimmed.h_approx _ _ h_coef)
+            rename_i h_coef
+            apply isApproximation_sub_zero (tl_trimmed.h_approx _ _ h_tl)
+            have := Filter.EventuallyEq.mul (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ deg)) h_coef
+            simpa using this
+          h_trimmed := tl_trimmed.h_trimmed
+        }
+    | .cons _ _ _ => return { -- copypaste from pos
         result := .cons deg coef_trimmed.result tl
         h_depth := by
-          cases h_depth
+          intro _ h_depth
+          cases h_depth with | cons _ _ _ _ h_coef h_tl =>
           apply PreMS.hasDepth.cons
-          · exact coef_trimmed.h_depth
+          · exact coef_trimmed.h_depth _ h_coef
           · assumption
         h_wo := by
+          intro h_wo
+          simp [PreMS.wellOrdered] at h_wo
           unfold PreMS.wellOrdered
           constructor
-          · exact coef_trimmed.h_wo
-          · unfold PreMS.wellOrdered at h_wo
-            exact h_wo.right
+          · exact coef_trimmed.h_wo h_wo.left
+          · exact h_wo.right
         h_approx := by
+          intro F basis h_approx
+          cases h_approx with | cons _ _ _ _ C basis_hd basis_tl h_coef h_tl h_comp =>
           apply PreMS.isApproximation.cons
-          exacts [coef_trimmed.h_approx, h_tl, h_comp]
+          exacts [coef_trimmed.h_approx _ _ h_coef, h_tl, h_comp]
         h_trimmed := by
           simp [PreMS.isTrimmed]
           constructor
@@ -168,16 +180,16 @@ structure MS.TrimmingResult (ms : MS) where
   h_eq_F : ms.F = result.F
   h_trimmed : result.isTrimmed
 
-noncomputable def MS.trim (ms : MS) : TendstoM <| MS.TrimmingResult ms := do
-  let r ← PreMS.trim ms.h_depth ms.h_wo ms.h_approx
+def MS.trim (ms : MS) : TendstoM <| MS.TrimmingResult ms := do
+  let r ← PreMS.trim ms.val
   return {
     result := {
       val := r.result
       basis := ms.basis
       F := ms.F
-      h_depth := r.h_depth
-      h_wo := r.h_wo
-      h_approx := r.h_approx
+      h_depth := r.h_depth _ ms.h_depth
+      h_wo := r.h_wo ms.h_wo
+      h_approx := r.h_approx _ _ ms.h_approx
     }
     h_eq_basis := by rfl
     h_eq_F := by rfl

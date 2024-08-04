@@ -13,8 +13,6 @@ inductive PreMS where
 
 abbrev Basis := List (ℝ → ℝ)
 
-#print PreMS.rec
-
 universe u in
 def PreMS.rec' {motive : PreMS → Sort u} (const : ∀ c, motive (.const c)) (nil : motive .nil)
     (cons : (deg : ℝ) → (coef : PreMS) → (tl : Thunk PreMS) → motive coef → motive tl.get → motive (.cons deg coef tl)) (ms : PreMS) :
@@ -43,7 +41,7 @@ def PreMS.rec' {motive : PreMS → Sort u} (const : ∀ c, motive (.const c)) (n
 
 instance : Inhabited PreMS := ⟨.nil⟩
 
-inductive PreMS.hasDepth : PreMS → ℕ → Type where
+inductive PreMS.hasDepth : PreMS → ℕ → Prop where
 | const (c : ℝ) : PreMS.hasDepth (PreMS.const c) 0
 | nil (n : ℕ) : PreMS.hasDepth PreMS.nil n
 | cons (m : ℕ) (deg : ℝ) (coef : PreMS) (tl : Thunk PreMS) (h_coef : PreMS.hasDepth coef m)
@@ -73,7 +71,7 @@ def PreMS.wellOrdered (ms : PreMS) : Prop :=
     | _ => True
   | _ => True
 
-inductive PreMS.isApproximation : PreMS → (ℝ → ℝ) → Basis → Type where
+inductive PreMS.isApproximation : PreMS → (ℝ → ℝ) → Basis → Prop where
 | nil (basis : List (ℝ → ℝ)) (F : ℝ → ℝ) (h : F =ᶠ[Filter.atTop] 0) : PreMS.isApproximation .nil F basis
 | const (c : ℝ) (F : ℝ → ℝ) (h : F =ᶠ[Filter.atTop] fun _ ↦ c) : PreMS.isApproximation (.const c) F []
 | cons (deg : ℝ) (coef : PreMS) (tl : Thunk PreMS) (F C basis_hd : ℝ → ℝ)
