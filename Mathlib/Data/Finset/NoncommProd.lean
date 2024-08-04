@@ -462,7 +462,7 @@ theorem pi_ext [Finite ι] {f g : (∀ i, M i) →* γ}
   congr 1 with i; exact h i (x i)
 
 /-- The coproduct property of finite products of monoids -/
-@[to_additive]
+@[to_additive "The coproduct property of finite products of additive monoids"]
 def pi_lift [Fintype ι] {f : ∀ i, (M i →* γ)}
     (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n)):
     (∀ i, M i) →* γ where
@@ -476,7 +476,7 @@ def pi_lift [Fintype ι] {f : ∀ i, (M i →* γ)}
     rfl
 
 @[to_additive]
-def pi_lift_apply [Fintype ι] {f : ∀ i, (M i →* γ)}
+theorem pi_lift_apply [Fintype ι] {f : ∀ i, (M i →* γ)}
     (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n))
     (i : ι) (m : M i) :
     pi_lift comm (Pi.mulSingle i m) = f i m := by
@@ -486,7 +486,7 @@ def pi_lift_apply [Fintype ι] {f : ∀ i, (M i →* γ)}
   rw [Pi.mulSingle_eq_of_ne (ne_of_mem_erase hx), map_one]
 
 @[to_additive]
-def pi_lift_unique [Fintype ι] {f : ∀ i, (M i →* γ)} (φ : (∀ i, M i) →* γ)
+theorem pi_lift_unique [Fintype ι] {f : ∀ i, (M i →* γ)} (φ : (∀ i, M i) →* γ)
     (h : ∀ i m, φ (Pi.mulSingle i m) = f i m)
     (comm : ∀ i (m : M i) j (n : M j) (_ : i ≠ j), Commute (f i m) (f j n) :=
       fun i m j n hij ↦ by
