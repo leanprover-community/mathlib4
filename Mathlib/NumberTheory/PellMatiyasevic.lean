@@ -197,7 +197,7 @@ theorem isPell_pellZd : ∀ n : ℕ, IsPell (pellZd a1 n)
   | 0 => rfl
   | n + 1 => by
     let o := isPell_one a1
-    simp; exact Pell.isPell_mul (isPell_pellZd n) o
+    simpa using Pell.isPell_mul (isPell_pellZd n) o
 
 @[simp]
 theorem pell_eqz (n : ℕ) : xz a1 n * xz a1 n - d a1 * yz a1 n * yz a1 n = 1 :=
@@ -401,7 +401,7 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
 theorem xy_modEq_yn (n) :
     ∀ k, xn a1 (n * k) ≡ xn a1 n ^ k [MOD yn a1 n ^ 2] ∧ yn a1 (n * k) ≡
         k * xn a1 n ^ (k - 1) * yn a1 n [MOD yn a1 n ^ 3]
-  | 0 => by constructor <;> simp <;> exact Nat.ModEq.refl _
+  | 0 => by constructor <;> simpa using Nat.ModEq.refl _
   | k + 1 => by
     let ⟨hx, hy⟩ := xy_modEq_yn n k
     have L : xn a1 (n * k) * xn a1 n + d a1 * yn a1 (n * k) * yn a1 n ≡
@@ -745,7 +745,7 @@ end
 theorem xy_modEq_of_modEq {a b c} (a1 : 1 < a) (b1 : 1 < b) (h : a ≡ b [MOD c]) :
     ∀ n, xn a1 n ≡ xn b1 n [MOD c] ∧ yn a1 n ≡ yn b1 n [MOD c]
   | 0 => by constructor <;> rfl
-  | 1 => by simp; exact ⟨h, ModEq.refl 1⟩
+  | 1 => by simpa using ⟨h, ModEq.refl 1⟩
   | n + 2 =>
     ⟨(xy_modEq_of_modEq a1 b1 h n).left.add_right_cancel <| by
         rw [xn_succ_succ a1, xn_succ_succ b1]
@@ -787,7 +787,7 @@ theorem matiyasevic {a k x y} :
       have vp : 0 < v := strictMono_y a1 (lt_trans zero_lt_one m1)
       have b1 : 1 < b :=
         have : xn a1 1 < u := strictMono_x a1 m1
-        have : a < u := by simp at this; exact this
+        have : a < u := by simpa using this
         lt_of_lt_of_le a1 <| by
           delta ModEq at ba; rw [Nat.mod_eq_of_lt this] at ba; rw [← ba]
           apply Nat.mod_le

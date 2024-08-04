@@ -187,7 +187,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s
 instance : Inhabited (Set α) :=
   ⟨∅⟩
 
-theorem ext_iff {s t : Set α} : s = t ↔ ∀ x, x ∈ s ↔ x ∈ t :=
+protected theorem ext_iff {s t : Set α} : s = t ↔ ∀ x, x ∈ s ↔ x ∈ t :=
   ⟨fun h x => by rw [h], ext⟩
 
 @[trans]
@@ -456,6 +456,7 @@ theorem setOf_false : { _a : α | False } = ∅ :=
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
   nofun
 
+@[simp]
 theorem subset_empty_iff {s : Set α} : s ⊆ ∅ ↔ s = ∅ :=
   (Subset.antisymm_iff.trans <| and_iff_left (empty_subset _)).symm
 
@@ -1019,7 +1020,7 @@ theorem eq_of_mem_singleton {x y : α} (h : x ∈ ({y} : Set α)) : x = y :=
 
 @[simp]
 theorem singleton_eq_singleton_iff {x y : α} : {x} = ({y} : Set α) ↔ x = y :=
-  ext_iff.trans eq_iff_eq_cancel_left
+  Set.ext_iff.trans eq_iff_eq_cancel_left
 
 theorem singleton_injective : Injective (singleton : α → Set α) := fun _ _ =>
   singleton_eq_singleton_iff.mp
@@ -1112,7 +1113,7 @@ theorem mem_sep_iff : x ∈ { x ∈ s | p x } ↔ x ∈ s ∧ p x :=
   Iff.rfl
 
 theorem sep_ext_iff : { x ∈ s | p x } = { x ∈ s | q x } ↔ ∀ x ∈ s, p x ↔ q x := by
-  simp_rw [ext_iff, mem_sep_iff, and_congr_right_iff]
+  simp_rw [Set.ext_iff, mem_sep_iff, and_congr_right_iff]
 
 theorem sep_eq_of_subset (h : s ⊆ t) : { x ∈ t | x ∈ s } = s :=
   inter_eq_self_of_subset_right h
@@ -1122,11 +1123,11 @@ theorem sep_subset (s : Set α) (p : α → Prop) : { x ∈ s | p x } ⊆ s := f
 
 @[simp]
 theorem sep_eq_self_iff_mem_true : { x ∈ s | p x } = s ↔ ∀ x ∈ s, p x := by
-  simp_rw [ext_iff, mem_sep_iff, and_iff_left_iff_imp]
+  simp_rw [Set.ext_iff, mem_sep_iff, and_iff_left_iff_imp]
 
 @[simp]
 theorem sep_eq_empty_iff_mem_false : { x ∈ s | p x } = ∅ ↔ ∀ x ∈ s, ¬p x := by
-  simp_rw [ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false_iff, not_and]
+  simp_rw [Set.ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false_iff, not_and]
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_true : { x ∈ s | True } = s :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Geometry.Manifold.ChartedSpace
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 /-!
@@ -659,6 +659,24 @@ variable {I}
 theorem compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H} (he : e ∈ maximalAtlas I M)
     (he' : e' ∈ maximalAtlas I M) : e.symm.trans e' ∈ contDiffGroupoid ∞ I :=
   StructureGroupoid.compatible_of_mem_maximalAtlas he he'
+
+/-- The empty set is a smooth manifold w.r.t. any charted space and model. -/
+instance empty [IsEmpty M] : SmoothManifoldWithCorners I M := by
+  apply smoothManifoldWithCorners_of_contDiffOn
+  intro e e' _ _ x hx
+  set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I
+  -- Since `M` is empty, the condition about compatibility of transition maps is vacuous.
+  have : (e.symm ≫ₕ e').source = ∅ := calc (e.symm ≫ₕ e').source
+    _ = (e.symm.source) ∩ e.symm ⁻¹' e'.source := by rw [← PartialHomeomorph.trans_source]
+    _ = (e.symm.source) ∩ e.symm ⁻¹' ∅ := by rw [eq_empty_of_isEmpty (e'.source)]
+    _ = (e.symm.source) ∩ ∅ := by rw [preimage_empty]
+    _ = ∅ := inter_empty e.symm.source
+  have : t = ∅ := calc t
+    _ = I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I := by
+      rw [← Subtype.preimage_val_eq_preimage_val_iff]
+    _ = ∅ ∩ range I := by rw [this, preimage_empty]
+    _ = ∅ := empty_inter (range I)
+  apply (this ▸ hx).elim
 
 /-- The product of two smooth manifolds with corners is naturally a smooth manifold with corners. -/
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]

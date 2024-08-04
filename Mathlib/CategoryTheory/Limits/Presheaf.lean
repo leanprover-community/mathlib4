@@ -345,6 +345,7 @@ instance (X : C) : (yoneda.obj (F.obj X)).IsLeftKanExtension (yonedaMap F X) :=
 
 end
 
+section
 variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
 
 /-- `F ⋙ yoneda` is naturally isomorphic to `yoneda ⋙ F.op.lan`. -/
@@ -359,8 +360,7 @@ noncomputable def compYonedaIsoYonedaCompLan :
         (yonedaMap F X) (F.op.lan.obj (yoneda.obj X)) (F.op.lanUnit.app (yoneda.obj X))) _) (𝟙 _)
       have eq₃ := congr_fun (congr_app (F.op.lanUnit.naturality (yoneda.map f)) _) (𝟙 _)
       dsimp at eq₁ eq₂ eq₃
-      rw [yonedaMap_app_apply] at eq₁
-      simp only [yonedaMap_app_apply, Functor.map_id] at eq₂
+      simp only [Functor.map_id] at eq₂
       simp only [id_comp] at eq₃
       simp [yonedaEquiv, eq₁, eq₂, eq₃])
 
@@ -370,6 +370,8 @@ lemma compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
       ((F.op.lanUnit.app (yoneda.obj X)).app _ (𝟙 X)) = 𝟙 _ :=
   (congr_fun (Functor.descOfIsLeftKanExtension_fac_app _
     (F.op.lanUnit.app (yoneda.obj X)) _ (yonedaMap F X) (Opposite.op X)) (𝟙 _)).trans (by simp)
+
+end
 
 namespace compYonedaIsoYonedaCompLan
 
@@ -430,6 +432,8 @@ lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type v₁} (f : P ⟶ Q) :
       whiskerLeft_app, Functor.map_comp, FunctorToTypes.comp]
     dsimp))
 
+variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
+
 /-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type v₁) ⥤ (Dᵒᵖ ⥤ Type v₁)`,
 and a natural transformation `φ : F ⋙ yoneda ⟶ yoneda ⋙ G`, this is
 the canonical natural transformation `F.op.lan ⟶ G`, which is part of the
@@ -454,6 +458,8 @@ lemma natTrans_app_yoneda_obj (X : C) : (natTrans φ).app (yoneda.obj X) =
   exact congr_arg _ (compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id F X).symm
 
 end
+
+variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
 
 /-- Given a functor `F : C ⥤ D`, this definition is part of the verification that
 `Functor.LeftExtension.mk F.op.lan (compYonedaIsoYonedaCompLan F).hom`
@@ -490,6 +496,8 @@ lemma hom_ext {Φ : yoneda.LeftExtension (F ⋙ yoneda)}
   rw [eq₁, eq₂]
 
 end compYonedaIsoYonedaCompLan
+
+variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
 
 noncomputable instance (Φ : StructuredArrow (F ⋙ yoneda)
     ((whiskeringLeft C (Cᵒᵖ ⥤ Type v₁) (Dᵒᵖ ⥤ Type v₁)).obj yoneda)) :

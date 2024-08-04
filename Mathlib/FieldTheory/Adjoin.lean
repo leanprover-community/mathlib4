@@ -1399,3 +1399,24 @@ theorem equivAdjoinSimple_symm_gen (pb : PowerBasis K L) :
   rw [equivAdjoinSimple, equivOfMinpoly_symm, equivOfMinpoly_gen, adjoin.powerBasis_gen]
 
 end PowerBasis
+
+namespace IntermediateField
+
+variable {K L L' : Type*} [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+
+theorem map_comap_eq (f : L →ₐ[K] L') (S : IntermediateField K L') :
+    (S.comap f).map f = S ⊓ f.fieldRange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self {f : L →ₐ[K] L'} {S : IntermediateField K L'} (h : S ≤ f.fieldRange) :
+    (S.comap f).map f = S := by
+  simpa only [inf_of_le_left h] using map_comap_eq f S
+
+theorem map_comap_eq_self_of_surjective {f : L →ₐ[K] L'} (hf : Function.Surjective f)
+    (S : IntermediateField K L') : (S.comap f).map f = S :=
+  SetLike.coe_injective (Set.image_preimage_eq _ hf)
+
+theorem comap_map (f : L →ₐ[K] L') (S : IntermediateField K L) : (S.map f).comap f = S :=
+  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+
+end IntermediateField
