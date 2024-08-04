@@ -26,13 +26,9 @@ universe v u
 
 noncomputable section
 
-open scoped Classical
+open CategoryTheory Limits
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
+open IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
 open AddMonCat.FilteredColimits (colimit_zero_eq colimit_add_mk_eq)
 
