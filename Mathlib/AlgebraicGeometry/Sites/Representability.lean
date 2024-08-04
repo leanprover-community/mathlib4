@@ -154,13 +154,12 @@ lemma hom_ext_W {Z : Scheme} {α β : Z ⟶ W hf i j k}
     (h₂ : α ≫ q₂ hf i j k = β ≫ q₂ hf i j k)
     (h₃ : α ≫ q₃ hf i j k = β ≫ q₃ hf i j k) : α = β := by
   dsimp [W]
-  ext1
-  · apply (hf i).rep.hom_ext'
-    simpa using h₁
-    simpa using h₂
-  · apply (hf i).rep.hom_ext'
-    simpa [eq_q₁] using h₁
-    simpa using h₃
+  -- TODO: modify ext priority so that this is a single ext?
+  ext1 <;> apply (hf i).rep.hom_ext'
+  · simpa using h₁
+  · simpa using h₂
+  · simpa [eq_q₁] using h₁
+  · simpa using h₃
 
 section
 
@@ -198,11 +197,11 @@ noncomputable def glueData : GlueData where
     infer_instance
   f_id := isIso_p₁_self hf
   t i j := (hf i).rep.symmetry (hf j).rep
-  t_id i := by ext1 <;> simp [p₁_self_eq_p₂ hf i]
+  t_id i := by apply (hf i).rep.hom_ext' <;> simp [p₁_self_eq_p₂ hf i]
   t' i j k := liftW hf (q₂ _ _ _ _) (q₃ _ _ _ _) (q₁ _ _ _ _) (by simp) (by simp)
   t_fac i j k := by
     dsimp
-    ext
+    apply (hf j).rep.hom_ext'
     · simp [eq_q₁]
       rfl
     · simpa using liftW_q₃ _ _ _ _ _ _
