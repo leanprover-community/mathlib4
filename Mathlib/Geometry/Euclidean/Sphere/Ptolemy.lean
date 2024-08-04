@@ -6,8 +6,6 @@ Authors: Manuel Candales, Benjamin Davidson
 import Mathlib.Geometry.Euclidean.Sphere.Power
 import Mathlib.Geometry.Euclidean.Triangle
 
-#align_import geometry.euclidean.sphere.ptolemy from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
-
 /-!
 # Ptolemy's theorem
 
@@ -69,6 +67,5 @@ theorem mul_dist_add_mul_dist_eq_mul_dist_of_cospherical {a b c d p : P}
   -- takes 650ms, but squeezing the equivalent simp call doesn't work
   field_simp [h₁, h₂, dist_eq_add_dist_of_angle_eq_pi hbpd, h₃, hbp, dist_comm a b, h₄, ← sq,
     dist_sq_mul_dist_add_dist_sq_mul_dist b, hapc]
-#align euclidean_geometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical
 
 end EuclideanGeometry

@@ -11,8 +11,6 @@ import Mathlib.RingTheory.Artinian
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.FreeModule.PID
 
-#align_import algebra.lie.weights from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
-
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras
 
@@ -90,7 +88,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   let f₁ : Module.End R (M₁ ⊗[R] M₂) := (toEnd R L M₁ x - χ₁ • ↑1).rTensor M₂
   let f₂ : Module.End R (M₁ ⊗[R] M₂) := (toEnd R L M₂ x - χ₂ • ↑1).lTensor M₁
   have h_comm_square : F ∘ₗ ↑g = (g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (f₁ + f₂) := by
-    ext m₁ m₂;
+    ext m₁ m₂
     simp only [f₁, f₂, F, ← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul,
       lie_tmul_right, tmul_smul, toEnd_apply_apply, LieModuleHom.map_smul,
       LinearMap.one_apply, LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply,
@@ -210,7 +208,7 @@ variable {M}
 @[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
   cases' χ₁ with f₁ _; cases' χ₂ with f₂ _; aesop
 
-lemma ext_iff {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by aesop
+protected lemma ext_iff {χ₁ χ₂ : Weight R L M} : χ₁ = χ₂ ↔ (χ₁ : L → R) = χ₂ := by aesop
 
 lemma exists_ne_zero (χ : Weight R L M) :
     ∃ x ∈ weightSpace M χ, x ≠ 0 := by
@@ -238,7 +236,7 @@ def IsZero (χ : Weight R L M) := (χ : L → R) = 0
 @[simp] lemma coe_eq_zero_iff (χ : Weight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
 
 lemma isZero_iff_eq_zero [Nontrivial (weightSpace M (0 : L → R))] {χ : Weight R L M} :
-    χ.IsZero ↔ χ = 0 := ext_iff (χ₂ := 0)
+    χ.IsZero ↔ χ = 0 := Weight.ext_iff (χ₂ := 0).symm
 
 lemma isZero_zero [Nontrivial (weightSpace M (0 : L → R))] : IsZero (0 : Weight R L M) := rfl
 
@@ -282,7 +280,6 @@ theorem zero_weightSpace_eq_top_of_nilpotent' [IsNilpotent R L M] :
     weightSpace M (0 : L → R) = ⊤ := by
   ext
   simp [weightSpace, weightSpaceOf]
-#align lie_module.zero_weight_space_eq_top_of_nilpotent' LieModule.zero_weightSpace_eq_top_of_nilpotent'
 
 theorem coe_weightSpace_of_top (χ : L → R) :
     (weightSpace M (χ ∘ (⊤ : LieSubalgebra R L).incl) : Submodule R M) = weightSpace M χ := by
@@ -290,7 +287,6 @@ theorem coe_weightSpace_of_top (χ : L → R) :
   simp only [mem_weightSpace, LieSubmodule.mem_coeSubmodule, Subtype.forall]
   apply forall_congr'
   simp
-#align lie_module.coe_weight_space_of_top LieModule.coe_weightSpace_of_top
 
 @[simp]
 theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
@@ -301,7 +297,6 @@ theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
   intro x
   obtain ⟨k, hk⟩ := exists_forall_pow_toEnd_eq_zero R L M
   exact ⟨k, by simp [hk x]⟩
-#align lie_module.zero_weight_space_eq_top_of_nilpotent LieModule.zero_weightSpace_eq_top_of_nilpotent
 
 theorem exists_weightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
     ∃ k : ℕ,
@@ -334,7 +329,6 @@ module. -/
 theorem isNilpotent_toEnd_weightSpace_zero [IsNoetherian R M] (x : L) :
     _root_.IsNilpotent <| toEnd R L (weightSpace M (0 : L → R)) x := by
   simpa using isNilpotent_toEnd_sub_algebraMap M (0 : L → R) x
-#align lie_module.is_nilpotent_to_endomorphism_weight_space_zero LieModule.isNilpotent_toEnd_weightSpace_zero
 
 /-- By Engel's theorem, the zero weight space of a Noetherian Lie module is nilpotent. -/
 instance [IsNoetherian R M] :
@@ -414,7 +408,7 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
   induction' l with l ih
   · simp
   simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
-  exact LieSubmodule.lie_mem_lie _ ⊤ (LieSubmodule.mem_top x) ih
+  exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
     [IsNilpotent R L M] (x : L) :
@@ -718,6 +712,15 @@ noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=
   iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEnd R L M x).genEigenspace φ k = ⊤
+
+instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizable R L' M where
+  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+
+instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
+  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+
+instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
+  iSup_eq_top := by rintro ⟨-, x, rfl⟩; exact IsTriangularizable.iSup_eq_top x
 
 @[simp]
 lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
