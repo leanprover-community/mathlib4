@@ -3,8 +3,9 @@ Copyright (c) 2021 Sebastian Ullrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
-import Lean
-import Mathlib.Tactic.Cache
+import Batteries.Util.Cache
+import Lean.HeadIndex
+import Lean.Elab.Command
 
 /-!
 # The `#find` command and tactic.
@@ -25,6 +26,7 @@ open Lean
 open Lean.Meta
 open Lean.Elab
 open Lean.Elab
+open Batteries.Tactic
 
 namespace Mathlib.Tactic.Find
 
@@ -42,21 +44,21 @@ private partial def matchHyps : List Expr → List Expr → List Expr → MetaM 
 -- from Lean.Server.Completion
 private def isBlackListed (declName : Name) : MetaM Bool := do
   let env ← getEnv
-  pure $ declName.isInternal
+  pure <| declName.isInternal
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName
   <||> isMatcher declName
 
 initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) ←
-  DeclCache.mk "#find: init cache" {} fun _ c headMap ↦ do
+  DeclCache.mk "#find: init cache" failure {} fun _ c headMap ↦ do
     if (← isBlackListed c.name) then
       return headMap
     -- TODO: this should perhaps use `forallTelescopeReducing` instead,
     -- to avoid leaking metavariables.
     let (_, _, ty) ← forallMetaTelescopeReducing c.type
     let head := ty.toHeadIndex
-    pure $ headMap.insert head (headMap.findD head #[] |>.push c.name)
+    pure <| headMap.insert head (headMap.findD head #[] |>.push c.name)
 
 def findType (t : Expr) : TermElabM Unit := withReducible do
   let t ← instantiateMVars t
@@ -94,10 +96,10 @@ Inside tactic proofs, the `#find` tactic can be used instead.
 There is also the `find` tactic which looks for
 lemmas which are `apply`able against the current goal.
 -/
-elab "#find" t:term : command =>
+elab "#find " t:term : command =>
   liftTermElabM do
     let t ← Term.elabTerm t none
-    Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+    Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
     findType t
 
 /- (Note that you'll get an error trying to run these here:
@@ -128,7 +130,7 @@ elab "find" : tactic => do
 Tactic version of the `#find` command.
 See also the `find` tactic to search for theorems matching the current goal.
 -/
-elab "#find" t:term : tactic => do
+elab "#find " t:term : tactic => do
   let t ← Term.elabTerm t none
-  Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+  Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
   findType t

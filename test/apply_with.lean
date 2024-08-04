@@ -1,5 +1,6 @@
 import Mathlib.Tactic.ApplyWith
 
+set_option autoImplicit true
 example (f : ∀ x : Nat, x = x → α) : α := by
   apply (config := {}) f
   apply rfl

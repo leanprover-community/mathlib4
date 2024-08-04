@@ -1,140 +1,125 @@
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Fin.Basic
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Ring.Basic
+/-
+Copyright (c) 2021 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
 import Mathlib.Data.ZMod.Defs
 
-lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+/-!
+# Adds Mathlib specific instances to the `UIntX` data types.
 
-lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+The `CommRing` instances (and the `NatCast` and `IntCast` instances from which they is built) are
+scoped in the `UIntX.CommRing` namespace, rather than available globally. As a result, the `ring`
+tactic will not work on `UIntX` types without `open scoped UIntX.Ring`.
 
-lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+This is because the presence of these casting operations contradicts assumptions made by the
+expression tree elaborator, namely that coercions do not form a cycle.
 
-lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
-
-lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
-
-instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
-
-instance UInt16.neZero : NeZero UInt16.size := ⟨by decide⟩
-
-instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
-
-instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
-
-instance USize.neZero : NeZero  USize.size := NeZero.of_pos usize_size_gt_zero
+The UInt
+version also interferes more with software-verification use-cases, which is reason to be more
+cautious here.
+-/
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
 set_option hygiene false in
 run_cmd
-  for typeName in [`UInt8, `UInt16, `UInt32, `UInt64, `USize].map Lean.mkIdent do
+  for typeName' in [`UInt8, `UInt16, `UInt32, `UInt64, `USize] do
+  let typeName := Lean.mkIdent typeName'
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
-      instance : Inhabited (Fin size) where
-        default := 0
+      instance neZero : NeZero size := ⟨by decide⟩
 
       instance : Neg $typeName where
         neg a := mk (-a.val)
 
-      lemma sub_def (a b : $typeName) : a - b = ⟨a.val - b.val⟩ := rfl
+      instance : Pow $typeName ℕ where
+        pow a n := mk (a.val ^ n)
 
-      lemma mul_def (a b : $typeName) : a * b = ⟨a.val * b.val⟩ := rfl
+      instance : SMul ℕ $typeName where
+        smul n a := mk (n • a.val)
 
-      lemma mod_def (a b : $typeName) : a % b = ⟨a.val % b.val⟩ := rfl
-
-      lemma add_def (a b : $typeName) : a + b = ⟨a.val + b.val⟩ := rfl
-
-      lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
-      | ⟨_⟩, ⟨_⟩, h => congrArg mk h
-
-      lemma val_eq_of_eq : ∀ {a b : $typeName}, a = b -> a.val = b.val
-      | ⟨_⟩, ⟨_⟩, h => congrArg val h
-
-      @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
-      | ⟨_, _⟩ => rfl
-
-      lemma zero_def : (0 : $typeName) = ⟨0⟩ := rfl
+      instance : SMul ℤ $typeName where
+        smul z a := mk (z • a.val)
 
       lemma neg_def (a : $typeName) : -a = ⟨-a.val⟩ := rfl
 
-      lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
+      lemma pow_def (a : $typeName) (n : ℕ) : a ^ n = ⟨a.val ^ n⟩ := rfl
 
-      instance : AddSemigroup $typeName where
-        add_assoc _ _ _ := congrArg mk (add_assoc _ _ _)
+      lemma nsmul_def (n : ℕ) (a : $typeName) : n • a = ⟨n • a.val⟩ := rfl
 
-      instance : AddCommSemigroup $typeName where
-        add_comm _ _ := congrArg mk (add_comm _ _)
+      lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ⟨z • a.val⟩ := rfl
 
-      instance : Semigroup $typeName where
-        mul_assoc _ _ _ := congrArg mk (mul_assoc _ _ _)
+      open $typeName (eq_of_val_eq) in
+      lemma val_injective : Function.Injective val := @eq_of_val_eq
 
-      instance : Semiring $typeName where
-        add_zero _ := congrArg mk (add_zero _)
-        zero_add _ := congrArg mk (zero_add _)
-        add_comm _ _:= congrArg mk (add_comm _ _)
-        mul_one _ := congrArg mk (mul_one _)
-        one_mul _ := congrArg mk (one_mul _)
-        nsmul n a := ⟨AddMonoid.nsmul n a.val⟩
-        nsmul_zero x := congrArg mk (AddMonoid.nsmul_zero x.val)
-        nsmul_succ n a := congrArg mk (AddMonoid.nsmul_succ n a.val)
-        zero_mul _ := congrArg mk (zero_mul _)
-        mul_zero _ := congrArg mk (mul_zero _)
-        npow_zero := fun _ ↦ rfl
-        npow_succ := fun _ _ ↦ rfl
-        right_distrib a b c := congrArg mk (right_distrib _ _ _)
-        left_distrib a b c := congrArg mk (left_distrib _ _ _)
-        natCast n := ⟨n⟩
-        natCast_zero := rfl
-        natCast_succ _ := congrArg mk (Nat.cast_succ _)
-        __ := inferInstanceAs (AddCommSemigroup $typeName)
-        __ := inferInstanceAs (Semigroup $typeName)
+      instance instCommMonoid : CommMonoid $typeName :=
+        Function.Injective.commMonoid val val_injective
+          rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
-      instance : Ring $typeName where
-        sub_eq_add_neg _ _ := congrArg mk (sub_eq_add_neg _ _)
-        add_left_neg _ := congrArg mk (add_left_neg _)
-        intCast n := ⟨n⟩
-        intCast_ofNat _ := rfl
-        intCast_negSucc _ := rfl
+      instance instNonUnitalCommRing : NonUnitalCommRing $typeName :=
+        Function.Injective.nonUnitalCommRing val val_injective
+          rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+          (fun _ _ => rfl) (fun _ _ => rfl)
 
-      instance : CommRing $typeName where
-        mul_comm := fun _ _ ↦ by
-          apply eq_of_val_eq
-          simp [mul_def, zero_def]
-          exact mul_comm _ _
+      local instance instNatCast : NatCast $typeName where
+        natCast n := mk n
+
+      local instance instIntCast : IntCast $typeName where
+        intCast z := mk z
+
+      lemma natCast_def (n : ℕ) : (n : $typeName) = ⟨n⟩ := rfl
+
+      lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
+
+      local instance instCommRing : CommRing $typeName :=
+        Function.Injective.commRing val val_injective
+          rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+          (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
+
+      namespace CommRing
+      attribute [scoped instance] instCommRing instNatCast instIntCast
+      end CommRing
 
     end $typeName
   ))
+  -- interpolating docstrings above is more trouble than it's worth
+  let docString :=
+    s!"To use this instance, use `open scoped {typeName'}.CommRing`.\n\n" ++
+    "See the module docstring for an explanation"
+  Lean.addDocString (typeName'.mkStr "instCommRing") docString
+  Lean.addDocString (typeName'.mkStr "instNatCast") docString
+  Lean.addDocString (typeName'.mkStr "instIntCast") docString
 
 namespace UInt8
 
 /-- Is this an uppercase ASCII letter? -/
-def isUpper (c : UInt8) : Bool :=
+def isASCIIUpper (c : UInt8) : Bool :=
   c ≥ 65 && c ≤ 90
 
 /-- Is this a lowercase ASCII letter? -/
-def isLower (c : UInt8) : Bool :=
+def isASCIILower (c : UInt8) : Bool :=
   c ≥ 97 && c ≤ 122
 
 /-- Is this an alphabetic ASCII character? -/
-def isAlpha (c : UInt8) : Bool :=
-  c.isUpper || c.isLower
+def isASCIIAlpha (c : UInt8) : Bool :=
+  c.isASCIIUpper || c.isASCIILower
 
 /-- Is this an ASCII digit character? -/
-def isDigit (c : UInt8) : Bool :=
+def isASCIIDigit (c : UInt8) : Bool :=
   c ≥ 48 && c ≤ 57
 
 /-- Is this an alphanumeric ASCII character? -/
-def isAlphanum (c : UInt8) : Bool :=
-  c.isAlpha || c.isDigit
+def isASCIIAlphanum (c : UInt8) : Bool :=
+  c.isASCIIAlpha || c.isASCIIDigit
 
-theorem toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by
-  rw [UInt32.val_eq_of_lt]
-  exact Or.inl $ Nat.lt_trans h $ by decide
-  exact Nat.lt_trans h $ by decide
+@[deprecated (since := "2024-06-06")] alias isUpper := isASCIIUpper
+@[deprecated (since := "2024-06-06")] alias isLower := isASCIILower
+@[deprecated (since := "2024-06-06")] alias isAlpha := isASCIIAlpha
+@[deprecated (since := "2024-06-06")] alias isDigit := isASCIIDigit
+@[deprecated (since := "2024-06-06")] alias isAlphanum := isASCIIAlphanum
 
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
-def toChar (n : UInt8) : Char := ⟨n.toUInt32, toChar_aux n.1 n.1.2⟩
+def toChar (n : UInt8) : Char := ⟨n.toUInt32, .inl (n.1.2.trans (by decide))⟩
 
 end UInt8

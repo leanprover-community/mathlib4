@@ -51,6 +51,16 @@ example [AddCommGroup α] (a b c : α) :
     left; abel1
   right; trivial
 
+/-- `MyTrue` should be opaque to `abel`. -/
+private def MyTrue := True
+
+/--
+error: abel_nf made no progress
+-/
+#guard_msgs in
+example : MyTrue := by
+  abel_nf
+
 -- `abel!` should see through terms that are definitionally equal,
 def id' (x : α) := x
 example [AddCommGroup α] (a b : α) : a + b - b - id' a = 0 := by
@@ -69,3 +79,63 @@ example [AddCommGroup α] : True := by
 example [AddCommGroup α] (x y z : α) : y = x + z - (x - y + z) := by
   have : True := trivial
   abel
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/abel.20bug.3F/near/368707560
+example [AddCommGroup α] (a b s : α) : -b + (s - a) = s - b - a := by abel_nf
+
+-- inspired by automated testing
+example : True := by
+  have := 0
+  abel_nf
+
+/--
+error: abel_nf made no progress
+-/
+#guard_msgs in
+example : False := by abel_nf
+
+/--
+error: abel_nf made no progress
+-/
+#guard_msgs in
+example [AddCommGroup α] (x y z : α) (w : x = y + z) : False := by
+  abel_nf at w
+
+example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False := by
+  abel_nf at w
+  guard_hyp w : 0 = y + z
+  assumption
+
+/--
+error: abel_nf made no progress
+-/
+#guard_msgs in
+example [AddCommGroup α] (x y z : α) (_w : x = y + z) : False := by
+  abel_nf at *
+
+-- Prior to https://github.com/leanprover/lean4/pull/2917 this would fail
+-- (the `at *` would close the goal,
+-- and then error when trying to work on the hypotheses because there was no goal.)
+example [AddCommGroup α] (x y z : α) (_w : x = y + z) : x - x = 0 := by
+  abel_nf at *
+
+/--
+error: abel_nf made no progress
+-/
+-- Ideally this would specify that it made no progress at `w`.
+#guard_msgs in
+example [AddCommGroup α] (x y z : α) (w : x = y + z) : x - x = 0 := by
+  abel_nf at w ⊢
+
+/--
+error: abel_nf made no progress
+-/
+-- Ideally this would specify that it made no progress at `⊢`.
+#guard_msgs in
+example [AddCommGroup α] (x y z : α) (w : x - x = y + z) : x = 0 := by
+  abel_nf at w ⊢
+
+example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False := by
+  abel_nf at *
+  guard_hyp w : 0 = y + z
+  assumption

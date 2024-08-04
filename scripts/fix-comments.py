@@ -41,7 +41,7 @@ align_files = subprocess.run(
 
 name_map = dict()
 for f in align_files.stdout.splitlines():
-    with open(os.path.join(root_dir, f)) as fh:
+    with open(os.path.join(root_dir, f), encoding="utf-8") as fh:
         contents = fh.read()
         for p in contents.split(sep='\n#align')[1:]:
             n3, n4, *_ = p.split(maxsplit=2)
@@ -84,7 +84,7 @@ def finish_comment():
         in_line_comment = False
         comment_so_far = None
 
-with open(leanfile) as F:
+with open(leanfile, encoding="utf-8") as F:
     while 1:
         char = F.read(1)
         if not char:

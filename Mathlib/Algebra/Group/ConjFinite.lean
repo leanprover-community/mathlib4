@@ -2,11 +2,6 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module algebra.group.conj_finite
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Data.Finite.Basic
@@ -16,8 +11,10 @@ import Mathlib.Data.Fintype.Units
 # Conjugacy of elements of finite groups
 -/
 
+-- TODO: After #13027,
+-- assert_not_exists MonoidWithZero
 
-variable {α : Type _} [Monoid α]
+variable {α : Type*} [Monoid α]
 
 attribute [local instance] IsConj.setoid
 
@@ -27,9 +24,8 @@ instance [Fintype α] [DecidableRel (IsConj : α → α → Prop)] : Fintype (Co
 instance [Finite α] : Finite (ConjClasses α) :=
   Quotient.finite _
 
-instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Prop) := fun a b => by
-  delta IsConj SemiconjBy
-  infer_instance
+instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Prop) := fun a b =>
+  inferInstanceAs (Decidable (∃ c : αˣ, c.1 * a = b * c.1))
 
 instance conjugatesOf.fintype [Fintype α] [DecidableRel (IsConj : α → α → Prop)] {a : α} :
   Fintype (conjugatesOf a) :=

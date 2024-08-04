@@ -27,59 +27,59 @@ example (n : ℕ) (w₂ : n < 1) : n = 0 := by
 
 example (n : ℕ) (w₂ : n < 2) : n = 0 ∨ n = 1 := by
   interval_cases n
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 example (n : ℕ) (w₁ : 1 ≤ n) (w₂ : n < 3) : n = 1 ∨ n = 2 := by
   interval_cases n
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 example (n : ℕ) (w₁ : 1 ≤ n) (w₂ : n < 3) : n = 1 ∨ n = 2 := by
   interval_cases using w₁, w₂
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 -- make sure we only pick up bounds on the specified variable:
 example (n m : ℕ) (w₁ : 1 ≤ n) (w₂ : n < 3) (_ : m < 2) : n = 1 ∨ n = 2 := by
   interval_cases n
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 example (n : ℕ) (w₁ : 1 < n) (w₂ : n < 4) : n = 2 ∨ n = 3 := by
   interval_cases n
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 example (n : ℕ) (w₁ : n ≥ 3) (w₂ : n < 5) : n = 3 ∨ n = 4 := by
   interval_cases n
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 example (n : ℕ) (w₀ : n ≥ 2) (w₁ : n ≥ 3) (w₂ : n < 5) : n = 3 ∨ n = 4 := by
   interval_cases n
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 example (n : ℕ) (w₁ : n > 2) (w₂ : n < 5) : n = 3 ∨ n = 4 := by
   interval_cases n
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 example (n : ℕ) (w₁ : n > 2) (w₂ : n ≤ 4) : n = 3 ∨ n = 4 := by
   interval_cases n
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 example (n : ℕ) (w₁ : 2 < n) (w₂ : 4 ≥ n) : n = 3 ∨ n = 4 := by
   interval_cases n
-  . left; rfl
-  . right; rfl
+  · left; rfl
+  · right; rfl
 
 example (n : ℕ) (h1 : 4 < n) (h2 : n ≤ 6) : n < 20 := by
   interval_cases n
-  . guard_target =ₛ 5 < 20; norm_num
-  . guard_target =ₛ 6 < 20; norm_num
+  · guard_target =ₛ 5 < 20; norm_num
+  · guard_target =ₛ 6 < 20; norm_num
 
 example (n : ℕ) (w₁ : n % 3 < 1) : n % 3 = 0 := by
   interval_cases h : n % 3
@@ -124,15 +124,15 @@ example (z : ℤ) (h1 : z ≥ -3) (h2 : z < 2) : z < 20 := by
 
 example (z : ℤ) (h1 : z ≥ -3) (h2 : z < 2) : z < 20 := by
   interval_cases z
-  . guard_target =ₛ (-3 : ℤ) < 20
+  · guard_target =ₛ (-3 : ℤ) < 20
     norm_num
-  . guard_target =ₛ (-2 : ℤ) < 20
+  · guard_target =ₛ (-2 : ℤ) < 20
     norm_num
-  . guard_target =ₛ (-1 : ℤ) < 20
+  · guard_target =ₛ (-1 : ℤ) < 20
     norm_num
-  . guard_target =ₛ (0 : ℤ) < 20
+  · guard_target =ₛ (0 : ℤ) < 20
     norm_num
-  . guard_target =ₛ (1 : ℤ) < 20
+  · guard_target =ₛ (1 : ℤ) < 20
     norm_num
 
 example (n : ℕ) : n % 2 = 0 ∨ n % 2 = 1 := by
@@ -140,19 +140,19 @@ example (n : ℕ) : n % 2 = 0 ∨ n % 2 = 1 := by
   have h2 : r < 2 := by
     exact Nat.mod_lt _ (by decide)
   interval_cases hrv : r -- Porting note: old syntax was `interval_cases r with hrv`
-  . left; exact hrv.symm.trans hrv
+  · left; exact hrv.symm.trans hrv
                --^ hover says `hrv : r = 0` and jumps to `hrv :` above
-  . right; exact hrv.symm.trans hrv
+  · right; exact hrv.symm.trans hrv
                --^ hover says `hrv : r = 1` and jumps to `hrv :` above
 
 /- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/interval_cases.20bug -/
 example {x : ℕ} (hx2 : x < 2) (h : False) : False := by
-  have : x ≤ 1
-  -- `interval_cases` deliberately not focussed,
-  -- this is testing that the `interval_cases` only acts on `have` side goal, not on both
-  interval_cases x
-  . exact zero_le_one
-  . rfl -- done for free in the mathlib3 version
+  have _this : x ≤ 1 := by
+    -- `interval_cases` deliberately not focussed,
+    -- this is testing that the `interval_cases` only acts on `have` side goal, not on both
+    interval_cases x
+    · exact zero_le_one
+    · rfl -- done for free in the mathlib3 version
   exact h
 
 /-
@@ -162,3 +162,13 @@ In Lean 3 this one didn't work! It reported:
 example (n : ℕ) (w₁ : n > 1000000) (w₁ : n < 1000002) : n < 2000000 := by
   interval_cases n
   norm_num
+
+section
+
+variable (d : ℕ)
+
+example (h : d ≤ 0) : d = 0 := by
+  interval_cases d
+  rfl
+
+end

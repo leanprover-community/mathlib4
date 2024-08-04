@@ -26,12 +26,12 @@ example {a : Nat} : a = a := by
   exact this
 
 example : True := by
-  (let _N) -- FIXME: lean4#1670
+  let _N; -- FIXME: lean4#1670
   exact Nat
   have
   · exact 0
   have _h : Nat
-  · exact 5
+  · exact this
   have _h' x : x < x + 1
   · exact Nat.lt.base x
   have _h'' (x : Nat) : x < x + 1
@@ -43,3 +43,10 @@ example : True := by
   have _q
   · exact 6
   simp
+
+/--
+error: type expected, got
+  (Nat.zero : Nat)
+-/
+#guard_msgs in
+example : True := by have h : Nat.zero

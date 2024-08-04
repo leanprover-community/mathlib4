@@ -2,10 +2,7 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
-
-import Std.Data.RBMap.Basic
 import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
@@ -30,7 +27,7 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-open Linarith.Ineq Std
+open Linarith.Ineq Batteries
 
 section
 open Lean Elab Tactic Meta
@@ -40,8 +37,9 @@ open Lean Elab Tactic Meta
 and returns the value associated with this key if it exists.
 Otherwise, it fails.
 -/
-def List.findDefeq (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) : MetaM v := do
-  if let some (_, n) ← m.findM? $ fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
+def List.findDefeq {v : Type} (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) :
+    MetaM v := do
+  if let some (_, n) ← m.findM? fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
     return n
   else
     failure
@@ -52,7 +50,8 @@ We introduce a local instance allowing addition of `RBMap`s,
 removing any keys with value zero.
 We don't need to prove anything about this addition, as it is only used in meta code.
 -/
-local instance [Add β] [Zero β] [DecidableEq β] : Add (RBMap α β c) where
+local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [DecidableEq β] :
+    Add (RBMap α β c) where
   add := fun f g => (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
 
 namespace Linarith
@@ -63,52 +62,61 @@ abbrev Map (α β) [Ord α] := RBMap α β Ord.compare
 /-! ### Parsing datatypes -/
 
 /-- Variables (represented by natural numbers) map to their power. -/
-@[reducible] def Monom : Type := Map ℕ ℕ
+abbrev Monom : Type := Map ℕ ℕ
 
 /-- `1` is represented by the empty monomial, the product of no variables. -/
 def Monom.one : Monom := RBMap.empty
 
 /-- Compare monomials by first comparing their keys and then their powers. -/
 def Monom.lt : Monom → Monom → Bool :=
-fun a b =>
-  ((a.keys : List ℕ) < b.keys) || (((a.keys : List ℕ) = b.keys) && ((a.values : List ℕ) < b.values))
+  fun a b =>
+    ((a.keys : List ℕ) < b.keys) ||
+      (((a.keys : List ℕ) = b.keys) && ((a.values : List ℕ) < b.values))
 
 instance : Ord Monom where
   compare x y := if x.lt y then .lt else if x == y then .eq else .gt
 
 /-- Linear combinations of monomials are represented by mapping monomials to coefficients. -/
-@[reducible] def Sum : Type := Map Monom ℤ
+abbrev Sum : Type := Map Monom ℤ
 
 /-- `1` is represented as the singleton sum of the monomial `Monom.one` with coefficient 1. -/
 def Sum.one : Sum := RBMap.empty.insert Monom.one 1
 
 /-- `Sum.scaleByMonom s m` multiplies every monomial in `s` by `m`. -/
 def Sum.scaleByMonom (s : Sum) (m : Monom) : Sum :=
-s.foldr (fun m' coeff sm => sm.insert (m + m') coeff) RBMap.empty
+  s.foldr (fun m' coeff sm => sm.insert (m + m') coeff) RBMap.empty
 
-/-- `sum.mul s1 s2` distributes the multiplication of two sums.` -/
+/-- `sum.mul s1 s2` distributes the multiplication of two sums. -/
 def Sum.mul (s1 s2 : Sum) : Sum :=
-s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).mapVal (fun _ v => v * coeff))) RBMap.empty
+  s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).mapVal (fun _ v => v * coeff)))
+    RBMap.empty
 
 /-- The `n`th power of `s : Sum` is the `n`-fold product of `s`, with `s.pow 0 = Sum.one`. -/
-def Sum.pow (s : Sum) : ℕ → Sum
-| 0     => Sum.one
-| (k+1) => s.mul (s.pow k)
+partial def Sum.pow (s : Sum) : ℕ → Sum
+  | 0 => Sum.one
+  | 1 => s
+  | n =>
+    let m := n >>> 1
+    let a := s.pow m
+    if n &&& 1 = 0 then
+      a.mul a
+    else
+      a.mul a |>.mul s
 
 /-- `SumOfMonom m` lifts `m` to a sum with coefficient `1`. -/
 def SumOfMonom (m : Monom) : Sum :=
-RBMap.empty.insert m 1
+  RBMap.empty.insert m 1
 
 /-- The unit monomial `one` is represented by the empty RBMap. -/
 def one : Monom := RBMap.empty
 
-/-- A scalar `z` is represented by a `sum` with coefficient `z` and monomial `one` -/
+/-- A scalar `z` is represented by a `Sum` with coefficient `z` and monomial `one` -/
 def scalar (z : ℤ) : Sum :=
-RBMap.empty.insert one z
+  RBMap.empty.insert one z
 
 /-- A single variable `n` is represented by a sum with coefficient `1` and monomial `n`. -/
 def var (n : ℕ) : Sum :=
-RBMap.empty.insert (RBMap.empty.insert n 1) 1
+  RBMap.empty.insert (RBMap.empty.insert n 1) 1
 
 
 /-! ### Parsing algorithms -/
@@ -169,10 +177,10 @@ partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
   | (``Neg.neg, #[_, _, e]) => do
     let (m1, comp) ← linearFormOfExpr red m e
     return (m1, comp.mapVal (fun _ v => -v))
-  | (``HPow.hPow, #[_, _, _, _, e, n]) => do
+  | (``HPow.hPow, #[_, _, _, _, a, n]) => do
     match n.numeral? with
     | some n => do
-      let (m1, comp) ← linearFormOfExpr red m e
+      let (m1, comp) ← linearFormOfExpr red m a
       return (m1, comp.pow n)
     | none => linearFormOfAtom red m e
   | _ => linearFormOfAtom red m e
@@ -186,13 +194,13 @@ but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
  -/
 def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
-s.foldr (λ mn coeff ⟨map, out⟩ =>
-  match map.find? mn with
-  | some n => ⟨map, out.insert n coeff⟩
-  | none =>
-    let n := map.size
-    ⟨map.insert mn n, out.insert n coeff⟩)
-  (m, RBMap.empty)
+  s.foldr (fun mn coeff ⟨map, out⟩ ↦
+    match map.find? mn with
+    | some n => ⟨map, out.insert n coeff⟩
+    | none =>
+      let n := map.size
+      ⟨map.insert mn n, out.insert n coeff⟩)
+    (m, RBMap.empty)
 
 /--
 `toComp red e e_map monom_map` converts an expression of the form `t < 0`, `t ≤ 0`, or `t = 0`
@@ -214,7 +222,7 @@ def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Ma
 updating `e_map` and `monom_map` as it goes.
  -/
 def toCompFold (red : TransparencyMode) : ExprMap → List Expr → Map Monom ℕ →
-      MetaM (List Comp × ExprMap × Map Monom ℕ)
+    MetaM (List Comp × ExprMap × Map Monom ℕ)
 | m, [],     mm => return ([], m, mm)
 | m, (h::t), mm => do
     let (c, m', mm') ← toComp red h m mm

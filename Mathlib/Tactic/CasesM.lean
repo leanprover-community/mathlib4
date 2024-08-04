@@ -3,7 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean
+import Lean.Elab.Tactic.Conv.Pattern
 
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics
@@ -11,8 +11,7 @@ import Lean
 These tactics implement repeated `cases` / `constructor` on anything satisfying a predicate.
 -/
 
-namespace Mathlib.Tactic
-open Lean Meta Elab Tactic
+namespace Lean.MVarId
 
 /--
 Core tactic for `casesm` and `cases_type`. Calls `cases` on all fvars in `g` for which
@@ -21,9 +20,8 @@ Core tactic for `casesm` and `cases_type`. Calls `cases` on all fvars in `g` for
 * `allowSplit`: if false, it will skip any hypotheses where `cases` returns more than one subgoal.
 * `throwOnNoMatch`: if true, then throws an error if no match is found
 -/
-partial def casesMatching (g : MVarId) (matcher : Expr → MetaM Bool)
-    (recursive := false) (allowSplit := true) (throwOnNoMatch := !recursive) :
-    MetaM (List MVarId) := do
+partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (allowSplit := true)
+    (throwOnNoMatch := true) (g : MVarId) : MetaM (List MVarId) := do
   let result := (← go g).toList
   if throwOnNoMatch && result == [g] then
     throwError "no match"
@@ -55,6 +53,17 @@ partial def casesMatching (g : MVarId) (matcher : Expr → MetaM Bool)
           return acc
       return (acc.push g)
 
+def casesType (heads : Array Name) (recursive := false) (allowSplit := true) :
+    MVarId → MetaM (List MVarId) :=
+  let matcher ty := pure <|
+    if let .const n .. := ty.headBeta.getAppFn then heads.contains n else false
+  casesMatching matcher recursive allowSplit
+
+end Lean.MVarId
+
+namespace Mathlib.Tactic
+open Lean Meta Elab Tactic MVarId
+
 /-- Elaborate a list of terms with holes into a list of patterns. -/
 def elabPatterns (pats : Array Term) : TermElabM (Array AbstractMVarsResult) :=
   withTheReader Term.Context (fun ctx ↦ { ctx with ignoreTCFailures := true }) <|
@@ -82,15 +91,13 @@ casesm* _ ∨ _, _ ∧ _
 -/
 elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
   let pats ← elabPatterns pats.getElems
-  liftMetaTactic (casesMatching · (matchPatterns pats) recursive.isSome)
+  liftMetaTactic (casesMatching (matchPatterns pats) recursive.isSome)
 
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)
     (recursive := false) (allowSplit := true) : TacticM Unit := do
-  let heads ← heads.mapM resolveGlobalConstNoOverloadWithInfo
-  let matcher ty := pure <|
-    if let .const n .. := ty.headBeta.getAppFn then heads.contains n else false
-  liftMetaTactic (casesMatching · matcher recursive allowSplit)
+  let heads ← heads.mapM (fun stx => realizeGlobalConstNoOverloadWithInfo stx)
+  liftMetaTactic (casesType heads recursive allowSplit)
 
 /--
 * `cases_type I` applies the `cases` tactic to a hypothesis `h : (I ...)`
@@ -104,11 +111,11 @@ Example: The following tactic destructs all conjunctions and disjunctions in the
 cases_type* Or And
 ```
 -/
-elab (name := casesType) "cases_type" recursive:"*"? ppSpace heads:(colGt ident)+ : tactic =>
+elab (name := casesType) "cases_type" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome true
 
 @[inherit_doc casesType]
-elab (name := casesType!) "cases_type!" recursive:"*"? ppSpace heads:(colGt ident)+ : tactic =>
+elab (name := casesType!) "cases_type!" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome false
 
 /--
@@ -118,7 +125,7 @@ Core tactic for `constructorm`. Calls `constructor` on all subgoals for which
 * `throwOnNoMatch`: if true, throws an error if no match is found
 -/
 partial def constructorMatching (g : MVarId) (matcher : Expr → MetaM Bool)
-    (recursive := false) (throwOnNoMatch := !recursive): MetaM (List MVarId) := do
+    (recursive := false) (throwOnNoMatch := true) : MetaM (List MVarId) := do
   let result ←
     (if recursive then (do
       let result ← go g

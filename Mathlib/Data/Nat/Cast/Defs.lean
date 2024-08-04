@@ -2,14 +2,8 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
-
-! This file was ported from Lean 3 source module data.nat.cast.defs
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.NeZero
 import Mathlib.Tactic.SplitIfs
 
 /-!
@@ -28,22 +22,12 @@ Preferentially, the homomorphism is written as the coercion `Nat.cast`.
 * `Nat.cast`: Canonical homomorphism `ℕ → R`.
 -/
 
+variable {R : Type*}
+
 /-- The numeral `((0+1)+⋯)+1`. -/
-protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
+protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => Nat.unaryCast n + 1
-#align nat.unary_cast Nat.unaryCast
-
-#align has_nat_cast NatCast
-#align has_nat_cast.nat_cast NatCast.natCast
-
-#align nat.cast Nat.cast
-
--- see note [coercion into rings]
-instance [NatCast R] : CoeTail ℕ R where coe := Nat.cast
-
--- see note [coercion into rings]
-instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
 
 -- the following four declarations are not in mathlib3 and are relevant to the way numeric
 -- literals are handled in Lean 4.
@@ -52,42 +36,55 @@ instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
 class Nat.AtLeastTwo (n : ℕ) : Prop where
   prop : n ≥ 2
 
-instance : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
+instance instNatAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
+  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
+
+namespace Nat.AtLeastTwo
+
+variable {n : ℕ} [n.AtLeastTwo]
+
+lemma one_lt : 1 < n := prop
+lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
+
+end Nat.AtLeastTwo
 
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]
-instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
+instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+    OfNat R n where
   ofNat := n.cast
 
-@[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
-  (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
+library_note "no_index around OfNat.ofNat"
+/--
+When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
+in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
+
+Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
+-/
+
+@[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+  (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
+
+theorem Nat.cast_eq_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+    (Nat.cast n : R) = OfNat.ofNat n :=
+  rfl
 
 /-! ### Additive monoids with one -/
 
 /-- An `AddMonoidWithOne` is an `AddMonoid` with a `1`.
 It also contains data for the unique homomorphism `ℕ → R`. -/
-class AddMonoidWithOne (R : Type u) extends NatCast R, AddMonoid R, One R where
+class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   natCast := Nat.unaryCast
   /-- The canonical map `ℕ → R` sends `0 : ℕ` to `0 : R`. -/
   natCast_zero : natCast 0 = 0 := by intros; rfl
   /-- The canonical map `ℕ → R` is a homomorphism. -/
   natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
-#align add_monoid_with_one AddMonoidWithOne
-#align add_monoid_with_one.to_has_nat_cast AddMonoidWithOne.toNatCast
-#align add_monoid_with_one.to_add_monoid AddMonoidWithOne.toAddMonoid
-#align add_monoid_with_one.to_has_one AddMonoidWithOne.toOne
-#align add_monoid_with_one.nat_cast_zero AddMonoidWithOne.natCast_zero
-#align add_monoid_with_one.nat_cast_succ AddMonoidWithOne.natCast_succ
 
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
-class AddCommMonoidWithOne (R : Type _) extends AddMonoidWithOne R, AddCommMonoid R
-#align add_comm_monoid_with_one AddCommMonoidWithOne
-#align add_comm_monoid_with_one.to_add_monoid_with_one AddCommMonoidWithOne.toAddMonoidWithOne
-#align add_comm_monoid_with_one.to_add_comm_monoid AddCommMonoidWithOne.toAddCommMonoid
+class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 
 library_note "coercion into rings"
 /--
@@ -106,30 +103,27 @@ if we need to shadow another coercion
 -/
 
 namespace Nat
+
 variable [AddMonoidWithOne R]
 
 @[simp, norm_cast]
 theorem cast_zero : ((0 : ℕ) : R) = 0 :=
   AddMonoidWithOne.natCast_zero
-#align nat.cast_zero Nat.cast_zero
 
--- Lemmas about nat.succ need to get a low priority, so that they are tried last.
--- This is because `nat.succ _` matches `1`, `3`, `x+1`, etc.
+-- Lemmas about `Nat.succ` need to get a low priority, so that they are tried last.
+-- This is because `Nat.succ _` matches `1`, `3`, `x+1`, etc.
 -- Rewriting would then produce really wrong terms.
-@[simp 500, norm_cast 500]
+@[norm_cast 500]
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
   AddMonoidWithOne.natCast_succ _
-#align nat.cast_succ Nat.cast_succ
 
 theorem cast_add_one (n : ℕ) : ((n + 1 : ℕ) : R) = n + 1 :=
   cast_succ _
-#align nat.cast_add_one Nat.cast_add_one
 
 @[simp, norm_cast]
 theorem cast_ite (P : Prop) [Decidable P] (m n : ℕ) :
     ((ite P m n : ℕ) : R) = ite P (m : R) (n : R) := by
   split_ifs <;> rfl
-#align nat.cast_ite Nat.cast_ite
 
 end Nat
 
@@ -138,12 +132,12 @@ namespace Nat
 @[simp, norm_cast]
 theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
   rw [cast_succ, Nat.cast_zero, zero_add]
-#align nat.cast_one Nat.cast_oneₓ
 
 @[simp, norm_cast]
 theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
-  induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
-#align nat.cast_add Nat.cast_addₓ
+  induction n with
+  | zero => simp
+  | succ n ih => rw [add_succ, cast_succ, ih, cast_succ, add_assoc]
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
 protected def binCast [Zero R] [One R] [Add R] : ℕ → R
@@ -151,11 +145,10 @@ protected def binCast [Zero R] [One R] [Add R] : ℕ → R
   | n + 1 => if (n + 1) % 2 = 0
     then (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2))
     else (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2)) + 1
-decreasing_by (exact Nat.div_lt_self (Nat.succ_pos n) (Nat.le_refl 2))
-#align nat.bin_cast Nat.binCast
 
 @[simp]
-theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : ℕ) : R) := by
+theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
+    (Nat.binCast n : R) = ((n : ℕ) : R) := by
   apply Nat.strongInductionOn n
   intros k hk
   cases k with
@@ -163,47 +156,27 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : 
   | succ k =>
       rw [Nat.binCast]
       by_cases h : (k + 1) % 2 = 0
-      · rw [←Nat.mod_add_div (succ k) 2]
-        rw [if_pos h, hk _ $ Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ←Nat.cast_add]
-        rw [Nat.succ_eq_add_one, h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
-      · rw [←Nat.mod_add_div (succ k) 2]
-        rw [if_neg h, hk _ $ Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ←Nat.cast_add]
+      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
+        rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
+        rw [h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
+      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
+        rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
         simp only [Nat.cast_add, Nat.cast_one]
-#align nat.bin_cast_eq Nat.binCast_eq
-
-section deprecated
-set_option linter.deprecated false
-
-@[norm_cast, deprecated]
-theorem cast_bit0 [AddMonoidWithOne R] (n : ℕ) : ((bit0 n : ℕ) : R) = bit0 (n : R) :=
-  Nat.cast_add _ _
-#align nat.cast_bit0 Nat.cast_bit0
-
-@[norm_cast, deprecated]
-theorem cast_bit1 [AddMonoidWithOne R] (n : ℕ) : ((bit1 n : ℕ) : R) = bit1 (n : R) := by
-  rw [bit1, cast_add_one, cast_bit0]; rfl
-#align nat.cast_bit1 Nat.cast_bit1
-
-end deprecated
 
 theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
-#align nat.cast_two Nat.cast_two
 
 attribute [simp, norm_cast] Int.natAbs_ofNat
 
 end Nat
 
 /-- `AddMonoidWithOne` implementation using unary recursion. -/
-@[reducible]
-protected def AddMonoidWithOne.unary {R : Type _} [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with }
-#align add_monoid_with_one.unary AddMonoidWithOne.unary
 
 /-- `AddMonoidWithOne` implementation using binary recursion. -/
-@[reducible]
-protected def AddMonoidWithOne.binary {R : Type _} [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast, Nat.cast],
@@ -211,37 +184,19 @@ protected def AddMonoidWithOne.binary {R : Type _} [AddMonoid R] [One R] : AddMo
       dsimp only [NatCast.natCast]
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
-#align add_monoid_with_one.binary AddMonoidWithOne.binary
 
-namespace NeZero
-
-lemma natCast_ne (n : ℕ) (R) [AddMonoidWithOne R] [h : NeZero (n : R)] :
-  (n : R) ≠ 0 := h.out
-#align ne_zero.nat_cast_ne NeZero.natCast_ne
-
-lemma of_neZero_natCast (R) [AddMonoidWithOne R] {n : ℕ} [h : NeZero (n : R)] : NeZero n :=
-  ⟨by rintro rfl; exact h.out Nat.cast_zero⟩
-#align ne_zero.of_ne_zero_coe NeZero.of_neZero_natCast
-
-lemma pos_of_neZero_natCast (R) [AddMonoidWithOne R] {n : ℕ} [NeZero (n : R)] : 0 < n :=
-  Nat.pos_of_ne_zero (of_neZero_natCast R).out
-#align ne_zero.pos_of_ne_zero_coe NeZero.pos_of_neZero_natCast
-
-end NeZero
-
-theorem one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
-  rw [←Nat.cast_one, ←Nat.cast_add]
-  apply congrArg
-  decide
-#align one_add_one_eq_two one_add_one_eq_two
-
-theorem two_add_one_eq_three [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
-  rw [←one_add_one_eq_two, ←Nat.cast_one, ←Nat.cast_add, ←Nat.cast_add]
+theorem one_add_one_eq_two [AddMonoidWithOne R] : 1 + 1 = (2 : R) := by
+  rw [← Nat.cast_one, ← Nat.cast_add]
   apply congrArg
   decide
 
-theorem three_add_one_eq_four [AddMonoidWithOne α] : 3 + 1 = (4 : α) := by
-  rw [←two_add_one_eq_three, ←one_add_one_eq_two, ←Nat.cast_one,
-    ←Nat.cast_add, ←Nat.cast_add, ←Nat.cast_add]
+theorem two_add_one_eq_three [AddMonoidWithOne R] : 2 + 1 = (3 : R) := by
+  rw [← one_add_one_eq_two, ← Nat.cast_one, ← Nat.cast_add, ← Nat.cast_add]
+  apply congrArg
+  decide
+
+theorem three_add_one_eq_four [AddMonoidWithOne R] : 3 + 1 = (4 : R) := by
+  rw [← two_add_one_eq_three, ← one_add_one_eq_two, ← Nat.cast_one,
+    ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_add]
   apply congrArg
   decide

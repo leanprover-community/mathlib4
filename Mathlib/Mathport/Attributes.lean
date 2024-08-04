@@ -5,9 +5,12 @@ Authors: Mario Carneiro
 -/
 import Lean.Attributes
 
+/-!
+# Defines the "substitution" attribute for mathport
+
+This has to be defined in a separate file.
+-/
+
 namespace Lean.Attr
 
 initialize substAttr : TagAttribute ← registerTagAttribute `subst "substitution"
-
-initialize hintTacticAttr : TagAttribute ←
-  registerTagAttribute `hint_tactic "A tactic that should be tried by `hint`."

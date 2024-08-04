@@ -1,10 +1,11 @@
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Nat.Basic
--- import Mathlib.Data.Set.Basic
+import Mathlib.Algebra.Ring.Nat
 
+private axiom test_sorry : ∀ {α}, α
 /-! ### Test `nontriviality` with inequality hypotheses -/
 
+set_option autoImplicit true
 
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
   nontriviality
@@ -40,19 +41,19 @@ example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 2 ∣ 4 := by
   rename_i inst; guard_hyp inst : Nontrivial R
   decide
 
-/-! Test using `@[nontriviality]` lemmas in `nontriviality and custom `simp` lemmas -/
+/-! Test using `@[nontriviality]` lemmas in `nontriviality` and custom `simp` lemmas -/
 
 
 def EmptyOrUniv {α : Type _} (s : Set α) : Prop :=
   s = ∅ ∨ s = Set.univ
 
 theorem Subsingleton.set_empty_or_univ {α} [Subsingleton α] (s : Set α) : s = ∅ ∨ s = Set.univ :=
-  sorry
+test_sorry
 
 theorem Subsingleton.set_empty_or_univ' {α} [Subsingleton α] (s : Set α) : EmptyOrUniv s :=
   Subsingleton.set_empty_or_univ s
 
-theorem Set.empty_union (a : Set α) : ∅ ∪ a = a := sorry
+theorem Set.empty_union (a : Set α) : ∅ ∪ a = a := test_sorry
 
 example {α : Type _} (s : Set α) (hs : s = ∅ ∪ Set.univ) : EmptyOrUniv s := by
   fail_if_success nontriviality α
@@ -90,3 +91,11 @@ class Foo (α : Type) : Prop
 instance : Foo α := {}
 
 example (α : Type) : Foo α := by nontriviality α; infer_instance
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
+noncomputable instance : CommRing (R c d) := test_sorry
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) : p = p := by
+  nontriviality
+  exact test_sorry

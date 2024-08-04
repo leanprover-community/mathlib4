@@ -2,14 +2,8 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.nat.gcd.big_operators
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 
 /-! # Lemmas about coprimality with big products.
 
@@ -19,18 +13,44 @@ These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize im
 
 namespace Nat
 
-open BigOperators
+variable {ι : Type*}
+
+theorem coprime_list_prod_left_iff {l : List ℕ} {k : ℕ} :
+    Coprime l.prod k ↔ ∀ n ∈ l, Coprime n k := by
+  induction l <;> simp [Nat.coprime_mul_iff_left, *]
+
+theorem coprime_list_prod_right_iff {k : ℕ} {l : List ℕ} :
+    Coprime k l.prod ↔ ∀ n ∈ l, Coprime k n := by
+  simp_rw [coprime_comm (n := k), coprime_list_prod_left_iff]
+
+theorem coprime_multiset_prod_left_iff {m : Multiset ℕ} {k : ℕ} :
+    Coprime m.prod k ↔ ∀ n ∈ m, Coprime n k := by
+  induction m using Quotient.inductionOn; simpa using coprime_list_prod_left_iff
+
+theorem coprime_multiset_prod_right_iff {k : ℕ} {m : Multiset ℕ} :
+    Coprime k m.prod ↔ ∀ n ∈ m, Coprime k n := by
+  induction m using Quotient.inductionOn; simpa using coprime_list_prod_right_iff
+
+theorem coprime_prod_left_iff {t : Finset ι} {s : ι → ℕ} {x : ℕ} :
+    Coprime (∏ i ∈ t, s i) x ↔ ∀ i ∈ t, Coprime (s i) x := by
+  simpa using coprime_multiset_prod_left_iff (m := t.val.map s)
+
+theorem coprime_prod_right_iff {x : ℕ} {t : Finset ι} {s : ι → ℕ} :
+    Coprime x (∏ i ∈ t, s i) ↔ ∀ i ∈ t, Coprime x (s i) := by
+  simpa using coprime_multiset_prod_right_iff (m := t.val.map s)
 
 /-- See `IsCoprime.prod_left` for the corresponding lemma about `IsCoprime` -/
-theorem coprime_prod_left {ι : Type _} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
-    (∀ i : ι, i ∈ t → coprime (s i) x) → coprime (∏ i : ι in t, s i) x :=
-  Finset.prod_induction s (fun y ↦ y.coprime x) (fun a b ↦ coprime.mul) (by simp)
-#align nat.coprime_prod_left Nat.coprime_prod_left
+alias ⟨_, Coprime.prod_left⟩ := coprime_prod_left_iff
 
 /-- See `IsCoprime.prod_right` for the corresponding lemma about `IsCoprime` -/
-theorem coprime_prod_right {ι : Type _} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
-    (∀ i : ι, i ∈ t → coprime x (s i)) → coprime x (∏ i : ι in t, s i) :=
-  Finset.prod_induction s (fun y ↦ x.coprime y) (fun a b ↦ coprime.mul_right) (by simp)
-#align nat.coprime_prod_right Nat.coprime_prod_right
+alias ⟨_, Coprime.prod_right⟩ := coprime_prod_right_iff
+
+theorem coprime_fintype_prod_left_iff [Fintype ι] {s : ι → ℕ} {x : ℕ} :
+    Coprime (∏ i, s i) x ↔ ∀ i, Coprime (s i) x := by
+  simp [coprime_prod_left_iff]
+
+theorem coprime_fintype_prod_right_iff [Fintype ι] {x : ℕ} {s : ι → ℕ} :
+    Coprime x (∏ i, s i) ↔ ∀ i, Coprime x (s i) := by
+  simp [coprime_prod_right_iff]
 
 end Nat
