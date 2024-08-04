@@ -369,15 +369,17 @@ lemma IsOfFinOrder.finite_powers (ha : IsOfFinOrder a) : (powers a : Set G).Fini
 
 namespace Commute
 
-variable {x} (h : Commute x y)
+variable {x}
 
 @[to_additive]
-theorem orderOf_mul_dvd_lcm : orderOf (x * y) ∣ Nat.lcm (orderOf x) (orderOf y) := by
+theorem orderOf_mul_dvd_lcm (h : Commute x y) :
+    orderOf (x * y) ∣ Nat.lcm (orderOf x) (orderOf y) := by
   rw [orderOf, ← comp_mul_left]
   exact Function.Commute.minimalPeriod_of_comp_dvd_lcm h.function_commute_mul_left
 
 @[to_additive]
-theorem orderOf_dvd_lcm_mul : orderOf y ∣ Nat.lcm (orderOf x) (orderOf (x * y)) := by
+theorem orderOf_dvd_lcm_mul (h : Commute x y):
+    orderOf y ∣ Nat.lcm (orderOf x) (orderOf (x * y)) := by
   by_cases h0 : orderOf x = 0
   · rw [h0, lcm_zero_left]
     apply dvd_zero
@@ -389,18 +391,20 @@ theorem orderOf_dvd_lcm_mul : orderOf y ∣ Nat.lcm (orderOf x) (orderOf (x * y)
       (lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (dvd_lcm_left _ _), dvd_lcm_right _ _⟩)
 
 @[to_additive addOrderOf_add_dvd_mul_addOrderOf]
-theorem orderOf_mul_dvd_mul_orderOf : orderOf (x * y) ∣ orderOf x * orderOf y :=
+theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y):
+    orderOf (x * y) ∣ orderOf x * orderOf y :=
   dvd_trans h.orderOf_mul_dvd_lcm (lcm_dvd_mul _ _)
 
 @[to_additive addOrderOf_add_eq_mul_addOrderOf_of_coprime]
-theorem orderOf_mul_eq_mul_orderOf_of_coprime (hco : (orderOf x).Coprime (orderOf y)) :
-    orderOf (x * y) = orderOf x * orderOf y := by
+theorem orderOf_mul_eq_mul_orderOf_of_coprime (h : Commute x y)
+    (hco : (orderOf x).Coprime (orderOf y)) : orderOf (x * y) = orderOf x * orderOf y := by
   rw [orderOf, ← comp_mul_left]
   exact h.function_commute_mul_left.minimalPeriod_of_comp_eq_mul_of_coprime hco
 
 /-- Commuting elements of finite order are closed under multiplication. -/
 @[to_additive "Commuting elements of finite additive order are closed under addition."]
-theorem isOfFinOrder_mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOrder (x * y) :=
+theorem isOfFinOrder_mul (h : Commute x y) (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) :
+    IsOfFinOrder (x * y) :=
   orderOf_pos_iff.mp <|
     pos_of_dvd_of_pos h.orderOf_mul_dvd_mul_orderOf <| mul_pos hx.orderOf_pos hy.orderOf_pos
 
@@ -410,7 +414,7 @@ theorem isOfFinOrder_mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOr
   "If each prime factor of
   `addOrderOf x` has higher multiplicity in `addOrderOf y`, and `x` commutes with `y`,
   then `x + y` has the same order as `y`."]
-theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (hy : IsOfFinOrder y)
+theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (h : Commute x y) (hy : IsOfFinOrder y)
     (hdvd : ∀ p : ℕ, p.Prime → p ∣ orderOf x → p * orderOf x ∣ orderOf y) :
     orderOf (x * y) = orderOf y := by
   have hoy := hy.orderOf_pos

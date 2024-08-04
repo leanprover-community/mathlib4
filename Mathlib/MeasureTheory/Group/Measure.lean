@@ -98,6 +98,16 @@ instance isMulRightInvariant_smul_nnreal [IsMulRightInvariant μ] (c : ℝ≥0) 
     IsMulRightInvariant (c • μ) :=
   MeasureTheory.isMulRightInvariant_smul (c : ℝ≥0∞)
 
+@[to_additive]
+instance IsMulLeftInvariant.smulInvariantMeasure [IsMulLeftInvariant μ] :
+    SMulInvariantMeasure G G μ :=
+  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_left_eq_self _ _) hs.nullMeasurableSet⟩
+
+@[to_additive]
+instance IsMulRightInvariant.toSMulInvariantMeasure_op [μ.IsMulRightInvariant] :
+    SMulInvariantMeasure Gᵐᵒᵖ G μ :=
+  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_right_eq_self _ _) hs.nullMeasurableSet⟩
+
 section MeasurableMul
 
 variable [MeasurableMul G]
@@ -123,16 +133,6 @@ theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => f x * g) μ' μ :=
   (measurePreserving_mul_right μ g).comp hf
-
-@[to_additive]
-instance IsMulLeftInvariant.smulInvariantMeasure [IsMulLeftInvariant μ] :
-    SMulInvariantMeasure G G μ :=
-  ⟨fun x _s hs => (measurePreserving_mul_left μ x).measure_preimage hs⟩
-
-@[to_additive]
-instance IsMulRightInvariant.toSMulInvariantMeasure_op [μ.IsMulRightInvariant] :
-    SMulInvariantMeasure Gᵐᵒᵖ G μ :=
-  ⟨fun x _s hs => (measurePreserving_mul_right μ (MulOpposite.unop x)).measure_preimage hs⟩
 
 @[to_additive]
 instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
