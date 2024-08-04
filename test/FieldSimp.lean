@@ -76,7 +76,6 @@ example {x y z w : ℚ} (h : x / y = z / w) (hy : y ≠ 0) (hw : w ≠ 0) : x * 
 example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
   field_simp
 
-
 -- An example of "unfolding" `field_simps` to its "definition"
 example {aa : ℚ} (ha : (aa : ℚ) ≠ 0) (hb : 2 * aa = 3) : (1 : ℚ) / aa = 2/ 3 := by
   simp (disch := field_simp_discharge) [-one_div, -one_divp, -mul_eq_zero, field_simps]

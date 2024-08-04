@@ -44,12 +44,9 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     -- Discharge strategy 2: use norm_cast
     -- Try to cast all hypotheses (that are proofs) and `prop` into normal form before checking
     let r'' ← NormCast.derive prop
-    let hyps ← (← getLocalHyps).filterM fun hyp => isProof hyp
-    for hyp in hyps do
-      -- If `hyp` can be discharged quickly using an assumption, do so.
-      if (← isDefEq (← inferType hyp) prop) then
-        return some hyp
-      -- Otherwise, use normCast to normalize and then check
+    let proofHypotheses ← (← getLocalHyps).filterM (isProof ·)
+    for hyp in proofHypotheses do
+      -- Use normCast to normalize and then check if `prop` can be discharged.
       let ty ← inferType hyp
       let r' ← NormCast.derive ty
       if (← isDefEq r''.expr r'.expr) then
@@ -134,8 +131,8 @@ should be given explicitly. If your expression is not completely reduced by the 
 invocation, check the denominators of the resulting expression and provide proofs that they are
 nonzero to enable further progress.
 
-To check that denominators are nonzero, `field_simp` will look for facts in the context and
-normalize them with `norm_cast` and will try to apply `norm_num` to close numerical goals.
+To check that denominators are nonzero, `field_simp` will look for facts in the context,
+normalize them with `norm_cast`, and will try to apply `norm_num` to close numerical goals.
 
 The invocation of `field_simp` removes the lemma `one_div` from the simpset, as this lemma
 works against the algorithm explained above. It also removes
