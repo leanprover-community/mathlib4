@@ -117,6 +117,8 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
 
+-- Needs thought: simp set is medium long
+set_option linter.flexible false in
 private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisors R M]
     (p : PerfectPairing R M N)
     (root : ι ↪ M)

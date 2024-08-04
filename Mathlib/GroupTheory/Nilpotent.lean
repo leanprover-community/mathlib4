@@ -554,6 +554,8 @@ theorem nilpotencyClass_zero_iff_subsingleton [IsNilpotent G] :
   rw [Group.nilpotencyClass, @Nat.find_eq_zero _ (Classical.decPred _), upperCentralSeries_zero,
     subsingleton_iff_bot_eq_top, Subgroup.subsingleton_iff]
 
+-- Needs thought: simp at hH is necessary; otherwise, `simpa using ...` works
+set_option linter.flexible false in
 /-- Quotienting the `center G` reduces the nilpotency class by 1 -/
 theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
     Group.nilpotencyClass (G ⧸ center G) = Group.nilpotencyClass G - 1 := by

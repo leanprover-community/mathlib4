@@ -119,6 +119,8 @@ theorem BinaryFan.assocInv_snd {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sX
     (BinaryFan.assocInv P s).snd = s.snd ≫ sYZ.snd :=
   rfl
 
+-- Needs thought: simp acts on multiple goals, with different long simp sets
+set_option linter.flexible false in
 /-- If all the binary fans involved a limit cones, `BinaryFan.assoc` produces another limit cone.
 -/
 @[simps]

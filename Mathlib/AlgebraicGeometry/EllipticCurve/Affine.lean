@@ -637,6 +637,8 @@ lemma neg_zero : (-0 : W.Point) = 0 :=
 lemma neg_some {x y : R} (h : W.Nonsingular x y) : -some h = some (nonsingular_neg h) :=
   rfl
 
+-- Needs thought: simp acts on two goals, with different simp sets
+set_option linter.flexible false in
 instance : InvolutiveNeg W.Point :=
   ⟨by rintro (_ | _) <;> simp [zero_def]; ring1⟩
 

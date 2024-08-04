@@ -339,7 +339,8 @@ instance addCommGroup : AddCommGroup ℂ :=
     add_comm := by intros; ext <;> simp [add_comm]
     add_left_neg := by intros; ext <;> simp }
 
-
+-- Needs thought: `show` is necessary; `simp only` uses four long lemmas each
+set_option linter.flexible false in
 instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast := fun n => ⟨n, 0⟩
