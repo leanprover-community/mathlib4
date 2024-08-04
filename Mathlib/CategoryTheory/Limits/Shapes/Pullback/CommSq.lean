@@ -220,21 +220,6 @@ lemma hom_ext (hP : IsPullback fst snd f g) {W : C} {k l : W ⟶ P}
     (h₀ : k ≫ fst = l ≫ fst) (h₁ : k ≫ snd = l ≫ snd) : k = l :=
   PullbackCone.IsLimit.hom_ext hP.isLimit h₀ h₁
 
-/- Basic API for the universal property -/
-noncomputable def lift (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
-    (w : h ≫ f = k ≫ g) : W ⟶ P :=
-  PullbackCone.IsLimit.lift hP.isLimit h k w
-
-@[reassoc (attr := simp)]
-lemma lift_fst (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
-    (w : h ≫ f = k ≫ g) : hP.lift h k w ≫ fst = h :=
-  PullbackCone.IsLimit.lift_fst hP.isLimit h k w
-
-@[reassoc (attr := simp)]
-lemma lift_snd (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
-    (w : h ≫ f = k ≫ g) : hP.lift h k w ≫ snd = k :=
-  PullbackCone.IsLimit.lift_snd hP.isLimit h k w
-
 /-- If `c` is a limiting pullback cone, then we have an `IsPullback c.fst c.snd f g`. -/
 theorem of_isLimit {c : PullbackCone f g} (h : Limits.IsLimit c) : IsPullback c.fst c.snd f g :=
   { w := c.condition
@@ -377,40 +362,6 @@ lemma of_iso (h : IsPullback fst snd f g)
               rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
-
-def id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
-  of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
-
-section
-
-variable {P': C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
-
-/-- Any object at the top left of a pullback square is isomorphic to the object at the top left
-of another pullback square with the same cospan. -/
-noncomputable def isoIsPullback (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    P ≅ P' :=
-  -- TODO: want PullbackCone.IsLimit.conePointUniqueUpToIso API...
-  IsLimit.conePointUniqueUpToIso h.isLimit h'.isLimit
-
-@[simp]
-theorem isoIsPullback_hom_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback h').hom ≫ fst' = fst :=
-  IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.left
-
-@[simp]
-theorem isoIsPullback_hom_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback h').hom ≫ snd' = snd :=
-  IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.right
-
-@[simp]
-theorem isoIsPullback_inv_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback h').inv ≫ fst = fst' := by simp [Iso.inv_comp_eq]
-
-@[simp]
-theorem isoIsPullback_inv_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback h').inv ≫ snd = snd' := by simp [Iso.inv_comp_eq]
-
-end
 
 end IsPullback
 
@@ -717,24 +668,6 @@ theorem of_right {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ 
     (t : IsPullback h₁₂ v₁₂ v₁₃ h₂₂) : IsPullback h₁₁ v₁₁ v₁₂ h₂₁ :=
   (of_bot s.flip p.symm t.flip).flip
 
-/-- Variant of `IsPullback.of_right` where `h₁₁` is induced from the universal property of the
-right square.
-
-The objects fit in the following diagram:
-```
-X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
-|            |            |
-v₁₁          v₁₂          v₁₃
-↓            ↓            ↓
-X₂₁ - h₂₁ -> X₂₂ - h₂₂ -> X₂₃
-```
--/
-theorem of_right' {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₂ : X₁₂ ⟶ X₁₃} {h₂₁ : X₂₁ ⟶ X₂₂} {h₂₂ : X₂₂ ⟶ X₂₃}
-    {h₁₃ : X₁₁ ⟶ X₁₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
-  (s : IsPullback h₁₃ v₁₁ v₁₃ (h₂₁ ≫ h₂₂)) (t : IsPullback h₁₂ v₁₂ v₁₃ h₂₂) :
-    IsPullback (t.lift h₁₃ (v₁₁ ≫ h₂₁) (by rw [s.w, Category.assoc])) v₁₁ v₁₂ h₂₁ := by
-  apply of_right ((t.lift_fst _ _ _) ▸ s) (t.lift_snd _ _ _) t
-
 theorem paste_vert_iff {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂}
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) (e : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁) :
@@ -908,9 +841,6 @@ Z --id--> Z
 -/
 lemma id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
-
-def id_vert (f : X ⟶ Z) : IsPullback f (𝟙 X) (𝟙 Z) f :=
-  of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 end IsPullback
 
