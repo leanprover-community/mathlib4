@@ -814,6 +814,7 @@ theorem TopologicalGroup.of_comm_of_nhds_one {G : Type u} [CommGroup G] [Topolog
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (x₀ * ·) (𝓝 1)) : TopologicalGroup G :=
   TopologicalGroup.of_nhds_one hmul hinv hleft (by simpa using tendsto_id)
 
+variable (G) in
 /-- Any first countable topological group has an antitone neighborhood basis `u : ℕ → Set G` for
 which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a key tool for
 `QuotientGroup.completeSpace` -/
