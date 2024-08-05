@@ -19,10 +19,11 @@ This is different from the radical of an ideal.
   its prime factors.
 - `radical_eq_of_associated`: If `a` and `b` are associates, i.e. `a * u = b` for some unit `u`,
   then `radical a = radical b`.
-- `radical_unit_hMul`: Multiplying unit does not change the radical.
+- `radical_unit_mul`: Multiplying unit does not change the radical.
 - `radical_dvd_self`: `radical a` divides `a`.
 - `radical_pow`: `radical (a ^ n) = radical a` for any `n ≥ 1`
-- `radical_prime`: Radical of a prime element is equal to its normalization
+- `radical_of_prime`: Radical of a prime element is equal to its normalization
+- `radical_pow_of_prime`: Radical of a power of prime element is equal to its normalization
 
 ## TODO
 
@@ -37,53 +38,55 @@ open scoped Classical
 
 open UniqueFactorizationMonoid
 
-variable {k : Type _} [Field k]
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
-variable {α : Type _} [CancelCommMonoidWithZero α] [NormalizationMonoid α]
-  [UniqueFactorizationMonoid α]
+variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
+  [UniqueFactorizationMonoid M]
 variable {R : Type _} [CommRing R] [IsDomain R] [NormalizationMonoid R] [UniqueFactorizationMonoid R]
 
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
-def primeFactors (a : α) : Finset α :=
+def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
 
 /--
 Radical of an element `a` in a unique factorization monoid is the product of
 the prime factors of `a`.
 -/
-def radical (a : α) : α :=
+def radical (a : M) : M :=
   (primeFactors a).prod id
 
 @[simp]
-theorem radical_zero_eq : radical (0 : α) = 1 := by
+theorem radical_zero_eq : radical (0 : M) = 1 := by
   rw [radical, primeFactors, normalizedFactors_zero, Multiset.toFinset_zero, Finset.prod_empty]
 
 @[simp]
-theorem radical_one_eq : radical (1 : α) = 1 := by
+theorem radical_one_eq : radical (1 : M) = 1 := by
   rw [radical, primeFactors, normalizedFactors_one, Multiset.toFinset_zero, Finset.prod_empty]
 
-theorem radical_eq_of_associated {a b : α} (h : Associated a b) : radical a = radical b := by
+theorem radical_eq_of_associated {a b : M} (h : Associated a b) : radical a = radical b := by
   rcases iff_iff_and_or_not_and_not.mp h.eq_zero_iff with (⟨rfl, rfl⟩ | ⟨ha, hb⟩)
   · rfl
   · simp_rw [radical, primeFactors]
     rw [(associated_iff_normalizedFactors_eq_normalizedFactors ha hb).mp h]
 
-theorem radical_unit_eq_one {a : α} (h : IsUnit a) : radical a = 1 :=
+theorem radical_unit_eq_one {a : M} (h : IsUnit a) : radical a = 1 :=
   (radical_eq_of_associated (associated_one_iff_isUnit.mpr h)).trans radical_one_eq
 
-theorem radical_unit_hMul {u : αˣ} {a : α} : radical ((↑u : α) * a) = radical a :=
+theorem radical_unit_mul {u : Mˣ} {a : M} : radical ((↑u : M) * a) = radical a :=
   radical_eq_of_associated (associated_unit_mul_left _ _ u.isUnit)
 
-theorem primeFactors_pow (a : α) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
+theorem radical_mul_unit {u : Mˣ} {a : M} : radical (a * (↑u : M)) = radical a :=
+  radical_eq_of_associated (associated_mul_unit_left _ _ u.isUnit)
+
+theorem primeFactors_pow (a : M) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
   simp_rw [primeFactors]
   simp only [normalizedFactors_pow]
   rw [Multiset.toFinset_nsmul]
   exact ne_of_gt hn
 
-theorem radical_pow (a : α) {n : Nat} (hn : 0 < n) : radical (a ^ n) = radical a := by
+theorem radical_pow (a : M) {n : Nat} (hn : 0 < n) : radical (a ^ n) = radical a := by
   simp_rw [radical, primeFactors_pow a hn]
 
-theorem radical_dvd_self (a : α) : radical a ∣ a := by
+theorem radical_dvd_self (a : M) : radical a ∣ a := by
   by_cases ha : a = 0
   · rw [ha]
     apply dvd_zero
@@ -92,21 +95,21 @@ theorem radical_dvd_self (a : α) : radical a ∣ a := by
     rw [primeFactors, Multiset.toFinset_val]
     apply Multiset.dedup_le
 
-theorem radical_prime {a : α} (ha : Prime a) : radical a = normalize a := by
+theorem radical_of_prime {a : M} (ha : Prime a) : radical a = normalize a := by
   rw [radical, primeFactors]
   rw [normalizedFactors_irreducible ha.irreducible]
   simp only [Multiset.toFinset_singleton, id, Finset.prod_singleton]
 
-theorem radical_prime_pow {a : α} (ha : Prime a) {n : ℕ} (hn : 1 ≤ n) :
+theorem radical_pow_of_prime {a : M} (ha : Prime a) {n : ℕ} (hn : 0 < n) :
     radical (a ^ n) = normalize a := by
   rw [radical_pow a hn]
-  exact radical_prime ha
+  exact radical_of_prime ha
 
 
 -- Theorems for commutative rings
 
 /-- Coprime elements have disjoint prime factors (as multisets). -/
-private theorem IsCoprime.disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
+theorem IsCoprime.disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
     (normalizedFactors a).Disjoint (normalizedFactors b) := by
   intro x hxa hxb
   have x_dvd_a := dvd_of_mem_normalizedFactors hxa
@@ -115,11 +118,11 @@ private theorem IsCoprime.disjoint_normalizedFactors {a b : R} (hc : IsCoprime a
   exact xp.not_unit (hc.isUnit_of_dvd' x_dvd_a x_dvd_b)
 
 /-- Coprime elements have disjoint prime factors (as finsets). -/
-private theorem IsCoprime.disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
+theorem IsCoprime.disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
     Disjoint (primeFactors a) (primeFactors b) :=
   Multiset.disjoint_toFinset.mpr (hc.disjoint_normalizedFactors)
 
-private theorem IsCoprime.hMul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
+theorem IsCoprime.hMul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
     (hc : IsCoprime a b) :
     primeFactors (a * b) = (primeFactors a).disjUnion (primeFactors b) hc.disjoint_primeFactors := by
   rw [Finset.disjUnion_eq_union]
