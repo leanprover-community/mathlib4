@@ -515,6 +515,9 @@ instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := �
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
 
+instance : DecidableEq UnitAddCircle :=
+  fun a b ↦ Classical.propDecidable (a = b)
+
 end UnitAddCircle
 
 section IdentifyIccEnds
