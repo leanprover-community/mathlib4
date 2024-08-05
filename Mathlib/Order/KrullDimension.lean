@@ -649,14 +649,16 @@ lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 :
     simp only [height_coe_WithTop, le_refl]
 
 @[simp]
+lemma krullDim_ENat : krullDim ℕ∞ = ⊤ := by
+  show (krullDim (WithTop ℕ) = ↑⊤)
+  simp only [krullDim_WithTop, krullDim_nat]
+  rfl
+
+@[simp]
 lemma height_ENat (n : ℕ∞) : height n = n := by
   cases n with
   | top =>
-    rw [← WithBot.coe_eq_coe, height_top_eq_krullDim]
-    show (krullDim (WithTop ℕ) = ↑⊤)
-    simp only [krullDim_WithTop, krullDim_nat]
-    rfl
+    simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_ENat, WithBot.coe_top]
   | coe n => simp
-
 
 end calculations
