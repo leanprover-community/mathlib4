@@ -417,6 +417,12 @@ lemma height_eq_zero_iff (x : α) : height x = 0 ↔ (∀ y, ¬(y < x)) := by
 lemma coheight_eq_zero_iff (x : α) : coheight x = 0 ↔ (∀ y, ¬(x < y)) :=
   height_eq_zero_iff (α := αᵒᵈ) x
 
+@[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by
+  simp [height_eq_zero_iff]
+
+@[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by
+  simp [coheight_eq_zero_iff]
+
 lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
     n < height x ↔ (∃ y, y < x ∧ height y = n) := by
   constructor
@@ -653,6 +659,15 @@ variable {α : Type*} [Preorder α]
   · let p' : LTSeries ℕ := { length := n, toFun := fun i => i, step := fun i => by simp }
     apply length_le_height_last p'
 
+@[simp] lemma coheight_nat (n : ℕ) : coheight n = ⊤ := by
+  rw [coheight_eq_top_iff]
+  intro m
+  use { length := m
+        toFun := fun i => OrderDual.toDual (n + m - i.1 : ℕ)
+        step := fun ⟨i, hi⟩ => by apply LT.lt.dual; simp; omega }
+  simp [RelSeries.last]
+  rfl
+
 @[simp]
 lemma krullDim_nat : krullDim ℕ = ⊤ := by
   simp only [krullDim_eq_iSup_height, height_nat]
@@ -673,9 +688,6 @@ lemma krullDim_nat : krullDim ℕ = ⊤ := by
   intro n
   use { length := n, toFun := fun i => a - n + i, step := fun i => by simp }
   simp [RelSeries.last]
-
-@[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by
-  simp [height_eq_zero_iff]
 
 @[simp]
 lemma height_coe_WithBot (x : α) : height (x : WithBot α) = height x + 1 := by
