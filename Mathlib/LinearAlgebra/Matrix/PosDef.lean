@@ -105,9 +105,10 @@ protected theorem natCast [DecidableEq n] (d : ℕ) :
     PosSemidef (d : Matrix n n R) :=
   ⟨isHermitian_natCast _, fun x => by
     simp only [natCast_mulVec, dotProduct_smul]
-    rw [← nsmul_eq_smul_cast]
+    rw [Nat.cast_smul_eq_nsmul]
     refine nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
 
+-- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [DecidableEq n] (d : ℕ) [d.AtLeastTwo] :
     PosSemidef (no_index (OfNat.ofNat d) : Matrix n n R) :=
   .natCast d
@@ -116,7 +117,7 @@ protected theorem intCast [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
     PosSemidef (d : Matrix n n R) :=
   ⟨isHermitian_intCast _, fun x => by
     simp only [intCast_mulVec, dotProduct_smul]
-    rw [← zsmul_eq_smul_cast]
+    rw [Int.cast_smul_eq_nsmul]
     refine zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
 
 @[simp]
@@ -366,7 +367,7 @@ protected theorem natCast [DecidableEq n] [NoZeroDivisors R] (d : ℕ) (hd : d �
     PosDef (d : Matrix n n R) :=
   ⟨isHermitian_natCast _, fun x hx => by
     simp only [natCast_mulVec, dotProduct_smul]
-    rw [← nsmul_eq_smul_cast]
+    rw [Nat.cast_smul_eq_nsmul]
     refine nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
@@ -375,6 +376,7 @@ theorem _root_.Matrix.posDef_natCast_iff [DecidableEq n] [NoZeroDivisors R]
     PosDef (d : Matrix n n R) ↔ 0 < (d : R) :=
   posDef_diagonal_iff.trans <| by simp
 
+-- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [DecidableEq n] [NoZeroDivisors R] (d : ℕ) [d.AtLeastTwo] :
     PosDef (no_index (OfNat.ofNat d) : Matrix n n R) :=
   .natCast d (NeZero.ne _)
@@ -383,13 +385,13 @@ protected theorem intCast [DecidableEq n] [NoZeroDivisors R] (d : ℤ) (hd : 0 <
     PosDef (d : Matrix n n R) :=
   ⟨isHermitian_intCast _, fun x hx => by
     simp only [intCast_mulVec, dotProduct_smul]
-    rw [← zsmul_eq_smul_cast]
+    rw [Int.cast_smul_eq_nsmul]
     refine zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_intCast_iff [DecidableEq n] [NoZeroDivisors R]
     [Nonempty n] [Nontrivial R] {d : ℤ} :
-    PosDef (d : Matrix n n R) ↔ 0 < (d : R) :=
+    PosDef (d : Matrix n n R) ↔ 0 < d :=
   posDef_diagonal_iff.trans <| by simp
 
 protected lemma add_posSemidef {A : Matrix m m R} {B : Matrix m m R}
