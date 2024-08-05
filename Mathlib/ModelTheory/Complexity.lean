@@ -12,19 +12,19 @@ This file defines quantifier complexity of first-order formulas, and constructs 
 
 ## Main Definitions
 
-* `FirstOrder.Language.BoundedFormula.IsAtomic` defines atomic formulas - those which are
-constructed only from terms and relations.
-* `FirstOrder.Language.BoundedFormula.IsQF` defines quantifier-free formulas - those which are
-constructed only from atomic formulas and boolean operations.
-* `FirstOrder.Language.BoundedFormula.IsPrenex` defines when a formula is in prenex normal form -
-when it consists of a series of quantifiers applied to a quantifier-free formula.
-* `FirstOrder.Language.BoundedFormula.toPrenex` constructs a prenex normal form of a given formula.
+- `FirstOrder.Language.BoundedFormula.IsAtomic` defines atomic formulas - those which are
+  constructed only from terms and relations.
+- `FirstOrder.Language.BoundedFormula.IsQF` defines quantifier-free formulas - those which are
+  constructed only from atomic formulas and boolean operations.
+- `FirstOrder.Language.BoundedFormula.IsPrenex` defines when a formula is in prenex normal form -
+  when it consists of a series of quantifiers applied to a quantifier-free formula.
+- `FirstOrder.Language.BoundedFormula.toPrenex` constructs a prenex normal form of a given formula.
 
 
 ## Main Results
 
-* `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a
-formula has the same realization as the original formula.
+- `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a
+  formula has the same realization as the original formula.
 
 -/
 

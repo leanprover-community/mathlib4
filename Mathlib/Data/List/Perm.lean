@@ -49,10 +49,6 @@ theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l�
 theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₃ ⊆ l₁ ↔ l₃ ⊆ l₂ :=
   ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
 
--- Porting note: used to be @[congr]
-
--- Porting note: used to be @[congr]
-
 section Rel
 
 open Relator
@@ -250,13 +246,9 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
   · simp [subset_def, or_comm]
   · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 
--- @[congr]
 theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
   perm_iff_count.2 fun a =>
-    if h : a ∈ l₁ then by
-      simp [nodup_dedup, h, p.subset h]
-    else by
-      simp [mem_dedup, h, not_false_eq_true, count_eq_zero_of_not_mem, mt p.mem_iff.2 h]
+    if h : a ∈ l₁ then by simp [nodup_dedup, h, p.subset h] else by simp [h, mt p.mem_iff.2 h]
 
 theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     l ∩ (t₁ ++ t₂) ~ l ∩ t₁ ++ l ∩ t₂ := by
@@ -305,7 +297,6 @@ theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) 
     product l t₁ ~ product l t₂ :=
   (Perm.bind_left _) fun _ _ => p.map _
 
--- @[congr]
 theorem Perm.product {l₁ l₂ : List α} {t₁ t₂ : List β} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
     product l₁ t₁ ~ product l₂ t₂ :=
   (p₁.product_right t₁).trans (p₂.product_left l₂)

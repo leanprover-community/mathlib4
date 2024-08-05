@@ -57,7 +57,7 @@ jobs:
         shell: bash
         run: |
           env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
-          ./scripts/update-style-exceptions.sh
+          lake exe lint_style --update
 
       - name: configure git setup
         run: |

@@ -56,7 +56,6 @@ import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 open MeasurableSpace Set
 
-open scoped Classical
 open MeasureTheory
 
 /-- A π-system is a collection of subsets of `α` that is closed under binary intersection of
@@ -245,6 +244,7 @@ For an indexed union version, see `mem_generatePiSystem_iUnion_elim'`. -/
 theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi : ∀ b, IsPiSystem (g b))
     (t : Set α) (h_t : t ∈ generatePiSystem (⋃ b, g b)) :
     ∃ (T : Finset β) (f : β → Set α), (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
+  classical
   induction' h_t with s h_s s t' h_gen_s h_gen_t' h_nonempty h_s h_t'
   · rcases h_s with ⟨t', ⟨⟨b, rfl⟩, h_s_in_t'⟩⟩
     refine ⟨{b}, fun _ => s, ?_⟩
@@ -278,6 +278,7 @@ For a total union version, see `mem_generatePiSystem_iUnion_elim`. -/
 theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s : Set β}
     (h_pi : ∀ b ∈ s, IsPiSystem (g b)) (t : Set α) (h_t : t ∈ generatePiSystem (⋃ b ∈ s, g b)) :
     ∃ (T : Finset β) (f : β → Set α), ↑T ⊆ s ∧ (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
+  classical
   have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) := by
     suffices h1 : ⋃ b : Subtype s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b by rwa [h1]
     ext x
@@ -381,6 +382,7 @@ theorem generateFrom_piiUnionInter_singleton_left (s : ι → Set α) (S : Set �
 /-- If `π` is a family of π-systems, then `piiUnionInter π S` is a π-system. -/
 theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSystem (π x)) (S : Set ι) :
     IsPiSystem (piiUnionInter π S) := by
+  classical
   rintro t1 ⟨p1, hp1S, f1, hf1m, ht1_eq⟩ t2 ⟨p2, hp2S, f2, hf2m, ht2_eq⟩ h_nonempty
   simp_rw [piiUnionInter, Set.mem_setOf_eq]
   let g n := ite (n ∈ p1) (f1 n) Set.univ ∩ ite (n ∈ p2) (f2 n) Set.univ

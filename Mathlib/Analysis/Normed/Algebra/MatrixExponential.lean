@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Matrix
 import Mathlib.LinearAlgebra.Matrix.ZPow
 import Mathlib.LinearAlgebra.Matrix.Hermitian
@@ -13,7 +13,8 @@ import Mathlib.Topology.UniformSpace.Matrix
 /-!
 # Lemmas about the matrix exponential
 
-In this file, we provide results about `exp` on `Matrix`s over a topological or normed algebra.
+In this file, we provide results about `NormedSpace.exp` on `Matrix`s
+over a topological or normed algebra.
 Note that generic results over all topological spaces such as `NormedSpace.exp_zero`
 can be used on matrices without issue, so are not repeated here.
 The topological results specific to matrices are:
@@ -51,7 +52,7 @@ results for general rings are instead stated about `Ring.inverse`:
 
 ## TODO
 
-* Show that `Matrix.det (exp 𝕂 A) = exp 𝕂 (Matrix.trace A)`
+* Show that `Matrix.det (NormedSpace.exp 𝕂 A) = NormedSpace.exp 𝕂 (Matrix.trace A)`
 
 ## References
 

@@ -230,7 +230,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
     · rintro ⟨hS, hT⟩
       cases' h₁ (show x ∈ ⊤ by trivial) with h h
       exacts [hS h, hT h]
-    · exact False.elim
+    · simp
 
 theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : IrreducibleSpace X] :
     IsIntegral X := by
