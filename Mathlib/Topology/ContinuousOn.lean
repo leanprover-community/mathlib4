@@ -636,11 +636,6 @@ theorem continuousWithinAt_congr_nhds {f : α → β} {s t : Set α} {x : α} (h
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   simp only [ContinuousWithinAt, h]
 
-theorem ContinuousWithinAt.mono_nhdsWithin {f : α → β} {s t : Set α} {x : α}
-    (h : ContinuousWithinAt f s x) (h_nhds : 𝓝[t] x ≤ 𝓝[s] x) : ContinuousWithinAt f t x :=
-  calc (𝓝[t] x).map f ≤ (𝓝[s] x).map f := by gcongr
-    _ ≤ 𝓝 (f x) := h
-
 theorem continuousWithinAt_inter' {f : α → β} {s t : Set α} {x : α} (h : t ∈ 𝓝[s] x) :
     ContinuousWithinAt f (s ∩ t) x ↔ ContinuousWithinAt f s x := by
   simp [ContinuousWithinAt, nhdsWithin_restrict'' s h]
