@@ -12,15 +12,17 @@ import Mathlib.PartialEquiv
 
 /-!
 # Direct Limits of First-Order Structures
+
 This file constructs the direct limit of a directed system of first-order embeddings.
 
 ## Main Definitions
-* `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
+
+- `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
   first-order embeddings between the structures indexed by `G`.
-* `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
+- `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
   from the components to another module that respect the directed system structure give rise to
   a unique map out of the direct limit.
-* `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
+- `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
   isomorphic direct systems.
 * `FirstOrder.Language.DirectLimit.partialEquiv_limit` is the limit of a directed system
   of PartialEquivs.
@@ -484,11 +486,11 @@ noncomputable def Equiv_iSup :
     simpa only [F, Embedding.codRestrict_apply', Subtype.mk.injEq]
   exact ⟨Equiv.ofBijective F ⟨F.injective, F_surj⟩, F.map_fun', F.map_rel'⟩
 
-theorem Equiv_isup_of_apply {i : ι} (x : S i) :
+theorem Equiv_iSup_of_apply {i : ι} (x : S i) :
     Equiv_iSup S (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
     = Substructure.inclusion (le_iSup _ _) x := rfl
 
-theorem Equiv_isup_symm_inclusion_apply {i : ι} (x : S i) :
+theorem Equiv_iSup_symm_inclusion_apply {i : ι} (x : S i) :
     (Equiv_iSup S).symm (Substructure.inclusion (le_iSup _ _) x)
     = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x := by
   apply (Equiv_iSup S).injective
@@ -496,10 +498,10 @@ theorem Equiv_isup_symm_inclusion_apply {i : ι} (x : S i) :
   rfl
 
 @[simp]
-theorem Equiv_isup_symm_inclusion (i : ι) :
+theorem Equiv_iSup_symm_inclusion (i : ι) :
     (Equiv_iSup S).symm.toEmbedding.comp (Substructure.inclusion (le_iSup _ _))
     = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i := by
-  ext x; exact Equiv_isup_symm_inclusion_apply _ x
+  ext x; exact Equiv_iSup_symm_inclusion_apply _ x
 
 open Substructure.PartialEquiv
 

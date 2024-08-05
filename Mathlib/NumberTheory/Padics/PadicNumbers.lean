@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Tactic.Peel
+import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # p-adic numbers
@@ -705,6 +706,9 @@ variable (p : ℕ) [Fact p.Prime]
 
 instance : Dist ℚ_[p] :=
   ⟨fun x y ↦ padicNormE (x - y : ℚ_[p])⟩
+
+instance : IsUltrametricDist ℚ_[p] :=
+  ⟨fun x y z ↦ by simpa [dist] using padicNormE.nonarchimedean' (x - y) (y - z)⟩
 
 instance metricSpace : MetricSpace ℚ_[p] where
   dist_self := by simp [dist]
