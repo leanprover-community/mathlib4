@@ -118,7 +118,7 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
 section Opposite
 open Opposite
 
-/-- The argument-swap isomorphism from `rel` to its opposite. -/
+/-- The argument-swap isomorphism from `RelCat` to its opposite. -/
 def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {X Y} r := op (fun y x => r x y)
@@ -154,8 +154,8 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
-/-- `rel` is self-dual: The map that swaps the argument order of a
-    relation induces an equivalence between `rel` and its opposite. -/
+/-- `RelCat` is self-dual: The map that swaps the argument order of a
+    relation induces an equivalence between `RelCat` and its opposite. -/
 @[simps]
 def opEquivalence : Equivalence RelCat RelCatᵒᵖ where
   functor := opFunctor

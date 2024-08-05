@@ -309,6 +309,12 @@ theorem add_tsub_cancel_right (a b : α) : a + b - b = a :=
 theorem add_tsub_cancel_left (a b : α) : a + b - a = b :=
   Contravariant.AddLECancellable.add_tsub_cancel_left
 
+/-- A more general version of the reverse direction of `sub_eq_sub_iff_add_eq_add` -/
+theorem tsub_eq_tsub_of_add_eq_add (h : a + d = c + b) : a - b = c - d := by
+  calc a - b = a + d - d - b := by rw [add_tsub_cancel_right]
+           _ = c + b - b - d := by rw [h, tsub_right_comm]
+           _ = c - d := by rw [add_tsub_cancel_right]
+
 theorem lt_add_of_tsub_lt_left (h : a - b < c) : a < b + c :=
   Contravariant.AddLECancellable.lt_add_of_tsub_lt_left h
 

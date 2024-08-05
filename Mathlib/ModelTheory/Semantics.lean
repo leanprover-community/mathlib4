@@ -9,42 +9,44 @@ import Mathlib.Data.List.ProdSigma
 
 /-!
 # Basics on First-Order Semantics
+
 This file defines the interpretations of first-order terms, formulas, sentences, and theories
 in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 
 ## Main Definitions
-* `FirstOrder.Language.Term.realize` is defined so that `t.realize v` is the term `t` evaluated at
-variables `v`.
-* `FirstOrder.Language.BoundedFormula.Realize` is defined so that `φ.Realize v xs` is the bounded
-formula `φ` evaluated at tuples of variables `v` and `xs`.
-* `FirstOrder.Language.Formula.Realize` is defined so that `φ.Realize v` is the formula `φ`
-evaluated at variables `v`.
-* `FirstOrder.Language.Sentence.Realize` is defined so that `φ.Realize M` is the sentence `φ`
-evaluated in the structure `M`. Also denoted `M ⊨ φ`.
-* `FirstOrder.Language.Theory.Model` is defined so that `T.Model M` is true if and only if every
-sentence of `T` is realized in `M`. Also denoted `T ⊨ φ`.
+
+- `FirstOrder.Language.Term.realize` is defined so that `t.realize v` is the term `t` evaluated at
+  variables `v`.
+- `FirstOrder.Language.BoundedFormula.Realize` is defined so that `φ.Realize v xs` is the bounded
+  formula `φ` evaluated at tuples of variables `v` and `xs`.
+- `FirstOrder.Language.Formula.Realize` is defined so that `φ.Realize v` is the formula `φ`
+  evaluated at variables `v`.
+- `FirstOrder.Language.Sentence.Realize` is defined so that `φ.Realize M` is the sentence `φ`
+  evaluated in the structure `M`. Also denoted `M ⊨ φ`.
+- `FirstOrder.Language.Theory.Model` is defined so that `T.Model M` is true if and only if every
+  sentence of `T` is realized in `M`. Also denoted `T ⊨ φ`.
 
 ## Main Results
-* `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a
-formula has the same realization as the original formula.
-* Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
-`liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
-sentences, and theories.
+
+- Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
+  `liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
+  sentences, and theories.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
-is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
-`n : Fin (n + 1)`.
+
+- Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
+  is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
+  indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
+  `∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
+  `n : Fin (n + 1)`.
 
 ## References
+
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
-
+  the continuum hypothesis*][flypitch_itp]
 -/
 
 
@@ -457,62 +459,6 @@ theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : 
     simp
   · refine (congr rfl (funext fun i => ?_)).mp h
     simp
-
-theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ)
-    {v : α → M} {xs : Fin n → M} :
-    (φ.toPrenexImpRight ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs := by
-  induction' hψ with _ _ hψ _ _ _hψ ih _ _ _hψ ih
-  · rw [hψ.toPrenexImpRight]
-  · refine _root_.trans (forall_congr' fun _ => ih hφ.liftAt) ?_
-    simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
-    exact ⟨fun h1 a h2 => h1 h2 a, fun h1 h2 a => h1 a h2⟩
-  · unfold toPrenexImpRight
-    rw [realize_ex]
-    refine _root_.trans (exists_congr fun _ => ih hφ.liftAt) ?_
-    simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_ex]
-    refine ⟨?_, fun h' => ?_⟩
-    · rintro ⟨a, ha⟩ h
-      exact ⟨a, ha h⟩
-    · by_cases h : φ.Realize v xs
-      · obtain ⟨a, ha⟩ := h' h
-        exact ⟨a, fun _ => ha⟩
-      · inhabit M
-        exact ⟨default, fun h'' => (h h'').elim⟩
-
-theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ)
-    {v : α → M} {xs : Fin n → M} : (φ.toPrenexImp ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs := by
-  revert ψ
-  induction' hφ with _ _ hφ _ _ _hφ ih _ _ _hφ ih <;> intro ψ hψ
-  · rw [hφ.toPrenexImp]
-    exact realize_toPrenexImpRight hφ hψ
-  · unfold toPrenexImp
-    rw [realize_ex]
-    refine _root_.trans (exists_congr fun _ => ih hψ.liftAt) ?_
-    simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
-    refine ⟨?_, fun h' => ?_⟩
-    · rintro ⟨a, ha⟩ h
-      exact ha (h a)
-    · by_cases h : ψ.Realize v xs
-      · inhabit M
-        exact ⟨default, fun _h'' => h⟩
-      · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
-        exact ⟨a, fun h => (ha h).elim⟩
-  · refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_
-    simp
-
-@[simp]
-theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
-    ∀ {xs : Fin n → M}, φ.toPrenex.Realize v xs ↔ φ.Realize v xs := by
-  induction' φ with _ _ _ _ _ _ _ _ _ f1 f2 h1 h2 _ _ h
-  · exact Iff.rfl
-  · exact Iff.rfl
-  · exact Iff.rfl
-  · intros
-    rw [toPrenex, realize_toPrenexImp f1.toPrenex_isPrenex f2.toPrenex_isPrenex, realize_imp,
-      realize_imp, h1, h2]
-  · intros
-    rw [realize_all, toPrenex, realize_all]
-    exact forall_congr' fun a => h
 
 end BoundedFormula
 
