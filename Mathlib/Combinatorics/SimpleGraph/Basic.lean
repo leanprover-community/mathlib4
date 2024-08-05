@@ -187,7 +187,7 @@ theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v 
   hn (h' ▸ h)
 
 theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
-  SimpleGraph.ext
+  fun _ _ => SimpleGraph.ext
 
 @[simp]
 theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=

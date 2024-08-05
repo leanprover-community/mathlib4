@@ -49,10 +49,6 @@ theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l�
 theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₃ ⊆ l₁ ↔ l₃ ⊆ l₂ :=
   ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
 
--- Porting note: used to be @[congr]
-
--- Porting note: used to be @[congr]
-
 section Rel
 
 open Relator
@@ -139,7 +135,7 @@ attribute [simp] nil_subperm
 theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
   ⟨fun h ↦ length_eq_zero.1 <| Nat.le_zero.1 h.length_le, by rintro rfl; rfl⟩
 
-lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons _ _⟩
+lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
 
 lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
     (l : List α) (a : α) :
@@ -217,8 +213,6 @@ section
 
 variable [DecidableEq α]
 
--- attribute [congr]
-
 theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂) :
     l₁.bagInter t ~ l₂.bagInter t := by
   induction' h with x _ _ _ _ x y _ _ _ _ _ _ ih_1 ih_2 generalizing t; · simp
@@ -247,21 +241,17 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
-    simp (config := { contextual := true }) [count_replicate, h, h.symm, this, count_eq_zero]
+    simp (config := { contextual := true }) [count_replicate, h, this, count_eq_zero, Ne.symm]
   trans ∀ c, c ∈ l → c = b ∨ c = a
   · simp [subset_def, or_comm]
   · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 
--- @[congr]
 theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
   perm_iff_count.2 fun a =>
-    if h : a ∈ l₁ then by simp [nodup_dedup, h, p.subset h] else by simp [h, mt p.mem_iff.2 h]
-
--- attribute [congr]
-
--- @[congr]
-
--- @[congr]
+    if h : a ∈ l₁ then by
+      simp [h, nodup_dedup, p.subset h]
+    else by
+      simp [h, count_eq_zero_of_not_mem, mt p.mem_iff.2]
 
 theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     l ∩ (t₁ ++ t₂) ~ l ∩ t₁ ++ l ∩ t₂ := by
@@ -310,7 +300,6 @@ theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) 
     product l t₁ ~ product l t₂ :=
   (Perm.bind_left _) fun _ _ => p.map _
 
--- @[congr]
 theorem Perm.product {l₁ l₂ : List α} {t₁ t₂ : List β} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
     product l₁ t₁ ~ product l₂ t₂ :=
   (p₁.product_right t₁).trans (p₂.product_left l₂)
@@ -347,7 +336,7 @@ theorem Perm.drop_inter [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ y
     have h₀ : n = xs.length - n' := by rwa [Nat.sub_sub_self]
     have h₁ : n' ≤ xs.length := Nat.sub_le ..
     have h₂ : xs.drop n = (xs.reverse.take n').reverse := by
-      rw [take_reverse _ h₁, h₀, reverse_reverse]
+      rw [take_reverse h₁, h₀, reverse_reverse]
     rw [h₂]
     apply (reverse_perm _).trans
     rw [inter_reverse]
@@ -534,7 +523,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
   induction' l with y l IH generalizing x
   · simp [takeWhile, count]
-  · rw [permutations'Aux, DecEq_eq, count_cons_self]
+  · rw [permutations'Aux, count_cons_self]
     by_cases hx : x = y
     · subst hx
       simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _

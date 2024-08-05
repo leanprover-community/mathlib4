@@ -425,9 +425,6 @@ initialize_simps_projections ContinuousLinearMap (toLinearMap_toFun → apply, t
 theorem ext {f g : M₁ →SL[σ₁₂] M₂} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : M₁ →SL[σ₁₂] M₂} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 /-- Copy of a `ContinuousLinearMap` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : M₁ →SL[σ₁₂] M₂ where
@@ -474,9 +471,6 @@ theorem coe_coe (f : M₁ →SL[σ₁₂] M₂) : ⇑(f : M₁ →ₛₗ[σ₁�
 @[ext]
 theorem ext_ring [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} (h : f 1 = g 1) : f = g :=
   coe_inj.1 <| LinearMap.ext_ring h
-
-theorem ext_ring_iff [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h => h ▸ rfl, ext_ring⟩
 
 /-- If two continuous linear maps are equal on a set `s`, then they are equal on the closure
 of the `Submodule.span` of this set. -/

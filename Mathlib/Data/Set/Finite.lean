@@ -792,14 +792,16 @@ theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
 
 section MapsTo
 
-variable {s : Set α} {f : α → α} (hs : s.Finite) (hm : MapsTo f s s)
+variable {s : Set α} {f : α → α}
 
-theorem Finite.surjOn_iff_bijOn_of_mapsTo : SurjOn f s s ↔ BijOn f s s := by
+theorem Finite.surjOn_iff_bijOn_of_mapsTo (hs : s.Finite) (hm : MapsTo f s s) :
+    SurjOn f s s ↔ BijOn f s s := by
   refine ⟨fun h ↦ ⟨hm, ?_, h⟩, BijOn.surjOn⟩
   have : Finite s := finite_coe_iff.mpr hs
   exact hm.restrict_inj.mp (Finite.injective_iff_surjective.mpr <| hm.restrict_surjective_iff.mpr h)
 
-theorem Finite.injOn_iff_bijOn_of_mapsTo : InjOn f s ↔ BijOn f s s := by
+theorem Finite.injOn_iff_bijOn_of_mapsTo (hs : s.Finite) (hm : MapsTo f s s) :
+    InjOn f s ↔ BijOn f s s := by
   refine ⟨fun h ↦ ⟨hm, h, ?_⟩, BijOn.injOn⟩
   have : Finite s := finite_coe_iff.mpr hs
   exact hm.restrict_surjective_iff.mp (Finite.injective_iff_surjective.mp <| hm.restrict_inj.mpr h)
@@ -1268,6 +1270,22 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
             ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
   contrapose! h
   rwa [injective_codRestrict, ← injOn_iff_injective]
+
+theorem infinite_iUnion {ι : Type*} [Infinite ι] {s : ι → Set α} (hs : Function.Injective s) :
+    (⋃ i, s i).Infinite :=
+  fun hfin ↦ @not_injective_infinite_finite ι _ _ hfin.finite_subsets.to_subtype
+    (fun i ↦ ⟨s i, subset_iUnion _ _⟩) fun i j h_eq ↦ hs (by simpa using h_eq)
+
+theorem Infinite.biUnion {ι : Type*} {s : ι → Set α} {a : Set ι} (ha : a.Infinite)
+    (hs : a.InjOn s) : (⋃ i ∈ a, s i).Infinite := by
+  rw [biUnion_eq_iUnion]
+  have _ := ha.to_subtype
+  exact infinite_iUnion fun ⟨i,hi⟩ ⟨j,hj⟩ hij ↦ by simp [hs hi hj hij]
+
+theorem Infinite.sUnion {s : Set (Set α)} (hs : s.Infinite) : (⋃₀ s).Infinite := by
+  rw [sUnion_eq_iUnion]
+  have _ := hs.to_subtype
+  exact infinite_iUnion Subtype.coe_injective
 
 /-! ### Order properties -/
 

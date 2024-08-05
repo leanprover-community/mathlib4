@@ -812,8 +812,8 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
     f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-lemma nsmul_sup' [LinearOrderedAddCommMonoid β] {s : Finset α}
-    (hs : s.Nonempty) (f : α → β) (n : ℕ) :
+lemma nsmul_sup' {α'} [LinearOrderedAddCommMonoid β] {s : Finset α'}
+    (hs : s.Nonempty) (f : α' → β) (n : ℕ) :
     s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
   let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
   (map_finset_sup' ns hs _).symm
@@ -844,18 +844,11 @@ lemma sup'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.N
     s.sup' hs (g ∘ f) = (s.map f).sup' (map_nonempty.2 hs) g :=
   .symm <| sup'_map _ _
 
+
+@[gcongr]
 theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
-
-/-- A version of `Finset.sup'_mono` acceptable for `@[gcongr]`.
-Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
-this version takes it as an argument. -/
-@[gcongr]
-lemma _root_.GCongr.finset_sup'_le {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
-    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₁.sup' h₁ f ≤ s₂.sup' h₂ f :=
-  sup'_mono f h h₁
-
 end Sup'
 
 section Inf'
@@ -970,8 +963,8 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
     f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-lemma nsmul_inf' [LinearOrderedAddCommMonoid β] {s : Finset α}
-    (hs : s.Nonempty) (f : α → β) (n : ℕ) :
+lemma nsmul_inf' {α'} [LinearOrderedAddCommMonoid β] {s : Finset α'}
+    (hs : s.Nonempty) (f : α' → β) (n : ℕ) :
     s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
   let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
   (map_finset_inf' ns hs _).symm
@@ -1001,17 +994,10 @@ lemma inf'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.N
     s.inf' hs (g ∘ f) = (s.map f).inf' (map_nonempty.2 hs) g :=
   sup'_comp_eq_map (α := αᵒᵈ) g hs
 
+@[gcongr]
 theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₂.inf' (h₁.mono h) f ≤ s₁.inf' h₁ f :=
   Finset.le_inf' h₁ _ (fun _ hb => inf'_le _ (h hb))
-
-/-- A version of `Finset.inf'_mono` acceptable for `@[gcongr]`.
-Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
-this version takes it as an argument. -/
-@[gcongr]
-lemma _root_.GCongr.finset_inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
-    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₂.inf' h₂ f ≤ s₁.inf' h₁ f :=
-  inf'_mono f h h₁
 
 end Inf'
 

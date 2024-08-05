@@ -79,7 +79,10 @@ section Colimits
 section
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{t} C] {J : Type w} [Category.{r} J]
-  (F : J ⥤ C) [PreservesColimit F (forget C)]
+  (F : J ⥤ C)
+
+section
+variable [PreservesColimit F (forget C)]
 
 theorem from_union_surjective_of_isColimit {D : Cocone F} (hD : IsColimit D) :
     let ff : (Σj : J, F.obj j) → D.pt := fun a => D.ι.app a.1 a.2
@@ -98,6 +101,8 @@ theorem isColimit_exists_rep {D : Cocone F} (hD : IsColimit D) (x : D.pt) :
 theorem colimit_exists_rep [HasColimit F] (x : ↑(colimit F)) :
     ∃ (j : J) (y : F.obj j), colimit.ι F j y = x :=
   Concrete.isColimit_exists_rep F (colimit.isColimit _) x
+
+end
 
 theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : F.obj i) (y : F.obj j)
     (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
