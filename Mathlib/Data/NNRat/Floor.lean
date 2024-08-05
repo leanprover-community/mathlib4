@@ -10,7 +10,7 @@ import Mathlib.Data.Rat.Floor
 
 ## Summary
 
-We define the `FloorSemiring` instance on `ℚ≥0`, and relate it's operators to `NNRat.cast`.
+We define the `FloorSemiring` instance on `ℚ≥0`, and relate its operators to `NNRat.cast`.
 
 Note that we cannot talk about `Int.fract`, which currently only works for rings.
 
