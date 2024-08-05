@@ -112,7 +112,133 @@ initialize addLinter dupNamespace
 end DupNamespaceLinter
 
 /-!
-# The "missing end" linter
+#  The "noInitialWhitespace" linter
+
+The "noInitialWhitespace" linter emits a warning somewhere.
+-/
+
+open Lean Elab
+
+/-- The "noInitialWhitespace" linter emits a warning when a command does not begin on the
+first column. -/
+register_option linter.noInitialWhitespace : Bool := {
+  defValue := true
+  descr := "enable the noInitialWhitespace linter"
+}
+
+/-- `getStartPos stx` assumes that `stx` is an im/ex-plicit binder and returns the positions of
+* the first open bracket, `{` or `(`;
+* the starting positions of each variable declared within the same binder;
+* the position of the `:`;
+* the starting position of the Type of the collection of variables;
+* the position of the closing bracket , `}` or `)`.
+-/
+def getStartPos (stx : Syntax) : Array String.Pos :=
+  if stx.isOfKind ``Lean.Parser.Term.implicitBinder ||
+     stx.isOfKind ``Lean.Parser.Term.explicitBinder then
+    match stx with
+      | .node _ _ #[ -- `im`/`explicitBinder`
+          .atom openBracket _, -- `{`
+          .node _ _ vars,
+          .node _ _ #[.atom siColon _, type],
+          .atom closedBracket _
+        ] =>
+        let vars := vars.map fun v => v.getHeadInfo.getPos?
+        (#[openBracket.getPos?] ++ vars ++
+          #[siColon.getPos?, type.getHeadInfo.getPos?, closedBracket.getPos?]).reduceOption
+      | _ => default
+  else default
+
+/-- `inappropriateSpacing file stx` takes as input the text `file` of a file and
+the `stx` of a binder.
+It returns the substring of `file` corresponding to `stx`, assuming that it is incorrectly
+formatted.
+The format is "incorrect" if
+* either one of the two characters neighbouring the `:` is not a space ` `;
+* either one of the two characters at distance 2 from the `:` is a space ` `;
+* either one of the two characters two positions before each variable in the binder
+  from the second onwards is a space;
+* the character following the opening binder or the character preceding the closing binder
+  is not a space.
+-/
+def inappropriateSpacing (file : String) (stx : Syntax) : Substring :=
+  let startPos := getStartPos stx
+  if startPos.isEmpty then default else
+  let closedBracketPos := startPos.back
+  let colonPos := startPos.pop.pop.back
+  -- this should not be a space
+  let charFollowingOpenBracket   := file.get ⟨startPos[0]!.byteIdx+1⟩
+  -- this should not be a space
+  let charPrecedingClosedBracket := file.get ⟨closedBracketPos.byteIdx-1⟩
+  let varPos := (startPos.pop.pop.pop.eraseIdx 0).eraseIdx 0
+  -- these should not be spaces
+  let charsTwoBeforeAVar := varPos.map (file.get ⟨·.byteIdx-2⟩)
+  let afterColon := file.get ⟨colonPos.byteIdx+1⟩
+  -- these should be spaces -- we allow a line break after `:`
+  let charAroundColon := #[file.get ⟨colonPos.byteIdx-1⟩].push <|
+    if afterColon == '\n' then ' ' else afterColon
+  -- these should not be spaces
+  let charAroundColonPlusOne := #[file.get ⟨colonPos.byteIdx-2⟩].push <|
+    if afterColon == '\n' then 'A' else file.get ⟨colonPos.byteIdx+2⟩
+  let spaces := charAroundColon
+  let nonspaces := ((charsTwoBeforeAVar ++ charAroundColonPlusOne).push
+    charFollowingOpenBracket).push charPrecedingClosedBracket
+  if !(spaces.filter (· != ' ') ++ nonspaces.filter (· == ' ')).isEmpty then
+    { str := file, startPos := startPos[0]!, stopPos:= startPos.back + ⟨1⟩ }
+  else default
+
+/-- `getBinders stx` returns the array of all the im/ex-plicit binders contained in `stx`. -/
+partial
+def getBinders : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let fargs := (args.map getBinders).flatten
+    if kind == ``Lean.Parser.Term.implicitBinder || kind == ``Lean.Parser.Term.explicitBinder then
+      fargs.push stx else fargs
+  | _ => #[]
+
+/-- `modNameToFilePath modName` takes as input the name of a file and it returns the corresponding
+`System.FilePath`.  There is no guarantee that the file exists. -/
+def modNameToFilePath (modName : Name) : System.FilePath :=
+  let cmps := (modName.components.drop 1).foldl (init := modName.getRoot.toString) fun a b =>
+    ((a.toString : System.FilePath) / b.toString)
+  cmps.addExtension "lean"
+
+namespace NoInitialWhitespace
+
+/-- Gets the value of the `linter.noInitialWhitespace` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.noInitialWhitespace o
+
+@[inherit_doc Mathlib.Linter.linter.noInitialWhitespace]
+def noInitialWhitespaceLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    if let some rg := stx.getRange? then
+      let pos := (← getFileMap).toPosition rg.start
+      let relevantLine := (← IO.FS.lines (← getFileName))[pos.line - 1]!
+      if pos.column != 0 && !"#guard_msgs".isPrefixOf relevantLine
+      then
+        Linter.logLint linter.noInitialWhitespace stx
+          m!"'{stx}' starts on column {pos.column}.\n\
+             Please, do not leave any whitespace before this command!"
+      let fileName := modNameToFilePath (← getMainModule)
+      let file := (← IO.FS.readFile fileName)
+      let binders := getBinders stx
+      for binder in binders do
+        let shouldBeEmpty := inappropriateSpacing file binder
+        if ! shouldBeEmpty.isEmpty then
+          let var ← `(command| variable $(⟨binder⟩))
+          Linter.logLint linter.noInitialWhitespace binder
+            m!"'{shouldBeEmpty}' should be printed as '{var}'"
+
+initialize addLinter noInitialWhitespaceLinter
+
+end NoInitialWhitespace
+
+/-!
+#  `oneLineAlign` linter
 
 The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).

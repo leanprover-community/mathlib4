@@ -1,3 +1,4 @@
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 
@@ -58,7 +59,32 @@ export Nat (add)
 
 end add
 
-set_option linter.cdot false in
+set_option linter.pedantic false
+
+set_option linter.noInitialWhitespace false
+/--
+warning: '{ a : Option Nat}' should be printed as 'variable {a : Option Nat}'
+note: this linter can be disabled with `set_option linter.noInitialWhitespace false`
+---
+warning: '{a  : Option Nat}' should be printed as 'variable {a : Option Nat}'
+note: this linter can be disabled with `set_option linter.noInitialWhitespace false`
+---
+warning: '{a :  Option Nat}' should be printed as 'variable {a : Option Nat}'
+note: this linter can be disabled with `set_option linter.noInitialWhitespace false`
+---
+warning: '{a : Option Nat }' should be printed as 'variable {a : Option Nat}'
+note: this linter can be disabled with `set_option linter.noInitialWhitespace false`
+-/
+#guard_msgs in
+set_option linter.noInitialWhitespace true in
+variable {a : Option Nat} { a : Option Nat} {a  : Option Nat} {a :  Option Nat} {a : Option Nat }
+
+#guard_msgs in
+set_option linter.noInitialWhitespace true in
+-- a line break after a colon (`:`) is allowed
+variable {a :
+  Option Nat}
+
 /--
 warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.cdot false`
