@@ -12,7 +12,11 @@ package mathlib where
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
-  -- weakLeanArgs := #[]
+  weakLeanArgs := #[
+    "linter.longLine true",
+    "linter.missingEnd true",
+    "linter.setOption true"
+  ]
 
 /-!
 ## Mathlib dependencies on upstream projects.

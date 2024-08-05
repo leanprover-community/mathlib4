@@ -123,7 +123,7 @@ open Lean Elab Command
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 register_option linter.missingEnd : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the missing end linter"
 }
 
