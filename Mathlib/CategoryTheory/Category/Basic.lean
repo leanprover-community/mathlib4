@@ -103,7 +103,7 @@ open Lean Meta Elab.Tactic in
 @[tactic sorryIfSorry, inherit_doc sorryIfSorry] def evalSorryIfSorry : Tactic := fun _ => do
   let goalType ← getMainTarget
   if goalType.hasSorry then
-    closeMainGoal (← mkSorry goalType true)
+    closeMainGoal `sorry_if_sorry (← mkSorry goalType true)
   else
     throwError "The goal does not contain `sorry`"
 

@@ -212,9 +212,8 @@ instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst f f) := by
   · simp
   · simp [fst_eq_snd_of_mono_eq]
 
-instance snd_iso_of_mono_eq [Mono f] : IsIso (pullback.snd f f) := by
-  rw [← fst_eq_snd_of_mono_eq]
-  infer_instance
+instance snd_iso_of_mono_eq [Mono f] : IsIso (pullback.snd f f) :=
+  fst_eq_snd_of_mono_eq f ▸ fst_iso_of_mono_eq f
 
 end
 
@@ -377,9 +376,8 @@ instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl _ _ : _ ⟶ pushout f f)
   · simp
   · simp [inl_eq_inr_of_epi_eq]
 
-instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr f f) := by
-  rw [← inl_eq_inr_of_epi_eq]
-  infer_instance
+instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr f f) :=
+  inl_eq_inr_of_epi_eq f ▸ inl_iso_of_epi_eq f
 
 end
 
