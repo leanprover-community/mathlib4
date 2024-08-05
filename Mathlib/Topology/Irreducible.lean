@@ -93,7 +93,7 @@ theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
 
 /-- The set of irreducible components of a topological space. -/
 def irreducibleComponents (X : Type*) [TopologicalSpace X] : Set (Set X) :=
-  maximals (· ≤ ·) { s : Set X | IsIrreducible s }
+  {s | Maximal IsIrreducible s}
 
 theorem isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponents X) :
     IsClosed s := by
@@ -101,7 +101,7 @@ theorem isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponen
   exact subset_closure.antisymm (H.2 H.1.closure subset_closure)
 
 theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X] :
-    irreducibleComponents X = maximals (· ≤ ·) { s : Set X | IsClosed s ∧ IsIrreducible s } := by
+    irreducibleComponents X = { s | Maximal (fun x ↦ IsClosed x ∧ IsIrreducible x) s} := by
   ext s
   constructor
   · intro H
