@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.ModelTheory.FinitelyGenerated
-import Mathlib.ModelTheory.DirectLimit
+import Mathlib.ModelTheory.PartialEquiv
 import Mathlib.ModelTheory.Bundled
 
 /-!
@@ -313,7 +313,7 @@ theorem isUltrahomogeneous_iff_extend_finite_equiv (M_CG : CG L M) : L.IsUltraho
     have dom_le_S : f.dom ≤ S := by
       simp only [S, closure_union, closure_eq, ge_iff_le, le_sup_left]
     let ⟨f', eq_f'⟩ := M_homog.extend_embedding (f.dom.fg_iff_structure_fg.1 f_FG)
-      ((subtype _).comp f.equiv.toEmbedding) (inclusion dom_le_S) (h := ⟨subtype _⟩)
+      ((subtype _).comp f.toEquiv.toEmbedding) (inclusion dom_le_S) (h := ⟨subtype _⟩)
     use ⟨S, f'.toHom.range, f'.equivRange⟩
     refine ⟨⟨dom_le_S, ?_⟩, by
       simp only [S, union_singleton]
@@ -321,8 +321,8 @@ theorem isUltrahomogeneous_iff_extend_finite_equiv (M_CG : CG L M) : L.IsUltraho
     simp only
     rw [← Embedding.comp_assoc, Embedding.subtype_equivRange f', ← eq_f']
   · intro h S S_FG f
-    let ⟨g, ⟨dom_le_dom, eq⟩⟩ := BackAndForth.equiv_between_cg M_CG M_CG
-      ⟨S, f.toHom.range, f.equivRange⟩ S_FG h (BackAndForth.back_iff_symm_of_forth.2 h)
+    let ⟨g, ⟨dom_le_dom, eq⟩⟩ := equiv_between_cg M_CG M_CG
+      ⟨S, f.toHom.range, f.equivRange⟩ S_FG h (back_iff_symm_of_forth.2 h)
     use g
     simp only [Embedding.subtype_equivRange] at eq
     rw [← eq]
@@ -386,7 +386,7 @@ theorem extend_finite_SubEquiv :
     let ⟨_, this⟩ := S_in_age_N
     exact this
   let ⟨g, eq⟩ := hN.ultrahomogeneous.extend_embedding (f.dom.fg_iff_structure_fg.1 f_FG)
-    ((subtype f.cod).comp f.equiv.toEmbedding) (inclusion dom_le_S)
+    ((subtype f.cod).comp f.toEquiv.toEmbedding) (inclusion dom_le_S)
   refine ⟨⟨S, g.toHom.range, g.equivRange⟩, ?_, ?_⟩
   · rw [PartialEquiv.le_def]
     use dom_le_S
@@ -406,11 +406,11 @@ theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
   let v : M ≃ₚ[L] N := {
     dom := S
     cod := emb_S.toHom.range
-    equiv := emb_S.equivRange
+    toEquiv := emb_S.equivRange
   }
-  exact ⟨Exists.choose (BackAndForth.equiv_between_cg cg_of_countable cg_of_countable v
+  exact ⟨Exists.choose (equiv_between_cg cg_of_countable cg_of_countable v
     ((Substructure.fg_iff_structure_fg _).2 S_fg) (extend_finite_SubEquiv hM hN)
-      (BackAndForth.back_iff_symm_of_forth.2 (extend_finite_SubEquiv hN hM)))⟩
+      (back_iff_symm_of_forth.2 (extend_finite_SubEquiv hN hM)))⟩
 
 instance [K_fraisse : IsFraisse K] : Nonempty ↑(Quotient.mk' '' K) :=
   (K_fraisse.is_nonempty.image Quotient.mk').coe_sort
