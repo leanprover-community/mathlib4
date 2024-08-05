@@ -416,40 +416,6 @@ register_option linter.pedantic : Bool := {
   descr := "enable the pedantic linter"
 }
 
-#eval
-  "   -- comment".findSubstr? { str := "--", startPos := ⟨0⟩, stopPos := ⟨2⟩ }
-
-def dropTrailingComments (s : List String) : List String :=
-  let doubleDash : Substring := { str := "--", startPos := ⟨0⟩, stopPos := ⟨2⟩ }
-  Id.run do
-  let mut s := s
-  let mut repl := true
-  while repl do
-    if s.isEmpty then return s else
-    let last := (s.getLast?.getD "").trimRight
-    --dbg_trace "last: '{last}'"
-    if last.isEmpty then s := s.dropLast else
-    match last.findSubstr? doubleDash with
-      | some _ =>
-        let preNewLast := ((last.splitOn "--").getD 0 default).trimRight
-        if preNewLast.isEmpty then
-          repl := true
-          s := s.dropLast
-        else
-          repl := false
-          s := s.dropLast ++ [preNewLast]
-      | none => repl := false
-  return s
-
-#eval
-  let str := "@[simp, norm_cast]
-theorem sqrt_natCast (n : ℕ) : Int.sqrt (n : ℤ) = Nat.sqrt n := by rw [sqrt, toNat_ofNat]
-
- -- See note [no_index around OfNat.ofNat]
-"
-  dropTrailingComments (str.splitOn "\n")
-
-#check String.findSubstr?
 def collapseWhitespace (s : String) : String :=
   let s := s.split (·.isWhitespace)
   (" ".intercalate (s.filter (!·.isEmpty)))
@@ -460,7 +426,6 @@ def collapseWhitespace (s : String) : String :=
 
 def collapseLineBreaksPlusSpaces (st : String) : String :=
   let s := ((st.split (· == '\n')).map .trimLeft).filter (!· == "")
-  --let s := dropTrailingComments s
   " ".intercalate (s.filter (!·.isEmpty))
 
 def zoomString (str : String) (centre offset : Nat) : Substring :=
@@ -489,8 +454,6 @@ def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
 
 @[inherit_doc Mathlib.Linter.linter.pedantic]
 def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
-    --dbg_trace capSyntax stx 10
-    --dbg_trace ((capSyntax stx 10).getTailPos?, stx.getTailPos?)
     unless getLinterHash (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
@@ -503,22 +466,17 @@ def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
            feel free to silence it with `set_option linter.pedantic false in` \
            and report this error!"
       return real))
-    --dbg_trace "\nfmt.pretty:\n{fmt.pretty}"
     let st := collapseWhitespace fmt.pretty
     if st != real then
       let diff := real.firstDiffPos st
-      --dbg_trace (diff, stx.getTailPos?.getD default, stx.getPos?.getD default)
-      --dbg_trace {stx.getSubstring?.getD default with stopPos := stx.getTailPos?.getD default}
-      let srcCtxt := zoomString real diff.byteIdx 5 --({ str := real, startPos := diff - ⟨4⟩, stopPos := diff + ⟨5⟩ } : Substring)
+      let srcCtxt := zoomString real diff.byteIdx 5
       let ppCtxt  := ({ str := st,   startPos := diff - ⟨4⟩, stopPos := diff + ⟨5⟩ } : Substring)
       if srcCtxt.toString == ppCtxt.toString then logInfo m!"{diff}\n{real}\n{ppCtxt}"
-      --dbg_trace "{real}\n{st}"
       Linter.logLint linter.pedantic stx m!"---\n\
         '{srcCtxt}' is in the source\n\
         '{ppCtxt}' is how it is pretty-printed\n---"
-      --Linter.logLint linter.pedantic stx m!"pretty:\n'{st}'\n'{real}'"
 
-
+/-
 run_cmd
   let s1 := "· 2"
   let s2 := "·12"
@@ -526,7 +484,7 @@ run_cmd
   logInfo m!"Difference at: {diff}\n\
         s1: '{({ str := s1, startPos := diff - ⟨1⟩, stopPos := diff + ⟨1⟩ } : Substring)}'\n\
         s2: '{({ str := s2, startPos := diff - ⟨1⟩, stopPos := diff + ⟨1⟩ } : Substring)}'"
-
+-/
 
 initialize addLinter pedantic
 
