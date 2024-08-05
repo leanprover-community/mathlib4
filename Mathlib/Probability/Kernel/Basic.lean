@@ -67,6 +67,14 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
 
 @[deprecated (since := "2024-07-22")] alias kernel := Kernel
 
+/-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/
+scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
+
+/-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain and codomain. -/
+scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
+
+initialize_simps_projections Kernel (toFun → apply)
+
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace Kernel
@@ -186,8 +194,6 @@ namespace Kernel
 
 @[ext]
 theorem ext {η : Kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
-
-protected theorem ext_iff {η : Kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
 
 theorem ext_iff' {η : Kernel α β} :
     κ = η ↔ ∀ a s, MeasurableSet s → κ a s = η a s := by

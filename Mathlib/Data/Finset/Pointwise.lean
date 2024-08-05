@@ -284,7 +284,7 @@ end InvolutiveInv
 
 section Mul
 
-variable [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
+variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
   (f : F) {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
 /-- The pointwise multiplication of finsets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}`
@@ -415,7 +415,7 @@ theorem subset_mul {s t : Set α} :
   subset_image₂
 
 @[to_additive]
-theorem image_mul : (s * t).image (f : α → β) = s.image f * t.image f :=
+theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f * t.image f :=
   image_image₂_distrib <| map_mul f
 
 /-- The singleton operation as a `MulHom`. -/
@@ -433,37 +433,37 @@ theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
 
 /-- Lift a `MulHom` to `Finset` via `image`. -/
 @[to_additive (attr := simps) "Lift an `AddHom` to `Finset` via `image`"]
-def imageMulHom : Finset α →ₙ* Finset β where
+def imageMulHom [DecidableEq β] : Finset α →ₙ* Finset β where
   toFun := Finset.image f
   map_mul' _ _ := image_mul _
 
 @[to_additive (attr := simp (default + 1))]
-lemma sup_mul_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
+lemma sup_mul_le {β} [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
     sup (s * t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x * y) ≤ a :=
   sup_image₂_le
 
 @[to_additive]
-lemma sup_mul_left [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
+lemma sup_mul_left {β} [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
     sup (s * t) f = sup s fun x ↦ sup t (f <| x * ·) :=
   sup_image₂_left ..
 
 @[to_additive]
-lemma sup_mul_right [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
+lemma sup_mul_right {β} [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
     sup (s * t) f = sup t fun y ↦ sup s (f <| · * y) :=
   sup_image₂_right ..
 
 @[to_additive (attr := simp (default + 1))]
-lemma le_inf_mul [SemilatticeInf β] [OrderTop β] {s t : Finset α} {f : α → β} {a : β} :
+lemma le_inf_mul {β} [SemilatticeInf β] [OrderTop β] {s t : Finset α} {f : α → β} {a : β} :
     a ≤ inf (s * t) f ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ f (x * y) :=
   le_inf_image₂
 
 @[to_additive]
-lemma inf_mul_left [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α → β) :
+lemma inf_mul_left {β} [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α → β) :
     inf (s * t) f = inf s fun x ↦ inf t (f <| x * ·) :=
   inf_image₂_left ..
 
 @[to_additive]
-lemma inf_mul_right [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α → β) :
+lemma inf_mul_right {β} [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α → β) :
     inf (s * t) f = inf t fun y ↦ inf s (f <| · * y) :=
   inf_image₂_right ..
 
@@ -989,7 +989,8 @@ theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
   simp only [isUnit_iff, Group.isUnit, and_true_iff]
 
 @[simp]
-theorem isUnit_iff_singleton_aux : (∃ a, s = {a} ∧ IsUnit a) ↔ ∃ a, s = {a} := by
+theorem isUnit_iff_singleton_aux {α} [Group α] {s : Finset α} :
+    (∃ a, s = {a} ∧ IsUnit a) ↔ ∃ a, s = {a} := by
   simp only [Group.isUnit, and_true_iff]
 
 @[to_additive (attr := simp)]
@@ -1871,8 +1872,17 @@ end BigOps
 end Finset
 
 namespace Fintype
-variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
-  [∀ i, DecidableEq (β i)]
+variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (β i)]
+
+@[to_additive]
+lemma piFinset_smul [∀ i, SMul (α i) (β i)] (s : ∀ i, Finset (α i)) (t : ∀ i, Finset (β i)) :
+    piFinset (fun i ↦ s i • t i) = piFinset s • piFinset t := piFinset_image₂ _ _ _
+
+@[to_additive]
+lemma piFinset_smul_finset [∀ i, SMul (α i) (β i)] (a : ∀ i, α i) (s : ∀ i, Finset (β i)) :
+    piFinset (fun i ↦ a i • s i) = a • piFinset s := piFinset_image _ _
+
+variable [∀ i, DecidableEq (α i)]
 
 @[to_additive]
 lemma piFinset_mul [∀ i, Mul (α i)] (s t : ∀ i, Finset (α i)) :
@@ -1886,13 +1896,7 @@ lemma piFinset_div [∀ i, Div (α i)] (s t : ∀ i, Finset (α i)) :
 lemma piFinset_inv [∀ i, Inv (α i)] (s : ∀ i, Finset (α i)) :
     piFinset (fun i ↦ (s i)⁻¹) = (piFinset s)⁻¹ := piFinset_image _ _
 
-@[to_additive]
-lemma piFinset_smul [∀ i, SMul (α i) (β i)] (s : ∀ i, Finset (α i)) (t : ∀ i, Finset (β i)) :
-    piFinset (fun i ↦ s i • t i) = piFinset s • piFinset t := piFinset_image₂ _ _ _
 
-@[to_additive]
-lemma piFinset_smul_finset [∀ i, SMul (α i) (β i)] (a : ∀ i, α i) (s : ∀ i, Finset (β i)) :
-    piFinset (fun i ↦ a i • s i) = a • piFinset s := piFinset_image _ _
 
 -- Note: We don't currently state `piFinset_vsub` because there's no
 -- `[∀ i, VSub (β i) (α i)] → VSub (∀ i, β i) (∀ i, α i)` instance
