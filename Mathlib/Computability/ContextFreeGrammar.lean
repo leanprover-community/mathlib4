@@ -690,8 +690,9 @@ private lemma in_language_of_in_union (hw : w ∈ (ContextFreeGrammar.union g₁
         exfalso
         exact impossible_rule huv hr''
 
-lemma ContextFreeGrammar.mem_union_language_iff_mem_or_mem :
-    w ∈ (ContextFreeGrammar.union g₁ g₂).language ↔ w ∈ g₁.language ∨ w ∈ g₂.language :=
+@[simp]
+lemma ContextFreeGrammar.language_union :
+    (g₁.union g₂).language = g₁.language ∪ g₂.language :=
   ⟨in_language_of_in_union, fun hw => hw.elim in_union_of_in_left in_union_of_in_right⟩
 
 end union_aux
