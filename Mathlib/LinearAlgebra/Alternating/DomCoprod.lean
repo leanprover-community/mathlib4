@@ -229,7 +229,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
       (QuotientGroup.leftRelDecidable (MonoidHom.range (Perm.sumCongrHom ιa ιb)))
       (Quotient.mk (QuotientGroup.leftRel (MonoidHom.range (Perm.sumCongrHom ιa ιb))) a)
       (Quotient.mk'' σ)) _ (s := Finset.univ)
-    fun x _ => QuotientGroup.eq' (s := MonoidHom.range (Perm.sumCongrHom ιa ιb)) (a := x) (b := σ)]
+    fun x _ => QuotientGroup.eq (s := MonoidHom.range (Perm.sumCongrHom ιa ιb)) (a := x) (b := σ)]
   -- eliminate a multiplication
   rw [← Finset.map_univ_equiv (Equiv.mulLeft σ), Finset.filter_map, Finset.sum_map]
   simp_rw [Equiv.coe_toEmbedding, Equiv.coe_mulLeft, (· ∘ ·), mul_inv_rev, inv_mul_cancel_right,
