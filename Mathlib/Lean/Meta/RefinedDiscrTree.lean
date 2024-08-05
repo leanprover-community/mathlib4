@@ -93,7 +93,7 @@ less potential matches can save a significant amount of computation.
 
 We encode an `Expr` as an `Array Key`. This is implemented with a lazy computation:
 we start with a `LazyEntry α`, which comes with a step function of type
-`LazyEntry α → Array (Key × LazyEntry α) ⊕ α`.
+`LazyEntry α → MetaM (Array (Key × LazyEntry α) ⊕ α)`.
 
 
 ## TODO
@@ -216,44 +216,45 @@ Helper function for converting an entry (i.e., `Array Key`) to the discriminatio
 `MessageData` that is more user-friendly. We use this function to implement diagnostic information.
 -/
 partial def keysAsPattern (keys : Array Key) : CoreM MessageData := do
-  go (parenIfNonAtomic := false) |>.run' keys.toList
+  go (paren := false) |>.run' keys.toList
 where
-  next? : StateRefT (List Key) CoreM (Option Key) := do
-    let key :: keys ← get | return none
+  /-- Get the next key. -/
+  next : StateRefT (List Key) CoreM Key := do
+    let key :: keys ← get | throwError m! "bad keys: {keys.map Key.format}"
     set keys
-    return some key
-
-  mkApp (f : MessageData) (args : Array MessageData) (parenIfNonAtomic : Bool) : CoreM MessageData := do
+    return key
+  /-- Format the application `f args`. -/
+  mkApp (f : MessageData) (args : Array MessageData) (paren : Bool) : CoreM MessageData := do
     if args.isEmpty then
       return f
     else
       let mut r := f
       for arg in args do
         r := r ++ m!" {arg}"
-      if parenIfNonAtomic then
+      if paren then
         return m!"({r})"
       else
         return r
-
-  go (parenIfNonAtomic := true) : StateRefT (List Key) CoreM MessageData := do
-    let some key ← next? | return .nil
+  /-- Format the next expression. -/
+  go (paren := true) : StateRefT (List Key) CoreM MessageData := do
+    let key ← next
     match key with
     | .const declName nargs =>
-      mkApp m!"{← mkConstWithLevelParams declName}" (← goN nargs) parenIfNonAtomic
+      mkApp m!"{← mkConstWithLevelParams declName}" (← goN nargs) paren
     | .fvar fvarId nargs =>
-      mkApp m!"{mkFVar fvarId}" (← goN nargs) parenIfNonAtomic
+      mkApp m!"{mkFVar fvarId}" (← goN nargs) paren
     | .proj _ i nargs =>
-      mkApp m!"{← go}.{i+1}" (← goN nargs) parenIfNonAtomic
+      mkApp m!"{← go}.{i+1}" (← goN nargs) paren
     | .bvar i nargs =>
-      mkApp m!"#{i}" (← goN nargs) parenIfNonAtomic
+      mkApp m!"#{i}" (← goN nargs) paren
     | .lam =>
-      let r := m!"λ, {← go false}"
-      if parenIfNonAtomic then return m!"({r})" else return r
+      let r := m!"λ, {← go (paren := false)}"
+      if paren then return m!"({r})" else return r
     | .forall =>
-      let r := m!"{← go} → {← go false}";
-      if parenIfNonAtomic then return m!"({r})" else return r
+      let r := m!"{← go} → {← go (paren := false)}";
+      if paren then return m!"({r})" else return r
     | _ => return key.format
-
+  /-- Format the next `n` expressions. -/
   goN (num : Nat) : StateRefT (List Key) CoreM (Array MessageData) := do
     let mut r := #[]
     for _ in [: num] do
@@ -414,76 +415,119 @@ def isStarWithArg (arg : Expr) : Expr → Bool
 
 /-- If there is a loose `.bvar` returns `none`. Otherwise returns the index
 of the next branch of the expression. -/
-private partial def hasLooseBVarsAux (keys : Array Key) (depth index : Nat) : Option Nat :=
-  match keys[index]! with
+private partial def hasLooseBVarsAux (depth : Nat) (keys : List Key) : Option (List Key) :=
+  match keys with
+  | [] => none
+  | key :: keys =>
+  match key with
   | .const _ nargs
-  | .fvar _ nargs   => recurse nargs
-  | .bvar i nargs   => if i ≥ depth then none else recurse nargs
-  | .lam            => hasLooseBVarsAux keys (depth + 1) (index + 1)
-  | .forall         => hasLooseBVarsAux keys depth (index + 1) >>= hasLooseBVarsAux keys (depth + 1)
-  | .proj _ _ nargs => recurse (nargs + 1)
-  | _               => some (index + 1)
+  | .fvar _ nargs   => recurse nargs keys
+  | .bvar i nargs   => if i ≥ depth then none else recurse nargs keys
+  | .lam            => hasLooseBVarsAux (depth + 1) keys
+  | .forall         => hasLooseBVarsAux depth keys >>= hasLooseBVarsAux (depth + 1)
+  | .proj _ _ nargs => recurse (nargs + 1) keys
+  | _               => some keys
 where
-  recurse (nargs : Nat) : Option Nat :=
-    nargs.foldM (init := index + 1) (fun _ => hasLooseBVarsAux keys depth)
+  recurse (nargs : Nat) (keys : List Key) : Option (List Key) :=
+    nargs.foldM (init := keys) (fun _ => hasLooseBVarsAux depth)
 
 /-- Determine whether `keys` contains a loose bound variable. -/
-def hasLooseBVars (keys : Array Key) : Bool :=
-  hasLooseBVarsAux keys 0 0 |>.isNone
+def hasLooseBVars (keys : List Key) : Bool :=
+  hasLooseBVarsAux 0 keys |>.isNone
 
 
 namespace MkKeys
 
-private structure Context where
+/-- The information for computing the keys of a subexpression. -/
+private structure ExprInfo where
+  /-- The expression -/
+  expr : Expr
   /-- Variables that come from a lambda or forall binder.
   The list index gives the De Bruijn index. -/
   bvars : List FVarId := []
   /-- Variables that come from a lambda that has been removed via η-reduction. -/
   forbiddenVars : List FVarId := []
-  config : WhnfCoreConfig
-  fvarInContext : FVarId → Bool
+  lctx : LocalContext
+  localInsts : LocalInstances
 
-private def getStar {m : Type → Type} [MonadState (Array MVarId) m] (mvarId? : Option MVarId) :
-    m Key :=
-  modifyGet fun s =>
-    match mvarId? with
-    | some mvarId => match s.getIdx? mvarId with
-      | some idx => (.star idx, s)
-      | none => (.star s.size, s.push mvarId)
-    | none => (.star s.size, s.push ⟨.anonymous⟩)
+/-- The possible values that can appear in the stack:
+- `.star` is an expression that will not be explicitly indexed
+- `.expr` is an expression that will be indexed
+- `.cache` is a cache entry, used for computations that can have multiple outcomes,
+  so that they always give the same outcome. -/
+inductive StackEntry where
+  | star
+  | expr (info : ExprInfo)
+  | cache (key : Expr) (value : List Key)
+
+private def StackEntry.format : StackEntry → Format
+  | .star => f!".star"
+  | .expr info => f!".expr {info.expr}"
+  | .cache key value => f!".cache {key} {value}"
+
+instance : ToFormat StackEntry := ⟨StackEntry.format⟩
+
+/-- A `LazyEntry` represents a snapshot of the computation of encoding an `Expr` as `Array Key`.
+This is used for computing the keys one by one. -/
+structure LazyEntry (α : Type) where
+  /-- The stack, used to emulate recursion. -/
+  stack         : List StackEntry
+  /-- The `MVarId` assignments for converting into `.star` keys. -/
+  stars         : RBMap MVarId Nat (·.name.quickCmp ·.name) := {}
+  /-- The number to be used for the next new `.star` key. -/
+  nStars        : Nat := 0
+  /-- The `Key`s that have already been computed. -/
+  results       : List Key := []
+  /-- The `WhnfCoreConfig` configuration -/
+  config        : WhnfCoreConfig
+  /-- `fvarInContext` specifies which free variables should be indexed with the `.fvar` key. -/
+  fvarInContext : FVarId → Bool
+  /-- The cache of past computations that have multiple possible outcomes. -/
+  cache         : AssocList Expr (List Key) := .nil
+  /-- The return value. -/
+  val           : α
+
+private def LazyEntry.format [ToFormat α] (entry : LazyEntry α) : Format :=
+  let results := if entry.results matches [] then f!"" else f!"results: {entry.results}, "
+  f!"stack: {entry.stack}, {results}value: {entry.val}"
+
+instance [ToFormat α] : ToFormat (LazyEntry α) := ⟨LazyEntry.format⟩
+
+/-- The context for the `LazyM α` monad-/
+structure Context where
+  /-- Variables that come from a lambda or forall binder.
+  The list index gives the De Bruijn index. -/
+  bvars : List FVarId
+  /-- Variables that come from a lambda that has been removed via η-reduction. -/
+  forbiddenVars : List FVarId
+
+/-- The monad used for evaluating a `LazyEntr α`. -/
+abbrev LazyM α := ReaderT Context StateRefT (LazyEntry α) MetaM
 
 /-- Determine for each argument whether it should be ignored. -/
-def getIgnores (fn : Expr) (args : Array Expr) : MetaM (Array Bool) := do
+def getArgsIgnored (fn : Expr) (args : Array Expr) : MetaM (Array (Option Expr)) := do
   let mut fnType ← inferType fn
   let mut result := Array.mkEmpty args.size
   let mut j := 0
-  for i in [:args.size] do
+  for h : i in [:args.size] do
     unless fnType.isForall do
       fnType ← whnfD (fnType.instantiateRevRange j i args)
       j := i
     let .forallE _ d b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
     fnType := b
-    result := result.push (← isIgnoredArg args[i]! d bi)
+    let arg := args[i]
+    result := result.push (← ignoredArg arg d bi)
   return result
 where
   /-- Determine whether the argument should be ignored. -/
-  isIgnoredArg (arg domain : Expr) (binderInfo : BinderInfo) : MetaM Bool := do
+  ignoredArg (arg domain : Expr) (binderInfo : BinderInfo) : MetaM (Option Expr) := do
     if domain.isOutParam then
-      return true
+      return none
     match binderInfo with
-    | .instImplicit => return true
+    | .instImplicit => return none
     | .implicit
-    | .strictImplicit => return !(← isType arg)
-    | .default => isProof arg
-
-@[specialize]
-private def withLams {m} [Monad m] [MonadWithReader Context m]
-    (lambdas : List FVarId) (k : m (Array Key)) : m (Array Key) :=
-  if lambdas.isEmpty then
-    k
-  else do
-    let e ← withReader (fun c => { c with bvars := lambdas ++ c.bvars }) k
-    return lambdas.foldl (fun d _ => #[.lam] ++ d) e
+    | .strictImplicit => return if ← isType arg then some arg else none
+    | .default => return if ← isProof arg then none else some arg
 
 /-- Reduction procedure for the `RefinedDiscrTree` indexing. -/
 partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
@@ -494,43 +538,55 @@ partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
     | some e => reduce e config
     | none   => return e
 
-/-- Repeatedly reduce while stripping lambda binders and introducing their variables -/
+
+private def getStar (mvarId : MVarId) : LazyM α Key :=
+  modifyGet fun entry =>
+    match entry.stars.find? mvarId with
+    | some idx => (.star idx, entry)
+    | none => (.star entry.nStars,
+      { entry with stars := entry.stars.insert mvarId entry.nStars, nStars := entry.nStars + 1 })
+
+private def getNewStar (entry : LazyEntry α) : Key × LazyEntry α :=
+  (.star entry.nStars, {entry with nStars := entry.nStars + 1 })
+
 @[specialize]
-partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m]
-    [MonadWithReader Context m] [MonadState (Array MVarId) m]
-    (e : Expr) (lambdas : List FVarId) (config : WhnfCoreConfig)
-    (k : Expr → List FVarId → m (Array Key)) : m (Array Key) := do
-  -- expressions marked with `no_index` are indexed with a star
-  if DiscrTree.hasNoindexAnnotation e then
-    withLams lambdas do return #[← getStar none]
-  else
-  match ← reduce e config with
-  | .lam n d b bi =>
-    withLocalDecl n bi d fun fvar =>
-      lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: lambdas) config k
-  | e => k e lambdas
+private def withLams (lambdas : List FVarId) (key : LazyM α Key) : LazyM α Key := do
+  let (key, rest) ← match lambdas with
+    | [] => pure (← key, [])
+    | _ :: tail => withReader (fun c => { c with bvars := lambdas ++ c.bvars }) do
+      pure (.lam, tail.foldl (init := [← key]) fun keys _fvarId => Key.lam :: keys)
+  let keys := key :: rest
+  modify fun s => { s with
+    results := rest
+    stack := s.stack.map fun
+      | .cache key value => .cache key (keys.foldl (init := value) (·.cons ·))
+      | x => x}
+  return key
+
+private def makeStackEntry (arg : Option Expr) : LazyM α StackEntry := do
+  match arg with
+  | none => return .star
+  | some arg => do
+    return .expr { (← read) with
+      expr := arg
+      lctx := ← getLCtx
+      localInsts := ← getLocalInstances }
 
 
-/-- Return the encoding of `e` as a `DTExpr`.
-If `root = false`, then `e` is a strict sub expression of the original expression. -/
-partial def mkKeyAux (e : Expr) (root : Bool) : ReaderT Context (StateT (Array MVarId) MetaM) (Array Key) := do
-  lambdaTelescopeReduce e [] (← read).config fun e lambdas => do
+private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM α Key := do
   unless root do
     if let some (n, as) ← reducePi e lambdas then
       let (args, lambdas) := as.back
       return ← withLams lambdas do
-        return #[.const n args.size] ++ (← args.concatMapM fun
-          | none => return #[← getStar none]
-          | some arg => mkKeyAux arg false)
+      let args ← args.mapM makeStackEntry
+      modify fun s => { s with stack := args.toListAppend s.stack }
+      return (.const n args.size)
+
   e.withApp fun fn args => do
-
-  let argDTExpr (arg : Expr) (ignore : Bool) : ReaderT Context (StateT (Array MVarId) MetaM) (Array Key) :=
-    if ignore then return #[← getStar none] else mkKeyAux arg false
-
-  let argDTExprs : ReaderT Context (StateT (Array MVarId) MetaM) (Array (Array Key)) := do
-    let ignores ← getIgnores fn args
-    args.mapIdxM fun i arg =>
-      argDTExpr arg ignores[i]!
+  let stackArgs : LazyM α Nat := do
+    let stack ← (← getArgsIgnored fn args).mapM makeStackEntry
+    modify fun s => { s with stack := stack.toListAppend s.stack}
+    return stack.size
 
   match fn with
   | .const n _ =>
@@ -538,173 +594,165 @@ partial def mkKeyAux (e : Expr) (root : Bool) : ReaderT Context (StateT (Array M
       /- since `(fun _ => 0) = 0` and `(fun _ => 1) = 1`,
       we don't index lambdas before literals -/
       if let some v := toNatLit? e then
-        return #[.lit v]
+        return ← withLams [] (return .lit v)
     withLams lambdas do
-      return #[.const n args.size] ++ (← argDTExprs).concatMap id
+    let nargs ← stackArgs
+    return (.const n nargs)
   | .proj n i a =>
     withLams lambdas do
-      let a ← argDTExpr a (isClass (← getEnv) n)
-      return #[.proj n i args.size] ++ a ++ (← argDTExprs).concatMap id
+    let struct ← makeStackEntry (if isClass (← getEnv) n then none else some a)
+    let nargs ← stackArgs
+    modify fun s => { s with stack := struct :: s.stack}
+    return .proj n i nargs
   | .fvar fvarId =>
     /- we index `fun x => x` as `id` when not at the root -/
-    if let fvarId' :: lambdas' := lambdas then
-      if fvarId' == fvarId && args.isEmpty && !root then
-        return ← withLams lambdas' do
-          let type ← mkKeyAux (← fvarId.getType) false
-          return #[.const ``id 1] ++ type
+    if args.isEmpty && !root then
+      if let fvarId' :: lambdas := lambdas then
+        if fvarId' == fvarId then
+          return ← withLams lambdas do
+          let type ← makeStackEntry (← fvarId.getType)
+          modify fun s => { s with stack := type :: s.stack }
+          return .const ``id 1
     withLams lambdas do
-      if let some idx := (← read).bvars.indexOf? fvarId then
-        return #[.bvar idx args.size] ++ (← argDTExprs).concatMap id
-      if (← read).fvarInContext fvarId then
-        return #[.fvar fvarId args.size] ++ (← argDTExprs).concatMap id
-      else
-        return #[.opaque]
+    if let some idx := (← read).bvars.indexOf? fvarId then
+      let nargs ← stackArgs
+      return .bvar idx nargs
+    else if (← get).fvarInContext fvarId then
+      let nargs ← stackArgs
+      return .fvar fvarId nargs
+    else
+      return .opaque
   | .mvar mvarId =>
     /- If there are arguments, don't index the lambdas, as `e` might contain the bound variables
     When not at the root, don't index the lambdas, as it should be able to match with
     `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`. -/
     if args.isEmpty && (root || lambdas.isEmpty) then
-      withLams lambdas do return #[← getStar (some mvarId)]
+      withLams lambdas (getStar mvarId)
     else
-      return #[← getStar none]
+      withLams [] (modifyGet getNewStar)
 
   | .forallE n d b bi =>
     withLams lambdas do
-      let d' ← mkKeyAux d false
-      let b' ← withLocalDecl n bi d fun fvar =>
-        withReader (fun c => { c with bvars := fvar.fvarId! :: c.bvars }) do
-          mkKeyAux (b.instantiate1 fvar) false
-      return #[.forall] ++ d' ++ b'
-  | .lit v      => withLams lambdas do return #[.lit v]
-  | .sort _     => withLams lambdas do return #[.sort]
-  | .letE ..    => withLams lambdas do return #[.opaque]
-  | .lam ..     => withLams lambdas do return #[.opaque]
+    let d' ← makeStackEntry d
+    let b' ← withLocalDecl n bi d fun fvar =>
+      withReader (fun c => { c with bvars := fvar.fvarId! :: c.bvars }) do
+        makeStackEntry (b.instantiate1 fvar)
+    modify fun s => { s with stack := d' :: b' :: s.stack }
+    return .forall
+  | .lit v      => withLams lambdas <| return .lit v
+  | .sort _     => withLams lambdas <| return .sort
+  | .letE ..    => withLams lambdas <| return .opaque
+  | .lam ..     => withLams lambdas <| return .opaque
   | _           => unreachable!
 
 
-private abbrev M := ReaderT Context $ StateListT (Array MVarId × AssocList Expr (Array Key)) $ MetaM
-
-/-
-Caching values is a bit dangerous, because when two expressions are be equal and they live under
-a different number of binders, then the resulting De Bruijn indices are offset.
-In practice, getting a `.bvar` in a `DTExpr` is very rare, so we exclude such values from the cache.
--/
-instance : MonadCache Expr (Array Key) M where
-  findCached? e := do
-    let s ← get
-    return s.2.find? e
-  cache e e' :=
-    if hasLooseBVars e' then
-      return
-    else
-      modify (fun (s,t) => (s,t.insert e e'))
-
-local instance : MonadState (Array MVarId) M where
-  get := return (← get).1
-  set s := modify ({ · with fst := s })
-  modifyGet f := modifyGet fun s => let (a,s1) := f s.1; (a, {s with fst := s1})
-
-
-/-- Return all pairs of body, bound variables that could possibly appear due to η-reduction -/
+/-- Run `k` on all pairs of body, bound variables that could possibly appear due to η-reduction -/
 @[specialize]
-def etaPossibilities (e : Expr) (lambdas : List FVarId) (k : Expr → List FVarId → M α) : M α :=
-  k e lambdas
-  <|> do
-  match e, lambdas with
+def etaPossibilities (e : Expr) (lambdas : List FVarId)
+    (k : Expr → List FVarId → ReaderT Context MetaM α) : ReaderT Context MetaM (List α) :=
+  return (← k e lambdas) :: (← match e, lambdas with
   | .app f a, fvarId :: lambdas =>
     if isStarWithArg (.fvar fvarId) a then
       withReader (fun c => { c with forbiddenVars := fvarId :: c.forbiddenVars }) do
         etaPossibilities f lambdas k
     else
-      failure
-  | _, _ => failure
+      return []
+  | _, _ => return [])
 
 /-- run `etaPossibilities`, and cache the result if there are multiple possibilities. -/
 @[specialize]
 def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
-    (k : Expr → List FVarId → M (Array Key)) : M (Array Key) :=
+    (cache : AssocList Expr (List Key))
+    (ifCached : List Key → (Key × LazyEntry α))
+    (k : Expr → List FVarId → ReaderT Context MetaM (Key × LazyEntry α)) :
+    ReaderT Context MetaM (List (Key × LazyEntry α)) := do
   match e, lambdas with
   | .app _ a, fvarId :: _ =>
     if isStarWithArg (.fvar fvarId) a then
-      checkCache original fun _ =>
-        etaPossibilities e lambdas k
+      match cache.find? original with
+      | some keys => return ([ifCached keys])
+      | none =>
+        let possibilities ← etaPossibilities e lambdas k
+        return possibilities.map fun (key, entry) =>
+          let stackEntry := .cache original (key :: entry.results).reverse
+          (key, { entry with stack := stackEntry :: entry.stack })
     else
-      k e lambdas
-  | _, _ => k e lambdas
+      return ([← k e lambdas])
+  | _, _ => return ([← k e lambdas])
+
+/-- Repeatedly reduce while stripping lambda binders and introducing their variables -/
+@[specialize]
+partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m]
+    [Inhabited α] (e : Expr) (lambdas : List FVarId) (config : WhnfCoreConfig)
+    (noIndex : List FVarId → m α) (k : Expr → List FVarId → m α) : m α := do
+  -- expressions marked with `no_index` are indexed with a star
+  if DiscrTree.hasNoindexAnnotation e then
+    noIndex lambdas
+  else
+    match ← reduce e config with
+    | .lam n d b bi =>
+      withLocalDecl n bi d fun fvar =>
+        lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: lambdas) config noIndex k
+    | e => k e lambdas
+
+/-- A single step in encoding an `Expr` into `Key`s. -/
+def encodingStep (original : Expr) (root : Bool) (entry : LazyEntry α) (tryEta : Bool) :
+    ReaderT Context MetaM (List (Key × LazyEntry α)) := do
+  lambdaTelescopeReduce original [] entry.config
+    (fun lambdas => do
+      let (key, entry) := getNewStar entry
+      let (key, entry) ← withLams lambdas (pure key) |>.run (← read) |>.run entry
+      pure ([(key, entry)]))
+    fun e lambdas => do
+  if tryEta then
+    cacheEtaPossibilities e original lambdas entry.cache
+      (fun | key :: keys => (key, { entry with results := keys }) | [] => (panic! "", entry))
+      (fun e lambdas => do encodingStepAux e lambdas root |>.run (← read) |>.run entry)
+  else
+    return ([← encodingStepAux e lambdas root |>.run (← read) |>.run entry])
 
 
-/-- Return all encodings of `e` as a `DTExpr`, taking possible η-reductions into account.
-If `root = false`, then `e` is a strict sub expression of the original expression. -/
-partial def mkKeysAux (original : Expr) (root : Bool) : M (Array Key) := do
-  lambdaTelescopeReduce original [] (← read).config fun e lambdas => do
-  unless root do
-    if let some (n, as) ← reducePi e lambdas then
-      let (args, lambdas) ← fun _ => StateListT.ofArray as
-      return ← withLams lambdas do
-        return #[.const n args.size] ++ (← args.concatMapM fun
-          | none => return #[← getStar none]
-          | some arg => mkKeysAux arg false)
-  cacheEtaPossibilities e original lambdas fun e lambdas =>
-  e.withApp fun fn args => do
+private partial def processLazyEntryAux (entry : LazyEntry α) (tryEta : Bool) :
+    MetaM (List (Key × LazyEntry α) ⊕ α) := do
+  let stackEntry :: stack := entry.stack | return .inr entry.val
+  let entry := { entry with stack }
+  match stackEntry with
+  | .cache key value =>
+    let value := value.reverse
+    let entry := if hasLooseBVars value then
+      { entry with cache := entry.cache.insert key value }
+      else entry
+    processLazyEntryAux { entry with cache := entry.cache.insert key (value.reverse) } tryEta
+  | .star =>
+    let (key, entry) := getNewStar entry
+    return .inl [(key, entry)]
+  | .expr info =>
+    withLCtx info.lctx info.localInsts do
+    return .inl (← encodingStep info.expr (root := false) entry tryEta |>.run { info with })
 
-  let argDTExpr (arg : Expr) (ignore : Bool) : M (Array Key) :=
-    if ignore then return #[← getStar none] else mkKeysAux arg false
+/-- A single step in evaluating a `LazyEntry α`. -/
+def processLazyEntry (entry : LazyEntry α) (tryEta : Bool) :
+    MetaM (List (Key × LazyEntry α) ⊕ α) := do
+  if let key :: results := entry.results then
+    return .inl [(key, { entry with results })]
+  else
+    processLazyEntryAux entry tryEta
 
-  let argDTExprs : M (Array (Array Key)) := do
-    let ignores ← getIgnores fn args
-    args.mapIdxM fun i arg =>
-      argDTExpr arg ignores[i]!
+/-- The first step in encoding an `Expr` into `Key`s. -/
+def initializeLazyEntry (e : Expr) (val : α) (config : WhnfCoreConfig)
+    (fvarInContext : FVarId → Bool) : MetaM (List (Key × LazyEntry α)) :=
+  encodingStep e true { stack := [], config, fvarInContext, val } true |>.run ⟨[], []⟩
 
-  match fn with
-  | .const n _ =>
-      unless root do
-        /- since `(fun _ => 0) = 0` and `(fun _ => 1) = 1`,
-        we don't index lambdas before nat literals -/
-        if let some v := toNatLit? e then
-          return #[.lit v]
-      withLams lambdas do
-        return #[.const n args.size] ++ (← argDTExprs).concatMap id
-  | .proj n i a =>
-    withLams lambdas do
-    let a ← argDTExpr a (isClass (← getEnv) n)
-    return #[.proj n i args.size] ++ a ++ (← argDTExprs).concatMap id
-  | .fvar fvarId =>
-    /- we index `fun x => x` as `id` when not at the root -/
-    if let fvarId' :: lambdas' := lambdas then
-      if fvarId' == fvarId && args.isEmpty && !root then
-        return ← withLams lambdas' do
-          let type ← mkKeysAux (← fvarId.getType) false
-          return #[.const ``id 1] ++ type
-    withLams lambdas do
-      let c ← read
-      if let some idx := c.bvars.indexOf? fvarId then
-        return #[.bvar idx args.size] ++ (← argDTExprs).concatMap id
-      guard !(c.forbiddenVars.contains fvarId)
-      if c.fvarInContext fvarId then
-        return #[.fvar fvarId args.size] ++ (← argDTExprs).concatMap id
-      else
-        return #[.opaque]
-  | .mvar mvarId =>
-    /- If there are arguments, don't index the lambdas, as `e` might contain the bound variables
-    When not at the root, don't index the lambdas, as it should be able to match with
-    `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`. -/
-    if args.isEmpty && (root || lambdas.isEmpty) then
-      withLams lambdas do return #[← getStar (some mvarId)]
-    else
-      return #[← getStar none]
-
-  | .forallE n d b bi =>
-    withLams lambdas do
-    let d' ← mkKeysAux d false
-    let b' ← withLocalDecl n bi d fun fvar =>
-      withReader (fun c => { c with bvars := fvar.fvarId! :: c.bvars }) do
-        mkKeysAux (b.instantiate1 fvar) false
-    return #[.forall] ++ d' ++ b'
-  | .lit v      => withLams lambdas do return #[.lit v]
-  | .sort _     => withLams lambdas do return #[.sort]
-  | .letE ..    => withLams lambdas do return #[.opaque]
-  | .lam ..     => withLams lambdas do return #[.opaque]
-  | _           => unreachable!
+private partial def force (entry : LazyEntry α) (keys : Array Key := #[]) :
+    MetaM (Array (Array Key)) := do
+  match ← processLazyEntry entry true with
+  | .inr _ => return #[keys]
+  | .inl entries =>
+    let mut result := #[]
+    for (key, entry) in entries do
+      let keys := keys.push key
+      result := result ++ (← force entry keys)
+    return result
 
 end MkKeys
 
@@ -714,16 +762,16 @@ def isSpecific : Array Key → Bool
   | #[.const ``Eq 3, .star _, .star _, .star _] => false
   | _ => true
 
-/-- Return the encoding of `e` as a `DTExpr`.
+-- /-- Return the encoding of `e` as a `DTExpr`.
 
-Warning: to account for potential η-reductions of `e`, use `mkDTExprs` instead.
+-- Warning: to account for potential η-reductions of `e`, use `mkDTExprs` instead.
 
-The argument `fvarInContext` allows you to specify which free variables in `e` will still be
-in the context when the `RefinedDiscrTree` is being used for lookup.
-It should return true only if the `RefinedDiscrTree` is built and used locally. -/
-def mkKey (e : Expr) (config : WhnfCoreConfig)
-    (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (Array Key) :=
-  withReducible do (MkKeys.mkKeyAux e true |>.run {config, fvarInContext} |>.run' #[])
+-- The argument `fvarInContext` allows you to specify which free variables in `e` will still be
+-- in the context when the `RefinedDiscrTree` is being used for lookup.
+-- It should return true only if the `RefinedDiscrTree` is built and used locally. -/
+-- def mkKey (e : Expr) (config : WhnfCoreConfig)
+--     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (Array Key) :=
+--   withReducible do (MkKeys.mkKeyAux e true |>.run {config, fvarInContext} |>.run' #[])
 
 /-- Similar to `mkKey`.
 Return all encodings of `e` as a `DTExpr`, taking potential further η-reductions into account.
@@ -731,7 +779,9 @@ If onlySpecific is `true`, then filter the encodings by whether they are specifi
 def mkKeys (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (List (Array Key)) :=
   withReducible do
-    let es ← (MkKeys.mkKeysAux e true).run {config, fvarInContext} |>.run' (#[],{})
+    let (key, entry) :: _ := (← MkKeys.initializeLazyEntry e () config fvarInContext) | failure
+    let es ← MkKeys.force entry #[key]
+    let es := es.toList
     return if onlySpecific then es.filter isSpecific else es
 
 
@@ -813,7 +863,8 @@ def insert [BEq α] (d : RefinedDiscrTree α) (e : Expr) (v : α)
   let keys ← mkKeys e config onlySpecific fvarInContext
   return keys.foldl (insertKeys · · v) d
 
-def isPerm (t s : Expr) : Bool := match t, s with
+/-- Return `true` if `s` and `t` are equal up to changing the `MVarId`s. -/
+private def isPerm (t s : Expr) : Bool := match t, s with
     | .forallE _ d₁ b₁ _, .forallE _ d₂ b₂ _   => isPerm d₁ d₂ && isPerm b₁ b₂
     | .lam _ d₁ b₁ _    , .lam _ d₂ b₂ _       => isPerm d₁ d₂ && isPerm b₁ b₂
     | .mdata d₁ e₁      , .mdata d₂ e₂         => d₁ == d₂ && isPerm e₁ e₂
@@ -908,11 +959,11 @@ def matchTargetStar (id : Nat) (t : Trie α) : M (Trie α) := do
   assignQueryStar id dropped
   return t
 
-private partial def getKeysPrefix (keys : List Key) : List Key × Array Key := Id.run do
+private partial def dropKeys (keys : List Key) : Array Key × List Key := Id.run do
   let key :: keys := keys | panic! "too few keys"
-  key.arity.fold (init := (keys, #[key])) fun _ (keys, pre) =>
-    let (keys, pre') := getKeysPrefix keys;
-    (keys, pre ++ pre')
+  key.arity.fold (init := (#[key], keys)) fun _ (pre, keys) =>
+    let (dropped, keys) := dropKeys keys;
+    (pre ++ dropped, keys)
 
 /-- Return the possible `Trie α` that come from a `Key.star`,
 while keeping track of the `Key.star` assignments. -/
@@ -925,13 +976,13 @@ def matchTreeStars (keys : List Key) (t : Trie α) : M (List Key × Trie α) := 
   so this loops through all of them. -/
   for (k, c) in t.children! do
     let .star i := k | break
-    let (keys', pre) := getPrefixResult.getD <| getKeysPrefix keys
-    getPrefixResult := (keys', pre)
+    let (dropped, keys') := getPrefixResult.getD <| dropKeys keys
+    getPrefixResult := (dropped, keys')
     if let some assignment := treeAssignments.find? i then
-      if pre == assignment then
-        result := (incrementScore pre.size *> pure (keys', c)) <|> result
+      if dropped == assignment then
+        result := (incrementScore dropped.size *> pure (keys', c)) <|> result
     else
-      result := (assignTreeStar i pre *> pure (keys', c)) <|> result
+      result := (assignTreeStar i dropped *> pure (keys', c)) <|> result
   result
 
 mutual
@@ -949,7 +1000,8 @@ mutual
   /-- Assuming that `keys` is not a metavariable, return the possible `Trie α` that
     exactly match with `keys`. -/
   @[specialize]
-  partial def exactMatch (keys : List Key) (find? : Key → Option (Trie α)) : M (List Key × Trie α) := do
+  partial def exactMatch (keys : List Key) (find? : Key → Option (Trie α)) :
+      M (List Key × Trie α) := do
     let key :: keys := keys | panic! "too few keys"
     let some trie := find? key | failure
     match key with
@@ -978,6 +1030,8 @@ private partial def getMatchWithScoreAux (d : RefinedDiscrTree α) (keys : Array
 
 end GetUnify
 
+
+#exit
 /--
 Return the results from the `RefinedDiscrTree` that match the given expression,
 together with their matching scores, in decreasing order of score.

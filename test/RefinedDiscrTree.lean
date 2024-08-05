@@ -42,10 +42,14 @@ run_meta do
 /-- info: λ, #0 -/
 #guard_msgs in
 # fun x : Nat => x
+
 /-- info: @Function.Bijective ℕ ℕ (@id ℕ) -/
 #guard_msgs in
 # Function.Bijective fun x : Nat => x
 
+/-- info: @Nat.fold ℕ (@HAdd.hAdd (ℕ → ℕ → ℕ) (ℕ → ℕ → ℕ) _0 _1 (λ, @id ℕ) (λ, λ, #1)) 10 1 -/
+#guard_msgs in
+# (10).fold (init := 1) (fun x y => y + x)
 
 /-- info: @HAdd.hAdd (ℕ → ℕ) (ℕ → ℕ) _0 _1 (@id ℕ) (@id ℕ) 4 -/
 #guard_msgs in
