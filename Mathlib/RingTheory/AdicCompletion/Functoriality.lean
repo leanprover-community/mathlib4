@@ -225,7 +225,7 @@ inverse to each other.
 
 -/
 
-variable {ι : Type*} [DecidableEq ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
+variable {ι : Type*} (M : ι → Type*) [∀ i, AddCommGroup (M i)]
   [∀ i, Module R (M i)]
 
 section Pi
@@ -244,19 +244,19 @@ open DirectSum
 
 /-- The canonical map from the sum of the adic completions to the adic completion
 of the sum. -/
-def sum :
+def sum [DecidableEq ι] :
     (⨁ j, (AdicCompletion I (M j))) →ₗ[AdicCompletion I R] AdicCompletion I (⨁ j, M j) :=
   toModule (AdicCompletion I R) ι (AdicCompletion I (⨁ j, M j))
     (fun j ↦ map I (lof R ι M j))
 
 @[simp]
-theorem sum_lof (j : ι) (x : AdicCompletion I (M j)) :
+theorem sum_lof [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
     sum I M ((DirectSum.lof (AdicCompletion I R) ι (fun i ↦ AdicCompletion I (M i)) j) x) =
       map I (lof R ι M j) x := by
   simp [sum]
 
 @[simp]
-theorem sum_of (j : ι) (x : AdicCompletion I (M j)) :
+theorem sum_of [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
     sum I M ((DirectSum.of (fun i ↦ AdicCompletion I (M i)) j) x) =
       map I (lof R ι M j) x := by
   rw [← lof_eq_of R]
@@ -283,6 +283,8 @@ theorem sumInv_apply (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
     (sumInv I M x) j = map I (component R ι _ j) x := by
   apply induction_on I _ x (fun x ↦ ?_)
   rfl
+
+variable [DecidableEq ι]
 
 theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
   ext j x
@@ -326,7 +328,7 @@ section Pi
 
 open DirectSum
 
-variable [Fintype ι]
+variable [DecidableEq ι] [Fintype ι]
 
 /-- If `ι` is finite, `pi` is a linear equiv. -/
 def piEquivOfFintype :

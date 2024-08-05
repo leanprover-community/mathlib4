@@ -238,7 +238,7 @@ However, with respect to a measure which is positive on non-empty open sets, *cl
 zero sets are nowhere dense and σ-compact measure zero sets in a Hausdorff space are meagre.
 -/
 
-variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] {s : Set X}
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] {s : Set X}
   {μ : Measure X} [IsOpenPosMeasure μ]
 
 /-- A *closed* measure zero subset is nowhere dense. (Closedness is required: for instance, the

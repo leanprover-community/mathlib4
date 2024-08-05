@@ -58,8 +58,8 @@ distance, and show that they form a compact family by applying Arzela-Ascoli
 theorem. The existence of a minimizer follows. -/
 section Definitions
 
-variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
-  [CompactSpace Y] [Nonempty Y]
+variable (X : Type u) (Y : Type v) [MetricSpace X] [MetricSpace Y]
+
 
 private abbrev ProdSpaceFun : Type _ :=
   (X ⊕ Y) × (X ⊕ Y) → ℝ
@@ -93,12 +93,13 @@ end Definitions
 
 section Constructions
 
-variable {X : Type u} {Y : Type v} [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
-  [CompactSpace Y] [Nonempty Y] {f : ProdSpaceFun X Y} {x y z t : X ⊕ Y}
+variable {X : Type u} {Y : Type v} [MetricSpace X] [MetricSpace Y]
+  {f : ProdSpaceFun X Y} {x y z t : X ⊕ Y}
 
 attribute [local instance 10] Classical.inhabited_of_nonempty'
 
-private theorem maxVar_bound : dist x y ≤ maxVar X Y :=
+private theorem maxVar_bound [CompactSpace X] [Nonempty X] [CompactSpace Y] [Nonempty Y] :
+    dist x y ≤ maxVar X Y :=
   calc
     dist x y ≤ diam (univ : Set (X ⊕ Y)) :=
       dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
@@ -200,6 +201,8 @@ private theorem candidates_lipschitz (fA : f ∈ candidates X Y) :
   rw [dist_comm]
   exact candidates_lipschitz_aux fA
 
+variable [CompactSpace X] [CompactSpace Y]
+
 /-- candidates give rise to elements of `BoundedContinuousFunction`s -/
 def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) : Cb X Y :=
   BoundedContinuousFunction.mkOfCompact ⟨f, (candidates_lipschitz fA).continuous⟩
@@ -207,6 +210,8 @@ def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
 theorem candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
     candidatesBOfCandidates f fA ∈ candidatesB X Y :=
   fA
+
+variable [Nonempty X] [Nonempty Y]
 
 /-- The distance on `X ⊕ Y` is a candidate -/
 private theorem dist_mem_candidates :
@@ -220,7 +225,8 @@ def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [
     [MetricSpace Y] [CompactSpace Y] [Nonempty Y] : Cb X Y :=
   candidatesBOfCandidates _ dist_mem_candidates
 
-theorem candidatesBDist_mem_candidatesB : candidatesBDist X Y ∈ candidatesB X Y :=
+theorem candidatesBDist_mem_candidatesB :
+    candidatesBDist X Y ∈ candidatesB X Y :=
   candidatesBOfCandidates_mem _ _
 
 private theorem candidatesB_nonempty : (candidatesB X Y).Nonempty :=
