@@ -37,7 +37,6 @@ open scoped Classical
 
 open UniqueFactorizationMonoid
 
-variable {k : Type*} [Field k]
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M]
