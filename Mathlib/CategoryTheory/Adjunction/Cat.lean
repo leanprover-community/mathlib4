@@ -45,8 +45,8 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
   counit : Cat.objects ⋙ typeToCat ⟶ 𝟭 Cat := {
     app := typeToCatObjectsAdjCounitApp
     naturality := fun _ _ _  ↦  Functor.hext (fun _ ↦ rfl)
-                                             (by intro ⟨_⟩ ⟨_⟩ f
-                                                 obtain rfl := Discrete.eq_of_hom f
-                                                 aesop_cat ) }
+      (by intro ⟨_⟩ ⟨_⟩ f
+          obtain rfl := Discrete.eq_of_hom f
+          aesop_cat ) }
 
 end CategoryTheory
