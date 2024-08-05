@@ -127,14 +127,6 @@ lemma max_bi_le {b : α → ℝ} (i : α) : b i ≤ b (max_bi b) :=
 
 end min_max
 
-variable {α : Type*} [Fintype α] [Nonempty α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
-  (R : AkraBazziRecurrence T g a b r)
-
-lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n / log n ^ 2 := by
-  rw [Filter.eventually_all]
-  intro i
-  simpa using IsLittleO.eventuallyLE (R.dist_r_b i)
-
 lemma isLittleO_self_div_log_id :
     (fun (n : ℕ) => n / log n ^ 2) =o[atTop] (fun (n : ℕ) => (n : ℝ)) := by
   calc (fun (n : ℕ) => (n : ℝ) / log n ^ 2) = fun (n : ℕ) => (n : ℝ) * ((log n) ^ 2)⁻¹ := by
@@ -149,6 +141,16 @@ lemma isLittleO_self_div_log_id :
                           IsLittleO.pow (IsLittleO.natCast_atTop
                             <| isLittleO_const_log_atTop) (by norm_num)
          _ = (fun (n : ℕ) => (n : ℝ)) := by ext; simp
+
+variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
+variable [Nonempty α] (R : AkraBazziRecurrence T g a b r)
+section
+include R
+
+lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n / log n ^ 2 := by
+  rw [Filter.eventually_all]
+  intro i
+  simpa using IsLittleO.eventuallyLE (R.dist_r_b i)
 
 lemma eventually_b_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n / log n ^ 2) ≤ r i n := by
   filter_upwards [R.dist_r_b'] with n hn
@@ -277,6 +279,8 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
 @[aesop safe apply]
 lemma T_nonneg (n : ℕ) : 0 ≤ T n := le_of_lt <| R.T_pos n
 
+end
+
 /-!
 #### Smoothing function
 
@@ -349,6 +353,7 @@ lemma eventually_one_sub_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 - ε
 lemma eventually_one_sub_smoothingFn_nonneg : ∀ᶠ (n : ℕ) in atTop, 0 ≤ 1 - ε n := by
   filter_upwards [eventually_one_sub_smoothingFn_pos] with n hn; exact le_of_lt hn
 
+include R in
 lemma eventually_one_sub_smoothingFn_r_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < 1 - ε (r i n) := by
   rw [Filter.eventually_all]
   exact fun i => (R.tendsto_atTop_r_real i).eventually eventually_one_sub_smoothingFn_pos_real
@@ -434,6 +439,7 @@ lemma eventually_one_add_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 + ε
   show 0 < 1 + 1 / log x
   positivity
 
+include R in
 lemma eventually_one_add_smoothingFn_r_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < 1 + ε (r i n) := by
   rw [Filter.eventually_all]
   exact fun i => (R.tendsto_atTop_r i).eventually (f := r i) eventually_one_add_smoothingFn_pos
@@ -455,6 +461,9 @@ lemma strictMonoOn_one_sub_smoothingFn :
 
 lemma strictAntiOn_one_add_smoothingFn : StrictAntiOn (fun (x : ℝ) => (1 : ℝ) + ε x) (Set.Ioi 1) :=
   StrictAntiOn.const_add strictAntiOn_smoothingFn 1
+
+section
+include R
 
 lemma isEquivalent_smoothingFn_sub_self (i : α) :
     (fun (n : ℕ) => ε (b i * n) - ε n) ~[atTop] fun n => -log (b i) / (log n)^2 := by
@@ -543,10 +552,13 @@ lemma one_mem_range_sumCoeffsExp : 1 ∈ Set.range (fun (p : ℝ) => ∑ i, a i 
 lemma injective_sumCoeffsExp : Function.Injective (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) :=
     R.strictAnti_sumCoeffsExp.injective
 
+end
+
 variable (a b) in
 /-- The exponent `p` associated with a particular Akra-Bazzi recurrence. -/
 noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
+include R in
 @[simp]
 lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   simp only [p]
@@ -576,13 +588,16 @@ variable (g) (a) (b)
 `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 noncomputable def asympBound (n : ℕ) : ℝ := n ^ p a b + sumTransform (p a b) g 0 n
 
-lemma asympBound_def {n : ℕ} : asympBound g a b n = n ^ p a b + sumTransform (p a b) g 0 n := rfl
+lemma asympBound_def {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :
+    asympBound g a b n = n ^ p a b + sumTransform (p a b) g 0 n := rfl
 
 variable {g} {a} {b}
 
-lemma asympBound_def' {n : ℕ} :
+lemma asympBound_def' {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :
     asympBound g a b n = n ^ p a b * (1 + (∑ u ∈ range n, g u / u ^ (p a b + 1))) := by
   simp [asympBound_def, sumTransform, mul_add, mul_one, Finset.sum_Ico_eq_sum_range]
+
+include R
 
 lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
   calc 0 < (n : ℝ) ^ p a b * (1 + 0) := by aesop (add safe Real.rpow_pos_of_pos)

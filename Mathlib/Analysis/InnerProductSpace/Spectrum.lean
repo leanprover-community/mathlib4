@@ -61,6 +61,7 @@ namespace LinearMap
 namespace IsSymmetric
 
 variable {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric)
+include hT
 
 /-- A self-adjoint operator preserves orthogonal complements of its eigenspaces. -/
 theorem invariant_orthogonalComplement_eigenspace (μ : 𝕜) (v : E) (hv : v ∈ (eigenspace T μ)ᗮ) :

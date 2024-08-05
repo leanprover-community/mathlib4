@@ -392,7 +392,11 @@ private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 
   ⟨cast_pos.mpr hv, by norm_cast; omega⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
-variable {ξ : ℝ} {u v : ℤ} (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
+variable {ξ : ℝ} {u v : ℤ}
+
+section
+variable (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
+include hv h
 
 -- The fractional part of `ξ` is positive.
 private theorem aux₁ : 0 < fract ξ := by
@@ -504,16 +508,16 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),
       lt_inv (div_pos hv₀' zero_lt_two) (aux₁ hv h), inv_div]
 
+end
+
 /-!
 ### The main result
 -/
 
 
 /-- The technical version of *Legendre's Theorem*. -/
-theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
+theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     ∃ n, (u / v : ℚ) = ξ.convergent n := by
-  -- Porting note: `induction` got in trouble because of the irrelevant hypothesis `h`
-  clear h; have h := h'; clear h'
   induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2
