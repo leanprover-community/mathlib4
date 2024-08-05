@@ -28,11 +28,10 @@ variable (X : Type u) (C : Cat)
 private def homEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
   toFun f x := f.obj ⟨x⟩
   invFun := Discrete.functor
-  left_inv F := Functor.ext (fun _ ↦ rfl)
-    (fun⟨_⟩ ⟨_⟩ f => by
-      obtain rfl := Discrete.eq_of_hom f
-      simp)
-  right_inv := fun _ ↦ funext (fun _ => rfl)
+  left_inv F := Functor.ext (fun _ ↦ rfl) (fun ⟨_⟩ ⟨_⟩ f => by
+    obtain rfl := Discrete.eq_of_hom f
+    simp)
+  right_inv _ := rfl
 
 private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤ C where
   obj := Discrete.as
