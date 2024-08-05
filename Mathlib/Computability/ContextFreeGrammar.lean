@@ -597,31 +597,34 @@ private def g₂g : LiftedContextFreeGrammar T :=
             rw [List.mem_map] at hr
             exact hr)⟩
 
-variable {w : List T}
-
-private lemma in_union_of_in_left (hw : w ∈ g₁.language) :
-    w ∈ (g₁.union g₂).language :=
-  have derives_left_initial : (g₁.union g₂).Derives [Symbol.nonterminal none]
+private lemma union_derives_left_initial :
+    (g₁.union g₂).Derives [Symbol.nonterminal none]
       [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
-    refine ContextFreeGrammar.Produces.single
-      ⟨⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩, List.mem_cons_self .., ?_⟩
-    rw [ContextFreeRule.rewrites_iff]
-    use [], []
-    simp
-  derives_left_initial.trans (Symbol.liftString_all_terminals g₁g.liftNT w ▸ g₁g.lift_derives hw)
+  refine ContextFreeGrammar.Produces.single
+    ⟨⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩, List.mem_cons_self .., ?_⟩
+  rw [ContextFreeRule.rewrites_iff]
+  use [], []
+  simp
 
-private lemma in_union_of_in_right (hw : w ∈ g₂.language) :
-    w ∈ (g₁.union g₂).language :=
-  have derives_right_initial :
+private lemma union_derives_right_initial :
     (g₁.union g₂).Derives [Symbol.nonterminal none]
       [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
-    refine ContextFreeGrammar.Produces.single
-      ⟨⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩,
-        List.mem_cons_of_mem _ (List.mem_cons_self ..), ?_⟩
-    rw [ContextFreeRule.rewrites_iff]
-    use [], []
-    simp
-  derives_right_initial.trans (Symbol.liftString_all_terminals g₂g.liftNT w ▸ g₂g.lift_derives hw)
+  refine ContextFreeGrammar.Produces.single
+    ⟨⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩,
+      List.mem_cons_of_mem _ (List.mem_cons_self ..), ?_⟩
+  rw [ContextFreeRule.rewrites_iff]
+  use [], []
+  simp
+
+variable {w : List T}
+
+private lemma in_union_of_in_left (hw : w ∈ g₁.language) : w ∈ (g₁.union g₂).language :=
+  union_derives_left_initial.trans
+    (Symbol.liftString_all_terminals g₁g.liftNT w ▸ g₁g.lift_derives hw)
+
+private lemma in_union_of_in_right (hw : w ∈ g₂.language) : w ∈ (g₁.union g₂).language :=
+  union_derives_right_initial.trans
+    (Symbol.liftString_all_terminals g₂g.liftNT w ▸ g₂g.lift_derives hw)
 
 private lemma in_left_of_in_union (hw :
     (g₁.union g₂).Derives
