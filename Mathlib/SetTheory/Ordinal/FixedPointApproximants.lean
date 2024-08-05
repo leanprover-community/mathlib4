@@ -62,7 +62,7 @@ namespace OrdinalApprox
 
 universe u
 variable {α : Type u}
-variable [CompleteLattice α] (f : α →o α) (x : α)
+variable [CompleteLattice α] (f g : α →o α) (x : α)
 
 open Function fixedPoints Cardinal Order OrderHom
 
@@ -109,6 +109,41 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     apply Or.inl
     simp only [Set.mem_setOf_eq]
     use a
+
+theorem lfpApprox_mono₂ (h : f ≤ g) : lfpApprox f ≤ lfpApprox g := by
+  intro x a
+  induction a using Ordinal.induction with
+  | h i ih =>
+    unfold lfpApprox
+    apply sSup_le
+    simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sSup_insert,
+      forall_eq_or_imp, le_sup_left, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      true_and]
+    intro i' h_lt
+    apply le_sup_of_le_right
+    apply le_sSup_of_le
+    · use i'
+    · apply le_trans (h _)
+      simp only [OrderHom.toFun_eq_coe]
+      apply g.monotone
+      exact ih i' h_lt
+
+theorem lfpApprox_mono₃ {x₁ x₂ : α} (h : x₁ ≤ x₂) : lfpApprox f x₁ ≤ lfpApprox f x₂ := by
+  intro a
+  induction a using Ordinal.induction with
+  | h i ih =>
+    unfold lfpApprox
+    apply sSup_le
+    simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sSup_insert,
+      forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    constructor
+    · exact le_sup_of_le_left h
+    · intro i' h_i'
+      apply le_sup_of_le_right
+      apply le_sSup_of_le
+      · use i'
+      · apply f.monotone
+        exact ih i' h_i'
 
 /-- The ordinal approximants of the least fixed point are stabilizing
   when reaching a fixed point of f -/
@@ -229,6 +264,41 @@ theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a+1) = f (gfpApprox f x a) :=
   lfpApprox_add_one (OrderHom.dual f) x h a
+
+theorem gfpApprox_mono₂ (h : f ≤ g) : gfpApprox f ≤ gfpApprox g := by
+  intro x a
+  induction a using Ordinal.induction with
+  | h i ih =>
+    unfold gfpApprox
+    apply le_sInf
+    simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sInf_insert,
+      forall_eq_or_imp, inf_le_left, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      true_and]
+    intro i' h_lt
+    apply inf_le_of_right_le
+    apply sInf_le_of_le
+    · use i'
+    · apply le_trans (h _)
+      simp only [OrderHom.toFun_eq_coe]
+      apply g.monotone
+      exact ih i' h_lt
+
+theorem gfpApprox_mono₃ {x₁ x₂ : α} (h : x₁ ≤ x₂) : gfpApprox f x₁ ≤ gfpApprox f x₂ := by
+  intro a
+  induction a using Ordinal.induction with
+  | h i ih =>
+    unfold gfpApprox
+    apply le_sInf
+    simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sInf_insert,
+      forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    constructor
+    · exact inf_le_of_left_le h
+    · intro i' h_i'
+      apply inf_le_of_right_le
+      apply sInf_le_of_le
+      · use i'
+      · apply f.monotone
+        exact ih i' h_i'
 
 /-- The ordinal approximants of the least fixed point are stabilizing
   when reaching a fixed point of f -/
