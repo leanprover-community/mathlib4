@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro
 -/
 import Mathlib.Tactic.Ring
+import Mathlib.Util.SynthesizeUsing
 
 /-!
 # linear_combination Tactic
@@ -51,6 +52,12 @@ theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
 theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
 theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
 
+open Qq
+
+inductive _root_.Mathlib.Tactic.LinearCombination
+  | const : Expr → LinearCombination
+  | proof (a b : Expr) : Q($a = $b) → LinearCombination
+
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
@@ -60,51 +67,60 @@ using `+`/`-`/`*`/`/` on equations and values.
 * `none` means that the input expression is not an equation but a value;
   the input syntax itself is used in this case.
 -/
-partial def expandLinearCombo (stx : Syntax.Term) : TermElabM (Option Syntax.Term) := do
-  let mut result ← match stx with
+partial def expandLinearCombo (stx : Syntax.Term) : TermElabM LinearCombination := do
+  -- let mut result ←
+  match stx with
   | `(($e)) => expandLinearCombo e
   | `($e₁ + $e₂) => do
     match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_add_c $p₁ $e₂)
-    | none, some p₂ => ``(c_add_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(add_pf $p₁ $p₂)
-  | `($e₁ - $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_sub_c $p₁ $e₂)
-    | none, some p₂ => ``(c_sub_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(sub_pf $p₁ $p₂)
-  | `(-$e) => do
-    match ← expandLinearCombo e with
-    | none => pure none
-    | some p => ``(neg_pf $p)
-  | `(← $e) => do
-    match ← expandLinearCombo e with
-    | none => pure none
-    | some p => ``(Eq.symm $p)
-  | `($e₁ * $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_mul_c $p₁ $e₂)
-    | none, some p₂ => ``(c_mul_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(mul_pf $p₁ $p₂)
-  | `($e⁻¹) => do
-    match ← expandLinearCombo e with
-    | none => pure none
-    | some p => ``(inv_pf $p)
-  | `($e₁ / $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_div_c $p₁ $e₂)
-    | none, some p₂ => ``(c_div_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(div_pf $p₁ $p₂)
+    | .const e₁, .const e₂ => return .const (← mkAppM ``HAdd.hAdd #[e₁, e₂])
+    | .proof a₁ b₁ p₁, .const e₂ =>
+      return .proof (← mkAppM ``HAdd.hAdd #[a₁, e₂]) (← mkAppM ``HAdd.hAdd #[b₁, e₂])
+        (← mkAppM ``pf_add_c #[p₁, e₂])
+    | .const e₁, .proof a₂ b₂ p₂ =>
+      return .proof (← mkAppM ``HAdd.hAdd #[e₁, a₂]) (← mkAppM ``HAdd.hAdd #[e₁, b₂])
+        (← mkAppM ``c_add_pf #[e₁, p₂])
+    | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ =>
+      return .proof (← mkAppM ``HAdd.hAdd #[a₁, a₂]) (← mkAppM ``HAdd.hAdd #[b₁, b₂])
+        (← mkAppM ``add_pf #[p₁, p₂])
+  -- | `($e₁ - $e₂) => do
+  --   match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+  --   | .const e₁, .const e₂ => return .const (← mkAppM ``HSub.hSub #[e₁, e₂])
+  --   | .proof p₁, .const e₂ => return .proof (← mkAppM ``pf_sub_c #[p₁, e₂])
+  --   | .const e₁, .proof p₂ => return .proof (← mkAppM ``c_sub_pf #[p₂, e₁])
+  --   | .proof p₁, .proof p₂ => return .proof (← mkAppM ``sub_pf #[p₁, p₂])
+  -- | `(-$e) => do
+  --   match ← expandLinearCombo e with
+  --   | none => pure none
+  --   | some p => ``(neg_pf $p)
+  -- | `(← $e) => do
+  --   match ← expandLinearCombo e with
+  --   | none => pure none
+  --   | some p => ``(Eq.symm $p)
+  -- | `($e₁ * $e₂) => do
+  --   match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+  --   | none, none => pure none
+  --   | some p₁, none => ``(pf_mul_c $p₁ $e₂)
+  --   | none, some p₂ => ``(c_mul_pf $p₂ $e₁)
+  --   | some p₁, some p₂ => ``(mul_pf $p₁ $p₂)
+  -- | `($e⁻¹) => do
+  --   match ← expandLinearCombo e with
+  --   | none => pure none
+  --   | some p => ``(inv_pf $p)
+  -- | `($e₁ / $e₂) => do
+  --   match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+  --   | none, none => pure none
+  --   | some p₁, none => ``(pf_div_c $p₁ $e₂)
+  --   | none, some p₂ => ``(c_div_pf $p₂ $e₁)
+  --   | some p₁, some p₂ => ``(div_pf $p₁ $p₂)
   | e => do
+    -- let k ← e.getKind
     let e ← elabTerm e none
     let eType ← inferType e
-    let .true := (← withReducible do whnf eType).isEq | pure none
-    some <$> e.toSyntax
-  return result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
+    match (← withReducible do whnf eType).eq? with
+    | some (_, a, b) => return LinearCombination.proof a b e
+    | none => return LinearCombination.const e
+  -- return result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
@@ -115,29 +131,63 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
+  -- let (val, mvarIds') ← elabTermWithHoles stx (← getMainTarget) tagSuffix allowNaturalHoles
+  -- let val ← instantiateMVars val
+  -- /- Ensure that the main goal does not occur in `val`. -/
+  -- if val.findMVar? (· == mvarId) matches some _ then
+  --   throwError "'refine' tactic failed, value{indentExpr val}\ndepends on the main goal metavariable '{mkMVar mvarId}'"
+  -- mvarId.assign val
+  -- Tactic.replaceMainGoal mvarIds'
+
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
     (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
-  let p ← match input with
-  | none => `(Eq.refl 0)
-  | some e => withSynthesize do
+  let ((α : Q(Type)), (a' : Q($α)), (b':Q($α))) := (← Lean.Elab.Tactic.getMainTarget).eq?.get!
+  let _ ← synthInstanceQ q(AddGroup $α)
+  let ⟨(a: Q($α)), (b:Q($α)), (p : Q($a=$b))⟩ ← match input with
+  | none => throwError "zz" --`(Eq.refl 0)
+  | some e => do
     match ← expandLinearCombo e with
-    | none => `(Eq.refl $e)
-    | some p => pure p
+    | .const e => pure (⟨e, e, q(Eq.refl $e)⟩ : Σ a b : Expr, Q($a = $b))
+    | .proof a b p => pure (⟨a, b, p⟩ : Σ a b : Expr, Q($a = $b))
+  let e := q(eq_of_add (a' := $a') (b' := $b') $p)
+  let d : Q(Prop) := q($a' - $b' - ($a - $b) = 0)
+  let mvar ← mkFreshExprMVar d MetavarKind.natural
+  Tactic.liftMetaTactic fun g ↦ do
+    g.assign (.app e mvar)
+    return [mvar.mvarId!]
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
-  Tactic.evalTactic <| ← withFreshMacroScope <|
-  if twoGoals then
-    `(tactic| (
-      refine eq_trans₃ $p ?a ?b
-      case' a => $norm:tactic
-      case' b => $norm:tactic))
-  else
-    match exp? with
-    | some n =>
-      if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
-      else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-    | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+  Tactic.evalTactic norm
+
+  -- let (α, a', b') ← match (← Lean.Elab.Tactic.getMainTarget).eq? with
+  -- | none => throwError "zz"
+  -- | some (α, a', b') => pure (α, a', b')
+  -- let tac := Tactic.evalTactic (← `(tactic| ring1))
+  -- -- let ⟨u, α, a⟩ ← inferTypeQ' a
+  -- -- let _h : Q(Zero $α) ← synthInstanceQ q(Zero $α)
+  -- let p' : Q($a' = $a) ← synthesizeUsing' q($a' = $a) tac
+  -- -- let zz ← q(eq_of_add $p $p')
+
+
+
+  -- -- let .ok a ← fun g : MVarId ↦ g.apply p
+  -- -- let some e ← getExprMVarAssignment? g | panic! "unassigned?"
+  -- -- let args := e.getAppArgs
+  -- sorry
+  -- let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
+  -- Tactic.evalTactic <| ← withFreshMacroScope <|
+  -- if twoGoals then
+  --   `(tactic| (
+  --     refine eq_trans₃ $p ?a ?b
+  --     case' a => $norm:tactic
+  --     case' b => $norm:tactic))
+  -- else
+  --   match exp? with
+  --   | some n =>
+  --     if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+  --     else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
+  --   | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
@@ -239,3 +289,6 @@ end LinearCombination
 end Tactic
 
 end Mathlib
+
+example (x y : ℤ) (h1 : x + 2 = 1) (h2 : y = x) : y = -2 + 1 := by
+  linear_combination h1 + h2
