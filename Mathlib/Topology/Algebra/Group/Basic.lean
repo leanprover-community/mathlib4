@@ -875,7 +875,8 @@ instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
   continuous_inv := continuous_inv.quotient_map' _
 
 @[to_additive (attr := deprecated (since := "2024-08-05"))]
-alias _root_.topologicalGroup_quotient := instTopologicalGroup
+theorem _root_.topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) :=
+  instTopologicalGroup N
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 @[to_additive
