@@ -420,6 +420,8 @@ def collapseWhitespace (s : String) : String :=
   let s := s.split (·.isWhitespace)
   (" ".intercalate (s.filter (!·.isEmpty)))
     |>.replace "/-!" "/-! "
+    |>.replace "``` " "```  " -- avoid losing an existing space after the triple back-ticks
+                              -- as a consequence of the following replacement
     |>.replace "`` " "``" -- weird pp ```#eval ``«Nat»``` pretty-prints as ```#eval `` «Nat»```
     |>.replace "notation3(" "notation3 ("
     --|>.replace "{" "{"   -- probably better?
