@@ -102,7 +102,7 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
-  exact congr($(AddCommMonoid.natModule.unique.2 inst).smul n x)
+  exact congr($(AddCommMonoid.uniqueNatModule.2 inst).smul n x)
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
@@ -188,7 +188,7 @@ lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
-  exact congr($(AddCommGroup.intModule.unique.2 inst).smul n x)
+  exact congr($(AddCommGroup.uniqueIntModule.2 inst).smul n x)
 
 open nonZeroDivisors
 
@@ -221,8 +221,6 @@ noncomputable section DivisionRing
 
 open nonZeroDivisors
 
-open scoped Classical
-
 variable {R : Type*} [Ring R] [Nontrivial R] [OreSet R⁰]
 
 instance nontrivial : Nontrivial R[R⁰⁻¹] :=
@@ -230,6 +228,7 @@ instance nontrivial : Nontrivial R[R⁰⁻¹] :=
 
 variable [NoZeroDivisors R]
 
+open Classical in
 /-- The inversion of Ore fractions for a ring without zero divisors, satisying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
 @[irreducible]
@@ -252,6 +251,7 @@ protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
 instance inv' : Inv R[R⁰⁻¹] :=
   ⟨OreLocalization.inv⟩
 
+open Classical in
 protected theorem inv_def {r : R} {s : R⁰} :
     (r /ₒ s)⁻¹ =
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])

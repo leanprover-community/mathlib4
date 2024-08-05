@@ -164,7 +164,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     specialize H (f.app _ s) _ ⟨x, by rw [Opens.mem_mk, e]; trivial⟩
     · rw [← Scheme.preimage_basicOpen, hs]; ext1; simp [Opens.map]
     · erw [← PresheafedSpace.stalkMap_germ_apply f.1 ⟨_, _⟩ ⟨x, _⟩] at H
-      apply_fun inv <| PresheafedSpace.stalkMap f.val x at H
+      apply_fun inv <| f.stalkMap x at H
       erw [CategoryTheory.IsIso.hom_inv_id_apply, map_zero] at H
       exact H
   | h₃ R =>
@@ -230,8 +230,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
     · rintro ⟨hS, hT⟩
       cases' h₁ (show x ∈ ⊤ by trivial) with h h
       exacts [hS h, hT h]
-    · intro x
-      exact x.rec (by contradiction)
+    · simp
 
 theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : IrreducibleSpace X] :
     IsIntegral X := by

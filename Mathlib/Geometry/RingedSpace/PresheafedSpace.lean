@@ -94,7 +94,7 @@ structure Hom (X Y : PresheafedSpace C) where
 -- rather than `Hom X Y`, this one was renamed `Hom.ext` instead of `ext`,
 -- and the more practical lemma `ext` is defined just after the definition
 -- of the `Category` instance
-@[ext]
+@[ext (iff := false)]
 theorem Hom.ext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β := by
   rcases α with ⟨base, c⟩
@@ -158,7 +158,7 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
 variable {C}
 
 -- Porting note (#5229): adding an `ext` lemma.
-@[ext]
+@[ext (iff := false)]
 theorem ext {X Y : PresheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
   Hom.ext α β w h

@@ -194,7 +194,7 @@ lemma Spec.locallyRingedSpaceObj_presheaf_map' (R : Type u) [CommRing R] {U V} (
 
 @[elementwise]
 theorem stalkMap_toStalk {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
-    toStalk R (PrimeSpectrum.comap f p) ≫ PresheafedSpace.stalkMap (Spec.sheafedSpaceMap f) p =
+    toStalk R (PrimeSpectrum.comap f p) ≫ (Spec.sheafedSpaceMap f).stalkMap p =
       f ≫ toStalk S p := by
   erw [← toOpen_germ S ⊤ ⟨p, trivial⟩, ← toOpen_germ R ⊤ ⟨PrimeSpectrum.comap f p, trivial⟩,
     Category.assoc, PresheafedSpace.stalkMap_germ (Spec.sheafedSpaceMap f) ⊤ ⟨p, trivial⟩,
@@ -212,7 +212,7 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
           (CommRingCat.of (Localization.AtPrime p.asIdeal)) _
           (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl)
           (stalkIso S p).inv =
-      PresheafedSpace.stalkMap (Spec.sheafedSpaceMap f) p :=
+      (Spec.sheafedSpaceMap f).stalkMap p :=
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
@@ -236,9 +236,7 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       #adaptation_note /-- nightly-2024-04-01
       It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
       erw [← localRingHom_comp_stalkIso_apply] at ha
-      replace ha := (stalkIso S p).hom.isUnit_map ha
-      rw [← comp_apply, show localizationToStalk S p = (stalkIso S p).inv from rfl,
-        Iso.inv_hom_id, id_apply] at ha
+      replace ha := (isUnit_map_iff (stalkIso S p).inv _).mp ha
       -- Porting note: `f` had to be made explicit
       replace ha := IsLocalRingHom.map_nonunit
         (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
@@ -249,13 +247,13 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
 @[simp]
 theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat.{u}) :
     Spec.locallyRingedSpaceMap (𝟙 R) = 𝟙 (Spec.locallyRingedSpaceObj R) :=
-  LocallyRingedSpace.Hom.ext _ _ <| by
+  LocallyRingedSpace.Hom.ext <| by
     rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_id]; rfl
 
 theorem Spec.locallyRingedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.locallyRingedSpaceMap (f ≫ g) =
       Spec.locallyRingedSpaceMap g ≫ Spec.locallyRingedSpaceMap f :=
-  LocallyRingedSpace.Hom.ext _ _ <| by
+  LocallyRingedSpace.Hom.ext <| by
     rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_comp]; rfl
 
 /-- Spec, as a contravariant functor from commutative rings to locally ringed spaces.
@@ -303,8 +301,8 @@ end SpecΓ
 theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
     (x : PrimeSpectrum (Localization M)) :
     IsIso
-      (PresheafedSpace.stalkMap
-        (Spec.toPresheafedSpace.map (CommRingCat.ofHom (algebraMap R (Localization M))).op) x) := by
+      ((Spec.toPresheafedSpace.map
+        (CommRingCat.ofHom (algebraMap R (Localization M))).op).stalkMap x) := by
   erw [← localRingHom_comp_stalkIso]
   -- Porting note: replaced `apply (config := { instances := false })`.
   -- See https://github.com/leanprover/lean4/issues/2273

@@ -10,16 +10,18 @@ import Mathlib.ModelTheory.Substructures
 # Elementary Maps Between First-Order Structures
 
 ## Main Definitions
-* A `FirstOrder.Language.ElementaryEmbedding` is an embedding that commutes with the
+
+- A `FirstOrder.Language.ElementaryEmbedding` is an embedding that commutes with the
   realizations of formulas.
-* The `FirstOrder.Language.elementaryDiagram` of a structure is the set of all sentences with
+- The `FirstOrder.Language.elementaryDiagram` of a structure is the set of all sentences with
   parameters that the structure satisfies.
-* `FirstOrder.Language.ElementaryEmbedding.ofModelsElementaryDiagram` is the canonical
-elementary embedding of any structure into a model of its elementary diagram.
+- `FirstOrder.Language.ElementaryEmbedding.ofModelsElementaryDiagram` is the canonical
+  elementary embedding of any structure into a model of its elementary diagram.
 
 ## Main Results
-* The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
-gives a simple criterion for an embedding to be elementary.
+
+- The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
+  gives a simple criterion for an embedding to be elementary.
  -/
 
 
@@ -166,9 +168,6 @@ theorem coe_injective : @Function.Injective (M ↪ₑ[L] N) (M → N) (↑) :=
 @[ext]
 theorem ext ⦃f g : M ↪ₑ[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : M ↪ₑ[L] N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 variable (L) (M)
 

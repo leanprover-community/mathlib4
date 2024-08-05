@@ -42,14 +42,14 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 
 variable [Preorder α]
 
-open scoped Classical
-
+open Classical in
 noncomputable instance WithTop.instSupSet [SupSet α] :
     SupSet (WithTop α) :=
   ⟨fun S =>
     if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
       ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
+open Classical in
 noncomputable instance WithTop.instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
@@ -86,6 +86,7 @@ theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
 
 theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : BddBelow s) :
     ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
+  classical
   obtain ⟨x, hx⟩ := hs
   change _ = ite _ _ _
   split_ifs with h
@@ -102,6 +103,7 @@ theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelo
 
 theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
+  classical
   change _ = ite _ _ _
   rw [if_neg, preimage_image_eq, if_pos hs]
   · exact Option.some_injective _
@@ -245,10 +247,7 @@ instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrde
     csSup_of_not_bddAbove := fun s H ↦ (H (OrderTop.bddAbove s)).elim
     csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim }
 
-section
-
-open scoped Classical
-
+open scoped Classical in
 /-- A well founded linear order is conditionally complete, with a bottom element. -/
 noncomputable abbrev IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*)
   [i₁ : _root_.LinearOrder α] [i₂ : OrderBot α] [h : IsWellOrder α (· < ·)] :
@@ -277,8 +276,6 @@ noncomputable abbrev IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*
       simp only [B, dite_false, upperBounds_empty, univ_nonempty, dite_true]
       exact le_antisymm bot_le (WellFounded.min_le _ (mem_univ _))
     csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim }
-
-end
 
 namespace OrderDual
 
@@ -864,6 +861,94 @@ lemma sup_eq_top_of_top_mem [OrderTop α] (h : ⊤ ∈ s) : sSup s = ⊤ :=
 lemma inf_eq_bot_of_bot_mem [OrderBot α] (h : ⊥ ∈ s) : sInf s = ⊥ :=
   bot_unique <| csInf_le (OrderBot.bddBelow s) h
 
+theorem ciSup_subtype [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f : Subtype p → α}
+    (hf : BddAbove (Set.range f)) (hf' : sSup ∅ ≤ iSup f) :
+    iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ := by
+  classical
+  refine le_antisymm (ciSup_le ?_) ?_
+  · intro ⟨i, h⟩
+    have : f ⟨i, h⟩ = (fun i : ι ↦ ⨆ (h : p i), f ⟨i, h⟩) i := by simp [h]
+    rw [this]
+    refine le_ciSup (f := (fun i : ι ↦ ⨆ (h : p i), f ⟨i, h⟩)) ?_ i
+    simp_rw [ciSup_eq_ite]
+    refine (hf.union (bddAbove_singleton (a := sSup ∅))).mono ?_
+    intro
+    simp only [Set.mem_range, Set.union_singleton, Set.mem_insert_iff, Subtype.exists,
+      forall_exists_index]
+    intro b hb
+    split_ifs at hb
+    · exact Or.inr ⟨_, _, hb⟩
+    · simp_all
+  · refine ciSup_le fun i ↦ ?_
+    simp_rw [ciSup_eq_ite]
+    split_ifs
+    · exact le_ciSup hf ?_
+    · exact hf'
+
+theorem ciInf_subtype [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f : Subtype p → α}
+    (hf : BddBelow (Set.range f)) (hf' : iInf f ≤ sInf ∅) :
+    iInf f = ⨅ (i) (h : p i), f ⟨i, h⟩ :=
+  ciSup_subtype (α := αᵒᵈ) hf hf'
+
+theorem ciSup_subtype' [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f : ∀ i, p i → α}
+    (hf : BddAbove (Set.range (fun i : Subtype p ↦ f i i.prop)))
+    (hf' : sSup ∅ ≤ ⨆ (i : Subtype p), f i i.prop) :
+    ⨆ (i) (h), f i h = ⨆ x : Subtype p, f x x.property :=
+  (ciSup_subtype (f := fun x => f x.val x.property) hf hf').symm
+
+theorem ciInf_subtype' [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f : ∀ i, p i → α}
+    (hf : BddBelow (Set.range (fun i : Subtype p ↦ f i i.prop)))
+    (hf' : ⨅ (i : Subtype p), f i i.prop ≤ sInf ∅) :
+    ⨅ (i) (h), f i h = ⨅ x : Subtype p, f x x.property :=
+  (ciInf_subtype (f := fun x => f x.val x.property) hf hf').symm
+
+theorem ciSup_subtype'' {ι} [Nonempty ι] {s : Set ι} (hs : s.Nonempty) {f : ι → α}
+    (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :
+    ⨆ i : s, f i = ⨆ (t : ι) (_ : t ∈ s), f t :=
+  haveI : Nonempty s := Set.Nonempty.to_subtype hs
+  ciSup_subtype hf hf'
+
+theorem ciInf_subtype'' {ι} [Nonempty ι] {s : Set ι} (hs : s.Nonempty) {f : ι → α}
+    (hf : BddBelow (Set.range fun i : s ↦ f i)) (hf' : ⨅ i : s, f i ≤ sInf ∅) :
+    ⨅ i : s, f i = ⨅ (t : ι) (_ : t ∈ s), f t :=
+  haveI : Nonempty s := Set.Nonempty.to_subtype hs
+  ciInf_subtype hf hf'
+
+theorem csSup_image [Nonempty β] {s : Set β} (hs : s.Nonempty) {f : β → α}
+    (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :
+    sSup (f '' s) = ⨆ a ∈ s, f a := by
+  rw [← ciSup_subtype'' hs hf hf', iSup, Set.image_eq_range]
+
+theorem csInf_image [Nonempty β] {s : Set β} (hs : s.Nonempty) {f : β → α}
+    (hf : BddBelow (Set.range fun i : s ↦ f i)) (hf' : ⨅ i : s, f i ≤ sInf ∅) :
+    sInf (f '' s) = ⨅ a ∈ s, f a :=
+  csSup_image (α := αᵒᵈ) hs hf hf'
+
+lemma ciSup_image {α ι ι' : Type*} [ConditionallyCompleteLattice α] [Nonempty ι] [Nonempty ι']
+    {s : Set ι} (hs : s.Nonempty) {f : ι → ι'} {g : ι' → α}
+    (hf : BddAbove (Set.range fun i : s ↦ g (f i))) (hg' : sSup ∅ ≤ ⨆ i : s, g (f i)) :
+    ⨆ i ∈ (f '' s), g i = ⨆ x ∈ s, g (f x) := by
+  have hg : BddAbove (Set.range fun i : f '' s ↦ g i) := by
+    simpa [bddAbove_def] using hf
+  have hf' : sSup ∅ ≤ ⨆ i : f '' s, g i := by
+    refine hg'.trans ?_
+    have : Nonempty s := Set.Nonempty.to_subtype hs
+    refine ciSup_le ?_
+    intro ⟨i, h⟩
+    obtain ⟨t, ht⟩ : ∃ t : f '' s, g t = g (f (Subtype.mk i h)) := by
+      have : f i ∈ f '' s := Set.mem_image_of_mem _ h
+      exact ⟨⟨f i, this⟩, by simp [this]⟩
+    rw [← ht]
+    refine le_ciSup_set ?_ t.prop
+    simpa [bddAbove_def] using hf
+  rw [← csSup_image (by simpa using hs) hg hf', ← csSup_image hs hf hg', ← Set.image_comp, comp_def]
+
+lemma ciInf_image {α ι ι' : Type*} [ConditionallyCompleteLattice α] [Nonempty ι] [Nonempty ι']
+    {s : Set ι} (hs : s.Nonempty) {f : ι → ι'} {g : ι' → α}
+    (hf : BddBelow (Set.range fun i : s ↦ g (f i))) (hg' : ⨅ i : s, g (f i) ≤ sInf ∅) :
+    ⨅ i ∈ (f '' s), g i = ⨅ x ∈ s, g (f x) :=
+  ciSup_image (α := αᵒᵈ) hs hf hg'
+
 end ConditionallyCompleteLattice
 
 instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
@@ -995,7 +1080,7 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
       · simp [hi]
     · apply sup_le
       · rcases isEmpty_or_nonempty (Subtype p) with hp|hp
-        · simp only [iSup_of_empty']
+        · rw [iSup_of_empty']
           convert le_ciSup B i₀
           simp [hi₀]
         · apply ciSup_le
@@ -1126,11 +1211,17 @@ theorem ciSup_mono' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove (range
 theorem csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sInf s ≤ sInf t :=
   csInf_le_csInf (OrderBot.bddBelow s) h₁ h₂
 
+lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
+    ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
+  by_cases hp : p <;> by_cases hq : q
+  · simp [hp, hq]
+  · simp [hp, hq]
+  · simp [hp, hq]
+  · simp [hp, hq]
+
 end ConditionallyCompleteLinearOrderBot
 
 namespace WithTop
-
-open scoped Classical
 
 variable [ConditionallyCompleteLinearOrderBot α]
 
@@ -1138,6 +1229,7 @@ variable [ConditionallyCompleteLinearOrderBot α]
 complete lattice with a top. -/
 theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : s.Nonempty) : IsLUB s (sSup s) := by
+  classical
   constructor
   · show ite _ _ _ ∈ _
     split_ifs with h₁ h₂
@@ -1190,6 +1282,7 @@ theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
 complete lattice with a top. -/
 theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : BddBelow s) : IsGLB s (sInf s) := by
+  classical
   constructor
   · show ite _ _ _ ∈ _
     simp only [hs, not_true_eq_false, or_false]
@@ -1446,8 +1539,6 @@ This result can be used to show that the extended reals `[-∞, ∞]` are a comp
 -/
 
 
-open scoped Classical
-
 /-- Adding a top element to a conditionally complete lattice
 gives a conditionally complete lattice -/
 noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
@@ -1468,6 +1559,7 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     csInf_le := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).le_csSup
     le_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csSup_le }
 
+open Classical in
 -- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=

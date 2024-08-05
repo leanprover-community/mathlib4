@@ -284,14 +284,8 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
   | [] => iff_of_true (by simp) (fun _ h => by simp at h)
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
-    rw [← and_forall_succ, chain'_cons, chain'_iff_get]
-    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, Nat.zero_add, Fin.mk_one,
-      get_cons_cons_one, succ_sub_succ_eq_sub, Nat.le_zero, Nat.add_eq_zero_iff, and_false,
-      Nat.sub_zero, Nat.add_pos_iff_pos_or_pos, Nat.zero_lt_one, or_true, forall_true_left,
-      and_congr_right_iff]
-    dsimp [succ_sub_one]
-    exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
-                    fun h i hi => h i (Nat.succ_lt_succ hi)⟩
+    rw [← and_forall_add_one, chain'_cons, chain'_iff_get]
+    simp
 
 /-- If `l₁ l₂` and `l₃` are lists and `l₁ ++ l₂` and `l₂ ++ l₃` both satisfy
   `Chain' R`, then so does `l₁ ++ l₂ ++ l₃` provided `l₂ ≠ []` -/
@@ -357,8 +351,7 @@ reflexive transitive closure of `r`. The converse of `exists_chain_of_relationRe
 -/
 theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     (hl₂ : getLast (a :: l) (cons_ne_nil _ _) = b) : Relation.ReflTransGen r a b :=
--- Porting note: `p` behaves like an implicit argument to `Chain.induction_head` but it is explicit.
-  Chain.induction_head l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
+  Chain.induction_head _ l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 
 theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}

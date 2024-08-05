@@ -201,6 +201,8 @@
   ["Mathlib.CategoryTheory.Monad.Limits"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
   ["Mathlib.Topology.Algebra.UniformRing"],
+  "Mathlib.Tactic.Widget.StringDiagram":
+  ["Mathlib.CategoryTheory.Monoidal.Category"],
   "Mathlib.Tactic.Widget.SelectPanelUtils":
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
@@ -236,7 +238,7 @@
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto": ["Batteries.Logic", "Mathlib.Init.Logic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
-  "Mathlib.Tactic.GCongr.Core": ["Mathlib.Init.Order.Defs"],
+  "Mathlib.Tactic.GCongr.Core": ["Mathlib.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FunProp.RefinedDiscrTree": ["Mathlib.Algebra.Group.Pi.Basic"],
   "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
@@ -311,7 +313,7 @@
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
-  "Mathlib.Init.Data.Nat.GCD": ["Batteries.Data.Nat.Gcd"],
+  "Mathlib.Init.Data.List.Lemmas": ["Batteries.Data.List.Lemmas"],
   "Mathlib.Init.Data.List.Basic": ["Batteries.Data.List.Basic"],
   "Mathlib.Init.Data.Int.Order": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Init.Data.Int.Basic": ["Batteries.Data.Int.Order"],

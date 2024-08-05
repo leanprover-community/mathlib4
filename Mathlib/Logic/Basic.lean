@@ -577,21 +577,11 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
   ⟨fun ⟨_, ⟨a, b, hab⟩, hc⟩ ↦ ⟨a, b, hab.symm ▸ hc⟩,
     fun ⟨a, b, hab⟩ ↦ ⟨f a b, ⟨a, b, rfl⟩, hab⟩⟩
 
-@[simp] theorem exists_or_eq_left (y : α) (p : α → Prop) : ∃ x : α, x = y ∨ p x := ⟨y, .inl rfl⟩
-
-@[simp] theorem exists_or_eq_right (y : α) (p : α → Prop) : ∃ x : α, p x ∨ x = y := ⟨y, .inr rfl⟩
-
-@[simp] theorem exists_or_eq_left' (y : α) (p : α → Prop) : ∃ x : α, y = x ∨ p x := ⟨y, .inl rfl⟩
-
-@[simp] theorem exists_or_eq_right' (y : α) (p : α → Prop) : ∃ x : α, p x ∨ y = x := ⟨y, .inr rfl⟩
-
 theorem forall_apply_eq_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, f a = b → p b) ↔ ∀ a, p (f a) := by simp
 
 theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, b = f a → p b) ↔ ∀ a, p (f a) := by simp
-
-@[simp] theorem exists_eq_right' {a' : α} : (∃ a, p a ∧ a' = a) ↔ p a' := by simp [@eq_comm _ a']
 
 theorem exists₂_comm
     {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
@@ -638,9 +628,6 @@ theorem Prop.exists_iff {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p Tru
 theorem Prop.forall_iff {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
   ⟨fun H ↦ ⟨H _, H _⟩, fun ⟨h₁, h₂⟩ h ↦ by by_cases H : h <;> simpa only [H]⟩
 
-theorem exists_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃ h' : p, q h') ↔ q h :=
-  @exists_const (q h) p ⟨h⟩
-
 theorem exists_iff_of_forall {p : Prop} {q : p → Prop} (h : ∀ h, q h) : (∃ h, q h) ↔ p :=
   ⟨Exists.fst, fun H ↦ ⟨H, h H⟩⟩
 
@@ -650,14 +637,7 @@ theorem exists_unique_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃! h
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
   mt Exists.fst
 
-@[congr]
-theorem exists_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
-    Exists q ↔ ∃ h : p', q' (hp.2 h) :=
-  ⟨fun ⟨_, _⟩ ↦ ⟨hp.1 ‹_›, (hq _).1 ‹_›⟩, fun ⟨_, _⟩ ↦ ⟨_, (hq _).2 ‹_›⟩⟩
-
-/-- See `IsEmpty.exists_iff` for the `False` version. -/
-@[simp] theorem exists_true_left (p : True → Prop) : (∃ x, p x) ↔ p True.intro :=
-  exists_prop_of_true _
+/- See `IsEmpty.exists_iff` for the `False` version of `exists_true_left`. -/
 
 -- Porting note: `@[congr]` commented out for now.
 -- @[congr]
@@ -951,6 +931,9 @@ either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a
 
+section
+variable [Decidable Q]
+
 theorem ite_and : ite (P ∧ Q) a b = ite P (ite Q a b) b := by
   by_cases hp : P <;> by_cases hq : Q <;> simp [hp, hq]
 
@@ -965,6 +948,8 @@ theorem ite_ite_comm (h : P → ¬Q) :
     (if P then a else if Q then b else c) =
      if Q then b else if P then a else c :=
   dite_dite_comm P Q h
+
+end
 
 variable {P Q}
 

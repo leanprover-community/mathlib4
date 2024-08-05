@@ -29,8 +29,6 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 
 open FiniteDimensional Polynomial
 
-open scoped Classical Polynomial
-
 namespace IntermediateField
 
 section AdjoinDef
@@ -822,6 +820,7 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
     ∃ T : Finset E, (T : Set E) ⊆ S ∧ x ∈ adjoin F (T : Set E) := by
   simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
   obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
+  classical
   refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp ?_ hx'⟩
   simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
   rintro _ h _ rfl
@@ -1236,6 +1235,7 @@ theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
+  classical
   refine Finset.induction_on' S ?_ (fun ha _ _ h => ?_)
   · simp [base]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
@@ -1399,3 +1399,24 @@ theorem equivAdjoinSimple_symm_gen (pb : PowerBasis K L) :
   rw [equivAdjoinSimple, equivOfMinpoly_symm, equivOfMinpoly_gen, adjoin.powerBasis_gen]
 
 end PowerBasis
+
+namespace IntermediateField
+
+variable {K L L' : Type*} [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+
+theorem map_comap_eq (f : L →ₐ[K] L') (S : IntermediateField K L') :
+    (S.comap f).map f = S ⊓ f.fieldRange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self {f : L →ₐ[K] L'} {S : IntermediateField K L'} (h : S ≤ f.fieldRange) :
+    (S.comap f).map f = S := by
+  simpa only [inf_of_le_left h] using map_comap_eq f S
+
+theorem map_comap_eq_self_of_surjective {f : L →ₐ[K] L'} (hf : Function.Surjective f)
+    (S : IntermediateField K L') : (S.comap f).map f = S :=
+  SetLike.coe_injective (Set.image_preimage_eq _ hf)
+
+theorem comap_map (f : L →ₐ[K] L') (S : IntermediateField K L) : (S.map f).comap f = S :=
+  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+
+end IntermediateField

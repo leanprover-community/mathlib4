@@ -255,7 +255,7 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
 -- verify there is no diamond at `default` transparency but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommSemiring S] in
-example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+example : (Semiring.toNatAlgebra : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
@@ -277,7 +277,7 @@ instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
 -- verify there is no diamond but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommRing S] in
-example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+example : (Ring.toIntAlgebra _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 variable {X}
 

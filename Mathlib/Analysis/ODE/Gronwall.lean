@@ -27,13 +27,11 @@ Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le`
   of `K x` and `f x`.
 -/
 
+open Metric Set Asymptotics Filter Real
+open scoped Topology NNReal
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
-
-open Metric Set Asymptotics Filter Real
-
-open scoped Classical Topology NNReal
 
 /-! ### Technical lemmas about `gronwallBound` -/
 

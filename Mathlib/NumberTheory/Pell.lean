@@ -128,7 +128,7 @@ theorem prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.p
 /-- Two solutions are equal if their `x` and `y` components are equal. -/
 @[ext]
 theorem ext {a b : Solution₁ d} (hx : a.x = b.x) (hy : a.y = b.y) : a = b :=
-  Subtype.ext <| Zsqrtd.ext _ _ hx hy
+  Subtype.ext <| Zsqrtd.ext hx hy
 
 /-- Construct a solution from `x`, `y` and a proof that the equation is satisfied. -/
 def mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : Solution₁ d where
@@ -145,7 +145,7 @@ theorem y_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).y = y :=
 
 @[simp]
 theorem coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : ℤ√d) = ⟨x, y⟩ :=
-  Zsqrtd.ext _ _ (x_mk x y prop) (y_mk x y prop)
+  Zsqrtd.ext (x_mk x y prop) (y_mk x y prop)
 
 @[simp]
 theorem x_one : (1 : Solution₁ d).x = 1 :=

@@ -78,7 +78,7 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 assert_not_exists OrderedSemiring
 
 open Function Set Order
-open scoped Classical symmDiff
+open scoped symmDiff
 
 universe u v w x y
 
@@ -120,12 +120,9 @@ theorem filter_eq : ∀ {f g : Filter α}, f.sets = g.sets → f = g
 theorem filter_eq_iff : f = g ↔ f.sets = g.sets :=
   ⟨congr_arg _, filter_eq⟩
 
-protected theorem ext_iff : f = g ↔ ∀ s, s ∈ f ↔ s ∈ g := by
-  simp only [filter_eq_iff, ext_iff, Filter.mem_sets]
-
 @[ext]
-protected theorem ext : (∀ s, s ∈ f ↔ s ∈ g) → f = g :=
-  Filter.ext_iff.2
+protected theorem ext (h : ∀ s, s ∈ f ↔ s ∈ g) : f = g := by
+  simpa [filter_eq_iff, Set.ext_iff, Filter.mem_sets]
 
 /-- An extensionality lemma that is useful for filters with good lemmas about `sᶜ ∈ f` (e.g.,
 `Filter.comap`, `Filter.coprod`, `Filter.Coprod`, `Filter.cofinite`). -/
@@ -564,6 +561,7 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
     (U ∈ ⨅ i, s i) ↔
       ∃ I : Set ι, I.Finite ∧ ∃ V : ι → Set α, (∀ i, V i ∈ s i) ∧
         (∀ i ∉ I, V i = univ) ∧ (U = ⋂ i ∈ I, V i) ∧ U = ⋂ i, V i := by
+  classical
   simp only [mem_iInf, SetCoe.forall', biInter_eq_iInter]
   refine ⟨?_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i => V i, fun i => hVs i, hVU⟩⟩
   rintro ⟨I, If, V, hV, rfl⟩
@@ -786,6 +784,7 @@ instance : DistribLattice (Filter α) :=
 def coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
+      classical
       rw [iInf_subtype']
       rw [sInf_eq_iInf', iInf_sets_eq_finite, mem_iUnion] at h₂
       obtain ⟨u, hu⟩ := h₂
@@ -800,6 +799,7 @@ instance instCoframe : Coframe (Filter α) := .ofMinimalAxioms coframeMinimalAxi
 
 theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by
+  classical
   simp only [← Finset.set_biInter_coe, biInter_eq_iInter, iInf_subtype']
   refine ⟨fun h => ?_, ?_⟩
   · rcases (mem_iInf_of_finite _).1 h with ⟨p, hp, rfl⟩
@@ -849,6 +849,7 @@ theorem iInf_neBot_iff_of_directed {f : ι → Filter α} [Nonempty α] (hd : Di
 @[elab_as_elim]
 theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f) {p : Set α → Prop}
     (uni : p univ) (ins : ∀ {i s₁ s₂}, s₁ ∈ f i → p s₂ → p (s₁ ∩ s₂)) : p s := by
+  classical
   rw [mem_iInf_finite'] at hs
   simp only [← Finset.inf_eq_iInf] at hs
   rcases hs with ⟨is, his⟩
@@ -917,6 +918,7 @@ theorem principal_le_iff {s : Set α} {f : Filter α} : 𝓟 s ≤ f ↔ ∀ V �
 @[simp]
 theorem iInf_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) :
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
+  classical
   induction' s using Finset.induction_on with i s _ hs
   · simp
   · rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]

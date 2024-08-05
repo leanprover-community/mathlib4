@@ -750,8 +750,6 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   rw [pow_succ]
   ring
 
-open scoped Classical
-
 -- Porting note: in the following proof there are two places where `⋃ i, ⋃ (hx : i ∈ _), ... `
 -- though `hx` is not used in `...` part, it is still required to maintain the structure of
 -- the original proof in mathlib3.

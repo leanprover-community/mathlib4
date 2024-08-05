@@ -118,10 +118,6 @@ lemma ext_dual {A B : E →WOT[𝕜] F} (h : ∀ x (y : F⋆), y (A x) = y (B x)
   specialize h x
   rwa [← NormedSpace.eq_iff_forall_dual_eq 𝕜] at h
 
-lemma ext_dual_iff {A B : E →WOT[𝕜] F} :
-    A = B ↔ ∀ x (y : F⋆), y (A x) = y (B x) :=
-  ⟨fun h _ _ => by simp [h], ext_dual⟩
-
 @[simp] lemma zero_apply (x : E) : (0 : E →WOT[𝕜] F) x = 0 := by simp only [DFunLike.coe]; rfl
 
 unseal ContinuousLinearMapWOT in
@@ -178,7 +174,7 @@ lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g 
 
 lemma embedding_inducingFn : Embedding (inducingFn 𝕜 E F) := by
   refine Function.Injective.embedding_induced fun A B hAB => ?_
-  rw [ext_dual_iff]
+  rw [ContinuousLinearMapWOT.ext_dual_iff]
   simpa [Function.funext_iff] using hAB
 
 open Filter in

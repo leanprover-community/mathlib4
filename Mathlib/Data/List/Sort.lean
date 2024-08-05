@@ -151,11 +151,13 @@ end Sorted
 
 section Monotone
 
-variable {n : ℕ} {α : Type u} [Preorder α] {f : Fin n → α}
+variable {n : ℕ} {α : Type u} {f : Fin n → α}
 
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
   exact Iff.symm (Fin.rightInverse_cast _).surjective.forall₂
+
+variable [Preorder α]
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
 strictly monotone. -/
@@ -246,8 +248,9 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
     · simpa [orderedInsert, h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
 
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
-    count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
+    count a (L.orderedInsert r b) = count a L + if b = a then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
+  simp
 
 theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
   | [] => Perm.nil
@@ -298,7 +301,7 @@ theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : Li
         rw [orderedInsert, if_pos (hxs.1 _ (.head zs))]
     · rw [mem_cons] at hx
       replace hx := hx.resolve_left hxy
-      rw [erase_cons_tail _ (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
+      rw [erase_cons_tail (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
       refine mt (fun hrxy => ?_) hxy
       exact antisymm hrxy (hxs.1 _ hx)
 
