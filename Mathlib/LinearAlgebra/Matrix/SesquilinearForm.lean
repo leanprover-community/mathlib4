@@ -377,7 +377,8 @@ theorem Matrix.toLinearMap₂_symm :
   (LinearMap.toMatrix₂ b₁ b₂).symm_symm
 
 theorem Matrix.toLinearMap₂_basisFun :
-    Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) = Matrix.toLinearMap₂' R (N₂ := N₂) := by
+    Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) =
+      Matrix.toLinearMap₂' R (N₂ := N₂) := by
   ext M
   simp only [coe_comp, coe_single, Function.comp_apply, toLinearMap₂_apply, Pi.basisFun_repr,
     toLinearMap₂'_apply]

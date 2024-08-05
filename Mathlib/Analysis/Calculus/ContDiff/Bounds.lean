@@ -18,7 +18,7 @@ import Mathlib.Data.Nat.Choose.Multinomial
 
 noncomputable section
 
-open scoped Classical NNReal Nat
+open scoped NNReal Nat
 
 universe u uD uE uF uG
 

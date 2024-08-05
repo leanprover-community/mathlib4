@@ -6,7 +6,7 @@ Authors: Jon Bannon, Jireh Loreaux
 
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
-import Mathlib.Topology.ContinuousFunction.UniqueCFC
+import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Topology.ContinuousFunction.Units
 
 /-!

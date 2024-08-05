@@ -3,7 +3,7 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Eric Wieser
 -/
-import Mathlib.Analysis.NormedSpace.PiLp
+import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -44,7 +44,7 @@ of a matrix.
 
 The norm induced by the identification of `Matrix m n 𝕜` with
 `EuclideanSpace n 𝕜 →L[𝕜] EuclideanSpace m 𝕜` (i.e., the ℓ² operator norm) can be found in
-`Analysis.NormedSpace.Star.Matrix`. It is separated to avoid extraneous imports in this file.
+`Analysis.CstarAlgebra.Matrix`. It is separated to avoid extraneous imports in this file.
 -/
 
 noncomputable section
@@ -403,7 +403,7 @@ private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
 
 set_option tactic.skipAssignedInstances false in
 private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
-  simp [unitOf]
+  simp only [unitOf, coe_nnnorm]
   split_ifs with h
   · simp [h]
   · rw [mul_smul_comm, mul_inv_cancel h, Algebra.algebraMap_eq_smul_one]

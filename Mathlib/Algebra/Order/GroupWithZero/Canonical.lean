@@ -120,10 +120,10 @@ theorem mul_inv_le_of_le_mul (hab : a ≤ b * c) : a * c⁻¹ ≤ b := by
   · exact le_of_le_mul_right h (by simpa [h] using hab)
 
 theorem inv_le_one₀ (ha : a ≠ 0) : a⁻¹ ≤ 1 ↔ 1 ≤ a :=
-  @inv_le_one' _ _ _ _ <| Units.mk0 a ha
+  inv_le_one' (a := Units.mk0 a ha)
 
 theorem one_le_inv₀ (ha : a ≠ 0) : 1 ≤ a⁻¹ ↔ a ≤ 1 :=
-  @one_le_inv' _ _ _ _ <| Units.mk0 a ha
+  one_le_inv' (a := Units.mk0 a ha)
 
 theorem le_mul_inv_iff₀ (hc : c ≠ 0) : a ≤ b * c⁻¹ ↔ a * c ≤ b :=
   ⟨fun h ↦ inv_inv c ▸ mul_inv_le_of_le_mul h, le_mul_inv_of_mul_le hc⟩
@@ -168,10 +168,10 @@ theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := b
   exact le_of_le_mul_right hc h
 
 theorem inv_lt_one₀ (ha : a ≠ 0) : a⁻¹ < 1 ↔ 1 < a :=
-  @inv_lt_one' _ _ _ _ <| Units.mk0 a ha
+  inv_lt_one' (a := Units.mk0 a ha)
 
 theorem one_lt_inv₀ (ha : a ≠ 0) : 1 < a⁻¹ ↔ a < 1 :=
-  @one_lt_inv' _ _ _ _ <| Units.mk0 a ha
+  one_lt_inv' (a := Units.mk0 a ha)
 
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
   show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from

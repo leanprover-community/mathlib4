@@ -224,7 +224,8 @@ lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure
         Pi.smul_apply, smul_eq_mul]
       simp_rw [mul_comm (μ _), cond_mul_eq_inter _ (hX (.singleton _))]
     _ = _ := by
-      have : ⋃ x ∈ Finset.univ, X ⁻¹' {x} ∩ E = E := by simp; ext _; simp
+      have : ⋃ x ∈ Finset.univ, X ⁻¹' {x} ∩ E = E := by
+        simp only [Finset.mem_univ, iUnion_true]; ext _; simp
       rw [← measure_biUnion_finset _ fun _ _ ↦ (hX (.singleton _)).inter hE, this]
       aesop (add simp [PairwiseDisjoint, Set.Pairwise, Function.onFun, disjoint_left])
 

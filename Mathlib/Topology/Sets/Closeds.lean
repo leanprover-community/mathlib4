@@ -162,11 +162,12 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
     (⨅ i, ⟨s i, h i⟩ : Closeds α) = ⟨⋂ i, s i, isClosed_iInter h⟩ :=
   iInf_def _
 
-instance : Coframe (Closeds α) :=
-  { inferInstanceAs (CompleteLattice (Closeds α)) with
-    sInf := sInf
-    iInf_sup_le_sup_sInf := fun a s =>
-      (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le }
+/-- Closed sets in a topological space form a coframe. -/
+def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
+  iInf_sup_le_sup_sInf a s :=
+    (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le
+
+instance instCoframe : Coframe (Closeds α) := .ofMinimalAxioms coframeMinimalAxioms
 
 /-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
 @[simps]
@@ -305,6 +306,7 @@ instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
 instance : BooleanAlgebra (Clopens α) :=
   SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
+    coe_himp
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩
 

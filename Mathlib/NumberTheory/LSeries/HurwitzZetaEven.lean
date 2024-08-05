@@ -81,7 +81,7 @@ lemma evenKernel_def (a x : ℝ) :
 /-- For `x ≤ 0` the defining sum diverges, so the kernel is 0. -/
 lemma evenKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : evenKernel a x = 0 := by
   have : (I * ↑x).im ≤ 0 := by rwa [I_mul_im, ofReal_re]
-  induction' a using QuotientAddGroup.induction_on' with a'
+  induction' a using QuotientAddGroup.induction_on with a'
   rw [← ofReal_inj, evenKernel_def, jacobiTheta₂_undef _ this, mul_zero, ofReal_zero]
 
 /-- Cosine Hurwitz zeta kernel. See `cosKernel_def` for the defining formula, and
@@ -96,7 +96,7 @@ lemma cosKernel_def (a x : ℝ) : ↑(cosKernel ↑a x) = jacobiTheta₂ a (I * 
     conj_I, neg_mul, neg_neg, ← mul_two, mul_div_cancel_right₀ _ (two_ne_zero' ℂ)]
 
 lemma cosKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : cosKernel a x = 0 := by
-  induction' a using QuotientAddGroup.induction_on' with a'
+  induction' a using QuotientAddGroup.induction_on with a'
   rw [← ofReal_inj, cosKernel_def, jacobiTheta₂_undef _ (by rwa [I_mul_im, ofReal_re]), ofReal_zero]
 
 /-- For `a = 0`, both kernels agree. -/
@@ -106,17 +106,17 @@ lemma evenKernel_eq_cosKernel_of_zero : evenKernel 0 = cosKernel 0 := by
     zero_mul, Complex.exp_zero, one_mul, cosKernel_def]
 
 lemma evenKernel_neg (a : UnitAddCircle) (x : ℝ) : evenKernel (-a) x = evenKernel a x := by
-  induction' a using QuotientAddGroup.induction_on' with a'
+  induction' a using QuotientAddGroup.induction_on with a'
   simp only [← QuotientAddGroup.mk_neg, ← ofReal_inj, evenKernel_def, ofReal_neg, neg_sq, neg_mul,
     jacobiTheta₂_neg_left]
 
 lemma cosKernel_neg (a : UnitAddCircle) (x : ℝ) : cosKernel (-a) x = cosKernel a x := by
-  induction' a using QuotientAddGroup.induction_on' with a'
+  induction' a using QuotientAddGroup.induction_on with a'
   simp only [← QuotientAddGroup.mk_neg, ← ofReal_inj, cosKernel_def, ofReal_neg,
     jacobiTheta₂_neg_left]
 
 lemma continuousOn_evenKernel (a : UnitAddCircle) : ContinuousOn (evenKernel a) (Ioi 0) := by
-  induction' a using QuotientAddGroup.induction_on' with a'
+  induction' a using QuotientAddGroup.induction_on with a'
   apply continuous_re.comp_continuousOn (f := fun x ↦ (evenKernel a' x : ℂ))
   simp only [evenKernel_def a']
   refine ContinuousAt.continuousOn (fun x hx ↦ ((Continuous.continuousAt ?_).mul ?_))
@@ -126,7 +126,7 @@ lemma continuousOn_evenKernel (a : UnitAddCircle) : ContinuousOn (evenKernel a) 
     · rwa [mul_im, I_re, I_im, zero_mul, one_mul, zero_add, ofReal_re]
 
 lemma continuousOn_cosKernel (a : UnitAddCircle) : ContinuousOn (cosKernel a) (Ioi 0) := by
-  induction' a using QuotientAddGroup.induction_on' with a'
+  induction' a using QuotientAddGroup.induction_on with a'
   apply continuous_re.comp_continuousOn (f := fun x ↦ (cosKernel a' x : ℂ))
   simp only [cosKernel_def]
   refine ContinuousAt.continuousOn (fun x hx ↦ ?_)
@@ -138,7 +138,7 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   rcases le_or_lt x 0 with hx | hx
   · rw [evenKernel_undef _ hx, cosKernel_undef, mul_zero]
     exact div_nonpos_of_nonneg_of_nonpos zero_le_one hx
-  induction' a using QuotientAddGroup.induction_on' with a
+  induction' a using QuotientAddGroup.induction_on with a
   rw [← ofReal_inj, ofReal_mul, evenKernel_def, cosKernel_def, jacobiTheta₂_functional_equation]
   have h1 : I * ↑(1 / x) = -1 / (I * x) := by
     push_cast

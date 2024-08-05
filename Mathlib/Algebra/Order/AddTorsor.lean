@@ -16,8 +16,8 @@ series.  In the multiplicative case, a standard example is the action of non-neg
 an ordered field.
 
 ## Implementation notes
-
-* Beause these classes mix the algebra and order hierarchies, we write them as `Prop`-valued mixins.
+* Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
+  mixins.
 * Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
   combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
 

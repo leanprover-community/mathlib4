@@ -7,8 +7,8 @@ import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Analysis.CstarAlgebra.Basic
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Topology.Bornology.BoundedOperation
 
 /-!
@@ -1306,7 +1306,7 @@ instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
       (fun _ _ _ => ext fun _ => mul_smul _ _ _)
       (fun f => ext fun x => one_smul 𝕜 (f x))
 
-/- TODO: When `NormedModule` has been added to `Analysis.NormedSpace.Basic`, this
+/- TODO: When `NormedModule` has been added to `Analysis.Normed.Module.Basic`, this
 shows that the space of bounded continuous functions from `α` to `β` is naturally a normed
 module over the algebra of bounded continuous functions from `α` to `𝕜`. -/
 instance : BoundedSMul (α →ᵇ 𝕜) (α →ᵇ β) :=

@@ -79,7 +79,7 @@ instance categoryOfDifferentialObjects : Category (DifferentialObject S C) where
 -- Porting note: added
 @[ext]
 theorem ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
-  Hom.ext _ _ w
+  Hom.ext w
 
 @[simp]
 theorem id_f (X : DifferentialObject S C) : (𝟙 X : X ⟶ X).f = 𝟙 X.obj := rfl
@@ -105,16 +105,19 @@ def forget : DifferentialObject S C ⥤ C where
 
 instance forget_faithful : (forget S C).Faithful where
 
+variable {S C}
+
+section
 variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
 
 instance {X Y : DifferentialObject S C} : Zero (X ⟶ Y) := ⟨{f := 0}⟩
-
-variable {S C}
 
 @[simp]
 theorem zero_f (P Q : DifferentialObject S C) : (0 : P ⟶ Q).f = 0 := rfl
 
 instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject S C) where
+
+end
 
 /-- An isomorphism of differential objects gives an isomorphism of the underlying objects. -/
 @[simps]

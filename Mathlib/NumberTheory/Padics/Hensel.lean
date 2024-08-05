@@ -34,7 +34,6 @@ p-adic, p adic, padic, p-adic integer
 
 noncomputable section
 
-open scoped Classical
 open Topology
 
 -- We begin with some general lemmas that are used below in the computation.
@@ -474,8 +473,9 @@ theorem hensels_lemma :
       F.eval z = 0 ∧
         ‖z - a‖ < ‖F.derivative.eval a‖ ∧
           ‖F.derivative.eval z‖ = ‖F.derivative.eval a‖ ∧
-            ∀ z', F.eval z' = 0 → ‖z' - a‖ < ‖F.derivative.eval a‖ → z' = z :=
-  if ha : F.eval a = 0 then ⟨a, a_is_soln hnorm ha⟩
+            ∀ z', F.eval z' = 0 → ‖z' - a‖ < ‖F.derivative.eval a‖ → z' = z := by
+  classical
+  exact if ha : F.eval a = 0 then ⟨a, a_is_soln hnorm ha⟩
   else by
     exact ⟨soln_gen hnorm, eval_soln hnorm,
       soln_dist_to_a_lt_deriv hnorm ha, soln_deriv_norm hnorm, fun z => soln_unique hnorm ha z⟩

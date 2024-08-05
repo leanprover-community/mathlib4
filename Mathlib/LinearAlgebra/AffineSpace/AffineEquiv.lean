@@ -497,7 +497,8 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P₁} (h : Injective 
   Equiv.pointReflection_fixed_iff_of_injective_bit0 h
 
 set_option linter.deprecated false in
-theorem injective_pointReflection_left_of_injective_bit0 (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
+theorem injective_pointReflection_left_of_injective_bit0
+    (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
     Injective fun x : P₁ => pointReflection k x y :=
   Equiv.injective_pointReflection_left_of_injective_bit0 h y
 

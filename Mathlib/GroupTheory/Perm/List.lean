@@ -68,7 +68,7 @@ theorem mem_or_mem_of_zipWith_swap_prod_ne : ∀ {l l' : List α} {x : α},
   | _, [], _ => by simp
   | a::l, b::l', x => fun hx ↦
     if h : (zipWith swap l l').prod x = x then
-      (eq_or_eq_of_swap_apply_ne_self (by simpa [h] using hx)).imp
+      (eq_or_eq_of_swap_apply_ne_self (a := a) (b := b) (x := x) (by simpa [h] using hx)).imp
         (by rintro rfl; exact .head _) (by rintro rfl; exact .head _)
     else
      (mem_or_mem_of_zipWith_swap_prod_ne h).imp (.tail _) (.tail _)

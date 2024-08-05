@@ -149,7 +149,7 @@ section RingHom
 variable {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 theorem RingHom.charZero (ϕ : R →+* S) [CharZero S] : CharZero R :=
-  ⟨fun a b h => CharZero.cast_injective (by rw [← map_natCast ϕ, ← map_natCast ϕ, h])⟩
+  ⟨fun a b h => CharZero.cast_injective (R := S) (by rw [← map_natCast ϕ, ← map_natCast ϕ, h])⟩
 
 theorem RingHom.charZero_iff {ϕ : R →+* S} (hϕ : Function.Injective ϕ) : CharZero R ↔ CharZero S :=
   ⟨fun hR =>

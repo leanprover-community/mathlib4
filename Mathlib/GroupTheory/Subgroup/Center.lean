@@ -86,7 +86,7 @@ theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = �
 
 /-- A group is commutative if the center is the whole group -/
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
-  { (_ : Group G) with
+  { ‹Group G› with
     mul_comm := by
       rw [eq_top_iff'] at h
       intro x y
