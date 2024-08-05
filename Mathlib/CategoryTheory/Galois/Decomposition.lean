@@ -206,7 +206,7 @@ private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProd
   simp only [mkSelfProdFib, FintypeCat.inv_hom_id_apply]
   exact Concrete.productEquiv_symm_apply_π.{w, w, w+1} (fun _ : F.obj X ↦ F.obj X) id t
 
-variable {X} {A : C} [IsConnected A] (u : A ⟶ selfProd F X) [Mono u]
+variable {X} {A : C} (u : A ⟶ selfProd F X)
   (a : F.obj A) (h : F.map u a = mkSelfProdFib F X) {F}
 
 /-- For each `x : F.obj X`, this is the composition of `u` with the projection at `x`. -/
@@ -219,6 +219,8 @@ private lemma selfProdProj_fiber (x : F.obj X) :
     F.map (selfProdProj u x) a = x := by
   simp only [selfProdProj, selfProd, F.map_comp, FintypeCat.comp_apply, h]
   rw [mkSelfProdFib_map_π F X x]
+
+variable [IsConnected A]
 
 /-- An element `b : F.obj A` defines a permutation of the fiber of `X` by projecting onto the
 `F.map u b` factor. -/
@@ -235,7 +237,7 @@ private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
 private noncomputable def selfProdPermIncl (b : F.obj A) : A ⟶ selfProd F X :=
   u ≫ (Pi.whiskerEquiv (fiberPerm h b) (fun _ => Iso.refl X)).inv
 
-private instance (b : F.obj A) : Mono (selfProdPermIncl h b) := mono_comp _ _
+private instance [Mono u] (b : F.obj A) : Mono (selfProdPermIncl h b) := mono_comp _ _
 
 /-- Key technical lemma: the twisted inclusion `selfProdPermIncl h b` maps `a` to `F.map u b`. -/
 private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
@@ -256,7 +258,7 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
 `f` is obtained by considering `u` and `selfProdPermIncl h b`.
 Both are inclusions of `A` into `selfProd F X` mapping `b` respectively `a` to the same element
 in the fiber of `selfProd F X`. Applying `connected_component_unique` yields the result. -/
-private lemma subobj_selfProd_trans (b : F.obj A) : ∃ (f : A ≅ A), F.map f.hom b = a := by
+private lemma subobj_selfProd_trans [Mono u] (b : F.obj A) : ∃ (f : A ≅ A), F.map f.hom b = a := by
   apply connected_component_unique F b a u (selfProdPermIncl h b)
   exact selfProdTermIncl_fib_eq h b
 

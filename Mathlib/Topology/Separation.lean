@@ -653,7 +653,7 @@ instance (priority := 100) [T1Space X] : R0Space X where
 instance : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
-theorem t1Space_antitone : Antitone (@T1Space X) := fun a _ h _ =>
+theorem t1Space_antitone {X} : Antitone (@T1Space X) := fun a _ h _ =>
   @T1Space.mk _ a fun x => (T1Space.t1 x).mono h
 
 theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
@@ -827,7 +827,7 @@ theorem eq_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X
     have fact₂ : Tendsto f (pure x) (𝓝 y) := h.comp (tendsto_id'.2 <| pure_le_nhds x)
     fact₂ fact₁ (Eq.refl <| f x)
 
-theorem Filter.Tendsto.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y}
+theorem Filter.Tendsto.eventually_ne {X} [TopologicalSpace Y] [T1Space Y] {g : X → Y}
     {l : Filter X} {b₁ b₂ : Y} (hg : Tendsto g l (𝓝 b₁)) (hb : b₁ ≠ b₂) : ∀ᶠ z in l, g z ≠ b₂ :=
   hg.eventually (isOpen_compl_singleton.eventually_mem hb)
 
