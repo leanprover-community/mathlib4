@@ -63,9 +63,15 @@ def polishSource (s : String) : String × Array Nat :=
   let s := (split.map .trimLeft).filter (!· == "")
   (" ".intercalate (s.filter (!·.isEmpty)), preWS)
 
-def posToShiftedPos (lths : Array Nat) (offset diff : Nat) : Nat := Id.run do
-  let mut ws := offset
-  let mut noWS := 0
+/-- `posToShiftedPos lths diff` takes as input an array `lths` of natural number,
+and one further natural number `diff`.
+It adds up the elements of `lths` occupying the odd positions, until the sum of the elements in
+the even positions does not exceed `diff`.
+It returns the sum of the accumulated odds and `diff`.
+This is useful to figure out the difference between the output of `polishSource s` and `s` itself.
+It plays a role similar to the `fileMap`. -/
+def posToShiftedPos (lths : Array Nat) (diff : Nat) : Nat := Id.run do
+  let mut (ws, noWS) := (diff, 0)
   for con in [:lths.size / 2] do
     let curr := lths[2 * con]!
     if noWS + curr < diff then
@@ -75,14 +81,13 @@ def posToShiftedPos (lths : Array Nat) (offset diff : Nat) : Nat := Id.run do
       break
   return ws
 
+/-- `zoomString str centre offset` returns the substring of `str` consisting of the `offset`
+characters around the `centre`th character. -/
 def zoomString (str : String) (centre offset : Nat) : Substring :=
   { str := str, startPos := ⟨centre - offset⟩, stopPos := ⟨centre + offset⟩ }
 
-namespace Pedantic
-
-/-- Gets the value of the `linter.pedantic` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.pedantic o
-
+/-- `capSourceInfo s p` "shortens" all end-position information in the `SourceInfo` `s` to be
+at most `p`, trimming down also the relevant substrings. -/
 def capSourceInfo (s : SourceInfo) (p : Nat) : SourceInfo :=
   match s with
     | .original leading pos trailing endPos =>
@@ -91,6 +96,12 @@ def capSourceInfo (s : SourceInfo) (p : Nat) : SourceInfo :=
       .synthetic pos ⟨min endPos.1 p⟩ canonical
     | .none => s
 
+/-- `capSyntax stx p` applies `capSourceInfo · s` to all `SourceInfo`s in all
+`node`s, `atom`s and `ident`s contained in `stx`.
+
+This is used to trim away all "fluff" that follows a command: comments and whitespace after
+a command get removed with `capSyntax stx stx.getTailPos?.get!`.
+-/
 partial
 def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
   match stx with
@@ -98,6 +109,11 @@ def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
     | .atom si val => .atom (capSourceInfo si p) (val.take p)
     | .ident si r v pr => .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.1 p⟩ } v pr
     | s => s
+
+namespace Pedantic
+
+/-- Gets the value of the `linter.pedantic` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.pedantic o
 
 @[inherit_doc Mathlib.Linter.linter.pedantic]
 def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
@@ -117,57 +133,18 @@ def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
     let st := polishPP fmt.pretty
     if st != real then
       let diff := real.firstDiffPos st
-      let pos := posToShiftedPos lths origSubstring.startPos.1 diff.1
-      --let toEnd : Substring := { str := real, startPos := diff, stopPos := ⟨real.length⟩ }
-      --let diffToNonWS := toEnd.takeWhile (·.isWhitespace)
-      --let toHighlight := (({diffToNonWS with startPos := diffToNonWS.stopPos, stopPos := ⟨real.length⟩}).takeWhile (!·.isWhitespace))--.takeWhile (!·.isWhitespace)
-      --dbg_trace "diff, ws, nws: {(diff, diffToNonWS.stopPos, toHighlight.stopPos)}\n'{toHighlight}' '{{ toHighlight with startPos := diff }}'\n"
-      --let toHighlightPlus : Substring := { toHighlight with startPos := diff, stopPos := toHighlight.stopPos}
-      let toDiff : Substring := { origSubstring with startPos := diff + ⟨pos⟩ } --, stopPos := origSubstring.stopPos }
+      let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
+      let toDiff : Substring := { origSubstring with startPos := ⟨pos⟩ }
       let fin := toDiff.toString.takeWhile (· != st.get diff)
       dbg_trace "diff: {diff}"
       dbg_trace "st.get diff: {st.get diff}"
       dbg_trace "fin: {fin}"
-      let f := origSubstring.str.drop (diff.1 + pos)
+      let f := origSubstring.str.drop (pos)
       let extraLth := (f.takeWhile (· != st.get diff)).length
-      --dbg_trace "alternate: '{f.take extraLth}'"
-      --dbg_trace "toDiff.toString: {toDiff.toString}"
-      --dbg_trace (st.get diff, fin, toDiff.toString)
-      --let finpos := posToShiftedPos lths origSubstring.startPos.1 (diff.1 + extraLth) --fin.stopPos.1
       let srcCtxt := zoomString real diff.1 5
       let ppCtxt  := zoomString st diff.1 5
-
-      --let origHighlight := origSubstring.findSubstr? toHighlightPlus
-      --if let some sstr := origHighlight then
-        --dbg_trace "this is pos: {pos}, this is diff: {diff}"
-        --dbg_trace (origHighlight.getD default).stopPos
-      --dbg_trace "ranges: {(diff + ⟨pos⟩, finpos)}"
-      Linter.logLint linter.pedantic (.ofRange ⟨diff + ⟨pos⟩, diff + ⟨pos + extraLth + 1⟩⟩) --m!"{pos}"
-        --Linter.logLint linter.pedantic (.ofRange ⟨sstr.startPos, sstr.stopPos + ⟨1⟩⟩)
-         m!"---\n\
-          '{srcCtxt}' is in the source\n\
-          '{ppCtxt}' is how it is pretty-printed\n---"
-      --else
-      --  if srcCtxt.toString == ppCtxt.toString then logInfo m!"{diff}\n{real}\n{ppCtxt}"
-      --  Linter.logLint linter.pedantic stx m!"---\n\
-      --    '{srcCtxt}' is in the source\n\
-      --    '{ppCtxt}' is how it is pretty-printed\n---"
-
-/-
-#eval
-  let str := "1234567"
-  let sstr : Substring := {str := str, startPos := ⟨2⟩, stopPos := ⟨str.length⟩}
-  dbg_trace sstr.takeWhile (· != '6')
-  0
-
-run_cmd
-  let s1 := "· 2"
-  let s2 := "·12"
-  let diff : String.Pos := s1.firstDiffPos s2
-  logInfo m!"Difference at: {diff}\n\
-        s1: '{({ str := s1, startPos := diff - ⟨1⟩, stopPos := diff + ⟨1⟩ } : Substring)}'\n\
-        s2: '{({ str := s2, startPos := diff - ⟨1⟩, stopPos := diff + ⟨1⟩ } : Substring)}'"
--/
+      Linter.logLint linter.pedantic (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
+        m!"source context\n'{srcCtxt}'\n'{ppCtxt}'\npretty-printed context"
 
 initialize addLinter pedantic
 
