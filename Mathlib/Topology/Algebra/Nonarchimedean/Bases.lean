@@ -344,6 +344,7 @@ view definitionaly gives the same topology on `A`.
 -/
 variable [TopologicalSpace R] {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
   (hsmul : ∀ (m : A) (i : ι), ∀ᶠ a : R in 𝓝 0, a • m ∈ B i)
+include hB hsmul
 
 theorem SubmodulesRingBasis.toSubmodulesBasis : SubmodulesBasis B :=
   { inter := hB.inter

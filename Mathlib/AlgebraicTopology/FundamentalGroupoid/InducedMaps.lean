@@ -83,6 +83,7 @@ theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
 
 variable {X₁ X₂ Y : TopCat.{u}} {f : C(X₁, Y)} {g : C(X₂, Y)} {x₀ x₁ : X₁} {x₂ x₃ : X₂}
   {p : Path x₀ x₁} {q : Path x₂ x₃} (hfg : ∀ t, f (p t) = g (q t))
+include hfg
 
 /-- If `f(p(t) = g(q(t))` for two paths `p` and `q`, then the induced path homotopy classes
 `f(p)` and `g(p)` are the same as well, despite having a priori different types -/
