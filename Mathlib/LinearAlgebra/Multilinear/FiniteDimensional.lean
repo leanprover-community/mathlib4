@@ -40,8 +40,8 @@ private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddC
         Module.Finite R (N 0 →ₗ[R] MultilinearMap R (fun i : Fin n => N i.succ) M₂) by
       cases this
       exact
-        ⟨Module.Free.of_equiv (multilinearCurryLeftEquiv R N M₂),
-          Module.Finite.equiv (multilinearCurryLeftEquiv R N M₂)⟩
+        ⟨Module.Free.of_equiv (multilinearCurryLeftEquiv R N M₂).symm,
+          Module.Finite.equiv (multilinearCurryLeftEquiv R N M₂).symm⟩
     cases ih fun i => N i.succ
     exact ⟨Module.Free.linearMap _ _ _ _, Module.Finite.linearMap _ _ _ _⟩
 
