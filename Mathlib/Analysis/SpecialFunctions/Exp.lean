@@ -117,7 +117,7 @@ theorem ContinuousOn.cexp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f
 theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.cexp
 
-/--The complex exponential function is uniformly continuous on left half planes. -/
+/-- The complex exponential function is uniformly continuous on left half planes. -/
 lemma UniformlyContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.re ≤ a} := by
   have : Continuous (cexp - 1) := Continuous.sub (Continuous.cexp continuous_id') continuous_one
   rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *
