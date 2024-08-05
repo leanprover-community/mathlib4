@@ -52,9 +52,32 @@ def polishPP (s : String) : String :=
 /-- `polishSource s` is similar to `polishPP s`, but expects the input to be actual source code.
 For this reason, `polishSource s` performs more conservative changes:
 it only replace all whitespace starting from a linebreak (`\n`) with a single whitespace. -/
-def polishSource (s : String) : String :=
-  let s := ((s.split (· == '\n')).map .trimLeft).filter (!· == "")
-  " ".intercalate (s.filter (!·.isEmpty))
+def polishSource (s : String) : String × Array Nat :=
+  let split := s.split (· == '\n')
+  --let lengths := split.map (·.length)
+  let preWS := split.foldl (init := #[]) fun p q =>
+    let txt := q.trimLeft.length
+    (p.push (q.length - txt)).push txt
+  let preWS := preWS.eraseIdx 0
+  dbg_trace "(spaces, sum, total): {(preWS, preWS.foldl (· + ·) 0, s.length)}"
+  let s := (split.map .trimLeft).filter (!· == "")
+  (" ".intercalate (s.filter (!·.isEmpty)), preWS)
+
+def posToShiftedPos (lths : Array Nat) (offset diff : Nat) : Nat := Id.run do
+  let mut ws := offset
+  let mut noWS := 0
+  for con in [:lths.size / 2] do
+    let curr := lths[2 * con]!
+    --let tmp := noWS + curr
+    --dbg_trace "(curr, tmp, ws): {(curr, noWS + curr, ws)}"
+    if noWS + curr < diff then
+      noWS := noWS + curr
+      ws := ws + lths[2 * con + 1]!
+      --dbg_trace "here {(ws, lths[2 * con + 1]!, lths, con)}"
+    else
+      --noWS := noWS + diff.1 --- origSubstring.stopPos.1
+      break
+  return ws
 
 def zoomString (str : String) (centre offset : Nat) : Substring :=
   { str := str, startPos := ⟨centre - offset⟩, stopPos := ⟨centre + offset⟩ }
@@ -88,7 +111,7 @@ def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
       return
     let stx:= capSyntax stx (stx.getTailPos?.getD default).1
     let origSubstring := stx.getSubstring?.getD default
-    let real := polishSource origSubstring.toString
+    let (real, lths) := polishSource origSubstring.toString
     let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
       Linter.logLint linter.pedantic stx
         m!"The pedantic linter had some parsing issues: \
@@ -98,25 +121,29 @@ def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
     let st := polishPP fmt.pretty
     if st != real then
       let diff := real.firstDiffPos st
-      --let toHighlight : Substring := { str := real, startPos := diff, stopPos := diff + ⟨3⟩ }
-      let toEnd : Substring := { str := real, startPos := diff, stopPos := ⟨real.length⟩ }
-      let diffToNonWS := toEnd.takeWhile (·.isWhitespace)
-      let toHighlight := (({diffToNonWS with startPos := diffToNonWS.stopPos, stopPos := ⟨real.length⟩}).takeWhile (!·.isWhitespace))--.takeWhile (!·.isWhitespace)
-      dbg_trace "diff, ws, nws: {(diff, diffToNonWS.stopPos, toHighlight.stopPos)}\n'{toHighlight}' '{{ toHighlight with startPos := diff }}'\n"
-      let toHighlightPlus : Substring := { toHighlight with startPos := diff, stopPos := toHighlight.stopPos}
+      let pos := posToShiftedPos lths origSubstring.startPos.1 diff.1
+      --let toEnd : Substring := { str := real, startPos := diff, stopPos := ⟨real.length⟩ }
+      --let diffToNonWS := toEnd.takeWhile (·.isWhitespace)
+      --let toHighlight := (({diffToNonWS with startPos := diffToNonWS.stopPos, stopPos := ⟨real.length⟩}).takeWhile (!·.isWhitespace))--.takeWhile (!·.isWhitespace)
+      --dbg_trace "diff, ws, nws: {(diff, diffToNonWS.stopPos, toHighlight.stopPos)}\n'{toHighlight}' '{{ toHighlight with startPos := diff }}'\n"
+      --let toHighlightPlus : Substring := { toHighlight with startPos := diff, stopPos := toHighlight.stopPos}
       let srcCtxt := zoomString real diff.byteIdx 5
       let ppCtxt  := zoomString st diff.byteIdx 5
 
-      let origHighlight := origSubstring.findSubstr? toHighlightPlus
-      if let some sstr := origHighlight then
-        Linter.logLint linter.pedantic (.ofRange ⟨sstr.startPos, sstr.stopPos + ⟨1⟩⟩) m!"---\n\
+      --let origHighlight := origSubstring.findSubstr? toHighlightPlus
+      --if let some sstr := origHighlight then
+        --dbg_trace "this is pos: {pos}, this is diff: {diff}"
+        --dbg_trace (origHighlight.getD default).stopPos
+      Linter.logLint linter.pedantic (.ofRange ⟨diff + ⟨pos⟩, diff + ⟨pos + 1⟩⟩) --m!"{pos}"
+        --Linter.logLint linter.pedantic (.ofRange ⟨sstr.startPos, sstr.stopPos + ⟨1⟩⟩)
+         m!"---\n\
           '{srcCtxt}' is in the source\n\
           '{ppCtxt}' is how it is pretty-printed\n---"
-      else
-        if srcCtxt.toString == ppCtxt.toString then logInfo m!"{diff}\n{real}\n{ppCtxt}"
-        Linter.logLint linter.pedantic stx m!"---\n\
-          '{srcCtxt}' is in the source\n\
-          '{ppCtxt}' is how it is pretty-printed\n---"
+      --else
+      --  if srcCtxt.toString == ppCtxt.toString then logInfo m!"{diff}\n{real}\n{ppCtxt}"
+      --  Linter.logLint linter.pedantic stx m!"---\n\
+      --    '{srcCtxt}' is in the source\n\
+      --    '{ppCtxt}' is how it is pretty-printed\n---"
 
 /-
 #eval
