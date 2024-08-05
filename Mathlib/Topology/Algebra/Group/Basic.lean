@@ -1927,4 +1927,4 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
   rintro _ ⟨t', ht', rfl⟩
   exact continuous_iff_coinduced_le.2 ht'
 
-end GroupTopology    
+end GroupTopology
