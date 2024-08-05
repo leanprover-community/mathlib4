@@ -6,7 +6,6 @@ Authors: Chris Hughes
 
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coprod.Basic
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.Complement
 
 /-!
@@ -166,7 +165,7 @@ theorem ofCoprodI_of (i : ι) (g : G i) :
 
 theorem induction_on {motive : PushoutI φ → Prop}
     (x : PushoutI φ)
-    (of  : ∀ (i : ι) (g : G i), motive (of i g))
+    (of : ∀ (i : ι) (g : G i), motive (of i g))
     (base : ∀ h, motive (base φ h))
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
   delta PushoutI PushoutI.of PushoutI.base at *
@@ -280,9 +279,6 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
   rcases w₂ with ⟨⟨_, _, _⟩, _, _⟩
   simp_all
 
-theorem ext_iff {w₁ w₂ : NormalWord d} : w₁ = w₂ ↔ w₁.head = w₂.head ∧ w₁.toList = w₂.toList :=
-  ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ => ext h₁ h₂⟩
-
 open Subgroup.IsComplement
 
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
@@ -296,7 +292,6 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
   have hhead : ((d.compl i).equiv (Word.equivPair i w).head).2 =
       (Word.equivPair i w).head := by
     rw [Word.equivPair_head]
-    dsimp only
     split_ifs with h
     · rcases h with ⟨_, rfl⟩
       exact hw _ _ (List.head_mem _)
@@ -322,12 +317,12 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       dsimp
       split_ifs with hep
       · rcases hep with ⟨hnil, rfl⟩
-        rw [head?_eq_head _ hnil]
+        rw [head?_eq_head hnil]
         simp_all
       · push_neg at hep
         by_cases hw : w.toList = []
         · simp [hw, Word.fstIdx]
-        · simp [head?_eq_head _ hw, Word.fstIdx, hep hw]
+        · simp [head?_eq_head hw, Word.fstIdx, hep hw]
 
 theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
     (h : CoprodI.of (φ i w₁.head) • w₁.toWord =
@@ -435,8 +430,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head } := rfl
 
-noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
-    MulAction (PushoutI φ) (NormalWord d) :=
+noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
       (fun i => MulAction.toEndHom)
@@ -597,7 +591,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
-    (f := ((. • .) : PushoutI φ → NormalWord d → NormalWord d)) ?_
+    (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, of_smul_eq_smul])
@@ -608,7 +602,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
-    (f := ((. • .) : PushoutI φ → NormalWord d → NormalWord d)) ?_
+    (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, base_smul_eq_smul])

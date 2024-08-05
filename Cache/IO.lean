@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.11"
+  "0.1.13"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -129,12 +129,11 @@ private def CacheM.getContext : IO CacheM.Context := do
     -- TODO this should be generated automatically from the information in `lakefile.lean`.
     let mut entries := #[
       ("Mathlib", root),
-      ("MathlibExtras", root),
       ("Archive", root),
       ("Counterexamples", root)
     ]
     if let some pth := pkgs.find? "aesop"        then entries := entries.push ("Aesop", pth)
-    if let some pth := pkgs.find? "std"          then entries := entries.push ("Std", pth)
+    if let some pth := pkgs.find? "batteries"    then entries := entries.push ("Batteries", pth)
     if let some pth := pkgs.find? "Cli"          then entries := entries.push ("Cli", pth)
     if let some pth := pkgs.find? "proofwidgets" then entries := entries.push ("ProofWidgets", pth)
     if let some pth := pkgs.find? "Qq"           then entries := entries.push ("Qq", pth)
@@ -371,7 +370,8 @@ def unpackCache (hashMap : HashMap) (force : Bool) : CacheM Unit := do
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
-    IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
+    IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
+    IO.println "Completed successfully!"
   else IO.println "No cache files to decompress"
 
 instance : Ord FilePath where

@@ -5,7 +5,7 @@ Authors: Moritz Doll, Robert Y. Lewis
 -/
 
 import Mathlib.Tactic.Zify
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 
 private axiom test_sorry : ∀ {α}, α
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
@@ -20,7 +20,6 @@ example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
 -- set_option pp.coercions false
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) (h2 : (c : ℤ) < a + 3 * b) : a + 3*b > c := by
   zify at h ⊢
-  push_cast at h
   guard_hyp h :~ ¬↑x * ↑y * ↑z < (0 : ℤ) -- TODO: canonize instances?
   guard_target =~ ↑c < (↑a : ℤ) + 3 * ↑b
   exact h2
