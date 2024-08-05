@@ -239,7 +239,7 @@ theorem toEquivOfEqTop_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.dom = ⊤)
 
 theorem fg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
     f.dom.FG ↔ f.cod.FG := by
-  rw [Substructure.fg_iff_structure_fg, f.equiv.fg_iff, Substructure.fg_iff_structure_fg]
+  rw [Substructure.fg_iff_structure_fg, f.toEquiv.fg_iff, Substructure.fg_iff_structure_fg]
 
 end PartialEquiv
 
@@ -294,7 +294,7 @@ instance : DirectedSystem (fun i ↦ (S i).cod) (fun _ _ h ↦
 noncomputable def partialEquivLimit : M ≃ₚ[L] N where
   dom := iSup (fun i ↦ (S i).dom)
   cod := iSup (fun i ↦ (S i).cod)
-  equiv :=
+  toEquiv :=
     (Equiv_iSup {
       toFun := (fun i ↦ (S i).cod)
       monotone' := monotone_cod.comp S.monotone}
@@ -303,8 +303,8 @@ noncomputable def partialEquivLimit : M ≃ₚ[L] N where
         (fun _ _ hij ↦ Substructure.inclusion (dom_le_dom (S.monotone hij)))
         (fun i ↦ (S i).cod)
         (fun _ _ hij ↦ Substructure.inclusion (cod_le_cod (S.monotone hij)))
-        (fun i ↦ (S i).equiv)
-        (fun _ _ hij _ ↦ equiv_inclusion_apply (S.monotone hij) _)
+        (fun i ↦ (S i).toEquiv)
+        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)
       ).comp
         (Equiv_iSup {
           toFun := (fun i ↦ (S i).dom)
@@ -318,8 +318,8 @@ theorem partialEquiv_limit_cod : (partialEquivLimit S).cod = iSup (fun x ↦ (S 
 
 @[simp]
 lemma partialEquivLimit_comp_inclusion {i : ι} :
-    (partialEquivLimit S).equiv.toEmbedding.comp (Substructure.inclusion (le_iSup _ i)) =
-    (Substructure.inclusion (le_iSup _ i)).comp (S i).equiv.toEmbedding := by
+    (partialEquivLimit S).toEquiv.toEmbedding.comp (Substructure.inclusion (le_iSup _ i)) =
+    (Substructure.inclusion (le_iSup _ i)).comp (S i).toEquiv.toEmbedding := by
   simp only [partialEquivLimit, Equiv.comp_toEmbedding, Embedding.comp_assoc]
   rw [Equiv_iSup_symm_inclusion]
   congr
@@ -420,7 +420,7 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (h : (M ≃ₚ[L] N)) (h_fg 
     exact dom_le_dom
       (le_partialEquivLimit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
   have isTop : F.dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
-  exact ⟨dom_top_toEmbedding isTop,
+  exact ⟨toEmbeddingOfEqTop isTop,
         by convert (le_partialEquivLimit S 0); apply Embedding.toPartialEquiv_toEmbedding⟩
 
 /-- For two countably generated structure `M` and `N`, if any PartialEquiv
@@ -457,16 +457,16 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
       (le_partialEquivLimit S (Encodable.encode (Sum.inr (⟨y, hy⟩ : Y)) + 1)) this
   have dom_top : F.dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
   have cod_top : F.cod = ⊤ := by rwa [← top_le_iff, ← Y_gen, Substructure.closure_le]
-  refine ⟨dom_cod_top_toEquiv dom_top cod_top, ?_⟩
+  refine ⟨toEquivOfEqTop dom_top cod_top, ?_⟩
   convert le_partialEquivLimit S 0
-  rw [dom_cod_top_toEquiv_toEmbedding]
+  rw [toEquivOfEqTop_toEmbedding]
   apply Embedding.toPartialEquiv_toEmbedding
 
 theorem Substructure.countable_self_FGPartialEquiv_of_countable [Countable M] :
     Countable { f : M ≃ₚ[L] M // f.dom.FG } := by
   let g : { f : M ≃ₚ[L] M // f.dom.FG } →
       Σ U : { S : L.Substructure M // S.FG }, U.val →[L] M :=
-    fun f ↦ ⟨⟨f.val.dom, f.prop⟩, (subtype _).toHom.comp f.val.equiv.toHom⟩
+    fun f ↦ ⟨⟨f.val.dom, f.prop⟩, (subtype _).toHom.comp f.val.toEquiv.toHom⟩
   have g_inj : Function.Injective g := by
     intro f f' h
     ext
