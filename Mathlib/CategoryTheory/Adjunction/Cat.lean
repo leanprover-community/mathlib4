@@ -15,6 +15,9 @@ The embedding `Type ⥤ Cat` has a right adjoint `Cat.objects` mapping
 each category to its set of objects.
 
 
+## Notes
+All this could be made with 2-functors
+
 ## TODO
 The embedding `Type ⥤ Cat` has a left adjoint `Cat.connectedComponents` mapping
 each category to its set of connected components.
@@ -46,17 +49,14 @@ private lemma linverse : Function.LeftInverse (xryTolxy X C) (lxyToxry X C) :=
         Discrete.functor_map_id (xryTolxy X C (lxyToxry X C fctr)) f
       _                                        = fctr.map f := (Discrete.functor_map_id fctr f).symm
 
-private lemma rightinverse : Function.RightInverse (xryTolxy X C) (lxyToxry X C) := fun _ ↦ by
-  fapply funext
-  intro x
-  rfl
+private lemma rightinverse : Function.RightInverse (xryTolxy X C) (lxyToxry X C) := fun _ ↦
+  funext (fun _ => rfl)
 
-private def homEquiv : ∀ X C, (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) := fun X C ↦ by
-    apply Equiv.mk
-      (lxyToxry X C)
-      (xryTolxy X C)
-      (linverse X C)
-      (rightinverse X C)
+private def homEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
+      toFun:= lxyToxry X C
+      invFun:= (xryTolxy X C)
+      left_inv:=(linverse X C)
+      right_inv:= (rightinverse X C)
 
 private def counit_app : ∀ C,  (Cat.objects ⋙ typeToCat).obj C ⥤ C := fun C =>
     { obj := Discrete.as
