@@ -356,7 +356,7 @@ variable (M M₂)
 
 /-- A typeclass for `SMul` structures which can be moved through a `LinearMap`.
 This typeclass is generated automatically from an `IsScalarTower` instance, but exists so that
-we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
+we can also add an instance for `AddCommGroup.toIntModule`, allowing `z •` to be moved even if
 `S` does not support negation.
 -/
 class CompatibleSMul (R S : Type*) [Semiring S] [SMul R M] [Module S M] [SMul R M₂]
