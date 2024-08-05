@@ -54,9 +54,9 @@ theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / 
 
 open Qq
 
-inductive _root_.Mathlib.Tactic.LinearCombination
-  | const : Expr → LinearCombination
-  | proof (a b : Expr) : Q($a = $b) → LinearCombination
+inductive _root_.Mathlib.Tactic.LinearCombination {u : Level} (α : Q(Type u))
+  | const : Q($α) → LinearCombination α
+  | proof (a b : Q($α)) : Q($a = $b) → LinearCombination α
 
 /--
 Performs macro expansion of a linear combination expression,
@@ -67,58 +67,67 @@ using `+`/`-`/`*`/`/` on equations and values.
 * `none` means that the input expression is not an equation but a value;
   the input syntax itself is used in this case.
 -/
-partial def expandLinearCombo (stx : Syntax.Term) : TermElabM LinearCombination := do
+partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
+    TermElabM (LinearCombination α) := do
   -- let mut result ←
   match stx with
-  | `(($e)) => expandLinearCombo e
+  | `(($e)) => expandLinearCombo α e
   | `($e₁ + $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | .const e₁, .const e₂ => return .const (← mkAppM ``HAdd.hAdd #[e₁, e₂])
-    | .proof a₁ b₁ p₁, .const e₂ =>
-      return .proof (← mkAppM ``HAdd.hAdd #[a₁, e₂]) (← mkAppM ``HAdd.hAdd #[b₁, e₂])
-        (← mkAppM ``pf_add_c #[p₁, e₂])
-    | .const e₁, .proof a₂ b₂ p₂ =>
-      return .proof (← mkAppM ``HAdd.hAdd #[e₁, a₂]) (← mkAppM ``HAdd.hAdd #[e₁, b₂])
-        (← mkAppM ``c_add_pf #[e₁, p₂])
-    | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ =>
-      return .proof (← mkAppM ``HAdd.hAdd #[a₁, a₂]) (← mkAppM ``HAdd.hAdd #[b₁, b₂])
-        (← mkAppM ``add_pf #[p₁, p₂])
-  -- | `($e₁ - $e₂) => do
-  --   match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-  --   | .const e₁, .const e₂ => return .const (← mkAppM ``HSub.hSub #[e₁, e₂])
-  --   | .proof p₁, .const e₂ => return .proof (← mkAppM ``pf_sub_c #[p₁, e₂])
-  --   | .const e₁, .proof p₂ => return .proof (← mkAppM ``c_sub_pf #[p₂, e₁])
-  --   | .proof p₁, .proof p₂ => return .proof (← mkAppM ``sub_pf #[p₁, p₂])
-  -- | `(-$e) => do
-  --   match ← expandLinearCombo e with
-  --   | none => pure none
-  --   | some p => ``(neg_pf $p)
+    let _i ← synthInstanceQ q(Add $α)
+    assumeInstancesCommute
+    match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
+    | .const e₁, .const e₂ => return .const q($e₁ + $e₂)
+    | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ + $e₂) q($b₁ + $e₂) q(pf_add_c $p₁ $e₂)
+    | .const e₁, .proof a₂ b₂ p₂ => return .proof q($e₁ + $a₂) q($e₁ + $b₂) q(c_add_pf $p₂ $e₁)
+    | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ + $a₂) q($b₁ + $b₂) q(add_pf $p₁ $p₂)
+  | `($e₁ - $e₂) => do
+    let _i ← synthInstanceQ q(Sub $α)
+    assumeInstancesCommute
+    match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
+    | .const e₁, .const e₂ => return .const q($e₁ - $e₂)
+    | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ - $e₂) q($b₁ - $e₂) q(pf_sub_c $p₁ $e₂)
+    | .const e₁, .proof a₂ b₂ p₂ => return .proof q($e₁ - $a₂) q($e₁ - $b₂) q(c_sub_pf $p₂ $e₁)
+    | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ - $a₂) q($b₁ - $b₂) q(sub_pf $p₁ $p₂)
+  | `(-$e) => do
+    let _i ← synthInstanceQ q(Neg $α)
+    assumeInstancesCommute
+    match ← expandLinearCombo α e with
+    | .const e => return .const q(-$e)
+    | .proof a b p => return .proof q(-$a) q(-$b) q(neg_pf $p)
   -- | `(← $e) => do
   --   match ← expandLinearCombo e with
   --   | none => pure none
   --   | some p => ``(Eq.symm $p)
-  -- | `($e₁ * $e₂) => do
-  --   match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-  --   | none, none => pure none
-  --   | some p₁, none => ``(pf_mul_c $p₁ $e₂)
-  --   | none, some p₂ => ``(c_mul_pf $p₂ $e₁)
-  --   | some p₁, some p₂ => ``(mul_pf $p₁ $p₂)
+  | `($e₁ * $e₂) => do
+    let _i ← synthInstanceQ q(Mul $α)
+    assumeInstancesCommute
+    match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
+    | .const e₁, .const e₂ => return .const q($e₁ * $e₂)
+    | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ * $e₂) q($b₁ * $e₂) q(pf_mul_c $p₁ $e₂)
+    | .const e₁, .proof a₂ b₂ p₂ => return .proof q($e₁ * $a₂) q($e₁ * $b₂) q(c_mul_pf $p₂ $e₁)
+    | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ * $a₂) q($b₁ * $b₂) q(mul_pf $p₁ $p₂)
   -- | `($e⁻¹) => do
   --   match ← expandLinearCombo e with
   --   | none => pure none
   --   | some p => ``(inv_pf $p)
-  -- | `($e₁ / $e₂) => do
-  --   match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-  --   | none, none => pure none
-  --   | some p₁, none => ``(pf_div_c $p₁ $e₂)
-  --   | none, some p₂ => ``(c_div_pf $p₂ $e₁)
-  --   | some p₁, some p₂ => ``(div_pf $p₁ $p₂)
+  | `($e₁ / $e₂) => do
+    let _i ← synthInstanceQ q(Div $α)
+    assumeInstancesCommute
+    match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
+    | .const e₁, .const e₂ => return .const q($e₁ / $e₂)
+    | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ / $e₂) q($b₁ / $e₂) q(pf_div_c $p₁ $e₂)
+    | .const e₁, .proof a₂ b₂ p₂ => return .proof q($e₁ / $a₂) q($e₁ / $b₂) q(c_div_pf $p₂ $e₁)
+    | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ / $a₂) q($b₁ / $b₂) q(div_pf $p₁ $p₂)
   | e => do
     -- let k ← e.getKind
-    let e ← elabTerm e none
+    let e ← elabTerm e (some α)
     let eType ← inferType e
     match (← withReducible do whnf eType).eq? with
-    | some (_, a, b) => return LinearCombination.proof a b e
+    | some (_, a, b) =>
+      -- let β : Q(Type u) := β
+      -- let _ : $α =Q $β := ⟨⟩
+      -- let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+      return LinearCombination.proof a b e
     | none => return LinearCombination.const e
   -- return result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
 
@@ -144,12 +153,13 @@ def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
     (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
   let ((α : Q(Type)), (a' : Q($α)), (b':Q($α))) := (← Lean.Elab.Tactic.getMainTarget).eq?.get!
-  let _ ← synthInstanceQ q(AddGroup $α)
+  let i ← synthInstanceQ q(AddGroup $α)
+  assumeInstancesCommute
   let ⟨(a: Q($α)), (b:Q($α)), (p : Q($a=$b))⟩ ← match input with
   | none => throwError "zz" --`(Eq.refl 0)
   | some e => do
-    match ← expandLinearCombo e with
-    | .const e => pure (⟨e, e, q(Eq.refl $e)⟩ : Σ a b : Expr, Q($a = $b))
+    match ← expandLinearCombo α e with
+    | .const e => pure (⟨e, e, q(Eq.refl $e)⟩ : Σ a b : Q($α), Q($a = $b))
     | .proof a b p => pure (⟨a, b, p⟩ : Σ a b : Expr, Q($a = $b))
   let e := q(eq_of_add (a' := $a') (b' := $b') $p)
   let d : Q(Prop) := q($a' - $b' - ($a - $b) = 0)
