@@ -610,7 +610,7 @@ section
 variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 variable [Semiring B] [Algebra R B]
-variable [Semiring C] [Algebra R C] [Algebra S C]
+variable [Semiring C] [Algebra S C]
 variable [Semiring D] [Algebra R D]
 
 /-- Build an algebra morphism from a linear map out of a tensor product, and evidence that on pure
@@ -656,6 +656,7 @@ theorem algEquivOfLinearEquivTensorProduct_apply (f h_mul h_one x) :
     (algEquivOfLinearEquivTensorProduct f h_mul h_one : A ⊗[R] B ≃ₐ[S] C) x = f x :=
   rfl
 
+variable [Algebra R C]
 /-- Build an algebra equivalence from a linear equivalence out of a triple tensor product,
 and evidence of multiplicativity on pure tensors.
 -/
@@ -741,7 +742,7 @@ end
 variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 variable [Semiring B] [Algebra R B] [Algebra S B] [IsScalarTower R S B]
-variable [Semiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
+variable [Semiring C] [Algebra R C]
 variable [Semiring D] [Algebra R D]
 variable [Semiring E] [Algebra R E]
 variable [Semiring F] [Algebra R F]
@@ -882,7 +883,8 @@ theorem map_tmul (f : A →ₐ[S] B) (g : C →ₐ[R] D) (a : A) (c : C) : map f
 theorem map_id : map (.id S A) (.id R C) = .id S _ :=
   ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
 
-theorem map_comp (f₂ : B →ₐ[S] C) (f₁ : A →ₐ[S] B) (g₂ : E →ₐ[R] F) (g₁ : D →ₐ[R] E) :
+theorem map_comp [Algebra S C] [IsScalarTower R S C]
+    (f₂ : B →ₐ[S] C) (f₁ : A →ₐ[S] B) (g₂ : E →ₐ[R] F) (g₁ : D →ₐ[R] E) :
     map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
   ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
 
@@ -936,7 +938,8 @@ theorem congr_symm_apply (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) (x) :
 theorem congr_refl : congr (.refl : A ≃ₐ[S] A) (.refl : C ≃ₐ[R] C) = .refl :=
   AlgEquiv.coe_algHom_injective <| map_id
 
-theorem congr_trans (f₁ : A ≃ₐ[S] B) (f₂ : B ≃ₐ[S] C) (g₁ : D ≃ₐ[R] E) (g₂ : E ≃ₐ[R] F) :
+theorem congr_trans [Algebra S C] [IsScalarTower R S C]
+    (f₁ : A ≃ₐ[S] B) (f₂ : B ≃ₐ[S] C) (g₁ : D ≃ₐ[R] E) (g₂ : E ≃ₐ[R] F) :
     congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
   AlgEquiv.coe_algHom_injective <| map_comp f₂.toAlgHom f₁.toAlgHom g₂.toAlgHom g₁.toAlgHom
 
@@ -1121,7 +1124,7 @@ namespace LinearMap
 open Algebra.TensorProduct
 
 variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
-  [Fintype ι] [Finite ι₂] [DecidableEq ι] [DecidableEq ι₂]
+  [Fintype ι] [Finite ι₂] [DecidableEq ι]
   [CommSemiring R] [CommSemiring A] [Algebra R A]
   [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
