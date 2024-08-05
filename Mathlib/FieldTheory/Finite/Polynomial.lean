@@ -45,8 +45,6 @@ namespace MvPolynomial
 
 noncomputable section
 
-open scoped Classical
-
 open Set LinearMap Submodule
 
 variable {K : Type*} {σ : Type*}
@@ -73,6 +71,7 @@ theorem degrees_indicator (c : σ → K) :
     degrees (indicator c) ≤ ∑ s : σ, (Fintype.card K - 1) • {s} := by
   rw [indicator]
   refine le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => ?_)
+  classical
   refine le_trans (degrees_sub _ _) ?_
   rw [degrees_one, ← bot_eq_zero, bot_sup_eq]
   refine le_trans (degrees_pow _ _) (nsmul_le_nsmul_right ?_ _)
@@ -82,6 +81,7 @@ theorem degrees_indicator (c : σ → K) :
 
 theorem indicator_mem_restrictDegree (c : σ → K) :
     indicator c ∈ restrictDegree σ K (Fintype.card K - 1) := by
+  classical
   rw [mem_restrictDegree_iff_sup, indicator]
   intro n
   refine le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq ?_)
@@ -126,6 +126,7 @@ variable [Field K] [Fintype K] [Finite σ]
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
   refine top_unique (SetLike.le_def.2 fun e _ => mem_map.2 ?_)
+  classical
   refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
@@ -176,6 +177,7 @@ section CommRing
 
 variable [CommRing K]
 
+-- TODO: would be nice to replace this by suitable decidability assumptions
 open Classical in
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
