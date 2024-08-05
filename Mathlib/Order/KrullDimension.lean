@@ -349,7 +349,7 @@ lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
     obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
     use p ⟨n, by omega⟩
     constructor
-    · rw [←hp]
+    · rw [← hp]
       apply LTSeries.strictMono
       simp [Fin.last]; omega
     · symm
@@ -384,7 +384,7 @@ lemma height_eq_coe_iff (x : α) (n : ℕ) : height x = n ↔
     simp only [hfin, true_and]
     congr! 3
     rename_i y _
-    cases height y <;> simp ; norm_cast; omega
+    cases height y <;> simp; norm_cast; omega
 
 /-- The elements of height zero are the minimal elements. -/
 lemma mem_minimal_univ_iff_height_eq_zero (a : α) :
