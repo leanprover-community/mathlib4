@@ -340,7 +340,6 @@ lemma cfc_const (r : R) (a : A) (ha : p a := by cfc_tac) :
   congr
 
 variable (R) in
-include R in
 lemma cfc_predicate_zero : p 0 :=
   ContinuousFunctionalCalculus.predicate_zero (R := R)
 
@@ -351,7 +350,6 @@ lemma cfc_predicate_algebraMap (r : R) : p (algebraMap R A r) :=
   cfc_const r (0 : A) (cfc_predicate_zero R) ▸ cfc_predicate (fun _ ↦ r) 0
 
 variable (R) in
-include R in
 lemma cfc_predicate_one : p 1 :=
   map_one (algebraMap R A) ▸ cfc_predicate_algebraMap (1 : R)
 
