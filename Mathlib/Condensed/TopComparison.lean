@@ -142,10 +142,10 @@ Associate to a `(u+1)`-small topological space the corresponding condensed set, 
 `yonedaPresheaf`.
 -/
 noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
-  toSheafCompHausLike.{u+1} _ X (fun _ _ _↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+  toSheafCompHausLike.{u+1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--
 `TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
 -/
 noncomputable abbrev topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} :=
-  topCatToSheafCompHausLike.{u+1} _ (fun _ _ _↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+  topCatToSheafCompHausLike.{u+1} _ (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
