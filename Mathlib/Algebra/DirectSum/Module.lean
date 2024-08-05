@@ -33,7 +33,7 @@ open DirectSum
 section General
 
 variable {R : Type u} [Semiring R]
-variable {ι : Type v} [dec_ι : DecidableEq ι]
+variable {ι : Type v}
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
@@ -54,6 +54,7 @@ theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :
   DFinsupp.smul_apply _ _ _
 
 variable (R ι M)
+variable [DecidableEq ι]
 
 /-- Create the direct sum given a family `M` of `R` modules indexed over `ι`. -/
 def lmk : ∀ s : Finset ι, (∀ i : (↑s : Set ι), M i.val) →ₗ[R] ⨁ i, M i :=
@@ -144,14 +145,14 @@ def linearEquivFunOnFintype [Fintype ι] : (⨁ i, M i) ≃ₗ[R] ∀ i, M i :=
 variable {ι M}
 
 @[simp]
-theorem linearEquivFunOnFintype_lof [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
+theorem linearEquivFunOnFintype_lof [Fintype ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
   ext a
   change (DFinsupp.equivFunOnFintype (lof R ι M i m)) a = _
   convert _root_.congr_fun (DFinsupp.equivFunOnFintype_single i m) a
 
 @[simp]
-theorem linearEquivFunOnFintype_symm_single [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
+theorem linearEquivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M).symm (Pi.single i m) = lof R ι M i m := by
   change (DFinsupp.equivFunOnFintype.symm (Pi.single i m)) = _
   rw [DFinsupp.equivFunOnFintype_symm_single i m]
@@ -177,7 +178,8 @@ variable {ι M}
 
 theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i f := rfl
 
-@[ext]
+-- Note(kmill): `@[ext]` cannot prove `ext_iff` because `R` is not determined by `f` or `g`.
+@[ext (iff := false)]
 theorem ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) : f = g :=
   DFinsupp.ext h
 

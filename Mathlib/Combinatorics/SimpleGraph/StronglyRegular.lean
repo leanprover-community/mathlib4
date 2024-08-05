@@ -35,7 +35,7 @@ universe u
 
 namespace SimpleGraph
 
-variable {V : Type u} [Fintype V] [DecidableEq V]
+variable {V : Type u} [Fintype V]
 variable (G : SimpleGraph V) [DecidableRel G.Adj]
 
 /-- A graph is strongly regular with parameters `n k ℓ μ` if
@@ -62,6 +62,8 @@ theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
     simp [mem_commonNeighbors]
+
+variable [DecidableEq V]
 
 /-- Complete graphs are strongly regular. Note that `μ` can take any value
 for complete graphs, since there are no distinct pairs of non-adjacent vertices. -/
@@ -158,7 +160,9 @@ theorem IsSRGWith.compl (h : G.IsSRGWith n k ℓ μ) :
 
 /-- The parameters of a strongly regular graph with at least one vertex satisfy
 `k * (k - ℓ - 1) = (n - k - 1) * μ`. -/
-theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
+theorem IsSRGWith.param_eq
+    {V : Type u} [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj]
+    (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     k * (k - ℓ - 1) = (n - k - 1) * μ := by
   letI := Classical.decEq V
   rw [← h.card, Fintype.card_pos_iff] at hn

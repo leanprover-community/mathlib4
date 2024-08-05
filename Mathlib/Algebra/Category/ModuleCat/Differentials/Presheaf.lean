@@ -208,7 +208,7 @@ noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' :=
   Derivation'.mk (fun X ↦ CommRingCat.KaehlerDifferential.D (φ'.app X)) (fun X Y f x ↦ by
     rw [relativeDifferentials'_map_apply, CommRingCat.KaehlerDifferential.map_d])
 
-/-- The derivation `derivation' φ'` is universal. -/
+/-- The derivation `Derivation' φ'` is universal. -/
 noncomputable def isUniversal' : (derivation' φ').Universal :=
   Derivation'.Universal.mk
     (fun {M'} d' ↦ Hom.mk'' (fun X ↦ (d'.app X).desc) (fun X Y f ↦

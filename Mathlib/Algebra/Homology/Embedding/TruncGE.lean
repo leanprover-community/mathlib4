@@ -40,7 +40,7 @@ it induces an isomorphism in homology in degrees in the image of `e.f`.
 open CategoryTheory Limits ZeroObject Category
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+  {C : Type*} [Category C] [HasZeroMorphisms C]
 
 namespace HomologicalComplex
 
@@ -127,6 +127,8 @@ lemma truncGE'_d_eq_fromOpcycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
   rw [dif_pos hij, dif_pos hi]
   subst hi' hj'
   simp [truncGE'XIso, truncGE'XIsoOpcycles]
+
+variable [HasZeroObject C]
 
 /-- The canonical truncation of a homological complex relative to an embedding
 of complex shapes `e` which satisfies `e.IsTruncGE`. -/
