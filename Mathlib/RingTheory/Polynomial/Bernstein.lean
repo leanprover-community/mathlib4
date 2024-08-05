@@ -18,7 +18,7 @@ The definition of the Bernstein polynomials
 bernsteinPolynomial (R : Type*) [CommRing R] (n ν : ℕ) : R[X] :=
 (choose n ν) * X^ν * (1 - X)^(n - ν)
 ```
-and the fact that for `ν : fin (n+1)` these are linearly independent over `ℚ`.
+and the fact that for `ν : Fin (n+1)` these are linearly independent over `ℚ`.
 
 We prove the basic identities
 * `(Finset.range (n + 1)).sum (fun ν ↦ bernsteinPolynomial R n ν) = 1`
@@ -247,7 +247,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
         rw [this]
         exact (iterate_derivative_at_1_ne_zero ℚ n k h).symm
       refine span_induction m ?_ ?_ ?_ ?_
-      · simp
+      · simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
         rintro ⟨a, w⟩; simp only [Fin.val_mk]
         rw [iterate_derivative_at_1_eq_zero_of_lt ℚ n ((tsub_lt_tsub_iff_left_of_le h).mpr w)]
       · simp
