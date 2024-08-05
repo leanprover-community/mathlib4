@@ -665,11 +665,11 @@ end Zero
 @[simps symm_apply]
 def QuotientAddGroup.equivIcoMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ico a (a + p) where
   toFun b :=
-    ⟨(toIcoMod_periodic hp a).lift b, QuotientAddGroup.induction_on' b <| toIcoMod_mem_Ico hp a⟩
+    ⟨(toIcoMod_periodic hp a).lift b, QuotientAddGroup.induction_on b <| toIcoMod_mem_Ico hp a⟩
   invFun := (↑)
   right_inv b := Subtype.ext <| (toIcoMod_eq_self hp).mpr b.prop
   left_inv b := by
-    induction b using QuotientAddGroup.induction_on'
+    induction b using QuotientAddGroup.induction_on
     dsimp
     rw [QuotientAddGroup.eq_iff_sub_mem, toIcoMod_sub_self]
     apply AddSubgroup.zsmul_mem_zmultiples
@@ -688,11 +688,11 @@ theorem QuotientAddGroup.equivIcoMod_zero (a : α) :
 @[simps symm_apply]
 def QuotientAddGroup.equivIocMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ioc a (a + p) where
   toFun b :=
-    ⟨(toIocMod_periodic hp a).lift b, QuotientAddGroup.induction_on' b <| toIocMod_mem_Ioc hp a⟩
+    ⟨(toIocMod_periodic hp a).lift b, QuotientAddGroup.induction_on b <| toIocMod_mem_Ioc hp a⟩
   invFun := (↑)
   right_inv b := Subtype.ext <| (toIocMod_eq_self hp).mpr b.prop
   left_inv b := by
-    induction b using QuotientAddGroup.induction_on'
+    induction b using QuotientAddGroup.induction_on
     dsimp
     rw [QuotientAddGroup.eq_iff_sub_mem, toIocMod_sub_self]
     apply AddSubgroup.zsmul_mem_zmultiples
@@ -805,36 +805,36 @@ theorem btw_coe_iff {x₁ x₂ x₃ : α} :
 instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) where
   btw_refl x := show _ ≤ _ by simp [sub_self, hp'.out.le]
   btw_cyclic_left {x₁ x₂ x₃} h := by
-    induction x₁ using QuotientAddGroup.induction_on'
-    induction x₂ using QuotientAddGroup.induction_on'
-    induction x₃ using QuotientAddGroup.induction_on'
+    induction x₁ using QuotientAddGroup.induction_on
+    induction x₂ using QuotientAddGroup.induction_on
+    induction x₃ using QuotientAddGroup.induction_on
     simp_rw [btw_coe_iff] at h ⊢
     apply toIxxMod_cyclic_left _ h
   sbtw := _
   sbtw_iff_btw_not_btw := Iff.rfl
   sbtw_trans_left {x₁ x₂ x₃ x₄} (h₁₂₃ : _ ∧ _) (h₂₃₄ : _ ∧ _) :=
     show _ ∧ _ by
-      induction x₁ using QuotientAddGroup.induction_on'
-      induction x₂ using QuotientAddGroup.induction_on'
-      induction x₃ using QuotientAddGroup.induction_on'
-      induction x₄ using QuotientAddGroup.induction_on'
+      induction x₁ using QuotientAddGroup.induction_on
+      induction x₂ using QuotientAddGroup.induction_on
+      induction x₃ using QuotientAddGroup.induction_on
+      induction x₄ using QuotientAddGroup.induction_on
       simp_rw [btw_coe_iff] at h₁₂₃ h₂₃₄ ⊢
       apply toIxxMod_trans _ h₁₂₃ h₂₃₄
 
 instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
   { QuotientAddGroup.circularPreorder with
     btw_antisymm := fun {x₁ x₂ x₃} h₁₂₃ h₃₂₁ => by
-      induction x₁ using QuotientAddGroup.induction_on'
-      induction x₂ using QuotientAddGroup.induction_on'
-      induction x₃ using QuotientAddGroup.induction_on'
+      induction x₁ using QuotientAddGroup.induction_on
+      induction x₂ using QuotientAddGroup.induction_on
+      induction x₃ using QuotientAddGroup.induction_on
       rw [btw_cyclic] at h₃₂₁
       simp_rw [btw_coe_iff] at h₁₂₃ h₃₂₁
       simp_rw [← modEq_iff_eq_mod_zmultiples]
       exact toIxxMod_antisymm _ h₁₂₃ h₃₂₁
     btw_total := fun x₁ x₂ x₃ => by
-      induction x₁ using QuotientAddGroup.induction_on'
-      induction x₂ using QuotientAddGroup.induction_on'
-      induction x₃ using QuotientAddGroup.induction_on'
+      induction x₁ using QuotientAddGroup.induction_on
+      induction x₂ using QuotientAddGroup.induction_on
+      induction x₃ using QuotientAddGroup.induction_on
       simp_rw [btw_coe_iff]
       apply toIxxMod_total }
 

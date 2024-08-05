@@ -371,9 +371,7 @@ theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (Quoti
 instance : Coe α (α ⧸ s) :=
   ⟨mk⟩
 
-@[to_additive (attr := elab_as_elim)]
-theorem induction_on' {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z : α, C z) : C x :=
-  Quotient.inductionOn' x H
+@[to_additive (attr := deprecated (since := "2024-08-04"))] alias induction_on' := induction_on
 
 @[to_additive (attr := simp)]
 theorem quotient_liftOn_mk {β} (f : α → β) (h) (x : α) : Quotient.liftOn' (x : α ⧸ s) f h = f x :=
@@ -397,9 +395,7 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
     _ ↔ @Setoid.r _ (leftRel s) a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
 
-@[to_additive]
-theorem eq' {a b : α} : (mk a : α ⧸ s) = mk b ↔ a⁻¹ * b ∈ s :=
-  QuotientGroup.eq
+@[to_additive (attr := deprecated (since := "2024-08-04"))] alias eq' := QuotientGroup.eq
 
 @[to_additive] -- Porting note (#10618): `simp` can prove this.
 theorem out_eq' (a : α ⧸ s) : mk a.out' = a :=
@@ -412,13 +408,13 @@ variable (s)
   stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out'`. -/
 @[to_additive QuotientAddGroup.mk_out'_eq_mul]
 theorem mk_out'_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out' = g * h :=
-  ⟨⟨g⁻¹ * (mk g).out', eq'.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
+  ⟨⟨g⁻¹ * (mk g).out', QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
 
 variable {s} {a b : α}
 
 @[to_additive (attr := simp)]
 theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a := by
-  rwa [eq', mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
+  rwa [QuotientGroup.eq, mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
 
 @[to_additive]
 theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
@@ -486,8 +482,8 @@ variable {t : Subgroup α}
 def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t where
   toFun := Quotient.map' id fun _a _b h' => h ▸ h'
   invFun := Quotient.map' id fun _a _b h' => h.symm ▸ h'
-  left_inv q := induction_on' q fun _g => rfl
-  right_inv q := induction_on' q fun _g => rfl
+  left_inv q := induction_on q fun _g => rfl
+  right_inv q := induction_on q fun _g => rfl
 
 theorem quotientEquivOfEq_mk (h : s = t) (a : α) :
     quotientEquivOfEq h (QuotientGroup.mk a) = QuotientGroup.mk a :=
@@ -544,7 +540,7 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
   inj' :=
     Quotient.ind₂' <| by
       intro a b h
-      simpa only [Quotient.map'_mk'', eq'] using h
+      simpa only [Quotient.map'_mk'', QuotientGroup.eq] using h
 
 -- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
@@ -588,8 +584,8 @@ def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : S
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
   inj' :=
     Quotient.ind₂' <| by
-      simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, eq', mem_subgroupOf, mem_iInf,
-        imp_self, forall_const]
+      simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, QuotientGroup.eq, mem_subgroupOf,
+        mem_iInf, imp_self, forall_const]
 
 -- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
@@ -605,7 +601,8 @@ def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i,
   toFun q i := quotientMapOfLE (iInf_le f i) q
   inj' :=
     Quotient.ind₂' <| by
-      simp_rw [funext_iff, quotientMapOfLE_apply_mk, eq', mem_iInf, imp_self, forall_const]
+      simp_rw [funext_iff, quotientMapOfLE_apply_mk, QuotientGroup.eq, mem_iInf, imp_self,
+        forall_const]
 
 @[to_additive (attr := simp)]
 theorem quotientiInfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (g : α) (i : ι) :
