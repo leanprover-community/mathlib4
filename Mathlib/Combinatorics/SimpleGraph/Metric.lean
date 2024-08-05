@@ -128,6 +128,15 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le h.toWalk) (ENat.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
+/-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
+theorem edist_le_subgraph_edist {G' : SimpleGraph V} (h : G ≤ G') :
+    G'.edist u v ≤ G.edist u v := by
+  by_cases hr : G.Reachable u v
+  · obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_edist
+    rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+    apply edist_le
+  · exact edist_eq_top_of_not_reachable hr ▸ le_top
+
 end edist
 
 section dist
@@ -233,6 +242,13 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
   obtain ⟨p, h⟩ := hconn.exists_walk_length_eq_dist  u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+
+/-- Supergraphs have smaller or equal distances to their subgraphs. -/
+theorem dist_le_subgraph_dist {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
+    G'.dist u v ≤ G.dist u v := by
+  obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
+  rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+  apply dist_le
 
 end dist
 
