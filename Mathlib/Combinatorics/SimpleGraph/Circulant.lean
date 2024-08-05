@@ -7,9 +7,9 @@ import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Set.Pointwise.Basic
 
 /-!
-# Definition of circulants graphs
+# Definition of circulant graphs
 
-This file defines and proves several fact about circulants graphs.
+This file defines and proves several fact about circulant graphs.
 A circulant graph over type `G` with jumps `s : Set G` is a graph in which two vertices `u` and `v`
 are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` are called jumps.
 
