@@ -26,7 +26,7 @@ namespace TopologicalSpace.Fibers
 
 variable [TopologicalSpace S]
 
-/-- The canonical map from the coproduct induced by `f` to `S`. -/
+/-- The canonical map from the disjoint union induced by `f` to `S`. -/
 @[simps apply]
 def sigmaIsoHom : C((x : Fibers f) × x.val, S) where
   toFun := fun ⟨a, x⟩ ↦ x.val
@@ -41,13 +41,11 @@ lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
 lemma sigmaIsoHom_surj : Function.Surjective (sigmaIsoHom f) :=
   fun _ ↦ ⟨⟨⟨_, ⟨⟨_, Set.mem_range_self _⟩, rfl⟩⟩, ⟨_, rfl⟩⟩, rfl⟩
 
-/-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
+/-- The inclusion map from a component of the disjoint union induced by `f` into `S`. -/
 def sigmaIncl (a : Fibers f) : C(a.val, S) where
   toFun := fun x ↦ x.val
 
-/--
-The inclusion map from a fiber
--/
+/-- The inclusion map from a fiber of a composition into the intermediate fiber. -/
 def sigmaInclIncl {X : Type*} (g : Y → X) (a : Fibers (g ∘ f))
     (b : Fibers (f ∘ (sigmaIncl (g ∘ f) a))) :
     C(b.val, (Fibers.mk f (b.preimage).val).val) where
