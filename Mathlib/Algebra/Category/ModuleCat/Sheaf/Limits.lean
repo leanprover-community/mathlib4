@@ -34,7 +34,7 @@ variable {R : Cᵒᵖ ⥤ RingCat.{u}}
   [HasLimitsOfShape D AddCommGrp.{v}]
 
 lemma isSheaf_of_isLimit (hc : IsLimit c) (hF : ∀ j, Presheaf.IsSheaf J (F.obj j).presheaf) :
-  Presheaf.IsSheaf J (c.pt.presheaf) := by
+    Presheaf.IsSheaf J (c.pt.presheaf) := by
   let G : D ⥤ Sheaf J AddCommGrp.{v} :=
     { obj := fun j => ⟨(F.obj j).presheaf, hF j⟩
       map := fun φ => ⟨(PresheafOfModules.toPresheaf R).map (F.map φ)⟩ }
