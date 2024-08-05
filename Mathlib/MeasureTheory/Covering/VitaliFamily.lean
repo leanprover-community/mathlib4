@@ -103,6 +103,7 @@ def FineSubfamilyOn (v : VitaliFamily μ) (f : α → Set (Set α)) (s : Set α)
 namespace FineSubfamilyOn
 
 variable {v : VitaliFamily μ} {f : α → Set (Set α)} {s : Set α} (h : v.FineSubfamilyOn f s)
+include h
 
 theorem exists_disjoint_covering_ae :
     ∃ t : Set (α × Set α),

@@ -56,6 +56,9 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddComm
   {f'' : E →L[ℝ] E →L[ℝ] F} (hf : ∀ x ∈ interior s, HasFDerivAt f (f' x) x) {x : E} (xs : x ∈ s)
   (hx : HasFDerivWithinAt f' f'' (interior s) x)
 
+section
+include s_conv hf xs hx
+
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
 differentiable at a point `x`. Then, given two vectors `v` and `w` pointing inside `s`, one can
 Taylor-expand to order two the function `f` on the segment `[x + h v, x + h (v + w)]`, giving a
@@ -248,6 +251,8 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     · filter_upwards [self_mem_nhdsWithin] with h (hpos : 0 < h)
       field_simp [LT.lt.ne' hpos, SMul.smul]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
+
+end
 
 /-- If a function is differentiable inside a convex set with nonempty interior, and has a second
 derivative at a point of this convex set, then this second derivative is symmetric. -/
