@@ -23,12 +23,10 @@ We define the notation `ℍ` for the upper half plane available in the locale
 `UpperHalfPlane` so as not to conflict with the quaternions.
 -/
 
-
 noncomputable section
 
 open Matrix Matrix.SpecialLinearGroup
-
-open scoped Classical MatrixGroups
+open scoped MatrixGroups
 
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/

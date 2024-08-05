@@ -12,14 +12,10 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 Derivatives of `arcsin` and `arccos`.
 -/
 
-
 noncomputable section
 
-open scoped Classical Topology Filter
-
-open Set Filter
-
-open scoped Real
+open scoped Topology Filter Real
+open Set
 
 namespace Real
 

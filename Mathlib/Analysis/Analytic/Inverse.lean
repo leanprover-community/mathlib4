@@ -26,8 +26,7 @@ we prove that they coincide and study their properties (notably convergence).
 
 -/
 
-
-open scoped Classical Topology
+open scoped Topology
 
 open Finset Filter
 
@@ -91,6 +90,7 @@ term is invertible. -/
 theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) : (leftInv p i).comp p = id 𝕜 E := by
   ext (n v)
+  classical
   match n with
   | 0 =>
     simp only [leftInv_coeff_zero, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne,
@@ -192,8 +192,8 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     (q : FormalMultilinearSeries 𝕜 F E) (v : Fin n → F) :
     p.comp q n v =
       ∑ c ∈ {c : Composition n | 1 < c.length}.toFinset,
-          p c.length (q.applyComposition c v) +
-        p 1 fun _ => q n v := by
+          p c.length (q.applyComposition c v) + p 1 fun _ => q n v := by
+  classical
   have A :
     (Finset.univ : Finset (Composition n)) =
       {c | 1 < Composition.length c}.toFinset ∪ {Composition.single n hn} := by
