@@ -387,16 +387,15 @@ open Classical in
 instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
 
-open Classical in
 -- This is a bad `@[simp]` lemma: the RHS is a coercion containing the LHS.
-protected theorem repr_symm_single (b : HilbertBasis ι 𝕜 E) (i : ι) :
-    b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i :=
-  rfl
+protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
+    b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by
+  convert rfl
 
-open Classical in
-protected theorem repr_self (b : HilbertBasis ι 𝕜 E) (i : ι) :
+protected theorem repr_self [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
   simp only [LinearIsometryEquiv.apply_symm_apply]
+  convert rfl
 
 protected theorem repr_apply_apply (b : HilbertBasis ι 𝕜 E) (v : E) (i : ι) :
     b.repr v i = ⟪b i, v⟫ := by
