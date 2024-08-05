@@ -110,7 +110,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     simp only [Set.mem_setOf_eq]
     use a
 
-theorem lfpApprox_mono₂ (h : f ≤ g) : lfpApprox f ≤ lfpApprox g := by
+theorem lfpApprox_mono₁ (h : f ≤ g) : lfpApprox f ≤ lfpApprox g := by
   intro x a
   induction a using Ordinal.induction with
   | h i ih =>
@@ -265,7 +265,7 @@ theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a+1) = f (gfpApprox f x a) :=
   lfpApprox_add_one (OrderHom.dual f) x h a
 
-theorem gfpApprox_mono₂ (h : f ≤ g) : gfpApprox f ≤ gfpApprox g := by
+theorem gfpApprox_mono₁ (h : f ≤ g) : gfpApprox f ≤ gfpApprox g := by
   intro x a
   induction a using Ordinal.induction with
   | h i ih =>
