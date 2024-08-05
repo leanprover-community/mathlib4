@@ -8,6 +8,7 @@ import Mathlib.Algebra.DirectLimit
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.Order.Ideal
+import Mathlib.PartialEquiv
 
 /-!
 # Direct Limits of First-Order Structures
@@ -571,7 +572,7 @@ end DirectLimit
 
 namespace BackAndForth
 
-open Substructure.PartialEquiv
+open PartialEquiv
 
 open DirectLimit
 
@@ -582,7 +583,7 @@ def FiniteEquiv := {f : M ≃ₚ[L] N // f.dom.FG}
 
 instance : PartialOrder (FiniteEquiv L M N) := Subtype.partialOrder _
 
-instance FiniteEquivToSubEquiv : Coe (FiniteEquiv L M N) (M ≃ₚ[L] N) := {coe := Subtype.val}
+instance FiniteEquivToPartialEquiv : Coe (FiniteEquiv L M N) (M ≃ₚ[L] N) := {coe := Subtype.val}
 
 variable {M} {N} {L}
 

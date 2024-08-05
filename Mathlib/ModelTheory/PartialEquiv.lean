@@ -311,7 +311,7 @@ theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.ma
       (f.substructureEquivMap g'.dom ⟨u, dom_le_dom h u_mem⟩))
   simp only [Equiv.symm_apply_apply, coeSubtype]
 
-theorem Sfg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
+theorem fg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
     f.dom.FG ↔ f.cod.FG := by
   rw [Substructure.fg_iff_structure_fg, f.equiv.fg_iff, Substructure.fg_iff_structure_fg]
 
