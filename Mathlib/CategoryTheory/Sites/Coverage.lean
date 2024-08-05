@@ -242,7 +242,7 @@ instance : PartialOrder (Coverage C) where
   le A B := A.covering ≤ B.covering
   le_refl A X := le_refl _
   le_trans A B C h1 h2 X := le_trans (h1 X) (h2 X)
-  le_antisymm A B h1 h2 := Coverage.ext A B <| funext <|
+  le_antisymm A B h1 h2 := Coverage.ext <| funext <|
     fun X => le_antisymm (h1 X) (h2 X)
 
 variable (C) in

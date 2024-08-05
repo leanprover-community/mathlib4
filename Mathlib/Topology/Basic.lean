@@ -76,7 +76,7 @@ open Topology
 
 lemma isOpen_mk {p h₁ h₂ h₃} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
 
-@[ext]
+@[ext (iff := false)]
 protected theorem TopologicalSpace.ext :
     ∀ {f g : TopologicalSpace X}, IsOpen[f] = IsOpen[g] → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
