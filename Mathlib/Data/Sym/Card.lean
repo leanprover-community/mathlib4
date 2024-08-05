@@ -188,8 +188,9 @@ theorem univ_singleton : @univ (Sym2 ({a} : Finset α)) _ = {s(⟨a, by simp⟩,
   rw [mem_singleton] at hx hy
   simp [hx, hy]
 
-theorem univ_pair : @univ (Sym2 ({a, b} : Finset α)) _ = {s(⟨a, by simp⟩, ⟨a, by simp⟩),
-    s(⟨a, by simp⟩, ⟨b, by simp⟩), s(⟨b, by simp⟩, ⟨b, by simp⟩)} := by
+theorem univ_pair :
+    @univ (Sym2 ({a, b} : Finset α)) _ = {s(⟨a, by simp⟩, ⟨a, by simp⟩),
+      s(⟨a, by simp⟩, ⟨b, by simp⟩), s(⟨b, by simp⟩, ⟨b, by simp⟩)} := by
   ext p
   simp_rw [mem_univ, mem_insert, mem_singleton, true_iff]
   refine p.inductionOn fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_

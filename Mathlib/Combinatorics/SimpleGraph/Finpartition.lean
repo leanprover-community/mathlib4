@@ -38,8 +38,9 @@ variable {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableR
 def interEdges (se : Sym2 P.parts) : Finset (Sym2 V) :=
   G.edgeFinset.filter (fun e ↦ e.map P.part = se.map (↑))
 
-lemma interEdges_self (p : P.parts) : G.interEdges s(p, p) =
-    (G.induce p).edgeFinset.map ⟨_, Sym2.map.injective Subtype.val_injective⟩ := by
+lemma interEdges_self (p : P.parts) :
+    G.interEdges s(p, p) =
+      (G.induce p).edgeFinset.map ⟨_, Sym2.map.injective Subtype.val_injective⟩ := by
   ext e
   obtain ⟨p, mp⟩ := p
   refine e.inductionOn fun x y ↦ ?_
@@ -57,8 +58,8 @@ lemma interEdges_self (p : P.parts) : G.interEdges s(p, p) =
     rcases q with ⟨qx, qy⟩ | ⟨qx, qy⟩ <;> (subst qx qy; refine ⟨by simpa only [adj_comm], ?_, ?_⟩)
     all_goals exact P.part_eq_of_mem mp ‹_›
 
-lemma interEdges_eq_biUnion (p q : P.parts) : G.interEdges s(p, q) =
-    q.1.biUnion fun b ↦ (p.1.filter (G.Adj · b)).map
+lemma interEdges_eq_biUnion (p q : P.parts) :
+    G.interEdges s(p, q) = q.1.biUnion fun b ↦ (p.1.filter (G.Adj · b)).map
       ⟨(s(b, ·)), fun _ _ c ↦ Sym2.congr_right.mp c⟩ := by
   ext e
   refine e.inductionOn fun a b ↦ ?_
@@ -97,8 +98,9 @@ theorem pairwiseDisjoint_interEdges :
   rw [interEdges, mem_filter] at mx my
   exact Sym2.map.injective Subtype.val_injective (mx.2 ▸ my.2)
 
-theorem disjiUnion_interEdges : (univ : Finset (Sym2 P.parts)).disjiUnion G.interEdges
-    (by simp [pairwiseDisjoint_interEdges]) = G.edgeFinset := by
+theorem disjiUnion_interEdges :
+    (univ : Finset (Sym2 P.parts)).disjiUnion G.interEdges
+      (by simp [pairwiseDisjoint_interEdges]) = G.edgeFinset := by
   ext e
   refine e.inductionOn fun x y ↦ ?_
   simp_rw [disjiUnion_eq_biUnion, mem_biUnion, mem_univ, interEdges, mem_filter, Set.mem_toFinset,
@@ -112,8 +114,9 @@ theorem card_edgeFinset_eq_sum_interEdges_card :
 
 variable {K : Finset V}
 
-theorem card_edgeFinset_bipartition : G.edgeFinset.card = (G.induce K).edgeFinset.card +
-    ∑ b in Kᶜ, (K.filter (G.Adj · b)).card + (G.induce Kᶜ).edgeFinset.card := by
+theorem card_edgeFinset_bipartition :
+    G.edgeFinset.card = (G.induce K).edgeFinset.card +
+      ∑ b in Kᶜ, (K.filter (G.Adj · b)).card + (G.induce Kᶜ).edgeFinset.card := by
   have t1 : (G.induce (∅ : Finset V).toSetᶜ).edgeFinset.card = G.edgeFinset.card := by
     convert G.induceUnivIso.card_edgeFinset_eq <;> simp
   have t2 : (G.induce (univ : Finset V)).edgeFinset.card = G.edgeFinset.card := by
