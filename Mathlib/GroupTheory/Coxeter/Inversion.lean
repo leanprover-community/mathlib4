@@ -250,7 +250,7 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
   · dsimp only [rightInvSeq]
     rcases j with _ | j'
     · simp [getD_cons_zero]
-    · simp only [getD_eq_getElem?, get?_eq_getElem?] at ih
+    · simp only [getD_eq_getElem?_getD, get?_eq_getElem?] at ih
       simp [getD_cons_succ, ih j']
 
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
@@ -299,11 +299,11 @@ theorem leftInvSeq_take (ω : List B) (j : ℕ) :
     lis (ω.take j) = (lis ω).take j := by
   obtain le | ge := Nat.le_or_ge j ω.length
   · simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse]
-    rw [List.take_reverse j (by simpa)]
+    rw [List.take_reverse (by simpa)]
     nth_rw 1 [← List.reverse_reverse ω]
-    rw [List.take_reverse j (by simpa)]
+    rw [List.take_reverse (by simpa)]
     simp [rightInvSeq_drop]
-  · rw [take_length_le ge, take_length_le (by simpa)]
+  · rw [take_of_length_le ge, take_of_length_le (by simpa)]
 
 theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω) :
     cs.IsReflection t := by
@@ -400,7 +400,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
   have h₃ : t' = (ris ω).getD j' 1                    := by
     rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
       (Nat.sub_add_cancel (by omega) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
-      drop_append_eq_append_drop, drop_length_le (by simp [j_lt_j'.le]), length_take,
+      drop_append_eq_append_drop, drop_of_length_le (by simp [j_lt_j'.le]), length_take,
       drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), ← add_assoc,
       Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2

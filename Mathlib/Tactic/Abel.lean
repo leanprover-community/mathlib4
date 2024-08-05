@@ -386,7 +386,7 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
     | throwError "abel1 requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
-  closeMainGoal <| ← AtomM.run tm <| ReaderT.run (r := c) do
+  closeMainGoal `abel1 <| ← AtomM.run tm <| ReaderT.run (r := c) do
     let (e₁', p₁) ← eval e₁
     trace[abel] "found `{p₁}`, a proof that `{e₁} = {e₁'.e}`"
     let (e₂', p₂) ← eval e₂

@@ -195,11 +195,6 @@ theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg 
 theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 
-/-- Deprecated. Use `DFunLike.ext_iff`. -/
--- @[deprecated] Porting note: using `DFunLike.ext_iff` is not viable below for now
-theorem ext_iff {v₁ v₂ : Valuation R Γ₀} : v₁ = v₂ ↔ ∀ r, v₁ r = v₂ r :=
-  DFunLike.ext_iff
-
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
 -- In addition, type class inference would not be able to infer `v`.
 /-- A valuation gives a preorder on the underlying ring. -/
@@ -680,9 +675,6 @@ theorem map_pow : ∀ (x : R) (n : ℕ), v (x ^ n) = n • (v x) :=
 @[ext]
 theorem ext {v₁ v₂ : AddValuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   Valuation.ext h
-
-theorem ext_iff {v₁ v₂ : AddValuation R Γ₀} : v₁ = v₂ ↔ ∀ (r : R), v₁ r = v₂ r :=
-  Valuation.ext_iff
 
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
 -- In addition, type class inference would not be able to infer `v`.

@@ -934,7 +934,7 @@ the first two blocks of `a` and its last three blocks, giving `a.gather b = [11,
 def gather (a : Composition n) (b : Composition a.length) : Composition n where
   blocks := (a.blocks.splitWrtComposition b).map sum
   blocks_pos := by
-    rw [forall_mem_map_iff]
+    rw [forall_mem_map]
     intro j hj
     suffices H : ∀ i ∈ j, 1 ≤ i by calc
       0 < j.length := length_pos_of_mem_splitWrtComposition hj

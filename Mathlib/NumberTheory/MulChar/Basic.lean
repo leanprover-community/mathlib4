@@ -134,11 +134,6 @@ theorem ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' :
   · exact h ha.unit
   · rw [map_nonunit χ ha, map_nonunit χ' ha]
 
-theorem ext_iff {χ χ' : MulChar R R'} : χ = χ' ↔ ∀ a : Rˣ, χ a = χ' a :=
-  ⟨by
-    rintro rfl a
-    rfl, ext⟩
-
 /-!
 ### Equivalence of multiplicative characters with homomorphisms on units
 
