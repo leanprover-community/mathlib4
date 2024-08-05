@@ -99,7 +99,7 @@ theorem Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : �
 
 theorem _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
     q.out'⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out' ∈ H := by
-  rw [mul_assoc, ← QuotientGroup.eq', QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
+  rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 
 end QuotientAction

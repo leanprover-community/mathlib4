@@ -83,7 +83,7 @@ theorem mk'_surjective : Surjective <| mk' N :=
 
 @[to_additive]
 theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
-  QuotientGroup.eq'.trans <| by
+  QuotientGroup.eq.trans <| by
     simp only [← _root_.eq_inv_mul_iff_mul_eq, exists_prop, exists_eq_right]
 
 open scoped Pointwise in
@@ -217,7 +217,7 @@ theorem map_mk' (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f)
 @[to_additive]
 theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
     map N N (MonoidHom.id _) h x = x :=
-  induction_on' x fun _x => rfl
+  induction_on x fun _x => rfl
 
 @[to_additive (attr := simp)]
 theorem map_id (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) :
@@ -230,7 +230,7 @@ theorem map_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.Norma
     (hgf : N ≤ Subgroup.comap (g.comp f) O :=
       hf.trans ((Subgroup.comap_mono hg).trans_eq (Subgroup.comap_comap _ _ _)))
     (x : G ⧸ N) : map M O g hg (map N M f hf x) = map N O (g.comp f) hgf x := by
-  refine induction_on' x fun x => ?_
+  refine induction_on x fun x => ?_
   simp only [map_mk, MonoidHom.comp_apply]
 
 @[to_additive (attr := simp)]
