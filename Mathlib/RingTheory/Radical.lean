@@ -22,6 +22,7 @@ This is different from the radical of an ideal.
 - `radical_dvd_self`: `radical a` divides `a`.
 - `radical_pow`: `radical (a ^ n) = radical a` for any `n ≥ 1`
 - `radical_of_prime`: Radical of a prime element is equal to its normalization
+- `radical_pow_of_prime`: Radical of a power of prime element is equal to its normalization
 
 ## TODO
 
@@ -36,9 +37,9 @@ open scoped Classical
 
 open UniqueFactorizationMonoid
 
-variable {k : Type _} [Field k]
+variable {k : Type*} [Field k]
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
-variable {M : Type _} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
+variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M]
 
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
