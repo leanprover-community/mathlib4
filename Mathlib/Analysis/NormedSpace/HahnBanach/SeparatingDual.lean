@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Spaces with separating dual
@@ -162,7 +162,7 @@ lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[
   obtain ⟨a, ha⟩ : ∃ a, Tendsto g atTop (𝓝 a) := cauchy_iff_exists_le_nhds.mp this
   refine ⟨a v, ?_⟩
   have : Tendsto (fun n ↦ g n v) atTop (𝓝 (a v)) := by
-    have : Continuous (fun (i : E →L[𝕜] F) ↦ i v) := by continuity
+    have : Continuous (fun (i : E →L[𝕜] F) ↦ i v) := by fun_prop
     exact (this.tendsto _).comp ha
   simpa [g, ContinuousLinearMap.smulRightL, hφ]
 
@@ -172,7 +172,7 @@ lemma completeSpace_continuousLinearMap_iff :
 
 open ContinuousMultilinearMap
 
-variable {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)]
+variable {ι : Type*} [Finite ι] {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)]
   [∀ i, NormedSpace 𝕜 (M i)] [∀ i, SeparatingDual 𝕜 (M i)]
 
 /-- If a space of multilinear maps from `Π i, E i` to `F` is complete, and each `E i` has a nonzero
@@ -183,6 +183,7 @@ lemma completeSpace_of_completeSpace_continuousMultilinearMap
   refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
   have : ∀ i, ∃ φ : M i →L[𝕜] 𝕜, φ (m i) = 1 := fun i ↦ exists_eq_one (hm i)
   choose φ hφ using this
+  cases nonempty_fintype ι
   let g : ℕ → (ContinuousMultilinearMap 𝕜 M F) := fun n ↦
     compContinuousLinearMapL φ
     (ContinuousMultilinearMap.smulRightL 𝕜 _ F ((ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι 𝕜)) (f n))

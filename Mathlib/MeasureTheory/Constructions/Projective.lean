@@ -61,7 +61,7 @@ lemma measure_univ_eq (hP : IsProjectiveMeasureFamily P) (I J : Finset ι) :
     P I univ = P J univ := by
   classical
   rw [← hP.measure_univ_eq_of_subset I.subset_union_left,
-    ← hP.measure_univ_eq_of_subset (I.subset_union_right (s₂:= J))]
+    ← hP.measure_univ_eq_of_subset (I.subset_union_right (s₂ := J))]
 
 lemma congr_cylinder_of_subset (hP : IsProjectiveMeasureFamily P)
     {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (hT : MeasurableSet T)

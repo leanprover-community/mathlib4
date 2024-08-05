@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 
-#align_import analysis.special_functions.non_integrable from "leanprover-community/mathlib"@"55ec6e9af7d3e0043f57e394cb06a72f6275273e"
-
 /-!
 # Non integrable functions
 
@@ -130,8 +128,6 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f :
     (hfg : deriv f =O[l] g) : ¬IntervalIntegrable g volume a b := by
   rw [intervalIntegrable_iff']
   exact not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter _ hl hd hf hfg
-set_option linter.uppercaseLean3 false in
-#align not_interval_integrable_of_tendsto_norm_at_top_of_deriv_is_O_filter not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter
 
 /-- If `a ≠ b`, `c ∈ [a, b]`, `f` is differentiable in the neighborhood of `c` within
 `[a, b] \ {c}`, `‖f x‖ → ∞` as `x → c` within `[a, b] \ {c}`, and `f' = O(g)` along
@@ -155,8 +151,6 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff
   exact not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter l
     (mem_of_superset hmem diff_subset) (h_deriv.filter_mono this) (h_infty.mono_left this)
     (hg.mono this)
-set_option linter.uppercaseLean3 false in
-#align not_interval_integrable_of_tendsto_norm_at_top_of_deriv_is_O_within_diff_singleton not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff_singleton
 
 /-- If `f` is differentiable in a punctured neighborhood of `c`, `‖f x‖ → ∞` as `x → c` (more
 formally, along the filter `𝓝[≠] c`), and `f' = O(g)` along `𝓝[≠] c`, where `f'` is the derivative
@@ -169,8 +163,6 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured {
   have : 𝓝[[[a, b]] \ {c}] c ≤ 𝓝[≠] c := nhdsWithin_mono _ inter_subset_right
   not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff_singleton hne hc
     (h_deriv.filter_mono this) (h_infty.mono_left this) (hg.mono this)
-set_option linter.uppercaseLean3 false in
-#align not_interval_integrable_of_tendsto_norm_at_top_of_deriv_is_O_punctured not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured
 
 /-- If `f` grows in the punctured neighborhood of `c : ℝ` at least as fast as `1 / (x - c)`,
 then it is not interval integrable on any nontrivial interval `a..b`, `c ∈ [a, b]`. -/
@@ -187,8 +179,6 @@ theorem not_intervalIntegrable_of_sub_inv_isBigO_punctured {f : ℝ → F} {a b 
   exact not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured
     (A.mono fun x hx => hx.differentiableAt) B
     (hf.congr' (A.mono fun x hx => hx.deriv.symm) EventuallyEq.rfl) hne hc
-set_option linter.uppercaseLean3 false in
-#align not_interval_integrable_of_sub_inv_is_O_punctured not_intervalIntegrable_of_sub_inv_isBigO_punctured
 
 /-- The function `fun x => (x - c)⁻¹` is integrable on `a..b` if and only if
 `a = b` or `c ∉ [a, b]`. -/
@@ -202,7 +192,6 @@ theorem intervalIntegrable_sub_inv_iff {a b c : ℝ} :
     · exact IntervalIntegrable.refl
     refine ((continuous_sub_right c).continuousOn.inv₀ ?_).intervalIntegrable
     exact fun x hx => sub_ne_zero.2 <| ne_of_mem_of_not_mem hx h₀
-#align interval_integrable_sub_inv_iff intervalIntegrable_sub_inv_iff
 
 /-- The function `fun x => x⁻¹` is integrable on `a..b` if and only if
 `a = b` or `0 ∉ [a, b]`. -/
@@ -210,7 +199,6 @@ theorem intervalIntegrable_sub_inv_iff {a b c : ℝ} :
 theorem intervalIntegrable_inv_iff {a b : ℝ} :
     IntervalIntegrable (fun x => x⁻¹) volume a b ↔ a = b ∨ (0 : ℝ) ∉ [[a, b]] := by
   simp only [← intervalIntegrable_sub_inv_iff, sub_zero]
-#align interval_integrable_inv_iff intervalIntegrable_inv_iff
 
 /-- The function `fun x ↦ x⁻¹` is not integrable on any interval `[a, +∞)`. -/
 theorem not_IntegrableOn_Ici_inv {a : ℝ} :

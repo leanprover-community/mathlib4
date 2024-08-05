@@ -70,8 +70,6 @@ We formalize several versions of this theorem in
 filter, countable
 -/
 
-set_option autoImplicit true
-
 open Function Set Filter
 
 /-- We say that a type `α` has a *countable separating family of sets* satisfying a predicate
@@ -140,7 +138,7 @@ theorem HasCountableSeparatingOn.subtype_iff {α : Type*} {p : Set α → Prop} 
 
 namespace Filter
 
-variable {l : Filter α} [CountableInterFilter l] {f g : α → β}
+variable {α β : Type*} {l : Filter α} [CountableInterFilter l] {f g : α → β}
 
 /-!
 ### Filters supported on a (sub)singleton
@@ -255,3 +253,7 @@ theorem of_eventually_mem_of_forall_separating_preimage (p : Set β → Prop) {s
 theorem of_forall_separating_preimage (p : Set β → Prop) [HasCountableSeparatingOn β p univ]
     (h : ∀ U : Set β, p U → f ⁻¹' U =ᶠ[l] g ⁻¹' U) : f =ᶠ[l] g :=
   of_eventually_mem_of_forall_separating_preimage p (s := univ) univ_mem univ_mem h
+
+end EventuallyEq
+
+end Filter

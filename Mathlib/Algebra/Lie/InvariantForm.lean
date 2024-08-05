@@ -199,7 +199,7 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]
   rw [← LieSubmodule.mem_bot (R := K) (L := L), ← (hJ.disjoint_of_ne hI hJI).eq_bot]
   apply lie_le_inf
-  exact lie_mem_lie _ _ x.2 hz
+  exact lie_mem_lie x.2 hz
 
 end field
 

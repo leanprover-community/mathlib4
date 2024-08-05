@@ -5,6 +5,11 @@ Authors: Jireh Loreaux
 -/
 import Lean.Elab.Tactic.Basic
 
+/-!
+# The `type_check` tactic
+Define the `type_check` tactic: it type checks a given expression, and traces its type.
+-/
+
 open Lean Meta
 
 /-- Type check the given expression, and trace its type. -/
