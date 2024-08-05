@@ -18,7 +18,6 @@ All this could be made with 2-functors
 ## TODO
 The embedding `Type ⥤ Cat` has a left adjoint `Cat.connectedComponents` mapping
 each category to its set of connected components.
-
 -/
 
 universe u
@@ -27,17 +26,17 @@ namespace CategoryTheory
 variable (X : Type u) (C : Cat)
 
 private def homEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
-      toFun f x := f.obj ⟨x⟩
-      invFun := Discrete.functor
-      left_inv F := Functor.ext (fun _ ↦ rfl)
-                                (fun⟨_⟩ ⟨_⟩ f => by
-                                        obtain rfl := Discrete.eq_of_hom f
-                                        simp)
-      right_inv := fun _ ↦ funext (fun _ => rfl)
+  toFun f x := f.obj ⟨x⟩
+  invFun := Discrete.functor
+  left_inv F := Functor.ext (fun _ ↦ rfl)
+                            (fun⟨_⟩ ⟨_⟩ f => by
+                                    obtain rfl := Discrete.eq_of_hom f
+                                    simp)
+  right_inv := fun _ ↦ funext (fun _ => rfl)
 
 private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤ C where
-     obj := Discrete.as
-     map := eqToHom ∘ Discrete.eq_of_hom
+  obj := Discrete.as
+  map := eqToHom ∘ Discrete.eq_of_hom
 
 /-- typeToCat : Type ⥤ Cat is left adjoint to Cat.objects : Cat ⥤ Type -/
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
