@@ -15,8 +15,8 @@ variable {α β : Type*}
 
 /-- Pullback an `OrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) "Pullback an `OrderedAddCommGroup` under an injective map."]
-def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One β] [Mul β] [Inv β]
+@[to_additive "Pullback an `OrderedAddCommGroup` under an injective map."]
+abbrev Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One β] [Mul β] [Inv β]
     [Div β] [Pow β ℕ] [Pow β ℤ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
@@ -27,8 +27,8 @@ def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One 
 
 /-- Pullback a `LinearOrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) "Pullback a `LinearOrderedAddCommGroup` under an injective map."]
-def Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : Type*} [One β]
+@[to_additive "Pullback a `LinearOrderedAddCommGroup` under an injective map."]
+abbrev Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : Type*} [One β]
     [Mul β] [Inv β] [Div β] [Pow β ℕ] [Pow β ℤ] [Sup β] [Inf β] (f : β → α)
     (hf : Function.Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)

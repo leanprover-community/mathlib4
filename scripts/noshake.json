@@ -191,7 +191,8 @@
  "ignoreAll":
  ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
  "ignore":
- {"Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
+ {"Mathlib.Util.Term.Basic": ["Mathlib.Util.Term.Beta"],
+  "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Order.LeftRightNhds": ["Mathlib.Data.Set.Pointwise.Basic"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
@@ -235,7 +236,8 @@
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
-  "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
+  "Mathlib.Tactic.IrreducibleDef":
+  ["Mathlib.Data.Subtype", "Mathlib.Util.Term.Basic"],
   "Mathlib.Tactic.ITauto": ["Batteries.Logic", "Mathlib.Init.Logic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Order.Defs"],
@@ -372,8 +374,10 @@
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.Equiv": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
+  "Mathlib.Algebra.GroupWithZero.Action.Defs": ["Mathlib.Util.Term.Basic"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
+  "Mathlib.Algebra.Group.InjSurj": ["Mathlib.Util.Term.Basic"],
   "Mathlib.Algebra.Group.Defs": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":

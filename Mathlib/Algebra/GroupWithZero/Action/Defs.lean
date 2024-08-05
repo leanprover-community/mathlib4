@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
+import Mathlib.Util.Term.Basic
 
 /-!
 # Definitions of group actions
@@ -171,7 +172,8 @@ variable (A)
 /-- Compose a `DistribSMul` with a function, with scalar multiplication `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
-  { SMulZeroClass.compFun A f with
+  reduceProj% zeta%
+  { delta% SMulZeroClass.compFun A f with
     smul_add := fun x => smul_add (f x) }
 
 /-- Each element of the scalars defines an additive monoid homomorphism. -/
@@ -234,7 +236,8 @@ variable (A)
 /-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
-  { DistribSMul.compFun A f, MulAction.compHom A f with }
+  reduceProj% zeta%
+  { delta% DistribSMul.compFun A f, delta% MulAction.compHom A f with }
 
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
 @[simps!]

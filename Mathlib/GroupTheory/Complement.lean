@@ -201,7 +201,7 @@ theorem mem_leftTransversals_iff_existsUnique_quotient_mk''_eq :
     S ∈ leftTransversals (H : Set G) ↔
       ∀ q : Quotient (QuotientGroup.leftRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
   simp_rw [mem_leftTransversals_iff_existsUnique_inv_mul_mem, SetLike.mem_coe, ←
-    QuotientGroup.eq']
+    QuotientGroup.eq]
   exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
 
 @[to_additive]
