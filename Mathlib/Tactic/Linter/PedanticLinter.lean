@@ -134,11 +134,6 @@ def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
     if st != real then
       let diff := real.firstDiffPos st
       let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
-      let toDiff : Substring := { origSubstring with startPos := ⟨pos⟩ }
-      let fin := toDiff.toString.takeWhile (· != st.get diff)
-      dbg_trace "diff: {diff}"
-      dbg_trace "st.get diff: {st.get diff}"
-      dbg_trace "fin: {fin}"
       let f := origSubstring.str.drop (pos)
       let extraLth := (f.takeWhile (· != st.get diff)).length
       let srcCtxt := zoomString real diff.1 5
