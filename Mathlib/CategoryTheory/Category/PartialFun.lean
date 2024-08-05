@@ -109,10 +109,10 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
   exact
     { obj := fun X => ⟨Option X, none⟩
       map := fun f => ⟨Option.elim' none fun a => (f a).toOption, rfl⟩
-      map_id := fun X => Pointed.Hom.ext _ _ <| funext fun o => Option.recOn o rfl fun a => (by
+      map_id := fun X => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => (by
         dsimp [CategoryStruct.id]
         convert Part.some_toOption a)
-      map_comp := fun f g => Pointed.Hom.ext _ _ <| funext fun o => Option.recOn o rfl fun a => by
+      map_comp := fun f g => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
         dsimp [CategoryStruct.comp]
         rw [Part.bind_toOption g (f a), Option.elim'_eq_elim] }
 
@@ -148,7 +148,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
               exact ⟨b, ⟨ha, h.symm⟩, rfl⟩) $
     NatIso.ofComponents
       (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
-      fun {X Y} f ↦ Pointed.Hom.ext _ _ <| funext fun a ↦ by
+      fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
         simp_all [Option.casesOn'_eq_elim, Part.elim_toOption]
@@ -165,7 +165,7 @@ noncomputable def typeToPartialFunIsoPartialFunToPointed :
         hom_inv_id := rfl
         inv_hom_id := rfl })
     fun f =>
-    Pointed.Hom.ext _ _ <|
+    Pointed.Hom.ext <|
       funext fun a => Option.recOn a rfl fun a => by
         convert Part.some_toOption _
         simpa using (Part.get_eq_iff_mem (by trivial)).mp rfl

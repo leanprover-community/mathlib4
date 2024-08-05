@@ -101,8 +101,6 @@ theorem ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
 
 theorem congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
 
-theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
-
 @[deprecated (since := "2024-04-14")]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl

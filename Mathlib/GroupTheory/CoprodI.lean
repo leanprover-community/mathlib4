@@ -357,7 +357,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
         heq_iff_eq, ← Subtype.ext_iff_val] using he
     rcases this with ⟨rfl, h⟩
     congr
-    exact Word.ext _ _ h
+    exact Word.ext h
 
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
@@ -526,7 +526,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
       intro hm1
       split_ifs with h
       · rcases h with ⟨hnil, rfl⟩
-        simp only [List.head?_eq_head _ hnil, Option.some.injEq, ne_eq]
+        simp only [List.head?_eq_head hnil, Option.some.injEq, ne_eq]
         constructor
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
@@ -605,7 +605,7 @@ def equiv : CoprodI M ≃ Word M where
       rw [prod_smul, mul_smul, ih]
 
 instance : DecidableEq (Word M) :=
-  Function.Injective.decidableEq Word.ext
+  Function.Injective.decidableEq fun _ _ => Word.ext
 
 instance : DecidableEq (CoprodI M) :=
   Equiv.decidableEq Word.equiv
@@ -637,7 +637,7 @@ def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
 theorem toList_ne_nil {i j} (w : NeWord M i j) : w.toList ≠ List.nil := by
   induction w
   · rintro ⟨rfl⟩
-  · apply List.append_ne_nil_of_ne_nil_left
+  · apply List.append_ne_nil_of_left_ne_nil
     assumption
 
 /-- The first letter of a `NeWord` -/
@@ -658,7 +658,7 @@ theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.head?_append (by assumption)
+  · exact List.mem_head?_append_of_mem_head? (by assumption)
 
 @[simp]
 theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
@@ -666,7 +666,7 @@ theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.so
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.getLast?_append (by assumption)
+  · exact List.mem_getLast?_append_of_mem_getLast? (by assumption)
 
 /-- The `Word M` represented by a `NeWord M i j` -/
 def toWord {i j} (w : NeWord M i j) : Word M where

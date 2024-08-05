@@ -45,7 +45,7 @@ namespace PiTensorProduct
 
 /-- Two dependent pairs of tensor products are equal if their index is equal and the contents
 are equal after a canonical reindexing. -/
-@[ext]
+@[ext (iff := false)]
 theorem gradedMonoid_eq_of_reindex_cast {ιι : Type*} {ι : ιι → Type*} :
     ∀ {a b : GradedMonoid fun ii => ⨂[R] _ : ι ii, M} (h : a.fst = b.fst),
       reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg ι h) a.snd = b.snd → a = b
@@ -118,7 +118,7 @@ theorem cast_cast {i j k} (h : i = j) (h' : j = k) (a : ⨂[R]^i M) :
     cast R M h' (cast R M h a) = cast R M (h.trans h') a :=
   reindex_reindex _ _ _
 
-@[ext]
+@[ext (iff := false)]
 theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _ : Fin n, M} (h : a.fst = b.fst)
     (h2 : cast R M h a.snd = b.snd) : a = b := by
   refine gradedMonoid_eq_of_reindex_cast h ?_

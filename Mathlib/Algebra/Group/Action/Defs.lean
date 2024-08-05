@@ -620,7 +620,7 @@ def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
   toFun f := ⟨MulAction.compHom N f, SMul.comp.isScalarTower _⟩
   invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom
   left_inv f := MonoidHom.ext fun m ↦ mul_one (f m)
-  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext _ _ <| funext₂ <| smul_one_smul N
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext <| funext₂ <| smul_one_smul N
 
 end CompatibleScalar
 

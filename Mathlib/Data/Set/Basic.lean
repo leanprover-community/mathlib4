@@ -187,9 +187,6 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s
 instance : Inhabited (Set α) :=
   ⟨∅⟩
 
-protected theorem ext_iff {s t : Set α} : s = t ↔ ∀ x, x ∈ s ↔ x ∈ t :=
-  ⟨fun h x => by rw [h], ext⟩
-
 @[trans]
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx

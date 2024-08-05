@@ -135,7 +135,4 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
 theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
   congrArg up h
 
-theorem ext_iff {α : Type*} (x y : ULift α) : x = y ↔ x.down = y.down :=
-  ⟨congrArg _, ULift.ext _ _⟩
-
 end ULift

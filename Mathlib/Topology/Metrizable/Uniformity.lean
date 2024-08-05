@@ -61,7 +61,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
   dist_comm x y :=
     NNReal.coe_inj.2 <| by
       refine reverse_surjective.iInf_congr _ fun l ↦ ?_
-      rw [← sum_reverse, zipWith_distrib_reverse, reverse_append, reverse_reverse,
+      rw [← sum_reverse, reverse_zipWith, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
         zipWith_comm_of_comm _ dist_comm]
       simp only [length, length_append]
@@ -134,7 +134,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       intro m hm
       rw [← not_lt, Nat.lt_iff_add_one_le, ← hL_len]
       intro hLm
-      rw [mem_setOf_eq, take_all_of_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
+      rw [mem_setOf_eq, take_of_length_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
           sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
           ← chain_append_singleton_iff_forall₂]
           at hm <;>
@@ -154,7 +154,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
-      rw [zipWith_distrib_take, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
+      rw [take_zipWith, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
@@ -169,7 +169,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
       sum_take_add_sum_drop, ← two_mul] at hMs'
     convert hMs'
-    rwa [zipWith_distrib_drop, drop, drop_append_of_le_length]
+    rwa [drop_zipWith, drop, drop_append_of_le_length]
 
 end PseudoMetricSpace
 

@@ -74,7 +74,7 @@ structure Hom (X Y : Grothendieck F) where
   /-- The morphism from the pushforward to the source fiber object to the target fiber object. -/
   fiber : (F.map base).obj X.fiber ⟶ Y.fiber
 
-@[ext]
+@[ext (iff := false)]
 theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
     (w_fiber : eqToHom (by rw [w_base]) ≫ f.fiber = g.fiber) : f = g := by
   cases f; cases g

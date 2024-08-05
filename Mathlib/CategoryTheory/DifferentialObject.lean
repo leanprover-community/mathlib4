@@ -79,7 +79,7 @@ instance categoryOfDifferentialObjects : Category (DifferentialObject S C) where
 -- Porting note: added
 @[ext]
 theorem ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
-  Hom.ext _ _ w
+  Hom.ext w
 
 @[simp]
 theorem id_f (X : DifferentialObject S C) : (𝟙 X : X ⟶ X).f = 𝟙 X.obj := rfl

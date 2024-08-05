@@ -55,7 +55,7 @@ variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 -- was not triggered automatically
 @[ext]
 lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
-  CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
+  CommaMorphism.ext (Subsingleton.elim _ _) h
 
 @[simp]
 theorem hom_eq_iff {X Y : StructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.right = g.right :=
@@ -168,7 +168,7 @@ picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] isoMk_hom_left_down_down isoMk_inv_left_down_down
 
 theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
-  CommaMorphism.ext _ _ (Subsingleton.elim _ _)
+  CommaMorphism.ext (Subsingleton.elim _ _)
 
 theorem ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right = g.right :=
   ⟨fun h => h ▸ rfl, ext f g⟩
@@ -404,7 +404,7 @@ variable {T T' T'' : D} {Y Y' Y'' : C} {S S' : C ⥤ D}
 -- was not triggered automatically
 @[ext]
 lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
-  CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
+  CommaMorphism.ext h (Subsingleton.elim _ _)
 
 @[simp]
 theorem hom_eq_iff {X Y : CostructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.left = g.left :=
@@ -513,7 +513,7 @@ picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
 theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) : f = g :=
-  CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
+  CommaMorphism.ext h (Subsingleton.elim _ _)
 
 theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left = g.left :=
   ⟨fun h => h ▸ rfl, ext f g⟩

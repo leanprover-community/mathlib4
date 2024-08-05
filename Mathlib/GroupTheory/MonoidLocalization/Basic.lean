@@ -387,10 +387,6 @@ theorem ext {f g : LocalizationMap S N} (h : ∀ x, f.toMap x = g.toMap x) : f =
   exact OneHom.ext h
 
 @[to_additive]
-protected theorem ext_iff {f g : LocalizationMap S N} : f = g ↔ ∀ x, f.toMap x = g.toMap x :=
-  ⟨fun h _ ↦ h ▸ rfl, ext⟩
-
-@[to_additive]
 theorem toMap_injective : Function.Injective (@LocalizationMap.toMap _ _ S N _) :=
   fun _ _ h ↦ ext <| DFunLike.ext_iff.1 h
 

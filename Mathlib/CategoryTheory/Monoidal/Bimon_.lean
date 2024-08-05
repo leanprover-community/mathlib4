@@ -44,7 +44,7 @@ namespace Bimon_
 instance : Category (Bimon_ C) := inferInstanceAs (Category (Comon_ (Mon_ C)))
 
 @[ext] lemma ext {X Y : Bimon_ C} {f g : X ⟶ Y} (w : f.hom.hom = g.hom.hom) : f = g :=
-  Comon_.Hom.ext _ _ (Mon_.Hom.ext _ _ w)
+  Comon_.Hom.ext (Mon_.Hom.ext w)
 
 @[simp] theorem id_hom' (M : Bimon_ C) : Comon_.Hom.hom (𝟙 M) = 𝟙 M.X := rfl
 
@@ -68,6 +68,7 @@ def toComon_ : Bimon_ C ⥤ Comon_ C := (Mon_.forgetMonoidal C).toOplaxMonoidalF
 @[simp]
 theorem toComon_forget : toComon_ C ⋙ Comon_.forget C = forget C := rfl
 
+set_option maxHeartbeats 400000 in
 /-- The object level part of the forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
   X := (toComon_ C).obj M

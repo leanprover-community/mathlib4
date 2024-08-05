@@ -2806,9 +2806,7 @@ theorem mem_toList {a : α} {s : Finset α} : a ∈ s.toList ↔ a ∈ s :=
 theorem toList_eq_nil {s : Finset α} : s.toList = [] ↔ s = ∅ :=
   Multiset.toList_eq_nil.trans val_eq_zero
 
-@[simp]
-theorem empty_toList {s : Finset α} : s.toList.isEmpty ↔ s = ∅ :=
-  List.isEmpty_iff_eq_nil.trans toList_eq_nil
+theorem empty_toList {s : Finset α} : s.toList.isEmpty ↔ s = ∅ := by simp
 
 @[simp]
 theorem toList_empty : (∅ : Finset α).toList = [] :=

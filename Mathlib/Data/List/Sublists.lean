@@ -119,7 +119,7 @@ theorem sublistsAux_eq_bind :
   List.reverseRecOn r
     (by simp [sublistsAux])
     (fun r l ih => by
-      rw [append_bind, ← ih, bind_singleton, sublistsAux, foldl_append]
+      rw [bind_append, ← ih, bind_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
 
 @[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
@@ -177,7 +177,7 @@ theorem length_sublists (l : List α) : length (sublists l) = 2 ^ length l := by
 
 theorem map_pure_sublist_sublists (l : List α) : map pure l <+ sublists l := by
   induction' l using reverseRecOn with l a ih <;> simp only [map, map_append, sublists_concat]
-  · simp only [sublists_nil, sublist_cons]
+  · simp only [sublists_nil, sublist_cons_self]
   exact ((append_sublist_append_left _).2 <|
               singleton_sublist.2 <| mem_map.2 ⟨[], mem_sublists.2 (nil_sublist _), by rfl⟩).trans
           ((append_sublist_append_right _).2 ih)
@@ -411,7 +411,7 @@ theorem range_bind_sublistsLen_perm (l : List α) :
     simp_rw [← List.map_bind, ← cons_append]
     rw [← List.singleton_append, ← List.sublistsLen_zero tl]
     refine Perm.append ?_ (l_ih.map _)
-    rw [List.range_succ, append_bind, bind_singleton,
+    rw [List.range_succ, bind_append, bind_singleton,
       sublistsLen_of_length_lt (Nat.lt_succ_self _), append_nil,
       ← List.bind_map Nat.succ fun n => sublistsLen n tl,
       ← bind_cons 0 _ fun n => sublistsLen n tl, ← range_succ_eq_map]

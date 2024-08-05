@@ -92,7 +92,7 @@ variable {F}
 
 @[ext]
 lemma hom_ext {A B : PointedGaloisObject F} {f g : A ⟶ B} (h : f.val = g.val) : f = g :=
-  Hom.ext f g h
+  Hom.ext h
 
 @[simp]
 lemma id_val (A : PointedGaloisObject F) : 𝟙 A = 𝟙 A.obj :=
