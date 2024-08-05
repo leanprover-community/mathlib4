@@ -137,7 +137,7 @@ This section deals with the conversion between matrices and sesquilinear maps on
 -/
 
 variable [CommSemiring R] [AddCommMonoid N₂] [Module R N₂] [Semiring R₁] [Semiring R₂]
-  [SMulCommClass R R N₂] [Semiring S₁] [Semiring S₂] [Module S₁ N₂] [Module S₂ N₂]
+  [Semiring S₁] [Semiring S₂] [Module S₁ N₂] [Module S₂ N₂]
   [SMulCommClass S₁ R N₂] [SMulCommClass S₂ R N₂] [SMulCommClass S₂ S₁ N₂]
 variable {σ₁ : R₁ →+* S₁} {σ₂ : R₂ →+* S₂}
 variable [Fintype n] [Fintype m]

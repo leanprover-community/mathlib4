@@ -259,6 +259,7 @@ noncomputable def lTensor.equiv :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) :=
   lTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
 
+include hfg hg in
 /-- Tensoring an exact pair on the left gives an exact pair -/
 theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
   rw [exact_iff, ← Submodule.ker_mkQ (p := range (lTensor Q f)),
@@ -364,6 +365,7 @@ noncomputable def rTensor.equiv :
     ((N ⊗[R] Q) ⧸ (LinearMap.range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) :=
   rTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
 
+include hfg hg in
 /-- Tensoring an exact pair on the right gives an exact pair -/
 theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
   rw [exact_iff, ← Submodule.ker_mkQ (p := range (rTensor Q f)),
@@ -385,10 +387,12 @@ variable {M' N' P' : Type*}
     {f' : M' →ₗ[R] N'} {g' : N' →ₗ[R] P'}
     (hfg' : Exact f' g') (hg' : Function.Surjective g')
 
+include hg hg' in
 theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g g') := by
   rw [← lTensor_comp_rTensor, coe_comp]
   exact Function.Surjective.comp (lTensor_surjective _ hg') (rTensor_surjective _ hg)
 
+include hg hg' hfg hfg' in
 /-- Kernel of a product map (right-exactness of tensor product) -/
 theorem TensorProduct.map_ker :
     ker (TensorProduct.map g g') = range (lTensor N f') ⊔ range (rTensor N' f) := by
