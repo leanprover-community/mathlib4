@@ -554,8 +554,8 @@ variable (D)
 noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
   obj P := ⟨J.sheafify P, J.sheafify_isSheaf P⟩
   map η := ⟨J.sheafifyMap η⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_comp _ _
+  map_id _ := Sheaf.Hom.ext <| J.sheafifyMap_id _
+  map_comp _ _ := Sheaf.Hom.ext <| J.sheafifyMap_comp _ _
 
 instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
@@ -571,7 +571,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
     { homEquiv := fun P Q =>
         { toFun := fun e => J.toSheafify P ≫ e.val
           invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
-          left_inv := fun e => Sheaf.Hom.ext _ _ <| (J.sheafifyLift_unique _ _ _ rfl).symm
+          left_inv := fun e => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
           right_inv := fun e => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm

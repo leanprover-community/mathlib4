@@ -79,9 +79,6 @@ theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - 
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
 
-protected theorem ext_iff {p q : FormalMultilinearSeries 𝕜 E F} : p = q ↔ ∀ n, p n = q n :=
-  Function.funext_iff
-
 protected theorem ne_iff {p q : FormalMultilinearSeries 𝕜 E F} : p ≠ q ↔ ∃ n, p n ≠ q n :=
   Function.ne_iff
 

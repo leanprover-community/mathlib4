@@ -279,9 +279,6 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
   rcases w₂ with ⟨⟨_, _, _⟩, _, _⟩
   simp_all
 
-theorem ext_iff {w₁ w₂ : NormalWord d} : w₁ = w₂ ↔ w₁.head = w₂.head ∧ w₁.toList = w₂.toList :=
-  ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ => ext h₁ h₂⟩
-
 open Subgroup.IsComplement
 
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
@@ -320,12 +317,12 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       dsimp
       split_ifs with hep
       · rcases hep with ⟨hnil, rfl⟩
-        rw [head?_eq_head _ hnil]
+        rw [head?_eq_head hnil]
         simp_all
       · push_neg at hep
         by_cases hw : w.toList = []
         · simp [hw, Word.fstIdx]
-        · simp [head?_eq_head _ hw, Word.fstIdx, hep hw]
+        · simp [head?_eq_head hw, Word.fstIdx, hep hw]
 
 theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
     (h : CoprodI.of (φ i w₁.head) • w₁.toWord =

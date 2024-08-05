@@ -375,7 +375,7 @@ See the corresponding section at `AlgebraicGeometry/PrimeSpectrum/Basic`.
 -/
 
 instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (PrimeSpectrum.ext)
+  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
 
 @[simp]
 theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
@@ -391,7 +391,7 @@ instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
 
 instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
-  uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
+  uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 
 end Order
 

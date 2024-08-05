@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Logic.Relation
 
 /-!
 # Special shapes for limits in `Type`.

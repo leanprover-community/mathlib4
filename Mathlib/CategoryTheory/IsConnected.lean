@@ -86,7 +86,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
   obj j := have := Nonempty.intro j
     Discrete.mk (Function.invFun F.obj (F.obj j))
   map {j _} f := have := Nonempty.intro j
-    ⟨⟨congr_arg (Function.invFun F.obj) (Discrete.ext _ _ (Discrete.eq_of_hom (F.map f)))⟩⟩
+    ⟨⟨congr_arg (Function.invFun F.obj) (Discrete.ext (Discrete.eq_of_hom (F.map f)))⟩⟩
 
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
@@ -245,7 +245,7 @@ lemma isConnected_iff_of_equivalence {K : Type u₂} [Category.{v₂} K] (e : J 
 instance isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ where
   iso_constant := fun {α} F X =>
     ⟨NatIso.ofComponents fun Y =>
-      eqToIso (Discrete.ext _ _ (Discrete.eq_of_hom ((Nonempty.some
+      eqToIso (Discrete.ext (Discrete.eq_of_hom ((Nonempty.some
         (IsPreconnected.iso_constant (F.rightOp ⋙ (Discrete.opposite α).functor) (unop X))).app
           (unop Y)).hom))⟩
 

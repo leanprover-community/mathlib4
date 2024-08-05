@@ -75,9 +75,6 @@ variable {m m' : AddContent C}
 @[ext] protected lemma AddContent.ext (h : ∀ s, m s = m' s) : m = m' :=
   DFunLike.ext _ _ h
 
-protected lemma AddContent.ext_iff (m m' : AddContent C) : m = m' ↔ ∀ s, m s = m' s :=
-  DFunLike.ext_iff
-
 @[simp] lemma addContent_empty : m ∅ = 0 := m.empty'
 
 lemma addContent_sUnion (h_ss : ↑I ⊆ C)

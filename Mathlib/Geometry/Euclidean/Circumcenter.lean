@@ -793,7 +793,7 @@ theorem exists_circumsphere_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
     ∃ c : Sphere P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumsphere = c := by
   obtain ⟨r, hr⟩ := exists_circumradius_eq_of_cospherical_subset h hd hc
   obtain ⟨c, hc⟩ := exists_circumcenter_eq_of_cospherical_subset h hd hc
-  exact ⟨⟨c, r⟩, fun sx hsx => Sphere.ext _ _ (hc sx hsx) (hr sx hsx)⟩
+  exact ⟨⟨c, r⟩, fun sx hsx => Sphere.ext (hc sx hsx) (hr sx hsx)⟩
 
 /-- Two n-simplices among cospherical points in an n-dimensional
 subspace have the same circumsphere. -/

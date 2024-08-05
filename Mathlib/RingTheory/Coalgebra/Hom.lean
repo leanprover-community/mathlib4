@@ -167,9 +167,6 @@ protected theorem congr_arg (φ : A →ₗc[R] B) {x y : A} (h : x = y) : φ x =
 theorem ext {φ₁ φ₂ : A →ₗc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
   DFunLike.ext _ _ H
 
-theorem ext_iff {φ₁ φ₂ : A →ₗc[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x = φ₂ x :=
-  DFunLike.ext_iff
-
 @[ext high]
 theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
   coe_linearMap_injective (by ext; assumption)

@@ -217,13 +217,13 @@ theorem star_im (z : ℤ√d) : (star z).im = -z.im :=
   rfl
 
 instance : StarRing (ℤ√d) where
-  star_involutive x := Zsqrtd.ext _ _ rfl (neg_neg _)
+  star_involutive x := Zsqrtd.ext rfl (neg_neg _)
   star_mul a b := by ext <;> simp <;> ring
-  star_add a b := Zsqrtd.ext _ _ rfl (neg_add _ _)
+  star_add a b := Zsqrtd.ext rfl (neg_add _ _)
 
 -- Porting note: proof was `by decide`
 instance nontrivial : Nontrivial (ℤ√d) :=
-  ⟨⟨0, 1, (Zsqrtd.ext_iff 0 1).not.mpr (by simp)⟩⟩
+  ⟨⟨0, 1, Zsqrtd.ext_iff.not.mpr (by simp)⟩⟩
 
 @[simp]
 theorem natCast_re (n : ℕ) : (n : ℤ√d).re = n :=
@@ -330,7 +330,7 @@ theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) 
     IsCoprime b.re b.im := by
   apply isCoprime_of_dvd
   · rintro ⟨hre, him⟩
-    obtain rfl : b = 0 := Zsqrtd.ext b 0 hre him
+    obtain rfl : b = 0 := Zsqrtd.ext hre him
     rw [zero_dvd_iff] at hdvd
     simp [hdvd, zero_im, zero_re, not_isCoprime_zero_zero] at hcoprime
   · rintro z hz - hzdvdu hzdvdv
@@ -883,7 +883,7 @@ instance : OrderedRing (ℤ√d) := by infer_instance
 end
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
-  refine ⟨fun ha => (Zsqrtd.ext_iff _ _).mpr ?_, fun h => by rw [h, norm_zero]⟩
+  refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
   by_cases h : 0 ≤ d

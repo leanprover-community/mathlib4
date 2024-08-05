@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
 
-import Mathlib.Data.List.Range
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.List.Defs
+import Mathlib.Data.Set.Function
 
 /-!
 # iterate

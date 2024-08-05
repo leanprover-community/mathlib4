@@ -798,8 +798,7 @@ theorem ext {n : ℕ} {s1 s2 : Simplex k P n} (h : ∀ i, s1.points i = s2.point
   exact h i
 
 /-- Two simplices are equal if and only if they have the same points. -/
-theorem ext_iff {n : ℕ} (s1 s2 : Simplex k P n) : s1 = s2 ↔ ∀ i, s1.points i = s2.points i :=
-  ⟨fun h _ => h ▸ rfl, ext⟩
+add_decl_doc Affine.Simplex.ext_iff
 
 /-- A face of a simplex is a simplex with the given subset of
 points. -/

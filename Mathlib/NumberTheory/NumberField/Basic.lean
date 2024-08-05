@@ -106,9 +106,6 @@ lemma coe_eq_algebraMap (x : 𝓞 K) : (x : K) = algebraMap _ _ x := rfl
 @[ext] theorem ext {x y : 𝓞 K} (h : (x : K) = (y : K)) : x = y :=
   Subtype.ext h
 
-theorem ext_iff {x y : 𝓞 K} : x = y ↔ (x : K) = (y : K) :=
-  Subtype.ext_iff
-
 @[norm_cast]
 theorem eq_iff {x y : 𝓞 K} : (x : K) = (y : K) ↔ x = y :=
   NumberField.RingOfIntegers.ext_iff.symm

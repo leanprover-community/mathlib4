@@ -305,11 +305,10 @@ theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p
 theorem coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P) :=
   SetLike.coe_injective
 
-@[ext]
+@[ext (iff := false)]
 theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
--- Porting note: removed `simp`, proof is `simp only [SetLike.ext'_iff]`
 protected theorem ext_iff (s₁ s₂ : AffineSubspace k P) : s₁ = s₂ ↔ (s₁ : Set P) = s₂ :=
   SetLike.ext'_iff
 

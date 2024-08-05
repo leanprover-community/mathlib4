@@ -198,11 +198,6 @@ instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
 theorem ext {f g : A →ₛₙₐ[φ] B} (h : ∀ x, f x = g x) : f = g :=
   coe_injective <| funext h
 
-theorem ext_iff {f g : A →ₛₙₐ[φ] B} : f = g ↔ ∀ x, f x = g x :=
-  ⟨by
-    rintro rfl x
-    rfl, ext⟩
-
 theorem congr_fun {f g : A →ₛₙₐ[φ] B} (h : f = g) (x : A) : f x = g x :=
   h ▸ rfl
 

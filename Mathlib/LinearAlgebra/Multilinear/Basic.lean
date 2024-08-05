@@ -138,9 +138,6 @@ theorem coe_inj {f g : MultilinearMap R M₁ M₂} : (f : (∀ i, M₁ i) → M�
 theorem ext {f f' : MultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
   DFunLike.ext _ _ H
 
-protected theorem ext_iff {f g : MultilinearMap R M₁ M₂} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem mk_coe (f : MultilinearMap R M₁ M₂) (h₁ h₂) :
     (⟨f, h₁, h₂⟩ : MultilinearMap R M₁ M₂) = f := rfl

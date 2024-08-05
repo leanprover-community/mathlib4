@@ -107,7 +107,7 @@ variable {X Y Z : Comma L R} {f : X ⟶ Y} {g : Y ⟶ Z}
 -- was not triggered automatically
 @[ext]
 lemma hom_ext (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) : f = g :=
-  CommaMorphism.ext _ _ h₁ h₂
+  CommaMorphism.ext h₁ h₂
 
 @[simp]
 theorem id_left : (𝟙 X : CommaMorphism X X).left = 𝟙 X.left :=

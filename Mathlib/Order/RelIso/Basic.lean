@@ -119,9 +119,6 @@ theorem coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
 theorem ext ⦃f g : r →r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : r →r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 /-- Identity map is a relation homomorphism. -/
 @[refl, simps]
 protected def id (r : α → α → Prop) : r →r r :=
@@ -250,9 +247,6 @@ theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
 @[ext]
 theorem ext ⦃f g : r ↪r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
-
-theorem ext_iff {f g : r ↪r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Identity map is a relation embedding. -/
 @[refl, simps!]
@@ -581,9 +575,6 @@ theorem coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
 @[ext]
 theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : r ≃r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Inverse map of a relation isomorphism is a relation isomorphism. -/
 protected def symm (f : r ≃r s) : s ≃r r :=

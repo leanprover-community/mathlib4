@@ -155,9 +155,6 @@ variable (f : α →ₙ+* β) {x y : α}
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
 
-protected theorem ext_iff {f g : α →ₙ+* β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
   ext fun _ => rfl
@@ -454,9 +451,6 @@ theorem coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=
 @[ext]
 theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
-
-protected theorem ext_iff {f g : α →+* β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 @[simp]
 theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
