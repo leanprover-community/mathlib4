@@ -142,7 +142,7 @@ theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
 @[simp]
-lemma eq_zero_iff_symm_eq_one {i : I} : σ i = 1 ↔ i = 0 := by
+lemma symm_eq_one_iff_eq_zero {i : I} : σ i = 1 ↔ i = 0 := by
   apply Iff.intro
   · intro h
     rw [← unitInterval.symm_zero] at h
@@ -151,7 +151,7 @@ lemma eq_zero_iff_symm_eq_one {i : I} : σ i = 1 ↔ i = 0 := by
     rw [h, symm_zero]
 
 @[simp]
-lemma eq_one_iff_symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
+lemma symm_eq_zero_iff_eq_one {i : I} : σ i = 0 ↔ i = 1 := by
   apply Iff.intro
   · intro h
     rw [← unitInterval.symm_one] at h
@@ -159,39 +159,39 @@ lemma eq_one_iff_symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
   · intro h
     rw [h, symm_one]
 
-theorem le_symm_if_le_symm {i j : I} (h : i ≤ σ j) : j ≤ σ i := by
+theorem le_symm_of_le_symm {i j : I} (h : i ≤ σ j) : j ≤ σ i := by
   rw [Subtype.mk_le_mk, coe_symm_eq] at h ⊢
   apply le_sub_left_of_add_le
   rw [add_comm]
   exact add_le_of_le_sub_left h
 
 theorem le_symm_iff_le_symm {i j : I} : i ≤ σ j ↔ j ≤ σ i :=
-  ⟨le_symm_if_le_symm, le_symm_if_le_symm⟩
+  ⟨le_symm_of_le_symm, le_symm_of_le_symm⟩
 
-theorem symm_le_if_symm_le {i j : I} (h : σ i ≤ j) : σ j ≤ i := by
+theorem symm_le_of_symm_le {i j : I} (h : σ i ≤ j) : σ j ≤ i := by
   rw [Subtype.mk_le_mk, coe_symm_eq] at h ⊢
   rw [sub_le_iff_le_add, add_comm, ← sub_le_iff_le_add]
   exact h
 
 theorem symm_le_iff_symm_le {i j : I} : σ i ≤ j ↔ σ j ≤ i :=
-  ⟨symm_le_if_symm_le, symm_le_if_symm_le⟩
+  ⟨symm_le_of_symm_le, symm_le_of_symm_le⟩
 
-theorem lt_symm_if_lt_symm {i j : I} (h : i < σ j) : j < σ i := by
+theorem lt_symm_of_lt_symm {i j : I} (h : i < σ j) : j < σ i := by
   rw [Subtype.mk_lt_mk, coe_symm_eq] at h ⊢
   apply lt_sub_left_of_add_lt
   rw [add_comm]
   exact add_lt_of_lt_sub_left h
 
 theorem lt_symm_iff_lt_symm {i j : I} : i < σ j ↔ j < σ i :=
-  ⟨lt_symm_if_lt_symm, lt_symm_if_lt_symm⟩
+  ⟨lt_symm_of_lt_symm, lt_symm_of_lt_symm⟩
 
-theorem symm_lt_if_symm_lt {i j : I} (h : σ i < j) : σ j < i := by
+theorem symm_lt_of_symm_lt {i j : I} (h : σ i < j) : σ j < i := by
   rw [Subtype.mk_lt_mk, coe_symm_eq] at h ⊢
   rw [sub_lt_iff_lt_add, add_comm, ← sub_lt_iff_lt_add]
   exact h
 
 theorem symm_lt_iff_symm_lt {i j : I} : σ i < j ↔ σ j < i :=
-  ⟨symm_lt_if_symm_lt, symm_lt_if_symm_lt⟩
+  ⟨symm_lt_of_symm_lt, symm_lt_of_symm_lt⟩
 
 instance : ConnectedSpace I :=
   Subtype.connectedSpace ⟨nonempty_Icc.mpr zero_le_one, isPreconnected_Icc⟩
