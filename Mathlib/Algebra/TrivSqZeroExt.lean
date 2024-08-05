@@ -702,7 +702,7 @@ end Inv
 
 section DivisionSemiring
 variable {R : Type u} {M : Type v}
-variable [DivisionSemiring R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [DivisionSemiring R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M]
 
 protected theorem inv_inl (r : R) :
     (inl r)⁻¹ = (inl (r⁻¹ : R) : tsze R M) := by
@@ -724,17 +724,19 @@ protected theorem inv_zero : (0 : tsze R M)⁻¹ = (0 : tsze R M) := by
 protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
   rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
-protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
-  ext
-  · rw [fst_mul, fst_inv, fst_one, mul_inv_cancel hx]
-  · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_comm, smul_smul, mul_inv_cancel hx, one_smul,
-      fst_inv, add_left_neg]
-
 protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
   ext
   · rw [fst_mul, fst_inv, inv_mul_cancel hx, fst_one]
   · rw [snd_mul, snd_inv, snd_one, smul_neg, op_smul_op_smul, inv_mul_cancel hx, op_one, one_smul,
       fst_inv, add_right_neg]
+
+variable [SMulCommClass R Rᵐᵒᵖ M]
+
+protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
+  ext
+  · rw [fst_mul, fst_inv, fst_one, mul_inv_cancel hx]
+  · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_comm, smul_smul, mul_inv_cancel hx, one_smul,
+      fst_inv, add_left_neg]
 
 protected theorem mul_inv_rev (a b : tsze R M) :
     (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
@@ -763,7 +765,7 @@ end DivisionSemiring
 
 section DivisionRing
 variable {R : Type u} {M : Type v}
-variable [DivisionRing R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [DivisionRing R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M]
 
 protected theorem inv_neg {x : tsze R M} : (-x)⁻¹ = -(x⁻¹) := by
   ext <;> simp [inv_neg]

@@ -339,7 +339,7 @@ lemma eq_desc (f : homotopyCofiber φ ⟶ K) (hc : ∀ j, ∃ i, c.Rel i j) :
 
 end
 
-lemma descSigma_ext_iff {K : HomologicalComplex C c}
+lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     (x y : Σ (α : G ⟶ K), Homotopy (φ ≫ α) 0) :
     x = y ↔ x.1 = y.1 ∧ (∀ (i j : ι) (_ : c.Rel j i), x.2.hom i j = y.2.hom i j) := by
   constructor

@@ -30,7 +30,7 @@ open Set Function
 
 noncomputable section
 
-variable {ι X : Type*} [TopologicalSpace X] [NormalSpace X]
+variable {ι X : Type*} [TopologicalSpace X]
 
 namespace ShrinkingLemma
 
@@ -154,7 +154,8 @@ theorem le_chainSup {c : Set (PartialRefinement u s)} (hc : IsChain (· ≤ ·) 
 
 /-- If `s` is a closed set, `v` is a partial refinement, and `i` is an index such that
 `i ∉ v.carrier`, then there exists a partial refinement that is strictly greater than `v`. -/
-theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i ∉ v.carrier) :
+theorem exists_gt [NormalSpace X] (v : PartialRefinement u s) (hs : IsClosed s) (i : ι)
+    (hi : i ∉ v.carrier) :
     ∃ v' : PartialRefinement u s, v < v' := by
   have I : (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) ⊆ v i := by
     simp only [subset_def, mem_inter_iff, mem_iInter, and_imp]
@@ -193,7 +194,7 @@ end ShrinkingLemma
 
 open ShrinkingLemma
 
-variable {u : ι → Set X} {s : Set X}
+variable {u : ι → Set X} {s : Set X} [NormalSpace X]
 
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new open cover so that the closure of each new open set is contained in the
