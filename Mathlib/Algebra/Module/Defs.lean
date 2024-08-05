@@ -72,7 +72,7 @@ instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
 
-instance AddCommMonoid.natModule : Module ℕ M where
+instance AddCommGroup.toNatModule : Module ℕ M where
   one_smul := one_nsmul
   mul_smul m n a := mul_nsmul' a m n
   smul_add n a b := nsmul_add a b n
@@ -190,7 +190,7 @@ section AddCommGroup
 
 variable (R M) [Semiring R] [AddCommGroup M]
 
-instance AddCommGroup.intModule : Module ℤ M where
+instance AddCommGroup.toIntModule : Module ℤ M where
   one_smul := one_zsmul
   mul_smul m n a := mul_zsmul a m n
   smul_add n a b := zsmul_add a b n
@@ -315,7 +315,7 @@ def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
   toFun f := ⟨Module.compHom S f, SMul.comp.isScalarTower _⟩
   invFun := fun ⟨_, _⟩ ↦ RingHom.smulOneHom
   left_inv f := RingHom.ext fun r ↦ mul_one (f r)
-  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext _ _ <| funext₂ <| smul_one_smul S
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext <| funext₂ <| smul_one_smul S
 
 section AddCommMonoid
 
@@ -350,7 +350,7 @@ theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) : @SMul.smul ℕ 
 
 /-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `AddCommMonoid`
 should normally have exactly one `ℕ`-module structure by design. -/
-def AddCommMonoid.natModule.unique : Unique (Module ℕ M) where
+def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := by infer_instance
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
@@ -391,7 +391,7 @@ theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ 
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
 should normally have exactly one `ℤ`-module structure by design. -/
-def AddCommGroup.intModule.unique : Unique (Module ℤ M) where
+def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
   default := by infer_instance
   uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
 

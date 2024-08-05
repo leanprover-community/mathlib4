@@ -195,8 +195,6 @@ namespace Kernel
 @[ext]
 theorem ext {η : Kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
 
-protected theorem ext_iff {η : Kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
-
 theorem ext_iff' {η : Kernel α β} :
     κ = η ↔ ∀ a s, MeasurableSet s → κ a s = η a s := by
   simp_rw [Kernel.ext_iff, Measure.ext_iff]

@@ -60,9 +60,6 @@ namespace AList
 theorem ext : ∀ {s t : AList β}, s.entries = t.entries → s = t
   | ⟨l₁, h₁⟩, ⟨l₂, _⟩, H => by congr
 
-protected theorem ext_iff {s t : AList β} : s = t ↔ s.entries = t.entries :=
-  ⟨congr_arg _, ext⟩
-
 instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fun xs ys => by
   rw [AList.ext_iff]; infer_instance
 

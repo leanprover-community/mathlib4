@@ -201,7 +201,7 @@ lemma ιTensorObj₃_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f�
     ← id_tensorHom, ← id_tensorHom, ← MonoidalCategory.tensor_comp_assoc, ι_tensorHom,
     ← MonoidalCategory.tensor_comp_assoc, id_comp, comp_id]
 
-@[ext]
+@[ext (iff := false)]
 lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (hi : i₁ + i₂ + i₃ = j),
@@ -245,7 +245,7 @@ lemma ιTensorObj₃'_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f
     ← tensorHom_id, ← tensorHom_id, ← MonoidalCategory.tensor_comp_assoc, id_comp,
     ι_tensorHom, ← MonoidalCategory.tensor_comp_assoc, comp_id]
 
-@[ext]
+@[ext (iff := false)]
 lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X₃ j ⟶ A)
     [H : HasGoodTensor₁₂Tensor X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
@@ -309,7 +309,7 @@ abbrev _root_.CategoryTheory.GradedObject.HasLeftTensor₃ObjExt (j : I) := Pres
 variable {X₁ X₂ X₃}
 variable [HasTensor X₂ X₃] [HasTensor X₁ (tensorObj X₂ X₃)]
 
-@[ext]
+@[ext (iff := false)]
 lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C)
     (f g : Z ⊗ tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
@@ -356,7 +356,7 @@ abbrev _root_.CategoryTheory.GradedObject.HasTensor₄ObjExt :=
 
 variable {X₁ X₂ X₃ X₄}
 
-@[ext]
+@[ext (iff := false)]
 lemma tensorObj₄_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ (tensorObj X₃ X₄)) j ⟶ A)
     [HasGoodTensorTensor₂₃ X₂ X₃ X₄]
     [H : HasTensor₄ObjExt X₁ X₂ X₃ X₄]
