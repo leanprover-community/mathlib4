@@ -697,7 +697,7 @@ lemma ContextFreeGrammar.mem_union_language_iff_mem_or_mem :
 end union_aux
 
 /-- The class of context-free languages is closed under union. -/
-theorem Language.IsContextFree.union (L₁ L₂ : Language T) :
+theorem Language.IsContextFree.union {L₁ L₂ : Language T} :
     L₁.IsContextFree → L₂.IsContextFree → (L₁ + L₂).IsContextFree := by
   rintro ⟨g₁, rfl⟩ ⟨g₂, rfl⟩
   exact ⟨ContextFreeGrammar.union g₁ g₂, Set.ext (fun _ =>
