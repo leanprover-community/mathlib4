@@ -366,7 +366,15 @@ lemma height_eq_top_iff (x : α) :
     obtain ⟨p, hlast, hp⟩ := h (n+1)
     exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
 
-/-- Another characterization of height, based on the supremum of the heights of elements below -/
+/--
+The coheight of an elemnet is infinite if there exist series of arbitrary length ending in that
+element.
+-/
+lemma coheight_eq_top_iff (x : α) :
+    coheight x = ⊤ ↔ (∀ n, ∃ p : LTSeries αᵒᵈ, p.last = x ∧ p.length = n) :=
+  height_eq_top_iff (α := αᵒᵈ) x
+
+/-- Another characterization of height, based on the supremum of the heights of elements below. -/
 lemma height_eq_isup_lt_height (x : α) :
     height x = ⨆ (y : α) (_  : y < x), height y + 1 := by
   unfold height
@@ -385,6 +393,12 @@ lemma height_eq_isup_lt_height (x : α) :
     apply le_iSup_of_le ⟨p.snoc x (hp ▸ hyx), by simp⟩
     simp
 
+/--
+Another characterization of coheight, based on the supremum of the coheights of elements above.
+-/
+lemma coheight_eq_isup_lt_height (x : α) :
+    coheight x = ⨆ (y : α) (_  : x < y), coheight y + 1 :=
+  height_eq_isup_lt_height (α := αᵒᵈ) x
 
 lemma height_le_coe_iff (x : α) (n : ℕ) :
     height x ≤ n ↔ (∀ y, y < x → height y < n) := by
@@ -393,8 +407,15 @@ lemma height_le_coe_iff (x : α) (n : ℕ) :
   congr! 2 with y _
   cases height y; simp; norm_cast
 
+lemma coheight_le_coe_iff (x : α) (n : ℕ) :
+    coheight x ≤ n ↔ (∀ y, x < y → coheight y < n) :=
+  height_le_coe_iff (α := αᵒᵈ) x n
+
 lemma height_eq_zero_iff (x : α) : height x = 0 ↔ (∀ y, ¬(y < x)) := by
   simpa using height_le_coe_iff x 0
+
+lemma coheight_eq_zero_iff (x : α) : coheight x = 0 ↔ (∀ y, ¬(x < y)) :=
+  height_eq_zero_iff (α := αᵒᵈ) x
 
 lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
     n < height x ↔ (∃ y, y < x ∧ height y = n) := by
@@ -413,9 +434,12 @@ lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
   · intro ⟨y, hyx, hy⟩
     exact hy ▸ height_strictMono y x hyx hfin
 
+lemma coe_lt_coheight_iff (x : α) (n : ℕ) (hfin : coheight x < ⊤):
+    n < coheight x ↔ (∃ y, x < y ∧ coheight y = n) :=
+  coe_lt_height_iff (α := αᵒᵈ) x n hfin
 
-lemma height_eq_coe_add_one_iff (x : α) (n : ℕ)  :
-    height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y, y < x → height y ≤ n) := by
+lemma height_eq_coe_add_one_iff (x : α) (n : ℕ)  : height x = n + 1 ↔
+    height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y, y < x → height y ≤ n) := by
   wlog hfin : height x < ⊤
   · simp_all
     exact ne_of_beq_false rfl
@@ -426,6 +450,10 @@ lemma height_eq_coe_add_one_iff (x : α) (n : ℕ)  :
   · congr! 1
     · exact coe_lt_height_iff x n hfin
     · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff x (n+1)
+
+lemma coheight_eq_coe_add_one_iff (x : α) (n : ℕ) : coheight x = n + 1 ↔
+    coheight x < ⊤ ∧ (∃ y > x, coheight y = n) ∧ (∀ y, x < y → coheight y ≤ n) :=
+  height_eq_coe_add_one_iff (α := αᵒᵈ) x n
 
 lemma height_eq_coe_iff (x : α) (n : ℕ) : height x = n ↔
     height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y, y < x → height y < n) := by
@@ -442,13 +470,21 @@ lemma height_eq_coe_iff (x : α) (n : ℕ) : height x = n ↔
     rename_i y _
     cases height y <;> simp; norm_cast; omega
 
+lemma coheight_eq_coe_iff (x : α) (n : ℕ) : coheight x = n ↔
+    coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y, y > x → coheight y < n) :=
+  height_eq_coe_iff (α := αᵒᵈ) x n
+
 /-- The elements of height zero are the minimal elements. -/
-lemma mem_minimal_univ_iff_height_eq_zero (a : α) :
+lemma mem_minimals_univ_iff_height_eq_zero (a : α) :
     a ∈ minimals (·≤·) Set.univ ↔ height a = 0 := by
   simp [mem_minimals_iff_forall_lt_not_mem, height_eq_zero_iff]
 
-/-- The elements of height n are the minimial elements among those of height `≥ n`. -/
-lemma mem_minimal_le_height_iff_height (a : α) (n : ℕ) :
+lemma mem_maximals_univ_iff_coheight_eq_zero (a : α) :
+    a ∈ maximals (·≤·) Set.univ ↔ coheight a = 0 :=
+  mem_minimals_univ_iff_height_eq_zero (α := αᵒᵈ) a
+
+/-- The elements of height `n` are the minimial elements among those of height `≥ n`. -/
+lemma mem_minimals_le_height_iff_height (a : α) (n : ℕ) :
     a ∈ minimals (·≤·) { y | n ≤ height y } ↔ height a = n := by -- TODO: swap statement
   by_cases hfin : height a < ⊤
   · simp only [mem_minimals_iff_forall_lt_not_mem, Set.mem_setOf_eq, not_le]
@@ -470,6 +506,10 @@ lemma mem_minimal_le_height_iff_height (a : α) (n : ℕ) :
     use p.eraseLast.last, RelSeries.eraseLast_last_rel_last _ (by omega)
     simpa [hp] using length_le_height_last p.eraseLast
 
+/-- The elements of coheight `n` are the maximal elements among those of coheight `≥ n`. -/
+lemma mem_maximals_le_coheight_iff_coheight (a : α) (n : ℕ) :
+    a ∈ maximals (·≤·) { y | n ≤ coheight y } ↔ coheight a = n :=
+  mem_minimals_le_height_iff_height (α := αᵒᵈ) a n
 
 end height
 
@@ -559,10 +599,28 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), (height a : WithBot 
       exact height_le _ _ (fun p _ ↦ le_iSup_of_le p (le_refl _))
 
 /--
+The Krull dimension is the supremum of the element's coheights.
+
+If `α` is `Nonempty`, then `krullDim_eq_iSup_coheight_of_nonempty`, with the coercion from
+`ℕ∞` to `WithBot ℕ∞` outside the supremum, can be more convenient.
+-/
+lemma krullDim_eq_iSup_coheight : krullDim α = ⨆ (a : α), (coheight a : WithBot ℕ∞) := by
+  rw [← krullDim_orderDual]
+  exact krullDim_eq_iSup_height (α := αᵒᵈ)
+
+/--
 The Krull dimension is the supremum of the element's heights. Variant of `krullDim_eq_iSup_height`.
 -/
 lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ⨆ (a : α), height a := by
   rw [krullDim_eq_iSup_height, WithBot.coe_iSup_OrderTop]
+
+/--
+The Krull dimension is the supremum of the element's coheights.
+Variant of `krullDim_eq_iSup_coheight`.
+-/
+lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] : krullDim α = ⨆ (a : α), coheight a := by
+  rw [← krullDim_orderDual]
+  exact krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
 
 @[simp] -- not as useful as it looks, due to the coe on the left
 lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := by
@@ -571,6 +629,11 @@ lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := 
   apply le_antisymm
   · exact height_le _ _ (fun p _ ↦ le_iSup_of_le p (le_refl _))
   · exact iSup_le (fun p => le_height_of_last_le ⊤ p le_top)
+
+@[simp] -- not as useful as it looks, due to the coe on the left
+lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α := by
+  rw [← krullDim_orderDual]
+  exact height_top_eq_krullDim (α := αᵒᵈ)
 
 end krullDim
 
