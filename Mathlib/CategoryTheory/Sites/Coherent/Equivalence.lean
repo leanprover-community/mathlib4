@@ -22,19 +22,18 @@ open GrothendieckTopology
 namespace Equivalence
 
 variable {D : Type*} [Category D]
-variable (e : C ≌ D)
 
 section Coherent
 
 variable [Precoherent C]
 
 /-- `Precoherent` is preserved by equivalence of categories. -/
-theorem precoherent : Precoherent D := e.inverse.reflects_precoherent
+theorem precoherent (e : C ≌ D) : Precoherent D := e.inverse.reflects_precoherent
 
 instance [EssentiallySmall C] :
     Precoherent (SmallModel C) := (equivSmallModel C).precoherent
 
-instance : haveI := precoherent e
+instance (e : C ≌ D) : haveI := precoherent e
     e.inverse.IsDenseSubsite (coherentTopology D) (coherentTopology C) where
   functorPushforward_mem_iff := by
     rw [coherentTopology.eq_induced e.inverse]
@@ -46,7 +45,7 @@ variable (A : Type*) [Category A]
 Equivalent precoherent categories give equivalent coherent toposes.
 -/
 @[simps!]
-def sheafCongrPrecoherent : haveI := e.precoherent
+def sheafCongrPrecoherent (e : C ≌ D) : haveI := e.precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A := e.sheafCongr _ _ _
 
 open Presheaf
@@ -54,7 +53,7 @@ open Presheaf
 /--
 The coherent sheaf condition can be checked after precomposing with the equivalence.
 -/
-theorem precoherent_isSheaf_iff (F : Cᵒᵖ ⥤ A) : haveI := e.precoherent
+theorem precoherent_isSheaf_iff (e : C ≌ D) (F : Cᵒᵖ ⥤ A) : haveI := e.precoherent
     IsSheaf (coherentTopology C) F ↔ IsSheaf (coherentTopology D) (e.inverse.op ⋙ F) := by
   refine ⟨fun hF ↦ ((e.sheafCongrPrecoherent A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
   rw [isSheaf_of_iso_iff (P' := e.functor.op ⋙ e.inverse.op ⋙ F)]
@@ -77,12 +76,12 @@ section Regular
 variable [Preregular C]
 
 /-- `Preregular` is preserved by equivalence of categories. -/
-theorem preregular : Preregular D := e.inverse.reflects_preregular
+theorem preregular (e : C ≌ D) : Preregular D := e.inverse.reflects_preregular
 
 instance [EssentiallySmall C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular
 
-instance : haveI := preregular e
+instance (e : C ≌ D) : haveI := preregular e
     e.inverse.IsDenseSubsite (regularTopology D) (regularTopology C) where
   functorPushforward_mem_iff := by
     rw [regularTopology.eq_induced e.inverse]
@@ -94,7 +93,7 @@ variable (A : Type*) [Category A]
 Equivalent preregular categories give equivalent regular toposes.
 -/
 @[simps!]
-def sheafCongrPreregular : haveI := e.preregular
+def sheafCongrPreregular (e : C ≌ D) : haveI := e.preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A := e.sheafCongr _ _ _
 
 open Presheaf
@@ -102,7 +101,7 @@ open Presheaf
 /--
 The regular sheaf condition can be checked after precomposing with the equivalence.
 -/
-theorem preregular_isSheaf_iff (F : Cᵒᵖ ⥤ A) : haveI := e.preregular
+theorem preregular_isSheaf_iff (e : C ≌ D) (F : Cᵒᵖ ⥤ A) : haveI := e.preregular
     IsSheaf (regularTopology C) F ↔ IsSheaf (regularTopology D) (e.inverse.op ⋙ F) := by
   refine ⟨fun hF ↦ ((e.sheafCongrPreregular A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
   rw [isSheaf_of_iso_iff (P' := e.functor.op ⋙ e.inverse.op ⋙ F)]

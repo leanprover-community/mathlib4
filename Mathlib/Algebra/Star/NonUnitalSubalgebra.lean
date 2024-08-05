@@ -685,7 +685,7 @@ lemma adjoin_eq_span (s : Set A) :
   rw [adjoin_toNonUnitalSubalgebra, NonUnitalAlgebra.adjoin_eq_span]
 
 @[simp]
-lemma span_eq_toSubmodule (s : NonUnitalStarSubalgebra R A) :
+lemma span_eq_toSubmodule {R} [CommSemiring R] [Module R A] (s : NonUnitalStarSubalgebra R A) :
     Submodule.span R (s : Set A) = s.toSubmodule := by
   simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
 

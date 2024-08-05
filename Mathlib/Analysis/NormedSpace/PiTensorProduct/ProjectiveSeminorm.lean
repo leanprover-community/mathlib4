@@ -39,7 +39,7 @@ universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]
 variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
-variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)]
 variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
@@ -80,6 +80,8 @@ theorem projectiveSeminormAux_smul (p : FreeAddMonoid (𝕜 × Π i, E i)) (a : 
   ext x
   simp only [Function.comp_apply, norm_mul, smul_eq_mul]
   rw [mul_assoc]
+
+variable [∀ i, NormedSpace 𝕜 (E i)]
 
 theorem bddBelow_projectiveSemiNormAux (x : ⨂[𝕜] i, E i) :
     BddBelow (Set.range (fun (p : lifts x) ↦ projectiveSeminormAux p.1)) := by

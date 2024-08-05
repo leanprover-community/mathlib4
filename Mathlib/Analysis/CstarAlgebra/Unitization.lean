@@ -76,7 +76,7 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
 
 section CStarProperty
 
-variable [StarRing 𝕜] [CstarRing 𝕜] [StarModule 𝕜 E]
+variable [StarRing 𝕜] [StarModule 𝕜 E]
 variable {E}
 
 /-- This is the key lemma used to establish the instance `Unitization.instCstarRing`
@@ -122,6 +122,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     simp only [smul_smul, smul_mul_assoc, ← add_assoc, ← mul_assoc, mul_smul_comm]
 
 variable {𝕜}
+variable [CstarRing 𝕜]
 
 /-- The norm on `Unitization 𝕜 E` satisfies the C⋆-property -/
 instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
