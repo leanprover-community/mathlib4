@@ -394,22 +394,132 @@ theorem span_constr {s : Set E} {f : s → F} (h0 : (h : 0 ∈ s) → f ⟨0, h�
     (hadd : ∀ x y : s, (h : x.1 + y.1 ∈ s) → f ⟨x.1 + y.1, h⟩ = f x + f y)
     (hsmul : ∀ (x : s) (t : ℝ), (h : t • x.1 ∈ s) → f ⟨t • x.1, h⟩ = t • (f x)) :
     ∃ g : span ℝ s →ₗ[ℝ] F, ∀ x : s, g ⟨x.1, subset_span x.2⟩ = f x := by
+  have base : ∃ (ι : Type u_1) (b : Basis ι ℝ (span ℝ s)), ∀ i, (b i).1 ∈ s := by
+    let u := (linearIndependent_empty ℝ E).extend (empty_subset s)
+    let v : u → E := Subtype.val
+    have liv := (linearIndependent_empty ℝ E).linearIndependent_extend (empty_subset s)
+    have uss : u ⊆ s := (linearIndependent_empty ℝ E).extend_subset (empty_subset s)
+    have rv : range v ⊆ s := by
+      rw [Subtype.range_val_subtype]
+      exact (linearIndependent_empty ℝ E).extend_subset (empty_subset s)
+    have sv : (⊤ : Submodule ℝ (span ℝ s)) ≤ span ℝ ((span ℝ s).subtype ⁻¹' (range v)) := by
+      rw [Subtype.range_val_subtype, span_preimage_eq]
+      have : span ℝ {x | x ∈ u} = span ℝ s := by sorry
+      rw [this, comap_subtype_self]
+      · sorry
+      · apply subset_trans ((linearIndependent_empty ℝ E).extend_subset (empty_subset s))
+        intro x hx
+        use ⟨x, subset_span hx⟩
+        rfl
+    have sv : (⊤ : Submodule ℝ (span ℝ s)) ≤
+        span ℝ (range (fun x : u ↦ ⟨x.1, subset_span (uss x.2)⟩)) := by
+      convert sv
+      ext x
+      simp only [mem_range, Subtype.exists, coeSubtype, mem_preimage]
+      refine ⟨fun ⟨a, h, ha⟩ ↦ ⟨a, h, ?_⟩, fun ⟨a, h, ha⟩ ↦ ⟨a, h, ?_⟩⟩
+      · rw [← ha]
+      · rw [← Subtype.coe_inj, ← ha]
+    change LinearIndependent (ι := u) ℝ
+      ((span ℝ s).subtype ∘ (fun x ↦ ⟨x.1, subset_span (uss x.2)⟩)) at liv
+    have li : LinearIndependent (ι := u) (M := span ℝ s)
+        ℝ (fun x ↦ ⟨x.1, subset_span (uss x.2)⟩) := liv.of_comp
+    let b := Basis.mk li sv
+    refine ⟨u, b, fun i ↦ ?_⟩
+    apply rv
+    have : Subtype.val '' (range b) ⊆ range v := by
+      simp [b, v]
+      rintro - ⟨y, rfl⟩
+      simp
+    apply this
+    exact ⟨b i, ⟨i, rfl⟩, rfl⟩
+  rcases base with ⟨ι, b, hb⟩
+  let g := b.constr ℝ (fun i ↦ f ⟨b i, hb i⟩)
+  use g
   sorry
 
--- theorem exists_inverse''
---     (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
---     (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
---     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
---   have fini (p : Submodule ℝ E) (hp : FiniteDimensional ℝ p) :
---       ∃ T : F →L[ℝ] E, ∀ y ∈ p, T (φ y) = y := by
---     sorry
---   choose! T hT using fini
---   have eq (p q : Submodule ℝ E) (hp : FiniteDimensional ℝ p) (hq : FiniteDimensional ℝ q) :
---       ∀ y ∈ p ⊓ q, T p (φ y) = T q (φ y) := by sorry
---   let f : (span ℝ (range φ)) →L[ℝ] E :=
---     { toFun := by
---         intro y
---         apply span_induction
---       map_add' := sorry
---       map_smul' := sorry
---       cont := sorry }
+theorem exists_inverse''
+    (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
+    (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
+    ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
+  have fini (p : Submodule ℝ E) (hp : FiniteDimensional ℝ p) :
+      ∃ T : span ℝ (φ '' p) →L[ℝ] p, ∀ y : p, T ⟨φ y, subset_span ⟨y.1, y.2, rfl⟩⟩ = y := by
+    sorry
+  choose! T hT using fini
+  have eq (p q : Submodule ℝ E) (hp : FiniteDimensional ℝ p) (hq : FiniteDimensional ℝ q) :
+      ∀ y : (span ℝ (φ '' p) ⊓ span ℝ (φ '' q) : Submodule ℝ F),
+      (T p (Submodule.inclusion inf_le_left y)).1 =
+        (T q (Submodule.inclusion inf_le_right y)).1 := by sorry
+  let Q : Set F := ⋃ (p : Submodule ℝ E) (_ : FiniteDimensional ℝ p), (span ℝ (φ '' p))
+  let g : span ℝ Q → E := fun y ↦
+    let n := (mem_span_set'.1 y.2).choose
+    let c : Fin n → ℝ := (mem_span_set'.1 y.2).choose_spec.choose
+    let x : Fin n → Q := (mem_span_set'.1 y.2).choose_spec.choose_spec.choose
+    let p := fun i ↦ (mem_iUnion₂.1 (x i).2).choose
+    have hx := fun i ↦ (mem_iUnion₂.1 (x i).2).choose_spec.choose_spec
+    ∑ i : Fin n, c i • (T (p i) ⟨(x i).1, hx i⟩)
+  have gadd : ∀ x y, g (x + y) = g x + g y := by
+    intro x y
+    let nx := (mem_span_set'.1 x.2).choose
+    let cx : Fin nx → ℝ := (mem_span_set'.1 x.2).choose_spec.choose
+    let xx : Fin nx → Q := (mem_span_set'.1 x.2).choose_spec.choose_spec.choose
+    have xe : ∑ i, cx i • (xx i).1 = x := (mem_span_set'.1 x.2).choose_spec.choose_spec.choose_spec
+    let px := fun i ↦ (mem_iUnion₂.1 (xx i).2).choose
+    have hx : ∀ i, (xx i).1 ∈ span ℝ (φ '' (px i)) :=
+      fun i ↦ (mem_iUnion₂.1 (xx i).2).choose_spec.choose_spec
+    let ny := (mem_span_set'.1 y.2).choose
+    let cy : Fin ny → ℝ := (mem_span_set'.1 y.2).choose_spec.choose
+    let xy : Fin ny → Q := (mem_span_set'.1 y.2).choose_spec.choose_spec.choose
+    have ye : ∑ i, cy i • (xy i).1 = y := (mem_span_set'.1 y.2).choose_spec.choose_spec.choose_spec
+    let py := fun i ↦ (mem_iUnion₂.1 (xy i).2).choose
+    have hy : ∀ i, (xy i).1 ∈ span ℝ (φ '' (py i)) :=
+      fun i ↦ (mem_iUnion₂.1 (xy i).2).choose_spec.choose_spec
+    let nxy := (mem_span_set'.1 (x + y).2).choose
+    let cxy : Fin nxy → ℝ := (mem_span_set'.1 (x + y).2).choose_spec.choose
+    let xxy : Fin nxy → Q := (mem_span_set'.1 (x + y).2).choose_spec.choose_spec.choose
+    have xye : ∑ i, cxy i • (xxy i).1 = x + y :=
+      (mem_span_set'.1 (x + y).2).choose_spec.choose_spec.choose_spec
+    let pxy := fun i ↦ (mem_iUnion₂.1 (xxy i).2).choose
+    have hxy : ∀ i, (xxy i).1 ∈ span ℝ (φ '' (pxy i)) :=
+      fun i ↦ (mem_iUnion₂.1 (xxy i).2).choose_spec.choose_spec
+    change ∑ i, cxy i • (T (pxy i) ⟨(xxy i).1, hxy i⟩).1 =
+      ∑ i, cx i • (T (px i) ⟨(xx i).1, hx i⟩).1 + ∑ i, cy i • (T (py i) ⟨(xy i).1, hy i⟩).1
+    have lol1 (i : Fin nxy) : span ℝ (φ '' (pxy i)) ≤ span ℝ (φ '' ↑(⨆ j, pxy j)) := sorry
+    have this (i : Fin nxy) :
+        (T (pxy i) ⟨(xxy i).1, hxy i⟩).1 =
+        (T (⨆ j, pxy j) (Submodule.inclusion (lol1 i) ⟨(xxy i).1, hxy i⟩)).1 := by sorry
+    simp_rw [this]
+    have lol2 (i : Fin nx) : span ℝ (φ '' (px i)) ≤ span ℝ (φ '' ↑(⨆ j, px j)) := sorry
+    have this (i : Fin nx) :
+        (T (px i) ⟨(xx i).1, hx i⟩).1 =
+        (T (⨆ j, px j) (Submodule.inclusion (lol2 i) ⟨(xx i).1, hx i⟩)).1 := by sorry
+    simp_rw [this]
+    have lol3 (i : Fin ny) : span ℝ (φ '' (py i)) ≤ span ℝ (φ '' ↑(⨆ j, py j)) := sorry
+    have this (i : Fin ny) :
+        (T (py i) ⟨(xy i).1, hy i⟩).1 =
+        (T (⨆ j, py j) (Submodule.inclusion (lol3 i) ⟨(xy i).1, hy i⟩)).1 := by sorry
+    simp_rw [this, ← coe_smul, ← _root_.map_smul, ← Submodule.coe_sum, ← map_sum]
+    have lol : span ℝ (φ '' ↑(⨆ j, pxy j)) ≤
+        span ℝ  (φ '' ↑((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))) := sorry
+    have this (x : span ℝ (φ '' ↑(⨆ j, pxy j))) :
+        (T (⨆ j, pxy j) x).1 =
+        (T ((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))
+          (Submodule.inclusion lol x)).1 := sorry
+    rw [this]
+    have lol : span ℝ (φ '' ↑(⨆ j, px j)) ≤
+        span ℝ  (φ '' ↑((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))) := sorry
+    have this (x : span ℝ (φ '' ↑(⨆ j, px j))) :
+        (T (⨆ j, px j) x).1 =
+        (T ((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))
+          (Submodule.inclusion lol x)).1 := sorry
+    rw [this]
+    have lol : span ℝ (φ '' ↑(⨆ j, py j)) ≤
+        span ℝ  (φ '' ↑((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))) := sorry
+    have this (x : span ℝ (φ '' ↑(⨆ j, py j))) :
+        (T (⨆ j, py j) x).1 =
+        (T ((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))
+          (Submodule.inclusion lol x)).1 := sorry
+    rw [this, ← coe_add, ← map_add]
+    congr
+    simp_rw [map_sum, ← Subtype.val_inj, coe_add, Submodule.coe_sum, Submodule.coe_inclusion,
+      coe_smul]
+    rw [xe, ye, xye]
