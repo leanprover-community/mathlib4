@@ -59,7 +59,7 @@ You may want to subscribe to the `mathlib4` stream
 
 * To obtain precompiled `olean` files, run `lake exe cache get`. (Skipping this step means the next step will be very slow.)
 * To build `mathlib4` run `lake build`.
-* To build and run all tests, run `lake test`.
+* To build and run all tests, run `lake test -K weak.linter.setOption=true -K weak.linter.longLine=true -K weak.linter.missingEnd=true`.
 * You can use `lake build Mathlib.Import.Path` to build a particular file, e.g. `lake build Mathlib.Algebra.Group.Defs`.
 * If you added a new file, run the following command to update `Mathlib.lean`
 
