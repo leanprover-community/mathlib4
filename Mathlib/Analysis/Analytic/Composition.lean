@@ -23,7 +23,7 @@ Then `g ∘ f` is obtained by summing all these multilinear functions.
 
 To formalize this, we use compositions of an integer `N`, i.e., its decompositions into
 a sum `i₁ + ... + iₙ` of positive integers. Given such a composition `c` and two formal
-multilinear series `q` and `p`, let `q.comp_along_composition p c` be the above multilinear
+multilinear series `q` and `p`, let `q.compAlongComposition p c` be the above multilinear
 function. Then the `N`-th coefficient in the power series expansion of `g ∘ f` is the sum of these
 terms over all `c : Composition N`.
 
@@ -46,7 +46,7 @@ summability of the norms, this implies the overall convergence.
 ## Implementation details
 
 The main technical difficulty is to write down things. In particular, we need to define precisely
-`q.comp_along_composition p c` and to show that it is indeed a continuous multilinear
+`q.compAlongComposition p c` and to show that it is indeed a continuous multilinear
 function. This requires a whole interface built on the class `Composition`. Once this is set,
 the main difficulty is to reorder the sums, writing the composition of the partial sums as a sum
 over some subset of `Σ n, Composition n`. We need to check that the reordering is a bijection,
@@ -59,7 +59,7 @@ the formal multilinear series representing a function (and also, it holds even w
 convergence of the series is `0`). Instead, we give a direct proof, which amounts to reordering
 double sums in a careful way. The change of variables is a canonical (combinatorial) bijection
 `Composition.sigmaEquivSigmaPi` between `(Σ (a : Composition n), Composition a.length)` and
-`(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocks_fun i))`, and is described
+`(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocksFun i))`, and is described
 in more details below in the paragraph on associativity.
 -/
 
@@ -173,7 +173,7 @@ variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 /-- Given a formal multilinear series `p`, a composition `c` of `n` and a continuous multilinear
 map `f` in `c.length` variables, one may form a continuous multilinear map in `n` variables by
 applying the right coefficient of `p` to each block of the composition, and then applying `f` to
-the resulting vector. It is called `f.comp_along_composition p c`. -/
+the resulting vector. It is called `f.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
     (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) :
     ContinuousMultilinearMap 𝕜 (fun _i : Fin n => E) G where
@@ -205,7 +205,7 @@ variable [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
 /-- Given two formal multilinear series `q` and `p` and a composition `c` of `n`, one may
 form a continuous multilinear map in `n` variables by applying the right coefficient of `p` to each
 block of the composition, and then applying `q c.length` to the resulting vector. It is
-called `q.comp_along_composition p c`. -/
+called `q.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
     ContinuousMultilinearMap 𝕜 (fun _i : Fin n => E) G :=
@@ -218,7 +218,7 @@ theorem compAlongComposition_apply {n : ℕ} (q : FormalMultilinearSeries 𝕜 F
   rfl
 
 /-- Formal composition of two formal multilinear series. The `n`-th coefficient in the composition
-is defined to be the sum of `q.comp_along_composition p c` over all compositions of
+is defined to be the sum of `q.compAlongComposition p c` over all compositions of
 `n`. In other words, this term (as a multilinear function applied to `v_0, ..., v_{n-1}`) is
 `∑'_{k} ∑'_{i₁ + ... + iₖ = n} qₖ (p_{i_1} (...), ..., p_{i_k} (...))`, where one puts all variables
 `v_0, ..., v_{n-1}` in increasing order in the dots.
@@ -287,7 +287,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 
 namespace FormalMultilinearSeries
 
-/-- The norm of `f.comp_along_composition p c` is controlled by the product of
+/-- The norm of `f.compAlongComposition p c` is controlled by the product of
 the norms of the relevant bits of `f` and `p`. -/
 theorem compAlongComposition_bound {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
     (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) (v : Fin n → E) :
@@ -306,7 +306,7 @@ theorem compAlongComposition_bound {n : ℕ} (p : FormalMultilinearSeries 𝕜 E
       rw [← c.blocksFinEquiv.prod_comp, ← Finset.univ_sigma_univ, Finset.prod_sigma]
       congr
 
-/-- The norm of `q.comp_along_composition p c` is controlled by the product of
+/-- The norm of `q.compAlongComposition p c` is controlled by the product of
 the norms of the relevant bits of `q` and `p`. -/
 theorem compAlongComposition_norm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
@@ -432,7 +432,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
     ∃ r > (0 : ℝ≥0),
       Summable fun i : Σ n, Composition n => ‖q.compAlongComposition p i.2‖₊ * r ^ i.1 := by
   /- This follows from the fact that the growth rate of `‖qₙ‖` and `‖pₙ‖` is at most geometric,
-    giving a geometric bound on each `‖q.comp_along_composition p op‖`, together with the
+    giving a geometric bound on each `‖q.compAlongComposition p op‖`, together with the
     fact that there are `2^(n-1)` compositions of `n`, giving at most a geometric loss. -/
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 (lt_min zero_lt_one hq) with ⟨rq, rq_pos, hrq⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 (lt_min zero_lt_one hp) with ⟨rp, rp_pos, hrp⟩
@@ -507,19 +507,19 @@ theorem le_comp_radius_of_summable (q : FormalMultilinearSeries 𝕜 F G)
 ### Composing analytic functions
 
 Now, we will prove that the composition of the partial sums of `q` and `p` up to order `N` is
-given by a sum over some large subset of `Σ n, Composition n` of `q.comp_along_composition p`, to
+given by a sum over some large subset of `Σ n, Composition n` of `q.compAlongComposition p`, to
 deduce that the series for `q.comp p` indeed converges to `g ∘ f` when `q` is a power series for
 `g` and `p` is a power series for `f`.
 
 This proof is a big reindexing argument of a sum. Since it is a bit involved, we define first
-the source of the change of variables (`comp_partial_source`), its target
-(`comp_partial_target`) and the change of variables itself (`comp_change_of_variables`) before
-giving the main statement in `comp_partial_sum`. -/
+the source of the change of variables (`compPartialSumSource`), its target
+(`compPartialSumTarget`) and the change of variables itself (`compChangeOfVariables`) before
+giving the main statement in `comp_partialSum`. -/
 
 
 /-- Source set in the change of variables to compute the composition of partial sums of formal
 power series.
-See also `comp_partial_sum`. -/
+See also `comp_partialSum`. -/
 def compPartialSumSource (m M N : ℕ) : Finset (Σ n, Fin n → ℕ) :=
   Finset.sigma (Finset.Ico m M) (fun n : ℕ => Fintype.piFinset fun _i : Fin n => Finset.Ico 1 N : _)
 
@@ -578,7 +578,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
 
 /-- Target set in the change of variables to compute the composition of partial sums of formal
 power series, here given a a finset.
-See also `comp_partial_sum`. -/
+See also `comp_partialSum`. -/
 def compPartialSumTarget (m M N : ℕ) : Finset (Σ n, Composition n) :=
   Set.Finite.toFinset <|
     ((Finset.finite_toSet _).dependent_image _).subset <|
@@ -590,9 +590,9 @@ theorem mem_compPartialSumTarget_iff {m M N : ℕ} {a : Σ n, Composition n} :
       m ≤ a.2.length ∧ a.2.length < M ∧ ∀ j : Fin a.2.length, a.2.blocksFun j < N := by
   simp [compPartialSumTarget, compPartialSumTargetSet]
 
-/-- `comp_change_of_variables m M N` is a bijection between `comp_partial_sum_source m M N`
-and `comp_partial_sum_target m M N`, yielding equal sums for functions that correspond to each
-other under the bijection. As `comp_change_of_variables m M N` is a dependent function, stating
+/-- `compChangeOfVariables m M N` is a bijection between `compPartialSumSource m M N`
+and `compPartialSumTarget m M N`, yielding equal sums for functions that correspond to each
+other under the bijection. As `compChangeOfVariables m M N` is a dependent function, stating
 that it is a bijection is not directly possible, but the consequence on sums can be stated
 more easily. -/
 theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
@@ -600,9 +600,9 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     (h : ∀ (e) (he : e ∈ compPartialSumSource m M N), f e = g (compChangeOfVariables m M N e he)) :
     ∑ e ∈ compPartialSumSource m M N, f e = ∑ e ∈ compPartialSumTarget m M N, g e := by
   apply Finset.sum_bij (compChangeOfVariables m M N)
-  -- We should show that the correspondance we have set up is indeed a bijection
+  -- We should show that the correspondence we have set up is indeed a bijection
   -- between the index sets of the two sums.
-  -- 1 - show that the image belongs to `comp_partial_sum_target m N N`
+  -- 1 - show that the image belongs to `compPartialSumTarget m N N`
   · rintro ⟨k, blocks_fun⟩ H
     rw [mem_compPartialSumSource_iff] at H
     -- Porting note: added
@@ -629,7 +629,7 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
   · intro i hi
     apply compPartialSumTargetSet_image_compPartialSumSource m M N i
     simpa [compPartialSumTarget] using hi
-  -- 4 - show that the composition gives the `comp_along_composition` application
+  -- 4 - show that the composition gives the `compAlongComposition` application
   · rintro ⟨k, blocks_fun⟩ H
     rw [h]
 
@@ -652,8 +652,8 @@ theorem compPartialSumTarget_tendsto_atTop :
     simp only [Finset.mem_image_of_mem, Finset.mem_coe, Finset.mem_univ]
 
 /-- Composing the partial sums of two multilinear series coincides with the sum over all
-compositions in `comp_partial_sum_target 0 N N`. This is precisely the motivation for the
-definition of `comp_partial_sum_target`. -/
+compositions in `compPartialSumTarget 0 N N`. This is precisely the motivation for the
+definition of `compPartialSumTarget`. -/
 theorem comp_partialSum (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
     (N : ℕ) (z : E) :
     q.partialSum N (∑ i ∈ Finset.Ico 1 N, p i fun _j => z) =
@@ -666,9 +666,9 @@ theorem comp_partialSum (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultil
       ∑ i ∈ compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z by
     simpa only [FormalMultilinearSeries.partialSum, ContinuousMultilinearMap.map_sum_finset] using H
   -- rewrite the first sum as a big sum over a sigma type, in the finset
-  -- `comp_partial_sum_target 0 N N`
+  -- `compPartialSumTarget 0 N N`
   rw [Finset.range_eq_Ico, Finset.sum_sigma']
-  -- use `comp_change_of_variables_sum`, saying that this change of variables respects sums
+  -- use `compChangeOfVariables_sum`, saying that this change of variables respects sums
   apply compChangeOfVariables_sum 0 N N
   rintro ⟨k, blocks_fun⟩ H
   apply congr _ (compChangeOfVariables_length 0 N N H).symm
@@ -722,7 +722,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     we will write `q.comp p` applied to `y` as a big sum over all compositions.
     Since the sum is summable, to get its convergence it suffices to get
     the convergence along some increasing sequence of sets.
-    We will use the sequence of sets `comp_partial_sum_target 0 n n`,
+    We will use the sequence of sets `compPartialSumTarget 0 n n`,
     along which the sum is exactly the composition of the partial sums of `q` and `p`, by design.
     To show that it converges to `g (f (x + y))`, pointwise convergence would not be enough,
     but we have uniform convergence to save the day. -/
@@ -757,7 +757,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     rw [← EMetric.isOpen_ball.nhdsWithin_eq B₂] at A
     convert Hg.tendstoLocallyUniformlyOn.tendsto_comp B₁.continuousWithinAt B₂ A
     simp only [add_sub_cancel]
-  -- Third step: the sum over all compositions in `comp_partial_sum_target 0 n n` converges to
+  -- Third step: the sum over all compositions in `compPartialSumTarget 0 n n` converges to
   -- `g (f (x + y))`. As this sum is exactly the composition of the partial sum, this is a direct
   -- consequence of the second step
   have C :
@@ -848,14 +848,14 @@ On the other hand,
 r.comp (q.comp p) n v = ∑_{c : Composition n} r c.length (applyComposition (q.comp p) c v)
 ```
 Here, `applyComposition (q.comp p) c v` is a vector of length `c.length`, whose `i`-th term is
-given by `(q.comp p) (c.blocks_fun i) (v_l, v_{l+1}, ..., v_{m-1})` where `{l, ..., m-1}` is the
-`i`-th block in the composition `c`, of length `c.blocks_fun i` by definition. To compute this term,
-we expand it as `∑_{dᵢ : Composition (c.blocks_fun i)} q dᵢ.length (applyComposition p dᵢ v')`,
+given by `(q.comp p) (c.blocksFun i) (v_l, v_{l+1}, ..., v_{m-1})` where `{l, ..., m-1}` is the
+`i`-th block in the composition `c`, of length `c.blocksFun i` by definition. To compute this term,
+we expand it as `∑_{dᵢ : Composition (c.blocksFun i)} q dᵢ.length (applyComposition p dᵢ v')`,
 where `v' = (v_l, v_{l+1}, ..., v_{m-1})`. Therefore, we get
 ```
 r.comp (q.comp p) n v =
-∑_{c : Composition n} ∑_{d₀ : Composition (c.blocks_fun 0),
-  ..., d_{c.length - 1} : Composition (c.blocks_fun (c.length - 1))}
+∑_{c : Composition n} ∑_{d₀ : Composition (c.blocksFun 0),
+  ..., d_{c.length - 1} : Composition (c.blocksFun (c.length - 1))}
   r c.length (λ i, q dᵢ.length (applyComposition p dᵢ v'ᵢ))
 ```
 To show that these terms coincide, we need to explain how to reindex the sums to put them in
@@ -875,7 +875,7 @@ made of two blocks of length `4` and `9`, i.e., `c = [4, 9]`. But one can also r
 the new first block was initially made of two blocks of size `2`, so `d₀ = [2, 2]`, and the new
 second block was initially made of three blocks of size `3`, `4` and `2`, so `d₁ = [3, 4, 2]`.
 
-This equivalence is called `Composition.sigma_equiv_sigma_pi n` below.
+This equivalence is called `Composition.sigmaEquivSigmaPi n` below.
 
 We start with preliminary results on compositions, of a very specialized nature, then define the
 equivalence `Composition.sigmaEquivSigmaPi n`, and we deduce finally the associativity of
@@ -899,7 +899,7 @@ theorem sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.leng
   induction H; congr; ext1; exact h'
 
 /-- Rewriting equality in the dependent type
-`Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocks_fun i)` in
+`Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocksFun i)` in
 non-dependent terms with lists, requiring that the lists of blocks coincide. -/
 theorem sigma_pi_composition_eq_iff
     (u v : Σ c : Composition n, ∀ i : Fin c.length, Composition (c.blocksFun i)) :
@@ -987,10 +987,10 @@ set_option linter.deprecated false in
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Grouping together some
 blocks of `a` according to `b` as in `a.gather b`, one can compute the total size of the blocks
-of `a` up to an index `size_up_to b i + j` (where the `j` corresponds to a set of blocks of `a`
+of `a` up to an index `sizeUpTo b i + j` (where the `j` corresponds to a set of blocks of `a`
 that do not fill a whole block of `a.gather b`). The first part corresponds to a sum of blocks
 in `a.gather b`, and the second one to a sum of blocks in the next block of
-`sigma_composition_aux a b`. This is the content of this lemma. -/
+`sigmaCompositionAux a b`. This is the content of this lemma. -/
 theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i j : ℕ}
     (hi : i < b.length) (hj : j < blocksFun b ⟨i, hi⟩) :
     sizeUpTo a (sizeUpTo b i + j) =
@@ -1032,7 +1032,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop', getElem_take _ _ C]
 
 /-- Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and
-`(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocks_fun i))`, that shows up as a
+`(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocksFun i))`, that shows up as a
 change of variables in the proof that composition of formal multilinear series is associative.
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Then `b` indicates how to
@@ -1062,7 +1062,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
           exact Composition.length_pos_of_pos _ (Composition.blocks_pos' _ _ _)
         blocks_sum := by dsimp only [Composition.length]; simp [sum_ofFn] }⟩
   left_inv := by
-    -- the fact that we have a left inverse is essentially `join_split_wrt_composition`,
+    -- the fact that we have a left inverse is essentially `join_splitWrtComposition`,
     -- but we need to massage it to take care of the dependent setting.
     rintro ⟨a, b⟩
     rw [sigma_composition_eq_iff]
@@ -1139,14 +1139,14 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   -- check that the `r` components are the same. Based on `Composition.length_gather`
   apply r.congr (Composition.length_gather a b).symm
   intro i hi1 hi2
-  -- check that the `q` components are the same. Based on `length_sigma_composition_aux`
+  -- check that the `q` components are the same. Based on `length_sigmaCompositionAux`
   apply q.congr (length_sigmaCompositionAux a b _).symm
   intro j hj1 hj2
-  -- check that the `p` components are the same. Based on `blocks_fun_sigma_composition_aux`
+  -- check that the `p` components are the same. Based on `blocksFun_sigmaCompositionAux`
   apply p.congr (blocksFun_sigmaCompositionAux a b _ _).symm
   intro k hk1 hk2
   -- finally, check that the coordinates of `v` one is using are the same. Based on
-  -- `size_up_to_size_up_to_add`.
+  -- `sizeUpTo_sizeUpTo_add`.
   refine congr_arg v (Fin.ext ?_)
   dsimp [Composition.embedding]
   rw [sizeUpTo_sizeUpTo_add _ _ hi1 hj1, add_assoc]
