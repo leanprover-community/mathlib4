@@ -335,8 +335,9 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       A '' closedBall 0 r + closedBall (f x) (ε * r) =
         {f x} + r • (A '' closedBall 0 1 + closedBall 0 ε) := by
       rw [smul_add, ← add_assoc, add_comm {f x}, add_assoc, smul_closedBall _ _ εpos.le, smul_zero,
-        singleton_add_closedBall_zero, ← image_smul_set ℝ E E A, smul_closedBall _ _ zero_le_one,
-        smul_zero, Real.norm_eq_abs, abs_of_nonneg r0, mul_one, mul_comm]
+        singleton_add_closedBall_zero, ← image_smul_set ℝ E E A,
+        _root_.smul_closedBall _ _ zero_le_one, smul_zero, Real.norm_eq_abs, abs_of_nonneg r0,
+        mul_one, mul_comm]
     rw [this] at K
     calc
       μ (f '' (s ∩ closedBall x r)) ≤ μ ({f x} + r • (A '' closedBall 0 1 + closedBall 0 ε)) :=
@@ -505,7 +506,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
     exact ⟨a, az, by simp only [ha, add_neg_cancel_left]⟩
   have norm_a : ‖a‖ ≤ ‖z‖ + ε :=
     calc
-      ‖a‖ = ‖z + (a - z)‖ := by simp only [add_sub_cancel]
+      ‖a‖ = ‖z + (a - z)‖ := by simp only [_root_.add_sub_cancel]
       _ ≤ ‖z‖ + ‖a - z‖ := norm_add_le _ _
       _ ≤ ‖z‖ + ε := add_le_add_left (mem_closedBall_iff_norm.1 az) _
   -- use the approximation properties to control `(f' x - A) a`, and then `(f' x - A) z` as `z` is
@@ -796,7 +797,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
       simp only [m, ENNReal.ofReal, lt_add_iff_pos_right, εpos, ENNReal.coe_lt_coe]
     rcases ((addHaar_image_le_mul_of_det_lt μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, δpos⟩
     obtain ⟨δ', δ'pos, hδ'⟩ : ∃ (δ' : ℝ), 0 < δ' ∧ ∀ B, dist B A < δ' → dist B.det A.det < ↑ε :=
-      continuousAt_iff.1 ContinuousLinearMap.continuous_det.continuousAt ε εpos
+      continuousAt_iff.1 (ContinuousLinearMap.continuous_det (E := E)).continuousAt ε εpos
     let δ'' : ℝ≥0 := ⟨δ' / 2, (half_pos δ'pos).le⟩
     refine ⟨min δ δ'', lt_min δpos (half_pos δ'pos), ?_, ?_⟩
     · intro B hB
@@ -918,7 +919,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
               ENNReal.ofReal |A.det| * μ t ≤ μ (g '' t) + ε * μ t := by
     intro A
     obtain ⟨δ', δ'pos, hδ'⟩ : ∃ (δ' : ℝ), 0 < δ' ∧ ∀ B, dist B A < δ' → dist B.det A.det < ↑ε :=
-      continuousAt_iff.1 ContinuousLinearMap.continuous_det.continuousAt ε εpos
+      continuousAt_iff.1 (ContinuousLinearMap.continuous_det (E := E)).continuousAt ε εpos
     let δ'' : ℝ≥0 := ⟨δ' / 2, (half_pos δ'pos).le⟩
     have I'' : ∀ B : E →L[ℝ] E, ‖B - A‖ ≤ ↑δ'' → |B.det - A.det| ≤ ↑ε := by
       intro B hB

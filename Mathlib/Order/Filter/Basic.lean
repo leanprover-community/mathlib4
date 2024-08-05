@@ -124,9 +124,6 @@ theorem filter_eq_iff : f = g ↔ f.sets = g.sets :=
 protected theorem ext (h : ∀ s, s ∈ f ↔ s ∈ g) : f = g := by
   simpa [filter_eq_iff, Set.ext_iff, Filter.mem_sets]
 
-protected theorem ext_iff : f = g ↔ ∀ s, s ∈ f ↔ s ∈ g :=
-  ⟨by rintro rfl s; rfl, Filter.ext⟩
-
 /-- An extensionality lemma that is useful for filters with good lemmas about `sᶜ ∈ f` (e.g.,
 `Filter.comap`, `Filter.coprod`, `Filter.Coprod`, `Filter.cofinite`). -/
 protected theorem coext (h : ∀ s, sᶜ ∈ f ↔ sᶜ ∈ g) : f = g :=

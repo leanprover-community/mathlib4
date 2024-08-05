@@ -76,7 +76,7 @@ open Topology
 
 lemma isOpen_mk {p h₁ h₂ h₃} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
 
-@[ext]
+@[ext (iff := false)]
 protected theorem TopologicalSpace.ext :
     ∀ {f g : TopologicalSpace X}, IsOpen[f] = IsOpen[g] → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
@@ -143,7 +143,7 @@ theorem IsOpen.and : IsOpen { x | p₁ x } → IsOpen { x | p₂ x } → IsOpen 
 @[simp] theorem isOpen_compl_iff : IsOpen sᶜ ↔ IsClosed s :=
   ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
 
-theorem TopologicalSpace.ext_iff_isClosed {t₁ t₂ : TopologicalSpace X} :
+theorem TopologicalSpace.ext_iff_isClosed {X} {t₁ t₂ : TopologicalSpace X} :
     t₁ = t₂ ↔ ∀ s, IsClosed[t₁] s ↔ IsClosed[t₂] s := by
   rw [TopologicalSpace.ext_iff, compl_surjective.forall]
   simp only [@isOpen_compl_iff _ _ t₁, @isOpen_compl_iff _ _ t₂]
@@ -1020,7 +1020,7 @@ theorem isOpen_iff_nhds : IsOpen s ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s :=
     IsOpen s ↔ s ⊆ interior s := subset_interior_iff_isOpen.symm
     _ ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s := by simp_rw [interior_eq_nhds, subset_def, mem_setOf]
 
-theorem TopologicalSpace.ext_iff_nhds {t t' : TopologicalSpace X} :
+theorem TopologicalSpace.ext_iff_nhds {X} {t t' : TopologicalSpace X} :
     t = t' ↔ ∀ x, @nhds _ t x = @nhds _ t' x :=
   ⟨fun H x ↦ congrFun (congrArg _ H) _, fun H ↦ by ext; simp_rw [@isOpen_iff_nhds _ _ _, H]⟩
 
@@ -1312,7 +1312,7 @@ open Topology
 
 section Continuous
 
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable {X Y Z : Type*}
 
 open TopologicalSpace
 
@@ -1322,6 +1322,7 @@ theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y} {f : X 
     Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 variable {f : X → Y} {s : Set X} {x : X} {y : Y}
 
 theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :

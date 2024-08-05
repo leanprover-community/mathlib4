@@ -229,11 +229,8 @@ inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b} : r a b → ReflGen r a b
 
-/-- `TransGen r`: transitive closure of `r` -/
-@[mk_iff]
-inductive TransGen (r : α → α → Prop) (a : α) : α → Prop
-  | single {b} : r a b → TransGen r a b
-  | tail {b c} : TransGen r a b → r b c → TransGen r a c
+attribute [mk_iff] TransGen
+
 
 attribute [refl] ReflGen.refl
 
@@ -401,17 +398,6 @@ theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
 
 end TransGen
 
-theorem _root_.Acc.TransGen (h : Acc r a) : Acc (TransGen r) a := by
-  induction' h with x _ H
-  refine Acc.intro x fun y hy ↦ ?_
-  cases' hy with _ hyx z _ hyz hzx
-  exacts [H y hyx, (H z hzx).inv hyz]
-
-theorem _root_.acc_transGen_iff : Acc (TransGen r) a ↔ Acc r a :=
-  ⟨Subrelation.accessible TransGen.single, Acc.TransGen⟩
-
-theorem _root_.WellFounded.transGen (h : WellFounded r) : WellFounded (TransGen r) :=
-  ⟨fun a ↦ (h.apply a).TransGen⟩
 
 section reflGen
 

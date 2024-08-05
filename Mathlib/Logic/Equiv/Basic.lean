@@ -1341,7 +1341,7 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} 
     Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun a b hab =>
       Subtype.ext_val (Quotient.sound ((h _ _).1 hab))
   left_inv := by exact fun ⟨a, ha⟩ => Quotient.inductionOn a (fun b hb => rfl) ha
-  right_inv a := Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
+  right_inv a := by exact Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
 
 @[simp]
 theorem subtypeQuotientEquivQuotientSubtype_mk (p₁ : α → Prop)

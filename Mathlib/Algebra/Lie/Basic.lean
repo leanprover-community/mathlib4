@@ -352,11 +352,6 @@ theorem coe_injective : @Function.Injective (L₁ →ₗ⁅R⁆ L₂) (L₁ → 
 theorem ext {f g : L₁ →ₗ⁅R⁆ L₂} (h : ∀ x, f x = g x) : f = g :=
   coe_injective <| funext h
 
-theorem ext_iff {f g : L₁ →ₗ⁅R⁆ L₂} : f = g ↔ ∀ x, f x = g x :=
-  ⟨by
-    rintro rfl x
-    rfl, ext⟩
-
 theorem congr_fun {f g : L₁ →ₗ⁅R⁆ L₂} (h : f = g) (x : L₁) : f x = g x :=
   h ▸ rfl
 
@@ -607,11 +602,10 @@ end LieEquiv
 section LieModuleMorphisms
 
 variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁) (P : Type w₂)
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 variable [Module R M] [Module R N] [Module R P]
 variable [LieRingModule L M] [LieRingModule L N] [LieRingModule L P]
-variable [LieModule R L M] [LieModule R L N] [LieModule R L P]
 
 /-- A morphism of Lie algebra modules is a linear map which commutes with the action of the Lie
 algebra. -/
@@ -663,6 +657,7 @@ theorem map_neg (f : M →ₗ⁅R,L⁆ N) (x : M) : f (-x) = -f x :=
 theorem map_lie (f : M →ₗ⁅R,L⁆ N) (x : L) (m : M) : f ⁅x, m⁆ = ⁅x, f m⁆ :=
   LieModuleHom.map_lie' f
 
+variable [LieAlgebra R L] [LieModule R L N] [LieModule R L P] in
 theorem map_lie₂ (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) (x : L) (m : M) (n : N) :
     ⁅x, f m n⁆ = f ⁅x, m⁆ n + f m ⁅x, n⁆ := by simp only [sub_add_cancel, map_lie, LieHom.lie_apply]
 
@@ -706,11 +701,6 @@ theorem coe_injective : @Function.Injective (M →ₗ⁅R,L⁆ N) (M → N) (↑
 @[ext]
 theorem ext {f g : M →ₗ⁅R,L⁆ N} (h : ∀ m, f m = g m) : f = g :=
   coe_injective <| funext h
-
-theorem ext_iff {f g : M →ₗ⁅R,L⁆ N} : f = g ↔ ∀ m, f m = g m :=
-  ⟨by
-    rintro rfl m
-    rfl, ext⟩
 
 theorem congr_fun {f g : M →ₗ⁅R,L⁆ N} (h : f = g) (x : M) : f x = g x :=
   h ▸ rfl
@@ -812,7 +802,10 @@ instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     (fun _ _ => coe_zsmul _ _)
 
-instance : SMul R (M →ₗ⁅R,L⁆ N) where smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by simp }
+variable [LieAlgebra R L] [LieModule R L N]
+
+instance : SMul R (M →ₗ⁅R,L⁆ N) where
+  smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by simp }
 
 @[norm_cast, simp]
 theorem coe_smul (t : R) (f : M →ₗ⁅R,L⁆ N) : ⇑(t • f) = t • (⇑f) :=

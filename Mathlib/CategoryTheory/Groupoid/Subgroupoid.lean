@@ -33,7 +33,7 @@ Given a type `C` with associated `groupoid C` instance.
 * `CategoryTheory.Subgroupoid.comap` is the "preimage" map of subgroupoids along a functor.
 * `CategoryTheory.Subgroupoid.map` is the "image" map of subgroupoids along a functor _injective on
   objects_.
-* `CategoryTheory.Subgroupoid.vertexSubgroup` is the subgroup of the `vertex group` at a given
+* `CategoryTheory.Subgroupoid.vertexSubgroup` is the subgroup of the *vertex group* at a given
   vertex `v`, assuming `v` is contained in the `CategoryTheory.Subgroupoid` (meaning, by definition,
   that the arrow `𝟙 v` is contained in the subgroupoid).
 
