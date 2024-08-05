@@ -377,10 +377,8 @@ instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     simp_rw [← continuous_id_iff_le, @continuous_prod_iff, @IsLower.continuous_iff_Ici]
     let _ : TopologicalSpace (α × β) := lower (α × β)
     have : IsLower (α × β) := ⟨rfl⟩
-    convert And.intro (fun a ↦ isClosed_Ici (a := (a, (⊥ : β))))
-      (fun b ↦ isClosed_Ici (a := ((⊥ : α), b))) <;>
-    ext ⟨x, y⟩ <;>
-    simp
+    exact ⟨(fun a => by convert isClosed_Ici (a := (a, (⊥ : β))); aesop ),
+      (fun b => by convert isClosed_Ici (a := ((⊥ : α), b)); aesop )⟩
 
 instance instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
     [OrderTop α] [Preorder β] [TopologicalSpace β] [IsUpper β] [OrderTop β] :
@@ -396,7 +394,9 @@ instance instIsLowerPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)]
     classical
     refine le_antisymm (le_generateFrom ?_) ?_
     · rintro _ ⟨x, rfl⟩
-      simpa using isClosed_set_pi fun i (_ : i ∈ univ) ↦ isClosed_Ici (a := x i)
+      rw [isOpen_compl_iff]
+      convert isClosed_set_pi (fun i (_ : i ∈ univ) ↦ isClosed_Ici (a := x i))
+      aesop
     simp_rw [← continuous_id_iff_le, @continuous_pi_iff, @IsLower.continuous_iff_Ici]
     intro i a
     let _ : TopologicalSpace (Π i, α i) := lower (Π i, α i)
