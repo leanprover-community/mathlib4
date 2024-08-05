@@ -8,24 +8,27 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 /-!
 # Adjunctions related to Cat, the category of categories
 
-The embedding `Type ⥤ Cat` has a right adjoint `Cat.objects` mapping
-each category to its set of objects.
+The embedding `typeToCat: Type ⥤ Cat`, mapping a type to the corresponding discrete category, is
+left adjoint to the functor `Cat.objects`, which maps a category to its set of objects.
+
 
 
 ## Notes
 All this could be made with 2-functors
 
 ## TODO
-The embedding `Type ⥤ Cat` has a left adjoint `Cat.connectedComponents` mapping
-each category to its set of connected components.
+
+Define the left adjoint `Cat.connectedComponents`, which map
+a category to its set of connected components.
+
 -/
 
 universe u
-namespace CategoryTheory
+namespace CategoryTheory.Cat
 
 variable (X : Type u) (C : Cat)
 
-private def homEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
+private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
   toFun f x := f.obj ⟨x⟩
   invFun := Discrete.functor
   left_inv F := Functor.ext (fun _ ↦ rfl) (fun ⟨_⟩ ⟨_⟩ f => by
@@ -37,9 +40,9 @@ private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤
   obj := Discrete.as
   map := eqToHom ∘ Discrete.eq_of_hom
 
-/-- typeToCat : Type ⥤ Cat is left adjoint to Cat.objects : Cat ⥤ Type -/
+/-- `typeToCat : Type ⥤ Cat` is left adjoint to `Cat.objects : Cat ⥤ Type` -/
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
-  homEquiv  := homEquiv
+  homEquiv  := typeToCatObjectsAdjHomEquiv
   unit := { app:= fun _  ↦ Discrete.mk }
   counit := {
     app := typeToCatObjectsAdjCounitApp
@@ -48,4 +51,4 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
           obtain rfl := Discrete.eq_of_hom f
           aesop_cat ) }
 
-end CategoryTheory
+end CategoryTheory.Cat
