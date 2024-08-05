@@ -34,7 +34,6 @@ exists_adjoin_simple_eq_top
 
 -/
 
-
 noncomputable section
 
 open FiniteDimensional Polynomial IntermediateField
@@ -81,6 +80,7 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   classical
   let sf := (f.map ϕ).roots
   let sg := (g.map ϕ).roots
+  classical
   let s := (sf.bind fun α' => sg.map fun β' => -(α' - α) / (β' - β)).toFinset
   let s' := s.preimage ϕ fun x _ y _ h => ϕ.injective h
   obtain ⟨c, hc⟩ := Infinite.exists_not_mem_finset s'
@@ -116,6 +116,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
       have α_in_Fαβ : α ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert α {β})
       have β_in_Fαβ : β ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert_of_mem α rfl)
       exact F⟮α, β⟯.add_mem α_in_Fαβ (F⟮α, β⟯.smul_mem β_in_Fαβ)
+  classical
   let p := EuclideanDomain.gcd ((f.map (algebraMap F F⟮γ⟯)).comp
     (C (AdjoinSimple.gen F γ) - (C ↑c : F⟮γ⟯[X]) * X)) (g.map (algebraMap F F⟮γ⟯))
   let h := EuclideanDomain.gcd ((f.map ιFE).comp (C γ - C (ιFE c) * X)) (g.map ιFE)
