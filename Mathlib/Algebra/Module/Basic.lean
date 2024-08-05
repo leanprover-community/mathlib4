@@ -148,7 +148,7 @@ end Function
 
 namespace Set
 section SMulZeroClass
-variable [Zero R] [Zero M] [SMulZeroClass R M]
+variable [Zero M] [SMulZeroClass R M]
 
 lemma indicator_smul_apply (s : Set α) (r : α → R) (f : α → M) (a : α) :
     indicator s (fun a ↦ r a • f a) a = r a • indicator s f a := by
@@ -191,6 +191,16 @@ lemma indicator_smul_const (s : Set α) (r : α → R) (m : M) :
   funext <| indicator_smul_const_apply _ _ _
 
 end SMulWithZero
+
+section MulZeroOneClass
+
+variable [MulZeroOneClass R]
+
+lemma smul_indicator_one_apply (s : Set α) (r : R) (a : α) :
+    r • s.indicator (1 : α → R) a = s.indicator (fun _ ↦ r) a := by
+  simp_rw [← indicator_const_smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
+
+end MulZeroOneClass
 end Set
 
 assert_not_exists Multiset

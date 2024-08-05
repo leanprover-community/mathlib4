@@ -31,10 +31,8 @@ type class and the main results are the instances `UniformSpace.Completion.Field
 `UniformSpace.Completion.TopologicalDivisionRing`.
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open uniformity Topology
 
 open Set UniformSpace UniformSpace.Completion Filter
@@ -88,6 +86,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     erw [denseInducing_coe.nhds_eq_comap (0 : K), ← Filter.comap_inf, eq_bot]
     exact comap_bot
 
+open Classical in
 /-
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
@@ -151,7 +150,9 @@ instance instField : Field (hat K) where
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun a x => rfl
 
 instance : TopologicalDivisionRing (hat K) :=
   { Completion.topologicalRing with

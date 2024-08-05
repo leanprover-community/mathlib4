@@ -103,10 +103,8 @@ local notation "l₂'" => (pullback.snd f₁ (g₃ ≫ f₂))
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
-  apply leftSquareIsPullback
-  · exact pullbackIsPullback f₃ f₄
-  convert pullbackIsPullback (g₂ ≫ f₃) f₄
-  rw [pullback.lift_snd]
+  apply leftSquareIsPullback _ rfl (pullbackIsPullback f₃ f₄)
+  simpa [PullbackCone.pasteHoriz] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ f₄)
 
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
 def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
@@ -114,14 +112,8 @@ def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
       (PullbackCone.mk (l₁ ≫ g₁) l₂
         (show (l₁ ≫ g₁) ≫ f₁ = l₂ ≫ g₃ ≫ f₂ by
           rw [pullback.lift_fst_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
-  apply PullbackCone.isLimitOfFlip
-  apply bigSquareIsPullback
-  · apply PullbackCone.isLimitOfFlip
-    exact pullbackIsPullback f₁ f₂
-  · apply PullbackCone.isLimitOfFlip
-    apply pullbackPullbackLeftIsPullback
-  · exact pullback.lift_fst _ _ _
-  · exact pullback.condition.symm
+  simpa using pasteVertIsPullback rfl (pullbackIsPullback _ _)
+    (pullbackPullbackLeftIsPullback f₁ f₂ f₃ f₄)
 
 theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ (g₃ ≫ f₂) :=
   ⟨⟨⟨_, pullbackAssocIsPullback f₁ f₂ f₃ f₄⟩⟩⟩
@@ -129,14 +121,8 @@ theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackRightIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
     IsLimit (PullbackCone.mk l₁' l₂' (show l₁' ≫ g₂ = l₂' ≫ g₃ from pullback.lift_snd _ _ _)) := by
-  apply PullbackCone.isLimitOfFlip
-  apply leftSquareIsPullback
-  · apply PullbackCone.isLimitOfFlip
-    exact pullbackIsPullback f₁ f₂
-  · apply PullbackCone.isLimitOfFlip
-    exact IsLimit.ofIsoLimit (pullbackIsPullback f₁ (g₃ ≫ f₂))
-      (PullbackCone.ext (Iso.refl _) (by simp) (by simp))
-  · exact pullback.condition.symm
+  apply topSquareIsPullback _ rfl (pullbackIsPullback f₁ f₂)
+  simpa [PullbackCone.pasteVert] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ _)
 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[Y₂] X₃`. -/
 def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
@@ -144,16 +130,11 @@ def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
       (PullbackCone.mk l₁' (l₂' ≫ g₄)
         (show l₁' ≫ g₂ ≫ f₃ = (l₂' ≫ g₄) ≫ f₄ by
           rw [pullback.lift_snd_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
-  apply bigSquareIsPullback
-  · exact pullbackIsPullback f₃ f₄
-  · apply pullbackPullbackRightIsPullback
+  simpa [PullbackCone.pasteHoriz] using pasteHorizIsPullback rfl
+    (pullbackIsPullback f₃ f₄) (pullbackPullbackRightIsPullback _ _ _ _)
 
 theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback (g₂ ≫ f₃) f₄ :=
   ⟨⟨⟨_, pullbackAssocSymmIsPullback f₁ f₂ f₃ f₄⟩⟩⟩
-
-/- Porting note: these don't seem to be propagating change from
--- variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ (g₃ ≫ f₂)] -/
-variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)]
 
 /-- The canonical isomorphism `(X₁ ×[Y₁] X₂) ×[Y₂] X₃ ≅ X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
 noncomputable def pullbackAssoc [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
@@ -292,13 +273,9 @@ local notation "l₂'" =>
 def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
     IsColimit
       (PushoutCocone.mk l₁' l₂' (show f₂ ≫ l₁' = f₃ ≫ l₂' from (pushout.inl_desc _ _ _).symm)) := by
-  apply PushoutCocone.isColimitOfFlip
-  apply rightSquareIsPushout
-  · apply PushoutCocone.isColimitOfFlip
-    exact pushoutIsPushout g₃ g₄
-  · exact IsColimit.ofIsoColimit (PushoutCocone.flipIsColimit (pushoutIsPushout (g₃ ≫ f₂) g₄))
-      (PushoutCocone.ext (Iso.refl _) (by simp) (by simp))
-  · exact pushout.condition.symm
+  apply botSquareIsPushout _ rfl (pushoutIsPushout _ g₄)
+  simpa [PushoutCocone.pasteVert] using
+    PushoutCocone.mkSelfIsColimit (pushoutIsPushout (g₃ ≫ f₂) g₄)
 
 /-- `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃` is the pushout `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
 def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
@@ -306,9 +283,8 @@ def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
       (PushoutCocone.mk (f₁ ≫ l₁') l₂'
         (show g₁ ≫ f₁ ≫ l₁' = (g₂ ≫ f₃) ≫ l₂' by
           rw [Category.assoc, pushout.inl_desc, pushout.condition_assoc])) := by
-  apply bigSquareIsPushout
-  · apply pushoutPushoutLeftIsPushout
-  · exact pushoutIsPushout _ _
+  simpa using pasteHorizIsPushout rfl (pushoutIsPushout g₁ g₂)
+    (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄)
 
 theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g₂ ≫ f₃) :=
   ⟨⟨⟨_, pushoutAssocIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
@@ -316,10 +292,8 @@ theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g�
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ×[X₂] (X₂ ⨿[Z₂] X₃)`. -/
 def pushoutPushoutRightIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
     IsColimit (PushoutCocone.mk l₁ l₂ (show f₂ ≫ l₁ = f₃ ≫ l₂ from pushout.inr_desc _ _ _)) := by
-  apply rightSquareIsPushout
-  · exact pushoutIsPushout _ _
-  · convert pushoutIsPushout g₁ (g₂ ≫ f₃)
-    rw [pushout.inl_desc]
+  apply rightSquareIsPushout _ rfl (pushoutIsPushout _ _)
+  simpa [PushoutCocone.pasteHoriz] using PushoutCocone.mkSelfIsColimit (pushoutIsPushout _ _)
 
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃`. -/
 def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
@@ -327,14 +301,7 @@ def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
       (PushoutCocone.mk l₁ (f₄ ≫ l₂)
         (show (g₃ ≫ f₂) ≫ l₁ = g₄ ≫ f₄ ≫ l₂ by
           rw [Category.assoc, pushout.inr_desc, pushout.condition_assoc])) := by
-  apply PushoutCocone.isColimitOfFlip
-  apply bigSquareIsPushout
-  · apply PushoutCocone.isColimitOfFlip
-    apply pushoutPushoutRightIsPushout
-  · apply PushoutCocone.isColimitOfFlip
-    exact pushoutIsPushout g₃ g₄
-  · exact pushout.condition.symm
-  · exact (pushout.inr_desc _ _ _).symm
+  simpa using pasteVertIsPushout rfl (pushoutIsPushout _ _) (pushoutPushoutRightIsPushout _ _ _ _)
 
 theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g₃ ≫ f₂) g₄ :=
   ⟨⟨⟨_, pushoutAssocSymmIsPushout g₁ g₂ g₃ g₄⟩⟩⟩

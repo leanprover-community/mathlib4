@@ -573,9 +573,27 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
       sub_le_comm.1 <|
         le_mk_of_forall_le <| H.imp fun _ h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
 
+lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 ≤ (a + 1) ^ b := by
+  rcases ha.eq_or_lt with rfl|ha'
+  · simp
+  clear ha
+  induction b generalizing a with
+  | zero => simp
+  | succ b hb =>
+    rw [Nat.cast_add_one, mul_add, mul_one, add_right_comm, pow_succ, mul_add, mul_one, add_comm]
+    gcongr
+    · rw [le_mul_iff_one_le_left ha']
+      exact (pow_le_pow_left zero_le_one (by simpa using ha'.le) b).trans' (by simp)
+    · exact hb ha'
+
 end Real
 
 /-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
   `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
-def IsNonarchimedean {A : Type _} [Add A] (f : A → ℝ) : Prop :=
+def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
   ∀ r s, f (r + s) ≤ max (f r) (f s)
+
+/-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
+`f (r ^ n) = (f r) ^ n`. -/
+def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
+  ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
