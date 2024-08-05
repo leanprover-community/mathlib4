@@ -11,15 +11,34 @@ import Mathlib.Topology.FiberPartition
 
 # The sheaf of locally constant maps on `CompHausLike P`
 
-This file proves that under suitable conditions, the functor from types to sheaves for the coherent
-topology on `CompHausLike P`, given by mapping a set to the sheaf of locally constant maps to it,
-is left adjoint to the "underlying set" functor (evaluation at the point).
+This file proves that under suitable conditions, the functor from the category of sets to the
+category of sheaves for the coherent topology on `CompHausLike P`, given by mapping a set to the
+sheaf of locally constant maps to it, is left adjoint to the "underlying set" functor (evaluation
+at the point).
 
 We apply this to prove that the constant sheaf functor into (light) condensed sets is isomorphic to
 the functor of sheaves of locally constant maps described above.
+
+## Proof sketch
+
+TODO
+
+Was a module docstring for the section Adjunction:
+# The functor of sheaves of locally constant maps is left adjoint to the forgetful functor
+
+The hard part of this adjunction is to define the counit. See `counitAppApp` for an explanation. 
+
+
+## Main definitions
+
+TODO
+
+## Main results
+
+TODO
 -/
 
-universe u w u'
+universe u w
 
 open CategoryTheory Limits LocallyConstant TopologicalSpace.Fibers Opposite Function Fibers
 
@@ -55,14 +74,8 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
     inv := fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2⟩ }
 
 section Adjunction
-/-!
 
-# The functor of sheaves of locally constant maps is left adjoint to the forgetful functor
-
-The hard part of this adjunction is to define the counit. See `counitAppApp` for an explanation. 
--/
-
-variable  [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
+variable [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
 
 /-- A fiber of a locally constant map as a `CompHausLike P`. -/
 def fiber {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (a : Fibers r) :
@@ -116,8 +129,10 @@ noncomputable def counitAppApp (S : CompHausLike.{u} P) (Y : (CompHausLike.{u} P
   fun r ↦ ((inv (sigmaComparison Y (fun a ↦ (fiber r a).1))) ≫
     (Y.mapIso (sigmaIso r).op).inv) (counitAppAppImage r)
 
--- This is the key lemma to prove naturality of the counit: to check equality of two elements of
--- `X(S)`, it suffices to check equality after composing with each `X(S) → X(Sᵢ)`.
+-- This is the key lemma to prove naturality of the counit:
+/--
+To check equality of two elements of `X(S)`, it suffices to check equality after composing with
+each `X(S) → X(Sᵢ)`. -/
 lemma compHausLike_presheaf_ext (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
     [PreservesFiniteProducts X] (x y : X.obj ⟨S⟩)
     (h : ∀ (a : Fibers f), X.map (sigmaIncl f a).op x = X.map (sigmaIncl f a).op y) : x = y := by
@@ -210,10 +225,8 @@ lemma hom_apply_counitAppApp (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
   erw [← mem_iff_eq_image (f := g.app _ ∘ f)]
   exact (b.preimage).prop
 
-end Adjunction
-
-variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
-    [CompHausLike.HasExplicitFiniteCoproducts.{0} P] [CompHausLike.HasExplicitPullbacks.{u} P]
+variable (P) (X : TopCat.{max u w})
+    [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks P]
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
 /-- `locallyConstantIsoContinuousMap` is a natural isomorphism. -/
@@ -244,16 +257,6 @@ noncomputable def functorIsoTopCatToSheafCompHausLike :
     functor.{u, w} P hs ≅ TopCat.discrete.{max w u} ⋙ topCatToSheafCompHausLike P hs :=
   NatIso.ofComponents (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
     (functorToPresheavesIsoTopCatToSheafCompHausLike P hs X))
-
-variable [CompHausLike.HasProp P PUnit.{u+1}]
-variable [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
-variable [HasExplicitFiniteCoproducts.{u} P]
-variable  [HasExplicitPullbacks P]
-
-noncomputable instance {C A : Type*} [Category C] [Category A] [Preregular C] [FinitaryExtensive C]
-    (F : Sheaf (coherentTopology C) A)
-    [HasPullbacks C] : PreservesFiniteProducts F.val :=
-  Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F.val |>.mp F.cond |>.1.some
 
 /-- The counit is natural in both `S : CompHausLike P` and
 `Y : Sheaf (coherentTopology (CompHausLike P)) (Type (max u w))` -/
@@ -352,7 +355,11 @@ noncomputable def adjunction :
 
 instance : IsIso (adjunction P hs).unit := (inferInstance : IsIso (unitIso P hs).hom)
 
+end Adjunction
+
 end CompHausLike.LocallyConstant
+
+section Condensed
 
 open Condensed CompHausLike
 
@@ -421,3 +428,5 @@ instance : (LightCondensed.discrete (Type u)).Faithful := Functor.Faithful.of_is
 
 instance : (LightCondensed.discrete (Type u)).Full := Functor.Full.of_iso
   LightCondSet.LocallyConstant.iso.{u}
+
+end Condensed
