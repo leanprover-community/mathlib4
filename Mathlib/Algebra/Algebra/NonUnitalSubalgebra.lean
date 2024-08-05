@@ -502,8 +502,14 @@ end NonUnitalAlgHom
 namespace NonUnitalAlgebra
 
 variable {F : Type*} (R : Type u) {A : Type v} {B : Type w}
-variable [CommSemiring R]
-variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+
+@[simp]
+lemma span_eq_toSubmodule (s : NonUnitalSubalgebra R A) :
+    Submodule.span R (s : Set A) = s.toSubmodule := by
+  simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
+
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 
@@ -639,11 +645,6 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
   · apply span_le.2 _
     show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
     exact Subsemigroup.closure_le.2 (subset_adjoin R)
-
-@[simp]
-lemma span_eq_toSubmodule (s : NonUnitalSubalgebra R A) :
-    Submodule.span R (s : Set A) = s.toSubmodule := by
-  simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
 
 variable (R A)
 
@@ -821,12 +822,17 @@ section NonAssoc
 
 variable {R : Type u} {A : Type v} {B : Type w}
 variable [CommSemiring R]
-variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-variable [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
+variable [NonUnitalNonAssocSemiring A] [Module R A]
 variable (S : NonUnitalSubalgebra R A)
+
+theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) = S :=
+  ext <| Set.ext_iff.1 <| (NonUnitalSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+
+variable [IsScalarTower R A A] [SMulCommClass R A A]
+variable [NonUnitalNonAssocSemiring B] [Module R B]
 
 instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra R A)] :
     Subsingleton (A →ₙₐ[R] B) :=
@@ -836,8 +842,6 @@ instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra 
         Subsingleton.elim (⊤ : NonUnitalSubalgebra R A) ⊥ ▸ mem_top
       (mem_bot.mp this).symm ▸ (map_zero f).trans (map_zero g).symm⟩
 
-theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) = S :=
-  ext <| Set.ext_iff.1 <| (NonUnitalSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
@@ -897,6 +901,8 @@ theorem prod_toSubmodule : (S.prod S₁).toSubmodule = S.toSubmodule.prod S₁.t
 theorem mem_prod {S : NonUnitalSubalgebra R A} {S₁ : NonUnitalSubalgebra R B} {x : A × B} :
     x ∈ prod S S₁ ↔ x.1 ∈ S ∧ x.2 ∈ S₁ :=
   Set.mem_prod
+
+variable [IsScalarTower R B B] [SMulCommClass R B B]
 
 @[simp]
 theorem prod_top : (prod ⊤ ⊤ : NonUnitalSubalgebra R (A × B)) = ⊤ := by ext; simp

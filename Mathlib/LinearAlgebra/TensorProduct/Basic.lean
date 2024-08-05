@@ -48,7 +48,7 @@ variable {R'' : Type*} [Semiring R'']
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*} {T : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
-variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S] [Module R T]
+variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
 variable (M N)
@@ -477,6 +477,8 @@ theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
     apply h
 
 end Module
+
+variable [Module R P]
 
 section UMP
 
@@ -1045,6 +1047,8 @@ theorem tensorTensorTensorAssoc_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
 end TensorProduct
 
 open scoped TensorProduct
+
+variable [Module R P]
 
 namespace LinearMap
 
