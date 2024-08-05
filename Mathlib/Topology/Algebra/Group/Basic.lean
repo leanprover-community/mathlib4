@@ -814,28 +814,60 @@ theorem TopologicalGroup.of_comm_of_nhds_one {G : Type u} [CommGroup G] [Topolog
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (x₀ * ·) (𝓝 1)) : TopologicalGroup G :=
   TopologicalGroup.of_nhds_one hmul hinv hleft (by simpa using tendsto_id)
 
+/-- Any first countable topological group has an antitone neighborhood basis `u : ℕ → Set G` for
+which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a key tool for
+`QuotientGroup.completeSpace` -/
+@[to_additive
+  "Any first countable topological additive group has an antitone neighborhood basis
+  `u : ℕ → set G` for which `u (n + 1) + u (n + 1) ⊆ u n`.
+  The existence of such a neighborhood basis is a key tool for `QuotientAddGroup.completeSpace`"]
+theorem TopologicalGroup.exists_antitone_basis_nhds_one [FirstCountableTopology G] :
+    ∃ u : ℕ → Set G, (𝓝 1).HasAntitoneBasis u ∧ ∀ n, u (n + 1) * u (n + 1) ⊆ u n := by
+  rcases (𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
+  have :=
+    ((hu.prod_nhds hu).tendsto_iff hu).mp
+      (by simpa only [mul_one] using continuous_mul.tendsto ((1, 1) : G × G))
+  simp only [and_self_iff, mem_prod, and_imp, Prod.forall, exists_true_left, Prod.exists,
+    forall_true_left] at this
+  have event_mul : ∀ n : ℕ, ∀ᶠ m in atTop, u m * u m ⊆ u n := by
+    intro n
+    rcases this n with ⟨j, k, -, h⟩
+    refine atTop_basis.eventually_iff.mpr ⟨max j k, True.intro, fun m hm => ?_⟩
+    rintro - ⟨a, ha, b, hb, rfl⟩
+    exact h a b (u_anti ((le_max_left _ _).trans hm) ha) (u_anti ((le_max_right _ _).trans hm) hb)
+  obtain ⟨φ, -, hφ, φ_anti_basis⟩ := HasAntitoneBasis.subbasis_with_rel ⟨hu, u_anti⟩ event_mul
+  exact ⟨u ∘ φ, φ_anti_basis, fun n => hφ n.lt_succ_self⟩
+
 end TopologicalGroup
 
-section QuotientTopologicalGroup
+namespace QuotientGroup
 
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] (N : Subgroup G) (n : N.Normal)
 
 @[to_additive]
-instance QuotientGroup.Quotient.topologicalSpace {G : Type*} [Group G] [TopologicalSpace G]
+instance instTopologicalSpace {G : Type*} [Group G] [TopologicalSpace G]
     (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
   instTopologicalSpaceQuotient
 
-open QuotientGroup
-
 @[to_additive]
-theorem QuotientGroup.isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := by
+theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := by
   intro s s_op
   change IsOpen (((↑) : G → G ⧸ N) ⁻¹' ((↑) '' s))
   rw [QuotientGroup.preimage_image_mk N s]
   exact isOpen_iUnion fun n => (continuous_mul_right _).isOpen_preimage s s_op
 
+@[to_additive (attr := simp)]
+theorem dense_preimage_mk {s : Set (G ⧸ N)} : Dense ((↑) ⁻¹' s : Set G) ↔ Dense s :=
+  letI := leftRel N -- `Dense.quotient` assumes `[Setoid G]`
+  ⟨fun h ↦ h.quotient.mono <| image_preimage_subset _ _, fun h ↦ h.preimage <| isOpenMap_coe _⟩
+
 @[to_additive]
-instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
+theorem dense_image_mk {s : Set G} :
+    Dense (mk '' s : Set (G ⧸ N)) ↔ Dense (s * (N : Set G)) := by
+  rw [← dense_preimage_mk, preimage_image_mk_eq_mul]
+
+@[to_additive]
+instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
   continuous_mul := by
     have cont : Continuous (((↑) : G → G ⧸ N) ∘ fun p : G × G ↦ p.fst * p.snd) :=
       continuous_quot_mk.comp continuous_mul
@@ -854,45 +886,15 @@ instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 @[to_additive
   "Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient."]
-theorem QuotientGroup.nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
+theorem nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
   le_antisymm ((QuotientGroup.isOpenMap_coe N).nhds_le x) continuous_quot_mk.continuousAt
 
-variable (G)
-variable [FirstCountableTopology G]
+@[to_additive]
+instance instFirstCountableTopology [FirstCountableTopology G] :
+    FirstCountableTopology (G ⧸ N) where
+  nhds_generated_countable := mk_surjective.forall.2 fun x ↦ nhds_eq N x ▸ inferInstance
 
-/-- Any first countable topological group has an antitone neighborhood basis `u : ℕ → Set G` for
-which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a key tool for
-`QuotientGroup.completeSpace` -/
-@[to_additive
-  "Any first countable topological additive group has an antitone neighborhood basis
-  `u : ℕ → set G` for which `u (n + 1) + u (n + 1) ⊆ u n`.
-  The existence of such a neighborhood basis is a key tool for `QuotientAddGroup.completeSpace`"]
-theorem TopologicalGroup.exists_antitone_basis_nhds_one :
-    ∃ u : ℕ → Set G, (𝓝 1).HasAntitoneBasis u ∧ ∀ n, u (n + 1) * u (n + 1) ⊆ u n := by
-  rcases (𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
-  have :=
-    ((hu.prod_nhds hu).tendsto_iff hu).mp
-      (by simpa only [mul_one] using continuous_mul.tendsto ((1, 1) : G × G))
-  simp only [and_self_iff, mem_prod, and_imp, Prod.forall, exists_true_left, Prod.exists,
-    forall_true_left] at this
-  have event_mul : ∀ n : ℕ, ∀ᶠ m in atTop, u m * u m ⊆ u n := by
-    intro n
-    rcases this n with ⟨j, k, -, h⟩
-    refine atTop_basis.eventually_iff.mpr ⟨max j k, True.intro, fun m hm => ?_⟩
-    rintro - ⟨a, ha, b, hb, rfl⟩
-    exact h a b (u_anti ((le_max_left _ _).trans hm) ha) (u_anti ((le_max_right _ _).trans hm) hb)
-  obtain ⟨φ, -, hφ, φ_anti_basis⟩ := HasAntitoneBasis.subbasis_with_rel ⟨hu, u_anti⟩ event_mul
-  exact ⟨u ∘ φ, φ_anti_basis, fun n => hφ n.lt_succ_self⟩
-
-/-- In a first countable topological group `G` with normal subgroup `N`, `1 : G ⧸ N` has a
-countable neighborhood basis. -/
-@[to_additive
-  "In a first countable topological additive group `G` with normal additive subgroup
-  `N`, `0 : G ⧸ N` has a countable neighborhood basis."]
-instance QuotientGroup.nhds_one_isCountablyGenerated : (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
-  (QuotientGroup.nhds_eq N 1).symm ▸ map.isCountablyGenerated _ _
-
-end QuotientTopologicalGroup
+end QuotientGroup
 
 /-- A typeclass saying that `p : G × G ↦ p.1 - p.2` is a continuous function. This property
 automatically holds for topological additive groups but it also holds, e.g., for `ℝ≥0`. -/
@@ -1859,8 +1861,6 @@ instance : SemilatticeInf (GroupTopology α) :=
 instance : Inhabited (GroupTopology α) :=
   ⟨⊤⟩
 
-local notation "cont" => @Continuous _ _
-
 /-- Infimum of a collection of group topologies. -/
 @[to_additive "Infimum of a collection of additive group topologies"]
 instance : InfSet (GroupTopology α) where
@@ -1927,4 +1927,4 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
   rintro _ ⟨t', ht', rfl⟩
   exact continuous_iff_coinduced_le.2 ht'
 
-end GroupTopology
+end GroupTopology    
