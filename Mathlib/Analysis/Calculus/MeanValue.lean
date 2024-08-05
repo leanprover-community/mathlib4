@@ -66,13 +66,12 @@ In this file we prove the following facts:
   strictly differentiable. (This is a corollary of the mean value inequality.)
 -/
 
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
 
-open scoped Classical Topology NNReal
+open scoped Topology NNReal
 
 /-! ### One-dimensional fencing inequalities -/
 

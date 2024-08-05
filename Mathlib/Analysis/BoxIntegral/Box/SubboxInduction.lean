@@ -26,8 +26,7 @@ Then `p I` is true.
 rectangular box, induction
 -/
 
-
-open Set Finset Function Filter Metric Classical Topology Filter ENNReal
+open Set Function Filter Topology
 
 noncomputable section
 
@@ -37,6 +36,7 @@ namespace Box
 
 variable {ι : Type*} {I J : Box ι}
 
+open Classical in
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also
 `BoxIntegral.Partition.splitCenter` for the corresponding `BoxIntegral.Partition`. -/

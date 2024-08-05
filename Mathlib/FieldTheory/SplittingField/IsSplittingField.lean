@@ -27,10 +27,7 @@ if it is the smallest field extension of `K` such that `f` splits.
 
 -/
 
-
 noncomputable section
-
-open scoped Classical Polynomial
 
 universe u v w
 
@@ -77,6 +74,7 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
     intro y hy
+    classical
     rw [Multiset.toFinset_map, Finset.mem_coe, Finset.mem_image] at hy
     obtain ⟨x : K, -, hxy : algebraMap K L x = y⟩ := hy
     rw [← hxy]
@@ -91,6 +89,7 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
   ⟨(IsScalarTower.algebraMap_eq F K L).symm ▸
       splits_mul _ (splits_comp_of_splits _ _ (splits K f))
         ((splits_map_iff _ _).1 (splits L <| g.map <| algebraMap F K)), by
+    classical
     rw [rootSet, aroots_mul (mul_ne_zero hf hg),
       Multiset.toFinset_add, Finset.coe_union, Algebra.adjoin_union_eq_adjoin_adjoin,
       aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map,
@@ -101,6 +100,7 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
 
 end ScalarTower
 
+open Classical in
 /-- Splitting field of `f` embeds into any field that splits `f`. -/
 def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     (hf : Splits (algebraMap K F) f) : L →ₐ[K] F :=
@@ -117,8 +117,9 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     ⟨IsAlgebraic.isIntegral ⟨f, hf0, this⟩,
       splits_of_splits_of_dvd _ hf0 hf <| minpoly.dvd _ _ this⟩)) Algebra.toTop
 
-theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L :=
-  ⟨@Algebra.top_toSubmodule K L _ _ _ ▸
+theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L := by
+  classical
+  exact ⟨@Algebra.top_toSubmodule K L _ _ _ ▸
     adjoin_rootSet L f ▸ fg_adjoin_of_finite (Finset.finite_toSet _) fun y hy ↦
       if hf : f = 0 then by rw [hf, rootSet_zero] at hy; cases hy
       else IsAlgebraic.isIntegral ⟨f, hf, (mem_rootSet'.mp hy).2⟩⟩
@@ -145,6 +146,7 @@ variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]} {F : IntermediateFie
 
 theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by
+  classical
   simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
   exact splits_of_comp _ F.val.toRingHom h hF
 

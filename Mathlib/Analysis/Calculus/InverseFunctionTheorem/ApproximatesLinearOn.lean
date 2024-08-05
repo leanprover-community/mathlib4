@@ -45,7 +45,7 @@ We introduce some `local notation` to make formulas shorter:
 
 open Function Set Filter Metric
 
-open scoped Topology Classical NNReal
+open scoped Topology NNReal
 
 noncomputable section
 
