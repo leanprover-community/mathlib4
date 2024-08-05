@@ -84,6 +84,18 @@ set_option linter.noInitialWhitespace true in
 -- a line break after a colon (`:`) is allowed
 variable {a :
   Option Nat}
+
+/--
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+---
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+---
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+-/
+#guard_msgs in
 set_option linter.cdot true in
 attribute [instance] Int.add in
 instance : Inhabited Nat where
