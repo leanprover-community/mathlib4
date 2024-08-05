@@ -157,10 +157,14 @@ noncomputable def height {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
 
 /--
 The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `<` and beginning with `a`.
+relation series of `α` ordered by `>` and ending with `a`.
+
+The definitions goes via the dual order to easily transfer theorems between `height` and `coheight`.
+See `coheight_eq_isup_head` for the definition with a series ordered by `<` and beginning with `a`.
 -/
 noncomputable def coheight {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
-  ⨆ (p : {p : LTSeries α // p.head = a}), p.1.length
+  -- height (α := αᵒᵈ) a
+  ⨆ (p : {p : LTSeries αᵒᵈ // p.last = a}), p.1.length
 
 end definitions
 
@@ -174,17 +178,31 @@ variable [Preorder α] [Preorder β]
 ## Height
 -/
 
-instance (a : α) : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
+instance instNonemptyLTSeriesLast (a : α) : Nonempty { p : LTSeries α // p.last = a } :=
+  ⟨RelSeries.singleton _ a, rfl⟩
+
+lemma height_orderDual (x : αᵒᵈ) : height x = coheight (α := α) x := rfl
+
+lemma coheight_orderDual (x : αᵒᵈ) : coheight x = height (α := α) x := rfl
 
 lemma height_le_iff (x : α) (n : ℕ∞) :
     height x ≤ n ↔ ∀ (p : LTSeries α), p.last = x → p.length ≤ n := by
   simp [height, iSup_le_iff]
 
+lemma coheight_le_iff (x : α) (n : ℕ∞) :
+    coheight x ≤ n ↔ ∀ (p : LTSeries αᵒᵈ), p.last = x → p.length ≤ n :=
+  height_le_iff (α := αᵒᵈ) x n
+
 lemma height_le (x : α) (n : ℕ∞) :
     (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n :=
   (height_le_iff x n).mpr
 
-lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) : p.length ≤ height x := by
+lemma coheight_le (x : α) (n : ℕ∞) :
+    (∀ (p : LTSeries αᵒᵈ), p.last = x → p.length ≤ n) → coheight x ≤ n :=
+  height_le (α := αᵒᵈ) x n
+
+lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
+    p.length ≤ height x := by
   by_cases hlen0 : p.length > 0
   · let p' := p.eraseLast.snoc x (by
       apply lt_of_lt_of_le
@@ -200,11 +218,21 @@ lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) : p
     exact le_iSup_of_le ⟨p', by simp [p']⟩ (by simp)
   · simp_all
 
+lemma le_coheight_of_last_le (x : α) (p : LTSeries αᵒᵈ) (hlast : x ≤ p.last) :
+    p.length ≤ coheight x :=
+  le_height_of_last_le (α := αᵒᵈ) x p hlast
+
 lemma length_le_height_last (p : LTSeries α) : p.length ≤ height p.last :=
   le_height_of_last_le _ p (le_refl _)
 
+lemma length_le_coheight_last (p : LTSeries αᵒᵈ) : p.length ≤ coheight (α := α) p.last :=
+  length_le_height_last (α := αᵒᵈ) p
+
 lemma index_le_height (p : LTSeries α) (i : Fin (p.length + 1)) : i ≤ height (p i) :=
   length_le_height_last (p.take i)
+
+lemma index_le_coheight (p : LTSeries αᵒᵈ) (i : Fin (p.length + 1)) : i ≤ coheight (α := α) (p i) :=
+  index_le_height (α := αᵒᵈ) p i
 
 lemma height_eq_index_of_length_eq_last_height (p : LTSeries α) (h : p.length = height p.last) :
     ∀ (i : Fin (p.length + 1)), i = height (p i) := by
@@ -219,11 +247,19 @@ lemma height_eq_index_of_length_eq_last_height (p : LTSeries α) (h : p.length =
   norm_cast at hp''
   omega
 
+lemma coheight_eq_index_of_length_eq_last_coheight (p : LTSeries αᵒᵈ)
+    (h : p.length = coheight (α := α) p.last) :
+    ∀ (i : Fin (p.length + 1)), i = coheight (α := α) (p i) :=
+  height_eq_index_of_length_eq_last_height (α := αᵒᵈ) p h
+
 lemma height_mono : Monotone (α := α) height := by
   intro x y hxy
   apply height_le
   intros p hlast _
   apply le_height_of_last_le y p (hlast ▸ hxy)
+
+lemma coheight_mono : Antitone (α := α) coheight :=
+  fun _ _ hxy => height_mono (α := αᵒᵈ) hxy
 
 -- only true for finite height
 lemma height_strictMono (x y : α) (hxy : x < y) (hfin : height y < ⊤) :
@@ -240,6 +276,10 @@ lemma height_strictMono (x y : α) (hxy : x < y) (hfin : height y < ⊤) :
   ext ⟨p, _hp⟩
   simp
 
+lemma coheight_strictAntitone (x y : α) (hxy : y < x) (hfin : coheight y < ⊤) :
+    coheight x < coheight y :=
+  height_strictMono (α := αᵒᵈ) x y hxy hfin
+
 lemma height_le_height_of_strictmono (f : α → β) (hf : StrictMono f) (x : α) :
     height x ≤ height (f x) := by
   unfold height
@@ -247,11 +287,19 @@ lemma height_le_height_of_strictmono (f : α → β) (hf : StrictMono f) (x : α
   rintro _ ⟨⟨p, hlast⟩, rfl⟩
   exact ⟨p.length, ⟨⟨⟨p.map f hf, by simp [hlast]⟩, rfl⟩, by simp⟩⟩
 
+lemma coheight_le_coheight_of_strictmono (f : α → β) (hf : StrictMono f) (x : α) :
+    coheight x ≤ coheight (f x) := by
+  apply height_le_height_of_strictmono (α := αᵒᵈ)
+  exact fun _ _ h ↦ hf h
+
 @[simp]
 lemma height_eq_of_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
   apply le_antisymm
   · simpa using height_le_height_of_strictmono _ f.symm.strictMono (f x)
   · exact height_le_height_of_strictmono _ f.strictMono x
+
+lemma coheight_eq_of_orderIso (f : α ≃o β) (x : α) : coheight (f x) = coheight x :=
+  height_eq_of_orderIso (α := αᵒᵈ) f.dual x
 
 -- TODO: Inline below?
 lemma exist_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
@@ -288,10 +336,18 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     · simp [hlast]
     · simp [hlen]; omega
 
+lemma exists_series_of_le_coheight (a : α) {n : ℕ} (h : n ≤ coheight a) :
+    ∃ p : LTSeries αᵒᵈ, p.last = a ∧ p.length = n :=
+  exists_series_of_le_height (α := αᵒᵈ) a h
+
 /-- For an element of finite height there exists a series ending in that element of that height. -/
 lemma exists_series_of_height_eq_coe (a : α) {n : ℕ} (h : height a = n) :
     ∃ p : LTSeries α, p.last = a ∧ p.length = n :=
   exists_series_of_le_height a (le_of_eq h.symm)
+
+lemma exists_series_of_coheight_eq_coe (a : α) {n : ℕ} (h : coheight a = n) :
+    ∃ p : LTSeries αᵒᵈ, p.last = a ∧ p.length = n :=
+  exists_series_of_height_eq_coe (α := αᵒᵈ) a h
 
 /--
 The height of an elemnet is infinite if there exist series of arbitrary length ending in that
