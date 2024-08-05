@@ -446,6 +446,14 @@ lemma CFC.quasispectrum_zero_eq : σₙ R (0 : A) = {0} := by
     simpa [CFC.quasispectrum_zero_eq]
   · exact cfcₙ_apply_of_not_map_zero _ hf0
 
+instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f a) where
+  star_comm_self := by
+    refine cfcₙ_cases (fun x ↦ Commute (star x) x) _ _ (Commute.zero_right _) fun _ _ _ ↦ ?_
+    simp only [Commute, SemiconjBy]
+    rw [← cfcₙ_apply f a, ← cfcₙ_star, ← cfcₙ_mul .., ← cfcₙ_mul ..]
+    congr! 2
+    exact mul_comm _ _
+
 end CFCn
 
 end Main
@@ -595,8 +603,8 @@ section UnitalToNonUnital
 
 open ContinuousMapZero Set Uniformity ContinuousMap
 
-variable {R A : Type*} {p : A → Prop} [Field R] [StarRing R] [MetricSpace R] [CompleteSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R] [CompleteSpace R]
+variable [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
 variable [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable [h_cpct : ∀ a : A, CompactSpace (spectrum R a)]
 

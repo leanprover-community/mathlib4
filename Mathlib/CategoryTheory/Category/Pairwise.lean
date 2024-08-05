@@ -17,7 +17,7 @@ whose only non-identity morphisms are
 
 We use this later in describing (one formulation of) the sheaf condition.
 
-Given any function `U : ι → α`, where `α` is some complete lattice (e.g. `(opens X)ᵒᵖ`),
+Given any function `U : ι → α`, where `α` is some complete lattice (e.g. `(Opens X)ᵒᵖ`),
 we produce a functor `Pairwise ι ⥤ α` in the obvious way,
 and show that `iSup U` provides a colimit cocone over this functor.
 -/
