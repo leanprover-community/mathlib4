@@ -69,7 +69,8 @@ def getRootHash : CacheM UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
   let isMathlibRoot ← isMathlibRoot
   let hashs ← rootFiles.mapM fun path => do
-    hashFileContents <$> IO.FS.readFile (if isMathlibRoot then path else (← mathlibDepPath) / path)
+    let path ← if isMathlibRoot then pure path else pure <| (← mathlibDepPath) / path
+    hashFileContents <$> IO.FS.readFile path
   return hash (hash Lean.githash :: hashs)
 
 /--
