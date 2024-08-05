@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.WithBot
+import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
 
 /-!

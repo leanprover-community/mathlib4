@@ -230,7 +230,7 @@ instance : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams �
   fun _ _ => And.decidable
 
 instance : DecidableEq IntegrationParams :=
-  fun x y => decidable_of_iff _ (IntegrationParams.ext_iff x y).symm
+  fun _ _ => decidable_of_iff _ IntegrationParams.ext_iff.symm
 
 /-- The `BoxIntegral.IntegrationParams` corresponding to the Riemann integral. In the
 corresponding filter, we require that the diameters of all boxes `J` of a tagged partition are

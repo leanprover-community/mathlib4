@@ -230,8 +230,8 @@ variable (A J)
 def Functor.sheafPushforwardCocontinuous : Sheaf J A ⥤ Sheaf K A where
   obj ℱ := ⟨G.op.ran.obj ℱ.val, ran_isSheaf_of_isCocontinuous _ K ℱ⟩
   map f := ⟨G.op.ran.map f.val⟩
-  map_id ℱ := Sheaf.Hom.ext _ _ <| (ran G.op).map_id ℱ.val
-  map_comp f g := Sheaf.Hom.ext _ _ <| (ran G.op).map_comp f.val g.val
+  map_id ℱ := Sheaf.Hom.ext <| (ran G.op).map_id ℱ.val
+  map_comp f g := Sheaf.Hom.ext <| (ran G.op).map_comp f.val g.val
 
 /-- `G.sheafPushforwardCocontinuous A J K : Sheaf J A ⥤ Sheaf K A` is induced
 by the right Kan extension functor `G.op.ran` on presheaves. -/

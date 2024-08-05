@@ -98,7 +98,7 @@ section Ext
 
 variable {i f}
 
-@[ext]
+@[ext (iff := false)]
 theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain)
     (to_fun_eq :
       ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄, (x : N) = y → a.toLinearPMap x = b.toLinearPMap y) :

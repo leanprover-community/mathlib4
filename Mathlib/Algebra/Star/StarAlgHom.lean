@@ -765,9 +765,6 @@ theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
 theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : A ≃⋆ₐ[R] B} : f = g ↔ ∀ a, f a = g a :=
-  DFunLike.ext_iff
-
 /-- The identity map is a star algebra isomorphism. -/
 @[refl]
 def refl : A ≃⋆ₐ[R] A :=

@@ -269,7 +269,7 @@ protected theorem Sublist.sym (n : ℕ) {xs ys : List α} (h : xs <+ ys) : xs.sy
     · exact h.sym (n + 1)
 
 theorem sym_sublist_sym_cons {a : α} : xs.sym n <+ (a :: xs).sym n :=
-  (sublist_cons a xs).sym n
+  (sublist_cons_self a xs).sym n
 
 theorem mem_of_mem_of_mem_sym {n : ℕ} {xs : List α} {a : α} {z : Sym α n}
     (ha : a ∈ z) (hz : z ∈ xs.sym n) : a ∈ xs :=

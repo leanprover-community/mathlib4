@@ -161,7 +161,8 @@ theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f
   congr_arg sInf (Set.range_comp _ _).symm
 
 instance : CompleteLattice (I.Filtration M) :=
-  Function.Injective.completeLattice Ideal.Filtration.N Ideal.Filtration.ext sup_N inf_N
+  Function.Injective.completeLattice Ideal.Filtration.N
+    (fun _ _ => Ideal.Filtration.ext) sup_N inf_N
     (fun _ => sSup_image) (fun _ => sInf_image) top_N bot_N
 
 instance : Inhabited (I.Filtration M) :=

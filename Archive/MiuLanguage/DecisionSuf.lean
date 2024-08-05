@@ -251,7 +251,7 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
     · -- case `x = M` gives a contradiction.
       exfalso; exact hm (mem_cons_self M xs)
     · -- case `x = I`
-      rw [count_cons, if_pos rfl, length, succ_inj']
+      rw [count_cons, beq_self_eq_true, if_pos rfl, length, succ_inj']
       apply hxs
       · simpa only [count]
       · rw [mem_cons, not_or] at hm; exact hm.2
@@ -307,7 +307,9 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
   use as, bs
   refine ⟨rfl, ?_, ?_, ?_⟩
   · -- Porting note: `simp_rw [count_append]` didn't work
-    rw [count_append] at hu; simp_rw [count_cons, if_true, add_succ, succ_inj'] at hu
+    rw [count_append] at hu
+    simp_rw [count_cons, beq_self_eq_true, if_true, add_succ, beq_iff_eq, reduceIte, add_zero,
+      succ_inj'] at hu
     rwa [count_append, count_append]
   · apply And.intro rfl
     rw [cons_append, cons_append]

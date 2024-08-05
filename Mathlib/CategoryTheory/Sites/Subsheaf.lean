@@ -54,7 +54,7 @@ structure Subpresheaf (F : Cᵒᵖ ⥤ Type w) where
 variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
 instance : PartialOrder (Subpresheaf F) :=
-  PartialOrder.lift Subpresheaf.obj Subpresheaf.ext
+  PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
 
 instance : Top (Subpresheaf F) :=
   ⟨⟨fun U => ⊤, @fun U V _ x _ => by aesop_cat⟩⟩
@@ -84,8 +84,8 @@ instance {U} : CoeHead (G.toPresheaf.obj U) (F.obj U) where
 def Subpresheaf.ι : G.toPresheaf ⟶ F where app U x := x
 
 instance : Mono G.ι :=
-  ⟨@fun _ f₁ f₂ e =>
-    NatTrans.ext f₁ f₂ <|
+  ⟨@fun _ _ _ e =>
+    NatTrans.ext <|
       funext fun U => funext fun x => Subtype.ext <| congr_fun (congr_app e U) x⟩
 
 /-- The inclusion of a subpresheaf to a larger subpresheaf -/
@@ -94,8 +94,8 @@ def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶
   app U x := ⟨x, h U x.prop⟩
 
 instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
-  ⟨fun f₁ f₂ e =>
-    NatTrans.ext f₁ f₂ <|
+  ⟨fun _ _ e =>
+    NatTrans.ext <|
       funext fun U =>
         funext fun x =>
           Subtype.ext <| (congr_arg Subtype.val <| (congr_fun (congr_app e U) x : _) : _)⟩

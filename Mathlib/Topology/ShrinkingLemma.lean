@@ -79,7 +79,7 @@ instance : PartialOrder (PartialRefinement u s) where
     ⟨Subset.trans h₁₂.1 h₂₃.1, fun i hi => (h₁₂.2 i hi).trans (h₂₃.2 i <| h₁₂.1 hi)⟩
   le_antisymm v₁ v₂ h₁₂ h₂₁ :=
     have hc : v₁.carrier = v₂.carrier := Subset.antisymm h₁₂.1 h₂₁.1
-    PartialRefinement.ext _ _
+    PartialRefinement.ext
       (funext fun x =>
         if hx : x ∈ v₁.carrier then h₁₂.2 _ hx
         else (v₁.apply_eq hx).trans (Eq.symm <| v₂.apply_eq <| hc ▸ hx))

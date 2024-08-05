@@ -406,7 +406,7 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
     · have A : (ofFn f).take i = (ofFn f).take i.succ := by
         rw [← length_ofFn f] at h
         have : length (ofFn f) ≤ i := not_lt.mp h
-        rw [take_all_of_le this, take_all_of_le (le_trans this (Nat.le_succ _))]
+        rw [take_of_length_le this, take_of_length_le (le_trans this (Nat.le_succ _))]
       have B : ∀ j : Fin n, ((j : ℕ) < i.succ) = ((j : ℕ) < i) := by
         intro j
         have : (j : ℕ) < i := lt_of_lt_of_le j.2 (not_lt.mp h)

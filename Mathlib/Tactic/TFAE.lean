@@ -221,7 +221,7 @@ elab_rules : tactic
   let goal ← getMainGoal
   goal.withContext do
     let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
-    closeMainGoal <|← AtomM.run .reducible do
+    closeMainGoal `tfae_finish <|← AtomM.run .reducible do
       let is ← tfaeList.mapM AtomM.addAtom
       let mut hyps := #[]
       for hyp in ← getLocalHyps do

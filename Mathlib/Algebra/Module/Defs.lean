@@ -315,7 +315,7 @@ def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
   toFun f := ⟨Module.compHom S f, SMul.comp.isScalarTower _⟩
   invFun := fun ⟨_, _⟩ ↦ RingHom.smulOneHom
   left_inv f := RingHom.ext fun r ↦ mul_one (f r)
-  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext _ _ <| funext₂ <| smul_one_smul S
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext <| funext₂ <| smul_one_smul S
 
 section AddCommMonoid
 

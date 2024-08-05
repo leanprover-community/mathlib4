@@ -81,9 +81,6 @@ def coeff (i : Fin n) (x : TruncatedWittVector p n R) : R :=
 theorem ext {x y : TruncatedWittVector p n R} (h : ∀ i, x.coeff i = y.coeff i) : x = y :=
   funext h
 
-theorem ext_iff {x y : TruncatedWittVector p n R} : x = y ↔ ∀ i, x.coeff i = y.coeff i :=
-  ⟨fun h i => by rw [h], ext⟩
-
 @[simp]
 theorem coeff_mk (x : Fin n → R) (i : Fin n) : (mk p x).coeff i = x i :=
   rfl

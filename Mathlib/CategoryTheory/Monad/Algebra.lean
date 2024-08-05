@@ -84,7 +84,7 @@ instance : CategoryStruct (Algebra T) where
 
 -- Porting note (#11041): Adding this `ext` lemma to help automation below.
 @[ext]
-lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
+lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
 @[simp]
 theorem comp_eq_comp {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') :
@@ -320,7 +320,7 @@ instance : CategoryStruct (Coalgebra G) where
 
 -- Porting note (#11041): Adding `ext` lemma to help automation below.
 @[ext]
-lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
+lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
 @[simp]
 theorem comp_eq_comp {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') :

@@ -389,10 +389,6 @@ same underlying function. -/
 theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-@[to_additive]
-theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[to_additive (attr := simp)]
 theorem mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨e, e', h₁, h₂⟩, h₃⟩ : M ≃* N) = e :=
   ext fun _ => rfl

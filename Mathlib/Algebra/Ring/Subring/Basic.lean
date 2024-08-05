@@ -850,7 +850,7 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
       ⟨l ++ m, fun t ht => (List.mem_append.1 ht).elim (hl1 t) (hm1 t), by simp [hl2, hm2]⟩)
     fun x ⟨L, hL⟩ =>
     ⟨L.map (List.cons (-1)),
-      List.forall_mem_map_iff.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
+      List.forall_mem_map.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
       hL.2 ▸
         List.recOn L (by simp)
           (by simp (config := { contextual := true }) [List.map_cons, add_comm])⟩
