@@ -298,6 +298,53 @@ lemma isTopologicalBasis_insert_univ_subbasis :
 
 end LinearOrder
 
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsLower α]
+
+lemma teq (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Ici a)ᶜ = U) := by
+  by_cases hU : U = univ
+  constructor
+  · intro _
+    exact Or.inl hU
+  · intro _
+    rw [hU]
+    exact isOpen_univ
+  constructor
+  · intro hO
+    apply Or.inr
+    convert IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
+    constructor
+    · intro hO
+      obtain ⟨a,ha⟩ := hO
+      use {U}
+      constructor
+      · rw [← ha]
+        apply subset_trans _ (subset_insert _ _)
+        rw [singleton_subset_iff, mem_setOf_eq]
+        use a
+      · rw [sUnion_singleton]
+    · intro h
+      obtain ⟨S,⟨_,hS2⟩⟩ := h
+      rw [hS2]
+
+      have _ : univ ∉ S := by
+        aesop
+      have _ : S ⊆ {s | ∃ a, (Ici a)ᶜ = s} := by
+        aesop
+
+      aesop
+        --apply subset_insert_iff_of_not_mem.mp --e1
+
+
+  · intro h
+    apply IsTopologicalBasis.isOpen isTopologicalBasis_insert_univ_subbasis
+    rw [mem_insert_iff, mem_setOf_eq]
+    convert h
+
+end CompleteLinearOrder
+
+
 end IsLower
 
 
