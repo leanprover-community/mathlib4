@@ -133,8 +133,8 @@ theorem card_edgeFinset_bipartition :
   · subst h1; simp [t1]
   by_cases h2 : K = univ
   · subst h2; rw [compl_univ, sum_empty, add_zero, t2, t3, add_zero]
-  let P2 := Finpartition.bipartition h1 h2
-  simp_rw [G.card_edgeFinset_eq_sum_interEdges_card (P := P2), P2, Finpartition.bipartition,
+  let P2 := Finpartition.properBipartition h1 h2
+  simp_rw [G.card_edgeFinset_eq_sum_interEdges_card (P := P2), P2, Finpartition.properBipartition,
     Sym2.univ_pair]
   have nc : K ≠ Kᶜ := by
     let x := (nonempty_iff_ne_empty.mpr h1).choose
