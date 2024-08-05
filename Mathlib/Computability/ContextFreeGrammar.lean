@@ -461,18 +461,18 @@ private lemma both_empty {u v : List T} {a b : T} (ha : [a] = u ++ [b] ++ v) :
 
 variable {g₁ g₂ : ContextFreeGrammar.{uT} T}
 
-private def oN₁_of_N : (ContextFreeGrammar.union g₁ g₂).NT → Option g₁.NT
+private def oN₁_of_N : (g₁.union g₂).NT → Option g₁.NT
   | none => none
   | some (Sum.inl n) => some n
   | some (Sum.inr _) => none
 
-private def oN₂_of_N : (ContextFreeGrammar.union g₁ g₂).NT → Option g₂.NT
+private def oN₂_of_N : (g₁.union g₂).NT → Option g₂.NT
   | none => none
   | some (Sum.inl _) => none
   | some (Sum.inr n) => some n
 
 private def g₁g : LiftedContextFreeGrammar T :=
-  ⟨g₁, ContextFreeGrammar.union g₁ g₂, some ∘ Sum.inl, oN₁_of_N,
+  ⟨g₁, g₁.union g₂, some ∘ Sum.inl, oN₁_of_N,
     (fun x y hxy => Sum.inl_injective (Option.some_injective _ hxy)),
     (by
       intro x y hxy
@@ -535,7 +535,7 @@ private def g₁g : LiftedContextFreeGrammar T :=
             exact Sum.noConfusion imposs)⟩
 
 private def g₂g : LiftedContextFreeGrammar T :=
-  ⟨g₂, ContextFreeGrammar.union g₁ g₂, some ∘ Sum.inr, oN₂_of_N,
+  ⟨g₂, g₁.union g₂, some ∘ Sum.inr, oN₂_of_N,
     (fun x y hxy => Sum.inr_injective (Option.some_injective _ hxy)),
     (by
       intro x y hxy
@@ -600,8 +600,8 @@ private def g₂g : LiftedContextFreeGrammar T :=
 variable {w : List T}
 
 private lemma in_union_of_in_left (hw : w ∈ g₁.language) :
-    w ∈ (ContextFreeGrammar.union g₁ g₂).language :=
-  have derives_left_initial : (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal none]
+    w ∈ (g₁.union g₂).language :=
+  have derives_left_initial : (g₁.union g₂).Derives [Symbol.nonterminal none]
       [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
     refine ContextFreeGrammar.Produces.single
       ⟨⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩, List.mem_cons_self .., ?_⟩
@@ -611,9 +611,9 @@ private lemma in_union_of_in_left (hw : w ∈ g₁.language) :
   derives_left_initial.trans (Symbol.liftString_all_terminals g₁g.liftNT w ▸ g₁g.lift_derives hw)
 
 private lemma in_union_of_in_right (hw : w ∈ g₂.language) :
-    w ∈ (ContextFreeGrammar.union g₁ g₂).language :=
+    w ∈ (g₁.union g₂).language :=
   have derives_right_initial :
-    (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal none]
+    (g₁.union g₂).Derives [Symbol.nonterminal none]
       [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
     refine ContextFreeGrammar.Produces.single
       ⟨⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩,
@@ -624,7 +624,7 @@ private lemma in_union_of_in_right (hw : w ∈ g₂.language) :
   derives_right_initial.trans (Symbol.liftString_all_terminals g₂g.liftNT w ▸ g₂g.lift_derives hw)
 
 private lemma in_left_of_in_union (hw :
-    (ContextFreeGrammar.union g₁ g₂).Derives
+    (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inl g₁.initial))]
       (List.map Symbol.terminal w)) :
     w ∈ g₁.language := by
@@ -634,7 +634,7 @@ private lemma in_left_of_in_union (hw :
   rfl
 
 private lemma in_right_of_in_union (hw :
-    (ContextFreeGrammar.union g₁ g₂).Derives
+    (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inr g₂.initial))]
       (List.map Symbol.terminal w)) :
     w ∈ g₂.language := by
@@ -643,10 +643,10 @@ private lemma in_right_of_in_union (hw :
   constructor
   rfl
 
-private lemma impossible_rule {r : ContextFreeRule T (ContextFreeGrammar.union g₁ g₂).NT}
-    (hg : [Symbol.nonterminal (ContextFreeGrammar.union g₁ g₂).initial] =
-      ([] : List (Symbol T (ContextFreeGrammar.union g₁ g₂).NT)) ++ [Symbol.nonterminal r.input] ++
-      ([] : List (Symbol T (ContextFreeGrammar.union g₁ g₂).NT)))
+private lemma impossible_rule {r : ContextFreeRule T (g₁.union g₂).NT}
+    (hg : [Symbol.nonterminal (g₁.union g₂).initial] =
+      ([] : List (Symbol T (g₁.union g₂).NT)) ++ [Symbol.nonterminal r.input] ++
+      ([] : List (Symbol T (g₁.union g₂).NT)))
     (hr : r ∈
       List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inl)) g₁.rules ++
       List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inr)) g₂.rules) :
@@ -663,7 +663,7 @@ private lemma impossible_rule {r : ContextFreeRule T (ContextFreeGrammar.union g
     rcases hr' with ⟨_, -, rfl⟩
     exact Option.noConfusion rule_root
 
-private lemma in_language_of_in_union (hw : w ∈ (ContextFreeGrammar.union g₁ g₂).language) :
+private lemma in_language_of_in_union (hw : w ∈ (g₁.union g₂).language) :
     w ∈ g₁.language ∨ w ∈ g₂.language := by
   cases hw.eq_or_head with
   | inl impossible =>
@@ -690,9 +690,8 @@ private lemma in_language_of_in_union (hw : w ∈ (ContextFreeGrammar.union g₁
         exfalso
         exact impossible_rule huv hr''
 
-@[simp]
-lemma ContextFreeGrammar.language_union :
-    (g₁.union g₂).language = g₁.language ∪ g₂.language :=
+lemma ContextFreeGrammar.mem_union_language_iff_mem_or_mem :
+    w ∈ (g₁.union g₂).language ↔ w ∈ g₁.language ∨ w ∈ g₂.language :=
   ⟨in_language_of_in_union, fun hw => hw.elim in_union_of_in_left in_union_of_in_right⟩
 
 end union_aux
@@ -701,7 +700,7 @@ end union_aux
 theorem Language.IsContextFree.union {L₁ L₂ : Language T} :
     L₁.IsContextFree → L₂.IsContextFree → (L₁ + L₂).IsContextFree := by
   rintro ⟨g₁, rfl⟩ ⟨g₂, rfl⟩
-  exact ⟨ContextFreeGrammar.union g₁ g₂, Set.ext (fun _ =>
+  exact ⟨g₁.union g₂, Set.ext (fun _ =>
     ContextFreeGrammar.mem_union_language_iff_mem_or_mem)⟩
 
 end closure_union
