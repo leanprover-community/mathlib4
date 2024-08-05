@@ -88,18 +88,9 @@ If `G` preserves finite coproducts (which is the case when `C` is `CompHaus`, `
 the extensive topology.
 -/
 noncomputable instance [PreservesFiniteCoproducts G] :
-    PreservesFiniteProducts (yonedaPresheaf G X) := by
-  change PreservesFiniteProducts (G.op ⋙ yonedaPresheaf' X)
-  have h' : PreservesFiniteProducts (yonedaPresheaf' X) := inferInstance
-  have h : PreservesFiniteProducts G.op :=
-    { preserves := fun J _ => by
-        apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeOp
-        exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _ }
-  constructor
-  intro J _
-  have := h.1 J
-  have := h'.1 J
-  exact compPreservesLimitsOfShape _ _
+    PreservesFiniteProducts (yonedaPresheaf G X) :=
+  have := preservesFiniteProductsOp G
+  ⟨fun _ ↦ compPreservesLimitsOfShape G.op (yonedaPresheaf' X)⟩
 
 section
 
