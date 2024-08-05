@@ -519,9 +519,7 @@ open scoped Pointwise
 
 variable [CommSemiring R] [StarRing R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
-variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
-variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+variable [StarModule R A]
 
 /-- The pointwise `star` of a non-unital subalgebra is a non-unital subalgebra. -/
 instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A) where
@@ -552,6 +550,7 @@ theorem star_mono : Monotone (star : NonUnitalSubalgebra R A → NonUnitalSubalg
   fun _ _ h _ hx => h hx
 
 variable (R)
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The star operation on `NonUnitalSubalgebra` commutes with `NonUnitalAlgebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) :
