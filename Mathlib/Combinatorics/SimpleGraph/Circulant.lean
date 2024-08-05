@@ -9,7 +9,7 @@ import Mathlib.Data.Set.Pointwise.Basic
 /-!
 # Definition of circulants graphs
 
-This file defines ans proves several fact about circulants graphs.
+This file defines and proves several fact about circulants graphs.
 A circulant graph over type `G` with jumps `s : Set G` is a graph in which two vertices `u` and `v`
 are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` are called jumps.
 
@@ -52,8 +52,8 @@ theorem circulantGraph_eq_symm : CirculantGraph s = CirculantGraph (s ∪ (-s)) 
 instance [DecidableEq G] [DecidablePred (· ∈ s)] : DecidableRel (CirculantGraph s).Adj :=
   fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
 
-theorem circulantGraph_adj_translate {s : Set G} {x y d : G} :
-    (CirculantGraph s).Adj (x + d) (y + d) ↔ (CirculantGraph s).Adj x y := by simp
+theorem circulantGraph_adj_translate {s : Set G} {u v d : G} :
+    (CirculantGraph s).Adj (u + d) (v + d) ↔ (CirculantGraph s).Adj u v := by simp
 
 /-- Cycle graph over `Fin n` -/
 def cycleGraph : (n : ℕ) → SimpleGraph (Fin n)
@@ -64,7 +64,7 @@ instance : (n : ℕ) → DecidableRel (cycleGraph n).Adj
   | 0 => fun _ _ => inferInstanceAs (Decidable False)
   | _ + 1 => inferInstanceAs (DecidableRel (CirculantGraph _).Adj)
 
-theorem cycleGraph_zero_adj {x y : Fin 0} : ¬(cycleGraph 0).Adj x y := id
+theorem cycleGraph_zero_adj {u v : Fin 0} : ¬(cycleGraph 0).Adj u v := id
 
 theorem cycleGraph_zero_eq_bot : cycleGraph 0 = ⊥ := Subsingleton.elim _ _
 theorem cycleGraph_one_eq_bot : cycleGraph 1 = ⊥ := Subsingleton.elim _ _
@@ -79,30 +79,30 @@ theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := by
   simp only [SimpleGraph.ext_iff, Function.funext_iff]
   decide
 
-theorem cycleGraph_one_adj {x y : Fin 1} : ¬(cycleGraph 1).Adj x y := by
+theorem cycleGraph_one_adj {u v : Fin 1} : ¬(cycleGraph 1).Adj u v := by
   rw [cycleGraph_one_eq_bot]
   exact id
 
-theorem cycleGraph_adj {n : ℕ} (x y : Fin (n + 2)) :
-    (cycleGraph (n + 2)).Adj x y ↔ x - y = 1 ∨ y - x = 1 := by
+theorem cycleGraph_adj {n : ℕ} {u v : Fin (n + 2)} :
+    (cycleGraph (n + 2)).Adj u v ↔ u - v = 1 ∨ v - u = 1 := by
   simp only [cycleGraph, CirculantGraph_adj, Set.mem_singleton_iff, and_iff_right_iff_imp]
   intro _ _
   simp_all
 
-theorem cycleGraph_adj' {n : ℕ} (x y : Fin n) :
-    (cycleGraph n).Adj x y ↔ (x - y).val = 1 ∨ (y - x).val = 1 := by
+theorem cycleGraph_adj' {n : ℕ} {u v : Fin n} :
+    (cycleGraph n).Adj u v ↔ (u - v).val = 1 ∨ (v - u).val = 1 := by
   match n with
-  | 0 => exact x.elim0
+  | 0 => exact u.elim0
   | 1 => simp [cycleGraph_one_adj]
   | n + 2 => simp [cycleGraph_adj, Fin.ext_iff]
 
-theorem cycleGraph_neighborSet {n : ℕ} (v : Fin (n + 2)) :
+theorem cycleGraph_neighborSet {n : ℕ} {v : Fin (n + 2)} :
     (cycleGraph (n + 2)).neighborSet v = {v - 1, v + 1} := by
   ext w
   simp only [mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff]
   rw [cycleGraph_adj, sub_eq_iff_eq_add', sub_eq_iff_eq_add', eq_sub_iff_add_eq, eq_comm]
 
-theorem cycleGraph_neighborFinset {n : ℕ} (v : Fin (n + 2)) :
+theorem cycleGraph_neighborFinset {n : ℕ} {v : Fin (n + 2)} :
     (cycleGraph (n + 2)).neighborFinset v = {v - 1, v + 1} := by
   simp [neighborFinset, cycleGraph_neighborSet]
 
@@ -120,12 +120,12 @@ theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
   match n with
   | 0 | 1 => simp
   | n + 2 =>
-      intro x y h
-      rw [pathGraph_adj] at h
-      rw [cycleGraph_adj']
-      cases h with
-      | inl h | inr h =>
-        simp [Fin.coe_sub_iff_le.mpr (Nat.lt_of_succ_le h.le).le, Nat.eq_sub_of_add_eq' h]
+    intro u v h
+    rw [pathGraph_adj] at h
+    rw [cycleGraph_adj']
+    cases h with
+    | inl h | inr h =>
+      simp [Fin.coe_sub_iff_le.mpr (Nat.lt_of_succ_le h.le).le, Nat.eq_sub_of_add_eq' h]
 
 theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
   (pathGraph_preconnected n).mono pathGraph_le_cycleGraph
