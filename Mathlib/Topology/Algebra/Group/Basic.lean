@@ -843,12 +843,16 @@ end TopologicalGroup
 
 namespace QuotientGroup
 
-variable [TopologicalSpace G] [Group G] [TopologicalGroup G] (N : Subgroup G) (n : N.Normal)
+variable [TopologicalSpace G] [Group G] [TopologicalGroup G] (N : Subgroup G)
 
 @[to_additive]
 instance instTopologicalSpace {G : Type*} [Group G] [TopologicalSpace G]
     (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
   instTopologicalSpaceQuotient
+
+@[to_additive]
+theorem quotientMap_mk : QuotientMap (mk : G → G ⧸ N) :=
+  quotientMap_quot_mk
 
 @[to_additive]
 theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := by
@@ -878,11 +882,11 @@ instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
       · exact continuous_quot_mk.prod_map continuous_quot_mk
       · exact (surjective_quot_mk _).prodMap (surjective_quot_mk _)
     exact quot.continuous_iff.2 cont
-  continuous_inv := by
-    have quot := IsOpenMap.to_quotientMap
-      (QuotientGroup.isOpenMap_coe N) continuous_quot_mk (surjective_quot_mk _)
-    rw [quot.continuous_iff]
-    exact continuous_quot_mk.comp continuous_inv
+  continuous_inv := continuous_inv.quotient_map' _
+
+@[to_additive (attr := deprecated (since := "2024-08-05"))]
+theorem _root_.topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) :=
+  instTopologicalGroup N
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 @[to_additive
@@ -894,6 +898,11 @@ theorem nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
 instance instFirstCountableTopology [FirstCountableTopology G] :
     FirstCountableTopology (G ⧸ N) where
   nhds_generated_countable := mk_surjective.forall.2 fun x ↦ nhds_eq N x ▸ inferInstance
+
+@[to_additive (attr := deprecated (since := "2024-08-05"))]
+theorem nhds_one_isCountablyGenerated [FirstCountableTopology G] [N.Normal] :
+    (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
+  inferInstance
 
 end QuotientGroup
 
