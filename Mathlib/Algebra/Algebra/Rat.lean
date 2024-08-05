@@ -27,7 +27,8 @@ end RingHom
 
 section Rat
 
-instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
+/-- Every division ring of characteristic zero is an algebra over the rationals. -/
+instance DivisionRing.toRatAlgebra {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   smul := (· • ·)
   smul_def' := Rat.smul_def
   toRingHom := Rat.castHom α
@@ -38,7 +39,7 @@ instance : Algebra NNRat ℚ :=
   NNRat.coeHom.toAlgebra
 
 /-- The two `Algebra ℚ ℚ` instances should coincide. -/
-example : algebraRat = Algebra.id ℚ :=
+example : DivisionRing.toRatAlgebra = Algebra.id ℚ :=
   rfl
 
 @[simp] theorem algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ := rfl
