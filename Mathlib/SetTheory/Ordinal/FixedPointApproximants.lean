@@ -128,8 +128,8 @@ theorem lfpApprox_mono₂ (h : f ≤ g) : lfpApprox f ≤ lfpApprox g := by
       apply g.monotone
       exact ih i' h_lt
 
-theorem lfpApprox_mono₃ {x₁ x₂ : α} (h : x₁ ≤ x₂) : lfpApprox f x₁ ≤ lfpApprox f x₂ := by
-  intro a
+theorem lfpApprox_mono₃ : Monotone (lfpApprox f) := by
+  intro x₁ x₂ h a
   induction a using Ordinal.induction with
   | h i ih =>
     unfold lfpApprox
@@ -283,8 +283,8 @@ theorem gfpApprox_mono₂ (h : f ≤ g) : gfpApprox f ≤ gfpApprox g := by
       apply g.monotone
       exact ih i' h_lt
 
-theorem gfpApprox_mono₃ {x₁ x₂ : α} (h : x₁ ≤ x₂) : gfpApprox f x₁ ≤ gfpApprox f x₂ := by
-  intro a
+theorem gfpApprox_mono₃ : Monotone (gfpApprox f) := by
+  intro x₁ x₂ h a
   induction a using Ordinal.induction with
   | h i ih =>
     unfold gfpApprox
