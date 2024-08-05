@@ -10,7 +10,7 @@ import Mathlib.ModelTheory.Substructures
 This file defines partial isomorphisms between first-order structures.
 
 ## Main Definitions
-* `FirstOrder.Language.Substructure.PartialEquiv` is defined so that `L.PartialEquiv M N`, annotated
+- `FirstOrder.Language.Substructure.PartialEquiv` is defined so that `L.PartialEquiv M N`, annotated
   `M ≃ₚ[L] N`, is the type of equivalences between substructures of `M` and `N`.
 
 -/

@@ -17,12 +17,11 @@ limits of `Real.exp` at infinity.
 exp
 -/
 
-
 noncomputable section
 
 open Finset Filter Metric Asymptotics Set Function Bornology
 
-open scoped Classical Topology Nat
+open scoped Topology Nat
 
 namespace Complex
 

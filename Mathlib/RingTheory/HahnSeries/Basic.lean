@@ -52,7 +52,7 @@ section Zero
 variable [PartialOrder Γ] [Zero R]
 
 theorem coeff_injective : Injective (coeff : HahnSeries Γ R → Γ → R) :=
-  HahnSeries.ext
+  fun _ _ => HahnSeries.ext
 
 @[simp]
 theorem coeff_inj {x y : HahnSeries Γ R} : x.coeff = y.coeff ↔ x = y :=
@@ -83,7 +83,7 @@ instance : Inhabited (HahnSeries Γ R) :=
   ⟨0⟩
 
 instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
-  ⟨fun a b => a.ext b (by subsingleton)⟩
+  ⟨fun _ _ => HahnSeries.ext (by subsingleton)⟩
 
 @[simp]
 theorem zero_coeff {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
@@ -154,7 +154,7 @@ def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
   toFun r :=
     { coeff := Pi.single a r
       isPWO_support' := (Set.isPWO_singleton a).mono Pi.support_single_subset }
-  map_zero' := HahnSeries.ext _ _ (Pi.single_zero _)
+  map_zero' := HahnSeries.ext (Pi.single_zero _)
 
 variable {a b : Γ} {r : R}
 
@@ -355,7 +355,7 @@ theorem zero_le_orderTop_iff {x : HahnSeries Γ R} : 0 ≤ x.orderTop ↔ 0 ≤ 
   · simp_all
   · simp_all [order_of_ne h, orderTop_of_ne h, zero_lt_orderTop_iff]
 
-theorem leadingCoeff_eq [Zero Γ] {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
+theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
   by_cases h : x = 0
   · rw [h, leadingCoeff_zero, zero_coeff]
   · rw [leadingCoeff_of_ne h, order_of_ne h]
@@ -437,10 +437,7 @@ end Zero
 
 section LocallyFiniteLinearOrder
 
-variable [Zero R] [LinearOrder Γ] [LocallyFiniteOrder Γ]
-
-theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
-    (Function.support f).IsPWO := Set.isWF_iff_isPWO.mp hf.wellFoundedOn_lt
+variable [Zero R] [LinearOrder Γ]
 
 theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
@@ -450,14 +447,21 @@ theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), 
   rw [Function.mem_support, ne_eq] at hm
   exact not_lt.mp (mt (hn m) hm)
 
+theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
+  simp only [support_zero', bddBelow_empty]
+
+variable [LocallyFiniteOrder Γ]
+
+theorem suppBddBelow_supp_PWO (f : Γ → R)
+    (hf : BddBelow (Function.support f)) :
+    (Function.support f).IsPWO :=
+  Set.isWF_iff_isPWO.mp hf.wellFoundedOn_lt
+
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
 def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : HahnSeries Γ R where
   coeff := f
   isPWO_support' := suppBddBelow_supp_PWO f hf
-
-theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
-  simp only [support_zero', bddBelow_empty]
 
 @[simp]
 theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 : HahnSeries Γ R) :=

@@ -71,6 +71,9 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
   trim_le : toOuterMeasure.trim ≤ toOuterMeasure
 
+/-- Notation for `Measure` with respect to a non-standard σ-algebra in the domain. -/
+scoped notation "Measure[" mα "]" α:arg => @Measure α mα
+
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
@@ -122,9 +125,6 @@ theorem ofMeasurable_apply {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
 theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :=
   toOuterMeasure_injective <| by
   rw [← trimmed, OuterMeasure.trim_congr (h _), trimmed]
-
-theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s :=
-  ⟨by rintro rfl s _hs; rfl, Measure.ext⟩
 
 theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
   ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩

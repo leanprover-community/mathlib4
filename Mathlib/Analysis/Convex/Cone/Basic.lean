@@ -194,7 +194,7 @@ end Module
 
 section Maps
 
-variable [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
+variable [AddCommMonoid F] [AddCommMonoid G]
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 
 /-- The image of a convex cone under a `𝕜`-linear map is a convex cone. -/

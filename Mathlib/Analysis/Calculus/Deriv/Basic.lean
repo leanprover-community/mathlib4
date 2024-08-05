@@ -90,8 +90,7 @@ universe u v w
 
 noncomputable section
 
-open scoped Classical Topology Filter ENNReal NNReal
-
+open scoped Topology ENNReal NNReal
 open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
