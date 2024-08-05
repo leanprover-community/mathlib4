@@ -35,9 +35,10 @@ theorem IsIntegral.map_of_comp_eq {R S T U : Type*} [CommRing R] [Ring S]
 section
 
 variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-variable (f : A →ₐ[R] B) (hf : Function.Injective f)
+variable (f : A →ₐ[R] B)
 
-theorem Algebra.IsIntegral.of_injective [Algebra.IsIntegral R B] : Algebra.IsIntegral R A :=
+theorem Algebra.IsIntegral.of_injective (hf : Function.Injective f) [Algebra.IsIntegral R B] :
+    Algebra.IsIntegral R A :=
   ⟨fun _ ↦ (isIntegral_algHom_iff f hf).mp (isIntegral _)⟩
 
 end
