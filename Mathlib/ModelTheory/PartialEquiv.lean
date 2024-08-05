@@ -368,7 +368,7 @@ def definedAtLeft
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
 def definedAtRight
-  (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ n ∈ g.cod)
+    (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ n ∈ g.cod)
   (n : N) : Order.Cofinal (FiniteEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
   mem_gt := by
