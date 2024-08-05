@@ -40,8 +40,8 @@ private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤
 /-- typeToCat : Type ⥤ Cat is left adjoint to Cat.objects : Cat ⥤ Type -/
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
   homEquiv  := homEquiv
-  unit : 𝟭 (Type u) ⟶ typeToCat ⋙ Cat.objects := { app:= fun _  ↦ Discrete.mk }
-  counit : Cat.objects ⋙ typeToCat ⟶ 𝟭 Cat := {
+  unit := { app:= fun _  ↦ Discrete.mk }
+  counit := {
     app := typeToCatObjectsAdjCounitApp
     naturality := fun _ _ _  ↦  Functor.hext (fun _ ↦ rfl)
       (by intro ⟨_⟩ ⟨_⟩ f
