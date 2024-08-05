@@ -20,12 +20,11 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, multiplication
 -/
 
-
 universe u v w
 
 noncomputable section
 
-open scoped Classical Topology Filter ENNReal
+open scoped Topology Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -326,12 +325,15 @@ variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
 theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
-    DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x :=
-  (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
+    DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x := by
+  classical
+  exact
+    (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
 
 theorem DifferentiableWithinAt.finset_prod (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
-    DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i ·) s x :=
-  (HasDerivWithinAt.finset_prod (fun i hi ↦
+    DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i ·) s x := by
+  classical
+  exact (HasDerivWithinAt.finset_prod (fun i hi ↦
     DifferentiableWithinAt.hasDerivWithinAt (hd i hi))).differentiableWithinAt
 
 theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :

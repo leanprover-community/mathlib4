@@ -615,8 +615,6 @@ theorem Measurable.measurableSMul₂_iterateMulAct (h : Measurable f) :
     MeasurableSMul₂ (IterateMulAct f) α where
   measurable_smul :=
     suffices Measurable fun p : α × IterateMulAct f ↦ f^[p.2.val] p.1 from this.comp measurable_swap
-    -- TODO: find home for this instance
-    have : Countable (IterateMulAct f) := ⟨⟨IterateMulAct.val, IterateMulAct.ext⟩⟩
     measurable_from_prod_countable fun n ↦ h.iterate n.val
 
 @[to_additive (attr := simp)]
