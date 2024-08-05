@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -108,7 +108,7 @@ lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDen
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
   ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
-    gcongr; exact monotone_filter_right _ h
+    gcongr; exact h
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by

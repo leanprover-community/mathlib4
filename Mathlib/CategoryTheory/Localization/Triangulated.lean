@@ -3,19 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Shift.Localization
 
 /-! # Localization of triangulated categories
 
 If `L : C ⥤ D` is a localization functor for a class of morphisms `W` that is compatible
-with the triangulation on the category `C` and admits left and right calculus of fractions,
+with the triangulation on the category `C` and admits a left calculus of fractions,
 it is shown in this file that `D` can be equipped with a pretriangulated category structure,
-and that it is triangulated (TODO).
-
-## TODO
-* obtain (pre)triangulated instances on `W.Localization` and `W.Localization'`.
+and that it is triangulated.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
@@ -120,9 +118,7 @@ namespace Triangulated
 namespace Localization
 
 variable (W : MorphismProperty C) [L.IsLocalization W]
-  [W.IsCompatibleWithTriangulation] [W.HasLeftCalculusOfFractions]
-  [Preadditive D] [HasZeroObject D]
-  [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
+  [W.HasLeftCalculusOfFractions]
 
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
@@ -138,6 +134,9 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
   dsimp
   simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
     Functor.mapArrow_obj_left, Functor.map_id, comp_id]
+
+section
+variable [W.IsCompatibleWithTriangulation]
 
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
@@ -180,6 +179,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     simp only [Functor.map_comp, reassoc_of% hγ,
       MorphismProperty.LeftFraction.map_comp_map_s_assoc]
 
+variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
+
 /-- The pretriangulated structure on the localized category. -/
 def pretriangulated : Pretriangulated D where
   distinguishedTriangles := L.essImageDistTriang
@@ -192,10 +193,63 @@ def pretriangulated : Pretriangulated D where
 
 instance isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
-    letI : Pretriangulated D := pretriangulated L W; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
+  letI : Pretriangulated D := pretriangulated L W
+  ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
+
+end
+
+variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+
+lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
+    IsTriangulated D := by
+  have := essSurj_mapComposableArrows L W 2
+  exact isTriangulated_of_essSurj_mapComposableArrows_two L
+
+variable [W.IsCompatibleWithTriangulation]
+
+instance (n : ℤ) : (shiftFunctor (W.Localization) n).Additive := by
+  rw [Localization.functor_additive_iff W.Q W]
+  exact Functor.additive_of_iso (W.Q.commShiftIso n)
+
+instance : Pretriangulated W.Localization := pretriangulated W.Q W
+
+instance [IsTriangulated C] : IsTriangulated W.Localization := isTriangulated W.Q W
+
+section
+
+variable [W.HasLocalization]
+
+instance (n : ℤ) : (shiftFunctor (W.Localization') n).Additive := by
+  rw [Localization.functor_additive_iff W.Q' W]
+  exact Functor.additive_of_iso (W.Q'.commShiftIso n)
+
+instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
+
+instance [IsTriangulated C] : IsTriangulated W.Localization' := isTriangulated W.Q' W
+
+end
 
 end Localization
 
 end Triangulated
+
+namespace Functor
+
+variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+  [Pretriangulated D] [L.mapArrow.EssSurj] [L.IsTriangulated]
+
+lemma distTriang_iff (T : Triangle D) :
+    (T ∈ distTriang D) ↔ T ∈ L.essImageDistTriang := by
+  constructor
+  · intro hT
+    let f := L.mapArrow.objPreimage T.mor₁
+    obtain ⟨Z, g : f.right ⟶ Z, h : Z ⟶ f.left⟦(1 : ℤ)⟧, mem⟩ :=
+      Pretriangulated.distinguished_cocone_triangle f.hom
+    exact ⟨_, (exists_iso_of_arrow_iso T _ hT (L.map_distinguished _ mem)
+      (L.mapArrow.objObjPreimageIso T.mor₁).symm).choose, mem⟩
+  · rintro ⟨T₀, e, hT₀⟩
+    exact isomorphic_distinguished _ (L.map_distinguished _ hT₀) _ e
+
+end Functor
 
 end CategoryTheory

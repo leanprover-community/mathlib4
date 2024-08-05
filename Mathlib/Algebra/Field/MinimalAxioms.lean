@@ -42,4 +42,6 @@ abbrev Field.ofMinimalAxioms (K : Type u)
     mul_inv_cancel := mul_inv_cancel
     inv_zero := inv_zero
     nnqsmul := _
-    qsmul := _ }
+    nnqsmul_def := fun q a => rfl
+    qsmul := _
+    qsmul_def := fun q a => rfl }

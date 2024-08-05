@@ -52,7 +52,6 @@ variable [HasRankNullity.{u} R]
 lemma rank_quotient_add_rank (N : Submodule R M) :
     Module.rank R (M ⧸ N) + Module.rank R N = Module.rank R M :=
   HasRankNullity.rank_quotient_add_rank N
-#align rank_quotient_add_rank rank_quotient_add_rank
 
 variable (R M) in
 lemma exists_set_linearIndependent :
@@ -60,10 +59,12 @@ lemma exists_set_linearIndependent :
   HasRankNullity.exists_set_linearIndependent M
 
 variable (R) in
-instance (priority := 100) : Nontrivial R := by
+theorem nontrivial_of_hasRankNullity : Nontrivial R := by
   refine (subsingleton_or_nontrivial R).resolve_left fun H ↦ ?_
   have := rank_quotient_add_rank (R := R) (M := PUnit) ⊥
   simp [one_add_one_eq_two] at this
+
+attribute [local instance] nontrivial_of_hasRankNullity
 
 theorem lift_rank_range_add_rank_ker (f : M →ₗ[R] M') :
     lift.{u} (Module.rank R (LinearMap.range f)) + lift.{v} (Module.rank R (LinearMap.ker f)) =
@@ -76,7 +77,6 @@ theorem rank_range_add_rank_ker (f : M →ₗ[R] M₁) :
     Module.rank R (LinearMap.range f) + Module.rank R (LinearMap.ker f) = Module.rank R M := by
   haveI := fun p : Submodule R M => Classical.decEq (M ⧸ p)
   rw [← f.quotKerEquivRange.rank_eq, rank_quotient_add_rank]
-#align rank_range_add_rank_ker rank_range_add_rank_ker
 
 theorem lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjective f) :
     lift.{v} (Module.rank R M) =
@@ -86,7 +86,6 @@ theorem lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjective f) :
 theorem rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f) :
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
-#align rank_eq_of_surjective rank_eq_of_surjective
 
 theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndependent (ι := s) R Subtype.val) :
@@ -100,12 +99,12 @@ theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
     apply ht'.ne_zero ⟨x, hxt⟩
     rw [Subtype.coe_mk, ← hsec x, Submodule.Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs
-  refine ⟨s ∪ sec '' t, subset_union_left _ _, ?_, ?_⟩
+  refine ⟨s ∪ sec '' t, subset_union_left, ?_, ?_⟩
   · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
       ← rank_quotient_add_rank (Submodule.span R s), add_comm, rank_span_set hs]
     exact HasLeftInverse.injective ⟨Submodule.Quotient.mk, hsec⟩
   · apply LinearIndependent.union_of_quotient Submodule.subset_span hs
-    rwa [Function.comp, linearIndependent_image ((hsec'.symm ▸ injective_id).injOn t).image_of_comp,
+    rwa [Function.comp, linearIndependent_image (hsec'.symm ▸ injective_id).injOn.image_of_comp,
       ← image_comp, hsec', image_id]
 
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
@@ -164,13 +163,11 @@ theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
     (equivSubtypeMap s (comap _ (s ⊓ t))).rank_eq, Submodule.map_comap_subtype,
     (equivSubtypeMap (s ⊔ t) (comap _ t)).rank_eq, Submodule.map_comap_subtype,
     ← inf_assoc, inf_idem, add_right_comm]
-#align submodule.rank_sup_add_rank_inf_eq Submodule.rank_sup_add_rank_inf_eq
 
 theorem Submodule.rank_add_le_rank_add_rank (s t : Submodule R M) :
     Module.rank R (s ⊔ t : Submodule R M) ≤ Module.rank R s + Module.rank R t := by
   rw [← Submodule.rank_sup_add_rank_inf_eq]
   exact self_le_add_right _ _
-#align submodule.rank_add_le_rank_add_rank Submodule.rank_add_le_rank_add_rank
 
 section Finrank
 

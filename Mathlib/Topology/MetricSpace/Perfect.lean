@@ -8,8 +8,6 @@ import Mathlib.Topology.Perfect
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.CantorScheme
 
-#align_import topology.perfect from "leanprover-community/mathlib"@"3905fa80e62c0898131285baab35559fbc4e5cda"
-
 /-!
 # Perfect Sets
 
@@ -51,7 +49,7 @@ private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C)
   · rw [IsClosed.closure_subset_iff hC.closed]
     apply inter_subset_right
   rw [EMetric.diam_closure]
-  apply le_trans (EMetric.diam_mono (inter_subset_left _ _))
+  apply le_trans (EMetric.diam_mono inter_subset_left)
   convert EMetric.diam_ball (x := x)
   rw [mul_comm, ENNReal.div_mul_cancel] <;> norm_num
 
@@ -71,7 +69,6 @@ theorem Perfect.small_diam_splitting (ε_pos : 0 < ε) :
     ⟨closure (EMetric.ball x₀ (ε / 2) ∩ D₀), closure (EMetric.ball x₁ (ε / 2) ∩ D₁),
       ⟨perf0', non0', sub0'.trans sub0, diam0⟩, ⟨perf1', non1', sub1'.trans sub1, diam1⟩, ?_⟩
   apply Disjoint.mono _ _ hdisj <;> assumption
-#align perfect.small_diam_splitting Perfect.small_diam_splitting
 
 open CantorScheme
 
@@ -127,7 +124,6 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
     continuity
   intro x y hxy
   simpa only [← Subtype.val_inj] using hdisj'.map_injective hxy
-#align perfect.exists_nat_bool_injection Perfect.exists_nat_bool_injection
 
 end CantorInjMetric
 
@@ -140,4 +136,3 @@ theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [Topolo
   obtain ⟨D, hD, Dnonempty, hDC⟩ := exists_perfect_nonempty_of_isClosed_of_not_countable hC hunc
   obtain ⟨f, hfD, hf⟩ := hD.exists_nat_bool_injection Dnonempty
   exact ⟨f, hfD.trans hDC, hf⟩
-#align is_closed.exists_nat_bool_injection_of_not_countable IsClosed.exists_nat_bool_injection_of_not_countable

@@ -54,4 +54,11 @@ noncomputable def restrictScalars (α : R ⟶ R') :
     { hom := φ.hom
       map_smul := fun X r ↦ φ.map_smul X (α.app _ r) }
 
+instance (α : R ⟶ R') : (restrictScalars.{v} α).Additive where
+
+instance : (restrictScalars (𝟙 R)).Full := inferInstanceAs (𝟭 _).Full
+
+instance (α : R ⟶ R') : (restrictScalars α).Faithful where
+  map_injective h := (toPresheaf R').map_injective ((toPresheaf R).congr_map h)
+
 end PresheafOfModules
