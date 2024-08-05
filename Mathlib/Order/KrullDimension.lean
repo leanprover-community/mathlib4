@@ -774,7 +774,6 @@ lemma height_coe_WithTop (x : α) : height (x : WithTop α) = height x := by
     let p' := p.map _ WithTop.coe_strictMono
     apply le_iSup_of_le ⟨p', by simp [p', hlast]⟩ (by simp [p'])
 
-@[simp]
 lemma height_coe_ENat (x : ℕ) : height (x : ℕ∞) = height x := height_coe_WithTop x
 
 @[simp]
@@ -809,8 +808,7 @@ lemma krullDim_ENat : krullDim ℕ∞ = ⊤ := by
 @[simp]
 lemma height_ENat (n : ℕ∞) : height n = n := by
   cases n with
-  | top =>
-    simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_ENat, WithBot.coe_top]
-  | coe n => simp
+  | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_ENat, WithBot.coe_top]
+  | coe n => simp only [height_coe_ENat, height_nat]
 
 end calculations
