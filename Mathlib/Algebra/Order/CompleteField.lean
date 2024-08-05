@@ -42,7 +42,6 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 reals, conditionally complete, ordered field, uniqueness
 -/
 
-
 variable {F α β γ : Type*}
 
 noncomputable section

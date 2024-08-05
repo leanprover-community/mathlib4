@@ -26,12 +26,9 @@ In this file we construct the algebraic closure of a field
 algebraic closure, algebraically closed
 -/
 
-
 universe u v w
 
 noncomputable section
-
-open scoped Classical Polynomial
 
 open Polynomial
 
@@ -54,6 +51,7 @@ indeterminate. -/
 def spanEval : Ideal (MvPolynomial (MonicIrreducible k) k) :=
   Ideal.span <| Set.range <| evalXSelf k
 
+open Classical in
 /-- Given a finset of monic irreducible polynomials, construct an algebra homomorphism to the
 splitting field of the product of the polynomials sending each indeterminate `x_f` represented by
 the polynomial `f` in the finset to a root of `f`. -/

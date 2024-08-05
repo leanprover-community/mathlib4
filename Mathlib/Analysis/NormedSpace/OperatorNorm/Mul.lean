@@ -15,9 +15,8 @@ of multiplication and scalar-multiplication operations in normed algebras and no
 
 suppress_compilation
 
-
 open Metric
-open scoped Classical NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
 

@@ -26,7 +26,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 open Set Filter MeasureTheory MeasurableSpace
 
-open scoped Classical Topology NNReal ENNReal MeasureTheory
+open scoped Topology NNReal ENNReal
 
 universe u v w x y
 
@@ -303,6 +303,7 @@ lemma aemeasurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   set p : α → (ℕ → ℝ≥0∞) → Prop := fun x f' ↦ Tendsto f' atTop (𝓝 (g x))
   have hp : ∀ᵐ x ∂μ, p x fun n ↦ f (v n) x := by
     filter_upwards [hlim] with x hx using hx.comp hv
+  classical
   set aeSeqLim := fun x ↦ ite (x ∈ aeSeqSet h'f p) (g x) (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some
   refine ⟨aeSeqLim, measurable_of_tendsto' atTop (aeSeq.measurable h'f p)
     (tendsto_pi_nhds.mpr fun x ↦ ?_), ?_⟩
