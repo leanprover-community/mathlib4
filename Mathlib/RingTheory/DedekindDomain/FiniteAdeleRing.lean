@@ -358,7 +358,8 @@ instance : CoeFun (FiniteAdeleRing R K)
     (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
   coe a v := a.1 v
 
-open scoped algebraMap in
+open scoped algebraMap -- coercion from R to `FiniteAdeleRing R K`
+
 variable {R K} in
 lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat R K,
     a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
@@ -366,9 +367,7 @@ lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat 
 
 section Topology
 
-open Classical nonZeroDivisors Multiplicative Additive IsDedekindDomain.HeightOneSpectrum
-
-open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
+open nonZeroDivisors
 open scoped DiscreteValuation
 
 variable {R K} in
@@ -392,8 +391,6 @@ lemma mul_nonZeroDivisor_mem_finiteIntegralAdeles (a : FiniteAdeleRing R K) :
     push_cast
     rw [← mul_assoc]
     exact mul_mem (h v (a v)) <| coe_mem_adicCompletionIntegers _ _
-
-open scoped Pointwise
 
 theorem submodulesRingBasis : SubmodulesRingBasis
     (fun (r : R⁰) ↦ Submodule.span (R_hat R K) {((r : R) : FiniteAdeleRing R K)}) where

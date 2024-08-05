@@ -26,9 +26,6 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 
 -/
 
-
-open scoped Classical Polynomial
-
 open Polynomial Set Function minpoly
 
 namespace minpoly
