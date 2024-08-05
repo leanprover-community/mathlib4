@@ -1581,17 +1581,17 @@ end FoldlEqFoldlr'
 section FoldlEqFoldlr'
 
 variable {f : α → β → β}
-variable (hf : ∀ a b c, f a (f b c) = f b (f a c))
 
-theorem foldr_eq_of_comm' : ∀ a b l, foldr f a (b :: l) = foldr f (f b a) l
+theorem foldr_eq_of_comm' (hf : ∀ a b c, f a (f b c) = f b (f a c)) :
+    ∀ a b l, foldr f a (b :: l) = foldr f (f b a) l
   | a, b, [] => rfl
-  | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' ..]; rfl
+  | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' hf ..]; rfl
 
 end FoldlEqFoldlr'
 
 section
 
-variable {op : α → α → α} [ha : Std.Associative op] [hc : Std.Commutative op]
+variable {op : α → α → α} [ha : Std.Associative op]
 
 /-- Notation for `op a b`. -/
 local notation a " ⋆ " b => op a b
@@ -1611,6 +1611,8 @@ theorem foldl_op_eq_op_foldr_assoc :
   | [], a₁, a₂ => rfl
   | a :: l, a₁, a₂ => by
     simp only [foldl_cons, foldr_cons, foldl_assoc, ha.assoc]; rw [foldl_op_eq_op_foldr_assoc]
+
+variable [hc : Std.Commutative op]
 
 theorem foldl_assoc_comm_cons {l : List α} {a₁ a₂} : ((a₁ :: l) <*> a₂) = a₁ ⋆ l <*> a₂ := by
   rw [foldl_cons, hc.comm, foldl_assoc]

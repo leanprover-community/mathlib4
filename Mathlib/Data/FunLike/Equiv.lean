@@ -149,7 +149,7 @@ class EquivLike (E : Sort*) (α β : outParam (Sort*)) where
 
 namespace EquivLike
 
-variable {E F α β γ : Sort*} [iE : EquivLike E α β] [iF : EquivLike F β γ]
+variable {E F α β γ : Sort*} [EquivLike E α β] [EquivLike F β γ]
 
 theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
