@@ -2076,9 +2076,6 @@ section
 /-! The next theorems cover the identification between `M ≃L[𝕜] M`and the group of units of the ring
 `M →L[R] M`. -/
 
-
-variable [TopologicalAddGroup M]
-
 /-- An invertible continuous linear map `f` determines a continuous equivalence from `M` to itself.
 -/
 def ofUnit (f : (M →L[R] M)ˣ) : M ≃L[R] M where
@@ -2273,7 +2270,7 @@ end
 section
 
 variable [Ring R]
-variable [AddCommGroup M] [TopologicalAddGroup M] [Module R M]
+variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]
