@@ -61,7 +61,6 @@ theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] 
     ⟨∏ x, minpoly F (s x), splits_prod _ fun x _ => h.splits (s x),
       Subalgebra.toSubmodule.injective ?_⟩
   rw [Algebra.top_toSubmodule, eq_top_iff, ← s.span_eq, Submodule.span_le, Set.range_subset_iff]
-  classical
   refine fun x =>
     Algebra.subset_adjoin
       (Multiset.mem_toFinset.mpr <|

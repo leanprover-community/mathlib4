@@ -176,9 +176,9 @@ section CommRing
 
 variable [CommRing K]
 
+open Classical in
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
-  classical
   simp only [Set.mem_setOf_eq]; infer_instance
 
 end CommRing
