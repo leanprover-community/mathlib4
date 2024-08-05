@@ -604,9 +604,6 @@ instance : Coe (Cocycle F G n) (Cochain F G n) where
 lemma ext (z₁ z₂ : Cocycle F G n) (h : (z₁ : Cochain F G n) = z₂) : z₁ = z₂ :=
   Subtype.ext h
 
-protected lemma ext_iff (z₁ z₂ : Cocycle F G n) : z₁ = z₂ ↔ (z₁ : Cochain F G n) = z₂ :=
-  Subtype.ext_iff
-
 instance : SMul R (Cocycle F G n) where
   smul r z := ⟨r • z.1, by
     have hz := z.2
