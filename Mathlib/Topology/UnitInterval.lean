@@ -226,7 +226,7 @@ lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := by
 lemma lt_one_iff_ne {x : I} : x < 1 ↔ x ≠ 1 := by
   rw [← coe_lt_one, ← coe_ne_one, lt_iff_le_and_ne, and_iff_right (le_one x)]
 
-lemma one_or_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 := by
+lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 := by
   contrapose! h
   simp only [ne_eq, ← lt_one_iff_ne, ← coe_lt_one, ← pos_iff_ne_zero, ← coe_pos] at h
   simp only [← Subtype.coe_lt_coe, coe_mul]
