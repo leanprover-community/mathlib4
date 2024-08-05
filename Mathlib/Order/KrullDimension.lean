@@ -103,6 +103,22 @@ section RelSeries
 
 variable {α : Type*}
 
+def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
+  { length := n, toFun := fun i => i, step := fun _ => Nat.lt_add_one _ }
+
+@[simp] def LTSeries.length_iota (n : ℕ) : (LTSeries.iota n).length = n := rfl
+
+@[simp] def LTSeries.head_iota (n : ℕ) : (LTSeries.iota n).head = 0 := rfl
+
+@[simp] def LTSeries.last_iota (n : ℕ) : (LTSeries.iota n).last = n := rfl
+
+@[simp] def RelSeries.last_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.last = p.head := by
+  simp [RelSeries.last, RelSeries.head]
+
+@[simp] def RelSeries.head_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.head = p.last := by
+  simp [RelSeries.last, RelSeries.head]
+
+
 def RelSeries.take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r :=
   { length := i
     toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
@@ -651,22 +667,19 @@ variable {α : Type*} [Preorder α]
 ## Concrete calculations
 -/
 
+
 @[simp] lemma height_nat (n : ℕ) : height n = n := by
   induction n using Nat.strongInductionOn with | ind n ih =>
   apply le_antisymm
   · apply (height_le_coe_iff ..).mpr
     simp (config := { contextual := true }) only [ih, Nat.cast_lt, implies_true]
-  · let p' : LTSeries ℕ := { length := n, toFun := fun i => i, step := fun i => by simp }
-    apply length_le_height_last p'
+  · exact length_le_height_last (.iota n)
 
 @[simp] lemma coheight_nat (n : ℕ) : coheight n = ⊤ := by
   rw [coheight_eq_top_iff]
   intro m
-  use { length := m
-        toFun := fun i => OrderDual.toDual (n + m - i.1 : ℕ)
-        step := fun ⟨i, hi⟩ => by apply LT.lt.dual; simp; omega }
-  simp [RelSeries.last]
-  rfl
+  use ((LTSeries.iota m).map (· + n) (StrictMono.add_const (fun _ _ x ↦ x) n)).reverse
+  simp
 
 @[simp]
 lemma krullDim_nat : krullDim ℕ = ⊤ := by
@@ -686,8 +699,16 @@ lemma krullDim_nat : krullDim ℕ = ⊤ := by
 @[simp] lemma height_int (a : ℤ) : height a = ⊤ := by
   rw [height_eq_top_iff]
   intro n
-  use { length := n, toFun := fun i => a - n + i, step := fun i => by simp }
-  simp [RelSeries.last]
+  use (LTSeries.iota n).map (a - (n : ℤ) + ·)
+    (StrictMono.const_add Int.natCast_strictMono (a - (n : ℤ)))
+  simp
+
+@[simp] lemma coheight_int (a : ℤ) : coheight a = ⊤ := by
+  rw [coheight_eq_top_iff]
+  intro n
+  use (LTSeries.iota n).map (fun i => a + (i : ℤ))
+    (StrictMono.const_add (Int.natCast_strictMono) a) |>.reverse
+  simp
 
 @[simp]
 lemma height_coe_WithBot (x : α) : height (x : WithBot α) = height x + 1 := by
