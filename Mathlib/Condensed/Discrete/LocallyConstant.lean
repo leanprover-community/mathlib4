@@ -162,6 +162,18 @@ end Aux
 variable [HasExplicitFiniteCoproducts.{u} P]
 
 section SigmaComparison
+/-!
+
+# The sigma-comparison map
+
+In this section we define the map `sigmaComparison` associated to a presheaf `X` on
+`CompHausLike P`, and a finite family `S₁,...,Sₙ` of spaces in `CompHausLike P`, where `P` is
+stable under taking finite disjoint unions.
+
+The map `sigmaComparison` is the canonical map `X(S₁ ⊔ ... ⊔ Sₙ) ⟶ X(S₁) × ... × X(Sₙ)` induced by
+the inclusion maps `Sᵢ ⟶ S₁ ⊔ ... ⊔ Sₙ`, and it is an isomorphism when `X` preserves finite
+products.
+-/
 
 variable
   (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w) [PreservesFiniteProducts X]
@@ -182,8 +194,8 @@ def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.
 noncomputable instance : PreservesLimitsOfShape (Discrete α) X :=
   let α' := (Countable.toSmall α).equiv_small.choose
   let e : α ≃ α' := (Countable.toSmall α).equiv_small.choose_spec.some
-  have : Fintype α := Fintype.ofFinite _
-  have : Fintype α' := Fintype.ofEquiv α e
+  letI : Fintype α := Fintype.ofFinite _
+  letI : Fintype α' := Fintype.ofEquiv α e
   preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) X
 
 theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
@@ -317,7 +329,6 @@ noncomputable def counitAppApp (S : CompHausLike.{u} P) (Y : (CompHausLike.{u} P
     [PreservesFiniteProducts Y] :
     LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u+1}))) ⟶ Y.obj ⟨S⟩ := by
   intro r
-  -- have : ∀ (a : α r), HasProp P (part hh r a) := hasProp_fiber hh r
   refine ((inv (sigmaComparison Y (fun a ↦ (part r a).1))) ≫
     (Y.mapIso (sigmaIso r).op).inv) (counitAppAppImage r)
 

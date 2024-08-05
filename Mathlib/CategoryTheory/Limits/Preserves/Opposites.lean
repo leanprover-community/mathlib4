@@ -171,9 +171,7 @@ end
 
 section
 
--- Preservation of finite (colimits) is only defined when the morphisms of C and D live in the same
--- universe.
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- If `F : C ⥤ D` preserves finite colimits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite
     limits. -/
@@ -222,6 +220,70 @@ def preservesFiniteColimitsRightOp (F : Cᵒᵖ ⥤ D) [PreservesFiniteLimits F]
 def preservesFiniteColimitsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesFiniteLimits F] :
     PreservesFiniteColimits F.unop where
   preservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeUnop J F
+
+/-- If `F : C ⥤ D` preserves finite coproducts, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite
+    products. -/
+def preservesFiniteProductsOp (F : C ⥤ D) [PreservesFiniteCoproducts F] :
+    PreservesFiniteProducts F.op where
+  preserves J _ := by
+    apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeOp
+    exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _
+
+/-- If `F : C ⥤ Dᵒᵖ` preserves finite coproducts, then `F.leftOp : Cᵒᵖ ⥤ D` preserves finite
+    products. -/
+def preservesFiniteProductsLeftOp (F : C ⥤ Dᵒᵖ) [PreservesFiniteCoproducts F] :
+    PreservesFiniteProducts F.leftOp where
+  preserves J _ := by
+    apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeLeftOp
+    exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _
+
+/-- If `F : Cᵒᵖ ⥤ D` preserves finite coproducts, then `F.rightOp : C ⥤ Dᵒᵖ` preserves finite
+    products. -/
+def preservesFiniteProductsRightOp (F : Cᵒᵖ ⥤ D) [PreservesFiniteCoproducts F] :
+    PreservesFiniteProducts F.rightOp where
+  preserves J _ := by
+    apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeRightOp
+    exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite coproducts, then `F.unop : C ⥤ D` preserves finite
+    products. -/
+def preservesFiniteProductsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesFiniteCoproducts F] :
+    PreservesFiniteProducts F.unop where
+  preserves J _ := by
+    apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeUnop
+    exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _
+
+/-- If `F : C ⥤ D` preserves finite products, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite
+    coproducts. -/
+def preservesFiniteCoproductsOp (F : C ⥤ D) [PreservesFiniteProducts F] :
+    PreservesFiniteCoproducts F.op where
+  preserves J _ := by
+    apply (config := { allowSynthFailures := true }) preservesColimitsOfShapeOp
+    exact preservesLimitsOfShapeOfEquiv (Discrete.opposite J).symm _
+
+/-- If `F : C ⥤ Dᵒᵖ` preserves finite products, then `F.left_op : Cᵒᵖ ⥤ D` preserves finite
+    coproducts. -/
+def preservesFiniteCoproductsLeftOp (F : C ⥤ Dᵒᵖ) [PreservesFiniteProducts F] :
+    PreservesFiniteCoproducts F.leftOp where
+  preserves J _ := by
+    apply (config := { allowSynthFailures := true }) preservesColimitsOfShapeLeftOp
+    exact preservesLimitsOfShapeOfEquiv (Discrete.opposite J).symm _
+
+/-- If `F : Cᵒᵖ ⥤ D` preserves finite products, then `F.right_op : C ⥤ Dᵒᵖ` preserves finite
+    coproducts. -/
+def preservesFiniteCoproductsRightOp (F : Cᵒᵖ ⥤ D) [PreservesFiniteProducts F] :
+    PreservesFiniteCoproducts F.rightOp where
+  preserves J _ := by
+    apply (config := { allowSynthFailures := true }) preservesColimitsOfShapeRightOp
+    exact preservesLimitsOfShapeOfEquiv (Discrete.opposite J).symm _
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite products, then `F.unop : C ⥤ D` preserves finite
+    coproducts. -/
+def preservesFiniteCoproductsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesFiniteProducts F] :
+    PreservesFiniteCoproducts F.unop where
+  preserves J _ := by
+    apply (config := { allowSynthFailures := true }) preservesColimitsOfShapeUnop
+    exact preservesLimitsOfShapeOfEquiv (Discrete.opposite J).symm _
 
 end
 
