@@ -308,7 +308,7 @@ lemma rpow_neg (a : Aˣ) (x : ℝ) (ha' : (0 : A) ≤ a := by cfc_tac) :
     rw [← ht.2]
     exact inv_ne_zero h₂
   rw [← cfc_inv_id (R := ℝ≥0) a, rpow_def, rpow_def,
-      ← cfc_comp' (fun z => z ^ x) (Inv.inv : ℝ≥0 → ℝ≥0) (a : A)]
+      ← cfc_comp' (fun z => z ^ x) (Inv.inv : ℝ≥0 → ℝ≥0) (a : A) h₁]
   refine cfc_congr fun _ _ => ?_
   simp [NNReal.rpow_neg, NNReal.inv_rpow]
 
