@@ -18,8 +18,6 @@ with chain maps identified when they are homotopic.
 
 universe v u
 
-open scoped Classical
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits HomologicalComplex
@@ -175,6 +173,7 @@ section
 
 variable [CategoryWithHomology V]
 
+open Classical in
 /-- The `i`-th homology, as a functor from the homotopy category. -/
 noncomputable def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
   CategoryTheory.Quotient.lift _ (HomologicalComplex.homologyFunctor V c i) (by
