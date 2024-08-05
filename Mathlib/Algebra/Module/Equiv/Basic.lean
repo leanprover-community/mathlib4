@@ -124,11 +124,13 @@ protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
 instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
   ⟨@fun _ _ ↦ LinearEquiv.ext⟩
 
-instance apply_smulCommClass : SMulCommClass R (M ≃ₗ[R] M) M where
-  smul_comm r e m := (e.map_smul r m).symm
+instance apply_smulCommClass [SMul S R] [SMul S M] [IsScalarTower S R M] :
+    SMulCommClass S (M ≃ₗ[R] M) M where
+  smul_comm r e m := (e.map_smul_of_tower r m).symm
 
-instance apply_smulCommClass' : SMulCommClass (M ≃ₗ[R] M) R M where
-  smul_comm := LinearEquiv.map_smul
+instance apply_smulCommClass' [SMul S R] [SMul S M] [IsScalarTower S R M] :
+    SMulCommClass (M ≃ₗ[R] M) S M :=
+  SMulCommClass.symm _ _ _
 
 end Automorphisms
 
