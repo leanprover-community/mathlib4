@@ -45,7 +45,7 @@ open Polynomial
 open Polynomial
 
 variable {R S T : Type*} [CommRing R] [Ring S] [Algebra R S]
-variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable {K : Type*} [Field K]
 
 /-- `pb : PowerBasis R S` states that `1, pb.gen, ..., pb.gen ^ (pb.dim - 1)`
@@ -316,7 +316,7 @@ noncomputable def liftEquiv (pb : PowerBasis A S) :
 /-- `pb.liftEquiv'` states that elements of the root set of the minimal
 polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 @[simps! (config := .asFn)]
-noncomputable def liftEquiv' (pb : PowerBasis A S) :
+noncomputable def liftEquiv' [IsDomain B] (pb : PowerBasis A S) :
     (S →ₐ[A] B) ≃ { y : B // y ∈ (minpoly A pb.gen).aroots B } :=
   pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
     rw [Equiv.refl_apply, mem_roots_iff_aeval_eq_zero]
@@ -325,7 +325,7 @@ noncomputable def liftEquiv' (pb : PowerBasis A S) :
 
 /-- There are finitely many algebra homomorphisms `S →ₐ[A] B` if `S` is of the form `A[x]`
 and `B` is an integral domain. -/
-noncomputable def AlgHom.fintype (pb : PowerBasis A S) : Fintype (S →ₐ[A] B) :=
+noncomputable def AlgHom.fintype [IsDomain B] (pb : PowerBasis A S) : Fintype (S →ₐ[A] B) :=
   letI := Classical.decEq B
   Fintype.ofEquiv _ pb.liftEquiv'.symm
 

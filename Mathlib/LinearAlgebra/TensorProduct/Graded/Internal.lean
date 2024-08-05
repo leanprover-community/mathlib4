@@ -53,7 +53,7 @@ suppress_compilation
 open scoped TensorProduct
 
 variable {R ι A B : Type*}
-variable [CommSemiring ι] [Module ι (Additive ℤˣ)] [DecidableEq ι]
+variable [CommSemiring ι] [DecidableEq ι]
 variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B)
 variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
@@ -134,6 +134,8 @@ theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
 
 theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
   (LinearEquiv.symm_apply_eq _).mpr (auxEquiv_one _ _).symm
+
+variable [Module ι (Additive ℤˣ)]
 
 /-- Auxiliary construction used to build the `Mul` instance and get distributivity of `+` and
 `\smul`. -/

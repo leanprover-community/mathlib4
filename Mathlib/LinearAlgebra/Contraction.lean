@@ -201,7 +201,7 @@ section CommRing
 variable [CommRing R]
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
-variable [Free R M] [Finite R M] [Free R N] [Finite R N] [Nontrivial R]
+variable [Free R M] [Finite R M] [Free R N] [Finite R N]
 
 /-- When `M` is a finite free module, the map `lTensorHomToHomLTensor` is an equivalence. Note
 that `lTensorHomEquivHomLTensor` is not defined directly in terms of

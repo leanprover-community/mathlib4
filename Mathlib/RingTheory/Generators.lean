@@ -215,7 +215,7 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
 end Construction
 
 variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S')
-variable [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
+variable [Algebra R R'] [Algebra S S']
 
 variable {R'' S''} [CommRing R''] [CommRing S''] [Algebra R'' S''] (P'' : Generators R'' S'')
 variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
@@ -249,6 +249,7 @@ an algebra homomorphism between the polynomial rings. -/
 noncomputable
 def Hom.toAlgHom (f : Hom P P') : P.Ring →ₐ[R] P'.Ring := MvPolynomial.aeval f.val
 
+variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] in
 @[simp]
 lemma Hom.algebraMap_toAlgHom (f : Hom P P') (x) : MvPolynomial.aeval P'.val (f.toAlgHom x) =
     algebraMap S S' (MvPolynomial.aeval P.val x) := by
@@ -270,6 +271,7 @@ lemma Hom.toAlgHom_monomial (f : Generators.Hom P P') (v r) :
     f.toAlgHom (monomial v r) = r • v.prod (f.val · ^ ·) := by
   rw [toAlgHom, aeval_monomial, Algebra.smul_def]
 
+variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] in
 /-- Giving a hom between two families of generators is equivalent to
 giving an algebra homomorphism between the polynomial rings. -/
 @[simps]
@@ -310,6 +312,8 @@ noncomputable def Hom.comp (f : Hom P' P'') (g : Hom P P') : Hom P P'' where
     | h_C r => simp [← IsScalarTower.algebraMap_apply]
     | h_add x y hx hy => simp only [map_add, hx, hy]
     | h_X p i hp => simp only [_root_.map_mul, hp, aeval_X, aeval_val]
+
+variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 @[simp]
 lemma Hom.comp_id (f : Hom P P') : f.comp (Hom.id P) = f := by ext; simp
@@ -457,6 +461,7 @@ lemma Cotangent.mk_surjective : Function.Surjective (mk (P := P)) :=
   fun x ↦ Ideal.toCotangent_surjective P.ker x.val
 
 variable {P'}
+variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 /-- A hom between families of generators induce a map between cotangent spaces. -/
 noncomputable
