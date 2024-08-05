@@ -5,6 +5,8 @@ Authors: Antoine Chambert-Loir
 
 -/
 
+import Mathlib.GroupTheory.NoncommCoprod
+import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 -- import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Perm.ConjAct
@@ -879,6 +881,79 @@ lemma disjoint_θu_θv : Disjoint (ofSubtype u)
 
 def newθ : Perm α := (ofSubtype u) *
     (Finset.univ.noncommProd (fun c ↦ (v c : Perm α)) v_commute)
+
+lemma pairdisjoint : Pairwise fun (c : g.cycleFactorsFinset) d ↦
+  ∀ (x : ↥(zpowers (c : Perm α))) (y : ↥(zpowers (d : Perm α))),
+    Disjoint (((fun c ↦ (zpowers (c : Perm α)).subtype) c) x)
+      (((fun c ↦ (zpowers (c : Perm α)).subtype) d) y) := fun c d hcd ↦
+  fun x y ↦ by
+  simp only [coeSubtype]
+  obtain ⟨m, hm⟩ := x.prop; obtain ⟨n, hn⟩ := y.prop
+  simp only [← hm, ← hn]
+  apply Disjoint.zpow_disjoint_zpow
+  exact g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
+    (Subtype.coe_ne_coe.mpr hcd)
+
+lemma paircommute : Pairwise fun (c : g.cycleFactorsFinset) d ↦
+  ∀ (x : ↥(zpowers (c : Perm α))) (y : ↥(zpowers (d : Perm α))),
+    Commute (((fun c ↦ (zpowers (c : Perm α)).subtype) c) x)
+      (((fun c ↦ (zpowers (c : Perm α)).subtype) d) y) :=
+  Pairwise.mono pairdisjoint (fun _ _ ↦ forall₂_imp (fun _ _ ↦ Disjoint.commute))
+
+lemma pairdisjoint' (u : Perm ↑(Function.fixedPoints ⇑g))
+    (v : (c : { x // x ∈ g.cycleFactorsFinset }) → ↥(zpowers (c : Perm α))) :
+    Disjoint (ofSubtype u)
+      ((MonoidHom.noncommPiCoprod (fun c ↦ Subgroup.subtype _)  paircommute) v) := by
+  sorry
+
+lemma paircommute' (u : Perm ↑(Function.fixedPoints ⇑g))
+    (v : (c : { x // x ∈ g.cycleFactorsFinset }) → ↥(zpowers (c : Perm α))) :
+    Commute (ofSubtype u)
+      ((MonoidHom.noncommPiCoprod (fun _ ↦ Subgroup.subtype _)  paircommute) v) :=
+  (pairdisjoint' u v).commute
+
+def renewθHom : (Perm (Function.fixedPoints g)) ×
+        ((c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) →*
+      Perm α :=
+  MonoidHom.noncommCoprod (ofSubtype)
+    (MonoidHom.noncommPiCoprod (fun c ↦ Subgroup.subtype _) (paircommute))
+    (sorry)
+
+lemma pairdisjoint₂ :
+    Pairwise fun (i : g.cycleFactorsFinset) (j : g.cycleFactorsFinset) ↦
+      ∀ (x y : Perm α), x ∈ zpowers ↑i → y ∈ zpowers ↑j → Disjoint x y :=
+  fun c d  hcd ↦ fun x y hx hy ↦ by
+  obtain ⟨m, hm⟩ := hx; obtain ⟨n, hn⟩ := hy
+  simp only [← hm, ← hn]
+  apply Disjoint.zpow_disjoint_zpow
+  exact g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
+    (Subtype.coe_ne_coe.mpr hcd)
+
+example (p q : α → Prop) (u v : α → α → Prop) (h : ∀ x y, u x y → v x y)
+  (H : ∀ x y, p x → q y → u x y) : (∀ x y, p x → q y → v x y) := by
+  exact fun x y a b ↦ h x y (H x y a b)
+
+lemma paircommute₂ :
+    Pairwise fun (i : g.cycleFactorsFinset) (j : g.cycleFactorsFinset) ↦
+      ∀ (x y : Perm α), x ∈ zpowers ↑i → y ∈ zpowers ↑j → Commute x y :=
+  pairdisjoint₂.mono (fun _ _ ↦ forall₂_imp (fun _ _ h hx hy ↦ (h hx hy).commute))
+
+example : ((c : { x // x ∈ g.cycleFactorsFinset }) → (zpowers (c : Perm α)))
+    →* Perm α := by
+  exact Subgroup.noncommPiCoprod
+    (H := fun (c : g.cycleFactorsFinset) ↦ zpowers (c : Perm α))  paircommute₂
+
+example : ∀ (m : Perm ↑(Function.fixedPoints ⇑g))
+    (n : (c : { x // x ∈ g.cycleFactorsFinset }) → ↥(zpowers (c : Perm α))),
+    Commute (ofSubtype m) ((noncommPiCoprod paircommute₂) n) := by
+  intro u v
+  sorry
+
+def renewθHom' : (Perm (Function.fixedPoints g)) ×
+        ((c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) →*
+      Perm α :=
+  MonoidHom.noncommCoprod (ofSubtype) (Subgroup.noncommPiCoprod paircommute₂)
+    (sorry)
 
 def newθHom : (Perm (Function.fixedPoints g)) ×
         ((c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) →*
