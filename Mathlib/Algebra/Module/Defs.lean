@@ -370,24 +370,24 @@ section
 variable (R)
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
-lemma Int.cast_smul_eq_nsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
+lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
   have : ((smulAddHom R M).flip b).comp (Int.castAddHom R) = (smulAddHom ℤ M).flip b := by
     apply AddMonoidHom.ext_int
     simp
   DFunLike.congr_fun this n
 
-@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_nsmul
+@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_zsmul
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
-@[deprecated Int.cast_smul_eq_nsmul (since := "2024-07-23")]
-theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_nsmul ..).symm
+@[deprecated Int.cast_smul_eq_zsmul (since := "2024-07-23")]
+theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_zsmul ..).symm
 
 end
 
 /-- Convert back any exotic `ℤ`-smul to the canonical instance. This should not be needed since in
 mathlib all `AddCommGroup`s should normally have exactly one `ℤ`-module structure by design. -/
 theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ M h.toSMul n x = n • x :=
-  Int.cast_smul_eq_nsmul ..
+  Int.cast_smul_eq_zsmul ..
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
 should normally have exactly one `ℤ`-module structure by design. -/
@@ -400,7 +400,7 @@ end AddCommGroup
 theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
     (x : ℤ) (a : M) :
-    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_nsmul, map_zsmul]
+    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
 
 theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]

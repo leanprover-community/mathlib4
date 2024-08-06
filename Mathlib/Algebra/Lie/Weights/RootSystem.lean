@@ -313,7 +313,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul (k : K) (h : (β : H → K) = k
       mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false] at H
     rw [← Int.cast_natCast, ← Int.cast_natCast (chainTopCoeff α β), ← Int.cast_sub] at H
     have := (rootSpace_zsmul_add_ne_bot_iff_mem α 0 hα (n - chainTopCoeff α β)).mp
-      (by rw [← Int.cast_smul_eq_nsmul K, ← H, ← h, Weight.coe_zero, add_zero]; exact β.2)
+      (by rw [← Int.cast_smul_eq_zsmul K, ← H, ← h, Weight.coe_zero, add_zero]; exact β.2)
     rw [chainTopCoeff_zero_right α hα, chainBotCoeff_zero_right α hα, Nat.cast_one] at this
     set k' : ℤ := n - chainTopCoeff α β
     subst H
@@ -330,7 +330,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul (k : K) (h : (β : H → K) = k
     · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg, neg_sub, true_and]
       rw [← Nat.cast_add, chainBotCoeff_add_chainTopCoeff, hn]
       omega
-    rw [h, hk, ← Int.cast_smul_eq_nsmul K, ← add_smul] at this
+    rw [h, hk, ← Int.cast_smul_eq_zsmul K, ← add_smul] at this
     simp only [Int.cast_sub, Int.cast_natCast,
       sub_add_sub_cancel', add_sub_cancel_left, ne_eq] at this
     cases this (rootSpace_one_div_two_smul α hα)
@@ -352,7 +352,7 @@ def reflectRoot (α β : Weight K H L) : Weight K H L where
     by_cases hα : α.IsZero
     · simpa [hα.eq] using β.weightSpace_ne_bot
     rw [sub_eq_neg_add, apply_coroot_eq_cast α β, ← neg_smul, ← Int.cast_neg,
-      Int.cast_smul_eq_nsmul, rootSpace_zsmul_add_ne_bot_iff α β hα]
+      Int.cast_smul_eq_zsmul, rootSpace_zsmul_add_ne_bot_iff α β hα]
     omega
 
 lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
