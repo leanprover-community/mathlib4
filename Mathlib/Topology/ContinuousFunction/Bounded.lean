@@ -11,6 +11,7 @@ import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Topology.Bornology.BoundedOperation
 import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-!
 # Bounded continuous functions
@@ -1518,8 +1519,8 @@ section
 
 variable (α γ : Type*) [TopologicalSpace α] [NormedRing γ]
 
-/-- The ideal of compactly supported functions as `RingCon`. -/
-def CompactlySupportedBoundedContinuousFunction : RingCon (α →ᵇ γ) where
+/-- The equivalence relation defined by compactly supported functions as `RingCon`. -/
+def ringConCompactlySupportedBoundedContinuousFunction : RingCon (α →ᵇ γ) where
   r x y := ∃ (z : α →ᵇ γ), (HasCompactSupport z ∧ x = y + z)
   iseqv := {
     refl := fun _ ↦ ⟨0, HasCompactSupport.zero, by simp⟩
@@ -1538,9 +1539,13 @@ def CompactlySupportedBoundedContinuousFunction : RingCon (α →ᵇ γ) where
     refine HasCompactSupport.add (HasCompactSupport.add ?_ ?_) <| HasCompactSupport.mul_left hb
     all_goals exact HasCompactSupport.mul_right ha
 
+/-- The two-sided ideal of compactly supported functions. -/
+def compactlySupportedBoundedContinuousFunction : TwoSidedIdeal (α →ᵇ γ) where
+  ringCon := ringConCompactlySupportedBoundedContinuousFunction α γ
+
 @[inherit_doc]
 scoped[BoundedContinuousFunction] notation
-  "C_cb(" α ", " γ ")" => CompactlySupportedBoundedContinuousFunction α γ
+  "C_cb(" α ", " γ ")" => compactlySupportedBoundedContinuousFunction α γ
 
 end
 
