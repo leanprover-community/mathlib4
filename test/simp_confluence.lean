@@ -6,6 +6,9 @@ open Function
 
 variable {α β : Type*}
 
+-- it seems that the focusing dot `·` in conv mode pretty-prints without a following space
+set_option linter.pedantic false
+
 /-- Without `subset_range_of_surjective`, `image_subset_iff` and `image_preimage_eq` create a simp
   confluence issue. -/
 example {f : α → β} (s t : Set β) (h : Surjective f) :
