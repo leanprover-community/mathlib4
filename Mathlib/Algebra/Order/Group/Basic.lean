@@ -102,4 +102,27 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injec
 `zsmul_lt_zsmul_iff'`."]
 lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
 
+variable (α) in
+/-- A nontrivial densely linear ordered commutative group can't be a cyclic group. -/
+@[to_additive
+  "A nontrivial densely linear ordered additive commutative group can't be a cyclic group."]
+theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬IsCyclic α := by
+  intro h
+  rcases exists_zpow_surjective α with ⟨a, ha⟩
+  rcases lt_trichotomy a 1 with hlt | rfl | hlt
+  · rcases exists_between hlt with ⟨b, hab, hb⟩
+    rcases ha b with ⟨k, rfl⟩
+    suffices 0 < k ∧ k < 1 by omega
+    rw [← one_lt_inv'] at hlt
+    simp_rw [← zpow_lt_zpow_iff hlt]
+    simp_all
+  · rcases exists_ne (1 : α) with ⟨b, hb⟩
+    simpa [hb.symm] using ha b
+  · rcases exists_between hlt with ⟨b, hb, hba⟩
+    rcases ha b with ⟨k, rfl⟩
+    suffices 0 < k ∧ k < 1 by omega
+    simp_rw [← zpow_lt_zpow_iff hlt]
+    simp_all
+
 end LinearOrderedCommGroup
+
