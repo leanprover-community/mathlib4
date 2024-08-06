@@ -267,9 +267,8 @@ theorem normSq_eq_zero_of_eq_zero {x : F} : x = 0 → normSqF x = 0 := by
   rintro rfl
   simp [normSq, inner_self_of_eq_zero]
 
-theorem ne_zero_of_inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 → x ≠ 0 := by
-  exact fun P Q => P (inner_self_of_eq_zero Q)
-
+theorem ne_zero_of_inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 → x ≠ 0 :=
+  mt inner_self_of_eq_zero
 theorem inner_self_ofReal_re (x : F) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ := by
   norm_num [ext_iff, inner_self_im]
 
