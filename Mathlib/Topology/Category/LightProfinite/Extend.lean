@@ -8,7 +8,7 @@ import Mathlib.Topology.Category.Profinite.Extend
 
 /-!
 
-# Extending a functor from `FintypeCat` to `Profinite`
+# Extending cones in `LightProfinite`
 
 Let `(Sₙ)_{n : ℕᵒᵖ}` be a sequential inverse system of finite sets and let `S` be
 its limit in `Profinite`. Let `G` be a functor from `LightProfinite` to a category `C` and suppose
