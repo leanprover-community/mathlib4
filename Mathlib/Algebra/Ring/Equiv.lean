@@ -481,7 +481,7 @@ def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) [DecidablePred p] (Y : �
 
 /-- Product of ring equivalences. This is `Equiv.prodCongr` as a `RingEquiv`. -/
 @[simps!]
-def prodMap {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring R']
+def prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring R']
     [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring S']
     (f : R ≃+* R') (g : S ≃+* S') :
     R × S ≃+* R' × S' where
@@ -494,9 +494,9 @@ def prodMap {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssoc
       Prod.map, Prod.fst_add, map_add, Prod.snd_add, Prod.mk_add_mk]
 
 @[simp]
-theorem coe_prodMap {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring R']
+theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring R']
     [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring S'] (f : R ≃+* R') (g : S ≃+* S') :
-    ⇑(RingEquiv.prodMap f g) = Prod.map f g :=
+    ⇑(RingEquiv.prodCongr f g) = Prod.map f g :=
   rfl
 
 end NonUnitalSemiring
