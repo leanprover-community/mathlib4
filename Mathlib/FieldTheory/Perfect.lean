@@ -51,7 +51,6 @@ variable (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
 lemma PerfectRing.ofSurjective (R : Type*) (p : ℕ) [CommRing R] [ExpChar R p]
     [IsReduced R] (h : Surjective <| frobenius R p) : PerfectRing R p :=
   ⟨frobenius_inj R p, h⟩
-#align perfect_ring.of_surjective PerfectRing.ofSurjective
 
 instance PerfectRing.ofFiniteOfIsReduced (R : Type*) [CommRing R] [ExpChar R p]
     [Finite R] [IsReduced R] : PerfectRing R p :=
@@ -75,11 +74,9 @@ theorem surjective_frobenius : Surjective (frobenius R p) := (bijective_frobeniu
 @[simps! apply]
 noncomputable def frobeniusEquiv : R ≃+* R :=
   RingEquiv.ofBijective (frobenius R p) PerfectRing.bijective_frobenius
-#align frobenius_equiv frobeniusEquiv
 
 @[simp]
 theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
-#align coe_frobenius_equiv coe_frobeniusEquiv
 
 theorem frobeniusEquiv_def (x : R) : frobeniusEquiv R p x = x ^ p := rfl
 
@@ -157,7 +154,6 @@ theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = 
   frobenius_apply_frobeniusEquiv_symm R p x
 
 theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv R p).injective h
-#align injective_pow_p injective_pow_p
 
 lemma polynomial_expand_eq (f : R[X]) :
     expand R p f = (f.map (frobeniusEquiv R p).symm) ^ p := by

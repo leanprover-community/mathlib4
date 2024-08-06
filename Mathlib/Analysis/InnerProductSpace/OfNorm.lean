@@ -6,8 +6,6 @@ Authors: Heather Macbeth
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Analysis.InnerProductSpace.Basic
 
-#align_import analysis.inner_product_space.of_norm from "leanprover-community/mathlib"@"baa88307f3e699fa7054ef04ec79fa4f056169cb"
-
 /-!
 # Inner product space derived from a norm
 
@@ -66,20 +64,17 @@ locally upgrade that to `InnerProductSpace 𝕜 E` using `casesI nonempty_innerP
 class InnerProductSpaceable : Prop where
   parallelogram_identity :
     ∀ x y : E, ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖)
-#align inner_product_spaceable InnerProductSpaceable
 
 variable (𝕜) {E}
 
 theorem InnerProductSpace.toInnerProductSpaceable [InnerProductSpace 𝕜 E] :
     InnerProductSpaceable E :=
   ⟨parallelogram_law_with_norm 𝕜⟩
-#align inner_product_space.to_inner_product_spaceable InnerProductSpace.toInnerProductSpaceable
 
 -- See note [lower instance priority]
 instance (priority := 100) InnerProductSpace.toInnerProductSpaceable_ofReal
     [InnerProductSpace ℝ E] : InnerProductSpaceable E :=
   ⟨parallelogram_law_with_norm ℝ⟩
-#align inner_product_space.to_inner_product_spaceable_of_real InnerProductSpace.toInnerProductSpaceable_ofReal
 
 variable [NormedSpace 𝕜 E]
 
@@ -115,13 +110,11 @@ theorem innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
   have h₄ : ‖(I : 𝕜) • -x - y‖ = ‖(I : 𝕜) • x + y‖ := by rw [smul_neg, ← neg_add', norm_neg]
   rw [h₁, h₂, h₃, h₄]
   ring
-#align inner_product_spaceable.inner_prop_neg_one InnerProductSpaceable.innerProp_neg_one
 
 theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
   unfold inner_
   fun_prop
-#align inner_product_spaceable.continuous.inner_ Continuous.inner_
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_]
@@ -133,7 +126,6 @@ theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [h₁, h₂, algebraMap_eq_ofReal, sub_self, norm_zero, mul_re, inv_re, ofNat_re, map_sub,
     map_add, ofReal_re, ofNat_im, ofReal_im, mul_im, I_re, inv_im]
   ring
-#align inner_product_spaceable.inner_.norm_sq InnerProductSpaceable.inner_.norm_sq
 
 theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
   simp only [inner_]
@@ -158,7 +150,6 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
     · rw [smul_add, smul_smul, I_mul_I_of_nonzero hI, neg_one_smul, ← neg_add_eq_sub]
   rw [h₁, h₂, ← sub_add_eq_add_sub]
   simp only [neg_mul, sub_eq_add_neg, neg_neg]
-#align inner_product_spaceable.inner_.conj_symm InnerProductSpaceable.inner_.conj_symm
 
 variable [InnerProductSpaceable E]
 
@@ -238,7 +229,6 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
   · rw [add_left_aux5, add_left_aux6, add_left_aux7, add_left_aux8]
     simp only [map_sub, map_mul, map_add, div_eq_mul_inv]
     ring
-#align inner_product_spaceable.add_left InnerProductSpaceable.add_left
 
 theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y := by
   induction' n with n ih
@@ -246,7 +236,6 @@ theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) 
       eq_self_iff_true, zero_smul, zero_add, mul_zero, sub_self, norm_neg, smul_zero]
   · simp only [Nat.cast_succ, add_smul, one_smul]
     rw [add_left, ih, add_mul, one_mul]
-#align inner_product_spaceable.nat InnerProductSpaceable.nat
 
 private theorem nat_prop (r : ℕ) : innerProp' E (r : 𝕜) := fun x y => by
   simp only [map_natCast]; exact nat r x y
@@ -306,7 +295,6 @@ theorem innerProp (r : 𝕜) : innerProp' E r := by
   rw [← re_add_im r, add_smul, add_left, real_prop _ x, ← smul_smul, real_prop _ _ y, I_prop,
     map_add, map_mul, conj_ofReal, conj_ofReal, conj_I]
   ring
-#align inner_product_spaceable.inner_prop InnerProductSpaceable.innerProp
 
 end InnerProductSpaceable
 
@@ -323,7 +311,6 @@ noncomputable def InnerProductSpace.ofNorm
     conj_symm := inner_.conj_symm
     add_left := InnerProductSpaceable.add_left
     smul_left := fun _ _ _ => innerProp _ _ _ }
-#align inner_product_space.of_norm InnerProductSpace.ofNorm
 
 variable (E)
 variable [InnerProductSpaceable E]
@@ -338,7 +325,6 @@ theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
       conj_symm := inner_.conj_symm
       add_left := add_left
       smul_left := fun _ _ _ => innerProp _ _ _ }⟩
-#align nonempty_inner_product_space nonempty_innerProductSpace
 
 variable {𝕜 E}
 variable [NormedSpace ℝ E]
@@ -347,4 +333,3 @@ variable [NormedSpace ℝ E]
 -- See note [lower instance priority]
 instance (priority := 100) InnerProductSpaceable.to_uniformConvexSpace : UniformConvexSpace E := by
   cases nonempty_innerProductSpace ℝ E; infer_instance
-#align inner_product_spaceable.to_uniform_convex_space InnerProductSpaceable.to_uniformConvexSpace

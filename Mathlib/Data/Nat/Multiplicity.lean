@@ -12,8 +12,6 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Digits
 import Mathlib.RingTheory.Multiplicity
 
-#align_import data.nat.multiplicity from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
-
 /-!
 # Natural number multiplicity
 
@@ -75,31 +73,25 @@ theorem multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (
               exacts [(hn.ne' h.2).elim, one_le_iff_ne_zero.1 h.1]
             exact le_log_of_pow_le (one_lt_iff_ne_zero_and_ne_one.2 ⟨m.succ_ne_zero, hm⟩)
                 (le_of_dvd hn h.2)
-#align nat.multiplicity_eq_card_pow_dvd Nat.multiplicity_eq_card_pow_dvd
 
 namespace Prime
 
 theorem multiplicity_one {p : ℕ} (hp : p.Prime) : multiplicity p 1 = 0 :=
   multiplicity.one_right hp.prime.not_unit
-#align nat.prime.multiplicity_one Nat.Prime.multiplicity_one
 
 theorem multiplicity_mul {p m n : ℕ} (hp : p.Prime) :
     multiplicity p (m * n) = multiplicity p m + multiplicity p n :=
   multiplicity.mul hp.prime
-#align nat.prime.multiplicity_mul Nat.Prime.multiplicity_mul
 
 theorem multiplicity_pow {p m n : ℕ} (hp : p.Prime) :
     multiplicity p (m ^ n) = n • multiplicity p m :=
   multiplicity.pow hp.prime
-#align nat.prime.multiplicity_pow Nat.Prime.multiplicity_pow
 
 theorem multiplicity_self {p : ℕ} (hp : p.Prime) : multiplicity p p = 1 :=
   multiplicity.multiplicity_self hp.prime.not_unit hp.ne_zero
-#align nat.prime.multiplicity_self Nat.Prime.multiplicity_self
 
 theorem multiplicity_pow_self {p n : ℕ} (hp : p.Prime) : multiplicity p (p ^ n) = n :=
   multiplicity.multiplicity_pow_self hp.ne_zero hp.prime.not_unit n
-#align nat.prime.multiplicity_pow_self Nat.Prime.multiplicity_pow_self
 
 /-- **Legendre's Theorem**
 
@@ -121,7 +113,6 @@ theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
         simp
       _ = (∑ i ∈ Ico 1 b, (n + 1) / p ^ i : ℕ) :=
         congr_arg _ <| Finset.sum_congr rfl fun _ _ => (succ_div _ _).symm
-#align nat.prime.multiplicity_factorial Nat.Prime.multiplicity_factorial
 
 /-- For a prime number `p`, taking `(p - 1)` times the multiplicity of `p` in `n!` equals `n` minus
 the sum of base `p` digits of `n`. -/
@@ -156,7 +147,6 @@ theorem multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   intro h
   rw [PartENat.add_left_cancel_iff h, sum_Ico_succ_top h2, multiplicity.mul hp',
     hp.multiplicity_self, sum_congr rfl h4, sum_const_zero, zero_add, add_comm (1 : PartENat)]
-#align nat.prime.multiplicity_factorial_mul_succ Nat.Prime.multiplicity_factorial_mul_succ
 
 /-- The multiplicity of `p` in `(p * n)!` is `n` more than that of `n!`. -/
 theorem multiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
@@ -167,20 +157,17 @@ theorem multiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
       ← add_assoc, Nat.cast_one, Nat.cast_add, factorial_succ]
     congr 1
     rw [add_comm, add_assoc]
-#align nat.prime.multiplicity_factorial_mul Nat.Prime.multiplicity_factorial_mul
 
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
     p ^ r ∣ n ! ↔ r ≤ ∑ i ∈ Ico 1 b, n / p ^ i := by
   rw [← PartENat.coe_le_coe, ← hp.multiplicity_factorial hbn, ← pow_dvd_iff_le_multiplicity]
-#align nat.prime.pow_dvd_factorial_iff Nat.Prime.pow_dvd_factorial_iff
 
 theorem multiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
     multiplicity p n ! ≤ (n / (p - 1) : ℕ) := by
   rw [hp.multiplicity_factorial (lt_succ_self _), PartENat.coe_le_coe]
   exact Nat.geom_sum_Ico_le hp.two_le _ _
-#align nat.prime.multiplicity_factorial_le_div_pred Nat.Prime.multiplicity_factorial_le_div_pred
 
 theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
     ∑ i ∈ Finset.Ico 1 b, n / p ^ i =
@@ -193,7 +180,6 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
           (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) := by
       simp only [Nat.add_div (pow_pos hp.pos _)]
     _ = _ := by simp [sum_add_distrib, sum_boole]
-#align nat.prime.multiplicity_choose_aux Nat.Prime.multiplicity_choose_aux
 
 /-- The multiplicity of `p` in `choose (n + k) k` is the number of carries when `k` and `n`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
@@ -226,7 +212,6 @@ theorem multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb 
   convert @multiplicity_choose' p (n - k) k b hp _
   · rw [this]
   exact this.symm ▸ hnb
-#align nat.prime.multiplicity_choose Nat.Prime.multiplicity_choose
 
 /-- A lower bound on the multiplicity of `p` in `choose n k`. -/
 theorem multiplicity_le_multiplicity_choose_add {p : ℕ} (hp : p.Prime) :
@@ -238,7 +223,6 @@ theorem multiplicity_le_multiplicity_choose_add {p : ℕ} (hp : p.Prime) :
     refine multiplicity_le_multiplicity_of_dvd_right ?_
     rw [← succ_mul_choose_eq]
     exact dvd_mul_right _ _
-#align nat.prime.multiplicity_le_multiplicity_choose_add Nat.Prime.multiplicity_le_multiplicity_choose_add
 
 variable {p n k : ℕ}
 
@@ -260,14 +244,12 @@ theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k �
         fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
       rwa [card_Ico 1 n.succ] at filter_le_Ico)
     (by rw [← hp.multiplicity_pow_self]; exact multiplicity_le_multiplicity_choose_add hp _ _)
-#align nat.prime.multiplicity_choose_prime_pow_add_multiplicity Nat.Prime.multiplicity_choose_prime_pow_add_multiplicity
 
 theorem multiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
     multiplicity p (choose (p ^ n) k) =
       ↑(n - (multiplicity p k).get (finite_nat_iff.2 ⟨hp.ne_one, hk0.bot_lt⟩)) :=
   PartENat.eq_natCast_sub_of_add_eq_natCast <|
     multiplicity_choose_prime_pow_add_multiplicity hp hkn hk0
-#align nat.prime.multiplicity_choose_prime_pow Nat.Prime.multiplicity_choose_prime_pow
 
 theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
   obtain hkp | hkp := hkp.symm.lt_or_lt
@@ -276,12 +258,10 @@ theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣
   have H := hp.multiplicity_choose_prime_pow_add_multiplicity hkp.le hk
   rw [h, zero_add, eq_coe_iff] at H
   exact H.1
-#align nat.prime.dvd_choose_pow Nat.Prime.dvd_choose_pow
 
 theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 ∧ k ≠ p ^ n := by
   refine ⟨fun h => ⟨?_, ?_⟩, fun h => dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
     simp [hp.ne_one] at h
-#align nat.prime.dvd_choose_pow_iff Nat.Prime.dvd_choose_pow_iff
 
 end Prime
 
@@ -309,6 +289,5 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
       rw [multiplicity_eq_zero.2 (two_not_dvd_two_mul_add_one n), zero_add]
       refine this.trans ?_
       exact mod_cast lt_succ_self _
-#align nat.multiplicity_two_factorial_lt Nat.multiplicity_two_factorial_lt
 
 end Nat

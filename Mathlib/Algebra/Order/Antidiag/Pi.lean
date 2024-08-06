@@ -209,7 +209,7 @@ lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
 lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     n •ℕ piAntidiag s m = (piAntidiag s (n * m)).filter fun f : ι → ℕ ↦ ∀ i ∈ s, n ∣ f i := by
   ext f
-  refine' mem_smul_finset.trans _
+  refine mem_smul_finset.trans ?_
   simp only [mem_smul_finset, mem_filter, mem_piAntidiag, Function.Embedding.coeFn_mk, exists_prop,
     and_assoc]
   constructor
@@ -244,4 +244,19 @@ lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) 
   simpa using map_nsmul_piAntidiag (univ : Finset ι) m hn
 
 end Nat
+
+lemma map_sym_eq_piAntidiag [DecidableEq ι] (s : Finset ι) (n : ℕ) :
+    (s.sym n).map ⟨fun m a ↦ m.1.count a, Multiset.count_injective.comp Sym.coe_injective⟩ =
+      piAntidiag s n := by
+  ext f
+  simp only [Sym.val_eq_coe, mem_map, mem_sym_iff, Embedding.coeFn_mk, funext_iff, Sym.exists,
+    Sym.mem_mk, Sym.coe_mk, exists_and_left, exists_prop, mem_piAntidiag, ne_eq]
+  constructor
+  · rintro ⟨m, hm, rfl, hf⟩
+    simpa [← hf, Multiset.sum_count_eq_card hm]
+  · rintro ⟨rfl, hf⟩
+    refine ⟨∑ a ∈ s, f a • {a}, ?_, ?_⟩
+    · simp (config := { contextual := true })
+    · simpa [Multiset.count_sum', Multiset.count_singleton, not_imp_comm, eq_comm (a := 0)] using hf
+
 end Finset

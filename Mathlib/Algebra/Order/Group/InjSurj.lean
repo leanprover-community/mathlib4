@@ -6,8 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Basic
 
-#align_import algebra.order.group.inj_surj from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
-
 /-!
 # Pull back ordered groups along injective maps.
 -/
@@ -27,9 +25,6 @@ def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One 
   toPartialOrder := PartialOrder.lift f hf
   __ := hf.orderedCommMonoid f one mul npow
 
-#align function.injective.ordered_comm_group Function.Injective.orderedCommGroup
-#align function.injective.ordered_add_comm_group Function.Injective.orderedAddCommGroup
-
 /-- Pullback a `LinearOrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible) "Pullback a `LinearOrderedAddCommGroup` under an injective map."]
@@ -42,5 +37,3 @@ def Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : 
     LinearOrderedCommGroup β where
   toOrderedCommGroup := hf.orderedCommGroup f one mul inv div npow zpow
   __ := LinearOrder.lift f hf sup inf
-#align function.injective.linear_ordered_comm_group Function.Injective.linearOrderedCommGroup
-#align function.injective.linear_ordered_add_comm_group Function.Injective.linearOrderedAddCommGroup

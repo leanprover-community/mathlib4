@@ -6,8 +6,6 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
-#align_import category_theory.limits.shapes.normal_mono.equalizers from "leanprover-community/mathlib"@"3a061790136d13594ec10c7c90d202335ac5d854"
-
 /-!
 # Normal mono categories with finite products and kernels have all equalizers.
 
@@ -92,7 +90,6 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
                   kernel.lift (prod.lift f g) (PullbackCone.snd s ≫ b) _ ≫
                     kernel.ι (prod.lift f g) := by rw [kernel.lift_ι]
                }
-#align category_theory.normal_mono_category.pullback_of_mono CategoryTheory.NormalMonoCategory.pullback_of_mono
 
 section
 
@@ -133,7 +130,6 @@ def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g
           (fun s => by simp) fun s m h =>
           pullback.hom_ext (by simpa only [pullback.lift_fst] using h)
             (by simpa only [huv.symm, pullback.lift_fst] using h) }
-#align category_theory.normal_mono_category.has_limit_parallel_pair CategoryTheory.NormalMonoCategory.hasLimit_parallelPair
 
 end
 
@@ -144,7 +140,6 @@ attribute [local instance] hasLimit_parallelPair
 /-- A `NormalMonoCategory` category with finite products and kernels has all equalizers. -/
 instance (priority := 100) hasEqualizers : HasEqualizers C :=
   hasEqualizers_of_hasLimit_parallelPair _
-#align category_theory.normal_mono_category.has_equalizers CategoryTheory.NormalMonoCategory.hasEqualizers
 
 end
 
@@ -160,7 +155,6 @@ theorem epi_of_zero_cokernel {X Y : C} (f : X ⟶ Y) (Z : C)
     have : IsIso (equalizer.ι u v) := by apply isIso_limit_cone_parallelPair_of_eq hn.symm hl
     apply (cancel_epi (equalizer.ι u v)).1
     exact equalizer.condition _ _⟩
-#align category_theory.normal_mono_category.epi_of_zero_cokernel CategoryTheory.NormalMonoCategory.epi_of_zero_cokernel
 
 section
 
@@ -172,7 +166,6 @@ open ZeroObject
 theorem epi_of_zero_cancel {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Y ⟶ Z) (_ : f ≫ g = 0), g = 0) : Epi f :=
   epi_of_zero_cokernel f 0 <| zeroCokernelOfZeroCancel f hf
-#align category_theory.normal_mono_category.epi_of_zero_cancel CategoryTheory.NormalMonoCategory.epi_of_zero_cancel
 
 end
 
@@ -254,7 +247,6 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
                     cokernel.desc (coprod.desc f g) (b ≫ PushoutCocone.inr s) _ := by
                 rw [cokernel.π_desc]
                }
-#align category_theory.normal_epi_category.pushout_of_epi CategoryTheory.NormalEpiCategory.pushout_of_epi
 
 section
 
@@ -296,7 +288,6 @@ def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair
           (fun s => by simp only [pushout.inl_desc, Cofork.π_ofπ]) fun s m h =>
           pushout.hom_ext (by simpa only [pushout.inl_desc] using h)
             (by simpa only [huv.symm, pushout.inl_desc] using h) }
-#align category_theory.normal_epi_category.has_colimit_parallel_pair CategoryTheory.NormalEpiCategory.hasColimit_parallelPair
 
 end
 
@@ -307,7 +298,6 @@ attribute [local instance] hasColimit_parallelPair
 /-- A `NormalEpiCategory` category with finite coproducts and cokernels has all coequalizers. -/
 instance (priority := 100) hasCoequalizers : HasCoequalizers C :=
   hasCoequalizers_of_hasColimit_parallelPair _
-#align category_theory.normal_epi_category.has_coequalizers CategoryTheory.NormalEpiCategory.hasCoequalizers
 
 end
 
@@ -326,7 +316,6 @@ theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
       apply isIso_colimit_cocone_parallelPair_of_eq hn.symm hl
     apply (cancel_mono (coequalizer.π u v)).1
     exact coequalizer.condition _ _⟩
-#align category_theory.normal_epi_category.mono_of_zero_kernel CategoryTheory.NormalEpiCategory.mono_of_zero_kernel
 
 section
 
@@ -338,7 +327,6 @@ open ZeroObject
 theorem mono_of_cancel_zero {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Z ⟶ X) (_ : g ≫ f = 0), g = 0) : Mono f :=
   mono_of_zero_kernel f 0 <| zeroKernelOfCancelZero f hf
-#align category_theory.normal_epi_category.mono_of_cancel_zero CategoryTheory.NormalEpiCategory.mono_of_cancel_zero
 
 end
 

@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.Util.AddRelatedDecl
-import Mathlib.Lean.Meta.Simp
 
 /-!
 # The `reassoc` attribute

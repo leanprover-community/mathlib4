@@ -7,8 +7,6 @@ import Mathlib.RepresentationTheory.FDRep
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.RepresentationTheory.Invariants
 
-#align_import representation_theory.character from "leanprover-community/mathlib"@"55b3f8206b8596db8bb1804d8a92814a0b6670c9"
-
 /-!
 # Characters of representations
 
@@ -39,7 +37,6 @@ open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation Fin
 variable {k : Type u} [Field k]
 
 namespace FDRep
-set_option linter.uppercaseLean3 false -- `FDRep`
 
 section Monoid
 
@@ -49,21 +46,17 @@ variable {G : Type u} [Monoid G]
 trace of the linear map `V.ρ g`. -/
 def character (V : FDRep k G) (g : G) :=
   LinearMap.trace k V (V.ρ g)
-#align fdRep.character FDRep.character
 
 theorem char_mul_comm (V : FDRep k G) (g : G) (h : G) :
     V.character (h * g) = V.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
-#align fdRep.char_mul_comm FDRep.char_mul_comm
 
 @[simp]
 theorem char_one (V : FDRep k G) : V.character 1 = FiniteDimensional.finrank k V := by
   simp only [character, map_one, trace_one]
-#align fdRep.char_one FDRep.char_one
 
 /-- The character is multiplicative under the tensor product. -/
 theorem char_tensor (V W : FDRep k G) : (V ⊗ W).character = V.character * W.character := by
   ext g; convert trace_tensorProduct' (V.ρ g) (W.ρ g)
-#align fdRep.char_tensor FDRep.char_tensor
 
 -- Porting note: adding variant of `char_tensor` to make the simp-set confluent
 @[simp]
@@ -76,7 +69,6 @@ theorem char_tensor' (V W : FDRep k G) :
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso {V W : FDRep k G} (i : V ≅ W) : V.character = W.character := by
   ext g; simp only [character, FDRep.Iso.conj_ρ i]; exact (trace_conj' (V.ρ g) _).symm
-#align fdRep.char_iso FDRep.char_iso
 
 end Monoid
 
@@ -88,18 +80,15 @@ variable {G : Type u} [Group G]
 @[simp]
 theorem char_conj (V : FDRep k G) (g : G) (h : G) : V.character (h * g * h⁻¹) = V.character g := by
   rw [char_mul_comm, inv_mul_cancel_left]
-#align fdRep.char_conj FDRep.char_conj
 
 @[simp]
 theorem char_dual (V : FDRep k G) (g : G) : (of (dual V.ρ)).character g = V.character g⁻¹ :=
   trace_transpose' (V.ρ g⁻¹)
-#align fdRep.char_dual FDRep.char_dual
 
 @[simp]
 theorem char_linHom (V W : FDRep k G) (g : G) :
     (of (linHom V.ρ W.ρ)).character g = V.character g⁻¹ * W.character g := by
   rw [← char_iso (dualTensorIsoLinHom _ _), char_tensor, Pi.mul_apply, char_dual]
-#align fdRep.char_lin_hom FDRep.char_linHom
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -107,7 +96,6 @@ theorem average_char_eq_finrank_invariants (V : FDRep k G) :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
   erw [← (isProj_averageMap V.ρ).trace] -- Porting note: Changed `rw` to `erw`
   simp [character, GroupAlgebra.average, _root_.map_sum]
-#align fdRep.average_char_eq_finrank_invariants FDRep.average_char_eq_finrank_invariants
 
 end Group
 
@@ -140,7 +128,6 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
   erw [(linHom.invariantsEquivFDRepHom W V).finrank_eq] -- Porting note: Changed `rw` to `erw`
   -- By Schur's Lemma, the dimension of `Hom_G(W, V)` is `1` is `V ≅ W` and `0` otherwise.
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
-#align fdRep.char_orthonormal FDRep.char_orthonormal
 
 end Orthogonality
 
