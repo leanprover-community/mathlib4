@@ -5,6 +5,7 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+import Mathlib.Data.Fintype.Order
 
 /-!
 # Matchings
@@ -245,21 +246,11 @@ lemma IsMatchingFree.mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatc
   simp only [Subgraph.map_verts, Hom.coe_ofLE, id_eq, Set.image_id']
   exact hc.2 v
 
-lemma Fintype.exists_maximal {α} [Fintype α] [PartialOrder α] {a : α} {p : α → Prop}
-    (h : p a) : ∃ b : α, a ≤ b ∧ p b ∧ ∀ c, c > b → ¬ p c := by
-  have hfinite : {b : α | a ≤ b ∧ p b}.Finite := by
-    rw [@Set.setOf_and]
-    apply Finite.Set.finite_inter_of_left
-  obtain ⟨b, hb⟩ := hfinite.exists_maximal_wrt id _ ⟨a, Set.mem_setOf.mpr ⟨by rfl, h⟩⟩
-  use b
-  simp only [Set.mem_setOf_eq, id_eq, and_imp] at hb
-  exact ⟨hb.1.1, hb.1.2, fun c hc hc' ↦
-    hc.ne <| hb.2 _ (le_trans hb.1.1 (le_of_lt hc)) hc' (le_of_lt hc)⟩
-
 lemma exists_maximal_isMatchingFree [Fintype V] [DecidableEq V]
     (h : G.IsMatchingFree) : ∃ Gmax : SimpleGraph V,
     G ≤ Gmax ∧ Gmax.IsMatchingFree ∧ ∀ G', G' > Gmax → ∃ M : Subgraph G', M.IsPerfectMatching := by
   simp_rw [← @not_forall_not _ Subgraph.IsPerfectMatching]
-  exact Fintype.exists_maximal h
+  obtain ⟨Gmax, hGmax⟩ := Fintype.exists_le_maximal h
+  exact ⟨Gmax, ⟨hGmax.1, ⟨hGmax.2.prop, fun _ h' ↦ hGmax.2.not_prop_of_gt h'⟩⟩⟩
 
 end SimpleGraph
