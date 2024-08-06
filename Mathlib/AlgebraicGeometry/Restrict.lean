@@ -143,7 +143,7 @@ end Scheme.Opens
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! J obj map]
-def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
+def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     (hU : ⨆ i, U i = ⊤) : X.OpenCover where
   J := s
   obj i := U i
@@ -155,6 +155,9 @@ def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     erw [Subtype.range_coe]
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
+
+@[deprecated (since := "2024-07-24")]
+noncomputable alias Scheme.openCoverOfSuprEqTop := Scheme.openCoverOfISupEqTop
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
