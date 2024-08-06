@@ -48,15 +48,15 @@ theorem Int.not_isField : ¬IsField ℤ := fun h =>
 
 namespace NumberField
 
-variable (K L : Type*) [Field K] [Field L] [nf : NumberField K]
+variable (K L : Type*) [Field K] [Field L]
 
 -- See note [lower instance priority]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
-protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
+protected theorem isAlgebraic [NumberField K] : Algebra.IsAlgebraic ℚ K :=
   Algebra.IsAlgebraic.of_finite _ _
 
-instance [NumberField L] [Algebra K L] : FiniteDimensional K L :=
+instance [NumberField K] [NumberField L] [Algebra K L] : FiniteDimensional K L :=
   Module.Finite.of_restrictScalars_finite ℚ K L
 
 /-- The ring of integers (or number ring) corresponding to a number field
@@ -79,7 +79,7 @@ instance : CommRing (𝓞 K) :=
   inferInstanceAs (CommRing (integralClosure _ _))
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
-instance : CharZero (𝓞 K) :=
+instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
@@ -202,6 +202,8 @@ variable (K)
 instance [CharZero K] : CharZero (𝓞 K) :=
   CharZero.of_module _ K
 
+variable [NumberField K]
+
 instance : IsNoetherian ℤ (𝓞 K) :=
   IsIntegralClosure.isNoetherian _ ℚ K _
 
@@ -249,6 +251,8 @@ def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ
   map_mul' x y := by simp only [restrict, map_mul, mk_mul_mk _]
 
 end RingOfIntegers
+
+variable [NumberField K]
 
 /-- A basis of `K` over `ℚ` that is also a basis of `𝓞 K` over `ℤ`. -/
 noncomputable def integralBasis : Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℚ K :=
