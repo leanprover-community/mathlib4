@@ -12,8 +12,12 @@ import Mathlib.Topology.LocallyConstant.Algebra
 
 # Discrete condensed `R`-modules
 
-This file proves a condensed `R`-module is discrete if and only if the underlying condensed set is
-(both for light condensed and condensed).
+This file provides the necessary API to prove that a condensed `R`-module is discrete if and only
+if the underlying condensed set is (both for light condensed and condensed).
+
+That is, it defines the functor `CondensedMod.LocallyConstant.functor` which takes an `R`-module to
+the condensed `R`-modules given by locally constant maps to it, and proves that this functor is
+naturally isomorphic to the constant sheaf functor (and the analogues for light condensed modules).
 -/
 
 universe w u
