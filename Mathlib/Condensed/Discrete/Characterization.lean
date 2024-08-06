@@ -46,7 +46,7 @@ theorem isDiscrete_of_isColimit_mapCone (X : CondensedSet.{u}) (h : ∀ S : Prof
     (Condensed.ProfiniteCompHaus.equivalence (Type (u + 1))).symm
   let i : (e.functor.obj X).val ≅ (e.functor.obj
       (CondensedSet.LocallyConstant.functor.obj _)).val :=
-    Condensed.isoDiscrete _ h
+    Condensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨e.functor.preimageIso ((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
 noncomputable abbrev LocallyConstant.adjunction :
@@ -106,7 +106,7 @@ theorem isDiscrete_of_isColimit_mapCone (X : LightCondSet.{u}) (h : ∀ S : Ligh
     IsColimit <| X.val.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
     X ∈ LightCondSet.LocallyConstant.functor.essImage := by
   let i : X.val ≅ (LightCondSet.LocallyConstant.functor.obj _).val :=
-    LightCondensed.isoDiscrete _ h
+    LightCondensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
 noncomputable abbrev LocallyConstant.adjunction :
