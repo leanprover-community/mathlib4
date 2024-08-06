@@ -181,7 +181,7 @@ elab_rules : tactic
 -- See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60split_ifs.60.20boxes.20itself.20into.20a.20corner]
 @[simp]
 theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
-  rw [ext_iff]
+  rw [WittVector.ext_iff]
   intro i
   simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
   by_cases hi : i < n <;> simp [hi]

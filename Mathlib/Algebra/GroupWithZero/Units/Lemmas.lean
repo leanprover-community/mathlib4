@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.GroupTheory.GroupAction.Units
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -30,7 +30,7 @@ end Commute
 section MonoidWithZero
 
 variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [FunLike F G₀ M₀]
-  [MonoidWithZeroHomClass F G₀ M₀] [FunLike F' G₀ M₀'] [MonoidWithZeroHomClass F' G₀ M₀']
+  [MonoidWithZeroHomClass F G₀ M₀] [FunLike F' G₀ M₀']
   (f : F) {a : G₀}
 
 
@@ -41,8 +41,8 @@ theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
 theorem map_eq_zero : f a = 0 ↔ a = 0 :=
   not_iff_not.1 (map_ne_zero f)
 
-
-theorem eq_on_inv₀ (f g : F') (h : f a = g a) : f a⁻¹ = g a⁻¹ := by
+theorem eq_on_inv₀ [MonoidWithZeroHomClass F' G₀ M₀'] (f g : F') (h : f a = g a) :
+    f a⁻¹ = g a⁻¹ := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · rw [inv_zero, map_zero, map_zero]
   · exact (IsUnit.mk0 a ha).eq_on_inv f g h

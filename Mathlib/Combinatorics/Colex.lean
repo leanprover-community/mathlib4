@@ -121,7 +121,7 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
 
 instance instPartialOrder : PartialOrder (Colex α) where
   le_refl s a ha ha' := (ha' ha).elim
-  le_antisymm s t hst hts := Colex.ext _ _ <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_antisymm s t hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -209,11 +209,15 @@ lemma singleton_le_singleton : (toColex {a} : Colex α) ≤ toColex {b} ↔ a �
 lemma singleton_lt_singleton : (toColex {a} : Colex α) < toColex {b} ↔ a < b := by
   simp [toColex_lt_singleton]
 
+lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
+    s ≤ t ↔ (ofColex s : Set α) \ ofColex t ⊆ lowerClosure (ofColex t \ ofColex s : Set α) := by
+  simp [le_def, Set.subset_def, and_assoc]
+
 section DecidableEq
 variable [DecidableEq α]
 
 instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
-  decidable_of_iff' (s.ofColex = t.ofColex) <| Colex.ext_iff _ _
+  decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
 
 instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fun s t ↦
   decidable_of_iff'
@@ -221,10 +225,6 @@ instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex �
 
 instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) :=
   decidableLTOfDecidableLE
-
-lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
-    s ≤ t ↔ (ofColex s : Set α) \ ofColex t ⊆ lowerClosure (ofColex t \ ofColex s : Set α) := by
-  simp [le_def, Set.subset_def, and_assoc]
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
@@ -421,8 +421,8 @@ instance instBoundedOrder : BoundedOrder (Colex α) where
   top := toColex univ
   le_top _x := toColex_le_toColex_of_subset <| subset_univ _
 
-@[simp] lemma toColex_univ [Fintype α] : toColex (univ : Finset α) = ⊤ := rfl
-@[simp] lemma ofColex_top [Fintype α] : ofColex (⊤ : Colex α) = univ := rfl
+@[simp] lemma toColex_univ : toColex (univ : Finset α) = ⊤ := rfl
+@[simp] lemma ofColex_top : ofColex (⊤ : Colex α) = univ := rfl
 
 end Fintype
 
