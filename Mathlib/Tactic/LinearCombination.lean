@@ -124,7 +124,7 @@ partial def expandLinearCombo {u : Level} (α : Q(Type u)) : Term → TermElabM 
     | none =>
       -- unfortunately we should now re-elaborate `e`, knowing that it represents a constant of
       -- type `α`
-      let e' ← elabTerm e (some α)
+      let e' ← elabTermEnsuringTypeQ e α
       synthesizeSyntheticMVarsNoPostponing
       return LinearCombination.const e'
 
