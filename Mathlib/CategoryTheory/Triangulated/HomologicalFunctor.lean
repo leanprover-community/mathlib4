@@ -172,7 +172,7 @@ lemma homologySequenceδ_naturality :
   rw [← shiftMap_comp', ← φ.comm₃, shiftMap_comp]
 
 variable (T)
-
+include hT
 @[reassoc]
 lemma comp_homologySequenceδ :
     (F.shift n₀).map T.mor₂ ≫ F.homologySequenceδ T n₀ n₁ h = 0 := by
