@@ -243,6 +243,21 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
   norm_cast at h ⊢
   exact NNReal.tendsto_pow_atTop_nhds_zero_iff.mp h
 
+@[simp]
+protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
+    Tendsto (fun n ↦ r^n) atTop (𝓝 ∞) ↔ 1 < r := by
+  refine ⟨?_, ?_⟩
+  · contrapose!
+    intro r_le_one h_tends
+    specialize h_tends (Ioi_mem_nhds one_lt_top)
+    simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, Set.mem_Ioi] at h_tends
+    obtain ⟨n, hn⟩ := h_tends
+    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one n (zero_le _) r_le_one
+  · intro r_gt_one
+    have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹)^n) atTop 0
+    simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
+    simpa [← ENNReal.inv_pow] using obs <| ENNReal.inv_lt_one.mpr r_gt_one
+
 /-! ### Geometric series-/
 
 
