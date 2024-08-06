@@ -443,9 +443,7 @@ attribute [local instance] toInner'
 local notation "normSqF" => @normSq 𝕜 F _ _ _ _
 
 theorem inner_self_eq_zero {x : F} : ⟪x, x⟫ = 0 ↔ x = 0 :=
-  ⟨cd.definite _, by
-    rintro rfl
-    exact inner_zero_left _⟩
+  ⟨cd.definite _, inner_self_of_eq_zero⟩
 
 theorem normSq_eq_zero {x : F} : normSqF x = 0 ↔ x = 0 :=
   Iff.trans
