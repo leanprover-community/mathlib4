@@ -299,16 +299,16 @@ theorem inner_add_add_self (x y : F) : ⟪x + y, x + y⟫ = ⟪x, x⟫ + ⟪x, y
 theorem inner_sub_sub_self (x y : F) : ⟪x - y, x - y⟫ = ⟪x, x⟫ - ⟪x, y⟫ - ⟪y, x⟫ + ⟪y, y⟫ := by
   simp only [inner_sub_left, inner_sub_right]; ring
 
-theorem inner_smul_smul_re (x : F) {t : ℝ} :
-    re ⟪(ofReal t : 𝕜) • x, (ofReal t : 𝕜) • x⟫ = normSqF x * t * t := by
-  rw [inner_smul_left, inner_smul_right, conj_ofReal, RCLike.re_ofReal_mul, RCLike.re_ofReal_mul,
-  ← mul_assoc, mul_comm, ← mul_assoc, normSq]
-
-theorem inner_smul_left_re (x y : F) {t : ℝ} : ⟪(ofReal t : 𝕜) • x, y⟫ = ⟪x, y⟫  * t := by
+theorem inner_smul_ofReal_left (x y : F) {t : ℝ} : ⟪(t : 𝕜) • x, y⟫ = ⟪x, y⟫  * t := by
   rw [inner_smul_left, conj_ofReal, mul_comm]
 
-theorem inner_smul_right_re (x y : F) {t : ℝ} : ⟪x, (ofReal t : 𝕜) • y⟫ = ⟪x, y⟫  * t := by
+theorem inner_smul_ofReal_right (x y : F) {t : ℝ} : ⟪x, (t : 𝕜) • y⟫ = ⟪x, y⟫  * t := by
   rw [inner_smul_right, mul_comm]
+
+theorem re_inner_smul_ofReal_smul_self (x : F) {t : ℝ} :
+    re ⟪(t : 𝕜) • x, (t : 𝕜) • x⟫ = normSqF x * t * t := by
+  apply ofReal_injective (K := 𝕜)
+  simp [inner_self_ofReal_re, inner_smul_ofReal_left, inner_smul_ofReal_right, normSq]
 
 /-- An auxiliary equality useful to prove the **Cauchy–Schwarz inequality**. Here we use the
 standard argument involving the discriminant of quadratic form. -/
