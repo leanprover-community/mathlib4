@@ -184,7 +184,7 @@ theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n 
   induction' n using Nat.binaryRec with b n hn
   · rfl
   · have : b = false := by simpa using h 0
-    rw [this, bit_false, hn fun i => by rw [← h (i + 1), testBit_bit_succ]]
+    rw [this, bit_false, hn fun i => by rw [← h (i + 1), bit_testBit_succ]]
 
 theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
   simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
@@ -196,7 +196,7 @@ theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
       bodd_eq_bits_head, List.getI_zero_eq_headI]
     cases List.headI (bits n) <;> rfl
   conv_lhs => rw [← bit_decomp n]
-  rw [testBit_bit_succ, ih n.div2, div2_bits_eq_tail]
+  rw [bit_testBit_succ, ih n.div2, div2_bits_eq_tail]
   cases n.bits <;> simp
 
 theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
@@ -208,13 +208,13 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
     rw [show b = true by
         revert h
         cases b <;> simp]
-    refine ⟨0, ⟨by rw [testBit_bit_zero], fun j hj => ?_⟩⟩
+    refine ⟨0, ⟨by rw [bit_testBit_zero], fun j hj => ?_⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (ne_of_gt hj)
-    rw [testBit_bit_succ, zero_testBit]
+    rw [bit_testBit_succ, zero_testBit]
   · obtain ⟨k, ⟨hk, hk'⟩⟩ := hn h'
-    refine ⟨k + 1, ⟨by rw [testBit_bit_succ, hk], fun j hj => ?_⟩⟩
+    refine ⟨k + 1, ⟨by rw [bit_testBit_succ, hk], fun j hj => ?_⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (show j ≠ 0 by intro x; subst x; simp at hj)
-    exact (testBit_bit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
+    exact (bit_testBit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
 
 theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : testBit m i = true)
     (hnm : ∀ j, i < j → testBit n j = testBit m j) : n < m := by
@@ -226,16 +226,16 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
   · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
   by_cases hi : i = 0
   · subst hi
-    simp only [testBit_bit_zero] at hn hm
+    simp only [bit_testBit_zero] at hn hm
     have : n = m :=
       eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
-      <;> rw [testBit_bit_succ]
+      <;> rw [bit_testBit_succ]
     rw [hn, hm, this, bit_false, bit_true]
     exact Nat.lt_succ_self _
   · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
-    simp only [testBit_bit_succ] at hn hm
+    simp only [bit_testBit_succ] at hn hm
     have := hn' _ hn hm fun j hj => by
-      convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
+      convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [bit_testBit_succ]
     have this' : 2 * n < 2 * m := Nat.mul_lt_mul_of_le_of_lt (le_refl _) this Nat.two_pos
     cases b <;> cases b'
     <;> simp only [bit_false, bit_true]

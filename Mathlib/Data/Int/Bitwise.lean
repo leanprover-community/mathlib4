@@ -216,20 +216,24 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
   cases b <;> cases bodd n <;> simp [(show bodd 2 = false by rfl)]
 
 @[simp]
-theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
+theorem bit_testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.bit_testBit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.bit_testBit_zero]; clear bit_testBit_zero
     cases b <;>
       rfl
 
+@[deprecated (since := "2024-08-07")] alias testBit_bit_zero := bit_testBit_zero
+
 @[simp]
-theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_succ
+theorem bit_testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.bit_testBit_succ
   | -[n+1] => by
     dsimp only [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
+    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.bit_testBit_succ]
+
+@[deprecated (since := "2024-08-07")] alias testBit_bit_succ := bit_testBit_succ
 
 -- Porting note (#11215): TODO
 -- private unsafe def bitwise_tac : tactic Unit :=

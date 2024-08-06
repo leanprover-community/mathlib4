@@ -865,11 +865,11 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     induction' n with n IH generalizing m <;> cases' m with m m
         <;> dsimp only [PosNum.testBit, Nat.zero_eq]
     · rfl
-    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
-    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
+    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.bit_testBit_zero]
+    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.bit_testBit_zero]
     · simp
-    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_succ, IH]
-    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_succ, IH]
+    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.bit_testBit_succ, IH]
+    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.bit_testBit_succ, IH]
 
 end Num
 

@@ -222,24 +222,28 @@ lemma shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n)
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
 -- Not a `simp` lemma, as later `simp` will be able to prove this.
-lemma testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
+lemma bit_testBit_zero (b n) : testBit (bit b n) 0 = b := by
   rw [testBit, bit]
   cases b
   · simp [← Nat.mul_two]
   · simp [← Nat.mul_two]
+
+@[deprecated (since := "2024-08-07")] alias testBit_bit_zero := bit_testBit_zero
 
 lemma bodd_eq_one_and_ne_zero : ∀ n, bodd n = (1 &&& n != 0)
   | 0 => rfl
   | 1 => rfl
   | n + 2 => by simpa using bodd_eq_one_and_ne_zero n
 
-lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
+lemma bit_testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
     simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
   simp only [bodd_eq_one_and_ne_zero] at this
   exact this
+
+@[deprecated (since := "2024-08-07")] alias testBit_bit_succ := bit_testBit_succ
 
 lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
