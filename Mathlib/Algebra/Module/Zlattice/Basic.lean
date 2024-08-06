@@ -599,8 +599,7 @@ theorem Zlattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [Norm
 instance instCountable_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] [IsZlattice ℝ L] :
     Countable L := by
-  rw [← (Module.Free.chooseBasis ℤ L).ofZlatticeBasis_span ℝ]
-  change Countable (span ℤ (Set.range (Basis.ofZlatticeBasis ℝ L _)))
+  simp_rw [← (Module.Free.chooseBasis ℤ L).ofZlatticeBasis_span ℝ, mem_toAddSubgroup]
   infer_instance
 
 end Zlattice

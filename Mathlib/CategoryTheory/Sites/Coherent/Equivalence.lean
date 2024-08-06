@@ -38,7 +38,7 @@ instance : haveI := precoherent e
     e.inverse.IsDenseSubsite (coherentTopology D) (coherentTopology C) where
   functorPushforward_mem_iff := by
     rw [coherentTopology.eq_induced e.inverse]
-    rfl
+    simp only [Functor.mem_inducedTopology_sieves_iff, implies_true]
 
 variable (A : Type*) [Category A]
 
@@ -86,7 +86,7 @@ instance : haveI := preregular e
     e.inverse.IsDenseSubsite (regularTopology D) (regularTopology C) where
   functorPushforward_mem_iff := by
     rw [regularTopology.eq_induced e.inverse]
-    rfl
+    simp only [Functor.mem_inducedTopology_sieves_iff, implies_true]
 
 variable (A : Type*) [Category A]
 

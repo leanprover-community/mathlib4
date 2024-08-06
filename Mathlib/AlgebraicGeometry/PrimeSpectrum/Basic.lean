@@ -532,7 +532,6 @@ section Order
 ## The specialization order
 
 We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if `y ∈ closure {x}`.
-This instance was defined in `RingTheory/PrimeSpectrum/Basic`.
 -/
 
 theorem le_iff_mem_closure (x y : PrimeSpectrum R) :
