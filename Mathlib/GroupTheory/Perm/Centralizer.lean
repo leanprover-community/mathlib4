@@ -976,7 +976,7 @@ theorem θHom_apply_of_mem_support_cycle {c} {x}
   exact mem_cycleFactorsFinset_support_le hc hx
 
 theorem θHom_apply_of_cycleOf_eq {x : α} {c : g.cycleFactorsFinset}
-    (hx : x ∈ (c : Perm α).support) : θHom g (u,v) x = (v c : Perm α) x := 
+    (hx : x ∈ (c : Perm α).support) : θHom g (u,v) x = (v c : Perm α) x :=
   θHom_apply_of_mem_support_cycle _ hx
 
 theorem θHom_apply_of_cycleOf_not_mem {x : α} (hx : g.cycleOf x ∉ g.cycleFactorsFinset) :
@@ -1017,7 +1017,7 @@ theorem θHom_apply_mem_support_cycle_iff_apply_mem
     rw [cycleOf_eq_one_iff, ← Function.mem_fixedPoints_iff, ofSubtype_apply_of_mem u hx]
     exact Subtype.coe_prop (u ⟨x, hx⟩)
 
-theorem θHom_apply_mem_centralizer : θHom g (u,v) ∈ Subgroup.centralizer {g} := by 
+theorem θHom_apply_mem_centralizer : θHom g (u,v) ∈ Subgroup.centralizer {g} := by
   rw [mem_centralizer_singleton_iff]
   set p := θHom g (u,v) with h
   suffices ∀ c ∈ g.cycleFactorsFinset, p * c = c * p by
@@ -1042,7 +1042,7 @@ theorem θHom_apply_mem_centralizer : θHom g (u,v) ∈ Subgroup.centralizer {g}
     rw [← not_mem_support, ← θHom_apply_mem_support_cycle_iff_apply_mem c hc]
     exact hx
 
-lemma θHom_range_le_centralizer : (θHom g).range ≤ centralizer {g} := by 
+lemma θHom_range_le_centralizer : (θHom g).range ≤ centralizer {g} := by
   rintro _ ⟨⟨u, v⟩, rfl⟩
   exact θHom_apply_mem_centralizer
 
