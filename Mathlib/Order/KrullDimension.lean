@@ -105,6 +105,13 @@ def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
 
 @[simp] def LTSeries.last_iota (n : ℕ) : (LTSeries.iota n).last = n := rfl
 
+-- https://github.com/leanprover-community/mathlib4/pull/15556
+@[simp] def RelSeries.last_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.last = p.head := by
+  simp [RelSeries.last, RelSeries.head]
+
+@[simp] def RelSeries.head_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.head = p.last := by
+  simp [RelSeries.last, RelSeries.head]
+
 end in_other_prs
 
 section still_to_PR -- should be empty when this PR gets submitted
@@ -112,13 +119,6 @@ section still_to_PR -- should be empty when this PR gets submitted
 section RelSeries
 
 variable {α : Type*}
-
-@[simp] def RelSeries.last_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.last = p.head := by
-  simp [RelSeries.last, RelSeries.head]
-
-@[simp] def RelSeries.head_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.head = p.last := by
-  simp [RelSeries.last, RelSeries.head]
-
 
 def RelSeries.take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := i
