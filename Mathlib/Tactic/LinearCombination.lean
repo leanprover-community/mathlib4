@@ -66,15 +66,13 @@ namespace LinearCombination
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
-* `some p` means that `p` is a syntax corresponding to a proof of an equation.
+* `.proof a b p` means that `p` is a syntax corresponding to a proof of an equation.
   For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `some (c_add_pf 2 h)`
   which is a proof of `2 * a = 2 * b`.
-* `none` means that the input expression is not an equation but a value;
+* `.const e` means that the input expression is not an equation but a value;
   the input syntax itself is used in this case.
 -/
-partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
-    TermElabM (LinearCombination α) := do
-  match stx with
+partial def expandLinearCombo {u : Level} (α : Q(Type u)) : Term → TermElabM (LinearCombination α)
   | `(($e)) => expandLinearCombo α e
   | `($e₁ + $e₂) => do
     let _i ← synthInstanceQ q(Add $α)
@@ -126,9 +124,9 @@ partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
     | none =>
       -- unfortunately we should now re-elaborate `e`, knowing that it represents a constant of
       -- type `α`
-      let e ← elabTerm e (some α)
+      let e' ← elabTerm e (some α)
       synthesizeSyntheticMVarsNoPostponing
-      return LinearCombination.const e
+      return LinearCombination.const e'
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
