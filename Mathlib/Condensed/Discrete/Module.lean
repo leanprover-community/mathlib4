@@ -53,7 +53,7 @@ def functor :
       have := CompHausLike.preregular hs
       apply Presheaf.isSheaf_coherent_of_hasPullbacks_of_comp (s :=
         CategoryTheory.forget (ModuleCat R))
-      exact ((Condensed.LocallyConstant.functor P hs).obj _).cond }
+      exact ((CompHausLike.LocallyConstant.functor P hs).obj _).cond }
   map f := ⟨(functorToPresheaves.{w, u} R).map f⟩
 
 end Condensed.LocallyConstantModule

@@ -32,7 +32,7 @@ instance : (constantSheaf (coherentTopology Profinite) (Type (u+1))).Faithful :=
 instance : (constantSheaf (coherentTopology Profinite) (Type (u+1))).Full :=
   Functor.Full.of_iso constantSheafProfiniteCompHausIso.symm
 
-open Condensed.LocallyConstant CompHausLike.LocallyConstant
+open CompHausLike.LocallyConstant
 
 noncomputable def isColimitLocallyConstantPresheaf (X : Type (u+1)) (S : Profinite.{u}) :
     IsColimit ((profiniteToCompHaus.op ⋙
@@ -51,7 +51,7 @@ theorem isDiscrete_of_isColimit_mapCone (X : CondensedSet.{u}) (h : ∀ S : Prof
 
 noncomputable abbrev LocallyConstant.adjunction :
     CondensedSet.LocallyConstant.functor ⊣ Condensed.underlying (Type (u+1)) :=
-  Condensed.LocallyConstant.adjunction _ _
+  CompHausLike.LocallyConstant.adjunction _ _
 
 open List in
 theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
@@ -95,7 +95,7 @@ instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :
 instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
   inferInstanceAs (LightCondensed.discrete _).Full
 
-open Condensed.LocallyConstant CompHausLike.LocallyConstant
+open CompHausLike.LocallyConstant
 
 noncomputable def isColimitLocallyConstantPresheaf (X : Type u) (S : LightProfinite.{u}) :
     IsColimit ((LightCondSet.LocallyConstant.functor.{u}.obj X).val.mapCocone
@@ -111,7 +111,7 @@ theorem isDiscrete_of_isColimit_mapCone (X : LightCondSet.{u}) (h : ∀ S : Ligh
 
 noncomputable abbrev LocallyConstant.adjunction :
     LightCondSet.LocallyConstant.functor ⊣ LightCondensed.underlying (Type u) :=
-  Condensed.LocallyConstant.adjunction _ _
+  CompHausLike.LocallyConstant.adjunction _ _
 
 open List in
 theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
