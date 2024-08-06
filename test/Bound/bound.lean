@@ -18,6 +18,7 @@ open scoped NNReal
 section bound_only
 variable {a b c x y : ℝ} {z : ℂ} {n : ℕ}
 example (h : x < y) : y - x > 0 := by bound
+example (h : x < y) : Real.exp (y - x) > 1 := by bound
 example (h : x < y) (y0 : 0 < y) : x / y < 1 := by bound
 example (f : ℕ → ℝ) (h : ∀ n, f n ≥ 0) : f n ≥ 0 := by bound [h n]
 example (x y : ℝ≥0) (h : x < y) : (x : ℝ) < y := by bound
