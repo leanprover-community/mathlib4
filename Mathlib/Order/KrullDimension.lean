@@ -138,16 +138,13 @@ lemma RelSeries.last_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length +
 noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
   inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
 
-end in_other_prs
-
-section still_to_PR -- should be empty when this PR gets submitted
-
 -- Q: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WithTop.2Ecoe_iSup.20or.20WithTop.2Ecoe_ciSup/near/456575712
+-- https://github.com/leanprover-community/mathlib4/pull/15560
 theorem WithBot.coe_iSup_OrderTop {α : Type*} [Preorder α] {ι : Type*} [Nonempty ι] [SupSet α]
     [OrderTop α] {f : ι → α} : ↑(⨆ i, f i) = (⨆ i, f i : WithBot α) :=
   WithBot.coe_iSup (OrderTop.bddAbove (Set.range f))
 
-end still_to_PR
+end in_other_prs
 
 section definitions
 
