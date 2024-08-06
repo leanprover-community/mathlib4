@@ -10,6 +10,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
+import Mathlib.Data.Subtype
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.

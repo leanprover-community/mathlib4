@@ -187,7 +187,7 @@ theorem sizeUpTo_zero : c.sizeUpTo 0 = 0 := by simp [sizeUpTo]
 theorem sizeUpTo_ofLength_le (i : ℕ) (h : c.length ≤ i) : c.sizeUpTo i = n := by
   dsimp [sizeUpTo]
   convert c.blocks_sum
-  exact take_all_of_le h
+  exact take_of_length_le h
 
 @[simp]
 theorem sizeUpTo_length : c.sizeUpTo c.length = n :=
@@ -868,7 +868,7 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     exact this.symm
 
 theorem blocks_sum : c.blocks.sum = n := by
-  have : c.blocks.take c.length = c.blocks := take_all_of_le (by simp [blocks])
+  have : c.blocks.take c.length = c.blocks := take_of_length_le (by simp [blocks])
   rw [← this, c.blocks_partial_sum c.length_lt_card_boundaries, c.boundary_length]
   rfl
 

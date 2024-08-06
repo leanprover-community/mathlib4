@@ -520,7 +520,7 @@ theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d 
 /- Porting note (#11039): broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
   simp_rw [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, SimplicialObject.δ,
-    Functor.comp_map, ← Int.cast_smul_eq_nsmul k ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
+    Functor.comp_map, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
     Int.cast_one, Action.sum_hom, Action.smul_hom, Rep.linearization_map_hom]
   rw [LinearMap.coeFn_sum, Fintype.sum_apply]
   erw [d_of (k := k) x]

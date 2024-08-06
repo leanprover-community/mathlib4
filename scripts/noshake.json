@@ -195,8 +195,8 @@
   "Mathlib.Topology.Order.LeftRightNhds": ["Mathlib.Data.Set.Pointwise.Basic"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
-  "Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.NonUnital":
-  ["Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital"],
+  "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
+  ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
@@ -313,7 +313,7 @@
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
-  "Mathlib.Init.Data.Nat.GCD": ["Batteries.Data.Nat.Gcd"],
+  "Mathlib.Init.Data.List.Lemmas": ["Batteries.Data.List.Lemmas"],
   "Mathlib.Init.Data.List.Basic": ["Batteries.Data.List.Basic"],
   "Mathlib.Init.Data.Int.Order": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Init.Data.Int.Basic": ["Batteries.Data.Int.Order"],
