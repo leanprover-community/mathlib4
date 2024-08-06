@@ -121,10 +121,20 @@ lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 
+theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
+
+theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
+  simp only [bit, shiftRight_one, testBit_zero]
+  cases mod_two_eq_zero_or_one n with | _ h => simpa [h] using Nat.div_add_mod n 2
+
 /-- For a predicate `C : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
-def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := bit_decomp n ▸ h _ _
+def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n :=
+  -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
+  let x := h (1 &&& n != 0) (n >>> 1)
+  -- `congrArg C _` is `rfl` in non-dependent case
+  congrArg C n.bit_testBit_zero_shiftRight_one ▸ x
 
 lemma bit_zero : bit false 0 = 0 :=
   rfl
@@ -159,18 +169,12 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   For a predicate `C : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
-def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
-  fun n =>
-    if n0 : n = 0 then by
-      simp only [n0]
-      exact z
-    else by
-      let n' := div2 n
-      have _x : bit (bodd n) n' = n := by
-        apply bit_decomp n
-      rw [← _x]
-      exact f (bodd n) n' (binaryRec z f n')
-  decreasing_by exact binaryRec_decreasing n0
+def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) (n : Nat) : C n :=
+  if n0 : n = 0 then congrArg C n0 ▸ z
+  else
+    let x := f (1 &&& n != 0) (n >>> 1) (binaryRec z f (n >>> 1))
+    congrArg C n.bit_testBit_zero_shiftRight_one ▸ x
+decreasing_by exact bitwise_rec_lemma n0
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
@@ -241,25 +245,6 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   simp only [bodd_eq_one_and_ne_zero] at this
   exact this
 
-lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
-    (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · generalize binaryRec z f (bit b n) = e
-    revert e
-    have bf := bodd_bit b n
-    have n0 := div2_bit b n
-    rw [h'] at bf n0
-    simp only [bodd_zero, div2_zero] at bf n0
-    subst bf n0
-    rw [binaryRec_zero]
-    intros
-    rw [h, eq_mpr_eq_cast, cast_eq]
-  · simp only; generalize_proofs h
-    revert h
-    rw [bodd_bit, div2_bit]
-    intros; simp only [eq_mpr_eq_cast, cast_eq]
-
 /-! ### `boddDiv2_eq` and `bodd` -/
 
 
@@ -288,9 +273,22 @@ theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
   cases b <;> dsimp [bit] <;> omega
 
 @[simp]
-theorem bitCasesOn_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
-    bitCasesOn (bit b n) H = H b n :=
-  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [bodd_bit, div2_bit]
+theorem bit_div_two (b n) : bit b n / 2 = n := by
+  rw [bit_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
+  · cases b <;> decide
+  · decide
+
+@[simp]
+theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
+  bit_div_two b n
+
+@[simp]
+theorem bitCasesOn_bit {C : ℕ → Sort u} (h : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
+    bitCasesOn (bit b n) h = h b n := by
+  change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
+  generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+  rw [testBit_bit_zero, bit_shiftRight_one]
+  intros; rfl
 
 @[simp]
 theorem bitCasesOn_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
@@ -335,18 +333,23 @@ i.e. supplying `n = 0 → b = true`. -/
 theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
     (h : f false 0 z = z ∨ (n = 0 → b = true)) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
-    rw [binaryRec_zero]
-    simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
+  by_cases h' : bit b n = 0
+  case pos =>
+    obtain ⟨rfl, rfl⟩ := bit_eq_zero_iff.mp h'
+    simp only [forall_const, or_false] at h
+    unfold binaryRec
     exact h.symm
-  · dsimp only []
-    generalize_proofs e
-    revert e
-    rw [bodd_bit, div2_bit]
-    intros
-    rfl
+  case neg =>
+    rw [binaryRec, dif_neg h']
+    change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
+    generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+    rw [testBit_bit_zero, bit_shiftRight_one]
+    intros; rfl
+
+theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
+    (h : f false 0 z = z) (b n) :
+    binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
+  binaryRec_eq' b n (.inl h)
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`-/
