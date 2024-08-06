@@ -145,9 +145,11 @@ theorem pi_le_four : π ≤ 4 :=
       π / 2 ≤ 2 := pi_div_two_le_two
       _ = 4 / 2 := by norm_num)
 
+@[bound]
 theorem pi_pos : 0 < π :=
   lt_of_lt_of_le (by norm_num) two_le_pi
 
+@[bound]
 theorem pi_nonneg : 0 ≤ π :=
   pi_pos.le
 
