@@ -20,8 +20,7 @@ namespace List
 
 theorem getElem_reverse' {α} (l : List α) (i : Nat) (h1 h2) :
     (reverse l)[i]'h1 = l[length l - 1 - i]'h2 := by
-  have := getElem_reverse l (length l - 1 -i) (by omega) (by omega)
-  rw [← this]
+  rw [← getElem_reverse l _ (by omega) (by omega)]
   congr
   simp at h1
   omega
