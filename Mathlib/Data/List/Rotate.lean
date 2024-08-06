@@ -493,8 +493,7 @@ theorem IsRotated.dropLast_tail {α}
   | [_] => by simp
   | a :: b :: L => by
     simp at hL' |-
-    rw [hL']
-    apply IsRotated.cons_getLast_dropLast
+    simp [hL', IsRotated.cons_getLast_dropLast]
 
 /-- List of all cyclic permutations of `l`.
 The `cyclicPermutations` of a nonempty list `l` will always contain `List.length l` elements.
