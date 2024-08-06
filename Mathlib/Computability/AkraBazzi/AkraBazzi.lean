@@ -597,6 +597,7 @@ lemma asympBound_def' {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :
     asympBound g a b n = n ^ p a b * (1 + (∑ u ∈ range n, g u / u ^ (p a b + 1))) := by
   simp [asympBound_def, sumTransform, mul_add, mul_one, Finset.sum_Ico_eq_sum_range]
 
+section
 include R
 
 lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
@@ -784,45 +785,14 @@ lemma eventually_atTop_sumTransform_ge :
       _ ≥ min (c₂ * (1 - c₃)) ((1 - c₃) * c₂ / c₁ ^ ((p a b) + 1)) * g n := by
              gcongr; exact min_le_right _ _
 
+end
+
 /-!
 #### Technical lemmas
 
 The next several lemmas are technical lemmas leading up to `rpow_p_mul_one_sub_smoothingFn_le` and
 `rpow_p_mul_one_add_smoothingFn_ge`, which are key steps in the main proof.
 -/
-
-lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (Set.Ioi 1))
-    (hq_poly : GrowsPolynomially fun x => ‖deriv q x‖) (i : α) :
-    (fun n => q (r i n) - q (b i * n)) =O[atTop] fun n => (deriv q n) * (r i n - b i * n) := by
-  let b' := b (min_bi b) / 2
-  have hb_pos : 0 < b' := by have := R.b_pos (min_bi b); positivity
-  have hb_lt_one : b' < 1 := calc
-    b (min_bi b) / 2 < b (min_bi b) := by exact div_two_lt_of_pos (R.b_pos (min_bi b))
-                   _ < 1 := R.b_lt_one (min_bi b)
-  have hb : b' ∈ Set.Ioo 0 1 := ⟨hb_pos, hb_lt_one⟩
-  have hb' : ∀ i, b' ≤ b i := fun i => calc
-    b (min_bi b) / 2 ≤ b i / 2 := by gcongr; aesop
-               _ ≤ b i := by exact le_of_lt <| div_two_lt_of_pos (R.b_pos i)
-  obtain ⟨c₁, _, c₂, _, hq_poly⟩ := hq_poly b' hb
-  rw [isBigO_iff]
-  refine ⟨c₂, ?_⟩
-  have h_tendsto : Tendsto (fun x => b' * x) atTop atTop :=
-    Tendsto.const_mul_atTop hb_pos tendsto_id
-  filter_upwards [hq_poly.natCast_atTop, R.eventually_bi_mul_le_r, eventually_ge_atTop R.n₀,
-                  eventually_gt_atTop 0, (h_tendsto.eventually_gt_atTop 1).natCast_atTop] with
-    n hn h_bi_le_r h_ge_n₀ h_n_pos h_bn
-  rw [norm_mul, ← mul_assoc]
-  refine Convex.norm_image_sub_le_of_norm_deriv_le
-    (s := Set.Icc (b'*n) n) (fun z hz => ?diff) (fun z hz => (hn z hz).2)
-    (convex_Icc _ _) ?mem_Icc <| ⟨h_bi_le_r i, by exact_mod_cast (le_of_lt (R.r_lt_n i n h_ge_n₀))⟩
-  case diff =>
-    refine hq_diff.differentiableAt (Ioi_mem_nhds ?_)
-    calc 1 < b' * n := by exact h_bn
-         _ ≤ z := hz.1
-  case mem_Icc =>
-    refine ⟨by gcongr; exact hb' i, ?_⟩
-    calc b i * n ≤ 1 * n := by gcongr; exact le_of_lt <| R.b_lt_one i
-                 _ = n := by simp
 
 lemma eventually_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
     deriv (fun z => z ^ p * (1 - ε z))
@@ -966,6 +936,41 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
       (isTheta_deriv_rpow_p_mul_one_add_smoothingFn hp) ?_
     filter_upwards [eventually_gt_atTop 0] with _ _
     positivity
+
+include R
+
+lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (Set.Ioi 1))
+    (hq_poly : GrowsPolynomially fun x => ‖deriv q x‖) (i : α) :
+    (fun n => q (r i n) - q (b i * n)) =O[atTop] fun n => (deriv q n) * (r i n - b i * n) := by
+  let b' := b (min_bi b) / 2
+  have hb_pos : 0 < b' := by have := R.b_pos (min_bi b); positivity
+  have hb_lt_one : b' < 1 := calc
+    b (min_bi b) / 2 < b (min_bi b) := by exact div_two_lt_of_pos (R.b_pos (min_bi b))
+                   _ < 1 := R.b_lt_one (min_bi b)
+  have hb : b' ∈ Set.Ioo 0 1 := ⟨hb_pos, hb_lt_one⟩
+  have hb' : ∀ i, b' ≤ b i := fun i => calc
+    b (min_bi b) / 2 ≤ b i / 2 := by gcongr; aesop
+               _ ≤ b i := by exact le_of_lt <| div_two_lt_of_pos (R.b_pos i)
+  obtain ⟨c₁, _, c₂, _, hq_poly⟩ := hq_poly b' hb
+  rw [isBigO_iff]
+  refine ⟨c₂, ?_⟩
+  have h_tendsto : Tendsto (fun x => b' * x) atTop atTop :=
+    Tendsto.const_mul_atTop hb_pos tendsto_id
+  filter_upwards [hq_poly.natCast_atTop, R.eventually_bi_mul_le_r, eventually_ge_atTop R.n₀,
+                  eventually_gt_atTop 0, (h_tendsto.eventually_gt_atTop 1).natCast_atTop] with
+    n hn h_bi_le_r h_ge_n₀ h_n_pos h_bn
+  rw [norm_mul, ← mul_assoc]
+  refine Convex.norm_image_sub_le_of_norm_deriv_le
+    (s := Set.Icc (b'*n) n) (fun z hz => ?diff) (fun z hz => (hn z hz).2)
+    (convex_Icc _ _) ?mem_Icc <| ⟨h_bi_le_r i, by exact_mod_cast (le_of_lt (R.r_lt_n i n h_ge_n₀))⟩
+  case diff =>
+    refine hq_diff.differentiableAt (Ioi_mem_nhds ?_)
+    calc 1 < b' * n := by exact h_bn
+         _ ≤ z := hz.1
+  case mem_Icc =>
+    refine ⟨by gcongr; exact hb' i, ?_⟩
+    calc b i * n ≤ 1 * n := by gcongr; exact le_of_lt <| R.b_lt_one i
+                 _ = n := by simp
 
 lemma rpow_p_mul_one_sub_smoothingFn_le :
     ∀ᶠ (n : ℕ) in atTop, ∀ i, (r i n) ^ (p a b) * (1 - ε (r i n))
