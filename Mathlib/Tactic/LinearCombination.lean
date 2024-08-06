@@ -175,13 +175,10 @@ def elabLinearCombination
         let _i ← synthInstanceQ q(AddGroup ($α : Type v))
         let mvar ← mkFreshExprMVar q($a' - $b' - ($a - $b) = 0)
         pure (q(eq_of_add (a' := $a') (b' := $b') $p), #[mvar])
-  Tactic.liftMetaTactic fun g ↦ do
-    g.assign (mkAppN e mvars)
-    return mvars.toList.map Expr.mvarId!
-  let mvarIds ← Tactic.getGoals
-  for mvarId in mvarIds do
-      Tactic.setGoals [mvarId]
-      Tactic.evalTactic norm
+  (← Tactic.getMainGoal).assign (mkAppN e mvars)
+  for mvar in mvars do
+    Tactic.setGoals [mvar.mvarId!]
+    Tactic.evalTactic norm
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
