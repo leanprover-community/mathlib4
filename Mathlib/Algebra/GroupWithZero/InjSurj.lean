@@ -50,8 +50,8 @@ variable [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
 
 /-- Pull back a `NoZeroDivisors` instance along an injective function. -/
 protected theorem Function.Injective.noZeroDivisors [NoZeroDivisors M₀'] : NoZeroDivisors M₀ :=
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun H =>
-      have : f _ * f _ = 0 := by rw [← mul, H, zero]
+  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} H ↦
+      have : f a * f b = 0 := by rw [← mul, H, zero]
       (eq_zero_or_eq_zero_of_mul_eq_zero this).imp
         (fun H => hf <| by rwa [zero]) fun H => hf <| by rwa [zero] }
 
