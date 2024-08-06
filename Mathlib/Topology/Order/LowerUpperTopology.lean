@@ -317,34 +317,26 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a 
         use a
       · rw [sUnion_singleton]
     · intro ⟨S,⟨hS1,hS2⟩⟩
-      rw [hS2]
       have hUS : univ ∉ S := by
-        by_contra hUS
+        by_contra hUS'
         apply hU
-        rw [hS2, sUnion_eq_univ_iff]
-        intro a
-        use univ
-        exact ⟨hUS,trivial⟩
-      let T := {a | (Ici a)ᶜ ∈ S}
-      use sSup T
-      rw [sUnion_eq_compl_sInter_compl, compl_inj_iff]
+        rw [hS2]
+        exact sUnion_eq_univ_iff.mpr (fun a => by use univ; exact ⟨hUS',trivial⟩)
+      use sSup {a | (Ici a)ᶜ ∈ S}
+      rw [hS2, sUnion_eq_compl_sInter_compl, compl_inj_iff]
       apply le_antisymm
       · intro b hb
         simp only [sInter_image, mem_iInter, mem_compl_iff]
         intro s hs
-        have h4 : s ∈ {s | ∃ a, (Ici a)ᶜ = s} := by
-          exact (subset_insert_iff_of_not_mem hUS).mp hS1 hs
-        simp only [mem_setOf_eq] at h4
-        obtain ⟨a,ha⟩ := h4
+        obtain ⟨a,ha⟩ := (subset_insert_iff_of_not_mem hUS).mp hS1 hs
         subst hS2 ha
-        simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt, T]
+        simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt]
       · intro b hb
-        simp only [mem_Ici, sSup_le_iff]
+        rw [mem_Ici, sSup_le_iff]
         intro c hc
-        simp only [sInter_image, mem_iInter, mem_compl_iff] at hb
-        have e2 : b ∉ (Ici c)ᶜ := hb _ hc
-        simp only [compl_Ici, mem_Iio, not_lt] at e2
-        exact e2
+        simp only [sInter_image, mem_iInter] at hb
+        rw [← not_lt, ← mem_Iio, ← compl_Ici]
+        exact hb _ hc
   · intro h
     exact IsTopologicalBasis.isOpen isTopologicalBasis_insert_univ_subbasis h
 
