@@ -302,7 +302,7 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsLower α]
 
-lemma teq (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Ici a)ᶜ = U) := by
+lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Ici a)ᶜ = U) := by
   by_cases hU : U = univ
   constructor
   · intro _
@@ -459,6 +459,15 @@ lemma isTopologicalBasis_insert_univ_subbasis :
   IsLower.isTopologicalBasis_insert_univ_subbasis (α := αᵒᵈ)
 
 end LinearOrder
+
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsUpper α]
+
+lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Iic a)ᶜ = U) :=
+  IsLower.isTopologicalSpace_basis (α := αᵒᵈ) U
+
+end CompleteLinearOrder
 
 end IsUpper
 
