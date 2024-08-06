@@ -300,33 +300,30 @@ section CompleteLinearOrder
 variable [CompleteLinearOrder α]
 
 lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α] (U : Set α) :
-    IsOpen U ↔ (∃ (a : α), U = (Iic a)ᶜ) ∨ U = univ := by
+    IsOpen U ↔ U = univ ∨ (∃ (a : α), (Iic a)ᶜ = U) := by
   constructor
   · intro hU
     rcases eq_empty_or_nonempty Uᶜ with eUc | neUc
-    · exact Or.inr (compl_empty_iff.mp eUc)
-    · apply Or.inl
+    · exact Or.inl (compl_empty_iff.mp eUc)
+    · apply Or.inr
       use sSup Uᶜ
-      rw [eq_compl_comm, le_antisymm_iff]
-      exact ⟨(isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
+      rw [compl_eq_comm, le_antisymm_iff]
+      exact ⟨fun  _ ha ↦ le_sSup ha, (isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
         (dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed  hU.isClosed_compl)
-        neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl),
-        fun  _ ha ↦ le_sSup ha⟩
-  · rintro (⟨a,rfl⟩ | rfl)
-    · exact isClosed_Iic.isOpen_compl
+        neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl)⟩
+  · rintro (rfl | ⟨a,rfl⟩ )
     · exact isOpen_univ
+    · exact isClosed_Iic.isOpen_compl
 
 -- N.B. A number of conditions equivalent to `scott α = upper α` are given in Gierz _et al_,
 -- Chapter III, Exercise 3.23.
-lemma scott_eq_upper : scott α = upper α := by
+lemma eq_upper_of_complete_linear_order : scott α = upper α := by
   letI := upper α
   ext U
   rw [@Topology.IsUpper.isTopologicalSpace_basis _ _ (upper α)
     ({ topology_eq_upperTopology := rfl }) U]
-  rw [Or.comm]
   letI := scott α
   rw [@isOpen_iff_Iic_compl_or_univ _ _ (scott α) ({ topology_eq_scott := rfl }) U]
-  aesop
 
 end CompleteLinearOrder
 
