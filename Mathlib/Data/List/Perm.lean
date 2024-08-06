@@ -630,7 +630,7 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
         rw [← hx, nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hn)]
         exact nthLe_mem _ _ _
 
-lemma permutations_first_two (x y : α) (s : List α) :
+lemma permutations_take_two (x y : α) (s : List α) :
     (x :: y :: s).permutations.take 2 = [x :: y :: s, y :: x :: s] := by
   induction s <;> simp only [take, permutationsAux, permutationsAux.rec, permutationsAux2, id_eq]
 
@@ -641,11 +641,9 @@ theorem nodup_permutations_iff (s : List α) : Nodup s.permutations ↔ Nodup s 
   intro ⟨x, hs⟩
   rw [duplicate_iff_sublist] at hs
   obtain ⟨l, ht⟩ := List.Sublist.exists_perm_append hs
-  rw [List.Perm.nodup_iff (List.Perm.permutations ht)]
-  rw [← exists_duplicate_iff_not_nodup]
+  rw [List.Perm.nodup_iff (List.Perm.permutations ht), ← exists_duplicate_iff_not_nodup]
   use x :: x :: l
-  rw [List.duplicate_iff_sublist]
-  rw [← permutations_first_two]
+  rw [List.duplicate_iff_sublist, ← permutations_take_two]
   exact take_sublist 2 _
 
 -- TODO: `count s s.permutations = (zipWith count s s.tails).prod`
