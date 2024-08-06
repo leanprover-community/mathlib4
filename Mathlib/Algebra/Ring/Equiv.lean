@@ -494,8 +494,9 @@ def prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAss
       Prod.map, Prod.fst_add, map_add, Prod.snd_add, Prod.mk_add_mk]
 
 @[simp]
-theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring R']
-    [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring S'] (f : R ≃+* R') (g : S ≃+* S') :
+theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
+    [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring S']
+    (f : R ≃+* R') (g : S ≃+* S') :
     ⇑(RingEquiv.prodCongr f g) = Prod.map f g :=
   rfl
 
