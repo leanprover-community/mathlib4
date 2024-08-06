@@ -64,7 +64,6 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
 
   -- Thus, by Zorn's lemma, we can pick a maximal ideal J in S.
   obtain ⟨Jset, _, hmax⟩ := zorn_subset_nonempty S chainub I IinS
-  -- obtain ⟨Jset, ⟨Jidl, IJ, JF⟩, ⟨_, Jmax⟩⟩ := zorn_subset_nonempty S chainub I IinS
   obtain ⟨Jidl, IJ, JF⟩ := hmax.prop
   set J := IsIdeal.toIdeal Jidl
   use J
