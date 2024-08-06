@@ -6,7 +6,6 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Lean.Linter.Util
-import Batteries.Data.String.Matcher
 
 /-!
 #  The "pedantic" linter
