@@ -90,7 +90,7 @@ def DirectLimit [DecidableEq ι] : Type max v w :=
 
 namespace DirectLimit
 
-section DecidableEq
+section Basic
 
 variable [DecidableEq ι]
 
@@ -250,7 +250,7 @@ lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
 
 end functorial
 
-end DecidableEq
+end Basic
 
 section Totalize
 
@@ -271,8 +271,7 @@ theorem totalize_of_not_le {i j} (h : ¬i ≤ j) : totalize G f i j = 0 :=
 
 end Totalize
 
-variable {G f}
-variable [DecidableEq ι] [DirectedSystem G fun i j h => f i j h]
+variable [DecidableEq ι] [DirectedSystem G fun i j h => f i j h] {G f}
 
 theorem toModule_totalize_of_le [∀ i (k : G i), Decidable (k ≠ 0)] {x : DirectSum ι G} {i j : ι}
     (hij : i ≤ j) (hx : ∀ k ∈ x.support, k ≤ i) :
@@ -363,6 +362,8 @@ protected theorem directedSystem [h : DirectedSystem G fun i j h => f i j h] :
 variable [DecidableEq ι]
 
 attribute [local instance] DirectLimit.directedSystem
+
+variable [DecidableEq ι]
 
 instance : AddCommGroup (DirectLimit G f) :=
   Module.DirectLimit.addCommGroup G fun i j hij => (f i j hij).toIntLinearMap
