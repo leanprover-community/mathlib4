@@ -71,4 +71,30 @@ lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
 lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
   sSup_eq_bot'
 
+lemma iSup_eq_zero : iSup f = 0 ↔ ∀ i, f i = 0 :=
+  iSup_eq_bot
+
+lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
+  apply (sSup_eq_top ..).mpr
+  intro x hx
+  cases x with
+  | top => simp at hx
+  | coe x =>
+    contrapose! h
+    simp only [not_infinite]
+    apply Finite.subset <| Finite.Set.finite_image {n : ℕ | n ≤ x} (fun (n : ℕ) => (n : ℕ∞))
+    intro y hy
+    specialize h y hy
+    have hxt : y < ⊤ := lt_of_le_of_lt h hx
+    use y.toNat
+    simp [toNat_le_of_le_coe h, LT.lt.ne_top hxt]
+
+lemma finite_of_sSup_lt_top (h : sSup s < ⊤) : s.Finite := by
+  contrapose! h
+  simp only [top_le_iff]
+  exact sSup_eq_top_of_infinite h
+
+lemma sSup_mem_of_Nonempty_of_lt_top [Nonempty s] (hs' : sSup s < ⊤) : sSup s ∈ s :=
+  Nonempty.csSup_mem nonempty_of_nonempty_subtype (finite_of_sSup_lt_top hs')
+
 end ENat
