@@ -88,7 +88,7 @@ protected lemma isNilpotent_iff :
     · simp
     simpa using hnp (isNilpotent_mul_X_iff.mp hpX) i
 
-@[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N):
+@[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
   simp only [Polynomial.isNilpotent_iff, coeff_reverse]
   refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_lt i N with hi | hi

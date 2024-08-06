@@ -93,7 +93,7 @@ lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
   apply MvPolynomial.IsHomogeneous.sum
   rintro j -
   apply MvPolynomial.isHomogeneous_monomial _ _
-  rw [degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
+  simp [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
     Finsupp.single_eq_same]
 
 lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
@@ -280,7 +280,8 @@ open LinearMap in
 lemma polyCharpolyAux_map_eq_toMatrix_charpoly (x : L) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) =
       (toMatrix bₘ bₘ (φ x)).charpoly := by
-  erw [polyCharpolyAux, Polynomial.map_map, MvPolynomial.comp_eval₂Hom, charpoly.univ_map_eval₂Hom]
+  rw [polyCharpolyAux, Polynomial.map_map, ← MvPolynomial.eval₂Hom_C_eq_bind₁,
+    MvPolynomial.comp_eval₂Hom, charpoly.univ_map_eval₂Hom]
   congr
   ext
   rw [of_apply, Function.curry_apply, toMvPolynomial_eval_eq_apply, LinearEquiv.symm_apply_apply]
