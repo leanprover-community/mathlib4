@@ -27,10 +27,7 @@ the circumcenter.
 
 -/
 
-
 noncomputable section
-
-open scoped Classical
 
 open RealInnerProductSpace
 
@@ -202,6 +199,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
         rw [hi default, hdist]
     · have i := hne.some
       let ι2 := { x // x ≠ i }
+      classical
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype (Finset.univ.filter fun x => x ≠ i)]
         · rw [Finset.filter_not]
@@ -495,6 +493,7 @@ def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex 
 theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
     (f : PointsWithCircumcenterIndex n → α) :
     ∑ i, f i = (∑ i : Fin (n + 1), f (pointIndex i)) + f circumcenterIndex := by
+  classical
   have h : univ = insert circumcenterIndex (univ.map (pointIndexEmbedding n)) := by
     ext x
     refine ⟨fun h => ?_, fun _ => mem_univ _⟩
@@ -536,6 +535,7 @@ def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumc
 @[simp]
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     ∑ j, pointWeightsWithCircumcenter i j = 1 := by
+  classical
   convert sum_ite_eq' univ (pointIndex i) (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [pointWeightsWithCircumcenter]
   · simp
@@ -596,6 +596,7 @@ def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex 
 @[simp]
 theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
     ∑ i, circumcenterWeightsWithCircumcenter n i = 1 := by
+  classical
   convert sum_ite_eq' univ circumcenterIndex (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [circumcenterWeightsWithCircumcenter]
   · simp

@@ -33,14 +33,9 @@ unnecessarily.
 
 -/
 
-
 noncomputable section
 
-open scoped Classical
-
-open scoped Real
-
-open scoped RealInnerProductSpace
+open scoped Real RealInnerProductSpace
 
 namespace InnerProductGeometry
 
@@ -242,9 +237,7 @@ This section develops some geometrical definitions and results on
 (possibly degenerate) triangles in Euclidean affine spaces.
 -/
 
-
 open InnerProductGeometry
-
 open scoped EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]

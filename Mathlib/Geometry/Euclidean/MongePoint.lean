@@ -46,10 +46,7 @@ generalization, the Monge point of a simplex.
 
 -/
 
-
 noncomputable section
-
-open scoped Classical
 
 open scoped RealInnerProductSpace
 
@@ -357,6 +354,7 @@ theorem finrank_direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fi
     (vectorSpan_mono ℝ (Set.image_subset_range s.points ↑(univ.erase i)))
   have hc : card (univ.erase i) = n + 1 := by rw [card_erase_of_mem (mem_univ _)]; simp
   refine add_left_cancel (_root_.trans h ?_)
+  classical
   rw [s.independent.finrank_vectorSpan (Fintype.card_fin _), ← Finset.coe_image,
     s.independent.finrank_vectorSpan_image_finset hc]
 
@@ -645,6 +643,7 @@ theorem exists_of_range_subset_orthocentricSystem {t : Triangle ℝ P}
   · right
     have hs := Set.subset_diff_singleton hps h
     rw [Set.insert_diff_self_of_not_mem ho] at hs
+    classical
     refine Set.eq_of_subset_of_card_le hs ?_
     rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.independent.injective]
 
