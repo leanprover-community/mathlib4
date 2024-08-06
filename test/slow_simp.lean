@@ -61,7 +61,7 @@ def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
     base := by
       have := f.w
       replace this := DFunLike.congr_fun this ()
-      simp [- Under.w] at this
+      simp [-Under.w] at this
       simp
       exact this.symm }
   map_comp := by intros; simp_all; rfl -- This is the slow step.
