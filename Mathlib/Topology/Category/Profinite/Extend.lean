@@ -184,7 +184,7 @@ open Extend
 
 section ProfiniteAsLimit
 
-variable (S : Profinite)
+variable (S : Profinite.{u})
 
 /-- A functor `StructuredArrow S toProfinite ⥤ Profinite` whose limit is isomorphic to `S`. -/
 abbrev diagram' : StructuredArrow S toProfinite ⥤ Profinite :=
