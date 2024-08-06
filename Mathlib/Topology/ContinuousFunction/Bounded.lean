@@ -1519,29 +1519,9 @@ section
 
 variable (α γ : Type*) [TopologicalSpace α] [NormedRing γ]
 
-/-- The equivalence relation defined by compactly supported functions as `RingCon`. -/
-def ringConCompactlySupportedBoundedContinuousFunction : RingCon (α →ᵇ γ) where
-  r x y := ∃ (z : α →ᵇ γ), (HasCompactSupport z ∧ x = y + z)
-  iseqv := {
-    refl := fun _ ↦ ⟨0, HasCompactSupport.zero, by simp⟩
-    symm := by
-      rintro x y ⟨z, hz, rfl⟩
-      exact ⟨-z, HasCompactSupport.neg' hz, by simp⟩
-    trans := by
-      rintro x y z ⟨w1, hw1, rfl⟩ ⟨w2, hw2, rfl⟩
-      exact ⟨w1 + w2, HasCompactSupport.add hw1 hw2, by rw [add_assoc, add_comm w2]⟩ }
-  add' := by
-    rintro w x y z ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
-    exact ⟨a + b, HasCompactSupport.add ha hb, add_add_add_comm ..⟩
-  mul' := by
-    rintro w x y z ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
-    refine ⟨a * z + a * b + x * b, ?_, by noncomm_ring⟩
-    refine HasCompactSupport.add (HasCompactSupport.add ?_ ?_) <| HasCompactSupport.mul_left hb
-    all_goals exact HasCompactSupport.mul_right ha
-
 /-- The two-sided ideal of compactly supported functions. -/
-def compactlySupportedBoundedContinuousFunction : TwoSidedIdeal (α →ᵇ γ) where
-  ringCon := ringConCompactlySupportedBoundedContinuousFunction α γ
+def compactlySupported : TwoSidedIdeal (α →ᵇ γ) :=
+  .mk' {z | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right
 
 @[inherit_doc]
 scoped[BoundedContinuousFunction] notation
