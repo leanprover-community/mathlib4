@@ -1,8 +1,9 @@
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Tauto
 
-/-- A tactic that adds a vacuous `sorry`.
-Useful for testing the chattiness of the `haveLet` linter. -/
+/--
+A tactic that adds a vacuous `sorry`. Useful for testing the chattiness of the `haveLet` linter.
+-/
 elab "noise" : tactic => do
   Lean.Elab.Tactic.evalTactic (← `(tactic| have : 0 = 0 := sorry; clear this ))
 
