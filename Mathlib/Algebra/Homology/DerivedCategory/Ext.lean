@@ -129,9 +129,6 @@ lemma comp_hom {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + 
 lemma ext {n : ℕ} {α β : Ext X Y n} (h : α.hom = β.hom) : α = β :=
   homEquiv.injective h
 
-lemma ext_iff {n : ℕ} {α β : Ext X Y n} : α = β ↔ α.hom = β.hom :=
-  ⟨fun h ↦ by rw [h], ext⟩
-
 end
 
 /-- The canonical map `(X ⟶ Y) → Ext X Y 0`. -/
