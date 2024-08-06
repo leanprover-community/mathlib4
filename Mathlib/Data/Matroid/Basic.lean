@@ -172,7 +172,6 @@ def Matroid.ExchangeProperty {α : Type _} (P : Set α → Prop) : Prop :=
   `P` is contained in a maximal subset of `X` satisfying `P`.  -/
 def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X : Set α) : Prop :=
   ∀ I, P I → I ⊆ X → ∃ J, I ⊆ J ∧ Maximal (fun K ↦ P K ∧ K ⊆ X) J
-  ∀ I, P I → I ⊆ X → ∃ J, I ⊆ J ∧ Maximal (fun K ↦ P K ∧ K ⊆ X) J
 
 /-- A `Matroid α` is a ground set `E` of type `Set α`, and a nonempty collection of its subsets
   satisfying the exchange property and the maximal subset property. Each such set is called a
