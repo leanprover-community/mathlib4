@@ -102,7 +102,8 @@ instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
 open CompHausLike.LocallyConstant
 
 lemma mem_locallyContant_essImage_of_isColimit_mapCocone (X : LightCondSet.{u})
-  (h : ∀ S : LightProfinite.{u}, IsColimit <| X.val.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
+    (h : ∀ S : LightProfinite.{u}, IsColimit <|
+      X.val.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
     X ∈ LightCondSet.LocallyConstant.functor.essImage := by
   let i : X.val ≅ (LightCondSet.LocallyConstant.functor.obj _).val :=
     LightCondensed.isoLocallyConstantOfIsColimit _ h
