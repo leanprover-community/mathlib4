@@ -112,14 +112,7 @@ def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
 @[simp] def RelSeries.head_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.head = p.last := by
   simp [RelSeries.last, RelSeries.head]
 
-end in_other_prs
-
-section still_to_PR -- should be empty when this PR gets submitted
-
-section RelSeries
-
-variable {α : Type*}
-
+-- https://github.com/leanprover-community/mathlib4/pull/15557
 def RelSeries.take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
@@ -141,7 +134,9 @@ lemma RelSeries.head_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length +
 lemma RelSeries.last_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) :
     (p.drop i).last = p.last := by simp [drop, last, Fin.last]; congr; omega
 
-end RelSeries
+end in_other_prs
+
+section still_to_PR -- should be empty when this PR gets submitted
 
 noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
   inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
