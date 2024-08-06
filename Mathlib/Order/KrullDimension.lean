@@ -134,12 +134,13 @@ lemma RelSeries.head_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length +
 lemma RelSeries.last_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) :
     (p.drop i).last = p.last := by simp [drop, last, Fin.last]; congr; omega
 
+-- https://github.com/leanprover-community/mathlib4/pull/15558
+noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
+  inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
+
 end in_other_prs
 
 section still_to_PR -- should be empty when this PR gets submitted
-
-noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
-  inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
 
 -- Q: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WithTop.2Ecoe_iSup.20or.20WithTop.2Ecoe_ciSup/near/456575712
 theorem WithBot.coe_iSup_OrderTop {α : Type*} [Preorder α] {ι : Type*} [Nonempty ι] [SupSet α]
