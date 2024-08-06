@@ -51,7 +51,7 @@ theorem head_reverse {α} (l : List α) (hL : l ≠ []) :
   rw [List.getLast?_eq_getLast (l := l) hL] at this
   exact Option.some_inj.mp this
 
-lemma tail_get {α} {i} (L : List α) (hi : i < L.tail.length) :
+lemma getElem_tail {α} {i} (L : List α) (hi : i < L.tail.length) :
     L.tail[i] = L[i + 1]'(by simp at *; omega) := by
   induction L <;> simp at hi |-
 
