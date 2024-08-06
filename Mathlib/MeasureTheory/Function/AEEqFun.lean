@@ -110,6 +110,7 @@ variable [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 def mk {β : Type*} [TopologicalSpace β] (f : α → β) (hf : AEStronglyMeasurable f μ) : α →ₘ[μ] β :=
   Quotient.mk'' ⟨f, hf⟩
 
+open scoped Classical in
 /-- Coercion from a space of equivalence classes of almost everywhere strongly measurable
 functions to functions. We ensure that if `f` has a constant representative,
 then we choose that one. -/
