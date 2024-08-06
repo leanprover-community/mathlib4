@@ -62,7 +62,7 @@ namespace OrdinalApprox
 
 universe u
 variable {α : Type u}
-variable [CompleteLattice α] (f g : α →o α) (x : α)
+variable [CompleteLattice α] (f : α →o α) (x : α)
 
 open Function fixedPoints Cardinal Order OrderHom
 
@@ -110,8 +110,8 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     simp only [Set.mem_setOf_eq]
     use a
 
-theorem lfpApprox_mono₁ (h : f ≤ g) : lfpApprox f ≤ lfpApprox g := by
-  intro x a
+theorem lfpApprox_mono₁ : Monotone (lfpApprox : (α →o α) → _) := by
+  intro f g h x a
   induction a using Ordinal.induction with
   | h i ih =>
     unfold lfpApprox
@@ -265,8 +265,8 @@ theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a+1) = f (gfpApprox f x a) :=
   lfpApprox_add_one (OrderHom.dual f) x h a
 
-theorem gfpApprox_mono₁ (h : f ≤ g) : gfpApprox f ≤ gfpApprox g := by
-  intro x a
+theorem gfpApprox_mono₁ : Monotone (gfpApprox : (α →o α) → _ ) := by
+  intro f g h x a
   induction a using Ordinal.induction with
   | h i ih =>
     unfold gfpApprox
