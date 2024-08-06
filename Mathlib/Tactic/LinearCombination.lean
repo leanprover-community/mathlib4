@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro
 -/
 import Mathlib.Tactic.Ring
-import Mathlib.Util.SynthesizeUsing
 
 /-!
 # linear_combination Tactic
@@ -69,7 +68,6 @@ using `+`/`-`/`*`/`/` on equations and values.
 -/
 partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
     TermElabM (LinearCombination α) := do
-  -- let mut result ←
   match stx with
   | `(($e)) => expandLinearCombo α e
   | `($e₁ + $e₂) => do
@@ -114,15 +112,15 @@ partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
     | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ / $e₂) q($b₁ / $e₂) q(pf_div_c $p₁ $e₂)
     | .const e₁, .proof a₂ b₂ p₂ => return .proof q($e₁ / $a₂) q($e₁ / $b₂) q(c_div_pf $p₂ $e₁)
     | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ / $a₂) q($b₁ / $b₂) q(div_pf $p₁ $p₂)
-  | e₀ => do
-    let e ← elabTerm e₀ none
-    let eType ← inferType e
+  | e => do
+    let e' ← elabTerm e none
+    let eType ← inferType e'
     match (← withReducible do whnf eType).eq? with
-    | some (_, a, b) => return LinearCombination.proof a b e
+    | some (_, a, b) => return LinearCombination.proof a b e'
     | none =>
       -- unfortunately we should now re-elaborate `e`, knowing that it represents a constant of
       -- type `α`
-      let e ← elabTerm e₀ (some α)
+      let e ← elabTerm e (some α)
       synthesizeSyntheticMVarsNoPostponing
       return LinearCombination.const e
 
@@ -139,10 +137,10 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
     (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
-  let p := (← Lean.Elab.Tactic.getMainTarget).eq?.get!
-  let .sort u ← whnf (← inferType p.1) | unreachable!
+  let eqData := (← Lean.Elab.Tactic.getMainTarget).eq?.get!
+  let .sort u ← whnf (← inferType eqData.1) | unreachable!
   let some v := u.dec | throwError "not a type"
-  let ((α : Q(Type v)), (a' : Q($α)), (b':Q($α))) := p
+  let ((α : Q(Type v)), (a' : Q($α)), (b':Q($α))) := eqData
   let (⟨a, b, p⟩ : Σ a b : Q($α), Q($a = $b)) ← do
     match input with
     | none =>
