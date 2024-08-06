@@ -483,8 +483,8 @@ theorem IsRotated.cons_getLast_dropLast
   | nil => simp at hL
   | append_singleton a L _ =>
     simp
-    apply List.IsRotated.symm
-    apply List.isRotated_concat
+    apply IsRotated.symm
+    apply isRotated_concat
 
 theorem IsRotated.dropLast_tail {α}
     {L : List α} (hL : L ≠ []) (hL' : L.head hL = L.getLast hL) : L.dropLast ~r L.tail :=
