@@ -30,11 +30,12 @@ Lastly, calls a normalization tactic on this target.
 
 -/
 
-namespace Mathlib.Tactic.LinearCombination
+namespace Mathlib.Tactic
 open Lean hiding Rat
-open Elab Meta Term
+open Elab Meta Term Qq
 
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
+namespace LinearCombination
 
 theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
 theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
@@ -51,11 +52,16 @@ theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
 theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
 theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
 
-open Qq
+end LinearCombination
 
-inductive _root_.Mathlib.Tactic.LinearCombination {u : Level} (α : Q(Type u))
+/-- Basic data structure for the `linear_combination` tactic: the subexpressions of a term presented
+as an argument to the `linear_combination` tactic are supposed to represent either constants (of
+type `α`) or proofs of equality between two terms of type `alpha`. -/
+inductive LinearCombination {u : Level} (α : Q(Type u))
   | const : Q($α) → LinearCombination α
   | proof (a b : Q($α)) : Q($a = $b) → LinearCombination α
+
+namespace LinearCombination
 
 /--
 Performs macro expansion of a linear combination expression,
