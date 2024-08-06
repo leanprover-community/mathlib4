@@ -42,13 +42,9 @@ coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We can't call it
 in the one for `LiftPropWithinAt`.
 -/
 
-
 noncomputable section
 
-open scoped Classical
-open Manifold Topology
-
-open Set Filter TopologicalSpace
+open Manifold Topology Set Filter TopologicalSpace
 
 variable {H M H' M' X : Type*}
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
