@@ -186,6 +186,7 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y = -2 * y + 1 :
 --   the equations it is being combined with.  This was a design choice for the
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
+set_option linter.unusedVariables false in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by
   fail_if_success linear_combination h1 + (0 : ℝ) * h2
   linear_combination h1
