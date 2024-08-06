@@ -4019,7 +4019,6 @@ import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Coherence.Bicategory
 import Mathlib.Tactic.CategoryTheory.Coherence.Monoidal
-import Mathlib.Tactic.CategoryTheory.CoherenceSymmetric
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Monoidal
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
