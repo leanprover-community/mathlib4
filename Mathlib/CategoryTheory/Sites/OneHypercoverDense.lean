@@ -4,7 +4,7 @@ universe w v₀ v v' u₀ u u'
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Opposite
 
 variable {C₀ : Type u₀} {C : Type u} [Category.{v₀} C₀] [Category.{v} C]
 
@@ -180,6 +180,46 @@ def toOneHypercover {X : C} (data : F.OneHypercoverDenseData J₀ J X) :
   mem₁ := data.mem₁
 
 end OneHypercoverDenseData
+
+namespace EssSurjOfIsOneHypercoverDense
+
+variable {J₀}
+variable (G₀ : Sheaf J₀ A)
+  [HasLimitsOfSize.{w, w} A]
+
+noncomputable def presheafObj (X : C) : A :=
+  multiequalizer ((F.oneHypercoverDenseData J₀ J X).multicospanIndex G₀.val)
+
+noncomputable def restriction {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) :
+    presheafObj F J G₀ X ⟶ G₀.val.obj (op X₀) :=
+  have : F.Full := sorry
+  G₀.2.amalgamate
+    ⟨_, F.cover_lift J₀ J (J.pullback_stable f (F.oneHypercoverDenseData J₀ J X).mem₀)⟩
+    (fun ⟨Y₀, a, ha⟩ ↦ Multiequalizer.ι _ _ ≫
+      G₀.val.map (F.preimage (Sieve.ofArrows.h ha)).op) sorry
+
+section
+
+variable {X Y : C} (f : X ⟶ Y)
+
+noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) : presheafObj F J G₀ Y ⟶ presheafObj F J G₀ X :=
+  Multiequalizer.lift _ _
+    (fun i₀ ↦ restriction _ _ _ ((F.oneHypercoverDenseData J₀ J X).f i₀ ≫ f))
+    sorry
+
+end
+
+noncomputable def presheaf : Cᵒᵖ ⥤ A where
+  obj X := presheafObj F J G₀ X.unop
+  map f := presheafMap F J G₀ f.unop
+  map_id := sorry
+  map_comp := sorry
+
+lemma isSheaf : Presheaf.IsSheaf J (presheaf F J G₀) := sorry
+
+noncomputable def extension : Sheaf J A := ⟨presheaf F J G₀, isSheaf F J G₀⟩
+
+end EssSurjOfIsOneHypercoverDense
 
 end Functor
 
