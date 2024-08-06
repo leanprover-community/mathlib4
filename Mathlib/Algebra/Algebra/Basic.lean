@@ -223,10 +223,10 @@ section Nat
 variable {R : Type*} [Semiring R]
 
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
--- `ℕ`-algebras. This is only an issue since `Algebra.id` and `algebraNat` are not yet defeq.
--- TODO: fix this by adding an `ofNat` field to semirings.
+-- `ℕ`-algebras.
+-- TODO: is this still needed?
 /-- Semiring ⥤ ℕ-Alg -/
-instance (priority := 99) algebraNat : Algebra ℕ R where
+instance (priority := 99) Semiring.toNatAlgebra : Algebra ℕ R where
   commutes' := Nat.cast_commute
   smul_def' _ _ := nsmul_eq_mul _ _
   toRingHom := Nat.castRingHom R
@@ -241,10 +241,10 @@ section Int
 variable (R : Type*) [Ring R]
 
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
--- `ℤ`-algebras. This is only an issue since `Algebra.id ℤ` and `algebraInt ℤ` are not yet defeq.
--- TODO: fix this by adding an `ofInt` field to rings.
+-- `ℤ`-algebras.
+-- TODO: is this still needed?
 /-- Ring ⥤ ℤ-Alg -/
-instance (priority := 99) algebraInt : Algebra ℤ R where
+instance (priority := 99) Ring.toIntAlgebra : Algebra ℤ R where
   commutes' := Int.cast_commute
   smul_def' _ _ := zsmul_eq_mul _ _
   toRingHom := Int.castRingHom R
@@ -329,10 +329,6 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
 @[simp]
 theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
-
-theorem intCast_smul {k V : Type*} [CommRing k] [AddCommGroup V] [Module k V] (r : ℤ) (x : V) :
-    (r : k) • x = r • x :=
-  algebraMap_smul k r x
 
 theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
@@ -476,12 +472,12 @@ end algebraMap
 section surjective
 
 variable {R S} [CommSemiring R] [Semiring S] [Algebra R S]
-variable (h : Function.Surjective (algebraMap R S))
 variable {M N} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S M] [IsScalarTower R S M]
 variable [Module R N] [Module S N] [IsScalarTower R S N]
 
 /-- If `R →+* S` is surjective, then `S`-linear maps between modules are exactly `R`-linear maps. -/
-def LinearMap.extendScalarsOfSurjectiveEquiv : (M →ₗ[R] N) ≃ₗ[R] (M →ₗ[S] N) where
+def LinearMap.extendScalarsOfSurjectiveEquiv (h : Function.Surjective (algebraMap R S)) :
+    (M →ₗ[R] N) ≃ₗ[R] (M →ₗ[S] N) where
   toFun f := { __ := f, map_smul' := fun r x ↦ by obtain ⟨r, rfl⟩ := h r; simp }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -490,17 +486,21 @@ def LinearMap.extendScalarsOfSurjectiveEquiv : (M →ₗ[R] N) ≃ₗ[R] (M →�
   right_inv f := rfl
 
 /-- If `R →+* S` is surjective, then `R`-linear maps are also `S`-linear. -/
-abbrev LinearMap.extendScalarsOfSurjective (l : M →ₗ[R] N) : M →ₗ[S] N :=
+abbrev LinearMap.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (l : M →ₗ[R] N) : M →ₗ[S] N :=
   extendScalarsOfSurjectiveEquiv h l
+
+/-- If `R →+* S` is surjective, then `R`-linear isomorphisms are also `S`-linear. -/
+def LinearEquiv.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : M ≃ₗ[R] N) : M ≃ₗ[S] N where
+  __ := f
+  map_smul' r x := by obtain ⟨r, rfl⟩ := h r; simp
+
+variable (h : Function.Surjective (algebraMap R S))
 
 @[simp]
 lemma LinearMap.extendScalarsOfSurjective_apply (l : M →ₗ[R] N) (x) :
     l.extendScalarsOfSurjective h x = l x := rfl
-
-/-- If `R →+* S` is surjective, then `R`-linear isomorphisms are also `S`-linear. -/
-def LinearEquiv.extendScalarsOfSurjective (f : M ≃ₗ[R] N) : M ≃ₗ[S] N where
-  __ := f
-  map_smul' r x := by obtain ⟨r, rfl⟩ := h r; simp
 
 @[simp]
 lemma LinearEquiv.extendScalarsOfSurjective_apply (f : M ≃ₗ[R] N) (x) :

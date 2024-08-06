@@ -192,9 +192,10 @@ namespace ConnectedComponent
 
 section Finite
 
-variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+variable [Fintype V]
 
-lemma even_card_of_isPerfectMatching (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
+lemma even_card_of_isPerfectMatching [DecidableEq V] [DecidableRel G.Adj]
+    (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
   classical simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
@@ -217,6 +218,7 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
 
   apply Nat.odd_iff_not_even.mp codd
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
+  classical
   have hMeven := Subgraph.IsMatching.even_card hMmatch
   haveI : Fintype (c.supp) := Fintype.ofFinite _
   simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image,

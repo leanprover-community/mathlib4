@@ -67,6 +67,14 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
 
 @[deprecated (since := "2024-07-22")] alias kernel := Kernel
 
+/-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/
+scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
+
+/-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain and codomain. -/
+scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
+
+initialize_simps_projections Kernel (toFun → apply)
+
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace Kernel
@@ -187,11 +195,9 @@ namespace Kernel
 @[ext]
 theorem ext {η : Kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
 
-theorem ext_iff {η : Kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
-
 theorem ext_iff' {η : Kernel α β} :
     κ = η ↔ ∀ a s, MeasurableSet s → κ a s = η a s := by
-  simp_rw [ext_iff, Measure.ext_iff]
+  simp_rw [Kernel.ext_iff, Measure.ext_iff]
 
 theorem ext_fun {η : Kernel α β} (h : ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b, f b ∂η a) :
     κ = η := by
@@ -207,6 +213,11 @@ theorem ext_fun_iff {η : Kernel α β} :
 protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun a => κ a s :=
   (Measure.measurable_coe hs).comp κ.measurable
+
+lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y' ∈ measurableAtom y) :
+    κ y' = κ y := by
+  ext s hs
+  exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
 lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
@@ -296,7 +307,8 @@ instance isFiniteKernel_seq (κ : Kernel α β) [h : IsSFiniteKernel κ] (n : �
     IsFiniteKernel (Kernel.seq κ n) :=
   h.tsum_finite.choose_spec.1 n
 
-instance IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) : SFinite (κ a) :=
+instance _root_.ProbabilityTheory.IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) :
+    SFinite (κ a) :=
   ⟨⟨fun n ↦ seq κ n a, inferInstance, (measure_sum_seq κ a).symm⟩⟩
 
 instance IsSFiniteKernel.add (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
@@ -445,17 +457,21 @@ lemma sum_const [Countable ι] (μ : ι → Measure β) :
   rw [const_apply, Measure.sum_apply _ hs, Kernel.sum_apply' _ _ hs]
   simp only [const_apply]
 
-instance isFiniteKernel_const {μβ : Measure β} [IsFiniteMeasure μβ] :
+instance const.instIsFiniteKernel {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=
   ⟨⟨μβ Set.univ, measure_lt_top _ _, fun _ => le_rfl⟩⟩
 
-instance isSFiniteKernel_const {μβ : Measure β} [SFinite μβ] :
+instance const.instIsSFiniteKernel {μβ : Measure β} [SFinite μβ] :
     IsSFiniteKernel (const α μβ) :=
   ⟨fun n ↦ const α (sFiniteSeq μβ n), fun n ↦ inferInstance, by rw [sum_const, sum_sFiniteSeq]⟩
 
-instance isMarkovKernel_const {μβ : Measure β} [hμβ : IsProbabilityMeasure μβ] :
+instance const.instIsMarkovKernel {μβ : Measure β} [hμβ : IsProbabilityMeasure μβ] :
     IsMarkovKernel (const α μβ) :=
   ⟨fun _ => hμβ⟩
+
+lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
+    IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
+  ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
 
 @[simp]
 theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :

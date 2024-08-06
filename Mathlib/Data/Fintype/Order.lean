@@ -172,12 +172,13 @@ noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBoolean
 
 
 variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
-  [Finite β] (D : Directed r f)
+  [Finite β]
 
-theorem Directed.finite_set_le {s : Set γ} (hs : s.Finite) : ∃ z, ∀ i ∈ s, r (f i) (f z) := by
+theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
+    ∃ z, ∀ i ∈ s, r (f i) (f z) := by
   convert D.finset_le hs.toFinset; rw [Set.Finite.mem_toFinset]
 
-theorem Directed.finite_le (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
+theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
     obtain ⟨z, hz⟩ := D.finite_set_le (Set.finite_range g)
     exact ⟨z, fun i => hz (g i) ⟨i, rfl⟩⟩
