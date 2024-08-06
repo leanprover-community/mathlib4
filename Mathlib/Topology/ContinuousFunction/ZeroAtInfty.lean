@@ -553,12 +553,12 @@ instance instStarRing : StarRing C₀(α, β) :=
 
 end StarRing
 
-section CstarRing
+section CStarRing
 
-instance instCstarRing [NonUnitalNormedRing β] [StarRing β] [CstarRing β] : CstarRing C₀(α, β) where
-  norm_mul_self_le f := CstarRing.norm_mul_self_le (x := f.toBCF)
+instance instCStarRing [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C₀(α, β) where
+  norm_mul_self_le f := CStarRing.norm_mul_self_le (x := f.toBCF)
 
-end CstarRing
+end CStarRing
 
 /-! ### C₀ as a functor
 

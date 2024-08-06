@@ -18,7 +18,7 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 ## Main definitions
 
 * `Matrix.instNormedRingL2Op`: the (necessarily unique) normed ring structure on `Matrix n n 𝕜`
-  which ensure it is a `CstarRing` in `Matrix.instCstarRing`. This is a scoped instance in the
+  which ensure it is a `CStarRing` in `Matrix.instCStarRing`. This is a scoped instance in the
   namespace `Matrix.L2OpNorm` in order to avoid choosing a global norm for `Matrix`.
 
 ## Main statements
@@ -267,10 +267,10 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedAlgebra
 
 /-- The operator norm on `Matrix n n 𝕜` given by the identification with (continuous) linear
 endmorphisms of `EuclideanSpace 𝕜 n` makes it into a `L2OpRing`. -/
-lemma instCstarRing : CstarRing (Matrix n n 𝕜) where
+lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
   norm_mul_self_le M := le_of_eq <| Eq.symm <| l2_opNorm_conjTranspose_mul_self M
 
-scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instCstarRing
+scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instCStarRing
 
 end Matrix
 

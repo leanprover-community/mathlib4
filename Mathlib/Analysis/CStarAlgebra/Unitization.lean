@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CstarAlgebra.Basic
+import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Algebra.Unitization
 /-! # The minimal unitization of a C⋆-algebra
 
@@ -49,12 +49,12 @@ lemma isometry_mul_flip : Isometry (mul 𝕜 E).flip :=
 
 end ContinuousLinearMap
 
-variable [DenselyNormedField 𝕜] [NonUnitalNormedRing E] [StarRing E] [CstarRing E]
+variable [DenselyNormedField 𝕜] [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
 variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E]
 variable (E)
 
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
-instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
+instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
     rw [← sSup_closed_unit_ball_eq_nnnorm]
@@ -71,17 +71,17 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
       refine ⟨_, ⟨k • star a, ?_, rfl⟩, ?_⟩
       · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using
           (NNReal.le_inv_iff_mul_le ha.ne').1 (one_mul ‖a‖₊⁻¹ ▸ hk₂.le : ‖k‖₊ ≤ ‖a‖₊⁻¹)
-      · simp only [map_smul, nnnorm_smul, mul_apply', mul_smul_comm, CstarRing.nnnorm_self_mul_star]
+      · simp only [map_smul, nnnorm_smul, mul_apply', mul_smul_comm, CStarRing.nnnorm_self_mul_star]
         rwa [← NNReal.div_lt_iff (mul_pos ha ha).ne', div_eq_mul_inv, mul_inv, ← mul_assoc]
 
 section CStarProperty
 
-variable [StarRing 𝕜] [CstarRing 𝕜] [StarModule 𝕜 E]
+variable [StarRing 𝕜] [CStarRing 𝕜] [StarModule 𝕜 E]
 variable {E}
 
-/-- This is the key lemma used to establish the instance `Unitization.instCstarRing`
+/-- This is the key lemma used to establish the instance `Unitization.instCStarRing`
 (i.e., proving that the norm on `Unitization 𝕜 E` satisfies the C⋆-property). We split this one
-out so that declaring the `CstarRing` instance doesn't time out. -/
+out so that declaring the `CStarRing` instance doesn't time out. -/
 theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 ≤ ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖ := by
   /- The key idea is that we can use `sSup_closed_unit_ball_eq_norm` to make this about
@@ -95,7 +95,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
   simp only
   -- rewrite to a more convenient form; this is where we use the C⋆-property
   rw [← Real.sqrt_sq (norm_nonneg _), Real.sqrt_le_sqrt_iff (norm_nonneg _), sq,
-    ← CstarRing.norm_star_mul_self, ContinuousLinearMap.add_apply, star_add, mul_apply',
+    ← CStarRing.norm_star_mul_self, ContinuousLinearMap.add_apply, star_add, mul_apply',
     Algebra.algebraMap_eq_smul_one, ContinuousLinearMap.smul_apply,
     ContinuousLinearMap.one_apply, star_mul, star_smul, add_mul, smul_mul_assoc, ← mul_smul_comm,
     mul_assoc, ← mul_add, ← sSup_closed_unit_ball_eq_norm]
@@ -124,7 +124,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
 variable {𝕜}
 
 /-- The norm on `Unitization 𝕜 E` satisfies the C⋆-property -/
-instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
+instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
   norm_mul_self_le x := by
     -- rewrite both sides as a `⊔`
     simp only [Unitization.norm_def, Prod.norm_def, ← sup_eq_max]
