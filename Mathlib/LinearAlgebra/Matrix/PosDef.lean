@@ -178,6 +178,7 @@ lemma sq_sqrt : hA.sqrt ^ 2 = A := by
 @[simp]
 lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [← pow_two, sq_sqrt]
 
+include hA in
 lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B := by
   /- This is deceptively hard, much more difficult than the positive *definite* case. We follow a
   clever proof due to Koeber and Schäfer. The idea is that if `A ≠ B`, then `A - B` has a nonzero
@@ -217,6 +218,7 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
 lemma sqrt_sq : (hA.pow 2 : PosSemidef (A ^ 2)).sqrt = A :=
   (hA.pow 2).posSemidef_sqrt.eq_of_sq_eq_sq hA (hA.pow 2).sq_sqrt
 
+include hA in
 lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt := by
   subst B
   rw [hA.sqrt_sq]
