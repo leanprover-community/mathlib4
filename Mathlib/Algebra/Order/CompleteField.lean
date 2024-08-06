@@ -42,14 +42,13 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 reals, conditionally complete, ordered field, uniqueness
 -/
 
-
 variable {F α β γ : Type*}
 
 noncomputable section
 
 open Function Rat Real Set
 
-open scoped Classical Pointwise
+open scoped Pointwise
 
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/

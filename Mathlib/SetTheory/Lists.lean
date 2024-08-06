@@ -302,8 +302,8 @@ section Decidable
 /-- Auxiliary function to prove termination of decidability checking -/
 @[simp, deprecated (since := "2023-06-24")]
 def Equiv.decidableMeas :
-    (PSum (Σ' _l₁ : Lists α, Lists α) <|
-        PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
+    ((Σ' _l₁ : Lists α, Lists α) ⊕'
+        ((Σ' _l₁ : Lists' α true, Lists' α true) ⊕' (Σ' _a : Lists α, Lists' α true))) →
       ℕ
   | PSum.inl ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
   | PSum.inr <| PSum.inl ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂

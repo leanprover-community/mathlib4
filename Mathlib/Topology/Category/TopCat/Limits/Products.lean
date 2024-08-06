@@ -263,7 +263,7 @@ end Prod
 
 /-- The binary coproduct cofan in `TopCat`. -/
 protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
-  BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (Sum X Y)) ⟨Sum.inr, by continuity⟩
+  BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (X ⊕ Y)) ⟨Sum.inr, by continuity⟩
 
 /-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by

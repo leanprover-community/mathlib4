@@ -11,7 +11,6 @@ import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.SuccPred
 
-
 /-!
 # Theory of univariate polynomials
 

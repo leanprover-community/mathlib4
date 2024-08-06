@@ -98,10 +98,12 @@ theorem monotone_u : Monotone u := fun a _ H => gc.le_u ((gc.l_u_le a).trans H)
 theorem monotone_l : Monotone l :=
   gc.dual.monotone_u.dual
 
-theorem upperBounds_l_image (s : Set α) : upperBounds (l '' s) = u ⁻¹' upperBounds s :=
+theorem upperBounds_l_image (gc : GaloisConnection l u) (s : Set α) :
+    upperBounds (l '' s) = u ⁻¹' upperBounds s :=
   Set.ext fun b => by simp [upperBounds, gc _ _]
 
-theorem lowerBounds_u_image (s : Set β) : lowerBounds (u '' s) = l ⁻¹' lowerBounds s :=
+theorem lowerBounds_u_image (gc : GaloisConnection l u) (s : Set β) :
+    lowerBounds (u '' s) = l ⁻¹' lowerBounds s :=
   gc.dual.upperBounds_l_image s
 
 theorem bddAbove_l_image {s : Set α} : BddAbove (l '' s) ↔ BddAbove s :=
@@ -159,7 +161,7 @@ theorem u_unique {l' : α → β} {u' : β → α} (gc' : GaloisConnection l' u'
 theorem exists_eq_u (a : α) : (∃ b : β, a = u b) ↔ a = u (l a) :=
   ⟨fun ⟨_, hS⟩ => hS.symm ▸ (gc.u_l_u_eq_u _).symm, fun HI => ⟨_, HI⟩⟩
 
-theorem u_eq {z : α} {y : β} : u y = z ↔ ∀ x, x ≤ z ↔ l x ≤ y := by
+theorem u_eq (gc : GaloisConnection l u) {z : α} {y : β} : u y = z ↔ ∀ x, x ≤ z ↔ l x ≤ y := by
   constructor
   · rintro rfl x
     exact (gc x y).symm
@@ -230,16 +232,19 @@ end SemilatticeInf
 
 section CompleteLattice
 
-variable [CompleteLattice α] [CompleteLattice β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
+variable [CompleteLattice α] [CompleteLattice β] {l : α → β} {u : β → α}
 
-theorem l_iSup {f : ι → α} : l (iSup f) = ⨆ i, l (f i) :=
+theorem l_iSup (gc : GaloisConnection l u) {f : ι → α} : l (iSup f) = ⨆ i, l (f i) :=
   Eq.symm <|
     IsLUB.iSup_eq <|
       show IsLUB (range (l ∘ f)) (l (iSup f)) by
         rw [range_comp, ← sSup_range]; exact gc.isLUB_l_image (isLUB_sSup _)
 
-theorem l_iSup₂ {f : ∀ i, κ i → α} : l (⨆ (i) (j), f i j) = ⨆ (i) (j), l (f i j) := by
+theorem l_iSup₂ (gc : GaloisConnection l u) {f : ∀ i, κ i → α} :
+    l (⨆ (i) (j), f i j) = ⨆ (i) (j), l (f i j) := by
   simp_rw [gc.l_iSup]
+
+variable (gc : GaloisConnection l u)
 
 theorem u_iInf {f : ι → β} : u (iInf f) = ⨅ i, u (f i) :=
   gc.dual.l_iSup
@@ -247,7 +252,8 @@ theorem u_iInf {f : ι → β} : u (iInf f) = ⨅ i, u (f i) :=
 theorem u_iInf₂ {f : ∀ i, κ i → β} : u (⨅ (i) (j), f i j) = ⨅ (i) (j), u (f i j) :=
   gc.dual.l_iSup₂
 
-theorem l_sSup {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by simp only [sSup_eq_iSup, gc.l_iSup]
+theorem l_sSup (gc : GaloisConnection l u) {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by
+  simp only [sSup_eq_iSup, gc.l_iSup]
 
 theorem u_sInf {s : Set β} : u (sInf s) = ⨅ a ∈ s, u a :=
   gc.dual.l_sSup

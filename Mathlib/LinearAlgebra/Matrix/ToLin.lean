@@ -82,10 +82,10 @@ def Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n �
 theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
     (M.vecMulLinear : _ → _) = M.vecMul := rfl
 
-variable [Fintype m] [DecidableEq m]
+variable [Fintype m]
 
 @[simp]
-theorem Matrix.vecMul_stdBasis (M : Matrix m n R) (i j) :
+theorem Matrix.vecMul_stdBasis [DecidableEq m] (M : Matrix m n R) (i j) :
     (LinearMap.stdBasis R (fun _ ↦ R) i 1 ᵥ* M) j = M i j := by
   have : (∑ i', (if i = i' then 1 else 0) * M i' j) = M i j := by
     simp_rw [boole_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
@@ -118,6 +118,9 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     ext j
     simp [vecMul, dotProduct]
 
+section
+variable [DecidableEq m]
+
 /-- Linear maps `(m → R) →ₗ[R] (n → R)` are linearly equivalent over `Rᵐᵒᵖ` to `Matrix m n R`,
 by having matrices act by right multiplication.
  -/
@@ -140,7 +143,7 @@ def LinearMap.toMatrixRight' : ((m → R) →ₗ[R] n → R) ≃ₗ[Rᵐᵒᵖ] 
 
 /-- A `Matrix m n R` is linearly equivalent over `Rᵐᵒᵖ` to a linear map `(m → R) →ₗ[R] (n → R)`,
 by having matrices act by right multiplication. -/
-abbrev Matrix.toLinearMapRight' : Matrix m n R ≃ₗ[Rᵐᵒᵖ] (m → R) →ₗ[R] n → R :=
+abbrev Matrix.toLinearMapRight' [DecidableEq m] : Matrix m n R ≃ₗ[Rᵐᵒᵖ] (m → R) →ₗ[R] n → R :=
   LinearEquiv.symm LinearMap.toMatrixRight'
 
 @[simp]
@@ -180,6 +183,7 @@ def Matrix.toLinearEquivRight'OfInv [Fintype n] [DecidableEq n] {M : Matrix m n 
       dsimp only -- Porting note: needed due to non-flat structures
       rw [← Matrix.toLinearMapRight'_mul_apply, hMM', Matrix.toLinearMapRight'_one, id_apply] }
 
+end
 end ToMatrixRight
 
 /-!
@@ -586,6 +590,22 @@ theorem LinearMap.toMatrix_basis_equiv [Fintype l] [DecidableEq l] (b : Basis l 
   ext i j
   simp [LinearMap.toMatrix_apply, Matrix.one_apply, Finsupp.single_apply, eq_comm]
 
+theorem LinearMap.toMatrix_smulBasis_left {G} [Group G] [DistribMulAction G M₁]
+    [SMulCommClass G R M₁] (g : G) (f : M₁ →ₗ[R] M₂) :
+    LinearMap.toMatrix (g • v₁) v₂ f =
+      LinearMap.toMatrix v₁ v₂ (f ∘ₗ DistribMulAction.toLinearMap _ _ g) := by
+  ext
+  rw [LinearMap.toMatrix_apply, LinearMap.toMatrix_apply]
+  dsimp
+
+theorem LinearMap.toMatrix_smulBasis_right {G} [Group G] [DistribMulAction G M₂]
+    [SMulCommClass G R M₂] (g : G) (f : M₁ →ₗ[R] M₂) :
+    LinearMap.toMatrix v₁ (g • v₂) f =
+      LinearMap.toMatrix v₁ v₂ (DistribMulAction.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
+  ext
+  rw [LinearMap.toMatrix_apply, LinearMap.toMatrix_apply]
+  dsimp
+
 end Finite
 
 variable {R : Type*} [CommSemiring R]
@@ -761,7 +781,7 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
     Pi.single_apply]
 
-lemma LinearMap.toMatrix_prodMap [DecidableEq n] [DecidableEq m] [DecidableEq (n ⊕ m)]
+lemma LinearMap.toMatrix_prodMap [DecidableEq m] [DecidableEq (n ⊕ m)]
     (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
     toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
       Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
@@ -835,6 +855,15 @@ theorem leftMulMatrix_injective : Function.Injective (leftMulMatrix b) := fun x 
     _ = Algebra.lmul R S x' 1 := by rw [(LinearMap.toMatrix b b).injective h]
     _ = x' := mul_one x'
 
+@[simp]
+theorem smul_leftMulMatrix {G} [Group G] [DistribMulAction G S]
+    [SMulCommClass G R S] [SMulCommClass G S S] (g : G) (x) :
+    leftMulMatrix (g • b) x = leftMulMatrix b x := by
+  ext
+  simp_rw [leftMulMatrix_apply, LinearMap.toMatrix_apply, coe_lmul_eq_mul, LinearMap.mul_apply',
+    Basis.repr_smul, Basis.smul_apply, LinearEquiv.trans_apply,
+    DistribMulAction.toLinearEquiv_symm_apply, mul_smul_comm, inv_smul_smul]
+
 end Lmul
 
 section LmulTower
@@ -844,25 +873,26 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable (b : Basis m R S) (c : Basis n S T)
 
-theorem smul_leftMulMatrix (x) (ik jk) :
-    leftMulMatrix (b.smul c) x ik jk = leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
-  simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smul_apply,
-    Basis.smul_repr, Finsupp.smul_apply, id.smul_eq_mul, LinearEquiv.map_smul, mul_smul_comm,
+theorem smulTower_leftMulMatrix (x) (ik jk) :
+    leftMulMatrix (b.smulTower c) x ik jk =
+      leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
+  simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smulTower_apply,
+    Basis.smulTower_repr, Finsupp.smul_apply, id.smul_eq_mul, LinearEquiv.map_smul, mul_smul_comm,
     coe_lmul_eq_mul, LinearMap.mul_apply']
 
-theorem smul_leftMulMatrix_algebraMap (x : S) :
-    leftMulMatrix (b.smul c) (algebraMap _ _ x) = blockDiagonal fun _ ↦ leftMulMatrix b x := by
+theorem smulTower_leftMulMatrix_algebraMap (x : S) :
+    leftMulMatrix (b.smulTower c) (algebraMap _ _ x) = blockDiagonal fun _ ↦ leftMulMatrix b x := by
   ext ⟨i, k⟩ ⟨j, k'⟩
-  rw [smul_leftMulMatrix, AlgHom.commutes, blockDiagonal_apply, algebraMap_matrix_apply]
+  rw [smulTower_leftMulMatrix, AlgHom.commutes, blockDiagonal_apply, algebraMap_matrix_apply]
   split_ifs with h <;> simp only at h <;> simp [h]
 
-theorem smul_leftMulMatrix_algebraMap_eq (x : S) (i j k) :
-    leftMulMatrix (b.smul c) (algebraMap _ _ x) (i, k) (j, k) = leftMulMatrix b x i j := by
-  rw [smul_leftMulMatrix_algebraMap, blockDiagonal_apply_eq]
+theorem smulTower_leftMulMatrix_algebraMap_eq (x : S) (i j k) :
+    leftMulMatrix (b.smulTower c) (algebraMap _ _ x) (i, k) (j, k) = leftMulMatrix b x i j := by
+  rw [smulTower_leftMulMatrix_algebraMap, blockDiagonal_apply_eq]
 
-theorem smul_leftMulMatrix_algebraMap_ne (x : S) (i j) {k k'} (h : k ≠ k') :
-    leftMulMatrix (b.smul c) (algebraMap _ _ x) (i, k) (j, k') = 0 := by
-  rw [smul_leftMulMatrix_algebraMap, blockDiagonal_apply_ne _ _ _ h]
+theorem smulTower_leftMulMatrix_algebraMap_ne (x : S) (i j) {k k'} (h : k ≠ k') :
+    leftMulMatrix (b.smulTower c) (algebraMap _ _ x) (i, k) (j, k') = 0 := by
+  rw [smulTower_leftMulMatrix_algebraMap, blockDiagonal_apply_ne _ _ _ h]
 
 end LmulTower
 
@@ -903,7 +933,7 @@ variable {R M M₁ M₂ ι ι₁ ι₂ : Type*} [CommSemiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₁] [Module R M₂]
 variable [Fintype ι] [Fintype ι₁] [Fintype ι₂]
-variable [DecidableEq ι] [DecidableEq ι₁] [DecidableEq ι₂]
+variable [DecidableEq ι] [DecidableEq ι₁]
 variable (b : Basis ι R M) (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂)
 
 /-- The standard basis of the space linear maps between two modules

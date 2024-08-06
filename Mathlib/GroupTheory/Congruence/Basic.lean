@@ -5,6 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Data.Setoid.Basic
 
 /-!
@@ -169,11 +170,6 @@ theorem ext {c d : Con M} (H : ∀ x y, c x y ↔ d x y) : c = d :=
 relation is injective."]
 theorem toSetoid_inj {c d : Con M} (H : c.toSetoid = d.toSetoid) : c = d :=
   ext <| ext_iff.1 H
-
-/-- Iff version of extensionality rule for congruence relations. -/
-@[to_additive "Iff version of extensionality rule for additive congruence relations."]
-protected theorem ext_iff {c d : Con M} : c = d ↔ (∀ x y, c x y ↔ d x y) :=
-  ⟨fun h _ _ => h ▸ Iff.rfl, ext⟩
 
 /-- Two congruence relations are equal iff their underlying binary relations are equal. -/
 @[to_additive "Two additive congruence relations are equal iff their underlying binary relations
@@ -577,7 +573,7 @@ the order-preserving bijection between the set of additive congruence relations 
 the additive congruence relations on the quotient of `M` by `c`."]
 def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
   toFun d :=
-    d.1.mapOfSurjective (↑) _ (by rw [mul_ker_mk_eq]; exact d.2) <|
+    d.1.mapOfSurjective (↑) (fun x y => rfl) (by rw [mul_ker_mk_eq]; exact d.2) <|
       @Quotient.exists_rep _ c.toSetoid
   invFun d :=
     ⟨comap ((↑) : M → c.Quotient) (fun x y => rfl) d, fun x y h =>

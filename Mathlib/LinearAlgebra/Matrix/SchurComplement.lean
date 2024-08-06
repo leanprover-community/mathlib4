@@ -297,9 +297,9 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
     exact (invertibleOfFromBlocksZero₁₂Invertible (A - B * ⅟ D * C) 0 D).1
   letI : Invertible (1 : Matrix n n α) := invertibleOne
   letI : Invertible (1 : Matrix m m α) := invertibleOne
-  letI iDC : Invertible (fromBlocks 1 0 (⅟ D * C) 1 : Matrix (Sum m n) (Sum m n) α) :=
+  letI iDC : Invertible (fromBlocks 1 0 (⅟ D * C) 1 : Matrix (m ⊕ n) (m ⊕ n) α) :=
     fromBlocksZero₁₂Invertible _ _ _
-  letI iBD : Invertible (fromBlocks 1 (B * ⅟ D) 0 1 : Matrix (Sum m n) (Sum m n) α) :=
+  letI iBD : Invertible (fromBlocks 1 (B * ⅟ D) 0 1 : Matrix (m ⊕ n) (m ⊕ n) α) :=
     fromBlocksZero₂₁Invertible _ _ _
   letI iBDC := Invertible.copy ‹_› _ (fromBlocks_eq_of_invertible₂₂ A B C D).symm
   refine (iBD.mulLeft _).symm ?_

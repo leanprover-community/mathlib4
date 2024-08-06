@@ -7,7 +7,6 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Qq
 
-
 /-! # Power function on `ℝ`
 
 We construct the power functions `x ^ y`, where `x` and `y` are real numbers.

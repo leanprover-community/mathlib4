@@ -531,9 +531,14 @@ instance : SupSet (UpperSet α) :=
 instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
-instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
-  (toDual.injective.comp SetLike.coe_injective).completelyDistribLattice _ (fun _ _ => rfl)
+instance completeLattice : CompleteLattice (UpperSet α) :=
+  (toDual.injective.comp SetLike.coe_injective).completeLattice _ (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
+
+instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
+  .ofMinimalAxioms $
+    (toDual.injective.comp SetLike.coe_injective).completelyDistribLatticeMinimalAxioms .of _
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance : Inhabited (UpperSet α) :=
   ⟨⊥⟩
@@ -661,9 +666,13 @@ instance : SupSet (LowerSet α) :=
 instance : InfSet (LowerSet α) :=
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ => s.lower⟩⟩
 
-instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
-  SetLike.coe_injective.completelyDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+instance completeLattice : CompleteLattice (LowerSet α) :=
+  SetLike.coe_injective.completeLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ => rfl) rfl rfl
+
+instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
+  .ofMinimalAxioms $ SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance : Inhabited (LowerSet α) :=
   ⟨⊥⟩
@@ -920,10 +929,10 @@ noncomputable instance LowerSet.instLinearOrder : LinearOrder (LowerSet α) := b
   classical exact Lattice.toLinearOrder _
 
 noncomputable instance UpperSet.instCompleteLinearOrder : CompleteLinearOrder (UpperSet α) :=
-  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
+  { completelyDistribLattice, instLinearOrder with }
 
 noncomputable instance LowerSet.instCompleteLinearOrder : CompleteLinearOrder (LowerSet α) :=
-  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
+  { completelyDistribLattice, instLinearOrder with }
 
 end LinearOrder
 

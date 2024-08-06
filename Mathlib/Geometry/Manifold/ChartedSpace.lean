@@ -576,6 +576,14 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
 
 section ChartedSpace
 
+/-- An empty type is a charted space over any topological space. -/
+def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
+    (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
+  atlas := ∅
+  chartAt x := (IsEmpty.false x).elim
+  mem_chart_source x := (IsEmpty.false x).elim
+  chart_mem_atlas x := (IsEmpty.false x).elim
+
 /-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
 instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
   atlas := {PartialHomeomorph.refl H}

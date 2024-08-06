@@ -176,7 +176,7 @@ theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between `α` and `β`. -/
 @[simps]
-def sumCongrHom (α β : Type*) : Perm α × Perm β →* Perm (Sum α β) where
+def sumCongrHom (α β : Type*) : Perm α × Perm β →* Perm (α ⊕ β) where
   toFun a := sumCongr a.1 a.2
   map_one' := sumCongr_one
   map_mul' _ _ := (sumCongr_mul _ _ _ _).symm
@@ -281,8 +281,8 @@ def extendDomainHom : Perm α →* Perm β where
 
 theorem extendDomainHom_injective : Function.Injective (extendDomainHom f) :=
   (injective_iff_map_eq_one (extendDomainHom f)).mpr fun e he =>
-    ext fun x =>
-      f.injective (Subtype.ext ((extendDomain_apply_image e f x).symm.trans (ext_iff.mp he (f x))))
+    ext fun x => f.injective <|
+      Subtype.ext ((extendDomain_apply_image e f x).symm.trans (Perm.ext_iff.mp he (f x)))
 
 @[simp]
 theorem extendDomain_eq_one_iff {e : Perm α} {f : α ≃ Subtype p} : e.extendDomain f = 1 ↔ e = 1 :=

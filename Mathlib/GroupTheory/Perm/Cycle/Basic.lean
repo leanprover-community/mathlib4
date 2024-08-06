@@ -867,10 +867,10 @@ theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => ?_⟩
   rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
-  rw [← List.indexOf_get ha, ← List.indexOf_get hb]
+  rw [← List.getElem_indexOf ha, ← List.getElem_indexOf hb]
   refine ⟨l.indexOf b - l.indexOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
-    Equiv.Perm.coe_mul, List.formPerm_pow_apply_get _ h, Function.comp]
+    Equiv.Perm.coe_mul, List.formPerm_pow_apply_getElem _ h, Function.comp]
   rw [add_comm]
 
 end
@@ -978,8 +978,7 @@ variable [Semiring α] [AddCommMonoid β] [Module α β] {s : Finset ι} {σ : P
 theorem sum_smul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f : ι → α) (g : ι → β) :
     (∑ i ∈ s, f i) • ∑ i ∈ s, g i = ∑ k ∈ range s.card, ∑ i ∈ s, f i • g ((σ ^ k) i) := by
   rw [sum_smul_sum, ← sum_product']
-  simp_rw [product_self_eq_disjiUnion_perm hσ, sum_disjiUnion, sum_map]
-  rfl
+  simp_rw [product_self_eq_disjiUnion_perm hσ, sum_disjiUnion, sum_map, Embedding.coeFn_mk]
 
 theorem sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι → α) :
     ((∑ i ∈ s, f i) * ∑ i ∈ s, g i) = ∑ k ∈ range s.card, ∑ i ∈ s, f i * g ((σ ^ k) i) :=

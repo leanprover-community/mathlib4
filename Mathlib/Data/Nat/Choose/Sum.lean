@@ -41,12 +41,12 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   have h_last : ∀ n, t n n.succ = 0 := fun n ↦ by
     simp only [t, choose_succ_self, cast_zero, mul_zero]
   have h_middle :
-    ∀ n i : ℕ, i ∈ range n.succ → (t n.succ ∘ Nat.succ) i =
+    ∀ n i : ℕ, i ∈ range n.succ → (t n.succ (Nat.succ i)) =
       x * t n i + y * t n i.succ := by
     intro n i h_mem
     have h_le : i ≤ n := Nat.le_of_lt_succ (mem_range.mp h_mem)
     dsimp only [t]
-    rw [Function.comp_apply, choose_succ_succ, Nat.cast_add, mul_add]
+    rw [choose_succ_succ, Nat.cast_add, mul_add]
     congr 1
     · rw [pow_succ' x, succ_sub_succ, mul_assoc, mul_assoc, mul_assoc]
     · rw [← mul_assoc y, ← mul_assoc y, (h.symm.pow_right i.succ).eq]
@@ -58,9 +58,8 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   · rw [_root_.pow_zero, sum_range_succ, range_zero, sum_empty, zero_add]
     dsimp only [t]
     rw [_root_.pow_zero, _root_.pow_zero, choose_self, Nat.cast_one, mul_one, mul_one]
-  · rw [sum_range_succ', h_first]
-    erw [sum_congr rfl (h_middle n), sum_add_distrib, add_assoc]
-    rw [pow_succ' (x + y), ih, add_mul, mul_sum, mul_sum]
+  · rw [sum_range_succ', h_first, sum_congr rfl (h_middle n), sum_add_distrib, add_assoc,
+      pow_succ' (x + y), ih, add_mul, mul_sum, mul_sum]
     congr 1
     rw [sum_range_succ', sum_range_succ, h_first, h_last, mul_zero, add_zero, _root_.pow_succ']
 

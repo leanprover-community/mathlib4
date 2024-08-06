@@ -41,22 +41,20 @@ theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
   | n + 1 => by rw [zero_pow n.succ_ne_zero]; exact zero_le_one
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
-  rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
+  rcases Nat.exists_eq_add_one_of_ne_zero hn with ⟨k, rfl⟩
   induction' k with k ih
-  · have eqn : Nat.succ Nat.zero = 1 := rfl
-    rw [eqn]
-    simp only [pow_one, le_refl]
+  · simp only [zero_add, pow_one, le_refl]
   · let n := k.succ
     have h1 := add_nonneg (mul_nonneg hx (pow_nonneg hy n)) (mul_nonneg hy (pow_nonneg hx n))
     have h2 := add_nonneg hx hy
     calc
-      x ^ n.succ + y ^ n.succ ≤ x * x ^ n + y * y ^ n + (x * y ^ n + y * x ^ n) := by
+      x ^ (n + 1) + y ^ (n + 1) ≤ x * x ^ n + y * y ^ n + (x * y ^ n + y * x ^ n) := by
         rw [pow_succ' _ n, pow_succ' _ n]
         exact le_add_of_nonneg_right h1
       _ = (x + y) * (x ^ n + y ^ n) := by
         rw [add_mul, mul_add, mul_add, add_comm (y * x ^ n), ← add_assoc, ← add_assoc,
           add_assoc (x * x ^ n) (x * y ^ n), add_comm (x * y ^ n) (y * y ^ n), ← add_assoc]
-      _ ≤ (x + y) ^ n.succ := by
+      _ ≤ (x + y) ^ (n + 1) := by
         rw [pow_succ' _ n]
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
 
@@ -115,8 +113,8 @@ variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n
   | 0, hn => by contradiction
   | n + 1, _ => by
-    simpa only [pow_succ] using
-      mul_lt_mul_of_le_of_le' (pow_le_pow_left hx h.le _) h (pow_pos (hx.trans_lt h) _) hx
+    simpa only [pow_succ] using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
+      (pow_le_pow_left hx h.le _) h hx (pow_pos (hx.trans_lt h) _)
 
 /-- See also `pow_left_strictMono` and `Nat.pow_left_strictMono`. -/
 lemma pow_left_strictMonoOn (hn : n ≠ 0) : StrictMonoOn (· ^ n : R → R) {a | 0 ≤ a} :=

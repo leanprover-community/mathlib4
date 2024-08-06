@@ -67,16 +67,16 @@ private lemma aux₀
     (frequently_of_forall fun _ ↦ lt_irrefl $ ENNReal.ofReal $ 4⁻¹ ^ Fintype.card ι)
     ((Filter.Tendsto.eventually_lt (H.comp hε₀) tendsto_const_nhds ?_).mono fun n ↦
       lt_of_le_of_lt ?_)
-  swap
-  calc
-    ENNReal.ofReal (4⁻¹ ^ Fintype.card ι)
-      = volume (closedBall (f (ε n) (hε' n)) (ε n / 4)) / volume (closedBall x (ε n)) := ?_
-    _ ≤ volume (closure s ∩ closedBall x (ε n)) / volume (closedBall x (ε n)) := by
-      gcongr; exact subset_inter ((hf₁ _ $ hε' n).trans interior_subset_closure) $ hf₀ _ $ hε' n
-  dsimp
-  have := hε' n
-  rw [Real.volume_pi_closedBall, Real.volume_pi_closedBall, ← ENNReal.ofReal_div_of_pos, ← div_pow,
-    mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
+  on_goal 2 =>
+    calc
+      ENNReal.ofReal (4⁻¹ ^ Fintype.card ι)
+        = volume (closedBall (f (ε n) (hε' n)) (ε n / 4)) / volume (closedBall x (ε n)) := ?_
+      _ ≤ volume (closure s ∩ closedBall x (ε n)) / volume (closedBall x (ε n)) := by
+        gcongr; exact subset_inter ((hf₁ _ $ hε' n).trans interior_subset_closure) $ hf₀ _ $ hε' n
+    dsimp
+    have := hε' n
+    rw [Real.volume_pi_closedBall, Real.volume_pi_closedBall, ← ENNReal.ofReal_div_of_pos,
+      ← div_pow, mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
   all_goals positivity
 
 /-- If we can fit a small ball inside a set `sᶜ` intersected with any neighborhood of `x`, then the
@@ -97,23 +97,23 @@ private lemma aux₁
       ((Filter.Tendsto.eventually_lt tendsto_const_nhds (H.comp hε₀) $
             ENNReal.sub_lt_self ENNReal.one_ne_top one_ne_zero ?_).mono
         fun n ↦ lt_of_le_of_lt' ?_)
-  swap
-  calc
-    volume (closure s ∩ closedBall x (ε n)) / volume (closedBall x (ε n))
-      ≤ volume (closedBall x (ε n) \ closedBall (f (ε n) $ hε' n) (ε n / 4)) /
-        volume (closedBall x (ε n)) := by
-      gcongr
-      rw [diff_eq_compl_inter]
-      refine inter_subset_inter_left _ ?_
-      rw [subset_compl_comm, ← interior_compl]
-      exact hf₁ _ _
-    _ = 1 - ENNReal.ofReal (4⁻¹ ^ Fintype.card ι) := ?_
-  dsimp only
-  have := hε' n
-  rw [measure_diff (hf₀ _ _) _ ((Real.volume_pi_closedBall _ _).trans_ne ENNReal.ofReal_ne_top),
-    Real.volume_pi_closedBall, Real.volume_pi_closedBall, ENNReal.sub_div fun _ _ ↦ _,
-    ENNReal.div_self _ ENNReal.ofReal_ne_top, ← ENNReal.ofReal_div_of_pos, ← div_pow,
-    mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
+  on_goal 2 =>
+    calc
+      volume (closure s ∩ closedBall x (ε n)) / volume (closedBall x (ε n))
+        ≤ volume (closedBall x (ε n) \ closedBall (f (ε n) $ hε' n) (ε n / 4)) /
+          volume (closedBall x (ε n)) := by
+        gcongr
+        rw [diff_eq_compl_inter]
+        refine inter_subset_inter_left _ ?_
+        rw [subset_compl_comm, ← interior_compl]
+        exact hf₁ _ _
+      _ = 1 - ENNReal.ofReal (4⁻¹ ^ Fintype.card ι) := ?_
+    dsimp only
+    have := hε' n
+    rw [measure_diff (hf₀ _ _) _ ((Real.volume_pi_closedBall _ _).trans_ne ENNReal.ofReal_ne_top),
+      Real.volume_pi_closedBall, Real.volume_pi_closedBall, ENNReal.sub_div fun _ _ ↦ _,
+      ENNReal.div_self _ ENNReal.ofReal_ne_top, ← ENNReal.ofReal_div_of_pos, ← div_pow,
+      mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
   all_goals try positivity
   · simp_all
   · measurability

@@ -16,14 +16,14 @@ to show that `Set.IccExtend h f` is continuous if and only if `f` is continuous.
 
 open Set Filter Topology
 
-variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace γ] {a b c : α} {h : a ≤ b}
+variable {α β γ : Type*} [LinearOrder α] {a b c : α} {h : a ≤ b}
 
 protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Filter α} {lb : Filter β}
     {lc : Filter γ} (hf : Tendsto (↿f) (lc ×ˢ la.map (projIcc a b h)) lb) :
     Tendsto (↿(IccExtend h ∘ f)) (lc ×ˢ la) lb :=
   hf.comp <| tendsto_id.prod_map tendsto_map
 
-variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β]
+variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 
 @[continuity]
 theorem continuous_projIcc : Continuous (projIcc a b h) :=

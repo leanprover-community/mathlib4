@@ -212,6 +212,14 @@ noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
     PolynomialModule R S ≃ₗ[R] S[X] :=
   { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ => rfl }
 
+@[simp]
+lemma equivPolynomialSelf_apply_eq (p : PolynomialModule R R) :
+    equivPolynomialSelf p = equivPolynomial p := rfl
+
+@[simp]
+lemma equivPolynomial_single {S : Type*} [CommRing S] [Algebra R S] (n : ℕ) (x : S) :
+    equivPolynomial (single R n x) = monomial n x := rfl
+
 variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
 variable [Algebra R R'] [Module R M'] [IsScalarTower R R' M']
 
@@ -282,6 +290,18 @@ theorem eval_map (f : M →ₗ[R] M') (q : PolynomialModule R M) (r : R) :
 theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :
     eval r (map R f q) = f (eval r q) :=
   eval_map R f q r
+
+@[simp]
+lemma aeval_equivPolynomial {S : Type*} [CommRing S] [Algebra S R]
+    (f : PolynomialModule S S) (x : R) :
+    aeval x (equivPolynomial f) = eval x (map R (Algebra.linearMap S R) f) := by
+  apply induction_linear f
+  · simp
+  · intro f g e₁ e₂
+    simp_rw [map_add, e₁, e₂]
+  · intro i m
+    rw [equivPolynomial_single, aeval_monomial, mul_comm, map_single,
+      Algebra.linearMap_apply, eval_single, smul_eq_mul]
 
 /-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`.  -/
 @[simps!]
