@@ -608,28 +608,6 @@ instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (
 
 end SpecificInstances
 
-/-- A nontrivial densely linear ordered commutative group can't be a cyclic group. -/
-@[to_additive
-  "A nontrivial densely linear ordered additive commutative group can't be a cyclic group."]
-theorem not_isCyclic_of_denselyOrdered (G : Type*) [LinearOrderedCommGroup G] [DenselyOrdered G]
-    [Nontrivial G] : ¬IsCyclic G := by
-  intro h
-  rcases IsCyclic.exists_generator (α := G) with ⟨a, ha⟩
-  rcases lt_trichotomy a 1 with hlt | rfl | hlt
-  · rcases exists_between hlt with ⟨b, hab, hb⟩
-    rcases ha b with ⟨k, rfl⟩
-    suffices 0 < k ∧ k < 1 by omega
-    rw [← one_lt_inv'] at hlt
-    simp_rw [← zpow_lt_zpow_iff hlt]
-    simp_all
-  · rcases exists_ne (1 : G) with ⟨b, hb⟩
-    simpa [hb] using ha b
-  · rcases exists_between hlt with ⟨b, hb, hba⟩
-    rcases ha b with ⟨k, rfl⟩
-    suffices 0 < k ∧ k < 1 by omega
-    simp_rw [← zpow_lt_zpow_iff hlt]
-    simp_all
-
 section Exponent
 
 open Monoid
