@@ -75,7 +75,7 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+@[simp, mfld_simps] theorem mem_setOf_eq {p : α → Prop} : (· ∈ {y | p y}) = p := rfl
 
 @[simp, mfld_simps] theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
