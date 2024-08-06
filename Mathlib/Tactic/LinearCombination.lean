@@ -91,10 +91,10 @@ partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
     match ← expandLinearCombo α e with
     | .const e => return .const q(-$e)
     | .proof a b p => return .proof q(-$a) q(-$b) q(neg_pf $p)
-  -- | `(← $e) => do
-  --   match ← expandLinearCombo e with
-  --   | none => pure none
-  --   | some p => ``(Eq.symm $p)
+  | `(← $e) => do
+    match ← expandLinearCombo α e with
+    | .const e => return .const q($e)
+    | .proof a b p => return .proof q($b) q($a) q(Eq.symm $p)
   | `($e₁ * $e₂) => do
     let _i ← synthInstanceQ q(Mul $α)
     match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
@@ -143,38 +143,45 @@ def elabLinearCombination
   let .sort u ← whnf (← inferType p.1) | unreachable!
   let some v := u.dec | throwError "not a type"
   let ((α : Q(Type v)), (a' : Q($α)), (b':Q($α))) := p
-  let _i ← synthInstanceQ q(AddGroup ($α : Type v))
-  let (⟨a, b, p⟩ : Σ a b : Q($α), Q($a = $b)) ← match input with
-  | none => pure ⟨q(0), q(0), q(Eq.refl 0)⟩
-  | some e => do
-    match ← expandLinearCombo α e with
-    | .const e => pure ⟨e, e, q(Eq.refl $e)⟩
-    | .proof a b p => pure ⟨a, b, p⟩
-  let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
-  let (e, d) ← do
-  -- if twoGoals then
-  --   `(tactic| (
-  --     refine eq_trans₃ $p ?a ?b
-  --     case' a => $norm:tactic
-  --     case' b => $norm:tactic))
-  -- else
-    match exp? with
-    | some n =>
-      let n : ℕ := n.getNat
-      if n = 1 then
-        pure (q(eq_of_add (a' := $a') (b' := $b') $p), q($a' - $b' - ($a - $b) = 0))
-      else
-        let _i ← synthInstanceQ q(Ring ($α : Type v))
-        let _i ← synthInstanceQ q(NoZeroDivisors ($α : Type v))
-        pure
-          (q(eq_of_add_pow (a' := $a') (b' := $b') $n $p), q(($a' - $b') ^ $n - ($a - $b) = 0))
+  let (⟨a, b, p⟩ : Σ a b : Q($α), Q($a = $b)) ← do
+    match input with
     | none =>
-      pure (q(eq_of_add (a' := $a') (b' := $b') $p), q($a' - $b' - ($a - $b) = 0))
-  let mvar ← mkFreshExprMVar d MetavarKind.natural
+      let _i ← synthInstanceQ q(OfNat ($α : Type v) 0)
+      pure ⟨q(0), q(0), q(Eq.refl 0)⟩
+    | some e => do
+      match ← expandLinearCombo α e with
+      | .const e => pure ⟨e, e, q(Eq.refl $e)⟩
+      | .proof a b p => pure ⟨a, b, p⟩
+  let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
+  let (e, mvars) ← do
+    if twoGoals then
+      let mvar₁ ← mkFreshExprMVar q($a = $a')
+      let mvar₂ ← mkFreshExprMVar q($b = $b')
+      pure (q(eq_trans₃ (a' := $a') (b' := $b') $p), #[mvar₁, mvar₂])
+    else
+      match exp? with
+      | some n =>
+        let n : ℕ := n.getNat
+        if n = 1 then
+          let _i ← synthInstanceQ q(AddGroup ($α : Type v))
+          let mvar ← mkFreshExprMVar q($a' - $b' - ($a - $b) = 0)
+          pure (q(eq_of_add (a' := $a') (b' := $b') $p), #[mvar])
+        else
+          let _i ← synthInstanceQ q(Ring ($α : Type v))
+          let _i ← synthInstanceQ q(NoZeroDivisors ($α : Type v))
+          let mvar ← mkFreshExprMVar q(($a' - $b') ^ $n - ($a - $b) = 0)
+          pure (q(eq_of_add_pow (a' := $a') (b' := $b') $n $p), #[mvar])
+      | none =>
+        let _i ← synthInstanceQ q(AddGroup ($α : Type v))
+        let mvar ← mkFreshExprMVar q($a' - $b' - ($a - $b) = 0)
+        pure (q(eq_of_add (a' := $a') (b' := $b') $p), #[mvar])
   Tactic.liftMetaTactic fun g ↦ do
-    g.assign (.app e mvar)
-    return [mvar.mvarId!]
-  Tactic.evalTactic norm
+    g.assign (mkAppN e mvars)
+    return mvars.toList.map Expr.mvarId!
+  let mvarIds ← Tactic.getGoals
+  for mvarId in mvarIds do
+      Tactic.setGoals [mvarId]
+      Tactic.evalTactic norm
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
@@ -276,6 +283,3 @@ end LinearCombination
 end Tactic
 
 end Mathlib
-
-example (x y : ℤ) (h1 : x + 2 = 1) (h2 : y = x) : y = -2 + 1 := by
-  linear_combination h1 + h2
