@@ -651,6 +651,18 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
+/-- The strict series `0 < … < n` in ℕ. -/
+def iota (n : ℕ) : LTSeries ℕ where
+  length := n
+  toFun := fun i => i
+  step := fun _ => Nat.lt_add_one _
+
+@[simp] def length_iota (n : ℕ) : (iota n).length = n := rfl
+
+@[simp] def head_iota (n : ℕ) : (iota n).head = 0 := rfl
+
+@[simp] def last_iota (n : ℕ) : (iota n).last = n := rfl
+
 end LTSeries
 
 end LTSeries
