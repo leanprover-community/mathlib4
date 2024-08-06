@@ -6,8 +6,6 @@ Authors: Yury G. Kudryashov
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.Sort
 
-#align_import data.list.nodup_equiv_fin from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
-
 /-!
 # Equivalence between `Fin (length l)` and elements of a list
 
@@ -44,7 +42,6 @@ def getBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x 
    fun x =>
     let ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
     ⟨i, hl⟩⟩
-#align list.nodup.nth_le_bijection_of_forall_mem_list List.Nodup.getBijectionOfForallMemList
 
 variable [DecidableEq α]
 
@@ -56,7 +53,6 @@ def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } w
   invFun x := ⟨indexOf (↑x) l, indexOf_lt_length.2 x.2⟩
   left_inv i := by simp only [List.get_indexOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
   right_inv x := by simp
-#align list.nodup.nth_le_equiv List.Nodup.getEquiv
 
 /-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
 an equivalence between `Fin l.length` and `α`.
@@ -70,7 +66,6 @@ def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ 
   invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
   left_inv i := by simp [List.indexOf_getElem, nd]
   right_inv a := by simp
-#align list.nodup.nth_le_equiv_of_forall_mem_list List.Nodup.getEquivOfForallMemList
 
 end Nodup
 
@@ -79,10 +74,8 @@ namespace Sorted
 variable [Preorder α] {l : List α}
 
 theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ => h.rel_get_of_le
-#align list.sorted.nth_le_mono List.Sorted.get_mono
 
 theorem get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ => h.rel_get_of_lt
-#align list.sorted.nth_le_strict_mono List.Sorted.get_strictMono
 
 variable [DecidableEq α]
 
@@ -91,19 +84,16 @@ variable [DecidableEq α]
 def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l } where
   toEquiv := H.nodup.getEquiv l
   map_rel_iff' := H.get_strictMono.le_iff_le
-#align list.sorted.nth_le_iso List.Sorted.getIso
 
 variable (H : Sorted (· < ·) l) {x : { x // x ∈ l }} {i : Fin l.length}
 
 @[simp]
 theorem coe_getIso_apply : (H.getIso l i : α) = get l i :=
   rfl
-#align list.sorted.coe_nth_le_iso_apply List.Sorted.coe_getIso_apply
 
 @[simp]
 theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = indexOf (↑x) l :=
   rfl
-#align list.sorted.coe_nth_le_iso_symm_apply List.Sorted.coe_getIso_symm_apply
 
 end Sorted
 
@@ -138,7 +128,6 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
   apply List.Sublist.append _ (IH _ this)
   rw [List.singleton_sublist, ← h, l'.getElem_take _ (Nat.lt_succ_self _)]
   apply List.get_mem
-#align list.sublist_of_order_embedding_nth_eq List.sublist_of_orderEmbedding_get?_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
@@ -162,7 +151,6 @@ theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
         · simpa using hf _
   · rintro ⟨f, hf⟩
     exact sublist_of_orderEmbedding_get?_eq f hf
-#align list.sublist_iff_exists_order_embedding_nth_eq List.sublist_iff_exists_orderEmbedding_get?_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `Fin l.length` into `Fin l'.length` such that
@@ -206,7 +194,6 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       · rw [get?_eq_none.mpr, get?_eq_none.mpr]
         · simp
         · simpa using hi
-#align list.sublist_iff_exists_fin_order_embedding_nth_le_eq List.sublist_iff_exists_fin_orderEmbedding_get_eq
 
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
@@ -246,7 +233,6 @@ theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
   duplicate_iff_exists_distinct_get.trans
     ⟨fun ⟨n, m, h⟩ => ⟨n.1, n.2, m.1, m.2, h⟩,
     fun ⟨n, hn, m, hm, h⟩ => ⟨⟨n, hn⟩, ⟨m, hm⟩, h⟩⟩
-#align list.duplicate_iff_exists_distinct_nth_le List.duplicate_iff_exists_distinct_nthLe
 
 end Sublist
 

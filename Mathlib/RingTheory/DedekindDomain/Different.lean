@@ -35,11 +35,15 @@ attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_l
 variable (A K : Type*) {L : Type u} {B} [CommRing A] [Field K] [CommRing B] [Field L]
 variable [Algebra A K] [Algebra B L] [Algebra A B] [Algebra K L] [Algebra A L]
 variable [IsScalarTower A K L] [IsScalarTower A B L]
-variable [IsDomain A] [IsDomain B]
+variable [IsDomain A]
 variable [IsFractionRing A K] [IsIntegralClosure B A L] [IsFractionRing B L]
-variable [FiniteDimensional K L] [IsSeparable K L]
+variable [FiniteDimensional K L] [Algebra.IsSeparable K L]
 
 open nonZeroDivisors IsLocalization Matrix Algebra
+
+section BIsDomain
+
+variable [IsDomain B]
 
 /-- Under the AKLB setting, `Iᵛ := traceDual A K (I : Submodule B L)` is the
 `Submodule B L` such that `x ∈ Iᵛ ↔ ∀ y ∈ I, Tr(x, y) ∈ A` -/
@@ -92,21 +96,22 @@ lemma traceDual_top' :
   split_ifs with h
   · rw [_root_.eq_top_iff]
     exact fun _ _ _ _ ↦ h ⟨_, rfl⟩
-  · rw [_root_.eq_bot_iff]
-    intro x hx
-    change ¬∀ x, _ → _ at h; push_neg at h
-    show x = 0; by_contra hx'
-    obtain ⟨_, ⟨b, rfl⟩, hb⟩ := h
-    apply hb
-    simpa [hx'] using hx (x⁻¹ * b) trivial
+  · simp only [SetLike.le_def, restrictScalars_mem, LinearMap.mem_range, mem_one,
+      forall_exists_index, forall_apply_eq_imp_iff, not_forall, not_exists] at h
+    obtain ⟨b, hb⟩ := h
+    simp_rw [eq_bot_iff, SetLike.le_def, mem_bot, mem_traceDual, mem_top, true_implies,
+      traceForm_apply, RingHom.mem_range]
+    contrapose! hb with hx'
+    obtain ⟨c, hc, hc0⟩ := hx'
+    simpa [hc0] using hc (c⁻¹ * b)
 
 lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
   convert traceDual_top'
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
-    ← RingHom.range_top_iff_surjective, _root_.eq_top_iff, SetLike.le_def]
-  rfl
+    ← RingHom.range_top_iff_surjective, _root_.eq_top_iff]
+  simp [SetLike.le_def]
 
 end Submodule
 
@@ -209,6 +214,20 @@ def dual (I : FractionalIdeal B⁰ L) :
     · convert isIntegral_discr_mul_of_mem_traceDual I hb hx' hz using 1
       · ext w; exact (IsIntegralClosure.isIntegral_iff (A := B)).symm
       · rw [Algebra.smul_def, RingHom.map_mul, hy, ← Algebra.smul_def]⟩
+
+end FractionalIdeal
+
+end BIsDomain
+
+namespace FractionalIdeal
+
+variable [IsIntegrallyClosed A]
+
+open Submodule
+
+open scoped Classical
+
+local notation:max I:max "ᵛ" => Submodule.traceDual A K I
 
 variable [IsDedekindDomain B] {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hJ : J ≠ 0)
 
@@ -358,7 +377,7 @@ lemma dual_injective :
 end FractionalIdeal
 
 variable (B)
-variable [IsDedekindDomain B]
+variable [IsIntegrallyClosed A] [IsDedekindDomain B]
 
 /-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
 as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/
@@ -368,7 +387,7 @@ def differentIdeal [NoZeroSMulDivisors A B] : Ideal B :=
 
 lemma coeSubmodule_differentIdeal_fractionRing
     [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B]
-    [IsSeparable (FractionRing A) (FractionRing B)]
+    [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     [FiniteDimensional (FractionRing A) (FractionRing B)] :
     coeSubmodule (FractionRing B) (differentIdeal A B) =
       1 / Submodule.traceDual A (FractionRing A) 1 := by
@@ -399,7 +418,8 @@ lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
-  have : IsSeparable (FractionRing A) (FractionRing B) := IsSeparable.of_equiv_equiv _ _ H
+  have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
+    Algebra.IsSeparable.of_equiv_equiv _ _ H
   have : FiniteDimensional (FractionRing A) (FractionRing B) := Module.Finite.of_equiv_equiv _ _ H
   have : Algebra.IsIntegral A B := IsIntegralClosure.isIntegral_algebra _ L
   simp only [AlgEquiv.toLinearEquiv_toLinearMap, Submodule.map_comp]
@@ -422,6 +442,8 @@ lemma coeIdeal_differentIdeal [NoZeroSMulDivisors A B] :
     FractionalIdeal.coe_dual_one, FractionalIdeal.coe_one]
 
 variable {A K B L}
+
+open Submodule
 
 lemma differentialIdeal_le_fractionalIdeal_iff
     {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) [NoZeroSMulDivisors A B] :
@@ -501,7 +523,7 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
     FractionalIdeal.coe_spanSingleton, Submodule.span_singleton_mul]
   ext y
   have hne₁ : aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))) ≠ 0 :=
-    (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+    (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   have : algebraMap B L (aeval x (derivative (minpoly A x))) ≠ 0 := by
     rwa [minpoly.isIntegrallyClosed_eq_field_fractions K L hAx, derivative_map,
       aeval_map_algebraMap, aeval_algebraMap_apply] at hne₁

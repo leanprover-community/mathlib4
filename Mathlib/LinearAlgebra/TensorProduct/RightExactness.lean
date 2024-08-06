@@ -88,7 +88,7 @@ open TensorProduct LinearMap
 
 section Semiring
 
-variable {R : Type*} [CommSemiring R] {M N P Q: Type*}
+variable {R : Type*} [CommSemiring R] {M N P Q : Type*}
     [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
     [Module R M] [Module R N] [Module R P] [Module R Q]
     {f : M →ₗ[R] N} (g : N →ₗ[R] P)
@@ -163,20 +163,7 @@ variable {R M N P : Type*} [CommRing R]
     [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
     [Module R M] [Module R N] [Module R P]
 
-open Function LinearMap
-
--- TODO: Move this and related lemmas to another file
-lemma LinearMap.exact_subtype_mkQ (Q : Submodule R N) :
-    Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
-  rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
-
-lemma LinearMap.exact_map_mkQ_range (f : M →ₗ[R] N) :
-    Exact f (Submodule.mkQ (range f)) :=
-  exact_iff.mpr <| Submodule.ker_mkQ _
-
-lemma LinearMap.exact_subtype_ker_map (g : N →ₗ[R] P) :
-    Exact (Submodule.subtype (ker g)) g :=
-  exact_iff.mpr <| (Submodule.range_subtype _).symm
+open Function
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     (Q : Type*) [AddCommGroup Q] [Module R Q]
@@ -418,6 +405,16 @@ theorem TensorProduct.map_ker :
   rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
 
 variable (M)
+
+variable (R) in
+theorem TensorProduct.mk_surjective (S) [Semiring S] [Algebra R S]
+    (h : Surjective (algebraMap R S)) :
+    Surjective (TensorProduct.mk R S M 1) := by
+  rw [← LinearMap.range_eq_top, ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
+  rintro _ ⟨x, y, rfl⟩
+  obtain ⟨x, rfl⟩ := h x
+  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
+  exact ⟨x • y, rfl⟩
 
 /-- Left tensoring a module with a quotient of the ring is the same as
 quotienting that module by the corresponding submodule. -/

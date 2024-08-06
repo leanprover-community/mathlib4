@@ -68,7 +68,7 @@ def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
 { toFun     := fun x : ℚ ↦ (padicNorm p x : ℝ),
   map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
   add_le'   := by simp only; norm_cast; exact fun r s ↦ padicNorm.triangle_ineq r s
-  neg'      := by simp only [forall_const, padicNorm.neg];
+  neg'      := by simp only [forall_const, padicNorm.neg]
   eq_zero_of_map_eq_zero' := by
     simp only [Rat.cast_eq_zero]
     apply padicNorm.zero_of_padicNorm_eq_zero
@@ -104,7 +104,7 @@ lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ 
 
 variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m)
 
- /-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
+/-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
 lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
   rw [← Nat.irreducible_iff_nat_prime]
   constructor -- Two goals: p is not a unit and any product giving p must contain a unit.

@@ -103,7 +103,7 @@ section symmetry
 /-- Reformulated functional equation with `f` and `g` interchanged. -/
 lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
     P.g (1 / x) = (P.ε⁻¹ * ↑(x ^ P.k)) • P.f x := by
-  rw [(div_div_cancel' (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx) :), ← mul_smul]
+  rw [(div_div_cancel' (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
   convert (one_smul ℂ (P.g (1 / x))).symm using 2
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
@@ -461,3 +461,5 @@ theorem Λ_residue_zero :
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds
+
+end WeakFEPair

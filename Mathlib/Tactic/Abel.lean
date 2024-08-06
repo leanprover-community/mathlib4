@@ -19,8 +19,6 @@ assert_not_exists OrderedAddCommMonoid
 assert_not_exists TopologicalSpace
 assert_not_exists PseudoMetricSpace
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
 
@@ -388,7 +386,7 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
     | throwError "abel1 requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
-  closeMainGoal <| ← AtomM.run tm <| ReaderT.run (r := c) do
+  closeMainGoal `abel1 <| ← AtomM.run tm <| ReaderT.run (r := c) do
     let (e₁', p₁) ← eval e₁
     trace[abel] "found `{p₁}`, a proof that `{e₁} = {e₁'.e}`"
     let (e₂', p₂) ← eval e₂
@@ -400,9 +398,9 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
 
 @[inherit_doc abel1] macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
 
-theorem term_eq [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
+theorem term_eq {α : Type*} [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-theorem termg_eq [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
+theorem termg_eq {α : Type*} [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
 
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool
@@ -564,3 +562,9 @@ macro (name := abelConv) "abel" : conv =>
   `(conv| first | discharge => abel1 | try_this abel_nf)
 @[inherit_doc abelConv] macro "abel!" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
+
+end Abel
+
+end Tactic
+
+end Mathlib

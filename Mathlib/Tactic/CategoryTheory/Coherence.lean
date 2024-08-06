@@ -3,12 +3,10 @@ Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Basic
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
-
-#align_import category_theory.monoidal.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # A `coherence` tactic for monoidal categories
@@ -25,11 +23,6 @@ are equal.
 
 -/
 
-set_option autoImplicit true
-
--- Porting note: restore when ported
--- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
-
 universe v u
 
 open CategoryTheory FreeMonoidalCategory
@@ -38,10 +31,12 @@ open CategoryTheory FreeMonoidalCategory
 -- we put everything inside a namespace.
 namespace Mathlib.Tactic.Coherence
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u} [Category.{v} C]
 open scoped MonoidalCategory
 
 noncomputable section lifting
+
+variable [MonoidalCategory C]
 
 /-- A typeclass carrying a choice of lift of an object from `C` to `FreeMonoidalCategory C`.
 It must be the case that `projectObj id (LiftObj.lift x) = x` by defeq. -/
@@ -103,7 +98,8 @@ end lifting
 open Lean Meta Elab Tactic
 
 /-- Helper function for throwing exceptions. -/
-def exception (g : MVarId) (msg : MessageData) : MetaM α := throwTacticEx `monoidal_coherence g msg
+def exception {α : Type} (g : MVarId) (msg : MessageData) : MetaM α :=
+  throwTacticEx `monoidal_coherence g msg
 
 /-- Helper function for throwing exceptions with respect to the main goal. -/
 def exception' (msg : MessageData) : TacticM Unit := do
@@ -289,9 +285,14 @@ elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
+      BicategoricalCoherence.hom,
       monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
     monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop
+
+end Coherence
+
+end Tactic
+
+end Mathlib
