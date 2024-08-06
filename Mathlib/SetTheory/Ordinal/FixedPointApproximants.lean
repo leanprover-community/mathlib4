@@ -110,7 +110,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     simp only [Set.mem_setOf_eq]
     use a
 
-theorem lfpApprox_mono₁ : Monotone (lfpApprox : (α →o α) → _) := by
+theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
   intro f g h x a
   induction a using Ordinal.induction with
   | h i ih =>
@@ -128,7 +128,7 @@ theorem lfpApprox_mono₁ : Monotone (lfpApprox : (α →o α) → _) := by
       apply g.monotone
       exact ih i' h_lt
 
-theorem lfpApprox_mono₃ : Monotone (lfpApprox f) := by
+theorem lfpApprox_mono_mid : Monotone (lfpApprox f) := by
   intro x₁ x₂ h a
   induction a using Ordinal.induction with
   | h i ih =>
@@ -265,7 +265,7 @@ theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a+1) = f (gfpApprox f x a) :=
   lfpApprox_add_one (OrderHom.dual f) x h a
 
-theorem gfpApprox_mono₁ : Monotone (gfpApprox : (α →o α) → _ ) := by
+theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _ ) := by
   intro f g h x a
   induction a using Ordinal.induction with
   | h i ih =>
@@ -283,7 +283,7 @@ theorem gfpApprox_mono₁ : Monotone (gfpApprox : (α →o α) → _ ) := by
       apply g.monotone
       exact ih i' h_lt
 
-theorem gfpApprox_mono₃ : Monotone (gfpApprox f) := by
+theorem gfpApprox_mono_mid : Monotone (gfpApprox f) := by
   intro x₁ x₂ h a
   induction a using Ordinal.induction with
   | h i ih =>
