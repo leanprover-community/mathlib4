@@ -302,7 +302,6 @@ theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
     (fun c hc chainc hcn ↦ ⟨⋃₀ c, ⟨?_, ?_⟩, fun _ ↦ subset_sUnion_of_mem⟩) s ⟨hs, hst⟩
   · exact algebraicIndependent_sUnion_of_directed hcn chainc.directedOn (fun x hxc ↦ (hc hxc).1)
   exact fun x ⟨w, hyc, hwy⟩ ↦ (hc hyc).2 hwy
-#align exists_maximal_algebraic_independent exists_maximal_algebraicIndependent
 
 section repr
 
