@@ -322,9 +322,6 @@ protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem mk_coe (f : M →ₛₗ[σ] M₃) (h) : (LinearMap.mk f h : M →ₛₗ[σ] M₃) = f :=
   ext fun _ ↦ rfl
@@ -359,7 +356,7 @@ variable (M M₂)
 
 /-- A typeclass for `SMul` structures which can be moved through a `LinearMap`.
 This typeclass is generated automatically from an `IsScalarTower` instance, but exists so that
-we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
+we can also add an instance for `AddCommGroup.toIntModule`, allowing `z •` to be moved even if
 `S` does not support negation.
 -/
 class CompatibleSMul (R S : Type*) [Semiring S] [SMul R M] [Module S M] [SMul R M₂]
@@ -455,9 +452,6 @@ theorem toAddMonoidHom_injective :
 @[ext high]
 theorem ext_ring {f g : R →ₛₗ[σ] M₃} (h : f 1 = g 1) : f = g :=
   ext fun x ↦ by rw [← mul_one x, ← smul_eq_mul, f.map_smulₛₗ, g.map_smulₛₗ, h]
-
-theorem ext_ring_iff {σ : R →+* R} {f g : R →ₛₗ[σ] M} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h ↦ h ▸ rfl, ext_ring⟩
 
 @[ext high]
 theorem ext_ring_op {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M₃} (h : f (1 : R) = g (1 : R)) :
@@ -654,13 +648,13 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂]
 
 /-- Convert an `IsLinearMap` predicate to a `LinearMap` -/
-def mk' (f : M → M₂) (H : IsLinearMap R f) : M →ₗ[R] M₂ where
+def mk' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ where
   toFun := f
-  map_add' := H.1
-  map_smul' := H.2
+  map_add' := lin.1
+  map_smul' := lin.2
 
 @[simp]
-theorem mk'_apply {f : M → M₂} (H : IsLinearMap R f) (x : M) : mk' f H x = f x :=
+theorem mk'_apply {f : M → M₂} (lin : IsLinearMap R f) (x : M) : mk' f lin x = f x :=
   rfl
 
 theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (c : R) :
@@ -673,9 +667,7 @@ theorem isLinearMap_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R
     IsLinearMap R fun c : R ↦ c • a :=
   IsLinearMap.mk (fun x y ↦ add_smul x y a) fun x y ↦ mul_smul x y a
 
-variable {f : M → M₂} (lin : IsLinearMap R f)
-
-theorem map_zero : f (0 : M) = (0 : M₂) :=
+theorem map_zero {f : M → M₂} (lin : IsLinearMap R f) : f (0 : M) = (0 : M₂) :=
   (lin.mk' f).map_zero
 
 end AddCommMonoid
@@ -688,12 +680,10 @@ variable [Module R M] [Module R M₂]
 theorem isLinearMap_neg : IsLinearMap R fun z : M ↦ -z :=
   IsLinearMap.mk neg_add fun x y ↦ (smul_neg x y).symm
 
-variable {f : M → M₂} (lin : IsLinearMap R f)
-
-theorem map_neg (x : M) : f (-x) = -f x :=
+theorem map_neg {f : M → M₂} (lin : IsLinearMap R f) (x : M) : f (-x) = -f x :=
   (lin.mk' f).map_neg x
 
-theorem map_sub (x y) : f (x - y) = f x - f y :=
+theorem map_sub {f : M → M₂} (lin : IsLinearMap R f) (x y : M) : f (x - y) = f x - f y :=
   (lin.mk' f).map_sub x y
 
 end AddCommGroup

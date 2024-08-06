@@ -54,12 +54,7 @@ product measure, Tonelli's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open scoped Classical
-open Topology ENNReal MeasureTheory
-
-open Set Function Real ENNReal
-
-open MeasureTheory MeasurableSpace MeasureTheory.Measure
+open Topology ENNReal MeasureTheory Set Function Real ENNReal MeasurableSpace MeasureTheory.Measure
 
 open TopologicalSpace hiding generateFrom
 
@@ -146,6 +141,7 @@ theorem isPiSystem_prod :
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
 theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
+  classical
   refine induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
     generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ hs
   · simp
@@ -326,6 +322,7 @@ theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
 do not need the sets to be measurable. -/
 @[simp]
 theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
+  classical
   apply le_antisymm
   · set S := toMeasurable μ s
     set T := toMeasurable ν t
@@ -717,6 +714,7 @@ theorem restrict_prod_eq_prod_univ (s : Set α) :
   rw [this, Measure.prod_restrict, ← this]
 
 theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
+  classical
   rw [← sum_sFiniteSeq μ, prod_sum_left, map_sum measurable_prod_mk_right.aemeasurable]
   congr
   ext1 i
@@ -725,6 +723,7 @@ theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
     dirac_apply' _ ht, ← indicator_mul_right _ fun _ => sFiniteSeq μ i s, Pi.one_apply, mul_one]
 
 theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
+  classical
   rw [← sum_sFiniteSeq ν, prod_sum_right, map_sum measurable_prod_mk_left.aemeasurable]
   congr
   ext1 i
@@ -779,22 +778,29 @@ namespace MeasurePreserving
 variable {δ : Type*} [MeasurableSpace δ] {μa : Measure α} {μb : Measure β} {μc : Measure γ}
   {μd : Measure δ}
 
+/-- Let `f : α → β` be a measure preserving map.
+For a.e. all `a`, let `g a : γ → δ` be a measure preserving map.
+Also suppose that `g` is measurable as a function of two arguments.
+Then the map `fun (a, c) ↦ (f a, g a c)` is a measure preserving map
+for the product measures on `α × γ` and `β × δ`.
+
+Some authors call a map of the form `fun (a, c) ↦ (f a, g a c)` a *skew product* over `f`,
+thus the choice of a name.
+-/
 theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
-    {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ x ∂μa, map (g x) μc = μd) :
+    {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
-  classical
   have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.1.comp measurable_fst).prod_mk hgm
+  use this
   /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
     to deduce `SFinite μd`. -/
-  rcases eq_or_ne μa 0 with (rfl | ha)
-  · rw [← hf.map_eq, zero_prod, Measure.map_zero, zero_prod]
-    exact ⟨this, by simp only [Measure.map_zero]⟩
+  rcases eq_zero_or_neZero μa with rfl | _
+  · simp [← hf.map_eq]
   have sf : SFinite μd := by
-    rcases (ae_neBot.2 ha).nonempty_of_mem hg with ⟨x, hx : map (g x) μc = μd⟩
-    rw [← hx]
+    obtain ⟨a, ha⟩ : ∃ a, map (g a) μc = μd := hg.exists
+    rw [← ha]
     infer_instance
   -- Thus we can use the integral formula for the product measure, and compute things explicitly
-  refine ⟨this, ?_⟩
   ext s hs
   rw [map_apply this hs, prod_apply (this hs), prod_apply hs,
     ← hf.lintegral_comp (measurable_measure_prod_mk_left hs)]
@@ -809,7 +815,7 @@ protected theorem prod [SFinite μa] [SFinite μc] {f : α → β} {g : γ → �
     (hf : MeasurePreserving f μa μb) (hg : MeasurePreserving g μc μd) :
     MeasurePreserving (Prod.map f g) (μa.prod μc) (μb.prod μd) :=
   have : Measurable (uncurry fun _ : α => g) := hg.1.comp measurable_snd
-  hf.skew_product this <| Filter.eventually_of_forall fun _ => hg.map_eq
+  hf.skew_product this <| ae_of_all _ fun _ => hg.map_eq
 
 end MeasurePreserving
 

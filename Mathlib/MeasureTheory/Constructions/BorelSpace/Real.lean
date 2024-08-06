@@ -26,7 +26,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 open Set Filter MeasureTheory MeasurableSpace
 
-open scoped Classical Topology NNReal ENNReal MeasureTheory
+open scoped Topology NNReal ENNReal
 
 universe u v w x y
 
@@ -439,11 +439,6 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 
 namespace NNReal
-
-instance : MeasurableSMul₂ ℝ≥0 ℝ≥0∞ where
-  measurable_smul :=
-    measurable_mul.comp <|
-      Measurable.prod_mk (ENNReal.continuous_coe.measurable.comp measurable_fst) measurable_snd
 
 /-- A limit (over a general filter) of measurable `ℝ≥0` valued functions is measurable. -/
 theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ≥0} (u : Filter ι) [NeBot u]
