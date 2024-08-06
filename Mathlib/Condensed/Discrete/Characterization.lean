@@ -8,6 +8,9 @@ import Mathlib.Condensed.Discrete.Module
 /-!
 
 # Characterizing discrete condensed sets.
+
+This file proves a characterization of discrete condensed sets and discrete light condensed sets,
+see `CondensedSet.isDiscrete_tfae` and `LightCondSet.isDiscrete_tfae`.
 -/
 
 universe u
