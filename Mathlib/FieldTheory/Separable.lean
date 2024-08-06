@@ -556,7 +556,11 @@ theorem Algebra.isSeparable_iff :
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
     fun h => ⟨fun x => (h x).2⟩⟩
 
-variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+variable {E : Type*}
+
+section
+
+variable [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
 
 /-- Transfer `IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F x := by
@@ -572,29 +576,34 @@ alias AlgEquiv.isSeparable := AlgEquiv.Algrebra.isSeparable
 theorem AlgEquiv.Algebra.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
   ⟨fun _ ↦ AlgEquiv.Algrebra.isSeparable e, fun _ ↦ AlgEquiv.Algrebra.isSeparable e.symm⟩
 
-variable (F K)
-
+variable (F K) in
 instance Algebra.IsSeparable.isAlgebraic [Nontrivial F] [Algebra.IsSeparable F K] :
     Algebra.IsAlgebraic F K :=
   ⟨fun x ↦ (Algebra.IsSeparable.isIntegral F x).isAlgebraic⟩
 
-variable {E: Type*} [Field K] [CommRing E] [Algebra F K]
+end
+
+section
+
+variable [Field K] [CommRing E] [Algebra F K]
     [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
-variable {F} in
+variable (K)
 /-- If `E / K / F` is an extension tower, `x : E` is separable over `F`, then it's also separable
 over `K`. -/
 theorem IsSeparable.tower_top
     {x : E} (h : IsSeparable F x) : IsSeparable K x :=
   h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
 
-variable (E) in
+variable (F E) in
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable K E :=
   ⟨fun x ↦ IsSeparable.tower_top _ (Algebra.IsSeparable.isSeparable F x)⟩
 
 @[deprecated (since := "2024-08-06")]
 alias IsSeparable.of_isScalarTower := Algebra.isSeparable_tower_top_of_isSeparable
+
+end
 
 end CommRing
 
