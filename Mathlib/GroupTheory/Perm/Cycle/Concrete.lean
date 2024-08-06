@@ -77,10 +77,9 @@ theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPer
     · rwa [formPerm_apply_mem_ne_self_iff _ hl _ (mem_cons_self _ _)]
     · intro w hw
       have : w ∈ x::y::l := mem_of_formPerm_ne_self _ _ hw
-      obtain ⟨k, hk⟩ := get_of_mem this
+      obtain ⟨k, hk, rfl⟩ := getElem_of_mem this
       use k
-      rw [← hk]
-      simp only [zpow_natCast, formPerm_pow_apply_head _ _ hl k, Nat.mod_eq_of_lt k.isLt]
+      simp only [zpow_natCast, formPerm_pow_apply_head _ _ hl k, Nat.mod_eq_of_lt hk]
 
 theorem pairwise_sameCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
     Pairwise l.formPerm.SameCycle l :=
@@ -110,6 +109,7 @@ theorem cycleType_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
   · simpa using isCycle_formPerm hl hn
   · simp
 
+set_option linter.deprecated false in
 theorem formPerm_apply_mem_eq_next (hl : Nodup l) (x : α) (hx : x ∈ l) :
     formPerm l x = next l x hx := by
   obtain ⟨k, rfl⟩ := get_of_mem hx
