@@ -2351,7 +2351,7 @@ import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Nat.Prime.NearlyPower
+import Mathlib.Data.Nat.Prime.MersenneFermat
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
