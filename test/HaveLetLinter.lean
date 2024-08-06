@@ -29,16 +29,15 @@ example : True := by
   have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
   exact .intro
 
--- I don't know how to silence this test.
---set_option linter.haveLet 2 in
---/--
---warning: '_zero : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
---[linter.haveLet]
----/
---#guard_msgs in
---example : True := by
---  have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
---  exact .intro
+/--
+warning: '_zero : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+[linter.haveLet]
+-/
+#guard_msgs in
+set_option linter.haveLet 2 in
+example : True := by
+  have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
+  exact .intro
 
 #guard_msgs in
 example : True := by
