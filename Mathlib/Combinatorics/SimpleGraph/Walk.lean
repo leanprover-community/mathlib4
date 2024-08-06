@@ -718,9 +718,8 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
   | .nil, .cons _ _, h => by simp at h
   | .cons _ _, .nil, h => by simp at h
   | .cons' u v c h₁ w₁, .cons' _ v' _ h₂ w₂, h => by
-    have h₁ : u ≠ v  := by rintro rfl; exact G.loopless _ h₁
-    have h₂ : u ≠ v' := by rintro rfl; exact G.loopless _ h₂
-    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₂] using h
+    have h₃ : u ≠ v' := by rintro rfl; exact G.loopless _ h₂
+    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₃] using h
     obtain rfl := Walk.edges_injective h₃
     rfl
 
