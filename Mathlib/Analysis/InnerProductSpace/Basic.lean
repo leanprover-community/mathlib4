@@ -260,9 +260,8 @@ theorem inner_zero_right (x : F) : ⟪x, 0⟫ = 0 := by
   rw [← inner_conj_symm, inner_zero_left]; simp only [RingHom.map_zero]
 
 theorem inner_self_of_eq_zero {x : F} : x = 0 → ⟪x, x⟫ = 0 := by
-    intro h
-    rw [h]
-    exact inner_zero_left _
+  rintro rfl
+  exact inner_zero_left _
 
 theorem normSq_eq_zero_of_eq_zero {x : F} : x = 0 → normSqF x = 0 := by
   intro h
