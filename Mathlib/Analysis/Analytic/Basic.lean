@@ -80,10 +80,7 @@ noncomputable section
 
 variable {𝕜 E F G : Type*}
 
-open scoped Classical
-open Topology NNReal Filter ENNReal
-
-open Set Filter Asymptotics
+open Topology NNReal Filter ENNReal Set Asymptotics
 
 namespace FormalMultilinearSeries
 

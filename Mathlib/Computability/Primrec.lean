@@ -763,7 +763,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
       hG)
   suffices ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n) by
     refine hF.of_eq fun a => ?_
-    rw [this, List.take_all_of_le (length_le_encode _)]
+    rw [this, List.take_of_length_le (length_le_encode _)]
   introv
   dsimp only [F]
   generalize f a = l
