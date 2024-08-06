@@ -3,7 +3,9 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Batteries.Data.List.Basic
+
+import Lean.Elab.Command
+import Lean.Server.InfoUtils
 
 /-!
 #  The `have` vs `let` linter
@@ -90,7 +92,6 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     unless isHave? stx do return #[]
     let mctx := i.mctxAfter
     let mvdecls := (i.goalsAfter.map (mctx.decls.find? ·)).reduceOption
-    let _ : Ord MetavarDecl := { compare := (compare ·.index ·.index) }
     -- we extract the `MetavarDecl` with largest index after a `have`, since this one
     -- holds information about the metavariable where `have` introduces the new hypothesis.
     let largestIdx := mvdecls.toArray.qsort (·.index > ·.index)
@@ -98,14 +99,16 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     let lc := (largestIdx.getD 0 default).lctx
     -- we also accumulate all `fvarId`s from all local contexts before the use of `have`
     -- so that we can then isolate the `fvarId`s that are created by `have`
-    let mvdeclsOld := (i.goalsBefore.map (mctx.decls.find? ·)).reduceOption
-    let lctxOld := mvdeclsOld.map (·.lctx)
-    let declsOld := (lctxOld.map (·.decls.toList.reduceOption)).join
-    let fvAssOld := declsOld.map (·.fvarId)
-    let oldDecls := lc.decls.toList.reduceOption.filter (! fvAssOld.contains ·.fvarId)
-    -- now, we get the `MetaM` state up and running to find the types of each entry of `oldDecls`
-    let fmts ← areProp_toFormat ctx lc (oldDecls.map (·.type)).toArray
-    let (_propFmts, typeFmts) := (fmts.zip (oldDecls.map (·.userName)).toArray).partition (·.1.1)
+    let oldMvdecls := (i.goalsBefore.map (mctx.decls.find? ·)).reduceOption
+    let oldLctx := oldMvdecls.map (·.lctx)
+    let oldDecls := (oldLctx.map (·.decls.toList.reduceOption)).join
+    let oldFVars := oldDecls.map (·.fvarId)
+    -- `newDecls` are the local declarations whose `FVarID` did not exist before the `have`
+    -- effectively they are the declarations that we want to test for being in `Prop` or not.
+    let newDecls := lc.decls.toList.reduceOption.filter (! oldFVars.contains ·.fvarId)
+    -- now, we get the `MetaM` state up and running to find the types of each entry of `newDecls`
+    let fmts ← areProp_toFormat ctx lc (newDecls.map (·.type)).toArray
+    let (_propFmts, typeFmts) := (fmts.zip (newDecls.map (·.userName)).toArray).partition (·.1.1)
     -- everything that is a Type triggers a warning on `have`
     return typeFmts.map fun ((_, fmt), na) => (stx, f!"{na} : {fmt}"))
 
@@ -118,9 +121,10 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
     let trees ← getInfoTrees
     for t in trees.toArray do
       for (s, fmt) in ← nonPropHaves t do
-        -- `import Lean.Linter.Util`
-        -- emulate `Linter.logLint linter.haveLet ...` with an option taking values not in `Bool`
-        logWarningAt s <| .tagged linter.haveLet.name m!"'{fmt}' is a Type and not a Prop. \
-          Consider using 'let' instead of 'have'. [{linter.haveLet.name}]"
+        -- Since the linter option is not in `Bool`, the standard `Linter.logLint` does not work.
+        -- We emulate it with `logWarningAt`
+        logWarningAt s <| .tagged linter.haveLet.name
+          m!"'{fmt}' is a Type and not a Prop. Consider using 'let' instead of 'have'.\n\
+          You can disable this linter using `set_option linter.haveLet 0`"
 
 initialize addLinter haveLetLinter

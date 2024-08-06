@@ -10,18 +10,17 @@ set_option linter.haveLet 2 in
 -- check that `tauto`, `replace`, `classical` are ignored
 example : True := by
   classical
-  let zero := 0
-  replace _zero := zero
+  let zero' := 0
+  replace _zero := zero'
   let eq := (rfl : 0 = 0)
   replace _eq := eq
   tauto
 
 /--
-info:
-
+info: ⏎
 ---
-warning: '_zero : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-[linter.haveLet]
+warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
@@ -46,11 +45,10 @@ example : True := by
   exact .intro
 
 /--
-info:
-
+info: ⏎
 ---
-warning: '_zero : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-[linter.haveLet]
+warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
@@ -59,13 +57,11 @@ example : True := by
   exact .intro
 
 /--
-info:
-
+info: ⏎
 ---
-warning:
-'_zero : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'. [linter.haveLet]
+warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
 -/
--- when `have` introduces several hypotheses, the linter flags the non-`Prop` ones.
 #guard_msgs in
 example : True := by
   have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
@@ -73,20 +69,19 @@ example : True := by
   exact .intro
 
 /--
-info:
-
+info: ⏎
 ---
-warning: '_a : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-[linter.haveLet]
+warning: '_a : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
 ---
-warning: '_b : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-[linter.haveLet]
+warning: '_b : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
 ---
-warning: '_oh : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-[linter.haveLet]
+warning: '_oh : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
 ---
-warning: '_b : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-[linter.haveLet]
+warning: '_b : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
@@ -101,11 +96,10 @@ example : True := by
 set_option linter.haveLet 0 in
 set_option linter.haveLet 1 in
 /--
-info:
-
+info: ⏎
 ---
-warning: 'this : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-[linter.haveLet]
+warning: 'this : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
@@ -131,11 +125,10 @@ example (h : False) : True := by
 set_option linter.haveLet 0 in
 set_option linter.haveLet 1 in
 /--
-info:
-
+info: ⏎
 ---
-warning: 'this : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-[linter.haveLet]
+warning: 'this : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 theorem ghi : True := by
