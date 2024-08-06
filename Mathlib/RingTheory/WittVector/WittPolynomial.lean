@@ -10,8 +10,6 @@ import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.ZMod.Basic
 
-#align_import ring_theory.witt_vector.witt_polynomial from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
-
 /-!
 # Witt polynomials
 
@@ -76,7 +74,6 @@ It is defined as:
 `∑_{i ≤ n} p^i X_i^{p^{n-i}} ∈ R[X_0, X_1, X_2, …]`. -/
 noncomputable def wittPolynomial (n : ℕ) : MvPolynomial ℕ R :=
   ∑ i ∈ range (n + 1), monomial (single i (p ^ (n - i))) ((p : R) ^ i)
-#align witt_polynomial wittPolynomial
 
 theorem wittPolynomial_eq_sum_C_mul_X_pow (n : ℕ) :
     wittPolynomial p R n = ∑ i ∈ range (n + 1), C ((p : R) ^ i) * X i ^ p ^ (n - i) := by
@@ -84,8 +81,6 @@ theorem wittPolynomial_eq_sum_C_mul_X_pow (n : ℕ) :
   rintro i -
   rw [monomial_eq, Finsupp.prod_single_index]
   rw [pow_zero]
-set_option linter.uppercaseLean3 false in
-#align witt_polynomial_eq_sum_C_mul_X_pow wittPolynomial_eq_sum_C_mul_X_pow
 
 /-! We set up notation locally to this file, to keep statements short and comprehensible.
 This allows us to simply write `W n` or `W_ ℤ n`. -/
@@ -117,7 +112,6 @@ theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
   rw [wittPolynomial, map_sum, wittPolynomial]
   refine sum_congr rfl fun i _ => ?_
   rw [map_monomial, RingHom.map_pow, map_natCast]
-#align map_witt_polynomial map_wittPolynomial
 
 variable (R)
 
@@ -130,23 +124,19 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   rw [if_neg]
   rw [Finsupp.single_eq_zero]
   exact ne_of_gt (pow_pos hp.1.pos _)
-#align constant_coeff_witt_polynomial constantCoeff_wittPolynomial
 
 @[simp]
 theorem wittPolynomial_zero : wittPolynomial p R 0 = X 0 := by
   simp only [wittPolynomial, X, sum_singleton, range_one, pow_zero, zero_add, tsub_self]
-#align witt_polynomial_zero wittPolynomial_zero
 
 @[simp]
 theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p := by
   simp only [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm, range_one, sum_singleton,
     one_mul, pow_one, C_1, pow_zero, tsub_self, tsub_zero]
-#align witt_polynomial_one wittPolynomial_one
 
 theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
     aeval f (W_ R n) = ∑ i ∈ range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
-  simp [wittPolynomial, AlgHom.map_sum, aeval_monomial, Finsupp.prod_single_index]
-#align aeval_witt_polynomial aeval_wittPolynomial
+  simp [wittPolynomial, map_sum, aeval_monomial, Finsupp.prod_single_index]
 
 /-- Over the ring `ZMod (p^(n+1))`, we produce the `n+1`st Witt polynomial
 by expanding the `n`th Witt polynomial by `p`. -/
@@ -155,13 +145,12 @@ theorem wittPolynomial_zmod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
   simp only [wittPolynomial_eq_sum_C_mul_X_pow]
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
-    zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
+    zero_mul, add_zero, map_sum, sum_congr rfl]
   intro k hk
-  rw [AlgHom.map_mul, AlgHom.map_pow, expand_X, algHom_C, ← pow_mul, ← pow_succ']
+  rw [map_mul (expand p), map_pow (expand p), expand_X, algHom_C, ← pow_mul, ← pow_succ']
   congr
   rw [mem_range] at hk
   rw [add_comm, add_tsub_assoc_of_le (Nat.lt_succ_iff.mp hk), ← add_comm]
-#align witt_polynomial_zmod_self wittPolynomial_zmod_self
 
 section PPrime
 
@@ -179,12 +168,10 @@ theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars
     intro a b h
     apply disjoint_singleton_left.mpr
     rwa [mem_singleton]
-#align witt_polynomial_vars wittPolynomial_vars
 
 theorem wittPolynomial_vars_subset (n : ℕ) : (wittPolynomial p R n).vars ⊆ range (n + 1) := by
   rw [← map_wittPolynomial p (Int.castRingHom R), ← wittPolynomial_vars p ℤ]
   apply vars_map
-#align witt_polynomial_vars_subset wittPolynomial_vars_subset
 
 end PPrime
 
@@ -204,16 +191,12 @@ The polynomials `xInTermsOfW` give the coordinate transformation in the backward
 that corresponds to the ordinary `X n`. -/
 noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
   | n => (X n - ∑ i : Fin n,
-          have := i.2
           C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟ p : R) ^ n)
-set_option linter.uppercaseLean3 false in
-#align X_in_terms_of_W xInTermsOfW
 
 theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
-    (X n - ∑ i ∈ range n, C ((p: R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) := by
+    (X n - ∑ i ∈ range n, C ((p : R) ^ i) *
+      xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) := by
   rw [xInTermsOfW, ← Fin.sum_univ_eq_sum_range]
-set_option linter.uppercaseLean3 false in
-#align X_in_terms_of_W_eq xInTermsOfW_eq
 
 @[simp]
 theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : ℕ) :
@@ -233,14 +216,10 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, IH m H]
   rw [zero_pow, mul_zero]
   exact pow_ne_zero _ hp.1.ne_zero
-set_option linter.uppercaseLean3 false in
-#align constant_coeff_X_in_terms_of_W constantCoeff_xInTermsOfW
 
 @[simp]
 theorem xInTermsOfW_zero [Invertible (p : R)] : xInTermsOfW p R 0 = X 0 := by
   rw [xInTermsOfW_eq, range_zero, sum_empty, pow_zero, C_1, mul_one, sub_zero]
-set_option linter.uppercaseLean3 false in
-#align X_in_terms_of_W_zero xInTermsOfW_zero
 
 section PPrime
 
@@ -273,13 +252,9 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
   · rw [mem_range]
     omega
   · omega
-set_option linter.uppercaseLean3 false in
-#align X_in_terms_of_W_vars_aux xInTermsOfW_vars_aux
 
 theorem xInTermsOfW_vars_subset (n : ℕ) : (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
   (xInTermsOfW_vars_aux p n).2
-set_option linter.uppercaseLean3 false in
-#align X_in_terms_of_W_vars_subset xInTermsOfW_vars_subset
 
 end PPrime
 
@@ -288,19 +263,15 @@ theorem xInTermsOfW_aux [Invertible (p : R)] (n : ℕ) :
       X n - ∑ i ∈ range n, C ((p : R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i) := by
   rw [xInTermsOfW_eq, mul_assoc, ← C_mul, ← mul_pow, invOf_mul_self,
     one_pow, C_1, mul_one]
-set_option linter.uppercaseLean3 false in
-#align X_in_terms_of_W_aux xInTermsOfW_aux
 
 @[simp]
 theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
     bind₁ (xInTermsOfW p R) (W_ R k) = X k := by
-  rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum]
-  simp only [Nat.cast_pow, AlgHom.map_pow, C_pow, AlgHom.map_mul, algHom_C]
+  rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum]
+  simp only [Nat.cast_pow, map_pow, C_pow, map_mul, algHom_C, algebraMap_eq]
   rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, bind₁_X_right, mul_comm, ← C_pow,
     xInTermsOfW_aux]
   simp only [Nat.cast_pow, C_pow, bind₁_X_right, sub_add_cancel]
-set_option linter.uppercaseLean3 false in
-#align bind₁_X_in_terms_of_W_witt_polynomial bind₁_xInTermsOfW_wittPolynomial
 
 @[simp]
 theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
@@ -308,7 +279,7 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
   apply Nat.strongInductionOn n
   clear n
   intro n H
-  rw [xInTermsOfW_eq, AlgHom.map_mul, AlgHom.map_sub, bind₁_X_right, algHom_C, AlgHom.map_sum,
+  rw [xInTermsOfW_eq, map_mul, map_sub, bind₁_X_right, algHom_C, map_sum,
     show X n = (X n * C ((p : R) ^ n)) * C ((⅟p : R) ^ n) by
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
@@ -317,6 +288,4 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
   apply sum_congr rfl
   intro i h
   rw [mem_range] at h
-  rw [AlgHom.map_mul, AlgHom.map_pow, algHom_C, H i h]
-set_option linter.uppercaseLean3 false in
-#align bind₁_witt_polynomial_X_in_terms_of_W bind₁_wittPolynomial_xInTermsOfW
+  rw [map_mul, map_pow (bind₁ _), algHom_C, H i h, algebraMap_eq]

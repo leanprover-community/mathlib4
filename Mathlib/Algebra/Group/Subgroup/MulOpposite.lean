@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Logic.Encodable.Basic
 
-#align_import group_theory.subgroup.mul_opposite from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
-
 /-!
 # Mul-opposite subgroups
 
@@ -87,8 +85,6 @@ def opEquiv : Subgroup G ≃o Subgroup Gᵐᵒᵖ where
   left_inv := unop_op
   right_inv := op_unop
   map_rel_iff' := op_le_op_iff
-#align subgroup.opposite Subgroup.opEquiv
-#align add_subgroup.opposite AddSubgroup.opEquiv
 
 @[to_additive (attr := simp)]
 theorem op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv.map_bot
@@ -163,9 +159,6 @@ theorem unop_closure (s : Set Gᵐᵒᵖ) : (closure s).unop = closure (MulOppos
 @[to_additive (attr := simps!) "Bijection between an additive subgroup `H` and its opposite."]
 def equivOp (H : Subgroup G) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
-#align subgroup.opposite_equiv Subgroup.equivOp
-#align add_subgroup.opposite_equiv AddSubgroup.equivOp
-#align subgroup.opposite_equiv_symm_apply_coe Subgroup.equivOp_symm_apply_coe
 
 @[to_additive]
 instance (H : Subgroup G) [Encodable H] : Encodable H.op :=
@@ -179,7 +172,5 @@ instance (H : Subgroup G) [Countable H] : Countable H.op :=
 theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
     h • (g * x) = g * h • x :=
   mul_assoc _ _ _
-#align subgroup.smul_opposite_mul Subgroup.smul_opposite_mul
-#align add_subgroup.vadd_opposite_add AddSubgroup.vadd_opposite_add
 
 end Subgroup

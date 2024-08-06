@@ -183,3 +183,5 @@ theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X]
   embedding_subtype_val.comp diracProbaHomeomorph.embedding
 
 end embed_to_probabilityMeasure
+
+end MeasureTheory

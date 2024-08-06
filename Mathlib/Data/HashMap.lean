@@ -9,9 +9,6 @@ The porting header is just here to mark that no further work on `data.hash_map` 
 -/
 import Batteries.Data.HashMap.Basic
 import Batteries.Data.RBMap.Basic
-import Mathlib.Mathport.Rename
-
-#align_import data.hash_map from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Additional API for `HashMap` and `RBSet`.
@@ -24,19 +21,24 @@ set_option autoImplicit true
 namespace Batteries.HashMap
 
 -- not an exact match, the Lean3 version was dependently-typed
-#align hash_map Batteries.HashMapₓ
 
 variable [BEq α] [Hashable α]
 
 /-- The list of keys in a `HashMap`. -/
+@[deprecated "This declaration is unused in Mathlib: if you need it, \
+  please file an issue in the Batteries repository." (since := "2024-06-12")]
 def keys (m : HashMap α β) : List α :=
   m.fold (fun ks k _ => k :: ks) []
 
 /-- The list of values in a `HashMap`. -/
+@[deprecated "This declaration is unused in Mathlib: if you need it, \
+  please file an issue in the Batteries repository." (since := "2024-06-12")]
 def values (m : HashMap α β) : List β :=
   m.fold (fun vs _ v => v :: vs) []
 
 /-- Add a value to a `HashMap α (List β)` viewed as a multimap. -/
+@[deprecated "This declaration is unused in Mathlib: if you need it, \
+  please file an issue in the Batteries repository." (since := "2024-06-12")]
 def consVal (self : HashMap α (List β)) (a : α) (b : β) : HashMap α (List β) :=
   match self.find? a with
   | none => self.insert a [b]
@@ -47,6 +49,8 @@ end Batteries.HashMap
 namespace Batteries.RBSet
 
 /-- Insert all elements of a list into an `RBSet`. -/
+@[deprecated "This declaration is unused in Mathlib: if you need it, \
+  please file an issue in the Batteries repository." (since := "2024-06-12")]
 def insertList {cmp} (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
   L.foldl (fun m a => m.insert a) m
 
