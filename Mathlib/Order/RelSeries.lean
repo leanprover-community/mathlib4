@@ -383,10 +383,10 @@ def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
 @[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.reverse i = p i.rev := rfl
 
-@[simp] def last_reverse (p : RelSeries r) : p.reverse.last = p.head := by
+@[simp] lemma last_reverse (p : RelSeries r) : p.reverse.last = p.head := by
   simp [RelSeries.last, RelSeries.head]
 
-@[simp] def head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
+@[simp] lemma head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
   simp [RelSeries.last, RelSeries.head]
 
 /--
