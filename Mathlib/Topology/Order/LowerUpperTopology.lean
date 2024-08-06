@@ -304,28 +304,19 @@ variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsLower α]
 
 lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Ici a)ᶜ = U) := by
   by_cases hU : U = univ
-  constructor
-  · intro _
-    exact Or.inl hU
-  · intro _
-    rw [hU]
-    exact isOpen_univ
+  simp only [hU, isOpen_univ, compl_Ici, true_or]
   constructor
   · intro hO
     apply Or.inr
     convert IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
     constructor
-    · intro hO
-      obtain ⟨a,ha⟩ := hO
+    · intro ⟨a,ha⟩
       use {U}
       constructor
-      · rw [← ha]
-        apply subset_trans _ (subset_insert _ _)
-        rw [singleton_subset_iff, mem_setOf_eq]
+      · apply subset_trans (singleton_subset_iff.mpr _) (subset_insert _ _)
         use a
       · rw [sUnion_singleton]
-    · intro h
-      obtain ⟨S,⟨hS1,hS2⟩⟩ := h
+    · intro ⟨S,⟨hS1,hS2⟩⟩
       rw [hS2]
       have hUS : univ ∉ S := by
         by_contra hUS
@@ -334,17 +325,15 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a 
         intro a
         use univ
         exact ⟨hUS,trivial⟩
-      have hS3 : S ⊆ {s | ∃ a, (Ici a)ᶜ = s} := (subset_insert_iff_of_not_mem hUS).mp hS1
       let T := {a | (Ici a)ᶜ ∈ S}
       use sSup T
-      rw [sUnion_eq_compl_sInter_compl]
-      rw [compl_inj_iff]
+      rw [sUnion_eq_compl_sInter_compl, compl_inj_iff]
       apply le_antisymm
       · intro b hb
         simp only [sInter_image, mem_iInter, mem_compl_iff]
         intro s hs
         have h4 : s ∈ {s | ∃ a, (Ici a)ᶜ = s} := by
-          exact hS3 hs
+          exact (subset_insert_iff_of_not_mem hUS).mp hS1 hs
         simp only [mem_setOf_eq] at h4
         obtain ⟨a,ha⟩ := h4
         subst hS2 ha
@@ -352,16 +341,12 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a 
       · intro b hb
         simp only [mem_Ici, sSup_le_iff]
         intro c hc
-        simp at hb
-        have e2 : b ∉ (Ici c)ᶜ := by
-          apply hb
-          exact hc
-        simp at e2
+        simp only [sInter_image, mem_iInter, mem_compl_iff] at hb
+        have e2 : b ∉ (Ici c)ᶜ := hb _ hc
+        simp only [compl_Ici, mem_Iio, not_lt] at e2
         exact e2
   · intro h
-    apply IsTopologicalBasis.isOpen isTopologicalBasis_insert_univ_subbasis
-    rw [mem_insert_iff, mem_setOf_eq]
-    convert h
+    exact IsTopologicalBasis.isOpen isTopologicalBasis_insert_univ_subbasis h
 
 end CompleteLinearOrder
 
