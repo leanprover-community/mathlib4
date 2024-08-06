@@ -1,6 +1,7 @@
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.AlgebraicTopology._Transfinite
 
 universe v u
 
@@ -130,9 +131,16 @@ instance llp_pushout' {X Y : C} {p : X ⟶ Y} : StableUnderCobaseChange (llp_wrt
     · rw [← Category.assoc, l', lift.fac_right]
   · rename_i k; cases k; all_goals dsimp
 
-def StableUnderTransfiniteComposition (P : MorphismProperty C) : Prop := sorry
+def StableUnderTransfiniteComposition (P : MorphismProperty C) : Prop :=
+  ∀ ⦃X Y: C⦄ ⦃f : X ⟶ Y⦄ (_ : IsTransfiniteComposition P f), P f
 
-instance llp_comp {T : MorphismProperty C} : StableUnderTransfiniteComposition (llp_wrt T) := sorry
+instance llp_comp {T : MorphismProperty C} : StableUnderTransfiniteComposition (llp_wrt T) := by
+  intro C0 Cα f h X Y g hg
+  induction h with
+  | mk α F hF hS =>
+    refine ⟨?_⟩
+    intro u v sq
+    sorry
 
 instance llp_comp' {X Y : C} {p : X ⟶ Y} : StableUnderTransfiniteComposition (llp_wrt' p) := sorry
 

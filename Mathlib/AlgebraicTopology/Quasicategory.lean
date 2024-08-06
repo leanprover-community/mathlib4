@@ -6,8 +6,6 @@ Authors: Johan Commelin
 
 import Mathlib.AlgebraicTopology.KanComplex
 import Mathlib.AlgebraicTopology._InternalHom
-import Mathlib.CategoryTheory.LiftingProperties.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.AlgebraicTopology._MorphismProperty
 import Mathlib.CategoryTheory.Adhesive
 
