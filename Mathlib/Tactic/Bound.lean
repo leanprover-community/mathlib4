@@ -207,17 +207,6 @@ attribute [aesop unsafe 5% tactic (rule_sets := [Bound])] boundLinarith
 ### `bound` tactic implementation
 -/
 
-/-- Add each provided hypothesis `x` to the context, as by with `have := x` -/
-def addHyps (xs : Array Syntax) : TacticM Unit :=
-  if xs.isEmpty then pure () else Tactic.withMainContext do
-    for x in xs do
-      let v ← elabTerm x none
-      let t ← inferType v
-      liftMetaTactic fun g ↦ do
-        let g ← g.assert `h t v
-        let (_, g) ← g.intro1P
-        return [g]
-
 /-- Aesop configuration for `bound` -/
 def boundConfig : Aesop.Options := {
   enableSimp := false
@@ -256,9 +245,14 @@ inequalities for more types of relations, supports all `positivity` functionalit
 faster since it is more specialized (not built atop `aesop`). -/
 syntax "bound " (" [" term,* "]")? : tactic
 
+-- Plain `bound` elaboration, with no hypotheses
 elab_rules : tactic
-  | `(tactic| bound $[[$lemmas:term,*]]?) => do
-    let lemmas := (lemmas.getD ⟨#[]⟩).getElems
-    Bound.addHyps lemmas
+  | `(tactic| bound) => do
     let tac ← `(tactic| aesop (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
     liftMetaTactic fun g ↦ do return (← Lean.Elab.runTactic g tac.raw).1
+
+-- Rewrite `bound [h₀, h₁]` into `have := h₀, have := h₁, bound`, and similar
+macro_rules
+  | `(tactic| bound%$tk [$[$ts],*]) => do
+    let haves ← ts.mapM fun (t : Term) => withRef t `(tactic| have := $t)
+    `(tactic| ($haves;* ; bound%$tk))
