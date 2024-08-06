@@ -38,8 +38,10 @@ theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = fal
   they can be constructed for any given natural number. -/
 @[inline]
 def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n :=
+  -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
   let x := h (1 &&& n != 0) (n >>> 1)
-  n.bit_testBit_zero_shiftRight_one ▸ x
+  -- `congrArg C _` is `rfl` in non-dependent case
+  congrArg C n.bit_testBit_zero_shiftRight_one ▸ x
 
 /-- A recursion principle for `bit` representations of natural numbers.
   For a predicate `C : Nat → Sort u`, if instances can be
@@ -47,10 +49,10 @@ def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n :=
   they can be constructed for all natural numbers. -/
 @[specialize]
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) (n : Nat) : C n :=
-  if n0 : n = 0 then n0 ▸ z
+  if n0 : n = 0 then congrArg C n0 ▸ z
   else
     let x := f (1 &&& n != 0) (n >>> 1) (binaryRec z f (n >>> 1))
-    n.bit_testBit_zero_shiftRight_one ▸ x
+    congrArg C n.bit_testBit_zero_shiftRight_one ▸ x
 decreasing_by exact bitwise_rec_lemma n0
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
@@ -97,8 +99,8 @@ theorem testBit_bit_zero (b n) : (bit b n).testBit 0 = b := by
 @[simp]
 theorem bitCasesOn_bit {C : Nat → Sort u} (h : ∀ b n, C (bit b n)) (b : Bool) (n : Nat) :
     bitCasesOn (bit b n) h = h b n := by
-  change (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
-  generalize (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+  change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
+  generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
   rw [testBit_bit_zero, bit_shiftRight_one]
   intros; rfl
 
@@ -119,8 +121,8 @@ theorem binaryRec_eq' {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     exact h.symm
   case neg =>
     rw [binaryRec, dif_neg h']
-    change (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
-    generalize (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+    change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
+    generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
     rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
 
