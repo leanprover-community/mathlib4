@@ -66,6 +66,8 @@ lemma rank_eq_natTrailingDegree :
   apply nilRank_eq_polyCharpoly_natTrailingDegree
 
 open FiniteDimensional
+
+include bₘ in
 lemma rank_le_card : rank R L M ≤ Fintype.card ιₘ :=
   nilRank_le_card _ bₘ
 
@@ -137,10 +139,11 @@ lemma rank_eq_natTrailingDegree :
   apply nilRank_eq_polyCharpoly_natTrailingDegree
 
 open FiniteDimensional
+
+include b in
 lemma rank_le_card : rank R L ≤ Fintype.card ι :=
   nilRank_le_card _ b
 
-open FiniteDimensional
 lemma rank_le_finrank : rank R L ≤ finrank R L :=
   nilRank_le_finrank _
 
