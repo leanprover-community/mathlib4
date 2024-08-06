@@ -119,19 +119,18 @@ def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
   simp [RelSeries.last, RelSeries.head]
 
 
-def RelSeries.take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r :=
-  { length := i
-    toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
-    step := fun ⟨j, h⟩ => p.step ⟨j, by omega⟩
-  }
+def RelSeries.take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+  length := i
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
+  step := fun ⟨j, h⟩ => p.step ⟨j, by omega⟩
 
 @[simps]
-def RelSeries.drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r :=
-  { length := p.length - i
-    toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by omega⟩
-    step := fun ⟨j, h⟩ => by
-      convert p.step ⟨j+i.1, by omega⟩
-      simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega }
+def RelSeries.drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+  length := p.length - i
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by omega⟩
+  step := fun ⟨j, h⟩ => by
+    convert p.step ⟨j+i.1, by omega⟩
+    simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
 
 @[simp]
 lemma RelSeries.head_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) :
@@ -497,20 +496,19 @@ lemma coheight_eq_coe_iff (x : α) (n : ℕ) : coheight x = n ↔
   height_eq_coe_iff (α := αᵒᵈ) x n
 
 /-- The elements of height zero are the minimal elements. -/
-lemma mem_minimals_univ_iff_height_eq_zero (a : α) :
-    a ∈ minimals (·≤·) Set.univ ↔ height a = 0 := by
-  simp [mem_minimals_iff_forall_lt_not_mem, height_eq_zero_iff]
+lemma minimal_iff_height_eq_zero (a : α) :
+    Minimal (fun _ => True) a ↔ height a = 0 := by
+  simp [minimal_iff_forall_lt, height_eq_zero_iff]
 
-lemma mem_maximals_univ_iff_coheight_eq_zero (a : α) :
-    a ∈ maximals (·≤·) Set.univ ↔ coheight a = 0 :=
-  mem_minimals_univ_iff_height_eq_zero (α := αᵒᵈ) a
+lemma maximal_iff_coheight_eq_zero (a : α) :
+    Maximal (fun _ => True) a ↔ coheight a = 0 :=
+  minimal_iff_height_eq_zero (α := αᵒᵈ) a
 
 /-- The elements of height `n` are the minimial elements among those of height `≥ n`. -/
-lemma mem_minimals_le_height_iff_height (a : α) (n : ℕ) :
-    a ∈ minimals (·≤·) { y | n ≤ height y } ↔ height a = n := by -- TODO: swap statement
+lemma minimal_le_height_iff_height (a : α) (n : ℕ) :
+    Minimal (fun y => n ≤ height y) a ↔ height a = n := by -- TODO: swap statement
   by_cases hfin : height a < ⊤
-  · simp only [mem_minimals_iff_forall_lt_not_mem, Set.mem_setOf_eq, not_le]
-    simp only [height_eq_coe_iff, hfin, true_and, and_congr_left_iff]
+  · simp only [minimal_iff_forall_lt, not_le, height_eq_coe_iff, hfin, true_and, and_congr_left_iff]
     intro _
     cases n
     case pos.zero => simp
@@ -521,7 +519,7 @@ lemma mem_minimals_le_height_iff_height (a : α) (n : ℕ) :
       rfl
   · suffices ∃ x, ∃ (_ : x < a), ↑n ≤ height x by
       simp only [not_lt, top_le_iff] at hfin
-      simpa only [mem_minimals_iff_forall_lt_not_mem, Set.mem_setOf_eq, hfin, le_top, not_le,
+      simpa only [minimal_iff_forall_lt, Set.mem_setOf_eq, hfin, le_top, not_le,
         true_and, ENat.top_ne_coe, iff_false, not_forall, Classical.not_imp, not_lt]
     simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
     obtain ⟨p, rfl, hp⟩ := hfin (n+1)
@@ -529,9 +527,9 @@ lemma mem_minimals_le_height_iff_height (a : α) (n : ℕ) :
     simpa [hp] using length_le_height_last p.eraseLast
 
 /-- The elements of coheight `n` are the maximal elements among those of coheight `≥ n`. -/
-lemma mem_maximals_le_coheight_iff_coheight (a : α) (n : ℕ) :
-    a ∈ maximals (·≤·) { y | n ≤ coheight y } ↔ coheight a = n :=
-  mem_minimals_le_height_iff_height (α := αᵒᵈ) a n
+lemma maximal_le_coheight_iff_coheight (a : α) (n : ℕ) :
+    Maximal (fun y => n ≤ coheight y) a ↔ coheight a = n :=
+  minimal_le_height_iff_height (α := αᵒᵈ) a n
 
 end height
 
