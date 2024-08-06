@@ -32,7 +32,7 @@ namespace Matrix
 
 variable {m n R 𝕜 : Type*}
 variable [Fintype m] [Fintype n]
-variable [CommRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+variable [CommRing R] [PartialOrder R] [StarRing R]
 variable [RCLike 𝕜]
 open scoped Matrix
 
@@ -46,7 +46,7 @@ def PosSemidef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, 0 ≤ dotProduct (star x) (M *ᵥ x)
 
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
-lemma posSemidef_diagonal_iff [DecidableEq n] {d : n → R} :
+lemma posSemidef_diagonal_iff [StarOrderedRing R] [DecidableEq n] {d : n → R} :
     PosSemidef (diagonal d) ↔ (∀ i : n, 0 ≤ d i) := by
   refine ⟨fun ⟨_, hP⟩ i ↦ by simpa using hP (Pi.single i 1), ?_⟩
   refine fun hd ↦ ⟨isHermitian_diagonal_iff.2 fun i ↦ IsSelfAdjoint.of_nonneg (hd i), ?_⟩
@@ -93,11 +93,12 @@ theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef :
 protected lemma zero : PosSemidef (0 : Matrix n n R) :=
   ⟨isHermitian_zero, by simp⟩
 
-protected lemma one [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
+protected lemma one [StarOrderedRing R] [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
   ⟨isHermitian_one, fun x => by
     rw [one_mulVec]; exact Fintype.sum_nonneg fun i => star_mul_self_nonneg _⟩
 
-protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
+protected lemma pow [StarOrderedRing R] [DecidableEq n]
+    {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
     PosSemidef (M ^ k) :=
   match k with
   | 0 => .one
@@ -113,13 +114,14 @@ protected lemma inv [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) : M�
   · rw [nonsing_inv_apply_not_isUnit _ h]
     exact .zero
 
-protected lemma zpow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (z : ℤ) :
+protected lemma zpow [StarOrderedRing R] [DecidableEq n]
+    {M : Matrix n n R} (hM : M.PosSemidef) (z : ℤ) :
     (M ^ z).PosSemidef := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
   · simpa using hM.pow n
   · simpa using (hM.pow n).inv
 
-protected lemma add {A : Matrix m m R} {B : Matrix m m R}
+protected lemma add [CovariantClass R R (· + ·) (· ≤ · )] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosSemidef) : (A + B).PosSemidef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x => by
     rw [add_mulVec, dotProduct_add]
@@ -178,6 +180,7 @@ lemma sq_sqrt : hA.sqrt ^ 2 = A := by
 @[simp]
 lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [← pow_two, sq_sqrt]
 
+include hA in
 lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B := by
   /- This is deceptively hard, much more difficult than the positive *definite* case. We follow a
   clever proof due to Koeber and Schäfer. The idea is that if `A ≠ B`, then `A - B` has a nonzero
@@ -217,6 +220,7 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
 lemma sqrt_sq : (hA.pow 2 : PosSemidef (A ^ 2)).sqrt = A :=
   (hA.pow 2).posSemidef_sqrt.eq_of_sq_eq_sq hA (hA.pow 2).sq_sqrt
 
+include hA in
 lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt := by
   subst B
   rw [hA.sqrt_sq]
@@ -231,13 +235,15 @@ theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
 
 /-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
-theorem posSemidef_conjTranspose_mul_self (A : Matrix m n R) : PosSemidef (Aᴴ * A) := by
+theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R) :
+    PosSemidef (Aᴴ * A) := by
   refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star]
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
-theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : PosSemidef (A * Aᴴ) := by
+theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R) :
+    PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
@@ -312,19 +318,21 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 
-protected lemma add_posSemidef {A : Matrix m m R} {B : Matrix m m R}
+protected lemma add_posSemidef [CovariantClass R R (· + ·) (· ≤ · )]
+    {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosSemidef) : (A + B).PosDef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
     rw [add_mulVec, dotProduct_add]
     exact add_pos_of_pos_of_nonneg (hA.2 x hx) (hB.2 x)⟩
 
-protected lemma posSemidef_add {A : Matrix m m R} {B : Matrix m m R}
+protected lemma posSemidef_add [CovariantClass R R (· + ·) (· ≤ · )]
+    {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
     rw [add_mulVec, dotProduct_add]
     exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
 
-protected lemma add {A : Matrix m m R} {B : Matrix m m R}
+protected lemma add [CovariantClass R R (· + ·) (· ≤ · )] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
   hA.add_posSemidef hB.posSemidef
 
