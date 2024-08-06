@@ -885,7 +885,7 @@ theorem θHom_disjoint_iff (f : Perm α) :
     Disjoint (θHom g (u,v)) f ↔ Disjoint (ofSubtype u) f ∧ ∀ c, Disjoint (v c : Perm α) f := by 
   classical
   simp only [disjoint_iff_disjoint_support, support_θHom, Finset.disjoint_union_left,
-    Finset.disjoint_biUnion_left] 
+    Finset.disjoint_biUnion_left]
   apply and_congr
   · rw [← support_ofSubtype]
   · simp only [Finset.univ_eq_attach, Finset.mem_attach, true_implies, Subtype.forall] 
