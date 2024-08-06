@@ -54,14 +54,14 @@ instance : ChosenFiniteProducts Cat.{u,u} where
   product (X Y : Cat) := { isLimit := isLimitProdCone X Y }
   terminal  := { isLimit := isTerminalPUnit }
 
+/-- The monoidal category instance for `Cat`-/
 def catIsMonoidal := ChosenFiniteProducts.instMonoidalCategory (Cat.{u,u})
 
-/-- The monoidal category instance for `Cat`-/
 instance : MonoidalCategory Cat.{u,u} := catIsMonoidal
 
+/-- The symmetric monoidal category instance for `Cat`-/
 def catIsSymmetricMonoidal := ChosenFiniteProducts.instSymmetricCategory (Cat.{u,u})
 
-/-- The symmetric monoidal category instance for `Cat`-/
 instance : SymmetricCategory Cat.{u,u} := catIsSymmetricMonoidal
 
 
