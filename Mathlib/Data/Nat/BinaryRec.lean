@@ -97,7 +97,7 @@ theorem bit_mod_two (b n) : bit b n % 2 = b.toNat := by
 @[simp] theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
   bit_div_two b n
 
-theorem bit_testBit_zero (b n) : (bit b n).testBit 0 = b := by
+theorem testBit_bit_zero (b n) : (bit b n).testBit 0 = b := by
   simp
 
 @[simp]
@@ -105,7 +105,7 @@ theorem bitCasesOn_bit {C : Nat → Sort u} (h : ∀ b n, C (bit b n)) (b : Bool
     bitCasesOn (bit b n) h = h b n := by
   change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
   generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
-  rw [bit_testBit_zero, bit_shiftRight_one]
+  rw [testBit_bit_zero, bit_shiftRight_one]
   intros; rfl
 
 unseal binaryRec in
@@ -127,7 +127,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
     rw [binaryRec, dif_neg h']
     change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
     generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
-    rw [bit_testBit_zero, bit_shiftRight_one]
+    rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
 
 end Nat
