@@ -122,7 +122,7 @@ protected theorem intCast [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
 
 @[simp]
 protected theorem _root_.Matrix.posSemidef_intCast_iff [DecidableEq n] [Nonempty n] (d : ℤ) :
-    PosSemidef (d : Matrix n n R) ↔ 0 ≤ (d : R) :=
+    PosSemidef (d : Matrix n n R) ↔ 0 ≤ d :=
   posSemidef_diagonal_iff.trans <| by simp [Pi.le_def]
 
 protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
