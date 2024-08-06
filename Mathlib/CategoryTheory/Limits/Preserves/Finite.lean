@@ -6,8 +6,6 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
-#align_import category_theory.limits.preserves.finite from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
-
 /-!
 # Preservation of finite (co)limits.
 
@@ -42,7 +40,6 @@ where `J : Type` is a finite category.
 class PreservesFiniteLimits (F : C ⥤ D) where
   preservesFiniteLimits :
     ∀ (J : Type) [SmallCategory J] [FinCategory J], PreservesLimitsOfShape J F := by infer_instance
-#align category_theory.limits.preserves_finite_limits CategoryTheory.Limits.PreservesFiniteLimits
 
 attribute [instance] PreservesFiniteLimits.preservesFiniteLimits
 
@@ -52,7 +49,6 @@ noncomputable instance (priority := 100) preservesLimitsOfShapeOfPreservesFinite
     [PreservesFiniteLimits F] (J : Type w) [SmallCategory J] [FinCategory J] :
     PreservesLimitsOfShape J F := by
   apply preservesLimitsOfShapeOfEquiv (FinCategory.equivAsType J)
-#align category_theory.limits.preserves_limits_of_shape_of_preserves_finite_limits CategoryTheory.Limits.preservesLimitsOfShapeOfPreservesFiniteLimits
 
 -- This is a dangerous instance as it has unbound universe variables.
 /-- If we preserve limits of some arbitrary size, then we preserve all finite limits. -/
@@ -61,19 +57,16 @@ noncomputable def PreservesLimitsOfSize.preservesFiniteLimits (F : C ⥤ D)
   preservesFiniteLimits J (sJ : SmallCategory J) fJ := by
     haveI := preservesSmallestLimitsOfPreservesLimits F
     exact preservesLimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
-#align category_theory.limits.preserves_limits.preserves_finite_limits_of_size CategoryTheory.Limits.PreservesLimitsOfSize.preservesFiniteLimits
 
 -- Added as a specialization of the dangerous instance above, for limits indexed in Type 0.
 noncomputable instance (priority := 120) PreservesLimitsOfSize0.preservesFiniteLimits
     (F : C ⥤ D) [PreservesLimitsOfSize.{0, 0} F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
-#align preserves_limits_of_size.zero.preserves_finite_limits CategoryTheory.Limits.PreservesLimitsOfSize0.preservesFiniteLimits
 
 -- An alternative specialization of the dangerous instance for small limits.
 noncomputable instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
-#align category_theory.limits.preserves_limits.preserves_finite_limits CategoryTheory.Limits.PreservesLimits.preservesFiniteLimits
 
 /-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
 arbitrary universe. -/
@@ -85,13 +78,11 @@ def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
         letI : Category (ULiftHom (ULift J)) := ULiftHom.category
         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
-#align category_theory.limits.preserves_finite_limits_of_preserves_finite_limits_of_size CategoryTheory.Limits.preservesFiniteLimitsOfPreservesFiniteLimitsOfSize
 
 /-- The composition of two left exact functors is left exact. -/
 def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
-#align category_theory.limits.comp_preserves_finite_limits CategoryTheory.Limits.compPreservesFiniteLimits
 
 /- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
@@ -188,7 +179,6 @@ class PreservesFiniteColimits (F : C ⥤ D) where
   preservesFiniteColimits :
     ∀ (J : Type) [SmallCategory J] [FinCategory J], PreservesColimitsOfShape J F := by
       infer_instance
-#align category_theory.limits.preserves_finite_colimits CategoryTheory.Limits.PreservesFiniteColimits
 
 attribute [instance] PreservesFiniteColimits.preservesFiniteColimits
 
@@ -200,7 +190,6 @@ noncomputable instance (priority := 100) preservesColimitsOfShapeOfPreservesFini
     (F : C ⥤ D) [PreservesFiniteColimits F] (J : Type w) [SmallCategory J] [FinCategory J] :
     PreservesColimitsOfShape J F := by
   apply preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J)
-#align category_theory.limits.preserves_colimits_of_shape_of_preserves_finite_colimits CategoryTheory.Limits.preservesColimitsOfShapeOfPreservesFiniteColimits
 
 -- This is a dangerous instance as it has unbound universe variables.
 /-- If we preserve colimits of some arbitrary size, then we preserve all finite colimits. -/
@@ -209,19 +198,16 @@ noncomputable def PreservesColimitsOfSize.preservesFiniteColimits (F : C ⥤ D)
   preservesFiniteColimits J (sJ : SmallCategory J) fJ := by
     haveI := preservesSmallestColimitsOfPreservesColimits F
     exact preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
-#align category_theory.limits.preserves_colimits_of_size.preserves_finite_colimits CategoryTheory.Limits.PreservesColimitsOfSize.preservesFiniteColimits
 
 -- Added as a specialization of the dangerous instance above, for colimits indexed in Type 0.
 noncomputable instance (priority := 120) PreservesColimitsOfSize0.preservesFiniteColimits
     (F : C ⥤ D) [PreservesColimitsOfSize.{0, 0} F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
-#align preserves_colimits_of_size.zero.preserves_finite_colimits CategoryTheory.Limits.PreservesColimitsOfSize0.preservesFiniteColimits
 
 -- An alternative specialization of the dangerous instance for small colimits.
 noncomputable instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ D)
     [PreservesColimits F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
-#align category_theory.limits.preserves_colimits.preserves_finite_colimits CategoryTheory.Limits.PreservesColimits.preservesFiniteColimits
 
 /-- We can always derive `PreservesFiniteColimits C`
 by showing that we are preserving colimits at an arbitrary universe. -/
@@ -233,13 +219,11 @@ def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
         letI : Category (ULiftHom (ULift J)) := ULiftHom.category
         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
-#align category_theory.limits.preserves_finite_colimits_of_preserves_finite_colimits_of_size CategoryTheory.Limits.preservesFiniteColimitsOfPreservesFiniteColimitsOfSize
 
 /-- The composition of two right exact functors is right exact. -/
 def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
-#align category_theory.limits.comp_preserves_finite_colimits CategoryTheory.Limits.compPreservesFiniteColimits
 
 /- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/

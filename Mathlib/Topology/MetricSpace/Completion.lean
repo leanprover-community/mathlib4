@@ -8,8 +8,6 @@ import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.Instances.Real
 
-#align_import topology.metric_space.completion from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # The completion of a metric space
 
@@ -41,19 +39,16 @@ instance : Dist (Completion α) :=
 protected theorem uniformContinuous_dist :
     UniformContinuous fun p : Completion α × Completion α ↦ dist p.1 p.2 :=
   uniformContinuous_extension₂ dist
-#align uniform_space.completion.uniform_continuous_dist UniformSpace.Completion.uniformContinuous_dist
 
 /-- The new distance is continuous. -/
 protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x ↦ dist (f x) (g x) :=
   Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg : _)
-#align uniform_space.completion.continuous_dist UniformSpace.Completion.continuous_dist
 
 /-- The new distance is an extension of the original distance. -/
 @[simp]
 protected theorem dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
   Completion.extension₂_coe_coe uniformContinuous_dist _ _
-#align uniform_space.completion.dist_eq UniformSpace.Completion.dist_eq
 
 /- Let us check that the new distance satisfies the axioms of a distance, by starting from the
 properties on α and extending them to `Completion α` by continuity. -/
@@ -63,7 +58,6 @@ protected theorem dist_self (x : Completion α) : dist x x = 0 := by
     exact Completion.continuous_dist continuous_id continuous_id
   · intro a
     rw [Completion.dist_eq, dist_self]
-#align uniform_space.completion.dist_self UniformSpace.Completion.dist_self
 
 protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
   refine induction_on₂ x y ?_ ?_
@@ -71,7 +65,6 @@ protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
         (Completion.continuous_dist continuous_snd continuous_fst)
   · intro a b
     rw [Completion.dist_eq, Completion.dist_eq, dist_comm]
-#align uniform_space.completion.dist_comm UniformSpace.Completion.dist_comm
 
 protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y + dist y z := by
   refine induction_on₃ x y z ?_ ?_
@@ -80,7 +73,6 @@ protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y 
   · intro a b c
     rw [Completion.dist_eq, Completion.dist_eq, Completion.dist_eq]
     exact dist_triangle a b c
-#align uniform_space.completion.dist_triangle UniformSpace.Completion.dist_triangle
 
 /-- Elements of the uniformity (defined generally for completions) can be characterized in terms
 of the distance. -/
@@ -140,7 +132,6 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     rintro ⟨a, b⟩ hp
     have : dist a b < ε := A a b hp
     exact hε this
-#align uniform_space.completion.mem_uniformity_dist UniformSpace.Completion.mem_uniformity_dist
 
 /-- Reformulate `Completion.mem_uniformity_dist` in terms that are suitable for the definition
 of the metric space structure. -/
@@ -151,11 +142,9 @@ protected theorem uniformity_dist' :
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     use ⟨min r p, lt_min hr hp⟩
     simp (config := { contextual := true }) [lt_min_iff]
-#align uniform_space.completion.uniformity_dist' UniformSpace.Completion.uniformity_dist'
 
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
-#align uniform_space.completion.uniformity_dist UniformSpace.Completion.uniformity_dist
 
 /-- Metric space structure on the completion of a pseudo_metric space. -/
 instance instMetricSpace : MetricSpace (Completion α) :=
@@ -166,22 +155,18 @@ instance instMetricSpace : MetricSpace (Completion α) :=
       dist := dist
       toUniformSpace := inferInstance
       uniformity_dist := Completion.uniformity_dist } _
-#align uniform_space.completion.metric_space UniformSpace.Completion.instMetricSpace
 
 @[deprecated eq_of_dist_eq_zero (since := "2024-03-10")]
 protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y :=
   eq_of_dist_eq_zero h
-#align uniform_space.completion.eq_of_dist_eq_zero UniformSpace.Completion.eq_of_dist_eq_zero
 
 /-- The embedding of a metric space in its completion is an isometry. -/
 theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
   Isometry.of_dist_eq Completion.dist_eq
-#align uniform_space.completion.coe_isometry UniformSpace.Completion.coe_isometry
 
 @[simp]
 protected theorem edist_eq (x y : α) : edist (x : Completion α) y = edist x y :=
   coe_isometry x y
-#align uniform_space.completion.edist_eq UniformSpace.Completion.edist_eq
 
 end UniformSpace.Completion
 

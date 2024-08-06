@@ -75,8 +75,22 @@ def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
   inj' := SetLike.coe_injective
   map_rel_iff' {I J} := ⟨fun (h : (I : Set R) ⊆ (J : Set R)) _ h' ↦ h h', fun h _ h' ↦ h h'⟩
 
-lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :=
-  coeOrderEmbedding.map_rel_iff.symm
+lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := Iff.rfl
+
+/-- Two-sided-ideals corresponds to congruence relations on a ring. -/
+def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
+  toFun := TwoSidedIdeal.ringCon
+  invFun := .mk
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' {I J} := Iff.symm $ le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
+    fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
+
+lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
+  rintro ⟨x⟩ ⟨y⟩ rfl; rfl
+
+lemma ringCon_le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ I.ringCon ≤ J.ringCon :=
+  orderIsoRingCon.map_rel_iff.symm
 
 @[ext]
 lemma ext {I J : TwoSidedIdeal R} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
