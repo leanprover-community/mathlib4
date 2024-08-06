@@ -5,6 +5,7 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
+import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Tactic.Convert
@@ -112,19 +113,8 @@ lemma div2_val (n) : div2 n = n / 2 := by
     (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
   rw [mod_two_of_bodd, bodd_add_div2]
 
-/-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
-def bit (b : Bool) : ℕ → ℕ := cond b (2 * · + 1) (2 * ·)
-
-lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
-  cases b <;> rfl
-
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
-
-/-- For a predicate `C : Nat → Sort*`, if instances can be
-  constructed for natural numbers of the form `bit b n`,
-  they can be constructed for any given natural number. -/
-def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := bit_decomp n ▸ h _ _
 
 lemma bit_zero : bit false 0 = 0 :=
   rfl
@@ -155,23 +145,6 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
     (lt_of_le_of_ne n.zero_le h.symm)
   rwa [Nat.mul_one] at this
 
-/-- A recursion principle for `bit` representations of natural numbers.
-  For a predicate `C : Nat → Sort*`, if instances can be
-  constructed for natural numbers of the form `bit b n`,
-  they can be constructed for all natural numbers. -/
-def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
-  fun n =>
-    if n0 : n = 0 then by
-      simp only [n0]
-      exact z
-    else by
-      let n' := div2 n
-      have _x : bit (bodd n) n' = n := by
-        apply bit_decomp n
-      rw [← _x]
-      exact f (bodd n) n' (binaryRec z f n')
-  decreasing_by exact binaryRec_decreasing n0
-
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
 def size : ℕ → ℕ :=
@@ -187,12 +160,6 @@ def bits : ℕ → List Bool :=
   boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
-
-@[simp]
-lemma binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec z f 0 = z := by
-  rw [binaryRec]
-  rfl
 
 /-! bitwise ops -/
 
@@ -241,25 +208,6 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   simp only [bodd_eq_one_and_ne_zero] at this
   exact this
 
-lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
-    (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · generalize binaryRec z f (bit b n) = e
-    revert e
-    have bf := bodd_bit b n
-    have n0 := div2_bit b n
-    rw [h'] at bf n0
-    simp only [bodd_zero, div2_zero] at bf n0
-    subst bf n0
-    rw [binaryRec_zero]
-    intros
-    rw [h, eq_mpr_eq_cast, cast_eq]
-  · simp only; generalize_proofs h
-    revert h
-    rw [bodd_bit, div2_bit]
-    intros; simp only [eq_mpr_eq_cast, cast_eq]
-
 /-! ### `boddDiv2_eq` and `bodd` -/
 
 
@@ -288,11 +236,6 @@ theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
   cases b <;> dsimp [bit] <;> omega
 
 @[simp]
-theorem bitCasesOn_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
-    bitCasesOn (bit b n) H = H b n :=
-  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [bodd_bit, div2_bit]
-
-@[simp]
 theorem bitCasesOn_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
     bitCasesOn (2 * n) H = H false n :=
   bitCasesOn_bit H false n
@@ -313,12 +256,6 @@ theorem bit_cases_on_inj {C : ℕ → Sort u} (H₁ H₂ : ∀ b n, C (bit b n))
     ((fun n => bitCasesOn n H₁) = fun n => bitCasesOn n H₂) ↔ H₁ = H₂ :=
   bit_cases_on_injective.eq_iff
 
-theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
-  constructor
-  · cases b <;> simp [Nat.bit]; omega
-  · rintro ⟨rfl, rfl⟩
-    rfl
-
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
   | true, _, _, h => by dsimp [bit]; omega
   | false, _, _, h => by dsimp [bit]; omega
@@ -327,56 +264,13 @@ lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
   bit a m < 2 * n   := by cases a <;> dsimp [bit] <;> omega
         _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
 
-/--
-The same as `binaryRec_eq`,
-but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
-Here, we allow you to explicitly say that that case is not happening,
-i.e. supplying `n = 0 → b = true`. -/
-theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
-    (h : f false 0 z = z ∨ (n = 0 → b = true)) :
-    binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
-    rw [binaryRec_zero]
-    simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
-    exact h.symm
-  · dsimp only []
-    generalize_proofs e
-    revert e
-    rw [bodd_bit, div2_bit]
-    intros
-    rfl
-
-/-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
-  the bit being appended is `true`-/
-@[elab_as_elim]
-def binaryRec' {C : ℕ → Sort*} (z : C 0) (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) :
-    ∀ n, C n :=
-  binaryRec z fun b n ih =>
-    if h : n = 0 → b = true then f b n h ih
-    else by
-      convert z
-      rw [bit_eq_zero_iff]
-      simpa using h
-
-/-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
-@[elab_as_elim]
-def binaryRecFromOne {C : ℕ → Sort*} (z₀ : C 0) (z₁ : C 1) (f : ∀ b n, n ≠ 0 → C n → C (bit b n)) :
-    ∀ n, C n :=
-  binaryRec' z₀ fun b n h ih =>
-    if h' : n = 0 then by
-      rw [h', h h']
-      exact z₁
-    else f b n h' ih
-
 @[simp]
 theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
-  rw [Nat.bits, binaryRec_eq']
+  rw [Nat.bits, Nat.bits, binaryRec_eq']
   simpa
 
 @[simp]
