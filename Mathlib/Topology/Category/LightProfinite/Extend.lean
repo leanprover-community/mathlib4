@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.LightProfinite.AsLimit
-import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.Topology.Category.Profinite.Extend
 
 /-!
 
@@ -22,54 +21,51 @@ namespace LightProfinite
 
 variable {F : ℕᵒᵖ ⥤ FintypeCat.{u}} (c : Cone <| F ⋙ toLightProfinite)
 
-/--
-A continuous map from a profinite set to a finite set factors through one of the components of
-the profinite set when written as a cofiltered limit of finite sets.
--/
-lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toLightProfinite.obj X) :
-    ∃ (n : ℕ) (g : F.obj ⟨n⟩ ⟶ X), f = c.π.app ⟨n⟩ ≫ toLightProfinite.map g := by
-  let _ : TopologicalSpace X := ⊥
-  have : DiscreteTopology (toLightProfinite.obj X) :=
-    inferInstanceAs (DiscreteTopology X)
-  let f' : LocallyConstant c.pt (toLightProfinite.obj X) :=
-    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.continuous⟩
-  obtain ⟨i, g, h⟩ := Profinite.exists_locallyConstant.{_, 0}
-    (lightToProfinite.mapCone c) (isLimitOfPreserves lightToProfinite hc) f'
-  refine ⟨Opposite.unop i, g.toFun, ?_⟩
-  ext x
-  exact LocallyConstant.congr_fun h x
-
 namespace Extend
 
+/--
+Given a sequential cone in `LightProfinite` consisting of finite sets,
+we obtain a functor from the indexing category to `StructuredArrow c.pt toLightProfinite`.
+-/
 @[simps]
 def functor : ℕᵒᵖ ⥤ StructuredArrow c.pt toLightProfinite where
   obj i := StructuredArrow.mk (c.π.app i)
   map f := StructuredArrow.homMk (F.map f) (c.w f)
 
+-- We check that the original diagram factors through `LightProfinite.Extend.functor`.
+example : functor c ⋙ StructuredArrow.proj c.pt toLightProfinite ≅ F := Iso.refl _
+
+/--
+Given a sequential cone in `LightProfinite` consisting of finite sets,
+we obtain a functor from the opposite of the indexing category to
+`CostructuredArrow toProfinite.op ⟨c.pt⟩`.
+-/
+@[simps! obj map]
 def functorOp : ℕ ⥤ CostructuredArrow toLightProfinite.op ⟨c.pt⟩ :=
   (functor c).rightOp ⋙ StructuredArrow.toCostructuredArrow _ _
 
-example : functor c ⋙ StructuredArrow.proj c.pt toLightProfinite ≅ F := Iso.refl _
-
+-- We check that the opposite of the original diagram factors through `Profinite.Extend.functorOp`.
 example : functorOp c ⋙ CostructuredArrow.proj toLightProfinite.op ⟨c.pt⟩ ≅ F.rightOp := Iso.refl _
 
-theorem functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (functor c) := by
-  let e : ℕᵒᵖ ≌ ULiftHom.{u} (ULift.{u} ℕᵒᵖ) := ULiftHomULiftCategory.equiv _
-  suffices (e.inverse ⋙ functor c).Initial from initial_of_equivalence_comp e.inverse (functor c)
-  rw [initial_iff_of_isCofiltered (F := e.inverse ⋙ functor c)]
-  constructor
-  · intro ⟨_, X, (f : c.pt ⟶ _)⟩
-    obtain ⟨i, g, h⟩ := LightProfinite.exists_hom c hc f
-    refine ⟨⟨⟨i⟩⟩, ⟨StructuredArrow.homMk g h.symm⟩⟩
-  · intro ⟨_, X, (f : c.pt ⟶ _)⟩ ⟨⟨i⟩⟩ ⟨_, (s : F.obj ⟨i⟩ ⟶ X), (w : f = c.π.app ⟨i⟩ ≫ _)⟩
-      ⟨_, (s' : F.obj ⟨i⟩ ⟶ X), (w' : f = c.π.app ⟨i⟩ ≫ _)⟩
-    simp only [functor_obj, functor_map, StructuredArrow.hom_eq_iff, StructuredArrow.mk_right,
-      StructuredArrow.comp_right, StructuredArrow.homMk_right]
-    refine ⟨⟨⟨i⟩⟩, 𝟙 _, ?_⟩
-    simp only [CategoryTheory.Functor.map_id, Category.id_comp]
-    rw [w] at w'
-    exact toLightProfinite.map_injective <| Epi.left_cancellation _ _ w'
+-- We check that `Profinite.Extend.functor` factors through `LightProfinite.Extend.functor`,
+-- via the equivalence `StructuredArrow.post _ _ lightToProfinite`.
+example : functor c ⋙ (StructuredArrow.post _ _ lightToProfinite) =
+  Profinite.Extend.functor (lightToProfinite.mapCone c) := rfl
 
+/--
+If the projection maps in the cone are epimorphic and the cone is limiting, then
+`LightProfinite.Extend.functor` is initial.
+-/
+theorem functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (functor c) := by
+  rw [initial_iff_comp_equivalence _ (StructuredArrow.post _ _ lightToProfinite)]
+  have : ∀ i, Epi ((lightToProfinite.mapCone c).π.app i) :=
+    fun i ↦ inferInstanceAs (Epi (lightToProfinite.map (c.π.app i)))
+  exact Profinite.Extend.functor_initial _ (isLimitOfPreserves lightToProfinite hc)
+
+/--
+If the projection maps in the cone are epimorphic and the cone is limiting, then
+`LightProfinite.Extend.functorOp` is final.
+-/
 theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
   have := functor_initial c hc
   have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence  :=
@@ -82,6 +78,13 @@ section Limit
 
 variable {C : Type*} [Category C] (G : LightProfinite ⥤ C)
 
+/--
+Given a functor `G` from `LightProfinite` and `S : LightProfinite`, we obtain a cone on
+`(StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G)` with cone point `G.obj S`.
+
+Whiskering this cone with `LightProfinite.Extend.functor c` gives `G.mapCone c` as we check in the
+example below.
+-/
 def cone (S : LightProfinite) :
     Cone (StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G) where
   pt := G.obj S
@@ -96,6 +99,10 @@ def cone (S : LightProfinite) :
 
 example : G.mapCone c = (cone G c.pt).whisker (functor c) := rfl
 
+/--
+If `c` and `G.mapCone c` are limit cones and the projection maps in `c` are epimorphic,
+then `cone G c.pt` is a limit cone.
+-/
 noncomputable
 def isLimitCone (hc : IsLimit c) [∀ i, Epi (c.π.app i)] (hc' : IsLimit <| G.mapCone c) :
     IsLimit (cone G c.pt) := (functor_initial c hc).isLimitWhiskerEquiv _ hc'
@@ -106,6 +113,14 @@ section Colimit
 
 variable {C : Type*} [Category C] (G : LightProfiniteᵒᵖ ⥤ C)
 
+/--
+Given a functor `G` from `LightProfiniteᵒᵖ` and `S : LightProfinite`, we obtain a cocone on
+`(CostructuredArrow.proj toLightProfinite.op ⟨S⟩ ⋙ toLightProfinite.op ⋙ G)` with cocone point
+`G.obj ⟨S⟩`.
+
+Whiskering this cocone with `LightProfinite.Extend.functorOp c` gives `G.mapCocone c.op` as we
+check in the example below.
+-/
 @[simps]
 def cocone (S : LightProfinite) :
     Cocone (CostructuredArrow.proj toLightProfinite.op ⟨S⟩ ⋙ toLightProfinite.op ⋙ G) where
@@ -122,6 +137,10 @@ def cocone (S : LightProfinite) :
 example : G.mapCocone c.op = (cocone G c.pt).whisker
   ((opOpEquivalence ℕ).functor ⋙ functorOp c) := rfl
 
+/--
+If `c` is a limit cone, `G.mapCocone c.op` is a colimit cone and the projection maps in `c`
+are epimorphic, then `cocone G c.pt` is a colimit cone.
+-/
 noncomputable
 def isColimitCocone (hc : IsLimit c) [∀ i, Epi (c.π.app i)] (hc' : IsColimit <| G.mapCocone c.op) :
     IsColimit (cocone G c.pt) :=
@@ -138,16 +157,22 @@ section LightProfiniteAsLimit
 
 variable (S : LightProfinite.{u})
 
+/--
+A functor `StructuredArrow S toLightProfinite ⥤ LightProfinite` whose limit is isomorphic to `S`.
+-/
 abbrev diagram' : StructuredArrow S toLightProfinite ⥤ LightProfinite :=
   StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite
 
+/-- A cone over `S.diagram'` whose cone point is `S`. -/
 def asLimitCone' : Cone (S.diagram') := cone (𝟭 _) S
 
 instance (i : ℕᵒᵖ) : Epi (S.asLimitCone.π.app i) :=
   (epi_iff_surjective _).mpr (S.proj_surjective _)
 
+/-- `S.asLimitCone'` is a limit cone. -/
 noncomputable def asLimit' : IsLimit S.asLimitCone' := isLimitCone _ (𝟭 _) S.asLimit S.asLimit
 
+/-- A bundled version of `S.asLimitCone'` and `S.asLimit'`. -/
 noncomputable def lim' : LimitCone S.diagram' := ⟨S.asLimitCone', S.asLimit'⟩
 
 end LightProfiniteAsLimit

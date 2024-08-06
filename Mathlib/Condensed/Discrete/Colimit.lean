@@ -3,10 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Discrete.LocallyConstant
+import Mathlib.Condensed.Equivalence
 import Mathlib.Topology.Category.LightProfinite.Extend
-import Mathlib.Topology.Category.Profinite.Extend
 /-!
 
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.
@@ -24,7 +23,7 @@ attribute [local instance] FintypeCat.discreteTopology ConcreteCategory.instFunL
 namespace Condensed
 
 variable {I : Type u} [Category.{u} I] [IsCofiltered I] {F : I ⥤ FintypeCat.{u}}
-    (c : Cone <| F ⋙ toProfinite)
+  (c : Cone <| F ⋙ toProfinite)
 
 section LocallyConstantAsColimit
 
@@ -170,8 +169,7 @@ def finYonedaIso :
 
 def mapOfElement {X : FintypeCat} (x : X) : FintypeCat.of (PUnit.{u+1}) ⟶ X := fun _ ↦ x
 
-def fintypeCatAsCofan (X : FintypeCat) :
-    Cofan (fun (_ : X) ↦ toProfinite.obj (of (PUnit.{u+1}))) :=
+def fintypeCatAsCofan (X : FintypeCat) : Cofan (fun (_ : X) ↦ toProfinite.obj (of (PUnit.{u+1}))) :=
   Cofan.mk (toProfinite.obj X) (fun x ↦ toProfinite.map (mapOfElement x))
 
 def fintypeCatAsCofanIsColimit (X : FintypeCat.{u}) :
