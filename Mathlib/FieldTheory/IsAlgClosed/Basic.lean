@@ -41,10 +41,7 @@ algebraic closure, algebraically closed
 
 -/
 
-
 universe u v w
-
-open scoped Classical Polynomial
 
 open Polynomial
 
@@ -127,6 +124,7 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
   refine ⟨fun p ↦ Or.inr ?_⟩
   intro q hq _
   have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
+    classical
     rw [← coe_normUnit_of_ne_zero hq.ne_zero]
     exact (associated_normalize _).irreducible hq
   obtain ⟨x, hx⟩ := H (q * C (leadingCoeff q)⁻¹) (monic_mul_leadingCoeff_inv hq.ne_zero) this
