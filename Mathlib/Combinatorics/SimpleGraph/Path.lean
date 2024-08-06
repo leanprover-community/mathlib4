@@ -961,6 +961,24 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
   rw [← (mem_supp_iff _ _).mp h.1]
   exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
 
+lemma connectedComponentMk_supp_subset_supp {G'} {v : V} (h : G ≤ G') (c' : G'.ConnectedComponent)
+    (hc' : v ∈ c'.supp) : (G.connectedComponentMk v).supp ⊆ c'.supp := by
+  intro v' hv'
+  simp only [mem_supp_iff, ConnectedComponent.eq] at hv' ⊢
+  rw [ConnectedComponent.sound (hv'.mono h)]
+  exact hc'
+
+lemma union_supp_eq_supp {G G' : SimpleGraph V} (h : G ≤ G') (c' : ConnectedComponent G') :
+    ⋃ c : {c : ConnectedComponent G | c.supp ⊆ c'.supp}, c.1.supp = c'.supp := by
+  ext v
+  simp_rw [Set.mem_iUnion]
+  refine ⟨fun ⟨i, hi⟩ ↦ i.2 hi, ?_⟩
+  intro hv
+  use ⟨G.connectedComponentMk v, by
+    simp only [Set.le_eq_subset, Set.mem_setOf_eq]
+    exact c'.connectedComponentMk_supp_subset_supp h hv⟩
+  rfl
+
 end ConnectedComponent
 
 -- TODO: Extract as lemma about general equivalence relation

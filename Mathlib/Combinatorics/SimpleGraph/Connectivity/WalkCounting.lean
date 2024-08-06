@@ -184,6 +184,22 @@ lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔
   rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ Nat.card x.supp))
 
+lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel G.Adj]
+    [DecidableRel G'.Adj] (h : G ≤ G') (c' : ConnectedComponent G') :
+    Odd (Nat.card c'.supp) ↔ Odd (Nat.card
+    ({(c : {c : ConnectedComponent G | c.supp ⊆ c'.supp}) | Odd (Nat.card c.1.supp) })) := by
+  rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset, Set.filter_mem_univ_eq_toFinset,
+    Set.toFinset_card]
+  haveI : DecidablePred (fun c : ConnectedComponent G ↦ c.supp ⊆ c'.supp) := Classical.decPred _
+  simp_rw [(c'.union_supp_eq_supp h).symm]
+  rw [← @Set.toFinset_card,
+    @Set.toFinset_iUnion V {c : ConnectedComponent G | c.supp ⊆ c'.supp} _ _ (fun c => c.1.supp),
+    Finset.card_biUnion (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr
+    (pairwise_disjoint_supp_connectedComponent _ (Subtype.coe_ne_coe.mpr hxy)))]
+  simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card]
+  rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
+  apply Finset.odd_sum_iff_odd_card_odd
+
 end Finite
 
 end WalkCounting
