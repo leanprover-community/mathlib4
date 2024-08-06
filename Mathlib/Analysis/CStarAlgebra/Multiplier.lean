@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Jon Bannon
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
-import Mathlib.Analysis.CstarAlgebra.Unitization
+import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
@@ -547,7 +547,7 @@ instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
         continuous_const
   exact continuous_const.mul ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp continuous_fst)
 
-variable [StarRing A] [CstarRing A]
+variable [StarRing A] [CStarRing A]
 
 /-- For `a : 𝓜(𝕜, A)`, the norms of `a.fst` and `a.snd` coincide, and hence these
 also coincide with `‖a‖` which is `max (‖a.fst‖) (‖a.snd‖)`. -/
@@ -569,7 +569,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
     intro b
     calc
       ‖a.fst b‖₊ ^ 2 = ‖star (a.fst b) * a.fst b‖₊ := by
-        simpa only [← sq] using CstarRing.nnnorm_star_mul_self.symm
+        simpa only [← sq] using CStarRing.nnnorm_star_mul_self.symm
       _ ≤ ‖a.snd (star (a.fst b))‖₊ * ‖b‖₊ := (a.central (star (a.fst b)) b ▸ nnnorm_mul_le _ _)
       _ ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ :=
         nnnorm_star (a.fst b) ▸ mul_le_mul_right' (a.snd.le_opNNNorm _) _
@@ -578,7 +578,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
     intro b
     calc
       ‖a.snd b‖₊ ^ 2 = ‖a.snd b * star (a.snd b)‖₊ := by
-        simpa only [← sq] using CstarRing.nnnorm_self_mul_star.symm
+        simpa only [← sq] using CStarRing.nnnorm_self_mul_star.symm
       _ ≤ ‖b‖₊ * ‖a.fst (star (a.snd b))‖₊ :=
         ((a.central b (star (a.snd b))).symm ▸ nnnorm_mul_le _ _)
       _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := mul_comm _ _
@@ -610,10 +610,10 @@ end NontriviallyNormed
 section DenselyNormed
 
 variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
-variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
+variable [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
-instance instCstarRing : CstarRing 𝓜(𝕜, A) where
+instance instCStarRing : CStarRing 𝓜(𝕜, A) where
   norm_mul_self_le := fun (a : 𝓜(𝕜, A)) => le_of_eq <| Eq.symm <| congr_arg ((↑) : ℝ≥0 → ℝ) <|
     show ‖star a * a‖₊ = ‖a‖₊ * ‖a‖₊ by
     /- The essence of the argument is this: let `a = (L,R)` and recall `‖a‖ = ‖L‖`.
@@ -658,7 +658,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
         · refine ⟨‖a‖₊ * ‖a‖₊, ?_⟩
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
-        · simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
+        · simpa only [a.central, star_star, CStarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
             using pow_lt_pow_left hxr zero_le' two_ne_zero
 
 end DenselyNormed
