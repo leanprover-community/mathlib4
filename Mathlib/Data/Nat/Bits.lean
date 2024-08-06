@@ -73,6 +73,12 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
   · simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 
+lemma bodd_bit (b n) : bodd (bit b n) = b := by
+  rw [bit_val]
+  simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
+    Bool.not_true, Bool.and_false, Bool.xor_false]
+  cases b <;> cases bodd n <;> rfl
+
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   have := congr_arg bodd (mod_add_div n 2)
   simp? [not] at this says
@@ -96,12 +102,15 @@ lemma div2_one : div2 1 = 0 := rfl
 
 lemma div2_two : div2 2 = 1 := rfl
 
+lemma div2_bit (b n) : div2 (bit b n) = n := by
+  rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
+  <;> cases b
+  <;> decide
+
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
-  apply Nat.eq_of_mul_eq_mul_left (by decide : 0 < 2)
-  apply Nat.add_right_cancel (m := cond (bodd (succ n)) 1 0)
-  rw (config := { occs := .pos [1] }) [div2_add_bodd, bodd_succ, ← div2_add_bodd n]
-  cases bodd n <;> simp [succ_eq_add_one, Nat.add_comm 1, Nat.mul_add]
+  cases n using bitCasesOn with
+  | h b n => cases b <;> simp [bit_val, div2_val, succ_div]
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
@@ -161,17 +170,6 @@ def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
 
 /-! bitwise ops -/
-
-lemma bodd_bit (b n) : bodd (bit b n) = b := by
-  rw [bit_val]
-  simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
-    Bool.not_true, Bool.and_false, Bool.xor_false]
-  cases b <;> cases bodd n <;> rfl
-
-lemma div2_bit (b n) : div2 (bit b n) = n := by
-  rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
-  <;> cases b
-  <;> decide
 
 lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shiftLeft' b m n) k
   | 0 => rfl
