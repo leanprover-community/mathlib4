@@ -745,6 +745,10 @@ lemma height_coe_WithBot (x : α) : height (x : WithBot α) = height x + 1 := by
     simp [p']
 
 @[simp]
+lemma coheight_coe_WithTop (x : α) : coheight (x : WithTop α) = coheight x + 1 :=
+  height_coe_WithBot (α := αᵒᵈ) x
+
+@[simp]
 lemma height_coe_WithTop (x : α) : height (x : WithTop α) = height x := by
   apply le_antisymm
   · apply height_le
@@ -773,7 +777,9 @@ lemma height_coe_WithTop (x : α) : height (x : WithTop α) = height x := by
     let p' := p.map _ WithTop.coe_strictMono
     apply le_iSup_of_le ⟨p', by simp [p', hlast]⟩ (by simp [p'])
 
-lemma height_coe_ENat (x : ℕ) : height (x : ℕ∞) = height x := height_coe_WithTop x
+@[simp]
+lemma coheight_coe_WithBot (x : α) : coheight (x : WithBot α) = coheight x :=
+  height_coe_WithTop (α := αᵒᵈ) x
 
 @[simp]
 lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
@@ -799,6 +805,12 @@ lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 :
     simp only [height_coe_WithTop, le_refl]
 
 @[simp]
+lemma krullDim_WithBot [Nonempty α] : krullDim (WithBot α) = krullDim α + 1 := by
+  conv_lhs => rw [← krullDim_orderDual]
+  conv_rhs => rw [← krullDim_orderDual]
+  exact krullDim_WithTop (α := αᵒᵈ)
+
+@[simp]
 lemma krullDim_ENat : krullDim ℕ∞ = ⊤ := by
   show (krullDim (WithTop ℕ) = ↑⊤)
   simp only [krullDim_WithTop, krullDim_nat]
@@ -808,6 +820,11 @@ lemma krullDim_ENat : krullDim ℕ∞ = ⊤ := by
 lemma height_ENat (n : ℕ∞) : height n = n := by
   cases n with
   | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_ENat, WithBot.coe_top]
-  | coe n => simp only [height_coe_ENat, height_nat]
+  | coe n => exact (height_coe_WithTop _).trans (height_nat _)
+
+@[simp]
+lemma coheight_coe_ENat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
+  apply (coheight_coe_WithTop _).trans
+  simp
 
 end calculations
