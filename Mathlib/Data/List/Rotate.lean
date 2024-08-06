@@ -477,6 +477,25 @@ theorem IsRotated.map {β : Type*} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f :
   rw [map_rotate]
   use n
 
+theorem IsRotated.cons_getLast_dropLast
+    {α} (L : List α) (hL : L ≠ []) : (L.getLast hL :: L.dropLast) ~r L := by
+  induction L using List.reverseRecOn with
+  | nil => simp at hL
+  | append_singleton a L _ =>
+    simp
+    apply List.IsRotated.symm
+    apply List.isRotated_concat
+
+theorem IsRotated.dropLast_tail {α}
+    {L : List α} (hL : L ≠ []) (hL' : L.head hL = L.getLast hL) : L.dropLast ~r L.tail :=
+  match L with
+  | [] => by simp
+  | [_] => by simp
+  | a :: b :: L => by
+    simp at hL' |-
+    rw [hL']
+    apply IsRotated.cons_getLast_dropLast
+
 /-- List of all cyclic permutations of `l`.
 The `cyclicPermutations` of a nonempty list `l` will always contain `List.length l` elements.
 This implies that under certain conditions, there are duplicates in `List.cyclicPermutations l`.

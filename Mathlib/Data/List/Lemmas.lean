@@ -18,6 +18,43 @@ variable {α β γ : Type*}
 
 namespace List
 
+theorem getElem_reverse' {α} (l : List α) (i : Nat) (h1 h2) :
+    (reverse l)[i]'h1 = l[length l - 1 - i]'h2 := by
+  have := getElem_reverse l (length l - 1 -i) (by omega) (by omega)
+  rw [← this]
+  congr
+  simp at h1
+  omega
+
+theorem reverse_tail_eq_dropLast_reverse {α} (l : List α) :
+    l.reverse.tail = l.dropLast.reverse := by
+  ext i v; by_cases hi : i < l.length - 1
+  · simp only [← drop_one]
+    rw [getElem?_eq_getElem (by simpa), getElem?_eq_getElem (by simpa),
+      ← getElem_drop _, getElem_reverse', getElem_reverse', getElem_dropLast]
+    simp [show l.length - 1 - (1 + i) = l.length - 1 - 1 - i by omega]
+    all_goals ((try simp); omega)
+  · rw [getElem?_eq_none, getElem?_eq_none]
+    all_goals (simp; omega)
+
+theorem getLast_tail {α} (l : List α) (hl : l.tail ≠ []) :
+    l.tail.getLast hl = l.getLast (by intro h; rw [h] at hl; simp at hl) := by
+  simp [getLast_eq_get, ← drop_one] at hl |-
+  rw [← getElem_drop]
+  simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
+  omega
+
+theorem head_reverse {α} (l : List α) (hL : l ≠ []) :
+    l.reverse.head (by simpa) = l.getLast hL := by
+  have : l.reverse.head? = l.getLast? := by simp
+  rw [List.head?_eq_head (l := l.reverse) (by simpa)] at this
+  rw [List.getLast?_eq_getLast (l := l) hL] at this
+  exact Option.some_inj.mp this
+
+lemma tail_get {α} {i} (L : List α) (hi : i < L.tail.length) :
+    L.tail[i] = L[i + 1]'(by simp at *; omega) := by
+  induction L <;> simp at hi |-
+
 theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by
   induction' l with hd tl IH
