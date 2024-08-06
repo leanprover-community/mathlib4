@@ -6,6 +6,7 @@ Authors: Simon Hudon, Yaël Dillies
 import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -51,6 +52,7 @@ theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n) : log b n = 0 :=
 theorem log_pos_iff {b n : ℕ} : 0 < log b n ↔ b ≤ n ∧ 1 < b := by
   rw [Nat.pos_iff_ne_zero, Ne, log_eq_zero_iff, not_or, not_lt, not_le]
 
+@[bound]
 theorem log_pos {b n : ℕ} (hb : 1 < b) (hbn : b ≤ n) : 0 < log b n :=
   log_pos_iff.2 ⟨hbn, hb⟩
 
