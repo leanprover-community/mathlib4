@@ -1,9 +1,10 @@
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Tauto
 
-/-- a tactic that simply logs an empty message.  Useful for testing the chattiness of the
-`haveLet` linter. -/
-elab "noise" : tactic => do Lean.logInfo ""
+/-- A tactic that adds a vacuous `sorry`.
+Useful for testing the chattiness of the `haveLet` linter. -/
+elab "noise" : tactic => do
+  Lean.Elab.Tactic.evalTactic (← `(tactic| have : 0 = 0 := sorry; clear this ))
 
 set_option linter.haveLet 2 in
 #guard_msgs in
@@ -17,7 +18,7 @@ example : True := by
   tauto
 
 /--
-info: ⏎
+warning: declaration uses 'sorry'
 ---
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 You can disable this linter using `set_option linter.haveLet 0`
@@ -28,36 +29,23 @@ example : True := by
   have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
   exact .intro
 
--- I don't know how to silence this test.
---set_option linter.haveLet 2 in
---/--
---warning: '_zero : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
---[linter.haveLet]
----/
---#guard_msgs in
---example : True := by
---  have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
---  exact .intro
-
-#guard_msgs in
-example : True := by
-  have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
-  exact .intro
-
 /--
-info: ⏎
----
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 You can disable this linter using `set_option linter.haveLet 0`
 -/
 #guard_msgs in
+set_option linter.haveLet 2 in
 example : True := by
   have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
-  noise
+  exact .intro
+
+#guard_msgs in
+example : True := by
+  have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
   exact .intro
 
 /--
-info: ⏎
+warning: declaration uses 'sorry'
 ---
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 You can disable this linter using `set_option linter.haveLet 0`
@@ -69,7 +57,19 @@ example : True := by
   exact .intro
 
 /--
-info: ⏎
+warning: declaration uses 'sorry'
+---
+warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+You can disable this linter using `set_option linter.haveLet 0`
+-/
+#guard_msgs in
+example : True := by
+  have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
+  noise
+  exact .intro
+
+/--
+warning: declaration uses 'sorry'
 ---
 warning: '_a : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 You can disable this linter using `set_option linter.haveLet 0`
@@ -96,7 +96,7 @@ example : True := by
 set_option linter.haveLet 0 in
 set_option linter.haveLet 1 in
 /--
-info: ⏎
+warning: declaration uses 'sorry'
 ---
 warning: 'this : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 You can disable this linter using `set_option linter.haveLet 0`
@@ -108,7 +108,7 @@ example : True := by
   exact .intro
   exact 0
 
-/-- info:-/
+/-- warning: declaration uses 'sorry' -/
 #guard_msgs in
 example : True := by
   have := And.intro (Nat.add_comm ?_ ?_) (Nat.add_comm ?_ ?_)
@@ -116,7 +116,8 @@ example : True := by
   noise
   repeat exact 0
 
-#guard_msgs(warning, drop info) in
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (h : False) : True := by
   have : False := h
   noise
@@ -125,7 +126,7 @@ example (h : False) : True := by
 set_option linter.haveLet 0 in
 set_option linter.haveLet 1 in
 /--
-info: ⏎
+warning: declaration uses 'sorry'
 ---
 warning: 'this : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 You can disable this linter using `set_option linter.haveLet 0`
