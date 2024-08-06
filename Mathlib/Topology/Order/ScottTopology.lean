@@ -297,9 +297,9 @@ end PartialOrder
 
 section CompleteLinearOrder
 
-variable [CompleteLinearOrder α] [TopologicalSpace α] [Topology.IsScott α]
+variable [CompleteLinearOrder α]
 
-lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
+lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α] (U : Set α) :
     IsOpen U ↔ (∃ (a : α), U = (Iic a)ᶜ) ∨ U = univ := by
   constructor
   · intro hU
@@ -315,6 +315,18 @@ lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
   · rintro (⟨a,rfl⟩ | rfl)
     · exact isClosed_Iic.isOpen_compl
     · exact isOpen_univ
+
+-- N.B. A number of conditions equivalent to `scott α = upper α` are given in Gierz _et al_,
+-- Chapter III, Exercise 3.23.
+lemma scott_eq_upper : scott α = upper α := by
+  letI := upper α
+  ext U
+  rw [@Topology.IsUpper.isTopologicalSpace_basis _ _ (upper α)
+    ({ topology_eq_upperTopology := rfl }) U]
+  rw [Or.comm]
+  letI := scott α
+  rw [@isOpen_iff_Iic_compl_or_univ _ _ (scott α) ({ topology_eq_scott := rfl }) U]
+  aesop
 
 end CompleteLinearOrder
 
