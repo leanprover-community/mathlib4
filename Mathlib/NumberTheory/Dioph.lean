@@ -234,7 +234,7 @@ theorem sumsq_eq_zero (x) : ∀ l, sumsq l x = 0 ↔ l.Forall fun a : Poly α =>
                 have t := add_le_add_left (sumsq_nonneg x ps) (p x * p x)
                 rwa [add_zero] at t)
               (mul_self_nonneg _)
-        ⟨this, by simp [this] at h; exact h⟩,
+        ⟨this, by simpa [this] using h⟩,
       fun ⟨h1, h2⟩ => by rw [add_apply, mul_apply, h1, h2]; rfl⟩
 
 end
@@ -242,9 +242,9 @@ end
 /-- Map the index set of variables, replacing `x_i` with `x_(f i)`. -/
 def map {α β} (f : α → β) (g : Poly α) : Poly β :=
   ⟨fun v => g <| v ∘ f, Poly.induction (C := fun g => IsPoly (fun v => g (v ∘ f)))
-    (fun i => by simp; apply IsPoly.proj) (fun n => by simp; apply IsPoly.const)
-    (fun f g pf pg => by simp; apply IsPoly.sub pf pg)
-    (fun f g pf pg => by simp; apply IsPoly.mul pf pg) _⟩
+    (fun i => by simpa using IsPoly.proj _) (fun n => by simpa using IsPoly.const _)
+    (fun f g pf pg => by simpa using IsPoly.sub pf pg)
+    (fun f g pf pg => by simpa using IsPoly.mul pf pg) _⟩
 
 @[simp]
 theorem map_apply {α β} (f : α → β) (g : Poly α) (v) : map f g v = g (v ∘ f) := rfl

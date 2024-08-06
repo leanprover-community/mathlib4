@@ -316,10 +316,45 @@ theorem coe_map : (b.map f : ι → M') = f ∘ b :=
 
 end Map
 
+section SMul
+variable {G G'}
+variable [Group G] [Group G']
+variable [DistribMulAction G M] [DistribMulAction G' M]
+variable [SMulCommClass G R M] [SMulCommClass G' R M]
+
+/-- The action on a `Basis` by acting on each element.
+
+See also `Basis.unitsSMul` and `Basis.groupSMul`, for the cases when a different action is applied
+to each basis element. -/
+instance : SMul G (Basis ι R M) where
+  smul g b := b.map <| DistribMulAction.toLinearEquiv _ _ g
+
+@[simp]
+theorem smul_apply (g : G) (b : Basis ι R M) (i : ι) : (g • b) i = g • b i := rfl
+
+@[norm_cast] theorem coe_smul (g : G) (b : Basis ι R M) : ⇑(g • b) = g • ⇑b := rfl
+
+/-- When the group in question is the automorphisms, `•` coincides with `Basis.map`. -/
+@[simp]
+theorem smul_eq_map (g : M ≃ₗ[R] M) (b : Basis ι R M) : g • b = b.map g := rfl
+
+@[simp] theorem repr_smul (g : G) (b : Basis ι R M) :
+    (g • b).repr = (DistribMulAction.toLinearEquiv _ _ g).symm.trans b.repr := rfl
+
+instance : MulAction G (Basis ι R M) :=
+  Function.Injective.mulAction _ DFunLike.coe_injective coe_smul
+
+instance [SMulCommClass G G' M] : SMulCommClass G G' (Basis ι R M) where
+  smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _
+
+instance [SMul G G'] [IsScalarTower G G' M] : IsScalarTower G G' (Basis ι R M) where
+  smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ => smul_assoc _ _ _
+
+end SMul
+
 section MapCoeffs
 
 variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
-  (h : ∀ (c) (x : M), f c • x = c • x)
 
 attribute [local instance] SMul.comp.isScalarTower
 
@@ -329,7 +364,7 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 See also `Basis.algebraMapCoeffs` for the case where `f` is equal to `algebraMap`.
 -/
 @[simps (config := { simpRhs := true })]
-def mapCoeffs : Basis ι R' M := by
+def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
   letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
   haveI : IsScalarTower R' R M :=
     { smul_assoc := fun x y z => by
@@ -339,6 +374,8 @@ def mapCoeffs : Basis ι R' M := by
         rw [mul_smul, ← h, f.apply_symm_apply] }
   exact ofRepr <| (b.repr.restrictScalars R').trans <|
     Finsupp.mapRange.linearEquiv (Module.compHom.toLinearEquiv f.symm).symm
+
+variable (h : ∀ (c) (x : M), f c • x = c • x)
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
   apply_eq_iff.mpr <| by

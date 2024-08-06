@@ -22,9 +22,9 @@ local infixl:50 " ~ᵤ " => Associated
 
 namespace Prime
 
-variable [CommMonoidWithZero α] {p : α} (hp : Prime p)
+variable [CommMonoidWithZero α] {p : α}
 
-theorem exists_mem_multiset_dvd {s : Multiset α} : p ∣ s.prod → ∃ a ∈ s, p ∣ a :=
+theorem exists_mem_multiset_dvd (hp : Prime p) {s : Multiset α} : p ∣ s.prod → ∃ a ∈ s, p ∣ a :=
   Multiset.induction_on s (fun h => (hp.not_dvd_one h).elim) fun a s ih h =>
     have : p ∣ a * s.prod := by simpa using h
     match hp.dvd_or_dvd this with
@@ -33,12 +33,13 @@ theorem exists_mem_multiset_dvd {s : Multiset α} : p ∣ s.prod → ∃ a ∈ s
       let ⟨a, has, h⟩ := ih h
       ⟨a, Multiset.mem_cons_of_mem has, h⟩
 
-theorem exists_mem_multiset_map_dvd {s : Multiset β} {f : β → α} :
+theorem exists_mem_multiset_map_dvd (hp : Prime p) {s : Multiset β} {f : β → α} :
     p ∣ (s.map f).prod → ∃ a ∈ s, p ∣ f a := fun h => by
   simpa only [exists_prop, Multiset.mem_map, exists_exists_and_eq_and] using
     hp.exists_mem_multiset_dvd h
 
-theorem exists_mem_finset_dvd {s : Finset β} {f : β → α} : p ∣ s.prod f → ∃ i ∈ s, p ∣ f i :=
+theorem exists_mem_finset_dvd (hp : Prime p) {s : Finset β} {f : β → α} :
+    p ∣ s.prod f → ∃ i ∈ s, p ∣ f i :=
   hp.exists_mem_multiset_map_dvd
 
 end Prime

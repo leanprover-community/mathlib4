@@ -247,6 +247,9 @@ end NonUnitalSemiring
 section Semiring
 variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
+instance : ZeroLEOneClass R where
+  zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+
 @[simp]
 lemma one_le_star_iff {x : R} : 1 ≤ star x ↔ 1 ≤ x := by
   simpa using star_le_star_iff (x := 1) (y := x)

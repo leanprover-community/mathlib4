@@ -387,10 +387,6 @@ theorem ext {f g : LocalizationMap S N} (h : ∀ x, f.toMap x = g.toMap x) : f =
   exact OneHom.ext h
 
 @[to_additive]
-theorem ext_iff {f g : LocalizationMap S N} : f = g ↔ ∀ x, f.toMap x = g.toMap x :=
-  ⟨fun h _ ↦ h ▸ rfl, ext⟩
-
-@[to_additive]
 theorem toMap_injective : Function.Injective (@LocalizationMap.toMap _ _ S N _) :=
   fun _ _ h ↦ ext <| DFunLike.ext_iff.1 h
 
@@ -507,7 +503,7 @@ theorem map_right_cancel {x y} {c : S} (h : f.toMap (c * x) = f.toMap (c * y)) :
 @[to_additive]
 theorem map_left_cancel {x y} {c : S} (h : f.toMap (x * c) = f.toMap (y * c)) :
     f.toMap x = f.toMap y :=
-  f.map_right_cancel <| by rw [mul_comm _ x, mul_comm _ y, h]
+  f.map_right_cancel (c := c) <| by rw [mul_comm _ x, mul_comm _ y, h]
 
 /-- Given a localization map `f : M →* N`, the surjection sending `(x, y) : M × S` to
 `f x * (f y)⁻¹`. -/
@@ -1282,7 +1278,7 @@ theorem mulEquivOfMulEquiv_mk' {k : LocalizationMap T Q} {j : M ≃* P} (H : S.m
 theorem of_mulEquivOfMulEquiv_apply {k : LocalizationMap T Q} {j : M ≃* P}
     (H : S.map j.toMonoidHom = T) (x) :
     (f.ofMulEquivOfLocalizations (f.mulEquivOfMulEquiv k H)).toMap x = k.toMap (j x) :=
-  ext_iff.1 (f.mulEquivOfLocalizations_right_inv (k.ofMulEquivOfDom H)) x
+  Submonoid.LocalizationMap.ext_iff.1 (f.mulEquivOfLocalizations_right_inv (k.ofMulEquivOfDom H)) x
 
 @[to_additive]
 theorem of_mulEquivOfMulEquiv {k : LocalizationMap T Q} {j : M ≃* P} (H : S.map j.toMonoidHom = T) :
