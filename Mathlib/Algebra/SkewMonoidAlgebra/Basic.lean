@@ -45,7 +45,7 @@ section AddCommMonoid
 variable [AddCommMonoid k]
 
 @[simp]
-theorem eta (f : SkewMonoidAlgebra k G) : ofFinsupp f.toFinsupp = f := by cases f; rfl
+theorem eta (f : SkewMonoidAlgebra k G) : ofFinsupp f.toFinsupp = f := rfl
 
 private irreducible_def add :
     SkewMonoidAlgebra k G → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
