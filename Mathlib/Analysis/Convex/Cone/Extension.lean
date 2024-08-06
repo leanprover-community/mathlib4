@@ -132,7 +132,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     let ⟨x, hx⟩ := hp_dense y
     ⟨Submodule.inclusion hpq.left x, hx⟩
   rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
-  exact ⟨r, hr, hqr.le, hqr.ne'⟩
+  exact ⟨r, hr, hqr.le, fun hrq ↦ hqr.ne' <| hrq.antisymm hqr.le⟩
 
 end RieszExtension
 

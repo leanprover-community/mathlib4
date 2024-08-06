@@ -499,7 +499,7 @@ theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPr
 
   have Imax' : ∀ {J}, I < J → J.IsPrincipal := by
     intro K hK
-    simpa [nonPrincipals] using hI.not_prop_of_lt hK
+    simpa [nonPrincipals] using hI.not_prop_of_gt hK
 
   by_cases hI1 : I = ⊤
   · subst hI1

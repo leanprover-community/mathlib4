@@ -138,7 +138,7 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
           refine Exists.imp (fun k hk => ?_) (hc1 S.2 ⟨g, hg⟩)
           rwa [Subtype.ext_iff, coe_pow] at hk ⊢, fun M hM g hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
       P hP)
-    fun {Q} ⟨hQ1, hQ2, hQ3⟩ => ⟨⟨Q, hQ1, hQ3 _⟩, hQ2⟩
+    fun {Q} h => ⟨⟨Q, h.2.prop, h.2.eq_of_ge⟩, h.1⟩
 
 instance Sylow.nonempty : Nonempty (Sylow p G) :=
   nonempty_of_exists IsPGroup.of_bot.exists_le_sylow
