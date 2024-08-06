@@ -93,33 +93,33 @@ protected theorem Commute.geom_sum₂_mul_add {x y : α} (h : Commute x y) (n : 
     (∑ i ∈ range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n := by
   let f :  ℕ → ℕ → α := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
   change (∑ i ∈ range n, (f n) i) * x + y ^ n = (x + y) ^ n
-  induction' n with n ih
-  · rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]
-  · have f_last : f (n + 1) n = (x + y) ^ n := by
+  induction n with
+  | zero => rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]
+  | succ n ih =>
+    have f_last : f (n + 1) n = (x + y) ^ n := by
       dsimp only [f]
       rw [← tsub_add_eq_tsub_tsub, Nat.add_comm, tsub_self, pow_zero, mul_one]
     have f_succ : ∀ i, i ∈ range n → f (n + 1) i = y * f n i := fun i hi => by
       dsimp only [f]
       have : Commute y ((x + y) ^ i) := (h.symm.add_right (Commute.refl y)).pow_right i
-      rw [← mul_assoc, this.eq, mul_assoc, ← pow_succ' y (n - 1 - i)]
-      congr 2
-      rw [add_tsub_cancel_right, ← tsub_add_eq_tsub_tsub, add_comm 1 i]
+      rw [← mul_assoc, this.eq, mul_assoc, ← pow_succ' y (n - 1 - i), add_tsub_cancel_right,
+        ← tsub_add_eq_tsub_tsub, add_comm 1 i]
       have : i + 1 + (n - (i + 1)) = n := add_tsub_cancel_of_le (mem_range.mp hi)
       rw [add_comm (i + 1)] at this
       rw [← this, add_tsub_cancel_right, add_comm i 1, ← add_assoc, add_tsub_cancel_right]
-    rw [pow_succ' (x + y), add_mul, sum_range_succ_comm, add_mul, f_last, add_assoc]
-    rw [(((Commute.refl x).add_right h).pow_right n).eq]
-    congr 1
-    rw [sum_congr rfl f_succ, ← mul_sum, pow_succ' y, mul_assoc, ← mul_add y, ih]
+    rw [pow_succ' (x + y), add_mul, sum_range_succ_comm, add_mul, f_last, add_assoc,
+      (((Commute.refl x).add_right h).pow_right n).eq, sum_congr rfl f_succ, ← mul_sum,
+      pow_succ' y, mul_assoc, ← mul_add y, ih]
 
 end Semiring
 
 @[simp]
 theorem neg_one_geom_sum [Ring α] {n : ℕ} :
     ∑ i ∈ range n, (-1 : α) ^ i = if Even n then 0 else 1 := by
-  induction' n with k hk
-  · simp
-  · simp only [geom_sum_succ', Nat.even_add_one, hk]
+  induction n with
+  | zero => simp
+  | succ k hk =>
+    simp only [geom_sum_succ', Nat.even_add_one, hk]
     split_ifs with h
     · rw [h.neg_one_pow, add_zero]
     · rw [(Nat.odd_iff_not_even.2 h).neg_one_pow, neg_add_self]
@@ -428,15 +428,16 @@ theorem geom_sum_pos_and_lt_one [StrictOrderedRing α] (hx : x < 0) (hx' : 0 < x
 theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 ≤ 0) (n : ℕ) :
     if Even n then (∑ i ∈ range n, x ^ i) ≤ 0 else 1 ≤ ∑ i ∈ range n, x ^ i := by
   have hx0 : x ≤ 0 := (le_add_of_nonneg_right zero_le_one).trans hx
-  induction' n with n ih
-  · simp only [Nat.zero_eq, range_zero, sum_empty, le_refl, ite_true, even_zero]
-  simp only [Nat.even_add_one, geom_sum_succ]
-  split_ifs at ih with h
-  · rw [if_neg (not_not_intro h), le_add_iff_nonneg_left]
-    exact mul_nonneg_of_nonpos_of_nonpos hx0 ih
-  · rw [if_pos h]
-    refine (add_le_add_right ?_ _).trans hx
-    simpa only [mul_one] using mul_le_mul_of_nonpos_left ih hx0
+  induction n with
+  | zero => simp only [Nat.zero_eq, range_zero, sum_empty, le_refl, ite_true, even_zero]
+  | succ n ih =>
+    simp only [Nat.even_add_one, geom_sum_succ]
+    split_ifs at ih with h
+    · rw [if_neg (not_not_intro h), le_add_iff_nonneg_left]
+      exact mul_nonneg_of_nonpos_of_nonpos hx0 ih
+    · rw [if_pos h]
+      refine (add_le_add_right ?_ _).trans hx
+      simpa only [mul_one] using mul_le_mul_of_nonpos_left ih hx0
 
 theorem geom_sum_alternating_of_lt_neg_one [StrictOrderedRing α] (hx : x + 1 < 0) (hn : 1 < n) :
     if Even n then (∑ i ∈ range n, x ^ i) < 0 else 1 < ∑ i ∈ range n, x ^ i := by
