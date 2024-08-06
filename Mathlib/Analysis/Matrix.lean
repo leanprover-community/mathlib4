@@ -44,7 +44,7 @@ of a matrix.
 
 The norm induced by the identification of `Matrix m n 𝕜` with
 `EuclideanSpace n 𝕜 →L[𝕜] EuclideanSpace m 𝕜` (i.e., the ℓ² operator norm) can be found in
-`Analysis.CstarAlgebra.Matrix`. It is separated to avoid extraneous imports in this file.
+`Analysis.CStarAlgebra.Matrix`. It is separated to avoid extraneous imports in this file.
 -/
 
 noncomputable section

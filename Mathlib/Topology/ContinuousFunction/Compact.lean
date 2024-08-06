@@ -473,19 +473,19 @@ instance [CompactSpace α] : NormedStarGroup C(α, β) where
 
 end NormedSpace
 
-section CstarRing
+section CStarRing
 
 variable {α : Type*} {β : Type*}
 variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 
-instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where
+instance [CompactSpace α] [CStarRing β] : CStarRing C(α, β) where
   norm_mul_self_le f := by
     rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
       ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]
     intro x
-    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
+    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self]
     exact ContinuousMap.norm_coe_le_norm (star f * f) x
 
-end CstarRing
+end CStarRing
 
 end ContinuousMap

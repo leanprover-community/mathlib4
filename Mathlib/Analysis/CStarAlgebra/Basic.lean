@@ -21,7 +21,7 @@ condition `‖x‖^2 ≤ ‖x⋆ * x‖` for all `x` (which actually implies equ
 a star algebra, then it is a C⋆-algebra.
 
 To get a C⋆-algebra `E` over field `𝕜`, use
-`[NormedField 𝕜] [StarRing 𝕜] [NormedRing E] [StarRing E] [CstarRing E]
+`[NormedField 𝕜] [StarRing 𝕜] [NormedRing E] [StarRing E] [CStarRing E]
  [NormedAlgebra 𝕜 E] [StarModule 𝕜 E]`.
 
 ## TODO
@@ -74,18 +74,20 @@ instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedSta
 /-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
 for every `x`. Note that this condition actually implies equality, as is shown in
 `norm_star_mul_self` below. -/
-class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
+class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
 
-instance : CstarRing ℝ where
+@[deprecated (since := "2024-08-04")] alias CstarRing := CStarRing
+
+instance : CStarRing ℝ where
   norm_mul_self_le x := by
     simp only [Real.norm_eq_abs, abs_mul_abs_self, star, id, norm_mul, le_refl]
 
-namespace CstarRing
+namespace CStarRing
 
 section NonUnital
 
-variable [NonUnitalNormedRing E] [StarRing E] [CstarRing E]
+variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
 
 -- see Note [lower instance priority]
 /-- In a C*-ring, star preserves the norm. -/
@@ -97,14 +99,14 @@ instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
     · have hnt : 0 < ‖x‖ := norm_pos_iff.mpr htriv
       have h₁ : ∀ z : E, ‖z⋆ * z‖ ≤ ‖z⋆‖ * ‖z‖ := fun z => norm_mul_le z⋆ z
       have h₂ : ∀ z : E, 0 < ‖z‖ → ‖z‖ ≤ ‖z⋆‖ := fun z hz => by
-        rw [← mul_le_mul_right hz]; exact (CstarRing.norm_mul_self_le z).trans (h₁ z)
+        rw [← mul_le_mul_right hz]; exact (CStarRing.norm_mul_self_le z).trans (h₁ z)
       have h₃ : ‖x⋆‖ ≤ ‖x‖ := by
         conv_rhs => rw [← star_star x]
         exact h₂ x⋆ (gt_of_ge_of_gt (h₂ x hnt) hnt)
       exact le_antisymm h₃ (h₂ x hnt)⟩
 
 theorem norm_star_mul_self {x : E} : ‖x⋆ * x‖ = ‖x‖ * ‖x‖ :=
-  le_antisymm ((norm_mul_le _ _).trans (by rw [norm_star])) (CstarRing.norm_mul_self_le x)
+  le_antisymm ((norm_mul_le _ _).trans (by rw [norm_star])) (CStarRing.norm_mul_self_le x)
 
 theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
   nth_rw 1 [← star_star x]
@@ -138,8 +140,8 @@ end NonUnital
 section ProdPi
 
 variable {ι R₁ R₂ : Type*} {R : ι → Type*}
-variable [NonUnitalNormedRing R₁] [StarRing R₁] [CstarRing R₁]
-variable [NonUnitalNormedRing R₂] [StarRing R₂] [CstarRing R₂]
+variable [NonUnitalNormedRing R₁] [StarRing R₁] [CStarRing R₁]
+variable [NonUnitalNormedRing R₂] [StarRing R₂] [CStarRing R₂]
 variable [∀ i, NonUnitalNormedRing (R i)] [∀ i, StarRing (R i)]
 
 /-- This instance exists to short circuit type class resolution because of problems with
@@ -147,16 +149,16 @@ inference involving Π-types. -/
 instance _root_.Pi.starRing' : StarRing (∀ i, R i) :=
   inferInstance
 
-variable [Fintype ι] [∀ i, CstarRing (R i)]
+variable [Fintype ι] [∀ i, CStarRing (R i)]
 
-instance _root_.Prod.cstarRing : CstarRing (R₁ × R₂) where
+instance _root_.Prod.cstarRing : CStarRing (R₁ × R₂) where
   norm_mul_self_le x := by
     dsimp only [norm]
     simp only [Prod.fst_mul, Prod.fst_star, Prod.snd_mul, Prod.snd_star, norm_star_mul_self, ← sq]
     rw [le_sup_iff]
     rcases le_total ‖x.fst‖ ‖x.snd‖ with (h | h) <;> simp [h]
 
-instance _root_.Pi.cstarRing : CstarRing (∀ i, R i) where
+instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
   norm_mul_self_le x := by
     refine le_of_eq (Eq.symm ?_)
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
@@ -165,7 +167,7 @@ instance _root_.Pi.cstarRing : CstarRing (∀ i, R i) where
       (Finset.comp_sup_eq_sup_comp_of_is_total (fun x : NNReal => x ^ 2)
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 
-instance _root_.Pi.cstarRing' : CstarRing (ι → R₁) :=
+instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
   Pi.cstarRing
 
 end ProdPi
@@ -173,7 +175,7 @@ end ProdPi
 section Unital
 
 
-variable [NormedRing E] [StarRing E] [CstarRing E]
+variable [NormedRing E] [StarRing E] [CStarRing E]
 
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
@@ -185,8 +187,8 @@ instance (priority := 100) [Nontrivial E] : NormOneClass E :=
   ⟨norm_one⟩
 
 theorem norm_coe_unitary [Nontrivial E] (U : unitary E) : ‖(U : E)‖ = 1 := by
-  rw [← sq_eq_sq (norm_nonneg _) zero_le_one, one_pow 2, sq, ← CstarRing.norm_star_mul_self,
-    unitary.coe_star_mul_self, CstarRing.norm_one]
+  rw [← sq_eq_sq (norm_nonneg _) zero_le_one, one_pow 2, sq, ← CStarRing.norm_star_mul_self,
+    unitary.coe_star_mul_self, CStarRing.norm_one]
 
 @[simp]
 theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U‖ = 1 :=
@@ -226,17 +228,17 @@ theorem norm_mul_mem_unitary (A : E) {U : E} (hU : U ∈ unitary E) : ‖A * U�
 
 end Unital
 
-end CstarRing
+end CStarRing
 
-theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E] {x : E}
+theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E] {x : E}
     (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction' n with k hk
   · simp only [pow_zero, pow_one, Nat.zero_eq]
   · rw [pow_succ', pow_mul', sq]
     nth_rw 1 [← selfAdjoint.mem_iff.mp hx]
-    rw [← star_pow, CstarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
+    rw [← star_pow, CStarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
 
-theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E] (x : selfAdjoint E)
+theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E] (x : selfAdjoint E)
     (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n :=
   x.prop.nnnorm_pow_two_pow _
 
@@ -275,8 +277,8 @@ instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [Se
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.subtype
 
-instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CstarRing A]
-    [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CstarRing S where
-  norm_mul_self_le x := @CstarRing.norm_mul_self_le A _ _ _ x
+instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CStarRing A]
+    [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CStarRing S where
+  norm_mul_self_le x := @CStarRing.norm_mul_self_le A _ _ _ x
 
 end StarSubalgebra
