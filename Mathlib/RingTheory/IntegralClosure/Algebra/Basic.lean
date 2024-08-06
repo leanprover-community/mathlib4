@@ -28,12 +28,10 @@ variable {R A B S : Type*}
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
-section
-
-variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-variable (f : A →ₐ[R] B) (hf : Function.Injective f)
-
-end
+theorem Subalgebra.isIntegral_iff (S : Subalgebra R A) :
+    Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
+  Algebra.isIntegral_def.trans <| .trans
+    (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
 
 instance Module.End.isIntegral {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M] :
     Algebra.IsIntegral R (Module.End R M) :=
@@ -112,11 +110,6 @@ theorem IsIntegral.smul {R} [CommSemiring R] [CommRing S] [Algebra R B] [Algebra
     [IsScalarTower R S B] {x : B} (r : R) (hx : IsIntegral S x) : IsIntegral S (r • x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
-
-theorem IsIntegral.of_pow {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
-    IsIntegral R x := by
-  rcases hx with ⟨p, hmonic, heval⟩
-  exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
 
 section inv
 

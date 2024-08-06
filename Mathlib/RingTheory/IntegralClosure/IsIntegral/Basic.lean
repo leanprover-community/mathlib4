@@ -55,12 +55,6 @@ theorem isIntegral_algHom_iff {x : A} : IsIntegral R (f x) ↔ IsIntegral R x :=
   refine ⟨fun ⟨p, hp, hx⟩ ↦ ⟨p, hp, ?_⟩, IsIntegral.map f⟩
   rwa [← f.comp_algebraMap, ← AlgHom.coe_toRingHom, ← hom_eval₂, AlgHom.coe_toRingHom,
     map_eq_zero_iff f hf] at hx
-#align is_integral_alg_hom_iff isIntegral_algHom_iff
-
-theorem Subalgebra.isIntegral_iff (S : Subalgebra R A) :
-    Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
-  Algebra.isIntegral_def.trans <| .trans
-    (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
 
 end
 
