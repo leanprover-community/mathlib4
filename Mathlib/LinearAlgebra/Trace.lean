@@ -257,6 +257,11 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
   simp only [llcomp_apply', compr₂_apply, flip_apply] at h
   exact h
 
+end
+
+variable {N P}
+variable [Module.Free R N] [Module.Finite R N] [Module.Free R P] [Module.Finite R P] in
+
 lemma trace_comp_cycle (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R] M) :
     trace R P (g ∘ₗ f ∘ₗ h) = trace R N (f ∘ₗ h ∘ₗ g) := by
   rw [trace_comp_comm', comp_assoc]
