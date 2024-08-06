@@ -110,13 +110,13 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
   classical
   -- Do induction on the prime factorisation of `n`. Note that we will apply the induction
   -- hypothesis with `ι := Finset ι`, so we need to generalise.
-  induction n using Nat.prime_composite_induction generalizing ι
+  induction n using Nat.prime_composite_induction generalizing ι with
   -- When `n := 0`, we can set `t := ∅`.
-  case zero => exact ⟨∅, by simp⟩
+  | zero => exact ⟨∅, by simp⟩
   -- When `n := 1`, we can take `t` to be any subset of `s` of size `2 * n - 1`.
-  case one => simpa using exists_subset_card_eq hs
+  | one => simpa using exists_subset_card_eq hs
   -- When `n := p` is prime, we use the prime case `Int.erdos_ginzburg_ziv_prime`.
-  case prime p hp =>
+  | prime p hp =>
     haveI := Fact.mk hp
     obtain ⟨t, hts, ht⟩ := exists_subset_card_eq hs
     obtain ⟨u, hut, hu⟩ := Int.erdos_ginzburg_ziv_prime a ht
@@ -124,7 +124,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
   -- When `n := m * n` is composite, we pick (by induction hypothesis on `n`) `2 * m - 1` sets of
   -- size `n` and sums divisible by `n`. Then by induction hypothesis (on `m`) we can pick `m` of
   -- these sets whose sum is divisible by `m * n`.
-  case composite m hm ihm n hn ihn =>
+  | composite m hm ihm n hn ihn =>
      -- First, show that it is enough to have those `2 * m - 1` sets.
     suffices ∀ k ≤ 2 * m - 1, ∃ 𝒜 : Finset (Finset ι), 𝒜.card = k ∧
       (𝒜 : Set (Finset ι)).Pairwise _root_.Disjoint ∧

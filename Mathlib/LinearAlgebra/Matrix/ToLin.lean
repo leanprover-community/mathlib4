@@ -954,12 +954,11 @@ attribute [simp] linearMap_repr_apply
 
 lemma linearMap_apply (ij : ι₂ × ι₁) :
     (b₁.linearMap b₂ ij) = (Matrix.toLin b₁ b₂) (Matrix.stdBasis R ι₂ ι₁ ij) := by
-  erw [linearMap_repr_symm_apply, Finsupp.total_single, one_smul]
+  simp [linearMap]
 
 lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
     (b₁.linearMap b₂ ij) (b₁ k) = if ij.2 = k then b₂ ij.1 else 0 := by
   have := Classical.decEq ι₂
-  rcases ij with ⟨i, j⟩
   rw [linearMap_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
   dsimp only [Matrix.stdBasisMatrix]
   simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]

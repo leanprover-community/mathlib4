@@ -30,8 +30,6 @@ open Topology Filter ENNReal
 
 open Set Filter
 
-variable {α : Type*}
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]

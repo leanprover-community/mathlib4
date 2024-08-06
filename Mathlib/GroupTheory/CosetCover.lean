@@ -149,7 +149,7 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
     let κ := ↥(s.filter (H · ≠ H j)) × Option ↥(s.filter (H · = H j))
     let f : κ → G
     | ⟨k₁, some k₂⟩ => g k₂ * x⁻¹ * g k₁
-    | ⟨k₁, none⟩  => g k₁
+    | ⟨k₁, none⟩ => g k₁
     let K (k : κ) : Subgroup G := H k.1.val
     have hK' (k : κ) : K k ∈ (s.image H).erase (H j) := by
       have := Finset.mem_filter.mp k.1.property
@@ -332,10 +332,10 @@ theorem exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
   by_contra! h
   apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_lt
-  by_cases hs : s = ∅
-  · simp only [hs, Finset.sum_empty, show (0 : ℚ) < 1 from rfl]
-  rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
-  have hs' : 0 < s.card := Nat.pos_of_ne_zero (Finset.card_ne_zero.mpr hs)
+  cases s.eq_empty_or_nonempty with
+  | inl hs => simp only [hs, Finset.sum_empty, zero_lt_one]
+  | inr hs =>
+  have hs' : 0 < s.card := hs.card_pos
   have hlt : ∀ i ∈ s, ((H i).index : ℚ)⁻¹ < (s.card : ℚ)⁻¹ := fun i hi ↦ by
     cases eq_or_ne (H i).index 0 with
     | inl hindex =>

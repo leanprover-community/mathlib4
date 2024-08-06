@@ -215,10 +215,9 @@ protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : Measurab
   (Measure.measurable_coe hs).comp κ.measurable
 
 lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y' ∈ measurableAtom y) :
-  κ y' = κ y := by
+    κ y' = κ y := by
   ext s hs
-  exact mem_of_mem_measurableAtom hy'
-    (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
+  exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
 lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
