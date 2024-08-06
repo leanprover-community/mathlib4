@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!

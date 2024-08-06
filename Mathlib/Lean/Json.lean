@@ -3,7 +3,8 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Mathport.Rename
+
+import Lean.Data.Json.FromToJson
 
 /-!
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`

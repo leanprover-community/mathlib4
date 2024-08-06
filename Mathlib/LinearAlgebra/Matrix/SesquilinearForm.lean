@@ -3,13 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Moritz Doll
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Opposite
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.LinearAlgebra.Basis.Bilinear
 
 /-!
@@ -377,7 +377,8 @@ theorem Matrix.toLinearMap₂_symm :
   (LinearMap.toMatrix₂ b₁ b₂).symm_symm
 
 theorem Matrix.toLinearMap₂_basisFun :
-    Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) = Matrix.toLinearMap₂' R (N₂ := N₂) := by
+    Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) =
+      Matrix.toLinearMap₂' R (N₂ := N₂) := by
   ext M
   simp only [coe_comp, coe_single, Function.comp_apply, toLinearMap₂_apply, Pi.basisFun_repr,
     toLinearMap₂'_apply]

@@ -174,6 +174,25 @@ theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : W
 instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
   prf x h := ⟨x.unbot h, coe_unbot _ _⟩
 
+instance instTop [Top α] : Top (WithBot α) where
+  top := (⊤ : α)
+
+@[simp, norm_cast] lemma coe_top [Top α] : ((⊤ : α) : WithBot α) = ⊤ := rfl
+@[simp, norm_cast] lemma coe_eq_top [Top α] {a : α} : (a : WithBot α) = ⊤ ↔ a = ⊤ := coe_eq_coe
+@[simp, norm_cast] lemma top_eq_coe [Top α] {a : α} : ⊤ = (a : WithBot α) ↔ ⊤ = a := coe_eq_coe
+
+theorem unbot_eq_iff {a : WithBot α} {b : α} (h : a ≠ ⊥) :
+    a.unbot h = b ↔ a = b := by
+  induction a
+  · simpa using h rfl
+  · simp
+
+theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
+    a = b.unbot h ↔ a = b := by
+  induction b
+  · simpa using h rfl
+  · simp
+
 section LE
 
 variable [LE α]
@@ -194,13 +213,6 @@ theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔
 
 @[simp, deprecated bot_le "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem none_le {a : WithBot α} : @LE.le (WithBot α) _ none a := bot_le
-
-instance instTop [Top α] : Top (WithBot α) where
-  top := (⊤ : α)
-
-@[simp, norm_cast] lemma coe_top [Top α] : ((⊤ : α) : WithBot α) = ⊤ := rfl
-@[simp, norm_cast] lemma coe_eq_top [Top α] {a : α} : (a : WithBot α) = ⊤ ↔ a = ⊤ := coe_eq_coe
-@[simp, norm_cast] lemma top_eq_coe [Top α] {a : α} : ⊤ = (a : WithBot α) ↔ ⊤ = a := coe_eq_coe
 
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
@@ -293,6 +305,18 @@ theorem lt_coe_iff : ∀ {x : WithBot α}, x < b ↔ ∀ a : α, x = a → a < b
 protected theorem bot_lt_iff_ne_bot : ∀ {x : WithBot α}, ⊥ < x ↔ x ≠ ⊥
   | ⊥ => iff_of_false (WithBot.not_lt_bot _) <| by simp
   | (x : α) => by simp [bot_lt_coe]
+
+theorem lt_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
+    a < unbot b h ↔ (a : WithBot α) < b := by
+  induction b
+  · simpa [bot_lt_coe] using h rfl
+  · simp
+
+theorem unbot_lt_iff {a : WithBot α} (h : a ≠ ⊥) {b : α} :
+    unbot a h < b ↔ a < (b : WithBot α) := by
+  induction a
+  · simpa [bot_lt_coe] using h rfl
+  · simp
 
 theorem unbot'_lt_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
     a.unbot' b < c ↔ a < c := by
@@ -752,6 +776,21 @@ theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : W
 instance canLift : CanLift (WithTop α) α (↑) fun r => r ≠ ⊤ where
   prf x h := ⟨x.untop h, coe_untop _ _⟩
 
+instance instBot [Bot α] : Bot (WithTop α) where
+  bot := (⊥ : α)
+
+@[simp, norm_cast] lemma coe_bot [Bot α] : ((⊥ : α) : WithTop α) = ⊥ := rfl
+@[simp, norm_cast] lemma coe_eq_bot [Bot α] {a : α} : (a : WithTop α) = ⊥ ↔ a = ⊥ := coe_eq_coe
+@[simp, norm_cast] lemma bot_eq_coe [Bot α] {a : α} : (⊥ : WithTop α) = a ↔ ⊥ = a := coe_eq_coe
+
+theorem untop_eq_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
+    a.untop h = b ↔ a = b :=
+  WithBot.unbot_eq_iff (α := αᵒᵈ) h
+
+theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
+    a = b.untop h ↔ a = b :=
+  WithBot.eq_unbot_iff (α := αᵒᵈ) h
+
 section LE
 
 variable [LE α]
@@ -796,13 +835,6 @@ instance orderTop : OrderTop (WithTop α) where
 
 @[simp, deprecated le_top "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none := le_top
-
-instance instBot [Bot α] : Bot (WithTop α) where
-  bot := (⊥ : α)
-
-@[simp, norm_cast] lemma coe_bot [Bot α] : ((⊥ : α) : WithTop α) = ⊥ := rfl
-@[simp, norm_cast] lemma coe_eq_bot [Bot α] {a : α} : (a : WithTop α) = ⊥ ↔ a = ⊥ := coe_eq_coe
-@[simp, norm_cast] lemma bot_eq_coe [Bot α] {a : α} : (⊥ : WithTop α) = a ↔ ⊥ = a := coe_eq_coe
 
 instance orderBot [OrderBot α] : OrderBot (WithTop α) where
   bot_le o a ha := by cases ha; exact ⟨_, rfl, bot_le⟩
@@ -878,6 +910,14 @@ theorem lt_ofDual_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
 @[simp]
 theorem ofDual_lt_ofDual_iff {a b : WithTop αᵒᵈ} : WithTop.ofDual a < WithTop.ofDual b ↔ b < a :=
   Iff.rfl
+
+theorem lt_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
+    a < b.untop h ↔ a < b :=
+  WithBot.unbot_lt_iff (α := αᵒᵈ) h
+
+theorem untop_lt_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
+    a.untop h < b ↔ a < b :=
+  WithBot.lt_unbot_iff (α := αᵒᵈ) h
 
 theorem lt_untop'_iff {a : WithTop α} {b c : α} (h : a = ⊤ → c < b) :
     c < a.untop' b ↔ c < a :=

@@ -7,7 +7,9 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Polynomial.Roots
 
 /-!
 # Dickson polynomials

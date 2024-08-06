@@ -445,70 +445,73 @@ theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
 instance : Sup (CompactOpens α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.isOpen.union t.isOpen⟩⟩
 
-instance [QuasiSeparatedSpace α] : Inf (CompactOpens α) :=
-  ⟨fun U V =>
-    ⟨⟨(U : Set α) ∩ (V : Set α),
-        QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩,
-      U.2.inter V.2⟩⟩
+instance : Bot (CompactOpens α) where bot := ⟨⊥, isOpen_empty⟩
 
-instance [QuasiSeparatedSpace α] : SemilatticeInf (CompactOpens α) :=
-  SetLike.coe_injective.semilatticeInf _ fun _ _ => rfl
+@[simp, norm_cast] lemma coe_sup (s t : CompactOpens α) : ↑(s ⊔ t) = (s ∪ t : Set α) := rfl
+@[simp, norm_cast] lemma coe_bot : ↑(⊥ : CompactOpens α) = (∅ : Set α) := rfl
 
-instance [CompactSpace α] : Top (CompactOpens α) :=
-  ⟨⟨⊤, isOpen_univ⟩⟩
-
-instance : Bot (CompactOpens α) :=
-  ⟨⟨⊥, isOpen_empty⟩⟩
-
-instance [T2Space α] : SDiff (CompactOpens α) :=
-  ⟨fun s t => ⟨⟨s \ t, s.isCompact.diff t.isOpen⟩, s.isOpen.sdiff t.isCompact.isClosed⟩⟩
-
-instance [T2Space α] [CompactSpace α] : HasCompl (CompactOpens α) :=
-  ⟨fun s => ⟨⟨sᶜ, s.isOpen.isClosed_compl.isCompact⟩, s.isCompact.isClosed.isOpen_compl⟩⟩
-
-instance : SemilatticeSup (CompactOpens α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
-
-instance : OrderBot (CompactOpens α) :=
-  OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
-
-instance [T2Space α] : GeneralizedBooleanAlgebra (CompactOpens α) :=
-  SetLike.coe_injective.generalizedBooleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl fun _ _ =>
-    rfl
-
-instance [CompactSpace α] : BoundedOrder (CompactOpens α) :=
-  BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
-
-instance [T2Space α] [CompactSpace α] : BooleanAlgebra (CompactOpens α) :=
-  SetLike.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
-    fun _ _ => rfl
-
-@[simp]
-theorem coe_sup (s t : CompactOpens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
-  rfl
-
-@[simp]
-theorem coe_inf [T2Space α] (s t : CompactOpens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
-  rfl
-
-@[simp]
-theorem coe_top [CompactSpace α] : (↑(⊤ : CompactOpens α) : Set α) = univ :=
-  rfl
-
-@[simp]
-theorem coe_bot : (↑(⊥ : CompactOpens α) : Set α) = ∅ :=
-  rfl
-
-@[simp]
-theorem coe_sdiff [T2Space α] (s t : CompactOpens α) : (↑(s \ t) : Set α) = ↑s \ ↑t :=
-  rfl
-
-@[simp]
-theorem coe_compl [T2Space α] [CompactSpace α] (s : CompactOpens α) : (↑sᶜ : Set α) = (↑s)ᶜ :=
-  rfl
+instance : SemilatticeSup (CompactOpens α) := SetLike.coe_injective.semilatticeSup _ coe_sup
+instance : OrderBot (CompactOpens α) := OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) coe_bot
 
 instance : Inhabited (CompactOpens α) :=
   ⟨⊥⟩
+
+section Inf
+variable [QuasiSeparatedSpace α]
+
+instance instInf : Inf (CompactOpens α) where
+  inf U V :=
+    ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩, U.2.inter V.2⟩
+
+@[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
+
+instance instSemilatticeInf : SemilatticeInf (CompactOpens α) :=
+  SetLike.coe_injective.semilatticeInf _ coe_inf
+
+end Inf
+
+section SDiff
+variable [T2Space α]
+
+instance instSDiff : SDiff (CompactOpens α) where
+  sdiff s t := ⟨⟨s \ t, s.isCompact.diff t.isOpen⟩, s.isOpen.sdiff t.isCompact.isClosed⟩
+
+@[simp, norm_cast] lemma coe_sdiff (s t : CompactOpens α) : ↑(s \ t) = (s \ t : Set α) := rfl
+
+instance instGeneralizedBooleanAlgebra : GeneralizedBooleanAlgebra (CompactOpens α) :=
+  SetLike.coe_injective.generalizedBooleanAlgebra _ coe_sup coe_inf coe_bot coe_sdiff
+
+end SDiff
+
+section Top
+variable [CompactSpace α]
+
+instance instTop : Top (CompactOpens α) where top := ⟨⊤, isOpen_univ⟩
+
+@[simp, norm_cast] lemma coe_top : ↑(⊤ : CompactOpens α) = (univ : Set α) := rfl
+
+instance instBoundedOrder : BoundedOrder (CompactOpens α) :=
+  BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) coe_top coe_bot
+
+section Compl
+variable [T2Space α]
+
+instance instHasCompl : HasCompl (CompactOpens α) where
+  compl s := ⟨⟨sᶜ, s.isOpen.isClosed_compl.isCompact⟩, s.isCompact.isClosed.isOpen_compl⟩
+
+instance instHImp : HImp (CompactOpens α) where
+  himp s t := ⟨⟨s ⇨ t, IsClosed.isCompact
+    (by simpa [himp_eq] using t.isCompact.isClosed.union s.isOpen.isClosed_compl)⟩,
+    by simpa [himp_eq] using t.isOpen.union s.isCompact.isClosed.isOpen_compl⟩
+
+@[simp, norm_cast] lemma coe_compl (s : CompactOpens α) : ↑sᶜ = (sᶜ : Set α) := rfl
+@[simp, norm_cast] lemma coe_himp (s t : CompactOpens α) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
+
+instance instBooleanAlgebra : BooleanAlgebra (CompactOpens α) :=
+  SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
+    coe_himp
+
+end Top.Compl
 
 /-- The image of a compact open under a continuous open map. -/
 @[simps toCompacts]

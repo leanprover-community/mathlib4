@@ -41,19 +41,15 @@ i.e., it is complete and second countable. We also prove the Gromov compactness 
 
 noncomputable section
 
-open scoped Classical Topology ENNReal Cardinal
+open scoped Topology ENNReal Cardinal
+open Set Function TopologicalSpace Filter Metric Quotient Bornology
+open BoundedContinuousFunction Nat Int kuratowskiEmbedding
 
+open Sum (inl inr)
 
 local notation "ℓ_infty_ℝ" => lp (fun n : ℕ => ℝ) ∞
 
 universe u v w
-
-open scoped Classical
-open Set Function TopologicalSpace Filter Metric Quotient Bornology
-
-open BoundedContinuousFunction Nat Int kuratowskiEmbedding
-
-open Sum (inl inr)
 
 attribute [local instance] metricSpaceSum
 
@@ -279,11 +275,11 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
           gcongr
           -- apply add_le_add (add_le_add le_rfl (le_of_lt dy)) le_rfl
         _ = 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by ring
-    let f : Sum X Y → ℓ_infty_ℝ := fun x =>
+    let f : X ⊕ Y → ℓ_infty_ℝ := fun x =>
       match x with
       | inl y => Φ y
       | inr z => Ψ z
-    let F : Sum X Y × Sum X Y → ℝ := fun p => dist (f p.1) (f p.2)
+    let F : (X ⊕ Y) × (X ⊕ Y) → ℝ := fun p => dist (f p.1) (f p.2)
     -- check that the induced "distance" is a candidate
     have Fgood : F ∈ candidates X Y := by
       simp only [F, candidates, forall_const, and_true_iff, add_comm, eq_self_iff_true,
@@ -304,7 +300,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
       · exact fun x y =>
           calc
             F (x, y) ≤ diam (range Φ ∪ range Ψ) := by
-              have A : ∀ z : Sum X Y, f z ∈ range Φ ∪ range Ψ := by
+              have A : ∀ z : X ⊕ Y, f z ∈ range Φ ∪ range Ψ := by
                 intro z
                 cases z
                 · apply mem_union_left; apply mem_range_self
@@ -562,7 +558,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
       |dist p q - dist (Φ p) (Φ q)| ≤ ε₂ := H p q
       _ ≤ 2 * (ε₂ / 2 + δ) := by linarith
   -- glue `X` and `Y` along the almost matching subsets
-  letI : MetricSpace (Sum X Y) :=
+  letI : MetricSpace (X ⊕ Y) :=
     glueMetricApprox (fun x : s => (x : X)) (fun x => Φ x) (ε₂ / 2 + δ) (by linarith) this
   let Fl := @Sum.inl X Y
   let Fr := @Sum.inr X Y
@@ -643,7 +639,7 @@ instance : SecondCountableTopology GHSpace := by
   choose N e _ using this
   -- cardinality of the nice finite subset `s p` of `p.rep`, called `N p`
   let N := fun p : GHSpace => N p (s p) (hs p).1
-  -- equiv from `s p`, a nice finite subset of `p.rep`, to `fin (N p)`, called `E p`
+  -- equiv from `s p`, a nice finite subset of `p.rep`, to `Fin (N p)`, called `E p`
   let E := fun p : GHSpace => e p (s p) (hs p).1
   -- A function `F` associating to `p : GHSpace` the data of all distances between points
   -- in the `ε`-dense set `s p`.
@@ -654,8 +650,8 @@ instance : SecondCountableTopology GHSpace := by
     `p` and `q` with `F p = F q` are at distance `≤ δ`.
     For this, we construct a map `Φ` from `s p ⊆ p.rep` (representing `p`)
     to `q.rep` (representing `q`) which is almost an isometry on `s p`, and
-    with image `s q`. For this, we compose the identification of `s p` with `fin (N p)`
-    and the inverse of the identification of `s q` with `fin (N q)`. Together with
+    with image `s q`. For this, we compose the identification of `s p` with `Fin (N p)`
+    and the inverse of the identification of `s q` with `Fin (N q)`. Together with
     the fact that `N p = N q`, this constructs `Ψ` between `s p` and `s q`, and then
     composing with the canonical inclusion we get `Φ`. -/
   have Npq : N p = N q := (Sigma.mk.inj_iff.1 hpq).1
@@ -698,12 +694,12 @@ instance : SecondCountableTopology GHSpace := by
       intro x y
       -- have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
       rw [show dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) from rfl]
-      -- introduce `i`, that codes both `x` and `Φ x` in `fin (N p) = fin (N q)`
+      -- introduce `i`, that codes both `x` and `Φ x` in `Fin (N p) = Fin (N q)`
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
       have i' : i = (E q) (Ψ x) := by simp only [Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
-      -- introduce `j`, that codes both `y` and `Φ y` in `fin (N p) = fin (N q)`
+      -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
@@ -850,12 +846,12 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       intro x y
       have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
       rw [this]
-      -- introduce `i`, that codes both `x` and `Φ x` in `fin (N p) = fin (N q)`
+      -- introduce `i`, that codes both `x` and `Φ x` in `Fin (N p) = Fin (N q)`
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
       have i' : i = (E q) (Ψ x) := by simp only [Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
-      -- introduce `j`, that codes both `y` and `Φ y` in `fin (N p) = fin (N q)`
+      -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp

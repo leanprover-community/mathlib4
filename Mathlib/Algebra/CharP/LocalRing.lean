@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
 import Mathlib.Algebra.CharP.Basic
-import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-!
 # Characteristics of local rings

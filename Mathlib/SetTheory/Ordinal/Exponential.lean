@@ -431,6 +431,5 @@ end Ordinal
 --   |-- We already know that `0 ≤ x` for all `x : Ordinal`
 --     _ =>
 --     failed
--- #align tactic.positivity_opow Tactic.positivity_opow
 
 -- end Tactic

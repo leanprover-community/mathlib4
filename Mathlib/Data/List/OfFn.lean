@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.List.Join
+import Mathlib.Data.List.Basic
 
 /-!
 # Lists from functions
@@ -41,7 +41,7 @@ theorem length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h)
 theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
   simp [ofFn, length_ofFn_go]
 
-theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
+theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk : k < (ofFn.go f i j h).length) :
     (ofFn.go f i j h)[k] = f ⟨j + k, by simp at hk; omega⟩ := by
   let i+1 := i
   cases k <;> simp [ofFn.go, getElem_ofFn_go (i := i)]
@@ -100,7 +100,6 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
 --     from this
 --   intros; induction' m with m IH generalizing l; · rfl
 --   simp only [DArray.revIterateAux, of_fn_aux, IH]
--- #align list.array_eq_of_fn List.array_eq_of_fn
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
@@ -134,7 +133,7 @@ theorem ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := 
 
 theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
     (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
-    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_get]
+    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_getElem]
 
 theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
     (h : ofFn f ≠ [] := mt ofFn_eq_nil_iff.mp (Nat.succ_ne_zero _)) :
@@ -165,7 +164,8 @@ theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
   induction' m with m IH
   · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, join]
-  · simp_rw [ofFn_succ', succ_mul, join_concat, ofFn_add, IH]
+  · simp_rw [ofFn_succ', succ_mul]
+    simp [join_concat, ofFn_add, IH]
     rfl
 
 /-- This breaks a list of `m*n` items into `n` groups each containing `m` elements. -/

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Zhouhang Zhou
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
-import Mathlib.Order.Filter.Germ
+import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
@@ -69,10 +69,7 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 noncomputable section
 
-open scoped Classical
-open ENNReal Topology
-
-open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
+open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
 variable {α β γ δ : Type*} [MeasurableSpace α] {μ ν : Measure α}
 
@@ -156,9 +153,6 @@ theorem mk_coeFn (f : α →ₘ[μ] β) : mk f f.aestronglyMeasurable = f := by
 @[ext]
 theorem ext {f g : α →ₘ[μ] β} (h : f =ᵐ[μ] g) : f = g := by
   rwa [← f.mk_coeFn, ← g.mk_coeFn, mk_eq_mk]
-
-theorem ext_iff {f g : α →ₘ[μ] β} : f = g ↔ f =ᵐ[μ] g :=
-  ⟨fun h => by rw [h], fun h => ext h⟩
 
 theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f := by
   apply (AEStronglyMeasurable.ae_eq_mk _).symm.trans

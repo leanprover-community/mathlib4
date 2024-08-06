@@ -57,17 +57,17 @@ variable {C}
 @[simps η μ]
 def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   toFunctor := M.X
-  η' := M.one
-  μ' := M.mul
-  left_unit' := fun X => by
+  η := M.one
+  μ := M.mul
+  left_unit := fun X => by
     -- Porting note: now using `erw`
     erw [← whiskerLeft_app, ← NatTrans.comp_app, M.mul_one]
     rfl
-  right_unit' := fun X => by
+  right_unit := fun X => by
     -- Porting note: now using `erw`
     erw [← whiskerRight_app, ← NatTrans.comp_app, M.one_mul]
     rfl
-  assoc' := fun X => by
+  assoc := fun X => by
     rw [← whiskerLeft_app, ← whiskerRight_app, ← NatTrans.comp_app]
     -- Porting note: had to add this step:
     erw [M.mul_assoc]

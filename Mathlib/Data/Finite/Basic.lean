@@ -73,16 +73,16 @@ theorem prod_left (β) [Finite (α × β)] [Nonempty β] : Finite α :=
 theorem prod_right (α) [Finite (α × β)] [Nonempty α] : Finite β :=
   of_surjective (Prod.snd : α × β → β) Prod.snd_surjective
 
-instance [Finite α] [Finite β] : Finite (Sum α β) := by
+instance [Finite α] [Finite β] : Finite (α ⊕ β) := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
   infer_instance
 
-theorem sum_left (β) [Finite (Sum α β)] : Finite α :=
-  of_injective (Sum.inl : α → Sum α β) Sum.inl_injective
+theorem sum_left (β) [Finite (α ⊕ β)] : Finite α :=
+  of_injective (Sum.inl : α → α ⊕ β) Sum.inl_injective
 
-theorem sum_right (α) [Finite (Sum α β)] : Finite β :=
-  of_injective (Sum.inr : β → Sum α β) Sum.inr_injective
+theorem sum_right (α) [Finite (α ⊕ β)] : Finite β :=
+  of_injective (Sum.inr : β → α ⊕ β) Sum.inr_injective
 
 instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := by
   letI := Fintype.ofFinite α

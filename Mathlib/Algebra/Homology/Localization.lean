@@ -305,28 +305,32 @@ variable [Preadditive C] [Preadditive D]
   [(HomologicalComplex.quasiIso D c).HasLocalization]
   [F.Additive] [F.PreservesHomology]
 
+/-- The localizer morphism which expresses that `F.mapHomologicalComplex c` preserves
+quasi-isomorphisms. -/
+@[simps]
+def mapHomologicalComplexUpToQuasiIsoLocalizerMorphism :
+    LocalizerMorphism (HomologicalComplex.quasiIso C c) (HomologicalComplex.quasiIso D c) where
+  functor := F.mapHomologicalComplex c
+  map _ _ f (_ : QuasiIso f) := HomologicalComplex.quasiIso_map_of_preservesHomology _ _
+
 lemma mapHomologicalComplex_upToQuasiIso_Q_inverts_quasiIso :
     (HomologicalComplex.quasiIso C c).IsInvertedBy
-      (F.mapHomologicalComplex c ⋙ HomologicalComplexUpToQuasiIso.Q) := fun K L f hf ↦ by
-  apply Localization.inverts _ (HomologicalComplex.quasiIso D c)
-  have : QuasiIso f := hf
-  apply HomologicalComplex.quasiIso_map_of_preservesHomology
+      (F.mapHomologicalComplex c ⋙ HomologicalComplexUpToQuasiIso.Q) := by
+  apply (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism c).inverts
 
 /-- The functor `HomologicalComplexUpToQuasiIso C c ⥤ HomologicalComplexUpToQuasiIso D c`
-induced by a functor `F : C ⥤ D` whcih preserves homology. -/
+induced by a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def mapHomologicalComplexUpToQuasiIso :
     HomologicalComplexUpToQuasiIso C c ⥤ HomologicalComplexUpToQuasiIso D c :=
-  Localization.lift _
-    (F.mapHomologicalComplex_upToQuasiIso_Q_inverts_quasiIso c)
-    HomologicalComplexUpToQuasiIso.Q
+  (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism c).localizedFunctor
+    HomologicalComplexUpToQuasiIso.Q HomologicalComplexUpToQuasiIso.Q
 
 noncomputable instance :
     Localization.Lifting HomologicalComplexUpToQuasiIso.Q
       (HomologicalComplex.quasiIso C c)
       (F.mapHomologicalComplex c ⋙ HomologicalComplexUpToQuasiIso.Q)
-      (F.mapHomologicalComplexUpToQuasiIso c) := by
-  dsimp only [mapHomologicalComplexUpToQuasiIso]
-  infer_instance
+      (F.mapHomologicalComplexUpToQuasiIso c) :=
+  (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism c).liftingLocalizedFunctor _ _
 
 /-- The functor `F.mapHomologicalComplexUpToQuasiIso c` is induced by
 `F.mapHomologicalComplex c`. -/
@@ -358,6 +362,26 @@ noncomputable instance :
       (F.mapHomotopyCategory c ⋙ HomologicalComplexUpToQuasiIso.Qh)
       (F.mapHomologicalComplexUpToQuasiIso c) :=
   ⟨F.mapHomologicalComplexUpToQuasiIsoFactorsh c⟩
+
+variable {c}
+
+@[reassoc]
+lemma mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app (K : HomologicalComplex C c) :
+    (F.mapHomologicalComplexUpToQuasiIsoFactorsh c).hom.app
+        ((HomotopyCategory.quotient _ _).obj K) =
+      (F.mapHomologicalComplexUpToQuasiIso c).map
+          ((HomologicalComplexUpToQuasiIso.quotientCompQhIso C c).hom.app K) ≫
+        (F.mapHomologicalComplexUpToQuasiIsoFactors c).hom.app K ≫
+          (HomologicalComplexUpToQuasiIso.quotientCompQhIso D c).inv.app _ ≫
+            HomologicalComplexUpToQuasiIso.Qh.map
+              ((F.mapHomotopyCategoryFactors c).inv.app K) := by
+  dsimp [mapHomologicalComplexUpToQuasiIsoFactorsh]
+  rw [Localization.liftNatTrans_app]
+  dsimp
+  simp only [Category.comp_id, Category.id_comp]
+  change _ = (F.mapHomologicalComplexUpToQuasiIso c).map (𝟙 _) ≫ _ ≫ 𝟙 _ ≫
+    HomologicalComplexUpToQuasiIso.Qh.map (𝟙 _)
+  simp only [map_id, Category.comp_id, Category.id_comp]
 
 end
 

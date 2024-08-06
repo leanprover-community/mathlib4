@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.VitaliCaratheodory
 

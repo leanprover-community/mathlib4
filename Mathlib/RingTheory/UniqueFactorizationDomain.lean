@@ -1970,13 +1970,4 @@ lemma factors_multiset_prod_of_irreducible {s : Multiset ℕ} (h : ∀ x : ℕ, 
   rw [Ne, Multiset.prod_eq_zero_iff]
   exact fun con ↦ not_irreducible_zero (h 0 con)
 
-lemma _root_.induction_on_primes {P : ℕ → Prop} (h₀ : P 0) (h₁ : P 1)
-    (h : ∀ p a : ℕ, p.Prime → P a → P (p * a)) (n : ℕ) : P n := by
-  apply UniqueFactorizationMonoid.induction_on_prime
-  · exact h₀
-  · intro n h
-    rw [Nat.isUnit_iff.1 h]
-    exact h₁
-  · exact fun a p _ hp ↦ h p a hp.nat_prime
-
 end Nat
