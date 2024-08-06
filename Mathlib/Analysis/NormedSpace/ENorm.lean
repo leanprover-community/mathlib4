@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Extended norm
@@ -63,9 +63,6 @@ theorem coeFn_injective : Function.Injective ((↑) : ENorm 𝕜 V → V → ℝ
 @[ext]
 theorem ext {e₁ e₂ : ENorm 𝕜 V} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ :=
   coeFn_injective <| funext h
-
-theorem ext_iff {e₁ e₂ : ENorm 𝕜 V} : e₁ = e₂ ↔ ∀ x, e₁ x = e₂ x :=
-  ⟨fun h _ => h ▸ rfl, ext⟩
 
 @[simp, norm_cast]
 theorem coe_inj {e₁ e₂ : ENorm 𝕜 V} : (e₁ : V → ℝ≥0∞) = e₂ ↔ e₁ = e₂ :=

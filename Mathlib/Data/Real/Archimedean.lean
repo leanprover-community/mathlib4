@@ -338,7 +338,7 @@ theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
 /-- Exponentiation is eventually larger than linear growth. -/
 lemma exists_natCast_add_one_lt_pow_of_one_lt {a : ℝ} (ha : 1 < a) :
     ∃ m : ℕ, (m + 1 : ℝ) < a ^ m := by
-  obtain ⟨k, posk, hk⟩ : ∃ (k : ℕ) (_ : 0 < k), a > 1 / k + 1 := by
+  obtain ⟨k, posk, hk⟩ : ∃ k : ℕ, 0 < k ∧ 1 / k + 1 < a := by
     contrapose! ha
     refine le_of_forall_lt_rat_imp_le ?_
     intro q hq

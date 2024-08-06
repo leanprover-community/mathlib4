@@ -181,8 +181,9 @@ alias _root_.MvPolynomial.degree_eq_zero_iff := degree_eq_zero_iff
 @[simp]
 theorem degree_zero : degree (0 : σ →₀ ℕ) = 0 := by rw [degree_eq_zero_iff]
 
-theorem degree_eq_weight_one (d : σ →₀ ℕ) :
-    degree d = weight 1 d := by
+theorem degree_eq_weight_one :
+    degree (σ := σ) = weight 1 := by
+  ext d
   simp only [degree, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum]
 
 @[deprecated degree_eq_weight_one (since := "2024-07-20")]

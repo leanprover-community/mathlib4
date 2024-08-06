@@ -44,6 +44,7 @@ def valuation : Valuation K ℝ≥0 where
   map_mul'        := nnnorm_mul
   map_add_le_max' := IsUltrametricDist.norm_add_le_max
 
+@[simp]
 theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
@@ -57,6 +58,14 @@ def toValued : Valued K ℝ≥0 :=
           ⟨Units.mk0 ⟨ε, le_of_lt hε⟩ (ne_of_gt hε), fun x hx ↦ h (mem_ball_zero_iff.mpr hx)⟩,
         fun ⟨ε, hε⟩ => ⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
           fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩ }
+
+instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
+    Valuation.RankOne (valuation (K := K)) where
+  hom := .id _
+  strictMono' := strictMono_id
+  nontrivial' := (exists_one_lt_norm K).imp fun x h ↦ by
+    have h' : x ≠ 0 := norm_eq_zero.not.mp (h.gt.trans' (by simp)).ne'
+    simp [valuation_apply, ← NNReal.coe_inj, h.ne', h']
 
 end NormedField
 
@@ -129,5 +138,23 @@ def toNormedField : NormedField L :=
         simp only [le_principal_iff, mem_principal, setOf_subset_setOf, Prod.forall]
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
+
+section NormedField
+
+/-- When a field is valued, one inherits a `NormedField`. Local instance to avoid
+a typeclass loop or non-defeq topology or norms. -/
+local instance : NormedField L := Valued.toNormedField L Γ₀
+
+protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖): L → ℝ) := Valued.norm_add_le
+
+instance : IsUltrametricDist L :=
+  ⟨fun x y z ↦ by
+    refine (Valued.norm_add_le (x - y) (y - z)).trans_eq' ?_
+    simp only [sub_add_sub_cancel]
+    rfl ⟩
+
+lemma coe_valuation_eq_rankOne_hom_comp_valuation : ⇑NormedField.valuation = hv.hom ∘ val.v := rfl
+
+end NormedField
 
 end Valued

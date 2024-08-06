@@ -233,18 +233,19 @@ theorem isSheaf_of_representable {J : GrothendieckTopology C} (hJ : Subcanonical
   Presieve.isSheaf_of_le _ hJ (Sheaf.isSheaf_of_representable P)
 
 variable {J}
-variable (hJ : Subcanonical J)
 
 /--
 If `J` is subcanonical, we obtain a "Yoneda" functor from the defining site
 into the sheaf category.
 -/
 @[simps]
-def yoneda : C ⥤ Sheaf J (Type v) where
+def yoneda (hJ : Subcanonical J) : C ⥤ Sheaf J (Type v) where
   obj X := ⟨CategoryTheory.yoneda.obj X, by
     rw [isSheaf_iff_isSheaf_of_type]
     apply hJ.isSheaf_of_representable⟩
   map f := ⟨CategoryTheory.yoneda.map f⟩
+
+variable (hJ : Subcanonical J)
 
 /--
 The yoneda embedding into the presheaf category factors through the one

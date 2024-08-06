@@ -136,7 +136,8 @@ def IsPointwiseLeftKanExtension.homFrom (G : LeftExtension L F) : E ⟶ G :=
       ext X
       simpa using (h (L.obj X)).fac (LeftExtension.coconeAt G _) (CostructuredArrow.mk (𝟙 _)))
 
-lemma IsPointwiseLeftKanExtension.hom_ext {G : LeftExtension L F} {f₁ f₂ : E ⟶ G} : f₁ = f₂ := by
+lemma IsPointwiseLeftKanExtension.hom_ext (h : E.IsPointwiseLeftKanExtension)
+    {G : LeftExtension L F} {f₁ f₂ : E ⟶ G} : f₁ = f₂ := by
   ext Y
   apply (h Y).hom_ext
   intro X
@@ -160,9 +161,9 @@ lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
   HasLeftKanExtension.mk E.right E.hom
 
 lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
-    IsIso (E.hom) := by
+    IsIso (E.hom) :=
   have := fun X => (h (L.obj X)).isIso_hom_app
-  apply NatIso.isIso_of_isIso_app
+  NatIso.isIso_of_isIso_app ..
 
 end LeftExtension
 
@@ -247,7 +248,8 @@ def IsPointwiseRightKanExtension.homTo (G : RightExtension L F) : G ⟶ E :=
       ext X
       simpa using (h (L.obj X)).fac (RightExtension.coneAt G _) (StructuredArrow.mk (𝟙 _)) )
 
-lemma IsPointwiseRightKanExtension.hom_ext {G : RightExtension L F} {f₁ f₂ : G ⟶ E} : f₁ = f₂ := by
+lemma IsPointwiseRightKanExtension.hom_ext (h : E.IsPointwiseRightKanExtension)
+    {G : RightExtension L F} {f₁ f₂ : G ⟶ E} : f₁ = f₂ := by
   ext Y
   apply (h Y).hom_ext
   intro X
@@ -270,9 +272,9 @@ lemma IsPointwiseRightKanExtension.hasRightKanExtension :
   HasRightKanExtension.mk E.left E.hom
 
 lemma IsPointwiseRightKanExtension.isIso_hom [L.Full] [L.Faithful] :
-    IsIso (E.hom) := by
+    IsIso (E.hom) :=
   have := fun X => (h (L.obj X)).isIso_hom_app
-  apply NatIso.isIso_of_isIso_app
+  NatIso.isIso_of_isIso_app ..
 
 end RightExtension
 

@@ -155,9 +155,6 @@ variable (f : α →ₙ+* β) {x y : α}
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
 
-theorem ext_iff {f g : α →ₙ+* β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
   ext fun _ => rfl
@@ -281,7 +278,7 @@ theorem coe_mul (f g : α →ₙ+* α) : ⇑(f * g) = f ∘ g :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →ₙ+* γ} {f : α →ₙ+* β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => ext <| hf.forall.2 (NonUnitalRingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →ₙ+* γ} {f₁ f₂ : α →ₙ+* β} (hg : Injective g) :
@@ -442,10 +439,10 @@ section
 
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β) {x y : α}
 
-theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
+protected theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem congr_arg (f : α →+* β) {x y : α} (h : x = y) : f x = f y :=
+protected theorem congr_arg (f : α →+* β) {x y : α} (h : x = y) : f x = f y :=
   DFunLike.congr_arg f h
 
 theorem coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=
@@ -454,9 +451,6 @@ theorem coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=
 @[ext]
 theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
-
-theorem ext_iff {f g : α →+* β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 @[simp]
 theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
@@ -607,7 +601,7 @@ instance instMonoid : Monoid (α →+* α) where
 @[simp]
 theorem cancel_right {g₁ g₂ : β →+* γ} {f : α →+* β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => RingHom.ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => RingHom.ext <| hf.forall.2 (RingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective g) :
