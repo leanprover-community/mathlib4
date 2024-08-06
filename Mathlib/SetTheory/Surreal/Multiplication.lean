@@ -453,26 +453,30 @@ namespace SetTheory.PGame
 open Surreal.Multiplication
 
 variable {x x₁ x₂ y y₁ y₂ : PGame.{u}}
-  (hx : x.Numeric) (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric)
-  (hy : y.Numeric) (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
 
-theorem Numeric.mul : Numeric (x * y) := main _ <| Args.numeric_P1.mpr ⟨hx, hy⟩
+theorem Numeric.mul (hx : x.Numeric) (hy : y.Numeric) : Numeric (x * y) :=
+  main _ <| Args.numeric_P1.mpr ⟨hx, hy⟩
 
-theorem P24 : P24 x₁ x₂ y := main _ <| Args.numeric_P24.mpr ⟨hx₁, hx₂, hy⟩
+theorem P24 (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hy : y.Numeric) : P24 x₁ x₂ y :=
+  main _ <| Args.numeric_P24.mpr ⟨hx₁, hx₂, hy⟩
 
-theorem Equiv.mul_congr_left (he : x₁ ≈ x₂) : x₁ * y ≈ x₂ * y :=
+theorem Equiv.mul_congr_left (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hy : y.Numeric)
+    (he : x₁ ≈ x₂) : x₁ * y ≈ x₂ * y :=
   equiv_iff_game_eq.2 <| (P24 hx₁ hx₂ hy).1 he
 
-theorem Equiv.mul_congr_right (he : y₁ ≈ y₂) : x * y₁ ≈ x * y₂ :=
+theorem Equiv.mul_congr_right (hx : x.Numeric)  (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
+    (he : y₁ ≈ y₂) : x * y₁ ≈ x * y₂ :=
   .trans (mul_comm_equiv _ _) <| .trans (mul_congr_left hy₁ hy₂ hx he) (mul_comm_equiv _ _)
 
-theorem Equiv.mul_congr (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ * y₁ ≈ x₂ * y₂ :=
+theorem Equiv.mul_congr (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric)
+    (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric) (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ * y₁ ≈ x₂ * y₂ :=
   .trans (mul_congr_left hx₁ hx₂ hy₁ hx) (mul_congr_right hx₂ hy₁ hy₂ hy)
 
 open Prod.GameAdd
 
 /-- One additional inductive argument that supplies the last missing part of Theorem 8. -/
-theorem P3_of_lt_of_lt (hx : x₁ < x₂) (hy : y₁ < y₂) : P3 x₁ x₂ y₁ y₂ := by
+theorem P3_of_lt_of_lt (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
+    (hx : x₁ < x₂) (hy : y₁ < y₂) : P3 x₁ x₂ y₁ y₂ := by
   revert x₁ x₂
   rw [← Prod.forall']
   refine (wf_isOption.prod_gameAdd wf_isOption).fix ?_
@@ -488,7 +492,8 @@ theorem P3_of_lt_of_lt (hx : x₁ < x₂) (hy : y₁ < y₂) : P3 x₁ x₂ y₁
         rw [moveLeft_neg', ← P3_neg, neg_lt_neg_iff]
         exact ih _ (fst <| IsOption.moveRight _) (hx₁.moveRight _) hx₂⟩
 
-theorem Numeric.mul_pos (hp₁ : 0 < x₁) (hp₂ : 0 < x₂) : 0 < x₁ * x₂ := by
+theorem Numeric.mul_pos (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hp₁ : 0 < x₁) (hp₂ : 0 < x₂) :
+    0 < x₁ * x₂ := by
   rw [lt_iff_game_lt]
   have := P3_of_lt_of_lt numeric_zero hx₁ numeric_zero hx₂ hp₁ hp₂
   simp_rw [P3, quot_zero_mul, quot_mul_zero, add_lt_add_iff_left] at this

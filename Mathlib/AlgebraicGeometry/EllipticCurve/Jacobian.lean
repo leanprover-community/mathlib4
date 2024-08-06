@@ -1152,8 +1152,7 @@ section Addition
 
 /-! ### Addition on point representatives -/
 
-open scoped Classical
-
+open Classical in
 variable (W') in
 /-- The addition of two point representatives. -/
 noncomputable def add (P Q : Fin 3 → R) : Fin 3 → R :=
@@ -1412,10 +1411,9 @@ section Affine
 
 /-! ### Equivalence with affine coordinates -/
 
-open scoped Classical
-
 namespace Point
 
+open Classical in
 variable (W) in
 /-- The map from a point representative that is nonsingular on a Weierstrass curve `W` in Jacobian
 coordinates to the corresponding nonsingular rational point on `W` in affine coordinates. -/

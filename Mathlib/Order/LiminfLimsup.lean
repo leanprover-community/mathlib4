@@ -263,8 +263,23 @@ section add_and_sum
 
 open Filter BigOperators Set
 
-variable {α : Type*} {f : Filter α} [NeBot f]
-variable {R : Type*} [Preorder R]
+variable {α : Type*} {f : Filter α}
+variable {R : Type*}
+
+lemma isBoundedUnder_sum {κ : Type*} [AddCommMonoid R] {r : R → R → Prop}
+    (hr : ∀ (v₁ v₂ : α → R), f.IsBoundedUnder r v₁ → f.IsBoundedUnder r v₂
+      → f.IsBoundedUnder r (v₁ + v₂)) (hr₀ : r 0 0)
+    {u : κ → α → R} (s : Finset κ) (h : ∀ k ∈ s, f.IsBoundedUnder r (u k)) :
+    f.IsBoundedUnder r (∑ k ∈ s, u k) := by
+  induction s using Finset.cons_induction
+  case empty =>
+    rw [Finset.sum_empty]
+    exact ⟨0, by simp_all only [eventually_map, Pi.zero_apply, eventually_true]⟩
+  case cons k₀ s k₀_notin_s ih =>
+    simp only [Finset.forall_mem_cons] at *
+    simpa only [Finset.sum_cons] using hr _ _ h.1 (ih h.2)
+
+variable [Preorder R]
 
 lemma isBoundedUnder_ge_add [Add R]
     [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
@@ -285,19 +300,6 @@ lemma isBoundedUnder_le_add [Add R]
   use U + V
   simp only [eventually_map, Pi.add_apply] at hU hV ⊢
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
-
-lemma isBoundedUnder_sum {κ : Type*} [AddCommMonoid R] {r : R → R → Prop}
-    (hr : ∀ (v₁ v₂ : α → R), f.IsBoundedUnder r v₁ → f.IsBoundedUnder r v₂
-      → f.IsBoundedUnder r (v₁ + v₂)) (hr₀ : r 0 0)
-    {u : κ → α → R} (s : Finset κ) (h : ∀ k ∈ s, f.IsBoundedUnder r (u k)) :
-    f.IsBoundedUnder r (∑ k ∈ s, u k) := by
-  induction s using Finset.cons_induction
-  case empty =>
-    rw [Finset.sum_empty]
-    exact ⟨0, by simp_all only [eventually_map, Pi.zero_apply, eventually_true]⟩
-  case cons k₀ s k₀_notin_s ih =>
-    simp only [Finset.forall_mem_cons] at *
-    simpa only [Finset.sum_cons] using hr _ _ h.1 (ih h.2)
 
 lemma isBoundedUnder_le_sum {κ : Type*} [AddCommMonoid R]
     [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
@@ -1254,8 +1256,7 @@ theorem gt_mem_sets_of_limsInf_gt : f.IsBounded (· ≥ ·) → b < f.limsInf �
 
 section Classical
 
-open scoped Classical
-
+open Classical in
 /-- Given an indexed family of sets `s j` over `j : Subtype p` and a function `f`, then
 `liminf_reparam j` is equal to `j` if `f` is bounded below on `s j`, and otherwise to some
 index `k` such that `f` is bounded below on `s k` (if there exists one).
@@ -1284,6 +1285,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     (hv : v.HasBasis p s) {f : ι → α} (hs : ∀ (j : Subtype p), (s j).Nonempty)
     (H : ∃ (j : Subtype p), BddBelow (range (fun (i : s j) ↦ f i))) :
     liminf f v = ⨆ (j : Subtype p), ⨅ (i : s (liminf_reparam f s p j)), f i := by
+  classical
   rcases H with ⟨j0, hj0⟩
   let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
   have : ∀ (j : Subtype p), Nonempty (s j) := fun j ↦ Nonempty.coe_sort (hs j)
@@ -1315,6 +1317,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
       · exact (hZ j0 hj0).elim
   simp_rw [hv.liminf_eq_sSup_iUnion_iInter, A, B, sSup_iUnion_Iic]
 
+open Classical in
 /-- Writing a liminf as a supremum of infimum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the infimum of sets which are
 not bounded below. -/
@@ -1360,6 +1363,7 @@ theorem HasBasis.limsup_eq_ciInf_ciSup {v : Filter ι}
     limsup f v = ⨅ (j : Subtype p), ⨆ (i : s (limsup_reparam f s p j)), f i :=
   HasBasis.liminf_eq_ciSup_ciInf (α := αᵒᵈ) hv hs H
 
+open Classical in
 /-- Writing a limsup as an infimum of supremum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the supremum of sets which are
 not bounded below. -/
