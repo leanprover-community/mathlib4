@@ -359,6 +359,8 @@ protected theorem directedSystem [h : DirectedSystem G fun i j h => f i j h] :
     DirectedSystem G fun i j hij => (f i j hij).toIntLinearMap :=
   h
 
+variable [DecidableEq ι]
+
 attribute [local instance] DirectLimit.directedSystem
 
 variable [DecidableEq ι]
