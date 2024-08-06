@@ -9,6 +9,7 @@ import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
 
 /-!
 
@@ -183,7 +184,7 @@ This is `M^~` as a sheaf of `R`-modules.
 -/
 noncomputable def tildeInModuleCat :
     TopCat.Presheaf (ModuleCat R) (PrimeSpectrum.Top R) :=
-  (PresheafOfModules.forgetToPresheafModuleCat (op ⊤) $
+  (PresheafOfModules.forgetToPresheafModuleCat (op ⊤) <|
     Limits.initialOpOfTerminal Limits.isTerminalTop).obj (tilde M).1 ⋙
   ModuleCat.restrictScalars (StructureSheaf.globalSectionsIso R).hom
 
@@ -203,8 +204,8 @@ lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
     st = 0 := by
   refine Limits.Concrete.colimit_no_zero_smul_divisor (hx := hst)
-    ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq $ funext fun pt ↦ ?_⟩
-  exact LocalizedModule.eq_zero_of_smul_eq_zero (hx := congr_fun (Subtype.ext_iff.1 hs) pt) $
+    ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
+  exact LocalizedModule.eq_zero_of_smul_eq_zero (hx := congr_fun (Subtype.ext_iff.1 hs) pt) <|
     i.unop pt |>.2
 
 /--
@@ -239,7 +240,7 @@ open LocalizedModule TopCat.Presheaf in
 lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     IsUnit ((algebraMap R (Module.End R ((tildeInModuleCat M).stalk x))) r) := by
   rw [Module.End_isUnit_iff]
-  refine ⟨LinearMap.ker_eq_bot.1 $ eq_bot_iff.2 fun st (h : r.1 • st = 0) ↦
+  refine ⟨LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 fun st (h : r.1 • st = 0) ↦
     smul_stalk_no_nonzero_divisor M r st h, fun st ↦ ?_⟩
   obtain ⟨U, mem, s, rfl⟩ := germ_exist (F := M.tildeInModuleCat) x st
   let O := U ⊓ (PrimeSpectrum.basicOpen r)
@@ -247,8 +248,8 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
       ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, by
         simpa only [Module.algebraMap_end_apply, ← map_smul] using
-          germ_ext (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _) (iWV := homOfLE inf_le_left) _ $
-          Subtype.eq $ funext fun y ↦ smul_eq_iff_of_mem (S := y.1.1.primeCompl) r _ _ _ |>.2 rfl⟩
+          germ_ext (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _) (iWV := homOfLE inf_le_left) _ <|
+          Subtype.eq <| funext fun y ↦ smul_eq_iff_of_mem (S := y.1.1.primeCompl) r _ _ _ |>.2 rfl⟩
   obtain ⟨V, mem_V, iV, num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
   refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
   obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
@@ -264,7 +265,7 @@ to the stalk of `M^~` at `x`.
 noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶
     (TopCat.Presheaf.stalk (tildeInModuleCat M) x) :=
-  LocalizedModule.lift _ (toStalk M x) $ isUnit_toStalk M x
+  LocalizedModule.lift _ (toStalk M x) <| isUnit_toStalk M x
 
 end Tilde
 
