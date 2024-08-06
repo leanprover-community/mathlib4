@@ -350,41 +350,25 @@ We need this for the `PreInnerProductSpace.Core` structure to prove the triangle
 when showing the core is a normed group and to take the quotient.
 -/
 theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := by
-  have hdiscrim : ∀ (t : ℝ), 0 ≤ normSqF x * t * t  + 2 * ‖⟪x, y⟫‖ * t + normSqF y := by
-    intro t
-    by_cases hzero : ⟪x, y⟫ = 0
-    · rw [hzero]
-      simp only [norm_zero, mul_zero, zero_mul, add_zero]
-      apply add_nonneg
-      · rw [mul_assoc, ← sq, normSq]
-        exact mul_nonneg inner_self_nonneg (sq_nonneg t)
-      · rw [normSq]
-        exact inner_self_nonneg
-    · push_neg at hzero
-      rw [← norm_ne_zero_iff] at hzero
-      have htxy: 0 ≤ normSqF (⟪x,y⟫ • x) * (t / ‖⟪x,y⟫‖) * (t / ‖⟪x,y⟫‖)
-          + 2 * re ⟪⟪x,y⟫ • x, y⟫ * (t / ‖⟪x,y⟫‖) + normSqF y := by
-        exact cauchy_schwarz_aux' (⟪x,y⟫ • x) y (t/‖⟪x,y⟫‖)
-      rw [inner_smul_left, RCLike.conj_mul, sq, ← RCLike.ofReal_mul, RCLike.ofReal_re, normSq,
-        inner_smul_left, inner_smul_right, ← mul_assoc, RCLike.conj_mul, sq, ← RCLike.ofReal_mul]
-        at htxy
-      simp only [ofReal_mul, mul_re, ofReal_re, ofReal_im, mul_zero, sub_zero, mul_im, zero_mul,
-        add_zero] at htxy
-      rw [normSq, normSq]
-      have : 0 ≤ ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * re ⟪x, x⟫ * t * t +
-          ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * 2 * ‖⟪x, y⟫‖ * t + normSqF y := by
-        calc 0 ≤ ‖⟪x, y⟫‖ * ‖⟪x, y⟫‖ * re ⟪x, x⟫ * (t / ‖⟪x, y⟫‖) * (t / ‖⟪x, y⟫‖) +
-          2 * (‖⟪x, y⟫‖ * ‖⟪x, y⟫‖) * (t / ‖⟪x, y⟫‖) + normSq y := htxy
-          _ = ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * re ⟪x, x⟫ * t * t +
-          ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * 2* ‖⟪x, y⟫‖ * t + normSq y := by ring
-      rw [div_self hzero, one_mul, one_mul, div_self hzero, one_mul] at this
-      exact this
-  have hnegdiscrim : (2 * ‖⟪x, y⟫‖)^2 - 4 * normSqF x * normSqF y ≤ 0 := by
-    rw [← discrim]
-    exact discrim_le_zero hdiscrim
-  rw [normSq, normSq, sq] at hnegdiscrim
-  nth_rw 1 [norm_inner_symm x y] at hnegdiscrim
-  linarith
+  suffices discrim (normSqF x) (2 * ‖⟪x, y⟫_𝕜‖) (normSqF y) ≤ 0 by
+    rw [norm_inner_symm y x]
+    rw [discrim, normSq, normSq, sq] at this
+    linarith
+  refine discrim_le_zero fun t ↦ ?_
+  by_cases hzero : ⟪x, y⟫ = 0
+  · simp only [mul_assoc, ← sq, hzero, norm_zero, mul_zero, zero_mul, add_zero, ge_iff_le]
+    obtain ⟨hx, hy⟩ : (0 ≤ normSqF x ∧ 0 ≤ normSqF y) := ⟨inner_self_nonneg, inner_self_nonneg⟩
+    positivity
+  · have hzero' : ‖⟪x, y⟫‖ ≠ 0 := norm_ne_zero_iff.2 hzero
+    convert cauchy_schwarz_aux' (𝕜 := 𝕜) (⟪x, y⟫ • x) y (t / ‖⟪x, y⟫‖) using 3
+    · field_simp
+      rw [← sq, normSq, normSq, inner_smul_right, inner_smul_left, ← mul_assoc _ _ ⟪x, x⟫,
+        mul_conj, ← ofReal_pow]
+      simp [- ofReal_pow, mul_re]
+      ring
+    · field_simp
+      rw [inner_smul_left, mul_comm _ ⟪x, y⟫_𝕜, mul_conj, ← ofReal_pow, ofReal_re]
+      ring
 
 /-- (Semi)norm constructed from an `PreInnerProductSpace.Core` structure, defined to be the square
 root of the scalar product. -/
