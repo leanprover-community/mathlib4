@@ -88,18 +88,9 @@ If `G` preserves finite coproducts (which is the case when `C` is `CompHaus`, `
 the extensive topology.
 -/
 noncomputable instance [PreservesFiniteCoproducts G] :
-    PreservesFiniteProducts (yonedaPresheaf G X) := by
-  change PreservesFiniteProducts (G.op ⋙ yonedaPresheaf' X)
-  have h' : PreservesFiniteProducts (yonedaPresheaf' X) := inferInstance
-  have h : PreservesFiniteProducts G.op :=
-    { preserves := fun J _ => by
-        apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeOp
-        exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _ }
-  constructor
-  intro J _
-  have := h.1 J
-  have := h'.1 J
-  exact compPreservesLimitsOfShape _ _
+    PreservesFiniteProducts (yonedaPresheaf G X) :=
+  have := preservesFiniteProductsOp G
+  ⟨fun _ ↦ compPreservesLimitsOfShape G.op (yonedaPresheaf' X)⟩
 
 section
 
@@ -142,10 +133,10 @@ Associate to a `(u+1)`-small topological space the corresponding condensed set, 
 `yonedaPresheaf`.
 -/
 noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
-  toSheafCompHausLike.{u+1} _ X (fun _ _ _↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+  toSheafCompHausLike.{u+1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--
 `TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
 -/
 noncomputable abbrev topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} :=
-  topCatToSheafCompHausLike.{u+1} _ (fun _ _ _↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+  topCatToSheafCompHausLike.{u+1} _ (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)

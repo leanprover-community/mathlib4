@@ -190,7 +190,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
 
 /-- If a p-group acts on `α` and the cardinality of `α` is not a multiple
   of `p` then the action has a fixed point. -/
-theorem nonempty_fixed_point_of_prime_not_dvd_card (hpα : ¬p ∣ Nat.card α) :
+theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα : ¬p ∣ Nat.card α) :
     (fixedPoints G α).Nonempty :=
   have : Finite α := Nat.finite_of_card_ne_zero (fun h ↦ (h ▸ hpα) (dvd_zero p))
   @Set.nonempty_of_nonempty_subtype _ _
@@ -315,12 +315,12 @@ theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact
 
 section P2comm
 
-variable [Fact p.Prime] {n : ℕ} (hGpn : Nat.card G = p ^ n)
+variable [Fact p.Prime] {n : ℕ}
 
 open Subgroup
 
 /-- The cardinality of the `center` of a `p`-group is `p ^ k` where `k` is positive. -/
-theorem card_center_eq_prime_pow (hn : 0 < n) :
+theorem card_center_eq_prime_pow (hGpn : Nat.card G = p ^ n) (hn : 0 < n) :
     ∃ k > 0, Nat.card (center G) = p ^ k := by
   have : Finite G := Nat.finite_of_card_ne_zero (hGpn ▸ pow_ne_zero n (NeZero.ne p))
   have hcG := to_subgroup (of_card hGpn) (center G)
