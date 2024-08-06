@@ -264,10 +264,8 @@ theorem inner_self_of_eq_zero {x : F} : x = 0 → ⟪x, x⟫ = 0 := by
   exact inner_zero_left _
 
 theorem normSq_eq_zero_of_eq_zero {x : F} : x = 0 → normSqF x = 0 := by
-  intro h
-  rw [normSq]
-  rw [inner_self_of_eq_zero h]
-  exact RCLike.zero_re'
+  rintro rfl
+  simp [normSq, inner_self_of_eq_zero]
 
 theorem ne_zero_of_inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 → x ≠ 0 := by
   exact fun P Q => P (inner_self_of_eq_zero Q)
