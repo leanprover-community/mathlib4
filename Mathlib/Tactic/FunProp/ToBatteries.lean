@@ -13,7 +13,6 @@ namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunProp
-set_option autoImplicit true
 
 /-- Check if `a` can be obtained by removing elements from `b`. -/
 def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bool :=

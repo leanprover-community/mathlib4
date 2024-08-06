@@ -7,8 +7,6 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Units
 
-#align_import algebra.order.group.units from "leanprover-community/mathlib"@"a95b16cbade0f938fc24abd05412bde1e84bab9b"
-
 /-!
 # The units of an ordered commutative monoid form an ordered commutative group
 -/
@@ -23,8 +21,6 @@ variable {α : Type*}
 instance Units.orderedCommGroup [OrderedCommMonoid α] : OrderedCommGroup αˣ :=
   { Units.instPartialOrderUnits, Units.instCommGroupUnits with
     mul_le_mul_left := fun _ _ h _ => (@mul_le_mul_left' α _ _ _ _ _ h _) }
-#align units.ordered_comm_group Units.orderedCommGroup
-#align add_units.ordered_add_comm_group AddUnits.orderedAddCommGroup
 
 -- Porting note: the mathlib3 proof was
 -- mul_le_mul_left := fun a b h c => (mul_le_mul_left' (h : (a : α) ≤ b) _ : (c : α) * a ≤ c * b) }

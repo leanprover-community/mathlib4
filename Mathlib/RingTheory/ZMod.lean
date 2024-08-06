@@ -8,8 +8,6 @@ import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
-#align_import ring_theory.zmod from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
-
 /-!
 # Ring theoretic facts about `ZMod n`
 
@@ -28,7 +26,6 @@ theorem ZMod.ker_intCastRingHom (n : ℕ) :
   ext
   rw [Ideal.mem_span_singleton, RingHom.mem_ker, Int.coe_castRingHom,
     ZMod.intCast_zmod_eq_zero_iff_dvd]
-#align zmod.ker_int_cast_ring_hom ZMod.ker_intCastRingHom
 
 /-- Two ring homomorphisms into `ZMod n` with equal kernels are equal. -/
 theorem ZMod.ringHom_eq_of_ker_eq {n : ℕ} {R : Type*} [CommRing R] (f g : R →+* ZMod n)
@@ -36,7 +33,6 @@ theorem ZMod.ringHom_eq_of_ker_eq {n : ℕ} {R : Type*} [CommRing R] (f g : R �
   have := f.liftOfRightInverse_comp _ (ZMod.ringHom_rightInverse f) ⟨g, le_of_eq h⟩
   rw [Subtype.coe_mk] at this
   rw [← this, RingHom.ext_zmod (f.liftOfRightInverse _ _ ⟨g, _⟩) _, RingHom.id_comp]
-#align zmod.ring_hom_eq_of_ker_eq ZMod.ringHom_eq_of_ker_eq
 
 /-- `ZMod n` is reduced iff `n` is square-free (or `n=0`). -/
 @[simp]
@@ -45,7 +41,6 @@ theorem isReduced_zmod {n : ℕ} : IsReduced (ZMod n) ↔ Squarefree n ∨ n = 0
       (ZMod.ringHom_surjective <| Int.castRingHom <| ZMod n),
       ZMod.ker_intCastRingHom, ← isRadical_iff_span_singleton, isRadical_iff_squarefree_or_zero,
       Int.squarefree_natCast, Nat.cast_eq_zero]
-#align is_reduced_zmod isReduced_zmod
 
 instance {n : ℕ} [Fact <| Squarefree n] : IsReduced (ZMod n) :=
   isReduced_zmod.2 <| Or.inl <| Fact.out

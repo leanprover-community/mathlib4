@@ -23,8 +23,6 @@ In this file we show some results connecting multivariate polynomial rings and l
 
 -/
 
-open Classical
-
 variable {σ R : Type*} [CommRing R] (M : Submonoid R)
 variable (S : Type*) [CommRing S] [Algebra R S]
 
@@ -60,9 +58,10 @@ instance isLocalization : IsLocalization (M.map <| C (σ := σ))
       ring
   exists_of_eq {p q} := by
     intro h
-    simp_rw [algebraMap_def, ext_iff, coeff_map] at h
+    simp_rw [algebraMap_def, MvPolynomial.ext_iff, coeff_map] at h
     choose c hc using (fun m ↦ IsLocalization.exists_of_eq (M := M) (h m))
     simp only [Subtype.exists, Submonoid.mem_map, exists_prop, exists_exists_and_eq_and]
+    classical
     refine ⟨Finset.prod (p.support ∪ q.support) (fun m ↦ c m), ?_, ?_⟩
     · exact M.prod_mem (fun m _ ↦ (c m).property)
     · ext m

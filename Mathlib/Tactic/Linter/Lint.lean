@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Lean.Linter.Util
-import Batteries.Data.Array.Basic
+import Batteries.Data.String.Matcher
 import Batteries.Tactic.Lint
 
 /-!
@@ -111,70 +111,34 @@ initialize addLinter dupNamespace
 end DupNamespaceLinter
 
 /-!
-#  `oneLineAlign` linter
+# The "missing end" linter
 
-The `oneLineAlign` linter checks that `#align` statements span a single line,
-which is desirable as it allows them to be parsed by very simple parsers.
--/
-
-/--
-The `oneLineAlign` linter is set on by default.  Lean emits a warning on `#align` statements
-spanning more than one line.
--/
-register_option linter.oneLineAlign : Bool := {
-  defValue := true
-  descr := "enable the one-line align linter"
-}
-
-namespace OneLineAlignLinter
-
-open Lean
-
-/-- Gets the value of the `linter.oneLineAlign` option. -/
-def getLinterOneLineAlign (o : Options) : Bool := Linter.getLinterValue linter.oneLineAlign o
-
-@[inherit_doc linter.oneLineAlign]
-def oneLineAlign : Linter where run := withSetOptionIn fun stx => do
-  if getLinterOneLineAlign (← getOptions) then
-    if stx.isOfKind `Mathlib.Prelude.Rename.align then
-      if let some spos := stx.getRange? then
-        let fm ← getFileMap
-        let lines := (fm.toPosition spos.stop).line - (fm.toPosition spos.start).line + 1
-        if lines != 1 then
-          Linter.logLint linter.oneLineAlign stx
-            m!"This `#align` spans {lines} lines, instead of just one.\n\
-              Do not worry, the 100 character limit does not apply to `#align` statements!"
-
-initialize addLinter oneLineAlign
-
-end OneLineAlignLinter
-
-/-!
-# The "EndOf" linter
-
-The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 
 open Lean Elab Command
 
-/-- The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+/-- The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
-register_option linter.endOf : Bool := {
+register_option linter.missingEnd : Bool := {
   defValue := true
-  descr := "enable the EndOf linter"
+  descr := "enable the missing end linter"
 }
 
-namespace EndOf
+namespace MissingEnd
 
-/-- Gets the value of the `linter.endOf` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.endOf o
+/-- Gets the value of the `linter.missingEnd` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
 
-@[inherit_doc Mathlib.Linter.linter.endOf]
-def endOfLinter : Linter where run := withSetOptionIn fun stx ↦ do
+@[inherit_doc Mathlib.Linter.linter.missingEnd]
+def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
+    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
+      return
     if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
@@ -187,11 +151,121 @@ def endOfLinter : Linter where run := withSetOptionIn fun stx ↦ do
       if !ends.isEmpty then
         let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
           a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
-        Linter.logLint linter.endOf stx
+        Linter.logLint linter.missingEnd stx
          m!"unclosed sections or namespaces; expected: '{ending}'"
 
-initialize addLinter endOfLinter
+initialize addLinter missingEndLinter
 
-end EndOf
+end MissingEnd
+
+/-!
+# The `cdot` linter
+
+The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
+by typing a character different from `·`.
+For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
+-/
+
+/--
+The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a character
+different from `·`.
+For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
+register_option linter.cdot : Bool := {
+  defValue := true
+  descr := "enable the `cdot` linter"
+}
+
+/-- `isCDot? stx` checks whether `stx` is a `Syntax` node corresponding to a `cdot` typed with
+the character `·`. -/
+def isCDot? : Syntax → Bool
+  | .node _ ``cdotTk #[.node _ `patternIgnore #[.node _ _ #[.atom _ v]]] => v == "·"
+  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v] => v == "·"
+  | _ => false
+
+/--
+`findCDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`. -/
+partial
+def findCDot : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let dargs := (args.map findCDot).flatten
+    match kind with
+      | ``Lean.Parser.Term.cdot | ``cdotTk=> dargs.push stx
+      | _ =>  dargs
+  |_ => #[]
+
+/-- `unwanted_cdot stx` returns an array of syntax atoms within `stx`
+corresponding to `cdot`s that are not written with the character `·`.
+This is precisely what the `cdot` linter flags.
+-/
+def unwanted_cdot (stx : Syntax) : Array Syntax :=
+  (findCDot stx).filter (!isCDot? ·)
+
+namespace CDotLinter
+
+/-- Gets the value of the `linter.generic` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.cdot o
+
+@[inherit_doc linter.cdot]
+def cdotLinter : Linter where run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for s in unwanted_cdot stx do
+      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\·`) instead of '{s}' as 'cdot'."
+
+initialize addLinter cdotLinter
+
+end CDotLinter
+
+/-! # The "longLine linter" -/
+
+/-- The "longLine" linter emits a warning on lines longer than 100 characters.
+We allow lines containing URLs to be longer, though. -/
+register_option linter.longLine : Bool := {
+  defValue := true
+  descr := "enable the longLine linter"
+}
+
+namespace LongLine
+
+/-- Gets the value of the `linter.longLine` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.longLine o
+
+@[inherit_doc Mathlib.Linter.linter.longLine]
+def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
+    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
+      return
+    -- The linter ignores the `#guard_msgs` command, in particular its doc-string.
+    -- The linter still lints the message guarded by `#guard_msgs`.
+    if stx.isOfKind ``Lean.guardMsgsCmd then
+      return
+    -- if the linter reached the end of the file, then we scan the `import` syntax instead
+    let stx := ← do
+      if stx.isOfKind ``Lean.Parser.Command.eoi then
+        let fname ← getFileName
+        if !(← System.FilePath.pathExists fname) then return default
+        let contents ← IO.FS.readFile fname
+        -- `impMods` is the syntax for the modules imported in the current file
+        let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
+        return impMods
+      else return stx
+    let sstr := stx.getSubstring?
+    let fm ← getFileMap
+    let longLines := ((sstr.getD default).splitOn "\n").filter fun line =>
+      (100 < (fm.toPosition line.stopPos).column)
+    for line in longLines do
+      if !(line.containsSubstr "http") then
+        Linter.logLint linter.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
+          m!"This line exceeds the 100 character limit, please shorten it!"
+
+initialize addLinter longLineLinter
+
+end LongLine
 
 end Mathlib.Linter

@@ -7,8 +7,6 @@ import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Set.Pointwise.Basic
 
-#align_import data.set.pointwise.list_of_fn from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
-
 /-!
 # Pointwise operations with lists of sets
 
@@ -29,8 +27,6 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :
   · simp_rw [List.ofFn_zero, List.prod_nil, Fin.exists_fin_zero_pi, eq_comm, Set.mem_one]
   · simp_rw [List.ofFn_succ, List.prod_cons, Fin.exists_fin_succ_pi, Fin.cons_zero, Fin.cons_succ,
       mem_mul, @ih, exists_exists_eq_and, SetCoe.exists, exists_prop]
-#align set.mem_prod_list_of_fn Set.mem_prod_list_ofFn
-#align set.mem_sum_list_of_fn Set.mem_sum_list_ofFn
 
 @[to_additive]
 theorem mem_list_prod {l : List (Set α)} {a : α} :
@@ -45,14 +41,10 @@ theorem mem_list_prod {l : List (Set α)} {a : α} :
     exact ⟨fun i ↦ ⟨_, fi i⟩, rfl, rfl⟩
   · rintro ⟨fi, rfl, rfl⟩
     exact ⟨fun i ↦ _, rfl⟩
-#align set.mem_list_prod Set.mem_list_prod
-#align set.mem_list_sum Set.mem_list_sum
 
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i ↦ (f i : α)).prod = a := by
   rw [← mem_prod_list_ofFn, List.ofFn_const, List.prod_replicate]
-#align set.mem_pow Set.mem_pow
-#align set.mem_nsmul Set.mem_nsmul
 
 end Set
