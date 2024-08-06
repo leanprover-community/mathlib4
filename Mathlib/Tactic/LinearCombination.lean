@@ -66,9 +66,9 @@ namespace LinearCombination
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
-* `.proof a b p` means that `p` is a syntax corresponding to a proof of an equation.
-  For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `some (c_add_pf 2 h)`
-  which is a proof of `2 * a = 2 * b`.
+* `.proof a b p` means that `p` is a syntax corresponding to a proof of the equation `a = b`.
+  For example, if `h : x = y` then `expandLinearCombo (2 * h)` returns `some (c_add_pf 2 h)`
+  which is a proof of `2 * x = 2 * y`.
 * `.const e` means that the input expression is not an equation but a value;
   the input syntax itself is used in this case.
 -/
