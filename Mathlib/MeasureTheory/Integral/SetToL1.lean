@@ -70,7 +70,7 @@ with finite measure. Its value on other sets is ignored.
 
 noncomputable section
 
-open scoped Classical Topology NNReal ENNReal MeasureTheory Pointwise
+open scoped Topology NNReal ENNReal MeasureTheory Pointwise
 
 open Set Filter TopologicalSpace ENNReal EMetric
 
@@ -143,6 +143,7 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     (hS_meas : ∀ i, MeasurableSet (S i)) (hSp : ∀ i ∈ sι, μ (S i) ≠ ∞)
     (h_disj : ∀ᵉ (i ∈ sι) (j ∈ sι), i ≠ j → Disjoint (S i) (S j)) :
     T (⋃ i ∈ sι, S i) = ∑ i ∈ sι, T (S i) := by
+  classical
   revert hSp h_disj
   refine Finset.induction_on sι ?_ ?_
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, iUnion_false, iUnion_empty, sum_empty,
@@ -276,7 +277,8 @@ theorem setToSimpleFunc_zero_apply {m : MeasurableSpace α} (T : Set α → F �
     setToSimpleFunc T (0 : α →ₛ F) = 0 := by
   cases isEmpty_or_nonempty α <;> simp [setToSimpleFunc]
 
-theorem setToSimpleFunc_eq_sum_filter {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F')
+theorem setToSimpleFunc_eq_sum_filter [DecidablePred fun x ↦ x ≠ (0 : F)]
+    {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F')
     (f : α →ₛ F) :
     setToSimpleFunc T f = ∑ x ∈ f.range.filter fun x => x ≠ 0, (T (f ⁻¹' {x})) x := by
   symm
@@ -287,6 +289,7 @@ theorem setToSimpleFunc_eq_sum_filter {m : MeasurableSpace α} (T : Set α → F
 theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAdditive μ T) {f : α →ₛ G}
     (hf : Integrable f μ) {g : G → F} (hg : g 0 = 0) :
     (f.map g).setToSimpleFunc T = ∑ x ∈ f.range, T (f ⁻¹' {x}) (g x) := by
+  classical
   have T_empty : T ∅ = 0 := h_add.map_empty_eq_zero
   have hfp : ∀ x ∈ f.range, x ≠ 0 → μ (f ⁻¹' {x}) ≠ ∞ := fun x _ hx0 =>
     (measure_preimage_lt_top_of_integrable f hf hx0).ne
@@ -376,6 +379,7 @@ theorem setToSimpleFunc_add_left {m : MeasurableSpace α} (T T' : Set α → F �
 theorem setToSimpleFunc_add_left' (T T' T'' : Set α → E →L[ℝ] F)
     (h_add : ∀ s, MeasurableSet s → μ s < ∞ → T'' s = T s + T' s) {f : α →ₛ E}
     (hf : Integrable f μ) : setToSimpleFunc T'' f = setToSimpleFunc T f + setToSimpleFunc T' f := by
+  classical
   simp_rw [setToSimpleFunc_eq_sum_filter]
   suffices
     ∀ x ∈ filter (fun x : E => x ≠ 0) f.range, T'' (f ⁻¹' {x}) = T (f ⁻¹' {x}) + T' (f ⁻¹' {x}) by
@@ -397,6 +401,7 @@ theorem setToSimpleFunc_smul_left {m : MeasurableSpace α} (T : Set α → F →
 theorem setToSimpleFunc_smul_left' (T T' : Set α → E →L[ℝ] F') (c : ℝ)
     (h_smul : ∀ s, MeasurableSet s → μ s < ∞ → T' s = c • T s) {f : α →ₛ E} (hf : Integrable f μ) :
     setToSimpleFunc T' f = c • setToSimpleFunc T f := by
+  classical
   simp_rw [setToSimpleFunc_eq_sum_filter]
   suffices ∀ x ∈ filter (fun x : E => x ≠ 0) f.range, T' (f ⁻¹' {x}) = c • T (f ⁻¹' {x}) by
     rw [smul_sum]
@@ -559,6 +564,7 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
     SimpleFunc.setToSimpleFunc T
         (SimpleFunc.piecewise s hs (SimpleFunc.const α x) (SimpleFunc.const α 0)) =
       T s x := by
+  classical
   obtain rfl | hs_empty := s.eq_empty_or_nonempty
   · simp only [hT_empty, ContinuousLinearMap.zero_apply, piecewise_empty, const_zero,
       setToSimpleFunc_zero_apply]
@@ -1132,6 +1138,7 @@ section Function
 variable [CompleteSpace F] {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ} {f g : α → E}
 variable (μ T)
 
+open Classical in
 /-- Extend `T : Set α → E →L[ℝ] F` to `(α → E) → F` (for integrable functions `α → E`). We set it to
 0 if the function is not integrable. -/
 def setToFun (hT : DominatedFinMeasAdditive μ T C) (f : α → E) : F :=
@@ -1223,6 +1230,7 @@ theorem setToFun_add (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f �
 theorem setToFun_finset_sum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι)
     {f : ι → α → E} (hf : ∀ i ∈ s, Integrable (f i) μ) :
     setToFun μ T hT (∑ i ∈ s, f i) = ∑ i ∈ s, setToFun μ T hT (f i) := by
+  classical
   revert hf
   refine Finset.induction_on s ?_ ?_
   · intro _

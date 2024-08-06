@@ -35,7 +35,7 @@ namespace IsCompactlyGenerated
 
 open CompleteLattice
 
-variable {α : Type*} [CompleteLattice α] [IsCompactlyGenerated α]
+variable {α : Type*} [CompleteLattice α]
 
 /--
 An alternative constructor for boolean algebras.
@@ -67,6 +67,8 @@ variable {S : Set α}
 lemma mono (hS : BooleanGenerators S) {T : Set α} (hTS : T ⊆ S) : BooleanGenerators T where
   isAtom I hI := hS.isAtom I (hTS hI)
   finitelyAtomistic := fun s a hs ↦ hS.finitelyAtomistic s a (le_trans hs hTS)
+
+variable [IsCompactlyGenerated α]
 
 lemma atomistic (hS : BooleanGenerators S) (a : α) (ha : a ≤ sSup S) : ∃ T ⊆ S, a = sSup T := by
   obtain ⟨C, hC, rfl⟩ := IsCompactlyGenerated.exists_sSup_eq a

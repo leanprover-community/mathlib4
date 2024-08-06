@@ -13,8 +13,6 @@ import Mathlib.RingTheory.Polynomial.Tower
 We prove basic properties of integral elements in a ring extension.
 -/
 
-
-open scoped Classical
 open Polynomial Submodule
 
 section Ring
@@ -58,6 +56,7 @@ theorem isIntegral_algHom_iff {x : A} : IsIntegral R (f x) ↔ IsIntegral R x :=
 
 end
 
+open Classical in
 theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A] [Algebra R A]
     {x : A} {f : R[X]} (hf : f.Monic) (hfx : aeval x f = 0) :
     span R (Finset.image (x ^ ·) (Finset.range (natDegree f))) =
@@ -78,6 +77,7 @@ theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A]
 
 theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
     (Algebra.adjoin R {x}).toSubmodule.FG := by
+  classical
   rcases hx with ⟨f, hfm, hfx⟩
   use (Finset.range <| f.natDegree).image (x ^ ·)
   exact span_range_natDegree_eq_adjoin hfm (by rwa [aeval_def])

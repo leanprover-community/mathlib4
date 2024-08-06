@@ -31,9 +31,9 @@ The following properties are covered:
 
 * The triviality of an ideal or an element:
   `ideal_eq_bot_of_localization`, `eq_zero_of_localization`
-* `isReduced` : `localization_isReduced`, `isReduced_of_localization_maximal`.
-* `finite`: `localization_finite`, `finite_ofLocalizationSpan`
-* `finiteType`: `localization_finiteType`, `finiteType_ofLocalizationSpan`
+* `IsReduced` : `localization_isReduced`, `isReduced_of_localization_maximal`.
+* `RingHom.finite`: `localization_finite`, `finite_ofLocalizationSpan`
+* `RingHom.finiteType`: `localization_finiteType`, `finiteType_ofLocalizationSpan`
 
 -/
 

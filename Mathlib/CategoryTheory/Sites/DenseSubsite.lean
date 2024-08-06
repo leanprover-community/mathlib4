@@ -478,7 +478,7 @@ lemma isContinuous [G.IsLocallyFaithful K] (Hp : CoverPreserving J K G) : G.IsCo
 
 instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
-  map_surjective α := ⟨⟨sheafHom α.val⟩, Sheaf.Hom.ext _ _ <| sheafHom_restrict_eq α.val⟩
+  map_surjective α := ⟨⟨sheafHom α.val⟩, Sheaf.Hom.ext <| sheafHom_restrict_eq α.val⟩
 
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
@@ -510,6 +510,9 @@ class IsDenseSubsite : Prop where
   isLocallyFull' : G.IsLocallyFull K := by infer_instance
   isLocallyFaithful' : G.IsLocallyFaithful K := by infer_instance
   functorPushforward_mem_iff : ∀ {X : C} {S : Sieve X}, S.functorPushforward G ∈ K _ ↔ S ∈ J _
+
+lemma functorPushforward_mem_iff {X : C} {S : Sieve X} [G.IsDenseSubsite J K]:
+    S.functorPushforward G ∈ K _ ↔ S ∈ J _ := IsDenseSubsite.functorPushforward_mem_iff
 
 namespace IsDenseSubsite
 
@@ -654,6 +657,9 @@ it induces an equivalence of category of sheaves valued in a category with suita
 @[simps! functor inverse]
 noncomputable def sheafEquiv : Sheaf J A ≌ Sheaf K A :=
   (G.sheafAdjunctionCocontinuous A J K).toEquivalence.symm
+
+instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=
+  inferInstanceAs (IsDenseSubsite.sheafEquiv G _ _ _).inverse.IsEquivalence
 
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 

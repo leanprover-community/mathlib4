@@ -389,6 +389,9 @@ end NormedSpace
 def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 
+/-- Notation for `Integrable` with respect to a non-standard σ-algebra. -/
+scoped notation "Integrable[" mα "]" => @Integrable _ _ _ mα
+
 theorem memℒp_one_iff_integrable {f : α → β} : Memℒp f 1 μ ↔ Integrable f μ := by
   simp_rw [Integrable, HasFiniteIntegral, Memℒp, eLpNorm_one_eq_lintegral_nnnorm]
 

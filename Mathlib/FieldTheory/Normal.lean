@@ -22,8 +22,6 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 noncomputable section
 
-open scoped Classical Polynomial
-
 open Polynomial IsScalarTower
 
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]
@@ -57,6 +55,7 @@ instance normal_self : Normal F F where
 
 theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
     ∃ p : F[X], IsSplittingField F K p := by
+  classical
   let s := Basis.ofVectorSpace F K
   refine
     ⟨∏ x, minpoly F (s x), splits_prod _ fun x _ => h.splits (s x),
