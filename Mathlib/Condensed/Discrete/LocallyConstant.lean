@@ -43,12 +43,25 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 * `incl_of_counitAppApp`: given  `S`, `Y` and `f : LocallyConstant S Y(*)` like above, we have
   `Y(ιᵢ)(ε_{S, Y}(f)) = gᵢ(yᵢ)` where `ε` denotes the counit and the other notation is like above.
 
-For naturality in `Y`, there is an additional lemma:
-
-* `CompHausLike.LocallyConstant.hom_apply_counitAppApp`: given `S`, `Y` and
-  `f : LocallyConstant S Y(*)` ...
-
 ## Main definitions
+
+* `CompHausLike.LocallyConstant.functor`: the functor from the category of sets to the category of
+  sheaves for the coherent topology on `CompHausLike P`, which takes a set `X` to
+  `LocallyConstant - X`
+  - `CondensedSet.LocallyConstant.functor` is the above functor in the case of condensed sets.
+  - `LightCondSet.LocallyConstant.functor` is the above functor in the case of light condensed sets.
+
+* `CompHausLike.LocallyConstant.adjunction`: the functor described above is left adjoint to the
+  "underlying set" functor `(sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩`, which takes
+  a sheaf `X` to the set `X(*)`.
+
+* `CondensedSet.LocallyConstant.iso`: the functor `CondensedSet.LocallyConstant.functor` is
+  isomorphic to the functor `Condensed.discrete (Type _)` (the constant sheaf functor from sets to
+  condensed sets).
+
+* `LightCondSet.LocallyConstant.iso`: the functor `LightCondSet.LocallyConstant.functor` is
+  isomorphic to the functor `LightCondensed.discrete (Type _)` (the constant sheaf functor from sets
+  to light condensed sets).
 
 -/
 
