@@ -75,10 +75,6 @@ lemma quasicategory_of_filler (S : SSet)
 
 section
 
-end
-
-section
-
 instance : MonoidalClosed SSet := FunctorToTypes.monoidalClosed
 
 /- p : X ⟶ Y is a trivial Kan fibration if it has the right lifting property wrt
@@ -90,18 +86,44 @@ class trivialKanFibration {X Y : SSet} (p : X ⟶ Y) : Prop where
 class rlp_mono {X Y : SSet} (p : X ⟶ Y) where
   has_rlp {A B : SSet} (i : A ⟶ B) [Mono i] : HasLiftingProperty i p
 
+section _006Y
+
 open MorphismProperty
 
-instance : StableUnderCobaseChange (monomorphisms SSet) := sorry
-instance : StableUnderRetracts (monomorphisms SSet) := mono_retracts
-instance : StableUnderTransfiniteComposition (monomorphisms SSet) := sorry
+instance sset_mono_pushout : StableUnderCobaseChange (monomorphisms SSet) := by
+  intro A B A' B' f s f' t P ⟨hf⟩
+  have p : ∀ (X : SimplexCategoryᵒᵖ), Function.Injective (f.app X) := by
+    sorry
+  have : ∀ (X : SimplexCategoryᵒᵖ), Mono (f'.app X) := by
+    intro n
+    have := congr_app P.w n
+    rw [mono_iff_injective]
+    dsimp [Function.Injective] at p ⊢
+    have := p n
+    sorry
+  apply NatTrans.mono_of_mono_app
 
-instance : WeaklySaturated (monomorphisms SSet) where
+instance sset_mono_comp : StableUnderTransfiniteComposition (monomorphisms SSet) := sorry
+
+-- `0077` (a)
+instance : WeaklySaturated (monomorphisms SSet) := ⟨sset_mono_pushout, mono_retract, sset_mono_comp⟩
+
+-- Fix a TKF `p` and let `S` be the collection of all morphisms with LLP wrt `p`.
+-- Then `S` contains all boundary inclusions
+instance {X Y : SSet} (p : X ⟶ Y) [trivialKanFibration p] (n : ℕ) :
+    llp_wrt' p (boundaryInclusion n) := trivialKanFibration.has_rlp n
+-- And `S` is weakly saturated
+instance {X Y : SSet} (p : X ⟶ Y) [trivialKanFibration p] : WeaklySaturated (llp_wrt' p) :=
+  ⟨llp_pushout', llp_retract', llp_comp'⟩
+-- it follows from `0077` (b) that `S` contains all monomorphisms
 
 -- `006Y`, need weakly satured stuff to prove, and `0077`
 /- RLP wrt all monomorphisms iff trivial Kan fib -/
 instance tkf_iff_rlp_mono {X Y : SSet} (p : X ⟶ Y) : trivialKanFibration p ↔
-    ∀ {A B : SSet} (i : A ⟶ B) [Mono i], HasLiftingProperty i p := sorry
+    ∀ {A B : SSet} (i : A ⟶ B) [Mono i], HasLiftingProperty i p := by
+  sorry
+
+end _006Y
 
 /- inner fibration if RLP wrt all inner horn inclusions -/
 class innerFibration {X Y : SSet} (p : X ⟶ Y) where
@@ -119,7 +141,7 @@ instance innerAnodyne_of_innerHorn
   has_llp _ h := h.has_rlp _h0 _hn
 
 -- `007E`, if extension property wrt every inner anodyne, then quasicat
--- to prove converse, need (?) that class of inner anodyne morphisms is generated
+-- to prove converse, need that class of inner anodyne morphisms is generated
 -- by inner horn inclusions
 instance {S : SSet}
     (h : ∀ {A B} (i : A ⟶ B) [innerAnodyne i] (f₀ : A ⟶ S), ∃ (f : B ⟶ S), f₀ = i ≫ f) :
@@ -238,37 +260,35 @@ end ihom
 noncomputable
 def temp (m : ℕ) :
     Limits.PushoutCocone (Λ[2, 1] ◁ boundaryInclusion m) (hornInclusion 2 1 ▷ ∂Δ[m]) := by
-  refine Limits.PushoutCocone.mk (hornInclusion 2 1 ▷ Δ[m]) (Δ[2] ◁ boundaryInclusion m) ?_
-  aesop
+  refine Limits.PushoutCocone.mk (hornInclusion 2 1 ▷ Δ[m]) (Δ[2] ◁ boundaryInclusion m)
+    (by aesop)
 
 -- `0079`, hard to show
 /- B is a quasicat iff Fun(Δ[2], B) ⟶ Fun(Λ[2, 1], B) is a trivial Kan fib -/
 instance horn_tkf_iff_quasicat (B : SSet) : Quasicategory B ↔
-    trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B) := by
-  refine ⟨?_, ?_⟩
-  swap
-  rintro ⟨h⟩
-  refine ⟨fun m i σ₀ _h0 _hm ↦ ?_⟩
-  let p := (MonoidalClosed.pre (hornInclusion 2 1)).app B
-  have := temp m
-  sorry
---  (Δ[2] ⊗ Δ[m])
--- ∂Δ[n] ⟶ Δ[n] is a monomorphism
-instance (n : ℕ) : Mono (boundaryInclusion n) where
-  right_cancellation := by
-    intro Z f g H
-    ext m Zm
-    have := congr_fun (congr_app H m) Zm
-    change (boundaryInclusion n).app m (f.app m Zm) = (boundaryInclusion n).app m (g.app m Zm) at this
-    simp [boundaryInclusion] at this
-    sorry
+    trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B) := sorry
 
-example (X Y B : SSet) (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) (b : B.obj n) (x : X.obj n) :
-  (B ◁ f).app n (b, x) = (b, f.app n x) := rfl
+-- ∂Δ[n] ⟶ Δ[n] is a monomorphism
+instance (n : ℕ) : Mono (boundaryInclusion n) := by
+  have : ∀ (k : SimplexCategoryᵒᵖ), Mono ((boundaryInclusion n).app k) := fun _ ↦ by
+    rw [mono_iff_injective]
+    exact (Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
+  apply NatTrans.mono_of_mono_app
 
 -- need that B ⊗ ∂Δ[n] ⟶ B ⊗ Δ[n] is a monomorphism for next lemma
-instance (B : SSet) (n : ℕ) : Mono (B ◁ (boundaryInclusion n)) where
-  right_cancellation := sorry
+instance (B : SSet) (n : ℕ) : Mono (B ◁ (boundaryInclusion n)) := by
+  have : ∀ (k : SimplexCategoryᵒᵖ), Mono ((B ◁ boundaryInclusion n).app k) := by
+    intro k
+    rw [mono_iff_injective]
+    rintro ⟨b, x⟩ ⟨b', x'⟩ h
+    apply Prod.ext_iff.1 at h
+    apply Prod.ext
+    · exact h.1
+    · simp only [boundaryInclusion, whiskerLeft_app_apply] at h ⊢
+      apply (Set.injective_codRestrict Subtype.property).mp
+      exact fun ⦃a₁ a₂⦄ a ↦ a
+      exact h.2
+  apply NatTrans.mono_of_mono_app
 
 /- changing the square to apply the lifting property of p
    on the monomorphism `(B ◁ boundaryInclusion n)` -/
