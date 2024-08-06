@@ -665,11 +665,13 @@ protected theorem smul_def (f : A₁ ≃ₐ[R] A₁) (a : A₁) : f • a = f a 
 instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
   ⟨AlgEquiv.ext⟩
 
-instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁ where
-  smul_comm r e a := (map_smul e r a).symm
+instance apply_smulCommClass {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
+    SMulCommClass S (A₁ ≃ₐ[R] A₁) A₁ where
+  smul_comm r e a := (e.toLinearEquiv.map_smul_of_tower r a).symm
 
-instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
-  smul_comm e r a := map_smul e r a
+instance apply_smulCommClass' {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
+    SMulCommClass (A₁ ≃ₐ[R] A₁) S A₁ :=
+  SMulCommClass.symm _ _ _
 
 instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
   smul := fun f => Units.map f
