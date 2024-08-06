@@ -634,7 +634,8 @@ lemma permutations_take_two (x y : α) (s : List α) :
     (x :: y :: s).permutations.take 2 = [x :: y :: s, y :: x :: s] := by
   induction s <;> simp only [take, permutationsAux, permutationsAux.rec, permutationsAux2, id_eq]
 
-theorem nodup_permutations_iff (s : List α) : Nodup s.permutations ↔ Nodup s := by
+@[simp]
+theorem nodup_permutations_iff {s : List α} : Nodup s.permutations ↔ Nodup s := by
   refine ⟨?_, nodup_permutations s⟩
   contrapose
   rw [← exists_duplicate_iff_not_nodup]
