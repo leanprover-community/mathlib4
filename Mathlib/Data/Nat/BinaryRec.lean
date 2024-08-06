@@ -94,7 +94,8 @@ theorem bit_div_two (b n) : bit b n / 2 = n := by
 theorem bit_mod_two (b n) : bit b n % 2 = b.toNat := by
   cases b <;> simp [bit_val, mul_add_mod]
 
-@[simp] theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
+@[simp]
+theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
   bit_div_two b n
 
 theorem testBit_bit_zero (b n) : (bit b n).testBit 0 = b := by

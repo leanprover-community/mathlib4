@@ -73,25 +73,13 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
   · simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 
+@[simp]
 lemma bodd_bit (b n) : bodd (bit b n) = b := by
-  rw [bit_val]
-  simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
-    Bool.not_true, Bool.and_false, Bool.xor_false]
-  cases b <;> cases bodd n <;> rfl
+  simp [bodd]
 
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
-  have := congr_arg bodd (mod_add_div n 2)
-  simp? [not] at this says
-    simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and, Bool.bne_false]
-      at this
-  have _ : ∀ b, and false b = false := by
-    intro b
-    cases b <;> rfl
-  have _ : ∀ b, bxor b false = b := by
-    intro b
-    cases b <;> rfl
-  rw [← this]
-  cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
+  cases n using bitCasesOn with
+  | h b n => cases b <;> simp
 
 theorem div2_add_bodd (n : Nat) : 2 * div2 n + cond (bodd n) 1 0 = n := by
   rw [← mod_two_of_bodd, div2_val, Nat.div_add_mod]
@@ -102,10 +90,9 @@ lemma div2_one : div2 1 = 0 := rfl
 
 lemma div2_two : div2 2 = 1 := rfl
 
+@[simp]
 lemma div2_bit (b n) : div2 (bit b n) = n := by
-  rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
-  <;> cases b
-  <;> decide
+  rw [div2_val, bit_div_two]
 
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
@@ -114,14 +101,9 @@ lemma div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
-lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
-  | 0 => rfl
-  | succ n => by
-    simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
-    refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
-    cases bodd n
-    · simp
-    · simp; omega
+lemma bodd_add_div2 (n : ℕ) : cond (bodd n) 1 0 + 2 * div2 n = n := by
+  cases n using bitCasesOn with
+  | h b n => simpa using (bit_val b n).symm
 
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
