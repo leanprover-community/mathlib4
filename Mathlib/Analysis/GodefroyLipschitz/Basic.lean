@@ -375,20 +375,16 @@ theorem exists_inverse' [FiniteDimensional ℝ E] {n : ℕ} (hn : finrank ℝ (E
     exact Tφ x
 
 theorem isup_fin :
-    (⊤ : Submodule ℝ E) = ⨆ (F : Submodule ℝ E) (_ : Module.rank ℝ F < Cardinal.aleph0), F := by
+    univ = ⋃ (F : Submodule ℝ E) (_ : FiniteDimensional ℝ F), (F : Set E) := by
   ext x
-  simp only [Submodule.mem_top, true_iff]
-  apply mem_iSup_of_mem (span ℝ {x})
-  apply mem_iSup_of_mem
+  simp only [mem_univ, mem_iUnion, SetLike.mem_coe, exists_prop, true_iff]
+  refine ⟨span ℝ {x}, ?_, ?_⟩
+  · exact Finite.span_singleton ℝ x
   apply subset_span
   exact mem_singleton _
-  have := Finite.span_singleton ℝ x
-  rw [← finrank_eq_rank]
-  rcases eq_or_ne x 0 with rfl | hx
-  · rw [span_singleton_eq_bot.2 rfl, finrank_bot]
-    exact Cardinal.nat_lt_aleph0 0
-  · rw [finrank_span_singleton hx]
-    exact Cardinal.one_lt_aleph0
+
+theorem Dense.denseInducing_val {X : Type*} [TopologicalSpace X] {s : Set X} (hs : Dense s) :
+    DenseInducing (@Subtype.val X s) := ⟨inducing_subtype_val, hs.denseRange_val⟩
 
 theorem span_constr {s : Set E} {f : s → F} (h0 : (h : 0 ∈ s) → f ⟨0, h⟩ = 0)
     (hadd : ∀ x y : s, (h : x.1 + y.1 ∈ s) → f ⟨x.1 + y.1, h⟩ = f x + f y)
@@ -437,14 +433,18 @@ theorem span_constr {s : Set E} {f : s → F} (h0 : (h : 0 ∈ s) → f ⟨0, h�
   use g
   sorry
 
-theorem exists_inverse''
+theorem uniformInducing_val {X : Type*} [UniformSpace X] (s : Set X) :
+    UniformInducing (@Subtype.val X s) := ⟨uniformity_setCoe⟩
+
+theorem exists_inverse'' [CompleteSpace E]
     (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
     (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   have fini (p : Submodule ℝ E) (hp : FiniteDimensional ℝ p) :
-      ∃ T : span ℝ (φ '' p) →L[ℝ] p, ∀ y : p, T ⟨φ y, subset_span ⟨y.1, y.2, rfl⟩⟩ = y := by
+      ∃ T : span ℝ (φ '' p) →L[ℝ] p, ‖T‖ = 1 ∧
+        ∀ y : p, T ⟨φ y, subset_span ⟨y.1, y.2, rfl⟩⟩ = y := by
     sorry
-  choose! T hT using fini
+  choose! T nT hT using fini
   have eq (p q : Submodule ℝ E) (hp : FiniteDimensional ℝ p) (hq : FiniteDimensional ℝ q) :
       ∀ y : (span ℝ (φ '' p) ⊓ span ℝ (φ '' q) : Submodule ℝ F),
       (T p (Submodule.inclusion inf_le_left y)).1 =
@@ -483,43 +483,183 @@ theorem exists_inverse''
       fun i ↦ (mem_iUnion₂.1 (xxy i).2).choose_spec.choose_spec
     change ∑ i, cxy i • (T (pxy i) ⟨(xxy i).1, hxy i⟩).1 =
       ∑ i, cx i • (T (px i) ⟨(xx i).1, hx i⟩).1 + ∑ i, cy i • (T (py i) ⟨(xy i).1, hy i⟩).1
-    have lol1 (i : Fin nxy) : span ℝ (φ '' (pxy i)) ≤ span ℝ (φ '' ↑(⨆ j, pxy j)) := sorry
-    have this (i : Fin nxy) :
-        (T (pxy i) ⟨(xxy i).1, hxy i⟩).1 =
-        (T (⨆ j, pxy j) (Submodule.inclusion (lol1 i) ⟨(xxy i).1, hxy i⟩)).1 := by sorry
+    have lol (i : Fin nxy) :
+        span ℝ (φ '' (pxy i)) ≤
+        span ℝ  (φ '' ↑((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))) := sorry
+    have this (i : Fin nxy) (x : span ℝ (φ '' (pxy i))) :
+        (T (pxy i) x).1 =
+        (T ((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))
+          (Submodule.inclusion (lol i) x)).1 := by sorry
     simp_rw [this]
-    have lol2 (i : Fin nx) : span ℝ (φ '' (px i)) ≤ span ℝ (φ '' ↑(⨆ j, px j)) := sorry
-    have this (i : Fin nx) :
-        (T (px i) ⟨(xx i).1, hx i⟩).1 =
-        (T (⨆ j, px j) (Submodule.inclusion (lol2 i) ⟨(xx i).1, hx i⟩)).1 := by sorry
+    have lol (i : Fin nx) :
+        span ℝ (φ '' (px i)) ≤
+        span ℝ  (φ '' ↑((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))) := sorry
+    have this (i : Fin nx) (x : span ℝ (φ '' (px i))) :
+        (T (px i) x).1 =
+        (T ((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))
+          (Submodule.inclusion (lol i) x)).1 := by sorry
     simp_rw [this]
-    have lol3 (i : Fin ny) : span ℝ (φ '' (py i)) ≤ span ℝ (φ '' ↑(⨆ j, py j)) := sorry
-    have this (i : Fin ny) :
-        (T (py i) ⟨(xy i).1, hy i⟩).1 =
-        (T (⨆ j, py j) (Submodule.inclusion (lol3 i) ⟨(xy i).1, hy i⟩)).1 := by sorry
-    simp_rw [this, ← coe_smul, ← _root_.map_smul, ← Submodule.coe_sum, ← map_sum]
-    have lol : span ℝ (φ '' ↑(⨆ j, pxy j)) ≤
+    have lol (i : Fin ny) :
+        span ℝ (φ '' (py i)) ≤
         span ℝ  (φ '' ↑((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))) := sorry
-    have this (x : span ℝ (φ '' ↑(⨆ j, pxy j))) :
-        (T (⨆ j, pxy j) x).1 =
+    have this (i : Fin ny) (x : span ℝ (φ '' (py i))) :
+        (T (py i) x).1 =
         (T ((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))
-          (Submodule.inclusion lol x)).1 := sorry
-    rw [this]
-    have lol : span ℝ (φ '' ↑(⨆ j, px j)) ≤
-        span ℝ  (φ '' ↑((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))) := sorry
-    have this (x : span ℝ (φ '' ↑(⨆ j, px j))) :
-        (T (⨆ j, px j) x).1 =
-        (T ((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))
-          (Submodule.inclusion lol x)).1 := sorry
-    rw [this]
-    have lol : span ℝ (φ '' ↑(⨆ j, py j)) ≤
-        span ℝ  (φ '' ↑((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))) := sorry
-    have this (x : span ℝ (φ '' ↑(⨆ j, py j))) :
-        (T (⨆ j, py j) x).1 =
-        (T ((⨆ j, pxy j) ⊔ (⨆ j, px j) ⊔ (⨆ j, py j))
-          (Submodule.inclusion lol x)).1 := sorry
-    rw [this, ← coe_add, ← map_add]
+          (Submodule.inclusion (lol i) x)).1 := by sorry
+    simp_rw [this, ← coe_smul, ← Submodule.coe_sum, ← _root_.map_smul, ← map_sum]
+    rw [← coe_add, ← map_add]
     congr
-    simp_rw [map_sum, ← Subtype.val_inj, coe_add, Submodule.coe_sum, Submodule.coe_inclusion,
-      coe_smul]
+    rw [← Subtype.val_inj, coe_add]
+    simp_rw [Submodule.coe_sum, Submodule.coe_inclusion, coe_smul]
     rw [xe, ye, xye]
+  have gsmul : ∀ (c : ℝ) x, g (c • x) = c • (g x) := by
+    intro c x
+    let nx := (mem_span_set'.1 x.2).choose
+    let cx : Fin nx → ℝ := (mem_span_set'.1 x.2).choose_spec.choose
+    let xx : Fin nx → Q := (mem_span_set'.1 x.2).choose_spec.choose_spec.choose
+    have xe : ∑ i, cx i • (xx i).1 = x := (mem_span_set'.1 x.2).choose_spec.choose_spec.choose_spec
+    let px := fun i ↦ (mem_iUnion₂.1 (xx i).2).choose
+    have hx : ∀ i, (xx i).1 ∈ span ℝ (φ '' (px i)) :=
+      fun i ↦ (mem_iUnion₂.1 (xx i).2).choose_spec.choose_spec
+    let ncx := (mem_span_set'.1 (c • x).2).choose
+    let ccx : Fin ncx → ℝ := (mem_span_set'.1 (c • x).2).choose_spec.choose
+    let xcx : Fin ncx → Q := (mem_span_set'.1 (c • x).2).choose_spec.choose_spec.choose
+    have cxe : ∑ i, ccx i • (xcx i).1 = c • x :=
+      (mem_span_set'.1 (c • x).2).choose_spec.choose_spec.choose_spec
+    let pcx := fun i ↦ (mem_iUnion₂.1 (xcx i).2).choose
+    have hcx : ∀ i, (xcx i).1 ∈ span ℝ (φ '' (pcx i)) :=
+      fun i ↦ (mem_iUnion₂.1 (xcx i).2).choose_spec.choose_spec
+    change ∑ i, ccx i • (T (pcx i) ⟨(xcx i).1, hcx i⟩).1 =
+      c • ∑ i, cx i • (T (px i) ⟨(xx i).1, hx i⟩).1
+    have lol (i : Fin ncx) :
+        span ℝ (φ '' (pcx i)) ≤
+        span ℝ  (φ '' ↑((⨆ j, pcx j) ⊔ (⨆ j, px j))) := sorry
+    have this (i : Fin ncx) (x : span ℝ (φ '' (pcx i))) :
+        (T (pcx i) x).1 =
+        (T ((⨆ j, pcx j) ⊔ (⨆ j, px j))
+          (Submodule.inclusion (lol i) x)).1 := by sorry
+    simp_rw [this]
+    have lol (i : Fin nx) :
+        span ℝ (φ '' (px i)) ≤
+        span ℝ  (φ '' ↑((⨆ j, pcx j) ⊔ (⨆ j, px j))) := sorry
+    have this (i : Fin nx) (x : span ℝ (φ '' (px i))) :
+        (T (px i) x).1 =
+        (T ((⨆ j, pcx j) ⊔ (⨆ j, px j))
+          (Submodule.inclusion (lol i) x)).1 := by sorry
+    simp_rw [this, ← coe_smul, ← Submodule.coe_sum, ← _root_.map_smul, ← map_sum]
+    rw [← coe_smul, ← _root_.map_smul]
+    congr
+    rw [← Subtype.val_inj, coe_smul]
+    simp_rw [Submodule.coe_sum, Submodule.coe_inclusion, coe_smul]
+    rw [xe, cxe]
+  have ng : ∀ x, ‖g x‖ ≤ ‖x‖ := by
+    intro x
+    let nx := (mem_span_set'.1 x.2).choose
+    let cx : Fin nx → ℝ := (mem_span_set'.1 x.2).choose_spec.choose
+    let xx : Fin nx → Q := (mem_span_set'.1 x.2).choose_spec.choose_spec.choose
+    have xe : ∑ i, cx i • (xx i).1 = x := (mem_span_set'.1 x.2).choose_spec.choose_spec.choose_spec
+    let px := fun i ↦ (mem_iUnion₂.1 (xx i).2).choose
+    have hx : ∀ i, (xx i).1 ∈ span ℝ (φ '' (px i)) :=
+      fun i ↦ (mem_iUnion₂.1 (xx i).2).choose_spec.choose_spec
+    have lol (i : Fin nx) :
+        span ℝ (φ '' (px i)) ≤
+        span ℝ  (φ '' ↑(⨆ j, px j)) := sorry
+    have this (i : Fin nx) (x : span ℝ (φ '' (px i))) :
+        (T (px i) x).1 =
+        (T (⨆ j, px j)
+          (Submodule.inclusion (lol i) x)).1 := by sorry
+    change ‖∑ i, cx i • (T (px i) ⟨(xx i).1, hx i⟩).1‖ ≤ ‖x‖
+    simp_rw [this, ← coe_smul, ← Submodule.coe_sum, ← _root_.map_smul, ← map_sum]
+    rw [norm_coe]
+    apply le_trans (ContinuousLinearMap.le_opNorm _ _)
+    rw [← norm_coe (∑ _, _)]
+    simp_rw [Submodule.coe_sum, Submodule.coe_inclusion, coe_smul]
+    rw [xe, nT, norm_coe, one_mul]
+    sorry
+
+  have dQ : Dense (span ℝ Q : Set F) := by
+    simp only [Q]
+    rw [span_iUnion₂]
+    simp_rw [span_span]
+    rw [← span_iUnion₂, ← image_iUnion₂, ← isup_fin, image_univ]
+    exact hlol
+  have dQ := dQ.denseRange_val
+  have ui := uniformInducing_val (span ℝ Q : Set F)
+  let g' : span ℝ Q →ₗ[ℝ] E :=
+    { toFun := g
+      map_add' := gadd
+      map_smul' := gsmul }
+  have cg : UniformContinuous g := sorry
+  let h := (ui.denseInducing dQ).extend g
+  have ch : Continuous h :=
+    (ui.denseInducing dQ).continuous_extend (uniformly_extend_exists ui dQ cg)
+  have merde : ∀ x : F, ∃ u : ℕ → span ℝ Q, Tendsto (Subtype.val ∘ u) atTop (𝓝 x) := by
+    intro x
+    rcases dense_seq dQ x with ⟨u, hu1, hu2⟩
+    let v : ℕ → span ℝ Q := fun n ↦ (hu1 n).choose
+    have : u = Subtype.val ∘ v := by
+      ext n
+      simp only [SetLike.coe_sort_coe, Function.comp_apply, v]
+      exact (hu1 n).choose_spec.symm
+    use v
+    rwa [← this]
+  have hadd : ∀ x y, h (x + y) = h x + h y := by
+    intro x y
+    rcases merde x with ⟨ux, hux⟩
+    rcases merde y with ⟨uy, huy⟩
+    have ptn1 : Tendsto (fun n ↦ h (ux n)) atTop (𝓝 (h x)) := (ch.tendsto _).comp hux
+    have ptn2 : Tendsto (fun n ↦ h (uy n)) atTop (𝓝 (h y)) := (ch.tendsto _).comp huy
+    have ptn3 : Tendsto (fun n ↦ h ((ux n : F) + (uy n))) atTop (𝓝 (h (x + y))) :=
+      (ch.tendsto _).comp <| hux.add huy
+    have ptn4 : Tendsto (fun n ↦ g (ux n)) atTop (𝓝 (h x)) := by
+      apply ptn1.congr
+      intro n
+      exact (ui.denseInducing dQ).extend_eq cg.continuous (ux n)
+    have ptn5 : Tendsto (fun n ↦ g (uy n)) atTop (𝓝 (h y)) := by
+      apply ptn2.congr
+      intro n
+      exact (ui.denseInducing dQ).extend_eq cg.continuous (uy n)
+    have ptn6 : Tendsto (fun n ↦ g ((ux n) + (uy n))) atTop (𝓝 (h (x + y))) := by
+      apply ptn3.congr
+      intro n
+      rw [← coe_add]
+      exact (ui.denseInducing dQ).extend_eq cg.continuous _
+    have ptn7 : Tendsto (fun n ↦ (g (ux n)) + (g (uy n))) atTop (𝓝 (h (x + y))) := by
+      apply ptn6.congr
+      exact fun _ ↦ gadd _ _
+    have ptn8 : Tendsto (fun n ↦ (g (ux n)) + (g (uy n))) atTop (𝓝 ((h x) + (h y))) :=
+      ptn4.add ptn5
+    exact tendsto_nhds_unique ptn7 ptn8
+  have hsmul : ∀ (c : ℝ) x, h (c • x) = c • (h x) := by
+    intro c x
+    rcases merde x with ⟨ux, hux⟩
+    have ptn1 : Tendsto (fun n ↦ h (ux n)) atTop (𝓝 (h x)) := (ch.tendsto _).comp hux
+    have ptn3 : Tendsto (fun n ↦ h (c • (ux n : F))) atTop (𝓝 (h (c • x))) :=
+      (ch.tendsto _).comp <| hux.const_smul c
+    have ptn4 : Tendsto (fun n ↦ g (ux n)) atTop (𝓝 (h x)) := by
+      apply ptn1.congr
+      intro n
+      exact (ui.denseInducing dQ).extend_eq cg.continuous (ux n)
+    have ptn6 : Tendsto (fun n ↦ g (c • (ux n))) atTop (𝓝 (h (c • x))) := by
+      apply ptn3.congr
+      intro n
+      rw [← Submodule.coe_smul]
+      exact (ui.denseInducing dQ).extend_eq cg.continuous _
+    have ptn7 : Tendsto (fun n ↦ c • (g (ux n))) atTop (𝓝 (h (c • x))) := by
+      apply ptn6.congr
+      exact fun _ ↦ gsmul _ _
+    have ptn8 : Tendsto (fun n ↦ c • (g (ux n))) atTop (𝓝 (c • (h x))) :=
+      ptn4.const_smul c
+    exact tendsto_nhds_unique ptn7 ptn8
+  have hnorm : ∀ x, ‖h x‖ ≤ ‖x‖ := by
+    intro x
+    rcases merde x with ⟨ux, hux⟩
+    have ptn1 : Tendsto (fun n ↦ h (ux n)) atTop (𝓝 (h x)) := (ch.tendsto _).comp hux
+    have ptn4 : Tendsto (fun n ↦ g (ux n)) atTop (𝓝 (h x)) := by
+      apply ptn1.congr
+      intro n
+      exact (ui.denseInducing dQ).extend_eq cg.continuous (ux n)
+    have ptn5 : Tendsto (fun n ↦ ‖g (ux n)‖) atTop (𝓝 (‖h x‖)) :=
+      (continuous_norm.tendsto _).comp ptn4
+    apply le_of_tendsto_of_tendsto' ptn5 ((continuous_norm.tendsto _).comp hux)
+    exact fun _ ↦ ng _
