@@ -29,8 +29,6 @@ similar results for right Kan extensions and right Kan lifts.
 
 namespace CategoryTheory
 
-open Mathlib.Tactic.BicategoryCoherence bicategoricalComp
-
 namespace Bicategory
 
 universe w v u

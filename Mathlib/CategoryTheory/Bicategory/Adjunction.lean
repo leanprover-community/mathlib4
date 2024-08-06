@@ -79,13 +79,13 @@ theorem rightZigzag_idempotent_of_left_triangle
   dsimp only [rightZigzag]
   calc
     _ = g ◁ η ⊗≫ ((ε ▷ g ▷ 𝟙 a) ≫ (𝟙 b ≫ g) ◁ η) ⊗≫ ε ▷ g := by
-      simp [bicategoricalComp]; coherence
+      coherence
     _ = 𝟙 _ ⊗≫ g ◁ (η ▷ 𝟙 a ≫ (f ≫ g) ◁ η) ⊗≫ (ε ▷ (g ≫ f) ≫ 𝟙 b ◁ ε) ▷ g ⊗≫ 𝟙 _ := by
-      rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+      rw [← whisker_exchange]; coherence
     _ = g ◁ η ⊗≫ g ◁ leftZigzag η ε ▷ g ⊗≫ ε ▷ g := by
-      rw [← whisker_exchange,  ← whisker_exchange]; simp [leftZigzag, bicategoricalComp]; coherence
+      rw [← whisker_exchange,  ← whisker_exchange]; dsimp only [leftZigzag]; coherence
     _ = g ◁ η ⊗≫ ε ▷ g := by
-      rw [h]; simp [bicategoricalComp]; coherence
+      rw [h]; coherence
 
 /-- Adjunction between two 1-morphisms. -/
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
@@ -130,6 +130,7 @@ def compUnit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : 𝟙 a ⟶ (f�
 def compCounit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : (g₂ ≫ g₁) ≫ f₁ ≫ f₂ ⟶ 𝟙 c :=
   𝟙 _ ⊗≫ g₂ ◁ adj₁.counit ▷ f₂ ⊗≫ adj₂.counit
 
+set_option maxHeartbeats 400000 in
 theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) :
     leftZigzag (compUnit adj₁ adj₂) (compCounit adj₁ adj₂) = (λ_ _).hom ≫ (ρ_ _).inv := by
   calc
@@ -137,14 +138,16 @@ theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂)
           adj₁.unit ▷ (f₁ ≫ f₂) ⊗≫
             f₁ ◁ (adj₂.unit ▷ (g₁ ≫ f₁) ≫ (f₂ ≫ g₂) ◁ adj₁.counit) ▷ f₂ ⊗≫
               (f₁ ≫ f₂) ◁ adj₂.counit ⊗≫ 𝟙 _ := by
-      simp [bicategoricalComp]; coherence
+      dsimp only [compUnit, compCounit, leftZigzag]
+      coherence
     _ = 𝟙 _ ⊗≫
           (leftZigzag adj₁.unit adj₁.counit) ▷ f₂ ⊗≫
             f₁ ◁ (leftZigzag adj₂.unit adj₂.counit) ⊗≫ 𝟙 _ := by
-      rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+      rw [← whisker_exchange]; dsimp only [leftZigzag]; coherence
     _ = _ := by
-      simp_rw [left_triangle]; simp [bicategoricalComp]
+      simp_rw [left_triangle]; coherence
 
+set_option maxHeartbeats 400000 in
 theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) :
     rightZigzag (compUnit adj₁ adj₂) (compCounit adj₁ adj₂) = (ρ_ _).hom ≫ (λ_ _).inv := by
   calc
@@ -152,13 +155,14 @@ theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂
           (g₂ ≫ g₁) ◁ adj₁.unit ⊗≫
             g₂ ◁ ((g₁ ≫ f₁) ◁ adj₂.unit ≫ adj₁.counit ▷ (f₂ ≫ g₂)) ▷ g₁ ⊗≫
               adj₂.counit ▷ (g₂ ≫ g₁) ⊗≫ 𝟙 _ := by
-      simp [bicategoricalComp]; coherence
+      dsimp only [compUnit, compCounit, rightZigzag]
+      coherence
     _ = 𝟙 _ ⊗≫
           g₂ ◁ (rightZigzag adj₁.unit adj₁.counit) ⊗≫
             (rightZigzag adj₂.unit adj₂.counit) ▷ g₁ ⊗≫ 𝟙 _ := by
-      rw [whisker_exchange]; simp [bicategoricalComp]; coherence
+      rw [whisker_exchange]; dsimp only [rightZigzag]; coherence
     _ = _ := by
-      simp_rw [right_triangle]; simp [bicategoricalComp]
+      simp_rw [right_triangle]; coherence
 
 /-- Composition of adjunctions. -/
 @[simps]
@@ -218,7 +222,8 @@ theorem right_triangle_of_left_triangle (h : leftZigzag η.hom ε.hom = (λ_ f).
     rightZigzag η.hom ε.hom = (ρ_ g).hom ≫ (λ_ g).inv := by
   rw [← cancel_epi (rightZigzag η.hom ε.hom ≫ (λ_ g).hom ≫ (ρ_ g).inv)]
   calc
-    _ = rightZigzag η.hom ε.hom ⊗≫ rightZigzag η.hom ε.hom := by coherence
+    _ = rightZigzag η.hom ε.hom ⊗≫ rightZigzag η.hom ε.hom := by
+      dsimp [rightZigzag]; bicategory_nf; dsimp; coherence
     _ = rightZigzag η.hom ε.hom := rightZigzag_idempotent_of_left_triangle _ _ h
     _ = _ := by simp
 
@@ -233,15 +238,15 @@ theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f �
   calc
     _ = 𝟙 _ ⊗≫ (η.hom ▷ (f ≫ 𝟙 b) ≫ (f ≫ g) ◁ f ◁ ε.inv) ⊗≫
           f ◁ g ◁ η.inv ▷ f ⊗≫ f ◁ ε.hom := by
-      simp [bicategoricalComp]; coherence
+      coherence
     _ = 𝟙 _ ⊗≫ f ◁ ε.inv ⊗≫ (η.hom ▷ (f ≫ g) ≫ (f ≫ g) ◁ η.inv) ▷ f ⊗≫ f ◁ ε.hom := by
-      rw [← whisker_exchange η.hom (f ◁ ε.inv)]; simp [bicategoricalComp]; coherence
+      rw [← whisker_exchange η.hom (f ◁ ε.inv)]; coherence
     _ = 𝟙 _ ⊗≫ f ◁ ε.inv ⊗≫ (η.inv ≫ η.hom) ▷ f ⊗≫ f ◁ ε.hom := by
       rw [← whisker_exchange η.hom η.inv]; coherence
     _ = 𝟙 _ ⊗≫ f ◁ (ε.inv ≫ ε.hom) := by
-      rw [Iso.inv_hom_id]; simp [bicategoricalComp]
+      rw [Iso.inv_hom_id]; coherence
     _ = _ := by
-      rw [Iso.inv_hom_id]; simp [bicategoricalComp]
+      rw [Iso.inv_hom_id]; coherence
 
 /-- Adjoint equivalences between two objects. -/
 structure Equivalence (a b : B) where

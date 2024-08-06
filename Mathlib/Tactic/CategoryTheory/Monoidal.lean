@@ -856,10 +856,6 @@ def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
   | NormalExpr.nil _ => []
   | NormalExpr.cons _ η ηs => η :: NormalExpr.toList ηs
 
-end Mathlib.Tactic.Monoidal
-
-open Mathlib.Tactic.Monoidal
-
 /-- `normalize% η` is the normalization of the 2-morphism `η`.
 1. The normalized 2-morphism is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where
   each `αᵢ` is a structural 2-morphism (consisting of associators and unitors),
@@ -877,7 +873,7 @@ theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a'
 
 open Lean Elab Meta Tactic in
 /-- Transform an equality between 2-morphisms into the equality between their normalizations. -/
-def mkEq (e : Expr) : MetaM Expr := do
+def mkEqOfNormalizedEq (e : Expr) : MetaM Expr := do
   let some (_, e₁, e₂) := (← whnfR <| e).eq?
     | throwError "monoidal_nf requires an equality goal"
   let some ctx ← mkContext? e₁
@@ -891,5 +887,7 @@ open Lean Elab Tactic in
 /-- Normalize the both sides of an equality. -/
 elab "monoidal_nf" : tactic => withMainContext do
   let t ← getMainTarget
-  let mvarIds ← (← getMainGoal).apply (← mkEq t)
+  let mvarIds ← (← getMainGoal).apply (← mkEqOfNormalizedEq t)
   replaceMainGoal mvarIds
+
+end Mathlib.Tactic.Monoidal

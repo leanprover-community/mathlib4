@@ -153,6 +153,7 @@ theorem yang_baxter' (X Y Z : C) :
       𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
   rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
   convert yang_baxter X Y Z using 1
+  all_goals dsimp
   all_goals coherence
 
 theorem yang_baxter_iso (X Y Z : C) :
@@ -574,15 +575,17 @@ theorem tensor_right_unitality (X₁ X₂ : C) :
     rightUnitor_inv_braiding]
   simp [tensorHom_id, id_tensorHom, tensorHom_def]
 
+set_option maxHeartbeats 400000 in
 theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
     (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (Z₁ ⊗ Z₂)) ≫
         tensor_μ C (X₁ ⊗ Y₁, X₂ ⊗ Y₂) (Z₁, Z₂) ≫ ((α_ X₁ Y₁ Z₁).hom ⊗ (α_ X₂ Y₂ Z₂).hom) =
       (α_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂) (Z₁ ⊗ Z₂)).hom ≫
         ((X₁ ⊗ X₂) ◁ tensor_μ C (Y₁, Y₂) (Z₁, Z₂)) ≫ tensor_μ C (X₁, X₂) (Y₁ ⊗ Z₁, Y₂ ⊗ Z₂) := by
-  dsimp only [tensor_obj, prodMonoidal_tensorObj, tensor_μ]
-  simp only [whiskerRight_tensor, comp_whiskerRight, whisker_assoc, assoc, Iso.inv_hom_id_assoc,
-    tensor_whiskerLeft, braiding_tensor_left, MonoidalCategory.whiskerLeft_comp,
-    braiding_tensor_right]
+  dsimp only [tensor_μ]
+  -- simp only [whiskerRight_tensor, comp_whiskerRight, whisker_assoc, assoc, Iso.inv_hom_id_assoc,
+  --   tensor_whiskerLeft, braiding_tensor_left, MonoidalCategory.whiskerLeft_comp,
+  --   braiding_tensor_right]
+  simp only [braiding_tensor_left, braiding_tensor_right]
   calc
     _ = 𝟙 _ ⊗≫
       X₁ ◁ ((β_ X₂ Y₁).hom ▷ (Y₂ ⊗ Z₁) ≫ (Y₁ ⊗ X₂) ◁ (β_ Y₂ Z₁).hom) ▷ Z₂ ⊗≫
@@ -641,6 +644,7 @@ theorem rightUnitor_monoidal (X₁ X₂ : C) :
   dsimp only [tensor_obj, prodMonoidal_tensorObj]
   coherence
 
+set_option maxHeartbeats 400000 in
 theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
     tensor_μ C (X₁ ⊗ X₂, X₃) (Y₁ ⊗ Y₂, Y₃) ≫
         (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =
@@ -650,8 +654,13 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
   calc
     _ = 𝟙 _ ⊗≫ X₁ ◁ X₂ ◁ (β_ X₃ Y₁).hom ▷ Y₂ ▷ Y₃ ⊗≫
       X₁ ◁ ((X₂ ⊗ Y₁) ◁ (β_ X₃ Y₂).hom ≫
-        (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by simp; coherence
-    _ = _ := by rw [whisker_exchange]; simp; coherence
+        (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by
+      simp only [braiding_tensor_right]
+      coherence
+    _ = _ := by
+      rw [whisker_exchange]
+      simp only [braiding_tensor_left]
+      coherence
 
 -- We got a timeout if `reassoc` was at the declaration, so we put it here instead.
 attribute [reassoc] associator_monoidal

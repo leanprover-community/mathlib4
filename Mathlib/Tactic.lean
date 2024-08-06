@@ -19,8 +19,12 @@ import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+import Mathlib.Tactic.CategoryTheory.Bicategory
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.Coherence.Bicategory
+import Mathlib.Tactic.CategoryTheory.Coherence.Monoidal
+import Mathlib.Tactic.CategoryTheory.CoherenceSymmetric
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Monoidal
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
