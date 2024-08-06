@@ -373,7 +373,7 @@ protected theorem natCast [DecidableEq n] [NoZeroDivisors R] (d : ℕ) (hd : d �
 @[simp]
 theorem _root_.Matrix.posDef_natCast_iff [DecidableEq n] [NoZeroDivisors R]
     [Nonempty n] [Nontrivial R] {d : ℕ} :
-    PosDef (d : Matrix n n R) ↔ 0 < (d : R) :=
+    PosDef (d : Matrix n n R) ↔ 0 < d :=
   posDef_diagonal_iff.trans <| by simp
 
 -- See note [no_index around OfNat.ofNat]
