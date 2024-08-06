@@ -705,8 +705,8 @@ lemma paircommute₂ :
 
 @[to_additive]
 lemma _root_.MonoidHom.commute_noncommPiCoprod
-    {ι : Type*} [Fintype ι] {H : ι → Type*} [∀ i, Monoid (H i)] {P : Type*} [Monoid P] 
-    (f : (i : ι) → H i →* P) (comm) (p : P) (hcomm : ∀ i (x : H i), Commute p (f i x)) 
+    {ι : Type*} [Fintype ι] {H : ι → Type*} [∀ i, Monoid (H i)] {P : Type*} [Monoid P]
+    (f : (i : ι) → H i →* P) (comm) (p : P) (hcomm : ∀ i (x : H i), Commute p (f i x))
     (h : (i : ι) → H i) :
     Commute p (MonoidHom.noncommPiCoprod f comm h) := by 
   dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
