@@ -74,7 +74,6 @@ partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
   | `(($e)) => expandLinearCombo α e
   | `($e₁ + $e₂) => do
     let _i ← synthInstanceQ q(Add $α)
-    assumeInstancesCommute
     match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
     | .const e₁, .const e₂ => return .const q($e₁ + $e₂)
     | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ + $e₂) q($b₁ + $e₂) q(pf_add_c $p₁ $e₂)
@@ -82,7 +81,6 @@ partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
     | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ + $a₂) q($b₁ + $b₂) q(add_pf $p₁ $p₂)
   | `($e₁ - $e₂) => do
     let _i ← synthInstanceQ q(Sub $α)
-    assumeInstancesCommute
     match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
     | .const e₁, .const e₂ => return .const q($e₁ - $e₂)
     | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ - $e₂) q($b₁ - $e₂) q(pf_sub_c $p₁ $e₂)
@@ -90,7 +88,6 @@ partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
     | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ - $a₂) q($b₁ - $b₂) q(sub_pf $p₁ $p₂)
   | `(-$e) => do
     let _i ← synthInstanceQ q(Neg $α)
-    assumeInstancesCommute
     match ← expandLinearCombo α e with
     | .const e => return .const q(-$e)
     | .proof a b p => return .proof q(-$a) q(-$b) q(neg_pf $p)
@@ -100,36 +97,29 @@ partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
   --   | some p => ``(Eq.symm $p)
   | `($e₁ * $e₂) => do
     let _i ← synthInstanceQ q(Mul $α)
-    assumeInstancesCommute
     match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
     | .const e₁, .const e₂ => return .const q($e₁ * $e₂)
     | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ * $e₂) q($b₁ * $e₂) q(pf_mul_c $p₁ $e₂)
     | .const e₁, .proof a₂ b₂ p₂ => return .proof q($e₁ * $a₂) q($e₁ * $b₂) q(c_mul_pf $p₂ $e₁)
     | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ * $a₂) q($b₁ * $b₂) q(mul_pf $p₁ $p₂)
-  -- | `($e⁻¹) => do
-  --   match ← expandLinearCombo e with
-  --   | none => pure none
-  --   | some p => ``(inv_pf $p)
+  | `($e⁻¹) => do
+    let _i ← synthInstanceQ q(Inv $α)
+    match ← expandLinearCombo α e with
+    | .const e => return .const q($e⁻¹)
+    | .proof a b p => return .proof q($a⁻¹) q($b⁻¹) q(inv_pf $p)
   | `($e₁ / $e₂) => do
     let _i ← synthInstanceQ q(Div $α)
-    assumeInstancesCommute
     match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
     | .const e₁, .const e₂ => return .const q($e₁ / $e₂)
     | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ / $e₂) q($b₁ / $e₂) q(pf_div_c $p₁ $e₂)
     | .const e₁, .proof a₂ b₂ p₂ => return .proof q($e₁ / $a₂) q($e₁ / $b₂) q(c_div_pf $p₂ $e₁)
     | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ / $a₂) q($b₁ / $b₂) q(div_pf $p₁ $p₂)
   | e => do
-    -- let k ← e.getKind
     let e ← elabTerm e (some α)
     let eType ← inferType e
     match (← withReducible do whnf eType).eq? with
-    | some (_, a, b) =>
-      -- let β : Q(Type u) := β
-      -- let _ : $α =Q $β := ⟨⟩
-      -- let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
-      return LinearCombination.proof a b e
+    | some (_, a, b) => return LinearCombination.proof a b e
     | none => return LinearCombination.const e
-  -- return result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
@@ -140,52 +130,29 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
-  -- let (val, mvarIds') ← elabTermWithHoles stx (← getMainTarget) tagSuffix allowNaturalHoles
-  -- let val ← instantiateMVars val
-  -- /- Ensure that the main goal does not occur in `val`. -/
-  -- if val.findMVar? (· == mvarId) matches some _ then
-  --   throwError "'refine' tactic failed, value{indentExpr val}\ndepends on the main goal metavariable '{mkMVar mvarId}'"
-  -- mvarId.assign val
-  -- Tactic.replaceMainGoal mvarIds'
-
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
     (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
-  let ((α : Q(Type)), (a' : Q($α)), (b':Q($α))) := (← Lean.Elab.Tactic.getMainTarget).eq?.get!
-  let i ← synthInstanceQ q(AddGroup $α)
-  assumeInstancesCommute
-  let ⟨(a: Q($α)), (b:Q($α)), (p : Q($a=$b))⟩ ← match input with
-  | none => throwError "zz" --`(Eq.refl 0)
+  let p := (← Lean.Elab.Tactic.getMainTarget).eq?.get!
+  let .sort u ← whnf (← inferType p.1) | unreachable!
+  let some v := u.dec | throwError "not a type"
+  let ((α : Q(Type v)), (a' : Q($α)), (b':Q($α))) := p
+  let _i ← synthInstanceQ q(AddGroup ($α : Type v))
+  let (⟨a, b, p⟩ : Σ a b : Q($α), Q($a = $b)) ← match input with
+  | none => pure ⟨q(0), q(0), q(Eq.refl 0)⟩
   | some e => do
     match ← expandLinearCombo α e with
-    | .const e => pure (⟨e, e, q(Eq.refl $e)⟩ : Σ a b : Q($α), Q($a = $b))
-    | .proof a b p => pure (⟨a, b, p⟩ : Σ a b : Expr, Q($a = $b))
-  let e := q(eq_of_add (a' := $a') (b' := $b') $p)
+    | .const e => pure ⟨e, e, q(Eq.refl $e)⟩
+    | .proof a b p => pure ⟨a, b, p⟩
+  let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
+  let e : Q($a' - $b' - ($a - $b) = 0 → $a' = $b') := q(eq_of_add (a' := $a') (b' := $b') $p)
   let d : Q(Prop) := q($a' - $b' - ($a - $b) = 0)
   let mvar ← mkFreshExprMVar d MetavarKind.natural
   Tactic.liftMetaTactic fun g ↦ do
     g.assign (.app e mvar)
     return [mvar.mvarId!]
-  let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
   Tactic.evalTactic norm
-
-  -- let (α, a', b') ← match (← Lean.Elab.Tactic.getMainTarget).eq? with
-  -- | none => throwError "zz"
-  -- | some (α, a', b') => pure (α, a', b')
-  -- let tac := Tactic.evalTactic (← `(tactic| ring1))
-  -- -- let ⟨u, α, a⟩ ← inferTypeQ' a
-  -- -- let _h : Q(Zero $α) ← synthInstanceQ q(Zero $α)
-  -- let p' : Q($a' = $a) ← synthesizeUsing' q($a' = $a) tac
-  -- -- let zz ← q(eq_of_add $p $p')
-
-
-
-  -- -- let .ok a ← fun g : MVarId ↦ g.apply p
-  -- -- let some e ← getExprMVarAssignment? g | panic! "unassigned?"
-  -- -- let args := e.getAppArgs
-  -- sorry
-  -- let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
   -- Tactic.evalTactic <| ← withFreshMacroScope <|
   -- if twoGoals then
   --   `(tactic| (
