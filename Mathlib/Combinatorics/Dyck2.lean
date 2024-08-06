@@ -63,10 +63,23 @@ notation "♮" d => cast (by omega) (by omega) (by omega) d
     thru (cast hk hl rfl d) = ♮(thru d) := by
   subst hk; subst hl; rfl
 
+@[simp] theorem rec₁_cast {h : k₁ = k₂} {d : Dyck k₁ l n} : h ▸ d = ♮ d := by
+  cases h
+  simp
+@[simp] theorem rec₂_cast {h : l₁ = l₂} {d : Dyck k l₁ n} : h ▸ d = ♮ d := by
+  cases h
+  simp
+@[simp] theorem rec₃_cast {h : n₁ = n₂} {d : Dyck k l n₁} : h ▸ d = ♮ d := by
+  cases h
+  simp
+
 def allThru (n : Nat) : Dyck n n 0 :=
   match n with
   | 0 => .nil
   | n+1 => .thru (allThru n)
+
+@[simp] theorem allThru_zero : allThru 0 = .nil := rfl
+@[simp] theorem allThru_succ : allThru (n+1) = .thru (allThru n) := rfl
 
 /-- Put two diagrams side-by-side. The left diagram must have no points along its right edge. -/
 def juxta (d : Dyck k₁ l₁ 0) (d' : Dyck k₂ l₂ n) : Dyck (k₁ + k₂) (l₁ + l₂) n :=
@@ -114,6 +127,17 @@ def comp {k₁ k₂ l₁ n₁ n₂} (d₁ : Dyck k₁ l₁ n₁) (d₂ : Dyck k�
 
 example : nil.thru.up.down.thru.comp nil.up.down = nil.up.up.down.down := rfl
 
+@[simp] theorem nil_comp {d : Dyck k 0 n} : comp nil d = ♮ d := by cases d; rfl
+@[simp] theorem comp_nil : comp d nil = nil := by cases d; rfl
+@[simp] theorem up_comp {d₁ : Dyck k₁ l n₁} {d₂ : Dyck k₂ k₁ n₂} :
+    comp (up d₁) d₂ = ♮(up (comp d₁ d₂)) := rfl
+@[simp] theorem down_comp {d₁ : Dyck k₁ l (n₁+1)} {d₂ : Dyck k₂ k₁ n₂} :
+    comp (down d₁) d₂ = down (♮(comp d₁ d₂)) := rfl
+@[simp] theorem thru_comp_up : comp (thru d₁) (up d₂) = up (comp d₁ d₂) := rfl
+@[simp] theorem thru_comp_down {d₁ : Dyck k₁ l 0} {d₂ : Dyck k₂ k₁ (n₂+1)} :
+    comp (thru d₁) (down d₂) = down (♮(comp d₁ d₂)) := rfl
+@[simp] theorem thru_comp_thru : comp (thru d₁) (thru d₂) = thru (comp d₁ d₂) := rfl
+
 @[simp] theorem cast_comp {hl : l₁ = l₁'} {hn : n₁ = n₁'}
     {d₁ : Dyck k₁ l₁ n₁} {d₂ : Dyck k₂ k₁ n₂} :
     comp (cast rfl hl hn d₁) d₂ = ♮ comp d₁ d₂ := by
@@ -141,8 +165,18 @@ theorem comp_assoc {d₁ : Dyck k₁ l₂ n₁} {d₂ : Dyck k₂ k₁ n₂} {d�
   | thru _, thru _, down _
   | thru _, thru _, thru _ => by cases n₃ <;> simp [comp, comp_assoc]
 
-theorem allThru_comp {d : Dyck k l n} : comp (allThru _) d = ♮ d := sorry
-theorem comp_allThru {d : Dyck k l n} : comp d (allThru _) = d := sorry
+theorem down_comp_zero {a : Dyck k l (n+1)} {b : Dyck k' k 0} :
+    down (n := n) (comp (n₁ := n+1) a b) = comp (down a) b := sorry
+
+theorem allThru_comp {d : Dyck k l n} : comp (allThru _) d = ♮ d := by
+  induction l generalizing k n with
+  | zero => cases d <;> rfl
+  | succ l ih => cases d <;> simp_all [comp]
+
+theorem comp_allThru {d : Dyck k l n} : comp d (allThru _) = d := by
+  induction l generalizing k n with
+  | zero => cases d <;> rfl
+  | succ l ih => cases d <;> simp_all [comp]
 
 theorem juxta_comp {d₁ : Dyck k₁ l₁ 0} {d₂ : Dyck k₂ k₁ 0}
     {d₃ : Dyck k₃ l₃ n₃} {d₄ : Dyck k₄ k₃ n₄} :
@@ -161,9 +195,12 @@ def capRight (d : Dyck k l (n + 2)) (m : Nat := 0) (w : m ≤ n := by omega) : D
   | n + 1, up d, (m + 1), _ => up (capRight d m)
   | _, down d, m, _ => down (capRight d m)
 
+@[simp] theorem capRight_comp_zero {d₁ : Dyck k l (n + 2)} {d₂ : Dyck k' k 0} :
+    capRight (n := n) (comp (n₁ := n + 2) d₁ d₂) 0 = comp (capRight d₁ 0) d₂ := sorry
+
 -- TODO: theorem capRight_juxta : capRight (juxta d₁ d₂) m w = juxta d₁ (capRight d₂ m w) := sorry
 -- TODO: `capRight_capRight`
--- TODO: There are three cases of `capRight_comp`; one requires `capTop` to state.
+-- TODO: There are more cases of `capRight_comp`; one requires `capTop` to state.
 
 /-- Pull the topmost point on the right edge to the left end of the top edge. -/
 def pullUp (d : Dyck k l (n + 1)) : Dyck (k + 1) l n :=
@@ -179,74 +216,19 @@ def pullDown (d : Dyck (k + 1) l n) : Dyck k l (n + 1) :=
   | up d => up (pullDown d)
   | down d => down (pullDown d)
 
--- TODO: `pullDown_pullUp` and `pullUp_pullDown`
+@[simp] theorem pullDown_pullUp {d : Dyck k l (n + 1)} : pullDown (pullUp d) = d := by
+  match n, d with
+  | 0, .up d => simp [pullUp, pullDown]
+  | _, .down d => simp [pullUp, pullDown, pullDown_pullUp]
+  | _ + 1, up d => simp [pullUp, pullDown, pullDown_pullUp]
+@[simp] theorem pullUp_pullDown : pullUp (pullDown d) = d := by
+  match d with
+  | .thru d => simp [pullUp, pullDown]
+  | .up d => simp [pullUp, pullDown, pullUp_pullDown]
+  | .down d => simp [pullUp, pullDown, pullUp_pullDown]
 
-/--
-Given two diagrams with the same number of points along their bottoms edges,
-and the same number of points along their right edges,
-we flip the first diagram vertically, then stack the second diagram above it,
-and then pair up all the points along the right edge, in a nested fashion.
-
-This results in a diagram containing some number of closed loops.
-We count these as `δ`, then remove them.
-The remaining diagram can be uniquely decomposed as a diagram `d₁'`
-(with no points on the right edge,
-and as usual all points on the top edge are paired with points on the bottom edge)
-with the flip of another such diagram `d₂'` stacked above it.
-
-We return the quadruple `⟨δ, k', d₁', d₂'⟩`, where `k'` is
-the (common) number of points along the top edges of `d₁'` and `d₂'`.
--/
-def revComp (d₁ : Dyck k₁ l n) (d₂ : Dyck k₂ l n) : Nat × (k' : Nat) × Dyck k' k₁ 0 × Dyck k' k₂ 0 :=
-  match k₁, k₂, d₁, d₂ with
-  | _, _, nil, nil => ⟨0, 0, nil, nil⟩
-  | _, _, up d₁, up d₂ => match revComp d₁ d₂ with
-    | ⟨δ, _, d₁', d₂'⟩ => ⟨δ + 1, _, d₁', d₂'⟩
-  | _, _, up d₁, down d₂ => revComp d₁ (capRight d₂)
-  | _, _, down d₁, up d₂ => revComp (capRight d₁) d₂
-  | _, _, down d₁, down d₂ => revComp d₁ d₂
-  | _, _, down d₁, thru d₂ => match revComp (pullUp d₁) d₂ with
-    | ⟨δ, _, down d₁', d₂'⟩ => ⟨δ, _, pullUp d₁', thru d₂'⟩
-    | ⟨δ, _, thru d₁', d₂'⟩ => ⟨δ, _, d₁', down (pullDown d₂')⟩
-  | _, _, thru d₁, down d₂ => match revComp d₁ (pullUp d₂) with
-    | ⟨δ, _, d₁', down d₂'⟩ => ⟨δ, _, thru d₁', pullUp d₂'⟩
-    | ⟨δ, _, d₁', thru d₂'⟩ => ⟨δ, _, down (pullDown d₁'), d₂'⟩
-  | _, _, thru d₁, thru d₂ => match revComp d₁ d₂ with
-    | ⟨δ, _, d₁', d₂'⟩ => ⟨δ, _, thru d₁', thru d₂'⟩
-
-example : revComp nil.up.down nil.up.down = ⟨1, _, nil, nil⟩ := rfl
-example : revComp nil.up.up.down.down nil.up.up.down.down = ⟨2, _, nil, nil⟩ := rfl
-example : revComp nil.up.up.down.down nil.up.down.up.down = ⟨1, _, nil, nil⟩ := rfl
-example : revComp nil.thru nil.thru = ⟨0, _, nil.thru, nil.thru⟩ := rfl
-example : revComp nil.thru.up.down nil.up.down.thru = ⟨0, _, nil.thru, nil.thru⟩ := rfl
-example : revComp nil.thru.up.down nil.thru.up.down = ⟨1, _, nil.thru, nil.thru⟩ := rfl
-
-theorem allThru_revComp (d : Dyck k l 0) : revComp (allThru l) d = ⟨0, k, d, allThru k⟩ := sorry
-theorem revComp_allThru (d : Dyck k l 0) : revComp d (allThru l) = ⟨0, k, allThru k, d⟩ := sorry
-
-theorem Sigma.ext_iff' {β : α → Type*} {x₀ x₁ : Sigma β} :
-  x₀ = x₁ ↔ Nonempty ((h : x₀.fst = x₁.fst) ×' x₀.snd = h ▸ x₁.snd) := sorry
-
-example {α α' : Type u} {β β' : Type b} (h : (α × β) = (α' × β')) : α = α' := by
-
-
-theorem fst_rec (h : (α × β) = (α' × β')) (p : α × β) : (h ▸ p).1 = ()
-
-@[simp] theorem allThru_revComp_fst : (revComp (allThru _) d).1 = 0 := by simp [allThru_revComp]
-@[simp] theorem revComp_allThru_fst : (revComp a (allThru _)).1 = 0 := by simp [revComp_allThru]
-@[simp] theorem allThru_revComp_snd_fst (d : Dyck k l 0) : (revComp (allThru _) d).2.1 = k := by
-  simp [allThru_revComp]
-@[simp] theorem revComp_allThru_snd_fst (d : Dyck k l 0) : (revComp d (allThru _)).2.1 = k := by
-  simp [revComp_allThru]
-@[simp] theorem allThru_revComp_snd_snd_fst {d : Dyck k l 0} :
-    (revComp (allThru l) d).2.2.1 = (have := allThru_revComp_snd_fst d; ♮ d) := by
-  have := congrArg Prod.snd (allThru_revComp d)
-  simp [Sigma.ext_iff'] at this
-  simp [this]
-  sorry
-
-
-@[simp] theorem revComp_allThru_fst : (revComp a (allThru _)).1 = 0 := by simp [revComp_allThru]
+@[simp] theorem pullUp_comp {a : Dyck k l (n + 1)} {b : Dyck k' k 0} :
+    pullUp (n := n) (comp (n₁ := n + 1) a b) = comp (pullUp a) (thru b) := sorry
 
 end Dyck
 
@@ -268,30 +250,348 @@ open Dyck
   cases hgirth
   simp_all
 
+theorem ext_iff {x y : TLDiagram n m} :
+    x = y ↔ x.loops = y.loops ∧
+      Nonempty ((h : x.girth = y.girth) ×' (x.epi = ♮ y.epi) ∧ (x.mono = ♮ y.mono)) :=
+  sorry
+
+@[simps] def addLoops (d : TLDiagram n m) (k : Nat) : TLDiagram n m :=
+  { d with loops := d.loops + k }
+
+@[simp] theorem addLoops_zero : addLoops d 0 = d := rfl
+@[simp] theorem addLoops_addLoops : addLoops (addLoops d k₁) k₂ = addLoops d (k₁ + k₂) := by
+  ext <;> simp <;> omega
+@[simp] theorem addLoops_inj : addLoops d k = addLoops d' k ↔ d = d' := sorry
+
+@[simps]
+def thru (d : TLDiagram n m) : TLDiagram (n+1) (m+1) where
+  loops := d.loops
+  girth := d.girth + 1
+  epi := d.epi.thru
+  mono := d.mono.thru
+
+@[simp] theorem thru_addLoops : (addLoops d k).thru = d.thru.addLoops k := sorry
+
+def pullUp (d : TLDiagram (n+1) m) : TLDiagram n (m+1) :=
+  match d with
+  | ⟨δ, _, .down x, y⟩ => ⟨δ, _, x.pullUp, y.thru⟩
+  | ⟨δ, _, .thru x, y⟩ => ⟨δ, _, x, y.pullDown.down⟩
+
+@[simp] theorem pullUp_loops : (pullUp d).loops = d.loops := sorry
+@[simp] theorem pullUp_addLoops : (addLoops d k).pullUp = d.pullUp.addLoops k := sorry
+@[simp] theorem pullUp_down : pullUp ⟨δ, _, .down x, y⟩ = ⟨δ, _, x.pullUp, y.thru⟩ := rfl
+@[simp] theorem pullUp_thru : pullUp ⟨δ, _, .thru x, y⟩ = ⟨δ, _, x, y.pullDown.down⟩ := rfl
+
+def pullDown (d : TLDiagram n (m+1)) : TLDiagram (n+1) m :=
+  match d with
+  | ⟨δ, _, x, .down y⟩ => ⟨δ, _, x.thru, y.pullUp⟩
+  | ⟨δ, _, x, .thru y⟩ => ⟨δ, _, x.pullDown.down, y⟩
+
+@[simp] theorem pullDown_loops : (pullDown d).loops = d.loops := sorry
+@[simp] theorem pullDown_addLoops : (addLoops d k).pullDown = d.pullDown.addLoops k := sorry
+@[simp] theorem pullDown_down : pullDown ⟨δ, _, x, .down y⟩ = ⟨δ, _, x.thru, y.pullUp⟩ := rfl
+@[simp] theorem pullDown_thru : pullDown ⟨δ, _, x, .thru y⟩ = ⟨δ, _, x.pullDown.down, y⟩ := rfl
+
+end TLDiagram
+
+namespace Dyck
+
+/--
+Given two diagrams with the same number of points along their bottoms edges,
+and the same number of points along their right edges,
+we flip the first diagram vertically, then stack the second diagram above it,
+and then pair up all the points along the right edge, in a nested fashion.
+
+This results in a diagram containing some number of closed loops.
+We count these as `δ`, then remove them.
+The remaining diagram can be uniquely decomposed as a diagram `d₁'`
+(with no points on the right edge,
+and as usual all points on the top edge are paired with points on the bottom edge)
+with the flip of another such diagram `d₂'` stacked above it.
+
+We return the quadruple `⟨δ, k', d₁', d₂'⟩`, where `k'` is
+the (common) number of points along the top edges of `d₁'` and `d₂'`.
+-/
+def revComp (d₁ : Dyck k₁ l n) (d₂ : Dyck k₂ l n) : TLDiagram k₁ k₂ :=
+  match k₁, k₂, d₁, d₂ with
+  | _, _, nil, nil => ⟨0, 0, nil, nil⟩
+  | _, _, up d₁, up d₂ => (revComp d₁ d₂).addLoops 1
+  | _, _, up d₁, down d₂ => revComp d₁ (capRight d₂)
+  | _, _, down d₁, up d₂ => revComp (capRight d₁) d₂
+  | _, _, down d₁, down d₂ => revComp d₁ d₂
+  | _, _, down d₁, thru d₂ => (revComp (pullUp d₁) d₂).pullUp
+  | _, _, thru d₁, down d₂ => (revComp d₁ (pullUp d₂)).pullDown
+  | _, _, thru d₁, thru d₂ => (revComp d₁ d₂).thru
+
+example : revComp nil.up.down nil.up.down = ⟨1, _, nil, nil⟩ := rfl
+example : revComp nil.up.up.down.down nil.up.up.down.down = ⟨2, _, nil, nil⟩ := rfl
+example : revComp nil.up.up.down.down nil.up.down.up.down = ⟨1, _, nil, nil⟩ := rfl
+example : revComp nil.thru nil.thru = ⟨0, _, nil.thru, nil.thru⟩ := rfl
+example : revComp nil.thru.up.down nil.up.down.thru = ⟨0, _, nil.thru, nil.thru⟩ := rfl
+example : revComp nil.thru.up.down nil.thru.up.down = ⟨1, _, nil.thru, nil.thru⟩ := rfl
+
+
+-- theorem Sigma.ext_iff' {β : α → Type*} {x₀ x₁ : Sigma β} :
+--     x₀ = x₁ ↔ Nonempty ((h : x₀.fst = x₁.fst) ×' x₀.snd = h ▸ x₁.snd) := by
+--   constructor
+--   · rintro rfl; simp
+--   · rcases x₀ with ⟨a₀, b₀⟩
+--     rcases x₁ with ⟨a₁, b₁⟩
+--     rintro ⟨h, w⟩
+--     simp at h
+--     subst h
+--     simp_all
+
+-- theorem Sigma.prod_ext_iff {β₁ β₂ : α → Type*} {x₀ x₁ : Σ a, β₁ a × β₂ a} :
+--     x₀ = x₁ ↔
+--       Nonempty ((h : x₀.fst = x₁.fst) ×' (x₀.2.1 = h ▸ x₁.2.1) ∧ (x₀.2.2 = h ▸ x₁.2.2)) := by
+--   constructor
+--   · rintro rfl; simp
+--   · rcases x₀ with ⟨a₀, b₀, c₀⟩
+--     rcases x₁ with ⟨a₁, b₁, c₁⟩
+--     rintro ⟨h, w₁, w₂⟩
+--     simp at h
+--     subst h
+--     simp_all
+
+theorem allThru_revComp (d : Dyck k l 0) : revComp (allThru l) d = ⟨0, k, d, allThru k⟩ := by
+  induction l generalizing k with
+  | zero => cases d <;> simp [revComp]
+  | succ l ih =>
+    cases d with
+    | down => simp_all only [revComp, allThru_succ, TLDiagram.pullDown_thru, pullDown_pullUp]
+    | thru d =>
+      specialize ih d
+      rw [TLDiagram.ext_iff] at ih
+      obtain ⟨h₀, ⟨h, w₁, h₂⟩⟩ := ih
+      simp_all [revComp, TLDiagram.ext_iff]
+theorem revComp_allThru (d : Dyck k l 0) : revComp d (allThru l) = ⟨0, k, allThru k, d⟩ := by
+  induction l generalizing k with
+  | zero => cases d <;> simp [revComp]
+  | succ l ih =>
+    cases d with
+    | down => simp_all only [revComp, allThru_succ, TLDiagram.pullUp_thru, pullDown_pullUp]
+    | thru d =>
+      specialize ih d
+      rw [TLDiagram.ext_iff] at ih
+      obtain ⟨h₀, ⟨h, w₁, h₂⟩⟩ := ih
+      simp_all [revComp, TLDiagram.ext_iff]
+
+@[simp] theorem allThru_revComp_loops : (revComp (allThru _) d).loops = 0 := by
+  simp [allThru_revComp]
+@[simp] theorem revComp_allThru_loops : (revComp a (allThru _)).loops = 0 := by
+  simp [revComp_allThru]
+@[simp] theorem allThru_revComp_girth (d : Dyck k l 0) : (revComp (allThru _) d).girth = k := by
+  simp [allThru_revComp]
+@[simp] theorem revComp_allThru_girth (d : Dyck k l 0) : (revComp d (allThru _)).girth = k := by
+  simp [revComp_allThru]
+@[simp] theorem allThru_revComp_epi {d : Dyck k l 0} :
+    (revComp (allThru l) d).epi = (have := allThru_revComp_girth d; ♮ d) := by
+  have := allThru_revComp d
+  simp_all [TLDiagram.ext_iff]
+@[simp] theorem allThru_revComp_mono {d : Dyck k l 0} :
+    (revComp (allThru l) d).mono = (have := allThru_revComp_girth d; ♮(allThru k)) := by
+  have := allThru_revComp d
+  simp_all [TLDiagram.ext_iff]
+@[simp] theorem revComp_allThru_epi {d : Dyck k l 0} :
+    (revComp d (allThru l)).epi = (have := revComp_allThru_girth d; ♮(allThru k)) := by
+  have := revComp_allThru d
+  simp_all [TLDiagram.ext_iff]
+@[simp] theorem revComp_allThru_mono {d : Dyck k l 0} :
+    (revComp d (allThru l)).mono = (have := revComp_allThru_girth d; ♮ d) := by
+  have := revComp_allThru d
+  simp_all [TLDiagram.ext_iff]
+
+end Dyck
+
+namespace TLDiagram
+
+open Dyck
+
+@[simps]
+def dyckComp (d₁ : Dyck k₂ k₁ 0) (d₂ : TLDiagram k₂ k₃) : TLDiagram k₁ k₃ where
+  loops := d₂.loops
+  girth := d₂.girth
+  epi := d₁.comp d₂.epi
+  mono := d₂.mono
+
+@[simps]
+def compDyck (d₁ : TLDiagram k₁ k₂) (d₂ : Dyck k₂ k₃ 0) : TLDiagram k₁ k₃ where
+  loops := d₁.loops
+  girth := d₁.girth
+  epi := d₁.epi
+  mono := d₂.comp d₁.mono
+
+@[simp] theorem dyckComp_thru_thru : dyckComp d₁.thru d₂.thru = (dyckComp d₁ d₂).thru := sorry
+
+-- @[simp] theorem dyckComp_inj : dyckComp d₁ d₂ = dyckComp d₁ d₃ ↔ d₂ = d₃ := sorry
+-- @[simp] theorem compDyck_inj : compDyck d₁ d₃ = compDyck d₂ d₃ ↔ d₁ = d₂ := sorry
+
+def dyckRevComp (d₁ : Dyck k₁ k₂ 0) (d₂ : TLDiagram k₂ k₃) : TLDiagram k₁ k₃ :=
+  compDyck (revComp d₁ d₂.epi) d₂.mono
+
+def compDyckRev (d₁ : TLDiagram k₁ k₂) (d₂ : Dyck k₃ k₂ 0) : TLDiagram k₁ k₃ :=
+  dyckComp d₁.epi (revComp d₁.mono d₂)
+
+def comp (d₁ : TLDiagram k₁ k₂) (d₂ : TLDiagram k₂ k₃) : TLDiagram k₁ k₃ :=
+  dyckComp d₁.epi (dyckRevComp d₁.mono d₂)
+
+def comp' (d₁ : TLDiagram k₁ k₂) (d₂ : TLDiagram k₂ k₃) : TLDiagram k₁ k₃ :=
+  compDyck (compDyckRev d₁ d₂.epi) d₂.mono
+
+theorem dyckComp_compDyck : compDyck (dyckComp d₁ d₂) d₃ = dyckComp d₁ (compDyck d₂ d₃) := sorry
+
+theorem comp'_eq_comp : comp' d₁ d₂ = comp d₁ d₂ := dyckComp_compDyck ..
+
+theorem dyckComp_compDyckRev : compDyckRev (dyckComp d₁ d₂) d₃ = dyckComp d₁ (compDyckRev d₂ d₃) :=
+  sorry
+
+theorem dyckRevComp_compDyck : dyckRevComp d₁ (compDyck d₂ d₃) = compDyck (dyckRevComp d₁ d₂) d₃ :=
+  sorry
+
+end TLDiagram
+
+open TLDiagram
+
+namespace Dyck
+
+theorem revComp_comp {a : Dyck k₁ k₂ n} {b : Dyck k₃ k₂ n} {c : Dyck k₄ k₃ 0} :
+    revComp a (comp b c) =
+      (dyckComp (revComp a b).epi (revComp (revComp a b).mono c)).addLoops (revComp a b).loops := by
+  match k₂, k₃, k₄, n, b, c with
+  | _, _ ,_ ,_ , nil, nil => cases a; simp [revComp, dyckComp]
+  | _, _ ,_ ,_ , up b, c =>
+    simp only [up_comp, Nat.add_zero, cast_refl]
+    match k₁, a with
+    | _, up a => simp [revComp, revComp_comp]
+    | _, down a => simp [revComp, revComp_comp]
+  | _, _ ,_ , n, down b, c =>
+    simp only [down_comp, Nat.add_zero, cast_refl]
+    match n, k₁, a with
+    | _, _, up a => simp [revComp, revComp_comp]
+    | _, _, down a => simp [revComp, revComp_comp]
+    | _, _, thru a =>
+      rw [revComp]
+      rw [pullUp_comp]
+      rw [revComp_comp]
+      rw [revComp]
+      simp
+      sorry
+  | _, _ ,_ ,_ , thru b, down c =>
+    simp only [thru_comp_down, Nat.add_zero, Nat.reduceAdd, cast_refl]
+    match n, k₁, a with
+    | _, _, down a =>
+      rw [revComp]
+      sorry
+    | _, _, thru a =>
+      rw [revComp]
+      sorry
+  | _, _ ,_ ,_ , thru b, thru c =>
+    simp
+    match n, k₁, a with
+    | _, _, down a =>
+      rw [revComp]
+      sorry
+    | _, _, thru a => simp [revComp, revComp_comp]
+
+@[simp] theorem revComp_comp_loops {a : Dyck k₁ k₂ n} {b : Dyck k₃ k₂ n} {c : Dyck k₄ k₃ 0} :
+    (revComp a (comp b c)).loops = (revComp a b).loops + (revComp (revComp a b).mono c).loops :=
+  sorry
+
+@[simp] theorem revComp_comp_girth (a : Dyck k₁ k₂ n) (b : Dyck k₃ k₂ n) (c : Dyck k₄ k₃ 0) :
+    (revComp a (comp b c)).girth = (revComp (revComp a b).mono c).girth := sorry
+
+@[simp] theorem revComp_comp_epi {a : Dyck k₁ k₂ n} {b : Dyck k₃ k₂ n} {c : Dyck k₄ k₃ 0} :
+    (revComp a (comp b c)).epi =
+      (have := revComp_comp_girth a b c;
+       ♮((revComp a b).epi.comp (revComp (revComp a b).mono c).epi)) :=
+  sorry
+
+@[simp] theorem revComp_comp_mono {a : Dyck k₁ k₂ n} {b : Dyck k₃ k₂ n} {c : Dyck k₄ k₃ 0} :
+    (revComp a (comp b c)).mono =
+      (have := revComp_comp_girth a b c;
+       ♮(revComp (revComp a b).mono c).mono) :=
+  sorry
+
+@[simp] theorem comp_revComp_loops {a : Dyck k₁ k₂ n} {b : Dyck k₃ k₁ 0} {c : Dyck k₄ k₂ n} :
+    (revComp (comp a b) c).loops = (revComp a c).loops + (revComp b (revComp a c).epi).loops :=
+  sorry
+
+@[simp] theorem comp_revComp_girth (a : Dyck k₁ k₂ n) (b : Dyck k₃ k₁ 0) (c : Dyck k₄ k₂ n) :
+    (revComp (comp a b) c).girth = (revComp b (revComp a c).epi).girth :=
+  sorry
+
+@[simp] theorem comp_revComp_epi {a : Dyck k₁ k₂ n} {b : Dyck k₃ k₁ 0} {c : Dyck k₄ k₂ n} :
+    (revComp (comp a b) c).epi =
+      (have := comp_revComp_girth a b c;
+       ♮(revComp b (revComp a c).epi).epi) :=
+  sorry
+
+@[simp] theorem comp_revComp_mono {a : Dyck k₁ k₂ n} {b : Dyck k₃ k₁ 0} {c : Dyck k₄ k₂ n} :
+    (revComp (comp a b) c).mono =
+      (have := comp_revComp_girth a b c;
+       ♮((revComp a c).mono.comp (revComp b (revComp a c).epi).mono)) :=
+  sorry
+
+variable (a : Dyck k₁ k₂ n) (b : Dyck k₃ k₂ n) (c : Dyck k₃ k₄ n') (d : Dyck k₅ k₄ n')
+
+theorem loops :
+    (c.revComp d).loops + (a.revComp (b.comp (c.revComp d).epi)).loops =
+      (a.revComp b).loops + ((c.comp (a.revComp b).mono).revComp d).loops := by
+  rw [revComp_comp_loops, comp_revComp_loops]
+  omega
+
+-- theorem foo :
+--     dyckComp (revComp a b).epi (revComp (comp c (revComp a b).mono) d) =
+--       compDyck (revComp a (comp b (revComp c d).epi)) (revComp c d).mono := by
+--   ext
+--   · sorry
+--   · sorry
+--   · simp
+--   · simp
+
+end Dyck
+
+namespace TLDiagram
+
+theorem dyckRevComp_compDyckRev :
+    compDyckRev (dyckRevComp x y) z = dyckRevComp x (compDyckRev y z) := by
+  dsimp [dyckRevComp, compDyckRev]
+  ext
+  · sorry
+  · simp
+  · simp
+  · simp
+
+@[simp] theorem comp_assoc : comp (comp x y) z = comp x (comp y z) := by
+  nth_rewrite 4 [← comp'_eq_comp]
+  nth_rewrite 1 [← comp'_eq_comp]
+  dsimp [comp, comp']
+  rw [dyckComp_compDyckRev, dyckComp_compDyck, dyckRevComp_compDyck, dyckRevComp_compDyckRev]
+
+open Dyck
+
 @[simps]
 def id (n : Nat) : TLDiagram n n where
   epi := allThru n
   mono := allThru n
 
-@[simps]
-def comp (x : TLDiagram n m) (y : TLDiagram m k) : TLDiagram n k :=
-  match revComp x.mono y.epi with
-  | ⟨loops', _, epi', mono'⟩ =>
-    { loops := x.loops + y.loops + loops'
-      epi := Dyck.comp x.epi epi'
-      mono := Dyck.comp y.mono mono' }
+-- @[simps]
+-- def comp (x : TLDiagram n m) (y : TLDiagram m k) : TLDiagram n k :=
+--   match revComp x.mono y.epi with
+--   | ⟨loops', _, epi', mono'⟩ =>
+--     { loops := x.loops + y.loops + loops'
+--       epi := Dyck.comp x.epi epi'
+--       mono := Dyck.comp y.mono mono' }
 
 @[simp] theorem id_comp : comp (id _) x = x := by
-  ext
-  · simp
-  · simp
-  · simp
-    rw [allThru_revComp]
+  ext <;> simp [allThru_comp, comp_allThru]
 
+@[simp] theorem comp_id : comp x (id _) = x := by
+  ext <;> simp [allThru_comp, comp_allThru]
 
-@[simp] theorem comp_id : comp x (id _) = x := sorry
-
-@[simp] theorem comp_assoc : comp (comp x y) z = comp x (comp y z) := sorry
+-- @[simp] theorem comp_assoc : comp (comp x y) z = comp x (comp y z) := by
+--   ext <;> simp_all
 
 end TLDiagram
 
