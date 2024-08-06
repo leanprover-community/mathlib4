@@ -142,6 +142,9 @@ def WeaklySaturated (P : MorphismProperty C) : Prop :=
 instance llp_weakly_saturated (T : MorphismProperty C) : WeaklySaturated (llp_wrt T) :=
   ⟨llp_pushout, llp_retract, llp_comp⟩
 
+instance llp_weakly_saturated' {X Y : C} (p : X ⟶ Y) : WeaklySaturated (llp_wrt' p) :=
+  ⟨llp_pushout', llp_retract', llp_comp'⟩
+
 end MorphismProperty
 
 end CategoryTheory
