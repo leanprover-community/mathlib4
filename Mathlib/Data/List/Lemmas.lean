@@ -18,7 +18,7 @@ variable {α β γ : Type*}
 
 namespace List
 
-theorem getElem_reverse' {α} (l : List α) (i : Nat) (h1 h2) :
+theorem getElem_reverse' (l : List α) (i : Nat) (h1 h2) :
     (reverse l)[i]'h1 = l[length l - 1 - i]'h2 := by
   rw [← getElem_reverse l _ (by omega) (by omega)]
   congr
