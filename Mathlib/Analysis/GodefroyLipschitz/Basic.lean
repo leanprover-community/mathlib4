@@ -386,53 +386,6 @@ theorem isup_fin :
 theorem Dense.denseInducing_val {X : Type*} [TopologicalSpace X] {s : Set X} (hs : Dense s) :
     DenseInducing (@Subtype.val X s) := ⟨inducing_subtype_val, hs.denseRange_val⟩
 
-theorem span_constr {s : Set E} {f : s → F} (h0 : (h : 0 ∈ s) → f ⟨0, h⟩ = 0)
-    (hadd : ∀ x y : s, (h : x.1 + y.1 ∈ s) → f ⟨x.1 + y.1, h⟩ = f x + f y)
-    (hsmul : ∀ (x : s) (t : ℝ), (h : t • x.1 ∈ s) → f ⟨t • x.1, h⟩ = t • (f x)) :
-    ∃ g : span ℝ s →ₗ[ℝ] F, ∀ x : s, g ⟨x.1, subset_span x.2⟩ = f x := by
-  have base : ∃ (ι : Type u_1) (b : Basis ι ℝ (span ℝ s)), ∀ i, (b i).1 ∈ s := by
-    let u := (linearIndependent_empty ℝ E).extend (empty_subset s)
-    let v : u → E := Subtype.val
-    have liv := (linearIndependent_empty ℝ E).linearIndependent_extend (empty_subset s)
-    have uss : u ⊆ s := (linearIndependent_empty ℝ E).extend_subset (empty_subset s)
-    have rv : range v ⊆ s := by
-      rw [Subtype.range_val_subtype]
-      exact (linearIndependent_empty ℝ E).extend_subset (empty_subset s)
-    have sv : (⊤ : Submodule ℝ (span ℝ s)) ≤ span ℝ ((span ℝ s).subtype ⁻¹' (range v)) := by
-      rw [Subtype.range_val_subtype, span_preimage_eq]
-      have : span ℝ {x | x ∈ u} = span ℝ s := by sorry
-      rw [this, comap_subtype_self]
-      · sorry
-      · apply subset_trans ((linearIndependent_empty ℝ E).extend_subset (empty_subset s))
-        intro x hx
-        use ⟨x, subset_span hx⟩
-        rfl
-    have sv : (⊤ : Submodule ℝ (span ℝ s)) ≤
-        span ℝ (range (fun x : u ↦ ⟨x.1, subset_span (uss x.2)⟩)) := by
-      convert sv
-      ext x
-      simp only [mem_range, Subtype.exists, coeSubtype, mem_preimage]
-      refine ⟨fun ⟨a, h, ha⟩ ↦ ⟨a, h, ?_⟩, fun ⟨a, h, ha⟩ ↦ ⟨a, h, ?_⟩⟩
-      · rw [← ha]
-      · rw [← Subtype.coe_inj, ← ha]
-    change LinearIndependent (ι := u) ℝ
-      ((span ℝ s).subtype ∘ (fun x ↦ ⟨x.1, subset_span (uss x.2)⟩)) at liv
-    have li : LinearIndependent (ι := u) (M := span ℝ s)
-        ℝ (fun x ↦ ⟨x.1, subset_span (uss x.2)⟩) := liv.of_comp
-    let b := Basis.mk li sv
-    refine ⟨u, b, fun i ↦ ?_⟩
-    apply rv
-    have : Subtype.val '' (range b) ⊆ range v := by
-      simp [b, v]
-      rintro - ⟨y, rfl⟩
-      simp
-    apply this
-    exact ⟨b i, ⟨i, rfl⟩, rfl⟩
-  rcases base with ⟨ι, b, hb⟩
-  let g := b.constr ℝ (fun i ↦ f ⟨b i, hb i⟩)
-  use g
-  sorry
-
 theorem uniformInducing_val {X : Type*} [UniformSpace X] (s : Set X) :
     UniformInducing (@Subtype.val X s) := ⟨uniformity_setCoe⟩
 
@@ -651,8 +604,9 @@ theorem exists_inverse'' [CompleteSpace E]
     have ptn8 : Tendsto (fun n ↦ c • (g (ux n))) atTop (𝓝 (c • (h x))) :=
       ptn4.const_smul c
     exact tendsto_nhds_unique ptn7 ptn8
-  have hnorm : ∀ x, ‖h x‖ ≤ ‖x‖ := by
+  have hnorm : ∀ x, ‖h x‖ ≤ 1 * ‖x‖ := by
     intro x
+    rw [one_mul]
     rcases merde x with ⟨ux, hux⟩
     have ptn1 : Tendsto (fun n ↦ h (ux n)) atTop (𝓝 (h x)) := (ch.tendsto _).comp hux
     have ptn4 : Tendsto (fun n ↦ g (ux n)) atTop (𝓝 (h x)) := by
@@ -663,3 +617,27 @@ theorem exists_inverse'' [CompleteSpace E]
       (continuous_norm.tendsto _).comp ptn4
     apply le_of_tendsto_of_tendsto' ptn5 ((continuous_norm.tendsto _).comp hux)
     exact fun _ ↦ ng _
+  let h' : F →ₗ[ℝ] E :=
+    { toFun := h
+      map_add' := hadd
+      map_smul' := hsmul }
+  let H := h'.mkContinuous 1 hnorm
+  use H
+  constructor
+  · apply le_antisymm
+    · exact H.opNorm_le_bound (by norm_num) hnorm
+    · sorry
+  · ext x
+    have : x ∈ ⋃ (F : Submodule ℝ E) (_ : FiniteDimensional ℝ F), (F : Set E) := by
+      rw [← isup_fin]; trivial
+    rcases mem_iUnion₂.1 this with ⟨p, hp, hx⟩
+    have ptn : φ x ∈ Q := by
+      simp only [mem_iUnion, SetLike.mem_coe, exists_prop, Q]
+      exact ⟨p, hp, subset_span ⟨x, hx, rfl⟩⟩
+    have ob : (T p ⟨φ x, subset_span ⟨x, hx, rfl⟩⟩).1 = g ⟨φ x, subset_span ptn⟩ := by sorry
+    have merde : H (φ x) = g ⟨φ x, subset_span ptn⟩ := by
+      change h (⟨φ x, subset_span ptn⟩ : span ℝ Q) = g ⟨φ x, subset_span ptn⟩
+      exact (ui.denseInducing dQ).extend_eq cg.continuous _
+    simp only [Function.comp_apply, id_eq]
+    rw [merde, ← ob]
+    exact Subtype.val_inj.2 <| hT p hp ⟨x, hx⟩
