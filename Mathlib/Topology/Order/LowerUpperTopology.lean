@@ -325,18 +325,39 @@ lemma teq (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Ici a)ᶜ = U
         use a
       · rw [sUnion_singleton]
     · intro h
-      obtain ⟨S,⟨_,hS2⟩⟩ := h
+      obtain ⟨S,⟨hS1,hS2⟩⟩ := h
       rw [hS2]
-
-      have _ : univ ∉ S := by
-        aesop
-      have _ : S ⊆ {s | ∃ a, (Ici a)ᶜ = s} := by
-        aesop
-
-      aesop
-        --apply subset_insert_iff_of_not_mem.mp --e1
-
-
+      have hUS : univ ∉ S := by
+        by_contra hUS
+        apply hU
+        rw [hS2, sUnion_eq_univ_iff]
+        intro a
+        use univ
+        exact ⟨hUS,trivial⟩
+      have hS3 : S ⊆ {s | ∃ a, (Ici a)ᶜ = s} := (subset_insert_iff_of_not_mem hUS).mp hS1
+      let T := {a | (Ici a)ᶜ ∈ S}
+      use sSup T
+      rw [sUnion_eq_compl_sInter_compl]
+      rw [compl_inj_iff]
+      apply le_antisymm
+      · intro b hb
+        simp only [sInter_image, mem_iInter, mem_compl_iff]
+        intro s hs
+        have h4 : s ∈ {s | ∃ a, (Ici a)ᶜ = s} := by
+          exact hS3 hs
+        simp only [mem_setOf_eq] at h4
+        obtain ⟨a,ha⟩ := h4
+        subst hS2 ha
+        simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt, T]
+      · intro b hb
+        simp only [mem_Ici, sSup_le_iff]
+        intro c hc
+        simp at hb
+        have e2 : b ∉ (Ici c)ᶜ := by
+          apply hb
+          exact hc
+        simp at e2
+        exact e2
   · intro h
     apply IsTopologicalBasis.isOpen isTopologicalBasis_insert_univ_subbasis
     rw [mem_insert_iff, mem_setOf_eq]
