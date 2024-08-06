@@ -30,7 +30,6 @@ theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) 
   simp only [bit, testBit_zero]
   cases mod_two_eq_zero_or_one n with | _ h => simpa [h] using Nat.div_add_mod n 2
 
-@[simp]
 theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   cases n <;> cases b <;> simp [bit, Nat.shiftLeft_succ, Nat.two_mul, ← Nat.add_assoc]
 
@@ -46,7 +45,7 @@ def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n :=
   For a predicate `C : Nat → Sort u`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
-@[elab_as_elim, specialize]
+@[specialize]
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) (n : Nat) : C n :=
   if n0 : n = 0 then n0 ▸ z
   else
@@ -81,21 +80,19 @@ def binaryRecFromOne {C : Nat → Sort u} (z₀ : C 0) (z₁ : C 1)
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b <;> rfl
 
-@[simp]
 theorem bit_div_two (b n) : bit b n / 2 = n := by
   rw [bit_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
   · cases b <;> decide
   · decide
 
-@[simp]
 theorem bit_mod_two (b n) : bit b n % 2 = if b then 1 else 0 := by
   cases b <;> simp [bit_val, mul_add_mod]
 
-@[simp] theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
+theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
   bit_div_two b n
 
 theorem bit_testBit_zero (b n) : (bit b n).testBit 0 = b := by
-  simp
+  simp [bit_mod_two]
 
 @[simp]
 theorem bitCasesOn_bit {C : Nat → Sort u} (h : ∀ b n, C (bit b n)) (b : Bool) (n : Nat) :
@@ -105,10 +102,10 @@ theorem bitCasesOn_bit {C : Nat → Sort u} (h : ∀ b n, C (bit b n)) (b : Bool
   rw [bit_testBit_zero, bit_shiftRight_one]
   intros; rfl
 
-unseal binaryRec in
 @[simp]
 theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec z f 0 = z :=
+    binaryRec z f 0 = z := by
+  rw [binaryRec]
   rfl
 
 theorem binaryRec_eq' {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
@@ -127,8 +124,8 @@ theorem binaryRec_eq' {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     rw [bit_testBit_zero, bit_shiftRight_one]
     intros; rfl
 
-theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
-    (h : f false 0 z = z) :
+theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
+    (h : f false 0 z = z) (b n) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
   binaryRec_eq' b n (.inl h)
 
