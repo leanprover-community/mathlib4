@@ -90,12 +90,12 @@ lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
   (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
 
 protected theorem edist_triangle : G.edist u w ≤ G.edist u v + G.edist v w := by
-  rcases eq_or_ne (G.edist u v) ⊤ with huv | huv
-  case inl => simp [huv]
-  case inr =>
-    rcases eq_or_ne (G.edist v w) ⊤ with hvw | hvw
-    case inl => simp [hvw]
-    case inr =>
+  cases eq_or_ne (G.edist u v) ⊤ with
+  | inl huv => simp [huv]
+  | inr huv =>
+    cases eq_or_ne (G.edist v w) ⊤ with
+    | inl hvw => simp [hvw]
+    | inr hvw =>
       obtain ⟨p, hp⟩ := exists_walk_of_edist_ne_top huv
       obtain ⟨q, hq⟩ := exists_walk_of_edist_ne_top hvw
       rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
@@ -134,6 +134,15 @@ lemma edist_bot [DecidableEq V] : (⊥ : SimpleGraph V).edist u v = (if u = v th
 
 lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
+
+/-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
+theorem edist_le_subgraph_edist {G' : SimpleGraph V} (h : G ≤ G') :
+    G'.edist u v ≤ G.edist u v := by
+  by_cases hr : G.Reachable u v
+  · obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_edist
+    rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+    apply edist_le
+  · exact edist_eq_top_of_not_reachable hr ▸ le_top
 
 end edist
 
@@ -246,6 +255,13 @@ lemma dist_bot : (⊥ : SimpleGraph V).dist u v = 0 := by
 
 lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
+
+/-- Supergraphs have smaller or equal distances to their subgraphs. -/
+theorem dist_le_subgraph_dist {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
+    G'.dist u v ≤ G.dist u v := by
+  obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
+  rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+  apply dist_le
 
 end dist
 
