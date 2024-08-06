@@ -1525,7 +1525,7 @@ def compactlySupported : TwoSidedIdeal (α →ᵇ γ) :=
 
 @[inherit_doc]
 scoped[BoundedContinuousFunction] notation
-  "C_cb(" α ", " γ ")" => compactlySupportedBoundedContinuousFunction α γ
+  "C_cb(" α ", " γ ")" => compactlySupported α γ
 
 end
 
