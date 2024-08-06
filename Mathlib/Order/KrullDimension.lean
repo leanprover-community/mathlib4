@@ -95,14 +95,7 @@ lemma RelSeries.eraseLast_last_rel_last {r : Rel α α} (p : RelSeries r) (h : 0
 @[simp] lemma LTSeries.last_map  {α β : Type*} [Preorder α] [Preorder β] (p : LTSeries α)
     (f : α → β) (hf : StrictMono f) : (p.map f hf).last = f p.last := rfl
 
-end in_other_prs
-
-section still_to_PR -- should be empty when this PR gets submitted
-
-section RelSeries
-
-variable {α : Type*}
-
+-- https://github.com/leanprover-community/mathlib4/pull/15555
 def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
   { length := n, toFun := fun i => i, step := fun _ => Nat.lt_add_one _ }
 
@@ -111,6 +104,14 @@ def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
 @[simp] def LTSeries.head_iota (n : ℕ) : (LTSeries.iota n).head = 0 := rfl
 
 @[simp] def LTSeries.last_iota (n : ℕ) : (LTSeries.iota n).last = n := rfl
+
+end in_other_prs
+
+section still_to_PR -- should be empty when this PR gets submitted
+
+section RelSeries
+
+variable {α : Type*}
 
 @[simp] def RelSeries.last_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.last = p.head := by
   simp [RelSeries.last, RelSeries.head]
