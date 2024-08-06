@@ -890,7 +890,7 @@ theorem θHom_disjoint_iff (f : Perm α) :
   · rw [← support_ofSubtype]
   · simp only [Finset.univ_eq_attach, Finset.mem_attach, true_implies, Subtype.forall] 
 
-theorem θHom_disjoint_self_iff : 
+theorem θHom_disjoint_self_iff :
     Disjoint (θHom g (u,v)) g ↔ v = 1 := by
   rw [θHom_disjoint_iff]
   convert true_and_iff _
