@@ -130,6 +130,14 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
+-- /-- Get the mvarid of the main goal, run the given `tactic`,
+-- then set the new goals to be the resulting goal list.-/
+-- @[inline] def liftMetaTactic (tactic : MVarId → MetaM (List MVarId)) : TacticM Unit :=
+--   withMainContext do
+--     let mvarIds ← tactic (← getMainGoal)
+--     replaceMainGoal mvarIds
+--     pure ()
+
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
@@ -146,25 +154,30 @@ def elabLinearCombination
     | .const e => pure ⟨e, e, q(Eq.refl $e)⟩
     | .proof a b p => pure ⟨a, b, p⟩
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
-  let e : Q($a' - $b' - ($a - $b) = 0 → $a' = $b') := q(eq_of_add (a' := $a') (b' := $b') $p)
-  let d : Q(Prop) := q($a' - $b' - ($a - $b) = 0)
-  let mvar ← mkFreshExprMVar d MetavarKind.natural
-  Tactic.liftMetaTactic fun g ↦ do
-    g.assign (.app e mvar)
-    return [mvar.mvarId!]
-  Tactic.evalTactic norm
-  -- Tactic.evalTactic <| ← withFreshMacroScope <|
+  let (e, d) ← do
   -- if twoGoals then
   --   `(tactic| (
   --     refine eq_trans₃ $p ?a ?b
   --     case' a => $norm:tactic
   --     case' b => $norm:tactic))
   -- else
-  --   match exp? with
-  --   | some n =>
-  --     if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
-  --     else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-  --   | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+    match exp? with
+    | some n =>
+      let n : ℕ := n.getNat
+      if n = 1 then
+        pure (q(eq_of_add (a' := $a') (b' := $b') $p), q($a' - $b' - ($a - $b) = 0))
+      else
+        let _i ← synthInstanceQ q(Ring ($α : Type v))
+        let _i ← synthInstanceQ q(NoZeroDivisors ($α : Type v))
+        pure
+          (q(eq_of_add_pow (a' := $a') (b' := $b') $n $p), q(($a' - $b') ^ $n - ($a - $b) ^ $n = 0))
+    | none =>
+      pure (q(eq_of_add (a' := $a') (b' := $b') $p), q($a' - $b' - ($a - $b) = 0))
+  let mvar ← mkFreshExprMVar d MetavarKind.natural
+  Tactic.liftMetaTactic fun g ↦ do
+    g.assign (.app e mvar)
+    return [mvar.mvarId!]
+  Tactic.evalTactic norm
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
