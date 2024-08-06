@@ -187,8 +187,8 @@ variable [Monoid α] [Preorder α]
 
 @[to_additive existing]
 instance NonemptyInterval.hasPow
-  [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
-  Pow (NonemptyInterval α) ℕ :=
+    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
+    Pow (NonemptyInterval α) ℕ :=
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 
 namespace NonemptyInterval

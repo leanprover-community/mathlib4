@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Order.Group.Lattice
--- import Mathlib.Algebra.Order.Group.Defs
 
 /-!
 # Absolute values in ordered groups
