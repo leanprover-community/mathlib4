@@ -197,6 +197,8 @@ variable (p : ℕ) [Fact p.Prime]
 
 instance : MetricSpace ℤ_[p] := Subtype.metricSpace
 
+instance : IsUltrametricDist ℤ_[p] := IsUltrametricDist.subtype _
+
 instance completeSpace : CompleteSpace ℤ_[p] :=
   have : IsClosed { x : ℚ_[p] | ‖x‖ ≤ 1 } := isClosed_le continuous_norm continuous_const
   this.completeSpace_coe
