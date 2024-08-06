@@ -19,15 +19,11 @@ This file sets up the theory of locally constant function from a topological spa
 * `LocallyConstant X Y` : the type of locally constant maps from `X` to `Y`
 * `LocallyConstant.map` : push-forward of locally constant maps
 * `LocallyConstant.comap` : pull-back of locally constant maps
-
 -/
-
 
 variable {X Y Z α : Type*} [TopologicalSpace X]
 
-open Set Filter
-
-open Topology
+open Set Filter Topology
 
 /-- A function between topological spaces is locally constant if the preimage of any set is open. -/
 def IsLocallyConstant (f : X → Y) : Prop :=
@@ -434,8 +430,6 @@ section Indicator
 
 variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 
-open scoped Classical
-
 /-- Given a clopen set `U` and a locally constant function `f`, `LocallyConstant.mulIndicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/
 @[to_additive (attr := simps) "Given a clopen set `U` and a locally constant function `f`,
@@ -449,6 +443,7 @@ noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
 
 variable (a : X)
 
+open Classical in
 @[to_additive]
 theorem mulIndicator_apply_eq_if (hU : IsClopen U) :
     mulIndicator f hU a = if a ∈ U then f a else 1 :=

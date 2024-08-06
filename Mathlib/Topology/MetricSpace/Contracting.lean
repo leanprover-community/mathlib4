@@ -28,8 +28,6 @@ of convergence, and some properties of the map sending a contracting map to its 
 contracting map, fixed point, Banach fixed point theorem
 -/
 
-
-open scoped Classical
 open NNReal Topology ENNReal Filter Function
 
 variable {α : Type*}
