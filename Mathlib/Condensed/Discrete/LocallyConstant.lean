@@ -206,17 +206,15 @@ noncomputable def counitApp (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
   app := fun ⟨S⟩ ↦ counitAppApp S Y
   naturality := by
     intro S T g
-    simp only [functorToPresheaves]
     ext f
     apply presheaf_ext (f.comap g.unop)
     intro a
-    simp only [op_unop, types_comp_apply]
-    rw [incl_of_counitAppApp, ← FunctorToTypes.map_comp_apply, incl_comap]
-    simp only [op_unop, FunctorToTypes.map_comp_apply]
-    rw [incl_of_counitAppApp]
+    simp only [op_unop, functorToPresheaves_obj_obj, types_comp_apply, functorToPresheaves_obj_map,
+      incl_of_counitAppApp, ← FunctorToTypes.map_comp_apply, incl_comap]
+    simp only [FunctorToTypes.map_comp_apply, incl_of_counitAppApp]
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
       terminal.comp_from]
-    erw [image_eq_image_mk (g := g.unop.toFun)]
+    erw [image_eq_image_mk (g := g.unop.toFun), ]
     rfl
 
 lemma hom_apply_counitAppApp (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
