@@ -621,8 +621,7 @@ lemma vanishingIdeal_irreducibleComponents :
     minimalPrimes R := by
   rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals,
     image_antitone_setOf_maximal (fun s t hs _ ↦ (vanishingIdeal_anti_mono_iff hs.1).symm),
-    minimal_congr (P := Ideal.IsPrime) (Q := fun x ↦ x ∈ {x | Ideal.IsPrime x}) (by simp),
-    ← vanishingIdeal_isClosed_isIrreducible]
+    ← funext (@Set.mem_setOf_eq _ · Ideal.IsPrime), ← vanishingIdeal_isClosed_isIrreducible]
   rfl
 
 lemma zeroLocus_minimalPrimes :

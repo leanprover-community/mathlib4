@@ -104,7 +104,6 @@ section dual
     obtain (heB'' | ⟨-,heX⟩ ) := hB₁I heB'
     · exact hdj.ne_of_mem heJ heB'' rfl
     exact heX (hJX heJ)
-
   subset_ground := by tauto
 
 /-- The dual of a matroid; the bases are the complements (w.r.t `M.E`) of the bases of `M`. -/

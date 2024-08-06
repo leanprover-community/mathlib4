@@ -471,9 +471,7 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
   obtain rfl | H := eq_or_ne b k
   · left; ext; simp only [Set.Iic.coe_top, Subtype.coe_mk]
   right
-  -- #check zorn_le_nonempty
   have ⟨a, ba, h⟩ := zorn_le_nonempty₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
-  -- have ⟨a, a₀, ba, h⟩ := zorn_le_nonempty₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
   · refine ⟨⟨a, le_of_lt h.prop⟩, ⟨ne_of_lt h.prop, fun c hck => by_contradiction fun c₀ => ?_⟩, ba⟩
     cases h.eq_of_le (y := c.1) (lt_of_le_of_ne c.2 fun con ↦ c₀ (Subtype.ext con)) hck.le
     exact lt_irrefl _ hck
