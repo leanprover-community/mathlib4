@@ -9,6 +9,19 @@ import Mathlib.Topology.Category.Profinite.Extend
 /-!
 
 # Extending a functor from `FintypeCat` to `Profinite`
+
+Let `(Sₙ)_{n : ℕᵒᵖ}` be a sequential inverse system of finite sets and let `S` be
+its limit in `Profinite`. Let `G` be a functor from `LightProfinite` to a category `C` and suppose
+that `G` preserves the limit described above. Suppose further that the projection maps `S ⟶ Sₙ` are
+epimorphic for all `n`. Then `G.obj S` is isomorphic to a limit indexed by
+`StructuredArrow S toLightProfinite` (see `LightProfinite.Extend.isLimitCone`).
+
+We also provide the dual result for a functor of the form `G : LightProfiniteᵒᵖ ⥤ C`.
+
+We apply this to define `LightProfinite.diagram'`, `LightProfinite.asLimitCone'`, and
+`LightProfinite.asLimit'`, analogues to their unprimed versions in
+`Mathlib.Topology.Category.LightProfinite.AsLimit`, in which the
+indexing category is `StructuredArrow S toLightProfinite` instead of `ℕᵒᵖ`.
 -/
 
 universe u
