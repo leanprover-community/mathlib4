@@ -252,6 +252,7 @@ namespace LieModule
 
 variable {R L}
 variable {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L)
+include hx
 
 lemma commute_toEnd_of_mem_center_left :
     Commute (toEnd R L M x) (toEnd R L M y) := by
