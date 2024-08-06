@@ -141,7 +141,7 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
     (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
-  let eqData := (← Lean.Elab.Tactic.getMainTarget).eq?.get!
+  let eqData := (← Tactic.getMainTarget).consumeMData.eq?.get!
   let .sort u ← whnf (← inferType eqData.1) | unreachable!
   let some v := u.dec | throwError "not a type"
   let ((α : Q(Type v)), (a' : Q($α)), (b':Q($α))) := eqData
