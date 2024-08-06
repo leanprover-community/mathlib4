@@ -121,7 +121,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
       ⟨fun a => f a j, fun a b e' => by
         let ⟨sa, ea⟩ := hf a
         let ⟨sb, eb⟩ := hf b
-        rw [← ea, ← eb, hs _ sa _ sb _ e']⟩⟩⟩
+        rw [← ea, ← eb, hs.prop _ sa _ sb _ e']⟩⟩⟩
 
 end Wo
 
