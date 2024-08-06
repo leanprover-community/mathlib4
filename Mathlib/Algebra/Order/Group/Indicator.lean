@@ -104,7 +104,7 @@ lemma mulIndicator_le_one (h : ∀ a ∈ s, f a ≤ 1) (a : α) : mulIndicator s
 @[to_additive]
 lemma mulIndicator_le_mulIndicator' (h : a ∈ s → f a ≤ g a) :
     mulIndicator s f a ≤ mulIndicator s g a :=
-  mulIndicator_rel_mulIndicator le_rfl fun ha ↦ h ha
+  mulIndicator_rel_mulIndicator le_rfl h
 
 @[to_additive]
 lemma mulIndicator_le_mulIndicator (h : f a ≤ g a) : mulIndicator s f a ≤ mulIndicator s g a :=
