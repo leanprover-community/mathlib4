@@ -361,8 +361,7 @@ instance fromGlued_stalk_iso (x : 𝒰.gluedCover.glued.carrier) :
     IsIso (𝒰.fromGlued.stalkMap x) := by
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   have := stalkMap_congr_hom _ _ (𝒰.ι_fromGlued i) x
-  rw [stalkMap_comp, ← IsIso.eq_comp_inv,
-    ← TopCat.Presheaf.stalkCongr_hom _ (Inseparable.of_eq <| by simp)] at this
+  rw [stalkMap_comp, ← IsIso.eq_comp_inv] at this
   rw [this]
   infer_instance
 

@@ -178,6 +178,17 @@ theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
     · exact ih (Nat.succ_lt_succ_iff.1 hi)
 
 @[simp]
+lemma cons_getVert_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
+    (p.cons h).getVert (n + 1) = p.getVert n := rfl
+
+lemma cons_getVert {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : n ≠ 0) :
+    (p.cons h).getVert n = p.getVert (n - 1) := by
+  obtain ⟨i, hi⟩ : ∃ (i : ℕ), i.succ = n := by
+    use n - 1; exact Nat.succ_pred_eq_of_ne_zero hn
+  rw [← hi]
+  simp only [Nat.succ_eq_add_one, cons_getVert_succ, Nat.add_sub_cancel]
+
+@[simp]
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
     (cons h p).append q = cons h (p.append q) := rfl
 
@@ -748,6 +759,12 @@ def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → So
   | nil => fun hp => absurd .nil hp
   | .cons h q => fun _ => cons h q
 
+@[simp]
+lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → Sort*}
+    (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) →
+    motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
+    @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
+
 /-- The second vertex along a non-nil walk. -/
 def sndOfNotNil (p : G.Walk v w) (hp : ¬ p.Nil) : V :=
   p.notNilRec (@fun _ u _ _ _ => u) hp
@@ -791,6 +808,18 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
 @[simp] lemma support_tail (p : G.Walk v v) (hp) :
     (p.tail hp).support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
+
+@[simp]
+lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
+    (p.cons h).tail not_nil_cons = p := by
+  unfold Walk.tail; simp only [notNilRec_cons]
+
+lemma tail_support_eq_support_tail (p : G.Walk u v) (hnp : ¬p.Nil) :
+    (p.tail hnp).support = p.support.tail :=
+  p.notNilRec (by
+    intro u v w huv q
+    unfold Walk.tail
+    simp only [notNilRec_cons, Walk.support_cons, List.tail_cons]) hnp
 
 /-! ### Walk decompositions -/
 
@@ -872,7 +901,7 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
         simp
       · rw [edges_cons, List.count_cons]
         split_ifs with h''
-        · rw [Sym2.eq_iff] at h''
+        · simp only [beq_iff_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h''
           obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h''
           · exact (h' rfl).elim
           · cases p' <;> simp!
@@ -965,6 +994,51 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
     · obtain ⟨d, hd, hcd⟩ := ih h vS
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩
+
+lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
+    (p.tail hnp).getVert n = p.getVert (n + 1) :=
+  p.notNilRec (fun _ _ ↦ by simp only [tail_cons, cons_getVert_succ]) hnp
+
+@[simp]
+lemma cons_sndOfNotNil (q : G.Walk v w) (hadj : G.Adj u v) :
+    (q.cons hadj).sndOfNotNil not_nil_cons = v := by
+  unfold sndOfNotNil; simp only [notNilRec_cons]
+
+lemma getVert_one (p : G.Walk u v) (hnp : ¬ p.Nil) : p.getVert 1 = p.sndOfNotNil hnp :=
+  p.notNilRec (fun _ _ ↦ by simp only [cons_getVert_succ, getVert_zero, cons_sndOfNotNil]) hnp
+
+/-- Given a walk `w` and a node in the support, there exists a natural `n`, such that given node
+is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the path.
+Due to the definition of `getVert` it would otherwise be legal to return a larger `n` for the last
+node. -/
+theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
+    u ∈ p.support ↔ ∃ n, p.getVert n = u ∧ n ≤ p.length := by
+  constructor
+  · intro h
+    obtain ⟨q, r, hqr⟩ := SimpleGraph.Walk.mem_support_iff_exists_append.mp h
+    use q.length
+    rw [hqr]
+    rw [Walk.getVert_append]
+    simp only [lt_self_iff_false, ↓reduceIte, Nat.sub_self, getVert_zero, length_append,
+      Nat.le_add_right, and_self]
+  · rintro ⟨n, hn⟩
+    rw [SimpleGraph.Walk.mem_support_iff]
+    by_cases h0 : n = 0
+    · rw [h0, getVert_zero] at hn
+      left
+      exact hn.1.symm
+    · right
+      have hnp : ¬ p.Nil := by
+        rw [@nil_iff_length_eq]
+        have : 1 ≤ p.length := by omega
+        exact Nat.not_eq_zero_of_lt this
+      rw [← tail_support_eq_support_tail _ hnp]
+      rw [mem_support_iff_exists_getVert]
+      use n - 1
+      simp only [Nat.sub_le_iff_le_add, length_tail_add_one, getVert_tail]
+      have : n - 1 + 1 = n := by omega
+      rwa [this]
+termination_by p.length
 
 end Walk
 

@@ -59,11 +59,11 @@ open Algebra (lsmul)
 section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
-variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
+variable [AddCommMonoid M] [Module R M] [Module A M]
+variable [IsScalarTower R A M]
 variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
-variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
+variable [AddCommMonoid P] [Module R P] [Module A P]
+variable [IsScalarTower R A P]
 variable [AddCommMonoid Q] [Module R Q]
 variable [AddCommMonoid P'] [Module R P'] [Module A P'] [Module B P']
 variable [IsScalarTower R A P'] [IsScalarTower R B P'] [SMulCommClass A B P']
@@ -128,6 +128,9 @@ theorem lift_tmul (f : M →ₗ[A] N →ₗ[R] P) (x : M) (y : N) : lift f (x �
   rfl
 
 variable (R A B M N P Q)
+
+section
+variable [Module B P] [IsScalarTower R B P] [SMulCommClass A B P]
 
 /-- Heterobasic version of `TensorProduct.uncurry`:
 
@@ -292,6 +295,8 @@ variable {M} in
 @[simp]
 theorem rid_symm_apply (m : M) : (AlgebraTensorModule.rid R A M).symm m = m ⊗ₜ 1 := rfl
 
+end
+
 end Semiring
 
 section CommSemiring
@@ -300,14 +305,14 @@ variable [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
-variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
+variable [AddCommMonoid P] [Module A P]
 variable [AddCommMonoid Q] [Module R Q]
 variable (R A B M N P Q)
 
 attribute [local ext high] TensorProduct.ext
 
 section assoc
+variable [Module R P] [IsScalarTower R A P]
 variable [Algebra A B] [IsScalarTower A B M]
 
 /-- Heterobasic version of `TensorProduct.assoc`:
@@ -362,6 +367,7 @@ theorem cancelBaseChange_symm_tmul (m : M) (n : N) :
 end cancelBaseChange
 
 section leftComm
+variable [Module R P] [IsScalarTower R A P]
 
 /-- Heterobasic version of `TensorProduct.leftComm` -/
 def leftComm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
@@ -416,6 +422,7 @@ theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
 end rightComm
 
 section tensorTensorTensorComm
+variable [Module R P] [IsScalarTower R A P]
 
 /-- Heterobasic version of `tensorTensorTensorComm`. -/
 def tensorTensorTensorComm :

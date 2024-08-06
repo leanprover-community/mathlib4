@@ -220,7 +220,6 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
         rw [stalkIso_hom, stalkIso_inv]
         erw [comp_apply, comp_apply, localizationToStalk_of, stalkMap_toStalk_apply f p x,
             stalkToFiberRingHom_toStalk]
-        rfl
 
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
@@ -237,9 +236,7 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       #adaptation_note /-- nightly-2024-04-01
       It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
       erw [← localRingHom_comp_stalkIso_apply] at ha
-      replace ha := (stalkIso S p).hom.isUnit_map ha
-      rw [← comp_apply, show localizationToStalk S p = (stalkIso S p).inv from rfl,
-        Iso.inv_hom_id, id_apply] at ha
+      replace ha := (isUnit_map_iff (stalkIso S p).inv _).mp ha
       -- Porting note: `f` had to be made explicit
       replace ha := IsLocalRingHom.map_nonunit
         (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
@@ -250,13 +247,13 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
 @[simp]
 theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat.{u}) :
     Spec.locallyRingedSpaceMap (𝟙 R) = 𝟙 (Spec.locallyRingedSpaceObj R) :=
-  LocallyRingedSpace.Hom.ext _ _ <| by
+  LocallyRingedSpace.Hom.ext <| by
     rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_id]; rfl
 
 theorem Spec.locallyRingedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.locallyRingedSpaceMap (f ≫ g) =
       Spec.locallyRingedSpaceMap g ≫ Spec.locallyRingedSpaceMap f :=
-  LocallyRingedSpace.Hom.ext _ _ <| by
+  LocallyRingedSpace.Hom.ext <| by
     rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_comp]; rfl
 
 /-- Spec, as a contravariant functor from commutative rings to locally ringed spaces.
