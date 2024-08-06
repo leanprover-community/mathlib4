@@ -18,6 +18,10 @@ attribute [local instance] ConcreteCategory.instFunLike
 
 namespace CondensedSet
 
+/--
+This is an auxiliary definition to prove that the constant sheaf functor from `Type (u+1)` 
+to sheaves for the coherent topology on `Profinite.{u}` is fully faithful.
+-/
 noncomputable
 def constantSheafProfiniteCompHausIso : constantSheaf (coherentTopology Profinite) (Type (u+1)) ≅
     constantSheaf (coherentTopology CompHaus) (Type (u+1)) ⋙
@@ -34,13 +38,9 @@ instance : (constantSheaf (coherentTopology Profinite) (Type (u+1))).Full :=
 
 open CompHausLike.LocallyConstant
 
-noncomputable def isColimitLocallyConstantPresheaf (X : Type (u+1)) (S : Profinite.{u}) :
-    IsColimit ((profiniteToCompHaus.op ⋙
-      (CondensedSet.LocallyConstant.functor.{u}.obj X).val).mapCocone S.asLimitCone.op) :=
-  Condensed.isColimitLocallyConstantPresheafDiagram _ _
-
-theorem isDiscrete_of_isColimit_mapCone (X : CondensedSet.{u}) (h : ∀ S : Profinite.{u},
-    IsColimit <| (profiniteToCompHaus.op ⋙ X.val).mapCocone S.asLimitCone.op) :
+lemma mem_locallyContant_essImage_of_isColimit_mapCocone (X : CondensedSet.{u})
+    (h : ∀ S : Profinite.{u}, IsColimit <|
+      (profiniteToCompHaus.op ⋙ X.val).mapCocone S.asLimitCone.op) :
     X ∈ CondensedSet.LocallyConstant.functor.essImage := by
   let e : CondensedSet.{u} ≌ Sheaf (coherentTopology Profinite) _ :=
     (Condensed.ProfiniteCompHaus.equivalence (Type (u + 1))).symm
@@ -49,6 +49,10 @@ theorem isDiscrete_of_isColimit_mapCone (X : CondensedSet.{u}) (h : ∀ S : Prof
     Condensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨e.functor.preimageIso ((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
+/--
+`CondensedSet.LocallyConstant.functor` is left adjoint to the forgetful functor from light condensed
+sets to sets.
+-/
 noncomputable abbrev LocallyConstant.adjunction :
     CondensedSet.LocallyConstant.functor ⊣ Condensed.underlying (Type (u+1)) :=
   CompHausLike.LocallyConstant.adjunction _ _
@@ -77,12 +81,12 @@ theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
       CompHaus.isTerminalPUnit _).symm
   tfae_have 6 → 3
   · intro h
-    exact isDiscrete_of_isColimit_mapCone X (fun S ↦ (h S).some)
+    exact mem_locallyContant_essImage_of_isColimit_mapCocone X (fun S ↦ (h S).some)
   tfae_have 3 → 6
   · intro ⟨Y, ⟨i⟩⟩ S
     exact ⟨IsColimit.mapCoconeEquiv (isoWhiskerLeft profiniteToCompHaus.op
       ((sheafToPresheaf _ _).mapIso i))
-      (isColimitLocallyConstantPresheaf Y S)⟩
+      (Condensed.isColimitLocallyConstantPresheafDiagram Y S)⟩
   tfae_finish
 
 end CondensedSet
@@ -97,18 +101,17 @@ instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
 
 open CompHausLike.LocallyConstant
 
-noncomputable def isColimitLocallyConstantPresheaf (X : Type u) (S : LightProfinite.{u}) :
-    IsColimit ((LightCondSet.LocallyConstant.functor.{u}.obj X).val.mapCocone
-      (coconeRightOpOfCone S.asLimitCone)) :=
-  LightCondensed.isColimitLocallyConstantPresheafDiagram _ _
-
-theorem isDiscrete_of_isColimit_mapCone (X : LightCondSet.{u}) (h : ∀ S : LightProfinite.{u},
-    IsColimit <| X.val.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
+lemma mem_locallyContant_essImage_of_isColimit_mapCocone (X : LightCondSet.{u})
+  (h : ∀ S : LightProfinite.{u}, IsColimit <| X.val.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
     X ∈ LightCondSet.LocallyConstant.functor.essImage := by
   let i : X.val ≅ (LightCondSet.LocallyConstant.functor.obj _).val :=
     LightCondensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
+/--
+`LightCondSet.LocallyConstant.functor` is left adjoint to the forgetful functor from light condensed
+sets to sets.
+-/
 noncomputable abbrev LocallyConstant.adjunction :
     LightCondSet.LocallyConstant.functor ⊣ LightCondensed.underlying (Type u) :=
   CompHausLike.LocallyConstant.adjunction _ _
@@ -131,11 +134,11 @@ theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
   · exact Sheaf.isDiscrete_iff_isIso_counit_app _ _ LightCondSet.LocallyConstant.adjunction X
   tfae_have 5 → 3
   · intro h
-    exact isDiscrete_of_isColimit_mapCone X (fun S ↦ (h S).some)
+    exact mem_locallyContant_essImage_of_isColimit_mapCocone X (fun S ↦ (h S).some)
   tfae_have 3 → 5
   · intro ⟨Y, ⟨i⟩⟩ S
     exact ⟨IsColimit.mapCoconeEquiv ((sheafToPresheaf _ _).mapIso i)
-      (isColimitLocallyConstantPresheaf Y S)⟩
+      (LightCondensed.isColimitLocallyConstantPresheafDiagram Y S)⟩
   tfae_finish
 
 end LightCondSet
