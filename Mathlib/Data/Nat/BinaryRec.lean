@@ -91,7 +91,7 @@ theorem bit_mod_two (b n) : bit b n % 2 = if b then 1 else 0 := by
 theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
   bit_div_two b n
 
-theorem bit_testBit_zero (b n) : (bit b n).testBit 0 = b := by
+theorem testBit_bit_zero (b n) : (bit b n).testBit 0 = b := by
   simp [bit_mod_two]
 
 @[simp]
@@ -99,7 +99,7 @@ theorem bitCasesOn_bit {C : Nat → Sort u} (h : ∀ b n, C (bit b n)) (b : Bool
     bitCasesOn (bit b n) h = h b n := by
   change (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
   generalize (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
-  rw [bit_testBit_zero, bit_shiftRight_one]
+  rw [testBit_bit_zero, bit_shiftRight_one]
   intros; rfl
 
 @[simp]
@@ -121,7 +121,7 @@ theorem binaryRec_eq' {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     rw [binaryRec, dif_neg h']
     change (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
     generalize (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
-    rw [bit_testBit_zero, bit_shiftRight_one]
+    rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
 
 theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
