@@ -114,12 +114,17 @@ partial def expandLinearCombo {u : Level} (α : Q(Type u)) (stx : Syntax.Term) :
     | .proof a₁ b₁ p₁, .const e₂ => return .proof q($a₁ / $e₂) q($b₁ / $e₂) q(pf_div_c $p₁ $e₂)
     | .const e₁, .proof a₂ b₂ p₂ => return .proof q($e₁ / $a₂) q($e₁ / $b₂) q(c_div_pf $p₂ $e₁)
     | .proof a₁ b₁ p₁, .proof a₂ b₂ p₂ => return .proof q($a₁ / $a₂) q($b₁ / $b₂) q(div_pf $p₁ $p₂)
-  | e => do
-    let e ← elabTerm e (some α)
+  | e₀ => do
+    let e ← elabTerm e₀ none
     let eType ← inferType e
     match (← withReducible do whnf eType).eq? with
     | some (_, a, b) => return LinearCombination.proof a b e
-    | none => return LinearCombination.const e
+    | none =>
+      -- unfortunately we should now re-elaborate `e`, knowing that it represents a constant of
+      -- type `α`
+      let e ← elabTerm e₀ (some α)
+      synthesizeSyntheticMVarsNoPostponing
+      return LinearCombination.const e
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
@@ -129,14 +134,6 @@ theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) :
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
-
--- /-- Get the mvarid of the main goal, run the given `tactic`,
--- then set the new goals to be the resulting goal list.-/
--- @[inline] def liftMetaTactic (tactic : MVarId → MetaM (List MVarId)) : TacticM Unit :=
---   withMainContext do
---     let mvarIds ← tactic (← getMainGoal)
---     replaceMainGoal mvarIds
---     pure ()
 
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
 def elabLinearCombination
@@ -170,7 +167,7 @@ def elabLinearCombination
         let _i ← synthInstanceQ q(Ring ($α : Type v))
         let _i ← synthInstanceQ q(NoZeroDivisors ($α : Type v))
         pure
-          (q(eq_of_add_pow (a' := $a') (b' := $b') $n $p), q(($a' - $b') ^ $n - ($a - $b) ^ $n = 0))
+          (q(eq_of_add_pow (a' := $a') (b' := $b') $n $p), q(($a' - $b') ^ $n - ($a - $b) = 0))
     | none =>
       pure (q(eq_of_add (a' := $a') (b' := $b') $p), q($a' - $b' - ($a - $b) = 0))
   let mvar ← mkFreshExprMVar d MetavarKind.natural
