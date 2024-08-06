@@ -143,6 +143,27 @@ open MulAction Equiv Subgroup
 
 variable {α : Type*} [DecidableEq α] [Fintype α] {g : Equiv.Perm α}
 
+theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {x : α} :
+    x ∈ g.support ↔
+    ∃ c ∈ g.cycleFactorsFinset, x ∈ c.support := by
+  constructor
+  · intro h
+    use g.cycleOf x, cycleOf_mem_cycleFactorsFinset_iff.mpr h
+    rw [mem_support_cycleOf_iff]
+    refine ⟨SameCycle.refl g x, h⟩
+  · rintro ⟨c, hc, hx⟩
+    exact mem_cycleFactorsFinset_support_le hc hx
+
+theorem isCycleOn_support_of_mem_cycleFactorsFinset (c : g.cycleFactorsFinset) :
+    IsCycleOn g (c : Perm α).support := by
+  suffices Finset.Nonempty (c : Perm α).support by
+    obtain ⟨x, hx⟩ := this
+    convert isCycleOn_support_cycleOf g x
+    exact cycle_is_cycleOf hx c.prop
+  rw [← Finset.card_pos]
+  apply lt_of_lt_of_le Nat.zero_lt_two
+  exact IsCycle.two_le_card_support (mem_cycleFactorsFinset_iff.mp c.prop).1
+
 theorem CycleType.count_def (n : ℕ) :
     g.cycleType.count n =
       Fintype.card {c : g.cycleFactorsFinset // (c : Perm α).support.card = n } := by
@@ -316,8 +337,162 @@ def Kf (a : Equiv.Perm.Basis g) (e : Equiv.Perm g.cycleFactorsFinset)
   (c : g.cycleFactorsFinset) (i : ℤ) : α :=
   (g ^ i) (a (e c))
 -/
+/- we have points a, b on two cycles c, d of the same length
+we want to define a function that maps g ^ i a to g ^ i b for all i
+take m such that x = g ^ m a, set y = g ^ m b
 
-variable {e e' : range_toPermHom' g} {c d : g.cycleFactorsFinset} {i j : ℤ}
+to get the general function that maps an adequate permutation of cycles:
+- if x belongs to a cycle c
+  get m using sameCycle such that x = g ^ m a.c
+  apply g ^ m a.(τ c)
+- otherwise, apply x
+
+this should allow to suppress the mention of i in the definition
+
+-/
+section
+
+variable (τ : range_toPermHom' g)
+
+noncomputable def newK (x : α) : α := by
+  if hx : g.cycleOf x ∈ g.cycleFactorsFinset
+  then
+    let h := mem_support_cycleOf_iff.mp (a.mem_support_self ⟨g.cycleOf x, hx⟩)
+    exact (g ^ h.1.symm.choose) (a ((τ : Perm g.cycleFactorsFinset) ⟨g.cycleOf x, hx⟩))
+  else exact x
+
+theorem mem_fixedPoints_or_exists_zpow_eq (x : α) : x ∈ Function.fixedPoints g ∨
+    ∃ (c : g.cycleFactorsFinset) (_ : x ∈ (c : Perm α).support) (m : ℤ), (g ^ m) (a c) = x := by
+  rw [Classical.or_iff_not_imp_left]
+  intro hx
+  rw [Function.mem_fixedPoints_iff, ← ne_eq, ← mem_support,
+    ← cycleOf_mem_cycleFactorsFinset_iff] at hx
+  let c : g.cycleFactorsFinset := ⟨g.cycleOf x, hx⟩
+  have hc : x ∈ (c : Perm α).support := by
+    rw [mem_support_cycleOf_iff]
+    rw [← cycleOf_mem_cycleFactorsFinset_iff]
+    simp [SameCycle.rfl, hx, and_self]
+  use c, hc
+  exact (mem_support_cycleOf_iff.mp (a.mem_support_self c)).1.symm
+
+theorem newK_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
+    (hx : x ∈ (c : Perm α).support) {m : ℤ} (hm : (g ^ m) (a c) = x) :
+    newK a τ x = (g ^ m) (a ((τ  : Perm g.cycleFactorsFinset) c)) := by
+  have hx' : c = g.cycleOf x := cycle_is_cycleOf hx (Subtype.prop c)
+  have hx'' : g.cycleOf x ∈ g.cycleFactorsFinset := hx' ▸ c.prop
+  let h := mem_support_cycleOf_iff.mp (a.mem_support_self ⟨g.cycleOf x, hx''⟩)
+  set n := h.1.symm.choose
+  have hn : (g ^ n) (a c) = x := by
+    rw [← h.1.symm.choose_spec]
+    congr
+    rw [← Subtype.coe_inj, hx']
+  suffices newK a τ x = (g ^ n) (a ((τ : Perm g.cycleFactorsFinset) c)) by
+    rw [this, IsCycleOn.zpow_apply_eq_zpow_apply
+      (isCycleOn_support_of_mem_cycleFactorsFinset ((τ : Perm g.cycleFactorsFinset) c))
+      (mem_support_self a ((τ : Perm g.cycleFactorsFinset) c))]
+    simp only [τ.prop c]
+    rw [← IsCycleOn.zpow_apply_eq_zpow_apply
+      (isCycleOn_support_of_mem_cycleFactorsFinset c) (mem_support_self a c)]
+    rw [hn, hm]
+  simp only [newK, dif_pos hx'']
+  congr
+  exact hx'.symm
+
+theorem newK_apply_of_mem_fixedPoints {x : α} (hx : x ∈ Function.fixedPoints g) :
+    newK a τ x = x := by
+  rw [newK, dif_neg]
+  rw [cycleOf_mem_cycleFactorsFinset_iff, not_mem_support]
+  exact hx
+
+theorem zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff
+    {x :α} {m : ℤ} {c : g.cycleFactorsFinset} :
+    (g ^ m) x ∈ (c : Perm α).support ↔ x ∈ (c : Perm α).support := by
+  rw [← g.eq_cycleOf_of_mem_cycleFactorsFinset_iff _ c.prop]
+  rw [cycleOf_self_apply_zpow g m x]
+  rw [eq_cycleOf_of_mem_cycleFactorsFinset_iff _ _ c.prop]
+
+theorem newK_apply_mem_support_cycle_iff {x : α} {c : g.cycleFactorsFinset} :
+    newK a τ x ∈ ((τ : Perm g.cycleFactorsFinset) c : Perm α).support ↔
+      x ∈ (c : Perm α).support := by
+  rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨d, hd, m, hm⟩)
+  · simp only [newK_apply_of_mem_fixedPoints a τ hx]
+    suffices ∀ (d : g.cycleFactorsFinset), x ∉ (d : Perm α).support by
+      simp only [this]
+    intro d hx'
+    rw [Function.mem_fixedPoints_iff, ← not_mem_support] at hx
+    apply hx
+    exact mem_cycleFactorsFinset_support_le d.prop hx'
+  · rw [newK_apply_of_cycleOf_mem a τ hd hm] --
+    rw [zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff]
+    by_cases h : c = d
+    · simp only [h, hd, iff_true, mem_support_self]
+    · have H : Disjoint (c : Perm α) (d : Perm α) :=
+        cycleFactorsFinset_pairwise_disjoint g c.prop d.prop (Subtype.coe_ne_coe.mpr h)
+      have H' : Disjoint ((τ : Perm g.cycleFactorsFinset) c : Perm α)
+        ((τ : Perm g.cycleFactorsFinset) d : Perm α) :=
+        cycleFactorsFinset_pairwise_disjoint g ((τ : Perm g.cycleFactorsFinset) c).prop
+          ((τ : Perm g.cycleFactorsFinset) d).prop (by
+          intro h'; apply h
+          simpa only [Subtype.coe_inj, EmbeddingLike.apply_eq_iff_eq] using h')
+      rw [disjoint_iff_disjoint_support, Finset.disjoint_right] at H H'
+      simp only [H hd, H' (mem_support_self a _)]
+
+theorem newK_apply_mem_fixedPoints_iff {x : α} :
+    newK a τ x ∈ Function.fixedPoints g ↔ x ∈ Function.fixedPoints g := by
+  rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
+  · simp only [hx, newK_apply_of_mem_fixedPoints a τ hx]
+  · rw [newK_apply_of_cycleOf_mem a τ hc hm, ← hm]
+    simp only [Function.mem_fixedPoints_iff, ← not_mem_support]
+    simp only [zpow_apply_mem_support, not_iff_not]
+    simp only [Finset.coe_mem,
+      mem_cycleFactorsFinset_support_le _ (mem_support_self a _)]
+
+
+
+theorem newK_commute_zpow_apply (x : α) (j : ℤ) :
+    newK a τ ((g ^ j) x) = (g ^ j) (newK a τ x) := by
+  rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | hx)
+  · rw [newK_apply_of_mem_fixedPoints a τ hx, newK_apply_of_mem_fixedPoints]
+    rw [Function.mem_fixedPoints_iff]
+    simp only [← mul_apply, ← zpow_one_add, add_comm]
+    conv_rhs => rw [← hx, ← mul_apply, ← zpow_add_one]
+  · obtain ⟨c, hc, m, hm⟩ := hx
+    have hm' : (g ^ (j + m)) (a c) = (g ^ j) x := by rw [zpow_add, mul_apply, hm]
+    rw [newK_apply_of_cycleOf_mem a τ hc hm, newK_apply_of_cycleOf_mem a τ _ hm',
+      ← mul_apply, ← zpow_add]
+    exact zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff.mpr hc
+
+theorem newK_mul (σ τ : range_toPermHom' g) (x) :
+    newK a (σ * τ) x = (newK a σ) (newK a τ x) := by
+  rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
+  · simp only [newK_apply_of_mem_fixedPoints a _ hx]
+  · simp only [newK_apply_of_cycleOf_mem a _ hc hm]
+    rw [newK_apply_of_cycleOf_mem a _ _ rfl]
+    rfl
+    rw [zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff]
+    apply mem_support_self
+
+theorem newK_one (x : α) : (newK a 1) x = x := by
+  rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
+  · rw [newK_apply_of_mem_fixedPoints a _ hx]
+  · rw [newK_apply_of_cycleOf_mem a _ hc hm, OneMemClass.coe_one, coe_one, id_eq, hm]
+
+/-- Given `a : g.Basis` and a permutation of `g.cycleFactorsFinset` that
+  preserve the lengths of the cycles, a permutation of `α` that
+  moves the `Basis` and commutes with `g` -/
+noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
+  toFun τ := {
+    toFun := newK a τ
+    invFun := newK a τ⁻¹
+    left_inv := fun x ↦ by rw [← newK_mul, inv_mul_self, newK_one]
+    right_inv := fun x ↦ by rw [← newK_mul, mul_right_inv, newK_one] }
+  map_one' := ext fun x ↦ newK_one a x
+  map_mul' := fun σ τ ↦ ext fun x ↦ by simp [mul_apply, newK_mul a σ τ x]
+
+
+
+/- variable {e e' : range_toPermHom' g} {c d : g.cycleFactorsFinset} {i j : ℤ}
+
 
 theorem Kf_def :
     Kf a e ⟨c, i⟩ = (g ^ i) (a ((e : Perm g.cycleFactorsFinset) c)) := rfl
@@ -418,17 +593,6 @@ theorem k_apply_of_not_mem_support {x : α} (hx : x ∉ g.support) :
     apply mem_cycleFactorsFinset_support_le c.prop
     exact mem_support_self a c
 
-theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {x : α} :
-    x ∈ g.support ↔
-    ∃ c ∈ g.cycleFactorsFinset, x ∈ c.support := by
-  constructor
-  · intro h
-    use g.cycleOf x, cycleOf_mem_cycleFactorsFinset_iff.mpr h
-    rw [mem_support_cycleOf_iff]
-    refine ⟨SameCycle.refl g x, h⟩
-  · rintro ⟨c, hc, hx⟩
-    exact mem_cycleFactorsFinset_support_le hc hx
-
 theorem mem_support_iff_exists_Kf (x : α) :
     x ∈ g.support ↔
     ∃ c : g.cycleFactorsFinset, ∃ i, g.cycleOf x = c ∧ x = Kf a 1 ⟨c, i⟩ := by
@@ -513,7 +677,7 @@ theorem k_cycle_apply (x : α) :
       exact Finset.not_mem_mono (mem_cycleFactorsFinset_support_le c.prop) hx
 
 /-- Given `a : g.Basis` and a permutation of g.cycleFactorsFinset that
-  preserve the lengths of the cycles, the permutation of `α` that
+  preserve the lengths of the cycles, a permutation of `α` that
   moves the `Basis` and commutes with `g`
   -/
 noncomputable def ofPerm : Perm α :=
@@ -521,18 +685,22 @@ noncomputable def ofPerm : Perm α :=
 
 theorem ofPerm_apply (x) :
     (ofPerm a τ) x = k a τ x := rfl
+-/
 
-theorem ofPerm_support_le :
-    (ofPerm a τ).support ≤ g.support := by
+/- theorem ofPermHom_support_le :
+    (ofPermHom a τ).support ≤ g.support := by
   intro x
   simp only [Perm.mem_support, ne_eq, not_imp_not]
   rw [← Perm.not_mem_support]
-  exact k_apply_of_not_mem_support a _
+  sorry -- exact k_apply_of_not_mem_support a _
+-/
 
-theorem mem_ofPerm_support_iff (x : α) :
-    x ∈ (ofPerm a τ).support ↔
+/-
+theorem mem_ofPermHom_support_iff (x : α) :
+    x ∈ (ofPermHom a τ).support ↔
       ∃ c : g.cycleFactorsFinset,
         g.cycleOf x = c ∧ c ∈ (τ : Perm g.cycleFactorsFinset).support := by
+  sorry
   by_cases hx : x ∈ g.support
   · obtain ⟨c, i, hc, hci⟩ := (Equiv.Perm.Basis.mem_support_iff_exists_Kf a x).mp hx
     rw [show x ∈ (ofPerm a τ : Perm α).support ↔
@@ -557,26 +725,43 @@ theorem mem_ofPerm_support_iff (x : α) :
     intro hc
     simp only [Equiv.Perm.cycleOf_mem_cycleFactorsFinset_iff] at hc
     contradiction
+-/
 
-theorem ofPerm_support :
-    (ofPerm a τ).support = Finset.biUnion (τ : Perm g.cycleFactorsFinset).support
+theorem ofPermHom_support :
+    (ofPermHom a τ).support = Finset.biUnion (τ : Perm g.cycleFactorsFinset).support
         (fun c ↦ (c : Perm α).support) := by
   ext x
-  simp only [mem_ofPerm_support_iff a τ, Finset.mem_biUnion, Subtype.exists]
-  apply exists_congr; intro c
-  apply exists_congr; intro hc
-  rw [and_comm, and_congr_right_iff]
-  intro _
-  constructor
-  · intro h
-    simpa only [cycleOf_apply_self, ne_eq, ← h,
-      cycleOf_mem_cycleFactorsFinset_iff, mem_support] using hc
-  · exact fun h ↦ (cycle_is_cycleOf h hc).symm
+  simp only [mem_support, Finset.mem_biUnion]
+  change newK a τ x ≠ x ↔ _
+  rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
+  · simp only [newK_apply_of_mem_fixedPoints a τ hx, ne_eq, not_true_eq_false, false_iff]
+    rw [Function.mem_fixedPoints_iff] at hx
+    simp only [← mem_support]
+    intro h
+    obtain ⟨c, _, h'⟩ := h
+    exact mem_support.mp ((mem_cycleFactorsFinset_support_le c.prop) h') hx
+  · rw [newK_apply_of_cycleOf_mem a τ hc hm]
+    nth_rewrite 1 [← hm]
+    simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, (a.injective).eq_iff]
+    rw [not_iff_comm]
+    by_cases H : (τ : Perm g.cycleFactorsFinset) c = c
+    · simp only [H, iff_true]
+      push_neg
+      intro d hd
+      rw [← not_mem_support]
+      have := g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
+      rw [disjoint_iff_disjoint_support, Finset.disjoint_left] at this
+      refine this ?_ hc
+      intro h
+      rw [Subtype.coe_inj] at h
+      exact hd (h ▸ H)
+    · simp only [H, iff_false, not_not]
+      exact ⟨c, H, mem_support.mp hc⟩
 
-theorem card_ofPerm_support :
-    (ofPerm a τ).support.card =  (τ : Perm g.cycleFactorsFinset).support.sum
+theorem card_ofPermHom_support :
+    (ofPermHom a τ).support.card =  (τ : Perm g.cycleFactorsFinset).support.sum
         (fun c ↦ (c : Perm α).support.card) := by
-  rw [ofPerm_support, Finset.card_biUnion]
+  rw [ofPermHom_support, Finset.card_biUnion]
   intro c _ d _ h
   apply Equiv.Perm.Disjoint.disjoint_support
   have := g.cycleFactorsFinset_pairwise_disjoint.eq c.prop d.prop
@@ -585,43 +770,50 @@ theorem card_ofPerm_support :
   exact Subtype.coe_ne_coe.mpr h
 
 
-theorem ofPerm_mem_centralizer :
-    ofPerm a τ ∈ Subgroup.centralizer {g} := by
-  rw [mem_centralizer_singleton_iff, ← DFunLike.coe_fn_eq]
-  simp only [coe_mul, ofPerm]
-  exact k_commute a τ
+theorem ofPermHom_mem_centralizer :
+    ofPermHom a τ ∈ Subgroup.centralizer {g} := by
+  rw [mem_centralizer_singleton_iff]
+  ext x
+  simp only [mul_apply]
+  exact newK_commute_zpow_apply a τ x 1
 
 /-- Given `a : Equiv.Perm.Basis g`,
 we define a right inverse of `Equiv.Perm.OnCycleFactors.toPermHom`,
 on `range_toPermHom' g` -/
 noncomputable def toCentralizer :
     range_toPermHom' g →* Subgroup.centralizer {g}  where
-  toFun τ := ⟨ofPerm a τ, ofPerm_mem_centralizer a τ⟩
-  map_one' := by
-    simp only [Submonoid.mk_eq_one]
-    ext x
-    simp only [ofPerm, k_one, ofBijective_apply, id_eq, coe_one]
-  map_mul' σ τ := by
-    simp only [ofPerm, Submonoid.mk_mul_mk, Subtype.mk.injEq]
-    ext x
-    simp only [← k_mul a, ofBijective_apply, Function.comp_apply, coe_mul]
+  toFun τ := ⟨ofPermHom a τ, ofPermHom_mem_centralizer a τ⟩
+  map_one' := by simp only [map_one, Submonoid.mk_eq_one]
+  map_mul' σ τ := by simp only [map_mul, Submonoid.mk_mul_mk]
 
-theorem toCentralizer_apply (x) :
-    (toCentralizer a τ : Perm α) x = k a τ x :=
-  rfl
+theorem toCentralizer_apply (x) : (toCentralizer a τ : Perm α) x = newK a τ x := rfl
 
+variable (c) in
 theorem toCentralizer_equivariant :
     (toCentralizer a τ) • c = (τ : Perm g.cycleFactorsFinset) c := by
   rw [centralizer_smul_def, ← Subtype.coe_inj]
   simp only [InvMemClass.coe_inv, mul_inv_eq_iff_eq_mul]
   ext x
-  exact k_cycle_apply a τ c x
+  simp only [mul_apply]
+  change newK a τ ((c : Perm α) x) = ((τ : Perm g.cycleFactorsFinset) c : Perm α) (newK a τ x)
+  by_cases hx : x ∈ (c : Perm α).support
+  · rw [(mem_cycleFactorsFinset_iff.mp c.prop).2 x hx]
+    have := newK_commute_zpow_apply a τ x 1
+    simp only [zpow_one] at this
+    rw [this]
+    rw [← (mem_cycleFactorsFinset_iff.mp ((τ : Perm g.cycleFactorsFinset) c).prop).2]
+    rw [newK_apply_mem_support_cycle_iff]
+    exact hx
+  · rw [not_mem_support.mp hx, eq_comm, ← not_mem_support, newK_apply_mem_support_cycle_iff]
+    exact hx
 
 theorem toCentralizer_rightInverse :
     (OnCycleFactors.toPermHom g) (toCentralizer a τ) = (τ : Perm g.cycleFactorsFinset) := by
   apply ext
   intro c
   rw [OnCycleFactors.toPermHom_apply, toCentralizer_equivariant]
+
+end
 
 end Basis
 
@@ -981,7 +1173,7 @@ theorem θHom_apply_of_cycleOf_eq {x : α} {c : g.cycleFactorsFinset}
 
 theorem θHom_apply_of_cycleOf_not_mem {x : α} (hx : g.cycleOf x ∉ g.cycleFactorsFinset) :
     θHom g (u,v) x = ofSubtype u x := by
-  sorry
+  rw [θHom_apply, dif_neg hx]
 
 theorem θHom_injective (g : Perm α) : Function.Injective (θHom g) := by
   rw [← MonoidHom.ker_eq_bot_iff, eq_bot_iff]
