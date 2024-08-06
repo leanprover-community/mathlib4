@@ -14,17 +14,15 @@ import Mathlib.Tactic.Bound
 open Complex (abs)
 open scoped NNReal
 
--- Tests that work with `bound`, but not `positivity` or `gcongr`
+-- Tests that work with `bound`, but not `positivity`, `gcongr`, or `norm_num`
 section bound_only
 variable {a b c x y : ℝ} {z : ℂ} {n : ℕ}
 example (h : x < y) : y - x > 0 := by bound
+example (h : x < y) (y0 : 0 < y) : x / y < 1 := by bound
 example (f : ℕ → ℝ) (h : ∀ n, f n ≥ 0) : f n ≥ 0 := by bound [h n]
-example : (1 : ℝ) < 4 := by bound
-example : (2 : ℝ) < 4 := by bound
 example (x y : ℝ≥0) (h : x < y) : (x : ℝ) < y := by bound
 example : dist a c ≤ dist a b + dist b c := by bound
--- Test an example that requires function inference
-example {α : Type} {s : Finset α} {f g : α → ℂ} :
+example {α : Type} {s : Finset α} {f g : α → ℂ} :  -- An example that requires function inference
     ‖s.sum (fun x ↦ f x + g x)‖ ≤ s.sum (fun x ↦ ‖f x + g x‖) := by bound
 end bound_only
 
@@ -91,6 +89,8 @@ end nonneg_tests
 
 section bound_tests
 variable {a b c x y : ℝ} {z : ℂ} {n : ℕ}
+example : (1 : ℝ) < 4 := by bound
+example : (2 : ℝ) < 4 := by bound
 example (n : x ≥ 0) (h : x ≤ y) : x^2 ≤ y^2 := by bound
 example (n : x ≥ 0) (h : x ≤ y) : y^2 ≥ x^2 := by bound
 example (n : a ≥ 0) (h : x ≤ y) : a * x ≤ a * y := by bound
