@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Order.Zorn
 import Mathlib.Order.Atoms
 
-#align_import order.zorn_atoms from "leanprover-community/mathlib"@"9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef"
-
 /-!
 # Zorn lemma for (co)atoms
 
@@ -41,4 +39,3 @@ theorem IsAtomic.of_isChain_bounded {α : Type*} [PartialOrder α] [OrderBot α]
         IsChain (· ≤ ·) c → c.Nonempty → ⊥ ∉ c → ∃ x ≠ ⊥, x ∈ lowerBounds c) :
     IsAtomic α :=
   isCoatomic_dual_iff_isAtomic.mp <| IsCoatomic.of_isChain_bounded fun c hc => h c hc.symm
-#align is_atomic.of_is_chain_bounded IsAtomic.of_isChain_bounded

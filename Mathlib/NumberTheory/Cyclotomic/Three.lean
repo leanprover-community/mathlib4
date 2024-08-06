@@ -82,7 +82,7 @@ private lemma lambda_sq : λ ^ 2 = -3 * η := by
   _ = -3 * η := by ring
 
 /-- We have that `η ^ 2 = -η - 1`. -/
-private lemma eta_sq : (η ^ 2 : 𝓞 K) = - η - 1 := by
+lemma eta_sq : (η ^ 2 : 𝓞 K) = - η - 1 := by
   rw [← neg_add', ← add_eq_zero_iff_eq_neg, ← add_assoc]
   ext; simpa using hζ.isRoot_cyclotomic (by decide)
 

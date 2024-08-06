@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
-#align_import algebra.category.Group.zero from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # The category of (commutative) (additive) groups has a zero object.
 
@@ -32,10 +30,6 @@ theorem isZero_of_subsingleton (G : Grp) [Subsingleton G] : IsZero G := by
     rw [this, map_one, map_one]
   · ext
     subsingleton
-set_option linter.uppercaseLean3 false in
-#align Group.is_zero_of_subsingleton Grp.isZero_of_subsingleton
-set_option linter.uppercaseLean3 false in
-#align AddGroup.is_zero_of_subsingleton AddGrp.isZero_of_subsingleton
 
 @[to_additive AddGrp.hasZeroObject]
 instance : HasZeroObject Grp :=
@@ -53,10 +47,6 @@ theorem isZero_of_subsingleton (G : CommGrp) [Subsingleton G] : IsZero G := by
     rw [this, map_one, map_one]
   · ext
     subsingleton
-set_option linter.uppercaseLean3 false in
-#align CommGroup.is_zero_of_subsingleton CommGrp.isZero_of_subsingleton
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.is_zero_of_subsingleton AddCommGrp.isZero_of_subsingleton
 
 @[to_additive AddCommGrp.hasZeroObject]
 instance : HasZeroObject CommGrp :=

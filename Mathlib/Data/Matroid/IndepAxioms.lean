@@ -97,7 +97,7 @@ structure IndepMatroid (α : Type*) where
   (Indep : Set α → Prop)
   (indep_empty : Indep ∅)
   (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
-  (indep_aug : ∀⦃I B⦄, Indep I → ¬ Maximal Indep I →
+  (indep_aug : ∀ ⦃I B⦄, Indep I → ¬ Maximal Indep I →
     Maximal Indep B → ∃ x ∈ B \ I, Indep (insert x I))
   (indep_maximal : ∀ X, X ⊆ E → ExistsMaximalSubsetProperty Indep X)
   (subset_ground : ∀ I, Indep I → I ⊆ E)
@@ -120,14 +120,13 @@ namespace IndepMatroid
     exact ⟨B, hB.1⟩
   base_exchange B B' hB hB' e he := by
     have hnotmax : ¬ Maximal M.Indep (B \ {e}) :=
-      fun h ↦ h.not_prop_of_ssubset (diff_singleton_sSubset.2 he.1) hB.prop
-
+      fun h ↦ h.not_prop_of_ssuperset (diff_singleton_sSubset.2 he.1) hB.prop
     obtain ⟨f, hf, hfB⟩ := M.indep_aug (M.indep_subset hB.prop diff_subset) hnotmax hB'
     replace hf := show f ∈ B' \ B by simpa [show f ≠ e by rintro rfl; exact he.2 hf.1] using hf
     refine ⟨f, hf, by_contra fun hnot ↦ ?_⟩
     obtain ⟨x, hxB, hind⟩ := M.indep_aug hfB hnot hB
     obtain ⟨-, rfl⟩ : _ ∧ x = e := by simpa [hxB.1] using hxB
-    refine hB.not_prop_of_ssubset ?_ hind
+    refine hB.not_prop_of_ssuperset ?_ hind
     rw [insert_comm, insert_diff_singleton, insert_eq_of_mem he.1]
     exact ssubset_insert hf.2
   maximality := M.indep_maximal
@@ -166,7 +165,7 @@ namespace IndepMatroid
 
     by_contra hcon; push_neg at hcon
 
-    have heBdep := hBmax.not_prop_of_ssubset (ssubset_insert heB)
+    have heBdep := hBmax.not_prop_of_ssuperset (ssubset_insert heB)
 
     -- There is a finite subset `B₀` of `B` so that `B₀ + e` is dependent
     obtain ⟨B₀, hB₀B, hB₀fin, hB₀e⟩ := htofin B e hBmax.1 heBdep
@@ -220,18 +219,25 @@ namespace IndepMatroid
     exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim)
       (fun h ↦ h.resolve_left hfI₀), hfI₀⟩ hfi )
   (indep_maximal := by
-    refine fun X _ I hI hIX ↦ zorn_subset_nonempty {Y | Indep Y ∧ Y ⊆ X} ?_ I ⟨hI, hIX⟩
-    refine fun Is hIs hchain _ ↦
-      ⟨⋃₀ Is, ⟨?_, sUnion_subset fun Y hY ↦ (hIs hY).2⟩, fun _ ↦ subset_sUnion_of_mem⟩
-    refine indep_compact _ fun J hJ hJfin ↦ ?_
-    have hchoose : ∀ e, e ∈ J → ∃ I, I ∈ Is ∧ (e : α) ∈ I := fun _ he ↦ mem_sUnion.1 <| hJ he
-    choose! f hf using hchoose
-    refine J.eq_empty_or_nonempty.elim (fun hJ ↦ hJ ▸ indep_empty) (fun hne ↦ ?_)
-    obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximal_wrt f _ hJfin hne
-    refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ ?_
-    obtain (hle | hle) := hchain.total (hf _ hxJ).1 (hf _ hyJ).1
-    · rw [hxmax _ hyJ hle]; exact (hf _ hyJ).2
-    exact hle (hf _ hyJ).2)
+      rintro X - I hI hIX
+      have hzorn := zorn_subset_nonempty {Y | Indep Y ∧ I ⊆ Y ∧ Y ⊆ X} ?_ I ⟨hI, Subset.rfl, hIX⟩
+      · obtain ⟨J, ⟨hJi, hIJ, hJX⟩, -, hJmax⟩ := hzorn
+        simp_rw [maximal_subset_iff]
+        exact ⟨J, hIJ, ⟨hJi, hJX⟩, fun K hK hJK ↦ (hJmax K ⟨hK.1, hIJ.trans hJK, hK.2⟩ hJK).symm⟩
+
+      refine fun Is hIs hchain ⟨K, hK⟩ ↦ ⟨⋃₀ Is, ⟨?_,?_,?_⟩, fun _ ↦ subset_sUnion_of_mem⟩
+      · refine indep_compact _ fun J hJ hJfin ↦ ?_
+        have hchoose : ∀ e, e ∈ J → ∃ I, I ∈ Is ∧ (e : α) ∈ I := fun _ he ↦ mem_sUnion.1 <| hJ he
+        choose! f hf using hchoose
+        refine J.eq_empty_or_nonempty.elim (fun hJ ↦ hJ ▸ indep_empty) (fun hne ↦ ?_)
+        obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximal_wrt f _ hJfin hne
+        refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ ?_
+        obtain (hle | hle) := hchain.total (hf _ hxJ).1 (hf _ hyJ).1
+        · rw [hxmax _ hyJ hle]; exact (hf _ hyJ).2
+        exact hle (hf _ hyJ).2
+
+      · exact subset_sUnion_of_subset _ K (hIs hK).2.1 hK
+      exact sUnion_subset fun X hX ↦ (hIs hX).2.2)
   (subset_ground := subset_ground)
 
 @[simp] theorem ofFinitary_indep (E : Set α) (Indep : Set α → Prop)
@@ -322,7 +328,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
         obtain ⟨n, hn⟩ := indep_bdd
         exact finite_of_encard_le_coe (hn _ hI)
       obtain ⟨y, -, hyB, hi⟩ := indep_aug hBmax.prop hxI hlt
-      exact hBmax.not_prop_of_ssubset (ssubset_insert hyB) hi)
+      exact hBmax.not_prop_of_ssuperset (ssubset_insert hyB) hi)
     (indep_bdd := indep_bdd) (subset_ground := subset_ground)
 
 @[simp] theorem ofBddAugment_E (E : Set α) Indep indep_empty indep_subset indep_aug

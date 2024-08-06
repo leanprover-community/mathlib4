@@ -7,8 +7,6 @@ import Mathlib.Order.Antichain
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.Interval.Set.Basic
 
-#align_import order.minimal from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
-
 /-!
 # Minimality and Maximality
 
@@ -25,6 +23,13 @@ an ordered type `α`.
 This file underwent a refactor from a version where minimality and maximality were defined using
 sets rather than predicates, and with an unbundled order relation rather than a `LE` instance.
 
+A side effect is that it has become less straightforward to state that something is minimal
+with respect to a relation that is *not* defeq to the default `LE`.
+One possible way would be with a type synonym,
+and another would be with an ad hoc `LE` instance and `@` notation.
+This was not an issue in practice anywhere in mathlib at the time of the refactor,
+but it may be worth re-examining this to make it easier in the future; see the TODO below.
+
 ## TODO
 
 * In the linearly ordered case, versions of lemmas like `minimal_mem_image` will hold with
@@ -33,11 +38,15 @@ sets rather than predicates, and with an unbundled order relation rather than a 
 * `Set.maximal_iff_forall_insert` and `Set.minimal_iff_forall_diff_singleton` will generalize to
   lemmas about covering in the case of an `IsStronglyAtomic`/`IsStronglyCoatomic` order.
 
+* `Finset` versions of the lemmas about sets.
+
+* API to allow for easily expressing min/maximality with respect to an arbitrary non-`LE` relation.
+
 -/
 
 open Set OrderDual
 
-variable {α : Type*} {r r₁ r₂ : α → α → Prop} {P Q : α → Prop} {a x y : α}
+variable {α : Type*} {P Q : α → Prop} {a x y : α}
 
 section LE
 
@@ -61,19 +70,15 @@ lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
 lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
   h.2 hy hge
 
-@[simp] theorem minimal_toDual_iff : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
+@[simp] theorem minimal_toDual : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
   Iff.rfl
 
-@[simp] theorem maximal_toDual_iff : Maximal (fun x ↦ P (ofDual x)) (toDual x) ↔ Minimal P x :=
+alias ⟨Minimal.of_dual, Minimal.dual⟩ := minimal_toDual
+
+@[simp] theorem maximal_toDual : Maximal (fun x ↦ P (ofDual x)) (toDual x) ↔ Minimal P x :=
   Iff.rfl
 
-theorem minimal_congr (hPQ : ∀ x, P x ↔ Q x) : Minimal P = Minimal Q := by
-  ext
-  simp_rw [Minimal, hPQ]
-
-theorem maximal_congr (hPQ : ∀ x, P x ↔ Q x) : Maximal P = Maximal Q := by
-  ext
-  simp_rw [Maximal, hPQ]
+alias ⟨Maximal.of_dual, Maximal.dual⟩ := maximal_toDual
 
 @[simp] theorem minimal_false : ¬ Minimal (fun _ ↦ False) x := by
   simp [Minimal]
@@ -86,6 +91,16 @@ theorem maximal_congr (hPQ : ∀ x, P x ↔ Q x) : Maximal P = Maximal Q := by
 
 @[simp] theorem maximal_true : Maximal (fun _ ↦ True) x ↔ IsMax x :=
   minimal_true (α := αᵒᵈ)
+
+@[simp] theorem minimal_subtype {x : Subtype Q} :
+    Minimal (fun x ↦ P x.1) x ↔ Minimal (P ⊓ Q) x := by
+  obtain ⟨x, hx⟩ := x
+  simp only [Minimal, Subtype.forall, Subtype.mk_le_mk, Pi.inf_apply, inf_Prop_eq]
+  tauto
+
+@[simp] theorem maximal_subtype {x : Subtype Q} :
+    Maximal (fun x ↦ P x.1) x ↔ Maximal (P ⊓ Q) x :=
+  minimal_subtype (α := αᵒᵈ)
 
 theorem maximal_true_subtype {x : Subtype P} : Maximal (fun _ ↦ True) x ↔ Maximal P x := by
   obtain ⟨x, hx⟩ := x
@@ -111,17 +126,23 @@ elements satisfying `P`. -/
 theorem maximal_iff_isMax (hP : ∀ ⦃x y⦄, P y → y ≤ x → P x) : Maximal P x ↔ P x ∧ IsMax x :=
   ⟨fun h ↦ ⟨h.prop, fun _ h' ↦ h.le_of_ge (hP h.prop h') h'⟩, fun h ↦ ⟨h.1, fun _ _  h' ↦ h.2 h'⟩⟩
 
-theorem Minimal.and_right (h : Minimal P x) (hQ : Q x) : Minimal (fun x ↦ (P x ∧ Q x)) x :=
-  ⟨⟨h.prop, hQ⟩, fun _ hy ↦ h.le_of_le hy.1⟩
+theorem Minimal.mono (h : Minimal P x) (hle : Q ≤ P) (hQ : Q x) : Minimal Q x :=
+  ⟨hQ, fun y hQy ↦ h.le_of_le (hle y hQy)⟩
+
+theorem Maximal.mono (h : Maximal P x) (hle : Q ≤ P) (hQ : Q x) : Maximal Q x :=
+  ⟨hQ, fun y hQy ↦ h.le_of_ge (hle y hQy)⟩
+
+theorem Minimal.and_right (h : Minimal P x) (hQ : Q x) : Minimal (fun x ↦ P x ∧ Q x) x :=
+  h.mono (fun _ ↦ And.left) ⟨h.prop, hQ⟩
 
 theorem Minimal.and_left (h : Minimal P x) (hQ : Q x) : Minimal (fun x ↦ (Q x ∧ P x)) x :=
-  ⟨⟨hQ, h.prop⟩, fun _ hy ↦ h.le_of_le hy.2⟩
+  h.mono (fun _ ↦ And.right) ⟨hQ, h.prop⟩
 
 theorem Maximal.and_right (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (P x ∧ Q x)) x :=
-  ⟨⟨h.prop, hQ⟩, fun _ hy ↦ h.le_of_ge hy.1⟩
+  h.mono (fun _ ↦ And.left) ⟨h.prop, hQ⟩
 
 theorem Maximal.and_left (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (Q x ∧ P x)) x :=
-  ⟨⟨hQ, h.prop⟩, fun _ hy ↦ h.le_of_ge hy.2⟩
+  h.mono (fun _ ↦ And.right) ⟨hQ, h.prop⟩
 
 @[simp] theorem minimal_eq_iff : Minimal (· = y) x ↔ x = y := by
   simp (config := {contextual := true}) [Minimal]
@@ -129,8 +150,14 @@ theorem Maximal.and_left (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (Q x 
 @[simp] theorem maximal_eq_iff : Maximal (· = y) x ↔ x = y := by
   simp (config := {contextual := true}) [Maximal]
 
+theorem not_minimal_iff (hx : P x) : ¬ Minimal P x ↔ ∃ y, P y ∧ y ≤ x ∧ ¬ (x ≤ y) := by
+  simp [Minimal, hx]
+
+theorem not_maximal_iff (hx : P x) : ¬ Maximal P x ↔ ∃ y, P y ∧ x ≤ y ∧ ¬ (y ≤ x) :=
+  not_minimal_iff (α := αᵒᵈ) hx
+
 theorem Minimal.or (h : Minimal (fun x ↦ P x ∨ Q x) x) : Minimal P x ∨ Minimal Q x := by
-  obtain ⟨(h | h), hmin⟩ := h
+  obtain ⟨h | h, hmin⟩ := h
   · exact .inl ⟨h, fun y hy hyx ↦ hmin (Or.inl hy) hyx⟩
   exact .inr ⟨h, fun y hy hyx ↦ hmin (Or.inr hy) hyx⟩
 
@@ -163,20 +190,20 @@ variable [Preorder α]
 theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
   simp [Minimal, lt_iff_le_not_le, not_imp_not, imp.swap]
 
-theorem maximal_iff_forall_lt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
+theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
   minimal_iff_forall_lt (α := αᵒᵈ)
 
 theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬ P y :=
   (minimal_iff_forall_lt.1 h).2 hlt
 
-theorem Maximal.not_prop_of_lt (h : Maximal P x) (hlt : x < y) : ¬ P y :=
-  (maximal_iff_forall_lt.1 h).2 hlt
+theorem Maximal.not_prop_of_gt (h : Maximal P x) (hlt : x < y) : ¬ P y :=
+  (maximal_iff_forall_gt.1 h).2 hlt
 
 theorem Minimal.not_lt (h : Minimal P x) (hy : P y) : ¬ (y < x) :=
   fun hlt ↦ h.not_prop_of_lt hlt hy
 
-theorem Maximal.not_lt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
-  fun hlt ↦ h.not_prop_of_lt hlt hy
+theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
+  fun hlt ↦ h.not_prop_of_gt hlt hy
 
 @[simp] theorem minimal_le_iff : Minimal (· ≤ y) x ↔ x ≤ y ∧ IsMin x :=
   minimal_iff_isMin (fun _ _ h h' ↦ h'.trans h)
@@ -190,19 +217,15 @@ theorem Maximal.not_lt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
 @[simp] theorem maximal_gt_iff : Maximal (y < ·) x ↔ y < x ∧ IsMax x :=
   minimal_lt_iff (α := αᵒᵈ)
 
-theorem not_minimal_iff (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x ∧ P y := by
-  rw [← not_iff_not, not_not, not_exists]
-  simp only [Minimal, hx, true_and, lt_iff_le_not_le, not_and, and_imp, not_imp_not]
-  tauto
+theorem not_minimal_iff_exists_lt (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x ∧ P y := by
+  simp_rw [not_minimal_iff hx, lt_iff_le_not_le, and_comm]
 
-theorem not_maximal_iff (hx : P x) : ¬ Maximal P x ↔ ∃ y, x < y ∧ P y :=
-  not_minimal_iff (α := αᵒᵈ) hx
+alias ⟨exists_lt_of_not_minimal, _⟩ := not_minimal_iff_exists_lt
 
-theorem exists_of_not_minimal (hx : P x) (h : ¬ Minimal P x) : ∃ y, y < x ∧ P y :=
-  (not_minimal_iff hx).1 h
+theorem not_maximal_iff_exists_gt (hx : P x) : ¬ Maximal P x ↔ ∃ y, x < y ∧ P y :=
+  not_minimal_iff_exists_lt (α := αᵒᵈ) hx
 
-theorem exists_of_not_maximal (hx : P x) (h : ¬ Maximal P x) : ∃ y, x < y ∧ P y :=
-  (not_maximal_iff hx).1 h
+alias ⟨exists_gt_of_not_maximal, _⟩ := not_maximal_iff_exists_gt
 
 end Preorder
 
@@ -294,10 +317,10 @@ theorem maximal_subset_iff' : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, P t → s ⊆
   Iff.rfl
 
 theorem not_minimal_subset_iff (hs : P s) : ¬ Minimal P s ↔ ∃ t, t ⊂ s ∧ P t :=
-  not_minimal_iff hs
+  not_minimal_iff_exists_lt hs
 
 theorem not_maximal_subset_iff (hs : P s) : ¬ Maximal P s ↔ ∃ t, s ⊂ t ∧ P t :=
-  not_maximal_iff hs
+  not_maximal_iff_exists_gt hs
 
 theorem Set.minimal_iff_forall_ssubset : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, t ⊂ s → ¬ P t :=
   minimal_iff_forall_lt
@@ -324,14 +347,14 @@ theorem Set.exists_diff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t 
     (h : ¬ Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
   simpa [Set.minimal_iff_forall_diff_singleton hP, hs] using h
 
-theorem Set.maximal_iff_forall_ssubset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
-  maximal_iff_forall_lt
+theorem Set.maximal_iff_forall_ssuperset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
+  maximal_iff_forall_gt
 
-theorem Maximal.not_prop_of_ssubset (h : Maximal P s) (ht : s ⊂ t) : ¬ P t :=
-  (maximal_iff_forall_lt.1 h).2 ht
+theorem Maximal.not_prop_of_ssuperset (h : Maximal P s) (ht : s ⊂ t) : ¬ P t :=
+  (maximal_iff_forall_gt.1 h).2 ht
 
-theorem Maximal.not_ssubset (h : Maximal P s) (ht : P t) : ¬ s ⊂ t :=
-  h.not_lt ht
+theorem Maximal.not_ssuperset (h : Maximal P s) (ht : P t) : ¬ s ⊂ t :=
+  h.not_gt ht
 
 theorem Set.maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
     Maximal P s ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
@@ -381,17 +404,19 @@ theorem IsAntichain.maximal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Maximal (
 
 /-- If `t` is an antichain shadowing and including the set of maximal elements of `s`,
 then `t` *is* the set of maximal elements of `s`. -/
-theorem IsAntichain.eq_maximals (ht : IsAntichain (· ≤ ·) t) (h : ∀ x, Maximal (· ∈ s) x → x ∈ t)
-    (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) : {x | Maximal (· ∈ s) x} = t := by
+theorem IsAntichain.eq_setOf_maximal (ht : IsAntichain (· ≤ ·) t)
+    (h : ∀ x, Maximal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) :
+    {x | Maximal (· ∈ s) x} = t := by
   refine Set.ext fun x ↦ ⟨h _, fun hx ↦ ?_⟩
   obtain ⟨y, hyx, hy⟩ := hs x hx
   rwa [← ht.eq (h y hy) hx hyx]
 
 /-- If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
 then `t` *is* the set of minimal elements of `s`. -/
-theorem IsAntichain.eq_minimals (ht : IsAntichain (· ≤ ·) t) (h : ∀ x, Minimal (· ∈ s) x → x ∈ t)
-    (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) : {x | Minimal (· ∈ s) x} = t :=
-  ht.to_dual.eq_maximals h hs
+theorem IsAntichain.eq_setOf_minimal (ht : IsAntichain (· ≤ ·) t)
+    (h : ∀ x, Minimal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) :
+    {x | Minimal (· ∈ s) x} = t :=
+  ht.to_dual.eq_setOf_maximal h hs
 
 end Preorder
 
@@ -434,72 +459,74 @@ section Function
 
 variable {f : α → β}
 
-theorem minimal_mem_image (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y))
+theorem minimal_mem_image_monotone (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y))
     (hx : Minimal (· ∈ s) x) : Minimal (· ∈ f '' s) (f x) := by
   refine ⟨mem_image_of_mem f hx.prop, ?_⟩
   rintro _ ⟨y, hy, rfl⟩
   rw [hf hx.prop hy, hf hy hx.prop]
   exact hx.le_of_le hy
 
-theorem maximal_mem_image (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y))
+theorem maximal_mem_image_monotone (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y))
     (hx : Maximal (· ∈ s) x) : Maximal (· ∈ f '' s) (f x) :=
-  minimal_mem_image (α := αᵒᵈ) (β := βᵒᵈ) (s := s) (fun _ _ hx hy ↦ hf hy hx) hx
+  minimal_mem_image_monotone (α := αᵒᵈ) (β := βᵒᵈ) (s := s) (fun _ _ hx hy ↦ hf hy hx) hx
 
-theorem minimal_mem_image_iff (ha : a ∈ s) (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
+theorem minimal_mem_image_monotone_iff (ha : a ∈ s)
+    (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
     Minimal (· ∈ f '' s) (f a) ↔ Minimal (· ∈ s) a := by
-  refine ⟨fun h ↦ ⟨ha, fun y hys ↦ ?_⟩, minimal_mem_image hf⟩
+  refine ⟨fun h ↦ ⟨ha, fun y hys ↦ ?_⟩, minimal_mem_image_monotone hf⟩
   rw [← hf ha hys, ← hf hys ha]
   exact h.le_of_le (mem_image_of_mem f hys)
 
-theorem maximal_mem_image_iff (ha : a ∈ s) (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
+theorem maximal_mem_image_monotone_iff (ha : a ∈ s)
+    (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
     Maximal (· ∈ f '' s) (f a) ↔ Maximal (· ∈ s) a :=
-  minimal_mem_image_iff (α := αᵒᵈ) (β := βᵒᵈ) (s := s) ha fun _ _ hx hy ↦ hf hy hx
+  minimal_mem_image_monotone_iff (α := αᵒᵈ) (β := βᵒᵈ) (s := s) ha fun _ _ hx hy ↦ hf hy hx
 
 theorem minimal_mem_image_antitone (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x))
     (hx : Minimal (· ∈ s) x) : Maximal (· ∈ f '' s) (f x) :=
-  minimal_mem_image (β := βᵒᵈ) (fun _ _ h h' ↦ hf h' h) hx
+  minimal_mem_image_monotone (β := βᵒᵈ) (fun _ _ h h' ↦ hf h' h) hx
 
 theorem maximal_mem_image_antitone (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x))
     (hx : Maximal (· ∈ s) x) : Minimal (· ∈ f '' s) (f x) :=
-  maximal_mem_image (β := βᵒᵈ) (fun _ _ h h' ↦ hf h' h) hx
+  maximal_mem_image_monotone (β := βᵒᵈ) (fun _ _ h h' ↦ hf h' h) hx
 
 theorem minimal_mem_image_antitone_iff (ha : a ∈ s)
     (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
     Minimal (· ∈ f '' s) (f a) ↔ Maximal (· ∈ s) a :=
-  maximal_mem_image_iff (β := βᵒᵈ) ha (fun _ _ h h' ↦ hf h' h)
+  maximal_mem_image_monotone_iff (β := βᵒᵈ) ha (fun _ _ h h' ↦ hf h' h)
 
 theorem maximal_mem_image_antitone_iff (ha : a ∈ s)
     (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
     Maximal (· ∈ f '' s) (f a) ↔ Minimal (· ∈ s) a :=
-  minimal_mem_image_iff (β := βᵒᵈ) ha (fun _ _ h h' ↦ hf h' h)
+  minimal_mem_image_monotone_iff (β := βᵒᵈ) ha (fun _ _ h h' ↦ hf h' h)
 
-theorem image_setOf_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ x ≤ y)) :
+theorem image_monotone_setOf_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ x ≤ y)) :
     f '' {x | Minimal P x} = {x | Minimal (∃ x₀, P x₀ ∧ f x₀ = ·) x} := by
   refine Set.ext fun x ↦ ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨x, (hx : Minimal _ x), rfl⟩
-    exact (minimal_mem_image_iff hx.prop hf).2 hx
+    exact (minimal_mem_image_monotone_iff hx.prop hf).2 hx
   obtain ⟨y, hy, rfl⟩ := (mem_setOf_eq ▸ h).prop
-  exact mem_image_of_mem _ <| (minimal_mem_image_iff (s := setOf P) hy hf).1 h
+  exact mem_image_of_mem _ <| (minimal_mem_image_monotone_iff (s := setOf P) hy hf).1 h
 
-theorem image_setOf_maximal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ x ≤ y)) :
+theorem image_monotone_setOf_maximal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ x ≤ y)) :
     f '' {x | Maximal P x} = {x | Maximal (∃ x₀, P x₀ ∧ f x₀ = ·) x} :=
-  image_setOf_minimal (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
+  image_monotone_setOf_minimal (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
 
 theorem image_antitone_setOf_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ y ≤ x)) :
     f '' {x | Minimal P x} = {x | Maximal (∃ x₀, P x₀ ∧ f x₀ = ·) x} :=
-  image_setOf_minimal (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
+  image_monotone_setOf_minimal (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
 
 theorem image_antitone_setOf_maximal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ y ≤ x)) :
     f '' {x | Maximal P x} = {x | Minimal (∃ x₀, P x₀ ∧ f x₀ = ·) x} :=
-  image_setOf_maximal (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
+  image_monotone_setOf_maximal (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
 
-theorem image_setOf_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
+theorem image_monotone_setOf_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
     f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
-  image_setOf_minimal hf
+  image_monotone_setOf_minimal hf
 
-theorem image_setOf_maximal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
+theorem image_monotone_setOf_maximal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
     f '' {x | Maximal (· ∈ s) x} = {x | Maximal (· ∈ f '' s) x} :=
-  image_setOf_maximal hf
+  image_monotone_setOf_maximal hf
 
 theorem image_antitone_setOf_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
     f '' {x | Minimal (· ∈ s) x} = {x | Maximal (· ∈ f '' s) x} :=
@@ -516,16 +543,16 @@ namespace OrderEmbedding
 variable {f : α ↪o β} {t : Set β}
 
 theorem minimal_mem_image (f : α ↪o β) (hx : Minimal (· ∈ s) x) : Minimal (· ∈ f '' s) (f x) :=
-  _root_.minimal_mem_image (by simp [f.le_iff_le]) hx
+  _root_.minimal_mem_image_monotone (by simp [f.le_iff_le]) hx
 
 theorem maximal_mem_image (f : α ↪o β) (hx : Maximal (· ∈ s) x) : Maximal (· ∈ f '' s) (f x) :=
-  _root_.maximal_mem_image (by simp [f.le_iff_le]) hx
+  _root_.maximal_mem_image_monotone (by simp [f.le_iff_le]) hx
 
 theorem minimal_mem_image_iff (ha : a ∈ s) : Minimal (· ∈ f '' s) (f a) ↔ Minimal (· ∈ s) a :=
-  _root_.minimal_mem_image_iff ha (by simp [f.le_iff_le])
+  _root_.minimal_mem_image_monotone_iff ha (by simp [f.le_iff_le])
 
 theorem maximal_mem_image_iff (ha : a ∈ s) : Maximal (· ∈ f '' s) (f a) ↔ Maximal (· ∈ s) a :=
-  _root_.maximal_mem_image_iff ha (by simp [f.le_iff_le])
+  _root_.maximal_mem_image_monotone_iff ha (by simp [f.le_iff_le])
 
 theorem minimal_apply_mem_inter_range_iff :
     Minimal (· ∈ t ∩ range f) (f x) ↔ Minimal (fun x ↦ f x ∈ t) x := by
@@ -549,10 +576,10 @@ theorem maximal_apply_iff (ht : t ⊆ Set.range f) :
   f.dual.minimal_apply_mem_iff ht
 
 @[simp] theorem image_setOf_minimal : f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
-  _root_.image_setOf_minimal (by simp [f.le_iff_le])
+  _root_.image_monotone_setOf_minimal (by simp [f.le_iff_le])
 
 @[simp] theorem image_setOf_maximal : f '' {x | Maximal (· ∈ s) x} = {x | Maximal (· ∈ f '' s) x} :=
-  _root_.image_setOf_maximal (by simp [f.le_iff_le])
+  _root_.image_monotone_setOf_maximal (by simp [f.le_iff_le])
 
 theorem inter_preimage_setOf_minimal_eq_of_subset (hts : t ⊆ f '' s) :
     x ∈ s ∩ f ⁻¹' {y | Minimal (· ∈ t) y} ↔ Minimal (· ∈ s ∩ f ⁻¹' t) x := by
@@ -570,12 +597,12 @@ namespace OrderIso
 
 theorem image_setOf_minimal (f : α ≃o β) (P : α → Prop) :
     f '' {x | Minimal P x} = {x | Minimal (fun x ↦ P (f.symm x)) x} := by
-  convert _root_.image_setOf_minimal (f := f) (by simp [f.le_iff_le])
+  convert _root_.image_monotone_setOf_minimal (f := f) (by simp [f.le_iff_le])
   aesop
 
 theorem image_setOf_maximal (f : α ≃o β) (P : α → Prop) :
     f '' {x | Maximal P x} = {x | Maximal (fun x ↦ P (f.symm x)) x} := by
-  convert _root_.image_setOf_maximal (f := f) (by simp [f.le_iff_le])
+  convert _root_.image_monotone_setOf_maximal (f := f) (by simp [f.le_iff_le])
   aesop
 
 theorem map_minimal_mem (f : s ≃o t) (hx : Minimal (· ∈ s) x) :

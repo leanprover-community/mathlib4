@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
-#align_import category_theory.monoidal.of_has_finite_products from "leanprover-community/mathlib"@"f153a85a8dc0a96ce9133fed69e34df72f7f191f"
-
 /-!
 # The natural monoidal structure on any category with finite (co)products.
 
@@ -60,7 +58,6 @@ def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : Monoidal
     (pentagon := prod.pentagon)
     (triangle := prod.triangle)
     (associator_naturality := @prod.associator_naturality _ _ _)
-#align category_theory.monoidal_of_has_finite_products CategoryTheory.monoidalOfHasFiniteProducts
 
 end
 
@@ -83,12 +80,10 @@ open scoped MonoidalCategory
 @[simp]
 theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
-#align category_theory.monoidal_of_has_finite_products.tensor_obj CategoryTheory.monoidalOfHasFiniteProducts.tensorObj
 
 @[simp]
 theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.prod.map f g :=
   rfl
-#align category_theory.monoidal_of_has_finite_products.tensor_hom CategoryTheory.monoidalOfHasFiniteProducts.tensorHom
 
 @[simp]
 theorem whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f = Limits.prod.map (𝟙 X) f :=
@@ -101,22 +96,18 @@ theorem whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z = Limits.prod.map
 @[simp]
 theorem leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
   rfl
-#align category_theory.monoidal_of_has_finite_products.left_unitor_hom CategoryTheory.monoidalOfHasFiniteProducts.leftUnitor_hom
 
 @[simp]
 theorem leftUnitor_inv (X : C) : (λ_ X).inv = prod.lift (terminal.from X) (𝟙 _) :=
   rfl
-#align category_theory.monoidal_of_has_finite_products.left_unitor_inv CategoryTheory.monoidalOfHasFiniteProducts.leftUnitor_inv
 
 @[simp]
 theorem rightUnitor_hom (X : C) : (ρ_ X).hom = Limits.prod.fst :=
   rfl
-#align category_theory.monoidal_of_has_finite_products.right_unitor_hom CategoryTheory.monoidalOfHasFiniteProducts.rightUnitor_hom
 
 @[simp]
 theorem rightUnitor_inv (X : C) : (ρ_ X).inv = prod.lift (𝟙 _) (terminal.from X) :=
   rfl
-#align category_theory.monoidal_of_has_finite_products.right_unitor_inv CategoryTheory.monoidalOfHasFiniteProducts.rightUnitor_inv
 
 -- We don't mark this as a simp lemma, even though in many particular
 -- categories the right hand side will simplify significantly further.
@@ -126,7 +117,6 @@ theorem associator_hom (X Y Z : C) :
       prod.lift (Limits.prod.fst ≫ Limits.prod.fst)
         (prod.lift (Limits.prod.fst ≫ Limits.prod.snd) Limits.prod.snd) :=
   rfl
-#align category_theory.monoidal_of_has_finite_products.associator_hom CategoryTheory.monoidalOfHasFiniteProducts.associator_hom
 
 theorem associator_inv (X Y Z : C) :
     (α_ X Y Z).inv =
@@ -169,7 +159,6 @@ def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : Symmetr
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
   symmetry X Y := by dsimp; simp
-#align category_theory.symmetric_of_has_finite_products CategoryTheory.symmetricOfHasFiniteProducts
 
 end
 
@@ -191,7 +180,6 @@ def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : Monoi
     (pentagon := coprod.pentagon)
     (triangle := coprod.triangle)
     (associator_naturality := @coprod.associator_naturality _ _ _)
-#align category_theory.monoidal_of_has_finite_coproducts CategoryTheory.monoidalOfHasFiniteCoproducts
 
 end
 
@@ -206,12 +194,10 @@ open scoped MonoidalCategory
 @[simp]
 theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
   rfl
-#align category_theory.monoidal_of_has_finite_coproducts.tensor_obj CategoryTheory.monoidalOfHasFiniteCoproducts.tensorObj
 
 @[simp]
 theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.coprod.map f g :=
   rfl
-#align category_theory.monoidal_of_has_finite_coproducts.tensor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.tensorHom
 
 @[simp]
 theorem whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f = Limits.coprod.map (𝟙 X) f :=
@@ -224,22 +210,18 @@ theorem whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z = Limits.coprod.m
 @[simp]
 theorem leftUnitor_hom (X : C) : (λ_ X).hom = coprod.desc (initial.to X) (𝟙 _) :=
   rfl
-#align category_theory.monoidal_of_has_finite_coproducts.left_unitor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.leftUnitor_hom
 
 @[simp]
 theorem rightUnitor_hom (X : C) : (ρ_ X).hom = coprod.desc (𝟙 _) (initial.to X) :=
   rfl
-#align category_theory.monoidal_of_has_finite_coproducts.right_unitor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.rightUnitor_hom
 
 @[simp]
 theorem leftUnitor_inv (X : C) : (λ_ X).inv = Limits.coprod.inr :=
   rfl
-#align category_theory.monoidal_of_has_finite_coproducts.left_unitor_inv CategoryTheory.monoidalOfHasFiniteCoproducts.leftUnitor_inv
 
 @[simp]
 theorem rightUnitor_inv (X : C) : (ρ_ X).inv = Limits.coprod.inl :=
   rfl
-#align category_theory.monoidal_of_has_finite_coproducts.right_unitor_inv CategoryTheory.monoidalOfHasFiniteCoproducts.rightUnitor_inv
 
 -- We don't mark this as a simp lemma, even though in many particular
 -- categories the right hand side will simplify significantly further.
@@ -248,7 +230,6 @@ theorem associator_hom (X Y Z : C) :
     (α_ X Y Z).hom =
       coprod.desc (coprod.desc coprod.inl (coprod.inl ≫ coprod.inr)) (coprod.inr ≫ coprod.inr) :=
   rfl
-#align category_theory.monoidal_of_has_finite_coproducts.associator_hom CategoryTheory.monoidalOfHasFiniteCoproducts.associator_hom
 
 theorem associator_inv (X Y Z : C) :
     (α_ X Y Z).inv =
@@ -274,7 +255,6 @@ def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_inv]; simp
   symmetry X Y := by dsimp; simp
-#align category_theory.symmetric_of_has_finite_coproducts CategoryTheory.symmetricOfHasFiniteCoproducts
 
 end
 

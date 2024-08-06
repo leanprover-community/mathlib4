@@ -172,6 +172,7 @@ def Matroid.ExchangeProperty {α : Type _} (P : Set α → Prop) : Prop :=
   `P` is contained in a maximal subset of `X` satisfying `P`.  -/
 def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X : Set α) : Prop :=
   ∀ I, P I → I ⊆ X → ∃ J, I ⊆ J ∧ Maximal (fun K ↦ P K ∧ K ⊆ X) J
+  ∀ I, P I → I ⊆ X → ∃ J, I ⊆ J ∧ Maximal (fun K ↦ P K ∧ K ⊆ X) J
 
 /-- A `Matroid α` is a ground set `E` of type `Set α`, and a nonempty collection of its subsets
   satisfying the exchange property and the maximal subset property. Each such set is called a
@@ -256,10 +257,11 @@ theorem rkPos_iff_empty_not_base : M.RkPos ↔ ¬M.Base ∅ :=
 section exchange
 namespace ExchangeProperty
 
-variable {Base : Set α → Prop} (exch : ExchangeProperty Base) {B B' : Set α}
+variable {Base : Set α → Prop} {B B' : Set α}
 
 /-- A family of sets with the exchange property is an antichain. -/
-theorem antichain (hB : Base B) (hB' : Base B') (h : B ⊆ B') : B = B' :=
+theorem antichain (exch : ExchangeProperty Base) (hB : Base B) (hB' : Base B') (h : B ⊆ B') :
+    B = B' :=
   h.antisymm (fun x hx ↦ by_contra
     (fun hxB ↦ let ⟨_, hy, _⟩ := exch B' B hB' hB x ⟨hx, hxB⟩; hy.2 <| h hy.1))
 
@@ -288,14 +290,16 @@ variable {B₁ B₂ : Set α}
 
 /-- For any two sets `B₁`, `B₂` in a family with the exchange property, the differences `B₁ \ B₂`
 and `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/
-theorem encard_diff_eq (hB₁ : Base B₁) (hB₂ : Base B₂) : (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
+theorem encard_diff_eq (exch : ExchangeProperty Base) (hB₁ : Base B₁) (hB₂ : Base B₂) :
+    (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
   (encard_diff_le_aux exch hB₁ hB₂).antisymm (encard_diff_le_aux exch hB₂ hB₁)
 
 /-- Any two sets `B₁`, `B₂` in a family with the exchange property have the same
 `ℕ∞`-cardinality. -/
-theorem encard_base_eq (hB₁ : Base B₁) (hB₂ : Base B₂) : B₁.encard = B₂.encard := by
-rw [← encard_diff_add_encard_inter B₁ B₂, exch.encard_diff_eq hB₁ hB₂, inter_comm,
-     encard_diff_add_encard_inter]
+theorem encard_base_eq (exch : ExchangeProperty Base) (hB₁ : Base B₁) (hB₂ : Base B₂) :
+    B₁.encard = B₂.encard := by
+  rw [← encard_diff_add_encard_inter B₁ B₂, exch.encard_diff_eq hB₁ hB₂, inter_comm,
+    encard_diff_add_encard_inter]
 
 end ExchangeProperty
 
@@ -460,7 +464,7 @@ theorem eq_of_base_iff_base_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.
 
 theorem base_compl_iff_maximal_disjoint_base (hB : B ⊆ M.E := by aesop_mat) :
     M.Base (M.E \ B) ↔ Maximal (fun I ↦ I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B) B := by
-  simp_rw [maximal_iff, and_iff_right hB,  and_imp, forall_exists_index]
+  simp_rw [maximal_iff, and_iff_right hB, and_imp, forall_exists_index]
   refine ⟨fun h ↦ ⟨⟨_, h, disjoint_sdiff_right⟩,
     fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm ?_⟩, fun ⟨⟨B', hB', hBB'⟩,h⟩ ↦ ?_⟩
   · rw [hB'.eq_of_subset_base h, ← subset_compl_iff_disjoint_right, diff_eq, compl_inter,
@@ -830,7 +834,7 @@ theorem Basis.not_basis_of_ssubset (hI : M.Basis I X) (hJI : J ⊂ I) : ¬ M.Bas
 theorem Indep.subset_basis_of_subset (hI : M.Indep I) (hIX : I ⊆ X) (hX : X ⊆ M.E := by aesop_mat) :
     ∃ J, M.Basis J X ∧ I ⊆ J := by
   obtain ⟨J, hJ, hJmax⟩ := M.maximality X hX I hI hIX
-  exact ⟨J, ⟨⟨hJmax, hX⟩, hJ⟩⟩
+  exact ⟨J, ⟨hJmax, hX⟩, hJ⟩
 
 theorem Indep.subset_basis'_of_subset (hI : M.Indep I) (hIX : I ⊆ X) :
     ∃ J, M.Basis' J X ∧ I ⊆ J := by

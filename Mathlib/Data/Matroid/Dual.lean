@@ -74,7 +74,6 @@ section dual
     obtain rfl : I = B' \ X := hI.eq_of_subset_indep (hB'.indep.diff _)
       (subset_diff.2 ⟨hIB', (subset_diff.1 hI.subset).2⟩)
       (diff_subset_diff_left hB'.subset_ground)
-
     simp_rw [maximal_subset_iff']
     refine ⟨(X \ B') ∩ M.E, ?_, ⟨⟨inter_subset_right, ?_⟩, ?_⟩, ?_⟩
     · rw [subset_inter_iff, and_iff_left hI'E, subset_diff, and_iff_right hI'X]
@@ -100,7 +99,6 @@ section dual
       refine (em (e ∈ X)).elim (fun heX ↦ hI' (Or.inl ⟨heB'', heX⟩)) (fun heX ↦ hIB' ?_)
       refine hI.mem_of_insert_indep ⟨hB₁.subset_ground he, heX⟩ ?_
       exact hB₁.indep.subset (insert_subset he (subset_union_right.trans hI'B₁))
-
     by_contra hdj'
     obtain ⟨e, heJ, heB'⟩ := not_disjoint_iff.mp hdj'
     obtain (heB'' | ⟨-,heX⟩ ) := hB₁I heB'

@@ -8,8 +8,6 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.Units.Basic
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
-#align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
-
 /-!
 # Dirichlet theorem on the group of units of a number field
 This file is devoted to the proof of Dirichlet unit theorem that states that the group of
@@ -209,7 +207,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
-      (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑): NNReal → ENNReal) h_gprod)
+      (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
     refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
@@ -462,7 +460,7 @@ def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsio
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
-  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i) :)
+  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i):)
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul ⟦fundSystem K i⟧ = (basisModTorsion K i) := by
