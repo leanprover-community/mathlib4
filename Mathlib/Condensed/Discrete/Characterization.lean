@@ -60,6 +60,13 @@ noncomputable abbrev LocallyConstant.adjunction :
     CondensedSet.LocallyConstant.functor ⊣ Condensed.underlying (Type (u+1)) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
+/--
+A condensed set is discrete if it is discrete as a sheaf with respect to the terminal object
+`PUnit` in `CompHaus`.
+-/
+abbrev IsDiscrete (M : CondensedSet.{u}) :=
+  Sheaf.IsDiscrete (coherentTopology CompHaus) CompHaus.isTerminalPUnit M
+
 open List in
 theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
     TFAE
@@ -94,6 +101,24 @@ theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
 
 end CondensedSet
 
+namespace CondensedMod
+
+variable (R : Type (u+1)) [Ring R]
+
+/--
+A condensed module is discrete if it is discrete as a sheaf with respect to the terminal object
+`PUnit` in `CompHaus`.
+-/
+abbrev IsDiscrete (M : CondensedMod R) :=
+  Sheaf.IsDiscrete (coherentTopology CompHaus) CompHaus.isTerminalPUnit M
+
+lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
+    IsDiscrete R M ↔ CondensedSet.IsDiscrete ((Condensed.forget R).obj M) :=
+  Sheaf.isDiscrete_iff_forget (coherentTopology CompHaus) CompHaus.isTerminalPUnit
+    (CategoryTheory.forget (ModuleCat R)) M
+
+end CondensedMod
+
 namespace LightCondSet
 
 instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
@@ -119,6 +144,13 @@ sets to sets.
 noncomputable abbrev LocallyConstant.adjunction :
     LightCondSet.LocallyConstant.functor ⊣ LightCondensed.underlying (Type u) :=
   CompHausLike.LocallyConstant.adjunction _ _
+
+/--
+A light condensed set is discrete if it is discrete as a sheaf with respect to the terminal object
+`PUnit` in `LightProfinite`.
+-/
+abbrev IsDiscrete (M : LightCondSet.{u}) :=
+  Sheaf.IsDiscrete (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
 
 open List in
 theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
@@ -146,3 +178,21 @@ theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
   tfae_finish
 
 end LightCondSet
+
+namespace LightCondMod
+
+variable (R : Type u) [Ring R]
+
+/--
+A light condensed module is discrete if it is discrete as a sheaf with respect to the terminal
+object `PUnit` in `LightProfinite`.
+-/
+abbrev IsDiscrete (M : LightCondMod R) :=
+  Sheaf.IsDiscrete (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
+
+lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
+    IsDiscrete R M ↔ LightCondSet.IsDiscrete ((LightCondensed.forget R).obj M) :=
+  Sheaf.isDiscrete_iff_forget (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit
+    (CategoryTheory.forget (ModuleCat R)) M
+
+end LightCondMod
