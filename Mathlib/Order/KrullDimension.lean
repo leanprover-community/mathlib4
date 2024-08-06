@@ -493,13 +493,13 @@ lemma coheight_eq_coe_iff (x : α) (n : ℕ) : coheight x = n ↔
   height_eq_coe_iff (α := αᵒᵈ) x n
 
 /-- The elements of height zero are the minimal elements. -/
-lemma minimal_iff_height_eq_zero (a : α) :
-    Minimal (fun _ => True) a ↔ height a = 0 := by
-  simp [minimal_iff_forall_lt, height_eq_zero_iff]
+lemma isMin_iff_height_eq_zero (a : α) :
+    IsMin a ↔ height a = 0 := by
+  simp [isMin_iff_forall_not_lt, height_eq_zero_iff]
 
-lemma maximal_iff_coheight_eq_zero (a : α) :
-    Maximal (fun _ => True) a ↔ coheight a = 0 :=
-  minimal_iff_height_eq_zero (α := αᵒᵈ) a
+lemma isMax_iff_coheight_eq_zero (a : α) :
+    IsMax a ↔ coheight a = 0 :=
+  isMin_iff_height_eq_zero (α := αᵒᵈ) a
 
 /-- The elements of height `n` are the minimial elements among those of height `≥ n`. -/
 lemma minimal_le_height_iff_height (a : α) (n : ℕ) :
