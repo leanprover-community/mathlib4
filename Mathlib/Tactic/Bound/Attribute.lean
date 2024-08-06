@@ -18,7 +18,7 @@ on the number and types of the lemma's hypotheses.
 open Lean (MetaM)
 open Qq
 
-namespace Bound
+namespace Mathlib.Tactic.Bound
 
 initialize Lean.registerTraceClass `bound.attribute
 
