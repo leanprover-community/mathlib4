@@ -89,7 +89,7 @@ We close numerical goals with `norm_num` and `linarith`.
 open Lean Elab Meta Term Mathlib.Tactic Syntax
 open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 
-namespace Bound
+namespace Mathlib.Tactic.Bound
 
 /-!
 ### `.mpr` lemmas of iff statements for use as Aesop apply rules
@@ -223,7 +223,7 @@ def boundConfig : Aesop.Options := {
   enableSimp := false
 }
 
-end Bound
+end Mathlib.Tactic.Bound
 
 /-- `bound` tactic for proving inequalities via straightforward recursion on expression structure.
 
