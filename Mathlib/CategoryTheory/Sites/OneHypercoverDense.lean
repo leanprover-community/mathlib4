@@ -143,53 +143,34 @@ lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) 
     letI str := Presieve.getFunctorPushforwardStructure (Presieve.bindStruct hg).hg
     exact Sieve.pullback str.lift
       (Sieve.functorPushforward F (data.sieve₁₀ str.cover.1.choose str.cover.2.choose)))
-  /-have hS : S ∈ J W := by
+  have hS : S ∈ J W := by
     apply J.bind_covering
     · apply is_cover_of_isCoverDense
     · intro Y f hf
       apply J.pullback_stable
       rw [Functor.functorPushforward_mem_iff J₀]
       apply J₀.intersection_covering
-      all_goals apply IsDenseSubsite.imageSieve_mem J₀ J-/
-  have hT : T ∈ J W := sorry /-J.bind_covering hS (fun Z g hg ↦ by
+      all_goals apply IsDenseSubsite.imageSieve_mem J₀ J
+  have hT : T ∈ J W := J.bind_covering hS (fun Z g hg ↦ by
     apply J.pullback_stable
     rw [Functor.functorPushforward_mem_iff J₀]
     let str := Presieve.getFunctorPushforwardStructure (Presieve.bindStruct hg).hg
     apply data.mem₁₀
-    simp only [str.cover.1.choose_spec, str.cover.2.choose_spec, assoc, w])-/
+    simp only [str.cover.1.choose_spec, str.cover.2.choose_spec, assoc, w])
   refine J.superset_covering ?_ hT
-  rintro U _ ⟨V, a, _, ⟨Y, b, c, hc, H, rfl⟩, ⟨W₀, d, e, ⟨j, f, h₁, h₂⟩, fac⟩, rfl⟩
-  let str := Presieve.getFunctorPushforwardStructure H
+  rintro U f ⟨V, a, b, hb, h, _, rfl⟩
+  let str := Presieve.getFunctorPushforwardStructure (Presieve.bindStruct hb).hg
+  obtain ⟨W₀, c : _ ⟶ _, d, ⟨j, e, h₁, h₂⟩, fac⟩ := h
   dsimp
-  refine ⟨j, e ≫ F.map f, ?_, ?_⟩
-  · rw [assoc, assoc, assoc, ← F.map_comp, ← h₁, F.map_comp,
-      ← reassoc_of% fac]
-    congr 1
-    sorry
-  · sorry
-  #exit
-  have : F.Full := sorry
-  let data₁ := F.oneHypercoverDenseData J₀ J W
-  let R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ W⦄, data₁.toPreOneHypercover.sieve₀.arrows f → Sieve Y :=
-    fun Y f hf => ((data.sieve₁₀ (F.preimage (data₁.f (Sieve.ofArrows.i hf) ≫ p₁))
-      (F.preimage (data₁.f (Sieve.ofArrows.i hf) ≫ p₂))).functorPushforward F).pullback
-        (Sieve.ofArrows.h hf)
-  refine J.superset_covering ?_ (J.bind_covering data₁.mem₀ (R := R) ?_)
-  · rintro Y f ⟨T, a, b, hb, ha, rfl⟩
-    obtain ⟨X₀, c, d, hc, fac⟩ := ha
-    obtain ⟨j, e, w₁, w₂⟩ := hc
-    refine ⟨j, d ≫ F.map e, ?_, ?_⟩
-    · rw [Sieve.ofArrows.fac hb, assoc, assoc, assoc]
-      dsimp
-      rw [← F.map_comp, ← w₁, F.map_comp, F.map_preimage, reassoc_of% fac]
-    · rw [Sieve.ofArrows.fac hb, assoc, assoc, assoc]
-      dsimp
-      rw [← F.map_comp, ← w₂, F.map_comp, F.map_preimage, reassoc_of% fac]
-  · intro Y f hf
-    apply J.pullback_stable
-    apply (IsDenseSubsite.coverPreserving J₀ J F).cover_preserve
-    apply data.mem₁₀ i₁ i₂
-    simp [w]
+  refine ⟨j, d ≫ F.map e, ?_, ?_⟩
+  · rw [assoc, assoc, ← F.map_comp, ← h₁, F.map_comp, ← reassoc_of% fac,
+      str.cover.1.choose_spec, ← reassoc_of% str.fac,
+      Presieve.CoverByImageStructure.fac_assoc,
+      Presieve.BindStruct.fac_assoc]
+  · rw [assoc, assoc, ← F.map_comp, ← h₂, F.map_comp, ← reassoc_of% fac,
+      str.cover.2.choose_spec, ← reassoc_of% str.fac,
+      Presieve.CoverByImageStructure.fac_assoc,
+      Presieve.BindStruct.fac_assoc]
 
 @[simps toPreOneHypercover]
 def toOneHypercover {X : C} (data : F.OneHypercoverDenseData J₀ J X) :

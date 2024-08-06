@@ -83,6 +83,8 @@ structure BindStruct (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f �
   hg : R hf g
   fac : g ≫ f = h
 
+attribute [reassoc (attr := simp)] BindStruct.fac
+
 noncomputable def bindStruct {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y}
     {Z : C} {h : Z ⟶ X} (H : bind S R h) : BindStruct S R h :=
   Nonempty.some (by
