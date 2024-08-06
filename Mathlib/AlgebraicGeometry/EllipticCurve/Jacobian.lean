@@ -392,7 +392,7 @@ lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
 
 lemma nonsingular_zero [Nontrivial R] : W'.Nonsingular ![1, 1, 0] := by
   simp only [nonsingular_of_Z_eq_zero, equation_zero, true_and, fin3_def_ext, ← not_and_or]
-  exact fun h => one_ne_zero <| by linear_combination (norm := ring1) h.1 - h.2.1
+  exact fun h => one_ne_zero (α := R) <| by linear_combination (norm := ring1) h.1 - h.2.1
 
 lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ W'.toAffine.Nonsingular X Y := by
   simp_rw [nonsingular_iff, equation_some, fin3_def_ext, Affine.nonsingular_iff',
