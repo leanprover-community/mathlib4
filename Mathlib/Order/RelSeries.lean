@@ -657,11 +657,11 @@ def iota (n : ℕ) : LTSeries ℕ where
   toFun := fun i => i
   step := fun _ => Nat.lt_add_one _
 
-@[simp] def length_iota (n : ℕ) : (iota n).length = n := rfl
+@[simp] lemma length_iota (n : ℕ) : (iota n).length = n := rfl
 
-@[simp] def head_iota (n : ℕ) : (iota n).head = 0 := rfl
+@[simp] lemma head_iota (n : ℕ) : (iota n).head = 0 := rfl
 
-@[simp] def last_iota (n : ℕ) : (iota n).last = n := rfl
+@[simp] lemma last_iota (n : ℕ) : (iota n).last = n := rfl
 
 end LTSeries
 
