@@ -990,8 +990,6 @@ theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
 theorem val_pos_of_ne_zero {n : ℕ} {a : ZMod n} (h : a ≠ 0) : 0 < a.val :=
   Nat.pos_of_ne_zero <| (val_ne_zero a).mpr h
 
-
-
 theorem val_eq_one : ∀ {n : ℕ} [n.AtLeastTwo] (a : ZMod n), a.val = 1 ↔ a = 1
   | 0, ⟨hn⟩, _
   | 1, ⟨hn⟩, _ => by simp at hn
