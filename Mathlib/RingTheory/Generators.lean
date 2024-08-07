@@ -247,8 +247,7 @@ an algebra homomorphism between the polynomial rings. -/
 noncomputable
 def Hom.toAlgHom (f : Hom P P') : P.Ring →ₐ[R] P'.Ring := MvPolynomial.aeval f.val
 
-variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
-
+variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] in
 @[simp]
 lemma Hom.algebraMap_toAlgHom (f : Hom P P') (x) : MvPolynomial.aeval P'.val (f.toAlgHom x) =
     algebraMap S S' (MvPolynomial.aeval P.val x) := by
