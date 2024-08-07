@@ -222,10 +222,8 @@ lemma AutGalois.ext {f g : AutGalois F}
   ext A
   exact h A
 
-variable [FiberFunctor F]
-
 /-- `autGalois.π` is surjective for every pointed Galois object. -/
-theorem AutGalois.π_surjective (A : PointedGaloisObject F) :
+theorem AutGalois.π_surjective [FiberFunctor F] (A : PointedGaloisObject F) :
     Function.Surjective (AutGalois.π F A) := fun (σ : Aut A.obj) ↦ by
   have (i : PointedGaloisObject F) : Finite ((autGaloisSystem F ⋙ forget _).obj i) :=
     inferInstanceAs <| Finite (Aut (i.obj))
