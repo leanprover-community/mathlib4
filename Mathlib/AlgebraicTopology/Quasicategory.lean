@@ -90,7 +90,47 @@ instance sset_mono_pushout : StableUnderCobaseChange (monomorphisms SSet) := by
   letI _ : Adhesive SSet := adhesive_functor
   exact Adhesive.mono_of_isPushout_of_mono_right P
 
-instance sset_mono_comp : StableUnderTransfiniteComposition (monomorphisms SSet) := sorry
+def C_prop (α : Ordinal) (F : {β | β ≤ α} ⥤ SSet) : Ordinal → Prop := fun γ ↦
+  (hγ : γ ≤ α) → monomorphisms SSet (F.map (gam γ hγ))
+
+--
+instance transfinite_monos
+    (X Y : SSet) (f : X ⟶ Y)
+    (α : Ordinal)
+    (F : {β | β ≤ α} ⥤ SSet) (hF : Limits.PreservesColimits F)
+    (hS : ∀ (β : Ordinal) (hβ : β < α), monomorphisms SSet (F.map (to_succ hβ))) :
+      ∀ {γ} (hγ : γ ≤ α), monomorphisms SSet (F.map (gam γ hγ)) := by
+  intro γ hγ
+  refine @Ordinal.limitRecOn (C_prop α F) γ ?_ ?_ ?_ hγ
+  dsimp [C_prop]
+  · intro; simp [gam]; exact instMonoId (F.obj bot)
+  · dsimp [C_prop]
+    intro o IH (succ_le : o + 1 ≤ α)
+    have o_lt : o < α := Order.succ_le_iff.mp succ_le
+    have : (F.map (gam (Order.succ o) succ_le)) = (F.map (gam o (le_of_lt o_lt))) ≫
+        (F.map (to_succ o_lt)) := by
+      suffices (gam (Order.succ o) succ_le) = (gam o (le_of_lt o_lt)) ≫ (to_succ o_lt) by
+        aesop
+      simp only [Set.coe_setOf, Set.mem_setOf_eq, gam, to_succ, homOfLE_comp]
+    rw [this]
+    have a := IH (le_of_lt o_lt)
+    have b := hS o o_lt
+    exact @CategoryTheory.mono_comp SSet _ _ _ _
+      (F.map (gam o (le_of_lt o_lt))) a (F.map (to_succ o_lt)) b
+  · simp [C_prop]
+    intro o ho IH o_le
+    sorry -- because monomorphisms are closed under filtered colimits?
+
+-- o is colimit of o' < o, and ∀ o' < o we have f_o'_0 : F(0) ⟶ F(o') is a Mono.
+-- {o' | o' < o} is a filtered category (as a directed set), so o is a filtered colimit
+-- F preserves colimits, so F(o) is a filtered colimit of F(o') for o' < o
+-- since each F(0) ⟶ F(o') is a Mono, also F(0) ⟶ F(o) is a Mono
+
+
+instance sset_mono_comp : StableUnderTransfiniteComposition (monomorphisms SSet) := by
+  intro X Y f hf
+  induction hf with
+  | mk α F hF hS => exact transfinite_monos X Y f α F hF hS (le_refl α)
 
 -- `0077` (a)
 instance : WeaklySaturated (monomorphisms SSet) := ⟨sset_mono_pushout, mono_retract, sset_mono_comp⟩
@@ -217,6 +257,8 @@ instance fun_quasicat_aux (S D : SSet) [Quasicategory D] :
       CategoryTheory.Comma.isoMk (ihom_iso' _ _ _) (ihom_iso' _ _ _)
     exact HasLiftingProperty.of_arrow_iso_right (boundaryInclusion n) H
 
+
+-- what can be said for more general filling conditions?
 -- `0066`
 /- if D is a quasicat, then Fun(S, D) is -/
 instance fun_quasicat (S D : SSet) [Quasicategory D] : Quasicategory ((Fun.obj (.op S)).obj D) :=

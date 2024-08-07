@@ -134,6 +134,36 @@ instance llp_pushout' {X Y : C} {p : X ⟶ Y} : StableUnderCobaseChange (llp_wrt
 def StableUnderTransfiniteComposition (P : MorphismProperty C) : Prop :=
   ∀ ⦃X Y: C⦄ ⦃f : X ⟶ Y⦄ (_ : IsTransfiniteComposition P f), P f
 
+#check Ordinal.zero_or_succ_or_limit.{v} -- need this
+
+/-
+inductive u_morphisms (T : MorphismProperty C)
+    (α : Ordinal.{v})
+      (F : {β | β ≤ α} ⥤ C) (hF : Limits.PreservesColimits F)
+      (hS : ∀ (β : Ordinal.{v}) (hβ : β < α), T.llp_wrt (F.map (to_succ hβ)))
+    (X Y : C) (g : X ⟶ Y) (hg : T g)
+    (u : F.obj bot ⟶ X) (v : F.obj (top α) ⟶ Y) (sq : CommSq u (F.map bot_to_top) g v)
+    (β : Ordinal.{v})
+    (hβ : β < α)
+    :
+      Prop where
+  | nil
+-/
+
+/-
+def u_morphisms (T : MorphismProperty C)
+    (α : Ordinal.{v})
+      (F : {β | β ≤ α} ⥤ C) (hF : Limits.PreservesColimits F)
+      (hS : ∀ (β : Ordinal.{v}) (hβ : β < α), T.llp_wrt (F.map (to_succ hβ)))
+    (X Y : C) (g : X ⟶ Y) (hg : T g)
+    (u : F.obj bot ⟶ X) (v : F.obj (top α) ⟶ Y) (sq : CommSq u (F.map bot_to_top) g v)
+    (β γ : Ordinal.{v})
+    (hγ : γ ≤ α) (hβ : β < γ)
+    : (F.obj (B (lt_of_lt_of_le hβ hγ))) ⟶ X := by
+  cases Ordinal.zero_or_succ_or_limit β
+  sorry
+-/
+
 instance llp_comp {T : MorphismProperty C} : StableUnderTransfiniteComposition (llp_wrt T) := by
   intro C0 Cα f h X Y g hg
   induction h with

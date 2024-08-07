@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.SetTheory.Ordinal.Arithmetic
 
 open CategoryTheory
 
@@ -17,6 +18,8 @@ def top (α : Ordinal.{v}) : {β | β ≤ α} := ⟨α, le_refl α⟩
 
 def bot_to_top {α : Ordinal.{v}} : bot ⟶ top α := LE.le.hom (Ordinal.zero_le α)
 
+def gam {α : Ordinal.{v}} (γ : Ordinal.{v}) (hγ : γ ≤ α) : bot ⟶ ⟨γ, hγ⟩ := LE.le.hom (Ordinal.zero_le γ)
+
 def to_succ {α β : Ordinal.{v}} (hβ : β < α) : (B hβ) ⟶ (BSucc hβ) :=
   LE.le.hom (Ordinal.le_add_right β 1)
 
@@ -31,8 +34,3 @@ inductive IsTransfiniteCompositionAux
 
 def IsTransfiniteComposition (S : MorphismProperty C) : MorphismProperty C := fun _ _ f =>
   IsTransfiniteCompositionAux S f
-
-example {C : Type u} [Category.{v} C] (S : MorphismProperty C)
-    {X Y : C} (f : X ⟶ Y) (h : IsTransfiniteComposition S f) : f = f → True := by
-  induction h
-  sorry
