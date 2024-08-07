@@ -188,9 +188,6 @@ theorem ext (H : ∀ x : M, Q x = Q' x) : Q = Q' :=
 theorem congr_fun (h : Q = Q') (x : M) : Q x = Q' x :=
   DFunLike.congr_fun h _
 
-theorem ext_iff : Q = Q' ↔ ∀ x, Q x = Q' x :=
-  DFunLike.ext_iff
-
 /-- Copy of a `QuadraticMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (Q : QuadraticMap R M N) (Q' : M → N) (h : Q' = ⇑Q) : QuadraticMap R M N where
@@ -646,7 +643,7 @@ end QuadraticMap
 
 Over a commutative ring with an inverse of 2, the theory of quadratic maps is
 basically identical to that of symmetric bilinear maps. The map from quadratic
-maps to bilinear maps giving this identification is called the `associated`
+maps to bilinear maps giving this identification is called the <`associated`
 quadratic map.
 -/
 
