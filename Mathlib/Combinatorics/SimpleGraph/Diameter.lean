@@ -53,7 +53,14 @@ lemma ediam_eq_top_of_not_connected [Nonempty α] (h : ¬G.Connected) : G.ediam 
   rw [eq_top_iff, ← edist_eq_top_of_not_reachable hw]
   exact edist_le_ediam
 
-lemma exists_walk_eq_ediam [Nonempty α] [Finite α] :
+lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
+    ∃ u v, G.edist u v = G.ediam := by
+  let f : (α × α) → ℕ∞ := fun p ↦ G.edist p.1 p.2
+  convert_to (∃ p : (α × α), f p = ⨆ p : (α × α), f p)
+  rw [Prod.exists, ediam_def]
+  exact ENat.sSup_mem_of_Nonempty_of_lt_top <| lt_top_iff_ne_top.mpr <| ediam_def ▸ h
+
+lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.edist u v = G.ediam := by
   let f : (α × α) → ℕ∞ := fun p ↦ G.edist p.1 p.2
   by_cases h : G.ediam = ⊤
@@ -64,9 +71,7 @@ lemma exists_walk_eq_ediam [Nonempty α] [Finite α] :
       exact Set.Nonempty.csSup_mem Set.nonempty_of_nonempty_subtype <|
         Finite.Set.finite_replacement f
     simp_all
-  · convert_to (∃ p : (α × α), f p = ⨆ p : (α × α), f p)
-    rw [Prod.exists, ediam_def]
-    exact ENat.sSup_mem_of_Nonempty_of_lt_top <| lt_top_iff_ne_top.mpr <| ediam_def ▸ h
+  · exact exists_edist_eq_ediam_of_ne_top h
 
 end ediam
 
