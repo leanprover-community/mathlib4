@@ -286,8 +286,6 @@ instance baseAction : MulAction H (NormalWord d) :=
 
 theorem base_smul_def' (h : H) (w : NormalWord d) :
     h • w = { w with head := h * w.head } := rfl
-
-
 /-- Take the product of a normal word as an element of the `PushoutI`. We show that this is
 bijective, in `NormalWord.equiv`. -/
 def prod (w : NormalWord d) : PushoutI φ :=
