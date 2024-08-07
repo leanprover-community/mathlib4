@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Yuma Mizuno. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yuma Mizuno
+-/
 import Mathlib.Tactic.CategoryTheory.Monoidal
+
+/-!
+# A `coherence` tactic for monoidal categories
+
+-/
 
 open Lean Elab Meta Tactic
 open CategoryTheory
@@ -11,11 +21,13 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 open MonoidalCategory
 
+/-- Make a `Iso.refl` expression. -/
 def mkIsoRefl (f : Expr) : MonoidalM Expr := do
   let ctx ← read
   return mkAppN (.const ``Iso.refl (← getLevels))
     #[ctx.C, ctx.instCat, f]
 
+/-- Make a `whiskerRightIso` expression. -/
 def mkWhiskerRightIso (η : Expr) (h : Expr) : MonoidalM Expr := do
   let ctx ← read
   let f ← srcExprOfIso η
@@ -23,6 +35,7 @@ def mkWhiskerRightIso (η : Expr) (h : Expr) : MonoidalM Expr := do
   return mkAppN (.const ``MonoidalCategory.whiskerRightIso (← getLevels))
     #[ctx.C, ctx.instCat, ctx.instMonoidal, f, g, η, h]
 
+/-- Make a `Iso.trans` expression. -/
 def mkIsoTrans (η θ : Expr) : MonoidalM Expr := do
   let ctx ← read
   let f ← srcExprOfIso η
@@ -31,6 +44,7 @@ def mkIsoTrans (η θ : Expr) : MonoidalM Expr := do
   return mkAppN (.const ``Iso.trans (← getLevels))
     #[ctx.C, ctx.instCat, f, g, h, η, θ]
 
+/-- Make a `Iso.symm` expression. -/
 def mkIsoSymm (η : Expr) : MonoidalM Expr := do
   let ctx ← read
   let f ← srcExprOfIso η
