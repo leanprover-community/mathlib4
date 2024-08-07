@@ -78,7 +78,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
     for(fil in diff) {
       if(!(diff[fil] == 0)) {
         fileCount++
-        outputLength+=length(fil)
+        outputLength+=length(fil)+4
         nums[diff[fil]]++
         reds[diff[fil]]=reds[diff[fil]]" `"fil"`"
       }
