@@ -3,7 +3,7 @@ import Mathlib.LinearAlgebra.Dimension.Finrank
 
 open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Submodule
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 theorem dense_of_ae {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
@@ -150,7 +150,7 @@ theorem fderiv_norm_smul_pos {x : E} {t : ℝ} (ht : t > 0) :
     fderiv ℝ (‖·‖) (t • x) = fderiv ℝ (‖·‖) x := by
   rw [fderiv_norm_smul, abs_of_pos ht, div_self ht.ne.symm, one_smul]
 
-theorem norm_fderiv_norm {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
+theorem norm_fderiv_norm [Nontrivial E] {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
     ‖fderiv ℝ (‖·‖) x‖ = 1 := by
   have : x ≠ 0 := by
     intro hx
@@ -211,7 +211,7 @@ theorem unique1 [FiniteDimensional ℝ E] {x : E} (hx : ‖x‖ = 1) (h : Differ
   simp only [smul_eq_mul, mul_one, neg_sub] at this
   exact sub_eq_zero.1 this.symm
 
-theorem tendsto_differentiable
+theorem tendsto_differentiable [Nontrivial E]
     {x : ℕ → E} (hd : ∀ n, DifferentiableAt ℝ (‖·‖) (x n))
     {z : E} (ht : Tendsto x atTop (𝓝 z)) :
     Tendsto (fun n ↦ fderiv ℝ (‖·‖) (x n) z) atTop (𝓝 ‖z‖) := by
@@ -235,7 +235,8 @@ theorem dense_seq {X : Type*} [TopologicalSpace X] [FrechetUrysohnSpace X]
     ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ Tendsto u atTop (𝓝 x) := by
   rw [← mem_closure_iff_seq_limit, dense_iff_closure_eq.1 hs]; trivial
 
-theorem exists_inverse' [FiniteDimensional ℝ E] {n : ℕ} (hn : finrank ℝ (E →ₗ[ℝ] ℝ) = n)
+theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
+    {n : ℕ} (hn : finrank ℝ (E →ₗ[ℝ] ℝ) = n)
     (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
     (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
@@ -323,7 +324,8 @@ theorem exists_inverse' [FiniteDimensional ℝ E] {n : ℕ} (hn : finrank ℝ (E
     exact LinearMap.congr_fun this x
   constructor
   · apply le_antisymm
-    · have prim : ∀ x : E, ‖x‖ = 1 → DifferentiableAt ℝ (‖·‖) x → f x = (fderiv ℝ (‖·‖) x) ∘ T := by
+    · have prim : ∀ x : E, ‖x‖ = 1 → DifferentiableAt ℝ (‖·‖) x →
+          f x = (fderiv ℝ (‖·‖) x) ∘ T := by
         intro x nx dx
         apply Continuous.ext_on hlol
         · exact (f x).continuous
@@ -389,22 +391,38 @@ theorem Dense.denseInducing_val {X : Type*} [TopologicalSpace X] {s : Set X} (hs
 theorem uniformInducing_val {X : Type*} [UniformSpace X] (s : Set X) :
     UniformInducing (@Subtype.val X s) := ⟨uniformity_setCoe⟩
 
-theorem exists_inverse'' [CompleteSpace E]
+theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
     (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
     (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   let A : Submodule ℝ E → Submodule ℝ F := fun p ↦ span ℝ (φ '' p)
   have mA : Monotone A := fun p q hpq ↦ span_mono (image_mono hpq)
   let ψ : (p : Submodule ℝ E) → p → A p := fun p x ↦ ⟨φ x, subset_span ⟨x.1, x.2, rfl⟩⟩
-  have hψ p : Isometry (ψ p) := sorry
-  have ψz p : ψ p 0 = 0 := sorry
+  have hψ p : Isometry (ψ p) := Isometry.of_dist_eq fun x y ↦ hφ.dist_eq _ _
+  have ψz p : ψ p 0 = 0 := by simp [ψ, φz]
   have fini (p : Submodule ℝ E) (hp : FiniteDimensional ℝ p) :
-      ∃ T : A p →L[ℝ] p, ‖T‖ = 1 ∧ ∀ y : p, T (ψ p y) = y := by
-    have : Dense (X := A p) (span ℝ (range (ψ p))) := by sorry
-    have _ : Nontrivial p := sorry
-    rcases exists_inverse' (n := finrank ℝ (p →ₗ[ℝ] ℝ)) rfl (ψ p) (hψ p) (ψz p) this with ⟨T, nT, hT⟩
-    use T, nT
-    exact fun y ↦ congrFun hT y
+      ∃ T : A p →L[ℝ] p, (∀ y, ‖T y‖ ≤ 1 * ‖y‖) ∧ ∀ y : p, T (ψ p y) = y := by
+    by_cases np : Nontrivial p
+    · have : Dense (X := A p) (span ℝ (range (ψ p))) := by
+        convert dense_univ
+        ext x
+        simp only [SetLike.mem_coe, mem_univ, iff_true]
+        rcases mem_span_set'.1 x.2 with ⟨n, f, g, hx⟩
+        rw [mem_span_set']
+        have this i : ⟨g i, subset_span (g i).2⟩ ∈ range (ψ p) := by
+          rcases (g i).2 with ⟨y, hy, h⟩
+          use ⟨y, hy⟩
+          rw [← Subtype.val_inj]
+          simpa
+        use n, f, fun i ↦ ⟨⟨g i, subset_span (g i).2⟩, this i⟩
+        rw [← Subtype.val_inj, ← hx]
+        simp
+      rcases exists_inverse' (n := finrank ℝ (p →ₗ[ℝ] ℝ))
+        rfl (ψ p) (hψ p) (ψz p) this with ⟨T, nT, hT⟩
+      exact ⟨T, fun y ↦ nT ▸ T.le_opNorm y, fun y ↦ congrFun hT y⟩
+    · refine ⟨0, by simp, ?_⟩
+      rw [not_nontrivial_iff_subsingleton] at np
+      exact fun _ ↦ Subsingleton.allEq _ _
   choose! T nT hT using fini
   have eq {p q : Submodule ℝ E} (hp : FiniteDimensional ℝ p) (hq : FiniteDimensional ℝ q)
       (hpq : p ≤ q) :
@@ -492,8 +510,8 @@ theorem exists_inverse'' [CompleteSpace E]
     rfl
   have ng x : ‖g x‖ ≤ 1 * ‖x‖ := by
     rcases imp x with ⟨p, hp, hx⟩
-    rw [← Teg p hp x hx, norm_coe, ← nT p hp]
-    apply (T p).le_opNorm
+    rw [← Teg p hp x hx]
+    exact nT p hp _
 
   have dQ : Dense (span ℝ Q : Set F) := by
     simp only [Q, A]
@@ -503,7 +521,13 @@ theorem exists_inverse'' [CompleteSpace E]
     exact hlol
   have dQ := dQ.denseRange_val
   have ui := uniformInducing_val (span ℝ Q : Set F)
-  have cg : UniformContinuous g := sorry
+  have cg : UniformContinuous g := by
+    apply LipschitzWith.uniformContinuous (K := 1)
+    apply LipschitzWith.of_dist_le_mul
+    intro x y
+    rw [dist_eq_norm, sub_eq_add_neg, ← neg_one_smul ℝ, ← gsmul, ← gadd, dist_eq_norm,
+      neg_one_smul ℝ, ← sub_eq_add_neg]
+    exact ng _
   let h := (ui.denseInducing dQ).extend g
   have ch : Continuous h :=
     (ui.denseInducing dQ).continuous_extend (uniformly_extend_exists ui dQ cg)
@@ -558,21 +582,27 @@ theorem exists_inverse'' [CompleteSpace E]
       map_smul' := hsmul }
   let H := h'.mkContinuous 1 hnorm
   use H
-  constructor
-  · apply le_antisymm
-    · exact H.opNorm_le_bound (by norm_num) hnorm
-    · sorry
-  · ext x
+  have this x : H (φ x) = x := by
     have : x ∈ ⋃ (F : Submodule ℝ E) (_ : FiniteDimensional ℝ F), (F : Set E) := by
       rw [← isup_fin]; trivial
     rcases mem_iUnion₂.1 this with ⟨p, hp, hx⟩
-    have ptn : φ x ∈ Q := by
-      simp only [mem_iUnion, SetLike.mem_coe, exists_prop, Q]
-      exact ⟨p, hp, subset_span ⟨x, hx, rfl⟩⟩
-    have ob : (T p ⟨φ x, subset_span ⟨x, hx, rfl⟩⟩).1 = g ⟨φ x, subset_span ptn⟩ := by sorry
-    have merde : H (φ x) = g ⟨φ x, subset_span ptn⟩ := by
-      change h (⟨φ x, subset_span ptn⟩ : span ℝ Q) = g ⟨φ x, subset_span ptn⟩
+    have ptn : φ x ∈ A p := by
+      exact subset_span ⟨x, hx, rfl⟩
+    have ptn' : φ x ∈ span ℝ Q := subset_span <| mem_iUnion₂.2 ⟨p, hp, ptn⟩
+    have ob : (T p ⟨φ x, ptn⟩).1 = g ⟨φ x, ptn'⟩ := by
+      exact Teg p hp ⟨φ x, ptn'⟩ ptn
+    have merde : H (φ x) = g ⟨φ x, ptn'⟩ := by
+      change h (⟨φ x, ptn'⟩ : span ℝ Q) = g ⟨φ x, ptn'⟩
       exact (ui.denseInducing dQ).extend_eq cg.continuous _
-    simp only [Function.comp_apply, id_eq]
     rw [merde, ← ob]
     exact Subtype.val_inj.2 <| hT p hp ⟨x, hx⟩
+  constructor
+  · apply le_antisymm
+    · exact H.opNorm_le_bound (by norm_num) hnorm
+    · rcases NormedSpace.exists_lt_norm ℝ E 0 with ⟨x, hx⟩
+      rw [← _root_.mul_le_mul_right hx, one_mul]
+      nth_rw 1 [← this x]
+      rw [← hφ.norm_map_of_map_zero φz x]
+      exact H.le_opNorm _
+  · ext x
+    exact this x
