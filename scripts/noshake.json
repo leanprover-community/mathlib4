@@ -61,6 +61,7 @@
   "Mathlib.Tactic.Attr.Core",
   "Mathlib.Tactic.Attr.Register",
   "Mathlib.Tactic.Basic",
+  "Mathlib.Tactic.Bound.Attribute",
   "Mathlib.Tactic.ByContra",
   "Mathlib.Tactic.CC",
   "Mathlib.Tactic.CancelDenoms",
@@ -195,8 +196,8 @@
   "Mathlib.Topology.Order.LeftRightNhds": ["Mathlib.Data.Set.Pointwise.Basic"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
-  "Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.NonUnital":
-  ["Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital"],
+  "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
+  ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
@@ -238,7 +239,7 @@
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto": ["Batteries.Logic", "Mathlib.Init.Logic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
-  "Mathlib.Tactic.GCongr.Core": ["Mathlib.Init.Order.Defs"],
+  "Mathlib.Tactic.GCongr.Core": ["Mathlib.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FunProp.RefinedDiscrTree": ["Mathlib.Algebra.Group.Pi.Basic"],
   "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
@@ -281,6 +282,17 @@
   "Mathlib.Tactic.CC.Addition":
   ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.Basic": ["Mathlib.Tactic.Linter.OldObtain"],
+  "Mathlib.Tactic.Bound":
+  ["Mathlib.Analysis.Analytic.Basic",
+   "Mathlib.Algebra.Order.AbsoluteValue",
+   "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+   "Mathlib.Algebra.Order.Floor",
+   "Mathlib.Tactic.Bound.Attribute",
+   "Mathlib.Tactic.Bound.Init"],
+  "Mathlib.Tactic.Bound.Attribute":
+  ["Mathlib.Algebra.Group.ZeroOne",
+  "Mathlib.Tactic.Bound.Init"],
+  "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.PowerSeries.Basic":
@@ -313,7 +325,7 @@
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
-  "Mathlib.Init.Data.Nat.GCD": ["Batteries.Data.Nat.Gcd"],
+  "Mathlib.Init.Data.List.Lemmas": ["Batteries.Data.List.Lemmas"],
   "Mathlib.Init.Data.List.Basic": ["Batteries.Data.List.Basic"],
   "Mathlib.Init.Data.Int.Order": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Init.Data.Int.Basic": ["Batteries.Data.Int.Order"],
