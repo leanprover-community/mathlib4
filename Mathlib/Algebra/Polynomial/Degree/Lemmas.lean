@@ -305,19 +305,7 @@ end Ring
 
 section NoZeroDivisors
 
-variable [Semiring R] [NoZeroDivisors R] {p q : R[X]} {a : R}
-
-theorem degree_mul_C (a0 : a ≠ 0) : (p * C a).degree = p.degree := by
-  rw [degree_mul, degree_C a0, add_zero]
-
-theorem degree_C_mul (a0 : a ≠ 0) : (C a * p).degree = p.degree := by
-  rw [degree_mul, degree_C a0, zero_add]
-
-theorem natDegree_mul_C (a0 : a ≠ 0) : (p * C a).natDegree = p.natDegree := by
-  simp only [natDegree, degree_mul_C a0]
-
-theorem natDegree_C_mul (a0 : a ≠ 0) : (C a * p).natDegree = p.natDegree := by
-  simp only [natDegree, degree_C_mul a0]
+variable [Semiring R] {p q : R[X]} {a : R}
 
 @[simp]
 lemma nextCoeff_C_mul_X_add_C (ha : a ≠ 0) (c : R) : nextCoeff (C a * X + C c) = c := by
@@ -336,6 +324,20 @@ lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b =
       simp [hp]
   · rintro ⟨a, ha, b, rfl⟩
     simp [ha]
+
+variable [NoZeroDivisors R]
+
+theorem degree_mul_C (a0 : a ≠ 0) : (p * C a).degree = p.degree := by
+  rw [degree_mul, degree_C a0, add_zero]
+
+theorem degree_C_mul (a0 : a ≠ 0) : (C a * p).degree = p.degree := by
+  rw [degree_mul, degree_C a0, zero_add]
+
+theorem natDegree_mul_C (a0 : a ≠ 0) : (p * C a).natDegree = p.natDegree := by
+  simp only [natDegree, degree_mul_C a0]
+
+theorem natDegree_C_mul (a0 : a ≠ 0) : (C a * p).natDegree = p.natDegree := by
+  simp only [natDegree, degree_C_mul a0]
 
 theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
   by_cases q0 : q.natDegree = 0

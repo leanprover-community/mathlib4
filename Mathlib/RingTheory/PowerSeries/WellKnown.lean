@@ -151,7 +151,7 @@ def sin : PowerSeries A :=
 def cos : PowerSeries A :=
   mk fun n => if Even n then algebraMap ℚ A ((-1) ^ (n / 2) / n !) else 0
 
-variable {A A'} [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A'] (n : ℕ) (f : A →+* A')
+variable {A A'} (n : ℕ)
 
 @[simp]
 theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
@@ -161,6 +161,8 @@ theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
 theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_exp]
   simp
+
+variable (f : A →+* A')
 
 @[simp]
 theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by

@@ -181,8 +181,16 @@ octonions), we replace the `[Semiring S]` with `[NonAssocSemiring S] [Pow S ℕ]
 -/
 
 variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
-  [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S] [Pow S ℕ]
-  [NatPowAssoc S] (x : S)
+  [NonAssocSemiring S] [Module R S] [Pow S ℕ] (x : S)
+
+theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
+  induction p using Polynomial.induction_on' with
+  | h_add p q ph qh =>
+    simp only [mul_add, smeval_add, ph, qh, smul_add]
+  | h_monomial n b =>
+    simp only [C_mul_monomial, smeval_monomial, mul_smul]
+
+variable [NatPowAssoc S]
 
 theorem smeval_at_natCast (q : ℕ[X]) : ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
   induction q using Polynomial.induction_on' with
@@ -206,13 +214,8 @@ theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
     | succ n => rw [coeff_monomial_succ, smeval_monomial, npow_add, npow_one, mul_zero, zero_smul,
         smul_zero]
 
-theorem smeval_mul_X : (p * X).smeval x = p.smeval x * x := by
-    induction p using Polynomial.induction_on' with
-  | h_add p q ph qh =>
-    simp only [add_mul, smeval_add, ph, qh]
-  | h_monomial n a =>
-    simp only [← monomial_one_one_eq_X, monomial_mul_monomial, smeval_monomial, mul_one, pow_succ',
-      mul_assoc, npow_add, smul_mul_assoc, npow_one]
+section
+variable [SMulCommClass R S S]
 
 theorem smeval_X_mul : (X * p).smeval x = x * p.smeval x := by
     induction p using Polynomial.induction_on' with
@@ -221,21 +224,6 @@ theorem smeval_X_mul : (X * p).smeval x = x * p.smeval x := by
   | h_monomial n a =>
     rw [← monomial_one_one_eq_X, monomial_mul_monomial, smeval_monomial, one_mul, npow_add,
       npow_one, ← mul_smul_comm, smeval_monomial]
-
-theorem smeval_assoc_X_pow (m n : ℕ) :
-    p.smeval x * x ^ m * x ^ n = p.smeval x * (x ^ m * x ^ n) := by
-  induction p using Polynomial.induction_on' with
-  | h_add p q ph qh =>
-    simp only [smeval_add, ph, qh, add_mul]
-  | h_monomial n a =>
-    rw [smeval_monomial, smul_mul_assoc, smul_mul_assoc, npow_mul_assoc, ← smul_mul_assoc]
-
-theorem smeval_mul_X_pow : ∀ (n : ℕ), (p * X^n).smeval x = p.smeval x * x^n
-  | 0 => by
-    simp only [npow_zero, mul_one]
-  | n + 1 => by
-    rw [npow_add, ← mul_assoc, npow_one, smeval_mul_X, smeval_mul_X_pow n, npow_add,
-      ← smeval_assoc_X_pow, npow_one]
 
 theorem smeval_X_pow_assoc (m n : ℕ) :
     x ^ m * x ^ n * p.smeval x = x ^ m * (x ^ n * p.smeval x) := by
@@ -252,13 +240,6 @@ theorem smeval_X_pow_mul : ∀ (n : ℕ), (X^n * p).smeval x = x^n * p.smeval x
     rw [add_comm, npow_add, mul_assoc, npow_one, smeval_X_mul, smeval_X_pow_mul n, npow_add,
       smeval_X_pow_assoc, npow_one]
 
-theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
-  induction p using Polynomial.induction_on' with
-  | h_add p q ph qh =>
-    simp only [mul_add, smeval_add, ph, qh, smul_add]
-  | h_monomial n b =>
-    simp only [C_mul_monomial, smeval_monomial, mul_smul]
-
 theorem smeval_monomial_mul (n : ℕ) :
     (monomial n r * p).smeval x = r • (x ^ n * p.smeval x) := by
   induction p using Polynomial.induction_on' with
@@ -267,6 +248,35 @@ theorem smeval_monomial_mul (n : ℕ) :
     rw [← C_mul_X_pow_eq_monomial, mul_assoc, smeval_C_mul, smeval_X_pow_mul, smeval_add]
   | h_monomial n a =>
     rw [smeval_monomial, monomial_mul_monomial, smeval_monomial, npow_add, mul_smul, mul_smul_comm]
+
+end
+
+variable [IsScalarTower R S S]
+
+theorem smeval_mul_X : (p * X).smeval x = p.smeval x * x := by
+    induction p using Polynomial.induction_on' with
+  | h_add p q ph qh =>
+    simp only [add_mul, smeval_add, ph, qh]
+  | h_monomial n a =>
+    simp only [← monomial_one_one_eq_X, monomial_mul_monomial, smeval_monomial, mul_one, pow_succ',
+      mul_assoc, npow_add, smul_mul_assoc, npow_one]
+
+theorem smeval_assoc_X_pow (m n : ℕ) :
+    p.smeval x * x ^ m * x ^ n = p.smeval x * (x ^ m * x ^ n) := by
+  induction p using Polynomial.induction_on' with
+  | h_add p q ph qh =>
+    simp only [smeval_add, ph, qh, add_mul]
+  | h_monomial n a =>
+    rw [smeval_monomial, smul_mul_assoc, smul_mul_assoc, npow_mul_assoc, ← smul_mul_assoc]
+
+theorem smeval_mul_X_pow : ∀ (n : ℕ), (p * X^n).smeval x = p.smeval x * x^n
+  | 0 => by
+    simp only [npow_zero, mul_one]
+  | n + 1 => by
+    rw [npow_add, ← mul_assoc, npow_one, smeval_mul_X, smeval_mul_X_pow n, npow_add,
+      ← smeval_assoc_X_pow, npow_one]
+
+variable [SMulCommClass R S S]
 
 theorem smeval_mul : (p * q).smeval x  = p.smeval x * q.smeval x := by
   induction p using Polynomial.induction_on' with

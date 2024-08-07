@@ -1584,6 +1584,20 @@ theorem prime_pow_le_iff_le_bcount [DecidableEq (Associates α)] {m p : Associat
   rw [bcount, factors_mk, Multiset.le_count_iff_replicate_le, ← factors_le, factors_prime_pow,
     factors_mk, WithTop.coe_le_coe] <;> assumption
 
+@[simp]
+theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
+  apply eq_of_prod_eq_prod
+  rw [Associates.factors_prod]
+  exact Multiset.prod_zero
+
+@[simp]
+theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
+    (a ^ k).factors = k • a.factors := by
+  induction' k with n h
+  · rw [zero_nsmul, pow_zero]
+    exact factors_one
+  · rw [pow_succ, succ_nsmul, factors_mul, h]
+
 section count
 
 variable [DecidableEq (Associates α)] [∀ p : Associates α, Decidable (Irreducible p)]
@@ -1615,16 +1629,16 @@ theorem count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
       (Associates.irreducible_mk.mpr hp)] at h
   exact (zero_lt_one.trans_le h).ne'
 
-theorem count_self [Nontrivial α] [DecidableEq (Associates α)] {p : Associates α}
+theorem count_self [Nontrivial α] {p : Associates α}
     (hp : Irreducible p) : p.count p.factors = 1 := by
   simp [factors_self hp, Associates.count_some hp]
 
-theorem count_eq_zero_of_ne [DecidableEq (Associates α)] {p q : Associates α} (hp : Irreducible p)
+theorem count_eq_zero_of_ne {p q : Associates α} (hp : Irreducible p)
     (hq : Irreducible q) (h : p ≠ q) : p.count q.factors = 0 :=
   not_ne_iff.mp fun h' ↦ h <| associated_iff_eq.mp <| hp.associated_of_dvd hq <|
     le_of_count_ne_zero hq.ne_zero hp h'
 
-theorem count_mul [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0) {b : Associates α}
+theorem count_mul {a : Associates α} (ha : a ≠ 0) {b : Associates α}
     (hb : b ≠ 0) {p : Associates α} (hp : Irreducible p) :
     count p (factors (a * b)) = count p a.factors + count p b.factors := by
   obtain ⟨a0, nza, rfl⟩ := exists_non_zero_rep ha
@@ -1632,7 +1646,7 @@ theorem count_mul [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 
   rw [factors_mul, factors_mk a0 nza, factors_mk b0 nzb, ← FactorSet.coe_add, count_some hp,
     Multiset.count_add, count_some hp, count_some hp]
 
-theorem count_of_coprime [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0)
+theorem count_of_coprime {a : Associates α} (ha : a ≠ 0)
     {b : Associates α} (hb : b ≠ 0) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {p : Associates α}
     (hp : Irreducible p) : count p a.factors = 0 ∨ count p b.factors = 0 := by
   rw [or_iff_not_imp_left, ← Ne]
@@ -1641,7 +1655,7 @@ theorem count_of_coprime [DecidableEq (Associates α)] {a : Associates α} (ha :
   exact ⟨p, le_of_count_ne_zero ha hp hca, le_of_count_ne_zero hb hp hcb,
     UniqueFactorizationMonoid.irreducible_iff_prime.mp hp⟩
 
-theorem count_mul_of_coprime [DecidableEq (Associates α)] {a : Associates α} {b : Associates α}
+theorem count_mul_of_coprime {a : Associates α} {b : Associates α}
     (hb : b ≠ 0) {p : Associates α} (hp : Irreducible p) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) :
     count p a.factors = 0 ∨ count p a.factors = count p (a * b).factors := by
   by_cases ha : a = 0
@@ -1650,7 +1664,7 @@ theorem count_mul_of_coprime [DecidableEq (Associates α)] {a : Associates α} {
   apply Or.intro_right
   rw [count_mul ha hb hp, hb0, add_zero]
 
-theorem count_mul_of_coprime' [DecidableEq (Associates α)] {a b : Associates α} {p : Associates α}
+theorem count_mul_of_coprime' {a b : Associates α} {p : Associates α}
     (hp : Irreducible p) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) :
     count p (a * b).factors = count p a.factors ∨ count p (a * b).factors = count p b.factors := by
   by_cases ha : a = 0
@@ -1664,7 +1678,7 @@ theorem count_mul_of_coprime' [DecidableEq (Associates α)] {a b : Associates α
   · apply Or.intro_left
     rw [hb0, add_zero]
 
-theorem dvd_count_of_dvd_count_mul [DecidableEq (Associates α)] {a b : Associates α} (hb : b ≠ 0)
+theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0)
     {p : Associates α} (hp : Irreducible p) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {k : ℕ}
     (habk : k ∣ count p (a * b).factors) : k ∣ count p a.factors := by
   by_cases ha : a = 0
@@ -1675,21 +1689,7 @@ theorem dvd_count_of_dvd_count_mul [DecidableEq (Associates α)] {a b : Associat
   · rw [count_mul ha hb hp, h] at habk
     exact habk
 
-@[simp]
-theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
-  apply eq_of_prod_eq_prod
-  rw [Associates.factors_prod]
-  exact Multiset.prod_zero
-
-@[simp]
-theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
-    (a ^ k).factors = k • a.factors := by
-  induction' k with n h
-  · rw [zero_nsmul, pow_zero]
-    exact factors_one
-  · rw [pow_succ, succ_nsmul, factors_mul, h]
-
-theorem count_pow [Nontrivial α] [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0)
+theorem count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
     {p : Associates α} (hp : Irreducible p) (k : ℕ) :
     count p (a ^ k).factors = k * count p a.factors := by
   induction' k with n h
@@ -1697,12 +1697,12 @@ theorem count_pow [Nontrivial α] [DecidableEq (Associates α)] {a : Associates 
   · rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h]
     ring
 
-theorem dvd_count_pow [Nontrivial α] [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0)
+theorem dvd_count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
     {p : Associates α} (hp : Irreducible p) (k : ℕ) : k ∣ count p (a ^ k).factors := by
   rw [count_pow ha hp]
   apply dvd_mul_right
 
-theorem is_pow_of_dvd_count [DecidableEq (Associates α)] {a : Associates α}
+theorem is_pow_of_dvd_count {a : Associates α}
     (ha : a ≠ 0) {k : ℕ} (hk : ∀ p : Associates α, Irreducible p → k ∣ count p a.factors) :
     ∃ b : Associates α, a = b ^ k := by
   nontriviality α
@@ -1721,7 +1721,7 @@ theorem is_pow_of_dvd_count [DecidableEq (Associates α)] {a : Associates α}
 
 /-- The only divisors of prime powers are prime powers. See `eq_pow_find_of_dvd_irreducible_pow`
 for an explicit expression as a p-power (without using `count`). -/
-theorem eq_pow_count_factors_of_dvd_pow [DecidableEq (Associates α)] {p a : Associates α}
+theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α}
     (hp : Irreducible p) {n : ℕ} (h : a ∣ p ^ n) : a = p ^ p.count a.factors := by
   nontriviality α
   have hph := pow_ne_zero n hp.ne_zero
@@ -1738,7 +1738,7 @@ theorem eq_pow_count_factors_of_dvd_pow [DecidableEq (Associates α)] {p a : Ass
   · rw [h, count_self hp, mul_one]
   · rw [count_eq_zero_of_ne hq hp h, mul_zero, eq_zero_of_ne q hq h]
 
-theorem count_factors_eq_find_of_dvd_pow [DecidableEq (Associates α)] {a p : Associates α}
+theorem count_factors_eq_find_of_dvd_pow {a p : Associates α}
     (hp : Irreducible p) [∀ n : ℕ, Decidable (a ∣ p ^ n)] {n : ℕ} (h : a ∣ p ^ n) :
     @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩ = p.count a.factors := by
   apply le_antisymm
