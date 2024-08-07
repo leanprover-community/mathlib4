@@ -283,8 +283,9 @@ inductive StructuralAtom : Type
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
 def structuralAtom? (e : Expr) : MonoidalM (Option StructuralAtom) := do
-  match e.getAppFnArgs with
-  | (``Iso.hom, #[_, _, _, _, η]) =>
+  match (← whnfR e) with
+  -- whnfR version of `| (``Iso.hom, #[_, _, _, _, η]) =>`
+  | .proj ``Iso 0 η =>
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
       return some <| .associator (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
@@ -293,7 +294,8 @@ def structuralAtom? (e : Expr) : MonoidalM (Option StructuralAtom) := do
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
       return some <| .rightUnitor (← toMor₁ f)
     | _ => return none
-  | (``Iso.inv, #[_, _, _, _, η]) =>
+  -- whnfR version of `| (``Iso.inv, #[_, _, _, _, η]) =>`
+  | .proj ``Iso 1 η =>
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
       return some <| .associatorInv (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
@@ -933,10 +935,11 @@ end
 
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
 partial def eval (e : Expr) : MonoidalM Result := do
+  let e ← instantiateMVars e
   if let .some α ← structuralAtom? e then
     return ⟨.nil <| .atom α, ← mkEqRefl (← α.e)⟩
   else
-    match e.getAppFnArgs with
+    match (← whnfR e).getAppFnArgs with
     | (``CategoryStruct.id, #[_, _, f]) =>
       return ⟨.nil (.id (← toMor₁ f)), ← mkEqRefl (← mkId f)⟩
     | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>

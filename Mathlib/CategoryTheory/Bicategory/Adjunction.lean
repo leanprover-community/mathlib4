@@ -221,7 +221,7 @@ theorem right_triangle_of_left_triangle (h : leftZigzag η.hom ε.hom = (λ_ f).
   rw [← cancel_epi (rightZigzag η.hom ε.hom ≫ (λ_ g).hom ≫ (ρ_ g).inv)]
   calc
     _ = rightZigzag η.hom ε.hom ⊗≫ rightZigzag η.hom ε.hom := by
-      dsimp [rightZigzag]; bicategory_nf; dsimp; coherence
+      dsimp [rightZigzag]; coherence
     _ = rightZigzag η.hom ε.hom := rightZigzag_idempotent_of_left_triangle _ _ h
     _ = _ := by simp
 
