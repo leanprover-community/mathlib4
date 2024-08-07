@@ -3,6 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Data.List.Lemmas
 import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
@@ -1239,6 +1240,142 @@ theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
   intros e
   rw [edges_transfer]
   apply edges_subset_edgeSet p
+
+end Walk
+
+namespace Walk
+
+open Classical
+variable {G}
+
+noncomputable def fromList {l : List V} (ne : l ≠ []) (hl : l.Chain' (fun u v => G.Adj u v)) :
+    G.Walk (l.head ne) (l.getLast ne) :=
+  match l with
+  | [] => by simp at ne
+  | a :: l' =>
+    if h : l' = [] then
+      (nil : G.Walk a a).copy (by simp) (by simp [h])
+    else cons
+      (show G.Adj a (l'.head h) by
+        rw [List.chain'_cons'] at hl; apply hl.1; simp [List.head?_eq_head h])
+      (fromList h
+        (by rw [List.chain'_cons'] at hl; exact hl.2) |>.copy rfl
+        (by conv_lhs =>
+          simp (config := {singlePass := true}) only [← List.tail_cons (a := a) (as := l')]
+          rw [List.getLast_tail]))
+
+def fromList_support {l : List V} (ne : l ≠ []) (hl : l.Chain' (fun u v => G.Adj u v)) :
+    (fromList ne hl).support = l := by
+  induction l with
+  | nil => simp at ne
+  | cons a l' ih =>
+    simp [fromList]
+    split_ifs with l'_ne
+    · simp [l'_ne]
+    · simpa using ih l'_ne _
+
+lemma firstDart_mem_darts {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) :
+    p.firstDart hp ∈ p.darts := by
+  induction p <;> simp [Walk.firstDart, Walk.sndOfNotNil, Walk.notNilRec] at hp |-
+
+theorem darts_getElem_fst
+    {u v : V} {p : G.Walk u v} (i : ℕ) (hi : i < p.length) :
+    (p.darts[i]'(by simpa)).fst = p.support[i]'(by simp; omega) := by
+  induction p generalizing i with
+  | nil => simp at hi
+  | @cons u' v' w' adj tail ih =>
+    simp at hi
+    by_cases h : i = 0
+    · subst h; simp
+    · simpa (config := {singlePass := true}) [show i = i - 1 + 1 by omega]
+        using ih (i - 1) (by omega)
+
+lemma darts_getElem_fst_eq_support_tail
+    {u v} {p : G.Walk u v} (i : ℕ) (hi : 0 < i ∧ i < p.length) :
+    (p.darts[i]'(by simp; omega)).fst = p.support.tail[i - 1]'(by simp; omega) := by
+  simp only [← List.drop_one]
+  rw [← List.getElem_drop, p.darts_getElem_fst]
+  simp only [show 1 + (i - 1) = i by omega]
+  exact hi.2
+  simp; omega
+
+theorem darts_getElem_snd_eq_support_tail
+    {u v : V} {p : G.Walk u v} (i : ℕ) (h : i < p.length) :
+    (p.darts[i]'(by simpa)).snd = p.support.tail[i]'(by simpa) := by
+  simp [← p.map_snd_darts]
+
+theorem darts_getElem_snd
+    {u v : V} {p : G.Walk u v} (i : ℕ) (hi : i < p.length) :
+    (p.darts[i]'(by simpa)).snd = p.support[i + 1]'(by simpa) := by
+  rw [darts_getElem_snd_eq_support_tail i hi]
+  simp only [← List.drop_one]
+  rw [← List.getElem_drop]
+  congr 1
+  rw [add_comm]
+  simp; omega
+
+lemma support_getElem_eq_getVert {u v} {p : G.Walk u v} {i} (hi : i < p.length + 1) :
+    p.support[i]'(by simpa using hi) = p.getVert i := by
+  induction p generalizing i with
+  | nil => simp [Walk.getVert]
+  | cons v p' ih =>
+    cases' i with j
+    · simp
+    · simp [Walk.getVert] at hi
+      simpa [Walk.getVert] using ih (by omega)
+
+lemma darts_getElem_zero {u v} {p : G.Walk u v} (hi : 0 < p.length) :
+    (p.darts[0]'(by simp; omega)).fst = u := by
+  induction p with
+  | nil => simp at hi
+  | @cons u' v' w' adj tail _ => simp
+
+@[simp] lemma support_head {u v : V} {p : G.Walk u v} : p.support.head (by simp) = u := by
+  induction p <;> simp
+
+@[simp] lemma support_tail_ne_nil {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
+    p.support.tail ≠ [] := by
+  cases p <;> simp at hp |-
+
+@[simp] lemma support_getLast {u v : V} {p : G.Walk u v} :
+    p.support.getLast (by simp) = v := by
+  have : p.support.getLast (by simp) = p.reverse.support.head (by simp) := by
+    simp [List.head_reverse]
+  simp only [support_head, this]
+
+lemma sum_takeUntil_dropUntil_length {u v w : V} {p : G.Walk u v} (hw : w ∈ p.support) :
+    (p.takeUntil w hw).length + (p.dropUntil w hw).length = p.length := by
+  have := congr_arg (·.length) (p.take_spec hw)
+  simpa only [length_append] using this
+
+@[simp] lemma rotate_length_eq {u v : V} {c : G.Walk u u} (hv : v ∈ c.support) :
+    (c.rotate hv).length = c.length := by
+  have : (c.rotate hv).edges ~r c.edges := by apply rotate_edges
+  simpa only [← length_edges] using this.perm.length_eq
+
+lemma rotate_Nil_iff {u v : V} {c : G.Walk u u} (hv : v ∈ c.support) :
+    (c.rotate hv).Nil ↔ c.Nil := by
+  simp only [nil_iff_length_eq, rotate_length_eq hv]
+
+lemma prev_unique {u v : V} {c : G.Walk u v} {d₁ d₂ : G.Dart} (nodup : c.support.tail.Nodup)
+    (hd₁ : d₁ ∈ c.darts) (hd₂ : d₂ ∈ c.darts) (eq : d₁.snd = d₂.snd) :
+    d₁.fst = d₂.fst := by
+  by_contra h
+  have ne : d₁ ≠ d₂ := by
+    contrapose h
+    simp at h |-
+    congr
+  exact ne $ List.inj_on_of_nodup_map (c.map_snd_darts ▸ nodup) hd₁ hd₂ eq
+
+lemma next_unique {u v : V} {c : G.Walk u v} (nodup : c.support.dropLast.Nodup)
+    {d₁ d₂ : G.Dart} (hd₁ : d₁ ∈ c.darts) (hd₂ : d₂ ∈ c.darts) (eq : d₁.fst = d₂.fst) :
+    d₁.snd = d₂.snd := by
+  by_contra h
+  have ne : d₁ ≠ d₂ := by
+    contrapose h
+    simp at h |-
+    congr
+  exact ne $ List.inj_on_of_nodup_map (c.map_fst_darts ▸ nodup) hd₁ hd₂ eq
 
 end Walk
 
