@@ -187,8 +187,6 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
   have hacard := le_iff_lt_or_eq.mp ha.2.1
   tauto
 
-variable (σ : Type*) [Fintype σ] (R : Type*) [CommRing R]
-
 private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetCard k univ) :
     ∑ j ∈ A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i ∈ A, X i : MvPolynomial σ R) := by
   simp [weight, mem_powersetCard_univ.mp h, mul_assoc]
