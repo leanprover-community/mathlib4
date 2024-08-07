@@ -188,9 +188,8 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel 
     exact fun _ _ ↦ pairwise_disjoint_supp_connectedComponent _ hxy
     )]
   simp only [Set.toFinset_card]
-  rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
-
-  rw [Finset.filter_congr (by
+  rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset,
+    Finset.filter_congr (by
     intro x _
     constructor <;> intro h
     · have := Odd.pos h
@@ -205,23 +204,9 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel 
     · haveI : Nonempty (x.supp ⊆ c'.supp) := Nonempty.intro h.1
       simp_rw [Set.iUnion_const, Fintype.card_eq_nat_card]
       exact h.2
-
-    : ∀ x ∈ (Finset.univ : Finset G.ConnectedComponent), Odd (Fintype.card ↑(⋃ (_ : x.supp ⊆ c'.supp), x.supp)) ↔ (x ∈ {c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp)}))]
-
-lemma ConnectedComponent.top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
-    c.supp = (Set.univ : Set V) := by
-  have ⟨w, hw⟩ := c.exists_rep
-  ext v
-  simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
-  apply SimpleGraph.ConnectedComponent.sound
-  exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
-
-instance [IsEmpty V] : IsEmpty (ConnectedComponent G) := by
-  by_contra! hc
-  rw [@not_isEmpty_iff] at hc
-  obtain ⟨v, _⟩ := (Classical.inhabited_of_nonempty hc).default.exists_rep
-  exact IsEmpty.false v
-
+    : ∀ x ∈ (Finset.univ : Finset G.ConnectedComponent),
+      Odd (Fintype.card ↑(⋃ (_ : x.supp ⊆ c'.supp), x.supp)) ↔
+      (x ∈ {c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp)}))]
 
 lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔
     Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
@@ -231,13 +216,13 @@ lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔
     have : Nat.card ((⊤ : SimpleGraph V).connectedComponentMk v).supp = Nat.card V := by
       simpa using (set_fintype_card_eq_univ_iff _).mpr
         ((⊤ : SimpleGraph V).connectedComponentMk v).top_supp_eq_univ
-    rw [← this, ((⊤ : SimpleGraph V).connectedComponentMk v).odd_card_supp_iff_odd_subcomponents _ (OrderTop.le_top G)]
+    rw [← this, ((⊤ : SimpleGraph V).connectedComponentMk v).odd_card_supp_iff_odd_subcomponents _
+      (OrderTop.le_top G)]
     simp [ConnectedComponent.top_supp_eq_univ]
   else
     rw [@not_nonempty_iff] at h
-    simp only [Nat.card_of_isEmpty, Nat.card_eq_fintype_card, Fintype.card_eq_zero, Nat.odd_iff_not_even, even_zero,
-      not_true_eq_false, Set.setOf_false, Fintype.card_ofIsEmpty]
-
+    simp only [Nat.card_of_isEmpty, Nat.card_eq_fintype_card, Fintype.card_eq_zero,
+      Nat.odd_iff_not_even, even_zero, not_true_eq_false, Set.setOf_false, Fintype.card_ofIsEmpty]
 
 end Finite
 

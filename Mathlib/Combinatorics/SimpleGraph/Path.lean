@@ -775,6 +775,12 @@ namespace ConnectedComponent
 instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
   ⟨G.connectedComponentMk default⟩
 
+instance isEmpty [IsEmpty V] : IsEmpty (ConnectedComponent G) := by
+  by_contra! hc
+  rw [@not_isEmpty_iff] at hc
+  obtain ⟨v, _⟩ := (Classical.inhabited_of_nonempty hc).default.exists_rep
+  exact IsEmpty.false v
+
 @[elab_as_elim]
 protected theorem ind {β : G.ConnectedComponent → Prop}
     (h : ∀ v : V, β (G.connectedComponentMk v)) (c : G.ConnectedComponent) : β c :=
@@ -977,6 +983,14 @@ lemma biUnion_supp_eq_supp {G G' : SimpleGraph V} (h : G ≤ G') (c' : Connected
   use G.connectedComponentMk v
   use c'.connectedComponentMk_supp_subset_supp h hv
   simp only [mem_supp_iff]
+
+lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
+    c.supp = (Set.univ : Set V) := by
+  have ⟨w, hw⟩ := c.exists_rep
+  ext v
+  simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
+  apply SimpleGraph.ConnectedComponent.sound
+  exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
 
 end ConnectedComponent
 
