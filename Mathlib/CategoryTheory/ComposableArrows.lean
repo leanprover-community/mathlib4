@@ -917,6 +917,7 @@ def Functor.mapComposableArrows :
     ComposableArrows C n ⥤ ComposableArrows D n :=
   (whiskeringRight _ _ _).obj G
 
+suppress_compilation in
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` induced by `G : C ⥤ D`
 commutes with `opEquivalence`. -/
 def Functor.mapComposableArrowsOpIso :
