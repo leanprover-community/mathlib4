@@ -49,7 +49,7 @@ noncomputable section
 
 open MvPolynomial Function
 
-variable {p : ℕ} {R S T : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
+variable {p : ℕ} {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable {α : Type*} {β : Type*}
 
 local notation "𝕎" => WittVector p
@@ -76,9 +76,6 @@ theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 
--- Porting note: using `(x y : 𝕎 R)` instead of `(x y : WittVector p R)` produced sorries.
-variable (f : R →+* S) (x y : WittVector p R)
-
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
 -- porting note: a very crude port.
 macro "map_fun_tac" : tactic => `(tactic| (
@@ -91,6 +88,10 @@ macro "map_fun_tac" : tactic => `(tactic| (
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
     fin_cases i <;> rfl))
+
+variable [Fact p.Prime]
+-- Porting note: using `(x y : 𝕎 R)` instead of `(x y : WittVector p R)` produced sorries.
+variable (f : R →+* S) (x y : WittVector p R)
 
 --  and until `pow`.
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.
@@ -158,14 +159,15 @@ end Tactic
 
 section GhostFun
 
-variable (x y : WittVector p R)
-
 -- The following lemmas are not `@[simp]` because they will be bundled in `ghostMap` later on.
 
 @[local simp]
 theorem matrix_vecEmpty_coeff {R} (i j) :
     @coeff p R (Matrix.vecEmpty i) j = (Matrix.vecEmpty i : ℕ → R) j := by
   rcases i with ⟨_ | _ | _ | _ | i_val, ⟨⟩⟩
+
+variable [Fact p.Prime]
+variable (x y : WittVector p R)
 
 private theorem ghostFun_zero : ghostFun (0 : 𝕎 R) = 0 := by
   ghost_fun_tac 0, ![]
@@ -231,6 +233,8 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
     have := bind₁_xInTermsOfW_wittPolynomial p R n
     apply_fun aeval x at this
     simpa only [aeval_bind₁, aeval_X, ghostFun, aeval_wittPolynomial]
+
+variable [Fact p.Prime]
 
 @[local instance]
 private def comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
