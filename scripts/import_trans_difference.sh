@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
  : <<'BASH_MODULE_DOCS'
-`scripts/import_trans_difference.sh <opt_commit1> <opt_commit2>` outputs a full diff of the
-change of transitive imports in all the files between `<opt_commit1>` and `<opt_commit2>`.
+`scripts/import_trans_difference.sh <opt all> <opt_commit1> <opt_commit2>` outputs a full diff
+of the change of transitive imports in all the files between `<opt_commit1>` and `<opt_commit2>`.
 
-If the commits are not provided, then it uses the current commit as `commit1` and
+The optional flag `<opt all>` must either be `all` or not be passed.
+Without `all`, the script only displays the difference if the output does not exceed 200 lines.
+
+If the commits are not provided, then the script uses the current commit as `commit1` and
 current `master` as `commit2`.
 
 The output is of the form
@@ -17,6 +20,14 @@ The output is of the form
 
 with collapsible tabs for file entries with at least 3 files.
 BASH_MODULE_DOCS
+
+# `all=1` is the flag to print all import changes, without capping at 200
+all=0
+if [ "${1}" == "all" ]
+then
+  all=1
+  shift
+fi
 
 if [ -n "${1}" ]
 then
@@ -55,7 +66,7 @@ git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
-  (awk -F, '{ diff[$1]+=$2 } END {
+  (awk -F, -v all="${all}" '{ diff[$1]+=$2 } END {
     con=0
     for(fil in diff) {
       if(!(diff[fil] == 0)) {
@@ -64,7 +75,9 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         reds[diff[fil]]=reds[diff[fil]]" `"fil"`"
       }
     }
-    if (200 <= con) { printf("There are %s files with changed transitive imports: this is too many to display!\n", con) } else {
+    if ((all == 0) && (200 <= con)) {
+      printf("There are %s files with changed transitive imports: this is too many to display!\n", con)
+    } else {
       for(x in reds) {
         if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
