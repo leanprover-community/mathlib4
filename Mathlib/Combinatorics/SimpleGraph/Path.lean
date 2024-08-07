@@ -969,15 +969,14 @@ lemma connectedComponentMk_supp_subset_supp {G'} {v : V} (h : G ≤ G') (c' : G'
   exact hc'
 
 lemma biUnion_supp_eq_supp {G G' : SimpleGraph V} (h : G ≤ G') (c' : ConnectedComponent G') :
-    ⋃ (c : ConnectedComponent G) (hc : c.supp ⊆ c'.supp}, c.1.supp = c'.supp := by
+    ⋃ (c : ConnectedComponent G) (_ : c.supp ⊆ c'.supp), c.supp = c'.supp := by
   ext v
   simp_rw [Set.mem_iUnion]
-  refine ⟨fun ⟨i, hi⟩ ↦ i.2 hi, ?_⟩
+  refine ⟨fun ⟨_, ⟨hi, hi'⟩⟩ ↦ hi hi', ?_⟩
   intro hv
-  use ⟨G.connectedComponentMk v, by
-    simp only [Set.le_eq_subset, Set.mem_setOf_eq]
-    exact c'.connectedComponentMk_supp_subset_supp h hv⟩
-  rfl
+  use G.connectedComponentMk v
+  use c'.connectedComponentMk_supp_subset_supp h hv
+  simp only [mem_supp_iff]
 
 end ConnectedComponent
 

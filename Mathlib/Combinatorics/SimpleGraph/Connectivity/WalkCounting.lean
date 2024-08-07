@@ -191,7 +191,11 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel 
   rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset, Set.filter_mem_univ_eq_toFinset,
     Set.toFinset_card]
   haveI : DecidablePred (fun c : ConnectedComponent G ↦ c.supp ⊆ c'.supp) := Classical.decPred _
-  simp_rw [(c'.union_supp_eq_supp h).symm]
+  haveI : Fintype (⋃ (c : ConnectedComponent G) (_ : c.supp ⊆ c'.supp), c.supp) := by
+    apply Set.fintypeiUnion
+  conv =>
+    lhs
+    rw [(c'.biUnion_supp_eq_supp h).symm]
   rw [← @Set.toFinset_card,
     @Set.toFinset_iUnion V {c : ConnectedComponent G | c.supp ⊆ c'.supp} _ _ (fun c => c.1.supp),
     Finset.card_biUnion (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr
