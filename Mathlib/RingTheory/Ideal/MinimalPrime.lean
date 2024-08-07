@@ -36,7 +36,7 @@ variable {R S : Type*} [CommSemiring R] [CommSemiring S] (I J : Ideal R)
 
 /-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
 protected def Ideal.minimalPrimes : Set (Ideal R) :=
-  minimals (· ≤ ·) { p | p.IsPrime ∧ I ≤ p }
+  {p | Minimal (fun q ↦ q.IsPrime ∧ I ≤ q) p}
 
 variable (R) in
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
@@ -44,8 +44,8 @@ This is defined as `Ideal.minimalPrimes ⊥`. -/
 def minimalPrimes : Set (Ideal R) :=
   Ideal.minimalPrimes ⊥
 
-lemma minimalPrimes_eq_minimals : minimalPrimes R = minimals (· ≤ ·) (setOf Ideal.IsPrime) :=
-  congr_arg (minimals (· ≤ ·)) (by simp)
+lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} :=
+  congr_arg Minimal (by simp)
 
 variable {I J}
 
@@ -217,8 +217,8 @@ include hMin
 theorem _root_.IsLocalization.AtPrime.prime_unique_of_minimal {S} [CommSemiring S] [Algebra R S]
     [IsLocalization.AtPrime S I] {J K : Ideal S} [J.IsPrime] [K.IsPrime] : J = K :=
   haveI : Subsingleton {i : Ideal R // i.IsPrime ∧ i ≤ I} := ⟨fun i₁ i₂ ↦ Subtype.ext <| by
-    rw [minimalPrimes_eq_minimals] at hMin
-    rw [← eq_of_mem_minimals hMin i₁.2.1 i₁.2.2, ← eq_of_mem_minimals hMin i₂.2.1 i₂.2.2]⟩
+    rw [minimalPrimes_eq_minimals, Set.mem_setOf] at hMin
+    rw [hMin.eq_of_le i₁.2.1 i₁.2.2, hMin.eq_of_le i₂.2.1 i₂.2.2]⟩
   Subtype.ext_iff.mp <| (IsLocalization.AtPrime.orderIsoOfPrime S I).injective
     (a₁ := ⟨J, ‹_›⟩) (a₂ := ⟨K, ‹_›⟩) (Subsingleton.elim _ _)
 

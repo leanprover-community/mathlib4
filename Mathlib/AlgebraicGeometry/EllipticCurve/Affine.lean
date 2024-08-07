@@ -427,8 +427,7 @@ section Field
 
 /-! ### Group operation polynomials over a field -/
 
-open scoped Classical
-
+open Classical in
 /-- The slope of the line through two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`.
 If $x_1 \ne x_2$, then this line is the secant of `W` through $(x_1, y_1)$ and $(x_2, y_2)$,
 and has slope $(y_1 - y_2) / (x_1 - x_2)$. Otherwise, if $y_1 \ne -y_1 - a_1x_1 - a_3$,
@@ -640,10 +639,9 @@ lemma neg_some {x y : R} (h : W.Nonsingular x y) : -some h = some (nonsingular_n
 instance : InvolutiveNeg W.Point :=
   ⟨by rintro (_ | _) <;> simp [zero_def]; ring1⟩
 
-open scoped Classical
-
 variable {F : Type u} [Field F] {W : Affine F}
 
+open Classical in
 /-- The addition of two nonsingular rational points on `W`.
 
 Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/

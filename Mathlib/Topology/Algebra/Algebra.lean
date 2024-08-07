@@ -27,10 +27,7 @@ TODO: add continuous algebra isomorphisms.
 
 -/
 
-open scoped Classical
-open Set TopologicalSpace Algebra BigOperators
-
-open scoped Classical
+open Set TopologicalSpace Algebra
 
 universe u v w
 

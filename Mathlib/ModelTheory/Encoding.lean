@@ -8,23 +8,27 @@ import Mathlib.Logic.Small.List
 import Mathlib.ModelTheory.Syntax
 import Mathlib.SetTheory.Cardinal.Ordinal
 
-/-! # Encodings and Cardinality of First-Order Syntax
+/-!
+# Encodings and Cardinality of First-Order Syntax
 
 ## Main Definitions
-* `FirstOrder.Language.Term.encoding` encodes terms as lists.
-* `FirstOrder.Language.BoundedFormula.encoding` encodes bounded formulas as lists.
+
+- `FirstOrder.Language.Term.encoding` encodes terms as lists.
+- `FirstOrder.Language.BoundedFormula.encoding` encodes bounded formulas as lists.
 
 ## Main Results
-* `FirstOrder.Language.Term.card_le` shows that the number of terms in `L.Term α` is at most
-`max ℵ₀ # (α ⊕ Σ i, L.Functions i)`.
-* `FirstOrder.Language.BoundedFormula.card_le` shows that the number of bounded formulas in
-`Σ n, L.BoundedFormula α n` is at most
-`max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card)`.
+
+- `FirstOrder.Language.Term.card_le` shows that the number of terms in `L.Term α` is at most
+  `max ℵ₀ # (α ⊕ Σ i, L.Functions i)`.
+- `FirstOrder.Language.BoundedFormula.card_le` shows that the number of bounded formulas in
+  `Σ n, L.BoundedFormula α n` is at most
+  `max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card)`.
 
 ## TODO
-* `Primcodable` instances for terms and formulas, based on the `encoding`s
-* Computability facts about term and formula operations, to set up a computability approach to
-incompleteness
+
+- `Primcodable` instances for terms and formulas, based on the `encoding`s
+- Computability facts about term and formula operations, to set up a computability approach to
+  incompleteness
 
 -/
 

@@ -11,19 +11,18 @@ import Mathlib.Algebra.Field.MinimalAxioms
 import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
-
 # The First Order Theory of Fields
 
 This file defines the first order theory of fields as a theory over the language of rings.
 
 ## Main definitions
-* `FirstOrder.Language.Theory.field` : the theory of fields
-* `FirstOrder.Model.fieldOfModelField` : a model of the theory of fields on a type `K` that
-  already has ring operations.
-* `FirstOrder.Model.compatibleRingOfModelField` : shows that the ring operations on `K` given
-by `fieldOfModelField` are compatible with the ring operations on `K` given by the
-`Language.ring.Structure` instance.
 
+- `FirstOrder.Language.Theory.field` : the theory of fields
+- `FirstOrder.Model.fieldOfModelField` : a model of the theory of fields on a type `K` that
+  already has ring operations.
+- `FirstOrder.Model.compatibleRingOfModelField` : shows that the ring operations on `K` given
+  by `fieldOfModelField` are compatible with the ring operations on `K` given by the
+  `Language.ring.Structure` instance.
 -/
 
 variable {K : Type*}

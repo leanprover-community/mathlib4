@@ -40,7 +40,7 @@ run_cmd Elab.Command.liftTermElabM <|
 /--
 error: failed to synthesize
   ToExpr (Bool → Nat)
-Additional diagnostic information may be available by using the `set_option diagnostics true` command.
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 inductive Bar

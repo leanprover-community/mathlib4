@@ -131,10 +131,9 @@ connection API to do most of the work.
 uniform convergence
 -/
 
-
 noncomputable section
 
-open scoped Classical Topology Uniformity
+open scoped Topology Uniformity
 open Set Filter
 
 section TypeAlias
