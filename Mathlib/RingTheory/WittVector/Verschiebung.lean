@@ -49,13 +49,13 @@ theorem verschiebungFun_coeff_succ (x : 𝕎 R) (n : ℕ) :
   rfl
 
 @[ghost_simps]
-theorem ghostComponent_zero_verschiebungFun [hp : Fact p.Prime]  (x : 𝕎 R) :
+theorem ghostComponent_zero_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) :
     ghostComponent 0 (verschiebungFun x) = 0 := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.range_one, Finset.sum_singleton,
     verschiebungFun_coeff_zero, pow_zero, pow_zero, pow_one, one_mul]
 
 @[ghost_simps]
-theorem ghostComponent_verschiebungFun [hp : Fact p.Prime]  (x : 𝕎 R) (n : ℕ) :
+theorem ghostComponent_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
   rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
