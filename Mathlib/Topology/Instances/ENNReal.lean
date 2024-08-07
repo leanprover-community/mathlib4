@@ -1543,8 +1543,7 @@ lemma isCoboundedUnder_toNNReal_of_liminf_ne_top {xs : ι → ℝ≥0∞} (limin
 lemma liminf_toReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_eq_top : F.liminf xs = ∞) :
     F.liminf (fun i ↦ (xs i).toReal) = 0 := by
   by_cases ev_ne_top : ∀ᶠ i in F, xs i ≠ ∞
-  · simp only [liminf, limsInf, sSup, eventually_map]
-    have not_bdd : ¬ BddAbove {a | ∀ᶠ i in F, a ≤ (xs i).toReal} := by
+  · have not_bdd : ¬ BddAbove {a | ∀ᶠ i in F, a ≤ (xs i).toReal} := by
       rw [not_bddAbove_iff]
       intro x
       refine ⟨max (x + 1) 0, ?_⟩
@@ -1553,16 +1552,15 @@ lemma liminf_toReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_eq
       filter_upwards [eventually_lt_of_lt_liminf
                         (show ENNReal.ofReal (max (x + 1) 0) < liminf xs F by simp [liminf_eq_top]),
                       ev_ne_top] with i hi hi'
-      convert (toReal_le_toReal top_ne_ofReal.symm hi').mpr hi.le
-      simp
-    simp [not_bdd]
+      simpa using (toReal_le_toReal top_ne_ofReal.symm hi').mpr hi.le
+    simp [liminf, limsInf, sSup, not_bdd]
   · simp only [ne_eq, not_eventually, Decidable.not_not] at ev_ne_top
     by_cases bdd : BddAbove {a | ∀ᶠ i in F, a ≤ (xs i).toReal}
     · apply le_antisymm
       · exact liminf_le_of_frequently_le (ev_ne_top.mono fun i hi ↦ by simp [hi]) ⟨0, by simp⟩
       · apply le_liminf_of_le ?_ (eventually_of_forall fun i ↦ toReal_nonneg)
         obtain ⟨b, hb⟩ := bdd
-        apply IsCobounded.of_frequently_le (u := b+1)
+        apply IsCobounded.of_frequently_le (u := b + 1)
         by_contra con
         simp only [not_frequently, not_le] at con
         linarith [hb <| con.mono fun i hi ↦ hi.le]
@@ -1589,10 +1587,10 @@ lemma liminf_toNNReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_
           from Monotone.map_liminf_of_continuousAt Real.toNNReal_mono _
                 continuous_real_toNNReal.continuousAt cobdd ⟨0, by simp⟩]
     simp [liminf_toReal_eq_zero_of_liminf_eq_top liminf_eq_top]
-  · simp only [IsCoboundedUnder, ge_iff_le, isCobounded_ge_iff_frequently_le, frequently_map,
-               not_exists, not_frequently, not_le] at cobdd
-    refine NNReal.sSup_of_not_bddAbove ?_
+  · refine NNReal.sSup_of_not_bddAbove ?_
     rw [not_bddAbove_iff]
+    simp only [IsCoboundedUnder, ge_iff_le, isCobounded_ge_iff_frequently_le, frequently_map,
+               not_exists, not_frequently, not_le] at cobdd
     exact fun x ↦ ⟨x + 1, by filter_upwards [cobdd (x + 1)] with i hi using hi.le, lt_add_one x⟩
 
 lemma limsup_toNNReal_eq_zero_of_limsup_eq_top {xs : ι → ℝ≥0∞}
@@ -1635,8 +1633,7 @@ lemma liminf_toReal_eq {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs i
           apply ((frequently_lt_of_liminf_lt ⟨∞, by simp⟩ lt_b).and_eventually ev_ne_top).mono
           exact fun i hi ↦ (toReal_le_toReal hi.2 b_ne_top).mpr hi.1.le]
   simpa using Monotone.map_liminf_of_continuousAt (F := F) (f := fun z ↦ min z b.toReal)
-      (fun x y hxy ↦ by simp [hxy]) _
-      (Continuous.min continuous_id continuous_const).continuousAt
+      (fun x y hxy ↦ by simp [hxy]) _ (Continuous.min continuous_id continuous_const).continuousAt
       (isCoboundedUnder_toReal_of_liminf_ne_top infty) ⟨0, by simp⟩
 
 /-- If `xs : ι → ℝ≥0∞` is eventually finite, then we have
@@ -1645,11 +1642,8 @@ lemma limsup_toReal_eq {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs i
     F.limsup (fun i ↦ (xs i).toReal) = (F.limsup xs).toReal := by
   by_cases infty : F.limsup xs = ∞
   · simp [infty, limsup_toReal_eq_zero_of_limsup_eq_top infty ev_ne_top]
-  let b := F.limsup xs + 1
-  have b_lt_top : b < ∞ := by simpa [b] using lt_top_iff_ne_top.mpr infty
-  have ev_lt_b := eventually_lt_of_limsup_lt <| lt_add_right infty one_ne_zero
-  rw [limsup_toReal_eq_of_eventually_le b_lt_top.ne]
-  filter_upwards [ev_lt_b] with i lt_b using lt_b.le
+  rw [limsup_toReal_eq_of_eventually_le (show F.limsup xs + 1 ≠ ∞ by simpa using infty)]
+  filter_upwards [eventually_lt_of_limsup_lt <| lt_add_right infty one_ne_zero] with i h using h.le
 
 /-- If `xs : ι → ℝ≥0∞` is eventually finite, then we have
 `liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
