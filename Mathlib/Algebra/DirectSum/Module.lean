@@ -54,7 +54,6 @@ theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :
   DFinsupp.smul_apply _ _ _
 
 variable (R ι M)
-variable [DecidableEq ι]
 
 section DecEqIota
 
