@@ -212,6 +212,7 @@ theorem liftPropWithinAt_self_target {f : M → H'} :
 
 namespace LocalInvariantProp
 
+section
 variable (hG : G.LocalInvariantProp G' P)
 
 /-- `LiftPropWithinAt P f s x` is equivalent to a definition where we restrict the set we are
@@ -396,6 +397,8 @@ theorem liftPropOn_congr (h : LiftPropOn P g s) (h₁ : ∀ y ∈ s, g' y = g y)
 
 theorem liftPropOn_congr_iff (h₁ : ∀ y ∈ s, g' y = g y) : LiftPropOn P g' s ↔ LiftPropOn P g s :=
   ⟨fun h ↦ hG.liftPropOn_congr h fun y hy ↦ (h₁ y hy).symm, fun h ↦ hG.liftPropOn_congr h h₁⟩
+
+end
 
 theorem liftPropWithinAt_mono_of_mem
     (mono_of_mem : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, s ∈ 𝓝[t] x → P f s x → P f t x)

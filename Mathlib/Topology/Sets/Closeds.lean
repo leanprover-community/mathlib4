@@ -310,8 +310,6 @@ instance : BooleanAlgebra (Clopens α) :=
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩
 
-variable [TopologicalSpace β]
-
 instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
   sprod s t := ⟨s ×ˢ t, s.2.prod t.2⟩
 
