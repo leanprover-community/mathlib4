@@ -362,13 +362,13 @@ inductive NormalExpr : Type
 
 /-- The domain of a morphism. -/
 def src (η : Expr) : MonoidalM Mor₁ := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) => toMor₁ f
   | _ => throwError "{η} is not a morphism"
 
 /-- The codomain of a morphism. -/
 def tgt (η : Expr) : MonoidalM Mor₁ := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, _, g]) => toMor₁ g
   | _ => throwError "{η} is not a morphism"
 
@@ -982,7 +982,7 @@ def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
 elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
   let some ctx ← mkContext? e
-    | throwError "{← ppExpr e} is not a morphism"
+    | throwError m!"{e} is not a morphism"
   MonoidalM.run ctx do (← eval e).expr.e
 
 theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
@@ -991,7 +991,7 @@ theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a'
 open Lean Elab Meta Tactic in
 /-- Transform an equality between 2-morphisms into the equality between their normalizations. -/
 def mkEqOfNormalizedEq (e : Expr) : MetaM Expr := do
-  let some (_, e₁, e₂) := (← whnfR <| e).eq?
+  let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| e).eq?
     | throwError "monoidal_nf requires an equality goal"
   let some ctx ← mkContext? e₁
     | throwError "the lhs and rhs must be morphisms"

@@ -245,20 +245,21 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : MonoidalM Expr := 
       mkAppM ``naturality_tensorHom #[η, θ, η_f₁, η_g₁, η_f₂, η_g₂, ih_η, ih_θ]
     | _ => throwError "failed to prove the naturality for {η}"
 
-def pure_coherence (mvarId : MVarId) : MetaM (List MVarId) := mvarId.withContext do
-  let e ← instantiateMVars <| ← mvarId.getType
-  let some (_, η, θ) := (← whnfR e).eq?
-    | throwError "monoidal requires an equality goal"
-  let f ← srcExpr η
-  let g ← tgtExpr η
-  let some ctx ← mkContext? η | throwError "the lhs and rhs must be 2-morphisms"
-  MonoidalM.run ctx do
-    let ⟨_, αf⟩ ← normalize .nil f
-    let ⟨_, αg⟩ ← normalize .nil g
-    let Hη ← naturality .nil η
-    let Hθ ← naturality .nil θ
-    let H ← mkAppM ``of_normalize_eq #[η, θ, αf, αg, Hη, Hθ]
-    mvarId.apply H
+def pure_coherence (mvarId : MVarId) : MetaM (List MVarId) :=
+  mvarId.withContext do
+    let e ← instantiateMVars <| ← mvarId.getType
+    let some (_, η, θ) := (← whnfR e).eq?
+      | throwError "coherence requires an equality goal"
+    let f ← srcExpr η
+    let g ← tgtExpr η
+    let some ctx ← mkContext? η | throwError "the lhs and rhs must be 2-morphisms"
+    MonoidalM.run ctx do
+      let ⟨_, αf⟩ ← normalize .nil f
+      let ⟨_, αg⟩ ← normalize .nil g
+      let Hη ← naturality .nil η
+      let Hθ ← naturality .nil θ
+      let H ← mkAppM ``of_normalize_eq #[η, θ, αf, αg, Hη, Hθ]
+      mvarId.apply H
 
 elab "monoidal_coherence" : tactic => withMainContext do
   replaceMainGoal <| ← pure_coherence <| ← getMainGoal
@@ -272,7 +273,7 @@ theorem mk_eq_of_cons {C : Type u} [CategoryStruct.{v} C]
 
 /-- Transform an equality between 2-morphisms into the equality between their normalizations. -/
 def mkEqOfHom₂ (mvarId : MVarId) : MetaM Expr := do
-  let some (_, e₁, e₂) := (← whnfR <| ← mvarId.getType).eq?
+  let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| ← mvarId.getType).eq?
     | throwError "monoidal requires an equality goal"
   let some c ← mkContext? e₁ | throwError "monoidal requires an equality goal"
   MonoidalM.run c do
@@ -280,35 +281,37 @@ def mkEqOfHom₂ (mvarId : MVarId) : MetaM Expr := do
     let ⟨e₂', p₂⟩ ← eval e₂
     mkAppM ``mk_eq #[e₁, e₂, ← e₁'.e, ← e₂'.e, p₁, p₂]
 
-def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
-  let e ← mvarId.getType
-  let some (_, e₁, e₂) := (← whnfR e).eq? | throwError "monoidal requires an equality goal"
-  match (← whnfR e₁).getAppFnArgs, (← whnfR e₂).getAppFnArgs with
-  | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]) ,
-    (``CategoryStruct.comp, #[_, _, _, _, _, α', η']) =>
-    match (← whnfR η).getAppFnArgs, (← whnfR η').getAppFnArgs with
-    | (``CategoryStruct.comp, #[_, _, _, _, _, η, ηs]),
-      (``CategoryStruct.comp, #[_, _, _, _, _, η', ηs']) =>
-      let pf_α ← mkFreshExprMVar (← mkEq α α')
-      let pf_η  ← mkFreshExprMVar (← mkEq η η')
-      let pf_ηs ← mkFreshExprMVar (← mkEq ηs ηs')
-      let x ← mvarId.apply (← mkAppM ``mk_eq_of_cons #[α, α', η, η', ηs, ηs', pf_α, pf_η, pf_ηs])
-      return x
+def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) :=
+  mvarId.withContext do
+    let e ← instantiateMVars <| ← mvarId.getType
+    let some (_, e₁, e₂) := (← whnfR e).eq? | throwError "monoidal requires an equality goal"
+    match (← whnfR e₁).getAppFnArgs, (← whnfR e₂).getAppFnArgs with
+    | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]) ,
+      (``CategoryStruct.comp, #[_, _, _, _, _, α', η']) =>
+      match (← whnfR η).getAppFnArgs, (← whnfR η').getAppFnArgs with
+      | (``CategoryStruct.comp, #[_, _, _, _, _, η, ηs]),
+        (``CategoryStruct.comp, #[_, _, _, _, _, η', ηs']) =>
+        let pf_α ← mkFreshExprMVar (← mkEq α α')
+        let pf_η  ← mkFreshExprMVar (← mkEq η η')
+        let pf_ηs ← mkFreshExprMVar (← mkEq ηs ηs')
+        let x ← mvarId.apply (← mkAppM ``mk_eq_of_cons #[α, α', η, η', ηs, ηs', pf_α, pf_η, pf_ηs])
+        return x
+      | _, _ => throwError "failed to make a normalized equality for {e}"
     | _, _ => throwError "failed to make a normalized equality for {e}"
-  | _, _ => throwError "failed to make a normalized equality for {e}"
 
-def monoidal (g : MVarId) : MetaM (List MVarId) := g.withContext do
-  let mvarIds ← g.apply (← mkEqOfHom₂ g)
-  let mvarIds' ← repeat' (fun i ↦ ofNormalizedEq i) mvarIds
-  let mvarIds'' ← mvarIds'.mapM fun mvarId => do
-    try
-      mvarId.refl
-      return [mvarId]
-    catch _ =>
+def monoidal (mvarId : MVarId) : MetaM (List MVarId) :=
+  mvarId.withContext do
+    let mvarIds ← mvarId.apply (← mkEqOfHom₂ mvarId)
+    let mvarIds' ← repeat' (fun i ↦ ofNormalizedEq i) mvarIds
+    let mvarIds'' ← mvarIds'.mapM fun mvarId => do
       try
-        pure_coherence mvarId
-      catch _ => return [mvarId]
-  return mvarIds''.join
+        mvarId.refl
+        return [mvarId]
+      catch _ =>
+        try
+          pure_coherence mvarId
+        catch _ => return [mvarId]
+    return mvarIds''.join
 
 /-- Normalize the both sides of an equality. -/
 elab "monoidal" : tactic => withMainContext do

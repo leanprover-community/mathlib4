@@ -44,9 +44,6 @@ variable {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} in
 variable {f : a ⟶ b} {g : b ⟶ c} in
 #guard_expr normalize% 𝟙 (f ≫ g) = 𝟙 (f ≫ g)
 
-variable {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} in
-#check normalize% (α_ f g h).hom
-
 example {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} {i j : a ⟶ d}
     (η : i ⟶ f ≫ (g ≫ h)) (θ : (f ≫ g) ≫ h ⟶ j) :
     η ⊗≫ θ = η ≫ 𝟙 _ ≫ (α_ _ _ _).inv ≫ θ := by

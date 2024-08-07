@@ -282,26 +282,26 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : BicategoryM Expr :
           naturality p η'
     | _ => throwError "failed to prove the naturality for {η}"
 
-def pure_coherence (mvarId : MVarId) : MetaM (List MVarId) := mvarId.withContext do
-  withTraceNode `bicategory (fun _ =>
-      return m!"coherence equality: {← mvarId.getType}") do
-    let e ← instantiateMVars <| ← mvarId.getType
-    let some (_, η, θ) := (← whnfR <| e).eq?
-      | throwError "pure_coherence requires an equality goal"
-    let f ← srcExpr η
-    let g ← tgtExpr η
-    let a ← srcExpr f
-    let some ctx ← mkContext? η
-      | throwError "the lhs and rhs must be 2-morphisms"
-    BicategoryM.run ctx do
-      trace[bicategory] m!"LHS"
-      let ⟨_, η_f⟩ ← normalize (.nil a) f
-      let Hη ← naturality (.nil a) η
-      trace[bicategory] m!"RHS"
-      let ⟨_, η_g⟩ ← normalize (.nil a) g
-      let Hθ ← naturality (.nil a) θ
-      let H ← mkAppM ``of_normalize_eq #[η, θ, η_f, η_g, Hη, Hθ]
-      mvarId.apply H
+def pure_coherence (mvarId : MVarId) : MetaM (List MVarId) :=
+  mvarId.withContext do
+    withTraceNode `bicategory (fun _ =>
+        return m!"coherence equality: {← mvarId.getType}") do
+      let e ← instantiateMVars <| ← mvarId.getType
+      let some (_, η, θ) := (← whnfR e).eq?
+        | throwError "coherence requires an equality goal"
+      let f ← srcExpr η
+      let g ← tgtExpr η
+      let a ← srcExpr f
+      let some ctx ← mkContext? η | throwError "the lhs and rhs must be 2-morphisms"
+      BicategoryM.run ctx do
+        trace[bicategory] m!"LHS"
+        let ⟨_, η_f⟩ ← normalize (.nil a) f
+        let Hη ← naturality (.nil a) η
+        trace[bicategory] m!"RHS"
+        let ⟨_, η_g⟩ ← normalize (.nil a) g
+        let Hθ ← naturality (.nil a) θ
+        let H ← mkAppM ``of_normalize_eq #[η, θ, η_f, η_g, Hη, Hθ]
+        mvarId.apply H
 
 elab "bicategory_coherence" : tactic => withMainContext do
   let g ← getMainGoal
@@ -316,7 +316,7 @@ theorem mk_eq_of_cons {C : Type u} [CategoryStruct.{v} C]
 
 /-- Transform an equality between 2-morphisms into the equality between their normalizations. -/
 def mkEqOfHom₂ (mvarId : MVarId) : MetaM Expr := do
-  let some (_, e₁, e₂) := (← whnfR <| ← mvarId.getType).eq?
+  let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| ← mvarId.getType).eq?
     | throwError "bicategory requires an equality goal"
   let some ctx ← mkContext? e₁
     | throwError "the lhs and rhs must be 2-morphisms"
@@ -326,36 +326,38 @@ def mkEqOfHom₂ (mvarId : MVarId) : MetaM Expr := do
     mkAppM ``mk_eq #[e₁, e₂, ← e₁'.e, ← e₂'.e, p₁, p₂]
 
 def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
-  let e ← mvarId.getType
-  let some (_, e₁, e₂) := (← whnfR e).eq? | throwError "bicategory requires an equality goal"
-  match (← whnfR e₁).getAppFnArgs, (← whnfR e₂).getAppFnArgs with
-  | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]) ,
-    (``CategoryStruct.comp, #[_, _, _, _, _, α', η']) =>
-    match (← whnfR η).getAppFnArgs, (← whnfR η').getAppFnArgs with
-    | (``CategoryStruct.comp, #[_, _, _, _, _, η, ηs]),
-      (``CategoryStruct.comp, #[_, _, _, _, _, η', ηs']) =>
-      let pf_α ← mkFreshExprMVar (← Meta.mkEq α α')
-      let pf_η  ← mkFreshExprMVar (← Meta.mkEq η η')
-      let pf_ηs ← mkFreshExprMVar (← Meta.mkEq ηs ηs')
-      let x ← mvarId.apply (← mkAppM ``mk_eq_of_cons #[α, α', η, η', ηs, ηs', pf_α, pf_η, pf_ηs])
-      return x
+  mvarId.withContext do
+    let e ← instantiateMVars <| ← mvarId.getType
+    let some (_, e₁, e₂) := (← whnfR e).eq? | throwError "bicategory requires an equality goal"
+    match (← whnfR e₁).getAppFnArgs, (← whnfR e₂).getAppFnArgs with
+    | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]) ,
+      (``CategoryStruct.comp, #[_, _, _, _, _, α', η']) =>
+      match (← whnfR η).getAppFnArgs, (← whnfR η').getAppFnArgs with
+      | (``CategoryStruct.comp, #[_, _, _, _, _, η, ηs]),
+        (``CategoryStruct.comp, #[_, _, _, _, _, η', ηs']) =>
+        let pf_α ← mkFreshExprMVar (← Meta.mkEq α α')
+        let pf_η  ← mkFreshExprMVar (← Meta.mkEq η η')
+        let pf_ηs ← mkFreshExprMVar (← Meta.mkEq ηs ηs')
+        let x ← mvarId.apply (← mkAppM ``mk_eq_of_cons #[α, α', η, η', ηs, ηs', pf_α, pf_η, pf_ηs])
+        return x
+      | _, _ => throwError "failed to make a normalized equality for {e}"
     | _, _ => throwError "failed to make a normalized equality for {e}"
-  | _, _ => throwError "failed to make a normalized equality for {e}"
 
-def bicategory (g : MVarId) : MetaM (List MVarId) := g.withContext do
-  let mvarIds ← g.apply (← mkEqOfHom₂ g)
-  let mvarIds' ← repeat' (fun i ↦ ofNormalizedEq i) mvarIds
-  let mvarIds'' ← mvarIds'.mapM fun mvarId => do
-    withTraceNode `bicategory (fun _ => do return m!"goal: {← mvarId.getType}") do
-      try
-        mvarId.refl
-        trace[bicategory] m!"{checkEmoji} refl"
-        return [mvarId]
-      catch _ =>
+def bicategory (mvarId : MVarId) : MetaM (List MVarId) :=
+  mvarId.withContext do
+    let mvarIds ← mvarId.apply (← mkEqOfHom₂ mvarId)
+    let mvarIds' ← repeat' (fun i ↦ ofNormalizedEq i) mvarIds
+    let mvarIds'' ← mvarIds'.mapM fun mvarId => do
+      withTraceNode `bicategory (fun _ => do return m!"goal: {← mvarId.getType}") do
         try
-          pure_coherence mvarId
-        catch _ => return [mvarId]
-  return mvarIds''.join
+          mvarId.refl
+          trace[bicategory] m!"{checkEmoji} refl"
+          return [mvarId]
+        catch _ =>
+          try
+            pure_coherence mvarId
+          catch _ => return [mvarId]
+    return mvarIds''.join
 
 /-- Normalize the both sides of an equality. -/
 elab "bicategory" : tactic => withMainContext do
