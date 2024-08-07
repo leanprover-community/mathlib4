@@ -617,9 +617,8 @@ A --→ B
 R --→ S
 ```
 -/
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
-variable [SMulCommClass S A B]
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A]
+variable [Algebra A B] [Algebra S B]
 
 unsuppress_compilation in
 -- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
@@ -639,7 +638,8 @@ The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/S}` is spanned by the imag
 kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `ds` with `s : S`.
 See `kerTotal_map'` for the special case where `R = S`.
 -/
-theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
+theorem KaehlerDifferential.kerTotal_map [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B]
+    (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
         Submodule.span A (Set.range fun x : S => .single (algebraMap S B x) (1 : B)) =
       (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
@@ -665,7 +665,8 @@ This is a special case of `kerTotal_map` where `R = S`.
 The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/R}` is spanned by the image of the
 kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `da` with `a : A`.
 -/
-theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A B)) :
+theorem KaehlerDifferential.kerTotal_map' [Algebra R B]
+    [IsScalarTower R A B] (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A ⊔
       Submodule.span A (Set.range fun x ↦ .single (algebraMap R A x) 1)).map finsupp_map =
       (KaehlerDifferential.kerTotal R B).restrictScalars _ := by
@@ -673,6 +674,8 @@ theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A
   congr
   refine congr_arg Set.range ?_
   ext; simp [IsScalarTower.algebraMap_eq R A B]
+
+variable [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B] [SMulCommClass S A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
 ```
