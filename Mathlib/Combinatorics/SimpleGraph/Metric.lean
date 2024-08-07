@@ -129,8 +129,11 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le h.toWalk) (ENat.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
-lemma edist_bot_of_ne [DecidableEq V] (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
+lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
+
+lemma edist_bot [DecidableEq V] : (⊥ : SimpleGraph V).edist u v = (if u = v then 0 else ⊤) := by
+  by_cases h : u = v <;> simp [h, edist_bot_of_ne]
 
 lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
