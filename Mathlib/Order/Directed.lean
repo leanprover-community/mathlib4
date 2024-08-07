@@ -309,6 +309,13 @@ lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) (i : ι) :
   use z i
   aesop
 
+lemma prodMk {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (· ≤ ·) (d i)) :
+    DirectedOn (· ≤ ·) (Set.pi  Set.univ d) := by
+  intro a ha b hb
+  dsimp
+  choose f hf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
+  simpa [Pi.le_def, ← forall_and] using ⟨f, hf⟩
+
 end Pi
 
 section Prod
