@@ -172,7 +172,7 @@ identity to `a`. This is the necessary tool used to establish `cfcHom_comp` and 
 variant `cfc_comp`.
 
 This class has instances, which can be found in
-`Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unique`, in each of the common cases
+`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique`, in each of the common cases
 `ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem.
 
 This class is separate from `ContinuousFunctionalCalculus` primarily because we will later use
@@ -270,7 +270,7 @@ not continuous on the spectrum of `a`, then `cfc f a` returns the junk value `0`
 
 This is the primary declaration intended for widespread use of the continuous functional calculus,
 and all the API applies to this declaration. For more information, see the module documentation
-for `Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
+for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
 noncomputable irreducible_def cfc (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (spectrum R a)
     then cfcHom h.1 ⟨_, h.2.restrict⟩

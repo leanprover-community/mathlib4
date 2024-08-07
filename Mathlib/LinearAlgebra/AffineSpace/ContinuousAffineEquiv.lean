@@ -114,9 +114,6 @@ initialize_simps_projections ContinuousLinearMap (toAffineEquiv_toFun → apply,
 theorem ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 
-theorem ext_iff {e e' : P₁ ≃ᵃL[k] P₂} : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
-
 @[continuity]
 protected theorem continuous (e : P₁ ≃ᵃL[k] P₂) : Continuous e :=
   e.2
