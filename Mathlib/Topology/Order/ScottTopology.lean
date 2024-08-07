@@ -308,7 +308,7 @@ lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α] (
     · apply Or.inr
       use sSup Uᶜ
       rw [compl_eq_comm, le_antisymm_iff]
-      exact ⟨fun  _ ha ↦ le_sSup ha, (isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
+      exact ⟨fun _ ha ↦ le_sSup ha, (isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
         (dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed  hU.isClosed_compl)
         neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl)⟩
   · rintro (rfl | ⟨a, rfl⟩)
