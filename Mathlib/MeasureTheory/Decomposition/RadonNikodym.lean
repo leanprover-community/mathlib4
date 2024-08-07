@@ -173,7 +173,6 @@ lemma rnDeriv_withDensity_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFini
     rnDeriv_withDensity_withDensity_rnDeriv_right μ ν hf hf_ne_zero hf_ne_top
   have h₂ : μ.rnDeriv ν =ᵐ[ν] μ'.rnDeriv ν :=
     (Measure.rnDeriv_withDensity _ (Measure.measurable_rnDeriv _ _)).symm
-  have : SigmaFinite μ' := SigmaFinite.withDensity_of_ne_top (Measure.rnDeriv_ne_top _ _)
   have hμ' := rnDeriv_withDensity_right_of_absolutelyContinuous
     (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) hf hf_ne_zero hf_ne_top
   filter_upwards [h₁, h₂, hμ'] with x hx₁ hx₂ hx_eq
