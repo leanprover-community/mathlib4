@@ -238,8 +238,8 @@ example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
   linear_combination (↑b + 1) * h₁ + ↑r * h₂
 
 -- Implementation at the time of the port (Nov 2022) was 110,000 heartbeats.
--- Overriding Pow exponent elaboration brings this to 7,763 heartbeats.
-set_option maxHeartbeats 8000 in
+-- Separately "hand-elaborating" each leaf term brings this to 8,374 heartbeats.
+set_option maxHeartbeats 9000 in
 example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
     (h₀ : 3 * x ^ 2 + z ^ 2 * p = 0)
     (h₁ : z * (2 * y) = 0)

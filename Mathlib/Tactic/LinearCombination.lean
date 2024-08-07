@@ -52,7 +52,7 @@ theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
 theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
 theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
 
-inductive Expanded
+inductive Expanded (α : Expr)
   | proof (pf : Syntax.Term)
   | const (c : Syntax.Term)
 
@@ -65,51 +65,46 @@ using `+`/`-`/`*`/`/` on equations and values.
 * `none` means that the input expression is not an equation but a value;
   the input syntax itself is used in this case.
 -/
-partial def expandLinearCombo (stx : Syntax.Term) : TermElabM Expanded := withRef stx do
+partial def expandLinearCombo (α : Expr) (stx : Syntax.Term) :
+    TermElabM (Expanded α) := withRef stx do
   match stx with
-  | `(($e)) => expandLinearCombo e
+  | `(($e)) => expandLinearCombo α e
   | `($e₁ + $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+    match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_add_c $p₁ $c₂)
     | .const c₁, .proof p₂ => .proof <$> ``(c_add_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ $p₂)
   | `($e₁ - $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+    match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_sub_c $p₁ $c₂)
     | .const c₁, .proof p₂ => .proof <$> ``(c_sub_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(sub_pf $p₁ $p₂)
   | `(-$e) => do
-    match ← expandLinearCombo e with
+    match ← expandLinearCombo α e with
     | .const c => .const <$> `(-$c)
     | .proof p => .proof <$> ``(neg_pf $p)
   | `(← $e) => do
-    match ← expandLinearCombo e with
+    match ← expandLinearCombo α e with
     | .const c => return .const c
     | .proof p => .proof <$> ``(Eq.symm $p)
   | `($e₁ * $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+    match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_mul_c $p₁ $c₂)
     | .const c₁, .proof p₂ => .proof <$> ``(c_mul_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(mul_pf $p₁ $p₂)
   | `($e⁻¹) => do
-    match ← expandLinearCombo e with
+    match ← expandLinearCombo α e with
     | .const c => .const <$> `($c⁻¹)
     | .proof p => .proof <$> ``(inv_pf $p)
   | `($e₁ / $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+    match ← expandLinearCombo α e₁, ← expandLinearCombo α e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ / $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_div_c $p₁ $c₂)
     | .const c₁, .proof p₂ => .proof <$> ``(c_div_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(div_pf $p₁ $p₂)
-  | `($e ^ $n) => do
-    -- Fully pre-elaborate n to speed up exponentiation elaboration:
-    let n ← (withSynthesize <| elabTerm n none) >>= Expr.toSyntax
-    match ← expandLinearCombo e with
-    | .const c => .const <$> ``($c ^ $n)
-    | .proof p => .proof <$> ``(pow_pf $p $n)
   | e => do
     let s ← saveState
     let c ← withSynthesizeLight <| Term.elabTerm e none
@@ -119,7 +114,9 @@ partial def expandLinearCombo (stx : Syntax.Term) : TermElabM Expanded := withRe
     else
       -- Restore state to remove all pending instance problems.
       restoreState s
-      return .const e
+      -- Fully pre-elaborate c to speed up elaboration:
+      let c ← (withSynthesize <| elabTerm e (some α)) >>= Expr.toSyntax
+      return .const c
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
@@ -134,10 +131,12 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
     (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
+  let some (α, _) := (← Tactic.getMainTarget).consumeMData.eq? |
+    throwError "linear_combination only proves equalities"
   let p ← match input with
   | none => `(Eq.refl 0)
   | some e =>
-    match ← expandLinearCombo e with
+    match ← expandLinearCombo α e with
     | .const c => `(Eq.refl $c)
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
