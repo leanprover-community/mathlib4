@@ -45,7 +45,7 @@ fi
 
 #printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
 
-currCommit="$(git rev-parse HEAD)"
+currCommit="$(git rev-parse --abbrev-ref HEAD)"
 
 getTransImports () {
   python3 scripts/count-trans-deps.py Mathlib |
