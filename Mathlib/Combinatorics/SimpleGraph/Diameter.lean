@@ -46,6 +46,10 @@ lemma edist_le_ediam {u v : α} : G.edist u v ≤ G.ediam :=
 lemma ediam_eq_top_iff : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
   simp only [ediam, iSup_eq_top, lt_iSup_iff]
 
+lemma nonempty_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nonempty α := by
+  contrapose h
+  simp [ediam, not_nonempty_iff.mp h]
+
 lemma ediam_eq_top_of_not_connected [Nonempty α] (h : ¬G.Connected) : G.ediam = ⊤ := by
   rw [connected_iff_exists_forall_reachable] at h
   push_neg at h
@@ -72,6 +76,19 @@ lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
         Finite.Set.finite_replacement f
     simp_all
   · exact exists_edist_eq_ediam_of_ne_top h
+
+@[simp]
+lemma ediam_bot : (⊥ : SimpleGraph α).ediam = ⊤ := by
+  sorry
+
+-- Note: need to find a way to remove the case of 1 vertex in the next 2 lemmas.
+@[simp]
+lemma ediam_top [Nonempty α] : (⊤ : SimpleGraph α).ediam = 1 := by
+  sorry
+
+@[simp]
+lemma diam_eq_one [Nonempty α] : G.ediam = 1 ↔ G = ⊤ := by
+  sorry
 
 end ediam
 
