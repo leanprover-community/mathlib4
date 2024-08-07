@@ -15,7 +15,6 @@ variable {α β : Type*}
 
 namespace Function.Injective
 variable (f : β → α) (hf : Injective f)
-
 include hf
 
 variable [Add β] [Mul β]
@@ -197,7 +196,6 @@ end Function.Injective
 
 namespace Function.Surjective
 variable (f : α → β) (hf : Surjective f)
-
 include hf
 
 variable [Add β] [Mul β]

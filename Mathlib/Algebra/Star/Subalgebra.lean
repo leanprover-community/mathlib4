@@ -653,7 +653,8 @@ variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A]
 variable [Semiring B] [Algebra R B] [StarRing B]
 
-section variable [StarModule R A]
+section
+variable [StarModule R A]
 
 theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
     [AlgHomClass F R (adjoin R s) B] [StarAlgHomClass F R (adjoin R s) B] {f g : F}

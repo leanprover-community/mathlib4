@@ -8,33 +8,35 @@ import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Basics on First-Order Structures
+
 This file defines first-order languages and structures in the style of the
 [Flypitch project](https://flypitch.github.io/), as well as several important maps between
 structures.
 
 ## Main Definitions
-* A `FirstOrder.Language` defines a language as a pair of functions from the natural numbers to
+
+- A `FirstOrder.Language` defines a language as a pair of functions from the natural numbers to
   `Type l`. One sends `n` to the type of `n`-ary functions, and the other sends `n` to the type of
   `n`-ary relations.
-* A `FirstOrder.Language.Structure` interprets the symbols of a given `FirstOrder.Language` in the
+- A `FirstOrder.Language.Structure` interprets the symbols of a given `FirstOrder.Language` in the
   context of a given type.
-* A `FirstOrder.Language.Hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
+- A `FirstOrder.Language.Hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
   `L`-structure `N` that commutes with the interpretations of functions, and which preserves the
   interpretations of relations (although only in the forward direction).
-* A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
+- A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-* A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
+- A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
 
 ## References
+
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
-
+  the continuum hypothesis*][flypitch_itp]
 -/
 
 universe u v u' v' w w'
