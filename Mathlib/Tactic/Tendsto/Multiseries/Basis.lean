@@ -3,6 +3,8 @@ import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 open Asymptotics Filter
 
+namespace TendstoTactic
+
 def MS.wellOrderedBasis (basis : List (ℝ → ℝ)) : Prop :=
   match basis with
   | [] => True
@@ -110,3 +112,54 @@ theorem MS.basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop
     · simp_rw [show (-1 : ℝ) = 0 - 1 by simp]
       apply Tendsto.sub_const h1
     · exact Tendsto.comp Real.tendsto_log_atTop hg
+
+-- to upstream
+lemma MS.compare_self {f : ℝ → ℝ} {e1 e2 : ℝ} (h1 : Tendsto f atTop atTop) (h2 : e1 < e2) :
+    (fun x ↦ (f x)^e1) =o[atTop] fun x ↦ (f x)^e2 := by
+  apply (isLittleO_iff_tendsto' _).mpr
+  · have : (fun x ↦ f x ^ e1 / f x ^ e2) =ᶠ[atTop] fun x ↦ (f x)^(e1 - e2) := by
+      apply Eventually.mono <| Tendsto.eventually_gt_atTop h1 0
+      intro x h
+      simp only
+      rw [← Real.rpow_sub h]
+    apply Tendsto.congr' this.symm
+    conv =>
+      arg 1
+      rw [show (fun x ↦ f x ^ (e1 - e2)) = ((fun x ↦ x^(-(e2 - e1))) ∘ f) by ext; simp]
+    apply Tendsto.comp _ h1
+    apply tendsto_rpow_neg_atTop
+    linarith
+  · apply Eventually.mono <| Tendsto.eventually_gt_atTop h1 0
+    intro x h1 h2
+    absurd h2
+    exact (Real.rpow_pos_of_pos h1 _).ne.symm
+
+theorem PreMS.isApproximation_coef_isLittleO_head {c : PreMS} {C basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {deg : ℝ} (h_deg : 0 < deg) (h_approx : c.isApproximation C basis_tl) (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl)) :
+    C =o[atTop] fun x ↦ (basis_hd x)^deg := by
+  cases h_approx with
+  | const c _ hC =>
+    apply EventuallyEq.trans_isLittleO hC
+    apply isLittleO_const_left.mpr
+    right
+    apply Tendsto.comp tendsto_norm_atTop_atTop
+    apply Tendsto.comp (tendsto_rpow_atTop h_deg)
+    simpa [MS.wellOrderedBasis] using h_basis
+  | nil _ _ hC =>
+    apply EventuallyEq.trans_isLittleO hC
+    apply isLittleO_const_left.mpr
+    left
+    rfl
+  | cons coef_deg coef_coef coef_tl _ CC basis_tl_hd basis_tl_tl h_coef_coef h_coef_tl h_coef_comp =>
+    apply Asymptotics.IsLittleO.trans <| h_coef_comp (coef_deg + 1) (by linarith)
+    apply MS.basis_compare
+    · apply MS.basis_head_eventually_pos
+      unfold MS.wellOrderedBasis at h_basis
+      exact h_basis.right.left
+    · apply MS.basis_tendsto_top h_basis
+      simp only [List.mem_cons, true_or]
+    · simp [MS.wellOrderedBasis] at h_basis
+      exact h_basis.right.right
+    · exact h_deg
+
+end TendstoTactic

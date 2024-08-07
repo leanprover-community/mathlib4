@@ -71,14 +71,60 @@ def PreMS.wellOrdered (ms : PreMS) : Prop :=
     | _ => True
   | _ => True
 
+-- todo: make args implicit
 inductive PreMS.isApproximation : PreMS → (ℝ → ℝ) → Basis → Prop where
 | nil (basis : List (ℝ → ℝ)) (F : ℝ → ℝ) (h : F =ᶠ[Filter.atTop] 0) : PreMS.isApproximation .nil F basis
 | const (c : ℝ) (F : ℝ → ℝ) (h : F =ᶠ[Filter.atTop] fun _ ↦ c) : PreMS.isApproximation (.const c) F []
 | cons (deg : ℝ) (coef : PreMS) (tl : Thunk PreMS) (F C basis_hd : ℝ → ℝ)
     (basis_tl : Basis) (h_coef : coef.isApproximation C basis_tl)
     (h_tl : tl.get.isApproximation (fun x ↦ (F x) - (basis_hd x)^deg * (C x)) (basis_hd :: basis_tl))
-    (h : (∀ deg', deg < deg' → F =o[Filter.atTop] (fun x => (basis_hd x)^deg'))) :
+    (h_comp : (∀ deg', deg < deg' → F =o[Filter.atTop] (fun x => (basis_hd x)^deg'))) :
     PreMS.isApproximation (.cons deg coef tl) F (basis_hd :: basis_tl)
+
+-- structural recursion can't be used because PreMS is a nested type
+theorem PreMS.isApproximation_of_EventuallyEq {ms : PreMS} {F F' : ℝ → ℝ} {basis : Basis}
+    (h_approx : ms.isApproximation F basis) (h_equiv : F =ᶠ[Filter.atTop] F') : ms.isApproximation F' basis := by
+  induction ms using PreMS.rec' generalizing F F' with
+  | nil =>
+    cases h_approx with | nil _ _ h =>
+    apply PreMS.isApproximation.nil
+    exact Filter.EventuallyEq.trans h_equiv.symm h
+  | const =>
+    cases h_approx with | const _ _ h =>
+    apply PreMS.isApproximation.const
+    exact Filter.EventuallyEq.trans h_equiv.symm h
+  | cons deg coef tl coef_ih tl_ih =>
+    cases h_approx with | cons _ _ _ _ C basis_hd basis_tl h_coef h_tl h_comp =>
+    apply PreMS.isApproximation.cons
+    · exact h_coef
+    · apply tl_ih h_tl
+      apply Filter.EventuallyEq.sub h_equiv (by apply Filter.EventuallyEq.refl)
+    · intros
+      apply Filter.EventuallyEq.trans_isLittleO h_equiv.symm (h_comp _ _)
+      assumption
+
+theorem PreMS.EventuallyEq_of_isApproximation {ms : PreMS} {F F' : ℝ → ℝ} {basis : Basis}
+    (h_approx : ms.isApproximation F basis) (h_approx' : ms.isApproximation F' basis) : F =ᶠ[Filter.atTop] F' := by
+  induction ms using PreMS.rec' generalizing F F' basis with
+  | nil =>
+    cases h_approx with | nil _ _ h =>
+    cases h_approx' with | nil _ _ h' =>
+    trans 0
+    · exact h
+    · exact h'.symm
+  | const c =>
+    cases h_approx with | const _ _ h =>
+    cases h_approx' with | const _ _ h' =>
+    trans (fun _ ↦ c)
+    · exact h
+    · exact h'.symm
+  | cons deg coef tl coef_ih tl_ih =>
+    cases h_approx with | cons _ _ _ _ C basis_hd basis_tl h_coef h_tl h_comp =>
+    cases h_approx' with | cons _ _ _ _ C' _ _ h_coef' h_tl' h_comp' =>
+    have : (fun x ↦ basis_hd x ^ deg * C x) =ᶠ[Filter.atTop] (fun x ↦ basis_hd x ^ deg * C' x) :=
+      Filter.EventuallyEq.mul (by rfl) (coef_ih h_coef h_coef')
+    have := (tl_ih h_tl h_tl').add this
+    simpa using this
 
 structure MS where
   val : PreMS
@@ -139,28 +185,5 @@ def MS.nil (basis : Basis) : MS where
 --   | m + 1 =>
 --     let pre : MS m := MS.lift MS.one (by omega)
 --     MS.monomial 1 pre
-
---!!- Maybe to Trimming.lean?
-
-def PreMS.isFlatZero (ms : PreMS) : Prop :=
-  match ms with
-  | .const c => c = 0
-  | .nil => True
-  | _ => False
-
-
-def PreMS.isTrimmed (ms : PreMS) : Prop :=
-  match ms with
-  | .cons _ coef _ => coef.isTrimmed ∧ ¬ coef.isFlatZero
-  | _ => True
-
--- def PreMS.isTrimmed (ms : PreMS) : Prop :=
---   match ms with
---   | .cons _ coef _ => coef.isTrimmed
---   | .const c => c ≠ 0
---   | .nil => False
-
-def MS.isTrimmed (ms : MS) : Prop :=
-  ms.val.isTrimmed
 
 end TendstoTactic

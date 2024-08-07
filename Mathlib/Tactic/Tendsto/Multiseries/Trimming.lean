@@ -3,36 +3,35 @@ import Mathlib.Tactic.Tendsto.TendstoM
 
 namespace TendstoTactic
 
-namespace Trimming
+def PreMS.isFlatZero (ms : PreMS) : Prop :=
+  match ms with
+  | .const c => c = 0
+  | .nil => True
+  | _ => False
 
--- structural recursion can't be used because PreMS is a nested type
-theorem PreMS.isApproximation_of_EventuallyEq {ms : PreMS} {F F' : ℝ → ℝ} {basis : Basis}
-    (h_approx : ms.isApproximation F basis) (h_equiv : F =ᶠ[Filter.atTop] F') : ms.isApproximation F' basis := by
-  induction ms using PreMS.rec' generalizing F F' with
-  | nil =>
-    cases h_approx with | nil _ _ h =>
-    apply PreMS.isApproximation.nil
-    exact Filter.EventuallyEq.trans h_equiv.symm h
-  | const =>
-    cases h_approx with | const _ _ h =>
-    apply PreMS.isApproximation.const
-    exact Filter.EventuallyEq.trans h_equiv.symm h
-  | cons deg coef tl coef_ih tl_ih =>
-    cases h_approx with | cons _ _ _ _ C basis_hd basis_tl h_coef h_tl h_comp =>
-    apply PreMS.isApproximation.cons
-    · exact h_coef
-    · apply tl_ih h_tl
-      apply Filter.EventuallyEq.sub h_equiv (by apply Filter.EventuallyEq.refl)
-    · intros
-      apply Filter.EventuallyEq.trans_isLittleO h_equiv.symm (h_comp _ _)
-      assumption
+def PreMS.isTrimmed (ms : PreMS) : Prop :=
+  match ms with
+  | .cons _ coef _ => coef.isTrimmed ∧ ¬ coef.isFlatZero
+  | _ => True
+
+-- def PreMS.hasNegativeLeading (ms : PreMS) : Prop :=
+--   match ms with
+--   | .cons deg _ _ => (deg < 0)
+--   | _ => False
+
+-- def PreMS.isPartiallyTrimmed (ms : PreMS) : Prop :=
+--   ms.hasNegativeLeading ∨ ms.isTrimmed
+
+def MS.isTrimmed (ms : MS) : Prop :=
+  ms.val.isTrimmed
+
+namespace Trimming
 
 theorem PreMS.isApproximation_sub_zero {ms : PreMS} {F C : ℝ → ℝ} {basis : Basis}
     (h_approx : ms.isApproximation (F - C) basis) (h_C : C =ᶠ[Filter.atTop] 0) : ms.isApproximation F basis := by
-  apply isApproximation_of_EventuallyEq h_approx
+  apply PreMS.isApproximation_of_EventuallyEq h_approx
   have := Filter.EventuallyEq.sub (Filter.EventuallyEq.refl _ F) h_C
   simpa using this
-
 
 structure PreMS.TrimmingResult (ms : PreMS) where
   result : PreMS
@@ -195,7 +194,6 @@ def MS.trim (ms : MS) : TendstoM <| MS.TrimmingResult ms := do
     h_eq_F := by rfl
     h_trimmed := r.h_trimmed
   }
-
 
 end Trimming
 
