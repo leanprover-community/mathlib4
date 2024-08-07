@@ -3,7 +3,7 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sebastien Gouezel, Heather Macbeth, Patrick Massot, Floris van Doorn
 -/
-import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Topology.FiberBundle.Basic
 
 /-!
@@ -521,7 +521,6 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
 -- Porting note (#11215): TODO: restore coercion
 -- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
 --   ⟨toFiberBundleCore⟩
--- #align vector_bundle_core.to_fiber_bundle_core_coe VectorBundleCore.toFiberBundleCoreCoe
 
 theorem coordChange_linear_comp (i j k : ι) :
     ∀ x ∈ Z.baseSet i ∩ Z.baseSet j ∩ Z.baseSet k,

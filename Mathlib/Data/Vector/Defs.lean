@@ -6,8 +6,6 @@ Authors: Leonardo de Moura
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Tactic.Common
 
-
-
 /-!
 The type `Vector` represents lists with fixed length.
 -/
@@ -82,22 +80,6 @@ def get (l : Vector α n) (i : Fin n) : α :=
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
   | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 
-/- warning: vector.elim -> Vector.elim is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {C : forall {n : ℕ},
-  (Vector.{u_1} α n) -> Sort.{u}}, (forall (l : List.{u_1} α),
-  C (List.length.{u_1} α l) (Subtype.mk.{succ u_1} (List.{u_1} α)
-  (fun (l_1 : List.{u_1} α) => Eq.{1} ℕ (List.length.{u_1} α l_1)
-  (List.length.{u_1} α l)) l (Vector.Elim._proof_1.{u_1} α l))) ->
-  (forall {n : ℕ} (v : Vector.{u_1} α n), C n v)
-but is expected to have type
-  forall {α : Type.{_aux_param_0}} {C : forall {n : ℕ}, (Vector.{_aux_param_0} α n) -> Sort.{u}},
-  (forall (l : List.{_aux_param_0} α),
-  C (List.length.{_aux_param_0} α l) (Subtype.mk.{succ _aux_param_0} (List.{_aux_param_0} α)
-  (fun (l_1 : List.{_aux_param_0} α) => Eq.{1} ℕ (List.length.{_aux_param_0} α l_1)
-  (List.length.{_aux_param_0} α l)) l (rfl.{1} ℕ (List.length.{_aux_param_0} α l)))) ->
-  (forall {n : ℕ} (v : Vector.{_aux_param_0} α n), C n v)
-Case conversion may be inaccurate. Consider using '#align vector.elim Vector.elimₓ'. -/
 /-- Elimination rule for `Vector`. -/
 @[elab_as_elim]
 def elim {α} {C : ∀ {n}, Vector α n → Sort u}

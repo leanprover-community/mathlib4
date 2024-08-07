@@ -474,9 +474,8 @@ structure Config : Type where
   existing : Option Bool := none
   deriving Repr
 
-open Lean.Expr.FindImpl in
 /-- Implementation function for `additiveTest`.
-  We cache previous applications of the function, using the same method that `Expr.find?` uses,
+  We cache previous applications of the function, using an expression cache using ptr equality
   to avoid visiting the same subexpression many times. Note that we only need to cache the
   expressions without taking the value of `inApp` into account, since `inApp` only matters when
   the expression is a constant. However, for this reason we have to make sure that we never
@@ -486,13 +485,15 @@ open Lean.Expr.FindImpl in
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
-  let rec visit (e : Expr) (inApp := false) : OptionT FindM Name := do
+  let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) Name := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
       else
         return e.constName
-    checkVisited e
+    if (← get).contains e then
+      failure
+    modify fun s => s.insert e
     match e with
     | x@(.app e a)       =>
         visit e true <|> do

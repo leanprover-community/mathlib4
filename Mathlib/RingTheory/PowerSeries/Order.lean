@@ -163,7 +163,6 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ 
   · intro i hi
     rw [(coeff _ _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H),
       zero_add]
--- #align power_series.order_add_of_order_eq.aux power_series.order_add_of_order_eq.aux
 
 /-- The order of the sum of two formal power series
  is the minimum of their orders if their orders differ. -/

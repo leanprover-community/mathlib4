@@ -161,7 +161,7 @@ end IsMonoidHom
 homomorphism."]
 theorem IsMulHom.to_isMonoidHom [MulOneClass α] [Group β] {f : α → β} (hf : IsMulHom f) :
     IsMonoidHom f :=
-  { map_one := mul_right_eq_self.1 <| by rw [← hf.map_mul, one_mul]
+  { map_one := (mul_right_eq_self (a := f 1)).1 <| by rw [← hf.map_mul, one_mul]
     map_mul := hf.map_mul }
 
 namespace IsMonoidHom

@@ -228,11 +228,10 @@ theorem lTensorHomEquivHomLTensor_toLinearMap :
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine (cancel_right h).1 ?_
   ext f q m
-  dsimp [e, lTensorHomEquivHomLTensor]
-  simp only [lTensorHomEquivHomLTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
-    LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
-    dualTensorHomEquivOfBasis_apply, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply,
-    dualTensorHomEquivOfBasis_symm_cancel_left, leftComm_tmul, dualTensorHom_apply, tmul_smul]
+  simp only [e, lTensorHomEquivHomLTensor, dualTensorHomEquiv, LinearEquiv.comp_coe, compr₂_apply,
+    mk_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply,
+    dualTensorHomEquivOfBasis_apply, dualTensorHomEquivOfBasis_symm_cancel_left, leftComm_tmul,
+    dualTensorHom_apply, coe_comp, Function.comp_apply, lTensorHomToHomLTensor_apply, tmul_smul]
 
 @[simp]
 theorem rTensorHomEquivHomRTensor_toLinearMap :

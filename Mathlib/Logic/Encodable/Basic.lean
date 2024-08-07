@@ -226,38 +226,38 @@ variable [Encodable α] [Encodable β]
 
 -- Porting note: removing bit0 and bit1
 /-- Explicit encoding function for the sum of two encodable types. -/
-def encodeSum : Sum α β → ℕ
+def encodeSum : α ⊕ β → ℕ
   | Sum.inl a => 2 * encode a
   | Sum.inr b => 2 * encode b + 1
 
 /-- Explicit decoding function for the sum of two encodable types. -/
-def decodeSum (n : ℕ) : Option (Sum α β) :=
+def decodeSum (n : ℕ) : Option (α ⊕ β) :=
   match boddDiv2 n with
   | (false, m) => (decode m : Option α).map Sum.inl
   | (_, m) => (decode m : Option β).map Sum.inr
 
 /-- If `α` and `β` are encodable, then so is their sum. -/
-instance _root_.Sum.encodable : Encodable (Sum α β) :=
+instance _root_.Sum.encodable : Encodable (α ⊕ β) :=
   ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
 
 -- Porting note: removing bit0 and bit1 from statement
 @[simp]
-theorem encode_inl (a : α) : @encode (Sum α β) _ (Sum.inl a) = 2 * (encode a) :=
+theorem encode_inl (a : α) : @encode (α ⊕ β) _ (Sum.inl a) = 2 * (encode a) :=
   rfl
 
 -- Porting note: removing bit0 and bit1 from statement
 @[simp]
-theorem encode_inr (b : β) : @encode (Sum α β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
+theorem encode_inr (b : β) : @encode (α ⊕ β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
   rfl
 
 @[simp]
-theorem decode_sum_val (n : ℕ) : (decode n : Option (Sum α β)) = decodeSum n :=
+theorem decode_sum_val (n : ℕ) : (decode n : Option (α ⊕ β)) = decodeSum n :=
   rfl
 
 end Sum
 
 instance _root_.Bool.encodable : Encodable Bool :=
-  ofEquiv (Sum Unit Unit) Equiv.boolEquivPUnitSumPUnit
+  ofEquiv (Unit ⊕ Unit) Equiv.boolEquivPUnitSumPUnit
 
 @[simp]
 theorem encode_true : encode true = 1 :=
@@ -327,7 +327,7 @@ instance Prod.encodable : Encodable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 
 @[simp]
-theorem decode_prod_val [i : Encodable α] (n : ℕ) :
+theorem decode_prod_val (n : ℕ) :
     (@decode (α × β) _ n : Option (α × β))
       = (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Prod.mk a := by
   simp only [decode_ofEquiv, Equiv.symm_symm, decode_sigma_val]

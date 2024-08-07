@@ -3,12 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.SetLike.Fintype
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Sylow theorems
@@ -69,9 +66,6 @@ instance : CoeOut (Sylow p G) (Subgroup G) :=
 
 @[ext]
 theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr
-
-theorem ext_iff {P Q : Sylow p G} : P = Q ↔ (P : Subgroup G) = Q :=
-  ⟨congr_arg _, ext⟩
 
 instance : SetLike (Sylow p G) G where
   coe := (↑)

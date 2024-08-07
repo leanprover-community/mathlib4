@@ -9,21 +9,24 @@ import Mathlib.ModelTheory.Semantics
 
 /-!
 # Definable Sets
+
 This file defines what it means for a set over a first-order structure to be definable.
 
 ## Main Definitions
-* `Set.Definable` is defined so that `A.Definable L s` indicates that the
-set `s` of a finite cartesian power of `M` is definable with parameters in `A`.
-* `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
-`(s : Set M)` is definable with parameters in `A`.
-* `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
-`(s : Set (M × M))` is definable with parameters in `A`.
-* A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
+
+- `Set.Definable` is defined so that `A.Definable L s` indicates that the
+  set `s` of a finite cartesian power of `M` is definable with parameters in `A`.
+- `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
+  `(s : Set M)` is definable with parameters in `A`.
+- `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
+  `(s : Set (M × M))` is definable with parameters in `A`.
+- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
 
 ## Main Results
-* `L.DefinableSet A α` forms a `BooleanAlgebra`
-* `Set.Definable.image_comp` shows that definability is closed under projections in finite
+
+- `L.DefinableSet A α` forms a `BooleanAlgebra`
+- `Set.Definable.image_comp` shows that definability is closed under projections in finite
   dimensions.
 
 -/
@@ -146,6 +149,9 @@ theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definabl
 theorem Definable.sdiff {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.Definable L t) :
     A.Definable L (s \ t) :=
   hs.inter ht.compl
+
+@[simp] lemma Definable.himp {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.Definable L t) :
+    A.Definable L (s ⇨ t) := by rw [himp_eq]; exact ht.union hs.compl
 
 theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Definable L s) :
     A.Definable L ((fun g : β → M => g ∘ f) ⁻¹' s) := by
@@ -309,6 +315,10 @@ instance instHasCompl : HasCompl (L.DefinableSet A α) :=
 instance instSDiff : SDiff (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s \ t, s.2.sdiff t.2⟩⟩
 
+-- Why does it complain that `s ⇨ t` is noncomputable?
+noncomputable instance instHImp : HImp (L.DefinableSet A α) where
+  himp s t := ⟨s ⇨ t, s.2.himp t.2⟩
+
 instance instInhabited : Inhabited (L.DefinableSet A α) :=
   ⟨⊥⟩
 
@@ -367,9 +377,12 @@ theorem coe_sdiff (s t : L.DefinableSet A α) :
     ((s \ t : L.DefinableSet A α) : Set (α → M)) = (s : Set (α → M)) \ (t : Set (α → M)) :=
   rfl
 
-instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
+@[simp, norm_cast]
+lemma coe_himp (s t : L.DefinableSet A α) : ↑(s ⇨ t) = (s ⇨ t : Set (α → M)) := rfl
+
+noncomputable instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
   Function.Injective.booleanAlgebra (α := L.DefinableSet A α) _ Subtype.coe_injective
-    coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
+    coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff coe_himp
 
 end DefinableSet
 

@@ -305,7 +305,6 @@ theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
 theorem ssubset_def : s ⊂ t ↔ s ⊆ t ∧ ¬t ⊆ s :=
   Iff.rfl
 
-@[simp]
 theorem Subset.refl (s : Finset α) : s ⊆ s :=
   Multiset.Subset.refl _
 
@@ -336,6 +335,8 @@ theorem subset_iff {s₁ s₂ : Finset α} : s₁ ⊆ s₂ ↔ ∀ ⦃x⦄, x �
 @[simp, norm_cast]
 theorem coe_subset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊆ s₂ ↔ s₁ ⊆ s₂ :=
   Iff.rfl
+
+@[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset
 
 @[simp]
 theorem val_le_iff {s₁ s₂ : Finset α} : s₁.1 ≤ s₂.1 ↔ s₁ ⊆ s₂ :=
@@ -1107,7 +1108,8 @@ theorem Nonempty.cons_induction {α : Type*} {p : ∀ s : Finset α, s.Nonempty 
     · exact singleton a
     · exact cons a t ha ht (h ht)
 
-lemma Nonempty.exists_cons_eq (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s :=
+-- We use a fresh `α` here to exclude the unneeded `DecidableEq α` instance from the section.
+lemma Nonempty.exists_cons_eq {α} {s : Finset α} (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s :=
   hs.cons_induction (fun a ↦ ⟨∅, a, _, cons_empty _⟩) fun _ _ _ _ _ ↦ ⟨_, _, _, rfl⟩
 
 /-- Inserting an element to a finite set is equivalent to the option type. -/
@@ -2221,7 +2223,7 @@ theorem filter_subset_filter {s t : Finset α} (h : s ⊆ t) : s.filter p ⊆ t.
 
 theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_filter p
 
--- TODO: `@[gcongr]` doesn't accept this lemma because of the `DecidablePred` arguments
+@[gcongr]
 theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
     (h : p ≤ q) : s.filter p ⊆ s.filter q :=
   Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
@@ -2292,6 +2294,7 @@ theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
   · rw [filter_cons_of_pos _ _ _ ha h, singleton_disjUnion]
   · rw [filter_cons_of_neg _ _ _ ha h, empty_disjUnion]
 
+section
 variable [DecidableEq α]
 
 theorem filter_union (s₁ s₂ : Finset α) : (s₁ ∪ s₂).filter p = s₁.filter p ∪ s₂.filter p :=
@@ -2374,7 +2377,6 @@ open scoped Classical
 -- theorem sep_def {α : Type*} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
 --   ext
 --   simp
--- #align finset.sep_def Finset.sep_def
 
 end Classical
 
@@ -2426,7 +2428,11 @@ theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
 
+end
+
 lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by simp [ext_iff]
+
+lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by simp [ext_iff]
 
 end Filter
 
@@ -2656,7 +2662,6 @@ theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
 -- @[simp]
 -- theorem toFinset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :
 --     (m.dedup.bind f).toFinset = (m.bind f).toFinset := by simp_rw [toFinset, dedup_bind_dedup]
--- #align multiset.to_finset_bind_dedup Multiset.toFinset_bind_dedup
 
 @[simp]
 theorem toFinset_filter (s : Multiset α) (p : α → Prop) [DecidablePred p] :
@@ -2801,9 +2806,7 @@ theorem mem_toList {a : α} {s : Finset α} : a ∈ s.toList ↔ a ∈ s :=
 theorem toList_eq_nil {s : Finset α} : s.toList = [] ↔ s = ∅ :=
   Multiset.toList_eq_nil.trans val_eq_zero
 
-@[simp]
-theorem empty_toList {s : Finset α} : s.toList.isEmpty ↔ s = ∅ :=
-  List.isEmpty_iff_eq_nil.trans toList_eq_nil
+theorem empty_toList {s : Finset α} : s.toList.isEmpty ↔ s = ∅ := by simp
 
 @[simp]
 theorem toList_empty : (∅ : Finset α).toList = [] :=

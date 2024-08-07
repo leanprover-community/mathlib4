@@ -64,7 +64,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         reds[diff[fil]]=reds[diff[fil]]" `"fil"`"
       }
     }
-    if (200 <= con) { printf("Too many changes (%s)!\n", con) } else {
+    if (200 <= con) { printf("There are %s files with changed transitive imports: this is too many to display!\n", con) } else {
       for(x in reds) {
         if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }

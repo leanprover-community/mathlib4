@@ -158,7 +158,6 @@ instance noMaxOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrd
     obtain ⟨b⟩ : Nonempty (α j) := inferInstance
     exact ⟨⟨j, b⟩, left _ _ h⟩⟩
 
--- Porting note: this statement was incorrect in mathlib3, hence the `#noalign`.
 instance noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMinOrder ι]
     [∀ i, Nonempty (α i)] : NoMinOrder (Σₗ' i, α i) :=
   ⟨by

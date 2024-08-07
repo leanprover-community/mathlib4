@@ -241,9 +241,9 @@ def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β ×
   Equiv.piFinSuccAbove (fun _ => β) (.last _)
 
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
-def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n) where
+def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
-  invFun i := @Fin.addCases m n (fun _ => Sum (Fin m) (Fin n)) Sum.inl Sum.inr i
+  invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
   left_inv x := by cases' x with y y <;> dsimp <;> simp
   right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 

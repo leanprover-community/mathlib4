@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Notation
+import Mathlib.Order.SetNotation
 import Mathlib.Logic.Embedding.Basic
+import Mathlib.Logic.Pairwise
 import Mathlib.Data.Set.Image
 
 /-!
@@ -11,8 +14,9 @@ import Mathlib.Data.Set.Image
 
 -/
 
-
 universe u v w x
+
+open Set Set.Notation
 
 section Equiv
 
@@ -126,3 +130,56 @@ theorem subtypeOrEquiv_symm_inr (p q : α → Prop) [DecidablePred p] (h : Disjo
   rfl
 
 end Subtype
+
+section Disjoint
+
+variable {α ι : Type*} {s t r : Set α}
+
+/-- For disjoint `s t : Set α`, the natural injection from `↑s ⊕ ↑t` to `α`. -/
+@[simps] def Function.Embedding.sumSet (h : Disjoint s t) : s ⊕ t ↪ α where
+  toFun := Sum.elim (↑) (↑)
+  inj' := by
+    rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
+    · simp [Subtype.val_inj]
+    · simpa using h.ne_of_mem ha hb
+    · simpa using h.symm.ne_of_mem ha hb
+    simp [Subtype.val_inj]
+
+@[norm_cast] lemma Function.Embedding.coe_sumSet (h : Disjoint s t) :
+    (Function.Embedding.sumSet h : s ⊕ t → α) = Sum.elim (↑) (↑) := rfl
+
+@[simp] theorem Function.Embedding.sumSet_preimage_inl (h : Disjoint s t) :
+    .inl ⁻¹' (Function.Embedding.sumSet h ⁻¹' r) = r ∩ s := by
+  simp [Set.ext_iff]
+
+@[simp] theorem Function.Embedding.sumSet_preimage_inr (h : Disjoint s t) :
+    .inr ⁻¹' (Function.Embedding.sumSet h ⁻¹' r) = r ∩ t := by
+  simp [Set.ext_iff]
+
+@[simp] theorem Function.Embedding.sumSet_range {s t : Set α} (h : Disjoint s t) :
+    range (Function.Embedding.sumSet h) = s ∪ t := by
+  simp [Set.ext_iff]
+
+/-- For an indexed family `s : ι → Set α` of disjoint sets,
+the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
+@[simps] def Function.Embedding.sigmaSet {s : ι → Set α} (h : Pairwise (Disjoint on s)) :
+    (i : ι) × s i ↪ α where
+  toFun x := x.2.1
+  inj' := by
+    rintro ⟨i, x, hx⟩ ⟨j, -, hx'⟩ rfl
+    obtain rfl : i = j := h.eq (not_disjoint_iff.2 ⟨_, hx, hx'⟩)
+    rfl
+
+@[norm_cast] lemma Function.Embedding.coe_sigmaSet {s : ι → Set α} (h) :
+    (Function.Embedding.sigmaSet h : ((i : ι) × s i) → α) = fun x ↦ x.2.1 := rfl
+
+@[simp] theorem Function.Embedding.sigmaSet_preimage {s : ι → Set α}
+    (h : Pairwise (Disjoint on s)) (i : ι) (r : Set α) :
+    Sigma.mk i ⁻¹' (Function.Embedding.sigmaSet h ⁻¹' r) = r ∩ s i := by
+  simp [Set.ext_iff]
+
+@[simp] theorem Function.Embedding.sigmaSet_range {s : ι → Set α}
+    (h : Pairwise (Disjoint on s)) : Set.range (Function.Embedding.sigmaSet h) = ⋃ i, s i := by
+  simp [Set.ext_iff]
+
+end Disjoint

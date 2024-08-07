@@ -3,8 +3,6 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Index
 
 /-!
@@ -58,7 +56,7 @@ def quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
     K ⧸ H.subgroupOf K ≃ (g • K).1 ⧸ (g • H).subgroupOf (g • K) :=
   Quotient.congr (K.equivSMul g).toEquiv fun a b => by
     dsimp
-    rw [← Quotient.eq'', ← Quotient.eq'', QuotientGroup.eq', QuotientGroup.eq',
+    rw [← Quotient.eq'', ← Quotient.eq'', QuotientGroup.eq, QuotientGroup.eq,
       Subgroup.mem_subgroupOf, Subgroup.mem_subgroupOf, ← MulEquiv.map_inv, ← MulEquiv.map_mul,
       Subgroup.equivSMul_apply_coe]
     exact Subgroup.smul_mem_pointwise_smul_iff.symm
