@@ -304,7 +304,7 @@ variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsLower α]
 lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Ici a)ᶜ = U) := by
   by_cases hU : U = univ
   simp only [hU, isOpen_univ, compl_Ici, true_or]
-  constructor
+  refine ⟨?_, isTopologicalBasis_insert_univ_subbasis.isOpen⟩ 
   · intro hO
     apply Or.inr
     convert IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
