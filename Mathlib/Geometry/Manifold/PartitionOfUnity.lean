@@ -278,7 +278,8 @@ type if for each `i` the closure of the support of `f i` is a subset of `U i`. -
 def IsSubordinate (f : SmoothPartitionOfUnity ι I M s) (U : ι → Set M) :=
   ∀ i, tsupport (f i) ⊆ U i
 
-variable {f} {U : ι → Set M}
+variable {f}
+variable {U : ι → Set M}
 
 @[simp]
 theorem isSubordinate_toPartitionOfUnity :
