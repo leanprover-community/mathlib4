@@ -14,6 +14,7 @@ import Mathlib.Lean.Thunk
 This file is entirely deprecated, and contains various definitions and proofs on lazy lists.
 -/
 
+-- The whole file is full of deprecations about LazyList
 set_option linter.deprecated false
 
 universe u
@@ -101,8 +102,7 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
     | case1 =>
       simp only [Thunk.pure, LazyList.bind, LazyList.traverse, Id.pure_eq]
     | case2 _ _ ih =>
-      simp [LazyList.bind, LazyList.traverse, Seq.seq, Id.map_eq, append, Thunk.pure]
-      rw [← ih]
+      simp only [Thunk.pure, LazyList.bind, append, Thunk.get_mk, comp_apply, ← ih]
       simp only [Thunk.get, append, singleton, Thunk.pure])
 
 end LazyList
