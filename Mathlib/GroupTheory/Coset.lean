@@ -352,8 +352,13 @@ instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : F
   Quotient.fintype (leftRel s)
 
 /-- The canonical map from a group `α` to the quotient `α ⧸ s`. -/
-@[to_additive (attr := coe) "The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`."]
+@[coe]
 abbrev mk (a : α) : α ⧸ s :=
+  Quotient.mk'' a
+
+/-- The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`. -/
+@[coe]
+abbrev _root_.QuotientAddGroup.mk [AddGroup α] {s : AddSubgroup α} (a : α) : α ⧸ s :=
   Quotient.mk'' a
 
 @[to_additive]
