@@ -68,7 +68,7 @@ def upper (α : Type*) [Preorder α] : TopologicalSpace α := generateFrom {s | 
 /-- Type synonym for a preorder equipped with the lower set topology. -/
 def WithLower (α : Type*) := α
 
-variable {α}
+variable {α β : Type*}
 
 namespace WithLower
 
