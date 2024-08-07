@@ -295,22 +295,14 @@ lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
 
 lemma rpow_neg (a : Aˣ) (x : ℝ) (ha' : (0 : A) ≤ a := by cfc_tac) :
     (a : A) ^ (-x) = (↑a⁻¹ : A) ^ x := by
-  have h₁ : ContinuousOn (fun z ↦ z ^ x) (Inv.inv '' (spectrum ℝ≥0 (a : A))) := by
-    intro z hz
-    apply ContinuousAt.continuousWithinAt
-    refine NNReal.continuousAt_rpow_const (Or.inl ?_)
-    have : ∀ t ∈ spectrum ℝ≥0 (a : A), t ≠ 0 := fun _ _ => by
-      have := (spectrum.zero_not_mem ℝ≥0 a.isUnit)
-      aesop
-    rw [Set.mem_image] at hz
-    obtain ⟨t, ht⟩ := hz
-    have h₂ := this t ht.1
-    rw [← ht.2]
-    exact inv_ne_zero h₂
-  rw [← cfc_inv_id (R := ℝ≥0) a, rpow_def, rpow_def,
-      ← cfc_comp' (fun z => z ^ x) (Inv.inv : ℝ≥0 → ℝ≥0) (a : A) h₁]
-  refine cfc_congr fun _ _ => ?_
-  simp [NNReal.rpow_neg, NNReal.inv_rpow]
+  suffices h₁ : ContinuousOn (fun z ↦ z ^ x) (Inv.inv '' (spectrum ℝ≥0 (a : A))) by
+    rw [← cfc_inv_id (R := ℝ≥0) a, rpow_def, rpow_def,
+        ← cfc_comp' (fun z => z ^ x) (Inv.inv : ℝ≥0 → ℝ≥0) (a : A) h₁]
+    refine cfc_congr fun _ _ => ?_
+    simp [NNReal.rpow_neg, NNReal.inv_rpow]
+  refine NNReal.continuousOn_rpow_const (.inl ?_)
+  rintro ⟨z, hz, hz'⟩
+  exact spectrum.zero_not_mem ℝ≥0 a.isUnit <| inv_eq_zero.mp hz' ▸ hz
 
 lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
     (a : A) ^ (n : ℝ) = (↑(a ^ n) : A) := by
