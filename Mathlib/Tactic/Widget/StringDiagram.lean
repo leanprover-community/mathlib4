@@ -6,7 +6,6 @@ Authors: Yuma Mizuno
 import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Presentation.Expr
 import Mathlib.Tactic.CategoryTheory.Monoidal
-import Mathlib.Tactic.CategoryTheory.Bicategory
 
 /-!
 # String Diagram Widget
