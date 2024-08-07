@@ -387,6 +387,12 @@ def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
 @[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.reverse i = p i.rev := rfl
 
+@[simp] lemma last_reverse (p : RelSeries r) : p.reverse.last = p.head := by
+  simp [RelSeries.last, RelSeries.head]
+
+@[simp] lemma head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
+  simp [RelSeries.last, RelSeries.head]
+
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
 a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
