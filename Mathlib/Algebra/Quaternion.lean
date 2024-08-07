@@ -295,7 +295,6 @@ section
 -- We temporarily remove the `CommRing R` instance.
 variable {R : Type*} {c₁ c₂ : R} {a : ℍ[R,c₁,c₂]} [SMul S R] [SMul T R] (s : S)
 
--- Porting note: Lean 4 auto drops the unused `[Ring R]` argument
 instance : SMul S ℍ[R,c₁,c₂] where smul s a := ⟨s • a.1, s • a.2, s • a.3, s • a.4⟩
 
 instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂] where
