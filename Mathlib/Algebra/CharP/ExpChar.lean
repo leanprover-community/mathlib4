@@ -91,6 +91,22 @@ theorem char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p 
     decide
   · exact ⟨fun hpq => hpq.symm ▸ hq_prime, fun _ => CharP.eq R hp hq_hchar⟩
 
+/-- The exponential characteristic is a prime number or one.
+See also `CharP.char_is_prime_or_zero`. -/
+theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 := by
+  cases hq with
+  | zero => exact .inr rfl
+  | prime hp => exact .inl hp
+
+/-- The exponential characteristic is positive. -/
+theorem expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
+  rcases expChar_is_prime_or_one R q with h | rfl
+  exacts [Nat.Prime.pos h, Nat.one_pos]
+
+/-- Any power of the exponential characteristic is positive. -/
+theorem expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
+  Nat.pos_pow_of_pos n (expChar_pos R q)
+
 section Nontrivial
 
 variable [Nontrivial R]
@@ -125,22 +141,6 @@ theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) :
   cases' CharP.char_is_prime_or_zero R p with h h
   · exact h
   · contradiction
-
-/-- The exponential characteristic is a prime number or one.
-See also `CharP.char_is_prime_or_zero`. -/
-theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 := by
-  cases hq with
-  | zero => exact .inr rfl
-  | prime hp => exact .inl hp
-
-/-- The exponential characteristic is positive. -/
-theorem expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
-  rcases expChar_is_prime_or_one R q with h | rfl
-  exacts [Nat.Prime.pos h, Nat.one_pos]
-
-/-- Any power of the exponential characteristic is positive. -/
-theorem expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
-  Nat.pos_pow_of_pos n (expChar_pos R q)
 
 end NoZeroDivisors
 

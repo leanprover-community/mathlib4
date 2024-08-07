@@ -270,8 +270,6 @@ instance (i : ι) : Inhabited (Pair d i) :=
       head := 1,
       fstIdx_ne := fun h => by cases h }⟩
 
-variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
-
 @[ext]
 theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
     (hlist : w₁.toList = w₂.toList) : w₁ = w₂ := by
@@ -280,6 +278,53 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
   simp_all
 
 open Subgroup.IsComplement
+
+instance baseAction : MulAction H (NormalWord d) :=
+  { smul := fun h w => { w with head := h * w.head },
+    one_smul := by simp [instHSMul]
+    mul_smul := by simp [instHSMul, mul_assoc] }
+
+theorem base_smul_def' (h : H) (w : NormalWord d) :
+    h • w = { w with head := h * w.head } := rfl
+/-- Take the product of a normal word as an element of the `PushoutI`. We show that this is
+bijective, in `NormalWord.equiv`. -/
+def prod (w : NormalWord d) : PushoutI φ :=
+  base φ w.head * ofCoprodI (w.toWord).prod
+
+@[simp]
+theorem prod_base_smul (h : H) (w : NormalWord d) :
+    (h • w).prod = base φ h * w.prod := by
+  simp only [base_smul_def', prod, map_mul, mul_assoc]
+
+@[simp]
+theorem prod_empty : (empty : NormalWord d).prod = 1 := by
+  simp [prod, empty]
+
+/-- A constructor that multiplies a `NormalWord` by an element, with condition to make
+sure the underlying list does get longer.  -/
+@[simps!]
+noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
+    (hgr : g ∉ (φ i).range) : NormalWord d :=
+  letI n := (d.compl i).equiv (g * (φ i w.head))
+  letI w' := Word.cons (n.2 : G i) w.toWord hmw
+    (mt (coe_equiv_snd_eq_one_iff_mem _ (d.one_mem _)).1
+      (mt (mul_mem_cancel_right (by simp)).1 hgr))
+  { toWord := w'
+    head := (MonoidHom.ofInjective (d.injective i)).symm n.1
+    normalized := fun i g hg => by
+      simp only [w', Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
+      rcases hg with ⟨rfl, hg | hg⟩
+      · simp
+      · exact w.normalized _ _ (by assumption) }
+
+@[simp]
+theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
+    (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
+  simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv,
+    mul_assoc, MonoidHom.apply_ofInjective_symm, List.prod_cons, map_mul, map_inv,
+    ofCoprodI_of, inv_mul_cancel_left]
+
+variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
 we multiply by an element of the base group it still has this property,
@@ -337,23 +382,6 @@ theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
   have : h₁⁻¹ * h₂ = 1 := eq_one_of_smul_normalized w₂ (h₁⁻¹ * h₂) hw₂ hw₁
   rw [inv_mul_eq_one] at this; subst this
   simp
-
-/-- A constructor that multiplies a `NormalWord` by an element, with condition to make
-sure the underlying list does get longer.  -/
-@[simps!]
-noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : NormalWord d :=
-  letI n := (d.compl i).equiv (g * (φ i w.head))
-  letI w' := Word.cons (n.2 : G i) w.toWord hmw
-    (mt (coe_equiv_snd_eq_one_iff_mem _ (d.one_mem _)).1
-      (mt (mul_mem_cancel_right (by simp)).1 hgr))
-  { toWord := w'
-    head := (MonoidHom.ofInjective (d.injective i)).symm n.1
-    normalized := fun i g hg => by
-      simp only [w', Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
-      rcases hg with ⟨rfl, hg | hg⟩
-      · simp
-      · exact w.normalized _ _ (by assumption) }
 
 /-- Given a pair `(head, tail)`, we can form a word by prepending `head` to `tail`, but
 putting head into normal form first, by making sure it is expressed as an element
@@ -416,14 +444,6 @@ noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :
     mul_smul := fun _ _ _ => by
       dsimp [instHSMul]
       simp [mul_assoc, Equiv.apply_symm_apply, Function.End.mul_def] }
-
-instance baseAction : MulAction H (NormalWord d) :=
-  { smul := fun h w => { w with head := h * w.head },
-    one_smul := by simp [instHSMul]
-    mul_smul := by simp [instHSMul, mul_assoc] }
-
-theorem base_smul_def' (h : H) (w : NormalWord d) :
-    h • w = { w with head := h * w.head } := rfl
 
 theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
     g • w = (equivPair i).symm
@@ -500,10 +520,6 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
 
-/-- Take the product of a normal word as an element of the `PushoutI`. We show that this is
-bijective, in `NormalWord.equiv`. -/
-def prod (w : NormalWord d) : PushoutI φ :=
-  base φ w.head * ofCoprodI (w.toWord).prod
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
@@ -524,28 +540,12 @@ theorem prod_summand_smul {i : ι} (g : G i) (w : NormalWord d) :
     Word.prod_smul, ofCoprodI_of, inv_mul_cancel_left, mul_inv_cancel_left]
 
 @[simp]
-theorem prod_base_smul (h : H) (w : NormalWord d) :
-    (h • w).prod = base φ h * w.prod := by
-  simp only [base_smul_def', prod, map_mul, mul_assoc]
-
-@[simp]
 theorem prod_smul (g : PushoutI φ) (w : NormalWord d) :
     (g • w).prod = g * w.prod := by
   induction g using PushoutI.induction_on generalizing w with
   | of i g => rw [of_smul_eq_smul, prod_summand_smul]
   | base h => rw [base_smul_eq_smul, prod_base_smul]
   | mul x y ihx ihy => rw [mul_smul, ihx, ihy, mul_assoc]
-
-@[simp]
-theorem prod_empty : (empty : NormalWord d).prod = 1 := by
-  simp [prod, empty]
-
-@[simp]
-theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
-  simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv,
-    mul_assoc, MonoidHom.apply_ofInjective_symm, List.prod_cons, map_mul, map_inv,
-    ofCoprodI_of, inv_mul_cancel_left]
 
 theorem prod_smul_empty (w : NormalWord d) : w.prod • empty = w := by
   induction w using consRecOn with
