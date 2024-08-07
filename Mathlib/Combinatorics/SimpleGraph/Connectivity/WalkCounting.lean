@@ -172,27 +172,20 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
-lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔
-    Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
-  rw [Nat.card_eq_fintype_card]
-  simp only [← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
-    ConnectedComponent.mem_supp_iff, Fintype.card_subtype_compl,
-    ← Set.toFinset_card, Set.toFinset_iUnion ConnectedComponent.supp]
-  rw [Finset.card_biUnion
-    (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
-  simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card]
-  rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
-  exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ Nat.card x.supp))
-
 lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel G.Adj]
     [DecidableRel G'.Adj] (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd (Nat.card c'.supp) ↔ Odd (Nat.card
-    ({(c : {c : ConnectedComponent G | c.supp ⊆ c'.supp}) | Odd (Nat.card c.1.supp) })) := by
+    ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
+
   rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset, Set.filter_mem_univ_eq_toFinset,
     Set.toFinset_card]
   haveI : DecidablePred (fun c : ConnectedComponent G ↦ c.supp ⊆ c'.supp) := Classical.decPred _
   haveI : Fintype (⋃ (c : ConnectedComponent G) (_ : c.supp ⊆ c'.supp), c.supp) := by
     apply Set.fintypeiUnion
+  haveI (v : V): Decidable (v ∈ ⋃ (c : ConnectedComponent G) (_ : c.supp ⊆ c'.supp), c.supp) := Classical.dec _
+
+  haveI : Fintype (@Set.Elem V (⋃ (c : ConnectedComponent G) (_ : c.supp ⊆ c'.supp), c.supp)) := by
+    infer_instance
   conv =>
     lhs
     rw [(c'.biUnion_supp_eq_supp h).symm]
@@ -203,6 +196,37 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel 
   simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card]
   rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
   apply Finset.odd_sum_iff_odd_card_odd
+
+lemma ConnectedComponent.top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
+  c.supp = (Set.univ : Set V) := by
+  have ⟨w, hw⟩ := c.exists_rep
+  ext v
+  simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
+  apply SimpleGraph.ConnectedComponent.sound
+  exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
+
+instance [IsEmpty V] : IsEmpty (ConnectedComponent G) := by
+  by_contra! hc
+  rw [@not_isEmpty_iff] at hc
+  obtain ⟨v, _⟩ := (Classical.inhabited_of_nonempty hc).default.exists_rep
+  exact IsEmpty.false v
+
+
+lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔
+    Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
+  if h : Nonempty V then
+    let v := (Classical.inhabited_of_nonempty h).default
+    haveI : DecidableRel G.Adj := Classical.decRel _
+    have : Nat.card ((⊤ : SimpleGraph V).connectedComponentMk v).supp = Nat.card V := by
+      simpa using (set_fintype_card_eq_univ_iff _).mpr
+        ((⊤ : SimpleGraph V).connectedComponentMk v).top_supp_eq_univ
+    rw [← this, ((⊤ : SimpleGraph V).connectedComponentMk v).odd_card_supp_iff_odd_subcomponents _ (OrderTop.le_top G)]
+    simp [ConnectedComponent.top_supp_eq_univ]
+  else
+    rw [@not_nonempty_iff] at h
+    simp only [Nat.card_of_isEmpty, Nat.card_eq_fintype_card, Fintype.card_eq_zero, Nat.odd_iff_not_even, even_zero,
+      not_true_eq_false, Set.setOf_false, Fintype.card_ofIsEmpty]
+
 
 end Finite
 
