@@ -24,7 +24,7 @@ the state in a subtle way and most tactics are expected to be able to handle the
 For instance,
 * adding `have := 0` introduces meta-data in the goal;
 * adding `have h := h`, where `h` is an existing hypothesis creates a copy of `h` with
-  an "unstantiated metavariable";
+  an "uninstantiated metavariable";
 * adding `have h' := h`, where `h` is an existing hypothesis add an `h'` that was not present in
   the initial `LocalContext`.
 
