@@ -656,7 +656,7 @@ end Reduced
 
 /-- The intersection of the images of the maps from any two distinct groups in the diagram
 into the amalgamated product is the image of the map from the base group in the diagram. -/
-theorem inf_of_range_eq_base_range [DecidableEq ι] [(i : ι) → DecidableEq (G i)]
+theorem inf_of_range_eq_base_range
     (hφ : ∀ i, Injective (φ i)) {i j : ι} (hij : i ≠ j) :
     (of i).range ⊓ (of j).range = (base φ).range :=
   le_antisymm

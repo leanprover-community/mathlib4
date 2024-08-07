@@ -149,14 +149,14 @@ lemma SurjectiveOnStalks.exists_mul_eq_tmul
 
 variable (S) in
 lemma surjectiveOnStalks_of_isLocalization
-    [Algebra R T] [Algebra R S] [Algebra S T] [IsLocalization M S] :
+    [Algebra R S] [IsLocalization M S] :
     SurjectiveOnStalks (algebraMap R S) := by
   refine surjectiveOnStalks_of_exists_div fun s ↦ ?_
   obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M s
   exact ⟨x, s, IsLocalization.map_units S s, IsLocalization.mk'_spec' S x s⟩
 
 lemma SurjectiveOnStalks.baseChange
-    [Algebra R T] [Algebra R S] [Algebra S T]
+    [Algebra R T] [Algebra R S]
     (hf : (algebraMap R T).SurjectiveOnStalks) :
     (algebraMap S (S ⊗[R] T)).SurjectiveOnStalks := by
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
