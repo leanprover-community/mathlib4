@@ -32,27 +32,107 @@ of the permutation induced given by `Equiv.Perm.Basis.θ`.
 -/
 variable {α : Type*} [Fintype α] [DecidableEq α] (g : Equiv.Perm α)
 
-namespace Equiv.Perm.OnCycleFactors
-
 open Equiv.Perm Equiv Finset MulAction
 
-theorem sign_θ
+namespace Equiv.Perm
+
+section
+
+variable {α : Type*} [DecidableEq α] [Fintype α]
+
+theorem sameCycle_iff_cycleOf_eq_of_mem_support
+    {g : Perm α} {x y : α} (hx : x ∈ g.support) (hy : y ∈ g.support) :
+    g.SameCycle x y ↔ g.cycleOf x = g.cycleOf y := by
+  constructor
+  · exact SameCycle.cycleOf_eq
+  · intro h
+    rw [← mem_support_cycleOf_iff' (mem_support.mp hx), h]
+    rw [mem_support_cycleOf_iff' (mem_support.mp hy)]
+
+/- theorem cycleType_prime_order' (σ : Equiv.Perm α) (p : ℕ) [hp : Fact (Nat.Prime p)] :
+    σ ^ p = 1 ↔ ∃ (n : ℕ), σ.cycleType = Multiset.replicate n p := by
+  constructor
+  · intro hσ
+    by_cases hσ' : σ = 1
+    · use 0; simp [hσ']
+    · suffices orderOf σ = p by
+        rw [← this]
+        obtain ⟨n, h⟩ := σ.cycleType_prime_order (by rw [this]; exact hp.elim)
+        use n + 1, h
+      exact orderOf_eq_prime hσ hσ'
+  · rintro ⟨n, h⟩
+    rw [Multiset.eq_replicate] at h
+    rw [← orderOf_dvd_iff_pow_eq_one, ← lcm_cycleType, Multiset.lcm_dvd]
+    intro b hb; simp only [h.2 b hb, dvd_refl]
+-/
+
+ theorem cycleType_prime_order' (σ : Equiv.Perm α) (p : ℕ) [hp : Fact (Nat.Prime p)] :
+    σ ^ p = 1 ↔ ∀ c ∈ σ.cycleType, c = p := by
+  constructor
+  · intro hσ
+    by_cases hσ' : σ = 1
+    · simp [hσ']
+    · suffices orderOf σ = p by
+        rw [← this]
+        obtain ⟨n, h⟩ := σ.cycleType_prime_order (by rw [this]; exact hp.elim)
+        intro c hc
+        rw [h] at hc
+        exact Multiset.eq_of_mem_replicate hc
+      exact orderOf_eq_prime hσ hσ'
+  · intro h
+    rw [← orderOf_dvd_iff_pow_eq_one, ← lcm_cycleType, Multiset.lcm_dvd]
+    intro b hb; simp only [h b hb, dvd_refl]
+
+
+end
+
+section NoncommCoProd
+
+theorem MonoidHom.comp_noncommPiCoprod {M : Type*} [Monoid M] {ι : Type*} [Fintype ι]
+    {N : ι → Type u_3} [(i : ι) → Monoid (N i)]
+    (ϕ : (i : ι) → N i →* M)
+    (hcomm : Pairwise fun i j => ∀ x y, Commute ((ϕ i) x) ((ϕ j) y))
+    {P : Type*} [Monoid P] (f : M →* P)
+    (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
+      Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by
+        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map  (h y) f]))) :
+    f.comp (MonoidHom.noncommPiCoprod ϕ hcomm) =
+      MonoidHom.noncommPiCoprod (fun i ↦ f.comp (ϕ i)) hcomm' :=
+  MonoidHom.ext fun _ ↦ by
+    simp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
+      Function.comp_apply, map_noncommProd]
+
+end NoncommCoProd
+
+namespace OnCycleFactors
+
+theorem sign_θHom
     (k : Perm (Function.fixedPoints g))
     (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) :
-    sign (θ g ⟨k, v⟩) = sign k *
+    sign (θHom g ⟨k, v⟩) = sign k *
         Finset.univ.prod fun c => sign (v c : Perm α) :=  by
-  rw [← Prod.fst_mul_snd ⟨k, v⟩]
-  simp only [map_mul]
-  apply congr_arg₂
-  · simp only [θ_apply_fst, sign_ofSubtype]
-  · rw [← MonoidHom.inr_apply, ← MonoidHom.comp_apply]
-    conv_lhs => rw [← Finset.noncommProd_mul_single v]
-    simp only [Finset.map_noncommProd]
-    rw [Finset.noncommProd_eq_prod]
-    apply Finset.prod_congr rfl
-    intro c _
-    simp only [MonoidHom.inr_apply, MonoidHom.coe_comp, Function.comp_apply]
-    rw [θ_apply_single_zpowers]
+  rw [θHom, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩]
+  simp only [Prod.mk_mul_mk, mul_one, one_mul, map_mul, sign_ofSubtype, Finset.univ_eq_attach,
+    mul_right_inj]
+  rw [← MonoidHom.comp_apply]
+  simp only [Subgroup.noncommPiCoprod]
+  rw [MonoidHom.comp_noncommPiCoprod]
+  rw [MonoidHom.noncommPiCoprod_apply, Finset.noncommProd_eq_prod]
+  simp only [univ_eq_attach, MonoidHom.coe_comp, Subgroup.coeSubtype, Function.comp_apply]
+
+theorem cycleType_θHom
+    (k : Perm (Function.fixedPoints g))
+    (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) :
+    cycleType (θHom g ⟨k, v⟩) = cycleType k +
+        Finset.univ.sum fun c => cycleType (v c : Perm α) :=  by
+  rw [θHom, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩]
+  simp only [Prod.mk_mul_mk, mul_one, one_mul, univ_eq_attach]
+  rw [Disjoint.cycleType (disjoint₁₂ k v)]
+  apply congr_arg₂ _ cycleType_ofSubtype
+  simp only [Subgroup.noncommPiCoprod_apply]
+  rw [Equiv.Perm.Disjoint.cycleType_noncommProd]
+  simp only [univ_eq_attach]
+  exact fun c _ d _ h ↦ pairdisjoint₂ h (v c) (v d) (v c).prop (v d).prop
 
 variable {g} in
 theorem odd_of_centralizer_le_alternatingGroup
@@ -70,9 +150,9 @@ theorem odd_of_centralizer_le_alternatingGroup
     · rw [mem_cycleFactorsFinset_iff] at hc
       exact hc.left
   apply h
-  apply θ_range_le_centralizer
+  apply θHom_range_le_centralizer
   use ⟨1, Pi.mulSingle ⟨c, hc⟩ ⟨c, Subgroup.mem_zpowers c⟩⟩
-  rw [θ_apply_single]
+  simp [θHom, MonoidHom.noncommCoprod]
 
 end Equiv.Perm.OnCycleFactors
 
@@ -163,25 +243,13 @@ theorem card_le_of_centralizer_le_alternating
   change 2 + g.cycleType.sum ≤ _ at hm
   suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
-    suffices sign (θ g ⟨swap a b, 1⟩) ≠ 1 by
-      exact this (h (θ_range_le_centralizer (Set.mem_range_self _)))
-    simp only [θ_apply_fst, ofSubtype_swap_eq, sign_swap', Subtype.coe_inj,
-      ne_eq, ite_eq_left_iff, neg_units_ne_self, imp_false, Decidable.not_not]
-    exact hab
+    suffices sign (θHom g ⟨swap a b, 1⟩) ≠ 1 by
+      exact this (h (θHom_range_le_centralizer (Set.mem_range_self _)))
+    simp [sign_θHom, hab]
   rwa [card_fixedPoints g, Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
   rw [sum_cycleType]
   exact Finset.card_le_univ _
 
-theorem _root_.Equiv.Perm.sameCycle_iff_cycleOf_eq_of_mem_support
-    {g : Perm α} {x y : α} (hx : x ∈ g.support) (hy : y ∈ g.support) :
-    g.SameCycle x y ↔ g.cycleOf x = g.cycleOf y := by
-  constructor
-  · exact SameCycle.cycleOf_eq
-  · intro h
-    rw [← mem_support_cycleOf_iff' (mem_support.mp hx), h]
-    rw [mem_support_cycleOf_iff' (mem_support.mp hy)]
-
--- FIND A BETTER NAME
 theorem count_le_one_of_centralizer_le_alternating
     (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     ∀ i, g.cycleType.count i ≤ 1 := by
@@ -196,14 +264,13 @@ theorem count_le_one_of_centralizer_le_alternating
   suffices hτ : τ ∈ range_toPermHom' g by
     set k := toCentralizer a ⟨τ, hτ⟩ with hk
     have hk' : toPermHom g k = τ := toCentralizer_rightInverse a ⟨τ, hτ⟩
-    have hk2 (c : g.cycleFactorsFinset) : k • c = τ c := by
-      rw [← hk', toPermHom_apply]
-    have hksup : (k : Perm α).support ≤ g.support := by
+    have hk2 (c : g.cycleFactorsFinset) : k • c = τ c := by rw [← hk']; rfl
+    /- have hksup : (k : Perm α).support ≤ g.support := by
       intro x
       simp only [Equiv.Perm.mem_support, not_imp_not]
       intro hx
       rw [← Equiv.Perm.not_mem_support] at hx
-      exact k_apply_of_not_mem_support a ⟨τ, hτ⟩ hx
+      exact k_apply_of_not_mem_support a ⟨τ, hτ⟩ hx -/
     suffices hsign_k : Equiv.Perm.sign (k : Perm α) = -1 by
       rw [h _, ← Units.eq_iff] at hsign_k
       exact Int.noConfusion hsign_k
@@ -216,69 +283,45 @@ theorem count_le_one_of_centralizer_le_alternating
       but it will be sufficient to observe that `k ^ 2 = 1`
       (which implies that `k.cycleType` is of the form (2,2,…))
       and to control its support. -/
-    suffices (k : Perm α).cycleType = Multiset.replicate c.support.card 2 by
-      rw [Equiv.Perm.sign_of_cycleType]; rw [this]
+    suffices ∀ b ∈ (k : Perm α).cycleType, b = 2 by
+      let this' := Multiset.eq_replicate_card.mpr this
+      rw [sign_of_cycleType, this']
       simp only [Multiset.sum_replicate, smul_eq_mul, Multiset.card_replicate]
       rw [Odd.neg_one_pow]
       rw [Nat.odd_add']
-      simp only [odd_of_centralizer_le_alternatingGroup h c.support.card
-        (by rw [Equiv.Perm.cycleType_def, Multiset.mem_map]
-            exact ⟨c, hc, rfl⟩),
-        true_iff_iff]
-      rw [mul_comm]; apply even_two_mul
+      simp only [even_two, Even.mul_left, iff_true]
+      apply odd_of_centralizer_le_alternatingGroup h
+      suffices that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card by
+        rw [that]
+        simp only [cycleType_def, Multiset.mem_map]
+        exact ⟨c , hc, by simp only [Function.comp_apply]⟩
 
-    suffices ∀ i ∈ (k : Perm α).cycleType, i = 2 by
-      rw [← Multiset.eq_replicate_card] at this
-      rw [this]
-      congr
-      --
-      have this' : (k : Perm α).cycleType.sum = (k : Perm α).support.card :=
+      have this'' : (k : Perm α).cycleType.sum = (k : Perm α).support.card :=
         sum_cycleType _
-      rw [this] at this'
-      simp only [Multiset.sum_replicate, smul_eq_mul] at this'
-      rw [← mul_left_inj', this', hk, toCentralizer]
-      simp only [MonoidHom.coe_mk, OneHom.coe_mk, a.card_ofPerm_support]
-      simp only [τ]
+      rw [this', Multiset.sum_replicate, smul_eq_mul] at this''
+      rw [← mul_left_inj' (c := 2) (by norm_num), this'']
+      simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
       have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
-      rw [Equiv.Perm.support_swap H]
-      rw [Finset.sum_insert, Finset.sum_singleton]
-      · simp only
-        rw [Equiv.Perm.OnCycleFactors.mem_range_toPermHom'_iff] at hτ
-        specialize hτ ⟨c, hc⟩
-        simp only [τ, Equiv.swap_apply_left] at hτ
-        rw [hτ, mul_two]
-      · simp only [Finset.mem_singleton, H, not_false_eq_true]
-      · norm_num
-
-   -- ∀ i ∈ k.cycle_type, i = 2
-    suffices hk2 : orderOf (k : Perm α) = 2 by
-      have hk2' : Nat.Prime (orderOf (k : Perm α)) := by
-        rw [hk2]; exact Nat.prime_two
-      obtain ⟨n, hn⟩ := Equiv.Perm.cycleType_prime_order hk2'
-      intro i hi
-      rw [hn, hk2, Multiset.mem_replicate] at hi
-      exact hi.right
-    apply orderOf_eq_prime
-    · -- k ^ 2 = 1,
-      simp only [k]
-      rw [← Subgroup.coe_pow, ← map_pow]
-      suffices  (⟨τ, hτ⟩ : range_toPermHom' g) ^ 2 = 1  by
-        simp only [this, map_one, OneMemClass.coe_one]
-      rw [← Subtype.coe_inj]
-      simp only [SubmonoidClass.mk_pow, OneMemClass.coe_one, τ]
-      simp only [pow_two, Equiv.swap_mul_self]
-    · -- k ≠ 1
-      intro hk
-      simp only [OneMemClass.coe_eq_one] at hk
-      apply hm'
-      specialize hk2 ⟨c, hc⟩
-      simpa only [← Subtype.coe_inj, hk, one_smul, τ, swap_apply_left] using hk2
-  · intro x
-    by_cases hx : x = ⟨c, hc⟩
-    · rw [hx, Equiv.swap_apply_left]; exact hm.symm
-    by_cases hx' : x = ⟨d, hd⟩
-    · rw [hx', Equiv.swap_apply_right]; exact hm
-    · rw [Equiv.swap_apply_of_ne_of_ne hx hx']
+      simp only [τ, support_swap H]
+      rw [Finset.sum_insert (by simp only [mem_singleton, H, not_false_eq_true]),
+        Finset.sum_singleton]
+      rw [Equiv.Perm.OnCycleFactors.mem_range_toPermHom'_iff] at hτ
+      specialize hτ ⟨c, hc⟩
+      simp only [τ, Equiv.swap_apply_left] at hτ
+      rw [hτ, mul_two]
+    rw [← cycleType_prime_order', ← Subgroup.coe_pow, ← Subgroup.coe_one, Subtype.coe_inj]
+    simp only [k, ← map_pow]
+    suffices  (⟨τ, hτ⟩ : range_toPermHom' g) ^ 2 = 1  by
+      simp only [this, map_one, OneMemClass.coe_one]
+    rw [← Subtype.coe_inj]
+    simp only [SubmonoidClass.mk_pow, OneMemClass.coe_one, τ]
+    simp only [pow_two, Equiv.swap_mul_self]
+  intro x
+  by_cases hx : x = ⟨c, hc⟩
+  · rw [hx, Equiv.swap_apply_left]; exact hm.symm
+  by_cases hx' : x = ⟨d, hd⟩
+  · rw [hx', Equiv.swap_apply_right]; exact hm
+  · rw [Equiv.swap_apply_of_ne_of_ne hx hx']
 
 end OnCycleFactors
 
@@ -299,10 +342,10 @@ theorem centralizer_le_alternating_iff :
       card_le_of_centralizer_le_alternating g h,
       count_le_one_of_centralizer_le_alternating g h⟩
   · rintro ⟨h_odd, h_fixed, h_count⟩ x hx
-    suffices hx' : x ∈ (θ g).range by
+    suffices hx' : x ∈ (θHom g).range by
       obtain ⟨⟨y, uv⟩, rfl⟩ := MonoidHom.mem_range.mp hx'
       rw [Equiv.Perm.mem_alternatingGroup]
-      have := sign_θ (g := g) y uv
+      have := sign_θHom (g := g) y uv
       rw [this]
       convert mul_one _
       · apply Finset.prod_eq_one
@@ -324,7 +367,7 @@ theorem centralizer_le_alternating_iff :
         rw [card_fixedPoints g, tsub_le_iff_left]
         exact h_fixed
     -- x ∈ set.range (on_cycle_factors.ψ g)
-    rw [mem_θ_range_iff]
+    rw [mem_θHom_range_iff]
     use hx
     have that := mem_range_toPermHom_iff (τ :=  (toPermHom g) ⟨x, hx⟩)
     simp only [MonoidHom.mem_range, exists_apply_eq_apply, true_iff] at that

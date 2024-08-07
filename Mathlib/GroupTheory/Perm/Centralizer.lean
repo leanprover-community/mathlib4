@@ -332,9 +332,10 @@ theorem Disjoint.cycleType_mul
 
 theorem Disjoint.cycleType_noncommProd
     {ι : Type*} {k : ι → Perm α} {s : Finset ι}
-    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j)) :
-    (s.noncommProd k (hs.imp (fun _ _ ↦ Perm.Disjoint.commute))).cycleType =
-      s.sum fun i ↦ (k i).cycleType := by
+    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
+    (hs' : Set.Pairwise s fun i j ↦ Commute (k i) (k j) :=
+      hs.imp (fun _ _ ↦ Perm.Disjoint.commute)):
+    (s.noncommProd k hs').cycleType = s.sum fun i ↦ (k i).cycleType := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
