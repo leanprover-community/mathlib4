@@ -11,6 +11,33 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 open MonoidalCategory
 
+def mkIsoRefl (f : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  return mkAppN (.const ``Iso.refl (← getLevels))
+    #[ctx.C, ctx.instCat, f]
+
+def mkWhiskerRightIso (η : Expr) (h : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let f ← srcExprOfIso η
+  let g ← tgtExprOfIso η
+  return mkAppN (.const ``MonoidalCategory.whiskerRightIso (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, f, g, η, h]
+
+def mkIsoTrans (η θ : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let f ← srcExprOfIso η
+  let g ← tgtExprOfIso η
+  let h ← tgtExprOfIso θ
+  return mkAppN (.const ``Iso.trans (← getLevels))
+    #[ctx.C, ctx.instCat, f, g, h, η, θ]
+
+def mkIsoSymm (η : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let f ← srcExprOfIso η
+  let g ← tgtExprOfIso η
+  return mkAppN (.const ``Iso.symm (← getLevels))
+    #[ctx.C, ctx.instCat, f, g, η]
+
 inductive NormalizedHom (α : Type u) : Type u
   | nil : NormalizedHom α
   | cons : NormalizedHom α → α → NormalizedHom α
@@ -101,29 +128,25 @@ theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} (η : f
     Iso.inv_hom_id_assoc]
   simp only [← whisker_exchange_assoc, associator_inv_naturality_right_assoc]
 
-def eval₁ (p : NormalizedHom Expr) (C : Option Expr := none) : MetaM Expr := do
+def eval₁ (p : NormalizedHom Expr) : MonoidalM Expr := do
   match p with
-  | .nil =>
-    mkAppOptM ``MonoidalCategoryStruct.tensorUnit #[C, none, none]
-  | .cons fs f => do
-    let fs' ← eval₁ fs C
-    mkAppM ``MonoidalCategory.tensorObj #[fs', f]
+  | .nil => mkTensorUnit
+  | .cons fs f => mkTensorObj (← eval₁ fs) f
 
-partial def normalize (p : NormalizedHom Expr) (f : Expr) : MetaM Coherence.Result := do
-  let C ← inferType f
+partial def normalize (p : NormalizedHom Expr) (f : Expr) : MonoidalM Coherence.Result := do
   if let some _ ← isTensorUnit? f then
-    let α ← mkAppOptM ``MonoidalCategoryStruct.rightUnitor #[C, none, none, ← eval₁ p C]
+    let α ← mkRightUnitor (← eval₁ p)
     return ⟨p, α⟩
   else if let some (f, g) ← isTensorObj? f then
     let ⟨pf, Hf⟩ ← normalize p f
-    let Hf' ← mkAppM ``MonoidalCategory.whiskerRightIso #[Hf, g]
+    let Hf' ← mkWhiskerRightIso Hf g
     let ⟨pfg, Hg⟩ ← normalize pf g
-    let η ← mkAppM ``Iso.trans #[Hf', Hg]
-    let alpha ← mkAppM ``Iso.symm #[← mkAppM ``MonoidalCategory.associator #[← eval₁ p C, f, g]]
-    let η' ← mkAppM ``Iso.trans #[alpha, η]
+    let η ← mkIsoTrans Hf' Hg
+    let alpha ← mkIsoSymm (← mkAssociator (← eval₁ p) f g)
+    let η' ← mkIsoTrans alpha η
     return ⟨pfg, η'⟩
   else
-    let α ← mkAppOptM ``Iso.refl #[C, none, ← eval₁ (p.cons f) C]
+    let α ← mkIsoRefl (← eval₁ (p.cons f))
     return ⟨p.cons f, α⟩
 
 theorem of_normalize_eq {f g f' : C} (η θ : f ⟶ g) (η_f : 𝟙_ C ⊗ f ≅ f') (η_g : 𝟙_ C ⊗ g ≅ f')
@@ -136,19 +159,7 @@ theorem of_normalize_eq {f g f' : C} (η θ : f ⟶ g) (η_f : 𝟙_ C ⊗ f ≅
     _ = θ := by
       simp [← reassoc_of% h_θ]
 
-/-- The domain of a morphism. -/
-def srcExpr (η : Expr) : MetaM Expr := do
-  match (← whnfR (← inferType η)).getAppFnArgs with
-  | (``Quiver.Hom, #[_, _, f, _]) => return f
-  | _ => throwError "{η} is not a morphism"
-
-/-- The codomain of a morphism. -/
-def tgtExpr (η : Expr) : MetaM Expr := do
-  match (← whnfR (← inferType η)).getAppFnArgs with
-  | (``Quiver.Hom, #[_, _, _, g]) => return g
-  | _ => throwError "{η} is not a morphism"
-
-partial def naturality (p : NormalizedHom Expr) (η : Expr) : MetaM Expr := do
+partial def naturality (p : NormalizedHom Expr) (η : Expr) : MonoidalM Expr := do
   match η.getAppFnArgs with
   | (``Iso.hom, #[_, _, _, _, η]) =>
     match (← whnfR η).getAppFnArgs with
@@ -221,20 +232,22 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : MetaM Expr := do
     | _ => throwError "failed to prove the naturality for {η}"
 
 def pure_coherence (mvarId : MVarId) : MetaM (List MVarId) := mvarId.withContext do
-  let some (_, η, θ) := (← whnfR <| ← mvarId.getType).eq?
+  let e ← instantiateMVars <| ← mvarId.getType
+  let some (_, η, θ) := (← whnfR e).eq?
     | throwError "monoidal requires an equality goal"
   let f ← srcExpr η
   let g ← tgtExpr η
-  let ⟨_, αf⟩ ← normalize .nil f
-  let ⟨_, αg⟩ ← normalize .nil g
-  let Hη ← naturality .nil η
-  let Hθ ← naturality .nil θ
-  let H ← mkAppM ``of_normalize_eq #[η, θ, αf, αg, Hη, Hθ]
-  mvarId.apply H
+  let some ctx ← mkContext? η | throwError "the lhs and rhs must be 2-morphisms"
+  MonoidalM.run ctx do
+    let ⟨_, αf⟩ ← normalize .nil f
+    let ⟨_, αg⟩ ← normalize .nil g
+    let Hη ← naturality .nil η
+    let Hθ ← naturality .nil θ
+    let H ← mkAppM ``of_normalize_eq #[η, θ, αf, αg, Hη, Hθ]
+    mvarId.apply H
 
 elab "monoidal_coherence" : tactic => withMainContext do
-  let g ← getMainGoal
-  replaceMainGoal <| ← pure_coherence g
+  replaceMainGoal <| ← pure_coherence <| ← getMainGoal
 
 theorem mk_eq_of_cons {C : Type u} [CategoryStruct.{v} C]
     {f₁ f₂ f₃ f₄ : C}
@@ -285,7 +298,7 @@ def monoidal (g : MVarId) : MetaM (List MVarId) := g.withContext do
 
 /-- Normalize the both sides of an equality. -/
 elab "monoidal" : tactic => withMainContext do
-  replaceMainGoal (← monoidal (← getMainGoal))
+  replaceMainGoal <| ← monoidal <| ← getMainGoal
 
 end Monoidal
 

@@ -13,6 +13,39 @@ open Bicategory
 
 initialize registerTraceClass `bicategory
 
+def mkIsoRefl (f : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let instCat ← mkHomCatInst (← srcExpr f) (← tgtExpr f)
+  return mkAppN (.const ``Iso.refl [ctx.level₂, ctx.level₁])
+    #[← inferType f, instCat, f]
+
+def mkWhiskerRightIso (η : Expr) (h : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let f ← srcExprOfIso η
+  let g ← tgtExprOfIso η
+  let a ← srcExpr f
+  let b ← tgtExpr f
+  let c ← tgtExpr h
+  return mkAppN (.const ``Bicategory.whiskerRightIso (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, f, g, η, h]
+
+def mkIsoTrans (η θ : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let f ← srcExprOfIso η
+  let g ← tgtExprOfIso η
+  let h ← tgtExprOfIso θ
+  let instCat ← mkHomCatInst (← srcExpr f) (← tgtExpr f)
+  return mkAppN (.const ``Iso.trans [ctx.level₂, ctx.level₁])
+    #[← inferType f, instCat, f, g, h, η, θ]
+
+def mkIsoSymm (η : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let f ← srcExprOfIso η
+  let g ← tgtExprOfIso η
+  let instCat ← mkHomCatInst (← srcExpr f) (← tgtExpr f)
+  return mkAppN (.const ``Iso.symm [ctx.level₂, ctx.level₁])
+    #[← inferType f, instCat, f, g, η]
+
 inductive NormalizedHom (α : Type u) : Type u
   | nil (a : α) : NormalizedHom α
   | cons : NormalizedHom α → α → NormalizedHom α
@@ -72,7 +105,7 @@ theorem naturality_id (η_f : p ≫ f ≅ pf) :
   simp only [whiskerLeft_id, Category.id_comp]
 
 theorem naturality_comp
-    {p : a ⟶ b} {f g h : b ⟶ c}
+    {p : a ⟶ b} {f g h : b ⟶ c} {pf : a ⟶ c}
     (η : f ⟶ g) (θ : g ⟶ h) (η_f : (p ≫ f) ≅ pf) (η_g : (p ≫ g) ≅ pf) (η_h : p ≫ h ≅ pf)
     (ih_η : p ◁ η ≫ η_g.hom = η_f.hom) (ih_θ : p ◁ θ ≫ η_h.hom = η_g.hom) :
     p ◁ (η ≫ θ) ≫ η_h.hom = η_f.hom := by
@@ -100,27 +133,31 @@ theorem naturality_whiskerRight {p : a ⟶ b} {f g : b ⟶ c} {h : c ⟶ d} {pfh
 
 end
 
-def eval₁ (p : NormalizedHom Expr) : MetaM Expr := do match p with
+def eval₁ (p : NormalizedHom Expr) : BicategoryM Expr := do
+  let ctx ← read
+  match p with
   | .nil a =>
-    mkAppM ``CategoryStruct.id #[a]
-  | .cons fs f => do
+    return mkAppN (.const ``CategoryStruct.id [ctx.level₁, ctx.level₀])
+      #[ctx.B, ← mkCategoryStructInst₁ ,a]
+  | .cons fs f =>
     let fs' ← eval₁ fs
-    mkAppM ``CategoryStruct.comp #[fs', f]
+    return mkAppN (.const ``CategoryStruct.comp [ctx.level₁, ctx.level₀])
+      #[ctx.B, ← mkCategoryStructInst₁, ← srcExpr fs', ← tgtExpr fs', ← tgtExpr f, fs', f]
 
-partial def normalize (p : NormalizedHom Expr) (f : Expr) : MetaM Coherence.Result := do
+partial def normalize (p : NormalizedHom Expr) (f : Expr) : BicategoryM Coherence.Result := do
   if let some _ ← isId? f then
-    let α ← mkAppM ``Bicategory.rightUnitor #[← eval₁ p]
+    let α ← mkRightUnitor (← eval₁ p)
     return ⟨p, α⟩
   else if let some (f, g) ← isComp? f then
     let ⟨pf, Hf⟩ ← normalize p f
-    let Hf' ← mkAppM ``Bicategory.whiskerRightIso #[Hf, g]
+    let Hf' ← mkWhiskerRightIso Hf g
     let ⟨pfg, Hg⟩ ← normalize pf g
-    let η ← mkAppM ``Iso.trans #[Hf', Hg]
-    let alpha ← mkAppM ``Iso.symm #[← mkAppM ``Bicategory.associator #[← eval₁ p, f, g]]
-    let η' ← mkAppM ``Iso.trans #[alpha, η]
+    let η ← mkIsoTrans Hf' Hg
+    let alpha ← mkIsoSymm (← mkAssociator (← eval₁ p) f g)
+    let η' ← mkIsoTrans alpha η
     return ⟨pfg, η'⟩
   else
-    let α ← mkAppM ``Iso.refl #[← eval₁ (p.cons f)]
+    let α ← mkIsoRefl (← eval₁ (p.cons f))
     return ⟨p.cons f, α⟩
 
 theorem of_normalize_eq {a b : B} {f g f' : a ⟶ b}
@@ -134,7 +171,9 @@ theorem of_normalize_eq {a b : B} {f g f' : a ⟶ b}
     _ = θ := by
       simp [← reassoc_of% h_θ]
 
-partial def naturality (p : NormalizedHom Expr) (η : Expr) : MetaM Expr := do
+partial def naturality (p : NormalizedHom Expr) (η : Expr) : BicategoryM Expr := do
+  let B := (← read).B
+  let instB := (← read).instBicategory
   match η.getAppFnArgs with
   | (``Iso.hom, #[_, _, _, _, η]) =>
     match (← whnfR η).getAppFnArgs with
@@ -191,12 +230,15 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : MetaM Expr := do
         return result
     | (``CategoryStruct.comp, #[_, _, f, g, h, η, θ]) =>
       withTraceNode `bicategory (fun _ => return m!"comp") do
-        let ⟨_, η_f⟩ ← normalize p f
+        let ⟨pf, η_f⟩ ← normalize p f
         let ⟨_, η_g⟩ ← normalize p g
         let ⟨_, η_h⟩ ← normalize p h
         let ih_η ← naturality p η
         let ih_θ ← naturality p θ
-        let result ← mkAppM ``naturality_comp #[η, θ, η_f, η_g, η_h, ih_η, ih_θ]
+        let p ← eval₁ p
+        let result := mkAppN (.const ``naturality_comp (← getLevels))
+          #[B, instB, ← srcExpr p, ← tgtExpr p, ← tgtExpr f, p, f, g, h,
+            ← eval₁ pf, η, θ, η_f, η_g, η_h, ih_η, ih_θ]
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | (``Bicategory.whiskerLeft, #[_, _, _, _, _, f, g, h, η]) =>
@@ -220,8 +262,8 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : MetaM Expr := do
     | (``bicategoricalComp, #[_, _, _, _, _, _, _, _, inst, η, θ]) =>
       withTraceNode `bicategory (fun _ => return m!"bicategoricalComp") do
         let α ← mkAppOptM ``BicategoricalCoherence.hom #[none, none, none, none, none, none, inst]
-        let αθ ← mkAppM ``CategoryStruct.comp #[α, θ]
-        let ηαθ ← mkAppM ``CategoryStruct.comp #[η, αθ]
+        let αθ ← mkComp₂ α θ
+        let ηαθ ← mkComp₂ η αθ
         naturality p ηαθ
       | (``BicategoricalCoherence.hom, #[_, _, _, _, _, _, _]) =>
         withTraceNode `bicategory (fun _ => return m!"bicategoricalCoherence.hom") do
@@ -233,19 +275,23 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : MetaM Expr := do
 def pure_coherence (mvarId : MVarId) : MetaM (List MVarId) := mvarId.withContext do
   withTraceNode `bicategory (fun _ =>
       return m!"coherence equality: {← mvarId.getType}") do
-    let some (_, η, θ) := (← whnfR <| ← mvarId.getType).eq?
+    let e ← instantiateMVars <| ← mvarId.getType
+    let some (_, η, θ) := (← whnfR <| e).eq?
       | throwError "pure_coherence requires an equality goal"
     let f ← srcExpr η
     let g ← tgtExpr η
     let a ← srcExpr f
-    trace[bicategory] m!"LHS"
-    let ⟨_, η_f⟩ ← normalize (.nil a) f
-    let Hη ← naturality (.nil a) η
-    trace[bicategory] m!"RHS"
-    let ⟨_, η_g⟩ ← normalize (.nil a) g
-    let Hθ ← naturality (.nil a) θ
-    let H ← mkAppM ``of_normalize_eq #[η, θ, η_f, η_g, Hη, Hθ]
-    mvarId.apply H
+    let some ctx ← mkContext? η
+      | throwError "the lhs and rhs must be 2-morphisms"
+    BicategoryM.run ctx do
+      trace[bicategory] m!"LHS"
+      let ⟨_, η_f⟩ ← normalize (.nil a) f
+      let Hη ← naturality (.nil a) η
+      trace[bicategory] m!"RHS"
+      let ⟨_, η_g⟩ ← normalize (.nil a) g
+      let Hθ ← naturality (.nil a) θ
+      let H ← mkAppM ``of_normalize_eq #[η, θ, η_f, η_g, Hη, Hθ]
+      mvarId.apply H
 
 elab "bicategory_coherence" : tactic => withMainContext do
   let g ← getMainGoal
@@ -262,9 +308,12 @@ theorem mk_eq_of_cons {C : Type u} [CategoryStruct.{v} C]
 def mkEqOfHom₂ (mvarId : MVarId) : MetaM Expr := do
   let some (_, e₁, e₂) := (← whnfR <| ← mvarId.getType).eq?
     | throwError "bicategory requires an equality goal"
-  let ⟨e₁', p₁⟩ ← eval e₁
-  let ⟨e₂', p₂⟩ ← eval e₂
-  mkAppM ``mk_eq #[e₁, e₂, ← e₁'.e, ← e₂'.e, p₁, p₂]
+  let some ctx ← mkContext? e₁
+    | throwError "the lhs and rhs must be 2-morphisms"
+  BicategoryM.run ctx do
+    let ⟨e₁', p₁⟩ ← eval e₁
+    let ⟨e₂', p₂⟩ ← eval e₂
+    mkAppM ``mk_eq #[e₁, e₂, ← e₁'.e, ← e₂'.e, p₁, p₂]
 
 def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
   let e ← mvarId.getType

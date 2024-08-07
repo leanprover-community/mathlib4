@@ -29,23 +29,32 @@ namespace Mathlib.Tactic.Coherence
 open Lean Meta Elab Tactic
 open Mathlib.Tactic.Monoidal Mathlib.Tactic.Bicategory
 
-macro "pure_coherence" : tactic => `(tactic| monoidal_coherence <;> bicategory_coherence)
+def runMonoidalOrBicategory (mvarId : MVarId)
+    (monoidal : MVarId → MetaM (List MVarId))
+    (bicategory : MVarId → MetaM (List MVarId)) :
+    MetaM (List MVarId) := mvarId.withContext do
+  let e ← instantiateMVars <| ← mvarId.getType
+  let some (_, η, _) := (← whnfR <| e).eq? | throwError "coherence requires an equality goal"
+  let ctx ← Monoidal.mkContext? η
+  match ctx with
+  | .some _ => monoidal mvarId
+  | .none =>
+    let ctx ← Bicategory.mkContext? η
+    match ctx with
+    | .some _ => bicategory mvarId
+    | .none => throwError "the goal must be an equality in a monoidal category or bicategory"
 
-macro "coherence" : tactic => `(tactic| monoidal <;> bicategory)
+def pureCoherence (mvarId : MVarId) : MetaM (List MVarId) :=
+  runMonoidalOrBicategory mvarId Monoidal.pure_coherence Bicategory.pure_coherence
 
--- elab (name := coherence) "coherence" : tactic => withMainContext do
---   replaceMainGoal (← Monoidal.monoidal (← getMainGoal)) <|>
---     replaceMainGoal (← Bicategory.bicategory (← getMainGoal))
-  -- Bicategory.bicategory g
+elab "pure_coherence" : tactic => withMainContext do
+  replaceMainGoal <| ← pureCoherence <| ← getMainGoal
 
--- @[inherit_doc coherence]
--- elab_rules : tactic
--- | `(tactic| coherence) => do
---   evalTactic (← `(tactic|
---     (simp (config := {failIfUnchanged := false}) only [bicategoricalComp, monoidalComp]);
---     whisker_simps (config := {failIfUnchanged := false});
---     monoidal_simps (config := {failIfUnchanged := false})))
---   coherence_loop
+def coherence (mvarId : MVarId) : MetaM (List MVarId) :=
+  runMonoidalOrBicategory mvarId Monoidal.monoidal Bicategory.bicategory
+
+elab "coherence" : tactic => withMainContext do
+  replaceMainGoal <| ← coherence <| ← getMainGoal
 
 end Mathlib.Tactic.Coherence
 

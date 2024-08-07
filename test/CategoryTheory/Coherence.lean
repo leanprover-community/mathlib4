@@ -22,8 +22,8 @@ example (X₁ X₂ : C) :
   -- exact congrArg _ (Subsingleton.elim _ _)
 
 example {Y Z : C} (f : Y ⟶ Z) (g) (w : false) : (λ_ _).hom ≫ f = g := by
-  liftable_prefixes
-  guard_target = (𝟙 _ ≫ (λ_ _).hom) ≫ f = (𝟙 _) ≫ g
+  monoidal_nf
+  guard_target = _ ≫ f ≫ _ = _ ≫ g ≫ _
   cases w
 
 -- `coherence`
@@ -87,8 +87,6 @@ open scoped Bicategory
 
 
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
-
-example {a : B} (f : a ⟶ a) : 𝟙 f ▷ f = 𝟙 (f ≫ f) := by whisker_simps
 
 example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by bicategory_coherence
 example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by bicategory_coherence

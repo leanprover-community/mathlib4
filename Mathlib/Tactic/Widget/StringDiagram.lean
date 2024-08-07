@@ -6,6 +6,7 @@ Authors: Yuma Mizuno
 import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Presentation.Expr
 import Mathlib.Tactic.CategoryTheory.Monoidal
+import Mathlib.Tactic.CategoryTheory.Bicategory
 
 /-!
 # String Diagram Widget
@@ -54,7 +55,7 @@ namespace Mathlib.Tactic
 open Lean Meta Elab
 open CategoryTheory
 
-open Mathlib.Tactic.Monoidal
+open Mathlib.Tactic.Monoidal ProofWidgets.Penrose
 
 namespace Widget.StringDiagram
 
@@ -94,13 +95,13 @@ def Node.e : Node → Expr
 
 /-- The domain of the 2-morphism associated with a node as a list
 (the first component is the node itself). -/
-def Node.srcList : Node → MetaM (List (Node × Atom₁))
+def Node.srcList : Node → MonoidalM (List (Node × Atom₁))
   | Node.atom n => return (← n.atom.src).toList.map (fun f ↦ (.atom n, f))
   | Node.id n => return [(.id n, n.id)]
 
 /-- The codomain of the 2-morphism associated with a node as a list
 (the first component is the node itself). -/
-def Node.tarList : Node → MetaM (List (Node × Atom₁))
+def Node.tarList : Node → MonoidalM (List (Node × Atom₁))
   | Node.atom n => return (← n.atom.tgt).toList.map (fun f ↦ (.atom n, f))
   | Node.id n => return [(.id n, n.id)]
 
@@ -120,7 +121,7 @@ def Node.hPosTar : Node → ℕ
   | Node.id n => n.hPosTar
 
 /-- The list of nodes at the top of a string diagram. -/
-def topNodes (η : WhiskerLeftExpr) : MetaM (List Node) := do
+def topNodes (η : WhiskerLeftExpr) : MonoidalM (List Node) := do
   return (← η.src).toList.enum.map (fun (i, f) => .id ⟨0, i, i, f⟩)
 
 /-- Strings in a string diagram. -/
@@ -146,7 +147,7 @@ open Widget.StringDiagram
 
 /-- The list of nodes associated with a 2-morphism. The position is counted from the
 specified natural numbers. -/
-def WhiskerRightExpr.nodes (v h₁ h₂ : ℕ) : WhiskerRightExpr → MetaM (List Node)
+def WhiskerRightExpr.nodes (v h₁ h₂ : ℕ) : WhiskerRightExpr → MonoidalM (List Node)
   | WhiskerRightExpr.of η => do
     return [.atom ⟨v, h₁, h₂, η⟩]
   | WhiskerRightExpr.whisker η f => do
@@ -158,7 +159,7 @@ def WhiskerRightExpr.nodes (v h₁ h₂ : ℕ) : WhiskerRightExpr → MetaM (Lis
 
 /-- The list of nodes associated with a 2-morphism. The position is counted from the
 specified natural numbers. -/
-def TensorHomExpr.nodes (v h₁ h₂ : ℕ) : TensorHomExpr → MetaM (List Node)
+def TensorHomExpr.nodes (v h₁ h₂ : ℕ) : TensorHomExpr → MonoidalM (List Node)
   | TensorHomExpr.of η => η.nodes v h₁ h₂
   | TensorHomExpr.cons η ηs => do
     let s₁ ← η.nodes v h₁ h₂
@@ -169,7 +170,7 @@ def TensorHomExpr.nodes (v h₁ h₂ : ℕ) : TensorHomExpr → MetaM (List Node
 
 /-- The list of nodes associated with a 2-morphism. The position is counted from the
 specified natural numbers. -/
-def WhiskerLeftExpr.nodes (v h₁ h₂ : ℕ) : WhiskerLeftExpr → MetaM (List Node)
+def WhiskerLeftExpr.nodes (v h₁ h₂ : ℕ) : WhiskerLeftExpr → MonoidalM (List Node)
   | WhiskerLeftExpr.of η => η.nodes v h₁ h₂
   | WhiskerLeftExpr.whisker f η => do
     let s : Node := .id ⟨v, h₁, h₂, f⟩
@@ -178,7 +179,7 @@ def WhiskerLeftExpr.nodes (v h₁ h₂ : ℕ) : WhiskerLeftExpr → MetaM (List 
 
 /-- The list of nodes at the top of a string diagram. The position is counted from the
 specified natural number. -/
-def NormalExpr.nodesAux (v : ℕ) : NormalExpr → MetaM (List (List Node))
+def NormalExpr.nodesAux (v : ℕ) : NormalExpr → MonoidalM (List (List Node))
   | NormalExpr.nil α => return [(α.src).toList.enum.map (fun (i, f) => .id ⟨v, i, i, f⟩)]
   | NormalExpr.cons _ η ηs => do
     let s₁ ← η.nodes v 0 0
@@ -186,7 +187,7 @@ def NormalExpr.nodesAux (v : ℕ) : NormalExpr → MetaM (List (List Node))
     return s₁ :: s₂
 
 /-- The list of nodes associated with a 2-morphism. -/
-def NormalExpr.nodes (e : NormalExpr) : MetaM (List (List Node)) := do
+def NormalExpr.nodes (e : NormalExpr) : MonoidalM (List (List Node)) := do
   match e with
   | NormalExpr.nil _ => return []
   | NormalExpr.cons _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
@@ -196,7 +197,7 @@ def pairs {α : Type} : List α → List (α × α) :=
   fun l => l.zip (l.drop 1)
 
 /-- The list of strands associated with a 2-morphism. -/
-def NormalExpr.strands (e : NormalExpr) : MetaM (List (List Strand)) := do
+def NormalExpr.strands (e : NormalExpr) : MonoidalM (List (List Strand)) := do
   let l ← e.nodes
   (pairs l).mapM fun (x, y) ↦ do
     let xs := (← x.mapM (fun n ↦ n.tarList)).join
@@ -247,31 +248,41 @@ def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List Penro
   let vs' := ", ".intercalate (vs.map (fun v => toString v))
   addInstruction s!"{tp} {v} := {nm} ({vs'})"
 
+abbrev StringDiagramM := ReaderT Monoidal.Context DiagramBuilderM
+
+instance : MonadLift MonoidalM StringDiagramM where
+  monadLift x := do x.run (← read)
+
+def StringDiagramM.run {α : Type} (c : Monoidal.Context) (x : StringDiagramM α) :
+    DiagramBuilderM α :=
+  ReaderT.run x c
+
 open scoped Jsx in
 /-- Construct a string diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
-def mkStringDiagram (e : NormalExpr) : DiagramBuilderM PUnit := do
-  let nodes ← e.nodes
-  let strands ← e.strands
-  /- Add 2-morphisms. -/
-  for x in nodes.join do
-    match x with
-    | .atom _ => do addPenroseVar "Atom" x.toPenroseVar
-    | .id _ => do addPenroseVar "Id" x.toPenroseVar
-  /- Add constraints. -/
-  for l in nodes do
-    for (x₁, x₂) in pairs l do
-      addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
-  /- Add constraints. -/
-  for (l₁, l₂) in pairs nodes do
-    if let .some x₁ := l₁.head? then
-      if let .some x₂ := l₂.head? then
-        addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
-  /- Add 1-morphisms as strings. -/
-  for l in strands do
-    for s in l do
-      addConstructor "Mor1" s.toPenroseVar
-        "MakeString" [s.startPoint.toPenroseVar, s.endPoint.toPenroseVar]
+def mkStringDiagram (e : NormalExpr) (ctx : Monoidal.Context) : DiagramBuilderM PUnit := do
+  StringDiagramM.run ctx do
+    let nodes ← e.nodes
+    let strands ← e.strands
+    /- Add 2-morphisms. -/
+    for x in nodes.join do
+      match x with
+      | .atom _ => do addPenroseVar "Atom" x.toPenroseVar
+      | .id _ => do addPenroseVar "Id" x.toPenroseVar
+    /- Add constraints. -/
+    for l in nodes do
+      for (x₁, x₂) in pairs l do
+        addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
+    /- Add constraints. -/
+    for (l₁, l₂) in pairs nodes do
+      if let .some x₁ := l₁.head? then
+        if let .some x₂ := l₂.head? then
+          addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
+    /- Add 1-morphisms as strings. -/
+    for l in strands do
+      for s in l do
+        addConstructor "Mor1" s.toPenroseVar
+          "MakeString" [s.startPoint.toPenroseVar, s.endPoint.toPenroseVar]
 
 /-- Penrose dsl file for string diagrams. -/
 def dsl :=
@@ -283,10 +294,10 @@ def sty :=
 
 open scoped Jsx in
 /-- Construct a string diagram from the expression of a 2-morphism. -/
-def fromExpr (e : Expr) : MonoidalM Html := do
+def fromExpr (e : Expr) (ctx : Monoidal.Context) : MonoidalM Html := do
   let e' := (← eval e).expr
   DiagramBuilderM.run do
-    mkStringDiagram e'
+    mkStringDiagram e' ctx
     match ← DiagramBuilderM.buildDiagram dsl sty with
     | some html => return html
     | none => return <span>No non-structural morphisms found.</span>
@@ -295,7 +306,7 @@ def fromExpr (e : Expr) : MonoidalM Html := do
 def stringM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
   let some ctx ← mkContext? e | return none
-  return some <| ← MonoidalM.run ctx <| fromExpr e
+  return some <| ← MonoidalM.run ctx <| fromExpr e ctx
 
 open scoped Jsx in
 /-- Help function for displaying two string diagrams in an equality. -/
