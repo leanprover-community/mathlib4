@@ -710,7 +710,6 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
   have one_k : 1 ∈ k := mem_of_mem_nhds k_mem
   let A : Set (Set G) := {t | t ⊆ s ∧ PairwiseDisjoint t (fun x ↦ x • k)}
   obtain ⟨m, m_max⟩ : ∃ m, Maximal (· ∈ A) m := by
-  -- obtain ⟨m, mA, m_max⟩ : ∃ m ∈ A, ∀ a ∈ A, m ⊆ a → a = m := by
     apply zorn_subset
     intro c cA hc
     refine ⟨⋃ a ∈ c, a, ⟨?_, ?_⟩, ?_⟩
