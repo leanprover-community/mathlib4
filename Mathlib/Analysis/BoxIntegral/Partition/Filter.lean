@@ -266,10 +266,6 @@ theorem henstock_le_mcShane : Henstock ≤ McShane := by trivial
 theorem gp_le : GP ≤ l :=
   bot_le
 
-section ExplicitL
-
-variable (l)
-
 /-- The predicate corresponding to a base set of the filter defined by an
 `IntegrationParams`. It says that
 
@@ -285,7 +281,7 @@ Sacks-Henstock inequality to compare two prepartitions covering the same part of
 
 It is also automatically satisfied for any `c > 1`, see TODO section of the module docstring for
 details. -/
-structure MemBaseSet (I : Box ι) (c : ℝ≥0) (r : (ι → ℝ) → Ioi (0 : ℝ))
+structure MemBaseSet (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) (r : (ι → ℝ) → Ioi (0 : ℝ))
     (π : TaggedPrepartition I) : Prop where
   protected isSubordinate : π.IsSubordinate r
   protected isHenstock : l.bHenstock → π.IsHenstock
@@ -294,26 +290,26 @@ structure MemBaseSet (I : Box ι) (c : ℝ≥0) (r : (ι → ℝ) → Ioi (0 : �
     π'.iUnion = ↑I \ π.iUnion ∧ π'.distortion ≤ c
 
 /-- A predicate saying that in case `l.bRiemann = true`, the function `r` is a constant. -/
-def RCond {ι : Type*} (r : (ι → ℝ) → Ioi (0 : ℝ)) : Prop :=
+def RCond {ι : Type*} (l : IntegrationParams) (r : (ι → ℝ) → Ioi (0 : ℝ)) : Prop :=
   l.bRiemann → ∀ x, r x = r 0
 
 /-- A set `s : Set (TaggedPrepartition I)` belongs to `l.toFilterDistortion I c` if there exists
 a function `r : ℝⁿ → (0, ∞)` (or a constant `r` if `l.bRiemann = true`) such that `s` contains each
 prepartition `π` such that `l.MemBaseSet I c r π`. -/
-def toFilterDistortion (I : Box ι) (c : ℝ≥0) :
+def toFilterDistortion (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) :
     Filter (TaggedPrepartition I) :=
   ⨅ (r : (ι → ℝ) → Ioi (0 : ℝ)) (_ : l.RCond r), 𝓟 { π | l.MemBaseSet I c r π }
 
 /-- A set `s : Set (TaggedPrepartition I)` belongs to `l.toFilter I` if for any `c : ℝ≥0` there
 exists a function `r : ℝⁿ → (0, ∞)` (or a constant `r` if `l.bRiemann = true`) such that
 `s` contains each prepartition `π` such that `l.MemBaseSet I c r π`. -/
-def toFilter (I : Box ι) : Filter (TaggedPrepartition I) :=
+def toFilter (l : IntegrationParams) (I : Box ι) : Filter (TaggedPrepartition I) :=
   ⨆ c : ℝ≥0, l.toFilterDistortion I c
 
 /-- A set `s : Set (TaggedPrepartition I)` belongs to `l.toFilterDistortioniUnion I c π₀` if
 there exists a function `r : ℝⁿ → (0, ∞)` (or a constant `r` if `l.bRiemann = true`) such that `s`
 contains each prepartition `π` such that `l.MemBaseSet I c r π` and `π.iUnion = π₀.iUnion`. -/
-def toFilterDistortioniUnion (I : Box ι) (c : ℝ≥0) (π₀ : Prepartition I) :=
+def toFilterDistortioniUnion (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) (π₀ : Prepartition I) :=
   l.toFilterDistortion I c ⊓ 𝓟 { π | π.iUnion = π₀.iUnion }
 
 /-- A set `s : Set (TaggedPrepartition I)` belongs to `l.toFilteriUnion I π₀` if for any `c : ℝ≥0`
@@ -322,15 +318,13 @@ contains each prepartition `π` such that `l.MemBaseSet I c r π` and `π.iUnion
 def toFilteriUnion (I : Box ι) (π₀ : Prepartition I) :=
   ⨆ c : ℝ≥0, l.toFilterDistortioniUnion I c π₀
 
-theorem rCond_of_bRiemann_eq_false {ι} (hl : l.bRiemann = false)
+theorem rCond_of_bRiemann_eq_false {ι} (l : IntegrationParams) (hl : l.bRiemann = false)
     {r : (ι → ℝ) → Ioi (0 : ℝ)} : l.RCond r := by
   simp [RCond, hl]
 
-theorem toFilter_inf_iUnion_eq (I : Box ι) (π₀ : Prepartition I) :
+theorem toFilter_inf_iUnion_eq (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :
     l.toFilter I ⊓ 𝓟 { π | π.iUnion = π₀.iUnion } = l.toFilteriUnion I π₀ :=
   (iSup_inf_principal _ _).symm
-
-end ExplicitL
 
 variable {r r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} {π π₁ π₂ : TaggedPrepartition I}
 
@@ -356,7 +350,7 @@ theorem MemBaseSet.exists_common_compl
       (l.bDistortion → π.distortion ≤ c₁) ∧ (l.bDistortion → π.distortion ≤ c₂) := by
   wlog hc : c₁ ≤ c₂ with H
   · simpa [hU, _root_.and_comm] using
-      @H _ _ I c₂ c₁ r₂ r₁ π₂ π₁ _ l₂ l₁ r π h₂ h₁ hU.symm (le_of_not_le hc)
+        @H _ _ I c₂ c₁ r₂ r₁ π₂ π₁ _ l₂ l₁ r π h₂ h₁ hU.symm (le_of_not_le hc)
   by_cases hD : (l.bDistortion : Prop)
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩
