@@ -403,8 +403,9 @@ protected theorem Smooth.coordChange (hf : Smooth IM IB f)
     Smooth IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
 
-variable (IB e e')
+variable (e e')
 
+variable (IB) in
 theorem Trivialization.contMDiffOn_symm_trans :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n
       (e.toPartialHomeomorph.symm ≫ₕ e'.toPartialHomeomorph) (e.target ∩ e'.target) := by
@@ -420,7 +421,7 @@ theorem Trivialization.contMDiffOn_symm_trans :
     simp_all only [Trivialization.mem_target, mfld_simps]
   exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
 
-variable {IB e e'}
+variable {e e'}
 
 theorem ContMDiffWithinAt.change_section_trivialization {f : M → TotalSpace F E}
     (hp : ContMDiffWithinAt IM IB n (π F E ∘ f) s x)
@@ -551,8 +552,8 @@ end
 
 namespace VectorBundleCore
 
-variable {ι : Type*} {F}
-variable (Z : VectorBundleCore 𝕜 B F ι)
+variable {F}
+variable {ι : Type*} (Z : VectorBundleCore 𝕜 B F ι)
 
 /-- Mixin for a `VectorBundleCore` stating smoothness (of transition functions). -/
 class IsSmooth (IB : ModelWithCorners 𝕜 EB HB) : Prop where

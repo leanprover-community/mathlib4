@@ -31,7 +31,7 @@ manifold, smooth bump function
 universe uE uF uH uM
 
 variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {H : Type uH} [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM} [TopologicalSpace M]
+  {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [TopologicalSpace M]
   [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
 open Function Filter FiniteDimensional Set Metric
@@ -46,6 +46,7 @@ noncomputable section
 In this section we define a structure for a bundled smooth bump function and prove its properties.
 -/
 
+variable (I) in
 /-- Given a smooth manifold modelled on a finite dimensional space `E`,
 `f : SmoothBumpFunction I M` is a smooth function on `M` such that in the extended chart `e` at
 `f.c`:
@@ -63,7 +64,7 @@ structure SmoothBumpFunction (c : M) extends ContDiffBump (extChartAt I c c) whe
 
 namespace SmoothBumpFunction
 
-variable {c : M} (f : SmoothBumpFunction I c) {x : M} {I}
+variable {c : M} (f : SmoothBumpFunction I c) {x : M}
 
 /-- The function defined by `f : SmoothBumpFunction c`. Use automatic coercion to function
 instead. -/
@@ -243,8 +244,9 @@ protected theorem hasCompactSupport : HasCompactSupport f :=
   f.isCompact_symm_image_closedBall.of_isClosed_subset isClosed_closure
     f.tsupport_subset_symm_image_closedBall
 
-variable (I c)
+variable (I)
 
+variable (c) in
 /-- The closures of supports of smooth bump functions centered at `c` form a basis of `𝓝 c`.
 In other words, each of these closures is a neighborhood of `c` and each neighborhood of `c`
 includes `tsupport f` for some `f : SmoothBumpFunction I c`. -/
@@ -257,8 +259,6 @@ theorem nhds_basis_tsupport :
     exact nhdsWithin_range_basis.map _
   exact this.to_hasBasis' (fun f _ => ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
     fun f _ => f.tsupport_mem_nhds
-
-variable {c}
 
 /-- Given `s ∈ 𝓝 c`, the supports of smooth bump functions `f : SmoothBumpFunction I c` such that
 `tsupport f ⊆ s` form a basis of `𝓝 c`.  In other words, each of these supports is a
