@@ -179,7 +179,7 @@ theorem IsTrail.count_edges_eq_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h
   List.count_eq_one_of_mem h.edges_nodup he
 
 theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
-    (w : G.Walk u v) {h : w.IsTrail} : w.length ≤ G.edgeFinset.card := by
+    {w : G.Walk u v} (h : w.IsTrail) : w.length ≤ G.edgeFinset.card := by
   classical
   let edges := w.edges.toFinset
   have : edges.card = w.length := length_edges _ ▸ List.toFinset_card_of_nodup h.edges_nodup
@@ -187,7 +187,7 @@ theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
   have : edges ⊆ G.edgeFinset := by
     intro e h
     refine mem_edgeFinset.mpr ?_
-    apply SimpleGraph.Walk.edges_subset_edgeSet w
+    apply w.edges_subset_edgeSet
     simpa [edges] using h
   exact Finset.card_le_card this
 
