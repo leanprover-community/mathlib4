@@ -6,7 +6,7 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
@@ -157,7 +157,7 @@ lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x)
   have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by fun_prop (disch := assumption)
   have ha₂'' : ContinuousOn Real.log ((· ^ n) '' spectrum ℝ a)  := by fun_prop (disch := aesop)
   rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp' Real.log (· ^ n) a ha₂'', log]
-  simp_rw [Real.log_pow, nsmul_eq_smul_cast ℝ n, cfc_const_mul (n : ℝ) Real.log a ha₂']
+  simp_rw [Real.log_pow, ← Nat.cast_smul_eq_nsmul ℝ n, cfc_const_mul (n : ℝ) Real.log a ha₂']
 
 end real_log
 end CFC

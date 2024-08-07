@@ -366,7 +366,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
   -- Then in fact there is a `P ∈ Z` with `P ≤ M`.
   obtain ⟨P, hPZ, rfl⟩ := Multiset.mem_map.mp hPZ'
   classical
-    have := Multiset.map_erase PrimeSpectrum.asIdeal PrimeSpectrum.ext P Z
+    have := Multiset.map_erase PrimeSpectrum.asIdeal (fun _ _ => PrimeSpectrum.ext) P Z
     obtain ⟨hP0, hZP0⟩ : P.asIdeal ≠ ⊥ ∧ ((Z.erase P).map PrimeSpectrum.asIdeal).prod ≠ ⊥ := by
       rwa [Ne, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
         this] at hprodZ
@@ -851,20 +851,19 @@ section IsDedekindDomain
 
 variable {T : Type*} [CommRing T] [IsDedekindDomain T] {I J : Ideal T}
 
-open scoped Classical
-
 open Multiset UniqueFactorizationMonoid Ideal
 
 theorem prod_normalizedFactors_eq_self (hI : I ≠ ⊥) : (normalizedFactors I).prod = I :=
   associated_iff_eq.1 (normalizedFactors_prod hI)
 
-theorem count_le_of_ideal_ge {I J : Ideal T} (h : I ≤ J) (hI : I ≠ ⊥) (K : Ideal T) :
+theorem count_le_of_ideal_ge [DecidableEq (Ideal T)]
+    {I J : Ideal T} (h : I ≤ J) (hI : I ≠ ⊥) (K : Ideal T) :
     count K (normalizedFactors J) ≤ count K (normalizedFactors I) :=
   le_iff_count.1 ((dvd_iff_normalizedFactors_le_normalizedFactors (ne_bot_of_le_ne_bot hI h) hI).1
     (dvd_iff_le.2 h))
     _
 
-theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
+theorem sup_eq_prod_inf_factors [DecidableEq (Ideal T)] (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     I ⊔ J = (normalizedFactors I ∩ normalizedFactors J).prod := by
   have H : normalizedFactors (normalizedFactors I ∩ normalizedFactors J).prod =
       normalizedFactors I ∩ normalizedFactors J := by
@@ -892,21 +891,24 @@ theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     · exact ne_bot_of_le_ne_bot hI le_sup_left
     · exact this
 
-theorem irreducible_pow_sup (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
+theorem irreducible_pow_sup [DecidableEq (Ideal T)](hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
     J ^ n ⊔ I = J ^ min ((normalizedFactors I).count J) n := by
   rw [sup_eq_prod_inf_factors (pow_ne_zero n hJ.ne_zero) hI, min_comm,
     normalizedFactors_of_irreducible_pow hJ, normalize_eq J, replicate_inter, prod_replicate]
 
-theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : ↑n ≤ multiplicity J I) :
+theorem irreducible_pow_sup_of_le [DecidableRel fun (x : Ideal T) x_1 ↦ x ∣ x_1]
+    (hJ : Irreducible J) (n : ℕ) (hn : ↑n ≤ multiplicity J I) :
     J ^ n ⊔ I = J ^ n := by
+  classical
   by_cases hI : I = ⊥
   · simp_all
   rw [irreducible_pow_sup hI hJ, min_eq_right]
   rwa [multiplicity_eq_count_normalizedFactors hJ hI, PartENat.coe_le_coe, normalize_eq J] at hn
 
-theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
-    (hn : multiplicity J I ≤ n) :
+theorem irreducible_pow_sup_of_ge [DecidableRel fun (x : Ideal T) x_1 ↦ x ∣ x_1]
+    (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) (hn : multiplicity J I ≤ n) :
     J ^ n ⊔ I = J ^ (multiplicity J I).get (PartENat.dom_of_le_natCast hn) := by
+  classical
   rw [irreducible_pow_sup hI hJ, min_eq_left]
   · congr
     rw [← PartENat.natCast_inj, PartENat.natCast_get,

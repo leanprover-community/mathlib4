@@ -23,7 +23,7 @@ See `RingTheory.Derivation.Lie` for
 - `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
 
 and `RingTheory.Derivation.ToSquareZero` for
-- `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
+- `derivationToSquareZeroEquivLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
 ## Future project
@@ -149,7 +149,7 @@ theorem map_aeval (P : R[X]) (x : A) :
   induction P using Polynomial.induction_on
   · simp
   · simp [add_smul, *]
-  · simp [mul_smul, nsmul_eq_smul_cast A]
+  · simp [mul_smul, ← Nat.cast_smul_eq_nsmul A]
 
 theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun x hx =>
   Algebra.adjoin_induction hx h (fun r => (D1.map_algebraMap r).trans (D2.map_algebraMap r).symm)
@@ -423,7 +423,8 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     congr
     omega
   · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
-      ← zpow_natCast, nsmul_eq_smul_cast K, zsmul_eq_smul_cast K, smul_smul, smul_smul, smul_smul]
+      ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_zsmul K, smul_smul, smul_smul,
+      smul_smul]
     trans (-n.natAbs * (a ^ ((n.natAbs - 1 : ℕ) : ℤ) / (a ^ ((n.natAbs * 2 : ℕ) : ℤ)))) • D a
     · ring_nf
     rw [← zpow_sub₀ ha]
