@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.ModelTheory.DirectLimit
 import Mathlib.Order.Ideal
+import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Partial Isomorphisms
@@ -331,21 +332,19 @@ theorem le_partialEquivLimit : ∀ i, S i ≤ partialEquivLimit S :=
 
 end DirectLimit
 
-section FGPartialEquiv
+section FGEquiv
 
-open PartialEquiv Set DirectLimit
+open PartialEquiv Set DirectLimit Filter
 
 variable (M) (N) (L)
 
 /-- The type of equivalences between finitely generated substructures. -/
-abbrev FiniteEquiv := {f : M ≃ₚ[L] N // f.dom.FG}
-
-variable {M} {N} {L}
+abbrev FGEquiv := {f : M ≃ₚ[L] N // f.dom.FG}
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
 def definedAtLeft
     (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.dom)
-    (m : M) : Order.Cofinal (FiniteEquiv L M N) where
+    (m : M) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | m ∈ f.val.dom}
   mem_gt := by
     intro f
@@ -369,7 +368,7 @@ def definedAtLeft
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
 def definedAtRight
     (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ n ∈ g.cod)
-  (n : N) : Order.Cofinal (FiniteEquiv L M N) where
+  (n : N) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
   mem_gt := by
     intro f
@@ -409,7 +408,7 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (h : (M ≃ₚ[L] N)) (h_fg 
   rcases M_cg with ⟨X, _, X_gen⟩
   have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
   have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
-  let D : X → Order.Cofinal (FiniteEquiv L M N) := fun x ↦ definedAtLeft H x
+  let D : X → Order.Cofinal (FGEquiv L M N) := fun x ↦ definedAtLeft H x
   let S : ℕ →o M ≃ₚ[L] N :=
     ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
       (Subtype.mono_coe _).comp (Order.sequenceOfCofinals.monotone _ _)⟩
@@ -439,7 +438,7 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
   have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
   have _ : Countable (↑Y : Type _) := by simpa only [countable_coe_iff]
   have _ : Encodable (↑Y : Type _) := Encodable.ofCountable _
-  let D : Sum X Y → Order.Cofinal (FiniteEquiv L M N) := fun p ↦
+  let D : Sum X Y → Order.Cofinal (FGEquiv L M N) := fun p ↦
     Sum.recOn p (fun x ↦ definedAtLeft ext_dom x) (fun y ↦ definedAtRight ext_cod y)
   let S : ℕ →o M ≃ₚ[L] N :=
     ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
@@ -462,7 +461,7 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
   rw [toEquivOfEqTop_toEmbedding]
   apply Embedding.toPartialEquiv_toEmbedding
 
-theorem Substructure.countable_self_FGPartialEquiv_of_countable [Countable M] :
+theorem Substructure.countable_self_FGEquiv_of_countable [Countable M] :
     Countable { f : M ≃ₚ[L] M // f.dom.FG } := by
   let g : { f : M ≃ₚ[L] M // f.dom.FG } →
       Σ U : { S : L.Substructure M // S.FG }, U.val →[L] M :=
@@ -479,10 +478,10 @@ theorem Substructure.countable_self_FGPartialEquiv_of_countable [Countable M] :
     fun U ↦ (U.val.fg_iff_structure_fg.1 U.prop)
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
-instance inhabited_self_FGPartialEquiv : Inhabited { f : M ≃ₚ[L] M // f.dom.FG } :=
+instance inhabited_self_FGEquiv : Inhabited { f : M ≃ₚ[L] M // f.dom.FG } :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
-end FGPartialEquiv
+end FGEquiv
 
 end Language
 
