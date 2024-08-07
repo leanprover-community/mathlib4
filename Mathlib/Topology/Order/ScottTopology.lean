@@ -317,7 +317,7 @@ lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α] (
 
 -- N.B. A number of conditions equivalent to `scott α = upper α` are given in Gierz _et al_,
 -- Chapter III, Exercise 3.23.
-lemma eq_upper_of_complete_linear_order : scott α = upper α := by
+lemma scott_eq_upper_of_completeLinearOrder : scott α = upper α := by
   letI := upper α
   ext U
   rw [@Topology.IsUpper.isTopologicalSpace_basis _ _ (upper α)
