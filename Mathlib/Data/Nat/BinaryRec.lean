@@ -82,6 +82,7 @@ def binaryRecFromOne {C : Nat → Sort u} (z₀ : C 0) (z₁ : C 1)
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b <;> rfl
 
+@[simp]
 theorem bit_div_two (b n) : bit b n / 2 = n := by
   rw [bit_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
   · cases b <;> decide
@@ -90,6 +91,7 @@ theorem bit_div_two (b n) : bit b n / 2 = n := by
 theorem bit_mod_two (b n) : bit b n % 2 = if b then 1 else 0 := by
   cases b <;> simp [bit_val, mul_add_mod]
 
+@[simp]
 theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
   bit_div_two b n
 
