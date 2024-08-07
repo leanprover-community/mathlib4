@@ -47,8 +47,7 @@ lemma mem_locallyContant_essImage_of_isColimit_mapCocone (X : CondensedSet.{u})
     X ∈ CondensedSet.LocallyConstant.functor.essImage := by
   let e : CondensedSet.{u} ≌ Sheaf (coherentTopology Profinite) _ :=
     (Condensed.ProfiniteCompHaus.equivalence (Type (u + 1))).symm
-  let i : (e.functor.obj X).val ≅ (e.functor.obj
-      (CondensedSet.LocallyConstant.functor.obj _)).val :=
+  let i : (e.functor.obj X).val ≅ (e.functor.obj (LocallyConstant.functor.obj _)).val :=
     Condensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨e.functor.preimageIso ((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
