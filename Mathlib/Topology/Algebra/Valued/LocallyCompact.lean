@@ -25,7 +25,7 @@ open NNReal
 
 namespace Valued.integer
 
-noncomputable instance : Valued K ℝ≥0 := NormedField.toValued
+noncomputable scoped instance : Valued K ℝ≥0 := NormedField.toValued
 
 -- should we do this all in the Valuation namespace instead?
 
