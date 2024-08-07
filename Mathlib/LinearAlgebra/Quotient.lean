@@ -53,7 +53,6 @@ def mk {p : Submodule R M} : M → M ⧸ p :=
 /- porting note: here and throughout elaboration is sped up *tremendously* (in some cases even
 avoiding timeouts) by providing type ascriptions to `mk` (or `mk x`) and its variants. Lean 3
 didn't need this help. -/
-@[simp]
 theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
     @Quotient.mk' _ (quotientRel p) x = (mk : M → M ⧸ p) x :=
   rfl
@@ -61,7 +60,6 @@ theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
 theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mk : M → M ⧸ p) x :=
   rfl
 
-@[simp]
 theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = (mk : M → M ⧸ p) x :=
   rfl
 
