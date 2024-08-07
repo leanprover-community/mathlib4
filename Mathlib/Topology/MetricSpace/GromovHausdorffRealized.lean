@@ -193,32 +193,6 @@ private theorem candidates_lipschitz (fA : f ∈ candidates X Y) :
   rw [dist_comm]
   exact candidates_lipschitz_aux fA
 
-/-- candidates give rise to elements of `BoundedContinuousFunction`s -/
-def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) : Cb X Y :=
-  BoundedContinuousFunction.mkOfCompact ⟨f, (candidates_lipschitz fA).continuous⟩
-
-theorem candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
-    candidatesBOfCandidates f fA ∈ candidatesB X Y :=
-  fA
-
-/-- The distance on `X ⊕ Y` is a candidate -/
-private theorem dist_mem_candidates :
-    (fun p : (X ⊕ Y) × (X ⊕ Y) => dist p.1 p.2) ∈ candidates X Y := by
-  simp_rw [candidates, Set.mem_setOf_eq, dist_comm, dist_triangle, dist_self, maxVar_bound,
-    forall_const, and_true]
-  exact ⟨fun x y => rfl, fun x y => rfl⟩
-
-/-- The distance on `X ⊕ Y` as a candidate -/
-def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
-    [MetricSpace Y] [CompactSpace Y] [Nonempty Y] : Cb X Y :=
-  candidatesBOfCandidates _ dist_mem_candidates
-
-theorem candidatesBDist_mem_candidatesB : candidatesBDist X Y ∈ candidatesB X Y :=
-  candidatesBOfCandidates_mem _ _
-
-private theorem candidatesB_nonempty : (candidatesB X Y).Nonempty :=
-  ⟨_, candidatesBDist_mem_candidatesB⟩
-
 /-- To apply Arzela-Ascoli, we need to check that the set of candidates is closed and
 equicontinuous. Equicontinuity follows from the Lipschitz control, we check closedness. -/
 private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
@@ -249,20 +223,6 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
       |apply isClosed_iInter _
       |apply I1 _ _|apply I2 _ _|apply I3 _ _|apply I4 _ _ _|apply I5 _|apply I6 _ _|intro x
 
-/-- Compactness of candidates (in `BoundedContinuousFunction`s) follows. -/
-private theorem isCompact_candidatesB : IsCompact (candidatesB X Y) := by
-  refine arzela_ascoli₂
-      (Icc 0 (maxVar X Y) : Set ℝ) isCompact_Icc (candidatesB X Y) closed_candidatesB ?_ ?_
-  · rintro f ⟨x1, x2⟩ hf
-    simp only [Set.mem_Icc]
-    exact ⟨candidates_nonneg hf, candidates_le_maxVar hf⟩
-  · refine equicontinuous_of_continuity_modulus (fun t => 2 * maxVar X Y * t) ?_ _ ?_
-    · have : Tendsto (fun t : ℝ => 2 * (maxVar X Y : ℝ) * t) (𝓝 0) (𝓝 (2 * maxVar X Y * 0)) :=
-        tendsto_const_nhds.mul tendsto_id
-      simpa using this
-    · rintro x y ⟨f, hf⟩
-      exact (candidates_lipschitz hf).dist_le_mul _ _
-
 /-- We will then choose the candidate minimizing the Hausdorff distance. Except that we are not
 in a metric space setting, so we need to define our custom version of Hausdorff distance,
 called `HD`, and prove its basic properties. -/
@@ -279,7 +239,7 @@ theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 
-private theorem HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
+private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun x : X => ⨅ y, f (inl x, inr y) + C) := by
   obtain ⟨Cf, hCf⟩ := f.isBounded_range.bddAbove
   refine ⟨Cf + C, forall_mem_range.2 fun x => ?_⟩
@@ -292,7 +252,7 @@ theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 
-private theorem HD_bound_aux2 (f : Cb X Y) (C : ℝ) :
+private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
   obtain ⟨Cf, hCf⟩ := f.isBounded_range.bddAbove
   refine ⟨Cf + C, forall_mem_range.2 fun y => ?_⟩
@@ -300,29 +260,8 @@ private theorem HD_bound_aux2 (f : Cb X Y) (C : ℝ) :
     ⨅ x, f (inl x, inr y) + C ≤ f (inl default, inr y) + C := ciInf_le (HD_below_aux2 C) default
     _ ≤ Cf + C := add_le_add ((fun x => hCf (mem_range_self x)) _) le_rfl
 
-/-- Explicit bound on `HD (dist)`. This means that when looking for minimizers it will
-be sufficient to look for functions with `HD(f)` bounded by this bound. -/
-theorem HD_candidatesBDist_le :
-    HD (candidatesBDist X Y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
-  refine max_le (ciSup_le fun x => ?_) (ciSup_le fun y => ?_)
-  · have A : ⨅ y, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl x, inr default) :=
-      ciInf_le (by simpa using HD_below_aux1 0) default
-    have B : dist (inl x) (inr default) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) :=
-      calc
-        dist (inl x) (inr (default : Y)) = dist x (default : X) + 1 + dist default default := rfl
-        _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
-          gcongr <;>
-            exact dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
-    exact le_trans A B
-  · have A : ⨅ x, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl default, inr y) :=
-      ciInf_le (by simpa using HD_below_aux2 0) default
-    have B : dist (inl default) (inr y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) :=
-      calc
-        dist (inl (default : X)) (inr y) = dist default default + 1 + dist default y := rfl
-        _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
-          gcongr <;>
-            exact dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
-    exact le_trans A B
+section Nonempty
+variable [Nonempty X] [Nonempty Y]
 
 /- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
 prove separately inequalities controlling the two terms (relying too heavily on copy-paste...) -/
@@ -382,13 +321,85 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
   -- deduce the result from the above two steps
   simpa [E2, E1]
 
-private theorem HD_lipschitz_aux3 (f g : Cb X Y) : HD f ≤ HD g + dist f g :=
+private theorem HD_lipschitz_aux3 (f g : Cb X Y) :
+    HD f ≤ HD g + dist f g :=
   max_le (le_trans (HD_lipschitz_aux1 f g) (add_le_add_right (le_max_left _ _) _))
     (le_trans (HD_lipschitz_aux2 f g) (add_le_add_right (le_max_right _ _) _))
 
 /-- Conclude that `HD`, being Lipschitz, is continuous -/
 private theorem HD_continuous : Continuous (HD : Cb X Y → ℝ) :=
   LipschitzWith.continuous (LipschitzWith.of_le_add HD_lipschitz_aux3)
+
+end Nonempty
+
+variable [CompactSpace X] [CompactSpace Y]
+
+/-- Compactness of candidates (in `BoundedContinuousFunction`s) follows. -/
+private theorem isCompact_candidatesB : IsCompact (candidatesB X Y) := by
+  refine arzela_ascoli₂
+      (Icc 0 (maxVar X Y) : Set ℝ) isCompact_Icc (candidatesB X Y) closed_candidatesB ?_ ?_
+  · rintro f ⟨x1, x2⟩ hf
+    simp only [Set.mem_Icc]
+    exact ⟨candidates_nonneg hf, candidates_le_maxVar hf⟩
+  · refine equicontinuous_of_continuity_modulus (fun t => 2 * maxVar X Y * t) ?_ _ ?_
+    · have : Tendsto (fun t : ℝ => 2 * (maxVar X Y : ℝ) * t) (𝓝 0) (𝓝 (2 * maxVar X Y * 0)) :=
+        tendsto_const_nhds.mul tendsto_id
+      simpa using this
+    · rintro x y ⟨f, hf⟩
+      exact (candidates_lipschitz hf).dist_le_mul _ _
+
+/-- candidates give rise to elements of `BoundedContinuousFunction`s -/
+def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) : Cb X Y :=
+  BoundedContinuousFunction.mkOfCompact ⟨f, (candidates_lipschitz fA).continuous⟩
+
+theorem candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
+    candidatesBOfCandidates f fA ∈ candidatesB X Y :=
+  fA
+
+variable [Nonempty X] [Nonempty Y]
+
+/-- The distance on `X ⊕ Y` is a candidate -/
+private theorem dist_mem_candidates :
+    (fun p : (X ⊕ Y) × (X ⊕ Y) => dist p.1 p.2) ∈ candidates X Y := by
+  simp_rw [candidates, Set.mem_setOf_eq, dist_comm, dist_triangle, dist_self, maxVar_bound,
+    forall_const, and_true]
+  exact ⟨fun x y => rfl, fun x y => rfl⟩
+
+/-- The distance on `X ⊕ Y` as a candidate -/
+def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
+    [MetricSpace Y] [CompactSpace Y] [Nonempty Y] : Cb X Y :=
+  candidatesBOfCandidates _ dist_mem_candidates
+
+theorem candidatesBDist_mem_candidatesB :
+    candidatesBDist X Y ∈ candidatesB X Y :=
+  candidatesBOfCandidates_mem _ _
+
+private theorem candidatesB_nonempty : (candidatesB X Y).Nonempty :=
+  ⟨_, candidatesBDist_mem_candidatesB⟩
+
+/-- Explicit bound on `HD (dist)`. This means that when looking for minimizers it will
+be sufficient to look for functions with `HD(f)` bounded by this bound. -/
+theorem HD_candidatesBDist_le :
+    HD (candidatesBDist X Y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
+  refine max_le (ciSup_le fun x => ?_) (ciSup_le fun y => ?_)
+  · have A : ⨅ y, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl x, inr default) :=
+      ciInf_le (by simpa using HD_below_aux1 0) default
+    have B : dist (inl x) (inr default) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) :=
+      calc
+        dist (inl x) (inr (default : Y)) = dist x (default : X) + 1 + dist default default := rfl
+        _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
+          gcongr <;>
+            exact dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
+    exact le_trans A B
+  · have A : ⨅ x, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl default, inr y) :=
+      ciInf_le (by simpa using HD_below_aux2 0) default
+    have B : dist (inl default) (inr y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) :=
+      calc
+        dist (inl (default : X)) (inr y) = dist default default + 1 + dist default y := rfl
+        _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
+          gcongr <;>
+            exact dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
+    exact le_trans A B
 
 end Constructions
 

@@ -466,12 +466,12 @@ theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.prod ν, p 
     ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
   measure_ae_null_of_prod_null h
 
-theorem ae_ae_eq_curry_of_prod {f g : α × β → γ} (h : f =ᵐ[μ.prod ν] g) :
+theorem ae_ae_eq_curry_of_prod {γ : Type*} {f g : α × β → γ} (h : f =ᵐ[μ.prod ν] g) :
     ∀ᵐ x ∂μ, curry f x =ᵐ[ν] curry g x :=
   ae_ae_of_ae_prod h
 
-theorem ae_ae_eq_of_ae_eq_uncurry {f g : α → β → γ} (h : uncurry f =ᵐ[μ.prod ν] uncurry g) :
-    ∀ᵐ x ∂μ, f x =ᵐ[ν] g x :=
+theorem ae_ae_eq_of_ae_eq_uncurry {γ : Type*} {f g : α → β → γ}
+    (h : uncurry f =ᵐ[μ.prod ν] uncurry g) : ∀ᵐ x ∂μ, f x =ᵐ[ν] g x :=
   ae_ae_eq_curry_of_prod h
 
 theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :

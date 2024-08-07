@@ -92,7 +92,7 @@ section
 for Pi types will not trigger. -/
 variable {𝕜 p α}
 variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
-variable [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] (c : 𝕜)
+variable [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
 #adaptation_note
@@ -744,7 +744,7 @@ variable {ι : Type*} {κ : ι → Type*} (p : ℝ≥0∞) [Fact (1 ≤ p)]
 
 variable (𝕜) in
 /-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
-def _root_.LinearIsometryEquiv.piLpCurry  :
+def _root_.LinearIsometryEquiv.piLpCurry :
     PiLp p (fun i : Sigma _ => α i.1 i.2) ≃ₗᵢ[𝕜] PiLp p (fun i => PiLp p (α i)) where
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _

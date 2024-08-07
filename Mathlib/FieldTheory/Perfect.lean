@@ -290,6 +290,7 @@ theorem roots_expand_image_frobenius_subset [DecidableEq R] :
   convert ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
   apply pow_one
 
+section PerfectRing
 variable {p n f}
 variable [PerfectRing R p]
 
@@ -342,7 +343,9 @@ theorem roots_expand_image_frobenius [DecidableEq R] :
   rw [Finset.image_toFinset, roots_expand_map_frobenius,
       (roots f).toFinset_nsmul _ (expChar_pos R p).ne']
 
-variable (p n f) [DecidableEq R]
+end PerfectRing
+
+variable [DecidableEq R]
 
 /-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
 a map from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
@@ -366,6 +369,8 @@ noncomputable def rootsExpandPowToRoots :
 
 @[simp]
 theorem rootsExpandPowToRoots_apply (x) : (rootsExpandPowToRoots p n f x : R) = x ^ p ^ n := rfl
+
+variable [PerfectRing R p]
 
 /-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
 a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
