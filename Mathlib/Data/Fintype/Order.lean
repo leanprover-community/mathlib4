@@ -152,17 +152,19 @@ noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : Complete
 
 end Nonempty
 
-lemma exists_le_maximal {α} [Fintype α] [PartialOrder α] {a : α} {p : α → Prop}
-    (h : p a) : ∃ b, a ≤ b ∧ Maximal p b := by
-  have hfinite : {b : α | a ≤ b ∧ p b}.Finite := by
-    rw [@Set.setOf_and]
-    apply Finite.Set.finite_inter_of_left
-  obtain ⟨b, hb⟩ := hfinite.exists_maximal_wrt id _ ⟨a, Set.mem_setOf.mpr ⟨by rfl, h⟩⟩
-  use b
-  simp only [Set.mem_setOf_eq, id_eq, and_imp] at hb
-  exact ⟨hb.1.1, hb.1.2, fun c hc hc' ↦ le_of_eq (hb.2 c (le_trans hb.1.1 hc') hc hc').symm⟩
-
 end Fintype
+
+/-! ### Properties for PartialOrders -/
+
+lemma Finite.exists_ge_minimal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
+    ∃ b, b ≤ a ∧ Minimal p b := by
+  obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ :=
+    Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
+  exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
+
+lemma Finite.exists_le_maximal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
+    ∃ b, a ≤ b ∧ Maximal p b :=
+  Finite.exists_ge_minimal (α := αᵒᵈ) h
 
 /-! ### Concrete instances -/
 

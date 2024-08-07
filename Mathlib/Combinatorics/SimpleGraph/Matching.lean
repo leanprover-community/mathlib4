@@ -250,7 +250,7 @@ lemma exists_maximal_isMatchingFree [Fintype V] [DecidableEq V]
     (h : G.IsMatchingFree) : ∃ Gmax : SimpleGraph V,
     G ≤ Gmax ∧ Gmax.IsMatchingFree ∧ ∀ G', G' > Gmax → ∃ M : Subgraph G', M.IsPerfectMatching := by
   simp_rw [← @not_forall_not _ Subgraph.IsPerfectMatching]
-  obtain ⟨Gmax, hGmax⟩ := Fintype.exists_le_maximal h
+  obtain ⟨Gmax, hGmax⟩ := Finite.exists_le_maximal h
   exact ⟨Gmax, ⟨hGmax.1, ⟨hGmax.2.prop, fun _ h' ↦ hGmax.2.not_prop_of_gt h'⟩⟩⟩
 
 end SimpleGraph
