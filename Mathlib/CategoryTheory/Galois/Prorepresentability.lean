@@ -230,6 +230,8 @@ theorem AutGalois.π_surjective [FiberFunctor F] (A : PointedGaloisObject F) :
   exact eval_section_surjective_of_surjective
     (autGaloisSystem F ⋙ forget _) (autGaloisSystem_map_surjective F) A σ
 
+variable [FiberFunctor F]
+
 section EndAutGaloisIsomorphism
 
 /-!
