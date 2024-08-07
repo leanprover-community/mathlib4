@@ -190,13 +190,37 @@ variable (G₀ : Sheaf J₀ A)
 noncomputable def presheafObj (X : C) : A :=
   multiequalizer ((F.oneHypercoverDenseData J₀ J X).multicospanIndex G₀.val)
 
+section
+
+variable {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X)
+
+variable (J₀)
+
+structure PresheafSieveStruct {Y₀ : C₀} (g : Y₀ ⟶ X₀) where
+  i₀ : (F.oneHypercoverDenseData J₀ J X).I₀
+  q : Y₀ ⟶ (F.oneHypercoverDenseData J₀ J X).X i₀
+  fac : F.map q ≫ (F.oneHypercoverDenseData J₀ J X).f i₀ =
+    F.map g ≫ f := by simp
+
+attribute [reassoc (attr := simp)] PresheafSieveStruct.fac
+
+def presheafSieve : Sieve X₀ :=
+  ⟨fun Y₀ g ↦ Nonempty (PresheafSieveStruct F J₀ J f g), by
+    rintro Y₀ Z₀ g ⟨h⟩ p
+    exact ⟨{ i₀ := h.i₀, q := p ≫ h.q}⟩⟩
+
+lemma presheafSieve_mem : presheafSieve F J₀ J f ∈ J₀ X₀ := sorry
+--⟨_, F.cover_lift J₀ J (J.pullback_stable f (F.oneHypercoverDenseData J₀ J X).mem₀)⟩
+
+variable {J₀}
+
 noncomputable def restriction {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) :
     presheafObj F J G₀ X ⟶ G₀.val.obj (op X₀) :=
-  have : F.Full := sorry
-  G₀.2.amalgamate
-    ⟨_, F.cover_lift J₀ J (J.pullback_stable f (F.oneHypercoverDenseData J₀ J X).mem₀)⟩
-    (fun ⟨Y₀, a, ha⟩ ↦ Multiequalizer.ι _ _ ≫
-      G₀.val.map (F.preimage (Sieve.ofArrows.h ha)).op) sorry
+  G₀.2.amalgamate ⟨_, presheafSieve_mem F J₀ J f⟩
+    (fun ⟨Y₀, g, hg⟩ ↦ Multiequalizer.ι _ _ ≫ G₀.val.map hg.some.q.op) (by
+      sorry)
+
+end
 
 section
 
