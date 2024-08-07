@@ -82,19 +82,6 @@ lemma RelSeries.eraseLast_last_rel_last {r : Rel α α} (p : RelSeries r) (h : 0
   convert p.step ⟨p.length -1, by omega⟩
   simp; omega
 
--- https://github.com/leanprover-community/mathlib4/pull/15387
-@[simp] lemma RelSeries.head_map {r : Rel α α} {s : Rel α α} (p : RelSeries r) (f : r →r s) :
-    (p.map f).head = f p.head := rfl
-
-@[simp] lemma RelSeries.last_map {r : Rel α α} {s : Rel α α} (p : RelSeries r) (f : r →r s) :
-    (p.map f).last = f p.last := rfl
-
-@[simp] lemma LTSeries.head_map  {α β : Type*} [Preorder α] [Preorder β] (p : LTSeries α)
-    (f : α → β) (hf : StrictMono f) : (p.map f hf).head = f p.head := rfl
-
-@[simp] lemma LTSeries.last_map  {α β : Type*} [Preorder α] [Preorder β] (p : LTSeries α)
-    (f : α → β) (hf : StrictMono f) : (p.map f hf).last = f p.last := rfl
-
 -- https://github.com/leanprover-community/mathlib4/pull/15555
 def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
   { length := n, toFun := fun i => i, step := fun _ => Nat.lt_add_one _ }
@@ -104,13 +91,6 @@ def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
 @[simp] def LTSeries.head_iota (n : ℕ) : (LTSeries.iota n).head = 0 := rfl
 
 @[simp] def LTSeries.last_iota (n : ℕ) : (LTSeries.iota n).last = n := rfl
-
--- https://github.com/leanprover-community/mathlib4/pull/15556
-@[simp] def RelSeries.last_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.last = p.head := by
-  simp [RelSeries.last, RelSeries.head]
-
-@[simp] def RelSeries.head_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.head = p.last := by
-  simp [RelSeries.last, RelSeries.head]
 
 -- https://github.com/leanprover-community/mathlib4/pull/15557
 def RelSeries.take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
