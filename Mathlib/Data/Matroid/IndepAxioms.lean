@@ -162,7 +162,6 @@ namespace IndepMatroid
     obtain ⟨e, heI, hins⟩ := exists_insert_of_not_maximal indep_subset hI hImax
     by_cases heB : e ∈ B
     · exact ⟨e, ⟨heB, heI⟩, hins⟩
-
     by_contra hcon; push_neg at hcon
 
     have heBdep := hBmax.not_prop_of_ssuperset (ssubset_insert heB)
