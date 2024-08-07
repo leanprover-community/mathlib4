@@ -120,7 +120,7 @@ theorem denseRange_zsmul_iff_surjective {a : G} :
 
 /-- In a nontrivial densely linearly ordered additive group,
 the integer multiples of an element can't be dense. -/
-theorem not_denseRange_zsmul [Nontrivial G] [DenselyOrdered G] {a : G} :
+theorem not_denseRange_zsmul [Nontrivial G] [DenselyOrdered G] (a : G) :
     ¬DenseRange (· • a : ℤ → G) := by
   refine denseRange_zsmul_iff_surjective.not.mpr fun h ↦ ?_
   -- TODO: move to a separate lemma w/o topology?
