@@ -203,8 +203,7 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel 
       exact h
     · haveI : Nonempty (x.supp ⊆ c'.supp) := Nonempty.intro h.1
       simp_rw [Set.iUnion_const, Fintype.card_eq_nat_card]
-      exact h.2
-    : ∀ x ∈ (Finset.univ : Finset G.ConnectedComponent),
+      exact h.2 : ∀ x ∈ (Finset.univ : Finset G.ConnectedComponent),
       Odd (Fintype.card ↑(⋃ (_ : x.supp ⊆ c'.supp), x.supp)) ↔
       (x ∈ {c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp)}))]
 
