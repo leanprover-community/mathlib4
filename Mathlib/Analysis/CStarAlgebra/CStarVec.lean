@@ -124,9 +124,9 @@ noncomputable instance instNorm : Norm (CStarVec n A) where
 
 lemma inner_eq_sum {v w : CStarVec n A} : ⟪v, w⟫_A = ∑ i : n, star (v i) * w i := rfl
 
-lemma norm_eq_sum {v : CStarVec n A} : ‖v‖ = √‖∑ i : n, star (v i) * v i‖ := rfl
+lemma norm_eq_sqrt_sum {v : CStarVec n A} : ‖v‖ = √‖∑ i : n, star (v i) * v i‖ := rfl
 
-lemma inner_single_eq_entry [DecidableEq n] {v : CStarVec n A} {i : n} {a : A} :
+lemma inner_single_left [DecidableEq n] {v : CStarVec n A} {i : n} {a : A} :
     ⟪ofFun (Pi.single i a), v⟫_A = star a * v i := by
   simp [inner_eq_sum, ofFun_apply, Pi.single_apply]
   have hmain :
@@ -165,7 +165,7 @@ instance instCStarModule : CStarModule A (CStarVec n A) where
   star_inner x y := by simp only [inner, star_sum, star_mul, star_star]
   norm_eq_sqrt_norm_inner_self v := rfl
 
-lemma norm_entry_le_norm [DecidableEq n] [CompleteSpace A] {v : CStarVec n A} {i : n} :
+lemma norm_apply_le_norm [DecidableEq n] [CompleteSpace A] {v : CStarVec n A} {i : n} :
     ‖v i‖ ≤ ‖v‖ := by
   by_cases htriv : 0 < ‖v i‖
   · have hmain := calc ‖v i‖ * ‖v i‖ = ‖star (v i) * v i‖  := CStarRing.norm_star_mul_self.symm
@@ -204,7 +204,9 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [Partial
 variable {n : Type*} [Fintype n]
 
 /-- A temporary "bad" instance of `NormedAddCommGroup` that induces a uniformity that is not
-defeq with the product uniformity. -/
+defeq with the product uniformity.
+
+This is not intended for use outside of this file. -/
 private noncomputable abbrev normedAddCommGroupAux : NormedAddCommGroup (CStarVec n A) :=
   NormedAddCommGroup.ofCore CStarModule.normedSpaceCore
 
