@@ -37,7 +37,7 @@ The main intent is to convert `s` to a reasonable candidate for a desirable sour
 The function first replaces consecutive whitespace sequences into a single space (` `), in an
 attempt to side-step line-break differences.
 After that, it applies some pre-emptive changes:
-* doc-module beginnings tend to have some whitespace following it, so we add a space back in;
+* doc-module beginnings tend to have some whitespace following them, so we add a space back in;
 * name quotations such as ``` ``Nat``` get pretty-printed as ``` `` Nat```, so we remove a space
   after double back-ticks, but take care of adding one more for triple (or more) back-ticks;
 * `notation3` is not followed by a pretty-printer space, so we add it here (#15515).
@@ -67,10 +67,10 @@ def polishSource (s : String) : String × Array Nat :=
   let s := (split.map .trimLeft).filter (!· == "")
   (" ".intercalate (s.filter (!·.isEmpty)), preWS)
 
-/-- `posToShiftedPos lths diff` takes as input an array `lths` of natural number,
+/-- `posToShiftedPos lths diff` takes as input an array `lths` of natural numbers,
 and one further natural number `diff`.
-It adds up the elements of `lths` occupying the odd positions, until the sum of the elements in
-the even positions does not exceed `diff`.
+It adds up the elements of `lths` occupying the odd positions, as long as the sum of the
+elements in the even positions does not exceed `diff`.
 It returns the sum of the accumulated odds and `diff`.
 This is useful to figure out the difference between the output of `polishSource s` and `s` itself.
 It plays a role similar to the `fileMap`. -/
