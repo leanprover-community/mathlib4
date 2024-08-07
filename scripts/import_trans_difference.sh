@@ -49,6 +49,7 @@ currCommit="$(git rev-parse --abbrev-ref HEAD)"
 # if we are in a detached head, `currCommit` would be the unhelpful `HEAD`
 # in this case, we fetch the commit hash
 if [ "${currCommit}" == "HEAD" ]
+then
   currCommit="$(git rev-parse HEAD)"
 fi
 
