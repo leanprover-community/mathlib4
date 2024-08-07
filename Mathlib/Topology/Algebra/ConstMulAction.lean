@@ -494,6 +494,7 @@ section MulAction
 variable {G₀ : Type*} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
   [ContinuousConstSMul G₀ α]
 
+-- Porting note: generalize to a monoid action + `IsUnit`
 /-- Scalar multiplication by a nonzero scalar preserves neighborhoods. -/
 theorem smul_mem_nhds_smul₀ {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x :=
