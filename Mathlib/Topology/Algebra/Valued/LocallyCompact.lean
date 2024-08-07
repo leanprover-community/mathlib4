@@ -25,6 +25,9 @@ open NNReal
 
 namespace Valued.integer
 
+/-- The valued field structure on a nonarchimedean nontrivially normed field K,
+determined by the norm, as a scoped instance so that we can refer to its valuation ring.
+It is scoped because otherwise, NormedField <-> Valued enters a loop. -/
 noncomputable scoped instance : Valued K ℝ≥0 := NormedField.toValued
 
 -- should we do this all in the Valuation namespace instead?
