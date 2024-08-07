@@ -341,6 +341,8 @@ variable (M) (N) (L)
 /-- The type of equivalences between finitely generated substructures. -/
 abbrev FGEquiv := {f : M ≃ₚ[L] N // f.dom.FG}
 
+variable {M N L}
+
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
 def definedAtLeft
     (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.dom)
