@@ -384,7 +384,7 @@ lemma contMDiff_openEmbedding [Nonempty M] :
       h.toPartialHomeomorph_target] at this
     exact this
 
-variable {I}
+variable {I I'}
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is smooth. -/
 lemma contMDiffOn_openEmbedding_symm [Nonempty M] :
