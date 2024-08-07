@@ -315,7 +315,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a 
       · apply subset_trans (singleton_subset_iff.mpr _) (subset_insert _ _)
         use a
       · rw [sUnion_singleton]
-    · intro ⟨S,⟨hS1,hS2⟩⟩
+    · intro ⟨S, hS1, hS2⟩
       have hUS : univ ∉ S := by
         by_contra hUS'
         apply hU
