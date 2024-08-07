@@ -287,7 +287,7 @@ variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
 
 lemma isTopologicalBasis_insert_univ_subbasis :
     IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) :=
-  isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq]; rfl)
+  isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq α]; rfl)
     (fun _ hs _ ht => by
       simp at *
       rcases hs with ⟨b, hb⟩
@@ -304,40 +304,38 @@ variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsLower α]
 lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Ici a)ᶜ = U) := by
   by_cases hU : U = univ
   simp only [hU, isOpen_univ, compl_Ici, true_or]
-  refine ⟨?_, isTopologicalBasis_insert_univ_subbasis.isOpen⟩ 
-  · intro hO
-    apply Or.inr
-    convert IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
+  refine ⟨?_, isTopologicalBasis_insert_univ_subbasis.isOpen⟩
+  intro hO
+  apply Or.inr
+  convert IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
+  constructor
+  · intro ⟨a,ha⟩
+    use {U}
     constructor
-    · intro ⟨a,ha⟩
-      use {U}
-      constructor
-      · apply subset_trans (singleton_subset_iff.mpr _) (subset_insert _ _)
-        use a
-      · rw [sUnion_singleton]
-    · intro ⟨S, hS1, hS2⟩
-      have hUS : univ ∉ S := by
-        by_contra hUS'
-        apply hU
-        rw [hS2]
-        exact sUnion_eq_univ_iff.mpr (fun a => by use univ; exact ⟨hUS',trivial⟩)
-      use sSup {a | (Ici a)ᶜ ∈ S}
-      rw [hS2, sUnion_eq_compl_sInter_compl, compl_inj_iff]
-      apply le_antisymm
-      · intro b hb
-        simp only [sInter_image, mem_iInter, mem_compl_iff]
-        intro s hs
-        obtain ⟨a,ha⟩ := (subset_insert_iff_of_not_mem hUS).mp hS1 hs
-        subst hS2 ha
-        simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt]
-      · intro b hb
-        rw [mem_Ici, sSup_le_iff]
-        intro c hc
-        simp only [sInter_image, mem_iInter] at hb
-        rw [← not_lt, ← mem_Iio, ← compl_Ici]
-        exact hb _ hc
-  · intro h
-    exact IsTopologicalBasis.isOpen isTopologicalBasis_insert_univ_subbasis h
+    · apply subset_trans (singleton_subset_iff.mpr _) (subset_insert _ _)
+      use a
+    · rw [sUnion_singleton]
+  · intro ⟨S, hS1, hS2⟩
+    have hUS : univ ∉ S := by
+      by_contra hUS'
+      apply hU
+      rw [hS2]
+      exact sUnion_eq_univ_iff.mpr (fun a => by use univ; exact ⟨hUS',trivial⟩)
+    use sSup {a | (Ici a)ᶜ ∈ S}
+    rw [hS2, sUnion_eq_compl_sInter_compl, compl_inj_iff]
+    apply le_antisymm
+    · intro b hb
+      simp only [sInter_image, mem_iInter, mem_compl_iff]
+      intro s hs
+      obtain ⟨a,ha⟩ := (subset_insert_iff_of_not_mem hUS).mp hS1 hs
+      subst hS2 ha
+      simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt]
+    · intro b hb
+      rw [mem_Ici, sSup_le_iff]
+      intro c hc
+      simp only [sInter_image, mem_iInter] at hb
+      rw [← not_lt, ← mem_Iio, ← compl_Ici]
+      exact hb _ hc
 
 end CompleteLinearOrder
 
