@@ -112,7 +112,6 @@ structure OrthogonalIdempotents : Prop where
   ortho : Pairwise (e · * e · = 0)
 
 variable {e}
-variable (he : OrthogonalIdempotents e)
 
 lemma OrthogonalIdempotents.mul_eq [DecidableEq I] (he : OrthogonalIdempotents e) (i j) :
     e i * e j = if i = j then e i else 0 := by
@@ -124,7 +123,7 @@ lemma OrthogonalIdempotents.iff_mul_eq [DecidableEq I] :
     OrthogonalIdempotents e ↔ ∀ i j, e i * e j = if i = j then e i else 0 :=
   ⟨mul_eq, fun H ↦ ⟨fun i ↦ by simpa using H i i, fun i j e ↦ by simpa [e] using H i j⟩⟩
 
-lemma OrthogonalIdempotents.isIdempotentElem_sum {s : Finset I} :
+lemma OrthogonalIdempotents.isIdempotentElem_sum (he : OrthogonalIdempotents e) {s : Finset I} :
     IsIdempotentElem (∑ i ∈ s, e i) := by
   classical
   simp [IsIdempotentElem, Finset.sum_mul, Finset.mul_sum, he.mul_eq]
@@ -139,7 +138,7 @@ lemma OrthogonalIdempotents.mul_sum_of_not_mem {i : I} {s : Finset I} (h : i ∉
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
 
-lemma OrthogonalIdempotents.map :
+lemma OrthogonalIdempotents.map (he : OrthogonalIdempotents e) :
     OrthogonalIdempotents (f ∘ e) := by
   classical
   simp [iff_mul_eq, he.mul_eq, ← map_mul f, apply_ite f]
@@ -149,7 +148,7 @@ lemma OrthogonalIdempotents.map_injective_iff (hf : Function.Injective f) :
   classical
   simp [iff_mul_eq, ← hf.eq_iff, apply_ite]
 
-lemma OrthogonalIdempotents.embedding {J} (i : J ↪ I) :
+lemma OrthogonalIdempotents.embedding (he : OrthogonalIdempotents e) {J} (i : J ↪ I) :
     OrthogonalIdempotents (e ∘ i) := by
   classical
   simp [iff_mul_eq, he.mul_eq]
@@ -163,7 +162,7 @@ lemma OrthogonalIdempotents.unique [Unique I] :
     OrthogonalIdempotents e ↔ IsIdempotentElem (e default) := by
   simp only [orthogonalIdempotents_iff, Unique.forall_iff, Subsingleton.pairwise, and_true]
 
-lemma OrthogonalIdempotents.option [Fintype I] (x)
+lemma OrthogonalIdempotents.option (he : OrthogonalIdempotents e) [Fintype I] (x)
     (hx : IsIdempotentElem x) (hx₁ : x * ∑ i, e i = 0) (hx₂ : (∑ i, e i) * x = 0) :
     OrthogonalIdempotents (Option.elim · x e) where
   idem i := i.rec hx he.idem
@@ -250,7 +249,7 @@ lemma CompleteOrthogonalIdempotents.single {I : Type*} [Fintype I] [DecidableEq 
   · subst hi; simp [hij]
   · simp [hi]
 
-lemma CompleteOrthogonalIdempotents.map :
+lemma CompleteOrthogonalIdempotents.map (he : CompleteOrthogonalIdempotents e) :
     CompleteOrthogonalIdempotents (f ∘ e) where
   __ := he.toOrthogonalIdempotents.map f
   complete := by simp only [Function.comp_apply, ← map_sum, he.complete, map_one]
