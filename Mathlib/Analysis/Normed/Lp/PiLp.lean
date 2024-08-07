@@ -458,11 +458,9 @@ theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] :
 instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
   Pi.instBornology
 
--- throughout the rest of the file, we assume `1 ≤ p`
-variable [Fact (1 ≤ p)]
 
 section Fintype
-
+variable [hp : Fact (1 ≤ p)]
 variable [Fintype ι]
 
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
@@ -784,7 +782,7 @@ variable [DecidableEq ι]
 
 -- Porting note: added `hp`
 @[simp]
-theorem nnnorm_equiv_symm_single [hp : Fact (1 ≤ p)] (i : ι) (b : β i) :
+theorem nnnorm_equiv_symm_single (i : ι) (b : β i) :
     ‖(WithLp.equiv p (∀ i, β i)).symm (Pi.single i b)‖₊ = ‖b‖₊ := by
   haveI : Nonempty ι := ⟨i⟩
   induction p generalizing hp with
