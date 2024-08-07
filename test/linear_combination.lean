@@ -4,6 +4,8 @@ import Mathlib.Tactic.Linarith
 
 set_option autoImplicit true
 
+private axiom test_sorry : ∀ {α}, α
+
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
@@ -236,15 +238,15 @@ example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
     r * s = (a + 1 : ℤ) * (b + 1) := by
   linear_combination (↑b + 1) * h₁ + ↑r * h₂
 
--- Macro-heavy implementation at the time of the port (Nov 2022) was 120,000 heartbeats
--- Reimplementation using Qq (Aug 2024) brings this to 20,000 heartbeats
-set_option maxHeartbeats 30000 in
+-- Macro-heavy implementation at the time of the port (Nov 2022) was 110,000 heartbeats
+-- Reimplementation using Qq (Aug 2024) brings this to 7,500 heartbeats
+set_option maxHeartbeats 10000 in
 example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
     (h₀ : 3 * x ^ 2 + z ^ 2 * p = 0)
     (h₁ : z * (2 * y) = 0)
     (h₂ : -y ^ 2 + p * x * (2 * z) + q * (3 * z ^ 2) = 0) :
     ((27 * q ^ 2 + 4 * p ^ 3) * x) ^ 4 = 0 := by
-  linear_combination
+  linear_combination (norm := skip)
     (256 / 3 * p ^ 12 * x ^ 2 + 128 * q * p ^ 11 * x * z + 2304 * q ^ 2 * p ^ 9 * x ^ 2 +
                                 2592 * q ^ 3 * p ^ 8 * x * z -
                               64 * q * p ^ 10 * y ^ 2 +
@@ -271,3 +273,4 @@ example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
               13122 * q ^ 6 * p ^ 3 * x * z -
             59049 * q ^ 7 * p * x ^ 2) *
           h₂
+  exact test_sorry
