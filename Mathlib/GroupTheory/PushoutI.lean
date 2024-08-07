@@ -637,7 +637,7 @@ theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw 
 /-- For any word `w` in the coproduct,
 if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
 `w` itself is not in the image of the base group. -/
-theorem Reduced.eq_empty_of_mem_range [DecidableEq ι] [(i : ι) → DecidableEq (G i)]
+theorem Reduced.eq_empty_of_mem_range
     (hφ : ∀ i, Injective (φ i)) {w : Word G} (hw : Reduced φ w)
     (h : ofCoprodI w.prod ∈ (base φ).range) : w = .empty := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
