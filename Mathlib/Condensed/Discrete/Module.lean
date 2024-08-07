@@ -110,7 +110,6 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
   · exact (Condensed.discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M)
   · apply this.reflects
 
-open CompHausLike.LocallyConstantModule in
 /--
 `CondensedMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
 `R`-modules to condensed `R`-modules.
@@ -128,10 +127,7 @@ noncomputable def functorIsoDiscrete : functor R ≅ Condensed.discrete _ := by
   congr 1
   rw [← Iso.comp_inv_eq]
   apply Sheaf.hom_ext
-  simp only [comp_obj, Condensed.underlying_obj, functor_obj_val, functorToPresheaves_obj_obj,
-    coe_of, Condensed.discrete_obj, Functor.comp_map, Condensed.underlying_map,
-    functorToPresheaves_map_app, Condensed.discrete_map, functorIsoDiscreteAux₂, mapIso_inv,
-    ← Functor.map_comp]
+  simp [functorIsoDiscreteAux₂, ← Functor.map_comp]
   rfl
 
 /--
@@ -226,7 +222,6 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
   · exact (LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M)
   · apply this.reflects
 
-open CompHausLike.LocallyConstantModule in
 /--
 `LightCondMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
 `R`-modules to light condensed `R`-modules.
@@ -245,10 +240,7 @@ noncomputable def functorIsoDiscrete : functor R ≅ LightCondensed.discrete _ :
   congr 1
   rw [← Iso.comp_inv_eq]
   apply Sheaf.hom_ext
-  simp only [comp_obj, LightCondensed.underlying_obj, functor_obj_val, functorToPresheaves_obj_obj,
-    coe_of, LightCondensed.discrete_obj, Functor.comp_map, LightCondensed.underlying_map,
-    functorToPresheaves_map_app, LightCondensed.discrete_map, functorIsoDiscreteAux₂, mapIso_inv,
-    ← Functor.map_comp]
+  simp [functorIsoDiscreteAux₂, ← Functor.map_comp]
   rfl
 
 /--
