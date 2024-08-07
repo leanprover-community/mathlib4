@@ -356,7 +356,6 @@ end ChartedSpace
 
 section
 
-
 variable {e : M → H} (h : OpenEmbedding e) {n : WithTop ℕ}
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
