@@ -77,17 +77,37 @@ lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     simp_all
   · exact exists_edist_eq_ediam_of_ne_top h
 
+lemma diam_mono_of_ne_top [Nonempty α] (h : G ≤ G') (hn : G'.ediam ≠ ⊤) :
+    G'.ediam ≤ G.ediam :=
+  have ⟨_, _, huv⟩ := G'.exists_edist_eq_ediam_of_ne_top hn
+  huv ▸ LE.le.trans (edist_le_subgraph_edist h) <| edist_le_ediam
+
+lemma diam_mono_of_finite [Nonempty α] [Finite α] (h : G ≤ G') :
+    G'.ediam ≤ G.ediam :=
+  have ⟨_, _, huv⟩ := G'.exists_edist_eq_ediam_of_finite
+  huv ▸ LE.le.trans (edist_le_subgraph_edist h) <| edist_le_ediam
+
+lemma zero_lt_ediam_of_nontrivial [Nontrivial α] :
+    0 < G.ediam := by
+  obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
+  contrapose! huv
+  simp only [ediam, nonpos_iff_eq_zero, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
+  exact huv u v
+
 @[simp]
-lemma ediam_bot : (⊥ : SimpleGraph α).ediam = ⊤ := by
+lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ := by
   sorry
 
--- Note: need to find a way to remove the case of 1 vertex in the next 2 lemmas.
 @[simp]
-lemma ediam_top [Nonempty α] : (⊤ : SimpleGraph α).ediam = 1 := by
+lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
   sorry
 
 @[simp]
-lemma diam_eq_one [Nonempty α] : G.ediam = 1 ↔ G = ⊤ := by
+lemma ediam_eq_zero [Nontrivial α] : G.ediam = 0 ↔ G = ⊥  := by
+  sorry
+
+@[simp]
+lemma diam_eq_one [Nontrivial α] : G.ediam = 1 ↔ G = ⊤ := by
   sorry
 
 end ediam
