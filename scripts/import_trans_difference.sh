@@ -72,7 +72,7 @@ git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
-  (awk -F, -v all="${all}" '{ diff[$1]+=$2 } END {
+  (awk -F, -v all="${all}" -v ghLimit='261752' '{ diff[$1]+=$2 } END {
     fileCount=0
     outputLength=0
     for(fil in diff) {
@@ -83,7 +83,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         reds[diff[fil]]=reds[diff[fil]]" `"fil"`"
       }
     }
-    if ((all == 0) && (outputLength <= 2^2^4/2)) { # the size limit for messages on GitHub is 2^2^4
+    if ((all == 0) && (ghLimit/2 <= outputLength)) {
       printf("There are %s files with changed transitive imports taking up over %s characters: this is too many to display!\nYou can run `scripts/import_trans_difference.sh all` locally to see the whole output.", fileCount, outputLength)
     } else {
       for(x in reds) {
@@ -94,3 +94,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
     printf("- Files with changed transitive imports: %s\n- Estimated characters: %s\n", fileCount, outputLength)
   }' transImports*.txt | sort -t'|' -n -k3
   ))"
+
+
+# allowed:    261752
+# disallowed: 261753
