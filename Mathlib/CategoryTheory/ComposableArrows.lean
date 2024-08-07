@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Order.Fin.Basic
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Composable arrows
@@ -889,6 +890,7 @@ lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by valid) :
 
 end mkOfObjOfMapSucc
 
+suppress_compilation in
 variable (C n) in
 /-- The equivalence `(ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n` obtained
 by reversing the arrows. -/
