@@ -574,7 +574,7 @@ section trivial
 
 @[to_additive]
 theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
-  dsimp [HasQuotient.Quotient, QuotientGroup.instHasQuotientSubgroup, Quotient]
+  dsimp [QuotientGroup.instHasQuotientSubgroup, Quotient]
   rw [leftRel_eq]
   exact Trunc.instSubsingletonTrunc
 

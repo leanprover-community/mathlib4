@@ -39,7 +39,7 @@ variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 /-- The quotient of a Lie module by a Lie submodule. It is a Lie module. -/
 instance : HasQuotient M (LieSubmodule R L M) :=
-  ⟨fun N => M ⧸ N.toSubmodule⟩
+  ⟨fun m ↦ m.toSubmodule.quotientRel⟩
 
 namespace Quotient
 

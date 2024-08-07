@@ -268,7 +268,7 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
 @[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`.  If `s` is a normal
  subgroup, `α ⧸ s` is a group"]
 instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
-  ⟨fun s => Quotient (leftRel s)⟩
+  ⟨leftRel⟩
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
@@ -352,8 +352,13 @@ instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : F
   Quotient.fintype (leftRel s)
 
 /-- The canonical map from a group `α` to the quotient `α ⧸ s`. -/
-@[to_additive (attr := coe) "The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`."]
+@[coe]
 abbrev mk (a : α) : α ⧸ s :=
+  Quotient.mk'' a
+
+/-- The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`. -/
+@[coe]
+abbrev _root_.QuotientAddGroup.mk [AddGroup α] {s : AddSubgroup α} (a : α) : α ⧸ s :=
   Quotient.mk'' a
 
 @[to_additive]
