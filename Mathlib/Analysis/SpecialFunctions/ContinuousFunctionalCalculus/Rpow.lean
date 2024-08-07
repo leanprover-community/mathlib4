@@ -207,7 +207,7 @@ end NonUnital
 section Unital
 
 variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRing A]
-  [TopologicalRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
+  [TopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
 /- ## `rpow` -/
