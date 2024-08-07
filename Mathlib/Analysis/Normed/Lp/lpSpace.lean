@@ -32,7 +32,7 @@ The space `lp E p` is the subtype of elements of `∀ i : α, E i` which satisfy
   a type synonym `PreLp` for `∀ i : α, E i`, and equipped with a `NormedAddCommGroup` structure.
   Under appropriate conditions, this is also equipped with the instances `lp.normedSpace`,
   `lp.completeSpace`. For `p=∞`, there is also `lp.inftyNormedRing`,
-  `lp.inftyNormedAlgebra`, `lp.inftyStarRing` and `lp.inftyCstarRing`.
+  `lp.inftyNormedAlgebra`, `lp.inftyStarRing` and `lp.inftyCStarRing`.
 
 ## Main results
 
@@ -310,9 +310,6 @@ instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
 @[ext]
 theorem ext {f g : lp E p} (h : (f : ∀ i, E i) = g) : f = g :=
   Subtype.ext h
-
-protected theorem ext_iff {f g : lp E p} : f = g ↔ (f : ∀ i, E i) = g :=
-  Subtype.ext_iff
 
 theorem eq_zero' [IsEmpty α] (f : lp E p) : f = 0 :=
   Subsingleton.elim f 0
@@ -757,11 +754,11 @@ instance inftyStarRing : StarRing (lp B ∞) :=
   { lp.instStarAddMonoid with
     star_mul := fun _f _g => ext <| star_mul (R := ∀ i, B i) _ _ }
 
-instance inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
+instance inftyCStarRing [∀ i, CStarRing (B i)] : CStarRing (lp B ∞) where
   norm_mul_self_le f := by
     rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _)]
     refine lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => ?_
-    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
+    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self]
     exact lp.norm_apply_le_norm ENNReal.top_ne_zero (star f * f) i
 
 end StarRing
