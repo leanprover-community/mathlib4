@@ -105,18 +105,21 @@ partial def expandLinearCombo (stx : Syntax.Term) : TermElabM Expanded := withRe
     | .const c₁, .proof p₂ => .proof <$> ``(c_div_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(div_pf $p₁ $p₂)
   | `($e ^ $n) => do
-    -- Fully pre-elaborate n:
+    -- Fully pre-elaborate n to speed up exponentiation elaboration:
     let n ← (withSynthesize <| elabTerm n none) >>= Expr.toSyntax
     match ← expandLinearCombo e with
     | .const c => .const <$> ``($c ^ $n)
     | .proof p => .proof <$> ``(pow_pf $p $n)
   | e => do
-    let c ← Term.elabTerm e none
+    let s ← saveState
+    let c ← withSynthesizeLight <| Term.elabTerm e none
     let eType ← inferType c
     if (← withReducible do whnf eType).isEq then
       .proof <$> c.toSyntax
     else
-      .const <$> c.toSyntax
+      -- Restore state to remove all pending instance problems.
+      restoreState s
+      return .const e
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 

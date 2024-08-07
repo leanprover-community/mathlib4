@@ -237,9 +237,8 @@ example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
     r * s = (a + 1 : ℤ) * (b + 1) := by
   linear_combination (↑b + 1) * h₁ + ↑r * h₂
 
--- Macro-heavy implementation at the time of the port (Nov 2022) was 110,000 heartbeats
--- Careful re-use of elaboration subproblems and overriding Pow exponent elaboration
--- brings this to 7,735 heartbeats
+-- Implementation at the time of the port (Nov 2022) was 110,000 heartbeats.
+-- Overriding Pow exponent elaboration brings this to 7,763 heartbeats.
 set_option maxHeartbeats 8000 in
 example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
     (h₀ : 3 * x ^ 2 + z ^ 2 * p = 0)
