@@ -523,6 +523,7 @@ lemma tendsto_measure_smul_diff_isCompact_isClosed [LocallyCompactSpace G]
   ENNReal.nhds_zero_basis.tendsto_right_iff.mpr <| fun _ h ↦
     eventually_nhds_one_measure_smul_diff_lt hk h'k h.ne'
 
+section IsMulLeftInvariant
 variable [IsMulLeftInvariant μ]
 
 /-- If a left-invariant measure gives positive mass to a compact set, then it gives positive mass to
@@ -681,6 +682,8 @@ lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
     μ (closure k) = μ k :=
   hk.measure_closure μ
+
+end IsMulLeftInvariant
 
 @[to_additive]
 lemma innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group [h : InnerRegularCompactLTTop μ] :
