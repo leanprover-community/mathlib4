@@ -126,6 +126,9 @@ lemma inner_eq_sum {v w : CStarVec n A} : ⟪v, w⟫_A = ∑ i : n, star (v i) *
 
 lemma norm_eq_sqrt_sum {v : CStarVec n A} : ‖v‖ = √‖∑ i : n, star (v i) * v i‖ := rfl
 
+lemma norm_sq_eq_sum {v : CStarVec n A} : ‖v‖ ^ 2 = ‖∑ i : n, star (v i) * v i‖ := by
+  simp [norm_eq_sqrt_sum]
+
 lemma inner_single_left [DecidableEq n] {v : CStarVec n A} {i : n} {a : A} :
     ⟪ofFun (Pi.single i a), v⟫_A = star a * v i := by
   simp [inner_eq_sum, ofFun_apply, Pi.single_apply]
@@ -135,6 +138,10 @@ lemma inner_single_left [DecidableEq n] {v : CStarVec n A} {i : n} {a : A} :
     ext
     split_ifs with h <;> simp [h, mul_assoc]
   simp [hmain, Finset.sum_ite]
+
+lemma inner_single_right [DecidableEq n] {v : CStarVec n A} {i : n} {a : A} :
+    ⟪v, ofFun (Pi.single i a)⟫_A = star (v i) * a := by
+  simp [inner_eq_sum, ofFun_apply, Pi.single_apply]
 
 @[simp] lemma norm_single {i : n} {a : A} [DecidableEq n] : ‖ofFun (Pi.single i a)‖ = ‖a‖ := by
   simp [norm_eq_sqrt_sum, Pi.single_apply, CStarRing.norm_star_mul_self]
