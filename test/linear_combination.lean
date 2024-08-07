@@ -274,3 +274,9 @@ example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
             59049 * q ^ 7 * p * x ^ 2) *
           h₂
   exact test_sorry
+
+set_option linter.unusedTactic false in
+example {a b c : ℤ} (h1 : a = 2) (h2 : b = c) : a + b = 2 + c := by
+  linear_combination2 (norm := skip) h1 + h2
+  · ring
+  · ring

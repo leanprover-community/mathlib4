@@ -178,9 +178,8 @@ def elabLinearCombination
         let mvar ← mkFreshExprMVar q($a' - $b' - ($a - $b) = 0)
         pure (q(eq_of_add (a' := $a') (b' := $b') $p), #[mvar])
   (← Tactic.getMainGoal).assign (mkAppN e mvars)
-  for mvar in mvars do
-    Tactic.setGoals [mvar.mvarId!]
-    Tactic.evalTactic norm
+  Tactic.setGoals (mvars.toList.map Expr.mvarId!)
+  Tactic.allGoals (Tactic.evalTactic norm)
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
