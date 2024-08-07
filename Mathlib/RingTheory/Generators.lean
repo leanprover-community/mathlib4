@@ -269,6 +269,7 @@ lemma Hom.toAlgHom_monomial (f : Generators.Hom P P') (v r) :
     f.toAlgHom (monomial v r) = r • v.prod (f.val · ^ ·) := by
   rw [toAlgHom, aeval_monomial, Algebra.smul_def]
 
+variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] in
 /-- Giving a hom between two families of generators is equivalent to
 giving an algebra homomorphism between the polynomial rings. -/
 @[simps]
