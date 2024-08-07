@@ -408,11 +408,12 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
   b.dualBasis.map (B.toDual hB).symm
 
 @[simp]
-theorem dualBasis_repr_apply [FiniteDimensional K V]
+theorem dualBasis_repr_apply
     (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    Basis.dualBasis_repr, toDual_def]
+    Basis.dualBasis_repr]
+  rfl
 
 theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
