@@ -72,10 +72,10 @@ variable {α}
 
 namespace WithLower
 
-/-- `toLower` is the identity function to the `WithLower` of a type.  -/
+/-- `toLower` is the identity function to the `WithLower` of a type. -/
 @[match_pattern] def toLower : α ≃ WithLower α := Equiv.refl _
 
-/-- `ofLower` is the identity function from the `WithLower` of a type.  -/
+/-- `ofLower` is the identity function from the `WithLower` of a type. -/
 @[match_pattern] def ofLower : WithLower α ≃ α := Equiv.refl _
 
 @[simp] lemma to_WithLower_symm_eq : (@toLower α).symm = ofLower := rfl
@@ -116,10 +116,10 @@ end WithLower
 def WithUpper (α : Type*) := α
 namespace WithUpper
 
-/-- `toUpper` is the identity function to the `WithUpper` of a type.  -/
+/-- `toUpper` is the identity function to the `WithUpper` of a type. -/
 @[match_pattern] def toUpper : α ≃ WithUpper α := Equiv.refl _
 
-/-- `ofUpper` is the identity function from the `WithUpper` of a type.  -/
+/-- `ofUpper` is the identity function from the `WithUpper` of a type. -/
 @[match_pattern] def ofUpper : WithUpper α ≃ α := Equiv.refl _
 
 @[simp] lemma to_WithUpper_symm_eq {α} : (@toUpper α).symm = ofUpper := rfl
