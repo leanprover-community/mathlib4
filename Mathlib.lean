@@ -3276,6 +3276,7 @@ import Mathlib.ModelTheory.Fraisse
 import Mathlib.ModelTheory.Graph
 import Mathlib.ModelTheory.LanguageMap
 import Mathlib.ModelTheory.Order
+import Mathlib.ModelTheory.PartialEquiv
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.Satisfiability
 import Mathlib.ModelTheory.Semantics
@@ -4009,6 +4010,9 @@ import Mathlib.Tactic.ArithMult.Init
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CC
 import Mathlib.Tactic.CC.Addition
@@ -4118,6 +4122,7 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
+import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.OldObtain
