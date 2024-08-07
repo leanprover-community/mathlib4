@@ -5,6 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.Data.ZMod.Parity
+import Mathlib.Data.List.GetD
 
 /-!
 # Reflections, inversions, and inversion sequences

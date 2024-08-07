@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, Thomas Browning
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Type
+import Mathlib.Tactic.Linarith
 
 /-!
 # Zagier's "one-sentence proof" of Fermat's theorem on sums of two squares

@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Int.SuccPred
 import Mathlib.GroupTheory.QuotientGroup

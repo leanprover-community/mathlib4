@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Topological groups

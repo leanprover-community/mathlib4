@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.CauSeq.Basic
 
 /-!

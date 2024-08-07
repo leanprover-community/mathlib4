@@ -8,6 +8,7 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.Peel
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Exponent of a group
