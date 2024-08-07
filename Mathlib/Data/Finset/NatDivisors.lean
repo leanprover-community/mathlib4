@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yury Kudryashov
 -/
 import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Finset.Pointwise.Basic
 
 /-!
