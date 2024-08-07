@@ -49,8 +49,8 @@ variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
   [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
   [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃]
   [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄]
-  [TopologicalSpace P₁] [AddCommMonoid P₁] [Module k P₁]
-  [TopologicalSpace P₂] [AddCommMonoid P₂] [Module k P₂]
+  [TopologicalSpace P₁]
+  [TopologicalSpace P₂]
   [TopologicalSpace P₃] [TopologicalSpace P₄]
 
 namespace ContinuousAffineEquiv
