@@ -227,16 +227,6 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [reverse_append] at h
   apply h.of_append_left
 
-theorem IsPath.length_lt_card_V [Fintype V] {u v : V} (w : G.Walk u v) {h : w.IsPath} :
-    w.length < Fintype.card V := by
-  classical
-  apply Nat.lt_of_add_one_le
-  let support := w.support.toFinset
-  have : support.card = w.length + 1 :=
-    length_support _ ▸ List.toFinset_card_of_nodup h.support_nodup
-  rw [← this]
-  exact Finset.card_le_card (Finset.subset_univ support)
-
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
 
