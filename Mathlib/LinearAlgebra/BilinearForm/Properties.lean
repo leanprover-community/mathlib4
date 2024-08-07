@@ -427,7 +427,7 @@ theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : 
 
 @[simp]
 lemma dualBasis_dualBasis_flip [FiniteDimensional K V]
-    (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
+    (B : BilinForm K V) (hB : B.Nondegenerate) {ι : Type*}
     [Finite ι] [DecidableEq ι] (b : Basis ι K V) :
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
