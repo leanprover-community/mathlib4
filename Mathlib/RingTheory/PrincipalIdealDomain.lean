@@ -373,10 +373,34 @@ section
 
 open Ideal
 
-variable [CommRing R] [IsDomain R]
+variable [CommRing R]
 
 section Bezout
 variable [IsBezout R]
+
+theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
+    (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
+  (isRelPrime_of_no_nonunits_factors nonzero H).isCoprime
+
+theorem dvd_or_coprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y :=
+  h.dvd_or_isRelPrime.imp_right IsRelPrime.isCoprime
+
+/-- See also `Irreducible.isRelPrime_iff_not_dvd`. -/
+theorem Irreducible.coprime_iff_not_dvd {p n : R} (hp : Irreducible p) :
+    IsCoprime p n ↔ ¬p ∣ n := by rw [← isRelPrime_iff_isCoprime, hp.isRelPrime_iff_not_dvd]
+
+/-- See also `Irreducible.coprime_iff_not_dvd'`. -/
+theorem Irreducible.dvd_iff_not_coprime {p n : R} (hp : Irreducible p) : p ∣ n ↔ ¬IsCoprime p n :=
+  iff_not_comm.2 hp.coprime_iff_not_dvd
+
+theorem Irreducible.coprime_pow_of_not_dvd {p a : R} (m : ℕ) (hp : Irreducible p) (h : ¬p ∣ a) :
+    IsCoprime a (p ^ m) :=
+  (hp.coprime_iff_not_dvd.2 h).symm.pow_right
+
+theorem Irreducible.coprime_or_dvd {p : R} (hp : Irreducible p) (i : R) : IsCoprime p i ∨ p ∣ i :=
+  (_root_.em _).imp_right hp.dvd_iff_not_coprime.2
+
+variable [IsDomain R]
 
 section GCD
 variable [GCDMonoid R]
@@ -404,30 +428,8 @@ theorem gcd_isUnit_iff (x y : R) : IsUnit (gcd x y) ↔ IsCoprime x y := by
 
 end GCD
 
-theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
-    (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
-  (isRelPrime_of_no_nonunits_factors nonzero H).isCoprime
-
-theorem dvd_or_coprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y :=
-  h.dvd_or_isRelPrime.imp_right IsRelPrime.isCoprime
-
-/-- See also `Irreducible.isRelPrime_iff_not_dvd`. -/
-theorem Irreducible.coprime_iff_not_dvd {p n : R} (hp : Irreducible p) :
-    IsCoprime p n ↔ ¬p ∣ n := by rw [← isRelPrime_iff_isCoprime, hp.isRelPrime_iff_not_dvd]
-
 theorem Prime.coprime_iff_not_dvd {p n : R} (hp : Prime p) : IsCoprime p n ↔ ¬p ∣ n :=
   hp.irreducible.coprime_iff_not_dvd
-
-/-- See also `Irreducible.coprime_iff_not_dvd'`. -/
-theorem Irreducible.dvd_iff_not_coprime {p n : R} (hp : Irreducible p) : p ∣ n ↔ ¬IsCoprime p n :=
-  iff_not_comm.2 hp.coprime_iff_not_dvd
-
-theorem Irreducible.coprime_pow_of_not_dvd {p a : R} (m : ℕ) (hp : Irreducible p) (h : ¬p ∣ a) :
-    IsCoprime a (p ^ m) :=
-  (hp.coprime_iff_not_dvd.2 h).symm.pow_right
-
-theorem Irreducible.coprime_or_dvd {p : R} (hp : Irreducible p) (i : R) : IsCoprime p i ∨ p ∣ i :=
-  (_root_.em _).imp_right hp.dvd_iff_not_coprime.2
 
 theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {k : ℕ}
     (h : a * b = c ^ k) : ∃ d : R, Associated (d ^ k) a := by
@@ -443,7 +445,7 @@ theorem exists_associated_pow_of_associated_pow_mul {a b c : R} (hab : IsCoprime
 
 end Bezout
 
-variable [IsPrincipalIdealRing R]
+variable [IsDomain R] [IsPrincipalIdealRing R]
 
 theorem isCoprime_of_irreducible_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : R, Irreducible z → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
