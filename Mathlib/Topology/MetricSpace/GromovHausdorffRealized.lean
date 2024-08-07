@@ -94,7 +94,7 @@ attribute [local instance 10] Classical.inhabited_of_nonempty'
 private theorem maxVar_bound : dist x y ≤ maxVar X Y :=
   calc
     dist x y ≤ diam (univ : Set (X ⊕ Y)) :=
-      dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
+      dist_le_diam_of_mem (.all _) (mem_univ _) (mem_univ _)
     _ = diam (range inl ∪ range inr : Set (X ⊕ Y)) := by rw [range_inl_union_range_inr]
     _ ≤ diam (range inl : Set (X ⊕ Y)) + dist (inl default) (inr default) +
         diam (range inr : Set (X ⊕ Y)) :=
@@ -311,8 +311,7 @@ theorem HD_candidatesBDist_le :
       calc
         dist (inl x) (inr (default : Y)) = dist x (default : X) + 1 + dist default default := rfl
         _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
-          gcongr <;>
-            exact dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
+          gcongr <;> exact dist_le_diam_of_mem (.all _) (mem_univ _) (mem_univ _)
     exact le_trans A B
   · have A : ⨅ x, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl default, inr y) :=
       ciInf_le (by simpa using HD_below_aux2 0) default
@@ -320,8 +319,7 @@ theorem HD_candidatesBDist_le :
       calc
         dist (inl (default : X)) (inr y) = dist default default + 1 + dist default y := rfl
         _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
-          gcongr <;>
-            exact dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
+          gcongr <;> exact dist_le_diam_of_mem (.all _) (mem_univ _) (mem_univ _)
     exact le_trans A B
 
 /- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we

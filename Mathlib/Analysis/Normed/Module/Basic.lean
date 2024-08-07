@@ -188,23 +188,20 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rwa [norm_smul, ← _root_.div_lt_iff]
   rwa [norm_pos_iff]
 
-protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
-  let ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
-  let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
-  hx.not_le (hR x trivial)
+protected theorem NormedSpace.unboundedSpace : UnboundedSpace E :=
+  ⟨fun h ↦
+    let ⟨R, hR⟩ := h.exists_norm_le
+    let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
+    hx.not_le (hR x trivial)⟩
 
-protected lemma NormedSpace.cobounded_neBot : NeBot (cobounded E) := by
-  rw [neBot_iff, Ne, cobounded_eq_bot_iff, ← isBounded_univ]
-  exact NormedSpace.unbounded_univ 𝕜 E
+instance (priority := 100) NontriviallyNormedField.unboundedSpace : UnboundedSpace 𝕜 :=
+  NormedSpace.unboundedSpace 𝕜 𝕜
 
-instance (priority := 100) NontriviallyNormedField.cobounded_neBot : NeBot (cobounded 𝕜) :=
-  NormedSpace.cobounded_neBot 𝕜 𝕜
-
-instance (priority := 80) RealNormedSpace.cobounded_neBot [NormedSpace ℝ E] :
-    NeBot (cobounded E) := NormedSpace.cobounded_neBot ℝ E
+instance (priority := 80) RealNormedSpace.unboundedSpace [NormedSpace ℝ E] :
+    UnboundedSpace E := NormedSpace.unboundedSpace ℝ E
 
 instance (priority := 80) NontriviallyNormedField.infinite : Infinite 𝕜 :=
-  ⟨fun _ ↦ NormedSpace.unbounded_univ 𝕜 𝕜 (Set.toFinite _).isBounded⟩
+  ⟨fun _ ↦ (NormedSpace.unboundedSpace 𝕜 𝕜).1 (Set.toFinite _).isBounded⟩
 
 end NontriviallyNormedSpace
 
@@ -220,7 +217,8 @@ We register this as an instance in two cases: `𝕜 = E` and `𝕜 = ℝ`. -/
 protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
   by_cases H : ∃ c : 𝕜, c ≠ 0 ∧ ‖c‖ ≠ 1
   · letI := NontriviallyNormedField.ofNormNeOne H
-    exact ⟨fun h ↦ NormedSpace.unbounded_univ 𝕜 E h.isBounded⟩
+    have := NormedSpace.unboundedSpace 𝕜 E
+    infer_instance
   · push_neg at H
     rcases exists_ne (0 : E) with ⟨x, hx⟩
     suffices ClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
@@ -232,8 +230,8 @@ protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
 instance (priority := 100) NormedField.noncompactSpace : NoncompactSpace 𝕜 :=
   NormedSpace.noncompactSpace 𝕜 𝕜
 
-instance (priority := 100) RealNormedSpace.noncompactSpace [NormedSpace ℝ E] : NoncompactSpace E :=
-  NormedSpace.noncompactSpace ℝ E
+instance (priority := 100) RealNormedSpace.unboundedSpace [NormedSpace ℝ E] : UnboundedSpace E :=
+  NormedSpace.unboundedSpace ℝ E
 
 end NormedSpace
 

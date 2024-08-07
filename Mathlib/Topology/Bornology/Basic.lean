@@ -63,7 +63,7 @@ def Bornology.cobounded (α : Type*) [Bornology α] : Filter α := Bornology.cob
 alias Bornology.Simps.cobounded := Bornology.cobounded
 
 lemma Bornology.le_cofinite (α : Type*) [Bornology α] : cobounded α ≤ cofinite :=
-Bornology.le_cofinite'
+  Bornology.le_cofinite'
 
 initialize_simps_projections Bornology (cobounded' → cobounded)
 
@@ -280,7 +280,7 @@ abbrev Bornology.cofinite : Bornology α where
   le_cofinite' := le_rfl
 
 /-- A space with a `Bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
-class BoundedSpace (α : Type*) [Bornology α] : Prop where
+@[mk_iff] class BoundedSpace (α : Type*) [Bornology α] : Prop where
   /-- The `Set.univ` is bounded. -/
   bounded_univ : Bornology.IsBounded (univ : Set α)
 
@@ -289,15 +289,50 @@ instance (priority := 100) BoundedSpace.of_finite {α : Type*} [Bornology α] [F
     BoundedSpace α where
   bounded_univ := (toFinite _).isBounded
 
+/-- A space with a `Bornology` is an **unbounded space** if `Set.univ : Set α` is not bounded. -/
+@[mk_iff] class UnboundedSpace (α : Type*) [Bornology α] : Prop where
+  unbounded_univ : ¬IsBounded (univ : Set α)
+
 namespace Bornology
 
 variable [Bornology α]
 
+<<<<<<< HEAD
+theorem isBounded_univ : IsBounded (univ : Set α) ↔ BoundedSpace α := (BoundedSpace_iff _).symm
+#align bornology.is_bounded_univ Bornology.isBounded_univ
+||||||| 23c87df3dc3
 theorem isBounded_univ : IsBounded (univ : Set α) ↔ BoundedSpace α :=
   ⟨fun h => ⟨h⟩, fun h => h.1⟩
+#align bornology.is_bounded_univ Bornology.isBounded_univ
+=======
+theorem isBounded_univ : IsBounded (univ : Set α) ↔ BoundedSpace α :=
+  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+>>>>>>> 465f26fde59aa31d051ef0b6db1fb34476802b64
+
+@[simp]
+lemma not_boundedSpace_iff : ¬BoundedSpace α ↔ UnboundedSpace α :=
+  (BoundedSpace_iff _).not.trans (UnboundedSpace_iff _).symm
+
+@[simp]
+lemma not_unboundedSpace_iff : ¬UnboundedSpace α ↔ BoundedSpace α :=
+  not_boundedSpace_iff.not_right.symm
 
 theorem cobounded_eq_bot_iff : cobounded α = ⊥ ↔ BoundedSpace α := by
   rw [← isBounded_univ, isBounded_def, compl_univ, empty_mem_iff_bot]
+
+lemma cobounded_neBot_iff : NeBot (cobounded α) ↔ UnboundedSpace α := by
+  simp [neBot_iff, cobounded_eq_bot_iff]
+
+instance [UnboundedSpace α] : NeBot (cobounded α) := cobounded_neBot_iff.2 ‹_›
+
+instance (priority := 100) [NeBot (cobounded α)] : UnboundedSpace α :=
+  cobounded_neBot_iff.1 ‹_›
+
+instance (priority := 50) [h : UnboundedSpace α] : Infinite α :=
+  ⟨mt (fun _ ↦ (toFinite _).isBounded) h.1⟩
+
+@[simp]
+lemma unbounded_univ [UnboundedSpace α] : ¬IsBounded (univ : Set α) := (UnboundedSpace_iff _).1 ‹_›
 
 variable [BoundedSpace α]
 
