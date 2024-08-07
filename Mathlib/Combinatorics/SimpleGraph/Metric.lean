@@ -256,6 +256,7 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
   obtain ⟨p, h⟩ := hconn.exists_walk_length_eq_dist  u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
 
+@[simp]
 lemma dist_bot : (⊥ : SimpleGraph V).dist u v = 0 := by
   by_cases h : u = v <;> simp [h]
 
