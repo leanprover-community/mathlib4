@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Sheaves taking values in a category
@@ -631,6 +632,7 @@ def IsSheaf' (P : Cᵒᵖ ⥤ A) : Prop :=
 
 -- Again I wonder whether `UnivLE` can somehow be used to allow `s` to take
 -- values in a more general universe.
+suppress_compilation in
 /-- (Implementation). An auxiliary lemma to convert between sheaf conditions. -/
 def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
     [∀ J, PreservesLimitsOfShape (Discrete.{max v₁ u₁} J) s] (U : C) (R : Presieve U) :
