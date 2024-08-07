@@ -173,8 +173,7 @@ noncomputable section
 
 namespace BoxIntegral
 
-variable {ι : Type*} [Fintype ι] {I J : Box ι} {c c₁ c₂ : ℝ≥0} {r r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)}
-  {π π₁ π₂ : TaggedPrepartition I}
+variable {ι : Type*} [Fintype ι] {I J : Box ι} {c c₁ c₂ : ℝ≥0}
 
 open TaggedPrepartition
 
@@ -327,6 +326,8 @@ theorem toFilter_inf_iUnion_eq (l : IntegrationParams) (I : Box ι) (π₀ : Pre
     l.toFilter I ⊓ 𝓟 { π | π.iUnion = π₀.iUnion } = l.toFilteriUnion I π₀ :=
   (iSup_inf_principal _ _).symm
 
+variable {r r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} {π π₁ π₂ : TaggedPrepartition I}
+
 theorem MemBaseSet.mono' (I : Box ι) (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂) {π : TaggedPrepartition I}
     (hr : ∀ J ∈ π, r₁ (π.tag J) ≤ r₂ (π.tag J)) (hπ : l₁.MemBaseSet I c₁ r₁ π) :
     l₂.MemBaseSet I c₂ r₂ π :=
@@ -345,7 +346,7 @@ theorem MemBaseSet.exists_common_compl (h₁ : l.MemBaseSet I c₁ r₁ π₁) (
       (l.bDistortion → π.distortion ≤ c₁) ∧ (l.bDistortion → π.distortion ≤ c₂) := by
   wlog hc : c₁ ≤ c₂ with H
   · simpa [hU, _root_.and_comm] using
-      @H _ _ I J c c₂ c₁ r r₂ r₁ π π₂ π₁ _ l₂ l₁ h₂ h₁ hU.symm (le_of_not_le hc)
+      @H _ _ I J c c₂ c₁ _ l₂ l₁ r r₂ r₁ π π₂ π₁ h₂ h₁ hU.symm (le_of_not_le hc)
   by_cases hD : (l.bDistortion : Prop)
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩

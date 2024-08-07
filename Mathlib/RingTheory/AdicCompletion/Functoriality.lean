@@ -140,7 +140,7 @@ theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
   rfl
 
 /-- Equality of maps out of an adic completion can be checked on Cauchy sequences. -/
-theorem map_ext {f g : AdicCompletion I M → N}
+theorem map_ext {N} {f g : AdicCompletion I M → N}
     (h : ∀ (a : AdicCauchySequence I M),
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
