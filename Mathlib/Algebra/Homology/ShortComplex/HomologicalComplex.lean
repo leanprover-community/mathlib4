@@ -77,12 +77,6 @@ variable [K.HasHomology i]
 /-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology
 
-/-- Comparison isomorphism between the homology for the two homology API. -/
-noncomputable def homology'IsoHomology {A : Type*} [Category A] [Abelian A]
-    (K : HomologicalComplex A c) (i : ι) :
-    K.homology' i ≅ K.homology i :=
-  (K.sc i).homology'IsoHomology
-
 /-- The cycles in degree `i` of a homological complex. -/
 noncomputable def cycles := (K.sc i).cycles
 
@@ -583,6 +577,12 @@ def ExactAt := (K.sc i).Exact
 
 lemma exactAt_iff :
     K.ExactAt i ↔ (K.sc i).Exact := by rfl
+
+variable {K i} in
+lemma ExactAt.of_iso (hK : K.ExactAt i) {L : HomologicalComplex C c} (e : K ≅ L) :
+    L.ExactAt i := by
+  rw [exactAt_iff] at hK ⊢
+  exact ShortComplex.exact_of_iso ((shortComplexFunctor C c i).mapIso e) hK
 
 lemma exactAt_iff' (hi : c.prev j = i) (hk : c.next j = k) :
     K.ExactAt j ↔ (K.sc' i j k).Exact :=

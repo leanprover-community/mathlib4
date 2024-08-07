@@ -23,7 +23,7 @@ This file contains basic results for root systems and root data.
    roots form a root system, we do not need to check that the coroots are stable under reflections
    since this follows from the corresponding property for the roots.
 
-## Todo
+## TODO
 
 * Derived properties of pairs, e.g., (ultra)parallel linearly independent pairs generate infinite
    dihedral groups.

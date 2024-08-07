@@ -208,7 +208,7 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   apply AlgHom.ext_of_adjoin_eq_top (s := { x | x.1 ∈ finset R S })
   · rw [← top_le_iff]
     rintro x _
-    refine' Algebra.adjoin_induction' _ _ _ _ x
+    refine Algebra.adjoin_induction' ?_ ?_ ?_ ?_ x
     · intro x hx; exact Algebra.subset_adjoin hx
     · intro r; exact Subalgebra.algebraMap_mem _ _
     · intro x y hx hy; exact add_mem hx hy

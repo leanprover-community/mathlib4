@@ -8,8 +8,6 @@ import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.TensorProduct.Basic
 
-#align_import algebra.lie.base_change from "leanprover-community/mathlib"@"9264b15ee696b7ca83f13c8ad67c83d6eb70b730"
-
 /-!
 # Extension and restriction of scalars for Lie algebras and Lie modules
 
@@ -58,7 +56,6 @@ private theorem bracket_def (x : A ⊗[R] L) (m : A ⊗[R] M) : ⁅x, m⁆ = bra
 
 @[simp]
 theorem bracket_tmul (s t : A) (x : L) (y : M) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y⁆ = (s * t) ⊗ₜ ⁅x, y⁆ := rfl
-#align lie_algebra.extend_scalars.bracket_tmul LieAlgebra.ExtendScalars.bracket_tmul
 
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
@@ -113,7 +110,6 @@ instance instLieRing : LieRing (A ⊗[R] L) where
   leibniz_lie := bracket_leibniz_lie R A L L
 
 instance instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
-#align lie_algebra.extend_scalars.lie_algebra LieAlgebra.ExtendScalars.instLieAlgebra
 
 instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, LinearMap.map_add]
@@ -140,7 +136,6 @@ variable [CommRing A] [LieAlgebra A L]
 instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
   lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
     (RestrictScalars.addEquiv R A L y) : _)
-#align lie_algebra.restrict_scalars.lie_algebra LieAlgebra.RestrictScalars.lieAlgebra
 
 end RestrictScalars
 

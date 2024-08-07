@@ -18,11 +18,11 @@ package mathlib where
 ## Mathlib dependencies on upstream projects.
 -/
 
-require "leanprover-community" / "batteries" @ "git#main"
-require "leanprover-community" / "Qq" @ "git#master"
-require "leanprover-community" / "aesop" @ "git#master"
-require "leanprover-community" / "proofwidgets" @ "git#v0.0.39"
-require "leanprover-community" / "importGraph" @ "git#main"
+require "leanprover-community" / "batteries" @ git "main"
+require "leanprover-community" / "Qq" @ git "master"
+require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.41"
+require "leanprover-community" / "importGraph" @ git "main"
 
 /-!
 ## Mathlib libraries
@@ -49,8 +49,8 @@ lean_lib docs where
 lean_exe cache where
   root := `Cache.Main
 
-/-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
-lean_exe checkYaml where
+/-- `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
+lean_exe «check-yaml» where
   srcDir := "scripts"
   supportInterpreter := true
 
