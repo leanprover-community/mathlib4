@@ -1344,8 +1344,8 @@ variable
 /-- A finite-dimensional manifold modelled on a locally compact field
   (such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
 lemma Manifold.locallyCompact_of_finiteDimensional
-    (I : ModelWithCorners 𝕜 E H) [HasGroupoid M (contDiffGroupoid 0 I)]
-    [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E] : LocallyCompactSpace M := by
+    (I : ModelWithCorners 𝕜 E H) [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E] :
+    LocallyCompactSpace M := by
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   have : LocallyCompactSpace H := I.locallyCompactSpace
   exact ChartedSpace.locallyCompactSpace H M
