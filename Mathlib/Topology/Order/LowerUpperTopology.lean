@@ -258,7 +258,7 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
 /-- A function `f : β → α` with lower topology in the codomain is continuous
 if and only if the preimage of every interval `Set.Ici a` is a closed set.
 -/
-lemma continuous_iff_Ici {β} [TopologicalSpace β] {f : β → α} :
+lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Ici a)) := by
   obtain rfl := IsLower.topology_eq α
   simp [continuous_generateFrom_iff]
@@ -402,14 +402,14 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (upperBasis α) :=
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous
 if and only if the preimage of every interval `Set.Iic a` is a closed set. -/
-lemma continuous_iff_Iic {β} [TopologicalSpace β] {f : β → α} :
+lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Iic a)) :=
   IsLower.continuous_iff_Ici (α := αᵒᵈ)
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous
 provided that the preimage of every interval `Set.Iic a` is a closed set. -/
 @[deprecated (since := "2023-12-24")]
-lemma continuous_of_Iic {β} [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
+lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
     Continuous f :=
   continuous_iff_Iic.2 h
 
@@ -448,7 +448,7 @@ end CompleteLinearOrder
 
 end IsUpper
 
-instance instIsLowerProd {β} [Preorder α] [TopologicalSpace α] [IsLower α]
+instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     [OrderBot α] [Preorder β] [TopologicalSpace β] [IsLower β] [OrderBot β] :
     IsLower (α × β) where
   topology_eq_lowerTopology := by
@@ -467,7 +467,7 @@ instance instIsLowerProd {β} [Preorder α] [TopologicalSpace α] [IsLower α]
     · exact GenerateOpen.basic _ ⟨(a, ⊥), by simp [Ici_prod_eq, prod_univ]⟩
     · exact GenerateOpen.basic _ ⟨(⊥, b), by simp [Ici_prod_eq, univ_prod]⟩
 
-instance instIsUpperProd {β} [Preorder α] [TopologicalSpace α] [IsUpper α]
+instance instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
     [OrderTop α] [Preorder β] [TopologicalSpace β] [IsUpper β] [OrderTop β] :
     IsUpper (α × β) where
   topology_eq_upperTopology := by
@@ -476,7 +476,7 @@ instance instIsUpperProd {β} [Preorder α] [TopologicalSpace α] [IsUpper α]
 
 section CompleteLattice_IsLower
 
-variable {β} [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLower α]
+variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLower α]
   [TopologicalSpace β] [IsLower β]
 
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
@@ -495,7 +495,7 @@ end CompleteLattice_IsLower
 
 section CompleteLattice_IsUpper
 
-variable {β} [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsUpper α]
+variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsUpper α]
   [TopologicalSpace β] [IsUpper β]
 
 protected lemma _root_.sSupHom.continuous (f : sSupHom α β) : Continuous f :=
