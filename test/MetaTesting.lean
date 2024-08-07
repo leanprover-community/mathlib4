@@ -82,6 +82,7 @@ elab "buggy_exact " "withMC" "clearMD" h:ident : tactic => do
   evalTactic (← `(tactic| buggy_exact clearMD $h))
 
 end buggy_tactic
+
 /--
 warning: goal does not match
 ---
