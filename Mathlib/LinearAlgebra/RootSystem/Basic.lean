@@ -25,10 +25,7 @@ This file contains basic results for root systems and root data.
 
 ## TODO
 
-* Derived properties of pairs, e.g., (ultra)parallel linearly independent pairs generate infinite
-   dihedral groups.
 * Properties of Weyl group (faithful action on roots, finiteness for finite `ι`)
-* Conditions for existence of Weyl-invariant form (e.g., finiteness).
 
 -/
 
@@ -73,6 +70,27 @@ protected def equiv_of_mapsTo :
   right_inv j := choose_choose_eq_of_mapsTo p root coroot i j h hp
 
 end reflection_perm
+
+lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
+    (P : RootPairing ι R M N) (i j : ι) (hl : LinearIndependent R ![P.root i, P.root j])
+    (hc : P.coxeterWeight i j = 4) : Infinite ι := by
+  refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
+    (infinite_range_of_reflection_reflection_iterate (P.coroot_root_two i)
+    (P.coroot_root_two j) ?_ ?_))
+  · rw [range_subset_iff]
+    intro n
+    rw [← IsFixedPt.image_iterate ((bijOn_reflection_of_mapsTo (P.coroot_root_two i)
+      (P.mapsTo_reflection_root i)).comp (bijOn_reflection_of_mapsTo (P.coroot_root_two j)
+      (P.mapsTo_reflection_root j))).image_eq n]
+    exact mem_image_of_mem _ (mem_range_self j)
+  · rw [coroot_root_eq_pairing, coroot_root_eq_pairing, ← hc, mul_comm, coxeterWeight]
+  · rw [LinearIndependent.pair_iff] at hl
+    rw [coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg, ← neg_smul]
+    specialize hl (P.pairing j i) (-2)
+    contrapose! hl
+    simp only [ne_eq, neg_eq_zero, OfNat.ofNat_ne_zero, not_false_eq_true, implies_true, and_true]
+    have h2 : (-2 : ℤ) • P.root j = (-2 : R) • P.root j := by simp only [neg_smul, two_smul]
+    exact h2 ▸ hl
 
 variable [Finite ι] (P : RootPairing ι R M N) (i j : ι)
 
