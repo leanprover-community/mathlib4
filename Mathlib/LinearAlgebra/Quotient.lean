@@ -58,7 +58,6 @@ theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
     @Quotient.mk' _ (quotientRel p) x = (mk : M → M ⧸ p) x :=
   rfl
 
-@[simp]
 theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mk : M → M ⧸ p) x :=
   rfl
 
@@ -463,8 +462,8 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
-    left_inv := fun x => Quotient.inductionOn' x (by simp)
-    right_inv := fun x => Quotient.inductionOn' x (by simp) }
+    left_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk])
+    right_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk]) }
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
