@@ -130,10 +130,7 @@ variable {K L M N : Type*}
 section CommSemiring
 
 variable [CommSemiring K] [CommSemiring L] [CommSemiring M]
-  (i : K →+* L) (j : K →+* M) (f : L →+* M)
-  (p : ℕ) --[ExpChar K p]
-  -- [ExpChar L p]
-  -- [ExpChar M p]
+  (i : K →+* L) (j : K →+* M) (f : L →+* M) (p : ℕ)
 
 /-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it is called
 `p`-radical if the following conditions are satisfied:
@@ -255,8 +252,7 @@ namespace IsPRadical
 
 /-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential charactistic `p` whose
 `p`-nilradical is zero, the map `(L →+* M) → (K →+* M)` induced by `i` is injective. -/
-theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p]
-    (h : pNilradical M p = ⊥) :
+theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M p = ⊥) :
     Function.Injective fun f : L →+* M ↦ f.comp i := fun f g heq ↦ by
   ext x
   obtain ⟨n, y, hx⟩ := IsPRadical.pow_mem i p x
@@ -306,8 +302,8 @@ theorem liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
     ← sub_eq_zero, ← map_pow, ← map_pow, ← map_sub,
     add_comm m, add_comm m, pow_add, pow_mul, pow_add, pow_mul, ← sub_pow_expChar_pow, h, map_zero]
 
-
 variable [ExpChar L p]
+
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
 `i` is `p`-radical, and `M` is a perfect ring, then `PerfectRing.liftAux`
 is a ring homomorphism. This is similar to `IsAlgClosed.lift` and `IsSepClosed.lift`. -/
