@@ -305,6 +305,10 @@ def map (p : RelSeries r) (f : r →r s) : RelSeries s where
 @[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
     p.map f i = f (p i) := rfl
 
+@[simp] lemma head_map (p : RelSeries r) (f : r →r s) : (p.map f).head = f p.head := rfl
+
+@[simp] lemma last_map (p : RelSeries r) (f : r →r s) : (p.map f).last = f p.last := rfl
+
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
 `aᵢ -r→ a -r→ a_ᵢ₊₁`, then
@@ -637,6 +641,12 @@ can be pushed out to a strict chain of `β` by
 @[simps!]
 def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
   LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
+
+@[simp] lemma head_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
+  (p.map f hf).head = f p.head := rfl
+
+@[simp] lemma last_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
+  (p.map f hf).last = f p.last := rfl
 
 /--
 For two preorders `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
