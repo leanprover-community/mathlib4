@@ -286,9 +286,8 @@ section LinearOrder
 variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
 
 lemma isTopologicalBasis_insert_univ_subbasis :
-    IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) := by
-  exact isTopologicalBasis_of_subbasis_of_inter (by
-      rw [topology_eq α]; exact rfl)
+    IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) :=
+  isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq]; rfl)
     (fun _ hs _ ht => by
       simp at *
       rcases hs with ⟨b, hb⟩
