@@ -198,7 +198,7 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel 
   apply Finset.odd_sum_iff_odd_card_odd
 
 lemma ConnectedComponent.top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
-  c.supp = (Set.univ : Set V) := by
+    c.supp = (Set.univ : Set V) := by
   have ⟨w, hw⟩ := c.exists_rep
   ext v
   simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
