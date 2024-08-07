@@ -128,13 +128,13 @@ lemma OrthogonalIdempotents.isIdempotentElem_sum (he : OrthogonalIdempotents e) 
   classical
   simp [IsIdempotentElem, Finset.sum_mul, Finset.mul_sum, he.mul_eq]
 
-lemma OrthogonalIdempotents.mul_sum_of_mem {i : I} {s : Finset I} (h : i ∈ s) :
-    e i * ∑ j ∈ s, e j = e i := by
+lemma OrthogonalIdempotents.mul_sum_of_mem (he : OrthogonalIdempotents e)
+    {i : I} {s : Finset I} (h : i ∈ s) : e i * ∑ j ∈ s, e j = e i := by
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
 
-lemma OrthogonalIdempotents.mul_sum_of_not_mem {i : I} {s : Finset I} (h : i ∉ s) :
-    e i * ∑ j ∈ s, e j = 0 := by
+lemma OrthogonalIdempotents.mul_sum_of_not_mem (he : OrthogonalIdempotents e)
+    {i : I} {s : Finset I} (h : i ∉ s) : e i * ∑ j ∈ s, e j = 0 := by
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
 
