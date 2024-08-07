@@ -52,22 +52,23 @@ class TietzeExtension (Y : Type v) [TopologicalSpace Y] : Prop where
     (hs : IsClosed s) (f : C(s, Y)) : ∃ (g : C(X, Y)), g.restrict s = f
 
 variable {X₁ : Type u₁} [TopologicalSpace X₁]
-variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
-variable {e : X₁ → X} (he : ClosedEmbedding e)
+variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X}
+variable {e : X₁ → X}
 variable {Y : Type v} [TopologicalSpace Y] [TietzeExtension.{u, v} Y]
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces, a version for a closed set. Let
 `s` be a closed set in a normal topological space `X`. Let `f` be a continuous function
 on `s` with values in a `TietzeExtension` space `Y`. Then there exists a continuous function
 `g : C(X, Y)` such that `g.restrict s = f`. -/
-theorem ContinuousMap.exists_restrict_eq (f : C(s, Y)) : ∃ (g : C(X, Y)), g.restrict s = f :=
+theorem ContinuousMap.exists_restrict_eq (hs : IsClosed s) (f : C(s, Y)) :
+    ∃ (g : C(X, Y)), g.restrict s = f :=
   TietzeExtension.exists_restrict_eq' s hs f
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
 nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
 function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exists a
 continuous function `g : C(X, Y)` such that `g ∘ e = f`. -/
-theorem ContinuousMap.exists_extension (f : C(X₁, Y)) :
+theorem ContinuousMap.exists_extension (he : ClosedEmbedding e) (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := Homeomorph.ofEmbedding _ he.toEmbedding
   obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
@@ -80,7 +81,8 @@ continuous function `g : C(X, Y)` such that `g ∘ e = f`.
 
 This version is provided for convenience and backwards compatibility. Here the composition is
 phrased in terms of bare functions. -/
-theorem ContinuousMap.exists_extension' (f : C(X₁, Y)) : ∃ (g : C(X, Y)), g ∘ e = f :=
+theorem ContinuousMap.exists_extension' (he : ClosedEmbedding e) (f : C(X₁, Y)) :
+    ∃ (g : C(X, Y)), g ∘ e = f :=
   f.exists_extension he |>.imp fun g hg ↦ by ext x; congrm($(hg) x)
 
 /-- This theorem is not intended to be used directly because it is rare for a set alone to
@@ -89,7 +91,8 @@ the radius is strictly positive, so finding this as an instance will fail.
 
 Instead, it is intended to be used as a constructor for theorems about sets which *do* satisfy
 `[TietzeExtension t]` under some hypotheses. -/
-theorem ContinuousMap.exists_forall_mem_restrict_eq {Y : Type v} [TopologicalSpace Y] (f : C(s, Y))
+theorem ContinuousMap.exists_forall_mem_restrict_eq (hs : IsClosed s)
+    {Y : Type v} [TopologicalSpace Y] (f : C(s, Y))
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
     ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.restrict s = f := by
   obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_restrict_eq hs
@@ -101,7 +104,8 @@ the radius is strictly positive, so finding this as an instance will fail.
 
 Instead, it is intended to be used as a constructor for theorems about sets which *do* satisfy
 `[TietzeExtension t]` under some hypotheses. -/
-theorem ContinuousMap.exists_extension_forall_mem {Y : Type v} [TopologicalSpace Y] (f : C(X₁, Y))
+theorem ContinuousMap.exists_extension_forall_mem (he : ClosedEmbedding e)
+    {Y : Type v} [TopologicalSpace Y] (f : C(X₁, Y))
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
     ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.comp ⟨e, he.continuous⟩ = f := by
   obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_extension he
