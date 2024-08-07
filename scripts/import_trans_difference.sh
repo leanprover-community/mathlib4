@@ -82,7 +82,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
       }
     }
     if ((all == 0) && (200 <= con)) {
-      printf("There are %s files with changed transitive imports: this is too many to display!\n", con)
+      printf("There are %s files with changed transitive imports: this is too many to display!\nYou can run `scripts/import_trans_difference.sh all` locally to see the whole output.", con)
     } else {
       for(x in reds) {
         if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
