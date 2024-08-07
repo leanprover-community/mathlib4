@@ -86,8 +86,6 @@ lemma IsHomological.mk' [F.PreservesZeroMorphisms]
     exact (ShortComplex.exact_iff_of_iso
       (F.mapShortComplex.mapIso ((shortComplexOfDistTriangleIsoOfIso e hT)))).2 h'
 
-variable [F.IsHomological]
-
 lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.IsHomological] (e : F₁ ≅ F₂) :
     F₂.IsHomological :=
   have := preservesZeroMorphisms_of_iso e
