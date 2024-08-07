@@ -391,7 +391,7 @@ lemma contMDiffOn_openEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
       n (OpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
   haveI := h.singleton_smoothManifoldWithCorners I
-  rw [@contMDiffOn_iff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
+  rw [@contMDiffOn_iff]
   constructor
   · rw [← h.toPartialHomeomorph_target]
     exact (h.toPartialHomeomorph e).continuousOn_symm
