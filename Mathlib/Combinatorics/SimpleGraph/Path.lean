@@ -968,8 +968,8 @@ lemma connectedComponentMk_supp_subset_supp {G'} {v : V} (h : G ≤ G') (c' : G'
   rw [ConnectedComponent.sound (hv'.mono h)]
   exact hc'
 
-lemma union_supp_eq_supp {G G' : SimpleGraph V} (h : G ≤ G') (c' : ConnectedComponent G') :
-    ⋃ c : {c : ConnectedComponent G | c.supp ⊆ c'.supp}, c.1.supp = c'.supp := by
+lemma biUnion_supp_eq_supp {G G' : SimpleGraph V} (h : G ≤ G') (c' : ConnectedComponent G') :
+    ⋃ (c : ConnectedComponent G) (hc : c.supp ⊆ c'.supp}, c.1.supp = c'.supp := by
   ext v
   simp_rw [Set.mem_iUnion]
   refine ⟨fun ⟨i, hi⟩ ↦ i.2 hi, ?_⟩
