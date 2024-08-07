@@ -250,8 +250,15 @@ theorem subset_interior_smul_right {s : Set G} {t : Set α} : s • interior t �
   interior_maximal (Set.smul_subset_smul_left interior_subset) isOpen_interior.smul_left
 
 @[to_additive (attr := simp)]
-theorem smul_mem_nhds {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 (g • a) ↔ t ∈ 𝓝 a :=
+theorem smul_mem_nhds_smul {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 (g • a) ↔ t ∈ 𝓝 a :=
   (Homeomorph.smul g).openEmbedding.image_mem_nhds
+
+@[deprecated (since := "2024-08-06")] alias ⟨_, smul_mem_nhds⟩ := smul_mem_nhds_smul
+
+@[to_additive (attr := simp)]
+theorem smul_mem_nhds_self [TopologicalSpace G] [ContinuousConstSMul G G] {g : G} {s : Set G} :
+    g • s ∈ 𝓝 g ↔ s ∈ 𝓝 1 := by
+  rw [← smul_mem_nhds_smul g⁻¹]; simp
 
 end Group
 
@@ -487,15 +494,18 @@ section MulAction
 variable {G₀ : Type*} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
   [ContinuousConstSMul G₀ α]
 
-theorem set_smul_mem_nhds_smul_iff {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
+/-- Scalar multiplication by a nonzero scalar preserves neighborhoods. -/
+theorem smul_mem_nhds_smul₀ {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x :=
-  smul_mem_nhds (Units.mk0 c hc)
+  smul_mem_nhds_smul (Units.mk0 c hc)
 
--- Porting note: generalize to a group action + `IsUnit`
-/-- Scalar multiplication preserves neighborhoods. -/
+@[deprecated (since := "2024-08-06")]
+alias set_smul_mem_nhds_smul_iff := smul_mem_nhds_smul₀
+
+@[deprecated  smul_mem_nhds_smul₀ (since := "2024-08-06")]
 theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝 x) (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) :=
-  (set_smul_mem_nhds_smul_iff hc).2 hs
+  (smul_mem_nhds_smul₀ hc).2 hs
 
 end MulAction
 
@@ -506,7 +516,7 @@ variable {G₀ : Type*} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G�
 
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) := by
-  refine Iff.trans ?_ (set_smul_mem_nhds_smul_iff hc)
+  refine Iff.trans ?_ (smul_mem_nhds_smul₀ hc)
   rw [smul_zero]
 
 end DistribMulAction

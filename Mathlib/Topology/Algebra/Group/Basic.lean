@@ -1125,7 +1125,7 @@ theorem subset_interior_mul : interior s * interior t ⊆ interior (s * t) :=
 
 @[to_additive]
 theorem singleton_mul_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : {a} * s ∈ 𝓝 (a * b) := by
-  rwa [← smul_eq_mul, ← smul_eq_mul, singleton_smul, smul_mem_nhds]
+  rwa [← smul_eq_mul, ← smul_eq_mul, singleton_smul, smul_mem_nhds_smul]
 
 @[to_additive]
 theorem singleton_mul_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : {a} * s ∈ 𝓝 a := by
@@ -1139,8 +1139,8 @@ variable [TopologicalSpace α] [Group α] [ContinuousConstSMul αᵐᵒᵖ α] {
 
 @[to_additive]
 theorem IsOpen.mul_right (hs : IsOpen s) : IsOpen (s * t) := by
-  rw [← iUnion_op_smul_set]
-  exact isOpen_biUnion fun a _ => hs.smul _
+  rw [← image_op_smul]
+  exact hs.smul_left
 
 @[to_additive]
 theorem subset_interior_mul_left : interior s * t ⊆ interior (s * t) :=
@@ -1152,8 +1152,8 @@ theorem subset_interior_mul' : interior s * interior t ⊆ interior (s * t) :=
 
 @[to_additive]
 theorem mul_singleton_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : s * {a} ∈ 𝓝 (b * a) := by
-  simp only [← iUnion_op_smul_set, mem_singleton_iff, iUnion_iUnion_eq_left]
-  exact (smul_mem_nhds _).2 h
+  rw [mul_singleton]
+  exact (Homeomorph.smul (op a)).openEmbedding.image_mem_nhds.2 h
 
 @[to_additive]
 theorem mul_singleton_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : s * {a} ∈ 𝓝 a := by
