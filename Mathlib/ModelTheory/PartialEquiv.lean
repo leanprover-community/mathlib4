@@ -333,7 +333,7 @@ end DirectLimit
 
 section FGEquiv
 
-open PartialEquiv Set DirectLimit Filter
+open PartialEquiv Set DirectLimit
 
 variable (M) (N) (L)
 
