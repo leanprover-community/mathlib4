@@ -5,7 +5,7 @@ Authors: Damiano Testa, Yury Kudryashov
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.Order.Lemmas
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 
 /-!
 #  `Nat.divisors` as a multiplicative homomorpism
