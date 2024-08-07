@@ -71,7 +71,6 @@ lemma normalClosure_le_iSup_adjoin :
 
 variable (splits : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
 
-include splits in
 lemma normalClosure_eq_iSup_adjoin_of_splits :
     normalClosure F K L = ⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_le_iSup_adjoin.antisymm <|
