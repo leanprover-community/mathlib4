@@ -180,14 +180,24 @@ section continuity
 
 variable {α ι : Type*}
 
-lemma TendstoUniformlyOn_re_part (f : ι → α → ℂ) {p : Filter ι} (g : α → ℂ) (K : Set α)
+protected lemma TendstoUniformlyOn.re {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ} {K : Set α}
     (hf : TendstoUniformlyOn f g p K) : TendstoUniformlyOn (fun n x => (f n x).re)
       (fun y => (g y).re) p K := by
   apply UniformContinuous.comp_tendstoUniformlyOn UniformlyContinous_re hf
 
-lemma TendstoUniformlyOn_im_part (f : ι → α → ℂ) {p : Filter ι} (g : α → ℂ) (K : Set α)
+protected lemma TendstoUniformly.re {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ}
+    (hf : TendstoUniformly f g p) : TendstoUniformly (fun n x => (f n x).re)
+      (fun y => (g y).re) p := by
+  apply UniformContinuous.comp_tendstoUniformly UniformlyContinous_re hf
+
+protected lemma TendstoUniformlyOn.im (f : ι → α → ℂ) {p : Filter ι} {g : α → ℂ} {K : Set α}
     (hf : TendstoUniformlyOn f g p K) : TendstoUniformlyOn (fun n x => (f n x).im)
       (fun y => (g y).im) p K := by
   apply UniformContinuous.comp_tendstoUniformlyOn UniformlyContinous_im hf
+
+protected lemma TendstoUniformly.im (f : ι → α → ℂ) {p : Filter ι} {g : α → ℂ}
+    (hf : TendstoUniformly f g p) : TendstoUniformly (fun n x => (f n x).im)
+      (fun y => (g y).im) p := by
+  apply UniformContinuous.comp_tendstoUniformly UniformlyContinous_im hf
 
 end continuity

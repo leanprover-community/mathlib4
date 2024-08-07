@@ -241,11 +241,8 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
-lemma UniformlyContinous_re : UniformContinuous re := by
-  rw [Metric.uniformContinuous_iff]
-  intro ε hε
-  refine ⟨ε, hε, fun hxy => ?_⟩
-  apply lt_of_le_of_lt (Complex.abs_re_le_abs _) hxy
+lemma UniformlyContinous_re : UniformContinuous re :=
+  reCLM.uniformContinuous
 
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
@@ -263,11 +260,8 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
-lemma UniformlyContinous_im : UniformContinuous im := by
-  rw [Metric.uniformContinuous_iff]
-  intro ε hε
-  refine ⟨ε, hε, fun hxy => ?_⟩
-  apply lt_of_le_of_lt (Complex.abs_im_le_abs _) hxy
+lemma UniformlyContinous_im : UniformContinuous im :=
+  imCLM.uniformContinuous
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
