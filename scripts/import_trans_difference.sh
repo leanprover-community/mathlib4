@@ -21,7 +21,7 @@ The output is of the form
 with collapsible tabs for file entries with at least 3 files.
 BASH_MODULE_DOCS
 
-# `all=1` is the flag to print all import changes, without capping at 200
+# `all=1` is the flag to print all import changes, without cut-off
 all=0
 if [ "${1}" == "all" ]
 then
