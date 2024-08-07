@@ -184,8 +184,6 @@ variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shift
 variable [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
   (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
-section
-include hT
 @[reassoc]
 lemma comp_homologySequenceδ :
     (F.shift n₀).map T.mor₂ ≫ F.homologySequenceδ T n₀ n₁ h = 0 := by
