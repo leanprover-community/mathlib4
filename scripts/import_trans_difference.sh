@@ -46,6 +46,11 @@ fi
 #printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
 
 currCommit="$(git rev-parse --abbrev-ref HEAD)"
+# if we are in a detached head, `currCommit` would be the unhelpful `HEAD`
+# in this case, we fetch the commit hash
+if [ "${currCommit}" == "HEAD" ]
+  currCommit="$(git rev-parse HEAD)"
+fi
 
 getTransImports () {
   python3 scripts/count-trans-deps.py Mathlib |
