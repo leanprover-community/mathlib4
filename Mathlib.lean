@@ -1375,6 +1375,7 @@ import Mathlib.CategoryTheory.CatCommSq
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.Category.Cat.Adjunction
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Category.Factorisation
 import Mathlib.CategoryTheory.Category.GaloisConnection
@@ -1900,6 +1901,7 @@ import Mathlib.Combinatorics.SetFamily.Shatter
 import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
@@ -3273,6 +3275,7 @@ import Mathlib.ModelTheory.Fraisse
 import Mathlib.ModelTheory.Graph
 import Mathlib.ModelTheory.LanguageMap
 import Mathlib.ModelTheory.Order
+import Mathlib.ModelTheory.PartialEquiv
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.Satisfiability
 import Mathlib.ModelTheory.Semantics
@@ -4006,6 +4009,9 @@ import Mathlib.Tactic.ArithMult.Init
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CC
 import Mathlib.Tactic.CC.Addition
