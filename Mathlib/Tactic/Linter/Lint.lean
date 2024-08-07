@@ -51,6 +51,8 @@ end Std.Tactic.Lint
 
 namespace Mathlib.Linter
 
+open Lean
+
 /-!
 #  `dupNamespace` linter
 
@@ -77,7 +79,7 @@ register_option linter.dupNamespace : Bool := {
 
 namespace DupNamespaceLinter
 
-open Lean Parser Elab Command Meta
+open Parser Elab Command Meta
 
 /-- Gets the value of the `linter.dupNamespace` option. -/
 def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
@@ -117,8 +119,6 @@ The "missing end" linter emits a warning on non-closed `section`s and `namespace
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 
-open Lean Elab Command
-
 /-- The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
@@ -128,6 +128,8 @@ register_option linter.missingEnd : Bool := {
 }
 
 namespace MissingEnd
+
+open Elab Command
 
 /-- Gets the value of the `linter.missingEnd` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
@@ -267,5 +269,116 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter longLineLinter
 
 end LongLine
+
+/-!
+#  The "badVariable" linter
+The "badVariable" linter emits a warning when a variable command
+changes how a variable is bound and declares new variables at the same time.
+
+This is discouraged since it leads to surprising behaviour.
+-/
+
+/-- The "badVariable" linter emits a warning when a variable command
+changes how a variable is bound and declares new variables at the same time.
+
+This is discouraged since it leads to surprising behaviour.
+-/
+register_option linter.badVariable : Bool := {
+  defValue := true
+  descr := "enable the badVariable linter"
+}
+
+namespace BadVariable
+
+open Elab Command
+
+/-- Gets the value of the `linter.badVariable` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.badVariable o
+
+/--
+Whether a variable binder just updates the type of a previous variable.
+`current` is the name of the variable,
+`withType` describes whether its binder contains a type or not, and
+`previousNames` are all names of variables which were previously declared.
+-/
+def isBinderTypeChange (current : Name) (withType : Bool) (previousNames : Array Name) : Bool :=
+  -- If there was no previous variable of this name, we simply have a new variable.
+  if !previousNames.contains current then
+    false
+  -- If the current variable was declared before, but is now declared with a type,
+  -- it shadows a previous one: this is not a binder type change either.
+  else if withType then
+    false
+  -- Otherwise, we have a change in binder types.
+  -- TODO: currently, this treats a variable with a default value as "change"; is this what we want?
+  else true
+
+/--
+"Pluralize" a string: convert it to "plural form" if `n` is larger than one, else leave it unchanged.
+Usually, we just append an "s", but we change "is" to "are". More versions could be added if needed.
+-/
+def pluralize (name : String) (n : Nat) : String :=
+  match name with
+  | "is" => if n > 1 then "are" else "is"
+  | s => if n > 1 then s!"{s}s" else s
+
+@[inherit_doc Mathlib.Linter.linter.badVariable]
+def badVariableLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    -- TODO: the results of getScope include the variables from this command already
+    -- how can I access the scope *prior* to it? Otherwise, the linter cannot work...
+
+    -- In a variable command, determine all implicit or explicit binders,
+    -- and whether they are given with a type or not.
+    if stx.getKind == ``Lean.Parser.Command.variable then
+      -- The inner arguments: a list of binders in the variable command.
+      let binders := stx[1].getArgs
+      -- Restrict to implicit or explicit binders, for now.
+      let binders := binders.filter fun binder ↦
+        [``Lean.Parser.Term.implicitBinder, ``Lean.Parser.Term.explicitBinder].contains
+        binder.getKind
+      -- Collect a list of identifier names and whether they are declared with a type or not.
+      -- Whether these are implicit or explicit does not matter to us.
+      let namesWithTypes : Array (Name × Bool) := (binders.map fun binder ↦
+        binder[1].getArgs.map fun s ↦ (s.getId, binder[2][0] != default)).flatten
+
+      -- Next, determine which of these variables existed previously:
+      -- this information is contained in the current scope.
+      -- HACK: using the previous scope as a hack.
+      let prevScope := (← get).scopes.getD 1 (← getScope)
+      let previousVariables := (prevScope.varDecls).map fun var ↦ var.raw
+      -- We care about all kinds of previous binders.
+      let previousNames := (previousVariables.map fun binder ↦
+        binder[1].getArgs.map fun s ↦ s.getId).flatten
+
+      -- Determine all binders which are just changing a previous variable's binder.
+      let binderTypeChanged := (namesWithTypes.filter (fun nm ↦
+        isBinderTypeChange nm.1 nm.2 previousNames)).map fun nameBool ↦ nameBool.1
+      -- if binderTypeChanged.size > 0 then
+      --  dbg_trace s!"binder type of {pluralize "variable" binderTypeChanged.size} \
+      --   {", ".intercalate ((binderTypeChanged.toList).map fun s ↦ s!"'{s}'")} changed"
+      -- We error if this `variable` command contains both a variable whose binder type
+      -- is merely changed, and a new binder declared.
+      let newVariables := (namesWithTypes.filter (fun nm ↦
+        !isBinderTypeChange nm.1 nm.2 previousNames)).map fun nb ↦ nb.1
+
+      if newVariables.size > 0 && binderTypeChanged.size > 0 then
+        let changed := ", ".intercalate ((binderTypeChanged.toList).map fun s ↦ s!"'{s}'")
+        let C := binderTypeChanged.size
+        let new := ", ".intercalate ((newVariables.toList).map fun s ↦ s!"'{s}'")
+        let N := binderTypeChanged.size
+        Linter.logLint linter.badVariable stx -- TODO: underline the actual args!
+          s!"bad variable declaration: \n\
+          the binder types of the {pluralize "variable" C} {changed} {pluralize "is" C} changed, \
+          while the new {pluralize "variable" N} {new} {pluralize "is" C} declared\n\
+          please split these into separate 'variable' commands"
+
+initialize addLinter badVariableLinter
+
+end BadVariable
 
 end Mathlib.Linter

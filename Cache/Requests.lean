@@ -75,6 +75,16 @@ def downloadFile (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
+/--
+"Pluralize" a string: convert it to "plural form" if `n` is larger than one, else leave it unchanged.
+Usually, we just append an "s", but we change "is" to "are".
+More special cases could be added if needed.
+-/
+def pluralize (name : String) (n : Nat) : String :=
+  match name with
+  | "is" => if n > 1 then "are" else "is"
+  | s => if n > 1 then s!"{s}s" else s
+
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
 Exit the process with exit code 1 if any files failed to download. -/
 def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
@@ -82,7 +92,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
-    IO.println s!"Attempting to download {size} file(s)"
+    IO.println s!"Attempting to download {size} {pluralize "file" size}"
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
       let args := #["--request", "GET", "--parallel", "--fail", "--silent",
@@ -113,7 +123,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
           done := done + 1
           let now ← IO.monoMsNow
           if now - last ≥ 100 then -- max 10/s update rate
-            let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%]"
+            let mut msg := s!"\rDownloaded: {success} {pluralize "file" success} [attempted {done}/{size} = {100*done/size}%]"
             if failed != 0 then
               msg := msg ++ s!", {failed} failed"
             IO.eprint msg
@@ -121,7 +131,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
         pure (last, success, failed, done)
       if done > 0 then
         -- to avoid confusingly moving on without finishing the count
-        let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%] ({100*success/done}% success)"
+        let mut msg := s!"\rDownloaded: {success} {pluralize "file" success} [attempted {done}/{size} = {100*done/size}%] ({100*success/done}% success)"
         if failed != 0 then
           msg := msg ++ s!", {failed} failed"
         IO.eprintln msg
@@ -136,7 +146,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
         pure <| (← IO.asTask do downloadFile hash) :: acc
       pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
     if failed > 0 then
-      IO.println s!"{failed} download(s) failed"
+      IO.println s!"{failed} {pluralize "download" failed} failed"
       IO.Process.exit 1
   else IO.println "No files to download"
 
@@ -197,7 +207,7 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
   let size := fileNames.size
   if size > 0 then
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
-    IO.println s!"Attempting to upload {size} file(s)"
+    IO.println s!"Attempting to upload {size} {pluralize "file" size}"
     let args := if useFROCache then
       -- TODO: reimplement using HEAD requests?
       let _ := overwrite
