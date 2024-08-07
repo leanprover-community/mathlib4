@@ -146,13 +146,13 @@ noncomputable def height {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
 
 /--
 The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `>` and ending with `a`.
+relation series of `α` ordered by `<` and beginning with `a`.
 
-The definitions goes via the dual order to easily transfer theorems between `height` and `coheight`.
-See `coheight_eq_isup_head` for the definition with a series ordered by `<` and beginning with `a`.
+The definition of `coheight` is via the `height` in the dual order, in order to easily transfer
+theorems between `height` and `coheight`. See `coheight_eq_isup_head` for the definition with a
+series ordered by `<` and beginning with `a`.
 -/
-noncomputable def coheight {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
-  ⨆ (p : LTSeries αᵒᵈ ) (_ : p.last = a), p.length
+noncomputable def coheight {α : Type*} [Preorder α] (a : α) : ℕ∞ := height (α := αᵒᵈ) a
 
 end definitions
 
@@ -170,21 +170,31 @@ lemma height_orderDual (x : αᵒᵈ) : height x = coheight (α := α) x := rfl
 
 lemma coheight_orderDual (x : αᵒᵈ) : coheight x = height (α := α) x := rfl
 
+@[simp]
+lemma RelSeries.reverse_reverse {r : Rel α α} (p : RelSeries r) :
+    p.reverse.reverse = p := by ext <;> simp
+
+lemma coheight_eq_iSup_head (a : α) :
+    coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), (p.length : ℕ∞) := by
+  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
+    RelSeries.reverse_reverse⟩
+  simp
+
 lemma height_le_iff (x : α) (n : ℕ∞) :
     height x ≤ n ↔ ∀ (p : LTSeries α), p.last = x → p.length ≤ n := by
   simp [height, iSup_le_iff]
 
 lemma coheight_le_iff (x : α) (n : ℕ∞) :
-    coheight x ≤ n ↔ ∀ (p : LTSeries αᵒᵈ), p.last = x → p.length ≤ n :=
-  height_le_iff (α := αᵒᵈ) x n
+    coheight x ≤ n ↔ ∀ (p : LTSeries α), p.head = x → p.length ≤ n := by
+  simp [coheight_eq_iSup_head, iSup_le_iff]
 
 lemma height_le (x : α) (n : ℕ∞) :
     (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n :=
   (height_le_iff x n).mpr
 
 lemma coheight_le (x : α) (n : ℕ∞) :
-    (∀ (p : LTSeries αᵒᵈ), p.last = x → p.length ≤ n) → coheight x ≤ n :=
-  height_le (α := αᵒᵈ) x n
+    (∀ (p : LTSeries α), p.head = x → p.length ≤ n) → coheight x ≤ n :=
+  (coheight_le_iff x n).mpr
 
 lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
     p.length ≤ height x := by
@@ -205,21 +215,21 @@ lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
     exact le_refl _
   · simp_all
 
-lemma le_coheight_of_last_le (x : α) (p : LTSeries αᵒᵈ) (hlast : x ≤ p.last) :
+lemma le_coheight_of_le_head (x : α) (p : LTSeries α) (hhead : x ≤ p.head) :
     p.length ≤ coheight x :=
-  le_height_of_last_le (α := αᵒᵈ) x p hlast
+  le_height_of_last_le (α := αᵒᵈ) x p.reverse (by simpa)
 
 lemma length_le_height_last (p : LTSeries α) : p.length ≤ height p.last :=
   le_height_of_last_le _ p (le_refl _)
 
-lemma length_le_coheight_last (p : LTSeries αᵒᵈ) : p.length ≤ coheight (α := α) p.last :=
-  length_le_height_last (α := αᵒᵈ) p
+lemma length_le_coheight_last (p : LTSeries α) : p.length ≤ coheight p.head :=
+  le_coheight_of_le_head _ p (le_refl _)
 
 lemma index_le_height (p : LTSeries α) (i : Fin (p.length + 1)) : i ≤ height (p i) :=
   length_le_height_last (p.take i)
 
-lemma index_le_coheight (p : LTSeries αᵒᵈ) (i : Fin (p.length + 1)) : i ≤ coheight (α := α) (p i) :=
-  index_le_height (α := αᵒᵈ) p i
+lemma index_le_coheight (p : LTSeries α) (i : Fin (p.length + 1)) : i.rev ≤ coheight (p i) := by
+  simpa using index_le_height (α := αᵒᵈ) p.reverse i.rev
 
 lemma height_eq_index_of_length_eq_last_height (p : LTSeries α) (h : p.length = height p.last) :
     ∀ (i : Fin (p.length + 1)), i = height (p i) := by
@@ -234,10 +244,11 @@ lemma height_eq_index_of_length_eq_last_height (p : LTSeries α) (h : p.length =
   norm_cast at hp''
   omega
 
-lemma coheight_eq_index_of_length_eq_last_coheight (p : LTSeries αᵒᵈ)
-    (h : p.length = coheight (α := α) p.last) :
-    ∀ (i : Fin (p.length + 1)), i = coheight (α := α) (p i) :=
-  height_eq_index_of_length_eq_last_height (α := αᵒᵈ) p h
+lemma coheight_eq_index_of_length_eq_head_coheight (p : LTSeries α)
+    (h : p.length = coheight p.head) :
+    ∀ (i : Fin (p.length + 1)), i.rev = coheight (p i) := by
+  intro i
+  simpa using height_eq_index_of_length_eq_last_height (α := αᵒᵈ) p.reverse (by simpa) i.rev
 
 lemma height_mono : Monotone (α := α) height := by
   intro x y hxy
@@ -328,8 +339,9 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     · simp [hlen]; omega
 
 lemma exists_series_of_le_coheight (a : α) {n : ℕ} (h : n ≤ coheight a) :
-    ∃ p : LTSeries αᵒᵈ, p.last = a ∧ p.length = n :=
-  exists_series_of_le_height (α := αᵒᵈ) a h
+    ∃ p : LTSeries α, p.head = a ∧ p.length = n := by
+  obtain ⟨p, hp, hl⟩ := exists_series_of_le_height (α := αᵒᵈ) a h
+  exact ⟨p.reverse, by simpa, by simpa⟩
 
 /-- For an element of finite height there exists a series ending in that element of that height. -/
 lemma exists_series_of_height_eq_coe (a : α) {n : ℕ} (h : height a = n) :
@@ -337,8 +349,8 @@ lemma exists_series_of_height_eq_coe (a : α) {n : ℕ} (h : height a = n) :
   exists_series_of_le_height a (le_of_eq h.symm)
 
 lemma exists_series_of_coheight_eq_coe (a : α) {n : ℕ} (h : coheight a = n) :
-    ∃ p : LTSeries αᵒᵈ, p.last = a ∧ p.length = n :=
-  exists_series_of_height_eq_coe (α := αᵒᵈ) a h
+    ∃ p : LTSeries α, p.head = a ∧ p.length = n :=
+  exists_series_of_le_coheight a (le_of_eq h.symm)
 
 /--
 The height of an elemnet is infinite if there exist series of arbitrary length ending in that
@@ -362,8 +374,10 @@ The coheight of an elemnet is infinite if there exist series of arbitrary length
 element.
 -/
 lemma coheight_eq_top_iff (x : α) :
-    coheight x = ⊤ ↔ (∀ n, ∃ p : LTSeries αᵒᵈ, p.last = x ∧ p.length = n) :=
-  height_eq_top_iff (α := αᵒᵈ) x
+    coheight x = ⊤ ↔ (∀ n, ∃ p : LTSeries α, p.head = x ∧ p.length = n) := by
+  convert height_eq_top_iff (α := αᵒᵈ) x using 2 with n
+  exact ⟨fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩,
+         fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩⟩
 
 /-- Another characterization of height, based on the supremum of the heights of elements below. -/
 lemma height_eq_isup_lt_height (x : α) :
