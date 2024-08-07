@@ -8,6 +8,7 @@ import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Exponential, trigonometric and hyperbolic trigonometric functions
@@ -979,11 +980,13 @@ private theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ ex
 
 theorem one_le_exp {x : ℝ} (hx : 0 ≤ x) : 1 ≤ exp x := by linarith [add_one_le_exp_of_nonneg hx]
 
+@[bound]
 theorem exp_pos (x : ℝ) : 0 < exp x :=
   (le_total 0 x).elim (lt_of_lt_of_le zero_lt_one ∘ one_le_exp) fun h => by
     rw [← neg_neg x, Real.exp_neg]
     exact inv_pos.2 (lt_of_lt_of_le zero_lt_one (one_le_exp (neg_nonneg.2 h)))
 
+@[bound]
 lemma exp_nonneg (x : ℝ) : 0 ≤ exp x := x.exp_pos.le
 
 @[simp]
@@ -1006,7 +1009,7 @@ theorem exp_lt_exp_of_lt {x y : ℝ} (h : x < y) : exp x < exp y := exp_strictMo
 theorem exp_monotone : Monotone exp :=
   exp_strictMono.monotone
 
-@[gcongr]
+@[gcongr, bound]
 theorem exp_le_exp_of_le {x y : ℝ} (h : x ≤ y) : exp x ≤ exp y := exp_monotone h
 
 @[simp]
@@ -1030,6 +1033,8 @@ theorem exp_eq_one_iff : exp x = 1 ↔ x = 0 :=
 
 @[simp]
 theorem one_lt_exp_iff {x : ℝ} : 1 < exp x ↔ 0 < x := by rw [← exp_zero, exp_lt_exp]
+
+@[bound] private alias ⟨_, Bound.one_lt_exp_of_pos⟩ := one_lt_exp_iff
 
 @[simp]
 theorem exp_lt_one_iff {x : ℝ} : exp x < 1 ↔ x < 0 := by rw [← exp_zero, exp_lt_exp]

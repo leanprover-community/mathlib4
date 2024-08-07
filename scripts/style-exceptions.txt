@@ -7,7 +7,7 @@ Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean : line 1 : ERR_NUM_LIN : 1
 Mathlib/Analysis/Asymptotics/Asymptotics.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1955 lines, try to split it up
 Mathlib/Analysis/Calculus/ContDiff/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1952 lines, try to split it up
 Mathlib/Analysis/Calculus/ContDiff/Defs.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1595 lines, try to split it up
-Mathlib/Analysis/InnerProductSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2098 lines, try to split it up
+Mathlib/Analysis/InnerProductSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2433 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Biproducts.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1998 lines, try to split it up
 Mathlib/Computability/TMToPartrec.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2071 lines, try to split it up
 Mathlib/Computability/TuringMachine.lean : line 1 : ERR_NUM_LIN : 2700 file contains 2561 lines, try to split it up
