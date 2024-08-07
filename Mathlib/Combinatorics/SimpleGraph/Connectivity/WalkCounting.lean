@@ -173,7 +173,7 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
 lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel G.Adj]
-    [DecidableRel G'.Adj] (h : G ≤ G') (c' : ConnectedComponent G') :
+    (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd (Nat.card c'.supp) ↔ Odd (Nat.card
     ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
   haveI : DecidablePred (fun c : ConnectedComponent G ↦ c.supp ⊆ c'.supp) := Classical.decPred _
