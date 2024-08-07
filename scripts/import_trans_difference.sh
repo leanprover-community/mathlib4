@@ -91,5 +91,6 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
       }
     }
+    printf("- Files with changed transitive imports: %s\n- Estimated characters: %s\n", fileCount, outputLength)
   }' transImports*.txt | sort -t'|' -n -k3
   ))"
