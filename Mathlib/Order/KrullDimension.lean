@@ -114,6 +114,11 @@ lemma RelSeries.head_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length +
 lemma RelSeries.last_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) :
     (p.drop i).last = p.last := by simp [drop, last, Fin.last]; congr; omega
 
+-- https://github.com/leanprover-community/mathlib4/pull/15601
+@[simp]
+lemma RelSeries.reverse_reverse {r : Rel α α} (p : RelSeries r) :
+    p.reverse.reverse = p := by ext <;> simp
+
 -- https://github.com/leanprover-community/mathlib4/pull/15558
 noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
   inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
@@ -169,10 +174,6 @@ variable [Preorder α] [Preorder β]
 lemma height_orderDual (x : αᵒᵈ) : height x = coheight (α := α) x := rfl
 
 lemma coheight_orderDual (x : αᵒᵈ) : coheight x = height (α := α) x := rfl
-
-@[simp]
-lemma RelSeries.reverse_reverse {r : Rel α α} (p : RelSeries r) :
-    p.reverse.reverse = p := by ext <;> simp
 
 lemma coheight_eq_iSup_head (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), (p.length : ℕ∞) := by
