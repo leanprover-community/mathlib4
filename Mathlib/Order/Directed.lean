@@ -300,6 +300,8 @@ namespace DirectedOn
 
 section Pi
 
+namespace Pi
+
 variable {ι : Type*} {α : ι → Type*} {t : (Π i, α i) → (Π i, α i) → Prop} [∀ i, LE (α i)]
 
 lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) (i : ι) :
@@ -318,6 +320,8 @@ lemma prodMk {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (· �
 
 end Pi
 
+end Pi
+
 section Prod
 
 variable {r₂ : β → β → Prop}
@@ -326,6 +330,8 @@ variable {r₂ : β → β → Prop}
 local infixl:50 " ≼₁ " => r
 /-- Local notation for a relation -/
 local infixl:50 " ≼₂ " => r₂
+
+namespace Prod
 
 lemma fst {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
     DirectedOn (· ≼₁ ·) (Prod.fst '' d) := by
@@ -345,6 +351,8 @@ lemma prodMk {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≼₁ ·) d
   obtain ⟨r₂,hr₂⟩ := h₂ _ hpd.2 _ hqd.2
   use (r₁, r₂)
   aesop
+
+end Prod
 
 end Prod
 
