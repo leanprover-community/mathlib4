@@ -121,8 +121,7 @@ include hF hI in
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
 inclusion maps in a disjoint coproduct are equal.
 -/
-theorem firstMap_eq_secondMap
-    :
+theorem firstMap_eq_secondMap :
     Equalizer.Presieve.Arrows.firstMap F X c.inj =
     Equalizer.Presieve.Arrows.secondMap F X c.inj := by
   ext a ⟨i, j⟩
