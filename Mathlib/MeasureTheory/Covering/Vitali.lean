@@ -86,7 +86,6 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
       (UT uU).2.2 a hat b hbu hab
     exact ⟨c, ⟨u, uU, cu⟩, ac, hc⟩
   obtain ⟨u, hu⟩ := hzorn
-
   -- The only nontrivial bit is to check that every `a ∈ t` intersects an element `b ∈ u` with
   -- comparatively large `δ b`. Assume this is not the case, then we will contradict the maximality.
   refine ⟨u, hu.prop.1, hu.prop.2.1, fun a hat => ?_⟩
