@@ -6,6 +6,8 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Linarith
+
 
 /-!
 # Integers mod `n`
