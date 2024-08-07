@@ -25,7 +25,7 @@ variable {R : Type u} {S : Type v}
 section Semiring
 
 variable {F : Type*} [Semiring R] [Semiring S]
-variable [FunLike F R S] [rc : RingHomClass F R S]
+variable [FunLike F R S] [RingHomClass F R S]
 variable (f : F)
 variable {I J : Ideal R} {K L : Ideal S}
 
@@ -94,8 +94,6 @@ theorem map_le_comap_of_inverse [RingHomClass G S R] (g : G) (I : Ideal R)
     (h : Function.LeftInverse g f) :
     I.map f ≤ I.comap g :=
   map_le_comap_of_inv_on _ _ _ <| h.leftInvOn _
-
-variable [RingHomClass F R S]
 
 /-- The `Ideal` version of `Set.preimage_subset_image_of_inverse`. -/
 theorem comap_le_map_of_inverse (g : G) (I : Ideal S) (h : Function.LeftInverse g f) :
