@@ -33,7 +33,10 @@ variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGro
 variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
 variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M₁]
 variable [SMulCommClass R A N₁] [SMulCommClass A R N₁] [IsScalarTower R A N₁]
-variable [Module R M₂] [Module R N₂] [Invertible (2 : R)]
+variable [Module R M₂] [Module R N₂]
+
+section InvertibleTwo
+variable [Invertible (2 : R)]
 
 variable (R A) in
 /-- The tensor product of two quadratic maps injects into quadratic maps on tensor products.
@@ -139,6 +142,8 @@ theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
   rw [QuadraticForm.baseChange, BilinMap.baseChange, polarBilin_tmul, BilinMap.tmul,
     ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
     smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
+
+end InvertibleTwo
 
 /-- If two quadratic forms from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
 
