@@ -59,7 +59,7 @@ inductive NormalizedHom (α : Type u) : Type u
 structure Coherence.Result where
   /-- The normalized 1-morphism. -/
   normalizedHom : NormalizedHom Expr
-  /-- The 2-morphism to the normalized 1-morphism. -/
+  /-- The 2-morphism from the original 1-morphism to the normalized 1-morphism. -/
   toNormalize : Expr
 
 abbrev normalizeIso {p f g pf pfg : C} (η_f : p ⊗ f ≅ pf) (η_g : pf ⊗ g ≅ pfg) :=
@@ -73,6 +73,14 @@ theorem naturality_associator {p f g h pf pfg pfgh : C}
     Iso.hom_inv_id_assoc, pentagon_hom_inv_inv_inv_inv_assoc, whiskerRightIso_trans,
     Iso.trans_assoc, Iso.refl_hom, Category.comp_id]
 
+def mkNaturalityAssociator (p f g h η_f η_g η_h : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  let pfg ← tgtExprOfIso η_g
+  let pfgh ← tgtExprOfIso η_h
+  return mkAppN (.const ``naturality_associator (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, g, h, pf, pfg, pfgh, η_f, η_g, η_h]
+
 theorem naturality_associator_inv {p f g h pf pfg pfgh : C}
     (η_f : (p ⊗ f) ≅ pf) (η_g : (pf ⊗ g) ≅ pfg) (η_h : pfg ⊗ h ≅ pfgh) :
     p ◁ (α_ f g h).inv ≫ (normalizeIso (normalizeIso η_f η_g) η_h).hom =
@@ -81,15 +89,35 @@ theorem naturality_associator_inv {p f g h pf pfg pfgh : C}
     whiskerRightIso_hom, pentagon_inv_assoc, whiskerRight_tensor, Category.assoc,
     Iso.hom_inv_id_assoc, Iso.refl_hom, Category.comp_id]
 
+def mkNaturalityAssociatorInv (p f g h η_f η_g η_h : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  let pfg ← tgtExprOfIso η_g
+  let pfgh ← tgtExprOfIso η_h
+  return mkAppN (.const ``naturality_associator_inv (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, g, h, pf, pfg, pfgh, η_f, η_g, η_h]
+
 theorem naturality_leftUnitor {p f pf : C} (η_f : p ⊗ f ≅ pf) :
     p ◁ (λ_ f).hom ≫ η_f.hom = (normalizeIso (ρ_ p) η_f).hom := by
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, triangle_assoc_comp_right_assoc,
     Iso.refl_hom, Category.comp_id]
 
+def mkNaturalityLeftUnitor (p f η_f : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  return mkAppN (.const ``naturality_leftUnitor (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, pf, η_f]
+
 theorem naturality_leftUnitor_inv {p f pf : C} (η_f : p ⊗ f ≅ pf) :
     p ◁ (λ_ f).inv ≫ (normalizeIso (ρ_ p) η_f).hom = η_f.hom := by
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, triangle_assoc_comp_right_assoc,
     whiskerLeft_inv_hom_assoc, Iso.refl_hom, Category.comp_id]
+
+def mkNaturalityLeftUnitorInv (p f η_f : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  return mkAppN (.const ``naturality_leftUnitor_inv (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, pf, η_f]
 
 theorem naturality_rightUnitor {p f pf : C} (η_f : p ⊗ f ≅ pf) :
     p ◁ (ρ_ f).hom ≫ η_f.hom = (normalizeIso η_f (ρ_ pf)).hom := by
@@ -97,21 +125,45 @@ theorem naturality_rightUnitor {p f pf : C} (η_f : p ⊗ f ≅ pf) :
     whiskerRightIso_hom, MonoidalCategory.whiskerRight_id, Iso.inv_hom_id, Category.comp_id,
     Iso.refl_hom]
 
+def mkNaturalityRightUnitor (p f η_f : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  return mkAppN (.const ``naturality_rightUnitor (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, pf, η_f]
+
 theorem naturality_rightUnitor_inv {p f pf : C} (η_f : p ⊗ f ≅ pf) :
     p ◁ (ρ_ f).inv ≫ (normalizeIso η_f (ρ_ pf)).hom = η_f.hom := by
   simp only [whiskerLeft_rightUnitor_inv, Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom,
     MonoidalCategory.whiskerRight_id, Category.assoc, Iso.inv_hom_id, Category.comp_id,
     Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.refl_hom]
 
+def mkNaturalityRightUnitorInv (p f η_f : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  return mkAppN (.const ``naturality_rightUnitor_inv (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, pf, η_f]
+
 theorem naturality_id {p f pf : C} (η_f : p ⊗ f ≅ pf) :
     p ◁ (𝟙 f) ≫ η_f.hom = η_f.hom := by
   simp only [MonoidalCategory.whiskerLeft_id, Category.id_comp]
+
+def mkNaturalityId (p f η_f : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  return mkAppN (.const ``naturality_id (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, pf, η_f]
 
 theorem naturality_comp {p f g h pf : C}
     (η : f ⟶ g) (θ : g ⟶ h) (η_f : (p ⊗ f) ≅ pf) (η_g : (p ⊗ g) ≅ pf) (η_h : p ⊗ h ≅ pf)
     (ih_η : p ◁ η ≫ η_g.hom = η_f.hom) (ih_θ : p ◁ θ ≫ η_h.hom = η_g.hom) :
     p ◁ (η ≫ θ) ≫ η_h.hom = η_f.hom := by
   simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc, ← ih_η, ← ih_θ]
+
+def mkNaturalityComp (p f g h η θ η_f η_g η_h ih_η ih_θ : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  return mkAppN (.const ``naturality_comp (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, g, h, pf, η, θ, η_f, η_g, η_h, ih_η, ih_θ]
 
 theorem naturality_whiskerLeft {p f g h pf pfg : C} (η : g ⟶ h) (η_f : (p ⊗ f) ≅ pf)
     (η_fg : (pf ⊗ g) ≅ pfg)
@@ -122,6 +174,13 @@ theorem naturality_whiskerLeft {p f g h pf pfg : C} (η : g ⟶ h) (η_f : (p �
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, ← ih_η, ← whisker_exchange_assoc,
     tensor_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc, Iso.refl_hom, Category.comp_id]
 
+def mkNaturalityWhiskerLeft (p f g h η η_f η_fg η_fh ih_η : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  let pfg ← tgtExprOfIso η_fg
+  return mkAppN (.const ``naturality_whiskerLeft (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, g, h, pf, pfg, η, η_f, η_fg, η_fh, ih_η]
+
 theorem naturality_whiskerRight {p f g h pf pfh : C} (η : f ⟶ g) (η_f : (p ⊗ f) ≅ pf)
     (η_g : (p ⊗ g) ≅ pf)
     (η_fh : (pf ⊗ h) ≅ pfh)
@@ -130,6 +189,13 @@ theorem naturality_whiskerRight {p f g h pf pfh : C} (η : f ⟶ g) (η_f : (p �
     (normalizeIso η_f η_fh).hom := by
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, ← ih_η, comp_whiskerRight,
     whisker_assoc, Category.assoc, Iso.inv_hom_id_assoc]
+
+def mkNaturalityWhiskerRight (p f g h η η_f η_g η_fh ih_η : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  let pf ← tgtExprOfIso η_f
+  let pfh ← tgtExprOfIso η_fh
+  return mkAppN (.const ``naturality_whiskerRight (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal, p, f, g, h, pf, pfh, η, η_f, η_g, η_fh, ih_η]
 
 theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} (η : f₁ ⟶ g₁) (θ : f₂ ⟶ g₂)
     (η_f₁ : p ⊗ f₁ ≅ pf₁) (η_g₁ : p ⊗ g₁ ≅ pf₁)
@@ -141,6 +207,15 @@ theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} (η : f
     whiskerRightIso_hom, Category.assoc, ← ih_η, comp_whiskerRight, whisker_assoc, ← ih_θ,
     Iso.inv_hom_id_assoc]
   simp only [← whisker_exchange_assoc, associator_inv_naturality_right_assoc]
+
+def mkNaturalityTensorHom (p f₁ g₁ f₂ g₂ η θ η_f₁ η_g₁ η_f₂ η_g₂ ih_η ih_θ : Expr) :
+    MonoidalM Expr := do
+  let ctx ← read
+  let pf₁ ← tgtExprOfIso η_f₁
+  let pf₁f₂ ← tgtExprOfIso η_f₂
+  return mkAppN (.const ``naturality_tensorHom (← getLevels))
+    #[ctx.C, ctx.instCat, ctx.instMonoidal,
+      p, f₁, g₁, f₂, g₂, pf₁, pf₁f₂, η, θ, η_f₁, η_g₁, η_f₂, η_g₂, ih_η, ih_θ]
 
 def eval₁ (p : NormalizedHom Expr) : MonoidalM Expr := do
   match p with
@@ -178,88 +253,128 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : MonoidalM Expr := 
   | (``Iso.hom, #[_, _, _, _, η]) =>
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
-      let ⟨pf, η_f⟩ ← normalize p f
-      let ⟨pfg, η_g⟩ ← normalize pf g
-      let ⟨_, η_h⟩ ← normalize pfg h
-      mkAppM ``naturality_associator #[η_f, η_g, η_h]
+      withTraceNode `monoidal (fun _ => return m!"associator") do
+        let ⟨pf, η_f⟩ ← normalize p f
+        let ⟨pfg, η_g⟩ ← normalize pf g
+        let ⟨_, η_h⟩ ← normalize pfg h
+        let result ← mkNaturalityAssociator (← eval₁ p) f g h η_f η_g η_h
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
-      let ⟨_, η_f⟩ ← normalize p f
-      mkAppM ``naturality_leftUnitor #[η_f]
+      withTraceNode `monoidal (fun _ => return m!"leftUnitor") do
+        let ⟨_, η_f⟩ ← normalize p f
+        let result ← mkNaturalityLeftUnitor (← eval₁ p) f η_f
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
-      let ⟨_, η_f⟩ ← normalize p f
-      mkAppM ``naturality_rightUnitor #[η_f]
+      withTraceNode `monoidal (fun _ => return m!"rightUnitor") do
+        let ⟨_, η_f⟩ ← normalize p f
+        let result ← mkNaturalityRightUnitor (← eval₁ p) f η_f
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | _ => throwError "failed to prove the naturality for {η}"
   | (``Iso.inv, #[_, _, _, _, η]) =>
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
-      let ⟨pf, η_f⟩ ← normalize p f
-      let ⟨pfg, η_g⟩ ← normalize pf g
-      let ⟨_, η_h⟩ ← normalize pfg h
-      mkAppM ``naturality_associator_inv #[η_f, η_g, η_h]
+      withTraceNode `monoidal (fun _ => return m!"associator_inv") do
+        let ⟨pf, η_f⟩ ← normalize p f
+        let ⟨pfg, η_g⟩ ← normalize pf g
+        let ⟨_, η_h⟩ ← normalize pfg h
+        let result ← mkNaturalityAssociatorInv (← eval₁ p) f g h η_f η_g η_h
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
-      let ⟨_, η_f⟩ ← normalize p f
-      mkAppM ``naturality_leftUnitor_inv #[η_f]
+      withTraceNode `monoidal (fun _ => return m!"leftUnitor_inv") do
+        let ⟨_, η_f⟩ ← normalize p f
+        let result ← mkNaturalityLeftUnitorInv (← eval₁ p) f η_f
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
-      let ⟨_, η_f⟩ ← normalize p f
-      mkAppM ``naturality_rightUnitor_inv #[η_f]
+      withTraceNode `monoidal (fun _ => return m!"rightUnitor_inv") do
+        let ⟨_, η_f⟩ ← normalize p f
+        let result ← mkNaturalityRightUnitorInv (← eval₁ p) f η_f
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | _ => throwError "failed to prove the naturality for {η}"
   | _ =>  match (← whnfR η).getAppFnArgs with
     | (``CategoryStruct.id, #[_, _, f]) =>
-      let ⟨_, η_f⟩ ← normalize p f
-      mkAppM ``naturality_id #[η_f]
+      withTraceNode `monoidal (fun _ => return m!"id") do
+        let ⟨_, η_f⟩ ← normalize p f
+        let result ← mkNaturalityId (← eval₁ p) f η_f
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | (``CategoryStruct.comp, #[_, _, f, g, h, η, θ]) =>
-      let ⟨_, η_f⟩ ← normalize p f
-      let ⟨_, η_g⟩ ← normalize p g
-      let ⟨_, η_h⟩ ← normalize p h
-      let ih_η ← naturality p η
-      let ih_θ ← naturality p θ
-      mkAppM ``naturality_comp #[η, θ, η_f, η_g, η_h, ih_η, ih_θ]
+      withTraceNode `monoidal (fun _ => return m!"comp") do
+        let ⟨_, η_f⟩ ← normalize p f
+        let ⟨_, η_g⟩ ← normalize p g
+        let ⟨_, η_h⟩ ← normalize p h
+        let ih_η ← naturality p η
+        let ih_θ ← naturality p θ
+        let result ← mkNaturalityComp (← eval₁ p) f g h η θ η_f η_g η_h ih_η ih_θ
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, g, h, η]) =>
-      let ⟨pf, η_f⟩ ← normalize p f
-      let ⟨_, η_fg⟩ ← normalize pf g
-      let ⟨_, η_fh⟩ ← normalize pf h
-      let ih ← naturality pf η
-      mkAppM ``naturality_whiskerLeft #[η, η_f, η_fg, η_fh, ih]
+      withTraceNode `monoidal (fun _ => return m!"whiskerLeft") do
+        let ⟨pf, η_f⟩ ← normalize p f
+        let ⟨_, η_fg⟩ ← normalize pf g
+        let ⟨_, η_fh⟩ ← normalize pf h
+        let ih ← naturality pf η
+        let result ← mkNaturalityWhiskerLeft (← eval₁ p) f g h η η_f η_fg η_fh ih
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, f, g, η, h]) =>
-      let ⟨pf, η_f⟩ ← normalize p f
-      let ⟨_, η_g⟩ ← normalize p g
-      let ⟨_, η_fh⟩ ← normalize pf h
-      let ih ← naturality p η
-      mkAppM ``naturality_whiskerRight #[η, η_f, η_g, η_fh, ih]
-    | (``monoidalComp, #[_, _, _, _, _, _, inst, η, θ]) =>
-        let α ← mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, inst]
-        let αθ ← mkAppM ``CategoryStruct.comp #[α, θ]
-        let ηαθ ← mkAppM ``CategoryStruct.comp #[η, αθ]
+      withTraceNode `monoidal (fun _ => return m!"whiskerRight") do
+        let ⟨pf, η_f⟩ ← normalize p f
+        let ⟨_, η_g⟩ ← normalize p g
+        let ⟨_, η_fh⟩ ← normalize pf h
+        let ih ← naturality p η
+        let result ← mkNaturalityWhiskerRight (← eval₁ p) f g h η η_f η_g η_fh ih
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
+    | (``monoidalComp, #[_, _, _, f, g, _, inst, η, θ]) =>
+      withTraceNode `monoidal (fun _ => return m!"monoidalComp") do
+        let α ← mkMonoidalCoherenceHom f g inst
+        let αθ ← mkComp α θ
+        let ηαθ ← mkComp η αθ
         naturality p ηαθ
     | (``MonoidalCoherence.hom, #[_, _, _, _, _]) =>
-      let (η', _) ← dsimp η
-        { simpTheorems := #[.addDeclToUnfoldCore {} ``MonoidalCoherence.hom] }
-      naturality p η'
+      withTraceNode `monoidal (fun _ => return m!"MonoidalCoherence.hom") do
+        let (η', _) ← dsimp η
+          { simpTheorems := #[.addDeclToUnfoldCore {} ``MonoidalCoherence.hom] }
+        naturality p η'
     | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, f₁, g₁, f₂, g₂, η, θ]) =>
-      let ⟨pf₁, η_f₁⟩ ← normalize p f₁
-      let ⟨pg₁, η_g₁⟩ ← normalize p g₁
-      let ⟨_, η_f₂⟩ ← normalize pf₁ f₂
-      let ⟨_, η_g₂⟩ ← normalize pg₁ g₂
-      let ih_η ← naturality p η
-      let ih_θ ← naturality pf₁ θ
-      mkAppM ``naturality_tensorHom #[η, θ, η_f₁, η_g₁, η_f₂, η_g₂, ih_η, ih_θ]
+      withTraceNode `monoidal (fun _ => return m!"tensorHom") do
+        let ⟨pf₁, η_f₁⟩ ← normalize p f₁
+        let ⟨pg₁, η_g₁⟩ ← normalize p g₁
+        let ⟨_, η_f₂⟩ ← normalize pf₁ f₂
+        let ⟨_, η_g₂⟩ ← normalize pg₁ g₂
+        let ih_η ← naturality p η
+        let ih_θ ← naturality pf₁ θ
+        let result ← mkNaturalityTensorHom (← eval₁ p) f₁ g₁ f₂ g₂ η θ η_f₁ η_g₁ η_f₂ η_g₂ ih_η ih_θ
+        trace[monoidal] m!"{checkEmoji} {← inferType result}"
+        return result
     | _ => throwError "failed to prove the naturality for {η}"
 
 def pure_coherence (mvarId : MVarId) : MetaM (List MVarId) :=
   mvarId.withContext do
-    let e ← instantiateMVars <| ← mvarId.getType
-    let some (_, η, θ) := (← whnfR e).eq?
-      | throwError "coherence requires an equality goal"
-    let f ← srcExpr η
-    let g ← tgtExpr η
-    let some ctx ← mkContext? η | throwError "the lhs and rhs must be 2-morphisms"
-    MonoidalM.run ctx do
-      let ⟨_, αf⟩ ← normalize .nil f
-      let ⟨_, αg⟩ ← normalize .nil g
-      let Hη ← naturality .nil η
-      let Hθ ← naturality .nil θ
-      let H ← mkAppM ``of_normalize_eq #[η, θ, αf, αg, Hη, Hθ]
-      mvarId.apply H
+    withTraceNode `monoidal (fun ex => match ex with
+      | .ok _ => return m!"{checkEmoji} coherence equality: {← mvarId.getType}"
+      | .error err => return m!"{crossEmoji} {err.toMessageData}") do
+      let e ← instantiateMVars <| ← mvarId.getType
+      let some (_, η, θ) := (← whnfR e).eq?
+        | throwError "coherence requires an equality goal"
+      let f ← srcExpr η
+      let g ← tgtExpr η
+      let some ctx ← mkContext? η | throwError "the lhs and rhs must be 2-morphisms"
+      MonoidalM.run ctx do
+        trace[monoidal] m!"LHS"
+        let ⟨_, αf⟩ ← normalize .nil f
+        let Hη ← naturality .nil η
+        trace[monoidal] m!"RHS"
+        let ⟨_, αg⟩ ← normalize .nil g
+        let Hθ ← naturality .nil θ
+        let H ← mkAppM ``of_normalize_eq #[η, θ, αf, αg, Hη, Hθ]
+        mvarId.apply H
 
 elab "monoidal_coherence" : tactic => withMainContext do
   replaceMainGoal <| ← pure_coherence <| ← getMainGoal
