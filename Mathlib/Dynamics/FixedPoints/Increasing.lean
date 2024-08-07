@@ -3,8 +3,7 @@ Copyright (c) 2024 Shuhao Song. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shuhao Song
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finite.Card
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Fixed points of function `f` with `f(x) ≥ x`
