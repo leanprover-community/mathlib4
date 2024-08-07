@@ -38,12 +38,12 @@ namespace FractionalIdeal
 open Set Submodule
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-variable [Algebra R P] [loc : IsLocalization S P]
+variable [Algebra R P]
 
 section
 
-variable {P' : Type*} [CommRing P'] [Algebra R P'] [loc' : IsLocalization S P']
-variable {P'' : Type*} [CommRing P''] [Algebra R P''] [loc'' : IsLocalization S P'']
+variable {P' : Type*} [CommRing P'] [Algebra R P']
+variable {P'' : Type*} [CommRing P''] [Algebra R P'']
 
 theorem _root_.IsFractional.map (g : P →ₐ[R] P') {I : Submodule R P} :
     IsFractional S I → IsFractional S (Submodule.map g.toLinearMap I)
@@ -165,7 +165,8 @@ theorem isFractional_span_iff {s : Set P} :
         rw [smul_comm]
         exact isInteger_smul hx⟩⟩
 
-theorem isFractional_of_fg {I : Submodule R P} (hI : I.FG) : IsFractional S I := by
+theorem isFractional_of_fg [IsLocalization S P] {I : Submodule R P} (hI : I.FG) :
+    IsFractional S I := by
   rcases hI with ⟨I, rfl⟩
   rcases exist_integer_multiples_of_finset S I with ⟨⟨s, hs1⟩, hs⟩
   rw [isFractional_span_iff]
@@ -195,6 +196,8 @@ theorem _root_.Ideal.fg_of_isUnit (inj : Function.Injective (algebraMap R P)) (I
   exact FractionalIdeal.fg_of_isUnit I h
 
 variable (S P P')
+
+variable [IsLocalization S P] [IsLocalization S P']
 
 /-- `canonicalEquiv f f'` is the canonical equivalence between the fractional
 ideals in `P` and in `P'`, which are both localizations of `R` at `S`. -/
@@ -329,7 +332,7 @@ is a field because `R` is a domain.
 -/
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
-variable [Algebra R₁ K] [frac : IsFractionRing R₁ K]
+variable [Algebra R₁ K]
 
 instance : Nontrivial (FractionalIdeal R₁⁰ K) :=
   ⟨⟨0, 1, fun h =>
@@ -344,7 +347,7 @@ theorem ne_zero_of_mul_eq_one (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) 
       convert h
       simp [hI])
 
-variable [IsDomain R₁]
+variable [IsFractionRing R₁ K] [IsDomain R₁]
 
 theorem _root_.IsFractional.div_of_nonzero {I J : Submodule R₁ K} :
     IsFractional R₁⁰ I → IsFractional R₁⁰ J → J ≠ 0 → IsFractional R₁⁰ (I / J)
@@ -540,6 +543,8 @@ theorem spanFinset_ne_zero {ι : Type*} {s : Finset ι} {f : ι → K} :
     spanFinset R₁ s f ≠ 0 ↔ ∃ j ∈ s, f j ≠ 0 := by simp
 
 open Submodule.IsPrincipal
+
+variable [IsLocalization S P]
 
 theorem isFractional_span_singleton (x : P) : IsFractional S (span R {x} : Submodule R P) :=
   let ⟨a, ha⟩ := exists_integer_multiple S x
@@ -814,7 +819,7 @@ theorem num_le (I : FractionalIdeal S P) :
 end PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁]
-variable {K : Type*} [Field K] [Algebra R₁ K] [frac : IsFractionRing R₁ K]
+variable {K : Type*} [Field K] [Algebra R₁ K]
 
 attribute [local instance] Classical.propDecidable
 
@@ -835,7 +840,7 @@ theorem isNoetherian_coeIdeal [IsNoetherianRing R₁] (I : Ideal R₁) :
   obtain ⟨J, rfl⟩ := le_one_iff_exists_coeIdeal.mp (le_trans hJ coeIdeal_le_one)
   exact (IsNoetherian.noetherian J).map _
 
-variable [IsDomain R₁]
+variable [IsFractionRing R₁ K] [IsDomain R₁]
 
 theorem isNoetherian_spanSingleton_inv_to_map_mul (x : R₁) {I : FractionalIdeal R₁⁰ K}
     (hI : IsNoetherian R₁ I) :
@@ -864,10 +869,10 @@ theorem isNoetherian [IsNoetherianRing R₁] (I : FractionalIdeal R₁⁰ K) : I
 section Adjoin
 
 variable (S)
-variable (x : P) (hx : IsIntegral R x)
+variable [IsLocalization S P] (x : P)
 
 /-- `A[x]` is a fractional ideal for every integral `x`. -/
-theorem isFractional_adjoin_integral :
+theorem isFractional_adjoin_integral (hx : IsIntegral R x) :
     IsFractional S (Subalgebra.toSubmodule (Algebra.adjoin R ({x} : Set P))) :=
   isFractional_of_fg hx.fg_adjoin_singleton
 
@@ -875,16 +880,16 @@ theorem isFractional_adjoin_integral :
 where `hx` is a proof that `x : P` is integral over `R`. -/
 -- Porting note: `@[simps]` generated a `Subtype.val` coercion instead of a
 -- `FractionalIdeal.coeToSubmodule` coercion
-def adjoinIntegral : FractionalIdeal S P :=
+def adjoinIntegral (hx : IsIntegral R x) : FractionalIdeal S P :=
   ⟨_, isFractional_adjoin_integral S x hx⟩
 
 @[simp]
-theorem adjoinIntegral_coe :
+theorem adjoinIntegral_coe (hx : IsIntegral R x) :
     (adjoinIntegral S x hx : Submodule R P) =
       (Subalgebra.toSubmodule (Algebra.adjoin R ({x} : Set P))) :=
   rfl
 
-theorem mem_adjoinIntegral_self : x ∈ adjoinIntegral S x hx :=
+theorem mem_adjoinIntegral_self (hx : IsIntegral R x) : x ∈ adjoinIntegral S x hx :=
   Algebra.subset_adjoin (Set.mem_singleton x)
 
 end Adjoin

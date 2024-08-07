@@ -429,7 +429,7 @@ of `C(X, E)` (i.e. locally uniform convergence). -/
 
 open TopologicalSpace
 
-variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
+variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
