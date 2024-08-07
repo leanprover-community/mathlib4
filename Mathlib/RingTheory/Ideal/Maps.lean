@@ -25,7 +25,7 @@ variable {R : Type u} {S : Type v}
 section Semiring
 
 variable {F : Type*} [Semiring R] [Semiring S]
-variable [FunLike F R S] [rc : RingHomClass F R S]
+variable [FunLike F R S] [RingHomClass F R S]
 variable (f : F)
 variable {I J : Ideal R} {K L : Ideal S}
 
@@ -74,20 +74,24 @@ variable (f)
 theorem comap_ne_top (hK : K ≠ ⊤) : comap f K ≠ ⊤ :=
   (ne_top_iff_one _).2 <| by rw [mem_comap, map_one]; exact (ne_top_iff_one _).1 hK
 
-variable {G : Type*} [FunLike G S R] [rcg : RingHomClass G S R]
+variable {G : Type*} [FunLike G S R]
 
-theorem map_le_comap_of_inv_on (g : G) (I : Ideal R) (hf : Set.LeftInvOn g f I) :
+theorem map_le_comap_of_inv_on [RingHomClass G S R] (g : G) (I : Ideal R)
+    (hf : Set.LeftInvOn g f I) :
     I.map f ≤ I.comap g := by
   refine Ideal.span_le.2 ?_
   rintro x ⟨x, hx, rfl⟩
   rw [SetLike.mem_coe, mem_comap, hf hx]
   exact hx
 
-theorem comap_le_map_of_inv_on (g : G) (I : Ideal S) (hf : Set.LeftInvOn g f (f ⁻¹' I)) :
-    I.comap f ≤ I.map g := fun x (hx : f x ∈ I) => hf hx ▸ Ideal.mem_map_of_mem g hx
+theorem comap_le_map_of_inv_on (g : G) (I : Ideal S)
+    (hf : Set.LeftInvOn g f (f ⁻¹' I)) :
+    I.comap f ≤ I.map g :=
+  fun x (hx : f x ∈ I) => hf hx ▸ Ideal.mem_map_of_mem g hx
 
 /-- The `Ideal` version of `Set.image_subset_preimage_of_inverse`. -/
-theorem map_le_comap_of_inverse (g : G) (I : Ideal R) (h : Function.LeftInverse g f) :
+theorem map_le_comap_of_inverse [RingHomClass G S R] (g : G) (I : Ideal R)
+    (h : Function.LeftInverse g f) :
     I.map f ≤ I.comap g :=
   map_le_comap_of_inv_on _ _ _ <| h.leftInvOn _
 
