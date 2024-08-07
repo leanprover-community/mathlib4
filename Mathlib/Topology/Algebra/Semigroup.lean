@@ -53,7 +53,6 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
       apply Set.inter_subset_left
     rw [← absorbing_eq_self] at hm
     exact hm.2
-
   refine zorn_superset _ fun c hcs hc => ?_
   refine
     ⟨⋂₀ c, ⟨isClosed_sInter fun t ht => (hcs ht).1, ?_, fun m hm m' hm' => ?_⟩, fun s hs =>
