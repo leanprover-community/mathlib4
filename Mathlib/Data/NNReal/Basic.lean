@@ -71,6 +71,7 @@ noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
 instance : Archimedean ℝ≥0 := Nonneg.archimedean
+instance : MulArchimedean ℝ≥0 := Nonneg.mulArchimedean
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
 noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
