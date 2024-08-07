@@ -484,6 +484,7 @@ theorem cycleOf_eq (c : g.cycleFactorsFinset) :
 
 variable (τ : range_toPermHom' g)
 
+/-- The function that will provide a right inverse `toCentralizer` to `toPermHom` -/
 noncomputable def newK (x : α) : α := by
   if hx : g.cycleOf x ∈ g.cycleFactorsFinset
   then
@@ -787,6 +788,7 @@ lemma commute₁₂ : ∀ (m : Perm ↑(Function.fixedPoints ⇑g))
   fun u v ↦ Disjoint.commute (disjoint₁₂ u v)
 
 variable (g) in
+/-- The parametrization of the kernel of `toPermHom` -/
 def θHom : (Perm (Function.fixedPoints g)) ×
     ((c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) →*
       Perm α :=
