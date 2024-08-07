@@ -38,17 +38,11 @@ theorem reverse_tail_eq_dropLast_reverse {α} (l : List α) :
 
 theorem getLast_tail {α} (l : List α) (hl : l.tail ≠ []) :
     l.tail.getLast hl = l.getLast (by intro h; rw [h] at hl; simp at hl) := by
-  simp [getLast_eq_get, ← drop_one] at hl |-
+  simp only [← drop_one, ne_eq, drop_eq_nil_iff_le,
+    not_le, getLast_eq_getElem, length_drop] at hl |-
   rw [← getElem_drop]
   simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
   omega
-
-theorem head_reverse {α} (l : List α) (hL : l ≠ []) :
-    l.reverse.head (by simpa) = l.getLast hL := by
-  have : l.reverse.head? = l.getLast? := by simp
-  rw [List.head?_eq_head (l := l.reverse) (by simpa)] at this
-  rw [List.getLast?_eq_getLast (l := l) hL] at this
-  exact Option.some_inj.mp this
 
 lemma getElem_tail {α} {i} (L : List α) (hi : i < L.tail.length) :
     L.tail[i] = L[i + 1]'(by simp at *; omega) := by
