@@ -137,7 +137,7 @@ lemma inner_single_left [DecidableEq n] {v : CStarVec n A} {i : n} {a : A} :
   simp [hmain, Finset.sum_ite]
 
 @[simp] lemma norm_single {i : n} {a : A} [DecidableEq n] : ‖ofFun (Pi.single i a)‖ = ‖a‖ := by
-  simp [norm_eq_sum, Pi.single_apply, CStarRing.norm_star_mul_self]
+  simp [norm_eq_sqrt_sum, Pi.single_apply, CStarRing.norm_star_mul_self]
 
 instance instCStarModule : CStarModule A (CStarVec n A) where
   inner_add_right {v} {w₁} {w₂} := by
@@ -169,7 +169,7 @@ lemma norm_apply_le_norm [DecidableEq n] [CompleteSpace A] {v : CStarVec n A} {i
     ‖v i‖ ≤ ‖v‖ := by
   by_cases htriv : 0 < ‖v i‖
   · have hmain := calc ‖v i‖ * ‖v i‖ = ‖star (v i) * v i‖  := CStarRing.norm_star_mul_self.symm
-      _ = ‖⟪ofFun (Pi.single i (v i)), v⟫_A‖ := by rw [inner_single_eq_entry]
+      _ = ‖⟪ofFun (Pi.single i (v i)), v⟫_A‖ := by rw [inner_single_left]
       _ ≤ ‖ofFun (Pi.single i (v i))‖ * ‖v‖ :=
             CStarModule.norm_inner_le (E := CStarVec n A)
       _ = ‖v i‖ * ‖v‖ := by rw [norm_single]
@@ -212,7 +212,9 @@ private noncomputable abbrev normedAddCommGroupAux : NormedAddCommGroup (CStarVe
 
 attribute [local instance] normedAddCommGroupAux
 
-/-- A temporary "bad" instance of `NormedSpace`. -/
+/-- A temporary "bad" instance of `NormedSpace`.
+
+This is not intended for use outside of this file.  -/
 private noncomputable abbrev normedSpaceAux : NormedSpace ℂ (CStarVec n A) :=
   .ofCore CStarModule.normedSpaceCore
 
