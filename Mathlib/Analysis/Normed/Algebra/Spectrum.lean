@@ -605,7 +605,7 @@ open Set
 /-- If `S : Subalgebra 𝕜 A` is a closed subalgebra of a Banach algebra `A`, then for any
 `x : S`, the boundary of the spectrum of `x` relative to `S` is a subset of the spectrum of
 `↑x : A` relative to `A`. -/
-lemma _root_.Subalgebra.frontier_spectrum : frontier (spectrum 𝕜 x) ⊆ spectrum 𝕜 (x : A) := by
+lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x : A) := by
   have : CompleteSpace S := hS.completeSpace_coe
   intro μ hμ
   by_contra h
@@ -627,8 +627,8 @@ lemma _root_.Subalgebra.frontier_spectrum : frontier (spectrum 𝕜 x) ⊆ spect
 the spectrum of `x` relative to `S` is a subset of the boundary of the spectrum of `↑x : A`
 relative to `A`. -/
 lemma Subalgebra.frontier_subset_frontier :
-    frontier (spectrum 𝕜 x) ⊆ frontier (spectrum 𝕜 (x : A)) := by
-  rw [frontier_eq_closure_inter_closure (s := spectrum 𝕜 (x : A)),
+    frontier (σ 𝕜 x) ⊆ frontier (σ 𝕜 (x : A)) := by
+  rw [frontier_eq_closure_inter_closure (s := σ 𝕜 (x : A)),
     (spectrum.isClosed (x : A)).closure_eq]
   apply subset_inter (frontier_spectrum S x)
   rw [frontier_eq_closure_inter_closure]
@@ -652,10 +652,9 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
       diff_eq_compl_inter, union_empty]
     exact (spectrum.isClosed _).isOpen_compl.inter isOpen_interior
   apply isClopen_preimage_val h_open
-  suffices h_frontier : frontier (σ 𝕜 x \ σ 𝕜 (x : A)) ⊆ frontier (σ 𝕜 (x : A)) by
-    rw [← disjoint_iff_inter_eq_empty]
-    exact disjoint_of_subset_left h_frontier <|
-      disjoint_compl_right.frontier_left (spectrum.isClosed _).isOpen_compl
+  suffices h_frontier : frontier (σ 𝕜 x \ σ 𝕜 (x : A)) ⊆ frontier (σ 𝕜 (x : A)) from
+    disjoint_of_subset_left h_frontier <| disjoint_compl_right.frontier_left
+      (spectrum.isClosed _).isOpen_compl
   rw [diff_eq_compl_inter]
   apply (frontier_inter_subset _ _).trans
   rw [frontier_compl]
