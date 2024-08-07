@@ -389,7 +389,7 @@ protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedA
 
 
 section
-variable [NormedDivisionRing α] [NormedAlgebra ℝ α] [CompleteSpace α]
+variable [NormedDivisionRing α] [NormedAlgebra ℝ α]
 
 /-- Auxiliary construction; an element of norm 1 such that `a * unitOf a = ‖a‖`. -/
 private def unitOf (a : α) : α := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
@@ -401,7 +401,6 @@ private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
   · rw [← nnnorm_eq_zero] at h
     rw [nnnorm_smul, nnnorm_inv, nnnorm_norm, mul_inv_cancel h]
 
-set_option tactic.skipAssignedInstances false in
 private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
   simp only [unitOf, coe_nnnorm]
   split_ifs with h
