@@ -49,12 +49,12 @@ This generality has several advantages
   `smul` to multiply the functions, that would be an asymmetric definition.
 
 # Main Definitions
-* `convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ` is the convolution of
-  `f` and `g` w.r.t. the continuous bilinear map `L` and measure `μ`.
-* `ConvolutionExistsAt f g x L μ` states that the convolution `(f ⋆[L, μ] g) x` is well-defined
-  (i.e. the integral exists).
-* `ConvolutionExists f g L μ` states that the convolution `f ⋆[L, μ] g` is well-defined at each
-  point.
+* `MeasureTheory.convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ`
+  is the convolution of `f` and `g` w.r.t. the continuous bilinear map `L` and measure `μ`.
+* `MeasureTheory.ConvolutionExistsAt f g x L μ` states that the convolution `(f ⋆[L, μ] g) x`
+  is well-defined (i.e. the integral exists).
+* `MeasureTheory.ConvolutionExists f g L μ` states that the convolution `f ⋆[L, μ] g`
+  is well-defined at each point.
 
 # Main Results
 * `HasCompactSupport.hasFDerivAt_convolution_right` and
@@ -66,12 +66,12 @@ This generality has several advantages
 
 Versions of these statements for functions depending on a parameter are also given.
 
-* `convolution_tendsto_right`: Given a sequence of nonnegative normalized functions whose support
-  tends to a small neighborhood around `0`, the convolution tends to the right argument.
-  This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
+* `MeasureTheory.convolution_tendsto_right`: Given a sequence of nonnegative normalized functions
+  whose support tends to a small neighborhood around `0`, the convolution tends to the right
+  argument. This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
 
 # Notation
-The following notations are localized in the locale `convolution`:
+The following notations are localized in the locale `Convolution`:
 * `f ⋆[L, μ] g` for the convolution. Note: you have to use parentheses to apply the convolution
   to an argument: `(f ⋆[L, μ] g) x`.
 * `f ⋆[L] g := f ⋆[L, volume] g`
@@ -854,7 +854,7 @@ theorem integral_convolution [MeasurableAdd₂ G] [MeasurableNeg G] [NormedSpace
 variable [MeasurableAdd₂ G] [IsAddRightInvariant ν] [MeasurableNeg G]
 
 /-- Convolution is associative. This has a weak but inconvenient integrability condition.
-See also `convolution_assoc`. -/
+See also `MeasureTheory.convolution_assoc`. -/
 theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z = L₃ x (L₄ y z))
     {x₀ : G} (hfg : ∀ᵐ y ∂μ, ConvolutionExistsAt f g y L ν)
     (hgk : ∀ᵐ x ∂ν, ConvolutionExistsAt g k x L₄ μ)

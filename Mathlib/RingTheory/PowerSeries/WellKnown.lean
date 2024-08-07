@@ -73,7 +73,7 @@ Note that the power series `1 + X + X^2 + ...` is written as `mk 1` where `1` is
 function so that `mk 1` is the power series with all coefficients equal to one.
 -/
 theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
-  rw [mul_comm, ext_iff]
+  rw [mul_comm, PowerSeries.ext_iff]
   intro n
   cases n with
   | zero => simp
