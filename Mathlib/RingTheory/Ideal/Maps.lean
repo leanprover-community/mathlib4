@@ -59,19 +59,19 @@ theorem mem_map_of_mem (f : F) {I : Ideal R} {x : R} (h : x ∈ I) : f x ∈ map
 theorem apply_coe_mem_map (f : F) (I : Ideal R) (x : I) : f x ∈ I.map f :=
   mem_map_of_mem f x.2
 
-theorem map_le_iff_le_comap [RingHomClass F R S] : map f I ≤ K ↔ I ≤ comap f K :=
+theorem map_le_iff_le_comap : map f I ≤ K ↔ I ≤ comap f K :=
   span_le.trans Set.image_subset_iff
 
 @[simp]
-theorem mem_comap [RingHomClass F R S] {x} : x ∈ comap f K ↔ f x ∈ K :=
+theorem mem_comap {x} : x ∈ comap f K ↔ f x ∈ K :=
   Iff.rfl
 
-theorem comap_mono [RingHomClass F R S] (h : K ≤ L) : comap f K ≤ comap f L :=
+theorem comap_mono (h : K ≤ L) : comap f K ≤ comap f L :=
   Set.preimage_mono fun _ hx => h hx
 
 variable (f)
 
-theorem comap_ne_top [RingHomClass F R S] (hK : K ≠ ⊤) : comap f K ≠ ⊤ :=
+theorem comap_ne_top (hK : K ≠ ⊤) : comap f K ≠ ⊤ :=
   (ne_top_iff_one _).2 <| by rw [mem_comap, map_one]; exact (ne_top_iff_one _).1 hK
 
 variable {G : Type*} [FunLike G S R]
@@ -84,7 +84,7 @@ theorem map_le_comap_of_inv_on [RingHomClass G S R] (g : G) (I : Ideal R)
   rw [SetLike.mem_coe, mem_comap, hf hx]
   exact hx
 
-theorem comap_le_map_of_inv_on [RingHomClass F R S] (g : G) (I : Ideal S)
+theorem comap_le_map_of_inv_on (g : G) (I : Ideal S)
     (hf : Set.LeftInvOn g f (f ⁻¹' I)) :
     I.comap f ≤ I.map g :=
   fun x (hx : f x ∈ I) => hf hx ▸ Ideal.mem_map_of_mem g hx
