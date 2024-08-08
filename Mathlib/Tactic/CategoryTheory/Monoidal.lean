@@ -70,25 +70,30 @@ structure Context where
   level₂ : Level
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext? (e : Expr) : MetaM (Option Context) := do
+def mkContext (e : Expr) : MetaM Context := do
   match (← whnfR (← inferType e)).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) =>
     let C ← inferType f
-    let .succ level₁ ← getLevel C | return none
-    let .succ level₂ ← getLevel (← inferType e) | return none
-    let .some instCat ← synthInstance?
-      (mkAppN (.const ``Category [level₂, level₁]) #[C]) | return none
-    let .some instMonoidal ← synthInstance?
-      (mkAppN (.const ``MonoidalCategory [level₂, level₁]) #[C, instCat]) | return none
-    return some
-      { C := C, instCat := instCat, instMonoidal := instMonoidal,
-        level₁ := level₁, level₂ := level₂ }
-  | _ => return none
+    let .succ level₁ ← getLevel C |
+      throwError m!"faled to get the universe level of {C}"
+    let .succ level₂ ← getLevel (← inferType e) |
+      throwError m!"failed to get the universe level of {e}"
+    let instCat ← synthInstance (mkAppN (.const ``Category [level₂, level₁]) #[C])
+    let instMonoidal ← synthInstance
+      (mkAppN (.const ``MonoidalCategory [level₂, level₁]) #[C, instCat])
+    return ⟨C, instCat, instMonoidal, level₁, level₂⟩
+  | _ => throwError m!"{e} is not a morphism"
+
+def mkContext? (e : Expr) : MetaM (Option Context) := do
+  try
+    return some (← mkContext e)
+  catch _ =>
+    return none
 
 /-- The monad for the normalization of 2-morphisms. -/
 abbrev MonoidalM := ReaderT Context MetaM
 
-/-- Run a computation in the `M` monad. -/
+/-- Run a computation in the `MonoidalM` monad. -/
 abbrev MonoidalM.run {α : Type} (c : Context) (m : MonoidalM α) : MetaM α :=
   ReaderT.run m c
 
@@ -98,35 +103,27 @@ def getLevels : MonoidalM (List Level) := do
 
 /-- The domain of a morphism. -/
 def srcExpr (η : Expr) : MetaM Expr := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) => return f
-  | _ => match (← whnfR (← inferType η)).getAppFnArgs with
-    | (``Quiver.Hom, #[_, _, f, _]) => return f
-    | _ => throwError m!"{η} is not a morphism"
+  | _ => throwError m!"{η} is not a morphism"
 
 /-- The codomain of a morphism. -/
 def tgtExpr (η : Expr) : MetaM Expr := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, _, g]) => return g
-  | _ => match (← whnfR (← inferType η)).getAppFnArgs with
-    | (``Quiver.Hom, #[_, _, _, g]) => return g
-    | _ => throwError m!"{η} is not a morphism"
+  | _ => throwError m!"{η} is not a morphism"
 
 /-- The domain of a morphism. -/
 def srcExprOfIso (η : Expr) : MetaM Expr := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Iso, #[_, _, f, _]) => return f
-  | _ => match (← whnfR (← inferType η)).getAppFnArgs with
-    | (``Iso, #[_, _, f, _]) => return f
-    | _ => throwError m!"{η} is not a morphism"
+  | _ => throwError m!"{η} is not a morphism"
 
 /-- The codomain of a morphism. -/
 def tgtExprOfIso (η : Expr) : MetaM Expr := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Iso, #[_, _, _, g]) => return g
-  | _ => match (← whnfR (← inferType η)).getAppFnArgs with
-    | (``Iso, #[_, _, _, g]) => return g
-    | _ => throwError m!"{η} is not a morphism"
+  | _ => throwError m!"{η} is not a morphism"
 
 def mkCategoryStructInst : MonoidalM Expr := do
   let ctx ← read
@@ -135,6 +132,10 @@ def mkCategoryStructInst : MonoidalM Expr := do
 def mkQuiverInst : MonoidalM Expr := do
   let ctx ← read
   return mkAppN (.const ``CategoryStruct.toQuiver (← getLevels)) #[ctx.C, ← mkCategoryStructInst]
+
+def mkHom (f g : Expr) : MonoidalM Expr := do
+  let ctx ← read
+  return mkAppN (.const ``Quiver.Hom [ctx.level₂.succ, ctx.level₁]) #[ctx.C, ← mkQuiverInst, f, g]
 
 def mkMonoidalCategoryStructInst : MonoidalM Expr := do
   let ctx ← read
@@ -290,7 +291,7 @@ inductive StructuralAtom : Type
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
 def structuralAtom? (e : Expr) : MonoidalM (Option StructuralAtom) := do
-  match (← whnfR e) with
+  match ← whnfR e with
   -- whnfR version of `| (``Iso.hom, #[_, _, _, _, η]) =>`
   | .proj ``Iso 0 η =>
     match (← whnfR η).getAppFnArgs with
@@ -321,6 +322,10 @@ def structuralAtom? (e : Expr) : MonoidalM (Option StructuralAtom) := do
 structure Atom where
   /-- Extract a Lean expression from an `Atom` expression. -/
   e : Expr
+  /-- The domain of a 2-morphism. -/
+  src : Mor₁
+  /-- The codomain of a 2-morphism. -/
+  tgt : Mor₁
   deriving Inhabited
 
 /-- Expressions of the form `η ▷ f₁ ▷ ... ▷ fₙ`. -/
@@ -369,53 +374,35 @@ inductive NormalExpr : Type
   | cons (head_structural : Structural) (head : WhiskerLeftExpr) (tail : NormalExpr) : NormalExpr
   deriving Inhabited
 
-/-- The domain of a morphism. -/
-def src (η : Expr) : MonoidalM Mor₁ := do
-  match (← whnfR (← inferType η)).getAppFnArgs with
-  | (``Quiver.Hom, #[_, _, f, _]) => toMor₁ f
-  | _ => throwError "{η} is not a morphism"
-
-/-- The codomain of a morphism. -/
-def tgt (η : Expr) : MonoidalM Mor₁ := do
-  match (← whnfR (← inferType η)).getAppFnArgs with
-  | (``Quiver.Hom, #[_, _, _, g]) => toMor₁ g
-  | _ => throwError "{η} is not a morphism"
-
 /-- The domain of a 2-morphism. -/
-def Atom.src (η : Atom) : MonoidalM Mor₁ := do Monoidal.src η.e
-
-/-- The codomain of a 2-morphism. -/
-def Atom.tgt (η : Atom) : MonoidalM Mor₁ := do Monoidal.tgt η.e
-
-/-- The domain of a 2-morphism. -/
-def WhiskerRightExpr.src : WhiskerRightExpr → MonoidalM Mor₁
+def WhiskerRightExpr.src : WhiskerRightExpr → Mor₁
   | WhiskerRightExpr.of η => η.src
-  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.src η).comp (Mor₁.of f)
+  | WhiskerRightExpr.whisker η f => η.src.comp (Mor₁.of f)
 
 /-- The codomain of a 2-morphism. -/
-def WhiskerRightExpr.tgt : WhiskerRightExpr → MonoidalM Mor₁
+def WhiskerRightExpr.tgt : WhiskerRightExpr → Mor₁
   | WhiskerRightExpr.of η => η.tgt
-  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.tgt η).comp (Mor₁.of f)
+  | WhiskerRightExpr.whisker η f => η.tgt.comp (Mor₁.of f)
 
 /-- The domain of a 2-morphism. -/
-def TensorHomExpr.src : TensorHomExpr → MonoidalM Mor₁
+def TensorHomExpr.src : TensorHomExpr → Mor₁
   | TensorHomExpr.of η => η.src
-  | TensorHomExpr.cons η ηs => return (← η.src).comp (← ηs.src)
+  | TensorHomExpr.cons η ηs => η.src.comp ηs.src
 
 /-- The codomain of a 2-morphism. -/
-def TensorHomExpr.tgt : TensorHomExpr → MonoidalM Mor₁
+def TensorHomExpr.tgt : TensorHomExpr → Mor₁
   | TensorHomExpr.of η => η.tgt
-  | TensorHomExpr.cons η ηs => return (← η.tgt).comp (← ηs.tgt)
+  | TensorHomExpr.cons η ηs => η.tgt.comp ηs.tgt
 
 /-- The domain of a 2-morphism. -/
-def WhiskerLeftExpr.src : WhiskerLeftExpr → MonoidalM Mor₁
+def WhiskerLeftExpr.src : WhiskerLeftExpr → Mor₁
   | WhiskerLeftExpr.of η => TensorHomExpr.src η
-  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.src η)
+  | WhiskerLeftExpr.whisker f η => (Mor₁.of f).comp η.src
 
 /-- The codomain of a 2-morphism. -/
-def WhiskerLeftExpr.tgt : WhiskerLeftExpr → MonoidalM Mor₁
+def WhiskerLeftExpr.tgt : WhiskerLeftExpr → Mor₁
   | WhiskerLeftExpr.of η => TensorHomExpr.tgt η
-  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tgt η)
+  | WhiskerLeftExpr.whisker f η => (Mor₁.of f).comp η.tgt
 
 /-- The domain of a 2-morphism. -/
 def StructuralAtom.src : StructuralAtom → Mor₁
@@ -490,12 +477,12 @@ def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
   .nil <| .atom <| .rightUnitorInv f
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
-def NormalExpr.of (η : WhiskerLeftExpr) : MonoidalM NormalExpr := do
-  return .cons (.id (← η.src)) η (.nil (.id (← η.tgt)))
+def NormalExpr.of (η : WhiskerLeftExpr) : NormalExpr :=
+  .cons (.id η.src) η (.nil (.id η.tgt))
 
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
-def NormalExpr.ofExpr (η : Expr) : MonoidalM NormalExpr :=
-  NormalExpr.of <| .of <| .of <| .of ⟨η⟩
+def NormalExpr.ofExpr (η : Expr) : MonoidalM NormalExpr := do
+  return NormalExpr.of <| .of <| .of <| .of ⟨η, ← toMor₁ (← srcExpr η), ← toMor₁ (← tgtExpr η)⟩
 
 /-- If `e` is an expression of the form `η ⊗≫ θ := η ≫ α ≫ θ` in the monoidal category `C`,
 return the expression for `α` .-/
@@ -505,16 +492,11 @@ def structuralOfMonoidalComp (e : Expr) : MonoidalM Structural := do
   let g ← mkFreshExprMVar ctx.C
   let h ← mkFreshExprMVar ctx.C
   let i ← mkFreshExprMVar ctx.C
-  let η ← mkFreshExprMVar (mkAppN (.const ``Quiver.Hom [ctx.level₂.succ, ctx.level₁])
-    #[ctx.C, ← mkQuiverInst, f, g])
-  let α₀ ← mkFreshExprMVar (mkAppN (.const ``Quiver.Hom [ctx.level₂.succ, ctx.level₁])
-    #[ctx.C, ← mkQuiverInst, g, h])
-  let θ ← mkFreshExprMVar (mkAppN (.const ``Quiver.Hom [ctx.level₂.succ, ctx.level₁])
-    #[ctx.C, ← mkQuiverInst, h, i])
-  let αθ := mkAppN (.const ``CategoryStruct.comp (← getLevels))
-    #[ctx.C, ← mkCategoryStructInst, g, h, i, α₀, θ]
-  let ηαθ := mkAppN (.const ``CategoryStruct.comp (← getLevels))
-    #[ctx.C, ← mkCategoryStructInst, f, g, i, η, αθ]
+  let η ← mkFreshExprMVar (← mkHom f g)
+  let α₀ ← mkFreshExprMVar (← mkHom g h)
+  let θ ← mkFreshExprMVar (← mkHom h i)
+  let αθ ← mkComp α₀ θ
+  let ηαθ ← mkComp η αθ
   _ ← isDefEq e ηαθ
   match ← structuralAtom? (← instantiateMVars α₀) with
   | some α => return .atom α
@@ -1105,13 +1087,13 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MonoidalM Result
 /-- Evaluate the expression `η ▷ f` into a normalized form. -/
 partial def evalWhiskerRightExprAux : TensorHomExpr → Atom₁ → MonoidalM Result
   | .of η, f => do
-    let η' ← NormalExpr.of <| .of <| .of <| .whisker η f
+    let η' := NormalExpr.of <| .of <| .of <| .whisker η f
     return ⟨η', ← mkEvalWhiskerRightExprAuxOf (← η.e) f.e⟩
   | .cons η ηs, f => do
     let ⟨ηs', pf_ηs'⟩ ← evalWhiskerRightExprAux ηs f
-    let ⟨η₁, pf_η₁⟩ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηs'
-    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ (.associatorInv (← η.tgt) (← ηs.tgt) (.of f))
-    let ⟨η₃, pf_η₃⟩ ← evalComp (.associator (← η.src) (← ηs.src) (.of f)) η₂
+    let ⟨η₁, pf_η₁⟩ ← evalTensorHomExpr (NormalExpr.of <| .of <| .of η) ηs'
+    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ (.associatorInv η.tgt ηs.tgt (.of f))
+    let ⟨η₃, pf_η₃⟩ ← evalComp (.associator η.src ηs.src (.of f)) η₂
     return ⟨η₃, ← mkEvalWhiskerRightExprAuxCons f.e (← η.e) (← ηs.e) (← ηs'.e)
       (← η₁.e) (← η₂.e) (← η₃.e) pf_ηs' pf_η₁ pf_η₂ pf_η₃⟩
 
@@ -1127,8 +1109,8 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
     return ⟨η₃, ← mkEvalWhiskerRightConsOfOf f.e (← α.e) (← η.e) (← ηs.e)
       (← ηs₁.e) (← η₁.e) (← η₂.e) (← η₃.e) pf_ηs₁ pf_η₁ pf_η₂ pf_η₃⟩
   | .cons α (.whisker f η) ηs, h => do
-    let g ← η.src
-    let g' ← η.tgt
+    let g := η.src
+    let g' := η.tgt
     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (.cons (.id g) η (.nil (.id g'))) h
     let ⟨η₂, pf_η₂⟩ ← evalWhiskerLeftExpr (.of f) η₁
     let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs h
@@ -1159,12 +1141,12 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
 /-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
 partial def evalTensorHomAux : TensorHomExpr → TensorHomExpr → MonoidalM Result
   | .of η, θ => do
-    return ⟨← NormalExpr.of <| .of <| .cons η θ, ← mkEvalTensorHomAuxOf (← η.e) (← θ.e)⟩
+    return ⟨NormalExpr.of <| .of <| .cons η θ, ← mkEvalTensorHomAuxOf (← η.e) (← θ.e)⟩
   | .cons η ηs, θ => do
-    let α := NormalExpr.associator (← η.src) (← ηs.src) (← θ.src)
-    let α' := NormalExpr.associatorInv (← η.tgt) (← ηs.tgt) (← θ.tgt)
+    let α := NormalExpr.associator η.src ηs.src θ.src
+    let α' := NormalExpr.associatorInv η.tgt ηs.tgt θ.tgt
     let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomAux ηs θ
-    let ⟨η₁, pf_η₁⟩ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηθ
+    let ⟨η₁, pf_η₁⟩ ← evalTensorHomExpr (.of <| .of <| .of η) ηθ
     let ⟨ηθ₁, pf_ηθ₁⟩ ← evalComp η₁ α'
     let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp α ηθ₁
     return ⟨ηθ₂, ← mkEvalTensorHomAuxCons (← η.e) (← ηs.e) (← θ.e) (← ηθ.e)
@@ -1176,15 +1158,15 @@ partial def evalTensorHomAux' : WhiskerLeftExpr → WhiskerLeftExpr → Monoidal
   | .whisker f η, θ => do
     let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomAux' η θ
     let ⟨ηθ₁, pf_ηθ₁⟩ ← evalWhiskerLeftExpr (.of f) ηθ
-    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp ηθ₁ (.associatorInv (.of f) (← η.tgt) (← θ.tgt))
-    let ⟨ηθ₃, pf_ηθ₃⟩ ← evalComp (.associator (.of f) (← η.src) (← θ.src)) ηθ₂
+    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp ηθ₁ (.associatorInv (.of f) η.tgt θ.tgt)
+    let ⟨ηθ₃, pf_ηθ₃⟩ ← evalComp (.associator (.of f) η.src θ.src) ηθ₂
     return ⟨ηθ₃, ← mkEvalTensorHomAux'_whisker f.e (← η.e) (← θ.e) (← ηθ.e)
       (← ηθ₁.e) (← ηθ₂.e) (← ηθ₃.e) pf_ηθ pf_ηθ₁ pf_ηθ₂ pf_ηθ₃⟩
   | .of η, .whisker f θ => do
     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExprAux η f
-    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomExpr η₁ (← NormalExpr.of θ)
-    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalComp ηθ (.associator (← η.tgt) (.of f) (← θ.tgt))
-    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp (.associatorInv (← η.src) (.of f) (← θ.src)) ηθ₁
+    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomExpr η₁ (.of θ)
+    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalComp ηθ (.associator η.tgt (.of f) θ.tgt)
+    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp (.associatorInv η.src (.of f) θ.src) ηθ₁
     return ⟨ηθ₂, ← mkEvalTensorHomAux'OfWhisker f.e (← η.e) (← θ.e) (← ηθ.e)
       (← η₁.e) (← ηθ₁.e) (← ηθ₂.e) pf_η₁ pf_ηθ pf_ηθ₁ pf_ηθ₂⟩
 
@@ -1193,14 +1175,14 @@ partial def evalTensorHomExpr : NormalExpr → NormalExpr → MonoidalM Result
   | .nil α, .nil β => do
     return ⟨.nil <| .tensorHom α β, ← mkEvalTensorHomExprNilNil (← α.e) (← β.e)⟩
   | .nil α, .cons β η ηs => do
-    let ⟨η₁, pf_η₁⟩ ← evalWhiskerLeftExpr α.tgt (← NormalExpr.of η)
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerLeftExpr α.tgt (.of η)
     let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerLeftExpr α.tgt ηs
     let ⟨η₂, pf_η₂⟩ ← evalComp η₁ ηs₁
     let ⟨η₃, pf_η₃⟩ ← evalCompNil (α.tensorHom β) η₂
     return ⟨η₃, ← mkEvalTensorHomExpr_nil_cons (← α.e) (← β.e) (← η.e) (← ηs.e)
       (← η₁.e) (← ηs₁.e) (← η₂.e) (← η₃.e) pf_η₁ pf_ηs₁ pf_η₂ pf_η₃⟩
   | .cons α η ηs, .nil β => do
-    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (← NormalExpr.of η) β.tgt
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (.of η) β.tgt
     let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs β.tgt
     let ⟨η₂, pf_η₂⟩ ← evalComp η₁ ηs₁
     let ⟨η₃, pf_η₃⟩ ← evalCompNil (α.tensorHom β) η₂
@@ -1228,12 +1210,12 @@ partial def eval (e : Expr) : MonoidalM Result := do
         return ⟨.nil (.id (← toMor₁ f)), ← mkEqRefl (← mkId f)⟩
       | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
         withTraceNode `monoidal (fun _ => return m!"comp") do
-        let ⟨η', pf_η⟩ ← eval η
-        let ⟨θ', pf_θ⟩ ← eval θ
-        let ⟨ηθ, pf⟩ ← evalComp η' θ'
-        let result ← mkEvalComp η (← η'.e) θ (← θ'.e) (← ηθ.e) pf_η pf_θ pf
-        trace[monoidal] m!"{checkEmoji} {← inferType result}"
-        return ⟨ηθ, result⟩
+          let ⟨η', pf_η⟩ ← eval η
+          let ⟨θ', pf_θ⟩ ← eval θ
+          let ⟨ηθ, pf⟩ ← evalComp η' θ'
+          let result ← mkEvalComp η (← η'.e) θ (← θ'.e) (← ηθ.e) pf_η pf_θ pf
+          trace[monoidal] m!"{checkEmoji} {← inferType result}"
+          return ⟨ηθ, result⟩
       | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
         withTraceNode `monoidal (fun _ => return m!"whiskerLeft") do
           let ⟨η', pf_η⟩ ← eval η
@@ -1286,8 +1268,7 @@ def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
 -/
 elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
-  let some ctx ← mkContext? e
-    | throwError m!"{e} is not a morphism"
+  let ctx ← mkContext e
   MonoidalM.run ctx do (← eval e).expr.e
 
 theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
@@ -1299,8 +1280,7 @@ def mkEqOfNormalizedEq (e : Expr) : MetaM Expr := do
   withTraceNode `monoidal (fun _ => return m!"normalizing {e}") do
     let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| e).eq?
       | throwError "monoidal_nf requires an equality goal"
-    let some ctx ← mkContext? e₁
-      | throwError "the lhs and rhs must be morphisms"
+    let ctx ← mkContext e₁
     MonoidalM.run ctx do
       let ⟨e₁', p₁⟩ ← eval e₁
       let ⟨e₂', p₂⟩ ← eval e₂

@@ -68,22 +68,29 @@ structure Context where
   level₂ : Level
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext? (e : Expr) : MetaM (Option Context) := do
+def mkContext (e : Expr) : MetaM Context := do
   match (← whnfR (← inferType e)).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) =>
     match (← whnfR (← inferType f)).getAppFnArgs with
     | (``Quiver.Hom, #[_, _, a, _]) =>
       let B ← inferType a
-      let .succ level₀ ← getLevel B | return none
-      let .succ level₁ ← getLevel (← inferType f) | return none
-      let .succ level₂ ← getLevel (← inferType e) | return none
-      let .some instBicategory ← synthInstance?
-        (mkAppN (.const ``Bicategory [level₂, level₁, level₀]) #[B]) | return none
-      return some
-        { B := B, instBicategory := instBicategory,
-          level₀ := level₀, level₁ := level₁, level₂ := level₂ }
-    | _ => return none
-  | _ => return none
+      let .succ level₀ ← getLevel B |
+        throwError m!"faled to get the universe level of {B}"
+      let .succ level₁ ← getLevel (← inferType f) |
+        throwError m!"faled to get the universe level of {← inferType f}"
+      let .succ level₂ ← getLevel (← inferType e) |
+        throwError m!"faled to get the universe level of {← inferType e}"
+      let instBicategory ← synthInstance
+        (mkAppN (.const ``Bicategory [level₂, level₁, level₀]) #[B])
+      return ⟨B, instBicategory, level₀, level₁, level₂⟩
+    | _ => throwError m!"{f} is not a morphism"
+  | _ => throwError m!"{e} is not a morphism"
+
+def mkContext? (e : Expr) : MetaM (Option Context) := do
+  try
+    return some (← mkContext e)
+  catch _ =>
+    return none
 
 /-- The monad for the normalization of 2-morphisms. -/
 abbrev BicategoryM := ReaderT Context MetaM
@@ -98,41 +105,43 @@ def getLevels : BicategoryM (List Level) := do
 
 /-- The domain of a morphism. -/
 def srcExpr (η : Expr) : MetaM Expr := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) => return f
-  | _ => match (← whnfR (← inferType η)).getAppFnArgs with
-    | (``Quiver.Hom, #[_, _, f, _]) => return f
-    | _ => throwError m!"{η} is not a morphism"
+  | _ => throwError m!"{η} is not a morphism"
 
 /-- The codomain of a morphism. -/
 def tgtExpr (η : Expr) : MetaM Expr := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, _, g]) => return g
-  | _ => match (← whnfR (← inferType η)).getAppFnArgs with
-    | (``Quiver.Hom, #[_, _, _, g]) => return g
-    | _ => throwError m!"{η} is not a morphism"
+  | _ => throwError m!"{η} is not a morphism"
 
 /-- The domain of a morphism. -/
 def srcExprOfIso (η : Expr) : MetaM Expr := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Iso, #[_, _, f, _]) => return f
-  | _ => match (← whnfR (← inferType η)).getAppFnArgs with
-    | (``Iso, #[_, _, f, _]) => return f
-    | _ => throwError m!"{η} is not a morphism"
+  | _ => throwError m!"{η} is not a morphism"
 
 /-- The codomain of a morphism. -/
 def tgtExprOfIso (η : Expr) : MetaM Expr := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR (← inferType η)).getAppFnArgs with
   | (``Iso, #[_, _, _, g]) => return g
-  | _ => match (← whnfR (← inferType η)).getAppFnArgs with
-    | (``Iso, #[_, _, _, g]) => return g
-    | _ => throwError m!"{η} is not a morphism"
+  | _ => throwError m!"{η} is not a morphism"
 
 def mkCategoryStructInst₁ : BicategoryM Expr := do
   let ctx ← read
   let B := ctx.B
   let instB := ctx.instBicategory
   return mkAppN (.const ``Bicategory.toCategoryStruct (← getLevels)) #[B, instB]
+
+def mkQuiverInst₁ : BicategoryM Expr := do
+  let ctx ← read
+  return mkAppN (.const ``CategoryStruct.toQuiver [ctx.level₁, ctx.level₀])
+    #[ctx.B, ← mkCategoryStructInst₁]
+
+def mkHom₁ (a b : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  return mkAppN (.const ``Quiver.Hom [ctx.level₁.succ, ctx.level₀])
+    #[ctx.B, ← mkQuiverInst₁, a, b]
 
 def mkComp₁ (f g : Expr) : BicategoryM Expr := do
   let ctx ← read
@@ -155,6 +164,16 @@ def mkCategoryStructInst₂ (f : Expr) : BicategoryM Expr := do
   let instCat ← mkHomCatInst (← srcExpr f) (← tgtExpr f)
   return mkAppN (.const ``Category.toCategoryStruct [ctx.level₂, ctx.level₁])
     #[← inferType f, instCat]
+
+def mkQuiverInst₂ (f : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  return mkAppN (.const ``CategoryStruct.toQuiver [ctx.level₂, ctx.level₁])
+    #[← inferType f, ← mkCategoryStructInst₂ f]
+
+def mkHom₂ (f g : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  return mkAppN (.const ``Quiver.Hom [ctx.level₂.succ, ctx.level₁])
+    #[← inferType f, ← mkQuiverInst₂ f, f, g]
 
 def mkComp₂ (η θ : Expr) : BicategoryM Expr := do
   let ctx ← read
@@ -228,12 +247,26 @@ def mkRightUnitor (f : Expr) : BicategoryM Expr := do
   return mkAppN (.const ``Bicategory.rightUnitor (← getLevels))
     #[ctx.B, ctx.instBicategory, a, b, f]
 
+def mkBicategoricalCoherenceHom (f g inst : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr f
+  let b ← tgtExpr f
+  return mkAppN (.const ``BicategoricalCoherence.hom (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, f, g, inst]
+
 /-- Expressions for atomic 1-morphisms. -/
 structure Atom₁ : Type where
   /-- Extract a Lean expression from an `Atom₁` expression. -/
   e : Expr
+  /-- The domain of the 1-morphism. -/
   src : Expr
+  /-- The codomain of the 1-morphism. -/
   tgt : Expr
+
+def Atom₁.mkM (e : Expr) : MetaM Atom₁ := do
+  let src ← srcExpr e
+  let tgt ← tgtExpr e
+  return ⟨e, src, tgt⟩
 
 /-- Expressions for 1-morphisms. -/
 inductive Mor₁ : Type
@@ -251,60 +284,40 @@ def Mor₁.toList : Mor₁ → List Atom₁
   | .comp f g => f.toList ++ g.toList
   | .of f => [f]
 
-/-- Returns `𝟙 a` if the expression `e` is of the form `𝟙 a`. -/
+/-- Returns `a` if the expression `e` is of the form `𝟙 a`. -/
 def isId? (e : Expr) : BicategoryM (Option (Expr)) := do
-  let B ← mkFreshExprMVar none
-  let instB ← mkFreshExprMVar none
-  let a ← mkFreshExprMVar none
-  let unit := mkAppN (← mkConstWithFreshMVarLevels
-    ``CategoryStruct.id) #[B, instB, a]
-  if ← withDefault <| isDefEq e unit then
-    return (← instantiateMVars unit)
+  let ctx ← read
+  let a ← mkFreshExprMVar ctx.B
+  let i ← mkId₁ a
+  if ← withDefault <| isDefEq e i then
+    return (← instantiateMVars a)
   else
     return none
 
-/-- Returns `(f, g)` if the expression `e` is of the form `f ⊗ g`. -/
+/-- Returns `(f, g)` if the expression `e` is of the form `f ≫ g`. -/
 def isComp? (e : Expr) : BicategoryM (Option (Expr × Expr)) := do
-  let B ← mkFreshExprMVar none
-  let a ← mkFreshExprMVar B
-  let b ← mkFreshExprMVar B
-  let c ← mkFreshExprMVar B
-  let instQB ← mkFreshExprMVar none
-  let f ← mkFreshExprMVar (mkAppN (← mkConstWithFreshMVarLevels ``Quiver.Hom) #[B, instQB, a, b])
-  let g ← mkFreshExprMVar (mkAppN (← mkConstWithFreshMVarLevels ``Quiver.Hom) #[B, instQB, b, c])
-  let instB ← mkFreshExprMVar none
-  let fg := mkAppN (← mkConstWithFreshMVarLevels
-    ``CategoryStruct.comp) #[B, instB, a, b, c, f, g]
+  let ctx ← read
+  let a ← mkFreshExprMVar ctx.B
+  let b ← mkFreshExprMVar ctx.B
+  let c ← mkFreshExprMVar ctx.B
+  let hom_ab ← mkHom₁ a b
+  let hom_bc ← mkHom₁ b c
+  let f ← mkFreshExprMVar hom_ab
+  let g ← mkFreshExprMVar hom_bc
+  let fg ← mkComp₁ f g
   if ← withDefault <| isDefEq e fg then
     return (← instantiateMVars f, ← instantiateMVars g)
   else
     return none
 
-def Mor₁.src : Mor₁ → Expr
-  | .id a => a
-  | .comp f _ => f.src
-  | .of f => f.src
-
-def Mor₁.tgt : Mor₁ → Expr
-  | .id a => a
-  | .comp _ g => g.tgt
-  | .of f => f.tgt
-
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def toMor₁ (e : Expr) : BicategoryM Mor₁ := do
-  let src ← srcExpr e
-  let tgt ← tgtExpr e
-  -- match (← whnfR e).getAppFnArgs with
-  -- | (``CategoryStruct.id, #[_, _, a]) => return Mor₁.id a
-  -- | (``CategoryStruct.comp, #[_, _, _, _, _, f, g]) =>
-    -- return (← toMor₁ f).comp (← toMor₁ g)
-  -- | _ => return Mor₁.of ⟨e, src, tgt⟩
-  if let some _ ← isId? e then
-    return Mor₁.id src
+  if let some a ← isId? e then
+    return Mor₁.id a
   else if let some (f, g) ← isComp? e then
     return (← toMor₁ f).comp (← toMor₁ g)
   else
-    return Mor₁.of ⟨e, src, tgt⟩
+    return Mor₁.of (← Atom₁.mkM e)
 
 /-- Expressions for atomic structural 2-morphisms. -/
 inductive StructuralAtom : Type
@@ -326,8 +339,9 @@ inductive StructuralAtom : Type
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
 def structuralAtom? (e : Expr) : BicategoryM (Option StructuralAtom) := do
-  match e.getAppFnArgs with
-  | (``Iso.hom, #[_, _, _, _, η]) =>
+  match ← whnfR e with
+  -- whnfR version of `| (``Iso.hom, #[_, _, _, _, η]) =>`
+  | .proj ``Iso 0 η =>
     match (← whnfR η).getAppFnArgs with
     | (``Bicategory.associator, #[_, _, _, _, _, _, f, g, h]) =>
       return some <| .associator (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
@@ -336,7 +350,8 @@ def structuralAtom? (e : Expr) : BicategoryM (Option StructuralAtom) := do
     | (``Bicategory.rightUnitor, #[_, _, _, _, f]) =>
       return some <| .rightUnitor (← toMor₁ f)
     | _ => return none
-  | (``Iso.inv, #[_, _, _, _, η]) =>
+  -- whnfR version of `| (``Iso.inv, #[_, _, _, _, η]) =>`
+  | .proj ``Iso 1 η =>
     match (← whnfR η).getAppFnArgs with
     | (``Bicategory.associator, #[_, _, _, _, _, _, f, g, h]) =>
       return some <| .associatorInv (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
@@ -355,7 +370,16 @@ def structuralAtom? (e : Expr) : BicategoryM (Option StructuralAtom) := do
 structure Atom where
   /-- Extract a Lean expression from an `Atom` expression. -/
   e : Expr
+  /-- The domain of a 2-morphism. -/
+  src : Mor₁
+  /-- The codomain of a 2-morphism. -/
+  tgt : Mor₁
   deriving Inhabited
+
+def Atom.mkM (e : Expr) : BicategoryM Atom := do
+  let src ← toMor₁ (← srcExpr e)
+  let tgt ← toMor₁ (← tgtExpr e)
+  return ⟨e, src, tgt⟩
 
 /-- Expressions of the form `η ▷ f₁ ▷ ... ▷ fₙ`. -/
 inductive WhiskerRightExpr : Type
@@ -395,35 +419,37 @@ inductive NormalExpr : Type
   | cons (head_structural : Structural) (head : WhiskerLeftExpr) (tail : NormalExpr) : NormalExpr
   deriving Inhabited
 
-/-- The domain of a 2-morphism. -/
-def Atom.src (η : Atom) : BicategoryM Mor₁ := do toMor₁ (← srcExpr η.e)
+/-- The domain of a 1-morphism. -/
+def Mor₁.src : Mor₁ → Expr
+  | .id a => a
+  | .comp f _ => f.src
+  | .of f => f.src
 
-/-- The codomain of a 2-morphism. -/
-def Atom.tgt (η : Atom) : BicategoryM Mor₁ := do toMor₁ (← tgtExpr η.e)
+/-- The codomain of a 1-morphism. -/
+def Mor₁.tgt : Mor₁ → Expr
+  | .id a => a
+  | .comp _ g => g.tgt
+  | .of f => f.tgt
 
 /-- The domain of a 2-morphism. -/
-def WhiskerRightExpr.src : WhiskerRightExpr → BicategoryM Mor₁
+def WhiskerRightExpr.src : WhiskerRightExpr → Mor₁
   | WhiskerRightExpr.of η => η.src
-  | WhiskerRightExpr.whisker η f =>
-    return (← WhiskerRightExpr.src η).comp (Mor₁.of f)
+  | WhiskerRightExpr.whisker η f => η.src.comp (Mor₁.of f)
 
 /-- The codomain of a 2-morphism. -/
-def WhiskerRightExpr.tgt : WhiskerRightExpr → BicategoryM Mor₁
+def WhiskerRightExpr.tgt : WhiskerRightExpr → Mor₁
   | WhiskerRightExpr.of η => η.tgt
-  | WhiskerRightExpr.whisker η f =>
-    return (← WhiskerRightExpr.tgt η).comp (Mor₁.of f)
+  | WhiskerRightExpr.whisker η f => η.tgt.comp (Mor₁.of f)
 
 /-- The domain of a 2-morphism. -/
-def WhiskerLeftExpr.src : WhiskerLeftExpr → BicategoryM Mor₁
+def WhiskerLeftExpr.src : WhiskerLeftExpr → Mor₁
   | WhiskerLeftExpr.of η => η.src
-  | WhiskerLeftExpr.whisker f η =>
-    return (Mor₁.of f).comp (← WhiskerLeftExpr.src η)
+  | WhiskerLeftExpr.whisker f η => (Mor₁.of f).comp η.src
 
 /-- The codomain of a 2-morphism. -/
-def WhiskerLeftExpr.tgt : WhiskerLeftExpr → BicategoryM Mor₁
+def WhiskerLeftExpr.tgt : WhiskerLeftExpr → Mor₁
   | WhiskerLeftExpr.of η => η.tgt
-  | WhiskerLeftExpr.whisker f η =>
-    return (Mor₁.of f).comp (← WhiskerLeftExpr.tgt η)
+  | WhiskerLeftExpr.whisker f η => (Mor₁.of f).comp η.tgt
 
 /-- The domain of a 2-morphism. -/
 def StructuralAtom.src : StructuralAtom → Mor₁
@@ -496,31 +522,30 @@ def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
   .nil <| .atom <| .rightUnitorInv f
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
-def NormalExpr.of (η : WhiskerLeftExpr) : BicategoryM NormalExpr := do
-  return .cons (.id (← η.src)) η (.nil (.id (← η.tgt)))
+def NormalExpr.of (η : WhiskerLeftExpr) : NormalExpr :=
+  .cons (.id η.src) η (.nil (.id η.tgt))
 
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
-def NormalExpr.ofExpr (η : Expr) : BicategoryM NormalExpr :=
-  NormalExpr.of <| .of <| .of <| ⟨η⟩
+def NormalExpr.ofExpr (η : Expr) : BicategoryM NormalExpr := do
+  return NormalExpr.of <| .of <| .of <| ← Atom.mkM η
 
 /-- If `e` is an expression of the form `η ⊗≫ θ := η ≫ α ≫ θ` in the monoidal category `C`,
 return the expression for `α` .-/
-def structuralOfBicategoricalComp (C e : Expr) : BicategoryM Structural := do
-  let v ← mkFreshLevelMVar
-  let u ← mkFreshLevelMVar
-  _ ← isDefEq (.sort (.succ v)) (← inferType (← inferType e))
-  _ ← isDefEq (.sort (.succ u)) (← inferType C)
-  let W ← mkFreshExprMVar none
-  let X ← mkFreshExprMVar none
-  let Y ← mkFreshExprMVar none
-  let Z ← mkFreshExprMVar none
-  let f ← mkFreshExprMVar none
-  let g ← mkFreshExprMVar none
-  let α₀ ← mkFreshExprMVar none
-  let instC ← mkFreshExprMVar none
-  let αg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, X, Y, Z, α₀, g]
-  let fαg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, W, X, Z, f, αg]
-  _ ← isDefEq e fαg
+def structuralOfBicategoricalComp (e : Expr) : BicategoryM Structural := do
+  let ctx ← read
+  let a ← mkFreshExprMVar ctx.B
+  let b ← mkFreshExprMVar ctx.B
+  let hom_ab ← mkHom₁ a b
+  let f ← mkFreshExprMVar hom_ab
+  let g ← mkFreshExprMVar hom_ab
+  let h ← mkFreshExprMVar hom_ab
+  let i ← mkFreshExprMVar hom_ab
+  let η ← mkFreshExprMVar (← mkHom₂ f g)
+  let α₀ ← mkFreshExprMVar (← mkHom₂ g h)
+  let θ ← mkFreshExprMVar (← mkHom₂ h i)
+  let αθ ← mkComp₂ α₀ θ
+  let ηαθ ← mkComp₂ η αθ
+  _ ← isDefEq e ηαθ
   match ← structuralAtom? α₀ with
   | some η => return .atom η
   | none => throwError "not a structural 2-morphism"
@@ -717,7 +742,7 @@ theorem evalWhiskerRight_id
     η ▷ 𝟙 b = η₂ := by
   simp [pf_η₁, pf_η₂]
 
-theorem eval_monoidalComp
+theorem eval_bicategoricalComp
     {η η' : f ⟶ g} {α : g ⟶ h} {θ θ' : h ⟶ i} {αθ : g ⟶ i} {ηαθ : f ⟶ i}
     (pf_η : η = η') (pf_θ : θ = θ') (pf_αθ : α ≫ θ' = αθ) (pf_ηαθ : η' ≫ αθ = ηαθ) :
     η ≫ α ≫ θ = ηαθ := by
@@ -725,14 +750,10 @@ theorem eval_monoidalComp
 
 end
 
-
 /-- Extract a Lean expression from a `Mor₁` expression. -/
-def Mor₁.e (e : Mor₁) : BicategoryM Expr :=
-  match e with
-  | .id  a => do
-    mkId₁ a
-  | .comp f g => do
-    mkComp₁ (← f.e) (← g.e)
+def Mor₁.e : Mor₁ → BicategoryM Expr
+  | .id  a => do mkId₁ a
+  | .comp f g => do mkComp₁ (← f.e) (← g.e)
   | .of f => return f.e
 
 /-- Extract a Lean expression from a `StructuralAtom` expression. -/
@@ -743,8 +764,7 @@ def StructuralAtom.e : StructuralAtom → BicategoryM Expr
   | .leftUnitorInv f => do mkIsoInv (← mkLeftUnitor (← f.e))
   | .rightUnitor f => do mkIsoHom (← mkRightUnitor (← f.e))
   | .rightUnitorInv f => do mkIsoInv (← mkRightUnitor (← f.e))
-  | .bicategoricalCoherence _ _ e => do
-    mkAppOptM ``BicategoricalCoherence.hom #[none, none, none, none, none, none, e]
+  | .bicategoricalCoherence f g e => do mkBicategoricalCoherenceHom (← f.e) (← g.e) e
 
 /-- Extract a Lean expression from a `Structural` expression. -/
 partial def Structural.e : Structural → BicategoryM Expr
@@ -757,28 +777,17 @@ partial def Structural.e : Structural → BicategoryM Expr
 /-- Extract a Lean expression from a `WhiskerRightExpr` expression. -/
 def WhiskerRightExpr.e : WhiskerRightExpr → BicategoryM Expr
   | WhiskerRightExpr.of η => return η.e
-  | WhiskerRightExpr.whisker η f => do
-    mkWhiskerRight (← η.e) f.e
+  | WhiskerRightExpr.whisker η f => do mkWhiskerRight (← η.e) f.e
 
 /-- Extract a Lean expression from a `WhiskerLeftExpr` expression. -/
 def WhiskerLeftExpr.e : WhiskerLeftExpr → BicategoryM Expr
   | WhiskerLeftExpr.of η => η.e
-  | WhiskerLeftExpr.whisker f η => do
-    mkWhiskerLeft f.e (← η.e)
+  | WhiskerLeftExpr.whisker f η => do mkWhiskerLeft f.e (← η.e)
 
 /-- Extract a Lean expression from a `NormalExpr` expression. -/
 def NormalExpr.e : NormalExpr → BicategoryM Expr
   | NormalExpr.nil α => α.e
-  | NormalExpr.cons α η θ => do
-    -- match α, θ with
-    -- | .id _, .nil (.id _) => η.e
-    -- | .id _, _ => do
-    --   mkAppM ``CategoryStruct.comp #[← η.e, ← θ.e]
-    -- | _, .nil (.id _) => do
-    --   mkAppM ``CategoryStruct.comp #[← α.e, ← η.e]
-    -- | _, _ => do
-    mkComp₂ (← α.e) (← mkComp₂ (← η.e) (← θ.e))
-
+  | NormalExpr.cons α η θ => do mkComp₂ (← α.e) (← mkComp₂ (← η.e) (← θ.e))
 
 /-- The result of evaluating an expression into normal form. -/
 structure Result where
@@ -834,8 +843,8 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → BicategoryM Result
     let pf ← mkAppM ``evalWhiskerRight_cons_of_of #[← α.e, ← η.e, pf_θ]
     return ⟨η', pf⟩
   | .cons α (.whisker f η) ηs, h => do
-    let g ← η.src
-    let g' ← η.tgt
+    let g := η.src
+    let g' := η.tgt
     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (.cons (.id g) η (.nil (.id g'))) h
     let ⟨η₂, pf_η₂⟩ ← evalWhiskerLeftExpr (.of f) η₁
     let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs h
@@ -866,54 +875,51 @@ partial def eval (e : Expr) : BicategoryM Result := do
   if let .some α ← structuralAtom? e then
     return ⟨.nil <| .atom α, ← mkEqRefl (← α.e)⟩
   else
-    match e.getAppFnArgs with
+    match (← whnfR e).getAppFnArgs with
     | (``CategoryStruct.id, #[_, _, f]) =>
       return ⟨.nil (.id (← toMor₁ f)), ← mkEqRefl (← mkId₂ f)⟩
     | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
-      let ⟨η_e, pf_η⟩ ← eval η
-      let ⟨θ_e, pf_θ⟩ ← eval θ
-      let ⟨ηθ, pf⟩ ← evalComp η_e θ_e
-      return ⟨ηθ, ← mkAppM ``eval_comp #[pf_η, pf_θ, pf]⟩
+      withTraceNode `bicategory (fun _ => return m!"comp") do
+        let ⟨η', pf_η⟩ ← eval η
+        let ⟨θ', pf_θ⟩ ← eval θ
+        let ⟨ηθ, pf⟩ ← evalComp η' θ'
+        let result ← mkAppM ``eval_comp #[pf_η, pf_θ, pf]
+        trace[bicategory] m!"{checkEmoji} {← inferType result}"
+        return ⟨ηθ, result⟩
     | (``Bicategory.whiskerLeft, #[_, _, _, _, _, f, _, _, η]) =>
-      let ⟨η_e, pf_η⟩ ← eval η
-      let ⟨θ, pf_θ⟩ ← evalWhiskerLeftExpr (← toMor₁ f) η_e
-      return ⟨θ, ← mkAppM ``eval_whiskerLeft #[pf_η, pf_θ]⟩
+      withTraceNode `bicategory (fun _ => return m!"whiskerLeft") do
+        let ⟨η', pf_η⟩ ← eval η
+        let ⟨θ, pf_θ⟩ ← evalWhiskerLeftExpr (← toMor₁ f) η'
+        let result ← mkAppM ``eval_whiskerLeft #[pf_η, pf_θ]
+        trace[bicategory] m!"{checkEmoji} {← inferType result}"
+        return ⟨θ, result⟩
     | (``Bicategory.whiskerRight, #[_, _, _, _, _, _, _, η, h]) =>
-      let ⟨η_e, pf_η⟩ ← eval η
-      let ⟨θ, pf_θ⟩ ← evalWhiskerRightExpr η_e (← toMor₁ h)
-      return ⟨θ, ← mkAppM ``eval_whiskerRight #[pf_η, pf_θ]⟩
-    | (``bicategoricalComp, #[C, _, _, _, _, _, _, _, _, η, θ]) =>
-      let ⟨η_e, pf_η⟩ ← eval η
-      let α₀ ← structuralOfBicategoricalComp C e
-      let α := NormalExpr.nil α₀
-      let ⟨θ_e, pf_θ⟩ ← eval θ
-      let ⟨αθ, pf_θα⟩ ← evalComp α θ_e
-      let ⟨ηαθ, pf_ηαθ⟩ ← evalComp η_e αθ
-      return ⟨ηαθ, ← mkAppM ``eval_monoidalComp #[pf_η, pf_θ, pf_θα, pf_ηαθ]⟩
+      withTraceNode `bicategory (fun _ => return m!"whiskerRight") do
+        let ⟨η', pf_η⟩ ← eval η
+        let ⟨θ, pf_θ⟩ ← evalWhiskerRightExpr η' (← toMor₁ h)
+        let result ← mkAppM ``eval_whiskerRight #[pf_η, pf_θ]
+        trace[bicategory] m!"{checkEmoji} {← inferType result}"
+        return ⟨θ, result⟩
+    | (``bicategoricalComp, #[_, _, _, _, _, _, _, _, _, η, θ]) =>
+      withTraceNode `bicategory (fun _ => return m!"bicategoricalComp") do
+        let ⟨η', pf_η⟩ ← eval η
+        let α₀ ← structuralOfBicategoricalComp e
+        let α := NormalExpr.nil α₀
+        let ⟨θ', pf_θ⟩ ← eval θ
+        let ⟨αθ, pf_θα⟩ ← evalComp α θ'
+        let ⟨ηαθ, pf_ηαθ⟩ ← evalComp η' αθ
+        let result ← mkAppM ``eval_bicategoricalComp #[pf_η, pf_θ, pf_θα, pf_ηαθ]
+        trace[bicategory] m!"{checkEmoji} {← inferType result}"
+        return ⟨ηαθ, result⟩
     | _ =>
-      return ⟨← NormalExpr.ofExpr e, ← mkAppM ``eval_of #[e]⟩
+      let result ← mkAppM ``eval_of #[e]
+      trace[bicategory] m!"{checkEmoji} {← inferType result}"
+      return ⟨← NormalExpr.ofExpr e, result⟩
 
 /-- Convert a `NormalExpr` expression into a list of `WhiskerLeftExpr` expressions. -/
 def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
   | NormalExpr.nil _ => []
   | NormalExpr.cons _ η ηs => η :: NormalExpr.toList ηs
-
-theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
-  simp [h, ha, hb]
-
-open Lean Elab Meta Tactic in
-/-- Transform an equality between 2-morphisms into the equality between their normalizations. -/
-def mkEqOfNormalizedEq (e : Expr) : MetaM Expr := do
-  let some (_, e₁, e₂) := (← whnfR <| e).eq?
-    | throwError "bicategory_nf requires an equality goal"
-  let some ctx ← mkContext? e₁
-    | throwError "the lhs and rhs must be 2-morphisms"
-  BicategoryM.run ctx do
-    let ⟨e₁', p₁⟩ ← eval e₁
-    let ⟨e₂', p₂⟩ ← eval e₂
-    mkAppM ``mk_eq #[e₁, e₂, ← e₁'.e, ← e₂'.e, p₁, p₂]
-
--- open Mathlib.Tactic.Bicategory
 
 /-- `normalize% η` is the normalization of the 2-morphism `η`.
 1. The normalized 2-morphism is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where
@@ -923,9 +929,23 @@ def mkEqOfNormalizedEq (e : Expr) : MetaM Expr := do
 -/
 elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
-  let some ctx ← mkContext? e
-    | throwError m!"{e} is not a morphism"
+  let ctx ← mkContext e
   BicategoryM.run ctx do (← eval e).expr.e
+
+theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
+  simp [h, ha, hb]
+
+open Lean Elab Meta Tactic in
+/-- Transform an equality between 2-morphisms into the equality between their normalizations. -/
+def mkEqOfNormalizedEq (e : Expr) : MetaM Expr := do
+  withTraceNode `bicategory (fun _ => return m!"normalizing {e}") do
+    let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| e).eq?
+      | throwError "bicategory_nf requires an equality goal"
+    let ctx ← mkContext e₁
+    BicategoryM.run ctx do
+      let ⟨e₁', p₁⟩ ← eval e₁
+      let ⟨e₂', p₂⟩ ← eval e₂
+      mkAppM ``mk_eq #[e₁, e₂, ← e₁'.e, ← e₂'.e, p₁, p₂]
 
 open Lean Elab Tactic in
 /-- Normalize the both sides of an equality. -/

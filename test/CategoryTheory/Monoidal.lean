@@ -1,5 +1,4 @@
-import Mathlib.Tactic.CategoryTheory.Monoidal
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.Coherence.Monoidal
 
 open CategoryTheory
 open scoped MonoidalCategory

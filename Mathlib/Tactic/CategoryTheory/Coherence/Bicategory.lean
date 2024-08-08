@@ -56,20 +56,35 @@ def mkIsoSymm (η : Expr) : BicategoryM Expr := do
   return mkAppN (.const ``Iso.symm [ctx.level₂, ctx.level₁])
     #[← inferType f, instCat, f, g, η]
 
-inductive NormalizedHom (α : Type u) : Type u
-  | nil (a : α) : NormalizedHom α
-  | cons : NormalizedHom α → α → NormalizedHom α
+/-- Type of normalized 1-morphisms, represented by (reversed) list. -/
+inductive NormalizedHom : Type
+  /-- The identity 1-morphism `𝟙 a`. -/
+  | nil (e : Expr) (a : Expr) : NormalizedHom
+  /-- The `cons` composes an atomic 1-morphism at the end of a normalized 1-morphism. -/
+  | cons (e : Expr) : NormalizedHom → Expr → NormalizedHom
+
+/-- The underlying expression of a normalized 1-morphism. -/
+def NormalizedHom.e : NormalizedHom → Expr
+  | NormalizedHom.nil e _ => e
+  | NormalizedHom.cons e _ _ => e
+
+/-- Construct the `NormalizedHom.nil` term in `BicategoryM`. -/
+def normalizedHom.nilM (a : Expr) : BicategoryM NormalizedHom := do
+  return NormalizedHom.nil (← mkId₁ a) a
+
+/-- Construct a `NormalizedHom.cons` term in `BicategoryM`. -/
+def NormalizedHom.consM (p : NormalizedHom) (f : Expr) : BicategoryM NormalizedHom := do
+  return NormalizedHom.cons (← mkComp₁ p.e f) p f
 
 structure Coherence.Result where
   /-- The normalized 1-morphism. -/
-  normalizedHom : NormalizedHom Expr
+  normalizedHom : NormalizedHom
   /-- The 2-morphism to the normalized 1-morphism. -/
   toNormalize : Expr
 
 section
 
 variable {a b c d e : B}
-variable {p : a ⟶ b} {f : b ⟶ c} {g : c ⟶ d} {h : d ⟶ e} {pf : a ⟶ c} {pfg : a ⟶ d} {pfgh : a ⟶ e}
 
 abbrev normalizeIso {p : a ⟶ b} {f : b ⟶ c} {g : c ⟶ d} {pf : a ⟶ c} {pfg : a ⟶ d}
     (η_f : p ≫ f ≅ pf) (η_g : pf ≫ g ≅ pfg) :=
@@ -83,36 +98,97 @@ theorem naturality_associator
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, whiskerRight_comp, Category.assoc,
     Iso.hom_inv_id_assoc, pentagon_hom_inv_inv_inv_inv_assoc, comp_whiskerRight]
 
+def mkNaturalityAssociator (p f g h pf pfg pfgh η_f η_g η_h : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  let d ← tgtExpr g
+  let e ← tgtExpr h
+  return mkAppN (.const ``naturality_associator (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, d, e, p, f, g, h, pf, pfg, pfgh, η_f, η_g, η_h]
+
 theorem naturality_associator_inv
+    {p : a ⟶ b} {f : b ⟶ c} {g : c ⟶ d} {h : d ⟶ e} {pf : a ⟶ c} {pfg : a ⟶ d} {pfgh : a ⟶ e}
     (η_f : (p ≫ f) ≅ pf) (η_g : (pf ≫ g) ≅ pfg) (η_h : pfg ≫ h ≅ pfgh) :
     p ◁ (α_ f g h).inv ≫ (normalizeIso (normalizeIso η_f η_g) η_h).hom =
     (normalizeIso η_f (normalizeIso η_g η_h)).hom := by
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, comp_whiskerRight, Category.assoc,
     pentagon_inv_assoc, whiskerRight_comp, Iso.hom_inv_id_assoc]
 
-theorem naturality_leftUnitor (η_f : p ≫ f ≅ pf) :
+def mkNaturalityAssociatorInv (p f g h pf pfg pfgh η_f η_g η_h : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  let d ← tgtExpr g
+  let e ← tgtExpr h
+  return mkAppN (.const ``naturality_associator_inv (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, d, e, p, f, g, h, pf, pfg, pfgh, η_f, η_g, η_h]
+
+theorem naturality_leftUnitor {p : a ⟶ b} {f : b ⟶ c} {pf : a ⟶ c} (η_f : p ≫ f ≅ pf) :
     p ◁ (λ_ f).hom ≫ η_f.hom = (normalizeIso (ρ_ p) η_f).hom := by
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, triangle_assoc_comp_right_assoc]
 
-theorem naturality_leftUnitor_inv (η_f : p ≫ f ≅ pf) :
+def mkNaturalityLeftUnitor (p f pf η_f : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  return mkAppN (.const ``naturality_leftUnitor (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, p, f, pf, η_f]
+
+theorem naturality_leftUnitor_inv {p : a ⟶ b} {f : b ⟶ c} {pf : a ⟶ c} (η_f : p ≫ f ≅ pf) :
     p ◁ (λ_ f).inv ≫ (normalizeIso (ρ_ p) η_f).hom = η_f.hom := by
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, triangle_assoc_comp_right_assoc,
     whiskerLeft_inv_hom_assoc, Iso.refl_hom, Category.comp_id]
 
-theorem naturality_rightUnitor (η_f : p ≫ f ≅ pf) :
+def mkNaturalityLeftUnitorInv (p f pf η_f : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  return mkAppN (.const ``naturality_leftUnitor_inv (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, p, f, pf, η_f]
+
+theorem naturality_rightUnitor {p : a ⟶ b} {f : b ⟶ c} {pf : a ⟶ c} (η_f : p ≫ f ≅ pf) :
     p ◁ (ρ_ f).hom ≫ η_f.hom = (normalizeIso η_f (ρ_ pf)).hom := by
   simp only [whiskerLeft_rightUnitor, Category.assoc, Iso.trans_hom, Iso.symm_hom,
     whiskerRightIso_hom, whiskerRight_id, Iso.inv_hom_id, Category.comp_id]
 
-theorem naturality_rightUnitor_inv (η_f : p ≫ f ≅ pf) :
+def mkNaturalityRightUnitor (p f pf η_f : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  return mkAppN (.const ``naturality_rightUnitor (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, p, f, pf, η_f]
+
+theorem naturality_rightUnitor_inv {p : a ⟶ b} {f : b ⟶ c} {pf : a ⟶ c} (η_f : p ≫ f ≅ pf) :
     p ◁ (ρ_ f).inv ≫ (normalizeIso η_f (ρ_ pf)).hom = η_f.hom := by
   simp only [whiskerLeft_rightUnitor_inv, Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom,
     whiskerRight_id, Category.assoc, Iso.inv_hom_id, Category.comp_id, Iso.hom_inv_id_assoc,
     Iso.inv_hom_id_assoc]
 
-theorem naturality_id (η_f : p ≫ f ≅ pf) :
+def mkNaturalityRightUnitorInv (p f pf η_f : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  return mkAppN (.const ``naturality_rightUnitor_inv (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, p, f, pf, η_f]
+
+theorem naturality_id {p : a ⟶ b} {f : b ⟶ c} {pf : a ⟶ c} (η_f : p ≫ f ≅ pf) :
     p ◁ (𝟙 f) ≫ η_f.hom = η_f.hom := by
   simp only [whiskerLeft_id, Category.id_comp]
+
+def mkNaturalityId (p f pf η_f : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  return mkAppN (.const ``naturality_id (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, p, f, pf, η_f]
 
 theorem naturality_comp
     {p : a ⟶ b} {f g h : b ⟶ c} {pf : a ⟶ c}
@@ -121,7 +197,15 @@ theorem naturality_comp
     p ◁ (η ≫ θ) ≫ η_h.hom = η_f.hom := by
   simp only [whiskerLeft_comp, Category.assoc, ← ih_η, ← ih_θ]
 
-theorem naturality_whiskerLeft {p : a ⟶ b} {f : b ⟶ c} {g h : c ⟶ d}
+def mkNaturalityComp (p f g h pf η θ η_f η_g η_h ih_η ih_θ : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  return mkAppN (.const ``naturality_comp (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, p, f, g, h, pf, η, θ, η_f, η_g, η_h, ih_η, ih_θ]
+
+theorem naturality_whiskerLeft {p : a ⟶ b} {f : b ⟶ c} {g h : c ⟶ d} {pf : a ⟶ c} {pfg : a ⟶ d}
     (η : g ⟶ h) (η_f : (p ≫ f) ≅ pf)
     (η_fg : (pf ≫ g) ≅ pfg)
     (η_fh : (pf ≫ h) ≅ pfg)
@@ -131,7 +215,16 @@ theorem naturality_whiskerLeft {p : a ⟶ b} {f : b ⟶ c} {g h : c ⟶ d}
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, ← ih_η, ← whisker_exchange_assoc,
     comp_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc]
 
-theorem naturality_whiskerRight {p : a ⟶ b} {f g : b ⟶ c} {h : c ⟶ d} {pfh : a ⟶ d}
+def mkNaturalityWhiskerLeft (p f g h pf pfg η η_f η_fg η_fh ih_η : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  let d ← tgtExpr g
+  return mkAppN (.const ``naturality_whiskerLeft (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, d, p, f, g, h, pf, pfg, η, η_f, η_fg, η_fh, ih_η]
+
+theorem naturality_whiskerRight {p : a ⟶ b} {f g : b ⟶ c} {h : c ⟶ d} {pf : a ⟶ c} {pfh : a ⟶ d}
     (η : f ⟶ g) (η_f : (p ≫ f) ≅ pf)
     (η_g : (p ≫ g) ≅ pf)
     (η_fh : (pf ≫ h) ≅ pfh)
@@ -141,34 +234,33 @@ theorem naturality_whiskerRight {p : a ⟶ b} {f g : b ⟶ c} {h : c ⟶ d} {pfh
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, ← ih_η, comp_whiskerRight,
     whisker_assoc, Category.assoc, Iso.inv_hom_id_assoc]
 
+def mkNaturalityWhiskerRight (p f g h pf pfh η η_f η_g η_fh ih_η : Expr) : BicategoryM Expr := do
+  let ctx ← read
+  let a ← srcExpr p
+  let b ← tgtExpr p
+  let c ← tgtExpr f
+  let d ← tgtExpr h
+  return mkAppN (.const ``naturality_whiskerRight (← getLevels))
+    #[ctx.B, ctx.instBicategory, a, b, c, d, p, f, g, h, pf, pfh, η, η_f, η_g, η_fh, ih_η]
+
 end
 
-def eval₁ (p : NormalizedHom Expr) : BicategoryM Expr := do
-  let ctx ← read
-  match p with
-  | .nil a =>
-    return mkAppN (.const ``CategoryStruct.id [ctx.level₁, ctx.level₀])
-      #[ctx.B, ← mkCategoryStructInst₁ ,a]
-  | .cons fs f =>
-    let fs' ← eval₁ fs
-    return mkAppN (.const ``CategoryStruct.comp [ctx.level₁, ctx.level₀])
-      #[ctx.B, ← mkCategoryStructInst₁, ← srcExpr fs', ← tgtExpr fs', ← tgtExpr f, fs', f]
-
-partial def normalize (p : NormalizedHom Expr) (f : Expr) : BicategoryM Coherence.Result := do
+partial def normalize (p : NormalizedHom) (f : Expr) : BicategoryM Coherence.Result := do
   if let some _ ← isId? f then
-    let α ← mkRightUnitor (← eval₁ p)
+    let α ← mkRightUnitor p.e
     return ⟨p, α⟩
   else if let some (f, g) ← isComp? f then
     let ⟨pf, Hf⟩ ← normalize p f
     let Hf' ← mkWhiskerRightIso Hf g
     let ⟨pfg, Hg⟩ ← normalize pf g
     let η ← mkIsoTrans Hf' Hg
-    let alpha ← mkIsoSymm (← mkAssociator (← eval₁ p) f g)
+    let alpha ← mkIsoSymm (← mkAssociator p.e f g)
     let η' ← mkIsoTrans alpha η
     return ⟨pfg, η'⟩
   else
-    let α ← mkIsoRefl (← eval₁ (p.cons f))
-    return ⟨p.cons f, α⟩
+    let pf ← p.consM f
+    let α ← mkIsoRefl pf.e
+    return ⟨pf, α⟩
 
 theorem of_normalize_eq {a b : B} {f g f' : a ⟶ b}
     (η θ : f ⟶ g) (η_f : 𝟙 a ≫ f ≅ f') (η_g : 𝟙 a ≫ g ≅ f')
@@ -181,9 +273,7 @@ theorem of_normalize_eq {a b : B} {f g f' : a ⟶ b}
     _ = θ := by
       simp [← reassoc_of% h_θ]
 
-partial def naturality (p : NormalizedHom Expr) (η : Expr) : BicategoryM Expr := do
-  let B := (← read).B
-  let instB := (← read).instBicategory
+partial def naturality (p : NormalizedHom) (η : Expr) : BicategoryM Expr := do
   match η.getAppFnArgs with
   | (``Iso.hom, #[_, _, _, _, η]) =>
     match (← whnfR η).getAppFnArgs with
@@ -191,20 +281,20 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : BicategoryM Expr :
       withTraceNode `bicategory (fun _ => return m!"associator") do
         let ⟨pf, η_f⟩ ← normalize p f
         let ⟨pfg, η_g⟩ ← normalize pf g
-        let ⟨_, η_h⟩ ← normalize pfg h
-        let result ← mkAppM ``naturality_associator #[η_f, η_g, η_h]
+        let ⟨pfgh, η_h⟩ ← normalize pfg h
+        let result ← mkNaturalityAssociator p.e f g h pf.e pfg.e pfgh.e η_f η_g η_h
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | (``Bicategory.leftUnitor, #[_, _, _, _, f]) =>
       withTraceNode `bicategory (fun _ => return m!"leftUnitor") do
-        let ⟨_, η_f⟩ ← normalize p f
-        let result ← mkAppM ``naturality_leftUnitor #[η_f]
+        let ⟨pf, η_f⟩ ← normalize p f
+        let result ← mkNaturalityLeftUnitor p.e f pf.e η_f
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | (``Bicategory.rightUnitor, #[_, _, _, _, f]) =>
       withTraceNode `bicategory (fun _ => return m!"rightUnitor") do
-        let ⟨_, η_f⟩ ← normalize p f
-        let result ← mkAppM ``naturality_rightUnitor #[η_f]
+        let ⟨pf, η_f⟩ ← normalize p f
+        let result ← mkNaturalityRightUnitor p.e f pf.e η_f
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | _ => throwError "failed to prove the naturality for {η}"
@@ -214,28 +304,28 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : BicategoryM Expr :
       withTraceNode `bicategory (fun _ => return m!"associatorInv") do
         let ⟨pf, η_f⟩ ← normalize p f
         let ⟨pfg, η_g⟩ ← normalize pf g
-        let ⟨_, η_h⟩ ← normalize pfg h
-        let result ← mkAppM ``naturality_associator_inv #[η_f, η_g, η_h]
+        let ⟨pfgh, η_h⟩ ← normalize pfg h
+        let result ← mkNaturalityAssociatorInv p.e f g h pf.e pfg.e pfgh.e η_f η_g η_h
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | (``Bicategory.leftUnitor, #[_, _, _, _, f]) =>
       withTraceNode `bicategory (fun _ => return m!"leftUnitorInv") do
-        let ⟨_, η_f⟩ ← normalize p f
-        let result ← mkAppM ``naturality_leftUnitor_inv #[η_f]
+        let ⟨pf, η_f⟩ ← normalize p f
+        let result ← mkNaturalityLeftUnitorInv p.e f pf.e η_f
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | (``Bicategory.rightUnitor, #[_, _, _, _, f]) =>
       withTraceNode `bicategory (fun _ => return m!"rightUnitorInv") do
-        let ⟨_, η_f⟩ ← normalize p f
-        let result ← mkAppM ``naturality_rightUnitor_inv #[η_f]
+        let ⟨pf, η_f⟩ ← normalize p f
+        let result ← mkNaturalityRightUnitorInv p.e f pf.e η_f
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | _ => throwError "failed to prove the naturality for {η}"
   | _ =>  match (← whnfR η).getAppFnArgs with
     | (``CategoryStruct.id, #[_, _, f]) =>
       withTraceNode `bicategory (fun _ => return m!"id") do
-        let ⟨_, η_f⟩ ← normalize p f
-        let result ← mkAppM ``naturality_id #[η_f]
+        let ⟨pf, η_f⟩ ← normalize p f
+        let result ← mkNaturalityId p.e f pf.e η_f
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | (``CategoryStruct.comp, #[_, _, f, g, h, η, θ]) =>
@@ -245,28 +335,25 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : BicategoryM Expr :
         let ⟨_, η_h⟩ ← normalize p h
         let ih_η ← naturality p η
         let ih_θ ← naturality p θ
-        let p ← eval₁ p
-        let result := mkAppN (.const ``naturality_comp (← getLevels))
-          #[B, instB, ← srcExpr p, ← tgtExpr p, ← tgtExpr f, p, f, g, h,
-            ← eval₁ pf, η, θ, η_f, η_g, η_h, ih_η, ih_θ]
+        let result ← mkNaturalityComp p.e f g h pf.e η θ η_f η_g η_h ih_η ih_θ
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | (``Bicategory.whiskerLeft, #[_, _, _, _, _, f, g, h, η]) =>
       withTraceNode `bicategory (fun _ => return m!"whiskerLeft") do
         let ⟨pf, η_f⟩ ← normalize p f
-        let ⟨_, η_fg⟩ ← normalize pf g
+        let ⟨pfg, η_fg⟩ ← normalize pf g
         let ⟨_, η_fh⟩ ← normalize pf h
         let ih ← naturality pf η
-        let result ← mkAppM ``naturality_whiskerLeft #[η, η_f, η_fg, η_fh, ih]
+        let result ← mkNaturalityWhiskerLeft p.e f g h pf.e pfg.e η η_f η_fg η_fh ih
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | (``Bicategory.whiskerRight, #[_, _, _, _, _, f, g, η, h]) =>
       withTraceNode `bicategory (fun _ => return m!"whiskerRight") do
         let ⟨pf, η_f⟩ ← normalize p f
         let ⟨_, η_g⟩ ← normalize p g
-        let ⟨_, η_fh⟩ ← normalize pf h
+        let ⟨pfh, η_fh⟩ ← normalize pf h
         let ih ← naturality p η
-        let result ← mkAppM ``naturality_whiskerRight #[η, η_f, η_g, η_fh, ih]
+        let result ← mkNaturalityWhiskerRight p.e f g h pf.e pfh.e η η_f η_g η_fh ih
         trace[bicategory] m!"{checkEmoji} {← inferType result}"
         return result
     | (``bicategoricalComp, #[_, _, _, _, _, _, _, _, inst, η, θ]) =>
@@ -282,30 +369,32 @@ partial def naturality (p : NormalizedHom Expr) (η : Expr) : BicategoryM Expr :
           naturality p η'
     | _ => throwError "failed to prove the naturality for {η}"
 
-def pure_coherence (mvarId : MVarId) : MetaM (List MVarId) :=
+def pureCoherence (mvarId : MVarId) : MetaM (List MVarId) :=
   mvarId.withContext do
-    withTraceNode `bicategory (fun _ =>
-        return m!"coherence equality: {← mvarId.getType}") do
+    withTraceNode `bicategory (fun ex => match ex with
+      | .ok _ => return m!"{checkEmoji} coherence equality: {← mvarId.getType}"
+      | .error err => return m!"{crossEmoji} {err.toMessageData}") do
       let e ← instantiateMVars <| ← mvarId.getType
       let some (_, η, θ) := (← whnfR e).eq?
         | throwError "coherence requires an equality goal"
       let f ← srcExpr η
       let g ← tgtExpr η
       let a ← srcExpr f
-      let some ctx ← mkContext? η | throwError "the lhs and rhs must be 2-morphisms"
+      let ctx ← mkContext η
       BicategoryM.run ctx do
         trace[bicategory] m!"LHS"
-        let ⟨_, η_f⟩ ← normalize (.nil a) f
-        let Hη ← naturality (.nil a) η
+        let id_a ← normalizedHom.nilM a
+        let ⟨_, η_f⟩ ← normalize id_a f
+        let Hη ← naturality id_a η
         trace[bicategory] m!"RHS"
-        let ⟨_, η_g⟩ ← normalize (.nil a) g
-        let Hθ ← naturality (.nil a) θ
+        let ⟨_, η_g⟩ ← normalize id_a g
+        let Hθ ← naturality id_a θ
         let H ← mkAppM ``of_normalize_eq #[η, θ, η_f, η_g, Hη, Hθ]
         mvarId.apply H
 
 elab "bicategory_coherence" : tactic => withMainContext do
   let g ← getMainGoal
-  replaceMainGoal <| ← pure_coherence g
+  replaceMainGoal <| ← pureCoherence g
 
 theorem mk_eq_of_cons {C : Type u} [CategoryStruct.{v} C]
     {f₁ f₂ f₃ f₄ : C}
@@ -318,8 +407,7 @@ theorem mk_eq_of_cons {C : Type u} [CategoryStruct.{v} C]
 def mkEqOfHom₂ (mvarId : MVarId) : MetaM Expr := do
   let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| ← mvarId.getType).eq?
     | throwError "bicategory requires an equality goal"
-  let some ctx ← mkContext? e₁
-    | throwError "the lhs and rhs must be 2-morphisms"
+  let ctx ← mkContext e₁
   BicategoryM.run ctx do
     let ⟨e₁', p₁⟩ ← eval e₁
     let ⟨e₂', p₂⟩ ← eval e₂
@@ -355,7 +443,7 @@ def bicategory (mvarId : MVarId) : MetaM (List MVarId) :=
           return [mvarId]
         catch _ =>
           try
-            pure_coherence mvarId
+            pureCoherence mvarId
           catch _ => return [mvarId]
     return mvarIds''.join
 

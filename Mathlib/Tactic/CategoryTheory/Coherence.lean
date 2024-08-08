@@ -45,7 +45,7 @@ def runMonoidalOrBicategory (mvarId : MVarId)
     | .none => throwError "the goal must be an equality in a monoidal category or bicategory"
 
 def pureCoherence (mvarId : MVarId) : MetaM (List MVarId) :=
-  runMonoidalOrBicategory mvarId Monoidal.pure_coherence Bicategory.pure_coherence
+  runMonoidalOrBicategory mvarId Monoidal.pureCoherence Bicategory.pureCoherence
 
 elab "pure_coherence" : tactic => withMainContext do
   replaceMainGoal <| ← pureCoherence <| ← getMainGoal
