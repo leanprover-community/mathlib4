@@ -394,13 +394,15 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
 protected theorem Bornology.IsVonNBounded.restrict_scalars
-    [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+    [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
     [Zero E] [TopologicalSpace E]
     [SMul 𝕜 E] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s := by
   intro V hV
-  refine (h hV).restrict_scalars (Isometry.antilipschitz ?_).tendsto_cobounded
-  simpa only [Algebra.algebraMap_eq_smul_one'] using algebraMap_isometry 𝕜 𝕜'
+  refine (h hV).restrict_scalars <| AntilipschitzWith.tendsto_cobounded (K := ‖(1 : 𝕜')‖₊⁻¹) ?_
+  refine AntilipschitzWith.of_le_mul_nndist fun x y ↦ ?_
+  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← sub_smul, nnnorm_smul, ← div_eq_inv_mul,
+    mul_div_cancel_right₀ _ (nnnorm_ne_zero_iff.2 one_ne_zero)]
 
 section VonNBornologyEqMetric
 
