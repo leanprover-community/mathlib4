@@ -167,6 +167,7 @@ section PerfectField
 
 variable [PerfectField K] (comm : Commute f g) (hf : f.IsSemisimple) (hg : g.IsSemisimple)
 
+attribute [local simp] Submodule.Quotient.quot_mk_eq_mk in
 theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
     a.IsSemisimple := by
   let R := K[X] ⧸ Ideal.span {minpoly K f}
