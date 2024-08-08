@@ -437,7 +437,7 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsUpper α]
 
-lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Iic a)ᶜ = U) :=
+lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (Iic a)ᶜ = U :=
   IsLower.isTopologicalSpace_basis (α := αᵒᵈ) U
 
 end CompleteLinearOrder
