@@ -124,7 +124,7 @@ If the space is also Lindelöf:
 
 -/
 
-set_option linter.longFile 2900
+set_option linter.longFile 2800
 
 open Function Set Filter Topology TopologicalSpace
 

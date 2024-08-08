@@ -19,7 +19,7 @@ the uniform distance.
 
 -/
 
-set_option linter.longFile 1800
+set_option linter.longFile 1700
 
 
 noncomputable section

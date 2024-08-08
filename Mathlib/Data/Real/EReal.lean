@@ -47,7 +47,7 @@ if and only if they have the same absolute value and the same sign.
 real, ereal, complete lattice
 -/
 
-set_option linter.longFile 1900
+set_option linter.longFile 1800
 
 open Function ENNReal NNReal Set SignType
 

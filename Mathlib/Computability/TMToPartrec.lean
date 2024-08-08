@@ -23,7 +23,7 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 * `PartrecToTM2.tr`: A TM2 turing machine which can evaluate `code` programs
 -/
 
-set_option linter.longFile 2200
+set_option linter.longFile 2100
 
 open Mathlib (Vector)
 

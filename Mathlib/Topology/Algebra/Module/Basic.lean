@@ -27,7 +27,7 @@ Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →
 The corresponding notation for equivalences is `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 -/
 
-set_option linter.longFile 2600
+set_option linter.longFile 2500
 
 assert_not_exists Star.star
 
