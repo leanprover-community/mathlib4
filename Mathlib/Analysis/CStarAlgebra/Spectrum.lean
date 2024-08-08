@@ -3,8 +3,8 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Algebra.Star.StarAlgHom
 
@@ -119,46 +119,59 @@ theorem selfAdjoint.val_re_map_spectrum [StarModule ℂ A] (a : selfAdjoint A) :
 
 end ComplexScalars
 
-namespace StarAlgHom
+namespace NonUnitalStarAlgHom
 
-variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CStarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CStarRing B]
-  [FunLike F A B] [AlgHomClass F ℂ A B] [StarAlgHomClass F ℂ A B] (φ : F)
+variable {F A B : Type*}
+variable [NonUnitalNormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
+variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
+variable [NonUnitalNormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
+variable [NormedSpace ℂ B] [IsScalarTower ℂ B B] [SMulCommClass ℂ B B] [StarModule ℂ B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [NonUnitalStarAlgHomClass F ℂ A B]
 
-/-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
-theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
-  suffices ∀ s : A, IsSelfAdjoint s → ‖φ s‖₊ ≤ ‖s‖₊ by
-    exact nonneg_le_nonneg_of_sq_le_sq zero_le' <| by
-      simpa only [nnnorm_star_mul_self, map_star, map_mul]
-      using this _ (IsSelfAdjoint.star_mul_self a)
-  intro s hs
-  simpa only [hs.spectralRadius_eq_nnnorm, (hs.starHom_apply φ).spectralRadius_eq_nnnorm,
-    coe_le_coe] using
-    show spectralRadius ℂ (φ s) ≤ spectralRadius ℂ s from
-      iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset φ s)
+open Unitization
 
-/-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
-theorem norm_apply_le (a : A) : ‖(φ a : B)‖ ≤ ‖a‖ :=
-  nnnorm_apply_le φ a
+/-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
+lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
+  have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
+      ‖ψ x‖₊ ≤ ‖x‖₊ := by
+    suffices ∀ {s}, IsSelfAdjoint s → ‖ψ s‖₊ ≤ ‖s‖₊ by
+      refine nonneg_le_nonneg_of_sq_le_sq zero_le' ?_
+      simp_rw [← nnnorm_star_mul_self, ← map_star, ← map_mul]
+      exact this <| .star_mul_self x
+    intro s hs
+    suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
+      -- changing the order of `rw`s below runs into https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20type.20class.20synthesis.20error/near/421224482
+      rwa [(hs.starHom_apply ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
+        at this
+    exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
+  simpa [nnnorm_inr] using h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (φ : A →⋆ₙₐ[ℂ] B))) a
 
-/-- Star algebra homomorphisms between C⋆-algebras are continuous linear maps.
+/-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
+lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
+  exact_mod_cast nnnorm_apply_le φ a
+
+/-- Non-unital star algebra homomorphisms between C⋆-algebras are continuous linear maps.
 See note [lower instance priority] -/
-noncomputable instance (priority := 100) : ContinuousLinearMapClass F ℂ A B :=
-  { AlgHomClass.linearMapClass with
+lemma instContinuousLinearMapClassComplex : ContinuousLinearMapClass F ℂ A B :=
+  { NonUnitalAlgHomClass.instLinearMapClass with
     map_continuous := fun φ =>
       AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using nnnorm_apply_le φ) }
 
-end StarAlgHom
+scoped[CStarAlgebra] attribute [instance] NonUnitalStarAlgHom.instContinuousLinearMapClassComplex
+
+end NonUnitalStarAlgHom
 
 namespace StarAlgEquiv
 
-variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CStarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CStarRing B]
-  [EquivLike F A B] [NonUnitalAlgEquivClass F ℂ A B] [StarAlgEquivClass F ℂ A B]
+variable {F A B : Type*} [NormedRing A] [NormedSpace ℂ A] [SMulCommClass ℂ A A]
+variable [IsScalarTower ℂ A A] [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A]
+variable [NormedRing B] [NormedSpace ℂ B] [SMulCommClass ℂ B B] [IsScalarTower ℂ B B]
+variable [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B] [EquivLike F A B]
+variable [NonUnitalAlgEquivClass F ℂ A B] [StarAlgEquivClass F ℂ A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
-  le_antisymm (StarAlgHom.nnnorm_apply_le φ a) <| by
-    simpa using StarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
+  le_antisymm (NonUnitalStarAlgHom.nnnorm_apply_le φ a) <| by
+    simpa using NonUnitalStarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
   congr_arg NNReal.toReal (nnnorm_map φ a)
