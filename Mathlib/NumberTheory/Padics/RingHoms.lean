@@ -39,7 +39,6 @@ which removes some boilerplate code.
 
 noncomputable section
 
-open scoped Classical
 open Nat LocalRing Padic
 
 namespace PadicInt
@@ -273,6 +272,7 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     · norm_cast
     · apply sub_zmodRepr_mem
 
+open Classical in
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
 See `appr_spec`. -/
 -- Porting note: removing irreducible solves a lot of problems
