@@ -62,7 +62,7 @@ inductive Expanded
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
 * `.proof p` means that `p` is a syntax corresponding to a proof of an equation.
-  For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `some (c_add_pf 2 h)`
+  For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `.proof (c_add_pf 2 h)`
   which is a proof of `2 * a = 2 * b`.
 * `.const c` means that the input expression is not an equation but a value.
 -/
