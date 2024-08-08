@@ -94,8 +94,9 @@ variable (A) in
 /--
 The constant sheaf functor commutes up to isomorphism with any equivalence of sheaf categories.
 
-This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff` below, which says that the
-property of a sheaf of being a discrete object is invariant under equivalence of sheaf categories.
+This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalence` below, which
+says that the property of a sheaf of being a discrete object is invariant under equivalence of
+sheaf categories.
 -/
 noncomputable def equivCommuteConstant :
     let e : Sheaf J A ≌ Sheaf K A :=
@@ -110,8 +111,9 @@ variable (A) in
 /--
 The constant sheaf functor commutes up to isomorphism with any equivalence of sheaf categories.
 
-This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff` below, which says that the
-property of a sheaf of being a discrete object is invariant under equivalence of sheaf categories.
+This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalence` below, which
+says that the property of a sheaf of being a discrete object is invariant under equivalence of
+sheaf categories.
 -/
 noncomputable def equivCommuteConstant' :
     let e : Sheaf J A ≌ Sheaf K A :=
