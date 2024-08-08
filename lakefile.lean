@@ -8,6 +8,7 @@ package mathlib where
     ⟨`autoImplicit, false⟩,
     ⟨`relaxedAutoImplicit, false⟩,
 
+    ⟨`weak.Mathlib.Linter.linter.hashCommand, true⟩,
     ⟨`weak.linter.hashCommand, true⟩
   ]
   -- These are additional settings which do not affect the lake hash,
