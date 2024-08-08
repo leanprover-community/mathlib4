@@ -75,11 +75,11 @@ class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]
 
 initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)
 
-attribute [simp] MulCharClass.map_nonunit
-
 end Defi
 
 namespace MulChar
+
+attribute [scoped simp] MulCharClass.map_nonunit
 
 section Group
 
