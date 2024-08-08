@@ -707,7 +707,8 @@ end IntermediateField
 
 section
 
-variable (q n : ℕ) [hF : ExpChar F q] {ι : Type*} {v : ι → E} {F E}
+variable (q n : ℕ) [hF : ExpChar F q] {ι : Type*} {v : ι → E}
+variable {F E}
 
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a family
 of elements of `E` which `F`-linearly spans `E`, then `{ u_i ^ (q ^ n) }` also `F`-linearly spans

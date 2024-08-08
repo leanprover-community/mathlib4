@@ -551,7 +551,7 @@ theorem adjoin_simple_adjoin_simple (β : E) : F⟮α⟯⟮β⟯.restrictScalars
 theorem adjoin_simple_comm (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮β⟯⟮α⟯.restrictScalars F :=
   adjoin_adjoin_comm _ _ _
 
-variable {F} {α}
+variable {F α}
 
 theorem adjoin_algebraic_toSubalgebra {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
     (IntermediateField.adjoin F S).toSubalgebra = Algebra.adjoin F S := by

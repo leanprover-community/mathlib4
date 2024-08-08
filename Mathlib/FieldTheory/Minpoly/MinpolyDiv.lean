@@ -37,7 +37,8 @@ lemma coeff_minpolyDiv (i) : coeff (minpolyDiv R x) i =
     algebraMap R S (coeff (minpoly R x) (i + 1)) + coeff (minpolyDiv R x) (i + 1) * x := by
   rw [← coeff_map, ← minpolyDiv_spec R x]; simp [mul_sub]
 
-variable (hx : IsIntegral R x) {R x}
+variable (hx : IsIntegral R x)
+variable {R x}
 
 lemma minpolyDiv_ne_zero [Nontrivial S] : minpolyDiv R x ≠ 0 := by
   intro e

@@ -113,7 +113,8 @@ theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
     RingQuot.mkAlgHom_rel R (Rel.of m), AlgHom.commutes]
   rfl
 
-variable {Q} {A : Type*} [Semiring A] [Algebra R A]
+variable {Q}
+variable {A : Type*} [Semiring A] [Algebra R A]
 
 @[simp]
 theorem comp_ι_sq_scalar (g : CliffordAlgebra Q →ₐ[R] A) (m : M) :

@@ -52,7 +52,8 @@ measure preserving and pre-ergodic. -/
 structure QuasiErgodic (μ : Measure α := by volume_tac) extends
   QuasiMeasurePreserving f μ μ, PreErgodic f μ : Prop
 
-variable {f} {μ : Measure α}
+variable {f}
+variable {μ : Measure α}
 
 namespace PreErgodic
 

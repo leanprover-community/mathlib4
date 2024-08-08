@@ -176,7 +176,8 @@ instance normal_sup
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_|_) <;> infer_instance)
 
 -- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
-variable {F K} {L : Type*} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
+variable {F K}
+variable {L : Type*} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
   [Algebra F K] [IsScalarTower F K L]
 
 @[simp]

@@ -442,7 +442,7 @@ lemma IntermediateField.adjoin_root_eq_top_of_isSplittingField :
   refine (IntermediateField.eq_adjoin_of_eq_algebra_adjoin _ _ _ ?_).symm
   exact (Algebra.adjoin_root_eq_top_of_isSplittingField hζ H hα).symm
 
-variable (a) (L)
+variable (a L)
 
 /-- An arbitrary choice of `ⁿ√a` in the splitting field of `Xⁿ - a`. -/
 noncomputable

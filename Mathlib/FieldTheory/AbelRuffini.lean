@@ -188,8 +188,7 @@ theorem gal_X_pow_sub_C_isSolvable (n : ℕ) (x : F) : IsSolvable (X ^ n - C x).
 
 end GalXPowSubC
 
-variable (F)
-
+variable (F) in
 /-- Inductive definition of solvable by radicals -/
 inductive IsSolvableByRad : E → Prop
   | base (α : F) : IsSolvableByRad (algebraMap F E α)
@@ -199,8 +198,7 @@ inductive IsSolvableByRad : E → Prop
   | inv (α : E) : IsSolvableByRad α → IsSolvableByRad α⁻¹
   | rad (α : E) (n : ℕ) (hn : n ≠ 0) : IsSolvableByRad (α ^ n) → IsSolvableByRad α
 
-variable (E)
-
+variable (E F) in
 /-- The intermediate field of solvable-by-radicals elements -/
 def solvableByRad : IntermediateField F E where
   carrier := IsSolvableByRad F
@@ -217,7 +215,7 @@ def solvableByRad : IntermediateField F E where
 
 namespace solvableByRad
 
-variable {F} {E} {α : E}
+variable {α : E}
 
 theorem induction (P : solvableByRad F E → Prop)
     (base : ∀ α : F, P (algebraMap F (solvableByRad F E) α))
