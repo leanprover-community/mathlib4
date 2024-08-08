@@ -94,14 +94,14 @@ no matter the instantiation of the metavariables. -/
 @[inline] private def mustHaveAnyFVar (e : Expr) (p : FVarId → Bool) : Bool :=
   let rec @[specialize] visit (e : Expr) := if !e.hasFVar then false else
     match e with
-    | .forallE _ d b _   => visit d || visit b
-    | .lam _ d b _       => visit d || visit b
-    | .mdata _ e         => visit e
-    | .letE _ t v b _    => visit t || visit v || visit b
-    | .app f a           => !f.getAppFn.isMVar && (visit a || visit f)
-    | .proj _ _ e        => visit e
-    | .fvar fvarId       => p fvarId
-    | _                      => false
+    | .forallE _ d b _ => visit d || visit b
+    | .lam _ d b _     => visit d || visit b
+    | .mdata _ e       => visit e
+    | .letE _ t v b _  => visit t || visit v || visit b
+    | .app f a         => !f.getAppFn.isMVar && (visit a || visit f)
+    | .proj _ _ e      => visit e
+    | .fvar fvarId     => p fvarId
+    | _                => false
   visit e
 
 /-- Return `true` if `e` contains the given free variable. -/
