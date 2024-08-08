@@ -394,7 +394,7 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
 protected theorem Bornology.IsVonNBounded.restrict_scalars
-    [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜']
+    [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
     [Zero E] [TopologicalSpace E]
     [SMul 𝕜 E] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s := by
