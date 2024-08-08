@@ -216,12 +216,12 @@ instance (M : ModuleCat R) :
 
 /-- Auxilary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
-    (discrete _).obj M ≅ (functor R).obj M := by
+    (discrete _).obj M ≅ (functor R).obj M :=
   have : (LightCondensed.forget R).ReflectsIsomorphisms :=
     inferInstanceAs (sheafCompose _ _).ReflectsIsomorphisms
-  refine (functorIsoDiscreteAux₂ R M) ≪≫ (@asIso _ _ _ _ ?_ ?_)
-  · exact (discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M)
-  · apply this.reflects
+  have : IsIso ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M)) :=
+    isIso_of_reflects_iso _ (LightCondensed.forget R)
+  functorIsoDiscreteAux₂ R M ≪≫ asIso ((discreteUnderlyingAdj _).counit.app ((functor R).obj M))
 
 /--
 `LightCondMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
