@@ -2097,7 +2097,8 @@ import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.PiInduction
 import Mathlib.Data.Finset.Piecewise
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
+import Mathlib.Data.Finset.Pointwise.Card
 import Mathlib.Data.Finset.Pointwise.Interval
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
@@ -3070,9 +3071,7 @@ import Mathlib.Logic.Small.Ring
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.Unique
 import Mathlib.Logic.UnivLE
-import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
-import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
 import Mathlib.MeasureTheory.Category.MeasCat
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic

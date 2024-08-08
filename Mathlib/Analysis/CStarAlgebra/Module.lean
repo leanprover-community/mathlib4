@@ -68,8 +68,7 @@ namespace CStarModule
 section general
 
 variable {A E : Type*} [NonUnitalRing A] [StarRing A] [AddCommGroup E] [Module ℂ A]
-  [Module ℂ E] [PartialOrder A] [SMul Aᵐᵒᵖ E] [StarModule ℂ A] [Norm A] [Norm E]
-  [CStarModule A E]
+  [Module ℂ E] [PartialOrder A] [SMul Aᵐᵒᵖ E] [Norm A] [Norm E] [CStarModule A E]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
 
@@ -81,6 +80,10 @@ lemma inner_add_left {x y z : E} : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ := b
 @[simp]
 lemma inner_op_smul_left {a : A} {x y : E} : ⟪x <• a, y⟫ = star a * ⟪x, y⟫ := by
   rw [← star_inner]; simp
+
+section StarModule
+
+variable [StarModule ℂ A]
 
 @[simp]
 lemma inner_smul_left_complex {z : ℂ} {x y : E} : ⟪z • x, y⟫ = star z • ⟪x, y⟫ := by
@@ -128,6 +131,8 @@ lemma inner_sum_left {ι : Type*} {s : Finset ι} {x : ι → E} {y : E} :
     ⟪∑ i ∈ s, x i, y⟫ = ∑ i ∈ s, ⟪x i, y⟫ :=
   map_sum (innerₛₗ.flip y) ..
 
+end StarModule
+
 @[simp]
 lemma isSelfAdjoint_inner_self {x : E} : IsSelfAdjoint ⟪x, x⟫ := star_inner _ _
 
@@ -135,9 +140,8 @@ end general
 
 section norm
 
-variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [PartialOrder A]
-  [StarOrderedRing A] [AddCommGroup E] [NormedSpace ℂ A] [Module ℂ E] [SMul Aᵐᵒᵖ E] [Norm E]
-  [StarModule ℂ A] [CStarModule A E] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [PartialOrder A]
+  [AddCommGroup E] [NormedSpace ℂ A] [Module ℂ E] [SMul Aᵐᵒᵖ E] [Norm E] [CStarModule A E]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
 
@@ -149,11 +153,7 @@ noncomputable def norm : Norm E where
 
 lemma inner_self_eq_norm_sq {x : E} : ‖⟪x, x⟫‖ = ‖x‖ ^ 2 := by simp [norm_eq_sqrt_norm_inner_self]
 
-protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inner_self]
-
-lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
-  ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self, inner_self] using h,
-    fun h => by simp [norm, h]; rw [CStarModule.norm_zero] ⟩
+section
 
 protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]; positivity
 
@@ -163,7 +163,20 @@ protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
   rw [inner_self] at H
   exact hx H
 
+variable [StarModule ℂ A]
+
+protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inner_self]
+
+lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
+  ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self, inner_self] using h,
+    fun h => by simp [norm, h]; rw [CStarModule.norm_zero] ⟩
+
+end
+
 lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sqrt_norm_inner_self]
+
+variable [CStarRing A] [StarOrderedRing A] [StarModule ℂ A]
+  [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
 
 /-- The C⋆-algebra-valued Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
