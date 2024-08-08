@@ -300,7 +300,7 @@ section CompleteLinearOrder
 variable [CompleteLinearOrder α]
 
 lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α] (U : Set α) :
-    IsOpen U ↔ U = univ ∨ (∃ (a : α), (Iic a)ᶜ = U) := by
+    IsOpen U ↔ U = univ ∨ ∃ a, (Iic a)ᶜ = U := by
   constructor
   · intro hU
     rcases eq_empty_or_nonempty Uᶜ with eUc | neUc
