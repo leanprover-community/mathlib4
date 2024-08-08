@@ -51,7 +51,7 @@ theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
 theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
 theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
 
-/-- Result of `expandLinearCombo`, either a  -/
+/-- Result of `expandLinearCombo`, either an equality proof or a value. -/
 inductive Expanded
   /-- A proof of `a = b`. -/
   | proof (pf : Syntax.Term)
