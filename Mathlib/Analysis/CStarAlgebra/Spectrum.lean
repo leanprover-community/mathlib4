@@ -3,8 +3,8 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Analysis.Normed.Algebra.Unitization
+import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Algebra.Star.StarAlgHom
 
@@ -145,12 +145,10 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
         at this
     exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
   simpa [nnnorm_inr] using h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (φ : A →⋆ₙₐ[ℂ] B))) a
-#align star_alg_hom.nnnorm_apply_le NonUnitalStarAlgHom.nnnorm_apply_le
 
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
   exact_mod_cast nnnorm_apply_le φ a
-#align star_alg_hom.norm_apply_le NonUnitalStarAlgHom.norm_apply_le
 
 /-- Non-unital star algebra homomorphisms between C⋆-algebras are continuous linear maps.
 See note [lower instance priority] -/
