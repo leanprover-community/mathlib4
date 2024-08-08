@@ -448,7 +448,7 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
   intro x
   obtain ⟨k, hk⟩ := Filter.eventually_atTop.mp (toEnd R L M x).eventually_iInf_range_pow_eq
   use k
-  ext ⟨m⟩
+  ext m
   set F := posFittingComp R L M
   replace hk : (toEnd R L M x ^ k) m ∈ F := by
     apply posFittingCompOf_le_posFittingComp R L M x

@@ -74,7 +74,7 @@ variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 theorem leftCoset_cover_const_iff_surjOn :
     ⋃ i ∈ s, g i • (H : Set G) = Set.univ ↔ Set.SurjOn (g · : ι → G ⧸ H) s Set.univ := by
   simp [Set.eq_univ_iff_forall, mem_leftCoset_iff, Set.SurjOn,
-    QuotientGroup.forall_mk, QuotientGroup.eq]
+    QuotientGroup.forall_mk, QuotientGroup.leftRel_eq]
 
 variable (hcovers : ⋃ i ∈ s, g i • (H : Set G) = Set.univ)
 
@@ -143,7 +143,7 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
       refine ⟨i, ⟨hi, fun hij => hx i hi hij ?_⟩, ?_⟩
       · rwa [hmem, eq_comm, QuotientGroup.eq, hij, inv_mul_cancel_left,
           ← SetLike.mem_coe, ← mem_leftCoset_iff]
-      · simpa [mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.eq, mul_assoc] using hmem
+      · simpa [mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.leftRel_eq, mul_assoc] using hmem
     -- Thus `G` can also be covered by a finite union `U k, f k • K k` of left cosets
     -- of the subgroups `H k ≠ H j`.
     let κ := ↥(s.filter (H · ≠ H j)) × Option ↥(s.filter (H · = H j))

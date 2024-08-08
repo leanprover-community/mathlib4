@@ -232,7 +232,6 @@ alias ring_sep_rel := inseparableSetoid_ring
 theorem ring_sep_quot (α : Type u) [r : CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     SeparationQuotient α = (α ⧸ (⊥ : Ideal α).closure) := by
   rw [SeparationQuotient, @inseparableSetoid_ring α r]
-  rfl
 
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an homeomorphism between the separated quotient of `α` and the quotient ring
