@@ -147,6 +147,7 @@ def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
 
 end
 
+section
 variable [HasShift C A]
 
 /-- The monoidal functor from `A` to `C ⥤ C` given a `HasShift` instance. -/
@@ -173,16 +174,16 @@ lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
   ext1
   apply Category.id_comp
 
-variable (A)
-
+variable (A) in
 /-- Shifting by zero is the identity functor. -/
 def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
   (shiftMonoidalFunctor C A).εIso.symm
 
-variable {A} in
 /-- Shifting by `a` such that `a = 0` identifies to the identity functor. -/
 def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
   eqToIso (by rw [ha]) ≪≫ shiftFunctorZero C A
+
+end
 
 variable {C A}
 
@@ -220,6 +221,7 @@ set_option quotPrecheck false in
 notation f "⟦" n "⟧'" => (shiftFunctor _ n).map f
 
 variable (C)
+variable [HasShift C A]
 
 lemma shiftFunctorAdd'_zero_add (a : A) :
     shiftFunctorAdd' C 0 a a (zero_add a) = (Functor.leftUnitor _).symm ≪≫

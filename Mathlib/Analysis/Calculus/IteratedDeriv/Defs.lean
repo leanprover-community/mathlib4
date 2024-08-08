@@ -40,11 +40,9 @@ by translating the corresponding result `iteratedFDerivWithin_succ_apply_left` f
 iterated Fréchet derivative.
 -/
 
-
 noncomputable section
 
-open scoped Classical Topology
-
+open scoped Topology
 open Filter Asymptotics Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

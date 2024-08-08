@@ -105,34 +105,34 @@ theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 �
     by simp [Function.funext_iff, mul_eq_zero]
 
 @[simp]
-lemma conjTranspose_mul_self_eq_zero {A : Matrix m n R} : Aᴴ * A = 0 ↔ A = 0 :=
+lemma conjTranspose_mul_self_eq_zero {n} {A : Matrix m n R} : Aᴴ * A = 0 ↔ A = 0 :=
   ⟨fun h => Matrix.ext fun i j =>
     (congr_fun <| dotProduct_star_self_eq_zero.1 <| Matrix.ext_iff.2 h j j) i,
   fun h => h ▸ Matrix.mul_zero _⟩
 
 @[simp]
-lemma self_mul_conjTranspose_eq_zero {A : Matrix m n R} : A * Aᴴ = 0 ↔ A = 0 :=
+lemma self_mul_conjTranspose_eq_zero {m} {A : Matrix m n R} : A * Aᴴ = 0 ↔ A = 0 :=
   ⟨fun h => Matrix.ext fun i j =>
     (congr_fun <| dotProduct_self_star_eq_zero.1 <| Matrix.ext_iff.2 h i i) j,
   fun h => h ▸ Matrix.zero_mul _⟩
 
-lemma conjTranspose_mul_self_mul_eq_zero (A : Matrix m n R) (B : Matrix n p R) :
+lemma conjTranspose_mul_self_mul_eq_zero {p} (A : Matrix m n R) (B : Matrix n p R) :
     (Aᴴ * A) * B = 0 ↔ A * B = 0 := by
   refine ⟨fun h => ?_, fun h => by simp only [Matrix.mul_assoc, h, Matrix.mul_zero]⟩
   apply_fun (Bᴴ * ·) at h
   rwa [Matrix.mul_zero, Matrix.mul_assoc, ← Matrix.mul_assoc, ← conjTranspose_mul,
     conjTranspose_mul_self_eq_zero] at h
 
-lemma self_mul_conjTranspose_mul_eq_zero (A : Matrix m n R) (B : Matrix m p R) :
+lemma self_mul_conjTranspose_mul_eq_zero {p} (A : Matrix m n R) (B : Matrix m p R) :
     (A * Aᴴ) * B = 0 ↔ Aᴴ * B = 0 := by
   simpa only [conjTranspose_conjTranspose] using conjTranspose_mul_self_mul_eq_zero Aᴴ _
 
-lemma mul_self_mul_conjTranspose_eq_zero (A : Matrix m n R) (B : Matrix p m R) :
+lemma mul_self_mul_conjTranspose_eq_zero {p} (A : Matrix m n R) (B : Matrix p m R) :
     B * (A * Aᴴ) = 0 ↔ B * A = 0 := by
   rw [← conjTranspose_eq_zero, conjTranspose_mul, conjTranspose_mul, conjTranspose_conjTranspose,
     self_mul_conjTranspose_mul_eq_zero, ← conjTranspose_mul, conjTranspose_eq_zero]
 
-lemma mul_conjTranspose_mul_self_eq_zero (A : Matrix m n R) (B : Matrix p n R) :
+lemma mul_conjTranspose_mul_self_eq_zero {p} (A : Matrix m n R) (B : Matrix p n R) :
     B * (Aᴴ * A) = 0 ↔ B * Aᴴ = 0 := by
   simpa only [conjTranspose_conjTranspose] using mul_self_mul_conjTranspose_eq_zero Aᴴ _
 

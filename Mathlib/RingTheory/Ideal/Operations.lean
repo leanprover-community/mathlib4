@@ -898,19 +898,19 @@ theorem IsPrime.radical_le_iff (hJ : IsPrime J) : I.radical ≤ J ↔ I ≤ J :=
 theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J ∧ IsPrime J } :=
   le_antisymm (le_sInf fun J hJ ↦ hJ.2.radical_le_iff.2 hJ.1) fun r hr ↦
     by_contradiction fun hri ↦
-      let ⟨m, (hrm : r ∉ radical m), him, hm⟩ :=
-        zorn_nonempty_partialOrder₀ { K : Ideal R | r ∉ radical K }
+      let ⟨m, hIm, hm⟩ :=
+        zorn_le_nonempty₀ { K : Ideal R | r ∉ radical K }
           (fun c hc hcc y hyc =>
             ⟨sSup c, fun ⟨n, hrnc⟩ =>
               let ⟨y, hyc, hrny⟩ := (Submodule.mem_sSup_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
               hc hyc ⟨n, hrny⟩,
               fun z => le_sSup⟩)
           I hri
+      have hrm : r ∉ radical m := hm.prop
       have : ∀ x ∉ m, r ∈ radical (m ⊔ span {x}) := fun x hxm =>
-        by_contradiction fun hrmx =>
-          hxm <|
-            hm (m ⊔ span {x}) hrmx le_sup_left ▸
-              (le_sup_right : _ ≤ m ⊔ span {x}) (subset_span <| Set.mem_singleton _)
+        by_contradiction fun hrmx => hxm <| by
+          rw [hm.eq_of_le hrmx le_sup_left]
+          exact Submodule.mem_sup_right <| mem_span_singleton_self x
       have : IsPrime m :=
         ⟨by rintro rfl; rw [radical_top] at hrm; exact hrm trivial, fun {x y} hxym =>
           or_iff_not_imp_left.2 fun hxm =>
@@ -929,7 +929,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
                     m.add_mem (m.mul_mem_right _ hpm)
                     (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
     hrm <|
-      this.radical.symm ▸ (sInf_le ⟨him, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
+      this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
     (⊥ : Ideal R).IsRadical := fun _ hx => hx.recOn fun _ hn => pow_eq_zero hn
