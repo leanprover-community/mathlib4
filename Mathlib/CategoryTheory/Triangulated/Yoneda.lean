@@ -48,7 +48,8 @@ lemma preadditiveYoneda_map_distinguished
 noncomputable instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).ShiftSequence ℤ :=
   Functor.ShiftSequence.tautological _ _
 
-lemma preadditiveCoyoneda_homologySequenceδ_apply {C} [Category C] [Preadditive C] [HasShift C ℤ]
+lemma preadditiveCoyoneda_homologySequenceδ_apply
+    {C : Type*} [Category C] [Preadditive C] [HasShift C ℤ]
     (A : Cᵒᵖ) (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (x : A.unop ⟶ T.obj₃⟦n₀⟧) :
     (preadditiveCoyoneda.obj A).homologySequenceδ T n₀ n₁ h x =
       x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by omega)).inv.app _ := by
