@@ -165,7 +165,7 @@ end inv
 
 variable (R A)
 
-/-- The integral closure of R in an R-algebra A. -/
+/-- The integral closure of `R` in an `R`-algebra `A`. -/
 def integralClosure : Subalgebra R A where
   carrier := { r | IsIntegral R r }
   zero_mem' := isIntegral_zero
