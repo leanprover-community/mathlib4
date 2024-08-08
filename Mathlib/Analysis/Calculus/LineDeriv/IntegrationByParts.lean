@@ -48,7 +48,7 @@ open MeasureTheory Measure FiniteDimensional
 
 variable {E F G W : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
   [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedAddCommGroup W]
-  [NormedSpace ℝ W] [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
+  [NormedSpace ℝ W] [MeasurableSpace E] {μ : Measure E}
 
 lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 [SigmaFinite μ]
     {f f' : E × ℝ → F} {g g' : E × ℝ → G} {B : F →L[ℝ] G →L[ℝ] W}
@@ -71,6 +71,8 @@ lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 [Sig
       convert (hg (x, t)).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t))) (by simp)
         <;> simp
   _ = - ∫ x, B (f' x) (g x) ∂(μ.prod volume) := by rw [integral_neg, integral_prod _ hf'g]
+
+variable [BorelSpace E]
 
 lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux2
     [FiniteDimensional ℝ E] {μ : Measure (E × ℝ)} [IsAddHaarMeasure μ]
