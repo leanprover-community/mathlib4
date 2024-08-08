@@ -260,6 +260,8 @@ theorem t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) :
   · exact h'.2
   · simp [hw]
 
+section
+
 /-- Every cube in the valley must be smaller than it -/
 theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
   apply lt_of_le_of_ne _ (v.2.2 i hi.1)
@@ -507,6 +509,10 @@ noncomputable def sequenceOfCubes : ℕ → { i : ι // Valley cs (cs i).shiftUp
 
 def decreasingSequence (k : ℕ) : ℝ :=
   (cs (sequenceOfCubes h k).1).w
+
+end
+
+variable [Finite ι] [Nontrivial ι]
 
 theorem strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
   strictAnti_nat_of_succ_lt fun k => by
