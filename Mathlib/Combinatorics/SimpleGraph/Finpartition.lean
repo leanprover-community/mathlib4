@@ -22,7 +22,7 @@ of the parts. This specialisation is intended for proving Turán's theorem
 
 * `G.interEdges se`: given the superedge `se : Sym2 P.parts`, returns the finset of all edges of `G`
   under said superedge.
-* `SimpleGraph.card_edgeFinset_eq_sum_interEdges_card`: the superedges partition `G`'s edges.
+* `SimpleGraph.card_edgeFinset_eq_sum_interEdges_card`: the superedges partition the edges of `G`.
 * `SimpleGraph.card_edgeFinset_bipartition`: special case of the above theorem for `P` comprising
   two parts.
 -/
@@ -34,8 +34,8 @@ namespace SimpleGraph
 variable {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
   {P : Finpartition (univ : Finset V)}
 
-/-- The finset of edges whose endpoints lie in the given superedge's endpoint's parts.-/
-def interEdges (se : Sym2 P.parts) : Finset (Sym2 V) :=
+/-- The finset of edges whose endpoints lie in the parts of the endpoint of the given superedge. -/
+def interEdges (se : Sym2 (Finset V)) : Finset (Sym2 V) :=
   G.edgeFinset.filter (fun e ↦ e.map P.part = se.map (↑))
 
 lemma interEdges_self (p : P.parts) :
@@ -90,7 +90,7 @@ lemma card_interEdges_eq_sum_of_ne {p q : P.parts} (h : p ≠ q) :
     aesop
 
 theorem pairwiseDisjoint_interEdges :
-    (Set.univ : Set (Sym2 P.parts)).PairwiseDisjoint G.interEdges := by
+    (P.parts.sym2 : Set (Sym2 P.parts)).PairwiseDisjoint G.interEdges := by
   rintro x - y - hn
   contrapose! hn
   rw [not_disjoint_iff] at hn
