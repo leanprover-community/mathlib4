@@ -18,6 +18,7 @@ components and functors to functions between those sets.
 
 ## Notes
 All this could be made with 2-functors
+
 -/
 
 universe u
@@ -50,10 +51,10 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
 
 private def fnToFctr {X C} (fct : connectedComponents.obj C ⟶ X) : (C ⥤ typeToCat.obj X) where
   obj :=  Discrete.mk ∘ fct ∘ toCC
-  map :=  Discrete.eqToHom ∘ congrArg fct ∘ cc_eq_of_connected
+  map :=  Discrete.eqToHom ∘ congrArg fct ∘ cc_eq_of_hom
 
 private def fctrToFn {X} {C : Cat} (fctr :C ⥤ typeToCat.obj X)  : (connectedComponents.obj C ⟶ X) :=
-  Quotient.lift (s:= Quiver.zigzagSetoid C)
+  Quotient.lift (s:= Zigzag.setoid C)
     (fun c => (fctr.obj c).as)
     (fun _ _ h => eq_of_zigzag X (transportZigzag fctr h))
 
@@ -62,7 +63,7 @@ def isadj_CC_TypeToCat : connectedComponents ⊣ typeToCat where
   homEquiv C X := {
     toFun := fun fct => {
       obj :=  Discrete.mk ∘ fct ∘ toCC
-      map :=  Discrete.eqToHom ∘ congrArg fct ∘ cc_eq_of_connected }
+      map :=  Discrete.eqToHom ∘ congrArg fct ∘ cc_eq_of_hom }
     invFun  := fctrToFn
     left_inv  := fun f =>
       funext
