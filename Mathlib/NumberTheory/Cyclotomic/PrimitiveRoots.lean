@@ -210,7 +210,7 @@ variable {K} [Field K] [NumberField K]
 variable (n) in
 /-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
 `l ∣ 2 * n`. -/
-theorem dvd_of_isCyclotomicExtension [NumberField K] [IsCyclotomicExtension {n} ℚ K] {ζ : K}
+theorem dvd_of_isCyclotomicExtension [IsCyclotomicExtension {n} ℚ K] {ζ : K}
     {l : ℕ} (hζ : IsPrimitiveRoot ζ l) (hl : l ≠ 0) : l ∣ 2 * n := by
   have hl : NeZero l := ⟨hl⟩
   have hroot := IsCyclotomicExtension.zeta_spec n ℚ K
@@ -236,7 +236,7 @@ theorem dvd_of_isCyclotomicExtension [NumberField K] [IsCyclotomicExtension {n} 
 /-- If `x` is a root of unity (spelled as `IsOfFinOrder x`) in an `n`-th cyclotomic extension of
 `ℚ`, where `n` is odd, and `ζ` is a primitive `n`-th root of unity, then there exist `r`
 such that `x = (-ζ)^r`. -/
-theorem exists_neg_pow_of_isOfFinOrder [NumberField K] [IsCyclotomicExtension {n} ℚ K]
+theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd (n : ℕ)) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
     ∃ r : ℕ, x = (-ζ) ^ r :=  by
   have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
@@ -257,7 +257,7 @@ theorem exists_neg_pow_of_isOfFinOrder [NumberField K] [IsCyclotomicExtension {n
 /-- If `x` is a root of unity (spelled as `IsOfFinOrder x`) in an `n`-th cyclotomic extension of
 `ℚ`, where `n` is odd, and `ζ` is a primitive `n`-th root of unity, then there exists `r < n`
 such that `x = ζ^r` or `x = -ζ^r`. -/
-theorem exists_pow_or_neg_mul_pow_of_isOfFinOrder [NumberField K] [IsCyclotomicExtension {n} ℚ K]
+theorem exists_pow_or_neg_mul_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd (n : ℕ)) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
     ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
   obtain ⟨r, hr⟩ := hζ.exists_neg_pow_of_isOfFinOrder hno hx
@@ -269,13 +269,16 @@ end Field
 
 section CommRing
 
-variable [CommRing L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
+variable [CommRing L] {ζ : L}
 variable {K} [Field K] [Algebra K L]
 
 /-- This mathematically trivial result is complementary to `norm_eq_one` below. -/
 theorem norm_eq_neg_one_pow (hζ : IsPrimitiveRoot ζ 2) [IsDomain L] :
     norm K ζ = (-1 : K) ^ finrank K L := by
   rw [hζ.eq_neg_one_of_two_right, show -1 = algebraMap K L (-1) by simp, Algebra.norm_algebraMap]
+
+variable (hζ : IsPrimitiveRoot ζ n)
+include hζ
 
 /-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), the norm of a primitive root is
 `1` if `n ≠ 2`. -/
@@ -314,8 +317,12 @@ end CommRing
 
 section Field
 
-variable [Field L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
+variable [Field L] {ζ : L}
 variable {K} [Field K] [Algebra K L]
+
+section
+variable (hζ : IsPrimitiveRoot ζ n)
+include hζ
 
 /-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the norm of
 `ζ - 1` is `eval 1 (cyclotomic n ℤ)`. -/
@@ -361,6 +368,8 @@ theorem sub_one_norm_isPrimePow (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtensi
         mem_primeFactors_iff_mem_primeFactorsList.2 <|
           (mem_primeFactorsList (IsPrimePow.ne_zero hn)).2 ⟨hprime.out, minFac_dvd _⟩)
   simp [hk, sub_one_norm_eq_eval_cyclotomic hζ this hirr]
+
+end
 
 variable {A}
 
