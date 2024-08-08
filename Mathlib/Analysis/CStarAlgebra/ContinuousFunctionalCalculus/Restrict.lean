@@ -68,8 +68,18 @@ def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
 variable {R S A : Type*} {p q : A → Prop}
 variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
 variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [ContinuousStar S]
-variable [TopologicalSpace A] [Ring A] [StarRing A] [Algebra S A] [ContinuousFunctionalCalculus S q]
+variable [Ring A] [StarRing A] [Algebra S A]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
+
+lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R)}
+    (h : SpectrumRestricts a f) (h_id : φ (.restrict (spectrum S a) <| .id S) = a) :
+    h.starAlgHom φ (.restrict (spectrum R a) <| .id R) = a := by
+  simp only [SpectrumRestricts.starAlgHom_apply]
+  convert h_id
+  ext x
+  exact h.rightInvOn x.2
+
+variable [TopologicalSpace A] [ContinuousFunctionalCalculus S q]
 variable [CompleteSpace R]
 
 lemma closedEmbedding_starAlgHom {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A}
@@ -80,14 +90,6 @@ lemma closedEmbedding_starAlgHom {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A
   hφ.comp <| UniformEmbedding.toClosedEmbedding <| .comp
     (ContinuousMap.uniformEmbedding_comp _ halg)
     (UniformEquiv.arrowCongr h.homeomorph.symm (.refl _) |>.uniformEmbedding)
-
-lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R)}
-    (h : SpectrumRestricts a f) (h_id : φ (.restrict (spectrum S a) <| .id S) = a) :
-    h.starAlgHom φ (.restrict (spectrum R a) <| .id R) = a := by
-  simp only [SpectrumRestricts.starAlgHom_apply]
-  convert h_id
-  ext x
-  exact h.rightInvOn x.2
 
 /-- Given a `ContinuousFunctionalCalculus S q`. If we form the predicate `p` for `a : A`
 characterized by: `q a` and the spectrum of `a` restricts to the scalar subring `R` via
@@ -201,9 +203,19 @@ def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
 variable {R S A : Type*} {p q : A → Prop}
 variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
 variable [Field S] [StarRing S] [MetricSpace S] [TopologicalRing S] [ContinuousStar S]
-variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module S A] [IsScalarTower S A A]
-variable [SMulCommClass S A A] [NonUnitalContinuousFunctionalCalculus S q]
+variable [NonUnitalRing A] [StarRing A] [Module S A] [IsScalarTower S A A]
+variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
+
+lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A} {f : C(S, R)}
+    (h : QuasispectrumRestricts a f) (h_id : φ (.id rfl) = a) :
+    h.nonUnitalStarAlgHom φ (.id rfl) = a := by
+  simp only [QuasispectrumRestricts.nonUnitalStarAlgHom_apply]
+  convert h_id
+  ext x
+  exact h.rightInvOn x.2
+
+variable [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus S q]
 variable [CompleteSpace R]
 
 lemma closedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
@@ -215,14 +227,6 @@ lemma closedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →�
   refine hφ.comp <| UniformEmbedding.toClosedEmbedding <| .comp
     (ContinuousMapZero.uniformEmbedding_comp _ halg)
     (UniformEquiv.arrowCongrLeft₀ h.homeomorph.symm this |>.uniformEmbedding)
-
-lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A} {f : C(S, R)}
-    (h : QuasispectrumRestricts a f) (h_id : φ (.id rfl) = a) :
-    h.nonUnitalStarAlgHom φ (.id rfl) = a := by
-  simp only [QuasispectrumRestricts.nonUnitalStarAlgHom_apply]
-  convert h_id
-  ext x
-  exact h.rightInvOn x.2
 
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 
