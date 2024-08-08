@@ -7,11 +7,11 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
-# Topological space structure on `Mᵈᵐᵃ` and `Mᵃᵐᵃ`
+# Topological space structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
 
 In this file we define `TopologicalSpace` structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
 and prove basic theorems about these topologies.
-The topologies on `Mᵈᵐᵃ` and `Mᵃᵐᵃ` are the same as the topology on `M`.
+The topologies on `Mᵈᵐᵃ` and `Mᵈᵃᵃ` are the same as the topology on `M`.
 Formally, they are induced by `DomMulAct.mk.symm` and `DomAddAct.mk.symm`,
 since the types aren't definitionally equal.
 
