@@ -3075,10 +3075,6 @@ import Mathlib.Marginis.CalvertFranklin2015
 import Mathlib.Marginis.DienerHendtlass2020
 import Mathlib.Marginis.Hrbackek2020
 import Mathlib.Marginis.Swan2016
-import Mathlib.Mathport.Attributes
-import Mathlib.Mathport.Notation
-import Mathlib.Mathport.Rename
-import Mathlib.Mathport.Syntax
 import Mathlib.MeasureTheory.Category.MeasCat
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
