@@ -114,7 +114,6 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
       if (← whnfR (← inferType c)).isEq then
         .proof <$> c.toSyntax
       else
-        let c ← ensureHasType ty c
         .const <$> c.toSyntax
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p

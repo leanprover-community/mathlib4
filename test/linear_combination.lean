@@ -238,7 +238,7 @@ example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
   linear_combination (↑b + 1) * h₁ + ↑r * h₂
 
 -- Implementation at the time of the port (Nov 2022) was 110,000 heartbeats.
--- Eagerly elaborating leaf nodes brings this to 7,618 heartbeats.
+-- Eagerly elaborating leaf nodes brings this to 7,540 heartbeats.
 set_option maxHeartbeats 8000 in
 example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
     (h₀ : 3 * x ^ 2 + z ^ 2 * p = 0)
