@@ -506,7 +506,7 @@ lemma Cotangent.map_id :
 
 variable [Algebra R R''] [IsScalarTower R R' R''] [IsScalarTower R' R'' S'']
   [IsScalarTower R' S' S''] [IsScalarTower S S' S'']
-variable [Algebra R S''] [IsScalarTower R R'' S''] [IsScalarTower R S S'']
+  [Algebra R S''] [IsScalarTower R R'' S''] [IsScalarTower R S S'']
 
 lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
     Cotangent.map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by

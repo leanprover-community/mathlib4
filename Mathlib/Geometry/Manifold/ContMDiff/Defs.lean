@@ -52,15 +52,15 @@ open scoped Topology Manifold
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  -- declare a smooth manifold `M` over the pair `(E, H)`.
+  -- Prerequisite typeclasses to say that `M` is a smooth manifold over the pair `(E, H)`
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  -- declare a smooth manifold `M'` over the pair `(E', H')`.
+  -- Prerequisite typeclasses to say that `M'` is a smooth manifold over the pair `(E', H')`
   {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  -- declare a manifold `M''` over the pair `(E'', H'')`.
+  -- Prerequisite typeclasses to say that `M''` is a smooth manifold over the pair `(E'', H'')`
   {E'' : Type*}
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
@@ -340,7 +340,7 @@ theorem smoothAt_iff_target {x : M} :
     SmoothAt I I' f x ↔ ContinuousAt f x ∧ SmoothAt I 𝓘(𝕜, E') (extChartAt I' (f x) ∘ f) x :=
   contMDiffAt_iff_target
 
-section SMWC
+section SmoothManifoldWithCorners
 
 theorem contMDiffWithinAt_iff_source_of_mem_maximalAtlas
     [SmoothManifoldWithCorners I M] (he : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
@@ -585,7 +585,7 @@ theorem smooth_iff_target :
         ∀ y : M', SmoothOn I 𝓘(𝕜, E') (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) :=
   contMDiff_iff_target
 
-end SMWC
+end SmoothManifoldWithCorners
 
 /-! ### Deducing smoothness from smoothness one step beyond -/
 

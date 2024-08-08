@@ -61,7 +61,7 @@ namespace Functor
 
 variable (F : C ⥤ A)
 
-section CCACA
+section Pretriangulated
 
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C] [Abelian A]
@@ -155,7 +155,7 @@ lemma isHomological_of_localization (L : C ⥤ D)
   obtain ⟨T₀, e, hT₀⟩ := hT
   exact ⟨L.mapTriangle.obj T₀, e, (L ⋙ F).map_distinguished_exact _ hT₀⟩
 
-end CCACA
+end Pretriangulated
 
 section
 
