@@ -6,16 +6,17 @@ package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`relaxedAutoImplicit, false⟩,
-
-    ⟨`weak.Mathlib.Linter.linter.hashCommand, true⟩,
-    ⟨`weak.linter.hashCommand, true⟩
+    ⟨`relaxedAutoImplicit, false⟩
   ]
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
   -- weakLeanArgs := #[]
+  moreServerOptions := #[
+    ⟨`Mathlib.Linter.linter.hashCommand, true⟩,
+    ⟨`linter.hashCommand, true⟩
+  ]
 
 /-!
 ## Mathlib dependencies on upstream projects.
