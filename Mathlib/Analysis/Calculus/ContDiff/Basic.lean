@@ -32,10 +32,9 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-
 noncomputable section
 
-open scoped Classical NNReal Nat
+open scoped NNReal Nat
 
 local notation "∞" => (⊤ : ℕ∞)
 

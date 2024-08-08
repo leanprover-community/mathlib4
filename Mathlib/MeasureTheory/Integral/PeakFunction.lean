@@ -30,7 +30,7 @@ functions are also called approximations of unity, or approximations of identity
   at `0` and integrable.
 
 Note that there are related results about convolution with respect to peak functions in the file
-`Analysis.Convolution`, such as `convolution_tendsto_right` there.
+`Analysis.Convolution`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
@@ -86,8 +86,6 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
 @[deprecated (since := "2024-02-20")]
 alias integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt :=
   integrableOn_peak_smul_of_integrableOn_of_tendsto
-
-variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -181,6 +179,8 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
 @[deprecated (since := "2024-02-20")]
 alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
   tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
+
+variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and

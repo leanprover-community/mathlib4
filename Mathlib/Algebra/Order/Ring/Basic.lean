@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
+import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Basic lemmas about ordered rings
@@ -58,6 +59,7 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
         rw [pow_succ' _ n]
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
 
+@[bound]
 theorem pow_le_one : ∀ n : ℕ, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
   | 0, _, _ => (pow_zero a).le
   | n + 1, h₀, h₁ => (pow_succ a n).le.trans (mul_le_one (pow_le_one n h₀ h₁) h₀ h₁)
@@ -68,6 +70,7 @@ theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → 
     rw [pow_succ']
     exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one _ h₀ h₁.le)
 
+@[bound]
 theorem one_le_pow_of_one_le (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
   | 0 => by rw [pow_zero]
   | n + 1 => by
@@ -86,7 +89,12 @@ theorem pow_le_pow_right (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m := pow_r
 theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m := by
   simpa only [pow_one] using pow_le_pow_right ha <| Nat.pos_iff_ne_zero.2 h
 
-@[mono, gcongr]
+/-- The `bound` tactic can't handle `m ≠ 0` goals yet, so we express as `0 < m` -/
+@[bound]
+lemma Bound.le_self_pow_of_pos {m : ℕ} (ha : 1 ≤ a) (h : 0 < m) : a ≤ a ^ m :=
+  le_self_pow ha h.ne'
+
+@[mono, gcongr, bound]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
   | 0 => by simp
   | n + 1 => by simpa only [pow_succ']
@@ -103,13 +111,21 @@ lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a +
   exact add_le_add (pow_le_pow_left ha (le_add_of_nonneg_right hb) _)
     (pow_le_pow_left hb (le_add_of_nonneg_left ha) _)
 
+/-- `bound` lemma for branching on `1 ≤ a ∨ a ≤ 1` when proving `a ^ n ≤ a ^ m` -/
+@[bound]
+lemma Bound.pow_le_pow_right_of_le_one_or_one_le (h : 1 ≤ a ∧ n ≤ m ∨ 0 ≤ a ∧ a ≤ 1 ∧ m ≤ n) :
+    a ^ n ≤ a ^ m := by
+  rcases h with ⟨a1, nm⟩ | ⟨a0, a1, mn⟩
+  · exact pow_le_pow_right a1 nm
+  · exact pow_le_pow_of_le_one a0 a1 mn
+
 end OrderedSemiring
 
 section StrictOrderedSemiring
 
 variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
 
-@[gcongr]
+@[gcongr, bound]
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n
   | 0, hn => by contradiction
   | n + 1, _ => by
