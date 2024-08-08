@@ -38,6 +38,8 @@ class IsSemireal [AddMonoid R] [Mul R] [One R] [Neg R] : Prop where
   non_trivial        : (0 : R) ≠ 1
   not_isSumSq_neg_one  : ¬IsSumSq (-1 : R)
 
+@[deprecated (since := "2024-08-09")] alias isSemireal := IsSemireal
+
 instance [LinearOrderedField R] : IsSemireal R where
   non_trivial := zero_ne_one
   not_isSumSq_neg_one := fun h ↦ (not_le (α := R)).2 neg_one_lt_zero h.nonneg
