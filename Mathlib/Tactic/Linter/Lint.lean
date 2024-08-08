@@ -228,8 +228,6 @@ The default value for the option is 1500.
 
 open Lean Elab
 
-namespace Mathlib.Linter
-
 /--
 The "longFile" linter emits a warning on declarations whose line number exceeds the value of its
 option.
@@ -262,8 +260,6 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter longFileLinter
 
 end LongFile
-
-end Mathlib.Linter
 
 /-! # The "longLine linter" -/
 
