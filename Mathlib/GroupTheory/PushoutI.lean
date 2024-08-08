@@ -563,7 +563,7 @@ noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
       simp only [prod_smul, prod_empty, mul_one]
     right_inv := fun w => prod_smul_empty w }
 
-theorem prod_injective {ι} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
+theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
     {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
   letI := Classical.decEq ι
   letI := fun i => Classical.decEq (G i)
