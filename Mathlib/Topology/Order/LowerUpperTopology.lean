@@ -320,7 +320,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a 
       by_contra hUS'
       apply hU
       rw [hS2]
-      exact sUnion_eq_univ_iff.mpr (fun a => by use univ; exact ⟨hUS',trivial⟩)
+      exact sUnion_eq_univ_iff.mpr (fun a => ⟨univ, hUS', trivial⟩)
     use sSup {a | (Ici a)ᶜ ∈ S}
     rw [hS2, sUnion_eq_compl_sInter_compl, compl_inj_iff]
     apply le_antisymm
