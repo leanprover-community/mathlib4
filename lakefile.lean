@@ -13,9 +13,15 @@ package mathlib where
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
   -- weakLeanArgs := #[]
+  -- these are the linter options that Mathlib enforces, but that would not be active by default
   moreServerOptions := #[
-    ⟨`Mathlib.Linter.linter.hashCommand, true⟩,
-    ⟨`linter.hashCommand, true⟩
+    ⟨`linter.hashCommand, true⟩,
+    ⟨`linter.missingEnd, true⟩,
+    ⟨`linter.cdot, true⟩,
+    ⟨`linter.longLine, true⟩,
+    ⟨`linter.oldObtain, true,⟩,
+    ⟨`linter.refine, true⟩,
+    ⟨`linter.setOption, true⟩
   ]
 
 /-!
