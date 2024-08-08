@@ -243,19 +243,32 @@ namespace LongFile
 
 @[inherit_doc Mathlib.Linter.linter.longFile]
 def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    let gh := linter.longFile.get (← getOptions)
-    unless gh != 0 do
+    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+    let fileLengthBound := linter.longFile.get (← getOptions)
+    if fileLengthBound == 0 then
       return
     if (← get).messages.hasErrors then
       return
     if let some init := stx.getPos? then
-      let line := ((← getFileMap).toPosition init).line
-      if gh < line then
+      -- the last line: we subtract 1, since the last line is expected to be empty
+      let line := ((← getFileMap).toPosition init).line - 1
+      -- `candidate` is divisible by `100` and satisfies `line + 100 < candidate ≤ line + 200`
+      let candidate := ((line + 200) / 100) * 100
+      if fileLengthBound < line then
         logWarningAt stx <| .tagged linter.longFile.name
-          m!"This command starts on line {line}, but this file can only be {gh} lines long.\n\n\
-          You can extend the default length of the file using `set_option linter.longFile x` \
-          where the value of `x : ℕ` is the new file limit.\n\n\
-          You can disable completely this linter by setting the length limit to `0`."
+          m!"This file is {line} lines long, but the limit is {fileLengthBound}.\n\n\
+            You can extend the default length of the file using \
+            `set_option linter.longFile {candidate}`.\n\
+            You can disable completely this linter by setting the length limit to `0`."
+      else
+      let candidate := max candidate 1500
+      if 1500 < fileLengthBound && fileLengthBound != candidate then
+        logWarningAt stx <| .tagged linter.longFile.name
+          m!"The recommended limit for the number of lines is {candidate}, \
+            instead of {fileLengthBound}.\n\n
+            Please adjust the limit to the recommended value using \
+            `set_option linter.longFile {candidate}`.\n\
+            You can disable completely this linter by setting the length limit to `0`."
 
 initialize addLinter longFileLinter
 
