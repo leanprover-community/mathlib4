@@ -54,6 +54,8 @@ measurable functions, as a basis for the Bochner integral.
 
 -/
 
+set_option linter.longFile 2000
+
 
 open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 

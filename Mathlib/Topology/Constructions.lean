@@ -30,6 +30,8 @@ product, sum, disjoint union, subspace, quotient space
 
 -/
 
+set_option linter.longFile 1700
+
 noncomputable section
 
 open Topology TopologicalSpace Set Filter Function

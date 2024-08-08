@@ -48,6 +48,8 @@ but we reference them here because all theorems about set integrals are in this 
 
 -/
 
+set_option linter.longFile 1700
+
 
 assert_not_exists InnerProductSpace
 

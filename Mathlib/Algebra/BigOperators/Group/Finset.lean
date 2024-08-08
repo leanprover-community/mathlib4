@@ -35,6 +35,8 @@ See the documentation of `to_additive.attr` for more information.
 
 -/
 
+set_option linter.longFile 2400
+
 -- TODO
 -- assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero

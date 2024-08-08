@@ -141,6 +141,8 @@ Bochner integral, simple function, function space, Lebesgue dominated convergenc
 
 -/
 
+set_option linter.longFile 2100
+
 
 assert_not_exists Differentiable
 

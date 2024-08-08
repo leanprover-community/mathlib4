@@ -91,6 +91,8 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
     splitting of `V₁`.
 -/
 
+set_option linter.longFile 1900
+
 noncomputable section
 
 namespace Module

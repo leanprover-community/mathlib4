@@ -30,6 +30,8 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 -/
 
+set_option linter.longFile 2200
+
 assert_not_exists NormedSpace
 
 noncomputable section

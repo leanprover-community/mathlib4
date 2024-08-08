@@ -52,6 +52,8 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
+set_option linter.longFile 2100
+
 open Function Set
 
 universe u

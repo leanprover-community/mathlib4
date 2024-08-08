@@ -18,6 +18,8 @@ import Mathlib.Order.Nat
 # Lattice operations on finsets
 -/
 
+set_option linter.longFile 2100
+
 -- TODO:
 -- assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidWithZero

@@ -43,6 +43,8 @@ spans can be proved directly.
 - [scholze2019condensed], Theorem 5.4.
 -/
 
+set_option linter.longFile 2000
+
 universe u
 
 namespace Profinite

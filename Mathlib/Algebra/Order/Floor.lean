@@ -54,6 +54,8 @@ many lemmas.
 rounding, floor, ceil
 -/
 
+set_option linter.longFile 1700
+
 
 open Set
 

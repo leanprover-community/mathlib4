@@ -44,6 +44,8 @@ As this had no pay-off (everything about limits is non-constructive in mathlib),
 we made everything classical.
 -/
 
+set_option linter.longFile 2100
+
 noncomputable section
 
 universe w w' v u

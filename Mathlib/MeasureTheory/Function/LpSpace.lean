@@ -65,6 +65,8 @@ of the coercions of `f` and `g`. All such lemmas use `coeFn` in their name, to d
 function coercion from the coercion to almost everywhere defined functions.
 -/
 
+set_option linter.longFile 2100
+
 
 noncomputable section
 

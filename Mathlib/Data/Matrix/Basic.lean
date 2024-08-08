@@ -47,6 +47,8 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
+set_option linter.longFile 2700
+
 
 universe u u' v w
 

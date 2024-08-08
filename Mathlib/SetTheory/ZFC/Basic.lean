@@ -57,6 +57,8 @@ respectively as "`Set`" and "ZFC set".
 Prove `ZFSet.mapDefinableAux` computably.
 -/
 
+set_option linter.longFile 1700
+
 
 universe u v
 

@@ -66,6 +66,8 @@ ordered map, ordered set, data structure, verified programming
 
 -/
 
+set_option linter.longFile 1700
+
 
 variable {α : Type*}
 

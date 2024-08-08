@@ -81,6 +81,8 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
+set_option linter.longFile 3000
+
 assert_not_exists OrderedAddCommMonoid
 
 open Function

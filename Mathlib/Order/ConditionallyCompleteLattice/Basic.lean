@@ -29,6 +29,8 @@ while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
 
+set_option linter.longFile 1700
+
 
 open Function OrderDual Set
 

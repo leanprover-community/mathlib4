@@ -139,6 +139,8 @@ instances could be added when needed (in that case, one also needs to add instan
 integral, fundamental theorem of calculus, FTC-1, FTC-2, change of variables in integrals
 -/
 
+set_option linter.longFile 1800
+
 noncomputable section
 
 open scoped Classical

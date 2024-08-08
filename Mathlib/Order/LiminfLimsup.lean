@@ -34,6 +34,8 @@ the definitions of Limsup and Liminf.
 In complete lattices, however, it coincides with the `Inf Sup` definition.
 -/
 
+set_option linter.longFile 1900
+
 open Filter Set Function
 
 variable {α β γ ι ι' : Type*}

@@ -95,6 +95,8 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
 -/
 
+set_option linter.longFile 1900
+
 namespace SetTheory
 
 open Function Relation

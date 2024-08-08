@@ -40,6 +40,8 @@ instances since they do not compute anything.
 finite sets
 -/
 
+set_option linter.longFile 1700
+
 assert_not_exists OrderedRing
 assert_not_exists MonoidWithZero
 

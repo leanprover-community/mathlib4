@@ -44,6 +44,8 @@ it suffices to assume that `f` is zero wherever `g` is. (This generalization is 
 the Fréchet derivative.)
 -/
 
+set_option linter.longFile 2100
+
 
 open Filter Set
 

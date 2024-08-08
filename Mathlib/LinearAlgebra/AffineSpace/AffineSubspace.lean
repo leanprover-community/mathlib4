@@ -43,6 +43,8 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and `Topolo
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
 
+set_option linter.longFile 1800
+
 noncomputable section
 
 open Affine

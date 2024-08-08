@@ -14,6 +14,8 @@ import Mathlib.Topology.Order.T5
 # Topology on extended non-negative reals
 -/
 
+set_option linter.longFile 1700
+
 noncomputable section
 
 open Set Filter Metric Function

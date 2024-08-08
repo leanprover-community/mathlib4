@@ -46,6 +46,8 @@ the `Add` instance as noncomputable. This design difference is independent of th
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
 
+set_option linter.longFile 2200
+
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 

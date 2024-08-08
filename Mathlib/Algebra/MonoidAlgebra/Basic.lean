@@ -49,6 +49,8 @@ Similarly, I attempted to just define
 `Multiplicative G = G` leaks through everywhere, and seems impossible to use.
 -/
 
+set_option linter.longFile 2100
+
 
 noncomputable section
 

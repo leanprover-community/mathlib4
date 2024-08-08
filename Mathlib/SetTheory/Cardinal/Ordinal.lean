@@ -43,6 +43,8 @@ using ordinals.
 cardinal arithmetic (for infinite cardinals)
 -/
 
+set_option linter.longFile 1700
+
 
 noncomputable section
 

@@ -18,6 +18,8 @@ import Batteries.Data.List.Perm
 # Basic properties of lists
 -/
 
+set_option linter.longFile 2900
+
 assert_not_exists Set.range
 assert_not_exists GroupWithZero
 assert_not_exists Ring

@@ -113,6 +113,8 @@ The formalization uses the books:
 But it makes a more systematic use of the filter library.
 -/
 
+set_option linter.longFile 1900
+
 open Set Filter Topology
 
 universe u v ua ub uc ud

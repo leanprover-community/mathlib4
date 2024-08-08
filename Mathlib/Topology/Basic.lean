@@ -45,6 +45,8 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 topological space, interior, closure, frontier, neighborhood, continuity, continuous function
 -/
 
+set_option linter.longFile 1900
+
 noncomputable section
 
 open Set Filter

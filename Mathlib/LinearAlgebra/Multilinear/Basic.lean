@@ -72,6 +72,8 @@ something similar, but of the form `Fin.decidableEq n = _inst`, which is much ea
 since `_inst` is a free variable and so the equality can just be substituted.
 -/
 
+set_option linter.longFile 1900
+
 
 open Function Fin Set
 

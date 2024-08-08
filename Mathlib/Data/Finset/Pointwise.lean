@@ -53,6 +53,8 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
+set_option linter.longFile 2200
+
 
 open Function MulOpposite
 

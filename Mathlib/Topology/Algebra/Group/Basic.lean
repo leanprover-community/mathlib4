@@ -32,6 +32,8 @@ groups.
 topological space, group, topological group
 -/
 
+set_option linter.longFile 2100
+
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
 universe u v w x

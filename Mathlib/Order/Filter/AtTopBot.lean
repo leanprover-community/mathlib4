@@ -27,6 +27,8 @@ In this file we define the filters
 Then we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 -/
 
+set_option linter.longFile 2000
+
 variable {ι ι' α β γ : Type*}
 
 open Set

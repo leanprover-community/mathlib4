@@ -38,6 +38,8 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
+set_option linter.longFile 1900
+
 
 noncomputable section
 

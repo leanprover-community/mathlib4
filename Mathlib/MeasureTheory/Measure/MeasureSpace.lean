@@ -77,6 +77,8 @@ The measure is denoted `volume`.
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
 
+set_option linter.longFile 2200
+
 noncomputable section
 
 open Set

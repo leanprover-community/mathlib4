@@ -17,6 +17,8 @@ These are implemented as the quotient of a list by permutations.
 We define the global infix notation `::ₘ` for `Multiset.cons`.
 -/
 
+set_option linter.longFile 2900
+
 universe v
 
 open List Subtype Nat Function

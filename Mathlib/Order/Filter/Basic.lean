@@ -75,6 +75,8 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `[NeBot f]` in a number of lemmas and definitions.
 -/
 
+set_option linter.longFile 3000
+
 assert_not_exists OrderedSemiring
 
 open Function Set Order

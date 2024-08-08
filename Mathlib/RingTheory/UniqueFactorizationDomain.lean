@@ -25,6 +25,8 @@ import Mathlib.RingTheory.Multiplicity
 
 -/
 
+set_option linter.longFile 2100
+
 
 variable {α : Type*}
 

@@ -67,6 +67,8 @@ The starting object `T : Set α → E →L[ℝ] F` matters only through its rest
 with finite measure. Its value on other sets is ignored.
 -/
 
+set_option linter.longFile 1800
+
 
 noncomputable section
 

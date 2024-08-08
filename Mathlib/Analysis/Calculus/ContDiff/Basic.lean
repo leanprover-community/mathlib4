@@ -32,6 +32,8 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
+set_option linter.longFile 2100
+
 noncomputable section
 
 open scoped NNReal Nat

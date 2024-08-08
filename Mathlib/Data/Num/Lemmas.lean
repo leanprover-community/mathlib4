@@ -14,6 +14,8 @@ import Mathlib.Data.Num.Bitwise
 # Properties of the binary representation of integers
 -/
 
+set_option linter.longFile 1700
+
 -- Porting note: Required for the notation `-[n+1]`.
 open Int Function
 

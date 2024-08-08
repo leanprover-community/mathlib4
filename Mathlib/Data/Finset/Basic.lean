@@ -115,6 +115,8 @@ finite sets, finset
 
 -/
 
+set_option linter.longFile 3100
+
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen
