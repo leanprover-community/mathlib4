@@ -815,7 +815,7 @@ protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTo
 
 /-- Let `μ` be a locally finite measure on an R₁ topological space with Borel σ-algebra.
 If `μ` is inner regular for finite measure sets with respect to compact sets,
-then any finite measurable set can be approximated in measure by an open set.
+then any measurable set of finite measure can be approximated in measure by an open set.
 See also `Set.exists_isOpen_lt_of_lt` and `MeasurableSet.exists_isOpen_diff_lt`
 for the case of an outer regular measure. -/
 protected theorem _root_.MeasurableSet.exists_isOpen_symmDiff_lt [InnerRegularCompactLTTop μ]
@@ -834,6 +834,20 @@ protected theorem _root_.MeasurableSet.exists_isOpen_symmDiff_lt [InnerRegularCo
         apply measure_diff_lt_of_lt_add hKcl.measurableSet hKU _ hμU
         exact ne_top_of_le_ne_top hμs (by gcongr)
   · exact lt_of_le_of_lt (by gcongr) hμK
+
+/-- Let `μ` be a locally finite measure on an R₁ topological space with Borel σ-algebra.
+If `μ` is inner regular for finite measure sets with respect to compact sets,
+then any null measurable set of finite measure can be approximated in measure by an open set.
+See also `Set.exists_isOpen_lt_of_lt` and `MeasurableSet.exists_isOpen_diff_lt`
+for the case of an outer regular measure. -/
+protected theorem _root_.MeasureTheory.NullMeasurableSet.exists_isOpen_symmDiff_lt
+    [InnerRegularCompactLTTop μ] [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α]
+    {s : Set α} (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ U, IsOpen U ∧ μ U < ∞ ∧ μ (U ∆ s) < ε := by
+  rcases hs with ⟨t, htm, hst⟩
+  rcases htm.exists_isOpen_symmDiff_lt (by rwa [← measure_congr hst]) hε with ⟨U, hUo, hμU, hUs⟩
+  refine ⟨U, hUo, hμU, ?_⟩
+  rwa [measure_congr <| (ae_eq_refl _).symmDiff hst]
 
 instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
   by_cases hc : c = 0
