@@ -512,7 +512,7 @@ lemma span_eq_toSubmodule (s : NonUnitalSubalgebra R A) :
 variable [NonUnitalNonAssocSemiring B] [Module R B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 
-section RAA
+section IsScalarTower
 
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 
@@ -814,7 +814,7 @@ theorem comap_top [IsScalarTower R B B] [SMulCommClass R B B]
 def toTop : A →ₙₐ[R] (⊤ : NonUnitalSubalgebra R A) :=
   NonUnitalAlgHom.codRestrict (NonUnitalAlgHom.id R A) ⊤ fun _ => mem_top
 
-end RAA
+end IsScalarTower
 
 theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B) :
     NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
