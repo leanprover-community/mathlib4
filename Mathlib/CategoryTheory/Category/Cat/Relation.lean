@@ -43,17 +43,17 @@ def cc_eq_of_connected (f : a ⟶ b) : toCC a = toCC b :=
   (.intro ∘ Hom.toPath ∘ Sum.inl) f |> .rel _ _ |> Quot.EqvGen_sound
 
 /-- Functors transport zigzag in the domain category to zigzags in the codomain category -/
-lemma transportZigzag : zigzagSetoidC.r a b → zigzagSetoidC.r (F.obj a) (F.obj b)
-  | ⟨p⟩ => p.rec (⟨Quiver.Path.nil⟩)
-      (fun _ f pd' ↦ pd'.elim (fun pd ↦
-        f.elim
-          (fun f ↦ ⟨Quiver.Path.cons pd (.inl (F.map f))⟩)
-          (fun f ↦ ⟨Quiver.Path.cons pd (.inr (F.map f))⟩)))
+lemma transportZigzag (nep : zigzagSetoidC.r a b) : zigzagSetoidC.r (F.obj a) (F.obj b) :=
+  nep.elim (fun p => p.rec (⟨Quiver.Path.nil⟩)
+    (fun _ f pd' ↦ pd'.elim (fun pd ↦
+      f.elim
+        (fun f ↦ ⟨Quiver.Path.cons pd (.inl (F.map f))⟩)
+        (fun f ↦ ⟨Quiver.Path.cons pd (.inr (F.map f))⟩))))
 
 /-- A zigzag in the discrete category entails an equality of its extremities -/
-def eq_of_zigzag (X) {a b : typeToCat.obj X }  : (h : zigzagSetoidC.r a b) → a.as = b.as
-| ⟨p⟩ => p.rec rfl
-    (fun _ bc abeq => abeq.trans (bc.elim (Discrete.eq_of_hom) (Eq.symm ∘ Discrete.eq_of_hom)))
+def eq_of_zigzag (X) {a b : typeToCat.obj X }   (nep : zigzagSetoidC.r a b) : a.as = b.as :=
+  nep.elim (fun p => p.rec rfl
+    (fun _ bc abeq => abeq.trans (bc.elim (Discrete.eq_of_hom) (Eq.symm ∘ Discrete.eq_of_hom))))
 
 /-- fmap transports a functor to a function beetwen CC -/
 private def ccfmap : (WeaklyConnectedComponent C) → (WeaklyConnectedComponent D) :=
@@ -62,7 +62,7 @@ private def ccfmap : (WeaklyConnectedComponent C) → (WeaklyConnectedComponent 
     (Quotient.mk zigzagSetoidC ∘ F.obj)
     (fun _ _ ↦ Quot.sound ∘ transportZigzag F)
 
-private abbrev liftedMk {α} (s : Setoid α) :=
+private abbrev liftedMk {α} (s : Setoid α) : Quotient s → Quotient s :=
   Quotient.lift (Quotient.mk s) (fun _ _ ↦ Quotient.sound)
 
 /- The connected components functor -/
