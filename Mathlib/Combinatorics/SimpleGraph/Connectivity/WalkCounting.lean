@@ -222,7 +222,6 @@ lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔
       (OrderTop.le_top G)]
     simp [ConnectedComponent.top_supp_eq_univ]
 
-
 end Finite
 
 end WalkCounting
