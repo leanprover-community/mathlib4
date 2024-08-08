@@ -12,7 +12,8 @@ A rudimentary export format, adapted from
 with support for lean 4 kernel primitives.
 -/
 
-open Lean (HashMap HashSet)
+open Lean
+open Std (HashMap HashSet)
 
 namespace Lean
 
@@ -75,7 +76,7 @@ def alloc {α} [BEq α] [Hashable α] [OfState α] (a : α) : ExportM Nat := do
   pure n
 
 def exportName (n : Name) : ExportM Nat := do
-  match (← get).names.map.find? n with
+  match (← get).names.map[n]? with
   | some i => pure i
   | none => match n with
     | .anonymous => pure 0
@@ -83,7 +84,7 @@ def exportName (n : Name) : ExportM Nat := do
     | .str p s => let i ← alloc n; IO.println s!"{i} #NS {← exportName p} {s}"; pure i
 
 def exportLevel (L : Level) : ExportM Nat := do
-  match (← get).levels.map.find? L with
+  match (← get).levels.map[L]? with
   | some i => pure i
   | none => match L with
     | .zero => pure 0
@@ -107,7 +108,7 @@ open ConstantInfo in
 mutual
 
 partial def exportExpr (E : Expr) : ExportM Nat := do
-  match (← get).exprs.map.find? E with
+  match (← get).exprs.map[E]? with
   | some i => pure i
   | none => match E with
     | .bvar n => let i ← alloc E; IO.println s!"{i} #EV {n}"; pure i

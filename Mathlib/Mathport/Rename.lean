@@ -18,7 +18,8 @@ namespace Mathlib.Prelude.Rename
 
 open Lean
 open System (FilePath)
-open Lean (HashMap)
+open Lean
+open Std (HashMap)
 
 /-- This structure keeps track of alignments from lean 3 names to lean 4 names and vice versa. -/
 structure RenameMap where

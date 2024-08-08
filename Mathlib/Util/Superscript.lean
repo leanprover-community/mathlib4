@@ -28,7 +28,7 @@ universe u
 
 namespace Mathlib.Tactic
 
-open Lean Parser PrettyPrinter
+open Lean Parser PrettyPrinter Std
 
 namespace Superscript
 
@@ -127,7 +127,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
       let mut pos := start
       while pos < stopTk do
         let c := input.get pos
-        let c' := m.toNormal.find! c
+        let c' := m.toNormal[c]!
         newStr := newStr.push c'
         pos := pos + c
         if c.utf8Size != c'.utf8Size then
@@ -212,7 +212,7 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   Formatter.node.formatter k p
   let st ← get
   let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
-    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').find? | .error s
+    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
     .ok ⟨s⟩)
   match transformed with
   | .error err =>
