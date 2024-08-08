@@ -38,6 +38,7 @@ variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} (μ : Measure α) (f
 
 section Layercake
 
+include f_nn f_mble p_pos in
 /-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
@@ -73,6 +74,7 @@ end Layercake
 
 section LayercakeLT
 
+include f_nn f_mble p_pos in
 /-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
