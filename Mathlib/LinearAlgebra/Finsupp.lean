@@ -120,7 +120,7 @@ theorem LinearEquiv.finsuppUnique_apply (f : α →₀ M) :
 variable {α}
 
 @[simp]
-theorem LinearEquiv.finsuppUnique_symm_apply [Unique α] (m : M) :
+theorem LinearEquiv.finsuppUnique_symm_apply (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
   ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
     equivFunOnFinite, Function.update]
@@ -1306,8 +1306,10 @@ end LinearMap
 
 namespace Submodule
 
-variable {S : Type*} [Semiring S] [Module R S] [SMulCommClass R R S] [SMulCommClass R S S]
-  [IsScalarTower R S S]
+variable {S : Type*} [Semiring S] [Module R S] [SMulCommClass R R S]
+
+section
+variable [SMulCommClass R S S]
 
 /-- If `M` and `N` are submodules of an `R`-algebra `S`, `m : ι → M` is a family of elements, then
 there is an `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }` to the sum of `m_i * n_i`.
@@ -1323,6 +1325,10 @@ theorem mulLeftMap_apply_single {M N : Submodule R S} {ι : Type*} (m : ι → M
     mulLeftMap N m (Finsupp.single i n) = (m i).1 * n.1 := by
   simp [mulLeftMap]
 
+end
+
+variable [IsScalarTower R S S]
+
 /-- If `M` and `N` are submodules of an `R`-algebra `S`, `n : ι → N` is a family of elements, then
 there is an `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }` to the sum of `m_i * n_i`.
 This is used in the definition of linearly disjointness. -/
@@ -1337,7 +1343,7 @@ theorem mulRightMap_apply_single {M N : Submodule R S} {ι : Type*} (n : ι → 
     mulRightMap M n (Finsupp.single i m) = m.1 * (n i).1 := by
   simp [mulRightMap]
 
-theorem mulLeftMap_eq_mulRightMap_of_commute
+theorem mulLeftMap_eq_mulRightMap_of_commute [SMulCommClass R S S]
     {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M)
     (hc : ∀ (i : ι) (n : N), Commute (m i).1 n.1) : mulLeftMap N m = mulRightMap N m := by
   ext i n; simp [(hc i n).eq]

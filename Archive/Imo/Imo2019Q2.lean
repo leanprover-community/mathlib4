@@ -66,7 +66,7 @@ attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
 variable (V : Type*) (Pt : Type*)
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
-variable [NormedAddTorsor V Pt] [hd2 : Fact (finrank ℝ V = 2)]
+variable [NormedAddTorsor V Pt]
 
 namespace Imo2019Q2
 
@@ -96,7 +96,7 @@ structure Imo2019q2Cfg where
   C_ne_Q₁ : C ≠ Q₁
 
 /-- A default choice of orientation, for lemmas that need to pick one. -/
-def someOrientation : Module.Oriented ℝ V (Fin 2) :=
+def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
   ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
 
 variable {V Pt}
@@ -249,7 +249,7 @@ section Oriented
 
 variable [Module.Oriented ℝ V (Fin 2)]
 
-theorem oangle_CQ₁Q_sign_eq_oangle_CBA_sign :
+theorem oangle_CQ₁Q_sign_eq_oangle_CBA_sign [Fact (finrank ℝ V = 2)] :
     (∡ cfg.C cfg.Q₁ cfg.Q).sign = (∡ cfg.C cfg.B cfg.A).sign := by
   rw [← cfg.sbtw_Q_A₁_Q₁.symm.oangle_eq_right,
     cfg.sOppSide_CB_Q_Q₁.oangle_sign_eq_neg (left_mem_affineSpan_pair ℝ cfg.C cfg.B)
@@ -259,7 +259,8 @@ theorem oangle_CQ₁Q_sign_eq_oangle_CBA_sign :
     cfg.wbtw_B_Q_B₁.oangle_eq_right cfg.Q_ne_B,
     cfg.wbtw_A_B₁_C.symm.oangle_sign_eq_of_ne_left cfg.B cfg.B₁_ne_C.symm]
 
-theorem oangle_CQ₁Q_eq_oangle_CBA : ∡ cfg.C cfg.Q₁ cfg.Q = ∡ cfg.C cfg.B cfg.A :=
+theorem oangle_CQ₁Q_eq_oangle_CBA [Fact (finrank ℝ V = 2)] :
+    ∡ cfg.C cfg.Q₁ cfg.Q = ∡ cfg.C cfg.B cfg.A :=
   oangle_eq_of_angle_eq_of_sign_eq cfg.angle_CQ₁Q_eq_angle_CBA
     cfg.oangle_CQ₁Q_sign_eq_oangle_CBA_sign
 
@@ -267,6 +268,9 @@ end Oriented
 
 /-! ### More obvious configuration properties -/
 
+section
+
+variable [hd2 : Fact (finrank ℝ V = 2)]
 
 theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
   intro h
@@ -568,6 +572,8 @@ theorem result : Concyclic ({cfg.P, cfg.Q, cfg.P₁, cfg.Q₁} : Set Pt) := by
   simp only [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨cfg.P_mem_ω, cfg.Q_mem_ω, cfg.P₁_mem_ω, cfg.Q₁_mem_ω⟩
 
+end
+
 end Imo2019q2Cfg
 
 end
@@ -576,7 +582,7 @@ end Imo2019Q2
 
 open Imo2019Q2
 
-theorem imo2019_q2 (A B C A₁ B₁ P Q P₁ Q₁ : Pt)
+theorem imo2019_q2 [Fact (finrank ℝ V = 2)] (A B C A₁ B₁ P Q P₁ Q₁ : Pt)
     (affine_independent_ABC : AffineIndependent ℝ ![A, B, C]) (wbtw_B_A₁_C : Wbtw ℝ B A₁ C)
     (wbtw_A_B₁_C : Wbtw ℝ A B₁ C) (wbtw_A_P_A₁ : Wbtw ℝ A P A₁) (wbtw_B_Q_B₁ : Wbtw ℝ B Q B₁)
     (PQ_parallel_AB : line[ℝ, P, Q] ∥ line[ℝ, A, B]) (P_ne_Q : P ≠ Q)

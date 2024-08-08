@@ -43,6 +43,6 @@ warning: declaration uses 'sorry'
 info: 1
 -/
 #guard_msgs in
-#eval @legendreSym (2 ^ 11213 - 1) sorry 7
+#eval! @legendreSym (2 ^ 11213 - 1) sorry 7
 
 end Csimp
