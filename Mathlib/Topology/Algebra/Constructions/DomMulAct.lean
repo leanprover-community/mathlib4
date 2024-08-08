@@ -95,6 +95,19 @@ instance instFirstCountableTopology [FirstCountableTopology M] : FirstCountableT
 instance instSecondCountableTopology [SecondCountableTopology M] : SecondCountableTopology Mᵈᵐᵃ :=
   inducing_mk_symm.secondCountableTopology
 
+@[to_additive]
+instance instCompactSpace [CompactSpace M] : CompactSpace Mᵈᵐᵃ :=
+  mkHomeomorph.compactSpace
+
+@[to_additive]
+instance instLocallyCompactSpace [LocallyCompactSpace M] : LocallyCompactSpace Mᵈᵐᵃ :=
+  openEmbedding_mk_symm.locallyCompactSpace
+
+@[to_additive]
+instance instWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace M] :
+    WeaklyLocallyCompactSpace Mᵈᵐᵃ :=
+  closedEmbedding_mk_symm.weaklyLocallyCompactSpace
+
 @[to_additive (attr := simp)]
 theorem map_mk_nhds (x : M) : map (mk : M → Mᵈᵐᵃ) (𝓝 x) = 𝓝 (mk x) :=
   mkHomeomorph.map_nhds_eq x
