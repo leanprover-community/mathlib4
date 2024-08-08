@@ -196,8 +196,6 @@
   "Mathlib.Topology.Order.LeftRightNhds": ["Mathlib.Data.Set.Pointwise.Basic"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
-  "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
-  ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
@@ -281,18 +279,16 @@
    "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
   "Mathlib.Tactic.CC.Addition":
   ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
-  "Mathlib.Tactic.Basic": ["Mathlib.Tactic.Linter.OldObtain"],
+  "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
+  "Mathlib.Tactic.Bound.Attribute":
+  ["Mathlib.Algebra.Group.ZeroOne", "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Bound":
-  ["Mathlib.Analysis.Analytic.Basic",
-   "Mathlib.Algebra.Order.AbsoluteValue",
+  ["Mathlib.Algebra.Order.AbsoluteValue",
    "Mathlib.Algebra.Order.BigOperators.Group.Finset",
    "Mathlib.Algebra.Order.Floor",
-   "Mathlib.Tactic.Bound.Attribute",
+   "Mathlib.Analysis.Analytic.Basic",
    "Mathlib.Tactic.Bound.Init"],
-  "Mathlib.Tactic.Bound.Attribute":
-  ["Mathlib.Algebra.Group.ZeroOne",
-  "Mathlib.Tactic.Bound.Init"],
-  "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
+  "Mathlib.Tactic.Basic": ["Mathlib.Tactic.Linter.OldObtain"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.PowerSeries.Basic":
@@ -300,6 +296,7 @@
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
+  "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
   "Mathlib.Probability.Notation":
   ["Mathlib.MeasureTheory.Decomposition.Lebesgue",
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
@@ -366,12 +363,15 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
-  "Mathlib.Analysis.Normed.Operator.LinearIsometry": ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Analysis.Normed.Operator.LinearIsometry":
+  ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.InnerProductSpace.Basic":
   ["Mathlib.Algebra.Module.LinearMap.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.Analysis.Convex.Basic":
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
+  "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
+  ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
