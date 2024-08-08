@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
 import Mathlib.Topology.GDelta
+import Mathlib.Topology.LocallyClosed
 import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
@@ -130,8 +131,9 @@ theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h 
   · rintro s - ⟨u, uo, su⟩
     refine ⟨(closure u)ᶜ, isClosed_closure.isOpen_compl,
       EventuallyEq.compl (su.trans $ EventuallyLE.antisymm subset_closure.eventuallyLE ?_)⟩
-    have : (u ∪ (closure u)ᶜ) ∈ residual _ :=
-      residual_of_dense_open (uo.union isClosed_closure.isOpen_compl) union_compl_closure_dense
+    have : (coborder u) ∈ residual _ :=
+      residual_of_dense_open uo.isLocallyClosed.isOpen_coborder dense_coborder
+    rw[coborder_eq_union_closure_compl] at this
     rw[EventuallyLE]
     convert this
     simp only [le_Prop_eq, imp_iff_or_not]
@@ -154,28 +156,28 @@ open Set
 
 variable {f : α → β}
 
-theorem residual_map_le_of_isOpenMap (hc : Continuous f) (ho : IsOpenMap f) :
+theorem tendsto_residual_of_isOpenMap (hc : Continuous f) (ho : IsOpenMap f) :
     Tendsto f (residual α) (residual β) := by
   apply le_countableGenerate_iff_of_countableInterFilter.mpr
   rintro t ⟨ht, htd⟩
-  exact residual_of_dense_open (ht.preimage hc) (htd.dense_preimage_of_isOpenMap ho hc)
+  exact residual_of_dense_open (ht.preimage hc) (htd.preimage ho)
 
 /-- The preimage of a meager set under a continuous open map is meager. -/
 theorem IsMeagre.preimage_of_isOpenMap (hc : Continuous f) (ho : IsOpenMap f)
     {s : Set β} (h : IsMeagre s) : IsMeagre (f ⁻¹' s) :=
-  residual_map_le_of_isOpenMap hc ho h
+  tendsto_residual_of_isOpenMap hc ho h
 
 /-- The preimage of a `BaireMeasurableSet` under a continuous open map is Baire measurable. -/
 theorem BaireMeasurableSet.preimage (hc : Continuous f) (ho : IsOpenMap f)
     {s : Set β} (h : BaireMeasurableSet s) : BaireMeasurableSet (f⁻¹' s) := by
   rcases h with ⟨u, hu, hsu⟩
-  refine ⟨f ⁻¹' u, ?_, hsu.filter_mono <| residual_map_le_of_isOpenMap hc ho⟩
+  refine ⟨f ⁻¹' u, ?_, hsu.filter_mono <| tendsto_residual_of_isOpenMap hc ho⟩
   borelize α β
   exact hc.measurable hu
 
 theorem Homeomorph.residual_map_eq (h : α ≃ₜ β) : (residual α).map h = residual β := by
-  refine le_antisymm (residual_map_le_of_isOpenMap h.continuous h.isOpenMap) (le_map ?_)
+  refine le_antisymm (tendsto_residual_of_isOpenMap h.continuous h.isOpenMap) (le_map ?_)
   simp_rw[← preimage_symm]
-  exact residual_map_le_of_isOpenMap h.symm.continuous h.symm.isOpenMap
+  exact tendsto_residual_of_isOpenMap h.symm.continuous h.symm.isOpenMap
 
 end Map

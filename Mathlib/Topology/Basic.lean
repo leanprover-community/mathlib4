@@ -1229,10 +1229,16 @@ theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
   let ⟨U, hsub, ho, hx⟩ := mem_nhds_iff.1 ht
   (hs.inter_open_nonempty U ho ⟨x, hx⟩).mono fun _y hy => ⟨hy.2, hsub hy.1⟩
 
-/-- The union of a set and the complement of its closure is a dense set. -/
-theorem union_compl_closure_dense {s : Set X} :
-    Dense (s ∪ (closure s)ᶜ) := by
-  rw [dense_iff_closure_eq, closure_union, ← univ_subset_iff]
+--Move to Topology.LocallyClosed?
+theorem coborder_eq_union_closure_compl {s : Set X} : coborder s = s ∪ (closure s)ᶜ := by
+  rw [coborder, compl_eq_comm, compl_union, compl_compl, inter_comm]
+  rfl
+
+--Move to Toplogy.LocallyClosed?
+/-- The coborder of any set is dense -/
+theorem dense_coborder {s : Set X} :
+    Dense (coborder s) := by
+  rw [dense_iff_closure_eq, coborder_eq_union_closure_compl, closure_union, ← univ_subset_iff]
   refine _root_.subset_trans ?_ (union_subset_union_right _ (subset_closure))
   simp
 

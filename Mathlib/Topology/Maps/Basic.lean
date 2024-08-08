@@ -16,7 +16,7 @@ This file introduces the following properties of a map `f : X → Y` between top
 (Open and closed maps need not be continuous.)
 
 * `Inducing f` means the topology on `X` is the one induced via `f` from the topology on `Y`.
-  These behave like embeddings except they need not be injective. Instead, points of `X` whichq
+  These behave like embeddings except they need not be injective. Instead, points of `X` which
   are identified by `f` are also inseparable in the topology on `X`.
 * `Embedding f` means `f` is inducing and also injective. Equivalently, `f` identifies `X` with
   a subspace of `Y`.
@@ -366,12 +366,6 @@ theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continu
 theorem of_isEmpty [h : IsEmpty X] (f : X → Y) : IsOpenMap f := of_nhds_le h.elim
 
 end IsOpenMap
-
-/-- The preimage of a `Dense` set under a continuous open map is `Dense`. -/
-theorem Dense.dense_preimage_of_isOpenMap (hf : IsOpenMap f) (hfc : Continuous f)
-    {t : Set Y} (ht : Dense t) : Dense (f ⁻¹' t) := by
-  rw [dense_iff_closure_eq, ← hf.preimage_closure_eq_closure_preimage hfc,
-    dense_iff_closure_eq.mp ht, preimage_univ]
 
 theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
   ⟨fun hf => hf.nhds_le, IsOpenMap.of_nhds_le⟩
