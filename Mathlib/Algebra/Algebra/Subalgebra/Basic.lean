@@ -13,7 +13,6 @@ In this file we define `Subalgebra`s and the usual operations on them (`map`, `c
 More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 -/
 
-
 universe u u' v w w'
 
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/

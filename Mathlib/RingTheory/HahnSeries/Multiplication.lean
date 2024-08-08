@@ -32,7 +32,6 @@ Hahn series.
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
-
 open Finset Function Pointwise
 
 noncomputable section

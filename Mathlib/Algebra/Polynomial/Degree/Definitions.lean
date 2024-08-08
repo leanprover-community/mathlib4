@@ -10,6 +10,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Algebra.Order.Ring.WithTop
 
 /-!
 # Theory of univariate polynomials
