@@ -427,7 +427,28 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
   have eq {p q : Submodule ℝ E} (hp : FiniteDimensional ℝ p) (hq : FiniteDimensional ℝ q)
       (hpq : p ≤ q) :
       ∀ y : A p, (T p y).1 =
-        (T q (Submodule.inclusion (mA hpq) y)).1 := by sorry
+        (T q (Submodule.inclusion (mA hpq) y)).1 := by
+    have : p.subtype ∘ₗ (T p) = q.subtype ∘ₗ (T q) ∘ₗ (Submodule.inclusion (mA hpq)) := by
+      have : span ℝ (range (ψ p)) = ⊤ := by
+        ext x
+        simp only [Submodule.mem_top, iff_true]
+        rcases mem_span_set'.1 x.2 with ⟨n, f, g, hx⟩
+        rw [mem_span_set']
+        have this i : ⟨g i, subset_span (g i).2⟩ ∈ range (ψ p) := by
+          rcases (g i).2 with ⟨y, hy, h⟩
+          use ⟨y, hy⟩
+          rw [← Subtype.val_inj]
+          simpa
+        use n, f, fun i ↦ ⟨⟨g i, subset_span (g i).2⟩, this i⟩
+        rw [← Subtype.val_inj, ← hx]
+        simp
+      apply LinearMap.ext_on_range this
+      intro x
+      simp only [LinearMap.coe_comp, coeSubtype, ContinuousLinearMap.coe_coe, Function.comp_apply]
+      have : Submodule.inclusion (mA hpq) (ψ p x) = ψ q (Submodule.inclusion hpq x) := rfl
+      rw [hT p hp, this, hT q hq]
+      rfl
+    exact fun y ↦ congrFun (congrArg DFunLike.coe this) y
   let Q : Set F := ⋃ (p : Submodule ℝ E) (_ : FiniteDimensional ℝ p), A p
   let g : span ℝ Q → E := fun y ↦
     let n := (mem_span_set'.1 y.2).choose
