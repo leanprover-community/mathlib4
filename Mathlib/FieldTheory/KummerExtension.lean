@@ -7,7 +7,7 @@ import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.FieldTheory.Galois
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 /-!
 # Kummer Extensions
 
@@ -80,8 +80,6 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     exact splits_C _ _
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
-
-open BigOperators
 
 -- make this private, as we only use it to prove a strictly more general version
 private

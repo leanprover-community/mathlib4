@@ -6,8 +6,6 @@ Authors: David Wärn
 import Mathlib.Topology.Separation
 import Mathlib.Algebra.Group.Defs
 
-#align_import topology.algebra.semigroup from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
-
 /-!
 # Idempotents in topological semigroups
 
@@ -70,8 +68,6 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     exacts [fun i => (hcs i.prop).2.1, fun i => (hcs i.prop).1.isCompact, fun i => (hcs i.prop).1]
   · rw [Set.mem_sInter]
     exact fun t ht => (hcs ht).2.2 m (Set.mem_sInter.mp hm t ht) m' (Set.mem_sInter.mp hm' t ht)
-#align exists_idempotent_of_compact_t2_of_continuous_mul_left exists_idempotent_of_compact_t2_of_continuous_mul_left
-#align exists_idempotent_of_compact_t2_of_continuous_add_left exists_idempotent_of_compact_t2_of_continuous_add_left
 
 /-- A version of `exists_idempotent_of_compact_t2_of_continuous_mul_left` where the idempotent lies
 in some specified nonempty compact subsemigroup. -/
@@ -93,5 +89,3 @@ theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [Topological
     ((continuous_mul_left p.1).comp continuous_subtype_val).subtype_mk _
   obtain ⟨⟨m, hm⟩, idem⟩ := exists_idempotent_of_compact_t2_of_continuous_mul_left this
   exact ⟨m, hm, Subtype.ext_iff.mp idem⟩
-#align exists_idempotent_in_compact_subsemigroup exists_idempotent_in_compact_subsemigroup
-#align exists_idempotent_in_compact_add_subsemigroup exists_idempotent_in_compact_add_subsemigroup

@@ -48,14 +48,14 @@ set `s` of integration variables is a `Finset`. We are assuming that the functio
 for most of this file. Note that asking whether it is `AEMeasurable` is not even well-posed,
 since there is no well-behaved measure on the domain of `f`.
 
-## Todo
+## TODO
 
 * Define the marginal function for functions taking values in a Banach space.
 
 -/
 
 
-open scoped Classical ENNReal
+open scoped ENNReal
 open Set Function Equiv Finset
 
 noncomputable section
@@ -90,10 +90,8 @@ theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫�
   refine hf.comp ?_
   rw [measurable_pi_iff]; intro i
   by_cases hi : i ∈ s
-  · simp [hi, updateFinset]
-    exact measurable_pi_iff.1 measurable_snd _
-  · simp [hi, updateFinset]
-    exact measurable_pi_iff.1 measurable_fst _
+  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_snd _
+  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_fst _
 
 @[simp] theorem lmarginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
   ext1 x
@@ -248,3 +246,5 @@ theorem lintegral_le_of_lmarginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i,
   simp_rw [lintegral_eq_lmarginal_univ x, lmarginal_le_of_subset (Finset.subset_univ s) hf hg hfg x]
 
 end LMarginal
+
+end MeasureTheory

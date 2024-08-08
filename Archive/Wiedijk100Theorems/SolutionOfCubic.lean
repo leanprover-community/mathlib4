@@ -6,8 +6,6 @@ Authors: Jeoff Lee
 import Mathlib.Tactic.LinearCombination
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
-#align_import wiedijk_100_theorems.solution_of_cubic from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # The Solution of a Cubic
 
@@ -50,7 +48,6 @@ variable {ω p q r s t : K}
 
 theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
   simpa [cyclotomic_prime, Finset.sum_range_succ] using hω.isRoot_cyclotomic (by decide)
-#align theorems_100.cube_root_of_unity_sum Theorems100.cube_root_of_unity_sum
 
 /-- The roots of a monic cubic whose quadratic term is zero and whose discriminant is nonzero. -/
 theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠ 0)
@@ -69,7 +66,6 @@ theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠
     hr + (-q + r + s ^ 3) * hs3 - (3 * x * s ^ 3 + (t * s) ^ 2 + t * s * p + p ^ 2) * ht +
     (x ^ 2 * (s - t) + x * (-ω * (s ^ 2 + t ^ 2) + s * t * (3 + ω ^ 2 - ω)) -
       (-(s ^ 3 - t ^ 3) * (ω - 1) + s ^ 2 * t * ω ^ 2 - s * t ^ 2 * ω ^ 2)) * s ^ 3 * H
-#align theorems_100.cubic_basic_eq_zero_iff Theorems100.cubic_basic_eq_zero_iff
 
 /-- Roots of a monic cubic whose discriminant is nonzero. -/
 theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - b ^ 2) / 9)
@@ -87,7 +83,6 @@ theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - 
     field_simp [y, h9, h54]; ring
   rw [h₁, cubic_basic_eq_zero_iff hω hp_nonzero hr hs3 ht y]
   simp_rw [eq_sub_iff_add_eq]
-#align theorems_100.cubic_monic_eq_zero_iff Theorems100.cubic_monic_eq_zero_iff
 
 /-- **The Solution of Cubic**.
   The roots of a cubic polynomial whose discriminant is nonzero. -/
@@ -115,7 +110,6 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
       b / a / 3 = b / (a * 3) := by field_simp [ha]
       _ = b / (3 * a) := by rw [mul_comm]
   rw [h₄]
-#align theorems_100.cubic_eq_zero_iff Theorems100.cubic_eq_zero_iff
 
 /-- the solution of the cubic equation when p equals zero. -/
 theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
@@ -150,7 +144,6 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
       _ = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by ring
   rw [h₁, h₂, h₃, h₄ (x + b / (3 * a))]
   ring_nf
-#align theorems_100.cubic_eq_zero_iff_of_p_eq_zero Theorems100.cubic_eq_zero_iff_of_p_eq_zero
 
 end Field
 

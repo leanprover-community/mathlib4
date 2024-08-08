@@ -8,8 +8,6 @@ import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.RCLike.Lemmas
 
-#align_import analysis.normed_space.hahn_banach.extension from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
-
 /-!
 # Extension Hahn-Banach theorem
 
@@ -57,7 +55,6 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
   dsimp at g_eq
   rw [← g_eq]
   apply g'.le_opNorm
-#align real.exists_extension_norm_eq Real.exists_extension_norm_eq
 
 end Real
 
@@ -107,7 +104,6 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
       _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
       _ = ‖f‖ := by rw [reCLM_norm, one_mul]
   · exact f.opNorm_le_bound g.extendTo𝕜.opNorm_nonneg fun x => h x ▸ g.extendTo𝕜.le_opNorm x
-#align exists_extension_norm_eq exists_extension_norm_eq
 
 open FiniteDimensional
 
@@ -161,7 +157,6 @@ theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x
   set_option maxSynthPendingDepth 2 in
   rw [norm_smul (α := 𝕜) (x := coord 𝕜 x h), RCLike.norm_coe_norm, coord_norm,
     mul_inv_cancel (mt norm_eq_zero.mp h)]
-#align coord_norm' coord_norm'
 
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
     element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
@@ -175,7 +170,6 @@ theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, �
       g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [coe_mk]
       _ = ((‖x‖ : 𝕜) • coord 𝕜 x h) (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [← hg.1]
       _ = ‖x‖ := by simp
-#align exists_dual_vector exists_dual_vector
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, and choosing
     the dual element arbitrarily when `x = 0`. -/
@@ -186,7 +180,6 @@ theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : E →L[𝕜] 𝕜, 
     refine ⟨g, hg.left, ?_⟩
     simp [hx]
   · exact exists_dual_vector 𝕜 x hx
-#align exists_dual_vector' exists_dual_vector'
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
     the dual element has norm at most `1` (this can not be improved for the trivial
@@ -198,6 +191,5 @@ theorem exists_dual_vector'' (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 
     simp [hx]
   · rcases exists_dual_vector 𝕜 x hx with ⟨g, g_norm, g_eq⟩
     exact ⟨g, g_norm.le, g_eq⟩
-#align exists_dual_vector'' exists_dual_vector''
 
 end DualVector
