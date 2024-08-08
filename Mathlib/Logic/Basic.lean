@@ -977,6 +977,9 @@ theorem beq_eq_decide {α : Type*} [BEq α] [LawfulBEq α] {a b : α} : (a == b)
   rw [← beq_iff_eq a b]
   cases a == b <;> simp
 
+@[simp] lemma beq_eq_beq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {a₁ a₂ : α}
+    {b₁ b₂ : β} : (a₁ == a₂) = (b₁ == b₂) ↔ (a₁ = a₂ ↔ b₁ = b₂) := by rw [Bool.eq_iff_iff]; simp
+
 @[ext]
 theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
