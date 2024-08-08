@@ -288,8 +288,6 @@ theorem isSubordinate_toPartitionOfUnity :
 
 alias ⟨_, IsSubordinate.toPartitionOfUnity⟩ := isSubordinate_toPartitionOfUnity
 
-variable [SmoothManifoldWithCorners I M]
-
 /-- If `f` is a smooth partition of unity on a set `s : Set M` subordinate to a family of open sets
 `U : ι → Set M` and `g : ι → M → F` is a family of functions such that `g i` is $C^n$ smooth on
 `U i`, then the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is $C^n$ smooth on the whole manifold. -/

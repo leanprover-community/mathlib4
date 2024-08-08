@@ -464,7 +464,7 @@ instance SmoothFiberwiseLinear.hasGroupoid :
 
 variable [SmoothManifoldWithCorners IB B] in
 /-- A smooth vector bundle `E` is naturally a smooth manifold. -/
-instance Bundle.TotalSpace.smoothManifoldWithCorners :
+instance Bundle.TotalSpace.smoothManifoldWithCorners [SmoothManifoldWithCorners IB B] :
     SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace F E) := by
   refine { StructureGroupoid.HasGroupoid.comp (smoothFiberwiseLinear B F IB) ?_ with }
   intro e he
