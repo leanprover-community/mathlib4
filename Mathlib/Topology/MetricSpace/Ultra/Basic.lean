@@ -50,6 +50,9 @@ lemma dist_triangle_max : dist x z ≤ max (dist x y) (dist y z) :=
 
 namespace IsUltrametricDist
 
+instance subtype (p : X → Prop) : IsUltrametricDist (Subtype p) :=
+  ⟨fun _ _ _ ↦ by simpa [Subtype.dist_eq] using dist_triangle_max _ _ _⟩
+
 lemma ball_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ ball x r) : ball x r = ball y r := by
   ext a
   simp_rw [mem_ball] at h ⊢

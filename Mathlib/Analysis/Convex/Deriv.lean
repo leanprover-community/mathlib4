@@ -20,8 +20,7 @@ Here we relate convexity of functions `ℝ → ℝ` to properties of their deriv
 -/
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
-
-open scoped Classical Topology NNReal
+open scoped Topology NNReal
 
 /-!
 ## Monotonicity of `f'` implies convexity of `f`
