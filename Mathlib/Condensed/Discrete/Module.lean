@@ -227,22 +227,19 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
 `LightCondMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
 `R`-modules to light condensed `R`-modules.
  -/
-noncomputable def functorIsoDiscrete : functor R ≅ discrete _ := by
-  refine NatIso.ofComponents (fun M ↦ (functorIsoDiscreteComponents R M).symm) ?_
-  intro M N f
-  dsimp
-  rw [Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
-  dsimp [functorIsoDiscreteComponents]
-  rw [Category.assoc, ← Iso.eq_inv_comp]
-  erw [← (LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.naturality]
-  change _ ≫ ((LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.app
-    (((functor R).obj N))) = _
-  simp only [← assoc]
-  congr 1
-  rw [← Iso.comp_inv_eq]
-  apply Sheaf.hom_ext
-  simp [functorIsoDiscreteAux₂, ← Functor.map_comp]
-  rfl
+noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
+  NatIso.ofComponents (fun M ↦ (functorIsoDiscreteComponents R M).symm) fun f ↦ by
+    dsimp
+    rw [Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
+    dsimp [functorIsoDiscreteComponents]
+    rw [Category.assoc, ← Iso.eq_inv_comp]
+    erw [← (discreteUnderlyingAdj (ModuleCat R)).counit.naturality]
+    simp only [← assoc]
+    congr 1
+    rw [← Iso.comp_inv_eq]
+    apply Sheaf.hom_ext
+    simp [functorIsoDiscreteAux₂, ← Functor.map_comp]
+    rfl
 
 /--
 `LightCondMod.LocallyConstant.functor` is left adjoint to the forgetful functor from light condensed
