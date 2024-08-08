@@ -46,18 +46,16 @@ variable {α β γ : Type*}
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
   /-- Multiplication in a boolean ring is idempotent. -/
-  mul_self' : ∀ a : α, a * a = a
+  mul_self : ∀ a : α, a * a = a
 
 namespace BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
 instance : Std.IdempotentOp (α := α) (· * ·) :=
-  ⟨BooleanRing.mul_self'⟩
+  ⟨BooleanRing.mul_self⟩
 
-@[scoped simp]
-theorem mul_self : a * a = a :=
-  BooleanRing.mul_self' _
+attribute [scoped simp] mul_self
 
 @[scoped simp]
 theorem add_self : a + a = 0 := by
@@ -416,7 +414,7 @@ abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
   one := ⊤
   one_mul := top_inf_eq
   mul_one := inf_top_eq
-  mul_self' := inf_idem
+  mul_self := inf_idem
 
 scoped[BooleanRingOfBooleanAlgebra]
   attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
@@ -535,7 +533,7 @@ instance : BooleanRing Bool where
   mul_one := Bool.and_true
   left_distrib := and_xor_distrib_left
   right_distrib := and_xor_distrib_right
-  mul_self' := Bool.and_self
+  mul_self := Bool.and_self
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
