@@ -52,15 +52,19 @@ namespace CategoryTheory
 
 open Category Limits Pretriangulated ZeroObject Preadditive
 
-variable {C D A : Type*} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
-  [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive] [Pretriangulated C]
+variable {C D A : Type*} [Category C] [HasShift C ℤ]
   [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (CategoryTheory.shiftFunctor D n).Additive] [Pretriangulated D]
-  [Category A] [Abelian A]
+  [Category A]
 
 namespace Functor
 
 variable (F : C ⥤ A)
+
+section Pretriangulated
+
+variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
+  [Pretriangulated C] [Abelian A]
 
 /-- A functor from a pretriangulated category to an abelian category is an homological functor
 if it sends distinguished triangles to exact sequences. -/
@@ -151,27 +155,32 @@ lemma isHomological_of_localization (L : C ⥤ D)
   obtain ⟨T₀, e, hT₀⟩ := hT
   exact ⟨L.mapTriangle.obj T₀, e, (L ⋙ F).map_distinguished_exact _ hT₀⟩
 
-section
+end Pretriangulated
 
-variable [F.IsHomological] [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
-  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+section
 
 /-- The connecting homomorphism in the long exact sequence attached to an homological
 functor and a distinguished triangle. -/
-noncomputable def homologySequenceδ :
+noncomputable def homologySequenceδ
+    [F.ShiftSequence ℤ] (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (F.shift n₀).obj T.obj₃ ⟶ (F.shift n₁).obj T.obj₁ :=
   F.shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
 
 variable {T T'}
 
 @[reassoc]
-lemma homologySequenceδ_naturality :
+lemma homologySequenceδ_naturality
+    [F.ShiftSequence ℤ] (T T' : Triangle C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (F.shift n₀).map φ.hom₃ ≫ F.homologySequenceδ T' n₀ n₁ h =
       F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map φ.hom₁ := by
   dsimp only [homologySequenceδ]
   rw [← shiftMap_comp', ← φ.comm₃, shiftMap_comp]
 
 variable (T)
+variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
+  [Pretriangulated C] [Abelian A] [F.IsHomological]
+variable [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
+  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
 @[reassoc]
 lemma comp_homologySequenceδ :

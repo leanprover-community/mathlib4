@@ -264,7 +264,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
   haveI := Module.Finite.of_surjective _ (torsion R N).mkQ_surjective
   obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ :=
     equiv_directSum_of_isTorsion.{u, v} (@torsion_isTorsion R N _ _ _)
-  obtain ⟨n, ⟨g⟩⟩ := @Module.basisOfFiniteTypeTorsionFree' R _ _ _ (N ⧸ torsion R N) _ _ _ _
+  obtain ⟨n, ⟨g⟩⟩ := @Module.basisOfFiniteTypeTorsionFree' R _ (N ⧸ torsion R N) _ _ _ _ _ _
   haveI : Module.Projective R (N ⧸ torsion R N) := Module.Projective.of_basis ⟨g⟩
   obtain ⟨f, hf⟩ := Module.projective_lifting_property _ LinearMap.id (torsion R N).mkQ_surjective
   refine
