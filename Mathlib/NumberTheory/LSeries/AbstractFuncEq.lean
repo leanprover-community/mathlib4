@@ -67,7 +67,7 @@ noncomputable section
 
 open Real Complex Filter Topology Asymptotics Set MeasureTheory
 
-variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-!
 ## Definitions and symmetry
@@ -335,7 +335,7 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
 
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
 `0` and `∞`. -/
-lemma f_modif_aux2 {s : ℂ} (hs : P.k < re s) :
+lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
     mellin (fun x ↦ P.f_modif x - P.f x + P.f₀) s = (1 / s) • P.f₀ + (P.ε  / (P.k - s)) • P.g₀ := by
   have h_re1 : -1 < re (s - 1) := by simpa using P.hk.trans hs
   have h_re2 : -1 < re (s - P.k - 1) := by simpa using hs
@@ -406,7 +406,8 @@ theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠
     · simpa only [hs', smul_zero] using differentiableAt_const (0 : E)
 
 /-- Relation between `Λ s` and the Mellin transform of `f - f₀`, where the latter is defined. -/
-theorem hasMellin {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.Λ s) := by
+theorem hasMellin [CompleteSpace E]
+    {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.Λ s) := by
   have hc1 : MellinConvergent (P.f · - P.f₀) s :=
     let ⟨_, ht⟩ := exists_gt s.re
     mellinConvergent_of_isBigO_rpow (P.hf_int.sub (locallyIntegrableOn_const _)) (P.hf_top _) ht
