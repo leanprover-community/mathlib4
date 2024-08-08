@@ -3,7 +3,6 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser
 -/
-
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Group.Even
@@ -13,22 +12,22 @@ import Mathlib.Algebra.Order.Ring.Defs
 # Sums of squares
 
 We introduce sums of squares in a type `R` endowed with an `[Add R]`, `[Zero R]` and `[Mul R]`
-instances. Sums of squares in `R` are defined by an inductive predicate `isSumSq : R → Prop`:
+instances. Sums of squares in `R` are defined by an inductive predicate `IsSumSq : R → Prop`:
 `0 : R` is a sum of squares and if `S` is a sum of squares, then for all `a : R`, `a * a + S` is a
 sum of squares in `R`.
 
 ## Main declaration
 
-- The predicate `isSumSq : R → Prop`, defining the property of being a sum of squares in `R`.
+- The predicate `IsSumSq : R → Prop`, defining the property of being a sum of squares in `R`.
 
 ## Auxiliary declarations
 
 - The type `SumSqIn R` : in an additive monoid with multiplication `R`, we introduce the type
-`SumSqIn R` as the submonoid of `R` whose carrier is the subset `{S : R | isSumSq S}`.
+`SumSqIn R` as the submonoid of `R` whose carrier is the subset `{S : R | IsSumSq S}`.
 
 ## Theorems
 
-- `isSumSq.add`: if `S1` and `S2` are sums of squares in `R`, then so is `S1 + S2`.
+- `IsSumSq.add`: if `S1` and `S2` are sums of squares in `R`, then so is `S1 + S2`.
 - `SumSq.nonneg`: in a linearly ordered semiring `R` with an `[ExistsAddOfLE R]` instance, sums of
 squares are non-negative.
 - `SquaresInSumSq`: a square is a sum of squares.
@@ -45,18 +44,18 @@ squares is defined by an inductive predicate: `0 : R` is a sum of squares and if
 squares, then for all `a : R`, `a * a + S` is a sum of squares in `R`.
 -/
 @[mk_iff]
-inductive isSumSq [Add R] [Zero R] : R → Prop
-  | zero                              : isSumSq 0
-  | sq_add (a S : R) (pS : isSumSq S) : isSumSq (a * a + S)
+inductive IsSumSq [Add R] [Zero R] : R → Prop
+  | zero                              : IsSumSq 0
+  | sq_add (a S : R) (pS : IsSumSq S) : IsSumSq (a * a + S)
 
 /--
 If `S1` and `S2` are sums of squares in a semiring `R`, then `S1 + S2` is a sum of squares in `R`.
 -/
-theorem isSumSq.add [AddMonoid R] {S1 S2 : R} (p1 : isSumSq S1)
-    (p2 : isSumSq S2) : isSumSq (S1 + S2) := by
+theorem IsSumSq.add [AddMonoid R] {S1 S2 : R} (p1 : IsSumSq S1)
+    (p2 : IsSumSq S2) : IsSumSq (S1 + S2) := by
   induction p1 with
   | zero             => rw [zero_add]; exact p2
-  | sq_add a S pS ih => rw [add_assoc]; exact isSumSq.sq_add a (S + S2) ih
+  | sq_add a S pS ih => rw [add_assoc]; exact IsSumSq.sq_add a (S + S2) ih
 
 variable (R) in
 /--
@@ -64,9 +63,9 @@ In an additive monoid with multiplication `R`, the type `SumSqIn R` is the submo
 squares in `R`.
 -/
 def SumSqIn [AddMonoid R] : AddSubmonoid R where
-  carrier   := {S : R | isSumSq S}
-  zero_mem' := isSumSq.zero
-  add_mem'  := isSumSq.add
+  carrier   := {S : R | IsSumSq S}
+  zero_mem' := IsSumSq.zero
+  add_mem'  := IsSumSq.add
 
 /--
 In an additive monoid with multiplication, every square is a sum of squares. By definition, a square
@@ -76,7 +75,7 @@ in `R` is a term `x : R` such that `x = y * y` for some `y : R` and in Mathlib t
 theorem SquaresInSumSq [AddMonoid R] {x : R} (px : IsSquare x) : x ∈ SumSqIn R := by
   rcases px with ⟨y, py⟩
   rw [py, ← AddMonoid.add_zero (y * y)]
-  exact isSumSq.sq_add _ _ isSumSq.zero
+  exact IsSumSq.sq_add _ _ IsSumSq.zero
 
 open AddSubmonoid in
 /--
@@ -94,8 +93,8 @@ Let `R` be a linearly ordered semiring in which the property `a ≤ b → ∃ c,
 (e.g. `R = ℕ`). If `S : R` is a sum of squares in `R`, then `0 ≤ S`. This is used in
 `Mathlib.Algebra.Ring.Semireal.Defs` to show that linearly ordered fields are semireal.
 -/
-theorem isSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {S : R}
-    (pS : isSumSq S) : 0 ≤ S := by
+theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {S : R}
+    (pS : IsSumSq S) : 0 ≤ S := by
   induction pS with
   | zero             => simp only [le_refl]
   | sq_add x S _ ih  => apply add_nonneg ?_ ih; simp only [← pow_two x, sq_nonneg]
