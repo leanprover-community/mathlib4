@@ -55,7 +55,7 @@ theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :
 
 variable (R ι M)
 
-section DecEqIota
+section DecidableEq
 
 variable [DecidableEq ι]
 
@@ -161,7 +161,7 @@ theorem linearEquivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : M i) :
   rw [DFinsupp.equivFunOnFintype_symm_single i m]
   rfl
 
-end DecEqIota
+end DecidableEq
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
