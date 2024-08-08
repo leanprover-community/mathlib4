@@ -451,6 +451,7 @@ def algEquiv (L' : Type*) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} K
 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
+include n in
 theorem isGalois : IsGalois K L :=
   letI := isSplittingField_X_pow_sub_one n K L
   IsGalois.of_separable_splitting_field (X_pow_sub_one_separable_iff.2
@@ -521,7 +522,7 @@ end CyclotomicField
 
 section IsDomain
 
-variable [Algebra A K] [IsFractionRing A K]
+variable [Algebra A K]
 
 section CyclotomicRing
 
@@ -541,7 +542,8 @@ instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
 instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
   SplittingField.isScalarTower _
 
-instance CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicField n K) := by
+instance CyclotomicField.noZeroSMulDivisors [IsFractionRing A K] :
+    NoZeroSMulDivisors A (CyclotomicField n K) := by
   refine NoZeroSMulDivisors.of_algebraMap_injective ?_
   rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
@@ -578,10 +580,12 @@ instance algebraBase : Algebra A (CyclotomicRing n A K) :=
 -- but there is at `reducible_and_instances` #10906
 example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = Ring.toIntAlgebra _ := rfl
 
-instance : NoZeroSMulDivisors A (CyclotomicRing n A K) :=
+instance [NoZeroSMulDivisors A (CyclotomicField n K)] :
+    NoZeroSMulDivisors A (CyclotomicRing n A K) :=
   (adjoin A _).noZeroSMulDivisors_bot
 
-theorem algebraBase_injective : Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
+theorem algebraBase_injective [NoZeroSMulDivisors A (CyclotomicField n K)] :
+    Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
   NoZeroSMulDivisors.algebraMap_injective _ _
 
 instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
@@ -597,7 +601,7 @@ instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
 instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
   IsScalarTower.subalgebra' _ _ _ _
 
-instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
+instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
   exists_prim_root := @fun a han => by
     rw [mem_singleton_iff] at han
@@ -620,7 +624,7 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
     · exact Subalgebra.add_mem _ hy hz
     · exact Subalgebra.mul_mem _ hy hz
 
-instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
+instance [IsFractionRing A K] [IsDomain A] [NeZero ((n : ℕ) : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
   map_units' := fun ⟨x, hx⟩ => by
     rw [isUnit_iff_ne_zero]
