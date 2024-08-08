@@ -38,8 +38,7 @@ variable [LieRingModule L M]
 variable (N N' : LieSubmodule R L M)
 
 /-- The quotient of a Lie module by a Lie submodule. It is a Lie module. -/
-instance : HasQuotient M (LieSubmodule R L M) :=
-  ⟨fun m ↦ m.toSubmodule.quotientRel⟩
+instance : HasQuotient M (LieSubmodule R L M) (fun m ↦ m.toSubmodule.quotientRel) := ⟨⟩
 
 namespace Quotient
 

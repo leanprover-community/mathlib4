@@ -40,8 +40,7 @@ theorem quotientRel_r_def {x y : M} : @Setoid.r _ p.quotientRel x y ↔ x - y �
     neg_mem_iff
 
 /-- The quotient of a module `M` by a submodule `p ⊆ M`. -/
-instance hasQuotient : HasQuotient M (Submodule R M) :=
-  ⟨quotientRel⟩
+instance hasQuotient : HasQuotient M (Submodule R M) quotientRel := ⟨⟩
 
 namespace Quotient
 
