@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Topological groups
@@ -31,8 +32,6 @@ groups.
 topological space, group, topological group
 -/
 
-
-open scoped Classical
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
 universe u v w x
