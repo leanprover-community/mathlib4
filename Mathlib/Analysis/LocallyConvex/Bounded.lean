@@ -242,9 +242,9 @@ then it is also von Neumann bounded with respect to a larger field.
 See also `Bornology.IsVonNBounded.restrict_scalars` below. -/
 theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
     {E : Type*} [AddCommGroup E] [Module 𝕜 E]
-     (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
-     [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
-     {s : Set E} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕝 s := by
+    (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
+    [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
+    {s : Set E} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕝 s := by
   obtain ⟨ε, hε, hε₀⟩ : ∃ ε : ℕ → 𝕜, Tendsto ε atTop (𝓝 0) ∧ ∀ᶠ n in atTop, ε n ≠ 0 := by
     simpa only [tendsto_nhdsWithin_iff] using exists_seq_tendsto (𝓝[≠] (0 : 𝕜))
   refine isVonNBounded_of_smul_tendsto_zero (ε := (ε · • 1)) (by simpa) fun x hx ↦ ?_
