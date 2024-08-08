@@ -481,7 +481,7 @@ lemma polyCharpoly_coeff_nilRank_ne_zero :
 
 open FiniteDimensional Module.Free
 
-lemma nilRank_le_card {ι} [Fintype ι] (b : Basis ι R M) : nilRank φ ≤ Fintype.card ι := by
+lemma nilRank_le_card {ι : Type*} [Fintype ι] (b : Basis ι R M) : nilRank φ ≤ Fintype.card ι := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
   rw [← FiniteDimensional.finrank_eq_card_basis b, ← polyCharpoly_natDegree φ (chooseBasis R L),
     Polynomial.coeff_natDegree, (polyCharpoly_monic _ _).leadingCoeff]

@@ -385,13 +385,13 @@ theorem map_eq_neg_iff_det_neg (x : Orientation R M ι) (f : M ≃ₗ[R] M)
 
 /-- If the index type has cardinality equal to the finite dimension, a basis with the given
 orientation. -/
-def someBasis [Nonempty ι] [DecidableEq ι] [Module.Finite R M] (x : Orientation R M ι)
+def someBasis [Nonempty ι] [DecidableEq ι] [FiniteDimensional R M] (x : Orientation R M ι)
     (h : Fintype.card ι = finrank R M) : Basis ι R M :=
   ((finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm).adjustToOrientation x
 
 /-- `some_basis` gives a basis with the required orientation. -/
 @[simp]
-theorem someBasis_orientation [Nonempty ι] [DecidableEq ι] [Module.Finite R M]
+theorem someBasis_orientation [Nonempty ι] [DecidableEq ι] [FiniteDimensional R M]
     (x : Orientation R M ι) (h : Fintype.card ι = finrank R M) : (x.someBasis h).orientation = x :=
   Basis.orientation_adjustToOrientation _ _
 
