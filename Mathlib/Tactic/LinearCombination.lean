@@ -47,23 +47,24 @@ theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
 theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
 theorem mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
 theorem inv_pf [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
-theorem pow_pf {γ : Type*} [Pow α γ] (p : (a:α) = b) (n : γ) : a ^ n = b ^ n := p ▸ rfl
 theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
 theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
 theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
 
+/-- Result of `expandLinearCombo`, either a  -/
 inductive Expanded
+  /-- A proof of `a = b`. -/
   | proof (pf : Syntax.Term)
+  /-- A value, equivalently a proof of `c = c`. -/
   | const (c : Syntax.Term)
 
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
-* `some p` means that `p` is a syntax corresponding to a proof of an equation.
+* `.proof p` means that `p` is a syntax corresponding to a proof of an equation.
   For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `some (c_add_pf 2 h)`
   which is a proof of `2 * a = 2 * b`.
-* `none` means that the input expression is not an equation but a value;
-  the input syntax itself is used in this case.
+* `.const c` means that the input expression is not an equation but a value.
 -/
 partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expanded := withRef stx do
   match stx with
@@ -104,17 +105,11 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     | .proof p₁, .const c₂ => .proof <$> ``(pf_div_c $p₁ $c₂)
     | .const c₁, .proof p₂ => .proof <$> ``(c_div_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(div_pf $p₁ $p₂)
-  | `($e ^ $n) => do
-    -- Fully pre-elaborate n to speed up exponentiation elaboration.
-    -- Assumption: mathlib only uses Pow instances that respect the default instances
-    -- for the exponent. For example, if the exponent is `37` it should be a `Nat`.
-    let n ← (withSynthesize <| elabTerm n none) >>= Expr.toSyntax
-    match ← expandLinearCombo ty e with
-    | .const c => .const <$> ``($c ^ $n)
-    | .proof p => .proof <$> ``(pow_pf $p $n)
   | e =>
     -- We have the expected type from the goal, so we can fully synthesize this leaf node.
     withSynthesize do
+      -- It is OK to use `ty` as the expected type even if `e` is a proof.
+      -- The expected type is just a hint.
       let c ← withSynthesizeLight <| Term.elabTerm e ty
       if (← whnfR (← inferType c)).isEq then
         .proof <$> c.toSyntax
