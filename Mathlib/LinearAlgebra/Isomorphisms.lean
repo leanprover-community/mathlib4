@@ -161,8 +161,9 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
   { quotientQuotientEquivQuotientAux S T h with
     toFun := quotientQuotientEquivQuotientAux S T h
     invFun := mapQ _ _ (mkQ S) (le_comap_map _ _)
-    left_inv := fun x => Quotient.inductionOn' x fun x => Quotient.inductionOn' x fun x => by simp
-    right_inv := fun x => Quotient.inductionOn' x fun x => by simp }
+    left_inv := fun x => Quotient.inductionOn' x fun x => Quotient.inductionOn' x fun x =>
+      by simp [Quotient.mk''_eq_mk]
+    right_inv := fun x => Quotient.inductionOn' x fun x => by simp [Quotient.mk''_eq_mk] }
 
 /-- Essentially the same equivalence as in the third isomorphism theorem,
 except restated in terms of suprema/addition of submodules instead of `≤`. -/
