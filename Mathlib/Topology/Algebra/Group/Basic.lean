@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Topological groups
@@ -31,8 +32,6 @@ groups.
 topological space, group, topological group
 -/
 
-
-open scoped Classical
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
 universe u v w x
@@ -1245,7 +1244,7 @@ theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set 
 
 @[to_additive]
 lemma subset_mul_closure_one (s : Set G) : s ⊆ s * (closure {1} : Set G) := by
-  have : s ⊆ s * ({1} : Set G) := by simpa using Subset.rfl
+  have : s ⊆ s * ({1} : Set G) := by simp
   exact this.trans (smul_subset_smul_left subset_closure)
 
 @[to_additive]

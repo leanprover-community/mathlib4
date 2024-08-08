@@ -7,8 +7,6 @@ import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Data.Real.Archimedean
 import Mathlib.LinearAlgebra.LinearPMap
 
-
-
 /-!
 # Extension theorems
 

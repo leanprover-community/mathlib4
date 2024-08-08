@@ -1498,23 +1498,21 @@ instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgrou
 
 namespace Normal
 
-variable (nH : H.Normal)
-
 @[to_additive]
-theorem conj_mem' (n : G) (hn : n ∈ H) (g : G) :
+theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
   convert nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]
-theorem mem_comm {a b : G} (h : a * b ∈ H) : b * a ∈ H := by
+theorem mem_comm (nH : H.Normal) {a b : G} (h : a * b ∈ H) : b * a ∈ H := by
   have : a⁻¹ * (a * b) * a⁻¹⁻¹ ∈ H := nH.conj_mem (a * b) h a⁻¹
   -- Porting note: Previous code was:
   -- simpa
   simp_all only [inv_mul_cancel_left, inv_inv]
 
 @[to_additive]
-theorem mem_comm_iff {a b : G} : a * b ∈ H ↔ b * a ∈ H :=
+theorem mem_comm_iff (nH : H.Normal) {a b : G} : a * b ∈ H ↔ b * a ∈ H :=
   ⟨nH.mem_comm, nH.mem_comm⟩
 
 end Normal
@@ -1658,8 +1656,6 @@ theorem normalizer_eq_top : H.normalizer = ⊤ ↔ H.Normal :=
     ⟨fun h => ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
       ⟨fun hb => h.conj_mem b hb a, fun hb => by rwa [h.mem_comm_iff, inv_mul_cancel_left] at hb⟩⟩
 
-open scoped Classical
-
 @[to_additive]
 theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=
   fun x hx y =>
@@ -1732,6 +1728,11 @@ attribute [class] AddSubgroup.IsCommutative
 instance IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
   { H.toGroup with mul_comm := h.is_comm.comm }
 
+/-- A subgroup of a commutative group is commutative. -/
+@[to_additive "A subgroup of a commutative group is commutative."]
+instance commGroup_isCommutative {G : Type*} [CommGroup G] (H : Subgroup G) : H.IsCommutative :=
+  ⟨CommMagma.to_isCommutative⟩
+
 @[to_additive]
 instance map_isCommutative (f : G →* G') [H.IsCommutative] : (H.map f).IsCommutative :=
   ⟨⟨by
@@ -1752,6 +1753,11 @@ theorem comap_injective_isCommutative {f : G' →* G} (hf : Injective f) [H.IsCo
 @[to_additive]
 instance subgroupOf_isCommutative [H.IsCommutative] : (H.subgroupOf K).IsCommutative :=
   H.comap_injective_isCommutative Subtype.coe_injective
+
+@[to_additive]
+lemma mul_comm_of_mem_isCommutative [H.IsCommutative] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
+    a * b = b * a := by
+  simpa only [Submonoid.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
 
 end Subgroup
 
@@ -1957,6 +1963,11 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 
 @[to_additive]
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
+
+@[to_additive]
+instance range_isCommutative {G : Type*} [CommGroup G] {N : Type*} [Group N] (f : G →* N) :
+    f.range.IsCommutative :=
+  range_eq_map f ▸ Subgroup.map_isCommutative ⊤ f
 
 @[to_additive (attr := simp)]
 theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by
@@ -2884,7 +2895,7 @@ namespace ConjClasses
 def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
   {x | x.carrier.Nontrivial}
 
-@[simp] lemma mem_noncenter [Monoid G] (g : ConjClasses G) :
+@[simp] lemma mem_noncenter {G} [Monoid G] (g : ConjClasses G) :
   g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
 
 end ConjClasses

@@ -129,10 +129,7 @@ variable {M}
 
 /-- An element of `R` admitting a left inverse is `M`-regular. -/
 theorem of_mul_eq_one (h : a * b = 1) : IsSMulRegular M b :=
-  of_mul
-    (by
-      rw [h]
-      exact one M)
+  of_mul (a := a) (by rw [h]; exact one M)
 
 /-- Any power of an `M`-regular element is `M`-regular. -/
 theorem pow (n : ℕ) (ra : IsSMulRegular M a) : IsSMulRegular M (a ^ n) := by

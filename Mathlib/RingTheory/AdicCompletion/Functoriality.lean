@@ -140,7 +140,7 @@ theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
   rfl
 
 /-- Equality of maps out of an adic completion can be checked on Cauchy sequences. -/
-theorem map_ext {f g : AdicCompletion I M → N}
+theorem map_ext {N} {f g : AdicCompletion I M → N}
     (h : ∀ (a : AdicCauchySequence I M),
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
@@ -299,7 +299,7 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   ext f n
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
     Submodule.mkQ_apply]
-  rw [← DirectSum.sum_univ_of _ (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
+  rw [← DirectSum.sum_univ_of (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
   simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum, mk_apply_coe,
     AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply]
   simp only [← Submodule.mkQ_apply, ← map_sum]

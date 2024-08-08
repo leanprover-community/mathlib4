@@ -109,10 +109,9 @@ variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [AddCommMonoid X₁] [AddCommMo
   [AddCommMonoid Y₁] [AddCommMonoid Y₂] [AddCommMonoid Y₃]
   (e₁ : X₁ ≃+ Y₁) (e₂ : X₂ ≃+ Y₂) (e₃ : X₃ ≃+ Y₃)
   {f₁₂ : X₁ →+ X₂} {f₂₃ : X₂ →+ X₃} {g₁₂ : Y₁ →+ Y₂} {g₂₃ : Y₂ →+ Y₃}
-  (comm₁₂ : g₁₂.comp e₁ = AddMonoidHom.comp e₂ f₁₂)
-  (comm₂₃ : g₂₃.comp e₂ = AddMonoidHom.comp e₃ f₂₃)
 
-lemma of_ladder_addEquiv_of_exact (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
+lemma of_ladder_addEquiv_of_exact (comm₁₂ : g₁₂.comp e₁ = AddMonoidHom.comp e₂ f₁₂)
+    (comm₂₃ : g₂₃.comp e₂ = AddMonoidHom.comp e₃ f₂₃) (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
   have h₁₂ := DFunLike.congr_fun comm₁₂
   have h₂₃ := DFunLike.congr_fun comm₂₃
   dsimp at h₁₂ h₂₃
@@ -126,7 +125,8 @@ lemma of_ladder_addEquiv_of_exact (H : Exact f₁₂ f₂₃) : Exact g₁₂ g�
     obtain ⟨x₁, rfl⟩ := (H x₂).1 (e₃.injective (by rw [← h₂₃, hx₂, map_zero]))
     exact ⟨e₁ x₁, by rw [h₁₂]⟩
 
-lemma of_ladder_addEquiv_of_exact' (H : Exact g₁₂ g₂₃) : Exact f₁₂ f₂₃ := by
+lemma of_ladder_addEquiv_of_exact' (comm₁₂ : g₁₂.comp e₁ = AddMonoidHom.comp e₂ f₁₂)
+    (comm₂₃ : g₂₃.comp e₂ = AddMonoidHom.comp e₃ f₂₃) (H : Exact g₁₂ g₂₃) : Exact f₁₂ f₂₃ := by
   refine of_ladder_addEquiv_of_exact e₁.symm e₂.symm e₃.symm ?_ ?_ H
   · ext y₁
     obtain ⟨x₁, rfl⟩ := e₁.surjective y₁
@@ -137,7 +137,8 @@ lemma of_ladder_addEquiv_of_exact' (H : Exact g₁₂ g₂₃) : Exact f₁₂ f
     apply e₃.injective
     simpa using DFunLike.congr_fun comm₂₃.symm x₂
 
-lemma iff_of_ladder_addEquiv : Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ := by
+lemma iff_of_ladder_addEquiv (comm₁₂ : g₁₂.comp e₁ = AddMonoidHom.comp e₂ f₁₂)
+    (comm₂₃ : g₂₃.comp e₂ = AddMonoidHom.comp e₃ f₂₃) : Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ := by
   constructor
   · exact of_ladder_addEquiv_of_exact' e₁ e₂ e₃ comm₁₂ comm₂₃
   · exact of_ladder_addEquiv_of_exact e₁ e₂ e₃ comm₁₂ comm₂₃
@@ -171,6 +172,21 @@ lemma exact_of_comp_eq_zero_of_ker_le_range
 lemma exact_of_comp_of_mem_range
     (h1 : g ∘ₗ f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
   exact_of_comp_eq_zero_of_ker_le_range h1 h2
+
+variable {R M N P : Type*} [CommRing R]
+  [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
+
+lemma exact_subtype_mkQ (Q : Submodule R N) :
+    Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
+  rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
+
+lemma exact_map_mkQ_range (f : M →ₗ[R] N) :
+    Exact f (Submodule.mkQ (range f)) :=
+  exact_iff.mpr <| Submodule.ker_mkQ _
+
+lemma exact_subtype_ker_map (g : N →ₗ[R] P) :
+    Exact (Submodule.subtype (ker g)) g :=
+  exact_iff.mpr <| (Submodule.range_subtype _).symm
 
 end LinearMap
 
@@ -338,6 +354,22 @@ theorem Exact.split_tfae
   tfae_finish
 
 end split
+
+section Prod
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+
+lemma Exact.inr_fst : Function.Exact (LinearMap.inr R M N) (LinearMap.fst R M N) := by
+  rintro ⟨x, y⟩
+  simp only [LinearMap.fst_apply, @eq_comm _ x, LinearMap.coe_inr, Set.mem_range, Prod.mk.injEq,
+    exists_eq_right]
+
+lemma Exact.inl_snd : Function.Exact (LinearMap.inl R M N) (LinearMap.snd R M N) := by
+  rintro ⟨x, y⟩
+  simp only [LinearMap.snd_apply, @eq_comm _ y, LinearMap.coe_inl, Set.mem_range, Prod.mk.injEq,
+    exists_eq_left]
+
+end Prod
 
 section Ring
 

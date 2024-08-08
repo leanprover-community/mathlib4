@@ -93,8 +93,8 @@ noncomputable instance instNormedLatticeAddCommGroup [Fact (1 ≤ p)] :
     add_le_add_left := fun f g => add_le_add_left
     solid := fun f g hfg => by
       rw [← coeFn_le] at hfg
-      simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top f) (Lp.snorm_ne_top g)]
-      refine snorm_mono_ae ?_
+      simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top f) (Lp.eLpNorm_ne_top g)]
+      refine eLpNorm_mono_ae ?_
       filter_upwards [hfg, Lp.coeFn_abs f, Lp.coeFn_abs g] with x hx hxf hxg
       rw [hxf, hxg] at hx
       exact HasSolidNorm.solid hx }
