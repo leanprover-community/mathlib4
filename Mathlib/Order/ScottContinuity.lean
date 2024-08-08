@@ -117,12 +117,6 @@ variable {γ : Type*}
 
 variable [Preorder α] [Preorder β] [Preorder γ]
 
--- c.f Monotone.inf
-
-lemma monotone {f : α × β → γ} (h₁ : ∀ b, Monotone (fun a => f (a,b)))
-    (h₂ : ∀ a, Monotone (fun b => f (a,b))) : Monotone f := fun _ _ hab =>
-  le_trans (h₁ _ (Prod.mk_le_mk.mp hab).1) (h₂ _ (Prod.mk_le_mk.mp hab).2)
-
 -- c.f. isLUB_prod
 -- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
 --    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
@@ -173,7 +167,8 @@ lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
     (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
     ScottContinuous f := by
   intro d hd₁ hd₂ p hdp
-  rw [Prod.IsLub (monotone (fun a => (h₂ a).monotone) (fun a => (h₁ a).monotone)) hd₂]
+  rw [Prod.IsLub (Monotone.jointly_of_separately (fun a => (h₁ a).monotone)
+    (fun a => (h₂ a).monotone) ) hd₂]
   rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
   apply IsLUB.iUnion
   apply fun a => step1' (Nonempty.image Prod.snd hd₁) (DirectedOn.Prod.snd hd₂) hdp h₁
