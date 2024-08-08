@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Commutative squares that are pushout or pullback squares
@@ -17,7 +15,7 @@ squares in a category `C`.
 
 -/
 
-universe v v' u u'
+universe v u
 
 namespace CategoryTheory
 
