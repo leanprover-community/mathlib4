@@ -756,6 +756,7 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
   congr 1
   exact IsBaseChange.lift_eq _ _ _
 
+set_option synthInstance.maxHeartbeats 40000 in
 lemma KaehlerDifferential.range_mapBaseChange :
     LinearMap.range (mapBaseChange R A B) = LinearMap.ker (map R A B B) := by
   apply le_antisymm
