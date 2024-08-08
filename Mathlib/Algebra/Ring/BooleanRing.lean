@@ -46,20 +46,20 @@ variable {α β γ : Type*}
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
   /-- Multiplication in a boolean ring is idempotent. -/
-  mul_self : ∀ a : α, a * a = a
+  mul_self' : ∀ a : α, a * a = a
 
-section BooleanRing
+namespace BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
 instance : Std.IdempotentOp (α := α) (· * ·) :=
-  ⟨BooleanRing.mul_self⟩
+  ⟨BooleanRing.mul_self'⟩
 
-@[simp]
+@[scoped simp]
 theorem mul_self : a * a = a :=
-  BooleanRing.mul_self _
+  BooleanRing.mul_self' _
 
-@[simp]
+@[scoped simp]
 theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
     calc
@@ -68,7 +68,7 @@ theorem add_self : a + a = 0 := by
       _ = a + a + (a + a) := by rw [mul_self]
   rwa [self_eq_add_left] at this
 
-@[simp]
+@[scoped simp]
 theorem neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
@@ -90,14 +90,14 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a + b + (a * b + b * a) := by abel
   rwa [self_eq_add_right] at this
 
-@[simp]
+@[scoped simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 
 @[simp]
 theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
 
 -- Note [lower instance priority]
-instance (priority := 100) BooleanRing.toCommRing : CommRing α :=
+instance (priority := 100) toCommRing : CommRing α :=
   { (inferInstance : BooleanRing α) with
     mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
 
@@ -235,6 +235,8 @@ def toBooleanAlgebra : BooleanAlgebra α :=
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
+
+open BooleanRing
 
 instance : BooleanAlgebra (AsBoolAlg α) :=
   @BooleanRing.toBooleanAlgebra α _
@@ -414,7 +416,7 @@ abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
   one := ⊤
   one_mul := top_inf_eq
   mul_one := inf_top_eq
-  mul_self := inf_idem
+  mul_self' := inf_idem
 
 scoped[BooleanRingOfBooleanAlgebra]
   attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
@@ -533,7 +535,7 @@ instance : BooleanRing Bool where
   mul_one := Bool.and_true
   left_distrib := and_xor_distrib_left
   right_distrib := and_xor_distrib_right
-  mul_self := Bool.and_self
+  mul_self' := Bool.and_self
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
