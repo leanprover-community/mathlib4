@@ -52,7 +52,11 @@ open Finset Nat
 
 namespace NewtonIdentities
 
-variable (σ : Type*) [DecidableEq σ] (R : Type*) [CommRing R]
+variable (σ : Type*) (R : Type*) [CommRing R]
+
+section DecidableEq
+
+variable [DecidableEq σ]
 
 private def pairMap (t : Finset σ × σ) : Finset σ × σ :=
   if h : t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (t.fst.cons t.snd h, t.snd)
@@ -186,6 +190,10 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
   refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
   have hacard := le_iff_lt_or_eq.mp ha.2.1
   tauto
+
+end DecidableEq
+
+variable [Fintype σ]
 
 private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetCard k univ) :
     ∑ j ∈ A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i ∈ A, X i : MvPolynomial σ R) := by
