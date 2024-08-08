@@ -211,7 +211,7 @@ open TopCat Opposite
 
 variable {C : Type u} [Category.{v} C]
 variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
-variable (F : X.Presheaf C) (F' : Sheaf C X) (h : Opens.IsBasis (Set.range B))
+variable (F : X.Presheaf C) (F' : Sheaf C X)
 
 /-- The empty component of a sheaf is terminal. -/
 def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.val.obj (op ⊥)) :=
@@ -226,18 +226,20 @@ def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
     is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
     is equivalent to a homomorphism between their restrictions to the indexing type
     `ι` of `B`, with the induced category structure on `ι`. -/
-def restrictHomEquivHom :
+def restrictHomEquivHom (h : Opens.IsBasis (Set.range B)) :
     ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) ≃ (F ⟶ F'.1) :=
   @Functor.IsCoverDense.restrictHomEquivHom _ _ _ _ _ _ _ _
     (Opens.coverDense_inducedFunctor h) _ F F'
 
 @[simp]
-theorem extend_hom_app (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) (i : ι) :
+theorem extend_hom_app (h : Opens.IsBasis (Set.range B))
+    (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) (i : ι) :
     (restrictHomEquivHom F F' h α).app (op (B i)) = α.app (op i) := by
   nth_rw 2 [← (restrictHomEquivHom F F' h).left_inv α]
   rfl
 
-theorem hom_ext {α β : F ⟶ F'.1} (he : ∀ i, α.app (op (B i)) = β.app (op (B i))) : α = β := by
+theorem hom_ext (h : Opens.IsBasis (Set.range B))
+    {α β : F ⟶ F'.1} (he : ∀ i, α.app (op (B i)) = β.app (op (B i))) : α = β := by
   apply (restrictHomEquivHom F F' h).symm.injective
   ext i
   exact he i.unop
