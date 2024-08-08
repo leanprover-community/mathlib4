@@ -2,35 +2,34 @@ import Lake
 
 open Lake DSL
 
+/-- These options are used
+* as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
+* as `moreServerArgs`, to set their default value in mathlib.
+-/
+abbrev moreServOpts : Array LeanOption := #[
+  ⟨`linter.hashCommand, true⟩,
+  ⟨`linter.missingEnd, true⟩,
+  ⟨`linter.cdot, true⟩,
+  ⟨`linter.longLine, true⟩,
+  ⟨`linter.oldObtain, true,⟩,
+  ⟨`linter.refine, true⟩,
+  ⟨`linter.setOption, true⟩
+]
+
 package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`relaxedAutoImplicit, false⟩,
-    -- options that are used in `lake build`
-    ⟨`weak.linter.hashCommand, true⟩,
-    ⟨`weak.linter.missingEnd, true⟩,
-    ⟨`weak.linter.cdot, true⟩,
-    ⟨`weak.linter.longLine, true⟩,
-    ⟨`weak.linter.oldObtain, true,⟩,
-    ⟨`weak.linter.refine, true⟩,
-    ⟨`weak.linter.setOption, true⟩
-  ]
+    ⟨`relaxedAutoImplicit, false⟩
+  ] ++ -- options that are used in `lake build`
+    moreServOpts.map fun s => { s with name := `weak ++ s.name }
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
   -- weakLeanArgs := #[]
   -- these are the linter options that Mathlib enforces, but that would not be active by default
-  moreServerOptions := #[
-    ⟨`linter.hashCommand, true⟩,
-    ⟨`linter.missingEnd, true⟩,
-    ⟨`linter.cdot, true⟩,
-    ⟨`linter.longLine, true⟩,
-    ⟨`linter.oldObtain, true,⟩,
-    ⟨`linter.refine, true⟩,
-    ⟨`linter.setOption, true⟩
-  ]
+  moreServerOptions := moreServOpts
 
 /-!
 ## Mathlib dependencies on upstream projects.
