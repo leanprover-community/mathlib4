@@ -6,7 +6,16 @@ Authors: Scott Morrison, Newell Jensen
 import Lean.Elab.SyntheticMVars
 import Lean.Meta.Tactic.Constructor
 
-open Lean Meta Elab Tactic
+/-!
+# The `fconstructor` and `econstructor` tactics
+
+The `fconstructor` and `econstructor` tactics are variants of the `constructor` tactic in Lean core,
+except that
+- `fconstructor` does not reorder goals
+- `econstructor` adds only non-dependent premises as new goals.
+-/
+
+open Lean Elab Tactic
 
 /--
 `fconstructor` is like `constructor`

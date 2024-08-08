@@ -222,19 +222,25 @@ jobs:
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
-          lake exe checkYaml
+          lake exe check-yaml
 
       - name: verify `lake exe graph` works
         run: |
           lake exe graph
           rm import_graph.dot
 
+      - name: build everything
+        # make sure everything is available for test/import_all.lean
+        run: |
+          lake build Batteries Qq Aesop ProofWidgets
+
       - name: test mathlib
         id: test
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
-          run: lake test
+          run:
+            lake test
 
       - name: check for unused imports
         id: shake

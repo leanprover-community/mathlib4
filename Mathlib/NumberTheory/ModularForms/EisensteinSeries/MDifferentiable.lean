@@ -58,3 +58,5 @@ theorem eisensteinSeries_SIF_MDifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) 
     (eventually_of_forall fun s ↦ DifferentiableOn.sum
       fun _ _ ↦ eisSummand_extension_differentiableOn _ _)
         (isOpen_lt continuous_const continuous_im)
+
+end EisensteinSeries

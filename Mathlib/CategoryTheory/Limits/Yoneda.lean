@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.Util.AssertExists
 
-#align_import category_theory.limits.yoneda from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
-
 /-!
 # Limit properties relating to the (co)yoneda embedding.
 
@@ -34,7 +32,6 @@ variable {C : Type u} [Category.{v} C]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
   ι := { app := by aesop_cat }
-#align category_theory.coyoneda.colimit_cocone CategoryTheory.Coyoneda.colimitCocone
 
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
@@ -51,7 +48,6 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
     dsimp
     rw [← w]
     simp
-#align category_theory.coyoneda.colimit_cocone_is_colimit CategoryTheory.Coyoneda.colimitCoconeIsColimit
 
 instance (X : Cᵒᵖ) : HasColimit (coyoneda.obj X) :=
   HasColimit.mk
@@ -64,7 +60,6 @@ noncomputable def colimitCoyonedaIso (X : Cᵒᵖ) : colimit (coyoneda.obj X) �
   apply colimit.isoColimitCocone
     { cocone := _
       isColimit := colimitCoconeIsColimit X }
-#align category_theory.coyoneda.colimit_coyoneda_iso CategoryTheory.Coyoneda.colimitCoyonedaIso
 
 end Coyoneda
 
@@ -111,7 +106,15 @@ def yonedaJointlyReflectsLimits (F : J ⥤ Cᵒᵖ) (c : Cone F)
     dsimp at eq
     dsimp [Types.isLimitEquivSections, Types.sectionOfCone]
     rw [eq, Category.comp_id, ← hm, unop_comp])
-#align category_theory.yoneda_jointly_reflects_limits CategoryTheory.yonedaJointlyReflectsLimits
+
+/-- A cocone is colimit iff it becomes limit after the
+application of `yoneda.obj X` for all `X : C`. -/
+noncomputable def Limits.Cocone.isColimitYonedaEquiv {F : J ⥤ C} (c : Cocone F) :
+    IsColimit c ≃ ∀ (X : C), IsLimit ((yoneda.obj X).mapCone c.op) where
+  toFun h X := isLimitOfPreserves _ h.op
+  invFun h := IsLimit.unop (yonedaJointlyReflectsLimits _ _ h)
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := by ext; apply Subsingleton.elim
 
 /-- The cone of `F` corresponding to an element in `(F ⋙ coyoneda.obj X).sections`. -/
 @[simps]
@@ -145,7 +148,14 @@ def coyonedaJointlyReflectsLimits (F : J ⥤ C) (c : Cone F)
     have eq := congr_fun ((hc (op s.pt)).fac ((coyoneda.obj (op s.pt)).mapCone s) j) (𝟙 _)
     dsimp at eq
     rw [eq, Category.id_comp, ← hm]
-#align category_theory.coyoneda_jointly_reflects_limits CategoryTheory.coyonedaJointlyReflectsLimits
+
+/-- A cone is limit iff it is so after the application of `coyoneda.obj X` for all `X : Cᵒᵖ`. -/
+noncomputable def Limits.Cone.isLimitCoyonedaEquiv {F : J ⥤ C} (c : Cone F) :
+    IsLimit c ≃ ∀ (X : Cᵒᵖ), IsLimit ((coyoneda.obj X).mapCone c) where
+  toFun h X := isLimitOfPreserves _ h
+  invFun h := coyonedaJointlyReflectsLimits _ _ h
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := by ext; apply Subsingleton.elim
 
 end
 
@@ -156,7 +166,6 @@ noncomputable instance yonedaPreservesLimits (X : C) :
 /-- The coyoneda embedding `coyoneda.obj X : C ⥤ Type v` for `X : Cᵒᵖ` preserves limits. -/
 noncomputable instance coyonedaPreservesLimits (X : Cᵒᵖ) :
     PreservesLimitsOfSize.{t, w} (coyoneda.obj X) where
-#align category_theory.coyoneda_preserves_limits CategoryTheory.coyonedaPreservesLimits
 
 noncomputable instance yonedaFunctorPreservesLimits :
     PreservesLimitsOfSize.{t, w} (@yoneda C _) := by
@@ -164,7 +173,6 @@ noncomputable instance yonedaFunctorPreservesLimits :
   intro K
   change PreservesLimitsOfSize (coyoneda.obj K)
   infer_instance
-#align category_theory.yoneda_functor_preserves_limits CategoryTheory.yonedaFunctorPreservesLimits
 
 noncomputable instance coyonedaFunctorPreservesLimits :
     PreservesLimitsOfSize.{t, w} (@coyoneda C _) := by
@@ -172,15 +180,12 @@ noncomputable instance coyonedaFunctorPreservesLimits :
   intro K
   change PreservesLimitsOfSize (yoneda.obj K)
   infer_instance
-#align category_theory.coyoneda_functor_preserves_limits CategoryTheory.coyonedaFunctorPreservesLimits
 
 noncomputable instance yonedaFunctorReflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@yoneda C _) := inferInstance
-#align category_theory.yoneda_functor_reflects_limits CategoryTheory.yonedaFunctorReflectsLimits
 
 noncomputable instance coyonedaFunctorReflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@coyoneda C _) := inferInstance
-#align category_theory.coyoneda_functor_reflects_limits CategoryTheory.coyonedaFunctorReflectsLimits
 
 namespace Functor
 

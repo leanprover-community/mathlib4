@@ -7,6 +7,7 @@ import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
+import Batteries.Data.RBMap.Alter
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`
@@ -180,7 +181,7 @@ structure FunctionTheorem where
   /-- function name -/
   funOrigin   : Origin
   /-- array of argument indices about which this theorem is about -/
-  mainArgs  : Array Nat
+  mainArgs    : Array Nat
   /-- total number of arguments applied to the function  -/
   appliedArgs : Nat
   /-- priority  -/

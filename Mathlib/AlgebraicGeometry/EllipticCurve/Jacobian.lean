@@ -112,7 +112,7 @@ local macro "pderiv_simp" : tactic =>
     pderiv_X_of_ne (by decide : z ≠ x), pderiv_X_of_ne (by decide : x ≠ z),
     pderiv_X_of_ne (by decide : z ≠ y), pderiv_X_of_ne (by decide : y ≠ z)])
 
-variable {R : Type u} [CommRing R] {W' : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
+variable {R : Type u} {W' : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
 
 section Jacobian
 
@@ -126,6 +126,8 @@ lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, 
 
 lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
   (FinVec.map_eq _ _).symm
+
+variable [CommRing R]
 
 /-- The scalar multiplication on a point representative. -/
 scoped instance instSMulPoint : SMul R <| Fin 3 → R :=
@@ -223,6 +225,8 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
   (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).symm
 
 end Jacobian
+
+variable [CommRing R]
 
 section Equation
 
@@ -1152,8 +1156,7 @@ section Addition
 
 /-! ### Addition on point representatives -/
 
-open scoped Classical
-
+open Classical in
 variable (W') in
 /-- The addition of two point representatives. -/
 noncomputable def add (P Q : Fin 3 → R) : Fin 3 → R :=
@@ -1412,10 +1415,9 @@ section Affine
 
 /-! ### Equivalence with affine coordinates -/
 
-open scoped Classical
-
 namespace Point
 
+open Classical in
 variable (W) in
 /-- The map from a point representative that is nonsingular on a Weierstrass curve `W` in Jacobian
 coordinates to the corresponding nonsingular rational point on `W` in affine coordinates. -/
