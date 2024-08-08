@@ -5,6 +5,7 @@ Authors: Neil Strickland
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Abs
@@ -174,6 +175,13 @@ theorem Commute.sub_dvd_pow_sub_pow [Ring α] {x y : α} (h : Commute x y) (n : 
 theorem sub_dvd_pow_sub_pow [CommRing α] (x y : α) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
   (Commute.all x y).sub_dvd_pow_sub_pow n
 
+theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
+  rcases le_or_lt y x with h | h
+  · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
+    exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
+  · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
+    exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
+
 theorem one_sub_dvd_one_sub_pow [Ring α] (x : α) (n : ℕ) :
     1 - x ∣ 1 - x ^ n := by
   conv_rhs => rw [← one_pow n]
@@ -184,12 +192,15 @@ theorem sub_one_dvd_pow_sub_one [Ring α] (x : α) (n : ℕ) :
   conv_rhs => rw [← one_pow n]
   exact (Commute.one_right x).sub_dvd_pow_sub_pow n
 
-theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
-  rcases le_or_lt y x with h | h
-  · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
-    exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
-  · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
-    exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
+lemma pow_one_sub_dvd_pow_mul_sub_one [Ring α] (x : α) (m n : ℕ) :
+    ((x ^ m) - 1 : α) ∣ (x ^ (m * n) - 1) := by
+  rw [npow_mul]
+  exact sub_one_dvd_pow_sub_one (x := x ^ m) (n := n)
+
+lemma nat_pow_one_sub_dvd_pow_mul_sub_one (x m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
+  nth_rw 2 [← Nat.one_pow n]
+  rw [Nat.pow_mul x m n]
+  apply nat_sub_dvd_pow_sub_pow (x ^ m) 1
 
 theorem Odd.add_dvd_pow_add_pow [CommRing α] (x y : α) {n : ℕ} (h : Odd n) :
     x + y ∣ x ^ n + y ^ n := by
