@@ -275,7 +275,8 @@ theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : 
   rw [comp_eq_mk]
   apply coeFn_mk
 
-theorem comp_compQuasiMeasurePreserving {β : Type*} [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
+theorem comp_compQuasiMeasurePreserving
+    {β : Type*} [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
     (f : β →ₘ[ν] γ) {φ : α → β} (hφ : Measure.QuasiMeasurePreserving φ μ ν) :
     (comp g hg f).compQuasiMeasurePreserving φ hφ =
       comp g hg (f.compQuasiMeasurePreserving φ hφ) := by
