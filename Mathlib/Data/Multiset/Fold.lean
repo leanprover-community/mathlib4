@@ -43,6 +43,15 @@ theorem fold_eq_foldl (b : α) (s : Multiset α) :
     fold op b s = foldl op (right_comm _ hc.comm ha.assoc) b s :=
   Quot.inductionOn s fun _ => coe_fold_l _ _ _
 
+private def fold_impl: α → Multiset α → α :=
+  foldl op (right_comm _ hc.comm ha.assoc)
+
+@[csimp]
+private theorem fold_eq_fold_impl: @fold = @fold_impl := by {
+  funext
+  exact fold_eq_foldl _ _ _
+}
+
 @[simp]
 theorem fold_zero (b : α) : (0 : Multiset α).fold op b = b :=
   rfl
