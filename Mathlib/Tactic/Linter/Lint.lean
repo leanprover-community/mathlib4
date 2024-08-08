@@ -221,18 +221,16 @@ end CDotLinter
 /-!
 #  The "longFile" linter
 
-The "longFile" linter emits a warning on declarations whose line number exceeds the value of its
+The "longFile" linter emits a warning on files whose line number exceeds the value of the linter's
 option.
-The default value for the option is 1500.
+The default value for the option is `1500`.
 -/
 
-open Lean Elab
-
 /--
-The "longFile" linter emits a warning on declarations whose line number exceeds the value of its
+The "longFile" linter emits a warning on files whose line number exceeds the value of the linter's
 option.
-The default value for the option is 1500.
-A value of 0 silences the linter entirely.
+The default value for the option is `1500`.
+A value of `0` silences the linter entirely.
 -/
 register_option linter.longFile : Nat := {
   defValue := 1500
@@ -243,34 +241,28 @@ namespace LongFile
 
 @[inherit_doc Mathlib.Linter.linter.longFile]
 def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    let linterBound := linter.longFile.get (← getOptions)
-    if (← getMainModule) == `Mathlib then return
-    if linterBound == 0 then
-      return
-    if (← get).messages.hasErrors then
-      return
-    if let some init := stx.getPos? then
-      -- the last line: we subtract 1, since the last line is expected to be empty
-      let lastLine := ((← getFileMap).toPosition init).line - 1
-      -- `candidate` is divisible by `100` and satisfies
-      -- `lastLine + 100 < candidate ≤ lastLine + 200`
-      let candidate := ((lastLine + 200) / 100) * 100
-      if linterBound < lastLine then
-        logWarningAt stx <| .tagged linter.longFile.name
-          m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
-            You can extend the default length of the file using \
-            `set_option linter.longFile {candidate}`.\n\
-            You can disable completely this linter by setting the length limit to `0`."
-      else
-      let candidate := max candidate 1500
-      if 1500 < linterBound && lastLine + 200 < linterBound &&  linterBound != candidate then
-        logWarningAt stx <| .tagged linter.longFile.name
-          m!"The recommended limit for the number of lines is {candidate}, \
-            instead of {linterBound}.\n\n
-            Please adjust the limit to the recommended value using \
-            `set_option linter.longFile {candidate}`.\n\
-            You can disable completely this linter by setting the length limit to `0`."
+  let linterBound := linter.longFile.get (← getOptions)
+  if linterBound == 0 then
+    return
+  unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+  if (← getMainModule) == `Mathlib then return
+  if let some init := stx.getPos? then
+    -- the last line: we subtract 1, since the last line is expected to be empty
+    let lastLine := ((← getFileMap).toPosition init).line - 1
+    -- `candidate` is divisible by `100` and satisfies `lastLine + 100 < candidate ≤ lastLine + 200`
+    let candidate := (lastLine / 100) * 100 + 200
+    let endMsg := m!"using `set_option linter.longFile {candidate}`.\n\
+                    You can disable completely this linter by setting the length limit to `0`."
+    if linterBound < lastLine then
+      logWarningAt stx <| .tagged linter.longFile.name
+        m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
+          You can extend the default length of the file {endMsg}"
+    else
+    let candidate := max candidate 1500
+    if 1500 < linterBound && lastLine + 200 < linterBound &&  linterBound != candidate then
+      logWarningAt stx <| .tagged linter.longFile.name
+        m!"For this file, the recommended limit for the number of lines is {candidate}, instead of \
+          {linterBound}.\n\nPlease adjust the limit to the recommended value {endMsg}"
 
 initialize addLinter longFileLinter
 
