@@ -586,7 +586,7 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
   exact add_lt_add_left (mul_lt_mul_of_pos_right hab <| (lt_add_iff_pos_right _).1 hcd) _
 
 /-- Binary **rearrangement inequality**. -/
-lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE α] [PosMulMono α] [MulPosStrictMono α]
+lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE α] [MulPosStrictMono α]
     [CovariantClass α α (· + ·) (· < ·)]
     (hba : b < a) (hdc : d < c) : a * d + b * c < a * c + b * d := by
   rw [add_comm (a * d), add_comm (a * c)]

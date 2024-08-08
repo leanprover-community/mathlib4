@@ -2514,7 +2514,7 @@ open scoped Classical
 variable [Inhabited Λ]
 
 /-- The support of a set of TM2 states in the TM2 emulator. -/
-noncomputable def trSupp [DecidableEq K] (S : Finset Λ) : Finset Λ'₂₁ :=
+noncomputable def trSupp (S : Finset Λ) : Finset Λ'₂₁ :=
   S.biUnion fun l ↦ insert (normal l) (trStmts₁ (M l))
 
 theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M S) :=

@@ -208,7 +208,7 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
   simp [circleMap_zero]
 
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succ`. -/
-theorem torusIntegral_succAbove [CompleteSpace E]
+theorem torusIntegral_succAbove
     {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R)
     (i : Fin (n + 1)) :
     (∯ x in T(c, R), f x) =
