@@ -244,29 +244,30 @@ namespace LongFile
 @[inherit_doc Mathlib.Linter.linter.longFile]
 def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    let fileLengthBound := linter.longFile.get (← getOptions)
+    let linterBound := linter.longFile.get (← getOptions)
     if (← getMainModule) == `Mathlib then return
-    if fileLengthBound == 0 then
+    if linterBound == 0 then
       return
     if (← get).messages.hasErrors then
       return
     if let some init := stx.getPos? then
       -- the last line: we subtract 1, since the last line is expected to be empty
-      let line := ((← getFileMap).toPosition init).line - 1
-      -- `candidate` is divisible by `100` and satisfies `line + 100 < candidate ≤ line + 200`
-      let candidate := ((line + 200) / 100) * 100
-      if fileLengthBound < line then
+      let lastLine := ((← getFileMap).toPosition init).line - 1
+      -- `candidate` is divisible by `100` and satisfies
+      -- `lastLine + 100 < candidate ≤ lastLine + 200`
+      let candidate := ((lastLine + 200) / 100) * 100
+      if linterBound < lastLine then
         logWarningAt stx <| .tagged linter.longFile.name
-          m!"This file is {line} lines long, but the limit is {fileLengthBound}.\n\n\
+          m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
             You can extend the default length of the file using \
             `set_option linter.longFile {candidate}`.\n\
             You can disable completely this linter by setting the length limit to `0`."
       else
       let candidate := max candidate 1500
-      if 1500 < fileLengthBound && fileLengthBound != candidate then
+      if 1500 < linterBound && lastLine + 200 < linterBound &&  linterBound != candidate then
         logWarningAt stx <| .tagged linter.longFile.name
           m!"The recommended limit for the number of lines is {candidate}, \
-            instead of {fileLengthBound}.\n\n
+            instead of {linterBound}.\n\n
             Please adjust the limit to the recommended value using \
             `set_option linter.longFile {candidate}`.\n\
             You can disable completely this linter by setting the length limit to `0`."
