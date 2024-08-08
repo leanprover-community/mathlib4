@@ -54,6 +54,9 @@ theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :
   DFinsupp.smul_apply _ _ _
 
 variable (R ι M)
+
+section DecidableEq
+
 variable [DecidableEq ι]
 
 /-- Create the direct sum given a family `M` of `R` modules indexed over `ι`. -/
@@ -158,6 +161,8 @@ theorem linearEquivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : M i) :
   rw [DFinsupp.equivFunOnFintype_symm_single i m]
   rfl
 
+end DecidableEq
+
 @[simp]
 theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
     (linearEquivFunOnFintype R ι M).symm f = f := by
@@ -167,8 +172,6 @@ theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
 protected def lid (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
     (⨁ _ : ι, M) ≃ₗ[R] M :=
   { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
-
-variable (ι M)
 
 /-- The projection map onto one component, as a linear map. -/
 def component (i : ι) : (⨁ i, M i) →ₗ[R] M i :=
@@ -187,14 +190,15 @@ theorem ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = com
   ⟨fun h _ ↦ by rw [h], ext R⟩
 
 @[simp]
-theorem lof_apply (i : ι) (b : M i) : ((lof R ι M i) b) i = b :=
+theorem lof_apply [DecidableEq ι] (i : ι) (b : M i) : ((lof R ι M i) b) i = b :=
   DFinsupp.single_eq_same
 
 @[simp]
-theorem component.lof_self (i : ι) (b : M i) : component R ι M i ((lof R ι M i) b) = b :=
+theorem component.lof_self [DecidableEq ι] (i : ι) (b : M i) :
+    component R ι M i ((lof R ι M i) b) = b :=
   lof_apply R i b
 
-theorem component.of (i j : ι) (b : M j) :
+theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
   DFinsupp.single_apply
 
@@ -216,7 +220,7 @@ end CongrLeft
 section Sigma
 
 variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
-variable [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
+variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
