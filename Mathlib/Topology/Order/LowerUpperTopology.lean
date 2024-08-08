@@ -288,12 +288,10 @@ variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
 lemma isTopologicalBasis_insert_univ_subbasis :
     IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) :=
   isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq α]; rfl)
-    (fun _ hs _ ht => by
-      simp at *
-      rcases hs with ⟨b, hb⟩
-      rcases ht with ⟨c, hc⟩
+    (by
+      rintro _ ⟨b, hb⟩ _ ⟨c, hc⟩
       use b ⊓ c
-      rw [← hc, ← hb, Iio_inter_Iio])
+      rw [← hc, ← hb, compl_Ici, compl_Ici, compl_Ici, Iio_inter_Iio])
 
 end LinearOrder
 
@@ -320,7 +318,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a 
       by_contra hUS'
       apply hU
       rw [hS2]
-      exact sUnion_eq_univ_iff.mpr (fun a => by use univ; exact ⟨hUS',trivial⟩)
+      exact sUnion_eq_univ_iff.mpr (fun a => ⟨univ, hUS', trivial⟩)
     use sSup {a | (Ici a)ᶜ ∈ S}
     rw [hS2, sUnion_eq_compl_sInter_compl, compl_inj_iff]
     apply le_antisymm
@@ -437,7 +435,7 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsUpper α]
 
-lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a : α), (Iic a)ᶜ = U) :=
+lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (Iic a)ᶜ = U :=
   IsLower.isTopologicalSpace_basis (α := αᵒᵈ) U
 
 end CompleteLinearOrder
