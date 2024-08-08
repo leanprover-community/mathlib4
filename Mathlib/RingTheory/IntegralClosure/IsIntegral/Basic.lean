@@ -48,7 +48,7 @@ section
 
 variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
-theorem isIntegral_algHom_iff (f : A →ₐ[R] B)  (hf : Function.Injective f) {x : A} :
+theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x : A} :
     IsIntegral R (f x) ↔ IsIntegral R x := by
   refine ⟨fun ⟨p, hp, hx⟩ ↦ ⟨p, hp, ?_⟩, IsIntegral.map f⟩
   rwa [← f.comp_algebraMap, ← AlgHom.coe_toRingHom, ← hom_eval₂, AlgHom.coe_toRingHom,
@@ -87,7 +87,7 @@ variable (f : R →+* B)
 theorem RingHom.isIntegralElem_zero : f.IsIntegralElem 0 :=
   f.map_zero ▸ f.isIntegralElem_map
 
-theorem isIntegral_zero [Algebra R B]  : IsIntegral R (0 : B) :=
+theorem isIntegral_zero [Algebra R B] : IsIntegral R (0 : B) :=
   (algebraMap R B).isIntegralElem_zero
 
 theorem RingHom.isIntegralElem_one : f.IsIntegralElem 1 :=
@@ -98,7 +98,7 @@ theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
 
 variable (f : R →+* S)
 
-theorem IsIntegral.of_pow [Algebra R B]  {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
+theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
     IsIntegral R x := by
   rcases hx with ⟨p, hmonic, heval⟩
   exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
