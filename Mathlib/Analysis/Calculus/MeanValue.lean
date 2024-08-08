@@ -752,6 +752,7 @@ theorem exists_deriv_eq_slope : ∃ c ∈ Ioo a b, deriv f c = (f b - f a) / (b 
   exists_hasDerivAt_eq_slope f (deriv f) hab hfc fun x hx =>
     ((hfd x hx).differentiableAt <| IsOpen.mem_nhds isOpen_Ioo hx).hasDerivAt
 
+include hab hfc hfd in
 /-- Lagrange's **Mean Value Theorem**, `deriv` version. -/
 theorem exists_deriv_eq_slope' : ∃ c ∈ Ioo a b, deriv f c = slope f a b := by
   rw [slope_def_field]

@@ -56,6 +56,7 @@ namespace HomologySequence
 
 variable (T : Triangle (DerivedCategory C)) (hT : T ∈ distTriang _)
   (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+include hT
 
 /-- The connecting homomorphism on the homology sequence attached to a distinguished
 triangle in the derived category. -/
