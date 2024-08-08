@@ -18,7 +18,6 @@ components and functors to functions between those sets.
 
 ## Notes
 All this could be made with 2-functors
-
 -/
 
 universe u

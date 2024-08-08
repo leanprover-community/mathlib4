@@ -25,6 +25,7 @@ two elements are connected, only that they are.
 ## Implmentation notes
 
 We rely on `Quiver.ConnectedComponent`
+
 -/
 
 namespace CategoryTheory.Cat
