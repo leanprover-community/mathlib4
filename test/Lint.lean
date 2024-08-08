@@ -116,3 +116,16 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 -/
 #guard_msgs in
 #eval List.range 27
+
+set_option linter.longFile 121
+/--
+warning: This command starts on line 130, but this file can only be 121 lines long.
+
+You can extend the default length of the file using `set_option linter.longFile x`
+where the value of `x : ℕ` is the new file limit.
+
+You can disable completely this linter by setting the length limit to `0`.
+-/
+#guard_msgs in
+run_cmd return
+set_option linter.longFile 1500

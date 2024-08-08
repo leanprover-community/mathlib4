@@ -218,6 +218,53 @@ initialize addLinter cdotLinter
 
 end CDotLinter
 
+/-!
+#  The "longFile" linter
+
+The "longFile" linter emits a warning on declarations whose line number exceeds the value of its
+option.
+The default value for the option is 1500.
+-/
+
+open Lean Elab
+
+namespace Mathlib.Linter
+
+/--
+The "longFile" linter emits a warning on declarations whose line number exceeds the value of its
+option.
+The default value for the option is 1500.
+A value of 0 silences the linter entirely.
+-/
+register_option linter.longFile : Nat := {
+  defValue := 1500
+  descr := "enable the longFile linter"
+}
+
+namespace LongFile
+
+@[inherit_doc Mathlib.Linter.linter.longFile]
+def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    let gh := linter.longFile.get (← getOptions)
+    unless gh != 0 do
+      return
+    if (← get).messages.hasErrors then
+      return
+    if let some init := stx.getPos? then
+      let line := ((← getFileMap).toPosition init).line
+      if gh < line then
+        logWarningAt stx <| .tagged linter.longFile.name
+          m!"This command starts on line {line}, but this file can only be {gh} lines long.\n\n\
+          You can extend the default length of the file using `set_option linter.longFile x` \
+          where the value of `x : ℕ` is the new file limit.\n\n\
+          You can disable completely this linter by setting the length limit to `0`."
+
+initialize addLinter longFileLinter
+
+end LongFile
+
+end Mathlib.Linter
+
 /-! # The "longLine linter" -/
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
