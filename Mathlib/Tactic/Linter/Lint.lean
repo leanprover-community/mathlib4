@@ -245,6 +245,7 @@ namespace LongFile
 def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
     let fileLengthBound := linter.longFile.get (← getOptions)
+    if (← getMainModule) == `Mathlib then return
     if fileLengthBound == 0 then
       return
     if (← get).messages.hasErrors then
