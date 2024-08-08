@@ -7,12 +7,6 @@ import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 
-namespace CategoryTheory.Cat
-
-variable {C D : Cat}
-variable {a b : C}
-variable (F : C ⥤ D)
-
 /-!# Relation induced by a category
 
 The hom-set of a category can be seen as a (proof relevant) relation on its objects :
@@ -31,6 +25,13 @@ two elements are connected, only that they are.
 
 We rely on `Quiver.ConnectedComponent`
 -/
+
+namespace CategoryTheory.Cat
+
+variable {C D : Cat}
+variable {a b : C}
+variable (F : C ⥤ D)
+
 open Quiver
 
 abbrev zigzagSetoidC : Setoid C := zigzagSetoid C
