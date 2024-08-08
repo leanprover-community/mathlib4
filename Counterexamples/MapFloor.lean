@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Group.PiLex
+import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Polynomial.Reverse
 
 /-!
