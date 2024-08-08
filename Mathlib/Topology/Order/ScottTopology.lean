@@ -142,7 +142,7 @@ def scottHausdorff (α : Type*) [Preorder α] : TopologicalSpace α where
     obtain ⟨b, hbd, hbds₀⟩ := h s₀ hs₀s hd₁ hd₂ hd₃ has₀
     exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩
 
-variable (α) [TopologicalSpace α]
+variable (α) [t : TopologicalSpace α]
 
 /-- Predicate for an ordered topological space to be equipped with its Scott-Hausdorff topology.
 
@@ -376,7 +376,7 @@ end Scott
 variable [Preorder α]
 
 lemma scottHausdorff_le_lower : scottHausdorff α ≤ lower α :=
-  fun s h => @IsScottHausdorff.isOpen_of_isLowerSet _ _ (scottHausdorff α) _ _
+  fun s h => IsScottHausdorff.isOpen_of_isLowerSet (t := scottHausdorff α)
       <| (@IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _ _ s h)
 
 variable [TopologicalSpace α]
