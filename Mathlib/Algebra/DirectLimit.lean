@@ -271,7 +271,8 @@ theorem totalize_of_not_le {i j} (h : ¬i ≤ j) : totalize G f i j = 0 :=
 
 end Totalize
 
-variable [DecidableEq ι] [DirectedSystem G fun i j h => f i j h] {G f}
+variable [DecidableEq ι] [DirectedSystem G fun i j h => f i j h]
+variable {G f}
 
 theorem toModule_totalize_of_le [∀ i (k : G i), Decidable (k ≠ 0)] {x : DirectSum ι G} {i j : ι}
     (hij : i ≤ j) (hx : ∀ k ∈ x.support, k ≤ i) :
