@@ -54,6 +54,7 @@ example (x : ℚ) (h₀ : x ≠ 0) :
   field_simp
   ring
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 /-- Use a custom discharger -/
 example (x : ℚ) (h₀ : x ≠ 0) :
     (4 / x)⁻¹ * ((3 * x^3) / x)^2 * ((1 / (2 * x))⁻¹)^3 = 18 * x^8 := by
