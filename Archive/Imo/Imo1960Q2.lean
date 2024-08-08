@@ -36,6 +36,7 @@ structure IsGood (x : ℝ) : Prop where
   /-- The number belongs to the domain of the denominator. -/
   denom_dom : (1 - sqrt (2 * x + 1)) ^ 2 ≠ 0
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 /-- Solution of IMO 1960 Q2: solutions of the inequality
 are the numbers of the half-closed interval \([-1/2, 45/8)\) except for the number zero. -/
 theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by

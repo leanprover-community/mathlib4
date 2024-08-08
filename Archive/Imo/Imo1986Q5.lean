@@ -66,6 +66,7 @@ theorem map_eq (x : ℝ≥0) : f x = 2 / (2 - x) :=
 
 end IsGood
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 theorem isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2 - x) := by
   refine ⟨fun hf ↦ funext hf.map_eq, ?_⟩
   rintro rfl

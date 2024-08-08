@@ -225,6 +225,7 @@ lemma floor_fExample (x : ℚ) :
     rw [Int.floor_eq_iff]
     simp [(Int.fract_nonneg x).lt_of_ne' h, (Int.fract_lt_one x).le]
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) = 2 := by
   have h : Set.range (fun x ↦ fExample x + fExample (-x)) = {0, -2} := by
     ext x
