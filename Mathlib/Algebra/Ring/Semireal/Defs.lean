@@ -36,8 +36,8 @@ for all additive monoid `R` equipped with a multiplication, a multiplicative uni
 @[mk_iff]
 class IsSemireal [AddMonoid R] [Mul R] [One R] [Neg R] : Prop where
   non_trivial        : (0 : R) ≠ 1
-  neg_one_not_SumSq  : ¬isSumSq (-1 : R)
+  neg_one_not_isSumSq  : ¬IsSumSq (-1 : R)
 
 instance [LinearOrderedField R] : IsSemireal R where
   non_trivial := zero_ne_one
-  neg_one_not_SumSq := fun h ↦ (not_le (α := R)).2 neg_one_lt_zero h.nonneg
+  neg_one_not_isSumSq := fun h ↦ (not_le (α := R)).2 neg_one_lt_zero h.nonneg
