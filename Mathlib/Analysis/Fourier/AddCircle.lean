@@ -274,7 +274,7 @@ variable [hT : Fact (0 < T)]
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `AddCircle T → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `AddCircle T` of `fourier (-n) t • f t`. -/
