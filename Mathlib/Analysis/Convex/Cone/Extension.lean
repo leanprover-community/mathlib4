@@ -125,14 +125,14 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
     convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
     exact this.2 rfl
-  obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ S hSc p hp_nonneg
+  obtain ⟨q, hpq, hqs, hq⟩ := zorn_le_nonempty₀ S hSc p hp_nonneg
   refine ⟨q, hpq, ?_, hqs⟩
   contrapose! hq
   have hqd : ∀ y, ∃ x : q.domain, (x : E) + y ∈ s := fun y ↦
     let ⟨x, hx⟩ := hp_dense y
     ⟨Submodule.inclusion hpq.left x, hx⟩
   rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
-  exact ⟨r, hr, hqr.le, hqr.ne'⟩
+  exact ⟨r, hr, hqr.le, fun hrq ↦ hqr.ne' <| hrq.antisymm hqr.le⟩
 
 end RieszExtension
 

@@ -296,24 +296,12 @@ theorem algebraicIndependent_sUnion_of_directed {s : Set (Set A)} (hsn : s.Nonem
   exact algebraicIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
 
 theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
-    (hs : AlgebraicIndependent R ((↑) : s → A)) :
-    ∃ u : Set A, AlgebraicIndependent R ((↑) : u → A) ∧ s ⊆ u ∧ u ⊆ t ∧
-      ∀ x : Set A, AlgebraicIndependent R ((↑) : x → A) → u ⊆ x → x ⊆ t → x = u := by
-  rcases zorn_subset_nonempty { u : Set A | AlgebraicIndependent R ((↑) : u → A) ∧ s ⊆ u ∧ u ⊆ t }
-      (fun c hc chainc hcn =>
-        ⟨⋃₀ c, by
-          refine ⟨⟨algebraicIndependent_sUnion_of_directed hcn chainc.directedOn
-              fun a ha => (hc ha).1, ?_, ?_⟩, ?_⟩
-          · cases' hcn with x hx
-            exact subset_sUnion_of_subset _ x (hc hx).2.1 hx
-          · exact sUnion_subset fun x hx => (hc hx).2.2
-          · intro s
-            exact subset_sUnion_of_mem⟩)
-      s ⟨hs, Set.Subset.refl s, hst⟩ with
-    ⟨u, ⟨huai, _, hut⟩, hsu, hx⟩
-  use u, huai, hsu, hut
-  intro x hxai huv hxt
-  exact hx _ ⟨hxai, _root_.trans hsu huv, hxt⟩ huv
+    (hs : AlgebraicIndependent R ((↑) : s → A)) : ∃ u, s ⊆ u ∧
+      Maximal (fun (x : Set A) ↦ AlgebraicIndependent R ((↑) : x → A) ∧ x ⊆ t) u := by
+  refine zorn_subset_nonempty { u : Set A | AlgebraicIndependent R ((↑) : u → A) ∧ u ⊆ t}
+    (fun c hc chainc hcn ↦ ⟨⋃₀ c, ⟨?_, ?_⟩, fun _ ↦ subset_sUnion_of_mem⟩) s ⟨hs, hst⟩
+  · exact algebraicIndependent_sUnion_of_directed hcn chainc.directedOn (fun x hxc ↦ (hc hxc).1)
+  exact fun x ⟨w, hyc, hwy⟩ ↦ (hc hyc).2 hwy
 
 section repr
 
@@ -443,10 +431,9 @@ theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
   cases' exists_maximal_algebraicIndependent (∅ : Set A) Set.univ (Set.subset_univ _)
       ((algebraicIndependent_empty_iff R A).2 h) with
     s hs
-  use s, hs.1
-  intro t ht hr
+  refine ⟨s, hs.2.1.1, fun t ht hst ↦ ?_⟩
   simp only [Subtype.range_coe_subtype, setOf_mem_eq] at *
-  exact Eq.symm (hs.2.2.2 t ht hr (Set.subset_univ _))
+  exact hs.2.eq_of_le ⟨ht, subset_univ _⟩ hst
 
 variable {R}
 
