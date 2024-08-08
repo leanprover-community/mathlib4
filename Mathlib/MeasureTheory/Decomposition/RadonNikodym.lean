@@ -517,7 +517,7 @@ lemma setLIntegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_rnDeriv_mul := setLIntegral_rnDeriv_mul
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 theorem integrable_rnDeriv_smul_iff [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
     [SigmaFinite μ] {f : α → E} :
@@ -526,13 +526,13 @@ theorem integrable_rnDeriv_smul_iff [HaveLebesgueDecomposition μ ν] (hμν : �
   rw [← integrable_withDensity_iff_integrable_smul' (E := E)
     (measurable_rnDeriv μ ν) (rnDeriv_lt_top μ ν)]
 
-theorem withDensityᵥ_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
+theorem withDensityᵥ_rnDeriv_smul [CompleteSpace E] [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
     [SigmaFinite μ] {f : α → E} (hf : Integrable f μ) :
     ν.withDensityᵥ (fun x ↦ (rnDeriv μ ν x).toReal • f x) = μ.withDensityᵥ f := by
   rw [withDensityᵥ_smul_eq_withDensityᵥ_withDensity' (measurable_rnDeriv μ ν).aemeasurable
     (rnDeriv_lt_top μ ν) ((integrable_rnDeriv_smul_iff hμν).mpr hf), withDensity_rnDeriv_eq μ ν hμν]
 
-theorem integral_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
+theorem integral_rnDeriv_smul [CompleteSpace E] [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
     [SigmaFinite μ] {f : α → E} :
     ∫ x, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x, f x ∂μ := by
   by_cases hf : Integrable f μ

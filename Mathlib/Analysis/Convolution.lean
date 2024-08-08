@@ -829,12 +829,11 @@ variable [NormedSpace 𝕜 E']
 variable [NormedSpace 𝕜 E'']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
 variable {n : ℕ∞}
-variable [CompleteSpace F]
 variable [MeasurableSpace G] {μ ν : Measure G}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 section Assoc
-
+variable [CompleteSpace F]
 variable [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [CompleteSpace F']
 variable [NormedAddCommGroup F''] [NormedSpace ℝ F''] [NormedSpace 𝕜 F''] [CompleteSpace F'']
 variable {k : G → E''}
@@ -994,7 +993,6 @@ variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
 variable {f₀ : 𝕜 → E} {g₀ : 𝕜 → E'}
 variable {n : ℕ∞}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
-variable [CompleteSpace F]
 variable {μ : Measure 𝕜}
 variable [IsAddLeftInvariant μ] [SFinite μ]
 
@@ -1016,7 +1014,7 @@ end Real
 section WithParam
 
 variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
-  [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
+  [NormedSpace 𝕜 F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
