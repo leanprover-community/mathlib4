@@ -142,6 +142,7 @@ lemma coeff_rTensorAlgHom_tmul
   rw [algebraMap_eq, mul_comm, coeff_C_mul]
   simp [mapAlgHom, coeff_map]
 
+section DecidableEq
 variable [DecidableEq σ]
 
 lemma coeff_rTensorAlgHom_monomial_tmul
@@ -189,8 +190,10 @@ noncomputable def scalarRTensorAlgEquiv :
     MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
 
+end DecidableEq
+
 variable (R)
-variable {σ : Type*} (A : Type*) [CommSemiring A] [Algebra R A]
+variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
 equivalent to `M̀vPolynomial σ A`. -/
