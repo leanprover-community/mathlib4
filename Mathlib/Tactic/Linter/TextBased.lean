@@ -362,8 +362,10 @@ def checkFileLength (lines : Array String) (existing_limit : Option ℕ) : Optio
     if is_larger then
       -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
       -- but sufficiently large PRs will get nudged towards splitting up this file.
-      return some (StyleError.fileTooLong lines.size
-        ((Nat.div lines.size 100) * 100 + 200) existing_limit)
+      if (lines.filter ("set_option linter.longFile ".isPrefixOf)).isEmpty then
+        return some (StyleError.fileTooLong lines.size
+          ((Nat.div lines.size 100) * 100 + 200) existing_limit)
+      else return none
   none
 
 end
