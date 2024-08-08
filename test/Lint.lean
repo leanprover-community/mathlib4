@@ -156,21 +156,21 @@ variable (a) -- dummy line
 section
 /--
 warning: bad variable declaration: ⏎
-the binder types of the variable 'a' is changed, while the new variable 'b' is declared
+the binder type of the variable 'a' is changed, while the new variables 'b', 'c' are declared
 please split these into separate 'variable' commands
 note: this linter can be disabled with `set_option linter.badVariable false`
 -/
 #guard_msgs in
-variable {a} (b : Type)
+variable {a} (b c : Type)
 section
 /--
 warning: bad variable declaration: ⏎
-the binder types of the variable 'a' is changed, while the new variable 'b' is declared
+the binder types of the variables 'a', 'b' are changed, while the new variable 'c' is declared
 please split these into separate 'variable' commands
 note: this linter can be disabled with `set_option linter.badVariable false`
 -/
 #guard_msgs in
-variable (a) {b : Type}
+variable (a) {b} {c : Type}
 
 -- If a variable was previously strictly implicitly bound, we still catch this.
 section
@@ -178,7 +178,7 @@ variable ⦃x y : Int⦄  ⦃x y⦄
 section
 /--
 warning: bad variable declaration: ⏎
-the binder types of the variable 'x' is changed, while the new variable 'c' is declared
+the binder type of the variable 'x' is changed, while the new variable 'c' is declared
 please split these into separate 'variable' commands
 note: this linter can be disabled with `set_option linter.badVariable false`
 -/

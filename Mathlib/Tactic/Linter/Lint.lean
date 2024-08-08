@@ -370,11 +370,11 @@ def badVariableLinter : Linter where
         let changed := ", ".intercalate ((binderTypeChanged.toList).map fun s ↦ s!"'{s}'")
         let C := binderTypeChanged.size
         let new := ", ".intercalate ((newVariables.toList).map fun s ↦ s!"'{s}'")
-        let N := binderTypeChanged.size
+        let N := newVariables.size
         Linter.logLint linter.badVariable stx -- TODO: underline the actual args!
           s!"bad variable declaration: \n\
-          the binder types of the {pluralize "variable" C} {changed} {pluralize "is" C} changed, \
-          while the new {pluralize "variable" N} {new} {pluralize "is" C} declared\n\
+          the binder {pluralize "type" C} of the {pluralize "variable" C} {changed} {pluralize "is" C} changed, \
+          while the new {pluralize "variable" N} {new} {pluralize "is" N} declared\n\
           please split these into separate 'variable' commands"
 
 initialize addLinter badVariableLinter
