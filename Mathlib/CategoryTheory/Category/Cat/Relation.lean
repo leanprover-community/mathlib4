@@ -7,7 +7,8 @@ import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 
-/-!# Relation induced by a category
+/-!
+# Relation induced by a category
 
 The hom-set of a category can be seen as a (proof relevant) relation on its objects :
 Two objects are connected if there is an arrow between them.
@@ -34,12 +35,13 @@ variable (F : C ⥤ D)
 
 open Quiver
 
-abbrev zigzagSetoidC : Setoid C := zigzagSetoid C
+private abbrev zigzagSetoidC : Setoid C := zigzagSetoid C
 
--- Transport of some x to its component
+/-- Transport of some x to its component -/
 def toCC (x : C) := WeaklyConnectedComponent.mk x
 
-def cc_eq_of_connected (f : a ⟶ b) : toCC a = toCC b :=
+/-- two connected objects have the same component -/
+lemma cc_eq_of_connected (f : a ⟶ b) : toCC a = toCC b :=
   (.intro ∘ Hom.toPath ∘ Sum.inl) f |> .rel _ _ |> Quot.EqvGen_sound
 
 /-- Functors transport zigzag in the domain category to zigzags in the codomain category -/
@@ -51,7 +53,7 @@ lemma transportZigzag (nep : zigzagSetoidC.r a b) : zigzagSetoidC.r (F.obj a) (F
         (fun f ↦ ⟨Quiver.Path.cons pd (.inr (F.map f))⟩))))
 
 /-- A zigzag in the discrete category entails an equality of its extremities -/
-def eq_of_zigzag (X) {a b : typeToCat.obj X }   (nep : zigzagSetoidC.r a b) : a.as = b.as :=
+lemma eq_of_zigzag (X) {a b : typeToCat.obj X }   (nep : zigzagSetoidC.r a b) : a.as = b.as :=
   nep.elim (fun p => p.rec rfl
     (fun _ bc abeq => abeq.trans (bc.elim (Discrete.eq_of_hom) (Eq.symm ∘ Discrete.eq_of_hom))))
 
@@ -65,7 +67,7 @@ private def ccfmap : (WeaklyConnectedComponent C) → (WeaklyConnectedComponent 
 private abbrev liftedMk {α} (s : Setoid α) : Quotient s → Quotient s :=
   Quotient.lift (Quotient.mk s) (fun _ _ ↦ Quotient.sound)
 
-/- The connected components functor -/
+/-- The connected components functor -/
 def connectedComponents.{v,u} : Cat.{v, u} ⥤ Type u where
   obj C := WeaklyConnectedComponent C
   map F := ccfmap F
