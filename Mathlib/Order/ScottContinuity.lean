@@ -110,6 +110,18 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [Preorder β]
+
+/-
+lemma Pi.upperBounds {f : (Π i, α i) → β} (hf : Monotone f)
+    {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) :
+    upperBounds (f '' d) = upperBounds (f '' (Set.pi  Set.univ  (fun i => (fun a => a i) '' d))) :=
+  sorry
+-/
+
+end Pi
 
 section Products
 
