@@ -199,6 +199,9 @@ variable {b : Type*}
 section
 -- variable {a : Type} (b)
 
+-- TODO: add a test case for a false positive with the current logic...
+-- where variable a was declared previously, but b is declared in the current section
+-- so the current linter iteration complains. then fix it, and re-test on mathlib
 end
 end
 end
