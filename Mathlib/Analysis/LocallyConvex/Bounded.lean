@@ -93,8 +93,15 @@ theorem isVonNBounded_union {s t : Set E} :
 theorem IsVonNBounded.union {s₁ s₂ : Set E} (hs₁ : IsVonNBounded 𝕜 s₁) (hs₂ : IsVonNBounded 𝕜 s₂) :
     IsVonNBounded 𝕜 (s₁ ∪ s₂) := isVonNBounded_union.2 ⟨hs₁, hs₂⟩
 
+@[nontriviality]
 theorem IsVonNBounded.of_boundedSpace [BoundedSpace 𝕜] {s : Set E} : IsVonNBounded 𝕜 s := fun _ _ ↦
   .of_boundedSpace
+
+@[nontriviality]
+theorem IsVonNBounded.of_subsingleton [Subsingleton E] {s : Set E} : IsVonNBounded 𝕜 s :=
+  fun U hU ↦ eventually_of_forall fun c ↦ calc
+    s ⊆ univ := subset_univ s
+    _ = c • U := .symm <| Subsingleton.eq_univ_of_nonempty <| (Filter.nonempty_of_mem hU).image _
 
 @[simp]
 theorem isVonNBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set E} :
@@ -393,7 +400,8 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
   haveI := comm_topologicalAddGroup_is_uniform (G := E)
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
-protected theorem Bornology.IsVonNBounded.restrict_scalars
+variable (𝕜) in
+protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
     [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
     [Zero E] [TopologicalSpace E]
     [SMul 𝕜 E] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
@@ -403,6 +411,19 @@ protected theorem Bornology.IsVonNBounded.restrict_scalars
   refine AntilipschitzWith.of_le_mul_nndist fun x y ↦ ?_
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← sub_smul, nnnorm_smul, ← div_eq_inv_mul,
     mul_div_cancel_right₀ _ (nnnorm_ne_zero_iff.2 one_ne_zero)]
+
+variable (𝕜) in
+protected theorem Bornology.IsVonNBounded.restrict_scalars
+    [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+    [Zero E] [TopologicalSpace E]
+    [SMul 𝕜 E] [MulActionWithZero 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
+    (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s :=
+  match subsingleton_or_nontrivial 𝕜' with
+  | .inl _ =>
+    have : Subsingleton E := MulActionWithZero.subsingleton 𝕜' E
+    IsVonNBounded.of_subsingleton
+  | .inr _ =>
+    h.restrict_scalars_of_nontrivial _
 
 section VonNBornologyEqMetric
 
