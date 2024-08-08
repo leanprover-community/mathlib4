@@ -37,7 +37,7 @@ open scoped NNReal
 
 namespace Unitization
 
-variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [Nontrivial A]
+variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
   [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
   [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 
@@ -67,7 +67,11 @@ end Unitization
 section CStar_unital
 
 variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
-variable [NormedAlgebra ℂ A] [StarModule ℂ A] [PartialOrder A] [StarOrderedRing A]
+variable [NormedAlgebra ℂ A] [StarModule ℂ A]
+
+section StarOrderedRing
+
+variable [PartialOrder A] [StarOrderedRing A]
 
 lemma IsSelfAdjoint.le_algebraMap_norm_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     a ≤ algebraMap ℝ A ‖a‖ := by
@@ -93,6 +97,8 @@ lemma CStarRing.star_mul_le_algebraMap_norm_sq {a : A} : star a * a ≤ algebraM
   have : star a * a ≤ algebraMap ℝ A ‖star a * a‖ := IsSelfAdjoint.le_algebraMap_norm_self
   rwa [CStarRing.norm_star_mul_self, ← pow_two] at this
 
+end StarOrderedRing
+
 lemma IsSelfAdjoint.toReal_spectralRadius_eq_norm {a : A} (ha : IsSelfAdjoint a) :
     (spectralRadius ℝ a).toReal = ‖a‖ := by
   simp [ha.spectrumRestricts.spectralRadius_eq, ha.spectralRadius_eq_nnnorm]
@@ -102,6 +108,8 @@ lemma CStarRing.norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
   have ha' : SpectrumRestricts a Complex.reCLM := ha.spectrumRestricts
   rw [← ha.toReal_spectralRadius_eq_norm]
   exact Real.spectralRadius_mem_spectrum_or (ha'.image ▸ (spectrum.nonempty a).image _)
+
+variable [PartialOrder A] [StarOrderedRing A]
 
 lemma CStarRing.nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ∈ spectrum ℝ≥0 a := by

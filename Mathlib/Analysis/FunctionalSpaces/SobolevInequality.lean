@@ -54,14 +54,14 @@ open Set Function Finset MeasureTheory Measure Filter
 
 noncomputable section
 
-variable {ι : Type*} [Fintype ι]
+variable {ι : Type*}
 
 local prefix:max "#" => Fintype.card
 
 /-! ## The grid-lines lemma -/
 
 variable {A : ι → Type*} [∀ i, MeasurableSpace (A i)]
-  (μ : ∀ i, Measure (A i)) [∀ i, SigmaFinite (μ i)]
+  (μ : ∀ i, Measure (A i))
 
 namespace MeasureTheory
 
@@ -91,7 +91,7 @@ def T (p : ℝ) (f : (∀ i, A i) → ℝ≥0∞) (s : Finset ι) : (∀ i, A i)
 
 variable {p : ℝ}
 
-@[simp] lemma T_univ (f : (∀ i, A i) → ℝ≥0∞) (x : ∀ i, A i) :
+@[simp] lemma T_univ [Fintype ι] [∀ i, SigmaFinite (μ i)] (f : (∀ i, A i) → ℝ≥0∞) (x : ∀ i, A i) :
     T μ p f univ x =
     ∫⁻ (x : ∀ i, A i), (f x ^ (1 - (#ι - 1 : ℝ) * p)
     * ∏ i : ι, (∫⁻ t : A i, f (update x i t) ∂(μ i)) ^ p) ∂(.pi μ) := by
@@ -106,7 +106,7 @@ variable {p : ℝ}
 The grid-lines operation `GridLines.T` on a nonnegative function on a finitary product type is
 less than or equal to the grid-lines operation of its partial integral in one co-ordinate
 (the latter intuitively considered as a function on a space "one dimension down"). -/
-theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
+theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0 ≤ p) (s : Finset ι)
     (hp : (s.card : ℝ) * p ≤ 1)
     (i : ι) (hi : i ∉ s) {f : (∀ i, A i) → ℝ≥0∞} (hf : Measurable f) :
     T μ p f (insert i s) ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := by
@@ -214,8 +214,8 @@ type indexed by `ι`, and a set `s` in `ι`, consider partially integrating over
 `sᶜ` and performing the "grid-lines operation" (see `GridLines.T`) to the resulting function in the
 variables `s`.  This theorem states that this operation decreases as the number of grid-lines taken
 increases. -/
-theorem T_lmarginal_antitone (hp₀ : 0 ≤ p) (hp : (#ι - 1 : ℝ) * p ≤ 1)
-    {f : (∀ i, A i) → ℝ≥0∞} (hf : Measurable f) :
+theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
+    (hp₀ : 0 ≤ p) (hp : (#ι - 1 : ℝ) * p ≤ 1) {f : (∀ i, A i) → ℝ≥0∞} (hf : Measurable f) :
     Antitone (fun s ↦ T μ p (∫⋯∫⁻_sᶜ, f ∂μ) s) := by
   -- Reformulate (by induction): a function is decreasing on `Finset ι` if it decreases under the
   -- insertion of any element to any set.
@@ -254,7 +254,8 @@ direction through `x`.
 
 This lemma bounds the Lebesgue integral of the grid-lines quantity by a power of the Lebesgue
 integral of `f`. -/
-theorem lintegral_mul_prod_lintegral_pow_le {p : ℝ} (hp₀ : 0 ≤ p)
+theorem lintegral_mul_prod_lintegral_pow_le
+    [Fintype ι] [∀ i, SigmaFinite (μ i)] {p : ℝ} (hp₀ : 0 ≤ p)
     (hp : (#ι - 1 : ℝ) * p ≤ 1) {f : (∀ i : ι, A i) → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ x, f x ^ (1 - (#ι - 1 : ℝ) * p) * ∏ i, (∫⁻ xᵢ, f (update x i xᵢ) ∂μ i) ^ p ∂.pi μ
     ≤ (∫⁻ x, f x ∂.pi μ) ^ (1 + p) := by
@@ -266,7 +267,7 @@ theorem lintegral_mul_prod_lintegral_pow_le {p : ℝ} (hp₀ : 0 ≤ p)
 
 /-- Special case of the grid-lines lemma `lintegral_mul_prod_lintegral_pow_le`, taking the extremal
 exponent `p = (#ι - 1)⁻¹`. -/
-theorem lintegral_prod_lintegral_pow_le
+theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
     {p : ℝ} (hp : Real.IsConjExponent #ι p)
     {f} (hf : Measurable f) :
     ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂.pi μ
@@ -295,7 +296,7 @@ expression `|u x| ^ (n / (n - 1))` is bounded above by the `n / (n - 1)`-th powe
 integral of the Fréchet derivative of `u`.
 
 For a basis-free version, see `lintegral_pow_le_pow_lintegral_fderiv`. -/
-theorem lintegral_pow_le_pow_lintegral_fderiv_aux
+theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
     {p : ℝ} (hp : Real.IsConjExponent #ι p)
     {u : (ι → ℝ) → F} (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) :
