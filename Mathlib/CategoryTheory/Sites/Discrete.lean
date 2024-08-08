@@ -265,8 +265,7 @@ lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J B) _
   apply ReflectsIsomorphisms.reflects (sheafCompose J U) _
 
-instance [h : F.IsDiscrete J ht] :
-    ((sheafCompose J U).obj F).IsDiscrete J ht := by
+instance [h : F.IsDiscrete J ht] : ((sheafCompose J U).obj F).IsDiscrete J ht := by
   rw [isDiscrete_iff_mem_essImage] at h ⊢
   obtain ⟨Y, ⟨i⟩⟩ := h
   exact ⟨U.obj Y, ⟨(fullyFaithfulSheafToPresheaf _ _).preimageIso
