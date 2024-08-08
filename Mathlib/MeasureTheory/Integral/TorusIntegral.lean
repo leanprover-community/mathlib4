@@ -233,7 +233,7 @@ theorem torusIntegral_succAbove
     rwa [← hem.integrableOn_comp_preimage e.measurableEmbedding, heπ] at this
 
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succAbove`. -/
-theorem torusIntegral_succ [CompleteSpace E]
+theorem torusIntegral_succ
     {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R) :
     (∯ x in T(c, R), f x) =
       ∮ x in C(c 0, R 0), ∯ y in T(c ∘ Fin.succ, R ∘ Fin.succ), f (Fin.cons x y) := by
