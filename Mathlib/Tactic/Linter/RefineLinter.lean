@@ -24,7 +24,7 @@ namespace Mathlib.Linter.refine
 
 /-- The refine linter emits a warning on usages of `refine'`. -/
 register_option linter.refine : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the refine linter"
 }
 
