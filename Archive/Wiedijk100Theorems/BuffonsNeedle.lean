@@ -76,7 +76,7 @@ namespace BuffonsNeedle
 
 variable
   /- Probability theory variables. -/
-  {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
+  {Ω : Type*} [MeasureSpace Ω]
 
   /- Buffon's needle variables. -/
 
@@ -124,7 +124,7 @@ noncomputable def N : Ω → ℝ := needleCrossesIndicator l ∘ B
 /--
   The possible x-positions and angle relative to the y-axis of a needle.
 -/
-abbrev needleSpace: Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
+abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
 lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
   simp_rw [MeasureTheory.Measure.volume_eq_prod, MeasureTheory.Measure.prod_prod, Real.volume_Icc,

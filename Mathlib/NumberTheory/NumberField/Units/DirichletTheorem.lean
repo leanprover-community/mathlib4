@@ -42,7 +42,7 @@ noncomputable section
 
 open NumberField NumberField.InfinitePlace NumberField.Units BigOperators
 
-variable (K : Type*) [Field K] [NumberField K]
+variable (K : Type*) [Field K]
 
 namespace NumberField.Units.dirichletUnitTheorem
 
@@ -63,6 +63,10 @@ open scoped Classical
 open Finset
 
 variable {K}
+
+section NumberField
+
+variable [NumberField K]
 
 /-- The distinguished infinite place. -/
 def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
@@ -95,6 +99,8 @@ theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     · norm_num
   · exact fun w _ => pow_ne_zero _ (AbsoluteValue.ne_zero _ (coe_ne_zero x))
 
+end NumberField
+
 theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
@@ -102,6 +108,8 @@ theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
   · simp only [ne_eq, map_eq_zero, coe_ne_zero x, not_false_eq_true]
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num
+
+variable [NumberField K]
 
 theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
     logEmbedding K x = 0 ↔ x ∈ torsion K := by
