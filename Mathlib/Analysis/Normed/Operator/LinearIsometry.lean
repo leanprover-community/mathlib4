@@ -170,14 +170,6 @@ theorem ext {f g : E →ₛₗᵢ[σ₁₂] E₂} (h : ∀ x, f x = g x) : f = g
 
 variable [FunLike 𝓕 E E₂]
 
-protected theorem congr_arg {f : 𝓕} :
-    ∀ {x x' : E}, x = x' → f x = f x'
-  | _, _, rfl => rfl
-
-protected theorem congr_fun {f g : 𝓕} (h : f = g) (x : E) :
-    f x = g x :=
-  h ▸ rfl
-
 -- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_zero : f 0 = 0 :=
   f.toLinearMap.map_zero
