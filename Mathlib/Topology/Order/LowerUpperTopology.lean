@@ -339,7 +339,6 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ (∃ (a 
 
 end CompleteLinearOrder
 
-
 end IsLower
 
 
