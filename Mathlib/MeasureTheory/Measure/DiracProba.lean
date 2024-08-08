@@ -180,8 +180,8 @@ noncomputable def diracProbaHomeomorph [T0Space X] [CompletelyRegularSpace X] :
 /-- If `X` is a completely regular T0 space with its Borel sigma algebra, then the mapping
 that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
 `X → ProbabilityMeasure X`. -/
-theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X]
-    : Embedding (fun (x : X) ↦ diracProba x) :=
+theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
+    Embedding (fun (x : X) ↦ diracProba x) :=
   embedding_subtype_val.comp diracProbaHomeomorph.embedding
 
 end embed_to_probabilityMeasure
