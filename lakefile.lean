@@ -6,7 +6,15 @@ package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`relaxedAutoImplicit, false⟩
+    ⟨`relaxedAutoImplicit, false⟩,
+    -- options that are used in `lake build`
+    ⟨`weak.linter.hashCommand, true⟩,
+    ⟨`weak.linter.missingEnd, true⟩,
+    ⟨`weak.linter.cdot, true⟩,
+    ⟨`weak.linter.longLine, true⟩,
+    ⟨`weak.linter.oldObtain, true,⟩,
+    ⟨`weak.linter.refine, true⟩,
+    ⟨`weak.linter.setOption, true⟩
   ]
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
