@@ -1166,7 +1166,7 @@ In this version, all the types belong to the same universe (to get an induction 
 proof). Use instead `contDiffOn_convolution_right_with_param`, which removes this restriction. -/
 theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP} {F : Type uP}
     {P : Type uP} [NormedAddCommGroup E'] [NormedAddCommGroup F] [NormedSpace 𝕜 E']
-    [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G]
+    [NormedSpace ℝ F] [NormedSpace 𝕜 F] [MeasurableSpace G]
     {μ : Measure G}
     [NormedAddCommGroup G] [BorelSpace G] [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P]
     {f : G → E} {n : ℕ∞} (L : E →L[𝕜] E' →L[𝕜] F) {g : P → G → E'} {s : Set P} {k : Set G}
@@ -1329,7 +1329,7 @@ end WithParam
 
 section Nonneg
 
-variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [NormedSpace ℝ F] [CompleteSpace F]
+variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [NormedSpace ℝ F]
 
 /-- The forward convolution of two functions `f` and `g` on `ℝ`, with respect to a continuous
 bilinear map `L` and measure `ν`. It is defined to be the function mapping `x` to
@@ -1395,7 +1395,8 @@ theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Meas
 
 /-- The integral over `Ioi 0` of a forward convolution of two functions is equal to the product
 of their integrals over this set. (Compare `integral_convolution` for the two-sided convolution.) -/
-theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] {μ ν : Measure ℝ}
+theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {μ ν : Measure ℝ}
     [SFinite μ] [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     ∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ =
