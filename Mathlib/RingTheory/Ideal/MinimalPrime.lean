@@ -50,13 +50,11 @@ lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x
 variable {I J}
 
 theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J := by
-  suffices
-    ∃ m ∈ { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ OrderDual.ofDual p },
-      OrderDual.toDual J ≤ m ∧ ∀ z ∈ { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ p }, m ≤ z → z = m by
-    obtain ⟨p, h₁, h₂, h₃⟩ := this
-    simp_rw [← @eq_comm _ p] at h₃
-    exact ⟨p, ⟨h₁, fun a b c => le_of_eq (h₃ a b c)⟩, h₂⟩
-  apply zorn_nonempty_partialOrder₀
+  set S := { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ OrderDual.ofDual p }
+  suffices h : ∃ m, OrderDual.toDual J ≤ m ∧ Maximal (· ∈ S) m by
+    obtain ⟨p, hJp, hp⟩ := h
+    exact ⟨p, ⟨hp.prop, fun q hq hle ↦ hp.le_of_ge hq hle⟩, hJp⟩
+  apply zorn_le_nonempty₀
   swap
   · refine ⟨show J.IsPrime by infer_instance, e⟩
   rintro (c : Set (Ideal R)) hc hc' J' hJ'

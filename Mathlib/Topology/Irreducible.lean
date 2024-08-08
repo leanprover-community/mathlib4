@@ -74,7 +74,7 @@ protected alias ⟨_, IsIrreducible.closure⟩ := isIrreducible_iff_closure
 
 theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
     ∃ t : Set X, IsPreirreducible t ∧ s ⊆ t ∧ ∀ u, IsPreirreducible u → t ⊆ u → u = t :=
-  let ⟨m, hm, hsm, hmm⟩ :=
+  let ⟨m, hsm, hm⟩ :=
     zorn_subset_nonempty { t : Set X | IsPreirreducible t }
       (fun c hc hcc _ =>
         ⟨⋃₀ c, fun u v hu hv ⟨y, hy, hyu⟩ ⟨x, hx, hxv⟩ =>
@@ -89,7 +89,7 @@ theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
             ⟨x, mem_sUnion_of_mem hxp hpc, hxuv⟩,
           fun _ hxc => subset_sUnion_of_mem hxc⟩)
       s H
-  ⟨m, hm, hsm, fun _u hu hmu => hmm _ hu hmu⟩
+  ⟨m, hm.prop, hsm, fun _u hu hmu => (hm.eq_of_subset hu hmu).symm⟩
 
 /-- The set of irreducible components of a topological space. -/
 def irreducibleComponents (X : Type*) [TopologicalSpace X] : Set (Set X) :=
