@@ -229,6 +229,7 @@ lemma span_weight_eq_top :
   rw [← traceForm_flip K H L, ← LinearMap.dualAnnihilator_ker_eq_range_flip,
     ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.dualAnnihilator_bot]
 
+variable (K L H) in
 @[simp]
 lemma span_weight_isNonZero_eq_top :
     span K ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) = ⊤ := by

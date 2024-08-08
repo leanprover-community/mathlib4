@@ -355,8 +355,6 @@ protected nonrec theorem Smooth.coordChangeL
     Smooth IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) :=
   hf.coordChangeL he he'
 
-variable [SmoothManifoldWithCorners IM M]
-
 protected theorem ContMDiffWithinAt.coordChange
     (hf : ContMDiffWithinAt IM IB n f s x) (hg : ContMDiffWithinAt IM 𝓘(𝕜, F) n g s x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
@@ -407,7 +405,6 @@ protected theorem Smooth.coordChange (hf : Smooth IM IB f)
 
 variable (e e')
 
-variable [SmoothManifoldWithCorners IB B] in
 variable (IB) in
 theorem Trivialization.contMDiffOn_symm_trans :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n
@@ -487,7 +484,6 @@ section
 
 variable {F E}
 variable {e e' : Trivialization F (π F E)} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
-variable [SmoothManifoldWithCorners IM M]
 
 theorem Trivialization.contMDiffWithinAt_iff {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (he : f x₀ ∈ e.source) :
@@ -539,8 +535,6 @@ theorem Trivialization.smooth_iff {f : M → TotalSpace F E} (he : ∀ x, f x �
     Smooth IM (IB.prod 𝓘(𝕜, F)) f ↔
       Smooth IM IB (fun x => (f x).proj) ∧ Smooth IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) :=
   e.contMDiff_iff IB he
-
-variable [SmoothManifoldWithCorners IB B]
 
 theorem Trivialization.smoothOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) e e.source := by

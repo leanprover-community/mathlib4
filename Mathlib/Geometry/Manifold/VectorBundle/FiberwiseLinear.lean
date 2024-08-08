@@ -232,8 +232,6 @@ private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} :
             (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
   simp only [mem_iUnion, mem_setOf_eq]
 
-variable [SmoothManifoldWithCorners IB B]
-
 /-- For `B` a manifold and `F` a normed space, the groupoid on `B × F` consisting of local
 homeomorphisms which are bi-smooth and fiberwise linear, and induce the identity on `B`.
 When a (topological) vector bundle is smooth, then the composition of charts associated
