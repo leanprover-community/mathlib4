@@ -110,9 +110,6 @@ protected theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f 
 theorem ext {f g : α →ᵈ β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : α →ᵈ β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
   ext fun _ => rfl
