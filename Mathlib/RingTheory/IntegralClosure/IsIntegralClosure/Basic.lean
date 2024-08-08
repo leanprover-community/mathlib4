@@ -198,6 +198,12 @@ theorem mem_integralClosure_iff_mem_fg {r : A} :
 
 variable {R A}
 
+theorem adjoin_le_integralClosure {x : A} (hx : IsIntegral R x) :
+    Algebra.adjoin R {x} ≤ integralClosure R A := by
+  rw [Algebra.adjoin_le_iff]
+  simp only [SetLike.mem_coe, Set.singleton_subset_iff]
+  exact hx
+
 theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
     S ≤ integralClosure R A ↔ Algebra.IsIntegral R S :=
   SetLike.forall.symm.trans <|
@@ -205,12 +211,6 @@ theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
       show IsIntegral R (algebraMap S A x) ↔ IsIntegral R x from
         isIntegral_algebraMap_iff Subtype.coe_injective).trans
       Algebra.isIntegral_def.symm
-
-theorem adjoin_le_integralClosure {x : A} (hx : IsIntegral R x) :
-    Algebra.adjoin R {x} ≤ integralClosure R A := by
-  rw [Algebra.adjoin_le_iff]
-  simp only [SetLike.mem_coe, Set.singleton_subset_iff]
-  exact hx
 
 theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x) :
     Algebra.IsIntegral R (Algebra.adjoin R S) :=
