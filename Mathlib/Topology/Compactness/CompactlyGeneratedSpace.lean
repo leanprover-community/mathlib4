@@ -211,7 +211,7 @@ end UCompactlyGeneratedSpace
 
 section CompactlyGeneratedSpace
 
-variable {X : Type u} {Y : Type v} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
 
 /--
 A topological space `X` is compactly generated if its topology is finer than (and thus equal to)
@@ -292,7 +292,8 @@ theorem CompactlyGeneratedSpace.isOpen [CompactlyGeneratedSpace X] {s : Set X}
 
 /-- If the topology of `X` is coinduced by a continuous function whose domain is
 compactly generated, then so is `X`. -/
-theorem compactlyGeneratedSpace_of_coinduced {Y : Type u} [tY : TopologicalSpace Y]
+theorem compactlyGeneratedSpace_of_coinduced
+    {X : Type u} [tX : TopologicalSpace X] {Y : Type u} [tY : TopologicalSpace Y]
     [CompactlyGeneratedSpace X] {f : X → Y} (hf : Continuous f) (ht : tY = coinduced f tX) :
     CompactlyGeneratedSpace Y := uCompactlyGeneratedSpace_of_coinduced hf ht
 
