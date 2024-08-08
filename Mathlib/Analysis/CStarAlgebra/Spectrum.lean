@@ -152,7 +152,9 @@ lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
 
 /-- Non-unital star algebra homomorphisms between C⋆-algebras are continuous linear maps.
 See note [lower instance priority] -/
-noncomputable instance (priority := 100) : ContinuousLinearMapClass F ℂ A B :=
+noncomputable
+scoped instance (priority := 100) CStarAlgebra.instContinuousLinearMapClass :
+    ContinuousLinearMapClass F ℂ A B :=
   { NonUnitalAlgHomClass.instLinearMapClass with
     map_continuous := fun φ =>
       AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using nnnorm_apply_le φ) }
