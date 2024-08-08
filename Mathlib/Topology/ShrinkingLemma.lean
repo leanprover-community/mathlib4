@@ -30,7 +30,7 @@ open Set Function
 
 noncomputable section
 
-variable {ι X : Type*} [TopologicalSpace X] [NormalSpace X]
+variable {ι X : Type*} [TopologicalSpace X]
 
 namespace ShrinkingLemma
 
@@ -79,7 +79,7 @@ instance : PartialOrder (PartialRefinement u s) where
     ⟨Subset.trans h₁₂.1 h₂₃.1, fun i hi => (h₁₂.2 i hi).trans (h₂₃.2 i <| h₁₂.1 hi)⟩
   le_antisymm v₁ v₂ h₁₂ h₂₁ :=
     have hc : v₁.carrier = v₂.carrier := Subset.antisymm h₁₂.1 h₂₁.1
-    PartialRefinement.ext _ _
+    PartialRefinement.ext
       (funext fun x =>
         if hx : x ∈ v₁.carrier then h₁₂.2 _ hx
         else (v₁.apply_eq hx).trans (Eq.symm <| v₂.apply_eq <| hc ▸ hx))
@@ -154,7 +154,8 @@ theorem le_chainSup {c : Set (PartialRefinement u s)} (hc : IsChain (· ≤ ·) 
 
 /-- If `s` is a closed set, `v` is a partial refinement, and `i` is an index such that
 `i ∉ v.carrier`, then there exists a partial refinement that is strictly greater than `v`. -/
-theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i ∉ v.carrier) :
+theorem exists_gt [NormalSpace X] (v : PartialRefinement u s) (hs : IsClosed s) (i : ι)
+    (hi : i ∉ v.carrier) :
     ∃ v' : PartialRefinement u s, v < v' := by
   have I : (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) ⊆ v i := by
     simp only [subset_def, mem_inter_iff, mem_iInter, and_imp]
@@ -193,7 +194,7 @@ end ShrinkingLemma
 
 open ShrinkingLemma
 
-variable {u : ι → Set X} {s : Set X}
+variable {u : ι → Set X} {s : Set X} [NormalSpace X]
 
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new open cover so that the closure of each new open set is contained in the

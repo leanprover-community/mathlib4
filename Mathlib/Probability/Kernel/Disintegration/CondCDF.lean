@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
-import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
+import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 
 /-!
 # Conditional cumulative distribution function
@@ -17,7 +17,7 @@ and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is 
 `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
 `condCDF` is build from the more general tools about kernel CDFs developed in the file
-`Probability.Kernel.Disintegration.CdfToKernel`. In that file, we build a function
+`Probability.Kernel.Disintegration.CDFToKernel`. In that file, we build a function
 `α × β → StieltjesFunction` (which is `α × β → ℝ → ℝ` with additional properties) from a function
 `α × β → ℚ → ℝ`. The restriction to `ℚ` allows to prove some properties like measurability more
 easily. Here we apply that construction to the case `β = Unit` and then drop `β` to build
