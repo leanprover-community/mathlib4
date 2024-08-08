@@ -760,6 +760,7 @@ theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
       ∫ x in a..b, ((1 - cos (2 * x)) / 2) ^ m * ((1 + cos (2 * x)) / 2) ^ n := by
   field_simp [pow_mul, sin_sq, cos_sq, ← sub_sub, (by ring : (2 : ℝ) - 1 = 1)]
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 @[simp]
 theorem integral_sin_sq_mul_cos_sq :
     ∫ x in a..b, sin x ^ 2 * cos x ^ 2 = (b - a) / 8 - (sin (4 * b) - sin (4 * a)) / 32 := by

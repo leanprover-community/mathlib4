@@ -117,6 +117,7 @@ section TransRefl
 def transReflReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 2 then 2 * t else 1
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 @[continuity]
 theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
   refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_ <;>

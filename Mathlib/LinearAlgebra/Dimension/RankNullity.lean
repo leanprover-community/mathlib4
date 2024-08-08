@@ -58,6 +58,7 @@ lemma exists_set_linearIndependent :
     ∃ s : Set M, #s = Module.rank R M ∧ LinearIndependent (ι := s) R Subtype.val :=
   HasRankNullity.exists_set_linearIndependent M
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 variable (R) in
 theorem nontrivial_of_hasRankNullity : Nontrivial R := by
   refine (subsingleton_or_nontrivial R).resolve_left fun H ↦ ?_

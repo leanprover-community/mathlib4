@@ -366,6 +366,7 @@ lemma root_apply_cartanEquivDual_symm_ne_zero {α : Weight K H L} (hα : α.IsNo
     simpa using this
   exact Submodule.mem_inf.mp ⟨hα, cartanEquivDual_symm_apply_mem_corootSpace K L H α⟩
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
     α (coroot α) = 2 := by
   rw [← Weight.coe_coe]
@@ -378,6 +379,7 @@ lemma traceForm_coroot (α : Weight K H L) (x : H) :
   rw [coroot, map_nsmul, map_smul, LinearMap.smul_apply, LinearMap.smul_apply]
   congr 2
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 @[simp] lemma coroot_eq_zero_iff {α : Weight K H L} :
     coroot α = 0 ↔ α.IsZero := by
   refine ⟨fun hα ↦ ?_, fun hα ↦ ?_⟩
@@ -388,6 +390,7 @@ lemma traceForm_coroot (α : Weight K H L) (x : H) :
 @[simp]
 lemma coroot_zero [Nontrivial L] : coroot (0 : Weight K H L) = 0 := by simp [Weight.isZero_zero]
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma coe_corootSpace_eq_span_singleton (α : Weight K H L) :
     (corootSpace α).toSubmodule = K ∙ coroot α := by
   if hα : α.IsZero then
@@ -447,6 +450,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     · have := traceForm_eq_zero_of_mem_ker_of_mem_span_coroot hx hy
       rwa [traceForm_comm] at this
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 @[simp] lemma coroot_eq_iff (α β : Weight K H L) :
     coroot α = coroot β ↔ α = β := by
   refine ⟨fun hyp ↦ ?_, fun h ↦ by rw [h]⟩
@@ -495,6 +499,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
     rw [lie_smul, lie_smul, smul_lie, this]
     simp [← smul_assoc, f, hh, mul_comm _ (2 * (α h)⁻¹)]
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     {h e f : L} (ht : IsSl2Triple h e f) (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (- α)) :
     h = coroot α := by

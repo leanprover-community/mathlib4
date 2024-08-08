@@ -178,6 +178,7 @@ private lemma expDegree_rec (m : ℕ) :
 private def expCoeff (n : ℕ) : ℤ :=
   if Even n then n / 2 else n
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 private lemma expCoeff_cast (n : ℕ) : (expCoeff n : ℚ) = if Even n then (n / 2 : ℚ) else n := by
   rcases n.even_or_odd' with ⟨n, rfl | rfl⟩ <;> simp [expCoeff, n.not_even_two_mul_add_one]
 

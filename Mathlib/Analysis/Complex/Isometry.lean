@@ -61,7 +61,8 @@ theorem rotation_ne_conjLIE (a : circle) : rotation a ≠ conjLIE := by
   have h1 : rotation a 1 = conj 1 := LinearIsometryEquiv.congr_fun h 1
   have hI : rotation a I = conj I := LinearIsometryEquiv.congr_fun h I
   rw [rotation_apply, RingHom.map_one, mul_one] at h1
-  rw [rotation_apply, conj_I, ← neg_one_mul, mul_left_inj' I_ne_zero, h1, eq_neg_self_iff] at hI
+  rw [rotation_apply, conj_I, ← neg_one_mul, mul_left_inj' I_ne_zero,
+    h1, CharZero.eq_neg_self_iff] at hI
   exact one_ne_zero hI
 
 /-- Takes an element of `ℂ ≃ₗᵢ[ℝ] ℂ` and checks if it is a rotation, returns an element of the

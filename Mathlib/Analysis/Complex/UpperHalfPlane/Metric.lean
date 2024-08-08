@@ -104,6 +104,7 @@ theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / 
   rw [dist_le_iff_le_sinh, ← div_mul_eq_div_div_swap, self_le_sinh_iff]
   positivity
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 /-- An auxiliary `MetricSpace` instance on the upper half-plane. This instance has bad projection
 to `TopologicalSpace`. We replace it later. -/
 def metricSpaceAux : MetricSpace ℍ where

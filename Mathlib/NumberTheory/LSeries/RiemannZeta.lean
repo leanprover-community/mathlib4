@@ -44,7 +44,7 @@ proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
 
 
 open MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
-  Classical HurwitzZeta
+  Classical HurwitzZeta CharZero
 
 open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp
 

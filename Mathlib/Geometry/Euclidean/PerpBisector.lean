@@ -48,6 +48,7 @@ theorem mem_perpBisector_iff_inner_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ midpoint ℝ p₁ p₂, p₂ -ᵥ p₁⟫ = 0 :=
   inner_eq_zero_symm
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 theorem mem_perpBisector_iff_inner_pointReflection_vsub_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪Equiv.pointReflection c p₁ -ᵥ p₂, p₂ -ᵥ p₁⟫ = 0 := by
   rw [mem_perpBisector_iff_inner_eq_zero, Equiv.pointReflection_apply,
@@ -75,6 +76,7 @@ theorem direction_perpBisector (p₁ p₂ : P) :
   ext x
   exact Submodule.mem_orthogonal_singleton_iff_inner_right.symm
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 theorem mem_perpBisector_iff_inner_eq_inner :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ p₁, p₂ -ᵥ p₁⟫ = ⟪c -ᵥ p₂, p₁ -ᵥ p₂⟫ := by
   rw [Iff.comm, mem_perpBisector_iff_inner_eq_zero, ← add_neg_eq_zero, ← inner_neg_right,

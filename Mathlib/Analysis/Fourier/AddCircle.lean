@@ -453,6 +453,7 @@ theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
 
 variable {T}
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => (T : ℂ) / (-2 * π * I * n) * fourier (-n) (y : AddCircle T))
       (fourier (-n) (x : AddCircle T)) x := by

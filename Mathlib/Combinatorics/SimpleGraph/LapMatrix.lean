@@ -95,6 +95,7 @@ theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R]
     rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
     positivity
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField R] (x : V → R) :
     Matrix.toLinearMap₂' R (G.lapMatrix R) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   simp (disch := intros; positivity)

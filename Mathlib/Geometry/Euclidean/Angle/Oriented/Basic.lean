@@ -592,6 +592,7 @@ theorem eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero {x y : V}
   rw [Real.Angle.sign_eq_zero_iff] at h
   rcases h with (h | h) <;> simp [h, Real.pi_pos.le]
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 /-- If two unoriented angles are equal, and the signs of the corresponding oriented angles are
 equal, then the oriented angles are equal (even in degenerate cases). -/
 theorem oangle_eq_of_angle_eq_of_sign_eq {w x y z : V}
@@ -671,6 +672,7 @@ theorem oangle_eq_zero_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
     rw [h] at ha
     simpa using ha
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 /-- The oriented angle between two vectors is `π` if and only if the unoriented angle is `π`. -/
 theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
     o.oangle x y = π ↔ InnerProductGeometry.angle x y = π := by

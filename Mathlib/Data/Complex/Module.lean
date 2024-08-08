@@ -487,6 +487,7 @@ lemma Complex.coe_selfAdjointEquiv (z : selfAdjoint ℂ) :
   simpa [selfAdjointEquiv_symm_apply]
     using (congr_arg Subtype.val <| Complex.selfAdjointEquiv.left_inv z)
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 @[simp]
 lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
   rw [realPart_apply_coe, star_def, conj_ofReal, ← two_smul ℝ (r : ℂ)]

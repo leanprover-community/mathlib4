@@ -82,6 +82,7 @@ theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
 theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Set α) t :=
   rfl
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 /-- In a complete space, the type of closed subsets is complete for the
 Hausdorff edistance. -/
 instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by

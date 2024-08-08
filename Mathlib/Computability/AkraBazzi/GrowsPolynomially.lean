@@ -150,6 +150,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
       exact le_of_max_le_left hx₀_ge
     exact_mod_cast Nat.floor_le this
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, 0 ≤ f x) ∨ (∀ᶠ x in atTop, f x ≤ 0) := by
   obtain ⟨c₁, _, c₂, _, h⟩ := hf (1/2) (by norm_num)

@@ -90,6 +90,7 @@ lemma toFiniteAux_eq_zero_iff [SFinite μ] : μ.toFiniteAux = 0 ↔ μ = 0 := by
   specialize h n
   simpa [ENNReal.mul_eq_top, measure_ne_top] using h
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma toFiniteAux_univ_le_one (μ : Measure α) [SFinite μ] : μ.toFiniteAux Set.univ ≤ 1 := by
   rw [toFiniteAux_apply]
   have h_le_pow : ∀ n, (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ * sFiniteSeq μ n Set.univ

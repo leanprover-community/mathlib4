@@ -165,6 +165,7 @@ theorem discr_powerBasis_eq_prod' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃ 
 
 local notation "n" => finrank K L
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 /-- A variation of `Algebra.discr_powerBasis_eq_prod`. -/
 theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =

@@ -784,6 +784,7 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
 
 variable (R)
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 theorem wbtw_pointReflection (x y : P) : Wbtw R y x (pointReflection R x y) := by
   refine ⟨2⁻¹, ⟨by norm_num, by norm_num⟩, ?_⟩
   rw [lineMap_apply, pointReflection_apply, vadd_vsub_assoc, ← two_smul R (x -ᵥ y)]

@@ -28,6 +28,7 @@ open Polynomial Real
 
 open scoped Nat Real
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprime n) :
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]

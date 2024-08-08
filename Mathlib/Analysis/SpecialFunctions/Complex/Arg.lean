@@ -247,6 +247,7 @@ theorem arg_eq_pi_div_two_iff {z : ℂ} : arg z = π / 2 ↔ z.re = 0 ∧ 0 < z.
     rintro ⟨rfl : x = 0, hy : 0 < y⟩
     rw [← arg_I, ← arg_real_mul I hy, ofReal_mul', I_re, I_im, mul_zero, mul_one]
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 theorem arg_eq_neg_pi_div_two_iff {z : ℂ} : arg z = -(π / 2) ↔ z.re = 0 ∧ z.im < 0 := by
   by_cases h₀ : z = 0; · simp [h₀, lt_irrefl, Real.pi_ne_zero]
   constructor
@@ -406,6 +407,7 @@ theorem arg_neg_eq_arg_sub_pi_iff {x : ℂ} :
       simp [hr.not_lt, ← add_eq_zero_iff_eq_neg, Real.pi_ne_zero]
   · simp [hi, arg_neg_eq_arg_sub_pi_of_im_pos]
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 theorem arg_neg_eq_arg_add_pi_iff {x : ℂ} :
     arg (-x) = arg x + π ↔ x.im < 0 ∨ x.im = 0 ∧ 0 < x.re := by
   rcases lt_trichotomy x.im 0 with (hi | hi | hi)

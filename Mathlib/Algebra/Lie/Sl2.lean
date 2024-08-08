@@ -126,6 +126,7 @@ lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
     congr
     ring
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 /-- The eigenvalue of a primitive vector must be a natural number if the representation is
 finite-dimensional. -/
 lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R] :

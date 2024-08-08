@@ -249,6 +249,7 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
       field_simp [LT.lt.ne' hpos, SMul.smul]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 /-- If a function is differentiable inside a convex set with nonempty interior, and has a second
 derivative at a point of this convex set, then this second derivative is symmetric. -/
 theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Convex ℝ s)

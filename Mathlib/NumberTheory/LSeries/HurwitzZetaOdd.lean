@@ -42,6 +42,7 @@ various versions of the Jacobi theta function.
 
 noncomputable section
 
+open CharZero
 open Complex hiding abs_of_nonneg
 open Filter Topology Asymptotics Real Set MeasureTheory
 open scoped ComplexConjugate

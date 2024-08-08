@@ -120,9 +120,11 @@ namespace RootPairing
 variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma ne_zero' [CharZero R] : (P.coroot i : N) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
 

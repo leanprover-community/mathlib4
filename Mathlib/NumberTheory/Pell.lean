@@ -400,7 +400,8 @@ theorem exists_iff_not_isSquare (h₀ : 0 < d) :
   refine ⟨?_, exists_of_not_isSquare h₀⟩
   rintro ⟨x, y, hxy, hy⟩ ⟨a, rfl⟩
   rw [← sq, ← mul_pow, sq_sub_sq] at hxy
-  simpa [hy, mul_self_pos.mp h₀, sub_eq_add_neg, eq_neg_self_iff] using Int.eq_of_mul_eq_one hxy
+  simpa [hy, mul_self_pos.mp h₀, sub_eq_add_neg, CharZero.eq_neg_self_iff]
+    using Int.eq_of_mul_eq_one hxy
 
 namespace Solution₁
 

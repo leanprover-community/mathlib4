@@ -59,6 +59,7 @@ nonrec lemma EdgeDisjointTriangles.mono (h : G ≤ H) (hH : H.EdgeDisjointTriang
 
 @[simp] lemma locallyLinear_bot : (⊥ : SimpleGraph α).LocallyLinear := by simp [LocallyLinear]
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
     (G.map f).EdgeDisjointTriangles := by
   rw [EdgeDisjointTriangles, cliqueSet_map (by norm_num : 3 ≠ 1),

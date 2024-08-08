@@ -288,6 +288,7 @@ lemma rootSpace_two_smul : rootSpace H (2 • α) = ⊥ := by
   simpa [chainTopCoeff_zero_right α hα] using
     weightSpace_chainTopCoeff_add_one_nsmul_add α (0 : Weight K H L) hα
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma rootSpace_one_div_two_smul : rootSpace H ((2⁻¹ : K) • α) = ⊥ := by
   by_contra h
   let W : Weight K H L := ⟨_, h⟩
@@ -299,6 +300,7 @@ lemma rootSpace_one_div_two_smul : rootSpace H ((2⁻¹ : K) • α) = ⊥ := by
     apply_fun (2 • ·) at e; simpa [hW] using e)
   rwa [hW] at this
 
+open scoped OfNat in -- to use `no_index`ed simp lemmas for `ofNat`
 lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul (k : K) (h : (β : H → K) = k • α) :
     k = -1 ∨ k = 0 ∨ k = 1 := by
   cases subsingleton_or_nontrivial L
