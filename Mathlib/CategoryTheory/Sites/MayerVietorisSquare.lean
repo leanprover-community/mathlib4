@@ -19,7 +19,7 @@ where `X₁` is the intersection of `X₂` and `X₃`, and `H^q` are the
 cohomology groups with values in an abelian sheaf.
 
 In this file, we introduce a structure
-`GrothendieckTopology.MayerVietorisSquare` which extends `Squace C`,
+`GrothendieckTopology.MayerVietorisSquare` which extends `Square C`,
 and asserts properties which shall imply the existence of long
 exact Mayer-Vietoris sequences in sheaf cohomology (TODO).
 We require that the map `X₁ ⟶ X₃` is a monomorphism and

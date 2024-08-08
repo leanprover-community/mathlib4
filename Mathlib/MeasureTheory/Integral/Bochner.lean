@@ -298,7 +298,7 @@ theorem integral_eq {m : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F)
 theorem integral_eq_sum_filter [DecidablePred fun x : F => x ≠ 0] {m : MeasurableSpace α}
     (f : α →ₛ F) (μ : Measure α) :
     f.integral μ = ∑ x ∈ f.range.filter fun x => x ≠ 0, (μ (f ⁻¹' {x})).toReal • x := by
-  rw [integral_def, setToSimpleFunc_eq_sum_filter]; simp_rw [weightedSMul_apply]; congr
+  simp_rw [integral_def, setToSimpleFunc_eq_sum_filter, weightedSMul_apply]
 
 /-- The Bochner integral is equal to a sum over any set that includes `f.range` (except `0`). -/
 theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α →ₛ F} {s : Finset F}
@@ -559,11 +559,8 @@ theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = �
       ((toSimpleFunc (posPart f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
     apply MeasureTheory.SimpleFunc.integral_congr (SimpleFunc.integrable f)
     filter_upwards [ae_eq₁, ae_eq₂] with _ h₁ h₂
-    show _ = _ - _
-    rw [← h₁, ← h₂]
-    have := (toSimpleFunc f).posPart_sub_negPart
-    conv_lhs => rw [← this]
-    rfl
+    rw [SimpleFunc.sub_apply, ← h₁, ← h₂]
+    exact DFunLike.congr_fun (toSimpleFunc f).posPart_sub_negPart.symm _
   · exact (SimpleFunc.integrable f).pos_part.congr ae_eq₁
   · exact (SimpleFunc.integrable f).neg_part.congr ae_eq₂
 
@@ -706,17 +703,12 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [hE : CompleteSpace E] [Nont
   [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
-section
-
-open scoped Classical
-
+open Classical in
 /-- The Bochner integral -/
 irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
   if _ : CompleteSpace G then
     if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0
   else 0
-
-end
 
 /-! In the notation for integrals, an expression like `∫ x, g ‖x‖ ∂μ` will not be parsed correctly,
   and needs parentheses. We do not set the binding power of `r` to `0`, because then
