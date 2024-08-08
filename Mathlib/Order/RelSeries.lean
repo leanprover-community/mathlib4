@@ -219,6 +219,12 @@ lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
+@[simp]
+lemma head_singleton {r : Rel α α} (x : α) : (singleton r x).head = x := by simp [singleton, head]
+
+@[simp]
+lemma last_singleton {r : Rel α α} (x : α) : (singleton r x).last = x := by simp [singleton, last]
+
 end
 
 variable {r s}
@@ -570,6 +576,40 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
 @[simp] lemma last_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).last = q.last := by
   delta smash last; aesop
+
+/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `a₀ -r→ … -r→ aᵢ`. -/
+@[simps! length]
+def take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+  length := i
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
+  step := fun ⟨j, h⟩ => p.step ⟨j, by omega⟩
+
+@[simp]
+lemma head_take (p : RelSeries r) (i : Fin (p.length + 1)) :
+    (p.take i).head = p.head := by simp [take, head]
+
+@[simp]
+lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
+    (p.take i).last = p i := by simp [take, last, Fin.last]
+
+/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aᵢ`. -/
+@[simps! length]
+def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+  length := p.length - i
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by omega⟩
+  step := fun ⟨j, h⟩ => by
+    convert p.step ⟨j+i.1, by omega⟩
+    simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
+
+@[simp]
+lemma head_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).head = p.toFun i := by
+  simp [drop, head]
+
+@[simp]
+lemma last_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).last = p.last := by
+  simp only [last, drop, Fin.last]
+  congr
+  omega
 
 end RelSeries
 
