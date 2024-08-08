@@ -31,7 +31,7 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 ## Co-discrete open sets
 
 In a topological space the sets which are open with discrete complement form a filter. We
-formalise this as `Filter.codiscrete`.
+formalise this as `Filter.codiscrete`. This is also the supremum of all punctured neighborhoods.
 
 -/
 
@@ -91,30 +91,50 @@ theorem isClosed_and_discrete_iff {S : Set X} :
   · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
     simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
 
-/-- In any topological space, the open sets with with discrete complement form a filter. -/
-def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X where
-  sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
-  univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
-  sets_of_superset := by
-    intro U V hU hV
-    simp_rw [← isClosed_compl_iff, isClosed_and_discrete_iff] at hU ⊢
-    exact fun x ↦ (hU x).mono_right (principal_mono.mpr <| compl_subset_compl.mpr hV)
-  inter_sets := by
-    intro U V hU hV
-    simp_rw [← isClosed_compl_iff, isClosed_and_discrete_iff] at hU hV ⊢
-    exact fun x ↦ compl_inter U V ▸ sup_principal ▸ disjoint_sup_right.mpr ⟨hU x, hV x⟩
+/-- We can create a filter of sets with no accumulation points inside a subset. -/
+def Filter.codiscreteWithin (S : Set X) : Filter X := ⨆ x ∈ S, 𝓝[S \ {x}] x
+
+lemma mem_codiscreteWithin {S T : Set X} :
+    S ∈ codiscreteWithin T ↔ ∀ x ∈ T, Disjoint (𝓝[≠] x) (𝓟 (T \ S)) := by
+  simp only [codiscreteWithin, mem_iSup, mem_nhdsWithin, disjoint_principal_right]
+  congr! 6 with x - u
+  constructor
+  · intro h _ _
+    simp only [mem_compl_iff, mem_diff, not_and, not_not]
+    intro _
+    apply h
+    simp_all
+  · intro h x hx
+    simp_all only [mem_inter_iff, mem_diff, mem_singleton_iff]
+    suffices x ∈ (T \ S)ᶜ by
+      simp only [mem_compl_iff, mem_diff, not_and, not_not] at this
+      exact this hx.2.1
+    apply h
+    simp_all
+
+lemma mem_codiscreteWithin_accPt {S T : Set X} :
+    S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
+  simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
+
+/-- In any topological space, we form a filter from the supremum of all punctured neighborhoods. -/
+def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteWithin Set.univ
 
 lemma mem_codiscrete {S : Set X} :
-    S ∈ codiscrete X ↔ IsOpen S ∧ DiscreteTopology ↑Sᶜ := Iff.rfl
+    S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
+  simp [codiscrete, mem_codiscreteWithin, compl_eq_univ_diff]
+
+lemma mem_codiscrete_accPt {S : Set X} :
+    S ∈ codiscrete X ↔ ∀ x, ¬AccPt x (𝓟 Sᶜ) := by
+  simp only [mem_codiscrete, disjoint_iff, AccPt, not_neBot]
 
 lemma mem_codiscrete' {S : Set X} :
-    S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
+    S ∈ codiscrete X ↔ IsOpen S ∧ DiscreteTopology ↑Sᶜ := by
   rw [mem_codiscrete, ← isClosed_compl_iff, isClosed_and_discrete_iff]
 
-lemma mem_codiscrete_subtype {S : Set X} {U : Set S} :
-    U ∈ codiscrete S ↔ ∀ x ∈ S, ¬AccPt x (𝓟 (Subtype.val '' Uᶜ)) := by
-  simp only [mem_codiscrete', disjoint_principal_right, compl_compl, Subtype.forall, AccPt,
-    not_neBot, inf_principal_eq_bot]
+lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
+    U ∈ codiscrete S ↔ Subtype.val '' U ∈ codiscreteWithin S := by
+  simp only [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
+    mem_codiscreteWithin]
   congr! with x hx
   constructor
   · intro h
@@ -125,9 +145,10 @@ lemma mem_codiscrete_subtype {S : Set X} {U : Set S} :
     obtain ⟨u, hu1, hu2, hu3⟩ := ht1
     use u, hu1, hu2
     intro v hv
-    simp only [mem_compl_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-      not_exists, not_not]
+    simp only [mem_compl_iff, mem_diff, mem_image, Subtype.exists, exists_and_right,
+      exists_eq_right, not_exists, not_and, not_forall, not_not]
     intro hv2
+    use hv2
     apply ht2
     simp only [mem_preimage]
     apply hu3
