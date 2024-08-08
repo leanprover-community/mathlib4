@@ -328,9 +328,10 @@ lemma cfc_id (ha : p a := by cfc_tac) : cfc (id : R → R) a = a :=
 variable (R) in
 lemma cfc_id' (ha : p a := by cfc_tac) : cfc (fun x : R ↦ x) a = a := cfc_id R a
 
-include ha hf in
 /-- The **spectral mapping theorem** for the continuous functional calculus. -/
-lemma cfc_map_spectrum : spectrum R (cfc f a) = f '' spectrum R a := by
+lemma cfc_map_spectrum (ha : p a := by cfc_tac)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
+    spectrum R (cfc f a) = f '' spectrum R a := by
   simp [cfc_apply f a, cfcHom_map_spectrum (p := p)]
 
 lemma cfc_const (r : R) (a : A) (ha : p a := by cfc_tac) :

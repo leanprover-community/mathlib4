@@ -122,7 +122,7 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   rw [restrict_comp, trace_comp_eq_mul_of_commute_of_isNilpotent μ h_comm
     (f.isNilpotent_restrict_iSup_sub_algebraMap μ), hg, mul_zero]
 
-lemma mapsTo_biSup_of_mapsTo {ι} {N : ι → Submodule R M}
+lemma mapsTo_biSup_of_mapsTo {ι : Type*} {N : ι → Submodule R M}
     (s : Set ι) {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i)) :
     MapsTo f ↑(⨆ i ∈ s, N i) ↑(⨆ i ∈ s, N i) := by
   replace hf : ∀ i, (N i).map f ≤ N i := fun i ↦ Submodule.map_le_iff_le_comap.mpr (hf i)

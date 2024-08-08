@@ -356,7 +356,6 @@ end ChartedSpace
 
 section
 
-
 variable {e : M → H} (h : OpenEmbedding e) {n : WithTop ℕ}
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
@@ -391,7 +390,7 @@ lemma contMDiffOn_openEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
       n (OpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
   haveI := h.singleton_smoothManifoldWithCorners I
-  rw [@contMDiffOn_iff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
+  rw [@contMDiffOn_iff]
   constructor
   · rw [← h.toPartialHomeomorph_target]
     exact (h.toPartialHomeomorph e).continuousOn_symm

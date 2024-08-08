@@ -867,7 +867,7 @@ theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype �
     MeasurePreserving (MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit) volume volume :=
   measurePreserving_pi_empty fun _ => volume
 
-theorem measurePreserving_piFinsetUnion {ι} {α : ι → Type*}
+theorem measurePreserving_piFinsetUnion {ι : Type*} {α : ι → Type*}
     {_ : ∀ i, MeasurableSpace (α i)} [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t)
     (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.piFinsetUnion α h)
@@ -877,12 +877,12 @@ theorem measurePreserving_piFinsetUnion {ι} {α : ι → Type*}
   measurePreserving_piCongrLeft (fun i : ↥(s ∪ t) ↦ μ i) e |>.comp <|
     measurePreserving_sumPiEquivProdPi_symm fun b ↦ μ (e b)
 
-theorem volume_preserving_piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
+theorem volume_preserving_piFinsetUnion {ι : Type*} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
     (h : Disjoint s t) [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
     MeasurePreserving (MeasurableEquiv.piFinsetUnion α h) volume volume :=
   measurePreserving_piFinsetUnion h (fun _ ↦ volume)
 
-theorem measurePreserving_pi {ι} [Fintype ι] {α : ι → Type v} {β : ι → Type*}
+theorem measurePreserving_pi {ι : Type*} [Fintype ι] {α : ι → Type v} {β : ι → Type*}
     [∀ i, MeasureSpace (α i)] [∀ i, MeasurableSpace (β i)]
     (μ : (i : ι) → Measure (α i)) (ν : (i : ι) → Measure (β i))
     {f : (i : ι) → (α i) → (β i)} [∀ i, SigmaFinite (ν i)]

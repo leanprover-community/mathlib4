@@ -219,7 +219,7 @@ protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
 
 section
 
-variable {M'} [AddCommGroup M'] [Module R M'] {N'} [AddCommGroup N'] [Module S N']
+variable {M' : Type*} [AddCommGroup M'] [Module R M'] {N'} [AddCommGroup N'] [Module S N']
   {σ : R →+* S} (l : M' →ₛₗ[σ] N')
 
 theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective

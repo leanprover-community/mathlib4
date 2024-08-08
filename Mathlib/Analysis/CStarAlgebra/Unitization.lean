@@ -122,7 +122,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     simp only [smul_smul, smul_mul_assoc, ← add_assoc, ← mul_assoc, mul_smul_comm]
 
 variable {𝕜}
-variable [CstarRing 𝕜]
+variable [CStarRing 𝕜]
 
 /-- The norm on `Unitization 𝕜 E` satisfies the C⋆-property -/
 instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
