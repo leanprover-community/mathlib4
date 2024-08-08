@@ -209,11 +209,10 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel 
 
 lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔
     Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
-  cases isEmpty_or_nonempty V with
-  | inl h => simp only [Nat.card_of_isEmpty, Nat.card_eq_fintype_card, Fintype.card_eq_zero,
+  cases' isEmpty_or_nonempty V with _ h
+  · simp only [Nat.card_of_isEmpty, Nat.card_eq_fintype_card, Fintype.card_eq_zero,
       Nat.odd_iff_not_even, even_zero, not_true_eq_false, Set.setOf_false, Fintype.card_ofIsEmpty]
-  | inr h =>
-    let v := (Classical.inhabited_of_nonempty h).default
+  · let v := (Classical.inhabited_of_nonempty h).default
     haveI : DecidableRel G.Adj := Classical.decRel _
     have : Nat.card ((⊤ : SimpleGraph V).connectedComponentMk v).supp = Nat.card V := by
       simpa using (set_fintype_card_eq_univ_iff _).mpr
