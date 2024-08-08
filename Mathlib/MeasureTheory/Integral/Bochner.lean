@@ -141,8 +141,6 @@ Bochner integral, simple function, function space, Lebesgue dominated convergenc
 
 -/
 
-set_option linter.longFile 2100
-
 
 assert_not_exists Differentiable
 
@@ -1948,3 +1946,5 @@ def evalIntegral : PositivityExt where eval {u α} zα pα e := do
   | _ => throwError "not MeasureTheory.integral"
 
 end Mathlib.Meta.Positivity
+
+set_option linter.longFile 2100

@@ -44,8 +44,6 @@ it suffices to assume that `f` is zero wherever `g` is. (This generalization is 
 the Fréchet derivative.)
 -/
 
-set_option linter.longFile 2100
-
 
 open Filter Set
 
@@ -1955,3 +1953,5 @@ theorem isLittleO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F
   exact forall₂_congr fun c _hc => e.isBigOWith_congr
 
 end Homeomorph
+
+set_option linter.longFile 2100

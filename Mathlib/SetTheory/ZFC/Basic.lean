@@ -57,8 +57,6 @@ respectively as "`Set`" and "ZFC set".
 Prove `ZFSet.mapDefinableAux` computably.
 -/
 
-set_option linter.longFile 1700
-
 
 universe u v
 
@@ -1543,3 +1541,5 @@ noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2
 
 end ZFSet
+
+set_option linter.longFile 1700

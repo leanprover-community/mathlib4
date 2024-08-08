@@ -40,8 +40,6 @@ instances since they do not compute anything.
 finite sets
 -/
 
-set_option linter.longFile 1700
-
 assert_not_exists OrderedRing
 assert_not_exists MonoidWithZero
 
@@ -1565,3 +1563,5 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+set_option linter.longFile 1700

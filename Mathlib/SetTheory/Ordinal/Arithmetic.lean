@@ -49,8 +49,6 @@ Some properties of the operations are also used to discuss general tools on ordi
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-set_option linter.longFile 2400
-
 assert_not_exists Field
 assert_not_exists Module
 
@@ -2270,3 +2268,5 @@ theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
     StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
 
 end WellFounded
+
+set_option linter.longFile 2400

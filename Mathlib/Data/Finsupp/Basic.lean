@@ -38,8 +38,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-set_option linter.longFile 1900
-
 
 noncomputable section
 
@@ -1703,3 +1701,5 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 end Sigma
 
 end Finsupp
+
+set_option linter.longFile 1900

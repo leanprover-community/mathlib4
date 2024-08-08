@@ -77,8 +77,6 @@ lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two fo
 elliptic curve, rational point, Jacobian coordinates
 -/
 
-set_option linter.longFile 1700
-
 local notation3 "x" => (0 : Fin 3)
 
 local notation3 "y" => (1 : Fin 3)
@@ -1620,3 +1618,5 @@ end WeierstrassCurve.Jacobian
 abbrev WeierstrassCurve.Affine.Point.toJacobian {R : Type u} [CommRing R]
     [Nontrivial R] {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
   Jacobian.Point.fromAffine P
+
+set_option linter.longFile 1700

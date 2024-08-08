@@ -32,8 +32,6 @@ groups.
 topological space, group, topological group
 -/
 
-set_option linter.longFile 2100
-
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
 universe u v w x
@@ -1932,3 +1930,5 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
   exact continuous_iff_coinduced_le.2 ht'
 
 end GroupTopology
+
+set_option linter.longFile 2100

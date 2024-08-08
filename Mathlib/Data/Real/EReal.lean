@@ -47,8 +47,6 @@ if and only if they have the same absolute value and the same sign.
 real, ereal, complete lattice
 -/
 
-set_option linter.longFile 1800
-
 open Function ENNReal NNReal Set SignType
 
 noncomputable section
@@ -1670,3 +1668,5 @@ unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
 
 end Tactic
 -/
+
+set_option linter.longFile 1800

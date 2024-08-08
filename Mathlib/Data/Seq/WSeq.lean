@@ -15,8 +15,6 @@ This file provides a `WSeq α` type representing partially defined possibly infi
 (referred here as weak sequences).
 -/
 
-set_option linter.longFile 1800
-
 namespace Stream'
 
 open Function
@@ -1624,3 +1622,5 @@ instance lawfulMonad : LawfulMonad WSeq :=
 end WSeq
 
 end Stream'
+
+set_option linter.longFile 1800

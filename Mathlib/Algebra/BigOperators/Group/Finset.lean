@@ -35,8 +35,6 @@ See the documentation of `to_additive.attr` for more information.
 
 -/
 
-set_option linter.longFile 2400
-
 -- TODO
 -- assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
@@ -2255,3 +2253,5 @@ theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoi
     simp [and_assoc]
   · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
     simp
+
+set_option linter.longFile 2400

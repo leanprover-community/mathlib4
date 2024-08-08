@@ -72,8 +72,6 @@ something similar, but of the form `Fin.decidableEq n = _inst`, which is much ea
 since `_inst` is a free variable and so the equality can just be substituted.
 -/
 
-set_option linter.longFile 1900
-
 
 open Function Fin Set
 
@@ -1773,3 +1771,5 @@ def range [Nonempty ι] (f : MultilinearMap R M₁ M₂) : SubMulAction R M₂ :
 end Submodule
 
 end MultilinearMap
+
+set_option linter.longFile 1900

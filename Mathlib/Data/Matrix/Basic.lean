@@ -47,8 +47,6 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
-set_option linter.longFile 2700
-
 
 universe u u' v w
 
@@ -2519,3 +2517,5 @@ theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M 
   simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
 
 end RingHom
+
+set_option linter.longFile 2700

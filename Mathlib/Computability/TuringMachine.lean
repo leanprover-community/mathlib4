@@ -58,8 +58,6 @@ Given these parameters, there are a few common structures for the model that ari
   formalizes "essentially finite" mentioned above.
 -/
 
-set_option linter.longFile 2700
-
 -- After https://github.com/leanprover/lean4/pull/4400
 -- the simp normal forms for `List` lookup use the `GetElem` typeclass, rather than `List.get?`.
 -- This file has not been updated to reflect that change, so uses a number of deprecated lemmas.
@@ -2561,3 +2559,5 @@ end
 end TM2to1
 
 end Turing
+
+set_option linter.longFile 2700

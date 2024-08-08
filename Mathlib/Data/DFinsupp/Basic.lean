@@ -46,8 +46,6 @@ the `Add` instance as noncomputable. This design difference is independent of th
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
 
-set_option linter.longFile 2200
-
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
@@ -2078,3 +2076,5 @@ instance DFinsupp.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, I
   DFinsupp.infinite_of_exists_right (Classical.arbitrary ι)
 
 end FiniteInfinite
+
+set_option linter.longFile 2200

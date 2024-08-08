@@ -113,8 +113,6 @@ The formalization uses the books:
 But it makes a more systematic use of the filter library.
 -/
 
-set_option linter.longFile 1900
-
 open Set Filter Topology
 
 universe u v ua ub uc ud
@@ -1768,3 +1766,5 @@ theorem Filter.Tendsto.congr_uniformity {α β} [UniformSpace β] {f g : α → 
 theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
     (hfg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
   ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩
+
+set_option linter.longFile 1900

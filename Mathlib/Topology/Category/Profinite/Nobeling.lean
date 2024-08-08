@@ -43,8 +43,6 @@ spans can be proved directly.
 - [scholze2019condensed], Theorem 5.4.
 -/
 
-set_option linter.longFile 2000
-
 universe u
 
 namespace Profinite
@@ -1806,3 +1804,5 @@ instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
   @Nobeling_aux {C : Set S // IsClopen C}
     (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder
     S (Nobeling.ι S) (Nobeling.embedding S)
+
+set_option linter.longFile 2000

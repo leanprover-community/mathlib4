@@ -30,8 +30,6 @@ product, sum, disjoint union, subspace, quotient space
 
 -/
 
-set_option linter.longFile 1700
-
 noncomputable section
 
 open Topology TopologicalSpace Set Filter Function
@@ -1596,3 +1594,5 @@ theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {
   nhdsSet_prod_le _ _ (mem_of_superset (prod_mem_prod hs ht) fun _ ⟨hx, hy⟩ ↦ hp hx hy)
 
 end NhdsSet
+
+set_option linter.longFile 1700

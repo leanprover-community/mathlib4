@@ -67,8 +67,6 @@ This file expands on the development in the core library.
 
 -/
 
-set_option linter.longFile 1700
-
 assert_not_exists Monoid
 
 universe u v
@@ -1525,3 +1523,5 @@ instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
       q(OfNat.ofNat $i)
 
 end Fin
+
+set_option linter.longFile 1700

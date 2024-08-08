@@ -70,8 +70,6 @@ polynomial, multivariate polynomial, multivariable polynomial
 
 -/
 
-set_option linter.longFile 1700
-
 noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
@@ -1541,3 +1539,5 @@ end EvalMem
 end CommSemiring
 
 end MvPolynomial
+
+set_option linter.longFile 1700

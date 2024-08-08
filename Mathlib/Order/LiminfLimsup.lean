@@ -34,8 +34,6 @@ the definitions of Limsup and Liminf.
 In complete lattices, however, it coincides with the `Inf Sup` definition.
 -/
 
-set_option linter.longFile 1800
-
 open Filter Set Function
 
 variable {α β γ ι ι' : Type*}
@@ -1692,3 +1690,5 @@ lemma Antitone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_decr : Antito
   Monotone.isCoboundedUnder_le_of_isCobounded (S := Sᵒᵈ) f_decr cobdd
 
 end frequently_bounded
+
+set_option linter.longFile 1800

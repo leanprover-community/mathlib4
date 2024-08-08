@@ -25,8 +25,6 @@ import Mathlib.RingTheory.Multiplicity
 
 -/
 
-set_option linter.longFile 2100
-
 
 variable {α : Type*}
 
@@ -1973,3 +1971,5 @@ lemma factors_multiset_prod_of_irreducible {s : Multiset ℕ} (h : ∀ x : ℕ, 
   exact fun con ↦ not_irreducible_zero (h 0 con)
 
 end Nat
+
+set_option linter.longFile 2100

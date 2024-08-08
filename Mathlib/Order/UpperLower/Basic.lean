@@ -42,8 +42,6 @@ makes them order-isomorphic to lower sets and antichains, and matches the conven
 Lattice structure on antichains. Order equivalence between upper/lower sets and antichains.
 -/
 
-set_option linter.longFile 1900
-
 open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
@@ -1804,3 +1802,5 @@ theorem lowerClosure_prod (s : Set α) (t : Set β) :
   simp [Prod.le_def, @and_and_and_comm _ (_ ∈ t)]
 
 end Preorder
+
+set_option linter.longFile 1900

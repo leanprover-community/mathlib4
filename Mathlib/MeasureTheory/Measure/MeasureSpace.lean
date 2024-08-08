@@ -77,8 +77,6 @@ The measure is denoted `volume`.
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
 
-set_option linter.longFile 2200
-
 noncomputable section
 
 open Set
@@ -2027,3 +2025,5 @@ theorem OuterMeasure.toMeasure_zero [MeasurableSpace α] :
 end MeasureTheory
 
 end
+
+set_option linter.longFile 2200

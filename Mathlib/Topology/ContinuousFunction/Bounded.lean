@@ -19,8 +19,6 @@ the uniform distance.
 
 -/
 
-set_option linter.longFile 1700
-
 
 noncomputable section
 
@@ -1516,3 +1514,5 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 end
 
 end BoundedContinuousFunction
+
+set_option linter.longFile 1700

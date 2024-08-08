@@ -17,8 +17,6 @@ These are implemented as the quotient of a list by permutations.
 We define the global infix notation `::ₘ` for `Multiset.cons`.
 -/
 
-set_option linter.longFile 2900
-
 universe v
 
 open List Subtype Nat Function
@@ -2734,3 +2732,5 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
 @[deprecated (since := "2023-12-27")] alias card_lt_of_lt := card_lt_card
 
 end Multiset
+
+set_option linter.longFile 2900

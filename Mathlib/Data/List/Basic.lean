@@ -18,8 +18,6 @@ import Batteries.Data.List.Perm
 # Basic properties of lists
 -/
 
-set_option linter.longFile 2800
-
 assert_not_exists Set.range
 assert_not_exists GroupWithZero
 assert_not_exists Ring
@@ -2598,3 +2596,5 @@ end lookup
 end List
 
 assert_not_exists Lattice
+
+set_option linter.longFile 2800

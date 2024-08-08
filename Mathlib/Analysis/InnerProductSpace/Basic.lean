@@ -63,8 +63,6 @@ inner product space, Hilbert space, norm
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
 
-set_option linter.longFile 2500
-
 
 noncomputable section
 
@@ -2407,3 +2405,5 @@ instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
 end UniformSpace.Completion
 
 end UniformSpace.Completion
+
+set_option linter.longFile 2500

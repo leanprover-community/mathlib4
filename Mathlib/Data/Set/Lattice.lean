@@ -52,8 +52,6 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
-set_option linter.longFile 2100
-
 open Function Set
 
 universe u
@@ -1932,3 +1930,5 @@ lemma forall_sUnion {S : Set (Set α)} {p : α → Prop} :
 lemma exists_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∃ x ∈ ⋃₀ S, p x) ↔ ∃ s ∈ S, ∃ x ∈ s, p x := by
   simp_rw [← exists_prop, ← iSup_Prop_eq, iSup_sUnion]
+
+set_option linter.longFile 2100

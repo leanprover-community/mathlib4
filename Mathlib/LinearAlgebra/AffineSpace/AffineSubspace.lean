@@ -43,8 +43,6 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and `Topolo
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
 
-set_option linter.longFile 1800
-
 noncomputable section
 
 open Affine
@@ -1692,3 +1690,5 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
     not_nonempty_iff_eq_empty]
 
 end AffineSubspace
+
+set_option linter.longFile 1800

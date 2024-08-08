@@ -77,8 +77,6 @@ cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
 
-set_option linter.longFile 2200
-
 assert_not_exists Field
 assert_not_exists Module
 
@@ -2004,3 +2002,5 @@ end Cardinal
 --     failed
 
 -- end Tactic
+
+set_option linter.longFile 2200

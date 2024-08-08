@@ -30,8 +30,6 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 -/
 
-set_option linter.longFile 2200
-
 assert_not_exists NormedSpace
 
 noncomputable section
@@ -2053,3 +2051,5 @@ lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGen
 end TendstoIndicator -- section
 
 end MeasureTheory
+
+set_option linter.longFile 2200

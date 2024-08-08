@@ -48,8 +48,6 @@ but we reference them here because all theorems about set integrals are in this 
 
 -/
 
-set_option linter.longFile 1700
-
 
 assert_not_exists InnerProductSpace
 
@@ -1585,3 +1583,5 @@ lemma continuousOn_integral_of_compact_support
     hk hf hfs (integrableOn_const.2 (Or.inr hk.measure_lt_top)) (μ := μ) (g := fun _ ↦ 1)
 
 end ParametricIntegral
+
+set_option linter.longFile 1700

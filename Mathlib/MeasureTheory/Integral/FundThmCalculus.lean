@@ -139,8 +139,6 @@ instances could be added when needed (in that case, one also needs to add instan
 integral, fundamental theorem of calculus, FTC-1, FTC-2, change of variables in integrals
 -/
 
-set_option linter.longFile 1700
-
 noncomputable section
 
 open scoped Classical
@@ -1559,3 +1557,5 @@ theorem integral_deriv_comp_mul_deriv {f f' g g' : ℝ → ℝ}
 end Mul
 
 end intervalIntegral
+
+set_option linter.longFile 1700

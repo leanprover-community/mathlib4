@@ -44,8 +44,6 @@ As this had no pay-off (everything about limits is non-constructive in mathlib),
 we made everything classical.
 -/
 
-set_option linter.longFile 2100
-
 noncomputable section
 
 universe w w' v u
@@ -1998,3 +1996,5 @@ theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z
   isIso_left_of_isIso_biprod_map g f
 
 end CategoryTheory
+
+set_option linter.longFile 2100

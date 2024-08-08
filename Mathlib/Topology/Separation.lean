@@ -124,8 +124,6 @@ If the space is also Lindelöf:
 
 -/
 
-set_option linter.longFile 2800
-
 open Function Set Filter Topology TopologicalSpace
 
 universe u v
@@ -2609,3 +2607,5 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
   refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, ?_, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
+
+set_option linter.longFile 2800
