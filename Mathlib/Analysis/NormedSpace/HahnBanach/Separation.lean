@@ -205,8 +205,7 @@ theorem iInter_halfspaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
 
 namespace RCLike
 
-variable [RCLike 𝕜] [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
-  [Module 𝕜 E] [Module ℝ E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable [RCLike 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 /--Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
 noncomputable def extendTo𝕜'ₗ : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=

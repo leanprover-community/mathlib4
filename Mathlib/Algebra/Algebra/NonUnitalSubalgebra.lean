@@ -502,10 +502,19 @@ end NonUnitalAlgHom
 namespace NonUnitalAlgebra
 
 variable {F : Type*} (R : Type u) {A : Type v} {B : Type w}
-variable [CommSemiring R]
-variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-variable [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
+variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+
+@[simp]
+lemma span_eq_toSubmodule (s : NonUnitalSubalgebra R A) :
+    Submodule.span R (s : Set A) = s.toSubmodule := by
+  simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
+
+variable [NonUnitalNonAssocSemiring B] [Module R B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
+
+section IsScalarTower
+
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The minimal non-unital subalgebra that includes `s`. -/
 def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
@@ -640,11 +649,6 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
     show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
     exact Subsemigroup.closure_le.2 (subset_adjoin R)
 
-@[simp]
-lemma span_eq_toSubmodule (s : NonUnitalSubalgebra R A) :
-    Submodule.span R (s : Set A) = s.toSubmodule := by
-  simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
-
 variable (R A)
 
 @[simp]
@@ -656,15 +660,15 @@ theorem adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ :=
   eq_top_iff.2 fun _x hx => subset_adjoin R hx
 
 open NonUnitalSubalgebra in
-lemma _root_.NonUnitalAlgHom.map_adjoin (f : F) (s : Set A) :
-    map f (adjoin R s) = adjoin R (f '' s) :=
+lemma _root_.NonUnitalAlgHom.map_adjoin [IsScalarTower R B B] [SMulCommClass R B B]
+    (f : F) (s : Set A) : map f (adjoin R s) = adjoin R (f '' s) :=
   Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) NonUnitalAlgebra.gi.gc
     NonUnitalAlgebra.gi.gc fun _t => rfl
 
 open NonUnitalSubalgebra in
 @[simp]
-lemma _root_.NonUnitalAlgHom.map_adjoin_singleton (f : F) (x : A) :
-    map f (adjoin R {x}) = adjoin R {f x} := by
+lemma _root_.NonUnitalAlgHom.map_adjoin_singleton [IsScalarTower R B B] [SMulCommClass R B B]
+    (f : F) (x : A) : map f (adjoin R {x}) = adjoin R {f x} := by
   simp [NonUnitalAlgHom.map_adjoin]
 
 variable {R A}
@@ -717,7 +721,8 @@ theorem mul_mem_sup {S T : NonUnitalSubalgebra R A} {x y : A} (hx : x ∈ S) (hy
     x * y ∈ S ⊔ T :=
   mul_mem (mem_sup_left hx) (mem_sup_right hy)
 
-theorem map_sup (f : F) (S T : NonUnitalSubalgebra R A) :
+theorem map_sup [IsScalarTower R B B] [SMulCommClass R B B]
+    (f : F) (S T : NonUnitalSubalgebra R A) :
     ((S ⊔ T).map f : NonUnitalSubalgebra R B) = S.map f ⊔ T.map f :=
   (NonUnitalSubalgebra.gc_map_comap f).l_sup
 
@@ -787,10 +792,6 @@ theorem coe_bot : ((⊥ : NonUnitalSubalgebra R A) : Set A) = {0} := by
 theorem eq_top_iff {S : NonUnitalSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top, fun h => by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
-theorem range_top_iff_surjective (f : A →ₙₐ[R] B) :
-    NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
-  NonUnitalAlgebra.eq_top_iff
-
 @[simp]
 theorem range_id : NonUnitalAlgHom.range (NonUnitalAlgHom.id R A) = ⊤ :=
   SetLike.coe_injective Set.range_id
@@ -800,16 +801,24 @@ theorem map_top (f : A →ₙₐ[R] B) : (⊤ : NonUnitalSubalgebra R A).map f =
   SetLike.coe_injective Set.image_univ
 
 @[simp]
-theorem map_bot (f : A →ₙₐ[R] B) : (⊥ : NonUnitalSubalgebra R A).map f = ⊥ :=
+theorem map_bot [IsScalarTower R B B] [SMulCommClass R B B]
+    (f : A →ₙₐ[R] B) : (⊥ : NonUnitalSubalgebra R A).map f = ⊥ :=
   SetLike.coe_injective <| by simp [NonUnitalAlgebra.coe_bot, NonUnitalSubalgebra.coe_map]
 
 @[simp]
-theorem comap_top (f : A →ₙₐ[R] B) : (⊤ : NonUnitalSubalgebra R B).comap f = ⊤ :=
+theorem comap_top [IsScalarTower R B B] [SMulCommClass R B B]
+    (f : A →ₙₐ[R] B) : (⊤ : NonUnitalSubalgebra R B).comap f = ⊤ :=
   eq_top_iff.2 fun _ => mem_top
 
 /-- `NonUnitalAlgHom` to `⊤ : NonUnitalSubalgebra R A`. -/
 def toTop : A →ₙₐ[R] (⊤ : NonUnitalSubalgebra R A) :=
   NonUnitalAlgHom.codRestrict (NonUnitalAlgHom.id R A) ⊤ fun _ => mem_top
+
+end IsScalarTower
+
+theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B) :
+    NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
+  NonUnitalAlgebra.eq_top_iff
 
 end NonUnitalAlgebra
 
@@ -821,12 +830,56 @@ section NonAssoc
 
 variable {R : Type u} {A : Type v} {B : Type w}
 variable [CommSemiring R]
-variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-variable [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
+variable [NonUnitalNonAssocSemiring A] [Module R A]
 variable (S : NonUnitalSubalgebra R A)
+
+theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) = S :=
+  ext <| Set.ext_iff.1 <| (NonUnitalSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+
+variable [NonUnitalNonAssocSemiring B] [Module R B]
+
+section Prod
+
+variable (S₁ : NonUnitalSubalgebra R B)
+
+/-- The product of two non-unital subalgebras is a non-unital subalgebra. -/
+def prod : NonUnitalSubalgebra R (A × B) :=
+  { S.toNonUnitalSubsemiring.prod S₁.toNonUnitalSubsemiring with
+    carrier := S ×ˢ S₁
+    smul_mem' := fun r _x hx => ⟨SMulMemClass.smul_mem r hx.1, SMulMemClass.smul_mem r hx.2⟩ }
+
+@[simp]
+theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ S₁ :=
+  rfl
+
+theorem prod_toSubmodule : (S.prod S₁).toSubmodule = S.toSubmodule.prod S₁.toSubmodule :=
+  rfl
+
+@[simp]
+theorem mem_prod {S : NonUnitalSubalgebra R A} {S₁ : NonUnitalSubalgebra R B} {x : A × B} :
+    x ∈ prod S S₁ ↔ x.1 ∈ S ∧ x.2 ∈ S₁ :=
+  Set.mem_prod
+
+variable [IsScalarTower R A A] [SMulCommClass R A A] [IsScalarTower R B B] [SMulCommClass R B B]
+
+@[simp]
+theorem prod_top : (prod ⊤ ⊤ : NonUnitalSubalgebra R (A × B)) = ⊤ := by ext; simp
+
+theorem prod_mono {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
+    S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
+  Set.prod_mono
+
+@[simp]
+theorem prod_inf_prod {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
+    S.prod S₁ ⊓ T.prod T₁ = (S ⊓ T).prod (S₁ ⊓ T₁) :=
+  SetLike.coe_injective Set.prod_inter_prod
+
+end Prod
+
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra R A)] :
     Subsingleton (A →ₙₐ[R] B) :=
@@ -836,8 +889,6 @@ instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra 
         Subsingleton.elim (⊤ : NonUnitalSubalgebra R A) ⊥ ▸ mem_top
       (mem_bot.mp this).symm ▸ (map_zero f).trans (map_zero g).symm⟩
 
-theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) = S :=
-  ext <| Set.ext_iff.1 <| (NonUnitalSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
@@ -875,42 +926,6 @@ theorem inclusion_inclusion {S T U : NonUnitalSubalgebra R A} (hst : S ≤ T) (h
 theorem coe_inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) (s : S) :
     (inclusion h s : A) = s :=
   rfl
-
-section Prod
-
-variable (S₁ : NonUnitalSubalgebra R B)
-
-/-- The product of two non-unital subalgebras is a non-unital subalgebra. -/
-def prod : NonUnitalSubalgebra R (A × B) :=
-  { S.toNonUnitalSubsemiring.prod S₁.toNonUnitalSubsemiring with
-    carrier := S ×ˢ S₁
-    smul_mem' := fun r _x hx => ⟨SMulMemClass.smul_mem r hx.1, SMulMemClass.smul_mem r hx.2⟩ }
-
-@[simp]
-theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ S₁ :=
-  rfl
-
-theorem prod_toSubmodule : (S.prod S₁).toSubmodule = S.toSubmodule.prod S₁.toSubmodule :=
-  rfl
-
-@[simp]
-theorem mem_prod {S : NonUnitalSubalgebra R A} {S₁ : NonUnitalSubalgebra R B} {x : A × B} :
-    x ∈ prod S S₁ ↔ x.1 ∈ S ∧ x.2 ∈ S₁ :=
-  Set.mem_prod
-
-@[simp]
-theorem prod_top : (prod ⊤ ⊤ : NonUnitalSubalgebra R (A × B)) = ⊤ := by ext; simp
-
-theorem prod_mono {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
-    S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
-  Set.prod_mono
-
-@[simp]
-theorem prod_inf_prod {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
-    S.prod S₁ ⊓ T.prod T₁ = (S ⊓ T).prod (S₁ ⊓ T₁) :=
-  SetLike.coe_injective Set.prod_inter_prod
-
-end Prod
 
 section SuprLift
 
