@@ -68,11 +68,13 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
       ext x
       simp [Submodule.mem_bot, Submodule.mem_top, h x]⟩⟩
 
-variable {m : Submodule R M} {N : Type*} [AddCommGroup N] [Module R N] {R S M}
+variable {m : Submodule R M} {N : Type*} [AddCommGroup N] {R S M}
 
 theorem LinearMap.isSimpleModule_iff_of_bijective [Module S N] {σ : R →+* S} [RingHomSurjective σ]
     (l : M →ₛₗ[σ] N) (hl : Function.Bijective l) : IsSimpleModule R M ↔ IsSimpleModule S N :=
   (Submodule.orderIsoMapComapOfBijective l hl).isSimpleOrder_iff
+
+variable [Module R N]
 
 theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
   (Submodule.orderIsoMapComap l).isSimpleOrder
@@ -204,7 +206,7 @@ instance submodule {m : Submodule R M} : IsSemisimpleModule R m :=
 variable {R M}
 open LinearMap
 
-theorem congr [IsSemisimpleModule R N] (e : M ≃ₗ[R] N) : IsSemisimpleModule R M :=
+theorem congr (e : N ≃ₗ[R] M) : IsSemisimpleModule R N :=
   (Submodule.orderIsoMapComap e.symm).complementedLattice
 
 instance quotient : IsSemisimpleModule R (M ⧸ m) :=
@@ -217,19 +219,21 @@ protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
 
 section
 
-variable [Module S N] {σ : R →+* S} [RingHomSurjective σ] (l : M →ₛₗ[σ] N)
+variable {M' : Type*} [AddCommGroup M'] [Module R M'] {N'} [AddCommGroup N'] [Module S N']
+  {σ : R →+* S} (l : M' →ₛₗ[σ] N')
 
-theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective (hl : Function.Bijective l) :
-    IsSemisimpleModule R M ↔ IsSemisimpleModule S N :=
+theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective
+    [RingHomSurjective σ] (hl : Function.Bijective l) :
+    IsSemisimpleModule R M' ↔ IsSemisimpleModule S N' :=
   (Submodule.orderIsoMapComapOfBijective l hl).complementedLattice_iff
 
 -- TODO: generalize Submodule.equivMapOfInjective from InvPair to RingHomSurjective
 proof_wanted _root_.LinearMap.isSemisimpleModule_of_injective (_ : Function.Injective l)
-    [IsSemisimpleModule S N] : IsSemisimpleModule R M
+    [IsSemisimpleModule S N'] : IsSemisimpleModule R M'
 
 --TODO: generalize LinearMap.quotKerEquivOfSurjective to SemilinearMaps + RingHomSurjective
 proof_wanted _root_.LinearMap.isSemisimpleModule_of_surjective (_ : Function.Surjective l)
-    [IsSemisimpleModule R M] : IsSemisimpleModule S N
+    [IsSemisimpleModule R M'] : IsSemisimpleModule S N'
 
 end
 

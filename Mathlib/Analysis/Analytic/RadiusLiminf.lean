@@ -19,7 +19,7 @@ because this would create a circular dependency once we redefine `exp` using
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-open scoped Topology Classical NNReal ENNReal
+open scoped Topology NNReal ENNReal
 
 open Filter Asymptotics
 
