@@ -34,11 +34,7 @@ variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
 namespace Basis
 
-instance : Inhabited (Basis ι R (ι →₀ R)) :=
-  ⟨.ofRepr (LinearEquiv.refl _ _)⟩
-
 variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
-
 
 section Coord
 
