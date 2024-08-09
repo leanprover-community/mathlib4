@@ -5,8 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Disjoint
 
-#align_import order.prop_instances from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
-
 /-!
 
 # The order on `Prop`
@@ -26,7 +24,6 @@ instance Prop.instDistribLattice : DistribLattice Prop where
   inf_le_right := @And.right
   le_inf := fun _ _ _ Hab Hac Ha => And.intro (Hab Ha) (Hac Ha)
   le_sup_inf := fun _ _ _ => or_and_left.2
-#align Prop.distrib_lattice Prop.instDistribLattice
 
 /-- Propositions form a bounded order. -/
 instance Prop.instBoundedOrder : BoundedOrder Prop where
@@ -34,36 +31,29 @@ instance Prop.instBoundedOrder : BoundedOrder Prop where
   le_top _ _ := True.intro
   bot := False
   bot_le := @False.elim
-#align Prop.bounded_order Prop.instBoundedOrder
 
 @[simp]
 theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
   rfl
-#align Prop.bot_eq_false Prop.bot_eq_false
 
 @[simp]
 theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
-#align Prop.top_eq_true Prop.top_eq_true
 
 instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
-#align Prop.le_is_total Prop.le_isTotal
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by
   classical
   exact Lattice.toLinearOrder Prop
-#align Prop.linear_order Prop.linearOrder
 
 @[simp]
 theorem sup_Prop_eq : (· ⊔ ·) = (· ∨ ·) :=
   rfl
-#align sup_Prop_eq sup_Prop_eq
 
 @[simp]
 theorem inf_Prop_eq : (· ⊓ ·) = (· ∧ ·) :=
   rfl
-#align inf_Prop_eq inf_Prop_eq
 
 namespace Pi
 
@@ -78,35 +68,29 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
       (update_le_iff.mpr ⟨hg, fun _ _ => bot_le⟩)).1
   · intro h x hf hg i
     apply h i (hf i) (hg i)
-#align pi.disjoint_iff Pi.disjoint_iff
 
 theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
     Codisjoint f g ↔ ∀ i, Codisjoint (f i) (g i) :=
   @disjoint_iff _ (fun i => (α' i)ᵒᵈ) _ _ _ _
-#align pi.codisjoint_iff Pi.codisjoint_iff
 
 theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by
   simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]
-#align pi.is_compl_iff Pi.isCompl_iff
 
 end Pi
 
 @[simp]
 theorem Prop.disjoint_iff {P Q : Prop} : Disjoint P Q ↔ ¬(P ∧ Q) :=
   disjoint_iff_inf_le
-#align Prop.disjoint_iff Prop.disjoint_iff
 
 @[simp]
 theorem Prop.codisjoint_iff {P Q : Prop} : Codisjoint P Q ↔ P ∨ Q :=
   codisjoint_iff_le_sup.trans <| forall_const True
-#align Prop.codisjoint_iff Prop.codisjoint_iff
 
 @[simp]
 theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   rw [_root_.isCompl_iff, Prop.disjoint_iff, Prop.codisjoint_iff, not_iff]
   by_cases P <;> by_cases Q <;> simp [*]
-#align Prop.is_compl_iff Prop.isCompl_iff
 
 -- Porting note: Lean 3 would unfold these for us, but we need to do it manually now
 section decidable_instances

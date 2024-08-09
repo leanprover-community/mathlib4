@@ -26,7 +26,6 @@ structure Lifts where
   carrier : IntermediateField F E
   /-- The lifted RingHom, expressed as an AlgHom. -/
   emb : carrier →ₐ[F] K
-#align intermediate_field.lifts IntermediateField.Lifts
 
 variable {F E K}
 
@@ -68,7 +67,6 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
          inclusion_inclusion, inclusion_self, AlgHom.id_apply x]
   · dsimp only [AlgHom.comp_apply]
     exact Subalgebra.iSupLift_inclusion (K := t') (i := ⟨L, hL⟩) x (le_iSup t' ⟨L, hL⟩)
-#align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
@@ -93,14 +91,13 @@ theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F
     (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
   Lifts.exists_lift_of_splits' x h1.tower_top <| h1.minpoly_splits_tower_top' <| by
     rwa [← x.emb.comp_algebraMap] at h2
-#align intermediate_field.lifts.exists_lift_of_splits IntermediateField.Lifts.exists_lift_of_splits
 
 section
 
 private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
     ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
-  obtain ⟨φ, hfφ, hφ⟩ := zorn_nonempty_Ici₀ _
+  obtain ⟨φ, hfφ, hφ⟩ := zorn_le_nonempty_Ici₀ _
     (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
   refine ⟨φ.emb.comp (inclusion <| (le_extendScalars_iff hfφ.1 <| adjoin L S).mp <|
     adjoin_le_iff.mpr fun s h ↦ ?_), AlgHom.ext hfφ.2⟩
@@ -108,7 +105,8 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
   letI : SMul L φ.carrier := Algebra.toSMul
   have : IsScalarTower L φ.carrier E := ⟨(smul_assoc · (· : E))⟩
   have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
-  · obtain ⟨y, h1, h2⟩ := this; exact (hφ y h1).1 h2
+  · obtain ⟨y, h1, h2⟩ := this
+    exact (hφ h1).1 h2
   · convert (hK s h).2; ext; apply hfφ.2
 
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
@@ -149,16 +147,15 @@ variable (hK : ∀ s ∈ S, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap 
 -- The following uses the hypothesis `hK`.
 
 theorem exists_algHom_adjoin_of_splits : ∃ φ : adjoin F S →ₐ[F] K, φ.comp (inclusion hL) = f := by
-  obtain ⟨φ, hfφ, hφ⟩ := zorn_nonempty_Ici₀ _
+  obtain ⟨φ, hfφ, hφ⟩ := zorn_le_nonempty_Ici₀ _
     (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
   refine ⟨φ.emb.comp (inclusion <| adjoin_le_iff.mpr fun s hs ↦ ?_), ?_⟩
   · rcases φ.exists_lift_of_splits (hK s hs).1 (hK s hs).2 with ⟨y, h1, h2⟩
-    exact (hφ y h1).1 h2
+    exact (hφ h1).1 h2
   · ext; apply hfφ.2
 
 theorem nonempty_algHom_adjoin_of_splits : Nonempty (adjoin F S →ₐ[F] K) :=
   have ⟨φ, _⟩ := exists_algHom_adjoin_of_splits hK (⊥ : Lifts F E K).emb bot_le; ⟨φ⟩
-#align intermediate_field.alg_hom_mk_adjoin_splits IntermediateField.nonempty_algHom_adjoin_of_splits
 
 variable (hS : adjoin F S = ⊤)
 
@@ -168,7 +165,6 @@ theorem exists_algHom_of_adjoin_splits : ∃ φ : E →ₐ[F] K, φ.comp L.val =
 
 theorem nonempty_algHom_of_adjoin_splits : Nonempty (E →ₐ[F] K) :=
   have ⟨φ, _⟩ := exists_algHom_of_adjoin_splits hK (⊥ : Lifts F E K).emb hS; ⟨φ⟩
-#align intermediate_field.alg_hom_mk_adjoin_splits' IntermediateField.nonempty_algHom_of_adjoin_splits
 
 variable {x : E} (hx : x ∈ adjoin F S) {y : K} (hy : aeval y (minpoly F x) = 0)
 

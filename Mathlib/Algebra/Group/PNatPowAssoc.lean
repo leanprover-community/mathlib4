@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Data.PNat.Basic
-import Mathlib.GroupTheory.GroupAction.Prod
 
 /-!
 # Typeclasses for power-associative structures
@@ -29,13 +27,16 @@ powers are considered.
 
 - PNatPowAssoc for products and Pi types
 
-## Todo
+## TODO
 
 * `NatPowAssoc` for `MulOneClass` - more or less the same flow
 * It seems unlikely that anyone will want `NatSMulAssoc` and `PNatSMulAssoc` as additive versions of
   power-associativity, but we have found that it is not hard to write.
 
 -/
+
+-- TODO:
+-- assert_not_exists MonoidWithZero
 
 variable {M : Type*}
 

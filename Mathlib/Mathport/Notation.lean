@@ -458,8 +458,8 @@ This command can be used in mathlib4 but it has an uncertain future and was crea
 for backward compatibility.
 -/
 elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
-    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)? pp?:(prettyPrintOpt)?
-    ppSpace items:(notation3Item)+ " => " val:term : command => do
+    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
+    pp?:(ppSpace prettyPrintOpt)? items:(ppSpace notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
   -- identifiers that appear in `items`
   let mut boundIdents : HashMap Name Ident := {}
@@ -612,7 +612,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         pretty printing relies on deriving an expression matcher from the expansion. \
         (Use `set_option trace.notation3 true` to get some debug information.)"
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
 
 /-! `scoped[ns]` support -/
 
