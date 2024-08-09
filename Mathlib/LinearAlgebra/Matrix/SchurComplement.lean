@@ -443,7 +443,7 @@ end CommRing
 
 section StarOrderedRing
 
-variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarRing 𝕜] [StarOrderedRing 𝕜]
+variable {𝕜 : Type*} [CommRing 𝕜] [StarRing 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
@@ -490,6 +490,8 @@ theorem IsHermitian.fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m
   rw [← isHermitian_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
   convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
+
+variable [PartialOrder 𝕜] [StarOrderedRing 𝕜]
 
 theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (hA : A.PosDef) [Invertible A] :
