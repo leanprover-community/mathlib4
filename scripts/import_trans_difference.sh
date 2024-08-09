@@ -61,8 +61,7 @@ getFormattedTransImports () {
   { getTransImports
     formatGitDiff "${1}"; } |
     awk -F, '
-         ($2+0 == $2) { record[$1]=$2; #if(name[$1] == "")
-           { name[$1]="`"$1"`" } }
+         ($2+0 == $2) { record[$1]=$2; if(name[$1] == "") { name[$1]="`"$1"`" } }
          ($2 == "")   { name[$1]="`"$1"`"$3 }
       END {
         for(fil in name)
