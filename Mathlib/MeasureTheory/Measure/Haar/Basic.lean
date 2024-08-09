@@ -576,9 +576,9 @@ instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (
   · simp only [haarMeasure_self, ne_eq, ENNReal.one_ne_top, not_false_eq_true]
 
 /-- `haar` is some choice of a Haar measure, on a locally compact group. -/
-@[to_additive (attr := reducible)
+@[to_additive
 "`addHaar` is some choice of a Haar measure, on a locally compact additive group."]
-noncomputable def haar [LocallyCompactSpace G] : Measure G :=
+noncomputable abbrev haar [LocallyCompactSpace G] : Measure G :=
   haarMeasure <| Classical.arbitrary _
 
 /-! Steinhaus theorem: if `E` has positive measure, then `E / E` contains a neighborhood of zero.
