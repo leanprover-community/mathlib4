@@ -6,9 +6,9 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 
 import Mathlib.Data.Nat.Choose.Vandermonde
 
-/-! # Multiple choose 
+/-! # Multiple choose
 
-* `Nat.mchoose m n` is the number of possibilities of dividing a set 
+* `Nat.mchoose m n` is the number of possibilities of dividing a set
 with `m * n` elements into `m` groups of `n`-element subsets
 
 This integer is defined as a finite product.
@@ -25,13 +25,13 @@ that couldn't lie in `Mathlib.Data.Nat.Choose.Basic` because their proof uses th
 namespace Nat
 
 theorem choose_mul_add (m) {n : ℕ} (hn : n ≠ 0) :
-    (m * n + n).choose n = (m + 1) * (m * n + n - 1).choose (n - 1) := by 
+    (m * n + n).choose n = (m + 1) * (m * n + n - 1).choose (n - 1) := by
   rw [← mul_left_inj' (mul_ne_zero (factorial_ne_zero (m * n)) (factorial_ne_zero n))]
-  set p := n - 1 
+  set p := n - 1
   have hp : n = p + 1 := (succ_pred_eq_of_ne_zero hn).symm
   simp only [hp, add_succ_sub_one]
-  calc 
-    (m * (p + 1) + (p + 1)).choose (p + 1) * ((m * (p+1))! * (p+1)!) 
+  calc
+    (m * (p + 1) + (p + 1)).choose (p + 1) * ((m * (p+1))! * (p+1)!)
       = (m * (p + 1) + (p + 1)).choose (p + 1) * (m * (p+1))! * (p+1)! := by ring
     _ = (m * (p+ 1) + (p + 1))! := by rw [add_choose_mul_factorial_mul_factorial]
     _ = ((m * (p+ 1) + p) + 1)! := by ring_nf
@@ -42,17 +42,17 @@ theorem choose_mul_add (m) {n : ℕ} (hn : n ≠ 0) :
     _ = (m * (p + 1) + p).choose p * (m * (p+1))! * (((p + 1) * (p)!) * (m + 1)) := by ring
     _ = (m * (p + 1) + p).choose p * (m * (p+1))! * ((p + 1)! * (m + 1)) := by rw [factorial_succ]
     _ = (m + 1) * (m * (p + 1) + p).choose p * ((m * (p + 1))! * (p + 1)!) := by ring
-  
+
 theorem choose_mul_right (m) {n : ℕ} (hn : n ≠ 0) :
-    (m * n).choose n = m * (m * n - 1).choose (n - 1) := by 
-  by_cases hm : m = 0 
+    (m * n).choose n = m * (m * n - 1).choose (n - 1) := by
+  by_cases hm : m = 0
   · simp only [hm, zero_mul, choose_eq_zero_iff]
     exact Nat.pos_of_ne_zero hn
   · set p := m - 1; have hp : m = p + 1 := (succ_pred_eq_of_ne_zero hm).symm
     simp only [hp]
     rw [add_mul, one_mul, choose_mul_add _ hn]
 
-/-- Number of possibilities of dividing a set with `m * n` elements into `m` groups 
+/-- Number of possibilities of dividing a set with `m * n` elements into `m` groups
 of `n`-element subsets. -/
 def mchoose (m n : ℕ) : ℕ :=
   Finset.prod (Finset.range m) fun p => choose (p * n + n - 1) (n - 1)
@@ -78,22 +78,22 @@ theorem mchoose_one' (m : ℕ) : mchoose m 1 = 1 := by
 theorem mchoose_mul_factorial_mul_pow_factorial (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     mchoose m n * m.factorial * n.factorial ^ m = (m * n).factorial := by
   rw [← zero_lt_iff] at hn
-  induction m with 
+  induction m with
   | zero => rw [mchoose_zero, one_mul, MulZeroClass.zero_mul, factorial_zero, pow_zero, mul_one]
-  | succ m ih => 
+  | succ m ih =>
     calc mchoose (m + 1) n * (m+1)! * (n)! ^ (m+1)
-        =  ((m * n + n - 1).choose (n-1) * mchoose m n) * (m + 1)! *(n)! ^(m + 1) := by 
+        =  ((m * n + n - 1).choose (n-1) * mchoose m n) * (m + 1)! *(n)! ^(m + 1) := by
           rw [mchoose_succ]
       _ = mchoose m n * ((m + 1) * (m * n + n - 1).choose (n-1)) * (m)! * (n)!  ^ (m +1) := by
-          rw [factorial_succ]; ring 
-      _ = mchoose m n * ((m*n+n).choose n) * (m)! * (n)! ^ (m+1) := by 
+          rw [factorial_succ]; ring
+      _ = mchoose m n * ((m*n+n).choose n) * (m)! * (n)! ^ (m+1) := by
           rw [← choose_mul_add _ (not_eq_zero_of_lt hn)]
-      _ = (mchoose m n * (m)! * (n)! ^ m) * (m*n+n).choose n * (n)! := by 
+      _ = (mchoose m n * (m)! * (n)! ^ m) * (m*n+n).choose n * (n)! := by
           rw [pow_succ]; ring_nf
       _ = (m  * n + n).choose n * (m * n)! * (n)! := by rw [ih]; ring
       _ = (m * n + n)! := by rw [add_choose_mul_factorial_mul_factorial]
       _ = ((m + 1)* n)! := by ring_nf
-    
+
 theorem mchoose_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     mchoose m n = (m * n).factorial / (m.factorial * n.factorial ^ m) := by
   rw [← Nat.mul_left_inj <|
