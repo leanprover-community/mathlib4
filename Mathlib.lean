@@ -2159,7 +2159,6 @@ import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.FunLike.Fintype
-import Mathlib.Data.HashMap
 import Mathlib.Data.Holor
 import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Align
@@ -2534,7 +2533,9 @@ import Mathlib.Data.ZMod.Module
 import Mathlib.Data.ZMod.Parity
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.Data.ZMod.Units
+import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.Group
+import Mathlib.Deprecated.HashMap
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subfield
 import Mathlib.Deprecated.Subgroup
