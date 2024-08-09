@@ -101,9 +101,12 @@ notation:25 α " →ₘ[" μ "] " β => AEEqFun α β μ
 
 end MeasurableSpace
 
+variable [TopologicalSpace δ]
+
 namespace AEEqFun
 
-variable [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
+section
+variable [TopologicalSpace β]
 
 /-- Construct the equivalence class `[f]` of an almost everywhere measurable function `f`, based
     on the equivalence relation of being almost everywhere equal. -/
@@ -183,13 +186,15 @@ theorem induction_on₃ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpac
     (H : ∀ f hf f' hf' f'' hf'', p (mk f hf) (mk f' hf') (mk f'' hf'')) : p f f' f'' :=
   induction_on f fun f hf => induction_on₂ f' f'' <| H f hf
 
+end
+
 /-!
 ### Composition of an a.e. equal function with a (quasi) measure preserving function
 -/
 
 section compQuasiMeasurePreserving
 
-variable [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β}
+variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β}
 
 open MeasureTheory.Measure (QuasiMeasurePreserving)
 
@@ -221,7 +226,8 @@ end compQuasiMeasurePreserving
 
 section compMeasurePreserving
 
-variable [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β} {g : β → γ}
+variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β}
+  {f : α → β} {g : β → γ}
 
 /-- Composition of an almost everywhere equal function and a quasi measure preserving function.
 
@@ -247,6 +253,8 @@ theorem coeFn_compMeasurePreserving (g : β →ₘ[ν] γ) (hf : MeasurePreservi
 
 end compMeasurePreserving
 
+variable [TopologicalSpace β] [TopologicalSpace γ]
+
 /-- Given a continuous function `g : β → γ`, and an almost everywhere equal function `[f] : α →ₘ β`,
     return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
     `[g ∘ f] : α →ₘ γ`. -/
@@ -267,7 +275,8 @@ theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : 
   rw [comp_eq_mk]
   apply coeFn_mk
 
-theorem comp_compQuasiMeasurePreserving [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
+theorem comp_compQuasiMeasurePreserving
+    {β : Type*} [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
     (f : β →ₘ[ν] γ) {φ : α → β} (hφ : Measure.QuasiMeasurePreserving φ μ ν) :
     (comp g hg f).compQuasiMeasurePreserving φ hφ =
       comp g hg (f.compQuasiMeasurePreserving φ hφ) := by
@@ -408,13 +417,13 @@ theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae �
   ext <| Germ.coe_eq.1 <| by rwa [← toGerm_eq, ← toGerm_eq]
 
 @[simp]
-theorem compQuasiMeasurePreserving_toGerm [MeasurableSpace β] {f : α → β} {ν}
+theorem compQuasiMeasurePreserving_toGerm {β : Type*} [MeasurableSpace β] {f : α → β} {ν}
     (g : β →ₘ[ν] γ) (hf : Measure.QuasiMeasurePreserving f μ ν) :
     (g.compQuasiMeasurePreserving f hf).toGerm = g.toGerm.compTendsto f hf.tendsto_ae := by
   rcases g; rfl
 
 @[simp]
-theorem compMeasurePreserving_toGerm [MeasurableSpace β] {f : α → β} {ν}
+theorem compMeasurePreserving_toGerm {β : Type*} [MeasurableSpace β] {f : α → β} {ν}
     (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν) :
     (g.compMeasurePreserving f hf).toGerm =
       g.toGerm.compTendsto f hf.quasiMeasurePreserving.tendsto_ae :=
