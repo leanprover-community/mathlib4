@@ -37,7 +37,7 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   refine ⟨⟨tendsto_log_mul_self_nhds_zero_left, ?_⟩, ?_⟩
   · simpa only [rpow_one] using tendsto_log_mul_rpow_nhds_zero zero_lt_one
   · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
-    simp only [log_zero, mul_zero]
+    simp
 
 lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
   differentiable_id'.differentiableOn.mul differentiableOn_log
@@ -53,7 +53,7 @@ lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * lo
   simp [hx]
 
 open Filter in
-lemma tendsto_deriv_mul_log_nhdsWithin_zero :
+private lemma tendsto_deriv_mul_log_nhdsWithin_zero :
     Tendsto (deriv (fun x ↦ x * log x)) (𝓝[>] 0) atBot := by
   have : (deriv (fun x ↦ x * log x)) =ᶠ[𝓝[>] 0] (fun x ↦ log x + 1) := by
     apply eventuallyEq_nhdsWithin_of_eqOn
@@ -63,75 +63,16 @@ lemma tendsto_deriv_mul_log_nhdsWithin_zero :
     exact ne_of_gt hx
   simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
 
--- lemma isLittleO_nhds_zero_id_deriv_mul_log : id =o[𝓝[>] 0] (deriv (fun x ↦ x * log x)) := by
---   sorry
-
-/- helper lemma for `not_eventually_bounded_zero_mul_log` -/
-private lemma NegMulLog.one_lt_log_sub_const_of_lt_exp_sub
-    (x D : ℝ) (hx : 0 < x) (h : x < rexp (D - 2)) :
-    1 < |x.log - D| := by
-  by_cases abs_eq : x.log - D < 0
-  · rw [abs_of_neg]
-    have : x.log - D < -2 := sub_left_lt_of_lt_add ((log_lt_iff_lt_exp hx).mpr h)
-    linarith
-    exact abs_eq
-  · have h := log_lt_log hx h
-    simp only [log_exp] at h
-    rw [abs_of_pos (by linarith)]
-    linarith
-
-lemma not_eventually_bounded_derivative_zero_mul_log (D : ℝ) :
-    ¬ ∀ᶠ (x : ℝ) in 𝓝 0, |x * x.log - x * D| ≤ |x| := by
-  simp [eventually_nhdsWithin_iff, Metric.eventually_nhds_iff]
-  intro x hx
-  exists min (2⁻¹ * x) (exp (D - 2))
-  have xhalf_gt0 : 0 < 2⁻¹ * x := by norm_num [hx]
-  constructor
-  · rw [abs_of_nonneg (le_min (le_of_lt xhalf_gt0) (exp_nonneg (D - 2)))]
-    apply min_lt_of_left_lt
-    norm_num
-    linarith
-  · have exists_pos : 0 < |min (2⁻¹ * x) (rexp (D - 2))| := by
-      simp only [one_div, abs_pos]
-      exact ne_of_gt (lt_min xhalf_gt0 (exp_pos (D - 2)))
-    simp only [← mul_sub, one_div, abs_mul]
-    apply (lt_mul_iff_one_lt_right exists_pos).mpr
-    by_cases min_l : (2⁻¹ * x) < (rexp (D - 2))
-    · rw [min_eq_left_of_lt min_l]
-      exact NegMulLog.one_lt_log_sub_const_of_lt_exp_sub (2⁻¹ * x) D xhalf_gt0 min_l
-    · simp only [min_eq_right (le_of_not_lt min_l), log_exp, sub_sub_cancel_left, abs_neg,
-        Nat.abs_ofNat, Nat.one_lt_ofNat]
-
--- TODO inline or refactor or find home
-/- In the hypothesis, D stands for a hypothetical derivative `deriv f x0`. -/
-lemma not_DifferentiableAt_of_not_eventuallly_bounded_derivative (f : ℝ → ℝ) (x0 : ℝ)
-    (hf : ∀ D, ¬ ∀ᶠ (x : ℝ) in 𝓝 0, |f (x0 + x) - f x0 - x * D| ≤ |x|) :
-    ¬ DifferentiableAt ℝ f x0 := by
-  intro h
-  have := hasDerivAt_iff_isLittleO_nhds_zero.mp (DifferentiableAt.hasDerivAt h)
-  simp only [zero_add, log_zero, mul_zero, sub_zero, smul_eq_mul] at this
-  have := Asymptotics.IsLittleO.bound this
-  simp only [norm_mul, norm_eq_abs] at this
-  have := @this 1 (by norm_num)
-  simp only [one_mul] at this
-  have := hf (deriv f x0)
-  contradiction
-
+/-- at `x=0`, `(fun x ↦ x * log x)` is continuous (`continuous_mul_log`) but not differentiable. -/
 lemma not_DifferentiableAt_log_mul_zero :
-    ¬ DifferentiableAt ℝ (fun x ↦ x * log x) 0 := by
-  apply not_DifferentiableAt_of_not_eventuallly_bounded_derivative (fun x ↦ x * log x) 0
-  simp only [zero_add, log_zero, mul_zero, sub_zero]
-  exact not_eventually_bounded_derivative_zero_mul_log
+    ¬ DifferentiableAt ℝ (fun x ↦ x * log x) 0 := fun h ↦
+  (not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (fun (x:ℝ) ↦ x * log x) (a:=0))
+    tendsto_deriv_mul_log_nhdsWithin_zero
+    (h.differentiableWithinAt (s:=(Set.Ioi 0)))
 
 /-- Not differentiable, hence `deriv` has junk value zero. -/
 lemma deriv_mul_log_zero : deriv (fun x ↦ x * log x) 0 = 0 :=
   deriv_zero_of_not_differentiableAt not_DifferentiableAt_log_mul_zero
-
--- TODO delete
--- lemma not_continuousAt_of_tendsto_nhdsWithin_Ioi_atTop {f : ℝ → ℝ} {x : ℝ}
---     (hf : Tendsto f (𝓝[>] x) atTop) :
---     ¬ ContinuousAt f x :=
---   not_continuousAt_of_tendsto hf nhdsWithin_le_nhds (by simp)
 
 lemma not_continuousAt_deriv_mul_log_zero :
     ¬ ContinuousAt (deriv (fun (x : ℝ) ↦ x * log x)) 0 :=
