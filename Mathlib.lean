@@ -2689,7 +2689,8 @@ import Mathlib.GroupTheory.Congruence.BigOperators
 import Mathlib.GroupTheory.Congruence.Opposite
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
-import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.CosetCover
 import Mathlib.GroupTheory.Coxeter.Basic
 import Mathlib.GroupTheory.Coxeter.Inversion

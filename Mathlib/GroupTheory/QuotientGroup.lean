@@ -8,7 +8,7 @@ This file is to a certain extent based on `quotient_module.lean` by Johannes Hö
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Coset.Card
 
 /-!
 # Quotients of groups by normal subgroups

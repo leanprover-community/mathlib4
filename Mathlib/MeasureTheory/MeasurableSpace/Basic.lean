@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
-import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Coset.Card
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.LiminfLimsup

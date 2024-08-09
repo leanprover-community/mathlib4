@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Commutator
-import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
 
@@ -19,7 +19,6 @@ This file proves properties of group actions which use the quotient group constr
 * the class formula `card_eq_sum_card_group_div_card_stabilizer'`
 * Burnside's lemma `sum_card_fixedBy_eq_card_orbits_mul_card_group`
 -/
-
 
 universe u v w
 
