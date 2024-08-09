@@ -6,7 +6,7 @@ open Lake DSL
 * as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
 * as `moreServerArgs`, to set their default value in mathlib.
 -/
-abbrev moreServOpts : Array LeanOption := #[
+abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.missingEnd, true⟩,
   ⟨`linter.cdot, true⟩,
@@ -21,14 +21,14 @@ package mathlib where
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩
   ] ++ -- options that are used in `lake build`
-    moreServOpts.map fun s => { s with name := `weak ++ s.name }
+    mathlibOnlyLinters.map fun s => { s with name := `weak ++ s.name }
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
   -- weakLeanArgs := #[]
   -- these are the linter options that Mathlib enforces, but that would not be active by default
-  moreServerOptions := moreServOpts
+  moreServerOptions := mathlibOnlyLinters
 
 /-!
 ## Mathlib dependencies on upstream projects.
