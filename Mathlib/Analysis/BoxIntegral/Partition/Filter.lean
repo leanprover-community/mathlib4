@@ -346,9 +346,10 @@ theorem MemBaseSet.exists_common_compl (h₁ : l.MemBaseSet I c₁ r₁ π₁) (
     (hU : π₁.iUnion = π₂.iUnion) :
     ∃ π : Prepartition I, π.iUnion = ↑I \ π₁.iUnion ∧
       (l.bDistortion → π.distortion ≤ c₁) ∧ (l.bDistortion → π.distortion ≤ c₂) := by
+  clear J c l₁ l₂ π r
   wlog hc : c₁ ≤ c₂ with H
   · simpa [hU, _root_.and_comm] using
-      @H _ _ I J c c₂ c₁ _ l₂ l₁ r r₂ r₁ π π₂ π₁ h₂ h₁ hU.symm (le_of_not_le hc)
+      @H _ _ I c₂ c₁ _ r₂ r₁ π₂ π₁ h₂ h₁ hU.symm (le_of_not_le hc)
   by_cases hD : (l.bDistortion : Prop)
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩
