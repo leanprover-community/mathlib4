@@ -265,7 +265,8 @@ disjoint unions, then the predicate holds for almost every `x : β` and all meas
 
 This is an AE version of `MeasurableSpace.induction_on_inter` where the condition is dependent
 on a measurable space `β`. -/
-theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {μ : Measure β}
+theorem _root_.MeasurableSpace.ae_induction_on_inter
+    {α β : Type*} [MeasurableSpace β] {μ : Measure β}
     {C : β → Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
     (h_eq : m = MeasurableSpace.generateFrom s)
     (h_inter : IsPiSystem s) (h_empty : ∀ᵐ x ∂μ, C x ∅) (h_basic : ∀ᵐ x ∂μ, ∀ t ∈ s, C x t)
