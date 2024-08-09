@@ -246,7 +246,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
           injection h₂.symm.trans e with h; simp [h]
         next e =>
           injection h₂.symm.trans e
-    · simp [fix] at h₃
+    · simp only [fix, Part.mem_assert_iff] at h₃
       cases' h₃ with h₃ h₄
       refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique h h' with e
@@ -410,16 +410,10 @@ theorem core_inter (s t : Set β) : f.core (s ∩ t) = f.core s ∩ f.core t :=
 theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
     x ∈ (res f s).core t ↔ x ∈ s → f x ∈ t := by simp [mem_core, mem_res]
 
-section
-
-open scoped Classical
-
 theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = sᶜ ∪ f ⁻¹' t := by
   ext x
   rw [mem_core_res]
   by_cases h : x ∈ s <;> simp [h]
-
-end
 
 theorem core_restrict (f : α → β) (s : Set β) : (f : α →. β).core s = s.preimage f := by
   ext x; simp [core_def]

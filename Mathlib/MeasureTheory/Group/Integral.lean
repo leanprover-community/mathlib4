@@ -20,7 +20,7 @@ open Measure TopologicalSpace
 open scoped ENNReal
 
 variable {𝕜 M α G E F : Type*} [MeasurableSpace G]
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [NormedAddCommGroup F]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
 variable {μ : Measure G} {f : G → E} {g : G}
 
 section MeasurableInv

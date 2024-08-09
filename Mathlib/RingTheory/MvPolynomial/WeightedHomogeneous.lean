@@ -399,7 +399,7 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvP
   · split_ifs
     · rfl
     rw [zero_coeff]
-  · rw [hp zero_coeff, if_pos]; rfl
+  · rw [hp zero_coeff, if_pos rfl]
 
 theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
     {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) :
@@ -409,9 +409,7 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
   ext x
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
-  · split_ifs
-    · rw [zero_coeff]; rw [coeff_zero]
-    · rw [coeff_zero]
+  · simp [zero_coeff]
   · rw [if_neg]
     · rw [coeff_zero]
     · rw [hp zero_coeff]; exact Ne.symm hn
@@ -424,8 +422,8 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
   ext x
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
-  · split_ifs
-    all_goals simp only [zero_coeff, coeff_zero]
+  · split_ifs <;>
+    simp only [zero_coeff, coeff_zero]
   · rw [h zero_coeff]
     simp only [show n = m ↔ m = n from eq_comm]
     split_ifs with h1
@@ -439,8 +437,7 @@ theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_same
   ext x
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
-  · split_ifs
-    rfl; rw [zero_coeff]
+  · simp [zero_coeff]
   · rw [hp zero_coeff, if_pos rfl]
 
 theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_ne
@@ -450,7 +447,7 @@ theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_ne
   ext x
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
-  · split_ifs <;> simp only [zero_coeff, coeff_zero]
+  · simp [zero_coeff]
   · rw [if_neg (by simp only [hp zero_coeff, hn.symm, not_false_eq_true]), coeff_zero]
 
 variable (R w)
@@ -520,13 +517,8 @@ def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
 theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
-    NonTorsionWeight w := by
-  intro n x
-  rw [smul_eq_zero]
-  intro hnx
-  cases' hnx with hn hx
-  · exact hn
-  · exact absurd hx (hw x)
+    NonTorsionWeight w :=
+  fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
 
 end CanonicallyOrderedAddCommMonoid
 

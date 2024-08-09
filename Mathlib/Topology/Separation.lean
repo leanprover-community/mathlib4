@@ -124,10 +124,7 @@ If the space is also Lindelöf:
 
 -/
 
-
-
 open Function Set Filter Topology TopologicalSpace
-open scoped Classical
 
 universe u v
 
@@ -656,7 +653,7 @@ instance (priority := 100) [T1Space X] : R0Space X where
 instance : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
-theorem t1Space_antitone : Antitone (@T1Space X) := fun a _ h _ =>
+theorem t1Space_antitone {X} : Antitone (@T1Space X) := fun a _ h _ =>
   @T1Space.mk _ a fun x => (T1Space.t1 x).mono h
 
 theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
@@ -807,6 +804,7 @@ theorem Dense.diff_singleton [T1Space X] {s : Set X} (hs : Dense s) (x : X) [NeB
 obtains a dense set. -/
 theorem Dense.diff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     (t : Finset X) : Dense (s \ t) := by
+  classical
   induction t using Finset.induction_on with
   | empty => simpa using hs
   | insert _ ih =>
@@ -829,7 +827,7 @@ theorem eq_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X
     have fact₂ : Tendsto f (pure x) (𝓝 y) := h.comp (tendsto_id'.2 <| pure_le_nhds x)
     fact₂ fact₁ (Eq.refl <| f x)
 
-theorem Filter.Tendsto.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y}
+theorem Filter.Tendsto.eventually_ne {X} [TopologicalSpace Y] [T1Space Y] {g : X → Y}
     {l : Filter X} {b₁ b₂ : Y} (hg : Tendsto g l (𝓝 b₁)) (hb : b₁ ≠ b₂) : ∀ᶠ z in l, g z ≠ b₂ :=
   hg.eventually (isOpen_compl_singleton.eventually_mem hb)
 
@@ -1138,6 +1136,7 @@ theorem IsCompact.binary_compact_cover {K U V : Set X}
 theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type*}
     (t : Finset ι) (U : ι → Set X) (hU : ∀ i ∈ t, IsOpen (U i)) (hsC : s ⊆ ⋃ i ∈ t, U i) :
     ∃ K : ι → Set X, (∀ i, IsCompact (K i)) ∧ (∀ i, K i ⊆ U i) ∧ s = ⋃ i ∈ t, K i := by
+  classical
   induction' t using Finset.induction with x t hx ih generalizing U s
   · refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
     simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
@@ -1674,6 +1673,12 @@ variable {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z]
 theorem isClosed_eq [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsClosed { y : Y | f y = g y } :=
   continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_diagonal
+
+/-- If functions `f` and `g` are continuous on a closed set `s`,
+then the set of points `x ∈ s` such that `f x = g x` is a closed set. -/
+protected theorem IsClosed.isClosed_eq [T2Space Y] {f g : X → Y} {s : Set X} (hs : IsClosed s)
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed {x ∈ s | f x = g x} :=
+  (hf.prod hg).preimage_isClosed_of_isClosed hs isClosed_diagonal
 
 theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { y : Y | f y ≠ g y } :=

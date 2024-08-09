@@ -116,7 +116,6 @@ circle homeomorphism, rotation number
 -/
 
 
-open scoped Classical
 open Filter Set Int Topology
 open Function hiding Commute
 
@@ -160,9 +159,6 @@ theorem map_one_add (x : ℝ) : f (1 + x) = 1 + f x := by rw [add_comm, map_add_
 @[ext]
 theorem ext ⦃f g : CircleDeg1Lift⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : CircleDeg1Lift} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 instance : Monoid CircleDeg1Lift where
   mul f g :=
