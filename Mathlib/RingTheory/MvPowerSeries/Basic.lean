@@ -143,10 +143,8 @@ theorem ext {φ ψ} (h : ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ) : �
   funext h
 
 /-- Two multivariate formal power series are equal
- if and only if all their coefficients are equal. -/
-protected theorem ext_iff {φ ψ : MvPowerSeries σ R} :
-    φ = ψ ↔ ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ :=
-  Function.funext_iff
+if and only if all their coefficients are equal. -/
+add_decl_doc MvPowerSeries.ext_iff
 
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     (monomial R n) = LinearMap.stdBasis R (fun _ ↦ R) n := by
