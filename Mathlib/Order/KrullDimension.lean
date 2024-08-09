@@ -86,42 +86,11 @@ lemma RelSeries.eraseLast_last_rel_last {r : Rel α α} (p : RelSeries r) (h : 0
 def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
   { length := n, toFun := fun i => i, step := fun _ => Nat.lt_add_one _ }
 
-@[simp] def LTSeries.length_iota (n : ℕ) : (LTSeries.iota n).length = n := rfl
+@[simp] theorem LTSeries.length_iota (n : ℕ) : (LTSeries.iota n).length = n := rfl
 
-@[simp] def LTSeries.head_iota (n : ℕ) : (LTSeries.iota n).head = 0 := rfl
+@[simp] theorem LTSeries.head_iota (n : ℕ) : (LTSeries.iota n).head = 0 := rfl
 
-@[simp] def LTSeries.last_iota (n : ℕ) : (LTSeries.iota n).last = n := rfl
-
--- https://github.com/leanprover-community/mathlib4/pull/15557
-def RelSeries.take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
-  length := i
-  toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
-  step := fun ⟨j, h⟩ => p.step ⟨j, by omega⟩
-
-@[simps]
-def RelSeries.drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
-  length := p.length - i
-  toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by omega⟩
-  step := fun ⟨j, h⟩ => by
-    convert p.step ⟨j+i.1, by omega⟩
-    simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
-
-@[simp]
-lemma RelSeries.head_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) :
-    (p.drop i).head = p.toFun i := by simp [drop, head]
-
-@[simp]
-lemma RelSeries.last_drop {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) :
-    (p.drop i).last = p.last := by simp [drop, last, Fin.last]; congr; omega
-
--- https://github.com/leanprover-community/mathlib4/pull/15601
-@[simp]
-lemma RelSeries.reverse_reverse {r : Rel α α} (p : RelSeries r) :
-    p.reverse.reverse = p := by ext <;> simp
-
--- https://github.com/leanprover-community/mathlib4/pull/15558
-noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
-  inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
+@[simp] theorem LTSeries.last_iota (n : ℕ) : (LTSeries.iota n).last = n := rfl
 
 -- Q: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WithTop.2Ecoe_iSup.20or.20WithTop.2Ecoe_ciSup/near/456575712
 -- https://github.com/leanprover-community/mathlib4/pull/15560
