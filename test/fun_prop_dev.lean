@@ -348,7 +348,7 @@ theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) :
 
 
 example : let f := fun x : α => x; Con f := by fun_prop
-y
+
 
 example [Add β] (f g : α → β) (hf : Con f := by fun_prop) (hg : outParam (Con g)) :
   Con (fun x => f x + g x) := by fun_prop
