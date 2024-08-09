@@ -181,11 +181,10 @@ theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (
     insert a (b :: t +-+ v)
       (Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (fs (add i k))) =
       Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (b :: t +-+ insert a v i)
-  rw [←
-    (Eq.recOn e' rfl :
+  rw [← (Eq.recOn e' rfl :
       fs (Eq.recOn e' (i.add k) : Fin2 ((n + k) + 1)) =
         Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (fs (i.add k)))]
-  simp; rw [IH]; exact Eq.recOn e' rfl
+  simpa [IH] using Eq.recOn e' rfl
 
 end Vector3
 
