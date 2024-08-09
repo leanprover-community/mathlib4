@@ -177,8 +177,6 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'} [DecidableRel 
     Odd (Nat.card c'.supp) ↔ Odd (Nat.card
     ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
   haveI : DecidablePred (fun c : ConnectedComponent G ↦ c.supp ⊆ c'.supp) := Classical.decPred _
-  haveI : (i : G.ConnectedComponent) → Fintype ↑(⋃ (_ : i.supp ⊆ c'.supp), i.supp) := by
-    exact fun i ↦ Set.fintypeiUnion fun _ ↦ i.supp
   nth_rewrite 1 [← (c'.biUnion_supp_eq_supp h)]
   rw [@Nat.card_eq_card_toFinset, @Set.toFinset_iUnion _ (ConnectedComponent G) _ _
     (fun c => ⋃ (_ : c.supp ⊆ c'.supp), c.supp),
