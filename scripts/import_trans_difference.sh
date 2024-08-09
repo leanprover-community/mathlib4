@@ -82,7 +82,7 @@ git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
-  (awk -F, '/ew/{ diff[$1]+=$2 } END {
+  (awk -F, '{ diff[$1]+=$2 } END {
     con=0
     for(fil in diff) {
       if(!(diff[fil] == 0)) {
@@ -100,7 +100,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
       }
     }
-  }' transImports*.txt | sort -t'|' -n -k3
+  }' transImports*.txt | sort -t'|' -n -k3 | grep "ew"
   ))"
 
 printf 'formatGitDiff %s\n' "${commit1}" &&
