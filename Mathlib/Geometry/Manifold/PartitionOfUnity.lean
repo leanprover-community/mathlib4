@@ -65,9 +65,9 @@ open scoped Topology Manifold Classical Filter
 noncomputable section
 
 variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [FiniteDimensional ℝ E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace ℝ F] {H : Type uH}
+  {F : Type uF} [NormedAddCommGroup F] [NormedSpace ℝ F] {H : Type uH}
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM} [TopologicalSpace M]
-  [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  [ChartedSpace H M]
 
 /-!
 ### Covering by supports of smooth bump functions
@@ -98,7 +98,7 @@ subordinate to `U`, see `SmoothBumpCovering.exists_isSubordinate`.
 This covering can be used, e.g., to construct a partition of unity and to prove the weak
 Whitney embedding theorem. -/
 -- Porting note(#5171): was @[nolint has_nonempty_instance]
-structure SmoothBumpCovering (s : Set M := univ) where
+structure SmoothBumpCovering [FiniteDimensional ℝ E] (s : Set M := univ) where
   /-- The center point of each bump in the smooth covering. -/
   c : ι → M
   /-- A smooth bump function around `c i`. -/
@@ -171,6 +171,13 @@ theorem le_one (i : ι) (x : M) : f i x ≤ 1 :=
 theorem sum_nonneg (x : M) : 0 ≤ ∑ᶠ i, f i x :=
   f.toPartitionOfUnity.sum_nonneg x
 
+theorem finsum_smul_mem_convex {g : ι → M → F} {t : Set F} {x : M} (hx : x ∈ s)
+    (hg : ∀ i, f i x ≠ 0 → g i x ∈ t) (ht : Convex ℝ t) : ∑ᶠ i, f i x • g i x ∈ t :=
+  ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
+
+section SmoothManifoldWithCorners
+variable [SmoothManifoldWithCorners I M]
+
 theorem contMDiff_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n g x) :
     ContMDiff I 𝓘(ℝ, F) n fun x => f i x • g x :=
   contMDiff_of_tsupport fun x hx =>
@@ -212,9 +219,7 @@ theorem contDiffAt_finsum {s : Set E} (f : SmoothPartitionOfUnity ι 𝓘(ℝ, E
   simp only [← contMDiffAt_iff_contDiffAt] at *
   exact f.contMDiffAt_finsum hφ
 
-theorem finsum_smul_mem_convex {g : ι → M → F} {t : Set F} {x : M} (hx : x ∈ s)
-    (hg : ∀ i, f i x ≠ 0 → g i x ∈ t) (ht : Convex ℝ t) : ∑ᶠ i, f i x • g i x ∈ t :=
-  ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
+end SmoothManifoldWithCorners
 
 section finsupport
 
@@ -288,6 +293,8 @@ theorem isSubordinate_toPartitionOfUnity :
 
 alias ⟨_, IsSubordinate.toPartitionOfUnity⟩ := isSubordinate_toPartitionOfUnity
 
+variable [SmoothManifoldWithCorners I M]
+
 /-- If `f` is a smooth partition of unity on a set `s : Set M` subordinate to a family of open sets
 `U : ι → Set M` and `g : ι → M → F` is a family of functions such that `g i` is $C^n$ smooth on
 `U i`, then the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is $C^n$ smooth on the whole manifold. -/
@@ -353,6 +360,7 @@ end BumpCovering
 
 namespace SmoothBumpCovering
 
+variable [FiniteDimensional ℝ E]
 variable {s : Set M} {U : M → Set M} (fs : SmoothBumpCovering ι I M s)
 
 instance : CoeFun (SmoothBumpCovering ι I M s) fun x => ∀ i : ι, SmoothBumpFunction I (x.c i) :=
@@ -371,8 +379,8 @@ theorem IsSubordinate.support_subset {fs : SmoothBumpCovering ι I M s} {U : M �
     (h : fs.IsSubordinate U) (i : ι) : support (fs i) ⊆ U (fs.c i) :=
   Subset.trans subset_closure (h i)
 
-variable (I)
-
+variable (I) in
+variable [SmoothManifoldWithCorners I M] in
 /-- Let `M` be a smooth manifold with corners modelled on a finite dimensional real vector space.
 Suppose also that `M` is a Hausdorff `σ`-compact topological space. Let `s` be a closed set
 in `M` and `U : M → Set M` be a collection of sets such that `U x ∈ 𝓝 x` for every `x ∈ s`.
@@ -399,21 +407,11 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
       ((f i).support_subset_source <| hVf _ hi) (hr i hi).2
   · simpa only [SmoothBumpFunction.support_updateRIn, tsupport] using hfU i
 
-variable {I}
-
 protected theorem locallyFinite : LocallyFinite fun i => support (fs i) :=
   fs.locallyFinite'
 
 protected theorem point_finite (x : M) : {i | fs i x ≠ 0}.Finite :=
   fs.locallyFinite.point_finite x
-
-theorem mem_chartAt_source_of_eq_one {i : ι} {x : M} (h : fs i x = 1) :
-    x ∈ (chartAt H (fs.c i)).source :=
-  (fs i).support_subset_source <| by simp [h]
-
-theorem mem_extChartAt_source_of_eq_one {i : ι} {x : M} (h : fs i x = 1) :
-    x ∈ (extChartAt I (fs.c i)).source := by
-  rw [extChartAt_source]; exact fs.mem_chartAt_source_of_eq_one h
 
 /-- Index of a bump function such that `fs i =ᶠ[𝓝 x] 1`. -/
 def ind (x : M) (hx : x ∈ s) : ι :=
@@ -427,6 +425,16 @@ theorem apply_ind (x : M) (hx : x ∈ s) : fs (fs.ind x hx) x = 1 :=
 
 theorem mem_support_ind (x : M) (hx : x ∈ s) : x ∈ support (fs <| fs.ind x hx) := by
   simp [fs.apply_ind x hx]
+
+variable [SmoothManifoldWithCorners I M]
+
+theorem mem_chartAt_source_of_eq_one {i : ι} {x : M} (h : fs i x = 1) :
+    x ∈ (chartAt H (fs.c i)).source :=
+  (fs i).support_subset_source <| by simp [h]
+
+theorem mem_extChartAt_source_of_eq_one {i : ι} {x : M} (h : fs i x = 1) :
+    x ∈ (extChartAt I (fs.c i)).source := by
+  rw [extChartAt_source]; exact fs.mem_chartAt_source_of_eq_one h
 
 theorem mem_chartAt_ind_source (x : M) (hx : x ∈ s) : x ∈ (chartAt H (fs.c (fs.ind x hx))).source :=
   fs.mem_chartAt_source_of_eq_one (fs.apply_ind x hx)
@@ -498,6 +506,8 @@ theorem sum_toSmoothPartitionOfUnity_eq (x : M) :
 end SmoothBumpCovering
 
 variable (I)
+variable [FiniteDimensional ℝ E]
+variable [SmoothManifoldWithCorners I M]
 
 /-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` on `s` and to `1` on `t`.
