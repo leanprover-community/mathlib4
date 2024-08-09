@@ -52,6 +52,7 @@ theorem continuousSMul_of_algebraMap [TopologicalSemiring A] (h : Continuous (al
     ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
 
+section
 variable [ContinuousSMul R A]
 
 /-- The inclusion of the base ring in a topological algebra as a continuous linear map. -/
@@ -67,9 +68,14 @@ theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
 theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
 
+end
+
 /-- If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
-is also a topological `R`-algebra. -/
-instance [TopologicalSemiring A] [DiscreteTopology R] :
+is also a topological `R`-algebra.
+
+NB: This could be an instance but the signature makes it very expensive in search. See #15339
+for the regressions caused by making this an instance. -/
+theorem DiscreteTopology.instContinuousSMul [TopologicalSemiring A] [DiscreteTopology R] :
     ContinuousSMul R A := continuousSMul_of_algebraMap _ _ continuous_of_discreteTopology
 
 end TopologicalAlgebra
@@ -78,8 +84,8 @@ section TopologicalAlgebra
 
 section
 
-variable (R : Type*) [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
-  (A : Type*) [Semiring A] [TopologicalSpace A] [TopologicalSemiring A]
+variable (R : Type*) [CommSemiring R]
+  (A : Type*) [Semiring A]
 
 /-- Continuous algebra homomorphisms between algebras. We only put the type classes that are
 necessary for the definition, although in applications `M` and `B` will be topological algebras
@@ -98,7 +104,7 @@ namespace ContinuousAlgHom
 section Semiring
 
 variable {R} {A}
-variable [TopologicalSpace R] [TopologicalSemiring R]
+variable [TopologicalSpace A]
 
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
 
@@ -155,8 +161,6 @@ initialize_simps_projections ContinuousAlgHom (toAlgHom_toFun → apply, toAlgHo
 @[ext]
 theorem ext {f g : A →A[R] B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
-theorem ext_iff {f g : A →A[R] B} : f = g ↔ ∀ x, f x = g x := DFunLike.ext_iff
-
 /-- Copy of a `ContinuousAlgHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 def copy (f : A →A[R] B) (f' : A → B) (h : f' = ⇑f) : A →A[R] B where
@@ -190,7 +194,7 @@ protected theorem map_sum {ι : Type*} (f : A →A[R] B) (s : Finset ι) (g : ι
   map_sum ..
 
 /-- Any two continuous `R`-algebra morphisms from `R` are equal -/
-@[ext]
+@[ext (iff := false)]
 theorem ext_ring [TopologicalSpace R] {f g : R →A[R] A} : f = g :=
   coe_inj.mp (ext_id _ _ _)
 
@@ -208,6 +212,8 @@ algebra maps equal on `s` are equal. -/
 theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
     {f g : A →A[R] B} (h : Set.EqOn f g s) : f = g :=
   ext fun x => eqOn_closure_adjoin h (hs x)
+
+variable [TopologicalSemiring A]
 
 /-- The topological closure of a subalgebra -/
 def _root_.Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A where
@@ -246,6 +252,7 @@ end Semiring
 
 section id
 
+variable [TopologicalSpace A]
 variable [Algebra R A]
 
 /-- The identity map as a continuous algebra homomorphism. -/
@@ -276,6 +283,7 @@ end id
 section comp
 
 variable {R} {A}
+variable [TopologicalSpace A]
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
   {C : Type*} [Semiring C] [Algebra R C] [TopologicalSpace C]
 
@@ -333,6 +341,7 @@ end comp
 section prod
 
 variable {R} {A}
+variable [TopologicalSpace A]
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
   {C : Type*} [Semiring C] [Algebra R C] [TopologicalSpace C]
 
@@ -433,6 +442,7 @@ end prod
 section subalgebra
 
 variable {R A}
+variable [TopologicalSpace A]
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
 
 /-- Restrict codomain of a continuous algebra morphism. -/

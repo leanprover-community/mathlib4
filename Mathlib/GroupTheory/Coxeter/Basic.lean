@@ -6,6 +6,8 @@ Authors: Newell Jensen, Mitchell Lee
 import Mathlib.Algebra.Ring.Int
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.Coxeter.Matrix
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Use
 
 /-!
 # Coxeter groups and Coxeter systems

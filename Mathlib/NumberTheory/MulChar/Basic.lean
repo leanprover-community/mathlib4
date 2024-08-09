@@ -75,11 +75,11 @@ class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]
 
 initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)
 
-attribute [simp] MulCharClass.map_nonunit
-
 end Defi
 
 namespace MulChar
+
+attribute [scoped simp] MulCharClass.map_nonunit
 
 section Group
 
@@ -133,11 +133,6 @@ theorem ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' :
   by_cases ha : IsUnit a
   · exact h ha.unit
   · rw [map_nonunit χ ha, map_nonunit χ' ha]
-
-theorem ext_iff {χ χ' : MulChar R R'} : χ = χ' ↔ ∀ a : Rˣ, χ a = χ' a :=
-  ⟨by
-    rintro rfl a
-    rfl, ext⟩
 
 /-!
 ### Equivalence of multiplicative characters with homomorphisms on units

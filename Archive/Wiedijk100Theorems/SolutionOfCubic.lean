@@ -41,10 +41,7 @@ section Field
 
 open Polynomial
 
-variable {K : Type*} [Field K]
-variable [Invertible (2 : K)] [Invertible (3 : K)]
-variable (a b c d : K)
-variable {ω p q r s t : K}
+variable {K : Type*} [Field K] (a b c d : K) {ω p q r s t : K}
 
 theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
   simpa [cyclotomic_prime, Finset.sum_range_succ] using hω.isRoot_cyclotomic (by decide)
@@ -66,6 +63,8 @@ theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠
     hr + (-q + r + s ^ 3) * hs3 - (3 * x * s ^ 3 + (t * s) ^ 2 + t * s * p + p ^ 2) * ht +
     (x ^ 2 * (s - t) + x * (-ω * (s ^ 2 + t ^ 2) + s * t * (3 + ω ^ 2 - ω)) -
       (-(s ^ 3 - t ^ 3) * (ω - 1) + s ^ 2 * t * ω ^ 2 - s * t ^ 2 * ω ^ 2)) * s ^ 3 * H
+
+variable [Invertible (2 : K)] [Invertible (3 : K)]
 
 /-- Roots of a monic cubic whose discriminant is nonzero. -/
 theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - b ^ 2) / 9)

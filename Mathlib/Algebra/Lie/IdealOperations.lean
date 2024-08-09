@@ -37,12 +37,34 @@ universe u v w w₁ w₂
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w} {M₂ : Type w₁}
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
-variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L) (N₂ : LieSubmodule R L M₂)
+variable [CommRing R] [LieRing L]
+variable [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂]
+variable (N N' : LieSubmodule R L M) (N₂ : LieSubmodule R L M₂)
+variable (f : M →ₗ⁅R,L⁆ M₂)
 
 section LieIdealOperations
+
+theorem map_comap_le : map f (comap f N₂) ≤ N₂ :=
+  (N₂ : Set M₂).image_preimage_subset f
+
+theorem map_comap_eq (hf : N₂ ≤ f.range) : map f (comap f N₂) = N₂ := by
+  rw [SetLike.ext'_iff]
+  exact Set.image_preimage_eq_of_subset hf
+
+theorem le_comap_map : N ≤ comap f (map f N) :=
+  (N : Set M).subset_preimage_image f
+
+theorem comap_map_eq (hf : f.ker = ⊥) : comap f (map f N) = N := by
+  rw [SetLike.ext'_iff]
+  exact (N : Set M).preimage_image_eq (f.ker_eq_bot.mp hf)
+
+@[simp]
+theorem map_comap_incl : map N.incl (comap N.incl N') = N ⊓ N' := by
+  rw [← coe_toSubmodule_eq_iff]
+  exact (N : Submodule R M).map_comap_subtype N'
+
+variable [LieAlgebra R L] [LieModule R L M₂] (I J : LieIdeal R L)
 
 /-- Given a Lie module `M` over a Lie algebra `L`, the set of Lie ideals of `L` acts on the set
 of submodules of `M`. -/
@@ -55,7 +77,7 @@ theorem lieIdeal_oper_eq_span :
 
 /-- See also `LieSubmodule.lieIdeal_oper_eq_linear_span'` and
 `LieSubmodule.lieIdeal_oper_eq_tensor_map_range`. -/
-theorem lieIdeal_oper_eq_linear_span :
+theorem lieIdeal_oper_eq_linear_span [LieModule R L M] :
     (↑⁅I, N⁆ : Submodule R M) =
       Submodule.span R { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m } := by
   apply le_antisymm
@@ -76,7 +98,7 @@ theorem lieIdeal_oper_eq_linear_span :
     exact Submodule.subset_span
   · rw [lieIdeal_oper_eq_span]; apply submodule_span_le_lieSpan
 
-theorem lieIdeal_oper_eq_linear_span' :
+theorem lieIdeal_oper_eq_linear_span' [LieModule R L M] :
     (↑⁅I, N⁆ : Submodule R M) = Submodule.span R { m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m } := by
   rw [lieIdeal_oper_eq_linear_span]
   congr
@@ -180,9 +202,7 @@ theorem inf_lie : ⁅I ⊓ J, N⁆ ≤ ⁅I, N⁆ ⊓ ⁅J, N⁆ := by
   rw [le_inf_iff]; constructor <;>
   apply mono_lie_left <;> [exact inf_le_left; exact inf_le_right]
 
-variable (f : M →ₗ⁅R,L⁆ M₂)
-
-theorem map_bracket_eq : map f ⁅I, N⁆ = ⁅I, map f N⁆ := by
+theorem map_bracket_eq [LieModule R L M] : map f ⁅I, N⁆ = ⁅I, map f N⁆ := by
   rw [← coe_toSubmodule_eq_iff, coeSubmodule_map, lieIdeal_oper_eq_linear_span,
     lieIdeal_oper_eq_linear_span, Submodule.map_span]
   congr
@@ -195,29 +215,10 @@ theorem map_bracket_eq : map f ⁅I, N⁆ = ⁅I, map f N⁆ := by
     obtain ⟨n, hn, rfl⟩ := (mem_map m₂).mp hm₂
     exact ⟨⁅x, n⁆, ⟨x, ⟨n, hn⟩, rfl⟩, by simp⟩
 
-theorem map_comap_le : map f (comap f N₂) ≤ N₂ :=
-  (N₂ : Set M₂).image_preimage_subset f
-
-theorem map_comap_eq (hf : N₂ ≤ f.range) : map f (comap f N₂) = N₂ := by
-  rw [SetLike.ext'_iff]
-  exact Set.image_preimage_eq_of_subset hf
-
-theorem le_comap_map : N ≤ comap f (map f N) :=
-  (N : Set M).subset_preimage_image f
-
-theorem comap_map_eq (hf : f.ker = ⊥) : comap f (map f N) = N := by
-  rw [SetLike.ext'_iff]
-  exact (N : Set M).preimage_image_eq (f.ker_eq_bot.mp hf)
-
-theorem comap_bracket_eq (hf₁ : f.ker = ⊥) (hf₂ : N₂ ≤ f.range) :
+theorem comap_bracket_eq [LieModule R L M] (hf₁ : f.ker = ⊥) (hf₂ : N₂ ≤ f.range) :
     comap f ⁅I, N₂⁆ = ⁅I, comap f N₂⁆ := by
   conv_lhs => rw [← map_comap_eq N₂ f hf₂]
   rw [← map_bracket_eq, comap_map_eq _ f hf₁]
-
-@[simp]
-theorem map_comap_incl : map N.incl (comap N.incl N') = N ⊓ N' := by
-  rw [← coe_toSubmodule_eq_iff]
-  exact (N : Submodule R M).map_comap_subtype N'
 
 end LieIdealOperations
 
