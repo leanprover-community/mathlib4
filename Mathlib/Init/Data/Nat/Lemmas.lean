@@ -46,6 +46,8 @@ def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ
   | zero => exact H1 rfl
   | succ n _ => apply H2 _ rfl
 
+-- Unused in Mathlib;
+-- if downstream projects find this essential please copy it or remove the deprecation.
 @[deprecated (since := "2024-07-27")]
 theorem one_eq_succ_zero : 1 = succ 0 :=
   rfl
@@ -58,6 +60,8 @@ def twoStepInduction {P : ℕ → Sort u} (H1 : P 0) (H2 : P 1)
   | 1 => H2
   | succ (succ _n) => H3 _ (twoStepInduction H1 H2 H3 _) (twoStepInduction H1 H2 H3 _)
 
+-- Unused in Mathlib;
+-- if downstream projects find this essential please copy it or remove the deprecation.
 @[deprecated (since := "2024-07-27")]
 def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P (succ n) 0)
     (H3 : ∀ n m, P n m → P (succ n) (succ m)) : ∀ n m : ℕ, P n m
@@ -80,6 +84,8 @@ protected theorem case_strong_induction_on {p : Nat → Prop} (a : Nat) (hz : p 
 
 /-! mod -/
 
+-- Unused in Mathlib;
+-- if downstream projects find this essential please copy it or remove the deprecation.
 @[deprecated (since := "2024-07-27")]
 theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
     cond (@decide (x % 2 = 1) d) 1 0 = x % 2 := by

@@ -255,6 +255,7 @@ theorem WellFounded.psigma_lex
   WellFounded.intro fun ⟨a, b⟩ => lexAccessible (WellFounded.apply ha a) hb b
 
 theorem WellFounded.psigma_revLex
+    {α : Sort*} {β : Sort*} {r : α → α → Prop} {s : β → β → Prop}
     (ha : WellFounded r) (hb : WellFounded s) : WellFounded (RevLex r s) :=
   WellFounded.intro fun ⟨a, b⟩ => revLexAccessible (apply hb b) (WellFounded.apply ha) a
 
