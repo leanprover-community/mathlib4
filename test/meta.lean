@@ -1,3 +1,4 @@
+import Lean.Elab.Tactic
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Tactic.Relation.Rfl
