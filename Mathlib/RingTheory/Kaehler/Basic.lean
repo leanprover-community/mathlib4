@@ -675,6 +675,7 @@ theorem KaehlerDifferential.kerTotal_map' [Algebra R B]
   refine congr_arg Set.range ?_
   ext; simp [IsScalarTower.algebraMap_eq R A B]
 
+section
 variable [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B] [SMulCommClass S A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
@@ -786,6 +787,8 @@ lemma KaehlerDifferential.exact_mapBaseChange_map :
     Function.Exact (mapBaseChange R A B) (map R A B B) :=
   SetLike.ext_iff.mp (range_mapBaseChange R A B).symm
 
+end
+
 /-- The map `I → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 @[simps]
 noncomputable
@@ -812,6 +815,8 @@ def KaehlerDifferential.kerCotangentToTensor :
 @[simp]
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :
     kerCotangentToTensor R A B (Ideal.toCotangent _ x) = 1 ⊗ₜ D _ _ x.1 := rfl
+
+variable [Algebra R B] [IsScalarTower R A B]
 
 theorem KaehlerDifferential.range_kerCotangentToTensor
     (h : Function.Surjective (algebraMap A B)) :
