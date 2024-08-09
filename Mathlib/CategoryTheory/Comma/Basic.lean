@@ -6,6 +6,8 @@ Authors: Scott Morrison, Johan Commelin, Bhavik Mehta
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.Products.Unitor
 
 /-!
 # Comma categories
@@ -408,6 +410,37 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
     { left := f.left
       right := f.right
       w := by simp only [Functor.comp_map, ← F.map_comp, f.w] }
+
+/-- The canonical functor from the product of two categories to the comma category of their
+respective functors into `Discrete PUnit`. -/
+@[simps]
+def PUnitPUnitFromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
+    A × B ⥤ Comma L R where
+  obj X :=
+    { left := X.1
+      right := X.2
+      hom := Discrete.eqToHom rfl }
+  map {X} {Y} f :=
+    { left := f.1
+      right := f.2 }
+
+/-- Taking the comma category of two functors into `Discrete PUnit` results in something
+is equivalent to their product. -/
+def PUnitPUnitIso (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
+    Comma L R ≌ A × B :=
+  Equivalence.mk ((fst L R).prod' (snd L R)) (PUnitPUnitFromProd L R)
+    { hom := 𝟙 _, inv := 𝟙 _ }
+    { hom := 𝟙 _, inv := 𝟙 _ }
+
+/-- Taking the comma category of a functor into `A ⥤ Discrete PUnit` and the identity
+`Discrete PUnit ⥤ Discrete PUnit` results in a category equivalent to `A`. -/
+def PUnitIdIso (L : A ⥤ Discrete PUnit) : Comma L (Functor.id _) ≌ A :=
+  (PUnitPUnitIso L _).trans (prod.rightUnitorEquivalence A)
+
+/-- Taking the comma category of the identity `Discrete PUnit ⥤ Discrete PUnit`
+and a functor `B ⥤ Discrete PUnit` results in a category equivalent to `B`. -/
+def IdPUnitIso (R : B ⥤ Discrete PUnit) : Comma (Functor.id _) R ≌ B :=
+  (PUnitPUnitIso _ R).trans (prod.leftUnitorEquivalence B)
 
 end
 
