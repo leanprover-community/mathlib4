@@ -561,6 +561,10 @@ theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restri
 theorem ae_restrict_mem (hs : MeasurableSet s) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
   ae_restrict_mem₀ hs.nullMeasurableSet
 
+theorem ae_restrict_of_forall_mem {μ : Measure α} {s : Set α}
+    (hs : MeasurableSet s) {p : α → Prop} (h : ∀ x ∈ s, p x) : ∀ᵐ (x : α) ∂μ.restrict s, p x :=
+  (ae_restrict_mem hs).mono h
+
 theorem ae_restrict_of_ae {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ, p x) : ∀ᵐ x ∂μ.restrict s, p x :=
   h.filter_mono (ae_mono Measure.restrict_le_self)
 
@@ -827,11 +831,6 @@ theorem ae_restrict_iff_subtype {m0 : MeasurableSpace α} {μ : Measure α} {s :
     (hs : MeasurableSet s) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ (x : s) ∂comap ((↑) : s → α) μ, p x := by
   rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).ae_map_iff]
-
-theorem ae_restrict_of_forall_mem {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
-    (hs : MeasurableSet s) {p : α → Prop} (h : ∀ x ∈ s, p x) : ∀ᵐ (x : α) ∂μ.restrict s, p x := by
-  rw [ae_restrict_iff_subtype hs]
-  exact Filter.eventually_of_forall fun ⟨x, hx⟩ => h x hx
 
 variable [MeasureSpace α] {s t : Set α}
 
