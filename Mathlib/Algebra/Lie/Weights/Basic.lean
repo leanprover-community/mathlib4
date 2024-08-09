@@ -455,7 +455,8 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
     simp_rw [← LieSubmodule.mem_coeSubmodule, posFittingCompOf, hk k (le_refl k)]
     apply LinearMap.mem_range_self
   suffices (toEnd R L (M ⧸ F) x ^ k) (LieSubmodule.Quotient.mk (N := F) m) =
-    LieSubmodule.Quotient.mk (N := F) ((toEnd R L M x ^ k) m) by simpa [this]
+    LieSubmodule.Quotient.mk (N := F) ((toEnd R L M x ^ k) m)
+      by simpa [Submodule.Quotient.quot_mk_eq_mk, this]
   have := LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute
     (LieSubmodule.Quotient.toEnd_comp_mk' F x) k) m
   simpa using this

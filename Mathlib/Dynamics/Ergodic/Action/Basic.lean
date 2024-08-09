@@ -26,7 +26,7 @@ then it is either null or conull.
 -/
 class ErgodicVAdd (G α : Type*) [VAdd G α] {_ : MeasurableSpace α} (μ : Measure α)
     extends VAddInvariantMeasure G α μ : Prop where
-  aeconst_of_forall_preimage_vadd_ae_eq {s : Set α}: MeasurableSet s →
+  aeconst_of_forall_preimage_vadd_ae_eq {s : Set α} : MeasurableSet s →
     (∀ g : G, (g +ᵥ ·) ⁻¹' s =ᵐ[μ] s) → EventuallyConst s (ae μ)
 
 /--
@@ -38,7 +38,7 @@ then it is either null or conull.
 @[to_additive, mk_iff]
 class ErgodicSMul (G α : Type*) [SMul G α] {_ : MeasurableSpace α} (μ : Measure α)
     extends SMulInvariantMeasure G α μ : Prop where
-  aeconst_of_forall_preimage_smul_ae_eq {s : Set α}: MeasurableSet s →
+  aeconst_of_forall_preimage_smul_ae_eq {s : Set α} : MeasurableSet s →
     (∀ g : G, (g • ·) ⁻¹' s =ᵐ[μ] s) → EventuallyConst s (ae μ)
 
 attribute [to_additive] ergodicSMul_iff

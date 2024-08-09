@@ -287,13 +287,13 @@ def Algebra.intNormAux [Algebra.IsSeparable K L] :
 
 variable {A K L B}
 
-lemma Algebra.map_intNormAux [IsIntegrallyClosed A] [Algebra.IsSeparable K L] (x : B) :
+lemma Algebra.map_intNormAux [Algebra.IsSeparable K L] (x : B) :
     algebraMap A K (Algebra.intNormAux A K L B x) = Algebra.norm K (algebraMap B L x) := by
   dsimp [Algebra.intNormAux]
   exact IsIntegralClosure.algebraMap_mk' _ _ _
 
 variable (A B)
-variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
+variable [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 variable [Algebra.IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this
 
