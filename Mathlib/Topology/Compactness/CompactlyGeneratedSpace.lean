@@ -47,7 +47,7 @@ open TopologicalSpace Filter Topology Set
 
 section UCompactlyGeneratedSpace
 
-variable {X : Type w} {Y : Type x} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type w} {Y : Type x}
 
 /--
 The compactly generated topology on a topological space `X`. This is the finest topology
@@ -61,7 +61,7 @@ def TopologicalSpace.compactlyGenerated (X : Type w) [TopologicalSpace X] : Topo
   let f : (Σ (i : (S : CompHaus.{u}) × C(S, X)), i.fst) → X := fun ⟨⟨_, i⟩, s⟩ ↦ i s
   coinduced f inferInstance
 
-lemma continuous_from_compactlyGenerated [t : TopologicalSpace Y] (f : X → Y)
+lemma continuous_from_compactlyGenerated [TopologicalSpace X] [t : TopologicalSpace Y] (f : X → Y)
     (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) :
         Continuous[compactlyGenerated.{u} X, t] f := by
   rw [continuous_coinduced_dom]
@@ -94,14 +94,6 @@ instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     rw [DiscreteTopology.eq_bot (t := t)]
     exact bot_le
 
-/-- If `X` is compactly generated, to prove that `f : X → Y` is continuous it is enough to show
-that for every compact Hausdorff space `K` and every continuous map `g : K → X`,
-`f ∘ g` is continuous. -/
-lemma continuous_from_uCompactlyGeneratedSpace [UCompactlyGeneratedSpace.{u} X] (f : X → Y)
-    (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) : Continuous f := by
-  apply continuous_le_dom UCompactlyGeneratedSpace.le_compactlyGenerated
-  exact continuous_from_compactlyGenerated f h
-
 /-- Let `f : X → Y`. Suppose that to prove that `f` is continuous, it suffices to show that
 for every compact Hausdorff space `K` and every continuous map `g : K → X`, `f ∘ g` is continuous.
 Then `X` is compactly generated. -/
@@ -119,6 +111,16 @@ lemma uCompactlyGeneratedSpace_of_continuous_maps [t : TopologicalSpace X]
       Continuous[inferInstance, compactlyGenerated X] (fun (a : i.fst) ↦ f ⟨i, a⟩) from this ⟨S, g⟩
     rw [← @continuous_sigma_iff]
     apply continuous_coinduced_rng
+
+variable [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+
+/-- If `X` is compactly generated, to prove that `f : X → Y` is continuous it is enough to show
+that for every compact Hausdorff space `K` and every continuous map `g : K → X`,
+`f ∘ g` is continuous. -/
+lemma continuous_from_uCompactlyGeneratedSpace [UCompactlyGeneratedSpace.{u} X] (f : X → Y)
+    (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) : Continuous f := by
+  apply continuous_le_dom UCompactlyGeneratedSpace.le_compactlyGenerated
+  exact continuous_from_compactlyGenerated f h
 
 /-- A topological space `X` is compactly generated if a set `s` is closed when `f ⁻¹' s` is
 closed for every continuous map `f : K → X`, where `K` is compact Hausdorff. -/
@@ -155,7 +157,6 @@ theorem UCompactlyGeneratedSpace.isOpen [UCompactlyGeneratedSpace.{u} X] {s : Se
 /-- If the topology of `X` is coinduced by a continuous function whose domain is
 compactly generated, then so is `X`. -/
 theorem uCompactlyGeneratedSpace_of_coinduced
-    [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     [UCompactlyGeneratedSpace.{u} X] {f : X → Y} (hf : Continuous f) (ht : tY = coinduced f tX) :
     UCompactlyGeneratedSpace.{u} Y := by
   refine uCompactlyGeneratedSpace_of_isClosed fun s h ↦ ?_
@@ -291,8 +292,8 @@ theorem CompactlyGeneratedSpace.isOpen [CompactlyGeneratedSpace X] {s : Set X}
 
 /-- If the topology of `X` is coinduced by a continuous function whose domain is
 compactly generated, then so is `X`. -/
-theorem compactlyGeneratedSpace_of_coinduced {Y : Type u}
-    [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+theorem compactlyGeneratedSpace_of_coinduced
+    {X : Type u} [tX : TopologicalSpace X] {Y : Type u} [tY : TopologicalSpace Y]
     [CompactlyGeneratedSpace X] {f : X → Y} (hf : Continuous f) (ht : tY = coinduced f tX) :
     CompactlyGeneratedSpace Y := uCompactlyGeneratedSpace_of_coinduced hf ht
 

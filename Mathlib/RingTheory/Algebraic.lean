@@ -306,9 +306,9 @@ section NoZeroSMulDivisors
 namespace Algebra.IsAlgebraic
 
 variable [CommRing K] [Field L]
-variable [Algebra K L] [NoZeroSMulDivisors K L]
+variable [Algebra K L]
 
-theorem algHom_bijective [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
+theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
   refine ⟨f.injective, fun b ↦ ?_⟩
   obtain ⟨p, hp, he⟩ := Algebra.IsAlgebraic.isAlgebraic (R := K) b
@@ -318,12 +318,12 @@ theorem algHom_bijective [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 
-theorem algHom_bijective₂ [Field R] [Algebra K R]
+theorem algHom_bijective₂ [NoZeroSMulDivisors K L] [Field R] [Algebra K R]
     [Algebra.IsAlgebraic K L] (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
   (g.injective.bijective₂_of_surjective f.injective (algHom_bijective <| g.comp f).2).symm
 
-theorem bijective_of_isScalarTower [Algebra.IsAlgebraic K L]
+theorem bijective_of_isScalarTower [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L]
     [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
@@ -338,7 +338,7 @@ variable (K L)
 
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 @[simps]
-noncomputable def algEquivEquivAlgHom [Algebra.IsAlgebraic K L] :
+noncomputable def algEquivEquivAlgHom [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] :
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) where
   toFun ϕ := ϕ.toAlgHom
   invFun ϕ := AlgEquiv.ofBijective ϕ (algHom_bijective ϕ)

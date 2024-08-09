@@ -290,6 +290,15 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
   · ext ⟨x, hx⟩
     simpa using LinearMap.congr_fun h x
 
+lemma inf_orthogonal_self_le_ker_restrict {W : Submodule R M} (b₁ : B.IsRefl) :
+    W ⊓ B.orthogonal W ≤ (LinearMap.ker <| B.restrict W).map W.subtype := by
+  rintro v ⟨hv : v ∈ W, hv' : v ∈ B.orthogonal W⟩
+  simp only [Submodule.mem_map, mem_ker, restrict_apply, Submodule.coeSubtype, Subtype.exists,
+    exists_and_left, exists_prop, exists_eq_right_right]
+  refine ⟨?_, hv⟩
+  ext ⟨w, hw⟩
+  exact b₁ w v <| hv' w hw
+
 variable [FiniteDimensional K V]
 
 open FiniteDimensional Submodule
@@ -380,15 +389,6 @@ lemma orthogonal_eq_bot_iff
   refine ⟨eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot b₁ b₂, fun h ↦ ?_⟩
   rw [h, eq_bot_iff]
   exact fun x hx ↦ b₃ x fun y ↦ b₁ y x <| by simpa using hx y
-
-lemma inf_orthogonal_self_le_ker_restrict (b₁ : B.IsRefl) :
-    W ⊓ B.orthogonal W ≤ (LinearMap.ker <| B.restrict W).map W.subtype := by
-  rintro v ⟨hv : v ∈ W, hv' : v ∈ B.orthogonal W⟩
-  simp only [Submodule.mem_map, mem_ker, restrict_apply, Submodule.coeSubtype, Subtype.exists,
-    exists_and_left, exists_prop, exists_eq_right_right]
-  refine ⟨?_, hv⟩
-  ext ⟨w, hw⟩
-  exact b₁ w v <| hv' w hw
 
 end
 

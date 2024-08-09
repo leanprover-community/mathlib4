@@ -536,8 +536,6 @@ end PresheafedSpace
 
 namespace SheafedSpace
 
-variable [HasProducts.{v} C]
-
 /-- A family of gluing data consists of
 1. An index type `J`
 2. A sheafed space `U i` for each `i : J`.
