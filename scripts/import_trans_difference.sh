@@ -53,7 +53,7 @@ formatGitDiff () {
   fi
   git diff --name-status "${1}" |
     awk -F'\t' '!($1 == "M") {
-      printf("%s,,%s%s\n", NF == 2? $2 : $3, $1, NF == 2? "" : ","$2)
+      printf("%s,,%s%s\n", $NF, $1, NF == 2? "" : ","$2)
     }' |
     sed '
       s=/=.=g
