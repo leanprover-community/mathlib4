@@ -65,8 +65,8 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
-/-- `lake exe lint_style` runs text-based style linters. -/
-lean_exe lint_style where
+/-- `lake exe lint-style` runs text-based style linters. -/
+lean_exe «lint-style» where
   srcDir := "scripts"
 
 /--

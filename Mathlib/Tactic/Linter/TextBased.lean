@@ -17,7 +17,7 @@ All of these have been rewritten from the `lint-style.py` script.
 For now, this only contains the linters for the copyright and author headers and large files:
 further linters will be ported in subsequent PRs.
 
-An executable running all these linters is defined in `scripts/lint_style.lean`.
+An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
 
 open System
@@ -51,7 +51,7 @@ inductive StyleError where
   as well as a size limit (slightly larger). On future runs, this linter will allow this file
   to grow up to this limit.
   For diagnostic purposes, this may also contain a previous size limit, which is now exceeded. -/
-  | fileTooLong (number_lines : ℕ) (new_size_limit : ℕ) (previousLimit : Option ℕ) : StyleError
+  | fileTooLong (numberLines : ℕ) (newSizeLimit : ℕ) (previousLimit : Option ℕ) : StyleError
 deriving BEq
 
 /-- How to format style errors -/
@@ -81,16 +81,16 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
       e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
       benchmark it. If this is fine, feel free to allow this linter."
   | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
-  | StyleError.fileTooLong current_size size_limit previousLimit =>
+  | StyleError.fileTooLong currentSize sizeLimit previousLimit =>
     match style with
     | ErrorFormat.github =>
       if let some n := previousLimit then
-        s!"file contains {current_size} lines (at most {n} allowed), try to split it up"
+        s!"file contains {currentSize} lines (at most {n} allowed), try to split it up"
       else
-        s!"file contains {current_size} lines, try to split it up"
+        s!"file contains {currentSize} lines, try to split it up"
     | ErrorFormat.exceptionsFile =>
-        s!"{size_limit} file contains {current_size} lines, try to split it up"
-    | ErrorFormat.humanReadable => s!"file contains {current_size} lines, try to split it up"
+        s!"{sizeLimit} file contains {currentSize} lines, try to split it up"
+    | ErrorFormat.humanReadable => s!"file contains {currentSize} lines, try to split it up"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -164,7 +164,7 @@ def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorCo
 `style` specifies if the error should be formatted for humans to read, github problem matchers
 to consume, or for the style exceptions file. -/
 def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
-  let error_message := errctx.error.errorMessage style
+  let errorMessage := errctx.error.errorMessage style
   match style with
   | ErrorFormat.github =>
    -- We are outputting for github: duplicate file path, line number and error code,
@@ -172,31 +172,31 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     let path := errctx.path
     let nr := errctx.lineNumber
     let code := errctx.error.errorCode
-    s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {error_message}"
+    s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errorMessage}"
   | ErrorFormat.exceptionsFile =>
     -- Produce an entry in the exceptions file: with error code and "line" in front of the number.
-    s!"{errctx.path} : line {errctx.lineNumber} : {errctx.error.errorCode} : {error_message}"
+    s!"{errctx.path} : line {errctx.lineNumber} : {errctx.error.errorCode} : {errorMessage}"
   | ErrorFormat.humanReadable =>
     -- Print for humans: clickable file name and omit the error code
-    s!"error: {errctx.path}:{errctx.lineNumber}: {error_message}"
+    s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (· == ' ')
   match parts with
-    | filename :: ":" :: "line" :: line_number :: ":" :: error_code :: ":" :: error_message =>
+    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
       let path := mkFilePath (filename.split (FilePath.pathSeparators.contains ·))
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
-      let err : Option StyleError := match error_code with
+      let err : Option StyleError := match errorCode with
         -- Use default values for parameters which are ignored for comparing style exceptions.
         -- NB: keep this in sync with `compare` above!
         | "ERR_COP" => some (StyleError.copyright none)
         | "ERR_LIN" =>
-          if let some n := error_message.get? 2 then
+          if let some n := errorMessage.get? 2 then
             match String.toNat? n with
               | some n => return StyleError.lineLength n
               | none => none
@@ -205,21 +205,21 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_ADN" => some (StyleError.adaptationNote)
         | "ERR_IMP" =>
           -- XXX tweak exceptions messages to ease parsing?
-          if (error_message.get! 0).containsSubstr "tactic" then
+          if (errorMessage.get! 0).containsSubstr "tactic" then
             some (StyleError.broadImport BroadImports.TacticFolder)
           else
             some (StyleError.broadImport BroadImports.Lake)
         | "ERR_NUM_LIN" =>
           -- Parse the error message in the script. `none` indicates invalid input.
-          match (error_message.get? 0, error_message.get? 3) with
+          match (errorMessage.get? 0, errorMessage.get? 3) with
           | (some limit, some current) =>
             match (String.toNat? limit, String.toNat? current) with
-            | (some size_limit, some current_size) =>
-              some (StyleError.fileTooLong current_size size_limit (some size_limit))
+            | (some sizeLimit, some currentSize) =>
+              some (StyleError.fileTooLong currentSize sizeLimit (some sizeLimit))
             | _ => none
           | _ => none
         | _ => none
-      match String.toNat? line_number with
+      match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
       | _ => none
     -- It would be nice to print an error on any line which doesn't match the above format,
@@ -336,9 +336,9 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
 We allow URLs to be longer, though.
 -/
 def lineLengthLinter : TextbasedLinter := fun lines ↦ Id.run do
-  let errors := (lines.toList.enumFrom 1).filterMap (fun (line_number, line) ↦
+  let errors := (lines.toList.enumFrom 1).filterMap (fun (lineNumber, line) ↦
     if line.length > 101 && !line.containsSubstr "http" then
-      some (StyleError.lineLength line.length, line_number)
+      some (StyleError.lineLength line.length, lineNumber)
     else none)
   errors.toArray
 
@@ -353,17 +353,17 @@ def isImportsOnlyFile (lines : Array String) : Bool :=
 **and** longer than an optional previous limit.
 If the file is too large, return a matching `StyleError`, which includes a new size limit
 (which is somewhat larger than the current size). -/
-def checkFileLength (lines : Array String) (existing_limit : Option ℕ) : Option StyleError :=
+def checkFileLength (lines : Array String) (existingLimit : Option ℕ) : Option StyleError :=
   Id.run do
   if lines.size > 1500 then
-    let is_larger : Bool := match existing_limit with
+    let isLarger : Bool := match existingLimit with
     | some mark => lines.size > mark
     | none => true
-    if is_larger then
+    if isLarger then
       -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
       -- but sufficiently large PRs will get nudged towards splitting up this file.
       return some (StyleError.fileTooLong lines.size
-        ((Nat.div lines.size 100) * 100 + 200) existing_limit)
+        ((Nat.div lines.size 100) * 100 + 200) existingLimit)
   none
 
 end
@@ -444,12 +444,12 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
     formatErrors allUnexpectedErrors style
     if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
       IO.println s!"error: found {numberErrorFiles} new style errors\n\
-        run `lake exe lint_style --update` to ignore all of them"
+        run `lake exe lint-style --update` to ignore all of them"
   | OutputSetting.update =>
     formatErrors allUnexpectedErrors ErrorFormat.humanReadable
     -- Regenerate the style exceptions file, including the Python output.
     IO.FS.writeFile exceptionsFilePath ""
-    let python_output ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
+    let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
     -- Combine style exception entries: for each new error, replace by a corresponding
     -- previous exception if that is preferred.
     let mut tweaked := allUnexpectedErrors.map fun err ↦
@@ -457,7 +457,7 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
         if let ComparisonResult.Comparable (true) := _root_.compare err existing then existing
         else err
       else err
-    let this_output := "\n".intercalate (tweaked.map
+    let thisOutput := "\n".intercalate (tweaked.map
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
-    IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
+    IO.FS.writeFile exceptionsFilePath s!"{pythonOutput}{thisOutput}\n"
   return numberErrorFiles
