@@ -134,11 +134,6 @@ def spectralAlgNorm (hna : IsNonarchimedean (norm : K → ℝ)) :
 
 end spectralNorm
 
-/-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
-  `f (r ^ n) = (f r) ^ n`. -/
-def IsPowMul {R : Type _} [Ring R] (f : R → ℝ) :=
-  ∀ (a : R) {n : ℕ} (_ : 1 ≤ n), f (a ^ n) = f a ^ n
-
 variable {K : Type _} [NontriviallyNormedField K] {L : Type _} [Field L] [Algebra K L]
   [Algebra.IsAlgebraic K L]
 
