@@ -532,7 +532,7 @@ instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
 
-proof_wanted IsSemisimpleRing.isArtinianRing (R) [CommRing R] [IsSemisimpleRing R] :
+proof_wanted IsSemisimpleRing.isArtinianRing (R : Type*) [CommRing R] [IsSemisimpleRing R] :
     IsArtinianRing R
 
 end IsArtinianRing

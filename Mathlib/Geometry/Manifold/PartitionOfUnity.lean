@@ -373,6 +373,7 @@ theorem IsSubordinate.support_subset {fs : SmoothBumpCovering ι I M s} {U : M �
   Subset.trans subset_closure (h i)
 
 variable (I) in
+
 /-- Let `M` be a smooth manifold with corners modelled on a finite dimensional real vector space.
 Suppose also that `M` is a Hausdorff `σ`-compact topological space. Let `s` be a closed set
 in `M` and `U : M → Set M` be a collection of sets such that `U x ∈ 𝓝 x` for every `x ∈ s`.

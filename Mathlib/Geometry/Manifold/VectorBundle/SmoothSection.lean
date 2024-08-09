@@ -32,11 +32,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   (n : ℕ∞)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
   -- `V` vector bundle
-
-
-
-variable [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
-
+  [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle. -/
 structure ContMDiffSection where

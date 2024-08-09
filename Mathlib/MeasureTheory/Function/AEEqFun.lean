@@ -417,13 +417,13 @@ theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae �
   ext <| Germ.coe_eq.1 <| by rwa [← toGerm_eq, ← toGerm_eq]
 
 @[simp]
-theorem compQuasiMeasurePreserving_toGerm {β} [MeasurableSpace β] {f : α → β} {ν}
+theorem compQuasiMeasurePreserving_toGerm {β : Type*} [MeasurableSpace β] {f : α → β} {ν}
     (g : β →ₘ[ν] γ) (hf : Measure.QuasiMeasurePreserving f μ ν) :
     (g.compQuasiMeasurePreserving f hf).toGerm = g.toGerm.compTendsto f hf.tendsto_ae := by
   rcases g; rfl
 
 @[simp]
-theorem compMeasurePreserving_toGerm {β} [MeasurableSpace β] {f : α → β} {ν}
+theorem compMeasurePreserving_toGerm {β : Type*} [MeasurableSpace β] {f : α → β} {ν}
     (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν) :
     (g.compMeasurePreserving f hf).toGerm =
       g.toGerm.compTendsto f hf.quasiMeasurePreserving.tendsto_ae :=
