@@ -298,7 +298,7 @@ theorem integral_eq {m : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F)
 theorem integral_eq_sum_filter [DecidablePred fun x : F => x ≠ 0] {m : MeasurableSpace α}
     (f : α →ₛ F) (μ : Measure α) :
     f.integral μ = ∑ x ∈ f.range.filter fun x => x ≠ 0, (μ (f ⁻¹' {x})).toReal • x := by
-  rw [integral_def, setToSimpleFunc_eq_sum_filter]; simp_rw [weightedSMul_apply]; congr
+  simp_rw [integral_def, setToSimpleFunc_eq_sum_filter, weightedSMul_apply]
 
 /-- The Bochner integral is equal to a sum over any set that includes `f.range` (except `0`). -/
 theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α →ₛ F} {s : Finset F}
@@ -699,21 +699,16 @@ Define the Bochner integral on functions generally to be the `L1` Bochner integr
 functions, and 0 otherwise; prove its basic properties.
 -/
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [hE : CompleteSpace E] [NontriviallyNormedField 𝕜]
-  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable [NormedAddCommGroup E] [hE : CompleteSpace E] [NontriviallyNormedField 𝕜]
+  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
-section
-
-open scoped Classical
-
+open Classical in
 /-- The Bochner integral -/
 irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
   if _ : CompleteSpace G then
     if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0
   else 0
-
-end
 
 /-! In the notation for integrals, an expression like `∫ x, g ‖x‖ ∂μ` will not be parsed correctly,
   and needs parentheses. We do not set the binding power of `r` to `0`, because then
@@ -735,6 +730,7 @@ section Properties
 
 open ContinuousLinearMap MeasureTheory.SimpleFunc
 
+variable [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
 
 theorem integral_eq (f : α → E) (hf : Integrable f μ) : ∫ a, f a ∂μ = L1.integral (hf.toL1 f) := by
@@ -1420,7 +1416,10 @@ theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace
   apply tendsto_integral_approxOn_of_measurable hf fmeas _ _ (integrable_zero _ _ _)
   exact eventually_of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 
-theorem tendsto_integral_norm_approxOn_sub [MeasurableSpace E] [BorelSpace E] {f : α → E}
+-- We redeclare `E` here to temporarily avoid
+-- the `[CompleteSpace E]` and `[NormedSpace ℝ E]` instances.
+theorem tendsto_integral_norm_approxOn_sub
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {f : α → E}
     (fmeas : Measurable f) (hf : Integrable f μ) [SeparableSpace (range f ∪ {0} : Set E)] :
     Tendsto (fun n ↦ ∫ x, ‖SimpleFunc.approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖ ∂μ)
       atTop (𝓝 0) := by
