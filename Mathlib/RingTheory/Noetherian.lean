@@ -8,6 +8,7 @@ import Mathlib.Order.PartialSups
 import Mathlib.Algebra.Module.Submodule.IterateMapComap
 import Mathlib.RingTheory.OrzechProperty
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Noetherian rings and modules
