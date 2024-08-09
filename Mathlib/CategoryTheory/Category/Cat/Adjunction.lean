@@ -60,7 +60,7 @@ def connectedComponents.{v} : Cat.{v, u} ⥤ Type u where
   map_comp _ _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h => by simp [<- h])
 
 
-private def fnToFctr (fct : connectedComponents.obj C ⟶ X) : (C ⥤ typeToCat.obj X) where
+private def fnToFctr  {X C} (fct : connectedComponents.obj C ⟶ X) : (C ⥤ typeToCat.obj X) where
   obj :=  Discrete.mk ∘ fct ∘ Quotient.mk (Zigzag.setoid _)
   map :=  Discrete.eqToHom ∘ congrArg fct ∘ Quotient.sound ∘ Zigzag.of_hom
 
@@ -72,7 +72,7 @@ private def fctrToFn {X} {C : Cat} (fctr :C ⥤ typeToCat.obj X)  : (connectedCo
 /-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
 def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
   homEquiv C X := {
-    toFun := fnToFctr X C
+    toFun := fnToFctr
     invFun := fctrToFn
     left_inv := fun f ↦ funext fun x ↦ by
       obtain ⟨x, h⟩ := Quotient.exists_rep x
@@ -82,7 +82,7 @@ def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
       Functor.hext (fun _ ↦ rfl) (fun c d f ↦
         have : Subsingleton (fctr.obj c ⟶ fctr.obj d) := Discrete.instSubsingletonDiscreteHom _ _
         (Subsingleton.elim (fctr.map f) _).symm.heq) }
-  unit := { app:= fun C  ↦ fnToFctr (connectedComponents.obj C) C (𝟙 _) }
+  unit := { app:= fun C  ↦ fnToFctr (𝟙 _) }
   counit :=  {
       app := fun X => fctrToFn (𝟙 typeToCat.obj X)
       naturality := fun _ _ _ =>
