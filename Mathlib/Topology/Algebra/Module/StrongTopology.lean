@@ -365,7 +365,7 @@ theorem uniformEmbedding_restrictScalars :
     UniformEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) := by
   rw [← uniformEmbedding_toUniformOnFun.of_comp_iff]
   convert uniformEmbedding_toUniformOnFun using 4 with s
-  exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars⟩
+  exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
 
 theorem uniformContinuous_restrictScalars :
     UniformContinuous (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
