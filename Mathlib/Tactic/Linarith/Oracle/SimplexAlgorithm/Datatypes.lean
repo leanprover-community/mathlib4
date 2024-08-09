@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
 import Batteries.Data.Rat.Basic
-import Std.Data.HashMap
 
 /-!
 # Datatypes for the Simplex Algorithm implementation
