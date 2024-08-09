@@ -134,8 +134,6 @@ instance llp_pushout' {X Y : C} {p : X ⟶ Y} : StableUnderCobaseChange (llp_wrt
 def StableUnderTransfiniteComposition (P : MorphismProperty C) : Prop :=
   ∀ ⦃X Y: C⦄ ⦃f : X ⟶ Y⦄ (_ : IsTransfiniteComposition P f), P f
 
-#check Ordinal.zero_or_succ_or_limit.{v} -- need this
-
 /-
 inductive u_morphisms (T : MorphismProperty C)
     (α : Ordinal.{v})

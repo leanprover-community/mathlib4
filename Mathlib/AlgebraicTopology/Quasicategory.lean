@@ -213,7 +213,7 @@ lemma ext_iff_llp_wrt_proj {S : SSet} :
 instance {S : SSet} :
     (∀ {A B} (i : A ⟶ B) (_ : innerAnodyne i) (f₀ : A ⟶ S), ∃ (f : B ⟶ S), f₀ = i ≫ f) ↔
     Quasicategory S := by
-  refine ⟨fun h ↦ _007Ea h, ?_⟩
+  refine ⟨_007Ea, ?_⟩
   intro hS
   rw [ext_iff_llp_wrt_proj]
   sorry
@@ -227,37 +227,22 @@ abbrev Fun : SSetᵒᵖ ⥤ SSet ⥤ SSet := internalHom
 
 -- pushout in `0079`
 -- inclusions of this into Δ[2] ⊗ Δ[m] generate the WSC of inner anodyne morphisms (`007F`)
-noncomputable
-def P_cocone (m : ℕ) :
-    Limits.PushoutCocone (hornInclusion 2 1 ▷ ∂Δ[m]) (Λ[2, 1] ◁ boundaryInclusion m) :=
-  Limits.PushoutCocone.mk (Δ[2] ◁ boundaryInclusion m) (hornInclusion 2 1 ▷ Δ[m]) rfl
-
-def P_square (m : ℕ) : CommSq (hornInclusion 2 1 ▷ ∂Δ[m]) (Λ[2, 1] ◁ boundaryInclusion m)
-    (Δ[2] ◁ boundaryInclusion m) (hornInclusion 2 1 ▷ Δ[m]) where
-  w := rfl
-
-def Pushout (m : ℕ) : IsPushout (hornInclusion 2 1 ▷ ∂Δ[m]) (Λ[2, 1] ◁ boundaryInclusion m)
+def Δ_pushout (m : ℕ) : IsPushout (hornInclusion 2 1 ▷ ∂Δ[m]) (Λ[2, 1] ◁ boundaryInclusion m)
     (Limits.pushout.inl (hornInclusion 2 1 ▷ ∂Δ[m]) (Λ[2, 1] ◁ boundaryInclusion m))
     (Limits.pushout.inr (hornInclusion 2 1 ▷ ∂Δ[m]) (Λ[2, 1] ◁ boundaryInclusion m)) :=
   IsPushout.of_hasPushout (hornInclusion 2 1 ▷ ∂Δ[m]) (Λ[2, 1] ◁ boundaryInclusion m)
 
-/-
-instance Pushout (m : ℕ) : Limits.IsColimit (P_cocone m) where
-  desc := by
-    intro s
-    simp [P_cocone]
-    have := s.ι
-    sorry
-  fac := sorry
-  uniq := sorry
--/
+noncomputable
+def Δ_cocone (m : ℕ) :
+    Limits.PushoutCocone (hornInclusion 2 1 ▷ ∂Δ[m]) (Λ[2, 1] ◁ boundaryInclusion m) :=
+  Limits.PushoutCocone.mk (Δ[2] ◁ boundaryInclusion m) (hornInclusion 2 1 ▷ Δ[m]) rfl
 
 -- `0079`, hard to show
 /- S is a quasicat iff Fun(Δ[2], S) ⟶ Fun(Λ[2, 1], S) is a trivial Kan fib -/
 instance horn_tkf_iff_quasicat (S : SSet) : Quasicategory S ↔
     trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app S) := by
   refine ⟨?_, ?_⟩
-  intro ⟨h⟩
+  intro h
   refine ⟨?_⟩
   intro m
   refine ⟨?_⟩
@@ -281,16 +266,18 @@ instance horn_tkf_iff_quasicat (S : SSet) : Quasicategory S ↔
     rw [← this]
     simp [MonoidalClosed.pre]
     aesop
-
-  let to_S : (Pushout m).cocone.pt ⟶ S := (Pushout m).isColimit.desc S_cocone
-  let to_Δ : (Pushout m).cocone.pt ⟶ Δ[2] ⊗ Δ[m] := (Pushout m).isColimit.desc (P_cocone m)
-  have pppp : Δ[2] ⊗ Δ[m] = (Pushout m).cocone.pt := by
-    dsimp [Pushout]
+  let to_S : (Δ_pushout m).cocone.pt ⟶ S := (Δ_pushout m).isColimit.desc S_cocone
+  let to_Δ : (Δ_pushout m).cocone.pt ⟶ Δ[2] ⊗ Δ[m] := (Δ_pushout m).isColimit.desc (Δ_cocone m)
+  have : to_S ≫ (proj S) = (to_Δ) ≫ (proj (Δ[2] ⊗ Δ[m])) :=
+    Limits.IsTerminal.hom_ext ptIsTerminal _ _
+  let newSq := CommSq.mk this
+  have : sq.HasLift ↔ newSq.HasLift := by
+    refine ⟨?_, ?_⟩
+    intro ⟨lift, fac_left, fac_right⟩
+    use MonoidalClosed.uncurry lift
     sorry
-  refine ⟨?_, ?_, ?_⟩
-  apply MonoidalClosed.curry
-  dsimp
-  exact to_S
+    sorry
+    sorry
   sorry
   sorry
 
