@@ -5,7 +5,6 @@ Authors: Robert Maxton
 -/
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
-import Mathlib.RingTheory.PiTensorProduct
 
 /-!
 # The free product of $R$-algebras
@@ -206,7 +205,8 @@ theorem rel'_cases {motive : ∀ {x y}, rel' R A x y → Prop} {x y} (h : rel' R
 @[reducible] def asPowers := RingQuot <| FreeProduct.rel' R A
 
 /--The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct.asPowers`-/
-@[simps!] noncomputable def equiv_asPowers : FreeProduct.asPowers R A ≃ₐ[R] FreeProduct R A :=
+@[simps (config := {isSimp := false, rhsMd := .default, simpRhs := true})]
+noncomputable def equiv_asPowers : FreeProduct.asPowers R A ≃ₐ[R] FreeProduct R A :=
   RingQuot.algEquiv_quot_algEquiv
     (FreeProduct.powerAlgebra_equiv_freeAlgebra R A |>.symm) (FreeProduct.rel R A)
   |>.symm
@@ -277,7 +277,7 @@ abbrev mkAlgHom : PowerAlgebra R A →ₐ[R] FreeProduct.asPowers R A :=
 abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct.asPowers R A :=
   (mkAlgHom R A).toLinearMap ∘ₗ PowerAlgebra.ι R A
 
-@[simp] theorem ι_apply (x : ⨁ i, A i) :
+theorem ι_apply (x : ⨁ i, A i) :
     ⟨Quot.mk (Rel <| rel' R A) (PowerAlgebra.ι R A x)⟩ = ι' R A x := by
   simp_rw [ι', mkAlgHom, RingQuot.mkAlgHom, mkRingHom, LinearMap.coe_comp, comp_apply,
            AlgHom.toLinearMap_apply, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk,
