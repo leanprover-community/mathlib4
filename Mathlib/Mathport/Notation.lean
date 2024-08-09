@@ -458,8 +458,8 @@ This command can be used in mathlib4 but it has an uncertain future and was crea
 for backward compatibility.
 -/
 elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
-    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)? pp?:(prettyPrintOpt)?
-    ppSpace items:(notation3Item)+ " => " val:term : command => do
+    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
+    pp?:(ppSpace prettyPrintOpt)? items:(ppSpace notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
   -- identifiers that appear in `items`
   let mut boundIdents : HashMap Name Ident := {}
