@@ -615,8 +615,8 @@ lemma mul_comm_of_exponent_two [IsCancelMul G] (hG : Monoid.exponent G = 2) (a b
   Commute.of_orderOf_dvd_two (fun g => hG ▸ Monoid.order_dvd_exponent g) a b
 
 /-- Any cancellative monoid of exponent two is abelian. -/
-@[to_additive (attr := reducible) "Any additive group of exponent two is abelian."]
-def commMonoidOfExponentTwo [IsCancelMul G] (hG : Monoid.exponent G = 2) : CommMonoid G where
+@[to_additive "Any additive group of exponent two is abelian."]
+abbrev commMonoidOfExponentTwo [IsCancelMul G] (hG : Monoid.exponent G = 2) : CommMonoid G where
   mul_comm := mul_comm_of_exponent_two hG
 
 end Monoid
