@@ -323,9 +323,9 @@ instance instCategorySheaf : Category (Sheaf J A) where
   Hom := Hom
   id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.val ≫ g.val⟩
-  id_comp _ := Hom.ext _ _ <| id_comp _
-  comp_id _ := Hom.ext _ _ <| comp_id _
-  assoc _ _ _ := Hom.ext _ _ <| assoc _ _ _
+  id_comp _ := Hom.ext <| id_comp _
+  comp_id _ := Hom.ext <| comp_id _
+  assoc _ _ _ := Hom.ext <| assoc _ _ _
 
 -- Let's make the inhabited linter happy.../sips
 instance (X : Sheaf J A) : Inhabited (Hom X X) :=
@@ -334,7 +334,7 @@ instance (X : Sheaf J A) : Inhabited (Hom X X) :=
 -- Porting note: added because `Sheaf.Hom.ext` was not triggered automatically
 @[ext]
 lemma hom_ext {X Y : Sheaf J A} (x y : X ⟶ Y) (h : x.val = y.val) : x = y :=
-  Sheaf.Hom.ext _ _ h
+  Sheaf.Hom.ext h
 
 end Sheaf
 
@@ -476,7 +476,7 @@ theorem Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.
 
 instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (fun f : Sheaf.Hom P Q => f.1)
-    (fun _ _ h => Sheaf.Hom.ext _ _ h) rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ h => Sheaf.Hom.ext h) rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => by aesop_cat) (fun _ _ => by aesop_cat)
 
 instance : Preadditive (Sheaf J A) where
@@ -636,26 +636,22 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
     [∀ J, PreservesLimitsOfShape (Discrete.{max v₁ u₁} J) s] (U : C) (R : Presieve U) :
     IsLimit (s.mapCone (Fork.ofι _ (w R P))) ≃
       IsLimit (Fork.ofι _ (Equalizer.Presieve.w (P ⋙ s) R)) := by
-  apply Equiv.trans (isLimitMapConeForkEquiv _ _) _
-  apply (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
-  · apply NatIso.ofComponents _ _
-    · rintro (_ | _)
-      · apply PreservesProduct.iso s
-      · apply PreservesProduct.iso s
-    · rintro _ _ (_ | _)
-      · refine limit.hom_ext (fun j => ?_)
-        dsimp [Equalizer.Presieve.firstMap, firstMap]
-        simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
-        rw [piComparison_comp_π_assoc]
-      · refine limit.hom_ext (fun j => ?_)
-        dsimp [Equalizer.Presieve.secondMap, secondMap]
-        simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
-        rw [piComparison_comp_π_assoc]
-      · dsimp
-        simp
-  · refine Fork.ext (Iso.refl _) ?_
-    dsimp [Equalizer.forkMap, forkMap]
-    simp [Fork.ι]
+  let e : parallelPair (s.map (firstMap R P)) (s.map (secondMap R P)) ≅
+    parallelPair (Equalizer.Presieve.firstMap (P ⋙ s) R)
+      (Equalizer.Presieve.secondMap (P ⋙ s) R) := by
+    refine parallelPair.ext (PreservesProduct.iso s _) ((PreservesProduct.iso s _))
+      (limit.hom_ext (fun j => ?_)) (limit.hom_ext (fun j => ?_))
+    · dsimp [Equalizer.Presieve.firstMap, firstMap]
+      simp only [map_lift_piComparison, Functor.map_comp, limit.lift_π, Fan.mk_pt,
+        Fan.mk_π_app, assoc, piComparison_comp_π_assoc]
+    · dsimp [Equalizer.Presieve.secondMap, secondMap]
+      simp only [map_lift_piComparison, Functor.map_comp, limit.lift_π, Fan.mk_pt,
+        Fan.mk_π_app, assoc, piComparison_comp_π_assoc]
+  refine Equiv.trans (isLimitMapConeForkEquiv _ _) ?_
+  refine (IsLimit.postcomposeHomEquiv e _).symm.trans
+    (IsLimit.equivIsoLimit (Fork.ext (Iso.refl _) ?_))
+  dsimp [Equalizer.forkMap, forkMap, e, Fork.ι]
+  simp only [id_comp, map_lift_piComparison]
 
 -- Remark : this lemma uses `A'` not `A`; `A'` is `A` but with a universe
 -- restriction. Can it be generalised?

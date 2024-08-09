@@ -731,7 +731,7 @@ def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
 
 /-- It's just the same as `Lean.Meta.setInlineAttribute` but with type `CoreM Unit`.
 
-TODO: make `Lean.Meta.setInlineAttribute` a `CoreM Unit` and remove this definition. -/
+TODO (lean4#4965): make `Lean.Meta.setInlineAttribute` a `CoreM Unit` and remove this definition. -/
 def setInlineAttribute (declName : Name) (kind := Compiler.InlineAttributeKind.inline) :
     CoreM Unit := do
   let env ← getEnv
@@ -804,8 +804,10 @@ partial def transformDeclAux
   else
     addAndCompile trgDecl.toDeclaration!
   if let .defnDecl { hints := .abbrev, .. } := trgDecl.toDeclaration! then
-    setReducibilityStatus tgt .reducible
-    setInlineAttribute tgt
+    if (← getReducibilityStatus src) == .reducible then
+      setReducibilityStatus tgt .reducible
+    if Compiler.getInlineAttribute? (← getEnv) src == some .inline then
+      setInlineAttribute tgt
   -- now add declaration ranges so jump-to-definition works
   -- note: we currently also do this for auxiliary declarations, while they are not normally
   -- generated for those. We could change that.
