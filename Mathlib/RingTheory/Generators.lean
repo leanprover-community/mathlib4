@@ -215,7 +215,6 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
 end Construction
 
 variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S')
-variable [Algebra R R'] [Algebra S S']
 variable {R'' S''} [CommRing R''] [CommRing S''] [Algebra R'' S''] (P'' : Generators R'' S'')
 
 section Hom
@@ -312,8 +311,6 @@ noncomputable def Hom.comp [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
     | h_C r => simp [← IsScalarTower.algebraMap_apply]
     | h_add x y hx hy => simp only [map_add, hx, hy]
     | h_X p i hp => simp only [_root_.map_mul, hp, aeval_X, aeval_val]
-
-variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 @[simp]
 lemma Hom.comp_id [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] (f : Hom P P') :
