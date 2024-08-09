@@ -15,7 +15,8 @@ This file provides lemmas relating sums of constants to the cardinality of the d
 ## TODO
 
 + Once we have a topology on `ENat`, provide an `ENat` valued version
-+ Once we replace `PartENat` entirely with `ENat` (and get a `ENat.card` to replace `PartENat.card`), provide versions which sum over the whole type.
++ Once we replace `PartENat` entirely with `ENat` (and replace `PartENat.card` with a `ENat.card`),
+  provide versions which sum over the whole type.
 -/
 
 open Set Function
@@ -32,9 +33,10 @@ lemma tsum_set_one_eq : ∑' (_ : s), (1 : ℝ≥0∞) = s.encard := by
   · have : Infinite s := infinite_coe_iff.mpr hinf
     rw [tsum_const_eq_top_of_ne_zero one_ne_zero, encard_eq_top hinf, ENat.toENNReal_top]
 
-lemma tsum_const_eq' {α : Type*} (s : Set α) (c : ℝ≥0∞) :
+@[simp]
+lemma tsum_set_const_eq' (c : ℝ≥0∞) :
     ∑' (_:s), (c : ℝ≥0∞) = s.encard * c := by
   nth_rw 1 [← one_mul c]
-  rw [ENNReal.tsum_mul_right,tsum_one_eq']
+  rw [ENNReal.tsum_mul_right,tsum_set_one_eq]
 
 end ENNReal
