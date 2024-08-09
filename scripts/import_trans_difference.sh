@@ -107,4 +107,4 @@ printf 'formatGitDiff %s\n' "${commit1}" &&
 formatGitDiff "${commit1}" &&
 printf 'formatGitDiff %s\n' "${commit2}" &&
 formatGitDiff "${commit2}"
-cat transImports1.txt
+head -50 transImports1.txt
