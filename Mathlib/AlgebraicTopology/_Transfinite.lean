@@ -8,19 +8,26 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
-def B {α β : Ordinal.{v}} (hβ : β < α) : {β | β ≤ α} := ⟨β, le_of_lt hβ⟩
+-- constructions in the category {β | β ≤ α}
 
-def BSucc {α β : Ordinal.{v}} (hβ : β < α) : {β | β ≤ α} := ⟨β + 1, Order.succ_le_of_lt hβ⟩
+def ord_le_of_lt {α β : Ordinal.{v}} (hβ : β < α) : {β | β ≤ α} := ⟨β, le_of_lt hβ⟩
 
-def bot {α : Ordinal.{v}} : {β | β ≤ α} := ⟨0, Ordinal.zero_le α⟩
+def ord_succ_le_of_lt {α β : Ordinal.{v}} (hβ : β < α) : {β | β ≤ α} :=
+  ⟨β + 1, Order.succ_le_of_lt hβ⟩
 
-def top (α : Ordinal.{v}) : {β | β ≤ α} := ⟨α, le_refl α⟩
+def ord_zero_le {α : Ordinal.{v}} : {β | β ≤ α} := ⟨0, Ordinal.zero_le α⟩
 
-def bot_to_top {α : Ordinal.{v}} : bot ⟶ top α := LE.le.hom (Ordinal.zero_le α)
+def ord_le_refl (α : Ordinal.{v}) : {β | β ≤ α} := ⟨α, le_refl α⟩
 
-def gam {α : Ordinal.{v}} (γ : Ordinal.{v}) (hγ : γ ≤ α) : bot ⟶ ⟨γ, hγ⟩ := LE.le.hom (Ordinal.zero_le γ)
+def bot_to_top {α : Ordinal.{v}} : ord_zero_le ⟶ ord_le_refl α := LE.le.hom (Ordinal.zero_le α)
 
-def to_succ {α β : Ordinal.{v}} (hβ : β < α) : (B hβ) ⟶ (BSucc hβ) :=
+def ord_le_to_top {α β : Ordinal.{v}} (hβ : β ≤ α) : ⟨β, hβ⟩ ⟶ (ord_le_refl α) :=
+  LE.le.hom hβ
+
+def zero_to {α : Ordinal.{v}} (γ : Ordinal.{v}) (hγ : γ ≤ α) : ord_zero_le ⟶ ⟨γ, hγ⟩ :=
+  LE.le.hom (Ordinal.zero_le γ)
+
+def to_succ {α β : Ordinal.{v}} (hβ : β < α) : (ord_le_of_lt hβ) ⟶ (ord_succ_le_of_lt hβ) :=
   LE.le.hom (Ordinal.le_add_right β 1)
 
 inductive IsTransfiniteCompositionAux

@@ -134,40 +134,39 @@ instance llp_pushout' {X Y : C} {p : X ⟶ Y} : StableUnderCobaseChange (llp_wrt
 def StableUnderTransfiniteComposition (P : MorphismProperty C) : Prop :=
   ∀ ⦃X Y: C⦄ ⦃f : X ⟶ Y⦄ (_ : IsTransfiniteComposition P f), P f
 
-/-
-inductive u_morphisms (T : MorphismProperty C)
-    (α : Ordinal.{v})
-      (F : {β | β ≤ α} ⥤ C) (hF : Limits.PreservesColimits F)
-      (hS : ∀ (β : Ordinal.{v}) (hβ : β < α), T.llp_wrt (F.map (to_succ hβ)))
-    (X Y : C) (g : X ⟶ Y) (hg : T g)
-    (u : F.obj bot ⟶ X) (v : F.obj (top α) ⟶ Y) (sq : CommSq u (F.map bot_to_top) g v)
-    (β : Ordinal.{v})
-    (hβ : β < α)
-    :
-      Prop where
-  | nil
--/
+structure llp_comp_aux {α : Ordinal.{v}}
+    (F : {β | β ≤ α} ⥤ C) (hF : Limits.PreservesColimits F) (T : MorphismProperty C)
+    (hS : ∀ (β : Ordinal.{v}) (hβ : β < α), T.llp_wrt (F.map (to_succ hβ)))
+    {X Y : C} (g : X ⟶ Y) (u : F.obj ord_zero_le ⟶ X) (v : F.obj (ord_le_refl α) ⟶ Y)
+    (sq : CommSq u (F.map bot_to_top) g v) where
+  μ (β : {β | β ≤ α}) : F.obj β ⟶ X
+  μ_comp {β : {β | β ≤ α}} : (μ β) ≫ g = (F.map (ord_le_to_top β.2)) ≫ v
+  μ_fac {β γ : {β | β ≤ α}} (hβ : β ≤ γ) : μ β = (F.map (LE.le.hom hβ)) ≫ μ γ
 
-/-
-def u_morphisms (T : MorphismProperty C)
-    (α : Ordinal.{v})
-      (F : {β | β ≤ α} ⥤ C) (hF : Limits.PreservesColimits F)
-      (hS : ∀ (β : Ordinal.{v}) (hβ : β < α), T.llp_wrt (F.map (to_succ hβ)))
-    (X Y : C) (g : X ⟶ Y) (hg : T g)
-    (u : F.obj bot ⟶ X) (v : F.obj (top α) ⟶ Y) (sq : CommSq u (F.map bot_to_top) g v)
-    (β γ : Ordinal.{v})
-    (hγ : γ ≤ α) (hβ : β < γ)
-    : (F.obj (B (lt_of_lt_of_le hβ hγ))) ⟶ X := by
-  cases Ordinal.zero_or_succ_or_limit β
-  sorry
--/
-
+-- `006R`
 instance llp_comp {T : MorphismProperty C} : StableUnderTransfiniteComposition (llp_wrt T) := by
   intro C0 Cα f h X Y g hg
   induction h with
   | mk α F hF hS =>
     refine ⟨?_⟩
     intro u v sq
+    have U : llp_comp_aux F hF T hS g u v sq := by
+      refine ⟨?_, ?_, ?_⟩
+      · intro ⟨β, hβ⟩
+        by_cases β = 0
+        · have : F.obj ⟨β, hβ⟩ = F.obj (ord_zero_le) := by aesop
+          rw [this]
+          exact u
+        · by_cases (∃ a, β = Order.succ a)
+          sorry
+          sorry
+      · intro β
+        induction (Ordinal.zero_or_succ_or_limit β) with
+        | inl => sorry
+        | inr => sorry
+      · sorry
+    use U.μ (ord_le_refl α)
+    sorry
     sorry
 
 instance llp_comp' {X Y : C} {p : X ⟶ Y} : StableUnderTransfiniteComposition (llp_wrt' p) := sorry
