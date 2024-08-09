@@ -52,6 +52,7 @@ theorem continuousSMul_of_algebraMap [TopologicalSemiring A] (h : Continuous (al
     ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
 
+section
 variable [ContinuousSMul R A]
 
 /-- The inclusion of the base ring in a topological algebra as a continuous linear map. -/
@@ -67,9 +68,14 @@ theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
 theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
 
+end
+
 /-- If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
-is also a topological `R`-algebra. -/
-instance [TopologicalSemiring A] [DiscreteTopology R] :
+is also a topological `R`-algebra.
+
+NB: This could be an instance but the signature makes it very expensive in search. See #15339
+for the regressions caused by making this an instance. -/
+theorem DiscreteTopology.instContinuousSMul [TopologicalSemiring A] [DiscreteTopology R] :
     ContinuousSMul R A := continuousSMul_of_algebraMap _ _ continuous_of_discreteTopology
 
 end TopologicalAlgebra
