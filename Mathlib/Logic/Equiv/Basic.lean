@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
@@ -458,7 +457,7 @@ def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
     Σ β : Type u, α ≃ Option β where
   fst := {a // a ≠ default}
   snd.toFun a := if h : a = default then none else some ⟨a, h⟩
-  snd.invFun := Option.elim' default (↑)
+  snd.invFun := (·.elim default (↑))
   snd.left_inv a := by dsimp only; split_ifs <;> simp [*]
   snd.right_inv
     | none => by simp

@@ -409,8 +409,7 @@ theorem ofWithBot_mono {boxes₁ : Finset (WithBot (Box ι))}
 theorem sum_ofWithBot {M : Type*} [AddCommMonoid M] (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) (f : Box ι → M) :
-    (∑ J ∈ (ofWithBot boxes le_of_mem pairwise_disjoint).boxes, f J) =
-      ∑ J ∈ boxes, Option.elim' 0 f J :=
+    (∑ J ∈ (ofWithBot boxes le_of_mem pairwise_disjoint).boxes, f J) = ∑ J ∈ boxes, J.elim 0 f :=
   Finset.sum_eraseNone _ _
 
 /-- Restrict a prepartition to a box. -/

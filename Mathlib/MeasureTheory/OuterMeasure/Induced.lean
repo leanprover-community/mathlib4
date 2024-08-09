@@ -430,8 +430,8 @@ theorem trim_iSup {ι} [Countable ι] (μ : ι → OuterMeasure α) :
   ext1 s
   obtain ⟨t, _, _, hμt⟩ :=
     exists_measurable_superset_forall_eq_trim
-      (Option.elim' (⨆ i, μ (PLift.down i)) (μ ∘ PLift.down)) s
-  simp only [Option.forall, Option.elim'] at hμt
+      (Option.elim · (⨆ i, μ (PLift.down i)) (μ ∘ PLift.down)) s
+  simp only [Option.forall, Option.elim] at hμt
   simp only [iSup_apply, ← hμt.1]
   exact iSup_congr hμt.2
 
