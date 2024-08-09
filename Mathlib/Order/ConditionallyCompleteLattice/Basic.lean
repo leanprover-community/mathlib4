@@ -86,6 +86,9 @@ theorem WithBot.csInf_eq [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
     (hs' : BddBelow ((↑) ⁻¹' s : Set α)) : sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
   (if_neg hs).trans <| if_pos hs'
 
+/--
+The more general version of this lemma, previously under this name, is now `WithBot.csInf_eq`.
+-/
 theorem WithBot.sInf_eq [InfSet α] [OrderBot α] {s : Set (WithBot α)} (hs : ⊥ ∉ s) :
     sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
   WithBot.csInf_eq hs (OrderBot.bddBelow _)
@@ -94,6 +97,9 @@ theorem WithBot.csSup_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥})
     sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
   WithTop.csInf_eq (α := αᵒᵈ) hs h's
 
+/--
+The more general version of this lemma, previously under this name, is now `WithBot.csSup_eq`.
+-/
 theorem WithBot.sSup_eq [SupSet α] [OrderTop α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) :
     sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
   WithBot.csSup_eq hs (OrderTop.bddAbove _)
