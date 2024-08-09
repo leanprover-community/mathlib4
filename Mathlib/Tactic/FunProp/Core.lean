@@ -39,7 +39,7 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
     return false
 
 
-/-- Synthesize arguments `xs` either with typeclass synthesis, with `fun_prop` or with discharger.-/
+/-- Synthesize arguments `xs` either with typeclass synthesis, with `fun_prop` or with discharger. -/
 def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM Bool := do
@@ -320,7 +320,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
 /-- Prove function property of using *morphism theorems*. -/
 def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
-  trace[Debug.Meta.Tactic.fun_prop] "applying morphism theoresm to {← ppExpr e}"
+  trace[Debug.Meta.Tactic.fun_prop] "applying morphism theorems to {← ppExpr e}"
 
   match ← fData.isMorApplication with
   | .none => throwError "fun_prop bug: ivalid use of mor rules on {← ppExpr e}"
@@ -366,7 +366,7 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
 
 /-- Try to remove applied argument i.e. prove `P (fun x => f x y)` from `P (fun x => f x)`.
 
-For exmaple
+For example
   - `funPropDecl` is `FunPropDecl` for `Continuous`
   - `e = q(Continuous fun x => foo (bar x) y)`
   - `fData` contains info on `fun x => foo (bar x) y`
