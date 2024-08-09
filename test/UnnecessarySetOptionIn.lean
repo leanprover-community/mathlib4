@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.UnusedSetOptionIn
+import Mathlib.Tactic.Linter.UnnecessarySetOptionIn
 
 /--
 warning: unnecessary 'set_option maxHeartbeats' in 'example'

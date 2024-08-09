@@ -66,15 +66,12 @@ register_option linter.unnecessarySetOptionIn : Bool := {
 @[inherit_doc linter.unnecessarySetOptionIn]
 def getSetOptionIn (o : Options) : Bool := Linter.getLinterValue linter.unnecessarySetOptionIn o
 
-/-- reports a warning if the "first layer" `set_option ... in` is unused. -/
+/-- reports a warning if the "first layer" `set_option ... in` is unnecessary. -/
 def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
   let mut (report?, declId) := (false, default)
   let s ← get
   match stx with
-    | .node _ ``Lean.Parser.Command.in #[
-        .node _ ``Lean.Parser.Command.set_option #[_, opt, _, _],
-        _,  -- atom `in`
-        inner] => do
+    | `(command| set_option $opt $_ in $inner) => do
       if !opt.getId.components.contains `linter then
         if let some (exm, id) := (← toExample inner) then
           cmd exm

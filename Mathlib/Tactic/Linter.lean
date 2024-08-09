@@ -13,5 +13,5 @@ import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.Style
-import Mathlib.Tactic.Linter.UnusedSetOptionIn
+import Mathlib.Tactic.Linter.UnnecessarySetOptionIn
 import Mathlib.Tactic.Linter.UnusedTactic
