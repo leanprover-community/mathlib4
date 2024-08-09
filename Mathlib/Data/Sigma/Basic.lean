@@ -61,9 +61,6 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
 theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
   | ⟨_, _⟩ => rfl
 
-theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
-  cases x₀; cases x₁; exact Sigma.mk.inj_iff
-
 protected theorem eq {α : Type*} {β : α → Type*} : ∀ {p₁ p₂ : Σ a, β a} (h₁ : p₁.1 = p₂.1),
     (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
   | ⟨_, _⟩, _, rfl, rfl => rfl
@@ -241,10 +238,7 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     match a₁, a₂, b₁, b₂, h₁, h₂ with
     | _, _, _, _, Eq.refl _, HEq.refl _ => rfl
 
-theorem ext_iff {x₀ x₁ : PSigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
-  cases x₀; cases x₁; exact PSigma.mk.inj_iff
-
-@[deprecated ext_iff (since := "2024-07-27")]
+@[deprecated PSigma.ext_iff (since := "2024-07-27")]
 protected theorem eq {α : Sort*} {β : α → Sort*} : ∀ {p₁ p₂ : Σ' a, β a} (h₁ : p₁.1 = p₂.1),
     (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
   | ⟨_, _⟩, _, rfl, rfl => rfl
