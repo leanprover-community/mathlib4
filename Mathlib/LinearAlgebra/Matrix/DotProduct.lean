@@ -15,7 +15,7 @@ vectors `v w : n → R` to the sum of the entrywise products `v i * w i`.
 
 ## Main results
 
-* `Matrix.dotProduct_stdBasis_one`: the dot product of `v` with the `i`th
+* `Matrix.dotProduct_single_one`: the dot product of `v` with the `i`th
   standard basis vector is `v i`
 * `Matrix.dotProduct_eq_zero_iff`: if `v`'s' dot product with all `w` is zero,
   then `v` is zero
@@ -35,12 +35,9 @@ section Semiring
 
 variable [Semiring R] [Fintype n]
 
-@[simp]
 theorem dotProduct_single_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
     dotProduct v (LinearMap.single R (fun _ => R) i c) = v i * c := by
-  rw [dotProduct, Finset.sum_eq_single i, LinearMap.single_same]
-  · exact fun _ _ hb => by rw [LinearMap.single_ne _ _ _ _ hb, mul_zero]
-  · exact fun hi => False.elim (hi <| Finset.mem_univ _)
+  simp
 
 set_option linter.deprecated false in
 @[simp, deprecated dotProduct_single_eq_mul (since := "2024-08-09")]
@@ -56,8 +53,8 @@ theorem dotProduct_single_one [DecidableEq n] (v : n → R) (i : n) :
 set_option linter.deprecated false in
 @[deprecated dotProduct_single_one (since := "2024-08-09")]
 theorem dotProduct_stdBasis_one [DecidableEq n] (v : n → R) (i : n) :
-    dotProduct v (LinearMap.stdBasis R (fun _ => R) i 1) = v i := by
-  rw [dotProduct_stdBasis_eq_mul, mul_one]
+    dotProduct v (LinearMap.stdBasis R (fun _ => R) i 1) = v i :=
+  dotProduct_single_one ..
 
 theorem dotProduct_eq (v w : n → R) (h : ∀ u, dotProduct v u = dotProduct w u) : v = w := by
   funext x

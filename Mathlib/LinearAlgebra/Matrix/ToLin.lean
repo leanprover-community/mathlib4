@@ -97,14 +97,8 @@ theorem Matrix.vecMul_single [DecidableEq m] (M : Matrix m n R) (i j) :
 set_option linter.deprecated false in
 @[simp, deprecated Matrix.vecMul_single (since := "2024-08-09")]
 theorem Matrix.vecMul_stdBasis [DecidableEq m] (M : Matrix m n R) (i j) :
-    (LinearMap.stdBasis R (fun _ ↦ R) i 1 ᵥ* M) j = M i j := by
-  have : (∑ i', (if i = i' then 1 else 0) * M i' j) = M i j := by
-    simp_rw [boole_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
-  simp only [vecMul, dotProduct]
-  convert this
-  split_ifs with h <;> simp only [stdBasis_apply]
-  · rw [h, Function.update_same]
-  · rw [Function.update_noteq (Ne.symm h), Pi.zero_apply]
+    (LinearMap.stdBasis R (fun _ ↦ R) i 1 ᵥ* M) j = M i j :=
+  Matrix.vecMul_single ..
 
 theorem range_vecMulLinear (M : Matrix m n R) :
     LinearMap.range M.vecMulLinear = span R (range M) := by
@@ -277,18 +271,18 @@ set_option linter.deprecated false in
 @[deprecated Matrix.mulVec_linearMap_single (since := "2024-08-09")]
 theorem Matrix.mulVec_stdBasis [DecidableEq n] (M : Matrix m n R) (i j) :
     (M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1) i = M i j :=
-  (congr_fun (Matrix.mulVec_single _ _ (1 : R)) i).trans <| mul_one _
+  Matrix.mulVec_linearMap_single ..
 
 @[simp]
 theorem Matrix.mulVec_single_apply [DecidableEq n] (M : Matrix m n R) (j) :
-    M *ᵥ LinearMap.single R (fun _ ↦ R) j 1 = Mᵀ j :=
+    M *ᵥ Pi.single j 1 = Mᵀ j :=
   funext fun i ↦ Matrix.mulVec_linearMap_single M i j
 
 set_option linter.deprecated false in
 @[simp, deprecated Matrix.mulVec_single_apply (since := "2024-08-09")]
 theorem Matrix.mulVec_stdBasis_apply [DecidableEq n] (M : Matrix m n R) (j) :
     M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1 = Mᵀ j :=
-  funext fun i ↦ Matrix.mulVec_stdBasis M i j
+  Matrix.mulVec_single_apply ..
 
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range Mᵀ) := by

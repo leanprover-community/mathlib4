@@ -100,13 +100,6 @@ variable [DecidableEq n] [DecidableEq o]
 def LinearMap.BilinForm.toMatrix' : BilinForm R₂ (n → R₂) ≃ₗ[R₂] Matrix n n R₂ :=
   LinearMap.toMatrix₂' R₂
 
-@[simp]
-theorem LinearMap.BilinForm.toMatrixAux_stdBasis (B : BilinForm R₂ (n → R₂)) :
-    -- Porting note: had to hint the base ring even though it should be clear from context...
-    BilinForm.toMatrixAux (R₂ := R₂) (fun j => single R₂ (fun _ => R₂) j 1) B =
-      BilinForm.toMatrix' B :=
-  rfl
-
 /-- The linear equivalence between `n × n` matrices and bilinear forms on `n → R` -/
 def Matrix.toBilin' : Matrix n n R₂ ≃ₗ[R₂] BilinForm R₂ (n → R₂) :=
   BilinForm.toMatrix'.symm
@@ -124,10 +117,15 @@ theorem Matrix.toBilin'_apply' (M : Matrix n n R₂) (v w : n → R₂) :
     Matrix.toBilin' M v w = Matrix.dotProduct v (M *ᵥ w) := Matrix.toLinearMap₂'_apply' _ _ _
 
 @[simp]
+theorem Matrix.toBilin'_single (M : Matrix n n R₂) (i j : n) :
+    Matrix.toBilin' M (Pi.single i 1) (Pi.single j 1) = M i j := Matrix.toLinearMap₂'_single _ _ _
+
+set_option linter.deprecated false in
+@[simp, deprecated Matrix.toBilin'_single (since := "2024-08-09")]
 theorem Matrix.toBilin'_stdBasis (M : Matrix n n R₂) (i j : n) :
     Matrix.toBilin' M
-      (LinearMap.single R₂ (fun _ => R₂) i 1)
-      (LinearMap.single R₂ (fun _ => R₂) j 1) = M i j := Matrix.toLinearMap₂'_single _ _ _
+      (LinearMap.stdBasis R₂ (fun _ => R₂) i 1)
+      (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j := Matrix.toLinearMap₂'_single _ _ _
 
 @[simp]
 theorem LinearMap.BilinForm.toMatrix'_symm :
