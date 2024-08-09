@@ -330,6 +330,17 @@ theorem dist_lt_of_dist_lt_modulus (f : C(α, β)) (ε : ℝ) (h : 0 < ε) {a b 
     (w : dist a b < f.modulus ε h) : dist (f a) (f b) < ε :=
   (Classical.choose_spec (uniform_continuity f ε h)).2 w
 
+/-- A family of continuous maps `f : α → C(β, γ)` is continuous on an open set if it is
+  pointwise continuous, provided that `β` is compact and `α` is locally compact. -/
+lemma continuousOn_of_pointwise_continuousOn_of_compact {α : Type*} {β : Type*} {γ : Type*}
+    [UniformSpace α] [UniformSpace β] [LocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
+    {f : α → C(β, γ)} {U : Set α} (hU : IsOpen U)
+    (h : ContinuousOn (fun ⟨a, b⟩ => f a b) (U ×ˢ univ)) :
+    ContinuousOn f U := by
+  intro a aU
+  rw [ContinuousWithinAt, ContinuousMap.tendsto_iff_tendstoUniformly, hU.nhdsWithin_eq aU]
+  exact ContinuousOn.tendstoUniformly (IsOpen.mem_nhds hU aU) h
+
 end UniformContinuity
 
 end ContinuousMap
