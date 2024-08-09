@@ -177,8 +177,8 @@ theorem rel'_cases {motive : ∀ {x y}, rel' R A x y → Prop} {x y} (h : rel' R
     (id : ∀ {i : I}, motive (rel'_id R A i))
     (prod : ∀ {i : I} {a₁ a₂ : A i}, motive (rel'_prod R A i a₁ a₂)) : motive h := by
   unfold rel' Function.onFun at h
-  set x' := ofDirectSum x with ←x'_def
-  set y' := ofDirectSum y with ←y'_def
+  set x' := ofDirectSum x with ← x'_def
+  set y' := ofDirectSum y with ← y'_def
   have inj : Function.Injective <| ofDirectSum (R := R) (M := ⨁ i, A i) := by
     fapply Function.LeftInverse.injective (g := toDirectSum)
     intro x; simp
@@ -295,9 +295,9 @@ theorem mul_injections (a₁ a₂ : A i) :
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   convert RingQuot.mkAlgHom_rel R <| rel'_prod R A i a₁ a₂
   simp_rw [lof_eq_of, ι', mkAlgHom, LinearMap.coe_comp, comp_apply, AlgHom.toLinearMap_apply,
-           ←_root_.map_mul]
+           ← _root_.map_mul]
   congr
-  rw [←TensorAlgebra.toDirectSum_tensorPower_tprod]
+  rw [← TensorAlgebra.toDirectSum_tensorPower_tprod]
   simp [lof_eq_of]
 
 /--The `i`th canonical injection, from `A i` to the free product, as
