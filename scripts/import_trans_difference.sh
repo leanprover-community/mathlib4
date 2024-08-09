@@ -93,7 +93,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
       max=0
       for(x in reds) {
         max++
-        if(1000 < max) { exit 1 }
+        if(100 < max) { exit 1 }
         if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
       }
