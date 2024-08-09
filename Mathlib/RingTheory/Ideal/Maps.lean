@@ -340,7 +340,13 @@ theorem comap_symm (I : Ideal R) (f : R ≃+* S) : I.comap f.symm = I.map f :=
 theorem map_symm (I : Ideal S) (f : R ≃+* S) : I.map f.symm = I.comap f :=
   map_comap_of_equiv I (RingEquiv.symm f)
 
+theorem symm_apply_mem_of_equiv_iff {I : Ideal R} {f : R ≃+* S} {y : S} :
+    f.symm y ∈ I ↔ y ∈ I.map f := by
+  rw [← comap_symm, mem_comap]
 
+theorem apply_mem_of_equiv_iff {I : Ideal R} {f : R ≃+* S} {x : R} :
+    f x ∈ I.map f ↔ x ∈ I := by
+  rw [← comap_symm, Ideal.mem_comap, f.symm_apply_apply]
 
 end Semiring
 
