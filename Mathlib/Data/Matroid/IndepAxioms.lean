@@ -215,27 +215,21 @@ namespace IndepMatroid
     rw [ncard_insert_of_not_mem heI₀ hI₀fin, ← Nat.lt_iff_add_one_le] at hcard
 
     obtain ⟨f, hfJ, hfI₀, hfi⟩ := indep_aug (indep_subset hI hI₀I) hI₀fin hJ hJfin hcard
-    exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by aesop), hfI₀⟩ hfi )
+    exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by aesop), hfI₀⟩ hfi)
   (indep_maximal := by
-      rintro X - I hI hIX
-      have hzorn := zorn_subset_nonempty {Y | Indep Y ∧ I ⊆ Y ∧ Y ⊆ X} ?_ I ⟨hI, Subset.rfl, hIX⟩
-      · obtain ⟨J, ⟨hJi, hIJ, hJX⟩, -, hJmax⟩ := hzorn
-        simp_rw [maximal_subset_iff]
-        exact ⟨J, hIJ, ⟨hJi, hJX⟩, fun K hK hJK ↦ (hJmax K ⟨hK.1, hIJ.trans hJK, hK.2⟩ hJK).symm⟩
+    refine fun X _ I hI hIX ↦ zorn_subset_nonempty {Y | Indep Y ∧ Y ⊆ X} ?_ I ⟨hI, hIX⟩
+    refine fun Is hIs hchain _ ↦
+      ⟨⋃₀ Is, ⟨?_, sUnion_subset fun Y hY ↦ (hIs hY).2⟩, fun _ ↦ subset_sUnion_of_mem⟩
+    refine indep_compact _ fun J hJ hJfin ↦ ?_
+    have hchoose : ∀ e, e ∈ J → ∃ I, I ∈ Is ∧ (e : α) ∈ I := fun _ he ↦ mem_sUnion.1 <| hJ he
+    choose! f hf using hchoose
+    refine J.eq_empty_or_nonempty.elim (fun hJ ↦ hJ ▸ indep_empty) (fun hne ↦ ?_)
+    obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximal_wrt f _ hJfin hne
+    refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ ?_
+    obtain (hle | hle) := hchain.total (hf _ hxJ).1 (hf _ hyJ).1
+    · rw [hxmax _ hyJ hle]; exact (hf _ hyJ).2
+    exact hle (hf _ hyJ).2)
 
-      refine fun Is hIs hchain ⟨K, hK⟩ ↦ ⟨⋃₀ Is, ⟨?_,?_,?_⟩, fun _ ↦ subset_sUnion_of_mem⟩
-      · refine indep_compact _ fun J hJ hJfin ↦ ?_
-        have hchoose : ∀ e, e ∈ J → ∃ I, I ∈ Is ∧ (e : α) ∈ I := fun _ he ↦ mem_sUnion.1 <| hJ he
-        choose! f hf using hchoose
-        refine J.eq_empty_or_nonempty.elim (fun hJ ↦ hJ ▸ indep_empty) (fun hne ↦ ?_)
-        obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximal_wrt f _ hJfin hne
-        refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ ?_
-        obtain (hle | hle) := hchain.total (hf _ hxJ).1 (hf _ hyJ).1
-        · rw [hxmax _ hyJ hle]; exact (hf _ hyJ).2
-        exact hle (hf _ hyJ).2
-
-      · exact subset_sUnion_of_subset _ K (hIs hK).2.1 hK
-      exact sUnion_subset fun X hX ↦ (hIs hX).2.2)
   (subset_ground := subset_ground)
 
 @[simp] theorem ofFinitary_indep (E : Set α) (Indep : Set α → Prop)

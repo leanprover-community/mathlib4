@@ -19,8 +19,7 @@ abbrev moreServOpts : Array LeanOption := #[
 package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
-    ⟨`autoImplicit, false⟩,
-    ⟨`relaxedAutoImplicit, false⟩
+    ⟨`autoImplicit, false⟩
   ] ++ -- options that are used in `lake build`
     moreServOpts.map fun s => { s with name := `weak ++ s.name }
   -- These are additional settings which do not affect the lake hash,
@@ -83,8 +82,8 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
-/-- `lake exe lint_style` runs text-based style linters. -/
-lean_exe lint_style where
+/-- `lake exe lint-style` runs text-based style linters. -/
+lean_exe «lint-style» where
   srcDir := "scripts"
 
 /--
