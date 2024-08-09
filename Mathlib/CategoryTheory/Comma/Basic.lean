@@ -441,7 +441,7 @@ def toPUnitIdEquiv (L : A ⥤ Discrete PUnit) (R : Discrete PUnit ⥤ Discrete P
   (equivProd L _).trans (prod.rightUnitorEquivalence A)
 
 @[simp]
-def toPUnitIdEquiv_functor_iso {L : A ⥤ Discrete PUnit}
+theorem toPUnitIdEquiv_functor_iso {L : A ⥤ Discrete PUnit}
     {R : Discrete PUnit ⥤ Discrete PUnit} :
     (toPUnitIdEquiv L R).functor = fst L R :=
   rfl
@@ -454,7 +454,7 @@ def toIdPUnitEquiv (L : Discrete PUnit ⥤ Discrete PUnit) (R : B ⥤ Discrete P
   (equivProd _ R).trans (prod.leftUnitorEquivalence B)
 
 @[simp]
-def toIdPUnitEquiv_functor_iso {L : Discrete PUnit ⥤ Discrete PUnit}
+theorem toIdPUnitEquiv_functor_iso {L : Discrete PUnit ⥤ Discrete PUnit}
     {R : B ⥤ Discrete PUnit} :
     (toIdPUnitEquiv L R).functor = snd L R :=
   rfl
