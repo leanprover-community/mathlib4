@@ -6,7 +6,6 @@ Authors: Scott Morrison, Johan Commelin, Bhavik Mehta
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Products.Unitor
 
 /-!
