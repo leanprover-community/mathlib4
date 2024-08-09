@@ -284,7 +284,7 @@ protected def Mem (a : α) (s : Computation α) :=
   some a ∈ s.1
 
 instance : Membership α (Computation α) where
-  mem s a := Computation.Mem a s
+  mem a s := Computation.Mem a s
 
 theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
   cases' s with f al

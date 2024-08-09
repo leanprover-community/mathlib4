@@ -17,7 +17,8 @@ package mathlib where
 /-!
 ## Mathlib dependencies on upstream projects.
 -/
-require batteries from git "https://github.com/mattrobball/batteries"@"mrb/swap_mem_args"
+
+require "leanprover-community" / "batteries" @ "git#main"
 require "leanprover-community" / "Qq" @ "git#master"
 require "leanprover-community" / "aesop" @ "git#master"
 require "leanprover-community" / "proofwidgets" @ "git#v0.0.40"
