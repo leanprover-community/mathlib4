@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Emily Riehl
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Whiskering
+import Mathlib.CategoryTheory.HomCongr
 
 import Mathlib.Tactic.ApplyFun
 

@@ -138,7 +138,7 @@ infixl:25 " ≃ᵐ " => MeasurableEquiv
 
 namespace MeasurableEquiv
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] [MeasurableSpace δ]
+variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 theorem toEquiv_injective : Injective (toEquiv : α ≃ᵐ β → α ≃ β) := by
   rintro ⟨e₁, _, _⟩ ⟨e₂, _, _⟩ (rfl : e₁ = e₂)
@@ -327,6 +327,7 @@ def ofUniqueOfUnique (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [
   measurable_toFun := Subsingleton.measurable
   measurable_invFun := Subsingleton.measurable
 
+variable [MeasurableSpace δ] in
 /-- Products of equivalent measurable spaces are equivalent. -/
 def prodCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α × γ ≃ᵐ β × δ where
   toEquiv := .prodCongr ab.toEquiv cd.toEquiv
@@ -349,6 +350,7 @@ def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   measurable_toFun := measurable_fst.fst.prod_mk <| measurable_fst.snd.prod_mk measurable_snd
   measurable_invFun := (measurable_fst.prod_mk measurable_snd.fst).prod_mk measurable_snd.snd
 
+variable [MeasurableSpace δ] in
 /-- Sums of measurable spaces are symmetric. -/
 def sumCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α ⊕ γ ≃ᵐ β ⊕ δ where
   toEquiv := .sumCongr ab.toEquiv cd.toEquiv
@@ -621,8 +623,6 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
     (hg : Measurable g) (H : LeftInverse g f) : MeasurableEmbedding f :=
   of_measurable_inverse_on_range hf₁ hf₂ (hg.comp measurable_subtype_coe) H
 
-open scoped Classical
-
 /-- The **measurable Schröder-Bernstein Theorem**: given measurable embeddings
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`. -/
 noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : MeasurableEmbedding f)
@@ -633,6 +633,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   -- However, we must find this fixed point manually instead of invoking Knaster-Tarski
   -- in order to make sure it is measurable.
   suffices Σ'A : Set α, MeasurableSet A ∧ F A = A by
+    classical
     rcases this with ⟨A, Ameas, Afp⟩
     let B := f '' A
     have Bmeas : MeasurableSet B := hf.measurableSet_image' Ameas

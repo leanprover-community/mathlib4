@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Range
 import Mathlib.Data.Bool.Basic
+
 /-!
 # Intervals in ℕ
 
