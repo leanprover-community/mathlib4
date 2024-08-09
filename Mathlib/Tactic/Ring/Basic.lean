@@ -136,7 +136,6 @@ end
 
 
 -- In this file, we would like to use multi-character auto-implicits.
-set_option relaxedAutoImplicit true
 set_option autoImplicit true
 
 mutual -- partial only to speed up compilation
@@ -212,7 +211,6 @@ partial def ExSum.cast {a : Q($arg)} : ExSum sα a → Σ a, ExSum sβ a
 end
 
 set_option autoImplicit false
-set_option relaxedAutoImplicit false
 
 variable {u : Lean.Level}
 

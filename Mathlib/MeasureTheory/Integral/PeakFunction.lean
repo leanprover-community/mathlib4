@@ -87,8 +87,6 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
 alias integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt :=
   integrableOn_peak_smul_of_integrableOn_of_tendsto
 
-variable [CompleteSpace E]
-
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
 has a limit `a` at `x₀`, then `∫ φᵢ • g` converges to `a`.
@@ -181,6 +179,8 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
 @[deprecated (since := "2024-02-20")]
 alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
   tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
+
+variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
