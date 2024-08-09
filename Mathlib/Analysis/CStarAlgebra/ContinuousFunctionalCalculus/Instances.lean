@@ -3,11 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Restrict
-import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Basic
-import Mathlib.Analysis.CstarAlgebra.Spectrum
-import Mathlib.Analysis.CstarAlgebra.Unitization
-import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+import Mathlib.Analysis.CStarAlgebra.Spectrum
+import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 
 /-! # Instances of the continuous functional calculus
 
@@ -23,7 +23,7 @@ import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unique
   elements in an `ℝ`-algebra with a continuous functional calculus for selfadjoint elements,
   where every element has compact spectrum, and where nonnegative elements have nonnegative
   spectrum. In particular, this includes unital C⋆-algebras over `ℝ`.
-* `CstarRing.instNonnegSpectrumClass`: In a unital C⋆-algebra over `ℂ` which is also a
+* `CStarRing.instNonnegSpectrumClass`: In a unital C⋆-algebra over `ℂ` which is also a
   `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
 
 ## Tags
@@ -42,8 +42,8 @@ local notation "σ" => spectrum
 
 section RCLike
 
-variable {𝕜 A : Type*} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
-variable [CompleteSpace A] [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
+variable {𝕜 A : Type*} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A]
+variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 variable [StarModule 𝕜 A] {p : A → Prop} {p₁ : Unitization 𝕜 A → Prop}
 
 local postfix:max "⁺¹" => Unitization 𝕜
@@ -99,6 +99,8 @@ lemma spec_cfcₙAux (f : C(σₙ 𝕜 a, 𝕜)₀) : σ 𝕜 (cfcₙAux hp₁ a
   · exact ⟨⟨x, (Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm ▸ x.property⟩, rfl⟩
   · exact ⟨⟨x, Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a ▸ x.property⟩, rfl⟩
 
+variable [CompleteSpace A]
+
 lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
     cfcₙAux hp₁ a ha f ∈ NonUnitalStarAlgHom.range (Unitization.inrNonUnitalStarAlgHom 𝕜 A) := by
   have h₁ := (closedEmbedding_cfcₙAux hp₁ a ha).continuous.range_subset_closure_image_dense
@@ -115,6 +117,8 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
     simp only [NonUnitalStarAlgHom.coe_range]
     convert IsClosed.preimage this (isClosed_singleton (x := 0))
     aesop
+
+variable [CStarRing A]
 
 open Unitization NonUnitalStarAlgHom in
 theorem RCLike.nonUnitalContinuousFunctionalCalculus :
@@ -147,14 +151,19 @@ end RCLike
 section Normal
 
 instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [NormedRing A] [StarRing A]
-    [CstarRing A] [CompleteSpace A] [NormedAlgebra ℂ A] [StarModule ℂ A] :
+    [CStarRing A] [CompleteSpace A] [NormedAlgebra ℂ A] [StarModule ℂ A] :
     ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) where
   predicate_zero := isStarNormal_zero
   exists_cfc_of_predicate a ha := by
     refine ⟨(elementalStarAlgebra ℂ a).subtype.comp <| continuousFunctionalCalculus a,
       ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
-    case hom_closedEmbedding => exact Isometry.closedEmbedding <|
-      isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+    case hom_closedEmbedding =>
+      -- note: Lean should find these for `StarAlgEquiv.isometry`, but it doesn't and so we
+      -- provide them manually.
+      have : SMulCommClass ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := Algebra.to_smulCommClass (A := C(σ ℂ a, ℂ))
+      have : IsScalarTower ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := IsScalarTower.right (A := C(σ ℂ a, ℂ))
+      exact Isometry.closedEmbedding <|
+        isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     case hom_id => exact congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a
     case hom_map_spectrum =>
       intro f
@@ -164,7 +173,7 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [NormedRing A
     case predicate_hom => exact fun f ↦ ⟨by rw [← map_star]; exact Commute.all (star f) f |>.map _⟩
 
 instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*} [NonUnitalNormedRing A]
-    [StarRing A] [CstarRing A] [CompleteSpace A] [NormedSpace ℂ A] [IsScalarTower ℂ A A]
+    [StarRing A] [CStarRing A] [CompleteSpace A] [NormedSpace ℂ A] [IsScalarTower ℂ A A]
     [SMulCommClass ℂ A A] [StarModule ℂ A] :
     NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) :=
   RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
@@ -178,7 +187,7 @@ end Normal
 section SelfAdjointNonUnital
 
 variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module ℂ A]
-  [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
+  [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
   [NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
 
 /-- An element in a non-unital C⋆-algebra is selfadjoint if and only if it is normal and its
@@ -219,7 +228,7 @@ section SelfAdjointUnital
 
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
-  [StarModule ℂ A] [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
+  [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
 
 /-
 TODO: REMOVE
@@ -288,7 +297,7 @@ lemma CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts {A : Type*} [No
 variable {A : Type*} [NonUnitalRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [TopologicalSpace A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
 variable [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-variable [NonnegSpectrumClass ℝ A] [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 lemma nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts {a : A} :
     0 ≤ a ↔ IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal := by
@@ -328,7 +337,7 @@ lemma CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts {A : Type*} [Ring A]
 
 variable {A : Type*} [Ring A] [PartialOrder A] [StarRing A] [StarOrderedRing A] [TopologicalSpace A]
 variable [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-variable [NonnegSpectrumClass ℝ A] [UniqueContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 -- TODO: REMOVE (duplicate; see comment on `isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts`)
 lemma nonneg_iff_isSelfAdjoint_and_spectrumRestricts {a : A} :
@@ -355,7 +364,7 @@ section SpectrumRestricts
 
 open NNReal ENNReal
 
-variable {A : Type*} [NormedRing A] [StarRing A] [CstarRing A] [CompleteSpace A]
+variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
 variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 
 lemma SpectrumRestricts.nnreal_iff_nnnorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjoint a) (ht : ‖a‖₊ ≤ t) :
@@ -476,10 +485,10 @@ end SpectrumRestricts
 section NonnegSpectrumClass
 
 variable {A : Type*} [NormedRing A] [CompleteSpace A]
-variable [PartialOrder A] [StarRing A] [StarOrderedRing A] [CstarRing A]
+variable [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A]
 variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 
-instance CstarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
+instance CStarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
   .of_spectrum_nonneg fun a ha ↦ by
     rw [StarOrderedRing.nonneg_iff] at ha
     induction ha using AddSubmonoid.closure_induction' with
@@ -495,7 +504,7 @@ instance CstarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
       exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
 
 open ComplexOrder in
-instance CstarRing.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
+instance CStarRing.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x := by
     rw [mem_quasispectrum_iff]
     refine (Or.elim · ge_of_eq fun hx ↦ ?_)
@@ -506,7 +515,7 @@ end NonnegSpectrumClass
 
 section SpectralOrder
 
-variable (A : Type*) [NormedRing A] [CompleteSpace A] [StarRing A] [CstarRing A]
+variable (A : Type*) [NormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
 variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 
 /-- The partial order on a unital C⋆-algebra defined by `x ≤ y` if and only if `y - x` is
@@ -515,7 +524,7 @@ selfadjoint and has nonnegative spectrum.
 This is not declared as an instance because one may already have a partial order with better
 definitional properties. However, it can be useful to invoke this as an instance in proofs. -/
 @[reducible]
-def CstarRing.spectralOrder : PartialOrder A where
+def CStarRing.spectralOrder : PartialOrder A where
   le x y := IsSelfAdjoint (y - x) ∧ SpectrumRestricts (y - x) ContinuousMap.realToNNReal
   le_refl := by
     simp only [sub_self, IsSelfAdjoint.zero, true_and, forall_const]
@@ -528,9 +537,9 @@ def CstarRing.spectralOrder : PartialOrder A where
   le_trans x y z hxy hyz :=
     ⟨by simpa using hyz.1.add hxy.1, by simpa using hyz.2.nnreal_add hyz.1 hxy.1 hxy.2⟩
 
-/-- The `CstarRing.spectralOrder` on a unital C⋆-algebra is a `StarOrderedRing`. -/
-lemma CstarRing.spectralOrderedRing : @StarOrderedRing A _ (CstarRing.spectralOrder A) _ :=
-  let _ := CstarRing.spectralOrder A
+/-- The `CStarRing.spectralOrder` on a unital C⋆-algebra is a `StarOrderedRing`. -/
+lemma CStarRing.spectralOrderedRing : @StarOrderedRing A _ (CStarRing.spectralOrder A) _ :=
+  let _ := CStarRing.spectralOrder A
   { le_iff := by
       intro x y
       constructor
@@ -559,15 +568,15 @@ end SpectralOrder
 section NonnegSpectrumClass
 
 variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
-variable [PartialOrder A] [StarRing A] [StarOrderedRing A] [CstarRing A]
+variable [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A]
 variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
 
-instance CstarRing.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A where
+instance CStarRing.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A where
   quasispectrum_nonneg_of_nonneg a ha := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' _ ℂ]
     -- should this actually be an instance on the `Unitization`? (probably scoped)
-    let _ := CstarRing.spectralOrder (Unitization ℂ A)
-    have := CstarRing.spectralOrderedRing (Unitization ℂ A)
+    let _ := CStarRing.spectralOrder (Unitization ℂ A)
+    have := CStarRing.spectralOrderedRing (Unitization ℂ A)
     apply spectrum_nonneg_of_nonneg
     rw [StarOrderedRing.nonneg_iff] at ha ⊢
     have := AddSubmonoid.mem_map_of_mem (Unitization.inrNonUnitalStarAlgHom ℂ A) ha
@@ -584,7 +593,7 @@ end NonnegSpectrumClass
 section RealEqComplex
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
-  [StarModule ℂ A] [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
+  [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
   [UniqueContinuousFunctionalCalculus ℝ A]
   [UniqueContinuousFunctionalCalculus ℂ A]
@@ -609,7 +618,7 @@ section NNRealEqReal
 open NNReal
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
-  [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [ContinuousStar A] [StarModule ℝ A]
+  [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A]
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
   [ContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)] [UniqueContinuousFunctionalCalculus ℝ A]
   [NonnegSpectrumClass ℝ A]
