@@ -251,9 +251,9 @@ variable {α ι: Type*}
 open Real
 
 lemma Real.HasSum_rexp_HasProd  (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
-    (hf : ∀ x : α,  Summable fun n => log ((f n x))) (a : α) :
+    (hf : ∀ x : α, HasSum (fun n => log ((f n x))) (∑' i, log (f i x))) (a : α) :
        HasProd (fun b ↦ f b a) ((rexp ∘ fun a ↦ ∑' (n : ι), log (f n a)) a) := by
-  apply ((hf a).hasSum.rexp).congr
+  apply ((hf a).rexp).congr
   intro _
   congr
   exact funext fun x ↦ exp_log (hfn a x)
@@ -266,14 +266,14 @@ lemma Real.rexp_tsum_eq_tprod  (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x
         (fun a : α => ∏' n : ι, ((f n a))) := by
   ext a
   apply (HasProd.tprod_eq ?_).symm
-  apply Real.HasSum_rexp_HasProd f hfn hf a
+  apply Real.HasSum_rexp_HasProd f hfn fun a => (hf a).hasSum
 
 open Complex
 
-lemma Complex.Summable_cexp_HasProd  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
-    (hf : ∀ x : α,  Summable fun n => log ((f n x))) (a : α) :
+lemma Complex.HasSum_cexp_HasProd  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
+    (hf : ∀ x : α, HasSum (fun n => log ((f n x))) (∑' i, log (f i x))) (a : α) :
        HasProd (fun b ↦ f b a) ((cexp ∘ fun a ↦ ∑' (n : ι), log (f n a)) a) := by
-  apply ((hf a).hasSum.cexp).congr
+  apply ((hf a).cexp).congr
   intro _
   congr
   exact funext fun x ↦ exp_log (hfn a x)
@@ -286,7 +286,7 @@ lemma Complex.cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, f n x 
         (fun a : α => ∏' n : ι, ((f n a))) := by
   ext a
   apply (HasProd.tprod_eq ?_).symm
-  apply Complex.Summable_cexp_HasProd f hfn hf a
+  apply Complex.HasSum_cexp_HasProd f hfn fun a => (hf a).hasSum
 
 
 
