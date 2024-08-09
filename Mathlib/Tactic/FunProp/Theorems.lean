@@ -105,10 +105,10 @@ structure LambdaTheorems where
 def LambdaTheorem.getProof (thm : LambdaTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
-/-- Enviroment extension storing lambda theorems. -/
+/-- Environment extension storing lambda theorems. -/
 abbrev LambdaTheoremsExt := SimpleScopedEnvExtension LambdaTheorem LambdaTheorems
 
-/-- Enviroment extension storing all lambda theorems. -/
+/-- Environment extension storing all lambda theorems. -/
 initialize lambdaTheoremsExt : LambdaTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%

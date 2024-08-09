@@ -74,7 +74,7 @@ structure Config where
   smoothenss.
 
   Setting `maxTransitionDepth` to zero will disable all transition theorems. This can be very
-  usefull when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
+  useful when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
   `simp`.
   -/
   maxTransitionDepth := 1
@@ -109,7 +109,7 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
   {ctx with transitionDepth := ctx.transitionDepth + 1}
 
 /-- Monad to run `fun_prop` tactic in. -/
-abbrev FunPropM := ReaderT FunProp.Context $ StateT FunProp.State MetaM
+abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
 
 /-- Result of `funProp`, it is a proof of function property `P f` -/
 structure Result where
@@ -139,8 +139,8 @@ def withIncreasedTransitionDepth {α} (go : FunPropM (Option α)) : FunPropM (Op
   let newDepth := (← read).transitionDepth + 1
   if newDepth > maxDepth then
     trace[Meta.Tactic.fun_prop]
-   "maximum transition depth({maxDepth}) reached
-    to increase the maximum depth please run `fun_prop (config:=\{maxTransitionDepth:={newDepth}})`"
+   "maximum transition depth ({maxDepth}) reached
+    to increase the maximum depth please run `fun_prop (config := \{maxTransitionDepth := {newDepth}})`"
     return none
   else
     withReader (fun s => {s with transitionDepth := newDepth}) go
@@ -148,10 +148,10 @@ def withIncreasedTransitionDepth {α} (go : FunPropM (Option α)) : FunPropM (Op
 /-- Log error message that will displayed to the user at the end.
 
 Messages are logged only when `transitionDepth = 0` i.e. when `fun_prop` is **not** trying to infer
-function property like consinuity from another property like differentiability.
-Them main reason is that if user forgets to add a continuity theorem for function `foo` then
-`fun_prop` should report that there is missing continuity theorem for `foo`. If we would log
-messages `transitionDepth > 0` then user will messages saying that thre is a missing theorem for
+function property like continuity from another property like differentiability.
+The main reason is that if the user forgets to add a continuity theorem for function `foo` then
+`fun_prop` should report that there is a continuity theorem for `foo` missing. If we would log
+messages `transitionDepth > 0` then user will see messages saying that there is a missing theorem for
 differentiability, smoothness, ... for `foo`.  -/
 def logError (msg : String) : FunPropM Unit := do
   if (← read).transitionDepth = 0 then
