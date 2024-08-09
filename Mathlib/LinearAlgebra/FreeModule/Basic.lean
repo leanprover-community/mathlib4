@@ -125,13 +125,13 @@ instance prod [Module.Free R N] : Module.Free R (M × N) :=
   of_basis <| (chooseBasis R M).prod (chooseBasis R N)
 
 /-- The product of finitely many free modules is free. -/
-instance pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
+instance pi (M : ι → Type*) [Fintype ι] [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
     [∀ i : ι, Module.Free R (M i)] : Module.Free R (∀ i, M i) :=
   let ⟨_⟩ := nonempty_fintype ι
   of_basis <| Pi.basis fun i => chooseBasis R (M i)
 
 /-- The module of finite matrices is free. -/
-instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n M) :=
+instance matrix {m n : Type*} [Fintype m] [Fintype n] : Module.Free R (Matrix m n M) :=
   Module.Free.pi R _
 
 instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
@@ -140,7 +140,7 @@ variable (ι)
 
 /-- The product of finitely many free modules is free (non-dependent version to help with typeclass
 search). -/
-instance function [Finite ι] : Module.Free R (ι → M) :=
+instance function [Fintype ι] : Module.Free R (ι → M) :=
   Free.pi _ _
 
 instance finsupp : Module.Free R (ι →₀ M) :=

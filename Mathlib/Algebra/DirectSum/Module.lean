@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.RingTheory.Finiteness
 
 /-!
 # Direct sum of modules
@@ -49,6 +50,12 @@ instance {S : Type*} [Semiring S] [SMul R S] [∀ i, Module S (M i)] [∀ i, IsS
 
 instance [∀ i, Module Rᵐᵒᵖ (M i)] [∀ i, IsCentralScalar R (M i)] : IsCentralScalar R (⨁ i, M i) :=
   DFinsupp.isCentralScalar
+
+open DFinsupp in
+instance [Fintype ι] [∀ i, Module.Finite R (M i)] : Module.Finite R (⨁ i, M i) :=
+  have : (Π₀ (i : ι), M i) ≃ₗ[R] ((i : ι) → M i) :=
+    Equiv.toLinearEquiv equivFunOnFintype (by constructor <;> simp [equivFunOnFintype])
+  Module.Finite.equiv this.symm
 
 theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :=
   DFinsupp.smul_apply _ _ _
