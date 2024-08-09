@@ -69,6 +69,7 @@ theorem dvd_of_le_of_aleph0_le (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) 
 
 @[simp]
 theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
+  clear b m n
   refine ⟨(aleph0_pos.trans_le ha).ne', ?_, fun b c hbc => ?_⟩
   · rw [isUnit_iff]
     exact (one_lt_aleph0.trans_le ha).ne'
@@ -102,6 +103,7 @@ theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
 
 @[simp]
 theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
+  clear a b m
   simp only [Prime, Nat.prime_iff]
   refine and_congr (by simp) (and_congr ?_ ⟨fun h b c hbc => ?_, fun h b c hbc => ?_⟩)
   · simp only [isUnit_iff, Nat.isUnit_iff]
