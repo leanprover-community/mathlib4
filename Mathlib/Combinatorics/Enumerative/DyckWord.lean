@@ -48,32 +48,37 @@ inductive DyckStep
   | D : DyckStep
   deriving Inhabited, DecidableEq
 
-open DyckStep
+/-- Named in analogy to `Bool.dichotomy`. -/
+lemma DyckStep.dichotomy (s : DyckStep) : s = U ∨ s = D := by cases s <;> tauto
 
-lemma dyckStep_cases (s : DyckStep) : s = U ∨ s = D := by cases' s <;> tauto
+open DyckStep
 
 /-- A Dyck word is a list of `DyckStep`s with as many `U`s as `D`s and with every prefix having
 at least as many `U`s as `D`s. -/
 @[ext]
 structure DyckWord where
   /-- The underlying list -/
-  l : List DyckStep
+  toList : List DyckStep
   /-- There are as many `U`s as `D`s -/
-  bal : l.count U = l.count D
+  count_U_eq_count_D : toList.count U = toList.count D
   /-- Each prefix has as least as many `U`s as `D`s -/
-  nonneg i : (l.take i).count D ≤ (l.take i).count U
+  count_D_le_count_U i : (toList.take i).count D ≤ (toList.take i).count U
   deriving DecidableEq
 
+attribute [coe] DyckWord.toList
+instance : Coe DyckWord (List DyckStep) := ⟨DyckWord.toList⟩
+
 instance : Add DyckWord where
-  add p q := ⟨p.l ++ q.l, by simp only [count_append, p.bal, q.bal], by
+  add p q := ⟨p ++ q, by
+    simp only [count_append, p.count_U_eq_count_D, q.count_U_eq_count_D], by
     simp only [take_append_eq_append_take, count_append]
-    exact fun _ ↦ add_le_add (p.nonneg _) (q.nonneg _)⟩
+    exact fun _ ↦ add_le_add (p.count_D_le_count_U _) (q.count_D_le_count_U _)⟩
 
 instance : Zero DyckWord := ⟨[], by simp, by simp⟩
 
 /-- Dyck words form an additive monoid under concatenation, with the empty word as 0. -/
 instance : AddMonoid DyckWord where
-  add_zero p := by ext1; exact append_right_eq_self.mpr rfl
+  add_zero p := by ext1; exact append_nil _
   zero_add p := by ext1; rfl
   add_assoc p q r := by ext1; apply append_assoc
   nsmul := nsmulRec
@@ -82,116 +87,120 @@ namespace DyckWord
 
 variable (p q : DyckWord)
 
-lemma eq_zero_iff : p = 0 ↔ p.l = [] := by rw [DyckWord.ext_iff]; rfl
+lemma toList_eq_nil : p.toList = [] ↔ p = 0 := by rw [DyckWord.ext_iff]; rfl
 
 /-- The first element of a nonempty Dyck word is `U`. -/
-lemma head_eq_U (h : p.l ≠ []) : p.l.head h = U := by
+lemma head_eq_U (h : p.toList ≠ []) : p.toList.head h = U := by
   rcases p with - | s; · tauto
   rw [head_cons]
   by_contra f
   rename_i _ nonneg
-  simpa [(dyckStep_cases _).resolve_left f] using nonneg 1
+  simpa [s.dichotomy.resolve_left f] using nonneg 1
 
 /-- The last element of a nonempty Dyck word is `D`. -/
-lemma getLast_eq_D (h : p.l ≠ []) : p.l.getLast h = D := by
-  by_contra f; have s := p.bal
-  rw [← dropLast_append_getLast h, (dyckStep_cases _).resolve_right f] at s
+lemma getLast_eq_D (h : p.toList ≠ []) : p.toList.getLast h = D := by
+  by_contra f; have s := p.count_U_eq_count_D
+  rw [← dropLast_append_getLast h, (dichotomy _).resolve_right f] at s
   simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, ite_false] at s
-  have := p.nonneg p.l.length.pred; omega
+  have := p.count_D_le_count_U (p.toList.length - 1); omega
 
-lemma cons_tail_dropLast_concat (h : p.l ≠ []) : U :: p.l.dropLast.tail ++ [D] = p.l := by
-  have : p.l.dropLast.take 1 = [p.l.head h] := by
+lemma cons_tail_dropLast_concat (h : p.toList ≠ []) :
+    U :: p.toList.dropLast.tail ++ [D] = p := by
+  have : p.toList.dropLast.take 1 = [p.toList.head h] := by
     rcases p with - | ⟨s, ⟨- | ⟨t, r⟩⟩⟩
     · tauto
     · rename_i bal _
       cases s <;> simp at bal
     · tauto
-  nth_rw 2 [← p.l.dropLast_append_getLast h, ← p.l.dropLast.take_append_drop 1]
+  nth_rw 2 [← p.toList.dropLast_append_getLast h, ← p.toList.dropLast.take_append_drop 1]
   rw [p.getLast_eq_D, drop_one, this, p.head_eq_U]
   rfl
 
 /-- Prefix of a Dyck word as a Dyck word, given that the count of `U`s and `D`s in it are equal. -/
-def take (i : ℕ) (hi : (p.l.take i).count U = (p.l.take i).count D) : DyckWord where
-  l := p.l.take i
-  bal := hi
-  nonneg k := by rw [take_take]; exact p.nonneg (min k i)
+def take (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) : DyckWord where
+  toList := p.toList.take i
+  count_U_eq_count_D := hi
+  count_D_le_count_U k := by rw [take_take]; exact p.count_D_le_count_U (min k i)
 
 /-- Suffix of a Dyck word as a Dyck word, given that the count of `U`s and `D`s in the prefix
 are equal. -/
-def drop (i : ℕ) (hi : (p.l.take i).count U = (p.l.take i).count D) : DyckWord where
-  l := p.l.drop i
-  bal := by
-    have := p.bal
-    rw [← take_append_drop i p.l, count_append, count_append] at this
+def drop (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) : DyckWord where
+  toList := p.toList.drop i
+  count_U_eq_count_D := by
+    have := p.count_U_eq_count_D
+    rw [← take_append_drop i p.toList, count_append, count_append] at this
     omega
-  nonneg k := by
+  count_D_le_count_U k := by
     rw [show i = min i (i + k) by omega, ← take_take] at hi
-    rw [take_drop, ← add_le_add_iff_left (((p.l.take (i + k)).take i).count U),
+    rw [take_drop, ← add_le_add_iff_left (((p.toList.take (i + k)).take i).count U),
       ← count_append, hi, ← count_append, take_append_drop]
-    exact p.nonneg _
+    exact p.count_D_le_count_U _
 
 /-- Nest `p` in one pair of brackets, i.e. `x` becomes `(x)`. -/
 def nest : DyckWord where
-  l := [U] ++ p.l ++ [D]
-  bal := by simp [p.bal]
-  nonneg i := by
+  toList := [U] ++ p ++ [D]
+  count_U_eq_count_D := by simp [p.count_U_eq_count_D]
+  count_D_le_count_U i := by
     simp only [take_append_eq_append_take, count_append]
     rw [← add_rotate (count D _), ← add_rotate (count U _)]
-    apply add_le_add _ (p.nonneg _)
-    cases' i.eq_zero_or_pos with hi hi; · simp [hi]
-    rw [take_all_of_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
+    apply add_le_add _ (p.count_D_le_count_U _)
+    rcases i.eq_zero_or_pos with hi | hi; · simp [hi]
+    rw [take_of_length_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
     simp only [ite_true, ite_false]
     rw [add_comm]
     exact add_le_add (zero_le _) ((count_le_length _ _).trans (by simp))
 
 /-- Denest `p`, i.e. `(x)` becomes `x`, given that `p` is strictly positive in its interior
 (this ensures that `x` is a Dyck word). -/
-def denest (h : p.l ≠ []) (pos : ∀ i, 0 < i → i < p.l.length →
-    (p.l.take i).count D < (p.l.take i).count U) : DyckWord where
-  l := p.l.dropLast.tail
-  bal := by
-    have := p.bal
+def denest (h : p.toList ≠ []) (pos : ∀ i, 0 < i → i < p.toList.length →
+    (p.toList.take i).count D < (p.toList.take i).count U) : DyckWord where
+  toList := p.toList.dropLast.tail
+  count_U_eq_count_D := by
+    have := p.count_U_eq_count_D
     rw [← p.cons_tail_dropLast_concat h, count_append, count_cons] at this
     simpa using this
-  nonneg i := by
-    have l1 : p.l.take 1 = [p.l.head h] := by rcases p with - | - <;> tauto
-    have l3 : p.l.length.pred = p.l.length.pred.pred + 1 := by
+  count_D_le_count_U i := by
+    have l1 : p.toList.take 1 = [p.toList.head h] := by rcases p with - | - <;> tauto
+    have l3 : p.toList.length - 1 = p.toList.length - 1 - 1 + 1 := by
       rcases p with - | ⟨s, ⟨- | ⟨t, r⟩⟩⟩
       · tauto
       · rename_i bal _
         cases s <;> simp at bal
       · tauto
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
-    have ub : min (1 + i) p.l.length.pred < p.l.length :=
-      (min_le_right _ p.l.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr h).ne'))
-    have lb : 0 < min (1 + i) p.l.length.pred := by
+    have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
+      (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr h).ne'))
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by
       rw [l3, add_comm, min_add_add_right]; omega
     have eq := pos _ lb ub
-    set j := min (1 + i) p.l.length.pred
-    rw [← (p.l.take j).take_append_drop 1, count_append, count_append, take_take,
+    set j := min (1 + i) (p.toList.length - 1)
+    rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
       min_eq_left (by omega), l1, p.head_eq_U] at eq
     simp only [count_singleton', ite_true, ite_false] at eq
     omega
 
-lemma denest_nest (h : p.l ≠ []) (pos : ∀ i, 0 < i → i < p.l.length →
-    (p.l.take i).count D < (p.l.take i).count U) : (p.denest h pos).nest = p := by
+lemma denest_nest (h : p.toList ≠ []) (pos : ∀ i, 0 < i → i < p.toList.length →
+    (p.toList.take i).count D < (p.toList.take i).count U) : (p.denest h pos).nest = p := by
   simpa [DyckWord.ext_iff] using p.cons_tail_dropLast_concat h
 
 section Semilength
 
 /-- The semilength of a Dyck word is half of the number of `DyckStep`s in it, or equivalently
 its number of `U`s. -/
-def semilength : ℕ := p.l.count U
+def semilength : ℕ := p.toList.count U
 
-@[simp] lemma semilength_zero : semilength 0 = 0 := by rfl
+@[simp] lemma semilength_zero : semilength 0 = 0 := rfl
 @[simp] lemma semilength_add : (p + q).semilength = p.semilength + q.semilength := count_append ..
 @[simp] lemma semilength_nest : p.nest.semilength = p.semilength + 1 := by simp [semilength, nest]
 
+lemma semilength_eq_count_D : p.semilength = p.toList.count D := by
+  rw [← count_U_eq_count_D]; rfl
+
 @[simp]
-lemma two_mul_semilength_eq_length : 2 * p.semilength = p.l.length := by
-  nth_rw 1 [two_mul, semilength, p.bal, semilength]
-  convert (p.l.length_eq_countP_add_countP (· == D)).symm
-  rw [count]; congr!; rename_i s; cases' s <;> tauto
+lemma two_mul_semilength_eq_length : 2 * p.semilength = p.toList.length := by
+  nth_rw 1 [two_mul, semilength, p.count_U_eq_count_D, semilength]
+  convert (p.toList.length_eq_countP_add_countP (· == D)).symm
+  rw [count]; congr!; rename_i s; cases s <;> tauto
 
 end Semilength
 
@@ -199,11 +208,12 @@ section FirstReturn
 
 /-- `p.firstReturn` is 0 if `p = 0` and the index of the `D` matching the initial `U` otherwise. -/
 def firstReturn : ℕ :=
-  (range p.l.length).findIdx (fun i ↦ (p.l.take (i + 1)).count U = (p.l.take (i + 1)).count D)
+  (range p.toList.length).findIdx (fun i ↦
+    (p.toList.take (i + 1)).count U = (p.toList.take (i + 1)).count D)
 
 @[simp] lemma firstReturn_zero : firstReturn 0 = 0 := rfl
 
-lemma firstReturn_pos (h : p.l ≠ []) : 0 < p.firstReturn := by
+lemma firstReturn_pos (h : p.toList ≠ []) : 0 < p.firstReturn := by
   by_contra f
   replace f : p.firstReturn = 0 := by omega
   rw [firstReturn, findIdx_eq (by rw [length_range]; exact length_pos.mpr h)] at f
@@ -211,30 +221,31 @@ lemma firstReturn_pos (h : p.l ≠ []) : 0 < p.firstReturn := by
   rw [← p.cons_tail_dropLast_concat h] at f
   simp at f
 
-lemma firstReturn_lt_length (h : p.l ≠ []) : p.firstReturn < p.l.length := by
+lemma firstReturn_lt_length (h : p.toList ≠ []) : p.firstReturn < p.toList.length := by
   have lp := length_pos_of_ne_nil h
-  rw [← length_range p.l.length]
+  rw [← length_range p.toList.length]
   apply findIdx_lt_length_of_exists
   simp only [mem_range, decide_eq_true_eq]
-  use p.l.length - 1
-  exact ⟨by omega, by rw [Nat.sub_add_cancel lp, take_all_of_le (le_refl _), p.bal]⟩
+  use p.toList.length - 1
+  exact ⟨by omega, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
+    p.count_U_eq_count_D]⟩
 
-lemma count_eq_count_of_take_firstReturn_add_one (h : p.l ≠ []) :
-    (p.l.take (p.firstReturn + 1)).count U = (p.l.take (p.firstReturn + 1)).count D := by
-  have := findIdx_get (w := (length_range p.l.length).symm ▸ p.firstReturn_lt_length h)
+lemma count_eq_count_of_take_firstReturn_add_one (h : p.toList ≠ []) :
+    (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
+  have := findIdx_get (w := (length_range p.toList.length).symm ▸ p.firstReturn_lt_length h)
   simpa using this
 
 lemma count_lt_count_of_lt_firstReturn (i : ℕ) (hi : i < p.firstReturn) :
-    (p.l.take (i + 1)).count D < (p.l.take (i + 1)).count U := by
+    (p.toList.take (i + 1)).count D < (p.toList.take (i + 1)).count U := by
   have ne := not_of_lt_findIdx hi
   rw [decide_eq_true_eq, ← ne_eq, get_eq_getElem, getElem_range] at ne
-  exact lt_of_le_of_ne (p.nonneg (i + 1)) ne.symm
+  exact lt_of_le_of_ne (p.count_D_le_count_U (i + 1)) ne.symm
 
 @[simp, nolint unusedHavesSuffices]
 lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p.firstReturn := by
   split_ifs with h; · simp [h]
-  rw [eq_zero_iff, ← ne_eq] at h
-  have u : (p + q).l = p.l ++ q.l := rfl
+  rw [← toList_eq_nil, ← ne_eq] at h
+  have u : (p + q).toList = p.toList ++ q.toList := rfl
   have v := p.firstReturn_lt_length h
   rw [firstReturn, findIdx_eq]
   swap
@@ -242,36 +253,39 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
     exact Nat.lt_add_right _ (p.firstReturn_lt_length h)
   · simp_rw [get_eq_getElem, getElem_range, u, decide_eq_true_eq]
     constructor
-    · rw [take_append_eq_append_take (l₂ := q.l), show p.firstReturn + 1 - p.l.length = 0 by omega,
+    · rw [take_append_eq_append_take (l₂ := q.toList),
+        show p.firstReturn + 1 - p.toList.length = 0 by omega,
         take_zero, append_nil, p.count_eq_count_of_take_firstReturn_add_one h]
     · intro j hj
-      rw [take_append_eq_append_take, show j + 1 - p.l.length = 0 by omega, take_zero, append_nil]
+      rw [take_append_eq_append_take, show j + 1 - p.toList.length = 0 by omega,
+        take_zero, append_nil]
       have := p.count_lt_count_of_lt_firstReturn j hj
-      have := p.nonneg j
+      have := p.count_D_le_count_U j
       omega
 
 @[simp]
-lemma firstReturn_nest : p.nest.firstReturn = p.l.length + 1 := by
-  have u : p.nest.l = U :: p.l ++ [D] := rfl
+lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
+  have u : p.nest.toList = U :: p.toList ++ [D] := rfl
   rw [firstReturn, findIdx_eq]
   swap
   · simp_rw [length_range, u, length_append, length_cons]
     apply Nat.lt.base
   · simp_rw [get_eq_getElem, getElem_range, u, decide_eq_true_eq]
     constructor
-    · rw [take_all_of_le (by simp), ← u, p.nest.bal]
+    · rw [take_of_length_le (by simp), ← u, p.nest.count_U_eq_count_D]
     · intro j hj
-      simp_rw [cons_append, take_cons, count_cons, ite_true, ite_false, take_append_eq_append_take,
-        show j - p.l.length = 0 by omega, take_zero, append_nil]
-      have := p.nonneg j
+      simp_rw [cons_append, take_cons, count_cons, beq_self_eq_true, ite_true,
+        beq_iff_eq, ite_false, take_append_eq_append_take,
+        show j - p.toList.length = 0 by omega, take_zero, append_nil]
+      have := p.count_D_le_count_U j
       omega
 
 /-- The right part of the Dyck word decomposition. -/
-def rightPart (h : p.l ≠ []) : DyckWord :=
+def rightPart (h : p.toList ≠ []) : DyckWord :=
   p.drop (p.firstReturn + 1) (p.count_eq_count_of_take_firstReturn_add_one h)
 
 /-- The left part of the Dyck word decomposition. -/
-def leftPart (h : p.l ≠ []) : DyckWord :=
+def leftPart (h : p.toList ≠ []) : DyckWord :=
   (p.take (p.firstReturn + 1) (p.count_eq_count_of_take_firstReturn_add_one h)).denest
     (by simp [take, h]) (fun i lb ub ↦ by
       simp only [take, length_take, lt_min_iff] at ub ⊢
@@ -282,46 +296,49 @@ def leftPart (h : p.l ≠ []) : DyckWord :=
       exact p.count_lt_count_of_lt_firstReturn _ ub)
 
 @[simp]
-theorem leftPart_nest_add_rightPart (h : p.l ≠ []) : (p.leftPart h).nest + p.rightPart h = p := by
+theorem leftPart_nest_add_rightPart (h : p.toList ≠ []) :
+    (p.leftPart h).nest + p.rightPart h = p := by
   rw [DyckWord.ext_iff, leftPart, denest_nest]
   apply take_append_drop
 
-lemma leftPart_length_lt (h : p.l ≠ []) : (p.leftPart h).l.length < p.l.length := by
+lemma leftPart_length_lt (h : p.toList ≠ []) : (p.leftPart h).toList.length < p.toList.length := by
   nth_rw 2 [← p.leftPart_nest_add_rightPart h]
-  change _ < (U :: (p.leftPart h).l ++ [D] ++ (p.rightPart h).l).length
+  change _ < (U :: (p.leftPart h).toList ++ [D] ++ (p.rightPart h).toList).length
   simp_rw [length_append, length_singleton, length_cons]; omega
 
-theorem leftPart_semilength_lt (h : p.l ≠ []) : (p.leftPart h).semilength < p.semilength := by
+theorem leftPart_semilength_lt (h : p.toList ≠ []) : (p.leftPart h).semilength < p.semilength := by
   rw [← Nat.mul_lt_mul_left zero_lt_two]
   simp_rw [two_mul_semilength_eq_length]
   exact p.leftPart_length_lt h
 
-lemma rightPart_length_lt (h : p.l ≠ []) : (p.rightPart h).l.length < p.l.length := by
+lemma rightPart_length_lt (h : p.toList ≠ []) :
+    (p.rightPart h).toList.length < p.toList.length := by
   nth_rw 2 [← p.leftPart_nest_add_rightPart h]
-  change _ < (U :: (p.leftPart h).l ++ [D] ++ (p.rightPart h).l).length
+  change _ < (U :: (p.leftPart h).toList ++ [D] ++ (p.rightPart h).toList).length
   simp_rw [length_append, length_singleton, length_cons]; omega
 
-theorem rightPart_semilength_lt (h : p.l ≠ []) : (p.rightPart h).semilength < p.semilength := by
+theorem rightPart_semilength_lt (h : p.toList ≠ []) :
+    (p.rightPart h).semilength < p.semilength := by
   rw [← Nat.mul_lt_mul_left zero_lt_two]
   simp_rw [two_mul_semilength_eq_length]
   exact p.rightPart_length_lt h
 
-lemma nest_add_ne_empty : (p.nest + q).l ≠ [] := by change U :: _ ++ _ ≠ []; simp
+lemma nest_add_ne_empty : (p.nest + q).toList ≠ [] := by change U :: _ ++ _ ≠ []; simp
 
-lemma nest_add_firstReturn : (p.nest + q).firstReturn = p.l.length + 1 := by
-  rw [firstReturn_add, firstReturn_nest, ite_eq_right_iff, eq_zero_iff]; intro; contradiction
+lemma nest_add_firstReturn : (p.nest + q).firstReturn = p.toList.length + 1 := by
+  rw [firstReturn_add, firstReturn_nest, ite_eq_right_iff, ← toList_eq_nil]; intro; contradiction
 
 theorem nest_add_leftPart_eq : (p.nest + q).leftPart (nest_add_ne_empty _ _) = p := by
-  have : p.l.length + 1 + 1 = p.nest.l.length := by simp [nest]
+  have : p.toList.length + 1 + 1 = p.nest.toList.length := by simp [nest]
   simp_rw [leftPart, nest_add_firstReturn, take, DyckWord.ext_iff,
-    show (p.nest + q).l = p.nest.l ++ q.l by rfl, take_append_eq_append_take,
+    show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl, take_append_eq_append_take,
     this, take_length, tsub_self, take_zero, append_nil, denest, nest, dropLast_concat]
   rfl
 
 theorem nest_add_rightPart_eq : (p.nest + q).rightPart (nest_add_ne_empty _ _) = q := by
-  have : p.l.length + 1 + 1 = p.nest.l.length := by simp [nest]
+  have : p.toList.length + 1 + 1 = p.nest.toList.length := by simp [nest]
   simp_rw [rightPart, nest_add_firstReturn, drop, DyckWord.ext_iff,
-    show (p.nest + q).l = p.nest.l ++ q.l by rfl, drop_append_eq_append_drop,
+    show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl, drop_append_eq_append_drop,
     this, drop_length, nil_append, tsub_self, drop_zero]
 
 end FirstReturn
@@ -339,7 +356,7 @@ Dyck words. `f(w) = f(x) △ f(y)`, where △ (defined in `Mathlib.Data.Tree`) j
 to a new root node. -/
 def treeEquivToFun (w : DyckWord) : Tree Unit :=
   if e : w = 0 then nil else by
-    rw [eq_zero_iff, ← ne_eq] at e
+    rw [← toList_eq_nil, ← ne_eq] at e
     have := w.leftPart_semilength_lt e
     have := w.rightPart_semilength_lt e
     exact treeEquivToFun (w.leftPart e) △ treeEquivToFun (w.rightPart e)
@@ -362,7 +379,7 @@ theorem treeEquiv_left_inv {n : ℕ} (hs : p.semilength = n) :
   · simp [h, treeEquivToFun, treeEquivInvFun]
   · rw [treeEquivToFun]
     simp_rw [h, dite_false, treeEquivInvFun]
-    rw [eq_zero_iff, ← ne_eq] at h
+    rw [← toList_eq_nil, ← ne_eq] at h
     convert p.leftPart_nest_add_rightPart h
     · exact ih _ (hs ▸ p.leftPart_semilength_lt h) _ rfl
     · exact ih _ (hs ▸ p.rightPart_semilength_lt h) _ rfl
@@ -373,7 +390,7 @@ theorem treeEquiv_right_inv (tr : Tree Unit) : treeEquivToFun (treeEquivInvFun t
   · simp [treeEquivInvFun, treeEquivToFun]
   rw [treeEquivInvFun, treeEquivToFun]
   have pp : (treeEquivInvFun l).nest + treeEquivInvFun r ≠ 0 := by
-    rw [ne_eq, eq_zero_iff, ← ne_eq]
+    rw [ne_eq, ← toList_eq_nil, ← ne_eq]
     apply nest_add_ne_empty
   simp_rw [pp, dite_false, node.injEq, true_and]
   constructor
@@ -393,7 +410,7 @@ theorem semilength_eq_iff_numNodes_eq {n : ℕ} : p.semilength = n ↔ (treeEqui
   by_cases hn : p = 0; · simp [hn, treeEquiv, treeEquivToFun]
   rw [treeEquiv, Equiv.coe_fn_mk, treeEquivToFun]
   simp_rw [hn, dite_false, numNodes]
-  rw [eq_zero_iff, ← ne_eq] at hn
+  rw [← toList_eq_nil, ← ne_eq] at hn
   constructor <;> intro h
   · have tl := ih _ (h ▸ p.leftPart_semilength_lt hn) (p.leftPart hn)
     have tr := ih _ (h ▸ p.rightPart_semilength_lt hn) (p.rightPart hn)
