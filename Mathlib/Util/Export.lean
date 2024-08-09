@@ -36,15 +36,15 @@ instance : Coe Level Entry := ⟨Entry.level⟩
 instance : Coe Expr Entry := ⟨Entry.expr⟩
 
 structure Alloc (α) [BEq α] [Hashable α] where
-  map : HashMap α Nat
+  map : Std.HashMap α Nat
   next : Nat
 deriving Inhabited
 
 structure State where
-  names : Alloc Name := ⟨HashMap.empty.insert Name.anonymous 0, 1⟩
-  levels : Alloc Level := ⟨HashMap.empty.insert levelZero 0, 1⟩
+  names : Alloc Name := ⟨Std.HashMap.empty.insert Name.anonymous 0, 1⟩
+  levels : Alloc Level := ⟨Std.HashMap.empty.insert levelZero 0, 1⟩
   exprs : Alloc Expr
-  defs : HashSet Name
+  defs : Std.HashSet Name
   stk : Array (Bool × Entry)
 deriving Inhabited
 

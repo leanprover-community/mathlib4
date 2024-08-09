@@ -97,12 +97,12 @@ structure MatchState where
   that have been found so far during the course of the matching algorithm.
   We store the contexts since we need to delaborate expressions after we leave
   scoping constructs. -/
-  vars : HashMap Name (SubExpr × LocalContext × LocalInstances)
+  vars : Std.HashMap Name (SubExpr × LocalContext × LocalInstances)
   /-- The binders accumulated while matching a `scoped` expression. -/
   scopeState : Option (Array (TSyntax ``extBinderParenthesized))
   /-- The arrays of delaborated `Term`s accumulated while matching
   `foldl` and `foldr` expressions. For `foldl`, the arrays are stored in reverse order. -/
-  foldState : HashMap Name (Array Term)
+  foldState : Std.HashMap Name (Array Term)
 
 /-- A matcher is a delaboration function that transforms `MatchState`s. -/
 def Matcher := MatchState → DelabM MatchState
@@ -118,7 +118,7 @@ def MatchState.empty : MatchState where
 saved context. Fails if the variable has no value. -/
 def MatchState.withVar {α : Type} (s : MatchState) (name : Name)
     (m : DelabM α) : DelabM α := do
-  let some (se, lctx, linsts) := s.vars.find? name | failure
+  let some (se, lctx, linsts) := s.vars[name]? | failure
   withLCtx lctx linsts <| withTheReader SubExpr (fun _ => se) <| m
 
 /-- Delaborate the given variable's value. Fails if the variable has no value.
@@ -138,7 +138,7 @@ def MatchState.captureSubexpr (s : MatchState) (name : Name) : DelabM MatchState
 /-- Get the accumulated array of delaborated terms for a given foldr/foldl.
 Returns `#[]` if nothing has been pushed yet. -/
 def MatchState.getFoldArray (s : MatchState) (name : Name) : Array Term :=
-  (s.foldState.find? name).getD #[]
+  s.foldState[name]?.getD #[]
 
 /-- Get the accumulated array of delaborated terms for a given foldr/foldl.
 Returns `#[]` if nothing has been pushed yet. -/
@@ -153,7 +153,7 @@ def MatchState.pushFold (s : MatchState) (name : Name) (t : Term) : MatchState :
 /-- Matcher that assigns the current `SubExpr` into the match state;
 if a value already exists, then it checks for equality. -/
 def matchVar (c : Name) : Matcher := fun s => do
-  if let some (se, _, _) := s.vars.find? c then
+  if let some (se, _, _) := s.vars[c]? then
     guard <| se.expr == (← getExpr)
     return s
   else
@@ -206,7 +206,7 @@ def matchLambda (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher :=
 with types that are fresh metavariables.
 This is used for example when initializing `p` in `(scoped p => ...)` when elaborating `...`. -/
 def setupLCtx (lctx : LocalContext) (boundNames : Array Name) :
-    MetaM (LocalContext × HashMap FVarId Name) := do
+    MetaM (LocalContext × Std.HashMap FVarId Name) := do
   let mut lctx := lctx
   let mut boundFVars := {}
   for name in boundNames do
@@ -224,8 +224,8 @@ If it succeeds generating a matcher, returns
 1. a list of keys that should be used for the `delab` attribute
    when defining the elaborator
 2. a `Term` that represents a `Matcher` for the given expression `e`. -/
-partial def exprToMatcher (boundFVars : HashMap FVarId Name) (localFVars : HashMap FVarId Term)
-      (e : Expr) :
+partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
+    (localFVars : Std.HashMap FVarId Term) (e : Expr) :
     OptionT TermElabM (List Name × Term) := do
   match e with
   | .mvar .. => return ([], ← `(pure))

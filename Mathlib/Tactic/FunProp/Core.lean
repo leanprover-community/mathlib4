@@ -160,7 +160,7 @@ def tryTheorem? (e : Expr) (thmOrigin : Origin) (funProp : Expr → FunPropM (Op
 def applyIdRule (funPropDecl : FunPropDecl) (e X : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .id)
+  let .some thm := ext.theorems[(funPropDecl.funPropName, LambdaTheoremType.id)]?
     | trace[Meta.Tactic.fun_prop]
         "missing identity rule to prove `{← ppExpr e}`"
       return none
@@ -173,7 +173,7 @@ def applyConstRule (funPropDecl : FunPropDecl) (e X y : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .const)
+  let .some thm := ext.theorems[(funPropDecl.funPropName, LambdaTheoremType.const)]?
     | trace[Meta.Tactic.fun_prop]
         "missing constant rule to prove `{← ppExpr e}`"
       return none
@@ -189,7 +189,7 @@ def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
 
   -- non dependent case
   if ¬(Y.hasLooseBVars) then
-    if let .some thm := ext.theorems.find? (funPropDecl.funPropName, .proj) then
+    if let .some thm := ext.theorems[(funPropDecl.funPropName, LambdaTheoremType.proj)]? then
       let .proj id_x id_Y := thm.thmArgs | return none
       return ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funProp
 
@@ -197,7 +197,7 @@ def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
   -- can also handle non-dependent cases if non-dependent theorem is not available
   let Y := Expr.lam n X Y default
 
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .projDep)
+  let .some thm := ext.theorems[(funPropDecl.funPropName, LambdaTheoremType.projDep)]?
     | trace[Meta.Tactic.fun_prop]
         "missing projection rule to prove `{← ppExpr e}`"
       return none
@@ -210,7 +210,7 @@ def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .comp)
+  let .some thm := ext.theorems[(funPropDecl.funPropName, LambdaTheoremType.comp)]?
     | trace[Meta.Tactic.fun_prop]
         "missing composition rule to prove `{← ppExpr e}`"
       return none
@@ -223,7 +223,7 @@ def applyPiRule (funPropDecl : FunPropDecl) (e f : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .pi)
+  let .some thm := ext.theorems[(funPropDecl.funPropName, LambdaTheoremType.pi)]?
     | trace[Meta.Tactic.fun_prop]
         "missing pi rule to prove `{← ppExpr e}`"
       return none
