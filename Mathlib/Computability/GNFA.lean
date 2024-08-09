@@ -275,22 +275,22 @@ end GNFA
 namespace NFA
 
 variable (M : NFA α σ)
-    [DecidablePred (· ∈ M.start)]
-    [DecidablePred (· ∈ M.accept)]
-    [∀ p a , DecidablePred (· ∈ M.step p a)]
+    [DecidablePred M.start]
+    [DecidablePred M.accept]
+    [∀ p a , DecidablePred (M.step p a)]
 
 /-- Convert a computably useful NFA to a GNFA with the same language. -/
 def toGNFA [FinEnum α] : { G : GNFA α σ // G.accepts = M.accepts } := by
   exists ⟨(match ·, · with
     | none, none => 0
-    | none, some q => if q ∈ M.start then 1 else 0
-    | some p, none => if p ∈ M.accept then 1 else 0
+    | none, some q => if M.start q then 1 else 0
+    | some p, none => if M.accept p then 1 else 0
     | some p, some q =>
-        FinEnum.toList α |>.filter (q ∈ M.step p ·) |>.map RegularExpression.char |>.sum)⟩
+        FinEnum.toList α |>.filter (M.step p · q) |>.map RegularExpression.char |>.sum)⟩
   ext x
   constructor
   · rintro (⟨⟨⟩⟩ | @⟨_, y, z, q, hyt, step, rfl⟩)
-    rcases Decidable.em (q ∈ M.accept) with accept | accept <;> simp [accept] at step
+    rcases Decidable.em (M.accept q) with accept | accept <;> simp [accept] at step
     subst z
     refine ⟨q, accept, ?_⟩
     clear accept
@@ -298,7 +298,7 @@ def toGNFA [FinEnum α] : { G : GNFA α σ // G.accepts = M.accepts } := by
     induction y using List.reverseRecOn generalizing q
     · rw [NFA.eval_nil]
       rcases hyt with ⟨_, step⟩ | @⟨_, x, y, z, p, hyt, step, eq⟩
-      · rcases Decidable.em (q ∈ M.start) with start | start
+      · rcases Decidable.em (M.start q) with start | start
         · exact start
         · simp [start] at step
       · rw [List.nil_eq_append] at eq
@@ -308,17 +308,17 @@ def toGNFA [FinEnum α] : { G : GNFA α σ // G.accepts = M.accepts } := by
     · rename_i as a ih
       rw [M.eval_append_singleton]
       rcases hyt with ⟨_, step⟩ | @⟨x, y, z, p, _, hyt, step, eq⟩
-      · rcases Decidable.em (q ∈ M.start) with start | start <;> simp [start] at step
+      · rcases Decidable.em (M.start q) with start | start <;> simp [start] at step
       simp [Language.mem_sum, List.mem_filter] at step
       rcases step with ⟨r, step, rfl⟩
       rcases List.append_inj' eq rfl with ⟨rfl, ⟨rfl⟩⟩
       rw [M.mem_stepSet]
       exact ⟨p, ih p hyt, step⟩
   · rintro ⟨q, accept, eval⟩
-    refine GNFA.accepts.step q ?_ (by simp [accept]) x.append_nil.symm
+    refine GNFA.accepts.step q ?_ (by simp [Set.mem_def.mp accept]) x.append_nil.symm
     clear accept
     induction x using List.reverseRecOn generalizing q
-    · exact GNFA.trace.start q (by simp [M.eval_nil ▸ eval])
+    · exact GNFA.trace.start q (by simp [M.eval_nil ▸ Set.mem_def.mp eval])
     rename_i as a ih
     rw [M.eval_append_singleton, M.mem_stepSet] at eval
     rcases eval with ⟨p, mem, step⟩
@@ -332,10 +332,13 @@ def toRegularExpressionX [FinEnum α] [FinEnum σ] :
     {r : RegularExpression α // r.matches' = M.accepts } :=
   let ⟨g, hg⟩ := M.toGNFA; let ⟨r, hr⟩ := g.toRegularExpression; ⟨r, hr.trans hg⟩
 
+/-- Turn a useful NFA into a `RegularExpression` via state ripping
+-/
 abbrev toRegularExpression [FinEnum α] [FinEnum σ] : RegularExpression α := M.toRegularExpressionX
-abbrev toRegularExpression_spec [FinEnum α] [FinEnum σ] :
-    M.toRegularExpression.matches' = M.accepts :=
-  M.toRegularExpressionX.property
+/-- The result of state ripping really matches the original NFA's language
+-/
+theorem toRegularExpression_spec [FinEnum α] [FinEnum σ] :
+    M.toRegularExpression.matches' = M.accepts := M.toRegularExpressionX.property
 
 /-- Non-constructively, enumerability of state space and alphabet are not needed for an NFA to
 permit the possibility of having a regular expression that matches its language. -/

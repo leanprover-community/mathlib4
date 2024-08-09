@@ -136,11 +136,11 @@ permitting ε-moves.
 instance : Zero (NFA α σ) :=
   ⟨default⟩
 
-instance zeroDecidableStart : DecidablePred (· ∈ (0 : NFA α σ).start) :=
+instance zeroDecidableStart : DecidablePred (0 : NFA α σ).start :=
   fun _ ↦ decidableFalse
-instance zeroDecidableAccept : DecidablePred (· ∈ (0 : NFA α σ).accept) :=
+instance zeroDecidableAccept : DecidablePred (0 : NFA α σ).accept :=
   fun _ ↦ decidableFalse
-instance zeroDecidableStep : ∀ q a, DecidablePred (· ∈ (0 : NFA α σ).step q a) :=
+instance zeroDecidableStep : ∀ q a, DecidablePred ((0 : NFA α σ).step q a) :=
   fun _ _ _ ↦ decidableFalse
 
 @[simp]
@@ -152,11 +152,11 @@ theorem zero_correct : (0 : NFA α σ).accepts = 0 := by
 instance : One (NFA α σ) :=
   ⟨⟨fun _ _ ↦ ∅, univ, univ⟩⟩
 
-instance oneDecidableStart : DecidablePred (· ∈ (1 : NFA α σ).start) :=
+instance oneDecidableStart : DecidablePred (1 : NFA α σ).start :=
   fun _ ↦ decidableTrue
-instance oneDecidableAccept : DecidablePred (· ∈ (1 : NFA α σ).accept) :=
+instance oneDecidableAccept : DecidablePred (1 : NFA α σ).accept :=
   fun _ ↦ decidableTrue
-instance oneDecidableStep : ∀ q a, DecidablePred (· ∈ (1 : NFA α σ).step q a) :=
+instance oneDecidableStep : ∀ q a, DecidablePred ((1 : NFA α σ).step q a) :=
   fun _ _ _ ↦ decidableFalse
 
 @[simp]
@@ -177,13 +177,13 @@ def char (a : α) : (NFA α (σ ⊕ σ')) :=
   ⟨fun p c q ↦ p.isLeft ∧ a = c ∧ q.isRight, (Sum.isLeft ·), (Sum.isRight ·)⟩
 
 instance charDecidableStart (a : α) :
-    DecidablePred (· ∈ (char a : NFA α (σ ⊕ σ')).start) :=
+    DecidablePred (char a : NFA α (σ ⊕ σ')).start :=
   fun _ ↦ Bool.decEq _ _
 instance charDecidableAccept (a : α) :
-    DecidablePred (· ∈ (char a : NFA α (σ ⊕ σ')).accept) :=
+    DecidablePred (char a : NFA α (σ ⊕ σ')).accept :=
   fun _ ↦ Bool.decEq _ _
 instance charDecidableStep [DecidableEq α] (a' : α) :
-    ∀ q a, DecidablePred (· ∈ (char a' : NFA α (σ ⊕ σ')).step q a) :=
+    ∀ q a, DecidablePred ((char a' : NFA α (σ ⊕ σ')).step q a) :=
   fun _ _ _ ↦ And.decidable
 
 @[simp]
@@ -217,18 +217,18 @@ instance : HAdd (NFA α σ) (NFA α σ') (NFA α (σ ⊕ σ')) :=
       Sum.elim P₁.start P₂.start,
       Sum.elim P₁.accept P₂.accept⟩⟩
 
-instance haddDecidableStart {P₁ : NFA α σ} {P₂ : NFA α σ'}
-    [l : DecidablePred (· ∈ P₁.start)]
-    [r : DecidablePred (· ∈ P₂.start)] :
-    DecidablePred (· ∈ (P₁ + P₂).start) := Sum.rec l r
-instance haddDecidableAccept {P₁ : NFA α σ} {P₂ : NFA α σ'}
-    [l : DecidablePred (· ∈ P₁.accept)]
-    [r : DecidablePred (· ∈ P₂.accept)] :
-    DecidablePred (· ∈ (P₁ + P₂).accept) := Sum.rec l r
-instance haddDecidableStep {P₁ : NFA α σ} {P₂ : NFA α σ'}
-    [l : ∀ q a, DecidablePred (· ∈ P₁.step q a)]
-    [r : ∀ q a, DecidablePred (· ∈ P₂.step q a)] :
-    ∀ q a, DecidablePred (· ∈ (P₁ + P₂).step q a)
+instance haddDecidableStart (P₁ : NFA α σ) (P₂ : NFA α σ')
+    [l : DecidablePred P₁.start]
+    [r : DecidablePred P₂.start] :
+    DecidablePred (P₁ + P₂).start := Sum.rec l r
+instance haddDecidableAccept (P₁ : NFA α σ) (P₂ : NFA α σ')
+    [l : DecidablePred P₁.accept]
+    [r : DecidablePred P₂.accept] :
+    DecidablePred (P₁ + P₂).accept := Sum.rec l r
+instance haddDecidableStep (P₁ : NFA α σ) (P₂ : NFA α σ')
+    [l : ∀ q a, DecidablePred (P₁.step q a)]
+    [r : ∀ q a, DecidablePred (P₂.step q a)] :
+    ∀ q a, DecidablePred ((P₁ + P₂).step q a)
   | .inl q, a => Sum.rec (l q a) (fun _ ↦ decidableFalse)
   | .inr q, a => Sum.rec (fun _ ↦ decidableFalse) (r q a)
 
@@ -268,42 +268,26 @@ instance : HMul (NFA α σ) (NFA α σ') (NFA α (σ ⊕ σ')) :=
       Sum.elim P₁.start (P₂.start · ∧ ∃ p, P₁.accept p ∧ P₁.start p),
       Sum.elim (P₁.accept · ∧ ∃ p, P₂.accept p ∧ P₂.start p) P₂.accept⟩⟩
 
-instance hmulDecidableStart {P₁ : NFA α σ} {P₂ : NFA α σ'}
+instance hmulDecidableStart (P₁ : NFA α σ) (P₂ : NFA α σ')
     [Fintype σ]
-    [L : DecidablePred (· ∈ P₁.accept)]
-    [l : DecidablePred (· ∈ P₁.start)]
-    [r : DecidablePred (· ∈ P₂.start)] :
-    DecidablePred (· ∈ (P₁ * P₂).start) :=
-  Sum.rec
-    l
-    (fun q ↦ @And.decidable _ _ (r q) <|
-      @Fintype.decidableExistsFintype _ _ (fun p ↦ @And.decidable _ _ (L p) (l p)) _)
-instance hmulDecidableAccept {P₁ : NFA α σ} {P₂ : NFA α σ'}
+    [DecidablePred P₁.accept]
+    [l : DecidablePred P₁.start]
+    [DecidablePred P₂.start] :
+    DecidablePred (P₁ * P₂).start := Sum.rec l (fun _ ↦ And.decidable)
+instance hmulDecidableAccept (P₁ : NFA α σ) (P₂ : NFA α σ')
     [Fintype σ']
-    [l : DecidablePred (· ∈ P₁.accept)]
-    [R : DecidablePred (· ∈ P₂.start)]
-    [r : DecidablePred (· ∈ P₂.accept)] :
-    DecidablePred (· ∈ (P₁ * P₂).accept) :=
-  Sum.rec
-    (fun q ↦ @And.decidable _ _ (l q) <|
-      @Fintype.decidableExistsFintype _ _ (fun p ↦ @And.decidable _ _ (r p) (R p)) _)
-    r
-instance hmulDecidableStep {P₁ : NFA α σ} {P₂ : NFA α σ'}
+    [DecidablePred P₁.accept]
+    [DecidablePred P₂.start]
+    [r : DecidablePred P₂.accept] :
+    DecidablePred (P₁ * P₂).accept := Sum.rec (fun _ ↦ And.decidable) r
+instance hmulDecidableStep (P₁ : NFA α σ) (P₂ : NFA α σ')
     [Fintype σ]
-    [L : DecidablePred (· ∈ P₁.accept)]
-    [l : ∀ q a, DecidablePred (· ∈ P₁.step q a)]
-    [R :        DecidablePred (· ∈ P₂.start)]
-    [r : ∀ q a, DecidablePred (· ∈ P₂.step q a)] :
-    ∀ q a, DecidablePred (· ∈ (P₁ * P₂).step q a)
-  | .inl q, a => Sum.rec (l q a) <| by
-    intro p
-    have : Decidable (∃ r : σ, r ∈ P₁.accept ∧ P₁.step q a r) :=
-      letI : DecidablePred fun r : σ ↦ r ∈ P₁.accept ∧ P₁.step q a r := by
-        intro r
-        have : Decidable (P₁.step q a r) := l q a r
-        exact And.decidable
-      Fintype.decidableExistsFintype
-    exact @And.decidable _ _ (R p) this
+    [ DecidablePred P₁.accept]
+    [l : ∀ q a, DecidablePred (P₁.step q a)]
+    [DecidablePred P₂.start]
+    [r : ∀ q a, DecidablePred (P₂.step q a)] :
+    ∀ q a, DecidablePred ((P₁ * P₂).step q a)
+  | .inl q, a => Sum.rec (l q a) fun _ ↦ And.decidable
   | .inr q, a => Sum.rec (fun _ ↦ decidableFalse) (r q a)
 
 lemma hmul_eval₁ {P₂ : NFA α σ'} {P₁ : NFA α σ} {x : List α} (q : σ) :
@@ -399,29 +383,20 @@ def kstar (P : NFA α σ) : (NFA α (Option σ)) :=
     Option.rec True P.start,
     Option.rec True P.accept⟩
 
-instance kstarDecidableStart {P : NFA α σ}
-    [i : DecidablePred (· ∈ P.start)] :
-    DecidablePred (· ∈ P.kstar.start) := Option.rec decidableTrue i
-instance kstarDecidableAccept {P : NFA α σ}
-    [i : DecidablePred (· ∈ P.accept)] :
-    DecidablePred (· ∈ P.kstar.accept) := Option.rec decidableTrue i
-instance kstarDecidableStep {P : NFA α σ}
+instance kstarDecidableStart (P : NFA α σ)
+    [i : DecidablePred P.start] :
+    DecidablePred (P.kstar.start) := Option.rec decidableTrue i
+instance kstarDecidableAccept (P : NFA α σ)
+    [i : DecidablePred P.accept] :
+    DecidablePred P.kstar.accept := Option.rec decidableTrue i
+instance kstarDecidableStep (P : NFA α σ)
     [Fintype σ]
-    [s :        DecidablePred (· ∈ P.start)]
-    [a :        DecidablePred (· ∈ P.accept)]
-    [i : ∀ q a, DecidablePred (· ∈ P.step q a) ] :
-    ∀ q a, DecidablePred (· ∈ P.kstar.step q a)
+    [DecidablePred P.start]
+    [DecidablePred P.accept]
+    [∀ q a, DecidablePred (P.step q a)] :
+    ∀ q a, DecidablePred (P.kstar.step q a)
   | .none, _ => fun _ ↦ decidableFalse
-  | .some q, a => Option.rec decidableFalse <| by
-    intro p
-    have : Decidable (P.step q a p) := i q a p
-    have : Decidable (∃ r, r ∈ P.accept ∧ r ∈ P.step q a ∧ p ∈ P.start) :=
-      letI : DecidablePred fun r ↦ r ∈ P.accept ∧ r ∈ P.step q a ∧ p ∈ P.start := by
-        intro s
-        have : Decidable (s ∈ P.step q a ∧ p ∈ P.start) := And.decidable
-        exact And.decidable
-      Fintype.decidableExistsFintype
-    exact Or.decidable (dq := this)
+  | .some _, _ => Option.rec decidableFalse fun _ ↦ Or.decidable
 
 /-- All start states of an unstarred NFA can be reached in a starred NFA by a string in the
 original's language. -/
