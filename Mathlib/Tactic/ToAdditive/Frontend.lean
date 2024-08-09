@@ -804,10 +804,8 @@ partial def transformDeclAux
   else
     addAndCompile trgDecl.toDeclaration!
   if let .defnDecl { hints := .abbrev, .. } := trgDecl.toDeclaration! then
-    if (← getReducibilityStatus src) == .reducible then
-      setReducibilityStatus tgt .reducible
-    if Compiler.getInlineAttribute? (← getEnv) src == some .inline then
-      setInlineAttribute tgt
+    setReducibilityStatus tgt .reducible
+    setInlineAttribute tgt
   -- now add declaration ranges so jump-to-definition works
   -- note: we currently also do this for auxiliary declarations, while they are not normally
   -- generated for those. We could change that.

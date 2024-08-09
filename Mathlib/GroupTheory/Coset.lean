@@ -351,36 +351,10 @@ variable [Group α] {s : Subgroup α}
 instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=
   Quotient.fintype (leftRel s)
 
-/-- Reinterpret `x : Quotient (leftRel s)` as an element of `α ⧸ s`. -/
-@[to_additive "Reinterpret `x : Quotient (leftRel s)` as an element of `α ⧸ s`."]
-def ofQuotient (x : Quotient (leftRel s)) : α ⧸ s :=
-  x
-
-/-- Reinterpret `x : α ⧸ s` as an element of `Quotient (leftRel s)`. -/
-@[to_additive "Reinterpret `x : α ⧸ s` as an element of `Quotient (leftRel s)`."]
-def toQuotient (x : α ⧸ s) : Quotient (leftRel s) :=
-  x
-
-@[to_additive (attr := simp)]
-lemma ofQuotient_toQuotient (x : α ⧸ s) : ofQuotient (toQuotient x) = x :=
-  rfl
-
-@[to_additive (attr := simp)]
-lemma toQuotient_ofQuotient (x : α ⧸ s) : toQuotient (ofQuotient x) = x :=
-  rfl
-
 /-- The canonical map from a group `α` to the quotient `α ⧸ s`. -/
 @[to_additive (attr := coe) "The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`."]
-def mk (a : α) : α ⧸ s :=
-  ofQuotient (Quotient.mk'' a)
-
-@[to_additive (attr := simp)]
-lemma toQuotient_mk (x : α) : toQuotient (mk x : α ⧸ s) = ⟦x⟧ :=
-  rfl
-
-@[to_additive (attr := simp)]
-lemma ofQuotient_mk (x : α) : ofQuotient ⟦x⟧ = (mk x : α ⧸ s) :=
-  rfl
+abbrev mk (a : α) : α ⧸ s :=
+  Quotient.mk'' a
 
 @[to_additive]
 theorem mk_surjective : Function.Surjective <| @mk _ _ s :=
@@ -393,17 +367,13 @@ lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_iff_surjectiv
 theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (QuotientGroup.mk z)) : C x :=
   Quotient.inductionOn' x H
 
-@[to_additive (attr := elab_as_elim)]
-theorem induction_on₂ {α β : Type*} [Group α] [Group β] {s : Subgroup α} {t : Subgroup β}
-    {C : α ⧸ s → β ⧸ t → Prop} (x : α ⧸ s) (y : β ⧸ t)
-    (H : ∀ z₁ z₂, C (QuotientGroup.mk z₁) (QuotientGroup.mk z₂)) : C x y :=
-  Quotient.inductionOn₂' x y H
-
 @[to_additive]
 instance : Coe α (α ⧸ s) :=
   ⟨mk⟩
 
-@[to_additive (attr := deprecated (since := "2024-08-04"))] alias induction_on' := induction_on
+@[to_additive (attr := elab_as_elim)]
+theorem induction_on' {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z : α, C z) : C x :=
+  Quotient.inductionOn' x H
 
 @[to_additive (attr := simp)]
 theorem quotient_liftOn_mk {β} (f : α → β) (h) (x : α) : Quotient.liftOn' (x : α ⧸ s) f h = f x :=
@@ -427,39 +397,13 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
     _ ↔ @Setoid.r _ (leftRel s) a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
 
-@[to_additive (attr := deprecated (since := "2024-08-04"))] alias eq' := QuotientGroup.eq
+@[to_additive]
+theorem eq' {a b : α} : (mk a : α ⧸ s) = mk b ↔ a⁻¹ * b ∈ s :=
+  QuotientGroup.eq
 
-@[to_additive (attr := simp)]
+@[to_additive] -- Porting note (#10618): `simp` can prove this.
 theorem out_eq' (a : α ⧸ s) : mk a.out' = a :=
   Quotient.out_eq' a
-
-/-- A group homomorphism `f : α →* β` induces a map `α/s → β/t` if `s ⊆ f⁻¹(t)`. -/
-@[to_additive
-  "An additive group homomorphism `f : α →+ β` induces a map `α/s → β/t` if `s ⊆ f⁻¹(t)`."]
-protected def map' {α β : Type*} [Group α] [Group β] (s : Subgroup α) (t : Subgroup β) (f : α →* β)
-    (h : s ≤ t.comap f) : α ⧸ s → β ⧸ t :=
-  fun x ↦ ofQuotient <| (toQuotient x).map' f (by
-    intro a b
-    simp_rw [leftRel_eq]
-    intro hs
-    simpa using h hs)
-
-@[to_additive (attr := simp)]
-theorem map'_mk {α β : Type*} [Group α] [Group β] {s : Subgroup α} {t : Subgroup β} (f : α →* β)
-    (h : s ≤ Subgroup.comap f t) (x : α) :
-    QuotientGroup.map' s t f h (x : α ⧸ s) = f x :=
-  rfl
-
-/-- `QuotientGroup.congr'` lifts the isomorphism `e : α ≃* β` to `α ⧸ s ≃ β ⧸ t`,
-given that `e` maps `α` to `β`. -/
-@[to_additive "`QuotientAddGroup.congr'` lifts the isomorphism `e : α ≃+ β` to `α ⧸ s ≃ β ⧸ t`,
- given that `e` maps `α` to `β`."]
-def congr' {α β : Type*} [Group α] [Group β] (s : Subgroup α) (t : Subgroup β)
-    (e : α ≃* β) (he : s.map e = t) : α ⧸ s ≃ β ⧸ t where
-  toFun := QuotientGroup.map' s t e (he ▸ s.le_comap_map (e : α →* β))
-  invFun := QuotientGroup.map' t s e.symm (he ▸ (s.map_equiv_eq_comap_symm e).le)
-  left_inv := fun x => induction_on x <| fun x ↦ by simp
-  right_inv := fun x => induction_on x <| fun x ↦ by simp
 
 variable (s)
 
@@ -468,13 +412,13 @@ variable (s)
   stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out'`. -/
 @[to_additive QuotientAddGroup.mk_out'_eq_mul]
 theorem mk_out'_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out' = g * h :=
-  ⟨⟨g⁻¹ * (mk g).out', QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
+  ⟨⟨g⁻¹ * (mk g).out', eq'.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
 
 variable {s} {a b : α}
 
 @[to_additive (attr := simp)]
 theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a := by
-  rwa [QuotientGroup.eq, mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
+  rwa [eq', mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
 
 @[to_additive]
 theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
@@ -539,23 +483,26 @@ variable {t : Subgroup α}
 
 /-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/
 @[to_additive "If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection."]
-def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t :=
-  congr' _ _ (.refl _) (by ext; simp [h])
+def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t where
+  toFun := Quotient.map' id fun _a _b h' => h ▸ h'
+  invFun := Quotient.map' id fun _a _b h' => h.symm ▸ h'
+  left_inv q := induction_on' q fun _g => rfl
+  right_inv q := induction_on' q fun _g => rfl
 
 theorem quotientEquivOfEq_mk (h : s = t) (a : α) :
     quotientEquivOfEq h (QuotientGroup.mk a) = QuotientGroup.mk a :=
   rfl
 
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
-of the quotient map `G/K → G`. The classical version is `Subgroup.quotientEquivProdOfLE`. -/
-@[to_additive (attr := simps) AddSubgroup.quotientEquivProdOfLE'
+of the quotient map `G → G/K`. The classical version is `Subgroup.quotientEquivProdOfLE`. -/
+@[to_additive (attr := simps)
   "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
-  of the quotient map `G/K → G`. The classical version is `AddSubgroup.quotientEquivProdOfLE`."]
+  of the quotient map `G → G/K`. The classical version is `AddSubgroup.quotientEquivSumOfLE`."]
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t where
   toFun a :=
-    ⟨QuotientGroup.map' _ _ (.id _) h_le a, ofQuotient <|
-      (toQuotient a).map' (fun g : α => ⟨(f g)⁻¹ * g, leftRel_apply.mp (Quotient.exact' (hf g))⟩)
+    ⟨a.map' id fun b c h => leftRel_apply.mpr (h_le (leftRel_apply.mp h)),
+      a.map' (fun g : α => ⟨(f (Quotient.mk'' g))⁻¹ * g, leftRel_apply.mp (Quotient.exact' (hf g))⟩)
         fun b c h => by
         rw [leftRel_apply]
         change ((f b)⁻¹ * b)⁻¹ * ((f c)⁻¹ * c) ∈ s
@@ -563,26 +510,25 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
           congr_arg f (Quotient.sound' (leftRel_apply.mpr (h_le (leftRel_apply.mp h))))
         rwa [key, mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left, ← leftRel_apply]⟩
   invFun a := by
-    refine ofQuotient <| (toQuotient a.2).map' (fun b : t => f a.1 * b) fun b c h => by
+    refine a.2.map' (fun (b : { x // x ∈ t}) => f a.1 * b) fun b c h => by
       rw [leftRel_apply] at h ⊢
       change (f a.1 * b)⁻¹ * (f a.1 * c) ∈ s
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
-  left_inv a := by
-    refine QuotientGroup.induction_on a fun a => ?_
-    simp [mul_inv_cancel_left]
+  left_inv := by
+    refine Quotient.ind' fun a => ?_
+    simp_rw [Quotient.map'_mk'', id, mul_inv_cancel_left]
   right_inv := by
-    intro (a, b)
-    refine QuotientGroup.induction_on a fun a => ?_
-    refine QuotientGroup.induction_on b fun b => ?_
-    have key : QuotientGroup.mk (f a * b) = QuotientGroup.mk a :=
+    refine Prod.rec ?_
+    refine Quotient.ind' fun a => ?_
+    refine Quotient.ind' fun b => ?_
+    have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
-    simp [key, inv_mul_cancel_left]
+    simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
 
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
 The constructive version is `quotientEquivProdOfLE'`. -/
-@[to_additive (attr := simps!) AddSubgroup.quotientEquivProdOfLE
-"If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
-constructive version is `quotientEquivProdOfLE'`."]
+@[to_additive (attr := simps!) "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
+ constructive version is `quotientEquivProdOfLE'`."]
 noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
   quotientEquivProdOfLE' h_le Quotient.out' Quotient.out_eq'
 
@@ -592,12 +538,13 @@ noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ 
 def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t where
   toFun :=
-    QuotientGroup.map' _ _ (inclusion h) fun a b => by
-      simpa only [comap_inclusion_subgroupOf]
-  inj' a b :=
-    QuotientGroup.induction_on₂ a b <| by
+    Quotient.map' (inclusion h) fun a b => by
+      simp_rw [leftRel_eq]
+      exact id
+  inj' :=
+    Quotient.ind₂' <| by
       intro a b h
-      simpa only [map'_mk, QuotientGroup.eq] using h
+      simpa only [Quotient.map'_mk'', eq'] using h
 
 -- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
@@ -610,7 +557,7 @@ theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t)
 @[to_additive "If `s ≤ t`, then there is a map `H ⧸ s.addSubgroupOf H → H ⧸ t.addSubgroupOf H`."]
 def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
     H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H :=
-  fun a ↦ ofQuotient <| (toQuotient a).map' id fun a b => by
+  Quotient.map' id fun a b => by
     simp_rw [leftRel_eq]
     apply h
 
@@ -624,7 +571,9 @@ theorem quotientSubgroupOfMapOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : 
 /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/
 @[to_additive "If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`."]
 def quotientMapOfLE (h : s ≤ t) : α ⧸ s → α ⧸ t :=
-  QuotientGroup.map' _ _ (.id _) fun _ => (h ·)
+  Quotient.map' id fun a b => by
+    simp_rw [leftRel_eq]
+    apply h
 
 @[to_additive (attr := simp)]
 theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
@@ -637,10 +586,10 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
 def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α) :
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H where
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
-  inj' a b :=
-    QuotientGroup.induction_on₂ a b <| by
-      simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, QuotientGroup.eq, mem_subgroupOf,
-        mem_iInf, imp_self, forall_const]
+  inj' :=
+    Quotient.ind₂' <| by
+      simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, eq', mem_subgroupOf, mem_iInf,
+        imp_self, forall_const]
 
 -- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
@@ -654,10 +603,9 @@ theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgro
 @[to_additive (attr := simps) "The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`."]
 def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i where
   toFun q i := quotientMapOfLE (iInf_le f i) q
-  inj' a b :=
-    QuotientGroup.induction_on₂ a b <| by
-      simp_rw [funext_iff, quotientMapOfLE_apply_mk, QuotientGroup.eq, mem_iInf, imp_self,
-        forall_const]
+  inj' :=
+    Quotient.ind₂' <| by
+      simp_rw [funext_iff, quotientMapOfLE_apply_mk, eq', mem_iInf, imp_self, forall_const]
 
 @[to_additive (attr := simp)]
 theorem quotientiInfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (g : α) (i : ι) :
