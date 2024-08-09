@@ -260,9 +260,8 @@ lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
       sheafToPresheaf_map, f, ← constantSheafAdj_counit_w]
     exact inferInstanceAs (IsIso (_ ≫ ((sheafToPresheaf J B).map
       ((constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F)))))
-  have : IsIso f := by
-    apply ReflectsIsomorphisms.reflects (sheafToPresheaf J B) _
-  apply ReflectsIsomorphisms.reflects (sheafCompose J U) _
+  have := isIso_of_reflects_iso f (sheafToPresheaf J B)
+  exact isIso_of_reflects_iso _ (sheafCompose J U)
 
 variable [(constantSheaf J A).Full] [(constantSheaf J A).Faithful]
   [(constantSheaf J B).Full] [(constantSheaf J B).Faithful]
