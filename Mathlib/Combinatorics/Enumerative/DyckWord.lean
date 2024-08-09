@@ -94,7 +94,7 @@ lemma getLast_eq_D (h : p.toList ≠ []) : p.toList.getLast h = D := by
   by_contra f; have s := p.count_U_eq_count_D
   rw [← dropLast_append_getLast h, (dichotomy _).resolve_right f] at s
   simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, ite_false] at s
-  have := p.count_D_le_count_U p.toList.length.pred; omega
+  have := p.count_D_le_count_U (p.toList.length - 1); omega
 
 lemma cons_tail_dropLast_concat (h : p.toList ≠ []) :
     U :: p.toList.dropLast.tail ++ [D] = p := by
@@ -137,7 +137,7 @@ def nest : DyckWord where
     rw [← add_rotate (count D _), ← add_rotate (count U _)]
     apply add_le_add _ (p.count_D_le_count_U _)
     rcases i.eq_zero_or_pos with hi | hi; · simp [hi]
-    rw [take_all_of_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
+    rw [take_of_length_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
     simp only [ite_true, ite_false]
     rw [add_comm]
     exact add_le_add (zero_le _) ((count_le_length _ _).trans (by simp))
@@ -153,19 +153,19 @@ def denest (h : p.toList ≠ []) (pos : ∀ i, 0 < i → i < p.toList.length →
     simpa using this
   count_D_le_count_U i := by
     have l1 : p.toList.take 1 = [p.toList.head h] := by rcases p with - | - <;> tauto
-    have l3 : p.toList.length.pred = p.toList.length.pred.pred + 1 := by
+    have l3 : p.toList.length - 1 = p.toList.length - 1 - 1 + 1 := by
       rcases p with - | ⟨s, ⟨- | ⟨t, r⟩⟩⟩
       · tauto
       · rename_i bal _
         cases s <;> simp at bal
       · tauto
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
-    have ub : min (1 + i) p.toList.length.pred < p.toList.length :=
+    have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
       (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr h).ne'))
-    have lb : 0 < min (1 + i) p.toList.length.pred := by
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by
       rw [l3, add_comm, min_add_add_right]; omega
     have eq := pos _ lb ub
-    set j := min (1 + i) p.toList.length.pred
+    set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
       min_eq_left (by omega), l1, p.head_eq_U] at eq
     simp only [count_singleton', ite_true, ite_false] at eq
