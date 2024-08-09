@@ -228,8 +228,11 @@ theorem Functor.initial_iff_isCofiltered_costructuredArrow [IsCofilteredOrEmpty 
   rw [initial_iff_of_isCofiltered]
   exact fun h => isCofiltered_costructuredArrow_of_isCofiltered_of_exists F h.1 h.2
 
+end LocallySmall
+
 /-- If `C` is filtered, then every functor `F : ⥤ Discrete PUnit` is final. -/
-theorem Functor.final_of_isFiltered_pUnit [IsFiltered C] (F : C ⥤ Discrete PUnit) :
+theorem Functor.final_of_isFiltered_pUnit {C : Type u₁} [Category.{v₁} C]
+    [IsFiltered C] (F : C ⥤ Discrete PUnit) :
     Final F := by
   refine final_of_exists_of_isFiltered F (fun _ => ?_) (fun {_} {c} _ _ => ?_)
   · use Classical.choice IsFiltered.nonempty
@@ -238,14 +241,13 @@ theorem Functor.final_of_isFiltered_pUnit [IsFiltered C] (F : C ⥤ Discrete PUn
     apply Subsingleton.elim
 
 /-- If `C` is cofiltered, then every functor `F : ⥤ Discrete PUnit` is initial. -/
-theorem Functor.initial_of_isCofiltered_pUnit [IsCofiltered C] (F : C ⥤ Discrete PUnit) :
+theorem Functor.initial_of_isCofiltered_pUnit {C : Type u₁} [Category.{v₁} C]
+    [IsCofiltered C] (F : C ⥤ Discrete PUnit) :
     Initial F := by
   refine initial_of_exists_of_isCofiltered F (fun _ => ?_) (fun {_} {c} _ _ => ?_)
   · use Classical.choice IsCofiltered.nonempty
     exact ⟨Discrete.eqToHom (by simp)⟩
   · use c; use 𝟙 c
     apply Subsingleton.elim
-
-end LocallySmall
 
 end CategoryTheory
