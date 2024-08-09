@@ -142,7 +142,7 @@ def pair (a b : α) (hab : a ≤ b) : Chain α where
 @[simp] lemma pair_succ (a b : α) (hab) (n : ℕ) : pair a b hab (n + 1) = b := rfl
 
 @[simp] lemma range_pair (a b : α) (hab) : Set.range (pair a b hab) = {a, b} := by
-  ext; exact Nat.or_exists_succ.symm.trans (by aesop)
+  ext; exact Nat.or_exists_add_one.symm.trans (by aesop)
 
 @[simp] lemma pair_zip_pair (a₁ a₂ : α) (b₁ b₂ : β) (ha hb) :
     (pair a₁ a₂ ha).zip (pair b₁ b₂ hb) = pair (a₁, b₁) (a₂, b₂) (Prod.le_def.2 ⟨ha, hb⟩) := by
