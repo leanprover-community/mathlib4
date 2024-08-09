@@ -218,7 +218,7 @@ noncomputable def AddSubgroup.closure_equiv_closure {G' : Type*}
     · intro a b hab
       simp only [AddEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_lt_mk]
       generalize_proofs A B C D
-      rw [(zsmul_strictMono_left ypos).lt_iff_lt, ←(zsmul_strictMono_left xpos).lt_iff_lt,
+      rw [(zsmul_strictMono_left ypos).lt_iff_lt, ← (zsmul_strictMono_left xpos).lt_iff_lt,
           A.choose_spec, B.choose_spec]
       simpa using hab
 
