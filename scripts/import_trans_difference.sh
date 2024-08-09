@@ -66,7 +66,7 @@ formatGitDiff () {
 
 getFormattedTransImports () {
   { getTransImports
-    formatGitDiff "${1}"; } |
+    formatGitDiff "${1}" "${2}"; } |
     awk -F, '
          ($2+0 == $2) { record[$1]=$2; if(name[$1] == "") { name[$1]="`"$1"`" } }
          ($2 == "")   { name[$1]="`"$1"`"$3 }
