@@ -120,13 +120,14 @@ lemma Pi.upperBounds {f : (Π i, α i) → β} (hf : Monotone f)
     {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (f '' d) = upperBounds (f '' (pi univ (fun i => (fun a => a i) '' d))) := by
   apply le_antisymm
-  · intro u hu
-    rw [mem_upperBounds]
-    intro c hc
+  · intro u hu c hc
     simp at hc
+    obtain ⟨a, ⟨ha, hfac⟩⟩ := hc
+    obtain ⟨z,hz⟩ := hd
     sorry
-  · sorry
+  · exact upperBounds_mono_set (image_mono (by intro a ha₁ i hi; use a))
 -/
+
 
 end Pi
 
@@ -147,6 +148,7 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
   · intro u hu c hc
     simp at hc
     obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩⟩⟩ := hc
+    --have e1: hd _ hb₂ _ ha₂
     obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
     have e1 : (a₁,b₁) ≤ (a₃,b₃) := by simp_all [mk_le_mk]
     rw [← right]
