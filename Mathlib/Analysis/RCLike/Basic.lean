@@ -813,6 +813,11 @@ lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing 
       StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)
     simpa [smul_smul, inv_mul_cancel hc.ne'] using this
 
+instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
+    [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :
+    OrderedSMul ℝ A :=
+  StarModule.instOrderedSMul
+
 scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
 
 end Order
