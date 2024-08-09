@@ -813,8 +813,7 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
 theorem sep_empty f : (∅ : ZFSet).sep f = ∅ := by
   apply (eq_empty (ZFSet.sep f ∅)).mpr
   intro k mem
-  have ⟨ h, _ ⟩ := mem_sep.mp mem
-  exact not_mem_empty _ h
+  exact not_mem_empty _ (mem_sep.mp mem).1
 
 @[simp]
 theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
@@ -886,8 +885,8 @@ theorem mem_sInter {x y : ZFSet} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z ∈
   simp only [and_iff_right_iff_imp, mem_sep]
   intro mem
   apply mem_sUnion.mpr
-  replace ⟨ s, h ⟩ := h
-  exact ⟨ _, And.intro h (mem _ h) ⟩
+  replace ⟨s, h⟩ := h
+  exact ⟨_, h, mem _ h⟩
 
 @[simp]
 theorem sUnion_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ := by
