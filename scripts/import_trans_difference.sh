@@ -60,8 +60,10 @@ formatGitDiff () {
 getFormattedTransImports () {
   { getTransImports
     formatGitDiff "${1}"; } |
-    awk -F, '($2+0 == $2) { record[$1]=$2; if(name[$1] == "") { name[$1]="`"$1"`" } }
-         ($2 == "") { name[$1]="`"$1"`"$3 }
+    awk -F, '
+         ($2+0 == $2) { record[$1]=$2; #if(name[$1] == "")
+           { name[$1]="`"$1"`" } }
+         ($2 == "")   { name[$1]="`"$1"`"$3 }
       END {
         for(fil in name)
         { printf("%s,%s\n", name[fil], record[fil]) }
@@ -95,7 +97,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         max++
         #if(100 < max) { exit 1 }
         if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
-        #else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
+        else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
       }
     }
   }' transImports*.txt | sort -t'|' -n -k3
