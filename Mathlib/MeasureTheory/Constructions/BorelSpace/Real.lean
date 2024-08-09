@@ -470,7 +470,8 @@ end NNReal
 spanning measurable sets with finite measure on which `f` is bounded.
 See also `StronglyMeasurable.exists_spanning_measurableSet_norm_le` for functions into normed
 groups. -/
-theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → ℝ≥0}
+-- We redeclare `α` to temporarily avoid the `[MeasurableSpace α]` instance.
+theorem exists_spanning_measurableSet_le {α : Type*} {m : MeasurableSpace α} {f : α → ℝ≥0}
     (hf : Measurable f) (μ : Measure α) [SigmaFinite μ] :
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, f x ≤ n) ∧

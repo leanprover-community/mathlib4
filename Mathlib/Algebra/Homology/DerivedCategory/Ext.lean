@@ -238,18 +238,7 @@ lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
 
 section
 
-variable [HasDerivedCategory.{w'} C]
-
-variable (X Y n) in
-@[simp]
-lemma zero_hom : (0 : Ext X Y n).hom = 0 := by
-  let β : Ext 0 Y n := 0
-  have hβ : β.hom = 0 := by apply (Functor.map_isZero _ (isZero_zero C)).eq_of_src
-  have : (0 : Ext X Y n) = (0 : Ext X 0 0).comp β (zero_add n) := by simp [β]
-  rw [this, comp_hom, hβ, ShiftedHom.comp_zero]
-
-attribute [local instance] preservesBinaryBiproductsOfPreservesBiproducts
-
+attribute [local instance] preservesBinaryBiproductsOfPreservesBiproducts in
 lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
     (h₁ : (mk₀ biprod.inl).comp α (zero_add n) = (mk₀ biprod.inl).comp β (zero_add n))
     (h₂ : (mk₀ biprod.inr).comp α (zero_add n) = (mk₀ biprod.inr).comp β (zero_add n)) :
@@ -261,6 +250,16 @@ lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
     (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
       (BinaryBiproduct.isBilimit X₁ X₂)).isColimit
   all_goals assumption
+
+variable [HasDerivedCategory.{w'} C]
+
+variable (X Y n) in
+@[simp]
+lemma zero_hom : (0 : Ext X Y n).hom = 0 := by
+  let β : Ext 0 Y n := 0
+  have hβ : β.hom = 0 := by apply (Functor.map_isZero _ (isZero_zero C)).eq_of_src
+  have : (0 : Ext X Y n) = (0 : Ext X 0 0).comp β (zero_add n) := by simp [β]
+  rw [this, comp_hom, hβ, ShiftedHom.comp_zero]
 
 @[simp]
 lemma add_hom (α β : Ext X Y n) : (α + β).hom = α.hom + β.hom := by

@@ -61,7 +61,7 @@ open scoped ENNReal NNReal Topology BoundedContinuousFunction
 
 open MeasureTheory TopologicalSpace ContinuousMap Set Bornology
 
-variable {α : Type*} [TopologicalSpace α] [NormalSpace α] [R1Space α]
+variable {α : Type*} [TopologicalSpace α] [NormalSpace α]
   [MeasurableSpace α] [BorelSpace α]
 variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
 
@@ -137,7 +137,8 @@ alias exists_continuous_snorm_sub_le_of_closed := exists_continuous_eLpNorm_sub_
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
-theorem Memℒp.exists_hasCompactSupport_eLpNorm_sub_le [WeaklyLocallyCompactSpace α] [μ.Regular]
+theorem Memℒp.exists_hasCompactSupport_eLpNorm_sub_le
+    [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular]
     (hp : p ≠ ∞) {f : α → E} (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E, HasCompactSupport g ∧ eLpNorm (f - g) p μ ≤ ε ∧ Continuous g ∧ Memℒp g p μ := by
   suffices H :
@@ -194,7 +195,7 @@ alias Memℒp.exists_hasCompactSupport_snorm_sub_le := Memℒp.exists_hasCompact
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `0 < p < ∞`, version in terms of `∫`. -/
 theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
-    [WeaklyLocallyCompactSpace α] [μ.Regular]
+    [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular]
     {p : ℝ} (hp : 0 < p) {f : α → E} (hf : Memℒp f (ENNReal.ofReal p) μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α → E,
       HasCompactSupport g ∧
@@ -215,7 +216,7 @@ theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫⁻`. -/
 theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
-    [WeaklyLocallyCompactSpace α] [μ.Regular]
+    [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular]
     {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E,
       HasCompactSupport g ∧ (∫⁻ x, ‖f x - g x‖₊ ∂μ) ≤ ε ∧ Continuous g ∧ Integrable g μ := by
@@ -225,7 +226,7 @@ theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫`. -/
 theorem Integrable.exists_hasCompactSupport_integral_sub_le
-    [WeaklyLocallyCompactSpace α] [μ.Regular]
+    [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular]
     {f : α → E} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α → E, HasCompactSupport g ∧ (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧
       Continuous g ∧ Integrable g μ := by
@@ -347,13 +348,13 @@ end Lp
 
 end MeasureTheory
 
-variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)] (hp : p ≠ ∞)
+variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)]
 variable (𝕜 : Type*) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
 variable (E) (μ)
 
 namespace BoundedContinuousFunction
 
-theorem toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] :
+theorem toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] (hp : p ≠ ∞) :
     DenseRange (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ) := by
   haveI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
   simpa only [← range_toLp p μ (𝕜 := 𝕜)]
@@ -366,9 +367,9 @@ namespace ContinuousMap
 /-- Continuous functions are dense in `MeasureTheory.Lp`, `1 ≤ p < ∞`. This theorem assumes that
 the domain is a compact space because otherwise `ContinuousMap.toLp` is undefined. Use
 `BoundedContinuousFunction.toLp_denseRange` if the domain is not a compact space.  -/
-theorem toLp_denseRange [CompactSpace α] [μ.WeaklyRegular] [IsFiniteMeasure μ] :
+theorem toLp_denseRange [CompactSpace α] [μ.WeaklyRegular] [IsFiniteMeasure μ] (hp : p ≠ ∞) :
     DenseRange (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ) := by
-  refine (BoundedContinuousFunction.toLp_denseRange _ _ hp 𝕜).mono ?_
+  refine (BoundedContinuousFunction.toLp_denseRange _ _ 𝕜 hp).mono ?_
   refine range_subset_iff.2 fun f ↦ ?_
   exact ⟨f.toContinuousMap, rfl⟩
 
