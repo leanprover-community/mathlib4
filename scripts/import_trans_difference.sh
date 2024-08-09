@@ -103,7 +103,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
   }' transImports*.txt | sort -t'|' -n -k3
   ))"
 
-printf 'formatGitDiff %s\n' "${commit1}"
-formatGitDiff "${commit1}"
-printf 'formatGitDiff %s\n' "${commit2}"
+printf 'formatGitDiff %s\n' "${commit1}" &&
+formatGitDiff "${commit1}" &&
+printf 'formatGitDiff %s\n' "${commit2}" &&
 formatGitDiff "${commit2}"
