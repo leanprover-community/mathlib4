@@ -71,6 +71,7 @@ theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
   exact not_firstCountableTopology_opc inferInstance
 
 instance : TotallyDisconnectedSpace ℚ := by
+  clear p q s t
   refine ⟨fun s hsu hs x hx y hy => ?_⟩; clear hsu
   by_contra! H : x ≠ y
   wlog hlt : x < y
