@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.AlgebraicGeometry.AffineSchemeNew
+import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 
 /-!

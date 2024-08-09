@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineSchemeNew
+import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Algebra.Category.Ring.Constructions
