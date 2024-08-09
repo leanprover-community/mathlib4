@@ -43,7 +43,7 @@ git ls-files 'Archive/*.lean' | xargs ./scripts/lint-style.py "$@"
 git ls-files 'Counterexamples/*.lean' | xargs ./scripts/lint-style.py "$@"
 
 # Call the in-progress Lean rewrite of these Python lints.
-lake exe lint_style --github
+lake exe lint-style --github
 
 # 2. Global checks on the mathlib repository
 
