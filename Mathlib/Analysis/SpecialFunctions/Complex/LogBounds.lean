@@ -197,8 +197,8 @@ lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (
       linarith
     · rw [sq, div_eq_mul_one_div]
       apply mul_le_mul (by simp only [norm_eq_abs, mul_one, le_refl])
-        (by simpa only [norm_eq_abs, one_div] using hz) (norm_nonneg z) (by simp only [norm_eq_abs,
-          mul_one, apply_nonneg])
+        (by simpa only [norm_eq_abs, one_div] using hz) (norm_nonneg z)
+        (by simp only [norm_eq_abs, mul_one, apply_nonneg])
   simp only [isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
     IsUnit.div_mul_cancel] at hz4
   linarith
