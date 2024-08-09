@@ -246,12 +246,38 @@ end LogDeriv
 
 section tsum_tprod
 
-variable {α  ι: Type*}
+variable {α ι: Type*}
+
+
+lemma Real.HasSum_rexp_HasProd  (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
+    (hf : ∀ x : α,  Summable fun n => log ((f n x))) :
+      (exp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
+        (fun a : α => ∏' n : ι, ((f n a))) := by
+  ext a
+  apply (HasProd.tprod_eq ?_).symm
+  apply ((hf a).hasSum.rexp).congr
+  intro _
+  congr
+  exact funext fun x ↦ Real.exp_log (hfn a x)
+
+/--The exponential of a infinite sum  of real logs (which converges absolutely) is an infinite
+product.-/
+lemma Real.rexp_tsum_eq_tprod  (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
+    (hf : ∀ x : α,  Summable fun n => log ((f n x))) :
+      (exp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
+        (fun a : α => ∏' n : ι, ((f n a))) := by
+  ext a
+  apply (HasProd.tprod_eq ?_).symm
+  apply ((hf a).hasSum.rexp).congr
+  intro _
+  congr
+  exact funext fun x ↦ Real.exp_log (hfn a x)
 
 open Complex in
 
-/--The exponential of a infinite sum  of logs (which converges absolutely) is an infinite product.-/
-lemma cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
+/--The exponential of a infinite sum  of comples logs (which converges absolutely) is an infinite
+product.-/
+lemma Complex.cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
     (hf : ∀ x : α,  Summable fun n => log ((f n x))) :
       (cexp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
         (fun a : α => ∏' n : ι, ((f n a))) := by
@@ -261,5 +287,7 @@ lemma cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
   intro _
   congr
   exact funext fun x ↦ exp_log (hfn a x)
+
+
 
 end tsum_tprod
