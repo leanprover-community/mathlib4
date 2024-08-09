@@ -4263,6 +4263,7 @@ import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 import Mathlib.Topology.Algebra.InfiniteSum.Module
