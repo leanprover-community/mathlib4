@@ -32,6 +32,14 @@ open Set
 variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
 variable {S : Type v}
 
+-- Note that at present `Ideal` means a left-ideal,
+-- so this quotient is only useful in a commutative ring.
+-- We should develop quotients by two-sided ideals as well.
+/-- The quotient `R/I` of a ring `R` by an ideal `I`.
+The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
+-/
+instance instHasQuotient : HasQuotient R (Ideal R) Submodule.quotientRel := ⟨⟩
+
 namespace Quotient
 
 variable {I} {x y : R}
