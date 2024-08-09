@@ -39,8 +39,8 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring A]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
-variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M₁]
-variable [SMulCommClass R A N₁] [SMulCommClass A R N₁] [IsScalarTower R A N₁]
+variable [SMulCommClass R A M₁] [IsScalarTower R A M₁]
+variable [SMulCommClass R A N₁] [IsScalarTower R A N₁]
 variable [Module R M₂] [Module R N₂]
 
 variable (R A) in
@@ -126,7 +126,6 @@ variable [AddCommGroup M₁] [AddCommGroup M₂]
 variable [Module R M₁] [Module R M₂]
 variable [Module.Free R M₁] [Module.Finite R M₁]
 variable [Module.Free R M₂] [Module.Finite R M₂]
-variable [Nontrivial R]
 
 variable (R) in
 /-- `tensorDistrib` as an equivalence. -/
