@@ -1196,7 +1196,7 @@ open Submodule
    (instead of a data containing type class) -/
 theorem mem_span_insert_exchange :
     x ∈ span K (insert y s) → x ∉ span K s → y ∈ span K (insert x s) := by
-  simp [mem_span_insert]
+  simp only [mem_span_insert, forall_exists_index, and_imp]
   rintro a z hz rfl h
   refine ⟨a⁻¹, -a⁻¹ • z, smul_mem _ _ hz, ?_⟩
   have a0 : a ≠ 0 := by
@@ -1339,13 +1339,9 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
       · exact sUnion_subset fun x xc => (hc xc).1
       · exact linearIndependent_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
       · exact subset_sUnion_of_mem
-  rcases this with
-    ⟨b, ⟨bt, bi⟩, sb, h⟩
-  refine ⟨b, bt, sb, fun x xt => ?_, bi⟩
-  by_contra hn
-  apply hn
-  rw [← h _ ⟨insert_subset_iff.2 ⟨xt, bt⟩, bi.insert hn⟩ (subset_insert _ _)]
-  exact subset_span (mem_insert _ _)
+  obtain ⟨b, sb, h⟩ := this
+  refine ⟨b, h.prop.1, sb, fun x xt => by_contra fun hn ↦ hn ?_, h.prop.2⟩
+  exact subset_span <| h.mem_of_prop_insert ⟨insert_subset xt h.prop.1, h.prop.2.insert hn⟩
 
 variable (K t)
 
@@ -1453,7 +1449,7 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Finite)
     (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ span K t) :
     ∃ h : s.Finite, h.toFinset.card ≤ ht.toFinset.card :=
-  have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simp; assumption
+  have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simpa
   let ⟨u, _hust, hsu, Eq⟩ := exists_of_linearIndependent_of_finite_span hs this
   have : s.Finite := u.finite_toSet.subset hsu
   ⟨this, by rw [← Eq]; exact Finset.card_le_card <| Finset.coe_subset.mp <| by simp [hsu]⟩
