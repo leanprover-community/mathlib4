@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.QuotientGroup.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise

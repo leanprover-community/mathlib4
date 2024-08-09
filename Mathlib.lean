@@ -2681,7 +2681,8 @@ import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.GroupTheory.Commensurable
-import Mathlib.GroupTheory.Commutator
+import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.GroupTheory.Commutator.Finite
 import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Congruence.Basic
@@ -2758,7 +2759,8 @@ import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.PushoutI
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.QuotientGroup.Finite
 import Mathlib.GroupTheory.Schreier
 import Mathlib.GroupTheory.SchurZassenhaus
 import Mathlib.GroupTheory.SemidirectProduct

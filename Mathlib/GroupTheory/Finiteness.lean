@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.Data.Set.Pointwise.Finite
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.QuotientGroup.Finite
 
 /-!
 # Finitely generated monoids and groups
