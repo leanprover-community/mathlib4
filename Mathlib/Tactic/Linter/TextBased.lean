@@ -443,7 +443,7 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
   | OutputSetting.print style =>
     formatErrors allUnexpectedErrors style
     if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
-      IO.println s!"error: found {numberErrorFiles} new style errors\n\
+      IO.println s!"error: found {allUnexpectedErrors.size} new style errors\n\
         run `lake exe lint-style --update` to ignore all of them"
   | OutputSetting.update =>
     formatErrors allUnexpectedErrors ErrorFormat.humanReadable
