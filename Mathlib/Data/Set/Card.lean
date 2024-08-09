@@ -133,6 +133,8 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
   rw [← not_iff_not, ← Ne, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
 
+alias ⟨_, encard_eq_top⟩ := encard_eq_top_iff
+
 theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
   simp
 
