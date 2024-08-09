@@ -20,7 +20,7 @@ package mathlib where
 require "leanprover-community" / "batteries" @ git "nightly-testing"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
 require "leanprover-community" / "aesop" @ git "nightly-testing"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.42-pre"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.42-pre2"
 require "leanprover-community" / "importGraph" @ git "main"
 
 /-!
