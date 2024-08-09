@@ -79,6 +79,7 @@ open Finset Nat
 /-- The divided power structure on an ideal I of a commutative ring A -/
 @[ext]
 structure DividedPowers {A : Type*} [CommSemiring A] (I : Ideal A) where
+  /-- The divided power function underlying a divided power structure -/
   dpow : ℕ → A → A
   dpow_null : ∀ {n x} (_ : x ∉ I), dpow n x = 0
   dpow_zero : ∀ {x} (_ : x ∈ I), dpow 0 x = 1
@@ -155,9 +156,10 @@ instance {A : Type*} [CommSemiring A] [DecidableEq A] :
 instance {A : Type*} [CommSemiring A] (I : Ideal A) :
     CoeFun (DividedPowers I) fun _ => ℕ → A → A := ⟨fun hI => hI.dpow⟩
 
+/- -- The synTaut linter complains about this theorem.
 theorem coe_apply {A : Type*} [CommSemiring A]
     (I : Ideal A) (hI : DividedPowers I) (n : ℕ) (a : A) :
-  hI n a = hI.dpow n a := rfl
+  hI n a = hI.dpow n a := rfl -/
 
 theorem coe_injective {A : Type*} [CommSemiring A] (I : Ideal A) :
     Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
@@ -496,10 +498,10 @@ def equiv : DividedPowers I ≃ DividedPowers J where
   left_inv := fun hI ↦ by ext n a; simp [ofRingEquiv]
   right_inv := fun hJ ↦ by ext n b; simp [ofRingEquiv]
 
-def equiv_apply (hI : DividedPowers I) (n : ℕ) (b : B) :
+theorem equiv_apply (hI : DividedPowers I) (n : ℕ) (b : B) :
     (equiv h hI).dpow n b = e (hI.dpow n (e.symm b)) := rfl
 
-def equiv_apply' (hI : DividedPowers I) (n : ℕ) (a : A) :
+theorem equiv_apply' (hI : DividedPowers I) (n : ℕ) (a : A) :
     (equiv h hI).dpow n (e a) = e (hI.dpow n a) :=
   ofRingEquiv_eq' h hI n a
 
