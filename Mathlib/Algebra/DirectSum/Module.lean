@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Cardinality
 
 /-!
 # Direct sum of modules

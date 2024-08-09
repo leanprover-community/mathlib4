@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.AffineSpace.Pointwise
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Cardinality
 
 /-!
 # Affine bases and barycentric coordinates

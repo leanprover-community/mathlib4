@@ -5,7 +5,7 @@ Authors: Andreas Swerdlow, Kexing Ying
 -/
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.BilinearForm.Basic
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.Algebra.Algebra.Bilinear
 
 /-!
