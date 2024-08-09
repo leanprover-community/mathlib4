@@ -161,9 +161,6 @@ theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ] g) : f = g := by
   simp only [Subtype.mk_eq_mk]
   exact AEEqFun.ext h
 
-theorem ext_iff {f g : Lp E p μ} : f = g ↔ f =ᵐ[μ] g :=
-  ⟨fun h => by rw [h], fun h => ext h⟩
-
 theorem mem_Lp_iff_eLpNorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := Iff.rfl
 
 @[deprecated (since := "2024-07-27")]
@@ -1249,7 +1246,7 @@ namespace Lp
 section PosPart
 
 theorem lipschitzWith_pos_part : LipschitzWith 1 fun x : ℝ => max x 0 :=
-  LipschitzWith.of_dist_le_mul fun x y => by simp [Real.dist_eq, abs_max_sub_max_le_abs]
+  LipschitzWith.id.max_const _
 
 theorem _root_.MeasureTheory.Memℒp.pos_part {f : α → ℝ} (hf : Memℒp f p μ) :
     Memℒp (fun x => max (f x) 0) p μ :=

@@ -30,9 +30,8 @@ derivative, polynomial
 
 universe u v w
 
-open scoped Classical Topology Filter ENNReal Polynomial
-
-open Filter Asymptotics Set
+open scoped Topology Filter ENNReal Polynomial
+open Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 

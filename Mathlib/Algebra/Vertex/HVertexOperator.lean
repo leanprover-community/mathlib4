@@ -8,7 +8,7 @@ import Mathlib.RingTheory.HahnSeries.Multiplication
 /-!
 # Vertex operators
 In this file we introduce heterogeneous vertex operators using Hahn series.  When `R = ℂ`, `V = W`,
-and `Γ = ℤ`, then this is the usual notion of `meromorphic left-moving 2D field`.  The notion we use
+and `Γ = ℤ`, then this is the usual notion of "meromorphic left-moving 2D field".  The notion we use
 here allows us to consider composites and scalar-multiply by multivariable Laurent series.
 ## Definitions
 * `HVertexOperator` : An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
@@ -28,6 +28,8 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 * [R. Borcherds, *Vertex Algebras, Kac-Moody Algebras, and the Monster*][borcherds1986vertex]
 
 -/
+
+assert_not_exists Cardinal
 
 noncomputable section
 

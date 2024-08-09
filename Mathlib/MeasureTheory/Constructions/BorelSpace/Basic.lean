@@ -37,7 +37,7 @@ noncomputable section
 
 open Set Filter MeasureTheory
 
-open scoped Classical Topology NNReal ENNReal MeasureTheory
+open scoped Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -504,6 +504,7 @@ instance (priority := 100) TopologicalGroup.measurableInv [Group γ] [Topologica
     MeasurableInv γ :=
   ⟨continuous_inv.measurable⟩
 
+@[to_additive]
 instance (priority := 100) ContinuousSMul.measurableSMul {M α} [TopologicalSpace M]
     [TopologicalSpace α] [MeasurableSpace M] [MeasurableSpace α] [OpensMeasurableSpace M]
     [BorelSpace α] [SMul M α] [ContinuousSMul M α] : MeasurableSMul M α :=

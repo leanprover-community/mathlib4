@@ -26,7 +26,7 @@ We define the following properties for sets in a topological space:
   is compact.
 -/
 
-open Set Filter Topology TopologicalSpace Classical Function
+open Set Filter Topology TopologicalSpace Function
 
 universe u v
 
@@ -148,7 +148,7 @@ lemma IsCompact.le_nhds_of_unique_clusterPt (hs : IsCompact s) {l : Filter X} {y
 /-- If values of `f : Y → X` belong to a compact set `s` eventually along a filter `l`
 and `y` is a unique `MapClusterPt` for `f` along `l` in `s`,
 then `f` tends to `𝓝 y` along `l`. -/
-lemma IsCompact.tendsto_nhds_of_unique_mapClusterPt {l : Filter Y} {y : X} {f : Y → X}
+lemma IsCompact.tendsto_nhds_of_unique_mapClusterPt {Y} {l : Filter Y} {y : X} {f : Y → X}
     (hs : IsCompact s) (hmem : ∀ᶠ x in l, f x ∈ s) (h : ∀ x ∈ s, MapClusterPt x l f → x = y) :
     Tendsto f l (𝓝 y) :=
   hs.le_nhds_of_unique_clusterPt (mem_map.2 hmem) h
@@ -184,9 +184,10 @@ lemma IsCompact.elim_nhds_subcover_nhdsSet' (hs : IsCompact s) (U : ∀ x ∈ s,
   exact mem_interior_iff_mem_nhds.1 hy
 
 lemma IsCompact.elim_nhds_subcover_nhdsSet (hs : IsCompact s) {U : X → Set X}
-    (hU : ∀ x ∈ s, U x ∈ 𝓝 x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ (⋃ x ∈ t, U x) ∈ 𝓝ˢ s :=
+    (hU : ∀ x ∈ s, U x ∈ 𝓝 x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ (⋃ x ∈ t, U x) ∈ 𝓝ˢ s := by
   let ⟨t, ht⟩ := hs.elim_nhds_subcover_nhdsSet' (fun x _ => U x) hU
-  ⟨t.image (↑), fun x hx =>
+  classical
+  exact ⟨t.image (↑), fun x hx =>
     let ⟨y, _, hyx⟩ := Finset.mem_image.1 hx
     hyx ▸ y.2,
     by rwa [Finset.set_biUnion_finset_image]⟩
@@ -364,7 +365,7 @@ theorem isCompact_iff_finite_subfamily_closed :
 /-- If `s : Set (X × Y)` belongs to `𝓝 x ×ˢ l` for all `x` from a compact set `K`,
 then it belongs to `(𝓝ˢ K) ×ˢ l`,
 i.e., there exist an open `U ⊇ K` and `t ∈ l` such that `U ×ˢ t ⊆ s`. -/
-theorem IsCompact.mem_nhdsSet_prod_of_forall {K : Set X} {l : Filter Y} {s : Set (X × Y)}
+theorem IsCompact.mem_nhdsSet_prod_of_forall {K : Set X} {Y} {l : Filter Y} {s : Set (X × Y)}
     (hK : IsCompact K) (hs : ∀ x ∈ K, s ∈ 𝓝 x ×ˢ l) : s ∈ (𝓝ˢ K) ×ˢ l := by
   refine hK.induction_on (by simp) (fun t t' ht hs ↦ ?_) (fun t t' ht ht' ↦ ?_) fun x hx ↦ ?_
   · exact prod_mono (nhdsSet_mono ht) le_rfl hs
@@ -374,19 +375,19 @@ theorem IsCompact.mem_nhdsSet_prod_of_forall {K : Set X} {l : Filter Y} {s : Set
     refine ⟨u, nhdsWithin_le_nhds (huo.mem_nhds hx), mem_of_superset ?_ hs⟩
     exact prod_mem_prod (huo.mem_nhdsSet.2 Subset.rfl) hv
 
-theorem IsCompact.nhdsSet_prod_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter Y) :
+theorem IsCompact.nhdsSet_prod_eq_biSup {K : Set X} (hK : IsCompact K) {Y} (l : Filter Y) :
     (𝓝ˢ K) ×ˢ l = ⨆ x ∈ K, 𝓝 x ×ˢ l :=
   le_antisymm (fun s hs ↦ hK.mem_nhdsSet_prod_of_forall <| by simpa using hs)
     (iSup₂_le fun x hx ↦ prod_mono (nhds_le_nhdsSet hx) le_rfl)
 
-theorem IsCompact.prod_nhdsSet_eq_biSup {K : Set Y} (hK : IsCompact K) (l : Filter X) :
+theorem IsCompact.prod_nhdsSet_eq_biSup {K : Set Y} (hK : IsCompact K) {X} (l : Filter X) :
     l ×ˢ (𝓝ˢ K) = ⨆ y ∈ K, l ×ˢ 𝓝 y := by
   simp only [prod_comm (f := l), hK.nhdsSet_prod_eq_biSup, map_iSup]
 
 /-- If `s : Set (X × Y)` belongs to `l ×ˢ 𝓝 y` for all `y` from a compact set `K`,
 then it belongs to `l ×ˢ (𝓝ˢ K)`,
 i.e., there exist `t ∈ l` and an open `U ⊇ K` such that `t ×ˢ U ⊆ s`. -/
-theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {l : Filter X} {s : Set (X × Y)}
+theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {X} {l : Filter X} {s : Set (X × Y)}
     (hK : IsCompact K) (hs : ∀ y ∈ K, s ∈ l ×ˢ 𝓝 y) : s ∈ l ×ˢ 𝓝ˢ K :=
   (hK.prod_nhdsSet_eq_biSup l).symm ▸ by simpa using hs
 
@@ -516,6 +517,7 @@ lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X
   subst this
   obtain ⟨t, ht⟩ :=
     hUc.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
+  classical
   refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
   · refine Set.Subset.trans ht ?_
     simp only [Set.iUnion_subset_iff]
@@ -761,7 +763,7 @@ lemma le_nhds_of_unique_clusterPt [CompactSpace X] {l : Filter X} {y : X}
 /-- If `y` is a unique `MapClusterPt` for `f` along `l`
 and the codomain of `f` is a compact space,
 then `f` tends to `𝓝 y` along `l`. -/
-lemma tendsto_nhds_of_unique_mapClusterPt [CompactSpace X] {l : Filter Y} {y : X} {f : Y → X}
+lemma tendsto_nhds_of_unique_mapClusterPt [CompactSpace X] {Y} {l : Filter Y} {y : X} {f : Y → X}
     (h : ∀ x, MapClusterPt x l f → x = y) :
     Tendsto f l (𝓝 y) :=
   le_nhds_of_unique_clusterPt h
@@ -1088,7 +1090,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
     ∃ V : Set X, V ⊆ S ∧ V.Nonempty ∧ IsClosed V ∧
       ∀ V' : Set X, V' ⊆ V → V'.Nonempty → IsClosed V' → V' = V := by
   let opens := { U : Set X | Sᶜ ⊆ U ∧ IsOpen U ∧ Uᶜ.Nonempty }
-  obtain ⟨U, ⟨Uc, Uo, Ucne⟩, h⟩ :=
+  obtain ⟨U, h⟩ :=
     zorn_subset opens fun c hc hz => by
       by_cases hcne : c.Nonempty
       · obtain ⟨U₀, hU₀⟩ := hcne
@@ -1113,10 +1115,11 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
         refine ⟨⟨Set.Subset.refl _, isOpen_compl_iff.mpr hS, ?_⟩, fun U Uc => (hcne ⟨U, Uc⟩).elim⟩
         rw [compl_compl]
         exact hne
+  obtain ⟨Uc, Uo, Ucne⟩ := h.prop
   refine ⟨Uᶜ, Set.compl_subset_comm.mp Uc, Ucne, Uo.isClosed_compl, ?_⟩
   intro V' V'sub V'ne V'cls
   have : V'ᶜ = U := by
-    refine h V'ᶜ ⟨?_, isOpen_compl_iff.mpr V'cls, ?_⟩ (Set.subset_compl_comm.mp V'sub)
+    refine h.eq_of_ge ⟨?_, isOpen_compl_iff.mpr V'cls, ?_⟩ (subset_compl_comm.2 V'sub)
     · exact Set.Subset.trans Uc (Set.subset_compl_comm.mp V'sub)
     · simp only [compl_compl, V'ne]
   rw [← this, compl_compl]
