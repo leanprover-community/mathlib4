@@ -43,14 +43,39 @@ getTransImports () {
     tr -d ' "{}:'
 }
 
+formatGitDiff () {
+  git diff --name-status "${1}" |
+    awk -F'\t' '!($1 == "M") {
+      printf("%s,,%s%s\n", NF == 2? $2 : $3, $1, NF == 2? "" : ","$2)
+    }' |
+    sed '
+      s=/=.=g
+      s=\.lean,=,=
+      s=,A=, (new file)=
+      s=,D=, (removed file)=
+      s=,R[0-9]*,\(.*\)=, (paired with `\1`)=
+    '
+}
+
+getFormattedTransImports () {
+  { getTransImports
+    formatGitDiff "${1}"; } |
+    awk -F, '($2+0 == $2) { record[$1]=$2; if(name[$1] == "") { name[$1]="`"$1"`" } }
+         ($2 == "") { name[$1]="`"$1"`"$3 }
+      END {
+        for(fil in name)
+        { printf("%s,%s\n", name[fil], record[fil]) }
+      }'
+}
+
 git checkout "${commit1}"
 git checkout master scripts/count-trans-deps.py
-getTransImports > transImports1.txt
+getFormattedTransImports "${commit2}" > transImports1.txt
 git checkout "${currCommit}"
 
 git checkout "${commit2}"
 git checkout master scripts/count-trans-deps.py
-getTransImports - > transImports2.txt
+getFormattedTransImports "${commit1}" > transImports2.txt
 git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
@@ -61,10 +86,10 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
       if(!(diff[fil] == 0)) {
         con++
         nums[diff[fil]]++
-        reds[diff[fil]]=reds[diff[fil]]" `"fil"`"
+        reds[diff[fil]]=reds[diff[fil]]" "fil
       }
     }
-    if (200 <= con) { printf("There are %s files with changed transitive imports: this is too many to display!\n", con) } else {
+    if (2000 <= con) { printf("There are %s files with changed transitive imports: this is too many to display!\n", con) } else {
       for(x in reds) {
         if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
