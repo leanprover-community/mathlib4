@@ -34,8 +34,7 @@ lemma tsum_set_one_eq : ∑' (_ : s), (1 : ℝ≥0∞) = s.encard := by
     rw [tsum_const_eq_top_of_ne_zero one_ne_zero, encard_eq_top hinf, ENat.toENNReal_top]
 
 @[simp]
-lemma tsum_set_const_eq' (c : ℝ≥0∞) :
-    ∑' (_:s), (c : ℝ≥0∞) = s.encard * c := by
+lemma tsum_set_const_eq (c : ℝ≥0∞) : ∑' (_:s), (c : ℝ≥0∞) = s.encard * c := by
   nth_rw 1 [← one_mul c]
   rw [ENNReal.tsum_mul_right,tsum_set_one_eq]
 
