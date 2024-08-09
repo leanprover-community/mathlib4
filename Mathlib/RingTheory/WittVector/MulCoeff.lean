@@ -131,7 +131,8 @@ theorem mul_polyOfInterest_aux2 (n : ℕ) :
   rw [sum_range_succ, add_comm, Nat.sub_self, pow_zero, pow_one]
   rfl
 
-theorem mul_polyOfInterest_aux3 (n : ℕ) : wittPolyProd p (n + 1) =
+-- We redeclare `p` here to locally discard the unneeded `p.Prime` hypothesis.
+theorem mul_polyOfInterest_aux3 (p n : ℕ) : wittPolyProd p (n + 1) =
     -((p : 𝕄) ^ (n + 1) * X (0, n + 1)) * ((p : 𝕄) ^ (n + 1) * X (1, n + 1)) +
     (p : 𝕄) ^ (n + 1) * X (0, n + 1) * rename (Prod.mk (1 : Fin 2)) (wittPolynomial p ℤ (n + 1)) +
     (p : 𝕄) ^ (n + 1) * X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)) +
