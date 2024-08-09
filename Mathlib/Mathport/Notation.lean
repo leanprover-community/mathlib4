@@ -612,7 +612,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         pretty printing relies on deriving an expression matcher from the expansion. \
         (Use `set_option trace.notation3 true` to get some debug information.)"
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
 
 /-! `scoped[ns]` support -/
 

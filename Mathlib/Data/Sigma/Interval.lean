@@ -6,8 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Data.Sigma.Order
 import Mathlib.Order.Interval.Finset.Defs
 
-#align_import data.sigma.interval from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
-
 /-!
 # Finite intervals in a sigma type
 
@@ -59,19 +57,15 @@ variable (a b : Σ i, α i)
 
 theorem card_Icc : (Icc a b).card = if h : a.1 = b.1 then (Icc (h.rec a.2) b.2).card else 0 :=
   card_sigmaLift (fun _ => Icc) _ _
-#align sigma.card_Icc Sigma.card_Icc
 
 theorem card_Ico : (Ico a b).card = if h : a.1 = b.1 then (Ico (h.rec a.2) b.2).card else 0 :=
   card_sigmaLift (fun _ => Ico) _ _
-#align sigma.card_Ico Sigma.card_Ico
 
 theorem card_Ioc : (Ioc a b).card = if h : a.1 = b.1 then (Ioc (h.rec a.2) b.2).card else 0 :=
   card_sigmaLift (fun _ => Ioc) _ _
-#align sigma.card_Ioc Sigma.card_Ioc
 
 theorem card_Ioo : (Ioo a b).card = if h : a.1 = b.1 then (Ioo (h.rec a.2) b.2).card else 0 :=
   card_sigmaLift (fun _ => Ioo) _ _
-#align sigma.card_Ioo Sigma.card_Ioo
 
 end
 
@@ -80,22 +74,18 @@ variable (i : ι) (a b : α i)
 @[simp]
 theorem Icc_mk_mk : Icc (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Icc a b).map (Embedding.sigmaMk i) :=
   dif_pos rfl
-#align sigma.Icc_mk_mk Sigma.Icc_mk_mk
 
 @[simp]
 theorem Ico_mk_mk : Ico (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ico a b).map (Embedding.sigmaMk i) :=
   dif_pos rfl
-#align sigma.Ico_mk_mk Sigma.Ico_mk_mk
 
 @[simp]
 theorem Ioc_mk_mk : Ioc (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioc a b).map (Embedding.sigmaMk i) :=
   dif_pos rfl
-#align sigma.Ioc_mk_mk Sigma.Ioc_mk_mk
 
 @[simp]
 theorem Ioo_mk_mk : Ioo (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioo a b).map (Embedding.sigmaMk i) :=
   dif_pos rfl
-#align sigma.Ioo_mk_mk Sigma.Ioo_mk_mk
 
 end Disjoint
 
