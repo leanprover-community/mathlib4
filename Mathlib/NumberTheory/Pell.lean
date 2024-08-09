@@ -72,7 +72,7 @@ We then set up an API for `Pell.Solution₁ d`.
 -/
 
 
-open Zsqrtd
+open CharZero Zsqrtd
 
 /-- An element of `ℤ√d` has norm one (i.e., `a.re^2 - d*a.im^2 = 1`) if and only if
 it is contained in the submonoid of unitary elements.

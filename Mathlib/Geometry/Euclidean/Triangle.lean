@@ -36,6 +36,8 @@ unnecessarily.
 
 noncomputable section
 
+open scoped CharZero
+
 open scoped Classical
 
 open scoped Real
