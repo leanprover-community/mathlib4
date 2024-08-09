@@ -36,20 +36,32 @@ section Semiring
 variable [Semiring R] [Fintype n]
 
 @[simp]
-theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
-    dotProduct v (LinearMap.stdBasis R (fun _ => R) i c) = v i * c := by
-  rw [dotProduct, Finset.sum_eq_single i, LinearMap.stdBasis_same]
-  · exact fun _ _ hb => by rw [LinearMap.stdBasis_ne _ _ _ _ hb, mul_zero]
+theorem dotProduct_single_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
+    dotProduct v (LinearMap.single R (fun _ => R) i c) = v i * c := by
+  rw [dotProduct, Finset.sum_eq_single i, LinearMap.single_same]
+  · exact fun _ _ hb => by rw [LinearMap.single_ne _ _ _ _ hb, mul_zero]
   · exact fun hi => False.elim (hi <| Finset.mem_univ _)
 
+set_option linter.deprecated false in
+@[simp, deprecated dotProduct_single_eq_mul (since := "2024-08-09")]
+theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
+    dotProduct v (LinearMap.stdBasis R (fun _ => R) i c) = v i * c :=
+  dotProduct_single_eq_mul ..
+
 -- @[simp] -- Porting note (#10618): simp can prove this
+theorem dotProduct_single_one [DecidableEq n] (v : n → R) (i : n) :
+    dotProduct v (LinearMap.single R (fun _ => R) i 1) = v i := by
+  rw [dotProduct_single_eq_mul, mul_one]
+
+set_option linter.deprecated false in
+@[deprecated dotProduct_single_one (since := "2024-08-09")]
 theorem dotProduct_stdBasis_one [DecidableEq n] (v : n → R) (i : n) :
     dotProduct v (LinearMap.stdBasis R (fun _ => R) i 1) = v i := by
   rw [dotProduct_stdBasis_eq_mul, mul_one]
 
 theorem dotProduct_eq (v w : n → R) (h : ∀ u, dotProduct v u = dotProduct w u) : v = w := by
   funext x
-  classical rw [← dotProduct_stdBasis_one v x, ← dotProduct_stdBasis_one w x, h]
+  classical rw [← dotProduct_single_one v x, ← dotProduct_single_one w x, h]
 
 theorem dotProduct_eq_iff {v w : n → R} : (∀ u, dotProduct v u = dotProduct w u) ↔ v = w :=
   ⟨fun h => dotProduct_eq v w h, fun h _ => h ▸ rfl⟩

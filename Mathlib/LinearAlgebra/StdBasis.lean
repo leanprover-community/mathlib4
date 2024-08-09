@@ -41,45 +41,66 @@ variable (R : Type*) {ι : Type*} [Semiring R] (φ : ι → Type*) [∀ i, AddCo
   [∀ i, Module R (φ i)] [DecidableEq ι]
 
 /-- The standard basis of the product of `φ`. -/
+@[deprecated LinearMap.single (since := "2024-08-09")]
 def stdBasis : ∀ i : ι, φ i →ₗ[R] ∀ i, φ i :=
-  single
+  single R φ
 
+set_option linter.deprecated false in
+@[deprecated LinearMap.single_apply (since := "")]
 theorem stdBasis_apply (i : ι) (b : φ i) : stdBasis R φ i b = update (0 : (a : ι) → φ a) i b :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[simp, deprecated LinearMap.single_apply' (since := "2024-08-09")]
 theorem stdBasis_apply' (i i' : ι) : (stdBasis R (fun _x : ι => R) i) 1 i' = ite (i = i') 1 0 := by
   rw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
   congr 1; rw [eq_iff_iff, eq_comm]
 
+set_option linter.deprecated false in
+@[deprecated LinearMap.coe_single (since := "2024-08-09")]
 theorem coe_stdBasis (i : ι) : ⇑(stdBasis R φ i) = Pi.single i :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[simp, deprecated LinearMap.single_same (since := "2024-08-09")]
 theorem stdBasis_same (i : ι) (b : φ i) : stdBasis R φ i b i = b :=
   Pi.single_eq_same i b
 
+set_option linter.deprecated false in
+@[deprecated LinearMap.single_ne (since := "2024-08-09")]
 theorem stdBasis_ne (i j : ι) (h : j ≠ i) (b : φ i) : stdBasis R φ i b j = 0 :=
   Pi.single_eq_of_ne h b
 
+set_option linter.deprecated false in
+@[deprecated single_eq_pi_diag (since := "2024-08-09")]
 theorem stdBasis_eq_pi_diag (i : ι) : stdBasis R φ i = pi (diag i) := by
   ext x j
   -- Porting note: made types explicit
   convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
   rfl
 
+set_option linter.deprecated false in
+@[deprecated ker_single (since := "2024-08-09")]
 theorem ker_stdBasis (i : ι) : ker (stdBasis R φ i) = ⊥ :=
   ker_eq_bot_of_injective <| Pi.single_injective _ _
 
+set_option linter.deprecated false in
+@[deprecated proj_comp_single (since := "2024-08-09")]
 theorem proj_comp_stdBasis (i j : ι) : (proj i).comp (stdBasis R φ j) = diag j i := by
   rw [stdBasis_eq_pi_diag, proj_pi]
 
+set_option linter.deprecated false in
+@[deprecated proj_single_same (since := "2024-08-09")]
 theorem proj_stdBasis_same (i : ι) : (proj i).comp (stdBasis R φ i) = id :=
   LinearMap.ext <| stdBasis_same R φ i
 
+set_option linter.deprecated false in
+@[deprecated proj_single_ne (since := "2024-08-09")]
 theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ j) = 0 :=
   LinearMap.ext <| stdBasis_ne R φ _ _ h
 
+set_option linter.deprecated false in
+@[deprecated iSup_range_single_le_iInf_ker_proj (since := "2024-08-09")]
 theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (stdBasis R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
@@ -89,6 +110,8 @@ theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
   rintro rfl
   exact h.le_bot ⟨hi, hj⟩
 
+set_option linter.deprecated false in
+@[deprecated iInf_ker_proj_le_iSup_range_single (since := "2024-08-09")]
 theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : Set.univ ⊆ ↑I ∪ J) :
     ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) ≤ ⨆ i ∈ I, range (stdBasis R φ i) :=
   SetLike.le_def.2
@@ -105,6 +128,8 @@ theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : 
           exact hb _ ((hu trivial).resolve_left hiI)]
       exact sum_mem_biSup fun i _ => mem_range_self (stdBasis R φ i) (b i))
 
+set_option linter.deprecated false in
+@[deprecated iSup_range_single_eq_iInf_ker_proj (since := "2024-08-09")]
 theorem iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) (hI : Set.Finite I) :
     ⨆ i ∈ I, range (stdBasis R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
@@ -113,6 +138,8 @@ theorem iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
   refine le_trans (iInf_ker_proj_le_iSup_range_stdBasis R φ this) (iSup_mono fun i => ?_)
   rw [Set.Finite.mem_toFinset]
 
+set_option linter.deprecated false in
+@[deprecated iSup_range_single (since := "2024-08-09")]
 theorem iSup_range_stdBasis [Finite ι] : ⨆ i, range (stdBasis R φ i) = ⊤ := by
   cases nonempty_fintype ι
   convert top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_stdBasis R φ _)
@@ -120,6 +147,8 @@ theorem iSup_range_stdBasis [Finite ι] : ⨆ i, range (stdBasis R φ i) = ⊤ :
     exact ((@iSup_pos _ _ _ fun _ => range <| stdBasis R φ i) <| Finset.mem_univ i).symm
   · rw [Finset.coe_univ, Set.union_empty]
 
+set_option linter.deprecated false in
+@[deprecated disjoint_single_single (since := "2024-08-09")]
 theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
     Disjoint (⨆ i ∈ I, range (stdBasis R φ i)) (⨆ i ∈ J, range (stdBasis R φ i)) := by
   refine
@@ -135,6 +164,8 @@ theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
       · exact hJ i hiJ
     · exact hI i hiI
 
+set_option linter.deprecated false in
+@[deprecated single_eq_single (since := "2024-08-09")]
 theorem stdBasis_eq_single {a : R} :
     (fun i : ι => (stdBasis R (fun _ : ι => R) i) a) = fun i : ι => ↑(Finsupp.single i a) :=
   funext fun i => (Finsupp.single_eq_pi_single i a).symm
@@ -153,32 +184,32 @@ section Module
 
 variable {η : Type*} {ιs : η → Type*} {Ms : η → Type*}
 
-theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
+theorem linearIndependent_single [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
     [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
-    LinearIndependent R fun ji : Σj, ιs j => stdBasis R Ms ji.1 (v ji.1 ji.2) := by
-  have hs' : ∀ j : η, LinearIndependent R fun i : ιs j => stdBasis R Ms j (v j i) := by
+    LinearIndependent R fun ji : Σj, ιs j ↦ LinearMap.single R Ms ji.1 (v ji.1 ji.2) := by
+  have hs' : ∀ j : η, LinearIndependent R fun i : ιs j => LinearMap.single R Ms j (v j i) := by
     intro j
-    exact (hs j).map' _ (ker_stdBasis _ _ _)
+    exact (hs j).map' _ (LinearMap.ker_single _ _ _)
   apply linearIndependent_iUnion_finite hs'
   intro j J _ hiJ
   have h₀ :
-    ∀ j, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
-      LinearMap.range (stdBasis R Ms j) := by
+    ∀ j, span R (range fun i : ιs j => LinearMap.single R Ms j (v j i)) ≤
+      LinearMap.range (LinearMap.single R Ms j) := by
     intro j
     rw [span_le, LinearMap.range_coe]
     apply range_comp_subset_range
   have h₁ :
-    span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
-      ⨆ i ∈ ({j} : Set _), LinearMap.range (stdBasis R Ms i) := by
-    rw [@iSup_singleton _ _ _ fun i => LinearMap.range (stdBasis R (Ms) i)]
+    span R (range fun i : ιs j => LinearMap.single R Ms j (v j i)) ≤
+      ⨆ i ∈ ({j} : Set _), LinearMap.range (LinearMap.single R Ms i) := by
+    rw [@iSup_singleton _ _ _ fun i => LinearMap.range (LinearMap.single R (Ms) i)]
     apply h₀
   have h₂ :
-    ⨆ j ∈ J, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
-      ⨆ j ∈ J, LinearMap.range (stdBasis R (fun j : η => Ms j) j) :=
+    ⨆ j ∈ J, span R (range fun i : ιs j => LinearMap.single R Ms j (v j i)) ≤
+      ⨆ j ∈ J, LinearMap.range (LinearMap.single R (fun j : η => Ms j) j) :=
     iSup₂_mono fun i _ => h₀ i
   have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by
     convert Set.disjoint_singleton_left.2 hiJ using 0
-  exact (disjoint_stdBasis_stdBasis _ _ _ _ h₃).mono h₁ h₂
+  exact (disjoint_single_single _ _ _ _ h₃).mono h₁ h₂
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
@@ -198,14 +229,32 @@ protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
   Basis.ofRepr
     ((LinearEquiv.piCongrRight fun j => (s j).repr) ≪≫ₗ
       (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
-  --  Porting note: was
-  -- -- The `AddCommMonoid (Π j, Ms j)` instance was hard to find.
-  -- -- Defining this in tactic mode seems to shake up instance search enough
-  -- -- that it works by itself.
-  -- refine Basis.ofRepr (?_ ≪≫ₗ (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
-  -- exact LinearEquiv.piCongrRight fun j => (s j).repr
 
 @[simp]
+theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (j i) :
+    (Pi.basis s).repr (LinearMap.single R _ j (s j i)) = Finsupp.single ⟨j, i⟩ 1 := by
+  ext ⟨j', i'⟩
+  by_cases hj : j = j'
+  · subst hj
+    -- Porting note: needed to add more lemmas
+    simp only [Pi.basis, LinearEquiv.trans_apply, Basis.repr_self, single_same,
+      LinearEquiv.piCongrRight, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
+      Basis.repr_symm_apply, LinearEquiv.coe_mk, ne_eq, Sigma.mk.inj_iff, heq_eq_eq, true_and]
+    symm
+    -- Porting note: `Sigma.mk.inj` not found in the following, replaced by `Sigma.mk.inj_iff.mp`
+    exact
+      Finsupp.single_apply_left
+        (fun i i' (h : (⟨j, i⟩ : Σj, ιs j) = ⟨j, i'⟩) => eq_of_heq (Sigma.mk.inj_iff.mp h).2) _ _ _
+  simp only [Pi.basis, LinearEquiv.trans_apply, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
+    LinearEquiv.piCongrRight, coe_single]
+  dsimp
+  rw [Pi.single_eq_of_ne (Ne.symm hj), LinearEquiv.map_zero, Finsupp.zero_apply,
+    Finsupp.single_eq_of_ne]
+  rintro ⟨⟩
+  contradiction
+
+set_option linter.deprecated false in
+@[simp, deprecated basis_repr_single (since := "2024-08-09")]
 theorem basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (j i) :
     (Pi.basis s).repr (stdBasis R _ j (s j i)) = Finsupp.single ⟨j, i⟩ 1 := by
   ext ⟨j', i'⟩
@@ -230,8 +279,8 @@ theorem basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j))
 
 @[simp]
 theorem basis_apply [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (ji) :
-    Pi.basis s ji = stdBasis R _ ji.1 (s ji.1 ji.2) :=
-  Basis.apply_eq_iff.mpr (by simp)
+    Pi.basis s ji = LinearMap.single R _ ji.1 (s ji.1 ji.2) :=
+  Basis.apply_eq_iff.mpr (by simp [-coe_single])
 
 @[simp]
 theorem basis_repr (s : ∀ j, Basis (ιs j) R (Ms j)) (x) (ji) :
@@ -250,9 +299,10 @@ noncomputable def basisFun : Basis η R (η → R) :=
   Basis.ofEquivFun (LinearEquiv.refl _ _)
 
 @[simp]
-theorem basisFun_apply [DecidableEq η] (i) : basisFun R η i = stdBasis R (fun _ : η => R) i 1 := by
+theorem basisFun_apply [DecidableEq η] (i) :
+    basisFun R η i = LinearMap.single R (fun _ ↦ R) i 1 := by
   simp only [basisFun, Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
-    stdBasis_apply]
+    LinearMap.single_apply]
 
 @[simp]
 theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x i := by simp [basisFun]
@@ -317,10 +367,10 @@ theorem stdBasis_eq_stdBasisMatrix (i : m) (j : n) [DecidableEq m] [DecidableEq 
   · simp only [stdBasis, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
       hi, and_true, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
-    simp [hi, hj, Ne.symm hi, LinearMap.stdBasis_ne]
+    simp [hi, hj, Ne.symm hi, LinearMap.single_ne]
   · simp only [stdBasis, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
       hi, hj, and_self, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
-    simp [hi, hj, Ne.symm hj, Ne.symm hi, LinearMap.stdBasis_ne]
+    simp [hi, hj, Ne.symm hj, Ne.symm hi, LinearMap.single_ne]
 
 end Matrix
