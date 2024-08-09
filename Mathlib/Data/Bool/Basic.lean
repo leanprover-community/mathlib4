@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Mathlib.Logic.Function.Defs
-import Mathlib.Init.Order.Defs
+import Mathlib.Order.Defs
 
 /-!
 # Booleans

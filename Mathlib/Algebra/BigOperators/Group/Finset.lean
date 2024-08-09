@@ -1727,9 +1727,10 @@ theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) 
   Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| by simpa
 
 @[to_additive]
-lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] {s : Finset α} {f : α → β} {b₁ b₂ : β}
+lemma prod_mul_eq_prod_mul_of_exists {s : Finset α} {f : α → β} {b₁ b₂ : β}
     (a : α) (ha : a ∈ s) (h : f a * b₁ = f a * b₂) :
     (∏ a ∈ s, f a) * b₁ = (∏ a ∈ s, f a) * b₂ := by
+  classical
   rw [← insert_erase ha]
   simp only [mem_erase, ne_eq, not_true_eq_false, false_and, not_false_eq_true, prod_insert]
   rw [mul_assoc, mul_comm, mul_assoc, mul_comm b₁, h, ← mul_assoc, mul_comm _ (f a)]
@@ -2093,18 +2094,23 @@ theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multi
     {a : Multiset α} : Multiset.Disjoint a (i.sum f) ↔ ∀ b ∈ i, Multiset.Disjoint a (f b) := by
   simpa only [disjoint_comm] using disjoint_finset_sum_left
 
+@[simp]
+lemma mem_sum {s : Finset ι} {m : ι → Multiset α} : a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
+  induction' s using Finset.cons_induction <;> simp [*]
+
 variable [DecidableEq α]
 
-@[simp]
 theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a = card s := by
   simpa using (Finset.sum_multiset_map_count s (fun _ => (1 : ℕ))).symm
 
-@[simp]
-theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by
+@[simp] lemma sum_count_eq_card {s : Finset α} {m : Multiset α} (hms : ∀ a ∈ m, a ∈ s) :
+    ∑ a ∈ s, m.count a = card m := by
   rw [← toFinset_sum_count_eq, ← Finset.sum_filter_ne_zero]
-  congr
-  ext
-  simp
+  congr with a
+  simpa using hms a
+
+@[deprecated sum_count_eq_card (since := "2024-07-21")]
+theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by simp
 
 theorem count_sum' {s : Finset β} {a : α} {f : β → Multiset α} :
     count a (∑ x ∈ s, f x) = ∑ x ∈ s, count a (f x) := by

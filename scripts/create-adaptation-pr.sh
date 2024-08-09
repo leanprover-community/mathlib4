@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e # abort whenever a command in the script fails
+
 # We need to make the script robust against changes on disk
 # that might have happened during the script execution, e.g. from switching branches.
 # We do that by making sure the entire script is parsed before execution starts

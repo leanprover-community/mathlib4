@@ -42,17 +42,17 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     ∃ t : Set ℕ, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ n ∈ u, s n) := by
   -- We let `M f` be the set on which the norm of `f` exceeds its essential supremum, and `N` be the
   -- union of `M` of the finite products of the indicators of the `s n`.
-  let M (f : α → ℝ) : Set α := {x | snormEssSup f μ < ‖f x‖₊}
+  let M (f : α → ℝ) : Set α := {x | eLpNormEssSup f μ < ‖f x‖₊}
   let N : Set α := ⋃ u : Finset ℕ, M (Set.indicator (⋂ n ∈ u, s n) 1)
   -- `N` is a null set since `M f` is a null set for each `f`.
-  have hN₀ : μ N = 0 := measure_iUnion_null fun u ↦ meas_snormEssSup_lt
+  have hN₀ : μ N = 0 := measure_iUnion_null fun u ↦ meas_eLpNormEssSup_lt
   -- The important thing about `N` is that if we remove `N` from our space, then finite unions of
   -- the `s n` are null iff they are empty.
   have hN₁ (u : Finset ℕ) : ((⋂ n ∈ u, s n) \ N).Nonempty → 0 < μ (⋂ n ∈ u, s n) := by
     simp_rw [pos_iff_ne_zero]
     rintro ⟨x, hx⟩ hu
     refine hx.2 (mem_iUnion.2 ⟨u, ?_⟩)
-    rw [mem_setOf, indicator_of_mem hx.1, snormEssSup_eq_zero_iff.2]
+    rw [mem_setOf, indicator_of_mem hx.1, eLpNormEssSup_eq_zero_iff.2]
     · simp
     · rwa [indicator_ae_eq_zero, Function.support_one, inter_univ]
   -- Define `f n` to be the average of the first `n + 1` indicators of the `s k`.
