@@ -326,7 +326,7 @@ theorem toFilter_inf_iUnion_eq (l : IntegrationParams) (I : Box ι) (π₀ : Pre
     l.toFilter I ⊓ 𝓟 { π | π.iUnion = π₀.iUnion } = l.toFilteriUnion I π₀ :=
   (iSup_inf_principal _ _).symm
 
-variable {r r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} {π π₁ π₂ : TaggedPrepartition I}
+variable {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} {π π₁ π₂ : TaggedPrepartition I}
 
 variable (I) in
 theorem MemBaseSet.mono' (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
@@ -342,13 +342,16 @@ theorem MemBaseSet.mono (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     (hr : ∀ x ∈ Box.Icc I, r₁ x ≤ r₂ x) (hπ : l₁.MemBaseSet I c₁ r₁ π) : l₂.MemBaseSet I c₂ r₂ π :=
   hπ.mono' I h hc fun J _ => hr _ <| π.tag_mem_Icc J
 
-theorem MemBaseSet.exists_common_compl (h₁ : l.MemBaseSet I c₁ r₁ π₁) (h₂ : l.MemBaseSet I c₂ r₂ π₂)
+theorem MemBaseSet.exists_common_compl
+    {l : IntegrationParams}
+    (h₁ : l.MemBaseSet I c₁ r₁ π₁) (h₂ : l.MemBaseSet I c₂ r₂ π₂)
     (hU : π₁.iUnion = π₂.iUnion) :
     ∃ π : Prepartition I, π.iUnion = ↑I \ π₁.iUnion ∧
       (l.bDistortion → π.distortion ≤ c₁) ∧ (l.bDistortion → π.distortion ≤ c₂) := by
+  clear l₁ l₂
   wlog hc : c₁ ≤ c₂ with H
   · simpa [hU, _root_.and_comm] using
-      @H _ _ I J c c₂ c₁ _ l₂ l₁ r r₂ r₁ π π₂ π₁ h₂ h₁ hU.symm (le_of_not_le hc)
+        @H _ _ I J c c₂ c₁ l r₂ r₁ π π₂ π₁ _ h₂ h₁ hU.symm (le_of_not_le hc)
   by_cases hD : (l.bDistortion : Prop)
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩
@@ -363,6 +366,8 @@ protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c 
     fun h => (hπ₁.2 h).disjUnion (π₂.isHenstock_toSubordinate _) _,
     fun h => (distortion_unionComplToSubordinate _ _ _ _).trans_le (max_le (hπ₁.3 h) (hc h)),
     fun _ => ⟨⊥, by simp⟩⟩
+
+variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
 
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by

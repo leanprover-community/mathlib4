@@ -139,8 +139,7 @@ theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E]
 /-! ### Bochner integral -/
 
 
-variable [NormedSpace ℝ E] {E' : Type*} [NormedAddCommGroup E']
-  [CompleteSpace E'] [NormedSpace ℝ E']
+variable [NormedSpace ℝ E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
 theorem Kernel.integral_fn_integral_add ⦃f g : β × γ → E⦄ (F : E → E')
     (hf : Integrable f ((κ ⊗ₖ η) a)) (hg : Integrable g ((κ ⊗ₖ η) a)) :
