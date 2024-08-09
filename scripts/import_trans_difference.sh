@@ -70,12 +70,12 @@ getFormattedTransImports () {
 }
 
 git checkout "${commit1}"
-#git checkout master scripts/count-trans-deps.py
+git checkout master scripts/count-trans-deps.py
 getFormattedTransImports "${commit2}" > transImports1.txt
 git checkout "${currCommit}"
 
 git checkout "${commit2}"
-#git checkout master scripts/count-trans-deps.py
+git checkout master scripts/count-trans-deps.py
 getFormattedTransImports "${commit1}" > transImports2.txt
 git checkout "${currCommit}"
 
