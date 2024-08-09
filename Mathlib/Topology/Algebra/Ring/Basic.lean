@@ -354,3 +354,5 @@ def AbsoluteValue.comp {R S T : Type*} [Semiring T] [Semiring R] [OrderedSemirin
   add_le' _ _ := (congr_arg v (map_add f _ _)).trans_le (v.add_le _ _)
 
 end AbsoluteValue
+
+assert_not_exists Cardinal

@@ -3,13 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
-import Mathlib.GroupTheory.Commutator.Finite
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.GroupTheory.Commutator.Basic
 
 /-!
 # Properties of group actions involving quotient groups
@@ -421,5 +420,3 @@ theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G)
   rfl
 
 end Subgroup
-
-assert_not_exists Cardinal

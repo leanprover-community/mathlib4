@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Prod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Fintype.Units
 
 
 /-!
