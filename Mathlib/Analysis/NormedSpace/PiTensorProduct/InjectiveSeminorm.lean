@@ -397,10 +397,16 @@ noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i,
 protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
     mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow mapLMonoidHom _ _
 
+-- We redeclare `ι` here, and later dependent arguments,
+-- to avoid the `[Fintype ι]` assumption present throughout the rest of the file.
 open Function in
-private theorem mapL_add_smul_aux [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
+private theorem mapL_add_smul_aux {ι : Type uι}
+    {E : ι → Type uE} [(i : ι) → SeminormedAddCommGroup (E i)] [(i : ι) → NormedSpace 𝕜 (E i)]
+    {E' : ι → Type u_1} [(i : ι) → SeminormedAddCommGroup (E' i)] [(i : ι) → NormedSpace 𝕜 (E' i)]
+    (f : (i : ι) → E i →L[𝕜] E' i)
+    [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
     (fun j ↦ (update f i u j).toLinearMap) =
-    update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
+      update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
   symm
   rw [update_eq_iff]
   constructor

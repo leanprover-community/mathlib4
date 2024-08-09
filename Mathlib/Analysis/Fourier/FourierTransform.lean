@@ -143,8 +143,6 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
 @[deprecated (since := "2024-03-29")]
 alias fourier_integral_convergent_iff := VectorFourier.fourierIntegral_convergent_iff
 
-variable [CompleteSpace E]
-
 theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {f g : V → E} (hf : Integrable f μ) (hg : Integrable g μ) :
     fourierIntegral e μ L f + fourierIntegral e μ L g = fourierIntegral e μ L (f + g) := by
@@ -236,7 +234,7 @@ namespace VectorFourier
 
 variable {𝕜 ι E F V W : Type*} [Fintype ι] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup V] [NormedSpace 𝕜 V] [MeasurableSpace V] [BorelSpace V]
-  [NormedAddCommGroup W] [NormedSpace 𝕜 W] [MeasurableSpace W] [BorelSpace W]
+  [NormedAddCommGroup W] [NormedSpace 𝕜 W]
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →L[𝕜] W →L[𝕜] 𝕜}
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup E] [NormedSpace ℂ E]
@@ -273,8 +271,6 @@ variable {𝕜 : Type*} [CommRing 𝕜] [MeasurableSpace 𝕜] {E : Type*} [Norm
   [NormedSpace ℂ E]
 
 section Defs
-
-variable [CompleteSpace E]
 
 /-- The Fourier transform integral for `f : 𝕜 → E`, with respect to the measure `μ` and additive
 character `e`. -/
@@ -351,10 +347,9 @@ section Apply
 
 variable {ι F V W : Type*} [Fintype ι]
   [NormedAddCommGroup V] [NormedSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
-  [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace W] [BorelSpace W]
+  [NormedAddCommGroup W] [NormedSpace ℝ W]
   {μ : Measure V} {L : V →L[ℝ] W →L[ℝ] ℝ}
   [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup E] [NormedSpace ℂ E]
   {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
 
 theorem fourierIntegral_continuousLinearMap_apply'
@@ -372,11 +367,17 @@ theorem fourierIntegral_continuousMultilinearMap_apply'
 end Apply
 
 variable {V : Type*} [NormedAddCommGroup V]
-  [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+  [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
   {W : Type*} [NormedAddCommGroup W]
   [InnerProductSpace ℝ W] [MeasurableSpace W] [BorelSpace W] [FiniteDimensional ℝ W]
 
 open scoped RealInnerProductSpace
+
+@[simp] theorem fourierIntegral_convergent_iff {μ : Measure V} {f : V → E} (w : V) :
+    Integrable (fun v : V ↦ 𝐞 (- ⟪v, w⟫) • f v) μ ↔ Integrable f μ :=
+  fourierIntegral_convergent_iff' (innerSL ℝ) w
+
+variable [FiniteDimensional ℝ V]
 
 /-- The Fourier transform of a function on an inner product space, with respect to the standard
 additive character `ω ↦ exp (2 i π ω)`. -/
@@ -444,10 +445,6 @@ theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
 
 @[deprecated (since := "2024-02-21")]
 alias fourierIntegral_eq_integral_exp_smul := fourierIntegral_real_eq_integral_exp_smul
-
-@[simp] theorem fourierIntegral_convergent_iff {μ : Measure V} {f : V → E} (w : V) :
-    Integrable (fun v : V ↦ 𝐞 (- ⟪v, w⟫) • f v) μ ↔ Integrable f μ :=
-  fourierIntegral_convergent_iff' (innerSL ℝ) w
 
 theorem fourierIntegral_continuousLinearMap_apply
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]

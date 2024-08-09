@@ -1416,7 +1416,10 @@ theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace
   apply tendsto_integral_approxOn_of_measurable hf fmeas _ _ (integrable_zero _ _ _)
   exact eventually_of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 
-theorem tendsto_integral_norm_approxOn_sub [MeasurableSpace E] [BorelSpace E] {f : α → E}
+-- We redeclare `E` here to temporarily avoid
+-- the `[CompleteSpace E]` and `[NormedSpace ℝ E]` instances.
+theorem tendsto_integral_norm_approxOn_sub
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {f : α → E}
     (fmeas : Measurable f) (hf : Integrable f μ) [SeparableSpace (range f ∪ {0} : Set E)] :
     Tendsto (fun n ↦ ∫ x, ‖SimpleFunc.approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖ ∂μ)
       atTop (𝓝 0) := by
