@@ -466,7 +466,7 @@ theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     assumption'
 
 /-- For `x : α`, `s : Cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/
-def Mem (s : Cycle α) (a : α) : Prop :=
+def Mem (a : α) (s : Cycle α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun _ _ e => propext <| e.mem_iff
 
 instance : Membership α (Cycle α) :=

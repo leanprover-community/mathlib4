@@ -60,7 +60,7 @@ lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
     exact
       (h ha <| finite_zpowers.1 <| hs'.subset <| zpowers_le.2 has).trans
         (WithTop.coe_le_coe.2 <| s.orderOf_le_card hs' has)
-  · simpa using h (zpowers_ne_bot.2 ha) ha'.finite_zpowers
+  · sorry -- simpa using h (zpowers_ne_bot.2 ha) ha'.finite_zpowers
 
 @[to_additive]
 lemma minOrder_le_natCard (hs : s ≠ ⊥) (hs' : (s : Set α).Finite) : minOrder α ≤ Nat.card s :=

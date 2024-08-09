@@ -97,7 +97,7 @@ structure Filter (α : Type*) where
 
 /-- If `F` is a filter on `α`, and `U` a subset of `α` then we can write `U ∈ F` as on paper. -/
 instance {α : Type*} : Membership (Set α) (Filter α) :=
-  ⟨fun F U => U ∈ F.sets⟩
+  ⟨fun U F => U ∈ F.sets⟩
 
 namespace Filter
 

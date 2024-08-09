@@ -97,7 +97,6 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
     ext m
     simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, add_lie, LinearMap.coe_mk,
       AddHom.coe_mk, LinearMap.add_apply, AddSubmonoid.mk_add_mk]
-    sorry
   map_smul' t x := by
     simp only [RingHom.id_apply]
     ext m
@@ -116,7 +115,7 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
         ext m
         simp only [rootSpaceWeightSpaceProductAux, LieSubmodule.coe_bracket,
           LieSubalgebra.coe_bracket_of_module, lie_lie, LinearMap.coe_mk, AddHom.coe_mk,
-          Subtype.coe_mk, LieHom.lie_apply, LieSubmodule.coe_sub]; sorry}
+          Subtype.coe_mk, LieHom.lie_apply, LieSubmodule.coe_sub]}
 
 @[simp]
 theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
@@ -294,7 +293,5 @@ lemma mem_corootSpace' {x : H} :
     fun ⟨y, hy, z, hz, hyz⟩ ↦ ⟨?_, y, hy, z, hz, hyz⟩⟩
   convert (rootSpaceProduct R L H α (-α) 0 (add_neg_self α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property
   simp [hyz]
-  sorry
-  sorry
 
 end LieAlgebra

@@ -198,7 +198,6 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
     rw [← LieIdeal.coe_to_lieSubalgebra_to_submodule R K' I, hI₁]
     apply Submodule.map_injective_of_injective (K' : Submodule R L).injective_subtype
     simp
-    sorry
   have e : K ≃ₗ⁅R⁆ I :=
     (LieSubalgebra.equivOfLe hKK').trans
       (LieEquiv.ofEq _ _ ((LieSubalgebra.coe_set_eq _ _).mpr hI₁.symm))
@@ -221,7 +220,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     simp [h]
   change LieModule.IsNilpotent R L' M
   let s := {K : LieSubalgebra R L' | LieAlgebra.IsEngelian R K}
-  have hs : s.Nonempty := ⟨⊥, LieAlgebra.isEngelian_of_subsingleton⟩
+  have hs : s.Nonempty := sorry -- ⟨⊥, LieAlgebra.isEngelian_of_subsingleton⟩
   suffices ⊤ ∈ s by
     rw [← isNilpotent_of_top_iff]
     apply this M

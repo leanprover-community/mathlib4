@@ -85,7 +85,7 @@ protected def Mem (a : α) (o : Part α) : Prop :=
   ∃ h, o.get h = a
 
 instance : Membership α (Part α) where
-  mem o a := Part.Mem a o
+  mem a o := Part.Mem a o
 
 theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
   rfl

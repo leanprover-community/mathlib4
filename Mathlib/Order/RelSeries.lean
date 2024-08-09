@@ -171,7 +171,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
 instance membership : Membership α (RelSeries r) where
-  mem s a := a ∈ Set.range s
+  mem a s := a ∈ Set.range s
 
 theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 

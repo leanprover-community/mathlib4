@@ -192,13 +192,11 @@ instance : LieModule R L (shiftedWeightSpace R L M χ) where
     apply Subtype.ext
     simp only [coe_lie_shiftedWeightSpace_apply, smul_lie, LinearWeights.map_smul χ (aux R L M χ),
       SetLike.val_smul, smul_sub, sub_right_inj, smul_assoc t]
-    sorry
   lie_smul t x m := by
     nontriviality shiftedWeightSpace R L M χ
     apply Subtype.ext
     simp only [coe_lie_shiftedWeightSpace_apply, lie_smul, LinearWeights.map_smul χ (aux R L M χ),
       SetLike.val_smul, smul_sub, sub_right_inj, smul_comm t]
-    sorry
 
 /-- Forgetting the action of `L`, the spaces `weightSpace M χ` and `shiftedWeightSpace R L M χ` are
 equivalent. -/
@@ -208,7 +206,6 @@ lemma toEnd_eq (x : L) :
     toEnd R L (shiftedWeightSpace R L M χ) x =
     (shift R L M χ).conj (toEnd R L (weightSpace M χ) x - χ x • LinearMap.id) := by
   ext; simp [LinearEquiv.conj_apply]
-  sorry
 
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/

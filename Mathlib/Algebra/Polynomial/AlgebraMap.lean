@@ -385,8 +385,7 @@ instance instCommSemiringAdjoinSingleton :
       obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
       obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Submonoid.mk_mul_mk, ← map_mul,
-        mul_comm p' q']
-      sorry }
+        mul_comm p' q'] }
 
 instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
     CommRing <| Algebra.adjoin R {x} :=

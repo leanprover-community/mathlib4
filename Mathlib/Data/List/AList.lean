@@ -81,7 +81,7 @@ theorem keys_nodup (s : AList β) : s.keys.Nodup :=
 
 /-- The predicate `a ∈ s` means that `s` has a value associated to the key `a`. -/
 instance : Membership α (AList β) :=
-  ⟨fun s a => a ∈ s.keys⟩
+  ⟨fun a s => a ∈ s.keys⟩
 
 theorem mem_keys {a : α} {s : AList β} : a ∈ s ↔ a ∈ s.keys :=
   Iff.rfl

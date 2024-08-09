@@ -161,7 +161,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
 
 
 instance : Membership α (Finset α) where
-  mem s a := a ∈ s.1
+  mem a s := a ∈ s.1
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl

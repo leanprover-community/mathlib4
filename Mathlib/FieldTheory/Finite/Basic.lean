@@ -166,7 +166,6 @@ theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
   · subst G_bot
     simp only [ite_true, Subgroup.mem_bot, Fintype.card_ofSubsingleton, Nat.cast_ite, Nat.cast_one,
       Nat.cast_zero, univ_unique, Set.default_coe_singleton, sum_singleton, Units.val_one]
-    sorry
   · simp only [G_bot, ite_false]
     exact sum_subgroup_units_eq_zero G_bot
 

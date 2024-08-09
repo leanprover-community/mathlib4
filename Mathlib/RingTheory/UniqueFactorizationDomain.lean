@@ -1246,7 +1246,7 @@ def BfactorSetMem : { a : Associates α // Irreducible a } → FactorSet α → 
 `s : FactorSet α`.
 
 If `p` is not irreducible, `p` is not a member of any `FactorSet`. -/
-def FactorSetMem (s : FactorSet α) (p : Associates α) : Prop :=
+def FactorSetMem (p : Associates α) (s : FactorSet α) : Prop :=
   letI : Decidable (Irreducible p) := Classical.dec _
   if hp : Irreducible p then BfactorSetMem ⟨p, hp⟩ s else False
 
@@ -1254,7 +1254,7 @@ instance : Membership (Associates α) (FactorSet α) :=
   ⟨FactorSetMem⟩
 
 @[simp]
-theorem factorSetMem_eq_mem (p : Associates α) (s : FactorSet α) : FactorSetMem s p = (p ∈ s) :=
+theorem factorSetMem_eq_mem (p : Associates α) (s : FactorSet α) : FactorSetMem p s = (p ∈ s) :=
   rfl
 
 theorem mem_factorSet_top {p : Associates α} {hp : Irreducible p} : p ∈ (⊤ : FactorSet α) := by

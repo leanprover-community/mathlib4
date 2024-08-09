@@ -501,7 +501,6 @@ instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebr
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubalgebra.mem_bot] at hx; subst hx
   simp only [true_iff_iff, eq_self_iff_true, Submodule.mk_eq_zero, mem_bot, mem_top]
-  sorry
 
 theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
   show Subsingleton ((⊥ : LieSubalgebra R L) : Set L) by simp

@@ -476,7 +476,7 @@ instance : Inhabited (Cofinal P) :=
       mem_gt := fun x ↦ ⟨x, trivial, le_rfl⟩ }⟩
 
 instance : Membership P (Cofinal P) :=
-  ⟨fun D x ↦ x ∈ D.carrier⟩
+  ⟨fun x D ↦ x ∈ D.carrier⟩
 
 variable (D : Cofinal P) (x : P)
 

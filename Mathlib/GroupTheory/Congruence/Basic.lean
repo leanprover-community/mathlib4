@@ -151,7 +151,7 @@ theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
 @[to_additive "Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
 `c` on `M`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`."]
 instance : Membership (M × M) (Con M) where
-  mem c x := c x.1 x.2
+  mem x c := c x.1 x.2
 
 variable {c}
 

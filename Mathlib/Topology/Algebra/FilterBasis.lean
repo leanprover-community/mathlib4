@@ -84,7 +84,7 @@ variable {G : Type u} [Group G] {B : GroupFilterBasis G}
 
 @[to_additive]
 instance : Membership (Set G) (GroupFilterBasis G) :=
-  ⟨fun f s ↦ s ∈ f.sets⟩
+  ⟨fun s f ↦ s ∈ f.sets⟩
 
 @[to_additive]
 theorem one {U : Set G} : U ∈ B → (1 : G) ∈ U :=
@@ -225,7 +225,7 @@ namespace RingFilterBasis
 variable {R : Type u} [Ring R] (B : RingFilterBasis R)
 
 instance : Membership (Set R) (RingFilterBasis R) :=
-  ⟨fun B s ↦ s ∈ B.sets⟩
+  ⟨fun s B ↦ s ∈ B.sets⟩
 
 theorem mul {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V * V ⊆ U :=
   mul' hU
@@ -285,7 +285,7 @@ variable {R M : Type*} [CommRing R] [TopologicalSpace R] [AddCommGroup M] [Modul
   (B : ModuleFilterBasis R M)
 
 instance GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
-  ⟨fun B s ↦ s ∈ B.sets⟩
+  ⟨fun s B ↦ s ∈ B.sets⟩
 
 theorem smul {U : Set M} (hU : U ∈ B) : ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ B, V • W ⊆ U :=
   B.smul' hU

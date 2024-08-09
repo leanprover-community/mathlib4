@@ -1189,7 +1189,7 @@ namespace MeasurableSet
 variable [MeasurableSpace α]
 
 instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun s a => a ∈ (s : Set α)⟩
+  ⟨fun a s => a ∈ (s : Set α)⟩
 
 @[simp]
 theorem mem_coe (a : α) (s : Subtype (MeasurableSet : Set α → Prop)) : a ∈ (s : Set α) ↔ a ∈ s :=

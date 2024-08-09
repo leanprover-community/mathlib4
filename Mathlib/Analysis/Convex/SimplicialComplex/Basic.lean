@@ -72,7 +72,7 @@ variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
 /-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
 instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
-  ⟨fun K s => s ∈ K.faces⟩
+  ⟨fun s K => s ∈ K.faces⟩
 
 /-- The underlying space of a simplicial complex is the union of its faces. -/
 def space (K : SimplicialComplex 𝕜 E) : Set E :=

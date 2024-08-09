@@ -479,7 +479,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
   have hef := lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
   let h : H := ⟨⁅e, f'⁆, hef ▸ Submodule.smul_mem _ _ (Submodule.coe_mem _)⟩
   have hh : α h ≠ 0 := by
-    have : h = killingForm K L e f' • (cartanEquivDual H).symm α := by simp [Subtype.ext_iff, hef]; sorry
+    have : h = killingForm K L e f' • (cartanEquivDual H).symm α := by simp [Subtype.ext_iff, hef]
     rw [this, map_smul, smul_eq_mul, ne_eq, mul_eq_zero, not_or]
     exact ⟨hf, root_apply_cartanEquivDual_symm_ne_zero hα⟩
   let f := (2 * (α h)⁻¹) • f'
@@ -512,7 +512,7 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     rwa [this, one_smul] at hs
   set α' := (cartanEquivDual H).symm α with hα'
   have h_eq : h = killingForm K L e f • α' := by
-    simp only [hα', Subtype.ext_iff, Submodule.coe_smul_of_tower, ← ht.lie_e_f, hef]; sorry
+    simp only [hα', Subtype.ext_iff, Submodule.coe_smul_of_tower, ← ht.lie_e_f, hef]
   use (2 • (α α')⁻¹) * (killingForm K L e f)⁻¹
   have hef₀ : killingForm K L e f ≠ 0 := by
     have := ht.h_ne_zero

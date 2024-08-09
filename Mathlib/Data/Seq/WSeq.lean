@@ -110,7 +110,7 @@ protected def Mem (a : α) (s : WSeq α) :=
   Seq.Mem (some a) s
 
 instance membership : Membership α (WSeq α) where
-  mem s a := WSeq.Mem a s
+  mem a s := WSeq.Mem a s
 
 theorem not_mem_nil (a : α) : a ∉ @nil α :=
   Seq.not_mem_nil (some a)

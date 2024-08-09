@@ -172,7 +172,7 @@ lemma trace_toEnd_weightSpaceChain_eq_zero
           lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M α χ p q hp hz hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
-    have hfg : toEnd R H _ u = ⁅f, g⁆ := by ext; simp [f, g, ← hyz]; sorry
+    have hfg : toEnd R H _ u = ⁅f, g⁆ := by ext; simp [f, g, ← hyz]
     simp [hfg]
   · simp
   · simp_all

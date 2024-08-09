@@ -112,7 +112,6 @@ noncomputable def equiv_rootsOfUnity [inst_cyc : IsCyclic Mˣ] :
     simp only [toUnitHom_eq, coe_equivToUnitHom, ofRootOfUnity_spec]
   map_mul' x y := by
     simp only [toUnitHom_eq, equivToUnitHom_mul_apply, Submonoid.mk_mul_mk]
-    sorry
 
 end IsCyclic
 

@@ -976,8 +976,6 @@ lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     sepDegree F K = sepDegree E K := by
   convert sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
   sorry
-  sorry
-  sorry
   -- haveI : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   -- rw [sepDegree, ← separableClosure.map_eq_of_separableClosure_eq_bot F
     -- (separableClosure.separableClosure_eq_bot E K)]

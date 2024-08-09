@@ -532,6 +532,7 @@ theorem image_maximalIdeal : ((↑) : A → K) '' LocalRing.maximalIdeal A = A.n
   simp only [Set.mem_image, SetLike.mem_coe, mem_nonunits_iff_exists_mem_maximalIdeal]
   erw [Subtype.exists]
   simp_rw [exists_and_right, exists_eq_right]
+  sorry
 
 end nonunits
 

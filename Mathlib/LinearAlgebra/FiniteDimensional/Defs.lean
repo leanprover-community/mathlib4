@@ -719,7 +719,6 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
   · rw [Nat.succ_le_iff, finrank_pos_iff]
     use ⟨v, mem_span_singleton_self v⟩, 0
     simp [hv]
-    sorry
 
 /-- In a one-dimensional space, any vector is a multiple of any nonzero vector -/
 lemma exists_smul_eq_of_finrank_eq_one

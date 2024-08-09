@@ -195,7 +195,6 @@ instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
   ext ⟨x, hx⟩
   obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
   simp [ha, Real.dist_eq, abs_mul, (by norm_cast : |(k : ℝ)| < 1 ↔ |k| < 1)]
-  sorry
 
 /-- Under the coercion from `ℤ` to `ℝ`, inverse images of compact sets are finite. -/
 theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact ℝ) := by

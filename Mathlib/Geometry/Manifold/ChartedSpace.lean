@@ -176,7 +176,7 @@ structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
 variable [TopologicalSpace H]
 
 instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
-  ⟨fun (G : StructureGroupoid H) (e : PartialHomeomorph H H) ↦ e ∈ G.members⟩
+  ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
 
 instance (H : Type u) [TopologicalSpace H] :
     SetLike (StructureGroupoid H) (PartialHomeomorph H H) where

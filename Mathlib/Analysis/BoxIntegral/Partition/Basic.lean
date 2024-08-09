@@ -63,7 +63,7 @@ namespace Prepartition
 variable {I J J₁ J₂ : Box ι} (π : Prepartition I) {π₁ π₂ : Prepartition I} {x : ι → ℝ}
 
 instance : Membership (Box ι) (Prepartition I) :=
-  ⟨fun π J => J ∈ π.boxes⟩
+  ⟨fun J π => J ∈ π.boxes⟩
 
 @[simp]
 theorem mem_boxes : J ∈ π.boxes ↔ J ∈ π := Iff.rfl

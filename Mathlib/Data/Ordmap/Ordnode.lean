@@ -845,7 +845,7 @@ def find (x : α) : Ordnode α → Option α
     | Ordering.gt => find x r
 
 instance : Membership α (Ordnode α) :=
-  ⟨fun t x => t.mem x⟩
+  ⟨fun x t => t.mem x⟩
 
 instance mem.decidable (x : α) (t : Ordnode α) : Decidable (x ∈ t) :=
   Bool.decEq _ _

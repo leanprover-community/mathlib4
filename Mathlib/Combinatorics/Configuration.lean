@@ -57,7 +57,7 @@ instance [h : Fintype P] : Fintype (Dual P) :=
 -- Porting note (#11215): TODO: figure out if this is needed.
 set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
-  ⟨Function.swap (Membership.mem : L → P → Prop)⟩
+  ⟨Function.swap (Membership.mem : P → L → Prop)⟩
 
 /-- A configuration is nondegenerate if:
   1) there does not exist a line that passes through all of the points,

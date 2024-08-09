@@ -169,7 +169,6 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     have : x₁ = ⟨z, hz⟩ := by
       apply h_alg
       simp [hx₂, algebraMap_eq_smul_one]
-      sorry
     rwa [← this]
   · -- The converse inclusion is trivial
     have : algebraMap R S = (algebraMap _ S).comp (algebraMap R R<x>) := by ext; rfl

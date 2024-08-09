@@ -205,7 +205,7 @@ def Mem (a : α) (s : Multiset α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
 
 instance : Membership α (Multiset α) where
-  mem s a := Mem a s
+  mem a s := Mem a s
 
 @[simp]
 theorem mem_coe {a : α} {l : List α} : a ∈ (l : Multiset α) ↔ a ∈ l :=

@@ -229,6 +229,7 @@ theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s
   rw [hv]
   convert s.smul_vsub_vadd_mem 1 hp1 hp2 hp
   rw [one_smul]
+  exact s.mem_coe k P _
 
 /-- Subtracting two points in the subspace produces a vector in the direction. -/
 theorem vsub_mem_direction {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
@@ -729,10 +730,7 @@ theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
   obtain ⟨-, ⟨i, -⟩⟩ := nonempty_of_affineSpan_eq_top k V P h
   exact Fintype.card_pos_iff.mpr ⟨i⟩
 
-instance : Nonempty (⊤ : AffineSubspace k P) := Set.univ.nonempty
-
-instance : AffineSpace (⊤ : AffineSubspace k P).direction (⊤ : AffineSubspace k P) :=
-  toAddTorsor ..
+attribute [local instance] toAddTorsor
 
 /-- The top affine subspace is linearly equivalent to the affine space.
 
@@ -816,10 +814,9 @@ directions. -/
 theorem direction_inf (s1 s2 : AffineSubspace k P) :
     (s1 ⊓ s2).direction ≤ s1.direction ⊓ s2.direction := by
   simp only [direction_eq_vectorSpan, vectorSpan_def]
-  sorry
-  -- exact
-  --   le_inf (sInf_le_sInf fun p hp => trans (vsub_self_mono inter_subset_left) hp)
-  --     (sInf_le_sInf fun p hp => trans (vsub_self_mono inter_subset_right) hp)
+  exact
+    le_inf (sInf_le_sInf fun p hp => trans (vsub_self_mono inter_subset_left) hp)
+      (sInf_le_sInf fun p hp => trans (vsub_self_mono inter_subset_right) hp)
 
 /-- If two affine subspaces have a point in common, the direction of their inf equals the inf of
 their directions. -/

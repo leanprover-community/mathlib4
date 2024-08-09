@@ -197,7 +197,7 @@ protected def Mem (x y : PSet.{u}) : Prop :=
   ∃ b, Equiv x (y.Func b)
 
 instance : Membership PSet PSet where
-  mem y x := PSet.Mem x y
+  mem x y := PSet.Mem x y
 
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
   ⟨a, Equiv.refl (A a)⟩
@@ -582,7 +582,7 @@ protected def Mem : ZFSet → ZFSet → Prop :=
     propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
 
 instance : Membership ZFSet ZFSet where
-  mem s₂ s₁ := ZFSet.Mem s₁ s₂
+  mem s₁ s₂ := ZFSet.Mem s₁ s₂
 
 @[simp]
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
@@ -1251,7 +1251,7 @@ protected def Mem (A B : Class.{u}) : Prop :=
   ToSet.{u} B A
 
 instance : Membership Class Class where
-  mem c₂ c₁ := Class.Mem c₁ c₂
+  mem c₁ c₂ := Class.Mem c₁ c₂
 
 theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x :=
   Iff.rfl

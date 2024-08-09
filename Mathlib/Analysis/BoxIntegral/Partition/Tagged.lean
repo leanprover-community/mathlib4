@@ -49,7 +49,7 @@ namespace TaggedPrepartition
 variable {I J J₁ J₂ : Box ι} (π : TaggedPrepartition I) {x : ι → ℝ}
 
 instance : Membership (Box ι) (TaggedPrepartition I) :=
-  ⟨fun π J => J ∈ π.boxes⟩
+  ⟨fun J π => J ∈ π.boxes⟩
 
 @[simp]
 theorem mem_toPrepartition {π : TaggedPrepartition I} : J ∈ π.toPrepartition ↔ J ∈ π := Iff.rfl
