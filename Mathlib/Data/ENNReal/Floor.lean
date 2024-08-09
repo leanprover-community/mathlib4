@@ -56,7 +56,7 @@ lemma floor_eq_sSup_range_toENNReal_inter_Iic :
   · obtain ⟨n, hn⟩ := hx.1
     refine ⟨n, ⟨hn ▸ hx.2, hn⟩⟩
 
-lemma floor_mono (h : x ≤ y) : x.floor ≤ y.floor := sSup_le_sSup <| fun _ hx ↦ hx.trans h
+@[gcongr] lemma floor_mono (h : x ≤ y) : x.floor ≤ y.floor := sSup_le_sSup <| fun _ hx ↦ hx.trans h
 
 /-- The floor function `ℝ≥0∞ → ℝ≥0∞` is increasing. -/
 lemma monotone_floor : Monotone floor := fun _ _ h ↦ floor_mono h
@@ -77,15 +77,15 @@ lemma floor_le_of_lt_add_one (h : x < m + 1) :
     · exfalso; apply not_top_lt obs
     · exact Nat.cast_le.mpr <| Nat.le_of_lt_succ (by exact_mod_cast obs)
 
-@[simp] lemma floor_coe_eq (n : ℕ∞) :
+@[simp] lemma floor_coe (n : ℕ∞) :
     floor n = n :=
   le_antisymm (by exact_mod_cast floor_le n) (le_sSup (by simp))
 
-@[simp] lemma floor_zero_eq : floor 0 = 0 := by exact_mod_cast ENNReal.floor_coe_eq 0
+@[simp] lemma floor_zero : floor 0 = 0 := by exact_mod_cast ENNReal.floor_coe_eq 0
 
-@[simp] lemma floor_one_eq_one : floor 1 = 1 := by exact_mod_cast ENNReal.floor_coe_eq 1
+@[simp] lemma floor_one : floor 1 = 1 := by exact_mod_cast ENNReal.floor_coe_eq 1
 
-@[simp] lemma floor_top_eq : floor ∞ = ⊤ := floor_coe_eq ⊤
+@[simp] lemma floor_top : floor ∞ = ⊤ := floor_coe_eq ⊤
 
 lemma floor_eq_natFloor_toNNReal (x_ne_top : x ≠ ∞) :
     floor x = Nat.floor x.toNNReal := by
