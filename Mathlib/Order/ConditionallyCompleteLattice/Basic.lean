@@ -64,6 +64,9 @@ theorem WithTop.csSup_eq [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
   (if_neg hs).trans <| if_pos hs'
 
+/--
+The more general version of this lemma, previously under this name, is now `WithTop.csSup_eq`.
+-/
 theorem WithTop.sSup_eq [SupSet α] [OrderTop α] {s : Set (WithTop α)} (hs : ⊤ ∉ s) :
     sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
   WithTop.csSup_eq hs (OrderTop.bddAbove _)
@@ -72,6 +75,9 @@ theorem WithTop.csInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤})
     sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
   if_neg <| by simp [hs, h's]
 
+/--
+The more general version of this lemma, previously under this name, is now `WithTop.csInf_eq`.
+-/
 theorem WithTop.sInf_eq [InfSet α] [OrderBot α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) :
     sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
   WithTop.csInf_eq hs (OrderBot.bddBelow _)
@@ -112,6 +118,9 @@ theorem WithTop.coe_csInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : Bdd
   · rw [preimage_image_eq]
     exact Option.some_injective _
 
+/--
+The more general version of this lemma, previously under this name, is now `WithTop.coe_csInf'`.
+-/
 theorem WithTop.coe_sInf' [InfSet α] [OrderBot α] {s : Set α} (hs : s.Nonempty)  :
     ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithTop α) :=
   WithTop.coe_csInf' hs (OrderBot.bddBelow _)
@@ -121,6 +130,9 @@ theorem WithTop.coe_ciInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBel
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
   rw [iInf, iInf, WithTop.coe_csInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
 
+/--
+The more general version of this lemma, previously under this name, is now `WithTop.coe_ciInf'`.
+-/
 @[norm_cast]
 theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] [OrderBot α] {f : ι → α} :
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) :=
@@ -134,6 +146,9 @@ theorem WithTop.coe_csSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
   · exact Option.some_injective _
   · rintro ⟨x, _, ⟨⟩⟩
 
+/--
+The more general version of this lemma, previously under this name, is now `WithTop.coe_csSup'`.
+-/
 theorem WithTop.coe_sSup' [SupSet α] [OrderTop α] {s : Set α} :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) :=
   WithTop.coe_csSup' (OrderTop.bddAbove _)
@@ -143,6 +158,9 @@ theorem WithTop.coe_ciSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
   rw [iSup, iSup, WithTop.coe_csSup' h, ← range_comp, Function.comp_def]
 
+/--
+The more general version of this lemma, previously under this name, is now `WithTop.coe_ciSup`.
+-/
 @[norm_cast]
 theorem WithTop.coe_iSup [SupSet α] [OrderTop α] (f : ι → α) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) :=
@@ -164,6 +182,9 @@ theorem WithBot.coe_csSup' [SupSet α] {s : Set α} (hs : s.Nonempty) (h's : Bdd
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
   WithTop.coe_csInf' (α := αᵒᵈ) hs h's
 
+/--
+The more general version of this lemma, previously under this name, is now `WithBot.coe_csSup'`.
+-/
 @[norm_cast]
 theorem WithBot.coe_sSup' [SupSet α] [OrderTop α] {s : Set α} (hs : s.Nonempty) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
@@ -174,6 +195,9 @@ theorem WithBot.coe_ciSup [Nonempty ι] [SupSet α] {f : ι → α} (hf : BddAbo
     ↑(⨆ i, f i) = (⨆ i, f i : WithBot α) :=
   WithTop.coe_ciInf (α := αᵒᵈ) hf
 
+/--
+The more general version of this lemma, previously under this name, is now `WithBot.coe_ciSup`.
+-/
 @[norm_cast]
 theorem WithBot.coe_iSup [Nonempty ι] [SupSet α] [OrderTop α] {f : ι → α} :
     ↑(⨆ i, f i) = (⨆ i, f i : WithBot α) :=
@@ -184,6 +208,9 @@ theorem WithBot.coe_csInf' [InfSet α] {s : Set α} (hs : BddBelow s) :
     ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
   WithTop.coe_csSup' (α := αᵒᵈ) hs
 
+/--
+The more general version of this lemma, previously under this name, is now `WithBot.coe_ciInf'`.
+-/
 @[norm_cast]
 theorem WithBot.coe_sInf' [InfSet α] [OrderBot α] {s : Set α} :
     ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
@@ -194,6 +221,9 @@ theorem WithBot.coe_ciInf [InfSet α] (f : ι → α) (h : BddBelow (Set.range f
     ↑(⨅ i, f i) = (⨅ i, f i : WithBot α) :=
   WithTop.coe_ciSup (α := αᵒᵈ) _ h
 
+/--
+The more general version of this lemma, previously under this name, is now `WithBot.coe_ciInf`.
+-/
 @[norm_cast]
 theorem WithBot.coe_iInf [InfSet α] [OrderBot α] (f : ι → α) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithBot α) :=
@@ -1397,7 +1427,11 @@ noncomputable instance : CompleteLinearOrder (WithTop α) where
 theorem coe_csSup {s : Set α} (hb : BddAbove s) : ↑(sSup s) = (⨆ a ∈ s, ↑a : WithTop α) := by
   rw [coe_csSup' hb, sSup_image]
 
-/-- A version of `WithTop.coe_sSup'` with a more convenient but less general statement. -/
+/--
+A version of `WithTop.coe_sSup'` with a more convenient but less general statement.
+
+The more general version of this lemma, previously under this name, is now `WithTop.coe_csSup'`.
+-/
 @[norm_cast]
 theorem coe_sSup [OrderTop α] {s : Set α} : ↑(sSup s) = (⨆ a ∈ s, ↑a : WithTop α) :=
   coe_csSup (OrderTop.bddAbove _)
@@ -1408,6 +1442,11 @@ theorem coe_csInf {s : Set α} (hs : s.Nonempty) (h's : BddBelow s) :
     ↑(sInf s) = (⨅ a ∈ s, ↑a : WithTop α) := by
   rw [coe_csInf' hs h's, sInf_image]
 
+/--
+A version of `WithTop.coe_sInf'` with a more convenient but less general statement.
+
+The more general version of this lemma, previously under this name, is now `WithTop.coe_csInf`.
+-/
 @[norm_cast]
 theorem coe_sInf [OrderBot α] {s : Set α} (hs : s.Nonempty):
     ↑(sInf s) = (⨅ a ∈ s, ↑a : WithTop α) :=

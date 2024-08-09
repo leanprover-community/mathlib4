@@ -38,6 +38,8 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : ℕ∞) < ⊤ ↔ Nonempty ι := WithTop.i
 
 lemma coe_csSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := WithTop.coe_csSup
 
+@[deprecated (since := "2024-08-09")] alias coe_sSup := coe_csSup
+
 lemma coe_sInf (hs : s.Nonempty) : ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) := WithTop.coe_sInf hs
 
 lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := WithTop.coe_ciSup _

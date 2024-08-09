@@ -625,6 +625,8 @@ variable {ι : Sort*} {f : ι → ℝ≥0}
 theorem coe_csSup {s : Set ℝ≥0} : BddAbove s → (↑(sSup s) : ℝ≥0∞) = ⨆ a ∈ s, ↑a :=
   WithTop.coe_csSup
 
+@[deprecated (since := "2024-08-09")] alias coe_sSup := coe_csSup
+
 theorem coe_sInf {s : Set ℝ≥0} (hs : s.Nonempty) : (↑(sInf s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
   WithTop.coe_sInf hs
 
