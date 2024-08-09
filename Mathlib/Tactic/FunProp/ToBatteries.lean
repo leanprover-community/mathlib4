@@ -13,7 +13,6 @@ namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunProp
-set_option autoImplicit true
 
 /-- Check if `a` can be obtained by removing elements from `b`. -/
 def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bool :=
@@ -74,7 +73,7 @@ def mkProdElem (xs : Array Expr) : MetaM Expr := do
   | 1 => return xs[0]!
   | _ =>
     let n := xs.size
-    xs[0:n-1].foldrM (init:=xs[n-1]!) fun x p => mkAppM ``Prod.mk #[x,p]
+    xs[0:n-1].foldrM (init := xs[n-1]!) fun x p => mkAppM ``Prod.mk #[x,p]
 
 /--
 For `(x₀, .., xₙ₋₁)` return `xᵢ` but as a product projection.

@@ -8,9 +8,15 @@ import Lean
 import Mathlib.Util.Tactic
 import Mathlib.Lean.Expr.Basic
 
+/-!
+# The `rename_bvar` tactic
+
+This file defines the `rename_bvar` tactic, for renaming bound variables.
+-/
+
 namespace Mathlib.Tactic
 
-open Lean Meta Parser Elab Tactic
+open Lean Parser Elab Tactic
 
 /-- Renames a bound variable in a hypothesis. -/
 def renameBVarHyp (mvarId : MVarId) (fvarId : FVarId) (old new : Name) :

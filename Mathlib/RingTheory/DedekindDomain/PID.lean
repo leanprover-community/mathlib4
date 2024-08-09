@@ -6,8 +6,6 @@ Authors: Anne Baanen
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
-#align_import ring_theory.dedekind_domain.pid from "leanprover-community/mathlib"@"6010cf523816335f7bae7f8584cb2edaace73940"
-
 /-!
 # Criteria under which a Dedekind domain is a PID
 
@@ -72,7 +70,6 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
           hQp
             (isPrime_of_prime
               (irreducible_iff_prime.mp (irreducible_of_normalized_factor _ hQi)))).le
-#align ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne
 
 -- Porting note: replaced three implicit coercions of `I` with explicit `(I : Submodule R A)`
 theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {R A : Type*}
@@ -100,7 +97,6 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
     apply FractionalIdeal.mul_le_mul_left (FractionalIdeal.spanSingleton_le_iff_mem.mpr hw)
   · rw [FractionalIdeal.one_le, ← hvw, mul_comm]
     exact FractionalIdeal.mul_mem_mul hv (FractionalIdeal.mem_spanSingleton_self _ _)
-#align fractional_ideal.is_principal_of_unit_of_comap_mul_span_singleton_eq_top FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top
 
 /--
 An invertible fractional ideal of a commutative ring with finitely many maximal ideals is principal.
@@ -166,7 +162,6 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     -- Note: #8386 had to specify the value of `f`
     exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
       (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
-#align fractional_ideal.is_principal.of_finite_maximals_of_inv FractionalIdeal.isPrincipal.of_finite_maximals_of_inv
 
 /-- An invertible ideal in a commutative ring with finitely many maximal ideals is principal.
 
@@ -176,7 +171,6 @@ theorem Ideal.IsPrincipal.of_finite_maximals_of_isUnit (hf : {I : Ideal R | I.Is
   (IsLocalization.coeSubmodule_isPrincipal _ le_rfl).mp
     (FractionalIdeal.isPrincipal.of_finite_maximals_of_inv le_rfl hf I
       (↑hI.unit⁻¹ : FractionalIdeal R⁰ (FractionRing R)) hI.unit.mul_inv)
-#align ideal.is_principal.of_finite_maximals_of_is_unit Ideal.IsPrincipal.of_finite_maximals_of_isUnit
 
 /-- A Dedekind domain is a PID if its set of primes is finite. -/
 theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
@@ -187,7 +181,6 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
     apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit
     · apply h.subset; exact @Ideal.IsMaximal.isPrime _ _
     · exact isUnit_of_mul_eq_one _ _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
-#align is_principal_ideal_ring.of_finite_primes IsPrincipalIdealRing.of_finite_primes
 
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]
@@ -241,7 +234,6 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     rw [IsScalarTower.algebraMap_eq R S Sₚ]
     exact
       (IsLocalization.injective Sₚ non_zero_div).comp (NoZeroSMulDivisors.algebraMap_injective _ _)
-#align is_localization.over_prime.mem_normalized_factors_of_is_prime IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime
 
 /-- Let `p` be a prime in the Dedekind domain `R` and `S` be an integral extension of `R`,
 then the localization `Sₚ` of `S` at `p` is a PID. -/
@@ -260,4 +252,3 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
   exact
     and_iff_right_of_imp fun hP =>
       or_iff_not_imp_left.mpr (IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime S p hp0 hP)
-#align is_dedekind_domain.is_principal_ideal_ring_localization_over_prime IsDedekindDomain.isPrincipalIdealRing_localization_over_prime

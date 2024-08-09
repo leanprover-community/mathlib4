@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Limits.FunctorCategory
@@ -49,8 +49,7 @@ namespace PreGaloisCategory
 open Limits Functor
 
 variable {C : Type u₁} [Category.{u₂} C] [GaloisCategory C]
-variable (F : C ⥤ FintypeCat.{u₂}) [FiberFunctor F]
-
+variable (F : C ⥤ FintypeCat.{u₂})
 /-- A pointed Galois object is a Galois object with a fixed point of its fiber. -/
 structure PointedGaloisObject : Type (max u₁ u₂) where
   /-- The underlying object of `C`. -/
@@ -92,7 +91,7 @@ variable {F}
 
 @[ext]
 lemma hom_ext {A B : PointedGaloisObject F} {f g : A ⟶ B} (h : f.val = g.val) : f = g :=
-  Hom.ext f g h
+  Hom.ext h
 
 @[simp]
 lemma id_val (A : PointedGaloisObject F) : 𝟙 A = 𝟙 A.obj :=
@@ -104,20 +103,6 @@ lemma comp_val {A B C : PointedGaloisObject F} (f : A ⟶ B) (g : B ⟶ C) :
   rfl
 
 variable (F)
-
-/-- The category of pointed Galois objects is cofiltered. -/
-instance : IsCofilteredOrEmpty (PointedGaloisObject F) where
-  cone_objs := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ↦ by
-    obtain ⟨Z, f, z, hgal, hfz⟩ := exists_hom_from_galois_of_fiber F (A ⨯ B)
-      <| (fiberBinaryProductEquiv F A B).symm (a, b)
-    refine ⟨⟨Z, z, hgal⟩, ⟨f ≫ prod.fst, ?_⟩, ⟨f ≫ prod.snd, ?_⟩, trivial⟩
-    · simp only [F.map_comp, hfz, FintypeCat.comp_apply, fiberBinaryProductEquiv_symm_fst_apply]
-    · simp only [F.map_comp, hfz, FintypeCat.comp_apply, fiberBinaryProductEquiv_symm_snd_apply]
-  cone_maps := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, hf⟩ ⟨g, hg⟩ ↦ by
-    obtain ⟨Z, h, z, hgal, hhz⟩ := exists_hom_from_galois_of_fiber F A a
-    refine ⟨⟨Z, z, hgal⟩, ⟨h, hhz⟩, hom_ext ?_⟩
-    apply evaluation_injective_of_isConnected F Z B z
-    simp [hhz, hf, hg]
 
 /-- The canonical functor from pointed Galois objects to `C`. -/
 def incl : PointedGaloisObject F ⥤ C where
@@ -149,6 +134,22 @@ lemma cocone_app (A : PointedGaloisObject F) (B : C) (f : (A : C) ⟶ B) :
     ((cocone F).ι.app ⟨A⟩).app B f = F.map f A.pt :=
   rfl
 
+variable [FiberFunctor F]
+
+/-- The category of pointed Galois objects is cofiltered. -/
+instance : IsCofilteredOrEmpty (PointedGaloisObject F) where
+  cone_objs := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ↦ by
+    obtain ⟨Z, f, z, hgal, hfz⟩ := exists_hom_from_galois_of_fiber F (A ⨯ B)
+      <| (fiberBinaryProductEquiv F A B).symm (a, b)
+    refine ⟨⟨Z, z, hgal⟩, ⟨f ≫ prod.fst, ?_⟩, ⟨f ≫ prod.snd, ?_⟩, trivial⟩
+    · simp only [F.map_comp, hfz, FintypeCat.comp_apply, fiberBinaryProductEquiv_symm_fst_apply]
+    · simp only [F.map_comp, hfz, FintypeCat.comp_apply, fiberBinaryProductEquiv_symm_snd_apply]
+  cone_maps := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, hf⟩ ⟨g, hg⟩ ↦ by
+    obtain ⟨Z, h, z, hgal, hhz⟩ := exists_hom_from_galois_of_fiber F A a
+    refine ⟨⟨Z, z, hgal⟩, ⟨h, hhz⟩, hom_ext ?_⟩
+    apply evaluation_injective_of_isConnected F Z B z
+    simp [hhz, hf, hg]
+
 /-- `cocone F` is a colimit cocone, i.e. `F` is pro-represented by `incl F`. -/
 noncomputable def isColimit : IsColimit (cocone F) := by
   refine evaluationJointlyReflectsColimits _ (fun X ↦ ?_)
@@ -178,8 +179,8 @@ open PointedGaloisObject
 /-- The diagram sending each pointed Galois object to its automorphism group
 as an object of `C`. -/
 @[simps]
-noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} where
-  obj := fun A ↦ GroupCat.of <| Aut (A : C)
+noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ Grp.{u₂} where
+  obj := fun A ↦ Grp.of <| Aut (A : C)
   map := fun {A B} f ↦ (autMapHom f : Aut (A : C) →* Aut (B : C))
   map_id := fun A ↦ by
     ext (σ : Aut A.obj)
@@ -198,7 +199,7 @@ noncomputable instance : Group (AutGalois F) :=
 /-- The canonical projection from `AutGalois F` to the `C`-automorphism group of each
 pointed Galois object. -/
 noncomputable def AutGalois.π (A : PointedGaloisObject F) : AutGalois F →* Aut (A : C) :=
-  GroupCat.sectionsπMonoidHom (autGaloisSystem F) A
+  Grp.sectionsπMonoidHom (autGaloisSystem F) A
 
 /- Not a `simp` lemma, because we usually don't want to expose the internals here. -/
 lemma AutGalois.π_apply (A : PointedGaloisObject F) (x : AutGalois F) :
@@ -213,14 +214,6 @@ lemma autGaloisSystem_map_surjective ⦃A B : PointedGaloisObject F⦄ (f : A �
   simp only [autGaloisSystem_map]
   exact hψ
 
-/-- `autGalois.π` is surjective for every pointed Galois object. -/
-theorem AutGalois.π_surjective (A : PointedGaloisObject F) :
-    Function.Surjective (AutGalois.π F A) := fun (σ : Aut A.obj) ↦ by
-  have (i : PointedGaloisObject F) : Finite ((autGaloisSystem F ⋙ forget _).obj i) :=
-    inferInstanceAs <| Finite (Aut (i.obj))
-  exact eval_section_surjective_of_surjective
-    (autGaloisSystem F ⋙ forget _) (autGaloisSystem_map_surjective F) A σ
-
 /-- Equality of elements of `AutGalois F` can be checked on the projections on each pointed
 Galois object. -/
 lemma AutGalois.ext {f g : AutGalois F}
@@ -228,6 +221,16 @@ lemma AutGalois.ext {f g : AutGalois F}
   dsimp only [AutGalois]
   ext A
   exact h A
+
+/-- `autGalois.π` is surjective for every pointed Galois object. -/
+theorem AutGalois.π_surjective [FiberFunctor F] (A : PointedGaloisObject F) :
+    Function.Surjective (AutGalois.π F A) := fun (σ : Aut A.obj) ↦ by
+  have (i : PointedGaloisObject F) : Finite ((autGaloisSystem F ⋙ forget _).obj i) :=
+    inferInstanceAs <| Finite (Aut (i.obj))
+  exact eval_section_surjective_of_surjective
+    (autGaloisSystem F ⋙ forget _) (autGaloisSystem_map_surjective F) A σ
+
+variable [FiberFunctor F]
 
 section EndAutGaloisIsomorphism
 
@@ -253,7 +256,7 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
 - `endEquivAutGalois : End F ≅ AutGalois F`: this is the composition of `endEquivSectionsFibers`
   with:
 
-  `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GroupCat).sections`
+  `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget Grp).sections`
 
   which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
 
@@ -293,7 +296,7 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
 
 /-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
 noncomputable def autIsoFibers :
-    autGaloisSystem F ⋙ forget GroupCat ≅ incl F ⋙ F' :=
+    autGaloisSystem F ⋙ forget Grp ≅ incl F ⋙ F' :=
   NatIso.ofComponents (fun A ↦ ((evaluationEquivOfIsGalois F A A.pt).toIso))
     (fun {A B} f ↦ by
       ext (φ : Aut A.obj)

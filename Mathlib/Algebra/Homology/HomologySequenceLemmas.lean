@@ -72,7 +72,7 @@ noncomputable def composableArrows₅ (i j : ι) (hij : c.Rel i j) : ComposableA
   mk₅ (homologyMap S₁.f i) (homologyMap S₁.g i) (hS₁.δ i j hij)
     (homologyMap S₁.f j) (homologyMap S₁.g j)
 
-lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j):
+lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j) :
     (composableArrows₅ hS₁ i j hij).Exact :=
   exact_of_δ₀ (hS₁.homology_exact₂ i).exact_toComposableArrows
     (exact_of_δ₀ (hS₁.homology_exact₃ i j hij).exact_toComposableArrows

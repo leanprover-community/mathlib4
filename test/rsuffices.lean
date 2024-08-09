@@ -1,5 +1,5 @@
 import Mathlib.Tactic.RSuffices
-import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExistsI
 import Mathlib.Algebra.Ring.Nat
 
 set_option autoImplicit true

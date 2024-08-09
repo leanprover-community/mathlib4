@@ -416,7 +416,7 @@ section
 
 variable {G A : Type*} [Group G] [AddCommGroup A] [MulAction G A]
 
-@[simp] theorem map_inv_of_isOneCocycle {f : G → A} (hf : IsOneCocycle f) (g : G) :
+@[scoped simp] theorem map_inv_of_isOneCocycle {f : G → A} (hf : IsOneCocycle f) (g : G) :
     g • f g⁻¹ = - f g := by
   rw [← add_eq_zero_iff_eq_neg, ← map_one_of_isOneCocycle hf, ← mul_inv_self g, hf g g⁻¹]
 
@@ -539,7 +539,7 @@ section
 
 variable {G M : Type*} [Group G] [CommGroup M] [MulAction G M]
 
-@[simp] theorem map_inv_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) (g : G) :
+@[scoped simp] theorem map_inv_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) (g : G) :
     g • f g⁻¹ = (f g)⁻¹ := by
   rw [← mul_eq_one_iff_eq_inv, ← map_one_of_isMulOneCocycle hf, ← mul_inv_self g, hf g g⁻¹]
 
@@ -699,7 +699,6 @@ lemma dZero_comp_H0_subtype : dZero A ∘ₗ (H0 A).subtype = 0 := by
   exact hx
 
 /-- The (exact) short complex `A.ρ.invariants ⟶ A ⟶ (G → A)`. -/
-@[simps!]
 def shortComplexH0 : ShortComplex (ModuleCat k) :=
   ShortComplex.moduleCatMk _ _ (dZero_comp_H0_subtype A)
 

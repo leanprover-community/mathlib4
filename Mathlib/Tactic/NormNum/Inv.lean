@@ -11,7 +11,7 @@ import Mathlib.Algebra.Field.Basic
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
 -/
 
-set_option autoImplicit true
+variable {u : Lean.Level}
 
 namespace Mathlib.Meta.NormNum
 
@@ -70,15 +70,15 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.instDivisionRing)
   return .isRat' _ q n d q(isRat_mkRat $pa $pb $p)
 
-theorem isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
+theorem isNat_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isInt_ratCast [DivisionRing R] : {q : ℚ} → {n : ℤ} →
+theorem isInt_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℤ} →
     IsInt q n → IsInt (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isRat_ratCast [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
+theorem isRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
     IsRat q n d → IsRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only []; norm_cast⟩
 

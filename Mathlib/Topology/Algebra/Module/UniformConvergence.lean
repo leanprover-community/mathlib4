@@ -7,8 +7,6 @@ import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.UniformConvergence
 
-#align_import topology.algebra.uniform_convergence from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Algebraic facts about the topology of uniform convergence
 
@@ -107,7 +105,6 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : I
       map_add' := fun x y ↦ by exact congr_arg s.restrict (map_add φ x y) }
   refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
   simpa only [Set.image_eq_range] using h u s hs
-#align uniform_on_fun.has_continuous_smul_induced_of_image_bounded UniformOnFun.continuousSMul_induced_of_image_bounded
 
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,
@@ -119,6 +116,5 @@ theorem UniformOnFun.continuousSMul_submodule_of_image_bounded (H : Submodule �
     @ContinuousSMul 𝕜 H _ _ ((UniformOnFun.topologicalSpace α E 𝔖).induced ((↑) : H → α →ᵤ[𝔖] E)) :=
   UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜 α E H
     (LinearMap.id.domRestrict H : H →ₗ[𝕜] α → E) inducing_subtype_val fun ⟨u, hu⟩ => h u hu
-#align uniform_on_fun.has_continuous_smul_submodule_of_image_bounded UniformOnFun.continuousSMul_submodule_of_image_bounded
 
 end Module
