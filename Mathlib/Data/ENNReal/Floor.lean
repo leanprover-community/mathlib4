@@ -81,11 +81,11 @@ lemma floor_le_of_lt_add_one (h : x < m + 1) :
     floor n = n :=
   le_antisymm (by exact_mod_cast floor_le n) (le_sSup (by simp))
 
-@[simp] lemma floor_zero : floor 0 = 0 := by exact_mod_cast ENNReal.floor_coe_eq 0
+@[simp] lemma floor_zero : floor 0 = 0 := by exact_mod_cast ENNReal.floor_coe 0
 
-@[simp] lemma floor_one : floor 1 = 1 := by exact_mod_cast ENNReal.floor_coe_eq 1
+@[simp] lemma floor_one : floor 1 = 1 := by exact_mod_cast ENNReal.floor_coe 1
 
-@[simp] lemma floor_top : floor ∞ = ⊤ := floor_coe_eq ⊤
+@[simp] lemma floor_top : floor ∞ = ⊤ := floor_coe ⊤
 
 lemma floor_eq_natFloor_toNNReal (x_ne_top : x ≠ ∞) :
     floor x = Nat.floor x.toNNReal := by
@@ -134,7 +134,7 @@ lemma lt_floor_add_one {x : ℝ≥0∞} (x_ne_top : x ≠ ∞) : x < floor (x + 
   intro con
   apply (lt_self_iff_false (x.floor + 1)).mp
   nth_rw 2 [con]
-  simp only [ENat.toENNReal_add, toENNReal_one, floor_add_one, floor_coe_eq]
+  simp only [ENat.toENNReal_add, toENNReal_one, floor_add_one, floor_coe]
   rw [lt_add_one_iff]
   rw [← ENat.toENNReal_coe_ne_top_iff, ENat.toENNReal_add, toENNReal_one]
   exact ENNReal.add_ne_top.mpr ⟨(floor_lt_top x_ne_top).ne, one_ne_top⟩
