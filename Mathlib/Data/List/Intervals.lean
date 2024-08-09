@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.Bool.Basic
+import Mathlib.Order.Lattice
 
 /-!
 # Intervals in ℕ
