@@ -414,7 +414,7 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
 /-- The canonical functor from the product of two categories to the comma category of their
 respective functors into `Discrete PUnit`. -/
 @[simps]
-def PUnitPUnitFromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
+def fromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
     A × B ⥤ Comma L R where
   obj X :=
     { left := X.1
@@ -426,21 +426,38 @@ def PUnitPUnitFromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
 
 /-- Taking the comma category of two functors into `Discrete PUnit` results in something
 is equivalent to their product. -/
-def PUnitPUnitIso (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
+@[simps!]
+def equivProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
     Comma L R ≌ A × B :=
-  Equivalence.mk ((fst L R).prod' (snd L R)) (PUnitPUnitFromProd L R)
+  Equivalence.mk ((fst L R).prod' (snd L R)) (fromProd L R)
     { hom := 𝟙 _, inv := 𝟙 _ }
     { hom := 𝟙 _, inv := 𝟙 _ }
 
 /-- Taking the comma category of a functor into `A ⥤ Discrete PUnit` and the identity
 `Discrete PUnit ⥤ Discrete PUnit` results in a category equivalent to `A`. -/
-def PUnitIdIso (L : A ⥤ Discrete PUnit) : Comma L (Functor.id _) ≌ A :=
-  (PUnitPUnitIso L _).trans (prod.rightUnitorEquivalence A)
+@[simps!]
+def toPUnitIdEquiv (L : A ⥤ Discrete PUnit) (R : Discrete PUnit ⥤ Discrete PUnit) :
+    Comma L R ≌ A :=
+  (equivProd L _).trans (prod.rightUnitorEquivalence A)
+
+@[simp]
+def toPUnitIdEquiv_functor_iso {L : A ⥤ Discrete PUnit}
+    {R : Discrete PUnit ⥤ Discrete PUnit} :
+    (toPUnitIdEquiv L R).functor = fst L R :=
+  rfl
 
 /-- Taking the comma category of the identity `Discrete PUnit ⥤ Discrete PUnit`
 and a functor `B ⥤ Discrete PUnit` results in a category equivalent to `B`. -/
-def IdPUnitIso (R : B ⥤ Discrete PUnit) : Comma (Functor.id _) R ≌ B :=
-  (PUnitPUnitIso _ R).trans (prod.leftUnitorEquivalence B)
+@[simps!]
+def toIdPUnitEquiv (L : Discrete PUnit ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
+    Comma L R ≌ B :=
+  (equivProd _ R).trans (prod.leftUnitorEquivalence B)
+
+@[simp]
+def toIdPUnitEquiv_functor_iso {L : Discrete PUnit ⥤ Discrete PUnit}
+    {R : B ⥤ Discrete PUnit} :
+    (toIdPUnitEquiv L R).functor = snd L R :=
+  rfl
 
 end
 
