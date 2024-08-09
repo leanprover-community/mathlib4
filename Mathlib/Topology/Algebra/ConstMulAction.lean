@@ -250,15 +250,18 @@ theorem subset_interior_smul_right {s : Set G} {t : Set α} : s • interior t �
   interior_maximal (Set.smul_subset_smul_left interior_subset) isOpen_interior.smul_left
 
 @[to_additive (attr := simp)]
-theorem smul_mem_nhds_smul {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 (g • a) ↔ t ∈ 𝓝 a :=
+theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 (g • a) ↔ t ∈ 𝓝 a :=
   (Homeomorph.smul g).openEmbedding.image_mem_nhds
 
-@[deprecated (since := "2024-08-06")] alias ⟨_, smul_mem_nhds⟩ := smul_mem_nhds_smul
+@[to_additive] alias ⟨_, smul_mem_nhds_smul⟩ := smul_mem_nhds_smul_iff
+
+@[to_additive (attr := deprecated (since := "2024-08-06"))]
+alias smul_mem_nhds := smul_mem_nhds_smul
 
 @[to_additive (attr := simp)]
 theorem smul_mem_nhds_self [TopologicalSpace G] [ContinuousConstSMul G G] {g : G} {s : Set G} :
     g • s ∈ 𝓝 g ↔ s ∈ 𝓝 1 := by
-  rw [← smul_mem_nhds_smul g⁻¹]; simp
+  rw [← smul_mem_nhds_smul_iff g⁻¹]; simp
 
 end Group
 
@@ -366,38 +369,35 @@ variable [Monoid M] [TopologicalSpace α] [MulAction M α] [ContinuousConstSMul 
 
 nonrec theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c : M} (hc : IsUnit c) :
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
-  let ⟨u, hu⟩ := hc
-  hu ▸ tendsto_const_smul_iff u
+  tendsto_const_smul_iff hc.unit
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {c : M} {s : Set β}
 
 nonrec theorem continuousWithinAt_const_smul_iff (hc : IsUnit c) :
     ContinuousWithinAt (fun x => c • f x) s b ↔ ContinuousWithinAt f s b :=
-  let ⟨u, hu⟩ := hc
-  hu ▸ continuousWithinAt_const_smul_iff u
+  continuousWithinAt_const_smul_iff hc.unit
 
 nonrec theorem continuousOn_const_smul_iff (hc : IsUnit c) :
     ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
-  let ⟨u, hu⟩ := hc
-  hu ▸ continuousOn_const_smul_iff u
+  continuousOn_const_smul_iff hc.unit
 
 nonrec theorem continuousAt_const_smul_iff (hc : IsUnit c) :
     ContinuousAt (fun x => c • f x) b ↔ ContinuousAt f b :=
-  let ⟨u, hu⟩ := hc
-  hu ▸ continuousAt_const_smul_iff u
+  continuousAt_const_smul_iff hc.unit
 
 nonrec theorem continuous_const_smul_iff (hc : IsUnit c) :
     (Continuous fun x => c • f x) ↔ Continuous f :=
-  let ⟨u, hu⟩ := hc
-  hu ▸ continuous_const_smul_iff u
+  continuous_const_smul_iff hc.unit
 
 nonrec theorem isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=
-  let ⟨u, hu⟩ := hc
-  hu ▸ isOpenMap_smul u
+  isOpenMap_smul hc.unit
 
 nonrec theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c • x :=
-  let ⟨u, hu⟩ := hc
-  hu ▸ isClosedMap_smul u
+  isClosedMap_smul hc.unit
+
+nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
+    c • s ∈ 𝓝 (c • a) ↔ s ∈ 𝓝 a :=
+  smul_mem_nhds_smul_iff hc.unit
 
 end IsUnit
 
@@ -494,19 +494,20 @@ section MulAction
 variable {G₀ : Type*} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
   [ContinuousConstSMul G₀ α]
 
--- Porting note: generalize to a monoid action + `IsUnit`
 /-- Scalar multiplication by a nonzero scalar preserves neighborhoods. -/
-theorem smul_mem_nhds_smul₀ {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
+theorem smul_mem_nhds_smul_iff₀ {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x :=
-  smul_mem_nhds_smul (Units.mk0 c hc)
+  smul_mem_nhds_smul_iff (Units.mk0 c hc)
 
 @[deprecated (since := "2024-08-06")]
-alias set_smul_mem_nhds_smul_iff := smul_mem_nhds_smul₀
+alias set_smul_mem_nhds_smul_iff := smul_mem_nhds_smul_iff₀
+
+alias ⟨_, smul_mem_nhds_smul₀⟩ := smul_mem_nhds_smul_iff₀
 
 @[deprecated  smul_mem_nhds_smul₀ (since := "2024-08-06")]
 theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝 x) (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) :=
-  (smul_mem_nhds_smul₀ hc).2 hs
+  smul_mem_nhds_smul₀ hc hs
 
 end MulAction
 
@@ -517,7 +518,7 @@ variable {G₀ : Type*} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G�
 
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) := by
-  refine Iff.trans ?_ (smul_mem_nhds_smul₀ hc)
+  refine Iff.trans ?_ (smul_mem_nhds_smul_iff₀ hc)
   rw [smul_zero]
 
 end DistribMulAction
