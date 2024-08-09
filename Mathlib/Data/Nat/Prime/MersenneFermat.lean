@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+import Mathlib.NumberTheory.LucasPrimality
 
 /-!
 # Lemmas about Fermat numbers
@@ -15,7 +16,7 @@ import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
 open ZMod Nat
 
-/-- Prime `a ^ n + 1` implies `n` is a power of two (Fermat primes `Fₙ`). -/
+/-- Prime `a ^ n + 1` implies `n` is a power of two (Fermat primes). -/
 theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ n + 1).Prime) :
     ∃ m : ℕ, n = 2 ^ m := by
   obtain ⟨k, m, hm, rfl⟩ := exists_eq_two_pow_mul_odd hn
@@ -25,6 +26,45 @@ theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ 
   let h := hm.nat_add_dvd_pow_add_pow (a ^ 2 ^ k) 1
   rw [one_pow, hP.dvd_iff_eq (Nat.lt_add_right 1 ha).ne', add_left_inj, pow_eq_self_iff ha] at h
   rw [h, mul_one]
+
+/-- `Fₙ = 2^(2^n)+1` is prime only if `3^(2^(2^n-1)) = -1 mod Fₙ` (Pépin's test). -/
+lemma pepin_primality (n : ℕ) (h : 3 ^ (2 ^ (2 ^ n - 1)) = (-1 : ZMod (2 ^ (2 ^ n) + 1))) :
+    (2 ^ (2 ^ n) + 1).Prime := by
+  have hneg1ne1: (-1 : ZMod (2 ^ (2 ^ n) + 1)) ≠ (1 : ZMod (2 ^ (2 ^ n) + 1)) := by
+    by_contra h'
+    let h := (ZMod.neg_eq_self_iff (1 : ZMod (2 ^ (2 ^ n) + 1))).mp h'
+    rcases h with h | h
+    · absurd h
+      rw [Fin.one_eq_zero_iff, ← ne_eq, succ_ne_succ]
+      exact NeZero.ne (2 ^ 2 ^ n)
+    · absurd h
+      have : Fact (1 < 2 ^ (2 ^ n) + 1) := by
+        simp only [lt_add_iff_pos_left, ofNat_pos, pow_pos]
+        exact { out := trivial }
+      rw [val_one]
+      norm_num
+      simp only [reduceEqDiff]
+      rw [pow_eq_one_iff (x := 2) (n := 2 ^ n)]
+      · exact succ_succ_ne_one 0
+      · exact Ne.symm (NeZero.ne' (2 ^ n))
+  apply lucas_primality (p := 2 ^ (2 ^ n) + 1) (a := 3)
+  · norm_num
+    apply Mathlib.Tactic.Ring.pow_nat _ h neg_one_sq
+    rw [mul_comm, ← Nat.pow_add' 2 (2 ^ n - 1) 1]
+    norm_num
+    rw [Nat.sub_add_cancel Nat.one_le_two_pow]
+  · norm_num
+    intro p H' H''
+    rw [(Nat.prime_dvd_prime_iff_eq H' prime_two).mp ((Nat.Prime.dvd_of_dvd_pow H') H'')]
+    have : 2 ^ (2 ^ n) / 2 = 2 ^ (2 ^ n - 1) := by
+      rw [← Nat.mul_right_inj (a := 2), ← Nat.pow_add' 2 (2 ^ n - 1) 1,
+        mul_comm, Nat.div_mul_cancel]
+      · norm_num
+        rw [Nat.sub_add_cancel Nat.one_le_two_pow]
+      · exact dvd_pow_self 2 (Ne.symm (NeZero.ne' (2 ^ n)))
+      · exact Ne.symm (zero_ne_add_one 1)
+    rw [this, h]
+    exact hneg1ne1
 
 /-- Prime factors of composite `Fₙ = 2 ^ (2 ^ n) + 1` are of form `k * 2 ^ (n + 2) + 1`. -/
 lemma fermat_primeFactors (n p : ℕ) (hn : 1 < n) (hP : p.Prime) (hp' : p ≠ 2)
