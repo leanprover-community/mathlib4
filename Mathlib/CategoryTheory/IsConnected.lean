@@ -331,6 +331,14 @@ theorem zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzag j₁ j₂
     Zigzag (F.obj j₁) (F.obj j₂) :=
   h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
 
+/-- A zigzag in a discrete category entails an equality of its extremities -/
+lemma eq_of_zigzag (X) {a b : Discrete X} (zab : Relation.ReflTransGen Zag a b) : a.as = b.as := by
+  induction zab with
+  | refl => rfl
+  | @tail b c _ zbc eqab  =>
+    exact eqab.trans ( zbc.elim (Nonempty.elim · Discrete.eq_of_hom)
+      (Eq.symm ∘ (Nonempty.elim · Discrete.eq_of_hom)))
+
 -- TODO: figure out the right way to generalise this to `Zigzag`.
 theorem zag_of_zag_obj (F : J ⥤ K) [F.Full] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :
     Zag j₁ j₂ :=

@@ -5,7 +5,7 @@ Authors: Nicolas Rolland
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Cat.Relation
+import Mathlib.CategoryTheory.ConnectedComponents
 
 /-!
 # Adjunctions related to Cat, the category of categories
