@@ -91,10 +91,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
       }
     }
     if (10000 <= con) { printf("There are %s files with changed transitive imports: this is too many to display!\n", con) } else {
-      max=0
       for(x in reds) {
-        #max++
-        if(100 < max) { exit 1 }
         if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
       }
