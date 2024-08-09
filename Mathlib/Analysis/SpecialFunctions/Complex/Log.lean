@@ -300,6 +300,4 @@ lemma Complex.cexp_tsum_eq_tprod (f : ι → α → ℂ) (hfn : ∀ x n, f n x �
   apply (HasProd.tprod_eq ?_).symm
   apply Complex.HasSum_cexp_HasProd f hfn fun a => (hf a).hasSum
 
-
-
 end tsum_tprod
