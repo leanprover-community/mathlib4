@@ -115,10 +115,17 @@ section Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [Preorder β]
 
 /-
+open Set in
 lemma Pi.upperBounds {f : (Π i, α i) → β} (hf : Monotone f)
     {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds (f '' d) = upperBounds (f '' (Set.pi  Set.univ  (fun i => (fun a => a i) '' d))) :=
-  sorry
+    upperBounds (f '' d) = upperBounds (f '' (pi univ (fun i => (fun a => a i) '' d))) := by
+  apply le_antisymm
+  · intro u hu
+    rw [mem_upperBounds]
+    intro c hc
+    simp at hc
+    sorry
+  · sorry
 -/
 
 end Pi
@@ -137,26 +144,16 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
   apply le_antisymm
-  · intro u hu
-    rw [mem_upperBounds]
-    intro c hc
+  · intro u hu c hc
     simp at hc
-    cases' hc with a₁ ha
-    cases' ha with b₁ hab
-    obtain ⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩ := hab
+    obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩⟩⟩ := hc
     obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
-    have e1 : (a₁,b₁) ≤ (a₃,b₃) := by
-      aesop
+    have e1 : (a₁,b₁) ≤ (a₃,b₃) := by simp_all [mk_le_mk]
     rw [← right]
-    apply le_trans (hf e1)
-    rw [mem_upperBounds] at hu
-    apply hu
+    apply le_trans (hf e1) (hu _)
     use (a₃, b₃)
     exact And.imp_right (fun _ ↦ rfl) hm
-  · apply upperBounds_mono_set
-    apply image_mono
-    intro _ _
-    aesop
+  · exact upperBounds_mono_set (image_mono fun ⟨p₁, p₂⟩ _ => by aesop)
 
 lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
