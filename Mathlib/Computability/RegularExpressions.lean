@@ -132,6 +132,12 @@ theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches
   rfl
 
 @[simp]
+theorem matches'_sum (Ps : List (RegularExpression α)) :
+    (Ps.sum).matches' = (Ps.map matches').sum := by
+  open List in
+  rw [sum, ← foldr_map' matches' (· + ·) (· + ·) 0 Ps matches'_add, matches'_zero, ← sum]
+
+@[simp]
 theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' = P.matches' ^ n
   | 0 => matches'_epsilon
   | n + 1 => (matches'_mul _ _).trans <| Eq.trans
