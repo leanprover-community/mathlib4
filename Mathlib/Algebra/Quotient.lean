@@ -46,6 +46,7 @@ class HasQuotient (A : outParam <| Type u) (B : Type v) (setoid : outParam <| B 
 /-- `HasQuotient.Quotient A b` (with notation `A ⧸ b`) is the quotient
  of the type `A` by `b`.
 -/
+@[nolint unusedArguments]
 abbrev HasQuotient.Quotient (A : Type u) {B : Type v} {setoid : B → Setoid A}
     [HasQuotient A B setoid] (b : B) : Type u :=
   _root_.Quotient (setoid b)
