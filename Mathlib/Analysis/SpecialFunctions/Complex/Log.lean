@@ -248,45 +248,45 @@ section tsum_tprod
 
 variable {α ι: Type*}
 
+open Real
 
 lemma Real.HasSum_rexp_HasProd  (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
-    (hf : ∀ x : α,  Summable fun n => log ((f n x))) :
-      (exp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
-        (fun a : α => ∏' n : ι, ((f n a))) := by
-  ext a
-  apply (HasProd.tprod_eq ?_).symm
+    (hf : ∀ x : α,  Summable fun n => log ((f n x))) (a : α) :
+       HasProd (fun b ↦ f b a) ((rexp ∘ fun a ↦ ∑' (n : ι), log (f n a)) a) := by
   apply ((hf a).hasSum.rexp).congr
   intro _
   congr
-  exact funext fun x ↦ Real.exp_log (hfn a x)
+  exact funext fun x ↦ exp_log (hfn a x)
 
 /--The exponential of a infinite sum  of real logs (which converges absolutely) is an infinite
 product.-/
 lemma Real.rexp_tsum_eq_tprod  (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
     (hf : ∀ x : α,  Summable fun n => log ((f n x))) :
-      (exp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
+      (rexp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
         (fun a : α => ∏' n : ι, ((f n a))) := by
   ext a
   apply (HasProd.tprod_eq ?_).symm
-  apply ((hf a).hasSum.rexp).congr
-  intro _
-  congr
-  exact funext fun x ↦ Real.exp_log (hfn a x)
+  apply Real.HasSum_rexp_HasProd f hfn hf a
 
-open Complex in
+open Complex
 
-/--The exponential of a infinite sum  of comples logs (which converges absolutely) is an infinite
-product.-/
-lemma Complex.cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
-    (hf : ∀ x : α,  Summable fun n => log ((f n x))) :
-      (cexp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
-        (fun a : α => ∏' n : ι, ((f n a))) := by
-  ext a
-  apply (HasProd.tprod_eq ?_).symm
+lemma Complex.Summable_cexp_HasProd  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
+    (hf : ∀ x : α,  Summable fun n => log ((f n x))) (a : α) :
+       HasProd (fun b ↦ f b a) ((cexp ∘ fun a ↦ ∑' (n : ι), log (f n a)) a) := by
   apply ((hf a).hasSum.cexp).congr
   intro _
   congr
   exact funext fun x ↦ exp_log (hfn a x)
+
+/--The exponential of a infinite sum  of comples logs (which converges absolutely) is an infinite
+product.-/
+lemma Complex.cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
+    (hf : ∀ x : α,  Summable fun n => log ((f n x)))  :
+      (cexp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
+        (fun a : α => ∏' n : ι, ((f n a))) := by
+  ext a
+  apply (HasProd.tprod_eq ?_).symm
+  apply Complex.Summable_cexp_HasProd f hfn hf a
 
 
 
