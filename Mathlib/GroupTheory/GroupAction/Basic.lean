@@ -428,9 +428,9 @@ theorem image_inter_image_iff (U V : Set α) :
 variable (G α)
 
 /-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
-@[to_additive (attr := reducible)
+@[to_additive
     "The quotient by `AddAction.orbitRel`, given a name to enable dot notation."]
-def orbitRel.Quotient : Type _ :=
+abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
