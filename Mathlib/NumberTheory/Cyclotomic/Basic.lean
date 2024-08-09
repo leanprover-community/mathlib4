@@ -579,11 +579,11 @@ instance algebraBase : Algebra A (CyclotomicRing n A K) :=
 -- but there is at `reducible_and_instances` #10906
 example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = Ring.toIntAlgebra _ := rfl
 
-instance [NoZeroSMulDivisors A (CyclotomicField n K)] :
+instance [IsFractionRing A K] :
     NoZeroSMulDivisors A (CyclotomicRing n A K) :=
   (adjoin A _).noZeroSMulDivisors_bot
 
-theorem algebraBase_injective [NoZeroSMulDivisors A (CyclotomicField n K)] :
+theorem algebraBase_injective [IsFractionRing A K] :
     Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
   NoZeroSMulDivisors.algebraMap_injective _ _
 
