@@ -44,6 +44,13 @@ getTransImports () {
 }
 
 formatGitDiff () {
+  local new=new
+  local removed=removed
+  if [ -n "${2}" ]
+  then
+    new=removed
+    removed=new
+  fi
   git diff --name-status "${1}" |
     awk -F'\t' '!($1 == "M") {
       printf("%s,,%s%s\n", NF == 2? $2 : $3, $1, NF == 2? "" : ","$2)
@@ -51,8 +58,8 @@ formatGitDiff () {
     sed '
       s=/=.=g
       s=\.lean,=,=
-      s=,A=, (new file)=
-      s=,D=, (removed file)=
+      s=,A=, ('"${new}"' file)=
+      s=,D=, ('"${removed}"' file)=
       s=,R[0-9]*,\(.*\)=, (paired with `\1`)=
     '
 }
@@ -76,7 +83,7 @@ git checkout "${currCommit}"
 
 git checkout "${commit2}"
 git checkout master scripts/count-trans-deps.py
-getFormattedTransImports "${commit1}" > transImports2.txt
+getFormattedTransImports "${commit1}" rev > transImports2.txt
 git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
