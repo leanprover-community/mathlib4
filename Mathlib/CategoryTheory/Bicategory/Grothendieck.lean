@@ -81,23 +81,12 @@ lemma hom_ext_iff (g : a ⟶ b) : f = g ↔ ∃ (hfg : f.1 = g.1), f.2 = g.2 ≫
 protected lemma id_comp : 𝟙 a ≫ f = f := by
   ext
   · simp
-  dsimp
-  rw [F.mapComp_id_right_inv f.1.op.toLoc]
-  rw [← (F.mapId ⟨op a.1⟩).inv.naturality_assoc f.2]
-  slice_lhs 2 4 =>
-    rw [← Cat.whiskerLeft_app, ← NatTrans.comp_app, ← assoc]
-    rw [← Bicategory.whiskerLeft_comp, Iso.inv_hom_id]
-  simp
+  · simp [F.mapComp_id_right_inv f.1.op.toLoc, ← (F.mapId ⟨op a.1⟩).inv.naturality_assoc f.2]
 
 protected lemma comp_id : f ≫ 𝟙 b = f := by
   ext
   · simp
-  dsimp
-  rw [← Cat.whiskerRight_app, ← NatTrans.comp_app]
-  rw [F.mapComp_id_left_inv]
-  nth_rw 1 [← assoc]
-  rw [← Bicategory.comp_whiskerRight, Iso.inv_hom_id]
-  simp
+  simp [F.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
 
 end
 
@@ -108,15 +97,11 @@ protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   dsimp
   slice_lhs 3 5 =>
     rw [← (F.mapComp g.1.op.toLoc f.1.op.toLoc).inv.naturality_assoc h.2]
-    rw [← Cat.whiskerLeft_app, ← NatTrans.comp_app]
+    -- lemmas should make this unecessary
+    -- can make unecessary w/ better comp lemmas (where non whiskering is isolated)
+    rw [← Cat.whiskerLeft_app, ← Cat.comp_app]
     rw [F.mapComp_assoc_right_inv h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc]
-    simp only [Strict.associator_eqToIso, eqToIso_refl, Iso.refl_inv, eqToIso.hom]
-    repeat rw [NatTrans.comp_app]
-    rw [F.map₂_eqToHom, NatTrans.id_app]
-  simp only [Cat.comp_obj, Cat.comp_map, map_comp, assoc]
-  congr 3
-  rw [← Cat.whiskerRight_app, eqToHom_app]
-  simp only [Cat.whiskerRight_app, Cat.comp_obj, id_comp]
+  simp
 
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
@@ -136,6 +121,7 @@ section
 
 -- TODO: different universe?
 variable {G : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+  {H : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
 
 /-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`.
@@ -160,6 +146,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     · simp
     dsimp
     rw [comp_id]
+
     sorry -- this should follow from variation of naturality_id (after taking inverses)
   map_comp {a b c} f g := by
     ext
@@ -171,48 +158,50 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
 
 theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
 
+/-- The underlying homomorphism of `mapIdIso`. This is done so that `mapIdIso` compiles. -/
+abbrev mapIdIso_hom : map (𝟙 F) ⟶ 𝟭 (∫ F) := { app := fun a ↦ eqToHom (by aesop_cat) }
+
+-- TODO: give hom_ext higher precedence as an ext lemma?
+abbrev mapIdIso_inv : 𝟭 (∫ F) ⟶ map (𝟙 F) := { app := fun a ↦ eqToHom (by aesop_cat) }
+
 /-- TODO -/
+-- TODO: explicit arg
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
-  hom := {
-    app := fun a ↦ eqToHom (by aesop_cat)
-    naturality := by
-      intros a b f
-      simp only [categoryStruct_id, id_obj, categoryStruct_Hom, map_obj_base, map_obj_fiber,
-        StrongOplaxNatTrans.id_app, toOplax_toPrelaxFunctor, eqToHom_refl, comp_id, Functor.id_map,
-        id_comp]
-      ext
-      · simp
-      simp only [map_obj_base, map_obj_fiber, StrongOplaxNatTrans.id_app, toOplax_toPrelaxFunctor,
-        map_map_fst, map_map_snd, Cat.id_map, StrongOplaxNatTrans.id_naturality_hom,
-        Strict.rightUnitor_eqToIso, eqToIso_refl, Iso.refl_hom, Strict.leftUnitor_eqToIso,
-        Iso.refl_inv, id_comp, heq_eq_eq]
-      rw [NatTrans.id_app]
-      erw [comp_id]
-  }
-  inv := {
-    app := fun a ↦ eqToHom (by aesop_cat)
-    naturality := by
-      intros a b f
-      simp only [id_obj, categoryStruct_id, categoryStruct_Hom, map_obj_base, map_obj_fiber,
-        StrongOplaxNatTrans.id_app, toOplax_toPrelaxFunctor, Functor.id_map, eqToHom_refl, comp_id,
-        id_comp]
-      ext
-      · simp
-      simp only [map_map_fst, map_map_snd, StrongOplaxNatTrans.id_app, toOplax_toPrelaxFunctor,
-        Cat.id_map, StrongOplaxNatTrans.id_naturality_hom, Strict.rightUnitor_eqToIso, eqToIso_refl,
-        Iso.refl_hom, Strict.leftUnitor_eqToIso, Iso.refl_inv, id_comp, heq_eq_eq]
-      rw [NatTrans.id_app]
-      erw [comp_id]
-  }
+  hom := mapIdIso_hom
+  inv := mapIdIso_inv
   hom_inv_id := by
     dsimp
     ext
     · simp
-    simp
-    sorry
-  inv_hom_id := sorry
+    simp [F.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
+  inv_hom_id := by
+    dsimp
+    ext
+    · simp
+    simp [F.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
 
--- theorem mapIdIso, mapCompIso!
+abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α ⋙ map β where
+  app := fun a ↦ eqToHom (by aesop_cat)
+
+abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map (α ≫ β) where
+  app := fun a ↦ eqToHom (by aesop_cat)
+
+def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β where
+  hom := mapCompIso_hom α β
+  inv := mapCompIso_inv α β
+  hom_inv_id := by
+    dsimp
+    ext
+    · simp
+    simp [H.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
+  inv_hom_id := by
+    dsimp
+    ext
+    · simp
+    simp [H.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
+
+-- TODO: mapComp_eq and mapId_eq?
+
 
 end
 

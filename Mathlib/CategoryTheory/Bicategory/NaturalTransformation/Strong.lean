@@ -131,6 +131,7 @@ section
 
 variable {a b c : B} {a' : C}
 
+
 @[reassoc (attr := simp)]
 theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :
     f ◁ G.map₂ β ▷ θ.app b ≫ f ◁ (θ.naturality h).hom =
