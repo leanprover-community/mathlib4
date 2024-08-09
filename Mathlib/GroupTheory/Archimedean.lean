@@ -90,8 +90,173 @@ theorem AddSubgroup.cyclic_of_isolated_zero {H : AddSubgroup G} {a : G} (h₀ : 
   · exact ⟨0, closure_singleton_zero.symm⟩
   · exact (exists_isLeast_pos hbot h₀ hd).imp fun _ => cyclic_of_min
 
+lemma AddSubgroup.isLeast_of_closure_iff_eq_max {a b : G} :
+    IsLeast {y : G | y ∈ closure ({a} : Set G) ∧ 0 < y} b ↔ b = max a (-a) ∧ 0 < b := by
+  constructor <;> intro h
+  · have := cyclic_of_min h
+    have ha : a ∈ closure ({b} : Set G) := by
+      simp [← this]
+    rw [mem_closure_singleton] at ha
+    obtain ⟨n, rfl⟩ := ha
+    have := h.left
+    simp only [mem_closure_singleton, mem_setOf_eq, ← mul_zsmul] at this
+    obtain ⟨m, hm⟩ := this.left
+    have key : m * n = 1 := by
+      rw [← (zsmul_strictMono_left this.right).injective.eq_iff, hm, one_zsmul]
+    rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
+    rw [eq_comm]
+    rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
+    simp [this.right.le, this.right]
+  · wlog ha : 0 ≤ a generalizing a
+    · convert @this (-a) ?_ (by simpa using le_of_not_le ha) using 4
+      · simp
+      · rwa [max_comm, neg_neg]
+    rw [max_eq_left ((neg_nonpos.mpr ha).trans ha)] at h
+    rcases h with ⟨rfl, h⟩
+    refine ⟨?_, ?_⟩
+    · simp [h]
+    · intro x
+      simp only [mem_closure_singleton, mem_setOf_eq, and_imp, forall_exists_index]
+      rintro k rfl hk
+      rw [← one_zsmul b, ← mul_zsmul, mul_one, zsmul_le_zsmul_iff h, ← zero_add 1,
+          ← Int.lt_iff_add_one_le]
+      contrapose! hk
+      rw [← Left.nonneg_neg_iff, ← neg_zsmul]
+      exact zsmul_nonneg ha (by simp [hk])
+
+lemma AddSubgroup.mem_closure_singleton_iff_existsUnique_zsmul {a b : G} (ha : a ≠ 0) :
+    (b ∈ closure {a}) ↔ ∃! k : ℤ, k • a = b := by
+  constructor <;> intro h
+  · wlog ha : 0 < a generalizing a b
+    · simp only [not_lt] at ha
+      rcases ha.eq_or_lt with rfl|ha
+      · contradiction
+      specialize @this (-a) b (by simpa) (by simpa) (by simpa)
+      simp only [zsmul_neg'] at this
+      obtain ⟨k, rfl, hk'⟩ := this
+      refine ⟨-k, rfl, ?_⟩
+      intro y hy
+      rw [← neg_eq_iff_eq_neg]
+      exact hk' _ (by simpa using hy)
+    · rw [mem_closure_singleton] at h
+      obtain ⟨k, hk⟩ := h
+      refine ⟨k, hk, ?_⟩
+      rintro l rfl
+      exact (zsmul_strictMono_left ha).injective hk.symm
+  · rw [mem_closure_singleton]
+    exact h.exists
+
 /-- Every subgroup of `ℤ` is cyclic. -/
 theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closure {a} :=
   have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_not_mem fun m hm =>
     hm.1.not_le (lt_add_one_iff.1 hm.2)
   AddSubgroup.cyclic_of_isolated_zero one_pos <| by simp [this]
+
+lemma AddSubgroup.closure_singleton_int_one_eq_top : closure ({1} : Set ℤ) = ⊤ := by
+  rw [eq_comm]
+  apply cyclic_of_min
+  refine ⟨?_, ?_⟩
+  · simp
+  · intro x
+    simp only [mem_top, true_and, mem_setOf_eq]
+    exact id
+
+/-- In two linearly ordered archimedean additive groups, the closure of an element of one group
+is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
+noncomputable def AddSubgroup.closure_equiv_closure {G' : Type*}
+    [LinearOrderedAddCommGroup G'] [Archimedean G'] (x : G) (y : G') (hxy : x = 0 ↔ y = 0) :
+    {f : closure ({x} : Set G) ≃+ closure ({y} : Set G') // StrictMono f} :=
+  if hx : x = 0 then by
+    refine ⟨⟨⟨fun _ ↦ ⟨0, by simp [hxy.mp hx]⟩, fun _ ↦ ⟨0, by simp [hx]⟩, ?_, ?_⟩, ?_⟩, ?_⟩
+    · intro ⟨a, ha⟩
+      simpa [hx, closure_singleton_zero, eq_comm] using ha
+    · intro ⟨a, ha⟩
+      simpa [hxy.mp hx, closure_singleton_zero, eq_comm] using ha
+    · intros
+      simp
+    · intro ⟨a, ha⟩ ⟨b, hb⟩
+      simp only [hx, closure_singleton_zero, mem_bot] at ha hb
+      simp [ha, hb]
+  else by
+    set x' := max x (-x) with hx'
+    have xpos : 0 < x' := by
+      simp [hx', eq_comm, hx]
+    set y' := max y (-y) with hy'
+    have ypos : 0 < y' := by
+      simp [hy', eq_comm, ← hxy, hx]
+    have hxc : closure {x} = closure {x'} := by
+      rcases max_cases x (-x) with H|H <;>
+      simp [hx', H.left]
+    have hyc : closure {y} = closure {y'} := by
+      rcases max_cases y (-y) with H|H <;>
+      simp [hy', H.left]
+    refine ⟨⟨⟨
+      fun a ↦ ⟨((mem_closure_singleton).mp
+        (by simpa [hxc] using a.prop)).choose • y', ?_⟩,
+      fun a ↦ ⟨((mem_closure_singleton).mp
+        (by simpa [hyc] using a.prop)).choose • x', ?_⟩,
+        ?_, ?_⟩, ?_⟩, ?_⟩
+    · rw [hyc, mem_closure_singleton]
+      exact ⟨_, rfl⟩
+    · rw [hxc, mem_closure_singleton]
+      exact ⟨_, rfl⟩
+    · intro a
+      generalize_proofs A B C D
+      rw [Subtype.ext_iff, ← (C a).choose_spec, (zsmul_strictMono_left xpos).injective.eq_iff,
+          ← (zsmul_strictMono_left ypos).injective.eq_iff, (A ⟨_, D a⟩).choose_spec]
+    · intro a
+      generalize_proofs A B C D
+      rw [Subtype.ext_iff, ← (C a).choose_spec, (zsmul_strictMono_left ypos).injective.eq_iff,
+          ← (zsmul_strictMono_left xpos).injective.eq_iff, (A ⟨_, D a⟩).choose_spec]
+    · intro a b
+      generalize_proofs A B C D E F
+      simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, AddSubmonoid.mk_add_mk, Subtype.mk.injEq]
+      rw [← add_zsmul, (zsmul_strictMono_left ypos).injective.eq_iff,
+          ← (zsmul_strictMono_left xpos).injective.eq_iff, add_zsmul,
+          (A a).choose_spec, (A b).choose_spec, (A (a + b)).choose_spec]
+      simp
+    · intro a b hab
+      simp only [AddEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_lt_mk]
+      generalize_proofs A B C D
+      rw [(zsmul_strictMono_left ypos).lt_iff_lt, ←(zsmul_strictMono_left xpos).lt_iff_lt,
+          A.choose_spec, B.choose_spec]
+      simpa using hab
+
+/-- If an element of a linearly ordered archimedean additive group is the least positive element,
+then the whole group is isomorphic (and order-isomorphic) to the integers. -/
+noncomputable def LinearOrderedAddCommGroup.int_addEquiv_of_isLeast_pos {x : G}
+    (h : IsLeast {y : G | 0 < y} x) :
+    {f : G ≃+ ℤ // StrictMono f} := by
+  have : IsLeast {y : G | y ∈ (⊤ : AddSubgroup G) ∧ 0 < y} x := by simpa using h
+  replace this := AddSubgroup.cyclic_of_min this
+  let e : G ≃+ (⊤ : AddSubgroup G) := AddSubsemigroup.topEquiv.symm
+  let e' : (⊤ : AddSubgroup G) ≃+ AddSubgroup.closure {x} :=
+    AddEquiv.subsemigroupCongr (by simp [this])
+  let g : ℤ ≃+ (⊤ : AddSubgroup ℤ) := AddSubsemigroup.topEquiv.symm
+  let g' : (⊤ : AddSubgroup ℤ) ≃+ AddSubgroup.closure ({1} : Set ℤ) :=
+    (.subsemigroupCongr (by simp [AddSubgroup.closure_singleton_int_one_eq_top]))
+  let f := AddSubgroup.closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
+  refine ⟨(((e.trans e').trans f.val).trans g'.symm).trans g.symm, ?_⟩
+  intro a b hab
+  have hab' : f.val (e' (e a)) < f.val (e' (e b)) := by
+    rw [f.prop.lt_iff_lt]
+    exact hab
+  exact hab'
+
+/-- Any linearly ordered archimedean additive group is either is isomorphic (and order-isomorphic)
+to the integers, or is densely ordered. -/
+lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered :
+    (∃ f : G ≃+ ℤ, StrictMono f) ∨ DenselyOrdered G := by
+  by_cases H : ∃ x, IsLeast {y : G | 0 < y} x
+  · obtain ⟨x, hx⟩ := H
+    exact Or.inl ⟨_, (LinearOrderedAddCommGroup.int_addEquiv_of_isLeast_pos hx).prop⟩
+  · push_neg at H
+    refine Or.inr ⟨?_⟩
+    intro x y hxy
+    specialize H (y - x)
+    obtain ⟨z, hz⟩ : ∃ z : G, 0 < z ∧ z < y - x := by
+      contrapose! H
+      refine ⟨by simp [hxy], fun _ ↦ H _⟩
+    refine ⟨x + z, ?_, ?_⟩
+    · simp [hz.left]
+    · simpa [lt_sub_iff_add_lt'] using hz.right
