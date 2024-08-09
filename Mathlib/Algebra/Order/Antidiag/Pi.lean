@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
   Yaël Dillies
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 
 /-!
