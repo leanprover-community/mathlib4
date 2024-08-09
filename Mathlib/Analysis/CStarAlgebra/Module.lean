@@ -57,7 +57,7 @@ class CStarModule (A : outParam <| Type*) (E : Type*) [NonUnitalSemiring A] [Sta
   inner_smul_right_complex {z : ℂ} {x} {y} : inner x (z • y) = z • inner x y
   star_inner x y : star (inner x y) = inner y x
   norm_sq_eq x : ‖x‖ ^ 2 = ‖inner x x‖
-  protected norm_nonneg (x : E) : 0 ≤ ‖x‖ := by positivity
+  protected norm_nonneg (x : E) : 0 ≤ ‖x‖ := by intro; positivity
 
 attribute [simp] CStarModule.inner_add_right CStarModule.star_inner
   CStarModule.inner_op_smul_right CStarModule.inner_smul_right_complex
