@@ -7,9 +7,9 @@ import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Commutator
-import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Properties of group actions involving quotient groups
