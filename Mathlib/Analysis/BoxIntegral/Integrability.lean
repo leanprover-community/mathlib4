@@ -21,8 +21,7 @@ We deduce that the same is true for the Riemann integral for continuous function
 integral, McShane integral, Bochner integral
 -/
 
-
-open scoped Classical NNReal ENNReal Topology
+open scoped NNReal ENNReal Topology
 
 universe u v
 
@@ -63,6 +62,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
       nhds_basis_closedBall.mem_iff.1 (hFc.isOpen_compl.mem_nhds fun hx' => hx.2 (hFs hx').1)
     exact ⟨⟨r, hr₀⟩, hr⟩
   choose! rs' hrs'F using this
+  classical
   set r : (ι → ℝ) → Ioi (0 : ℝ) := s.piecewise rs rs'
   refine ⟨fun _ => r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ hπp => ?_⟩; rw [mul_comm]
   /- Then the union of boxes `J ∈ π` such that `π.tag ∈ s` includes `F` and is included by `U`,

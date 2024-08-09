@@ -758,9 +758,10 @@ variable {ι : Type u} {ι' : Type w} (f : ι → Cardinal.{v})
 
 section add
 
-variable [Nonempty ι] [Nonempty ι'] (hf : BddAbove (range f))
+variable [Nonempty ι] [Nonempty ι']
 
-protected theorem ciSup_add (c : Cardinal.{v}) : (⨆ i, f i) + c = ⨆ i, f i + c := by
+protected theorem ciSup_add (hf : BddAbove (range f)) (c : Cardinal.{v}) :
+    (⨆ i, f i) + c = ⨆ i, f i + c := by
   have : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · + c)) := ⟨_, forall_mem_range.mpr this⟩
@@ -772,10 +773,12 @@ protected theorem ciSup_add (c : Cardinal.{v}) : (⨆ i, f i) + c = ⨆ i, f i +
   exact ⟨ciSup_mono bdd fun i ↦ self_le_add_right _ c,
     (self_le_add_left _ _).trans (le_ciSup bdd <| Classical.arbitrary ι)⟩
 
-protected theorem add_ciSup (c : Cardinal.{v}) : c + (⨆ i, f i) = ⨆ i, c + f i := by
+protected theorem add_ciSup (hf : BddAbove (range f)) (c : Cardinal.{v}) :
+    c + (⨆ i, f i) = ⨆ i, c + f i := by
   rw [add_comm, Cardinal.ciSup_add f hf]; simp_rw [add_comm]
 
-protected theorem ciSup_add_ciSup (g : ι' → Cardinal.{v}) (hg : BddAbove (range g)) :
+protected theorem ciSup_add_ciSup (hf : BddAbove (range f)) (g : ι' → Cardinal.{v})
+    (hg : BddAbove (range g)) :
     (⨆ i, f i) + (⨆ j, g j) = ⨆ (i) (j), f i + g j := by
   simp_rw [Cardinal.ciSup_add f hf, Cardinal.add_ciSup g hg]
 
@@ -991,27 +994,26 @@ theorem mk_perm_eq_self_power : #(Equiv.Perm α) = #α ^ #α :=
 theorem mk_perm_eq_two_power : #(Equiv.Perm α) = 2 ^ #α := by
   rw [mk_perm_eq_self_power, power_self_eq (aleph0_le_mk α)]
 
-variable (leq : lift.{v} #α = lift.{u} #β') (eq : #α = #β)
-
-theorem mk_equiv_eq_arrow_of_lift_eq : #(α ≃ β') = #(α → β') := by
+theorem mk_equiv_eq_arrow_of_lift_eq (leq : lift.{v} #α = lift.{u} #β') :
+    #(α ≃ β') = #(α → β') := by
   obtain ⟨e⟩ := lift_mk_eq'.mp leq
   have e₁ := lift_mk_eq'.mpr ⟨.equivCongr (.refl α) e⟩
   have e₂ := lift_mk_eq'.mpr ⟨.arrowCongr (.refl α) e⟩
   rw [lift_id'.{u,v}] at e₁ e₂
   rw [← e₁, ← e₂, lift_inj, mk_perm_eq_self_power, power_def]
 
-theorem mk_equiv_eq_arrow_of_eq : #(α ≃ β) = #(α → β) :=
+theorem mk_equiv_eq_arrow_of_eq (eq : #α = #β) : #(α ≃ β) = #(α → β) :=
   mk_equiv_eq_arrow_of_lift_eq congr(lift $eq)
 
-theorem mk_equiv_of_lift_eq : #(α ≃ β') = 2 ^ lift.{v} #α := by
+theorem mk_equiv_of_lift_eq (leq : lift.{v} #α = lift.{u} #β') : #(α ≃ β') = 2 ^ lift.{v} #α := by
   erw [← (lift_mk_eq'.2 ⟨.equivCongr (.refl α) (lift_mk_eq'.1 leq).some⟩).trans (lift_id'.{u,v} _),
     lift_umax.{u,v}, mk_perm_eq_two_power, lift_power, lift_natCast]; rfl
 
-theorem mk_equiv_of_eq : #(α ≃ β) = 2 ^ #α := by rw [mk_equiv_of_lift_eq (lift_inj.mpr eq), lift_id]
+theorem mk_equiv_of_eq (eq : #α = #β) : #(α ≃ β) = 2 ^ #α := by
+  rw [mk_equiv_of_lift_eq (lift_inj.mpr eq), lift_id]
 
-variable (lle : lift.{u} #β' ≤ lift.{v} #α) (le : #β ≤ #α)
-
-theorem mk_embedding_eq_arrow_of_lift_le : #(β' ↪ α) = #(β' → α) :=
+theorem mk_embedding_eq_arrow_of_lift_le (lle : lift.{u} #β' ≤ lift.{v} #α) :
+    #(β' ↪ α) = #(β' → α) :=
   (mk_embedding_le_arrow _ _).antisymm <| by
     conv_rhs => rw [← (Equiv.embeddingCongr (.refl _)
       (Cardinal.eq.mp <| mul_eq_self <| aleph0_le_mk α).some).cardinal_eq]
@@ -1019,10 +1021,11 @@ theorem mk_embedding_eq_arrow_of_lift_le : #(β' ↪ α) = #(β' → α) :=
     exact ⟨⟨fun f ↦ ⟨fun b ↦ ⟨e b, f b⟩, fun _ _ h ↦ e.injective congr(Prod.fst $h)⟩,
       fun f g h ↦ funext fun b ↦ congr(Prod.snd <| $h b)⟩⟩
 
-theorem mk_embedding_eq_arrow_of_le : #(β ↪ α) = #(β → α) :=
+theorem mk_embedding_eq_arrow_of_le (le : #β ≤ #α) : #(β ↪ α) = #(β → α) :=
   mk_embedding_eq_arrow_of_lift_le (lift_le.mpr le)
 
-theorem mk_surjective_eq_arrow_of_lift_le : #{f : α → β' | Surjective f} = #(α → β') :=
+theorem mk_surjective_eq_arrow_of_lift_le (lle : lift.{u} #β' ≤ lift.{v} #α) :
+    #{f : α → β' | Surjective f} = #(α → β') :=
   (mk_set_le _).antisymm <|
     have ⟨e⟩ : Nonempty (α ≃ α ⊕ β') := by
       simp_rw [← lift_mk_eq', mk_sum, lift_add, lift_lift]; rw [lift_umax.{u,v}, eq_comm]
@@ -1031,7 +1034,7 @@ theorem mk_surjective_eq_arrow_of_lift_le : #{f : α → β' | Surjective f} = #
       fun f g h ↦ funext fun a ↦ by
         simpa only [e.apply_symm_apply] using congr_fun (Subtype.ext_iff.mp h) (e.symm <| .inl a)⟩⟩
 
-theorem mk_surjective_eq_arrow_of_le : #{f : α → β | Surjective f} = #(α → β) :=
+theorem mk_surjective_eq_arrow_of_le (le : #β ≤ #α) : #{f : α → β | Surjective f} = #(α → β) :=
   mk_surjective_eq_arrow_of_lift_le (lift_le.mpr le)
 
 end Function
@@ -1206,13 +1209,13 @@ theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α]
 
 theorem mk_compl_eq_mk_compl_finite {α β : Type u} [Finite α] {s : Set α} {t : Set β}
     (h1 : #α = #β) (h : #s = #t) : #(sᶜ : Set α) = #(tᶜ : Set β) := by
-  rw [← lift_inj.{u, max u v}]
-  apply mk_compl_eq_mk_compl_finite_lift.{u, u, max u v}
+  rw [← lift_inj.{u, u}]
+  apply mk_compl_eq_mk_compl_finite_lift.{u, u, u}
   <;> rwa [lift_inj]
 
 theorem mk_compl_eq_mk_compl_finite_same {α : Type u} [Finite α] {s t : Set α} (h : #s = #t) :
     #(sᶜ : Set α) = #(tᶜ : Set α) :=
-  mk_compl_eq_mk_compl_finite.{u, u} rfl h
+  mk_compl_eq_mk_compl_finite.{u} rfl h
 
 end compl
 

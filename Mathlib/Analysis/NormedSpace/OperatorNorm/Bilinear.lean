@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.NormedSpace.LinearIsometry
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 
 /-!
 # Operator norm: bilinear maps
@@ -19,7 +19,7 @@ suppress_compilation
 
 open Bornology
 open Filter hiding map_smul
-open scoped Classical NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
@@ -84,13 +84,13 @@ end ContinuousLinearMap
 
 namespace LinearMap
 
-variable [RingHomIsometric σ₂₃]
-
 lemma norm_mkContinuous₂_aux (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ)
     (h : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) (x : E) :
     ‖(f x).mkContinuous (C * ‖x‖) (h x)‖ ≤ max C 0 * ‖x‖ :=
   (mkContinuous_norm_le' (f x) (h x)).trans_eq <| by
     rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
+
+variable [RingHomIsometric σ₂₃]
 
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
 map and existence of a bound on the norm of the image. The linear map can be constructed using

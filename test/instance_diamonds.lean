@@ -3,13 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Prod
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.GroupTheory.GroupAction.Prod
-import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Data.Complex.Module
-import Mathlib.RingTheory.Algebraic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
@@ -208,13 +208,13 @@ example [CommSemiring R] [Nontrivial R] :
   rfl
 
 -- fails `with_reducible_and_instances` #10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `algebraNat`. -/
-example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = algebraNat :=
+/-- `Polynomial.algebraOfAlgebra` is consistent with `Semiring.toNatAlgebra`. -/
+example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = Semiring.toNatAlgebra :=
   rfl
 
 -- fails `with_reducible_and_instances` #10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `algebraInt`. -/
-example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = algebraInt _ :=
+/-- `Polynomial.algebraOfAlgebra` is consistent with `Ring.toIntAlgebra`. -/
+example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = Ring.toIntAlgebra _ :=
   rfl
 
 end Polynomial

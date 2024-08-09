@@ -38,11 +38,7 @@ conservative dynamical system, Poincare recurrence theorem
 
 noncomputable section
 
-open scoped Classical
-open Set Filter MeasureTheory Finset Function TopologicalSpace
-
-open scoped Classical
-open Topology
+open Set Filter MeasureTheory Finset Function TopologicalSpace Topology
 
 variable {ι : Type*} {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
@@ -61,7 +57,7 @@ structure Conservative (f : α → α) (μ : Measure α) extends QuasiMeasurePre
 /-- A self-map preserving a finite measure is conservative. -/
 protected theorem MeasurePreserving.conservative [IsFiniteMeasure μ] (h : MeasurePreserving f μ μ) :
     Conservative f μ :=
-  ⟨h.quasiMeasurePreserving, fun _ hsm h0 => h.exists_mem_iterate_mem hsm h0⟩
+  ⟨h.quasiMeasurePreserving, fun _ hsm h0 => h.exists_mem_iterate_mem hsm.nullMeasurableSet h0⟩
 
 namespace Conservative
 
