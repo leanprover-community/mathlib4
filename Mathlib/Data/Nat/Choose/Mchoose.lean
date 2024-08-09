@@ -4,12 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
 
-import Mathlib.Data.Nat.Choose.Vandermonde
+import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Ring.Regular
+import Mathlib.Tactic.Ring.RingNF
 
 /-! # Multiple choose
 
-* `Nat.mchoose m n` is the number of possibilities of dividing a set
-with `m * n` elements into `m` groups of `n`-element subsets
+* `Nat.mchoose m n` is the number of (unordered) partitions of a set
+with `m * n` elements into `m` parts of `n`-element subsets
 
 This integer is defined as a finite product.
 
@@ -19,6 +21,14 @@ and `Nat.mchoose_mul_factorial_mul_pow_factorial` establishes the equality
 
 * `Nat.mchoose_mul_add` and `Nat.choose_mul_right` are lemmas for `Nat.choose`
 that couldn't lie in `Mathlib.Data.Nat.Choose.Basic` because their proof uses the `ring` tactic.
+
+
+## Note :
+
+* It has nothing to do with `Nat.multichoose`.
+
+* It is a particular case of a more general counting problem, counting the number
+of unordered paritions of a set with given “type” (a multiset).
 
 -/
 
