@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.Data.Finsupp.Fintype
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!

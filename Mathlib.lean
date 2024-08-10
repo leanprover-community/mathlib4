@@ -2842,8 +2842,10 @@ import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Alternating.DomCoprod
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Basis.Bilinear
+import Mathlib.LinearAlgebra.Basis.Cardinality
+import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Basis.Flag
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.BilinearForm.Basic
