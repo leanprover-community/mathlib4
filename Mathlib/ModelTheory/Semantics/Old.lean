@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 import Mathlib.Data.Finset.Basic
-import Mathlib.ModelTheory.Syntax
+import Mathlib.ModelTheory.Syntax.Old
 import Mathlib.Data.List.ProdSigma
 
 /-!

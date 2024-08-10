@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.ModelTheory.Substructures
+import Mathlib.ModelTheory.Semantics.LanguageMap
 
 /-!
 # Elementary Maps Between First-Order Structures
