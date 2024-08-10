@@ -28,10 +28,6 @@ equivalence of sheaf categories.
 * `isDiscrete_iff_forget` : Given a "forgetful" functor `U : A ⥤ B` a sheaf `F : Sheaf J A` is
 discrete if and only if the sheaf given by postcomposition with `U` is discrete.
 
-## Future work
-
-* Use `isDiscrete_iff_forget` to prove that a condensed module is discrete if and only if its
-underlying condensed set is discrete.
 -/
 
 open CategoryTheory Limits Functor Adjunction Opposite Category Functor
