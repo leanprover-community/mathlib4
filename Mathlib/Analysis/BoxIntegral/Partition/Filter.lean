@@ -347,16 +347,9 @@ theorem MemBaseSet.exists_common_compl
     (hU : π₁.iUnion = π₂.iUnion) :
     ∃ π : Prepartition I, π.iUnion = ↑I \ π₁.iUnion ∧
       (l.bDistortion → π.distortion ≤ c₁) ∧ (l.bDistortion → π.distortion ≤ c₂) := by
-<<<<<<< HEAD
-  clear J c l₁ l₂ π
   wlog hc : c₁ ≤ c₂ with H
   · simpa [hU, _root_.and_comm] using
       @H _ _ I c₂ c₁ l r₂ r₁ π₂ π₁ h₂ h₁ hU.symm (le_of_not_le hc)
-=======
-  wlog hc : c₁ ≤ c₂ with H
-  · simpa [hU, _root_.and_comm] using
-        @H _ _ I c₂ c₁ r₂ r₁ π₂ π₁ _ h₂ h₁ hU.symm (le_of_not_le hc)
->>>>>>> lean-pr-testing-4814
   by_cases hD : (l.bDistortion : Prop)
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩
