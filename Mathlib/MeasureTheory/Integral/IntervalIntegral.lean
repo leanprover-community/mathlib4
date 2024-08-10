@@ -120,7 +120,7 @@ theorem intervalIntegrable_const_iff {c : E} :
     IntervalIntegrable (fun _ => c) μ a b ↔ c = 0 ∨ μ (Ι a b) < ∞ := by
   simp only [intervalIntegrable_iff, integrableOn_const]
 
-@[simp]
+@[simp] -- Porting note (#10618): simp can prove this
 theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
     IntervalIntegrable (fun _ => c) μ a b :=
   intervalIntegrable_const_iff.2 <| Or.inr measure_Ioc_lt_top
@@ -624,7 +624,7 @@ Porting note: some `@[simp]` attributes in this section were removed to make the
 happy. TODO: find out if these lemmas are actually good or bad `simp` lemmas.
 -/
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem integral_comp_mul_right (hc : c ≠ 0) :
     (∫ x in a..b, f (x * c)) = c⁻¹ • ∫ x in a * c..b * c, f x := by
   have A : MeasurableEmbedding fun x => x * c :=
@@ -637,32 +637,32 @@ theorem integral_comp_mul_right (hc : c ≠ 0) :
       Measure.restrict_congr_set (α := ℝ) (μ := volume) Ico_ae_eq_Ioc]
   · simp [h, mul_div_cancel_right₀, hc, abs_of_pos]
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem smul_integral_comp_mul_right (c) :
     (c • ∫ x in a..b, f (x * c)) = ∫ x in a * c..b * c, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_right]
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem integral_comp_mul_left (hc : c ≠ 0) :
     (∫ x in a..b, f (c * x)) = c⁻¹ • ∫ x in c * a..c * b, f x := by
   simpa only [mul_comm c] using integral_comp_mul_right f hc
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem smul_integral_comp_mul_left (c) :
     (c • ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_left]
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem integral_comp_div (hc : c ≠ 0) :
     (∫ x in a..b, f (x / c)) = c • ∫ x in a / c..b / c, f x := by
   simpa only [inv_inv] using integral_comp_mul_right f (inv_ne_zero hc)
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem inv_smul_integral_comp_div (c) :
     (c⁻¹ • ∫ x in a..b, f (x / c)) = ∫ x in a / c..b / c, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_div]
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem integral_comp_add_right (d) : (∫ x in a..b, f (x + d)) = ∫ x in a + d..b + d, f x :=
   have A : MeasurableEmbedding fun x => x + d :=
     (Homeomorph.addRight d).closedEmbedding.measurableEmbedding
@@ -671,22 +671,22 @@ theorem integral_comp_add_right (d) : (∫ x in a..b, f (x + d)) = ∫ x in a + 
       simp [intervalIntegral, A.setIntegral_map]
     _ = ∫ x in a + d..b + d, f x := by rw [map_add_right_eq_self]
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 nonrec theorem integral_comp_add_left (d) :
     (∫ x in a..b, f (d + x)) = ∫ x in d + a..d + b, f x := by
   simpa only [add_comm d] using integral_comp_add_right f d
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem integral_comp_mul_add (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (c * x + d)) = c⁻¹ • ∫ x in c * a + d..c * b + d, f x := by
   rw [← integral_comp_add_right, ← integral_comp_mul_left _ hc]
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem smul_integral_comp_mul_add (c d) :
     (c • ∫ x in a..b, f (c * x + d)) = ∫ x in c * a + d..c * b + d, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_add]
 
--- Porting note (#10618): was @[simp]
+@[simp] -- Porting note (#10618): was @[simp]
 theorem integral_comp_add_mul (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (d + c * x)) = c⁻¹ • ∫ x in d + c * a..d + c * b, f x := by
   rw [← integral_comp_add_left, ← integral_comp_mul_left _ hc]

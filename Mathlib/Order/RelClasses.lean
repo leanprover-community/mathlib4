@@ -5,8 +5,8 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 -/
 import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.IsEmpty
-import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
+import Mathlib.Tactic.MkIffOfInductiveProp
 import Batteries.WF
 
 /-!
@@ -529,7 +529,7 @@ lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [
 
 lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
 
-@[refl]
+@[refl, simp]
 lemma subset_refl [IsRefl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
 
 lemma subset_rfl [IsRefl α (· ⊆ ·)] : a ⊆ a := refl _

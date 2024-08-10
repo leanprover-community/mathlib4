@@ -63,15 +63,15 @@ variable {Ω F : Type*} {m : MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
 It is defined as the conditional distribution of the identity given the identity, where the second
 identity is understood as a map from `Ω` with the σ-algebra `mΩ` to `Ω` with σ-algebra `m ⊓ mΩ`.
 We use `m ⊓ mΩ` instead of `m` to ensure that it is a sub-σ-algebra of `mΩ`. We then use
-`kernel.comap` to get a kernel from `m` to `mΩ` instead of from `m ⊓ mΩ` to `mΩ`. -/
+`Kernel.comap` to get a kernel from `m` to `mΩ` instead of from `m ⊓ mΩ` to `mΩ`. -/
 noncomputable irreducible_def condexpKernel (μ : Measure Ω) [IsFiniteMeasure μ]
-    (m : MeasurableSpace Ω) : @kernel Ω Ω m mΩ :=
-  kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id
+    (m : MeasurableSpace Ω) : @Kernel Ω Ω m mΩ :=
+  Kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id
     (measurable_id'' (inf_le_left : m ⊓ mΩ ≤ m))
 
 lemma condexpKernel_apply_eq_condDistrib {ω : Ω} :
     condexpKernel μ m ω = @condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
-  simp_rw [condexpKernel, kernel.comap_apply]
+  simp_rw [condexpKernel, Kernel.comap_apply]
 
 instance : IsMarkovKernel (condexpKernel μ m) := by simp only [condexpKernel]; infer_instance
 
@@ -151,7 +151,7 @@ theorem integrable_toReal_condexpKernel {s : Set Ω} (hs : MeasurableSet s) :
 
 end Integrability
 
-lemma condexpKernel_ae_eq_condexp' [IsFiniteMeasure μ] {s : Set Ω} (hs : MeasurableSet s) :
+lemma condexpKernel_ae_eq_condexp' {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m ⊓ mΩ⟧ := by
   have h := condDistrib_ae_eq_condexp (μ := μ)
     (measurable_id'' (inf_le_right : m ⊓ mΩ ≤ mΩ)) measurable_id hs
@@ -159,12 +159,12 @@ lemma condexpKernel_ae_eq_condexp' [IsFiniteMeasure μ] {s : Set Ω} (hs : Measu
   simp_rw [condexpKernel_apply_eq_condDistrib]
   exact h
 
-lemma condexpKernel_ae_eq_condexp [IsFiniteMeasure μ]
+lemma condexpKernel_ae_eq_condexp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m⟧ :=
   (condexpKernel_ae_eq_condexp' hs).trans (by rw [inf_of_le_left hm])
 
-lemma condexpKernel_ae_eq_trim_condexp [IsFiniteMeasure μ]
+lemma condexpKernel_ae_eq_trim_condexp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
   rw [ae_eq_trim_iff hm _ stronglyMeasurable_condexp]

@@ -80,7 +80,7 @@ protected lemma mul_lt_mul_of_lt_of_lt [PosMulStrictMono α] (hab : a < b) (hcd 
   obtain rfl | hc := eq_zero_or_pos c
   · rw [mul_zero]
     exact mul_pos ((zero_le _).trans_lt hab) hcd
-  · exact mul_lt_mul_of_lt_of_lt' hab hcd ((zero_le _).trans_lt hab) hc
+  · exact mul_lt_mul_of_pos' hab hcd hc ((zero_le _).trans_lt hab)
 
 end CanonicallyOrderedCommSemiring
 end CanonicallyOrderedCommSemiring
@@ -115,5 +115,16 @@ theorem tsub_mul (a b c : α) : (a - b) * c = a * c - b * c :=
 
 lemma mul_tsub_one (a b : α) : a * (b - 1) = a * b - a := by rw [mul_tsub, mul_one]
 lemma tsub_one_mul (a b : α) : (a - 1) * b = a * b - b := by rw [tsub_mul, one_mul]
+
+/-- The `tsub` version of `mul_self_sub_mul_self`. Notably, this holds for `Nat` and `NNReal`. -/
+theorem mul_self_tsub_mul_self (a b : α) : a * a - b * b = (a + b) * (a - b) := by
+  rw [mul_tsub, add_mul, add_mul, tsub_add_eq_tsub_tsub, mul_comm b a, add_tsub_cancel_right]
+
+/-- The `tsub` version of `sq_sub_sq`. Notably, this holds for `Nat` and `NNReal`. -/
+theorem sq_tsub_sq (a b : α) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
+  rw [sq, sq, mul_self_tsub_mul_self]
+
+theorem mul_self_tsub_one (a : α) : a * a - 1 = (a + 1) * (a - 1) := by
+  rw [← mul_self_tsub_mul_self, mul_one]
 
 end Sub

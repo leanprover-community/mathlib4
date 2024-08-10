@@ -131,6 +131,10 @@ end Boundaryless
 section BoundarylessManifold
 variable [BoundarylessManifold I M]
 
+/-- The empty manifold is boundaryless. -/
+instance BoundarylessManifold.of_empty [IsEmpty M] : BoundarylessManifold I M where
+  isInteriorPoint' x := (IsEmpty.false x).elim
+
 lemma _root_.BoundarylessManifold.isInteriorPoint {x : M} :
     IsInteriorPoint I x := BoundarylessManifold.isInteriorPoint' x
 
@@ -142,6 +146,9 @@ lemma interior_eq_univ : I.interior M = univ :=
 lemma Boundaryless.boundary_eq_empty : I.boundary M = ∅ := by
   rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
 
+instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
+  isEmpty_coe_sort.mpr (Boundaryless.boundary_eq_empty I)
+
 end BoundarylessManifold
 end ModelWithCorners
 
@@ -152,7 +159,7 @@ variable {I}
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  (J : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners J N] {x : M} {y : N}
+  (J : ModelWithCorners 𝕜 E' H') {x : M} {y : N}
 
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma ModelWithCorners.interior_prod :
