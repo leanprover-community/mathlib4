@@ -207,10 +207,6 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
       · exact hJ i hiJ
     · exact hI i hiI
 
-theorem single_eq_single {a : R} :
-    (fun i : ι => (single R (fun _ : ι => R) i) a) = fun i : ι => ↑(Finsupp.single i a) :=
-  funext fun i => (Finsupp.single_eq_pi_single i a).symm
-
 /-- The linear equivalence between linear functions on a finite product of modules and
 families of functions on these modules. See note [bundled maps over different rings]. -/
 @[simps symm_apply]

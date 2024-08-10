@@ -126,10 +126,10 @@ theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
   disjoint_single_single R φ I J h
 
 set_option linter.deprecated false in
-@[deprecated single_eq_single (since := "2024-08-09")]
+@[deprecated "You can probably use Finsupp.single_eq_pi_single here" (since := "2024-08-09")]
 theorem stdBasis_eq_single {a : R} :
     (fun i : ι => (stdBasis R (fun _ : ι => R) i) a) = fun i : ι => ↑(Finsupp.single i a) :=
-  single_eq_single ..
+  funext fun i => (Finsupp.single_eq_pi_single i a).symm
 
 end LinearMap
 

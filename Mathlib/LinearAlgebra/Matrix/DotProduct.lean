@@ -36,7 +36,7 @@ section Semiring
 variable [Semiring R] [Fintype n]
 
 theorem dotProduct_single_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
-    dotProduct v (LinearMap.single R (fun _ => R) i c) = v i * c := by
+    dotProduct v (Pi.single i c) = v i * c := by
   simp
 
 set_option linter.deprecated false in
@@ -47,8 +47,8 @@ theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n)
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem dotProduct_single_one [DecidableEq n] (v : n → R) (i : n) :
-    dotProduct v (LinearMap.single R (fun _ => R) i 1) = v i := by
-  rw [dotProduct_single_eq_mul, mul_one]
+    dotProduct v (Pi.single i 1) = v i := by
+  simp
 
 set_option linter.deprecated false in
 @[deprecated dotProduct_single_one (since := "2024-08-09")]

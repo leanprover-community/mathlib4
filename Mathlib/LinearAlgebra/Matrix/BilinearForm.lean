@@ -152,7 +152,7 @@ theorem BilinForm.toMatrix'_toBilin' (M : Matrix n n R₂) :
 
 @[simp]
 theorem BilinForm.toMatrix'_apply (B : BilinForm R₂ (n → R₂)) (i j : n) :
-    BilinForm.toMatrix' B i j = B (single R₂ (fun _ => R₂) i 1) (single R₂ (fun _ => R₂) j 1) :=
+    BilinForm.toMatrix' B i j = B (Pi.single i 1) (Pi.single j 1) :=
   LinearMap.toMatrix₂'_apply _ _ _
 
 -- Porting note: dot notation for bundled maps doesn't work in the rest of this section
