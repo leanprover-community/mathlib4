@@ -555,21 +555,22 @@ lemma restriction_ne_zero (h : v x ≠ 0) : v.restrictionRangeGroup x ≠ 0 := b
   simpa only [restrictionRangeGroup, ne_eq, dite_not, coe_mk, MonoidWithZeroHom.coe_mk,
     ZeroHom.coe_mk, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
 
-@[simp]
 lemma restriction_zero : v.restrictionRangeGroup 0 = 0 := by
   simp only [restrictionRangeGroup, ne_eq, dite_not, _root_.map_zero]
 
 example (a b c : Prop) (h : ¬ a) : if a then b else c = c := by
   simp only [h, ↓reduceIte]
 
-lemma restriction_eq (h : v x ≠ 0) : WithZero.unzero (v.restriction_ne_zero h) =
-    (⟨Units.mk0 (v x) h, v.mem_rangeGroup (by rfl)⟩ : v.rangeGroup) := by
+lemma restriction_eq (h : v x ≠ 0) :
+    WithZero.unzero (v.restriction_ne_zero h) =
+      (⟨Units.mk0 (v x) h, v.mem_rangeGroup (by rfl)⟩ : v.rangeGroup) := by
   simp only [restrictionRangeGroup, ne_eq, dite_not, coe_mk, MonoidWithZeroHom.coe_mk,
     ZeroHom.coe_mk, h, ↓reduceDIte, WithZero.unzero_coe]
 
-@[simp]
-lemma restriction_eq' (h : v x ≠ 0) : WithZero.unzero (v.restriction_ne_zero h) =
-    Units.mk0 (v x) h := by rw [v.restriction_eq h]
+lemma restriction_eq' (h : v x ≠ 0) :
+    WithZero.unzero (v.restriction_ne_zero h) =
+      Units.mk0 (v x) h := by
+  rw [v.restriction_eq h]
 
 --from here on the old stuff
 
