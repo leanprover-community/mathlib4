@@ -4,15 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Perfect pairings of modules
 
 A perfect pairing of two (left) modules may be defined either as:
  1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
-    bijective. It follows from this that both `M` and `N` are reflexive modules.
     bijective. It follows from this that both `M` and `N` are reflexive modules.
  2. A linear equivalence `N ≃ Dual R M` for which `M` is reflexive. (It then follows that `N` is
     reflexive.)
@@ -62,14 +59,12 @@ protected def flip : PerfectPairing R N M where
 
 @[simp] lemma flip_flip : p.flip.flip = p := rfl
 
-section reflexive
-
 /-- The linear equivalence from `M` to `Dual R N` induced by a perfect pairing. -/
 noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=
   LinearEquiv.ofBijective p.toLin p.bijectiveLeft
 
 @[simp]
-theorem toDualLeft_apply (a : M) : p.toDualLeft a = p.toLin a :=
+theorem toDualLeft_apply (a : M) : p.toDualLeft a = p a :=
   rfl
 
 @[simp]
@@ -79,11 +74,11 @@ theorem apply_toDualLeft_symm_apply (f : Dual R N) (x : N) : p (p.toDualLeft.sym
   exact congrFun (congrArg DFunLike.coe h) x
 
 /-- The linear equivalence from `N` to `Dual R M` induced by a perfect pairing. -/
-noncomputable def toDualRight : N ≃ₗ[R] Dual R M := toDualLeft p.flip
-
+noncomputable def toDualRight : N ≃ₗ[R] Dual R M :=
+  toDualLeft p.flip
 
 @[simp]
-theorem toDualRight_apply (a : N) : p.toDualRight a = p.flip.toLin a :=
+theorem toDualRight_apply (a : N) : p.toDualRight a = p.flip a :=
   rfl
 
 @[simp]
@@ -93,8 +88,8 @@ theorem apply_apply_toDualRight_symm (x : M) (f : Dual R M) :
   rw [toDualRight_apply] at h
   exact congrFun (congrArg DFunLike.coe h) x
 
-theorem toDualLeft_of_toDualRightInvFun (x : M) (f : Dual R M) :
-    (p.toDualLeft x) (p.toDualRight.invFun f) = f x := by
+theorem toDualLeft_of_toDualRight_symm (x : M) (f : Dual R M) :
+    (p.toDualLeft x) (p.toDualRight.symm f) = f x := by
   rw [@toDualLeft_apply]
   exact apply_apply_toDualRight_symm p x f
 
@@ -102,7 +97,12 @@ theorem toDualRight_symm_toDualLeft (x : M) :
     p.toDualRight.symm.dualMap (p.toDualLeft x) = Dual.eval R M x := by
   ext f
   simp only [LinearEquiv.dualMap_apply, Dual.eval_apply]
-  exact toDualLeft_of_toDualRightInvFun p x f
+  exact toDualLeft_of_toDualRight_symm p x f
+
+theorem toDualRight_symm_comp_toDualLeft :
+    p.toDualRight.symm.dualMap ∘ₗ (p.toDualLeft : M →ₗ[R] Dual R N) = Dual.eval R M := by
+  ext1 x
+  exact p.toDualRight_symm_toDualLeft x
 
 theorem bijective_toDualRight_symm_toDualLeft :
     Bijective (fun x => p.toDualRight.symm.dualMap (p.toDualLeft x)) :=
@@ -111,17 +111,11 @@ theorem bijective_toDualRight_symm_toDualLeft :
 
 theorem reflexive_left : IsReflexive R M where
   bijective_dual_eval' := by
-    constructor
-    · intro a b h
-      rw [← toDualRight_symm_toDualLeft p a, ← toDualRight_symm_toDualLeft p b] at h
-      apply (bijective_toDualRight_symm_toDualLeft p).1 h
-    · intro a
-      simp_rw [← toDualRight_symm_toDualLeft p]
-      apply (bijective_toDualRight_symm_toDualLeft p).2
+    rw [← p.toDualRight_symm_comp_toDualLeft]
+    exact p.bijective_toDualRight_symm_toDualLeft
 
-theorem reflexive_right : IsReflexive R N := reflexive_left p.flip
-
-end reflexive
+theorem reflexive_right : IsReflexive R N :=
+  reflexive_left p.flip
 
 end PerfectPairing
 

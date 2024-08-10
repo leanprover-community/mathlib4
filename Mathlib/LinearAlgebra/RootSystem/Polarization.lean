@@ -141,15 +141,47 @@ lemma root_covector_coroot (x : N) (i : ι) :
     (P.toLin (P.root i) x) • P.coroot i = (x - P.coreflection i x) := by
   rw [coreflection_apply, sub_sub_cancel]
 
-/-!
-theorem PolInner_self_coroot (P : RootPairing ι R M N) [Finite ι] (i : ι) :
+lemma pairing_reflection_perm (P : RootPairing ι R M N) (i j k : ι) :
+    P.pairing j (P.reflection_perm i k) = P.pairing (P.reflection_perm i j) k := by
+  rw [pairing, ← reflection_perm_coroot, pairing, ← reflection_perm_root, map_sub, map_sub]
+  simp [mul_comm]
+
+@[simp]
+lemma pairing_reflection_perm_self (P : RootPairing ι R M N) (i j : ι) :
+    P.pairing (P.reflection_perm i i) j = - P.pairing i j := by
+  rw [pairing, ← reflection_perm_root, root_coroot_two, two_smul, sub_add_cancel_left,
+    LinearMap.map_neg₂, root_coroot_eq_pairing]
+
+/-- SGA3 XXI Lemma 1.2.1 (10) -/
+lemma PolInner_self_coroot (P : RootPairing ι R M N) [Finite ι] (i : ι) :
     (P.PolInner (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
-  rw [PolInner_apply, LinearMap.comp_apply, Polarization_apply, two_nsmul]
+  letI := Fintype.ofFinite ι
+  have hP : P.Polarization (P.root i) =
+      ∑ j : ι, P.pairing i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j) := by
+    simp_rw [Polarization_apply, root_coroot_eq_pairing]
+    convert (Fintype.sum_equiv (P.reflection_perm i)
+          (fun j ↦ P.pairing i ((P.reflection_perm i) j) • P.coroot ((P.reflection_perm i) j))
+          (fun j ↦ P.pairing i j • P.coroot j) (congrFun rfl)).symm
+  rw [two_nsmul]
+  nth_rw 2 [hP]
+  rw [Polarization_apply]
+  simp only [root_coroot_eq_pairing, pairing_reflection_perm, pairing_reflection_perm_self,
+    ← reflection_perm_coroot, smul_sub, neg_smul, sub_neg_eq_add]
+  rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add]
+  simp only [PolInner_apply, LinearMap.coe_comp, comp_apply, Polarization_apply,
+    root_coroot_eq_pairing, map_sum, LinearMapClass.map_smul, Finset.sum_neg_distrib, ← smul_assoc]
+  rw [Finset.sum_smul, add_neg_eq_zero.mpr rfl]
+  exact sub_eq_zero_of_eq rfl
 
-  sorry
+/-!
+positive definite on R-span of roots, Weyl-invariant.  If `P` is crystallographic,
+then this takes integer values.
 
-symmetric, positive definite on R-span of roots, Weyl-invariant.  If `P` is crystallographic,
-then this takes integer values. -/
+LinearOrderedCommRing version of Cauchy-Schwarz:
+`|(x,y) • x - (x,x) • y|^2 = |x|^2(|x|^2 * |y|^2 - (x,y)^2)` (easy cancellation)
+
+This constrains coxeterWeight to at most 4, and proportionality when 4.
+-/
 
 -- faithful Weyl action on roots: for all x, w(x)-x lies in R-span of roots.
 --If all roots are fixed by w, then (w(x)-x, r) = (x, w^-1r -r)=0. w(x) - w by nondeg on R-span.
@@ -157,11 +189,9 @@ then this takes integer values. -/
 
 --positivity constraints for finite root pairings mean we restrict to weights between 0 and 4.
 
---lemma coxeter_weight_leq_4
-
 end
 
-section
+section linearOrderedCommRing
 
 variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 (P : RootPairing ι R M N)
@@ -172,6 +202,9 @@ theorem polInner_self_non_neg [Finite ι] (x : M) : 0 ≤ P.PolInner x x := by
     polarization_self]
   exact Finset.sum_nonneg fun i _ =>
     (sq (P.toLin x (P.coroot i))) ▸ sq_nonneg (P.toLin x (P.coroot i))
+
+--lemma coxeter_weight_leq_4 :
+
 
 theorem polInner_root_self_pos [Finite ι] (j : ι) :
     0 < P.PolInner (P.root j) (P.root j) := by
@@ -189,6 +222,6 @@ theorem polInner_root_positive [Finite ι] : IsRootPositive P P.PolInner where
   symm := P.polInner_symmetric
   apply_reflection_eq := P.polInner_reflection_invariant
 
-end
+end linearOrderedCommRing
 
 end RootPairing

@@ -97,7 +97,67 @@ lemma coxeterWeight_zero_iff_isOrthogonal : P.coxeterWeight i j = 0 ↔ P.IsOrth
   · exact ⟨h, (pairing_zero_iff B i j).mp h⟩
   · exact ⟨(pairing_zero_iff B j i).mp h, h⟩
 
+section ultraparallel
+/-! We consider the case `4 < P.coxeterWeight i j`.  A pair of roots with this configuration
+are called `ultraparallel` in the literature.  The reflections in ultraparallel roots generate an
+infinite dihedral group, so in particular, any root system with an ultraparallel pair is infinite.
+
+Hmm. If I wait until we do polarization, then it suffices to construct a combination of roots with
+nonpositive norm.
+-/
+
+variable (P)
+
+/-- This is a function that describes the coefficients attached to `P.root i` and `P.root j` of the
+roots given by `(P.reflection i) ∘ (P.reflection j) (P.root i)`. -/
+private def refl_coeff : ℕ → R × R
+  | .zero => (1,0)
+  | n + 1 => (((refl_coeff n).1 + (refl_coeff n).2) * P.coxeterWeight i j - (refl_coeff n).1,
+    -(refl_coeff n).1 - (refl_coeff n).2)
+
+lemma refl_coeff_rec (n : ℕ) : ((P.reflection i) ∘ (P.reflection j))
+    ((P.refl_coeff i j n).1 • P.root i + (P.refl_coeff i j n).2 • P.pairing i j • P.root j) =
+    (P.refl_coeff i j (n + 1)).1 • P.root i +
+    (P.refl_coeff i j (n + 1)).2 • P.pairing i j • P.root j := by
+  simp only [Function.comp_apply, map_add, LinearMapClass.map_smul, reflection_apply_self, smul_neg,
+    map_neg, reflection_apply_root, smul_sub, map_sub, refl_coeff, sub_smul, add_mul, sub_mul,
+    add_smul, smul_smul, Int.reduceNeg, neg_smul, one_smul, add_right_inj, neg_sub,
+    mul_assoc _ (P.pairing i j)]
+  rw [← coxeterWeight, ← sub_eq_zero]
+  abel_nf
+  simp
+
+lemma refl_coeff_eq (n : ℕ) : (P.refl_coeff i j n).1 • P.root i +
+    (P.refl_coeff i j n).2 • P.pairing i j • P.root j =
+    ((P.reflection i) ∘ (P.reflection j))^[n] (P.root i) := by
+  induction n with
+  | zero => simp [refl_coeff]
+  | succ n ih =>
+    simp only [Function.iterate_succ', ← refl_coeff_rec, ih, Function.comp_apply]
+
 /-!
+lemma refl_coeff_ineq_rec_i (n : ℕ) (hi : 0 < (P.refl_coeff i j n).1)
+    (hij : -2 * (P.refl_coeff i j n).2 < (P.refl_coeff i j n).1) (hc : 4 < P.coxeterWeight i j) :
+    (P.refl_coeff i j n).1 < (P.refl_coeff i j (n + 1)).1 := by
+  sorry
+
+lemma refl_coeff_ineq_rec_ij (n : ℕ) (hi : 0 < (P.refl_coeff i j n).1)
+    (hij : -2 * (P.refl_coeff i j n).2 < (P.refl_coeff i j n).1) (hc : 4 < P.coxeterWeight i j) :
+    -2 * (P.refl_coeff i j (n + 1)).2 < (P.refl_coeff i j (n + 1)).1 := by
+  sorry
+
+lemma refl_coeff_ineq_rec_j (n : ℕ) (hi : 0 < (P.refl_coeff i j n).1)
+    (hij : -2 * (P.refl_coeff i j n).2 < (P.refl_coeff i j n).1) (hc : 4 < P.coxeterWeight i j) :
+    (P.refl_coeff i j (n + 1)).2 < (P.refl_coeff i j n).2 := by
+  sorry
+
+lemma refl_coeff_monotone_i : Monotone fun n => (P.refl_coeff i j n).1 := by
+  sorry
+
+lemma refl_coeff_monotone_j : Antitone fun n => (P.refl_coeff i j n).2 := by
+  sorry
+
+
 lemma linear_independent_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j) :
     LinearIndependent R ![P.root i, P.root j] := by
   refine LinearIndependent.pair_iff.mpr fun a b hab => ?_
@@ -118,10 +178,43 @@ lemma root_reflection_pos_coeff_left {a b : R} (ha : 0 < a) (hab : -2 * b < a)
 lemma root_reflection_pos_coeff_right {a b : R} (hab : -2 * b < a) : -(a + b) < b := by
   linarith
 
+lemma root_refl_pos_coeff_right_2 {a b : R} (ha : 0 < a) (hab : -2 * b < a)
+    (hc : 4 < P.coxeterWeight i j) : (-2 * -(a + b)) < ((a + b) * P.coxeterWeight i j - a) := by
+  have habz : 0 < a + b := by linarith
+  have hab4 : (a + b) * 4 < (a + b) * P.coxeterWeight i j := by exact (mul_lt_mul_left habz).mpr hc
+  calc
+    (-2 * -(a + b)) = 2 * a + 2 * b := by ring
+    2 * a + 2 * b < 3 * a + 4 * b := by linarith
+    3 * a + 4 * b = ((a + b) * 4 - a) := by ring
+    ((a + b) * 4 - a) < ((a + b) * P.coxeterWeight i j - a) := by linarith
 
--- show coeff of P.root i is monotone!
+-- show coeff of P.root i is monotone!  Or, choose a good linear functional!
 /-!
+a is positive, and -2 * b < a, so b is bounded below.
+P.root i coefficient increases: a < ((a + b) * P.coxeterWeight i j - a)
+P.root j coefficient decreases : -(a + b) < b
+
+evaluate at P.coroot i: 2 * a + b * P.pairing j i to
+  2 * ((a + b) * P.coxeterWeight i j - a) - (a + b) * P.pairing j i
+
+evaluate at P.coroot j: a * P.pairing i j + 2 * b to
+  P.pairing i j * ((a + b) * P.coxeterWeight i j - a) - 2 * (a + b)
+
+try : P.pairing i j * P.coroot i - 2 * P.coroot j
+2 * a * P.pairing i j + b * P.coxeterWeight i j - 2 * a * P.pairing i j - 4 * b = b * (c-4) to
+2 * ((a + b) * P.cW i j - a) * P.p i j - (a + b) * P.cW i j -
+  2 * P.p i j * ((a + b) * P.cW i j - a) + 4 * (a + b) = (a + b) * (4 - c)
+
+Use -P.pairing i j • P.coroot i + 2 • P.coroot j:
+get strict increase from -b * (c - 4) to (a + b) * (c - 4)
+since 0 < (c - 4) and -b < (a + b)
+
+
+
 lemma infinite_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j) : Infinite ι := by
+
+    --refine monotone_nat_of_le_succ ?_
+
   refine Infinite.of_injective
     (fun n => (((P.reflection_perm i) ∘ (P.reflection_perm j))^[n] i)) fun m n hmn => ?_
   simp only at hmn
@@ -131,13 +224,14 @@ lemma infinite_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j) : Infinit
   simp only [Equiv.coe_trans, EmbeddingLike.apply_eq_iff_eq] at h
 
   sorry
-
-  rw [sub_eq_sub_iff_sub_eq_sub, add_sub_add_right_eq_sub, ← sub_smul, ← sub_smul,
-    ← sub_eq_zero, sub_eq_add_neg, ← neg_smul, smul_smul] at h
+-/
+  --rw [sub_eq_sub_iff_sub_eq_sub, add_sub_add_right_eq_sub, ← sub_smul, ← sub_smul,
+--    ← sub_eq_zero, sub_eq_add_neg, ← neg_smul, smul_smul] at h
 
 -- use reflection_reflection_smul_root_plus_pairing_smul_root
+end ultraparallel
 
-
+/-!
 I want something flip-invariant.  One common factor in examples: a distinguished subspace on which
 the form is non-degenerate.  For finite root data, this is the span of roots.  For Kac-Moody Lie
 algebras, this is the extended Cartan (i.e., not just the span of roots.)
@@ -159,6 +253,5 @@ class DualPositive (P : RootPairing ι R M N) where
   coroot_pos : IsRootPositive P.flip (P.toPerfectPairing.toDualLeft ∘ₗ cww)
   weight_nondeg : ∀ x, x ∈ LinearMap.range cww → x ∈ LinearMap.ker wcw → x = 0
   coweight_nondeg : ∀ y, y ∈ LinearMap.range wcw → y ∈ LinearMap.ker cww → y = 0
-
 
 end RootPairing

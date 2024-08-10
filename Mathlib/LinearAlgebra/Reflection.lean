@@ -177,17 +177,25 @@ variable {g : Dual R M}
 /-- Composite of reflections in "parallel" hyperplanes is a shear (special case). -/
 lemma reflection_reflection_iterate (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4)
     (n : ℕ) : ((Module.reflection hgy).trans (Module.reflection hfx))^[n] y =
-      (1 - (2 * n : ℤ)) • y + (n : ℤ) • f y • x := by
+      y + (n : ℤ) • (f y • x - (2 : ℤ) • y) := by
   induction n with
   | zero => simp
   | succ n ih =>
     have hz : ∀ z : M, f y • g x • z = 2 • 2 • z := by
       intro z
       rw [smul_smul, hgxfy, smul_smul, ← Nat.cast_smul_eq_nsmul R (2 * 2), Nat.cast_eq_ofNat]
-    simp only [iterate_succ', comp_apply, ih, zsmul_sub, map_add, LinearEquiv.trans_apply, sub_smul,
+    simp only [iterate_succ', comp_apply, ih, map_add, LinearEquiv.trans_apply, sub_smul, map_smul,
       reflection_apply_self, map_neg, reflection_apply, hz, two_smul, neg_sub, map_sub, smul_sub,
-      map_zsmul, smul_neg, smul_add, Nat.cast_succ, mul_add, mul_one, add_smul, map_smul, two_mul]
+      map_nsmul, map_zsmul, smul_neg, smul_add, Nat.cast_succ, mul_add, mul_one, add_smul, two_mul]
     abel
+
+lemma infinite_range_of_reflection_reflection_iterate [NoZeroSMulDivisors ℤ M] (hfx : f x = 2)
+    (hgy : g y = 2) (hgxfy : f y * g x = 4) (hxy : ¬ f y • x = (2 : ℤ) • y) : Set.Infinite (range
+      (fun n => ((Module.reflection hgy).trans (Module.reflection hfx))^[n] y)) := by
+  refine infinite_range_of_injective fun n m hnm => ?_
+  simp only [reflection_reflection_iterate hfx hgy hgxfy] at hnm
+  rw [add_right_inj, ← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero, sub_eq_zero] at hnm
+  simpa using hnm.resolve_right hxy
 
 lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (hΦ : Φ.Finite)
     (hfx : f x = 2) (hgy : g y = 2) (hgx : g x = 2) (hfy : f y = 2)
@@ -195,23 +203,18 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
     (hygΦ : MapsTo (preReflection y g) Φ Φ)
     (hyΦ : y ∈ Φ) :
     x = y := by
-  rw [← finite_coe_iff] at hΦ
-  set sxy : M ≃ₗ[R] M := (Module.reflection hgy).trans (Module.reflection hfx)
-  have hb : BijOn sxy Φ Φ :=
-    (bijOn_reflection_of_mapsTo hfx hxfΦ).comp (bijOn_reflection_of_mapsTo hgy hygΦ)
-  have hsxy : ∀ n : ℕ, (sxy^[n]) y = y + (2 * n : ℤ) • (x - y) := by
-    intro n
-    simp only [reflection_reflection_iterate hfx hgy (by rw [hgx, hfy]; norm_cast) n, hfy, two_mul,
-      two_smul, sub_smul, add_smul, smul_add, smul_sub]
-    abel
-  set f' : ℕ → Φ := fun n ↦ ⟨(sxy^[n]) y, by
-    rw [← IsFixedPt.image_iterate hb.image_eq n]; exact mem_image_of_mem _ hyΦ⟩
-  have : ¬ Injective f' := not_injective_infinite_finite f'
-  contrapose! this
-  intros n m hnm
-  rw [Subtype.mk_eq_mk, hsxy, hsxy, add_right_inj, ← sub_eq_zero, ← sub_smul, smul_eq_zero,
-    sub_eq_zero, sub_eq_zero] at hnm
-  simpa using hnm.resolve_right this
+  suffices h : f y • x = (2 : ℤ) • y by
+    rw [hfy, two_smul R x, ← two_zsmul, ← sub_eq_zero, ← smul_sub, smul_eq_zero, sub_eq_zero] at h
+    simpa using h.resolve_left
+  rw [← not_infinite] at hΦ
+  contrapose! hΦ
+  refine Infinite.mono ?_
+    (infinite_range_of_reflection_reflection_iterate hfx hgy (by rw [hfy, hgx]; norm_cast) hΦ)
+  rw [range_subset_iff]
+  intro n
+  rw [← IsFixedPt.image_iterate ((bijOn_reflection_of_mapsTo hfx hxfΦ).comp
+    (bijOn_reflection_of_mapsTo hgy hygΦ)).image_eq n]
+  exact mem_image_of_mem _ hyΦ
 
 lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [NoZeroSMulDivisors ℤ M]
     {r : ι ↪ M} {c : ι → Dual R M} (hfin : (range r).Finite)

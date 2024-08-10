@@ -116,7 +116,7 @@ lemma linearDependent_of_eq_reflection (h : P.reflection i = P.reflection j) (h�
 
 lemma root_reflection_trans_iterate_coxeterWeight_four (hc : P.coxeterWeight i j = 4) (n : ℕ) :
     ((P.reflection j).trans (P.reflection i))^[n] (P.root j) =
-      (1 - 2 * n : ℤ) • P.root j + n • P.pairing j i • P.root i := by
+      P.root j + n • (P.pairing j i • P.root i - (2 : ℤ) • P.root j) := by
   rw [coxeterWeight, pairing, pairing, mul_comm] at hc
   rw [reflection, reflection, pairing]
   convert reflection_reflection_iterate (R := R) (M := M) _ _ _ n
@@ -124,38 +124,36 @@ lemma root_reflection_trans_iterate_coxeterWeight_four (hc : P.coxeterWeight i j
     exact (Nat.cast_smul_eq_nsmul ℤ n v).symm
   · exact hc
 
-lemma root_reflection_perm_trans_iterate (hc : P.coxeterWeight i j = 4) (n : ℕ) :
-    P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[n] j) =
-      (1 - 2 * n : ℤ) • P.root j + n • P.pairing j i • P.root i := by
-  rw [← root_reflection_trans_iterate_coxeterWeight_four P i j hc]
+lemma root_reflection_perm_trans_iterate (k : ι) (n : ℕ) :
+    P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[n] k) =
+      ((P.reflection j).trans (P.reflection i))^[n] (P.root k) := by
   induction n with
   | zero => simp
   | succ n ih =>
     rw [iterate_succ', iterate_succ', Equiv.coe_trans, comp.assoc, comp_apply, root_reflection_perm,
     comp_apply, root_reflection_perm, ← Equiv.coe_trans, ih, comp_apply, LinearEquiv.trans_apply]
 
-lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R]
-    (hl : LinearIndependent R ![P.root i, P.root j]) (hc : P.coxeterWeight i j = 4) :
-    Infinite ι := by
-  refine Infinite.of_injective
-    (fun n => (((P.reflection_perm i) ∘ (P.reflection_perm j))^[n] j)) fun m n hmn => ?_
-  simp only at hmn
-  have h : P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[m] j) =
-      P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[n] j) :=
-    congrArg (⇑P.root) hmn
-  simp only [root_reflection_perm_trans_iterate P i j hc, (Nat.cast_smul_eq_nsmul R _ _).symm,
-    Nat.cast_add, add_smul] at h
-  have hcast : (2 * n - 2 * m : ℤ) • P.root j = (2 * n - 2 * m : R) • P.root j := by
-    rw [← Int.cast_smul_eq_nsmul R _ (P.root j)]
-    norm_cast
-  rw [← sub_eq_zero, add_sub_right_comm, ← sub_sub, ← sub_smul, sub_add_comm, ← sub_smul, ← sub_add,
-    sub_sub_cancel_left, neg_add_eq_sub, hcast, smul_smul _ (P.pairing j i)] at h
-  rw [LinearIndependent.pair_iff] at hl
-  have h2 : (2 * n - 2 * m : R) = 0 := by apply (hl _ _ h).2
-  rw [sub_eq_zero, two_mul, two_mul, ← Nat.cast_add, ← Nat.cast_add] at h2
-  have h2' : n + n = m + m := Nat.cast_injective h2
-  omega
-
+/-- We should be able to eliminate the NoZeroSMulDivisors ℤ M hypothesis. -/
+lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
+    (P : RootPairing ι R M N) (i j : ι) (hl : LinearIndependent R ![P.root i, P.root j])
+    (hc : P.coxeterWeight i j = 4) : Infinite ι := by
+  refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
+    (infinite_range_of_reflection_reflection_iterate (P.coroot_root_two i)
+    (P.coroot_root_two j) ?_ ?_))
+  · rw [range_subset_iff]
+    intro n
+    rw [← IsFixedPt.image_iterate ((bijOn_reflection_of_mapsTo (P.coroot_root_two i)
+      (P.mapsTo_reflection_root i)).comp (bijOn_reflection_of_mapsTo (P.coroot_root_two j)
+      (P.mapsTo_reflection_root j))).image_eq n]
+    exact mem_image_of_mem _ (mem_range_self j)
+  · rw [coroot_root_eq_pairing, coroot_root_eq_pairing, ← hc, mul_comm, coxeterWeight]
+  · rw [LinearIndependent.pair_iff] at hl
+    rw [coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg, ← neg_smul]
+    specialize hl (P.pairing j i) (-2)
+    contrapose! hl
+    simp only [ne_eq, neg_eq_zero, OfNat.ofNat_ne_zero, not_false_eq_true, implies_true, and_true]
+    have h2 : (-2 : ℤ) • P.root j = (-2 : R) • P.root j := by simp only [neg_smul, two_smul]
+    exact h2 ▸ hl
 
 /-!
 lemma coxeterWeight_one_order (h: coxeterWeight P i j = 1) :
