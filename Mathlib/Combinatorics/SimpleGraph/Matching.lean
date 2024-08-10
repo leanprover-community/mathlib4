@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+import Mathlib.Data.Set.Finite.Parity
 
 /-!
 # Matchings
@@ -225,6 +227,57 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
     Nat.card_eq_fintype_card, Set.toFinset_image,
     Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card] at hMeven ⊢
   exact hMeven
+
+lemma isClique_even_iff_matches [DecidableEq V] (u : Set V) (hu : Set.Finite u)
+    (hc : G.IsClique u) : Even (Nat.card u) ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
+  haveI : Fintype u := hu.fintype
+  refine ⟨?_ , by
+    rintro ⟨M, ⟨hMl, hMr⟩⟩
+    haveI : Fintype M.verts := hMl ▸ hu.fintype
+    subst hMl
+    simpa [Nat.card_eq_card_finite_toFinset hu, Set.toFinite_toFinset,
+      Set.toFinset_card] using hMr.even_card⟩
+  intro he
+  cases' Set.eq_empty_or_nonempty u with h h
+  · subst h
+    let empty : Subgraph G := {
+      verts := ∅,
+      Adj := fun _ _ ↦ False,
+      adj_sub := False.elim,
+      edge_vert := False.elim }
+    use empty
+    simp only [true_and]
+    intro _ h
+    contradiction
+  · obtain ⟨x, y, hxy⟩ := Set.Finite.two_of_even_of_nonempty hu h he
+    let u' := u \ {x, y}
+    have hu'e := Set.Finite.even_card_diff_pair hu he hxy.1 hxy.2.1 hxy.2.2
+    have hu'c := hc.subset (Set.diff_subset : u' ⊆ u)
+    have hu'f := Set.Finite.diff hu {x, y}
+    obtain ⟨M, hM⟩ := (isClique_even_iff_matches u' hu'f hu'c).mp hu'e
+    use M ⊔ subgraphOfAdj _ (hc hxy.1 hxy.2.1 hxy.2.2)
+    simp only [Subgraph.verts_sup, hM.1, subgraphOfAdj_verts]
+    refine ⟨by
+      rw [Set.diff_union_self]
+      exact Set.union_eq_self_of_subset_right (Set.pair_subset hxy.1 hxy.2.1), ?_⟩
+    refine Subgraph.IsMatching.sup hM.2
+      (Subgraph.IsMatching.subgraphOfAdj (hc hxy.left hxy.right.left hxy.right.right)) ?_
+    simp only [support_subgraphOfAdj, hM.2.support_eq_verts, hM.1]
+    exact Set.disjoint_sdiff_left
+termination_by u.ncard
+decreasing_by
+· simp_wf
+  refine Set.ncard_lt_ncard ?_ hu
+  exact ⟨Set.diff_subset, by
+    rw [Set.not_subset_iff_exists_mem_not_mem]
+    use x
+    exact ⟨hxy.1, by simp only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
+      not_true_eq_false, and_false, not_false_eq_true]⟩⟩
+
+lemma completeGraph_even_iff_matches [Fintype V] [DecidableEq V] :
+    Even (Nat.card V) ↔ ∃ (M : Subgraph (completeGraph V)), M.verts = Set.univ ∧ M.IsMatching := by
+  simpa [Nat.card_eq_fintype_card, (set_fintype_card_eq_univ_iff _).mpr rfl] using
+    isClique_even_iff_matches (Set.univ : Set V) Set.finite_univ IsClique.completeGraph
 
 end Finite
 end ConnectedComponent
