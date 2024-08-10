@@ -31,7 +31,6 @@ namespace CategoryTheory
 attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
-variable {C : Type u₂} [Category.{u₁} C]
 
 /-- This type indexes the connected components of the category `J`. -/
 def ConnectedComponents (J : Type u₁) [Category.{v₁} J] : Type u₁ :=
@@ -41,16 +40,16 @@ instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
   ⟨Quotient.mk'' default⟩
 
 /-- Every function from connected components of a category gives a functor to discrete category -/
-def ConnectedComponents.connectedToDiscrete.{u_1, u_2} {X C : Type u_1} [Category.{u_2, u_1} C]
-    (f : ConnectedComponents C -> X) : (C ⥤ Discrete X) where
-  obj :=  Discrete.mk ∘ f ∘ Quotient.mk (Zigzag.setoid _)
-  map :=  Discrete.eqToHom ∘ congrArg f ∘ Quotient.sound ∘ Zigzag.of_hom
+def ConnectedComponents.functorToDiscrete {X }
+    (f : ConnectedComponents J → X) : J ⥤ Discrete X where
+  obj Y :=  Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
+  map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzag.of_hom g)))
 
 /-- Every functor to a discrete category gives a function from connected components -/
-def ConnectedComponents.discreteToConnected  {X C} [Category C] (fctr :C ⥤ Discrete X) :
-    (ConnectedComponents C -> X) :=
-  Quotient.lift (fun c => (fctr.obj c).as)
-    (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag fctr h))
+def ConnectedComponents.functionFromConnected  {X} (F :J ⥤ Discrete X) :
+    (ConnectedComponents J -> X) :=
+  Quotient.lift (fun c => (F.obj c).as)
+    (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F h))
 
 /-- Given an index for a connected component, produce the actual component as a full subcategory. -/
 def Component (j : ConnectedComponents J) : Type u₁ :=

@@ -21,7 +21,7 @@ All this could be made with 2-functors
 
 -/
 
-universe u
+universe v u
 namespace CategoryTheory.Cat
 
 variable (X : Type u) (C : Cat)
@@ -51,7 +51,7 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
 
 
 /-- The connected components functor -/
-def connectedComponents.{v} : Cat.{v, u} ⥤ Type u where
+def connectedComponents : Cat.{v, u} ⥤ Type u where
   obj C := ConnectedComponents C
   map F :=
     Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj)
@@ -61,7 +61,7 @@ def connectedComponents.{v} : Cat.{v, u} ⥤ Type u where
 
 
 /-- Functions from connected components and functors to discrete category are in bijection -/
-def connectedComponentsTypeToCatHomEquiv  (C : Cat) (X : Type u) :
+def connectedComponentsTypeToCatHomEquiv  (C) [Category C] (X : Type u) :
     ( ConnectedComponents C ⟶ X) ≃ (C ⥤ Discrete X)   where
   toFun := ConnectedComponents.connectedToDiscrete
   invFun := ConnectedComponents.discreteToConnected
@@ -76,7 +76,7 @@ def connectedComponentsTypeToCatHomEquiv  (C : Cat) (X : Type u) :
 
 /-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
 def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
-  homEquiv := connectedComponentsTypeToCatHomEquiv
+  homEquiv C X := connectedComponentsTypeToCatHomEquiv C X
   unit := { app:= fun C  ↦ ConnectedComponents.connectedToDiscrete (𝟙 (connectedComponents.obj C)) }
   counit :=  {
       app := fun X => ConnectedComponents.discreteToConnected (𝟙 typeToCat.obj X)
