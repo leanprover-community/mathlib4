@@ -106,8 +106,8 @@ instance applyMulDistribMulAction {M} [Monoid M] : MulDistribMulAction (MulAut M
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-  smul_one := MulEquiv.map_one
-  smul_mul := MulEquiv.map_mul
+  smul_one := map_one
+  smul_mul := map_mul
 
 @[simp]
 protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a :=
@@ -211,8 +211,8 @@ def toPerm : AddAut A →* Equiv.Perm A where
 This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction {A} [AddMonoid A] : DistribMulAction (AddAut A) A where
   smul := (· <| ·)
-  smul_zero := AddEquiv.map_zero
-  smul_add := AddEquiv.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
