@@ -63,7 +63,7 @@ private lemma tendsto_deriv_mul_log_nhdsWithin_zero :
     exact ne_of_gt hx
   simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
 
-/-- at `x=0`, `(fun x ↦ x * log x)` is continuous (`continuous_mul_log`) but not differentiable. -/
+/-- At `x=0`, `(fun x ↦ x * log x)` is not differentiable (but note that it is continuous, see `continuous_mul_log`). -/
 lemma not_DifferentiableAt_log_mul_zero :
     ¬ DifferentiableAt ℝ (fun x ↦ x * log x) 0 := fun h ↦
   (not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (fun (x:ℝ) ↦ x * log x) (a:=0))
