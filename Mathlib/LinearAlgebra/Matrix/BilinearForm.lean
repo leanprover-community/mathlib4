@@ -80,10 +80,8 @@ variable [Fintype n] [Fintype o]
 
 theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₂ (n → R₂)) :
     -- Porting note: had to hint the base ring even though it should be clear from context...
-    Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₂ := R₂)
-      (fun j => single R₂ (fun _ => R₂) j 1) B₂) = B₂ := by
-  rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux,
-    toLinearMap₂'Aux_toMatrix₂Aux]
+    Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₂ := R₂) (fun j => Pi.single j 1) B₂) = B₂ := by
+  rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux, toLinearMap₂'Aux_toMatrix₂Aux]
 
 section ToMatrix'
 
