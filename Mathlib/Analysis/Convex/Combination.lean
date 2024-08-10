@@ -553,6 +553,7 @@ variable {𝕜 ι : Type*} {E : ι → Type*} [Finite ι] [LinearOrderedField �
 
 open Finset Fintype
 
+set_option maxHeartbeats 0 in
 lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈ convexHull 𝕜 (s.pi t) := by
   cases nonempty_fintype ι
   wlog hs : s = Set.univ generalizing s t

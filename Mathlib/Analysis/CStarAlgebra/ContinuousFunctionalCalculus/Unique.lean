@@ -301,6 +301,7 @@ section TopologicalRing
 
 variable [TopologicalSpace A] [TopologicalRing A]
 
+set_option maxHeartbeats 0 in
 /-- Given a non-unital star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)₀` into a non-unital
 `ℝ`-algebra `A`, this is the unique extension of `φ` from `C(X, ℝ)₀` to `A` as a non-unital
 star `ℝ`-algebra homomorphism. -/

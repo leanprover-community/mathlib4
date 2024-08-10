@@ -574,6 +574,7 @@ theorem tensor_right_unitality (X₁ X₂ : C) :
     rightUnitor_inv_braiding]
   simp [tensorHom_id, id_tensorHom, tensorHom_def]
 
+set_option maxHeartbeats 0 in
 theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
     (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (Z₁ ⊗ Z₂)) ≫
         tensor_μ C (X₁ ⊗ Y₁, X₂ ⊗ Y₂) (Z₁, Z₂) ≫ ((α_ X₁ Y₁ Z₁).hom ⊗ (α_ X₂ Y₂ Z₂).hom) =
@@ -641,6 +642,7 @@ theorem rightUnitor_monoidal (X₁ X₂ : C) :
   dsimp only [tensor_obj, prodMonoidal_tensorObj]
   coherence
 
+set_option maxHeartbeats 0 in
 theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
     tensor_μ C (X₁ ⊗ X₂, X₃) (Y₁ ⊗ Y₂, Y₃) ≫
         (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =
