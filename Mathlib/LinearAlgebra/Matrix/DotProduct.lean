@@ -16,9 +16,9 @@ vectors `v w : n → R` to the sum of the entrywise products `v i * w i`.
 
 ## Main results
 
-* `Matrix.dotProduct_single_one`: the dot product of `v` with the `i`th
+* `Matrix.dotProduct_stdBasis_one`: the dot product of `v` with the `i`th
   standard basis vector is `v i`
-* `Matrix.dotProduct_eq_zero_iff`: if `v`'s' dot product with all `w` is zero,
+* `Matrix.dotProduct_eq_zero_iff`: if `v`'s dot product with all `w` is zero,
   then `v` is zero
 
 ## Tags
@@ -41,11 +41,6 @@ set_option linter.deprecated false in
 theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
     dotProduct v (LinearMap.stdBasis R (fun _ => R) i c) = v i * c :=
   dotProduct_single ..
-
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem dotProduct_single_one [DecidableEq n] (v : n → R) (i : n) :
-    dotProduct v (Pi.single i 1) = v i := by
-  simp
 
 set_option linter.deprecated false in
 @[deprecated dotProduct_single_one (since := "2024-08-09")]

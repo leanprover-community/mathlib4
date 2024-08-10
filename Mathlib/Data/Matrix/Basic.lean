@@ -783,6 +783,14 @@ variable [NonAssocSemiring α]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
   simp [dotProduct]
 
+theorem dotProduct_single_one [DecidableEq n] (v : n → α) (i : n) :
+    dotProduct v (Pi.single i 1) = v i := by
+  rw [dotProduct_single, mul_one]
+
+theorem single_one_dotProduct [DecidableEq n] (i : n) (v : n → α) :
+    dotProduct (Pi.single i 1) v = v i := by
+  rw [single_dotProduct, one_mul]
+
 end NonAssocSemiring
 
 section NonUnitalNonAssocRing
