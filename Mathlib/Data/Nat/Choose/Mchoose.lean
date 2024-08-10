@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
 
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Ring.Regular
 import Mathlib.Tactic.Ring.RingNF
 
 /-! # Multiple choose
