@@ -95,15 +95,15 @@ lemma zero_lt_ediam_of_nontrivial [Nontrivial α] :
   exact huv u v
 
 @[simp]
-lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ := by
-  sorry
+lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
+  ediam_eq_top_of_not_connected bot_not_connected
 
 @[simp]
 lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
   sorry
 
 @[simp]
-lemma ediam_eq_zero [Nontrivial α] : G.ediam = 0 ↔ G = ⊥  := by
+lemma diam_eq_zero : G.ediam = 0 ↔ Subsingleton α := by
   sorry
 
 @[simp]
