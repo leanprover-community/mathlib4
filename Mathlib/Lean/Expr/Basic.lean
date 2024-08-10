@@ -8,7 +8,6 @@ import Lean.Meta.Tactic.Rewrite
 import Batteries.Lean.Expr
 import Batteries.Data.Rat.Basic
 import Batteries.Data.List.Basic
-import Batteries.Logic
 
 /-!
 # Additional operations on Expr and related types
