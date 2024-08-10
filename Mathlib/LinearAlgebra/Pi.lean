@@ -123,13 +123,8 @@ def single [DecidableEq ι] (i : ι) : φ i →ₗ[R] (i : ι) → φ i :=
     map_smul' := Pi.single_smul i }
 
 lemma single_apply [DecidableEq ι] {i : ι} (v : φ i) :
-    single R φ i v = update (0 : (a : ι) → φ a) i v :=
+    single R φ i v = Pi.single i v :=
   rfl
-
-lemma single_apply' [DecidableEq ι] (i i' : ι) :
-    single R (fun _ ↦ R) i 1 i' = if (i = i') then 1 else 0  := by
-  rw [single_apply, update_apply]
-  congr 1; rw [eq_iff_iff, eq_comm]
 
 @[simp]
 theorem coe_single [DecidableEq ι] (i : ι) :
@@ -138,25 +133,18 @@ theorem coe_single [DecidableEq ι] (i : ι) :
 
 variable [DecidableEq ι]
 
-@[simp]
-theorem single_same (i : ι) (b : φ i) : single R φ i b i = b :=
-  Pi.single_eq_same i b
+theorem proj_comp_single_same (i : ι) : (proj i).comp (single R φ i) = id :=
+  LinearMap.ext <| Pi.single_eq_same i
 
-theorem single_ne (i j : ι) (h : j ≠ i) (b : φ i) : single R φ i b j = 0 :=
-  Pi.single_eq_of_ne h b
-
-theorem proj_single_same (i : ι) : (proj i).comp (single R φ i) = id :=
-  LinearMap.ext <| single_same R φ i
-
-theorem proj_single_ne (i j : ι) (h : i ≠ j) : (proj i).comp (single R φ j) = 0 :=
-  LinearMap.ext <| single_ne R φ _ _ h
+theorem proj_comp_single_ne (i j : ι) (h : i ≠ j) : (proj i).comp (single R φ j) = 0 :=
+  LinearMap.ext <| Pi.single_eq_of_ne h
 
 theorem iSup_range_single_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (single R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
   simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
-  rw [proj_single_ne R φ j i, zero_apply]
+  rw [proj_comp_single_ne R φ j i, zero_apply]
   rintro rfl
   exact h.le_bot ⟨hi, hj⟩
 
@@ -167,12 +155,12 @@ theorem iInf_ker_proj_le_iSup_range_single {I : Finset ι} {J : Set ι} (hu : Se
       intro b hb
       simp only [mem_iInf, mem_ker, proj_apply] at hb
       rw [←
-        show (∑ i ∈ I, single R φ i (b i)) = b by
+        show (∑ i ∈ I, Pi.single i (b i)) = b by
           ext i
-          rw [Finset.sum_apply, ← single_same R φ i (b i)]
-          refine Finset.sum_eq_single i (fun j _ ne => single_ne _ _ _ _ ne.symm _) ?_
+          rw [Finset.sum_apply, ← Pi.single_eq_same i (b i)]
+          refine Finset.sum_eq_single i (fun j _ ne => Pi.single_eq_of_ne ne.symm _) ?_
           intro hiI
-          rw [single_same]
+          rw [Pi.single_eq_same]
           exact hb _ ((hu trivial).resolve_left hiI)]
       exact sum_mem_biSup fun i _ => mem_range_self (single R φ i) (b i))
 

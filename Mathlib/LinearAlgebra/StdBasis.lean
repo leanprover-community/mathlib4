@@ -47,14 +47,14 @@ def stdBasis : ∀ i : ι, φ i →ₗ[R] ∀ i, φ i :=
   single R φ
 
 set_option linter.deprecated false in
-@[deprecated LinearMap.single_apply (since := "")]
+@[deprecated Pi.single (since := "")]
 theorem stdBasis_apply (i : ι) (b : φ i) : stdBasis R φ i b = update (0 : (a : ι) → φ a) i b :=
   rfl
 
 set_option linter.deprecated false in
-@[simp, deprecated LinearMap.single_apply' (since := "2024-08-09")]
-theorem stdBasis_apply' (i i' : ι) : (stdBasis R (fun _x : ι => R) i) 1 i' = ite (i = i') 1 0 :=
-  LinearMap.single_apply' ..
+@[simp, deprecated Pi.single_apply (since := "2024-08-09")]
+theorem stdBasis_apply' (i i' : ι) : (stdBasis R (fun _x : ι => R) i) 1 i' = ite (i = i') 1 0 := by
+  simp_rw [stdBasis, single_apply, Pi.single_apply, eq_comm]
 
 set_option linter.deprecated false in
 @[deprecated LinearMap.coe_single (since := "2024-08-09")]
@@ -62,14 +62,14 @@ theorem coe_stdBasis (i : ι) : ⇑(stdBasis R φ i) = Pi.single i :=
   rfl
 
 set_option linter.deprecated false in
-@[simp, deprecated LinearMap.single_same (since := "2024-08-09")]
+@[simp, deprecated Pi.single_eq_same (since := "2024-08-09")]
 theorem stdBasis_same (i : ι) (b : φ i) : stdBasis R φ i b i = b :=
-  single_same ..
+  Pi.single_eq_same ..
 
 set_option linter.deprecated false in
-@[deprecated LinearMap.single_ne (since := "2024-08-09")]
+@[deprecated Pi.single_eq_of_ne (since := "2024-08-09")]
 theorem stdBasis_ne (i j : ι) (h : j ≠ i) (b : φ i) : stdBasis R φ i b j = 0 :=
-  single_ne R φ i j h b
+  Pi.single_eq_of_ne h b
 
 set_option linter.deprecated false in
 @[deprecated single_eq_pi_diag (since := "2024-08-09")]
@@ -87,14 +87,14 @@ theorem proj_comp_stdBasis (i j : ι) : (proj i).comp (stdBasis R φ j) = diag j
   proj_comp_single ..
 
 set_option linter.deprecated false in
-@[deprecated proj_single_same (since := "2024-08-09")]
+@[deprecated proj_comp_single_same (since := "2024-08-09")]
 theorem proj_stdBasis_same (i : ι) : (proj i).comp (stdBasis R φ i) = id :=
-  proj_single_same ..
+  proj_comp_single_same ..
 
 set_option linter.deprecated false in
-@[deprecated proj_single_ne (since := "2024-08-09")]
+@[deprecated proj_comp_single_ne (since := "2024-08-09")]
 theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ j) = 0 :=
-  proj_single_ne R φ i j h
+  proj_comp_single_ne R φ i j h
 
 set_option linter.deprecated false in
 @[deprecated iSup_range_single_le_iInf_ker_proj (since := "2024-08-09")]
@@ -200,7 +200,7 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
   by_cases hj : j = j'
   · subst hj
     -- Porting note: needed to add more lemmas
-    simp only [Pi.basis, LinearEquiv.trans_apply, Basis.repr_self, single_same,
+    simp only [Pi.basis, LinearEquiv.trans_apply, Basis.repr_self, Pi.single_eq_same,
       LinearEquiv.piCongrRight, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
       Basis.repr_symm_apply, LinearEquiv.coe_mk, ne_eq, Sigma.mk.inj_iff, heq_eq_eq, true_and]
     symm
@@ -308,10 +308,10 @@ theorem stdBasis_eq_stdBasisMatrix (i : m) (j : n) [DecidableEq m] [DecidableEq 
   · simp only [stdBasis, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
       hi, and_true, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
-    simp [hi, hj, Ne.symm hi, LinearMap.single_ne]
+    simp [hi, hj, Ne.symm hi, Pi.single_eq_of_ne]
   · simp only [stdBasis, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
       hi, hj, and_self, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
-    simp [hi, hj, Ne.symm hj, Ne.symm hi, LinearMap.single_ne]
+    simp [hi, hj, Ne.symm hj, Ne.symm hi, Pi.single_eq_of_ne]
 
 end Matrix
