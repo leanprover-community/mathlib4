@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 import Mathlib.ModelTheory.Semantics.Relabel
-import Mathlib.ModelTheory.Syntax.Complexity
+import Mathlib.ModelTheory.Syntax.Formula
 
 /-!
 # Basics on First-Order Semantics
