@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Nat.Notation
-import Batteries.Data.List.Basic
+import Batteries.Tactic.Alias
 
 /-!
 # Note about `Mathlib/Init/`

@@ -3,8 +3,8 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
 -/
-import Batteries.Data.List.Lemmas
 import Mathlib.Tactic.Cases
+import Batteries.Logic
 
 /-!
 # Note about `Mathlib/Init/`
@@ -25,14 +25,6 @@ namespace List
 
 open Nat
 
-/-! append -/
-
-/-! length -/
-
-/-! map -/
-
-/-! bind -/
-
 /-! mem -/
 
 theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) :=
@@ -46,17 +38,11 @@ theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
 @[deprecated (since := "2024-03-23")] alias not_bex_nil := not_exists_mem_nil
 @[deprecated (since := "2024-03-23")] alias bex_cons := exists_mem_cons
 
-/-! list subset -/
--- This is relying on an automatically generated instance name from Batteries.
-
 /-! sublists -/
 
 alias length_le_of_sublist := Sublist.length_le
 
-/-! filter -/
-
 /-! map_accumr -/
-
 
 section MapAccumr
 
