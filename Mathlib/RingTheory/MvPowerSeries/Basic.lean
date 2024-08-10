@@ -8,7 +8,6 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Weight
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
 
 /-!
