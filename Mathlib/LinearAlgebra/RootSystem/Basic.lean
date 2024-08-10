@@ -114,16 +114,16 @@ lemma linearDependent_of_eq_reflection (h : P.reflection i = P.reflection j) (h�
   specialize h' h₂
   apply h₁ h'.left
 
+/-- Seems to be superfluous. -/
 lemma root_reflection_trans_iterate_coxeterWeight_four (hc : P.coxeterWeight i j = 4) (n : ℕ) :
     ((P.reflection j).trans (P.reflection i))^[n] (P.root j) =
-      P.root j + n • (P.pairing j i • P.root i - (2 : ℤ) • P.root j) := by
+      P.root j + n • (P.pairing j i • P.root i - (2 : R) • P.root j) := by
   rw [coxeterWeight, pairing, pairing, mul_comm] at hc
   rw [reflection, reflection, pairing]
   convert reflection_reflection_iterate (R := R) (M := M) _ _ _ n
-  · ext v
-    exact (Nat.cast_smul_eq_nsmul ℤ n v).symm
-  · exact hc
+  exact hc
 
+/-- May be useful in more generality. -/
 lemma root_reflection_perm_trans_iterate (k : ι) (n : ℕ) :
     P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[n] k) =
       ((P.reflection j).trans (P.reflection i))^[n] (P.root k) := by
@@ -138,8 +138,8 @@ lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSM
     (P : RootPairing ι R M N) (i j : ι) (hl : LinearIndependent R ![P.root i, P.root j])
     (hc : P.coxeterWeight i j = 4) : Infinite ι := by
   refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
-    (infinite_range_of_reflection_reflection_iterate (P.coroot_root_two i)
-    (P.coroot_root_two j) ?_ ?_))
+    ((infinite_range_reflection_reflection_iterate_iff (P.coroot_root_two i)
+    (P.coroot_root_two j) ?_).mpr ?_))
   · rw [range_subset_iff]
     intro n
     rw [← IsFixedPt.image_iterate ((bijOn_reflection_of_mapsTo (P.coroot_root_two i)
@@ -148,12 +148,10 @@ lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSM
     exact mem_image_of_mem _ (mem_range_self j)
   · rw [coroot_root_eq_pairing, coroot_root_eq_pairing, ← hc, mul_comm, coxeterWeight]
   · rw [LinearIndependent.pair_iff] at hl
-    rw [coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg, ← neg_smul]
     specialize hl (P.pairing j i) (-2)
-    contrapose! hl
-    simp only [ne_eq, neg_eq_zero, OfNat.ofNat_ne_zero, not_false_eq_true, implies_true, and_true]
-    have h2 : (-2 : ℤ) • P.root j = (-2 : R) • P.root j := by simp only [neg_smul, two_smul]
-    exact h2 ▸ hl
+    simp only [neg_smul, neg_eq_zero, OfNat.ofNat_ne_zero, and_false, imp_false] at hl
+    rw [ne_eq, coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
+    exact hl
 
 /-!
 lemma coxeterWeight_one_order (h: coxeterWeight P i j = 1) :
