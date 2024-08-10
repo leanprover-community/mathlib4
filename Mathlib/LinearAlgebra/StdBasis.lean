@@ -13,21 +13,19 @@ import Mathlib.LinearAlgebra.Basis.Defs
 
 This file defines the standard basis `Pi.basis (s : ∀ j, Basis (ι j) R (M j))`,
 which is the `Σ j, ι j`-indexed basis of `Π j, M j`. The basis vectors are given by
-`Pi.basis s ⟨j, i⟩ j' = LinearMap.stdBasis R M j' (s j) i = if j = j' then s i else 0`.
+`Pi.basis s ⟨j, i⟩ j' = Pi.single j' (s j) i = if j = j' then s i else 0`.
 
 The standard basis on `R^η`, i.e. `η → R` is called `Pi.basisFun`.
 
-To give a concrete example, `LinearMap.stdBasis R (fun (i : Fin 3) ↦ R) i 1`
+To give a concrete example, `Pi.single (i : Fin 3) (1 : R)`
 gives the `i`th unit basis vector in `R³`, and `Pi.basisFun R (Fin 3)` proves
 this is a basis over `Fin 3 → R`.
 
 ## Main definitions
 
- - `LinearMap.stdBasis R M`: if `x` is a basis vector of `M i`, then
-   `LinearMap.stdBasis R M i x` is the `i`th standard basis vector of `Π i, M i`.
  - `Pi.basis s`: given a basis `s i` for each `M i`, the standard basis on `Π i, M i`
  - `Pi.basisFun R η`: the standard basis on `R^η`, i.e. `η → R`, given by
-   `Pi.basisFun R η i j = if i = j then 1 else 0`.
+   `Pi.basisFun R η i j = Pi.single i 1 j = if i = j then 1 else 0`.
  - `Matrix.stdBasis R n m`: the standard basis on `Matrix n m R`, given by
    `Matrix.stdBasis R n m (i, j) i' j' = if (i, j) = (i', j') then 1 else 0`.
 
