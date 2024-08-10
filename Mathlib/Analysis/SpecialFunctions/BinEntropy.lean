@@ -74,7 +74,7 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
   ring
 
 /-- `binaryEntropy` is symmetric about 1/2. -/
-lemma binaryEntropy_add_onehalf (p : ℝ) :
+lemma binaryEntropy_two_inv_add (p : ℝ) :
     binaryEntropy (2⁻¹ + p) = binaryEntropy (2⁻¹ - p) := by
   simp only [binaryEntropy_eq', neg_sub, sub_sub_cancel, neg_mul]
   ring_nf
