@@ -60,20 +60,19 @@ def connectedComponents.{v} : Cat.{v, u} ⥤ Type u where
   map_comp _ _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h => by simp [<- h])
 
 
-
 /-- Functions from connected components and functors to discrete category are in bijection -/
 def connectedComponentsTypeToCatHomEquiv  (C : Cat) (X : Type u)
-  : ( ConnectedComponents C ⟶ X) ≃ (C ⥤ Discrete X)   where
-    toFun := ConnectedComponents.connectedToDiscrete
-    invFun := ConnectedComponents.discreteToConnected
-    left_inv := fun f ↦ funext fun x ↦ by
-      obtain ⟨x, h⟩ := Quotient.exists_rep x
-      rw [← h]
-      rfl
-    right_inv  := fun fctr ↦
-      Functor.hext (fun _ ↦ rfl) (fun c d f ↦
-        have : Subsingleton (fctr.obj c ⟶ fctr.obj d) := Discrete.instSubsingletonDiscreteHom _ _
-        (Subsingleton.elim (fctr.map f) _).symm.heq)
+      : ( ConnectedComponents C ⟶ X) ≃ (C ⥤ Discrete X)   where
+  toFun := ConnectedComponents.connectedToDiscrete
+  invFun := ConnectedComponents.discreteToConnected
+  left_inv := fun f ↦ funext fun x ↦ by
+    obtain ⟨x, h⟩ := Quotient.exists_rep x
+    rw [← h]
+    rfl
+  right_inv  := fun fctr ↦
+    Functor.hext (fun _ ↦ rfl) (fun c d f ↦
+      have : Subsingleton (fctr.obj c ⟶ fctr.obj d) := Discrete.instSubsingletonDiscreteHom _ _
+      (Subsingleton.elim (fctr.map f) _).symm.heq)
 
 /-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
 def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where

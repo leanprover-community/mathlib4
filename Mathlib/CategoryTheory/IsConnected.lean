@@ -336,7 +336,7 @@ lemma eq_of_zigzag (X) {a b : Discrete X} (h : Zigzag a b) : a.as = b.as := by
   induction h with
   | refl => rfl
   | tail _ h eq  =>
-    exact eq.trans (h.elim (fun ⟨f⟩ ↦ Discrete.eq_of_hom f) 
+    exact eq.trans (h.elim (fun ⟨f⟩ ↦ Discrete.eq_of_hom f)
       (fun ⟨f⟩ ↦ (Discrete.eq_of_hom f).symm))
 
 -- TODO: figure out the right way to generalise this to `Zigzag`.
