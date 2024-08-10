@@ -563,7 +563,8 @@ noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
       simp only [prod_smul, prod_empty, mul_one]
     right_inv := fun w => prod_smul_empty w }
 
-theorem prod_injective : Function.Injective (prod : NormalWord d → PushoutI φ) := by
+theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
+    {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
   letI := Classical.decEq ι
   letI := fun i => Classical.decEq (G i)
   classical exact equiv.symm.injective
@@ -636,8 +637,8 @@ theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw 
 /-- For any word `w` in the coproduct,
 if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
 `w` itself is not in the image of the base group. -/
-theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
-    {w : Word G} (hw : Reduced φ w)
+theorem Reduced.eq_empty_of_mem_range
+    (hφ : ∀ i, Injective (φ i)) {w : Word G} (hw : Reduced φ w)
     (h : ofCoprodI w.prod ∈ (base φ).range) : w = .empty := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   rcases hw.exists_normalWord_prod_eq d with ⟨w', hw'prod, hw'map⟩
@@ -655,7 +656,8 @@ end Reduced
 
 /-- The intersection of the images of the maps from any two distinct groups in the diagram
 into the amalgamated product is the image of the map from the base group in the diagram. -/
-theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (hij : i ≠ j) :
+theorem inf_of_range_eq_base_range
+    (hφ : ∀ i, Injective (φ i)) {i j : ι} (hij : i ≠ j) :
     (of i).range ⊓ (of j).range = (base φ).range :=
   le_antisymm
     (by
