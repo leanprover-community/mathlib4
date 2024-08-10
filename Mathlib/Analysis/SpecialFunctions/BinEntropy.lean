@@ -149,7 +149,7 @@ lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} : binaryEntropy p = 0 ↔ p =
       sub_zero, log_one, sub_self, *]
 
 /-- For probability `p < 0.5`, `binaryEntropy p < log 2`. -/
-lemma binaryEntropy_lt_log2_of_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) :
+lemma binaryEntropy_lt_log2_of_lt_one_half {p : ℝ} (p_nonneg : 0 ≤ p) (p_lt : p < 1/2) :
     binaryEntropy p < log 2 := by
   -- Proof by concavity of log.
   rw [binaryEntropy_eq']
