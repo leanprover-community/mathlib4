@@ -251,14 +251,12 @@ theorem LinearMap.toMatrix'_toLinearMap₂' (M : Matrix n m N₂) :
 
 @[simp]
 theorem LinearMap.toMatrixₛₗ₂'_apply (B : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) (i : n) (j : m) :
-    LinearMap.toMatrixₛₗ₂' R B i j =
-      B (single R₁ (fun _ => R₁) i 1) (single R₂ (fun _ => R₂) j 1) :=
+    LinearMap.toMatrixₛₗ₂' R B i j = B (Pi.single i 1) (Pi.single j 1) :=
   rfl
 
 @[simp]
 theorem LinearMap.toMatrix₂'_apply (B : (n → S₁) →ₗ[S₁] (m → S₂) →ₗ[S₂] N₂) (i : n) (j : m) :
-    LinearMap.toMatrix₂' R B i j =
-      B (single S₁ (fun _ => S₁) i 1) (single S₂ (fun _ => S₂) j 1) :=
+    LinearMap.toMatrix₂' R B i j = B (Pi.single i 1) (Pi.single j 1) :=
   rfl
 
 end ToMatrix'
@@ -362,8 +360,8 @@ noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[
 theorem LinearMap.toMatrix₂_apply (B : M₁ →ₗ[R] M₂ →ₗ[R] N₂) (i : n) (j : m) :
     LinearMap.toMatrix₂ b₁ b₂ B i j = B (b₁ i) (b₂ j) := by
   simp only [toMatrix₂, LinearEquiv.trans_apply, toMatrix₂'_apply, LinearEquiv.arrowCongr_apply,
-    Basis.equivFun_symm_apply, single_apply', ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ,
-    ↓reduceIte, LinearEquiv.refl_apply]
+    Basis.equivFun_symm_apply, Pi.single_apply, ite_smul, one_smul, zero_smul, sum_ite_eq',
+    mem_univ, ↓reduceIte, LinearEquiv.refl_apply]
 
 @[simp]
 theorem Matrix.toLinearMap₂_apply (M : Matrix n m N₂) (x : M₁) (y : M₂) :
