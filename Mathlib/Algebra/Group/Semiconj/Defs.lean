@@ -104,10 +104,12 @@ variable [Monoid M]
 
 @[to_additive (attr := simp)]
 theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by
-  induction' n with n ih
-  · rw [pow_zero, pow_zero]
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero]
     exact SemiconjBy.one_right _
-  · rw [pow_succ, pow_succ]
+  | succ n ih =>
+    rw [pow_succ, pow_succ]
     exact ih.mul_right h
 
 end Monoid

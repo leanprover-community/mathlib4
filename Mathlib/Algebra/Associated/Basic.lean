@@ -68,15 +68,17 @@ theorem not_dvd_mul {a b : α} (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ a 
   hp.dvd_mul.not.mpr <| not_or.mpr ⟨ha, hb⟩
 
 theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
-  induction' n with n ih
-  · rw [pow_zero] at h
+  induction n with
+  | zero =>
+    rw [pow_zero] at h
     have := isUnit_of_dvd_one h
     have := not_unit hp
     contradiction
-  rw [pow_succ'] at h
-  cases' dvd_or_dvd hp h with dvd_a dvd_pow
-  · assumption
-  exact ih dvd_pow
+  | succ n ih =>
+    rw [pow_succ'] at h
+    cases' dvd_or_dvd hp h with dvd_a dvd_pow
+    · assumption
+    · exact ih dvd_pow
 
 theorem dvd_pow_iff_dvd {a : α} {n : ℕ} (hn : n ≠ 0) : p ∣ a ^ n ↔ p ∣ a :=
   ⟨hp.dvd_of_dvd_pow, (dvd_pow · hn)⟩
@@ -123,10 +125,12 @@ theorem Prime.left_dvd_or_dvd_right_of_dvd_mul [CancelCommMonoidWithZero α] {p 
 
 theorem Prime.pow_dvd_of_dvd_mul_left [CancelCommMonoidWithZero α] {p a b : α} (hp : Prime p)
     (n : ℕ) (h : ¬p ∣ a) (h' : p ^ n ∣ a * b) : p ^ n ∣ b := by
-  induction' n with n ih
-  · rw [pow_zero]
+  induction n with
+  | zero =>
+    rw [pow_zero]
     exact one_dvd b
-  · obtain ⟨c, rfl⟩ := ih (dvd_trans (pow_dvd_pow p n.le_succ) h')
+  | succ n ih =>
+    obtain ⟨c, rfl⟩ := ih (dvd_trans (pow_dvd_pow p n.le_succ) h')
     rw [pow_succ]
     apply mul_dvd_mul_left _ ((hp.dvd_or_dvd _).resolve_left h)
     rwa [← mul_dvd_mul_iff_left (pow_ne_zero n hp.ne_zero), ← pow_succ, mul_left_comm]
@@ -493,9 +497,9 @@ theorem Associated.mul_mul [CommMonoid α] {a₁ a₂ b₁ b₂ : α}
     (h₁ : a₁ ~ᵤ b₁) (h₂ : a₂ ~ᵤ b₂) : a₁ * a₂ ~ᵤ b₁ * b₂ := (h₁.mul_right _).trans (h₂.mul_left _)
 
 theorem Associated.pow_pow [CommMonoid α] {a b : α} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
-  induction' n with n ih
-  · simp [Associated.refl]
-  convert h.mul_mul ih <;> rw [pow_succ']
+  induction n with
+  | zero => simp [Associated.refl]
+  | succ n ih => convert h.mul_mul ih <;> rw [pow_succ']
 
 protected theorem Associated.dvd [Monoid α] {a b : α} : a ~ᵤ b → a ∣ b := fun ⟨u, hu⟩ =>
   ⟨u, hu.symm⟩
@@ -1130,17 +1134,19 @@ theorem pow_injective_of_not_unit [CancelCommMonoidWithZero α] {q : α} (hq : �
 
 theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n : ℕ) :
     q ∣ p ^ n ↔ ∃ i ≤ n, Associated q (p ^ i) := by
-  induction' n with n ih generalizing q
-  · simp [← isUnit_iff_dvd_one, associated_one_iff_isUnit]
-  refine ⟨fun h => ?_, fun ⟨i, hi, hq⟩ => hq.dvd.trans (pow_dvd_pow p hi)⟩
-  rw [pow_succ'] at h
-  rcases hp.left_dvd_or_dvd_right_of_dvd_mul h with (⟨q, rfl⟩ | hno)
-  · rw [mul_dvd_mul_iff_left hp.ne_zero, ih] at h
-    rcases h with ⟨i, hi, hq⟩
-    refine ⟨i + 1, Nat.succ_le_succ hi, (hq.mul_left p).trans ?_⟩
-    rw [pow_succ']
-  · obtain ⟨i, hi, hq⟩ := ih.mp hno
-    exact ⟨i, hi.trans n.le_succ, hq⟩
+  induction n generalizing q with
+  | zero =>
+    simp [← isUnit_iff_dvd_one, associated_one_iff_isUnit]
+  | succ n ih =>
+    refine ⟨fun h => ?_, fun ⟨i, hi, hq⟩ => hq.dvd.trans (pow_dvd_pow p hi)⟩
+    rw [pow_succ'] at h
+    rcases hp.left_dvd_or_dvd_right_of_dvd_mul h with (⟨q, rfl⟩ | hno)
+    · rw [mul_dvd_mul_iff_left hp.ne_zero, ih] at h
+      rcases h with ⟨i, hi, hq⟩
+      refine ⟨i + 1, Nat.succ_le_succ hi, (hq.mul_left p).trans ?_⟩
+      rw [pow_succ']
+    · obtain ⟨i, hi, hq⟩ := ih.mp hno
+      exact ⟨i, hi.trans n.le_succ, hq⟩
 
 end CancelCommMonoidWithZero
 
