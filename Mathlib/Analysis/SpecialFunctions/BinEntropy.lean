@@ -263,7 +263,7 @@ lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
     have := not_DifferentiableAt_log_mul_zero
     contradiction
 
-private lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻¹ := by
+private lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1 - x)⁻¹ := by
   by_cases xis1 : x = 1
   · have deriv_log_one_sub_at_1 : deriv (fun p ↦ log (1 - p)) 1 = 0 := by
       have : ¬ DifferentiableAt ℝ (fun p ↦ log (1 - p)) 1 := by
