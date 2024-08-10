@@ -93,10 +93,12 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors'
     n < p.rootMultiplicity t := by
   apply lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hroot
   clear hroot
-  induction' n with n ih
-  · simp only [Nat.zero_eq, Nat.factorial_zero, Nat.cast_one]
+  induction n with
+  | zero =>
+    simp only [Nat.zero_eq, Nat.factorial_zero, Nat.cast_one]
     exact Submonoid.one_mem _
-  · rw [Nat.factorial_succ, Nat.cast_mul, mul_mem_nonZeroDivisors]
+  | succ n ih =>
+    rw [Nat.factorial_succ, Nat.cast_mul, mul_mem_nonZeroDivisors]
     exact ⟨hnzd _ le_rfl n.succ_ne_zero, ih fun m h ↦ hnzd m (h.trans n.le_succ)⟩
 
 theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative_of_mem_nonZeroDivisors

@@ -384,9 +384,9 @@ theorem X_def (s : σ) : X s = monomial R (single s 1) 1 :=
   rfl
 
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial R (single s n) 1 := by
-  induction' n with n ih
-  · simp
-  · rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
 
 theorem coeff_X_pow [DecidableEq σ] (m : σ →₀ ℕ) (s : σ) (n : ℕ) :
     coeff R m ((X s : MvPowerSeries σ R) ^ n) = if m = single s n then 1 else 0 := by
