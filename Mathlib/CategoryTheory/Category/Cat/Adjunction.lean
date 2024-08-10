@@ -61,8 +61,8 @@ def connectedComponents.{v} : Cat.{v, u} ⥤ Type u where
 
 
 /-- Functions from connected components and functors to discrete category are in bijection -/
-def connectedComponentsTypeToCatHomEquiv  (C : Cat) (X : Type u)
-    : ( ConnectedComponents C ⟶ X) ≃ (C ⥤ Discrete X)   where
+def connectedComponentsTypeToCatHomEquiv  (C : Cat) (X : Type u) :
+    ( ConnectedComponents C ⟶ X) ≃ (C ⥤ Discrete X)   where
   toFun := ConnectedComponents.connectedToDiscrete
   invFun := ConnectedComponents.discreteToConnected
   left_inv := fun f ↦ funext fun x ↦ by
