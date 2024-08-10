@@ -375,14 +375,14 @@ theorem descFactorial_mul_descFactorial {n : ℕ} : ∀ {m k : ℕ}, k ≤ m →
     rw [descFactorial_mul_descFactorial]
     rw [descFactorial_succ]
     exact Nat.le_of_lt_succ h
-    have h4 : n - k = 0
+    have h3 : n - k = 0
     omega
-    rw [h4]
+    rw [h3]
     rw [zero_mul]
     rw [zero_mul]
-    have h5 : n < m.succ
+    have h4 : n < m.succ
     omega
-    exact Eq.symm ((fun {_} => descFactorial_eq_zero_iff_lt.mpr) h5)
+    exact Eq.symm ((fun {_} => descFactorial_eq_zero_iff_lt.mpr) h4)
 
 /-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
 theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n ! / (n - k)! := by
@@ -393,13 +393,13 @@ theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n !
 theorem descFactorial_le (n k m : ℕ) (h : k ≤ m) :
   k.descFactorial n ≤ m.descFactorial n :=
 by
-  induction' n with n ih
-  exact Nat.le_of_ble_eq_true rfl
-  rw [descFactorial_succ]
-  rw [descFactorial_succ]
-  suffices : k ≤ m → k - n ≤ m - n
-  apply Nat.mul_le_mul (this h) ih
-  exact fun a => Nat.sub_le_sub_right a n
+  induction n with
+  | zero => exact Nat.le_of_ble_eq_true rfl
+  | succ n ih =>
+    rw [descFactorial_succ, descFactorial_succ]
+    apply Nat.mul_le_mul
+    exact Nat.sub_le_sub_right h n
+    exact ih
 
 theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.descFactorial k
   | 0 => by rw [descFactorial_zero, Nat.pow_zero]
