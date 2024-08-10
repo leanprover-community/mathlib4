@@ -1834,12 +1834,12 @@ theorem comp_liftAddHom {δ : Type*} [∀ i, AddZeroClass (β i)] [AddCommMonoid
 @[simp]
 theorem sumAddHom_zero [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
     (sumAddHom fun i => (0 : β i →+ γ)) = 0 :=
-  (liftAddHom (β := β) : (∀ i, β i →+ γ) ≃+ _).map_zero
+  map_zero (liftAddHom (β := β))
 
 @[simp]
 theorem sumAddHom_add [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (g : ∀ i, β i →+ γ)
     (h : ∀ i, β i →+ γ) : (sumAddHom fun i => g i + h i) = sumAddHom g + sumAddHom h :=
-  (liftAddHom (β := β)).map_add _ _
+  map_add (liftAddHom (β := β)) _ _
 
 @[simp]
 theorem sumAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :

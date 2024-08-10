@@ -572,12 +572,12 @@ def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* β�
     { toFun := MulOpposite.op ∘ f ∘ unop, invFun := MulOpposite.op ∘ f.symm ∘ unop,
       left_inv := fun x => unop_injective (f.symm_apply_apply x.unop),
       right_inv := fun x => unop_injective (f.apply_symm_apply x.unop),
-      map_mul' := fun x y => unop_injective (f.map_mul y.unop x.unop) }
+      map_mul' := fun x y => unop_injective (map_mul f y.unop x.unop) }
   invFun f :=
     { toFun := unop ∘ f ∘ MulOpposite.op, invFun := unop ∘ f.symm ∘ MulOpposite.op,
       left_inv := fun x => by simp,
       right_inv := fun x => by simp,
-      map_mul' := fun x y => congr_arg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
+      map_mul' := fun x y => congr_arg unop (map_mul f (MulOpposite.op y) (MulOpposite.op x)) }
   left_inv _ := rfl
   right_inv _ := rfl
 
