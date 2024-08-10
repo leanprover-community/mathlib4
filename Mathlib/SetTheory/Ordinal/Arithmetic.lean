@@ -200,7 +200,7 @@ theorem pred_le {a b} : pred a ≤ b ↔ a ≤ succ b :=
 theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a :=
   ⟨fun ⟨a, h⟩ =>
     let ⟨b, e⟩ := lift_down <| show a ≤ lift.{u} o from le_of_lt <| h.symm ▸ lt_succ a
-    ⟨b, lift_inj.1 <| by rw [h, ← e, lift_succ]⟩,
+    ⟨b, (lift_inj.{u,v}).1 <| by rw [h, ← e, lift_succ]⟩,
     fun ⟨a, h⟩ => ⟨lift.{u} a, by simp only [h, lift_succ]⟩⟩
 
 @[simp]
@@ -246,12 +246,13 @@ theorem lt_limit {o} (h : IsLimit o) {a} : a < o ↔ ∃ x < o, a < x := by
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@limit_le _ h a)
 
 @[simp]
-theorem lift_isLimit (o) : IsLimit (lift o) ↔ IsLimit o :=
+theorem lift_isLimit (o : Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
   and_congr (not_congr <| by simpa only [lift_zero] using @lift_inj o 0)
-    ⟨fun H a h => lift_lt.1 <| by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h => by
-      obtain ⟨a', rfl⟩ := lift_down h.le
-      rw [← lift_succ, lift_lt]
-      exact H a' (lift_lt.1 h)⟩
+    ⟨fun H a h => (lift_lt.{u,v}).1 <|
+      by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h => by
+        obtain ⟨a', rfl⟩ := lift_down h.le
+        rw [← lift_succ, lift_lt]
+        exact H a' (lift_lt.1 h)⟩
 
 theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
   lt_of_le_of_ne (Ordinal.zero_le _) h.1.symm
@@ -1140,7 +1141,7 @@ theorem sup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
   (sup_le_of_range_subset.{u, v, w} h.le).antisymm (sup_le_of_range_subset.{v, u, w} h.ge)
 
 @[simp]
-theorem sup_sum {α : Type u} {β : Type v} (f : Sum α β → Ordinal) :
+theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     sup.{max u v, w} f =
       max (sup.{u, max v w} fun a => f (Sum.inl a)) (sup.{v, max u w} fun b => f (Sum.inr b)) := by
   apply (sup_le_iff.2 _).antisymm (max_le_iff.2 ⟨_, _⟩)
@@ -1452,7 +1453,7 @@ theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
   (lsub_le_of_range_subset.{u, v, w} h.le).antisymm (lsub_le_of_range_subset.{v, u, w} h.ge)
 
 @[simp]
-theorem lsub_sum {α : Type u} {β : Type v} (f : Sum α β → Ordinal) :
+theorem lsub_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     lsub.{max u v, w} f =
       max (lsub.{u, max v w} fun a => f (Sum.inl a)) (lsub.{v, max u w} fun b => f (Sum.inr b)) :=
   sup_sum _

@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Algebra.Ring.Regular
 
@@ -92,9 +93,6 @@ instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
 @[ext] protected theorem eq {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) → n = m :=
   Subtype.eq
 
-protected theorem eq_iff {n m : ℝ≥0} : n = m ↔ (n : ℝ) = (m : ℝ) :=
-  Subtype.ext_iff
-
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
   NNReal.eq_iff.symm.not
 
@@ -119,7 +117,7 @@ theorem _root_.Real.toNNReal_of_nonneg {r : ℝ} (hr : 0 ≤ r) : r.toNNReal = �
 theorem _root_.Real.le_coe_toNNReal (r : ℝ) : r ≤ Real.toNNReal r :=
   le_max_left r 0
 
-theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
+@[bound] theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
 
 @[simp, norm_cast] theorem coe_mk (a : ℝ) (ha) : toReal ⟨a, ha⟩ = a := rfl
 
@@ -326,7 +324,11 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
+@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
+
+@[bound] private alias ⟨_, Bound.coe_pos_of_pos⟩ := coe_pos
 
 @[simp, norm_cast] lemma one_le_coe : 1 ≤ (r : ℝ) ↔ 1 ≤ r := by rw [← coe_le_coe, coe_one]
 @[simp, norm_cast] lemma one_lt_coe : 1 < (r : ℝ) ↔ 1 < r := by rw [← coe_lt_coe, coe_one]

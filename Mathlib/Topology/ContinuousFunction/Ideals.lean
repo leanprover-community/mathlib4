@@ -7,7 +7,7 @@ import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.NormedSpace.Units
+import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
@@ -380,7 +380,7 @@ variable (X 𝕜 : Type*) [TopologicalSpace X]
 
 section ContinuousMapEval
 
-variable [LocallyCompactSpace X] [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the

@@ -155,8 +155,19 @@ lemma isoOfHom_id_inv (X : C) (hX : W (𝟙 X)) :
   rw [← cancel_mono (isoOfHom L W (𝟙 X) hX).hom, Iso.inv_hom_id, id_comp,
     isoOfHom_hom, Functor.map_id]
 
+variable {W}
+
+lemma Construction.wIso_eq_isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    Construction.wIso f hf = isoOfHom W.Q W f hf := by ext; rfl
+
+lemma Construction.wInv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    Construction.wInv f hf = (isoOfHom W.Q W f hf).inv :=
+  congr_arg Iso.inv (wIso_eq_isoOfHom f hf)
+
 instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=
   (inferInstance : L.IsLocalization W).isEquivalence
+
+variable (W)
 
 /-- A chosen equivalence of categories `W.Localization ≅ D` for a functor
 `L : C ⥤ D` which satisfies `L.IsLocalization W`. This shall be used in
@@ -180,7 +191,7 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
     _ ≅ W.Q ⋙ 𝟭 _ := isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm
     _ ≅ W.Q := Functor.rightUnitor _
 
-theorem essSurj : L.EssSurj :=
+theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
   ⟨fun X =>
     ⟨(Construction.objEquiv W).invFun ((equivalenceFromModel L W).inverse.obj X),
       Nonempty.intro
@@ -220,7 +231,7 @@ def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
 /-- The functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the composition with a localization
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
-def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
+def whiskeringLeftFunctor' [L.IsLocalization W] (E : Type*) [Category E] :
     (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
 
@@ -245,15 +256,17 @@ instance : (whiskeringLeftFunctor' L W E).Faithful := by
   · infer_instance
   apply InducedCategory.faithful -- why is it not found automatically ???
 
-lemma full_whiskeringLeft : ((whiskeringLeft C D E).obj L).Full :=
+lemma full_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category E] :
+    ((whiskeringLeft C D E).obj L).Full :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Full
 
-lemma faithful_whiskeringLeft : ((whiskeringLeft C D E).obj L).Faithful :=
+lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category E] :
+    ((whiskeringLeft C D E).obj L).Faithful :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
 
 variable {E}
 
-theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
+theorem natTrans_ext (L : C ⥤ D) (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
   haveI := essSurj L W
   ext Y
@@ -352,7 +365,7 @@ instance id : Lifting L W L (𝟭 D) :=
 instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
 
 @[simp]
-lemma compLeft_iso (F : D ⥤ E) : Localization.Lifting.iso L W (L ⋙ F) F = Iso.refl _ := rfl
+lemma compLeft_iso (W) (F : D ⥤ E) : Localization.Lifting.iso L W (L ⋙ F) F = Iso.refl _ := rfl
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
@@ -477,9 +490,9 @@ lemma mk (L : C ⥤ D) [L.IsLocalization W] (h : L.map f = L.map g) :
   (areEqualizedByLocalization_iff L W f g).2 h
 
 variable {W f g}
-variable (h : AreEqualizedByLocalization W f g)
 
-lemma map_eq (L : C ⥤ D) [L.IsLocalization W] : L.map f = L.map g :=
+lemma map_eq (h : AreEqualizedByLocalization W f g) (L : C ⥤ D) [L.IsLocalization W] :
+    L.map f = L.map g :=
   (areEqualizedByLocalization_iff L W f g).1 h
 
 end AreEqualizedByLocalization

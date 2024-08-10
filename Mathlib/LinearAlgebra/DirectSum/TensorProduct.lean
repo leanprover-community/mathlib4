@@ -75,7 +75,6 @@ protected def directSum :
       coe_restrictScalars, AlgebraTensorModule.lift_apply, lift.tmul, toModule_lof, flip_apply,
       AlgebraTensorModule.map_tmul, id_coe, id_eq]
   /- was:
-
     refine'
       LinearEquiv.ofLinear
         (lift <|

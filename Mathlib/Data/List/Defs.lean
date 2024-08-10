@@ -18,12 +18,6 @@ This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
 
--- Porting note
--- Many of the definitions in `Data.List.Defs` were already defined upstream in `Batteries`
--- These have been annotated with `#align`s
--- To make this easier for review, the `#align`s have been placed in order of occurrence
--- in `mathlib`
-
 namespace List
 
 open Function Nat
@@ -108,13 +102,6 @@ end foldIdxM
 
 
 section mapIdxM
-
--- Porting note: This was defined in `mathlib` with an `Applicative`
--- constraint on `m` and have been `#align`ed to the `Batteries` versions defined
--- with a `Monad` typeclass constraint.
--- Since all `Monad`s are `Applicative` this won't cause issues
--- downstream & `Monad`ic code is more performant per Mario C
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Applicative.20variants.20of.20Monadic.20functions/near/313213172
 
 variable {m : Type v → Type w} [Monad m]
 

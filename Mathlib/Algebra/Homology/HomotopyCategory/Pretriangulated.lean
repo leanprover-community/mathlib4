@@ -33,8 +33,8 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
 variable {C D : Type*} [Category C] [Category D]
-  [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
-  [Preadditive D] [HasZeroObject D] [HasBinaryBiproducts D]
+  [Preadditive C] [HasBinaryBiproducts C]
+  [Preadditive D] [HasBinaryBiproducts D]
   {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 namespace CochainComplex
@@ -420,6 +420,7 @@ lemma isomorphic_distinguished (T₁ : Triangle (HomotopyCategory C (ComplexShap
   obtain ⟨X, Y, f, ⟨e'⟩⟩ := hT₁
   exact ⟨X, Y, f, ⟨e ≪≫ e'⟩⟩
 
+variable [HasZeroObject C] in
 lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) :
     Pretriangulated.contractibleTriangle X ∈ distinguishedTriangles C := by
   obtain ⟨X⟩ := X
@@ -491,6 +492,8 @@ lemma complete_distinguished_triangle_morphism
 
 end Pretriangulated
 
+variable [HasZeroObject C]
+
 instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   distinguishedTriangles := Pretriangulated.distinguishedTriangles C
   isomorphic_distinguished := Pretriangulated.isomorphic_distinguished
@@ -505,6 +508,8 @@ variable {C}
 lemma mappingCone_triangleh_distinguished {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
     CochainComplex.mappingCone.triangleh f ∈ distTriang (HomotopyCategory _ _) :=
   ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
+variable [HasZeroObject D]
 
 instance (G : C ⥤ D) [G.Additive] :
     (G.mapHomotopyCategory (ComplexShape.up ℤ)).IsTriangulated where

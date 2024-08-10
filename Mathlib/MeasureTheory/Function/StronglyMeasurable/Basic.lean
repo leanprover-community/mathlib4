@@ -3,7 +3,7 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
 /-!
@@ -900,7 +900,8 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet[m] (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, ‖f x‖ ≤ n) ∧
       ⋃ i, s i = Set.univ := by
-  obtain ⟨s, hs, hs_univ⟩ := exists_spanning_measurableSet_le hf.nnnorm.measurable (μ.trim hm)
+  obtain ⟨s, hs, hs_univ⟩ :=
+    @exists_spanning_measurableSet_le _ m _ hf.nnnorm.measurable (μ.trim hm) _
   refine ⟨s, fun n ↦ ⟨(hs n).1, (le_trim hm).trans_lt (hs n).2.1, fun x hx ↦ ?_⟩, hs_univ⟩
   have hx_nnnorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
   rw [← coe_nnnorm]

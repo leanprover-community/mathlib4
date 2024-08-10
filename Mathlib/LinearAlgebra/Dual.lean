@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Dual vector spaces
@@ -1126,7 +1126,7 @@ variable (f : M₁ →ₗ[R] M₂)
 theorem ker_dualMap_eq_dualAnnihilator_range :
     LinearMap.ker f.dualMap = f.range.dualAnnihilator := by
   ext
-  simp_rw [mem_ker, ext_iff, Submodule.mem_dualAnnihilator,
+  simp_rw [mem_ker, LinearMap.ext_iff, Submodule.mem_dualAnnihilator,
     ← SetLike.mem_coe, range_coe, Set.forall_mem_range]
   rfl
 
@@ -1288,12 +1288,12 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
 
 theorem ker_dualMap_eq_dualCoannihilator_range (f : M →ₗ[R] M') :
     LinearMap.ker f.dualMap = (Dual.eval R M' ∘ₗ f).range.dualCoannihilator := by
-  ext x; simp [ext_iff (f := dualMap f x)]
+  ext x; simp [LinearMap.ext_iff (f := dualMap f x)]
 
 @[simp]
 lemma dualCoannihilator_range_eq_ker_flip (B : M →ₗ[R] M' →ₗ[R] R) :
     (range B).dualCoannihilator = LinearMap.ker B.flip := by
-  ext x; simp [ext_iff (f := B.flip x)]
+  ext x; simp [LinearMap.ext_iff (f := B.flip x)]
 
 end LinearMap
 
@@ -1697,7 +1697,7 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
     Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simp
+  · simpa using mul_comm _ _
   all_goals { intros; simp [*] at * }
 
 -- Porting note: introduced to help with timeout in dualDistribEquivOfBasis

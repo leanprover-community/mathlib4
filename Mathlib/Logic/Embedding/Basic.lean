@@ -105,10 +105,6 @@ instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
   default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
   uniq := by intro; ext v; exact isEmptyElim v
 
--- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
-theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
-  Iff.symm (DFunLike.ext_iff)
-
 @[simp]
 theorem toFun_eq_coe {α β} (f : α ↪ β) : toFun f = f :=
   rfl
@@ -251,7 +247,7 @@ section Sum
 open Sum
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Sum.map e₁ e₂`. -/
-def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : Sum α γ ↪ Sum β δ :=
+def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α ⊕ γ ↪ β ⊕ δ :=
   ⟨Sum.map e₁ e₂, e₁.injective.sum_map e₂.injective⟩
 
 @[simp]
@@ -260,12 +256,12 @@ theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap 
 
 /-- The embedding of `α` into the sum `α ⊕ β`. -/
 @[simps]
-def inl {α β : Type*} : α ↪ Sum α β :=
+def inl {α β : Type*} : α ↪ α ⊕ β :=
   ⟨Sum.inl, fun _ _ => Sum.inl.inj⟩
 
 /-- The embedding of `β` into the sum `α ⊕ β`. -/
 @[simps]
-def inr {α β : Type*} : β ↪ Sum α β :=
+def inr {α β : Type*} : β ↪ α ⊕ β :=
   ⟨Sum.inr, fun _ _ => Sum.inr.inj⟩
 
 end Sum
@@ -406,7 +402,7 @@ variable {α : Type*}
 /-- A subtype `{x // p x ∨ q x}` over a disjunction of `p q : α → Prop` can be injectively split
 into a sum of subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right. -/
 def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
-    { x // p x ∨ q x } ↪ Sum { x // p x } { x // q x } :=
+    { x // p x ∨ q x } ↪ { x // p x } ⊕ { x // q x } :=
   ⟨fun x => if h : p x then Sum.inl ⟨x, h⟩ else Sum.inr ⟨x, x.prop.resolve_left h⟩, by
     intro x y
     dsimp only

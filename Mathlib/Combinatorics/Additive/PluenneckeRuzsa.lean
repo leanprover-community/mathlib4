@@ -3,11 +3,12 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Rat
 
 /-!
 # The Plünnecke-Ruzsa inequality
@@ -42,11 +43,11 @@ theorem ruzsa_triangle_inequality_div_div_div (A B C : Finset α) :
   refine card_mul_le_card_mul (fun b ac ↦ ac.1 * ac.2 = b) (fun x hx ↦ ?_)
     fun x _ ↦ card_le_one_iff.2 fun hu hv ↦
       ((mem_bipartiteBelow _).1 hu).2.symm.trans ?_
-  obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
-  refine card_le_card_of_injOn (fun b ↦ (a / b, b / c)) (fun b hb ↦ ?_) fun b₁ _ b₂ _ h ↦ ?_
-  · rw [mem_bipartiteAbove]
-    exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel' _ _ _⟩
-  · exact div_right_injective (Prod.ext_iff.1 h).1
+  · obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
+    refine card_le_card_of_injOn (fun b ↦ (a / b, b / c)) (fun b hb ↦ ?_) fun b₁ _ b₂ _ h ↦ ?_
+    · rw [mem_bipartiteAbove]
+      exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel' _ _ _⟩
+    · exact div_right_injective (Prod.ext_iff.1 h).1
   · exact ((mem_bipartiteBelow _).1 hv).2
 
 /-- **Ruzsa's triangle inequality**. Div-mul-mul version. -/
@@ -185,7 +186,7 @@ theorem pluennecke_ruzsa_inequality_pow_div_pow_mul (hA : A.Nonempty) (B : Finse
   obtain ⟨C, hC, hCA⟩ :=
     exists_min_image (A.powerset.erase ∅) (fun C ↦ (C * B).card / C.card : _ → ℚ≥0) ⟨A, hA'⟩
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hC
-  refine (mul_le_mul_right <| cast_pos.2 hC.1.card_pos).1 ?_
+  refine (_root_.mul_le_mul_right <| cast_pos.2 hC.1.card_pos).1 ?_
   norm_cast
   refine (Nat.cast_le.2 <| ruzsa_triangle_inequality_div_mul_mul _ _ _).trans ?_
   push_cast

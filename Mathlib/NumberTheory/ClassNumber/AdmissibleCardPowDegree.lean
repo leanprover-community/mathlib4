@@ -6,7 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Admissible absolute values on polynomials

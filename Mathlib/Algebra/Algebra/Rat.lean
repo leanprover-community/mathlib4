@@ -6,7 +6,6 @@ Authors: Kenny Lau, Yury Kudryashov
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Algebra.Algebra.Defs
 
-
 /-!
 # Further basic results about `Algebra`'s over `ℚ`.
 
@@ -28,7 +27,8 @@ end RingHom
 
 section Rat
 
-instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
+/-- Every division ring of characteristic zero is an algebra over the rationals. -/
+instance DivisionRing.toRatAlgebra {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   smul := (· • ·)
   smul_def' := Rat.smul_def
   toRingHom := Rat.castHom α
@@ -39,7 +39,7 @@ instance : Algebra NNRat ℚ :=
   NNRat.coeHom.toAlgebra
 
 /-- The two `Algebra ℚ ℚ` instances should coincide. -/
-example : algebraRat = Algebra.id ℚ :=
+example : DivisionRing.toRatAlgebra = Algebra.id ℚ :=
   rfl
 
 @[simp] theorem algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ := rfl
@@ -48,5 +48,3 @@ instance algebra_rat_subsingleton {α} [Semiring α] : Subsingleton (Algebra ℚ
   ⟨fun x y => Algebra.algebra_ext x y <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 
 end Rat
-
-

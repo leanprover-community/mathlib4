@@ -361,7 +361,8 @@ theorem IsUniversalColimit.map_reflective
       · rw [Gl.map_comp, hα'', Category.assoc, hc'']
         dsimp [β]
         rw [Category.comp_id, Category.assoc]
-  have : cf.hom ≫ (PreservesPullback.iso _ _ _).hom ≫ pullback.fst _ _ ≫ adj.counit.app _ = 𝟙 _ := by
+  have :
+      cf.hom ≫ (PreservesPullback.iso _ _ _).hom ≫ pullback.fst _ _ ≫ adj.counit.app _ = 𝟙 _ := by
     simp only [IsIso.inv_hom_id, Iso.inv_hom_id_assoc, Category.assoc, pullback.lift_fst_assoc]
   have : IsIso cf := by
     apply @Cocones.cocone_iso_of_hom_iso (i := ?_)
@@ -746,7 +747,7 @@ theorem isPullback_initial_to_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {
   subst this
   have : ∀ i, Subsingleton (⊥_ C ⟶ (Discrete.functor f).obj i) := inferInstance
   convert isPullback_of_cofan_isVanKampen hc i.as j.as
-  exact (if_neg (mt (Discrete.ext _ _) hi.symm)).symm
+  exact (if_neg (mt Discrete.ext hi.symm)).symm
 
 theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι ⥤ C}
     {c : Cocone F} (hc : IsVanKampenColimit c) (i : Discrete ι) : Mono (c.ι.app i) := by

@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Fintype.Basic
 
@@ -10,10 +11,9 @@ import Mathlib.Data.Fintype.Basic
 # Fintype instances for pi types
 -/
 
+open Finset Function
 
-variable {α : Type*}
-
-open Finset
+variable {α β : Type*}
 
 namespace Fintype
 
@@ -55,6 +55,9 @@ theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (�
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
   simp [Finset.Nonempty, Classical.skolem]
+
+lemma _root_.Finset.Nonempty.piFinset_const {ι : Type*} [Fintype ι] [DecidableEq ι] {s : Finset β}
+    (hs : s.Nonempty) : (piFinset fun _ : ι ↦ s).Nonempty := piFinset_nonempty.2 fun _ ↦ hs
 
 @[simp]
 lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s = univ :=
@@ -144,8 +147,30 @@ noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [F
   Fintype (α ↪ β) := by
   classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 
+instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}
+    {s : β → β → Prop} [DecidableRel r] [DecidableRel s] : Fintype (r →r s) :=
+  Fintype.ofEquiv {f : α → β // ∀ {x y}, r x y → s (f x) (f y)} <| Equiv.mk
+    (fun f ↦ ⟨f.1, f.2⟩) (fun f ↦ ⟨f.1, f.2⟩) (fun _ ↦ rfl) (fun _ ↦ rfl)
+
+noncomputable instance RelEmbedding.instFintype {α β} [Fintype α] [Fintype β]
+    {r : α → α → Prop} {s : β → β → Prop} : Fintype (r ↪r s) :=
+  Fintype.ofInjective _ RelEmbedding.toEmbedding_injective
+
 @[simp]
 theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp
+
+/-! ### Diagonal -/
+
+namespace Finset
+variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
+
+lemma piFinset_filter_const [DecidableEq ι] [Fintype ι] :
+    (Fintype.piFinset fun _ ↦ s).filter (∃ a ∈ s, const ι a = ·) = s.piDiag ι := by aesop
+
+lemma piDiag_subset_piFinset [DecidableEq ι] [Fintype ι] :
+    s.piDiag ι ⊆ Fintype.piFinset fun _ ↦ s := by simp [← piFinset_filter_const]
+
+end Finset
