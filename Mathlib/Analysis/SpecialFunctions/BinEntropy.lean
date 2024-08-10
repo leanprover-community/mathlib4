@@ -98,7 +98,7 @@ lemma binaryEntropy_pos {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < binaryEntr
     exact (Real.mul_pos (by linarith) (by linarith [log_neg pgt0 ple1])).le
   · exact mul_neg_of_pos_of_neg (by linarith) (log_neg (by linarith) (by linarith))
 
-lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qaryEntropy q p := by
+lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < qaryEntropy q p := by
   unfold qaryEntropy
   have p_q_log_nonneg : 0 ≤ p * ((q : ℝ) - 1).log := by
     rw [mul_nonneg_iff_of_pos_left pgt0, show q - (1 : ℝ) = (q - 1 : ℤ) by norm_cast]
