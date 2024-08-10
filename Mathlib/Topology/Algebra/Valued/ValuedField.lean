@@ -73,8 +73,7 @@ end InversionEstimate
 
 open Valued
 
-example [Valued K Γ₀] (x y : Valued.v.rangeGroup (R := K))
-  : x ≤ y ↔ x.1 ≤ y.1 := by rfl
+example [Valued K Γ₀] (x y : Valued.v.rangeGroup (R := K)) : x ≤ y ↔ x.1 ≤ y.1 := by rfl
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
     [N. Bourbaki, *Algèbre Commutative*, Chapitre 6, § 5, n. 1, Proposition 1][bourbaki1964] -/
