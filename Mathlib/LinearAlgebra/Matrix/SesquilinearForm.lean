@@ -145,9 +145,7 @@ variable (R)
 
 /-- The linear equivalence between sesquilinear maps and `n × m` matrices -/
 def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
-  { LinearMap.toMatrix₂Aux R (fun i => single R₁ (fun _ => R₁) i 1) fun j =>
-      single R₂ (fun _ => R₂) j
-        1 with
+  { LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1) (fun j => Pi.single j 1) with
     toFun := LinearMap.toMatrix₂Aux R _ _
     invFun := Matrix.toLinearMap₂'Aux σ₁ σ₂
     left_inv := LinearMap.toLinearMap₂'Aux_toMatrix₂Aux R
