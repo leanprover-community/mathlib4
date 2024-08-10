@@ -86,13 +86,14 @@ section
 
 /- Note: we use classical logic only for these definitions, to ensure that we do not write lemmas
 with `Classical.dec` in their statement. -/
-open scoped Classical
 
+open Classical in
 /-- Sum of `f x` as `x` ranges over the elements of the support of `f`, if it's finite. Zero
 otherwise. -/
 noncomputable irreducible_def finsum (lemma := finsum_def') [AddCommMonoid M] (f : α → M) : M :=
   if h : (support (f ∘ PLift.down)).Finite then ∑ i ∈ h.toFinset, f i.down else 0
 
+open Classical in
 /-- Product of `f x` as `x` ranges over the elements of the multiplicative support of `f`, if it's
 finite. One otherwise. -/
 @[to_additive existing]

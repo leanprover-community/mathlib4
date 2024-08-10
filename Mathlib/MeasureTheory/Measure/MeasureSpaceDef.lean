@@ -55,15 +55,9 @@ measure, almost everywhere, measure space
 
 noncomputable section
 
-open scoped Classical
-open Set
+open Set Function MeasurableSpace Topology Filter ENNReal NNReal
 
 open Filter hiding map
-
-open Function MeasurableSpace
-
-open scoped Classical
-open Topology Filter ENNReal NNReal
 
 variable {α β γ δ : Type*} {ι : Sort*}
 
@@ -76,6 +70,9 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
   m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
   trim_le : toOuterMeasure.trim ≤ toOuterMeasure
+
+/-- Notation for `Measure` with respect to a non-standard σ-algebra in the domain. -/
+scoped notation "Measure[" mα "]" α:arg => @Measure α mα
 
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
@@ -128,9 +125,6 @@ theorem ofMeasurable_apply {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
 theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :=
   toOuterMeasure_injective <| by
   rw [← trimmed, OuterMeasure.trim_congr (h _), trimmed]
-
-theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s :=
-  ⟨by rintro rfl s _hs; rfl, Measure.ext⟩
 
 theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
   ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
@@ -271,7 +265,8 @@ disjoint unions, then the predicate holds for almost every `x : β` and all meas
 
 This is an AE version of `MeasurableSpace.induction_on_inter` where the condition is dependent
 on a measurable space `β`. -/
-theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {μ : Measure β}
+theorem _root_.MeasurableSpace.ae_induction_on_inter
+    {α β : Type*} [MeasurableSpace β] {μ : Measure β}
     {C : β → Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
     (h_eq : m = MeasurableSpace.generateFrom s)
     (h_inter : IsPiSystem s) (h_empty : ∀ᵐ x ∂μ, C x ∅) (h_basic : ∀ᵐ x ∂μ, ∀ t ∈ s, C x t)
@@ -284,6 +279,7 @@ theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {
 
 end ae
 
+open Classical in
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
 (This property holds without the assumption `μ s ≠ ∞` when the space is s-finite -- for example
