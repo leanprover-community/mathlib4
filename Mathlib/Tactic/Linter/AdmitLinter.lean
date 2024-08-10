@@ -27,17 +27,13 @@ register_option linter.admit : Bool := {
   descr := "enable the admit linter"
 }
 
-syntax (name := admit) "admit " : tactic
-/-- `admit` is a shorthand for `exact sorry`. -/
-macro "admit" : tactic => `(tactic| exact @sorryAx _ false)
-
-/-- `getadmit t` returns all usages of the `admit` tactic in the input syntax `t`. -/
+/-- `getAdmit t` returns all usages of the `admit` tactic in the input syntax `t`. -/
 partial
-def getadmit : Syntax → Array Syntax
-  | stx@(.node _ kind args) =>
-    let rargs := (args.map getadmit).flatten
-    if kind == ``admit then rargs.push stx else rargs
-  | _ => default
+def getAdmit (stx : Syntax) : Array Syntax :=
+  if let `(tactic| admit) := stx then
+    #[stx]
+  else
+    stx.foldArgs (fun arg r => r ++ getAdmit arg) #[]
 
 /-- The "admit" linter flags usages of the `admit` tactic.
 
@@ -47,15 +43,14 @@ The use of `sorry` is much more common and should be preferred.
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.admit o
 
 @[inherit_doc getLinterHash]
-def admitLinter : Linter where run := withSetOptionIn fun _stx => do
+def admitLinter : Linter where run := withSetOptionIn fun stx => do
   unless getLinterHash (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  for stx in (getadmit _stx) do
-    Linter.logLint linter.admit stx
-      "The `admit` tactic is discouraged: \
-      please consider using the synonymous `sorry` instead."
+  for stxAdmit in (getAdmit stx) do
+    Linter.logLint linter.admit stxAdmit
+      "The `admit` tactic is discouraged: please consider using the synonymous `sorry` instead."
 
 initialize addLinter admitLinter
 
