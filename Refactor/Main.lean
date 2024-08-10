@@ -37,9 +37,54 @@ structure Edit where
   range : String.Range
   deriving ToJson, FromJson
 
-def runRefactoring (_cmd : TSyntax `command) : CommandElabM (List Edit) := do
+partial
+def getSimpAttrs : Syntax → Array Syntax
+  | stx@(.node _ k args) =>
+    let nargs := (args.map getSimpAttrs).flatten
+    if k == ``Lean.Parser.Attr.simp then
+      nargs.push stx
+    else nargs
+  | _ => #[]
+
+def getSimpAttrRanges (stx next : Syntax) : Array String.Range := Id.run do
+  if let some attrs := stx.find? (·.isOfKind ``Lean.Parser.Term.attributes) then
+    let mut rgs : Array String.Range := #[]
+    let simps := getSimpAttrs attrs[1]
+    if attrs[1].getArgs.size == simps.size + simps.size - 1 then
+      rgs := rgs.push ⟨attrs.getPos?.getD default, next.getPos?.getD default⟩
+    else
+      for idx in [:attrs[1].getNumArgs] do
+        let i := attrs[1][idx]
+        if (i.find? (·.isOfKind ``Lean.Parser.Attr.simp)).isSome then
+          if attrs[1][idx+2] == .missing then
+            rgs := rgs.push ⟨attrs[1][idx-1].getPos?.getD default, i.getTailPos?.getD default⟩
+          else
+            rgs := rgs.push ⟨i.getPos?.getD default, attrs[1][idx+2].getPos?.getD default⟩
+    return rgs
+  else return #[]
+--#check Parser.Command.declId
+--def getSimpAttrEdits (env : Environment) (stx : Syntax) : CommandElabM (Array Edit) := do
+--  if let some declId := stx.find? (·.isOfKind ``Parser.Command.declId) then
+--    let declName ← resolveGlobalConst declId[0]
+--    if env.getSuccesses declName == some 0 && (env.getAttempts declName |>.get!) > 100 then
+--      let rgs := getSimpAttrEdits stx
+--      return rgs.map ({ replacement := "", range := ·})
+--    else return #[]
+--  else return #[]
+
+def getSimpAttrEdits : Syntax → Array Edit
+  | `($dm:declModifiers $t) =>
+    let rgs := getSimpAttrRanges dm t
+    rgs.map ({ replacement := "", range := ·})
+  | _ => #[]
+
+def runRefactoring (cmd : TSyntax `command) : CommandElabM (List Edit) := do
+  dbg_trace (getSimpAttrEdits cmd).map (·.range.start)
+  dbg_trace (getSimpAttrEdits cmd).map (·.range.stop)
+  return (getSimpAttrEdits cmd.raw).toList
   -- INSERT LEAN CODE HERE
-  panic! "no refactoring active, edit Refactor/Main.lean to add one"
+  --return []
+  --panic! "no refactoring active, edit Refactor/Main.lean to add one"
   -- let `(command| #align $_ $_) := cmd | return []
   -- let some range := cmd.raw.getRange? | return []
   -- pure [⟨"", range⟩]
