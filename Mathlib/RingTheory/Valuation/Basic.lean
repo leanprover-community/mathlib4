@@ -329,7 +329,7 @@ lemma rangeGroup_min (x y : v.rangeGroup) : ((min x y).1 : Γ₀) = min (x.1 : �
 -- theorem injective_withZero_inclusion : Injective (withZero_inclusion v) := by
 --   intro a b hab
 --   by_cases h : a = 0
---   · rwa [h, Eq.comm, withZero_inclusion_zero, withZero_inclusion_eq_zero_iff, 
+--   · rwa [h, Eq.comm, withZero_inclusion_zero, withZero_inclusion_eq_zero_iff,
 --      ← h, Eq.comm] at hab
 --   · have ha : withZero_inclusion v a ≠ 0 := withZero_inclusion_ne_zero v h
 --     have hb : withZero_inclusion v b ≠ 0 := by
@@ -348,17 +348,17 @@ theorem mem_rangeGroup {x : R} {γ : Γ₀ˣ} (Hx : v x = γ) : γ ∈ v.rangeGr
   Subgroup.subset_closure ⟨x, Hx⟩
 
 section ACL
-/- Here, I try to define directly the `range₀`, in the hope that it will simplify everything 
+/- Here, I try to define directly the `range₀`, in the hope that it will simplify everything
 On the other hand, there is no `SubmonoidWithZero` -/
 
 namespace MonoidHomWithZero
 
-variable {A B : Type*} [MonoidWithZero A] [CommGroupWithZero B] 
+variable {A B : Type*} [MonoidWithZero A] [CommGroupWithZero B]
   {F : Type*} [FunLike F A B] [MonoidHomClass F A B] [ZeroHomClass F A B] (f : F)
 
 def range₀ : Submonoid B where
-  carrier := { b | ∃ a c, f a ≠ 0 ∧  (f a * b = f c)} 
-  mul_mem' {b b'} hb hb' := by 
+  carrier := { b | ∃ a c, f a ≠ 0 ∧  (f a * b = f c)}
+  mul_mem' {b b'} hb hb' := by
     simp only [ne_eq, Set.mem_setOf_eq] at hb hb' ⊢
     obtain ⟨a, c, ha, h⟩ := hb
     obtain ⟨a', c', ha', h'⟩ := hb'
@@ -367,25 +367,25 @@ def range₀ : Submonoid B where
     · simp only [_root_.map_mul, mul_eq_zero, ha, ha', or_self, not_false_eq_true]
     · simp only [_root_.map_mul, ← h, ← h']
       simp only [mul_assoc]; apply congr_arg₂ _ rfl
-      simp only [← mul_assoc]; apply congr_arg₂ _ _ rfl 
+      simp only [← mul_assoc]; apply congr_arg₂ _ _ rfl
       rw [mul_comm]
-  one_mem' := by 
+  one_mem' := by
     simp only [ne_eq, exists_and_left, Set.mem_setOf_eq, mul_one, exists_apply_eq_apply', and_true]
     use 1
     rw [_root_.map_one]
     exact one_ne_zero
 
 variable {f} in
-theorem mem_range₀_iff {b : B} : b ∈ range₀ f ↔ ∃ a c, (f a ≠ 0 ∧ f a * b = f c) := by 
+theorem mem_range₀_iff {b : B} : b ∈ range₀ f ↔ ∃ a c, (f a ≠ 0 ∧ f a * b = f c) := by
   simp only [range₀]; rfl
 
-theorem zero_mem_range₀ : 0 ∈ range₀ f := by 
+theorem zero_mem_range₀ : 0 ∈ range₀ f := by
   rw [mem_range₀_iff]
   use 1, 0
-  constructor 
+  constructor
   · rw [_root_.map_one]; exact one_ne_zero
   · rw [mul_zero, _root_.map_zero]
- 
+
 theorem inv_mem_range₀ {b : B} (hb : b ∈ range₀ f) : b⁻¹ ∈ range₀ f := by
   by_cases h : b = 0
   · simp only [h, inv_zero, zero_mem_range₀]
@@ -398,48 +398,48 @@ theorem inv_mem_range₀ {b : B} (hb : b ∈ range₀ f) : b⁻¹ ∈ range₀ f
     exact ⟨ha, h⟩
   · rw [mul_assoc, mul_inv_cancel h, mul_one]
 
-theorem inv_mem_range₀_iff {b : B} : b⁻¹ ∈ range₀ f ↔ b ∈ range₀ f := by 
+theorem inv_mem_range₀_iff {b : B} : b⁻¹ ∈ range₀ f ↔ b ∈ range₀ f := by
   constructor
-  · nth_rewrite 2 [← inv_inv b]  
-    exact inv_mem_range₀ f 
+  · nth_rewrite 2 [← inv_inv b]
+    exact inv_mem_range₀ f
   · exact inv_mem_range₀ f
-  
+
 instance : CommGroupWithZero (range₀ f) where
   toCommMonoid := inferInstance
   zero := ⟨0, zero_mem_range₀ f⟩
   zero_mul a := by
     rw [← Subtype.coe_inj, Submonoid.coe_mul]
     exact zero_mul _
-  mul_zero a := by 
+  mul_zero a := by
     rw [← Subtype.coe_inj, Submonoid.coe_mul]
     exact mul_zero _
   inv b := ⟨b⁻¹, inv_mem_range₀ f b.prop⟩
-  exists_pair_ne := by 
+  exists_pair_ne := by
     use 1, ⟨0, zero_mem_range₀ f⟩
     rw [ne_eq, ← Subtype.coe_inj]
     exact one_ne_zero
   inv_zero := by
     rw [← Subtype.coe_inj]
     exact inv_zero
-  mul_inv_cancel b hb := by 
+  mul_inv_cancel b hb := by
     obtain ⟨a, c, ha, hc⟩ := mem_range₀_iff.mpr b.prop
     rw [← Subtype.coe_inj, Submonoid.coe_mul]
-    apply mul_inv_cancel 
+    apply mul_inv_cancel
     rwa [ne_eq, ← Subtype.coe_inj] at hb
 
 theorem range₀_coe_zero : ((0 : range₀ f) : B) = 0 := rfl
 
-theorem range₀_coe_one : ((1 : range₀ f) : B) = 1 := rfl 
+theorem range₀_coe_one : ((1 : range₀ f) : B) = 1 := rfl
 
 end MonoidHomWithZero
 
 /-- The image of the valuation, as a `CommGroupWithZero` -/
 def range₀ := MonoidHomWithZero.range₀ v
 
-theorem mem_range₀_iff {x : Γ₀} : x ∈ v.range₀ ↔ ∃ a b, v a ≠ 0 ∧ v a * x = v b := 
+theorem mem_range₀_iff {x : Γ₀} : x ∈ v.range₀ ↔ ∃ a b, v a ≠ 0 ∧ v a * x = v b :=
   MonoidHomWithZero.mem_range₀_iff
 
-instance : CommGroupWithZero v.range₀ := by 
+instance : CommGroupWithZero v.range₀ := by
   unfold range₀
   infer_instance
 
@@ -454,21 +454,21 @@ instance : PartialOrder v.range₀ where
 instance: LinearOrderedCommMonoid v.range₀ where
   toCommMonoid := inferInstance
   toPartialOrder := inferInstance
-  mul_le_mul_left _ _ h _ := by 
-    apply OrderedCommMonoid.mul_le_mul_left 
+  mul_le_mul_left _ _ h _ := by
+    apply OrderedCommMonoid.mul_le_mul_left
     exact h
-  le_total a b := LinearOrder.le_total (a : Γ₀) b 
+  le_total a b := LinearOrder.le_total (a : Γ₀) b
   decidableLE := LinearOrder.decidableLE
   decidableEq := LinearOrder.decidableEq
   decidableLT := LinearOrder.decidableLT
-  min a b := ⟨min (a : Γ₀) b, by 
+  min a b := ⟨min (a : Γ₀) b, by
     rw [min_def]; split_ifs with h; exact a.prop; exact b.prop⟩
-  max a b := ⟨max (a : Γ₀) b, by 
+  max a b := ⟨max (a : Γ₀) b, by
     rw [max_def]; split_ifs with h; exact b.prop; exact a.prop⟩
   compare a b := compare (a : Γ₀) b
-  min_def a b := by 
+  min_def a b := by
     rw [← Subtype.coe_inj, min_def, apply_ite (f := fun (x : v.range₀) ↦ (x : Γ₀))]
-  max_def a b := by 
+  max_def a b := by
     rw [← Subtype.coe_inj, max_def, apply_ite (f := fun (x : v.range₀) ↦ (x : Γ₀))]
   compare_eq_compareOfLessAndEq a b := by
     change compare (a : Γ₀) b = _
@@ -480,11 +480,11 @@ instance: LinearOrderedCommMonoid v.range₀ where
       by_cases h : a = b
       · rw [if_pos h, if_pos (show (a : Γ₀) = b by rw [Subtype.coe_inj]; exact h)]
       · rw [if_neg h, if_neg (show ¬ (a : Γ₀) = b by rw [Subtype.coe_inj]; exact h)]
- 
+
 instance : LinearOrderedCommMonoidWithZero v.range₀ where
   zero_mul := zero_mul
   mul_zero := mul_zero
-  zero_le_one := by 
+  zero_le_one := by
     change (0 : Γ₀) ≤ 1
     apply zero_le_one'
 
@@ -492,8 +492,8 @@ instance : LinearOrderedCommGroupWithZero v.range₀ where
   toLinearOrderedCommMonoidWithZero := inferInstance
   inv_zero := inv_zero
   mul_inv_cancel := GroupWithZero.mul_inv_cancel
- 
-example : Valuation R v.range₀ where 
+
+example : Valuation R v.range₀ where
   toFun x := ⟨v x, by rw [mem_range₀_iff]; use 1, x; simp⟩
   map_zero' := by simp only [_root_.map_zero]; rfl
   map_one' := by simp [← Subtype.coe_inj]
