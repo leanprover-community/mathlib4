@@ -245,12 +245,12 @@ theorem swap_mem_interedges_iff (hr : Symmetric r) {x : α × α} :
   rw [mem_interedges_iff, mem_interedges_iff, hr.iff]
   exact and_left_comm
 
-variable (hr : Symmetric r)
-
-theorem mk_mem_interedges_comm : (a, b) ∈ interedges r s t ↔ (b, a) ∈ interedges r t s :=
+theorem mk_mem_interedges_comm (hr : Symmetric r) :
+    (a, b) ∈ interedges r s t ↔ (b, a) ∈ interedges r t s :=
   @swap_mem_interedges_iff _ _ _ _ _ hr (b, a)
 
-theorem card_interedges_comm (s t : Finset α) : (interedges r s t).card = (interedges r t s).card :=
+theorem card_interedges_comm (hr : Symmetric r) (s t : Finset α) :
+    (interedges r s t).card = (interedges r t s).card :=
   Finset.card_bij (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ (swap_mem_interedges_iff hr).2)
     (fun _ _ _ _ h ↦ Prod.swap_injective h) fun x h ↦
     ⟨x.swap, (swap_mem_interedges_iff hr).2 h, x.swap_swap⟩

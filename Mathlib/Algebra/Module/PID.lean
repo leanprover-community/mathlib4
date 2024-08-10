@@ -53,8 +53,6 @@ assert_not_exists TopologicalSpace
 
 universe u v
 
-open scoped Classical
-
 variable {R : Type u} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 variable {M : Type v} [AddCommGroup M] [Module R M]
 variable {N : Type max u v} [AddCommGroup N] [Module R N]
@@ -73,7 +71,7 @@ theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
-theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
+theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
       torsionBy R M
@@ -90,6 +88,7 @@ theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R 
     (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i)
         (e : ι → ℕ), DirectSum.IsInternal fun i => torsionBy R M <| p i ^ e i := by
+  classical
   refine ⟨_, ?_, _, _, ?_, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
   · exact Finset.fintypeCoeSort _
   · rintro ⟨p, hp⟩
@@ -108,6 +107,7 @@ open Ideal Submodule.IsPrincipal
 
 theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
     torsionOf R M x = span {p ^ pOrder hM x} := by
+  classical
   dsimp only [pOrder]
   rw [← (torsionOf R M x).span_singleton_generator, Ideal.span_singleton_eq_span_singleton, ←
     Associates.mk_eq_mk_iff_associated, Associates.mk_pow]
@@ -264,7 +264,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
   haveI := Module.Finite.of_surjective _ (torsion R N).mkQ_surjective
   obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ :=
     equiv_directSum_of_isTorsion.{u, v} (@torsion_isTorsion R N _ _ _)
-  obtain ⟨n, ⟨g⟩⟩ := @Module.basisOfFiniteTypeTorsionFree' R _ _ _ (N ⧸ torsion R N) _ _ _ _
+  obtain ⟨n, ⟨g⟩⟩ := @Module.basisOfFiniteTypeTorsionFree' R _ (N ⧸ torsion R N) _ _ _ _ _ _
   haveI : Module.Projective R (N ⧸ torsion R N) := Module.Projective.of_basis ⟨g⟩
   obtain ⟨f, hf⟩ := Module.projective_lifting_property _ LinearMap.id (torsion R N).mkQ_surjective
   refine
