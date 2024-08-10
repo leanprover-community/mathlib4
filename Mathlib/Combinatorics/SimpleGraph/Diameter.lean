@@ -9,14 +9,14 @@ import Mathlib.Tactic.NormNum
 /-!
 # Diameter of a simple graph
 
-This file defines the diameter of a simple graph as the greatest distance between any two vertices
-in the graph.
+This module defines the extended diameter and diameter of a simple graph, which measure respectively
+the maximum extended distance and distance between vertices.
 
 ## Main definitions
 
-- `SimpleGraph.diam` is the graph diameter.
-
 - `SimpleGraph.ediam` is the graph extended diameter.
+
+- `SimpleGraph.diam` is the graph diameter.
 
 ## Todo
 
