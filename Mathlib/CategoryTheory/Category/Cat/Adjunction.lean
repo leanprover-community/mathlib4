@@ -60,20 +60,12 @@ def connectedComponents.{v} : Cat.{v, u} ⥤ Type u where
   map_comp _ _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h => by simp [<- h])
 
 
-private def fnToFctr  {X C} (fct : connectedComponents.obj C ⟶ X) : (C ⥤ typeToCat.obj X) where
-  obj :=  Discrete.mk ∘ fct ∘ Quotient.mk (Zigzag.setoid _)
-  map :=  Discrete.eqToHom ∘ congrArg fct ∘ Quotient.sound ∘ Zigzag.of_hom
 
-private def fctrToFn {X} {C : Cat} (fctr :C ⥤ typeToCat.obj X)  : (connectedComponents.obj C ⟶ X) :=
-  Quotient.lift
-    (fun c => (fctr.obj c).as)
-    (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag fctr h))
-
-/-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
-def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
-  homEquiv C X := {
-    toFun := fnToFctr
-    invFun := fctrToFn
+/-- Functions from connected components and functors to discrete category are in bijection -/
+def connectedComponentsTypeToCatHomEquiv  (C : Cat) (X : Type u)
+  : ( ConnectedComponents C ⟶ X) ≃ (C ⥤ Discrete X)   where
+    toFun := ConnectedComponents.connectedToDiscrete
+    invFun := ConnectedComponents.discreteToConnected
     left_inv := fun f ↦ funext fun x ↦ by
       obtain ⟨x, h⟩ := Quotient.exists_rep x
       rw [← h]
@@ -81,16 +73,19 @@ def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
     right_inv  := fun fctr ↦
       Functor.hext (fun _ ↦ rfl) (fun c d f ↦
         have : Subsingleton (fctr.obj c ⟶ fctr.obj d) := Discrete.instSubsingletonDiscreteHom _ _
-        (Subsingleton.elim (fctr.map f) _).symm.heq) }
-  unit := { app:= fun C  ↦ fnToFctr (𝟙 _) }
+        (Subsingleton.elim (fctr.map f) _).symm.heq)
+
+/-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
+def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
+  homEquiv := connectedComponentsTypeToCatHomEquiv
+  unit := { app:= fun C  ↦ ConnectedComponents.connectedToDiscrete (𝟙 (connectedComponents.obj C)) }
   counit :=  {
-      app := fun X => fctrToFn (𝟙 typeToCat.obj X)
+      app := fun X => ConnectedComponents.discreteToConnected (𝟙 typeToCat.obj X)
       naturality := fun _ _ _ =>
         funext (fun xcc => by
           obtain ⟨x,h⟩ := Quotient.exists_rep xcc
           aesop_cat) }
   homEquiv_unit := fun {C X h} => Functor.hext (fun _ => by rfl) (fun _ _ _ => by rfl)
   homEquiv_counit := fun {C X G} => by funext cc;obtain ⟨_,_⟩ := Quotient.exists_rep cc; aesop_cat
-
 
 end CategoryTheory.Cat
