@@ -266,19 +266,15 @@ lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
         convert as1.add_iff_right.mp is_diff using 2
         ring
       have : ¬ DifferentiableAt ℝ (fun p ↦ -(1 - p) * log (1 - p)) 1 := by
-        intro h
-        have : DifferentiableAt ℝ (fun (x : ℝ) ↦ (-1 * x + 1).negMulLog) ((-1)⁻¹ * (0 - 1)) := by
-          convert h using 1
-          · ext
-            simp [negMulLog]
-            ring_nf
-          · ring
-        have := (DifferentiableAt.iff_comp_mul_add
-          (a:=(0:ℝ)) (b:=(1:ℝ)) (m:=(-1 : ℝ)) (show (-1 : ℝ) ≠ 0 by norm_num) negMulLog).mpr this
-        unfold negMulLog at this
-        have := differentiableAt_neg_iff.mpr this
-        simp only [neg_mul, neg_neg, differentiableAt_id'] at this
-        exact not_DifferentiableAt_log_mul_zero this
+        have h₁ : negMulLog = (fun p ↦ -(1 - p) * log (1 - p)) ∘ (fun x => 1 - x) := by
+          ext; simp [negMulLog]
+        have h₂ : DifferentiableAt ℝ negMulLog 0 := by
+          rw [h₁]
+          refine DifferentiableAt.comp _ ?_ (by fun_prop)
+          simpa only [neg_sub, differentiableAt_id', differentiableAt_const, DifferentiableAt.sub,
+            sub_zero] using notTrue
+        rw [differentiableAt_negMulLog_iff] at h₂
+        exact fun _ ↦ h₂ rfl
       contradiction
   · have : x = 0 := by simp_all only [neg_mul, false_implies, ne_eq, Decidable.not_not]
     rw [this] at is_diff
