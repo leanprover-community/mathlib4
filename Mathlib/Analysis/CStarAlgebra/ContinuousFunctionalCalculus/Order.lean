@@ -136,6 +136,7 @@ instance CStarRing.instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
     exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
 
+set_option maxHeartbeats 0 in
 lemma CStarRing.norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
   suffices ∀ a b : Unitization ℂ A, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by

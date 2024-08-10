@@ -108,6 +108,7 @@ def Aₙ : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
+set_option maxHeartbeats 0 in
 /-- The Coxeter matrix of type Bₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -125,6 +126,7 @@ def Bₙ : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
+set_option maxHeartbeats 0 in
 /-- The Coxeter matrix of type Dₙ.
 
 The corresponding Coxeter-Dynkin diagram is:

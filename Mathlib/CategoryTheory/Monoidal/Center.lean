@@ -118,6 +118,7 @@ instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f :
   change IsIso (isoMk f).hom
   infer_instance
 
+set_option maxHeartbeats 0 in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorObj (X Y : Center C) : Center C :=
