@@ -63,8 +63,8 @@ def connectedComponents : Cat.{v, u} ⥤ Type u where
 /-- Functions from connected components and functors to discrete category are in bijection -/
 def connectedComponentsTypeToCatHomEquiv  (C) [Category C] (X : Type u) :
     ( ConnectedComponents C ⟶ X) ≃ (C ⥤ Discrete X)   where
-  toFun := ConnectedComponents.connectedToDiscrete
-  invFun := ConnectedComponents.discreteToConnected
+  toFun := ConnectedComponents.functorToDiscrete
+  invFun := ConnectedComponents.functionFromConnectedComponents
   left_inv := fun f ↦ funext fun x ↦ by
     obtain ⟨x, h⟩ := Quotient.exists_rep x
     rw [← h]
@@ -77,9 +77,9 @@ def connectedComponentsTypeToCatHomEquiv  (C) [Category C] (X : Type u) :
 /-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
 def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
   homEquiv C X := connectedComponentsTypeToCatHomEquiv C X
-  unit := { app:= fun C  ↦ ConnectedComponents.connectedToDiscrete (𝟙 (connectedComponents.obj C)) }
+  unit := { app:= fun C  ↦ ConnectedComponents.functorToDiscrete (𝟙 (connectedComponents.obj C)) }
   counit :=  {
-      app := fun X => ConnectedComponents.discreteToConnected (𝟙 typeToCat.obj X)
+      app := fun X => ConnectedComponents.functionFromConnectedComponents (𝟙 typeToCat.obj X)
       naturality := fun _ _ _ =>
         funext (fun xcc => by
           obtain ⟨x,h⟩ := Quotient.exists_rep xcc
