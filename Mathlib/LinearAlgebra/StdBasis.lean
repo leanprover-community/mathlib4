@@ -147,7 +147,7 @@ variable {η : Type*} {ιs : η → Type*} {Ms : η → Type*}
 
 theorem linearIndependent_single [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
     [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
-    LinearIndependent R fun ji : Σj, ιs j ↦ LinearMap.single R Ms ji.1 (v ji.1 ji.2) := by
+    LinearIndependent R fun ji : Σj, ιs j ↦ Pi.single ji.1 (v ji.1 ji.2) := by
   have hs' : ∀ j : η, LinearIndependent R fun i : ιs j => LinearMap.single R Ms j (v j i) := by
     intro j
     exact (hs j).map' _ (LinearMap.ker_single _ _ _)
@@ -220,7 +220,7 @@ theorem basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j))
 
 @[simp]
 theorem basis_apply [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (ji) :
-    Pi.basis s ji = LinearMap.single R _ ji.1 (s ji.1 ji.2) :=
+    Pi.basis s ji = Pi.single ji.1 (s ji.1 ji.2) :=
   Basis.apply_eq_iff.mpr (by simp)
 
 @[simp]
@@ -241,9 +241,8 @@ noncomputable def basisFun : Basis η R (η → R) :=
 
 @[simp]
 theorem basisFun_apply [DecidableEq η] (i) :
-    basisFun R η i = LinearMap.single R (fun _ ↦ R) i 1 := by
-  simp only [basisFun, Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
-    LinearMap.single_apply]
+    basisFun R η i = Pi.single i 1 := by
+  simp only [basisFun, Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
 
 @[simp]
 theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x i := by simp [basisFun]

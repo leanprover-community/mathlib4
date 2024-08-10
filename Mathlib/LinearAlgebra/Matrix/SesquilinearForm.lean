@@ -114,8 +114,7 @@ theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[
         (LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1) (fun j => Pi.single j 1) f) =
       f := by
   refine ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => ?_
-  simp_rw [Pi.basisFun_apply, LinearMap.coe_single, Matrix.toLinearMap₂'Aux_single,
-    LinearMap.toMatrix₂Aux_apply]
+  simp_rw [Pi.basisFun_apply, Matrix.toLinearMap₂'Aux_single, LinearMap.toMatrix₂Aux_apply]
 
 theorem Matrix.toMatrix₂Aux_toLinearMap₂'Aux (f : Matrix n m N₂) :
     LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1)
