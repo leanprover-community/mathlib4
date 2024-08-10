@@ -355,10 +355,8 @@ lemma continuousOn_of_pointwise_continuousOn_of_compact {α : Type*} {β : Type*
   have compactK : CompactSpace K := isCompact_iff_compactSpace.mp hK
   let unifK : UniformSpace K := uniformSpaceOfCompactT2
   have h₁ : ContinuousOn f K := by
-    rw [continuousOn_iff_continuous_restrict]
-    rw [continuous_iff_continuousOn_univ]
+    rw [continuousOn_iff_continuous_restrict, continuous_iff_continuousOn_univ]
     refine continuousOn_of_pointwise_continuousOn_of_compact' isOpen_univ ?_
-    simp only
     have : (fun (x : K × β) ↦ (K.restrict f x.1) x.2)
         = (fun ⟨a, b⟩ => f a b) ∘ (fun x => (⟨x.1, x.2⟩ : α × β)) := by rfl
     rw [this]
