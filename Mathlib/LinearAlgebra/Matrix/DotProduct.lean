@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Dot product of two vectors

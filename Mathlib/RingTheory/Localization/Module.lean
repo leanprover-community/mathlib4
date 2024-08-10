@@ -3,10 +3,10 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Basis
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
