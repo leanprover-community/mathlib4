@@ -68,8 +68,7 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
 variable [DecidableEq n] [DecidableEq m]
 
 theorem Matrix.toLinearMap₂'Aux_single (f : Matrix n m N₂) (i : n) (j : m) :
-    f.toLinearMap₂'Aux σ₁ σ₂ (LinearMap.single R₁ (fun _ => R₁) i 1)
-      (LinearMap.single R₂ (fun _ => R₂) j 1) = f i j := by
+    f.toLinearMap₂'Aux σ₁ σ₂ (Pi.single i 1) (Pi.single j 1) = f i j := by
   rw [Matrix.toLinearMap₂'Aux, mk₂'ₛₗ_apply]
   have : (∑ i', ∑ j', (if i = i' then (1 : S₁) else (0 : S₁)) •
         (if j = j' then (1 : S₂) else (0 : S₂)) • f i' j') =
@@ -112,15 +111,15 @@ variable [DecidableEq n] [DecidableEq m]
 
 theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) :
     Matrix.toLinearMap₂'Aux σ₁ σ₂
-        (LinearMap.toMatrix₂Aux R (fun i => single R₁ (fun _ => R₁) i 1)
-          (fun j => single R₂ (fun _ => R₂) j 1) f) =
+        (LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1) (fun j => Pi.single j 1) f) =
       f := by
   refine ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => ?_
-  simp_rw [Pi.basisFun_apply, Matrix.toLinearMap₂'Aux_single, LinearMap.toMatrix₂Aux_apply]
+  simp_rw [Pi.basisFun_apply, LinearMap.coe_single, Matrix.toLinearMap₂'Aux_single,
+    LinearMap.toMatrix₂Aux_apply]
 
 theorem Matrix.toMatrix₂Aux_toLinearMap₂'Aux (f : Matrix n m N₂) :
-    LinearMap.toMatrix₂Aux R (fun i => LinearMap.single R₁ (fun _ => R₁) i 1)
-        (fun j => LinearMap.single R₂ (fun _ => R₂) j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
+    LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1)
+        (fun j => Pi.single j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
       f := by
   ext i j
   simp_rw [LinearMap.toMatrix₂Aux_apply, Matrix.toLinearMap₂'Aux_single]

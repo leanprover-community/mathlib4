@@ -61,8 +61,7 @@ def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n →
   Matrix.toLinearMap₂'Aux _ _ M
 
 theorem Matrix.toBilin'Aux_single [Fintype n] [DecidableEq n] (M : Matrix n n R₂) (i j : n) :
-    M.toBilin'Aux (LinearMap.single R₂ (fun _ => R₂) i 1)
-      (LinearMap.single R₂ (fun _ => R₂) j 1) = M i j :=
+    M.toBilin'Aux (Pi.single i 1) (Pi.single j 1) = M i j :=
   Matrix.toLinearMap₂'Aux_single _ _ _ _ _
 
 /-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
