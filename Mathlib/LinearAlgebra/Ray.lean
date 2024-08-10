@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.Algebra.Ring.Subring.Units
 
-#align_import linear_algebra.ray from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
-
 /-!
 # Rays in modules
 
@@ -39,7 +37,6 @@ are equal (in the typical case over a field, this means one of them is a nonnega
 the other). -/
 def SameRay (v₁ v₂ : M) : Prop :=
   v₁ = 0 ∨ v₂ = 0 ∨ ∃ r₁ r₂ : R, 0 < r₁ ∧ 0 < r₂ ∧ r₁ • v₁ = r₂ • v₂
-#align same_ray SameRay
 
 variable {R}
 
@@ -50,52 +47,43 @@ variable {x y z : M}
 @[simp]
 theorem zero_left (y : M) : SameRay R 0 y :=
   Or.inl rfl
-#align same_ray.zero_left SameRay.zero_left
 
 @[simp]
 theorem zero_right (x : M) : SameRay R x 0 :=
   Or.inr <| Or.inl rfl
-#align same_ray.zero_right SameRay.zero_right
 
 @[nontriviality]
 theorem of_subsingleton [Subsingleton M] (x y : M) : SameRay R x y := by
   rw [Subsingleton.elim x 0]
   exact zero_left _
-#align same_ray.of_subsingleton SameRay.of_subsingleton
 
 @[nontriviality]
 theorem of_subsingleton' [Subsingleton R] (x y : M) : SameRay R x y :=
   haveI := Module.subsingleton R M
   of_subsingleton x y
-#align same_ray.of_subsingleton' SameRay.of_subsingleton'
 
 /-- `SameRay` is reflexive. -/
 @[refl]
 theorem refl (x : M) : SameRay R x x := by
   nontriviality R
   exact Or.inr (Or.inr <| ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
-#align same_ray.refl SameRay.refl
 
 protected theorem rfl : SameRay R x x :=
   refl _
-#align same_ray.rfl SameRay.rfl
 
 /-- `SameRay` is symmetric. -/
 @[symm]
 theorem symm (h : SameRay R x y) : SameRay R y x :=
   (or_left_comm.1 h).imp_right <| Or.imp_right fun ⟨r₁, r₂, h₁, h₂, h⟩ => ⟨r₂, r₁, h₂, h₁, h.symm⟩
-#align same_ray.symm SameRay.symm
 
 /-- If `x` and `y` are nonzero vectors on the same ray, then there exist positive numbers `r₁ r₂`
 such that `r₁ • x = r₂ • y`. -/
 theorem exists_pos (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ r₁ r₂ : R, 0 < r₁ ∧ 0 < r₂ ∧ r₁ • x = r₂ • y :=
   (h.resolve_left hx).resolve_left hy
-#align same_ray.exists_pos SameRay.exists_pos
 
 theorem sameRay_comm : SameRay R x y ↔ SameRay R y x :=
   ⟨SameRay.symm, SameRay.symm⟩
-#align same_ray_comm SameRay.sameRay_comm
 
 /-- `SameRay` is transitive unless the vector in the middle is zero and both other vectors are
 nonzero. -/
@@ -109,7 +97,6 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   rcases hyz.exists_pos hy hz with ⟨r₃, r₄, hr₃, hr₄, h₂⟩
   refine Or.inr (Or.inr <| ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
-#align same_ray.trans SameRay.trans
 
 variable {S : Type*} [OrderedCommSemiring S] [Algebra S R] [Module S M] [SMulPosMono S R]
   [IsScalarTower S R M] {a : S}
@@ -121,49 +108,40 @@ lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) :=
     exact zero_right _
   · refine Or.inr $ Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
     rw [algebraMap_smul, one_smul]
-#align same_ray_nonneg_smul_right SameRay.sameRay_nonneg_smul_right
 
 /-- A nonnegative multiple of a vector is in the same ray as that vector. -/
 lemma sameRay_nonneg_smul_left (v : M) (ha : 0 ≤ a) : SameRay R (a • v) v :=
   (sameRay_nonneg_smul_right v ha).symm
-#align same_ray_nonneg_smul_left SameRay.sameRay_nonneg_smul_left
 
 /-- A vector is in the same ray as a positive multiple of itself. -/
 lemma sameRay_pos_smul_right (v : M) (ha : 0 < a) : SameRay R v (a • v) :=
   sameRay_nonneg_smul_right v ha.le
-#align same_ray_pos_smul_right SameRay.sameRay_pos_smul_right
 
 /-- A positive multiple of a vector is in the same ray as that vector. -/
 lemma sameRay_pos_smul_left (v : M) (ha : 0 < a) : SameRay R (a • v) v :=
   sameRay_nonneg_smul_left v ha.le
-#align same_ray_pos_smul_left SameRay.sameRay_pos_smul_left
 
 /-- A vector is in the same ray as a nonnegative multiple of one it is in the same ray as. -/
 lemma nonneg_smul_right (h : SameRay R x y) (ha : 0 ≤ a) : SameRay R x (a • y) :=
   h.trans (sameRay_nonneg_smul_right y ha) fun hy => Or.inr <| by rw [hy, smul_zero]
-#align same_ray.nonneg_smul_right SameRay.nonneg_smul_right
 
 /-- A nonnegative multiple of a vector is in the same ray as one it is in the same ray as. -/
 lemma nonneg_smul_left (h : SameRay R x y) (ha : 0 ≤ a) : SameRay R (a • x) y :=
   (h.symm.nonneg_smul_right ha).symm
-#align same_ray.nonneg_smul_left SameRay.nonneg_smul_left
 
 /-- A vector is in the same ray as a positive multiple of one it is in the same ray as. -/
 theorem pos_smul_right (h : SameRay R x y) (ha : 0 < a) : SameRay R x (a • y) :=
   h.nonneg_smul_right ha.le
-#align same_ray.pos_smul_right SameRay.pos_smul_right
 
 /-- A positive multiple of a vector is in the same ray as one it is in the same ray as. -/
 theorem pos_smul_left (h : SameRay R x y) (hr : 0 < a) : SameRay R (a • x) y :=
   h.nonneg_smul_left hr.le
-#align same_ray.pos_smul_left SameRay.pos_smul_left
 
 /-- If two vectors are on the same ray then they remain so after applying a linear map. -/
 theorem map (f : M →ₗ[R] N) (h : SameRay R x y) : SameRay R (f x) (f y) :=
   (h.imp fun hx => by rw [hx, map_zero]) <|
     Or.imp (fun hy => by rw [hy, map_zero]) fun ⟨r₁, r₂, hr₁, hr₂, h⟩ =>
       ⟨r₁, r₂, hr₁, hr₂, by rw [← f.map_smul, ← f.map_smul, h]⟩
-#align same_ray.map SameRay.map
 
 /-- The images of two vectors under an injective linear map are on the same ray if and only if the
 original vectors are on the same ray. -/
@@ -172,21 +150,18 @@ theorem _root_.Function.Injective.sameRay_map_iff
     {f : F} (hf : Function.Injective f) :
     SameRay R (f x) (f y) ↔ SameRay R x y := by
   simp only [SameRay, map_zero, ← hf.eq_iff, map_smul]
-#align function.injective.same_ray_map_iff Function.Injective.sameRay_map_iff
 
 /-- The images of two vectors under a linear equivalence are on the same ray if and only if the
 original vectors are on the same ray. -/
 @[simp]
 theorem sameRay_map_iff (e : M ≃ₗ[R] N) : SameRay R (e x) (e y) ↔ SameRay R x y :=
   Function.Injective.sameRay_map_iff (EquivLike.injective e)
-#align same_ray_map_iff SameRay.sameRay_map_iff
 
 /-- If two vectors are on the same ray then both scaled by the same action are also on the same
 ray. -/
 theorem smul {S : Type*} [Monoid S] [DistribMulAction S M] [SMulCommClass R S M]
     (h : SameRay R x y) (s : S) : SameRay R (s • x) (s • y) :=
   h.map (s • (LinearMap.id : M →ₗ[R] M))
-#align same_ray.smul SameRay.smul
 
 /-- If `x` and `y` are on the same ray as `z`, then so is `x + y`. -/
 theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z := by
@@ -199,12 +174,10 @@ theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z
   · apply_rules [add_pos, mul_pos]
   · simp only [mul_smul, smul_add, add_smul, ← Hx, ← Hy]
     rw [smul_comm]
-#align same_ray.add_left SameRay.add_left
 
 /-- If `y` and `z` are on the same ray as `x`, then so is `y + z`. -/
 theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z) :=
   (hy.symm.add_left hz.symm).symm
-#align same_ray.add_right SameRay.add_right
 
 end SameRay
 
@@ -215,12 +188,10 @@ set_option linter.unusedVariables false in
 @[nolint unusedArguments]
 def RayVector (R M : Type*) [Zero M] :=
   { v : M // v ≠ 0 }
-#align ray_vector RayVector
 
 -- Porting note: Made Coe into CoeOut so it's not dangerous anymore
 instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
-#align ray_vector.has_coe RayVector.coe
 instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   let ⟨x, hx⟩ := exists_ne (0 : M)
   ⟨⟨x, hx⟩⟩
@@ -238,14 +209,12 @@ instance RayVector.Setoid : Setoid (RayVector R M) where
 -- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
 def Module.Ray :=
   Quotient (RayVector.Setoid R M)
-#align module.ray Module.Ray
 
 variable {R M}
 
 /-- Equivalence of nonzero vectors, in terms of `SameRay`. -/
 theorem equiv_iff_sameRay {v₁ v₂ : RayVector R M} : v₁ ≈ v₂ ↔ SameRay R (v₁ : M) v₂ :=
   Iff.rfl
-#align equiv_iff_same_ray equiv_iff_sameRay
 
 variable (R)
 
@@ -253,13 +222,11 @@ variable (R)
 /-- The ray given by a nonzero vector. -/
 def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
   ⟦⟨v, h⟩⟧
-#align ray_of_ne_zero rayOfNeZero
 
 /-- An induction principle for `Module.Ray`, used as `induction x using Module.Ray.ind`. -/
 theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
     (x : Module.Ray R M) : C x :=
   Quotient.ind (Subtype.rec <| h) x
-#align module.ray.ind Module.Ray.ind
 
 variable {R}
 
@@ -271,40 +238,33 @@ satisfy `SameRay`. -/
 theorem ray_eq_iff {v₁ v₂ : M} (hv₁ : v₁ ≠ 0) (hv₂ : v₂ ≠ 0) :
     rayOfNeZero R _ hv₁ = rayOfNeZero R _ hv₂ ↔ SameRay R v₁ v₂ :=
   Quotient.eq'
-#align ray_eq_iff ray_eq_iff
 
 /-- The ray given by a positive multiple of a nonzero vector. -/
 @[simp]
 theorem ray_pos_smul {v : M} (h : v ≠ 0) {r : R} (hr : 0 < r) (hrv : r • v ≠ 0) :
     rayOfNeZero R (r • v) hrv = rayOfNeZero R v h :=
   (ray_eq_iff _ _).2 <| SameRay.sameRay_pos_smul_left v hr
-#align ray_pos_smul ray_pos_smul
 
 /-- An equivalence between modules implies an equivalence between ray vectors. -/
 def RayVector.mapLinearEquiv (e : M ≃ₗ[R] N) : RayVector R M ≃ RayVector R N :=
   Equiv.subtypeEquiv e.toEquiv fun _ => e.map_ne_zero_iff.symm
-#align ray_vector.map_linear_equiv RayVector.mapLinearEquiv
 
 /-- An equivalence between modules implies an equivalence between rays. -/
 def Module.Ray.map (e : M ≃ₗ[R] N) : Module.Ray R M ≃ Module.Ray R N :=
   Quotient.congr (RayVector.mapLinearEquiv e) fun _ _=> (SameRay.sameRay_map_iff _).symm
-#align module.ray.map Module.Ray.map
 
 @[simp]
 theorem Module.Ray.map_apply (e : M ≃ₗ[R] N) (v : M) (hv : v ≠ 0) :
     Module.Ray.map e (rayOfNeZero _ v hv) = rayOfNeZero _ (e v) (e.map_ne_zero_iff.2 hv) :=
   rfl
-#align module.ray.map_apply Module.Ray.map_apply
 
 @[simp]
 theorem Module.Ray.map_refl : (Module.Ray.map <| LinearEquiv.refl R M) = Equiv.refl _ :=
   Equiv.ext <| Module.Ray.ind R fun _ _ => rfl
-#align module.ray.map_refl Module.Ray.map_refl
 
 @[simp]
 theorem Module.Ray.map_symm (e : M ≃ₗ[R] N) : (Module.Ray.map e).symm = Module.Ray.map e.symm :=
   rfl
-#align module.ray.map_symm Module.Ray.map_symm
 
 section Action
 
@@ -331,13 +291,11 @@ instance : MulAction G (Module.Ray R M) where
 theorem Module.Ray.linearEquiv_smul_eq_map (e : M ≃ₗ[R] M) (v : Module.Ray R M) :
     e • v = Module.Ray.map e v :=
   rfl
-#align module.ray.linear_equiv_smul_eq_map Module.Ray.linearEquiv_smul_eq_map
 
 @[simp]
 theorem smul_rayOfNeZero (g : G) (v : M) (hv) :
     g • rayOfNeZero R v hv = rayOfNeZero R (g • v) ((smul_ne_zero_iff_ne _).2 hv) :=
   rfl
-#align smul_ray_of_ne_zero smul_rayOfNeZero
 
 end Action
 
@@ -349,35 +307,29 @@ theorem units_smul_of_pos (u : Rˣ) (hu : 0 < (u.1 : R)) (v : Module.Ray R M) : 
   induction v using Module.Ray.ind
   rw [smul_rayOfNeZero, ray_eq_iff]
   exact SameRay.sameRay_pos_smul_left _ hu
-#align module.ray.units_smul_of_pos Module.Ray.units_smul_of_pos
 
 /-- An arbitrary `RayVector` giving a ray. -/
 def someRayVector (x : Module.Ray R M) : RayVector R M :=
   Quotient.out x
-#align module.ray.some_ray_vector Module.Ray.someRayVector
 
 /-- The ray of `someRayVector`. -/
 @[simp]
 theorem someRayVector_ray (x : Module.Ray R M) : (⟦x.someRayVector⟧ : Module.Ray R M) = x :=
   Quotient.out_eq _
-#align module.ray.some_ray_vector_ray Module.Ray.someRayVector_ray
 
 /-- An arbitrary nonzero vector giving a ray. -/
 def someVector (x : Module.Ray R M) : M :=
   x.someRayVector
-#align module.ray.some_vector Module.Ray.someVector
 
 /-- `someVector` is nonzero. -/
 @[simp]
 theorem someVector_ne_zero (x : Module.Ray R M) : x.someVector ≠ 0 :=
   x.someRayVector.property
-#align module.ray.some_vector_ne_zero Module.Ray.someVector_ne_zero
 
 /-- The ray of `someVector`. -/
 @[simp]
 theorem someVector_ray (x : Module.Ray R M) : rayOfNeZero R _ x.someVector_ne_zero = x :=
   (congr_arg _ (Subtype.coe_eta _ _) : _).trans x.out_eq
-#align module.ray.some_vector_ray Module.Ray.someVector_ray
 
 end Module.Ray
 
@@ -392,14 +344,10 @@ variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R 
 @[simp]
 theorem sameRay_neg_iff : SameRay R (-x) (-y) ↔ SameRay R x y := by
   simp only [SameRay, neg_eq_zero, smul_neg, neg_inj]
-#align same_ray_neg_iff sameRay_neg_iff
 
 alias ⟨SameRay.of_neg, SameRay.neg⟩ := sameRay_neg_iff
-#align same_ray.of_neg SameRay.of_neg
-#align same_ray.neg SameRay.neg
 
 theorem sameRay_neg_swap : SameRay R (-x) y ↔ SameRay R x (-y) := by rw [← sameRay_neg_iff, neg_neg]
-#align same_ray_neg_swap sameRay_neg_swap
 
 theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr : r < 0)
     (h : SameRay R x (r • x)) : x = 0 := by
@@ -409,14 +357,12 @@ theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr :
   · rw [← sub_eq_zero, smul_smul, ← sub_smul, smul_eq_zero] at h
     refine h.resolve_left (ne_of_gt <| sub_pos.2 ?_)
     exact (mul_neg_of_pos_of_neg hr₂ hr).trans hr₁
-#align eq_zero_of_same_ray_neg_smul_right eq_zero_of_sameRay_neg_smul_right
 
 /-- If a vector is in the same ray as its negation, that vector is zero. -/
 theorem eq_zero_of_sameRay_self_neg [NoZeroSMulDivisors R M] (h : SameRay R x (-x)) : x = 0 := by
   nontriviality M; haveI : Nontrivial R := Module.nontrivial R M
   refine eq_zero_of_sameRay_neg_smul_right (neg_lt_zero.2 (zero_lt_one' R)) ?_
   rwa [neg_one_smul]
-#align eq_zero_of_same_ray_self_neg eq_zero_of_sameRay_self_neg
 
 namespace RayVector
 
@@ -428,7 +374,6 @@ instance {R : Type*} : Neg (RayVector R M) :=
 @[simp, norm_cast]
 theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
   rfl
-#align ray_vector.coe_neg RayVector.coe_neg
 
 /-- Negating a nonzero vector twice produces the original vector. -/
 instance {R : Type*} : InvolutiveNeg (RayVector R M) where
@@ -439,7 +384,6 @@ instance {R : Type*} : InvolutiveNeg (RayVector R M) where
 @[simp]
 theorem equiv_neg_iff {v₁ v₂ : RayVector R M} : -v₁ ≈ -v₂ ↔ v₁ ≈ v₂ :=
   sameRay_neg_iff
-#align ray_vector.equiv_neg_iff RayVector.equiv_neg_iff
 
 end RayVector
 
@@ -454,7 +398,6 @@ instance : Neg (Module.Ray R M) :=
 theorem neg_rayOfNeZero (v : M) (h : v ≠ 0) :
     -rayOfNeZero R _ h = rayOfNeZero R (-v) (neg_ne_zero.2 h) :=
   rfl
-#align neg_ray_of_ne_zero neg_rayOfNeZero
 
 namespace Module.Ray
 
@@ -471,25 +414,21 @@ theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := 
   induction' x using Module.Ray.ind with x hx
   rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
-#align module.ray.ne_neg_self Module.Ray.ne_neg_self
 
 theorem neg_units_smul (u : Rˣ) (v : Module.Ray R M) : -u • v = -(u • v) := by
   induction v using Module.Ray.ind
   simp only [smul_rayOfNeZero, Units.smul_def, Units.val_neg, neg_smul, neg_rayOfNeZero]
-#align module.ray.neg_units_smul Module.Ray.neg_units_smul
 
 -- Porting note: `(u.1 : R)` was `(u : R)`, CoeHead from R to Rˣ does not seem to work.
 /-- Scaling by a negative unit is negation. -/
 theorem units_smul_of_neg (u : Rˣ) (hu : u.1 < 0) (v : Module.Ray R M) : u • v = -v := by
   rw [← neg_inj, neg_neg, ← neg_units_smul, units_smul_of_pos]
   rwa [Units.val_neg, Right.neg_pos_iff]
-#align module.ray.units_smul_of_neg Module.Ray.units_smul_of_neg
 
 @[simp]
 protected theorem map_neg (f : M ≃ₗ[R] N) (v : Module.Ray R M) : map f (-v) = -map f v := by
   induction' v using Module.Ray.ind with g hg
   simp
-#align module.ray.map_neg Module.Ray.map_neg
 
 end Module.Ray
 
@@ -506,7 +445,6 @@ theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit ↥(U
     SameRay R v₁ v₂ := by
   rcases h with ⟨⟨r, hr : 0 < r.1⟩, rfl : r • v₂ = v₁⟩
   exact SameRay.sameRay_pos_smul_left _ hr
-#align same_ray_of_mem_orbit sameRay_of_mem_orbit
 
 /-- Scaling by an inverse unit is the same as scaling by itself. -/
 @[simp]
@@ -515,7 +453,6 @@ theorem units_inv_smul (u : Rˣ) (v : Module.Ray R M) : u⁻¹ • v = u • v :
   calc
     u⁻¹ • v = (u * u) • u⁻¹ • v := Eq.symm <| (u⁻¹ • v).units_smul_of_pos _ (by exact this)
     _ = u • v := by rw [mul_smul, smul_inv_smul]
-#align units_inv_smul units_inv_smul
 
 section
 
@@ -525,59 +462,49 @@ variable [NoZeroSMulDivisors R M]
 theorem sameRay_smul_right_iff {v : M} {r : R} : SameRay R v (r • v) ↔ 0 ≤ r ∨ v = 0 :=
   ⟨fun hrv => or_iff_not_imp_left.2 fun hr => eq_zero_of_sameRay_neg_smul_right (not_le.1 hr) hrv,
     or_imp.2 ⟨SameRay.sameRay_nonneg_smul_right v, fun h => h.symm ▸ SameRay.zero_left _⟩⟩
-#align same_ray_smul_right_iff sameRay_smul_right_iff
 
 /-- A nonzero vector is in the same ray as a multiple of itself if and only if that multiple
 is positive. -/
 theorem sameRay_smul_right_iff_of_ne {v : M} (hv : v ≠ 0) {r : R} (hr : r ≠ 0) :
     SameRay R v (r • v) ↔ 0 < r := by
   simp only [sameRay_smul_right_iff, hv, or_false_iff, hr.symm.le_iff_lt]
-#align same_ray_smul_right_iff_of_ne sameRay_smul_right_iff_of_ne
 
 @[simp]
 theorem sameRay_smul_left_iff {v : M} {r : R} : SameRay R (r • v) v ↔ 0 ≤ r ∨ v = 0 :=
   SameRay.sameRay_comm.trans sameRay_smul_right_iff
-#align same_ray_smul_left_iff sameRay_smul_left_iff
 
 /-- A multiple of a nonzero vector is in the same ray as that vector if and only if that multiple
 is positive. -/
 theorem sameRay_smul_left_iff_of_ne {v : M} (hv : v ≠ 0) {r : R} (hr : r ≠ 0) :
     SameRay R (r • v) v ↔ 0 < r :=
   SameRay.sameRay_comm.trans (sameRay_smul_right_iff_of_ne hv hr)
-#align same_ray_smul_left_iff_of_ne sameRay_smul_left_iff_of_ne
 
 @[simp]
 theorem sameRay_neg_smul_right_iff {v : M} {r : R} : SameRay R (-v) (r • v) ↔ r ≤ 0 ∨ v = 0 := by
   rw [← sameRay_neg_iff, neg_neg, ← neg_smul, sameRay_smul_right_iff, neg_nonneg]
-#align same_ray_neg_smul_right_iff sameRay_neg_smul_right_iff
 
 theorem sameRay_neg_smul_right_iff_of_ne {v : M} {r : R} (hv : v ≠ 0) (hr : r ≠ 0) :
     SameRay R (-v) (r • v) ↔ r < 0 := by
   simp only [sameRay_neg_smul_right_iff, hv, or_false_iff, hr.le_iff_lt]
-#align same_ray_neg_smul_right_iff_of_ne sameRay_neg_smul_right_iff_of_ne
 
 @[simp]
 theorem sameRay_neg_smul_left_iff {v : M} {r : R} : SameRay R (r • v) (-v) ↔ r ≤ 0 ∨ v = 0 :=
   SameRay.sameRay_comm.trans sameRay_neg_smul_right_iff
-#align same_ray_neg_smul_left_iff sameRay_neg_smul_left_iff
 
 theorem sameRay_neg_smul_left_iff_of_ne {v : M} {r : R} (hv : v ≠ 0) (hr : r ≠ 0) :
     SameRay R (r • v) (-v) ↔ r < 0 :=
   SameRay.sameRay_comm.trans <| sameRay_neg_smul_right_iff_of_ne hv hr
-#align same_ray_neg_smul_left_iff_of_ne sameRay_neg_smul_left_iff_of_ne
 
 -- Porting note: `(u.1 : R)` was `(u : R)`, CoeHead from R to Rˣ does not seem to work.
 @[simp]
 theorem units_smul_eq_self_iff {u : Rˣ} {v : Module.Ray R M} : u • v = v ↔ 0 < u.1 := by
   induction' v using Module.Ray.ind with v hv
   simp only [smul_rayOfNeZero, ray_eq_iff, Units.smul_def, sameRay_smul_left_iff_of_ne hv u.ne_zero]
-#align units_smul_eq_self_iff units_smul_eq_self_iff
 
 @[simp]
 theorem units_smul_eq_neg_iff {u : Rˣ} {v : Module.Ray R M} : u • v = -v ↔ u.1 < 0 := by
   rw [← neg_inj, neg_neg, ← Module.Ray.neg_units_smul, units_smul_eq_self_iff, Units.val_neg,
     neg_pos]
-#align units_smul_eq_neg_iff units_smul_eq_neg_iff
 
 /-- Two vectors are in the same ray, or the first is in the same ray as the negation of the
 second, if and only if they are not linearly independent. -/
@@ -622,7 +549,6 @@ theorem sameRay_or_sameRay_neg_iff_not_linearIndependent {x y : M} :
       simp [hm1, hx, hm0.ne.symm] at hm
     · refine Or.inr (Or.inr (Or.inr ⟨m 0, m 1, hm0, hm1, ?_⟩))
       rwa [smul_neg]
-#align same_ray_or_same_ray_neg_iff_not_linear_independent sameRay_or_sameRay_neg_iff_not_linearIndependent
 
 /-- Two vectors are in the same ray, or they are nonzero and the first is in the same ray as the
 negation of the second, if and only if they are not linearly independent. -/
@@ -631,7 +557,6 @@ theorem sameRay_or_ne_zero_and_sameRay_neg_iff_not_linearIndependent {x y : M} :
   rw [← sameRay_or_sameRay_neg_iff_not_linearIndependent]
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0 <;> simp [hx, hy]
-#align same_ray_or_ne_zero_and_same_ray_neg_iff_not_linear_independent sameRay_or_ne_zero_and_sameRay_neg_iff_not_linearIndependent
 
 end
 
@@ -646,12 +571,10 @@ theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ r : R, 0 < r ∧ r • x = y :=
   let ⟨r₁, r₂, hr₁, hr₂, h⟩ := h.exists_pos hx hy
   ⟨r₂⁻¹ * r₁, mul_pos (inv_pos.2 hr₂) hr₁, by rw [mul_smul, h, inv_smul_smul₀ hr₂.ne']⟩
-#align same_ray.exists_pos_left SameRay.exists_pos_left
 
 theorem exists_pos_right (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ r : R, 0 < r ∧ x = r • y :=
   (h.symm.exists_pos_left hy hx).imp fun _ => And.imp_right Eq.symm
-#align same_ray.exists_pos_right SameRay.exists_pos_right
 
 /-- If a vector `v₂` is on the same ray as a nonzero vector `v₁`, then it is equal to `c • v₁` for
 some nonnegative `c`. -/
@@ -659,13 +582,11 @@ theorem exists_nonneg_left (h : SameRay R x y) (hx : x ≠ 0) : ∃ r : R, 0 ≤
   obtain rfl | hy := eq_or_ne y 0
   · exact ⟨0, le_rfl, zero_smul _ _⟩
   · exact (h.exists_pos_left hx hy).imp fun _ => And.imp_left le_of_lt
-#align same_ray.exists_nonneg_left SameRay.exists_nonneg_left
 
 /-- If a vector `v₁` is on the same ray as a nonzero vector `v₂`, then it is equal to `c • v₂` for
 some nonnegative `c`. -/
 theorem exists_nonneg_right (h : SameRay R x y) (hy : y ≠ 0) : ∃ r : R, 0 ≤ r ∧ x = r • y :=
   (h.symm.exists_nonneg_left hy).imp fun _ => And.imp_right Eq.symm
-#align same_ray.exists_nonneg_right SameRay.exists_nonneg_right
 
 /-- If vectors `v₁` and `v₂` are on the same ray, then for some nonnegative `a b`, `a + b = 1`, we
 have `v₁ = a • (v₁ + v₂)` and `v₂ = b • (v₁ + v₂)`. -/
@@ -682,14 +603,12 @@ theorem exists_eq_smul_add (h : SameRay R v₁ v₂) :
     · rw [← add_div, add_comm, div_self h₁₂.ne']
     · rw [div_eq_inv_mul, mul_smul, smul_add, ← H, ← add_smul, add_comm r₂, inv_smul_smul₀ h₁₂.ne']
     · rw [div_eq_inv_mul, mul_smul, smul_add, H, ← add_smul, add_comm r₂, inv_smul_smul₀ h₁₂.ne']
-#align same_ray.exists_eq_smul_add SameRay.exists_eq_smul_add
 
 /-- If vectors `v₁` and `v₂` are on the same ray, then they are nonnegative multiples of the same
 vector. Actually, this vector can be assumed to be `v₁ + v₂`, see `SameRay.exists_eq_smul_add`. -/
 theorem exists_eq_smul (h : SameRay R v₁ v₂) :
     ∃ (u : M) (a b : R), 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ v₁ = a • u ∧ v₂ = b • u :=
   ⟨v₁ + v₂, h.exists_eq_smul_add⟩
-#align same_ray.exists_eq_smul SameRay.exists_eq_smul
 
 end SameRay
 
@@ -703,7 +622,6 @@ theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :
   refine ⟨fun h => ?_, fun h => h.exists_pos_left hx hy⟩
   rcases h with ⟨r, hr, rfl⟩
   exact SameRay.sameRay_pos_smul_right x hr
-#align exists_pos_left_iff_same_ray exists_pos_left_iff_sameRay
 
 theorem exists_pos_left_iff_sameRay_and_ne_zero (hx : x ≠ 0) :
     (∃ r : R, 0 < r ∧ r • x = y) ↔ SameRay R x y ∧ y ≠ 0 := by
@@ -712,34 +630,29 @@ theorem exists_pos_left_iff_sameRay_and_ne_zero (hx : x ≠ 0) :
     simp [hx, hr.le, hr.ne']
   · rintro ⟨hxy, hy⟩
     exact (exists_pos_left_iff_sameRay hx hy).2 hxy
-#align exists_pos_left_iff_same_ray_and_ne_zero exists_pos_left_iff_sameRay_and_ne_zero
 
 theorem exists_nonneg_left_iff_sameRay (hx : x ≠ 0) :
     (∃ r : R, 0 ≤ r ∧ r • x = y) ↔ SameRay R x y := by
   refine ⟨fun h => ?_, fun h => h.exists_nonneg_left hx⟩
   rcases h with ⟨r, hr, rfl⟩
   exact SameRay.sameRay_nonneg_smul_right x hr
-#align exists_nonneg_left_iff_same_ray exists_nonneg_left_iff_sameRay
 
 theorem exists_pos_right_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :
     (∃ r : R, 0 < r ∧ x = r • y) ↔ SameRay R x y := by
   rw [SameRay.sameRay_comm]
   simp_rw [eq_comm (a := x)]
   exact exists_pos_left_iff_sameRay hy hx
-#align exists_pos_right_iff_same_ray exists_pos_right_iff_sameRay
 
 theorem exists_pos_right_iff_sameRay_and_ne_zero (hy : y ≠ 0) :
     (∃ r : R, 0 < r ∧ x = r • y) ↔ SameRay R x y ∧ x ≠ 0 := by
   rw [SameRay.sameRay_comm]
   simp_rw [eq_comm (a := x)]
   exact exists_pos_left_iff_sameRay_and_ne_zero hy
-#align exists_pos_right_iff_same_ray_and_ne_zero exists_pos_right_iff_sameRay_and_ne_zero
 
 theorem exists_nonneg_right_iff_sameRay (hy : y ≠ 0) :
     (∃ r : R, 0 ≤ r ∧ x = r • y) ↔ SameRay R x y := by
   rw [SameRay.sameRay_comm]
   simp_rw [eq_comm (a := x)]
   exact exists_nonneg_left_iff_sameRay (R := R) hy
-#align exists_nonneg_right_iff_same_ray exists_nonneg_right_iff_sameRay
 
 end LinearOrderedField

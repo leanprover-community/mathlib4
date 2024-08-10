@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
-#align_import category_theory.monoidal.rigid.functor_category from "leanprover-community/mathlib"@"a6275694804455fe8995bd530e86b67ddab5cff1"
-
 /-!
 # Functors from a groupoid into a right/left rigid category form a right/left rigid category.
 
@@ -47,10 +45,8 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
               id_tensorHom, tensorHom_id, ← Category.assoc,
               coevaluation_comp_rightAdjointMate, Category.assoc, ← comp_whiskerRight,
               IsIso.inv_hom_id, id_whiskerRight, Category.comp_id] } }
-#align category_theory.monoidal.functor_has_right_dual CategoryTheory.Monoidal.functorHasRightDual
 
 instance rightRigidFunctorCategory [RightRigidCategory D] : RightRigidCategory (C ⥤ D) where
-#align category_theory.monoidal.right_rigid_functor_category CategoryTheory.Monoidal.rightRigidFunctorCategory
 
 instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F where
   leftDual :=
@@ -68,12 +64,9 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
           naturality := fun X Y f => by
             dsimp
             simp [tensorHom_def, coevaluation_comp_leftAdjointMate_assoc] } }
-#align category_theory.monoidal.functor_has_left_dual CategoryTheory.Monoidal.functorHasLeftDual
 
 instance leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where
-#align category_theory.monoidal.left_rigid_functor_category CategoryTheory.Monoidal.leftRigidFunctorCategory
 
 instance rigidFunctorCategory [RigidCategory D] : RigidCategory (C ⥤ D) where
-#align category_theory.monoidal.rigid_functor_category CategoryTheory.Monoidal.rigidFunctorCategory
 
 end CategoryTheory.Monoidal

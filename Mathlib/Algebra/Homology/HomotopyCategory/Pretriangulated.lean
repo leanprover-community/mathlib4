@@ -32,7 +32,9 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
-variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+variable {C D : Type*} [Category C] [Category D]
+  [Preadditive C] [HasBinaryBiproducts C]
+  [Preadditive D] [HasBinaryBiproducts D]
   {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 namespace CochainComplex
@@ -344,6 +346,55 @@ noncomputable def shiftTrianglehIso (n : ℤ) :
 
 end Shift
 
+
+section
+
+open Preadditive
+
+variable (G : C ⥤ D) [G.Additive]
+
+lemma map_δ :
+    (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangle φ).mor₃ ≫
+      NatTrans.app ((Functor.mapHomologicalComplex G (ComplexShape.up ℤ)).commShiftIso  1).hom K =
+    (mapHomologicalComplexIso φ G).hom ≫
+      (triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).mor₃ := by
+  ext n
+  dsimp [mapHomologicalComplexIso]
+  rw [mapHomologicalComplexXIso_eq φ G n (n+1) rfl, mapHomologicalComplexXIso'_hom]
+  simp only [Functor.mapHomologicalComplex_obj_X, add_comp, assoc, inl_v_triangle_mor₃_f,
+    shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv,
+    comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero, add_zero]
+  dsimp [triangle]
+  rw [Cochain.rightShift_v _ 1 0 (by omega) n n (by omega) (n + 1) (by omega)]
+  simp
+
+/-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
+additive functor, then the image by `G` of the triangle `triangle φ` identifies to
+the triangle associated to the image of `φ` by `G`. -/
+noncomputable def mapTriangleIso :
+    (G.mapHomologicalComplex (ComplexShape.up ℤ)).mapTriangle.obj (triangle φ) ≅
+      triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) := by
+  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapHomologicalComplexIso φ G)
+    (by aesop_cat) ?_ ?_
+  · dsimp
+    rw [map_inr, id_comp]
+  · dsimp
+    simp only [CategoryTheory.Functor.map_id, comp_id, map_δ]
+
+/-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
+additive functor, then the image by `G` of the triangle `triangleh φ` identifies to
+the triangle associated to the image of `φ` by `G`. -/
+noncomputable def mapTrianglehIso :
+    (G.mapHomotopyCategory (ComplexShape.up ℤ)).mapTriangle.obj (triangleh φ) ≅
+      triangleh ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) :=
+  (Functor.mapTriangleCompIso _ _).symm.app _ ≪≫
+    (Functor.mapTriangleIso (G.mapHomotopyCategoryFactors (ComplexShape.up ℤ))).app _ ≪≫
+    (Functor.mapTriangleCompIso _ _).app _ ≪≫
+    (HomotopyCategory.quotient D (ComplexShape.up ℤ)).mapTriangle.mapIso
+      (CochainComplex.mappingCone.mapTriangleIso φ G)
+
+end
+
 end mappingCone
 
 end CochainComplex
@@ -369,6 +420,7 @@ lemma isomorphic_distinguished (T₁ : Triangle (HomotopyCategory C (ComplexShap
   obtain ⟨X, Y, f, ⟨e'⟩⟩ := hT₁
   exact ⟨X, Y, f, ⟨e ≪≫ e'⟩⟩
 
+variable [HasZeroObject C] in
 lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) :
     Pretriangulated.contractibleTriangle X ∈ distinguishedTriangles C := by
   obtain ⟨X⟩ := X
@@ -440,6 +492,8 @@ lemma complete_distinguished_triangle_morphism
 
 end Pretriangulated
 
+variable [HasZeroObject C]
+
 instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   distinguishedTriangles := Pretriangulated.distinguishedTriangles C
   isomorphic_distinguished := Pretriangulated.isomorphic_distinguished
@@ -454,5 +508,14 @@ variable {C}
 lemma mappingCone_triangleh_distinguished {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
     CochainComplex.mappingCone.triangleh f ∈ distTriang (HomotopyCategory _ _) :=
   ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
+variable [HasZeroObject D]
+
+instance (G : C ⥤ D) [G.Additive] :
+    (G.mapHomotopyCategory (ComplexShape.up ℤ)).IsTriangulated where
+  map_distinguished := by
+    rintro T ⟨K, L, f, ⟨e⟩⟩
+    exact ⟨_, _, _, ⟨(G.mapHomotopyCategory (ComplexShape.up ℤ)).mapTriangle.mapIso e ≪≫
+      CochainComplex.mappingCone.mapTrianglehIso f G⟩⟩
 
 end HomotopyCategory

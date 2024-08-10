@@ -8,8 +8,6 @@ import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Order.Hom.Basic
 
-#align_import algebra.order.sub.basic from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
-
 /-!
 # Additional results about ordered Subtraction
 
@@ -26,17 +24,14 @@ theorem AddHom.le_map_tsub [Preorder β] [Add β] [Sub β] [OrderedSub β] (f : 
     (hf : Monotone f) (a b : α) : f a - f b ≤ f (a - b) := by
   rw [tsub_le_iff_right, ← f.map_add]
   exact hf le_tsub_add
-#align add_hom.le_map_tsub AddHom.le_map_tsub
 
 theorem le_mul_tsub {R : Type*} [Distrib R] [Preorder R] [Sub R] [OrderedSub R]
     [CovariantClass R R (· * ·) (· ≤ ·)] {a b c : R} : a * b - a * c ≤ a * (b - c) :=
   (AddHom.mulLeft a).le_map_tsub (monotone_id.const_mul' a) _ _
-#align le_mul_tsub le_mul_tsub
 
 theorem le_tsub_mul {R : Type*} [CommSemiring R] [Preorder R] [Sub R] [OrderedSub R]
     [CovariantClass R R (· * ·) (· ≤ ·)] {a b c : R} : a * c - b * c ≤ (a - b) * c := by
   simpa only [mul_comm _ c] using le_mul_tsub
-#align le_tsub_mul le_tsub_mul
 
 end Add
 
@@ -49,7 +44,6 @@ theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub
   refine le_antisymm ?_ (e_add.toAddHom.le_map_tsub e.monotone a b)
   suffices e (e.symm (e a) - e.symm (e b)) ≤ e (e.symm (e a - e b)) by simpa
   exact e.monotone (e_add.symm.toAddHom.le_map_tsub e.symm.monotone _ _)
-#align order_iso.map_tsub OrderIso.map_tsub
 
 /-! ### Preorder -/
 
@@ -62,6 +56,5 @@ variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 theorem AddMonoidHom.le_map_tsub [Preorder β] [AddCommMonoid β] [Sub β] [OrderedSub β] (f : α →+ β)
     (hf : Monotone f) (a b : α) : f a - f b ≤ f (a - b) :=
   f.toAddHom.le_map_tsub hf a b
-#align add_monoid_hom.le_map_tsub AddMonoidHom.le_map_tsub
 
 end Preorder

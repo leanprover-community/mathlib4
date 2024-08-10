@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Skeletal
 
-#align_import category_theory.monoidal.skeleton from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # The monoid on the skeleton of a monoidal category
 
@@ -38,12 +36,10 @@ abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   one_mul X := hC ⟨λ_ X⟩
   mul_one X := hC ⟨ρ_ X⟩
   mul_assoc X Y Z := hC ⟨α_ X Y Z⟩
-#align category_theory.monoid_of_skeletal_monoidal CategoryTheory.monoidOfSkeletalMonoidal
 
 /-- If `C` is braided and skeletal, it is a commutative monoid. -/
 def commMonoidOfSkeletalBraided [BraidedCategory C] (hC : Skeletal C) : CommMonoid C :=
   { monoidOfSkeletalMonoidal hC with mul_comm := fun X Y => hC ⟨β_ X Y⟩ }
-#align category_theory.comm_monoid_of_skeletal_braided CategoryTheory.commMonoidOfSkeletalBraided
 
 namespace Skeleton
 

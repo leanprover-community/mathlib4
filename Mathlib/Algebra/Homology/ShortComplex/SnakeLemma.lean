@@ -78,7 +78,7 @@ structure SnakeInput where
   h₀ : IsLimit (KernelFork.ofι _ w₀₂)
   /-- `L₃` is the cokernel of `v₁₂ : L₁ ⟶ L₂`. -/
   h₃ : IsColimit (CokernelCofork.ofπ _ w₁₃)
-  L₁_exact  : L₁.Exact
+  L₁_exact : L₁.Exact
   epi_L₁_g : Epi L₁.g
   L₂_exact : L₂.Exact
   mono_L₂_f : Mono L₂.f
