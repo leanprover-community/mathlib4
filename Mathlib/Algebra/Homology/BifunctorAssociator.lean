@@ -163,8 +163,7 @@ lemma hom_ext {j : ι₄} {A : C₄}
       ι F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j h ≫ f =
         ι F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j h ≫ g) :
     f = g :=
-  GradedObject.mapBifunctor₁₂BifunctorMapObj_ext
-    (ρ₁₂ := (ComplexShape.ρ₁₂ c₁ c₂ c₃ c₁₂ c₄)) _ _ hfg
+  GradedObject.mapBifunctor₁₂BifunctorMapObj_ext hfg
 
 end
 
@@ -403,6 +402,78 @@ lemma d_eq (j j' : ι₄):
 end mapBifunctor₁₂
 
 namespace mapBifunctor₂₃
+
+section
+
+variable (F G₂₃)
+
+noncomputable def ι (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄)
+    (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j) :
+    (F.obj (K₁.X i₁)).obj ((G₂₃.obj (K₂.X i₂)).obj (K₃.X i₃)) ⟶
+      (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j :=
+  GradedObject.ιMapBifunctorBifunctor₂₃MapObj _ _ (ComplexShape.ρ₂₃ c₁ c₂ c₃ c₁₂ c₂₃ c₄)
+    _ _ _ _ _ _ _ h
+
+lemma ι_eq (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (i₂₃ : ι₂₃) (j : ι₄)
+    (h₂₃ : ComplexShape.π c₂ c₃ c₂₃ ⟨i₂, i₃⟩ = i₂₃)
+    (h : ComplexShape.π c₁ c₂₃ c₄ (i₁, i₂₃) = j) :
+    ι F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j
+      (by rw [← h, ← h₂₃, ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄]; rfl) =
+      (F.obj (K₁.X i₁)).map (ιMapBifunctor K₂ K₃ G₂₃ c₂₃ i₂ i₃ i₂₃ h₂₃) ≫
+        ιMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄ i₁ i₂₃ j h := by
+  subst h₂₃
+  rfl
+
+noncomputable def ιOrZero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) :
+    (F.obj (K₁.X i₁)).obj ((G₂₃.obj (K₂.X i₂)).obj (K₃.X i₃)) ⟶
+      (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j :=
+  if h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j then
+    ι F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j h
+  else 0
+
+lemma ιOrZero_eq (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄)
+    (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j) :
+    ιOrZero F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j =
+      ι F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j h := dif_pos h
+
+lemma ιOrZero_eq_zero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄)
+    (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) ≠ j) :
+    ιOrZero F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j = 0 := dif_neg h
+
+-- this is not an ext lemma because Lean cannot guess `c₁₂`
+variable {F G₂₃ K₁ K₂ K₃ c₂₃ c₄} in
+lemma hom_ext {j : ι₄} {A : C₄}
+    {f g : (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j ⟶ A}
+    (hfg : ∀ (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃)
+      (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j),
+      ι F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j h ≫ f =
+        ι F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j h ≫ g) :
+    f = g :=
+  GradedObject.mapBifunctorBifunctor₂₃MapObj_ext
+    (ρ₂₃ := ComplexShape.ρ₂₃ c₁ c₂ c₃ c₁₂ c₂₃ c₄) hfg
+
+end
+
+section
+
+variable {K₁ K₂ K₃ c₁₂ c₂₃ c₄}
+variable {j : ι₄} {A : C₄}
+  (f : ∀ (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (_ : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j),
+        (F.obj (K₁.X i₁)).obj ((G₂₃.obj (K₂.X i₂)).obj (K₃.X i₃)) ⟶ A)
+
+noncomputable def mapBifunctor₂₃Desc :
+    (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j ⟶ A :=
+  GradedObject.mapBifunctorBifunctor₂₃Desc (ρ₂₃ := ComplexShape.ρ₂₃ c₁ c₂ c₃ c₁₂ c₂₃ c₄) f
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctor₂₃Desc (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃)
+    (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j) :
+    ι F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j h ≫ mapBifunctor₂₃Desc f =
+      f i₁ i₂ i₃ h := by
+  apply GradedObject.ι_mapBifunctorBifunctor₂₃Desc
+
+end
+
 
 variable (F G₂₃)
 variable (j j' : ι₄)

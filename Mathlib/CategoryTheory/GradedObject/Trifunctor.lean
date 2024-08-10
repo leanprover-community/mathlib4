@@ -388,7 +388,7 @@ variable {j : J} {A : C₄}
 
 @[ext]
 lemma mapBifunctor₁₂BifunctorMapObj_ext {A : C₄}
-    (f g : mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j ⟶ A)
+    {f g : mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j ⟶ A}
     (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j),
       ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
         ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
@@ -554,12 +554,12 @@ lemma ι_mapBifunctorComp₂₃MapObjIso_inv (i₁ : I₁) (i₂ : I₂) (i₃ :
   CofanMapObjFun.inj_iso_hom
     (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j) _ h
 
-variable {X₁ X₂ X₃ F₁₂ G ρ₂₃}
+variable {X₁ X₂ X₃ F G₂₃ ρ₂₃}
 variable {j : J} {A : C₄}
 
 @[ext]
 lemma mapBifunctorBifunctor₂₃MapObj_ext
-    (f g : mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j ⟶ A)
+    {f g : mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j ⟶ A}
     (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j),
       ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
         ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
@@ -569,8 +569,6 @@ lemma mapBifunctorBifunctor₂₃MapObj_ext
 
 section
 
-variable {F}
-variable {G₂₃}
 variable
   (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂, i₃⟩ = j),
     (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ A)
