@@ -215,33 +215,6 @@ This is due to definition of `Real.log` for negative numbers. -/
 
 /-! ### Derivatives of binary entropy function -/
 
-section general
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {x : E}
-
-lemma DifferentiableAt.iff_comp_mul_add
-    {a b m : 𝕜} (hm : m ≠ 0) (f : 𝕜 → E) :
-    DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x => f (m * x + b)) (m⁻¹ * (a - b)):= by
-  constructor <;> intro h
-  · apply DifferentiableAt.comp
-    · have : (m * (m⁻¹ * (a - b)) + b) = a := by
-        simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.mul_inv_cancel_left,
-          sub_add_cancel]
-      rw [this]
-      exact h
-    · fun_prop
-  · have : f = (fun x ↦ f (m * x + b)) ∘ (fun x => m⁻¹ * (x - b)) := by
-      ext
-      simp only [Function.comp_apply]
-      field_simp
-    rw [this]
-    apply DifferentiableAt.comp _ ?_ (by fun_prop)
-    exact h
-
-end general
-
 lemma differentiableAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
     DifferentiableAt ℝ binaryEntropy x := by
   simp only [binaryEntropy_eq]
