@@ -39,8 +39,10 @@ open CategoryTheory Limits Functor Adjunction Opposite Category Functor
 namespace CategoryTheory.Sheaf
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Category A]
-  [HasWeakSheafify J A] [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-  {t : C} (ht : IsTerminal t)
+  [HasWeakSheafify J A] {t : C} (ht : IsTerminal t)
+
+section
+variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 
 /--
 A sheaf is discrete if it is a discrete object of the "underlying object" functor from the sheaf
@@ -76,17 +78,15 @@ lemma isDiscrete_iff_isIso_counit_app {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafS
 section Equivalence
 
 variable {D : Type*} [Category D] (K : GrothendieckTopology D) [HasWeakSheafify K A]
-variable (G : C ⥤ D) [G.Full] [G.Faithful]
+variable (G : C ⥤ D)
   [∀ (X : Dᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) A]
-  [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K] (ht' : IsTerminal (G.obj t))
+  [G.IsDenseSubsite J K] (ht' : IsTerminal (G.obj t))
 
-variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-
-open Functor.IsCoverDense
+open Functor.IsDenseSubsite
 
 noncomputable example :
     let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
     e.inverse ⋙ (sheafSections J A).obj (op t) ≅ (sheafSections K A).obj (op (G.obj t)) :=
   Iso.refl _
 
@@ -99,10 +99,10 @@ property of a sheaf of being a discrete object is invariant under equivalence of
 -/
 noncomputable def equivCommuteConstant :
     let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
     constantSheaf J A ⋙ e.functor ≅ constantSheaf K A :=
   let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
   (Adjunction.leftAdjointUniq ((constantSheafAdj J A ht).comp e.toAdjunction)
     (constantSheafAdj K A ht'))
 
@@ -115,10 +115,10 @@ property of a sheaf of being a discrete object is invariant under equivalence of
 -/
 noncomputable def equivCommuteConstant' :
     let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
     constantSheaf J A ≅ constantSheaf K A ⋙ e.inverse :=
   let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
   isoWhiskerLeft (constantSheaf J A) e.unitIso ≪≫
     isoWhiskerRight (equivCommuteConstant J A ht K G ht') e.inverse
 
@@ -128,7 +128,7 @@ categories.
 -/
 lemma isDiscrete_iff_of_equivalence (F : Sheaf K A) :
     let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
     haveI : (constantSheaf K A).Faithful :=
       Functor.Faithful.of_iso (equivCommuteConstant J A ht K G ht')
     haveI : (constantSheaf K A).Full :=
@@ -152,12 +152,11 @@ lemma isDiscrete_iff_of_equivalence (F : Sheaf K A) :
 
 end Equivalence
 
+end
+
 section Forget
 
-variable {B : Type*} [Category B] (U : A ⥤ B)
-  [HasWeakSheafify J A] [HasWeakSheafify J B]
-  [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-  [(constantSheaf J B).Faithful] [(constantSheaf J B).Full]
+variable {B : Type*} [Category B] (U : A ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J A)
 
 open Limits
@@ -262,6 +261,9 @@ lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
   have : IsIso f := by
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J B) _
   apply ReflectsIsomorphisms.reflects (sheafCompose J U) _
+
+variable [(constantSheaf J A).Full] [(constantSheaf J A).Faithful]
+  [(constantSheaf J B).Full] [(constantSheaf J B).Faithful]
 
 instance [h : F.IsDiscrete J ht] :
     ((sheafCompose J U).obj F).IsDiscrete J ht := by

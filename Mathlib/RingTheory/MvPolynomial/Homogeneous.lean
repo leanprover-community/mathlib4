@@ -80,26 +80,24 @@ lemma weightedHomogeneousSubmodule_one (n : ℕ) :
 variable {σ R}
 
 @[simp]
-theorem mem_homogeneousSubmodule [CommSemiring R] (n : ℕ) (p : MvPolynomial σ R) :
+theorem mem_homogeneousSubmodule (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ homogeneousSubmodule σ R n ↔ p.IsHomogeneous n := Iff.rfl
 
 variable (σ R)
 
 /-- While equal, the former has a convenient definitional reduction. -/
-theorem homogeneousSubmodule_eq_finsupp_supported [CommSemiring R] (n : ℕ) :
+theorem homogeneousSubmodule_eq_finsupp_supported (n : ℕ) :
     homogeneousSubmodule σ R n = Finsupp.supported _ R { d | d.degree = n } := by
   simp_rw [degree_eq_weight_one]
   exact weightedHomogeneousSubmodule_eq_finsupp_supported R 1 n
 
 variable {σ R}
 
-theorem homogeneousSubmodule_mul [CommSemiring R] (m n : ℕ) :
+theorem homogeneousSubmodule_mul (m n : ℕ) :
     homogeneousSubmodule σ R m * homogeneousSubmodule σ R n ≤ homogeneousSubmodule σ R (m + n) :=
   weightedHomogeneousSubmodule_mul 1 m n
 
 section
-
-variable [CommSemiring R]
 
 theorem isHomogeneous_monomial {d : σ →₀ ℕ} (r : R) {n : ℕ} (hn : d.degree = n) :
     IsHomogeneous (monomial d r) n := by
@@ -107,6 +105,11 @@ theorem isHomogeneous_monomial {d : σ →₀ ℕ} (r : R) {n : ℕ} (hn : d.deg
   exact isWeightedHomogeneous_monomial 1 d r hn
 
 variable (σ)
+
+theorem totalDegree_eq_zero_iff (p : MvPolynomial σ R) :
+    p.totalDegree = 0 ↔ ∀ (m : σ →₀ ℕ) (_ : m ∈ p.support) (x : σ), m x = 0 := by
+  rw [← weightedTotalDegree_one, weightedTotalDegree_eq_zero_iff _ p]
+  exact nonTorsionWeight_of (Function.const σ one_ne_zero)
 
 theorem totalDegree_zero_iff_isHomogeneous {p : MvPolynomial σ R} :
     p.totalDegree = 0 ↔ IsHomogeneous p 0 := by
@@ -138,7 +141,7 @@ end
 
 namespace IsHomogeneous
 
-variable [CommSemiring R] [CommSemiring S] {φ ψ : MvPolynomial σ R} {m n : ℕ}
+variable [CommSemiring S] {φ ψ : MvPolynomial σ R} {m n : ℕ}
 
 theorem coeff_eq_zero (hφ : IsHomogeneous φ n) {d : σ →₀ ℕ} (hd : d.degree ≠ n) :
     coeff d φ = 0 := by
@@ -238,16 +241,15 @@ lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
   apply Finset.sup_le
   intro d hd
   rw [mem_support_iff] at hd
-  rw [Finsupp.sum, ← hφ hd, weight_apply]
-  simp only [Pi.one_apply, smul_eq_mul, mul_one]
-  exact Nat.le.refl
+  simp_rw [Finsupp.sum, ← hφ hd, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum,
+    le_rfl]
 
 theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
   apply le_antisymm hφ.totalDegree_le
   obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
   simp only [← hφ hd, MvPolynomial.totalDegree, Finsupp.sum]
   replace hd := Finsupp.mem_support_iff.mpr hd
-  simp only [weight_apply,Pi.one_apply, smul_eq_mul, mul_one]
+  simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one]
   -- Porting note: Original proof did not define `f`
   exact Finset.le_sup (f := fun s ↦ ∑ x ∈ s.support, s x) hd
 
@@ -427,14 +429,6 @@ instance HomogeneousSubmodule.gcommSemiring : SetLike.GradedMonoid (homogeneousS
   one_mem := isHomogeneous_one σ R
   mul_mem _ _ _ _ := IsHomogeneous.mul
 
-open DirectSum
-
-noncomputable example : CommSemiring (⨁ i, homogeneousSubmodule σ R i) :=
-  inferInstance
-
-noncomputable example : Algebra R (⨁ i, homogeneousSubmodule σ R i) :=
-  inferInstance
-
 end IsHomogeneous
 
 noncomputable section
@@ -451,7 +445,11 @@ section HomogeneousComponent
 
 open Finset Finsupp
 
-variable [CommSemiring R] (n : ℕ) (φ ψ : MvPolynomial σ R)
+variable (n : ℕ) (φ ψ : MvPolynomial σ R)
+
+theorem homogeneousComponent_mem  :
+    homogeneousComponent n φ ∈ homogeneousSubmodule σ R n :=
+  weightedHomogeneousComponent_mem _ φ n
 
 theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
     coeff d (homogeneousComponent n φ) = if d.degree = n then coeff d φ else 0 := by
@@ -494,12 +492,48 @@ theorem sum_homogeneousComponent :
     simpa [coeff_sum, coeff_homogeneousComponent]
   exact fun h => (coeff_eq_zero_of_totalDegree_lt h).symm
 
-theorem homogeneousComponent_homogeneous_polynomial (m n : ℕ) (p : MvPolynomial σ R)
-    (h : p ∈ homogeneousSubmodule σ R n) : homogeneousComponent m p = if m = n then p else 0 := by
-  convert weightedHomogeneousComponent_weighted_homogeneous_polynomial m n p h
+theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
+    (h : p ∈ homogeneousSubmodule σ R n) :
+    homogeneousComponent m p = if m = n then p else 0 :=
+  weightedHomogeneousComponent_of_mem h
 
 end HomogeneousComponent
 
 end
+
+noncomputable section GradedAlgebra
+
+/-- The homogeneous submodules form a graded ring.
+This instance is used by `DirectSum.commSemiring` and `DirectSum.algebra`. -/
+lemma HomogeneousSubmodule.gradedMonoid :
+    SetLike.GradedMonoid (homogeneousSubmodule σ R) :=
+  WeightedHomogeneousSubmodule.gradedMonoid
+
+/-- The decomposition of `MvPolynomial σ R` into homogeneous submodules. -/
+abbrev decomposition :
+    DirectSum.Decomposition (homogeneousSubmodule σ R) :=
+  weightedDecomposition R (1 : σ → ℕ)
+
+/-- `MvPolynomial σ R` as a graded algebra, graded by the degree.
+We do not make this a global instance because one may want to consider a different
+graded algebra structure on `MvPolynomial σ R`, induced by another weight function.
+To make it a local instance, you may use
+`attribute [local instance] MvPolynomial.gradedAlgebra`.
+-/
+abbrev gradedAlgebra : GradedAlgebra (homogeneousSubmodule σ R) :=
+  weightedGradedAlgebra R (1 : σ → ℕ)
+
+theorem decomposition.decompose'_apply (φ : MvPolynomial σ R) (i : ℕ) :
+    (decomposition.decompose' φ i : MvPolynomial σ R) = homogeneousComponent i φ :=
+  weightedDecomposition.decompose'_apply R _ φ i
+
+theorem decomposition.decompose'_eq :
+    decomposition.decompose' = fun φ : MvPolynomial σ R =>
+      DirectSum.mk (fun i : ℕ => ↥(homogeneousSubmodule σ R i)) (φ.support.image Finsupp.degree)
+        fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem m φ⟩ := by
+  rw [degree_eq_weight_one]
+  rfl
+
+end GradedAlgebra
 
 end MvPolynomial

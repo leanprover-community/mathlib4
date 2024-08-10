@@ -64,8 +64,6 @@ end Lp
 
 end MeasureTheory
 
-section Lp
-
 variable {E : Type*} [NormedAddCommGroup E] {p : ℝ≥0∞} [Fact (1 ≤ p)]
 
 theorem Filter.Tendsto.compMeasurePreservingLp {α : Type*} {l : Filter α}
@@ -102,5 +100,3 @@ theorem Continuous.compMeasurePreservingLp (hf : Continuous f) (hg : Continuous 
     Continuous (fun z ↦ Lp.compMeasurePreserving (g z) (hgm z) (f z)) :=
   continuous_iff_continuousAt.mpr fun _ ↦
     hf.continuousAt.compMeasurePreservingLp hg.continuousAt hgm hp
-
-end Lp

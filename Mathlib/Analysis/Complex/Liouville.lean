@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.NormedSpace.Completion
+import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Liouville's theorem

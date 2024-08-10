@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Star.Order
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.CStarAlgebra.Basic
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Algebra.Algebra.Field
 
@@ -506,7 +506,7 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
 @[rclike_simps] -- porting note (#10618): was `simp`
 theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 
-instance (priority := 100) : CstarRing K where
+instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj).symm
 
 /-! ### Cast lemmas -/
@@ -581,7 +581,7 @@ theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)�
 
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
-  rw [nsmul_eq_smul_cast K, norm_smul, RCLike.norm_natCast, nsmul_eq_mul]
+  rw [← Nat.cast_smul_eq_nsmul K, norm_smul, RCLike.norm_natCast, nsmul_eq_mul]
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
@@ -812,6 +812,11 @@ lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing 
     have : c⁻¹ • c • x < c⁻¹ • c • y :=
       StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)
     simpa [smul_smul, inv_mul_cancel hc.ne'] using this
+
+instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
+    [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :
+    OrderedSMul ℝ A :=
+  StarModule.instOrderedSMul
 
 scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
 

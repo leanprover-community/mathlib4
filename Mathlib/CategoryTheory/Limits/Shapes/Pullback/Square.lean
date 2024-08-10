@@ -93,6 +93,18 @@ lemma IsPushout.iff_of_iso {sq₁ sq₂ : Square C} (e : sq₁ ≅ sq₂) :
     sq₁.IsPushout ↔ sq₂.IsPushout :=
   ⟨fun h ↦ h.of_iso e, fun h ↦ h.of_iso e.symm⟩
 
+lemma IsPushout.op {sq : Square C} (h : sq.IsPushout) : sq.op.IsPullback :=
+  CategoryTheory.IsPushout.op h.flip
+
+lemma IsPushout.unop {sq : Square Cᵒᵖ} (h : sq.IsPushout) : sq.unop.IsPullback :=
+  CategoryTheory.IsPushout.unop h.flip
+
+lemma IsPullback.op {sq : Square C} (h : sq.IsPullback) : sq.op.IsPushout :=
+  CategoryTheory.IsPullback.op h.flip
+
+lemma IsPullback.unop {sq : Square Cᵒᵖ} (h : sq.IsPullback) : sq.unop.IsPushout :=
+  CategoryTheory.IsPullback.unop h.flip
+
 end Square
 
 end CategoryTheory

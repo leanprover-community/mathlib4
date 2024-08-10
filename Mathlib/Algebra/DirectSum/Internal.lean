@@ -173,7 +173,7 @@ theorem coe_mul_apply_eq_dfinsupp_sum [AddMonoid ι] [SetLike.GradedMonoid A]
   · subst h
     rw [of_eq_same]
     rfl
-  · rw [of_eq_of_ne _ _ _ _ h]
+  · rw [of_eq_of_ne _ _ _ h]
     rfl
 
 theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r : A i)
@@ -283,9 +283,9 @@ instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A 
   smul_def := fun _r ⟨i, _xi⟩ => Sigma.subtype_ext (zero_add i).symm <| Algebra.smul_def _ _
 
 @[simp]
-theorem setLike.coe_galgebra_toFun [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
+theorem setLike.coe_galgebra_toFun {ι} [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (s : S) :
-    ↑(@DirectSum.GAlgebra.toFun _ S (fun i => A i) _ _ _ _ _ _ _ s) = (algebraMap S R s : R) :=
+    (DirectSum.GAlgebra.toFun (A := fun i => A i) s) = (algebraMap S R s : R) :=
   rfl
 
 /-- A direct sum of powers of a submodule of an algebra has a multiplicative structure. -/

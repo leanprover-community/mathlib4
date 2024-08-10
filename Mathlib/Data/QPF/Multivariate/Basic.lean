@@ -67,10 +67,13 @@ matched because they preserve the properties of QPF. The latter example,
    * Const
 
 each proves that some operations on functors preserves the QPF structure
+-/
 
+set_option linter.longLine false in
+/-!
 ## Reference
 
-! * [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+[Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 

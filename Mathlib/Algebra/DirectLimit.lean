@@ -79,10 +79,9 @@ nonrec theorem DirectedSystem.map_map [DirectedSystem G fun i j h => f i j h] {i
   DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
 
 variable (G)
-variable [DecidableEq ι]
 
 /-- The direct limit of a directed system is the modules glued together along the maps. -/
-def DirectLimit : Type max v w :=
+def DirectLimit [DecidableEq ι] : Type max v w :=
   DirectSum ι G ⧸
     (span R <|
       { a |
@@ -90,6 +89,10 @@ def DirectLimit : Type max v w :=
           DirectSum.lof R ι G i x - DirectSum.lof R ι G j (f i j H x) = a })
 
 namespace DirectLimit
+
+section Basic
+
+variable [DecidableEq ι]
 
 instance addCommGroup : AddCommGroup (DirectLimit G f) :=
   Quotient.addCommGroup _
@@ -247,12 +250,11 @@ lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
 
 end functorial
 
+end Basic
+
 section Totalize
 
-open scoped Classical
-
-variable (G f)
-
+open Classical in
 /-- `totalize G f i j` is a linear map from `G i` to `G j`, for *every* `i` and `j`.
 If `i ≤ j`, then it is the map `f i j` that comes with the directed system `G`,
 and otherwise it is the zero map. -/
@@ -269,7 +271,8 @@ theorem totalize_of_not_le {i j} (h : ¬i ≤ j) : totalize G f i j = 0 :=
 
 end Totalize
 
-variable [DirectedSystem G fun i j h => f i j h]
+variable [DecidableEq ι] [DirectedSystem G fun i j h => f i j h]
+variable {G f}
 
 theorem toModule_totalize_of_le [∀ i (k : G i), Decidable (k ≠ 0)] {x : DirectSum ι G} {i j : ι}
     (hij : i ≤ j) (hx : ∀ k ∈ x.support, k ≤ i) :
@@ -343,10 +346,10 @@ end Module
 
 namespace AddCommGroup
 
-variable [DecidableEq ι] [∀ i, AddCommGroup (G i)]
+variable [∀ i, AddCommGroup (G i)]
 
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
-def DirectLimit (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
+def DirectLimit [DecidableEq ι] (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
   @Module.DirectLimit ℤ _ ι _ G _ _ (fun i j hij => (f i j hij).toIntLinearMap) _
 
 namespace DirectLimit
@@ -358,6 +361,8 @@ protected theorem directedSystem [h : DirectedSystem G fun i j h => f i j h] :
   h
 
 attribute [local instance] DirectLimit.directedSystem
+
+variable [DecidableEq ι]
 
 instance : AddCommGroup (DirectLimit G f) :=
   Module.DirectLimit.addCommGroup G fun i j hij => (f i j hij).toIntLinearMap
@@ -591,8 +596,6 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
         ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy]; rfl⟩
 
 section
-
-open scoped Classical
 
 open Polynomial
 
@@ -844,7 +847,7 @@ variable {G' : ι → Type v'} [∀ i, CommRing (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+* G' j}
 variable {G'' : ι → Type v''} [∀ i, CommRing (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →+* G'' j}
-variable [Nonempty ι]
+
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
 family of ring homomorphisms `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` induces a ring
@@ -863,6 +866,8 @@ def map (g : (i : ι) → G i →+* G' i)
     {i : ι} (x : G i) :
     map g hg (of G _ _ x) = of G' (fun _ _ h ↦ f' _ _ h) i (g i x) :=
   lift_of _ _ _ _ _
+
+variable [Nonempty ι]
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ RingHom.id _) (fun _ _ _ ↦ rfl) =
@@ -948,8 +953,8 @@ theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
 
 section
 
-open scoped Classical
 
+open Classical in
 /-- Noncomputable multiplicative inverse in a direct limit of fields. -/
 noncomputable def inv (p : Ring.DirectLimit G f) : Ring.DirectLimit G f :=
   if H : p = 0 then 0 else Classical.choose (DirectLimit.exists_inv G f H)

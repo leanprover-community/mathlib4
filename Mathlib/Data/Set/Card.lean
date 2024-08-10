@@ -133,6 +133,8 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
   rw [← not_iff_not, ← Ne, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
 
+alias ⟨_, encard_eq_top⟩ := encard_eq_top_iff
+
 theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
   simp
 
@@ -1010,7 +1012,7 @@ theorem eq_insert_of_ncard_eq_succ {n : ℕ} (h : s.ncard = n + 1) :
   obtain ⟨a, t, hat, hts, rfl⟩ := h
   simp only [Finset.ext_iff, Finset.mem_insert, Finite.mem_toFinset] at hts
   refine ⟨a, t, hat, ?_, ?_⟩
-  · simp only [Finset.mem_coe, ext_iff, mem_insert_iff]
+  · simp only [Finset.mem_coe, Set.ext_iff, mem_insert_iff]
     tauto
   simp
 

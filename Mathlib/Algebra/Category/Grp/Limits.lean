@@ -8,7 +8,7 @@ import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!

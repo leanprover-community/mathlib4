@@ -30,8 +30,6 @@ and Chris Hughes (on an earlier repository).
 
 noncomputable section
 
-open scoped Classical
-
 universe u v
 
 variable (R : Type u) (S : Type v)
@@ -101,7 +99,7 @@ theorem isClosed_singleton_iff_isMaximal (x : PrimeSpectrum R) :
   constructor <;> intro H
   · rcases x.asIdeal.exists_le_maximal x.2.1 with ⟨m, hm, hxm⟩
     exact (congr_arg asIdeal (@H ⟨m, hm.isPrime⟩ hxm)) ▸ hm
-  · exact fun p hp ↦ PrimeSpectrum.ext _ _ (H.eq_of_le p.2.1 hp).symm
+  · exact fun p hp ↦ PrimeSpectrum.ext (H.eq_of_le p.2.1 hp).symm
 
 theorem isRadical_vanishingIdeal (s : Set (PrimeSpectrum R)) : (vanishingIdeal s).IsRadical := by
   rw [← vanishingIdeal_closure, ← zeroLocus_vanishingIdeal_eq_closure,
@@ -250,9 +248,8 @@ theorem preimage_comap_zeroLocus (s : Set R) : comap f ⁻¹' zeroLocus s = zero
 
 theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     Function.Injective (comap f) := fun x y h =>
-  PrimeSpectrum.ext _ _
-    (Ideal.comap_injective_of_surjective f hf
-      (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
+  PrimeSpectrum.ext (Ideal.comap_injective_of_surjective f hf
+    (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
 
 variable (S)
 
@@ -513,6 +510,20 @@ lemma comap_basicOpen (f : R →+* S) (x : R) :
     TopologicalSpace.Opens.comap (comap f) (basicOpen x) = basicOpen (f x) :=
   rfl
 
+open TopologicalSpace in
+lemma iSup_basicOpen_eq_top_iff {ι : Type*} {f : ι → R} :
+    (⨆ i : ι, PrimeSpectrum.basicOpen (f i)) = ⊤ ↔ Ideal.span (Set.range f) = ⊤ := by
+  rw [SetLike.ext'_iff, Opens.coe_iSup]
+  simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Opens.coe_top, ← Set.compl_iInter,
+    ← PrimeSpectrum.zeroLocus_iUnion]
+  rw [← PrimeSpectrum.zeroLocus_empty_iff_eq_top, compl_involutive.eq_iff]
+  simp only [Set.iUnion_singleton_eq_range,  Set.compl_univ, PrimeSpectrum.zeroLocus_span]
+
+lemma iSup_basicOpen_eq_top_iff' {s : Set R} :
+    (⨆ i ∈ s, PrimeSpectrum.basicOpen i) = ⊤ ↔ Ideal.span s = ⊤ := by
+  conv_rhs => rw [← Subtype.range_val (s := s), ← iSup_basicOpen_eq_top_iff]
+  simp
+
 end BasicOpen
 
 section Order
@@ -522,18 +533,6 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if `y ∈ closure {x}`.
 -/
-
-
-instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (PrimeSpectrum.ext)
-
-@[simp]
-theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
-  Iff.rfl
-
-@[simp]
-theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
-  Iff.rfl
 
 theorem le_iff_mem_closure (x y : PrimeSpectrum R) :
     x ≤ y ↔ y ∈ closure ({x} : Set (PrimeSpectrum R)) := by
@@ -550,14 +549,6 @@ def nhdsOrderEmbedding : PrimeSpectrum R ↪o Filter (PrimeSpectrum R) :=
 
 instance : T0Space (PrimeSpectrum R) :=
   ⟨nhdsOrderEmbedding.inj'⟩
-
-instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
-  bot := ⟨⊥, Ideal.bot_prime⟩
-  bot_le I := @bot_le _ _ _ I.asIdeal
-
-instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
-  default := ⊥
-  uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 
 end Order
 
@@ -597,7 +588,7 @@ def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) 
   default :=
     ⟨LocalRing.maximalIdeal (Localization I.primeCompl),
     (LocalRing.maximalIdeal.isMaximal _).isPrime⟩
-  uniq x := PrimeSpectrum.ext _ _ (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
+  uniq x := PrimeSpectrum.ext (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
 
 end LocalizationAtMinimal
 
@@ -619,7 +610,8 @@ protected def minimalPrimes.equivIrreducibleComponents :
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
-  exact OrderIso.minimalsIsoMaximals (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
+  exact OrderIso.setOfMinimalIsoSetOfMaximal
+    (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
     (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual))
 
 namespace PrimeSpectrum
@@ -628,8 +620,9 @@ lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
     minimalPrimes R := by
   rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals,
-    ← minimals_swap, ← vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
-  exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.1
+    image_antitone_setOf_maximal (fun s t hs _ ↦ (vanishingIdeal_anti_mono_iff hs.1).symm),
+    ← funext (@Set.mem_setOf_eq _ · Ideal.IsPrime), ← vanishingIdeal_isClosed_isIrreducible]
+  rfl
 
 lemma zeroLocus_minimalPrimes :
     zeroLocus ∘ (↑) '' minimalPrimes R =

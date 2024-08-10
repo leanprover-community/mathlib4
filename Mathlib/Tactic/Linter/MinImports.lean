@@ -72,26 +72,21 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
       let currentlyUnneededImports := explicitImportsInFile.diff importsSoFar
       -- we read the current file, to do a custom parsing of the imports:
       -- this is a hack to obtain some `Syntax` information for the `import X` commands
-      let fil ← IO.FS.readFile (← getFileName)
+      let fname ← getFileName
+      let contents ← IO.FS.readFile fname
+      -- `impMods` is the syntax for the modules imported in the current file
+      let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
       for i in currentlyUnneededImports do
-        -- looking for the position of 'import i', so we split at ' i' and
-        -- compute the length of the string until '...import| i'
-        match fil.splitOn (" " ++ i.toString) with
-          | a::_::_ =>
-            let al := a.length
-            -- create a syntax covering the range that should be occupied by import `i`
-            let impPos : Syntax := .ofRange ⟨⟨al + 1⟩, ⟨al + i.toString.length + 1⟩⟩
-            logWarningAt impPos m!"unneeded import '{i}'"
+        match impMods.find? (·.getId == i) with
+          | some impPos => logWarningAt impPos m!"unneeded import '{i}'"
           | _ => dbg_trace f!"'{i}' not found"  -- this should be unreachable
       -- if the linter found new imports that should be added (likely to *reduce* the dependencies)
       if !newImps.isEmpty then
         -- format the imports prepending `import ` to each module name
         let withImport := (newImps.toArray.qsort Name.lt).map (s!"import {·}")
-        -- create a syntax node supported, likely on the first imported module name
-        let firstImport : Syntax := match fil.splitOn "import " with
-          | a::_::_ => .ofRange ⟨⟨a.length⟩, ⟨a.length + "import".length⟩⟩
-          | _ => .ofRange ⟨⟨0⟩, ⟨19⟩⟩
-        logWarningAt firstImport m!"-- missing imports\n{"\n".intercalate withImport.toList}"
+        -- log a warning at the first `import`, if there is one.
+        logWarningAt ((impMods.find? (·.isOfKind `import)).getD default)
+          m!"-- missing imports\n{"\n".intercalate withImport.toList}"
     let id ← getId stx
     let newImports := getIrredundantImports (← getEnv) (← getAllImports stx id)
     let tot := (newImports.append importsSoFar)
