@@ -1263,7 +1263,7 @@ def mapMatrix (f : α ≃+ β) : Matrix m n α ≃+ Matrix m n β :=
   { f.toEquiv.mapMatrix with
     toFun := fun M => M.map f
     invFun := fun M => M.map f.symm
-    map_add' := Matrix.map_add f f.map_add }
+    map_add' := Matrix.map_add f (map_add f) }
 
 @[simp]
 theorem mapMatrix_refl : (AddEquiv.refl α).mapMatrix = AddEquiv.refl (Matrix m n α) :=

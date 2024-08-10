@@ -482,7 +482,7 @@ def powLogEquiv [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n
 
 theorem log_mul [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n ^ m)
     (x y : powers (n : M)) : log (x * y) = log x + log y :=
-  (powLogEquiv h).symm.map_mul x y
+  map_mul (powLogEquiv h).symm x y
 
 theorem log_pow_int_eq_self {x : ℤ} (h : 1 < x.natAbs) (m : ℕ) : log (pow x m) = m :=
   (powLogEquiv (Int.pow_right_injective h)).symm_apply_apply _
