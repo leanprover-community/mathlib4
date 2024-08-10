@@ -268,6 +268,10 @@ instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
 
+-- TODO: can I state or prove such a lemma?
+-- lemma IccManifold.leftCharts {x y : ℝ} {z : Set.Icc x y} (h : z.val < y) :
+--     IccManifold.chartAt z = IccLeftChart x y := rfl
+
 /-- The manifold structure on `[x, y]` is smooth.
 -/
 instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :

@@ -134,10 +134,41 @@ section BoundaryIntervals
 
 variable {x y : ℝ} (hxy : x < y)
 
-lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Icc x y) =
-    { ⟨x, ⟨le_refl x, by linarith⟩⟩, ⟨y, ⟨by linarith, le_refl y⟩⟩} := by
+-- missing lemma 1: range of R∂ 1 is..., has boundary ...
+theorem leftChart_boundary {x y : ℝ} (hxy : x < y) [h : Fact (x < y)] :
+    ((IccLeftChart x y).extend (𝓡∂ 1)) (⟨x, ⟨le_refl x, by linarith⟩⟩) ∈ frontier (range (𝓡∂ 1)) := by
+  set xPt : Icc x y := ⟨x, ⟨le_refl x, by linarith⟩⟩
   sorry
 
+-- TODO: does this lemma require proving a lemma such as "interior and boundary are independent of
+-- the charted space structure" (which is out of reach with current mathlib)?
+lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Icc x y) =
+    { ⟨x, ⟨le_refl x, by linarith⟩⟩, ⟨y, ⟨by linarith, le_refl y⟩⟩} := by
+  set xPt : Icc x y := ⟨x, ⟨le_refl x, by linarith⟩⟩
+  set yPt : Icc x y := ⟨y, ⟨by linarith, le_refl y⟩⟩
+  apply le_antisymm
+  · sorry -- rewrite with by_contra and show interior is in interior
+  · intro p hp
+    by_cases h' : p.val < y
+    · have : p.val = x := by
+        have : p ≠ yPt := by by_contra h; linarith [congrArg Subtype.val h]
+        exact congrArg Subtype.val (Set.eq_of_not_mem_of_mem_insert hp this)
+      show (𝓡∂ 1).IsBoundaryPoint p
+      have : p = xPt := SetCoe.ext this
+      rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt, this]
+      have : chartAt (EuclideanHalfSpace 1) p = IccLeftChart x y := by
+        sorry -- follows by construction of the charted space structure
+        -- XXX: how can I use this?
+      suffices ((IccLeftChart x y).extend (𝓡∂ 1)) xPt ∈ frontier (range (𝓡∂ 1)) by
+        convert this
+        have : xPt.val < y := sorry
+        sorry -- use the def of that manifold structure, same as above
+      -- This is the real proof, extracted to a separate lemma.
+      exact leftChart_boundary h.out
+    sorry
+
+
+#exit
 variable {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
   [TopologicalSpace M] [ChartedSpace H M] {I : ModelWithCorners ℝ E H}
   [SmoothManifoldWithCorners I M] [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
