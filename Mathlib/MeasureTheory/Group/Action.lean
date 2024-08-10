@@ -39,10 +39,12 @@ class VAddInvariantMeasure (M α : Type*) [VAdd M α] {_ : MeasurableSpace α} (
 /-- A measure `μ : Measure α` is invariant under a multiplicative action of `M` on `α` if for any
 measurable set `s : Set α` and `c : M`, the measure of its preimage under `fun x => c • x` is equal
 to the measure of `s`. -/
-@[to_additive]
+@[to_additive, mk_iff smulInvariantMeasure_iff]
 class SMulInvariantMeasure (M α : Type*) [SMul M α] {_ : MeasurableSpace α} (μ : Measure α) :
   Prop where
   measure_preimage_smul : ∀ (c : M) ⦃s : Set α⦄, MeasurableSet s → μ ((fun x => c • x) ⁻¹' s) = μ s
+
+attribute [to_additive] smulInvariantMeasure_iff
 
 namespace SMulInvariantMeasure
 
@@ -166,6 +168,21 @@ theorem map_smul : map (c • ·) μ = μ :=
   (measurePreserving_smul c μ).map_eq
 
 end MeasurableSMul
+
+@[to_additive]
+theorem MeasurePreserving.smulInvariantMeasure_iterateMulAct
+    {f : α → α} {_ : MeasurableSpace α} {μ : Measure α} (hf : MeasurePreserving f μ μ) :
+    SMulInvariantMeasure (IterateMulAct f) α μ :=
+  ⟨fun n _s hs ↦ (hf.iterate n.val).measure_preimage hs.nullMeasurableSet⟩
+
+@[to_additive]
+theorem smulInvariantMeasure_iterateMulAct
+    {f : α → α} {_ : MeasurableSpace α} {μ : Measure α} (hf : Measurable f) :
+    SMulInvariantMeasure (IterateMulAct f) α μ ↔ MeasurePreserving f μ μ :=
+  ⟨fun _ ↦
+    have := hf.measurableSMul₂_iterateMulAct
+    measurePreserving_smul (IterateMulAct.mk (f := f) 1) μ,
+    MeasurePreserving.smulInvariantMeasure_iterateMulAct⟩
 
 section SMulHomClass
 

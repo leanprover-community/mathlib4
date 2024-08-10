@@ -240,12 +240,13 @@ lemma atTop_basis_Ioi' [NoMaxOrder α] (a : α) : atTop.HasBasis (a < ·) Ioi :=
   obtain ⟨d, hcd⟩ := exists_gt c
   exact ⟨d, hac.trans_lt hcd, Ioi_subset_Ioi (hbc.trans hcd.le)⟩
 
-variable [Nonempty α]
-
 theorem atTop_basis' (a : α) : (@atTop α _).HasBasis (fun x => a ≤ x) Ici := by
+  have : Nonempty α := ⟨a⟩
   refine atTop_basis.to_hasBasis (fun b _ ↦ ?_) fun b _ ↦ ⟨b, trivial, Subset.rfl⟩
   obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
   exact ⟨c, hac, Ici_subset_Ici.2 hbc⟩
+
+variable [Nonempty α]
 
 @[instance]
 lemma atTop_neBot : NeBot (atTop : Filter α) := atTop_basis.neBot_iff.2 fun _ => nonempty_Ici
@@ -288,11 +289,11 @@ lemma atBot_basis_Iio [Nonempty α] [NoMinOrder α] : (@atBot α _).HasBasis (fu
 lemma atBot_basis_Iio' [NoMinOrder α] (a : α) : atBot.HasBasis (· < a) Iio :=
   atTop_basis_Ioi' (α := αᵒᵈ) a
 
+lemma atBot_basis' (a : α) : (@atBot α _).HasBasis (fun x => x ≤ a) Iic := atTop_basis' (α := αᵒᵈ) _
+
 variable [Nonempty α]
 
 lemma atBot_basis : (@atBot α _).HasBasis (fun _ => True) Iic := atTop_basis (α := αᵒᵈ)
-
-lemma atBot_basis' (a : α) : (@atBot α _).HasBasis (fun x => x ≤ a) Iic := atTop_basis' (α := αᵒᵈ) _
 
 @[instance] lemma atBot_neBot : NeBot (atBot : Filter α) := atTop_neBot (α := αᵒᵈ)
 

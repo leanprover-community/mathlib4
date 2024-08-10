@@ -398,9 +398,10 @@ theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx _
 
 theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
-  induction' n with n ih
-  · exact (h rfl).elim
-  · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
+  induction n with
+  | zero => exact (h rfl).elim
+  | succ n ih =>
+    rw [pow_succ, pow_succ, mul_toAddSubmonoid]
     cases n with
     | zero => rw [pow_zero, pow_zero, one_mul, ← mul_toAddSubmonoid, one_mul]
     | succ n => rw [ih n.succ_ne_zero]
