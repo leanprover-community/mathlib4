@@ -88,9 +88,9 @@ noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
       (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
-instance (M : ModuleCat R) : IsIso ((forget R).map
+instance (M : ModuleCat R) : IsIso ((Condensed.forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
-  erw [← Sheaf.constantCommuteComposeApp_comp_counit]
+  erw [← Sheaf.constantSheafAdj_counit_w]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   change Sheaf.IsDiscrete _ _ _
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
@@ -198,11 +198,9 @@ noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
 instance : HasSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :=
   inferInstance
 
-instance (M : ModuleCat R) :
-    IsIso ((LightCondensed.forget R).map
-    ((discreteUnderlyingAdj (ModuleCat R)).counit.app
-      ((functor R).obj M))) := by
-  erw [← Sheaf.constantCommuteComposeApp_comp_counit]
+instance (M : ModuleCat R) : IsIso ((LightCondensed.forget R).map
+    ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
+  erw [← Sheaf.constantSheafAdj_counit_w]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   change Sheaf.IsDiscrete _ _ _
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
