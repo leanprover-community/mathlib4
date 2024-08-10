@@ -90,7 +90,7 @@ lemma qaryEntropy_eq_log_mul_add_binaryEntropy' {q : ℕ} :
   ext
   simp only [Pi.add_apply, qaryEntropy_eq_log_mul_add_binaryEntropy]
 
-lemma binaryEntropy_pos {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < binaryEntropy p := by
+lemma binaryEntropy_pos {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < binaryEntropy p := by
   simp only [binaryEntropy_eq']
   have pos_sum_pos_pos (a b : ℝ) (ha : 0 ≤ a) (hb : b < 0) : 0 < a - b := by linarith
   refine pos_sum_pos_pos (-p * log p) ((1 - p) * log (1 - p)) ?_ ?_
