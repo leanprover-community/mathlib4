@@ -436,16 +436,16 @@ theorem range₀_coe_one : ((1 : range₀ f) : B) = 1 := rfl
 end MonoidHomWithZero
 
 /-- The image of the valuation, as a `CommGroupWithZero` -/
-def range₀ := MonoidHomWithZero.range₀ v
+def rangeGroup₀ := MonoidHomWithZero.range₀ v
 
-theorem mem_range₀_iff {x : Γ₀} : x ∈ v.range₀ ↔ ∃ a b, v a ≠ 0 ∧ v a * x = v b :=
+theorem mem_rangeGroup₀_iff {x : Γ₀} : x ∈ v.rangeGroup₀ ↔ ∃ a b, v a ≠ 0 ∧ v a * x = v b :=
   MonoidHomWithZero.mem_range₀_iff
 
-instance : CommGroupWithZero v.range₀ := by
-  unfold range₀
+instance : CommGroupWithZero v.rangeGroup₀ := by
+  unfold rangeGroup₀
   infer_instance
 
-instance : PartialOrder v.range₀ where
+instance : PartialOrder v.rangeGroup₀ where
   le a b := (a : Γ₀) ≤ b
   lt a b := (a : Γ₀) < b
   le_refl := le_refl
@@ -453,7 +453,7 @@ instance : PartialOrder v.range₀ where
   lt_iff_le_not_le _ _ := lt_iff_le_not_le
   le_antisymm _ _ := le_antisymm
 
-instance: LinearOrderedCommMonoid v.range₀ where
+instance: LinearOrderedCommMonoid v.rangeGroup₀ where
   toCommMonoid := inferInstance
   toPartialOrder := inferInstance
   mul_le_mul_left _ _ h _ := by
@@ -469,9 +469,9 @@ instance: LinearOrderedCommMonoid v.range₀ where
     rw [max_def]; split_ifs with h; exact b.prop; exact a.prop⟩
   compare a b := compare (a : Γ₀) b
   min_def a b := by
-    rw [← Subtype.coe_inj, min_def, apply_ite (f := fun (x : v.range₀) ↦ (x : Γ₀))]
+    rw [← Subtype.coe_inj, min_def, apply_ite (f := fun (x : v.rangeGroup₀) ↦ (x : Γ₀))]
   max_def a b := by
-    rw [← Subtype.coe_inj, max_def, apply_ite (f := fun (x : v.range₀) ↦ (x : Γ₀))]
+    rw [← Subtype.coe_inj, max_def, apply_ite (f := fun (x : v.rangeGroup₀) ↦ (x : Γ₀))]
   compare_eq_compareOfLessAndEq a b := by
     change compare (a : Γ₀) b = _
     rw [LinearOrderedCommMonoid.compare_eq_compareOfLessAndEq (a : Γ₀) b]
@@ -483,21 +483,21 @@ instance: LinearOrderedCommMonoid v.range₀ where
       · rw [if_pos h, if_pos (show (a : Γ₀) = b by rw [Subtype.coe_inj]; exact h)]
       · rw [if_neg h, if_neg (show ¬ (a : Γ₀) = b by rw [Subtype.coe_inj]; exact h)]
 
-instance : LinearOrderedCommMonoidWithZero v.range₀ where
+instance : LinearOrderedCommMonoidWithZero v.rangeGroup₀ where
   zero_mul := zero_mul
   mul_zero := mul_zero
   zero_le_one := by
     change (0 : Γ₀) ≤ 1
     apply zero_le_one'
 
-instance : LinearOrderedCommGroupWithZero v.range₀ where
+instance : LinearOrderedCommGroupWithZero v.rangeGroup₀ where
   toLinearOrderedCommMonoidWithZero := inferInstance
   inv_zero := inv_zero
   mul_inv_cancel := GroupWithZero.mul_inv_cancel
 
-/-- The same valuation, with codomain restricted to `v.range₀` -/
-def restriction_range₀ : Valuation R v.range₀ where
-  toFun x := ⟨v x, by rw [mem_range₀_iff]; use 1, x; simp⟩
+/-- The same valuation, with codomain restricted to `v.rangeGroup₀` -/
+def restriction_rangeGroup₀ : Valuation R v.rangeGroup₀ where
+  toFun x := ⟨v x, by rw [mem_rangeGroup₀_iff]; use 1, x; simp⟩
   map_zero' := by simp only [_root_.map_zero]; rfl
   map_one' := by simp [← Subtype.coe_inj]
   map_mul' x y := by simp [← Subtype.coe_inj]

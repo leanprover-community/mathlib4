@@ -44,8 +44,8 @@ def valuation : Valuation K ℝ≥0 where
 theorem valuation_apply (x : K) : valuation h x = ‖x‖₊ := rfl
 
 
-/- NB. Si (valuation h).rangeGroup était `LinearOrderedCommGroupWith Zero`,
-on peurrait plutôt appliquer `NNReal.exists_lt_of_strictMono`
+/- NB. Si (valuation h).rangeGroup était `LinearOrderedCommGroupWithZero`,
+on pourrait plutôt appliquer `NNReal.exists_lt_of_strictMono`
 *FAE* Je l'ai rajouté, reste à voir si ça marche...-/
 
 theorem isTriviallyValued_or_exists' {ε : ℝ} (hε : 0 < ε):
