@@ -1451,7 +1451,7 @@ theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b
   cases' a with a ha
   cases' b with b hb
   cases n
-  · simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at ha hb
+  · simp only [Nat.zero_add, Nat.lt_one_iff] at ha hb
     simp [ha, hb]
   simp only [le_iff_val_le_val, val_add, lt_iff_val_lt_val, val_mk, val_one] at h ⊢
   rwa [Nat.mod_eq_of_lt, Nat.succ_le_iff]
@@ -1469,7 +1469,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
   cases n
   · cases' a with a ha
     cases' b with b hb
-    simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at ha hb
+    simp only [Nat.zero_add, Nat.lt_one_iff] at ha hb
     simp [ha, hb] at h
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
   have hkb : k < b := by omega
