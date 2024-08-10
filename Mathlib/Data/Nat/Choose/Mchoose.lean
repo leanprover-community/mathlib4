@@ -34,33 +34,20 @@ of unordered paritions of a set with given “type” (a multiset).
 
 namespace Nat
 
-theorem choose_mul_add (m) {n : ℕ} (hn : n ≠ 0) :
-    (m * n + n).choose n = (m + 1) * (m * n + n - 1).choose (n - 1) := by
-  rw [← mul_left_inj' (mul_ne_zero (factorial_ne_zero (m * n)) (factorial_ne_zero n))]
-  set p := n - 1
-  have hp : n = p + 1 := (succ_pred_eq_of_ne_zero hn).symm
-  simp only [hp, add_succ_sub_one]
-  calc
-    (m * (p + 1) + (p + 1)).choose (p + 1) * ((m * (p+1))! * (p+1)!)
-      = (m * (p + 1) + (p + 1)).choose (p + 1) * (m * (p+1))! * (p+1)! := by ring
-    _ = (m * (p+ 1) + (p + 1))! := by rw [add_choose_mul_factorial_mul_factorial]
-    _ = ((m * (p+ 1) + p) + 1)! := by ring_nf
-    _ = ((m * (p + 1) + p) + 1) * (m * (p + 1) + p)! := by rw [factorial_succ]
-    _ = (m * (p + 1) + p)! * ((p + 1) * (m + 1)) := by ring
-    _ = ((m * (p + 1) + p).choose p * (m * (p+1))! * (p)!) * ((p + 1) * (m + 1)) := by
-        rw [add_choose_mul_factorial_mul_factorial]
-    _ = (m * (p + 1) + p).choose p * (m * (p+1))! * (((p + 1) * (p)!) * (m + 1)) := by ring
-    _ = (m * (p + 1) + p).choose p * (m * (p+1))! * ((p + 1)! * (m + 1)) := by rw [factorial_succ]
-    _ = (m + 1) * (m * (p + 1) + p).choose p * ((m * (p + 1))! * (p + 1)!) := by ring
-
 theorem choose_mul_right (m) {n : ℕ} (hn : n ≠ 0) :
     (m * n).choose n = m * (m * n - 1).choose (n - 1) := by
   by_cases hm : m = 0
   · simp only [hm, zero_mul, choose_eq_zero_iff]
     exact Nat.pos_of_ne_zero hn
   · set p := m - 1; have hp : m = p + 1 := (succ_pred_eq_of_ne_zero hm).symm
-    simp only [hp]
-    rw [add_mul, one_mul, choose_mul_add _ hn]
+    set q := n - 1; have hq : n = q + 1 := (succ_pred_eq_of_ne_zero hn).symm
+    simp only [hp, hq]
+    rw [← Nat.mul_left_inj (zero_ne_add_one q).symm, eq_comm]
+    suffices (p + 1) * (q + 1) = (p * q + p + q).succ by
+      rw [this, ← Nat.succ_mul_choose_eq]
+      rw [mul_comm (p + 1), mul_assoc, mul_comm, this]
+      simp only [succ_eq_add_one, add_tsub_cancel_right]
+    simp only [succ_eq_add_one]; ring_nf
 
 /-- Number of possibilities of dividing a set with `m * n` elements into `m` groups
 of `n`-element subsets. -/
@@ -87,20 +74,18 @@ theorem mchoose_one' (m : ℕ) : mchoose m 1 = 1 := by
 
 theorem mchoose_mul_factorial_mul_pow_factorial (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     mchoose m n * m.factorial * n.factorial ^ m = (m * n).factorial := by
-  rw [← zero_lt_iff] at hn
   induction m with
   | zero => rw [mchoose_zero, one_mul, MulZeroClass.zero_mul, factorial_zero, pow_zero, mul_one]
   | succ m ih =>
     calc mchoose (m + 1) n * (m+1)! * (n)! ^ (m+1)
         =  ((m * n + n - 1).choose (n-1) * mchoose m n) * (m + 1)! *(n)! ^(m + 1) := by
           rw [mchoose_succ]
-      _ = mchoose m n * ((m + 1) * (m * n + n - 1).choose (n-1)) * (m)! * (n)!  ^ (m +1) := by
-          rw [factorial_succ]; ring
-      _ = mchoose m n * ((m*n+n).choose n) * (m)! * (n)! ^ (m+1) := by
-          rw [← choose_mul_add _ (not_eq_zero_of_lt hn)]
-      _ = (mchoose m n * (m)! * (n)! ^ m) * (m*n+n).choose n * (n)! := by
-          rw [pow_succ]; ring_nf
-      _ = (m  * n + n).choose n * (m * n)! * (n)! := by rw [ih]; ring
+      _ = (m * n + n - 1).choose (n-1) * (m + 1) * n ! * (mchoose m n * m ! *(n)! ^ m) := by
+          rw [factorial_succ, pow_succ]; ring_nf
+      _ =  ((m + 1) * ((m + 1) * n - 1).choose (n-1)) * n ! * (m * n)! := by
+          rw [ih]; ring_nf
+      _ = (m * n + n).choose n * (m * n)! * n ! := by
+          rw [← choose_mul_right _ hn]; ring_nf
       _ = (m * n + n)! := by rw [add_choose_mul_factorial_mul_factorial]
       _ = ((m + 1)* n)! := by ring_nf
 
