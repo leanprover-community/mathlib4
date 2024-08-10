@@ -25,6 +25,8 @@ open scoped ENNReal symmDiff Topology
 
 namespace MeasureTheory
 
+section
+
 variable {α X Y Z : Type*}
   [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] [R1Space X]
   [TopologicalSpace Y] [MeasurableSpace Y] [BorelSpace Y] [R1Space Y]
@@ -118,4 +120,14 @@ theorem isClosed_setOf_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
   rw [measure_congr (hw'.symmDiff (ae_eq_refl _)), symmDiff_comm] at hw
   exact hw.false
 
+end
+
+variable {G X : Type*}
+  [Group G] [TopologicalSpace G] [TopologicalGroup G]
+  [TopologicalSpace X] [R1Space X] [MulAction G X] [ContinuousSMul G X]
+  [MeasurableSpace X] [BorelSpace X]
+  {μ : Measure X} [SMulInvariantMeasure G X μ]
+  [IsLocallyFiniteMeasure μ] [μ.InnerRegularCompactLTTop]
+
 end MeasureTheory
+
