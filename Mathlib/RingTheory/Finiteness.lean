@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.LinearAlgebra.Basis.Cardinality
 
 /-!
 # Finiteness conditions in commutative algebra
