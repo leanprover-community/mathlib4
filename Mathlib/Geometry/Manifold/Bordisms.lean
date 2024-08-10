@@ -134,10 +134,30 @@ section BoundaryIntervals
 
 variable {x y : ℝ} (hxy : x < y)
 
--- missing lemma 1: range of R∂ 1 is..., has boundary ...
-theorem leftChart_boundary {x y : ℝ} (hxy : x < y) [h : Fact (x < y)] :
+-- missing lemma 1: range of R∂ 1 has frontier ... (that exists already?)
+-- do I need to rewrite from EuclideanSpace ℝ 1 to ℝ? does that exist already?
+theorem leftChart_boundary (hxy : x < y) [h : Fact (x < y)] :
     ((IccLeftChart x y).extend (𝓡∂ 1)) (⟨x, ⟨le_refl x, by linarith⟩⟩) ∈ frontier (range (𝓡∂ 1)) := by
   set xPt : Icc x y := ⟨x, ⟨le_refl x, by linarith⟩⟩
+  let aux := range_euclideanHalfSpace 1 -- does not apply directly...
+
+  -- that's the conclusion I want to reach, eventually
+  have : ((IccLeftChart x y).extend (modelWithCornersEuclideanHalfSpace 1)) xPt = 0 := by
+    rw [PartialHomeomorph.extend_coe]
+    rw [Function.comp]
+    beta_reduce
+    have : (IccLeftChart x y).toFun xPt = (⟨fun _ => xPt - x, sub_nonneg.mpr xPt.property.1⟩) := rfl
+    -- calc
+    --   ((IccLeftChart x y) xPt).val = (⟨fun _ => xPt - x, sub_nonneg.mpr xPt.property.1⟩ : Icc x y).val := by rw [this]
+
+    -- have : ((IccLeftChart x y) xPt).val = (fun _ ↦ 0) := by
+    --   apply congrArg Subtype.val this
+    --   congrsimp_rw [this]
+    --   rfl
+
+    --rw [this]
+    sorry
+
   sorry
 
 -- TODO: does this lemma require proving a lemma such as "interior and boundary are independent of
