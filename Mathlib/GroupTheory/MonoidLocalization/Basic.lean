@@ -1133,7 +1133,7 @@ def ofMulEquivOfLocalizations (k : N ≃* P) : LocalizationMap S P :=
     (fun v ↦
       let ⟨z, hz⟩ := k.toEquiv.surjective v
       let ⟨x, hx⟩ := f.surj z
-      ⟨x, show v * k _ = k _ by rw [← hx, k.map_mul, ← hz]; rfl⟩)
+      ⟨x, show v * k _ = k _ by rw [← hx, map_mul, ← hz]; rfl⟩)
     fun x y ↦ (k.apply_eq_iff_eq.trans f.eq_iff_exists).1
 
 @[to_additive (attr := simp)]
@@ -1214,7 +1214,7 @@ def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationM
         fun ⟨c, hc⟩ ↦
           let ⟨d, hd⟩ := k.toEquiv.surjective c
           ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, by
-            erw [← hd, ← k.map_mul, ← k.map_mul] at hc; exact k.toEquiv.injective hc⟩
+            erw [← hd, ← map_mul k, ← map_mul k] at hc; exact k.toEquiv.injective hc⟩
 
 @[to_additive (attr := simp)]
 theorem ofMulEquivOfDom_apply {k : P ≃* M} (H : T.map k.toMonoidHom = S) (x) :

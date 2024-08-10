@@ -122,7 +122,7 @@ variable {M : Type*} {N : Type*} [MulOneClass M] [MulOneClass N]
 /-- A multiplicative isomorphism preserves multiplication (deprecated). -/
 @[to_additive "An additive isomorphism preserves addition (deprecated)."]
 theorem isMulHom (h : M ≃* N) : IsMulHom h :=
-  ⟨h.map_mul⟩
+  ⟨map_mul h⟩
 
 /-- A multiplicative bijection between two monoids is a monoid hom
   (deprecated -- use `MulEquiv.toMonoidHom`). -/
@@ -130,7 +130,7 @@ theorem isMulHom (h : M ≃* N) : IsMulHom h :=
       "An additive bijection between two additive monoids is an additive
       monoid hom (deprecated). "]
 theorem isMonoidHom (h : M ≃* N) : IsMonoidHom h :=
-  { map_mul := h.map_mul
+  { map_mul := map_mul h
     map_one := h.map_one }
 
 end MulEquiv
@@ -216,7 +216,7 @@ theorem MonoidHom.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (f : G �
 @[to_additive]
 theorem MulEquiv.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (h : G ≃* H) :
     IsGroupHom h :=
-  { map_mul := h.map_mul }
+  { map_mul := map_mul h }
 
 /-- Construct `IsGroupHom` from its only hypothesis. -/
 @[to_additive "Construct `IsAddGroupHom` from its only hypothesis."]
