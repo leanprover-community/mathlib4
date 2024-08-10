@@ -273,7 +273,6 @@ theorem Matrix.mulVec_stdBasis [DecidableEq n] (M : Matrix m n R) (i j) :
     (M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1) i = M i j :=
   Matrix.mulVec_linearMap_single ..
 
-@[simp]
 theorem Matrix.mulVec_single_apply [DecidableEq n] (M : Matrix m n R) (j) :
     M *ᵥ Pi.single j 1 = Mᵀ j :=
   funext fun i ↦ Matrix.mulVec_linearMap_single M i j
