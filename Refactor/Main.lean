@@ -62,26 +62,22 @@ def getSimpAttrRanges (stx next : Syntax) : Array String.Range := Id.run do
             rgs := rgs.push ⟨i.getPos?.getD default, attrs[1][idx+2].getPos?.getD default⟩
     return rgs
   else return #[]
---#check Parser.Command.declId
---def getSimpAttrEdits (env : Environment) (stx : Syntax) : CommandElabM (Array Edit) := do
---  if let some declId := stx.find? (·.isOfKind ``Parser.Command.declId) then
---    let declName ← resolveGlobalConst declId[0]
---    if env.getSuccesses declName == some 0 && (env.getAttempts declName |>.get!) > 100 then
---      let rgs := getSimpAttrEdits stx
---      return rgs.map ({ replacement := "", range := ·})
---    else return #[]
---  else return #[]
 
-def getSimpAttrEdits : Syntax → Array Edit
-  | `($dm:declModifiers $t) =>
-    let rgs := getSimpAttrRanges dm t
-    rgs.map ({ replacement := "", range := ·})
-  | _ => #[]
+def getSimpAttrEdits (env : Environment) (stx : Syntax) : CommandElabM (Array Edit) := do
+  let filt : Name → Bool := sorry
+  if let some declId := stx.find? (·.isOfKind ``Parser.Command.declId) then
+    let declName ← resolveGlobalConstNoOverload declId[0]
+    if filt declName then
+      match stx with
+        | `($dm:declModifiers $t) =>
+          let rgs := getSimpAttrRanges dm t
+          return rgs.map ({ replacement := "", range := ·})
+        | _ => return #[]
+    else return #[]
+  else return #[]
 
 def runRefactoring (cmd : TSyntax `command) : CommandElabM (List Edit) := do
-  dbg_trace (getSimpAttrEdits cmd).map (·.range.start)
-  dbg_trace (getSimpAttrEdits cmd).map (·.range.stop)
-  return (getSimpAttrEdits cmd.raw).toList
+  return (← getSimpAttrEdits (← getEnv) cmd.raw).toList
   -- INSERT LEAN CODE HERE
   --return []
   --panic! "no refactoring active, edit Refactor/Main.lean to add one"
