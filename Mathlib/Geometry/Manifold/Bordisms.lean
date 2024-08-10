@@ -134,19 +134,13 @@ section BoundaryIntervals
 
 variable {x y : ℝ} (hxy : x < y)
 
--- missing lemma 1: range of R∂ 1 has frontier ... (that exists already?)
--- do I need to rewrite from EuclideanSpace ℝ 1 to ℝ? does that exist already?
-theorem leftChart_boundary (hxy : x < y) [h : Fact (x < y)] :
-    ((IccLeftChart x y).extend (𝓡∂ 1)) (⟨x, ⟨le_refl x, by linarith⟩⟩) ∈ frontier (range (𝓡∂ 1)) := by
+lemma IccLeftChart_extend_left_eq [h : Fact (x < y)] :
+    ((IccLeftChart x y).extend (𝓡∂ 1)) (⟨x, ⟨le_refl x, by linarith⟩⟩) = 0 := by
   set xPt : Icc x y := ⟨x, ⟨le_refl x, by linarith⟩⟩
-  let aux := range_euclideanHalfSpace 1 -- does not apply directly...
-
-  -- that's the conclusion I want to reach, eventually
-  have : ((IccLeftChart x y).extend (modelWithCornersEuclideanHalfSpace 1)) xPt = 0 := by
-    rw [PartialHomeomorph.extend_coe]
-    rw [Function.comp]
-    beta_reduce
-    have : (IccLeftChart x y).toFun xPt = (⟨fun _ => xPt - x, sub_nonneg.mpr xPt.property.1⟩) := rfl
+  rw [PartialHomeomorph.extend_coe]
+  rw [Function.comp]
+  beta_reduce
+  have : (IccLeftChart x y).toFun xPt = (⟨fun _ => xPt - x, sub_nonneg.mpr xPt.property.1⟩) := rfl
     -- calc
     --   ((IccLeftChart x y) xPt).val = (⟨fun _ => xPt - x, sub_nonneg.mpr xPt.property.1⟩ : Icc x y).val := by rw [this]
 
@@ -154,12 +148,23 @@ theorem leftChart_boundary (hxy : x < y) [h : Fact (x < y)] :
     --   apply congrArg Subtype.val this
     --   congrsimp_rw [this]
     --   rfl
-
     --rw [this]
-    sorry
-
   sorry
 
+-- missing lemma 1: range of R∂ 1 has frontier ... (that exists already?)
+-- do I need to rewrite from EuclideanSpace ℝ 1 to ℝ? does that exist already?
+theorem IccLeftChart_boundary [h : Fact (x < y)] :
+    ((IccLeftChart x y).extend (𝓡∂ 1)) (⟨x, ⟨le_refl x, by linarith⟩⟩) ∈ frontier (range (𝓡∂ 1)) := by
+  set xPt : Icc x y := ⟨x, ⟨le_refl x, by linarith⟩⟩
+  rw [IccLeftChart_extend_left_eq hxy]
+  let aux := range_euclideanHalfSpace 1 -- does not apply directly...
+  --have almostAux : (0 : EuclideanSpace ℝ (Fin 1)) ∈ frontier {y | 0 ≤ y 0} := sorry
+  -- this time out...
+  -- show (0 : EuclideanSpace ℝ (Fin 1)) ∈ frontier {y | 0 ≤ y 0}
+  sorry
+
+-- TODO: add analogue for IccRightChart
+-- extract lemmas: x is a boundary point of Icc x y; y is a boundary point of Icc x y
 -- TODO: does this lemma require proving a lemma such as "interior and boundary are independent of
 -- the charted space structure" (which is out of reach with current mathlib)?
 lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Icc x y) =
@@ -184,9 +189,8 @@ lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Icc x y) =
         have : xPt.val < y := sorry
         sorry -- use the def of that manifold structure, same as above
       -- This is the real proof, extracted to a separate lemma.
-      exact leftChart_boundary h.out
+      exact IccLeftChart_boundary hxy
     sorry
-
 
 #exit
 variable {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
