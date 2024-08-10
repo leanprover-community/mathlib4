@@ -84,16 +84,11 @@ theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
 
 variable [Fintype m]
 
-theorem Matrix.single_one_vecMul [DecidableEq m] (M : Matrix m n R) (i j) :
-    (Pi.single i 1 ᵥ* M) j = M i j := by
-  rw [single_vecMul]
-  simp_rw [one_mul]
-
 set_option linter.deprecated false in
 @[simp, deprecated Matrix.single_one_vecMul (since := "2024-08-09")]
 theorem Matrix.vecMul_stdBasis [DecidableEq m] (M : Matrix m n R) (i j) :
     (LinearMap.stdBasis R (fun _ ↦ R) i 1 ᵥ* M) j = M i j :=
-  Matrix.single_one_vecMul ..
+  congr_fun (Matrix.single_one_vecMul ..) j
 
 theorem range_vecMulLinear (M : Matrix m n R) :
     LinearMap.range M.vecMulLinear = span R (range M) := by
@@ -258,25 +253,17 @@ theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
     (LinearMap.ker M.mulVecLin) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   simp only [Submodule.eq_bot_iff, LinearMap.mem_ker, Matrix.mulVecLin_apply]
 
-theorem Matrix.mulVec_single_one [DecidableEq n] (M : Matrix m n R) (i j) :
-    (M *ᵥ Pi.single j 1) i = M i j :=
-  (congr_fun (Matrix.mulVec_single _ _ (1 : R)) i).trans <| mul_one _
-
 set_option linter.deprecated false in
 @[deprecated Matrix.mulVec_single_one (since := "2024-08-09")]
 theorem Matrix.mulVec_stdBasis [DecidableEq n] (M : Matrix m n R) (i j) :
     (M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1) i = M i j :=
-  Matrix.mulVec_single_one ..
-
-theorem Matrix.mulVec_single_apply [DecidableEq n] (M : Matrix m n R) (j) :
-    M *ᵥ Pi.single j 1 = Mᵀ j :=
-  funext fun i ↦ Matrix.mulVec_single_one M i j
+  congr_fun (Matrix.mulVec_single_one ..) i
 
 set_option linter.deprecated false in
-@[simp, deprecated Matrix.mulVec_single_apply (since := "2024-08-09")]
+@[simp, deprecated Matrix.mulVec_single_one (since := "2024-08-09")]
 theorem Matrix.mulVec_stdBasis_apply [DecidableEq n] (M : Matrix m n R) (j) :
     M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1 = Mᵀ j :=
-  Matrix.mulVec_single_apply ..
+  Matrix.mulVec_single_one ..
 
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range Mᵀ) := by
@@ -300,12 +287,12 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
   invFun := Matrix.mulVecLin
   right_inv M := by
     ext i j
-    simp only [Matrix.mulVec_single_one, Matrix.mulVecLin_apply, of_apply]
+    simp only [Matrix.mulVec_single_one, Matrix.mulVecLin_apply, of_apply, transpose_apply]
   left_inv f := by
     apply (Pi.basisFun R n).ext
     intro j; ext i
-    simp only [Pi.basisFun_apply, LinearMap.coe_single, Matrix.mulVec_single_one,
-      Matrix.mulVecLin_apply, of_apply]
+    simp only [Pi.basisFun_apply, Matrix.mulVec_single_one,
+      Matrix.mulVecLin_apply, of_apply, transpose_apply]
   map_add' f g := by
     ext i j
     simp only [Pi.add_apply, LinearMap.add_apply, of_apply, Matrix.add_apply]

@@ -1586,6 +1586,14 @@ theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] 
     (i : m) (x : R) : Pi.single i x ᵥ* M = fun j => x * M i j :=
   funext fun _ => single_dotProduct _ _ _
 
+theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
+    (M : Matrix m n R) (j : n) :
+    M *ᵥ Pi.single j 1 = Mᵀ j := by ext; simp
+
+theorem single_one_vecMul [Fintype m] [DecidableEq m] [NonAssocSemiring R]
+    (i : m) (M : Matrix m n R) :
+    Pi.single i 1 ᵥ* M = M i := by simp
+
 -- @[simp] -- Porting note: not in simpNF
 theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
     (j : n) (x : R) : diagonal v *ᵥ Pi.single j x = Pi.single j (v j * x) := by
