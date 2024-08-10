@@ -13,10 +13,10 @@ We define rank one valuations.
 
 ## Main Definitions
 
-* `RankLeOne` : A valuation `v` has rank at most one it its image is contained in `ℝ≥0` 
-  Note that this class contains the data of the inclusion of the codomain of `v` into `ℝ≥0`. 
+* `RankLeOne` : A valuation `v` has rank at most one it its image is contained in `ℝ≥0`
+  Note that this class contains the data of the inclusion of the codomain of `v` into `ℝ≥0`.
 
-* `RankOne` : A valuation `v` has rank one if it is nontrivial and of rank at most one. 
+* `RankOne` : A valuation `v` has rank one if it is nontrivial and of rank at most one.
 
 ## Tags
 
@@ -60,7 +60,7 @@ theorem strictMono_rangeGroup : StrictMono (hom_rangeGroup v) := by
   intro x y h
   simpa only [Units.val_lt_val, Subtype.coe_lt_coe, h] using (strictMono v h)
 
-/-- If `v` is a valuation of rank at most one, 
+/-- If `v` is a valuation of rank at most one,
 and if `x : Γ₀` has image `0` under `RankLeOne.hom v`, then `x = 0`. -/
 theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
   refine (eq_of_le_of_not_lt (zero_le' (a := x)) fun h_lt ↦ ?_).symm
@@ -68,7 +68,7 @@ theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
   rw [_root_.map_zero, hx] at hs
   exact hs.false
 
-/-- If `v` is a valuation of rank at most one, 
+/-- If `v` is a valuation of rank at most one,
 then`x : Γ₀` has image `0` under `RankLeOne.hom v` if and only if `x = 0`. -/
 theorem hom_eq_zero_iff {x : Γ₀} : hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, _root_.map_zero]⟩
