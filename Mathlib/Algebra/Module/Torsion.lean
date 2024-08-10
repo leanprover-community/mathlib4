@@ -860,3 +860,22 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     exact ⟨_, Int.natAbs_pos.2 (nonZeroDivisors.coe_ne_zero n), natAbs_nsmul_eq_zero.2 hn⟩
 
 end AddMonoid
+
+section InfiniteRange
+
+@[simp]
+lemma infinite_range_add_smul_iff
+    [AddCommGroup M] [Ring R] [Module R M] [Infinite R] [NoZeroSMulDivisors R M] (x y : M) :
+    (Set.range <| fun r : R ↦ x + r • y).Infinite ↔ y ≠ 0 := by
+  refine ⟨fun h hy ↦ by simp [hy] at h, fun h ↦ Set.infinite_range_of_injective fun r s hrs ↦ ?_⟩
+  rw [add_right_inj] at hrs
+  exact smul_left_injective _ h hrs
+
+@[simp]
+lemma infinite_range_add_nsmul_iff [AddCommGroup M] [NoZeroSMulDivisors ℤ M] (x y : M) :
+    (Set.range <| fun n : ℕ ↦ x + n • y).Infinite ↔ y ≠ 0 := by
+  refine ⟨fun h hy ↦ by simp [hy] at h, fun h ↦ Set.infinite_range_of_injective fun r s hrs ↦ ?_⟩
+  rw [add_right_inj, ← natCast_zsmul, ← natCast_zsmul] at hrs
+  simpa using smul_left_injective _ h hrs
+
+end InfiniteRange
