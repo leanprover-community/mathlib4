@@ -1504,9 +1504,10 @@ lemma prod_powersetCard (n : ℕ) (s : Finset α) (f : ℕ → β) :
 @[to_additive]
 theorem prod_flip {n : ℕ} (f : ℕ → β) :
     (∏ r ∈ range (n + 1), f (n - r)) = ∏ k ∈ range (n + 1), f k := by
-  induction' n with n ih
-  · rw [prod_range_one, prod_range_one]
-  · rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
+  induction n with
+  | zero => rw [prod_range_one, prod_range_one]
+  | succ n ih =>
+    rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
     simp [← ih]
 
 @[to_additive]

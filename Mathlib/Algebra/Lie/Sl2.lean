@@ -99,9 +99,10 @@ local notation "ψ" n => ((toEnd R L M f) ^ n) m
 
 lemma lie_h_pow_toEnd_f (n : ℕ) :
     ⁅h, ψ n⁆ = (μ - 2 * n) • ψ n := by
-  induction' n with n ih
-  · simpa using P.lie_h
-  · rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+  induction n with
+  | zero => simpa using P.lie_h
+  | succ n ih =>
+    rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
       leibniz_lie h, t.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
     congr
     ring
@@ -116,11 +117,13 @@ lemma lie_f_pow_toEnd_f (P : HasPrimitiveVectorWith t m μ) (n : ℕ) :
 
 lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
     ⁅e, ψ (n + 1)⁆ = ((n + 1) * (μ - n)) • ψ n := by
-  induction' n with n ih
-  · simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
-      pow_zero, LinearMap.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
-      add_zero]
-  · rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
+  induction n with
+  | zero =>
+      simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
+        pow_zero, LinearMap.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
+        add_zero]
+  | succ n ih =>
+    rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
       lie_h_pow_toEnd_f P, ih, lie_smul, lie_f_pow_toEnd_f P, ← add_smul,
       Nat.cast_add, Nat.cast_one]
     congr

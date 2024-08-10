@@ -478,9 +478,9 @@ theorem monomial_one_one_eq_X : monomial 1 (1 : R) = X :=
   rfl
 
 theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
-  induction' n with n ih
-  · simp [monomial_zero_one]
-  · rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, mul_one]
+  induction n with
+  | zero => simp [monomial_zero_one]
+  | succ n ih => rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, mul_one]
 
 @[simp]
 theorem toFinsupp_X : X.toFinsupp = Finsupp.single 1 (1 : R) :=
@@ -496,9 +496,10 @@ theorem X_mul : X * p = p * X := by
   simp [AddMonoidAlgebra.mul_apply, AddMonoidAlgebra.sum_single_index, add_comm]
 
 theorem X_pow_mul {n : ℕ} : X ^ n * p = p * X ^ n := by
-  induction' n with n ih
-  · simp
-  · conv_lhs => rw [pow_succ]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    conv_lhs => rw [pow_succ]
     rw [mul_assoc, X_mul, ← mul_assoc, ih, mul_assoc, ← pow_succ]
 
 /-- Prefer putting constants to the left of `X`.
