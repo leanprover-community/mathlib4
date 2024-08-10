@@ -332,14 +332,39 @@ theorem dist_lt_of_dist_lt_modulus (f : C(α, β)) (ε : ℝ) (h : 0 < ε) {a b 
 
 /-- A family of continuous maps `f : α → C(β, γ)` is continuous on an open set if it is
   pointwise continuous, provided that `β` is compact and `α` is locally compact. -/
-lemma continuousOn_of_pointwise_continuousOn_of_compact {α : Type*} {β : Type*} {γ : Type*}
-    [UniformSpace α] [UniformSpace β] [LocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
-    {f : α → C(β, γ)} {U : Set α} (hU : IsOpen U)
+lemma continuousOn_of_pointwise_continuousOn_of_compact' {α : Type*} {β : Type*} {γ : Type*}
+    [UniformSpace α] [TopologicalSpace β] [T2Space β] [LocallyCompactSpace α] [CompactSpace β]
+    [UniformSpace γ] {f : α → C(β, γ)} {U : Set α} (hU : IsOpen U)
     (h : ContinuousOn (fun ⟨a, b⟩ => f a b) (U ×ˢ univ)) :
     ContinuousOn f U := by
+  let unifβ : UniformSpace β := uniformSpaceOfCompactT2
   intro a aU
   rw [ContinuousWithinAt, ContinuousMap.tendsto_iff_tendstoUniformly, hU.nhdsWithin_eq aU]
   exact ContinuousOn.tendstoUniformly (IsOpen.mem_nhds hU aU) h
+
+/-- A family of continuous maps `f : α → C(β, γ)` is continuous on an open set if it is
+  pointwise continuous, provided that `β` is compact and `α` is locally compact. -/
+lemma continuousOn_of_pointwise_continuousOn_of_compact {α : Type*} {β : Type*} {γ : Type*}
+    [TopologicalSpace α] [T2Space α] [LocallyCompactSpace α] [TopologicalSpace β] [T2Space β]
+    [CompactSpace β] [UniformSpace γ] {f : α → C(β, γ)} {U : Set α} (hU : IsOpen U)
+    (h : ContinuousOn (fun ⟨a, b⟩ => f a b) (U ×ˢ univ)) :
+    ContinuousOn f U := by
+  intro a aU
+  rcases LocallyCompactSpace.local_compact_nhds _ _ (IsOpen.mem_nhds hU aU) with ⟨K, hxK, hKU, hK⟩
+  have aK : a ∈ K := mem_of_mem_nhds hxK
+  have compactK : CompactSpace K := isCompact_iff_compactSpace.mp hK
+  let unifK : UniformSpace K := uniformSpaceOfCompactT2
+  have h₁ : ContinuousOn f K := by
+    rw [continuousOn_iff_continuous_restrict]
+    rw [continuous_iff_continuousOn_univ]
+    refine continuousOn_of_pointwise_continuousOn_of_compact' isOpen_univ ?_
+    simp only
+    have : (fun (x : K × β) ↦ (K.restrict f x.1) x.2)
+        = (fun ⟨a, b⟩ => f a b) ∘ (fun x => (⟨x.1, x.2⟩ : α × β)) := by rfl
+    rw [this]
+    refine ContinuousOn.comp (t := K ×ˢ univ) ?_ (by fun_prop) fun _ _ => by simp
+    exact ContinuousOn.mono (s := U ×ˢ univ) h fun ⟨k, b⟩ ⟨hk, _⟩ => ⟨hKU hk, Set.mem_univ _⟩
+  exact ContinuousWithinAt.mono_of_mem (h₁ a aK) <| mem_nhdsWithin_of_mem_nhds hxK
 
 end UniformContinuity
 
