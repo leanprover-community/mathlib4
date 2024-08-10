@@ -410,7 +410,7 @@ lemma restriction_eq (h : v x ≠ 0) : WithZero.unzero (v.restriction_ne_zero h)
 
 @[simp]
 lemma restriction_eq' (h : v x ≠ 0) : WithZero.unzero (v.restriction_ne_zero h) =
-  Units.mk0 (v x) h := by rw [v.restriction_eq h]
+    Units.mk0 (v x) h := by rw [v.restriction_eq h]
 
 
 --from here on the old stuff
