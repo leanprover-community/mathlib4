@@ -1362,14 +1362,8 @@ theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
 
-/--
-Note: Version with (hl₁ : 𝓝 x ≤ l₁) is also true.
-
-Example usage:
-```
-example (x : ℝ) (f : ℝ → ℝ) (hf : Tendsto f (𝓝[>] x) atTop) : ¬ ContinuousAt f x := by
-  not_continuousAt_of_tendsto hf nhdsWithin_le_nhds (by simp)
-```
+/-- If a function ``f` tends to somewhere other than `𝓝 (f x)` at `x`,
+then `f` is not continuous at `x`
 -/
 lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter Y} {x : X}
     (hf : Tendsto f l₁ l₂) [l₁.NeBot] (hl₁ : l₁ ≤ 𝓝 x) (hl₂ : Disjoint (𝓝 (f x)) l₂) :
