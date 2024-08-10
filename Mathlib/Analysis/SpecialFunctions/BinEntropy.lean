@@ -418,7 +418,6 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
 
 lemma not_continuousAt_deriv_qaryEntropy_one {q : ℕ} :
     ¬ContinuousAt (deriv (qaryEntropy q)) 1 := by
-  apply not_continuousAt_of_tendsto_nhdsWithin_Iio_atBot
   have tendstoBot : Tendsto (fun x ↦ log (q - 1) + log (1 - x) - log x) (𝓝[<] 1) atBot := by
     have : (fun (x:ℝ) ↦ log (q - 1) + (1 - x).log - x.log)
       = (fun x ↦ log (q - 1) + ((1 - x).log - x.log)) := by
@@ -427,7 +426,8 @@ lemma not_continuousAt_deriv_qaryEntropy_one {q : ℕ} :
     rw [this]
     apply tendsto_atBot_add_const_left
     exact tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot
-  apply Filter.Tendsto.congr' _ tendstoBot
+  apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoBot) nhdsWithin_le_nhds
+  simp only [disjoint_nhds_atBot_iff, not_isBot, not_false_eq_true]
   filter_upwards [Ioo_mem_nhdsWithin_Iio' (show 1 - 2⁻¹ < (1:ℝ) by norm_num)]
   intros
   apply (deriv_qaryEntropy _ _).symm
@@ -438,16 +438,13 @@ lemma not_continuousAt_deriv_qaryEntropy_one {q : ℕ} :
 
 lemma not_continuousAt_deriv_qaryEntropy_zero {q : ℕ} :
     ¬ContinuousAt (deriv (qaryEntropy q)) 0 := by
-  apply not_continuousAt_of_tendsto_nhdsWithin_Ioi_atTop
-  have asdf : Tendsto (fun x ↦ log (q - 1) + log (1 - x) - log x) (𝓝[>] 0) atTop := by
+  have tendstoTop : Tendsto (fun x ↦ log (q - 1) + log (1 - x) - log x) (𝓝[>] 0) atTop := by
     have : (fun (x:ℝ) ↦ log (q - 1) + (1 - x).log - x.log)
-      = (fun x ↦ log (q - 1) + ((1 - x).log - x.log)) := by
-      ext
-      ring
+        = (fun x ↦ log (q - 1) + ((1 - x).log - x.log)) := by ext; ring
     rw [this]
-    apply tendsto_atTop_add_const_left
-    exact tendsto_log_one_sub_sub_log_nhdsWithin_atAtop
-  apply Filter.Tendsto.congr' _ asdf
+    exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsWithin_atAtop
+  apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoTop) nhdsWithin_le_nhds
+  simp only [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
   filter_upwards [Ioo_mem_nhdsWithin_Ioi' (show (0:ℝ) < 2⁻¹ by norm_num)]
   intros
   apply (deriv_qaryEntropy _ _).symm
