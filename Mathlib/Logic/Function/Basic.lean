@@ -754,6 +754,8 @@ namespace Involutive
 
 variable {α : Sort u} {f : α → α} (h : Involutive f)
 
+include h
+
 @[simp]
 theorem comp_self : f ∘ f = id :=
   funext h

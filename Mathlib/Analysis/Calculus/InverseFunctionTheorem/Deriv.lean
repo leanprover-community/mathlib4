@@ -23,6 +23,7 @@ noncomputable section
 namespace HasStrictDerivAt
 
 variable (f' a : 𝕜) (hf : HasStrictDerivAt f f' a) (hf' : f' ≠ 0)
+include hf hf'
 
 /-- A function that is inverse to `f` near `a`. -/
 abbrev localInverse : 𝕜 → 𝕜 :=

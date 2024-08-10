@@ -76,7 +76,7 @@ theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f 
   rw [natDegree_expand]
 
 theorem HasSeparableContraction.dvd_degree' : ∃ m : ℕ, hf.degree * q ^ m = f.natDegree :=
-  (Classical.choose_spec hf).dvd_degree' hf
+  (Classical.choose_spec hf).dvd_degree'
 
 /-- The separable degree divides the degree. -/
 theorem HasSeparableContraction.dvd_degree : hf.degree ∣ f.natDegree :=

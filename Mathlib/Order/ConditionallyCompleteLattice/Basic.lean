@@ -1354,6 +1354,7 @@ end WithTop
 namespace Monotone
 
 variable [Preorder α] [ConditionallyCompleteLattice β] {f : α → β} (h_mono : Monotone f)
+include h_mono
 
 /-! A monotone function into a conditionally complete lattice preserves the ordering properties of
 `sSup` and `sInf`. -/
