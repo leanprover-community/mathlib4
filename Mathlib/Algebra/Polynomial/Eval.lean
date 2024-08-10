@@ -104,8 +104,8 @@ def eval₂AddMonoidHom : R[X] →+ S where
 
 @[simp]
 theorem eval₂_natCast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
-  induction n with -- Porting note: `Nat.zero_eq` is required.
-  | zero => simp only [eval₂_zero, Nat.cast_zero, Nat.zero_eq]
+  induction n with
+  | zero => simp only [eval₂_zero, Nat.cast_zero]
   | succ n ih => rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
 
 @[deprecated (since := "2024-04-17")]
