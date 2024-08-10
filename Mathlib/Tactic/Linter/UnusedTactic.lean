@@ -50,7 +50,7 @@ before and after and see if there is some change.
 Yet another linter copied from the `unreachableTactic` linter!
 -/
 
-open Lean Elab
+open Lean Elab Std
 
 namespace Mathlib.Linter
 
