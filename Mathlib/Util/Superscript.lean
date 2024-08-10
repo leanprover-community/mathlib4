@@ -37,9 +37,9 @@ instance : Hashable Char := ⟨fun c => hash c.1⟩
 /-- A bidirectional character mapping. -/
 structure Mapping where
   /-- Map from "special" (e.g. superscript) characters to "normal" characters. -/
-  toNormal : HashMap Char Char := {}
+  toNormal : Std.HashMap Char Char := {}
   /-- Map from "normal" text to "special" (e.g. superscript) characters. -/
-  toSpecial : HashMap Char Char := {}
+  toSpecial : Std.HashMap Char Char := {}
   deriving Inhabited
 
 /-- Constructs a mapping (intended for compile time use). Panics on violated invariants. -/

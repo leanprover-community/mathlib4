@@ -128,7 +128,7 @@ structure LambdaTheorem where
 /-- -/
 structure LambdaTheorems where
   /-- map: function property name × theorem type → lambda theorem -/
-  theorems : HashMap (Name × LambdaTheoremType) LambdaTheorem := {}
+  theorems : Std.HashMap (Name × LambdaTheoremType) LambdaTheorem := {}
   deriving Inhabited
 
 
@@ -151,7 +151,7 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
 /-- -/
 def getLambdaTheorem (funPropName : Name) (type : LambdaTheoremType) :
     CoreM (Option LambdaTheorem) := do
-  return (lambdaTheoremsExt.getState (← getEnv)).theorems.find? (funPropName,type)
+  return (lambdaTheoremsExt.getState (← getEnv)).theorems[(funPropName,type)]?
 
 
 --------------------------------------------------------------------------------
