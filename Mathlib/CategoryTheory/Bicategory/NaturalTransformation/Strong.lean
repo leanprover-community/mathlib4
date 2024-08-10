@@ -199,5 +199,31 @@ instance Pseudofunctor.categoryStruct : CategoryStruct (Pseudofunctor B C) where
   id F := StrongOplaxNatTrans.id F.toOplax
   comp := StrongOplaxNatTrans.vcomp
 
+variable {F G : Pseudofunctor B C}
+
+-- TODO: move after refactor
+lemma StrongPseudoNatTrans.naturality_id_hom (α : F ⟶ G) (a : B) :
+    (α.naturality (𝟙 a)).hom = (F.mapId a).hom ▷ α.app a ≫
+      (λ_ (α.app a)).hom ≫ (ρ_ (α.app a)).inv ≫ α.app a ◁ (G.mapId a).inv := by
+  rw [← assoc, ← IsIso.comp_inv_eq]
+  simp
+  sorry
+
+lemma StrongPseudoNatTrans.naturality_naturality_hom (α : F ⟶ G) {a b : B}
+    (f g : a ⟶ b) (η : f ≅ g):
+      (α.naturality g).hom =
+       (F.map₂ η.inv) ▷ α.app b ≫ (α.naturality f).hom ≫ α.app a ◁ G.map₂ η.hom := by
+  simp [α.naturality_comp]
+  sorry
+
+lemma StrongPseudoNatTrans.naturality_comp_hom (α : F ⟶ G) {a b c : B}
+    (f : a ⟶ b) (g : b ⟶ c) :
+      (α.naturality (f ≫ g)).hom =
+        (F.mapComp f g).hom ▷ α.app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (α.naturality g).hom ≫
+        (α_ _ _ _).inv ≫ (α.naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom ≫
+        α.app a ◁ (G.mapComp f g).inv := by
+  simp [α.naturality_comp]
+  sorry
+
 
 end CategoryTheory

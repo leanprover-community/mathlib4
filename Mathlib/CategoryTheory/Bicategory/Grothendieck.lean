@@ -9,6 +9,9 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 
+import Mathlib.Tactic.CategoryTheory.Coherence
+
+
 /-!
 # The Grothendieck construction
 
@@ -26,7 +29,7 @@ The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first
 * On morphisms, it sends `(f, h)` to `f`
 
 ## TODO
-1. Implement functoriality for the Grothendieck construction.
+1. Implement more functoriality for the Grothendieck construction (make things into pseudofunctors).
 2. Obtain the results in `CategoryTheory.Grothendieck` as a specialization of these results.
 
 ## References
@@ -134,25 +137,35 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   -- TODO: give names to structure for `f`
   map {a b} f := {
     fst := f.1
-    -- Now: f : a.fiber ⟶ (F.map f.1.op.toLoc).obj b.fiber
-    -- thus image of f through α.app.map should be a morphism from
-    -- α.app.obj a.fiber = obj (..).fiber to α.app.obj ((F.map f.1.op.toLoc).obj b.fiber)
-    -- Thus, need to commute this last thing. This is done using α.naturality somehow
-    -- this is PROBABLY correct...
     snd := (α.app ⟨op a.base⟩).map f.2 ≫ (α.naturality f.1.op.toLoc).hom.app b.fiber
   }
   map_id a := by
-    ext
+    ext1
     · simp
     dsimp
-    rw [comp_id]
-
-    sorry -- this should follow from variation of naturality_id (after taking inverses)
+    rw [StrongPseudoNatTrans.naturality_id_hom]
+    simp [← Cat.whiskerRight_app, ← whiskerRightIso_inv, ← whiskerRightIso_hom]
+    -- Two tools would be great:
+    -- 1. "appify" bicat lemmas
+    -- 1.5 "unappify" expressions!! (can this even be possible?)
+    -- 2. inversify expressions
   map_comp {a b c} f g := by
     ext
-    · simp
+    · dsimp
     dsimp
-    sorry -- something something naturality_comp
+    rw [StrongPseudoNatTrans.naturality_comp_hom]
+    simp
+    slice_lhs 2 4 =>
+      repeat rw [← Functor.map_comp]
+      simp
+    simp
+    congr 1
+    rw [← assoc]
+    conv_rhs => rw [← assoc]
+    congr 1
+    rw [← Functor.comp_map, ← Functor.comp_map]
+    rw [NatTrans.naturality] -- TODO: need Cat version!
+    rfl
 
 -- maybe some API here...!
 
