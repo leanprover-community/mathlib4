@@ -95,7 +95,7 @@ lemma binaryEntropy_pos {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < binaryEntr
   have pos_sum_pos_pos (a b : ℝ) (ha : 0 ≤ a) (hb : b < 0) : 0 < a - b := by linarith
   refine pos_sum_pos_pos (-p * log p) ((1 - p) * log (1 - p)) ?_ ?_
   · rw [show -p * log p = p * (-log p) by ring]
-    exact (Real.mul_pos (by linarith) (by linarith [log_neg pgt0 ple1])).le
+    exact (Real.mul_pos (by linarith) (by linarith [log_neg pgt0 plt1])).le
   · exact mul_neg_of_pos_of_neg (by linarith) (log_neg (by linarith) (by linarith))
 
 lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < qaryEntropy q p := by
@@ -105,7 +105,7 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < qa
     exact Real.log_intCast_nonneg _
   have rest_is_pos : 0 < -(p * p.log) - (1 - p) * (1 - p).log := by
     simp only [← neg_mul, ← binaryEntropy_eq']
-    exact binaryEntropy_pos pgt0 ple1
+    exact binaryEntropy_pos pgt0 plt1
   linarith
 
 /- Outside usual range of `binaryEntropy`. This is due to `log x = log |x|` -/
@@ -126,7 +126,7 @@ lemma binaryEntropy_neg_of_neg {p : ℝ} (hp : p < 0) : binaryEntropy p < 0 := b
 /- Outside usual range of `binaryEntropy`. This is due to `log x = log |x|` -/
 lemma binaryEntropy_neg_of_gt_one {p : ℝ} (hp : 1 < p) : binaryEntropy p < 0 := by
   let x := p - 2⁻¹
-  rw [show p = 2⁻¹ + x by ring, binaryEntropy_add_onehalf]
+  rw [show p = 2⁻¹ + x by ring, binaryEntropy_two_inv_add]
   have : 2⁻¹ - x < 0 := by ring_nf; linarith
   exact binaryEntropy_neg_of_neg this
 
@@ -175,13 +175,13 @@ lemma binaryEntropy_lt_log2_of_lt_one_half {p : ℝ} (p_nonneg : 0 ≤ p) (p_lt 
 lemma binaryEntropy_lt_log2_of_gt_half {p : ℝ} (h : 1/2 < p) (h2 : p ≤ 1) :
     binaryEntropy p < log 2 := by
   rw [← binaryEntropy_one_sub]
-  exact binaryEntropy_lt_log2_of_lt_half (by linarith) (by linarith)
+  exact binaryEntropy_lt_log2_of_lt_one_half (by linarith) (by linarith)
 
 lemma binaryEntropy_eq_log2_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
     binaryEntropy p = log 2 ↔ p = 1/2 := by
   constructor <;> intro h
   · by_cases h' : p < 1/2
-    · linarith [binaryEntropy_lt_log2_of_lt_half pge0 h']
+    · linarith [binaryEntropy_lt_log2_of_lt_one_half pge0 h']
     · by_cases pgthalf : 1/2 < p
       · linarith [binaryEntropy_lt_log2_of_gt_half pgthalf ple1]
       · linarith
@@ -194,7 +194,7 @@ lemma binaryEntropy_le_log2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
   · by_cases gg: binaryEntropy p = log 2
     · simp only [le_refl, gg]
     · by_cases hhh: p < 1/2
-      · linarith [binaryEntropy_lt_log2_of_lt_half pge0 hhh]
+      · linarith [binaryEntropy_lt_log2_of_lt_one_half pge0 hhh]
       · have : 1/2 < p := by
           refine Ne.lt_of_le ?_ ?_
           · intro
