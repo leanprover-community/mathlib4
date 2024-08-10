@@ -306,6 +306,7 @@ theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
 
 theorem proj_comp_single (i j : ι) : (proj i).comp (single R φ j) = diag j i := by
   rw [single_eq_pi_diag, proj_pi]
+
 end
 
 /-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements

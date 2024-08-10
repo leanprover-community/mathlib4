@@ -171,6 +171,13 @@ theorem linearIndependent_single [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, M
     convert Set.disjoint_singleton_left.2 hiJ using 0
   exact (disjoint_single_single _ _ _ _ h₃).mono h₁ h₂
 
+set_option linter.deprecated false in
+@[deprecated linearIndependent_single (since := "2024-08-09")]
+theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
+    [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
+    LinearIndependent R fun ji : Σj, ιs j => stdBasis R Ms ji.1 (v ji.1 ji.2) :=
+  linearIndependent_single _ hs
+
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
 section Fintype
