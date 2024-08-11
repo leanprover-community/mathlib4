@@ -55,7 +55,7 @@ remember to force recompilation of any files that call `polyrith`.
 * See the book [*Ideals, Varieties, and Algorithms*][coxlittleOshea1997] by David Cox, John Little,
   and Donal O'Shea for the background theory on Groebner bases
 * This code was heavily inspired by the code for the tactic `linarith`, which was written by
-  Robert Lewis, who advised me on this project as part of a Computer Science independent study
+  Robert Y. Lewis, who advised me on this project as part of a Computer Science independent study
   at Brown University.
 
 -/

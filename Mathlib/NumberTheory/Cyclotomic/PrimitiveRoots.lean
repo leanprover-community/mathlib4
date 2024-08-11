@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Best, Riccardo Brasca, Eric Rodriguez
+Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
 import Mathlib.Data.PNat.Prime
 import Mathlib.Algebra.IsPrimePow
