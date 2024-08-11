@@ -844,20 +844,15 @@ theorem mk_pow (a : α) (n : ℕ) : Associates.mk (a ^ n) = Associates.mk a ^ n 
 theorem dvd_eq_le : ((· ∣ ·) : Associates α → Associates α → Prop) = (· ≤ ·) :=
   rfl
 
-theorem mul_eq_one_iff {x y : Associates α} : x * y = 1 ↔ x = 1 ∧ y = 1 :=
-  Iff.intro
-    (Quotient.inductionOn₂ x y fun a b h =>
-      have : a * b ~ᵤ 1 := Quotient.exact h
-      ⟨Quotient.sound <| associated_one_of_associated_mul_one this,
-        Quotient.sound <| associated_one_of_associated_mul_one (b := a) (by rwa [mul_comm])⟩)
-    (by simp (config := { contextual := true }))
-
-theorem units_eq_one (u : (Associates α)ˣ) : u = 1 :=
-  Units.ext (mul_eq_one_iff.1 u.val_inv).1
-
 instance uniqueUnits : Unique (Associates α)ˣ where
-  default := 1
-  uniq := Associates.units_eq_one
+  uniq := by
+    rintro ⟨a, b, hab, hba⟩
+    revert hab hba
+    exact Quotient.inductionOn₂ a b $ fun a b hab hba ↦ Units.ext $ Quotient.sound $
+      associated_one_of_associated_mul_one $ Quotient.exact hab
+
+@[deprecated (since := "2024-07-22")] alias mul_eq_one_iff := mul_eq_one
+@[deprecated (since := "2024-07-22")] protected alias units_eq_one := Subsingleton.elim
 
 @[simp]
 theorem coe_unit_eq_one (u : (Associates α)ˣ) : (u : Associates α) = 1 := by

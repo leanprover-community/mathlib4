@@ -220,7 +220,7 @@ theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
   nontriviality R
   obtain ⟨q, h⟩ := hpu.exists_right_inv
   have := hm.natDegree_mul' (right_ne_zero_of_mul_eq_one h)
-  rw [h, natDegree_one, eq_comm, add_eq_zero_iff] at this
+  rw [h, natDegree_one, eq_comm, add_eq_zero] at this
   exact hm.natDegree_eq_zero_iff_eq_one.mp this.1
 
 theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=

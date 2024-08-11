@@ -511,7 +511,8 @@ theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜}
   rcases _root_.em (p = 0 ∧ q = 0) with (⟨rfl, rfl⟩ | hpq)
   · use x, hx
     simp
-  · replace hpq : 0 < p + q := (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff' hp hq).1 hpq)
+  · replace hpq : 0 < p + q :=
+      (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff_of_nonneg hp hq).1 hpq)
     refine ⟨_, convex_iff_div.1 h hx hy hp hq hpq, ?_⟩
     simp only [smul_add, smul_smul, mul_div_cancel₀ _ hpq.ne']
 

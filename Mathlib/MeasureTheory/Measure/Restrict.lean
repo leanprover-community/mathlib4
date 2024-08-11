@@ -592,7 +592,7 @@ theorem ae_smul_measure {p : α → Prop} [Monoid R] [DistribMulAction R ℝ≥0
 
 theorem ae_add_measure_iff {p : α → Prop} {ν} :
     (∀ᵐ x ∂μ + ν, p x) ↔ (∀ᵐ x ∂μ, p x) ∧ ∀ᵐ x ∂ν, p x :=
-  add_eq_zero_iff
+  add_eq_zero
 
 theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ)
     (h : g =ᵐ[ν] g') (h2 : μ.map f ≪ ν) : g ∘ f =ᵐ[μ] g' ∘ f :=

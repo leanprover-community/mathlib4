@@ -292,7 +292,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         apply Finset.sum_congr rfl fun i _hi => ?_
         dsimp only [w]
         simp only [← Npos, Nat.not_lt_zero, Nat.add_succ_sub_one, add_zero, if_false,
-          add_eq_zero_iff, Nat.one_ne_zero, false_and_iff, Nat.succ_add_sub_one, zero_add]
+          add_eq_zero, Nat.one_ne_zero, false_and_iff, Nat.succ_add_sub_one, zero_add]
         rw [add_comm 1 i]
       _ = ∑ i ∈ Finset.Ico 1 (n + 1), edist (f (w (i + 1))) (f (w i)) := by
         rw [Finset.range_eq_Ico]

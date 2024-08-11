@@ -360,7 +360,7 @@ end CommRing
 theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
-  obtain ⟨ha, hb⟩ := (add_eq_zero_iff' (sq_nonneg _) (sq_nonneg _)).mp h'
+  obtain ⟨ha, hb⟩ := (add_eq_zero_iff_of_nonneg (sq_nonneg _) (sq_nonneg _)).mp h'
   obtain rfl := pow_eq_zero ha
   obtain rfl := pow_eq_zero hb
   exact not_isCoprime_zero_zero h

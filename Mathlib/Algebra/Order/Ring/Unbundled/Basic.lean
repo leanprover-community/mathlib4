@@ -915,7 +915,7 @@ lemma mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]
     [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α]
     [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· < ·)] :
     a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
-  rw [add_eq_zero_iff', mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
+  rw [add_eq_zero_iff_of_nonneg, mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
     apply mul_self_nonneg
 
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]
