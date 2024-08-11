@@ -51,32 +51,24 @@ group action
 
 open Function
 
-variable {R R' M M' N G A B α β : Type*}
+variable {A M N M₀ N₀ G G₀ R α : Type*}
 
 section GroupWithZero
-variable [GroupWithZero α] [MulAction α β] {a : α}
+variable [GroupWithZero G₀] [MulAction G₀ α] {a : G₀}
 
-protected lemma MulAction.bijective₀ (ha : a ≠ 0) : Bijective (a • · : β → β) :=
+protected lemma MulAction.bijective₀ (ha : a ≠ 0) : Bijective (a • · : α → α) :=
   MulAction.bijective <| Units.mk0 a ha
 
-protected lemma MulAction.injective₀ (ha : a ≠ 0) : Injective (a • · : β → β) :=
+protected lemma MulAction.injective₀ (ha : a ≠ 0) : Injective (a • · : α → α) :=
   (MulAction.bijective₀ ha).injective
 
-protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : β → β) :=
+protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : α → α) :=
   (MulAction.bijective₀ ha).surjective
 
 end GroupWithZero
 
 section DistribMulAction
 variable [Group G] [Monoid M] [AddMonoid A] [DistribMulAction M A]
-
--- Porting note: this probably is no longer relevant.
-/-! Since Lean 3 does not have definitional eta for structures, we have to make sure
-that the definition of `DistribMulAction.toDistribSMul` was done correctly,
-and the two paths from `DistribMulAction` to `SMul` are indeed definitionally equal. -/
-example :
-    (DistribMulAction.toMulAction.toSMul : SMul M A) = DistribMulAction.toDistribSMul.toSMul := rfl
-
 variable (A)
 
 /-- Each element of the group defines an additive monoid isomorphism.
@@ -87,7 +79,7 @@ def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
   __ := toAddMonoidHom A x
   __ := MulAction.toPermHom G A x
 
-variable (G M)
+variable (G)
 
 /-- Each element of the group defines an additive monoid isomorphism.
 
@@ -102,34 +94,31 @@ end DistribMulAction
 
 /-- Scalar multiplication as a monoid homomorphism with zero. -/
 @[simps]
-def smulMonoidWithZeroHom {α β : Type*} [MonoidWithZero α] [MulZeroOneClass β]
-    [MulActionWithZero α β] [IsScalarTower α β β] [SMulCommClass α β β] : α × β →*₀ β :=
+def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActionWithZero M₀ N₀]
+    [IsScalarTower M₀ N₀ N₀] [SMulCommClass M₀ N₀ N₀] : M₀ × N₀ →*₀ N₀ :=
   { smulMonoidHom with map_zero' := smul_zero _ }
 
 section MulDistribMulAction
-
-variable [Group α] [Monoid β] [MulDistribMulAction α β]
-variable (β)
+variable [Group G] [Monoid M] [MulDistribMulAction G M]
+variable (M)
 
 /-- Each element of the group defines a multiplicative monoid isomorphism.
 
 This is a stronger version of `MulAction.toPerm`. -/
 @[simps (config := { simpRhs := true })]
-def MulDistribMulAction.toMulEquiv (x : α) : β ≃* β :=
-  { MulDistribMulAction.toMonoidHom β x, MulAction.toPermHom α β x with }
+def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
+  { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
 
-variable (α)
+variable (G)
 
 /-- Each element of the group defines a multiplicative monoid isomorphism.
 
 This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]
-def MulDistribMulAction.toMulAut : α →* MulAut β where
-  toFun := MulDistribMulAction.toMulEquiv β
+def MulDistribMulAction.toMulAut : G →* MulAut M where
+  toFun := MulDistribMulAction.toMulEquiv M
   map_one' := MulEquiv.ext (one_smul _)
   map_mul' _ _ := MulEquiv.ext (mul_smul _ _)
-
-variable {α β}
 
 end MulDistribMulAction
 
@@ -143,8 +132,8 @@ instance applyMulDistribMulAction [Monoid M] : MulDistribMulAction (MulAut M) M 
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-  smul_one := MulEquiv.map_one
-  smul_mul := MulEquiv.map_mul
+  smul_one := map_one
+  smul_mul := map_mul
 
 end MulAut
 
@@ -155,8 +144,8 @@ namespace AddAut
 This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction [AddMonoid A] : DistribMulAction (AddAut A) A where
   smul := (· <| ·)
-  smul_zero := AddEquiv.map_zero
-  smul_add := AddEquiv.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
