@@ -9,9 +9,6 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 
-import Mathlib.Tactic.CategoryTheory.Coherence
-
-
 /-!
 # The Grothendieck construction
 
@@ -59,27 +56,47 @@ namespace Pseudofunctor.Grothendieck
 /-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
 scoped prefix:75 "∫ " => Pseudofunctor.Grothendieck
 
-@[simps]
-instance categoryStruct : CategoryStruct (∫ F) where
-  Hom X Y := (f : X.1 ⟶ Y.1) × (X.2 ⟶ (F.map f.op.toLoc).obj Y.2)
-  id X := ⟨𝟙 X.1, (F.mapId ⟨op X.1⟩).inv.app X.2⟩
-  comp {_ _ Z} f g := ⟨f.1 ≫ g.1, f.2 ≫ (F.map f.1.op.toLoc).map g.2 ≫
-    (F.mapComp g.1.op.toLoc f.1.op.toLoc).inv.app Z.2⟩
+/-- A morphism in the Grothendieck category `F : C ⥤ Cat` consists of
+`base : X.base ⟶ Y.base` and `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`.
+-/
+@[ext]
+structure Hom (X Y : ∫ F) where
+  /-- The morphism between base objects. -/
+  base : X.base ⟶ Y.base
+  /-- TODO. -/
+  fiber : X.fiber ⟶ (F.map base.op.toLoc).obj Y.fiber
 
+@[simps!]
+instance categoryStruct : CategoryStruct (∫ F) where
+  Hom X Y := Hom X Y
+  id X := {
+    base := 𝟙 X.base
+    fiber := (F.mapId ⟨op X.base⟩).inv.app X.fiber}
+  comp {_ _ Z} f g := {
+    base := f.base ≫ g.base
+    fiber := f.fiber ≫ (F.map f.base.op.toLoc).map g.fiber ≫
+      (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.app Z.fiber }
 section
 
 variable {a b : ∫ F} (f : a ⟶ b)
 
 @[ext]
-lemma hom_ext (g : a ⟶ b) (hfg₁ : f.1 = g.1) (hfg₂ : f.2 = g.2 ≫ eqToHom (hfg₁ ▸ rfl)) :
-    f = g := by
-  apply Sigma.ext hfg₁
+lemma Hom.ext' (g : a ⟶ b) (hfg₁ : f.1 = g.1)
+    (hfg₂ : f.2 = g.2 ≫ eqToHom (hfg₁ ▸ rfl)) : f = g := by
+  cases f; cases g
+  congr
+  dsimp at hfg₁
   rw [← conj_eqToHom_iff_heq _ _ rfl (hfg₁ ▸ rfl)]
-  simp only [hfg₂, eqToHom_refl, id_comp]
+  simpa only [eqToHom_refl, id_comp] using hfg₂
 
-lemma hom_ext_iff (g : a ⟶ b) : f = g ↔ ∃ (hfg : f.1 = g.1), f.2 = g.2 ≫ eqToHom (hfg ▸ rfl) where
+lemma Hom.ext'_iff (g : a ⟶ b) :
+    f = g ↔ ∃ (hfg : f.1 = g.1), f.2 = g.2 ≫ eqToHom (hfg ▸ rfl) where
   mp hfg := ⟨by rw [hfg], by simp [hfg]⟩
-  mpr := fun ⟨hfg₁, hfg₂⟩ => hom_ext f g hfg₁ hfg₂
+  mpr := fun ⟨hfg₁, hfg₂⟩ => Hom.ext' f g hfg₁ hfg₂
+
+lemma Hom.congr {a b : ∫ F} {f g : a ⟶ b} (h : f = g) :
+    f.2 = g.2 ≫ eqToHom (h ▸ rfl) := by
+  simp [h]
 
 protected lemma id_comp : 𝟙 a ≫ f = f := by
   ext
@@ -89,7 +106,7 @@ protected lemma id_comp : 𝟙 a ≫ f = f := by
 protected lemma comp_id : f ≫ 𝟙 b = f := by
   ext
   · simp
-  simp [F.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
+  · simp [F.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
 
 end
 
@@ -117,7 +134,7 @@ instance category : Category (∫ F) where
 factor. -/
 @[simps]
 def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ F ⥤ 𝒮 where
-  obj := fun X => X.1
+  obj := fun X => X.base
   map := fun f => f.1
 
 section
@@ -134,14 +151,12 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   obj a := {
     base := a.base
     fiber := (α.app ⟨op a.base⟩).obj a.fiber }
-  -- TODO: give names to structure for `f`
   map {a b} f := {
-    fst := f.1
-    snd := (α.app ⟨op a.base⟩).map f.2 ≫ (α.naturality f.1.op.toLoc).hom.app b.fiber
-  }
+    base := f.1
+    fiber := (α.app ⟨op a.base⟩).map f.2 ≫ (α.naturality f.1.op.toLoc).hom.app b.fiber }
   map_id a := by
     ext1
-    · simp
+    · dsimp
     dsimp
     rw [StrongPseudoNatTrans.naturality_id_hom]
     simp [← Cat.whiskerRight_app, ← whiskerRightIso_inv, ← whiskerRightIso_hom]
@@ -172,10 +187,11 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
 theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
 
 /-- The underlying homomorphism of `mapIdIso`. This is done so that `mapIdIso` compiles. -/
-abbrev mapIdIso_hom : map (𝟙 F) ⟶ 𝟭 (∫ F) := { app := fun a ↦ eqToHom (by aesop_cat) }
+abbrev mapIdIso_hom : map (𝟙 F) ⟶ 𝟭 (∫ F) where
+  app a := eqToHom (by aesop_cat)
 
--- TODO: give hom_ext higher precedence as an ext lemma?
-abbrev mapIdIso_inv : 𝟭 (∫ F) ⟶ map (𝟙 F) := { app := fun a ↦ eqToHom (by aesop_cat) }
+abbrev mapIdIso_inv : 𝟭 (∫ F) ⟶ map (𝟙 F) where
+  app a := eqToHom (by aesop_cat)
 
 /-- TODO -/
 -- TODO: explicit arg
@@ -193,11 +209,14 @@ def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
     · simp
     simp [F.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
 
+lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
+  Functor.ext_of_iso (mapIdIso) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
+
 abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α ⋙ map β where
-  app := fun a ↦ eqToHom (by aesop_cat)
+  app a := eqToHom (by aesop_cat)
 
 abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map (α ≫ β) where
-  app := fun a ↦ eqToHom (by aesop_cat)
+  app a := eqToHom (by aesop_cat)
 
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β where
   hom := mapCompIso_hom α β
@@ -213,7 +232,18 @@ def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ ma
     · simp
     simp [H.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
 
--- TODO: mapComp_eq and mapId_eq?
+lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β := by
+  apply Functor.ext_of_iso (mapCompIso α β)
+  · intro x
+    simp [mapCompIso]
+  · intro x
+    simp [map]
+
+/-
+TODO BEFORE PR:
+1. refactor strong nat trans
+3. PR ordinary grothendieck construction
+-/
 
 
 end
