@@ -330,87 +330,73 @@ lemma d_eq (j j' : ι₄):
       D₁ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' + D₂ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' +
         D₃ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' := by
   rw [mapBifunctor.d_eq]
-  ext i₁ i₂ i₃ h
-  simp only [Preadditive.comp_add, ι_D₁, ι_D₂, ι_D₃]
-  rw [ι_eq _ _ _ _ _ _ _ _ _ _ _ _ rfl h, assoc, mapBifunctor.ι_D₁,
-    assoc, mapBifunctor.ι_D₂]
   congr 1
-  · set i₁₂ := ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
-    by_cases h₁ : c₁₂.Rel i₁₂ (c₁₂.next i₁₂)
-    · by_cases h₂ : c₁₂.π c₃ c₄ (c₁₂.next i₁₂, i₃) = j'
-      · rw [mapBifunctor.d₁_eq _ _ _ _ h₁ _ _ h₂]
-        simp only [mapBifunctor.d_eq, Functor.map_add, NatTrans.app_add, Preadditive.add_comp,
-          smul_add, Preadditive.comp_add, Linear.comp_units_smul]
-        congr 1
-        · rw [← NatTrans.comp_app_assoc, ← Functor.map_comp,
-            mapBifunctor.ι_D₁]
-          by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
-          · have h₄ := (ComplexShape.next_π₁ c₂ c₁₂ h₃ i₂).symm
-            rw [mapBifunctor.d₁_eq _ _ _ _ h₃ _ _ h₄,
-              d₁_eq _ _ _ _ _ _ _ h₃,
-              ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ (by rw [← h₂, ← h₄]; rfl),
-              ι_eq _ _ _ _ _ _ _ _ _ _ (c₁₂.next i₁₂) _ h₄ h₂,
-              Functor.map_units_zsmul, Functor.map_comp, NatTrans.app_units_zsmul,
-              NatTrans.comp_app, Linear.units_smul_comp, assoc, smul_smul]
-          · rw [d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃,
-              mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₃,
-              Functor.map_zero, zero_app, zero_comp, smul_zero]
-        · rw [← NatTrans.comp_app_assoc, ← Functor.map_comp,
-            mapBifunctor.ι_D₂]
-          by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
-          · have h₄ := (ComplexShape.next_π₂ c₁ c₁₂ i₁ h₃).symm
-            rw [mapBifunctor.d₂_eq _ _ _ _ _ h₃ _ h₄,
-              d₂_eq _ _ _ _ _ _ _ _ h₃,
-              ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ (by rw [← h₂, ← h₄]; rfl),
-              ι_eq _ _ _ _ _ _ _ _ _ _ (c₁₂.next i₁₂) _ h₄ h₂,
-              Functor.map_units_zsmul, Functor.map_comp, NatTrans.app_units_zsmul,
-              NatTrans.comp_app, Linear.units_smul_comp, assoc, smul_smul]
-          · rw [d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃,
-              mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₃,
-              Functor.map_zero, zero_app, zero_comp, smul_zero]
-      · rw [mapBifunctor.d₁_eq_zero' _ _ _ _ h₁ _ _ h₂, comp_zero]
-        trans 0 + 0
-        · simp
-        · congr 1
-          · by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
-            · rw [d₁_eq _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero, smul_zero]
-              dsimp [ComplexShape.r]
-              intro h₄
-              apply h₂
-              rw [← h₄, ComplexShape.next_π₁ c₂ c₁₂ h₃ i₂]
-            · rw [d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃]
-          · by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
-            · rw [d₂_eq _ _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero, smul_zero]
-              dsimp [ComplexShape.r]
-              intro h₄
-              apply h₂
-              rw [← h₄, ComplexShape.next_π₂ c₁ c₁₂ i₁ h₃]
-            · rw [d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃]
-    · rw [mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₁, comp_zero,
-        d₁_eq_zero, d₂_eq_zero, zero_add]
-      · intro h₂
-        apply h₁
-        have := ComplexShape.rel_π₂ c₁ c₁₂ i₁ h₂
-        rw [c₁₂.next_eq' this]
-        exact this
-      · intro h₂
-        apply h₁
-        have := ComplexShape.rel_π₁ c₂ c₁₂ h₂ i₂
-        rw [c₁₂.next_eq' this]
-        exact this
-  · by_cases h₁ : c₃.Rel i₃ (c₃.next i₃)
-    · by_cases h₂ : ComplexShape.π c₁₂ c₃ c₄ (c₁.π c₂ c₁₂ (i₁, i₂), c₃.next i₃) = j'
-      · rw [mapBifunctor.d₂_eq _ _ _ _ _ h₁ _ h₂,
-          d₃_eq _ _ _ _ _ _ _ _ _ h₁,
-          ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ h₂,
-          ι_eq _ _ _ _ _ _ _ _ _ _ _ _ rfl h₂,
-          Linear.comp_units_smul, NatTrans.naturality_assoc]
-      · rw [mapBifunctor.d₂_eq_zero' _ _ _ _ _ h₁ _ h₂,
-          d₃_eq _ _ _ _ _ _ _ _ _ h₁,
-          ιOrZero_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₂,
-          comp_zero, comp_zero, smul_zero]
-    · rw [mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₁, comp_zero,
-        d₃_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₁]
+  ext i₁ i₂ i₃ h
+  simp only [Preadditive.comp_add, ι_D₁, ι_D₂]
+  rw [ι_eq _ _ _ _ _ _ _ _ _ _ _ _ rfl h, assoc, mapBifunctor.ι_D₁]
+  set i₁₂ := ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
+  by_cases h₁ : c₁₂.Rel i₁₂ (c₁₂.next i₁₂)
+  · by_cases h₂ : c₁₂.π c₃ c₄ (c₁₂.next i₁₂, i₃) = j'
+    · rw [mapBifunctor.d₁_eq _ _ _ _ h₁ _ _ h₂]
+      simp only [mapBifunctor.d_eq, Functor.map_add, NatTrans.app_add, Preadditive.add_comp,
+        smul_add, Preadditive.comp_add, Linear.comp_units_smul]
+      congr 1
+      · rw [← NatTrans.comp_app_assoc, ← Functor.map_comp,
+          mapBifunctor.ι_D₁]
+        by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
+        · have h₄ := (ComplexShape.next_π₁ c₂ c₁₂ h₃ i₂).symm
+          rw [mapBifunctor.d₁_eq _ _ _ _ h₃ _ _ h₄,
+            d₁_eq _ _ _ _ _ _ _ h₃,
+            ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ (by rw [← h₂, ← h₄]; rfl),
+            ι_eq _ _ _ _ _ _ _ _ _ _ (c₁₂.next i₁₂) _ h₄ h₂,
+            Functor.map_units_zsmul, Functor.map_comp, NatTrans.app_units_zsmul,
+            NatTrans.comp_app, Linear.units_smul_comp, assoc, smul_smul]
+        · rw [d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃,
+            mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₃,
+            Functor.map_zero, zero_app, zero_comp, smul_zero]
+      · rw [← NatTrans.comp_app_assoc, ← Functor.map_comp,
+          mapBifunctor.ι_D₂]
+        by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
+        · have h₄ := (ComplexShape.next_π₂ c₁ c₁₂ i₁ h₃).symm
+          rw [mapBifunctor.d₂_eq _ _ _ _ _ h₃ _ h₄,
+            d₂_eq _ _ _ _ _ _ _ _ h₃,
+            ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ (by rw [← h₂, ← h₄]; rfl),
+            ι_eq _ _ _ _ _ _ _ _ _ _ (c₁₂.next i₁₂) _ h₄ h₂,
+            Functor.map_units_zsmul, Functor.map_comp, NatTrans.app_units_zsmul,
+            NatTrans.comp_app, Linear.units_smul_comp, assoc, smul_smul]
+        · rw [d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃,
+            mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₃,
+            Functor.map_zero, zero_app, zero_comp, smul_zero]
+    · rw [mapBifunctor.d₁_eq_zero' _ _ _ _ h₁ _ _ h₂, comp_zero]
+      trans 0 + 0
+      · simp
+      · congr 1
+        · by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
+          · rw [d₁_eq _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero, smul_zero]
+            dsimp [ComplexShape.r]
+            intro h₄
+            apply h₂
+            rw [← h₄, ComplexShape.next_π₁ c₂ c₁₂ h₃ i₂]
+          · rw [d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃]
+        · by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
+          · rw [d₂_eq _ _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero, smul_zero]
+            dsimp [ComplexShape.r]
+            intro h₄
+            apply h₂
+            rw [← h₄, ComplexShape.next_π₂ c₁ c₁₂ i₁ h₃]
+          · rw [d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃]
+  · rw [mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₁, comp_zero,
+      d₁_eq_zero, d₂_eq_zero, zero_add]
+    · intro h₂
+      apply h₁
+      have := ComplexShape.rel_π₂ c₁ c₁₂ i₁ h₂
+      rw [c₁₂.next_eq' this]
+      exact this
+    · intro h₂
+      apply h₁
+      have := ComplexShape.rel_π₁ c₂ c₁₂ h₂ i₂
+      rw [c₁₂.next_eq' this]
+      exact this
 
 end mapBifunctor₁₂
 
@@ -632,16 +618,15 @@ lemma d_eq :
       D₁ F G₂₃ K₁ K₂ K₃ c₂₃ c₄ j j' + D₂ F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ j j' +
       D₃ F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ j j' := by
   rw [mapBifunctor.d_eq]
+  rw [add_assoc]
+  congr 1
   apply mapBifunctor₂₃.hom_ext (c₁₂ := c₁₂)
   intros i₁ i₂ i₃ h
-  simp only [Preadditive.comp_add, ι_D₁, ι_D₂, ι_D₃]
-  rw [add_assoc]
+  simp only [Preadditive.comp_add, ι_D₂, ι_D₃]
   rw [ι_eq _ _ _ _ _ _ _ _ _ _ _ _ _ rfl
       (by rw [← h, ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄]; rfl),
-      assoc, assoc, mapBifunctor.ι_D₁, mapBifunctor.ι_D₂]
-  congr 1
-  · sorry
-  · sorry
+      assoc, mapBifunctor.ι_D₂]
+  sorry
 
 end mapBifunctor₂₃
 
