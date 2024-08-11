@@ -122,7 +122,7 @@ variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
   [IsScalarTower R R'' S''] [IsScalarTower R S S'']
 variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
   [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
-variable [IsScalarTower R R' R''] [IsScalarTower S S' S'']
+variable [IsScalarTower S S' S'']
 
 @[simp]
 lemma map_id :

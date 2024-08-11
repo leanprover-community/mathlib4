@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Topological groups
@@ -1046,20 +1047,6 @@ section ContinuousConstSMul
 variable [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousConstSMul α β] {s : Set α}
   {t : Set β}
 
-@[to_additive]
-theorem IsOpen.smul_left (ht : IsOpen t) : IsOpen (s • t) := by
-  rw [← iUnion_smul_set]
-  exact isOpen_biUnion fun a _ => ht.smul _
-
-@[to_additive]
-theorem subset_interior_smul_right : s • interior t ⊆ interior (s • t) :=
-  interior_maximal (Set.smul_subset_smul_left interior_subset) isOpen_interior.smul_left
-
-@[to_additive]
-theorem smul_mem_nhds (a : α) {x : β} (ht : t ∈ 𝓝 x) : a • t ∈ 𝓝 (a • x) := by
-  rcases mem_nhds_iff.1 ht with ⟨u, ut, u_open, hu⟩
-  exact mem_nhds_iff.2 ⟨a • u, smul_set_mono ut, u_open.smul a, smul_mem_smul_set hu⟩
-
 variable [TopologicalSpace α]
 
 @[to_additive]
@@ -1137,8 +1124,7 @@ theorem subset_interior_mul : interior s * interior t ⊆ interior (s * t) :=
 
 @[to_additive]
 theorem singleton_mul_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : {a} * s ∈ 𝓝 (a * b) := by
-  have := smul_mem_nhds a h
-  rwa [← singleton_smul] at this
+  rwa [← smul_eq_mul, ← smul_eq_mul, singleton_smul, smul_mem_nhds_smul_iff]
 
 @[to_additive]
 theorem singleton_mul_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : {a} * s ∈ 𝓝 a := by
@@ -1152,8 +1138,8 @@ variable [TopologicalSpace α] [Group α] [ContinuousConstSMul αᵐᵒᵖ α] {
 
 @[to_additive]
 theorem IsOpen.mul_right (hs : IsOpen s) : IsOpen (s * t) := by
-  rw [← iUnion_op_smul_set]
-  exact isOpen_biUnion fun a _ => hs.smul _
+  rw [← image_op_smul]
+  exact hs.smul_left
 
 @[to_additive]
 theorem subset_interior_mul_left : interior s * t ⊆ interior (s * t) :=
@@ -1165,8 +1151,8 @@ theorem subset_interior_mul' : interior s * interior t ⊆ interior (s * t) :=
 
 @[to_additive]
 theorem mul_singleton_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : s * {a} ∈ 𝓝 (b * a) := by
-  simp only [← iUnion_op_smul_set, mem_singleton_iff, iUnion_iUnion_eq_left]
-  exact smul_mem_nhds _ h
+  rw [mul_singleton]
+  exact smul_mem_nhds_smul (op a) h
 
 @[to_additive]
 theorem mul_singleton_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : s * {a} ∈ 𝓝 a := by
@@ -1242,7 +1228,8 @@ theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set 
   rfl
 
 @[to_additive]
-lemma subset_mul_closure_one (s : Set G) : s ⊆ s * (closure {1} : Set G) := by
+lemma subset_mul_closure_one {G} [MulOneClass G] [TopologicalSpace G] (s : Set G) :
+    s ⊆ s * (closure {1} : Set G) := by
   have : s ⊆ s * ({1} : Set G) := by simp
   exact this.trans (smul_subset_smul_left subset_closure)
 

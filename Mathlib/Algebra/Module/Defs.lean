@@ -327,9 +327,9 @@ variable (R)
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
 lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
-  induction' n with n ih
-  · rw [Nat.cast_zero, zero_smul, zero_smul]
-  · rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
+  induction n with
+  | zero => rw [Nat.cast_zero, zero_smul, zero_smul]
+  | succ n ih => rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
 -- See note [no_index around OfNat.ofNat]
