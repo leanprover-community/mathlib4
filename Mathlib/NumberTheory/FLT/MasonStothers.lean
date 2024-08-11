@@ -48,9 +48,6 @@ theorem max₃_le {a b c d : Nat} : max₃ a b c ≤ d ↔ a ≤ d ∧ b ≤ d �
   rw [max₃, Nat.max_le, Nat.max_le, and_assoc]
 
 
-
-
-
 /--
 For a given polynomial `a`, `a.divRadical` is `a` divided by its radical `radical a`.
 This is the key to our implementation.
