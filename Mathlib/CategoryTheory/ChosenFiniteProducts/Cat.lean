@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolas Rolland
 -/
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Monoidal.Category
 /-!
 `Cat` is a category on its own, views categories as its objects and functors as its morphism.
 
