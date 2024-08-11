@@ -5,9 +5,9 @@ Authors: Nicolas Rolland
 -/
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 /-!
-# Chosen finite products in `Cat` 
+# Chosen finite products in `Cat`
 
-This file proves that the cartesian product of a pair of categories agrees with the 
+This file proves that the cartesian product of a pair of categories agrees with the
 product in `Cat`, and provides the associated `ChosenFiniteProducts` instance.
 
 -/
@@ -21,12 +21,12 @@ namespace Cat
 open Limits
 
 /-- The chosen terminal object in `Cat`. -/
-abbrev OneCat : Cat := Cat.of (ULift (ULiftHom (Discrete Unit)))
+abbrev chosenTerminal : Cat := Cat.of (ULift (ULiftHom (Discrete Unit)))
 
-example : OneCat := ⟨⟨⟨⟩⟩⟩
+example : chosenTerminal := ⟨⟨⟨⟩⟩⟩
 
 /-- The chosen terminal object in `Cat` is terminal. -/
-def isTerminalPUnit : IsTerminal OneCat :=
+def chosenTerminalIsTerminal : IsTerminal chosenTerminal :=
   IsTerminal.ofUniqueHom (fun _ ↦ (Functor.const _).obj ⟨⟨⟨⟩⟩⟩) fun _ _ ↦ rfl
 
 /-- The chosen product of categories `C × D` yields a product cone in `Cat`. -/
@@ -42,7 +42,7 @@ def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
 
 instance : ChosenFiniteProducts Cat where
   product (X Y : Cat) := { isLimit := isLimitProdCone X Y }
-  terminal  := { isLimit := isTerminalPUnit }
+  terminal  := { isLimit := chosenTerminalIsTerminal }
 
 example : MonoidalCategory Cat := by infer_instance
 
@@ -59,28 +59,29 @@ open MonoidalCategory
 variable (C : Cat) (D : Cat)
 
 @[simp]
-lemma leftUnitor_is_snd (C : Cat) :
+lemma leftUnitor_hom (C : Cat) :
     (λ_ C).hom = Prod.snd _ _  := rfl
 
 @[simp]
-lemma leftUnitor_inv_is_sectionr (C : Cat) :
+lemma leftUnitor_inv (C : Cat) :
     (λ_ C).inv = Prod.sectr ⟨⟨⟨⟩⟩⟩ _  := rfl
 
 @[simp]
-lemma rightUnitor_is_fst (C : Cat) :
+lemma rightUnitor_hom (C : Cat) :
     (ρ_ C).hom = Prod.fst _ _  := rfl
 
 @[simp]
-lemma rightUnitor_inv_is_sectionl (C : Cat) :
+lemma rightUnitor_inv (C : Cat) :
     (ρ_ C).inv = Prod.sectl _ ⟨⟨⟨⟩⟩⟩  := rfl
 
 @[simp]
-lemma whiskerLeft_is_product_with_identity_left (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
+lemma whiskerLeft (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
     MonoidalCategoryStruct.whiskerLeft X f = (𝟭 X).prod f   := rfl
 
 @[simp]
-lemma whiskerRight_is_product_with_identity_right {A : Cat} {B : Cat} (f : A ⟶ B)  (X : Cat) :
+lemma whiskerRight {A : Cat} {B : Cat} (f : A ⟶ B)  (X : Cat) :
     MonoidalCategoryStruct.whiskerRight f X  = f.prod (𝟭 X)   := rfl
+
 
 
 end Monoidal
