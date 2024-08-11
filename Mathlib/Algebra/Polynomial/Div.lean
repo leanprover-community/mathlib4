@@ -44,12 +44,12 @@ theorem X_pow_dvd_iff {f : R[X]} {n : ℕ} : X ^ n ∣ f ↔ ∀ d < n, f.coeff 
     induction n with
     | zero => simp [pow_zero, one_dvd]
     | succ n hn =>
-        obtain ⟨g, hgf⟩ := hn fun d : ℕ => fun H : d < n => hd _ (Nat.lt_succ_of_lt H)
-        have := coeff_X_pow_mul g n 0
-        rw [zero_add, ← hgf, hd n (Nat.lt_succ_self n)] at this
-        obtain ⟨k, hgk⟩ := Polynomial.X_dvd_iff.mpr this.symm
-        use k
-        rwa [pow_succ, mul_assoc, ← hgk]⟩
+      obtain ⟨g, hgf⟩ := hn fun d : ℕ => fun H : d < n => hd _ (Nat.lt_succ_of_lt H)
+      have := coeff_X_pow_mul g n 0
+      rw [zero_add, ← hgf, hd n (Nat.lt_succ_self n)] at this
+      obtain ⟨k, hgk⟩ := Polynomial.X_dvd_iff.mpr this.symm
+      use k
+      rwa [pow_succ, mul_assoc, ← hgk]⟩
 
 variable {p q : R[X]}
 

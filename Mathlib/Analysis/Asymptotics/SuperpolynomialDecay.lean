@@ -263,8 +263,8 @@ theorem superpolynomialDecay_param_pow_mul_iff (hk : Tendsto k l atTop) (n : ℕ
   induction n with
   | zero => simp
   | succ n hn =>
-      simpa [pow_succ, ← mul_comm k, mul_assoc,
-             superpolynomialDecay_param_mul_iff (k ^ n * f) hk] using hn
+    simpa [pow_succ, ← mul_comm k, mul_assoc,
+      superpolynomialDecay_param_mul_iff (k ^ n * f) hk] using hn
 
 theorem superpolynomialDecay_mul_param_pow_iff (hk : Tendsto k l atTop) (n : ℕ) :
     SuperpolynomialDecay l k (f * k ^ n) ↔ SuperpolynomialDecay l k f := by

@@ -171,9 +171,9 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
   induction n with
   | zero => simp only [Nat.zero_eq, ascPochhammer_zero, smeval_one, one_smul]
   | succ n hn =>
-      simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
-      simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
-      simp only [nsmul_eq_mul, Nat.cast_id]
+    simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
+    simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
+    simp only [nsmul_eq_mul, Nat.cast_id]
 
 variable {R S : Type*}
 

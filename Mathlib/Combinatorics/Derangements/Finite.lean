@@ -81,8 +81,8 @@ theorem numDerangements_succ (n : ℕ) :
   induction n with
   | zero => rfl
   | succ n hn =>
-      simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add]
-      ring
+    simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add]
+    ring
 
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by

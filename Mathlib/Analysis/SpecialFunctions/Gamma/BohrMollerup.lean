@@ -155,11 +155,11 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
   induction n with
   | zero => simp
   | succ n hn =>
-      have : x + n.succ = x + n + 1 := by push_cast; ring
-      rw [this, hf_feq, hn]
-      · rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
-        abel
-      · linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
+    have : x + n.succ = x + n + 1 := by push_cast; ring
+    rw [this, hf_feq, hn]
+    · rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
+      abel
+    · linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
 
 /-- Linear upper bound for `f (x + n)` on unit interval -/
 theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)

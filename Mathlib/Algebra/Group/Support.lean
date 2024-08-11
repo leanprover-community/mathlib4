@@ -212,7 +212,7 @@ theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
   induction n with
   | zero => simp [pow_zero, mulSupport_one]
   | succ n hfn =>
-      simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
+    simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
 
 section DivisionMonoid
 

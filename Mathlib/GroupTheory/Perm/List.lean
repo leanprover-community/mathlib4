@@ -270,9 +270,9 @@ theorem formPerm_rotate (l : List α) (h : Nodup l) (n : ℕ) :
   induction n with
   | zero => simp
   | succ n hn =>
-      rw [← rotate_rotate, formPerm_rotate_one, hn]
-      rwa [IsRotated.nodup_iff]
-      exact IsRotated.forall l n
+    rw [← rotate_rotate, formPerm_rotate_one, hn]
+    rwa [IsRotated.nodup_iff]
+    exact IsRotated.forall l n
 
 theorem formPerm_eq_of_isRotated {l l' : List α} (hd : Nodup l) (h : l ~r l') :
     formPerm l = formPerm l' := by
@@ -298,8 +298,8 @@ theorem formPerm_pow_apply_getElem (l : List α) (w : Nodup l) (n : ℕ) (i : �
   induction n with
   | zero => simp [Nat.mod_eq_of_lt h]
   | succ n hn =>
-      simp [pow_succ', mul_apply, hn, formPerm_apply_getElem _ w, Nat.succ_eq_add_one,
-            ← Nat.add_assoc]
+    simp [pow_succ', mul_apply, hn, formPerm_apply_getElem _ w, Nat.succ_eq_add_one,
+      ← Nat.add_assoc]
 
 @[deprecated formPerm_pow_apply_getElem (since := "2024-08-03")]
 theorem formPerm_pow_apply_get (l : List α) (h : Nodup l) (n : ℕ) (i : Fin l.length) :

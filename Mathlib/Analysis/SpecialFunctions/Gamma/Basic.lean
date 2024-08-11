@@ -327,9 +327,9 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
   induction n with
   | zero => simp
   | succ n hn =>
-      rw [Gamma_add_one n.succ <| Nat.cast_ne_zero.mpr <| Nat.succ_ne_zero n]
-      simp only [Nat.cast_succ, Nat.factorial_succ, Nat.cast_mul]
-      congr
+    rw [Gamma_add_one n.succ <| Nat.cast_ne_zero.mpr <| Nat.succ_ne_zero n]
+    simp only [Nat.cast_succ, Nat.factorial_succ, Nat.cast_mul]
+    congr
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
