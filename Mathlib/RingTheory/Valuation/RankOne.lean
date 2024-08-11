@@ -52,6 +52,9 @@ variable (v : Valuation R Γ₀) [RankLeOne v]
 
 lemma strictMono : StrictMono (hom v) := strictMono'
 
+
+-- TODO : add division?
+/-- The canonical map from `v.rangeGroup₀` to `ℝ≥0` -/
 def hom_rangeGroup₀ : v.rangeGroup₀ →*₀ ℝ≥0 where
   toFun := (hom v ·.val)
   map_one' := by simp
@@ -62,11 +65,13 @@ theorem strictMono_rangeGroup₀ : StrictMono (hom_rangeGroup₀ v) := by
   intro x y h
   simpa only [Units.val_lt_val, Subtype.coe_lt_coe, h] using (strictMono v h)
 
+/-- The canonical inclusion map from `v.rangeGroup` to `ℝ≥0` -/
 def hom_rangeGroup : v.rangeGroup →* ℝ≥0 where
   toFun := (hom v ·.val)
   map_one' := by simp
   map_mul' := by simp
 
+/-- The canonical inclusion map from `v.rangeGroup₀` to `Γ₀`-/
 def coe_rangeGroup₀ : v.rangeGroup₀ →*₀ Γ₀ where
   toFun := (·.val)
   map_zero' := rfl
