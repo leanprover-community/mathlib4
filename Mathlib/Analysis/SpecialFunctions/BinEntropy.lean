@@ -460,7 +460,7 @@ lemma deriv2_binaryEntropy {x : ℝ} : deriv^[2] binaryEntropy x = -1 / (x * (1-
 
 /-! ### Strict Monotonicity of binary entropy -/
 
-/-- Qary entropy is strictly increasing in interval [0, 1 - q⁻¹]. -/
+/-- Qary entropy is strictly increasing in the interval [0, 1 - q⁻¹]. -/
 lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
     StrictMonoOn (qaryEntropy q) (Icc 0 (1 - 1/q)) := by
   intro p1 hp1 p2 hp2 p1le2
