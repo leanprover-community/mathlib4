@@ -129,6 +129,35 @@ theorem Tendsto.countable_compl_preimage_ker {f : α → β}
     {l : Filter β} [l.IsCountablyGenerated] (h : Tendsto f cofinite l) :
     Set.Countable (f ⁻¹' l.ker)ᶜ := by rw [← ker_comap]; exact countable_compl_ker h.le_comap
 
+theorem univ_pi_mem_pi {α : ι → Type*} {s : ∀ i, Set (α i)} {l : ∀ i, Filter (α i)}
+    (h : ∀ i, s i ∈ l i) (hfin : ∀ᶠ i in cofinite, s i = univ) : univ.pi s ∈ pi l := by
+  filter_upwards [pi_mem_pi hfin fun i _ ↦ h i] with a ha i _
+  if hi : s i = univ then
+    simp [hi]
+  else
+    exact ha i hi
+
+theorem map_dcomp_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
+    (hf : ∀ᶠ i in cofinite, Surjective (f i)) (l : ∀ i, Filter (α i)) :
+    map (f _ ∘' ·) (pi l) = pi fun i ↦ map (f i) (l i) := by
+  refine le_antisymm (tendsto_dcomp_pi fun _ ↦ tendsto_map) ?_
+  refine ((hasBasis_pi fun i ↦ (l i).basis_sets).map _).ge_iff.2 ?_
+  rintro ⟨I, s⟩ ⟨hI : I.Finite, hs : ∀ i ∈ I, s i ∈ l i⟩
+  classical
+  rw [← univ_pi_piecewise_univ, dcomp_image_univ_pi]
+  refine univ_pi_mem_pi (fun i ↦ ?_) ?_
+  · if hi : i ∈ I then
+      simpa [hi] using image_mem_map (hs i hi)
+    else
+      simp [hi]
+  · filter_upwards [hf, hI.compl_mem_cofinite] with i hsurj (hiI : i ∉ I)
+    simp [hiI, hsurj.range_eq]
+
+theorem map_dcomp_pi_finite {α β : ι → Type*} [Finite ι]
+    (f : ∀ i, α i → β i) (l : ∀ i, Filter (α i)) :
+    map (f _ ∘' ·) (pi l) = pi fun i ↦ map (f i) (l i) :=
+  map_dcomp_pi (by simp) l
+
 end Filter
 
 open Filter
