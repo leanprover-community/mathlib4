@@ -8,7 +8,6 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Weight
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -129,7 +128,7 @@ variable (R) [Semiring R]
   and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
 def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
   letI := Classical.decEq σ
-  LinearMap.stdBasis R (fun _ ↦ R) n
+  LinearMap.single R (fun _ ↦ R) n
 
 /-- The `n`th coefficient of a multivariate formal power series. -/
 def coeff (n : σ →₀ ℕ) : MvPowerSeries σ R →ₗ[R] R :=
@@ -147,7 +146,7 @@ if and only if all their coefficients are equal. -/
 add_decl_doc MvPowerSeries.ext_iff
 
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
-    (monomial R n) = LinearMap.stdBasis R (fun _ ↦ R) n := by
+    (monomial R n) = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
   convert rfl
@@ -157,18 +156,18 @@ theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [coeff, monomial_def, LinearMap.proj_apply (i := m)]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
+  erw [LinearMap.single_apply, Pi.single_apply]
 
 @[simp]
 theorem coeff_monomial_same (n : σ →₀ ℕ) (a : R) : coeff R n (monomial R n a) = a := by
   classical
   rw [monomial_def]
-  exact LinearMap.stdBasis_same R (fun _ ↦ R) n a
+  exact Pi.single_eq_same _ _
 
 theorem coeff_monomial_ne {m n : σ →₀ ℕ} (h : m ≠ n) (a : R) : coeff R m (monomial R n a) = 0 := by
   classical
   rw [monomial_def]
-  exact LinearMap.stdBasis_ne R (fun _ ↦ R) _ _ h a
+  exact Pi.single_eq_of_ne h _
 
 theorem eq_of_coeff_monomial_ne_zero {m n : σ →₀ ℕ} {a : R} (h : coeff R m (monomial R n a) ≠ 0) :
     m = n :=
