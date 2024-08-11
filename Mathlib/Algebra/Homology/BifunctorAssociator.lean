@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.GradedObject.Associator
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.Algebra.Homology.Bifunctor
 
 /-!
@@ -35,13 +35,6 @@ the associator for the monoidal category structure on homological complexes (TOD
 -/
 
 open CategoryTheory Category Limits
-
-@[simp]
-theorem CategoryTheory.Functor.map_units_zsmul
-    {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
-    (F : C ⥤ D) [F.Additive]
-    {X Y : C} {f : X ⟶ Y} {r : ℤˣ} : F.map (r • f) = r • F.map f := by
-  apply Functor.map_zsmul
 
 @[reassoc]
 theorem CategoryTheory.NatTrans.naturality_app_app {C₁ C₂ C₃ D : Type*}
@@ -356,7 +349,7 @@ lemma d_eq (j j' : ι₄):
             d₁_eq _ _ _ _ _ _ _ h₃,
             ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ (by rw [← h₂, ← h₄]; rfl),
             ι_eq _ _ _ _ _ _ _ _ _ _ (c₁₂.next i₁₂) _ h₄ h₂,
-            Functor.map_units_zsmul, Functor.map_comp, NatTrans.app_units_zsmul,
+            Functor.map_units_smul, Functor.map_comp, NatTrans.app_units_zsmul,
             NatTrans.comp_app, Linear.units_smul_comp, assoc, smul_smul]
         · rw [d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃,
             mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₃,
@@ -369,7 +362,7 @@ lemma d_eq (j j' : ι₄):
             d₂_eq _ _ _ _ _ _ _ _ h₃,
             ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ (by rw [← h₂, ← h₄]; rfl),
             ι_eq _ _ _ _ _ _ _ _ _ _ (c₁₂.next i₁₂) _ h₄ h₂,
-            Functor.map_units_zsmul, Functor.map_comp, NatTrans.app_units_zsmul,
+            Functor.map_units_smul, Functor.map_comp, NatTrans.app_units_zsmul,
             NatTrans.comp_app, Linear.units_smul_comp, assoc, smul_smul]
         · rw [d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃,
             mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₃,
@@ -649,7 +642,7 @@ lemma d_eq :
         by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
         · rw [d₂_eq _ _ _ _ _ _ _ _ _ h₃,
             mapBifunctor.d₁_eq _ _ _ _ h₃ _ _ (ComplexShape.next_π₁ c₃ c₂₃ h₃ i₃).symm,
-            Functor.map_units_zsmul, Functor.map_comp, Linear.units_smul_comp,
+            Functor.map_units_smul, Functor.map_comp, Linear.units_smul_comp,
             assoc, smul_smul, smul_left_cancel_iff,
             ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ _ (by
               dsimp [ComplexShape.r]
@@ -662,7 +655,7 @@ lemma d_eq :
         by_cases h₃ : c₃.Rel i₃ (c₃.next i₃)
         · rw [d₃_eq _ _ _ _ _ _ _ _ _ _ h₃,
             mapBifunctor.d₂_eq _ _ _ _ _ h₃ _ (ComplexShape.next_π₂ c₂ c₂₃ i₂ h₃).symm,
-            Functor.map_units_zsmul, Functor.map_comp, Linear.units_smul_comp, assoc,
+            Functor.map_units_smul, Functor.map_comp, Linear.units_smul_comp, assoc,
             smul_smul, smul_left_cancel_iff]
           rw [ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ _ (by
             dsimp [ComplexShape.r]

@@ -401,13 +401,15 @@ section
 variable (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂, i₃⟩ = j),
   (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).obj (X₃ i₃) ⟶ A)
 
+/-- Constructor for morphisms from
+`mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j`. -/
 noncomputable def mapBifunctor₁₂BifunctorDesc :
     mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j ⟶ A :=
   Cofan.IsColimit.desc (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j)
     (fun i ↦ f i.1.1 i.1.2.1 i.1.2.2 i.2)
 
 @[reassoc (attr := simp)]
-noncomputable def ι_mapBifunctor₁₂BifunctorDesc
+lemma ι_mapBifunctor₁₂BifunctorDesc
     (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j) :
     ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
       mapBifunctor₁₂BifunctorDesc f = f i₁ i₂ i₃ h :=
@@ -573,13 +575,15 @@ variable
   (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂, i₃⟩ = j),
     (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ A)
 
+/-- Constructor for morphisms from
+`mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j`. -/
 noncomputable def mapBifunctorBifunctor₂₃Desc :
     mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j ⟶ A :=
   Cofan.IsColimit.desc (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j)
     (fun i ↦ f i.1.1 i.1.2.1 i.1.2.2 i.2)
 
 @[reassoc (attr := simp)]
-noncomputable def ι_mapBifunctorBifunctor₂₃Desc
+lemma ι_mapBifunctorBifunctor₂₃Desc
     (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j) :
     ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
       mapBifunctorBifunctor₂₃Desc f = f i₁ i₂ i₃ h :=

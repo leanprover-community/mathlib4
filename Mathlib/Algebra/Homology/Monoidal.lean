@@ -245,8 +245,8 @@ noncomputable def Monoidal.inducingFunctorData :
     rfl
   associator_eq K₁ K₂ K₃ := by
     dsimp [forget]
-    simp only [tensorHom_id, whiskerRight_tensor, id_whiskerRight, id_comp, Iso.inv_hom_id, comp_id,
-      assoc]
+    simp only [tensorHom_id, whiskerRight_tensor, id_whiskerRight,
+      id_comp, Iso.inv_hom_id, comp_id, assoc]
     erw [id_whiskerRight, id_comp, id_comp]
     rfl
   leftUnitor_eq K := by
@@ -267,7 +267,6 @@ noncomputable example {D : Type*} [Category D] [Preadditive D] [MonoidalCategory
     [∀ (X : D), (((curriedTensor D).obj X).Additive)]
     [∀ (X : D), PreservesFiniteCoproducts ((curriedTensor D).obj X)]
     [∀ (X : D), PreservesFiniteCoproducts ((curriedTensor D).flip.obj X)] :
-    MonoidalCategory (ChainComplex D ℕ) := by
-  infer_instance
+    MonoidalCategory (ChainComplex D ℕ) := inferInstance
 
 end HomologicalComplex
