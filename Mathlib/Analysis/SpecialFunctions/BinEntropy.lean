@@ -130,7 +130,7 @@ lemma binaryEntropy_neg_of_gt_one {p : ℝ} (hp : 1 < p) : binaryEntropy p < 0 :
   have : 2⁻¹ - x < 0 := by ring_nf; linarith
   exact binaryEntropy_neg_of_neg this
 
-lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} : binaryEntropy p = 0 ↔ p = 0 ∨ p = 1 := by
+lemma binaryEntropy_eq_zero {p : ℝ} : binaryEntropy p = 0 ↔ p = 0 ∨ p = 1 := by
   constructor <;> intro h
   · by_cases plt0 : p < 0
     · linarith [binaryEntropy_neg_of_neg plt0]
