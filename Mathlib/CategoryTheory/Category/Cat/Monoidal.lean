@@ -24,7 +24,7 @@ namespace CategoryTheory.Cat
 open Limits
 
 /-- The chosen terminal object in `Cat`. -/
-abbrev OneCat : Cat.{v, u} := Cat.of (ULift (ULiftHom (Discrete Unit)))
+abbrev OneCat : Cat := Cat.of (ULift (ULiftHom (Discrete Unit)))
 
 /-- The chosen terminal object in `Cat` is terminal. -/
 def isTerminalPUnit : IsTerminal OneCat :=
@@ -35,25 +35,24 @@ def prodCone (C D : Cat.{v,u}) : BinaryFan C D :=
   .mk (P := .of (C × D)) (Prod.fst _ _) (Prod.snd _ _)
 
 /-- The product cone in `Cat` is indeed a product. -/
-def isLimitProdCone (X Y : Cat.{v,u}) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
+def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
   (fun S => S.fst.prod' S.snd) (fun _ => rfl) (fun _ => rfl) (fun _ _ h1 h2 =>
     Functor.hext
       (fun _ ↦ Prod.ext (by simp [← h1]) (by simp [← h2]))
       (fun _ _ _ ↦ by dsimp; rw [← h1, ← h2]; rfl))
 
-instance : ChosenFiniteProducts Cat.{u,u} where
+instance : ChosenFiniteProducts Cat where
   product (X Y : Cat) := { isLimit := isLimitProdCone X Y }
   terminal  := { isLimit := isTerminalPUnit }
 
 /-- The monoidal category instance for `Cat`-/
-def catIsMonoidal := ChosenFiniteProducts.instMonoidalCategory (Cat.{u,u})
+def catIsMonoidal := ChosenFiniteProducts.instMonoidalCategory (Cat)
 
-instance : MonoidalCategory Cat.{u,u} := catIsMonoidal
+example : MonoidalCategory Cat := by infer_instance
 
 /-- The symmetric monoidal category instance for `Cat`-/
-def catIsSymmetricMonoidal := ChosenFiniteProducts.instSymmetricCategory (Cat.{u,u})
+def catIsSymmetricMonoidal := ChosenFiniteProducts.instSymmetricCategory (Cat)
 
-instance : SymmetricCategory Cat.{u,u} := catIsSymmetricMonoidal
-
+example : SymmetricCategory Cat := by infer_instance
 
 end CategoryTheory.Cat
