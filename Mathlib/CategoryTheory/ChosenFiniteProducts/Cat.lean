@@ -5,13 +5,11 @@ Authors: Nicolas Rolland
 -/
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 /-!
-`Cat` is a category on its own, views categories as its objects and functors as its morphism.
+# Chosen finite products in `Cat` 
 
-On one hand, we can build a cartesian product category out of a pair of categories.
-On the other hand `Cat`, as a category, comes with its own definition for an object to be a product.
+This file proves that the cartesian product of a pair of categories agrees with the 
+product in `Cat`, and provides the associated `ChosenFiniteProducts` instance.
 
-We verify here that the product *in* `Cat` is given by the product *of* categories, when viewed
-as an object.
 -/
 
 universe v u
