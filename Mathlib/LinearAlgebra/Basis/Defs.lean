@@ -740,11 +740,11 @@ theorem Basis.ofEquivFun_repr_apply [Finite ι] (e : M ≃ₗ[R] ι → R) (x : 
 
 @[simp]
 theorem Basis.coe_ofEquivFun [Finite ι] [DecidableEq ι] (e : M ≃ₗ[R] ι → R) :
-    (Basis.ofEquivFun e : ι → M) = fun i => e.symm (Function.update 0 i 1) :=
+    (Basis.ofEquivFun e : ι → M) = fun i => e.symm (Pi.single i 1) :=
   funext fun i =>
     e.injective <|
       funext fun j => by
-        simp [Basis.ofEquivFun, ← Finsupp.single_eq_pi_single, Finsupp.single_eq_update]
+        simp [Basis.ofEquivFun, ← Finsupp.single_eq_pi_single]
 
 @[simp]
 theorem Basis.ofEquivFun_equivFun [Finite ι] (v : Basis ι R M) :

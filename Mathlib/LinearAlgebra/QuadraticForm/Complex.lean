@@ -41,11 +41,11 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
       v j • w j ^ (-(1 / 2 : ℂ)) := by
     classical
     rw [Finset.sum_apply, sum_eq_single j, Pi.basisFun_apply, IsUnit.unit_spec,
-      LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply, Function.update_same, smul_eq_mul,
+      Pi.smul_apply, Pi.smul_apply, Pi.single_eq_same, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_one]
     · intro i _ hij
-      rw [Pi.basisFun_apply, LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply,
-        Function.update_noteq hij.symm, Pi.zero_apply, smul_eq_mul, smul_eq_mul,
+      rw [Pi.basisFun_apply, Pi.smul_apply, Pi.smul_apply,
+        Pi.single_eq_of_ne hij.symm, smul_eq_mul, smul_eq_mul,
         mul_zero, mul_zero]
     intro hj'; exact False.elim (hj' hj)
   simp_rw [Basis.unitsSMul_apply]
