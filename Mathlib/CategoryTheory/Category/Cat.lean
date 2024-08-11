@@ -95,6 +95,11 @@ theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ 
     (F ≫ G).map f = G.map (F.map f) :=
   rfl
 
+@[reassoc (attr := simp)]
+theorem naturality {C D : Cat} {F G : C ⟶ D} (α : F ⟶ G) {X Y : C} (f : X ⟶ Y) :
+    F.map f ≫ α.app Y = α.app X ≫ G.map f :=
+  α.naturality f
+
 @[simp]
 theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
 

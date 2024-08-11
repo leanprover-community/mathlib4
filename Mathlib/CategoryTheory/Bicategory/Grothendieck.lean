@@ -117,8 +117,7 @@ protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   ext
   · simp
   dsimp
-  slice_lhs 3 5 =>
-    rw [← (F.mapComp g.1.op.toLoc f.1.op.toLoc).inv.naturality_assoc h.2]
+  slice_lhs 3 4 => rw [← (F.mapComp g.1.op.toLoc f.1.op.toLoc).inv.naturality h.2]
   simp [to_app_of% F.mapComp_assoc_right_inv h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc]
 
 /-- The category structure on `∫ F`. -/
@@ -158,27 +157,19 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     dsimp
     rw [StrongPseudoNatTrans.naturality_id_hom]
     simp [← Cat.whiskerRight_app, ← whiskerRightIso_inv, ← whiskerRightIso_hom]
-    -- Two tools would be great:
-    -- 1. "appify" bicat lemmas
-    -- 1.5 "unappify" expressions!! (can this even be possible?)
-    -- 2. inversify expressions
   map_comp {a b c} f g := by
     ext
     · dsimp
     dsimp
     rw [StrongPseudoNatTrans.naturality_comp_hom]
-    simp
+    simp only [map_comp, toOplax_toPrelaxFunctor, Strict.associator_eqToIso, eqToIso_refl,
+      Iso.refl_hom, Iso.refl_inv, id_comp, Cat.comp_app, Cat.comp_obj, Cat.whiskerRight_app,
+      Cat.whiskerLeft_app, Cat.id_app, assoc, comp_id]
     slice_lhs 2 4 =>
       repeat rw [← Functor.map_comp]
-      simp
+      simp only [Iso.inv_hom_id_app, Cat.comp_obj, comp_id, assoc]
+    slice_lhs 2 3 => rw [← Functor.comp_map, NatTrans.naturality]
     simp
-    congr 1
-    rw [← assoc]
-    conv_rhs => rw [← assoc]
-    congr 1
-    rw [← Functor.comp_map, ← Functor.comp_map]
-    rw [NatTrans.naturality] -- TODO: need Cat version!
-    rfl
 
 -- maybe some API here...!
 
