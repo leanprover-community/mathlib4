@@ -154,9 +154,8 @@ lemma binaryEntropy_lt_log2_of_lt_one_half {p : ℝ} (p_nonneg : 0 ≤ p) (p_lt 
   · have invppos : 0 < 1/p := by positivity
     have : 0 < 1 - p := by linarith -- used implicitly by tactics.
     have sub1pinvpos : 0 < 1 / (1 - p) := by positivity
-    have logConcave := (strictConcaveOn_log_Ioi.right
-      (x := 1/p) (y := 1/(1-p))) (a := p) (b := 1-p)
-      invppos sub1pinvpos (by norm_num; linarith) (by positivity)
+    have logConcave := (strictConcaveOn_log_Ioi.right (x := 1/p) (y := 1/(1-p)))
+      (a := p) (b := 1-p) invppos sub1pinvpos (by norm_num; linarith) (by positivity)
       (by linarith) (by norm_num)
     have : p • (1 / p) + (1 - p) • (1 / (1 - p)) = 2 := by field_simp; norm_num
     rw [this] at logConcave
