@@ -45,7 +45,7 @@ def stdBasis : ∀ i : ι, φ i →ₗ[R] ∀ i, φ i :=
   single R φ
 
 set_option linter.deprecated false in
-@[deprecated Pi.single (since := "")]
+@[deprecated Pi.single (since := "2024-08-09")]
 theorem stdBasis_apply (i : ι) (b : φ i) : stdBasis R φ i b = update (0 : (a : ι) → φ a) i b :=
   rfl
 
