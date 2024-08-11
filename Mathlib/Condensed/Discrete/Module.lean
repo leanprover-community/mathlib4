@@ -96,8 +96,7 @@ instance (M : ModuleCat R) : IsIso ((Condensed.forget R).map
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Full :=
     inferInstanceAs (discrete _).Full
-  change Sheaf.IsDiscrete _ _ _
-  rw [Sheaf.isDiscrete_iff_mem_essImage]
+  rw [Adjunction.isIso_counit_app_iff_mem_essImage]
   change _ ∈ (discrete _).essImage
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
@@ -206,8 +205,7 @@ instance (M : ModuleCat R) : IsIso ((LightCondensed.forget R).map
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
     inferInstanceAs (discrete _).Full
-  change Sheaf.IsDiscrete _ _ _
-  rw [Sheaf.isDiscrete_iff_mem_essImage]
+  rw [Adjunction.isIso_counit_app_iff_mem_essImage]
   change _ ∈ (discrete _).essImage
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage LightCondSet.LocallyConstant.functor M

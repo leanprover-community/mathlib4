@@ -55,13 +55,13 @@ lemma isDiscrete_of_iso {F : Sheaf J A} {X : A} (i : F ≅ (constantSheaf J A).o
     IsDiscrete J ht F where
   isIso_counit := isIso_counit_app_of_iso _ i
 
-lemma isDiscrete_iff_isIso_counit (F : Sheaf J A) :
+lemma isDiscrete_iff_isIso_counit_app (F : Sheaf J A) :
     IsDiscrete J ht F ↔ IsIso ((constantSheafAdj J A ht).counit.app F) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ { isIso_counit := inferInstance }⟩
 
 lemma isDiscrete_iff_mem_essImage (F : Sheaf J A) :
     F.IsDiscrete J ht ↔ F ∈ (constantSheaf J A).essImage :=
-  (isDiscrete_iff_isIso_counit J ht F).trans
+  (isDiscrete_iff_isIso_counit_app J ht F).trans
     (constantSheafAdj J A ht).isIso_counit_app_iff_mem_essImage
 
 lemma isDiscrete_iff_mem_essImage' {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
@@ -73,7 +73,7 @@ lemma isDiscrete_iff_mem_essImage' {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSect
   · rw [isDiscrete_iff_mem_essImage]
     exact ⟨Y, ⟨e.symm.app _ ≪≫ i⟩⟩
 
-lemma isDiscrete_iff_isIso_counit_app {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
+lemma isDiscrete_iff_isIso_counit_app' {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
     (F : Sheaf J A) :
     IsDiscrete J ht F ↔ IsIso (adj.counit.app F) := by
   have : L.Faithful := Functor.Faithful.of_iso (adj.leftAdjointUniq (constantSheafAdj _ _ ht)).symm
