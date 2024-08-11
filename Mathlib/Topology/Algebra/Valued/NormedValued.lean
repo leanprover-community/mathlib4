@@ -59,29 +59,31 @@ theorem isTriviallyValued_or_exists' {ε : ℝ} (hε : 0 < ε):
   -- have := @NNReal.exists_lt_of_strictMono (valuation h).rangeGroup₀
   sorry
 
-theorem isTriviallyValued_or_exists {ε : ℝ} (hε : 0 < ε):
-    (valuation h).rangeGroup = ⊥ ∨ (∃ (x : K), ‖x‖₊ ≠ 0 ∧ ‖x‖₊ < ε) := by
-  rw [Classical.or_iff_not_imp_left]
-  simp only [rangeGroup,  Subgroup.closure_eq_bot_iff]
-  simp only [subset_singleton_iff, mem_preimage, mem_range, forall_exists_index, not_forall,
-    Classical.not_imp, exists_and_right, ne_eq, nnnorm_eq_zero, coe_nnnorm, and_imp]
-  intro γ x hx hγ
-  set u : ℝ≥0ˣ := if γ < 1 then γ else γ⁻¹ with hu
-  set y : K := if γ < 1 then x else x⁻¹ with hy
+#check NNReal.exists_lt_of_strictMono
+
+#check RankOne
+theorem exists_val_lt {L : Type*} [Field L] {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] [val : Valued L Γ₀] [hv : RankOne val.v]
+    (γ : Γ₀ˣ) :
+    (∃ (x : L), x ≠ 0 ∧ val.v x < γ) := by
+  set u : ℝ≥0 := if γ < 1 then hv.hom γ else hv.hom c⁻¹ with hu
+  set y : L := if c < 1 then x else x⁻¹ with hy
   have hu_lt1 : u < 1 := by
     rw [hu]
     split_ifs with h
-    · exact h
+    · rw [← hv.hom.map_one, StrictMono.lt_iff_lt hv.strictMono]
+      exact h
     · rw [not_lt] at h
-      rw [Left.inv_lt_one_iff, ← not_le]
-      intro h'
-      exact hγ (le_antisymm h' h)
-  have hy' : valuation h y = u := by
-    rw [hu, hy, apply_ite (f := valuation h), apply_ite (f := fun (x : ℝ≥0ˣ) ↦ (x : ℝ≥0))]
-    apply congr_arg₂ _ hx
-    simp only [map_inv₀, Units.val_inv_eq_inv_val, inv_inj, hx]
-  have hε' : 0 < min ε (1/2) := by simp [hε]
-  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hε' hu_lt1
+      rw [eq_comm] at hγ
+      rw [map_inv₀, inv_lt_one₀ ?_]
+      rw [← hv.hom.map_one, StrictMono.lt_iff_lt hv.strictMono]
+      apply lt_of_le_of_ne h hγ
+      apply ne_of_gt
+      rw [← hv.hom.map_zero, StrictMono.lt_iff_lt hv.strictMono]
+      exact c.zero_lt
+  have hy' : RankLeOne.hom val.v (Valued.v y) = u := by
+    rw [hu, hy, apply_ite (f := Valued.v), apply_ite (f := RankLeOne.hom Valued.v), map_inv₀, hx]
+  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one ?_ hu_lt1
   use y ^ n
   simp only [pow_eq_zero_iff', ne_eq, not_and, Decidable.not_not, norm_pow]
   constructor
@@ -235,19 +237,37 @@ def toNormedField : NormedField L :=
       · simp only [true_and_iff, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
         constructor
         · rintro ⟨a, ha, H⟩
-          sorry
-        · rintro ⟨a, ha, H⟩
-          suffices ∃ b ∈ val.v.rangeGroup, hv.hom b ≤ a by
-            obtain ⟨b, hb, hba⟩ := this
-            use b, hb
-            intro p hp
+          use hv.hom a
+          constructor
+          · suffices (0 : ℝ) = hv.hom 0 by
+              rw [this]
+              exact hv.strictMono a.zero_lt
+            simp
+          · intro p hp
             apply H
             simp only [mem_setOf_eq] at hp ⊢
-            rw [map_sub_swap] at hp
-            refine lt_of_lt_of_le ?_ hba
-            exact hv.strictMono hp
+            rw [← StrictMono.lt_iff_lt hv.strictMono]
+            rwa [norm, NNReal.coe_lt_coe, map_sub_swap] at hp
+
+
+        · rintro ⟨a, ha, H⟩
+          cases Valued.isTriviallyValued_or_exists h ha  with
+          | inl h => sorry
+          | inr h =>
+            obtain ⟨b, hb, h⟩ := h
+            let x := val.v b
+
+            suffices ∃ b ∈ val.v.rangeGroup, hv.hom b ≤ a by
+              obtain ⟨b, hb, hba⟩ := this
+              use b, hb
+              intro p hp
+              apply H
+              simp only [mem_setOf_eq] at hp ⊢
+              rw [map_sub_swap] at hp
+              refine lt_of_lt_of_le ?_ hba
+              exact hv.strictMono hp
           -- this would assume that the valuation is non trivial
-          sorry
+            sorry
         /- refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
         · set δ : ℝ≥0 := hv.hom ε with hδ
           have hδ_pos : 0 < δ := by
