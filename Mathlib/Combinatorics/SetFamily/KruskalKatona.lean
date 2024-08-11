@@ -5,8 +5,6 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.SetFamily.Compression.UV
-import Mathlib.Combinatorics.SetFamily.Intersecting
-import Mathlib.Data.Finset.Fin
 
 /-!
 # Kruskal-Katona theorem
@@ -163,7 +161,7 @@ variable {α : Type*} [LinearOrder α] {s U V : Finset α} {n : ℕ}
 namespace UV
 
 /-- Applying the compression makes the set smaller in colex. This is intuitive since a portion of
-the set is being "shifted 'down" as `max U < max V`. -/
+the set is being "shifted down" as `max U < max V`. -/
 lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' U hU < max' V hV)
     (hA : compress U V s ≠ s) : toColex (compress U V s) < toColex s := by
   rw [compress, ite_ne_right_iff] at hA
@@ -229,8 +227,8 @@ lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ 
 attribute [-instance] Fintype.decidableForallFintype
 
 -- TODO: There's currently a diamond
--- import Mathlib.Data.Fin.Basic
--- example (n : ℕ) : instDecidableEqFin n = instDecidableEq := rfl
+-- import Mathlib.Order.Fin.Basic
+-- example (n : ℕ) : instDecidableEqFin n = instDecidableEq_mathlib := rfl
 attribute [-instance] instDecidableEqFin
 
 /-- This measures roughly how compressed the family is. (Note that it does depend on the order of
