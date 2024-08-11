@@ -9,8 +9,8 @@ import Mathlib.SetTheory.Surreal.Basic
 /-!
 ### Surreal multiplication
 
-In this file, we show that multiplication of surreal numbers is well-defined, and thus the surreal
-numbers form a linear ordered commutative ring.
+In this file, we show that multiplication of surreal numbers is well-defined, and thus the
+surreal numbers form a linear ordered commutative ring.
 
 An inductive argument proves the following three main theorems:
 * P1: being numeric is closed under multiplication,
@@ -22,9 +22,9 @@ multiplication as an operation on numeric pregames, P2 says that this is well-de
 operation on the quotient by `PGame.Equiv`, namely the surreal numbers, and P3 is an axiom that
 needs to be satisfied for the surreals to be a `OrderedRing`.
 
-We follow the proof in [SchleicherStoll], except that we use the well-foundedness of the hydra
-relation `CutExpand` on `Multiset PGame` instead of the argument based on a depth function in the
-paper.
+We follow the proof in [SchleicherStoll], except that we use the well-foundedness of
+the hydra relation `CutExpand` on `Multiset PGame` instead of the argument based
+on a depth function in the paper.
 
 In the argument, P3 is stated with four variables `x₁`, `x₂`, `y₁`, `y₂` satisfying `x₁ < x₂` and
 `y₁ < y₂`, and says that `x₁ * y₂ + x₂ * x₁ < x₁ * y₁ + x₂ * y₂`, which is equivalent to
