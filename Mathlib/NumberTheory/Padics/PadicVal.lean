@@ -635,15 +635,17 @@ theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
   padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples hm.1 hm.2
 
 theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
+theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
-  induction' n with n hn
-  · rw [add_zero]
-  · rw [add_succ, factorial_succ,
-      padicValNat.mul (succ_ne_zero (p * m + n)) <| factorial_ne_zero (p * m + _),
-      hn <| lt_of_succ_lt h, ← add_succ,
-      padicValNat_eq_zero_of_mem_Ioo ⟨(Nat.lt_add_of_pos_right <| succ_pos n),
-        (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h))⟩,
-      zero_add]
+  induction n with
+  | zero => rw [add_zero]
+  | succ n hn =>
+      rw [add_succ, factorial_succ,
+          padicValNat.mul (succ_ne_zero (p * m + n)) <| factorial_ne_zero (p * m + _),
+          hn <| lt_of_succ_lt h, ← add_succ,
+          padicValNat_eq_zero_of_mem_Ioo ⟨(Nat.lt_add_of_pos_right <| succ_pos n),
+            (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h))⟩,
+          zero_add]
 
 /-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
 largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
