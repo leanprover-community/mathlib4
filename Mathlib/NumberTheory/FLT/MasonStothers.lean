@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
 import Init.Data.Nat.Lemmas
-import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Ring.Regular
@@ -21,7 +20,8 @@ For a (pairwise) coprime polynomials `a, b, c` (over a field) with `a + b + c = 
 `max {deg(a), deg(b), deg(c)} + 1 ≤ deg(rad(abc))` or `a' = b' = c' = 0`.
 
 Proof is based on this online note by Franz Lemmermeyer http://www.fen.bilkent.edu.tr/~franz/ag05/ag-02.pdf,
-which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason's Theorem", but slightly different.
+which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason's Theorem",
+but slightly different.
 
 ## TODO
 Prove polynomial FLT using Mason-Stothers theorem.
@@ -181,7 +181,8 @@ protected theorem IsCoprime.divRadical {a b : k[X]} (h : IsCoprime a b) :
 
 private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian a b) (ha : a ≠ 0)
     (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b) (hbc : IsCoprime b c) (hca : IsCoprime c a)
-    (abc_dr_dvd_w : divRadical (a * b * c) ∣ w) : c.natDegree + 1 ≤ (radical (a * b * c)).natDegree := by
+    (abc_dr_dvd_w : divRadical (a * b * c) ∣ w) :
+      c.natDegree + 1 ≤ (radical (a * b * c)).natDegree := by
   have hab := mul_ne_zero ha hb
   have habc := mul_ne_zero hab hc
   set abc_dr_nd := (divRadical (a * b * c)).natDegree with def_abc_dr_nd
