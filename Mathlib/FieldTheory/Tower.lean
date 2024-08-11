@@ -3,11 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Tower of field extensions
@@ -44,8 +42,6 @@ variable [DivisionRing F] [DivisionRing K] [AddCommGroup A]
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 
 namespace FiniteDimensional
-
-open IsNoetherian
 
 /-- In a tower of field extensions `A / K / F`, if `A / F` is finite, so is `K / F`.
 
