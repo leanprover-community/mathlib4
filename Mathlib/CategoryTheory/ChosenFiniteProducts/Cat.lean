@@ -51,9 +51,6 @@ def catIsMonoidal := ChosenFiniteProducts.instMonoidalCategory (Cat)
 
 example : MonoidalCategory Cat := by infer_instance
 
-/-- The symmetric monoidal category instance for `Cat`-/
-def catIsSymmetricMonoidal := ChosenFiniteProducts.instSymmetricCategory (Cat)
-
 example : SymmetricCategory Cat := by infer_instance
 
 end Cat
