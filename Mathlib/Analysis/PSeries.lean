@@ -374,7 +374,6 @@ open Finset
 
 variable {α : Type*} [LinearOrderedField α]
 
-set_option tactic.skipAssignedInstances false in
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i ∈ Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by
   refine Nat.le_induction ?_ ?_ n h
