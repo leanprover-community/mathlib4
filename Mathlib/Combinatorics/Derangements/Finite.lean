@@ -78,10 +78,11 @@ theorem numDerangements_add_two (n : ℕ) :
 
 theorem numDerangements_succ (n : ℕ) :
     (numDerangements (n + 1) : ℤ) = (n + 1) * (numDerangements n : ℤ) - (-1) ^ n := by
-  induction' n with n hn
-  · rfl
-  · simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add, Int.ofNat_succ]
-    ring
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+      simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add, Int.ofNat_succ]
+      ring
 
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
