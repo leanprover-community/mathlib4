@@ -141,14 +141,14 @@ theorem mk'_add_self : (⟦G⟧ : Quotient setoid) + ⟦G⟧ = 0 :=
 
 /-- This lemma doesn't require `H` to be impartial. -/
 theorem equiv_iff_add_equiv_zero (H : PGame) : (H ≈ G) ↔ (H + G ≈ 0) := by
-  rw [Game.PGame.equiv_iff_game_eq, ← @add_right_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
-    Game.PGame.equiv_iff_game_eq]
+  rw [equiv_iff_game_eq, ← @add_right_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
+    equiv_iff_game_eq]
   rfl
 
 /-- This lemma doesn't require `H` to be impartial. -/
 theorem equiv_iff_add_equiv_zero' (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
-  rw [Game.PGame.equiv_iff_game_eq, ← @add_left_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
-    Game.PGame.equiv_iff_game_eq]
+  rw [equiv_iff_game_eq, ← @add_left_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
+    equiv_iff_game_eq]
   exact ⟨Eq.symm, Eq.symm⟩
 
 theorem le_zero_iff {G : PGame} [G.Impartial] : G ≤ 0 ↔ 0 ≤ G := by
