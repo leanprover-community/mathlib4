@@ -160,7 +160,6 @@ lemma Triplet.ofPoint_SpectensorTo (T : Triplet f g) (p : Spec T.tensor) :
     exact fromSpecResidueField_apply T.y _
 
 instance fromSpecResidueField_is_preimmesion (x : X) : AlgebraicGeometry.IsPreimmersion (X.fromSpecResidueField x) := sorry
--- set_option maxHeartbeats 0
 
 @[reassoc (attr := simp)]
 lemma tensorCongr_SpecTensorTo {T T' : Triplet f g} (h : T = T') :
@@ -211,25 +210,9 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
     rw [reassoc_of% Spec_κ_p_to_pullback_eq]
     simp only [tensorCongr_SpecTensorTo_assoc]
 
-  have Spec_κ_p_to_Spec_κ_x_eq : Spec.map (Hom.residueFieldMap T.SpecTensorTo p)
-      ≫ Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))
-        ≫ Spec.map (tensorCongr (T.ofPoint_SpectensorTo p)).inv
-          ≫ Spec.map (pushout.inl _ _)
-            = (Spec T.tensor).fromSpecResidueField p
-              ≫ Spec.map (pushout.inl _ _) :=
-    (cancel_mono <| X.fromSpecResidueField T.x).mp Spec_κ_p_to_X_eq
-
-  have Spec_κ_p_to_Spec_κ_y_eq : Spec.map (Hom.residueFieldMap T.SpecTensorTo p)
-      ≫ Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))
-        ≫ Spec.map (tensorCongr (T.ofPoint_SpectensorTo p)).inv
-          ≫ Spec.map (pushout.inr _ _)
-            = (Spec T.tensor).fromSpecResidueField p
-              ≫ Spec.map (pushout.inr _ _) :=
-    (cancel_mono <| Y.fromSpecResidueField T.y).mp Spec_κ_p_to_Y_eq
-
   apply (is_pullback _).hom_ext
-  exact Spec_κ_p_to_Spec_κ_x_eq
-  exact Spec_κ_p_to_Spec_κ_y_eq
+  exact (cancel_mono <| X.fromSpecResidueField T.x).mp Spec_κ_p_to_X_eq
+  exact (cancel_mono <| Y.fromSpecResidueField T.y).mp Spec_κ_p_to_Y_eq
 
 lemma carrier_equiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
     T₁ = T₂ ↔ ∃ e : T₁.1 = T₂.1, (Spec.map (Triplet.tensorCongr e).inv).1.base T₁.2 = T₂.2 := sorry
