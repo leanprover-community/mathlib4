@@ -191,7 +191,14 @@ lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := b
 
 lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     (𝓡∂ 1).IsInteriorPoint p := by
-  sorry -- TODO: needs real proof!
+  have : chartAt (EuclideanHalfSpace 1) p = IccLeftChart x y := by
+    sorry -- follows by construction of the charted space structure; XXX: how can I use this?
+  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) p ∈ interior (range (𝓡∂ 1)) by
+    rw [ModelWithCorners.IsInteriorPoint, extChartAt]
+    convert this
+  -- TODO compute: chart maps this to something positive
+  -- then argue that this lies in the interior
+  sorry
 
 -- TODO: does this exist already? it ought to... same for the version below
 lemma Set.Icc.eq_left_or_interior_or_eq_right {p : ℝ} (hp : p ∈ Set.Icc x y) :
