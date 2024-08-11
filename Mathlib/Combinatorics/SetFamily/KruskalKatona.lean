@@ -231,8 +231,10 @@ attribute [-instance] Fintype.decidableForallFintype
 -- example (n : ℕ) : instDecidableEqFin n = instDecidableEq_mathlib := rfl
 attribute [-instance] instDecidableEqFin
 
-/-- This measures roughly how compressed the family is. (Note that it does depend on the order of
-the ground set, unlike Kruskal-Katona itself). -/
+/-- This measures roughly how compressed the family is.
+
+Note that this does depend on the order of the ground set, unlike the Kruskal-Katona theorem itself
+(although `kruskal_katona` currently is stated in an order-dependent manner). -/
 private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A in 𝒜, ∑ a in A, 2 ^ (a : ℕ)
 
 /-- Applying a compression strictly decreases the measure. This helps show that "compress until we
