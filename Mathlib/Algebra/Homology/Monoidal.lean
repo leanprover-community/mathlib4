@@ -75,16 +75,6 @@ section Unitor
 
 variable (K : HomologicalComplex C c)
 
-noncomputable def leftUnitor' :
-    (forget C c).obj (tensorObj ((single C c 0).obj (𝟙_ C)) K) ≅ K.X :=
-  ((curriedTensor _).mapIso (tensorUnitIso C c).symm).app K.X ≪≫
-    MonoidalCategoryStruct.leftUnitor (C := GradedObject I C) K.X
-
-lemma leftUnitor'_inv (i : I) :
-    (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ (K.X i)) ≫
-      ιTensorObj ((single C c 0).obj (𝟙_ C)) K 0 i i (zero_add i) := by
-  sorry
-
 @[simp]
 lemma unit_tensor_d₁ (i₁ i₂ j : I) :
     mapBifunctor.d₁ ((single C c 0).obj (𝟙_ C)) K (curriedTensor C) c i₁ i₂ j = 0 := by
@@ -104,6 +94,16 @@ lemma tensor_unit_d₂ (i₁ i₂ j : I) :
         zero_comp, smul_zero]
     · rw [mapBifunctor.d₂_eq_zero' _ _ _ _ _ h₁ _ h₂]
   · rw [mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₁]
+
+noncomputable def leftUnitor' :
+    (forget C c).obj (tensorObj ((single C c 0).obj (𝟙_ C)) K) ≅ K.X :=
+  ((curriedTensor _).mapIso (tensorUnitIso C c).symm).app K.X ≪≫
+    MonoidalCategoryStruct.leftUnitor (C := GradedObject I C) K.X
+
+lemma leftUnitor'_inv (i : I) :
+    (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ (K.X i)) ≫
+      ιTensorObj ((single C c 0).obj (𝟙_ C)) K 0 i i (zero_add i) := by
+  sorry
 
 @[reassoc]
 lemma leftUnitor'_inv_comm (i j : I) :
@@ -129,10 +129,23 @@ noncomputable def rightUnitor' :
   ((curriedTensor (GradedObject I C)).obj K.X).mapIso (tensorUnitIso C c).symm ≪≫
     MonoidalCategoryStruct.rightUnitor (C := GradedObject I C) K.X
 
+lemma rightUnitor'_inv (i : I) :
+    (rightUnitor' K).inv i = (ρ_ (K.X i)).inv ≫ ((K.X i) ◁ (singleObjXSelf c 0 (𝟙_ C)).inv) ≫
+      ιTensorObj K ((single C c 0).obj (𝟙_ C)) i 0 i (add_zero i) := by
+  sorry
+
 lemma rightUnitor'_inv_comm (i j : I) :
     (rightUnitor' K).inv i ≫ (tensorObj K ((single C c 0).obj (𝟙_ C))).d i j =
-      K.d i j ≫ (rightUnitor' K).inv j :=
-  sorry
+      K.d i j ≫ (rightUnitor' K).inv j := by
+  by_cases hij : c.Rel i j
+  · simp only [rightUnitor'_inv, assoc, mapBifunctor.d_eq,
+      Preadditive.comp_add, mapBifunctor.ι_D₁, mapBifunctor.ι_D₂,
+      tensor_unit_d₂, comp_zero, add_zero]
+    rw [mapBifunctor.d₁_eq _ _ _ _ hij _ _ (by simp)]
+    dsimp
+    simp only [one_smul, whisker_exchange_assoc,
+      MonoidalCategory.whiskerRight_id, assoc, Iso.inv_hom_id_assoc]
+  · simp only [shape _ _ _ hij, comp_zero, zero_comp]
 
 noncomputable def rightUnitor :
     tensorObj K ((single C c 0).obj (𝟙_ C)) ≅ K :=
@@ -154,6 +167,9 @@ noncomputable instance monoidalCategoryStruct :
   leftUnitor K := leftUnitor K
   rightUnitor K := rightUnitor K
 
+/-- The structure which allows to construct the monoidal category structure
+on `HomologicalComplex C c` from the monoidal category structure on
+graded objects. -/
 noncomputable def Monoidal.inducingFunctorData :
     Monoidal.InducingFunctorData (forget C c) where
   μIso _ _ := Iso.refl _
@@ -186,7 +202,15 @@ noncomputable def Monoidal.inducingFunctorData :
     erw [id_comp]
     rfl
 
-noncomputable instance : MonoidalCategory (HomologicalComplex C c) :=
+noncomputable instance monoidalCategory : MonoidalCategory (HomologicalComplex C c) :=
   Monoidal.induced _ (Monoidal.inducingFunctorData C c)
+
+noncomputable example {D : Type*} [Category D] [Preadditive D] [MonoidalCategory D]
+    [HasZeroObject D] [HasFiniteCoproducts D] [((curriedTensor D).Additive)]
+    [∀ (X : D), (((curriedTensor D).obj X).Additive)]
+    [∀ (X : D), PreservesFiniteCoproducts ((curriedTensor D).obj X)]
+    [∀ (X : D), PreservesFiniteCoproducts ((curriedTensor D).flip.obj X)] :
+    MonoidalCategory (ChainComplex D ℕ) := by
+  infer_instance
 
 end HomologicalComplex
