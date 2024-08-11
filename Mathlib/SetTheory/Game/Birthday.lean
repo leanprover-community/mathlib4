@@ -184,8 +184,45 @@ theorem birthday_nonempty (x : Game.{u}) : (PGame.birthday '' (Quotient.mk' ⁻�
   rw [Set.image_nonempty]
   exact ⟨_, x.out_eq⟩
 
-theorem birthday_le_pGame_birthday (x : PGame.{u}) : x.birthday ≤ birthday ⟦x⟧ := by
-  apply le_csInf (birthday_nonempty _)
+theorem birthday_eq_mk_birthday (x : Game.{u}) : ∃ y : PGame.{u},
+    ⟦y⟧ = x ∧ y.birthday = birthday x :=
+  csInf_mem (birthday_nonempty x)
+
+theorem birthday_le_pGame_birthday (x : PGame.{u}) : birthday ⟦x⟧ ≤ x.birthday :=
+  csInf_le' ⟨x, rfl, rfl⟩
+
+@[simp]
+theorem birthday_zero : birthday 0 = 0 := by
+  rw [← Ordinal.le_zero, ← PGame.birthday_zero]
+  exact birthday_le_pGame_birthday _
+
+@[simp]
+theorem birthday_eq_zero {x : Game} : birthday x = 0 ↔ x = 0 := by
+  constructor
+  · intro h
+    let ⟨y, hy₁, hy₂⟩ := birthday_eq_mk_birthday x
+    rw [← hy₁]
+    rw [h, PGame.birthday_eq_zero] at hy₂
+    exact PGame.equiv_iff_game_eq.1 (@PGame.Equiv.isEmpty _ hy₂.1 hy₂.2)
+  · rintro rfl
+    exact birthday_zero
+
+@[simp]
+theorem toPGame_birthday (o : Ordinal) : birthday ⟦o.toPGame⟧ = o := by
+  apply le_antisymm
+  · conv_rhs => rw [← PGame.toPGame_birthday o]
+    apply birthday_le_pGame_birthday
+  · let ⟨x, hx₁, hx₂⟩ := birthday_eq_mk_birthday ⟦o.toPGame⟧
+    rw [← hx₂, ← toPGame_le_iff]
+    rw [← PGame.equiv_iff_game_eq] at hx₁
+    exact hx₁.2.trans (PGame.le_birthday x)
+
+theorem le_birthday : ∀ x : PGame, x ≤ x.birthday.toPGame
+  | ⟨xl, _, xL, _⟩ =>
+    le_def.2
+      ⟨fun i =>
+        Or.inl ⟨toLeftMovesToPGame ⟨_, birthday_moveLeft_lt i⟩, by simp [le_birthday (xL i)]⟩,
+        isEmptyElim⟩
 
 end Game
 
