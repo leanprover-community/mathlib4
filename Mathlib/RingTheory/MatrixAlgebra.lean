@@ -152,7 +152,6 @@ theorem matrixEquivTensor_apply_stdBasisMatrix (i j : n) (x : A) :
 @[deprecated (since := "2024-08-11")] alias matrixEquivTensor_apply_std_basis :=
   matrixEquivTensor_apply_stdBasisMatrix
 
-
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
     (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x :=
