@@ -100,7 +100,7 @@ theorem Eventually.eval_pi {i : ι} (hf : ∀ᶠ x : α i in f i, p i x) :
 theorem eventually_pi [Finite ι] (hf : ∀ i, ∀ᶠ x in f i, p i x) :
     ∀ᶠ x : ∀ i, α i in pi f, ∀ i, p i (x i) := eventually_all.2 fun _i => (hf _).eval_pi
 
-theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
+theorem hasBasis_pi {ι' : ι → Type*} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
       fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
@@ -163,6 +163,13 @@ theorem pi_neBot : NeBot (pi f) ↔ ∀ i, NeBot (f i) := by simp [neBot_iff]
 
 instance [∀ i, NeBot (f i)] : NeBot (pi f) :=
   pi_neBot.2 ‹_›
+
+theorem map_piMap_pi [Finite ι] {β : ι → Type*} (m : ∀ i, α i → β i) (f : ∀ i, Filter (α i)) :
+    map (fun (a : ∀ i, α i) i ↦ m i (a i)) (.pi f) = .pi fun i ↦ map (m i) (f i) := by
+  refine ((hasBasis_pi fun i ↦ (f i).basis_sets).map _).eq_of_same_basis ?_
+  convert hasBasis_pi fun i ↦ (f i).basis_sets.map (m i) with ⟨I, s⟩
+  simp only [id]
+  sorry
 
 @[simp]
 theorem map_eval_pi (f : ∀ i, Filter (α i)) [∀ i, NeBot (f i)] (i : ι) :
