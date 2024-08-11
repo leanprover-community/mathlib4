@@ -46,9 +46,6 @@ instance : ChosenFiniteProducts Cat where
   product (X Y : Cat) := { isLimit := isLimitProdCone X Y }
   terminal  := { isLimit := isTerminalPUnit }
 
-/-- The monoidal category instance for `Cat`-/
-def catIsMonoidal := ChosenFiniteProducts.instMonoidalCategory (Cat)
-
 example : MonoidalCategory Cat := by infer_instance
 
 example : SymmetricCategory Cat := by infer_instance
