@@ -105,15 +105,19 @@ lemma tensor_unit_d₂ (i₁ i₂ j : I) :
     · rw [mapBifunctor.d₂_eq_zero' _ _ _ _ _ h₁ _ h₂]
   · rw [mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₁]
 
-
 @[reassoc]
 lemma leftUnitor'_inv_comm (i j : I) :
     (leftUnitor' K).inv i ≫ (tensorObj ((single C c 0).obj (𝟙_ C)) K).d i j =
       K.d i j ≫ (leftUnitor' K).inv j := by
-  simp only [leftUnitor'_inv, assoc, mapBifunctor.d_eq,
-    Preadditive.comp_add, mapBifunctor.ι_D₁, mapBifunctor.ι_D₂,
-    unit_tensor_d₁, comp_zero, zero_add]
-  sorry
+  by_cases hij : c.Rel i j
+  · simp only [leftUnitor'_inv, assoc, mapBifunctor.d_eq,
+      Preadditive.comp_add, mapBifunctor.ι_D₁, mapBifunctor.ι_D₂,
+      unit_tensor_d₁, comp_zero, zero_add]
+    rw [mapBifunctor.d₂_eq _ _ _ _ _ hij _ (by simp)]
+    dsimp
+    simp only [ComplexShape.ε_zero, one_smul, ← whisker_exchange_assoc,
+      id_whiskerLeft, assoc, Iso.inv_hom_id_assoc]
+  · simp only [shape _ _ _ hij, comp_zero, zero_comp]
 
 noncomputable def leftUnitor :
     tensorObj ((single C c 0).obj (𝟙_ C)) K ≅ K :=
