@@ -30,6 +30,71 @@ subgroups of `ℝ`.
 -/
 
 open Set
+
+-- no earlier file imports necessary
+open Subgroup in
+/-- In two linearly ordered groups, the closure of an element of one group
+is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
+@[to_additive]
+noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
+    [LinearOrderedCommGroup G] [LinearOrderedCommGroup G'] (x : G) (y : G') (hxy : x = 1 ↔ y = 1) :
+    {f : closure ({x} : Set G) ≃* closure ({y} : Set G') // StrictMono f} :=
+  if hx : x = 1 then by
+    refine ⟨⟨⟨fun _ ↦ ⟨1, by simp [hxy.mp hx]⟩, fun _ ↦ ⟨1, by simp [hx]⟩, ?_, ?_⟩, ?_⟩, ?_⟩
+    · intro ⟨a, ha⟩
+      simpa [hx, closure_singleton_one, eq_comm] using ha
+    · intro ⟨a, ha⟩
+      simpa [hxy.mp hx, closure_singleton_one, eq_comm] using ha
+    · intros
+      simp
+    · intro ⟨a, ha⟩ ⟨b, hb⟩
+      simp only [hx, closure_singleton_one, mem_bot] at ha hb
+      simp [ha, hb]
+  else by
+    set x' := max x x⁻¹ with hx'
+    have xpos : 1 < x' := by
+      simp [hx', eq_comm, hx]
+    set y' := max y y⁻¹ with hy'
+    have ypos : 1 < y' := by
+      simp [hy', eq_comm, ← hxy, hx]
+    have hxc : closure {x} = closure {x'} := by
+      rcases max_cases x x⁻¹ with H|H <;>
+      simp [hx', H.left]
+    have hyc : closure {y} = closure {y'} := by
+      rcases max_cases y y⁻¹ with H|H <;>
+      simp [hy', H.left]
+    refine ⟨⟨⟨
+      fun a ↦ ⟨y' ^ ((mem_closure_singleton).mp
+        (by simpa [hxc] using a.prop)).choose, ?_⟩,
+      fun a ↦ ⟨x' ^ ((mem_closure_singleton).mp
+        (by simpa [hyc] using a.prop)).choose, ?_⟩,
+        ?_, ?_⟩, ?_⟩, ?_⟩
+    · rw [hyc, mem_closure_singleton]
+      exact ⟨_, rfl⟩
+    · rw [hxc, mem_closure_singleton]
+      exact ⟨_, rfl⟩
+    · intro a
+      generalize_proofs A B C D
+      rw [Subtype.ext_iff, ← (C a).choose_spec, (zpow_right_strictMono xpos).injective.eq_iff,
+          ← (zpow_right_strictMono ypos).injective.eq_iff, (A ⟨_, D a⟩).choose_spec]
+    · intro a
+      generalize_proofs A B C D
+      rw [Subtype.ext_iff, ← (C a).choose_spec, (zpow_right_strictMono ypos).injective.eq_iff,
+          ← (zpow_right_strictMono xpos).injective.eq_iff, (A ⟨_, D a⟩).choose_spec]
+    · intro a b
+      generalize_proofs A B C D E F
+      simp only [Submonoid.coe_mul, coe_toSubmonoid, Submonoid.mk_mul_mk, Subtype.mk.injEq]
+      rw [← zpow_add, (zpow_right_strictMono ypos).injective.eq_iff,
+          ← (zpow_right_strictMono xpos).injective.eq_iff, zpow_add,
+          (A a).choose_spec, (A b).choose_spec, (A (a * b)).choose_spec]
+      simp
+    · intro a b hab
+      simp only [MulEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_lt_mk]
+      generalize_proofs A B C D
+      rw [(zpow_right_strictMono ypos).lt_iff_lt, ← (zpow_right_strictMono xpos).lt_iff_lt,
+          A.choose_spec, B.choose_spec]
+      simpa using hab
+
 variable {G : Type*} [LinearOrderedAddCommGroup G] [Archimedean G]
 
 /-- Given a subgroup `H` of a decidable linearly ordered archimedean abelian group `G`, if there
@@ -161,66 +226,6 @@ lemma AddSubgroup.closure_singleton_int_one_eq_top : closure ({1} : Set ℤ) = �
     simp only [mem_top, true_and, mem_setOf_eq]
     exact id
 
-/-- In two linearly ordered archimedean additive groups, the closure of an element of one group
-is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
-noncomputable def AddSubgroup.closure_equiv_closure {G' : Type*}
-    [LinearOrderedAddCommGroup G'] [Archimedean G'] (x : G) (y : G') (hxy : x = 0 ↔ y = 0) :
-    {f : closure ({x} : Set G) ≃+ closure ({y} : Set G') // StrictMono f} :=
-  if hx : x = 0 then by
-    refine ⟨⟨⟨fun _ ↦ ⟨0, by simp [hxy.mp hx]⟩, fun _ ↦ ⟨0, by simp [hx]⟩, ?_, ?_⟩, ?_⟩, ?_⟩
-    · intro ⟨a, ha⟩
-      simpa [hx, closure_singleton_zero, eq_comm] using ha
-    · intro ⟨a, ha⟩
-      simpa [hxy.mp hx, closure_singleton_zero, eq_comm] using ha
-    · intros
-      simp
-    · intro ⟨a, ha⟩ ⟨b, hb⟩
-      simp only [hx, closure_singleton_zero, mem_bot] at ha hb
-      simp [ha, hb]
-  else by
-    set x' := max x (-x) with hx'
-    have xpos : 0 < x' := by
-      simp [hx', eq_comm, hx]
-    set y' := max y (-y) with hy'
-    have ypos : 0 < y' := by
-      simp [hy', eq_comm, ← hxy, hx]
-    have hxc : closure {x} = closure {x'} := by
-      rcases max_cases x (-x) with H|H <;>
-      simp [hx', H.left]
-    have hyc : closure {y} = closure {y'} := by
-      rcases max_cases y (-y) with H|H <;>
-      simp [hy', H.left]
-    refine ⟨⟨⟨
-      fun a ↦ ⟨((mem_closure_singleton).mp
-        (by simpa [hxc] using a.prop)).choose • y', ?_⟩,
-      fun a ↦ ⟨((mem_closure_singleton).mp
-        (by simpa [hyc] using a.prop)).choose • x', ?_⟩,
-        ?_, ?_⟩, ?_⟩, ?_⟩
-    · rw [hyc, mem_closure_singleton]
-      exact ⟨_, rfl⟩
-    · rw [hxc, mem_closure_singleton]
-      exact ⟨_, rfl⟩
-    · intro a
-      generalize_proofs A B C D
-      rw [Subtype.ext_iff, ← (C a).choose_spec, (zsmul_strictMono_left xpos).injective.eq_iff,
-          ← (zsmul_strictMono_left ypos).injective.eq_iff, (A ⟨_, D a⟩).choose_spec]
-    · intro a
-      generalize_proofs A B C D
-      rw [Subtype.ext_iff, ← (C a).choose_spec, (zsmul_strictMono_left ypos).injective.eq_iff,
-          ← (zsmul_strictMono_left xpos).injective.eq_iff, (A ⟨_, D a⟩).choose_spec]
-    · intro a b
-      generalize_proofs A B C D E F
-      simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, AddSubmonoid.mk_add_mk, Subtype.mk.injEq]
-      rw [← add_zsmul, (zsmul_strictMono_left ypos).injective.eq_iff,
-          ← (zsmul_strictMono_left xpos).injective.eq_iff, add_zsmul,
-          (A a).choose_spec, (A b).choose_spec, (A (a + b)).choose_spec]
-      simp
-    · intro a b hab
-      simp only [AddEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_lt_mk]
-      generalize_proofs A B C D
-      rw [(zsmul_strictMono_left ypos).lt_iff_lt, ← (zsmul_strictMono_left xpos).lt_iff_lt,
-          A.choose_spec, B.choose_spec]
-      simpa using hab
 
 /-- If an element of a linearly ordered archimedean additive group is the least positive element,
 then the whole group is isomorphic (and order-isomorphic) to the integers. -/
@@ -235,7 +240,7 @@ noncomputable def LinearOrderedAddCommGroup.int_addEquiv_of_isLeast_pos {x : G}
   let g : ℤ ≃+ (⊤ : AddSubgroup ℤ) := AddSubsemigroup.topEquiv.symm
   let g' : (⊤ : AddSubgroup ℤ) ≃+ AddSubgroup.closure ({1} : Set ℤ) :=
     (.subsemigroupCongr (by simp [AddSubgroup.closure_singleton_int_one_eq_top]))
-  let f := AddSubgroup.closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
+  let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
   refine ⟨(((e.trans e').trans f.val).trans g'.symm).trans g.symm, ?_⟩
   intro a b hab
   have hab' : f.val (e' (e a)) < f.val (e' (e b)) := by
