@@ -22,7 +22,7 @@ variable {C : Type*} [Category C] (J : GrothendieckTopology C)
 variable (D : Type*) [Category D]
 
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
-@[simps! counit_app unit_app]
+@[simps! counit_app_app unit_app]
 noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
     Functor.const Cᵒᵖ ⊣ (evaluation Cᵒᵖ D).obj (op T) :=
   Adjunction.mkOfUnitCounit {
@@ -50,7 +50,6 @@ noncomputable def constantSheafAdj {T : C} (hT : IsTerminal T) :
     constantSheaf J D ⊣ (sheafSections J D).obj (op T) :=
   (constantPresheafAdj D hT).comp (sheafificationAdjunction J D)
 
-@[simp]
 lemma constantSheafAdj_counit_app {T : C} (hT : IsTerminal T) (F : Sheaf J D) :
     (constantSheafAdj J D hT).counit.app F =
       (presheafToSheaf J D).map ((constantPresheafAdj D hT).counit.app F.val) ≫

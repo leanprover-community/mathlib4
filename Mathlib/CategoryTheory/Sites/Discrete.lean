@@ -186,12 +186,13 @@ lemma constantSheafAdj_counit_w :
   rw [instCategorySheaf_comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
   ext
-  simp? says simp only [comp_obj, const_obj_obj, sheafCompose_obj_val, id_obj,
-      constantSheafAdj_counit_app, evaluation_obj_obj, constantPresheafAdj_counit_app,
-      Functor.comp_map, instCategorySheaf_comp_val, sheafificationAdjunction_counit_app_val,
-      sheafifyMap_sheafifyLift, comp_id, toSheafify_sheafifyLift, NatTrans.comp_app,
-      constComp_hom_app, id_comp, flip_obj_obj, sheafToPresheaf_obj, map_comp, sheafCompose_map_val,
-      sheafComposeIso_hom_fac_assoc, whiskerRight_app]
+  simp? [constantSheafAdj_counit_app] says simp only [comp_obj, const_obj_obj, sheafCompose_obj_val,
+      id_obj, constantSheafAdj_counit_app, evaluation_obj_obj, instCategorySheaf_comp_val,
+      sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, comp_id,
+      toSheafify_sheafifyLift, NatTrans.comp_app, constComp_hom_app,
+      constantPresheafAdj_counit_app_app, Functor.comp_map, id_comp, flip_obj_obj,
+      sheafToPresheaf_obj, map_comp, sheafCompose_map_val, sheafComposeIso_hom_fac_assoc,
+      whiskerRight_app]
   simp [← map_comp, ← NatTrans.comp_app]
 
 lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
