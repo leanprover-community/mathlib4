@@ -724,6 +724,9 @@ lemma bot_preconnected_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔
   contrapose h
   simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot, h]
 
+lemma bot_preconnected [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
+  bot_preconnected_iff_subsingleton.mpr ‹_›
+
 lemma bot_not_preconnected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected :=
   bot_preconnected_iff_subsingleton.not.mpr <| not_subsingleton_iff_nontrivial.mpr ‹_›
 
