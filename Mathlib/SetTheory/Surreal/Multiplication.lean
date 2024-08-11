@@ -27,12 +27,13 @@ relation `CutExpand` on `Multiset PGame` instead of the argument based on a dept
 paper.
 
 In the argument, P3 is stated with four variables `x₁`, `x₂`, `y₁`, `y₂` satisfying `x₁ < x₂` and
-`y₁ < y₂`, and says that `x₁ * y₂ + x₂ * x₁ < x₁ * y₁ + x₂ * y₂`, which is equivalent to `0 < x₂ -
-x₁ → 0 < y₂ - y₁ → 0 < (x₂ - x₁) * (y₂ - y₁)`, i.e. `@mul_pos PGame _ (x₂ - x₁) (y₂ - y₁)`. It has
-to be stated in this form and not in terms of `mul_pos` because we need to show P1, P2 and (a
-specialized form of) P3 simultaneously, and for example `P1 x y` will be deduced from P3 with
-variables taking values simpler than `x` or `y` (among other induction hypotheses), but if you
-subtract two pregames simpler than `x` or `y`, the result may no longer be simpler.
+`y₁ < y₂`, and says that `x₁ * y₂ + x₂ * x₁ < x₁ * y₁ + x₂ * y₂`, which is equivalent to
+`0 < x₂ - x₁ → 0 < y₂ - y₁ → 0 < (x₂ - x₁) * (y₂ - y₁)`, i.e.
+`@mul_pos PGame _ (x₂ - x₁) (y₂ - y₁)`. It has to be stated in this form and not in terms of
+`mul_pos` because we need to show P1, P2 and (a specialized form of) P3 simultaneously, and for
+example `P1 x y` will be deduced from P3 with variables taking values simpler than `x` or `y` (among
+other induction hypotheses), but if you subtract two pregames simpler than `x` or `y`, the result
+may no longer be simpler.
 
 The specialized version of P3 is called P4, which takes only three arguments `x₁`, `x₂`, `y` and
 requires that `y₂ = y` or `-y` and that `y₁` is a left option of `y₂`. After P1, P2 and P4 are
