@@ -17,6 +17,12 @@ All of these have been rewritten from the `lint-style.py` script.
 For now, this only contains the linters for the copyright and author headers and large files:
 further linters will be ported in subsequent PRs.
 
+The `longFile` and the `longLine` *syntax* linter take care of flagging lines that exceed the
+100 character limit and files that exceed the 1500 line limit.
+The text-based versions of this file are still used for the files where the linter is not imported.
+This means that the exceptions for the text-based linters are shorter, as they do not need to
+include those handled with `set_option linter.longFile x`/`set_option linter.longLine false`.
+
 An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
 
@@ -50,7 +56,9 @@ inductive StyleError where
   /-- The current file was too large: this error contains the current number of lines
   as well as a size limit (slightly larger). On future runs, this linter will allow this file
   to grow up to this limit.
-  For diagnostic purposes, this may also contain a previous size limit, which is now exceeded. -/
+  For diagnostic purposes, this may also contain a previous size limit, which is now exceeded.
+  The `longFile` linter implements the line-length check as a syntax linter.
+  This text-based check is present to ensure the limit on files that do not import the linter. -/
   | fileTooLong (numberLines : ℕ) (newSizeLimit : ℕ) (previousLimit : Option ℕ) : StyleError
 deriving BEq
 
@@ -360,11 +368,13 @@ def checkFileLength (lines : Array String) (existingLimit : Option ℕ) : Option
     | some mark => lines.size > mark
     | none => true
     if isLarger then
-      -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
-      -- but sufficiently large PRs will get nudged towards splitting up this file.
+      -- If the `longFile` linter is not active on the file, this text-based linter kicks in.
       if (lines.filter ("set_option linter.longFile ".isPrefixOf)).isEmpty then
+        -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
+        -- but sufficiently large PRs will get nudged towards splitting up this file.
         return some (StyleError.fileTooLong lines.size
           ((Nat.div lines.size 100) * 100 + 200) existingLimit)
+      -- Otherwise, the `longFile` linter already manages the exception for this file.
       else return none
   none
 
