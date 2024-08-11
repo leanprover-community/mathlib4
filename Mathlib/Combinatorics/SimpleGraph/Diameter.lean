@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
 import Mathlib.Combinatorics.SimpleGraph.Metric
-import Mathlib.Tactic.NormNum
 
 /-!
 # Diameter of a simple graph
 
-This module defines the extended diameter and diameter of a simple graph, which measure respectively
-the maximum extended distance and distance between vertices.
+This module defines the diameter of a simple graph, which measure the maximum distance between
+vertices.
 
 ## Main definitions
 
@@ -137,8 +136,69 @@ case the distances are not bounded above.
 noncomputable def diam (G : SimpleGraph α) :=
   G.ediam.toNat
 
+lemma diam_def : G.diam = (⨆ p : (α × α), G.edist p.1 p.2).toNat := by
+  rw [diam, ediam_def]
+
 lemma dist_le_diam (h : G.ediam ≠ ⊤) {u v : α} : G.dist u v ≤ G.diam :=
   ENat.toNat_le_toNat edist_le_ediam h
+
+lemma nonempty_of_diam_ne_zero (h : G.diam ≠ 0) : Nonempty α := by
+  apply G.nonempty_of_ediam_ne_zero
+  contrapose! h
+  simp [diam, h]
+
+lemma diam_eq_zero_of_not_connected (h : ¬G.Connected) : G.diam = 0 := by
+  cases isEmpty_or_nonempty α
+  · rw [diam, ediam, ciSup_of_empty, bot_eq_zero']; rfl
+  · rw [diam, ediam_eq_top_of_not_connected h, ENat.toNat_top]
+
+lemma ediam_ne_top_of_diam_ne_zero (h : G.diam ≠ 0) : G.ediam ≠ ⊤ :=
+  Ne.symm <| ne_of_apply_ne ENat.toNat fun a ↦ h <| id a.symm
+
+lemma exists_dist_eq_diam_of_ne_zero (h : G.diam ≠ 0) :
+    ∃ u v, G.dist u v = G.diam := by
+  have : Nonempty α := nonempty_of_diam_ne_zero h
+  obtain ⟨u, v, huv⟩ := exists_edist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
+  use u, v
+  rw [diam, dist, congrArg ENat.toNat huv]
+
+lemma exists_dist_eq_diam_of_finite [Nonempty α] [Finite α] :
+    ∃ u v, G.dist u v = G.diam := by
+  obtain ⟨u, v, huv⟩ := G.exists_edist_eq_ediam_of_finite
+  use u, v
+  rw [diam, dist, congrArg ENat.toNat huv]
+
+lemma diam_mono_of_ne_zero (h : G ≤ G') (hn₁ : G'.diam ≠ 0) (hn₂ : G.diam ≠ 0) :
+    G'.diam ≤ G.diam :=
+  have : Nonempty α := nonempty_of_diam_ne_zero hn₁
+  ENat.toNat_le_toNat (ediam_mono_of_ne_top h (ediam_ne_top_of_diam_ne_zero hn₁))
+    <| ediam_ne_top_of_diam_ne_zero hn₂
+
+lemma diam_mono_of_finite [Nonempty α] [Finite α] (h : G ≤ G') (hn : G.diam ≠ 0) :
+    G'.diam ≤ G.diam :=
+  ENat.toNat_le_toNat (ediam_mono_of_finite h) <| ediam_ne_top_of_diam_ne_zero hn
+
+@[simp]
+lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
+  rw [diam, ENat.toNat_eq_zero]
+  cases subsingleton_or_nontrivial α
+  · exact Or.inl <| ediam_eq_zero.mpr ‹_›
+  · exact Or.inr ediam_bot
+
+@[simp]
+lemma diam_top [Nontrivial α] : (⊤ : SimpleGraph α).diam = 1 := by
+  rw [diam, ediam_top]
+  rfl
+
+@[simp]
+lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
+  rw [diam, ENat.toNat_eq_zero]
+  aesop
+
+@[simp]
+lemma diam_eq_one [Nontrivial α] : G.diam = 1 ↔ G = ⊤ := by
+  rw [diam, ENat.toNat_eq_iff (by decide)]
+  exact ediam_eq_one
 
 end diam
 
