@@ -80,13 +80,25 @@ getFormattedTransImports () {
 
 git checkout "${commit1}"
 git checkout master scripts/count-trans-deps.py
-getFormattedTransImports "${commit2}" > transImports1.txt
+getTransImports > transImports1.txt
+#getFormattedTransImports "${commit2}" > transImports1.txt
 git checkout "${currCommit}"
 
 git checkout "${commit2}"
 git checkout master scripts/count-trans-deps.py
-getFormattedTransImports "${commit1}" rev > transImports2.txt
+getTransImports > transImports2.txt
+#getFormattedTransImports "${commit1}" rev > transImports2.txt
 git checkout "${currCommit}"
+
+importsDifferences () {
+  awk -F, '{ diff[$1]+=$2 } END {
+    con=0
+    for(fil in diff) {
+      if(!(diff[fil] == 0)) { printf("%s,%s\n", fil, diff[fil]) }
+    }
+  }' transImports*.txt
+}
+
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
