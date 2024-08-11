@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, E. W. Ayers
+Authors: Bhavik Mehta, Edward Ayers
 -/
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
