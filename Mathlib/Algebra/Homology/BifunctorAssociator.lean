@@ -62,7 +62,7 @@ variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
   [F₁₂.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F₁₂.obj X₁).PreservesZeroMorphisms]
   [G.Additive] [∀ (X₁₂ : C₁₂), (G.obj X₁₂).PreservesZeroMorphisms]
   [G₂₃.PreservesZeroMorphisms] [∀ (X₂ : C₂), (G₂₃.obj X₂).PreservesZeroMorphisms]
-  [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms]
+  [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive]
   (associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
   {ι₁ ι₂ ι₃ ι₁₂ ι₂₃ ι₄ : Type*}
   [DecidableEq ι₁₂] [DecidableEq ι₂₃] [DecidableEq ι₄]
@@ -336,7 +336,7 @@ lemma d_eq (j j' : ι₄):
   rw [ι_eq _ _ _ _ _ _ _ _ _ _ _ _ rfl h, assoc, mapBifunctor.ι_D₁]
   set i₁₂ := ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
   by_cases h₁ : c₁₂.Rel i₁₂ (c₁₂.next i₁₂)
-  · by_cases h₂ : c₁₂.π c₃ c₄ (c₁₂.next i₁₂, i₃) = j'
+  · by_cases h₂ : ComplexShape.π c₁₂ c₃ c₄ (c₁₂.next i₁₂, i₃) = j'
     · rw [mapBifunctor.d₁_eq _ _ _ _ h₁ _ _ h₂]
       simp only [mapBifunctor.d_eq, Functor.map_add, NatTrans.app_add, Preadditive.add_comp,
         smul_add, Preadditive.comp_add, Linear.comp_units_smul]
@@ -625,8 +625,73 @@ lemma d_eq :
   simp only [Preadditive.comp_add, ι_D₂, ι_D₃]
   rw [ι_eq _ _ _ _ _ _ _ _ _ _ _ _ _ rfl
       (by rw [← h, ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄]; rfl),
-      assoc, mapBifunctor.ι_D₂]
-  sorry
+    assoc, mapBifunctor.ι_D₂]
+  set i₂₃ := ComplexShape.π c₂ c₃ c₂₃ ⟨i₂, i₃⟩
+  by_cases h₁ : c₂₃.Rel i₂₃ (c₂₃.next i₂₃)
+  · by_cases h₂ : ComplexShape.π c₁ c₂₃ c₄ (i₁, c₂₃.next i₂₃) = j'
+    · rw [mapBifunctor.d₂_eq _ _ _ _ _ h₁ _ h₂, mapBifunctor.d_eq,
+        Linear.comp_units_smul, Functor.map_add, Preadditive.add_comp,
+        Preadditive.comp_add, smul_add]
+      congr 1
+      · rw [← Functor.map_comp_assoc, mapBifunctor.ι_D₁]
+        by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
+        · rw [d₂_eq _ _ _ _ _ _ _ _ _ h₃,
+            mapBifunctor.d₁_eq _ _ _ _ h₃ _ _ (ComplexShape.next_π₁ c₃ c₂₃ h₃ i₃).symm,
+            Functor.map_units_zsmul, Functor.map_comp, Linear.units_smul_comp,
+            assoc, smul_smul, smul_left_cancel_iff,
+            ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ _ (by
+              dsimp [ComplexShape.r]
+              rw [← h₂, ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄,
+                ComplexShape.next_π₁ c₃ c₂₃ h₃ i₃]), ι_eq]
+        · rw [d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₃,
+            mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₃,
+            Functor.map_zero, zero_comp, smul_zero]
+      · rw [← Functor.map_comp_assoc, mapBifunctor.ι_D₂]
+        by_cases h₃ : c₃.Rel i₃ (c₃.next i₃)
+        · rw [d₃_eq _ _ _ _ _ _ _ _ _ _ h₃,
+            mapBifunctor.d₂_eq _ _ _ _ _ h₃ _ (ComplexShape.next_π₂ c₂ c₂₃ i₂ h₃).symm,
+            Functor.map_units_zsmul, Functor.map_comp, Linear.units_smul_comp, assoc,
+            smul_smul, smul_left_cancel_iff]
+          rw [ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ _ (by
+            dsimp [ComplexShape.r]
+            rw [← h₂, ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄, ComplexShape.next_π₂ c₂ c₂₃ i₂ h₃]),
+            ι_eq]
+        · rw [d₃_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₃,
+            mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₃,
+            Functor.map_zero, zero_comp, smul_zero]
+    · rw [mapBifunctor.d₂_eq_zero' _ _ _ _ _ h₁ _ h₂, comp_zero]
+      trans 0 + 0
+      · simp
+      · congr 1
+        · by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
+          · rw [d₂_eq _ _ _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero, smul_zero]
+            intro h₄
+            apply h₂
+            rw [← h₄]
+            dsimp [ComplexShape.r]
+            rw [ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄, ComplexShape.next_π₁ c₃ c₂₃ h₃ i₃]
+          · rw [d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₃]
+        · by_cases h₃ : c₃.Rel i₃ (c₃.next i₃)
+          · rw [d₃_eq _ _ _ _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero, smul_zero]
+            intro h₄
+            apply h₂
+            rw [← h₄]
+            dsimp [ComplexShape.r]
+            rw [ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄, ComplexShape.next_π₂ c₂ c₂₃ i₂ h₃]
+          · rw [d₃_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₃]
+  · rw [mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₁, comp_zero]
+    trans 0 + 0
+    · simp only [add_zero]
+    · congr 1
+      · rw [d₂_eq_zero]
+        intro h₂
+        apply h₁
+        simpa only [← ComplexShape.next_π₁ c₃ c₂₃ h₂ i₃]
+          using ComplexShape.rel_π₁ c₃ c₂₃ h₂ i₃
+      · rw [d₃_eq_zero]
+        intro h₂
+        apply h₁
+        simpa only [ComplexShape.next_π₂ c₂ c₂₃ i₂ h₂] using ComplexShape.rel_π₂ c₂ c₂₃ i₂ h₂
 
 end mapBifunctor₂₃
 
