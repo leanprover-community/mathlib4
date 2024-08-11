@@ -12,13 +12,10 @@ related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x
 `b`, `c`.
 -/
 
-
 noncomputable section
 
-open Function Cardinal Set Equiv Order
-
-open scoped Classical
-open Cardinal Ordinal
+open Function Set Equiv Order
+open scoped Cardinal Ordinal
 
 universe u v w
 
