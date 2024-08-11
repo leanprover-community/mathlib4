@@ -3,8 +3,8 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Lemmas about bilinear maps with a basis over each argument
