@@ -42,13 +42,15 @@ variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Cate
   [HasWeakSheafify J A] {t : C} (ht : IsTerminal t)
 
 section
-variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-
 /--
 A sheaf is discrete if it is a discrete object of the "underlying object" functor from the sheaf
 category to the target category.
 -/
-abbrev IsDiscrete (F : Sheaf J A) : Prop := IsIso ((constantSheafAdj J A ht).counit.app F)
+abbrev IsDiscrete [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
+    (F : Sheaf J A) : Prop :=
+  IsIso ((constantSheafAdj J A ht).counit.app F)
+
+variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 
 lemma isDiscrete_of_iso {F : Sheaf J A} {X : A}
     (i : F ≅ (constantSheaf J A).obj X) : IsDiscrete J ht F :=
@@ -84,9 +86,8 @@ variable (G : C ⥤ D)
 
 open Functor.IsDenseSubsite
 
-noncomputable example :
-    let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquiv G J K A
+-- We use this definitional equality in `equivCommuteConstant'` below.
+noncomputable example : let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
     e.inverse ⋙ (sheafSections J A).obj (op t) ≅ (sheafSections K A).obj (op (G.obj t)) :=
   Iso.refl _
 
@@ -98,14 +99,10 @@ This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalen
 says that the property of a sheaf of being a discrete object is invariant under equivalence of
 sheaf categories.
 -/
-noncomputable def equivCommuteConstant :
-    let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquiv G J K A
+noncomputable def equivCommuteConstant : let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
     constantSheaf J A ⋙ e.functor ≅ constantSheaf K A :=
-  let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquiv G J K A
-  (Adjunction.leftAdjointUniq ((constantSheafAdj J A ht).comp e.toAdjunction)
-    (constantSheafAdj K A ht'))
+  let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
+  ((constantSheafAdj J A ht).comp e.toAdjunction).leftAdjointUniq (constantSheafAdj K A ht')
 
 variable (A) in
 /--
@@ -115,12 +112,9 @@ This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalen
 says that the property of a sheaf of being a discrete object is invariant under equivalence of
 sheaf categories.
 -/
-noncomputable def equivCommuteConstant' :
-    let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquiv G J K A
+noncomputable def equivCommuteConstant' : let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
     constantSheaf J A ≅ constantSheaf K A ⋙ e.inverse :=
-  let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquiv G J K A
+  let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
   isoWhiskerLeft (constantSheaf J A) e.unitIso ≪≫
     isoWhiskerRight (equivCommuteConstant J A ht K G ht') e.inverse
 
@@ -129,8 +123,7 @@ The property of a sheaf of being a discrete object is invariant under equivalenc
 categories.
 -/
 lemma isDiscrete_iff_of_equivalence (F : Sheaf K A) :
-    let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquiv G J K A
+    let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
     haveI : (constantSheaf K A).Faithful :=
       Functor.Faithful.of_iso (equivCommuteConstant J A ht K G ht')
     haveI : (constantSheaf K A).Full :=
@@ -161,6 +154,9 @@ section Forget
 variable {B : Type*} [Category B] (U : A ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J A)
 
+variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
+variable [(constantSheaf J B).Faithful] [(constantSheaf J B).Full]
+
 open Limits
 
 /-- The constant sheaf functor commutes with `sheafCompose` up to isomorphism. -/
@@ -170,24 +166,24 @@ noncomputable def constantCommuteCompose :
     (sheafComposeNatIso J U (sheafificationAdjunction J A) (sheafificationAdjunction J B)).symm) ≪≫
       isoWhiskerRight (compConstIso _ _).symm _
 
+lemma constantCommuteCompose_hom_app_val (X : A) : ((constantCommuteCompose J U).hom.app X).val =
+    (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
+
 /-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w :
     ((constantCommuteCompose J U).hom.app (F.val.obj ⟨t⟩)) ≫
       ((constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F)) =
         ((sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F)) := by
   apply Sheaf.hom_ext
-  change ((sheafifyComposeIso _ _ _).inv ≫ ((_ ⋙ sheafToPresheaf J B).mapIso
-      (constComp Cᵒᵖ (F.val.obj ⟨t⟩) U)).hom) ≫ _ = _
-  rw [assoc, Iso.inv_comp_eq]
+  rw [instCategorySheaf_comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
   ext
-  simp? says
-    simp only [comp_obj, const_obj_obj, sheafCompose_obj_val, sheafToPresheaf_obj, id_obj,
-      mapIso_hom, Functor.comp_map, sheafToPresheaf_map, constantSheafAdj_counit_app,
-      evaluation_obj_obj, constantPresheafAdj_counit_app, instCategorySheaf_comp_val,
-      sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, comp_id,
-      toSheafify_sheafifyLift, NatTrans.comp_app, constComp_hom_app, id_comp, flip_obj_obj,
-      map_comp, sheafCompose_map_val, sheafComposeIso_hom_fac_assoc, whiskerRight_app]
+  simp? says simp only [comp_obj, const_obj_obj, sheafCompose_obj_val, id_obj,
+      constantSheafAdj_counit_app, evaluation_obj_obj, constantPresheafAdj_counit_app,
+      Functor.comp_map, instCategorySheaf_comp_val, sheafificationAdjunction_counit_app_val,
+      sheafifyMap_sheafifyLift, comp_id, toSheafify_sheafifyLift, NatTrans.comp_app,
+      constComp_hom_app, id_comp, flip_obj_obj, sheafToPresheaf_obj, map_comp, sheafCompose_map_val,
+      sheafComposeIso_hom_fac_assoc, whiskerRight_app]
   simp [← map_comp, ← NatTrans.comp_app]
 
 lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
