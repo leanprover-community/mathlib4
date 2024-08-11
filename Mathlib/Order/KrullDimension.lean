@@ -82,7 +82,7 @@ lemma RelSeries.eraseLast_last_rel_last {r : Rel α α} (p : RelSeries r) (h : 0
   convert p.step ⟨p.length -1, by omega⟩
   simp; omega
 
--- https://github.com/leanprover-community/mathlib4/pull/15555
+/-- https://github.com/leanprover-community/mathlib4/pull/15555 -/
 def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
   { length := n, toFun := fun i => i, step := fun _ => Nat.lt_add_one _ }
 
