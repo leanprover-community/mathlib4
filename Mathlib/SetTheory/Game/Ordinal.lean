@@ -186,19 +186,16 @@ theorem toPGame_mul : ∀ a b : Ordinal.{u}, a.toPGame * b.toPGame ≈ (a ⨳ b)
     refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
     · apply leftMoves_mul_cases i ?_ isEmptyElim
       intro i j
-      let wfi := toLeftMovesToPGame_symm_lt i
-      let wfj := toLeftMovesToPGame_symm_lt j
-      rw [mul_moveLeft_inl, toPGame_moveLeft', toPGame_moveLeft', lf_iff_game_lf]
-      dsimp
-      rw [← Game.not_le, le_sub_iff_add_le]
+      rw [mul_moveLeft_inl, toPGame_moveLeft', toPGame_moveLeft', lf_iff_game_lf,
+        quot_sub, quot_add, ← Game.not_le, le_sub_iff_add_le]
       repeat rw [game_eq (toPGame_mul _ _)]
       repeat rw [toPGame_add_mk']
-      exact toPGame_lf (nmul_nadd_lt wfi wfj)
+      apply toPGame_lf (nmul_nadd_lt _ _) <;>
+      exact toLeftMovesToPGame_symm_lt _
     · rw [toPGame_moveLeft']
       rcases lt_nmul_iff.1 (toLeftMovesToPGame_symm_lt i) with ⟨c, hc, d, hd, h⟩
-      rw [← toPGame_le_iff] at h
-      change (⟦_⟧ : Game) ≤ ⟦_⟧ at h
-      rw [← toPGame_add_mk' _ _, ← toPGame_add_mk' _ _, ← le_sub_iff_add_le] at h
+      rw [← toPGame_le_iff, le_iff_game_le, ← toPGame_add_mk' _ _, ← toPGame_add_mk' _ _,
+        ← le_sub_iff_add_le] at h
       refine lf_of_le_of_lf h <| (lf_congr_left ?_).1 <| moveLeft_lf <| toLeftMovesMul <| Sum.inl
         ⟨toLeftMovesToPGame ⟨c, hc⟩, toLeftMovesToPGame ⟨d, hd⟩⟩
       simp only [mul_moveLeft_inl, toPGame_moveLeft', Equiv.symm_apply_apply, equiv_iff_game_eq,
