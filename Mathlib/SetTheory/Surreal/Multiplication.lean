@@ -32,8 +32,8 @@ In the argument, P3 is stated with four variables `x₁`, `x₂`, `y₁`, `y₂`
 `@mul_pos PGame _ (x₂ - x₁) (y₂ - y₁)`. It has to be stated in this form and not in terms of
 `mul_pos` because we need to show P1, P2 and (a specialized form of) P3 simultaneously, and
 for example `P1 x y` will be deduced from P3 with variables taking values simpler than `x` or `y`
-(among other induction hypotheses), but if you subtract two pregames simpler than `x` or `y`, the
-result may no longer be simpler.
+(among other induction hypotheses), but if you subtract two pregames simpler than `x` or `y`,
+the result may no longer be simpler.
 
 The specialized version of P3 is called P4, which takes only three arguments `x₁`, `x₂`, `y` and
 requires that `y₂ = y` or `-y` and that `y₁` is a left option of `y₂`. After P1, P2 and P4 are
@@ -48,12 +48,12 @@ Implementation strategy of the inductive argument: we
 
 The whole proof features a clear separation into lemmas of different roles:
 * verification of symmetry properties of P and IH (`P3_comm`, `ih1_neg_left`, etc.),
-* calculations that connect P1, P2, P3, and inequalities between the product of two surreals and its
-  options (`mulOption_lt_iff_P1`, etc.),
-* specializations of the induction hypothesis (`numeric_option_mul`, `ih1`, `ih1_swap`, `ih₁₂`,
-  `ih4`, etc.),
-* application of specialized induction hypothesis (`P1_of_ih`, `mul_right_le_of_equiv`, `P3_of_lt`,
-  etc.).
+* calculations that connect P1, P2, P3, and inequalities between the product of
+  two surreals and its options (`mulOption_lt_iff_P1`, etc.),
+* specializations of the induction hypothesis
+  (`numeric_option_mul`, `ih1`, `ih1_swap`, `ih₁₂`, `ih4`, etc.),
+* application of specialized induction hypothesis
+  (`P1_of_ih`, `mul_right_le_of_equiv`, `P3_of_lt`, etc.).
 
 ## References
 
