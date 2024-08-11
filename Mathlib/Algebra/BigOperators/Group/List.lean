@@ -119,10 +119,9 @@ theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
 
 @[to_additive (attr := simp)]
 theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
-  induction' n with n ih
-  · rw [pow_zero]
-    rfl
-  · rw [replicate_succ, prod_cons, ih, pow_succ']
+  induction n with
+  | zero => rw [pow_zero]; rfl
+  | succ n ih => rw [replicate_succ, prod_cons, ih, pow_succ']
 
 @[to_additive sum_eq_card_nsmul]
 theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
@@ -424,9 +423,10 @@ theorem prod_drop_succ :
 @[to_additive "Cancellation of a telescoping sum."]
 theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
     ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
-  induction' n with n h
-  · exact (div_self' (f 0)).symm
-  · rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
+  induction n with
+  | zero => exact (div_self' (f 0)).symm
+  | succ n h =>
+    rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
 
 lemma prod_rotate_eq_one_of_prod_eq_one :
     ∀ {l : List G} (_ : l.prod = 1) (n : ℕ), (l.rotate n).prod = 1

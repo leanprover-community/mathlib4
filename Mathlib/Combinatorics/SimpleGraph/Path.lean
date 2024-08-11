@@ -724,6 +724,12 @@ lemma bot_preconnected_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔
   contrapose h
   simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot, h]
 
+lemma bot_preconnected [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
+  bot_preconnected_iff_subsingleton.mpr ‹_›
+
+lemma bot_not_preconnected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected :=
+  bot_preconnected_iff_subsingleton.not.mpr <| not_subsingleton_iff_nontrivial.mpr ‹_›
+
 lemma top_preconnected : (⊤ : SimpleGraph V).Preconnected := fun x y => by
   if h : x = y then rw [h] else exact Adj.reachable h
 
@@ -764,8 +770,7 @@ protected lemma Connected.mono {G G' : SimpleGraph V} (h : G ≤ G')
   nonempty := hG.nonempty
 
 lemma bot_not_connected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
-  rw [← not_subsingleton_iff_nontrivial, ← bot_preconnected_iff_subsingleton.not] at ‹_›
-  simp [connected_iff, ‹_›]
+  simp [bot_not_preconnected, connected_iff, ‹_›]
 
 lemma top_connected [Nonempty V] : (⊤ : SimpleGraph V).Connected where
   preconnected := top_preconnected
