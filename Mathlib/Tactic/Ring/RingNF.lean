@@ -197,7 +197,6 @@ which rewrites all ring expressions into a normal form.
 * `ring_nf` works as both a tactic and a conv tactic.
   In tactic mode, `ring_nf at h` can be used to rewrite in a hypothesis.
 
-
 This can be used non-terminally to normalize ring expressions in the goal such as
 `⊢ P (x + x + x)` ~> `⊢ P (x * 3)`, as well as being able to prove some equations that
 `ring` cannot because they involve ring reasoning inside a subterm, such as
@@ -244,7 +243,8 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
 
 /--
 Tactic for evaluating expressions in *commutative* (semi)rings, allowing for variables in the
-exponent.
+exponent. It uses `ring1` and `ring_nf` in succession so, if `ring1` fails, `ring_nf` will
+not be called.
 
 * `ring!` will use a more aggressive reducibility setting to determine equality of atoms.
 * `ring1` fails if the target is not an equality.
