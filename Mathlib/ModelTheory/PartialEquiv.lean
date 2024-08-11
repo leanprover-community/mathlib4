@@ -5,7 +5,6 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.ModelTheory.DirectLimit
 import Mathlib.Order.Ideal
-import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Partial Isomorphisms
@@ -334,7 +333,7 @@ end DirectLimit
 
 section FGEquiv
 
-open PartialEquiv Set DirectLimit Filter
+open PartialEquiv Set DirectLimit
 
 variable (M) (N) (L)
 
