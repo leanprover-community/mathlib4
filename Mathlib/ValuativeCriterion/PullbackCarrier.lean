@@ -193,21 +193,10 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
               = (Spec T.tensor).fromSpecResidueField p
                 ≫ Spec.map (pushout.inl _ _)
                   ≫ X.fromSpecResidueField T.x := by
-    -- have : T.SpecTensorTo ≫ (pullback.fst f g)
-    --     = Spec.map (pushout.inl _ _) ≫ X.fromSpecResidueField T.x := by
-    --   rw [SpecTensorTo]
-    --   simp only [residueFieldCongr_inv, limit.lift_π, id_eq, PullbackCone.mk_pt,
-    --     PullbackCone.mk_π_app]
-    have : Spec.map (pushout.inl _ _) ≫ X.fromSpecResidueField T.x
-        = T.SpecTensorTo ≫ (pullback.fst f g) := by
-      rw [SpecTensorTo]
-      simp only [residueFieldCongr_inv, limit.lift_π, id_eq, PullbackCone.mk_pt,
-        PullbackCone.mk_π_app]
-    rw [this]
+    have : T.SpecTensorTo ≫ (pullback.fst f g) = Spec.map (pushout.inl _ _) ≫ X.fromSpecResidueField T.x := pullback.lift_fst _ _ _
+    rw [← this]
     rw [reassoc_of% Spec_κ_p_to_pullback_eq]
     simp only [tensorCongr_SpecTensorTo_assoc]
-
-  -- Now everything for `Y`
 
   have Spec_κ_p_to_Y_eq : Spec.map (Hom.residueFieldMap T.SpecTensorTo p)
       ≫ Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))
@@ -217,7 +206,10 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
               = (Spec T.tensor).fromSpecResidueField p
                 ≫ Spec.map (pushout.inr _ _)
                   ≫ Y.fromSpecResidueField T.y := by
-    sorry
+    have : T.SpecTensorTo ≫ (pullback.snd f g) = Spec.map (pushout.inr _ _) ≫ Y.fromSpecResidueField T.y := pullback.lift_snd _ _ _
+    rw [← this]
+    rw [reassoc_of% Spec_κ_p_to_pullback_eq]
+    simp only [tensorCongr_SpecTensorTo_assoc]
 
   have Spec_κ_p_to_Spec_κ_x_eq : Spec.map (Hom.residueFieldMap T.SpecTensorTo p)
       ≫ Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))
