@@ -24,13 +24,11 @@ namespace CategoryTheory.Cat
 open Limits
 
 /-- The chosen terminal object in `Cat`. -/
-abbrev OneCat : Cat := Cat.of (Discrete PUnit)
+abbrev OneCat : Cat.{v, u} := Cat.of (ULift (ULiftHom (Discrete Unit)))
 
 /-- The chosen terminal object in `Cat` is terminal. -/
-def isTerminalPUnit : IsTerminal OneCat where
-  lift s := Functor.star s.pt
-  fac _ (j : Discrete PEmpty.{1}) := PEmpty.elim j.as
-  uniq s m _ :=  Functor.punit_ext' m (Functor.star s.pt)
+def isTerminalPUnit : IsTerminal OneCat :=
+  IsTerminal.ofUniqueHom (fun _ ↦ (Functor.const _).obj ⟨⟨⟨⟩⟩⟩) fun _ _ ↦ rfl
 
 /-- The product cone in `Cat`. -/
 def prodCone (C D : Cat.{v,u}) : BinaryFan C D :=
