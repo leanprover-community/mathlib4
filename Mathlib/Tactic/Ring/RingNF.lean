@@ -196,6 +196,12 @@ which rewrites all ring expressions into a normal form.
   * `recursive`: if true, `ring_nf` will also recurse into atoms
 * `ring_nf` works as both a tactic and a conv tactic.
   In tactic mode, `ring_nf at h` can be used to rewrite in a hypothesis.
+
+
+This can be used non-terminally to normalize ring expressions in the goal such as
+`⊢ P (x + x + x)` ~> `⊢ P (x * 3)`, as well as being able to prove some equations that
+`ring` cannot because they involve ring reasoning inside a subterm, such as
+`sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
 elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
   let mut cfg ← elabConfig cfg
@@ -249,11 +255,6 @@ example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
 ```
-
-This can be used non-terminally to normalize ring expressions in the goal such as
-`⊢ P (x + x + x)` ~> `⊢ P (x * 3)`, as well as being able to prove some equations that
-`ring` cannot because they involve ring reasoning inside a subterm, such as
-`sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
 macro (name := ring) "ring" : tactic =>
   `(tactic| first | ring1 | try_this ring_nf)
