@@ -142,11 +142,23 @@ notation "⌊" a "⌋ᵢ" => ENat.floor a
 
 end OrderedSemiring
 
-section LinearOrderedSemiring
 
-#check LinearOrderedSemiring
-#check ZeroLEOneClass
---#check ZeroLEOneClass
+
+section GaloisConnection
+
+open EFloorSemiring in
+instance {α : Type*} [CanonicallyOrderedCommSemiring α] [ZeroLEOneClass α] [CoeTC ℕ∞ α]
+    [EFloorSemiring α] [CastNatENatClass α] :
+    GaloisConnection (fun (n : ℕ∞) ↦ (n : α)) (fun (a : α) ↦ ⌊a⌋ᵢ) := by
+  intro n a
+  rw [← gc_floor (zero_le a)]
+  rfl
+
+end GaloisConnection
+
+
+
+section LinearOrderedSemiring
 
 variable [Semiring α] [LinearOrder α] [ZeroLEOneClass α]
 variable [CoeTC ℕ∞ α] [EFloorSemiring α] [CastNatENatClass α]
@@ -241,81 +253,3 @@ lemma floor_le_one_of_le_one (h : a ≤ 1) :
 end LinearOrderedSemiring
 
 end ENat
-
-
-
-open Filter BigOperators TopologicalSpace Topology Set ENNReal NNReal ENat
-
-section ENat_topology
-
-instance : TopologicalSpace ℕ∞ := TopologicalSpace.induced ENat.toENNReal inferInstance
-
-lemma ENat.continuous_toENNReal : Continuous ENat.toENNReal :=
-  continuous_iff_le_induced.mpr fun _ h ↦ h
-
-instance : OrderTopology ℕ∞ := sorry
-
--- TODO: Move to the appropriate file `Data.ENat.Basic`.
-lemma ENat.toENNReal_coe_eq_top_iff {m : ℕ∞} :
-    (m : ℝ≥0∞) = ∞ ↔ m = ⊤ := by
-  rw [← toENNReal_coe_eq_iff, toENNReal_top]
-
--- TODO: Move to the appropriate file `Data.ENat.Basic`.
-lemma ENat.toENNReal_coe_ne_top_iff {m : ℕ∞} :
-    (m : ℝ≥0∞) ≠ ∞ ↔ m ≠ ⊤ :=
-  not_iff_not.mpr toENNReal_coe_eq_top_iff
-
-end ENat_topology
-
-
-
-section ENNReal
-
-namespace ENNReal
-
-/-- The floor function `ℝ≥0∞ → ℕ∞`: the floor of `x` is the supremum of the extended natural
-numbers `n` satisfying `n ≤ x`. -/
-noncomputable def floorAux (x : ℝ≥0∞) : ℕ∞ := sSup {n : ℕ∞ | n ≤ x}
-
-variable {x y : ℝ≥0∞} {m : ℕ∞}
-
-private lemma floorAux_mono (h : x ≤ y) : x.floorAux ≤ y.floorAux :=
-  sSup_le_sSup <| fun _ hx ↦ hx.trans h
-
-/-- The floor function `ℝ≥0∞ → ℝ≥0∞` is increasing. -/
-private lemma monotone_floorAux : Monotone floorAux := fun _ _ h ↦ floorAux_mono h
-
-private lemma floorAux_eq_sSup_range_toENNReal_inter_Iic :
-    floorAux x = sSup (Set.range (fun (m : ℕ∞) ↦ (m : ℝ≥0∞)) ∩ Iic x) := by
-  simp only [floorAux]
-  rw [toENNReal_mono.map_sSup_of_continuousAt ENat.continuous_toENNReal.continuousAt (by simp)]
-  congr
-  ext m
-  simp only [mem_image, mem_setOf_eq, mem_inter_iff, mem_range, mem_Iic]
-  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-  · obtain ⟨n, hn⟩ := hx
-    refine ⟨⟨n, hn.2⟩, hn.2 ▸ hn.1⟩
-  · obtain ⟨n, hn⟩ := hx.1
-    refine ⟨n, ⟨hn ▸ hx.2, hn⟩⟩
-
-private lemma floorAux_le (x : ℝ≥0∞) : floorAux x ≤ x := by
-  simpa only [floorAux_eq_sSup_range_toENNReal_inter_Iic] using sSup_le fun _ h ↦ h.2
-
-private lemma le_floorAux (h : m ≤ x) : m ≤ x.floorAux := le_sSup <| by simp [h]
-
-noncomputable instance : EFloorSemiring ℝ≥0∞ where
-  floor := floorAux
-  floor_of_neg ha := (ENNReal.not_lt_zero ha).elim
-  gc_floor := by
-    intro a n _
-    refine ⟨fun h ↦ le_trans ?_ <| floorAux_le a, fun h ↦ le_floorAux <| by exact_mod_cast h⟩
-    rwa [← cast_enat_le_iff (α := ℝ≥0∞)] at h
-  floor_lt := by
-    intro a n _
-    refine ⟨fun h ↦ ?_, fun h ↦ ENat.toENNReal_lt.mp <| lt_of_le_of_lt (floorAux_le _) h⟩
-    · by_contra con
-      exact (lt_self_iff_false n).mp <| (le_floorAux <| le_of_not_lt con).trans_lt h
-
-end ENNReal
-
-end ENNReal
