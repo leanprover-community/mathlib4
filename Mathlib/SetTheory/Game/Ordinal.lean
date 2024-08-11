@@ -176,7 +176,6 @@ theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b)
         rwa [toPGame_lf_iff]
 termination_by a b => (a, b)
 
-@[simp]
 theorem toPGame_add_mk' (a b : Ordinal) : (⟦a.toPGame⟧ + ⟦b.toPGame⟧ : Game) = ⟦(a ♯ b).toPGame⟧ :=
   Quot.sound (toPGame_add a b)
 
@@ -204,7 +203,6 @@ theorem toPGame_mul : ∀ a b : Ordinal.{u}, a.toPGame * b.toPGame ≈ (a ⨳ b)
       rfl
 termination_by a b => (a, b)
 
-@[simp]
 theorem toPGame_mul_mk' (a b : Ordinal) : (⟦a.toPGame * b.toPGame⟧ : Game) = ⟦(a ⨳ b).toPGame⟧ :=
   Quot.sound (toPGame_mul a b)
 
