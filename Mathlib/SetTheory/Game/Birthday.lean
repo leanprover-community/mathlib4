@@ -19,8 +19,7 @@ prove the basic properties about these.
 
 # Todo
 
-- Define the birthdays of `SetTheory.Game`s and `Surreal`s.
-- Characterize the birthdays of basic arithmetical operations.
+- Characterize the birthdays of more basic arithmetical operations.
 -/
 
 
@@ -35,8 +34,8 @@ open scoped NaturalOps PGame
 namespace PGame
 
 /-- The birthday of a pre-game is inductively defined as the least strict upper bound of the
-birthdays of its left and right games. It may be thought as the "step" in which a certain game is
-constructed. -/
+  birthdays of its left and right games. It may be thought as the "step" in which a certain game is
+  constructed. -/
 noncomputable def birthday : PGame.{u} → Ordinal.{u}
   | ⟨_, _, xL, xR⟩ =>
     max (lsub.{u, u} fun i => birthday (xL i)) (lsub.{u, u} fun i => birthday (xR i))
@@ -130,11 +129,9 @@ theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
 @[simp]
 theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.birthday
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    rw [birthday_def, nadd_def]
-    -- Porting note: `simp` doesn't apply
-    erw [lsub_sum, lsub_sum]
-    simp only [lsub_sum, mk_add_moveLeft_inl, moveLeft_mk, mk_add_moveLeft_inr,
-      mk_add_moveRight_inl, moveRight_mk, mk_add_moveRight_inr]
+    rw [birthday_def, nadd_def, lsub_sum, lsub_sum]
+    simp only [mk_add_moveLeft_inl, mk_add_moveLeft_inr, mk_add_moveRight_inl, mk_add_moveRight_inr,
+      moveLeft_mk, moveRight_mk]
     -- Porting note: Originally `simp only [birthday_add]`, but this causes an error in
     -- `termination_by`. Use a workaround.
     conv_lhs => left; left; right; intro a; rw [birthday_add (xL a) ⟨yl, yr, yL, yR⟩]
@@ -170,13 +167,26 @@ theorem birthday_natCast : ∀ n : ℕ, birthday n = n
   | 0 => birthday_zero
   | n + 1 => by simp [birthday_natCast]
 
-@[deprecated (since := "2024-04-17")]
-alias birthday_nat_cast := birthday_natCast
-
 theorem birthday_add_nat (n : ℕ) : (a + n).birthday = a.birthday + n := by simp
 
 theorem birthday_nat_add (n : ℕ) : (↑n + a).birthday = a.birthday + n := by simp
 
 end PGame
+
+namespace Game
+
+/-- The birthday of a game is defined as the least birthday among all pre-games that define it. -/
+noncomputable def birthday (x : Game.{u}) : Ordinal.{u} :=
+  sInf (PGame.birthday '' (Quotient.mk' ⁻¹' {x}))
+
+/-- The set in the definition of birthday is nonempty. -/
+theorem birthday_nonempty (x : Game.{u}) : (PGame.birthday '' (Quotient.mk' ⁻¹' {x})).Nonempty := by
+  rw [Set.image_nonempty]
+  exact ⟨_, x.out_eq⟩
+
+theorem birthday_le_pGame_birthday (x : PGame.{u}) : x.birthday ≤ birthday ⟦x⟧ := by
+  apply le_csInf (birthday_nonempty _)
+
+end Game
 
 end SetTheory
