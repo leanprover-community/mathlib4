@@ -92,11 +92,11 @@ instance (M : ModuleCat R) : IsIso ((Condensed.forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
   rw [discreteUnderlyingAdj, Condensed.forget, ← Sheaf.constantSheafAdj_counit_w]
   refine IsIso.comp_isIso' inferInstance ?_
-  change Sheaf.IsDiscrete _ _ _
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Full :=
     inferInstanceAs (discrete _).Full
+  change Sheaf.IsDiscrete _ _ _
   rw [Sheaf.isDiscrete_iff_mem_essImage]
   change _ ∈ (discrete _).essImage
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
@@ -202,11 +202,11 @@ instance (M : ModuleCat R) : IsIso ((LightCondensed.forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
   rw [discreteUnderlyingAdj, LightCondensed.forget, ← Sheaf.constantSheafAdj_counit_w]
   refine IsIso.comp_isIso' inferInstance ?_
-  change Sheaf.IsDiscrete _ _ _
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
     inferInstanceAs (discrete _).Full
+  change Sheaf.IsDiscrete _ _ _
   rw [Sheaf.isDiscrete_iff_mem_essImage]
   change _ ∈ (discrete _).essImage
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
