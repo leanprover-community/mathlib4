@@ -49,8 +49,6 @@ noncomputable section
 
 open Function Set Cardinal Equiv Order Ordinal
 
-open scoped Classical
-
 universe u v w
 
 namespace Cardinal
@@ -437,6 +435,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   refine Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Quotient.inductionOn c fun α IH ol => ?_) h
   -- consider the minimal well-order `r` on `α` (a type with cardinality `c`).
   rcases ord_eq α with ⟨r, wo, e⟩
+  classical
   letI := linearOrderOfSTO r
   haveI : IsWellOrder α (· < ·) := wo
   -- Define an order `s` on `α × α` by writing `(a, b) < (c, d)` if `max a b < max c d`, or
@@ -1067,8 +1066,9 @@ theorem mk_list_le_max (α : Type u) : #(List α) ≤ max ℵ₀ #α := by
     apply le_max_right
 
 @[simp]
-theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α :=
-  Eq.symm <|
+theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α := by
+  classical
+  exact Eq.symm <|
     le_antisymm (mk_le_of_injective fun _ _ => Finset.singleton_inj.1) <|
       calc
         #(Finset α) ≤ #(List α) := mk_le_of_surjective List.toFinset_surjective
@@ -1084,6 +1084,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     refine le_trans (mk_preimage_of_injective _ _ fun x y => Sum.inl.inj) ?_
     apply mk_range_le
   rintro ⟨s, ⟨g⟩⟩
+  classical
   use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val
                else Sum.inr (ULift.up 0)
   apply Subtype.eq; ext x
@@ -1178,6 +1179,7 @@ end compl
 
 theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
+  classical
   have := h; cases' this with g
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
