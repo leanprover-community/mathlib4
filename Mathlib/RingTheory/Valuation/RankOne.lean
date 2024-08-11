@@ -159,12 +159,12 @@ instance nontrivial_range : Nontrivial (v.rangeGroup) :=
 instance nontrivial_range₀ : Nontrivial (v.rangeGroup₀ˣ) :=
   (units_rangeGroup₀_equiv_rangeGroup v).nontrivial
 
--- This generalizes to `ValuationRing K`
+
+-- TODO : generalize to `ValuationRing K`
 theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankOne v]
-    (γ : Γ₀ˣ) : (∃ (x : K), x ≠ 0 ∧ v x < γ) := by
-  have hγ_pos : 0 < (RankLeOne.hom v γ) := by
-    rw [← (RankLeOne.hom v).map_zero]
-    exact RankLeOne.strictMono _ γ.zero_lt
+    {γ : ℝ≥0} (hγ : γ ≠ 0) :
+    (∃ (x : K), x ≠ 0 ∧ RankLeOne.hom v (v x) < γ) := by
+  have hγ_pos : 0 < γ := pos_iff_ne_zero.mpr hγ
   obtain ⟨x, h⟩ :=
     NNReal.exists_lt_of_strictMono (RankLeOne.strictMono v.restriction_rangeGroup₀) hγ_pos
   have hx := x.val.prop
@@ -181,17 +181,39 @@ theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankOne v]
       simp only [hb', _root_.map_zero, mul_eq_zero, map_eq_zero,
         Classical.or_iff_not_imp_left] at hx
       exact hx ha'
-    · rw [← StrictMono.lt_iff_lt (RankLeOne.strictMono v)]
-      simp only [map_div₀, ← hx, _root_.map_mul]
+    · simp only [map_div₀, ← hx, _root_.map_mul]
       rw [mul_div_cancel_left₀ _ <| (map_ne_zero (RankLeOne.hom v)).mpr ha]
       exact h
   intro ha'; apply ha; rw [ha', map_zero]
+
+-- TODO : generalize to `ValuationRing K`
+theorem exists_val_lt' {K : Type*} [Field K] (v : Valuation K Γ₀) [RankOne v] (γ : Γ₀ˣ) :
+    (∃ (x : K), x ≠ 0 ∧ v x < γ) := by
+  have : RankLeOne.hom v γ ≠ 0 := by
+    apply ne_of_gt
+    rw [← (RankLeOne.hom v).map_zero]
+    exact RankLeOne.strictMono _ γ.zero_lt
+  obtain ⟨x, hx, h⟩ := RankOne.exists_val_lt v this
+  use x, hx
+  rwa [StrictMono.lt_iff_lt (RankLeOne.strictMono v)] at h
 
 end RankOne
 
 namespace RankLeOne
 
 theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v] :
+    v.rangeGroup = ⊥ ∨
+      ∀ {γ : ℝ≥0} (_ : γ ≠ 0), ∃ (x : K), x ≠ 0 ∧ (RankLeOne.hom v) (v x) < γ := by
+  rw [Classical.or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
+  intro H
+  let hv : RankOne v := {
+    toRankLeOne := inferInstance
+    nontrivial' := by
+      rw [← nontrivial_rangeGroup_iff]
+      exact H }
+  exact @RankOne.exists_val_lt _ _ K _ v hv
+
+theorem exists_val_lt' {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v] :
     v.rangeGroup = ⊥ ∨ ∀ (γ : Γ₀ˣ), ∃ (x : K), x ≠ 0 ∧ v x < γ := by
   rw [Classical.or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro H
@@ -200,7 +222,7 @@ theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v
     nontrivial' := by
       rw [← nontrivial_rangeGroup_iff]
       exact H }
-  exact RankOne.exists_val_lt v
+  exact RankOne.exists_val_lt' v
 
 end RankLeOne
 
