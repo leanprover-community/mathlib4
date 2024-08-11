@@ -92,12 +92,6 @@ def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
 
 @[simp] theorem LTSeries.last_iota (n : ℕ) : (LTSeries.iota n).last = n := rfl
 
--- Q: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WithTop.2Ecoe_iSup.20or.20WithTop.2Ecoe_ciSup/near/456575712
--- https://github.com/leanprover-community/mathlib4/pull/15560
-theorem WithBot.coe_iSup_OrderTop {α : Type*} [Preorder α] {ι : Type*} [Nonempty ι] [SupSet α]
-    [OrderTop α] {f : ι → α} : ↑(⨆ i, f i) = (⨆ i, f i : WithBot α) :=
-  WithBot.coe_iSup (OrderTop.bddAbove (Set.range f))
-
 end in_other_prs
 
 section definitions
@@ -508,7 +502,7 @@ lemma krullDim_nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
 lemma krullDim_eq_of_nonempty [Nonempty α] :
     krullDim α = ⨆ (p : LTSeries α), (p.length : ℕ∞) := by
   unfold krullDim
-  rw [WithBot.coe_iSup_OrderTop]
+  rw [WithBot.coe_iSup (OrderTop.bddAbove _)]
   rfl
 
 lemma krullDim_eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := WithBot.ciSup_empty _
@@ -564,7 +558,7 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), (height a : WithBot 
   cases isEmpty_or_nonempty α with
   | inl h => simp [krullDim_eq_bot_of_isEmpty]
   | inr h =>
-    rw [← WithBot.coe_iSup_OrderTop]
+    rw [← WithBot.coe_iSup (OrderTop.bddAbove _)]
     apply le_antisymm
     · apply iSup_le
       intro p
@@ -590,7 +584,7 @@ lemma krullDim_eq_iSup_coheight : krullDim α = ⨆ (a : α), (coheight a : With
 The Krull dimension is the supremum of the element's heights. Variant of `krullDim_eq_iSup_height`.
 -/
 lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ⨆ (a : α), height a := by
-  rw [krullDim_eq_iSup_height, WithBot.coe_iSup_OrderTop]
+  rw [krullDim_eq_iSup_height, WithBot.coe_iSup (OrderTop.bddAbove _)]
 
 /--
 The Krull dimension is the supremum of the element's coheights.
