@@ -913,7 +913,7 @@ def basisFun : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜) :=
 @[simp]
 theorem basisFun_apply [DecidableEq ι] (i) :
     basisFun p 𝕜 ι i = (WithLp.equiv p _).symm (Pi.single i 1) := by
-  simp_rw [basisFun, Basis.coe_ofEquivFun, WithLp.linearEquiv_symm_apply, Pi.single]
+  simp_rw [basisFun, Basis.coe_ofEquivFun, WithLp.linearEquiv_symm_apply]
 
 @[simp]
 theorem basisFun_repr (x : PiLp p fun _ : ι => 𝕜) (i : ι) : (basisFun p 𝕜 ι).repr x i = x i :=
