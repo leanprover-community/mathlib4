@@ -149,9 +149,6 @@ theorem lt_iff_game_lt {x y : PGame} : x < y ↔ (⟦x⟧ : Game) < ⟦y⟧ :=
 theorem equiv_iff_game_eq {x y : PGame} : x ≈ y ↔ (⟦x⟧ : Game) = ⟦y⟧ :=
   (@Quotient.eq' _ _ x y).symm
 
-theorem game_eq {x y : PGame} : x ≈ y → (⟦x⟧ : Game) = ⟦y⟧ :=
-  equiv_iff_game_eq.1
-
 theorem fuzzy_iff_game_fuzzy {x y : PGame} : x ‖ y ↔ Game.Fuzzy ⟦x⟧ ⟦y⟧ :=
   Iff.rfl
 
