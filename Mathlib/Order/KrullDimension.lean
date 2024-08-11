@@ -627,7 +627,7 @@ variable {α : Type*} [Preorder α]
 @[simp] lemma coheight_nat (n : ℕ) : coheight n = ⊤ := by
   rw [coheight_eq_top_iff]
   intro m
-  use ((LTSeries.iota m).map (· + n) (StrictMono.add_const (fun _ _ x ↦ x) n))
+  use (LTSeries.iota m).map (· + n) (StrictMono.add_const (fun _ _ x ↦ x) n)
   simp
 
 @[simp]
@@ -641,7 +641,7 @@ lemma krullDim_nat : krullDim ℕ = ⊤ := by
   cases n with
   | top => contradiction
   | coe n =>
-    use (n+1)
+    use n+1
     norm_cast
     simp
 
