@@ -50,7 +50,7 @@ lemma binaryEntropy_eq : binaryEntropy = (fun p => -p * log p - (1 - p) * log (1
   ext
   simp [binaryEntropy, qaryEntropy, this]
 
-lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log (1 - p) := by
+lemma binaryEntropy_apply (p : ℝ) : binaryEntropy p = -p * log p - (1 - p) * log (1 - p) := by
   rw [binaryEntropy_eq]
 
 @[simp] lemma qaryEntropy_zero {q : ℕ} : qaryEntropy q 0 = 0 := by
