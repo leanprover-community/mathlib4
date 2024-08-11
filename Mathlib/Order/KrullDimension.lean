@@ -451,40 +451,36 @@ lemma coheight_eq_coe_iff (x : α) (n : ℕ) : coheight x = n ↔
   height_eq_coe_iff (α := αᵒᵈ) x n
 
 /-- The elements of height zero are the minimal elements. -/
-lemma isMin_iff_height_eq_zero (a : α) :
+lemma height_eq_zero_iff_isMin (a : α) :
     IsMin a ↔ height a = 0 := by
   simp [isMin_iff_forall_not_lt, height_eq_zero_iff]
 
-lemma isMax_iff_coheight_eq_zero (a : α) :
+lemma coheight_eq_zero_iff_isMax (a : α) :
     IsMax a ↔ coheight a = 0 :=
-  isMin_iff_height_eq_zero (α := αᵒᵈ) a
+  height_eq_zero_iff_isMin (α := αᵒᵈ) a
 
-/-- The elements of height `n` are the minimial elements among those of height `≥ n`. -/
-lemma minimal_le_height_iff_height (a : α) (n : ℕ) :
-    Minimal (fun y => n ≤ height y) a ↔ height a = n := by -- TODO: swap statement
+/-- The elements of finite height `n` are the minimial elements among those of height `≥ n`. -/
+lemma height_eq_coe_iff_minimal_le_height (a : α) (n : ℕ) :
+    height a = n ↔ Minimal (fun y => n ≤ height y) a := by
   by_cases hfin : height a < ⊤
   · simp only [minimal_iff_forall_lt, not_le, height_eq_coe_iff, hfin, true_and, and_congr_left_iff]
     intro _
     cases n
     case pos.zero => simp
     case pos.succ _ =>
-      simp only [Nat.cast_add, Nat.cast_one, add_eq_zero, one_ne_zero, and_false, false_or]
-      simp only [ne_eq, ENat.coe_ne_top, not_false_eq_true, ENat.add_one_le_iff]
-      simp only [coe_lt_height_iff, hfin]
+      simp only [add_eq_zero, one_ne_zero, and_false, Nat.cast_add, Nat.cast_one, false_or, ne_eq,
+        ENat.coe_ne_top, not_false_eq_true, ENat.add_one_le_iff, hfin, coe_lt_height_iff]
       rfl
-  · suffices ∃ x, ∃ (_ : x < a), ↑n ≤ height x by
-      simp only [not_lt, top_le_iff] at hfin
-      simpa only [minimal_iff_forall_lt, Set.mem_setOf_eq, hfin, le_top, not_le,
-        true_and, ENat.top_ne_coe, iff_false, not_forall, Classical.not_imp, not_lt]
+  · suffices ∃ x, ∃ (_ : x < a), ↑n ≤ height x by simp_all [minimal_iff_forall_lt]
     simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
     obtain ⟨p, rfl, hp⟩ := hfin (n+1)
     use p.eraseLast.last, RelSeries.eraseLast_last_rel_last _ (by omega)
     simpa [hp] using length_le_height_last p.eraseLast
 
-/-- The elements of coheight `n` are the maximal elements among those of coheight `≥ n`. -/
-lemma maximal_le_coheight_iff_coheight (a : α) (n : ℕ) :
-    Maximal (fun y => n ≤ coheight y) a ↔ coheight a = n :=
-  minimal_le_height_iff_height (α := αᵒᵈ) a n
+/-- The elements of finite coheight `n` are the maximal elements among those of coheight `≥ n`. -/
+lemma coheight_eq_coe_iff_maximal_le_coheight (a : α) (n : ℕ) :
+    coheight a = n ↔ Maximal (fun y => n ≤ coheight y) a :=
+  height_eq_coe_iff_minimal_le_height (α := αᵒᵈ) a n
 
 end height
 
