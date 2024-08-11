@@ -135,9 +135,9 @@ lemma binaryEntropy_eq_zero {p : ℝ} : binaryEntropy p = 0 ↔ p = 0 ∨ p = 1 
   · contrapose! h
     obtain hp₀ | hp₀ := h.1.lt_or_lt
     · exact (binaryEntropy_neg_of_neg hp₀).ne
-    obtain hp₁ | hp₁ := h.2.lt_or_lt.symm
-    · exact (binaryEntropy_neg_of_gt_one hp₁).ne
-    · exact (binaryEntropy_pos hp₀ hp₁).ne'
+    · obtain hp₁ | hp₁ := h.2.lt_or_lt.symm
+      · exact (binaryEntropy_neg_of_gt_one hp₁).ne
+      · exact (binaryEntropy_pos hp₀ hp₁).ne'
   · rw [binaryEntropy_apply]
     cases h <;> simp only [log_one, mul_zero, sub_self, log_zero, neg_zero, log_zero, mul_zero,
       sub_zero, log_one, sub_self, *]
