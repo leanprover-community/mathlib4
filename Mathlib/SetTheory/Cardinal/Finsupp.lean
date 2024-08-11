@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
+Authors: Violeta Hernández Palacios, Junyan Xu
 -/
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.Data.Finsupp.Basic
