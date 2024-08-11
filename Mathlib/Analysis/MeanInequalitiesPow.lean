@@ -162,8 +162,8 @@ private theorem add_rpow_le_one_of_add_le_one {p : ℝ} (a b : ℝ≥0) (hab : a
 theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) : a ^ p + b ^ p ≤ (a + b) ^ p := by
   have hp_pos : 0 < p := by positivity
   by_cases h_zero : a + b = 0
-  · simp [add_eq_zero_iff.mp h_zero, hp_pos.ne']
-  have h_nonzero : ¬(a = 0 ∧ b = 0) := by rwa [add_eq_zero_iff] at h_zero
+  · simp [add_eq_zero.mp h_zero, hp_pos.ne']
+  have h_nonzero : ¬(a = 0 ∧ b = 0) := by rwa [add_eq_zero] at h_zero
   have h_add : a / (a + b) + b / (a + b) = 1 := by rw [div_add_div_same, div_self h_zero]
   have h := add_rpow_le_one_of_add_le_one (a / (a + b)) (b / (a + b)) h_add.le hp1
   rw [div_rpow a (a + b), div_rpow b (a + b)] at h
