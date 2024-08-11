@@ -59,9 +59,7 @@ assert_not_exists Field
 noncomputable section
 
 open Function Cardinal Set Equiv Order
-
-open scoped Classical
-open Cardinal InitialSeg
+open scoped Cardinal InitialSeg
 
 universe u v w
 

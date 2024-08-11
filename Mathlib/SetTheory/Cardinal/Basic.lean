@@ -80,7 +80,6 @@ Cantor's theorem, König's theorem, Konig's theorem
 assert_not_exists Field
 assert_not_exists Module
 
-open scoped Classical
 open Mathlib (Vector)
 open Function Set Order
 
@@ -566,8 +565,9 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
     add_le_add_left := fun a b => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : α ⊕ ((range f)ᶜ : Set β) ≃ β :=
-          (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
+        have : α ⊕ ((range f)ᶜ : Set β) ≃ β := by
+          classical
+          exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
         ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
     le_self_add := fun a b => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
@@ -1784,8 +1784,9 @@ theorem mk_eq_nat_iff_fintype {n : ℕ} : #α = n ↔ ∃ h : Fintype α, @Finty
     exact ⟨t, eq_univ_iff_forall.2 ht, hn⟩
 
 theorem mk_union_add_mk_inter {α : Type u} {S T : Set α} :
-    #(S ∪ T : Set α) + #(S ∩ T : Set α) = #S + #T :=
-  Quot.sound ⟨Equiv.Set.unionSumInter S T⟩
+    #(S ∪ T : Set α) + #(S ∩ T : Set α) = #S + #T := by
+  classical
+  exact Quot.sound ⟨Equiv.Set.unionSumInter S T⟩
 
 /-- The cardinality of a union is at most the sum of the cardinalities
 of the two sets. -/
@@ -1793,8 +1794,9 @@ theorem mk_union_le {α : Type u} (S T : Set α) : #(S ∪ T : Set α) ≤ #S + 
   @mk_union_add_mk_inter α S T ▸ self_le_add_right #(S ∪ T : Set α) #(S ∩ T : Set α)
 
 theorem mk_union_of_disjoint {α : Type u} {S T : Set α} (H : Disjoint S T) :
-    #(S ∪ T : Set α) = #S + #T :=
-  Quot.sound ⟨Equiv.Set.union H.le_bot⟩
+    #(S ∪ T : Set α) = #S + #T := by
+  classical
+  exact Quot.sound ⟨Equiv.Set.union H.le_bot⟩
 
 theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
     #(insert a s : Set α) = #s + 1 := by
@@ -1806,8 +1808,9 @@ theorem mk_insert_le {α : Type u} {s : Set α} {a : α} : #(insert a s : Set α
   · simp only [insert_eq_of_mem h, self_le_add_right]
   · rw [mk_insert h]
 
-theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α :=
-  mk_congr (Equiv.Set.sumCompl s)
+theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α := by
+  classical
+  exact mk_congr (Equiv.Set.sumCompl s)
 
 theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
   ⟨Set.embeddingOfSubset s t h⟩
@@ -1816,6 +1819,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
     #t ≤ n ↔ ∀ s : Finset α, (s : Set α) ⊆ t → s.card ≤ n := by
   refine ⟨fun H s hs ↦ by simpa using (mk_le_mk_of_subset hs).trans H, fun H ↦ ?_⟩
   apply card_le_of (fun s ↦ ?_)
+  classical
   let u : Finset α := s.image Subtype.val
   have : u.card = s.card := Finset.card_image_of_injOn Subtype.coe_injective.injOn
   rw [← this]
@@ -1902,6 +1906,7 @@ theorem two_le_iff' (x : α) : (2 : Cardinal) ≤ #α ↔ ∃ y : α, y ≠ x :=
   rw [two_le_iff, ← nontrivial_iff, nontrivial_iff_exists_ne x]
 
 theorem mk_eq_two_iff : #α = 2 ↔ ∃ x y : α, x ≠ y ∧ ({x, y} : Set α) = univ := by
+  classical
   simp only [← @Nat.cast_two Cardinal, mk_eq_nat_iff_finset, Finset.card_eq_two]
   constructor
   · rintro ⟨t, ht, x, y, hne, rfl⟩
@@ -1920,6 +1925,7 @@ theorem mk_eq_two_iff' (x : α) : #α = 2 ↔ ∃! y, y ≠ x := by
 
 theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
     ∃ z : α, z ∉ l := by
+  classical
   contrapose! h
   calc
     #α = #(Set.univ : Set α) := mk_univ.symm
