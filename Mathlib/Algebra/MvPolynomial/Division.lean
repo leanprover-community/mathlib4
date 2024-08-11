@@ -42,7 +42,7 @@ results. -/
 noncomputable def divMonomial (p : MvPolynomial σ R) (s : σ →₀ ℕ) : MvPolynomial σ R :=
   AddMonoidAlgebra.divOf p s
 
-local infixl:70 " /ᵐᵒⁿᵒᵐⁱᵃˡ " => divMonomial
+@[inherit_doc] local infixl:70 " /ᵐᵒⁿᵒᵐⁱᵃˡ " => divMonomial
 
 @[simp]
 theorem coeff_divMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) (s' : σ →₀ ℕ) :
@@ -87,7 +87,7 @@ theorem divMonomial_monomial (a : σ →₀ ℕ) : monomial a 1 /ᵐᵒⁿᵒᵐ
 noncomputable def modMonomial (x : MvPolynomial σ R) (s : σ →₀ ℕ) : MvPolynomial σ R :=
   x.modOf s
 
-local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
+@[inherit_doc] local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 
 @[simp]
 theorem coeff_modMonomial_of_not_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : ¬s ≤ s') :
@@ -132,9 +132,9 @@ end CopiedDeclarations
 
 section XLemmas
 
-local infixl:70 " /ᵐᵒⁿᵒᵐⁱᵃˡ " => divMonomial
+@[inherit_doc] local infixl:70 " /ᵐᵒⁿᵒᵐⁱᵃˡ " => divMonomial
 
-local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
+@[inherit_doc] local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 
 @[simp]
 theorem X_mul_divMonomial (i : σ) (x : MvPolynomial σ R) :

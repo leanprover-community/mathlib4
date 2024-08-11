@@ -44,7 +44,7 @@ diamonds, as `Fintype` carries data.
 
 variable {K : Type*} {R : Type*}
 
-local notation "q" => Fintype.card K
+@[inherit_doc] local notation "q" => Fintype.card K
 
 open Finset
 

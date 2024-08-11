@@ -114,7 +114,7 @@ instance [Semiring α] : Module α (Holor α ds) := Pi.module _ _ _
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>
   x t.take * y t.drop
 
-local infixl:70 " ⊗ " => mul
+@[inherit_doc] local infixl:70 " ⊗ " => mul
 
 theorem cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
     cast (congr_arg (Holor α) eq) a = fun t => a (cast (congr_arg HolorIndex eq.symm) t) := by

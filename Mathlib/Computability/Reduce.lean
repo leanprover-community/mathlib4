@@ -240,7 +240,7 @@ theorem ULower.down_computable {α} [Primcodable α] : (ULower.equiv α).Computa
 theorem manyOneEquiv_up {α} [Primcodable α] {p : α → Prop} : ManyOneEquiv (p ∘ ULower.up) p :=
   ManyOneEquiv.of_equiv ULower.down_computable.symm
 
-local infixl:1001 " ⊕' " => Sum.elim
+@[inherit_doc] local infixl:1001 " ⊕' " => Sum.elim
 
 open Nat.Primrec
 

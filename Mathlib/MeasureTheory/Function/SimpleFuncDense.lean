@@ -43,7 +43,7 @@ noncomputable section
 
 namespace MeasureTheory
 
-local infixr:25 " →ₛ " => SimpleFunc
+@[inherit_doc] local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
 

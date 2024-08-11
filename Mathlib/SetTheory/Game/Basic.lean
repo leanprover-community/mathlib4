@@ -101,7 +101,7 @@ If `0 ⧏ x` (less or fuzzy with), then Left can win `x` as the first player. -/
 def LF : Game → Game → Prop :=
   Quotient.lift₂ PGame.LF fun _ _ _ _ hx hy => propext (lf_congr hx hy)
 
-local infixl:50 " ⧏ " => LF
+@[inherit_doc] local infixl:50 " ⧏ " => LF
 
 /-- On `Game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
@@ -147,7 +147,7 @@ If `x ‖ 0`, then the first player can always win `x`. -/
 def Fuzzy : Game → Game → Prop :=
   Quotient.lift₂ PGame.Fuzzy fun _ _ _ _ hx hy => propext (fuzzy_congr hx hy)
 
-local infixl:50 " ‖ " => Fuzzy
+@[inherit_doc] local infixl:50 " ‖ " => Fuzzy
 
 theorem PGame.fuzzy_iff_game_fuzzy {x y : PGame} : PGame.Fuzzy x y ↔ ⟦x⟧ ‖ ⟦y⟧ :=
   Iff.rfl

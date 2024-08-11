@@ -47,7 +47,7 @@ abbrev Finsubgraph (G : SimpleGraph V) :=
 abbrev FinsubgraphHom (G' : G.Finsubgraph) (F : SimpleGraph W) :=
   G'.val.coe →g F
 
-local infixl:50 " →fg " => FinsubgraphHom
+@[inherit_doc] local infixl:50 " →fg " => FinsubgraphHom
 
 namespace Finsubgraph
 

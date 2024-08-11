@@ -213,9 +213,9 @@ lemma contractRight_contractLeft (x : CliffordAlgebra Q) : (d ⌋ x) ⌊ d' = d 
 -/
 end contractLeft
 
-local infixl:70 "⌋" => contractLeft
+@[inherit_doc] local infixl:70 "⌋" => contractLeft
 
-local infixl:70 "⌊" => contractRight
+@[inherit_doc] local infixl:70 "⌊" => contractRight
 
 /-- Auxiliary construction for `CliffordAlgebra.changeForm` -/
 @[simps!]

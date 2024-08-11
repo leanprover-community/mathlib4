@@ -236,7 +236,7 @@ section Bisim
 
 variable (R : Computation α → Computation α → Prop)
 
-/-- bisimilarity relation-/
+/-- bisimilarity relation -/
 local infixl:50 " ~ " => R
 
 /-- Bisimilarity over a sum of `Computation`s-/

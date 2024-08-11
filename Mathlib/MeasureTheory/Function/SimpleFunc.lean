@@ -43,7 +43,7 @@ structure SimpleFunc.{u, v} (α : Type u) [MeasurableSpace α] (β : Type v) whe
   measurableSet_fiber' : ∀ x, MeasurableSet (toFun ⁻¹' {x})
   finite_range' : (Set.range toFun).Finite
 
-local infixr:25 " →ₛ " => SimpleFunc
+@[inherit_doc] local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
 

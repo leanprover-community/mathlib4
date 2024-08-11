@@ -63,7 +63,7 @@ It is a square-zero extension because `M^2 = 0`.
 def TrivSqZeroExt (R : Type u) (M : Type v) :=
   R × M
 
-local notation "tsze" => TrivSqZeroExt
+@[inherit_doc] local notation "tsze" => TrivSqZeroExt
 
 open scoped RightActions
 
