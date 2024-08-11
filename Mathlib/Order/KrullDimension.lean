@@ -237,10 +237,8 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
 -- only true for finite height
 lemma height_strictMono (x y : α) (hxy : x < y) (hfin : height y < ⊤) :
     height x < height y := by
-  suffices height x + 1 ≤ height y by
-    obtain ⟨n, hfin : height y = n⟩ := Option.ne_none_iff_exists'.mp (LT.lt.ne_top hfin)
-    revert hfin this
-    cases height y <;> cases height x <;> simp_all;  norm_cast;  omega
+  have : height x ≠ ⊤ := ne_top_of_lt (lt_of_le_of_lt (height_mono (le_of_lt hxy)) hfin)
+  rw [← ENat.add_one_le_iff this]
   rw [height_add_const]
   apply iSup₂_le
   intro p hlast
