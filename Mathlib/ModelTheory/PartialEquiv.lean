@@ -322,7 +322,7 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
     (partialEquivLimit S).toEquiv.toEmbedding.comp (Substructure.inclusion (le_iSup _ i)) =
     (Substructure.inclusion (le_iSup _ i)).comp (S i).toEquiv.toEmbedding := by
   simp only [partialEquivLimit, Equiv.comp_toEmbedding, Embedding.comp_assoc]
-  rw [Equiv_iSup_symm_inclusion]
+  rw [Equiv_isup_symm_inclusion]
   congr
 
 theorem le_partialEquivLimit : ∀ i, S i ≤ partialEquivLimit S :=
