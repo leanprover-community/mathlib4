@@ -399,65 +399,19 @@ theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
 theorem mul_comm_equiv (x y : PGame) : x * y ≈ y * x :=
   Quotient.exact <| quot_mul_comm _ _
 
-instance isEmpty_leftMoves_mul (x y : PGame.{u}) [IsEmpty x.LeftMoves] [IsEmpty y.RightMoves] :
+instance isEmpty_leftMoves_mul (x y : PGame.{u})
+    [IsEmpty (x.LeftMoves × y.LeftMoves ⊕ x.RightMoves × y.RightMoves)] :
     IsEmpty (x * y).LeftMoves := by
   cases x
   cases y
-  apply isEmpty_sum.2 ⟨_, _⟩ <;>
-  apply isEmpty_prod.2
-  · left
-    assumption
-  · right
-    assumption
+  assumption
 
-instance isEmpty_leftMoves_mul' (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpty y.LeftMoves] :
-    IsEmpty (x * y).LeftMoves := by
-  cases x
-  cases y
-  apply isEmpty_sum.2 ⟨_, _⟩ <;>
-  apply isEmpty_prod.2
-  · right
-    assumption
-  · left
-    assumption
-
-instance isEmpty_rightMoves_mul (x y : PGame.{u}) [IsEmpty x.LeftMoves] [IsEmpty y.LeftMoves] :
+instance isEmpty_rightMoves_mul (x y : PGame.{u})
+    [IsEmpty (x.LeftMoves × y.RightMoves ⊕ x.RightMoves × y.LeftMoves)] :
     IsEmpty (x * y).RightMoves := by
   cases x
   cases y
-  apply isEmpty_sum.2 ⟨_, _⟩ <;>
-  apply isEmpty_prod.2
-  · left
-    assumption
-  · right
-    assumption
-
-instance isEmpty_rightMoves_mul' (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpty y.RightMoves] :
-    IsEmpty (x * y).RightMoves := by
-  cases x
-  cases y
-  apply isEmpty_sum.2 ⟨_, _⟩ <;>
-  apply isEmpty_prod.2
-  · right
-    assumption
-  · left
-    assumption
-
-instance isEmpty_mul_zero_leftMoves (x : PGame.{u}) : IsEmpty (x * 0).LeftMoves := by
-  cases x
-  exact instIsEmptySum
-
-instance isEmpty_mul_zero_rightMoves (x : PGame.{u}) : IsEmpty (x * 0).RightMoves := by
-  cases x
-  apply instIsEmptySum
-
-instance isEmpty_zero_mul_leftMoves (x : PGame.{u}) : IsEmpty (0 * x).LeftMoves := by
-  cases x
-  apply instIsEmptySum
-
-instance isEmpty_zero_mul_rightMoves (x : PGame.{u}) : IsEmpty (0 * x).RightMoves := by
-  cases x
-  apply instIsEmptySum
+  assumption
 
 /-- `x * 0` has exactly the same moves as `0`. -/
 def mulZeroRelabelling (x : PGame) : x * 0 ≡r 0 :=
