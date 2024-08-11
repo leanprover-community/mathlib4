@@ -366,8 +366,8 @@ theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Pro
     (Qf : ∀ f : R[X], Q (toLaurent f)) (QT : ∀ f, Q (f * T 1) → Q f) : Q f := by
   induction' f using LaurentPolynomial.induction_on_mul_T with f n
   induction n with
-    | zero => simpa only [Nat.zero_eq, Nat.cast_zero, neg_zero, T_zero, mul_one] using Qf _
-    | succ n hn => convert QT _ _; simpa using hn
+  | zero => simpa only [Nat.zero_eq, Nat.cast_zero, neg_zero, T_zero, mul_one] using Qf _
+  | succ n hn => convert QT _ _; simpa using hn
 
 section Support
 
