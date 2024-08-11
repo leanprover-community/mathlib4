@@ -82,15 +82,12 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
       benchmark it. If this is fine, feel free to allow this linter."
   | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
   | StyleError.fileTooLong currentSize sizeLimit previousLimit =>
-    match style with
-    | ErrorFormat.github =>
-      if let some n := previousLimit then
-        s!"file contains {currentSize} lines (at most {n} allowed), try to split it up"
-      else
-        s!"file contains {currentSize} lines, try to split it up"
-    | ErrorFormat.exceptionsFile =>
-        s!"{sizeLimit} file contains {currentSize} lines, try to split it up"
-    | ErrorFormat.humanReadable => s!"file contains {currentSize} lines, try to split it up"
+    (if style == .exceptionsFile then s!"{sizeLimit} " else "") ++
+      s!"file contains {currentSize} lines" ++ (
+        if style == .github && previousLimit.isSome then
+          s!" (at most {previousLimit.get!} allowed)"
+        else ""
+      ) ++ s!", try to split it up"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
