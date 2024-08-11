@@ -11,6 +11,7 @@ import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.Polynomial.Wronskian
 import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.Algebra.Polynomial.FieldDivision
 
 noncomputable section
 
