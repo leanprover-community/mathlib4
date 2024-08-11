@@ -598,6 +598,20 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
 
 end QuotientGroup
 
+namespace QuotientAddGroup
+
+variable {R : Type*} [NonAssocRing R] (N : AddSubgroup R) [N.Normal]
+
+@[simp]
+theorem mk_nat_mul (n : ℕ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := by
+  rw [← nsmul_eq_mul, mk_nsmul N a n]
+
+@[simp]
+theorem mk_int_mul (n : ℤ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := by
+  rw [← zsmul_eq_mul, mk_zsmul N a n]
+
+end QuotientAddGroup
+
 namespace Group
 
 open scoped Classical
