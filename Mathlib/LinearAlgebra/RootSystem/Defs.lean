@@ -190,6 +190,9 @@ lemma reflection_same (x : M) :
     P.reflection i (P.reflection i x) = x :=
   Module.involutive_reflection (P.coroot_root_two i) x
 
+@[simp]
+lemma reflection_inverse : (P.reflection i)⁻¹ = P.reflection i := rfl
+
 lemma bijOn_reflection_root :
     BijOn (P.reflection i) (range P.root) (range P.root) :=
   Module.bijOn_reflection_of_mapsTo _ <| P.mapsTo_reflection_root i
@@ -334,50 +337,57 @@ def weylGroup : Subgroup (M ≃ₗ[R] M) :=
 
 lemma reflection_in_weyl : P.reflection i ∈ P.weylGroup :=
   Subgroup.subset_closure <| mem_range_self i
-/-!
+
 lemma weylGroup_apply_root (w : P.weylGroup) : ∀ i, ∃ j, w • (P.root i) = P.root j := by
   obtain ⟨w, hw⟩ := w
--- Want a new induction that uses inverses of gens.
--- Algebra.Group.Submonoid.Basic has dense_induction.
-  refine Subgroup.closure_induction' (k := {P.reflection i | i : ι })
-      (p := fun x hx => ∀ i, ∃ j, x • (P.root i) = P.root j) ?_ ?_ ?_ ?_ ?_
-  -- hw (fun x hx i => ?_) (fun i => Exists.intro i rfl) ?_ ?_
-  · intro x hx i
-    obtain ⟨k, hk⟩ := hx
+  refine Subgroup.closure_induction'' (p := fun x _ => ∀ i, ∃ j, x • (P.root i) = P.root j)
+      (fun x hx i => ?_) (fun x hx i => ?_) (by simp) (fun _ _ _ _ hxx hyy i => ?_) hw
+  · obtain ⟨k, hk⟩ := hx
     rw [← hk]
     exact Exists.intro ((P.reflection_perm k) i) (P.root_reflection_perm k i).symm
-  · simp
-  · intro x hx y hy hxx hyy i
-    obtain ⟨j, hj⟩ := hyy i
+  · obtain ⟨k, hk⟩ := hx
+    rw [← hk]
+    use P.reflection_perm k i
+    simp
+  · obtain ⟨j, hj⟩ := hyy i
     obtain ⟨k, hk⟩ := hxx j
     use k
     rw [mul_smul, hj, hk]
-  · intro x hx hxx i
-    sorry
-  · sorry
 
+/-- The homomorphism from the Weyl group to permutations on the index set. -/
+def weylGroupToPerm : P.weylGroup →* Equiv.Perm ι where
+  toFun w := {
+    toFun := fun i => (P.weylGroup_apply_root w i).choose
+    invFun := fun i => (P.weylGroup_apply_root w⁻¹ i).choose
+    left_inv := fun i => by
+      refine Embedding.injective P.root ?_
+      rw [← (P.weylGroup_apply_root w⁻¹ ((P.weylGroup_apply_root w i).choose)).choose_spec,
+        ← (P.weylGroup_apply_root w i).choose_spec, inv_smul_eq_iff]
+    right_inv := fun i => by
+      refine Embedding.injective P.root ?_
+      rw [← (P.weylGroup_apply_root w ((P.weylGroup_apply_root w⁻¹ i).choose)).choose_spec,
+        ← (P.weylGroup_apply_root w⁻¹ i).choose_spec, smul_inv_smul] }
+  map_one' := by
+    ext
+    simp
+  map_mul' x y := by
+    ext i
+    refine Embedding.injective P.root ?_
+    simp only [Equiv.coe_fn_mk, Equiv.Perm.coe_mul, comp_apply]
+    rw [← (P.weylGroup_apply_root (x * y) i).choose_spec,
+      ← (P.weylGroup_apply_root x ((P.weylGroup_apply_root y i).choose)).choose_spec,
+      ← (P.weylGroup_apply_root y i).choose_spec, mul_smul]
 
+@[simp]
+lemma weylGroupToPerm_apply_reflection :
+    P.weylGroupToPerm ⟨P.reflection i, P.reflection_in_weyl i⟩ = P.reflection_perm i := by
+  ext j
+  refine Embedding.injective P.root ?_
+  rw [weylGroupToPerm, MonoidHom.coe_mk, OneHom.coe_mk, Equiv.coe_fn_mk, root_reflection_perm,
+    ← (P.weylGroup_apply_root ⟨P.reflection i, P.reflection_in_weyl i⟩ j).choose_spec,
+    Subgroup.mk_smul, LinearEquiv.smul_def]
 
-
---define refl_perm : P.WeylGroup →* Equiv.Perm ι where -- use some kind of recursion?
-`let rec` defines recursive functions.
-See map_perm in LinearAlgebra.Alternating.Basic for an example of induction on generators.
-See also MonoidHom.ofClosureMEqTopLeft in Algebra.Group.Submonoid.Basic - defines a hom using a map
-from generators, just requiring (hmul : ∀ x ∈ s, ∀ (y), f (x * y) = f x * f y)
-
-I still need to define the actual map.
-
-Deepro Choudhury starts with `weylGroup_apply_root_mem (w : h.weylGroup) (α : Φ) : w • (α : V) ∈ Φ`
-proved using `Subgroup.closure_induction`.
-Then, defines `weylGroupToPerm (w : h.weylGroup) : Equiv.Perm Φ where`
- `toFun α := ⟨w • (α : V), h.weylGroup_apply_root_mem w α⟩`
-Then, defines `weylGroupToPerm' : h.weylGroup →* Equiv.Perm Φ`
-
--- Note: Deepro Choudhury defines Φ as a subset of V.  I need to use range P.root.
-
-First, show for any w ∈ weylGroup and i, we have w • P.root i ∈ range P.root.
-
---lemma exists_refl_perm_hom : define the hom using choice.
+/-!
 
 -- show that left-multiplication by reflection is "the same as" left composition with refl-perm.
 
