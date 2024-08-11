@@ -274,16 +274,11 @@ lemma height_eq_of_orderIso (f : α ≃o β) (x : α) : height (f x) = height x 
 lemma coheight_eq_of_orderIso (f : α ≃o β) (x : α) : coheight (f x) = coheight x :=
   height_eq_of_orderIso (α := αᵒᵈ) f.dual x
 
--- TODO: Inline below?
-lemma exist_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
+private lemma exist_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
     (h : (⨆ x, f x) = n) : ∃ x, f x = n := by
-  have : (⨆ x, f x) < ⊤ := by simp [h]
-  have := ENat.sSup_mem_of_Nonempty_of_lt_top this
-  obtain ⟨x, hx⟩ := this
-  simp only at hx
+  obtain ⟨x, hx⟩ := ENat.sSup_mem_of_Nonempty_of_lt_top (h ▸ ENat.coe_lt_top _)
   use x
-  rw [hx]
-  exact h
+  simpa [hx] using h
 
 /-- There exist a series ending in a element for any lenght up to the element’s height.  -/
 lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
@@ -304,7 +299,6 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     rw [ha, Nat.cast_le] at h
     rw [height, iSup_subtype'] at ha
     obtain ⟨⟨p,hlast⟩, hlen⟩ := exist_eq_iSup_of_iSup_eq_coe ha
-    simp only at hlen
     simp only [Nat.cast_inj] at hlen
     use p.drop ⟨m-n, by omega⟩
     constructor
