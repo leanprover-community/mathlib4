@@ -68,20 +68,16 @@ open MonoidalCategory
 variable (C : Cat) (D : Cat)
 
 @[simp]
-lemma leftUnitor_is_snd (C : Cat) :
-  (λ_ C).hom = Prod.snd _ _  := rfl
+lemma leftUnitor_is_snd (C : Cat) : (λ_ C).hom = Prod.snd _ _  := rfl
 
 @[simp]
-lemma leftUnitor_inv_is_sectionr (C : Cat) :
-  (λ_ C).inv = Prod.sectr ⟨⟨⟨⟩⟩⟩ _  := rfl
+lemma leftUnitor_inv_is_sectionr (C : Cat) : (λ_ C).inv = Prod.sectr ⟨⟨⟨⟩⟩⟩ _  := rfl
 
 @[simp]
-lemma rightUnitor_is_fst (C : Cat) :
-  (ρ_ C).hom = Prod.fst _ _  := rfl
+lemma rightUnitor_is_fst (C : Cat) : (ρ_ C).hom = Prod.fst _ _  := rfl
 
 @[simp]
-lemma rightUnitor_inv_is_sectionl (C : Cat) :
-  (ρ_ C).inv = Prod.sectl _ ⟨⟨⟨⟩⟩⟩  := rfl
+lemma rightUnitor_inv_is_sectionl (C : Cat) : (ρ_ C).inv = Prod.sectl _ ⟨⟨⟨⟩⟩⟩  := rfl
 
 
 end Monoidal
