@@ -83,6 +83,14 @@ lemma rightUnitor_is_fst (C : Cat) :
 lemma rightUnitor_inv_is_sectionl (C : Cat) :
     (ρ_ C).inv = Prod.sectl _ ⟨⟨⟨⟩⟩⟩  := rfl
 
+@[simp]
+lemma whiskerLeft_is_product_with_identity_left (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
+  MonoidalCategoryStruct.whiskerLeft X f = (𝟭 X).prod f   := rfl
+
+@[simp]
+lemma whiskerRight_is_product_with_identity_right {A : Cat} {B : Cat} (f : A ⟶ B)  (X : Cat) :
+  MonoidalCategoryStruct.whiskerRight f X  = f.prod (𝟭 X)   := rfl
+
 
 end Monoidal
 
