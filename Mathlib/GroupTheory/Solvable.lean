@@ -47,9 +47,9 @@ theorem derivedSeries_succ (n : ℕ) :
 
 -- Porting note: had to provide inductive hypothesis explicitly
 theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
-  induction' n with n ih
-  · exact (⊤ : Subgroup G).normal_of_characteristic
-  · exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
+  induction n with
+  | zero => exact (⊤ : Subgroup G).normal_of_characteristic
+  | succ n ih => exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
 
 -- Porting note: higher simp priority to restore Lean 3 behavior
 @[simp 1100]

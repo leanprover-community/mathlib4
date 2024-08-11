@@ -206,9 +206,9 @@ theorem eq_one_of_map_eq_one {S : Type*} [Semiring S] [Nontrivial S] (f : R →+
   rw [← hndeg, ← Polynomial.leadingCoeff, hp.leadingCoeff, C.map_one]
 
 theorem natDegree_pow (hp : p.Monic) (n : ℕ) : (p ^ n).natDegree = n * p.natDegree := by
-  induction' n with n hn
-  · simp
-  · rw [pow_succ, (hp.pow n).natDegree_mul hp, hn, Nat.succ_mul, add_comm]
+  induction n with
+  | zero => simp
+  | succ n hn => rw [pow_succ, (hp.pow n).natDegree_mul hp, hn, Nat.succ_mul, add_comm]
 
 end Monic
 
