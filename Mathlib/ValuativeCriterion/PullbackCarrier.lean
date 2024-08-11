@@ -151,13 +151,13 @@ lemma Triplet.ofPoint_SpectensorTo (T : Triplet f g) (p : Spec T.tensor) :
     ofPoint (T.SpecTensorTo.val.base p) = T := by
   ext
   · change (T.SpecTensorTo ≫ pullback.fst f g).val.base p = T.x
-    have : T.SpecTensorTo ≫ pullback.fst f g = Spec.map (pushout.inl _ _) ≫ X.fromSpecResidueField T.x := by
-      sorry
+    have : T.SpecTensorTo ≫ pullback.fst f g = Spec.map (pushout.inl _ _) ≫ X.fromSpecResidueField T.x := pullback.lift_fst _ _ _
     rw [this]
-    change (X.fromSpecResidueField T.x).val.base _ = T.x
     exact fromSpecResidueField_apply T.x _
-  ·
-    sorry
+  · change (T.SpecTensorTo ≫ pullback.snd f g).val.base p = T.y
+    have : T.SpecTensorTo ≫ pullback.snd f g = Spec.map (pushout.inr _ _) ≫ Y.fromSpecResidueField T.y := pullback.lift_snd _ _ _
+    rw [this]
+    exact fromSpecResidueField_apply T.y _
 
 instance fromSpecResidueField_is_preimmesion (x : X) : AlgebraicGeometry.IsPreimmersion (X.fromSpecResidueField x) := sorry
 -- set_option maxHeartbeats 0
