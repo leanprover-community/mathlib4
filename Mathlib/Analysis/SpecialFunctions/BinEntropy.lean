@@ -63,7 +63,7 @@ lemma binaryEntropy_apply (p : ℝ) : binaryEntropy p = -p * log p - (1 - p) * l
   unfold qaryEntropy
   simp only [log_one, mul_zero, sub_self, log_zero, one_mul, sub_zero]
 
-@[simp] lemma binaryEntropy_onehalf : binaryEntropy 2⁻¹ = log 2 := by
+@[simp] lemma binaryEntropy_two_inv : binaryEntropy 2⁻¹ = log 2 := by
   simp only [binaryEntropy_apply, show (1 : ℝ) - 2⁻¹ = 2⁻¹ by norm_num, log_inv]
   field_simp
 
@@ -179,12 +179,12 @@ lemma binaryEntropy_eq_log2_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤
     · by_cases pgthalf : 1/2 < p
       · linarith [binaryEntropy_lt_log2_of_gt_half pgthalf ple1]
       · linarith
-  · simp only [one_div, binaryEntropy_onehalf, h]
+  · simp only [one_div, binaryEntropy_two_inv, h]
 
 lemma binaryEntropy_le_log2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
     binaryEntropy p ≤ log 2 := by
   by_cases hh: p = 1/2
-  · simp only [one_div, binaryEntropy_onehalf, le_refl, hh]
+  · simp only [one_div, binaryEntropy_two_inv, le_refl, hh]
   · by_cases gg: binaryEntropy p = log 2
     · simp only [le_refl, gg]
     · by_cases hhh: p < 1/2
