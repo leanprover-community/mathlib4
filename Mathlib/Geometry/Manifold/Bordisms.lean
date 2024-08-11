@@ -141,42 +141,48 @@ abbrev X : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
 abbrev Y : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩
 
 lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) X = 0 := by
-  rw [PartialHomeomorph.extend_coe]
-  rw [Function.comp]
-  beta_reduce
-  have : (IccLeftChart x y).toFun X = (⟨fun _ => X - x, sub_nonneg.mpr X.property.1⟩) := rfl
-    -- calc
-    --   ((IccLeftChart x y) X).val = (⟨fun _ => X - x, sub_nonneg.mpr X.property.1⟩ : Icc x y).val := by rw [this]
-
-    -- have : ((IccLeftChart x y) X).val = (fun _ ↦ 0) := by
-    --   apply congrArg Subtype.val this
-    --   congrsimp_rw [this]
-    --   rfl
-    --rw [this]
-  sorry
+  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
+  calc ((IccLeftChart x y).extend (𝓡∂ 1)) X
+    _ = (𝓡∂ 1) ((IccLeftChart x y) X) := rfl
+    _ = (𝓡∂ 1) zero := by
+      congr; ext; rw [IccLeftChart]
+      norm_num
+    _ = 0 := rfl
 
 -- missing lemma 1: range of R∂ 1 has frontier ... (that exists already?)
 -- do I need to rewrite from EuclideanSpace ℝ 1 to ℝ? does that exist already?
-lemma IccLeftChart_boundary : ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) := by
+lemma IccLeftChart_boundary : (IccLeftChart x y).extend (𝓡∂ 1) X ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccLeftChart_extend_left_eq]
   let aux := range_euclideanHalfSpace 1 -- does not apply directly...
   --have almostAux : (0 : EuclideanSpace ℝ (Fin 1)) ∈ frontier {y | 0 ≤ y 0} := sorry
-  -- this time out...
+  -- this times out...
+  -- fully general proof: add a lemma about the frontier of EuclideanHalfSpace (in EuclideanSpace),
+  -- in all n dimensions...
   -- show (0 : EuclideanSpace ℝ (Fin 1)) ∈ frontier {y | 0 ≤ y 0}
   sorry
 
-lemma Icc_isBoundaryPoint_left [h : Fact (x < y)] : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
+lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
   have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y := by
     sorry -- follows by construction of the charted space structure; XXX: how can I use this?
   suffices ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) by convert this
   exact IccLeftChart_boundary
 
-lemma IccRightChart_boundary : ((IccRightChart x y).extend (𝓡∂ 1)) Y ∈ frontier (range (𝓡∂ 1)) := by
-  -- TODO: dualise proof of `IccLeftChart_boundary`
+lemma IccRightChart_extend_right_eq : (IccRightChart x y).extend (𝓡∂ 1) Y = 0 := by
+  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
+  calc ((IccRightChart x y).extend (𝓡∂ 1)) Y
+    _ = (𝓡∂ 1) ((IccRightChart x y) Y) := rfl
+    _ = (𝓡∂ 1) zero := by
+      congr; ext; rw [IccRightChart]
+      norm_num
+    _ = 0 := rfl
+
+lemma IccRightChart_boundary : (IccRightChart x y).extend (𝓡∂ 1) Y ∈ frontier (range (𝓡∂ 1)) := by
+  rw [IccRightChart_extend_right_eq]
+  -- TODO: dualise remaining proof of `IccLeftChart_boundary` (once completed)
   sorry
 
-lemma Icc_isBoundaryPoint_right [h : Fact (x < y)] : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
+lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
   have : chartAt (EuclideanHalfSpace 1) Y = IccRightChart x y := by
     sorry -- follows by construction of the charted space structure; XXX: how can I use this?
@@ -196,7 +202,7 @@ lemma Set.Icc.eq_left_or_interior_or_eq_right' (p : Set.Icc x y) :
 
 -- TODO: does this lemma require proving a lemma such as "interior and boundary are independent of
 -- the charted space structure" (which is out of reach with current mathlib)?
-lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
+lemma boundary_IccManifold : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
   ext p
   rcases Set.Icc.eq_left_or_interior_or_eq_right' p with (hp | hp | hp)
   · have : p = X := SetCoe.ext hp
