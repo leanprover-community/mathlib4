@@ -57,26 +57,26 @@ lemma binaryEntropy_apply (p : ℝ) : binaryEntropy p = -p * log p - (1 - p) * l
   simp only [qaryEntropy, zero_mul, log_zero, mul_zero, sub_self, sub_zero, log_one]
 
 @[simp] lemma binaryEntropy_one : binaryEntropy 1 = 0 := by
-  simp only [binaryEntropy_eq', log_one, mul_zero, sub_self, log_zero]
+  simp only [binaryEntropy_apply, log_one, mul_zero, sub_self, log_zero]
 
 @[simp] lemma qaryEntropy_one {q : ℕ} : qaryEntropy q 1 = log (q - 1) := by
   unfold qaryEntropy
   simp only [log_one, mul_zero, sub_self, log_zero, one_mul, sub_zero]
 
 @[simp] lemma binaryEntropy_onehalf : binaryEntropy 2⁻¹ = log 2 := by
-  simp only [binaryEntropy_eq', show (1 : ℝ) - 2⁻¹ = 2⁻¹ by norm_num, log_inv]
+  simp only [binaryEntropy_apply, show (1 : ℝ) - 2⁻¹ = 2⁻¹ by norm_num, log_inv]
   field_simp
 
 /-- `binaryEntropy` is symmetric about 1/2. -/
 @[simp] lemma binaryEntropy_one_sub (p : ℝ) :
     binaryEntropy (1 - p) = binaryEntropy p := by
-  simp only [binaryEntropy_eq', neg_sub, sub_sub_cancel, neg_mul]
+  simp only [binaryEntropy_apply, neg_sub, sub_sub_cancel, neg_mul]
   ring
 
 /-- `binaryEntropy` is symmetric about 1/2. -/
 lemma binaryEntropy_two_inv_add (p : ℝ) :
     binaryEntropy (2⁻¹ + p) = binaryEntropy (2⁻¹ - p) := by
-  simp only [binaryEntropy_eq', neg_sub, sub_sub_cancel, neg_mul]
+  simp only [binaryEntropy_apply, neg_sub, sub_sub_cancel, neg_mul]
   ring_nf
 
 lemma qaryEntropy_eq_log_mul_add_binaryEntropy {q : ℕ} {p : ℝ} :
@@ -91,7 +91,7 @@ lemma qaryEntropy_eq_log_mul_add_binaryEntropy' {q : ℕ} :
   simp only [Pi.add_apply, qaryEntropy_eq_log_mul_add_binaryEntropy]
 
 lemma binaryEntropy_pos {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < binaryEntropy p := by
-  simp only [binaryEntropy_eq']
+  simp only [binaryEntropy_apply]
   have pos_sum_pos_pos (a b : ℝ) (ha : 0 ≤ a) (hb : b < 0) : 0 < a - b := by linarith
   refine pos_sum_pos_pos (-p * log p) ((1 - p) * log (1 - p)) ?_ ?_
   · rw [show -p * log p = p * (-log p) by ring]
@@ -104,13 +104,13 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < qa
     rw [mul_nonneg_iff_of_pos_left pgt0, show q - (1 : ℝ) = (q - 1 : ℤ) by norm_cast]
     exact Real.log_intCast_nonneg _
   have rest_is_pos : 0 < -(p * p.log) - (1 - p) * (1 - p).log := by
-    simp only [← neg_mul, ← binaryEntropy_eq']
+    simp only [← neg_mul, ← binaryEntropy_apply]
     exact binaryEntropy_pos pgt0 plt1
   linarith
 
 /- Outside usual range of `binaryEntropy`. This is due to `log x = log |x|` -/
 lemma binaryEntropy_neg_of_neg {p : ℝ} (hp : p < 0) : binaryEntropy p < 0 := by
-  simp only [binaryEntropy_eq']
+  simp only [binaryEntropy_apply]
   suffices -p * log p < (1-p) * log (1-p) by linarith
   by_cases hp' : p < -1
   · have : log p < log (1 - p) := by
@@ -132,19 +132,13 @@ lemma binaryEntropy_neg_of_gt_one {p : ℝ} (hp : 1 < p) : binaryEntropy p < 0 :
 
 lemma binaryEntropy_eq_zero {p : ℝ} : binaryEntropy p = 0 ↔ p = 0 ∨ p = 1 := by
   constructor <;> intro h
-  · by_cases plt0 : p < 0
-    · linarith [binaryEntropy_neg_of_neg plt0]
-    · by_cases pgt1 : p > 1
-      · linarith [binaryEntropy_neg_of_gt_one pgt1]
-      obtain rfl | pz := eq_or_ne p 0
-      · simp
-      obtain rfl | pone := eq_or_ne p 1
-      · simp
-      have : 0 < binaryEntropy p := by
-        apply binaryEntropy_pos (pz.lt_of_le (le_of_not_lt plt0))
-        exact pone.lt_of_le (le_of_not_lt pgt1)
-      linarith
-  · rw [binaryEntropy_eq']
+  · contrapose! h
+    obtain hp₀ | hp₀ := h.1.lt_or_lt
+    · exact (binaryEntropy_neg_of_neg hp₀).ne
+    obtain hp₁ | hp₁ := h.2.lt_or_lt.symm
+    · exact (binaryEntropy_neg_of_gt_one hp₁).ne
+    · exact (binaryEntropy_pos hp₀ hp₁).ne'
+  · rw [binaryEntropy_apply]
     cases h <;> simp only [log_one, mul_zero, sub_self, log_zero, neg_zero, log_zero, mul_zero,
       sub_zero, log_one, sub_self, *]
 
@@ -152,7 +146,7 @@ lemma binaryEntropy_eq_zero {p : ℝ} : binaryEntropy p = 0 ↔ p = 0 ∨ p = 1 
 lemma binaryEntropy_lt_log2_of_lt_one_half {p : ℝ} (p_nonneg : 0 ≤ p) (p_lt : p < 1/2) :
     binaryEntropy p < log 2 := by
   -- Proof by concavity of log.
-  rw [binaryEntropy_eq']
+  rw [binaryEntropy_apply]
   rw [show -p * p.log = -(p * p.log) by ring]
   by_cases pz : p = 0
   · simp only [log_zero, mul_zero, neg_zero, sub_zero, log_one, sub_self, pz,
