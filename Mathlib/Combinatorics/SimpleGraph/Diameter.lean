@@ -40,18 +40,39 @@ lemma ediam_def : G.ediam = ⨆ p : (α × α), G.edist p.1 p.2 := by
   rw [ediam, iSup_prod]
 
 lemma edist_le_ediam {u v : α} : G.edist u v ≤ G.ediam :=
-  LE.le.trans (le_iSup _ _) <| le_iSup_iff.mpr fun _ h ↦ h u
+  (le_iSup _ _).trans <| le_iSup_iff.mpr fun _ h ↦ h u
 
 lemma ediam_eq_top_iff : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
   simp only [ediam, iSup_eq_top, lt_iSup_iff]
 
-lemma ediam_eq_zero_of_isEmpty [IsEmpty α] : G.ediam = 0 := by
-  rw [ediam, ciSup_of_empty, bot_eq_zero']
+lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
+  rw [ediam_def, ENat.iSup_eq_zero]
+  simpa [edist_eq_zero_iff, Prod.forall] using subsingleton_iff.mp ‹_›
 
-lemma nonempty_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nonempty α := by
+lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
   contrapose! h
-  apply not_nonempty_iff.mp at h
-  exact ediam_eq_zero_of_isEmpty
+  apply not_nontrivial_iff_subsingleton.mp at h
+  exact ediam_eq_zero_of_subsingleton
+
+lemma ediam_ne_zero_of_nontrivial [Nontrivial α] : G.ediam ≠ 0 := by
+  obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
+  contrapose! huv
+  simp only [ediam, nonpos_iff_eq_zero, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
+  exact huv u v
+
+lemma subsingleton_of_ediam_eq_zero (h : G.ediam = 0) : Subsingleton α := by
+  contrapose! h
+  apply not_subsingleton_iff_nontrivial.mp at h
+  exact ediam_ne_zero_of_nontrivial
+
+lemma ediam_ne_zero_iff_nontrivial :
+    G.ediam ≠ 0 ↔ Nontrivial α :=
+  ⟨nontrivial_of_ediam_ne_zero, fun _ ↦ ediam_ne_zero_of_nontrivial⟩
+
+@[simp]
+lemma ediam_eq_zero_iff_subsingleton :
+    G.ediam = 0 ↔ Subsingleton α :=
+  ⟨subsingleton_of_ediam_eq_zero, fun _ ↦ ediam_eq_zero_of_subsingleton⟩
 
 lemma ediam_eq_top_of_not_connected [Nonempty α] (h : ¬G.Connected) : G.ediam = ⊤ := by
   rw [connected_iff_exists_forall_reachable] at h
@@ -84,34 +105,18 @@ lemma ediam_mono_of_finite [Nonempty α] [Finite α] (h : G ≤ G') :
   have ⟨_, _, huv⟩ := G'.exists_edist_eq_ediam_of_finite
   huv ▸ (edist_le_subgraph_edist h).trans edist_le_ediam
 
-lemma zero_lt_ediam_iff_nontrivial :
-    0 < G.ediam ↔ Nontrivial α := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · contrapose! h
-    rw [ediam_def, ENat.iSup_eq_zero.mpr]
-    simpa [edist_eq_zero_iff.mpr] using subsingleton_iff.mp <| not_nontrivial_iff_subsingleton.mp h
-  · obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
-    contrapose! huv
-    simp only [ediam, nonpos_iff_eq_zero, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
-    exact huv u v
-
 @[simp]
 lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
   ediam_eq_top_of_not_connected bot_not_connected
 
 @[simp]
 lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
-  apply le_antisymm ?_ <| ENat.one_le_iff_pos.mpr <| zero_lt_ediam_iff_nontrivial.mpr ‹_›
+  apply le_antisymm ?_ <| ENat.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr ediam_ne_zero_of_nontrivial
   apply ediam_def ▸ iSup_le_iff.mpr
   intro p
   by_cases h : (⊤ : SimpleGraph α).Adj p.1 p.2
   · apply le_of_eq <| edist_eq_one_iff_adj.mpr h
   · simp_all
-
-@[simp]
-lemma ediam_eq_zero : G.ediam = 0 ↔ Subsingleton α := by
-  rw [← not_nontrivial_iff_subsingleton, ← zero_lt_ediam_iff_nontrivial.not]
-  aesop
 
 @[simp]
 lemma ediam_eq_one [Nontrivial α] : G.ediam = 1 ↔ G = ⊤ := by
@@ -140,8 +145,8 @@ lemma diam_def : G.diam = (⨆ p : (α × α), G.edist p.1 p.2).toNat := by
 lemma dist_le_diam (h : G.ediam ≠ ⊤) {u v : α} : G.dist u v ≤ G.diam :=
   ENat.toNat_le_toNat edist_le_ediam h
 
-lemma nonempty_of_diam_ne_zero (h : G.diam ≠ 0) : Nonempty α := by
-  apply G.nonempty_of_ediam_ne_zero
+lemma nontrivial_of_diam_ne_zero (h : G.diam ≠ 0) : Nontrivial α := by
+  apply G.nontrivial_of_ediam_ne_zero
   contrapose! h
   simp [diam, h]
 
@@ -155,7 +160,7 @@ lemma ediam_ne_top_of_diam_ne_zero (h : G.diam ≠ 0) : G.ediam ≠ ⊤ :=
 
 lemma exists_dist_eq_diam_of_ne_zero (h : G.diam ≠ 0) :
     ∃ u v, G.dist u v = G.diam := by
-  have : Nonempty α := nonempty_of_diam_ne_zero h
+  have : Nontrivial α := nontrivial_of_diam_ne_zero h
   obtain ⟨u, v, huv⟩ := exists_edist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
   use u, v
   rw [diam, dist, congrArg ENat.toNat huv]
@@ -168,7 +173,7 @@ lemma exists_dist_eq_diam_of_finite [Nonempty α] [Finite α] :
 
 lemma diam_mono_of_ne_zero (h : G ≤ G') (hn₁ : G'.diam ≠ 0) (hn₂ : G.diam ≠ 0) :
     G'.diam ≤ G.diam :=
-  have : Nonempty α := nonempty_of_diam_ne_zero hn₁
+  have : Nontrivial α := nontrivial_of_diam_ne_zero hn₁
   ENat.toNat_le_toNat (ediam_mono_of_ne_top h (ediam_ne_top_of_diam_ne_zero hn₁))
     <| ediam_ne_top_of_diam_ne_zero hn₂
 
@@ -180,7 +185,7 @@ lemma diam_mono_of_finite [Nonempty α] [Finite α] (h : G ≤ G') (hn : G.diam 
 lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
   rw [diam, ENat.toNat_eq_zero]
   cases subsingleton_or_nontrivial α
-  · exact Or.inl <| ediam_eq_zero.mpr ‹_›
+  · exact Or.inl <| ediam_eq_zero_iff_subsingleton.mpr ‹_›
   · exact Or.inr ediam_bot
 
 @[simp]
