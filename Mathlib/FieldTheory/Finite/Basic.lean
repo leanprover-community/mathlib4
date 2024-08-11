@@ -221,9 +221,9 @@ theorem pow_card (a : K) : a ^ q = a := by
     pow_card_sub_one_eq_one a h, one_mul]
 
 theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
-  induction' n with n ih
-  · simp
-  · simp [pow_succ, pow_mul, ih, pow_card]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ, pow_mul, ih, pow_card]
 
 end
 
@@ -351,9 +351,10 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
     frobenius K p ^ n = 1 := by
   ext x; conv_rhs => rw [RingHom.one_def, RingHom.id_apply, ← pow_card x, hcard]
   clear hcard
-  induction' n with n hn
-  · simp
-  · rw [pow_succ', pow_succ, pow_mul, RingHom.mul_def, RingHom.comp_apply, frobenius_def, hn]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [pow_succ', pow_succ, pow_mul, RingHom.mul_def, RingHom.comp_apply, frobenius_def, hn]
 
 open Polynomial
 
@@ -471,9 +472,9 @@ theorem pow_card {p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
 
 @[simp]
 theorem pow_card_pow {n p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p ^ n = x := by
-  induction' n with n ih
-  · simp
-  · simp [pow_succ, pow_mul, ih, pow_card]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ, pow_mul, ih, pow_card]
 
 @[simp]
 theorem frobenius_zmod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom.id _ := by
