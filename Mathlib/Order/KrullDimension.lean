@@ -635,7 +635,7 @@ lemma krullDim_nat : krullDim ℕ = ⊤ := by
   simp only [krullDim_eq_iSup_height, height_nat]
   rw [← WithBot.coe_iSup (OrderTop.bddAbove _)]
   simp only [WithBot.coe_eq_top]
-  show (⨆ (i : ℕ), ↑i = (⊤ : ℕ∞)) -- nothing simpler from here on?
+  show ⨆ (i : ℕ), ↑i = (⊤ : ℕ∞) -- nothing simpler from here on?
   rw [iSup_eq_top]
   intro n hn
   cases n with
@@ -679,10 +679,10 @@ lemma height_coe_WithBot (x : α) : height (x : WithBot α) = height x + 1 := by
       }
     have hlast' : p'.last = x := by
       simp only [RelSeries.last, Fin.val_last, WithBot.unbot_eq_iff, ← hlast]
-      congr; omega
+      congr
+      omega
     suffices p'.length ≤ height p'.last by
-      rw [hlast'] at this
-      simpa [p'] using this
+      simpa [p', hlast'] using this
     apply length_le_height_last
   · rw [height_add_const]
     apply iSup₂_le
@@ -729,16 +729,12 @@ lemma coheight_coe_WithBot (x : α) : coheight (x : WithBot α) = coheight x :=
 
 @[simp]
 lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
-  rw [← height_top_eq_krullDim]
-  rw [krullDim_eq_iSup_height_of_nonempty]
+  rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty]
   norm_cast
-  rw [ENat.iSup_add]
-  rw [height_eq_isup_lt_height]
+  rw [ENat.iSup_add, height_eq_isup_lt_height]
   apply le_antisymm
-  · apply iSup_le
-    intro x
-    apply iSup_le
-    intro h
+  · apply iSup₂_le
+    intro x h
     cases x with
     | top => simp at h
     | coe x =>
@@ -771,6 +767,6 @@ lemma height_ENat (n : ℕ∞) : height n = n := by
 @[simp]
 lemma coheight_coe_ENat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
   apply (coheight_coe_WithTop _).trans
-  simp
+  simp only [Nat.cast_id, coheight_nat, top_add]
 
 end calculations
