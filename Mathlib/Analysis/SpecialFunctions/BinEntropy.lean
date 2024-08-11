@@ -24,7 +24,7 @@ Most lemmas are also valid using a logarithm in a different base.
 
 ## Tags
 
-entropy, Shannon, binary
+entropy, Shannon, binary, nit, nepit
 -/
 
 open Real
