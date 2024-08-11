@@ -230,8 +230,8 @@ theorem Functor.initial_iff_isCofiltered_costructuredArrow [IsCofilteredOrEmpty 
 
 end LocallySmall
 
-/-- If `C` is filtered, then every functor `F : ⥤ Discrete PUnit` is final. -/
-theorem Functor.final_of_isFiltered_pUnit {C : Type u₁} [Category.{v₁} C]
+/-- If `C` is filtered, then every functor `F : C ⥤ Discrete PUnit` is final. -/
+theorem Functor.final_of_isFiltered_of_pUnit {C : Type u₁} [Category.{v₁} C]
     [IsFiltered C] (F : C ⥤ Discrete PUnit) :
     Final F := by
   refine final_of_exists_of_isFiltered F (fun _ => ?_) (fun {_} {c} _ _ => ?_)
@@ -240,7 +240,7 @@ theorem Functor.final_of_isFiltered_pUnit {C : Type u₁} [Category.{v₁} C]
   · use c; use 𝟙 c
     apply Subsingleton.elim
 
-/-- If `C` is cofiltered, then every functor `F : ⥤ Discrete PUnit` is initial. -/
+/-- If `C` is cofiltered, then every functor `F : C ⥤ Discrete PUnit` is initial. -/
 theorem Functor.initial_of_isCofiltered_pUnit {C : Type u₁} [Category.{v₁} C]
     [IsCofiltered C] (F : C ⥤ Discrete PUnit) :
     Initial F := by
