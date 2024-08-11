@@ -22,7 +22,18 @@ coheight is defined to be `sup {n | a = a₀ < a₁ < ... < aₙ}` .
 
 ## Main results
 
-* TOOD
+* The Krull dimension is the same as that in the dual order.
+
+* The Krull dimension is the supremum of the heights of the elements, or their coheights.
+
+* The height in the dual order equals the coheight, and vice versa.
+
+* The height is monotone, and strictly monone if finite.
+
+* The height is the supremum of the successor of the height of all elements of lower height.
+
+* The elements of height zero are the minimal elements, and the elements of height `n` are minimal
+  among those of height `≥ n`.
 
 * Concrete calculations for the height and Krull dimension in ℕ, ℤ, `WithTop`, `WithBot` and ℕ∞.
 
@@ -315,11 +326,11 @@ lemma exists_series_of_coheight_eq_coe (a : α) {n : ℕ} (h : coheight a = n) :
   exists_series_of_le_coheight a (le_of_eq h.symm)
 
 /--
-The height of an elemnet is infinite if there exist series of arbitrary length ending in that
+The height of an element is infinite if there exist series of arbitrary length ending in that
 element.
 -/
 lemma height_eq_top_iff (x : α) :
-    height x = ⊤ ↔ (∀ n, ∃ p : LTSeries α, p.last = x ∧ p.length = n) := by
+    height x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.last = x ∧ p.length = n := by
   constructor
   · intro h n
     apply exists_series_of_le_height x (n := n)
@@ -332,18 +343,17 @@ lemma height_eq_top_iff (x : α) :
     exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
 
 /--
-The coheight of an elemnet is infinite if there exist series of arbitrary length ending in that
+The coheight of an element is infinite if there exist series of arbitrary length ending in that
 element.
 -/
 lemma coheight_eq_top_iff (x : α) :
-    coheight x = ⊤ ↔ (∀ n, ∃ p : LTSeries α, p.head = x ∧ p.length = n) := by
+    coheight x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.head = x ∧ p.length = n := by
   convert height_eq_top_iff (α := αᵒᵈ) x using 2 with n
   exact ⟨fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩,
          fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩⟩
 
 /-- Another characterization of height, based on the supremum of the heights of elements below. -/
-lemma height_eq_isup_lt_height (x : α) :
-    height x = ⨆ (y : α) (_  : y < x), height y + 1 := by
+lemma height_eq_isup_lt_height (x : α) : height x = ⨆ (y : α) (_  : y < x), height y + 1 := by
   apply le_antisymm
   · apply height_le
     intro p hp
@@ -362,8 +372,7 @@ lemma height_eq_isup_lt_height (x : α) :
 /--
 Another characterization of coheight, based on the supremum of the coheights of elements above.
 -/
-lemma coheight_eq_isup_lt_height (x : α) :
-    coheight x = ⨆ (y : α) (_  : x < y), coheight y + 1 :=
+lemma coheight_eq_isup_lt_height (x : α) : coheight x = ⨆ (y : α) (_  : x < y), coheight y + 1 :=
   height_eq_isup_lt_height (α := αᵒᵈ) x
 
 lemma height_le_coe_iff (x : α) (n : ℕ) :
@@ -594,7 +603,7 @@ lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] : krullDim α = ⨆ (a
   rw [← krullDim_orderDual]
   exact krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
 
-@[simp] -- not as useful as it looks, due to the coe on the left
+@[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
 lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := by
   rw [krullDim_eq_of_nonempty]
   simp only [WithBot.coe_inj]
@@ -602,7 +611,7 @@ lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := 
   · exact height_le _ _ (fun p _ ↦ le_iSup_of_le p (le_refl _))
   · exact iSup_le (fun p => le_height_of_last_le ⊤ p le_top)
 
-@[simp] -- not as useful as it looks, due to the coe on the left
+@[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
 lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α := by
   rw [← krullDim_orderDual]
   exact height_top_eq_krullDim (α := αᵒᵈ)
