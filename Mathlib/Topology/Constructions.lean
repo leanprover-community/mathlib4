@@ -1151,8 +1151,19 @@ theorem Filter.Tendsto.apply_nhds {l : Filter Y} {f : Y → ∀ i, π i} {x : �
     (h : Tendsto f l (𝓝 x)) (i : ι) : Tendsto (fun a => f a i) l (𝓝 <| x i) :=
   (continuousAt_apply i _).tendsto.comp h
 
+theorem continuous_dcomp {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f : ∀ i, π i → Y i}
+    (hf : ∀ i, Continuous (f i)) : Continuous (f _ ∘' · : (∀ i, π i) → (∀ i, Y i)) :=
+  continuous_pi fun i ↦ (hf i).comp (continuous_apply i)
+
 theorem nhds_pi {a : ∀ i, π i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
   simp only [nhds_iInf, nhds_induced, Filter.pi]
+
+protected theorem IsOpenMap.dcomp {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f : ∀ i, π i → Y i}
+    (hfo : ∀ i, IsOpenMap (f i)) (hsurj : ∀ᶠ i in cofinite, Surjective (f i)) :
+    IsOpenMap (f _ ∘' · : (∀ i, π i) → (∀ i, Y i)) := by
+  refine IsOpenMap.of_nhds_le fun x ↦ ?_
+  rw [nhds_pi, nhds_pi, map_dcomp_pi hsurj]
+  exact Filter.pi_mono fun i ↦ (hfo i).nhds_le _
 
 theorem tendsto_pi_nhds {f : Y → ∀ i, π i} {g : ∀ i, π i} {u : Filter Y} :
     Tendsto f u (𝓝 g) ↔ ∀ x, Tendsto (fun i => f i x) u (𝓝 (g x)) := by
