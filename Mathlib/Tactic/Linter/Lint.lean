@@ -212,7 +212,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx => do
     if (← MonadState.get).messages.hasErrors then
       return
     for s in unwanted_cdot stx do
-      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\·`) instead of '{s}' as 'cdot'."
+      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
 
 initialize addLinter cdotLinter
 
