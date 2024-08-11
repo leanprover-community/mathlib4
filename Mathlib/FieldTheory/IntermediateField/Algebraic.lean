@@ -15,7 +15,7 @@ import Mathlib.FieldTheory.Minpoly.Basic
 open FiniteDimensional
 
 variable {K : Type*} {L : Type*} [Field K] [Field L] [Algebra K L]
-  (S : IntermediateField K L)
+  {S : IntermediateField K L}
 
 namespace IntermediateField
 
@@ -84,8 +84,6 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
   eq_of_le_of_finrank_le' h_le h_finrank.le
 
 end FiniteDimensional
-
-variable {S}
 
 theorem isAlgebraic_iff {x : S} : IsAlgebraic K x ↔ IsAlgebraic K (x : L) :=
   (isAlgebraic_algebraMap_iff (algebraMap S L).injective).symm
