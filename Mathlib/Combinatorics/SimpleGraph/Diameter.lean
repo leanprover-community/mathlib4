@@ -84,12 +84,16 @@ lemma ediam_mono_of_finite [Nonempty α] [Finite α] (h : G ≤ G') :
   have ⟨_, _, huv⟩ := G'.exists_edist_eq_ediam_of_finite
   huv ▸ (edist_le_subgraph_edist h).trans edist_le_ediam
 
-lemma zero_lt_ediam_of_nontrivial [Nontrivial α] :
-    0 < G.ediam := by
-  obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
-  contrapose! huv
-  simp only [ediam, nonpos_iff_eq_zero, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
-  exact huv u v
+lemma zero_lt_ediam_iff_nontrivial :
+    0 < G.ediam ↔ Nontrivial α := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    rw [ediam_def, ENat.iSup_eq_zero.mpr]
+    simpa [edist_eq_zero_iff.mpr] using subsingleton_iff.mp <| not_nontrivial_iff_subsingleton.mp h
+  · obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
+    contrapose! huv
+    simp only [ediam, nonpos_iff_eq_zero, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
+    exact huv u v
 
 @[simp]
 lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
@@ -97,7 +101,7 @@ lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
 
 @[simp]
 lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
-  apply le_antisymm ?_ <| ENat.one_le_iff_pos.mpr zero_lt_ediam_of_nontrivial
+  apply le_antisymm ?_ <| ENat.one_le_iff_pos.mpr <| zero_lt_ediam_iff_nontrivial.mpr ‹_›
   apply ediam_def ▸ iSup_le_iff.mpr
   intro p
   by_cases h : (⊤ : SimpleGraph α).Adj p.1 p.2
@@ -106,12 +110,8 @@ lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
 
 @[simp]
 lemma ediam_eq_zero : G.ediam = 0 ↔ Subsingleton α := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · contrapose! h
-    apply not_subsingleton_iff_nontrivial.mp at h
-    exact ENat.one_le_iff_ne_zero.mp <| ENat.one_le_iff_pos.mpr zero_lt_ediam_of_nontrivial
-  · rw [ediam_def, ENat.iSup_eq_zero.mpr]
-    simpa [edist_eq_zero_iff.mpr] using subsingleton_iff.mp h
+  rw [← not_nontrivial_iff_subsingleton, ← zero_lt_ediam_iff_nontrivial.not]
+  aesop
 
 @[simp]
 lemma ediam_eq_one [Nontrivial α] : G.ediam = 1 ↔ G = ⊤ := by
