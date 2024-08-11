@@ -279,10 +279,6 @@ theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ �
     f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ :=
   whisker_exchange f g ▸ tensorHom_def f g
 
-@[reassoc]
-lemma whiskerLeft_whiskerLeft_associator_inv (X Y : C) {Z₁ Z₂ : C} (f : Z₁ ⟶ Z₂) :
-    X ◁ Y ◁ f ≫ (α_ _ _ _).inv = (α_ _ _ _).inv ≫ _ ◁ f := by simp
-
 end MonoidalCategory
 
 open scoped MonoidalCategory
