@@ -8,7 +8,7 @@ import Mathlib.Combinatorics.SimpleGraph.Metric
 /-!
 # Diameter of a simple graph
 
-This module defines the diameter of a simple graph, which measure the maximum distance between
+This module defines the diameter of a simple graph, which measures the maximum distance between
 vertices.
 
 ## Main definitions
@@ -31,9 +31,9 @@ section ediam
 
 /--
 The extended diameter is the greatest distance between any two vertices, with the value `⊤` in
-case the distances are not bounded above.
+case the distances are not bounded above, or the graph is not connected.
 -/
-noncomputable def ediam (G : SimpleGraph α) :=
+noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
   ⨆ u, ⨆ v, G.edist u v
 
 lemma ediam_def : G.ediam = ⨆ p : (α × α), G.edist p.1 p.2 := by
@@ -45,9 +45,13 @@ lemma edist_le_ediam {u v : α} : G.edist u v ≤ G.ediam :=
 lemma ediam_eq_top_iff : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
   simp only [ediam, iSup_eq_top, lt_iSup_iff]
 
+lemma ediam_eq_zero_of_isEmpty [IsEmpty α] : G.ediam = 0 := by
+  rw [ediam, ciSup_of_empty, bot_eq_zero']
+
 lemma nonempty_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nonempty α := by
-  contrapose h
-  simp [ediam, not_nonempty_iff.mp h]
+  contrapose! h
+  apply not_nonempty_iff.mp at h
+  exact ediam_eq_zero_of_isEmpty
 
 lemma ediam_eq_top_of_not_connected [Nonempty α] (h : ¬G.Connected) : G.ediam = ⊤ := by
   rw [connected_iff_exists_forall_reachable] at h
@@ -57,19 +61,16 @@ lemma ediam_eq_top_of_not_connected [Nonempty α] (h : ¬G.Connected) : G.ediam 
   exact edist_le_ediam
 
 lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
-    ∃ u v, G.edist u v = G.ediam := by
-  let f : (α × α) → ℕ∞ := fun p ↦ G.edist p.1 p.2
-  convert_to (∃ p : (α × α), f p = ⨆ p : (α × α), f p)
-  rw [Prod.exists, ediam_def]
-  exact ENat.sSup_mem_of_Nonempty_of_lt_top <| lt_top_iff_ne_top.mpr <| ediam_def ▸ h
+    ∃ u v, G.edist u v = G.ediam :=
+  Prod.exists'.mp
+    <| ediam_def ▸ (ENat.sSup_mem_of_Nonempty_of_lt_top <| lt_top_iff_ne_top.mpr <| ediam_def ▸ h)
 
 lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.edist u v = G.ediam := by
   let f : (α × α) → ℕ∞ := fun p ↦ G.edist p.1 p.2
   by_cases h : G.ediam = ⊤
-  · have : ⨆ p, f p = ⊤ := by simp only [f, ediam_def ▸ h]
-    have : ∃ p, f p = ⊤ := by
-      convert_to ⊤ ∈ Set.range f
+  · have : ⨆ p, f p = ⊤ := by simp [f, ediam_def ▸ h]
+    have : ⊤ ∈ Set.range f := by
       rw [← this]
       exact Set.Nonempty.csSup_mem Set.nonempty_of_nonempty_subtype <|
         Finite.Set.finite_replacement f
@@ -131,7 +132,7 @@ section diam
 
 /--
 The diameter is the greatest distance between any two vertices, with the value `0` in
-case the distances are not bounded above.
+case the distances are not bounded above, or the graph is not connected.
 -/
 noncomputable def diam (G : SimpleGraph α) :=
   G.ediam.toNat
