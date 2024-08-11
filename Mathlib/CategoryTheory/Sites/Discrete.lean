@@ -45,20 +45,28 @@ variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Cate
 A sheaf is discrete if it is a discrete object of the "underlying object" functor from the sheaf
 category to the target category.
 -/
-abbrev IsDiscrete [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-    (F : Sheaf J A) : Prop :=
-  IsIso ((constantSheafAdj J A ht).counit.app F)
+class IsDiscrete (F : Sheaf J A) : Prop :=
+  isIso_counit : IsIso ((constantSheafAdj J A ht).counit.app F)
+  faithful : (constantSheaf J A).Faithful := by infer_instance
+  full : (constantSheaf J A).Full := by infer_instance
+
+attribute [instance] IsDiscrete.isIso_counit
 
 section
 variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 
-lemma isDiscrete_of_iso {F : Sheaf J A} {X : A}
-    (i : F ≅ (constantSheaf J A).obj X) : IsDiscrete J ht F :=
-  isIso_counit_app_of_iso _ i
+lemma isDiscrete_of_iso {F : Sheaf J A} {X : A} (i : F ≅ (constantSheaf J A).obj X) :
+    IsDiscrete J ht F where
+  isIso_counit := isIso_counit_app_of_iso _ i
+
+lemma isDiscrete_iff_counit_iso (F : Sheaf J A) :
+    IsDiscrete J ht F ↔ IsIso ((constantSheafAdj J A ht).counit.app F) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ { isIso_counit := inferInstance }⟩
 
 lemma isDiscrete_iff_mem_essImage (F : Sheaf J A) :
     F.IsDiscrete J ht ↔ F ∈ (constantSheaf J A).essImage :=
-  (constantSheafAdj J A ht).isIso_counit_app_iff_mem_essImage
+  (isDiscrete_iff_counit_iso J ht F).trans
+    (constantSheafAdj J A ht).isIso_counit_app_iff_mem_essImage
 
 lemma isDiscrete_iff_mem_essImage' {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
     (F : Sheaf J A) :
@@ -191,7 +199,7 @@ lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
   have : IsIso ((sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F)) := by
     rw [← constantSheafAdj_counit_w]
     infer_instance
-  exact isIso_of_reflects_iso _ (sheafCompose J U)
+  exact { isIso_counit := isIso_of_reflects_iso _ (sheafCompose J U) }
 
 variable [(constantSheaf J A).Full] [(constantSheaf J A).Faithful]
   [(constantSheaf J B).Full] [(constantSheaf J B).Faithful]
