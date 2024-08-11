@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.LocallyConvex.Polar
+import Mathlib.Data.Set.Finite
 
 /-!
 # The topological dual of a normed space
@@ -233,6 +234,57 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
   exact isBounded_closedBall.subset
     (((dualPairing 𝕜 E).flip.polar_antitone r_ball).trans <|
       polar_ball_subset_closedBall_div ha r_pos)
+
+theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
+  apply le_antisymm
+  · intro x hx
+    apply hx
+    rfl
+  · intro x hx
+    rw [polar, LinearMap.polar]
+    simp
+    exact hx
+
+/--/
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] (k : ℝ) (b : E)
+
+#check norm ((RCLike.ofReal (K := 𝕜) k) • b)
+
+#check norm (↑k • b)
+-/
+
+theorem inter_polar_finite_reciprocal_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
+    Set.sInter (polar 𝕜 '' { F | F.Finite ∧ F ⊆ Metric.closedBall (0 : E) r }) =
+      closedBall (0 : Dual 𝕜 E) r⁻¹ := by
+  apply le_antisymm
+  · intro x hx
+    simp at hx
+    simp
+    apply ContinuousLinearMap.opNorm_le_of_ball one_pos (inv_nonneg.mpr (le_of_lt hr))
+    intro a ha
+    have e1 :  x ∈ polar 𝕜 {(RCLike.ofReal (K := 𝕜) r) • a} := by
+      apply hx {(RCLike.ofReal (K := 𝕜) r) • a} (finite_singleton _)
+      simp
+      simp at ha
+      have e2 (k : ℝ) (b : E) : norm ((RCLike.ofReal (K := 𝕜) k) • b) = k * norm b  := by
+
+      rw [norm_smul_inv_norm]
+
+
+    by_contra hnx
+    simp at hnx
+    have e1 : ∃ (a : E), ‖x a‖ > r⁻¹ := by
+
+
+
+  · simp only [sInter_image, mem_setOf_eq, le_eq_subset, subset_iInter_iff, and_imp]
+    intro F hF₁ hF₂
+    exact le_trans (closedBall_inv_subset_polar_closedBall _ )
+      ((dualPairing 𝕜 E).flip.polar_antitone hF₂)
+
+
 
 end PolarSets
 
