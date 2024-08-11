@@ -637,7 +637,7 @@ variable {α : Type*} [Preorder α]
 @[simp]
 lemma krullDim_nat : krullDim ℕ = ⊤ := by
   simp only [krullDim_eq_iSup_height, height_nat]
-  rw [← WithBot.coe_iSup_OrderTop]
+  rw [← WithBot.coe_iSup (OrderTop.bddAbove _)]
   simp only [WithBot.coe_eq_top]
   show (⨆ (i : ℕ), ↑i = (⊤ : ℕ∞)) -- nothing simpler from here on?
   rw [iSup_eq_top]
