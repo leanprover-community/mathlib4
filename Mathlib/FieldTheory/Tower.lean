@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.AlgebraTower
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.RingTheory.Noetherian
 
 /-!
 # Finiteness of `IsScalarTower`

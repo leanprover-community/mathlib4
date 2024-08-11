@@ -6,6 +6,8 @@ Authors: Anne Baanen
 import Mathlib.FieldTheory.Tower
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.Algebra.Field.Subfield
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Intermediate fields

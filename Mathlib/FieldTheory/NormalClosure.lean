@@ -6,6 +6,7 @@ Authors: Thomas Browning
 
 import Mathlib.FieldTheory.Normal
 import Mathlib.Order.Closure
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # Normal closures
 
