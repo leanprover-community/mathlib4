@@ -81,9 +81,8 @@ theorem stdBasisMatrix_eq_single_vecMulVec_single (i : m) (j : n) :
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
     stdBasisMatrix i j (1 : α) =
       vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
-  ext i' j'
-  -- Porting note: lean3 didn't apply `mul_ite`.
-  simp [-mul_ite, stdBasisMatrix, vecMulVec, ite_and]
+  rw [stdBasisMatrix_eq_single_vecMulVec_single]
+  congr! with i <;> simp only [Pi.single_apply, eq_comm]
 
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]
