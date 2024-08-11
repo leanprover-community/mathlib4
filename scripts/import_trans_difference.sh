@@ -46,10 +46,12 @@ getTransImports () {
 formatGitDiff () {
   local new=new
   local removed=removed
+  local swap='s=,R[0-9]*,\(.*\)=, (paired with `\1`)='
   if [ -n "${2}" ]
   then
     new=removed
     removed=new
+    swap='s=^\([^,]*\),,R[0-9]*,\(.*\)=\2,, (paired with `\1`)='
   fi
   git diff --name-status "${1}" |
     awk -F'\t' '!($1 == "M") {
@@ -60,7 +62,7 @@ formatGitDiff () {
       s=\.lean,=,=
       s=,A=, ('"${new}"' file)=
       s=,D=, ('"${removed}"' file)=
-      s=,R[0-9]*,\(.*\)=, (paired with `\1`)=
+      '"${swap}"'
     '
 }
 
