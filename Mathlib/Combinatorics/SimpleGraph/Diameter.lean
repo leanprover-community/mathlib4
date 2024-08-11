@@ -70,22 +70,19 @@ lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
   let f : (α × α) → ℕ∞ := fun p ↦ G.edist p.1 p.2
   by_cases h : G.ediam = ⊤
   · have : ⨆ p, f p = ⊤ := by simp [f, ediam_def ▸ h]
-    have : ⊤ ∈ Set.range f := by
-      rw [← this]
-      exact Set.Nonempty.csSup_mem Set.nonempty_of_nonempty_subtype <|
-        Finite.Set.finite_replacement f
+    have : ⊤ ∈ Set.range f := this ▸ (Set.range_nonempty _).csSup_mem (Set.finite_range _)
     simp_all
   · exact exists_edist_eq_ediam_of_ne_top h
 
 lemma ediam_mono_of_ne_top [Nonempty α] (h : G ≤ G') (hn : G'.ediam ≠ ⊤) :
     G'.ediam ≤ G.ediam :=
   have ⟨_, _, huv⟩ := G'.exists_edist_eq_ediam_of_ne_top hn
-  huv ▸ LE.le.trans (edist_le_subgraph_edist h) <| edist_le_ediam
+  huv ▸ (edist_le_subgraph_edist h).trans edist_le_ediam
 
 lemma ediam_mono_of_finite [Nonempty α] [Finite α] (h : G ≤ G') :
     G'.ediam ≤ G.ediam :=
   have ⟨_, _, huv⟩ := G'.exists_edist_eq_ediam_of_finite
-  huv ▸ LE.le.trans (edist_le_subgraph_edist h) <| edist_le_ediam
+  huv ▸ (edist_le_subgraph_edist h).trans edist_le_ediam
 
 lemma zero_lt_ediam_of_nontrivial [Nontrivial α] :
     0 < G.ediam := by
