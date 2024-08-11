@@ -27,6 +27,7 @@ you should restate it here. You can also use
 noncomputable section
 
 open Topology NNReal BoundedContinuousFunction Set Filter Metric
+open scoped BoundedContinuousFunction
 
 namespace ContinuousMap
 

@@ -23,7 +23,8 @@ This file sets up the theory of locally constant function from a topological spa
 
 variable {X Y Z α : Type*} [TopologicalSpace X]
 
-open Set Filter Topology
+open Set Filter
+open scoped Topology
 
 /-- A function between topological spaces is locally constant if the preimage of any set is open. -/
 def IsLocallyConstant (f : X → Y) : Prop :=
