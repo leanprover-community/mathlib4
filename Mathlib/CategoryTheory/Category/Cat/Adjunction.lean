@@ -49,7 +49,6 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
           obtain rfl := Discrete.eq_of_hom f
           aesop_cat ) }
 
-
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where
   obj C := ConnectedComponents C
@@ -59,32 +58,16 @@ def connectedComponents : Cat.{v, u} ⥤ Type u where
   map_id _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h ↦ by simp [<- h]; rfl)
   map_comp _ _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h => by simp [<- h])
 
-
-/-- Functions from connected components and functors to discrete category are in bijection -/
-def connectedComponentsTypeToCatHomEquiv  (C) [Category C] (X : Type u) :
-    ( ConnectedComponents C ⟶ X) ≃ (C ⥤ Discrete X)   where
-  toFun := ConnectedComponents.functorToDiscrete
-  invFun := ConnectedComponents.functionFromConnectedComponents
-  left_inv := fun f ↦ funext fun x ↦ by
-    obtain ⟨x, h⟩ := Quotient.exists_rep x
-    rw [← h]
-    rfl
-  right_inv  := fun fctr ↦
-    Functor.hext (fun _ ↦ rfl) (fun c d f ↦
-      have : Subsingleton (fctr.obj c ⟶ fctr.obj d) := Discrete.instSubsingletonDiscreteHom _ _
-      (Subsingleton.elim (fctr.map f) _).symm.heq)
-
 /-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
 def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
-  homEquiv C X := connectedComponentsTypeToCatHomEquiv C X
+  homEquiv C X := ConnectedComponents.typeToCatHomEquiv C X
   unit := { app:= fun C  ↦ ConnectedComponents.functorToDiscrete (𝟙 (connectedComponents.obj C)) }
   counit :=  {
-      app := fun X => ConnectedComponents.functionFromConnectedComponents (𝟙 typeToCat.obj X)
+      app := fun X => ConnectedComponents.liftFunctor (𝟙 typeToCat.obj X)
       naturality := fun _ _ _ =>
         funext (fun xcc => by
           obtain ⟨x,h⟩ := Quotient.exists_rep xcc
           aesop_cat) }
-  homEquiv_unit := fun {C X h} => Functor.hext (fun _ => by rfl) (fun _ _ _ => by rfl)
   homEquiv_counit := fun {C X G} => by funext cc;obtain ⟨_,_⟩ := Quotient.exists_rep cc; aesop_cat
 
 end CategoryTheory.Cat
