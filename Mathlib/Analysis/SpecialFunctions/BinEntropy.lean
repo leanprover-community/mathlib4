@@ -136,14 +136,14 @@ lemma binaryEntropy_eq_zero {p : ℝ} : binaryEntropy p = 0 ↔ p = 0 ∨ p = 1 
     · linarith [binaryEntropy_neg_of_neg plt0]
     · by_cases pgt1 : p > 1
       · linarith [binaryEntropy_neg_of_gt_one pgt1]
-      · by_cases pz : p = 0
-        · left; assumption
-        · by_cases pone : p = 1
-          · right; assumption
-          · have : 0 < binaryEntropy p := by
-              apply binaryEntropy_pos (Ne.lt_of_le (fun a ↦ pz a.symm) (le_of_not_lt plt0))
-              exact Ne.lt_of_le pone (le_of_not_lt pgt1)
-            linarith
+      obtain rfl | pz := eq_or_ne p 0
+      · simp
+      obtain rfl | pone := eq_or_ne p 1
+      · simp
+      have : 0 < binaryEntropy p := by
+        apply binaryEntropy_pos (pz.lt_of_le (le_of_not_lt plt0))
+        exact pone.lt_of_le (le_of_not_lt pgt1)
+      linarith
   · rw [binaryEntropy_eq']
     cases h <;> simp only [log_one, mul_zero, sub_self, log_zero, neg_zero, log_zero, mul_zero,
       sub_zero, log_one, sub_self, *]
