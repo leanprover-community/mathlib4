@@ -41,7 +41,6 @@ namespace CategoryTheory.Sheaf
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Category A]
   [HasWeakSheafify J A] {t : C} (ht : IsTerminal t)
 
-section
 /--
 A sheaf is discrete if it is a discrete object of the "underlying object" functor from the sheaf
 category to the target category.
@@ -50,6 +49,7 @@ abbrev IsDiscrete [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
     (F : Sheaf J A) : Prop :=
   IsIso ((constantSheafAdj J A ht).counit.app F)
 
+section
 variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 
 lemma isDiscrete_of_iso {F : Sheaf J A} {X : A}
