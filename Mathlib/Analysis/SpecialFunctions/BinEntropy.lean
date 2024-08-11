@@ -108,7 +108,7 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < qa
     exact binaryEntropy_pos pgt0 plt1
   linarith
 
-/- Outside usual range of `binaryEntropy`. This is due to `log x = log |x|` -/
+/-- Outside usual range of `binaryEntropy`, it is negative. This is due to `log x = log |x|` -/
 lemma binaryEntropy_neg_of_neg {p : ℝ} (hp : p < 0) : binaryEntropy p < 0 := by
   simp only [binaryEntropy_apply]
   suffices -p * log p < (1-p) * log (1-p) by linarith
@@ -123,7 +123,7 @@ lemma binaryEntropy_neg_of_neg {p : ℝ} (hp : p < 0) : binaryEntropy p < 0 := b
       · nlinarith [log_neg_of_lt_zero hp h]
     nlinarith [(log_pos (by linarith) : 0 < log (1 - p))]
 
-/- Outside usual range of `binaryEntropy`. This is due to `log x = log |x|` -/
+/-- Outside usual range of `binaryEntropy`, it is negative. This is due to `log x = log |x|` -/
 lemma binaryEntropy_neg_of_gt_one {p : ℝ} (hp : 1 < p) : binaryEntropy p < 0 := by
   let x := p - 2⁻¹
   rw [show p = 2⁻¹ + x by ring, binaryEntropy_two_inv_add]
