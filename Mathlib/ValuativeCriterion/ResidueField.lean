@@ -15,9 +15,9 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 def Scheme.residueField (x : X) : CommRingCat := X.toLocallyRingedSpace.residueField x
 
 instance (x : X) : Field (X.residueField x) :=
-  inferInstanceAs <| Field (LocalRing.ResidueField (X.stalk x))
+  inferInstanceAs <| Field (LocalRing.ResidueField (X.presheaf.stalk x))
 
-def Scheme.toResidueField (X : Scheme) (x) : X.stalk x ⟶ X.residueField x :=
+def Scheme.toResidueField (X : Scheme) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
   LocalRing.residue _
 
 def Scheme.descResidueField {K : Type*} [Field K] (X : Scheme) {x}
@@ -26,7 +26,7 @@ def Scheme.descResidueField {K : Type*} [Field K] (X : Scheme) {x}
 
 @[reassoc (attr := simp)]
 lemma Scheme.toResidueField_descResidueField {K : Type*} [Field K] (X : Scheme) {x}
-    (f : X.stalk x ⟶ .of K) [IsLocalRingHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalRingHom f] :
     X.toResidueField x ≫ X.descResidueField f = f :=
   RingHom.ext fun _ ↦ rfl
 
@@ -86,7 +86,7 @@ def Scheme.Hom.residueFieldMap (f : X.Hom Y) (x : X) :
 @[reassoc]
 lemma residue_residueFieldMap (x : X) :
     Y.toResidueField (f.1.base x) ≫ f.residueFieldMap x =
-      PresheafedSpace.stalkMap f.1 x ≫ X.toResidueField x :=
+      f.stalkMap x ≫ X.toResidueField x :=
   LocallyRingedSpace.residue_comp_residueFieldMap_eq_stalkMap_comp_residue _ _
 
 lemma residueFieldMap_id (x : X) :
@@ -155,7 +155,7 @@ lemma Scheme.range_fromSpecResidueField  (x : X.carrier) :
 attribute [instance] isLocalRingHom_stalkClosedPointTo
 
 lemma Scheme.descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {x}
-    (f : X.stalk x ⟶ .of K) [IsLocalRingHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalRingHom f] :
     Spec.map (X.descResidueField f)
       ≫ X.fromSpecResidueField x = Spec.map f ≫ X.fromSpecStalk x := sorry -- by def
 
