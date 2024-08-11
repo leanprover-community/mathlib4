@@ -41,20 +41,28 @@ variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Cate
 A sheaf is discrete if it is a discrete object of the "underlying object" functor from the sheaf
 category to the target category.
 -/
-abbrev IsDiscrete [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-    (F : Sheaf J A) : Prop :=
-  IsIso ((constantSheafAdj J A ht).counit.app F)
+class IsDiscrete (F : Sheaf J A) : Prop :=
+  isIso_counit : IsIso ((constantSheafAdj J A ht).counit.app F)
+  faithful : (constantSheaf J A).Faithful := by infer_instance
+  full : (constantSheaf J A).Full := by infer_instance
+
+attribute [instance] IsDiscrete.isIso_counit
 
 section
 variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 
-lemma isDiscrete_of_iso {F : Sheaf J A} {X : A}
-    (i : F ≅ (constantSheaf J A).obj X) : IsDiscrete J ht F :=
-  isIso_counit_app_of_iso _ i
+lemma isDiscrete_of_iso {F : Sheaf J A} {X : A} (i : F ≅ (constantSheaf J A).obj X) :
+    IsDiscrete J ht F where
+  isIso_counit := isIso_counit_app_of_iso _ i
+
+lemma isDiscrete_iff_isIso_counit (F : Sheaf J A) :
+    IsDiscrete J ht F ↔ IsIso ((constantSheafAdj J A ht).counit.app F) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ { isIso_counit := inferInstance }⟩
 
 lemma isDiscrete_iff_mem_essImage (F : Sheaf J A) :
     F.IsDiscrete J ht ↔ F ∈ (constantSheaf J A).essImage :=
-  (constantSheafAdj J A ht).isIso_counit_app_iff_mem_essImage
+  (isDiscrete_iff_isIso_counit J ht F).trans
+    (constantSheafAdj J A ht).isIso_counit_app_iff_mem_essImage
 
 lemma isDiscrete_iff_mem_essImage' {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
     (F : Sheaf J A) :
@@ -174,12 +182,13 @@ lemma constantSheafAdj_counit_w :
   rw [instCategorySheaf_comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
   ext
-  simp? says simp only [comp_obj, const_obj_obj, sheafCompose_obj_val, id_obj,
-      constantSheafAdj_counit_app, evaluation_obj_obj, constantPresheafAdj_counit_app,
-      Functor.comp_map, instCategorySheaf_comp_val, sheafificationAdjunction_counit_app_val,
-      sheafifyMap_sheafifyLift, comp_id, toSheafify_sheafifyLift, NatTrans.comp_app,
-      constComp_hom_app, id_comp, flip_obj_obj, sheafToPresheaf_obj, map_comp, sheafCompose_map_val,
-      sheafComposeIso_hom_fac_assoc, whiskerRight_app]
+  simp? [constantSheafAdj_counit_app] says simp only [comp_obj, const_obj_obj, sheafCompose_obj_val,
+      id_obj, constantSheafAdj_counit_app, evaluation_obj_obj, instCategorySheaf_comp_val,
+      sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, comp_id,
+      toSheafify_sheafifyLift, NatTrans.comp_app, constComp_hom_app,
+      constantPresheafAdj_counit_app_app, Functor.comp_map, id_comp, flip_obj_obj,
+      sheafToPresheaf_obj, map_comp, sheafCompose_map_val, sheafComposeIso_hom_fac_assoc,
+      whiskerRight_app]
   simp [← map_comp, ← NatTrans.comp_app]
 
 lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
@@ -187,7 +196,7 @@ lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
   have : IsIso ((sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F)) := by
     rw [← constantSheafAdj_counit_w]
     infer_instance
-  exact isIso_of_reflects_iso _ (sheafCompose J U)
+  exact { isIso_counit := isIso_of_reflects_iso _ (sheafCompose J U) }
 
 variable [(constantSheaf J A).Full] [(constantSheaf J A).Faithful]
   [(constantSheaf J B).Full] [(constantSheaf J B).Faithful]
