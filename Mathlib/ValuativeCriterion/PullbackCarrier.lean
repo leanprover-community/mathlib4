@@ -175,19 +175,11 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
           = Scheme.fromSpecResidueField _ p := by
   simp only [Spec.map_comp, Category.assoc]
 
-  have Spec_κ_p_to_pullback_eq : Spec.map (T.SpecTensorTo.residueFieldMap p)
-      ≫ (pullback f g).fromSpecResidueField (T.SpecTensorTo.val.base p)
-        = (Spec T.tensor).fromSpecResidueField p
-          ≫ T.SpecTensorTo := by
-    exact hom.residueFieldMap_fromSpecResidueField T.SpecTensorTo p
-
-  -- have Spec_κ_p_to_pullback_eq' : Spec.map (T.SpecTensorTo.residueFieldMap p)
+  -- have Spec_κ_p_to_pullback_eq : Spec.map (T.SpecTensorTo.residueFieldMap p)
   --     ≫ (pullback f g).fromSpecResidueField (T.SpecTensorTo.val.base p)
   --       = (Spec T.tensor).fromSpecResidueField p
-  --         ≫ Spec.map (tensorCongr (T.ofPoint_SpectensorTo p)).hom
-  --           ≫ (ofPoint (T.SpecTensorTo.val.base p)).SpecTensorTo := by
-  --   rw [Spec_κ_p_to_pullback_eq]
-  --   rw [tensorCongr_SpecTensorTo (T.ofPoint_SpectensorTo p)]
+  --         ≫ T.SpecTensorTo := by
+  --   exact hom.residueFieldMap_fromSpecResidueField T.SpecTensorTo p
 
   have Spec_κ_p_to_pullback_eq' : Spec.map (T.SpecTensorTo.residueFieldMap p)
     ≫ Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))
@@ -197,50 +189,17 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
             ≫ Spec.map (tensorCongr (T.ofPoint_SpectensorTo p)).hom
               ≫ (ofPoint (T.SpecTensorTo.val.base p)).SpecTensorTo := by
     simp only [tensorCongr_inv, tensorCongr_SpecTensorTo]
-    rw [← Spec_κ_p_to_pullback_eq, ofPointtensor_SpectensorTo]
+    rw [← hom.residueFieldMap_fromSpecResidueField T.SpecTensorTo p, ofPointtensor_SpectensorTo]
 
   -- have Spec_κ_p_to_X_eq' : Spec.map (T.SpecTensorTo.residueFieldMap p)
-  --     ≫ (pullback f g).fromSpecResidueField (T.SpecTensorTo.val.base p)
-  --       ≫ pullback.fst f g
+  --   ≫ Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))
+  --     ≫ Spec.map (tensorCongr <| ofPoint_SpectensorTo T p).inv
+  --       ≫ T.SpecTensorTo ≫ pullback.fst f g
   --         = (Spec T.tensor).fromSpecResidueField p
   --           ≫ Spec.map (tensorCongr (T.ofPoint_SpectensorTo p)).hom
   --             ≫ (ofPoint (T.SpecTensorTo.val.base p)).SpecTensorTo
   --               ≫ pullback.fst f g := by
   --   rw [reassoc_of% Spec_κ_p_to_pullback_eq']
-
-  have Spec_κ_p_to_X_eq' : Spec.map (T.SpecTensorTo.residueFieldMap p)
-    ≫ Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))
-      ≫ Spec.map (tensorCongr <| ofPoint_SpectensorTo T p).inv
-        ≫ T.SpecTensorTo ≫ pullback.fst f g
-          = (Spec T.tensor).fromSpecResidueField p
-            ≫ Spec.map (tensorCongr (T.ofPoint_SpectensorTo p)).hom
-              ≫ (ofPoint (T.SpecTensorTo.val.base p)).SpecTensorTo
-                ≫ pullback.fst f g := by
-    rw [reassoc_of% Spec_κ_p_to_pullback_eq']
-
-  -- have x_eq : (T.SpecTensorTo ≫ (pullback.fst f g)).val.base p = T.x := sorry
-
-  -- have Spec_κ_SpecTensorTo_p_to_X_eq : (pullback f g).fromSpecResidueField (T.SpecTensorTo.val.base p)
-  --     ≫ pullback.fst f g
-  --       = Spec.map ((pullback.fst f g).residueFieldMap (T.SpecTensorTo.val.base p))
-  --         ≫ Spec.map (X.residueFieldCongr x_eq).inv
-  --           ≫ X.fromSpecResidueField T.x := sorry
-
-  -- have Spec_κ_SpecTensorTo_p_to_X_eq' : (pullback f g).fromSpecResidueField (T.SpecTensorTo.val.base p)
-  --     ≫ pullback.fst f g
-  --       = Spec.map ((pullback.fst f g).residueFieldMap (T.SpecTensorTo.val.base p))
-  --         ≫ X.fromSpecResidueField ((T.SpecTensorTo ≫ (pullback.fst f g)).val.base p) := by
-  --   rw [Spec_κ_SpecTensorTo_p_to_X_eq]
-  --   simp only [comp_coeBase, TopCat.coe_comp, Function.comp_apply, residueFieldCongr_inv,
-  --     residueFieldCongr_fromSpecResidueField]
-
-  -- have Spec_κ_p_to_X_eq'' : Spec.map (T.SpecTensorTo.residueFieldMap p)
-  --     ≫ (pullback f g).fromSpecResidueField (T.SpecTensorTo.val.base p)
-  --       ≫ pullback.fst f g
-  --         = Spec.map (T.SpecTensorTo.residueFieldMap p)
-  --           ≫ Spec.map ((pullback.fst f g).residueFieldMap (T.SpecTensorTo.val.base p))
-  --             ≫ X.fromSpecResidueField ((T.SpecTensorTo ≫ (pullback.fst f g)).val.base p) := by
-  --   rw [Spec_κ_SpecTensorTo_p_to_X_eq']
 
   have Spec_κ_p_to_X_eq : Spec.map (T.SpecTensorTo.residueFieldMap p)
       ≫ Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))
@@ -254,7 +213,7 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
         = Spec.map (pushout.inl _ _) ≫ X.fromSpecResidueField T.x := by
       sorry
     rw [← this]
-    rw [Spec_κ_p_to_X_eq']
+    rw [reassoc_of% Spec_κ_p_to_pullback_eq']
     simp only [tensorCongr_SpecTensorTo_assoc]
 
   -- Now everything for `Y`
