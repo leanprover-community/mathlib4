@@ -1261,6 +1261,18 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x)
 
 end ContinuousLinearEquiv
 
+namespace ContinuousMap
+
+lemma integral_apply [TopologicalSpace Y] [CompactSpace Y] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [CompleteSpace E] {f : X → C(Y, E)} (hf : Integrable f μ) (y : Y) :
+    (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
+  calc (∫ x, f x ∂μ) y = ContinuousMap.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
+    _ = ∫ x, ContinuousMap.evalCLM ℝ y (f x) ∂μ :=
+          (ContinuousLinearMap.integral_comp_comm _ hf).symm
+    _ = _ := rfl
+
+end ContinuousMap
+
 @[norm_cast]
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
   (@RCLike.ofRealLI 𝕜 _).integral_comp_comm f
