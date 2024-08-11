@@ -460,7 +460,7 @@ lemma rangeLiftInclusion : (liftInclusion S).toHom.range = ⨆ i, S i := by
   simp_rw [liftInclusion, range_lift, Substructure.range_subtype]
 
 /-- The isomorphism between a direct limit of a system of substructures and their union. -/
-noncomputable def equivISup :
+noncomputable def Equiv_iSup :
     DirectLimit (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) ≃[L]
     (iSup S : L.Substructure M) := by
   have liftInclusion_in_sup : ∀ x, liftInclusion S x ∈ (⨆ i, S i) := by
@@ -474,22 +474,22 @@ noncomputable def equivISup :
     simpa only [F, Embedding.codRestrict_apply', Subtype.mk.injEq]
   exact ⟨Equiv.ofBijective F ⟨F.injective, F_surj⟩, F.map_fun', F.map_rel'⟩
 
-theorem equivISup_of_apply {i : ι} (x : S i) :
-    equivISup S (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
+theorem Equiv_isup_of_apply {i : ι} (x : S i) :
+    Equiv_iSup S (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
     = Substructure.inclusion (le_iSup _ _) x := rfl
 
-theorem equivISup_symm_inclusion_apply {i : ι} (x : S i) :
-    (equivISup S).symm (Substructure.inclusion (le_iSup _ _) x)
+theorem Equiv_isup_symm_inclusion_apply {i : ι} (x : S i) :
+    (Equiv_iSup S).symm (Substructure.inclusion (le_iSup _ _) x)
     = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x := by
-  apply (equivISup S).injective
+  apply (Equiv_iSup S).injective
   simp only [Equiv.apply_symm_apply]
   rfl
 
 @[simp]
-theorem equivISup_symm_inclusion (i : ι) :
-    (equivISup S).symm.toEmbedding.comp (Substructure.inclusion (le_iSup _ _))
+theorem Equiv_isup_symm_inclusion (i : ι) :
+    (Equiv_iSup S).symm.toEmbedding.comp (Substructure.inclusion (le_iSup _ _))
     = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i := by
-  ext x; exact equivISup_symm_inclusion_apply _ x
+  ext x; exact Equiv_isup_symm_inclusion_apply _ x
 
 end DirectLimit
 
