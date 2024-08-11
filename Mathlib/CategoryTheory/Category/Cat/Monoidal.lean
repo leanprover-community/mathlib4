@@ -36,17 +36,10 @@ def prodCone (C D : Cat.{v,u}) : BinaryFan C D :=
 
 /-- The product cone in `Cat` is indeed a product. -/
 def isLimitProdCone (X Y : Cat.{v,u}) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
-  (fun S => Functor.prod' S.fst S.snd)
-  (fun S => rfl)
-  (fun S => rfl)
-  (fun S m (h1 : m ≫ Prod.fst X Y = S.fst) (h2 : m ≫ Prod.snd X Y = S.snd) => by
-    fapply Functor.hext
-    · intro X
-      apply Prod.ext <;> simp [← h1, ← h2]
-    · intro X Y f
-      dsimp
-      rw [← h1, ← h2]
-      rfl)
+  (fun S => S.fst.prod' S.snd) (fun _ => rfl) (fun _ => rfl) (fun _ _ h1 h2 =>
+    Functor.hext
+      (fun _ ↦ Prod.ext (by simp [← h1]) (by simp [← h2]))
+      (fun _ _ _ ↦ by dsimp; rw [← h1, ← h2]; rfl))
 
 instance : ChosenFiniteProducts Cat.{u,u} where
   product (X Y : Cat) := { isLimit := isLimitProdCone X Y }
