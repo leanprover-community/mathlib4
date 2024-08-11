@@ -48,8 +48,6 @@ noncomputable section
 
 open Function Set Cardinal Equiv Order Ordinal
 
-open scoped Classical
-
 universe u v w
 
 namespace Cardinal
@@ -436,6 +434,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   refine Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Quotient.inductionOn c fun α IH ol => ?_) h
   -- consider the minimal well-order `r` on `α` (a type with cardinality `c`).
   rcases ord_eq α with ⟨r, wo, e⟩
+  classical
   letI := linearOrderOfSTO r
   haveI : IsWellOrder α (· < ·) := wo
   -- Define an order `s` on `α × α` by writing `(a, b) < (c, d)` if `max a b < max c d`, or
@@ -758,9 +757,10 @@ variable {ι : Type u} {ι' : Type w} (f : ι → Cardinal.{v})
 
 section add
 
-variable [Nonempty ι] [Nonempty ι'] (hf : BddAbove (range f))
+variable [Nonempty ι] [Nonempty ι']
 
-protected theorem ciSup_add (c : Cardinal.{v}) : (⨆ i, f i) + c = ⨆ i, f i + c := by
+protected theorem ciSup_add (hf : BddAbove (range f)) (c : Cardinal.{v}) :
+    (⨆ i, f i) + c = ⨆ i, f i + c := by
   have : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · + c)) := ⟨_, forall_mem_range.mpr this⟩
@@ -772,10 +772,12 @@ protected theorem ciSup_add (c : Cardinal.{v}) : (⨆ i, f i) + c = ⨆ i, f i +
   exact ⟨ciSup_mono bdd fun i ↦ self_le_add_right _ c,
     (self_le_add_left _ _).trans (le_ciSup bdd <| Classical.arbitrary ι)⟩
 
-protected theorem add_ciSup (c : Cardinal.{v}) : c + (⨆ i, f i) = ⨆ i, c + f i := by
+protected theorem add_ciSup (hf : BddAbove (range f)) (c : Cardinal.{v}) :
+    c + (⨆ i, f i) = ⨆ i, c + f i := by
   rw [add_comm, Cardinal.ciSup_add f hf]; simp_rw [add_comm]
 
-protected theorem ciSup_add_ciSup (g : ι' → Cardinal.{v}) (hg : BddAbove (range g)) :
+protected theorem ciSup_add_ciSup (hf : BddAbove (range f)) (g : ι' → Cardinal.{v})
+    (hg : BddAbove (range g)) :
     (⨆ i, f i) + (⨆ j, g j) = ⨆ (i) (j), f i + g j := by
   simp_rw [Cardinal.ciSup_add f hf, Cardinal.add_ciSup g hg]
 
@@ -1063,8 +1065,9 @@ theorem mk_list_le_max (α : Type u) : #(List α) ≤ max ℵ₀ #α := by
     apply le_max_right
 
 @[simp]
-theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α :=
-  Eq.symm <|
+theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α := by
+  classical
+  exact Eq.symm <|
     le_antisymm (mk_le_of_injective fun _ _ => Finset.singleton_inj.1) <|
       calc
         #(Finset α) ≤ #(List α) := mk_le_of_surjective List.toFinset_surjective
@@ -1105,16 +1108,18 @@ theorem mk_finsupp_of_infinite' (α β : Type u) [Nonempty α] [Zero β] [Infini
 theorem mk_finsupp_nat (α : Type u) [Nonempty α] : #(α →₀ ℕ) = max #α ℵ₀ := by simp
 
 @[simp]
-theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = max #α ℵ₀ :=
-  Multiset.toFinsupp.toEquiv.cardinal_eq.trans (mk_finsupp_nat α)
+theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = max #α ℵ₀ := by
+  classical
+  exact Multiset.toFinsupp.toEquiv.cardinal_eq.trans (mk_finsupp_nat α)
 
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
 
 theorem mk_multiset_of_isEmpty (α : Type u) [IsEmpty α] : #(Multiset α) = 1 :=
   Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
 
-theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : #(Multiset α) = ℵ₀ :=
-  Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
+theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : #(Multiset α) = ℵ₀ := by
+  classical
+  exact Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
 
 theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal) :
     #{ t : Set α // #t ≤ c } ≤ #α ^ c := by
@@ -1126,6 +1131,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     refine le_trans (mk_preimage_of_injective _ _ fun x y => Sum.inl.inj) ?_
     apply mk_range_le
   rintro ⟨s, ⟨g⟩⟩
+  classical
   use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val
                else Sum.inr (ULift.up 0)
   apply Subtype.eq; ext x
@@ -1220,6 +1226,7 @@ end compl
 
 theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
+  classical
   have := h; cases' this with g
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans

@@ -267,9 +267,6 @@ theorem arrows_ext : ∀ {R S : Sieve X}, R.arrows = S.arrows → R = S := by
 protected theorem ext {R S : Sieve X} (h : ∀ ⦃Y⦄ (f : Y ⟶ X), R f ↔ S f) : R = S :=
   arrows_ext <| funext fun _ => funext fun f => propext <| h f
 
-protected theorem ext_iff {R S : Sieve X} : R = S ↔ ∀ ⦃Y⦄ (f : Y ⟶ X), R f ↔ S f :=
-  ⟨fun h _ _ => h ▸ Iff.rfl, Sieve.ext⟩
-
 open Lattice
 
 /-- The supremum of a collection of sieves: the union of them all. -/
@@ -748,6 +745,16 @@ lemma functorPushforward_inverse {X : D} (S : Sieve X) (e : C ≌ D) :
 lemma mem_functorPushforward_inverse {X : D} {S : Sieve X} {e : C ≌ D} {f : Y ⟶ e.inverse.obj X} :
     S.functorPushforward e.inverse f ↔ S (e.functor.map f ≫ e.counit.app X) :=
   congr($(S.functorPushforward_inverse e).arrows f)
+
+variable (e : C ≌ D)
+
+lemma functorPushforward_equivalence_eq_pullback {U : C} (S : Sieve U) :
+    Sieve.functorPushforward e.inverse (Sieve.functorPushforward e.functor S) =
+      Sieve.pullback (e.unitInv.app U) S := by ext; simp
+
+lemma pullback_functorPushforward_equivalence_eq {X : C} (S : Sieve X) :
+    Sieve.pullback (e.unit.app X) (Sieve.functorPushforward e.inverse
+      (Sieve.functorPushforward e.functor S)) = S := by ext; simp
 
 end Functor
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Lean.Linter.Util
-import Batteries.Data.Array.Basic
 import Batteries.Data.String.Matcher
 import Batteries.Tactic.Lint
 
@@ -219,6 +218,8 @@ initialize addLinter cdotLinter
 
 end CDotLinter
 
+/-! # The "longLine linter" -/
+
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
 register_option linter.longLine : Bool := {
@@ -237,8 +238,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    -- TODO: once per-project settings are available,
-    -- revert this hack to make it only apply on `Mathlib`
+    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
     unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
     -- The linter ignores the `#guard_msgs` command, in particular its doc-string.
@@ -248,11 +248,10 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- if the linter reached the end of the file, then we scan the `import` syntax instead
     let stx := ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
-        let fname ← getFileName
-        if !(← System.FilePath.pathExists fname) then return default
-        let contents ← IO.FS.readFile fname
+        let fileMap ← getFileMap
         -- `impMods` is the syntax for the modules imported in the current file
-        let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
+        let (impMods, _) ← Parser.parseHeader
+          { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
         return impMods
       else return stx
     let sstr := stx.getSubstring?

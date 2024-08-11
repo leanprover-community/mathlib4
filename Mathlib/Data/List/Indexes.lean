@@ -5,6 +5,7 @@ Authors: Jannis Limperg
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.Zip
 
 /-!
 # Lemmas about List.*Idx functions.

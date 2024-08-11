@@ -606,6 +606,29 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
 
 end SMul
 
+section IterateMulAct
+
+variable {α : Type*} {_ : MeasurableSpace α} {f : α → α}
+
+@[to_additive]
+theorem Measurable.measurableSMul₂_iterateMulAct (h : Measurable f) :
+    MeasurableSMul₂ (IterateMulAct f) α where
+  measurable_smul :=
+    suffices Measurable fun p : α × IterateMulAct f ↦ f^[p.2.val] p.1 from this.comp measurable_swap
+    measurable_from_prod_countable fun n ↦ h.iterate n.val
+
+@[to_additive (attr := simp)]
+theorem measurableSMul_iterateMulAct : MeasurableSMul (IterateMulAct f) α ↔ Measurable f :=
+  ⟨fun _ ↦ measurable_const_smul (IterateMulAct.mk (f := f) 1), fun h ↦
+    have := h.measurableSMul₂_iterateMulAct; inferInstance⟩
+
+@[to_additive (attr := simp)]
+theorem measurableSMul₂_iterateMulAct : MeasurableSMul₂ (IterateMulAct f) α ↔ Measurable f :=
+  ⟨fun _ ↦ measurableSMul_iterateMulAct.mp inferInstance,
+    Measurable.measurableSMul₂_iterateMulAct⟩
+
+end IterateMulAct
+
 section MulAction
 
 variable {M β α : Type*} [MeasurableSpace M] [MeasurableSpace β] [Monoid M] [MulAction M β]

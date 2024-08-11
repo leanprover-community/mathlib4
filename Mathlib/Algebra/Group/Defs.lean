@@ -10,6 +10,7 @@ import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Util.AssertExists
+import Batteries.Logic
 
 /-!
 # Typeclasses for (semi)groups and monoids
