@@ -170,7 +170,6 @@ lemma Icc_isBoundaryPoint_left [h : Fact (x < y)] : (𝓡∂ 1).IsBoundaryPoint 
   have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y := by
     sorry -- follows by construction of the charted space structure; XXX: how can I use this?
   suffices ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) by convert this
-  -- This is the real proof, extracted to a separate lemma.
   exact IccLeftChart_boundary
 
 lemma IccRightChart_boundary : ((IccRightChart x y).extend (𝓡∂ 1)) Y ∈ frontier (range (𝓡∂ 1)) := by
@@ -182,28 +181,40 @@ lemma Icc_isBoundaryPoint_right [h : Fact (x < y)] : (𝓡∂ 1).IsBoundaryPoint
   have : chartAt (EuclideanHalfSpace 1) Y = IccRightChart x y := by
     sorry -- follows by construction of the charted space structure; XXX: how can I use this?
   suffices ((IccRightChart x y).extend (𝓡∂ 1)) Y ∈ frontier (range (𝓡∂ 1)) by convert this
-  -- This is the real proof, extracted to a separate lemma.
   exact IccRightChart_boundary
 
 lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
-    (𝓡∂ 1).IsBoundaryPoint p := by
-  sorry
+    (𝓡∂ 1).IsInteriorPoint p := by
+  sorry -- TODO: needs real proof!
+
+-- TODO: does this exist already? it ought to... same for the version below
+lemma Set.Icc.eq_left_or_interior_or_eq_right {p : ℝ} (hp : p ∈ Set.Icc x y) :
+  p = x ∨ (x < p ∧ p < y) ∨ p = y := sorry
+
+lemma Set.Icc.eq_left_or_interior_or_eq_right' (p : Set.Icc x y) :
+  p.val = x ∨ (x < p.val ∧ p.val < y) ∨ p.val = y := sorry
 
 -- TODO: does this lemma require proving a lemma such as "interior and boundary are independent of
 -- the charted space structure" (which is out of reach with current mathlib)?
 lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
-  apply le_antisymm
-  · sorry -- rewrite with by_contra and show interior is in interior
-  · intro p hp
-    by_cases h' : p.val < y
-    · have : p.val = x := by
-        have : p ≠ Y := by by_contra h; linarith [congrArg Subtype.val h]
-        exact congrArg Subtype.val (Set.eq_of_not_mem_of_mem_insert hp this)
-      show (𝓡∂ 1).IsBoundaryPoint p
-      have : p = X := SetCoe.ext this
-      rw [this]
-      apply Icc_isBoundaryPoint_left
-    sorry
+  ext p
+  rcases Set.Icc.eq_left_or_interior_or_eq_right' p with (hp | hp | hp)
+  · have : p = X := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true Icc_isBoundaryPoint_left (mem_insert X {Y})
+  · apply iff_of_false
+    · -- FIXME; want a lemma p ∈ interior ↔ p ∉ boundary, and vice versa
+      rw [ModelWithCorners.boundary_eq_complement_interior, not_mem_compl_iff]
+      exact Icc_isInteriorPoint_interior hp
+    · rw [mem_insert_iff, mem_singleton_iff]
+      -- can this be golfed?
+      push_neg
+      constructor
+      · by_contra h; linarith [congrArg Subtype.val h]
+      · by_contra h; linarith [congrArg Subtype.val h]
+  · have : p = Y := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true Icc_isBoundaryPoint_right (mem_insert_of_mem X rfl)
 
 #exit
 variable {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
