@@ -368,6 +368,7 @@ import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.Localization
+import Mathlib.Algebra.Homology.Monoidal
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.Refinements
