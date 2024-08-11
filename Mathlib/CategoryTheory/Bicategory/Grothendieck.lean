@@ -9,6 +9,8 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 
+import Mathlib.Tactic.CategoryTheory.toCat
+
 /-!
 # The Grothendieck construction
 
@@ -80,7 +82,7 @@ section
 
 variable {a b : ∫ F} (f : a ⟶ b)
 
-@[ext]
+@[ext (iff := false)]
 lemma Hom.ext' (g : a ⟶ b) (hfg₁ : f.1 = g.1)
     (hfg₂ : f.2 = g.2 ≫ eqToHom (hfg₁ ▸ rfl)) : f = g := by
   cases f; cases g
@@ -106,7 +108,7 @@ protected lemma id_comp : 𝟙 a ≫ f = f := by
 protected lemma comp_id : f ≫ 𝟙 b = f := by
   ext
   · simp
-  · simp [F.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
+  · simp [F.mapComp_id_left_inv f.base.op.toLoc, ← Cat.whiskerRight_app, ← Cat.comp_app]
 
 end
 
@@ -117,11 +119,7 @@ protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   dsimp
   slice_lhs 3 5 =>
     rw [← (F.mapComp g.1.op.toLoc f.1.op.toLoc).inv.naturality_assoc h.2]
-    -- lemmas should make this unecessary
-    -- can make unecessary w/ better comp lemmas (where non whiskering is isolated)
-    rw [← Cat.whiskerLeft_app, ← Cat.comp_app]
-    rw [F.mapComp_assoc_right_inv h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc]
-  simp
+  simp [to_app_of% F.mapComp_assoc_right_inv h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc]
 
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
