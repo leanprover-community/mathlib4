@@ -1375,7 +1375,7 @@ theorem round_two_inv : round (2⁻¹ : α) = 1 := by
 
 @[simp]
 theorem round_neg_two_inv : round (-2⁻¹ : α) = 0 := by
-  simp only [round_eq, ← one_div, add_left_neg, floor_zero]
+  simp only [round_eq, ← one_div, neg_add_cancel, floor_zero]
 
 @[simp]
 theorem round_eq_zero_iff {x : α} : round x = 0 ↔ x ∈ Ico (-(1 / 2)) ((1 : α) / 2) := by

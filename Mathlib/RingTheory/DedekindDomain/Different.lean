@@ -319,24 +319,24 @@ variable (I)
 
 lemma inv_le_dual :
     I⁻¹ ≤ dual A K I :=
-  if hI : I = 0 then by simp [hI] else le_dual_inv_aux A K hI (le_of_eq (mul_inv_cancel hI))
+  if hI : I = 0 then by simp [hI] else le_dual_inv_aux A K hI (le_of_eq (mul_inv_cancel₀ hI))
 
 lemma dual_inv_le :
     (dual A K I)⁻¹ ≤ I := by
   by_cases hI : I = 0; · simp [hI]
   convert mul_right_mono ((dual A K I)⁻¹)
     (mul_left_mono I (inv_le_dual A K I)) using 1
-  · simp only [mul_inv_cancel hI, one_mul]
-  · simp only [mul_inv_cancel (dual_ne_zero A K (hI := hI)), mul_assoc, mul_one]
+  · simp only [mul_inv_cancel₀ hI, one_mul]
+  · simp only [mul_inv_cancel₀ (dual_ne_zero A K (hI := hI)), mul_assoc, mul_one]
 
 lemma dual_eq_mul_inv :
     dual A K I = dual A K 1 * I⁻¹ := by
   by_cases hI : I = 0; · simp [hI]
   apply le_antisymm
   · suffices dual A K I * I ≤ dual A K 1 by
-      convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel hI, mul_one, mul_assoc]
+      convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel₀ hI, mul_one, mul_assoc]
     rw [← le_dual_iff A K hI]
-  rw [le_dual_iff A K hI, mul_assoc, inv_mul_cancel hI, mul_one]
+  rw [le_dual_iff A K hI, mul_assoc, inv_mul_cancel₀ hI, mul_one]
 
 variable {I}
 
@@ -348,7 +348,7 @@ lemma dual_div_dual :
 
 lemma dual_mul_self (hI : I ≠ 0) :
     dual A K I * I = dual A K 1 := by
-  rw [dual_eq_mul_inv, mul_assoc, inv_mul_cancel hI, mul_one]
+  rw [dual_eq_mul_inv, mul_assoc, inv_mul_cancel₀ hI, mul_one]
 
 lemma self_mul_dual (hI : I ≠ 0) :
     I * dual A K I = dual A K 1 := by
@@ -362,7 +362,7 @@ variable (I)
 @[simp]
 lemma dual_dual :
     dual A K (dual A K I) = I := by
-  rw [dual_eq_mul_inv, dual_eq_mul_inv A K (I := I), mul_inv, inv_inv, ← mul_assoc, mul_inv_cancel,
+  rw [dual_eq_mul_inv, dual_eq_mul_inv A K (I := I), mul_inv, inv_inv, ← mul_assoc, mul_inv_cancel₀,
     one_mul]
   rw [dual_ne_zero_iff]
   exact one_ne_zero

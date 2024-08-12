@@ -78,7 +78,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
   suffices lem : ∃ g' : R[X], g'.map (algebraMap R K) = g * C g.leadingCoeff⁻¹ by
     obtain ⟨g', hg'⟩ := lem
     use g'
-    rw [hg', mul_assoc, ← C_mul, inv_mul_cancel (leadingCoeff_ne_zero.mpr g_ne_0), C_1, mul_one]
+    rw [hg', mul_assoc, ← C_mul, inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr g_ne_0), C_1, mul_one]
   have g_mul_dvd : g * C g.leadingCoeff⁻¹ ∣ f.map (algebraMap R K) := by
     rwa [Associated.dvd_iff_dvd_left (show Associated (g * C g.leadingCoeff⁻¹) g from _)]
     rw [associated_mul_isUnit_left_iff]

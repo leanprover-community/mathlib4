@@ -283,14 +283,14 @@ noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
     have hnx : -x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius := by
       rw [EMetric.mem_ball, ← neg_zero, edist_neg_neg]
       exact hx
-    rw [← exp_add_of_commute_of_mem_ball (Commute.neg_left <| Commute.refl x) hnx hx, neg_add_self,
-      exp_zero]
+    rw [← exp_add_of_commute_of_mem_ball (Commute.neg_left <| Commute.refl x) hnx hx,
+      neg_add_cancel, exp_zero]
   mul_invOf_self := by
     have hnx : -x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius := by
       rw [EMetric.mem_ball, ← neg_zero, edist_neg_neg]
       exact hx
-    rw [← exp_add_of_commute_of_mem_ball (Commute.neg_right <| Commute.refl x) hx hnx, add_neg_self,
-      exp_zero]
+    rw [← exp_add_of_commute_of_mem_ball (Commute.neg_right <| Commute.refl x) hx hnx,
+      add_neg_cancel, exp_zero]
 
 theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : IsUnit (exp 𝕂 x) :=
@@ -463,7 +463,7 @@ theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸]
     (h : x ∈ skewAdjoint 𝔸) : exp 𝕂 x ∈ unitary 𝔸 := by
   rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
-    add_left_neg, add_right_neg, exp_zero, and_self_iff]
+    neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 
 end
 
