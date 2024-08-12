@@ -298,7 +298,7 @@ structure LiftedContextFreeGrammar (T : Type uT) where
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
   lift_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.lift liftNT ∈ g.rules
   /-- Each rule of the bigger grammar whose input nonterminal the smaller grammar recognizes
-      has a corresponding rule in the smaller grammar. -/
+has a corresponding rule in the smaller grammar. -/
   preimage_of_rules :
     ∀ r : ContextFreeRule T g.NT,
       (r ∈ g.rules ∧ ∃ n₀ : g₀.NT, liftNT n₀ = r.input) →
