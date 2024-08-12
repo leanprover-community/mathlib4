@@ -277,6 +277,7 @@ theorem sameRay_of_mem_segment [StrictOrderedCommRing 𝕜] [AddCommGroup E] [Mo
   simpa only [add_sub_cancel_left, ← sub_sub, sub_smul, one_smul] using
     (SameRay.sameRay_nonneg_smul_left (z - y) hθ₀).nonneg_smul_right (sub_nonneg.2 hθ₁)
 
+set_option maxHeartbeats 0 in
 lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne [OrderedCommRing 𝕜] [NoZeroDivisors 𝕜]
     [AddCommGroup E] [Module 𝕜 E]
     {x y : E} (h : LinearIndependent 𝕜 ![x, y]) {s t : 𝕜} (hs : s ≠ t) (c : E) :

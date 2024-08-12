@@ -45,6 +45,7 @@ theorem mem_cocardinal {s : Set α} :
     cocardinal (α := α) isRegular_aleph0 = cofinite := by
   aesop
 
+set_option maxHeartbeats 0 in
 instance instCardinalInterFilter_cocardinal : CardinalInterFilter (cocardinal (α := α) hreg) c where
   cardinal_sInter_mem S hS hSs := by
     rw [mem_cocardinal, Set.compl_sInter]
