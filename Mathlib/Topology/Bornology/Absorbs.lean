@@ -159,7 +159,7 @@ protected lemma Absorbs.inter (hs : Absorbs G₀ s u) (ht : Absorbs G₀ t u) : 
   absorbs_inter.2 ⟨hs, ht⟩
 
 variable (G₀ u) in
-/-- The filter of sets `s` that absorb `u`. -/
+/-- The filter of sets that absorb `u`. -/
 protected def Filter.absorbing : Filter α where
   sets := {s | Absorbs G₀ s u}
   univ_sets := .univ
