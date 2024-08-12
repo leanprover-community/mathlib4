@@ -860,7 +860,7 @@ precomposition with the projections defined in the section `Projections`.
 theorem contained_eq_proj (o : Ordinal) (h : contained C o) :
     C = π C (ord I · < o) := by
   have := proj_prop_eq_self C (ord I · < o)
-  simp [π, Bool.not_eq_false] at this
+  simp only [ne_eq, Bool.not_eq_false, π] at this
   exact (this (fun i x hx ↦ h x hx i)).symm
 
 theorem isClosed_proj (o : Ordinal) (hC : IsClosed C) : IsClosed (π C (ord I · < o)) :=

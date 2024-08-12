@@ -594,7 +594,7 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
         (vectorAll_iff_forall _).1 fun z x y =>
           show ((y = 0 ∨ z < y) ∧ ∃ c, z + y * c = x) ↔ x % y = z from
             ⟨fun ⟨h, c, hc⟩ => by
-              rw [← hc]; simp; cases' h with x0 hl
+              rw [← hc]; simp only [add_mul_mod_self_left]; cases' h with x0 hl
               · rw [x0, mod_zero]
               exact mod_eq_of_lt hl, fun e => by
                 rw [← e]
