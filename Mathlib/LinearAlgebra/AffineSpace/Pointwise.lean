@@ -130,5 +130,5 @@ lemma direction_smul (ha : a ≠ 0) (s : AffineSubspace k V) : (a • s).directi
   change Submodule.map (a • LinearMap.id) _ = _
   simp [Submodule.map_smul, ha]
 
-  end Field
+end Field
 end AffineSubspace

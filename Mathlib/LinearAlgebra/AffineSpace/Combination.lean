@@ -79,8 +79,9 @@ lemma weightedVSubOfPoint_vadd (s : Finset ι) (w : ι → k) (p : ι → P) (b 
     s.weightedVSubOfPoint (v +ᵥ p) b w = s.weightedVSubOfPoint p (-v +ᵥ b) w := by
   simp [vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, add_comm]
 
-lemma weightedVSubOfPoint_smul [SMulCommClass kˣ k V] (s : Finset ι) (w : ι → k) (p : ι → V) (b : V)
-    (a : kˣ) : s.weightedVSubOfPoint (a • p) b w = a • s.weightedVSubOfPoint p (a⁻¹ • b) w := by
+lemma weightedVSubOfPoint_smul {G : Type*} [Group G] [DistribMulAction G V] [SMulCommClass G k V]
+    (s : Finset ι) (w : ι → k) (p : ι → V) (b : V) (a : G) :
+    s.weightedVSubOfPoint (a • p) b w = a • s.weightedVSubOfPoint p (a⁻¹ • b) w := by
   simp [smul_sum, smul_sub, smul_comm a (w _)]
 
 /-- `weightedVSubOfPoint` gives equal results for two families of weights and two families of
