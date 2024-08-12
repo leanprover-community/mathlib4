@@ -88,7 +88,7 @@ theorem OpenEmbedding.isQuasiSeparated_iff (h : OpenEmbedding f) {s : Set α} :
     H (f '' U) (f '' V) (Set.image_subset _ hU) (h.isOpenMap _ hU') (hU''.image h.continuous)
       (Set.image_subset _ hV) (h.isOpenMap _ hV') (hV''.image h.continuous)
 
-theorem isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
+theorem isQuasiSeparated_iff_quasiSeparatedSpace {s : Set α} (hs : IsOpen s) :
     IsQuasiSeparated s ↔ QuasiSeparatedSpace s := by
   rw [← isQuasiSeparated_univ_iff]
   convert (hs.openEmbedding_subtype_val.isQuasiSeparated_iff (s := Set.univ)).symm

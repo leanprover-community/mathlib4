@@ -1731,7 +1731,7 @@ protected theorem continuousWithinAt (e : M₁ ≃SL[σ₁₂] M₂) {s : Set M�
 
 theorem comp_continuousOn_iff {α : Type*} [TopologicalSpace α] (e : M₁ ≃SL[σ₁₂] M₂) {f : α → M₁}
     {s : Set α} : ContinuousOn (e ∘ f) s ↔ ContinuousOn f s :=
-  e.toHomeomorph.comp_continuousOn_iff _ _
+  e.toHomeomorph.comp_continuousOn_iff
 
 theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] (e : M₁ ≃SL[σ₁₂] M₂) {f : α → M₁} :
     Continuous (e ∘ f) ↔ Continuous f :=
@@ -1914,10 +1914,10 @@ theorem refl_symm : (ContinuousLinearEquiv.refl R₁ M₁).symm = ContinuousLine
 theorem symm_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) (x : M₁) : e.symm.symm x = e x :=
   rfl
 
-theorem symm_apply_eq (e : M₁ ≃SL[σ₁₂] M₂) {x y} : e.symm x = y ↔ x = e y :=
+theorem symm_apply_eq {e : M₁ ≃SL[σ₁₂] M₂} {x y} : e.symm x = y ↔ x = e y :=
   e.toLinearEquiv.symm_apply_eq
 
-theorem eq_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) {x y} : y = e.symm x ↔ e y = x :=
+theorem eq_symm_apply {e : M₁ ≃SL[σ₁₂] M₂} {x y} : y = e.symm x ↔ e y = x :=
   e.toLinearEquiv.eq_symm_apply
 
 protected theorem image_eq_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' s = e.symm ⁻¹' s :=

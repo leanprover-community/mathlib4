@@ -417,15 +417,15 @@ theorem mem_nhds_subtype_iff_nhdsWithin {s : Set α} {a : s} {t : Set s} :
 theorem preimage_coe_mem_nhds_subtype {s t : Set α} {a : s} : (↑) ⁻¹' t ∈ 𝓝 a ↔ t ∈ 𝓝[s] ↑a := by
   rw [← map_nhds_subtype_val, mem_map]
 
-theorem eventually_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
+theorem eventually_nhds_subtype_iff {s : Set α} {a : s} {P : α → Prop} :
     (∀ᶠ x : s in 𝓝 a, P x) ↔ ∀ᶠ x in 𝓝[s] a, P x :=
   preimage_coe_mem_nhds_subtype
 
-theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
+theorem frequently_nhds_subtype_iff {s : Set α} {a : s} {P : α → Prop} :
     (∃ᶠ x : s in 𝓝 a, P x) ↔ ∃ᶠ x in 𝓝[s] a, P x :=
-  eventually_nhds_subtype_iff s a (¬ P ·) |>.not
+  eventually_nhds_subtype_iff (P := (¬ P ·)) |>.not
 
-theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
+theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) {f : α → β} {l : Filter β} :
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
 
@@ -442,7 +442,7 @@ theorem ContinuousOn.continuousWithinAt {f : α → β} {s : Set α} {x : α} (h
     (hx : x ∈ s) : ContinuousWithinAt f s x :=
   hf x hx
 
-theorem continuousWithinAt_univ (f : α → β) (x : α) :
+theorem continuousWithinAt_univ {f : α → β} {x : α} :
     ContinuousWithinAt f Set.univ x ↔ ContinuousAt f x := by
   rw [ContinuousAt, ContinuousWithinAt, nhdsWithin_univ]
 
@@ -450,9 +450,9 @@ theorem continuous_iff_continuousOn_univ {f : α → β} : Continuous f ↔ Cont
   simp [continuous_iff_continuousAt, ContinuousOn, ContinuousAt, ContinuousWithinAt,
     nhdsWithin_univ]
 
-theorem continuousWithinAt_iff_continuousAt_restrict (f : α → β) {x : α} {s : Set α} (h : x ∈ s) :
+theorem continuousWithinAt_iff_continuousAt_restrict {f : α → β} {x : α} {s : Set α} (h : x ∈ s) :
     ContinuousWithinAt f s x ↔ ContinuousAt (s.restrict f) ⟨x, h⟩ :=
-  tendsto_nhdsWithin_iff_subtype h f _
+  tendsto_nhdsWithin_iff_subtype (h := h)
 
 theorem ContinuousWithinAt.tendsto_nhdsWithin {f : α → β} {x : α} {s : Set α} {t : Set β}
     (h : ContinuousWithinAt f s x) (ht : MapsTo f s t) : Tendsto f (𝓝[s] x) (𝓝[t] f x) :=
@@ -553,9 +553,9 @@ theorem continuousOn_iff_continuous_restrict {f : α → β} {s : Set α} :
     ContinuousOn f s ↔ Continuous (s.restrict f) := by
   rw [ContinuousOn, continuous_iff_continuousAt]; constructor
   · rintro h ⟨x, xs⟩
-    exact (continuousWithinAt_iff_continuousAt_restrict f xs).mp (h x xs)
+    exact (continuousWithinAt_iff_continuousAt_restrict xs).mp (h x xs)
   intro h x xs
-  exact (continuousWithinAt_iff_continuousAt_restrict f xs).mpr (h ⟨x, xs⟩)
+  exact (continuousWithinAt_iff_continuousAt_restrict xs).mpr (h ⟨x, xs⟩)
 
 -- Porting note: 2 new lemmas
 alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
@@ -751,7 +751,7 @@ theorem continuousOn_congr {f g : α → β} {s : Set α} (h' : EqOn g f s) :
 
 theorem ContinuousAt.continuousWithinAt {f : α → β} {s : Set α} {x : α} (h : ContinuousAt f x) :
     ContinuousWithinAt f s x :=
-  ContinuousWithinAt.mono ((continuousWithinAt_univ f x).2 h) (subset_univ _)
+  ContinuousWithinAt.mono (continuousWithinAt_univ.2 h) (subset_univ _)
 
 theorem continuousWithinAt_iff_continuousAt {f : α → β} {s : Set α} {x : α} (h : s ∈ 𝓝 x) :
     ContinuousWithinAt f s x ↔ ContinuousAt f x := by

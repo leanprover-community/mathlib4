@@ -220,7 +220,7 @@ variable {s s₁ s₂ t t₁ t₂ u : Set X}
 theorem symm : SeparatedNhds s t → SeparatedNhds t s := fun ⟨U, V, oU, oV, aU, bV, UV⟩ =>
   ⟨V, U, oV, oU, bV, aU, Disjoint.symm UV⟩
 
-theorem comm (s t : Set X) : SeparatedNhds s t ↔ SeparatedNhds t s :=
+theorem comm {s t : Set X} : SeparatedNhds s t ↔ SeparatedNhds t s :=
   ⟨symm, symm⟩
 
 theorem preimage [TopologicalSpace Y] {f : X → Y} {s t : Set Y} (h : SeparatedNhds s t)
@@ -264,11 +264,11 @@ class T0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Two inseparable points in a T₀ space are equal. -/
   t0 : ∀ ⦃x y : X⦄, Inseparable x y → x = y
 
-theorem t0Space_iff_inseparable (X : Type u) [TopologicalSpace X] :
+theorem t0Space_iff_inseparable {X : Type u} [TopologicalSpace X] :
     T0Space X ↔ ∀ x y : X, Inseparable x y → x = y :=
   ⟨fun ⟨h⟩ => h, fun h => ⟨h⟩⟩
 
-theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
+theorem t0Space_iff_not_inseparable {X : Type u} [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun x y : X => ¬Inseparable x y := by
   simp only [t0Space_iff_inseparable, Ne, not_imp_not, Pairwise]
 
@@ -289,12 +289,12 @@ lemma embedding_iff_inducing [TopologicalSpace Y] [T0Space X] {f : X → Y} :
     Embedding f ↔ Inducing f :=
   ⟨Embedding.toInducing, Inducing.embedding⟩
 
-theorem t0Space_iff_nhds_injective (X : Type u) [TopologicalSpace X] :
+theorem t0Space_iff_nhds_injective {X : Type u} [TopologicalSpace X] :
     T0Space X ↔ Injective (𝓝 : X → Filter X) :=
-  t0Space_iff_inseparable X
+  t0Space_iff_inseparable
 
 theorem nhds_injective [T0Space X] : Injective (𝓝 : X → Filter X) :=
-  (t0Space_iff_nhds_injective X).1 ‹_›
+  t0Space_iff_nhds_injective.1 ‹_›
 
 theorem inseparable_iff_eq [T0Space X] {x y : X} : Inseparable x y ↔ x = y :=
   nhds_injective.eq_iff
@@ -318,14 +318,14 @@ theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
     (hb : IsTopologicalBasis b) {x y : X} : x = y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
   inseparable_iff_eq.symm.trans hb.inseparable_iff
 
-theorem t0Space_iff_exists_isOpen_xor'_mem (X : Type u) [TopologicalSpace X] :
+theorem t0Space_iff_exists_isOpen_xor'_mem {X : Type u} [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
     inseparable_iff_forall_open, Pairwise]
 
 theorem exists_isOpen_xor'_mem [T0Space X] {x y : X} (h : x ≠ y) :
     ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) :=
-  (t0Space_iff_exists_isOpen_xor'_mem X).1 ‹_› h
+  t0Space_iff_exists_isOpen_xor'_mem.1 ‹_› h
 
 /-- Specialization forms a partial order on a t0 topological space. -/
 def specializationOrder (X) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
@@ -408,7 +408,7 @@ protected theorem Embedding.t0Space [TopologicalSpace Y] [T0Space Y] {f : X → 
 instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
   embedding_subtype_val.t0Space
 
-theorem t0Space_iff_or_not_mem_closure (X : Type u) [TopologicalSpace X] :
+theorem t0Space_iff_or_not_mem_closure {X : Type u} [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 
@@ -1470,7 +1470,7 @@ theorem Ultrafilter.lim_eq_iff_le_nhds [CompactSpace X] {x : X} {F : Ultrafilter
     F.lim = x ↔ ↑F ≤ 𝓝 x :=
   ⟨fun h => h ▸ F.le_nhds_lim, lim_eq⟩
 
-theorem isOpen_iff_ultrafilter' [CompactSpace X] (U : Set X) :
+theorem isOpen_iff_ultrafilter' [CompactSpace X] {U : Set X} :
     IsOpen U ↔ ∀ F : Ultrafilter X, F.lim ∈ U → U ∈ F.1 := by
   rw [isOpen_iff_ultrafilter]
   refine ⟨fun h F hF => h F.lim hF F F.le_nhds_lim, ?_⟩
@@ -2148,7 +2148,7 @@ instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
   refine ⟨fun x y hne => ?_⟩
   rw [lift'_nhds_closure, lift'_nhds_closure]
   have : x ∉ closure {y} ∨ y ∉ closure {x} :=
-    (t0Space_iff_or_not_mem_closure X).mp inferInstance hne
+    t0Space_iff_or_not_mem_closure.mp inferInstance hne
   simp only [← disjoint_nhds_nhdsSet, nhdsSet_singleton] at this
   exact this.elim id fun h => h.symm
 

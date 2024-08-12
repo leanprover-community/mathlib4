@@ -79,7 +79,7 @@ theorem inducing_of_inducing_compose
         exact induced_mono hg.le_induced)⟩
 
 theorem inducing_iff_nhds : Inducing f ↔ ∀ x, 𝓝 x = comap f (𝓝 (f x)) :=
-  (inducing_iff _).trans (induced_iff_nhds_eq f)
+  (inducing_iff _).trans induced_iff_nhds_eq
 
 namespace Inducing
 
@@ -547,14 +547,14 @@ theorem isOpenMap_iff (hg : OpenEmbedding g) :
     IsOpenMap f ↔ IsOpenMap (g ∘ f) := by
   simp_rw [isOpenMap_iff_nhds_le, ← map_map, comp, ← hg.map_nhds_eq, Filter.map_le_map_iff hg.inj]
 
-theorem of_comp_iff (f : X → Y) (hg : OpenEmbedding g) :
+theorem of_comp_iff {f : X → Y} (hg : OpenEmbedding g) :
     OpenEmbedding (g ∘ f) ↔ OpenEmbedding f := by
   simp only [openEmbedding_iff_continuous_injective_open, ← hg.isOpenMap_iff, ←
     hg.1.continuous_iff, hg.inj.of_comp_iff]
 
 theorem of_comp (f : X → Y) (hg : OpenEmbedding g)
     (h : OpenEmbedding (g ∘ f)) : OpenEmbedding f :=
-  (OpenEmbedding.of_comp_iff f hg).1 h
+  (OpenEmbedding.of_comp_iff hg).1 h
 
 theorem of_isEmpty [IsEmpty X] (f : X → Y) : OpenEmbedding f :=
   openEmbedding_of_embedding_open (.of_subsingleton f) (IsOpenMap.of_isEmpty f)

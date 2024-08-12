@@ -98,7 +98,7 @@ instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀
     choose n'' hn'' hsub' hc using fun i =>
       LocallyCompactSpace.local_compact_nhds (t i) (n' i) (hn' i)
     refine ⟨(Set.univ : Set ι).pi n'', ?_, subset_trans (fun _ h => ?_) hsub, isCompact_univ_pi hc⟩
-    · exact (set_pi_mem_nhds_iff (@Set.finite_univ ι _) _).mpr fun i _ => hn'' i
+    · exact (set_pi_mem_nhds_iff (@Set.finite_univ ι _)).mpr fun i _ => hn'' i
     · exact fun i _ => hsub' i (h i trivial)⟩
 
 /-- For spaces that are not Hausdorff. -/
@@ -109,7 +109,7 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpac
     choose n'' hn'' hsub' hc using fun i =>
       LocallyCompactSpace.local_compact_nhds (t i) (n' i) (hn' i)
     refine ⟨s.pi n'', ?_, subset_trans (fun _ => ?_) hsub, ?_⟩
-    · exact (set_pi_mem_nhds_iff hs _).mpr fun i _ => hn'' i
+    · exact (set_pi_mem_nhds_iff hs).mpr fun i _ => hn'' i
     · exact forall₂_imp fun i _ hi' => hsub' i hi'
     · classical
       rw [← Set.univ_pi_ite]

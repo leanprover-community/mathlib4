@@ -402,7 +402,7 @@ theorem closure_empty : closure (∅ : Set X) = ∅ :=
   isClosed_empty.closure_eq
 
 @[simp]
-theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
+theorem closure_empty_iff : closure s = ∅ ↔ s = ∅ :=
   ⟨subset_eq_empty subset_closure, fun h => h.symm ▸ closure_empty⟩
 
 @[simp]
@@ -824,17 +824,17 @@ theorem Filter.EventuallyLE.eventuallyLE_nhds [LE α] {f g : X → α} (h : f �
     ∀ᶠ y in 𝓝 x, f ≤ᶠ[𝓝 y] g :=
   h.eventually_nhds
 
-theorem all_mem_nhds (x : X) (P : Set X → Prop) (hP : ∀ s t, s ⊆ t → P s → P t) :
+theorem all_mem_nhds {x : X} {P : Set X → Prop} (hP : ∀ s t, s ⊆ t → P s → P t) :
     (∀ s ∈ 𝓝 x, P s) ↔ ∀ s, IsOpen s → x ∈ s → P s :=
   ((nhds_basis_opens x).forall_iff hP).trans <| by simp only [@and_comm (x ∈ _), and_imp]
 
-theorem all_mem_nhds_filter (x : X) (f : Set X → Set α) (hf : ∀ s t, s ⊆ t → f s ⊆ f t)
-    (l : Filter α) : (∀ s ∈ 𝓝 x, f s ∈ l) ↔ ∀ s, IsOpen s → x ∈ s → f s ∈ l :=
-  all_mem_nhds _ _ fun s t ssubt h => mem_of_superset h (hf s t ssubt)
+theorem all_mem_nhds_filter {x : X} {f : Set X → Set α} (hf : ∀ s t, s ⊆ t → f s ⊆ f t)
+    {l : Filter α} : (∀ s ∈ 𝓝 x, f s ∈ l) ↔ ∀ s, IsOpen s → x ∈ s → f s ∈ l :=
+  all_mem_nhds fun s t ssubt h => mem_of_superset h (hf s t ssubt)
 
 theorem tendsto_nhds {f : α → X} {l : Filter α} :
     Tendsto f l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → f ⁻¹' s ∈ l :=
-  all_mem_nhds_filter _ _ (fun _ _ h => preimage_mono h) _
+  all_mem_nhds_filter (fun _ _ h => preimage_mono h)
 
 theorem tendsto_atTop_nhds [Nonempty α] [SemilatticeSup α] {f : α → X} :
     Tendsto f atTop (𝓝 x) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ N, ∀ n, N ≤ n → f n ∈ U :=
@@ -934,15 +934,15 @@ theorem clusterPt_iff_ultrafilter {f : Filter X} : ClusterPt x f ↔
     ∃ u : Ultrafilter X, u ≤ f ∧ u ≤ 𝓝 x := by
   simp_rw [ClusterPt, ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
-theorem mapClusterPt_def {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+theorem mapClusterPt_def {ι : Type*} {x : X} {F : Filter ι} {u : ι → X} :
     MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
 
-theorem mapClusterPt_iff {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+theorem mapClusterPt_iff {ι : Type*} {x : X} {F : Filter ι} {u : ι → X} :
     MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
   simp_rw [MapClusterPt, ClusterPt, inf_neBot_iff_frequently_left, frequently_map]
   rfl
 
-theorem mapClusterPt_iff_ultrafilter {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+theorem mapClusterPt_iff_ultrafilter {ι : Type*} {x : X} {F : Filter ι} {u : ι → X} :
     MapClusterPt x F u ↔ ∃ U : Ultrafilter ι, U ≤ F ∧ Tendsto u U (𝓝 x) := by
   simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, tendsto_iff_comap,
     ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
@@ -960,27 +960,27 @@ theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
   have : map (u ∘ φ) p ≤ 𝓝 x ⊓ map u F := le_inf H this
   exact neBot_of_le this
 
-theorem accPt_sup (x : X) (F G : Filter X) :
+theorem accPt_sup {F G : Filter X} :
     AccPt x (F ⊔ G) ↔ AccPt x F ∨ AccPt x G := by
   simp only [AccPt, inf_sup_left, sup_neBot]
 
-theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
+theorem acc_iff_cluster {F : Filter X} : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
-theorem acc_principal_iff_cluster (x : X) (C : Set X) :
+theorem acc_principal_iff_cluster {C : Set X} :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) := by
   rw [acc_iff_cluster, inf_principal, inter_comm, diff_eq]
 
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/
-theorem accPt_iff_nhds (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
+theorem accPt_iff_nhds {C : Set X} : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
   simp [acc_principal_iff_cluster, clusterPt_principal_iff, Set.Nonempty, exists_prop, and_assoc,
     @and_comm (¬_ = x)]
 
 /-- `x` is an accumulation point of a set `C` iff
 there are points near `x` in `C` and different from `x`. -/
-theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y in 𝓝 x, y ≠ x ∧ y ∈ C := by
+theorem accPt_iff_frequently {C : Set X} : AccPt x (𝓟 C) ↔ ∃ᶠ y in 𝓝 x, y ≠ x ∧ y ∈ C := by
   simp [acc_principal_iff_cluster, clusterPt_principal_iff_frequently, and_comm]
 
 /-- If `x` is an accumulation point of `F` and `F ≤ G`, then
@@ -989,7 +989,7 @@ theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G 
   NeBot.mono h (inf_le_inf_left _ hFG)
 
 theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
-  ((acc_iff_cluster x F).mp h).mono inf_le_right
+  (acc_iff_cluster.mp h).mono inf_le_right
 
 /-!
 ### Interior, closure and frontier in terms of neighborhoods
@@ -1037,7 +1037,7 @@ theorem isOpen_iff_ultrafilter :
     IsOpen s ↔ ∀ x ∈ s, ∀ (l : Ultrafilter X), ↑l ≤ 𝓝 x → s ∈ l := by
   simp_rw [isOpen_iff_mem_nhds, ← mem_iff_ultrafilter]
 
-theorem isOpen_singleton_iff_nhds_eq_pure (x : X) : IsOpen ({x} : Set X) ↔ 𝓝 x = pure x := by
+theorem isOpen_singleton_iff_nhds_eq_pure {x : X} : IsOpen ({x} : Set X) ↔ 𝓝 x = pure x := by
   constructor
   · intro h
     apply le_antisymm _ (pure_le_nhds x)
@@ -1046,7 +1046,7 @@ theorem isOpen_singleton_iff_nhds_eq_pure (x : X) : IsOpen ({x} : Set X) ↔ �
   · intro h
     simp [isOpen_iff_nhds, h]
 
-theorem isOpen_singleton_iff_punctured_nhds (x : X) : IsOpen ({x} : Set X) ↔ 𝓝[≠] x = ⊥ := by
+theorem isOpen_singleton_iff_punctured_nhds : IsOpen ({x} : Set X) ↔ 𝓝[≠] x = ⊥ := by
   rw [isOpen_singleton_iff_nhds_eq_pure, nhdsWithin, ← mem_iff_inf_principal_compl, ← le_pure_iff,
     nhds_neBot.le_pure_iff]
 

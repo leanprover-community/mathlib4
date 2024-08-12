@@ -227,7 +227,7 @@ theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) �
   Iff.rfl
 
 /-- The only open sets in the indiscrete topology are the empty set and the whole space. -/
-theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
+theorem TopologicalSpace.isOpen_top_iff {α} {U : Set α} : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
   ⟨fun h => by
     induction h with
     | basic _ h => exact False.elim h
@@ -536,7 +536,7 @@ theorem nhds_mono {t₁ t₂ : TopologicalSpace α} {a : α} (h : t₁ ≤ t₂)
     @nhds α t₁ a ≤ @nhds α t₂ a :=
   (gc_nhds a).monotone_u h
 
-theorem le_iff_nhds {α : Type*} (t t' : TopologicalSpace α) :
+theorem le_iff_nhds {α : Type*} {t t' : TopologicalSpace α} :
     t ≤ t' ↔ ∀ x, @nhds α t x ≤ @nhds α t' x :=
   ⟨fun h _ => nhds_mono h, le_of_nhds_le_nhds⟩
 
@@ -558,7 +558,7 @@ alias nhdsAdjoint_nhds := nhds_nhdsAdjoint_same
 theorem nhds_nhdsAdjoint_of_ne {a b : α} (f : Filter α) (h : b ≠ a) :
     @nhds α (nhdsAdjoint a f) b = pure b :=
   let _ := nhdsAdjoint a f
-  (isOpen_singleton_iff_nhds_eq_pure _).1 <| isOpen_singleton_nhdsAdjoint f h
+  isOpen_singleton_iff_nhds_eq_pure.1 <| isOpen_singleton_nhdsAdjoint f h
 
 @[deprecated nhds_nhdsAdjoint_of_ne (since := "2024-02-10")]
 theorem nhdsAdjoint_nhds_of_ne (a : α) (f : Filter α) {b : α} (h : b ≠ a) :
@@ -574,7 +574,7 @@ theorem le_nhdsAdjoint_iff' {a : α} {f : Filter α} {t : TopologicalSpace α} :
   classical
   simp_rw [le_iff_nhds, nhds_nhdsAdjoint, forall_update_iff, (pure_le_nhds _).le_iff_eq]
 
-theorem le_nhdsAdjoint_iff {α : Type*} (a : α) (f : Filter α) (t : TopologicalSpace α) :
+theorem le_nhdsAdjoint_iff {α : Type*} {a : α} {f : Filter α} {t : TopologicalSpace α} :
     t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, IsOpen[t] {b} := by
   simp only [le_nhdsAdjoint_iff', @isOpen_singleton_iff_nhds_eq_pure α t]
 
@@ -717,7 +717,7 @@ theorem continuous_id_of_le {t t' : TopologicalSpace α} (h : t ≤ t') : Contin
   continuous_id_iff_le.2 h
 
 -- 𝓝 in the induced topology
-theorem mem_nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) (s : Set β) :
+theorem mem_nhds_induced [T : TopologicalSpace α] {f : β → α} {a : β} {s : Set β} :
     s ∈ @nhds β (TopologicalSpace.induced f T) a ↔ ∃ u ∈ 𝓝 (f a), f ⁻¹' u ⊆ s := by
   letI := T.induced f
   simp_rw [mem_nhds_iff, isOpen_induced_iff]
@@ -732,7 +732,7 @@ theorem nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) :
   ext s
   rw [mem_nhds_induced, mem_comap]
 
-theorem induced_iff_nhds_eq [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : β → α) :
+theorem induced_iff_nhds_eq [tα : TopologicalSpace α] [tβ : TopologicalSpace β] {f : β → α} :
     tβ = tα.induced f ↔ ∀ b, 𝓝 b = comap f (𝓝 <| f b) := by
   simp only [ext_iff_nhds, nhds_induced]
 

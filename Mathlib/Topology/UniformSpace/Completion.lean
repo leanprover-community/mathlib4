@@ -348,6 +348,7 @@ instance AbstractCompletion.inhabited : Inhabited (AbstractCompletion α) :=
 attribute [local instance]
   AbstractCompletion.uniformStruct AbstractCompletion.complete AbstractCompletion.separation
 
+variable {α} in
 theorem nonempty_completion_iff : Nonempty (Completion α) ↔ Nonempty α :=
   cPkg.dense.nonempty_iff.symm
 

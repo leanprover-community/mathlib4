@@ -162,18 +162,18 @@ theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso 
   rfl
 
 -- Porting note: simpNF requested partially simped version below
-theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} {f : X ⟶ Y} (g : Y ⟶ Z) [IsIso g] :
     OpenEmbedding (f ≫ g) ↔ OpenEmbedding f :=
-  (TopCat.homeoOfIso (asIso g)).openEmbedding.of_comp_iff f
+  (TopCat.homeoOfIso (asIso g)).openEmbedding.of_comp_iff
 
 @[simp]
-theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} {f : X ⟶ Y} (g : Y ⟶ Z) [IsIso g] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding f := by
   simp only [← Functor.map_comp]
-  exact openEmbedding_iff_comp_isIso f g
+  exact openEmbedding_iff_comp_isIso (f := f) g
 
 -- Porting note: simpNF requested partially simped version below
-theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) {g : Y ⟶ Z} [IsIso f] :
     OpenEmbedding (f ≫ g) ↔ OpenEmbedding g := by
   constructor
   · intro h
@@ -182,9 +182,9 @@ theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z
   · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).openEmbedding
 
 @[simp]
-theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) {g : Y ⟶ Z} [IsIso f] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding g := by
   simp only [← Functor.map_comp]
-  exact openEmbedding_iff_isIso_comp f g
+  exact openEmbedding_iff_isIso_comp f
 
 end TopCat

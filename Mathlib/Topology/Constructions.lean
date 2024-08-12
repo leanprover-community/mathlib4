@@ -200,9 +200,9 @@ variable [TopologicalSpace X]
 /-
 The 𝓝 filter and the subspace topology.
 -/
-theorem mem_nhds_subtype (s : Set X) (x : { x // x ∈ s }) (t : Set { x // x ∈ s }) :
+theorem mem_nhds_subtype {s : Set X} {x : { x // x ∈ s }} {t : Set { x // x ∈ s }} :
     t ∈ 𝓝 x ↔ ∃ u ∈ 𝓝 (x : X), Subtype.val ⁻¹' u ⊆ t :=
-  mem_nhds_induced _ x t
+  mem_nhds_induced (a := x)
 
 theorem nhds_subtype (s : Set X) (x : { x // x ∈ s }) : 𝓝 x = comap (↑) (𝓝 (x : X)) :=
   nhds_induced _ x
@@ -519,7 +519,7 @@ theorem mem_nhds_prod_iff' {x : X} {y : Y} {s : Set (X × Y)} :
   ((nhds_basis_opens x).prod_nhds (nhds_basis_opens y)).mem_iff.trans <| by
     simp only [Prod.exists, and_comm, and_assoc, and_left_comm]
 
-theorem Prod.tendsto_iff {X} (seq : X → Y × Z) {f : Filter X} (p : Y × Z) :
+theorem Prod.tendsto_iff {X} {seq : X → Y × Z} {f : Filter X} {p : Y × Z} :
     Tendsto seq f (𝓝 p) ↔
       Tendsto (fun n => (seq n).fst) f (𝓝 p.fst) ∧ Tendsto (fun n => (seq n).snd) f (𝓝 p.snd) := by
   rw [nhds_prod_eq, Filter.tendsto_prod_iff']
@@ -1313,7 +1313,7 @@ theorem set_pi_mem_nhds {i : Set ι} {s : ∀ a, Set (π a)} {x : ∀ a, π a} (
   rw [pi_def, biInter_mem hi]
   exact fun a ha => (continuous_apply a).continuousAt (hs a ha)
 
-theorem set_pi_mem_nhds_iff {I : Set ι} (hI : I.Finite) {s : ∀ i, Set (π i)} (a : ∀ i, π i) :
+theorem set_pi_mem_nhds_iff {I : Set ι} (hI : I.Finite) {s : ∀ i, Set (π i)} {a : ∀ i, π i} :
     I.pi s ∈ 𝓝 a ↔ ∀ i : ι, i ∈ I → s i ∈ 𝓝 (a i) := by
   rw [nhds_pi, pi_mem_pi_iff hI]
 

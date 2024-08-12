@@ -251,7 +251,7 @@ protected theorem subtype (de : DenseEmbedding e) (p : α → Prop) :
         simpa [closure_subtype, ← range_comp, (· ∘ ·)]
     inj := (de.inj.comp Subtype.coe_injective).codRestrict _
     induced :=
-      (induced_iff_nhds_eq _).2 fun ⟨x, hx⟩ => by
+      induced_iff_nhds_eq.2 fun ⟨x, hx⟩ => by
         simp [subtypeEmb, nhds_subtype_eq_comap, de.toInducing.nhds_eq_comap, comap_comap,
           (· ∘ ·)] }
 

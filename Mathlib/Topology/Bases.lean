@@ -392,6 +392,7 @@ instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) 
 instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
   quotientMap_quot_mk.separableSpace
 
+variable {a} in
 /-- A topological space with discrete topology is separable iff it is countable. -/
 theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
   simp [separableSpace_iff, countable_univ_iff]
