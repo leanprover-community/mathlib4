@@ -116,11 +116,20 @@ end Triplet
 /-- The ring map from tensor to residue field in the pullback. -/
 def ofPointTensor (t : ↑(pullback f g)) :
     (Triplet.ofPoint t).tensor ⟶ (pullback f g).residueField t :=
-  /-
-  ⊢ ((S.residueFieldCongr ⋯).inv ≫ Hom.residueFieldMap f (Triplet.ofPoint t).x) ≫ Hom.residueFieldMap (pullback.fst f g) t =
-    ((S.residueFieldCongr ⋯).inv ≫ Hom.residueFieldMap g (Triplet.ofPoint t).y) ≫ Hom.residueFieldMap (pullback.snd f g) t
-  -/
-  pushout.desc ((pullback.fst f g).residueFieldMap t) ((pullback.snd f g).residueFieldMap t) (show _ by sorry)
+  pushout.desc
+    ((pullback.fst f g).residueFieldMap t)
+    ((pullback.snd f g).residueFieldMap t)
+    (show _ by
+      simp only [Category.assoc]
+      change (S.residueFieldCongr _).inv
+        ≫ Hom.residueFieldMap f ((pullback.fst f g).val.base t)
+          ≫ Hom.residueFieldMap (pullback.fst f g) t
+            = (S.residueFieldCongr _).inv
+              ≫ Hom.residueFieldMap g ((pullback.snd f g).val.base t)
+                ≫ Hom.residueFieldMap (pullback.snd f g) t
+
+      simp only [← residueFieldMap_comp]
+      apply Scheme.hom.residueFieldMap_congr pullback.condition)
 
 lemma ofPointtensor_SpectensorTo (t : ↑(pullback f g)) :
     Spec.map (ofPointTensor t) ≫ (Triplet.ofPoint t).SpecTensorTo =
