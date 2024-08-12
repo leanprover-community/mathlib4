@@ -37,9 +37,9 @@ open Prod Set Uniformity UniformSpace
 
 variable {X : Type*}
 
-/-- The dynamical entourage associated to a transformation `T`, entourage `U` and time `n` is the set
-of points `(x, y)` such that `(T^[k] x, T^[k] y) ∈ U` for all `k < n`, i.e. which are `U`-close up
-to time `n`.-/
+/-- The dynamical entourage associated to a transformation `T`, entourage `U` and time `n`
+is the set of points `(x, y)` such that `(T^[k] x, T^[k] y) ∈ U` for all `k < n`, i.e.
+which are `U`-close up to time `n`.-/
 def dynEntourage (T : X → X) (U : Set (X × X)) (n : ℕ) : Set (X × X) :=
   ⋂ k < n, (map T T)^[k] ⁻¹' U
 
