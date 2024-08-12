@@ -414,7 +414,7 @@ theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => 
 @[to_additive (attr := simp)
   "Counterpart to `List.sum_take_succ` when we have a negation operation"]
 theorem prod_drop_succ :
-    ∀ (L : List G) (i : ℕ) (p), (L.drop (i + 1)).prod = (L.get ⟨i, p⟩)⁻¹ * (L.drop i).prod
+    ∀ (L : List G) (i : ℕ) (p : i < L.length), (L.drop (i + 1)).prod = L[i]⁻¹ * (L.drop i).prod
   | [], i, p => False.elim (Nat.not_lt_zero _ p)
   | x :: xs, 0, _ => by simp
   | x :: xs, i + 1, p => prod_drop_succ xs i _
@@ -459,7 +459,7 @@ theorem prod_range_div (n : ℕ) (f : ℕ → G) :
 /-- Alternative version of `List.prod_set` when the list is over a group -/
 @[to_additive "Alternative version of `List.sum_set` when the list is over a group"]
 theorem prod_set' (L : List G) (n : ℕ) (a : G) :
-    (L.set n a).prod = L.prod * if hn : n < L.length then (L.get ⟨n, hn⟩)⁻¹ * a else 1 := by
+    (L.set n a).prod = L.prod * if hn : n < L.length then L[n]⁻¹ * a else 1 := by
   refine (prod_set L n a).trans ?_
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←

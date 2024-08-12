@@ -340,20 +340,34 @@ def listTransvecRow : List (Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜) :=
 @[simp]
 theorem length_listTransvecCol : (listTransvecCol M).length = r := by simp [listTransvecCol]
 
+theorem listTransvecCol_getElem {i : ℕ} (h : i < (listTransvecCol M).length) :
+    (listTransvecCol M)[i] =
+      letI i' : Fin r := ⟨i, length_listTransvecCol M ▸ h⟩
+      transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) := by
+  simp [listTransvecCol]
+
+@[deprecated listTransvecCol_getElem (since := "2024-08-03")]
 theorem listTransvecCol_get (i : Fin (listTransvecCol M).length) :
     (listTransvecCol M).get i =
       letI i' := Fin.cast (length_listTransvecCol M) i
-      transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) := by
-  simp [listTransvecCol, Fin.cast]
+      transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) :=
+  listTransvecCol_getElem ..
 
 @[simp]
 theorem length_listTransvecRow : (listTransvecRow M).length = r := by simp [listTransvecRow]
 
+theorem listTransvecRow_getElem {i : ℕ} (h : i < (listTransvecRow M).length) :
+    (listTransvecRow M)[i] =
+      letI i' : Fin r := ⟨i, length_listTransvecRow M ▸ h⟩
+      transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) := by
+  simp [listTransvecRow, Fin.cast]
+
+@[deprecated listTransvecRow_getElem (since := "2024-08-03")]
 theorem listTransvecRow_get (i : Fin (listTransvecRow M).length) :
     (listTransvecRow M).get i =
       letI i' := Fin.cast (length_listTransvecRow M) i
-      transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) := by
-  simp [listTransvecRow, Fin.cast]
+      transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) :=
+  listTransvecRow_getElem ..
 
 /-- Multiplying by some of the matrices in `listTransvecCol M` does not change the last row. -/
 theorem listTransvecCol_mul_last_row_drop (i : Fin r ⊕ Unit) {k : ℕ} (hk : k ≤ r) :

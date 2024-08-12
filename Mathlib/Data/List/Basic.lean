@@ -2170,18 +2170,24 @@ theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l
     map f (foldl List.erase l₁ l₂) = foldl (fun l a => l.erase (f a)) (map f l₁) l₂ := by
   induction l₂ generalizing l₁ <;> [rfl; simp only [foldl_cons, map_erase finj, *]]
 
-theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
-    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) := by
-  induction l with
+theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.length) :
+    Perm (l.erase l[i]) (l.eraseIdx i) := by
+  induction l generalizing i with
   | nil => simp
   | cons a l IH =>
-    cases i using Fin.cases with
+    cases i with
     | zero => simp
     | succ i =>
-      by_cases ha : a = l.get i
-      · simpa [ha] using .trans (perm_cons_erase (l.get_mem i i.isLt)) (.cons _ (IH i))
-      · simp only [get_eq_getElem] at IH ha ⊢
-        simpa [ha] using IH i
+      have hi' : i < l.length := by simpa using hi
+      if ha : a = l[i] then
+        simpa [ha] using .trans (perm_cons_erase (l.getElem_mem i _)) (.cons _ (IH hi'))
+      else
+        simpa [ha] using IH hi'
+
+@[deprecated erase_getElem (since := "2024-08-03")]
+theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
+    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) :=
+  erase_getElem i.isLt
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
     (l.eraseIdx i).length + 1 = l.length := calc
