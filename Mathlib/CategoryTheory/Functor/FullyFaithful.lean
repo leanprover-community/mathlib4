@@ -144,6 +144,8 @@ def id : (𝟭 C).FullyFaithful where
 section
 variable (hF : F.FullyFaithful)
 
+include hF
+
 /-- The equivalence `(X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y)` given by `h : F.FullyFaithful`. -/
 @[simps]
 def homEquiv {X Y : C} : (X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y) where
@@ -178,7 +180,7 @@ def preimageIso {X Y : C} (e : F.obj X ≅ F.obj Y) : X ≅ Y where
   hom_inv_id := hF.map_injective (by simp)
   inv_hom_id := hF.map_injective (by simp)
 
-lemma isIso_of_isIso_map (hF : F.FullyFaithful) {X Y : C} (f : X ⟶ Y) [IsIso (F.map f)] :
+lemma isIso_of_isIso_map {X Y : C} (f : X ⟶ Y) [IsIso (F.map f)] :
     IsIso f := by
   simpa using (hF.preimageIso (asIso (F.map f))).isIso_hom
 
