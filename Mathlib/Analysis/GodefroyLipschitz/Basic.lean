@@ -224,8 +224,107 @@ theorem tendsto_differentiable [Nontrivial E]
   simp_rw [fun n ↦ norm_fderiv_norm (hd n), one_mul]
   exact tendsto_iff_norm_sub_tendsto_zero.1 ht
 
-theorem exists_inverse (h : finrank ℝ E = 1) (φ : E → F) (hφ : Isometry φ) :
-    ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ ∀ x : E, f (φ x) = x := by sorry
+theorem aux (a b c : ℝ) (ha : |a| ≤ c) (hb : |b| ≤ c) (h : a - b = 2 * c) :
+    a = c ∧ b = -c := by
+  have ha : a ≤ c := (abs_le.1 ha).2
+  have hb : -c ≤ b := (abs_le.1 hb).1
+  by_contra this
+  rw [Classical.not_and_iff_or_not_not] at this
+  rcases this with ha' | hb'
+  · have ha : a < c := lt_of_le_of_ne ha ha'
+    linarith
+  · change b ≠ -c at hb'
+    have hb : -c < b := lt_of_le_of_ne hb hb'.symm
+    linarith
+
+theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
+    ∃ (f : F →L[ℝ] ℝ), ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ t) = t := by
+  have this (k : ℕ) : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, t ∈ Icc (-k : ℝ) k → f (φ t) = t := by
+    obtain ⟨f, nf, hf⟩ : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ f ((φ k) - (φ (-k))) = 2 * k := by
+      have nk : ‖(φ k) - (φ (-k))‖ = 2 * k := by
+        rw [← dist_eq_norm, hφ.dist_eq, dist_eq_norm, norm_eq_abs, sub_neg_eq_add, two_mul,
+          abs_eq_self.2]
+        positivity
+      sorry
+    refine ⟨f, nf, fun t tmem ↦ ?_⟩
+    have ⟨h1, h2⟩ : f (φ k) = k ∧ f (φ (-k)) = -k := by
+      apply aux
+      · rw [← norm_eq_abs]
+        convert f.le_opNorm (φ k)
+        rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_eq_abs, abs_eq_self.2]
+        positivity
+      · rw [← norm_eq_abs]
+        convert f.le_opNorm (φ (-k))
+        rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_eq_abs, abs_eq_neg_self.2, neg_neg]
+        simp
+      · rw [← map_sub, hf]
+    rcases le_total t 0 with ht | ht
+    · have : f ((φ t) - (φ (-k))) = t - (-k) := by
+        apply le_antisymm
+        · apply le_trans <| le_abs_self _
+          rw [← norm_eq_abs]
+          apply le_trans <| f.le_opNorm _
+          rw [nf, one_mul, ← dist_eq_norm, hφ.dist_eq, dist_eq_norm, norm_eq_abs, abs_eq_self.2]
+          linarith [mem_Icc.1 tmem |>.1]
+        · have : |f (φ t)| ≤ -t := by
+            rw [← norm_eq_abs]
+            convert f.le_opNorm (φ t) using 1
+            rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_eq_abs, abs_eq_neg_self.2 ht]
+          rw [map_sub, h2]
+          linarith [abs_le.1 this |>.1]
+      rw [map_sub, h2] at this
+      simpa using this
+    · have : f ((φ k) - (φ t)) = k - t := by
+        apply le_antisymm
+        · apply le_trans <| le_abs_self _
+          rw [← norm_eq_abs]
+          apply le_trans <| f.le_opNorm _
+          rw [nf, one_mul, ← dist_eq_norm, hφ.dist_eq, dist_eq_norm, norm_eq_abs, abs_eq_self.2]
+          linarith [mem_Icc.1 tmem |>.2]
+        · have : |f (φ t)| ≤ t := by
+            rw [← norm_eq_abs]
+            convert f.le_opNorm (φ t) using 1
+            rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_eq_abs, abs_eq_self.2 ht]
+          rw [map_sub, h1]
+          linarith [abs_le.1 this |>.2]
+      simpa [map_sub, h1] using this
+  choose f nf hf using this
+  obtain ⟨g, ψ, hψ, hg⟩ : ∃ (g : F →L[ℝ] ℝ) (ψ : ℕ → ℕ), StrictMono ψ ∧
+      ∀ y, Tendsto (fun n ↦ f (ψ n) y) atTop (𝓝 (g y)) := by sorry
+  refine ⟨g, le_antisymm (g.opNorm_le_bound (by norm_num) fun y ↦ ?_) ?_, fun t ↦ ?_⟩
+  · apply le_of_tendsto' ((continuous_norm.tendsto _).comp (hg y))
+    exact fun c ↦ nf (ψ c) ▸ (f (ψ c)).le_opNorm _
+  · have : ∀ n ≥ 1, ‖f (ψ n) (φ 1)‖ = 1 := by
+      intro n hn
+      rw [hf, norm_one]
+      rw [mem_Icc]
+      constructor
+      · linarith
+      · norm_cast
+        exact hn.trans <| hψ.id_le n
+    have : 1 = ‖g (φ 1)‖ := by
+      have aux1 : Tendsto (fun n ↦ ‖f (ψ n) (φ 1)‖) atTop (𝓝 1) := by
+        apply tendsto_const_nhds.congr'
+        rw [EventuallyEq, eventually_atTop]
+        exact ⟨1, fun n hn ↦ (this n hn).symm⟩
+      have aux2 := (continuous_norm.tendsto _).comp <| hg (φ 1)
+      exact tendsto_nhds_unique aux1 aux2
+    rw [this]
+    apply g.unit_le_opNorm
+    rw [hφ.norm_map_of_map_zero φz, norm_one]
+  have aux1 : Tendsto (fun n ↦ f (ψ n) (φ t)) atTop (𝓝 t) := by
+    apply tendsto_const_nhds.congr'
+    rw [EventuallyEq, eventually_atTop]
+    use ⌈|t|⌉₊
+    intro b hb
+    have : t ∈ Icc (-(ψ b) : ℝ) (ψ b) := by
+      rw [mem_Icc]
+      exact abs_le.1 (Nat.ceil_le.1 (hb.trans (hψ.id_le b)))
+    exact (hf _ _ this).symm
+  have aux2 := hg (φ t)
+  exact tendsto_nhds_unique aux2 aux1
+
+
 
 theorem norm_normalize {x : E} (hx : x ≠ 0) : ‖(1 / ‖x‖) • x‖ = 1 := by
   rw [norm_smul, norm_div, norm_one, norm_norm, one_div_mul_cancel (norm_ne_zero_iff.2 hx)]
