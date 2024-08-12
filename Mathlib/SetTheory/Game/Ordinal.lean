@@ -210,14 +210,14 @@ theorem toGame_nmul (a b : Ordinal) : (a ⨳ b).toGame = ⟦a.toPGame * b.toPGam
   Quot.sound (toPGame_nmul a b)
 
 @[simp]
-theorem nat_toPGame_mk' : ∀ n : ℕ, toGame n = n
+theorem nat_toGame : ∀ n : ℕ, toGame n = n
   | 0 => Quot.sound (zeroToPGameRelabelling).equiv
   | n + 1 => by
     have : toGame 1 = 1 := Quot.sound oneToPGameRelabelling.equiv
-    rw [Nat.cast_add, ← nadd_nat, toPGame_nadd_mk', nat_toPGame_mk', Nat.cast_one, this]
+    rw [Nat.cast_add, ← nadd_nat, toGame_add, nat_toGame, Nat.cast_one, this]
     rfl
 
 theorem nat_toPGame (n : ℕ) : toPGame n ≈ n := by
-  rw [PGame.equiv_iff_game_eq, ← toGame, nat_toPGame_mk', quot_natCast]
+  rw [PGame.equiv_iff_game_eq, ← toGame, nat_toGame, quot_natCast]
 
 end Ordinal
