@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Field.Basic
 import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 
 /-!
 # Lemmas about quotients in characteristic zero
