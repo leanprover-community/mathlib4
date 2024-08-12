@@ -127,7 +127,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     have J : ‖f (σ' d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
       calc
         ‖f (σ' d⁻¹ • x) - y‖ = ‖d⁻¹ • f x - (d⁻¹ * d) • y‖ := by
-          rwa [f.map_smulₛₗ _, inv_mul_cancel, one_smul, map_inv₀, map_inv₀,
+          rwa [f.map_smulₛₗ _, inv_mul_cancel₀, one_smul, map_inv₀, map_inv₀,
             RingHomCompTriple.comp_apply, RingHom.id_apply]
         _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
@@ -136,7 +136,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
           simp only [δ]
           ring
         _ = ‖y‖ / 2 := by
-          rw [inv_mul_cancel, one_mul]
+          rw [inv_mul_cancel₀, one_mul]
           simp [norm_eq_zero, hd]
         _ = 1 / 2 * ‖y‖ := by ring
     rw [← dist_eq_norm] at J

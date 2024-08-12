@@ -139,7 +139,7 @@ instance addCommGroup : AddCommGroup (ℤ√d) := by
     add_assoc := ?_
     zero_add := ?_
     add_zero := ?_
-    add_left_neg := ?_
+    neg_add_cancel := ?_
     add_comm := ?_ } <;>
   intros <;>
   ext <;>

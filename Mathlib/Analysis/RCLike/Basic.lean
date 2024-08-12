@@ -436,7 +436,7 @@ theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
   rcases eq_or_ne z 0 with (rfl | h₀)
   · simp
   · apply inv_eq_of_mul_eq_one_right
-    rw [← mul_assoc, mul_conj, ofReal_inv, ofReal_pow, mul_inv_cancel]
+    rw [← mul_assoc, mul_conj, ofReal_inv, ofReal_pow, mul_inv_cancel₀]
     simpa
 
 @[simp, rclike_simps]
@@ -811,7 +811,7 @@ lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing 
   lt_of_smul_lt_smul_of_pos {x y c} hxy hc := by
     have : c⁻¹ • c • x < c⁻¹ • c • y :=
       StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)
-    simpa [smul_smul, inv_mul_cancel hc.ne'] using this
+    simpa [smul_smul, inv_mul_cancel₀ hc.ne'] using this
 
 instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
     [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :

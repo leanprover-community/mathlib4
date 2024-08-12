@@ -50,7 +50,7 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     { toFun := fun h =>
         ⟨g.unop⁻¹ * h * g.unop,
           hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩
-      map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_self]
+      map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_cancel]
       map_mul' := fun h₁ h₂ => by
         simp only [Subtype.ext_iff, coe_mk, coe_mul, mul_assoc, mul_inv_cancel_left] }
   refine (Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun x ↦ ?_).trans (map_prod ϕ _ _).symm
@@ -103,7 +103,7 @@ theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.Quotie
           (diff_inv _ _ _).symm.trans
             (inv_eq_one.mpr
               ((smul_diff' β α ((powCoprime hH).symm (diff (MonoidHom.id H) β α))⁻¹).trans
-                (by rw [inv_pow, ← powCoprime_apply hH, Equiv.apply_symm_apply, mul_inv_self])))⟩)
+                (by rw [inv_pow, ← powCoprime_apply hH, Equiv.apply_symm_apply, mul_inv_cancel])))⟩)
 
 theorem isComplement'_stabilizer_of_coprime {α : H.QuotientDiff}
     (hH : Nat.Coprime (Nat.card H) H.index) : IsComplement' H (stabilizer G α) :=
