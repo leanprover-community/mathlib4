@@ -729,8 +729,8 @@ theorem val_add_of_le {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.v
 
 theorem val_add_le {n : ℕ} (a b : ZMod n) : (a + b).val ≤ a.val + b.val := by
   cases n
-  · simp [ZMod.val]; apply Int.natAbs_add_le
-  · simp [ZMod.val_add]; apply Nat.mod_le
+  · simpa [ZMod.val] using Int.natAbs_add_le _ _
+  · simpa [ZMod.val_add] using Nat.mod_le _ _
 
 theorem val_mul {n : ℕ} (a b : ZMod n) : (a * b).val = a.val * b.val % n := by
   cases n

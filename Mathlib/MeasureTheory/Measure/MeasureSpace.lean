@@ -500,7 +500,7 @@ theorem measure_iInter_eq_iInf' {α ι : Type*} [MeasurableSpace α] {μ : Measu
     μ (⋂ i, f i) = ⨅ i, μ (⋂ j ≤ i, f j) := by
   let s := fun i ↦ ⋂ j ≤ i, f j
   have iInter_eq : ⋂ i, f i = ⋂ i, s i := by
-    ext x; simp [s]; constructor
+    ext x; simp only [mem_iInter, s]; constructor
     · exact fun h _ j _ ↦ h j
     · intro h i
       rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩

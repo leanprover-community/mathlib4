@@ -535,7 +535,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
         · rintro (⟨_, h, rfl⟩ | hm')
-          · simp [Sigma.ext_iff] at h
+          · simp only [Sigma.ext_iff, heq_eq_eq, true_and] at h
             subst h
             rfl
           · simp only [fstIdx, Option.map_eq_some', Sigma.exists,

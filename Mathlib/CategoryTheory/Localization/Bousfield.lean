@@ -74,9 +74,7 @@ lemma W_isoClosure : W (isoClosure P) = W P := by
       exact ⟨a ≫ e.inv, by simp only [reassoc_of% h, e.hom_inv_id, comp_id]⟩
 
 instance : (W P).IsMultiplicative where
-  id_mem X Z _ := by
-    simp [id_comp]
-    exact Function.bijective_id
+  id_mem X Z _ := by simpa [id_comp] using Function.bijective_id
   comp_mem f g hf hg Z hZ := by
     simpa using Function.Bijective.comp (hf Z hZ) (hg Z hZ)
 

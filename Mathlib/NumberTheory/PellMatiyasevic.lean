@@ -358,7 +358,7 @@ theorem strictMono_y : StrictMono (yn a1)
     have : yn a1 m ≤ yn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_y hl)
         fun e => by rw [e]
-    simp; refine lt_of_le_of_lt ?_ (Nat.lt_add_of_pos_left <| x_pos a1 n)
+    simp only [yn_succ, gt_iff_lt]; refine lt_of_le_of_lt ?_ (Nat.lt_add_of_pos_left <| x_pos a1 n)
     rw [← mul_one (yn a1 m)]
     exact mul_le_mul this (le_of_lt a1) (Nat.zero_le _) (Nat.zero_le _)
 
@@ -368,7 +368,8 @@ theorem strictMono_x : StrictMono (xn a1)
     have : xn a1 m ≤ xn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_x hl)
         fun e => by rw [e]
-    simp; refine lt_of_lt_of_le (lt_of_le_of_lt this ?_) (Nat.le_add_right _ _)
+    simp only [xn_succ, gt_iff_lt]
+    refine lt_of_lt_of_le (lt_of_le_of_lt this ?_) (Nat.le_add_right _ _)
     have t := Nat.mul_lt_mul_of_pos_left a1 (x_pos a1 n)
     rwa [mul_one] at t
 
@@ -816,7 +817,9 @@ theorem matiyasevic {a k x y} :
             (tk : yn b1 j ≡ k [MOD 4 * yn a1 i])⟩,
           (ky : k ≤ yn a1 i) =>
           (Nat.eq_zero_or_pos i).elim
-            (fun i0 => by simp [i0] at ky; rw [i0, ky]; exact ⟨rfl, rfl⟩) fun ipos => by
+            (fun i0 => by
+              simp only [i0, yn_zero, nonpos_iff_eq_zero] at ky; rw [i0, ky]; exact ⟨rfl, rfl⟩)
+            fun ipos => by
             suffices i = k by rw [this]; exact ⟨rfl, rfl⟩
             clear o rem xy uv st
             have iln : i ≤ n :=
