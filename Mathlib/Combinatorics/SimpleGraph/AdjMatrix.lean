@@ -172,7 +172,19 @@ theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
   simp only [IsAdjMatrix.toGraph_adj, adjMatrix_apply, ite_eq_left_iff, zero_ne_one]
   apply Classical.not_not
 
-variable {α} [Fintype V]
+variable {α}
+
+/-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
+theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
+    [NonAssocSemiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
+  ext i j
+  unfold Matrix.compl
+  rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
+  by_cases h : G.Adj i j
+  · aesop
+  · split_ifs <;> simp_all
+
+variable [Fintype V]
 
 @[simp]
 theorem adjMatrix_dotProduct [NonAssocSemiring α] (v : V) (vec : V → α) :
@@ -245,16 +257,6 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
       cases hp
       simp at hxy
-
-/-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
-theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
-    [NonAssocSemiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
-  ext i j
-  unfold Matrix.compl
-  rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
-  by_cases h : G.Adj i j
-  · aesop
-  · split_ifs <;> simp_all
 
 theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (x y : V → α) :
     x ⬝ᵥ (G.adjMatrix α).mulVec y = ∑ i : V, ∑ j : V, if G.Adj i j then x i * y j else 0 := by

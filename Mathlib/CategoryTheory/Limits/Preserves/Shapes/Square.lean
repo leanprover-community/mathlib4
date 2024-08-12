@@ -40,59 +40,42 @@ lemma IsPullback.map (h : sq.IsPullback) (F : C ⥤ D) [PreservesLimit (cospan s
     (sq.map F).IsPullback :=
   Square.IsPullback.mk _ (isLimitPullbackConeMapOfIsLimit F sq.fac h.isLimit)
 
+lemma IsPullback.of_map (F : C ⥤ D) [ReflectsLimit (cospan sq.f₂₄ sq.f₃₄) F]
+    (h : (sq.map F).IsPullback) : sq.IsPullback :=
+  CategoryTheory.IsPullback.of_map F sq.fac h
+
+variable (sq) in
+lemma IsPullback.map_iff (F : C ⥤ D) [PreservesLimit (cospan sq.f₂₄ sq.f₃₄) F]
+    [ReflectsLimit (cospan sq.f₂₄ sq.f₃₄) F] :
+    (sq.map F).IsPullback ↔ sq.IsPullback :=
+  ⟨fun h ↦ of_map F h, fun h ↦ h.map F⟩
+
 lemma IsPushout.map (h : sq.IsPushout) (F : C ⥤ D) [PreservesColimit (span sq.f₁₂ sq.f₁₃) F] :
     (sq.map F).IsPushout :=
   Square.IsPushout.mk _ (isColimitPushoutCoconeMapOfIsColimit F sq.fac h.isColimit)
 
+lemma IsPushout.of_map (F : C ⥤ D) [ReflectsColimit (span sq.f₁₂ sq.f₁₃) F]
+    (h : (sq.map F).IsPushout) : sq.IsPushout :=
+  CategoryTheory.IsPushout.of_map F sq.fac h
+
+variable (sq) in
+lemma IsPushout.map_iff (F : C ⥤ D) [PreservesColimit (span sq.f₁₂ sq.f₁₃) F]
+    [ReflectsColimit (span sq.f₁₂ sq.f₁₃) F] :
+    (sq.map F).IsPushout ↔ sq.IsPushout :=
+  ⟨fun h ↦ of_map F h, fun h ↦ h.map F⟩
+
 variable (sq)
 
 lemma isPullback_iff_map_coyoneda_isPullback :
-    sq.IsPullback ↔ ∀ (X : Cᵒᵖ), (sq.map (coyoneda.obj X)).IsPullback := by
-  constructor
-  · intro h X
-    apply h.map
-  · intro h
-    let e := fun {X} ↦ Equiv.ofBijective _
-      ((PullbackCone.isLimitEquivBijective _).1 (h (op X)).isLimit)
-    have he₁ : ∀ {X} (x), (@e X).symm x ≫ sq.f₁₂ = x.1.1 := fun {X} x ↦ by
-      obtain ⟨x, rfl⟩ := e.surjective x
-      simp only [Equiv.symm_apply_apply]
-      rfl
-    have he₂ : ∀ {X} (x), (@e X).symm x ≫ sq.f₁₃ = x.1.2 := fun {X} x ↦ by
-      obtain ⟨x, rfl⟩ := e.surjective x
-      simp only [Equiv.symm_apply_apply]
-      rfl
-    apply Square.IsPullback.mk
-    refine PullbackCone.IsLimit.mk _
-      (fun s ↦ e.symm ⟨⟨s.fst, s.snd⟩, s.condition⟩)
-      (fun _ ↦ he₁ _) (fun s ↦ he₂ _) (fun s m hm₁ hm₂ ↦ ?_)
-    apply e.injective
-    rw [Equiv.apply_symm_apply]
-    ext <;> assumption
+    sq.IsPullback ↔ ∀ (X : Cᵒᵖ), (sq.map (coyoneda.obj X)).IsPullback :=
+  ⟨fun h _ ↦ h.map _, fun h ↦ IsPullback.mk _
+    ((sq.pullbackCone.isLimitCoyonedaEquiv).symm (fun X ↦ (h X).isLimit))⟩
 
 lemma isPushout_iff_op_map_yoneda_isPullback :
-    sq.IsPushout ↔ ∀ (X : C), (sq.op.map (yoneda.obj X)).IsPullback := by
-  constructor
-  · intro h X
-    apply h.op.map
-  · intro h
-    let e := fun {X} ↦ Equiv.ofBijective _
-      ((PullbackCone.isLimitEquivBijective _).1 (h X).isLimit)
-    have he₁ : ∀ {X} (x), sq.f₂₄ ≫ (@e X).symm x = x.1.1 := fun {X} x ↦ by
-      obtain ⟨x, rfl⟩ := e.surjective x
-      simp only [Equiv.symm_apply_apply]
-      rfl
-    have he₂ : ∀ {X} (x), sq.f₃₄ ≫ (@e X).symm x = x.1.2 := fun {X} x ↦ by
-      obtain ⟨x, rfl⟩ := e.surjective x
-      simp only [Equiv.symm_apply_apply]
-      rfl
-    apply Square.IsPushout.mk
-    refine PushoutCocone.IsColimit.mk _
-      (fun s ↦ e.symm ⟨⟨s.inl, s.inr⟩, s.condition⟩)
-      (fun _ ↦ he₁ _) (fun s ↦ he₂ _) (fun s m hm₁ hm₂ ↦ ?_)
-    apply e.injective
-    rw [Equiv.apply_symm_apply]
-    ext <;> assumption
+    sq.IsPushout ↔ ∀ (X : C), (sq.op.map (yoneda.obj X)).IsPullback :=
+  ⟨fun h _ ↦ h.op.map _, fun h ↦ IsPushout.mk _
+    ((sq.pushoutCocone.isColimitYonedaEquiv).symm
+      (fun X ↦ IsLimit.ofIsoLimit (h X).isLimit (PullbackCone.ext (Iso.refl _))))⟩
 
 end Square
 

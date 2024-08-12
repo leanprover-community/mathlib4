@@ -119,7 +119,7 @@ theorem log_inv (x : ℝ) : log x⁻¹ = -log x := by
 theorem log_le_log_iff (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y := by
   rw [← exp_le_exp, exp_log h, exp_log h₁]
 
-@[gcongr]
+@[gcongr, bound]
 lemma log_le_log (hx : 0 < x) (hxy : x ≤ y) : log x ≤ log y :=
   (log_le_log_iff hx (hx.trans_le hxy)).2 hxy
 
@@ -165,6 +165,7 @@ theorem log_neg_of_lt_zero (h0 : x < 0) (h1 : -1 < x) : log x < 0 := by
 
 theorem log_nonneg_iff (hx : 0 < x) : 0 ≤ log x ↔ 1 ≤ x := by rw [← not_lt, log_neg_iff hx, not_lt]
 
+@[bound]
 theorem log_nonneg (hx : 1 ≤ x) : 0 ≤ log x :=
   (log_nonneg_iff (zero_lt_one.trans_le hx)).2 hx
 
