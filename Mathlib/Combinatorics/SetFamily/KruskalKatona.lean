@@ -232,31 +232,28 @@ private lemma kruskal_katona_helper {r : ℕ} (𝒜 : Finset (Finset (Fin n)))
     ∃ ℬ : Finset (Finset (Fin n)), (∂ ℬ).card ≤ (∂ 𝒜).card ∧ 𝒜.card = ℬ.card ∧
       (ℬ : Set (Finset (Fin n))).Sized r ∧ ∀ U V, UsefulCompression U V → IsCompressed U V ℬ := by
   classical
-  revert h
-  apply WellFounded.recursion (InvImage.wf familyMeasure wellFounded_lt) 𝒜
-  intro A ih h
   -- Are there any compressions we can make now?
   set usable : Finset (Finset (Fin n) × Finset (Fin n)) :=
-    univ.filter fun t ↦ UsefulCompression t.1 t.2 ∧ ¬ IsCompressed t.1 t.2 A
+    univ.filter fun t ↦ UsefulCompression t.1 t.2 ∧ ¬ IsCompressed t.1 t.2 𝒜
   obtain husable | husable := usable.eq_empty_or_nonempty
   -- No. Then where we are is the required set family.
-  · refine ⟨A, le_rfl, rfl, h, fun U V hUV ↦ ?_⟩
+  · refine ⟨𝒜, le_rfl, rfl, h, fun U V hUV ↦ ?_⟩
     rw [eq_empty_iff_forall_not_mem] at husable
     by_contra h
     exact husable ⟨U, V⟩ $ mem_filter.2 ⟨mem_univ _, hUV, h⟩
   -- Yes. Then apply the smallest compression, then keep going
   obtain ⟨⟨U, V⟩, hUV, t⟩ := exists_min_image usable (fun t ↦ t.1.card) husable
   rw [mem_filter] at hUV
-  have h₂ : ∀ U₁ V₁, UsefulCompression U₁ V₁ → U₁.card < U.card → IsCompressed U₁ V₁ A := by
+  have h₂ : ∀ U₁ V₁, UsefulCompression U₁ V₁ → U₁.card < U.card → IsCompressed U₁ V₁ 𝒜 := by
     rintro U₁ V₁ huseful hUcard
     by_contra h
     exact hUcard.not_le $ t ⟨U₁, V₁⟩ $ mem_filter.2 ⟨mem_univ _, huseful, h⟩
-  have p1 : (∂ (𝓒 U V A)).card ≤ (∂ A).card := compression_improved _ hUV.2.1 h₂
+  have p1 : (∂ (𝓒 U V 𝒜)).card ≤ (∂ 𝒜).card := compression_improved _ hUV.2.1 h₂
   obtain ⟨-, hUV', hu, hv, hmax⟩ := hUV.2.1
-  unfold InvImage at ih
-  obtain ⟨t, q1, q2, q3, q4⟩ := ih (𝓒 U V A)
-    (familyMeasure_compression_lt_familyMeasure hmax hUV.2.2) (h.uvCompression hUV')
+  have := familyMeasure_compression_lt_familyMeasure hmax hUV.2.2
+  obtain ⟨t, q1, q2, q3, q4⟩ := UV.kruskal_katona_helper (𝓒 U V 𝒜) (h.uvCompression hUV')
   exact ⟨t, q1.trans p1, (card_compression _ _ _).symm.trans q2, q3, q4⟩
+termination_by familyMeasure 𝒜
 
 end UV
 
