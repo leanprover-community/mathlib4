@@ -50,12 +50,14 @@ namespace CategoryTheory
 open Category
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
+universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
-variable {A' B' T' : Type*} [Category A'] [Category B'] [Category T']
+variable {A' : Type u₄} [Category.{v₄} A']
+variable {B' : Type u₅} [Category.{v₅} B']
+variable {T' : Type u₆} [Category.{v₆} T']
 
 /-- The objects of the comma category are triples of an object `left : A`, an object
    `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`.  -/
@@ -250,6 +252,30 @@ instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β
 noncomputable instance isEquivalenceMap
     [F₁.IsEquivalence] [F₂.IsEquivalence] [F.Faithful] [F.Full] [IsIso α] [IsIso β] :
     (map α β).IsEquivalence where
+
+/-- The equality between `map α β ⋙ fst L' R'` and `fst L R ⋙ F₁`,
+where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
+@[simp]
+theorem map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ :=
+  rfl
+
+/-- The isomorphism between `map α β ⋙ fst L' R'` and `fst L R ⋙ F₁`,
+where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
+@[simps!]
+def mapFst : map α β ⋙ fst L' R' ≅ fst L R ⋙ F₁ :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+
+/-- The equality between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
+where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
+@[simp]
+theorem map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ :=
+  rfl
+
+/-- The isomorphism between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
+where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
+@[simps!]
+def mapSnd : map α β ⋙ snd L' R' ≅ snd L R ⋙ F₂ :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 end
 
