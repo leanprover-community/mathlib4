@@ -301,8 +301,8 @@ structure LiftedContextFreeGrammar (T : Type uT) where
   has a corresponding rule in the smaller grammar. -/
   preimage_of_rules :
     ∀ r : ContextFreeRule T g.NT,
-      r ∈ g.rules → ∀ n₀ : g₀.NT, liftNT n₀ = r.input →
-        (∃ r₀ ∈ g₀.rules, r₀.lift liftNT = r)
+      r ∈ g.rules → ∀ n₀ : g₀.NT,
+        liftNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.lift liftNT = r
 
 lemma LiftedContextFreeGrammar.sinkNT_inverse_liftNT (G : LiftedContextFreeGrammar T) :
     ∀ x : G.g.NT, (∃ n₀, G.sinkNT x = some n₀) → (Option.map G.liftNT (G.sinkNT x) = x) := by
@@ -358,11 +358,10 @@ lemma LiftedContextFreeGrammar.sink_produces {G : LiftedContextFreeGrammar T}
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
-  rcases G.preimage_of_rules r (by
-      obtain ⟨n₀, hn₀⟩ : GoodLetter (Symbol.nonterminal r.input) := by apply hw₁; simp
-      refine ⟨rin, n₀, ?_⟩
-      simpa [G.sinkNT_inverse_liftNT r.input ⟨n₀, hn₀⟩, Option.map_some'] using
-        congr_arg (Option.map G.liftNT) hn₀.symm)
+  obtain ⟨n₀, hn₀⟩ : GoodLetter (Symbol.nonterminal r.input) := by apply hw₁; simp
+  rcases G.preimage_of_rules r rin n₀ (by
+    simpa [G.sinkNT_inverse_liftNT r.input ⟨n₀, hn₀⟩, Option.map_some'] using
+      congr_arg (Option.map G.liftNT) hn₀.symm)
     with ⟨r₀, hr₀, hrr₀⟩
   constructor
   · refine ⟨r₀, hr₀, ?_⟩
