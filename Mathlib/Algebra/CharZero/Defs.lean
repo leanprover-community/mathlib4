@@ -93,6 +93,9 @@ end Nat
 
 namespace OfNat
 
+-- TODO: This whole section is draped in `no_index` because of its special casing in
+-- core, see leanprover/lean4#2867. Hopefully this can be fixed in the future.
+
 variable [AddMonoidWithOne R] [CharZero R]
 
 @[simp] lemma ofNat_ne_zero (n : ℕ) [n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 0 :=
@@ -108,7 +111,7 @@ variable [AddMonoidWithOne R] [CharZero R]
   (ofNat_ne_one n).symm
 
 lemma ofNat_eq_ofNat {m n : ℕ} [m.AtLeastTwo] [n.AtLeastTwo] :
-    (no_index (ofNat m) : R) = no_index (ofNat n) ↔ (ofNat m : ℕ) = ofNat n :=
+    (ofNat m : R) = (ofNat n) ↔ (ofNat m : ℕ) = ofNat n :=
   Nat.cast_inj
 
 end OfNat
