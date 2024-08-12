@@ -488,7 +488,7 @@ lemma binaryEntropy_strictMonoOn : StrictMonoOn binaryEntropy (Icc 0 2⁻¹) := 
 
 /-! ### Strict Concavity of binary and q-ary entropy functions -/
 
-lemma strictConcave_qaryEntropy {q : ℕ} : StrictConcaveOn ℝ (Icc 0 1) (qaryEntropy q) := by
+lemma strictConcaveOn_qaryEntropy {q : ℕ} : StrictConcaveOn ℝ (Icc 0 1) (qaryEntropy q) := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) qaryEntropy_continuous.continuousOn
   intro x hx
   rw [deriv2_qaryEntropy]
