@@ -45,7 +45,7 @@ theorem getLast_tail {α} (l : List α) (hl : l.tail ≠ []) :
   simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
   omega
 
-lemma getElem_tail {α} {i} (L : List α) (hi : i < L.tail.length) :
+lemma getElem_tail {i} (L : List α) (hi : i < L.tail.length) :
     L.tail[i] = L[i + 1]'(by simp at *; omega) := by
   induction L <;> simp at hi |-
 
