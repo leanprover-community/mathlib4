@@ -224,7 +224,7 @@ theorem toPGame_birthday (o : Ordinal) : birthday ⟦o.toPGame⟧ = o := by
 
 @[simp]
 theorem birthday_natCast (n : ℕ) : birthday n = n := by
-  rw [← nat_toPGame_mk']
+  rw [← nat_toGame]
   exact toPGame_birthday _
 
 @[simp]
