@@ -1,5 +1,6 @@
-import Mathlib.CategoryTheory.Localization.Bifunctor
+import Mathlib.CategoryTheory.Localization.Trifunctor
 import Mathlib.CategoryTheory.Monoidal.Functor
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 namespace CategoryTheory
 
@@ -108,6 +109,8 @@ noncomputable def rightUnitor : tensorRightFunctor L W ε unit ≅ 𝟭 _ :=
       (tensorRightFunctor L W ε ((L').obj (𝟙_ _))) _
       (isoWhiskerRight (rightUnitorNatIso C) _ ≪≫ L.leftUnitor)
 
+-- lemma isInvertedBy₃ : MorphismProperty.IsInvertedBy₃ W W W (𝟭 C) :=
+
 noncomputable instance monoidalCategoryStruct :
     MonoidalCategoryStruct (LocalizedMonoidal L W ε) where
   tensorObj X Y := ((tensorBifunctor L W ε).obj X).obj Y
@@ -127,11 +130,24 @@ lemma μ_natural_left {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
       (μ L W ε X₁ Y).hom ≫ (L').map (f ▷ Y) :=
   NatTrans.naturality_app (tensorBifunctorIso L W ε).hom Y f
 
+-- is this necessary?
+@[reassoc (attr := simp)]
+lemma μ_inv_natural_left {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
+    (μ L W ε X₁ Y).inv ≫ (L').map f ▷ (L').obj Y =
+      (L').map (f ▷ Y) ≫ (μ L W ε X₂ Y).inv := by
+  simp [Iso.eq_comp_inv]
+
 @[reassoc (attr := simp)]
 lemma μ_natural_right (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) :
     (L').obj X ◁ (L').map g ≫ (μ L W ε X Y₂).hom =
-      (μ L W ε X Y₁).hom ≫ (toMonoidalCategory L W ε).map (X ◁ g) :=
+      (μ L W ε X Y₁).hom ≫ (L').map (X ◁ g) :=
   ((tensorBifunctorIso L W ε).hom.app X).naturality g
+
+@[reassoc (attr := simp)]
+lemma μ_inv_natural_right (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) :
+    (μ L W ε X Y₁).inv ≫ (L').obj X ◁ (L').map g =
+      (L').map (X ◁ g) ≫ (μ L W ε X Y₂).inv := by
+  simp [Iso.eq_comp_inv]
 
 lemma leftUnitor_hom_app (Y : C) :
     (λ_ ((L').obj Y)).hom =
@@ -178,9 +194,37 @@ lemma tensor_id (X₁ X₂ : LocalizedMonoidal L W ε) : 𝟙 X₁ ⊗ 𝟙 X₂
   simp [monoidalCategoryStruct]
 
 @[reassoc]
+theorem whiskerLeft_comp (Q : LocalizedMonoidal L W ε) {X Y Z : LocalizedMonoidal L W ε}
+    (f : X ⟶ Y) (g : Y ⟶ Z) :
+    Q ◁ (f ≫ g) = Q ◁ f ≫ Q ◁ g := by
+  simp only [← id_tensorHom, ← tensor_comp, comp_id]
+
+@[reassoc]
+theorem whiskerRight_comp (Q : LocalizedMonoidal L W ε) {X Y Z : LocalizedMonoidal L W ε}
+    (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g) ▷ Q = f ▷ Q ≫ g ▷ Q := by
+  simp only [← tensorHom_id, ← tensor_comp, comp_id]
+
+lemma whiskerLeft_id (X Y : LocalizedMonoidal L W ε) :
+    X ◁ (𝟙 Y) = 𝟙 _ := by simp [monoidalCategoryStruct]
+
+lemma whiskerRight_id (X Y : LocalizedMonoidal L W ε) :
+    (𝟙 X) ▷ Y = 𝟙 _ := by simp [monoidalCategoryStruct]
+
+@[reassoc]
 lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
-    ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ f₂ ⊗ f₃) := sorry
+    ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ f₂ ⊗ f₃) := by
+  sorry
+
+lemma associator_naturality₂ {X₁ X₂ X₃ Y₂ : LocalizedMonoidal L W ε} (f₂ : X₂ ⟶ Y₂) :
+    ((X₁ ◁ f₂) ▷ X₃) ≫ (α_ X₁ Y₂ X₃).hom = (α_ X₁ X₂ X₃).hom ≫ (X₁ ◁ (f₂ ▷ X₃)) := by
+  simp only [← tensorHom_id, ← id_tensorHom, associator_naturality]
+
+lemma pentagon_aux {X₁ X₂ X₃ Y₂ : LocalizedMonoidal L W ε} (i : X₂ ≅ Y₂) :
+    ((X₁ ◁ i.hom) ▷ X₃) ≫ (α_ X₁ Y₂ X₃).hom  ≫ (X₁ ◁ (i.inv ▷ X₃)) = (α_ X₁ X₂ X₃).hom := by
+  simp only [← assoc, associator_naturality₂]
+  simp [← whiskerRight_comp, ← whiskerLeft_comp, whiskerRight_id, whiskerLeft_id]
 
 variable {L W ε} in
 lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
@@ -214,7 +258,31 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
     simp only [tensor_comp]
     simp only [assoc]
     congr 2
-    sorry
+    simp only [tensorHom_id, id_tensorHom]
+    rw [associator_hom_app]
+    simp only [Functor.map_comp, assoc]
+    rw [← μ_inv_natural_right_assoc]
+    rw [← whiskerLeft_comp, ← whiskerLeft_comp]
+    rw [tensorHom_id, whiskerLeft_comp, whiskerLeft_comp, id_tensorHom]
+    simp only [← assoc]
+    congr 1
+    simp only [assoc]
+    rw [← μ_natural_left_assoc]
+    have : ((L').obj X₁ ◁ (μ L W ε X₂ X₃).inv) ▷ (L').obj X₄ ≫
+        (α_ ((L').obj X₁) ((L').obj X₂ ⊗ (L').obj X₃) ((L').obj X₄)).hom ≫
+          (L').obj X₁ ◁ (μ L W ε X₂ X₃).hom ▷ (L').obj X₄ =
+            (α_ ((L').obj X₁) ((L').obj (X₂ ⊗ X₃)) ((L').obj X₄)).hom :=
+      pentagon_aux _ _ _ (μ L W ε X₂ X₃).symm
+    rw [whiskerRight_comp, whiskerRight_comp]
+    simp only [assoc, reassoc_of% this]
+    congr 1
+    rw [associator_hom_app]
+    rw [tensorHom_id]
+    simp only [assoc]
+    rw [← whiskerRight_comp_assoc]
+    rw [id_tensorHom, ← whiskerLeft_comp]
+    simp [whiskerLeft_id, whiskerRight_id]
+    -- TODO: clean up this proof, add simp lemmas...
   · dsimp [a, b]
     sorry
 
