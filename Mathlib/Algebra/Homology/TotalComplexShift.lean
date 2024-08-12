@@ -188,7 +188,7 @@ noncomputable def totalShift₁Iso :
   HomologicalComplex.Hom.isoOfComponents (fun n => K.totalShift₁XIso x n (n + x) rfl)
     (fun n n' _ => by
       dsimp
-      simp only [Preadditive.add_comp, Preadditive.comp_add, smul_add,
+      simp only [total_d, Preadditive.add_comp, Preadditive.comp_add, smul_add,
         Linear.comp_units_smul, K.D₁_totalShift₁XIso_hom x n n' _ _ rfl rfl,
         K.D₂_totalShift₁XIso_hom x n n' _ _ rfl rfl])
 
@@ -300,7 +300,7 @@ noncomputable def totalShift₂Iso :
   HomologicalComplex.Hom.isoOfComponents (fun n => K.totalShift₂XIso y n (n + y) rfl)
     (fun n n' _ => by
       dsimp
-      simp only [Preadditive.add_comp, Preadditive.comp_add, smul_add,
+      simp only [total_d, Preadditive.add_comp, Preadditive.comp_add, smul_add,
         Linear.comp_units_smul, K.D₁_totalShift₂XIso_hom y n n' _ _ rfl rfl,
         K.D₂_totalShift₂XIso_hom y n n' _ _ rfl rfl])
 

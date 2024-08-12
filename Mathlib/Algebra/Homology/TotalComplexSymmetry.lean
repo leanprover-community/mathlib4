@@ -101,8 +101,7 @@ lemma totalFlipIsoX_hom_D₂ (j j' : J) :
 bicomplex when we have `[TotalComplexShapeSymmetry c₁ c₂ c]`. -/
 noncomputable def totalFlipIso : K.flip.total c ≅ K.total c :=
   HomologicalComplex.Hom.isoOfComponents (K.totalFlipIsoX c) (fun j j' _ => by
-    dsimp
-    simp only [Preadditive.comp_add, totalFlipIsoX_hom_D₁,
+    simp only [total_d, Preadditive.comp_add, totalFlipIsoX_hom_D₁,
       totalFlipIsoX_hom_D₂, Preadditive.add_comp]
     rw [add_comm])
 
