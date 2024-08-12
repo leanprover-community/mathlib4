@@ -75,9 +75,10 @@ theorem finrank_quotient_map :
 /-- Given a basis of `S`, the induced basis of `S / Ideal.map (algebraMap R S) p`. -/
 noncomputable
 def basisQuotient {ι} [Fintype ι] (b : Basis ι R S) : Basis ι (R ⧸ p) (S ⧸ pS) :=
-  basisOfTopLeSpanOfCardEqFinrank (Ideal.Quotient.mk pS ∘ b) (by
-    rw [Set.range_comp]
-    exact ((quotient_span_eq_top_iff_span_eq_top _).mpr b.span_eq).ge)
+  basisOfTopLeSpanOfCardEqFinrank (Ideal.Quotient.mk pS ∘ b)
+    (by
+      rw [Set.range_comp]
+      exact ((quotient_span_eq_top_iff_span_eq_top _).mpr b.span_eq).ge)
     (by rw [finrank_quotient_map, finrank_eq_card_basis b])
 
 lemma basisQuotient_apply {ι} [Fintype ι] (b : Basis ι R S) (i) :
