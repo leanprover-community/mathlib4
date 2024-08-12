@@ -5,25 +5,23 @@ Authors: Nicolas Rolland
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.ConnectedComponents
+
 /-!
 # Adjunctions related to Cat, the category of categories
 
 The embedding `typeToCat: Type ⥤ Cat`, mapping a type to the corresponding discrete category, is
 left adjoint to the functor `Cat.objects`, which maps a category to its set of objects.
 
-
+Another functor `connectedComponents : Cat ⥤ Type` maps a category to the set of its connected
+components and functors to functions between those sets.
 
 ## Notes
 All this could be made with 2-functors
 
-## TODO
-
-Define the left adjoint `Cat.connectedComponents`, which map
-a category to its set of connected components.
-
 -/
 
-universe u
+universe v u
 namespace CategoryTheory.Cat
 
 variable (X : Type u) (C : Cat)
@@ -42,7 +40,7 @@ private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤
 
 /-- `typeToCat : Type ⥤ Cat` is left adjoint to `Cat.objects : Cat ⥤ Type` -/
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
-  homEquiv  := typeToCatObjectsAdjHomEquiv
+  homEquiv := typeToCatObjectsAdjHomEquiv
   unit := { app:= fun _  ↦ Discrete.mk }
   counit := {
     app := typeToCatObjectsAdjCounitApp
@@ -50,5 +48,26 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
       (by intro ⟨_⟩ ⟨_⟩ f
           obtain rfl := Discrete.eq_of_hom f
           aesop_cat ) }
+
+/-- The connected components functor -/
+def connectedComponents : Cat.{v, u} ⥤ Type u where
+  obj C := ConnectedComponents C
+  map F :=
+    Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj)
+      (fun _ _ ↦ Quot.sound ∘ zigzag_obj_of_zigzag F)
+  map_id _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h ↦ by simp [<- h]; rfl)
+  map_comp _ _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h => by simp [<- h])
+
+/-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
+def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
+  homEquiv C X := ConnectedComponents.typeToCatHomEquiv C X
+  unit := { app:= fun C  ↦ ConnectedComponents.functorToDiscrete _ (𝟙 (connectedComponents.obj C)) }
+  counit :=  {
+      app := fun X => ConnectedComponents.liftFunctor _ (𝟙 typeToCat.obj X)
+      naturality := fun _ _ _ =>
+        funext (fun xcc => by
+          obtain ⟨x,h⟩ := Quotient.exists_rep xcc
+          aesop_cat) }
+  homEquiv_counit := fun {C X G} => by funext cc;obtain ⟨_,_⟩ := Quotient.exists_rep cc; aesop_cat
 
 end CategoryTheory.Cat
