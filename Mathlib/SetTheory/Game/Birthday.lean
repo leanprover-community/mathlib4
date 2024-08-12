@@ -169,6 +169,10 @@ theorem birthday_natCast : ∀ n : ℕ, birthday n = n
   | 0 => birthday_zero
   | n + 1 => by simp [birthday_natCast]
 
+@[simp]
+theorem birthday_ofNat (n : ℕ) : birthday (no_index (OfNat.ofNat n)) = n := by
+  sorry
+
 end PGame
 
 namespace Game
@@ -217,8 +221,12 @@ theorem toPGame_birthday (o : Ordinal) : birthday o.toGame = o := by
 
 @[simp]
 theorem birthday_natCast (n : ℕ) : birthday n = n := by
-  rw [← nat_toGame]
+  rw [← toGame_natCast]
   exact toPGame_birthday _
+
+@[simp]
+theorem birthday_ofNat (n : ℕ) : birthday (no_index (OfNat.ofNat n)) = n := by
+  sorry
 
 @[simp]
 theorem birthday_one : birthday 1 = 1 := by
