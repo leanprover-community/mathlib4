@@ -183,13 +183,13 @@ the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
     HomotopyEquiv (K⟦(1 : ℤ)⟧) (mappingCone (inr φ)) where
   hom := lift (inr φ) (-(Cocycle.ofHom φ).leftShift 1 1 (zero_add 1))
-    (-(inl φ).leftShift 1 0 (neg_add_self 1)) (by
-      simp? [Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1)] says
+    (-(inl φ).leftShift 1 0 (neg_add_cancel 1)) (by
+      simp? [Cochain.δ_leftShift _ 1 0 1 (neg_add_cancel 1) 0 (zero_add 1)] says
         simp only [Int.reduceNeg, δ_neg,
-          Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1),
+          Cochain.δ_leftShift _ 1 0 1 (neg_add_cancel 1) 0 (zero_add 1),
           Int.negOnePow_one, δ_inl, Cochain.ofHom_comp, Cochain.leftShift_comp_zero_cochain,
           Units.neg_smul, one_smul, neg_neg, Cocycle.coe_neg, Cocycle.leftShift_coe,
-          Cocycle.ofHom_coe, Cochain.neg_comp, add_right_neg])
+          Cocycle.ofHom_coe, Cochain.neg_comp, add_neg_cancel])
   inv := desc (inr φ) 0 (triangle φ).mor₃
     (by simp only [δ_zero, inr_triangleδ, Cochain.ofHom_zero])
   homotopyHomInvId := Homotopy.ofEq (by
@@ -208,17 +208,17 @@ noncomputable def rotateHomotopyEquiv :
     ⟨-(snd (inr φ)).comp ((snd φ).comp (inl (inr φ)) (zero_add (-1))) (zero_add (-1)), by
       ext n
       simp? [ext_to_iff _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl,
-        δ_zero_cochain_comp _ _ _ (neg_add_self 1),
-        (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega),
+        δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
+        (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by omega),
         (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
-        Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by omega)] says
+        Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by omega)] says
         simp only [Int.reduceNeg, Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
           Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
-          shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_self 1), δ_inl,
+          shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1), δ_inl,
           Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
           Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
           neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
-          Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by omega),
+          Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by omega),
           Cochain.zero_cochain_comp_v, Cochain.ofHom_v, HomologicalComplex.id_f,
           ext_to_iff _ _ (n + 1) rfl, assoc, liftCochain_v_fst_v,
           (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
@@ -230,9 +230,9 @@ noncomputable def rotateHomotopyEquiv :
           inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_triangle_mor₃_f_assoc, triangle_obj₁,
           Iso.refl_inv, inl_v_fst_v_assoc, inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, and_self,
           liftCochain_v_snd_v,
-          (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega),
+          (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by omega),
           Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
-          inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, add_left_neg]⟩
+          inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, neg_add_cancel]⟩
 
 /-- Auxiliary definition for `rotateTrianglehIso`. -/
 noncomputable def rotateHomotopyEquivComm₂Homotopy :
@@ -242,9 +242,9 @@ noncomputable def rotateHomotopyEquivComm₂Homotopy :
         ext p
         dsimp [rotateHomotopyEquiv]
         simp [ext_from_iff _ _ _ rfl, ext_to_iff _ _ _ rfl,
-          (inl φ).leftShift_v 1 0 (neg_add_self 1) p p (add_zero p) (p + 1) (by omega),
-          δ_zero_cochain_comp _ _ _ (neg_add_self 1),
-          Cochain.comp_v _ _ (add_neg_self 1) p (p + 1) p rfl (by omega),
+          (inl φ).leftShift_v 1 0 (neg_add_cancel 1) p p (add_zero p) (p + 1) (by omega),
+          δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
+          Cochain.comp_v _ _ (add_neg_cancel 1) p (p + 1) p rfl (by omega),
           (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega)]⟩
 
 @[reassoc (attr := simp)]
@@ -286,7 +286,7 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
     dsimp
     simp only [Cochain.δ_shift, δ_snd, Cochain.shift_neg, smul_neg, Cochain.neg_v,
       shiftFunctor_obj_X', Cochain.units_smul_v, Cochain.shift_v', Cochain.comp_zero_cochain_v,
-      Cochain.ofHom_v, Cochain.units_smul_comp, shiftFunctor_map_f', add_left_neg])
+      Cochain.ofHom_v, Cochain.units_smul_comp, shiftFunctor_map_f', neg_add_cancel])
   inv := desc _ (n.negOnePow • (inl φ).shift n) ((inr φ)⟦n⟧') (by
     ext p
     dsimp

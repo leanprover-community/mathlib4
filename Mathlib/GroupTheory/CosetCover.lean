@@ -271,7 +271,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
         f, K, hHD, ← (ht i hi _).2, hi, hfi, hkfi]
   · rw [hdensity]
     refine le_of_mul_le_mul_right ?_ (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hD.finiteIndex))
-    rw [one_mul, mul_assoc, inv_mul_cancel (Nat.cast_ne_zero.mpr hD.finiteIndex), mul_one,
+    rw [one_mul, mul_assoc, inv_mul_cancel₀ (Nat.cast_ne_zero.mpr hD.finiteIndex), mul_one,
       Nat.cast_le]
     exact index_le_of_leftCoset_cover_const hcovers'
   · rw [hdensity, mul_inv_eq_one₀ (Nat.cast_ne_zero.mpr hD.finiteIndex),
@@ -343,7 +343,7 @@ theorem exists_index_le_card_of_leftCoset_cover :
     | inr hindex =>
       exact inv_lt_inv_of_lt (by exact_mod_cast hs') (by exact_mod_cast h i hi ⟨hindex⟩)
   apply (Finset.sum_lt_sum_of_nonempty hs hlt).trans_eq
-  rw [Finset.sum_const, nsmul_eq_mul, mul_inv_cancel (Nat.cast_ne_zero.mpr hs'.ne')]
+  rw [Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr hs'.ne')]
 
 end
 

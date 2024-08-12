@@ -55,7 +55,7 @@ instance : Group (MulAut M) where
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
-  mul_left_inv := MulEquiv.self_trans_symm
+  inv_mul_cancel := MulEquiv.self_trans_symm
 
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
@@ -125,8 +125,8 @@ def conj [Group G] : G →* MulAut G where
   toFun g :=
     { toFun := fun h => g * h * g⁻¹
       invFun := fun h => g⁻¹ * h * g
-      left_inv := fun _ => by simp only [mul_assoc, inv_mul_cancel_left, mul_left_inv, mul_one]
-      right_inv := fun _ => by simp only [mul_assoc, mul_inv_cancel_left, mul_right_inv, mul_one]
+      left_inv := fun _ => by simp only [mul_assoc, inv_mul_cancel_left, inv_mul_cancel, mul_one]
+      right_inv := fun _ => by simp only [mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
       map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
   map_mul' g₁ g₂ := by
     ext h
@@ -162,7 +162,7 @@ instance group : Group (AddAut A) where
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
-  mul_left_inv := AddEquiv.self_trans_symm
+  inv_mul_cancel := AddEquiv.self_trans_symm
 
 instance : Inhabited (AddAut A) :=
   ⟨1⟩
@@ -233,8 +233,10 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
       { toFun := fun h => g + h + -g
         -- this definition is chosen to match `MulAut.conj`
         invFun := fun h => -g + h + g
-        left_inv := fun _ => by simp only [add_assoc, neg_add_cancel_left, add_left_neg, add_zero]
-        right_inv := fun _ => by simp only [add_assoc, add_neg_cancel_left, add_right_neg, add_zero]
+        left_inv := fun _ => by
+          simp only [add_assoc, neg_add_cancel_left, neg_add_cancel, add_zero]
+        right_inv := fun _ => by
+          simp only [add_assoc, add_neg_cancel_left, add_neg_cancel, add_zero]
         map_add' := by simp only [add_assoc, neg_add_cancel_left, forall_const] }
   map_add' g₁ g₂ := by
     apply Additive.toMul.injective; ext h
