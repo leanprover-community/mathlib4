@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Damiano Testa. All rights reserved.
+Copyright (c) 2024 Adomas Baliuka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Adomas Baliuka
 -/
@@ -23,7 +23,7 @@ namespace Mathlib.Linter.admit
 
 /-- The admit linter emits a warning on usages of `admit`. -/
 register_option linter.admit : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the admit linter"
 }
 
