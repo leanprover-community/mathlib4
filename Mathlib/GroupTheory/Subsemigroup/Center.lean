@@ -23,6 +23,8 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
   [cabreragarciarodriguezpalacios2014]
 -/
 
+-- Guard against import creep
+assert_not_exists Finset
 
 -- Guard against import creep
 assert_not_exists Finset

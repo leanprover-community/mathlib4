@@ -20,7 +20,6 @@ This file deals with the factors of natural numbers.
 
 -/
 
-
 assert_not_exists Multiset
 
 open Bool Subtype

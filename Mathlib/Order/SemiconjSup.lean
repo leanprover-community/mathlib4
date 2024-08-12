@@ -31,6 +31,8 @@ homeomorphisms of the circle, so in order to apply results from this file one ha
 homeomorphisms to the real line first.
 -/
 
+-- Guard against import creep
+assert_not_exists Finset
 
 -- Guard against import creep
 assert_not_exists Finset

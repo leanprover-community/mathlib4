@@ -16,6 +16,7 @@ Further results on bases in modules and vector spaces.
 
 -/
 
+assert_not_exists Ordinal
 
 assert_not_exists Ordinal
 

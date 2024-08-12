@@ -109,11 +109,13 @@ theorem bijective_toDualRight_symm_toDualLeft :
   Bijective.comp (LinearEquiv.bijective p.toDualRight.symm.dualMap)
     (LinearEquiv.bijective p.toDualLeft)
 
+include p in
 theorem reflexive_left : IsReflexive R M where
   bijective_dual_eval' := by
     rw [← p.toDualRight_symm_comp_toDualLeft]
     exact p.bijective_toDualRight_symm_toDualLeft
 
+include p in
 theorem reflexive_right : IsReflexive R N :=
   p.flip.reflexive_left
 
@@ -146,6 +148,7 @@ lemma symm_flip : e.flip.symm = e.symm.dualMap.trans (evalEquiv R M).symm := rfl
 lemma trans_dualMap_symm_flip : e.trans e.flip.symm.dualMap = Dual.eval R N := by
   ext; simp [symm_flip]
 
+include e in
 /-- If `N` is in perfect pairing with `M`, then it is reflexive. -/
 lemma isReflexive_of_equiv_dual_of_isReflexive : IsReflexive R N := by
   constructor

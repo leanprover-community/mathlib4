@@ -29,6 +29,8 @@ while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
 
+-- Guard against import creep
+assert_not_exists Multiset
 
 -- Guard against import creep
 assert_not_exists Multiset
@@ -1358,6 +1360,7 @@ end WithTop
 namespace Monotone
 
 variable [Preorder α] [ConditionallyCompleteLattice β] {f : α → β} (h_mono : Monotone f)
+include h_mono
 
 /-! A monotone function into a conditionally complete lattice preserves the ordering properties of
 `sSup` and `sInf`. -/

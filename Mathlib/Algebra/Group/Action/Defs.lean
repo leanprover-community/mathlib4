@@ -464,10 +464,10 @@ section Group
 variable [Group G] [MulAction G α] {g : G} {a b : α}
 
 @[to_additive (attr := simp)]
-lemma inv_smul_smul (g : G) (a : α) : g⁻¹ • g • a = a := by rw [smul_smul, mul_left_inv, one_smul]
+lemma inv_smul_smul (g : G) (a : α) : g⁻¹ • g • a = a := by rw [smul_smul, inv_mul_cancel, one_smul]
 
 @[to_additive (attr := simp)]
-lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smul, mul_right_inv, one_smul]
+lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smul, mul_inv_cancel, one_smul]
 
 @[to_additive] lemma inv_smul_eq_iff : g⁻¹ • a = b ↔ a = g • b :=
   ⟨fun h ↦ by rw [← h, smul_inv_smul], fun h ↦ by rw [h, inv_smul_smul]⟩
@@ -489,7 +489,7 @@ end Mul
 variable [Group H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H]
 
 lemma smul_inv (g : G) (a : H) : (g • a)⁻¹ = g⁻¹ • a⁻¹ :=
-  inv_eq_of_mul_eq_one_right $ by rw [smul_mul_smul, mul_right_inv, mul_right_inv, one_smul]
+  inv_eq_of_mul_eq_one_right $ by rw [smul_mul_smul, mul_inv_cancel, mul_inv_cancel, one_smul]
 
 lemma smul_zpow (g : G) (a : H) (n : ℤ) : (g • a) ^ n = g ^ n • a ^ n := by
   cases n <;> simp [smul_pow, smul_inv]

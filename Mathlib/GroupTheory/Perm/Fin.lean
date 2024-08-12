@@ -12,6 +12,7 @@ import Mathlib.Logic.Equiv.Fintype
 # Permutations of `Fin n`
 -/
 
+assert_not_exists LinearMap
 
 assert_not_exists LinearMap
 

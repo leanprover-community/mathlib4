@@ -35,6 +35,7 @@ equals the number of real roots plus the number of roots not fixed by complex co
 
 -/
 
+assert_not_exists Real
 
 assert_not_exists Real
 
