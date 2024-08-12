@@ -478,8 +478,21 @@ theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : de
 
 end
 
-/-! ### Fixed points of addition -/
+@[simp]
+theorem nfp_zero : nfp 0 = id := by
+  ext a
+  rw [← sup_iterate_eq_nfp]
+  refine (sup_le fun n => ?_).antisymm (le_sup (fun n => 0^[n] a) 0)
+  induction' n with n _
+  · rfl
+  rw [Function.iterate_succ']
+  exact Ordinal.zero_le a
 
+@[simp]
+theorem deriv_zero' : deriv 0 = id :=
+  deriv_eq_id_of_nfp_eq_id nfp_zero
+
+/-! ### Fixed points of addition -/
 
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
@@ -537,27 +550,14 @@ theorem nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by
   induction' n with n hn; · rfl
   dsimp only; rwa [iterate_succ_apply, mul_zero]
 
-@[simp]
-theorem nfp_zero_mul : nfp (0 * ·) = id := by
-  ext a
-  rw [← sup_iterate_eq_nfp]
-  refine (sup_le fun n => ?_).antisymm (le_sup (fun n => (0 * ·)^[n] a) 0)
-  induction' n with n _
-  · rfl
-  rw [Function.iterate_succ']
-  change 0 * _ ≤ a
-  rw [zero_mul]
-  exact Ordinal.zero_le a
-
-@[simp]
-theorem deriv_mul_zero : deriv (0 * ·) = id :=
-  deriv_eq_id_of_nfp_eq_id nfp_zero_mul
-
 theorem nfp_mul_eq_opow_omega {a b : Ordinal} (hb : 0 < b) (hba : b ≤ (a^omega)) :
     nfp (a * ·) b = (a^omega.{u}) := by
   rcases eq_zero_or_pos a with ha | ha
   · rw [ha, zero_opow omega_ne_zero] at hba ⊢
-    rw [Ordinal.le_zero.1 hba, nfp_zero_mul]
+    rw [Ordinal.le_zero.1 hba]
+    convert congr_fun nfp_zero 0
+    ext
+    rw [zero_mul]
     rfl
   apply le_antisymm
   · apply nfp_le_fp (mul_isNormal ha).monotone hba
