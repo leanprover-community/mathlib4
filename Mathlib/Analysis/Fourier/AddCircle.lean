@@ -123,7 +123,7 @@ theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
 
 -- @[simp] -- Porting note: simp normal form is `fourier_zero'`
 theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
-  induction x using QuotientAddGroup.induction_on'
+  induction x using QuotientAddGroup.induction_on
   simp only [fourier_coe_apply]
   norm_num
 
@@ -142,7 +142,7 @@ theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fouri
 
 -- @[simp] -- Porting note: simp normal form is `fourier_neg'`
 theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier n x) := by
-  induction x using QuotientAddGroup.induction_on'
+  induction x using QuotientAddGroup.induction_on
   simp_rw [fourier_apply, toCircle]
   rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_zsmul]
   simp_rw [Function.Periodic.lift_coe, ← coe_inv_circle_eq_conj, ← expMapCircle_neg,
@@ -243,7 +243,7 @@ theorem coeFn_fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) :
 theorem span_fourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p ≠ ∞) :
     (span ℂ (range (@fourierLp T _ p _))).topologicalClosure = ⊤ := by
   convert
-    (ContinuousMap.toLp_denseRange ℂ (@haarAddCircle T hT) hp ℂ).topologicalClosure_map_submodule
+    (ContinuousMap.toLp_denseRange ℂ (@haarAddCircle T hT) ℂ hp).topologicalClosure_map_submodule
       span_fourier_closure_eq_top
   erw [map_span, range_comp]
   simp only [ContinuousLinearMap.coe_coe]
@@ -255,7 +255,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   rw [ContinuousMap.inner_toLp (@haarAddCircle T hT) (fourier i) (fourier j)]
   simp_rw [← fourier_neg, ← fourier_add]
   split_ifs with h
-  · simp_rw [h, neg_add_self]
+  · simp_rw [h, neg_add_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
     rw [this, integral_const, measure_univ, ENNReal.one_toReal, Complex.real_smul,
       Complex.ofReal_one, mul_one]

@@ -17,6 +17,10 @@ See also `MeasureTheory.Function.SpecialFunctions.Arctan` and
 `MeasureTheory.Function.SpecialFunctions.Inner`, which have been split off to minimize imports.
 -/
 
+-- Guard against import creep:
+assert_not_exists InnerProductSpace
+assert_not_exists Real.arctan
+assert_not_exists FiniteDimensional.proper
 
 noncomputable section
 
@@ -223,8 +227,3 @@ instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
     exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const
 
 end PowInstances
-
--- Guard against import creep:
-assert_not_exists InnerProductSpace
-assert_not_exists Real.arctan
-assert_not_exists FiniteDimensional.proper

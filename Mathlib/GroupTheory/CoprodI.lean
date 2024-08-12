@@ -3,11 +3,9 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
-import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 
@@ -238,14 +236,14 @@ theorem inv_def (x : CoprodI G) :
   rfl
 
 instance : Group (CoprodI G) :=
-  { mul_left_inv := by
+  { inv_mul_cancel := by
       intro m
       rw [inv_def]
       induction m using CoprodI.induction_on with
       | h_one => rw [MonoidHom.map_one, MulOpposite.unop_one, one_mul]
       | h_of m ih =>
         change of _⁻¹ * of _ = 1
-        rw [← of.map_mul, mul_left_inv, of.map_one]
+        rw [← of.map_mul, inv_mul_cancel, of.map_one]
       | h_mul x y ihx ihy =>
         rw [MonoidHom.map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
           ihy] }
@@ -359,7 +357,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
         heq_iff_eq, ← Subtype.ext_iff_val] using he
     rcases this with ⟨rfl, h⟩
     congr
-    exact Word.ext _ _ h
+    exact Word.ext h
 
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
@@ -528,7 +526,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
       intro hm1
       split_ifs with h
       · rcases h with ⟨hnil, rfl⟩
-        simp only [List.head?_eq_head _ hnil, Option.some.injEq, ne_eq]
+        simp only [List.head?_eq_head hnil, Option.some.injEq, ne_eq]
         constructor
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
@@ -607,7 +605,7 @@ def equiv : CoprodI M ≃ Word M where
       rw [prod_smul, mul_smul, ih]
 
 instance : DecidableEq (Word M) :=
-  Function.Injective.decidableEq Word.ext
+  Function.Injective.decidableEq fun _ _ => Word.ext
 
 instance : DecidableEq (CoprodI M) :=
   Equiv.decidableEq Word.equiv
@@ -639,7 +637,7 @@ def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
 theorem toList_ne_nil {i j} (w : NeWord M i j) : w.toList ≠ List.nil := by
   induction w
   · rintro ⟨rfl⟩
-  · apply List.append_ne_nil_of_ne_nil_left
+  · apply List.append_ne_nil_of_left_ne_nil
     assumption
 
 /-- The first letter of a `NeWord` -/
@@ -660,7 +658,7 @@ theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.head?_append (by assumption)
+  · exact List.mem_head?_append_of_mem_head? (by assumption)
 
 @[simp]
 theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
@@ -668,7 +666,7 @@ theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.so
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.getLast?_append (by assumption)
+  · exact List.mem_getLast?_append_of_mem_getLast? (by assumption)
 
 /-- The `Word M` represented by a `NeWord M i j` -/
 def toWord {i j} (w : NeWord M i j) : Word M where
@@ -1014,7 +1012,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     have hnne0 : n ≠ 0 := by
       rintro rfl
       apply hne1
-      simp [H]; rfl
+      simp [H, FreeGroup.freeGroupUnitEquivInt]
     clear hne1
     simp only [X']
     -- Positive and negative powers separately

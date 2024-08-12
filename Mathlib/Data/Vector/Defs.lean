@@ -6,8 +6,6 @@ Authors: Leonardo de Moura
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Tactic.Common
 
-
-
 /-!
 The type `Vector` represents lists with fixed length.
 -/

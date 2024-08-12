@@ -145,7 +145,7 @@ theorem coe_ideal_span_singleton_div_self {x : R₁} (hx : x ≠ 0) :
 
 theorem spanSingleton_mul_inv {x : K} (hx : x ≠ 0) :
     spanSingleton R₁⁰ x * (spanSingleton R₁⁰ x)⁻¹ = 1 := by
-  rw [spanSingleton_inv, spanSingleton_mul_spanSingleton, mul_inv_cancel hx, spanSingleton_one]
+  rw [spanSingleton_inv, spanSingleton_mul_spanSingleton, mul_inv_cancel₀ hx, spanSingleton_one]
 
 theorem coe_ideal_span_singleton_mul_inv {x : R₁} (hx : x ≠ 0) :
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K) *
@@ -167,7 +167,7 @@ theorem mul_generator_self_inv {R₁ : Type*} [CommRing R₁] [Algebra R₁ K] [
     I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1 := by
   -- Rewrite only the `I` that appears alone.
   conv_lhs => congr; rw [eq_spanSingleton_of_principal I]
-  rw [spanSingleton_mul_spanSingleton, mul_inv_cancel, spanSingleton_one]
+  rw [spanSingleton_mul_spanSingleton, mul_inv_cancel₀, spanSingleton_one]
   intro generator_I_eq_zero
   apply h
   rw [eq_spanSingleton_of_principal I, generator_I_eq_zero, spanSingleton_zero]
@@ -366,7 +366,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
   -- Then in fact there is a `P ∈ Z` with `P ≤ M`.
   obtain ⟨P, hPZ, rfl⟩ := Multiset.mem_map.mp hPZ'
   classical
-    have := Multiset.map_erase PrimeSpectrum.asIdeal PrimeSpectrum.ext P Z
+    have := Multiset.map_erase PrimeSpectrum.asIdeal (fun _ _ => PrimeSpectrum.ext) P Z
     obtain ⟨hP0, hZP0⟩ : P.asIdeal ≠ ⊥ ∧ ((Z.erase P).map PrimeSpectrum.asIdeal).prod ≠ ⊥ := by
       rwa [Ne, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
         this] at hprodZ
@@ -416,7 +416,7 @@ lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
       exact Submodule.smul_mem_smul h_Iy hbZ
     rw [Ideal.mem_span_singleton'] at h_yb
     rcases h_yb with ⟨c, hc⟩
-    rw [← hc, RingHom.map_mul, mul_assoc, mul_inv_cancel hnz_fa, mul_one]
+    rw [← hc, RingHom.map_mul, mul_assoc, mul_inv_cancel₀ hnz_fa, mul_one]
     apply coe_mem_one
   · refine mt (mem_one_iff _).mp ?_
     rintro ⟨x', h₂_abs⟩
@@ -498,7 +498,7 @@ protected theorem mul_inv_cancel [IsDedekindDomain A] {I : FractionalIdeal A⁰ 
     exact ⟨spanSingleton A⁰ (algebraMap _ _ a) * (J : FractionalIdeal A⁰ K)⁻¹, h₂⟩
   subst hJ
   rw [mul_assoc, mul_left_comm (J : FractionalIdeal A⁰ K), coe_ideal_mul_inv, mul_one,
-    spanSingleton_mul_spanSingleton, inv_mul_cancel, spanSingleton_one]
+    spanSingleton_mul_spanSingleton, inv_mul_cancel₀, spanSingleton_one]
   · exact mt ((injective_iff_map_eq_zero (algebraMap A K)).mp (IsFractionRing.injective A K) _) ha
   · exact coeIdeal_ne_zero.mp (right_ne_zero_of_mul hne)
 
@@ -588,11 +588,11 @@ theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
     have hI' : (I : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr hI
     have : (I : FractionalIdeal A⁰ (FractionRing A))⁻¹ * J ≤ 1 :=
       le_trans (mul_left_mono (↑I)⁻¹ ((coeIdeal_le_coeIdeal _).mpr h))
-        (le_of_eq (inv_mul_cancel hI'))
+        (le_of_eq (inv_mul_cancel₀ hI'))
     obtain ⟨H, hH⟩ := le_one_iff_exists_coeIdeal.mp this
     use H
     refine coeIdeal_injective (show (J : FractionalIdeal A⁰ (FractionRing A)) = ↑(I * H) from ?_)
-    rw [coeIdeal_mul, hH, ← mul_assoc, mul_inv_cancel hI', one_mul]⟩
+    rw [coeIdeal_mul, hH, ← mul_assoc, mul_inv_cancel₀ hI', one_mul]⟩
 
 theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
   ⟨fun ⟨hI, H, hunit, hmul⟩ =>
@@ -851,20 +851,19 @@ section IsDedekindDomain
 
 variable {T : Type*} [CommRing T] [IsDedekindDomain T] {I J : Ideal T}
 
-open scoped Classical
-
 open Multiset UniqueFactorizationMonoid Ideal
 
 theorem prod_normalizedFactors_eq_self (hI : I ≠ ⊥) : (normalizedFactors I).prod = I :=
   associated_iff_eq.1 (normalizedFactors_prod hI)
 
-theorem count_le_of_ideal_ge {I J : Ideal T} (h : I ≤ J) (hI : I ≠ ⊥) (K : Ideal T) :
+theorem count_le_of_ideal_ge [DecidableEq (Ideal T)]
+    {I J : Ideal T} (h : I ≤ J) (hI : I ≠ ⊥) (K : Ideal T) :
     count K (normalizedFactors J) ≤ count K (normalizedFactors I) :=
   le_iff_count.1 ((dvd_iff_normalizedFactors_le_normalizedFactors (ne_bot_of_le_ne_bot hI h) hI).1
     (dvd_iff_le.2 h))
     _
 
-theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
+theorem sup_eq_prod_inf_factors [DecidableEq (Ideal T)] (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     I ⊔ J = (normalizedFactors I ∩ normalizedFactors J).prod := by
   have H : normalizedFactors (normalizedFactors I ∩ normalizedFactors J).prod =
       normalizedFactors I ∩ normalizedFactors J := by
@@ -892,21 +891,24 @@ theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     · exact ne_bot_of_le_ne_bot hI le_sup_left
     · exact this
 
-theorem irreducible_pow_sup (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
+theorem irreducible_pow_sup [DecidableEq (Ideal T)](hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
     J ^ n ⊔ I = J ^ min ((normalizedFactors I).count J) n := by
   rw [sup_eq_prod_inf_factors (pow_ne_zero n hJ.ne_zero) hI, min_comm,
     normalizedFactors_of_irreducible_pow hJ, normalize_eq J, replicate_inter, prod_replicate]
 
-theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : ↑n ≤ multiplicity J I) :
+theorem irreducible_pow_sup_of_le [DecidableRel fun (x : Ideal T) x_1 ↦ x ∣ x_1]
+    (hJ : Irreducible J) (n : ℕ) (hn : ↑n ≤ multiplicity J I) :
     J ^ n ⊔ I = J ^ n := by
+  classical
   by_cases hI : I = ⊥
   · simp_all
   rw [irreducible_pow_sup hI hJ, min_eq_right]
   rwa [multiplicity_eq_count_normalizedFactors hJ hI, PartENat.coe_le_coe, normalize_eq J] at hn
 
-theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
-    (hn : multiplicity J I ≤ n) :
+theorem irreducible_pow_sup_of_ge [DecidableRel fun (x : Ideal T) x_1 ↦ x ∣ x_1]
+    (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) (hn : multiplicity J I ≤ n) :
     J ^ n ⊔ I = J ^ (multiplicity J I).get (PartENat.dom_of_le_natCast hn) := by
+  classical
   rw [irreducible_pow_sup hI hJ, min_eq_left]
   · congr
     rw [← PartENat.natCast_inj, PartENat.natCast_get,
@@ -1437,7 +1439,7 @@ theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) 
   rw [multiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
     multiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
     normUnit_eq_one, Units.val_one, one_eq_top, mul_top, Nat.cast_inj] at this
-  simp only [normalize_apply, this]
+  · simp only [normalize_apply, this]
   · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
   · simpa only [prime_span_singleton_iff]
 

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Condensed.Light.TopComparison
+import Mathlib.Topology.Category.Sequential
+import Mathlib.Topology.Category.LightProfinite.Sequence
 /-!
 
 # The adjunction between light condensed sets and topological spaces
@@ -11,11 +13,14 @@ import Mathlib.Condensed.Light.TopComparison
 This file defines the functor `lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u}` which is
 left adjoint to `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`. We prove that the counit
 is bijective (but not in general an isomorphism) and conclude that the right adjoint is faithful.
+
+The counit is an isomorphism for sequential spaces, and we conclude that the functor
+`topCatToLightCondSet` is fully faithful when restricted to sequential spaces.
 -/
 
 universe u
 
-open LightCondensed LightCondSet CategoryTheory
+open LightCondensed LightCondSet CategoryTheory LightProfinite
 
 attribute [local instance] ConcreteCategory.instFunLike
 
@@ -44,6 +49,13 @@ local instance underlyingTopologicalSpace :
 /-- The object part of the functor `LightCondSet ⥤ TopCat`  -/
 def toTopCat : TopCat.{u} := TopCat.of (X.val.obj ⟨LightProfinite.of PUnit⟩)
 
+lemma continuous_coinducingCoprod {S : LightProfinite.{u}} (x : X.val.obj ⟨S⟩) :
+    Continuous fun a ↦ (X.coinducingCoprod ⟨⟨S, x⟩, a⟩) := by
+  suffices ∀ (i : (T : LightProfinite.{u}) × X.val.obj ⟨T⟩),
+      Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
+  rw [← continuous_sigma_iff]
+  apply continuous_coinduced_rng
+
 variable {X} {Y : LightCondSet} (f : X ⟶ Y)
 
 /-- The map part of the functor `LightCondSet ⥤ TopCat`  -/
@@ -59,10 +71,7 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat where
         (fun (a : S) ↦ Y.val.map (S.const a).op (f.val.app ⟨S⟩ x)) :=
       funext fun a ↦ NatTrans.naturality_apply f.val (S.const a).op x
     rw [this]
-    suffices ∀ (i : (T : LightProfinite.{u}) × Y.val.obj ⟨T⟩),
-        Continuous (fun (a : i.fst) ↦ Y.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
-    rw [← continuous_sigma_iff]
-    apply continuous_coinduced_rng
+    exact continuous_coinducingCoprod _ _
 
 /-- The functor `LightCondSet ⥤ TopCat`  -/
 @[simps]
@@ -103,7 +112,7 @@ def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSe
         apply continuous_coinduced_rng }
     naturality := fun _ _ _ ↦ by
       ext
-      simp only [types_comp_apply, ContinuousMap.coe_mk, TopCat.toCondensedSet_val_map,
+      simp only [types_comp_apply, ContinuousMap.coe_mk, TopCat.toLightCondSet_val_map,
         ContinuousMap.comp_apply, ← FunctorToTypes.map_comp_apply]
       rfl }
 
@@ -122,5 +131,83 @@ instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
   exact (topCatAdjunctionCounit_bijective _).2
 
 instance : topCatToLightCondSet.Faithful := topCatAdjunction.faithful_R_of_epi_counit_app
+
+open Sequential
+
+instance (X : LightCondSet.{u}) : SequentialSpace X.toTopCat := by
+  apply SequentialSpace.coinduced
+
+instance (X : LightCondSet.{u}) : SequentialSpace (lightCondSetToTopCat.obj X) :=
+  inferInstanceAs (SequentialSpace X.toTopCat)
+
+/-- The functor from light condensed sets to topological spaces lands in sequential spaces. -/
+def lightCondSetToSequential : LightCondSet.{u} ⥤ Sequential.{u} where
+  obj X := Sequential.of (lightCondSetToTopCat.obj X)
+  map f := toTopCatMap f
+
+/--
+The functor from topological spaces to light condensed sets restricted to sequential spaces.
+-/
+noncomputable def sequentialToLightCondSet :
+    Sequential.{u} ⥤ LightCondSet.{u} :=
+  sequentialToTop ⋙ topCatToLightCondSet
+
+/--
+The adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` restricted to sequential
+spaces.
+-/
+noncomputable def sequentialAdjunction :
+    lightCondSetToSequential ⊣ sequentialToLightCondSet :=
+  topCatAdjunction.restrictFullyFaithful (iC := 𝟭 _) (iD := sequentialToTop)
+    (Functor.FullyFaithful.id _) fullyFaithfulSequentialToTop
+    (Iso.refl _) (Iso.refl _)
+
+/--
+The counit of the adjunction `lightCondSetToSequential ⊣ sequentialToLightCondSet`
+is a homeomorphism.
+
+Note: for now, we only have `ℕ∪{∞}` as a light profinite set at universe level 0, which is why we
+can only prove this for `X : TopCat.{0}`.
+-/
+def sequentialAdjunctionHomeo (X : TopCat.{0}) [SequentialSpace X] :
+    X.toLightCondSet.toTopCat ≃ₜ X where
+  toEquiv := topCatAdjunctionCounitEquiv X
+  continuous_toFun := (topCatAdjunctionCounit X).continuous
+  continuous_invFun := by
+    apply SeqContinuous.continuous
+    unfold SeqContinuous
+    intro f p h
+    let g := (topCatAdjunctionCounitEquiv X).invFun ∘ (OnePoint.continuousMapMkNat f p h)
+    change Filter.Tendsto (fun n : ℕ ↦ g n) _ _
+    erw [← OnePoint.continuous_iff_from_nat]
+    let x : X.toLightCondSet.val.obj ⟨(ℕ∪{∞})⟩ := OnePoint.continuousMapMkNat f p h
+    exact continuous_coinducingCoprod X.toLightCondSet x
+
+/--
+The counit of the adjunction `lightCondSetToSequential ⊣ sequentialToLightCondSet`
+is an isomorphism.
+
+Note: for now, we only have `ℕ∪{∞}` as a light profinite set at universe level 0, which is why we
+can only prove this for `X : Sequential.{0}`.
+-/
+noncomputable def sequentialAdjunctionCounitIso (X : Sequential.{0}) :
+    lightCondSetToSequential.obj (sequentialToLightCondSet.obj X) ≅ X :=
+  isoOfHomeo (sequentialAdjunctionHomeo X.toTop)
+
+instance : IsIso sequentialAdjunction.{0}.counit := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro X
+  exact inferInstanceAs (IsIso (sequentialAdjunctionCounitIso X).hom)
+
+/--
+The functor from topological spaces to light condensed sets restricted to sequential spaces
+is fully faithful.
+
+Note: for now, we only have `ℕ∪{∞}` as a light profinite set at universe level 0, which is why we
+can only prove this for the functor `Sequential.{0} ⥤ LightCondSet.{0}`.
+-/
+noncomputable def fullyFaithfulSequentialToLightCondSet :
+    sequentialToLightCondSet.{0}.FullyFaithful :=
+  sequentialAdjunction.fullyFaithfulROfIsIsoCounit
 
 end LightCondSet

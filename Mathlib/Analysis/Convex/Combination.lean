@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Yury Kudriashov. All rights reserved.
+Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudriashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Analysis.Convex.Hull
@@ -60,10 +60,10 @@ theorem Finset.centerMass_insert (ha : i ∉ t) (hw : ∑ j ∈ t, w j ≠ 0) :
         ((∑ j ∈ t, w j) / (w i + ∑ j ∈ t, w j)) • t.centerMass w z := by
   simp only [centerMass, sum_insert ha, smul_add, (mul_smul _ _ _).symm, ← div_eq_inv_mul]
   congr 2
-  rw [div_mul_eq_mul_div, mul_inv_cancel hw, one_div]
+  rw [div_mul_eq_mul_div, mul_inv_cancel₀ hw, one_div]
 
 theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerMass w z = z i := by
-  rw [centerMass, sum_singleton, sum_singleton, ← mul_smul, inv_mul_cancel hw, one_smul]
+  rw [centerMass, sum_singleton, sum_singleton, ← mul_smul, inv_mul_cancel₀ hw, one_smul]
 
 @[simp] lemma Finset.centerMass_neg_left : t.centerMass (-w) z = t.centerMass w z := by
   simp [centerMass, inv_neg]
@@ -163,7 +163,7 @@ theorem Convex.centerMass_mem (hs : Convex R s) :
     have wz : ∑ j ∈ t, w j • z j = 0 := sum_eq_zero fun i hi => by simp [ws i hi]
     simp only [centerMass, sum_insert hi, wz, hsum_t, add_zero]
     simp only [hsum_t, add_zero] at hpos
-    rw [← mul_smul, inv_mul_cancel (ne_of_gt hpos), one_smul]
+    rw [← mul_smul, inv_mul_cancel₀ (ne_of_gt hpos), one_smul]
     exact zi
   · rw [Finset.centerMass_insert _ _ _ hi hsum_t]
     refine convex_iff_div.1 hs zi (ht hs₀ ?_ ?_) ?_ (sum_nonneg hs₀) hpos
@@ -262,7 +262,7 @@ theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
   apply s.centerMass_id_mem_convexHull
   · simp only [inv_nonneg, imp_true_iff, Nat.cast_nonneg, Finset.centroidWeights_apply]
   · have hs_card : (s.card : R) ≠ 0 := by simp [Finset.nonempty_iff_ne_empty.mp hs]
-    simp only [hs_card, Finset.sum_const, nsmul_eq_mul, mul_inv_cancel, Ne, not_false_iff,
+    simp only [hs_card, Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀, Ne, not_false_iff,
       Finset.centroidWeights_apply, zero_lt_one]
 
 theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull R (range v) =
@@ -424,8 +424,7 @@ theorem convexHull_prod (s : Set E) (t : Set F) :
     prod_subset_iff.2 fun _ hx _ => mk_mem_convexHull_prod hx
 
 theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + convexHull R t := by
-  simp_rw [← image2_add, ← image_prod, ← IsLinearMap.isLinearMap_add.image_convexHull,
-    convexHull_prod]
+  simp_rw [← add_image_prod, ← IsLinearMap.isLinearMap_add.image_convexHull, convexHull_prod]
 
 variable (R E)
 
@@ -549,13 +548,14 @@ lemma AffineIndependent.convexHull_inter' (hs : AffineIndependent R ((↑) : ↑
 end
 
 section pi
-variable {𝕜 ι : Type*} {E : ι → Type*} [Fintype ι] [LinearOrderedField 𝕜]
+variable {𝕜 ι : Type*} {E : ι → Type*} [Finite ι] [LinearOrderedField 𝕜]
   [Π i, AddCommGroup (E i)] [Π i, Module 𝕜 (E i)] {s : Set ι} {t : Π i, Set (E i)} {x : Π i, E i}
 
 open Finset Fintype
 
 lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈ convexHull 𝕜 (s.pi t) := by
-  wlog hs : s = Set.univ
+  cases nonempty_fintype ι
+  wlog hs : s = Set.univ generalizing s t
   · rw [← pi_univ_ite]
     refine this (fun i _ ↦ ?_) rfl
     split_ifs with hi

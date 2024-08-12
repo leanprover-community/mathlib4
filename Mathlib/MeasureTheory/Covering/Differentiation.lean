@@ -143,6 +143,12 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
     _ ≤ ν U := (measure_mono (iUnion_subset fun i => (h.covering_mem i.2).2))
     _ ≤ ν s + ε := νU
 
+theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIntegrable f μ) :
+    ∀ᶠ a in v.filterAt x, IntegrableOn f a μ := by
+  rcases hf x with ⟨w, w_nhds, hw⟩
+  filter_upwards [v.eventually_filterAt_subset_of_nhds w_nhds] with a ha
+  exact hw.mono_set ha
+
 section
 
 variable [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ] {ρ : Measure α}
@@ -870,12 +876,6 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div {f : α → E} (hf : LocallyIntegrab
   congr 1
   refine setLIntegral_congr_fun h'a (eventually_of_forall (fun y hy ↦ ?_))
   rw [indicator_of_mem (ha hy) f, indicator_of_mem hn f]
-
-theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIntegrable f μ) :
-    ∀ᶠ a in v.filterAt x, IntegrableOn f a μ := by
-  rcases hf x with ⟨w, w_nhds, hw⟩
-  filter_upwards [v.eventually_filterAt_subset_of_nhds w_nhds] with a ha
-  exact hw.mono_set ha
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `‖f y - f x‖` on `a` tends to `0` as `a` shrinks to `x` along a Vitali family. -/

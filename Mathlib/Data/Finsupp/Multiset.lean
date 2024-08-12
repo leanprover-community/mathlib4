@@ -10,10 +10,10 @@ import Mathlib.Data.Finsupp.Order
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
 
 This defines `Finsupp.toMultiset` the equivalence between `α →₀ ℕ` and `Multiset α`, along
-with `Multiset.toFinsupp` the reverse equivalence and `Finsupp.orderIsoMultiset` the equivalence
-promoted to an order isomorphism.
--/
+with `Multiset.toFinsupp` the reverse equivalence and `Finsupp.orderIsoMultiset` (the equivalence
+promoted to an order isomorphism).
 
+-/
 
 open Finset
 
@@ -147,7 +147,7 @@ theorem toFinsupp_apply (s : Multiset α) (a : α) : toFinsupp s a = s.count a :
 theorem toFinsupp_zero : toFinsupp (0 : Multiset α) = 0 := _root_.map_zero _
 
 theorem toFinsupp_add (s t : Multiset α) : toFinsupp (s + t) = toFinsupp s + toFinsupp t :=
-  toFinsupp.map_add s t
+  _root_.map_add toFinsupp s t
 
 @[simp]
 theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 := by

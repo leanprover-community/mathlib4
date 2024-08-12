@@ -6,7 +6,7 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -263,7 +263,7 @@ end Prod
 
 /-- The binary coproduct cofan in `TopCat`. -/
 protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
-  BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (Sum X Y)) ⟨Sum.inr, by continuity⟩
+  BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (X ⊕ Y)) ⟨Sum.inr, by continuity⟩
 
 /-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by

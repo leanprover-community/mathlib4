@@ -674,6 +674,13 @@ theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
 -- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_symm_mk' (x : R) (y : M) : (algEquiv M S Q).symm (mk' Q x y) = mk' S x y := by simp
 
+variable (M) in
+protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebraMap R Q) :
+    Function.Bijective f :=
+  (show f = IsLocalization.algEquiv M S Q by
+    apply IsLocalization.ringHom_ext M; rw [hf]; ext; simp) ▸
+    (IsLocalization.algEquiv M S Q).toEquiv.bijective
+
 end AlgEquiv
 
 section at_units
@@ -1083,7 +1090,9 @@ section
 variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable (S Rₘ Sₘ)
 
-theorem IsLocalization.map_units_map_submonoid (y : M) : IsUnit (algebraMap R Sₘ y) := by
+theorem IsLocalization.map_units_map_submonoid
+    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ] (y : M) :
+    IsUnit (algebraMap R Sₘ y) := by
   rw [IsScalarTower.algebraMap_apply _ S]
   exact IsLocalization.map_units Sₘ ⟨algebraMap R S y, Algebra.mem_algebraMapSubmonoid_of_mem y⟩
 
