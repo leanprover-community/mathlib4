@@ -240,6 +240,7 @@ theorem comp_rightAdjointMate {X Y Z : C} [HasRightDual X] [HasRightDual Y] [Has
     _ = η_ X Xᘁ ≫ f ▷ Xᘁ ≫ g ▷ Xᘁ := by
       rw [evaluation_coevaluation'']; coherence
 
+set_option maxHeartbeats 0 in
 /-- The composition of left adjoint mates is the adjoint mate of the composition. -/
 @[reassoc]
 theorem comp_leftAdjointMate {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] [HasLeftDual Z] {f : X ⟶ Y}

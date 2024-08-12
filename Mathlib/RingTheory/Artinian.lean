@@ -525,6 +525,7 @@ noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : {I : Ideal R | I.IsMax
 
 instance [IsReduced R] : DecompositionMonoid R := MulEquiv.decompositionMonoid (equivPi R)
 
+set_option synthInstance.maxHeartbeats 0 in
 instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
   MulEquiv.decompositionMonoid <| (Polynomial.mapEquiv <| equivPi R).trans (Polynomial.piEquiv _)
 

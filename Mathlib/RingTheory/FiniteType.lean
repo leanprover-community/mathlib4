@@ -645,6 +645,7 @@ end MonoidAlgebra
 
 section Orzech
 
+set_option maxHeartbeats 0 in
 open Submodule Module Module.Finite in
 /-- Any commutative ring `R` satisfies the `OrzechProperty`, that is, for any finitely generated
 `R`-module `M`, any surjective homomorphism `f : N →ₗ[R] M` from a submodule `N` of `M` to `M`
