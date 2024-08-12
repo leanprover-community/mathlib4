@@ -111,7 +111,7 @@ variable [AddMonoidWithOne R] [CharZero R]
   (ofNat_ne_one n).symm
 
 lemma ofNat_eq_ofNat {m n : ℕ} [m.AtLeastTwo] [n.AtLeastTwo] :
-    (ofNat m : R) = (ofNat n) ↔ (ofNat m : ℕ) = ofNat n :=
+    (no_index (ofNat m : R)) = no_index (ofNat n) ↔ (ofNat m : ℕ) = ofNat n :=
   Nat.cast_inj
 
 end OfNat
