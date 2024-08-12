@@ -381,7 +381,8 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     suffices (exists_smul_eq α (g • y₂) x).choose = (exists_smul_eq α y₂ x).choose * g⁻¹ by
       simp [this]
     rw [← inv_mul_eq_one, ← Subgroup.mem_bot, ← free ((g : α) • y₂)]
-    simp only [mem_stabilizer_iff, smul_smul, mul_assoc, InvMemClass.coe_inv, mul_left_inv, mul_one]
+    simp only [mem_stabilizer_iff, smul_smul, mul_assoc, InvMemClass.coe_inv, inv_mul_cancel,
+               mul_one]
     rw [← smul_smul, (exists_smul_eq α y₂ x).choose_spec, inv_smul_eq_iff,
         (exists_smul_eq α ((g : α) • y₂) x).choose_spec])
   invFun := fun q ↦ q.liftOn' (fun g ↦ ⟦g⁻¹ • x⟧) (by
