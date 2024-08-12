@@ -374,7 +374,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
         he ▸ e.prime_iff.1 (hp c hc),
         Units.map e.toMonoidHom u,
       by
-        erw [Multiset.prod_hom, ← e.map_mul, h]
+        erw [Multiset.prod_hom, ← map_mul e, h]
         simp⟩
 
 theorem MulEquiv.uniqueFactorizationMonoid_iff (e : α ≃* β) :
@@ -1762,7 +1762,7 @@ theorem eq_pow_of_mul_eq_pow {a b c : Associates α} (ha : a ≠ 0) (hb : b ≠ 
   by_cases hk0 : k = 0
   · use 1
     rw [hk0, pow_zero] at h ⊢
-    apply (mul_eq_one_iff.1 h).1
+    apply (mul_eq_one.1 h).1
   · refine is_pow_of_dvd_count ha fun p hp ↦ ?_
     apply dvd_count_of_dvd_count_mul hb hp hab
     rw [h]
