@@ -57,9 +57,11 @@ open Set Filter TopologicalSpace MeasureTheory Function RCLike
 
 open scoped Classical Topology ENNReal NNReal
 
-variable {X Y E F : Type*} [MeasurableSpace X]
+variable {X Y E F : Type*}
 
 namespace MeasureTheory
+
+variable [MeasurableSpace X]
 
 section NormedAddCommGroup
 
@@ -989,9 +991,10 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
 `(Lp.memℒp f).restrict s).toLp f`. This map is non-expansive. -/
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
-  rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top _) (Lp.snorm_ne_top _)]
-  apply (le_of_eq _).trans (snorm_mono_measure _ (Measure.restrict_le_self (s := s)))
-  exact snorm_congr_ae (Memℒp.coeFn_toLp _)
+  rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _)
+    (Lp.eLpNorm_ne_top _)]
+  apply (le_of_eq _).trans (eLpNorm_mono_measure _ (Measure.restrict_le_self (s := s)))
+  exact eLpNorm_congr_ae (Memℒp.coeFn_toLp _)
 
 variable (X F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in
@@ -1031,7 +1034,8 @@ section OpenPos
 
 open Measure
 
-variable [TopologicalSpace X] [OpensMeasurableSpace X] {μ : Measure X} [IsOpenPosMeasure μ]
+variable [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
+  {μ : Measure X} [IsOpenPosMeasure μ]
 
 theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMeasureOnCompacts μ]
     {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
@@ -1046,7 +1050,7 @@ section FTC
 
 open MeasureTheory Asymptotics Metric
 
-variable {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable [MeasurableSpace X] {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Fundamental theorem of calculus for set integrals:
 if `μ` is a measure that is finite at a filter `l` and
@@ -1138,6 +1142,8 @@ theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [Open
 end FTC
 
 section
+
+variable [MeasurableSpace X]
 
 /-! ### Continuous linear maps composed with integration
 
@@ -1417,7 +1423,7 @@ end
 
 section thickenedIndicator
 
-variable [PseudoEMetricSpace X]
+variable [MeasurableSpace X] [PseudoEMetricSpace X]
 
 theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure X) {E : Set X}
     (E_mble : MeasurableSet E) (δ : ℝ) : μ E ≤ ∫⁻ x, (thickenedIndicatorAux δ E x : ℝ≥0∞) ∂μ := by

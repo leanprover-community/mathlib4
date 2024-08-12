@@ -717,8 +717,7 @@ end DecidableEq
 
 variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
-open scoped Classical
-
+open Classical in
 /-- A simple `BoundedOrder` is also complete. -/
 protected noncomputable def completeLattice : CompleteLattice α :=
   { (inferInstance : Lattice α),
@@ -746,6 +745,7 @@ protected noncomputable def completeLattice : CompleteLattice α :=
         intro con
         exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
 
+open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice

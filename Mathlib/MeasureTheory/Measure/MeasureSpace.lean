@@ -83,9 +83,8 @@ open Set
 
 open Filter hiding map
 
-open Function MeasurableSpace
-open scoped Classical symmDiff
-open Topology Filter ENNReal NNReal Interval MeasureTheory
+open Function MeasurableSpace Topology Filter ENNReal NNReal Interval MeasureTheory
+open scoped symmDiff
 
 variable {α β γ δ ι R R' : Type*}
 
@@ -649,7 +648,7 @@ theorem liminf_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
     apply measure_limsup_eq_zero
     simp [h]
 
-theorem measure_if {x : β} {t : Set β} {s : Set α} :
+theorem measure_if {x : β} {t : Set β} {s : Set α} [Decidable (x ∈ t)] :
     μ (if x ∈ t then s else ∅) = indicator t (fun _ => μ s) x := by split_ifs with h <;> simp [h]
 
 end
@@ -1071,6 +1070,7 @@ theorem le_liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure
     f μ.toOuterMeasure s ≤ liftLinear f hf μ s :=
   le_toMeasure_apply _ (hf μ) s
 
+open Classical in
 /-- The pushforward of a measure as a linear map. It is defined to be `0` if `f` is not
 a measurable function. -/
 def mapₗ [MeasurableSpace α] (f : α → β) : Measure α →ₗ[ℝ≥0∞] Measure β :=
@@ -1085,6 +1085,7 @@ theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (
   simpa only [mapₗ, hf, hg, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply]
     using measure_congr (h.preimage s)
 
+open Classical in
 /-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
 measurable function. -/
 irreducible_def map [MeasurableSpace α] (f : α → β) (μ : Measure α) : Measure β :=
@@ -1225,11 +1226,14 @@ theorem preimage_null_of_map_null {f : α → β} (hf : AEMeasurable f μ) {s : 
 theorem tendsto_ae_map {f : α → β} (hf : AEMeasurable f μ) : Tendsto f (ae μ) (ae (μ.map f)) :=
   fun _ hs => preimage_null_of_map_null hf hs
 
+open Classical in
 /-- Pullback of a `Measure` as a linear map. If `f` sends each measurable set to a measurable
 set, then for each measurable set `s` we have `comapₗ f μ s = μ (f '' s)`.
 
+Note that if `f` is not injective, this definition assigns `Set.univ` measure zero.
+
 If the linearity is not needed, please use `comap` instead, which works for a larger class of
-functions. -/
+functions. `comapₗ` is an auxiliary definition and most lemmas deal with comap. -/
 def comapₗ [MeasurableSpace α] (f : α → β) : Measure β →ₗ[ℝ≥0∞] Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → MeasurableSet (f '' s) then
     liftLinear (OuterMeasure.comap f) fun μ s hs t => by
@@ -1244,8 +1248,11 @@ theorem comapₗ_apply {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f :
   rw [comapₗ, dif_pos, liftLinear_apply _ hs, OuterMeasure.comap_apply, coe_toOuterMeasure]
   exact ⟨hfi, hf⟩
 
+open Classical in
 /-- Pullback of a `Measure`. If `f` sends each measurable set to a null-measurable set,
-then for each measurable set `s` we have `comap f μ s = μ (f '' s)`. -/
+then for each measurable set `s` we have `comap f μ s = μ (f '' s)`.
+
+Note that if `f` is not injective, this definition assigns `Set.univ` measure zero. -/
 def comap [MeasurableSpace α] (f : α → β) (μ : Measure β) : Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ then
     (OuterMeasure.comap f μ.toOuterMeasure).toMeasure fun s hs t => by
