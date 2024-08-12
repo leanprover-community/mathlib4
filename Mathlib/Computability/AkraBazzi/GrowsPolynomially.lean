@@ -675,8 +675,8 @@ lemma GrowsPolynomially.of_isTheta {f g : ℝ → ℝ} (hg : GrowsPolynomially g
   have h_ub_pos : 0 < c₂ * c₄ * c₁⁻¹ := by positivity
   refine ⟨c₁ * c₂⁻¹ * c₃, h_lb_pos, ?_⟩
   refine ⟨c₂ * c₄ * c₁⁻¹, h_ub_pos, ?_⟩
-  have c₂_cancel : c₂⁻¹ * c₂ = 1 := inv_mul_cancel (by positivity)
-  have c₁_cancel : c₁⁻¹ * c₁ = 1 := inv_mul_cancel (by positivity)
+  have c₂_cancel : c₂⁻¹ * c₂ = 1 := inv_mul_cancel₀ (by positivity)
+  have c₁_cancel : c₁⁻¹ * c₁ = 1 := inv_mul_cancel₀ (by positivity)
   filter_upwards [(tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf',
                   (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf_lb,
                   (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf_ub,
