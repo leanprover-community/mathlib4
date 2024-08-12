@@ -250,6 +250,16 @@ noncomputable instance isEquivalenceMap
     [F₁.IsEquivalence] [F₂.IsEquivalence] [F.Faithful] [F.Full] [IsIso α] [IsIso β] :
     (map α β).IsEquivalence where
 
+/-- The equality between `map α β ⋙ fst L' R'` and `fst L R ⋙ F₁`,
+where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
+@[simp]
+def map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ := rfl
+
+/-- The equality between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
+where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
+@[simp]
+def map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ := rfl
+
 end
 
 /-- A natural transformation `L₁ ⟶ L₂` induces a functor `Comma L₂ R ⥤ Comma L₁ R`. -/
