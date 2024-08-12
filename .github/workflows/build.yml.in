@@ -219,6 +219,15 @@ jobs:
             exit 1
           fi
 
+      - name: check that assert_not_exists declarations exist later on
+        run: |
+          awk 'BEGIN{ print "import Mathlib" }
+            /^assert_not_exists .*$/ {
+              gsub(/^assert_not/, "assert")
+              acc[$0]=0
+            } END { for(i in acc){ print i } }' $(git ls-files '*.lean') > Mathlib/NonExistingDeclaration.lean
+          lake build Mathlib.NonExistingDeclaration
+
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
