@@ -16,6 +16,8 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
 
+assert_not_exists AddCommMonoid
+
 open Opposite CategoryTheory Limits
 
 universe t w v u
@@ -226,5 +228,3 @@ end Corepresentable
 end Functor
 
 end CategoryTheory
-
-assert_not_exists AddCommMonoid

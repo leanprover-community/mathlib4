@@ -47,6 +47,8 @@ it is probably because you have introduced new import dependencies to a file.
 In this case, you should refactor your work
 (for example by creating new files rather than adding imports to existing files).
 You should *not* delete the `assert_not_exists` statement without careful discussion ahead of time.
+
+`assert_not_exists` statements should generally live at the top of the file, after the module doc.
 -/
 elab "assert_not_exists " n:ident : command => do
   let decl ← try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n catch _ => return

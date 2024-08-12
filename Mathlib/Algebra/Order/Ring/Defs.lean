@@ -103,6 +103,8 @@ immediate predecessors and what conditions are added to each of them.
   - `CommRing` & `IsDomain` & linear order structure
 -/
 
+assert_not_exists MonoidHom
+
 open Function
 
 universe u
@@ -422,5 +424,3 @@ instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
 instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
     [d : LinearOrderedCommRing α] : LinearOrderedCommSemiring α :=
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
-
-assert_not_exists MonoidHom

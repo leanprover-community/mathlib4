@@ -28,6 +28,8 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
+assert_not_exists OrderedCommMonoid
+assert_not_exists Multiset
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -1144,6 +1146,3 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
       exact ⟨i, hi.trans n.le_succ, hq⟩
 
 end CancelCommMonoidWithZero
-
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset
