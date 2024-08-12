@@ -105,6 +105,8 @@ def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
 
 end in_other_prs
 
+namespace Order
+
 section definitions
 
 /--
@@ -770,3 +772,5 @@ lemma coheight_coe_ENat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
   simp only [Nat.cast_id, coheight_nat, top_add]
 
 end calculations
+
+end Order
