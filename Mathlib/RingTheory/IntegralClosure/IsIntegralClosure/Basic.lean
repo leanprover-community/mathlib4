@@ -48,6 +48,22 @@ theorem isIntegral_algEquiv {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algeb
     (f : A ≃ₐ[R] B) {x : A} : IsIntegral R (f x) ↔ IsIntegral R x :=
   ⟨fun h ↦ by simpa using h.map f.symm, IsIntegral.map f⟩
 
+/- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
+  a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
+  over `T`.-/
+theorem isIntegral_iff_of_equiv {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra T S] (φ : R ≃+* T)
+    (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
+    IsIntegral R a ↔ IsIntegral T a := by
+  constructor <;> intro ha
+  · rw [← RingHom.id_apply a]
+    refine IsIntegral.map_of_comp_eq φ.toRingHom (RingHom.id S) ?_ ha
+    rw [RingHom.id_comp, h]
+  · rw [← RingHom.id_apply a]
+    refine IsIntegral.map_of_comp_eq φ.symm.toRingHom (RingHom.id S) ?_ ha
+    rw [RingHom.id_comp, ← h, RingHom.comp_assoc, RingEquiv.toRingHom_comp_symm_toRingHom,
+      RingHom.comp_id]
+
 /-- If `R → A → B` is an algebra tower,
 then if the entire tower is an integral extension so is `A → B`. -/
 theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
