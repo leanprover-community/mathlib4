@@ -25,4 +25,4 @@ closed irreducible sets.
 -/
 noncomputable def topologicalKrullDim (T : Type _) [TopologicalSpace T] :
     WithBot (WithTop ℕ) :=
-  krullDim (IrreducibleCloseds T)
+  Order.krullDim (IrreducibleCloseds T)
