@@ -479,7 +479,7 @@ def eraseLast (p : RelSeries r) : RelSeries r where
     p.eraseLast.last = p ⟨p.length.pred, Nat.lt_succ_iff.2 (Nat.pred_le _)⟩ := rfl
 
 /-- In a non-trivial series `p`, the last element of `p.eraseLast` is related to `p.last` -/
-lemma eraseLast_last_rel_last (p : RelSeries r) (h : 0 < p.length) :
+lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
     r p.eraseLast.last p.last := by
   simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
   convert p.step ⟨p.length - 1, Nat.sub_one_lt_of_lt h⟩
