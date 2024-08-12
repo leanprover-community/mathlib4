@@ -63,14 +63,14 @@ of a point in `s`.-/
 def IsDynCoverOf (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) (s : Set X) : Prop :=
   F ⊆ ⋃ x ∈ s, ball x (dynEntourage T U n)
 
-lemma dynCover_antitone_time {T : X → X} {F : Set X} {U : Set (X × X)} {m n : ℕ}
-    (m_n : m ≤ n) {s : Set X} (h : IsDynCoverOf T F U n s) :
+lemma dynCover_antitone_time {T : X → X} {F : Set X} {U : Set (X × X)} {m n : ℕ} (m_n : m ≤ n)
+    {s : Set X} (h : IsDynCoverOf T F U n s) :
     IsDynCoverOf T F U m s := by
   exact Subset.trans (c := ⋃ x ∈ s, ball x (dynEntourage T U m)) h
     (iUnion₂_mono fun x _ ↦ ball_mono (dynEntourage_antitone T U m_n) x)
 
-lemma dynCover_monotone {T : X → X} {F : Set X} {U V : Set (X × X)} (U_V : U ⊆ V)
-    {n : ℕ} {s : Set X} (h : IsDynCoverOf T F U n s) :
+lemma dynCover_monotone {T : X → X} {F : Set X} {U V : Set (X × X)} (U_V : U ⊆ V) {n : ℕ}
+    {s : Set X} (h : IsDynCoverOf T F U n s) :
     IsDynCoverOf T F V n s := by
   exact Subset.trans (c := ⋃ x ∈ s, ball x (dynEntourage T V n)) h
     (iUnion₂_mono fun x _ ↦ ball_mono (dynEntourage_monotone T n U_V) x)
@@ -80,8 +80,8 @@ lemma empty_dynCover {T : X → X} {U : Set (X × X)} {n : ℕ} :
     IsDynCoverOf T ∅ U n ∅ := by
   simp only [IsDynCoverOf, empty_subset]
 
-lemma nonempty_dynCover {T : X → X} {F : Set X} (h : F.Nonempty) {U : Set (X × X)}
-    {n : ℕ} {s : Set X} (h' : IsDynCoverOf T F U n s) :
+lemma nonempty_dynCover {T : X → X} {F : Set X} (h : F.Nonempty) {U : Set (X × X)} {n : ℕ}
+    {s : Set X} (h' : IsDynCoverOf T F U n s) :
     s.Nonempty := by
   rcases nonempty_biUnion.1 (Nonempty.mono h' h) with ⟨x, x_s, _⟩
   exact nonempty_of_mem x_s
@@ -109,7 +109,7 @@ lemma dynCover_iterate {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set
     ∃ t : Finset X, IsDynCoverOf T F (U ○ U) (m * n) t ∧ t.card ≤ s.card ^ n := by
   classical
   rcases F.eq_empty_or_nonempty with (rfl | F_nemp)
-  · use ∅; simp [empty_dynCover]
+  · use ∅; simp
   have _ : Nonempty X := nonempty_of_exists F_nemp
   have s_nemp := nonempty_dynCover F_nemp h
   rcases F_nemp with ⟨x, x_F⟩
