@@ -188,15 +188,15 @@ section
 variable (c₁ c₂)
 variable [TotalComplexShape c₁₂ c₃ c] [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c]
 
-/-- When we have three complexes shapes `c₁`, `c₂`, `c₃`, `c₁₂`, `c₂₃`, `c`, and total functors
+/-- When we have six complex shapes `c₁`, `c₂`, `c₃`, `c₁₂`, `c₂₃`, `c`, and total functors
 `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂`,
 `HomologicalComplex₂ C c₁₂ c₃ ⥤ HomologicalComplex C c`,
 `HomologicalComplex₂ C c₂ c₃ ⥤ HomologicalComplex C c₂₃`,
 `HomologicalComplex₂ C c₁ c₂₂₃ ⥤ HomologicalComplex C c`, we get two ways to
 compute the total complex of a triple complex in `HomologicalComplex₃ C c₁ c₂ c₃`, then
-under this assumption `[Associator c₁ c₂ c₃ c₁₂ c₂₃ c]`, these two complexes
-canonical identify (without introducing signs). -/
-class Associator : Prop where
+under this assumption `[Associative c₁ c₂ c₃ c₁₂ c₂₃ c]`, these two complexes
+canonically identify (without introducing signs). -/
+class Associative : Prop where
   assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
     π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩
   ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
@@ -209,26 +209,26 @@ class Associator : Prop where
     ε₂ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) =
       (ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₂ c₂ c₃ c₂₃ (i₂, i₃))
 
-variable [Associator c₁ c₂ c₃ c₁₂ c₂₃ c]
+variable [Associative c₁ c₂ c₃ c₁₂ c₂₃ c]
 
 lemma assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
     π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩ := by
-  apply Associator.assoc
+  apply Associative.assoc
 
-lemma associator_ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+lemma associative_ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
     ε₁ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) =
       ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₁ c₁ c₂ c₁₂ (i₁, i₂) := by
-  apply Associator.ε₁_eq_mul
+  apply Associative.ε₁_eq_mul
 
-lemma associator_ε₂_ε₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+lemma associative_ε₂_ε₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
     ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₁ c₂ c₃ c₂₃ (i₂, i₃) =
       ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₂ c₁ c₂ c₁₂ (i₁, i₂) := by
-  apply Associator.ε₂_ε₁
+  apply Associative.ε₂_ε₁
 
-lemma associator_ε₂_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+lemma associative_ε₂_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
     ε₂ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) =
       (ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₂ c₂ c₃ c₂₃ (i₂, i₃)) := by
-  apply Associator.ε₂_eq_mul
+  apply Associative.ε₂_eq_mul
 
 /-- The map `I₁ × I₂ × I₃ → j` that is obtained using `TotalComplexShape c₁ c₂ c₁₂`
 and `TotalComplexShape c₁₂ c₃ c` when `c₁ : ComplexShape I₁`, `c₂ : ComplexShape I₂`,
@@ -256,7 +256,7 @@ def ρ₂₃ : GradedObject.BifunctorComp₂₃IndexData (r c₁ c₂ c₃ c₁�
 end
 
 instance {I : Type*} [AddMonoid I] (c : ComplexShape I) [c.TensorSigns] :
-    Associator c c c c c c where
+    Associative c c c c c c where
   assoc := add_assoc
   ε₁_eq_mul _ _ _ := by dsimp; rw [one_mul]
   ε₂_ε₁ _ _ _ := by dsimp; rw [one_mul, mul_one]

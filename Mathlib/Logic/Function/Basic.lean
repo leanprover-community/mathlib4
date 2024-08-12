@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Set
 import Mathlib.Logic.Basic
+import Batteries.Tactic.Init
 
 /-!
 # Miscellaneous function constructions and lemmas

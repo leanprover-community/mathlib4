@@ -151,7 +151,7 @@ lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
       ((shiftFunctor₁ C x).obj K).d₁_eq _ rfl _ _ (by dsimp; omega),
       K.d₁_eq _ (show p + x + 1 = p + 1 + x by omega) _ _ (by dsimp; omega)]
     dsimp
-    simp only [Linear.units_smul_comp, one_smul, Category.assoc, ι_totalDesc]
+    rw [one_smul, Category.assoc, ι_totalDesc, one_smul, Linear.units_smul_comp]
   · rw [D₁_shape _ _ _ _ h, zero_comp, D₁_shape, comp_zero, smul_zero]
     intro h'
     apply h
@@ -257,7 +257,7 @@ lemma D₁_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
       ι_D₁, smul_smul, ((shiftFunctor₂ C y).obj K).d₁_eq _ rfl _ _ (by dsimp; omega),
       K.d₁_eq _ rfl _ _ (by dsimp; omega)]
     dsimp
-    simp only [one_smul, Category.assoc, ι_totalDesc, Linear.comp_units_smul,
+    rw [one_smul, one_smul, Category.assoc, ι_totalDesc, Linear.comp_units_smul,
       ← Int.negOnePow_add]
     congr 2
     linarith
@@ -279,11 +279,10 @@ lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
     rw [ι_D₂_assoc, Linear.comp_units_smul, ι_totalDesc_assoc, Linear.units_smul_comp,
       smul_smul, ι_D₂, ((shiftFunctor₂ C y).obj K).d₂_eq _ _ rfl _ (by dsimp; omega),
       K.d₂_eq _ _ (show q + y + 1 = q + 1 + y by omega) _ (by dsimp; omega),
-      Linear.units_smul_comp]
+      Linear.units_smul_comp, Category.assoc, smul_smul, ι_totalDesc]
     dsimp
     simp only [Linear.units_smul_comp, Category.assoc, ι_totalDesc, Linear.comp_units_smul,
       smul_smul, ← Int.negOnePow_add]
-      --, assoc, smul_smul, ι_totalDesc]
     congr 2
     omega
   · rw [D₂_shape _ _ _ _ h, zero_comp, D₂_shape, comp_zero, smul_zero]
