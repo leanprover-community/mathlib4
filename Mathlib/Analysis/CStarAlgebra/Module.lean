@@ -156,7 +156,8 @@ lemma inner_self_eq_norm_sq {x : E} : ‖⟪x, x⟫‖ = ‖x‖ ^ 2 := by simp 
 section
 include A
 
-protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]; positivity
+protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by
+  simp only [norm_eq_sqrt_norm_inner_self]; positivity
 
 protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
   simp only [norm_eq_sqrt_norm_inner_self, Real.sqrt_pos, norm_pos_iff]
@@ -170,7 +171,7 @@ protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inne
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
   ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self, inner_self] using h,
-    fun h => by simp [norm, h]; rw [CStarModule.norm_zero] ⟩
+    fun h => by simp only [h, CStarModule.norm_zero] ⟩
 
 end
 
