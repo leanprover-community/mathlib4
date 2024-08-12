@@ -1,5 +1,6 @@
 import Mathlib.Analysis.Calculus.Rademacher
 import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.Algebra.Order.AddTorsor
 
 open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Submodule
 
@@ -237,15 +238,81 @@ theorem aux (a b c : ℝ) (ha : |a| ≤ c) (hb : |b| ≤ c) (h : a - b = 2 * c) 
     have hb : -c < b := lt_of_le_of_ne hb hb'.symm
     linarith
 
+theorem lol' (x : E) (nx : x ≠ 0) : ∃ f : E →L[ℝ] ℝ, ‖f‖ = 1 ∧ f x = ‖x‖ := by
+  let g' : span ℝ {x} →ₗ[ℝ] ℝ :=
+    { toFun := fun y ↦
+        let t := (mem_span_singleton.1 y.2).choose
+        t * ‖x‖
+      map_add' := by
+        intro y z
+        let t1 := (mem_span_singleton.1 y.2).choose
+        have ht1 : t1 • x = y := (mem_span_singleton.1 y.2).choose_spec
+        let t2 := (mem_span_singleton.1 z.2).choose
+        have ht2 : t2 • x = z := (mem_span_singleton.1 z.2).choose_spec
+        let t3 := (mem_span_singleton.1 (y + z).2).choose
+        have ht3 : t3 • x = y + z := (mem_span_singleton.1 (y + z).2).choose_spec
+        change t3 * ‖x‖ = t1 * ‖x‖ + t2 * ‖x‖
+        rw [← ht1, ← ht2, ← add_smul] at ht3
+        have : t3 = t1 + t2 := by
+          apply smul_left_injective ℝ nx
+          exact ht3
+        rw [← add_mul, this]
+      map_smul' := by
+        intro t y
+        let t1 := (mem_span_singleton.1 y.2).choose
+        have ht1 : t1 • x = y := (mem_span_singleton.1 y.2).choose_spec
+        let t2 := (mem_span_singleton.1 (t • y).2).choose
+        have ht2 : t2 • x = t • y := (mem_span_singleton.1 (t • y).2).choose_spec
+        change t2 * ‖x‖ = t • (t1 * ‖x‖)
+        rw [← ht1, smul_smul] at ht2
+        have : t2 = t * t1 := by
+          apply smul_left_injective ℝ nx
+          exact ht2
+        rw [this, mul_assoc]
+        rfl }
+  let g := LinearMap.toContinuousLinearMap g'
+  have ng y : ‖g y‖ = ‖y‖ := by
+    let t := (mem_span_singleton.1 y.2).choose
+    have ht : t • x = y := (mem_span_singleton.1 y.2).choose_spec
+    change ‖t * ‖x‖‖ = ‖y‖
+    rw [norm_mul, norm_norm, ← norm_smul, ht, norm_coe]
+  rcases Real.exists_extension_norm_eq (span ℝ {x}) g with ⟨f, hf, nf⟩
+  have hx : x ∈ span ℝ {x} := mem_span_singleton_self x
+  refine ⟨f, ?_, ?_⟩
+  · rw [nf]
+    apply le_antisymm
+    · refine g.opNorm_le_bound (by norm_num) (fun y ↦ ?_)
+      simp [ng]
+    · apply le_of_mul_le_mul_right _ (norm_pos_iff.2 nx)
+      rw [one_mul, show ‖x‖ = ‖(⟨x, hx⟩ : span ℝ {x})‖ by rfl]
+      nth_rw 1 [← ng ⟨x, hx⟩]
+      exact g.le_opNorm _
+  · change f (⟨x, hx⟩ : span ℝ {x}) = ‖(⟨x, hx⟩ : span ℝ {x})‖
+    rw [hf]
+    let t := (mem_span_singleton.1 hx).choose
+    let ht : t • x = x := (mem_span_singleton.1 hx).choose_spec
+    change t * ‖x‖ = ‖x‖
+    have : t = 1 := by
+      nth_rw 2 [← one_smul ℝ x] at ht
+      apply smul_left_injective ℝ nx
+      exact ht
+    rw [this, one_mul]
+
 theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
     ∃ (f : F →L[ℝ] ℝ), ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ t) = t := by
-  have this (k : ℕ) : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, t ∈ Icc (-k : ℝ) k → f (φ t) = t := by
+  have this (k : ℕ) (hk : 1 ≤ k) :
+      ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, t ∈ Icc (-k : ℝ) k → f (φ t) = t := by
     obtain ⟨f, nf, hf⟩ : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ f ((φ k) - (φ (-k))) = 2 * k := by
       have nk : ‖(φ k) - (φ (-k))‖ = 2 * k := by
         rw [← dist_eq_norm, hφ.dist_eq, dist_eq_norm, norm_eq_abs, sub_neg_eq_add, two_mul,
           abs_eq_self.2]
         positivity
-      sorry
+      have hnk : 0 < ‖(φ k) - (φ (-k))‖ := by
+        rw [nk]
+        positivity
+      obtain ⟨f, nf, hfk⟩ := lol' _ (norm_pos_iff.1 hnk)
+      use f, nf
+      rw [hfk, nk]
     refine ⟨f, nf, fun t tmem ↦ ?_⟩
     have ⟨h1, h2⟩ : f (φ k) = k ∧ f (φ (-k)) = -k := by
       apply aux
@@ -288,15 +355,16 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
           rw [map_sub, h1]
           linarith [abs_le.1 this |>.2]
       simpa [map_sub, h1] using this
-  choose f nf hf using this
+  choose! f nf hf using this
   obtain ⟨g, ψ, hψ, hg⟩ : ∃ (g : F →L[ℝ] ℝ) (ψ : ℕ → ℕ), StrictMono ψ ∧
       ∀ y, Tendsto (fun n ↦ f (ψ n) y) atTop (𝓝 (g y)) := by sorry
   refine ⟨g, le_antisymm (g.opNorm_le_bound (by norm_num) fun y ↦ ?_) ?_, fun t ↦ ?_⟩
-  · apply le_of_tendsto' ((continuous_norm.tendsto _).comp (hg y))
-    exact fun c ↦ nf (ψ c) ▸ (f (ψ c)).le_opNorm _
+  · apply le_of_tendsto ((continuous_norm.tendsto _).comp (hg y))
+    rw [eventually_atTop]
+    exact ⟨1, fun c hc ↦ nf (ψ c) (hc.trans (hψ.id_le c)) ▸ (f (ψ c)).le_opNorm _⟩
   · have : ∀ n ≥ 1, ‖f (ψ n) (φ 1)‖ = 1 := by
       intro n hn
-      rw [hf, norm_one]
+      rw [hf (ψ n) (hn.trans (hψ.id_le n)), norm_one]
       rw [mem_Icc]
       constructor
       · linarith
@@ -312,17 +380,23 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
     rw [this]
     apply g.unit_le_opNorm
     rw [hφ.norm_map_of_map_zero φz, norm_one]
-  have aux1 : Tendsto (fun n ↦ f (ψ n) (φ t)) atTop (𝓝 t) := by
-    apply tendsto_const_nhds.congr'
-    rw [EventuallyEq, eventually_atTop]
-    use ⌈|t|⌉₊
-    intro b hb
-    have : t ∈ Icc (-(ψ b) : ℝ) (ψ b) := by
-      rw [mem_Icc]
-      exact abs_le.1 (Nat.ceil_le.1 (hb.trans (hψ.id_le b)))
-    exact (hf _ _ this).symm
-  have aux2 := hg (φ t)
-  exact tendsto_nhds_unique aux2 aux1
+  · rcases eq_or_ne t 0 with rfl | ht
+    · rw [φz, _root_.map_zero]
+    · have aux1 : Tendsto (fun n ↦ f (ψ n) (φ t)) atTop (𝓝 t) := by
+        apply tendsto_const_nhds.congr'
+        rw [EventuallyEq, eventually_atTop]
+        use ⌈|t|⌉₊
+        intro b hb
+        have : t ∈ Icc (-(ψ b) : ℝ) (ψ b) := by
+          rw [mem_Icc]
+          exact abs_le.1 (Nat.ceil_le.1 (hb.trans (hψ.id_le b)))
+        refine (hf _ ?_ _ this).symm
+        apply le_trans _ (hψ.id_le b)
+        apply le_trans _ hb
+        rw [Nat.one_le_ceil_iff]
+        positivity
+      have aux2 := hg (φ t)
+      exact tendsto_nhds_unique aux2 aux1
 
 
 
@@ -341,10 +415,10 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   have main (x : E) (nx : ‖x‖ = 1) : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ (t • x)) = t := by
     apply exists_inverse
-    · exact finrank_self ℝ
     · apply Isometry.of_dist_eq
       intro x₁ x₂
       rw [hφ.dist_eq, dist_eq_norm, ← sub_smul, norm_smul, nx, mul_one, dist_eq_norm]
+    · simpa using φz
   choose! f nf hf using main
   have aux2 : Dense {x : E | DifferentiableAt ℝ (‖·‖) x} := by
     let _ : MeasurableSpace E := borel E
@@ -556,11 +630,6 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
     let p := fun i ↦ (mem_iUnion₂.1 (x i).2).choose
     have hx := fun i ↦ (mem_iUnion₂.1 (x i).2).choose_spec.choose_spec
     ∑ i : Fin n, c i • (T (p i) ⟨(x i).1, hx i⟩)
-  have Ale (p : Submodule ℝ E) (hp : FiniteDimensional ℝ p) : A p ≤ span ℝ Q := by
-    refine subset_trans ?_ subset_span
-    apply subset_iUnion₂ (s := fun q hq ↦ (A q : Set F)) p hp
-  let Ainc (p : Submodule ℝ E) (hp : FiniteDimensional ℝ p) : A p → span ℝ Q :=
-    Submodule.inclusion (Ale p hp)
   have Teg (p : Submodule ℝ E) (hp : FiniteDimensional ℝ p) (x : span ℝ Q)
       (hx : x.1 ∈ A p) : (T p ⟨x, hx⟩).1 = g x := by
     let nx := (mem_span_set'.1 x.2).choose
@@ -595,7 +664,7 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
     apply this
     apply le_iSup (A ∘ p) i
     exact hx i
-  have imp (x : span ℝ Q) : ∃ (p : Submodule ℝ E) (hp : FiniteDimensional ℝ p), x.1 ∈ A p := by
+  have imp (x : span ℝ Q) : ∃ (p : Submodule ℝ E), FiniteDimensional ℝ p ∧ x.1 ∈ A p := by
     let nx := (mem_span_set'.1 x.2).choose
     let cx : Fin nx → ℝ := (mem_span_set'.1 x.2).choose_spec.choose
     let xx : Fin nx → Q := (mem_span_set'.1 x.2).choose_spec.choose_spec.choose
