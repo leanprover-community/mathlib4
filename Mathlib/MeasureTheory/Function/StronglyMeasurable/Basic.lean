@@ -54,6 +54,8 @@ measurable functions, as a basis for the Bochner integral.
 
 -/
 
+-- Guard against import creep
+assert_not_exists InnerProductSpace
 
 -- Guard against import creep
 assert_not_exists InnerProductSpace

@@ -18,6 +18,8 @@ We provide `Subgroup.center`, `AddSubgroup.center`, `Subsemiring.center`, and `S
 other files.
 -/
 
+-- Guard against import creep
+assert_not_exists Finset
 
 -- Guard against import creep
 assert_not_exists Finset

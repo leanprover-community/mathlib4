@@ -35,6 +35,7 @@ assert_not_exists Finset
 assert_not_exists Module
 assert_not_exists Submonoid
 assert_not_exists FloorRing
+assert_not_exists Module
 
 variable {α β : Type*}
 
