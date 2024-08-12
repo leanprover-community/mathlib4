@@ -36,6 +36,8 @@ equals the number of real roots plus the number of roots not fixed by complex co
 -/
 
 
+assert_not_exists Real
+
 noncomputable section
 
 open scoped Polynomial
@@ -399,5 +401,3 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
 end Gal
 
 end Polynomial
-
-assert_not_exists Real
