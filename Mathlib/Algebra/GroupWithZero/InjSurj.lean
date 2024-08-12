@@ -48,6 +48,8 @@ section NoZeroDivisors
 variable [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
   (f : M₀ → M₀') (hf : Injective f) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
 
+include hf zero mul
+
 /-- Pull back a `NoZeroDivisors` instance along an injective function. -/
 protected theorem Function.Injective.noZeroDivisors [NoZeroDivisors M₀'] : NoZeroDivisors M₀ :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} H ↦
