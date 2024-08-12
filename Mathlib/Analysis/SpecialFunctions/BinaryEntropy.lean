@@ -482,11 +482,10 @@ lemma qaryEntropy_strictAntiOn {q : ℕ} (qLe2: 2 ≤ q) :
     have zero_lt_1_sub_p : 0 < 1 - p := by simp_all only [sub_pos, hp.2, interior_Icc, mem_Ioo]
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
-    have q_big : 0 < (q : ℝ) - 1 := by linarith
     · field_simp
       rw [← log_mul (by linarith) (by linarith)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr (show 0 < (↑q - 1) * (1 - p) by nlinarith))
-      · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, q_big]
+      · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left]
         linarith
       · have qpos : 0 < (q : ℝ) := by positivity
         ring_nf
