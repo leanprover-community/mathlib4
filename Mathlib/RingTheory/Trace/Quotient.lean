@@ -14,7 +14,8 @@ We gather results about the relations between the trace map on `B → A` and the
 quotients and localizations.
 
 ## Main Results
-  `Algebra.trace_quotient_eq_of_isDedekindDomain` : The trace map on `B → A` coincides with the
+
+* `Algebra.trace_quotient_eq_of_isDedekindDomain` : The trace map on `B → A` coincides with the
     trace map on `B⧸pB → A⧸p`.
 
 -/
