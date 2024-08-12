@@ -36,11 +36,11 @@ case the distances are not bounded above, or the graph is not connected.
 noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
   ⨆ u, ⨆ v, G.edist u v
 
-lemma ediam_def : G.ediam = ⨆ p : (α × α), G.edist p.1 p.2 := by
+lemma ediam_def : G.ediam = ⨆ p : α × α, G.edist p.1 p.2 := by
   rw [ediam, iSup_prod]
 
 lemma edist_le_ediam {u v : α} : G.edist u v ≤ G.ediam :=
-  (le_iSup _ _).trans <| le_iSup_iff.mpr fun _ h ↦ h u
+  le_iSup_of_le u <| le_iSup_of_le v le_rfl
 
 lemma ediam_eq_top_iff : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
   simp only [ediam, iSup_eq_top, lt_iSup_iff]
@@ -51,10 +51,10 @@ lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
 
 lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
   contrapose! h
-  apply not_nontrivial_iff_subsingleton.mp at h
+  rw [not_nontrivial_iff_subsingleton] at h
   exact ediam_eq_zero_of_subsingleton
 
-lemma ediam_ne_zero_of_nontrivial [Nontrivial α] : G.ediam ≠ 0 := by
+lemma ediam_ne_zero [Nontrivial α] : G.ediam ≠ 0 := by
   obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
   contrapose! huv
   simp only [ediam, nonpos_iff_eq_zero, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
@@ -63,11 +63,11 @@ lemma ediam_ne_zero_of_nontrivial [Nontrivial α] : G.ediam ≠ 0 := by
 lemma subsingleton_of_ediam_eq_zero (h : G.ediam = 0) : Subsingleton α := by
   contrapose! h
   apply not_subsingleton_iff_nontrivial.mp at h
-  exact ediam_ne_zero_of_nontrivial
+  exact ediam_ne_zero
 
 lemma ediam_ne_zero_iff_nontrivial :
     G.ediam ≠ 0 ↔ Nontrivial α :=
-  ⟨nontrivial_of_ediam_ne_zero, fun _ ↦ ediam_ne_zero_of_nontrivial⟩
+  ⟨nontrivial_of_ediam_ne_zero, fun _ ↦ ediam_ne_zero⟩
 
 @[simp]
 lemma ediam_eq_zero_iff_subsingleton :
@@ -80,6 +80,14 @@ lemma ediam_eq_top_of_not_connected [Nonempty α] (h : ¬G.Connected) : G.ediam 
   obtain ⟨_, hw⟩ := h Classical.ofNonempty
   rw [eq_top_iff, ← edist_eq_top_of_not_reachable hw]
   exact edist_le_ediam
+
+lemma ediam_eq_top_of_not_preconnected (h : ¬G.Preconnected) : G.ediam = ⊤ := by
+  cases isEmpty_or_nonempty α
+  · exfalso
+    exact h <| IsEmpty.forall_iff.mpr trivial
+  · apply ediam_eq_top_of_not_connected
+    rw [connected_iff]
+    tauto
 
 lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
     ∃ u v, G.edist u v = G.ediam :=
@@ -111,7 +119,7 @@ lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
 
 @[simp]
 lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
-  apply le_antisymm ?_ <| ENat.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr ediam_ne_zero_of_nontrivial
+  apply le_antisymm ?_ <| ENat.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr ediam_ne_zero
   apply ediam_def ▸ iSup_le_iff.mpr
   intro p
   by_cases h : (⊤ : SimpleGraph α).Adj p.1 p.2
@@ -139,7 +147,7 @@ case the distances are not bounded above, or the graph is not connected.
 noncomputable def diam (G : SimpleGraph α) :=
   G.ediam.toNat
 
-lemma diam_def : G.diam = (⨆ p : (α × α), G.edist p.1 p.2).toNat := by
+lemma diam_def : G.diam = (⨆ p : α × α, G.edist p.1 p.2).toNat := by
   rw [diam, ediam_def]
 
 lemma dist_le_diam (h : G.ediam ≠ ⊤) {u v : α} : G.dist u v ≤ G.diam :=
