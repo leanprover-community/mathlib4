@@ -303,6 +303,15 @@ theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
   erw [degree, neighborFinset_eq_filter, filter_False]
   exact Finset.card_empty
 
+open Classical in
+lemma degree_mono [Fintype V] (u : V) : Monotone (fun G => degree G u) := by
+  intro G H le
+  simp only [← card_neighborFinset_eq_degree]
+  apply Finset.card_le_card
+  intro v hv
+  simp at hv
+  simpa using le hv
+
 theorem IsRegularOfDegree.top [DecidableEq V] :
     (⊤ : SimpleGraph V).IsRegularOfDegree (Fintype.card V - 1) := by
   intro v

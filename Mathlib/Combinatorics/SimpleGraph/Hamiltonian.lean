@@ -103,6 +103,8 @@ lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
 
 namespace IsHamiltonianCycle
 
+open scoped List
+
 /-- The length of a hamiltonian cycle is the number of vertices. -/
 lemma length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
     p.length = Fintype.card α := by
@@ -135,28 +137,32 @@ protected theorem rotate (hp : p.IsHamiltonianCycle) :
   · rw [← hp.2 v]
     exact List.perm_iff_count.mp (List.IsRotated.perm (by simp)) v
 
-def mem_tail_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.tail := by
+lemma mem_tail_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.tail := by
   rw [← List.count_pos_iff_mem]
   have := hp.2 b
   simp at this
   omega
 
-def mem_dropLast_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.dropLast := by
+lemma mem_dropLast_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.dropLast := by
   rw [List.IsRotated.mem_iff (IsCycle.IsRotated_dropLast_tail hp.1)]
   apply hp.mem_tail_support
 
+/-- The dart in the Hamiltonian cycle that starts at `b` -/
 noncomputable def dart_with_fst (hp : p.IsHamiltonianCycle) : G.Dart :=
   Exists.choose <| show ∃d ∈ p.darts, d.fst = b by
     simpa [← Walk.map_fst_darts] using hp.mem_dropLast_support b
 
+/-- The dart in the Hamiltonian cycle that ends at `b` -/
 noncomputable def dart_with_snd (hp : p.IsHamiltonianCycle) : G.Dart :=
   Exists.choose <| show ∃d ∈ p.darts, d.snd = b by
     simpa [← Walk.map_snd_darts] using hp.mem_tail_support b
 
+/-- The next vertex in the Hamiltonian cycle -/
 protected noncomputable def next (hp : p.IsHamiltonianCycle) := (hp.dart_with_fst b).snd
+/-- The previous vertex in the Hamiltonian cycle -/
 protected noncomputable def prev (hp : p.IsHamiltonianCycle) := (hp.dart_with_snd b).fst
 
-def prev_self_in_darts (hp : p.IsHamiltonianCycle) :
+lemma prev_self_in_darts (hp : p.IsHamiltonianCycle) :
     ∃ d ∈ p.darts, d.fst = hp.prev b ∧ d.snd = b := by
   unfold IsHamiltonianCycle.prev dart_with_snd
   generalize_proofs hd
@@ -165,7 +171,7 @@ def prev_self_in_darts (hp : p.IsHamiltonianCycle) :
   use d
   simpa using this
 
-def self_next_in_darts (hp : p.IsHamiltonianCycle) :
+lemma self_next_in_darts (hp : p.IsHamiltonianCycle) :
     ∃ d ∈ p.darts, d.fst = b ∧ d.snd = hp.next b := by
   unfold IsHamiltonianCycle.next dart_with_fst
   generalize_proofs hd
@@ -174,29 +180,29 @@ def self_next_in_darts (hp : p.IsHamiltonianCycle) :
   use d
   simpa using this
 
-def Adj_prev_self (hp : p.IsHamiltonianCycle) : G.Adj (hp.prev b) b := by
+lemma Adj_prev_self (hp : p.IsHamiltonianCycle) : G.Adj (hp.prev b) b := by
   obtain ⟨d, _, hd'⟩ := hp.prev_self_in_darts b
   exact hd'.1 ▸ hd'.2 ▸ d.adj
 
-def Adj_self_next (hp : p.IsHamiltonianCycle) : G.Adj b (hp.next b) := by
+lemma Adj_self_next (hp : p.IsHamiltonianCycle) : G.Adj b (hp.next b) := by
   obtain ⟨d, _, hd'⟩ := hp.self_next_in_darts b
   exact hd'.2 ▸ hd'.1 ▸ d.adj
 
-@[simp] def prev_next (hp : p.IsHamiltonianCycle) : hp.prev (hp.next b) = b := by
+@[simp] lemma prev_next (hp : p.IsHamiltonianCycle) : hp.prev (hp.next b) = b := by
   obtain ⟨d₁, hd₁, hd₁'⟩ := hp.prev_self_in_darts (hp.next b)
   obtain ⟨d₂, hd₂, hd₂'⟩ := hp.self_next_in_darts b
   rw [← hd₁'.1, ← hd₂'.1]
   rw [← hd₂'.2] at hd₁'
   exact hp.1.prev_unique hd₁ hd₂ hd₁'.2
 
-@[simp] def next_prev (hp : p.IsHamiltonianCycle) : hp.next (hp.prev b) = b := by
+@[simp] lemma next_prev (hp : p.IsHamiltonianCycle) : hp.next (hp.prev b) = b := by
   obtain ⟨d₁, hd₁, hd₁'⟩ := hp.self_next_in_darts (hp.prev b)
   obtain ⟨d₂, hd₂, hd₂'⟩ := hp.prev_self_in_darts b
   rw [← hd₁'.2, ← hd₂'.2]
   rw [← hd₂'.1] at hd₁'
   exact hp.1.next_unique hd₁ hd₂ hd₁'.1
 
-def rotate_next (hp : p.IsHamiltonianCycle) (b': α) : (hp.rotate b').next b = hp.next b := by
+lemma rotate_next (hp : p.IsHamiltonianCycle) (b': α) : (hp.rotate b').next b = hp.next b := by
   unfold IsHamiltonianCycle.next dart_with_fst
   congr
   ext d
@@ -204,7 +210,7 @@ def rotate_next (hp : p.IsHamiltonianCycle) (b': α) : (hp.rotate b').next b = h
   rw [List.IsRotated.mem_iff (p.rotate_darts _)]
   apply Iff.rfl
 
-def next_inj (hp : p.IsHamiltonianCycle) : Function.Injective hp.next := by
+lemma next_inj (hp : p.IsHamiltonianCycle) : Function.Injective hp.next := by
   intro v₁ v₂ eq
   apply_fun hp.prev at eq
   simpa using eq
@@ -215,7 +221,7 @@ theorem next_ne (hp : p.IsHamiltonianCycle) : hp.next b ≠ b := by
   intro h
   exact G.irrefl (h ▸ hp.Adj_self_next b)
 
-def support_getElem_succ (hp : p.IsHamiltonianCycle)
+lemma support_getElem_succ (hp : p.IsHamiltonianCycle)
     {i : ℕ} (hi : i < p.length) (hi' : p.support[i]'(by simp; omega) = b) :
     p.support[i + 1]'(by simp; omega) = hp.next b := by
   have mem := List.getElem_mem p.darts i (by simpa)
@@ -242,6 +248,85 @@ theorem next_next_ne (hp : p.IsHamiltonianCycle) : hp.next (hp.next b) ≠ b := 
   rw [← List.getElem_dropLast _ 0 (by simp; omega)] at h
   rw [List.Nodup.getElem_inj_iff hp'.support_dropLast_Nodup] at h
   simp at h
+
+private theorem IsHamiltonianCycle_iff_support_count
+    (hp : p.length ≥ 3) (hp' : ∀ (a : α), List.count a p.support.tail = 1) :
+    p.IsHamiltonianCycle := by
+  rw [Walk.isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one]
+  rw [Walk.isCycle_def, Walk.isTrail_def]
+  refine And.intro ?_ hp'
+  apply And.intro
+  · rw [List.Nodup, List.pairwise_iff_getElem]
+    intro i j hi hj hij
+    unfold Walk.edges
+    have nodup : p.support.tail.Nodup := by
+      rw [List.nodup_iff_count_le_one]
+      exact fun a => le_of_eq (hp' a)
+    rw [List.Nodup, List.pairwise_iff_getElem] at nodup
+    have h₁ : i < p.length := by simpa using hi
+    have h₂ : j < p.length := by simpa using hj
+    have h₃ : i < p.darts.length := by simpa using hi
+    have h₄ : j < p.darts.length := by simpa using hj
+    have h₅ : i < p.support.tail.length := by simpa using hi
+    have h₆ : j < p.support.tail.length := by simpa using hj
+    simp only [length_edges] at hi
+    simp only [List.getElem_map, ne_eq, dart_edge_eq_iff, not_or]
+    apply And.intro
+    · have h₇ := p.darts_getElem_snd_eq_support_tail i h₁
+      have h₈ := p.darts_getElem_snd_eq_support_tail j h₂
+      suffices p.darts[i].snd ≠ p.darts[j].snd by
+        contrapose this
+        simp at this |-
+        congr
+      simp only [h₇, h₈]
+      exact nodup i j h₅ h₆ hij
+    · intro h
+      by_cases ij : i + 1 < j
+      · apply_fun (·.snd) at h
+        simp only [Dart.symm_toProd, Prod.snd_swap] at h
+        rw [p.darts_getElem_snd_eq_support_tail i h₁,
+          p.darts_getElem_fst_eq_support_tail j (by omega)] at h
+        exact nodup i (j - 1) h₅ (by omega) (by omega) h
+      · apply_fun (·.fst) at h
+        by_cases i0 : i = 0
+        · simp only [i0, darts_getElem_zero (show 0 < p.length by omega)] at h
+          have : p.support.tail[p.length - 1]'(by simp; omega) = a := by
+            simp [List.getElem_tail, show p.length - 1 + 1 = p.length by omega,
+              support_getElem_eq_getVert]
+          simp only [← this, Dart.symm_toProd, Prod.fst_swap,
+            p.darts_getElem_snd_eq_support_tail j h₂] at h
+          exact nodup j (p.length - 1) h₆ (by simp; omega) (by omega) h.symm
+        · simp only [p.darts_getElem_fst_eq_support_tail i (by omega),
+            p.darts_getElem_snd_eq_support_tail j h₂, Dart.symm_toProd, Prod.fst_swap] at h
+          exact nodup (i - 1) j  (by omega) h₆ (by omega) h
+  · apply And.intro
+    · intro nil_p
+      apply_fun (·.length) at nil_p
+      simp only [Walk.length_nil] at nil_p
+      omega
+    · rw [List.nodup_iff_count_le_one]
+      exact fun a => le_of_eq (hp' a)
+
+theorem isHamiltonianCycle_of_tail_toFinset
+    [Fintype α] (hp : p.length = Fintype.card α)
+    (hV : Fintype.card α ≥ 3) (hp' : p.support.tail.toFinset = Finset.univ) :
+    p.IsHamiltonianCycle := by
+  apply IsHamiltonianCycle_iff_support_count
+  rwa [hp]
+  suffices p.support.tail ~ Finset.univ.toList by
+    intro a
+    rw [List.Perm.count_eq this]
+    apply List.count_eq_one_of_mem
+    apply Finset.nodup_toList
+    simp
+  apply List.Perm.symm
+  apply List.Subperm.perm_of_length_le
+  · rw [List.subperm_ext_iff]
+    intro a ha
+    rw [List.count_eq_one_of_mem (Finset.nodup_toList _) ha]
+    rw [Nat.succ_le, List.count_pos_iff_mem]
+    rwa [Finset.mem_toList, ← hp', List.mem_toFinset] at ha
+  · simp [hp]
 
 end IsHamiltonianCycle
 
