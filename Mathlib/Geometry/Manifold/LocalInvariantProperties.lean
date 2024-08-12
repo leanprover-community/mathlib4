@@ -44,7 +44,8 @@ in the one for `LiftPropWithinAt`.
 
 noncomputable section
 
-open Manifold Topology Set Filter TopologicalSpace
+open Set Filter TopologicalSpace
+open scoped Manifold Topology
 
 variable {H M H' M' X : Type*}
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
