@@ -624,6 +624,11 @@ theorem inclusion_injective {H K : Subgroup G} (h : H ≤ K) : Function.Injectiv
   Set.inclusion_injective h
 
 @[to_additive (attr := simp)]
+lemma inclusion_inj {H K : Subgroup G} (h : H ≤ K) {x y : H} :
+    inclusion h x = inclusion h y ↔ x = y :=
+  (inclusion_injective h).eq_iff
+
+@[to_additive (attr := simp)]
 theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
     K.subtype.comp (inclusion hH) = H.subtype :=
   rfl
