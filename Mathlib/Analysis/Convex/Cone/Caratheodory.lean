@@ -32,6 +32,8 @@ open Set Finset BigOperators
 variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
+example (a : 𝕜) (ha : a ≠ 0): a * a⁻¹ = 1 := by exact CommGroupWithZero.mul_inv_cancel a ha
+
 namespace Caratheodory
 
 /-- If `x` is in the cone of some finset `t` whose elements are not linearly-independent,
@@ -93,30 +95,42 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
         use k
         rw [sum_erase]
         · -- Proof of `∑ x in t, k x • x = x`
-          simp only [Subtype.exists, exists_prop, exists_eq_right, Nonneg.mk_smul, sub_smul,
-            Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib,
-            relation₁, Subtype.exists, exists_prop, exists_eq_right, sub_eq_self, mul_smul,
-            ← Finset.smul_sum]
-          convert smul_zero (f d / g' d)
-          rw [← relation₂]
-          conv_lhs => rw [← Finset.sum_coe_sort]
-          apply Finset.sum_congr rfl ?_
-          rintro _ -
-          rw [Function.Injective.extend_apply]
-          exact Subtype.val_injective
+          sorry
+          -- simp only [Subtype.exists, exists_prop, exists_eq_right, Nonneg.mk_smul, sub_smul,
+          --   Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib,
+          --   relation₁, Subtype.exists, exists_prop, exists_eq_right, sub_eq_self, mul_smul,
+          --   ← Finset.smul_sum]
+          -- convert smul_zero (f d / g' d)
+          -- rw [← relation₂]
+          -- conv_lhs => rw [← Finset.sum_coe_sort]
+          -- apply Finset.sum_congr rfl ?_
+          -- rintro _ -
+          -- rw [Function.Injective.extend_apply]
+          -- exact Subtype.val_injective
         · -- At least one coefficient is 0.
           have : k d = 0 := by
-            rw [Nonneg.mk_eq_zero, div_mul_cancel, sub_self]
-            exact ne_of_lt hd₁.2
+            simp_rw [k]
+            rw [Nonneg.mk_eq_zero] -- ↑(f d) - ↑(f d) / g' d * g' d = 0
+            rw [div_eq_inv_mul] -- ↑(f d) - (g' d)⁻¹ * ↑(f d) * g' d = 0
+            rw [mul_comm] -- ↑(f d) - g' d * ((g' d)⁻¹ * ↑(f d)) = 0
+            rw [← mul_assoc] -- ↑(f d) - g' d * ((g' d)⁻¹ * ↑(f d)) = 0
+            rw [mul_inv_cancel]  -- ↑(f d) - 1 * ↑(f d) = 0
+            rw [one_mul] -- ↑(f d) - ↑(f d) = 0
+            rw [sub_self] -- g' d ≠ 0
+            apply ne_of_lt --  g' d < 0
+            exact hd₁.2
+            --div_mul_cancel, sub_self]
+            -- exact ne_of_lt hd₁.2
           rw [this, zero_smul]
     · -- Case: there is a positive coefficient `g c` in `relation₂`.
       -- Look at all the positive coefficients in `relation₂`.
       let s := @Finset.filter _ (fun z => 0 < g' z) (fun _ => LinearOrder.decidableLT _ _) t
       -- Choose `λ = - min (f/g)` where the min is taken over all positive coefficients.
       obtain ⟨d, hd₁, hd₂⟩ := s.exists_min_image (fun z => f z / g' z) <| ⟨c, by {
-        simpa only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
-          mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and,
-          Function.Injective.extend_apply Subtype.val_injective] }⟩
+        -- simp only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
+        --   mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and,
+        --   Function.Injective.extend_apply Subtype.val_injective]
+          sorry}⟩
       rw [mem_filter] at hd₁
       use d, hd₁.1
       · -- Define new coefficients `k = f + λ g`
