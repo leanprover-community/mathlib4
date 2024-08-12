@@ -188,7 +188,7 @@ section
 variable (c₁ c₂)
 variable [TotalComplexShape c₁₂ c₃ c] [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c]
 
-/-- When we have sic complex shapes `c₁`, `c₂`, `c₃`, `c₁₂`, `c₂₃`, `c`, and total functors
+/-- When we have six complex shapes `c₁`, `c₂`, `c₃`, `c₁₂`, `c₂₃`, `c`, and total functors
 `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂`,
 `HomologicalComplex₂ C c₁₂ c₃ ⥤ HomologicalComplex C c`,
 `HomologicalComplex₂ C c₂ c₃ ⥤ HomologicalComplex C c₂₃`,
