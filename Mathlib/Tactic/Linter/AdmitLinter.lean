@@ -17,15 +17,17 @@ The use of `sorry` is much more common and should be preferred.
 This linter is an incentive to discourage uses of `admit`, without being a ban.
 -/
 
-open Lean Elab
-
-namespace Mathlib.Linter.admit
+namespace Mathlib.Linter
 
 /-- The admit linter emits a warning on usages of `admit`. -/
 register_option linter.admit : Bool := {
   defValue := false
   descr := "enable the admit linter"
 }
+
+namespace AdmitLinter
+
+open Lean Elab
 
 /-- `getAdmit t` returns all usages of the `admit` tactic in the input syntax `t`. -/
 partial
@@ -54,4 +56,4 @@ def admitLinter : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter admitLinter
 
-end Mathlib.Linter.admit
+end AdmitLinter
