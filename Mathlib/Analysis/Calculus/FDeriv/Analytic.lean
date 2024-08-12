@@ -445,6 +445,7 @@ open FormalMultilinearSeries ENNReal Nat
 variable {p : FormalMultilinearSeries 𝕜 E F} {f : E → F} {x : E} {r : ℝ≥0∞}
   (h : HasFPowerSeriesOnBall f p x r) (y : E)
 
+include h in
 theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
   ext
   convert (h.hasSum <| EMetric.mem_ball_self h.r_pos).tsum_eq.symm
@@ -465,6 +466,7 @@ private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCom
     rfl
 
 variable [CompleteSpace F]
+include h
 
 theorem factorial_smul (n : ℕ) :
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
@@ -478,6 +480,6 @@ theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0
     HasSum (fun n ↦ (n ! : 𝕜)⁻¹ • iteratedFDeriv 𝕜 n f x fun _ ↦ y) (f (x + y)) := by
   convert h.hasSum hy with n
   rw [← h.factorial_smul y n, smul_comm, ← smul_assoc, nsmul_eq_mul,
-    mul_inv_cancel <| cast_ne_zero.mpr n.factorial_ne_zero, one_smul]
+    mul_inv_cancel₀ <| cast_ne_zero.mpr n.factorial_ne_zero, one_smul]
 
 end HasFPowerSeriesOnBall
