@@ -17,7 +17,6 @@ See also `MeasureTheory.Function.SpecialFunctions.Arctan` and
 `MeasureTheory.Function.SpecialFunctions.Inner`, which have been split off to minimize imports.
 -/
 
-
 -- Guard against import creep:
 assert_not_exists InnerProductSpace
 assert_not_exists Real.arctan

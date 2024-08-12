@@ -158,7 +158,7 @@ lemma chainBotCoeff_add_chainTopCoeff :
     intro e
     apply rootSpace_neg_nsmul_add_chainTop_of_le α β e
     rw [← Nat.succ_add, ← Nat.cast_smul_eq_nsmul ℤ, ← neg_smul, coe_chainTop, ← add_assoc,
-      ← add_smul, Nat.cast_add, neg_add, add_assoc, neg_add_self, add_zero, neg_smul, ← smul_neg,
+      ← add_smul, Nat.cast_add, neg_add, add_assoc, neg_add_cancel, add_zero, neg_smul, ← smul_neg,
       Nat.cast_smul_eq_nsmul]
     exact weightSpace_chainTopCoeff_add_one_nsmul_add (-α) β (Weight.IsNonZero.neg hα)
 
@@ -194,7 +194,7 @@ lemma le_chainBotCoeff_of_rootSpace_ne_top
     chainBotCoeff_add_chainTopCoeff] at hn
   have := rootSpace_neg_nsmul_add_chainTop_of_lt α β hα hn
   rwa [← Nat.cast_smul_eq_nsmul ℤ, ← neg_smul, coe_chainTop, ← add_assoc,
-    ← add_smul, Nat.cast_add, neg_add, add_assoc, neg_add_self, add_zero] at this
+    ← add_smul, Nat.cast_add, neg_add, add_assoc, neg_add_cancel, add_zero] at this
 
 /-- Members of the `α`-chain through `β` are the only roots of the form `β - kα`. -/
 lemma rootSpace_zsmul_add_ne_bot_iff (hα : α.IsNonZero) (n : ℤ) :
@@ -245,7 +245,7 @@ lemma chainLength_of_eq_zsmul_add (β' : Weight K H L) (n : ℤ) (hβ' : (β' : 
     rw [← chainTopCoeff_add_chainBotCoeff, ← chainTopCoeff_add_chainBotCoeff,
       Nat.cast_add, Nat.cast_add, chainTopCoeff_of_eq_zsmul_add α β hα β' n hβ',
       chainBotCoeff_of_eq_zsmul_add α β hα β' n hβ', sub_eq_add_neg, add_add_add_comm,
-      neg_add_self, add_zero]
+      neg_add_cancel, add_zero]
 
 lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
     chainTopCoeff α (0 : Weight K H L) = 1 := by
@@ -266,7 +266,7 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
     have : (toEnd K L L f ^ (chainTopCoeff α (0 : Weight K H L) + 1)) x ∈ rootSpace H (-α) := by
       convert toEnd_pow_apply_mem hf hx (chainTopCoeff α (0 : Weight K H L) + 1) using 2
       rw [coe_chainTop', Weight.coe_zero, add_zero, succ_nsmul',
-        add_assoc, smul_neg, neg_add_self, add_zero]
+        add_assoc, smul_neg, neg_add_cancel, add_zero]
     simpa using (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simpa using isSl2.f_ne_zero)).mp
       (finrank_rootSpace_eq_one _ hα.neg) ⟨_, this⟩
   apply_fun (⁅f, ·⁆) at hk

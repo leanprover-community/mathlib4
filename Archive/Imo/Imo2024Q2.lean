@@ -136,7 +136,7 @@ lemma ab_add_one_dvd_a_pow_large_n_add_b : a * b + 1 ∣ a ^ h.large_n + b := by
       (IsUnit.mul_right_eq_zero (ZMod.unitOfCoprime _ a_coprime_ab_add_one).isUnit).1 this
   rw [mul_add]
   norm_cast
-  simp only [mul_right_inv, Units.val_one, ZMod.coe_unitOfCoprime]
+  simp only [mul_inv_cancel, Units.val_one, ZMod.coe_unitOfCoprime]
   norm_cast
   convert ZMod.natCast_self (a * b + 1) using 2
   exact add_comm _ _

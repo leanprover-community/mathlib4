@@ -60,10 +60,10 @@ theorem Finset.centerMass_insert (ha : i ∉ t) (hw : ∑ j ∈ t, w j ≠ 0) :
         ((∑ j ∈ t, w j) / (w i + ∑ j ∈ t, w j)) • t.centerMass w z := by
   simp only [centerMass, sum_insert ha, smul_add, (mul_smul _ _ _).symm, ← div_eq_inv_mul]
   congr 2
-  rw [div_mul_eq_mul_div, mul_inv_cancel hw, one_div]
+  rw [div_mul_eq_mul_div, mul_inv_cancel₀ hw, one_div]
 
 theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerMass w z = z i := by
-  rw [centerMass, sum_singleton, sum_singleton, ← mul_smul, inv_mul_cancel hw, one_smul]
+  rw [centerMass, sum_singleton, sum_singleton, ← mul_smul, inv_mul_cancel₀ hw, one_smul]
 
 @[simp] lemma Finset.centerMass_neg_left : t.centerMass (-w) z = t.centerMass w z := by
   simp [centerMass, inv_neg]
@@ -163,7 +163,7 @@ theorem Convex.centerMass_mem (hs : Convex R s) :
     have wz : ∑ j ∈ t, w j • z j = 0 := sum_eq_zero fun i hi => by simp [ws i hi]
     simp only [centerMass, sum_insert hi, wz, hsum_t, add_zero]
     simp only [hsum_t, add_zero] at hpos
-    rw [← mul_smul, inv_mul_cancel (ne_of_gt hpos), one_smul]
+    rw [← mul_smul, inv_mul_cancel₀ (ne_of_gt hpos), one_smul]
     exact zi
   · rw [Finset.centerMass_insert _ _ _ hi hsum_t]
     refine convex_iff_div.1 hs zi (ht hs₀ ?_ ?_) ?_ (sum_nonneg hs₀) hpos
@@ -262,7 +262,7 @@ theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
   apply s.centerMass_id_mem_convexHull
   · simp only [inv_nonneg, imp_true_iff, Nat.cast_nonneg, Finset.centroidWeights_apply]
   · have hs_card : (s.card : R) ≠ 0 := by simp [Finset.nonempty_iff_ne_empty.mp hs]
-    simp only [hs_card, Finset.sum_const, nsmul_eq_mul, mul_inv_cancel, Ne, not_false_iff,
+    simp only [hs_card, Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀, Ne, not_false_iff,
       Finset.centroidWeights_apply, zero_lt_one]
 
 theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull R (range v) =

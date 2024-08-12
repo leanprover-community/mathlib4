@@ -17,7 +17,6 @@ import Mathlib.GroupTheory.Submonoid.Center
 We provide `Subgroup.centralizer`, `AddSubgroup.centralizer` in other files.
 -/
 
-
 -- Guard against import creep
 assert_not_exists Finset
 

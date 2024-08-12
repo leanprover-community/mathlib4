@@ -235,7 +235,8 @@
   "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
-  "Mathlib.Tactic.ITauto": ["Batteries.Logic", "Mathlib.Init.Logic"],
+  "Mathlib.Tactic.ITauto":
+  ["Batteries.Logic", "Batteries.Tactic.Init", "Mathlib.Init.Logic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
@@ -279,6 +280,7 @@
    "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
   "Mathlib.Tactic.CC.Addition":
   ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
+  "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Bound.Attribute":
   ["Mathlib.Algebra.Group.ZeroOne", "Mathlib.Tactic.Bound.Init"],
@@ -312,6 +314,7 @@
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
+  "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Data.Bool.Basic"],
   "Mathlib.Logic.Basic": ["Mathlib.Data.Int.Notation"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
@@ -338,6 +341,7 @@
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
+  "Mathlib.Data.Option.NAry": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
   "Mathlib.Data.List.TFAE": ["Batteries.Tactic.Classical"],
@@ -352,6 +356,7 @@
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Data.DFinsupp.Notation": ["Mathlib.Data.Finsupp.Notation"],
+  "Mathlib.Data.Bool.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Monad.Cont": ["Batteries.Tactic.Congr"],
   "Mathlib.Control.Basic": ["Mathlib.Logic.Function.Defs"],
