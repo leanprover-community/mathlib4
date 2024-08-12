@@ -39,6 +39,7 @@ If instead `G` is an additive group, we can write (with  `open scoped Pointwise`
 Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
 
+assert_not_exists Cardinal
 
 open Function MulOpposite Set
 open scoped Pointwise
@@ -686,5 +687,3 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
 
 end QuotientGroup
-
-assert_not_exists Cardinal
