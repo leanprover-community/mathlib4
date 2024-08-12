@@ -39,9 +39,7 @@ lemma Algebra.trace_quotient_mk (x : S) :
   classical
   let ι := Module.Free.ChooseBasisIndex R S
   let b : Basis ι R S := Module.Free.chooseBasis R S
-  rw [trace_eq_matrix_trace b, trace_eq_matrix_trace (basisQuotient b)]
-  show _ = (Ideal.Quotient.mk p).toAddMonoidHom _
-  rw [AddMonoidHom.map_trace]
+  rw [trace_eq_matrix_trace b, trace_eq_matrix_trace (basisQuotient b), AddMonoidHom.map_trace]
   congr 1
   ext i j
   simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply,
