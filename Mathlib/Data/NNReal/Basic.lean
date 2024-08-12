@@ -1063,15 +1063,15 @@ theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*�
   have hfu : f u < 1 := by
     rw [hu]
     split_ifs with hu1
-    · rw [← _root_.map_one f]; exact hf hu1
+    · rw [← map_one f]; exact hf hu1
     · have hfg0 : f g ≠ 0 :=
         fun h0 ↦ (Units.ne_zero g) ((map_eq_zero f).mp h0)
       have hg1' : 1 < g := lt_of_le_of_ne (not_lt.mp hu1) hg1.symm
-      rw [Units.val_inv_eq_inv_val, map_inv₀, inv_lt_one_iff hfg0, ← _root_.map_one f]
+      rw [Units.val_inv_eq_inv_val, map_inv₀, inv_lt_one_iff hfg0, ← map_one f]
       exact hf hg1'
   obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hr hfu
   use u ^ n
-  rwa [Units.val_pow_eq_pow_val, _root_.map_pow]
+  rwa [Units.val_pow_eq_pow_val, map_pow]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
   real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/

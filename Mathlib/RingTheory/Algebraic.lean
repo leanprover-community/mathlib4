@@ -109,10 +109,10 @@ theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
 
 /-- An element of `R` is algebraic, when viewed as an element of the `R`-algebra `A`. -/
 theorem isAlgebraic_algebraMap [Nontrivial R] (x : R) : IsAlgebraic R (algebraMap R A x) :=
-  ⟨_, X_sub_C_ne_zero x, by rw [_root_.map_sub, aeval_X, aeval_C, sub_self]⟩
+  ⟨_, X_sub_C_ne_zero x, by rw [map_sub, aeval_X, aeval_C, sub_self]⟩
 
 theorem isAlgebraic_one [Nontrivial R] : IsAlgebraic R (1 : A) := by
-  rw [← _root_.map_one (algebraMap R A)]
+  rw [← map_one (algebraMap R A)]
   exact isAlgebraic_algebraMap 1
 
 theorem isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
@@ -120,7 +120,7 @@ theorem isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
   exact isAlgebraic_algebraMap (Nat.cast n)
 
 theorem isAlgebraic_int [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
-  rw [← _root_.map_intCast (algebraMap R A)]
+  rw [← map_intCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Int.cast n)
 
 theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
