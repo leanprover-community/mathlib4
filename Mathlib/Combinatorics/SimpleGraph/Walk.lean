@@ -3,6 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Lemmas
 import Mathlib.Combinatorics.SimpleGraph.Maps
 
@@ -856,6 +857,10 @@ lemma support_getElem_eq_getVert {u v} {p : G.Walk u v} {i} (hi : i < p.length +
   have : p.support.getLast (by simp) = p.reverse.support.head (by simp) := by
     simp [List.head_reverse]
   simp only [support_head, this]
+
+lemma IsRotated_dropLast_tail (p : G.Walk u u) : p.support.dropLast ~r p.support.tail := by
+  apply List.IsRotated.dropLast_tail (show p.support ≠ [] by simp)
+  simp
 
 variable {x y : V} -- TODO: rename to u, v, w instead?
 

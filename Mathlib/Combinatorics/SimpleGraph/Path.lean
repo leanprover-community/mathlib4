@@ -3,7 +3,6 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.List.Rotate
 import Mathlib.Combinatorics.SimpleGraph.Walk
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
@@ -229,6 +228,19 @@ lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ 
   | .cons h .nil => simp at h
   | .cons _ (.cons _ .nil) => simp at hp
   | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; omega
+
+lemma IsCycle.support_dropLast_Nodup {u : V} {p : G.Walk u u} (hp : IsCycle p) :
+    p.support.dropLast.Nodup := by
+  rw [List.IsRotated.nodup_iff p.IsRotated_dropLast_tail]
+  exact hp.2
+
+lemma IsCycle.prev_unique {u : V} {p : G.Walk u u} (hp : IsCycle p)
+    {d₁ d₂ : G.Dart} (hd₁ : d₁ ∈ p.darts) (hd₂ : d₂ ∈ p.darts) (eq : d₁.snd = d₂.snd) :
+    d₁.fst = d₂.fst := p.prev_unique hp.2 hd₁ hd₂ eq
+
+lemma IsCycle.next_unique {u : V} {p : G.Walk u u} (hp : IsCycle p)
+    {d₁ d₂ : G.Dart} (hd₁ : d₁ ∈ p.darts) (hd₂ : d₂ ∈ p.darts) (eq : d₁.fst = d₂.fst) :
+    d₁.snd = d₂.snd := p.next_unique hp.support_dropLast_Nodup hd₁ hd₂ eq
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬s(u, v) ∈ p.edges := by
@@ -1086,29 +1098,5 @@ theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_not_mem) e
 
 end BridgeEdges
-
-namespace Walk.IsCycle
-
-variable {u : V} {c : G.Walk u u}
-
-lemma IsRotated_dropLast_tail (_ : IsCycle c) :
-    c.support.dropLast ~r c.support.tail := by
-  apply List.IsRotated.dropLast_tail (show c.support ≠ [] by simp)
-  simp
-
-lemma support_dropLast_Nodup (hq : IsCycle c) :
-    c.support.dropLast.Nodup := by
-  rw [List.IsRotated.nodup_iff hq.IsRotated_dropLast_tail]
-  exact hq.2
-
-lemma prev_unique {d₁ d₂ : G.Dart} (hq : IsCycle c)
-    (hd₁ : d₁ ∈ c.darts) (hd₂ : d₂ ∈ c.darts) (eq : d₁.snd = d₂.snd) :
-    d₁.fst = d₂.fst := c.prev_unique hq.2 hd₁ hd₂ eq
-
-lemma next_unique {d₁ d₂ : G.Dart} (hq : IsCycle c)
-    (hd₁ : d₁ ∈ c.darts) (hd₂ : d₂ ∈ c.darts) (eq : d₁.fst = d₂.fst) :
-    d₁.snd = d₂.snd := c.next_unique hq.support_dropLast_Nodup hd₁ hd₂ eq
-
-end Walk.IsCycle
 
 end SimpleGraph

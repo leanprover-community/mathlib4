@@ -144,7 +144,7 @@ lemma mem_tail_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.tail := by
   omega
 
 lemma mem_dropLast_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.dropLast := by
-  rw [List.IsRotated.mem_iff (IsCycle.IsRotated_dropLast_tail hp.1)]
+  rw [List.IsRotated.mem_iff (IsRotated_dropLast_tail p)]
   apply hp.mem_tail_support
 
 /-- The dart in the Hamiltonian cycle that starts at `b` -/
