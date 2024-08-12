@@ -839,6 +839,14 @@ theorem integral_congr_ae {f g : α → G} (h : f =ᵐ[μ] g) : ∫ a, f a ∂μ
     exact setToFun_congr_ae (dominatedFinMeasAdditive_weightedSMul μ) h
   · simp [integral, hG]
 
+lemma integral_congr_ae₂ {β : Type*} {_ : MeasurableSpace β} {ν : Measure β} {f g : α → β → G}
+    (h : ∀ᵐ a ∂μ, f a =ᵐ[ν] g a) :
+    ∫ a, ∫ b, f a b ∂ν ∂μ = ∫ a, ∫ b, g a b ∂ν ∂μ := by
+  apply integral_congr_ae
+  filter_upwards [h] with _ ha
+  apply integral_congr_ae
+  filter_upwards [ha] with _ hb using hb
+
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, nolint simpNF]
 theorem L1.integral_of_fun_eq_integral {f : α → G} (hf : Integrable f μ) :
