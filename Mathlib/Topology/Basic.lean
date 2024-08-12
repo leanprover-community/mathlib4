@@ -76,7 +76,7 @@ open Topology
 
 lemma isOpen_mk {p h₁ h₂ h₃} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
 
-@[ext]
+@[ext (iff := false)]
 protected theorem TopologicalSpace.ext :
     ∀ {f g : TopologicalSpace X}, IsOpen[f] = IsOpen[g] → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
@@ -1361,6 +1361,14 @@ This is essentially `Filter.Tendsto.eventually_mem`, but infers in more cases wh
 theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x) {s : Set Y}
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
+
+/-- If a function ``f` tends to somewhere other than `𝓝 (f x)` at `x`,
+then `f` is not continuous at `x`
+-/
+lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter Y} {x : X}
+    (hf : Tendsto f l₁ l₂) [l₁.NeBot] (hl₁ : l₁ ≤ 𝓝 x) (hl₂ : Disjoint (𝓝 (f x)) l₂) :
+    ¬ ContinuousAt f x := fun cont ↦
+  (cont.mono_left hl₁).not_tendsto hl₂ hf
 
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
 @[deprecated (since := "2024-01-15")]

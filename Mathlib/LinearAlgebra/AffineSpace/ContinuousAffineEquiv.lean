@@ -49,8 +49,8 @@ variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
   [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
   [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃]
   [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄]
-  [TopologicalSpace P₁] [AddCommMonoid P₁] [Module k P₁]
-  [TopologicalSpace P₂] [AddCommMonoid P₂] [Module k P₂]
+  [TopologicalSpace P₁]
+  [TopologicalSpace P₂]
   [TopologicalSpace P₃] [TopologicalSpace P₄]
 
 namespace ContinuousAffineEquiv
@@ -113,9 +113,6 @@ initialize_simps_projections ContinuousLinearMap (toAffineEquiv_toFun → apply,
 @[ext]
 theorem ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
-
-theorem ext_iff {e e' : P₁ ≃ᵃL[k] P₂} : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
 
 @[continuity]
 protected theorem continuous (e : P₁ ≃ᵃL[k] P₂) : Continuous e :=

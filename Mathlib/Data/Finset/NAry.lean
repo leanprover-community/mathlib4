@@ -425,7 +425,7 @@ theorem image₂_right_identity {f : γ → β → γ} {b : β} (h : ∀ a, f a 
 
 /-- If each partial application of `f` is injective, and images of `s` under those partial
 applications are disjoint (but not necessarily distinct!), then the size of `t` divides the size of
-`finset.image₂ f s t`. -/
+`Finset.image₂ f s t`. -/
 theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
     (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : t.card ∣ (image₂ f s t).card := by
   classical
@@ -446,7 +446,7 @@ theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
 
 /-- If each partial application of `f` is injective, and images of `t` under those partial
 applications are disjoint (but not necessarily distinct!), then the size of `s` divides the size of
-`finset.image₂ f s t`. -/
+`Finset.image₂ f s t`. -/
 theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
     (ht : ((fun b => s.image fun a => f a b) '' t).PairwiseDisjoint id) :
     s.card ∣ (image₂ f s t).card := by rw [← image₂_swap]; exact card_dvd_card_image₂_right hf ht

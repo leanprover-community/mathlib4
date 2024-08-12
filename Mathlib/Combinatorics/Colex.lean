@@ -121,7 +121,7 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
 
 instance instPartialOrder : PartialOrder (Colex α) where
   le_refl s a ha ha' := (ha' ha).elim
-  le_antisymm s t hst hts := Colex.ext _ _ <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_antisymm s t hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -217,7 +217,7 @@ section DecidableEq
 variable [DecidableEq α]
 
 instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
-  decidable_of_iff' (s.ofColex = t.ofColex) <| Colex.ext_iff _ _
+  decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
 
 instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fun s t ↦
   decidable_of_iff'

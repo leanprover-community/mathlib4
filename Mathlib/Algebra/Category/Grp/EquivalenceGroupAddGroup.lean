@@ -27,7 +27,7 @@ private instance (X : CommGrp) : MulOneClass X.α := X.str.toMulOneClass
 private instance (X : AddGrp) : AddZeroClass X.α := X.str.toAddZeroClass
 private instance (X : AddCommGrp) : AddZeroClass X.α := X.str.toAddZeroClass
 
-/-- The functor `Group ⥤ AddGroup` by sending `X ↦ additive X` and `f ↦ f`.
+/-- The functor `Group ⥤ AddGroup` by sending `X ↦ Additive X` and `f ↦ f`.
 -/
 @[simps]
 def toAddGrp : Grp ⥤ AddGrp where
@@ -38,7 +38,7 @@ end Grp
 
 namespace CommGrp
 
-/-- The functor `CommGroup ⥤ AddCommGroup` by sending `X ↦ additive X` and `f ↦ f`.
+/-- The functor `CommGroup ⥤ AddCommGroup` by sending `X ↦ Additive X` and `f ↦ f`.
 -/
 @[simps]
 def toAddCommGrp : CommGrp ⥤ AddCommGrp where
@@ -49,7 +49,7 @@ end CommGrp
 
 namespace AddGrp
 
-/-- The functor `AddGroup ⥤ Group` by sending `X ↦ multiplicative Y` and `f ↦ f`.
+/-- The functor `AddGroup ⥤ Group` by sending `X ↦ Multiplicative Y` and `f ↦ f`.
 -/
 @[simps]
 def toGrp : AddGrp ⥤ Grp where
@@ -60,7 +60,7 @@ end AddGrp
 
 namespace AddCommGrp
 
-/-- The functor `AddCommGroup ⥤ CommGroup` by sending `X ↦ multiplicative Y` and `f ↦ f`.
+/-- The functor `AddCommGroup ⥤ CommGroup` by sending `X ↦ Multiplicative Y` and `f ↦ f`.
 -/
 @[simps]
 def toCommGrp : AddCommGrp ⥤ CommGrp where

@@ -19,8 +19,8 @@ that surjections and localizations satisfy this.
 
 -/
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S] [Algebra R S]
-variable {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
+variable {T : Type*} [CommRing T]
 variable {g : S →+* T} {f : R →+* S}
 
 namespace RingHom
@@ -97,13 +97,6 @@ lemma surjectiveOnStalks_of_surjective (h : Function.Surjective f) :
     let ⟨r, hr⟩ := h s
     ⟨r, 1, 1, by simpa [← Ideal.eq_top_iff_one], by simpa [← Ideal.eq_top_iff_one], by simp [hr]⟩
 
-variable (S) in
-lemma surjectiveOnStalks_of_isLocalization [IsLocalization M S] :
-    SurjectiveOnStalks (algebraMap R S) := by
-  refine surjectiveOnStalks_of_exists_div fun s ↦ ?_
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M s
-  exact ⟨x, s, IsLocalization.map_units S s, IsLocalization.mk'_spec' S x s⟩
-
 lemma SurjectiveOnStalks.comp (hg : SurjectiveOnStalks g) (hf : SurjectiveOnStalks f) :
     SurjectiveOnStalks (g.comp f) := by
   intros I hI
@@ -118,8 +111,10 @@ lemma SurjectiveOnStalks.of_comp (hg : SurjectiveOnStalks (g.comp f)) :
     RingHom.coe_comp] at this
   exact this.of_comp
 
+
 open TensorProduct
 
+variable [Algebra R T] [Algebra R S] in
 /--
 If `R → T` is surjective on stalks, and `J` is some prime of `T`,
 then every element `x` in `S ⊗[R] T` satisfies `(1 ⊗ r • t) * x = a ⊗ t` for some
@@ -152,7 +147,16 @@ lemma SurjectiveOnStalks.exists_mul_eq_tmul
       Algebra.TensorProduct.tmul_mul_tmul, one_mul, smul_mul_assoc, ← TensorProduct.smul_tmul,
       TensorProduct.add_tmul, mul_comm t₁ t₂]
 
+variable (S) in
+lemma surjectiveOnStalks_of_isLocalization
+    [Algebra R S] [IsLocalization M S] :
+    SurjectiveOnStalks (algebraMap R S) := by
+  refine surjectiveOnStalks_of_exists_div fun s ↦ ?_
+  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M s
+  exact ⟨x, s, IsLocalization.map_units S s, IsLocalization.mk'_spec' S x s⟩
+
 lemma SurjectiveOnStalks.baseChange
+    [Algebra R T] [Algebra R S]
     (hf : (algebraMap R T).SurjectiveOnStalks) :
     (algebraMap S (S ⊗[R] T)).SurjectiveOnStalks := by
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom

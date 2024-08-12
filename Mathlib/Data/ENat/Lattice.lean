@@ -22,6 +22,9 @@ open Set
 noncomputable instance : CompleteLinearOrder ENat :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 
+noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
+  inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
+
 namespace ENat
 variable {ι : Sort*} {f : ι → ℕ} {s : Set ℕ}
 
@@ -70,6 +73,9 @@ lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
 
 lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
   sSup_eq_bot'
+
+lemma iSup_eq_zero : iSup f = 0 ↔ ∀ i, f i = 0 :=
+  iSup_eq_bot
 
 lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
   apply (sSup_eq_top ..).mpr
