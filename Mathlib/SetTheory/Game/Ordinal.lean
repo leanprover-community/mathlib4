@@ -39,17 +39,16 @@ noncomputable def toPGame : Ordinal.{u} → PGame.{u}
       PEmpty.elim⟩
 termination_by x => x
 
-@[nolint unusedHavesSuffices]
 theorem toPGame_def (o : Ordinal) :
     have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
     o.toPGame = ⟨o.out.α, PEmpty, fun x => (typein (· < ·) x).toPGame, PEmpty.elim⟩ := by
   rw [toPGame]
 
-@[simp, nolint unusedHavesSuffices]
+@[simp]
 theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.out.α := by
   rw [toPGame, LeftMoves]
 
-@[simp, nolint unusedHavesSuffices]
+@[simp]
 theorem toPGame_rightMoves (o : Ordinal) : o.toPGame.RightMoves = PEmpty := by
   rw [toPGame, RightMoves]
 
@@ -69,7 +68,6 @@ theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
     ↑(toLeftMovesToPGame.symm i) < o :=
   (toLeftMovesToPGame.symm i).prop
 
-@[nolint unusedHavesSuffices]
 theorem toPGame_moveLeft_hEq {o : Ordinal} :
     have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
     HEq o.toPGame.moveLeft fun x : o.out.α => (typein (· < ·) x).toPGame := by
@@ -179,5 +177,16 @@ termination_by a b => (a, b)
 @[simp]
 theorem toPGame_add_mk' (a b : Ordinal) : (⟦a.toPGame⟧ + ⟦b.toPGame⟧ : Game) = ⟦(a ♯ b).toPGame⟧ :=
   Quot.sound (toPGame_add a b)
+
+@[simp]
+theorem nat_toPGame_mk' : ∀ n : ℕ, ⟦toPGame n⟧ = (n : Game)
+  | 0 => Quot.sound (zeroToPGameRelabelling).equiv
+  | n + 1 => by
+    have : ⟦toPGame 1⟧ = 1 := Quot.sound oneToPGameRelabelling.equiv
+    rw [Nat.cast_add, ← nadd_nat, ← toPGame_add_mk', nat_toPGame_mk', Nat.cast_one, this]
+    rfl
+
+theorem nat_toPGame : ∀ n : ℕ, toPGame n ≈ n := PGame.equiv_iff_game_eq.2 nat_toPGame_mk'
+
 
 end Ordinal

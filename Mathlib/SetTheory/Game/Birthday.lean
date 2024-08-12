@@ -3,6 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
+import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.SetTheory.Game.Ordinal
 import Mathlib.SetTheory.Ordinal.NaturalOps
 
@@ -180,15 +181,15 @@ noncomputable def birthday (x : Game.{u}) : Ordinal.{u} :=
   sInf (PGame.birthday '' (Quotient.mk' ⁻¹' {x}))
 
 /-- The set in the definition of birthday is nonempty. -/
-theorem birthday_nonempty (x : Game.{u}) : (PGame.birthday '' (Quotient.mk' ⁻¹' {x})).Nonempty := by
+theorem birthday_nonempty (x : Game) : (PGame.birthday '' (Quotient.mk' ⁻¹' {x})).Nonempty := by
   rw [Set.image_nonempty]
   exact ⟨_, x.out_eq⟩
 
-theorem birthday_eq_mk_birthday (x : Game.{u}) : ∃ y : PGame.{u},
+theorem birthday_eq_pGame_birthday (x : Game) : ∃ y : PGame.{u},
     ⟦y⟧ = x ∧ y.birthday = birthday x :=
   csInf_mem (birthday_nonempty x)
 
-theorem birthday_le_pGame_birthday (x : PGame.{u}) : birthday ⟦x⟧ ≤ x.birthday :=
+theorem birthday_le_pGame_birthday (x : PGame) : birthday ⟦x⟧ ≤ x.birthday :=
   csInf_le' ⟨x, rfl, rfl⟩
 
 @[simp]
@@ -200,7 +201,7 @@ theorem birthday_zero : birthday 0 = 0 := by
 theorem birthday_eq_zero {x : Game} : birthday x = 0 ↔ x = 0 := by
   constructor
   · intro h
-    let ⟨y, hy₁, hy₂⟩ := birthday_eq_mk_birthday x
+    let ⟨y, hy₁, hy₂⟩ := birthday_eq_pGame_birthday x
     rw [← hy₁]
     rw [h, PGame.birthday_eq_zero] at hy₂
     exact PGame.equiv_iff_game_eq.1 (@PGame.Equiv.isEmpty _ hy₂.1 hy₂.2)
@@ -212,17 +213,52 @@ theorem toPGame_birthday (o : Ordinal) : birthday ⟦o.toPGame⟧ = o := by
   apply le_antisymm
   · conv_rhs => rw [← PGame.toPGame_birthday o]
     apply birthday_le_pGame_birthday
-  · let ⟨x, hx₁, hx₂⟩ := birthday_eq_mk_birthday ⟦o.toPGame⟧
+  · let ⟨x, hx₁, hx₂⟩ := birthday_eq_pGame_birthday ⟦o.toPGame⟧
     rw [← hx₂, ← toPGame_le_iff]
     rw [← PGame.equiv_iff_game_eq] at hx₁
     exact hx₁.2.trans (PGame.le_birthday x)
 
-theorem le_birthday : ∀ x : PGame, x ≤ x.birthday.toPGame
-  | ⟨xl, _, xL, _⟩ =>
-    le_def.2
-      ⟨fun i =>
-        Or.inl ⟨toLeftMovesToPGame ⟨_, birthday_moveLeft_lt i⟩, by simp [le_birthday (xL i)]⟩,
-        isEmptyElim⟩
+@[simp]
+theorem birthday_natCast (n : ℕ) : birthday n = n := by
+  convert toPGame_birthday ?_
+  sorry
+  --exact PGame.equiv_iff_game_eq.1 oneToPGameRelabelling.symm.equiv
+
+@[simp]
+theorem birthday_one : birthday 1 = 1 := by
+  convert toPGame_birthday ?_
+  exact PGame.equiv_iff_game_eq.1 oneToPGameRelabelling.symm.equiv
+
+@[simp]
+theorem birthday_star : birthday ⟦PGame.star⟧ = 1 := by
+  apply le_antisymm
+  · rw [← PGame.birthday_star]
+    exact birthday_le_pGame_birthday _
+  · rw [Ordinal.one_le_iff_ne_zero, ne_eq, birthday_eq_zero, Game.zero_def,
+      ← PGame.equiv_iff_game_eq]
+    exact PGame.star_fuzzy_zero.not_equiv
+
+private theorem neg_birthday' (x : Game) : (-x).birthday ≤ x.birthday := by
+  let ⟨y, hy₁, hy₂⟩ := birthday_eq_pGame_birthday x
+  rw [← hy₂, ← PGame.neg_birthday y]
+  conv_lhs => rw [← hy₁]
+  apply birthday_le_pGame_birthday
+
+@[simp]
+theorem neg_birthday (x : Game) : (-x).birthday = x.birthday := by
+  apply le_antisymm (neg_birthday' _)
+  conv_lhs => rw [← neg_neg x]
+  exact neg_birthday' _
+
+theorem le_birthday (x : Game) : x ≤ ⟦x.birthday.toPGame⟧ := by
+  let ⟨y, hy₁, hy₂⟩ := birthday_eq_pGame_birthday x
+  rw [← hy₁]
+  apply (y.le_birthday).trans
+  rw [toPGame_le_iff, hy₁, hy₂]
+
+theorem neg_birthday_le (x : Game) : -⟦x.birthday.toPGame⟧ ≤ x := by
+  rw [neg_le, ← neg_birthday]
+  exact le_birthday _
 
 end Game
 

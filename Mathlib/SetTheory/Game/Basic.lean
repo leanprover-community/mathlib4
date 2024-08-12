@@ -78,6 +78,9 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
 instance : Inhabited Game :=
   ⟨0⟩
 
+protected theorem zero_def : (0 : Game) = ⟦0⟧ :=
+  rfl
+
 instance instPartialOrderGame : PartialOrder Game where
   le := Quotient.lift₂ (· ≤ ·) fun x₁ y₁ x₂ y₂ hx hy => propext (le_congr hx hy)
   le_refl := by
