@@ -141,13 +141,13 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
 private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ U.card = V.card ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
 
-instance UsefulCompression.instDecidableRel : @DecidableRel (Finset α) UsefulCompression :=
+private instance UsefulCompression.instDecidableRel : @DecidableRel (Finset α) UsefulCompression :=
   fun _U _V ↦ And.decidable
 
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease
 shadow. In particular, 'good' means it's useful, and every smaller compression won't make a
 difference. -/
-lemma compression_improved (𝒜 : Finset (Finset α)) (h₁ : UsefulCompression U V)
+private lemma compression_improved (𝒜 : Finset (Finset α)) (h₁ : UsefulCompression U V)
     (h₂ : ∀ ⦃U₁ V₁⦄, UsefulCompression U₁ V₁ → U₁.card < U.card → IsCompressed U₁ V₁ 𝒜) :
     (∂ (𝓒 U V 𝒜)).card ≤ (∂ 𝒜).card := by
   obtain ⟨UVd, same_size, hU, hV, max_lt⟩ := h₁
@@ -199,7 +199,7 @@ private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A in �
 
 /-- Applying a compression strictly decreases the measure. This helps show that "compress until we
 can't any more" is a terminating process. -/
-lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} {hU : U.Nonempty}
+private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} {hU : U.Nonempty}
     {hV : V.Nonempty} (h : max' U hU < max' V hV) {𝒜 : Finset (Finset (Fin n))} (a : 𝓒 U V 𝒜 ≠ 𝒜) :
     familyMeasure (𝓒 U V 𝒜) < familyMeasure 𝒜 := by
   rw [compression] at a ⊢
