@@ -23,6 +23,5 @@ open TopologicalSpace
 The Krull dimension of a topological space is the supremum of lengths of chains of
 closed irreducible sets.
 -/
-noncomputable def topologicalKrullDim (T : Type _) [TopologicalSpace T] :
-    WithBot (WithTop ℕ) :=
+noncomputable def topologicalKrullDim (T : Type _) [TopologicalSpace T] : WithBot ℕ∞ :=
   Order.krullDim (IrreducibleCloseds T)
