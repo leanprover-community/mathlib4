@@ -237,7 +237,7 @@ theorem toEquivOfEqTop_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.dom = ⊤)
   cases h_cod
   rfl
 
-theorem fg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
+theorem dom_fg_iff_cod_fg {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
     f.dom.FG ↔ f.cod.FG := by
   rw [Substructure.fg_iff_structure_fg, f.toEquiv.fg_iff, Substructure.fg_iff_structure_fg]
 
@@ -290,7 +290,7 @@ instance : DirectedSystem (fun i ↦ (S i).cod) (fun _ _ h ↦
   map_self' := fun _ _ _ ↦ rfl
   map_map' := fun _ _ _ ↦ rfl
 
-/-- The limit of a directed system of PartialEquivs.-/
+/-- The limit of a directed system of PartialEquivs. -/
 noncomputable def partialEquivLimit : M ≃ₚ[L] N where
   dom := iSup (fun i ↦ (S i).dom)
   cod := iSup (fun i ↦ (S i).cod)
@@ -311,10 +311,10 @@ noncomputable def partialEquivLimit : M ≃ₚ[L] N where
           monotone' := monotone_dom.comp S.monotone}).symm)
 
 @[simp]
-theorem partialEquiv_limit_dom : (partialEquivLimit S).dom = iSup (fun x ↦ (S x).dom) := rfl
+theorem dom_partialEquivLimit : (partialEquivLimit S).dom = iSup (fun x ↦ (S x).dom) := rfl
 
 @[simp]
-theorem partialEquiv_limit_cod : (partialEquivLimit S).cod = iSup (fun x ↦ (S x).cod) := rfl
+theorem cod_partialEquivLimit : (partialEquivLimit S).cod = iSup (fun x ↦ (S x).cod) := rfl
 
 @[simp]
 lemma partialEquivLimit_comp_inclusion {i : ι} :
@@ -326,7 +326,7 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
 
 theorem le_partialEquivLimit : ∀ i, S i ≤ partialEquivLimit S :=
   fun i => ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    simp only [partialEquiv_limit_cod, partialEquiv_limit_dom, partialEquivLimit_comp_inclusion, ←
+    simp only [cod_partialEquivLimit, dom_partialEquivLimit, partialEquivLimit_comp_inclusion, ←
       Embedding.comp_assoc, subtype_comp_inclusion]⟩
 
 end DirectLimit
@@ -342,13 +342,13 @@ abbrev FGEquiv := {f : M ≃ₚ[L] N // f.dom.FG}
 
 /-- Two structures `M` and `N` form an extension pair if the domain of any finitely-generated map
 from `M` to `N` can be extended to include any element of `M`. -/
-def extensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.1.dom ∧ f ≤ g
+def IsExtensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.1.dom ∧ f ≤ g
 
 variable {M N L}
 
-theorem Substructure.countable_self_FGEquiv_of_countable [Countable M] :
-    Countable { f : M ≃ₚ[L] M // f.dom.FG } := by
-  let g : { f : M ≃ₚ[L] M // f.dom.FG } →
+theorem countable_self_fgequiv_of_countable [Countable M] :
+    Countable (L.FGEquiv M M) := by
+  let g : L.FGEquiv M M →
       Σ U : { S : L.Substructure M // S.FG }, U.val →[L] M :=
     fun f ↦ ⟨⟨f.val.dom, f.prop⟩, (subtype _).toHom.comp f.val.toEquiv.toHom⟩
   have g_inj : Function.Injective g := by
@@ -367,28 +367,28 @@ instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
 /-- Maps to the symmetric finitely-generated partial equivalence. -/
-def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.fg_iff.1 f.2⟩
+def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
 
-lemma extensionPair_symm : L.extensionPair M N ↔
+lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.1.cod ∧ f ≤ g := by
   refine Iff.intro ?_ ?_ <;>
   · intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m
     exact ⟨g.symm, h1, monotone_symm h2⟩
 
-lemma extensionPair.cod (h : L.extensionPair M N) (f : L.FGEquiv N M) (m : M) :
+lemma IsExtensionPair.cod (h : L.IsExtensionPair M N) (f : L.FGEquiv N M) (m : M) :
     ∃ g, m ∈ g.1.cod ∧ f ≤ g :=
-  extensionPair_symm.1 h f m
+  IsExtensionPair_iff_cod.1 h f m
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
 def definedAtLeft
-    (h : L.extensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
+    (h : L.IsExtensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | m ∈ f.val.dom}
   mem_gt := fun f => h f m
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
 def definedAtRight
-    (h : L.extensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
+    (h : L.IsExtensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
   mem_gt := fun f => h.cod f n
 
@@ -396,7 +396,7 @@ def definedAtRight
 between finitely generated substructures can be extended to any element in the domain,
 then there exists an embedding of `M` in `N`. -/
 theorem embedding_from_cg (M_cg : Structure.CG L M) (g : L.FGEquiv M N)
-    (H : L.extensionPair M N) :
+    (H : L.IsExtensionPair M N) :
     ∃ f : M ↪[L] N, g ≤ f.toPartialEquiv := by
   rcases M_cg with ⟨X, _, X_gen⟩
   have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
@@ -420,8 +420,8 @@ between finitely generated substructures can be extended to any element in the d
 any element in the codomain, then there exists an equivalence between `M` and `N`. -/
 theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
     (g : L.FGEquiv M N)
-    (ext_dom : L.extensionPair M N)
-    (ext_cod : L.extensionPair N M) :
+    (ext_dom : L.IsExtensionPair M N)
+    (ext_cod : L.IsExtensionPair N M) :
     ∃ f : M ≃[L] N, g ≤ f.toEmbedding.toPartialEquiv := by
   rcases M_cg with ⟨X, X_count, X_gen⟩
   rcases N_cg with ⟨Y, Y_count, Y_gen⟩
