@@ -105,8 +105,8 @@ lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
 @[simps]
 def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
-  length := x.length.pred
-  toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil)
+  length := x.length - 1
+  toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil) i]
   step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
