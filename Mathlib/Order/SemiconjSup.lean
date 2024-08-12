@@ -32,6 +32,9 @@ homeomorphisms to the real line first.
 -/
 
 
+-- Guard against import creep
+assert_not_exists Finset
+
 variable {α β γ : Type*}
 
 open Set
@@ -115,8 +118,5 @@ theorem csSup_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f�
     (hbdd : ∀ x, BddAbove (range fun g => (f₁ g)⁻¹ (f₂ g x))) (g : G) :
     Function.Semiconj (fun x => ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
   semiconj_of_isLUB f₁ f₂ (fun x => isLUB_csSup (range_nonempty _) (hbdd x)) _
-
--- Guard against import creep
-assert_not_exists Finset
 
 end Function

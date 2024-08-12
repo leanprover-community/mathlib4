@@ -58,13 +58,13 @@ Given these parameters, there are a few common structures for the model that ari
   formalizes "essentially finite" mentioned above.
 -/
 
+assert_not_exists MonoidWithZero
+
 -- After https://github.com/leanprover/lean4/pull/4400
 -- the simp normal forms for `List` lookup use the `GetElem` typeclass, rather than `List.get?`.
 -- This file has not been updated to reflect that change, so uses a number of deprecated lemmas.
 -- Updating this file to allow restoring the deprecation linter would be much appreciated.
 set_option linter.deprecated false
-
-assert_not_exists MonoidWithZero
 
 open Mathlib (Vector)
 open Relation

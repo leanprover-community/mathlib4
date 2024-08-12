@@ -53,6 +53,9 @@ basis, bases
 -/
 
 
+assert_not_exists LinearIndependent
+assert_not_exists Cardinal
+
 noncomputable section
 
 universe u
@@ -832,6 +835,3 @@ theorem sum_repr_mul_repr {ι'} [Fintype ι'] (b' : Basis ι' R M) (x : M) (i : 
 end Basis
 
 end CommSemiring
-
-assert_not_exists LinearIndependent
-assert_not_exists Cardinal
