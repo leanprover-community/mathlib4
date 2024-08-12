@@ -28,7 +28,21 @@ variable {C I₁ I₂ J : Type*} [Category C] [Preadditive C]
     {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂} (K : HomologicalComplex₂ C c₁ c₂)
     (c : ComplexShape J) [TotalComplexShape c₁ c₂ c] [TotalComplexShape c₂ c₁ c]
     [TotalComplexShapeSymmetry c₁ c₂ c]
-    [K.HasTotal c] [K.flip.HasTotal c] [DecidableEq J]
+
+instance [K.HasTotal c] : K.flip.HasTotal c := fun j =>
+  hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) j) _
+    (ComplexShape.symmetryEquiv c₁ c₂ c j) (fun _ => Iso.refl _)
+
+lemma flip_hasTotal_iff : K.flip.HasTotal c ↔ K.HasTotal c := by
+  constructor
+  · intro
+    change K.flip.flip.HasTotal c
+    have := TotalComplexShapeSymmetry.symmetry c₁ c₂ c
+    infer_instance
+  · intro
+    infer_instance
+
+variable [K.HasTotal c] [DecidableEq J]
 
 attribute [local simp] smul_smul
 
