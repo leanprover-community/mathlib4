@@ -249,7 +249,7 @@ theorem next_next_ne (hp : p.IsHamiltonianCycle) : hp.next (hp.next b) ≠ b := 
   rw [List.Nodup.getElem_inj_iff hp'.support_dropLast_Nodup] at h
   simp at h
 
-private theorem IsHamiltonianCycle_iff_support_count
+theorem IsHamiltonianCycle_iff_support_count
     (hp : p.length ≥ 3) (hp' : ∀ (a : α), List.count a p.support.tail = 1) :
     p.IsHamiltonianCycle := by
   rw [Walk.isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one]
@@ -309,7 +309,7 @@ private theorem IsHamiltonianCycle_iff_support_count
 
 theorem isHamiltonianCycle_of_tail_toFinset
     [Fintype α] (hp : p.length = Fintype.card α)
-    (hV : Fintype.card α ≥ 3) (hp' : p.support.tail.toFinset = Finset.univ) :
+    (hα : Fintype.card α ≥ 3) (hp' : p.support.tail.toFinset = Finset.univ) :
     p.IsHamiltonianCycle := by
   apply IsHamiltonianCycle_iff_support_count
   rwa [hp]
@@ -354,5 +354,27 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     have b_mem := hp.mem_support b
     exact ((p.takeUntil a a_mem).reverse.append $ p.takeUntil b b_mem).reachable
   nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG $ by simp [@Fintype.card_eq_zero]
+
+theorem IsHamiltonian.complete_graph (hV : Fintype.card α = 1 ∨ Fintype.card α ≥ 3) :
+    IsHamiltonian (⊤ : SimpleGraph α) := by
+  cases' hV with hV hV
+  · simpa [IsHamiltonian] using absurd hV
+  · have ne : (⊤ : Finset α).toList ≠ [] := by
+      simp [← Finset.card_eq_zero]
+      omega
+    let p := Walk.cons
+      (show (⊤ : SimpleGraph α).Adj
+          ((⊤ : Finset α).toList.getLast ne) ((⊤ : Finset α).toList.head ne) by
+        simp [List.getLast_eq_getElem]
+        rw [← List.getElem_zero (by simp; omega), List.Nodup.getElem_inj_iff]
+        omega
+        exact Finset.univ.nodup_toList)
+      (Walk.fromList (G := ⊤) ne
+        (by simpa using List.Pairwise.chain' Finset.univ.nodup_toList))
+    suffices p.IsHamiltonianCycle from fun _ => ⟨((⊤ : Finset α).toList.getLast ne), p, this⟩
+    apply Walk.IsHamiltonianCycle.isHamiltonianCycle_of_tail_toFinset
+    · simp [p, ← Walk.length_support, Walk.fromList_support]
+    · exact hV
+    · simp [p, Walk.fromList_support]
 
 end SimpleGraph
