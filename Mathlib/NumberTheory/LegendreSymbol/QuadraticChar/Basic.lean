@@ -213,7 +213,7 @@ when the domain has odd characteristic. -/
 theorem quadraticChar_ne_one (hF : ringChar F ≠ 2) : quadraticChar F ≠ 1 := by
   rcases quadraticChar_exists_neg_one' hF with ⟨a, ha⟩
   intro hχ
-  simp only [hχ, one_apply a.isUnit, eq_neg_self_iff, one_ne_zero] at ha
+  simp only [hχ, one_apply a.isUnit, one_ne_zero] at ha
 
 set_option linter.deprecated false in
 @[deprecated quadraticChar_ne_one (since := "2024-06-16")]
