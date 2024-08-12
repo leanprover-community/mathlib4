@@ -292,15 +292,8 @@ lemma MonotoneOn.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [Topolo
 lemma MonotoneOn.tendsto_nhdsWithin_Ioi {α β : Type*} [LinearOrder α] [TopologicalSpace α]
     [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {f : α → β} {x : α} (Mf : MonotoneOn f (Ioi x)) (h_bdd : BddBelow (f '' Ioi x)) :
-    Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) := by
-  rcases eq_empty_or_nonempty (Ioi x) with (h | h); · simp [h]
-  refine tendsto_order.2 ⟨fun l hl => ?_, fun m hm => ?_⟩
-  · refine mem_of_superset self_mem_nhdsWithin fun y hy => hl.trans_le ?_
-    exact csInf_le h_bdd (mem_image_of_mem _ hy)
-  · obtain ⟨z, xz, zm⟩ : ∃ a : α, x < a ∧ f a < m := by
-      simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
-        exists_lt_of_csInf_lt (h.image _) hm
-    exact mem_of_superset (Ioo_mem_nhdsWithin_Ioi' xz) fun y hy => (Mf hy.1 xz hy.2.le).trans_lt zm
+    Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) :=
+  MonotoneOn.tendsto_nhdsWithin_Iio (α := αᵒᵈ) (β := βᵒᵈ) Mf.dual h_bdd
 
 /-- A monotone map has a limit to the left of any point `x`, equal to `sSup (f '' (Iio x))`. -/
 theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [TopologicalSpace α]
