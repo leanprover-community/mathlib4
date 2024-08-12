@@ -62,7 +62,7 @@ variable (Rₚ)
 attribute [local instance] Ideal.Quotient.field
 
 /-- The isomorphism `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` satisfies
-`IsLocalization.AtPrime Rₚ p`. -/
+`IsLocalization.AtPrime Rₚ p`. In particular, localization preserves the residue field. -/
 noncomputable
 def equivQuotMaximalIdealOfIsLocalization : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
   refine (Ideal.quotEquivOfEq ?_).trans
