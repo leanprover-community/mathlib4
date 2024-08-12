@@ -87,7 +87,7 @@ lemma ENat.iSup_add (ι : Type*) [Nonempty ι] (f : ι → ℕ∞) (n : ℕ∞) 
     exact le_iSup f i
 
 -- https://github.com/leanprover-community/mathlib4/pull/15386
-lemma RelSeries.eraseLast_last_rel_last {r : Rel α α} (p : RelSeries r) (h : 0 < p.length) :
+lemma RelSeries.eraseLast_last_rel_last {r : Rel α α} (p : RelSeries r) (h : p.length ≠ 0) :
     r p.eraseLast.last p.last := by
   simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
   convert p.step ⟨p.length -1, by omega⟩
