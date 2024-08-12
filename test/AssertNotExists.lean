@@ -14,7 +14,8 @@ assert_not_exists Nats
 assert_not_exists Nats
 
 /--
-warning: `assert_not_exists` appears too late: it can only be preceded by `import` statements doc-module strings and other `assert_not_exists` statements.
+warning: `assert_not_exists   Nats` appears too late: it can only be preceded by
+`import` statements doc-module strings and other `assert_not_exists` statements.
 note: this linter can be disabled with `set_option linter.assertNotExists false`
 -/
 #guard_msgs in
