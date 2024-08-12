@@ -912,7 +912,8 @@ lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := 
   rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 
 @[to_additive]
-lemma Group.isUnit [Group α] (a : α) : IsUnit a := ⟨⟨a, a⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩, rfl⟩
+lemma Group.isUnit [Group α] (a : α) : IsUnit a :=
+  ⟨⟨a, a⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩, rfl⟩
 
 -- namespace
 end IsUnit
