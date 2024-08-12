@@ -694,8 +694,7 @@ protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebr
 end AlgEquiv
 
 section at_units
-lemma at_units -- {R : Type*} [CommSemiring R]
-    (S : Submonoid R)
+lemma at_units (S : Submonoid R)
     (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R where
   map_units' y := hS y.prop
   surj' := fun s ↦ ⟨⟨s, 1⟩, by simp⟩
