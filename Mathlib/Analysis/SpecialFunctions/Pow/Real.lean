@@ -103,6 +103,7 @@ theorem rpow_def_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) * cos (y * π) := by
   split_ifs with h <;> simp [rpow_def, *]; exact rpow_def_of_neg (lt_of_le_of_ne hx h) _
 
+@[bound]
 theorem rpow_pos_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : 0 < x ^ y := by
   rw [rpow_def_of_pos hx]; apply exp_pos
 
@@ -143,6 +144,7 @@ theorem zero_rpow_le_one (x : ℝ) : (0 : ℝ) ^ x ≤ 1 := by
 theorem zero_rpow_nonneg (x : ℝ) : 0 ≤ (0 : ℝ) ^ x := by
   by_cases h : x = 0 <;> simp [h, zero_le_one]
 
+@[bound]
 theorem rpow_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : 0 ≤ x ^ y := by
   rw [rpow_def_of_nonneg hx]; split_ifs <;>
     simp only [zero_le_one, le_refl, le_of_lt (exp_pos _)]
@@ -151,6 +153,7 @@ theorem abs_rpow_of_nonneg {x y : ℝ} (hx_nonneg : 0 ≤ x) : |x ^ y| = |x| ^ y
   have h_rpow_nonneg : 0 ≤ x ^ y := Real.rpow_nonneg hx_nonneg _
   rw [abs_eq_self.mpr hx_nonneg, abs_eq_self.mpr h_rpow_nonneg]
 
+@[bound]
 theorem abs_rpow_le_abs_rpow (x y : ℝ) : |x ^ y| ≤ |x| ^ y := by
   rcases le_or_lt 0 x with hx | hx
   · rw [abs_rpow_of_nonneg hx]
@@ -445,18 +448,18 @@ theorem mul_log_eq_log_iff {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
   by rintro rfl; rw [log_rpow hx]⟩
 
 @[simp] lemma rpow_rpow_inv (hx : 0 ≤ x) (hy : y ≠ 0) : (x ^ y) ^ y⁻¹ = x := by
-  rw [← rpow_mul hx, mul_inv_cancel hy, rpow_one]
+  rw [← rpow_mul hx, mul_inv_cancel₀ hy, rpow_one]
 
 @[simp] lemma rpow_inv_rpow (hx : 0 ≤ x) (hy : y ≠ 0) : (x ^ y⁻¹) ^ y = x := by
-  rw [← rpow_mul hx, inv_mul_cancel hy, rpow_one]
+  rw [← rpow_mul hx, inv_mul_cancel₀ hy, rpow_one]
 
 theorem pow_rpow_inv_natCast (hx : 0 ≤ x) (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.2 hn
-  rw [← rpow_natCast, ← rpow_mul hx, mul_inv_cancel hn0, rpow_one]
+  rw [← rpow_natCast, ← rpow_mul hx, mul_inv_cancel₀ hn0, rpow_one]
 
 theorem rpow_inv_natCast_pow (hx : 0 ≤ x) (hn : n ≠ 0) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.2 hn
-  rw [← rpow_natCast, ← rpow_mul hx, inv_mul_cancel hn0, rpow_one]
+  rw [← rpow_natCast, ← rpow_mul hx, inv_mul_cancel₀ hn0, rpow_one]
 
 lemma rpow_natCast_mul (hx : 0 ≤ x) (n : ℕ) (z : ℝ) : x ^ (n * z) = (x ^ n) ^ z := by
   rw [rpow_mul hx, rpow_natCast]
@@ -478,7 +481,7 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 -/
 
 
-@[gcongr]
+@[gcongr, bound]
 theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
   rw [le_iff_eq_or_lt] at hx; cases' hx with hx hx
   · rw [← hx, zero_rpow (ne_of_gt hz)]
@@ -490,7 +493,7 @@ theorem strictMonoOn_rpow_Ici_of_exponent_pos {r : ℝ} (hr : 0 < r) :
     StrictMonoOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
   fun _ ha _ _ hab => rpow_lt_rpow ha hab hr
 
-@[gcongr]
+@[gcongr, bound]
 theorem rpow_le_rpow {x y z : ℝ} (h : 0 ≤ x) (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z := by
   rcases eq_or_lt_of_le h₁ with (rfl | h₁'); · rfl
   rcases eq_or_lt_of_le h₂ with (rfl | h₂'); · simp
@@ -682,7 +685,7 @@ theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤
 
 theorem rpow_left_injOn {x : ℝ} (hx : x ≠ 0) : InjOn (fun y : ℝ => y ^ x) { y : ℝ | 0 ≤ y } := by
   rintro y hy z hz (hyz : y ^ x = z ^ x)
-  rw [← rpow_one y, ← rpow_one z, ← _root_.mul_inv_cancel hx, rpow_mul hy, rpow_mul hz, hyz]
+  rw [← rpow_one y, ← rpow_one z, ← mul_inv_cancel₀ hx, rpow_mul hy, rpow_mul hz, hyz]
 
 lemma rpow_left_inj (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : z ≠ 0) : x ^ z = y ^ z ↔ x = y :=
   (rpow_left_injOn hz).eq_iff hx hy
@@ -756,6 +759,14 @@ lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
   rcases lt_or_eq_of_le hb₁ with hb₁ | rfl
   case inl => exact (strictAnti_rpow_of_base_lt_one hb₀ hb₁).antitone
   case inr => intro _ _ _; simp
+
+/-- Guessing rule for the `bound` tactic: when trying to prove `x ^ y ≤ x ^ z`, we can either assume
+`1 ≤ x` or `0 < x ≤ 1`. -/
+@[bound] lemma rpow_le_rpow_of_exponent_le_or_ge {x y z : ℝ}
+    (h : 1 ≤ x ∧ y ≤ z ∨ 0 < x ∧ x ≤ 1 ∧ z ≤ y) : x ^ y ≤ x ^ z := by
+  rcases h with ⟨x1, yz⟩ | ⟨x0, x1, zy⟩
+  · exact Real.rpow_le_rpow_of_exponent_le x1 yz
+  · exact Real.rpow_le_rpow_of_exponent_ge x0 x1 zy
 
 end Real
 

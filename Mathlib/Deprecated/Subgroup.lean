@@ -117,6 +117,7 @@ namespace IsSubgroup
 open IsSubmonoid
 
 variable [Group G] {s : Set G} (hs : IsSubgroup s)
+include hs
 
 @[to_additive]
 theorem inv_mem_iff : a⁻¹ ∈ s ↔ a ∈ s :=
@@ -150,7 +151,7 @@ structure IsNormalSubgroup [Group G] (s : Set G) extends IsSubgroup s : Prop whe
 @[to_additive]
 theorem isNormalSubgroup_of_commGroup [CommGroup G] {s : Set G} (hs : IsSubgroup s) :
     IsNormalSubgroup s :=
-  { hs with normal := fun n hn g => by rwa [mul_right_comm, mul_right_inv, one_mul] }
+  { hs with normal := fun n hn g => by rwa [mul_right_comm, mul_inv_cancel, one_mul] }
 
 theorem Additive.isNormalAddSubgroup [Group G] {s : Set G} (hs : IsNormalSubgroup s) :
     @IsNormalAddSubgroup (Additive G) _ s :=
@@ -290,13 +291,13 @@ theorem one_ker_inv' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a⁻¹ 
 @[to_additive]
 theorem inv_ker_one {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) :
     f (a * b⁻¹) = 1 := by
-  have : f a * (f b)⁻¹ = 1 := by rw [h, mul_right_inv]
+  have : f a * (f b)⁻¹ = 1 := by rw [h, mul_inv_cancel]
   rwa [← hf.map_inv, ← hf.map_mul] at this
 
 @[to_additive]
 theorem inv_ker_one' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) :
     f (a⁻¹ * b) = 1 := by
-  have : (f a)⁻¹ * f b = 1 := by rw [h, mul_left_inv]
+  have : (f a)⁻¹ * f b = 1 := by rw [h, inv_mul_cancel]
   rwa [← hf.map_inv, ← hf.map_mul] at this
 
 @[to_additive]

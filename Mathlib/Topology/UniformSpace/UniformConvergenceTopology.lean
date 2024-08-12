@@ -333,7 +333,7 @@ theorem uniformContinuous_eval (x : α) :
 variable {β}
 
 @[simp]
-protected lemma mem_gen {f g : α →ᵤ β} {V : Set (β × β)} :
+protected lemma mem_gen {β} {f g : α →ᵤ β} {V : Set (β × β)} :
     (f, g) ∈ UniformFun.gen α β V ↔ ∀ x, (toFun f x, toFun g x) ∈ V :=
   .rfl
 

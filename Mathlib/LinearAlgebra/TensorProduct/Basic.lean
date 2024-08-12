@@ -48,7 +48,7 @@ variable {R'' : Type*} [Semiring R'']
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*} {T : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
-variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S] [Module R T]
+variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
 variable (M N)
@@ -216,7 +216,7 @@ variable (R R' M N)
 /-- A typeclass for `SMul` structures which can be moved across a tensor product.
 
 This typeclass is generated automatically from an `IsScalarTower` instance, but exists so that
-we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
+we can also add an instance for `AddCommGroup.toIntModule`, allowing `z •` to be moved even if
 `R` does not support negation.
 
 Note that `Module R' (M ⊗[R] N)` is available even without this typeclass on `R'`; it's only
@@ -477,6 +477,8 @@ theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
     apply h
 
 end Module
+
+variable [Module R P]
 
 section UMP
 
@@ -1048,6 +1050,8 @@ end TensorProduct
 
 open scoped TensorProduct
 
+variable [Module R P]
+
 namespace LinearMap
 
 variable {N}
@@ -1398,10 +1402,10 @@ variable {R}
 instance neg : Neg (M ⊗[R] N) where
   neg := Neg.aux R
 
-protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
+protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
   x.induction_on
     (by rw [add_zero]; apply (Neg.aux R).map_zero)
-    (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [add_left_neg, zero_tmul])
+    (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [neg_add_cancel, zero_tmul])
     fun x y hx hy => by
     suffices -x + x + (-y + y) = 0 by
       rw [← this]
@@ -1416,13 +1420,13 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
     neg := Neg.neg
     sub := _
     sub_eq_add_neg := fun _ _ => rfl
-    add_left_neg := fun x => TensorProduct.add_left_neg x
+    neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
     zsmul := fun n v => n • v
     zsmul_zero' := by simp [TensorProduct.zero_smul]
     zsmul_succ' := by simp [add_comm, TensorProduct.one_smul, TensorProduct.add_smul]
     zsmul_neg' := fun n x => by
       change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
-      rw [← zero_add (_ • x), ← TensorProduct.add_left_neg ((n.succ : ℤ) • x), add_assoc,
+      rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
         ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
       rfl }
 
@@ -1439,7 +1443,7 @@ theorem sub_tmul (m₁ m₂ : M) (n : N) : (m₁ - m₂) ⊗ₜ n = m₁ ⊗ₜ[
   (mk R M N).map_sub₂ _ _ _
 
 /-- While the tensor product will automatically inherit a ℤ-module structure from
-`AddCommGroup.intModule`, that structure won't be compatible with lemmas like `tmul_smul` unless
+`AddCommGroup.toIntModule`, that structure won't be compatible with lemmas like `tmul_smul` unless
 we use a `ℤ-Module` instance provided by `TensorProduct.left_module`.
 
 When `R` is a `Ring` we get the required `TensorProduct.compatible_smul` instance through

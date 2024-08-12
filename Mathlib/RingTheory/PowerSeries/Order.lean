@@ -296,7 +296,7 @@ theorem order_one : order (1 : R⟦X⟧) = 0 := by
 theorem order_zero_of_unit {f : PowerSeries R} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
   apply And.left
-  rw [← add_eq_zero_iff, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
+  rw [← add_eq_zero, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
   exact order_mul_ge _ _
 
 /-- The order of the formal power series `X` is `1`. -/

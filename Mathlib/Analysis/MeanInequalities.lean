@@ -153,7 +153,7 @@ theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z
   · simp_rw [div_eq_mul_inv, mul_assoc, mul_comm, ← mul_assoc, ← Finset.sum_mul, mul_comm]
   · exact fun _ hi => div_nonneg (hw _ hi) (le_of_lt hw')
   · simp_rw [div_eq_mul_inv, ← Finset.sum_mul]
-    exact mul_inv_cancel (by linarith)
+    exact mul_inv_cancel₀ (by linarith)
 
 theorem geom_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :
@@ -295,7 +295,7 @@ theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w
     rw [← Real.rpow_mul (le_of_lt <| hz i hi) (w _) n⁻¹, div_eq_mul_inv (w _) n]
   · exact fun i hi ↦ div_pos (hw i hi) hw'
   · simp_rw [div_eq_mul_inv (w _) (∑ i in s, w i), ← Finset.sum_mul _ _ (∑ i in s, w i)⁻¹]
-    exact mul_inv_cancel hw'.ne'
+    exact mul_inv_cancel₀ hw'.ne'
 
 end Real
 
@@ -422,9 +422,9 @@ theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExp
     · rw [Ne, rpow_eq_zero_iff, not_and_or]
       exact Or.inl hG_zero
   refine inner_le_Lp_mul_Lp_of_norm_le_one s f' g' hpq (le_of_eq ?_) (le_of_eq ?_)
-  · simp_rw [f', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel hpq.ne_zero, rpow_one,
+  · simp_rw [f', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel₀ hpq.ne_zero, rpow_one,
       div_self hF_zero]
-  · simp_rw [g', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel hpq.symm.ne_zero,
+  · simp_rw [g', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel₀ hpq.symm.ne_zero,
       rpow_one, div_self hG_zero]
 
 /-- **Weighted Hölder inequality**. -/

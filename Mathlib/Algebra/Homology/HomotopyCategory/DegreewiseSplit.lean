@@ -43,7 +43,7 @@ def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
         sub_comp, comp_sub, comp_sub, assoc, id_comp, d_comp_d, comp_zero, zero_sub,
         ← S.g.comm_assoc, reassoc_of% (s_g p), r_f (p + 2), comp_sub, comp_sub, comp_id,
         comp_sub, ← S.g.comm_assoc, reassoc_of% (s_g (p + 1)), d_comp_d_assoc, zero_comp,
-        sub_zero, add_left_neg])
+        sub_zero, neg_add_cancel])
 
 /-- The canonical morphism `S.X₃ ⟶ S.X₁⟦(1 : ℤ)⟧` attached to a degreewise split
 short exact sequence of cochain complexes. -/

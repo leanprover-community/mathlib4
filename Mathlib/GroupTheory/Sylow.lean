@@ -67,9 +67,6 @@ instance : CoeOut (Sylow p G) (Subgroup G) :=
 @[ext]
 theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr
 
-theorem ext_iff {P Q : Sylow p G} : P = Q ↔ (P : Subgroup G) = Q :=
-  ⟨congr_arg _, ext⟩
-
 instance : SetLike (Sylow p G) G where
   coe := (↑)
   coe_injective' _ _ h := ext (SetLike.coe_injective h)
@@ -129,7 +126,7 @@ end Sylow
   Every `p`-subgroup is contained in a Sylow `p`-subgroup. -/
 theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : Sylow p G, P ≤ Q :=
   Exists.elim
-    (zorn_nonempty_partialOrder₀ { Q : Subgroup G | IsPGroup p Q }
+    (zorn_le_nonempty₀ { Q : Subgroup G | IsPGroup p Q }
       (fun c hc1 hc2 Q hQ =>
         ⟨{  carrier := ⋃ R : c, R
             one_mem' := ⟨Q, ⟨⟨Q, hQ⟩, rfl⟩, Q.one_mem⟩
@@ -141,7 +138,7 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
           refine Exists.imp (fun k hk => ?_) (hc1 S.2 ⟨g, hg⟩)
           rwa [Subtype.ext_iff, coe_pow] at hk ⊢, fun M hM g hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
       P hP)
-    fun {Q} ⟨hQ1, hQ2, hQ3⟩ => ⟨⟨Q, hQ1, hQ3 _⟩, hQ2⟩
+    fun {Q} h => ⟨⟨Q, h.2.prop, h.2.eq_of_ge⟩, h.1⟩
 
 instance Sylow.nonempty : Nonempty (Sylow p G) :=
   nonempty_of_exists IsPGroup.of_bot.exists_le_sylow
