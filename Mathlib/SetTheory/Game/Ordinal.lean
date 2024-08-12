@@ -186,7 +186,7 @@ theorem nat_toPGame_mk' : ∀ n : ℕ, ⟦toPGame n⟧ = (n : Game)
     rw [Nat.cast_add, ← nadd_nat, ← toPGame_add_mk', nat_toPGame_mk', Nat.cast_one, this]
     rfl
 
-theorem nat_toPGame : ∀ n : ℕ, toPGame n ≈ n := PGame.equiv_iff_game_eq.2 nat_toPGame_mk'
-
+theorem nat_toPGame (n : ℕ) : toPGame n ≈ n := by
+  rw [PGame.equiv_iff_game_eq, nat_toPGame_mk', quot_natCast]
 
 end Ordinal

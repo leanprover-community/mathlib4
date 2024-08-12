@@ -10,19 +10,23 @@ import Mathlib.SetTheory.Ordinal.NaturalOps
 /-!
 # Birthdays of games
 
-The birthday of a game is an ordinal that represents at which "step" the game was constructed. We
-define it recursively as the least ordinal larger than the birthdays of its left and right games. We
-prove the basic properties about these.
+There are two related but distinct notions of a birthday within combinatorial game theory. One is
+the birthday of a pre-game, which represents the "step" at which it is constructed. We define it
+recursively as the least ordinal larger than the birthdays of its left and right options. On the
+other hand, the birthday of a game is the smallest birthday among all pre-games that quotient to it.
+
+The birthday of a pre-game can be understood as representing the depth of its game tree. On the
+other hand, the birthday of a game more closely matches Conway's original description.
 
 # Main declarations
 
 - `SetTheory.PGame.birthday`: The birthday of a pre-game.
+- `SetTheory.Game.birthday`: The birthday of a game.
 
 # Todo
 
-- Characterize the birthdays of more basic arithmetical operations.
+- Characterize the birthdays of other basic arithmetical operations.
 -/
-
 
 universe u
 
@@ -220,14 +224,12 @@ theorem toPGame_birthday (o : Ordinal) : birthday ⟦o.toPGame⟧ = o := by
 
 @[simp]
 theorem birthday_natCast (n : ℕ) : birthday n = n := by
-  convert toPGame_birthday ?_
-  sorry
-  --exact PGame.equiv_iff_game_eq.1 oneToPGameRelabelling.symm.equiv
+  rw [← nat_toPGame_mk']
+  exact toPGame_birthday _
 
 @[simp]
 theorem birthday_one : birthday 1 = 1 := by
-  convert toPGame_birthday ?_
-  exact PGame.equiv_iff_game_eq.1 oneToPGameRelabelling.symm.equiv
+  rw [← Nat.cast_one, birthday_natCast, Nat.cast_one]
 
 @[simp]
 theorem birthday_star : birthday ⟦PGame.star⟧ = 1 := by
@@ -259,6 +261,12 @@ theorem le_birthday (x : Game) : x ≤ ⟦x.birthday.toPGame⟧ := by
 theorem neg_birthday_le (x : Game) : -⟦x.birthday.toPGame⟧ ≤ x := by
   rw [neg_le, ← neg_birthday]
   exact le_birthday _
+
+theorem birthday_add_le (x y : Game) : (x + y).birthday ≤ x.birthday ♯ y.birthday := by
+  let ⟨a, ha₁, ha₂⟩ := birthday_eq_pGame_birthday x
+  let ⟨b, hb₁, hb₂⟩ := birthday_eq_pGame_birthday y
+  rw [← ha₂, ← hb₂, ← ha₁, ← hb₁, ← PGame.birthday_add]
+  exact birthday_le_pGame_birthday _
 
 end Game
 
