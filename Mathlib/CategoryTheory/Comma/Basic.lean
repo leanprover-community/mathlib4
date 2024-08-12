@@ -253,12 +253,12 @@ noncomputable instance isEquivalenceMap
 /-- The equality between `map α β ⋙ fst L' R'` and `fst L R ⋙ F₁`,
 where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
 @[simp]
-def map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ := rfl
+theorem map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ := rfl
 
 /-- The equality between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
 @[simp]
-def map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ := rfl
+theorem map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ := rfl
 
 end
 
