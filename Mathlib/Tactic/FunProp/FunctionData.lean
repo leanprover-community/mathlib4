@@ -76,6 +76,17 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
 
     Mor.withApp b fun fn args => do
 
+      let mut fn := fn
+      let mut args := args
+
+      -- revert projection in fn
+      if let .proj n i x := fn then
+        let .some info := getStructureInfo? (← getEnv) n | unreachable!
+        let .some projName := info.getProjFn? i | unreachable!
+        let p ← mkAppM projName #[x]
+        fn := p.getAppFn
+        args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
+
       let mainArgs := args
         |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
         |>.filterMap id
@@ -116,7 +127,9 @@ def getFunctionData? (f : Expr)
     else
       pure false
 
-  let .forallE xName xType _ _ ← inferType f | throwError "fun_prop bug: function expected"
+  let .forallE xName xType _ _ ← instantiateMVars (← inferType f)
+    | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
+                    type ctor {(← inferType f).ctorName}"
   withLocalDeclD xName xType fun x => do
     let fx' ← Mor.whnfPred (f.beta #[x]).eta unfold cfg
     let f' ← mkLambdaFVars #[x] fx'
