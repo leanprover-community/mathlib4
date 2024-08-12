@@ -68,7 +68,7 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   add_assoc := by
     rintro ⟨x⟩ ⟨y⟩ ⟨z⟩
     exact Quot.sound add_assoc_equiv
-  neg_add_self := Quotient.ind <| fun x => Quot.sound (neg_add_self_equiv x)
+  neg_add_cancel := Quotient.ind <| fun x => Quot.sound (neg_add_cancel_equiv x)
   add_comm := by
     rintro ⟨x⟩ ⟨y⟩
     exact Quot.sound add_comm_equiv

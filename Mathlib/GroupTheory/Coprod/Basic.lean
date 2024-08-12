@@ -566,11 +566,11 @@ variable {G H : Type*} [Group G] [Group H]
 
 @[to_additive]
 theorem mk_of_inv_mul : ∀ x : G ⊕ H, mk (of (x.map Inv.inv Inv.inv)) * mk (of x) = 1
-  | Sum.inl _ => map_mul_eq_one inl (inv_mul_self _)
-  | Sum.inr _ => map_mul_eq_one inr (inv_mul_self _)
+  | Sum.inl _ => map_mul_eq_one inl (inv_mul_cancel _)
+  | Sum.inr _ => map_mul_eq_one inr (inv_mul_cancel _)
 
 @[to_additive]
-theorem con_inv_mul_self (x : FreeMonoid (G ⊕ H)) :
+theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
     coprodCon G H (ofList (x.toList.map (Sum.map Inv.inv Inv.inv)).reverse * x) 1 := by
   rw [← mk_eq_mk, map_mul, map_one]
   induction x with
@@ -582,7 +582,7 @@ theorem con_inv_mul_self (x : FreeMonoid (G ⊕ H)) :
 @[to_additive]
 instance : Inv (G ∗ H) where
   inv := Quotient.map' (fun w => ofList (w.toList.map (Sum.map Inv.inv Inv.inv)).reverse) fun _ _ ↦
-    (coprodCon G H).map_of_mul_left_rel_one _ con_inv_mul_self
+    (coprodCon G H).map_of_mul_left_rel_one _ con_inv_mul_cancel
 
 @[to_additive]
 theorem inv_def (w : FreeMonoid (G ⊕ H)) :
@@ -591,7 +591,7 @@ theorem inv_def (w : FreeMonoid (G ⊕ H)) :
 
 @[to_additive]
 instance : Group (G ∗ H) where
-  inv_mul_self := mk_surjective.forall.2 fun x => mk_eq_mk.2 (con_inv_mul_self x)
+  inv_mul_cancel := mk_surjective.forall.2 fun x => mk_eq_mk.2 (con_inv_mul_cancel x)
 
 @[to_additive (attr := simp)]
 theorem closure_range_inl_union_inr :

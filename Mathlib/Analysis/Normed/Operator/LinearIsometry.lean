@@ -733,7 +733,7 @@ instance instGroup : Group (E ≃ₗᵢ[R] E) where
   one_mul := trans_refl
   mul_one := refl_trans
   mul_assoc _ _ _ := trans_assoc _ _ _
-  inv_mul_self := self_trans_symm
+  inv_mul_cancel := self_trans_symm
 
 @[simp]
 theorem coe_one : ⇑(1 : E ≃ₗᵢ[R] E) = id :=

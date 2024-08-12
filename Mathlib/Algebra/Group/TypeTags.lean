@@ -420,10 +420,10 @@ instance Multiplicative.divisionCommMonoid [SubtractionCommMonoid α] :
   { Multiplicative.divisionMonoid, Multiplicative.commSemigroup with }
 
 instance Additive.addGroup [Group α] : AddGroup (Additive α) :=
-  { Additive.subNegMonoid with neg_add_self := @inv_mul_self α _ }
+  { Additive.subNegMonoid with neg_add_cancel := @inv_mul_cancel α _ }
 
 instance Multiplicative.group [AddGroup α] : Group (Multiplicative α) :=
-  { Multiplicative.divInvMonoid with inv_mul_self := @neg_add_self α _ }
+  { Multiplicative.divInvMonoid with inv_mul_cancel := @neg_add_cancel α _ }
 
 instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
   { Additive.addGroup, Additive.addCommMonoid with }

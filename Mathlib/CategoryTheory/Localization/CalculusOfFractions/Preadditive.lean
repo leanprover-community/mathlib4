@@ -164,7 +164,7 @@ lemma neg'_add'_self (f : L.obj X ⟶ L.obj Y) :
   have := inverts L W _ α.hs
   rw [add'_eq W _ _ (LeftFraction₂.mk (-α.f) α.f α.s α.hs) (neg'_eq W _ _ rfl) rfl]
   simp only [← cancel_mono (L.map α.s), LeftFraction.map_comp_map_s, ← L.map_comp,
-    Limits.zero_comp, neg_add_self]
+    Limits.zero_comp, neg_add_cancel]
 
 lemma add'_assoc (f₁ f₂ f₃ : L.obj X ⟶ L.obj Y) :
     add' W (add' W f₁ f₂) f₃ = add' W f₁ (add' W f₂ f₃) := by
@@ -229,7 +229,7 @@ noncomputable def addCommGroup' : AddCommGroup (L.obj X ⟶ L.obj Y) := by
       add_zero := add'_zero _
       add_comm := add'_comm _
       zero_add := zero_add' _
-      neg_add_self := neg'_add'_self _
+      neg_add_cancel := neg'_add'_self _
       nsmul := nsmulRec
       zsmul := zsmulRec }
 

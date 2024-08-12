@@ -90,7 +90,7 @@ instance : Group (N ⋊[φ] G) where
   mul_assoc a b c := SemidirectProduct.ext (by simp [mul_assoc]) (by simp [mul_assoc])
   one_mul a := SemidirectProduct.ext (by simp) (one_mul a.2)
   mul_one a := SemidirectProduct.ext (by simp) (mul_one _)
-  inv_mul_self a := SemidirectProduct.ext (by simp) (by simp)
+  inv_mul_cancel a := SemidirectProduct.ext (by simp) (by simp)
 
 instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
 

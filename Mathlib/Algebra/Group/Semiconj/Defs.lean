@@ -121,7 +121,7 @@ variable [Group G] {a x y : G}
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
 theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
-  unfold SemiconjBy; rw [mul_assoc, inv_mul_self, mul_one]
+  unfold SemiconjBy; rw [mul_assoc, inv_mul_cancel, mul_one]
 
 @[to_additive (attr := simp)]
 theorem conj_iff {a x y b : G} :

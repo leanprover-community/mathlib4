@@ -177,9 +177,9 @@ instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P
   add_comm f g := by
     ext
     apply add_comm
-  neg_add_self f := by
+  neg_add_cancel f := by
     ext
-    apply neg_add_self
+    apply neg_add_cancel
   zsmul := zsmulRec
   nsmul := nsmulRec
 

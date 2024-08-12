@@ -278,7 +278,7 @@ private theorem I_prop : innerProp' E (I : 𝕜) := by
   by_cases hI : (I : 𝕜) = 0
   · rw [hI, ← Nat.cast_zero]; exact nat_prop _
   intro x y
-  have hI' : (-I : 𝕜) * I = 1 := by rw [← inv_I, inv_mul_cancel hI]
+  have hI' : (-I : 𝕜) * I = 1 := by rw [← inv_I, inv_mul_cancel₀ hI]
   rw [conj_I, inner_, inner_, mul_left_comm]
   congr 1
   rw [smul_smul, I_mul_I_of_nonzero hI, neg_one_smul]

@@ -284,7 +284,7 @@ lemma add_hom (α β : Ext X Y n) : (α + β).hom = α.hom + β.hom := by
       biprod.lift_snd, Functor.map_id, ShiftedHom.mk₀_id_comp]
 
 lemma neg_hom (α : Ext X Y n) : (-α).hom = -α.hom := by
-  rw [← add_right_inj α.hom, ← add_hom, add_neg_self, add_neg_self, zero_hom]
+  rw [← add_right_inj α.hom, ← add_hom, add_neg_cancel, add_neg_cancel, zero_hom]
 
 /-- When an instance of `[HasDerivedCategory.{w'} C]` is available, this is the additive
 bijection between `Ext.{w} X Y n` and a type of morphisms in the derived category. -/

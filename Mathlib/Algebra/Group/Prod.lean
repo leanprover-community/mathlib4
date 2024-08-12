@@ -189,7 +189,7 @@ instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G �
 
 @[to_additive]
 instance instGroup [Group G] [Group H] : Group (G × H) :=
-  { inv_mul_self := fun _ => mk.inj_iff.mpr ⟨inv_mul_self _, inv_mul_self _⟩ }
+  { inv_mul_cancel := fun _ => mk.inj_iff.mpr ⟨inv_mul_cancel _, inv_mul_cancel _⟩ }
 
 @[to_additive]
 instance [Mul G] [Mul H] [IsLeftCancelMul G] [IsLeftCancelMul H] : IsLeftCancelMul (G × H) where

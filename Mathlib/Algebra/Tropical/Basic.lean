@@ -410,7 +410,7 @@ instance instGroupTropical [AddGroup R] : Group (Tropical R) :=
   { instMonoidTropical with
     inv := Inv.inv
     div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
-    inv_mul_self := fun _ => untrop_injective <| neg_add_self _
+    inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _
     zpow := fun n x => trop <| n • untrop x
     zpow_zero' := fun _ => untrop_injective <| zero_zsmul _
     zpow_succ' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_succ' _ _

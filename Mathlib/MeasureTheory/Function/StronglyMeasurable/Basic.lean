@@ -237,7 +237,7 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
     · rwa [one_le_div (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
   · rw [min_eq_right _]
     · rw [norm_div, norm_norm, mul_comm, mul_div, div_eq_mul_inv, mul_comm, ← mul_assoc,
-        inv_mul_cancel h0, one_mul, Real.norm_of_nonneg hc]
+        inv_mul_cancel₀ h0, one_mul, Real.norm_of_nonneg hc]
     · rwa [div_le_one (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
 
 theorem _root_.stronglyMeasurable_bot_iff [Nonempty β] [T2Space β] :

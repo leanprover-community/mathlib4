@@ -85,10 +85,10 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
         intros
         ext
         simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
-      neg_add_self := by
+      neg_add_cancel := by
         intros
         ext
-        apply neg_add_self
+        apply neg_add_cancel
       add_comm := by
         intros
         ext
@@ -166,10 +166,10 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
         intros
         ext
         simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
-      neg_add_self := by
+      neg_add_cancel := by
         intros
         ext
-        apply neg_add_self
+        apply neg_add_cancel
       add_comm := by
         intros
         ext

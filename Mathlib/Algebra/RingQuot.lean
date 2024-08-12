@@ -337,7 +337,7 @@ private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : Ri
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
     neg := Neg.neg
-    neg_add_self := by
+    neg_add_cancel := by
       rintro ⟨⟨⟩⟩
       simp [neg_quot, add_quot, ← zero_quot]
     sub := Sub.sub

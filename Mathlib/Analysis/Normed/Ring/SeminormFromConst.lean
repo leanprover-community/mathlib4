@@ -96,7 +96,7 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
       rw [Nat.one_le_iff_ne_zero, ne_eq, Nat.sub_eq_zero_iff_le, not_le]
       exact lt_of_le_of_ne hmn heq
     rw [hpm c h1, mul_div_assoc, div_eq_mul_inv, pow_sub₀ _ hc hmn, mul_assoc, mul_comm (f c ^ m)⁻¹,
-      ← mul_assoc (f c ^ n), mul_inv_cancel (pow_ne_zero n hc), one_mul, div_eq_mul_inv]
+      ← mul_assoc (f c ^ n), mul_inv_cancel₀ (pow_ne_zero n hc), one_mul, div_eq_mul_inv]
 
 /-- The real-valued function sending `x ∈ R` to the limit of `(f (x * c^n))/((f c)^n)`. -/
 def seminormFromConst' (x : R) : ℝ :=
@@ -252,7 +252,7 @@ theorem seminormFromConst_const_mul (x : R) :
     simp only [seminormFromConst_seq_def]
     ext n
     ring_nf
-    rw [mul_assoc _ (f c), mul_inv_cancel hc, mul_one]
+    rw [mul_assoc _ (f c), mul_inv_cancel₀ hc, mul_one]
   simpa [hterm] using tendsto_const_nhds.mul hlim
 
 end Ring

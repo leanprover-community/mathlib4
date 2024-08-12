@@ -148,12 +148,12 @@ instance : SubNegMonoid (Completion α) :=
 
 instance addGroup : AddGroup (Completion α) :=
   { (inferInstance : SubNegMonoid <| Completion α) with
-    neg_add_self := fun a ↦
+    neg_add_cancel := fun a ↦
       Completion.induction_on a
         (isClosed_eq (continuous_map₂ Completion.continuous_map continuous_id) continuous_const)
         fun a ↦
         show -(a : Completion α) + a = 0 by
-          rw_mod_cast [neg_add_self]
+          rw_mod_cast [neg_add_cancel]
           rfl }
 
 instance uniformAddGroup : UniformAddGroup (Completion α) :=

@@ -214,7 +214,7 @@ instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMono
 
 @[to_additive]
 instance group [∀ i, Group (f i)] : Group (∀ i, f i) where
-  inv_mul_self := by intros; ext; exact inv_mul_self _
+  inv_mul_cancel := by intros; ext; exact inv_mul_cancel _
 
 @[to_additive]
 instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group, commMonoid with }
