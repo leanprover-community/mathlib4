@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Ring.NegOnePow
+import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 /-! Signs in constructions on homological complexes
 
@@ -21,12 +22,11 @@ In particular, we construct an instance of `TotalComplexShape c c c` when `c : C
 and `I` is an additive monoid equipped with a group homomorphism `ε' : Multiplicative I → ℤˣ`
 satisfying certain properties (see `ComplexShape.TensorSigns`).
 
-TODO @joelriou: add more classes for the associativity of the total complex, etc.
-
 -/
 
-variable {I₁ I₂ I₁₂ : Type*}
-  (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₁₂ : ComplexShape I₁₂)
+variable {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*}
+  (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
+  (c₁₂ : ComplexShape I₁₂) (c₂₃ : ComplexShape I₂₃) (c : ComplexShape J)
 
 /-- A total complex shape for three complexes shapes `c₁`, `c₂`, `c₁₂` on three types
 `I₁`, `I₂` and `I₁₂` consists of the data and properties that will allow the construction
@@ -182,6 +182,85 @@ instance : TensorSigns (ComplexShape.up ℤ) where
 lemma ε_up_ℤ (n : ℤ) : (ComplexShape.up ℤ).ε n = n.negOnePow := rfl
 
 end
+
+section
+
+variable (c₁ c₂)
+variable [TotalComplexShape c₁₂ c₃ c] [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c]
+
+/-- When we have six complex shapes `c₁`, `c₂`, `c₃`, `c₁₂`, `c₂₃`, `c`, and total functors
+`HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂`,
+`HomologicalComplex₂ C c₁₂ c₃ ⥤ HomologicalComplex C c`,
+`HomologicalComplex₂ C c₂ c₃ ⥤ HomologicalComplex C c₂₃`,
+`HomologicalComplex₂ C c₁ c₂₂₃ ⥤ HomologicalComplex C c`, we get two ways to
+compute the total complex of a triple complex in `HomologicalComplex₃ C c₁ c₂ c₃`, then
+under this assumption `[Associative c₁ c₂ c₃ c₁₂ c₂₃ c]`, these two complexes
+canonically identify (without introducing signs). -/
+class Associative : Prop where
+  assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩
+  ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₁ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₁ c₁ c₂ c₁₂ (i₁, i₂)
+  ε₂_ε₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₁ c₂ c₃ c₂₃ (i₂, i₃) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₂ c₁ c₂ c₁₂ (i₁, i₂)
+  ε₂_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) =
+      (ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₂ c₂ c₃ c₂₃ (i₂, i₃))
+
+variable [Associative c₁ c₂ c₃ c₁₂ c₂₃ c]
+
+lemma assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩ := by
+  apply Associative.assoc
+
+lemma associative_ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₁ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₁ c₁ c₂ c₁₂ (i₁, i₂) := by
+  apply Associative.ε₁_eq_mul
+
+lemma associative_ε₂_ε₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₁ c₂ c₃ c₂₃ (i₂, i₃) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₂ c₁ c₂ c₁₂ (i₁, i₂) := by
+  apply Associative.ε₂_ε₁
+
+lemma associative_ε₂_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) =
+      (ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₂ c₂ c₃ c₂₃ (i₂, i₃)) := by
+  apply Associative.ε₂_eq_mul
+
+/-- The map `I₁ × I₂ × I₃ → j` that is obtained using `TotalComplexShape c₁ c₂ c₁₂`
+and `TotalComplexShape c₁₂ c₃ c` when `c₁ : ComplexShape I₁`, `c₂ : ComplexShape I₂`,
+`c₃ : ComplexShape I₃`, `c₁₂ : ComplexShape I₁₂` and `c : ComplexShape J`. -/
+def r : I₁ × I₂ × I₃ → J := fun ⟨i₁, i₂, i₃⟩ ↦ π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩
+
+open CategoryTheory
+
+/-- The `GradedObject.BifunctorComp₁₂IndexData` which arises from complex shapes. -/
+@[reducible]
+def ρ₁₂ : GradedObject.BifunctorComp₁₂IndexData (r c₁ c₂ c₃ c₁₂ c) where
+  I₁₂ := I₁₂
+  p := π c₁ c₂ c₁₂
+  q := π c₁₂ c₃ c
+  hpq _ := rfl
+
+/-- The `GradedObject.BifunctorComp₂₃IndexData` which arises from complex shapes. -/
+@[reducible]
+def ρ₂₃ : GradedObject.BifunctorComp₂₃IndexData (r c₁ c₂ c₃ c₁₂ c) where
+  I₂₃ := I₂₃
+  p := π c₂ c₃ c₂₃
+  q := π c₁ c₂₃ c
+  hpq := fun ⟨i₁, i₂, i₃⟩ ↦ (assoc c₁ c₂ c₃ c₁₂ c₂₃ c i₁ i₂ i₃).symm
+
+end
+
+instance {I : Type*} [AddMonoid I] (c : ComplexShape I) [c.TensorSigns] :
+    Associative c c c c c c where
+  assoc := add_assoc
+  ε₁_eq_mul _ _ _ := by dsimp; rw [one_mul]
+  ε₂_ε₁ _ _ _ := by dsimp; rw [one_mul, mul_one]
+  ε₂_eq_mul _ _ _ := by dsimp; rw [ε_add]
 
 end ComplexShape
 
