@@ -781,7 +781,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       rw [ENNReal.div_lt_iff, one_mul]
       · conv_lhs => rw [← add_zero (N : ℝ≥0∞)]
         exact ENNReal.add_lt_add_left (ENNReal.natCast_ne_top N) zero_lt_one
-      · simp only [true_or_iff, add_eq_zero_iff, Ne, not_false_iff, one_ne_zero, and_false_iff]
+      · simp only [true_or_iff, add_eq_zero, Ne, not_false_iff, one_ne_zero, and_false_iff]
       · simp only [ENNReal.natCast_ne_top, Ne, not_false_iff, or_true_iff]
     rw [zero_mul] at C
     apply le_bot_iff.1
