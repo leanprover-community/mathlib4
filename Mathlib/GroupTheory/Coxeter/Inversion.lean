@@ -377,7 +377,7 @@ theorem prod_rightInvSeq (ω : List B) : prod (ris ω) = (π ω)⁻¹ := by
   · simp [rightInvSeq, ih, wordProd_cons]
 
 theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
-  simp [leftInvSeq_eq_reverse_rightInvSeq_reverse, prod_reverse_noncomm]
+  simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, prod_reverse_noncomm, inv_inj]
   have : List.map (fun x ↦ x⁻¹) (ris ω.reverse) = ris ω.reverse := calc
     List.map (fun x ↦ x⁻¹) (ris ω.reverse)
     _ = List.map id (ris ω.reverse)             := by
