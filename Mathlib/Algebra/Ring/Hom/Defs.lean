@@ -42,6 +42,10 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 `RingHom`, `SemiringHom`
 -/
 
+assert_not_exists Function.Injective.mulZeroClass
+assert_not_exists semigroupDvd
+assert_not_exists Units.map
+assert_not_exists Set.range
 
 open Function
 
@@ -154,9 +158,6 @@ variable (f : α →ₙ+* β) {x y : α}
 @[ext]
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
-
-theorem ext_iff {f g : α →ₙ+* β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 @[simp]
 theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
@@ -455,9 +456,6 @@ theorem coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=
 theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
 
-theorem ext_iff {f g : α →+* β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
   ext fun _ => rfl
@@ -660,8 +658,3 @@ theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   rfl
 
 end AddMonoidHom
-
-assert_not_exists Function.Injective.mulZeroClass
-assert_not_exists semigroupDvd
-assert_not_exists Units.map
-assert_not_exists Set.range

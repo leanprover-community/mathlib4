@@ -11,7 +11,7 @@ import Mathlib.Algebra.Module.Opposites
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Order.Kleene
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
@@ -299,11 +299,10 @@ end
 
 section DecidableEq
 
-open scoped Classical
-
 theorem mem_span_mul_finite_of_mem_span_mul {R A} [Semiring R] [AddCommMonoid A] [Mul A]
     [Module R A] {S : Set A} {S' : Set A} {x : A} (hx : x ∈ span R (S * S')) :
     ∃ T T' : Finset A, ↑T ⊆ S ∧ ↑T' ⊆ S' ∧ x ∈ span R (T * T' : Set A) := by
+  classical
   obtain ⟨U, h, hU⟩ := mem_span_finite_of_mem_span hx
   obtain ⟨T, T', hS, hS', h⟩ := Finset.subset_mul h
   use T, T', hS, hS'
@@ -399,9 +398,10 @@ theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx _
 
 theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
-  induction' n with n ih
-  · exact (h rfl).elim
-  · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
+  induction n with
+  | zero => exact (h rfl).elim
+  | succ n ih =>
+    rw [pow_succ, pow_succ, mul_toAddSubmonoid]
     cases n with
     | zero => rw [pow_zero, pow_zero, one_mul, ← mul_toAddSubmonoid, one_mul]
     | succ n => rw [ih n.succ_ne_zero]

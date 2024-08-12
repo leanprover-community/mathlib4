@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Data.Set.Subset
 import Mathlib.Topology.Clopen
 import Mathlib.Topology.Connected.Basic
 
@@ -21,7 +22,6 @@ to clopen sets.
 -/
 
 open Set Function Topology TopologicalSpace Relation
-open scoped Classical
 
 universe u v
 
@@ -120,6 +120,16 @@ theorem isClopen_iff [PreconnectedSpace α] {s : Set α} : IsClopen s ↔ s = �
 theorem IsClopen.eq_univ [PreconnectedSpace α] {s : Set α} (h' : IsClopen s) (h : s.Nonempty) :
     s = univ :=
   (isClopen_iff.mp h').resolve_left h.ne_empty
+
+open Set.Notation in
+lemma isClopen_preimage_val {X : Type*} [TopologicalSpace X] {u v : Set X}
+    (hu : IsOpen u) (huv : Disjoint (frontier u) v) : IsClopen (v ↓∩ u) := by
+  refine ⟨?_, isOpen_induced hu (f := Subtype.val)⟩
+  refine isClosed_induced_iff.mpr ⟨closure u, isClosed_closure, ?_⟩
+  apply image_val_injective
+  simp only [Subtype.image_preimage_coe]
+  rw [closure_eq_self_union_frontier, inter_union_distrib_left, inter_comm _ (frontier u),
+    huv.inter_eq, union_empty]
 
 section disjoint_subsets
 
@@ -267,6 +277,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
       ∀ U : Finset (Set α), (∀ u v : Set α, u ∈ U → v ∈ U → (s ∩ (u ∩ v)).Nonempty → u = v) →
         (∀ u ∈ U, IsOpen u) → (s ⊆ ⋃₀ ↑U) → ∃ u ∈ U, s ⊆ u := by
   rw [IsConnected, isPreconnected_iff_subset_of_disjoint]
+  classical
   refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h => ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
@@ -347,6 +358,21 @@ theorem IsClopen.biUnion_connectedComponent_eq {Z : Set α} (h : IsClopen Z) :
     ⋃ x ∈ Z, connectedComponent x = Z :=
   Subset.antisymm (iUnion₂_subset fun _ => h.connectedComponent_subset) fun _ h =>
     mem_iUnion₂_of_mem h mem_connectedComponent
+
+open Set.Notation in
+/-- If `u v : Set X` and `u ⊆ v` is clopen in `v`, then `u` is the union of the connected
+components of `v` in `X` which intersect `u`. -/
+lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u v : Set X}
+    (hu : IsClopen (v ↓∩ u)) (huv₁ : u ⊆ v) :
+    u = ⋃ x ∈ u, connectedComponentIn v x := by
+  have := congr(((↑) : Set v → Set X) $(hu.biUnion_connectedComponent_eq.symm))
+  simp only [Subtype.image_preimage_coe, mem_preimage, iUnion_coe_set, image_val_iUnion,
+    inter_eq_right.mpr huv₁] at this
+  nth_rw 1 [this]
+  congr! 2 with x hx
+  simp only [← connectedComponentIn_eq_image]
+  exact le_antisymm (iUnion_subset fun _ ↦ le_rfl) <|
+    iUnion_subset fun hx ↦ subset_iUnion₂_of_subset (huv₁ hx) hx le_rfl
 
 /-- The preimage of a connected component is preconnected if the function has connected fibers
 and a subset is closed iff the preimage is. -/

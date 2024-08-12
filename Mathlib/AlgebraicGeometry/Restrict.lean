@@ -121,16 +121,29 @@ def stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
 
 @[reassoc (attr := simp)]
 lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
-    {V : TopologicalSpace.Opens U} (x : V) :
+    {V : U.toScheme.Opens} (x : V) :
       U.toScheme.presheaf.germ x ≫ (U.stalkIso x.1).hom =
         X.presheaf.germ ⟨x.1.1, show x.1.1 ∈ U.ι ''ᵁ V from ⟨x.1, x.2, rfl⟩⟩ :=
-    PresheafedSpace.restrictStalkIso_hom_eq_germ _ _ _ _ _
+    PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.openEmbedding _ _ _
+
+@[reassoc (attr := simp)]
+lemma germ_stalkIso_hom' {X : Scheme.{u}} (U : X.Opens)
+    {V : TopologicalSpace.Opens U} (x : U) (hx : x ∈ V) :
+      U.toScheme.presheaf.germ ⟨x, hx⟩ ≫ (U.stalkIso x).hom =
+        X.presheaf.germ ⟨x.1, show x.1 ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ :=
+    PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.openEmbedding _ _ _
+
+@[simp, reassoc]
+lemma germ_stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x : U)
+    (hx : x ∈ V) : X.presheaf.germ ⟨x.val, show x.val ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ ≫
+      (U.stalkIso x).inv = U.toScheme.presheaf.germ ⟨x, hx⟩ :=
+  PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace U.openEmbedding V x hx
 
 end Scheme.Opens
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! J obj map]
-def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
+def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     (hU : ⨆ i, U i = ⊤) : X.OpenCover where
   J := s
   obj i := U i
@@ -142,6 +155,9 @@ def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     erw [Subtype.range_coe]
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
+
+@[deprecated (since := "2024-07-24")]
+noncomputable alias Scheme.openCoverOfSuprEqTop := Scheme.openCoverOfISupEqTop
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
@@ -485,23 +501,14 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.
 -/
 def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
-    Arrow.mk (PresheafedSpace.stalkMap (f ∣_ U).1 x) ≅
-      Arrow.mk (PresheafedSpace.stalkMap f.1 x.1) := by
-  fapply Arrow.isoMk'
-  · refine U.stalkIso ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ ?_
-    apply Inseparable.of_eq
-    exact morphismRestrict_base_coe f U x
-  · exact Scheme.Opens.stalkIso _ _
-  · apply TopCat.Presheaf.stalk_hom_ext
+    Arrow.mk ((f ∣_ U).stalkMap x) ≅ Arrow.mk (f.stalkMap x.1) := Arrow.isoMk' _ _
+  (U.stalkIso ((f ∣_ U).1.base x) ≪≫
+    (TopCat.Presheaf.stalkCongr _ <| Inseparable.of_eq <| morphismRestrict_base_coe f U x))
+  ((f ⁻¹ᵁ U).stalkIso x) <| by
+    apply TopCat.Presheaf.stalk_hom_ext
     intro V hxV
     change ↑(f ⁻¹ᵁ U) at x
-    simp only [Scheme.restrict_presheaf_obj, unop_op, Opens.coe_inclusion, Iso.trans_hom,
-      TopCat.Presheaf.stalkCongr_hom, Category.assoc, Scheme.restrict_toPresheafedSpace]
-    rw [Scheme.Opens.germ_stalkIso_hom_assoc,
-      TopCat.Presheaf.germ_stalkSpecializes'_assoc,
-      PresheafedSpace.stalkMap_germ'_assoc, PresheafedSpace.stalkMap_germ',
-      ← Scheme.Hom.app, ← Scheme.Hom.app, morphismRestrict_app,
-      Scheme.Opens.germ_stalkIso_hom, Category.assoc, TopCat.Presheaf.germ_res]
+    simp [Scheme.stalkMap_germ'_assoc, Scheme.Hom.appLE]
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by

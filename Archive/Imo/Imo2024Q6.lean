@@ -62,9 +62,9 @@ lemma Aquaesulian.apply_zero : f 0 = 0 := by
 @[simp]
 lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
   rcases h x (-(f x)) with hc | hc
-  · rw [add_right_neg, ← h.apply_zero] at hc
+  · rw [add_neg_cancel, ← h.apply_zero] at hc
     exact h.injective hc
-  · rw [add_right_neg, h.apply_zero] at hc
+  · rw [add_neg_cancel, h.apply_zero] at hc
     exact hc.symm
 
 @[simp]
