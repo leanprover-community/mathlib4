@@ -214,7 +214,7 @@ theorem nat_toGame : ∀ n : ℕ, toGame n = n
   | 0 => Quot.sound (zeroToPGameRelabelling).equiv
   | n + 1 => by
     have : toGame 1 = 1 := Quot.sound oneToPGameRelabelling.equiv
-    rw [Nat.cast_add, ← nadd_nat, toGame_add, nat_toGame, Nat.cast_one, this]
+    rw [Nat.cast_add, ← nadd_nat, toGame_nadd, nat_toGame, Nat.cast_one, this]
     rfl
 
 theorem nat_toPGame (n : ℕ) : toPGame n ≈ n := by
