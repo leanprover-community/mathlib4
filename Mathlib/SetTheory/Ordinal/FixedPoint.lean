@@ -368,7 +368,6 @@ def nfp (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
 theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : Unit => f :=
   rfl
 
-@[simp]
 theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) :
     (fun a => sup fun n : ℕ => f^[n] a) = nfp f := by
   refine funext fun a => le_antisymm ?_ (sup_le fun l => ?_)
