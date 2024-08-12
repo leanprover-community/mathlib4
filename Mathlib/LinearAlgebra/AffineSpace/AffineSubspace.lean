@@ -35,7 +35,8 @@ from `P`) in most cases. As for modules, `k` is an explicit argument rather than
 `V`.
 
 This file only provides purely algebraic definitions and results. Those depending on analysis or
-topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and `Topology.Algebra.Affine`.
+topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
+`Topology.Algebra.Affine`.
 
 ## References
 
@@ -305,11 +306,10 @@ theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p
 theorem coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P) :=
   SetLike.coe_injective
 
-@[ext]
+@[ext (iff := false)]
 theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
--- Porting note: removed `simp`, proof is `simp only [SetLike.ext'_iff]`
 protected theorem ext_iff (s₁ s₂ : AffineSubspace k P) : s₁ = s₂ ↔ (s₁ : Set P) = s₂ :=
   SetLike.ext'_iff
 

@@ -8,7 +8,7 @@ import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # (Semi-)linear isometries
@@ -169,14 +169,6 @@ theorem ext {f g : E →ₛₗᵢ[σ₁₂] E₂} (h : ∀ x, f x = g x) : f = g
   coe_injective <| funext h
 
 variable [FunLike 𝓕 E E₂]
-
-protected theorem congr_arg {f : 𝓕} :
-    ∀ {x x' : E}, x = x' → f x = f x'
-  | _, _, rfl => rfl
-
-protected theorem congr_fun {f g : 𝓕} (h : f = g) (x : E) :
-    f x = g x :=
-  h ▸ rfl
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_zero : f 0 = 0 :=

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Inv
+import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Maps between real and extended non-negative real numbers
@@ -155,7 +156,7 @@ theorem toReal_pos_iff : 0 < a.toReal ↔ 0 < a ∧ a < ∞ :=
 theorem toReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 < a.toReal :=
   toReal_pos_iff.mpr ⟨bot_lt_iff_ne_bot.mpr ha₀, lt_top_iff_ne_top.mpr ha_top⟩
 
-@[gcongr]
+@[gcongr, bound]
 theorem ofReal_le_ofReal {p q : ℝ} (h : p ≤ q) : ENNReal.ofReal p ≤ ENNReal.ofReal q := by
   simp [ENNReal.ofReal, Real.toNNReal_le_toNNReal h]
 
@@ -190,6 +191,8 @@ theorem ofReal_lt_ofReal_iff_of_nonneg {p q : ℝ} (hp : 0 ≤ p) :
 
 @[simp]
 theorem ofReal_pos {p : ℝ} : 0 < ENNReal.ofReal p ↔ 0 < p := by simp [ENNReal.ofReal]
+
+@[bound] private alias ⟨_, Bound.ofReal_pos_of_pos⟩ := ofReal_pos
 
 @[simp]
 theorem ofReal_eq_zero {p : ℝ} : ENNReal.ofReal p = 0 ↔ p ≤ 0 := by simp [ENNReal.ofReal]

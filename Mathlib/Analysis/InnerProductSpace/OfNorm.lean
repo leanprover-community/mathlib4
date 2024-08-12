@@ -127,6 +127,7 @@ theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
     map_add, ofReal_re, ofNat_im, ofReal_im, mul_im, I_re, inv_im]
   ring
 
+attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
 theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
   simp only [inner_]
   have h4 : conj (4⁻¹ : 𝕜) = 4⁻¹ := by norm_num

@@ -106,6 +106,7 @@ class PreservesIsConnected {C : Type u₁} [Category.{u₂, u₁} C] {D : Type v
   /-- `F.obj X` is connected if `X` is connected. -/
   preserves : ∀ {X : C} [IsConnected X], IsConnected (F.obj X)
 
+section
 variable {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
 
 attribute [instance] hasTerminal hasPullbacks hasFiniteCoproducts hasQuotientsByFiniteGroups
@@ -115,6 +116,8 @@ instance : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
 instance : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks C
 
 instance : HasEqualizers C := hasEqualizers_of_hasPullbacks_and_binary_products
+
+end
 
 namespace FiberFunctor
 
@@ -156,7 +159,8 @@ instance : F.Faithful where
 
 end FiberFunctor
 
-variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
+variable {C : Type u₁} [Category.{u₂, u₁} C]
+  (F : C ⥤ FintypeCat.{w})
 
 /-- The canonical action of `Aut F` on the fiber of each object. -/
 instance (X : C) : MulAction (Aut F) (F.obj X) where
@@ -167,6 +171,20 @@ instance (X : C) : MulAction (Aut F) (F.obj X) where
 lemma mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
     σ • x = σ.hom.app X x :=
   rfl
+
+/-- An object that is neither initial or connected has a non-trivial subobject. -/
+lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
+    (hi : IsInitial X → False) :
+    ∃ (Y : C) (v : Y ⟶ X), (IsInitial Y → False) ∧ Mono v ∧ (¬ IsIso v) := by
+  contrapose! hc
+  exact ⟨hi, fun Y i hm hni ↦ hc Y i hni hm⟩
+
+/-- The cardinality of the fiber is preserved under isomorphisms. -/
+lemma card_fiber_eq_of_iso {X Y : C} (i : X ≅ Y) : Nat.card (F.obj X) = Nat.card (F.obj Y) := by
+  have e : F.obj X ≃ F.obj Y := Iso.toEquiv (mapIso (F ⋙ FintypeCat.incl) i)
+  exact Nat.card_eq_of_bijective e (Equiv.bijective e)
+
+variable [PreGaloisCategory C] [FiberFunctor F]
 
 /-- An object is initial if and only if its fiber is empty. -/
 lemma initial_iff_fiber_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X) := by
@@ -188,13 +206,6 @@ lemma not_initial_iff_fiber_nonempty (X : C) : (IsInitial X → False) ↔ Nonem
 /-- An object whose fiber is inhabited is not initial. -/
 lemma not_initial_of_inhabited {X : C} (x : F.obj X) (h : IsInitial X) : False :=
   ((initial_iff_fiber_empty F X).mp ⟨h⟩).false x
-
-/-- An object that is neither initial or connected has a non-trivial subobject. -/
-lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
-    (hi : IsInitial X → False) :
-    ∃ (Y : C) (v : Y ⟶ X), (IsInitial Y → False) ∧ Mono v ∧ (¬ IsIso v) := by
-  contrapose! hc
-  exact ⟨hi, fun Y i hm hni ↦ hc Y i hni hm⟩
 
 /-- The fiber of a connected object is nonempty. -/
 instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj X) := by
@@ -338,11 +349,6 @@ lemma card_fiber_coprod_eq_sum (X Y : C) :
     <| Types.binaryCoproductIso (FintypeCat.incl.obj (F.obj X)) (FintypeCat.incl.obj (F.obj Y))
   rw [← Nat.card_sum]
   exact Nat.card_eq_of_bijective e.toFun (Equiv.bijective e)
-
-/-- The cardinality of the fiber is preserved under isomorphisms. -/
-lemma card_fiber_eq_of_iso {X Y : C} (i : X ≅ Y) : Nat.card (F.obj X) = Nat.card (F.obj Y) := by
-  have e : F.obj X ≃ F.obj Y := Iso.toEquiv (mapIso (F ⋙ FintypeCat.incl) i)
-  exact Nat.card_eq_of_bijective e (Equiv.bijective e)
 
 /-- The cardinality of morphisms `A ⟶ X` is smaller than the cardinality of
 the fiber of the target if the source is connected. -/

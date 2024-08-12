@@ -57,9 +57,11 @@ open Set Filter TopologicalSpace MeasureTheory Function RCLike
 
 open scoped Classical Topology ENNReal NNReal
 
-variable {X Y E F : Type*} [MeasurableSpace X]
+variable {X Y E F : Type*}
 
 namespace MeasureTheory
+
+variable [MeasurableSpace X]
 
 section NormedAddCommGroup
 
@@ -1032,7 +1034,8 @@ section OpenPos
 
 open Measure
 
-variable [TopologicalSpace X] [OpensMeasurableSpace X] {μ : Measure X} [IsOpenPosMeasure μ]
+variable [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
+  {μ : Measure X} [IsOpenPosMeasure μ]
 
 theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMeasureOnCompacts μ]
     {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
@@ -1047,7 +1050,7 @@ section FTC
 
 open MeasureTheory Asymptotics Metric
 
-variable {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable [MeasurableSpace X] {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Fundamental theorem of calculus for set integrals:
 if `μ` is a measure that is finite at a filter `l` and
@@ -1139,6 +1142,8 @@ theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [Open
 end FTC
 
 section
+
+variable [MeasurableSpace X]
 
 /-! ### Continuous linear maps composed with integration
 
@@ -1255,6 +1260,18 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x)
   · simp [integral, *]
 
 end ContinuousLinearEquiv
+
+namespace ContinuousMap
+
+lemma integral_apply [TopologicalSpace Y] [CompactSpace Y] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [CompleteSpace E] {f : X → C(Y, E)} (hf : Integrable f μ) (y : Y) :
+    (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
+  calc (∫ x, f x ∂μ) y = ContinuousMap.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
+    _ = ∫ x, ContinuousMap.evalCLM ℝ y (f x) ∂μ :=
+          (ContinuousLinearMap.integral_comp_comm _ hf).symm
+    _ = _ := rfl
+
+end ContinuousMap
 
 @[norm_cast]
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
@@ -1418,7 +1435,7 @@ end
 
 section thickenedIndicator
 
-variable [PseudoEMetricSpace X]
+variable [MeasurableSpace X] [PseudoEMetricSpace X]
 
 theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure X) {E : Set X}
     (E_mble : MeasurableSet E) (δ : ℝ) : μ E ≤ ∫⁻ x, (thickenedIndicatorAux δ E x : ℝ≥0∞) ∂μ := by

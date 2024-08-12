@@ -17,7 +17,7 @@ import Mathlib.Topology.Order.T5
 noncomputable section
 
 open Set Filter Metric Function
-open scoped Classical Topology ENNReal NNReal Filter
+open scoped Topology ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -348,6 +348,7 @@ protected theorem Tendsto.mul_const {f : Filter α} {m : α → ℝ≥0∞} {a b
 theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
+  classical
   induction' s using Finset.induction with a s has IH
   · simp [tendsto_const_nhds]
   simp only [Finset.prod_insert has]
@@ -366,20 +367,21 @@ protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b
     ContinuousAt (fun x => x * a) b :=
   Tendsto.mul_const tendsto_id h.symm
 
+@[fun_prop]
 protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous (a * ·) :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
 
+@[fun_prop]
 protected theorem continuous_mul_const {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous fun x => x * a :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_mul_const (Or.inl ha)
 
+@[fun_prop]
 protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
-    Continuous fun x : ℝ≥0∞ => x / c := by
-  simp_rw [div_eq_mul_inv, continuous_iff_continuousAt]
-  intro x
-  exact ENNReal.continuousAt_mul_const (Or.intro_left _ (inv_ne_top.mpr c_ne_zero))
+    Continuous fun x : ℝ≥0∞ => x / c :=
+  ENNReal.continuous_mul_const <| ENNReal.inv_ne_top.2 c_ne_zero
 
-@[continuity]
-theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
+@[continuity, fun_prop]
+protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
   simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
@@ -422,7 +424,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
     (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ n) f (𝓝 (a ^ n)) :=
-  ((continuous_pow n).tendsto a).comp hm
+  ((ENNReal.continuous_pow n).tendsto a).comp hm
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0∞} (h : ∀ a < 1, a * x ≤ y) : x ≤ y := by
   have : Tendsto (· * x) (𝓝[<] 1) (𝓝 (1 * x)) :=
@@ -470,6 +472,11 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
   OrderIso.invENNReal.liminf_apply
 
 instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
+
+@[fun_prop]
+protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)
+  | (n : ℕ) => mod_cast ENNReal.continuous_pow n
+  | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
 
 @[simp] -- Porting note (#11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
@@ -914,6 +921,7 @@ theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
   calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
   _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
 
+open Classical in
 theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
     ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) :=
   tsum_eq_add_tsum_ite' b ENNReal.summable
@@ -1058,6 +1066,7 @@ theorem summable_sigma {β : α → Type*} {f : (Σ x, β x) → ℝ≥0} :
 
 theorem indicator_summable {f : α → ℝ≥0} (hf : Summable f) (s : Set α) :
     Summable (s.indicator f) := by
+  classical
   refine NNReal.summable_of_le (fun a => le_trans (le_of_eq (s.indicator_apply f a)) ?_) hf
   split_ifs
   · exact le_refl (f a)
@@ -1103,6 +1112,7 @@ theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) 
   rw [← tsum_zero]
   exact tsum_lt_tsum (fun a => zero_le _) hi hg
 
+open Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
   refine tsum_eq_add_tsum_ite' i (NNReal.summable_of_le (fun i' => ?_) hf)
@@ -1280,7 +1290,7 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
 
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
-theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
+theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
   refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
   -- Actually we need partial sums of `d` to be a Cauchy sequence.

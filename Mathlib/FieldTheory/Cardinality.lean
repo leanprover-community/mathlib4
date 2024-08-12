@@ -63,7 +63,7 @@ theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α
   suffices #α = #K by
     obtain ⟨e⟩ := Cardinal.eq.1 this
     exact ⟨e.field⟩
-  rw [← IsLocalization.card (MvPolynomial α <| ULift.{u} ℚ)⁰ K le_rfl]
+  rw [← IsLocalization.card K (MvPolynomial α <| ULift.{u} ℚ)⁰ le_rfl]
   apply le_antisymm
   · refine
       ⟨⟨fun a => MvPolynomial.monomial (Finsupp.single a 1) (1 : ULift.{u} ℚ), fun x y h => ?_⟩⟩

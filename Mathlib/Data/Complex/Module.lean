@@ -8,6 +8,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Complex.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Data.Real.Star
+import Mathlib.Data.ZMod.Defs
 
 /-!
 # Complex number as a vector space over `ℝ`
