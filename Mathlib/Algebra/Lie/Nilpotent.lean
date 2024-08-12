@@ -527,6 +527,7 @@ variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModul
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
 variable (hf : Surjective f) (hg : Surjective g) (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
 
+include hf hg hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
     (lowerCentralSeries R L M k : Submodule R M).map g = lowerCentralSeries R L₂ M₂ k := by
   induction' k with k ih
@@ -550,6 +551,7 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
       obtain ⟨y, rfl⟩ := hf x
       exact ⟨⁅y, n⁆, ⟨y, n, hn, rfl⟩, (hfg y n).symm⟩
 
+include hf hg hfg in
 theorem Function.Surjective.lieModuleIsNilpotent [IsNilpotent R L M] : IsNilpotent R L₂ M₂ := by
   obtain ⟨k, hk⟩ := id (by infer_instance : IsNilpotent R L M)
   use k

@@ -105,7 +105,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         rw [hfdef]
         dsimp only
         rw [dif_pos rfl]
-        exact neg_add_self _
+        exact neg_add_cancel _
       have hs2 : s2.weightedVSub p f = (0 : V) := by
         set f2 : ι → V := fun x => f x • (p x -ᵥ p i1) with hf2def
         set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1)

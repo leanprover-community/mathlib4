@@ -697,8 +697,8 @@ lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom := by
   ext h
-  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul, mul_left_inv,
-    one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
+  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
+    inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
@@ -721,7 +721,7 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
-    add_left_neg, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
+    neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/

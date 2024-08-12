@@ -82,7 +82,7 @@ theorem centerAndRescale_center : a.centerAndRescale.c (last N) = 0 := by
 
 theorem centerAndRescale_radius {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) :
     a.centerAndRescale.r (last N) = 1 := by
-  simp [SatelliteConfig.centerAndRescale, inv_mul_cancel (a.rpos _).ne']
+  simp [SatelliteConfig.centerAndRescale, inv_mul_cancel₀ (a.rpos _).ne']
 
 end SatelliteConfig
 
