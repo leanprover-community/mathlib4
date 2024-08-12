@@ -181,7 +181,7 @@ termination_by (a, b)
 theorem toGame_nadd (a b : Ordinal) : (a ♯ b).toGame = a.toGame + b.toGame :=
   Quot.sound (toPGame_nadd a b)
 
-/-- The natural multiplication of ordinals corresponds to their product as games. -/
+/-- The natural multiplication of ordinals corresponds to their product as pre-games. -/
 theorem toPGame_nmul (a b : Ordinal.{u}) : (a ⨳ b).toPGame ≈ a.toPGame * b.toPGame := by
   refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
   · rw [toPGame_moveLeft']
