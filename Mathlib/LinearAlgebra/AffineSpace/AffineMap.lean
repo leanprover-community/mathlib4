@@ -33,7 +33,7 @@ This file defines affine maps.
 `P` or `V`.
 
 This file only provides purely algebraic definitions and results. Those depending on analysis or
-topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and
+topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 `Topology.Algebra.Affine`.
 
 ## References
@@ -738,8 +738,8 @@ theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.si
 /-- This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
 note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'`-/
 @[ext (iff := false)]
-theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single i).toAffineMap =
-    g.comp (LinearMap.single i).toAffineMap) : f = g := by
+theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
+    g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by
   refine pi_ext_nonempty fun i x => ?_
   convert AffineMap.congr_fun (h i) x
 
