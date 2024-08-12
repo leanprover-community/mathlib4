@@ -347,8 +347,8 @@ theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω
     (ht : t ∈ ris ω) : cs.IsRightInversion (π ω) t := by
   constructor
   · exact cs.isReflection_of_mem_rightInvSeq ω ht
-  · obtain ⟨⟨j, hj⟩, rfl⟩ := List.mem_iff_get.mp ht
-    rw [← List.getD_eq_get _ 1 hj, wordProd_mul_getD_rightInvSeq]
+  · obtain ⟨j, hj, rfl⟩ := List.mem_iff_getElem.mp ht
+    rw [← List.getD_eq_getElem _ 1 hj, wordProd_mul_getD_rightInvSeq]
     rw [cs.length_rightInvSeq] at hj
     calc
       ℓ (π (ω.eraseIdx j))
@@ -360,8 +360,8 @@ theorem isLeftInversion_of_mem_leftInvSeq {ω : List B} (hω : cs.IsReduced ω) 
     (ht : t ∈ lis ω) : cs.IsLeftInversion (π ω) t := by
   constructor
   · exact cs.isReflection_of_mem_leftInvSeq ω ht
-  · obtain ⟨⟨j, hj⟩, rfl⟩ := List.mem_iff_get.mp ht
-    rw [← List.getD_eq_get _ 1 hj, getD_leftInvSeq_mul_wordProd]
+  · obtain ⟨j, hj, rfl⟩ := List.mem_iff_getElem.mp ht
+    rw [← List.getD_eq_getElem _ 1 hj, getD_leftInvSeq_mul_wordProd]
     rw [cs.length_leftInvSeq] at hj
     calc
       ℓ (π (ω.eraseIdx j))
@@ -389,13 +389,13 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   exact cs.prod_rightInvSeq _
 
 theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (ris ω) := by
-  apply List.nodup_iff_get?_ne_get?.mpr
-  intro j j' j_lt_j' j'_lt_length (dup : get? (rightInvSeq cs ω) j = get? (rightInvSeq cs ω) j')
+  apply List.nodup_iff_getElem?_ne_getElem?.mpr
+  intro j j' j_lt_j' j'_lt_length (dup : (rightInvSeq cs ω)[j]? = (rightInvSeq cs ω)[j']?)
   show False
   replace j'_lt_length : j' < List.length ω := by simpa using j'_lt_length
-  rw [get?_eq_get (by simp; omega), get?_eq_get (by simp; omega)] at dup
+  rw [getElem?_eq_getElem (by simp; omega), getElem?_eq_getElem (by simp; omega)] at dup
   apply Option.some_injective at dup
-  rw [← getD_eq_get _ 1, ← getD_eq_get _ 1] at dup
+  rw [← getD_eq_getElem _ 1, ← getD_eq_getElem _ 1] at dup
   set! t := (ris ω).getD j 1 with h₁
   set! t' := (ris (ω.eraseIdx j)).getD (j' - 1) 1 with h₂
   have h₃ : t' = (ris ω).getD j' 1                    := by

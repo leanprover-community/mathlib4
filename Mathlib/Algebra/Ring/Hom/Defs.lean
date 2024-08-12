@@ -42,6 +42,10 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 `RingHom`, `SemiringHom`
 -/
 
+assert_not_exists Function.Injective.mulZeroClass
+assert_not_exists semigroupDvd
+assert_not_exists Units.map
+assert_not_exists Set.range
 
 open Function
 
@@ -654,8 +658,3 @@ theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   rfl
 
 end AddMonoidHom
-
-assert_not_exists Function.Injective.mulZeroClass
-assert_not_exists semigroupDvd
-assert_not_exists Units.map
-assert_not_exists Set.range
