@@ -266,8 +266,9 @@ lemma weightedVSub_vadd {s : Finset ι} {w : ι → k} (h : ∑ i ∈ s, w i = 0
   rw [weightedVSub, weightedVSubOfPoint_vadd,
     weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ h]
 
-lemma weightedVSub_smul [SMulCommClass kˣ k V] {s : Finset ι} {w : ι → k} (h : ∑ i ∈ s, w i = 0)
-    (p : ι → V) (a : kˣ) : s.weightedVSub (a • p) w = a • s.weightedVSub p w := by
+lemma weightedVSub_smul {G : Type*} [Group G] [DistribMulAction G V] [SMulCommClass G k V]
+    {s : Finset ι} {w : ι → k} (h : ∑ i ∈ s, w i = 0) (p : ι → V) (a : G) :
+    s.weightedVSub (a • p) w = a • s.weightedVSub p w := by
   rw [weightedVSub, weightedVSubOfPoint_smul,
     weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ h]
 
