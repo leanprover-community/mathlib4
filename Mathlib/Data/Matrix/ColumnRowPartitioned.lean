@@ -26,10 +26,6 @@ namespace Matrix
 
 variable {R : Type*}
 variable {m m₁ m₂ n n₁ n₂ : Type*}
-variable [Fintype m] [Fintype m₁] [Fintype m₂]
-variable [Fintype n] [Fintype n₁] [Fintype n₂]
-variable [DecidableEq m] [DecidableEq m₁] [DecidableEq m₂]
-variable [DecidableEq n] [DecidableEq n₁] [DecidableEq n₂]
 
 /-- Concatenate together two matrices A₁[m₁ × N] and A₂[m₂ × N] with the same columns (N) to get a
 bigger matrix indexed by [(m₁ ⊕ m₂) × N] -/
@@ -158,52 +154,6 @@ lemma fromColumns_neg (A₁ : Matrix n m₁ R) (A₂ : Matrix n m₂ R) :
 
 end Neg
 
-section Semiring
-
-variable [Semiring R]
-
-@[simp]
-lemma fromRows_mulVec (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (v : n → R) :
-    fromRows A₁ A₂ *ᵥ v = Sum.elim (A₁ *ᵥ v) (A₂ *ᵥ v) := by
-  ext (_ | _) <;> rfl
-
-@[simp]
-lemma vecMul_fromColumns (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂ R) (v : m → R) :
-    v ᵥ* fromColumns B₁ B₂ = Sum.elim (v ᵥ* B₁) (v ᵥ* B₂) := by
-  ext (_ | _) <;> rfl
-
-@[simp]
-lemma sum_elim_vecMul_fromRows (B₁ : Matrix m₁ n R) (B₂ : Matrix m₂ n R)
-    (v₁ : m₁ → R) (v₂ : m₂ → R) :
-    Sum.elim v₁ v₂ ᵥ* fromRows B₁ B₂ = v₁ ᵥ* B₁ + v₂ ᵥ* B₂ := by
-  ext
-  simp [Matrix.vecMul, fromRows, dotProduct]
-
-@[simp]
-lemma fromColumns_mulVec_sum_elim (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R)
-    (v₁ : n₁ → R) (v₂ : n₂ → R) :
-    fromColumns A₁ A₂ *ᵥ Sum.elim v₁ v₂ = A₁ *ᵥ v₁ + A₂ *ᵥ v₂ := by
-  ext
-  simp [Matrix.mulVec, fromColumns]
-
-@[simp]
-lemma fromRows_mul (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B : Matrix n m R) :
-    fromRows A₁ A₂ * B = fromRows (A₁ * B) (A₂ * B) := by
-  ext (_ | _) _ <;> simp [mul_apply]
-
-@[simp]
-lemma mul_fromColumns (A : Matrix m n R) (B₁ : Matrix n n₁ R) (B₂ : Matrix n n₂ R) :
-    A * fromColumns B₁ B₂ = fromColumns (A * B₁) (A * B₂) := by
-  ext _ (_ | _) <;> simp [mul_apply]
-
-@[simp]
-lemma fromRows_zero : fromRows (0 : Matrix m₁ n R) (0 : Matrix m₂ n R) = 0 := by
-  ext (_ | _) _ <;> simp
-
-@[simp]
-lemma fromColumns_zero : fromColumns (0 : Matrix m n₁ R) (0 : Matrix m n₂ R) = 0 := by
-  ext _ (_ | _) <;> simp
-
 @[simp]
 lemma fromColumns_fromRows_eq_fromBlocks (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R)
     (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
@@ -216,8 +166,54 @@ lemma fromRows_fromColumn_eq_fromBlocks (B₁₁ : Matrix m₁ n₁ R) (B₁₂ 
     fromRows (fromColumns B₁₁ B₁₂) (fromColumns B₂₁ B₂₂) = fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ := by
   ext (_ | _) (_ | _) <;> simp
 
+section Semiring
+
+variable [Semiring R]
+
+@[simp]
+lemma fromRows_mulVec [Fintype n] (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (v : n → R) :
+    fromRows A₁ A₂ *ᵥ v = Sum.elim (A₁ *ᵥ v) (A₂ *ᵥ v) := by
+  ext (_ | _) <;> rfl
+
+@[simp]
+lemma vecMul_fromColumns [Fintype m] (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂ R) (v : m → R) :
+    v ᵥ* fromColumns B₁ B₂ = Sum.elim (v ᵥ* B₁) (v ᵥ* B₂) := by
+  ext (_ | _) <;> rfl
+
+@[simp]
+lemma sum_elim_vecMul_fromRows [Fintype m₁] [Fintype m₂] (B₁ : Matrix m₁ n R) (B₂ : Matrix m₂ n R)
+    (v₁ : m₁ → R) (v₂ : m₂ → R) :
+    Sum.elim v₁ v₂ ᵥ* fromRows B₁ B₂ = v₁ ᵥ* B₁ + v₂ ᵥ* B₂ := by
+  ext
+  simp [Matrix.vecMul, fromRows, dotProduct]
+
+@[simp]
+lemma fromColumns_mulVec_sum_elim [Fintype n₁] [Fintype n₂]
+    (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (v₁ : n₁ → R) (v₂ : n₂ → R) :
+    fromColumns A₁ A₂ *ᵥ Sum.elim v₁ v₂ = A₁ *ᵥ v₁ + A₂ *ᵥ v₂ := by
+  ext
+  simp [Matrix.mulVec, fromColumns]
+
+@[simp]
+lemma fromRows_mul [Fintype n] (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B : Matrix n m R) :
+    fromRows A₁ A₂ * B = fromRows (A₁ * B) (A₂ * B) := by
+  ext (_ | _) _ <;> simp [mul_apply]
+
+@[simp]
+lemma mul_fromColumns [Fintype n] (A : Matrix m n R) (B₁ : Matrix n n₁ R) (B₂ : Matrix n n₂ R) :
+    A * fromColumns B₁ B₂ = fromColumns (A * B₁) (A * B₂) := by
+  ext _ (_ | _) <;> simp [mul_apply]
+
+@[simp]
+lemma fromRows_zero : fromRows (0 : Matrix m₁ n R) (0 : Matrix m₂ n R) = 0 := by
+  ext (_ | _) _ <;> simp
+
+@[simp]
+lemma fromColumns_zero : fromColumns (0 : Matrix m n₁ R) (0 : Matrix m n₂ R) = 0 := by
+  ext _ (_ | _) <;> simp
+
 /-- A row partitioned matrix multiplied by a column partioned matrix gives a 2 by 2 block matrix -/
-lemma fromRows_mul_fromColumns (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R)
+lemma fromRows_mul_fromColumns [Fintype n] (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R)
     (B₁ : Matrix n n₁ R) (B₂ : Matrix n n₂ R) :
     (fromRows A₁ A₂) * (fromColumns B₁ B₂) =
       fromBlocks (A₁ * B₁) (A₁ * B₂) (A₂ * B₁) (A₂ * B₂) := by
@@ -225,21 +221,21 @@ lemma fromRows_mul_fromColumns (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R)
 
 /-- A column partitioned matrix mulitplied by a row partitioned matrix gives the sum of the "outer"
 products of the block matrices -/
-lemma fromColumns_mul_fromRows (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R)
+lemma fromColumns_mul_fromRows [Fintype n₁] [Fintype n₂] (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R)
     (B₁ : Matrix n₁ n R) (B₂ : Matrix n₂ n R) :
     fromColumns A₁ A₂ * fromRows B₁ B₂ = (A₁ * B₁ + A₂ * B₂) := by
   ext
   simp [mul_apply]
 
 /-- A column partitioned matrix multipiled by a block matrix results in a column partioned matrix -/
-lemma fromColumns_mul_fromBlocks (A₁ : Matrix m m₁ R) (A₂ : Matrix m m₂ R)
+lemma fromColumns_mul_fromBlocks [Fintype m₁] [Fintype m₂] (A₁ : Matrix m m₁ R) (A₂ : Matrix m m₂ R)
     (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R) (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     (fromColumns A₁ A₂) * fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ =
       fromColumns (A₁ * B₁₁ + A₂ * B₂₁) (A₁ * B₁₂ + A₂ * B₂₂) := by
   ext _ (_ | _) <;> simp [mul_apply]
 
 /-- A block matrix mulitplied by a row partitioned matrix gives a row partitioned matrix -/
-lemma fromBlocks_mul_fromRows (A₁ : Matrix n₁ n R) (A₂ : Matrix n₂ n R)
+lemma fromBlocks_mul_fromRows [Fintype n₁] [Fintype n₂] (A₁ : Matrix n₁ n R) (A₂ : Matrix n₂ n R)
     (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R) (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ * (fromRows A₁ A₂) =
       fromRows (B₁₁ * A₁ + B₁₂ * A₂) (B₂₁ * A₁ + B₂₂ * A₂) := by
@@ -256,7 +252,9 @@ This is the column and row partitioned matrix form of `Matrix.mul_eq_one_comm`.
 
 The condition `e : n ≃ n₁ ⊕ n₂` states that `fromColumns A₁ A₂` and `fromRows B₁ B₂` are "square".
 -/
-lemma fromColumns_mul_fromRows_eq_one_comm (e : n ≃ n₁ ⊕ n₂)
+lemma fromColumns_mul_fromRows_eq_one_comm
+    [Fintype n₁] [Fintype n₂] [Fintype n] [DecidableEq n] [DecidableEq n₁] [DecidableEq n₂]
+    (e : n ≃ n₁ ⊕ n₂)
     (A₁ : Matrix n n₁ R) (A₂ : Matrix n n₂ R) (B₁ : Matrix n₁ n R) (B₂ : Matrix n₂ n R) :
     fromColumns A₁ A₂ * fromRows B₁ B₂ = 1 ↔ fromRows B₁ B₂ * fromColumns A₁ A₂ = 1 := by
   calc fromColumns A₁ A₂ * fromRows B₁ B₂ = 1
@@ -272,7 +270,8 @@ lemma fromColumns_mul_fromRows_eq_one_comm (e : n ≃ n₁ ⊕ n₂)
 
 /-- The lemma `fromColumns_mul_fromRows_eq_one_comm` specialized to the case where the index sets n₁
 and n₂, are the result of subtyping by a predicate and its complement. -/
-lemma equiv_compl_fromColumns_mul_fromRows_eq_one_comm (p : n → Prop)[DecidablePred p]
+lemma equiv_compl_fromColumns_mul_fromRows_eq_one_comm
+    [Fintype n] [DecidableEq n] (p : n → Prop) [DecidablePred p]
     (A₁ : Matrix n {i // p i} R) (A₂ : Matrix n {i // ¬p i} R)
     (B₁ : Matrix {i // p i} n R) (B₂ : Matrix {i // ¬p i} n R) :
     fromColumns A₁ A₂ * fromRows B₁ B₂ = 1 ↔ fromRows B₁ B₂ * fromColumns A₁ A₂ = 1 :=

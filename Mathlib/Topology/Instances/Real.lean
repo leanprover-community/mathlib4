@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Real.Star
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Periodic
+import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.Star
@@ -127,6 +128,12 @@ instance Real.instCompleteSpace : CompleteSpace ℝ := by
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo
+
+theorem Real.subfield_eq_of_closed {K : Subfield ℝ} (hc : IsClosed (K : Set ℝ)) : K = ⊤ := by
+  rw [SetLike.ext'_iff, Subfield.coe_top, ← hc.closure_eq]
+  refine Rat.denseRange_cast.mono ?_ |>.closure_eq
+  rintro - ⟨_, rfl⟩
+  exact SubfieldClass.ratCast_mem K _
 
 section
 

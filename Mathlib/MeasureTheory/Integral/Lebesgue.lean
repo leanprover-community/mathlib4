@@ -36,12 +36,9 @@ noncomputable section
 
 open Set hiding restrict restrict_apply
 
-open Filter ENNReal
+open Filter ENNReal Topology NNReal MeasureTheory
 
 open Function (support)
-
-open scoped Classical
-open Topology NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -249,12 +246,12 @@ theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤
   rcases exists_measurable_superset_of_null h with ⟨t, hts, ht, ht0⟩
   have : ∀ᵐ x ∂μ, x ∉ t := measure_zero_iff_ae_nmem.1 ht0
   rw [lintegral, lintegral]
-  refine iSup_le fun s => iSup_le fun hfs => le_iSup_of_le (s.restrict tᶜ) <| le_iSup_of_le ?_ ?_
+  refine iSup₂_le fun s hfs ↦ le_iSup₂_of_le (s.restrict tᶜ) ?_ ?_
   · intro a
     by_cases h : a ∈ t <;>
       simp only [restrict_apply s ht.compl, mem_compl_iff, h, not_true, not_false_eq_true,
         indicator_of_not_mem, zero_le, not_false_eq_true, indicator_of_mem]
-    exact le_trans (hfs a) (_root_.by_contradiction fun hnfg => h (hts hnfg))
+    exact le_trans (hfs a) (by_contradiction fun hnfg => h (hts hnfg))
   · refine le_of_eq (SimpleFunc.lintegral_congr <| this.mono fun a hnt => ?_)
     by_cases hat : a ∈ t <;> simp only [restrict_apply s ht.compl, mem_compl_iff, hat, not_true,
       not_false_eq_true, indicator_of_not_mem, not_false_eq_true, indicator_of_mem]
@@ -589,40 +586,39 @@ lemma setLIntegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) (s : Se
 alias set_lintegral_smul_measure := setLIntegral_smul_measure
 
 @[simp]
+theorem lintegral_zero_measure {m : MeasurableSpace α} (f : α → ℝ≥0∞) :
+    ∫⁻ a, f a ∂(0 : Measure α) = 0 := by
+  simp [lintegral]
+
+@[simp]
+theorem lintegral_add_measure (f : α → ℝ≥0∞) (μ ν : Measure α) :
+    ∫⁻ a, f a ∂(μ + ν) = ∫⁻ a, f a ∂μ + ∫⁻ a, f a ∂ν := by
+  simp only [lintegral, SimpleFunc.lintegral_add, iSup_subtype']
+  refine (ENNReal.iSup_add_iSup ?_).symm
+  rintro ⟨φ, hφ⟩ ⟨ψ, hψ⟩
+  refine ⟨⟨φ ⊔ ψ, sup_le hφ hψ⟩, ?_⟩
+  apply_rules [add_le_add, SimpleFunc.lintegral_mono, le_rfl] -- TODO: use `gcongr`
+  exacts [le_sup_left, le_sup_right]
+
+@[simp]
+theorem lintegral_finset_sum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞) (μ : ι → Measure α) :
+    ∫⁻ a, f a ∂(∑ i ∈ s, μ i) = ∑ i ∈ s, ∫⁻ a, f a ∂μ i :=
+  let F : Measure α →+ ℝ≥0∞ :=
+    { toFun := (lintegral · f),
+      map_zero' := lintegral_zero_measure f,
+      map_add' := lintegral_add_measure f }
+  map_sum F μ s
+
+@[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
-  simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum]
-  rw [iSup_comm]
-  congr; funext s
-  induction' s using Finset.induction_on with i s hi hs
-  · simp
-  simp only [Finset.sum_insert hi, ← hs]
-  refine (ENNReal.iSup_add_iSup ?_).symm
-  intro φ ψ
-  exact
-    ⟨⟨φ ⊔ ψ, fun x => sup_le (φ.2 x) (ψ.2 x)⟩,
-      add_le_add (SimpleFunc.lintegral_mono le_sup_left le_rfl)
-        (Finset.sum_le_sum fun j _ => SimpleFunc.lintegral_mono le_sup_right le_rfl)⟩
+  simp_rw [ENNReal.tsum_eq_iSup_sum, ← lintegral_finset_sum_measure,
+    lintegral, SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum,
+    SimpleFunc.lintegral_finset_sum, iSup_comm (ι := Finset ι)]
 
 theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     HasSum (fun i => ∫⁻ a, f a ∂μ i) (∫⁻ a, f a ∂Measure.sum μ) :=
   (lintegral_sum_measure f μ).symm ▸ ENNReal.summable.hasSum
-
-@[simp]
-theorem lintegral_add_measure {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ ν : Measure α) :
-    ∫⁻ a, f a ∂(μ + ν) = ∫⁻ a, f a ∂μ + ∫⁻ a, f a ∂ν := by
-  simpa [tsum_fintype] using lintegral_sum_measure f fun b => cond b μ ν
-
-@[simp]
-theorem lintegral_finset_sum_measure {ι} {m : MeasurableSpace α} (s : Finset ι) (f : α → ℝ≥0∞)
-    (μ : ι → Measure α) : ∫⁻ a, f a ∂(∑ i ∈ s, μ i) = ∑ i ∈ s, ∫⁻ a, f a ∂μ i := by
-  rw [← Measure.sum_coe_finset, lintegral_sum_measure, ← Finset.tsum_subtype']
-  simp only [Finset.coe_sort_coe]
-
-@[simp]
-theorem lintegral_zero_measure {m : MeasurableSpace α} (f : α → ℝ≥0∞) :
-    ∫⁻ a, f a ∂(0 : Measure α) = 0 := by
-  simp [lintegral]
 
 @[simp]
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
@@ -653,6 +649,7 @@ alias set_lintegral_measure_zero := setLIntegral_measure_zero
 theorem lintegral_finset_sum' (s : Finset β) {f : β → α → ℝ≥0∞}
     (hf : ∀ b ∈ s, AEMeasurable (f b) μ) :
     ∫⁻ a, ∑ b ∈ s, f b a ∂μ = ∑ b ∈ s, ∫⁻ a, f b a ∂μ := by
+  classical
   induction' s using Finset.induction_on with a s has ih
   · simp
   · simp only [Finset.sum_insert has]
@@ -932,6 +929,7 @@ theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
 /-- Weaker version of the monotone convergence theorem-/
 theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
     (h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f n.succ a) : ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
+  classical
   let ⟨s, hs⟩ := exists_measurable_superset_of_null (ae_iff.1 (ae_all_iff.2 h_mono))
   let g n a := if a ∈ s then 0 else f n a
   have g_eq_f : ∀ᵐ a ∂μ, ∀ n, g n a = f n a :=
@@ -1258,6 +1256,7 @@ end
 
 theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i, AEMeasurable (f i) μ) :
     ∫⁻ a, ∑' i, f i a ∂μ = ∑' i, ∫⁻ a, f i a ∂μ := by
+  classical
   simp only [ENNReal.tsum_eq_iSup_sum]
   rw [lintegral_iSup_directed]
   · simp [lintegral_finset_sum' _ fun i _ => hf i]
@@ -2040,7 +2039,7 @@ lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : Measur
 /-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
 almost everywhere to the indicator of a measurable set `A`, then the measures `μ Aᵢ` tend to
 the measure `μ A`. -/
-lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGenerated L]
+lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure
     {μ : Measure α} [IsFiniteMeasure μ] (A_mble : MeasurableSet A)
     (As_mble : ∀ i, MeasurableSet (As i)) (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
