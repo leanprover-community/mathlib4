@@ -730,8 +730,11 @@ end NormedAddCommGroup
 
 section Mono
 
-variable {μ : Measure X} {f g : X → ℝ} {s t : Set X} (hf : IntegrableOn f s μ)
-  (hg : IntegrableOn g s μ)
+variable {μ : Measure X} {f g : X → ℝ} {s t : Set X}
+
+section
+variable (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ)
+include hf hg
 
 theorem setIntegral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
@@ -766,6 +769,8 @@ theorem setIntegral_mono (h : f ≤ g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g
 
 @[deprecated (since := "2024-04-17")]
 alias set_integral_mono := setIntegral_mono
+
+end
 
 theorem setIntegral_mono_set (hfi : IntegrableOn f t μ) (hf : 0 ≤ᵐ[μ.restrict t] f)
     (hst : s ≤ᵐ[μ] t) : ∫ x in s, f x ∂μ ≤ ∫ x in t, f x ∂μ :=
@@ -1263,7 +1268,7 @@ end ContinuousLinearEquiv
 
 namespace ContinuousMap
 
-lemma integral_apply [TopologicalSpace Y] [CompactSpace Y] [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma integral_apply [TopologicalSpace Y] [CompactSpace Y] [NormedSpace ℝ E]
     [CompleteSpace E] {f : X → C(Y, E)} (hf : Integrable f μ) (y : Y) :
     (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
   calc (∫ x, f x ∂μ) y = ContinuousMap.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
@@ -1454,11 +1459,15 @@ theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
 
 end thickenedIndicator
 
+-- We declare a new `{X : Type*}` to discard the instance `[MeasureableSpace X]`
+-- which has been in scope for the entire file up to this point.
+variable {X : Type*}
+
 section BilinearMap
 
 namespace MeasureTheory
 
-variable {f : X → ℝ} {m m0 : MeasurableSpace X} {μ : Measure X}
+variable {X : Type*} {f : X → ℝ} {m m0 : MeasurableSpace X} {μ : Measure X}
 
 theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) :
     Integrable (⇑g * f) μ := by
@@ -1499,7 +1508,7 @@ open Metric ContinuousLinearMap
   under mild assumptions on the topologies involved. -/
 theorem continuous_parametric_integral_of_continuous
     [FirstCountableTopology X] [LocallyCompactSpace X]
-    [OpensMeasurableSpace Y] [SecondCountableTopologyEither Y E] [IsLocallyFiniteMeasure μ]
+    [SecondCountableTopologyEither Y E] [IsLocallyFiniteMeasure μ]
     {f : X → Y → E} (hf : Continuous f.uncurry) {s : Set Y} (hs : IsCompact s) :
     Continuous (∫ y in s, f · y ∂μ) := by
   rw [continuous_iff_continuousAt]

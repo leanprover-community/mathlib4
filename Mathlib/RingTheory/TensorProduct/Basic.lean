@@ -462,7 +462,7 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
   ext a b
   have := congr_arg₂ HMul.hMul (AlgHom.congr_fun ha a) (AlgHom.congr_fun hb b)
   dsimp at *
-  rwa [← _root_.map_mul, ← _root_.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
+  rwa [← _root_.map_mul, ← _root_.map_mul, tmul_mul_tmul, one_mul, mul_one] at this
 
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
   ext (AlgHom.ext fun _ => H _ _) (AlgHom.ext fun _ => H _ _)
@@ -908,7 +908,7 @@ theorem map_range (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
   apply le_antisymm
   · rw [← map_top, ← adjoin_tmul_eq_top, ← adjoin_image, adjoin_le_iff]
     rintro _ ⟨_, ⟨a, b, rfl⟩, rfl⟩
-    rw [map_tmul, ← _root_.mul_one (f a), ← _root_.one_mul (g b), ← tmul_mul_tmul]
+    rw [map_tmul, ← mul_one (f a), ← one_mul (g b), ← tmul_mul_tmul]
     exact mul_mem_sup (AlgHom.mem_range_self _ a) (AlgHom.mem_range_self _ b)
   · rw [← map_comp_includeLeft f g, ← map_comp_includeRight f g]
     exact sup_le (AlgHom.range_comp_le_range _ _) (AlgHom.range_comp_le_range _ _)
@@ -977,7 +977,7 @@ variable (R)
 def lmul' : S ⊗[R] S →ₐ[R] S :=
   algHomOfLinearMapTensorProduct (LinearMap.mul' R S)
     (fun a₁ a₂ b₁ b₂ => by simp only [LinearMap.mul'_apply, mul_mul_mul_comm]) <| by
-    simp only [LinearMap.mul'_apply, _root_.mul_one]
+    simp only [LinearMap.mul'_apply, mul_one]
 
 variable {R}
 
@@ -990,11 +990,11 @@ theorem lmul'_apply_tmul (a b : S) : lmul' (S := S) R (a ⊗ₜ[R] b) = a * b :=
 
 @[simp]
 theorem lmul'_comp_includeLeft : (lmul' R : _ →ₐ[R] S).comp includeLeft = AlgHom.id R S :=
-  AlgHom.ext <| _root_.mul_one
+  AlgHom.ext <| mul_one
 
 @[simp]
 theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = AlgHom.id R S :=
-  AlgHom.ext <| _root_.one_mul
+  AlgHom.ext <| one_mul
 
 /-- If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
 We obtain a map `A ⊗[R] B →ₐ[R] S` that commutes with `f`, `g` via `a ⊗ b ↦ f(a) * g(b)`.
