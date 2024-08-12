@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
@@ -438,6 +439,62 @@ theorem piCongrRight_trans {ι : Type*} {R S T : ι → Type*}
     [∀ i, NonUnitalNonAssocSemiring (R i)] [∀ i, NonUnitalNonAssocSemiring (S i)]
     [∀ i, NonUnitalNonAssocSemiring (T i)] (e : ∀ i, R i ≃+* S i) (f : ∀ i, S i ≃+* T i) :
     (piCongrRight e).trans (piCongrRight f) = piCongrRight fun i => (e i).trans (f i) :=
+  rfl
+
+/-- Transport dependent functions through an equivalence of the base space.
+
+This is `Equiv.piCongrLeft'` as a `RingEquiv`. -/
+@[simps!]
+def piCongrLeft' {ι ι' : Type*} (R : ι → Type*) (e : ι ≃ ι')
+    [∀ i, NonUnitalNonAssocSemiring (R i)] :
+    ((i : ι) → R i) ≃+* ((i : ι') → R (e.symm i)) where
+  toEquiv := Equiv.piCongrLeft' R e
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+@[simp]
+theorem piCongrLeft'_symm {R : Type*} [NonUnitalNonAssocSemiring R] (e : α ≃ β) :
+    (RingEquiv.piCongrLeft' (fun _ => R) e).symm = RingEquiv.piCongrLeft' _ e.symm := by
+  simp only [piCongrLeft', RingEquiv.symm, MulEquiv.symm, Equiv.piCongrLeft'_symm]
+
+/-- Transport dependent functions through an equivalence of the base space.
+
+This is `Equiv.piCongrLeft` as a `RingEquiv`. -/
+@[simps!]
+def piCongrLeft {ι ι' : Type*} (S : ι' → Type*) (e : ι ≃ ι')
+    [∀ i, NonUnitalNonAssocSemiring (S i)] :
+    ((i : ι) → S (e i)) ≃+* ((i : ι') → S i) :=
+  (RingEquiv.piCongrLeft' S e.symm).symm
+
+/-- Splits the indices of ring `∀ (i : ι), Y i` along the predicate `p`. This is
+`Equiv.piEquivPiSubtypeProd` as a `RingEquiv`. -/
+@[simps!]
+def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) [DecidablePred p] (Y : ι → Type*)
+    [∀ i, NonUnitalNonAssocSemiring (Y i)] :
+    ((i : ι) → Y i) ≃+* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) where
+  toEquiv := Equiv.piEquivPiSubtypeProd p Y
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+/-- Product of ring equivalences. This is `Equiv.prodCongr` as a `RingEquiv`. -/
+@[simps!]
+def prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring R']
+    [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring S']
+    (f : R ≃+* R') (g : S ≃+* S') :
+    R × S ≃+* R' × S' where
+  toEquiv := Equiv.prodCongr f g
+  map_mul' _ _ := by
+    simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
+      Prod.map, Prod.fst_mul, map_mul, Prod.snd_mul, Prod.mk_mul_mk]
+  map_add' _ _ := by
+    simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
+      Prod.map, Prod.fst_add, map_add, Prod.snd_add, Prod.mk_add_mk]
+
+@[simp]
+theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
+    [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring S']
+    (f : R ≃+* R') (g : S ≃+* S') :
+    ⇑(RingEquiv.prodCongr f g) = Prod.map f g :=
   rfl
 
 end NonUnitalSemiring
