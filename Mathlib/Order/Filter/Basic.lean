@@ -2396,6 +2396,10 @@ protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
 protected theorem push_pull' (f : α → β) (F : Filter α) (G : Filter β) :
     map f (comap f G ⊓ F) = G ⊓ map f F := by simp only [Filter.push_pull, inf_comm]
 
+theorem disjoint_comap_iff_map {f : α → β} {F : Filter α} {G : Filter β} :
+    Disjoint F (comap f G) ↔ Disjoint (map f F) G := by
+  simp only [disjoint_iff, ← Filter.push_pull, map_eq_bot_iff]
+
 theorem principal_eq_map_coe_top (s : Set α) : 𝓟 s = map ((↑) : s → α) ⊤ := by simp
 
 theorem inf_principal_eq_bot_iff_comap {F : Filter α} {s : Set α} :

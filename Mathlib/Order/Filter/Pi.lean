@@ -164,13 +164,6 @@ theorem pi_neBot : NeBot (pi f) ↔ ∀ i, NeBot (f i) := by simp [neBot_iff]
 instance [∀ i, NeBot (f i)] : NeBot (pi f) :=
   pi_neBot.2 ‹_›
 
-theorem map_piMap_pi [Finite ι] {β : ι → Type*} (m : ∀ i, α i → β i) (f : ∀ i, Filter (α i)) :
-    map (fun (a : ∀ i, α i) i ↦ m i (a i)) (.pi f) = .pi fun i ↦ map (m i) (f i) := by
-  refine ((hasBasis_pi fun i ↦ (f i).basis_sets).map _).eq_of_same_basis ?_
-  convert hasBasis_pi fun i ↦ (f i).basis_sets.map (m i) with ⟨I, s⟩
-  simp only [id]
-  sorry
-
 @[simp]
 theorem map_eval_pi (f : ∀ i, Filter (α i)) [∀ i, NeBot (f i)] (i : ι) :
     map (eval i) (pi f) = f i := by
