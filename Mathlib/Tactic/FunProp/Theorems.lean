@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomas Skrivan
+Authors: Tomáš Skřivan
 -/
 import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
+import Batteries.Data.RBMap.Alter
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`

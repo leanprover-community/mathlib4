@@ -8,15 +8,15 @@ import Mathlib.Probability.Kernel.IntegralCompProd
 /-!
 # Composition-Product of a measure and a kernel
 
-This operation, denoted by `⊗ₘ`, takes `μ : Measure α` and `κ : kernel α β` and creates
+This operation, denoted by `⊗ₘ`, takes `μ : Measure α` and `κ : Kernel α β` and creates
 `μ ⊗ₘ κ : Measure (α × β)`. The integral of a function against `μ ⊗ₘ κ` is
 `∫⁻ x, f x ∂(μ ⊗ₘ κ) = ∫⁻ a, ∫⁻ b, f (a, b) ∂(κ a) ∂μ`.
 
-`μ ⊗ₘ κ` is defined as `((kernel.const Unit μ) ⊗ₖ (kernel.prodMkLeft Unit κ)) ()`.
+`μ ⊗ₘ κ` is defined as `((Kernel.const Unit μ) ⊗ₖ (Kernel.prodMkLeft Unit κ)) ()`.
 
 ## Main definitions
 
-* `Measure.compProd`: from `μ : Measure α` and `κ : kernel α β`, get a `Measure (α × β)`.
+* `Measure.compProd`: from `μ : Measure α` and `κ : Kernel α β`, get a `Measure (α × β)`.
 
 ## Notations
 
@@ -30,22 +30,32 @@ open ProbabilityTheory
 namespace MeasureTheory.Measure
 
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-  {μ : Measure α} {κ η : kernel α β}
+  {μ : Measure α} {κ η : Kernel α β}
 
 /-- The composition-product of a measure and a kernel. -/
 noncomputable
-def compProd (μ : Measure α) (κ : kernel α β) : Measure (α × β) :=
-  (kernel.const Unit μ ⊗ₖ kernel.prodMkLeft Unit κ) ()
+def compProd (μ : Measure α) (κ : Kernel α β) : Measure (α × β) :=
+  (Kernel.const Unit μ ⊗ₖ Kernel.prodMkLeft Unit κ) ()
 
 @[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ⊗ₘ " => MeasureTheory.Measure.compProd
 
-@[simp] lemma compProd_zero_left (κ : kernel α β) : (0 : Measure α) ⊗ₘ κ = 0 := by simp [compProd]
-@[simp] lemma compProd_zero_right (μ : Measure α) : μ ⊗ₘ (0 : kernel α β) = 0 := by simp [compProd]
+lemma compProd_of_not_sfinite (μ : Measure α) (κ : Kernel α β) (h : ¬ SFinite μ) :
+    μ ⊗ₘ κ = 0 := by
+  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_left, Kernel.zero_apply]
+  rwa [Kernel.isSFiniteKernel_const]
+
+lemma compProd_of_not_isSFiniteKernel (μ : Measure α) (κ : Kernel α β) (h : ¬ IsSFiniteKernel κ) :
+    μ ⊗ₘ κ = 0 := by
+  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_right, Kernel.zero_apply]
+  rwa [Kernel.isSFiniteKernel_prodMkLeft_unit]
+
+@[simp] lemma compProd_zero_left (κ : Kernel α β) : (0 : Measure α) ⊗ₘ κ = 0 := by simp [compProd]
+@[simp] lemma compProd_zero_right (μ : Measure α) : μ ⊗ₘ (0 : Kernel α β) = 0 := by simp [compProd]
 
 lemma compProd_apply [SFinite μ] [IsSFiniteKernel κ] {s : Set (α × β)} (hs : MeasurableSet s) :
     (μ ⊗ₘ κ) s = ∫⁻ a, κ a (Prod.mk a ⁻¹' s) ∂μ := by
-  simp_rw [compProd, kernel.compProd_apply _ _ _ hs, kernel.const_apply, kernel.prodMkLeft_apply']
+  simp_rw [compProd, Kernel.compProd_apply _ _ _ hs, Kernel.const_apply, Kernel.prodMkLeft_apply']
   rfl
 
 lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]
@@ -67,41 +77,41 @@ lemma compProd_congr [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η]
 lemma ae_compProd_of_ae_ae [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (hp : MeasurableSet {x | p x}) (h : ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b)) :
     ∀ᵐ x ∂(μ ⊗ₘ κ), p x :=
-  kernel.ae_compProd_of_ae_ae hp h
+  Kernel.ae_compProd_of_ae_ae hp h
 
 lemma ae_ae_of_ae_compProd [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (h : ∀ᵐ x ∂(μ ⊗ₘ κ), p x) :
     ∀ᵐ a ∂μ, ∀ᵐ b ∂κ a, p (a, b) := by
-  convert kernel.ae_ae_of_ae_compProd h -- Much faster with `convert`
+  convert Kernel.ae_ae_of_ae_compProd h -- Much faster with `convert`
 
 lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (hp : MeasurableSet {x | p x}) :
     (∀ᵐ x ∂(μ ⊗ₘ κ), p x) ↔ ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
-  kernel.ae_compProd_iff hp
+  Kernel.ae_compProd_iff hp
 
-lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : kernel α β)
+lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : Kernel α β)
     [IsSFiniteKernel κ] :
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
-  rw [Measure.compProd, kernel.const_add, kernel.compProd_add_left]; rfl
+  rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left]; rfl
 
-lemma compProd_add_right (μ : Measure α) [SFinite μ] (κ η : kernel α β)
+lemma compProd_add_right (μ : Measure α) [SFinite μ] (κ η : Kernel α β)
     [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₘ (κ + η) = μ ⊗ₘ κ + μ ⊗ₘ η := by
-  rw [Measure.compProd, kernel.prodMkLeft_add, kernel.compProd_add_right]; rfl
+  rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right]; rfl
 
 section Integral
 
 lemma lintegral_compProd [SFinite μ] [IsSFiniteKernel κ]
     {f : α × β → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ x, f x ∂(μ ⊗ₘ κ) = ∫⁻ a, ∫⁻ b, f (a, b) ∂(κ a) ∂μ := by
-  rw [compProd, kernel.lintegral_compProd _ _ _ hf]
+  rw [compProd, Kernel.lintegral_compProd _ _ _ hf]
   simp
 
 lemma setLIntegral_compProd [SFinite μ] [IsSFiniteKernel κ]
     {f : α × β → ℝ≥0∞} (hf : Measurable f)
     {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t) :
     ∫⁻ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫⁻ a in s, ∫⁻ b in t, f (a, b) ∂(κ a) ∂μ := by
-  rw [compProd, kernel.setLIntegral_compProd _ _ _ hf hs ht]
+  rw [compProd, Kernel.setLIntegral_compProd _ _ _ hf hs ht]
   simp
 
 @[deprecated (since := "2024-06-29")]
@@ -140,17 +150,17 @@ lemma dirac_compProd_apply [MeasurableSingletonClass α] {a : α} [IsSFiniteKern
     (Measure.dirac a ⊗ₘ κ) s = κ a (Prod.mk a ⁻¹' s) := by
   rw [compProd_apply hs, lintegral_dirac]
 
-lemma dirac_unit_compProd (κ : kernel Unit β) [IsSFiniteKernel κ] :
+lemma dirac_unit_compProd (κ : Kernel Unit β) [IsSFiniteKernel κ] :
     Measure.dirac () ⊗ₘ κ = (κ ()).map (Prod.mk ()) := by
   ext s hs; rw [dirac_compProd_apply hs, Measure.map_apply measurable_prod_mk_left hs]
 
 lemma dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
-    Measure.dirac () ⊗ₘ kernel.const Unit μ = μ.map (Prod.mk ()) := by
-  rw [dirac_unit_compProd, kernel.const_apply]
+    Measure.dirac () ⊗ₘ Kernel.const Unit μ = μ.map (Prod.mk ()) := by
+  rw [dirac_unit_compProd, Kernel.const_apply]
 
 @[simp]
 lemma snd_dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
-    snd (Measure.dirac () ⊗ₘ kernel.const Unit μ) = μ := by
+    snd (Measure.dirac () ⊗ₘ Kernel.const Unit μ) = μ := by
   rw [dirac_unit_compProd_const, snd, map_map measurable_snd measurable_prod_mk_left]
   simp
 

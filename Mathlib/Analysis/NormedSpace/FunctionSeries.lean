@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Topology.Instances.ENNReal
 
-#align_import analysis.calculus.series from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Continuity of series of functions
 
@@ -37,7 +35,6 @@ theorem tendstoUniformlyOn_tsum {f : α → β → F} (hu : Summable u) {s : Set
   apply lt_of_le_of_lt _ ht
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
   exact tsum_le_tsum (fun n => hfu _ _ hx) (A.subtype _) (hu.subtype _)
-#align tendsto_uniformly_on_tsum tendstoUniformlyOn_tsum
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version relative to a set, with index set `ℕ`. -/
@@ -46,7 +43,6 @@ theorem tendstoUniformlyOn_tsum_nat {f : ℕ → β → F} {u : ℕ → ℝ} (hu
     TendstoUniformlyOn (fun N => fun x => ∑ n ∈ Finset.range N, f n x) (fun x => ∑' n, f n x) atTop
       s :=
   fun v hv => tendsto_finset_range.eventually (tendstoUniformlyOn_tsum hu hfu v hv)
-#align tendsto_uniformly_on_tsum_nat tendstoUniformlyOn_tsum_nat
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version with general index set. -/
@@ -54,7 +50,6 @@ theorem tendstoUniformly_tsum {f : α → β → F} (hu : Summable u) (hfu : ∀
     TendstoUniformly (fun t : Finset α => fun x => ∑ n ∈ t, f n x)
       (fun x => ∑' n, f n x) atTop := by
   rw [← tendstoUniformlyOn_univ]; exact tendstoUniformlyOn_tsum hu fun n x _ => hfu n x
-#align tendsto_uniformly_tsum tendstoUniformly_tsum
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version with index set `ℕ`. -/
@@ -63,7 +58,6 @@ theorem tendstoUniformly_tsum_nat {f : ℕ → β → F} {u : ℕ → ℝ} (hu :
     TendstoUniformly (fun N => fun x => ∑ n ∈ Finset.range N, f n x) (fun x => ∑' n, f n x)
       atTop :=
   fun v hv => tendsto_finset_range.eventually (tendstoUniformly_tsum hu hfu v hv)
-#align tendsto_uniformly_tsum_nat tendstoUniformly_tsum_nat
 
 /-- An infinite sum of functions with summable sup norm is continuous on a set if each individual
 function is. -/
@@ -74,7 +68,6 @@ theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set �
     refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (eventually_of_forall ?_)
     intro t
     exact continuousOn_finset_sum _ fun i _ => hf i
-#align continuous_on_tsum continuousOn_tsum
 
 /-- An infinite sum of functions with summable sup norm is continuous if each individual
 function is. -/
@@ -82,4 +75,3 @@ theorem continuous_tsum [TopologicalSpace β] {f : α → β → F} (hf : ∀ i,
     (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) : Continuous fun x => ∑' n, f n x := by
   simp_rw [continuous_iff_continuousOn_univ] at hf ⊢
   exact continuousOn_tsum hf hu fun n x _ => hfu n x
-#align continuous_tsum continuous_tsum

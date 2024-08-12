@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
@@ -29,7 +29,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
     HasFDerivAt (fun x : E ↦ ‖x‖ ^ p) ((p * ‖x‖ ^ (p - 2)) • innerSL ℝ x) x := by
   by_cases hx : x = 0
-  · simp [hx]
+  · simp only [hx, norm_zero, map_zero, smul_zero]
     have h2p : 0 < p - 1 := sub_pos.mpr hp
     rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO]
     calc (fun x : E ↦ ‖x‖ ^ p - ‖(0 : E)‖ ^ p - 0)
@@ -46,7 +46,7 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
         simp_rw [mul_one, isBigO_norm_left (f' := fun x ↦ x), sub_zero, isBigO_refl]
   · apply HasStrictFDerivAt.hasFDerivAt
     convert (hasStrictFDerivAt_norm_sq x).rpow_const (p := p / 2) (by simp [hx]) using 0
-    simp_rw [← Real.rpow_natCast_mul (norm_nonneg _), nsmul_eq_smul_cast ℝ, smul_smul]
+    simp_rw [← Real.rpow_natCast_mul (norm_nonneg _), ← Nat.cast_smul_eq_nsmul ℝ, smul_smul]
     ring_nf -- doesn't close the goal?
     congr! 2
     ring

@@ -709,7 +709,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     exact ⟨closure k, hk.closure, isClosed_closure, mem_of_superset hmem subset_closure⟩
   have one_k : 1 ∈ k := mem_of_mem_nhds k_mem
   let A : Set (Set G) := {t | t ⊆ s ∧ PairwiseDisjoint t (fun x ↦ x • k)}
-  obtain ⟨m, mA, m_max⟩ : ∃ m ∈ A, ∀ a ∈ A, m ⊆ a → a = m := by
+  obtain ⟨m, m_max⟩ : ∃ m, Maximal (· ∈ A) m := by
     apply zorn_subset
     intro c cA hc
     refine ⟨⋃ a ∈ c, a, ⟨?_, ?_⟩, ?_⟩
@@ -725,17 +725,16 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       exact (cA mc).2 (am xa) (bm yb) hxy
     · intro a ac
       exact subset_biUnion_of_mem (u := id) ac
-  change m ⊆ s ∧ PairwiseDisjoint m (fun x ↦ x • k) at mA
+  obtain ⟨hms : m ⊆ s, hdj : PairwiseDisjoint m (fun x ↦ x • k)⟩ := m_max.prop
   have sm : s ⊆ ⋃ x ∈ m, x • (k * k⁻¹) := by
     intro y hy
     by_cases h'y : m ∪ {y} ∈ A
-    · have : m ∪ {y} = m := m_max _ h'y subset_union_left
-      have ym : y ∈ m := by simpa using subset_union_right.trans this.subset
+    · have ym : y ∈ m := m_max.mem_of_prop_insert (by simpa using h'y)
       have : y ∈ y • (k * k⁻¹) := by
         simpa using mem_leftCoset y (Set.mul_mem_mul one_k (Set.inv_mem_inv.mpr one_k))
       exact mem_biUnion ym this
     · obtain ⟨x, xm, -, z, zy, zx⟩ : ∃ x ∈ m, y ≠ x ∧ ∃ z, z ∈ y • k ∧ z ∈ x • k := by
-        simpa [A, mA.1, hy, insert_subset_iff, pairwiseDisjoint_insert, mA.2, not_disjoint_iff]
+        simpa [A, hms, hy, insert_subset_iff, pairwiseDisjoint_insert, hdj, not_disjoint_iff]
           using h'y
       have : y ∈ x • (k * k⁻¹) := by
         rw [show y = x * ((x⁻¹ * z) * (y⁻¹ * z)⁻¹) by group]
@@ -771,15 +770,15 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       have : ∑' (x : m), ρ (s ∩ ((x : G) • k)) < ∞ := by
         apply lt_of_le_of_lt (MeasureTheory.tsum_meas_le_meas_iUnion_of_disjoint _ M _) _
         · have I : PairwiseDisjoint m fun x ↦ s ∩ x • k :=
-            mA.2.mono (fun x ↦ inter_subset_right)
+            hdj.mono (fun x ↦ inter_subset_right)
           exact I.on_injective Subtype.val_injective (fun x ↦ x.2)
         · exact lt_of_le_of_lt (measure_mono (by simp [inter_subset_left])) h'm.lt_top
       have C : Set.Countable (support fun (i : m) ↦ ρ (s ∩ (i : G) • k)) :=
         Summable.countable_support_ennreal this.ne
       have : support (fun (i : m) ↦ ρ (s ∩ (i : G) • k)) = univ := by
-        apply eq_univ_iff_forall.2 (fun i ↦ ?_)
-        apply ne_of_gt (hρ (i : G) (mA.1 i.2) _ _)
-        exact inter_mem_nhdsWithin s (by simpa using smul_mem_nhds (i : G) k_mem)
+        refine eq_univ_iff_forall.2 fun i ↦ ?_
+        refine ne_of_gt (hρ (i : G) (hms i.2) _ ?_)
+        exact inter_mem_nhdsWithin s (by simpa)
       rw [this] at C
       have : Countable m := countable_univ_iff.mp C
       exact to_countable m
@@ -892,8 +891,6 @@ lemma isMulLeftInvariant_eq_smul [LocallyCompactSpace G] [SecondCountableTopolog
   isMulLeftInvariant_eq_smul_of_regular μ' μ
   -- one could use as well `isMulLeftInvariant_eq_smul_of_innerRegular`, as in a
   -- second countable topological space all Haar measures are regular and inner regular
-#align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isMulLeftInvariant_eq_smul
-#align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddLeftInvariant_eq_smul
 
 @[deprecated (since := "2024-02-12")] alias isHaarMeasure_eq_smul := isMulLeftInvariant_eq_smul
 @[deprecated (since := "2024-02-12")] alias isAddHaarMeasure_eq_smul := isAddLeftInvariant_eq_smul
@@ -942,8 +939,6 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
           K.isCompact.measure_lt_top.ne).1 this
   have : c = 1 := (ENNReal.pow_strictMono two_ne_zero).injective this
   rw [hc, this, one_smul]
-#align measure_theory.measure.is_haar_measure.is_inv_invariant MeasureTheory.Measure.IsHaarMeasure.isInvInvariant_of_regular
-#align measure_theory.measure.is_add_haar_measure.is_neg_invariant MeasureTheory.Measure.IsAddHaarMeasure.isNegInvariant_of_regular
 
 /-- Any inner regular Haar measure is invariant under inversion in an abelian group. -/
 @[to_additive "Any regular additive Haar measure is invariant under negation in an abelian group."]
@@ -989,8 +984,6 @@ theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn
       have hμ₁ : μ univ ≠ ∞ := CompactSpace.isFiniteMeasure.measure_univ_lt_top.ne
       rwa [hC, smul_apply, Algebra.id.smul_eq_mul, mul_comm, ← ENNReal.eq_div_iff hμ₀ hμ₁,
         ENNReal.div_self hμ₀ hμ₁] at h_univ }
-#align measure_theory.measure.measure_preserving_zpow MeasureTheory.Measure.measurePreserving_zpow
-#align measure_theory.measure.measure_preserving_zsmul MeasureTheory.Measure.measurePreserving_zsmul
 
 @[to_additive]
 theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
@@ -998,8 +991,6 @@ theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => f x ^ n) μ' μ :=
   (measurePreserving_zpow μ hn).comp hf
-#align measure_theory.measure.measure_preserving.zpow MeasureTheory.Measure.MeasurePreserving.zpow
-#align measure_theory.measure.measure_preserving.zsmul MeasureTheory.Measure.MeasurePreserving.zsmul
 
 end CommGroup
 

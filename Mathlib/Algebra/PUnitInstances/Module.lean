@@ -7,8 +7,6 @@ import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Basic
 
-#align_import algebra.punit_instances from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
-
 /-!
 # Instances on PUnit
 
@@ -26,8 +24,6 @@ instance smul : SMul R PUnit :=
 @[to_additive (attr := simp)]
 theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
   rfl
-#align punit.smul_eq PUnit.smul_eq
-#align punit.vadd_eq PUnit.vadd_eq
 
 @[to_additive]
 instance : IsCentralScalar R PUnit :=

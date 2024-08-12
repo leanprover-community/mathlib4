@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.MeanValue
 
-#align_import analysis.calculus.fderiv_symmetric from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
-
 /-!
 # Symmetry of the second derivative
 
@@ -170,7 +168,6 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     abel
   · simp only [Real.norm_eq_abs, abs_mul, add_nonneg (norm_nonneg v) (norm_nonneg w), abs_of_nonneg,
       hpos.le, mul_assoc, norm_nonneg, abs_pow]
-#align convex.taylor_approx_two_segment Convex.taylor_approx_two_segment
 
 /-- One can get `f'' v w` as the limit of `h ^ (-2)` times the alternate sum of the values of `f`
 along the vertices of a quadrilateral with sides `h v` and `h w` based at `x`.
@@ -225,7 +222,6 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
     ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul',
     ContinuousLinearMap.map_smul]
   abel
-#align convex.is_o_alternate_sum_square Convex.isLittleO_alternate_sum_square
 
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
 differentiable at a point `x`. Then, given two vectors `v` and `w` pointing inside `s`, one
@@ -252,7 +248,6 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     · filter_upwards [self_mem_nhdsWithin] with h (hpos : 0 < h)
       field_simp [LT.lt.ne' hpos, SMul.smul]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
-#align convex.second_derivative_within_at_symmetric_of_mem_interior Convex.second_derivative_within_at_symmetric_of_mem_interior
 
 /-- If a function is differentiable inside a convex set with nonempty interior, and has a second
 derivative at a point of this convex set, then this second derivative is symmetric. -/
@@ -302,7 +297,6 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     at this
   apply smul_right_injective F _ this
   simp [(tpos v).ne', (tpos w).ne']
-#align convex.second_derivative_within_at_symmetric Convex.second_derivative_within_at_symmetric
 
 /-- If a function is differentiable around `x`, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
@@ -315,11 +309,9 @@ theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E �
   exact
     Convex.second_derivative_within_at_symmetric (convex_ball x ε) A
       (fun y hy => hε (interior_subset hy)) (Metric.mem_ball_self εpos) hx.hasFDerivWithinAt v w
-#align second_derivative_symmetric_of_eventually second_derivative_symmetric_of_eventually
 
 /-- If a function is differentiable, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
 theorem second_derivative_symmetric {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
   second_derivative_symmetric_of_eventually (Filter.eventually_of_forall hf) hx v w
-#align second_derivative_symmetric second_derivative_symmetric

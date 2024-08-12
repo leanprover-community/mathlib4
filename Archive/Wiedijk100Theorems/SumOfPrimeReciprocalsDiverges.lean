@@ -6,8 +6,6 @@ Authors: Manuel Candales
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Data.Nat.Squarefree
 
-#align_import wiedijk_100_theorems.sum_of_prime_reciprocals_diverges from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Divergence of the Prime Reciprocal Series
 
@@ -41,7 +39,6 @@ https://en.wikipedia.org/wiki/Divergence_of_the_sum_of_the_reciprocals_of_the_pr
 -/
 
 
-set_option linter.uppercaseLean3 false
 
 open scoped Classical
 
@@ -53,20 +50,17 @@ namespace Theorems100
 -/
 def P (x k : ℕ) : Finset ℕ :=
   Finset.filter (fun p => k < p ∧ Nat.Prime p) (range (x + 1))
-#align theorems_100.P Theorems100.P
 
 /-- The union over those primes `p ∈ (k, x]` of the sets of `e < x` for which `e + 1` is a multiple
 of `p`, i.e., those `e < x` for which there is a prime `p ∈ (k, x]` that divides `e + 1`.
 -/
 def U (x k : ℕ) :=
   Finset.biUnion (P x k) (fun p => Finset.filter (fun e => p ∣ e + 1) (range x))
-#align theorems_100.U Theorems100.U
 
 /-- Those `e < x` for which `e + 1` is a product of powers of primes smaller than or equal to `k`.
 -/
 noncomputable def M (x k : ℕ) :=
   Finset.filter (fun e => ∀ p : ℕ, Nat.Prime p ∧ p ∣ e + 1 → p ≤ k) (range x)
-#align theorems_100.M Theorems100.M
 
 /--
 If the sum of the reciprocals of the primes converges, there exists a `k : ℕ` such that the sum of
@@ -98,7 +92,6 @@ theorem sum_lt_half_of_not_tendsto
   simp only [mem_filter]
   intro a ha b hb
   exact ((mem_range.mp (hk hb)).trans ha.2).ne'
-#align theorems_100.sum_lt_half_of_not_tendsto Theorems100.sum_lt_half_of_not_tendsto
 
 /--
 Removing from {0, ..., x - 1} those elements `e` for which `e + 1` is a product of powers of primes
@@ -118,7 +111,6 @@ theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   · rintro ⟨p, hpfilter, ⟨hex, hpe1⟩⟩
     rw [imp_iff_right hex]
     exact ⟨hex, ⟨p, ⟨hpfilter.2.2, hpe1⟩, hpfilter.2.1⟩⟩
-#align theorems_100.range_sdiff_eq_biUnion Theorems100.range_sdiff_eq_biUnion
 
 /--
 The number of `e < x` for which `e + 1` has a prime factor `p > k` is bounded by `x` times the sum
@@ -133,7 +125,6 @@ theorem card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p ∈ P x
     _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := sum_le_sum fun p _ => ?_
     _ = x * ∑ p ∈ P, 1 / (p : ℝ) := by rw [mul_sum]
   simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
-#align theorems_100.card_le_mul_sum Theorems100.card_le_mul_sum
 
 /--
 The number of `e < x` for which `e + 1` is a squarefree product of primes smaller than or equal to
@@ -168,7 +159,6 @@ theorem card_le_two_pow {x k : ℕ} :
     _ ≤ 2 ^ card (image Nat.succ (range k)) := by simp only [K, card_powerset]; rfl
     _ ≤ 2 ^ card (range k) := pow_le_pow_right one_le_two card_image_le
     _ = 2 ^ k := by rw [card_range k]
-#align theorems_100.card_le_two_pow Theorems100.card_le_two_pow
 
 /--
 The number of `e < x` for which `e + 1` is a product of powers of primes smaller than or equal to
@@ -205,7 +195,6 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
     _ ≤ card K := card_image_le
     _ = card M₁ * card M₂ := card_product M₁ M₂
     _ ≤ 2 ^ k * x.sqrt := mul_le_mul' card_le_two_pow h2
-#align theorems_100.card_le_two_pow_mul_sqrt Theorems100.card_le_two_pow_mul_sqrt
 
 theorem Real.tendsto_sum_one_div_prime_atTop :
     Tendsto (fun n => ∑ p ∈ Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
@@ -246,6 +235,5 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
     (x : ℝ) = (card U' : ℝ) + (card M' : ℝ) := by assumption_mod_cast
     _ < x / 2 + x / 2 := add_lt_add_of_lt_of_le h3 h4
     _ = x := add_halves (x : ℝ)
-#align theorems_100.real.tendsto_sum_one_div_prime_at_top Theorems100.Real.tendsto_sum_one_div_prime_atTop
 
 end Theorems100

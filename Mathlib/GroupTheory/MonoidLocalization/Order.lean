@@ -6,14 +6,10 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 
-#align_import group_theory.monoid_localization from "leanprover-community/mathlib"@"10ee941346c27bdb5e87bb3535100c0b1f08ac41"
-
 /-!
-# Ordered algebra structures on localizations of commutative monoids
+# Ordered structures on localizations of commutative monoids
 
-## Tags
-localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
-commutative monoid, grothendieck group
+>>>>>>> master
 -/
 
 open Function
@@ -30,7 +26,7 @@ variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ 
 instance le : LE (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ ≤ a₂ * b₁)
-      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
+      fun {a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂} hab hcd => propext <| by
         obtain ⟨e, he⟩ := r_iff_exists.1 hab
         obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
         simp only [mul_right_inj] at he hf
@@ -43,7 +39,7 @@ instance le : LE (Localization s) :=
 instance lt : LT (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ < a₂ * b₁)
-      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
+      fun {a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂} hab hcd => propext <| by
         obtain ⟨e, he⟩ := r_iff_exists.1 hab
         obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
         simp only [mul_right_inj] at he hf
@@ -55,14 +51,10 @@ instance lt : LT (Localization s) :=
 @[to_additive]
 theorem mk_le_mk : mk a₁ a₂ ≤ mk b₁ b₂ ↔ ↑b₂ * a₁ ≤ a₂ * b₁ :=
   Iff.rfl
-#align localization.mk_le_mk Localization.mk_le_mk
-#align add_localization.mk_le_mk AddLocalization.mk_le_mk
 
 @[to_additive]
 theorem mk_lt_mk : mk a₁ a₂ < mk b₁ b₂ ↔ ↑b₂ * a₁ < a₂ * b₁ :=
   Iff.rfl
-#align localization.mk_lt_mk Localization.mk_lt_mk
-#align add_localization.mk_lt_mk AddLocalization.mk_lt_mk
 
 -- declaring this separately to the instance below makes things faster
 @[to_additive]
@@ -103,15 +95,11 @@ instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) wher
 instance decidableLE [DecidableRel ((· ≤ ·) : α → α → Prop)] :
     DecidableRel ((· ≤ ·) : Localization s → Localization s → Prop) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_le_mk
-#align localization.decidable_le Localization.decidableLE
-#align add_localization.decidable_le AddLocalization.decidableLE
 
 @[to_additive]
 instance decidableLT [DecidableRel ((· < ·) : α → α → Prop)] :
     DecidableRel ((· < ·) : Localization s → Localization s → Prop) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_lt_mk
-#align localization.decidable_lt Localization.decidableLT
-#align add_localization.decidable_lt AddLocalization.decidableLT
 
 /-- An ordered cancellative monoid injects into its localization by sending `a` to `a / b`. -/
 @[to_additive (attr := simps!) "An ordered cancellative monoid injects into its localization by
@@ -120,8 +108,6 @@ def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
   inj' := mk_left_injective _
   map_rel_iff' {a b} := by simp [-mk_eq_monoidOf_mk', mk_le_mk]
-#align localization.mk_order_embedding Localization.mkOrderEmbedding
-#align add_localization.mk_order_embedding AddLocalization.mkOrderEmbedding
 
 end OrderedCancelCommMonoid
 
@@ -134,7 +120,7 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
         simp_rw [mk_le_mk]
         exact le_total _ _
     decidableLE := Localization.decidableLE
-    decidableLT := Localization.decidableLT
+    decidableLT := Localization.decidableLT  -- Porting note: was wrong in mathlib3
     decidableEq := Localization.decidableEq }
 
 end Localization

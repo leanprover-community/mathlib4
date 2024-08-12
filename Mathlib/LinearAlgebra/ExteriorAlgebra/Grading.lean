@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
-#align_import linear_algebra.exterior_algebra.grading from "leanprover-community/mathlib"@"34020e531ebc4e8aac6d449d9eecbcd1508ea8d0"
-
 /-!
 # Results about the grading structure of the exterior algebra
 
@@ -31,14 +29,12 @@ protected def GradedAlgebra.ι :
     M →ₗ[R] ⨁ i : ℕ, ⋀[R]^i M :=
   DirectSum.lof R ℕ (fun i => ⋀[R]^i M) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
-#align exterior_algebra.graded_algebra.ι ExteriorAlgebra.GradedAlgebra.ι
 
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
       DirectSum.of (fun i : ℕ => ⋀[R]^i M) 1
         ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
-#align exterior_algebra.graded_algebra.ι_apply ExteriorAlgebra.GradedAlgebra.ι_apply
 
 -- Defining this instance manually, because Lean doesn't seem to be able to synthesize it.
 -- Strangely, this problem only appears when we use the abbreviation or notation for the
@@ -52,14 +48,12 @@ attribute [local instance 1100] MulZeroClass.toZero in
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
   exact DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
-#align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
 
 /-- `ExteriorAlgebra.GradedAlgebra.ι` lifted to exterior algebra. This is
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 def GradedAlgebra.liftι :
     ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ, ⋀[R]^i M :=
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
-#align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
 set_option linter.deprecated false in
 theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
@@ -79,7 +73,6 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
       simp_rw [AlgHom.map_mul, ih, GradedAlgebra.liftι, lift_ι_apply, GradedAlgebra.ι_apply R M,
         DirectSum.of_mul_of]
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)
-#align exterior_algebra.graded_algebra.lift_ι_eq ExteriorAlgebra.GradedAlgebra.liftι_eq
 
 /-- The exterior algebra is graded by the powers of the submodule `(ExteriorAlgebra.ι R).range`. -/
 instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ ⋀[R]^i M) :=
@@ -93,7 +86,6 @@ instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ ⋀[R]^i M) :=
         AlgHom.id_apply, GradedAlgebra.liftι]
       rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     (by apply GradedAlgebra.liftι_eq R M)
-#align exterior_algebra.graded_algebra ExteriorAlgebra.gradedAlgebra
 
 /-- The union of the images of the maps `ExteriorAlgebra.ιMulti R n` for `n` running through
 all natural numbers spans the exterior algebra. -/
