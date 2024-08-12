@@ -132,7 +132,7 @@ theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
   simpa only [neg_birthday, ← neg_le_iff] using le_birthday (-x)
 
 @[simp]
-theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.birthday
+theorem birthday_add : ∀ x y : PGame, (x + y).birthday = x.birthday ♯ y.birthday
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
     rw [birthday_def, nadd_def, lsub_sum, lsub_sum]
     simp only [mk_add_moveLeft_inl, mk_add_moveLeft_inr, mk_add_moveRight_inl, mk_add_moveRight_inr,
@@ -159,22 +159,15 @@ theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.
     · exact lt_max_of_lt_right ((nadd_le_nadd_left hj _).trans_lt (lt_lsub _ _))
 termination_by a b => (a, b)
 
-theorem birthday_add_zero : (a + 0).birthday = a.birthday := by simp
-
-theorem birthday_zero_add : (0 + a).birthday = a.birthday := by simp
-
-theorem birthday_add_one : (a + 1).birthday = Order.succ a.birthday := by simp
-
-theorem birthday_one_add : (1 + a).birthday = Order.succ a.birthday := by simp
+@[simp]
+theorem birthday_sub (x y : PGame) : (x - y).birthday = x.birthday ♯ y.birthday := by
+  apply (birthday_add x _).trans
+  rw [neg_birthday]
 
 @[simp]
 theorem birthday_natCast : ∀ n : ℕ, birthday n = n
   | 0 => birthday_zero
   | n + 1 => by simp [birthday_natCast]
-
-theorem birthday_add_nat (n : ℕ) : (a + n).birthday = a.birthday + n := by simp
-
-theorem birthday_nat_add (n : ℕ) : (↑n + a).birthday = a.birthday + n := by simp
 
 end PGame
 
@@ -267,6 +260,10 @@ theorem birthday_add_le (x y : Game) : (x + y).birthday ≤ x.birthday ♯ y.bir
   let ⟨b, hb₁, hb₂⟩ := birthday_eq_pGame_birthday y
   rw [← ha₂, ← hb₂, ← ha₁, ← hb₁, ← PGame.birthday_add]
   exact birthday_le_pGame_birthday _
+
+theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.birthday := by
+  apply (birthday_add_le _ _).trans_eq
+  rw [neg_birthday]
 
 end Game
 
