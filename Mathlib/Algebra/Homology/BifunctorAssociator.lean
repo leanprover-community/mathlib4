@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.GradedObject.Associator
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.Algebra.Homology.Bifunctor
 
 /-!
