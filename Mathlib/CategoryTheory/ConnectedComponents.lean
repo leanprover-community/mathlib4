@@ -54,8 +54,8 @@ def ConnectedComponents.liftFunctor  (J) [Category J] {X : Type*} (F :J ⥤ Disc
 /-- Functions from connected components and functors to discrete category are in bijection -/
 def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
     (ConnectedComponents J → X) ≃ (J ⥤ Discrete X)   where
-  toFun := ConnectedComponents.functorToDiscrete X
-  invFun := ConnectedComponents.liftFunctor J
+  toFun := ConnectedComponents.functorToDiscrete _
+  invFun := ConnectedComponents.liftFunctor _
   left_inv := fun f ↦ funext fun x ↦ by
     obtain ⟨x, h⟩ := Quotient.exists_rep x
     rw [← h]

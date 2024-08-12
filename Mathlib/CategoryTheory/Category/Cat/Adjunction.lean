@@ -61,9 +61,9 @@ def connectedComponents : Cat.{v, u} ⥤ Type u where
 /-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
 def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where
   homEquiv C X := ConnectedComponents.typeToCatHomEquiv C X
-  unit := { app:= fun C  ↦ ConnectedComponents.functorToDiscrete (𝟙 (connectedComponents.obj C)) }
+  unit := { app:= fun C  ↦ ConnectedComponents.functorToDiscrete _ (𝟙 (connectedComponents.obj C)) }
   counit :=  {
-      app := fun X => ConnectedComponents.liftFunctor (𝟙 typeToCat.obj X)
+      app := fun X => ConnectedComponents.liftFunctor _ (𝟙 typeToCat.obj X)
       naturality := fun _ _ _ =>
         funext (fun xcc => by
           obtain ⟨x,h⟩ := Quotient.exists_rep xcc
