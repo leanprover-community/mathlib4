@@ -22,6 +22,9 @@ In this file we define (semi)normed rings and fields. We also prove some theorem
 definitions.
 -/
 
+-- Guard against import creep.
+assert_not_exists RestrictScalars
+
 variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
 open Filter Metric Bornology
@@ -1206,6 +1209,3 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
   { SubringClass.toNormedRing s with mul_comm := mul_comm }
 
 end SubringClass
-
--- Guard against import creep.
-assert_not_exists RestrictScalars

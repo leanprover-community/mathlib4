@@ -20,6 +20,8 @@ Add appropriate instances for all `Set.Ixx`. This requires a refactor that will 
 default values for `sSup` and `sInf`.
 -/
 
+assert_not_exists Multiset
+
 open Set
 
 variable {ι : Sort*} {α : Type*} (s : Set α)
@@ -267,5 +269,3 @@ theorem coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ 
 
 
 end Set.Iic
-
-assert_not_exists Multiset

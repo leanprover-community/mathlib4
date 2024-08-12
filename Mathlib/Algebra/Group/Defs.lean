@@ -48,6 +48,8 @@ See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` 
 
 assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
+assert_not_exists Function.Injective.eq_iff
+assert_not_exists IsCommutative
 
 universe u v w
 
@@ -1179,6 +1181,3 @@ initialize_simps_projections Group
 initialize_simps_projections AddGroup
 initialize_simps_projections CommGroup
 initialize_simps_projections AddCommGroup
-
-assert_not_exists Function.Injective.eq_iff
-assert_not_exists IsCommutative

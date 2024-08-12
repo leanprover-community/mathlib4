@@ -30,6 +30,18 @@ the present file is about their interaction.
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
 
+
+/-!
+Previously an import dependency on `Mathlib.Algebra.Group.Basic` had crept in.
+In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
+files, without importing `.Basic` theory development.
+
+These `assert_not_exists` statements guard against this returning.
+-/
+assert_not_exists DivisionMonoid.toDivInvOneMonoid
+assert_not_exists mul_rotate
+
+
 universe u v w x
 
 variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
@@ -411,13 +423,3 @@ is cancellative on both sides. In other words, a nontrivial semiring `R` satisfy
 This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
-
-/-!
-Previously an import dependency on `Mathlib.Algebra.Group.Basic` had crept in.
-In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
-files, without importing `.Basic` theory development.
-
-These `assert_not_exists` statements guard against this returning.
--/
-assert_not_exists DivisionMonoid.toDivInvOneMonoid
-assert_not_exists mul_rotate
