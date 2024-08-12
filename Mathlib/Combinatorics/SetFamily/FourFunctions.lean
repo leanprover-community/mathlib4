@@ -59,13 +59,13 @@ open scoped FinsetFamily
 variable {α β : Type*}
 
 section Finset
-variable [DecidableEq α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β] {𝒜 ℬ : Finset (Finset α)}
+variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 ℬ : Finset (Finset α)}
   {a : α} {f f₁ f₂ f₃ f₄ g μ : Finset α → β} {s t u : Finset α}
 
 /-- The `n = 1` case of the Ahlswede-Daykin inequality. Note that we can't just expand everything
 out and bound termwise since `c₀ * d₁` appears twice on the RHS of the assumptions while `c₁ * d₀`
 does not appear. -/
-private lemma ineq {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ : β}
+private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ : β}
     (ha₀ : 0 ≤ a₀) (ha₁ : 0 ≤ a₁) (hb₀ : 0 ≤ b₀) (hb₁ : 0 ≤ b₁)
     (hc₀ : 0 ≤ c₀) (hc₁ : 0 ≤ c₁) (hd₀ : 0 ≤ d₀) (hd₁ : 0 ≤ d₁)
     (h₀₀ : a₀ * b₀ ≤ c₀ * d₀) (h₁₀ : a₁ * b₀ ≤ c₀ * d₁)
@@ -130,7 +130,8 @@ lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert 
 
 lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := fun _s ↦ sum_nonneg fun _t _ ↦ hf _
 
-lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
+lemma collapse_modular [ExistsAddOfLE β]
+    (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u →  f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
     (𝒜 ℬ : Finset (Finset α)) :
     ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → collapse 𝒜 a f₁ s * collapse ℬ a f₂ t ≤
@@ -233,6 +234,8 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
   · rw [← sum_union (disjoint_sdiff_self_right.mono inf_le_left inf_le_left),
       ← union_inter_distrib_right, union_sdiff_of_subset (powerset_mono.2 <| subset_insert _ _),
       inter_eq_right.2 h𝒜]
+
+variable [ExistsAddOfLE β]
 
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/

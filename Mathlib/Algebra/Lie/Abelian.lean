@@ -271,8 +271,7 @@ open LieSubmodule LieSubalgebra
 
 variable {R : Type u} {L : Type v} {M : Type w}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-variable [LieRingModule L M] [LieModule R L M]
-variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
+variable [LieRingModule L M] (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 @[simp]
 theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N⁆ = ⊥ := by

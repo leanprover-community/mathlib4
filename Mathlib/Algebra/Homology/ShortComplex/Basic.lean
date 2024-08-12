@@ -87,7 +87,7 @@ instance : Category (ShortComplex C) where
 
 @[ext]
 lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂) (h₃ : f.τ₃ = g.τ₃) : f = g :=
-  Hom.ext _ _ h₁ h₂ h₃
+  Hom.ext h₁ h₂ h₃
 
 /-- A constructor for morphisms in `ShortComplex C` when the commutativity conditions
 are not obvious. -/

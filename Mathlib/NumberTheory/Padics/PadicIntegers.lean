@@ -50,8 +50,6 @@ open Padic Metric LocalRing
 
 noncomputable section
 
-open scoped Classical
-
 /-- The `p`-adic integers `ℤ_[p]` are the `p`-adic numbers with norm `≤ 1`. -/
 def PadicInt (p : ℕ) [Fact p.Prime] :=
   { x : ℚ_[p] // ‖x‖ ≤ 1 }
@@ -198,6 +196,8 @@ We now show that `ℤ_[p]` is a
 variable (p : ℕ) [Fact p.Prime]
 
 instance : MetricSpace ℤ_[p] := Subtype.metricSpace
+
+instance : IsUltrametricDist ℤ_[p] := IsUltrametricDist.subtype _
 
 instance completeSpace : CompleteSpace ℤ_[p] :=
   have : IsClosed { x : ℚ_[p] | ‖x‖ ≤ 1 } := isClosed_le continuous_norm continuous_const

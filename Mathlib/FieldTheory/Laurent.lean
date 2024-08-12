@@ -30,9 +30,9 @@ noncomputable section
 
 open Polynomial
 
-open scoped Classical nonZeroDivisors Polynomial
+open scoped nonZeroDivisors
 
-variable {R : Type u} [CommRing R] [hdomain : IsDomain R] (r s : R) (p q : R[X]) (f : RatFunc R)
+variable {R : Type u} [CommRing R] (r s : R) (p q : R[X]) (f : RatFunc R)
 
 theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
   rw [mem_nonZeroDivisors_iff]
@@ -57,6 +57,8 @@ theorem laurentAux_ofFractionRing_mk (q : R[X]⁰) :
     laurentAux r (ofFractionRing (Localization.mk p q)) =
       ofFractionRing (.mk (taylor r p) ⟨taylor r q, taylor_mem_nonZeroDivisors r q q.prop⟩) :=
   map_apply_ofFractionRing_mk _ _ _ _
+
+variable [IsDomain R]
 
 theorem laurentAux_div :
     laurentAux r (algebraMap _ _ p / algebraMap _ _ q) =

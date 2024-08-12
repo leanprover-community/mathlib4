@@ -28,7 +28,14 @@ open Finset Matrix
 namespace SimpleGraph
 
 variable {V : Type*} (R : Type*)
-variable [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+variable [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj]
+
+theorem degree_eq_sum_if_adj {R : Type*} [AddCommMonoidWithOne R] (i : V) :
+    (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
+  unfold degree neighborFinset neighborSet
+  rw [sum_boole, Set.toFinset_setOf]
+
+variable [DecidableEq V]
 
 /-- The diagonal matrix consisting of the degrees of the vertices in the graph. -/
 def degMatrix [AddMonoidWithOne R] : Matrix V V R := Matrix.diagonal (G.degree ·)
@@ -63,11 +70,6 @@ theorem dotProduct_mulVec_degMatrix [CommRing R] (x : V → R) :
   simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
 
 variable (R)
-
-theorem degree_eq_sum_if_adj [AddCommMonoidWithOne R] (i : V) :
-    (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
-  unfold degree neighborFinset neighborSet
-  rw [sum_boole, Set.toFinset_setOf]
 
 /-- Let $L$ be the graph Laplacian and let $x \in \mathbb{R}$, then
 $$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
@@ -119,6 +121,8 @@ theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
+
+section
 
 variable [DecidableEq G.ConnectedComponent]
 
@@ -179,9 +183,12 @@ noncomputable def lapMatrix_ker_basis :=
   Basis.mk (linearIndependent_lapMatrix_ker_basis_aux G)
     (top_le_span_range_lapMatrix_ker_basis_aux G)
 
+end
+
 /-- The number of connected components in `G` is the dimension of the nullspace its Laplacian. -/
 theorem card_ConnectedComponent_eq_rank_ker_lapMatrix : Fintype.card G.ConnectedComponent =
     FiniteDimensional.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
+  classical
   rw [FiniteDimensional.finrank_eq_card_basis (lapMatrix_ker_basis G)]
 
 end SimpleGraph
