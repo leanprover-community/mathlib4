@@ -584,7 +584,6 @@ theorem map_unique (j : S →+* Q) (hj : ∀ x : R, j (algebraMap R S x) = algeb
     map Q g hy = j :=
   lift_unique (fun y => map_units _ ⟨g y, hy y.2⟩) hj
 
-
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 theorem map_comp_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring W]
@@ -694,8 +693,7 @@ protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebr
 end AlgEquiv
 
 section at_units
-lemma at_units -- {R : Type*} [CommSemiring R]
-    (S : Submonoid R)
+lemma at_units (S : Submonoid R)
     (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R where
   map_units' y := hS y.prop
   surj' := fun s ↦ ⟨⟨s, 1⟩, by simp⟩
@@ -1101,7 +1099,6 @@ variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsSca
 variable (S Rₘ Sₘ)
 
 theorem IsLocalization.map_units_map_submonoid
-    --[IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
     (y : M) :
     IsUnit (algebraMap R Sₘ y) := by
   rw [IsScalarTower.algebraMap_apply _ S]

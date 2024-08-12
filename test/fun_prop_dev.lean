@@ -31,7 +31,6 @@ set_option linter.unusedVariables false
 -- state basic lambda calculus rules --
 ---------------------------------------
 
--- variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
 @[fun_prop] theorem Con_id : Con (id : α → α) := silentSorry
 @[fun_prop] theorem Con_const (y : β) : Con (fun x : α => y) := silentSorry
