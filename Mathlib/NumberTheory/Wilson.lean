@@ -100,4 +100,4 @@ theorem prime_iff_fac_equiv_neg_one (h : n ≠ 1) : Prime n ↔ ((n - 1)! : ZMod
 
 end Nat
 
-assert_not_exists legendre_sym.quadratic_reciprocity
+assert_not_exists legendreSym.quadratic_reciprocity
