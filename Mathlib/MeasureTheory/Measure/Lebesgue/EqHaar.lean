@@ -83,7 +83,7 @@ theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommG
   classical
   rw [← Basis.parallelepiped_basisFun, ← Basis.parallelepiped_map]
   congr with x
-  simp
+  simp [Pi.single_apply]
 
 open MeasureTheory MeasureTheory.Measure
 
