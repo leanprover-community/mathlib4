@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gabriel Ebner, E.W.Ayers
+Authors: Gabriel Ebner, Edward Ayers
 -/
 import Lean.Data.HashMap
 
@@ -10,8 +10,7 @@ import Lean.Data.HashMap
 
 -/
 
-set_option autoImplicit true
-
+universe u v
 open ShareCommon
 
 private unsafe abbrev ObjectMap := @Lean.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩

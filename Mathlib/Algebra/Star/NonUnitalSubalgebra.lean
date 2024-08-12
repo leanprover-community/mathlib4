@@ -519,9 +519,7 @@ open scoped Pointwise
 
 variable [CommSemiring R] [StarRing R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
-variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
-variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+variable [StarModule R A]
 
 /-- The pointwise `star` of a non-unital subalgebra is a non-unital subalgebra. -/
 instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A) where
@@ -552,6 +550,7 @@ theorem star_mono : Monotone (star : NonUnitalSubalgebra R A → NonUnitalSubalg
   fun _ _ h _ hx => h hx
 
 variable (R)
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The star operation on `NonUnitalSubalgebra` commutes with `NonUnitalAlgebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) :
@@ -632,10 +631,10 @@ theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
 
 @[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
-  (Set.subset_union_left s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
+  Set.subset_union_left.trans <| NonUnitalAlgebra.subset_adjoin R
 
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
-  (Set.subset_union_right s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
+  Set.subset_union_right.trans <| NonUnitalAlgebra.subset_adjoin R
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   NonUnitalAlgebra.subset_adjoin R <| Set.mem_union_left _ (Set.mem_singleton x)
@@ -662,7 +661,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalStarSubal
   intro s S
   rw [← toNonUnitalSubalgebra_le_iff, adjoin_toNonUnitalSubalgebra,
     NonUnitalAlgebra.adjoin_le_iff, coe_toNonUnitalSubalgebra]
-  exact ⟨fun h => (Set.subset_union_left s _).trans h,
+  exact ⟨fun h => Set.subset_union_left.trans h,
     fun h => Set.union_subset h fun x hx => star_star x ▸ star_mem (show star x ∈ S from h hx)⟩
 
 /-- Galois insertion between `adjoin` and `Subtype.val`. -/
@@ -686,7 +685,7 @@ lemma adjoin_eq_span (s : Set A) :
   rw [adjoin_toNonUnitalSubalgebra, NonUnitalAlgebra.adjoin_eq_span]
 
 @[simp]
-lemma span_eq_toSubmodule (s : NonUnitalStarSubalgebra R A) :
+lemma span_eq_toSubmodule {R} [CommSemiring R] [Module R A] (s : NonUnitalStarSubalgebra R A) :
     Submodule.span R (s : Set A) = s.toSubmodule := by
   simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
 
@@ -967,20 +966,17 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast, ZeroMemClass.coe_zero,
           AddSubmonoid.mk_add_mk, Set.inclusion_mk]
         apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· * ·))
-        on_goal 3 => rw [coe_iSup_of_directed dir]
         all_goals simp
       map_add' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
         apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
-        on_goal 3 => rw [coe_iSup_of_directed dir]
         all_goals simp
       map_smul' := fun r => by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
         apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
           (fun _ _ => rfl)
-        on_goal 2 => rw [coe_iSup_of_directed dir]
         all_goals simp
       map_star' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalStarAlgHom.comp_apply, inclusion_mk, Eq.ndrec,
@@ -990,7 +986,6 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
           NonUnitalAlgHom.coe_mk]
         apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => star x)
           (fun _ _ => rfl)
-        on_goal 2 => rw [coe_iSup_of_directed dir]
         all_goals simp [map_star] }
 
 variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Directed (· ≤ ·) K}

@@ -56,8 +56,7 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
     cmd stx
 
 /-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev allowed_commands : HashSet String :=
-  { "#align", "#align_import", "#noalign", "#adaptation_note" }
+private abbrev allowed_commands : HashSet String := { "#adaptation_note" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.
@@ -70,7 +69,7 @@ logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
   let mod := (← getMainModule).components
   if getLinterHash (← getOptions) &&
-    ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) &&
+    ((← get).messages.toList.isEmpty || warningAsError.get (← getOptions)) &&
     -- we check that the module is either not in `test` or, is `test.HashCommandLinter`
     (mod.getD 0 default != `test || (mod == [`test, `HashCommandLinter]))
     then

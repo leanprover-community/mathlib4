@@ -5,8 +5,6 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Data.Fintype.Powerset
 
-#align_import wiedijk_100_theorems.ascending_descending_sequences from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Erdős–Szekeres theorem
 
@@ -74,8 +72,12 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- set, and if the second is more than `s` somewhere, then we have a decreasing subsequence.
   rsuffices ⟨i, hi⟩ : ∃ i, r < (ab i).1 ∨ s < (ab i).2
   · refine Or.imp ?_ ?_ hi
-    on_goal 1 => have : (ab i).1 ∈ _ := by simp only [← hab]; exact max'_mem _ _
-    on_goal 2 => have : (ab i).2 ∈ _ := by simp only [← hab]; exact max'_mem _ _
+    on_goal 1 =>
+      have : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
+        simp only [← hab]; exact max'_mem _ _
+    on_goal 2 =>
+      have : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
+        simp only [← hab]; exact max'_mem _ _
     all_goals
       intro hi
       rw [mem_image] at this
@@ -92,8 +94,12 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     -- We have two cases: `f i < f j` or `f j < f i`.
     -- In the former we'll show `a_i < a_j`, and in the latter we'll show `b_i < b_j`.
     cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
-    on_goal 1 => apply ne_of_lt _ q₁; have : (ab' i).1 ∈ _ := by dsimp only; exact max'_mem _ _
-    on_goal 2 => apply ne_of_lt _ q₂; have : (ab' i).2 ∈ _ := by dsimp only; exact max'_mem _ _
+    on_goal 1 =>
+      apply ne_of_lt _ q₁
+      have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
+    on_goal 2 =>
+      apply ne_of_lt _ q₂
+      have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
     all_goals
       -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
       rw [Nat.lt_iff_add_one_le]
@@ -162,6 +168,5 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   apply not_le_of_lt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
   simpa [ran, Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
-#align theorems_100.erdos_szekeres Theorems100.erdos_szekeres
 
 end Theorems100

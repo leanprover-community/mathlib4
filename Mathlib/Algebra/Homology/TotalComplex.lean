@@ -38,6 +38,12 @@ variable {C : Type*} [Category C] [Preadditive C]
 of the objects `(K.X i₁).X i₂` such that `ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = i₁₂` exists. -/
 abbrev HasTotal := K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₁₂)
 
+variable {K L} in
+lemma hasTotal_of_iso [K.HasTotal c₁₂] : L.HasTotal c₁₂ :=
+  GradedObject.hasMap_of_iso (GradedObject.isoMk K.toGradedObject L.toGradedObject
+    (fun ⟨i₁, i₂⟩ =>
+      (HomologicalComplex.eval _ _ i₁ ⋙ HomologicalComplex.eval _ _ i₂).mapIso e)) _
+
 variable [K.HasTotal c₁₂]
 
 section
@@ -237,7 +243,7 @@ lemma D₁_D₂ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
     K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' = - K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' := by simp
 
 /-- The total complex of a bicomplex. -/
-@[simps d]
+@[simps (config := .lemmasOnly) d]
 noncomputable def total : HomologicalComplex C c₁₂ where
   X := K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂)
   d i₁₂ i₁₂' := K.D₁ c₁₂ i₁₂ i₁₂' + K.D₂ c₁₂ i₁₂ i₁₂'
