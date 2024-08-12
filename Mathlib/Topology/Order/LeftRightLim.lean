@@ -89,6 +89,7 @@ namespace Monotone
 
 variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Monotone f) {x y : α}
+include hf
 
 theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
     leftLim f x = sSup (f '' Iio x) :=
@@ -253,6 +254,7 @@ namespace Antitone
 
 variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Antitone f) {x y : α}
+include hf
 
 theorem le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=
   hf.dual_right.leftLim_le h

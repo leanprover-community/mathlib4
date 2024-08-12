@@ -96,6 +96,7 @@ namespace SheafCondition
 
 variable {S}
 variable {P : Cᵒᵖ ⥤ Type v'} (h : S.SheafCondition P)
+include h
 
 lemma bijective_toPullbackObj : Function.Bijective (S.toPullbackObj P) := by
   rwa [← sheafCondition_iff_bijective_toPullbackObj]

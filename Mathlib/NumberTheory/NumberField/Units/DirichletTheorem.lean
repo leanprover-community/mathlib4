@@ -204,6 +204,7 @@ open NumberField.mixedEmbedding NNReal
 
 variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBodyLTFactor K) * B)
 
+include hB in
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     ∃ y : 𝓞 K, y ≠ 0 ∧

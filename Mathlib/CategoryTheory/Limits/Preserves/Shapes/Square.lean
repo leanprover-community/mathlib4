@@ -85,6 +85,7 @@ variable {sq₁ : Square (Type v)} {sq₂ : Square (Type u)}
   (comm₁₃ : e₃ ∘ sq₁.f₁₃ = sq₂.f₁₃ ∘ e₁)
   (comm₂₄ : e₄ ∘ sq₁.f₂₄ = sq₂.f₂₄ ∘ e₂)
   (comm₃₄ : e₄ ∘ sq₁.f₃₄ = sq₂.f₃₄ ∘ e₃)
+include comm₁₂ comm₁₃ comm₂₄ comm₃₄
 
 variable (sq₁ sq₂) in
 lemma IsPullback.iff_of_equiv : sq₁.IsPullback ↔ sq₂.IsPullback := by

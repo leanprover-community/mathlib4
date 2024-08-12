@@ -636,6 +636,7 @@ namespace IsSimpleOrder
 section Preorder
 
 variable [Preorder α] [BoundedOrder α] [IsSimpleOrder α] {a b : α} (h : a < b)
+include h
 
 theorem eq_bot_of_lt : a = ⊥ :=
   (IsSimpleOrder.eq_bot_or_eq_top _).resolve_right h.ne_top
@@ -971,6 +972,7 @@ variable [Lattice α] [BoundedOrder α] [IsModularLattice α]
 namespace IsCompl
 
 variable {a b : α} (hc : IsCompl a b)
+include hc
 
 theorem isAtom_iff_isCoatom : IsAtom a ↔ IsCoatom b :=
   Set.isSimpleOrder_Iic_iff_isAtom.symm.trans <|

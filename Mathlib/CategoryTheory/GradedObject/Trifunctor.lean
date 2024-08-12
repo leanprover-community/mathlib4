@@ -350,11 +350,14 @@ noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
 
 variable {F₁₂ G ρ₁₂ X₁ X₂ X₃}
 
+include ρ₁₂ in
 lemma HasGoodTrifunctor₁₂Obj.hasMap :
     HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r :=
   fun j => ⟨_, isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j⟩
 
 variable (F₁₂ G ρ₁₂ X₁ X₂ X₃)
+
+section
 variable [HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r]
 
 /-- The action on graded objects of a trifunctor obtained by composition of two
@@ -382,6 +385,8 @@ lemma ι_mapBifunctorComp₁₂MapObjIso_inv (i₁ : I₁) (i₂ : I₂) (i₃ :
       ιMapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ i₁ i₂ i₃ j h :=
   CofanMapObjFun.inj_iso_hom
     (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j) _ h
+
+end
 
 variable {X₁ X₂ X₃ F₁₂ G ρ₁₂}
 variable {j : J} {A : C₄}
@@ -523,11 +528,14 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
 
 variable {F₁₂ G ρ₁₂ X₁ X₂ X₃}
 
+include ρ₂₃ in
 lemma HasGoodTrifunctor₂₃Obj.hasMap :
     HasMap ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r :=
   fun j => ⟨_, isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j⟩
 
 variable (F₁₂ G ρ₁₂ X₁ X₂ X₃)
+
+section
 variable [HasMap ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r]
 
 /-- The action on graded objects of a trifunctor obtained by composition of two
@@ -555,6 +563,8 @@ lemma ι_mapBifunctorComp₂₃MapObjIso_inv (i₁ : I₁) (i₂ : I₂) (i₃ :
       ιMapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ i₁ i₂ i₃ j h :=
   CofanMapObjFun.inj_iso_hom
     (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j) _ h
+
+end
 
 variable {X₁ X₂ X₃ F G₂₃ ρ₂₃}
 variable {j : J} {A : C₄}

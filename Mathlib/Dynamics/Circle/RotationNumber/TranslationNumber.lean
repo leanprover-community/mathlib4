@@ -586,11 +586,11 @@ theorem transnumAuxSeq_dist_lt (n : ℕ) :
     pow_mul, sq, mul_apply]
 
 theorem tendsto_translationNumber_aux : Tendsto f.transnumAuxSeq atTop (𝓝 <| τ f) :=
-  (cauchySeq_of_le_geometric_two 1 fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
+  (cauchySeq_of_le_geometric_two fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
 
 theorem dist_map_zero_translationNumber_le : dist (f 0) (τ f) ≤ 1 :=
   f.transnumAuxSeq_zero ▸
-    dist_le_of_le_geometric_two_of_tendsto₀ 1 (fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n)
+    dist_le_of_le_geometric_two_of_tendsto₀ (fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n)
       f.tendsto_translationNumber_aux
 
 theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ)
