@@ -599,33 +599,6 @@ abbrev PullbackObj : Type u :=
 example (p : PullbackObj f g) : X × Y :=
   p
 
-/-- The map `PullbackObj f g → PullbackObj f' g'` induced
-by a commutative diagram. -/
-@[simps coe_fst coe_snd]
-def pullbackMap (a : X → X') (b : Y → Y') (c : Z → Z')
-    (commf : ∀ x, c (f x) = f' (a x))
-    (commg : ∀ y, c (g y) = g' (b y))
-    (x : PullbackObj f g) : PullbackObj f' g' :=
-  ⟨⟨a x.1.1, b x.1.2⟩, by
-    dsimp
-    rw [← commg, ← commf, x.2]⟩
-
-/-- The bijection `PullbackObj f g ≃ PullbackObj f' g'` induced
-by an equivalence between two pullback diagrams of types. -/
-@[simps]
-def pullbackMapEquiv (a : X ≃ X') (b : Y ≃ Y') (c : Z ≃ Z')
-    (commf : ∀ x, c (f x) = f' (a x))
-    (commg : ∀ y, c (g y) = g' (b y)) :
-    PullbackObj f g ≃ PullbackObj f' g' where
-  toFun := pullbackMap f g f' g' a b c commf commg
-  invFun := pullbackMap f' g' f g a.symm b.symm c.symm (fun x' ↦ by
-    obtain ⟨x, rfl⟩ := a.surjective x'
-    simp only [← commf, Equiv.symm_apply_apply]) (fun y' ↦ by
-    obtain ⟨y, rfl⟩ := b.surjective y'
-    simp only [← commg, Equiv.symm_apply_apply])
-  left_inv _ := by ext <;> simp
-  right_inv _ := by ext <;> simp
-
 /-- The explicit pullback cone on `PullbackObj f g`.
 This is bundled with the `IsLimit` data as `pullbackLimitCone f g`.
 -/
