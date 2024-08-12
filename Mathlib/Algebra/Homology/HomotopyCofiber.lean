@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-! The homotopy cofiber of a morphism of homological complexes
 
@@ -190,7 +191,7 @@ lemma inlX_d (i j k : ι) (hij : c.Rel i j) (hjk : c.Rel j k) :
   · simp [d_sndX φ _ _ hij]
 
 @[reassoc]
-lemma inlX_d' (i j : ι) (hij : c.Rel i j) (hj : ¬ c.Rel j (c.next j)):
+lemma inlX_d' (i j : ι) (hij : c.Rel i j) (hj : ¬ c.Rel j (c.next j)) :
     inlX φ j i hij ≫ d φ i j = φ.f j ≫ inrX φ j := by
   apply ext_to_X' _ _ hj
   simp [d_sndX φ i j hij]
@@ -338,7 +339,7 @@ lemma eq_desc (f : homotopyCofiber φ ⟶ K) (hc : ∀ j, ∃ i, c.Rel i j) :
 
 end
 
-lemma descSigma_ext_iff {K : HomologicalComplex C c}
+lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     (x y : Σ (α : G ⟶ K), Homotopy (φ ≫ α) 0) :
     x = y ↔ x.1 = y.1 ∧ (∀ (i j : ι) (_ : c.Rel j i), x.2.hom i j = y.2.hom i j) := by
   constructor

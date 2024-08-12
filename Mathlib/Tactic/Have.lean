@@ -6,13 +6,15 @@ Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 import Lean.Elab.Binders
 import Lean.Elab.SyntheticMVars
 import Lean.Meta.Tactic.Assert
-import Mathlib.Data.Array.Defs
 
 /-!
 # Extending `have`, `let` and `suffices`
 
 This file extends the `have`, `let` and `suffices` tactics to allow the addition of hypotheses to
 the context without requiring their proofs to be provided immediately.
+
+As a style choice, this should not be used in mathlib; but is provided for downstream users who
+preferred the old style.
 -/
 
 namespace Mathlib.Tactic
@@ -70,7 +72,7 @@ def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
       | none => mkFreshTypeMVar
       | some stx => withRef stx do
         let e ← Term.elabType stx
-        Term.synthesizeSyntheticMVars false
+        Term.synthesizeSyntheticMVars (postpone := .no)
         instantiateMVars e
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)

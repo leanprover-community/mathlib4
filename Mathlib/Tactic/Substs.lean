@@ -1,13 +1,18 @@
 /-
 Copyright (c) 2022 Evan Lohn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Evan Lohn, Mario Carneiro
+Authors: Evan Lohn, Mario Carneiro
 -/
 import Lean
 
+/-!
+# The `substs` macro
+
+The `substs` macro applies the `subst` tactic to a list of hypothesis, in left to right order.
+-/
+
 namespace Mathlib.Tactic.Substs
-open Lean Meta Elab
-open Tactic
+
 
 /--
 Applies the `subst` tactic to all given hypotheses from left to right.

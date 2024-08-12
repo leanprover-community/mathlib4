@@ -12,10 +12,12 @@ set -e
 #   TOKEN: ${{ secrets.LEAN_PR_TESTING }}
 #   GITHUB_CONTEXT: ${{ toJson(github) }}
 #   WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+#   BUILD_OUTCOME: ${{ steps.build.outcome }}
+#   NOISY_OUTCOME: ${{ steps.noisy.outcome }}
+#   ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
+#   COUNTEREXAMPLES_OUTCOME: ${{ steps.counterexamples.outcome }}
 #   LINT_OUTCOME: ${{ steps.lint.outcome }}
 #   TEST_OUTCOME: ${{ steps.test.outcome }}
-#   BUILD_OUTCOME: ${{ steps.build.outcome }}
-#   CHECK_OUTCOME: ${{ steps.lean4checker.outcome }}
 
 # Extract branch name and check if it matches the pattern.
 branch_name=$(echo "$GITHUB_CONTEXT" | jq -r .ref | cut -d'/' -f3)
@@ -25,7 +27,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
 
   echo "This is a 'lean-pr-testing-$pr_number' branch, so we need to adjust labels and write a comment."
 
-  if [ "$CHECK_OUTCOME" == "success" ]; then
+  if [ "$TEST_OUTCOME" == "success" ]; then
     echo "Removing label awaiting-mathlib"
     curl -L -s \
       -X DELETE \
@@ -48,7 +50,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
       -H "X-GitHub-Api-Version: 2022-11-28" \
       https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels \
       -d '{"labels":["builds-mathlib"]}'
-  elif [ "$CHECK_OUTCOME" == "failure" ] || [ "$LINT_OUTCOME" == "failure" ] || [ "$TEST_OUTCOME" == "failure" ] || [ "$BUILD_OUTCOME" == "failure" ]; then
+  elif [ "$LINT_OUTCOME" == "failure" ] || [ "$TEST_OUTCOME" == "failure" ] || [ "$COUNTEREXAMPLES_OUTCOME" == "failure" ] || [ "$ARCHIVE_OUTCOME" == "failure" ] || [ "$NOISY_OUTCOME" == "failure" ] || [ "$BUILD_OUTCOME" == "failure" ]; then
     echo "Removing label builds-mathlib"
     curl -L -s \
       -X DELETE \
@@ -56,14 +58,14 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
       -H "Authorization: Bearer $TOKEN" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
       https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels/builds-mathlib
-    echo "Adding label breaks-mathlib"
+    echo "Adding labels breaks-mathlib and release-ci"
     curl -L -s \
       -X POST \
       -H "Accept: application/vnd.github+json" \
       -H "Authorization: Bearer $TOKEN" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
       https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels \
-      -d '{"labels":["breaks-mathlib"]}'
+      -d '{"labels":["breaks-mathlib", "release-ci"]}'
   fi
 
   # Use GitHub API to check if a comment already exists
@@ -76,18 +78,22 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
 
   branch="[lean-pr-testing-$pr_number](https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$pr_number)"
   # Depending on the success/failure, set the appropriate message
-  if [ "$LINT_OUTCOME" == "cancelled" ] || [ "$TEST_OUTCOME" == "cancelled" ] || [ "$BUILD_OUTCOME" == "cancelled" ] || [ "$CHECK_OUTCOME" == "cancelled" ]; then
+  if [ "$LINT_OUTCOME" == "cancelled" ] || [ "$TEST_OUTCOME" == "cancelled" ] || [ "$COUNTEREXAMPLES_OUTCOME" == "cancelled" ] || [ "$ARCHIVE_OUTCOME" == "cancelled" ] || [ "$NOISY_OUTCOME" == "cancelled" ] || [ "$BUILD_OUTCOME" == "cancelled" ]; then
     message="- 🟡 Mathlib branch $branch build against this PR was cancelled. ($current_time) [View Log]($WORKFLOW_URL)"
-  elif [ "$CHECK_OUTCOME" == "success" ]; then
-    message="- ✅ Mathlib branch $branch has successfully built against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
-  elif [ "$LINT_OUTCOME" == "success" ]; then
-    message="- ❌ Mathlib branch $branch built against this PR, but lean4checker failed. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$TEST_OUTCOME" == "success" ]; then
-    message="- ❌ Mathlib branch $branch built against this PR, but linting failed. ($current_time) [View Log]($WORKFLOW_URL)"
-  elif [ "$BUILD_OUTCOME" == "success" ]; then
-    message="- ❌ Mathlib branch $branch built against this PR, but testing failed. ($current_time) [View Log]($WORKFLOW_URL)"
-  elif [ "$CHECK_OUTCOME" == "failure" ] || [ "$LINT_OUTCOME" == "failure" ] || [ "$TEST_OUTCOME" == "failure" ] || [ "$BUILD_OUTCOME" == "failure" ]; then
+    message="- ✅ Mathlib branch $branch has successfully built against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
+  elif [ "$BUILD_OUTCOME" == "failure" ] ; then
     message="- 💥 Mathlib branch $branch build failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
+  elif [ "$LINT_OUTCOME" == "failure" ]; then
+    message="- ❌ Mathlib branch $branch built against this PR, but linting failed. ($current_time) [View Log]($WORKFLOW_URL)"
+  elif [ "$COUNTEREXAMPLES_OUTCOME" == "failure" ]; then
+    message="- ❌ Mathlib branch $branch built against this PR, but the counterexamples library failed. ($current_time) [View Log]($WORKFLOW_URL)"
+  elif [ "$ARCHIVE_OUTCOME" == "failure" ]; then
+    message="- ❌ Mathlib branch $branch built against this PR, but the archive failed. ($current_time) [View Log]($WORKFLOW_URL)"
+  elif [ "$NOISY_OUTCOME" == "failure" ]; then
+    message="- ❌ Mathlib branch $branch built against this PR, but was unexpectedly noisy. ($current_time) [View Log]($WORKFLOW_URL)"
+  elif [ "$TEST_OUTCOME" == "failure" ]; then
+    message="- ❌ Mathlib branch $branch built against this PR, but testing failed. ($current_time) [View Log]($WORKFLOW_URL)"
   else
     message="- 🟡 Mathlib branch $branch build this PR didn't complete normally. ($current_time) [View Log]($WORKFLOW_URL)"
   fi

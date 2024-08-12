@@ -1,0 +1,31 @@
+-- Manual exceptions for the text-based linters.
+-- This file is to `style-exceptions.txt` what `nolints.json` is to `@nolint` attributes:
+-- The latter is supposed to become and stay mostly empty over time (though files longer than
+-- 1500 lines can be transient exceptions for some longer time period),
+-- the former could be necessary in the long term.
+-- In this case, it's a side-effect of making the linter stricter than its Python ancestor.
+
+-- This file was recognised as import-only by the old heuristic, but not by the new, simpler one.
+Mathlib/Tactic/Linter.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
+Mathlib/Tactic/Linter.lean : line 3 : ERR_COP : Malformed or missing copyright header: Second line should be "Released under Apache 2.0 license as described in the file LICENSE."
+Mathlib/Tactic/Linter.lean : line 4 : ERR_COP : Malformed or missing copyright header: The third line should describe the file's main authors
+
+-- The first line of the copyright is split in two (because of many authors, it is longer than
+-- 100 characters). Suggestion: tweak the line length linter and put this on one line?
+Archive/Sensitivity.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
+Archive/Sensitivity.lean : line 3 : ERR_COP : Malformed or missing copyright header: Second line should be "Released under Apache 2.0 license as described in the file LICENSE."
+Archive/Sensitivity.lean : line 4 : ERR_COP : Malformed or missing copyright header: The third line should describe the file's main authors
+
+-- The linter for the string "adaptation note" fires in the implementation of the linter,
+-- and in the implementation of the #adaptation_note tactic: this is as expected.
+Mathlib/Tactic/AdaptationNote.lean : line 9 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 12 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 21 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 27 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 39 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 52 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 33 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 60 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 222 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 227 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 228 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead

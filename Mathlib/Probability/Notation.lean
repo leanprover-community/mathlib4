@@ -3,11 +3,8 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
-
-#align_import probability.notation from "leanprover-community/mathlib"@"00abe0695d8767201e6d008afa22393978bb324d"
 
 /-! # Notations for probability theory
 
@@ -27,6 +24,9 @@ We note that the notation `∂P/∂Q` applies to three different cases, namely,
 `MeasureTheory.ComplexMeasure.rnDeriv`.
 
 - `ℙ` is a notation for `volume` on a measured space.
+
+To use these notations, you need to use `open scoped ProbabilityTheory`
+or `open ProbabilityTheory`.
 -/
 
 

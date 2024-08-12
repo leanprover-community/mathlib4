@@ -5,9 +5,9 @@ Authors: Floris van Doorn
 -/
 
 import Lean.Elab.Exception
-import Std.Lean.NameMapAttribute
-import Std.Lean.Expr
-import Std.Tactic.Lint
+import Batteries.Lean.NameMapAttribute
+import Batteries.Lean.Expr
+import Batteries.Tactic.Lint
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`
@@ -26,7 +26,7 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
     We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
     class that extends `Neg`.
   * `@[notation_class * <projName> Simps.findCoercionArgs]` is used to configure the
-    `SetLike` and `FunLike` coercions.
+    `SetLike` and `DFunLike` coercions.
   * The first name argument is the projection name we use as the key to search for this class
     (default: name of first projection of the class).
   * The second argument is the name of a declaration that has type
@@ -78,7 +78,7 @@ def findZeroArgs : findArgType := λ _ _ args =>
 def findOneArgs : findArgType := λ _ _ args =>
   return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
 
-/-- Find arguments of a coercion class (`FunLike` or `SetLike`) -/
+/-- Find arguments of a coercion class (`DFunLike` or `SetLike`) -/
 def findCoercionArgs : findArgType := λ str className args => do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
@@ -92,7 +92,7 @@ structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
   /-- `isNotation` is a boolean that specifies whether this is notation
-    (false for the coercions `FunLike` and `SetLike`). If this is set to true, we add the current
+    (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
     class as hypothesis during type-class synthesis. -/
   isNotation := true
   /-- The method to find the arguments of the class. -/
