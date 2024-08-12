@@ -3938,9 +3938,9 @@ import Mathlib.RingTheory.Unramified.Derivations
 import Mathlib.RingTheory.Unramified.Finite
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
+import Mathlib.RingTheory.Valuation.IntPolynomial
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
-import Mathlib.RingTheory.Valuation.IntPolynomial
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.Valuation.RamificationGroup
