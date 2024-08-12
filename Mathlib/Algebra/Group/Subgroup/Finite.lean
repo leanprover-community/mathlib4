@@ -179,9 +179,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
         by_cases heq : j = i
         · subst heq
           simp
-        · simp [heq]
-          apply h1 j
-          simpa [heq] using hj
+        · simpa [heq] using h1 j (by simpa [heq] using hj)
       · intro j hj
         have : j ≠ i := by
           rintro rfl

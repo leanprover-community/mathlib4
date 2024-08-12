@@ -769,13 +769,13 @@ theorem JoinedIn.refl (h : x ∈ F) : JoinedIn F x x :=
 @[symm]
 theorem JoinedIn.symm (h : JoinedIn F x y) : JoinedIn F y x := by
   cases' h.mem with hx hy
-  simp_all [joinedIn_iff_joined]
+  simp_all only [joinedIn_iff_joined]
   exact h.symm
 
 theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn F x z := by
   cases' hxy.mem with hx hy
   cases' hyz.mem with hx hy
-  simp_all [joinedIn_iff_joined]
+  simp_all only [joinedIn_iff_joined]
   exact hxy.trans hyz
 
 theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by

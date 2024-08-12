@@ -602,8 +602,9 @@ noncomputable def equivImage (s : Set α) (hf : MeasurableEmbedding f) : s ≃�
   toEquiv := Equiv.Set.image f s hf.injective
   measurable_toFun := (hf.measurable.comp measurable_id.subtype_val).subtype_mk
   measurable_invFun := by
-    rintro t ⟨u, hu, rfl⟩; simp [preimage_preimage, Set.image_symm_preimage hf.injective]
-    exact measurable_subtype_coe (hf.measurableSet_image' hu)
+    rintro t ⟨u, hu, rfl⟩
+    simpa [preimage_preimage, Set.image_symm_preimage hf.injective]
+      using measurable_subtype_coe (hf.measurableSet_image' hu)
 
 /-- The domain of `f` is equivalent to its range as measurable spaces,
   if `f` is a measurable embedding -/
