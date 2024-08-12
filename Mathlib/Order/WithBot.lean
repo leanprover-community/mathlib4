@@ -7,6 +7,7 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Lift
 import Mathlib.Data.Option.Basic
 
@@ -935,6 +936,30 @@ lemma forall_lt_iff_eq_bot [Preorder α] {x : WithBot α} :
     (∀ y : α, x < y) ↔ x = ⊥ :=
   ⟨fun h ↦ forall_ne_iff_eq_bot.mp (fun x ↦ (h x).ne'), fun h ↦ h ▸ fun y ↦ bot_lt_coe y⟩
 
+lemma le_forall_gt_iff_le_of_withBot [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
+    {x y : WithBot α} : (∀ z : α, x < z → y ≤ z) ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h z x_z ↦ le_trans h (le_of_lt x_z)⟩
+  induction y with
+  | bot => exact bot_le
+  | coe y => induction x with
+    | bot =>
+      rcases exists_not_ge y with ⟨z, y_z⟩
+      norm_cast at h
+      exact (y_z (h z (bot_lt_coe z))).rec
+    | coe x => norm_cast at *; exact le_of_forall_le_of_dense h
+
+lemma ge_forall_lt_iff_ge_of_withBot [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
+    {x y : WithBot α} : (∀ z : α, z < x → z ≤ y) ↔ x ≤ y := by
+  refine ⟨fun h ↦ ?_, fun h z x_z ↦ le_trans (le_of_lt x_z) h⟩
+  induction x with
+  | bot => exact bot_le
+  | coe x => induction y with
+    | bot =>
+      rcases exists_not_ge x with ⟨z, x_z⟩
+      norm_cast at h
+      exact (not_coe_le_bot z (h z (not_le.1 x_z))).rec
+    | coe y =>  norm_cast at *; exact le_of_forall_ge_of_dense h
+
 section LE
 
 variable [LE α] {a b : α}
@@ -1106,6 +1131,14 @@ lemma forall_lt_iff_eq_top {x : WithTop α} : (∀ y : α, y < x) ↔ x = ⊤ :=
   ⟨fun h ↦ forall_ne_iff_eq_top.mp (fun x ↦ (h x).ne), fun h ↦ h ▸ fun y ↦ coe_lt_top y⟩
 
 end Preorder
+
+lemma le_forall_gt_iff_le_of_withTop [LinearOrder α] [DenselyOrdered α] [NoMaxOrder α]
+    {x y : WithTop α} : (∀ z : α, x < z → y ≤ z) ↔ y ≤ x :=
+  WithBot.ge_forall_lt_iff_ge_of_withBot (α := αᵒᵈ)
+
+lemma ge_forall_lt_iff_ge_of_withTop [LinearOrder α] [DenselyOrdered α] [NoMaxOrder α]
+    {x y : WithTop α} : (∀ z : α, z < x → z ≤ y) ↔ x ≤ y :=
+  WithBot.le_forall_gt_iff_le_of_withBot (α := αᵒᵈ)
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with

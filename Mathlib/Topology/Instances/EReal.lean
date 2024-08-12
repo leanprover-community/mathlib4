@@ -228,7 +228,7 @@ lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) 
   rw [h, top_add_of_ne_bot h']
 
 lemma limsup_le_iff {b : EReal} : limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
-  rw [← le_iff_le_forall_real_gt]
+  rw [← le_forall_real_gt_iff_le]
   refine ⟨?_, ?_⟩ <;> intro h c b_lt_c
   · rcases exists_between_coe_real b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
     specialize h d b_lt_d
