@@ -33,7 +33,7 @@ This file defines affine maps.
 `P` or `V`.
 
 This file only provides purely algebraic definitions and results. Those depending on analysis or
-topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and
+topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 `Topology.Algebra.Affine`.
 
 ## References

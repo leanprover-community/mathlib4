@@ -6,7 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
-import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Angles between points
