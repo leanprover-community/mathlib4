@@ -175,7 +175,7 @@ lemma coheight_le (x : α) (n : ℕ∞) :
 
 lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
     p.length ≤ height x := by
-  by_cases hlen0 : p.length > 0
+  by_cases hlen0 : p.length ≠ 0
   · let p' := p.eraseLast.snoc x (by
       apply lt_of_lt_of_le
       · apply p.step ⟨p.length - 1, by omega⟩
@@ -665,7 +665,7 @@ lemma height_coe_WithBot (x : α) : height (x : WithBot α) = height x + 1 := by
   apply le_antisymm
   · apply height_le
     intro p hlast
-    wlog hlenpos : p.length > 0
+    wlog hlenpos : p.length ≠ 0
     · simp_all
     let p' : LTSeries α := {
       length := p.length - 1
