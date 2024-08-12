@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Defs
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 
 /-!
 # Notation classes for set supremum and infimum
