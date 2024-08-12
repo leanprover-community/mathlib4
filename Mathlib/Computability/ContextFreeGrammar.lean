@@ -296,7 +296,7 @@ structure LiftedContextFreeGrammar (T : Type uT) where
   /-- The two mappings are essentially inverses. -/
   sinkNT_liftNT : ∀ n₀ : g₀.NT, sinkNT (liftNT n₀) = some n₀
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
-  corresponding_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.lift liftNT ∈ g.rules
+  lift_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.lift liftNT ∈ g.rules
   /-- Each rule of the bigger grammar whose input nonterminal the smaller grammar recognizes
       has a corresponding rule in the smaller grammar. -/
   preimage_of_rules :
