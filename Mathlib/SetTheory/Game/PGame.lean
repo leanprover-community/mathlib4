@@ -1267,7 +1267,11 @@ instance : Add PGame.{u} :=
     · exact fun i => IHxr i y
     · exact IHyr⟩
 
-/-- The pre-game `((0+1)+⋯)+1`. -/
+/-- The pre-game `((0 + 1) + ⋯) + 1`.
+
+Note that this is **not** the usual recursive definition `n = {0, 1, … | }`. For instance,
+`2 = 0 + 1 + 1 = {0 + 0 + 1, 0 + 1 + 0 | }` does not contain any left option equivalent to `0`. For
+an implementation of said definition, see `Ordinal.toPGame`. -/
 instance : NatCast PGame :=
   ⟨Nat.unaryCast⟩
 
