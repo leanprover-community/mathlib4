@@ -353,6 +353,10 @@ theorem pair_preimage_singleton (f : α →ₛ β) (g : α →ₛ γ) (b : β) (
   rw [← singleton_prod_singleton]
   exact pair_preimage _ _ _ _
 
+@[simp] theorem map_fst_pair (f : α →ₛ β) (g : α →ₛ γ) : (f.pair g).map Prod.fst = f := rfl
+@[simp] theorem map_snd_pair (f : α →ₛ β) (g : α →ₛ γ) : (f.pair g).map Prod.snd = g := rfl
+
+@[simp]
 theorem bind_const (f : α →ₛ β) : f.bind (const α) = f := by ext; simp
 
 @[to_additive]
@@ -926,10 +930,12 @@ theorem restrict_const_lintegral (c : ℝ≥0∞) {s : Set α} (hs : MeasurableS
 @[gcongr]
 theorem lintegral_mono_fun {f g : α →ₛ ℝ≥0∞} (h : f ≤ g) : f.lintegral μ ≤ g.lintegral μ := by
   refine Monotone.of_left_le_map_sup (f := (lintegral · μ)) (fun f g ↦ ?_) h
-  change ((pair f g).map Prod.fst).lintegral μ ≤ ((pair f g).map fun p ↦ p.1 ⊔ p.2).lintegral μ
-  simp only [map_lintegral]
-  gcongr
-  exact le_sup_left
+  calc
+    f.lintegral μ = ((pair f g).map Prod.fst).lintegral μ := by rw [map_fst_pair]
+    _ ≤ ((pair f g).map fun p ↦ p.1 ⊔ p.2).lintegral μ := by
+      simp only [map_lintegral]
+      gcongr
+      exact le_sup_left
 
 theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lintegral μ ≤ (f ⊔ g).lintegral μ :=
   Monotone.le_map_sup (fun _ _ ↦ lintegral_mono_fun) f g
