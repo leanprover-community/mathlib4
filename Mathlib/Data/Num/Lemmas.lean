@@ -1277,7 +1277,7 @@ instance addCommGroup : AddCommGroup ZNum :=
     add_comm := by transfer
     neg := Neg.neg
     zsmul := zsmulRec
-    add_left_neg := by transfer }
+    neg_add_cancel := by transfer }
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with

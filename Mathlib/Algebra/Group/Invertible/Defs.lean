@@ -171,11 +171,11 @@ abbrev Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (h
 
 /-- Each element of a group is invertible. -/
 def invertibleOfGroup [Group α] (a : α) : Invertible a :=
-  ⟨a⁻¹, inv_mul_self a, mul_inv_self a⟩
+  ⟨a⁻¹, inv_mul_cancel a, mul_inv_cancel a⟩
 
 @[simp]
 theorem invOf_eq_group_inv [Group α] (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
-  invOf_eq_right_inv (mul_inv_self a)
+  invOf_eq_right_inv (mul_inv_cancel a)
 
 /-- `1` is the inverse of itself -/
 def invertibleOne [Monoid α] : Invertible (1 : α) :=

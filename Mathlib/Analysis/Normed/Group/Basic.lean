@@ -199,7 +199,7 @@ abbrev SeminormedGroup.ofMulDist [Norm E] [Group E] [PseudoMetricSpace E]
     SeminormedGroup E where
   dist_eq x y := by
     rw [h₁]; apply le_antisymm
-    · simpa only [div_eq_mul_inv, ← mul_right_inv y] using h₂ _ _ _
+    · simpa only [div_eq_mul_inv, ← mul_inv_cancel y] using h₂ _ _ _
     · simpa only [div_mul_cancel, one_mul] using h₂ (x / y) 1 y
 
 -- See note [reducible non-instances]
@@ -212,7 +212,7 @@ abbrev SeminormedGroup.ofMulDist' [Norm E] [Group E] [PseudoMetricSpace E]
   dist_eq x y := by
     rw [h₁]; apply le_antisymm
     · simpa only [div_mul_cancel, one_mul] using h₂ (x / y) 1 y
-    · simpa only [div_eq_mul_inv, ← mul_right_inv y] using h₂ _ _ _
+    · simpa only [div_eq_mul_inv, ← mul_inv_cancel y] using h₂ _ _ _
 
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/

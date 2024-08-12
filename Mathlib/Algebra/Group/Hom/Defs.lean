@@ -395,7 +395,7 @@ lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f 
 @[to_additive (attr := simp) "Additive group homomorphisms preserve negation."]
 theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
-  eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_self _
+  eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_cancel _
 
 @[to_additive (attr := simp)]
 lemma map_comp_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) :

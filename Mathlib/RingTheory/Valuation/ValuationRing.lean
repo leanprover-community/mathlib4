@@ -162,7 +162,7 @@ noncomputable instance linearOrderedCommGroupWithZero :
       apply Quotient.sound'
       use 1
       simp only [one_smul, ne_eq]
-      apply (mul_inv_cancel _).symm
+      apply (mul_inv_cancel₀ _).symm
       contrapose ha
       simp only [Classical.not_not] at ha ⊢
       rw [ha]

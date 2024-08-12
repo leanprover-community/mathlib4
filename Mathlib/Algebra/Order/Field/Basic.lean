@@ -760,7 +760,7 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- take inverses on both sides and use the assumption `2 ≤ a`.
   convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2) using 1
   -- show `1 - 1 / 2 = 1 / 2`.
-  rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel two_ne_zero]
+  rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel₀ two_ne_zero]
 
 /-! ### Results about `IsLUB` -/
 

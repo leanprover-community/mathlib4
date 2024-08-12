@@ -610,7 +610,7 @@ theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [Field K]
   rw [H]
   refine J.sub_mem (J.mul_mem_left _ hxJ) (hJ ?_)
   rw [mem_ker]
-  simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel (mt (mem_ker f).mpr hxf), sub_self]
+  simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel₀ (mt (mem_ker f).mpr hxf), sub_self]
 
 end RingHom
 

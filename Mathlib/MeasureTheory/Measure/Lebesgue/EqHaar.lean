@@ -189,7 +189,7 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     simpa only [sub_eq_zero, Ne] using (pow_right_strictAnti cpos cone).injective.ne hmn.symm
   have : x ∈ s := by
     convert s.smul_mem (c ^ n - c ^ m)⁻¹ A
-    rw [smul_smul, inv_mul_cancel H, one_smul]
+    rw [smul_smul, inv_mul_cancel₀ H, one_smul]
   exact hx this
 
 /-- A strict affine subspace has measure zero. -/
@@ -653,7 +653,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux2 (s : Set E) (x : E)
         ENNReal.ofReal_eq_zero, inv_eq_zero, inv_pow, Ne, or_self_iff, mul_eq_zero]
     · refine (smul_set_mono t_bound).trans_eq ?_
       rw [smul_closedBall _ _ Rpos.le, smul_zero, Real.norm_of_nonneg (inv_nonneg.2 Rpos.le),
-        inv_mul_cancel Rpos.ne']
+        inv_mul_cancel₀ Rpos.ne']
   have B : Tendsto (fun r : ℝ => R * r) (𝓝[>] 0) (𝓝[>] (R * 0)) := by
     apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
     · exact (tendsto_const_nhds.mul tendsto_id).mono_left nhdsWithin_le_nhds
@@ -666,9 +666,9 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux2 (s : Set E) (x : E)
   filter_upwards [self_mem_nhdsWithin]
   rintro r -
   have T : (R * r) • t' = r • t := by
-    rw [mul_comm, ht', smul_smul, mul_assoc, mul_inv_cancel Rpos.ne', mul_one]
+    rw [mul_comm, ht', smul_smul, mul_assoc, mul_inv_cancel₀ Rpos.ne', mul_one]
   have U : (R * r) • u' = r • u := by
-    rw [mul_comm, hu', smul_smul, mul_assoc, mul_inv_cancel Rpos.ne', mul_one]
+    rw [mul_comm, hu', smul_smul, mul_assoc, mul_inv_cancel₀ Rpos.ne', mul_one]
   dsimp
   rw [T, U]
 

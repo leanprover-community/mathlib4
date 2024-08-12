@@ -458,7 +458,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
         (continuous_id.prod_map <|
           (continuous_const.mul continuous_subtype_val).sub continuous_const)
   · rintro st hst
-    simp [hst, mul_inv_cancel (two_ne_zero' ℝ)]
+    simp [hst, mul_inv_cancel₀ (two_ne_zero' ℝ)]
 
 @[continuity]
 theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :

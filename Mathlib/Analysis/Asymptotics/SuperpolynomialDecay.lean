@@ -177,12 +177,12 @@ variable [TopologicalSpace β] [Field β] (l k f)
 
 theorem superpolynomialDecay_mul_const_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
     (SuperpolynomialDecay l k fun n => f n * c) ↔ SuperpolynomialDecay l k f :=
-  ⟨fun h => (h.mul_const c⁻¹).congr fun x => by simp [mul_assoc, mul_inv_cancel hc0], fun h =>
+  ⟨fun h => (h.mul_const c⁻¹).congr fun x => by simp [mul_assoc, mul_inv_cancel₀ hc0], fun h =>
     h.mul_const c⟩
 
 theorem superpolynomialDecay_const_mul_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
     (SuperpolynomialDecay l k fun n => c * f n) ↔ SuperpolynomialDecay l k f :=
-  ⟨fun h => (h.const_mul c⁻¹).congr fun x => by simp [← mul_assoc, inv_mul_cancel hc0], fun h =>
+  ⟨fun h => (h.const_mul c⁻¹).congr fun x => by simp [← mul_assoc, inv_mul_cancel₀ hc0], fun h =>
     h.const_mul c⟩
 
 variable {l k f}
@@ -210,7 +210,7 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
       ((eventually_map.1 hm).mp ?_)
   refine (hk.eventually_ne_atTop 0).mono fun x hk0 hx => ?_
   refine Eq.trans_le ?_ (mul_le_mul_of_nonneg_left hx <| abs_nonneg (k x)⁻¹)
-  rw [← abs_mul, ← mul_assoc, pow_succ', ← mul_assoc, inv_mul_cancel hk0, one_mul]
+  rw [← abs_mul, ← mul_assoc, pow_succ', ← mul_assoc, inv_mul_cancel₀ hk0, one_mul]
 
 theorem superpolynomialDecay_iff_zpow_tendsto_zero (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, Tendsto (fun a : α => k a ^ z * f a) l (𝓝 0) := by
@@ -251,7 +251,7 @@ theorem superpolynomialDecay_param_mul_iff (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k (k * f) ↔ SuperpolynomialDecay l k f :=
   ⟨fun h =>
     (h.inv_param_mul hk).congr'
-      ((hk.eventually_ne_atTop 0).mono fun x hx => by simp [← mul_assoc, inv_mul_cancel hx]),
+      ((hk.eventually_ne_atTop 0).mono fun x hx => by simp [← mul_assoc, inv_mul_cancel₀ hx]),
     fun h => h.param_mul⟩
 
 theorem superpolynomialDecay_mul_param_iff (hk : Tendsto k l atTop) :
@@ -306,7 +306,7 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
       ((isBigO_refl (fun a => k a ^ z) l).mul (h (-(z + 1)))).trans
         (IsBigO.of_bound 1 <| hk0.mono fun a ha0 => ?_)
     simp only [one_mul, neg_add z 1, zpow_add₀ ha0, ← mul_assoc, zpow_neg,
-      mul_inv_cancel (zpow_ne_zero z ha0), zpow_one]
+      mul_inv_cancel₀ (zpow_ne_zero z ha0), zpow_one]
     rfl
 
 theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
@@ -319,7 +319,7 @@ theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
   have : f =o[l] fun x : α => k x * k x ^ (z - 1) := by
     simpa using this.mul_isBigO ((superpolynomialDecay_iff_isBigO f hk).1 h <| z - 1)
   refine this.trans_isBigO (IsBigO.of_bound 1 (hk0.mono fun x hkx => le_of_eq ?_))
-  rw [one_mul, zpow_sub_one₀ hkx, mul_comm (k x), mul_assoc, inv_mul_cancel hkx, mul_one]
+  rw [one_mul, zpow_sub_one₀ hkx, mul_comm (k x), mul_assoc, inv_mul_cancel₀ hkx, mul_one]
 
 end NormedLinearOrderedField
 

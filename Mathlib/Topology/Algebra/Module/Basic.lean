@@ -638,19 +638,19 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_zero := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_comm := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_assoc := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   nsmul := (· • ·)
   nsmul_zero f := by
     ext
@@ -1263,7 +1263,7 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
   zsmul_neg' n f := by ext; simp [add_smul]
-  add_left_neg _ := by ext; apply add_left_neg
+  neg_add_cancel _ := by ext; apply neg_add_cancel
 
 theorem sub_apply (f g : M →SL[σ₁₂] M₂) (x : M) : (f - g) x = f x - g x :=
   rfl
@@ -1989,7 +1989,7 @@ instance automorphismGroup : Group (M₁ ≃L[R₁] M₁) where
   one_mul f := by
     ext
     rfl
-  mul_left_inv f := by
+  inv_mul_cancel f := by
     ext x
     exact f.left_inv x
 

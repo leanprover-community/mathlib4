@@ -175,7 +175,7 @@ instance : AddCommGroup (Poly α) where
   zero_add _ := by ext; simp_rw [add_apply, zero_apply, zero_add]
   add_comm _ _ := by ext; simp_rw [add_apply, add_comm]
   add_assoc _ _ _ := by ext; simp_rw [add_apply, ← add_assoc]
-  add_left_neg _ := by ext; simp_rw [add_apply, neg_apply, add_left_neg, zero_apply]
+  neg_add_cancel _ := by ext; simp_rw [add_apply, neg_apply, neg_add_cancel, zero_apply]
 
 instance : AddGroupWithOne (Poly α) :=
   { (inferInstance : AddCommGroup (Poly α)) with

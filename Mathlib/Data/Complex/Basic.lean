@@ -334,7 +334,7 @@ instance addCommGroup : AddCommGroup ℂ :=
     zero_add := by intros; ext <;> simp
     add_zero := by intros; ext <;> simp
     add_comm := by intros; ext <;> simp [add_comm]
-    add_left_neg := by intros; ext <;> simp }
+    neg_add_cancel := by intros; ext <;> simp }
 
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=
@@ -678,7 +678,7 @@ protected theorem inv_zero : (0⁻¹ : ℂ) = 0 := by
   rw [← ofReal_zero, ← ofReal_inv, inv_zero]
 
 protected theorem mul_inv_cancel {z : ℂ} (h : z ≠ 0) : z * z⁻¹ = 1 := by
-  rw [inv_def, ← mul_assoc, mul_conj, ← ofReal_mul, mul_inv_cancel (mt normSq_eq_zero.1 h),
+  rw [inv_def, ← mul_assoc, mul_conj, ← ofReal_mul, mul_inv_cancel₀ (mt normSq_eq_zero.1 h),
     ofReal_one]
 
 noncomputable instance instDivInvMonoid : DivInvMonoid ℂ where
