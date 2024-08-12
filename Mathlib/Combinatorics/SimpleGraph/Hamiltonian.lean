@@ -355,10 +355,10 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     exact ((p.takeUntil a a_mem).reverse.append $ p.takeUntil b b_mem).reachable
   nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG $ by simp [@Fintype.card_eq_zero]
 
-theorem IsHamiltonian.complete_graph (hV : Fintype.card α = 1 ∨ Fintype.card α ≥ 3) :
+theorem IsHamiltonian.complete_graph (hα : Fintype.card α = 1 ∨ Fintype.card α ≥ 3) :
     IsHamiltonian (⊤ : SimpleGraph α) := by
-  cases' hV with hV hV
-  · simpa [IsHamiltonian] using absurd hV
+  cases' hα with hα hα
+  · simpa [IsHamiltonian] using absurd hα
   · have ne : (⊤ : Finset α).toList ≠ [] := by
       simp [← Finset.card_eq_zero]
       omega
@@ -374,7 +374,7 @@ theorem IsHamiltonian.complete_graph (hV : Fintype.card α = 1 ∨ Fintype.card 
     suffices p.IsHamiltonianCycle from fun _ => ⟨((⊤ : Finset α).toList.getLast ne), p, this⟩
     apply Walk.IsHamiltonianCycle.isHamiltonianCycle_of_tail_toFinset
     · simp [p, ← Walk.length_support, Walk.fromList_support]
-    · exact hV
+    · exact hα
     · simp [p, Walk.fromList_support]
 
 end SimpleGraph
