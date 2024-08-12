@@ -727,7 +727,7 @@ theorem sum_centroidWeights_eq_one_of_card_ne_zero [CharZero k] (h : card s ≠ 
     ∑ i ∈ s, s.centroidWeights k i = 1 := by
   -- Porting note: `simp` cannot find `mul_inv_cancel` and does not use `norm_cast`
   simp only [centroidWeights_apply, sum_const, nsmul_eq_mul, ne_eq, Nat.cast_eq_zero, card_eq_zero]
-  refine mul_inv_cancel ?_
+  refine mul_inv_cancel₀ ?_
   norm_cast
 
 /-- In the characteristic zero case, the weights in the centroid sum

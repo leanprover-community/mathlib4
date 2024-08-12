@@ -295,13 +295,13 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
     funext x
     refine Prod.ext rfl ?_
     change (X.ρ x.1 * X.ρ (x.1⁻¹ : G)) x.2 = x.2
-    rw [← X.ρ.map_mul, mul_inv_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
+    rw [← X.ρ.map_mul, mul_inv_cancel, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
   inv_hom_id := by
     apply Hom.ext
     funext x
     refine Prod.ext rfl ?_
     change (X.ρ (x.1⁻¹ : G) * X.ρ x.1) x.2 = x.2
-    rw [← X.ρ.map_mul, inv_mul_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
+    rw [← X.ρ.map_mul, inv_mul_cancel, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
 
 /-- The natural isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on
 each factor. -/

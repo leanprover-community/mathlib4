@@ -389,7 +389,7 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
   suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (nValue N : ℝ)⁻¹ by
     rw [← rpow_natCast]
     apply (rpow_le_rpow (mul_nonneg zero_le_two (cast_nonneg _)) i (cast_nonneg _)).trans
-    rw [← rpow_mul (cast_nonneg _), inv_mul_cancel, rpow_one]
+    rw [← rpow_mul (cast_nonneg _), inv_mul_cancel₀, rpow_one]
     rw [cast_ne_zero]
     apply (nValue_pos hN).ne'
   rw [← le_div_iff']

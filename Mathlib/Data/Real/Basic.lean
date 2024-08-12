@@ -189,7 +189,7 @@ instance commRing : CommRing ℝ where
   mul_assoc a b c := by apply ext_cauchy; simp only [cauchy_mul, mul_assoc]
   left_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, mul_add]
   right_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, add_mul]
-  add_left_neg a := by apply ext_cauchy; simp [cauchy_add, cauchy_neg, cauchy_zero]
+  neg_add_cancel a := by apply ext_cauchy; simp [cauchy_add, cauchy_neg, cauchy_zero]
   natCast_zero := by apply ext_cauchy; simp [cauchy_zero]
   natCast_succ n := by apply ext_cauchy; simp [cauchy_one, cauchy_add]
   intCast_negSucc z := by apply ext_cauchy; simp [cauchy_neg, cauchy_natCast]

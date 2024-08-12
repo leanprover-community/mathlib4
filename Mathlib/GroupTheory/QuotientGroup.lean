@@ -334,7 +334,7 @@ theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
 @[to_additive]
 theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
   Quotient.inductionOn₂' a b fun a b (h : φ a = φ b) =>
-    Quotient.sound' <| by rw [leftRel_apply, mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_self]
+    Quotient.sound' <| by rw [leftRel_apply, mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_cancel]
 
 -- Note that `ker φ` isn't definitionally `ker (φ.rangeRestrict)`
 -- so there is a bit of annoying code duplication here
@@ -348,7 +348,7 @@ theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
   Quotient.inductionOn₂' a b fun a b (h : φ.rangeRestrict a = φ.rangeRestrict b) =>
     Quotient.sound' <| by
       rw [leftRel_apply, ← ker_rangeRestrict, mem_ker, φ.rangeRestrict.map_mul, ← h,
-        φ.rangeRestrict.map_inv, inv_mul_self]
+        φ.rangeRestrict.map_inv, inv_mul_cancel]
 
 @[to_additive]
 theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) := by
@@ -523,7 +523,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       change Setoid.r _ _
       rw [leftRel_apply]
       change h⁻¹ * (h * n) ∈ N
-      rwa [← mul_assoc, inv_mul_self, one_mul]
+      rwa [← mul_assoc, inv_mul_cancel, one_mul]
   (quotientMulEquivOfEq (by simp [φ, ← comap_ker])).trans
     (quotientKerEquivOfSurjective φ φ_surjective)
 

@@ -177,7 +177,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
     use A ^ q.toReal⁻¹
     rintro x ⟨i, rfl⟩
     have : 0 ≤ ‖f i‖ ^ q.toReal := by positivity
-    simpa [← Real.rpow_mul, mul_inv_cancel hq.ne'] using
+    simpa [← Real.rpow_mul, mul_inv_cancel₀ hq.ne'] using
       Real.rpow_le_rpow this (hA ⟨i, rfl⟩) (inv_nonneg.mpr hq.le)
   · apply memℓp_gen
     have hf' := hfq.summable hq

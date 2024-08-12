@@ -153,7 +153,7 @@ variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R
 
 @[simp]
 theorem smeval_neg : (-p).smeval x = - p.smeval x := by
-  rw [← add_eq_zero_iff_eq_neg, ← smeval_add, add_left_neg, smeval_zero]
+  rw [← add_eq_zero_iff_eq_neg, ← smeval_add, neg_add_cancel, smeval_zero]
 
 @[simp]
 theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by

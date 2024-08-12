@@ -44,19 +44,19 @@ variable [GroupWithZero α]
 
 /-- `a⁻¹` is an inverse of `a` if `a ≠ 0` -/
 def invertibleOfNonzero {a : α} (h : a ≠ 0) : Invertible a :=
-  ⟨a⁻¹, inv_mul_cancel h, mul_inv_cancel h⟩
+  ⟨a⁻¹, inv_mul_cancel₀ h, mul_inv_cancel₀ h⟩
 
 @[simp]
 theorem invOf_eq_inv (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
-  invOf_eq_right_inv (mul_inv_cancel (nonzero_of_invertible a))
+  invOf_eq_right_inv (mul_inv_cancel₀ (nonzero_of_invertible a))
 
 @[simp]
 theorem inv_mul_cancel_of_invertible (a : α) [Invertible a] : a⁻¹ * a = 1 :=
-  inv_mul_cancel (nonzero_of_invertible a)
+  inv_mul_cancel₀ (nonzero_of_invertible a)
 
 @[simp]
 theorem mul_inv_cancel_of_invertible (a : α) [Invertible a] : a * a⁻¹ = 1 :=
-  mul_inv_cancel (nonzero_of_invertible a)
+  mul_inv_cancel₀ (nonzero_of_invertible a)
 
 /-- `a` is the inverse of `a⁻¹` -/
 def invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=

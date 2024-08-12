@@ -144,7 +144,7 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExte
     rw [RingHom.map_sub, h, RingHom.map_one, sub_self]
   · right; right
     refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
-    rw [RingHom.map_add, h, RingHom.map_one, add_left_neg]
+    rw [RingHom.map_add, h, RingHom.map_one, neg_add_cancel]
 
 /-- We have that `η ^ 2 + η + 1 = 0`. -/
 lemma eta_sq_add_eta_add_one : (η : 𝓞 K) ^ 2 + η + 1 = 0 := by

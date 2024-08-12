@@ -45,7 +45,7 @@ lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}�
 lemma deriv_mul_log {x : ℝ} (hx : x ≠ 0) : deriv (fun x ↦ x * log x) x = log x + 1 := by
   rw [deriv_mul differentiableAt_id' (differentiableAt_log hx)]
   simp only [deriv_id'', one_mul, deriv_log', ne_eq, add_right_inj]
-  exact mul_inv_cancel hx
+  exact mul_inv_cancel₀ hx
 
 lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * log x) (log x + 1) x := by
   rw [← deriv_mul_log hx, hasDerivAt_deriv_iff]

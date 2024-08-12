@@ -212,7 +212,7 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha :
   apply_fun (· * y⁻¹ ^ 2) at hxy
   simp only [zero_mul] at hxy
   rw [(by ring : (x ^ 2 - ↑a * y ^ 2) * y⁻¹ ^ 2 = (x * y⁻¹) ^ 2 - a * (y * y⁻¹) ^ 2),
-    mul_inv_cancel hy, one_pow, mul_one, sub_eq_zero, pow_two] at hxy
+    mul_inv_cancel₀ hy, one_pow, mul_one, sub_eq_zero, pow_two] at hxy
   exact (eq_one_iff p ha).mpr ⟨x * y⁻¹, hxy.symm⟩
 
 /-- The Legendre symbol `legendreSym p a = 1` if there is a solution in `ℤ/pℤ`

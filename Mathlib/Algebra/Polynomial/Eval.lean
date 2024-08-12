@@ -1103,7 +1103,7 @@ alias eval_int_cast := eval_intCast
 
 @[simp]
 theorem eval₂_neg {S} [Ring S] (f : R →+* S) {x : S} : (-p).eval₂ f x = -p.eval₂ f x := by
-  rw [eq_neg_iff_add_eq_zero, ← eval₂_add, add_left_neg, eval₂_zero]
+  rw [eq_neg_iff_add_eq_zero, ← eval₂_add, neg_add_cancel, eval₂_zero]
 
 @[simp]
 theorem eval₂_sub {S} [Ring S] (f : R →+* S) {x : S} :

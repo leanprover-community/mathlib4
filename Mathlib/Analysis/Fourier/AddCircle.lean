@@ -255,7 +255,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   rw [ContinuousMap.inner_toLp (@haarAddCircle T hT) (fourier i) (fourier j)]
   simp_rw [← fourier_neg, ← fourier_add]
   split_ifs with h
-  · simp_rw [h, neg_add_self]
+  · simp_rw [h, neg_add_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
     rw [this, integral_const, measure_univ, ENNReal.one_toReal, Complex.real_smul,
       Complex.ofReal_one, mul_one]

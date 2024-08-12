@@ -136,7 +136,7 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
   -- then use it for both directions
   refine ⟨fun hf ↦ ?_, fun hf ↦ aux hf w⟩
   have := aux hf (-w)
-  simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_eq_mul, LinearMap.map_neg, neg_add_self,
+  simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_eq_mul, LinearMap.map_neg, neg_add_cancel,
     e.map_zero_eq_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
   exact this
 

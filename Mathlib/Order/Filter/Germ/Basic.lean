@@ -502,7 +502,7 @@ instance instDivisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
 
 @[to_additive]
 instance instGroup [Group G] : Group (Germ l G) :=
-  { mul_left_inv := Quotient.ind' fun _ => congrArg ofFun <| mul_left_inv _ }
+  { inv_mul_cancel := Quotient.ind' fun _ => congrArg ofFun <| inv_mul_cancel _ }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] : CommGroup (Germ l G) :=

@@ -63,7 +63,7 @@ theorem integral_pos : 0 < ∫ x, f x ∂μ := by
 
 theorem integral_normed : ∫ x, f.normed μ x ∂μ = 1 := by
   simp_rw [ContDiffBump.normed, div_eq_mul_inv, mul_comm (f _), ← smul_eq_mul, integral_smul]
-  exact inv_mul_cancel f.integral_pos.ne'
+  exact inv_mul_cancel₀ f.integral_pos.ne'
 
 theorem support_normed_eq : Function.support (f.normed μ) = Metric.ball c f.rOut := by
   unfold ContDiffBump.normed
