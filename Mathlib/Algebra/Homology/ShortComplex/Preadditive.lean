@@ -49,7 +49,7 @@ instance : AddCommGroup (S₁ ⟶ S₂) where
   add_assoc := fun a b c => by ext <;> apply add_assoc
   add_zero := fun a => by ext <;> apply add_zero
   zero_add := fun a => by ext <;> apply zero_add
-  add_left_neg := fun a => by ext <;> apply add_left_neg
+  neg_add_cancel := fun a => by ext <;> apply neg_add_cancel
   add_comm := fun a b => by ext <;> apply add_comm
   sub_eq_add_neg := fun a b => by ext <;> apply sub_eq_add_neg
   nsmul := nsmulRec

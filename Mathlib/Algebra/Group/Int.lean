@@ -38,7 +38,7 @@ instance instAddCommGroup : AddCommGroup ℤ where
   add_assoc := Int.add_assoc
   add_zero := Int.add_zero
   zero_add := Int.zero_add
-  add_left_neg := Int.add_left_neg
+  neg_add_cancel := Int.add_left_neg
   nsmul := (·*·)
   nsmul_zero := Int.zero_mul
   nsmul_succ n x :=

@@ -1225,7 +1225,7 @@ instance instGroupWithZero : GroupWithZero ℍ[R] :=
       -- Porting note: the aliased definition confuse TC search
       letI : Semiring ℍ[R] := inferInstanceAs (Semiring ℍ[R,-1,-1])
       rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
-        inv_mul_cancel (normSq_ne_zero.2 ha), coe_one] }
+        inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
 
 @[norm_cast, simp]
 theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
