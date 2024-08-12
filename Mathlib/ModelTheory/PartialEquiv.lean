@@ -376,7 +376,9 @@ lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     obtain ⟨g, h1, h2⟩ := h f.symm m
     exact ⟨g.symm, h1, monotone_symm h2⟩
 
-lemma IsExtensionPair.cod (h : L.IsExtensionPair M N) (f : L.FGEquiv N M) (m : M) :
+namespace IsExtensionPair
+
+lemma cod (h : L.IsExtensionPair M N) (f : L.FGEquiv N M) (m : M) :
     ∃ g, m ∈ g.1.cod ∧ f ≤ g :=
   IsExtensionPair_iff_cod.1 h f m
 
@@ -392,6 +394,8 @@ def definedAtRight
   carrier := {f | n ∈ f.val.cod}
   mem_gt := fun f => h.cod f n
 
+end IsExtensionPair
+
 /-- For a countably generated structure `M` and a structure `N`, if any partial equivalence
 between finitely generated substructures can be extended to any element in the domain,
 then there exists an embedding of `M` in `N`. -/
@@ -401,7 +405,7 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (g : L.FGEquiv M N)
   rcases M_cg with ⟨X, _, X_gen⟩
   have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
   have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
-  let D : X → Order.Cofinal (FGEquiv L M N) := fun x ↦ definedAtLeft H x
+  let D : X → Order.Cofinal (FGEquiv L M N) := fun x ↦ H.definedAtLeft x
   let S : ℕ →o M ≃ₚ[L] N :=
     ⟨Subtype.val ∘ (Order.sequenceOfCofinals g D),
       (Subtype.mono_coe _).comp (Order.sequenceOfCofinals.monotone _ _)⟩
@@ -430,7 +434,7 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
   have _ : Countable (↑Y : Type _) := by simpa only [countable_coe_iff]
   have _ : Encodable (↑Y : Type _) := Encodable.ofCountable _
   let D : Sum X Y → Order.Cofinal (FGEquiv L M N) := fun p ↦
-    Sum.recOn p (fun x ↦ definedAtLeft ext_dom x) (fun y ↦ definedAtRight ext_cod y)
+    Sum.recOn p (fun x ↦ ext_dom.definedAtLeft x) (fun y ↦ ext_cod.definedAtRight y)
   let S : ℕ →o M ≃ₚ[L] N :=
     ⟨Subtype.val ∘ (Order.sequenceOfCofinals g D),
       (Subtype.mono_coe _).comp (Order.sequenceOfCofinals.monotone _ _)⟩
