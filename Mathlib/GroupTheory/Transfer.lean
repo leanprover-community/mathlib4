@@ -185,6 +185,7 @@ theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
 section BurnsideTransfer
 
 variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ centralizer (P : Set G))
+include hP
 
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=

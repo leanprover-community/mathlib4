@@ -36,7 +36,7 @@ namespace CategoryTheory
 open MorphismProperty Preadditive Limits Category
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
-  {W : MorphismProperty C} [L.IsLocalization W] [W.HasLeftCalculusOfFractions]
+  {W : MorphismProperty C} [L.IsLocalization W]
 
 namespace MorphismProperty
 
@@ -91,7 +91,7 @@ should only rely on the fact that the localization functor is additive, as this
 completely determines the preadditive structure on the localized category when
 there is a calculus of left fractions. -/
 
-variable {X Y Z : C}
+variable [W.HasLeftCalculusOfFractions] {X Y Z : C}
 variable {L}
 
 /-- The opposite of a map `L.obj X ⟶ L.obj Y` when `L : C ⥤ D` is a localization
@@ -302,6 +302,8 @@ end ImplementationDetails
 
 end Preadditive
 
+variable [W.HasLeftCalculusOfFractions]
+
 /-- The preadditive structure on `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
 noncomputable def preadditive : Preadditive D where
@@ -316,7 +318,7 @@ lemma functor_additive :
   ⟨by apply Preadditive.map_add⟩
 
 attribute [irreducible] preadditive
-
+include W in
 lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :
     G.Additive ↔ (L ⋙ G).Additive := by

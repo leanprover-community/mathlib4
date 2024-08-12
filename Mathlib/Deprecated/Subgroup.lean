@@ -117,6 +117,7 @@ namespace IsSubgroup
 open IsSubmonoid
 
 variable [Group G] {s : Set G} (hs : IsSubgroup s)
+include hs
 
 @[to_additive]
 theorem inv_mem_iff : a⁻¹ ∈ s ↔ a ∈ s :=

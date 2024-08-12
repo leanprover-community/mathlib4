@@ -38,6 +38,7 @@ lemma Ioc_filter_modEq_eq (v : ℤ) : (Ioc a b).filter (· ≡ v [ZMOD r]) =
     exists_eq_right, modEq_comm, modEq_iff_dvd, sub_lt_sub_iff_right, sub_le_sub_iff_right]
 
 variable (hr : 0 < r)
+include hr
 
 lemma Ico_filter_dvd_eq : (Ico a b).filter (r ∣ ·) =
     (Ico ⌈a / (r : ℚ)⌉ ⌈b / (r : ℚ)⌉).map ⟨(· * r), mul_left_injective₀ hr.ne'⟩ := by
@@ -98,6 +99,7 @@ lemma Ioc_filter_modEq_cast {v : ℕ} : ((Ioc a b).filter (· ≡ v [MOD r])).ma
   · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
 
 variable (hr : 0 < r)
+include hr
 
 /-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` mod `r` in `[a, b)`,
 if `a ≤ b`. `Nat` version of `Int.Ico_filter_modEq_card`. -/
