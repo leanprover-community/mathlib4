@@ -52,7 +52,7 @@ def ConnectedComponents.liftFunctor {X : Type*} (F :J ⥤ Discrete X) :
     (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F h))
 
 /-- Functions from connected components and functors to discrete category are in bijection -/
-def ConnectedComponents.typeToCatHomEquiv   (X : Type*) :
+def ConnectedComponents.typeToCatHomEquiv (X : Type*) :
     (ConnectedComponents J → X) ≃ (J ⥤ Discrete X)   where
   toFun := ConnectedComponents.functorToDiscrete
   invFun := ConnectedComponents.liftFunctor
