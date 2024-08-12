@@ -29,13 +29,13 @@ variable (f f₁ g₁ : α₁ → β₁ → Finset γ₁) (g f₂ g₂ : α₂ �
 `α₁ ⊕ α₂ → β₁ ⊕ β₂ → Finset (γ₁ ⊕ γ₂)`. Could be generalized to `Alternative` functors if we can
 make sure to keep computability and universe polymorphism. -/
 @[simp]
-def sumLift₂ : ∀ (_ : Sum α₁ α₂) (_ : Sum β₁ β₂), Finset (Sum γ₁ γ₂)
+def sumLift₂ : ∀ (_ : α₁ ⊕ α₂) (_ : β₁ ⊕ β₂), Finset (γ₁ ⊕ γ₂)
   | inl a, inl b => (f a b).map Embedding.inl
   | inl _, inr _ => ∅
   | inr _, inl _ => ∅
   | inr a, inr b => (g a b).map Embedding.inr
 
-variable {f f₁ g₁ g f₂ g₂} {a : Sum α₁ α₂} {b : Sum β₁ β₂} {c : Sum γ₁ γ₂}
+variable {f f₁ g₁ g f₂ g₂} {a : α₁ ⊕ α₂} {b : β₁ ⊕ β₂} {c : γ₁ ⊕ γ₂}
 
 theorem mem_sumLift₂ :
     c ∈ sumLift₂ f g a b ↔
@@ -103,7 +103,7 @@ variable (f₁ f₁' : α₁ → β₁ → Finset γ₁) (f₂ f₂' : α₂ →
 /-- Lifts maps `α₁ → β₁ → Finset γ₁`, `α₂ → β₂ → Finset γ₂`, `α₁ → β₂ → Finset γ₁`,
 `α₂ → β₂ → Finset γ₂`  to a map `α₁ ⊕ α₂ → β₁ ⊕ β₂ → Finset (γ₁ ⊕ γ₂)`. Could be generalized to
 alternative monads if we can make sure to keep computability and universe polymorphism. -/
-def sumLexLift : Sum α₁ α₂ → Sum β₁ β₂ → Finset (Sum γ₁ γ₂)
+def sumLexLift : α₁ ⊕ α₂ → β₁ ⊕ β₂ → Finset (γ₁ ⊕ γ₂)
   | inl a, inl b => (f₁ a b).map Embedding.inl
   | inl a, inr b => (g₁ a b).disjSum (g₂ a b)
   | inr _, inl _ => ∅
@@ -124,7 +124,7 @@ lemma sumLexLift_inr_inl (a : α₂) (b : β₁) : sumLexLift f₁ f₂ g₁ g�
 lemma sumLexLift_inr_inr (a : α₂) (b : β₂) :
     sumLexLift f₁ f₂ g₁ g₂ (inr a) (inr b) = (f₂ a b).map ⟨_, inr_injective⟩ := rfl
 
-variable {f₁ g₁ f₂ g₂ f₁' g₁' f₂' g₂'} {a : Sum α₁ α₂} {b : Sum β₁ β₂} {c : Sum γ₁ γ₂}
+variable {f₁ g₁ f₂ g₂ f₁' g₁' f₂' g₂'} {a : α₁ ⊕ α₂} {b : β₁ ⊕ β₂} {c : γ₁ ⊕ γ₂}
 
 lemma mem_sumLexLift :
     c ∈ sumLexLift f₁ f₂ g₁ g₂ a b ↔
@@ -166,8 +166,8 @@ lemma inr_mem_sumLexLift {c₂ : γ₂} :
   simp [mem_sumLexLift]
 
 lemma sumLexLift_mono (hf₁ : ∀ a b, f₁ a b ⊆ f₁' a b) (hf₂ : ∀ a b, f₂ a b ⊆ f₂' a b)
-    (hg₁ : ∀ a b, g₁ a b ⊆ g₁' a b) (hg₂ : ∀ a b, g₂ a b ⊆ g₂' a b) (a : Sum α₁ α₂)
-    (b : Sum β₁ β₂) : sumLexLift f₁ f₂ g₁ g₂ a b ⊆ sumLexLift f₁' f₂' g₁' g₂' a b := by
+    (hg₁ : ∀ a b, g₁ a b ⊆ g₁' a b) (hg₂ : ∀ a b, g₂ a b ⊆ g₂' a b) (a : α₁ ⊕ α₂)
+    (b : β₁ ⊕ β₂) : sumLexLift f₁ f₂ g₁ g₂ a b ⊆ sumLexLift f₁' f₂' g₁' g₂' a b := by
   cases a <;> cases b
   exacts [map_subset_map.2 (hf₁ _ _), disjSum_mono (hg₁ _ _) (hg₂ _ _), Subset.rfl,
     map_subset_map.2 (hf₂ _ _)]
@@ -212,7 +212,7 @@ section Disjoint
 
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (Sum α β) where
+instance instLocallyFiniteOrder : LocallyFiniteOrder (α ⊕ β) where
   finsetIcc := sumLift₂ Icc Icc
   finsetIco := sumLift₂ Ico Ico
   finsetIoc := sumLift₂ Ioc Ioc
@@ -222,18 +222,18 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (Sum α β) where
   finset_mem_Ioc := by rintro (a | a) (b | b) (x | x) <;> simp
   finset_mem_Ioo := by rintro (a | a) (b | b) (x | x) <;> simp
 
-variable (a₁ a₂ : α) (b₁ b₂ : β) (a b : Sum α β)
+variable (a₁ a₂ : α) (b₁ b₂ : β) (a b : α ⊕ β)
 
-theorem Icc_inl_inl : Icc (inl a₁ : Sum α β) (inl a₂) = (Icc a₁ a₂).map Embedding.inl :=
+theorem Icc_inl_inl : Icc (inl a₁ : α ⊕ β) (inl a₂) = (Icc a₁ a₂).map Embedding.inl :=
   rfl
 
-theorem Ico_inl_inl : Ico (inl a₁ : Sum α β) (inl a₂) = (Ico a₁ a₂).map Embedding.inl :=
+theorem Ico_inl_inl : Ico (inl a₁ : α ⊕ β) (inl a₂) = (Ico a₁ a₂).map Embedding.inl :=
   rfl
 
-theorem Ioc_inl_inl : Ioc (inl a₁ : Sum α β) (inl a₂) = (Ioc a₁ a₂).map Embedding.inl :=
+theorem Ioc_inl_inl : Ioc (inl a₁ : α ⊕ β) (inl a₂) = (Ioc a₁ a₂).map Embedding.inl :=
   rfl
 
-theorem Ioo_inl_inl : Ioo (inl a₁ : Sum α β) (inl a₂) = (Ioo a₁ a₂).map Embedding.inl :=
+theorem Ioo_inl_inl : Ioo (inl a₁ : α ⊕ β) (inl a₂) = (Ioo a₁ a₂).map Embedding.inl :=
   rfl
 
 @[simp]
@@ -268,16 +268,16 @@ theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
 theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
   rfl
 
-theorem Icc_inr_inr : Icc (inr b₁ : Sum α β) (inr b₂) = (Icc b₁ b₂).map Embedding.inr :=
+theorem Icc_inr_inr : Icc (inr b₁ : α ⊕ β) (inr b₂) = (Icc b₁ b₂).map Embedding.inr :=
   rfl
 
-theorem Ico_inr_inr : Ico (inr b₁ : Sum α β) (inr b₂) = (Ico b₁ b₂).map Embedding.inr :=
+theorem Ico_inr_inr : Ico (inr b₁ : α ⊕ β) (inr b₂) = (Ico b₁ b₂).map Embedding.inr :=
   rfl
 
-theorem Ioc_inr_inr : Ioc (inr b₁ : Sum α β) (inr b₂) = (Ioc b₁ b₂).map Embedding.inr :=
+theorem Ioc_inr_inr : Ioc (inr b₁ : α ⊕ β) (inr b₂) = (Ioc b₁ b₂).map Embedding.inr :=
   rfl
 
-theorem Ioo_inr_inr : Ioo (inr b₁ : Sum α β) (inr b₂) = (Ioo b₁ b₂).map Embedding.inr :=
+theorem Ioo_inr_inr : Ioo (inr b₁ : α ⊕ β) (inr b₂) = (Ioo b₁ b₂).map Embedding.inr :=
   rfl
 
 end Disjoint

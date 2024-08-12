@@ -55,9 +55,7 @@ assert_not_exists Module
 noncomputable section
 
 open Function Cardinal Set Equiv Order
-
-open scoped Classical
-open Cardinal Ordinal
+open scoped Ordinal
 
 universe u v w
 
@@ -150,7 +148,7 @@ theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
 
 /-! ### The predecessor of an ordinal -/
 
-
+open Classical in
 /-- The ordinal predecessor of `o` is `o'` if `o = succ o'`,
   and `o` otherwise. -/
 def pred (o : Ordinal) : Ordinal :=
@@ -161,8 +159,9 @@ theorem pred_succ (o) : pred (succ o) = o := by
   have h : ∃ a, succ o = succ a := ⟨_, rfl⟩
   simpa only [pred, dif_pos h] using (succ_injective <| Classical.choose_spec h).symm
 
-theorem pred_le_self (o) : pred o ≤ o :=
-  if h : ∃ a, o = succ a then by
+theorem pred_le_self (o) : pred o ≤ o := by
+  classical
+  exact if h : ∃ a, o = succ a then by
     let ⟨a, e⟩ := h
     rw [e, pred_succ]; exact le_succ a
   else by rw [pred, dif_neg h]
@@ -187,8 +186,9 @@ theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a :=
 theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b < o ↔ b < o :=
   ⟨(lt_succ b).trans, fun l => lt_of_le_of_ne (succ_le_of_lt l) fun e => h ⟨_, e.symm⟩⟩
 
-theorem lt_pred {a b} : a < pred b ↔ succ a < b :=
-  if h : ∃ a, b = succ a then by
+theorem lt_pred {a b} : a < pred b ↔ succ a < b := by
+  classical
+  exact if h : ∃ a, b = succ a then by
     let ⟨c, e⟩ := h
     rw [e, pred_succ, succ_lt_succ_iff]
   else by simp only [pred, dif_neg h, succ_lt_of_not_succ h]
@@ -200,12 +200,13 @@ theorem pred_le {a b} : pred a ≤ b ↔ a ≤ succ b :=
 theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a :=
   ⟨fun ⟨a, h⟩ =>
     let ⟨b, e⟩ := lift_down <| show a ≤ lift.{u} o from le_of_lt <| h.symm ▸ lt_succ a
-    ⟨b, lift_inj.1 <| by rw [h, ← e, lift_succ]⟩,
+    ⟨b, (lift_inj.{u,v}).1 <| by rw [h, ← e, lift_succ]⟩,
     fun ⟨a, h⟩ => ⟨lift.{u} a, by simp only [h, lift_succ]⟩⟩
 
 @[simp]
-theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) :=
-  if h : ∃ a, o = succ a then by cases' h with a e; simp only [e, pred_succ, lift_succ]
+theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by
+  classical
+  exact if h : ∃ a, o = succ a then by cases' h with a e; simp only [e, pred_succ, lift_succ]
   else by rw [pred_eq_iff_not_succ.2 h, pred_eq_iff_not_succ.2 (mt lift_is_succ.1 h)]
 
 /-! ### Limit ordinals -/
@@ -246,12 +247,13 @@ theorem lt_limit {o} (h : IsLimit o) {a} : a < o ↔ ∃ x < o, a < x := by
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@limit_le _ h a)
 
 @[simp]
-theorem lift_isLimit (o) : IsLimit (lift o) ↔ IsLimit o :=
+theorem lift_isLimit (o : Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
   and_congr (not_congr <| by simpa only [lift_zero] using @lift_inj o 0)
-    ⟨fun H a h => lift_lt.1 <| by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h => by
-      obtain ⟨a', rfl⟩ := lift_down h.le
-      rw [← lift_succ, lift_lt]
-      exact H a' (lift_lt.1 h)⟩
+    ⟨fun H a h => (lift_lt.{u,v}).1 <|
+      by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h => by
+        obtain ⟨a', rfl⟩ := lift_down h.le
+        rw [← lift_succ, lift_lt]
+        exact H a' (lift_lt.1 h)⟩
 
 theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
   lt_of_le_of_ne (Ordinal.zero_le _) h.1.symm
@@ -263,8 +265,9 @@ theorem IsLimit.nat_lt {o : Ordinal} (h : IsLimit o) : ∀ n : ℕ, (n : Ordinal
   | 0 => h.pos
   | n + 1 => h.2 _ (IsLimit.nat_lt h n)
 
-theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o :=
-  if o0 : o = 0 then Or.inl o0
+theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o := by
+  classical
+  exact if o0 : o = 0 then Or.inl o0
   else
     if h : ∃ a, o = succ a then Or.inr (Or.inl h)
     else Or.inr <| Or.inr ⟨o0, fun _a => (succ_lt_of_not_succ h).2⟩
@@ -1140,7 +1143,7 @@ theorem sup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
   (sup_le_of_range_subset.{u, v, w} h.le).antisymm (sup_le_of_range_subset.{v, u, w} h.ge)
 
 @[simp]
-theorem sup_sum {α : Type u} {β : Type v} (f : Sum α β → Ordinal) :
+theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     sup.{max u v, w} f =
       max (sup.{u, max v w} fun a => f (Sum.inl a)) (sup.{v, max u w} fun b => f (Sum.inr b)) := by
   apply (sup_le_iff.2 _).antisymm (max_le_iff.2 ⟨_, _⟩)
@@ -1452,7 +1455,7 @@ theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
   (lsub_le_of_range_subset.{u, v, w} h.le).antisymm (lsub_le_of_range_subset.{v, u, w} h.ge)
 
 @[simp]
-theorem lsub_sum {α : Type u} {β : Type v} (f : Sum α β → Ordinal) :
+theorem lsub_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     lsub.{max u v, w} f =
       max (lsub.{u, max v w} fun a => f (Sum.inl a)) (lsub.{v, max u w} fun b => f (Sum.inr b)) :=
   sup_sum _

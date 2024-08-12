@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Batteries.Data.Nat.Lemmas
-import Batteries.WF
 import Mathlib.Util.AssertExists
 import Mathlib.Data.Nat.Notation
 
@@ -15,7 +14,6 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
-
 -/
 
 assert_not_exists Preorder
@@ -60,7 +58,7 @@ theorem one_eq_succ_zero : 1 = succ 0 :=
 
 /-! subtraction
 
-Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
+Many lemmas are proven more generally in mathlib `Algebra/Order/Sub` -/
 
 /-! min -/
 

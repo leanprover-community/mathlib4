@@ -106,7 +106,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     rw [deriv_mul, Gamma_one_half_eq,
       add_assoc, ← mul_add, deriv_comp_add_const,
       (by norm_num : 1/2 + 1/2 = (1 : ℝ)), Gamma_one, mul_one,
-      eulerMascheroniConstant_eq_neg_deriv, add_neg_self, mul_zero, add_zero]
+      eulerMascheroniConstant_eq_neg_deriv, add_neg_cancel, mul_zero, add_zero]
     · apply h_diff; norm_num -- s = 1
     · apply h_diff; norm_num -- s = 1/2
     · exact ((h_diff (by norm_num)).hasDerivAt.comp_add_const).differentiableAt -- s = 1
@@ -128,9 +128,9 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 3
     change deriv (Gamma ∘ fun s ↦ 2 * s) _ = _
-    rw [deriv.comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id'']
+    rw [deriv.comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id''] <;>
     dsimp only
-    rw [mul_one, mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
+    · rw [mul_one, mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
     · fun_prop
     · apply h_diff; norm_num -- s = 1
     · fun_prop
@@ -220,7 +220,7 @@ lemma hasDerivAt_Gammaℝ_one : HasDerivAt Gammaℝ (-(γ + log (4 * π)) / 2) 1
   refine HasDerivAt.congr_deriv (hf.mul hg) ?_
   simp only [f]
   rw [Gamma_one_half_eq, aux, div_mul_cancel₀ _ aux2, neg_div _ (1 : ℂ), cpow_neg, aux,
-    mul_div_assoc, ← mul_assoc, mul_neg, inv_mul_cancel aux2, neg_one_mul, ← neg_div,
+    mul_div_assoc, ← mul_assoc, mul_neg, inv_mul_cancel₀ aux2, neg_one_mul, ← neg_div,
     ← _root_.add_div, ← neg_add, add_comm, add_assoc, ← ofReal_log Real.pi_pos.le, ← ofReal_ofNat,
     ← ofReal_log zero_le_two,
     ← ofReal_mul, ← Nat.cast_ofNat (R := ℝ), ← Real.log_pow, ← ofReal_add,

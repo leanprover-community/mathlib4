@@ -206,9 +206,9 @@ theorem eq_one_of_map_eq_one {S : Type*} [Semiring S] [Nontrivial S] (f : R →+
   rw [← hndeg, ← Polynomial.leadingCoeff, hp.leadingCoeff, C.map_one]
 
 theorem natDegree_pow (hp : p.Monic) (n : ℕ) : (p ^ n).natDegree = n * p.natDegree := by
-  induction' n with n hn
-  · simp
-  · rw [pow_succ, (hp.pow n).natDegree_mul hp, hn, Nat.succ_mul, add_comm]
+  induction n with
+  | zero => simp
+  | succ n hn => rw [pow_succ, (hp.pow n).natDegree_mul hp, hn, Nat.succ_mul, add_comm]
 
 end Monic
 
@@ -220,7 +220,7 @@ theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
   nontriviality R
   obtain ⟨q, h⟩ := hpu.exists_right_inv
   have := hm.natDegree_mul' (right_ne_zero_of_mul_eq_one h)
-  rw [h, natDegree_one, eq_comm, add_eq_zero_iff] at this
+  rw [h, natDegree_one, eq_comm, add_eq_zero] at this
   exact hm.natDegree_eq_zero_iff_eq_one.mp this.1
 
 theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=
@@ -293,36 +293,40 @@ section Injective
 
 open Function
 
-variable [Semiring S] {f : R →+* S} (hf : Injective f)
+variable [Semiring S] {f : R →+* S}
 
-theorem degree_map_eq_of_injective (p : R[X]) : degree (p.map f) = degree p :=
+theorem degree_map_eq_of_injective (hf : Injective f) (p : R[X]) : degree (p.map f) = degree p :=
   letI := Classical.decEq R
   if h : p = 0 then by simp [h]
   else
     degree_map_eq_of_leadingCoeff_ne_zero _
       (by rw [← f.map_zero]; exact mt hf.eq_iff.1 (mt leadingCoeff_eq_zero.1 h))
 
-theorem natDegree_map_eq_of_injective (p : R[X]) : natDegree (p.map f) = natDegree p :=
+theorem natDegree_map_eq_of_injective (hf : Injective f) (p : R[X]) :
+    natDegree (p.map f) = natDegree p :=
   natDegree_eq_of_degree_eq (degree_map_eq_of_injective hf p)
 
-theorem leadingCoeff_map' (p : R[X]) : leadingCoeff (p.map f) = f (leadingCoeff p) := by
+theorem leadingCoeff_map' (hf : Injective f) (p : R[X]) :
+    leadingCoeff (p.map f) = f (leadingCoeff p) := by
   unfold leadingCoeff
   rw [coeff_map, natDegree_map_eq_of_injective hf p]
 
-theorem nextCoeff_map (p : R[X]) : (p.map f).nextCoeff = f p.nextCoeff := by
+theorem nextCoeff_map (hf : Injective f) (p : R[X]) : (p.map f).nextCoeff = f p.nextCoeff := by
   unfold nextCoeff
   rw [natDegree_map_eq_of_injective hf]
   split_ifs <;> simp [*]
 
-theorem leadingCoeff_of_injective (p : R[X]) : leadingCoeff (p.map f) = f (leadingCoeff p) := by
+theorem leadingCoeff_of_injective (hf : Injective f) (p : R[X]) :
+    leadingCoeff (p.map f) = f (leadingCoeff p) := by
   delta leadingCoeff
   rw [coeff_map f, natDegree_map_eq_of_injective hf p]
 
-theorem monic_of_injective {p : R[X]} (hp : (p.map f).Monic) : p.Monic := by
+theorem monic_of_injective (hf : Injective f) {p : R[X]} (hp : (p.map f).Monic) : p.Monic := by
   apply hf
   rw [← leadingCoeff_of_injective hf, hp.leadingCoeff, f.map_one]
 
-theorem _root_.Function.Injective.monic_map_iff {p : R[X]} : p.Monic ↔ (p.map f).Monic :=
+theorem _root_.Function.Injective.monic_map_iff (hf : Injective f) {p : R[X]} :
+    p.Monic ↔ (p.map f).Monic :=
   ⟨Monic.map _, Polynomial.monic_of_injective hf⟩
 
 end Injective

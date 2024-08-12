@@ -90,6 +90,32 @@ theorem concaveOn_id {s : Set β} (hs : Convex 𝕜 s) : ConcaveOn 𝕜 s _root_
     intros
     rfl⟩
 
+section congr
+
+variable {g : E → β}
+
+theorem ConvexOn.congr (hf : ConvexOn 𝕜 s f) (hfg : EqOn f g s) : ConvexOn 𝕜 s g :=
+  ⟨hf.1, fun x hx y hy a b ha hb hab => by
+    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
+
+theorem ConcaveOn.congr (hf : ConcaveOn 𝕜 s f) (hfg : EqOn f g s) : ConcaveOn 𝕜 s g :=
+  ⟨hf.1, fun x hx y hy a b ha hb hab => by
+    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
+
+theorem StrictConvexOn.congr (hf : StrictConvexOn 𝕜 s f) (hfg : EqOn f g s) :
+    StrictConvexOn 𝕜 s g :=
+  ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
+    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
+      hf.2 hx hy hxy ha hb hab⟩
+
+theorem StrictConcaveOn.congr (hf : StrictConcaveOn 𝕜 s f) (hfg : EqOn f g s) :
+    StrictConcaveOn 𝕜 s g :=
+  ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
+    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
+      hf.2 hx hy hxy ha hb hab⟩
+
+end congr
+
 theorem ConvexOn.subset {t : Set E} (hf : ConvexOn 𝕜 t f) (hst : s ⊆ t) (hs : Convex 𝕜 s) :
     ConvexOn 𝕜 s f :=
   ⟨hs, fun _ hx _ hy => hf.2 (hst hx) (hst hy)⟩
@@ -184,6 +210,14 @@ theorem convexOn_const (c : β) (hs : Convex 𝕜 s) : ConvexOn 𝕜 s fun _ : E
 
 theorem concaveOn_const (c : β) (hs : Convex 𝕜 s) : ConcaveOn 𝕜 s fun _ => c :=
   convexOn_const (β := βᵒᵈ) _ hs
+
+theorem ConvexOn.add_const (hf : ConvexOn 𝕜 s f) (b : β) :
+    ConvexOn 𝕜 s (f + fun _ => b) :=
+  hf.add (convexOn_const _ hf.1)
+
+theorem ConcaveOn.add_const (hf : ConcaveOn 𝕜 s f) (b : β) :
+    ConcaveOn 𝕜 s (f + fun _ => b) :=
+  hf.add (concaveOn_const _ hf.1)
 
 theorem convexOn_of_convex_epigraph (h : Convex 𝕜 { p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2 }) :
     ConvexOn 𝕜 s f :=
@@ -478,6 +512,14 @@ theorem ConcaveOn.add_strictConcaveOn (hf : ConcaveOn 𝕜 s f) (hg : StrictConc
 theorem StrictConcaveOn.add (hf : StrictConcaveOn 𝕜 s f) (hg : StrictConcaveOn 𝕜 s g) :
     StrictConcaveOn 𝕜 s (f + g) :=
   hf.dual.add hg
+
+theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
+    [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ => b) :=
+  hf.add_convexOn (convexOn_const _ hf.1)
+
+theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
+    [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ => b) :=
+  hf.add_concaveOn (concaveOn_const _ hf.1)
 
 end DistribMulAction
 

@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Mathlib.Tactic.Lemma
-import Mathlib.Mathport.Attributes
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.ProjectionNotation
 import Batteries.Tactic.Alias
 import Batteries.Tactic.Lint.Misc
-import Batteries.Logic -- Only needed for #align
 
 /-!
 # Note about `Mathlib/Init/`
