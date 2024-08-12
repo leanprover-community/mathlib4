@@ -772,9 +772,9 @@ theorem support_trinomial' (k m n : ℕ) (x y z : R) :
 end Fewnomials
 
 theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) := by
-  induction' n with n hn
-  · rw [pow_zero, monomial_zero_one]
-  · rw [pow_succ, hn, X, monomial_mul_monomial, one_mul]
+  induction n with
+  | zero => rw [pow_zero, monomial_zero_one]
+  | succ n hn => rw [pow_succ, hn, X, monomial_mul_monomial, one_mul]
 
 @[simp high]
 theorem toFinsupp_X_pow (n : ℕ) : (X ^ n).toFinsupp = Finsupp.single n (1 : R) := by
