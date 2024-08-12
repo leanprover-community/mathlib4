@@ -201,7 +201,7 @@ theorem birthday_eq_zero {x : Game} : birthday x = 0 ↔ x = 0 := by
     let ⟨y, hy₁, hy₂⟩ := birthday_eq_pGame_birthday x
     rw [← hy₁]
     rw [h, PGame.birthday_eq_zero] at hy₂
-    exact PGame.equiv_iff_game_eq.1 (@PGame.Equiv.isEmpty _ hy₂.1 hy₂.2)
+    exact PGame.game_eq (@PGame.Equiv.isEmpty _ hy₂.1 hy₂.2)
   · rintro rfl
     exact birthday_zero
 
@@ -241,7 +241,7 @@ private theorem neg_birthday' (x : Game) : (-x).birthday ≤ x.birthday := by
 
 @[simp]
 theorem neg_birthday (x : Game) : (-x).birthday = x.birthday := by
-  apply le_antisymm (neg_birthday' _)
+  apply le_antisymm (neg_birthday' x)
   conv_lhs => rw [← neg_neg x]
   exact neg_birthday' _
 
@@ -262,7 +262,7 @@ theorem birthday_add_le (x y : Game) : (x + y).birthday ≤ x.birthday ♯ y.bir
   exact birthday_le_pGame_birthday _
 
 theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.birthday := by
-  apply (birthday_add_le _ _).trans_eq
+  apply (birthday_add_le x _).trans_eq
   rw [neg_birthday]
 
 end Game
