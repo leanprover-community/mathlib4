@@ -315,8 +315,7 @@ end IsLprojection
 
 variable {𝕜 A F : Type*}
 
-variable [RCLike 𝕜] [NormedAddCommGroup A]
-variable [Module 𝕜 X] [NormedSpace 𝕜 A]
+variable [RCLike 𝕜] [NormedAddCommGroup A] [NormedSpace 𝕜 A]
 
 theorem contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 := by
   apply (ContinuousLinearMap.opNorm_le_iff (zero_le_one' ℝ)).mpr
