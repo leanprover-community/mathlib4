@@ -210,6 +210,15 @@ lemma π_symm (i₁ : I₁) (i₂ : I₂) :
     π c₂ c₁ c₁₂ ⟨i₂, i₁⟩ = π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ := by
   apply TotalComplexShapeSymmetry.symm
 
+/-- The symmetry bijection `(π c₂ c₁ c₁₂ ⁻¹' {j}) ≃ (π c₁ c₂ c₁₂ ⁻¹' {j})`. -/
+@[simps]
+def symmetryEquiv (j : I₁₂) :
+    (π c₂ c₁ c₁₂ ⁻¹' {j}) ≃ (π c₁ c₂ c₁₂ ⁻¹' {j}) where
+  toFun := fun ⟨⟨i₂, i₁⟩, h⟩ => ⟨⟨i₁, i₂⟩, by simpa [π_symm] using h⟩
+  invFun := fun ⟨⟨i₁, i₂⟩, h⟩ => ⟨⟨i₂, i₁⟩, by simpa [π_symm] using h⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 variable {c₁}
 
 lemma σ_ε₁ {i₁ i₁' : I₁} (h₁ : c₁.Rel i₁ i₁') (i₂ : I₂) :
@@ -237,6 +246,28 @@ instance : TotalComplexShapeSymmetry (up ℤ) (up ℤ) (up ℤ) where
     rw [one_mul, ← Int.negOnePow_add, mul_add, mul_one]
 
 end ComplexShape
+
+/-- The obvious `TotalComplexShapeSymmetry c₂ c₁ c₁₂` deduced from a
+`TotalComplexShapeSymmetry c₁ c₂ c₁₂`. -/
+def TotalComplexShapeSymmetry.symmetry [TotalComplexShape c₁ c₂ c₁₂]
+    [TotalComplexShape c₂ c₁ c₁₂] [TotalComplexShapeSymmetry c₁ c₂ c₁₂] :
+    TotalComplexShapeSymmetry c₂ c₁ c₁₂ where
+  symm i₂ i₁ := (ComplexShape.π_symm c₁ c₂ c₁₂ i₁ i₂).symm
+  σ i₂ i₁ := ComplexShape.σ c₁ c₂ c₁₂ i₁ i₂
+  σ_ε₁ {i₂ i₂'} h₂ i₁ := by
+    dsimp
+    apply mul_right_cancel (b := ComplexShape.ε₂ c₁ c₂ c₁₂ (i₁, i₂))
+    rw [mul_assoc]
+    nth_rw 2 [mul_comm]
+    rw [← mul_assoc, ComplexShape.σ_ε₂ c₁ c₁₂ i₁ h₂, mul_comm, ← mul_assoc,
+      Int.units_mul_self, one_mul, mul_comm, ← mul_assoc, Int.units_mul_self, one_mul]
+  σ_ε₂ i₂ i₁ i₁' h₁ := by
+    dsimp
+    apply mul_right_cancel (b := ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂))
+    rw [mul_assoc]
+    nth_rw 2 [mul_comm]
+    rw [← mul_assoc, ComplexShape.σ_ε₁ c₂ c₁₂ h₁ i₂, mul_comm, ← mul_assoc,
+      Int.units_mul_self, one_mul, mul_comm, ← mul_assoc, Int.units_mul_self, one_mul]
 
 /-- This typeclass expresses that the signs given by `[TotalComplexShapeSymmetry c₁ c₂ c₁₂]`
 and by `[TotalComplexShapeSymmetry c₂ c₁ c₁₂]` are compatible. -/
