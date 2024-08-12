@@ -260,6 +260,7 @@ theorem map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ :=
 
 /-- The isomorphism between `map α β ⋙ fst L' R'` and `fst L R ⋙ F₁`,
 where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
+@[simps!]
 def mapFst : map α β ⋙ fst L' R' ≅ fst L R ⋙ F₁ :=
   NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
@@ -271,6 +272,7 @@ theorem map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ :=
 
 /-- The isomorphism between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
+@[simps!]
 def mapSnd : map α β ⋙ snd L' R' ≅ snd L R ⋙ F₂ :=
   NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
