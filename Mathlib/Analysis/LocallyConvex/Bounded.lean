@@ -169,9 +169,9 @@ lemma isVonNBounded_iff_tendsto_smallSets_nhds {𝕜 E : Type*} [NormedDivisionR
 
 alias ⟨IsVonNBounded.tendsto_smallSets_nhds, _⟩ := isVonNBounded_iff_tendsto_smallSets_nhds
 
-lemma isVonNBounded_iff_absorbs_le {𝕜 E : Type*} [NormedDivisionRing 𝕜]
+lemma isVonNBounded_iff_absorbing_le {𝕜 E : Type*} [NormedDivisionRing 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] {S : Set E} :
-    IsVonNBounded 𝕜 S ↔ Filter.absorbs 𝕜 S ≤ 𝓝 0 :=
+    IsVonNBounded 𝕜 S ↔ Filter.absorbing 𝕜 S ≤ 𝓝 0 :=
   .rfl
 
 lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionRing 𝕜]
