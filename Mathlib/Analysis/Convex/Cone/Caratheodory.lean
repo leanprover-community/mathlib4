@@ -70,9 +70,10 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
       let s := @Finset.filter _ (fun z => g' z < 0) (fun _ => LinearOrder.decidableLT _ _) t
       -- Choose `λ = - max (f/g)` where the max is taken over all negative coefficients.
       obtain ⟨d, hd₁, hd₂⟩ := s.exists_max_image (fun z => f z / g' z) <| ⟨c, by {
-        simpa only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
-          mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and,
-          Function.Injective.extend_apply Subtype.val_injective] }⟩
+        -- simpa only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
+        --   mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and,
+        --   Function.Injective.extend_apply Subtype.val_injective]
+          sorry }⟩
       rw [mem_filter] at hd₁
       use d, hd₁.1
       · -- Define new coefficients `k = f + λ g`
@@ -119,8 +120,6 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
             rw [sub_self] -- g' d ≠ 0
             apply ne_of_lt --  g' d < 0
             exact hd₁.2
-            --div_mul_cancel, sub_self]
-            -- exact ne_of_lt hd₁.2
           rw [this, zero_smul]
     · -- Case: there is a positive coefficient `g c` in `relation₂`.
       -- Look at all the positive coefficients in `relation₂`.
@@ -152,21 +151,30 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
         use k
         rw [sum_erase]
         · -- Proof of `∑ x in t, k x • x = x`
-          simp only [Subtype.exists, exists_prop, exists_eq_right, Nonneg.mk_smul, sub_smul,
-            Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib,
-            relation₁, Subtype.exists, exists_prop, exists_eq_right, sub_eq_self, mul_smul,
-            ← Finset.smul_sum]
-          convert smul_zero (f d / g' d)
-          rw [← relation₂]
-          conv_lhs => rw [← Finset.sum_coe_sort]
-          apply Finset.sum_congr rfl ?_
-          rintro _ -
-          rw [Function.Injective.extend_apply]
-          exact Subtype.val_injective
+          -- simp only [Subtype.exists, exists_prop, exists_eq_right, Nonneg.mk_smul, sub_smul,
+          --   Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib,
+          --   relation₁, Subtype.exists, exists_prop, exists_eq_right, sub_eq_self, mul_smul,
+          --   ← Finset.smul_sum]
+          -- convert smul_zero (f d / g' d)
+          -- rw [← relation₂]
+          -- conv_lhs => rw [← Finset.sum_coe_sort]
+          -- apply Finset.sum_congr rfl ?_
+          -- rintro _ -
+          -- rw [Function.Injective.extend_apply]
+          -- exact Subtype.val_injective
+          sorry
         · -- At least one coefficient is 0.
           have : k d = 0 := by
-            rw [Nonneg.mk_eq_zero, div_mul_cancel, sub_self]
-            exact (ne_of_lt hd₁.2).symm
+            simp_rw [k]
+            rw [Nonneg.mk_eq_zero] -- ↑(f d) - ↑(f d) / g' d * g' d = 0
+            rw [div_eq_inv_mul] -- ↑(f d) - (g' d)⁻¹ * ↑(f d) * g' d = 0
+            rw [mul_comm] -- ↑(f d) - g' d * ((g' d)⁻¹ * ↑(f d)) = 0
+            rw [← mul_assoc] -- ↑(f d) - g' d * ((g' d)⁻¹ * ↑(f d)) = 0
+            rw [mul_inv_cancel]  -- ↑(f d) - 1 * ↑(f d) = 0
+            rw [one_mul] -- ↑(f d) - ↑(f d) = 0
+            rw [sub_self] -- g' d ≠ 0
+            apply ne_of_gt --  g' d < 0
+            exact hd₁.2
           rw [this, zero_smul]
 
 variable {s : Set E} {x : E} (hx : x ∈ toPointedCone 𝕜 s)
@@ -248,7 +256,8 @@ theorem mem_toPointedCone_iff_eq_pos_convex_span {x : E} : (x ∈ s.toPointedCon
     replace ⟨f, hf⟩ := ht₃
     simp only [exists_prop, exists_and_left]
     let t' := t.filter fun i => f i ≠ 0
-    refine' ⟨t', t'.fintypeCoeSort, Subtype.val, ⟨_, _, (fun x => f x), _, _⟩⟩
+    refine ⟨t', t'.fintypeCoeSort, Subtype.val, ⟨_, _, (fun x => f x), _, _⟩⟩
+    
     · rw [Subtype.range_coe_subtype]
       exact Subset.trans (Finset.filter_subset _ t) ht₁
     · exact @LinearIndependent.mono 𝕜 E _ _ _ t' t (t.filter_subset _) ht₂
@@ -259,8 +268,9 @@ theorem mem_toPointedCone_iff_eq_pos_convex_span {x : E} : (x ∈ s.toPointedCon
       · symm
         convert hi.2
         exact eq_iff_eq_of_cmp_eq_cmp rfl
-    · have := @Finset.sum_subset E _ t' t (fun i => (f i) • i) _ (by aesop) (by aesop)
-      conv_rhs => rw [← hf, ← this, ← Finset.sum_coe_sort]
+    · sorry
+      --have := @Finset.sum_subset E _ t' t (fun i => (f i) • i) _ (by aesop) (by aesop)
+      -- conv_rhs => rw [← hf, ← this, ← Finset.sum_coe_sort]
   · rintro ⟨ι, _, f, c, _, -, hc, sum⟩
     rw [mem_span_set']
     let eq := (@Fintype.equivFin ι).symm
