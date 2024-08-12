@@ -3,9 +3,9 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Lean.Data.HashSet
 import Batteries.Data.MLList.Basic
 import Mathlib.Control.Combinators
+import Std.Data.HashSet.Basic
 
 /-!
 # Depth first search
@@ -68,13 +68,13 @@ use Brendan McKay's method of "generation by canonical construction path".
 -- TODO can you make this work in `List` and `MLList m` simultaneously, by being tricky with monads?
 def depthFirstRemovingDuplicates {α : Type u} [BEq α] [Hashable α]
     (f : α → MLList m α) (a : α) (maxDepth : Option Nat := none) : MLList m α :=
-let f' : α → MLList (StateT.{u} (HashSet α) m) α := fun a =>
+let f' : α → MLList (StateT.{u} (Std.HashSet α) m) α := fun a =>
   (f a).liftM >>= fun b => do
     let s ← get
     if s.contains b then failure
     set <| s.insert b
     pure b
-(depthFirst f' a maxDepth).runState' (HashSet.empty.insert a)
+(depthFirst f' a maxDepth).runState' (Std.HashSet.empty.insert a)
 
 /--
 Variant of `depthFirst`,
