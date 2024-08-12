@@ -980,8 +980,7 @@ theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {x x' : α}
 theorem typein_le_typein' (o : Ordinal) {x x' : o.out.α} :
     @typein _ (· < ·) (isWellOrder_out_lt _) x ≤ @typein _ (· < ·) (isWellOrder_out_lt _) x'
       ↔ x ≤ x' := by
-  rw [typein_le_typein]
-  exact not_lt
+  simp
 
 theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o o' : Ordinal} (ho : o < type r)
     (ho' : o' < type r) : ¬r (enum r o' ho') (enum r o ho) ↔ o ≤ o' := by
