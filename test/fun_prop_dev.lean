@@ -309,7 +309,7 @@ example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
 
 
-example [Zero α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
+example [Zero α] [Obj α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
 
 noncomputable
 def foo : α ->> α ->> α := silentSorry
@@ -348,8 +348,8 @@ theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) :
 
 
 example : let f := fun x : α => x; Con f := by fun_prop
-example : let f := fun x => x + y; ∀ y : α, ∀ z : α, Con fun x => x + f x + z := by fun_prop
-example : ∀ y : α, let f := fun x => x + y; ∀ z : α, Con fun x => x + f x + z := by fun_prop
+example [Add α] : let f := fun x => x + y; ∀ y : α, ∀ z : α, Con fun x => x + f x + z := by fun_prop
+example [Add α] : ∀ y : α, let f := fun x => x + y; ∀ z : α, Con fun x => x + f x + z := by fun_prop
 -- this is still broken
 -- example : ∀ y : α, ∀ z : α, let f := fun x => x + y; Con fun x => x + f x + z := by fun_prop
 
@@ -402,7 +402,7 @@ example : Con fun ((x, _, _) : α × α × α) => x := by fun_prop
 example : Con fun ((_, x, _) : α × α × α) => x := by fun_prop
 example : Con fun ((_, _, x) : α × α × α) => x := by fun_prop
 
-example : let f := (by exact (fun x : α => x+x)); Con f := by
+example [Add α] : let f := (by exact (fun x : α => x+x)); Con f := by
   intro f;
   let F := fun x : α => x+x
   have : Con F := by fun_prop -- this used to be problematic
@@ -419,7 +419,7 @@ Issues:
   No theorems found for `f1` in order to prove `Con fun a => f1 a`
 -/
 #guard_msgs in
-example : Con (fun x : α => x + f1 x) := by fun_prop
+example [Add α] : Con (fun x : α => x + f1 x) := by fun_prop
 
 /--
 error: `fun_prop` was unable to prove `Con fun x => f1 x + f1 x`
@@ -428,7 +428,7 @@ Issues:
   No theorems found for `f1` in order to prove `Con fun a => f1 a`
 -/
 #guard_msgs in
-example : Con (fun x : α => f1 x + f1 x) := by fun_prop
+example [Add α] : Con (fun x : α => f1 x + f1 x) := by fun_prop
 
 /--
 error: `fun_prop` was unable to prove `Con fun x => f2 x + f1 x`
@@ -437,7 +437,7 @@ Issues:
   No theorems found for `f2` in order to prove `Con fun a => f2 a`
 -/
 #guard_msgs in
-example  : Con (fun x : α => f2 x + f1 x) := by fun_prop
+example [Add α] : Con (fun x : α => f2 x + f1 x) := by fun_prop
 
 
 def f3 (a : α) := a
