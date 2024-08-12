@@ -208,7 +208,7 @@ This is due to definition of `Real.log` for negative numbers. -/
 
 /-! ### Derivatives of binary entropy function -/
 
-lemma differentiableAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
+lemma differentiableAt_binaryEntropy {x : ℝ} (xne0 : x ≠ 0) (gne1 : x ≠ 1) :
     DifferentiableAt ℝ binaryEntropy x := by
   simp only [binaryEntropy_eq]
   refine DifferentiableAt.sub (DifferentiableAt.mul (by fun_prop) ?_)
