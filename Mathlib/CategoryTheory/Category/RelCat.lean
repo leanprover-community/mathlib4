@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Data.Rel
 
-#align_import category_theory.category.Rel from "leanprover-community/mathlib"@"afad8e438d03f9d89da2914aa06cb4964ba87a18"
-
 /-!
 # Basics on the category of relations
 
@@ -28,23 +26,19 @@ namespace CategoryTheory
 universe u
 
 -- This file is about Lean 3 declaration "Rel".
-set_option linter.uppercaseLean3 false
 
 /-- A type synonym for `Type`, which carries the category instance for which
     morphisms are binary relations. -/
 def RelCat :=
   Type u
-#align category_theory.Rel CategoryTheory.RelCat
 
 instance RelCat.inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
-#align category_theory.Rel.inhabited CategoryTheory.RelCat.inhabited
 
 /-- The category of types with binary relations as morphisms. -/
 instance rel : LargeCategory RelCat where
   Hom X Y := X → Y → Prop
   id X x y := x = y
   comp f g x z := ∃ y, f x y ∧ g y z
-#align category_theory.rel CategoryTheory.rel
 
 
 
@@ -124,7 +118,7 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
 section Opposite
 open Opposite
 
-/-- The argument-swap isomorphism from `rel` to its opposite. -/
+/-- The argument-swap isomorphism from `RelCat` to its opposite. -/
 def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {X Y} r := op (fun y x => r x y)
@@ -160,8 +154,8 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
-/-- `rel` is self-dual: The map that swaps the argument order of a
-    relation induces an equivalence between `rel` and its opposite. -/
+/-- `RelCat` is self-dual: The map that swaps the argument order of a
+    relation induces an equivalence between `RelCat` and its opposite. -/
 @[simps]
 def opEquivalence : Equivalence RelCat RelCatᵒᵖ where
   functor := opFunctor

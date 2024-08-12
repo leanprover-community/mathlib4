@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Topology.Instances.Real
 import Mathlib.Order.Filter.Archimedean
 
-#align_import analysis.subadditive from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Convergence of subadditive sequences
 
@@ -29,7 +27,6 @@ open Set Filter Topology
 for all `m, n`. -/
 def Subadditive (u : ℕ → ℝ) : Prop :=
   ∀ m n, u (m + n) ≤ u m + u n
-#align subadditive Subadditive
 
 namespace Subadditive
 
@@ -40,13 +37,11 @@ this limit is given in `Subadditive.tendsto_lim` -/
 @[nolint unusedArguments] -- Porting note: was irreducible
 protected def lim (_h : Subadditive u) :=
   sInf ((fun n : ℕ => u n / n) '' Ici 1)
-#align subadditive.lim Subadditive.lim
 
 theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
     h.lim ≤ u n / n := by
   rw [Subadditive.lim]
   exact csInf_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
-#align subadditive.lim_le_div Subadditive.lim_le_div
 
 theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
   induction k with
@@ -57,7 +52,6 @@ theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
       _ ≤ u n + u (k * n + r) := h _ _
       _ ≤ u n + (k * u n + u r) := add_le_add_left IH _
       _ = (k + 1 : ℕ) * u n + u r := by simp; ring
-#align subadditive.apply_mul_add_le Subadditive.apply_mul_add_le
 
 theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n / n < L) :
     ∀ᶠ p in atTop, u p / p < L := by
@@ -79,7 +73,6 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
   refine lt_of_le_of_lt ?_ hk
   simp only [(· ∘ ·), ← Nat.cast_add, ← Nat.cast_mul]
   exact div_le_div_of_nonneg_right (h.apply_mul_add_le _ _ _) (Nat.cast_nonneg _)
-#align subadditive.eventually_div_lt_of_div_lt Subadditive.eventually_div_lt_of_div_lt
 
 /-- Fekete's lemma: a subadditive sequence which is bounded below converges. -/
 theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
@@ -93,6 +86,5 @@ theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
       rcases (mem_image _ _ _).1 hx with ⟨n, hn, rfl⟩
       exact ⟨n, zero_lt_one.trans_le hn, xL⟩
     exact h.eventually_div_lt_of_div_lt npos.ne' hn
-#align subadditive.tendsto_lim Subadditive.tendsto_lim
 
 end Subadditive

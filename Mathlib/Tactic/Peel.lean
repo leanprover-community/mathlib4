@@ -243,3 +243,9 @@ elab_rules : tactic
 macro_rules
   | `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]? using $u:term) =>
     `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]?; exact $u)
+
+end Peel
+
+end Tactic
+
+end Mathlib

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.Portmanteau
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
@@ -27,7 +28,7 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
   probability measures on a separable space coincides with the topology of convergence in
   distribution, and in particular convergence in distribution is then pseudometrizable.
 
-## Todo
+## TODO
 
 * Show that in Borel spaces, the Lévy-Prokhorov distance is a metric; not just a pseudometric.
 
@@ -413,8 +414,7 @@ lemma LevyProkhorov.continuous_toProbabilityMeasure :
     filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
                       Real.mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
       with n hn hn'
-    simp only [gt_iff_lt, eventually_atTop, ge_iff_le, ne_eq, mem_map,
-               mem_atTop_sets, mem_preimage, mem_Iio] at *
+    simp only [mem_preimage, mem_Iio] at *
     specialize εs_pos n
     have bound := BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
                     (Ps n) P (ε := dist (μs n) ν + εs n) ?_ ?_ f ?_
@@ -438,7 +438,7 @@ lemma LevyProkhorov.continuous_toProbabilityMeasure :
       simp only [Ps, P, LevyProkhorov.toProbabilityMeasure]
     · exact eventually_of_forall f_nn
   · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
-               ge_iff_le, forall_exists_index]
+               forall_exists_index]
     refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i le_rfl)⟩
 
 /-- The topology of the Lévy-Prokhorov metric is at least as fine as the topology of convergence in
@@ -456,12 +456,13 @@ section Levy_Prokhorov_metrizes_convergence_in_distribution
 
 open BoundedContinuousFunction TopologicalSpace
 
-variable {ι : Type*} (Ω : Type*) [PseudoMetricSpace Ω] [SeparableSpace Ω]
+variable {ι : Type*} (Ω : Type*) [PseudoMetricSpace Ω]
 variable [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 
 /-- In a separable pseudometric space, for any ε > 0 there exists a countable collection of
 disjoint Borel measurable subsets of diameter at most ε that cover the whole space. -/
-lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 < ε) :
+lemma SeparableSpace.exists_measurable_partition_diam_le [SeparableSpace Ω]
+    {ε : ℝ} (ε_pos : 0 < ε) :
     ∃ (As : ℕ → Set Ω), (∀ n, MeasurableSet (As n)) ∧ (∀ n, Bornology.IsBounded (As n)) ∧
         (∀ n, diam (As n) ≤ ε) ∧ (⋃ n, As n = univ) ∧
         (Pairwise (fun (n m : ℕ) ↦ Disjoint (As n) (As m))) := by
@@ -512,7 +513,7 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure �
   convert ENNReal.add_lt_add_right ε_top hQ
   exact (tsub_add_cancel_of_le easy).symm
 
-lemma ProbabilityMeasure.continuous_toLevyProkhorov :
+lemma ProbabilityMeasure.continuous_toLevyProkhorov [SeparableSpace Ω] :
     Continuous (ProbabilityMeasure.toLevyProkhorov (Ω := Ω)) := by
   -- We check continuity of `id : ProbabilityMeasure Ω → LevyProkhorov (ProbabilityMeasure Ω)` at
   -- each point `P : ProbabilityMeasure Ω`.
@@ -611,7 +612,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
 
 /-- The topology of the Lévy-Prokhorov metric on probability measures on a separable space
 coincides with the topology of convergence in distribution. -/
-theorem levyProkhorov_eq_convergenceInDistribution :
+theorem levyProkhorov_eq_convergenceInDistribution [SeparableSpace Ω] :
     (inferInstance : TopologicalSpace (ProbabilityMeasure Ω))
       = TopologicalSpace.coinduced (LevyProkhorov.toProbabilityMeasure (Ω := Ω)) inferInstance :=
   le_antisymm (ProbabilityMeasure.continuous_toLevyProkhorov (Ω := Ω)).coinduced_le
@@ -619,7 +620,7 @@ theorem levyProkhorov_eq_convergenceInDistribution :
 
 /-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
 convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/
-def homeomorph_probabilityMeasure_levyProkhorov :
+def homeomorph_probabilityMeasure_levyProkhorov [SeparableSpace Ω] :
     ProbabilityMeasure Ω ≃ₜ LevyProkhorov (ProbabilityMeasure Ω) where
   toFun := ProbabilityMeasure.toLevyProkhorov (Ω := Ω)
   invFun := LevyProkhorov.toProbabilityMeasure (Ω := Ω)

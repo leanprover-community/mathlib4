@@ -32,7 +32,7 @@ namespace LieAlgebra
 section CommRing
 
 variable {K R L M : Type*}
-variable [Field K] [CommRing R] [Nontrivial R]
+variable [Field K] [CommRing R]
 variable [LieRing L] [LieAlgebra K L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [Module.Finite K L]
@@ -83,7 +83,7 @@ def lieCharpoly : Polynomial R[X] :=
 lemma lieCharpoly_monic : (lieCharpoly R M x y).Monic :=
   (polyCharpoly_monic _ _).map _
 
-lemma lieCharpoly_natDegree : (lieCharpoly R M x y).natDegree = finrank R M := by
+lemma lieCharpoly_natDegree [Nontrivial R] : (lieCharpoly R M x y).natDegree = finrank R M := by
   rw [lieCharpoly, (polyCharpoly_monic _ _).natDegree_map, polyCharpoly_natDegree]
 
 variable {R} in
@@ -97,7 +97,7 @@ lemma lieCharpoly_map_eval (r : R) :
     map_add, map_mul, aeval_C, Algebra.id.map_eq_id, RingHom.id_apply, aeval_X, aux,
     MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap]
 
-lemma lieCharpoly_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
+lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly R M x y).coeff i).natDegree ≤ j := by
   classical
   rw [← mul_one j, lieCharpoly, coeff_map]
@@ -119,7 +119,7 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L
 
 open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
--- Adaptation note: otherwise there is a spurious warning on `contrapose!` below.
+#adaptation_note /-- otherwise there is a spurious warning on `contrapose!` below. -/
 set_option linter.unusedVariables false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.

@@ -5,8 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 
-#align_import combinatorics.simple_graph.regularity.lemma from "leanprover-community/mathlib"@"1d4d3ca5ec44693640c4f5e407a6b611f77accc8"
-
 /-!
 # Szemerédi's Regularity Lemma
 
@@ -134,7 +132,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   have hi : (i : ℝ) ≤ 4 / ε ^ 5 := by
     have hi : ε ^ 5 / 4 * ↑i ≤ 1 := hP₄.trans (mod_cast P.energy_le_one G)
     rw [div_mul_eq_mul_div, div_le_iff (show (0 : ℝ) < 4 by norm_num)] at hi
-    set_option tactic.skipAssignedInstances false in norm_num at hi
+    norm_num at hi
     rwa [le_div_iff' (pow_pos hε _)]
   have hsize : P.parts.card ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
     hP₃.trans (monotone_iterate_of_id_le le_stepBound (Nat.le_floor hi) _)
@@ -149,4 +147,3 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     exact stepBound_mono hP₃
   · rw [Nat.cast_succ, mul_add, mul_one]
     exact add_le_add_right hP₄ _
-#align szemeredi_regularity szemeredi_regularity

@@ -33,3 +33,35 @@ Light condensed sets. Because `LightProfinite` is an essentially small category,
 same universe bump as in `CondensedSet`.
 -/
 abbrev LightCondSet := LightCondensed.{u} (Type u)
+
+namespace LightCondensed
+
+variable {C : Type w} [Category.{v} C]
+
+@[simp]
+lemma id_val (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).val = 𝟙 _ := rfl
+
+@[simp]
+lemma comp_val {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).val = f.val ≫ g.val :=
+  rfl
+
+@[ext]
+lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.val.app S = g.val.app S) :
+    f = g := by
+  apply Sheaf.hom_ext
+  ext
+  exact h _
+
+end LightCondensed
+
+namespace LightCondSet
+
+-- Note: `simp` can prove this when stated for `LightCondensed C` for a concrete category `C`.
+-- However, it doesn't seem to see through the abbreviation `LightCondSet`
+@[simp]
+lemma hom_naturality_apply {X Y : LightCondSet.{u}} (f : X ⟶ Y)  {S T : LightProfiniteᵒᵖ}
+    (g : S ⟶ T) (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
+  NatTrans.naturality_apply f.val g x
+
+end LightCondSet
