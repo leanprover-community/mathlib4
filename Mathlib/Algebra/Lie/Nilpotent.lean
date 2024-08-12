@@ -34,7 +34,7 @@ section NilpotentModules
 
 variable {R : Type u} {L : Type v} {M : Type w}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-variable [LieRingModule L M] [LieModule R L M]
+variable [LieRingModule L M]
 variable (k : ℕ) (N : LieSubmodule R L M)
 
 namespace LieSubmodule
@@ -99,6 +99,8 @@ theorem lcs_le_self : N.lcs k ≤ N := by
   · simp only [lcs_succ]
     exact (LieSubmodule.mono_lie_right ⊤ ih).trans (N.lie_le_right ⊤)
 
+variable [LieModule R L M]
+
 theorem lowerCentralSeries_eq_lcs_comap : lowerCentralSeries R L N k = (N.lcs k).comap N.incl := by
   induction' k with k ih
   · simp
@@ -106,7 +108,7 @@ theorem lowerCentralSeries_eq_lcs_comap : lowerCentralSeries R L N k = (N.lcs k)
     have : N.lcs k ≤ N.incl.range := by
       rw [N.range_incl]
       apply lcs_le_self
-    rw [ih, LieSubmodule.comap_bracket_eq _ _ N.incl N.ker_incl this]
+    rw [ih, LieSubmodule.comap_bracket_eq _ N.incl _ N.ker_incl this]
 
 theorem lowerCentralSeries_map_eq_lcs : (lowerCentralSeries R L N k).map N.incl = N.lcs k := by
   rw [lowerCentralSeries_eq_lcs_comap, LieSubmodule.map_comap_incl, inf_eq_right]
@@ -149,6 +151,9 @@ theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries 
       Set.mem_setOf]
     exact ⟨x, m, rfl⟩
 
+section
+variable [LieModule R L M]
+
 theorem iterate_toEnd_mem_lowerCentralSeries (x : L) (m : M) (k : ℕ) :
     (toEnd R L M x)^[k] m ∈ lowerCentralSeries R L M k := by
   induction' k with k ih
@@ -186,7 +191,7 @@ lemma map_lowerCentralSeries_eq {f : M →ₗ⁅R,L⁆ M₂} (hf : Function.Surj
     apply LieSubmodule.mono_lie_right
     assumption
 
-variable (R L M)
+end
 
 open LieAlgebra
 
@@ -217,7 +222,9 @@ theorem exists_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent R L M] :
 theorem isNilpotent_iff : IsNilpotent R L M ↔ ∃ k, lowerCentralSeries R L M k = ⊥ :=
   ⟨fun h => h.nilpotent, fun h => ⟨h⟩⟩
 
+section
 variable {R L M}
+variable [LieModule R L M]
 
 theorem _root_.LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot (N : LieSubmodule R L M) :
     LieModule.IsNilpotent R L N ↔ ∃ k, N.lcs k = ⊥ := by
@@ -292,6 +299,8 @@ theorem iInf_lcs_le_of_isNilpotent_quot (h : IsNilpotent R L (M ⧸ N)) :
   obtain ⟨k, hk⟩ := (isNilpotent_quotient_iff R L M N).mp h
   exact iInf_le_of_le k hk
 
+end
+
 /-- Given a nilpotent Lie module `M` with lower central series `M = C₀ ≥ C₁ ≥ ⋯ ≥ Cₖ = ⊥`, this is
 the natural number `k` (the number of inclusions).
 
@@ -346,7 +355,7 @@ noncomputable def lowerCentralSeriesLast : LieSubmodule R L M :=
   | 0 => ⊥
   | k + 1 => lowerCentralSeries R L M k
 
-theorem lowerCentralSeriesLast_le_max_triv :
+theorem lowerCentralSeriesLast_le_max_triv [LieModule R L M] :
     lowerCentralSeriesLast R L M ≤ maxTrivSubmodule R L M := by
   rw [lowerCentralSeriesLast]
   cases' h : nilpotencyLength R L M with k
@@ -374,6 +383,8 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent R L M] (h : ¬ I
   cases' hk : nilpotencyLength R L M with k <;> rw [hk] at h
   · contradiction
   · exact antitone_lowerCentralSeries _ _ _ (Nat.lt_succ.mp h)
+
+variable [LieModule R L M]
 
 /-- For a nilpotent Lie module `M` of a Lie algebra `L`, the first term in the lower central series
 of `M` contains a non-zero element on which `L` acts trivially unless the entire action is trivial.
@@ -427,6 +438,7 @@ end LieModule
 namespace LieSubmodule
 
 variable {N₁ N₂ : LieSubmodule R L M}
+variable [LieModule R L M]
 
 /-- The upper (aka ascending) central series.
 
@@ -509,6 +521,7 @@ section Morphisms
 
 open LieModule Function
 
+variable [LieModule R L M]
 variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
 variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModule R L₂ M₂]
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
@@ -709,7 +722,7 @@ namespace LieIdeal
 open LieModule
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
-variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable (k : ℕ)
 
 /-- Given a Lie module `M` over a Lie algebra `L` together with an ideal `I` of `L`, this is the
@@ -733,7 +746,8 @@ theorem lcs_top : (⊤ : LieIdeal R L).lcs M k = lowerCentralSeries R L M k :=
   rfl
 
 -- Porting note: added `LieSubmodule.toSubmodule` in the statement
-theorem coe_lcs_eq : LieSubmodule.toSubmodule (I.lcs M k) = lowerCentralSeries R I M k := by
+theorem coe_lcs_eq [LieModule R L M] :
+    LieSubmodule.toSubmodule (I.lcs M k) = lowerCentralSeries R I M k := by
   induction' k with k ih
   · simp
   · simp_rw [lowerCentralSeries_succ, lcs_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', ←
