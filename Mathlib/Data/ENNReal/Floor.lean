@@ -3,6 +3,8 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
+import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.ENat
 import Mathlib.Algebra.Order.EFloor
 
 /-!
@@ -10,15 +12,6 @@ import Mathlib.Algebra.Order.EFloor
 -/
 
 open Filter BigOperators TopologicalSpace Topology Set ENNReal NNReal ENat
-
-section ENat_topology
-
-instance : TopologicalSpace ℕ∞ := TopologicalSpace.induced ENat.toENNReal inferInstance
-
-lemma ENat.continuous_toENNReal : Continuous ENat.toENNReal :=
-  continuous_iff_le_induced.mpr fun _ h ↦ h
-
-instance : OrderTopology ℕ∞ := sorry
 
 -- TODO: Move to the appropriate file `Data.ENat.Basic`.
 lemma ENat.toENNReal_coe_eq_top_iff {m : ℕ∞} :
@@ -30,9 +23,11 @@ lemma ENat.toENNReal_coe_ne_top_iff {m : ℕ∞} :
     (m : ℝ≥0∞) ≠ ∞ ↔ m ≠ ⊤ :=
   not_iff_not.mpr toENNReal_coe_eq_top_iff
 
-end ENat_topology
-
-
+-- TODO: Move to an appropriate file.
+lemma ENNReal.eq_top_of_forall_nat_le {x : ℝ≥0∞} (h : ∀ n : ℕ, (n : ℝ≥0∞) ≤ x) : x = ⊤ := by
+  by_contra con
+  obtain ⟨n, hn⟩ := exists_nat_gt x.toNNReal
+  exact lt_irrefl _ <| ENNReal.coe_toNNReal con ▸ (ENNReal.coe_lt_coe.mpr hn).trans_le (h n)
 
 namespace ENNReal
 
@@ -48,20 +43,30 @@ private lemma floorAux_mono (h : x ≤ y) : x.floorAux ≤ y.floorAux :=
 /-- The floor function `ℝ≥0∞ → ℝ≥0∞` is increasing. -/
 private lemma monotone_floorAux : Monotone floorAux := fun _ _ h ↦ floorAux_mono h
 
+private lemma floorAux_le (x : ℝ≥0∞) : floorAux x ≤ x := by
+  by_contra con
+  simp only [not_le] at con
+  by_cases floor_top : floorAux x = ⊤
+  · refine ne_top_of_lt con <| ENNReal.eq_top_of_forall_nat_le (x := x) fun n ↦ ?_
+    obtain ⟨m, hm, n_lt_m⟩ := sSup_eq_top.mp floor_top n (ENat.coe_lt_top n)
+    exact (toENNReal_mono n_lt_m.le).trans hm
+  refine lt_irrefl x <| con.trans_le <| @ENat.sSup_mem_of_Nonempty_of_lt_top
+      {n | n ≤ x} ⟨0, by simp⟩ (Ne.lt_top' fun h ↦ floor_top h.symm)
+
 private lemma floorAux_eq_sSup_range_toENNReal_inter_Iic :
     floorAux x = sSup (Set.range (fun (m : ℕ∞) ↦ (m : ℝ≥0∞)) ∩ Iic x) := by
-  simp only [floorAux]
-  rw [toENNReal_mono.map_sSup_of_continuousAt ENat.continuous_toENNReal.continuousAt (by simp)]
-  congr
-  ext m
-  simp only [mem_image, mem_setOf_eq, mem_inter_iff, mem_range, mem_Iic]
-  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-  · obtain ⟨n, hn⟩ := hx
-    refine ⟨⟨n, hn.2⟩, hn.2 ▸ hn.1⟩
-  · obtain ⟨n, hn⟩ := hx.1
-    refine ⟨n, ⟨hn ▸ hx.2, hn⟩⟩
+  apply le_antisymm
+  · apply le_sSup
+    simp only [mem_inter_iff, mem_range, toENNReal_coe_eq_iff, exists_eq, true_and]
+    exact (ENat.toENNReal_le.mpr <| sSup_le fun n hn ↦ le_sSup hn).trans <| floorAux_le _
+  · apply sSup_le
+    intro z hz
+    simp only [mem_inter_iff, mem_range, mem_Iic] at hz
+    obtain ⟨n, hn⟩ := hz.1
+    rw [← hn]
+    exact ENat.toENNReal_le.mpr <| le_sSup <| by convert hn ▸ hz.2
 
-private lemma floorAux_le (x : ℝ≥0∞) : floorAux x ≤ x := by
+private lemma floorAux_le' (x : ℝ≥0∞) : floorAux x ≤ x := by
   simpa only [floorAux_eq_sSup_range_toENNReal_inter_Iic] using sSup_le fun _ h ↦ h.2
 
 private lemma le_floorAux (h : m ≤ x) : m ≤ x.floorAux := le_sSup <| by simp [h]
