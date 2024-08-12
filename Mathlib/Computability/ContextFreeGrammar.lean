@@ -257,7 +257,7 @@ end closure_reversal
 
 section lift_sink
 
-/- This section contains only auxiliary constructions that will shorten upcoming proofs of
+/-! This section contains only auxiliary constructions that will shorten upcoming proofs of
 closure properties. When combining several grammars together, we usually want to take a sum type of
 their nonterminal types and lift respective nonterminals to this sum type. We subsequently show
 that the resulting grammar preserves derivations of those strings that may contain any terminals but
