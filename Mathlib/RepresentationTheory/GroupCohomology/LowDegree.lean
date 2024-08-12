@@ -240,7 +240,7 @@ theorem mem_oneCocycles_iff (f : G → A) :
 
 @[simp] theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
     A.ρ g (f.1 g⁻¹) = - f.1 g := by
-  rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_self g,
+  rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_cancel g,
     (mem_oneCocycles_iff f.1).1 f.2 g g⁻¹]
 
 theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
@@ -302,7 +302,7 @@ lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
     A.ρ g (f.1 (g⁻¹, g)) - f.1 (g, g⁻¹)
       = f.1 (1, 1) - f.1 (g, 1) := by
   have := (mem_twoCocycles_iff f.1).1 f.2 g g⁻¹ g
-  simp only [mul_right_inv, mul_left_inv, twoCocycles_map_one_fst _ g]
+  simp only [mul_inv_cancel, inv_mul_cancel, twoCocycles_map_one_fst _ g]
     at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
 
@@ -418,12 +418,12 @@ variable {G A : Type*} [Group G] [AddCommGroup A] [MulAction G A]
 
 @[scoped simp] theorem map_inv_of_isOneCocycle {f : G → A} (hf : IsOneCocycle f) (g : G) :
     g • f g⁻¹ = - f g := by
-  rw [← add_eq_zero_iff_eq_neg, ← map_one_of_isOneCocycle hf, ← mul_inv_self g, hf g g⁻¹]
+  rw [← add_eq_zero_iff_eq_neg, ← map_one_of_isOneCocycle hf, ← mul_inv_cancel g, hf g g⁻¹]
 
 theorem smul_map_inv_sub_map_inv_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
     g • f (g⁻¹, g) - f (g, g⁻¹) = f (1, 1) - f (g, 1) := by
   have := hf g g⁻¹ g
-  simp only [mul_right_inv, mul_left_inv, map_one_fst_of_isTwoCocycle hf g] at this
+  simp only [mul_inv_cancel, inv_mul_cancel, map_one_fst_of_isTwoCocycle hf g] at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
 
 end
@@ -541,13 +541,13 @@ variable {G M : Type*} [Group G] [CommGroup M] [MulAction G M]
 
 @[scoped simp] theorem map_inv_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) (g : G) :
     g • f g⁻¹ = (f g)⁻¹ := by
-  rw [← mul_eq_one_iff_eq_inv, ← map_one_of_isMulOneCocycle hf, ← mul_inv_self g, hf g g⁻¹]
+  rw [← mul_eq_one_iff_eq_inv, ← map_one_of_isMulOneCocycle hf, ← mul_inv_cancel g, hf g g⁻¹]
 
 theorem smul_map_inv_div_map_inv_of_isMulTwoCocycle
     {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
     g • f (g⁻¹, g) / f (g, g⁻¹) = f (1, 1) / f (g, 1) := by
   have := hf g g⁻¹ g
-  simp only [mul_right_inv, mul_left_inv, map_one_fst_of_isMulTwoCocycle hf g] at this
+  simp only [mul_inv_cancel, inv_mul_cancel, map_one_fst_of_isMulTwoCocycle hf g] at this
   exact div_eq_div_iff_mul_eq_mul.2 this.symm
 
 end

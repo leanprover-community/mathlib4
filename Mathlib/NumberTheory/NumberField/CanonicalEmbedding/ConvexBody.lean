@@ -140,8 +140,8 @@ theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁ 
   · exact fun w hw => Function.update_noteq hw _ f
   · rw [← Finset.mul_prod_erase Finset.univ _ (Finset.mem_univ w₁), Function.update_same,
       Finset.prod_congr rfl fun w hw => by rw [Function.update_noteq (Finset.ne_of_mem_erase hw)],
-      ← NNReal.rpow_natCast, ← NNReal.rpow_mul, inv_mul_cancel, NNReal.rpow_one, mul_assoc,
-      inv_mul_cancel, mul_one]
+      ← NNReal.rpow_natCast, ← NNReal.rpow_mul, inv_mul_cancel₀, NNReal.rpow_one, mul_assoc,
+      inv_mul_cancel₀, mul_one]
     · rw [Finset.prod_ne_zero_iff]
       exact fun w hw => pow_ne_zero _ (hf w (Finset.ne_of_mem_erase hw))
     · rw [mult]; split_ifs <;> norm_num
@@ -615,7 +615,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨a, ha, by simpa using h_nz, ?_⟩
   rw [← rpow_natCast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
-      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
+      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
       (ne_of_gt finrank_pos)), rpow_one, le_div_iff' (Nat.cast_pos.mpr finrank_pos)]
   refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
   rw [← le_div_iff' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]

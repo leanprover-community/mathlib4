@@ -506,7 +506,7 @@ theorem HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c 
 
 theorem hasLineDerivWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     HasLineDerivWithinAt 𝕜 f (c • f') s x (c • v) ↔ HasLineDerivWithinAt 𝕜 f f' s x v :=
-  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
+  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel₀ hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
 theorem HasLineDerivAt.smul (h : HasLineDerivAt 𝕜 f f' x v) (c : 𝕜) :
     HasLineDerivAt 𝕜 f (c • f') x (c • v) := by
@@ -515,7 +515,7 @@ theorem HasLineDerivAt.smul (h : HasLineDerivAt 𝕜 f f' x v) (c : 𝕜) :
 
 theorem hasLineDerivAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     HasLineDerivAt 𝕜 f (c • f') x (c • v) ↔ HasLineDerivAt 𝕜 f f' x v :=
-  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
+  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel₀ hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
 theorem LineDifferentiableWithinAt.smul (h : LineDifferentiableWithinAt 𝕜 f s x v) (c : 𝕜) :
     LineDifferentiableWithinAt 𝕜 f s x (c • v) :=
@@ -523,7 +523,7 @@ theorem LineDifferentiableWithinAt.smul (h : LineDifferentiableWithinAt 𝕜 f s
 
 theorem lineDifferentiableWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     LineDifferentiableWithinAt 𝕜 f s x (c • v) ↔ LineDifferentiableWithinAt 𝕜 f s x v :=
-  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
+  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel₀ hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
 theorem LineDifferentiableAt.smul (h : LineDifferentiableAt 𝕜 f x v) (c : 𝕜) :
     LineDifferentiableAt 𝕜 f x (c • v) :=
@@ -531,7 +531,7 @@ theorem LineDifferentiableAt.smul (h : LineDifferentiableAt 𝕜 f x v) (c : �
 
 theorem lineDifferentiableAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     LineDifferentiableAt 𝕜 f x (c • v) ↔ LineDifferentiableAt 𝕜 f x v :=
-  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
+  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel₀ hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
 theorem lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDeriv 𝕜 f x v := by
   rcases eq_or_ne c 0 with rfl|hc

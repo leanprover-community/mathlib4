@@ -288,7 +288,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     apply (hμ u u_open x₀_u).trans_le
     exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
   have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n => by
-    rw [integral_mul_left, inv_mul_cancel (P n).ne']
+    rw [integral_mul_left, inv_mul_cancel₀ (P n).ne']
   have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 atTop (s \ u) := by
     intro u u_open x₀u
     obtain ⟨t, t_pos, tx₀, ht⟩ : ∃ t, 0 ≤ t ∧ t < c x₀ ∧ ∀ x ∈ s \ u, c x ≤ t := by
@@ -448,7 +448,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
     apply this.congr'
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     rw [integral_mul_left, setIntegral_comp_smul_of_pos _ _ _ hc, smul_eq_mul, ← mul_assoc,
-      mul_inv_cancel (by positivity), _root_.smul_closedBall _ _ zero_le_one]
+      mul_inv_cancel₀ (by positivity), _root_.smul_closedBall _ _ zero_le_one]
     simp [abs_of_nonneg hc.le]
   · filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     exact (I.comp_smul hc.ne').aestronglyMeasurable.const_mul _

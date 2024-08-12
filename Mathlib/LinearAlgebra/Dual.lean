@@ -1316,7 +1316,7 @@ lemma range_eq_top_of_ne_zero :
     LinearMap.range f = ⊤ := by
   obtain ⟨v, hv⟩ : ∃ v, f v ≠ 0 := by contrapose! hf; ext v; simpa using hf v
   rw [eq_top_iff]
-  exact fun x _ ↦ ⟨x • (f v)⁻¹ • v, by simp [inv_mul_cancel hv]⟩
+  exact fun x _ ↦ ⟨x • (f v)⁻¹ • v, by simp [inv_mul_cancel₀ hv]⟩
 
 lemma finrank_ker_add_one_of_ne_zero :
     finrank K (LinearMap.ker f) + 1 = finrank K V₁ := by

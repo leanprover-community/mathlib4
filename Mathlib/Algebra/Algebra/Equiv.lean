@@ -604,7 +604,7 @@ instance aut : Group (A₁ ≃ₐ[R] A₁) where
   one_mul ϕ := ext fun x => rfl
   mul_one ϕ := ext fun x => rfl
   inv := symm
-  mul_left_inv ϕ := ext <| symm_apply_apply ϕ
+  inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
 
 theorem aut_mul (ϕ ψ : A₁ ≃ₐ[R] A₁) : ϕ * ψ = ψ.trans ϕ :=
   rfl
@@ -714,8 +714,8 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
   toFun := fun f ↦
     { (f : S →ₐ[R] S) with
       invFun := ↑(f⁻¹)
-      left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_self]; rfl)
-      right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_self]; rfl) }
+      left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_cancel]; rfl)
+      right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_cancel]; rfl) }
   invFun := fun f ↦ ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
   left_inv := fun _ ↦ rfl
   right_inv := fun _ ↦ rfl

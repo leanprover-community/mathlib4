@@ -243,7 +243,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]
       exact card_pair (Ne.symm (mt (Ring.eq_self_iff_eq_zero_of_char_ne_two hF).mp h₀))
     · rw [quadraticChar_neg_one_iff_not_isSquare.mpr h]
-      simp only [add_left_neg, Int.natCast_eq_zero, card_eq_zero]
+      simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero]
       ext1
       -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
       -- added (Set.mem_toFinset), Set.mem_setOf

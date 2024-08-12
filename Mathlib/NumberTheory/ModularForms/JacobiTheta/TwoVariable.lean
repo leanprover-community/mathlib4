@@ -227,7 +227,7 @@ lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
     simp_rw [norm_mul, norm_I, norm_real, mul_one, norm_of_nonneg pi_pos.le,
       ← ofReal_ofNat, norm_real, norm_of_nonneg two_pos.le, ← ofReal_intCast, norm_real,
       Real.norm_eq_abs, ← Int.cast_abs, ← mul_assoc _ (2 * π),
-      inv_mul_cancel (mul_pos two_pos pi_pos).ne', one_mul]
+      inv_mul_cancel₀ (mul_pos two_pos pi_pos).ne', one_mul]
     rw [← Int.cast_one, Int.cast_le]
     exact Int.one_le_abs hn
   · refine fun hτ ↦ ((summable_pow_mul_jacobiTheta₂_term_bound

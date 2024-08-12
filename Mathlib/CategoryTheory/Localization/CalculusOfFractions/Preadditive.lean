@@ -158,13 +158,13 @@ lemma zero_add' (f : L.obj X ⟶ L.obj Y) :
     add' W (L.map 0) f = f := by
   rw [add'_comm, add'_zero]
 
-lemma add'_left_neg' (f : L.obj X ⟶ L.obj Y) :
+lemma neg'_add'_self (f : L.obj X ⟶ L.obj Y) :
     add' W (neg' W f) f = L.map 0 := by
   obtain ⟨α, rfl⟩ := exists_leftFraction L W f
   have := inverts L W _ α.hs
   rw [add'_eq W _ _ (LeftFraction₂.mk (-α.f) α.f α.s α.hs) (neg'_eq W _ _ rfl) rfl]
   simp only [← cancel_mono (L.map α.s), LeftFraction.map_comp_map_s, ← L.map_comp,
-    Limits.zero_comp, add_left_neg]
+    Limits.zero_comp, neg_add_cancel]
 
 lemma add'_assoc (f₁ f₂ f₃ : L.obj X ⟶ L.obj Y) :
     add' W (add' W f₁ f₂) f₃ = add' W f₁ (add' W f₂ f₃) := by
@@ -229,7 +229,7 @@ noncomputable def addCommGroup' : AddCommGroup (L.obj X ⟶ L.obj Y) := by
       add_zero := add'_zero _
       add_comm := add'_comm _
       zero_add := zero_add' _
-      add_left_neg := add'_left_neg' _
+      neg_add_cancel := neg'_add'_self _
       nsmul := nsmulRec
       zsmul := zsmulRec }
 

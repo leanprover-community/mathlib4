@@ -289,7 +289,7 @@ theorem smeval_ascPochhammer_self_neg : ∀ n : ℕ,
 theorem smeval_ascPochhammer_succ_neg (n : ℕ) :
     smeval (ascPochhammer ℕ (n + 1)) (-n : ℤ) = 0 := by
   rw [ascPochhammer_succ_right, smeval_mul, smeval_add, smeval_X, ← C_eq_natCast, smeval_C,
-    pow_zero, pow_one, Nat.cast_id, nsmul_eq_mul, mul_one, add_left_neg, mul_zero]
+    pow_zero, pow_one, Nat.cast_id, nsmul_eq_mul, mul_one, neg_add_cancel, mul_zero]
 
 theorem smeval_ascPochhammer_neg_add (n : ℕ) : ∀ k : ℕ,
     smeval (ascPochhammer ℕ (n + k + 1)) (-n : ℤ) = 0

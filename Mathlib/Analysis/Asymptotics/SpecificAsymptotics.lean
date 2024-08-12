@@ -134,10 +134,10 @@ theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpa
   · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
     simp only [smul_sub, sum_sub_distrib, sum_const, card_range, sub_right_inj]
-    rw [← Nat.cast_smul_eq_nsmul ℝ, smul_smul, inv_mul_cancel nposℝ.ne', one_smul]
+    rw [← Nat.cast_smul_eq_nsmul ℝ, smul_smul, inv_mul_cancel₀ nposℝ.ne', one_smul]
   · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
-    rw [Algebra.id.smul_eq_mul, inv_mul_cancel nposℝ.ne']
+    rw [Algebra.id.smul_eq_mul, inv_mul_cancel₀ nposℝ.ne']
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/
 theorem Filter.Tendsto.cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (𝓝 l)) :

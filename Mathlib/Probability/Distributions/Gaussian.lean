@@ -140,7 +140,7 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
     ring_nf
     calc (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹
       = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * (|c| * |c|⁻¹) := by
-          rw [mul_inv_cancel, mul_one]
+          rw [mul_inv_cancel₀, mul_one]
           simp only [ne_eq, abs_eq_zero, hc, not_false_eq_true]
     _ = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * |c| * |c|⁻¹ := by ring
   · congr 1
@@ -302,7 +302,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     Equiv.coe_fn_symm_mk, gaussianPDFReal_inv_mul hc]
   congr with x
   suffices |c⁻¹| * |c| = 1 by rw [← mul_assoc, this, one_mul]
-  rw [abs_inv, inv_mul_cancel]
+  rw [abs_inv, inv_mul_cancel₀]
   rwa [ne_eq, abs_eq_zero]
 
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/

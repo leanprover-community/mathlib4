@@ -287,7 +287,7 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
   · intro m hm
     rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm
     dsimp [term]
-    rw [Even.neg_pow hm, neg_one_mul, neg_add_self]
+    rw [Even.neg_pow hm, neg_one_mul, neg_add_cancel]
 
 @[deprecated (since := "2024-01-31")]
 alias hasSum_log_sub_log_of_abs_lt_1 := hasSum_log_sub_log_of_abs_lt_one
