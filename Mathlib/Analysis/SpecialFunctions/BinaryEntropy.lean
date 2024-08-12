@@ -27,7 +27,7 @@ Most lemmas are also valid using a logarithm in a different base.
 entropy, Shannon, binary, nit, nepit
 -/
 
-open Real
+namespace Real
 
 /-- Shannon q-ary Entropy function (measured in Nats, i.e., using natural logs).
 
@@ -79,17 +79,6 @@ lemma binaryEntropy_two_inv_add (p : ℝ) :
   simp only [binaryEntropy_apply, neg_sub, sub_sub_cancel, neg_mul]
   ring_nf
 
-lemma qaryEntropy_eq_log_mul_add_binaryEntropy {q : ℕ} {p : ℝ} :
-    qaryEntropy q p = p * log (q - 1) + binaryEntropy p := by
-  unfold binaryEntropy qaryEntropy
-  simp only [show ((2:ℕ) - (1:ℝ)).log = 0 by norm_num]
-  ring
-
-lemma qaryEntropy_eq_log_mul_add_binaryEntropy' {q : ℕ} :
-    qaryEntropy q = (fun p ↦ p * log (q - 1)) + binaryEntropy := by
-  ext
-  simp only [Pi.add_apply, qaryEntropy_eq_log_mul_add_binaryEntropy]
-
 lemma binaryEntropy_pos {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < binaryEntropy p := by
   simp only [binaryEntropy_apply]
   have pos_sum_pos_pos (a b : ℝ) (ha : 0 ≤ a) (hb : b < 0) : 0 < a - b := by linarith
@@ -108,7 +97,7 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < qa
     exact binaryEntropy_pos pgt0 plt1
   linarith
 
-/-- Outside usual range of `binaryEntropy`, it is negative. This is due to `log x = log |x|` -/
+/-- Outside usual range of `binaryEntropy`, it is negative. This is due to `log p = log |p|` -/
 lemma binaryEntropy_neg_of_neg {p : ℝ} (hp : p < 0) : binaryEntropy p < 0 := by
   simp only [binaryEntropy_apply]
   suffices -p * log p < (1-p) * log (1-p) by linarith
@@ -123,7 +112,7 @@ lemma binaryEntropy_neg_of_neg {p : ℝ} (hp : p < 0) : binaryEntropy p < 0 := b
       · nlinarith [log_neg_of_lt_zero hp h]
     nlinarith [(log_pos (by linarith) : 0 < log (1 - p))]
 
-/-- Outside usual range of `binaryEntropy`, it is negative. This is due to `log x = log |x|` -/
+/-- Outside usual range of `binaryEntropy`, it is negative. This is due to `log p = log |p|` -/
 lemma binaryEntropy_neg_of_gt_one {p : ℝ} (hp : 1 < p) : binaryEntropy p < 0 := by
   let x := p - 2⁻¹
   rw [show p = 2⁻¹ + x by ring, binaryEntropy_two_inv_add]
@@ -208,20 +197,20 @@ This is due to definition of `Real.log` for negative numbers. -/
 
 /-! ### Derivatives of binary entropy function -/
 
-lemma differentiableAt_binaryEntropy {x : ℝ} (xne0 : x ≠ 0) (gne1 : x ≠ 1) :
-    DifferentiableAt ℝ binaryEntropy x := by
+lemma differentiableAt_binaryEntropy {p : ℝ} (xne0 : p ≠ 0) (gne1 : p ≠ 1) :
+    DifferentiableAt ℝ binaryEntropy p := by
   simp only [binaryEntropy_eq]
   refine DifferentiableAt.sub (DifferentiableAt.mul (by fun_prop) ?_)
       (DifferentiableAt.mul (by fun_prop)
       (DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr gne1.symm)))
   exact DifferentiableAt.log differentiableAt_id' xne0
 
-lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
-    DifferentiableAt ℝ binaryEntropy x ↔ x ≠ 0 ∧ x ≠ 1 := by
+lemma differentiableAt_binaryEntropy_iff_ne_zero_one (p : ℝ) :
+    DifferentiableAt ℝ binaryEntropy p ↔ p ≠ 0 ∧ p ≠ 1 := by
   refine ⟨?_, fun ne0Ne1 ↦ differentiableAt_binaryEntropy ne0Ne1.1 ne0Ne1.2⟩
   intro is_diff
   rw [binaryEntropy_eq] at is_diff
-  by_cases is_x0 : x ≠ 0
+  by_cases is_x0 : p ≠ 0
   · constructor
     · assumption
     · intro xis1
@@ -242,7 +231,7 @@ lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
         rw [differentiableAt_negMulLog_iff] at h₂
         exact fun _ ↦ h₂ rfl
       contradiction
-  · have : x = 0 := by simp_all only [neg_mul, false_implies, ne_eq, Decidable.not_not]
+  · have : p = 0 := by simp_all only [neg_mul, false_implies, ne_eq, Decidable.not_not]
     rw [this] at is_diff
     have : DifferentiableAt ℝ (fun p ↦ -(1 - p) * log (1 - p)) 0 := by
       have := differentiableAt_negMulLog_iff.mpr (show (1 : ℝ) - 0 ≠ 0 by norm_num)
@@ -256,8 +245,8 @@ lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
     have := not_DifferentiableAt_log_mul_zero
     contradiction
 
-private lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1 - x)⁻¹ := by
-  by_cases xis1 : x = 1
+private lemma deriv_log_one_sub {p : ℝ} : deriv (fun p' ↦ log (1 - p')) p = -(1 - p)⁻¹ := by
+  by_cases xis1 : p = 1
   · have deriv_log_one_sub_at_1 : deriv (fun p ↦ log (1 - p)) 1 = 0 := by
       have : ¬ DifferentiableAt ℝ (fun p ↦ log (1 - p)) 1 := by
         by_contra h_contra
@@ -277,11 +266,11 @@ private lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(
 
 /-- Binary entropy has derivative `log (1 - p) - log p`.
 It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
-lemma deriv_binaryEntropy' {x : ℝ} :
-    deriv (fun p ↦ -p * p.log - (1 - p) * (1 - p).log) x = log (1 - x) - log x := by
-  by_cases is_x_where_nondiff : x ≠ 0 ∧ x ≠ 1
+lemma deriv_binaryEntropy' {p : ℝ} :
+    deriv (fun p' ↦ -p' * p'.log - (1 - p') * (1 - p').log) p = log (1 - p) - log p := by
+  by_cases is_x_where_nondiff : p ≠ 0 ∧ p ≠ 1
   · obtain ⟨h, hh⟩ := is_x_where_nondiff
-    have : DifferentiableAt ℝ (fun p ↦ log (1 - p)) x :=
+    have : DifferentiableAt ℝ (fun p' ↦ log (1 - p')) p :=
       DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
     rw [deriv_sub ?_ (by fun_prop)]
     · simp only [← neg_mul_eq_neg_mul]
@@ -294,25 +283,25 @@ lemma deriv_binaryEntropy' {x : ℝ} :
       ring
     · exact (hasDerivAt_negMulLog h).differentiableAt
   -- pathological case where `deriv = 0` since function is not differentiable there
-  · have : x = 0 ∨ x = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
+  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
     rw [← binaryEntropy_eq, deriv_zero_of_not_differentiableAt]
     · cases this with  -- surely this can be shortened?
         | inl xis0 => simp only [xis0, sub_zero, log_one, log_zero, sub_self]
         | inr xis1 => simp only [xis1, sub_zero, log_one, log_zero, sub_self]
     · intro h
-      have := (differentiableAt_binaryEntropy_iff_ne_zero_one x).mp h
+      have := (differentiableAt_binaryEntropy_iff_ne_zero_one p).mp h
       simp_all only [ne_eq, not_true_eq_false, zero_ne_one, not_false_eq_true, and_true]
 
-lemma deriv_qaryEntropy {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
-    deriv (qaryEntropy q) x = log (q - 1) + log (1 - x) - log x := by
+lemma deriv_qaryEntropy {q : ℕ} {p : ℝ} (h: p ≠ 0) (hh : p ≠ 1) :
+    deriv (qaryEntropy q) p = log (q - 1) + log (1 - p) - log p := by
   unfold qaryEntropy
   have differentiable_const_minus {q : ℝ} (p : ℝ) :
     DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
   have {a b c : ℝ} : a - b - c = a + (-b - c) := by ring
   simp_rw [this]
   rw [deriv_add]
-  · rw [show log (q - 1) + (1 - x).log - x.log = log (q - 1) + ((1 - x).log - x.log) by
-      exact add_sub_assoc (log (q - 1)) (1 - x).log x.log]
+  · rw [show log (q - 1) + (1 - p).log - p.log = log (q - 1) + ((1 - p).log - p.log) by
+      exact add_sub_assoc (log (q - 1)) (1 - p).log p.log]
     congr! 1
     simp only [differentiableAt_id', differentiableAt_const, deriv_mul, deriv_id'', one_mul,
       deriv_const', mul_zero, add_zero]
@@ -322,26 +311,26 @@ lemma deriv_qaryEntropy {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
   · apply DifferentiableAt.sub
     · exact DifferentiableAt.neg
         ((DifferentiableAt.mul differentiableAt_id') (DifferentiableAt.log differentiableAt_id' h))
-    · exact DifferentiableAt.mul (differentiable_const_minus x)
-        (DifferentiableAt.log (differentiable_const_minus x) (sub_ne_zero_of_ne hh.symm))
+    · exact DifferentiableAt.mul (differentiable_const_minus p)
+        (DifferentiableAt.log (differentiable_const_minus p) (sub_ne_zero_of_ne hh.symm))
 
 /-- Binary entropy has derivative `log (1 - p) - log p`.
 It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
-lemma deriv_binaryEntropy {x : ℝ} :
-    deriv binaryEntropy x = log (1 - x) - log x := by
+lemma deriv_binaryEntropy {p : ℝ} :
+    deriv binaryEntropy p = log (1 - p) - log p := by
   simp only [binaryEntropy_eq]
   exact deriv_binaryEntropy'
 
 /-- Binary entropy has derivative `log (1 - p) - log p`. -/
-lemma hasDerivAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (xne1 : x ≠ 1) :
-    HasDerivAt binaryEntropy (log (1 - x) - log x) x := by
+lemma hasDerivAt_binaryEntropy {p : ℝ} (xne0: p ≠ 0) (xne1 : p ≠ 1) :
+    HasDerivAt binaryEntropy (log (1 - p) - log p) p := by
   convert hasDerivAt_deriv_iff.mpr (differentiableAt_binaryEntropy xne0 xne1) using 1
   exact deriv_binaryEntropy.symm
 
-lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
-    HasDerivAt (qaryEntropy q) (log (q - 1) + log (1 - x) - log x) x := by
+lemma hasDerivAt_qaryEntropy {q : ℕ} {p : ℝ} (xne0: p ≠ 0) (gne1 : p ≠ 1) :
+    HasDerivAt (qaryEntropy q) (log (q - 1) + log (1 - p) - log p) p := by
   have diffAt :
-      DifferentiableAt ℝ (fun p => p * log (q - 1) - p * log p - (1 - p) * log (1 - p)) x := by
+      DifferentiableAt ℝ (fun p => p * log (q - 1) - p * log p - (1 - p) * log (1 - p)) p := by
     have : (fun p => p * log (q - 1) - p * log p - (1 - p) * log (1 - p)) =
       (fun p => p * log (q - 1) + (-p * log p - (1 - p) * log (1 - p))) := by ext; ring
     rw [this]
@@ -354,35 +343,35 @@ lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1
 open Filter Topology Set
 
 private lemma tendsto_log_one_sub_sub_log_nhdsWithin_atAtop :
-    Tendsto (fun (x:ℝ) ↦ (1 - x).log - x.log) (𝓝[>] 0) atTop := by
+    Tendsto (fun (p:ℝ) ↦ (1 - p).log - p.log) (𝓝[>] 0) atTop := by
   apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1/2) : ℝ)
   · have h₁ : (0 : ℝ) < 1 / 2 := by norm_num
-    filter_upwards [Ioc_mem_nhdsWithin_Ioi' h₁] with x hx
+    filter_upwards [Ioc_mem_nhdsWithin_Ioi' h₁] with p hx
     gcongr
     linarith [hx.2]
   · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsWithin_zero_right
 
 private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
-    Tendsto (fun (x:ℝ) ↦ (1 - x).log - x.log) (𝓝[<] 1) atBot := by
+    Tendsto (fun (p:ℝ) ↦ (1 - p).log - p.log) (𝓝[<] 1) atBot := by
   apply Filter.tendsto_atBot_add_right_of_ge' (𝓝[<] 1) (-log (1 - 2⁻¹))
   · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsWithin_zero_right
-    apply Tendsto.comp (f:=(fun x ↦ 1 - x)) (g:=Real.log) this
-    have contF : Continuous (fun (x:ℝ) ↦ 1 - x) := continuous_sub_left 1
-    have : MapsTo (fun (x:ℝ) ↦ 1 - x)  (Iio 1) (Ioi 0) := by
-      intro x hx
+    apply Tendsto.comp (f:=(fun p ↦ 1 - p)) (g:=Real.log) this
+    have contF : Continuous (fun (p:ℝ) ↦ 1 - p) := continuous_sub_left 1
+    have : MapsTo (fun (p:ℝ) ↦ 1 - p)  (Iio 1) (Ioi 0) := by
+      intro p hx
       simp_all only [mem_Iio, mem_Ioi, sub_pos]
     convert ContinuousWithinAt.tendsto_nhdsWithin (x:=(1:ℝ)) contF.continuousWithinAt this
     exact Eq.symm (sub_eq_zero_of_eq rfl)
   · have h₁ : (1 : ℝ) - (2 : ℝ)⁻¹ < 1 := by norm_num
-    filter_upwards [Ico_mem_nhdsWithin_Iio' h₁] with x hx
+    filter_upwards [Ico_mem_nhdsWithin_Iio' h₁] with p hx
     gcongr
     exact hx.1
 
 lemma not_continuousAt_deriv_qaryEntropy_one {q : ℕ} :
     ¬ContinuousAt (deriv (qaryEntropy q)) 1 := by
-  have tendstoBot : Tendsto (fun x ↦ log (q - 1) + log (1 - x) - log x) (𝓝[<] 1) atBot := by
-    have : (fun (x:ℝ) ↦ log (q - 1) + (1 - x).log - x.log)
-      = (fun x ↦ log (q - 1) + ((1 - x).log - x.log)) := by
+  have tendstoBot : Tendsto (fun p ↦ log (q - 1) + log (1 - p) - log p) (𝓝[<] 1) atBot := by
+    have : (fun (p:ℝ) ↦ log (q - 1) + (1 - p).log - p.log)
+      = (fun p ↦ log (q - 1) + ((1 - p).log - p.log)) := by
       ext
       ring
     rw [this]
@@ -400,9 +389,9 @@ lemma not_continuousAt_deriv_qaryEntropy_one {q : ℕ} :
 
 lemma not_continuousAt_deriv_qaryEntropy_zero {q : ℕ} :
     ¬ContinuousAt (deriv (qaryEntropy q)) 0 := by
-  have tendstoTop : Tendsto (fun x ↦ log (q - 1) + log (1 - x) - log x) (𝓝[>] 0) atTop := by
-    have : (fun (x:ℝ) ↦ log (q - 1) + (1 - x).log - x.log)
-        = (fun x ↦ log (q - 1) + ((1 - x).log - x.log)) := by ext; ring
+  have tendstoTop : Tendsto (fun p ↦ log (q - 1) + log (1 - p) - log p) (𝓝[>] 0) atTop := by
+    have : (fun (p:ℝ) ↦ log (q - 1) + (1 - p).log - p.log)
+        = (fun p ↦ log (q - 1) + ((1 - p).log - p.log)) := by ext; ring
     rw [this]
     exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsWithin_atAtop
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoTop) nhdsWithin_le_nhds
@@ -416,19 +405,19 @@ lemma not_continuousAt_deriv_qaryEntropy_zero {q : ℕ} :
     linarith [two_inv_lt_one (α:=ℝ)]
 
 /-- Second derivative of q-ary entropy. -/
-lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
-    deriv^[2] (qaryEntropy q) x = -1 / (x * (1 - x)) := by
+lemma deriv2_qaryEntropy {q : ℕ} {p : ℝ} :
+    deriv^[2] (qaryEntropy q) p = -1 / (p * (1 - p)) := by
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, Function.comp_apply]
-  by_cases is_x_where_nondiff : x ≠ 0 ∧ x ≠ 1  -- normal case
+  by_cases is_x_where_nondiff : p ≠ 0 ∧ p ≠ 1  -- normal case
   · obtain ⟨xne0, xne1⟩ := is_x_where_nondiff
-    suffices ∀ᶠ y in (𝓝 x),
-        deriv (fun x ↦ (qaryEntropy q) x) y = log (q - 1) + log (1 - y) - log y by
+    suffices ∀ᶠ y in (𝓝 p),
+        deriv (fun p ↦ (qaryEntropy q) p) y = log (q - 1) + log (1 - y) - log y by
       refine (Filter.EventuallyEq.deriv_eq this).trans ?_
       rw [deriv_sub ?_ (differentiableAt_log xne0)]
       · rw [deriv.log differentiableAt_id' xne0]
         simp only [deriv_id'', one_div]
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
-          have d_oneminus (x : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) x = -1 := by
+          have d_oneminus (p : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) p = -1 := by
             rw [deriv_const_sub 1, deriv_id'']
           field_simp [sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
           ring
@@ -438,7 +427,7 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2
   -- Pathological case where we use junk value (because function not differentiable)
-  · have : x = 0 ∨ x = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
+  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
     rw [deriv_zero_of_not_differentiableAt]
     · simp_all only [ne_eq, not_and, Decidable.not_not]
       cases this <;> simp_all only [
@@ -448,54 +437,96 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
       cases this <;> simp_all [
         not_continuousAt_deriv_qaryEntropy_zero, not_continuousAt_deriv_qaryEntropy_one, contAt]
 
-lemma deriv2_binaryEntropy {x : ℝ} : deriv^[2] binaryEntropy x = -1 / (x * (1-x)) :=
+lemma deriv2_binaryEntropy {p : ℝ} : deriv^[2] binaryEntropy p = -1 / (p * (1 - p)) :=
   deriv2_qaryEntropy
 
 /-! ### Strict Monotonicity of binary entropy -/
 
 /-- Qary entropy is strictly increasing in the interval [0, 1 - q⁻¹]. -/
-lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
+lemma qaryEntropy_strictMonoOn {q : ℕ} (qLe2: 2 ≤ q) :
     StrictMonoOn (qaryEntropy q) (Icc 0 (1 - 1/q)) := by
   intro p1 hp1 p2 hp2 p1le2
   apply strictMonoOn_of_deriv_pos (convex_Icc 0 (1 - 1/(q:ℝ))) _ _ hp1 hp2 p1le2
-  · apply qaryEntropy_continuous.continuousOn
-  · intro x hx
+  · exact qaryEntropy_continuous.continuousOn
+  · intro p hp
     have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qLe2
     have zero_le_qinv : 0 < (q : ℝ)⁻¹ := by positivity
-    have : 1 - x ∈ Ioi 0 := by
-      simp [mem_Ioi, sub_pos, hx.2]
-      have x_lt_1_minus_qinv : x < 1 - (q : ℝ)⁻¹ := by
+    have : 0 < 1 - p  := by
+      simp only [sub_pos, hp.2]
+      have p_lt_1_minus_qinv : p < 1 - (q : ℝ)⁻¹ := by
         simp_all only [inv_pos, interior_Icc, mem_Ioo, one_div]
       linarith
-    simp only [one_div, interior_Icc, mem_Ioo] at hx
+    simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
     · field_simp
       rw [← log_mul (by linarith) (by linarith)]
-      apply Real.strictMonoOn_log (mem_Ioi.mpr hx.1)
+      apply Real.strictMonoOn_log (mem_Ioi.mpr hp.1)
       · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, show 0 < (q : ℝ) - 1 by linarith]
       · have qpos : 0 < (q : ℝ) := by positivity
-        have : q * x < q - 1 := by
-          convert (mul_lt_mul_left qpos).2 hx.2 using 1
+        have : q * p < q - 1 := by
+          convert (mul_lt_mul_left qpos).2 hp.2 using 1
           simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
             IsUnit.mul_inv_cancel]
         linarith
-    exact (ne_of_gt (lt_add_neg_iff_lt.mp this : x < 1)).symm
+    exact (ne_of_gt (lt_add_neg_iff_lt.mp this : p < 1)).symm
+
+/-- Qary entropy is strictly decreasing in the interval [1 - q⁻¹, 1]. -/
+lemma qaryEntropy_strictAntiOn {q : ℕ} (qLe2: 2 ≤ q) :
+    StrictAntiOn (qaryEntropy q) (Icc (1 - 1/q) 1) := by
+  intro p1 hp1 p2 hp2 p1le2
+  apply strictAntiOn_of_deriv_neg (convex_Icc (1 - 1/(q:ℝ)) 1) _ _ hp1 hp2 p1le2
+  · exact qaryEntropy_continuous.continuousOn
+  · intro p hp
+    have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qLe2
+    have qinv_lt_1 : (q : ℝ)⁻¹ < 1 := inv_lt_one (by linarith)
+    have zero_lt_1_sub_p : 0 < 1 - p := by simp_all only [sub_pos, hp.2, interior_Icc, mem_Ioo]
+    simp only [one_div, interior_Icc, mem_Ioo] at hp
+    rw [deriv_qaryEntropy (by linarith)]
+    have q_big : 0 < (q : ℝ) - 1 := by linarith
+    · field_simp
+      rw [← log_mul (by linarith) (by linarith)]
+      apply Real.strictMonoOn_log (mem_Ioi.mpr (show 0 < (↑q - 1) * (1 - p) by nlinarith))
+      · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, q_big]
+        linarith
+      · have qpos : 0 < (q : ℝ) := by positivity
+        ring_nf
+        simp only [add_lt_iff_neg_right, neg_add_lt_iff_lt_add, add_zero, gt_iff_lt]
+        have : (q:ℝ) - 1 < p * q := by
+          have tmp := mul_lt_mul_of_pos_right hp.1 qpos
+          simp at tmp
+          have : (q : ℝ) ≠ 0 := (ne_of_lt qpos).symm
+          have asdfasfd : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
+            _ = q - (q : ℝ)⁻¹ * (q : ℝ) := by ring
+            _ = q - 1 := by simp_all only [ne_eq, isUnit_iff_ne_zero, Rat.cast_eq_zero,
+              not_false_eq_true, IsUnit.inv_mul_cancel]
+          rwa [asdfasfd] at tmp
+        nlinarith
+    exact (ne_of_gt (lt_add_neg_iff_lt.mp zero_lt_1_sub_p : p < 1)).symm
 
 /-- Binary entropy is strictly increasing in interval [0, 1/2]. -/
 lemma binaryEntropy_strictMonoOn : StrictMonoOn binaryEntropy (Icc 0 2⁻¹) := by
   rw [show Icc (0:ℝ) 2⁻¹ = Icc 0 (1 - 1/2) by norm_num]
-  exact qaryEntropy_strictMono (by rfl)
+  exact qaryEntropy_strictMonoOn (by rfl)
+
+/-- Binary entropy is strictly decreasing in interval [1/2, 1]. -/
+lemma binaryEntropy_strictAntiOn : StrictAntiOn binaryEntropy (Icc 2⁻¹ 1) := by
+  rw [show (Icc (2⁻¹ : ℝ) 1) = Icc (1/2) 1 by norm_num]
+  convert qaryEntropy_strictAntiOn (by rfl) using 1
+  norm_num
 
 /-! ### Strict Concavity of binary and q-ary entropy functions -/
 
 lemma strictConcaveOn_qaryEntropy {q : ℕ} : StrictConcaveOn ℝ (Icc 0 1) (qaryEntropy q) := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) qaryEntropy_continuous.continuousOn
-  intro x hx
+  intro p hp
   rw [deriv2_qaryEntropy]
   · simp_all only [interior_Icc, mem_Ioo]
     apply div_neg_of_neg_of_pos
     norm_num [show 0 < log 2 by positivity]
-    simp_all only [gt_iff_lt, mul_pos_iff_of_pos_left, sub_pos, hx]
+    simp_all only [gt_iff_lt, mul_pos_iff_of_pos_left, sub_pos, hp]
 
 lemma strictConcave_binaryEntropy : StrictConcaveOn ℝ (Icc 0 1) binaryEntropy :=
-  strictConcave_qaryEntropy
+  strictConcaveOn_qaryEntropy
+
+end Real
+
