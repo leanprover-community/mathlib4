@@ -26,8 +26,7 @@ equivalences (and other files that use them) before the group structure is defin
 MulAut, AddAut
 -/
 
--- TODO after #13161
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 assert_not_exists Ring
 
 variable {A : Type*} {M : Type*} {G : Type*}
