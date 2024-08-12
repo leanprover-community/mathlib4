@@ -3,8 +3,8 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Util.AssertExists
 import Lean.Linter.Util
+import Mathlib.Util.AssertExists
 
 /-!
 #  The "assertNotExists" linter
@@ -28,6 +28,14 @@ open Lean Elab Command
 
 namespace Mathlib.Linter
 
+/-- `onlyImportsOneModDocAsserts stx` checks whether `stx` is the syntax for a module that
+only consists of
+* any number of `import` statements (possibly none) followed by
+* any number of doc-module strings (possibly none) followed by
+* any number of `assert_not_exists` commands (possibly none),
+
+and nothing else.
+-/
 def onlyImportsOneModDocAsserts : Syntax → Bool
   | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] =>
     let dropDocs := args.toList.dropWhile (·.isOfKind ``Lean.Parser.Command.moduleDoc)
@@ -35,6 +43,13 @@ def onlyImportsOneModDocAsserts : Syntax → Bool
     dropAssertNotExists.isEmpty
   | _=> false
 
+/-- `parseUpToHere stx` takes as input the `Syntax` `stx`, and parses the file containing
+`stx` up to and excluding `stx`.
+
+Since this is intended for use by the `linter.assertNotExists`, the code also adds a final
+`assert_not_exists XXX`, to make sure that a dangling `#guard_msgs in` still allows to test
+the linter.
+-/
 def parseUpToHere (stx : Syntax) : CommandElabM Syntax := do
   let fm ← getFileMap
   let startPos := stx.getPos?.getD default
