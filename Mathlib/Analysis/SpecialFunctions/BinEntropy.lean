@@ -32,7 +32,7 @@ open Real
 /-- Shannon q-ary Entropy function (measured in Nats, i.e., using natural logs).
 
 It's the Shannon entropy of a random variable with possible outcomes {1, ..., q}
-where outcome `1` has probability `(1 - p)` and all other outcomes are equally likely.
+where outcome `1` has probability `1 - p` and all other outcomes are equally likely.
 
 Usual domain of definition is p ∈ [0,1], i.e., input is a probability.
 
