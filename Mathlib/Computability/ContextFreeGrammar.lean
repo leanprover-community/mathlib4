@@ -301,7 +301,7 @@ structure LiftedContextFreeGrammar (T : Type uT) where
 has a corresponding rule in the smaller grammar. -/
   preimage_of_rules :
     ∀ r : ContextFreeRule T g.NT,
-      (r ∈ g.rules ∧ ∃ n₀ : g₀.NT, liftNT n₀ = r.input) →
+      r ∈ g.rules → ∀ n₀ : g₀.NT → liftNT n₀ = r.input→
         (∃ r₀ ∈ g₀.rules, r₀.lift liftNT = r)
 
 lemma LiftedContextFreeGrammar.sinkNT_inverse_liftNT (G : LiftedContextFreeGrammar T) :
