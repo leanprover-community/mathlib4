@@ -342,18 +342,7 @@ protected alias IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
 
 section
 
-variable [DecidableEq α] [Fintype α]
-
-@[to_additive]
-theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
-    Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
-  simp_rw [← SetLike.mem_coe] at ha
-  simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
-
-@[to_additive]
-theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
-    Finset.image (fun i => a ^ i) (range (Fintype.card α)) = univ := by
-  rw [← orderOf_eq_card_of_forall_mem_zpowers ha, IsCyclic.image_range_orderOf ha]
+variable [Fintype α]
 
 @[to_additive]
 theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
@@ -365,6 +354,19 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       ← ZMod.intCast_eq_intCast_iff] at hy
     simp [hy]
+
+variable [DecidableEq α]
+
+@[to_additive]
+theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
+    Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
+  simp_rw [← SetLike.mem_coe] at ha
+  simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
+
+@[to_additive]
+theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
+    Finset.image (fun i => a ^ i) (range (Fintype.card α)) = univ := by
+  rw [← orderOf_eq_card_of_forall_mem_zpowers ha, IsCyclic.image_range_orderOf ha]
 
 @[to_additive]
 lemma IsCyclic.ext {G : Type*} [Group G] [Fintype G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
@@ -382,6 +384,7 @@ section Totient
 
 variable [DecidableEq α] [Fintype α]
   (hn : ∀ n : ℕ, 0 < n → (univ.filter fun a : α => a ^ n = 1).card ≤ n)
+include hn
 
 @[to_additive]
 private theorem card_pow_eq_one_eq_orderOf_aux (a : α) :
@@ -785,6 +788,8 @@ lemma monoidHomOfForallMemZpowers_apply_gen :
   exact Classical.choose_spec <| mem_zpowers_iff.mp <| hg g
 
 end monoidHom
+
+include hg
 
 /-- Two group homomorphisms `G →* G'` are equal if and only if they agree on a generator of `G`. -/
 @[to_additive

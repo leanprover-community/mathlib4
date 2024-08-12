@@ -129,6 +129,7 @@ section RealComposition
 open Real
 
 variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable f)
+include hf
 
 @[measurability]
 theorem Measurable.exp : Measurable fun x => Real.exp (f x) :=
@@ -165,6 +166,7 @@ section ComplexComposition
 open Complex
 
 variable {α : Type*} {m : MeasurableSpace α} {f : α → ℂ} (hf : Measurable f)
+include hf
 
 @[measurability]
 theorem Measurable.cexp : Measurable fun x => Complex.exp (f x) :=

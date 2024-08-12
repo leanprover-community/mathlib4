@@ -40,7 +40,7 @@ def ContractingWith [EMetricSpace α] (K : ℝ≥0) (f : α → α) :=
 
 namespace ContractingWith
 
-variable [EMetricSpace α] [cs : CompleteSpace α] {K : ℝ≥0} {f : α → α}
+variable [EMetricSpace α] {K : ℝ≥0} {f : α → α}
 
 open EMetric Set
 
@@ -79,6 +79,9 @@ restriction of `f` to `s` is `ContractingWith K` as well. -/
 theorem restrict (hf : ContractingWith K f) {s : Set α} (hs : MapsTo f s s) :
     ContractingWith K (hs.restrict f s s) :=
   ⟨hf.1, fun x y ↦ hf.2 x y⟩
+
+section
+variable [CompleteSpace α]
 
 /-- Banach fixed-point theorem, contraction mapping theorem, `EMetricSpace` version.
 A contracting map on a complete metric space has a fixed point.
@@ -142,6 +145,8 @@ theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx :
     exact hf.edist_efixedPoint_lt_top hx
   trans y
   exacts [lt_top_iff_ne_top.2 h, hf.edist_efixedPoint_lt_top hy]
+
+end
 
 /-- Banach fixed-point theorem for maps contracting on a complete subset. -/
 theorem exists_fixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
@@ -230,10 +235,14 @@ end ContractingWith
 
 namespace ContractingWith
 
-variable [MetricSpace α] {K : ℝ≥0} {f : α → α} (hf : ContractingWith K f)
+variable [MetricSpace α] {K : ℝ≥0} {f : α → α}
 
 theorem one_sub_K_pos (hf : ContractingWith K f) : (0 : ℝ) < 1 - K :=
   sub_pos.2 hf.1
+
+section
+variable (hf : ContractingWith K f)
+include hf
 
 theorem dist_le_mul (x y : α) : dist (f x) (f y) ≤ K * dist x y :=
   hf.toLipschitzWith.dist_le_mul x y
@@ -300,6 +309,10 @@ theorem tendsto_iterate_fixedPoint (x) :
 theorem fixedPoint_lipschitz_in_map {g : α → α} (hg : ContractingWith K g) {C}
     (hfg : ∀ z, dist (f z) (g z) ≤ C) : dist (fixedPoint f hf) (fixedPoint g hg) ≤ C / (1 - K) :=
   hf.dist_fixedPoint_fixedPoint_of_dist_le' g hf.fixedPoint_isFixedPt hg.fixedPoint_isFixedPt hfg
+
+end
+
+variable [Nonempty α] [CompleteSpace α]
 
 /-- If a map `f` has a contracting iterate `f^[n]`, then the fixed point of `f^[n]` is also a fixed
 point of `f`. -/
