@@ -32,9 +32,6 @@ with an additional assumption that `s` is bounded below.
 -- Guard against import creep
 assert_not_exists Multiset
 
--- Guard against import creep
-assert_not_exists Multiset
-
 
 open Function OrderDual Set
 
