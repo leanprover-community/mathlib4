@@ -182,8 +182,8 @@ theorem birthday_nonempty (x : Game) : (PGame.birthday '' (Quotient.mk' ⁻¹' {
   rw [Set.image_nonempty]
   exact ⟨_, x.out_eq⟩
 
-theorem birthday_eq_pGame_birthday (x : Game) : ∃ y : PGame.{u},
-    ⟦y⟧ = x ∧ y.birthday = birthday x :=
+theorem birthday_eq_pGame_birthday (x : Game) :
+    ∃ y : PGame.{u}, ⟦y⟧ = x ∧ y.birthday = birthday x :=
   csInf_mem (birthday_nonempty x)
 
 theorem birthday_le_pGame_birthday (x : PGame) : birthday ⟦x⟧ ≤ x.birthday :=
