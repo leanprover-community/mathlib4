@@ -28,8 +28,8 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s) = ⊤ ↔ span R s = ⊤ := by
   have H : (span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s)).restrictScalars R =
       (span R s).map (IsScalarTower.toAlgHom R S (S ⧸ pS)) := by
-    rw [map_span, ← restrictScalars_span R (R ⧸ p) Ideal.Quotient.mk_surjective]
-    rfl
+    rw [map_span, ← restrictScalars_span R (R ⧸ p) Ideal.Quotient.mk_surjective,
+      IsScalarTower.coe_toAlgHom', Ideal.Quotient.algebraMap_eq]
   constructor
   · intro hs
     rw [← top_le_iff]
