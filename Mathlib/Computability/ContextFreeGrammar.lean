@@ -298,10 +298,10 @@ structure LiftedContextFreeGrammar (T : Type uT) where
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
   lift_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.lift liftNT ∈ g.rules
   /-- Each rule of the bigger grammar whose input nonterminal the smaller grammar recognizes
-has a corresponding rule in the smaller grammar. -/
+  has a corresponding rule in the smaller grammar. -/
   preimage_of_rules :
     ∀ r : ContextFreeRule T g.NT,
-      r ∈ g.rules → ∀ n₀ : g₀.NT → liftNT n₀ = r.input→
+      r ∈ g.rules → ∀ n₀ : g₀.NT, liftNT n₀ = r.input →
         (∃ r₀ ∈ g₀.rules, r₀.lift liftNT = r)
 
 lemma LiftedContextFreeGrammar.sinkNT_inverse_liftNT (G : LiftedContextFreeGrammar T) :
@@ -319,7 +319,7 @@ lemma LiftedContextFreeGrammar.lift_produces {G : LiftedContextFreeGrammar T}
     G.g.Produces (w₁.map (Symbol.map G.liftNT)) (w₂.map (Symbol.map G.liftNT)) := by
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
-  refine ⟨r.lift G.liftNT, G.corresponding_rules r rin, ?_⟩
+  refine ⟨r.lift G.liftNT, G.lift_mem_rules r rin, ?_⟩
   rw [ContextFreeRule.rewrites_iff]
   use u.map (Symbol.map G.liftNT), v.map (Symbol.map G.liftNT)
   constructor
@@ -495,7 +495,7 @@ private def g₁g : LiftedContextFreeGrammar T :=
       rw [List.mem_map]
       use r),
     (by
-      intro r ⟨hr, ⟨n₀, imposs⟩⟩
+      intro r hr n₀ imposs
       cases hr with
       | head =>
         exfalso
@@ -558,7 +558,7 @@ private def g₂g : LiftedContextFreeGrammar T :=
       rw [List.mem_map]
       use r),
     (by
-      intro r ⟨hr, ⟨n₀, imposs⟩⟩
+      intro r hr n₀ imposs
       cases hr with
       | head =>
         exfalso
