@@ -1,17 +1,14 @@
 /-
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kenny Lau
+Authors: Johan Commelin, Kenny Lau, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Order
-
-
-
-#align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-! # Formal power series - Inverses
 
@@ -49,7 +46,6 @@ variable [Ring R]
 /-- Auxiliary function used for computing inverse of a power series -/
 protected def inv.aux : R → R⟦X⟧ → R⟦X⟧ :=
   MvPowerSeries.inv.aux
-#align power_series.inv.aux PowerSeries.inv.aux
 
 theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
     coeff R n (inv.aux a φ) =
@@ -79,12 +75,10 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
     · rintro ⟨⟩
       simpa [Finsupp.single_eq_same] using le_of_lt H
     · simpa [Finsupp.single_eq_same] using hh ()
-#align power_series.coeff_inv_aux PowerSeries.coeff_inv_aux
 
 /-- A formal power series is invertible if the constant coefficient is invertible. -/
 def invOfUnit (φ : R⟦X⟧) (u : Rˣ) : R⟦X⟧ :=
   MvPowerSeries.invOfUnit φ u
-#align power_series.inv_of_unit PowerSeries.invOfUnit
 
 theorem coeff_invOfUnit (n : ℕ) (φ : R⟦X⟧) (u : Rˣ) :
     coeff R n (invOfUnit φ u) =
@@ -94,31 +88,34 @@ theorem coeff_invOfUnit (n : ℕ) (φ : R⟦X⟧) (u : Rˣ) :
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (invOfUnit φ u) else 0 :=
   coeff_inv_aux n (↑u⁻¹ : R) φ
-#align power_series.coeff_inv_of_unit PowerSeries.coeff_invOfUnit
 
 @[simp]
 theorem constantCoeff_invOfUnit (φ : R⟦X⟧) (u : Rˣ) :
     constantCoeff R (invOfUnit φ u) = ↑u⁻¹ := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
-#align power_series.constant_coeff_inv_of_unit PowerSeries.constantCoeff_invOfUnit
 
+@[simp]
 theorem mul_invOfUnit (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff R φ = u) :
     φ * invOfUnit φ u = 1 :=
   MvPowerSeries.mul_invOfUnit φ u <| h
-#align power_series.mul_inv_of_unit PowerSeries.mul_invOfUnit
+
+@[simp]
+theorem invOfUnit_mul (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff R φ = u) :
+    invOfUnit φ u * φ = 1 :=
+  MvPowerSeries.invOfUnit_mul φ u h
+
+theorem isUnit_iff_constantCoeff {φ : R⟦X⟧} :
+    IsUnit φ ↔ IsUnit (constantCoeff R φ) :=
+  MvPowerSeries.isUnit_iff_constantCoeff
 
 /-- Two ways of removing the constant coefficient of a power series are the same. -/
 theorem sub_const_eq_shift_mul_X (φ : R⟦X⟧) :
-    φ - C R (constantCoeff R φ) = (PowerSeries.mk fun p => coeff R (p + 1) φ) * X :=
+    φ - C R (constantCoeff R φ) = (mk fun p ↦ coeff R (p + 1) φ) * X :=
   sub_eq_iff_eq_add.mpr (eq_shift_mul_X_add_const φ)
-set_option linter.uppercaseLean3 false in
-#align power_series.sub_const_eq_shift_mul_X PowerSeries.sub_const_eq_shift_mul_X
 
 theorem sub_const_eq_X_mul_shift (φ : R⟦X⟧) :
-    φ - C R (constantCoeff R φ) = X * PowerSeries.mk fun p => coeff R (p + 1) φ :=
+    φ - C R (constantCoeff R φ) = X * mk fun p ↦ coeff R (p + 1) φ :=
   sub_eq_iff_eq_add.mpr (eq_X_mul_shift_add_const φ)
-set_option linter.uppercaseLean3 false in
-#align power_series.sub_const_eq_X_mul_shift PowerSeries.sub_const_eq_X_mul_shift
 
 end Ring
 
@@ -129,13 +126,11 @@ variable {k : Type*} [Field k]
 /-- The inverse 1/f of a power series f defined over a field -/
 protected def inv : k⟦X⟧ → k⟦X⟧ :=
   MvPowerSeries.inv
-#align power_series.inv PowerSeries.inv
 
 instance : Inv k⟦X⟧ := ⟨PowerSeries.inv⟩
 
 theorem inv_eq_inv_aux (φ : k⟦X⟧) : φ⁻¹ = inv.aux (constantCoeff k φ)⁻¹ φ :=
   rfl
-#align power_series.inv_eq_inv_aux PowerSeries.inv_eq_inv_aux
 
 theorem coeff_inv (n) (φ : k⟦X⟧) :
     coeff k n φ⁻¹ =
@@ -145,64 +140,50 @@ theorem coeff_inv (n) (φ : k⟦X⟧) :
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 := by
   rw [inv_eq_inv_aux, coeff_inv_aux n (constantCoeff k φ)⁻¹ φ]
-#align power_series.coeff_inv PowerSeries.coeff_inv
 
 @[simp]
 theorem constantCoeff_inv (φ : k⟦X⟧) : constantCoeff k φ⁻¹ = (constantCoeff k φ)⁻¹ :=
   MvPowerSeries.constantCoeff_inv φ
-#align power_series.constant_coeff_inv PowerSeries.constantCoeff_inv
 
 theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff k φ = 0 :=
   MvPowerSeries.inv_eq_zero
-#align power_series.inv_eq_zero PowerSeries.inv_eq_zero
 
-@[simp]
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
   MvPowerSeries.zero_inv
-#align power_series.zero_inv PowerSeries.zero_inv
 
 -- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem invOfUnit_eq (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
   MvPowerSeries.invOfUnit_eq _ _
-#align power_series.inv_of_unit_eq PowerSeries.invOfUnit_eq
 
 @[simp]
 theorem invOfUnit_eq' (φ : k⟦X⟧) (u : Units k) (h : constantCoeff k φ = u) :
     invOfUnit φ u = φ⁻¹ :=
   MvPowerSeries.invOfUnit_eq' φ _ h
-#align power_series.inv_of_unit_eq' PowerSeries.invOfUnit_eq'
 
 @[simp]
 protected theorem mul_inv_cancel (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) : φ * φ⁻¹ = 1 :=
   MvPowerSeries.mul_inv_cancel φ h
-#align power_series.mul_inv_cancel PowerSeries.mul_inv_cancel
 
 @[simp]
 protected theorem inv_mul_cancel (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) : φ⁻¹ * φ = 1 :=
   MvPowerSeries.inv_mul_cancel φ h
-#align power_series.inv_mul_cancel PowerSeries.inv_mul_cancel
 
 theorem eq_mul_inv_iff_mul_eq {φ₁ φ₂ φ₃ : k⟦X⟧} (h : constantCoeff k φ₃ ≠ 0) :
     φ₁ = φ₂ * φ₃⁻¹ ↔ φ₁ * φ₃ = φ₂ :=
   MvPowerSeries.eq_mul_inv_iff_mul_eq h
-#align power_series.eq_mul_inv_iff_mul_eq PowerSeries.eq_mul_inv_iff_mul_eq
 
 theorem eq_inv_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff k ψ ≠ 0) :
     φ = ψ⁻¹ ↔ φ * ψ = 1 :=
   MvPowerSeries.eq_inv_iff_mul_eq_one h
-#align power_series.eq_inv_iff_mul_eq_one PowerSeries.eq_inv_iff_mul_eq_one
 
 theorem inv_eq_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff k ψ ≠ 0) :
     ψ⁻¹ = φ ↔ φ * ψ = 1 :=
   MvPowerSeries.inv_eq_iff_mul_eq_one h
-#align power_series.inv_eq_iff_mul_eq_one PowerSeries.inv_eq_iff_mul_eq_one
 
-@[simp]
 protected theorem mul_inv_rev (φ ψ : k⟦X⟧) : (φ * ψ)⁻¹ = ψ⁻¹ * φ⁻¹ :=
   MvPowerSeries.mul_inv_rev _ _
-#align power_series.mul_inv_rev PowerSeries.mul_inv_rev
 
 instance : InvOneClass k⟦X⟧ :=
   { inferInstanceAs <| InvOneClass <| MvPowerSeries Unit k with }
@@ -210,19 +191,13 @@ instance : InvOneClass k⟦X⟧ :=
 @[simp]
 theorem C_inv (r : k) : (C k r)⁻¹ = C k r⁻¹ :=
   MvPowerSeries.C_inv _
-set_option linter.uppercaseLean3 false in
-#align power_series.C_inv PowerSeries.C_inv
 
 @[simp]
 theorem X_inv : (X : k⟦X⟧)⁻¹ = 0 :=
   MvPowerSeries.X_inv _
-set_option linter.uppercaseLean3 false in
-#align power_series.X_inv PowerSeries.X_inv
 
-@[simp]
 theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ :=
   MvPowerSeries.smul_inv _ _
-#align power_series.smul_inv PowerSeries.smul_inv
 
 /-- `firstUnitCoeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
   field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`-/
@@ -282,7 +257,7 @@ theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 
 
 theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divided_by_X_pow_order hf ↔ IsUnit f :=
-  ⟨fun h => by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h => by
+  ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
     have : f.order.get (order_finite_iff_ne_zero.mpr hf) = 0 := by
       simp only [order_zero_of_unit h, PartENat.get_zero]
     convert (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
@@ -296,7 +271,6 @@ variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f
 
 instance map.isLocalRingHom : IsLocalRingHom (map f) :=
   MvPowerSeries.map.isLocalRingHom f
-#align power_series.map.is_local_ring_hom PowerSeries.map.isLocalRingHom
 
 variable [LocalRing R] [LocalRing S]
 
@@ -355,7 +329,7 @@ theorem maximalIdeal_eq_span_X : LocalRing.maximalIdeal (k⟦X⟧) = Ideal.span 
 instance : NormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
   normUnit_zero := by simp only [Unit_of_divided_by_X_pow_order_zero, inv_one]
-  normUnit_mul  := fun hf hg => by
+  normUnit_mul  := fun hf hg ↦ by
     simp only [← mul_inv, inv_inj]
     simp only [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
@@ -367,23 +341,36 @@ instance : NormalizationMonoid k⟦X⟧ where
     rw [inv_inj, Units.ext_iff, ← hu, Unit_of_divided_by_X_pow_order_nonzero h₀.ne_zero]
     exact ((eq_divided_by_X_pow_order_Iff_Unit h₀.ne_zero).mpr h₀).symm
 
-theorem normUnit_X : normUnit (X : PowerSeries k) = 1 := by
+theorem normUnit_X : normUnit (X : k⟦X⟧) = 1 := by
   simp [normUnit, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero]
 
-theorem X_eq_normalizeX : (X : PowerSeries k) = normalize X := by
+theorem X_eq_normalizeX : (X : k⟦X⟧) = normalize X := by
   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
+
+open UniqueFactorizationMonoid Classical
+
+theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
+    Multiset.count PowerSeries.X (normalizedFactors (P : k⟦X⟧)) =
+      Multiset.count Polynomial.X (normalizedFactors P) := by
+  apply eq_of_forall_le_iff
+  simp only [← PartENat.coe_le_coe]
+  rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← multiplicity_eq_count_normalizedFactors
+    irreducible_X hP, ← multiplicity_eq_count_normalizedFactors X_irreducible] <;>
+  simp only [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff,
+    PowerSeries.X_pow_dvd_iff, Polynomial.coeff_coe P, implies_true, ne_eq, coe_eq_zero_iff, hP,
+    not_false_eq_true]
 
 open LocalRing
 
 theorem ker_coeff_eq_max_ideal : RingHom.ker (constantCoeff k) = maximalIdeal _ :=
-  Ideal.ext fun _ => by
+  Ideal.ext fun _ ↦ by
     rw [RingHom.mem_ker, maximalIdeal_eq_span_X, Ideal.mem_span_singleton, X_dvd_iff]
 
 /-- The ring isomorphism between the residue field of the ring of power series valued in a field `K`
 and `K` itself. -/
 def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
   (Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm).trans
-    (RingHom.quotientKerEquivOfSurjective PowerSeries.constantCoeff_surj)
+    (RingHom.quotientKerEquivOfSurjective constantCoeff_surj)
 
 end DiscreteValuationRing
 
