@@ -413,24 +413,6 @@ theorem restrictScalarsIsometry_toLinearMap :
     (restrictScalarsIsometry 𝕜 E Fₗ 𝕜' 𝕜'').toLinearMap = restrictScalarsₗ 𝕜 E Fₗ 𝕜' 𝕜'' :=
   rfl
 
-variable (𝕜'')
-
-
-/-- `ContinuousLinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-def restrictScalarsL : (E →L[𝕜] Fₗ) →L[𝕜''] E →L[𝕜'] Fₗ :=
-  (restrictScalarsIsometry 𝕜 E Fₗ 𝕜' 𝕜'').toContinuousLinearMap
-
-variable {𝕜 E Fₗ 𝕜' 𝕜''}
-
-@[simp]
-theorem coe_restrictScalarsL : (restrictScalarsL 𝕜 E Fₗ 𝕜' 𝕜'' : (E →L[𝕜] Fₗ) →ₗ[𝕜''] E →L[𝕜'] Fₗ) =
-    restrictScalarsₗ 𝕜 E Fₗ 𝕜' 𝕜'' :=
-  rfl
-
-@[simp]
-theorem coe_restrict_scalarsL' : ⇑(restrictScalarsL 𝕜 E Fₗ 𝕜' 𝕜'') = restrictScalars 𝕜' :=
-  rfl
-
 end RestrictScalars
 
 lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
