@@ -23,7 +23,7 @@ we have three homological complexes `K₁ : HomologicalComplex C₁ c₁`,
 `K₂ : HomologicalComplex C₂ c₂` and `K₃ : HomologicalComplex C₃ c₃`,
 assumptions `TotalComplexShape c₁ c₂ c₁₂`, `TotalComplexShape c₁₂ c₃ c₄`,
 `TotalComplexShape c₂ c₃ c₂₃`, `TotalComplexShape c₁ c₂₃ c₄`,
-and `ComplexShape.Associator c₁ c₂ c₃ c₁₂ c₂₃ c₄` about the complex
+and `ComplexShape.Associative c₁ c₂ c₃ c₁₂ c₂₃ c₄` about the complex
 shapes, and technical assumptions
 `[HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c₁₂ c₄]` and
 `[HasGoodTrifunctor₂₃Obj F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄]` about the
@@ -75,7 +75,7 @@ variable (F G₂₃) in
 /-- Given bifunctors `F : C₁ ⥤ C₂₃ ⥤ C₄`, `G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃`, homological complexes
 `K₁ : HomologicalComplex C₁ c₁`, `K₂ : HomologicalComplex C₂ c₂` and
 `K₃ : HomologicalComplex C₃ c₃`, and complexes shapes `c₁₂`, `c₂₃`, `c₄`
-with `ComplexShape.Associator c₁ c₂ c₃ c₁₂ c₂₃ c₄`, this asserts that for
+with `ComplexShape.Associative c₁ c₂ c₃ c₁₂ c₂₃ c₄`, this asserts that for
 all `i₁ : ι₁` and `i₂₃ : ι₂₃`, the functor `F(K₁.X i₁, _)` commutes wich
 the coproducts of the `G₂₃(K₂.X i₂, K₃.X i₃)`
 such that `π c₂ c₃ c₂₃ ⟨i₂, i₃⟩ = i₂₃`. -/
