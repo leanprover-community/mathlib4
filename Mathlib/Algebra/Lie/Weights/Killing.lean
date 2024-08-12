@@ -382,7 +382,7 @@ lemma root_apply_cartanEquivDual_symm_ne_zero {α : Weight K H L} (hα : α.IsNo
 lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
     α (coroot α) = 2 := by
   rw [← Weight.coe_coe]
-  simpa [coroot] using inv_mul_cancel (root_apply_cartanEquivDual_symm_ne_zero hα)
+  simpa [coroot] using inv_mul_cancel₀ (root_apply_cartanEquivDual_symm_ne_zero hα)
 
 @[simp] lemma coroot_eq_zero_iff {α : Weight K H L} :
     coroot α = 0 ↔ α.IsZero := by
@@ -490,7 +490,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
   let f := (2 * (α h)⁻¹) • f'
   replace hef : ⁅⁅e, f⁆, e⁆ = 2 • e := by
     have : ⁅⁅e, f'⁆, e⁆ = α h • e := lie_eq_smul_of_mem_rootSpace heα h
-    rw [lie_smul, smul_lie, this, ← smul_assoc, smul_eq_mul, mul_assoc, inv_mul_cancel hh,
+    rw [lie_smul, smul_lie, this, ← smul_assoc, smul_eq_mul, mul_assoc, inv_mul_cancel₀ hh,
       mul_one, two_smul, two_smul]
   refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
   · rw [contra] at hef
@@ -523,7 +523,7 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     have := ht.h_ne_zero
     contrapose! this
     simpa [this] using h_eq
-  rw [h_eq, smul_smul, mul_assoc, inv_mul_cancel hef₀, mul_one, smul_assoc, coroot]
+  rw [h_eq, smul_smul, mul_assoc, inv_mul_cancel₀ hef₀, mul_one, smul_assoc, coroot]
 
 lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     finrank K (rootSpace H α) = 1 := by

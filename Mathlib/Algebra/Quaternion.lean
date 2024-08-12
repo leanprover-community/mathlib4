@@ -1170,7 +1170,8 @@ variable [LinearOrderedCommRing R] {a : ℍ[R]}
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ normSq.map_zero⟩
-  rw [normSq_def', add_eq_zero_iff', add_eq_zero_iff', add_eq_zero_iff'] at h
+  rw [normSq_def', add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg]
+    at h
   · exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)
   all_goals apply_rules [sq_nonneg, add_nonneg]
 
@@ -1224,7 +1225,7 @@ instance instGroupWithZero : GroupWithZero ℍ[R] :=
       -- Porting note: the aliased definition confuse TC search
       letI : Semiring ℍ[R] := inferInstanceAs (Semiring ℍ[R,-1,-1])
       rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
-        inv_mul_cancel (normSq_ne_zero.2 ha), coe_one] }
+        inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
 
 @[norm_cast, simp]
 theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=

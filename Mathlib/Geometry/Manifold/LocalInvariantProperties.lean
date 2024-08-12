@@ -70,6 +70,7 @@ structure LocalInvariantProp (P : (H → H') → Set H → H → Prop) : Prop wh
 
 variable {G G'} {P : (H → H') → Set H → H → Prop} {s t u : Set H} {x : H}
 variable (hG : G.LocalInvariantProp G' P)
+include hG
 
 namespace LocalInvariantProp
 
@@ -211,6 +212,7 @@ namespace LocalInvariantProp
 
 section
 variable (hG : G.LocalInvariantProp G' P)
+include hG
 
 /-- `LiftPropWithinAt P f s x` is equivalent to a definition where we restrict the set we are
   considering to the domain of the charts at `x` and `f x`. -/

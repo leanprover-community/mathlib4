@@ -135,6 +135,7 @@ section disjoint_subsets
 
 variable [PreconnectedSpace α]
   {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
+include h_nonempty h_disj
 
 /-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
 element. -/

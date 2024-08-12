@@ -167,7 +167,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
       exact h'g.comp_homeomorph ((Homeomorph.inv G).trans (Homeomorph.mulRight x))
   calc
   ∫ x, f x ∂μ = ∫ x, f x * (D x)⁻¹ * D x ∂μ := by
-    congr with x; rw [mul_assoc, inv_mul_cancel (D_pos x).ne', mul_one]
+    congr with x; rw [mul_assoc, inv_mul_cancel₀ (D_pos x).ne', mul_one]
   _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [integral_mul_left]
   _ = ∫ y, (∫ x, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂μ) ∂ν := by
       apply integral_integral_swap_of_hasCompactSupport
