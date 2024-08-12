@@ -173,7 +173,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
 
   -- Do the computation in `K` so we can work in terms of `z` instead of `r`.
   apply IsFractionRing.injective R K
-  simp only [_root_.map_mul, _root_.map_pow, _root_.map_neg, _root_.map_one]
+  simp only [_root_.map_mul, map_pow, map_neg, map_one]
   -- Both sides are actually norms:
   calc
     _ = norm K (Q.coeff 0 • B.gen ^ n) := ?_
@@ -182,7 +182,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
         (congr_arg (norm K) (eq_sub_of_add_eq ?_))
     _ = _ := ?_
   · simp only [Algebra.smul_def, algebraMap_apply R K L, Algebra.norm_algebraMap, _root_.map_mul,
-      _root_.map_pow, finrank_K_L, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
+      map_pow, finrank_K_L, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
       minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, coeff_map, ← hn]
     ring
   swap
@@ -193,7 +193,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
           B.gen ^ n := ?_
     _ = (Q.coeff 0 • B.gen ^ 0 +
         ∑ x ∈ (range (Q.natDegree + 1)).erase 0, Q.coeff x • B.gen ^ x) * B.gen ^ n := by
-      rw [_root_.pow_zero]
+      rw [pow_zero]
     _ = aeval B.gen Q * B.gen ^ n := ?_
     _ = _ := by rw [hQ, Algebra.smul_mul_assoc]
   · have : ∀ i ∈ (range (Q.natDegree + 1)).erase 0,
