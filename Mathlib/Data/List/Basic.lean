@@ -21,6 +21,7 @@ import Batteries.Data.List.Perm
 assert_not_exists Set.range
 assert_not_exists GroupWithZero
 assert_not_exists Ring
+assert_not_exists Lattice
 
 open Function
 
@@ -2600,5 +2601,3 @@ lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
 end lookup
 
 end List
-
-assert_not_exists Lattice

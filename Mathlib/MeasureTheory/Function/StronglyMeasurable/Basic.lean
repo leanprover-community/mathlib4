@@ -54,6 +54,8 @@ measurable functions, as a basis for the Bochner integral.
 
 -/
 
+-- Guard against import creep
+assert_not_exists InnerProductSpace
 
 open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 
@@ -1875,6 +1877,3 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 
 end MeasureTheory
-
--- Guard against import creep
-assert_not_exists InnerProductSpace
