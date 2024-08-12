@@ -6,6 +6,7 @@ Authors: Scott Morrison, Johan Commelin, Bhavik Mehta
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Products.Unitor
 
 /-!
 # Comma categories
@@ -107,7 +108,7 @@ variable {X Y Z : Comma L R} {f : X ⟶ Y} {g : Y ⟶ Z}
 -- was not triggered automatically
 @[ext]
 lemma hom_ext (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) : f = g :=
-  CommaMorphism.ext _ _ h₁ h₂
+  CommaMorphism.ext h₁ h₂
 
 @[simp]
 theorem id_left : (𝟙 X : CommaMorphism X X).left = 𝟙 X.left :=
@@ -408,6 +409,54 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
     { left := f.left
       right := f.right
       w := by simp only [Functor.comp_map, ← F.map_comp, f.w] }
+
+/-- The canonical functor from the product of two categories to the comma category of their
+respective functors into `Discrete PUnit`. -/
+@[simps]
+def fromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
+    A × B ⥤ Comma L R where
+  obj X :=
+    { left := X.1
+      right := X.2
+      hom := Discrete.eqToHom rfl }
+  map {X} {Y} f :=
+    { left := f.1
+      right := f.2 }
+
+/-- Taking the comma category of two functors into `Discrete PUnit` results in something
+is equivalent to their product. -/
+@[simps!]
+def equivProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
+    Comma L R ≌ A × B :=
+  Equivalence.mk ((fst L R).prod' (snd L R)) (fromProd L R)
+    { hom := 𝟙 _, inv := 𝟙 _ }
+    { hom := 𝟙 _, inv := 𝟙 _ }
+
+/-- Taking the comma category of a functor into `A ⥤ Discrete PUnit` and the identity
+`Discrete PUnit ⥤ Discrete PUnit` results in a category equivalent to `A`. -/
+@[simps!]
+def toPUnitIdEquiv (L : A ⥤ Discrete PUnit) (R : Discrete PUnit ⥤ Discrete PUnit) :
+    Comma L R ≌ A :=
+  (equivProd L _).trans (prod.rightUnitorEquivalence A)
+
+@[simp]
+theorem toPUnitIdEquiv_functor_iso {L : A ⥤ Discrete PUnit}
+    {R : Discrete PUnit ⥤ Discrete PUnit} :
+    (toPUnitIdEquiv L R).functor = fst L R :=
+  rfl
+
+/-- Taking the comma category of the identity `Discrete PUnit ⥤ Discrete PUnit`
+and a functor `B ⥤ Discrete PUnit` results in a category equivalent to `B`. -/
+@[simps!]
+def toIdPUnitEquiv (L : Discrete PUnit ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
+    Comma L R ≌ B :=
+  (equivProd _ R).trans (prod.leftUnitorEquivalence B)
+
+@[simp]
+theorem toIdPUnitEquiv_functor_iso {L : Discrete PUnit ⥤ Discrete PUnit}
+    {R : B ⥤ Discrete PUnit} :
+    (toIdPUnitEquiv L R).functor = snd L R :=
+  rfl
 
 end
 

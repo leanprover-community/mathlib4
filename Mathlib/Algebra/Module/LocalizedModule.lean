@@ -208,7 +208,7 @@ instance {M : Type*} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) w
 
 instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) :=
   { show AddCommMonoid (LocalizedModule S M) by infer_instance with
-    add_left_neg := by
+    neg_add_cancel := by
       rintro ⟨m, s⟩
       change
         (liftOn (mk m s) (fun x => mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by

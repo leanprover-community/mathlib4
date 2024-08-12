@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Johannes Hölzl, Yury G. Kudryashov, Patrick Massot
+Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Order.Filter.Archimedean
@@ -242,6 +242,21 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
   rw [← coe_zero] at h
   norm_cast at h ⊢
   exact NNReal.tendsto_pow_atTop_nhds_zero_iff.mp h
+
+@[simp]
+protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
+    Tendsto (fun n ↦ r^n) atTop (𝓝 ∞) ↔ 1 < r := by
+  refine ⟨?_, ?_⟩
+  · contrapose!
+    intro r_le_one h_tends
+    specialize h_tends (Ioi_mem_nhds one_lt_top)
+    simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, Set.mem_Ioi] at h_tends
+    obtain ⟨n, hn⟩ := h_tends
+    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one n (zero_le _) r_le_one
+  · intro r_gt_one
+    have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹)^n) atTop 0
+    simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
+    simpa [← ENNReal.inv_pow] using obs <| ENNReal.inv_lt_one.mpr r_gt_one
 
 /-! ### Geometric series-/
 
@@ -627,7 +642,7 @@ theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' A tendsto_const_nhds
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
     simp only [le_div_iff (zero_lt_one.trans_le hx), _root_.sub_mul,
-      inv_mul_cancel (zero_lt_one.trans_le hx).ne']
+      inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne']
     have := Nat.lt_floor_add_one (a * x)
     linarith
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
@@ -647,7 +662,7 @@ theorem tendsto_nat_ceil_mul_div_atTop {a : R} (ha : 0 ≤ a) :
     rw [le_div_iff (zero_lt_one.trans_le hx)]
     exact Nat.le_ceil _
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    simp [div_le_iff (zero_lt_one.trans_le hx), inv_mul_cancel (zero_lt_one.trans_le hx).ne',
+    simp [div_le_iff (zero_lt_one.trans_le hx), inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne',
       (Nat.ceil_lt_add_one (mul_nonneg ha (zero_le_one.trans hx))).le, add_mul]
 
 theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x ↦ (⌈x⌉₊ : R) / x) atTop (𝓝 1) := by

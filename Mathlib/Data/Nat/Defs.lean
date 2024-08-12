@@ -9,6 +9,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.PushNeg
 import Mathlib.Util.AssertExists
+import Batteries.Data.Nat.Basic
 
 /-!
 # Basic operations on the natural numbers
@@ -155,16 +156,6 @@ lemma pred_eq_of_eq_succ (H : m = n.succ) : m.pred = n := by simp [H]
 
 @[simp] lemma pred_eq_succ_iff : n - 1 = m + 1 ↔ n = m + 2 := by
   cases n <;> constructor <;> rintro ⟨⟩ <;> rfl
-
--- Porting note: this doesn't work as a simp lemma in Lean 4
-lemma and_forall_succ : p 0 ∧ (∀ n, p (n + 1)) ↔ ∀ n, p n :=
-  ⟨fun h n ↦ Nat.casesOn n h.1 h.2, fun h ↦ ⟨h _, fun _ ↦ h _⟩⟩
-
--- Porting note: this doesn't work as a simp lemma in Lean 4
-lemma or_exists_succ : p 0 ∨ (∃ n, p (n + 1)) ↔ ∃ n, p n :=
-  ⟨fun h ↦ h.elim (fun h0 ↦ ⟨0, h0⟩) fun ⟨n, hn⟩ ↦ ⟨n + 1, hn⟩, by
-    rintro ⟨_ | n, hn⟩
-    exacts [Or.inl hn, Or.inr ⟨n, hn⟩]⟩
 
 lemma forall_lt_succ : (∀ m < n + 1, p m) ↔ (∀ m < n, p m) ∧ p n := by
   simp only [Nat.lt_succ_iff, Nat.le_iff_lt_or_eq, or_comm, forall_eq_or_imp, and_comm]

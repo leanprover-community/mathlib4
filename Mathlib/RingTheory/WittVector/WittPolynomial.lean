@@ -65,7 +65,7 @@ open Finsupp (single)
 --attribute [-simp] coe_eval₂_hom
 
 variable (p : ℕ)
-variable (R : Type*) [CommRing R] [DecidableEq R]
+variable (R : Type*) [CommRing R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial
 with respect to a prime `p` with coefficients in a commutative ring `R`.

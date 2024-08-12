@@ -188,7 +188,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
         (Subtype.ext <| by simp only [PadicInt.coe_neg, PadicInt.coe_mul, Subtype.coe_mk])
       _ = -F.eval z := by simp only [mul_div_cancel₀ _ hdzne', Subtype.coe_eta]
 
-  exact ⟨q, by simpa only [sub_eq_add_neg, this, hz', add_right_neg, neg_sq, zero_add] using hq⟩
+  exact ⟨q, by simpa only [sub_eq_add_neg, this, hz', add_neg_cancel, neg_sq, zero_add] using hq⟩
 
 
 private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q} (heq : F.eval z' = q * z1 ^ 2)
