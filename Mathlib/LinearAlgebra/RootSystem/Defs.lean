@@ -29,9 +29,7 @@ This file contains basic definitions for root systems and root data.
 
 ## TODO
 
-* Put more API theorems in the Defs file.
-* Introduce the Weyl Group, and its action on the indexing set.
-* Base change of root pairings (may need flatness).
+* Base change of root pairings (may need flatness; perhaps should go in a different file).
 * Isomorphism of root pairings.
 * Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
   `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
