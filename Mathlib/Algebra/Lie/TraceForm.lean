@@ -34,7 +34,6 @@ We define the trace / Killing form in this file and prove some basic properties.
 
 variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-  [Module.Free R M] [Module.Finite R M]
 
 local notation "φ" => LieModule.toEnd R L M
 
@@ -95,7 +94,8 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   rw [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply, LinearMap.zero_apply,
     LinearMap.zero_apply, traceForm_apply_lie_apply', sub_self]
 
-@[simp] lemma traceForm_eq_zero_of_isNilpotent [IsReduced R] [IsNilpotent R L M] :
+@[simp] lemma traceForm_eq_zero_of_isNilpotent
+    [Module.Free R M] [Module.Finite R M] [IsReduced R] [IsNilpotent R L M] :
     traceForm R L M = 0 := by
   ext x y
   simp only [traceForm_apply_apply, LinearMap.zero_apply, ← isNilpotent_iff_eq_zero]
@@ -103,7 +103,8 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
 @[simp]
-lemma traceForm_weightSpace_eq [IsDomain R] [IsPrincipalIdealRing R]
+lemma traceForm_weightSpace_eq [Module.Free R M]
+    [IsDomain R] [IsPrincipalIdealRing R]
     [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] [LinearWeights R L M] (χ : L → R) (x y : L) :
     traceForm R L (weightSpace M χ) x y = finrank R (weightSpace M χ) • (χ x * χ y) := by
   set d := finrank R (weightSpace M χ)
@@ -210,7 +211,8 @@ open TensorProduct
 
 variable [LieAlgebra.IsNilpotent R L] [IsDomain R] [IsPrincipalIdealRing R]
 
-lemma traceForm_eq_sum_weightSpaceOf [IsTriangularizable R L M] (z : L) :
+lemma traceForm_eq_sum_weightSpaceOf
+    [NoZeroSMulDivisors R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
     ∑ χ ∈ (finite_weightSpaceOf_ne_bot R L M z).toFinset, traceForm R L (weightSpaceOf M χ z) := by
   ext x y
@@ -230,7 +232,7 @@ lemma traceForm_eq_sum_weightSpaceOf [IsTriangularizable R L M] (z : L) :
 
 -- In characteristic zero (or even just `LinearWeights R L M`) a stronger result holds (no
 -- `⊓ LieAlgebra.center R L`) TODO prove this using `LieModule.traceForm_eq_sum_finrank_nsmul_mul`.
-lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
+lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Module.Finite R M] :
     lowerCentralSeries R L L 1 ⊓ LieAlgebra.center R L ≤ LinearMap.ker (traceForm R L M) := by
   /- Sketch of proof (due to Zassenhaus):
 
@@ -277,8 +279,8 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
   · exact commute_toEnd_of_mem_center_right (A ⊗[R] M) hzc (1 ⊗ₜ x)
 
 /-- A nilpotent Lie algebra with a representation whose trace form is non-singular is Abelian. -/
-lemma isLieAbelian_of_ker_traceForm_eq_bot (h : LinearMap.ker (traceForm R L M) = ⊥) :
-    IsLieAbelian L := by
+lemma isLieAbelian_of_ker_traceForm_eq_bot [Module.Free R M] [Module.Finite R M]
+    (h : LinearMap.ker (traceForm R L M) = ⊥) : IsLieAbelian L := by
   simpa only [← disjoint_lowerCentralSeries_maxTrivSubmodule_iff R L L, disjoint_iff_inf_le,
     LieIdeal.coe_to_lieSubalgebra_to_submodule, LieSubmodule.coeSubmodule_eq_bot_iff, h]
     using lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
@@ -290,6 +292,7 @@ namespace LieSubmodule
 open LieModule (traceForm)
 
 variable {R L M}
+variable [Module.Free R M] [Module.Finite R M]
 variable [IsDomain R] [IsPrincipalIdealRing R]
   (N : LieSubmodule R L M) (I : LieIdeal R L) (h : I ≤ N.idealizer) (x : L) {y : L} (hy : y ∈ I)
 
@@ -299,6 +302,7 @@ lemma trace_eq_trace_restrict_of_le_idealizer
   suffices ∀ m, ⁅x, ⁅y, m⁆⁆ ∈ N by simp [(φ x ∘ₗ φ y).trace_restrict_eq_of_forall_mem _ this]
   exact fun m ↦ N.lie_mem (h hy m)
 
+include h in
 lemma traceForm_eq_of_le_idealizer :
     traceForm R I N = (traceForm R L M).restrict I := by
   ext ⟨x, hx⟩ ⟨y, hy⟩
@@ -306,6 +310,7 @@ lemma traceForm_eq_of_le_idealizer :
   rw [N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   rfl
 
+include h hy in
 /-- Note that this result is slightly stronger than it might look at first glance: we only assume
 that `N` is trivial over `I` rather than all of `L`. This means that it applies in the important
 case of an Abelian ideal (which has `M = L` and `N = I`). -/
@@ -321,8 +326,6 @@ lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
 end LieSubmodule
 
 section LieAlgebra
-
-variable [Module.Free R L] [Module.Finite R L]
 
 /-- A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
 
@@ -363,15 +366,15 @@ lemma coe_killingCompl_top :
   ext x
   simp [LinearMap.ext_iff, LinearMap.BilinForm.IsOrtho, LieModule.traceForm_comm R L L x]
 
-variable [IsDomain R] [IsPrincipalIdealRing R]
+lemma restrict_killingForm :
+    (killingForm R L).restrict I = LieModule.traceForm R I L :=
+  rfl
+
+variable [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma killingForm_eq :
     killingForm R I = (killingForm R L).restrict I :=
   LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
-
-lemma restrict_killingForm :
-    (killingForm R L).restrict I = LieModule.traceForm R I L :=
-  rfl
 
 @[simp] lemma le_killingCompl_top_of_isLieAbelian [IsLieAbelian I] :
     I ≤ LieIdeal.killingCompl R L ⊤ := by

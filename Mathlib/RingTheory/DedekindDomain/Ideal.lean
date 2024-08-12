@@ -261,6 +261,7 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractio
 namespace IsDedekindDomainInv
 
 variable [Algebra A K] [IsFractionRing A K] (h : IsDedekindDomainInv A)
+include h
 
 theorem mul_inv_eq_one {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : I * I⁻¹ = 1 :=
   isDedekindDomainInv_iff.mp h I hI
@@ -1068,8 +1069,6 @@ theorem idealFactorsEquivOfQuotEquiv_is_dvd_iso {L M : Ideal R} (hL : L ∣ I) (
 
 open UniqueFactorizationMonoid
 
-variable [DecidableEq (Ideal R)] [DecidableEq (Ideal A)]
-
 theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors (hJ : J ≠ ⊥)
     {L : Ideal R} (hL : L ∈ normalizedFactors I) :
     ↑(idealFactorsEquivOfQuotEquiv f ⟨L, dvd_of_mem_normalizedFactors hL⟩)
@@ -1375,7 +1374,8 @@ theorem multiplicity_eq_multiplicity_span [DecidableRel ((· ∣ ·) : R → R �
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
       exact not_finite_iff_forall.mp h n
 
-variable [DecidableEq R] [DecidableEq (Ideal R)] [NormalizationMonoid R]
+section NormalizationMonoid
+variable [NormalizationMonoid R]
 
 /-- The bijection between the (normalized) prime factors of `r` and the (normalized) prime factors
     of `span {r}` -/
@@ -1428,6 +1428,8 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
   rw [hx.symm, Equiv.symm_apply_apply, Subtype.coe_mk,
     multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha]
 
+variable [DecidableEq R] [DecidableEq (Ideal R)]
+
 /-- The bijection between the set of prime factors of the ideal `⟨r⟩` and the set of prime factors
   of `r` preserves `count` of the corresponding multisets. See
   `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
@@ -1448,6 +1450,10 @@ theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}
       Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
         Multiset.count X (normalizedFactors r) := by
   simpa [hX₁] using count_span_normalizedFactors_eq hr hX
+
+end NormalizationMonoid
+
+variable [DecidableEq (Ideal R)]
 
 /-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
   when regarding at these ideals as associated elements of the monoid of ideals.-/

@@ -542,6 +542,7 @@ section DivisionAlgebra
 
 variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 variable (𝕂)
+include 𝕂
 
 theorem norm_expSeries_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n ! : 𝔸)‖ :=
   norm_expSeries_div_summable_of_mem_ball 𝕂 x

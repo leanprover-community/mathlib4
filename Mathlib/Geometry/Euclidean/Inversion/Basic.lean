@@ -174,6 +174,7 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
 ### Ptolemy's inequality
 -/
 
+include V in
 /-- **Ptolemy's inequality**: in a quadrangle `ABCD`, `|AC| * |BD| ≤ |AB| * |CD| + |BC| * |AD|`. If
 `ABCD` is a convex cyclic polygon, then this inequality becomes an equality, see
 `EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical`. -/

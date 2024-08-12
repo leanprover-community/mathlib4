@@ -71,6 +71,7 @@ lemma normalClosure_le_iSup_adjoin :
 
 variable (splits : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
 
+include splits in
 lemma normalClosure_eq_iSup_adjoin_of_splits :
     normalClosure F K L = ⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_le_iSup_adjoin.antisymm <|
@@ -87,6 +88,7 @@ lemma isNormalClosure_iff : IsNormalClosure F K L ↔
     simpa only [normalClosure_eq_iSup_adjoin_of_splits splits] using h
 -- TODO: IntermediateField.isNormalClosure_iff similar to IntermediateField.isSplittingField_iff
 
+include splits in
 /-- `normalClosure F K L` is a valid normal closure if `K/F` is algebraic
   and all minimal polynomials of `K/F` splits in `L/F`. -/
 lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) := by

@@ -143,6 +143,7 @@ end ConditionallyCompleteLattice
 namespace LinearOrderedField
 
 variable {K : Type*} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
+include hr
 
 open Set
 

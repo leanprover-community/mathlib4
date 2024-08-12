@@ -184,6 +184,7 @@ lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   rw [Category.assoc, eq]
   simpa using liftAux_map hF α s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
 
+include hR hF in
 variable (K) in
 lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
     (h : ∀ (i : S.Arrow), f ≫ R.map i.f.op = g ≫ R.map i.f.op) : f = g := by

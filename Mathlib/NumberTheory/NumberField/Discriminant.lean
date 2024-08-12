@@ -269,6 +269,7 @@ noncomputable abbrev boundOfDiscBdd : ℝ≥0 := sqrt N * (2 : ℝ≥0) ^ rankOf
 
 variable {N} (hK : |discr K| ≤ N)
 
+include hK in
 /-- If `|discr K| ≤ N` then the degree of `K` is at most `rankOfDiscrBdd`. -/
 theorem rank_le_rankOfDiscrBdd :
     finrank ℚ K ≤ rankOfDiscrBdd N := by
@@ -295,6 +296,7 @@ theorem rank_le_rankOfDiscrBdd :
       exact le_trans (by norm_num) (Nat.one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr h_nz))
   · exact le_max_of_le_left h
 
+include hK in
 /-- If `|discr K| ≤ N` then the Minkowski bound of `K` is less than `boundOfDiscrBdd`. -/
 theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBdd N := by
   have : boundOfDiscBdd N - 1 < boundOfDiscBdd N := by
@@ -311,6 +313,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
   · exact one_le_two
   · exact rank_le_rankOfDiscrBdd hK
 
+include hK in
 theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
     natDegree (minpoly ℤ (a : K)) ≤ rankOfDiscrBdd N := by
   rw [Field.primitive_element_iff_minpoly_natDegree_eq,

@@ -884,9 +884,11 @@ noncomputable def linearEquiv [IsLocalizedModule S g] : M' ≃ₗ[R] M'' :=
 
 variable {S}
 
+include f in
 theorem smul_injective (s : S) : Function.Injective fun m : M' => s • m :=
   ((Module.End_isUnit_iff _).mp (IsLocalizedModule.map_units f s)).injective
 
+include f in
 theorem smul_inj (s : S) (m₁ m₂ : M') : s • m₁ = s • m₂ ↔ m₁ = m₂ :=
   (smul_injective f s).eq_iff
 

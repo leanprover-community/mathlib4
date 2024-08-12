@@ -53,7 +53,7 @@ assert_not_exists TopologicalSpace
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+variable {R : Type u} [CommRing R] [IsPrincipalIdealRing R]
 variable {M : Type v} [AddCommGroup M] [Module R M]
 variable {N : Type max u v} [AddCommGroup N] [Module R N]
 
@@ -68,6 +68,8 @@ theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible
   haveI := PrincipalIdealRing.isMaximal_of_irreducible h
   letI := Ideal.Quotient.field (R ∙ a)
   (submodule_torsionBy_orderIso a).complementedLattice
+
+variable [IsDomain R]
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
@@ -104,6 +106,8 @@ variable {p : R} (hp : Irreducible p) (hM : Module.IsTorsion' M (Submonoid.power
 variable [dec : ∀ x : M, Decidable (x = 0)]
 
 open Ideal Submodule.IsPrincipal
+
+include hp
 
 theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
     torsionOf R M x = span {p ^ pOrder hM x} := by

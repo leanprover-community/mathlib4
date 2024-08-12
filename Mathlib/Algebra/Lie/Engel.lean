@@ -76,6 +76,7 @@ namespace LieSubmodule
 open LieModule
 
 variable {I : LieIdeal R L} {x : L} (hxI : (R ∙ x) ⊔ I = ⊤)
+include hxI
 
 theorem exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y = t • x + z := by
   have hy : y ∈ (⊤ : Submodule R L) := Submodule.mem_top

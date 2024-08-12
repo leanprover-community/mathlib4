@@ -212,7 +212,7 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semir
     rw [Finset.univ_sum_single]
 
 @[simp]
-theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semiring S]
+theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
     [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) :
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 
@@ -226,7 +226,7 @@ variable {R φ}
 
 section Ext
 
-variable [Finite ι] [DecidableEq ι] [AddCommMonoid M] [Module R M] {f g : ((i : ι) → φ i) →ₗ[R] M}
+variable [Finite ι] [AddCommMonoid M] [Module R M] {f g : ((i : ι) → φ i) →ₗ[R] M}
 
 theorem pi_ext (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) : f = g :=
   toAddMonoidHom_injective <| AddMonoidHom.functions_ext _ _ _ h
@@ -281,8 +281,6 @@ end
 
 section
 
-variable [DecidableEq ι]
-
 /-- `diag i j` is the identity map if `i = j`. Otherwise it is the constant 0 map. -/
 def diag (i j : ι) : φ i →ₗ[R] φ j :=
   @Function.update ι (fun j => φ i →ₗ[R] φ j) _ 0 i id j
@@ -311,7 +309,7 @@ end
 
 /-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
 of the canonical basis. -/
-theorem pi_apply_eq_sum_univ [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
+theorem pi_apply_eq_sum_univ [Fintype ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
     f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
   conv_lhs => rw [pi_eq_sum_univ x, map_sum]
   refine Finset.sum_congr rfl (fun _ _ => ?_)

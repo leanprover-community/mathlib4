@@ -90,7 +90,7 @@ alias ContinuousLinearMap.op_norm_bound_of_ball_bound :=
   ContinuousLinearMap.opNorm_bound_of_ball_bound
 
 variable (𝕜)
-
+include 𝕜 in
 theorem NormedSpace.sphere_nonempty_rclike [Nontrivial E] {r : ℝ} (hr : 0 ≤ r) :
     Nonempty (sphere (0 : E) r) :=
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E

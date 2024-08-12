@@ -406,7 +406,7 @@ In this section we define `∫ x in a..b, f x ∂μ` as `∫ x in Ioc a b, f x �
 and prove some basic properties.
 -/
 
-variable [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedSpace ℝ E]
 
 /-- The interval integral `∫ x in a..b, f x ∂μ` is defined
 as `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`. If `a ≤ b`, then it equals
@@ -545,7 +545,8 @@ nonrec theorem integral_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norm
   simp only [intervalIntegral, integral_smul, smul_sub]
 
 @[simp]
-nonrec theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : ℝ → 𝕜) (c : E) :
+nonrec theorem integral_smul_const [CompleteSpace E]
+    {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : ℝ → 𝕜) (c : E) :
     ∫ x in a..b, f x • c ∂μ = (∫ x in a..b, f x ∂μ) • c := by
   simp only [intervalIntegral_eq_integral_uIoc, integral_smul_const, smul_assoc]
 
@@ -564,12 +565,12 @@ theorem integral_div {𝕜 : Type*} [RCLike 𝕜] (r : 𝕜) (f : ℝ → 𝕜) 
     ∫ x in a..b, f x / r ∂μ = (∫ x in a..b, f x ∂μ) / r := by
   simpa only [div_eq_mul_inv] using integral_mul_const r⁻¹ f
 
-theorem integral_const' (c : E) :
+theorem integral_const' [CompleteSpace E] (c : E) :
     ∫ _ in a..b, c ∂μ = ((μ <| Ioc a b).toReal - (μ <| Ioc b a).toReal) • c := by
   simp only [intervalIntegral, setIntegral_const, sub_smul]
 
 @[simp]
-theorem integral_const (c : E) : ∫ _ in a..b, c = (b - a) • c := by
+theorem integral_const [CompleteSpace E] (c : E) : ∫ _ in a..b, c = (b - a) • c := by
   simp only [integral_const', Real.volume_Ioc, ENNReal.toReal_ofReal', ← neg_sub b,
     max_zero_sub_eq_self]
 
@@ -605,7 +606,7 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_apply {a b : ℝ} {φ : ℝ 
 
 variable [NormedSpace ℝ F] [CompleteSpace F]
 
-theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm (L : E →L[𝕜] F)
+theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F)
     (hf : IntervalIntegrable f μ a b) : (∫ x in a..b, L (f x) ∂μ) = L (∫ x in a..b, f x ∂μ) := by
   simp_rw [intervalIntegral, L.integral_comp_comm hf.1, L.integral_comp_comm hf.2, L.map_sub]
 
@@ -878,7 +879,7 @@ theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
   rw [Iio_union_Ici, Measure.restrict_univ]
 
 /-- If `μ` is a finite measure then `∫ x in a..b, c ∂μ = (μ (Iic b) - μ (Iic a)) • c`. -/
-theorem integral_const_of_cdf [IsFiniteMeasure μ] (c : E) :
+theorem integral_const_of_cdf [CompleteSpace E] [IsFiniteMeasure μ] (c : E) :
     ∫ _ in a..b, c ∂μ = ((μ (Iic b)).toReal - (μ (Iic a)).toReal) • c := by
   simp only [sub_smul, ← setIntegral_const]
   refine (integral_Iic_sub_Iic ?_ ?_).symm <;>
@@ -1027,7 +1028,24 @@ theorem abs_integral_le_integral_abs (hab : a ≤ b) :
 
 section Mono
 
+theorem integral_mono_interval {c d} (hca : c ≤ a) (hab : a ≤ b) (hbd : b ≤ d)
+    (hf : 0 ≤ᵐ[μ.restrict (Ioc c d)] f) (hfi : IntervalIntegrable f μ c d) :
+    (∫ x in a..b, f x ∂μ) ≤ ∫ x in c..d, f x ∂μ := by
+  rw [integral_of_le hab, integral_of_le (hca.trans (hab.trans hbd))]
+  exact setIntegral_mono_set hfi.1 hf (Ioc_subset_Ioc hca hbd).eventuallyLE
+
+theorem abs_integral_mono_interval {c d} (h : Ι a b ⊆ Ι c d) (hf : 0 ≤ᵐ[μ.restrict (Ι c d)] f)
+    (hfi : IntervalIntegrable f μ c d) : |∫ x in a..b, f x ∂μ| ≤ |∫ x in c..d, f x ∂μ| :=
+  have hf' : 0 ≤ᵐ[μ.restrict (Ι a b)] f := ae_mono (Measure.restrict_mono h le_rfl) hf
+  calc
+    |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| := abs_integral_eq_abs_integral_uIoc f
+    _ = ∫ x in Ι a b, f x ∂μ := abs_of_nonneg (MeasureTheory.integral_nonneg_of_ae hf')
+    _ ≤ ∫ x in Ι c d, f x ∂μ := setIntegral_mono_set hfi.def' hf h.eventuallyLE
+    _ ≤ |∫ x in Ι c d, f x ∂μ| := le_abs_self _
+    _ = |∫ x in c..d, f x ∂μ| := (abs_integral_eq_abs_integral_uIoc f).symm
+
 variable (hab : a ≤ b) (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b)
+include hab hf hg
 
 theorem integral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict (Icc a b)] g) :
     (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
@@ -1044,22 +1062,6 @@ theorem integral_mono_on (h : ∀ x ∈ Icc a b, f x ≤ g x) :
 
 theorem integral_mono (h : f ≤ g) : (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ :=
   integral_mono_ae hab hf hg <| ae_of_all _ h
-
-theorem integral_mono_interval {c d} (hca : c ≤ a) (hab : a ≤ b) (hbd : b ≤ d)
-    (hf : 0 ≤ᵐ[μ.restrict (Ioc c d)] f) (hfi : IntervalIntegrable f μ c d) :
-    (∫ x in a..b, f x ∂μ) ≤ ∫ x in c..d, f x ∂μ := by
-  rw [integral_of_le hab, integral_of_le (hca.trans (hab.trans hbd))]
-  exact setIntegral_mono_set hfi.1 hf (Ioc_subset_Ioc hca hbd).eventuallyLE
-
-theorem abs_integral_mono_interval {c d} (h : Ι a b ⊆ Ι c d) (hf : 0 ≤ᵐ[μ.restrict (Ι c d)] f)
-    (hfi : IntervalIntegrable f μ c d) : |∫ x in a..b, f x ∂μ| ≤ |∫ x in c..d, f x ∂μ| :=
-  have hf' : 0 ≤ᵐ[μ.restrict (Ι a b)] f := ae_mono (Measure.restrict_mono h le_rfl) hf
-  calc
-    |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| := abs_integral_eq_abs_integral_uIoc f
-    _ = ∫ x in Ι a b, f x ∂μ := abs_of_nonneg (MeasureTheory.integral_nonneg_of_ae hf')
-    _ ≤ ∫ x in Ι c d, f x ∂μ := setIntegral_mono_set hfi.def' hf h.eventuallyLE
-    _ ≤ |∫ x in Ι c d, f x ∂μ| := le_abs_self _
-    _ = |∫ x in c..d, f x ∂μ| := (abs_integral_eq_abs_integral_uIoc f).symm
 
 end Mono
 

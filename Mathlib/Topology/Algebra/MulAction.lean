@@ -269,6 +269,7 @@ section AddTorsor
 variable (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
 variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 
+include G in
 /-- An `AddTorsor` for a connected space is a connected space. This is not an instance because
 it loops for a group as a torsor over itself. -/
 protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=

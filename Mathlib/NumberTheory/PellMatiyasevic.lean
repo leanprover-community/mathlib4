@@ -151,6 +151,7 @@ def az (a : ℕ) : ℤ :=
 
 end
 
+include a1 in
 theorem asq_pos : 0 < a * a :=
   le_trans (le_of_lt a1)
     (by have := @Nat.mul_le_mul_left 1 a a (le_of_lt a1); rwa [mul_one] at this)
@@ -228,6 +229,7 @@ theorem xn_ge_a_pow : ∀ n : ℕ, a ^ n ≤ xn a1 n
     simp only [_root_.pow_succ, xn_succ]
     exact le_trans (Nat.mul_le_mul_right _ (xn_ge_a_pow n)) (Nat.le_add_right _ _)
 
+include a1 in
 theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
   | 0 => Nat.le_refl 1
   | n + 1 => by

@@ -45,7 +45,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 lie character, eigenvalue, eigenspace, weight, weight vector, root, root vector
 -/
 
-variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra.IsNilpotent R L]
+variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieModule
@@ -146,7 +146,7 @@ variable (M)
 `weightSpaceOf M χ x` is the maximal generalized `χ`-eigenspace of the action of `x` on `M`.
 
 It is a Lie submodule because `L` is nilpotent. -/
-def weightSpaceOf (χ : R) (x : L) : LieSubmodule R L M :=
+def weightSpaceOf [LieAlgebra.IsNilpotent R L] (χ : R) (x : L) : LieSubmodule R L M :=
   { 𝕎(M, χ, x) with
     lie_mem := by
       intro y m hm
@@ -158,6 +158,7 @@ def weightSpaceOf (χ : R) (x : L) : LieSubmodule R L M :=
 end notation_weightSpaceOf
 
 variable (M)
+variable [LieAlgebra.IsNilpotent R L]
 
 theorem mem_weightSpaceOf (χ : R) (x : L) (m : M) :
     m ∈ weightSpaceOf M χ x ↔ ∃ k : ℕ, ((toEnd R L M x - χ • ↑1) ^ k) m = 0 := by
@@ -763,7 +764,6 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
 See also `LieModule.iSup_weightSpace_eq_top'`. -/
 lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, weightSpace M χ = ⊤ := by
-  clear! R -- cf https://github.com/leanprover/lean4/issues/2452
   induction' h_dim : finrank K M using Nat.strong_induction_on with n ih generalizing M
   obtain h' | ⟨y : L, hy : ¬ ∃ φ, weightSpaceOf M φ y = ⊤⟩ :=
     forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), weightSpaceOf M φ x = ⊤)

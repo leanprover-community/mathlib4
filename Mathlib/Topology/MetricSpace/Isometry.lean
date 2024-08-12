@@ -498,6 +498,7 @@ theorem diam_image (s : Set α) : Metric.diam (h '' s) = Metric.diam s :=
 theorem diam_preimage (s : Set β) : Metric.diam (h ⁻¹' s) = Metric.diam s := by
   rw [← image_symm, diam_image]
 
+include h in
 theorem diam_univ : Metric.diam (univ : Set α) = Metric.diam (univ : Set β) :=
   congr_arg ENNReal.toReal h.ediam_univ
 

@@ -230,7 +230,11 @@ lemma isCompact_preimage [TopologicalSpace β]
   apply subset_mulTSupport
   aesop
 
-variable [T2Space α'] (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
+variable [T2Space α']
+
+section
+variable (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
+include hf cont
 
 @[to_additive]
 theorem mulTSupport_extend_one_subset :
@@ -250,6 +254,8 @@ theorem mulTSupport_extend_one (inj : g.Injective) :
     (image_closure_subset_closure_image cont).trans
       (closure_mono (mulSupport_extend_one inj).superset)
 
+end
+
 @[to_additive]
 theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U) {f : U → β}
     (cont : Continuous f) (supp : HasCompactMulSupport f) :
@@ -262,7 +268,7 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
 
 /-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
 @[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
-theorem is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
+theorem is_one_at_infty {f : α → γ} [TopologicalSpace γ]
     (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
   intro N hN
   rw [mem_map, mem_cocompact']
@@ -276,7 +282,7 @@ end HasCompactMulSupport
 
 section Compact
 
-variable [CompactSpace α] [One γ] [TopologicalSpace γ]
+variable [CompactSpace α]
 
 /-- In a compact space `α`, any function has compact support. -/
 @[to_additive]
@@ -344,7 +350,7 @@ end MulZeroClass
 
 section OrderedAddGroup
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddGroup β] [Lattice β]
+variable {α β : Type*} [TopologicalSpace α] [AddGroup β] [Lattice β]
   [CovariantClass β β (· + ·) (· ≤ ·)]
 
 protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport f) :
