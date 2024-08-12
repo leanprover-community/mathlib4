@@ -243,8 +243,8 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
 
 /--
 Tactic for evaluating expressions in *commutative* (semi)rings, allowing for variables in the
-exponent. It uses `ring1` and `ring_nf` in succession so, if `ring1` fails, `ring_nf` will
-not be called.
+exponent. If the goal is not appropriate for `ring` (e.g. not an equality) `ring_nf` will be
+suggested.
 
 * `ring!` will use a more aggressive reducibility setting to determine equality of atoms.
 * `ring1` fails if the target is not an equality.
@@ -254,6 +254,7 @@ For example:
 example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
+example (x : ℕ) (h : x * 2 > 5): x + x > 5 := by ring; assumption -- suggests ring_nf
 ```
 -/
 macro (name := ring) "ring" : tactic =>
