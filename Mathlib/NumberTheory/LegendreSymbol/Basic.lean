@@ -235,9 +235,9 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
     simp at h
   by_contra hf
   cases' imp_iff_or_not.mp (not_and'.mp hf) with hx hy
-  · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, eq_neg_self_iff] at h
+  · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
-  · rw [eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy, eq_neg_self_iff] at h
+  · rw [eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
 
 /-- If `legendreSym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/
