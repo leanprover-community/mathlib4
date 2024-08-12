@@ -48,7 +48,7 @@ instance : Obj Nat := ⟨⟩
 
 -- Lin is missing `const` theorem
 @[fun_prop] theorem Lin_id : Lin (fun x : α => x) := silentSorry
-@[fun_prop] theorem Lin_const {β} [Zero β] : Lin (fun x : α => (0 : β)) := silentSorry
+@[fun_prop] theorem Lin_const {β} [Obj β] [Zero β] : Lin (fun x : α => (0 : β)) := silentSorry
 @[fun_prop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (f ∘ g) := silentSorry
@@ -194,9 +194,6 @@ example : Con (fun (f : α → β → γ) x y => f x y) := by fun_prop
 example : Con (fun (f : α → β → γ) y x => f x y) := by fun_prop
 example : Con (fun (f : α → α → α → α → α) y x => f x y x y) := by fun_prop
 
--- set_option pp.notation false
-
-
 -- local hypothesis are assumed to be always in fully applied form
 -- so `(hf : Con f)` is not considered valid
 -- is this valid assumption?
@@ -278,7 +275,6 @@ example (f : β → γ) (g : α ->> β) (hf: Con f) : Con (fun x => f (g x)) := 
 example (f : β ->> γ) (g : α → β) (hg: Con g) : Con (fun x => f (g x)) := by fun_prop
 example (f : β -o γ) (g : α → β) (hg : Con g) : Con fun x => f (g x) := by fun_prop
 
--- set_option trace.Meta.Tactic.fun_prop true in
 example (f : α → β ->> γ) (hf : Con f) (g : α → β) (hg : Lin g)  : Con (fun x => f x (g x)) := by fun_prop
 example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Con (fun x => f x (g x)) := by fun_prop
 example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fun_prop
@@ -321,7 +317,7 @@ example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
 
 
-example [Zero α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
+example [Zero α] [Obj α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
 
 noncomputable
 def foo : α ->> α ->> α := silentSorry
