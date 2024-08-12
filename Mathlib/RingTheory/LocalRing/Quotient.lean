@@ -44,10 +44,9 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
       rw [← this, ← comap_map_eq, mem_comap, ← H, hs]
       trivial
   · intro hs
-    rw [hs, Submodule.map_top] at H
-    change _ = LinearMap.range (Ideal.Quotient.mkₐ _ _) at H
-    rwa [LinearMap.range_eq_top.mpr (Ideal.Quotient.mkₐ_surjective _ _),
-      restrictScalars_eq_top_iff] at H
+    rwa [hs, Submodule.map_top, LinearMap.range_eq_top.mpr, restrictScalars_eq_top_iff] at H
+    rw [IsScalarTower.coe_toAlgHom', Ideal.Quotient.algebraMap_eq]
+    exact Ideal.Quotient.mk_surjective
 
 attribute [local instance] Ideal.Quotient.field
 
