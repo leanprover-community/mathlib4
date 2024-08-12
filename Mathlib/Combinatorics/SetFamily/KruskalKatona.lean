@@ -9,58 +9,18 @@ import Mathlib.Combinatorics.SetFamily.Compression.UV
 /-!
 # Kruskal-Katona theorem
 
-The Kruskal-Katona theorem in a few different versions, and an application to
-the Erdos-Ko-Rado theorem.
+This file proves the Kruskal-Katona theorem. This is a sharp statement about how many sets of size
+`k - 1` are covered by a family of sets of size `k`, given only its size.
 
 ## Main declarations
 
 The key results proved here are:
-
-* The basic Kruskal-Katona theorem, expressing that given a set family 𝒜
-  consisting of `r`-sets, and 𝒞 an initial segment of the colex order of the
-  same size, the shadow of 𝒞 is smaller than the shadow of 𝒜.
-  In particular, this shows that the minimum shadow size is achieved by initial
-  segments of colex.
-
-```lean
-theorem kruskal_katona {r : ℕ} {𝒜 𝒞 : Finset (Finset (Fin n))} (h₁ : (𝒜 : Set (Finset α)).Sized r)
-  (h₂ : 𝒜.card = 𝒞.card) (h₃ : IsInitSeg 𝒞 r) :
-  (∂𝒞).card ≤ (∂𝒜).card
-```
-
-* A strengthened form, giving the same result under a weaker constraint.
-
-```lean
-theorem strengthened_kk {r : ℕ} {𝒜 𝒞 : Finset (Finset (Fin n))} (h₁ : (𝒜 : Set (Finset α)).Sized r)
-  (h₂ : 𝒞.card ≤ 𝒜.card) (h₃ : IsInitSeg 𝒞 r) :
-  (∂𝒞).card ≤ (∂𝒜).card
-```
-
-* An iterated form, giving that the minimum iterated shadow size is given
-  by initial segments of colex.
-
-```lean
-theorem iterated_kk {r k : ℕ} {𝒜 𝒞 : Finset (Finset (Fin n))} (h₁ : (𝒜 : Set (Finset α)).Sized r)
-  (h₂ : 𝒞.card ≤ 𝒜.card) (h₃ : IsInitSeg 𝒞 r) :
-  (∂^[k] 𝒞).card ≤ (∂^[k] 𝒜).card
-```
-
-* A special case of `iterated_kk` which is often more practical to use.
-
-```lean
-theorem lovasz_form {r k i : ℕ} {𝒜 : Finset (Finset (Fin n))} (hir : i ≤ r)
-  (hrk : r ≤ k) (hkn : k ≤ n) (h₁ : (𝒜 : Set (Finset α)).Sized r) (h₂ : choose k r ≤ 𝒜.card) :
-  choose k (r-i) ≤ (∂^[i] 𝒜).card
-```
-
-* Erdos-Ko-Rado theorem, giving the upper bound on the size of an intersecting
-  family of `r`-sets
-
-```lean
-theorem EKR {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
-  (h₁ : intersecting 𝒜) (h₂ : (𝒜 : Set (Finset α)).Sized r) (h₃ : r ≤ n/2) :
-  𝒜.card ≤ choose (n-1) (r-1)
-```
+* `Finset.kruskal_katona`: The basic Kruskal-Katona theorem. Given a set family `𝒜` consisting of
+  `r`-sets, and `𝒞` an initial segment of the colex order of the same size, the shadow of `𝒞` is
+  smaller than the shadow of `𝒜`. In particular, this shows that the minimum shadow size is
+  achieved by initial segments of colex.
+* `Finset.iterated_kruskal_katona`: An iterated form of the Kruskal-Katona theorem, stating that the
+  minimum iterated shadow size is given by initial segments of colex.
 
 ## TODO
 
@@ -79,6 +39,11 @@ theorem EKR {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
 
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
+
+-- TODO: There's currently a diamond. See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/DecidableEq.20diamond.20on.20Fin
+-- import Mathlib.Order.Fin.Basic
+-- example (n : ℕ) : instDecidableEqFin n = instDecidableEq_mathlib := rfl
+attribute [-instance] instDecidableEqFin
 
 open Nat
 open scoped FinsetFamily
@@ -226,11 +191,6 @@ lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ 
 
 attribute [-instance] Fintype.decidableForallFintype
 
--- TODO: There's currently a diamond
--- import Mathlib.Order.Fin.Basic
--- example (n : ℕ) : instDecidableEqFin n = instDecidableEq_mathlib := rfl
-attribute [-instance] instDecidableEqFin
-
 /-- This measures roughly how compressed the family is.
 
 Note that this does depend on the order of the ground set, unlike the Kruskal-Katona theorem itself
@@ -284,7 +244,7 @@ private lemma kruskal_katona_helper {r : ℕ} (𝒜 : Finset (Finset (Fin n)))
     rw [eq_empty_iff_forall_not_mem] at husable
     by_contra h
     exact husable ⟨U, V⟩ $ mem_filter.2 ⟨mem_univ _, hUV, h⟩
-  -- Yes. Then apply the compression, then keep going
+  -- Yes. Then apply the smallest compression, then keep going
   obtain ⟨⟨U, V⟩, hUV, t⟩ := exists_min_image usable (fun t ↦ t.1.card) husable
   rw [mem_filter] at hUV
   have h₂ : ∀ U₁ V₁, UsefulCompression U₁ V₁ → U₁.card < U.card → IsCompressed U₁ V₁ A := by
@@ -302,7 +262,6 @@ end UV
 
 -- Finally we can prove Kruskal-Katona.
 section KK
-
 variable {r k i : ℕ} {𝒜 𝒞 : Finset $ Finset $ Fin n}
 
 /-- The **Kruskal-Katona theorem**.
@@ -310,26 +269,20 @@ variable {r k i : ℕ} {𝒜 𝒞 : Finset $ Finset $ Fin n}
 Given a set family `𝒜` consisting of `r`-sets, and `𝒞` an initial segment of the colex order of the
 same size, the shadow of `𝒞` is smaller than the shadow of `𝒜`. In particular, this gives that the
 minimum shadow size is achieved by initial segments of colex. -/
--- Proof notes: Most of the work was done in Kruskal-Katona helper; it gives a `ℬ` which is fully
--- compressed, and so we know it's an initial segment, which by uniqueness is the same as `𝒞`.
-theorem kruskal_katona (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : 𝒜.card = 𝒞.card)
-    (h₃ : IsInitSeg 𝒞 r) : (∂ 𝒞).card ≤ (∂ 𝒜).card := by
-  obtain ⟨ℬ, card_le, t, hℬ, fully_comp⟩ := UV.kruskal_katona_helper 𝒜 h₁
-  convert card_le
-  have hcard : card ℬ = card 𝒞 := t.symm.trans h₂
-  obtain CB | BC :=
-    h₃.total (UV.isInitSeg_of_compressed hℬ fun U V hUV ↦ by convert fully_comp U V hUV)
-  · exact eq_of_subset_of_card_le CB hcard.le
-  · exact (eq_of_subset_of_card_le BC hcard.ge).symm
-
-/-- We can strengthen Kruskal-Katona slightly: note the middle and has been relaxed to a `≤`.
-This shows that the minimum possible shadow size is attained by initial segments. -/
-theorem strengthened_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : 𝒞.card ≤ 𝒜.card)
-    (h₃ : IsInitSeg 𝒞 r) : (∂ 𝒞).card ≤ (∂ 𝒜).card := by
-  obtain ⟨𝒜', prop, size⟩ := exists_subset_card_eq h₂
-  refine (kruskal_katona (fun A hA ↦ h₁ (prop hA)) size h₃).trans (card_le_card ?_)
-  rw [shadow, shadow]
-  apply shadow_monotone prop
+theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞𝒜 : 𝒞.card ≤ 𝒜.card)
+    (h𝒞 : IsInitSeg 𝒞 r) : (∂ 𝒞).card ≤ (∂ 𝒜).card := by
+  -- WLOG `|𝒜| = |𝒞|`
+  obtain ⟨𝒜', h𝒜, h𝒜𝒞⟩ := exists_subset_card_eq h𝒞𝒜
+  -- By `kruskal_katona_helper`, we find a fully compressed family `ℬ` of the same size as `𝒜`
+  -- whose shadow is no bigger.
+  obtain ⟨ℬ, hℬ𝒜, h𝒜ℬ, hℬr, hℬ⟩ := UV.kruskal_katona_helper 𝒜' (h𝒜r.mono (by gcongr))
+  -- This means that `ℬ` is an initial segment of the same size as `𝒞`. Hence they are equal and
+  -- we are done.
+  suffices ℬ = 𝒞 by subst 𝒞; exact hℬ𝒜.trans (by gcongr)
+  have hcard : card ℬ = card 𝒞 := h𝒜ℬ.symm.trans h𝒜𝒞
+  obtain h𝒞ℬ | hℬ𝒞 := h𝒞.total (UV.isInitSeg_of_compressed hℬr hℬ)
+  · exact (eq_of_subset_of_card_le h𝒞ℬ hcard.le).symm
+  · exact eq_of_subset_of_card_le hℬ𝒞 hcard.ge
 
 /-- An iterated form of the Kruskal-Katona theorem. In particular, the minimum possible iterated
 shadow size is attained by initial segments. -/
@@ -337,7 +290,7 @@ theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : 𝒞.
     (h₃ : IsInitSeg 𝒞 r) : (∂^[k] 𝒞).card ≤ (∂^[k] 𝒜).card := by
   induction' k with _k ih generalizing r 𝒜 𝒞
   · simpa
-  · refine ih h₁.shadow (strengthened_kk h₁ h₂ h₃) ?_
+  · refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
     convert h₃.shadow
 
 end KK
