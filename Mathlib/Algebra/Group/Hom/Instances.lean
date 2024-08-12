@@ -20,6 +20,7 @@ Finally, we provide the `Ring` structure on `AddMonoid.End`.
 -/
 
 assert_not_exists AddMonoidWithOne
+assert_not_exists Ring
 
 universe uM uN uP uQ
 
@@ -233,5 +234,3 @@ theorem compr₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoi
   rfl
 
 end MonoidHom
-
-assert_not_exists Ring

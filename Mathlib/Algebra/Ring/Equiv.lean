@@ -38,6 +38,9 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, not 
 Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
 
+-- guard against import creep
+assert_not_exists Field
+assert_not_exists Fintype
 
 variable {F α β R S S' : Type*}
 
@@ -828,7 +831,3 @@ protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [Is
     exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
 
 end MulEquiv
-
--- guard against import creep
-assert_not_exists Field
-assert_not_exists Fintype

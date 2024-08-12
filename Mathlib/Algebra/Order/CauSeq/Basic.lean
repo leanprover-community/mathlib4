@@ -35,6 +35,7 @@ assert_not_exists Finset
 assert_not_exists Module
 assert_not_exists Submonoid
 assert_not_exists FloorRing
+assert_not_exists Module
 
 variable {α β : Type*}
 
@@ -877,5 +878,3 @@ protected theorem sup_inf_distrib_right (a b c : CauSeq α abs) : a ⊓ b ⊔ c 
 end Abs
 
 end CauSeq
-
-assert_not_exists Module
