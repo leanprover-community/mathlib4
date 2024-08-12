@@ -40,7 +40,7 @@ theorem radius_eq_liminf :
     have : 0 < (n : ℝ) := Nat.cast_pos.2 hn
     conv_lhs =>
       rw [one_div, ENNReal.le_inv_iff_mul_le, ← ENNReal.coe_mul, ENNReal.coe_le_one_iff, one_div, ←
-        NNReal.rpow_one r, ← mul_inv_cancel this.ne', NNReal.rpow_mul, ← NNReal.mul_rpow, ←
+        NNReal.rpow_one r, ← mul_inv_cancel₀ this.ne', NNReal.rpow_mul, ← NNReal.mul_rpow, ←
         NNReal.one_rpow n⁻¹, NNReal.rpow_le_rpow_iff (inv_pos.2 this), mul_comm,
         NNReal.rpow_natCast]
   apply le_antisymm <;> refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_

@@ -55,7 +55,7 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       intros
       ext
       apply div_eq_mul_inv,
-    mul_left_inv := by intros; ext; apply mul_left_inv,
+    inv_mul_cancel := by intros; ext; apply inv_mul_cancel,
     zpow := fun n f =>
       { toFun := fun x => f x ^ n,
         map_one' := by simp,

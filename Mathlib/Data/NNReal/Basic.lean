@@ -798,22 +798,22 @@ section Inv
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h]
+  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
 
 theorem inv_le_of_le_mul {r p : ℝ≥0} (h : 1 ≤ r * p) : r⁻¹ ≤ p := by
   by_cases r = 0 <;> simp [*, inv_le]
 
 @[simp]
 theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p ≤ 1 := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h, mul_comm]
+  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 @[simp]
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
-  rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h, mul_comm]
+  rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 theorem mul_le_iff_le_inv {a b r : ℝ≥0} (hr : r ≠ 0) : r * a ≤ b ↔ a ≤ r⁻¹ * b := by
   have : 0 < r := lt_of_le_of_ne (zero_le r) hr.symm
-  rw [← mul_le_mul_left (inv_pos.mpr this), ← mul_assoc, inv_mul_cancel hr, one_mul]
+  rw [← mul_le_mul_left (inv_pos.mpr this), ← mul_assoc, inv_mul_cancel₀ hr, one_mul]
 
 theorem le_div_iff_mul_le {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
   le_div_iff₀ hr
@@ -865,7 +865,7 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) 
     have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
     have : a * x⁻¹ * x ≤ y := h _ this
-    rwa [mul_assoc, inv_mul_cancel hx, mul_one] at this
+    rwa [mul_assoc, inv_mul_cancel₀ hx, mul_one] at this
 
 nonrec theorem half_le_self (a : ℝ≥0) : a / 2 ≤ a :=
   half_le_self bot_le

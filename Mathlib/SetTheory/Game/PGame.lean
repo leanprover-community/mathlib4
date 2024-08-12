@@ -1479,38 +1479,38 @@ termination_by x y z => (x, y, z)
 theorem add_assoc_equiv {x y z : PGame} : x + y + z ≈ x + (y + z) :=
   (addAssocRelabelling x y z).equiv
 
-theorem add_left_neg_le_zero : ∀ x : PGame, -x + x ≤ 0
+theorem neg_add_cancel_le_zero : ∀ x : PGame, -x + x ≤ 0
   | ⟨xl, xr, xL, xR⟩ =>
     le_zero.2 fun i => by
       cases' i with i i
       · -- If Left played in -x, Right responds with the same move in x.
         refine ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), ?_⟩
-        convert @add_left_neg_le_zero (xR i)
+        convert @neg_add_cancel_le_zero (xR i)
         apply add_moveRight_inr
       · -- If Left in x, Right responds with the same move in -x.
         dsimp
         refine ⟨@toRightMovesAdd ⟨_, _, _, _⟩ _ (Sum.inl i), ?_⟩
-        convert @add_left_neg_le_zero (xL i)
+        convert @neg_add_cancel_le_zero (xL i)
         apply add_moveRight_inl
 
-theorem zero_le_add_left_neg (x : PGame) : 0 ≤ -x + x := by
+theorem zero_le_neg_add_cancel (x : PGame) : 0 ≤ -x + x := by
   rw [← neg_le_neg_iff, neg_zero]
-  exact neg_add_le.trans (add_left_neg_le_zero _)
+  exact neg_add_le.trans (neg_add_cancel_le_zero _)
 
-theorem add_left_neg_equiv (x : PGame) : -x + x ≈ 0 :=
-  ⟨add_left_neg_le_zero x, zero_le_add_left_neg x⟩
+theorem neg_add_cancel_equiv (x : PGame) : -x + x ≈ 0 :=
+  ⟨neg_add_cancel_le_zero x, zero_le_neg_add_cancel x⟩
 
-theorem add_right_neg_le_zero (x : PGame) : x + -x ≤ 0 :=
-  add_comm_le.trans (add_left_neg_le_zero x)
+theorem add_neg_cancel_le_zero (x : PGame) : x + -x ≤ 0 :=
+  add_comm_le.trans (neg_add_cancel_le_zero x)
 
-theorem zero_le_add_right_neg (x : PGame) : 0 ≤ x + -x :=
-  (zero_le_add_left_neg x).trans add_comm_le
+theorem zero_le_add_neg_cancel (x : PGame) : 0 ≤ x + -x :=
+  (zero_le_neg_add_cancel x).trans add_comm_le
 
-theorem add_right_neg_equiv (x : PGame) : x + -x ≈ 0 :=
-  ⟨add_right_neg_le_zero x, zero_le_add_right_neg x⟩
+theorem add_neg_cancel_equiv (x : PGame) : x + -x ≈ 0 :=
+  ⟨add_neg_cancel_le_zero x, zero_le_add_neg_cancel x⟩
 
 theorem sub_self_equiv : ∀ (x : PGame), x - x ≈ 0 :=
-  add_right_neg_equiv
+  add_neg_cancel_equiv
 
 private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y + z
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
@@ -1546,11 +1546,11 @@ theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   fun w =>
   calc
     z ≤ z + 0 := (addZeroRelabelling _).symm.le
-    _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_right_neg x) _
+    _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_neg_cancel x) _
     _ ≤ z + x + -x := (addAssocRelabelling _ _ _).symm.le
     _ ≤ y + x + -x := add_le_add_right w _
     _ ≤ y + (x + -x) := (addAssocRelabelling _ _ _).le
-    _ ≤ y + 0 := add_le_add_left (add_right_neg_le_zero x) _
+    _ ≤ y + 0 := add_le_add_left (add_neg_cancel_le_zero x) _
     _ ≤ y := (addZeroRelabelling _).le
 
 theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
@@ -1589,32 +1589,32 @@ theorem sub_congr_right {x y z : PGame} : (y ≈ z) → (x - y ≈ x - z) :=
   sub_congr equiv_rfl
 
 theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
-  ⟨fun h => (zero_le_add_right_neg x).trans (add_le_add_right h _), fun h =>
+  ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
       _ ≤ y - x + x := add_le_add_right h _
       _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (add_left_neg_le_zero x) _
+      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
       _ ≤ y := (addZeroRelabelling y).le
       ⟩
 
 theorem lf_iff_sub_zero_lf {x y : PGame} : x ⧏ y ↔ 0 ⧏ y - x :=
-  ⟨fun h => (zero_le_add_right_neg x).trans_lf (add_lf_add_right h _), fun h =>
+  ⟨fun h => (zero_le_add_neg_cancel x).trans_lf (add_lf_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
       _ ⧏ y - x + x := add_lf_add_right h _
       _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (add_left_neg_le_zero x) _
+      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
       _ ≤ y := (addZeroRelabelling y).le
       ⟩
 
 theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
-  ⟨fun h => lt_of_le_of_lt (zero_le_add_right_neg x) (add_lt_add_right h _), fun h =>
+  ⟨fun h => lt_of_le_of_lt (zero_le_add_neg_cancel x) (add_lt_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
       _ < y - x + x := add_lt_add_right h _
       _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (add_left_neg_le_zero x) _
+      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
       _ ≤ y := (addZeroRelabelling y).le
       ⟩
 

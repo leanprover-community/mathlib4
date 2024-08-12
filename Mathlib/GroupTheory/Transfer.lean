@@ -118,7 +118,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out')) _]
         · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
         · intro k hk
-          simp only [if_neg hk, inv_mul_self]
+          simp only [if_neg hk, inv_mul_cancel]
           exact map_one ϕ
 
 /-- Auxiliary lemma in order to state `transfer_eq_pow`. -/

@@ -522,7 +522,7 @@ instance : Group (FreeGroup α) where
   mul_assoc := by rintro ⟨L₁⟩ ⟨L₂⟩ ⟨L₃⟩; simp
   one_mul := by rintro ⟨L⟩; rfl
   mul_one := by rintro ⟨L⟩; simp [one_eq_mk]
-  mul_left_inv := by
+  inv_mul_cancel := by
     rintro ⟨L⟩
     exact
       List.recOn L rfl fun ⟨x, b⟩ tl ih =>
