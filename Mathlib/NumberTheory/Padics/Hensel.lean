@@ -34,7 +34,6 @@ p-adic, p adic, padic, p-adic integer
 
 noncomputable section
 
-open scoped Classical
 open Topology
 
 -- We begin with some general lemmas that are used below in the computation.
@@ -189,7 +188,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
         (Subtype.ext <| by simp only [PadicInt.coe_neg, PadicInt.coe_mul, Subtype.coe_mk])
       _ = -F.eval z := by simp only [mul_div_cancel₀ _ hdzne', Subtype.coe_eta]
 
-  exact ⟨q, by simpa only [sub_eq_add_neg, this, hz', add_right_neg, neg_sq, zero_add] using hq⟩
+  exact ⟨q, by simpa only [sub_eq_add_neg, this, hz', add_neg_cancel, neg_sq, zero_add] using hq⟩
 
 
 private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q} (heq : F.eval z' = q * z1 ^ 2)
@@ -474,8 +473,9 @@ theorem hensels_lemma :
       F.eval z = 0 ∧
         ‖z - a‖ < ‖F.derivative.eval a‖ ∧
           ‖F.derivative.eval z‖ = ‖F.derivative.eval a‖ ∧
-            ∀ z', F.eval z' = 0 → ‖z' - a‖ < ‖F.derivative.eval a‖ → z' = z :=
-  if ha : F.eval a = 0 then ⟨a, a_is_soln hnorm ha⟩
+            ∀ z', F.eval z' = 0 → ‖z' - a‖ < ‖F.derivative.eval a‖ → z' = z := by
+  classical
+  exact if ha : F.eval a = 0 then ⟨a, a_is_soln hnorm ha⟩
   else by
     exact ⟨soln_gen hnorm, eval_soln hnorm,
       soln_dist_to_a_lt_deriv hnorm ha, soln_deriv_norm hnorm, fun z => soln_unique hnorm ha z⟩

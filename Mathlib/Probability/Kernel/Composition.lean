@@ -392,9 +392,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   · exact fun i j hij b => lintegral_mono fun c => h_mono hij _
   congr
   ext1 n
-  -- Porting note: Added `(P := _)`
-  refine SimpleFunc.induction (P := fun f => (∫⁻ (a : β × γ), f a ∂(κ ⊗ₖ η) a =
-      ∫⁻ (a_1 : β), ∫⁻ (c : γ), f (a_1, c) ∂η (a, a_1) ∂κ a)) ?_ ?_ (F n)
+  refine SimpleFunc.induction ?_ ?_ (F n)
   · intro c s hs
     classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
     simp (config := { unfoldPartialApp := true }) only [SimpleFunc.const_zero,
@@ -768,6 +766,18 @@ instance IsSFiniteKernel.prodMkLeft (κ : Kernel α β) [IsSFiniteKernel κ] :
 instance IsSFiniteKernel.prodMkRight (κ : Kernel α β) [IsSFiniteKernel κ] :
     IsSFiniteKernel (prodMkRight γ κ) := by rw [Kernel.prodMkRight]; infer_instance
 
+lemma isSFiniteKernel_prodMkLeft_unit {κ : Kernel α β} :
+    IsSFiniteKernel (prodMkLeft Unit κ) ↔ IsSFiniteKernel κ := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  change IsSFiniteKernel ((prodMkLeft Unit κ).comap (fun a ↦ ((), a)) (by fun_prop))
+  infer_instance
+
+lemma isSFiniteKernel_prodMkRight_unit {κ : Kernel α β} :
+    IsSFiniteKernel (prodMkRight Unit κ) ↔ IsSFiniteKernel κ := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  change IsSFiniteKernel ((prodMkRight Unit κ).comap (fun a ↦ (a, ())) (by fun_prop))
+  infer_instance
+
 lemma map_prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β)
     {f : β → δ} (hf : Measurable f) :
     map (prodMkLeft γ κ) f hf = prodMkLeft γ (map κ f hf) := rfl
@@ -1022,6 +1032,17 @@ theorem comp_deterministic_eq_comap (κ : Kernel α β) (hg : Measurable g) :
   ext a s hs
   simp_rw [comap_apply' _ _ _ s, comp_apply' _ _ _ hs, deterministic_apply hg a,
     lintegral_dirac' _ (Kernel.measurable_coe κ hs)]
+
+lemma const_comp (μ : Measure γ) (κ : Kernel α β) :
+    const β μ ∘ₖ κ = fun a ↦ (κ a) Set.univ • μ := by
+  ext _ _ hs
+  simp_rw [comp_apply' _ _ _ hs, const_apply, MeasureTheory.lintegral_const, Measure.smul_apply,
+    smul_eq_mul, mul_comm]
+
+@[simp]
+lemma const_comp' (μ : Measure γ) (κ : Kernel α β) [IsMarkovKernel κ] :
+    const β μ ∘ₖ κ = const α μ := by
+  ext; simp_rw [const_comp, measure_univ, one_smul, const_apply]
 
 end Comp
 

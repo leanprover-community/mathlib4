@@ -270,7 +270,7 @@ theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : C
 
 /-- A function to a discrete topological space is continuous if and only if the preimage of every
 singleton is open. -/
-theorem continuous_discrete_rng [TopologicalSpace β] [DiscreteTopology β]
+theorem continuous_discrete_rng {α} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β]
     {f : α → β} : Continuous f ↔ ∀ b : β, IsOpen (f ⁻¹' {b}) :=
   ⟨fun h b => (isOpen_discrete _).preimage h, fun h => ⟨fun s _ => by
     rw [← biUnion_of_singleton s, preimage_iUnion₂]
@@ -776,7 +776,7 @@ end Induced
 
 section Sierpinski
 
-variable {α : Type*} [TopologicalSpace α]
+variable {α : Type*}
 
 @[simp]
 theorem isOpen_singleton_true : IsOpen ({True} : Set Prop) :=
@@ -796,6 +796,8 @@ theorem tendsto_nhds_true {l : Filter α} {p : α → Prop} :
 theorem tendsto_nhds_Prop {l : Filter α} {p : α → Prop} {q : Prop} :
     Tendsto p l (𝓝 q) ↔ (q → ∀ᶠ x in l, p x) := by
   by_cases q <;> simp [*]
+
+variable [TopologicalSpace α]
 
 theorem continuous_Prop {p : α → Prop} : Continuous p ↔ IsOpen { x | p x } := by
   simp only [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_Prop, isOpen_iff_mem_nhds]; rfl

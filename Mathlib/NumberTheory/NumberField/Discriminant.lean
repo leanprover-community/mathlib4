@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+import Mathlib.Tactic.Rify
 
 /-!
 # Number field discriminant
@@ -112,7 +113,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
     refine le_of_eq ?_
     rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_natCast,
       ← Real.rpow_mul toReal_nonneg, div_mul_cancel₀, Real.rpow_one, ofReal_toReal, mul_comm,
-      mul_assoc, ← coe_mul, inv_mul_cancel (convexBodySumFactor_ne_zero K), ENNReal.coe_one,
+      mul_assoc, ← coe_mul, inv_mul_cancel₀ (convexBodySumFactor_ne_zero K), ENNReal.coe_one,
       mul_one]
     · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
     · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
@@ -201,22 +202,15 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
-  have h₁ : 1 ≤ 3 * π / 4 := by
-    rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
-    linarith [Real.pi_gt_three]
-  have h₂ : (9 : ℝ) < π ^ 2 := by
-    rw [← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9 : ℝ) = 3 from
-    (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
-    exact Real.pi_gt_three
-  refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
-  rw [← _root_.div_lt_iff' (by positivity), Int.cast_ofNat]
-  refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
-  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow,
-    show (2 : ℝ) / (4 / 9) * 4 ^ 2 = 72 by norm_num,
-    show (3 : ℝ) ^ 2 = 9 by norm_num,
-    ← _root_.div_lt_iff' (by positivity),
-    show (72 : ℝ) / 9 = 8 by norm_num]
-  linarith [h₂]
+  rw [← Nat.succ_le_iff] at h
+  rify
+  calc
+    (2 : ℝ) < (4 / 9) * (3 * π / 4) ^ 2 := by
+      nlinarith [Real.pi_gt_three]
+    _ ≤ (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K := by
+      gcongr
+      linarith [Real.pi_gt_three]
+    _ ≤ |(discr K : ℝ)| := mod_cast abs_discr_ge h
 
 /-!
 ### Hermite Theorem
@@ -294,7 +288,7 @@ theorem rank_le_rankOfDiscrBdd :
       refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_left
         (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0 : ℝ) < 4 / 9))
       rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
-            ← inv_div, inv_mul_cancel (by norm_num), one_mul, Int.cast_natCast]
+            ← inv_div, inv_mul_cancel₀ (by norm_num), one_mul, Int.cast_natCast]
     · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))
       rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff (by positivity), one_mul,
         ← _root_.div_le_iff (by positivity)]

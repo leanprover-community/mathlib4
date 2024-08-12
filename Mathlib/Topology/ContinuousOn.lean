@@ -903,6 +903,11 @@ theorem continuousOn_id' (s : Set α) : ContinuousOn (fun x : α => x) s := cont
 theorem continuousWithinAt_id {s : Set α} {x : α} : ContinuousWithinAt id s x :=
   continuous_id.continuousWithinAt
 
+protected theorem ContinuousOn.iterate {f : α → α} {s : Set α} (hcont : ContinuousOn f s)
+    (hmaps : MapsTo f s s) : ∀ n, ContinuousOn (f^[n]) s
+  | 0 => continuousOn_id
+  | (n + 1) => (hcont.iterate hmaps n).comp hcont hmaps
+
 theorem continuousOn_open_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     ContinuousOn f s ↔ ∀ t, IsOpen t → IsOpen (s ∩ f ⁻¹' t) := by
   rw [continuousOn_iff']
@@ -945,7 +950,7 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
   have := ct x ⟨xs, xt⟩
   rwa [ContinuousWithinAt, ← nhdsWithin_restrict _ xt open_t] at this
 
-theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
+theorem continuousOn_to_generateFrom_iff {β} {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
     delta ContinuousWithinAt
@@ -1139,7 +1144,7 @@ theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
 
 theorem IsOpen.ite {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
     (ht : s ∩ frontier t = s' ∩ frontier t) : IsOpen (t.ite s s') :=
-  hs.ite' hs' fun x hx => by simpa [hx] using ext_iff.1 ht x
+  hs.ite' hs' fun x hx => by simpa [hx] using Set.ext_iff.1 ht x
 
 theorem ite_inter_closure_eq_of_inter_frontier_eq {s s' t : Set α}
     (ht : s ∩ frontier t = s' ∩ frontier t) : t.ite s s' ∩ closure t = s ∩ closure t := by

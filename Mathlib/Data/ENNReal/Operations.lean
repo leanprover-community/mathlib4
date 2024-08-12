@@ -65,7 +65,7 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
   rw [coe_ne_zero] at h0
   intro x y h
   contrapose! h
-  simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel h0, coe_one, one_mul]
+  simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel₀ h0, coe_one, one_mul]
     using mul_le_mul_left' h (↑a⁻¹)
 
 @[gcongr] protected theorem mul_lt_mul_left' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
@@ -333,6 +333,14 @@ protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b :=
 @[simp]
 protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a :=
   (cancel_of_ne hb).add_tsub_cancel_right
+
+protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
+    a - b + c = a + c - b := by
+  by_cases c_top : c = ∞
+  · simpa [c_top] using ENNReal.eq_sub_of_add_eq b_ne_top rfl
+  refine (sub_eq_of_add_eq b_ne_top ?_).symm
+  simp only [add_assoc, add_comm c b]
+  simpa only [← add_assoc] using (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
 
 protected theorem lt_add_of_sub_lt_left (h : a ≠ ∞ ∨ b ≠ ∞) : a - b < c → a < b + c := by
   obtain rfl | hb := eq_or_ne b ∞

@@ -30,10 +30,8 @@ product, sum, disjoint union, subspace, quotient space
 
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Topology TopologicalSpace Set Filter Function
 
 universe u v
@@ -326,7 +324,7 @@ theorem ContinuousAt.fst'' {f : X → Z} {x : X × Y} (hf : ContinuousAt f x.fst
     ContinuousAt (fun x : X × Y => f x.fst) x :=
   hf.comp continuousAt_fst
 
-theorem Filter.Tendsto.fst_nhds {l : Filter X} {f : X → Y × Z} {p : Y × Z}
+theorem Filter.Tendsto.fst_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × Z}
     (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).1) l (𝓝 <| p.1) :=
   continuousAt_fst.tendsto.comp h
 
@@ -362,7 +360,7 @@ theorem ContinuousAt.snd'' {f : Y → Z} {x : X × Y} (hf : ContinuousAt f x.snd
     ContinuousAt (fun x : X × Y => f x.snd) x :=
   hf.comp continuousAt_snd
 
-theorem Filter.Tendsto.snd_nhds {l : Filter X} {f : X → Y × Z} {p : Y × Z}
+theorem Filter.Tendsto.snd_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × Z}
     (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).2) l (𝓝 <| p.2) :=
   continuousAt_snd.tendsto.comp h
 
@@ -646,7 +644,7 @@ theorem isOpen_prod_iff {s : Set (X × Y)} :
   isOpen_iff_mem_nhds.trans <| by simp_rw [Prod.forall, mem_nhds_prod_iff', and_left_comm]
 
 /-- A product of induced topologies is induced by the product map -/
-theorem prod_induced_induced (f : X → Y) (g : Z → W) :
+theorem prod_induced_induced {X Z} (f : X → Y) (g : Z → W) :
     @instTopologicalSpaceProd X Z (induced f ‹_›) (induced g ‹_›) =
       induced (fun p => (f p.1, g p.2)) instTopologicalSpaceProd := by
   delta instTopologicalSpaceProd
@@ -971,6 +969,10 @@ nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set X} (hs : IsClosed s
     ClosedEmbedding ((↑) : s → X) :=
   closedEmbedding_subtype_val hs
 
+theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
+    IsClosedMap ((↑) : s → X) :=
+  hs.closedEmbedding_subtype_val.isClosedMap
+
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
@@ -1269,6 +1271,7 @@ theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
     · exact Subset.trans
         (pi_mono fun i hi => (eval_image_pi_subset hi).trans (h1 i).choose_spec.1) h2
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
+    classical
     refine ⟨I, fun a => ite (a ∈ I) (t a) univ, fun i => ?_, ?_⟩
     · by_cases hi : i ∈ I
       · use t i
@@ -1335,7 +1338,8 @@ theorem pi_generateFrom_eq {π : ι → Type*} {g : ∀ a, Set (Set (π a))} :
     rintro _ ⟨s, i, hi, rfl⟩
     letI := fun a => generateFrom (g a)
     exact isOpen_set_pi i.finite_toSet (fun a ha => GenerateOpen.basic _ (hi a ha))
-  · refine le_iInf fun i => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => ?_
+  · classical
+    refine le_iInf fun i => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => ?_
     refine GenerateOpen.basic _ ⟨update (fun i => univ) i s, {i}, ?_⟩
     simp [hs]
 
@@ -1361,6 +1365,7 @@ theorem pi_generateFrom_eq_finite {π : ι → Type*} {g : ∀ a, Set (Set (π a
     refine isOpen_iff_forall_mem_open.2 fun f hf => ?_
     choose c hcg hfc using fun a => sUnion_eq_univ_iff.1 (hg a) (f a)
     refine ⟨pi i t ∩ pi ((↑i)ᶜ : Set ι) c, inter_subset_left, ?_, ⟨hf, fun a _ => hfc a⟩⟩
+    classical
     rw [← univ_pi_piecewise]
     refine GenerateOpen.basic _ ⟨_, fun a => ?_, rfl⟩
     by_cases a ∈ i <;> simp [*]
@@ -1479,7 +1484,7 @@ theorem inducing_sigma {f : Sigma σ → X} :
   refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
   · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
     refine ⟨U, hUo, ?_⟩
-    simpa [ext_iff] using hU
+    simpa [Set.ext_iff] using hU
   · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
     rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
     rcases h₂ i with ⟨U, hUo, hU⟩

@@ -12,6 +12,8 @@ import Mathlib.GroupTheory.Submonoid.Center
 
 -/
 
+assert_not_exists Multiset
+assert_not_exists Ring
 
 open Function
 open Int
@@ -74,7 +76,7 @@ instance centerCharacteristic : (center G).Characteristic := by
   refine characteristic_iff_comap_le.mpr fun ϕ g hg => ?_
   rw [mem_center_iff]
   intro h
-  rw [← ϕ.injective.eq_iff, ϕ.map_mul, ϕ.map_mul]
+  rw [← ϕ.injective.eq_iff, map_mul, map_mul]
   exact (hg.comm (ϕ h)).symm
 
 theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
@@ -86,7 +88,7 @@ theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = �
 
 /-- A group is commutative if the center is the whole group -/
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
-  { (_ : Group G) with
+  { ‹Group G› with
     mul_comm := by
       rw [eq_top_iff'] at h
       intro x y
@@ -142,6 +144,3 @@ theorem mk_bijOn (G : Type*) [Group G] :
     exact ⟨h, rfl⟩
 
 end ConjClasses
-
-assert_not_exists Multiset
-assert_not_exists Ring
