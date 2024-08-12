@@ -188,14 +188,14 @@ section
 variable (c₁ c₂)
 variable [TotalComplexShape c₁₂ c₃ c] [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c]
 
-/-- When we have three complexes shapes `c₁`, `c₂`, `c₃`, `c₁₂`, `c₂₃`, `c`, and total functors
+/-- When we have sic complex shapes `c₁`, `c₂`, `c₃`, `c₁₂`, `c₂₃`, `c`, and total functors
 `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂`,
 `HomologicalComplex₂ C c₁₂ c₃ ⥤ HomologicalComplex C c`,
 `HomologicalComplex₂ C c₂ c₃ ⥤ HomologicalComplex C c₂₃`,
 `HomologicalComplex₂ C c₁ c₂₂₃ ⥤ HomologicalComplex C c`, we get two ways to
 compute the total complex of a triple complex in `HomologicalComplex₃ C c₁ c₂ c₃`, then
 under this assumption `[Associator c₁ c₂ c₃ c₁₂ c₂₃ c]`, these two complexes
-canonical identify (without introducing signs). -/
+canonically identify (without introducing signs). -/
 class Associator : Prop where
   assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
     π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩
