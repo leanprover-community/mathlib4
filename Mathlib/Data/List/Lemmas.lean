@@ -26,7 +26,7 @@ theorem getElem_reverse' (l : List α) (i : Nat) (h1 h2) :
   simp at h1
   omega
 
-theorem reverse_tail_eq_dropLast_reverse {α} (l : List α) :
+theorem tail_reverse_eq_reverse_dropLast (l : List α) :
     l.reverse.tail = l.dropLast.reverse := by
   ext i v; by_cases hi : i < l.length - 1
   · simp only [← drop_one]
