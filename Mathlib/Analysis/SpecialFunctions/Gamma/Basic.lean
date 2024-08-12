@@ -324,10 +324,12 @@ theorem Gamma_eq_integral {s : ℂ} (hs : 0 < s.re) : Gamma s = GammaIntegral s 
 theorem Gamma_one : Gamma 1 = 1 := by rw [Gamma_eq_integral] <;> simp
 
 theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
-  induction' n with n hn
-  · simp
-  · rw [Gamma_add_one n.succ <| Nat.cast_ne_zero.mpr <| Nat.succ_ne_zero n]
-    simp only [Nat.cast_succ, Nat.factorial_succ, Nat.cast_mul]; congr
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [Gamma_add_one n.succ <| Nat.cast_ne_zero.mpr <| Nat.succ_ne_zero n]
+    simp only [Nat.cast_succ, Nat.factorial_succ, Nat.cast_mul]
+    congr
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
@@ -376,8 +378,8 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
       refine MeasureTheory.setIntegral_congr measurableSet_Ioi (fun x hx ↦ ?_)
       rw [mem_Ioi] at hx
       rw [mul_cpow_ofReal_nonneg hr.le hx.le, ← mul_assoc, one_div, ← ofReal_inv,
-        ← mul_cpow_ofReal_nonneg (inv_pos.mpr hr).le hr.le, ← ofReal_mul r⁻¹, inv_mul_cancel hr.ne',
-        ofReal_one, one_cpow, one_mul]
+        ← mul_cpow_ofReal_nonneg (inv_pos.mpr hr).le hr.le, ← ofReal_mul r⁻¹,
+        inv_mul_cancel₀ hr.ne', ofReal_one, one_cpow, one_mul]
     _ = 1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
       simp_rw [← ofReal_mul]
       rw [integral_comp_mul_left_Ioi (fun x ↦ _ * x ^ (a - 1) * exp (-x)) _ hr, mul_zero,
