@@ -36,7 +36,7 @@ namespace CategoryTheory
 open MorphismProperty Preadditive Limits Category
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
-  {W : MorphismProperty C} [L.IsLocalization W] -- [W.HasLeftCalculusOfFractions]
+  {W : MorphismProperty C} [L.IsLocalization W]
 
 namespace MorphismProperty
 
