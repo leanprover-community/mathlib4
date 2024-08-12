@@ -6,7 +6,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 open CategoryTheory CategoryTheory.Limits TopologicalSpace LocalRing
 
 noncomputable section
-
+set_option linter.longLine false
 namespace AlgebraicGeometry.Scheme.Pullback
 
 universe u
@@ -34,13 +34,6 @@ variable (T : Triplet f g)
 def tensor : CommRingCat :=
   pushout ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x)
     ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)
-
-lemma is_pullback : CategoryTheory.IsPullback
-    (Spec.map (pushout.inl _ _))
-      (Spec.map (pushout.inr ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x) ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)))
-        (Spec.map ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x))
-          (Spec.map ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)) := by
-  sorry
 
 def tensorCongr {T₁ T₂ : Triplet f g} (e : T₁ = T₂) :
     T₁.tensor ≅ T₂.tensor :=
@@ -86,23 +79,32 @@ def SpecTensorTo :
   pullback.lift
     (Spec.map (pushout.inl _ _) ≫ X.fromSpecResidueField T.x)
     (Spec.map (pushout.inr _ _) ≫ Y.fromSpecResidueField T.y)
-      /-
-      X Y S : Scheme
-      f : X ⟶ S
-      g : Y ⟶ S
-      T : Triplet f g
-      ⊢ (Spec.map
-              (pushout.inl ((S.residueFieldCongr ⋯).inv ≫ Hom.residueFieldMap f T.x)
-                ((S.residueFieldCongr ⋯).inv ≫ Hom.residueFieldMap g T.y)) ≫
-            X.fromSpecResidueField T.x) ≫
-          f =
-        (Spec.map
-              (pushout.inr ((S.residueFieldCongr ⋯).inv ≫ Hom.residueFieldMap f T.x)
-                ((S.residueFieldCongr ⋯).inv ≫ Hom.residueFieldMap g T.y)) ≫
-            Y.fromSpecResidueField T.y) ≫
-          g
-      -/
-      sorry
+    (show _ by
+      simp [Spec.map_comp]
+
+      have h₁ : X.fromSpecResidueField T.x
+          ≫ f
+            = Spec.map (f.residueFieldMap T.x)
+              ≫ Spec.map (S.residueFieldCongr T.hx).inv
+                ≫ S.fromSpecResidueField T.s := by
+        simp only [residueFieldCongr_inv, residueFieldCongr_fromSpecResidueField]
+        exact Eq.symm (hom.residueFieldMap_fromSpecResidueField f T.x)
+
+      have h₂ : Y.fromSpecResidueField T.y
+          ≫ g
+            = Spec.map (g.residueFieldMap T.y)
+              ≫ Spec.map (S.residueFieldCongr T.hy).inv
+                ≫ S.fromSpecResidueField T.s := by
+        simp only [residueFieldCongr_inv, residueFieldCongr_fromSpecResidueField]
+        exact Eq.symm (hom.residueFieldMap_fromSpecResidueField g T.y)
+
+      rw [h₁, h₂]
+      simp only [← reassoc_of% Spec.map_comp]
+
+      apply congrFun (congrArg CategoryStruct.comp _)
+      apply Spec.map_inj.mpr
+      simp only [residueFieldCongr_inv]
+      exact pushout.condition)
 
 /-- Given `t : X ×ₛ Y`, it maps to `X` and `Y` with same image in `S`, yielding a `Triplet f g`. -/
 def ofPoint (t : ↑(pullback f g)) : Triplet f g :=
@@ -115,25 +117,18 @@ end Triplet
 def ofPointTensor (t : ↑(pullback f g)) :
     (Triplet.ofPoint t).tensor ⟶ (pullback f g).residueField t :=
   /-
-  X Y S : Scheme
-  f : X ⟶ S
-  g : Y ⟶ S
-  t : ↑↑(pullback f g).toPresheafedSpace
   ⊢ ((S.residueFieldCongr ⋯).inv ≫ Hom.residueFieldMap f (Triplet.ofPoint t).x) ≫ Hom.residueFieldMap (pullback.fst f g) t =
     ((S.residueFieldCongr ⋯).inv ≫ Hom.residueFieldMap g (Triplet.ofPoint t).y) ≫ Hom.residueFieldMap (pullback.snd f g) t
   -/
-  pushout.desc ((pullback.fst f g).residueFieldMap t) ((pullback.snd f g).residueFieldMap t) sorry
+  pushout.desc ((pullback.fst f g).residueFieldMap t) ((pullback.snd f g).residueFieldMap t) (show _ by sorry)
 
 lemma ofPointtensor_SpectensorTo (t : ↑(pullback f g)) :
     Spec.map (ofPointTensor t) ≫ (Triplet.ofPoint t).SpecTensorTo =
-      /-
-      X Y S : Scheme
-      f : X ⟶ S
-      g : Y ⟶ S
-      t : ↑↑(pullback f g).toPresheafedSpace
-      ⊢ Spec.map (ofPointTensor t) ≫ (Triplet.ofPoint t).SpecTensorTo = (pullback f g).fromSpecResidueField t
-      -/
-      (pullback f g).fromSpecResidueField t := sorry -- two limit
+      (pullback f g).fromSpecResidueField t := by
+  /-
+  ⊢ Spec.map (ofPointTensor t) ≫ (Triplet.ofPoint t).SpecTensorTo = (pullback f g).fromSpecResidueField t
+  -/
+  sorry -- two limit
 
 def SpecOfPoint (t : ↑(pullback f g)) : Spec (Triplet.ofPoint t).tensor :=
     PrimeSpectrum.comap (ofPointTensor t) ⊥
@@ -159,13 +154,22 @@ lemma Triplet.ofPoint_SpectensorTo (T : Triplet f g) (p : Spec T.tensor) :
     rw [this]
     exact fromSpecResidueField_apply T.y _
 
+-- Is this in mathlib?
 instance fromSpecResidueField_is_preimmesion (x : X) : AlgebraicGeometry.IsPreimmersion (X.fromSpecResidueField x) := sorry
 
 @[reassoc (attr := simp)]
 lemma tensorCongr_SpecTensorTo {T T' : Triplet f g} (h : T = T') :
     Spec.map (Triplet.tensorCongr h).hom ≫ T.SpecTensorTo = T'.SpecTensorTo := by
   subst h
-  simp
+  simp only [Triplet.tensorCongr_refl, Iso.refl_hom, Spec.map_id, Category.id_comp]
+
+-- This should be a general lemma on adjuction
+lemma is_pullback (T : Triplet f g) : CategoryTheory.IsPullback
+    (Spec.map (pushout.inl _ _))
+      (Spec.map (pushout.inr ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x) ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)))
+        (Spec.map ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x))
+          (Spec.map ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)) := by
+  sorry
 
 lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tensor) :
     Spec.map ((Triplet.tensorCongr (T.ofPoint_SpectensorTo p)).inv
@@ -214,14 +218,46 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
   exact (cancel_mono <| X.fromSpecResidueField T.x).mp Spec_κ_p_to_X_eq
   exact (cancel_mono <| Y.fromSpecResidueField T.y).mp Spec_κ_p_to_Y_eq
 
+-- lemma SpecOfPoint_SpecTensorTo (T : Triplet f g) (p : Spec T.tensor) :
+--     SpecOfPoint (T.SpecTensorTo.val.base p)
+--       = (Spec.map (Triplet.tensorCongr (T.ofPoint_SpectensorTo p)).hom).val.base p := by
+--   rw [SpecOfPoint]
+
+--   sorry
+
 lemma carrier_equiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
-    T₁ = T₂ ↔ ∃ e : T₁.1 = T₂.1, (Spec.map (Triplet.tensorCongr e).inv).1.base T₁.2 = T₂.2 := sorry
+    T₁ = T₂ ↔ ∃ e : T₁.1 = T₂.1, (Spec.map (Triplet.tensorCongr e).inv).1.base T₁.2 = T₂.2 := by
+  constructor
+  · intro e
+    subst e
+    simp only [Triplet.tensorCongr_refl, Iso.refl_inv, Spec.map_id, id_val_base, TopCat.coe_id,
+      id_eq, exists_const]
+  · intro ⟨h₁, h₂⟩
+    apply Sigma.ext h₁
+    -- rw [h₁]
+    apply heq_of_cast_eq
+    ·
+      rw [← h₂]
+      simp
+      sorry
+    · rw [h₁]
 
 def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
   toFun t := ⟨.ofPoint t, SpecOfPoint t⟩
   invFun T := T.1.SpecTensorTo.1.base T.2
-  left_inv := sorry
-  right_inv := sorry
+  left_inv := SpecTensorTo_SpecOfPoint
+  right_inv := by
+    intro ⟨T, p⟩
+    apply carrier_equiv_eq_iff.mpr
+    constructor
+    · let e := T.ofPoint_SpectensorTo p
+      change (Spec.map (Triplet.tensorCongr e).inv).val.base (SpecOfPoint (T.SpecTensorTo.val.base p)) = p
+      have := fromSpecResidueField_apply p (⊥ : PrimeSpectrum _)
+      sorry
+      --  [this]
+
+
+    -- · exact Triplet.ofPoint_SpectensorTo T p
 
 -- move me to `Mathlib\Algebra\Category\Ring\Constructions.lean`
 lemma CommRingCat.nontrivial_pushout_of_isField {A B C : CommRingCat.{u}}
