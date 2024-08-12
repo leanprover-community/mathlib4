@@ -29,9 +29,12 @@ open Category Limits
 
 variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂] [Category C₂₃]
-  (F F' : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 
 namespace GradedObject
+
+section
+
+variable (F F' : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 
 /-- Auxiliary definition for `mapTrifunctor`. -/
 @[simps]
@@ -61,10 +64,11 @@ def mapTrifunctor (I₁ I₂ I₃ : Type*) :
         simp only [← NatTrans.comp_app]
         congr 1
         rw [NatTrans.naturality] }
+end
 
 section
 
-variable {F F'}
+variable {F F' : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄}
 
 /-- The natural transformation `mapTrifunctor F I₁ I₂ I₃ ⟶ mapTrifunctor F' I₁ I₂ I₃`
 induced by a natural transformation `F ⟶ F` of trifunctors. -/
@@ -103,6 +107,7 @@ end
 
 section
 
+variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 variable {I₁ I₂ I₃ J : Type*} (p : I₁ × I₂ × I₃ → J)
 
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₃`, graded objects `X₁ : GradedObject I₁ C₁`,
@@ -379,16 +384,39 @@ lemma ι_mapBifunctorComp₁₂MapObjIso_inv (i₁ : I₁) (i₂ : I₂) (i₃ :
     (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j) _ h
 
 variable {X₁ X₂ X₃ F₁₂ G ρ₁₂}
+variable {j : J} {A : C₄}
 
 @[ext]
-lemma mapBifunctor₁₂BifunctorMapObj_ext {j : J} {A : C₄}
-    (f g : mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j ⟶ A)
+lemma mapBifunctor₁₂BifunctorMapObj_ext {A : C₄}
+    {f g : mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j ⟶ A}
     (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j),
       ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
         ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
   apply Cofan.IsColimit.hom_ext (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j)
   rintro ⟨i, hi⟩
   exact h _ _ _ hi
+
+section
+
+variable (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂, i₃⟩ = j),
+  (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).obj (X₃ i₃) ⟶ A)
+
+/-- Constructor for morphisms from
+`mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j`. -/
+noncomputable def mapBifunctor₁₂BifunctorDesc :
+    mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j ⟶ A :=
+  Cofan.IsColimit.desc (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j)
+    (fun i ↦ f i.1.1 i.1.2.1 i.1.2.2 i.2)
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctor₁₂BifunctorDesc
+    (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j) :
+    ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
+      mapBifunctor₁₂BifunctorDesc f = f i₁ i₂ i₃ h :=
+  Cofan.IsColimit.fac
+    (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j) _ ⟨_, h⟩
+
+end
 
 end
 
@@ -528,17 +556,42 @@ lemma ι_mapBifunctorComp₂₃MapObjIso_inv (i₁ : I₁) (i₂ : I₂) (i₃ :
   CofanMapObjFun.inj_iso_hom
     (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j) _ h
 
-variable {X₁ X₂ X₃ F₁₂ G ρ₁₂}
+variable {X₁ X₂ X₃ F G₂₃ ρ₂₃}
+variable {j : J} {A : C₄}
 
 @[ext]
-lemma mapBifunctorBifunctor₂₃MapObj_ext {j : J} {A : C₄}
-    (f g : mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j ⟶ A)
+lemma mapBifunctorBifunctor₂₃MapObj_ext
+    {f g : mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j ⟶ A}
     (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j),
       ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
         ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
   apply Cofan.IsColimit.hom_ext (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j)
   rintro ⟨i, hi⟩
   exact h _ _ _ hi
+
+section
+
+variable
+  (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂, i₃⟩ = j),
+    (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ A)
+
+/-- Constructor for morphisms from
+`mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j`. -/
+noncomputable def mapBifunctorBifunctor₂₃Desc :
+    mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j ⟶ A :=
+  Cofan.IsColimit.desc (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j)
+    (fun i ↦ f i.1.1 i.1.2.1 i.1.2.2 i.2)
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctorBifunctor₂₃Desc
+    (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j) :
+    ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
+      mapBifunctorBifunctor₂₃Desc f = f i₁ i₂ i₃ h :=
+  Cofan.IsColimit.fac
+    (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j) _ ⟨_, h⟩
+
+end
+
 
 end
 
