@@ -421,7 +421,7 @@ lemma pentagon_inv :
       MonoidalCategory.whiskerLeft_comp_assoc,
       ← ιTensorObj₃_eq_assoc X₁ X₂ (tensorObj X₃ X₄) i₁ i₂ (i₃ + i₄) j
         (by rw [← add_assoc, h]) (i₂ + i₃ + i₄) (by rw [add_assoc]),
-      ιTensorObj₃_associator_inv_assoc, whiskerLeft_whiskerLeft_associator_inv_assoc,
+      ιTensorObj₃_associator_inv_assoc, associator_inv_naturality_right_assoc,
       ιTensorObj₃'_eq_assoc X₁ X₂ (tensorObj X₃ X₄) i₁ i₂ (i₃ + i₄) j
         (by rw [← add_assoc, h]) _ rfl, whisker_exchange_assoc,
       ← ιTensorObj₃_eq_assoc (tensorObj X₁ X₂) X₃ X₄ (i₁ + i₂) i₃ i₄ j h _ rfl,

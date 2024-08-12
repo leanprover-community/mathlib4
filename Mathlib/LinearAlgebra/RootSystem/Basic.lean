@@ -25,10 +25,7 @@ This file contains basic results for root systems and root data.
 
 ## TODO
 
-* Derived properties of pairs, e.g., (ultra)parallel linearly independent pairs generate infinite
-   dihedral groups.
 * Properties of Weyl group (faithful action on roots, finiteness for finite `ι`)
-* Conditions for existence of Weyl-invariant form (e.g., finiteness).
 
 -/
 
