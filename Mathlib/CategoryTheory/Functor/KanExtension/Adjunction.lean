@@ -14,12 +14,9 @@ a left Kan extension. It is shown that `L.lan` is the left adjoint to
 the functor `(D ⥤ H) ⥤ (C ⥤ H)` given by the precomposition
 with `L` (see `Functor.lanAdjunction`).
 
-## TODO
-- dualize the results for right Kan extensions
-- refactor the file `CategoryTheory.Limits.KanExtension` so that
-the definitions of `Lan` and `Ran` in that file (which rely on the
-existence of (co)limits) are replaced by the new definition
-`Functor.lan` which is based on Kan extensions API.
+Similarly, we define the right Kan extension functor
+`L.ran : (C ⥤ H) ⥤ (D ⥤ H)` which sends a functor `F : C ⥤ H` to its
+right Kan extension along `L`.
 
 -/
 
@@ -29,8 +26,13 @@ open Category
 
 namespace Functor
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D)
-  {H : Type*} [Category H] [∀ (F : C ⥤ H), HasLeftKanExtension L F]
+variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) {H : Type*} [Category H]
+
+section lan
+
+section
+
+variable [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 
 /-- The left Kan extension functor `(C ⥤ H) ⥤ (D ⥤ H)` along a functor `C ⥤ D`. -/
 noncomputable def lan : (C ⥤ H) ⥤ (D ⥤ H) where
@@ -61,7 +63,7 @@ noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G => homEquivOfIsLeftKanExtension _ (L.lanUnit.app F) G
       homEquiv_naturality_left_symm := fun {F₁ F₂ G} f α =>
-        hom_ext_of_isLeftKanExtension _  (L.lanUnit.app F₁) _ _ (by
+        hom_ext_of_isLeftKanExtension _ (L.lanUnit.app F₁) _ _ (by
           ext X
           dsimp [homEquivOfIsLeftKanExtension]
           rw [descOfIsLeftKanExtension_fac_app, NatTrans.comp_app, ← assoc]
@@ -98,15 +100,19 @@ lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
     IsIso ((L.lanAdjunction H).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (L ⋙ G)) :=
   (isLeftKanExtension_iff_isIso _ (L.lanUnit.app (L ⋙ G)) _ (by simp)).symm
 
+end
+
 section
 
 variable [Full L] [Faithful L]
 
-instance (F : C ⥤ H) (X : C) [HasPointwiseLeftKanExtension L F] :
+instance (F : C ⥤ H) (X : C) [HasPointwiseLeftKanExtension L F]
+    [∀ (F : C ⥤ H), HasLeftKanExtension L F] :
     IsIso ((L.lanUnit.app F).app X) :=
   (isPointwiseLeftKanExtensionLanUnit L F (L.obj X)).isIso_hom_app
 
-instance (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
+instance (F : C ⥤ H) [HasPointwiseLeftKanExtension L F]
+    [∀ (F : C ⥤ H), HasLeftKanExtension L F] :
     IsIso (L.lanUnit.app F) :=
   NatIso.isIso_of_isIso_app _
 
@@ -114,7 +120,8 @@ instance coreflective [∀ (F : C ⥤ H), HasPointwiseLeftKanExtension L F] :
     IsIso (L.lanUnit (H := H)) := by
   apply NatIso.isIso_of_isIso_app _
 
-instance (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
+instance (F : C ⥤ H) [HasPointwiseLeftKanExtension L F]
+    [∀ (F : C ⥤ H), HasLeftKanExtension L F] :
     IsIso ((L.lanAdjunction H).unit.app F) := by
   rw [lanAdjunction_unit]
   infer_instance
@@ -124,6 +131,115 @@ instance coreflective' [∀ (F : C ⥤ H), HasPointwiseLeftKanExtension L F] :
   apply NatIso.isIso_of_isIso_app _
 
 end
+
+end lan
+
+section ran
+
+section
+
+variable [∀ (F : C ⥤ H), HasRightKanExtension L F]
+
+/-- The right Kan extension functor `(C ⥤ H) ⥤ (D ⥤ H)` along a functor `C ⥤ D`. -/
+noncomputable def ran : (C ⥤ H) ⥤ (D ⥤ H) where
+  obj F := rightKanExtension L F
+  map {F₁ F₂} φ := liftOfIsRightKanExtension _ (rightKanExtensionCounit L F₂) _
+    (rightKanExtensionCounit L F₁ ≫ φ)
+
+/-- The natural transformation `L ⋙ (L.lan).obj G ⟶ L`. -/
+noncomputable def ranCounit : L.ran ⋙ (whiskeringLeft C D H).obj L ⟶ (𝟭 (C ⥤ H)) where
+  app F := rightKanExtensionCounit L F
+  naturality {F₁ F₂} φ := by ext; simp [ran]
+
+instance (F : C ⥤ H) : (L.ran.obj F).IsRightKanExtension (L.ranCounit.app F) := by
+  dsimp [ran, ranCounit]
+  infer_instance
+
+/-- If there exists a pointwise right Kan extension of `F` along `L`,
+then `L.ran.obj G` is a pointwise right Kan extension of `F`. -/
+noncomputable def isPointwiseRightKanExtensionRanCounit
+    (F : C ⥤ H) [HasPointwiseRightKanExtension L F] :
+    (RightExtension.mk _ (L.ranCounit.app F)).IsPointwiseRightKanExtension :=
+  isPointwiseRightKanExtensionOfIsRightKanExtension (F := F) _ (L.ranCounit.app F)
+
+variable (H) in
+/-- The right Kan extension functor `L.ran` is right adjoint to the
+precomposition by `L`. -/
+noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun F G =>
+        (homEquivOfIsRightKanExtension (α := L.ranCounit.app G) F).symm
+      homEquiv_naturality_right := fun {F G₁ G₂} β f ↦
+        hom_ext_of_isRightKanExtension _ (L.ranCounit.app G₂) _ _ (by
+        ext X
+        dsimp [homEquivOfIsRightKanExtension]
+        rw [liftOfIsRightKanExtension_fac_app, NatTrans.comp_app, assoc]
+        have h := congr_app (L.ranCounit.naturality f) X
+        dsimp at h ⊢
+        rw [h, liftOfIsRightKanExtension_fac_app_assoc])
+      homEquiv_naturality_left_symm := fun {F₁ F₂ G} β f ↦ by
+        dsimp [homEquivOfIsRightKanExtension]
+        rw [assoc] }
+
+variable (H) in
+@[simp]
+lemma ranAdjunction_counit : (L.ranAdjunction H).counit = L.ranCounit := by
+  ext F : 2
+  dsimp [ranAdjunction, homEquivOfIsRightKanExtension]
+  simp
+
+lemma ranAdjunction_unit_app (G : D ⥤ H) :
+    (L.ranAdjunction H).unit.app G =
+      liftOfIsRightKanExtension (L.ran.obj (L ⋙ G)) (L.ranCounit.app (L ⋙ G)) G (𝟙 (L ⋙ G)) :=
+  rfl
+
+@[reassoc (attr := simp)]
+lemma ranCounit_app_whiskerLeft_ranAdjunction_unit_app (G : D ⥤ H) :
+    whiskerLeft L ((L.ranAdjunction H).unit.app G) ≫ L.ranCounit.app (L ⋙ G) = 𝟙 (L ⋙ G) := by
+  simp [ranAdjunction_unit_app]
+
+@[reassoc (attr := simp)]
+lemma ranCounit_app_app_ranAdjunction_unit_app_app (G : D ⥤ H) (X : C) :
+    ((L.ranAdjunction H).unit.app G).app (L.obj X) ≫ (L.ranCounit.app (L ⋙ G)).app X = 𝟙 _ :=
+  congr_app (L.ranCounit_app_whiskerLeft_ranAdjunction_unit_app G) X
+
+lemma isIso_ranAdjunction_unit_app_iff (G : D ⥤ H) :
+    IsIso ((L.ranAdjunction H).unit.app G) ↔ G.IsRightKanExtension (𝟙 (L ⋙ G)) :=
+  (isRightKanExtension_iff_isIso _ (L.ranCounit.app (L ⋙ G)) _ (by simp)).symm
+
+end
+
+section
+
+variable [Full L] [Faithful L]
+
+instance (F : C ⥤ H) (X : C) [HasPointwiseRightKanExtension L F]
+    [∀ (F : C ⥤ H), HasRightKanExtension L F] :
+    IsIso ((L.ranCounit.app F).app X) :=
+  (isPointwiseRightKanExtensionRanCounit L F (L.obj X)).isIso_hom_app
+
+instance (F : C ⥤ H) [HasPointwiseRightKanExtension L F]
+    [∀ (F : C ⥤ H), HasRightKanExtension L F] :
+    IsIso (L.ranCounit.app F) :=
+  NatIso.isIso_of_isIso_app _
+
+instance reflective [∀ (F : C ⥤ H), HasPointwiseRightKanExtension L F] :
+    IsIso (L.ranCounit (H := H)) := by
+  apply NatIso.isIso_of_isIso_app _
+
+instance (F : C ⥤ H) [HasPointwiseRightKanExtension L F]
+    [∀ (F : C ⥤ H), HasRightKanExtension L F] :
+    IsIso ((L.ranAdjunction H).counit.app F) := by
+  rw [ranAdjunction_counit]
+  infer_instance
+
+instance reflective' [∀ (F : C ⥤ H), HasPointwiseRightKanExtension L F] :
+    IsIso (L.ranAdjunction H).counit := by
+  apply NatIso.isIso_of_isIso_app _
+
+end
+
+end ran
 
 end Functor
 

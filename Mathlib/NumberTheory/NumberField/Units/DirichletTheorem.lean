@@ -8,8 +8,6 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.Units.Basic
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
-#align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
-
 /-!
 # Dirichlet theorem on the group of units of a number field
 This file is devoted to the proof of Dirichlet unit theorem that states that the group of
@@ -44,7 +42,7 @@ noncomputable section
 
 open NumberField NumberField.InfinitePlace NumberField.Units BigOperators
 
-variable (K : Type*) [Field K] [NumberField K]
+variable (K : Type*) [Field K]
 
 namespace NumberField.Units.dirichletUnitTheorem
 
@@ -65,6 +63,10 @@ open scoped Classical
 open Finset
 
 variable {K}
+
+section NumberField
+
+variable [NumberField K]
 
 /-- The distinguished infinite place. -/
 def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
@@ -97,6 +99,8 @@ theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     · norm_num
   · exact fun w _ => pow_ne_zero _ (AbsoluteValue.ne_zero _ (coe_ne_zero x))
 
+end NumberField
+
 theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
@@ -104,6 +108,8 @@ theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
   · simp only [ne_eq, map_eq_zero, coe_ne_zero x, not_false_eq_true]
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num
+
+variable [NumberField K]
 
 theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
     logEmbedding K x = 0 ↔ x ∈ torsion K := by
@@ -209,7 +215,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
-      (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑): NNReal → ENNReal) h_gprod)
+      (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
     refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
@@ -291,7 +297,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
     · calc
         _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
           rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
-          ← mul_assoc, inv_mul_cancel (seq_ne_zero K w₁ hB n), one_mul]
+          ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
         _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
           _root_.map_mul _ _ _
         _ < 1 := by
@@ -462,7 +468,7 @@ def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsio
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
-  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i) :)
+  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i):)
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul ⟦fundSystem K i⟧ = (basisModTorsion K i) := by
