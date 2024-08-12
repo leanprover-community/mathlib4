@@ -7,6 +7,7 @@ import Batteries.Lean.Position
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.GoalsLocation
 import Mathlib.Lean.Meta.KAbstractPositions
+import Lean.Util.FoldConsts
 
 /-!
 
