@@ -179,7 +179,7 @@ theorem toPGame_nadd : ∀ a b : Ordinal.{u}, (a ♯ b).toPGame ≈ a.toPGame + 
       · exact nadd_lt_nadd_left wf _
 termination_by a b => (a, b)
 
-theorem toGame_add (a b : Ordinal) : (a ♯ b).toGame = a.toGame + b.toGame :=
+theorem toGame_nadd (a b : Ordinal) : (a ♯ b).toGame = a.toGame + b.toGame :=
   Quot.sound (toPGame_nadd a b)
 
 /-- The natural multiplication of ordinals corresponds to their product as games. -/
@@ -188,7 +188,7 @@ theorem toPGame_nmul : ∀ a b : Ordinal.{u}, (a ⨳ b).toPGame ≈ a.toPGame * 
     refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
     · rw [toPGame_moveLeft']
       rcases lt_nmul_iff.1 (toLeftMovesToPGame_symm_lt i) with ⟨c, hc, d, hd, h⟩
-      rw [← toPGame_le_iff, le_iff_game_le, ← toGame, ← toGame, toGame_add _ _, toGame_add _ _,
+      rw [← toPGame_le_iff, le_iff_game_le, ← toGame, ← toGame, toGame_nadd _ _, toGame_nadd _ _,
         ← le_sub_iff_add_le] at h
       refine lf_of_le_of_lf h <| (lf_congr_left ?_).1 <| moveLeft_lf <| toLeftMovesMul <| Sum.inl
         ⟨toLeftMovesToPGame ⟨c, hc⟩, toLeftMovesToPGame ⟨d, hd⟩⟩
@@ -201,7 +201,7 @@ theorem toPGame_nmul : ∀ a b : Ordinal.{u}, (a ⨳ b).toPGame ≈ a.toPGame * 
       rw [mul_moveLeft_inl, toPGame_moveLeft', toPGame_moveLeft', lf_iff_game_lf,
         quot_sub, quot_add, ← Game.not_le, le_sub_iff_add_le]
       repeat rw [← game_eq (toPGame_nmul _ _)]
-      repeat rw [← toGame_add]
+      repeat rw [← toGame_nadd]
       apply toPGame_lf (nmul_nadd_lt _ _) <;>
       exact toLeftMovesToPGame_symm_lt _
 termination_by a b => (a, b)
