@@ -18,6 +18,7 @@ open scoped Pointwise
 variable {G : Type*} [Group G] [MeasurableSpace G] [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ]
 
+@[to_additive]
 instance [μ.IsMulLeftInvariant] : ErgodicSMul G G μ := by
   refine ⟨fun {s} hsm hs ↦ ?_⟩
   suffices (∃ᵐ x ∂μ, x ∈ s) → ∀ᵐ x ∂μ, x ∈ s by
@@ -32,6 +33,7 @@ instance [μ.IsMulLeftInvariant] : ErgodicSMul G G μ := by
         (hsm.preimage measurable_fst).mem).setOf
   simpa [has] using (MeasureTheory.quasiMeasurePreserving_mul_right μ a⁻¹).ae ha
 
+@[to_additive]
 instance [μ.IsMulRightInvariant] : ErgodicSMul Gᵐᵒᵖ G μ := by
   refine ⟨fun {s} hsm hs ↦ ?_⟩
   suffices (∃ᵐ x ∂μ, x ∈ s) → ∀ᵐ x ∂μ, x ∈ s by
