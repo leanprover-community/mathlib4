@@ -24,6 +24,9 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
 -/
 
 
+-- Guard against import creep
+assert_not_exists Finset
+
 /-! ### `Set.center` as a `Subsemigroup`. -/
 
 variable (M)
@@ -76,6 +79,3 @@ theorem center_eq_top : center M = ⊤ :=
 end CommSemigroup
 
 end Subsemigroup
-
--- Guard against import creep
-assert_not_exists Finset

@@ -13,6 +13,8 @@ import Mathlib.Logic.Equiv.Fintype
 -/
 
 
+assert_not_exists LinearMap
+
 open Equiv
 
 /-- Permutations of `Fin (n + 1)` are equivalent to fixing a single
@@ -275,5 +277,3 @@ theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Per
 end Fin
 
 end CycleRange
-
-assert_not_exists LinearMap

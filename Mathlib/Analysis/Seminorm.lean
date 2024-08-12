@@ -32,6 +32,8 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
+assert_not_exists balancedCore
+
 open NormedField Set Filter
 
 open scoped NNReal Pointwise Topology Uniformity
@@ -1327,5 +1329,3 @@ lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (h
   rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)
 
 end normSeminorm
-
-assert_not_exists balancedCore

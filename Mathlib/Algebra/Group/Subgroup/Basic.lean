@@ -81,7 +81,9 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
+assert_not_exists Multiset
 assert_not_exists OrderedAddCommMonoid
+assert_not_exists Ring
 
 open Function
 open Int
@@ -2904,6 +2906,3 @@ def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
   g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
 
 end ConjClasses
-
-assert_not_exists Multiset
-assert_not_exists Ring

@@ -19,6 +19,9 @@ other files.
 -/
 
 
+-- Guard against import creep
+assert_not_exists Finset
+
 namespace Submonoid
 
 section MulOneClass
@@ -124,6 +127,3 @@ def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
     Function.Injective (unitsCenterToCenterUnits M) :=
   fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
-
--- Guard against import creep
-assert_not_exists Finset

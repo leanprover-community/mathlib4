@@ -25,6 +25,8 @@ This could be generalized to similar results about finite abelian groups.
 -/
 
 
+assert_not_exists legendre_sym.quadratic_reciprocity
+
 open Finset Nat FiniteField ZMod
 
 open scoped Nat
@@ -99,5 +101,3 @@ theorem prime_iff_fac_equiv_neg_one (h : n ≠ 1) : Prime n ↔ ((n - 1)! : ZMod
   exact ZMod.wilsons_lemma n
 
 end Nat
-
-assert_not_exists legendre_sym.quadratic_reciprocity

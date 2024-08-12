@@ -14,6 +14,7 @@ import Mathlib.GroupTheory.GroupAction.Group
 
 -/
 
+assert_not_exists Multiset
 assert_not_exists Nonneg.inv
 
 open Function Set
@@ -202,5 +203,3 @@ lemma smul_indicator_one_apply (s : Set α) (r : R) (a : α) :
 
 end MulZeroOneClass
 end Set
-
-assert_not_exists Multiset
