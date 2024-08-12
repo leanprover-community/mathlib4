@@ -22,7 +22,7 @@ open Complex Filter Bornology
 /--
 error: failed to synthesize
   AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
-Additional diagnostic information may be available by using the `set_option diagnostics true` command.
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 set_option synthInstance.maxHeartbeats 3000 in
