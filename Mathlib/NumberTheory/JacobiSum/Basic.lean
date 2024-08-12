@@ -49,7 +49,7 @@ end Finset
 -- need `Fintype` instead of `Finite` for `Finset.sum` etc.
 variable {R R' : Type*} [CommRing R] [Fintype R] [CommRing R']
 
-/- The *Jacobi sum* of two multiplicative characters on a finite commutative ring. -/
+/-- The *Jacobi sum* of two multiplicative characters on a finite commutative ring. -/
 def jacobiSum (χ ψ : MulChar R R') : R' :=
   ∑ x : R, χ x * ψ (1 - x)
 
