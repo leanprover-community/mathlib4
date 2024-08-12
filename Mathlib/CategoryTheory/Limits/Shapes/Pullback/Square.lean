@@ -6,7 +6,6 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Types
 
 /-!
 # Commutative squares that are pushout or pullback squares
