@@ -14,7 +14,7 @@ The [binary entropy function](https://en.wikipedia.org/wiki/Binary_entropy_funct
 is the Shannon entropy of a Bernoulli random variable with success probability `p`.
 
 More generally, the q-ary entropy function is the Shannon entropy of the random variable
-with possible outcomes `{1, ..., q}`, where outcome `1` has probability `(1 - p)`
+with possible outcomes `{1, ..., q}`, where outcome `1` has probability `1 - p`
 and all other outcomes are equally likely.
 
 `qaryEntropy (q : ℕ) (p : ℝ) := p * log (q - 1) - p * log p - (1 - p) * log (1 - p)`
