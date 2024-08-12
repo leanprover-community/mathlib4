@@ -160,7 +160,7 @@ def cokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       convert exists_apply_eq_apply f a)
 
 -- This is related to simp, erw and leanprover/lean4#2644.
-set_option linter.flexible false
+set_option linter.flexible false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp`. -/
 noncomputable
 def cokernelLift {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
@@ -173,6 +173,8 @@ def cokernelLift {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) (s : CokernelCofork f) 
       -- This used to be the end of the proof before leanprover/lean4#2644
       erw [zero_apply])
 
+-- This is related to simp, erw and leanprover/lean4#2644.
+set_option linter.flexible false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp`. -/
 noncomputable
 def isColimitCokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
