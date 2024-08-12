@@ -1032,7 +1032,7 @@ Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure
 on a type with the minumum proof obligations.
 -/
 class Group (G : Type u) extends DivInvMonoid G where
-  protected mul_left_inv : ∀ a : G, a⁻¹ * a = 1
+  protected inv_mul_self : ∀ a : G, a⁻¹ * a = 1
 
 /-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
 
@@ -1043,7 +1043,7 @@ Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an
 additive group structure on a type with the minumum proof obligations.
 -/
 class AddGroup (A : Type u) extends SubNegMonoid A where
-  protected add_left_neg : ∀ a : A, -a + a = 0
+  protected neg_add_self : ∀ a : A, -a + a = 0
 
 attribute [to_additive] Group
 
@@ -1052,46 +1052,43 @@ section Group
 variable [Group G] {a b c : G}
 
 @[to_additive (attr := simp)]
-theorem mul_left_inv : ∀ a : G, a⁻¹ * a = 1 :=
-  Group.mul_left_inv
-
-@[to_additive]
 theorem inv_mul_self (a : G) : a⁻¹ * a = 1 :=
-  mul_left_inv a
+  Group.inv_mul_self a
 
 @[to_additive]
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_self a) h
 
 @[to_additive (attr := simp)]
-theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
-  rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
+theorem mul_inv_self (a : G) : a * a⁻¹ = 1 := by
+  rw [← inv_mul_self a⁻¹, inv_eq_of_mul (inv_mul_self a)]
 
-@[to_additive]
-theorem mul_inv_self (a : G) : a * a⁻¹ = 1 :=
-  mul_right_inv a
+@[deprecated (since := "2024-08-12")] alias mul_left_inv := inv_mul_self
+@[deprecated (since := "2024-08-12")] alias mul_right_inv := mul_inv_self
+@[deprecated (since := "2024-08-12")] alias add_left_neg := neg_add_self
+@[deprecated (since := "2024-08-12")] alias add_right_neg := add_neg_self
 
 @[to_additive (attr := simp)]
 theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b := by
-  rw [← mul_assoc, mul_left_inv, one_mul]
+  rw [← mul_assoc, inv_mul_self, one_mul]
 
 @[to_additive (attr := simp)]
 theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b := by
-  rw [← mul_assoc, mul_right_inv, one_mul]
+  rw [← mul_assoc, mul_inv_self, one_mul]
 
 @[to_additive (attr := simp)]
 theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a := by
-  rw [mul_assoc, mul_right_inv, mul_one]
+  rw [mul_assoc, mul_inv_self, mul_one]
 
 @[to_additive (attr := simp)]
 theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
-  rw [mul_assoc, mul_left_inv, mul_one]
+  rw [mul_assoc, inv_mul_self, mul_one]
 
 @[to_additive AddGroup.toSubtractionMonoid]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
-  { inv_inv := fun a ↦ inv_eq_of_mul (mul_left_inv a)
+  { inv_inv := fun a ↦ inv_eq_of_mul (inv_mul_self a)
     mul_inv_rev :=
-      fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv]
+      fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_inv_self]
     inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
 
 -- see Note [lower instance priority]

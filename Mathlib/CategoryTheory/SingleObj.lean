@@ -80,8 +80,8 @@ See <https://stacks.math.columbia.edu/tag/0019>.
 -/
 instance groupoid : Groupoid (SingleObj G) where
   inv x := x⁻¹
-  inv_comp := mul_right_inv
-  comp_inv := mul_left_inv
+  inv_comp := mul_inv_self
+  comp_inv := inv_mul_self
 
 theorem inv_as_inv {x y : SingleObj G} (f : x ⟶ y) : inv f = f⁻¹ := by
   apply IsIso.inv_eq_of_hom_inv_id
@@ -142,7 +142,7 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
   map {x y} _ := f y * (f x)⁻¹
   map_id := by
     intro
-    simp only [SingleObj.id_as_one, mul_right_inv]
+    simp only [SingleObj.id_as_one, mul_inv_self]
   map_comp := by
     intros
     dsimp

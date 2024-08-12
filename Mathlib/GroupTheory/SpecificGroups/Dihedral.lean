@@ -67,7 +67,7 @@ instance : Group (DihedralGroup n) where
     · exact congr_arg r (add_zero a)
     · exact congr_arg sr (add_zero a)
   inv := inv
-  mul_left_inv := by
+  inv_mul_self := by
     rintro (a | a)
     · exact congr_arg r (neg_add_self a)
     · exact congr_arg r (sub_self a)

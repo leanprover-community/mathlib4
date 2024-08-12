@@ -558,7 +558,7 @@ noncomputable instance : AddCommGroup W.Point where
   zsmul := zsmulRec
   zero_add := zero_add
   add_zero := add_zero
-  add_left_neg _ := by rw [add_eq_zero]
+  neg_add_self _ := by rw [add_eq_zero]
   add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
   add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
 
@@ -579,8 +579,8 @@ noncomputable instance : AddCommGroup W.Point where
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
   add_zero _ := (toAffineAddEquiv W).injective <| by
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
-  add_left_neg P := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, add_left_neg, toAffineLift_zero]
+  neg_add_self P := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_self, toAffineLift_zero]
   add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
   add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
 

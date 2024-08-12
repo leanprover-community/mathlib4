@@ -57,11 +57,11 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
         dsimp
         ext
         apply sub_eq_add_neg
-      add_left_neg := by
+      neg_add_self := by
         intros
         dsimp
         ext
-        apply add_left_neg }
+        apply neg_add_self }
   add_comp := by
     intros
     dsimp

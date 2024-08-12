@@ -142,7 +142,7 @@ def ofMapMulInv {H : Type*} [Group H] (f : G → H)
         { simp only [one_mul, inv_one, ← map_div, inv_inv] }
       _ = f x * f y := by
         { simp only [map_div]
-          simp only [mul_right_inv, one_mul, inv_inv] }
+          simp only [mul_inv_self, one_mul, inv_inv] }
 
 @[to_additive (attr := simp)]
 theorem coe_of_map_mul_inv {H : Type*} [Group H] (f : G → H)

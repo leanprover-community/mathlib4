@@ -258,7 +258,7 @@ macro "frac_tac" : tactic => `(tactic| repeat (rintro (⟨⟩ : RatFunc _)) <;>
     ← ofFractionRing_inv,
     add_assoc, zero_add, add_zero, mul_assoc, mul_zero, mul_one, mul_add, inv_zero,
     add_comm, add_left_comm, mul_comm, mul_left_comm, sub_eq_add_neg, div_eq_mul_inv,
-    add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_right_neg])
+    add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_neg_self])
 
 /-- Solve equations for `RatFunc K` by applying `RatFunc.induction_on`. -/
 macro "smul_tac" : tactic => `(tactic|
@@ -308,7 +308,7 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
   zero_add := by frac_tac
   add_zero := by frac_tac
   neg := Neg.neg
-  add_left_neg := by frac_tac
+  neg_add_self := by frac_tac
   sub := Sub.sub
   sub_eq_add_neg := by frac_tac
   nsmul := (· • ·)

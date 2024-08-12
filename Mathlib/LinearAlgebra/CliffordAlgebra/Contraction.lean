@@ -338,7 +338,7 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
     right_inv := fun x => by
       dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
-        by simp_rw [(add_left_neg B), changeForm_self_apply] }
+        by simp_rw [(neg_add_self B), changeForm_self_apply] }
 
 @[simp]
 theorem changeFormEquiv_symm :

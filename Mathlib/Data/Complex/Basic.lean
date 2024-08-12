@@ -334,7 +334,7 @@ instance addCommGroup : AddCommGroup ℂ :=
     zero_add := by intros; ext <;> simp
     add_zero := by intros; ext <;> simp
     add_comm := by intros; ext <;> simp [add_comm]
-    add_left_neg := by intros; ext <;> simp }
+    neg_add_self := by intros; ext <;> simp }
 
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=

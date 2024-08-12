@@ -39,7 +39,7 @@ Language.ring.Sentence` -/
 inductive FieldAxiom : Type
   | addAssoc : FieldAxiom
   | zeroAdd : FieldAxiom
-  | addLeftNeg : FieldAxiom
+  | negAddSelf : FieldAxiom
   | mulAssoc : FieldAxiom
   | mulComm : FieldAxiom
   | oneMul : FieldAxiom
@@ -52,7 +52,7 @@ inductive FieldAxiom : Type
 def FieldAxiom.toSentence : FieldAxiom → Language.ring.Sentence
   | .addAssoc => ∀' ∀' ∀' (((&0 + &1) + &2) =' (&0 + (&1 + &2)))
   | .zeroAdd => ∀' (((0 : Language.ring.Term _) + &0) =' &0)
-  | .addLeftNeg => ∀' ∀' ((-&0 + &0) =' 0)
+  | .negAddSelf => ∀' ∀' ((-&0 + &0) =' 0)
   | .mulAssoc => ∀' ∀' ∀' (((&0 * &1) * &2) =' (&0 * (&1 * &2)))
   | .mulComm => ∀' ∀' ((&0 * &1) =' (&1 * &0))
   | .oneMul => ∀' (((1 : Language.ring.Term _) * &0) =' &0)
@@ -66,7 +66,7 @@ def FieldAxiom.toProp (K : Type*) [Add K] [Mul K] [Neg K] [Zero K] [One K] :
     FieldAxiom → Prop
   | .addAssoc => ∀ x y z : K, (x + y) + z = x + (y + z)
   | .zeroAdd => ∀ x : K, 0 + x = x
-  | .addLeftNeg => ∀ x : K, -x + x = 0
+  | .negAddSelf => ∀ x : K, -x + x = 0
   | .mulAssoc => ∀ x y z : K, (x * y) * z = x * (y * z)
   | .mulComm => ∀ x y : K, x * y = y * x
   | .oneMul => ∀ x : K, 1 * x = x
@@ -114,7 +114,7 @@ noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
   Field.ofMinimalAxioms K
     addAssoc.toProp_of_model
     zeroAdd.toProp_of_model
-    addLeftNeg.toProp_of_model
+    negAddSelf.toProp_of_model
     mulAssoc.toProp_of_model
     mulComm.toProp_of_model
     oneMul.toProp_of_model
@@ -150,7 +150,7 @@ instance [Field K] [CompatibleRing K] : Theory.field.Model K :=
       | existsInv => exact fun x hx0 => ⟨x⁻¹, mul_inv_cancel hx0⟩
       | addAssoc => exact add_assoc
       | zeroAdd => exact zero_add
-      | addLeftNeg => exact add_left_neg
+      | negAddSelf => exact neg_add_self
       | mulAssoc => exact mul_assoc
       | mulComm => exact mul_comm
       | oneMul => exact one_mul

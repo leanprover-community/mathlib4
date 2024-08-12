@@ -1614,7 +1614,7 @@ def normalizer : Subgroup G where
     simp only [mul_assoc, mul_inv_rev]
   inv_mem' {a} (ha : ∀ n, n ∈ H ↔ a * n * a⁻¹ ∈ H) n := by
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
-    simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_right_inv, mul_one]
+    simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_self, mul_one]
 
 -- variant for sets.
 -- TODO should this replace `normalizer`?
@@ -1630,7 +1630,7 @@ def setNormalizer (S : Set G) : Subgroup G where
     simp only [mul_assoc, mul_inv_rev]
   inv_mem' {a} (ha : ∀ n, n ∈ S ↔ a * n * a⁻¹ ∈ S) n := by
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
-    simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_right_inv, mul_one]
+    simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_self, mul_one]
 
 variable {H}
 
@@ -2815,7 +2815,7 @@ theorem subgroupOf_sup (A A' B : Subgroup G) (hA : A ≤ B) (hA' : A' ≤ B) :
 theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgroupOf K).Normal]
     {a b : G} (hb : b ∈ K) (h : a * b ∈ H) : b * a ∈ H := by
   have := (normal_subgroupOf_iff hK).mp hN (a * b) b h hb
-  rwa [mul_assoc, mul_assoc, mul_right_inv, mul_one] at this
+  rwa [mul_assoc, mul_assoc, mul_inv_self, mul_one] at this
 
 /-- Elements of disjoint, normal subgroups commute. -/
 @[to_additive "Elements of disjoint, normal subgroups commute."]

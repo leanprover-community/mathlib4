@@ -302,7 +302,7 @@ lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
     A.ρ g (f.1 (g⁻¹, g)) - f.1 (g, g⁻¹)
       = f.1 (1, 1) - f.1 (g, 1) := by
   have := (mem_twoCocycles_iff f.1).1 f.2 g g⁻¹ g
-  simp only [mul_right_inv, mul_left_inv, twoCocycles_map_one_fst _ g]
+  simp only [mul_inv_self, inv_mul_self, twoCocycles_map_one_fst _ g]
     at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
 
@@ -423,7 +423,7 @@ variable {G A : Type*} [Group G] [AddCommGroup A] [MulAction G A]
 theorem smul_map_inv_sub_map_inv_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
     g • f (g⁻¹, g) - f (g, g⁻¹) = f (1, 1) - f (g, 1) := by
   have := hf g g⁻¹ g
-  simp only [mul_right_inv, mul_left_inv, map_one_fst_of_isTwoCocycle hf g] at this
+  simp only [mul_inv_self, inv_mul_self, map_one_fst_of_isTwoCocycle hf g] at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
 
 end
@@ -547,7 +547,7 @@ theorem smul_map_inv_div_map_inv_of_isMulTwoCocycle
     {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
     g • f (g⁻¹, g) / f (g, g⁻¹) = f (1, 1) / f (g, 1) := by
   have := hf g g⁻¹ g
-  simp only [mul_right_inv, mul_left_inv, map_one_fst_of_isMulTwoCocycle hf g] at this
+  simp only [mul_inv_self, inv_mul_self, map_one_fst_of_isMulTwoCocycle hf g] at this
   exact div_eq_div_iff_mul_eq_mul.2 this.symm
 
 end

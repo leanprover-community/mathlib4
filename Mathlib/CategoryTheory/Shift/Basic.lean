@@ -449,17 +449,17 @@ section
 theorem shift_shiftFunctorCompIsoId_hom_app (n m : A) (h : n + m = 0) (X : C) :
     ((shiftFunctorCompIsoId C n m h).hom.app X)⟦n⟧' =
     (shiftFunctorCompIsoId C m n
-      (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg])).hom.app (X⟦n⟧) := by
+      (by rw [← neg_eq_of_add_eq_zero_left h, add_neg_self])).hom.app (X⟦n⟧) := by
   dsimp [shiftFunctorCompIsoId]
   simpa only [Functor.map_comp, ← shiftFunctorAdd'_zero_add_inv_app n X,
     ← shiftFunctorAdd'_add_zero_inv_app n X]
     using shiftFunctorAdd'_assoc_inv_app n m n 0 0 n h
-      (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg]) (by rw [h, zero_add]) X
+      (by rw [← neg_eq_of_add_eq_zero_left h, add_neg_self]) (by rw [h, zero_add]) X
 
 theorem shift_shiftFunctorCompIsoId_inv_app (n m : A) (h : n + m = 0) (X : C) :
     ((shiftFunctorCompIsoId C n m h).inv.app X)⟦n⟧' =
     ((shiftFunctorCompIsoId C m n
-      (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg])).inv.app (X⟦n⟧)) := by
+      (by rw [← neg_eq_of_add_eq_zero_left h, add_neg_self])).inv.app (X⟦n⟧)) := by
   rw [← cancel_mono (((shiftFunctorCompIsoId C n m h).hom.app X)⟦n⟧'),
     ← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id,
     shift_shiftFunctorCompIsoId_hom_app, Iso.inv_hom_id_app]

@@ -198,7 +198,7 @@ lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
   split_ifs with h
   · obtain ⟨k, rfl⟩ := h
     simp_rw [← Int.cast_add, Int.cast_eq_zero, add_eq_zero_iff_eq_neg]
-    simpa only [Int.cast_add, neg_mul, Int.cast_neg, add_left_neg, ne_eq, OfNat.ofNat_ne_zero,
+    simpa only [Int.cast_add, neg_mul, Int.cast_neg, neg_add_self, ne_eq, OfNat.ofNat_ne_zero,
       not_false_eq_true, zero_pow, mul_zero, zero_mul, Real.exp_zero]
       using hasSum_ite_sub_hasSum (hasSum_int_evenKernel (k : ℝ) ht) (-k)
   · suffices ∀ (n : ℤ), n + a ≠ 0 by simpa [this] using hasSum_int_evenKernel a ht

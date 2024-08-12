@@ -513,7 +513,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (h3 _ _ (List.mem_cons_self _ _))]
       · apply d.injective i
         simp only [cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
-          map_one, mul_one, mul_right_inv, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
+          map_one, mul_one, mul_inv_self, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
       · rwa [← SetLike.mem_coe,
           ← coe_equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),

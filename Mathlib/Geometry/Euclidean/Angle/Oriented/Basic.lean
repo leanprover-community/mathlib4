@@ -236,7 +236,7 @@ theorem two_zsmul_oangle_neg_self_right (x : V) : (2 : ℤ) • o.oangle x (-x) 
 negated, results in 0. -/
 @[simp]
 theorem oangle_add_oangle_rev_neg_left (x y : V) : o.oangle (-x) y + o.oangle (-y) x = 0 := by
-  rw [oangle_neg_left_eq_neg_right, oangle_rev, add_left_neg]
+  rw [oangle_neg_left_eq_neg_right, oangle_rev, neg_add_self]
 
 /-- Adding the angles between two vectors in each order, with the second vector in each angle
 negated, results in 0. -/

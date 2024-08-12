@@ -463,7 +463,7 @@ theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸]
     (h : x ∈ skewAdjoint 𝔸) : exp 𝕂 x ∈ unitary 𝔸 := by
   rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
-    add_left_neg, add_right_neg, exp_zero, and_self_iff]
+    neg_add_self, add_neg_self, exp_zero, and_self_iff]
 
 end
 

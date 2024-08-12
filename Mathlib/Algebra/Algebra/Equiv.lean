@@ -604,7 +604,7 @@ instance aut : Group (A₁ ≃ₐ[R] A₁) where
   one_mul ϕ := ext fun x => rfl
   mul_one ϕ := ext fun x => rfl
   inv := symm
-  mul_left_inv ϕ := ext <| symm_apply_apply ϕ
+  inv_mul_self ϕ := ext <| symm_apply_apply ϕ
 
 theorem aut_mul (ϕ ψ : A₁ ≃ₐ[R] A₁) : ϕ * ψ = ψ.trans ϕ :=
   rfl

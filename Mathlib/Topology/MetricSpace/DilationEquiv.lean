@@ -142,7 +142,7 @@ instance : Group (X ≃ᵈ X) where
   one_mul _ := rfl
   mul_one _ := rfl
   inv := symm
-  mul_left_inv := self_trans_symm
+  inv_mul_self := self_trans_symm
 
 theorem mul_def (e e' : X ≃ᵈ X) : e * e' = e'.trans e := rfl
 theorem one_def : (1 : X ≃ᵈ X) = refl X := rfl

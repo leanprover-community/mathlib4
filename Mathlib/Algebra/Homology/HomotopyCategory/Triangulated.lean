@@ -119,7 +119,7 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
           Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n + 2) (n + 1) n (by linarith)
             (by linarith),
           Cochain.ofHom_v, HomologicalComplex.id_f, Preadditive.comp_add, Preadditive.comp_neg,
-          inl_v_fst_v_assoc, neg_zero, add_zero, comp_id, add_left_neg, inr_f_snd_v_assoc,
+          inl_v_fst_v_assoc, neg_zero, add_zero, comp_id, neg_add_self, inr_f_snd_v_assoc,
           inr_f_descCochain_v_assoc, inr_f_fst_v_assoc, comp_zero, zero_add,
           ext_to_iff _ n (n + 1) rfl, liftCochain_v_fst_v, inl_v_descCochain_v, inl_v_fst_v,
           liftCochain_v_snd_v, Cochain.zero_v, inl_v_snd_v, and_self, neg_add_cancel_right,

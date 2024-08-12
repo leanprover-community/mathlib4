@@ -406,7 +406,7 @@ def preadditive : Preadditive C where
       zero_add := neg_neg
       add_zero := add_zero
       neg := fun f => -f
-      add_left_neg := neg_add_self
+      neg_add_self := neg_add_self
       sub_eq_add_neg := fun f g => (add_neg f g).symm -- Porting note: autoParam failed
       add_comm := add_comm
       nsmul := nsmulRec

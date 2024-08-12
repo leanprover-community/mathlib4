@@ -199,9 +199,9 @@ instance : Neg (SummableFamily Γ R α) :=
 instance : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
     zsmul := zsmulRec
-    add_left_neg := fun a => by
+    neg_add_self := fun a => by
       ext
-      apply add_left_neg }
+      apply neg_add_self }
 
 @[simp]
 theorem coe_neg : ⇑(-s) = -s :=
@@ -471,7 +471,7 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
     by_cases h : x = 0; · simp [h]
     rw [← order_eq_orderTop_of_ne h, orderTop_single
       (fun _ => by simp_all only [zero_mul, zero_ne_one]), ← @WithTop.coe_add,
-      WithTop.coe_nonneg, add_left_neg]
+      WithTop.coe_nonneg, neg_add_self]
   · apply coeff_orderTop_ne h.symm
     simp only [C_apply, single_mul_single, zero_add, mul_one, sub_coeff', Pi.sub_apply, one_coeff,
       ↓reduceIte]

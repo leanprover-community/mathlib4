@@ -75,7 +75,7 @@ def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N a ≃ gammaSet N (a ᵥ* γ) wh
       have := vecMul_SL2_mem_gammaSet v.2 γ⁻¹
       rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul] at this
       simpa only [SpecialLinearGroup.map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-        map_inv, mul_right_inv, SpecialLinearGroup.coe_one, vecMul_one]⟩
+        map_inv, mul_inv_self, SpecialLinearGroup.coe_one, vecMul_one]⟩
   left_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, mul_inv_self,
     SpecialLinearGroup.coe_one, vecMul_one]
   right_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, inv_mul_self,

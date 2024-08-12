@@ -100,7 +100,7 @@ instance : Group (QuaternionGroup n) where
     · exact congr_arg a (add_zero i)
     · exact congr_arg xa (add_zero i)
   inv := inv
-  mul_left_inv := by
+  inv_mul_self := by
     rintro (i | i)
     · exact congr_arg a (neg_add_self i)
     · exact congr_arg a (sub_self (n + i))

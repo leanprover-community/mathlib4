@@ -729,7 +729,7 @@ protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x 
   ext
   · rw [fst_mul, fst_inv, inv_mul_cancel hx, fst_one]
   · rw [snd_mul, snd_inv, snd_one, smul_neg, op_smul_op_smul, inv_mul_cancel hx, op_one, one_smul,
-      fst_inv, add_right_neg]
+      fst_inv, add_neg_self]
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
 
@@ -737,7 +737,7 @@ protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ 
   ext
   · rw [fst_mul, fst_inv, fst_one, mul_inv_cancel hx]
   · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_comm, smul_smul, mul_inv_cancel hx, one_smul,
-      fst_inv, add_left_neg]
+      fst_inv, neg_add_self]
 
 protected theorem mul_inv_rev (a b : tsze R M) :
     (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
