@@ -39,16 +39,17 @@ noncomputable def toPGame : Ordinal.{u} → PGame.{u}
       PEmpty.elim⟩
 termination_by x => x
 
+@[nolint unusedHavesSuffices]
 theorem toPGame_def (o : Ordinal) :
     have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
     o.toPGame = ⟨o.out.α, PEmpty, fun x => (typein (· < ·) x).toPGame, PEmpty.elim⟩ := by
   rw [toPGame]
 
-@[simp]
+@[simp, nolint unusedHavesSuffices]
 theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.out.α := by
   rw [toPGame, LeftMoves]
 
-@[simp]
+@[simp, nolint unusedHavesSuffices]
 theorem toPGame_rightMoves (o : Ordinal) : o.toPGame.RightMoves = PEmpty := by
   rw [toPGame, RightMoves]
 
@@ -68,6 +69,7 @@ theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
     ↑(toLeftMovesToPGame.symm i) < o :=
   (toLeftMovesToPGame.symm i).prop
 
+@[nolint unusedHavesSuffices]
 theorem toPGame_moveLeft_hEq {o : Ordinal} :
     have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
     HEq o.toPGame.moveLeft fun x : o.out.α => (typein (· < ·) x).toPGame := by
