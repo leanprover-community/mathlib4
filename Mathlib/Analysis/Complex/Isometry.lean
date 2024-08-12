@@ -30,6 +30,8 @@ noncomputable section
 
 open Complex
 
+open CharZero
+
 open ComplexConjugate
 
 local notation "|" x "|" => Complex.abs x
