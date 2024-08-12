@@ -482,7 +482,7 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
     r p.eraseLast.last p.last := by
   simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
-  convert p.step ⟨p.length - 1, Nat.sub_one_lt_of_lt h⟩
+  convert p.step ⟨p.length - 1, by omega⟩
   simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
 
 /--
