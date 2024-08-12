@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Data.NNReal.Basic
-import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # WithZero
@@ -29,9 +28,11 @@ WithZero, multiplicative, nnreal
 
 noncomputable section
 
-open scoped DiscreteValuation NNReal
+open scoped NNReal
 
 open Multiplicative WithZero
+
+local notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(Multiplicative.toAdd (WithZero.unzero hx)` when `x ≠ 0` as a `MonoidWithZeroHom`. -/
@@ -74,7 +75,6 @@ theorem withZeroMultIntToNNReal_pos {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) 
     0 < withZeroMultIntToNNReal he m :=
   lt_of_le_of_ne zero_le' (withZeroMultIntToNNReal_ne_zero he hm).symm
 
--- [Mathlib.Data.NNReal.Basic]
 /-- The map `withZeroMultIntToNNReal` is strictly monotone whenever `1 < e`. -/
 theorem withZeroMultIntToNNReal_strictMono {e : NNReal} (he : 1 < e) :
     StrictMono (withZeroMultIntToNNReal (ne_zero_of_lt he)) := by
