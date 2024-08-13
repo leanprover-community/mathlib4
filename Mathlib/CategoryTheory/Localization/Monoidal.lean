@@ -117,11 +117,9 @@ noncomputable def tensorTrifunctorLeft : LocalizedMonoidal L W ε ⥤ LocalizedM
 noncomputable def tensorTrifunctorRight : LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε ⥤
     LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=
   bifunctorComp₂₃ (tensorBifunctor L W ε) (tensorBifunctor L W ε)
-   -- this is `fun X Y Z ↦ X ⊗ (Y ⊗ Z)` see the example below
+   -- this is `fun X Y Z ↦ X ⊗ (Y ⊗ Z)`, see the example below
 
 noncomputable def associator : tensorTrifunctorLeft L W ε ≅ tensorTrifunctorRight L W ε := sorry
-
--- lemma isInvertedBy₃ : MorphismProperty.IsInvertedBy₃ W W W _ :=
 
 noncomputable instance monoidalCategoryStruct :
     MonoidalCategoryStruct (LocalizedMonoidal L W ε) where
@@ -133,6 +131,7 @@ noncomputable instance monoidalCategoryStruct :
   leftUnitor Y := (leftUnitor L W ε).app Y
   rightUnitor X := (rightUnitor L W ε).app X
 
+-- TODO: remove these examples, they are just for remembering what the trifunctors do.
 example (X Y Z : LocalizedMonoidal L W ε) :
     (((tensorTrifunctorLeft L W ε).obj X).obj Y).obj Z = (X ⊗ Y) ⊗ Z := rfl
 
@@ -453,7 +452,7 @@ noncomputable def toLocalizedMonoidal :
   toFunctor := toMonoidalCategory L W ε
   ε := ε.inv
   μ X Y := (μ L W ε X Y).hom
-  associativity := sorry
+  associativity X Y Z := by simp [associator_hom_app L W ε X Y Z]
   left_unitality Y := leftUnitor_hom_app L W ε Y
   right_unitality X := rightUnitor_hom_app L W ε X
 

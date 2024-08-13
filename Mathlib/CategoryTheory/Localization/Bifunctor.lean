@@ -96,6 +96,14 @@ lemma lift₂_iso_hom_app_app₂ (X₁ : C₁) (X₂ : C₂) :
       (Lifting.iso L₁ W₁ (F.flip.obj X₂) ((lift₂ F hF L₁ L₂).flip.obj (L₂.obj X₂))).hom.app X₁ :=
   rfl
 
+noncomputable abbrev lift₂NatIso {F₁ F₂ : C₁ ⥤ C₂ ⥤ E}
+    (hF₁ : W₁.IsInvertedBy₂ W₂ F₁)
+    (hF₂ : W₁.IsInvertedBy₂ W₂ F₂)
+    (e : F₁ ≅ F₂) : lift₂ _ hF₁ L₁ L₂  ≅ lift₂ _ hF₂ L₁ L₂ :=
+  curry.mapIso (liftNatIso (L₁.prod L₂) (W₁.prod W₂) _ _ _ _ (uncurry.mapIso e))
+    -- (F₁' F₂' : D₁ ⥤ D₂ ⥤ E) [Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁']
+    -- [Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂']
+
 end
 
 section
