@@ -1401,12 +1401,12 @@ theorem mem_uniformity_of_uniformContinuous_invariant [UniformSpace α] [Uniform
 /-- An entourage of the diagonal in α and an entourage in β yield an entourage in α × β once we
 permute coordinates.-/
 def entourageProd (u : Set (α × α)) (v : Set (β × β)) : Set ((α × β) × α × β) :=
-    { ((a₁, b₁),(a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v }
+    {((a₁, b₁),(a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
 
-theorem entourage_prod_def {u : Set (α × α)} {v : Set (β × β)} {p : (α × β) × α × β} :
+theorem mem_entourageProd {u : Set (α × α)} {v : Set (β × β)} {p : (α × β) × α × β} :
     p ∈ entourageProd u v ↔ (p.1.1, p.2.1) ∈ u ∧ (p.1.2, p.2.2) ∈ v := by rfl
 
-theorem mem_uniform_prod [t₁ : UniformSpace α] [t₂ : UniformSpace β] {u : Set (α × α)}
+theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpace β] {u : Set (α × α)}
     {v : Set (β × β)} (hu : u ∈ 𝓤 α) (hv : v ∈ 𝓤 β) :
     entourageProd u v ∈ 𝓤 (α × β) := by
   rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap hu) (preimage_mem_comap hv)
@@ -1415,14 +1415,14 @@ theorem ball_prod (u : Set (α × α)) (v : Set (β × β)) (x : α × β) :
     ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
   ext p; simp only [ball, entourageProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
 
-theorem entourage_prod_of_uniform_prod [UniformSpace α] [UniformSpace β] {s : Set ((α × β) × α × β)}
-    (h : s ∈ 𝓤 (α × β)) :
+theorem entourageProd_subset [UniformSpace α] [UniformSpace β]
+    {s : Set ((α × β) × α × β)} (h : s ∈ 𝓤 (α × β)) :
     ∃ u ∈ 𝓤 α, ∃ v ∈ 𝓤 β, entourageProd u v ⊆ s := by
   simp only [uniformity_prod, mem_inf_iff_superset, mem_comap] at h
   rcases h with ⟨u, ⟨a, a_uni, a_sub⟩, v, ⟨b, b_uni, b_sub⟩, uv_sub⟩
   use a, a_uni, b, b_uni
   refine subset_trans (subset_trans (fun _ ↦ ?_) (inter_subset_inter a_sub b_sub)) uv_sub
-  simp [entourage_prod_def]
+  simp [mem_entourageProd]
 
 theorem tendsto_prod_uniformity_fst [UniformSpace α] [UniformSpace β] :
     Tendsto (fun p : (α × β) × α × β => (p.1.1, p.2.1)) (𝓤 (α × β)) (𝓤 α) :=
