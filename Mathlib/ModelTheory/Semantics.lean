@@ -427,7 +427,7 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     simp
   · simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val]
     congr!
-    rw [Set.inclusion_comp_inclusion _ h]
+    erw [Set.inclusion_comp_inclusion _ h]
     simp
   · simp only [Realize, freeVarFinset.eq_4]
     rw [Set.inclusion_comp_inclusion, Set.inclusion_comp_inclusion]

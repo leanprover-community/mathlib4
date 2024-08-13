@@ -518,7 +518,11 @@ theorem liftProp_subtype_val {Q : (H → H) → Set H → H → Prop} (hG : Loca
 
 theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
     (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :
+    letI : ChartedSpace H { x // x ∈ V } := V.instChartedSpace
+    letI : ChartedSpace H { x // x ∈ U } := U.instChartedSpace
     LiftProp Q (Set.inclusion hUV : U → V) := by
+  letI : ChartedSpace H { x // x ∈ V } := V.instChartedSpace
+  letI : ChartedSpace H { x // x ∈ U } := U.instChartedSpace
   intro x
   show LiftPropAt Q (id ∘ inclusion hUV) x
   rw [← hG.liftPropAt_iff_comp_inclusion hUV]
