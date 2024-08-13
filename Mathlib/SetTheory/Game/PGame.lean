@@ -160,16 +160,6 @@ theorem leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (
 theorem rightMoves_ofLists (L R : List PGame) : (ofLists L R).RightMoves = ULift (Fin R.length) :=
   rfl
 
-/-- Converts a number into a left move for `ofLists`. -/
-@[simps!]
-def toOfListsLeftMoves {L R : List PGame} : Fin L.length ≃ (ofLists L R).LeftMoves :=
-  Equiv.ulift.symm
-
-/-- Converts a number into a right move for `ofLists`. -/
-@[simps!]
-def toOfListsRightMoves {L R : List PGame} : Fin R.length ≃ (ofLists L R).RightMoves :=
-  Equiv.ulift.symm
-
 @[simp]
 theorem ofLists_moveLeft' {L R : List PGame} (i : (ofLists L R).LeftMoves) :
     (ofLists L R).moveLeft i = L[i.down.val] :=
@@ -185,7 +175,7 @@ theorem ofLists_moveRight' {L R : List PGame} (i : (ofLists L R).RightMoves) :
   rfl
 
 theorem ofLists_moveRight {L R : List PGame} (i : Fin R.length) :
-    (ofLists L R).moveRight (toOfListsRightMoves i) = R[i] :=
+    (ofLists L R).moveRight (ULift.up i) = R[i] :=
   rfl
 
 /-- A variant of `PGame.recOn` expressed in terms of `PGame.moveLeft` and `PGame.moveRight`.
