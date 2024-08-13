@@ -36,14 +36,14 @@ and which would send the type class search algorithm on a chase for `A`), we pro
 these instances themselves on a particular type.
 
 Although the `Norm` is passed as a parameter, it almost never coincides with the norm on the
-underlying type, unless that it is a purpose built type, as with the *standard Hilbert C⋆-module*,
+underlying type, unless that it is a purpose built type, as with the *standard Hilbert C⋆-module*.
 However, with generic types already equipped with a norm, the norm as a Hilbert C⋆-module almost
 never coincides with the norm on the underlying type. The two notable exceptions to this are when
 we view `A` as a C⋆-module over itself, or when `A := ℂ`.  For this reason we will later use the
 type synonym `WithCStarModule`.
 
 As an example of just how different the norm can be, consider `CStarModule`s `E` and `F` over `A`.
-One would like to put a `CStarModule` structure on (a type synonrm of) `E × F`, where the `A`-valued
+One would like to put a `CStarModule` structure on (a type synonym of) `E × F`, where the `A`-valued
 inner product is given, for `x y : E × F`, `⟪x, y⟫_A := ⟪x.1, y.1⟫_A + ⟪x.2, y.2⟫_A`. The norm this
 induces satisfies `‖x‖ ^ 2 = ‖⟪x.1, y.1⟫ + ⟪x.2, y.2⟫‖`, but this doesn't coincide with *any*
 natural norm on `E × F` unless `A := ℂ`, in which case it is `WithLp 2 (E × F)` because `E × F` is
