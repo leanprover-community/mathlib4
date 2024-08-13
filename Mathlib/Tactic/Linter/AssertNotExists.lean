@@ -78,7 +78,7 @@ register_option linter.assertNotExists : Bool := {
   descr := "enable the assertNotExists linter"
 }
 
-namespace AssertNotExists
+namespace Style.AssertNotExists
 
 /-- Gets the value of the `linter.assertNotExists` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.assertNotExists o
@@ -98,6 +98,6 @@ def assertNotExistsLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter assertNotExistsLinter
 
-end AssertNotExists
+end Style.AssertNotExists
 
 end Mathlib.Linter
