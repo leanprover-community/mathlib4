@@ -3,16 +3,12 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Instances.ENNReal
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Data.ENat.Basic
+import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.Order.T5
-import Mathlib.Data.Real.ENatENNReal
 
 /-!
-# Topology on extended natural numbers
+# Topology on the extended natural numbers
 -/
 
 noncomputable section
@@ -25,22 +21,6 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 namespace ENat
 
 variable {a b c d : ℕ∞} {r p q : ℕ} {x y z : ℕ∞} {s : Set ℕ∞}
-
--- TODO: Add in a suitable file.
-lemma toNat_eq_toNat (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a.toNat = b.toNat ↔ a = b :=
-  ⟨fun h ↦ by simpa [ha, hb] using WithTop.untop'_eq_untop'_iff.mp h, fun h ↦ congrArg toNat h⟩
-
--- TODO: Add in a suitable file.
-lemma range_nat_cast : Set.range ((↑) : ℕ → ℕ∞) = Iio (⊤ : ℕ∞) := by
-  ext n
-  simp only [mem_Iio]
-  exact ⟨fun ⟨m, hm⟩ ↦ hm.symm ▸ coe_lt_top m, fun h ↦ Option.ne_none_iff_exists.mp h.ne_top⟩
-
--- TODO: Add in a suitable file.
-lemma Ico_eq_Iio (b : ℕ∞) : Ico 0 b = Iio b := by ext x; simp
-
--- TODO: Add in a suitable file.
-lemma Icc_eq_Iic (b : ℕ∞) : Icc 0 b = Iic b := by ext x; simp
 
 section TopologicalSpace
 
@@ -61,8 +41,6 @@ instance : T2Space ℕ∞ := inferInstance
 instance : T5Space ℕ∞ := inferInstance
 instance : T4Space ℕ∞ := inferInstance
 
-example : StrictMono ((↑) : ℕ → ℕ∞) := by exact Nat.strictMono_cast
-
 theorem embedding_coe : Embedding ((↑) : ℕ → ℕ∞) :=
   Nat.strictMono_cast.embedding_of_ordConnected <| by rw [range_nat_cast]; exact ordConnected_Iio
 
@@ -76,9 +54,7 @@ theorem openEmbedding_coe : OpenEmbedding ((↑) : ℕ → ℕ∞) :=
 theorem coe_range_mem_nhds : range ((↑) : ℕ → ℕ∞) ∈ 𝓝 (r : ℕ∞) :=
   IsOpen.mem_nhds openEmbedding_coe.isOpen_range <| mem_range_self _
 
-@[fun_prop]
-theorem continuous_coe : Continuous ((↑) : ℕ → ℕ∞) :=
-  embedding_coe.continuous
+@[fun_prop] theorem continuous_coe : Continuous ((↑) : ℕ → ℕ∞) := embedding_coe.continuous
 
 theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℕ} :
     (Continuous fun a ↦ (f a : ℕ∞)) ↔ Continuous f :=
@@ -119,12 +95,6 @@ lemma continuousAt_toNat (hx : x ≠ ⊤) : ContinuousAt ENat.toNat x :=
 
 theorem nhds_top : 𝓝 (⊤ : ℕ∞) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp [lt_top_iff_ne_top, Ioi]
-
-theorem nhds_zero : 𝓝 (0 : ℕ∞) = ⨅ (a) (_ : a ≠ 0), 𝓟 (Iio a) :=
-  nhds_bot_order.trans <| by simp [pos_iff_ne_zero, Iio]
-
-theorem nhds_zero_basis : (𝓝 (0 : ℕ∞)).HasBasis (fun a : ℕ∞ => 0 < a) fun a => Iio a :=
-  nhds_bot_basis
 
 end TopologicalSpace
 
