@@ -118,7 +118,8 @@ finite sets, finset
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen
-assert_not_exists Multiset.Powerset
+assert_not_exists Multiset.powerset
+
 assert_not_exists CompleteLattice
 
 open Multiset Subtype Nat Function
