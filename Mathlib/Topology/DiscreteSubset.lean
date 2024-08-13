@@ -117,7 +117,7 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
 /-- In any topological space, we form a filter from the supremum of all punctured neighborhoods. -/
-def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteWithin Set.univ
+abbrev Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteWithin Set.univ
 
 lemma mem_codiscrete {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
