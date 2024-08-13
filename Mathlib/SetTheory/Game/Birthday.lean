@@ -221,7 +221,8 @@ theorem birthday_natCast (n : ℕ) : birthday n = n := by
   exact toPGame_birthday _
 
 @[simp]
-theorem birthday_ofNat (n : ℕ) [n.AtLeastTwo] : birthday (no_index (OfNat.ofNat n)) = n :=
+theorem birthday_ofNat (n : ℕ) [n.AtLeastTwo] :
+    birthday (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   birthday_natCast n
 
 @[simp]
