@@ -103,15 +103,9 @@ lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     simp_all
   · exact exists_edist_eq_ediam_of_ne_top h
 
-lemma ediam_mono_of_ne_top [Nonempty α] (h : G ≤ G') (hn : G'.ediam ≠ ⊤) :
-    G'.ediam ≤ G.ediam :=
-  have ⟨_, _, huv⟩ := G'.exists_edist_eq_ediam_of_ne_top hn
-  huv ▸ (edist_le_subgraph_edist h).trans edist_le_ediam
-
-lemma ediam_mono_of_finite [Nonempty α] [Finite α] (h : G ≤ G') :
-    G'.ediam ≤ G.ediam :=
-  have ⟨_, _, huv⟩ := G'.exists_edist_eq_ediam_of_finite
-  huv ▸ (edist_le_subgraph_edist h).trans edist_le_ediam
+@[gcongr]
+lemma ediam_anti (h : G ≤ G') : G'.ediam ≤ G.ediam :=
+  iSup₂_mono fun _ _ ↦ edist_le_subgraph_edist h
 
 @[simp]
 lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
@@ -177,19 +171,9 @@ lemma exists_dist_eq_diam_of_ne_zero [Nonempty α] :
     use u, v
     rw [diam, dist, congrArg ENat.toNat huv]
 
-lemma exists_dist_eq_diam_of_finite [Nonempty α] [Finite α] :
-    ∃ u v, G.dist u v = G.diam := by
-  obtain ⟨u, v, huv⟩ := G.exists_edist_eq_ediam_of_finite
-  use u, v
-  rw [diam, dist, congrArg ENat.toNat huv]
-
-lemma diam_mono_of_ne_zero (h : G ≤ G') (hn : G.diam ≠ 0) :
-    G'.diam ≤ G.diam := by
-  by_cases hn' : G'.diam = 0
-  · omega
-  · have : Nontrivial α := nontrivial_of_diam_ne_zero hn
-    exact ENat.toNat_le_toNat (ediam_mono_of_ne_top h (ediam_ne_top_of_diam_ne_zero hn'))
-      <| ediam_ne_top_of_diam_ne_zero hn
+@[gcongr]
+lemma diam_mono_of_ediam_ne_top (h : G ≤ G') (hn : G.ediam ≠ ⊤) : G'.diam ≤ G.diam :=
+  ENat.toNat_le_toNat (ediam_anti h) hn
 
 @[simp]
 lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
