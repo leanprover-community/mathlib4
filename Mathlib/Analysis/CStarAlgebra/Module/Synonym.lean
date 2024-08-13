@@ -59,6 +59,7 @@ def WithCStarModule (E : Type*) := E
 
 namespace WithCStarModule
 
+@[inherit_doc]
 scoped notation "C⋆ᵐᵒᵈ" => WithCStarModule
 
 section Basic
