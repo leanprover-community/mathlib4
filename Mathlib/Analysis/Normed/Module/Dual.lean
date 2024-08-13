@@ -239,6 +239,10 @@ theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := le
   (fun _ hx => hx _ rfl) (fun x hx => (mem_polar_iff _ _).mpr (fun _ hb => by
       rw [mem_singleton_iff.mp hb]; exact hx))
 
+theorem polar_singleton_mem {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
+  rw [polar_singleton]
+  exact mem_setOf
+
 theorem inter_polar_finite_reciprocal_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
     ⋂₀ (polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
@@ -263,21 +267,32 @@ theorem inter_polar_finite_reciprocal_ball {𝕜 E : Type*} [RCLike 𝕜] [Norme
         rw [isUnit_iff_ne_zero]
         exact Ne.symm (ne_of_lt q3)
       rw [IsUnit.inv_mul_cancel q2]
-      have e1 :  x ∈ polar 𝕜 {(RCLike.ofReal (K := 𝕜) (r * ‖a‖)⁻¹) • a} := by
-        apply hx {(RCLike.ofReal (K := 𝕜)  (r * ‖a‖)⁻¹) • a} (finite_singleton _)
-        simp only [map_inv₀, singleton_subset_iff, mem_closedBall, dist_zero_right]
-        rw [norm_smul, norm_inv, norm_algebraMap', norm_mul, Real.norm_of_nonneg (le_of_lt hr),
-          norm_norm, mul_inv,
-          IsUnit.inv_mul_cancel_right (Ne.isUnit (norm_ne_zero_iff.mpr hnz))]
-      rw [polar, LinearMap.polar, mem_setOf_eq] at e1
-      simp only [map_inv₀, mem_singleton_iff, LinearMap.flip_apply,
-        dualPairing_apply, forall_eq, map_smul] at e1
-      simp only [map_smul, smul_eq_mul, norm_mul, norm_inv,
-        norm_algebraMap', norm_norm] at e1
-        --, map_smul, smul_eq_mul, norm_mul, norm_inv, norm_algebraMap',
-        --norm_norm, mem_setOf_eq] at e1
-      rw [Real.norm_of_nonneg (le_of_lt hr)] at e1
-      exact e1
+      have ee1 : (r * ‖a‖)⁻¹ * ‖x a‖ = ‖x ((RCLike.ofReal (K := 𝕜) (r * ‖a‖)⁻¹) • a)‖ := by
+        simp only [map_smul]
+        simp only [smul_eq_mul, norm_mul]
+        simp only [norm_algebraMap']
+        simp only [norm_inv]
+        simp only [norm_mul, norm_norm]
+        rw [Real.norm_of_nonneg (le_of_lt hr)]
+      have ee2 : (r * ‖a‖)⁻¹ * ‖a‖ = ‖(RCLike.ofReal (K := 𝕜) (r * ‖a‖)⁻¹) • a‖  := by
+        rw [norm_smul]
+        rw [norm_algebraMap']
+        rw [norm_inv]
+        rw [norm_mul]
+        rw [norm_norm]
+        rw [Real.norm_of_nonneg (le_of_lt hr)]
+      rw [ee1]
+      rw [← polar_singleton_mem]
+      apply hx {(RCLike.ofReal (K := 𝕜)  (r * ‖a‖)⁻¹) • a} (finite_singleton _)
+      rw [singleton_subset_iff, mem_closedBall, dist_zero_right]
+      rw [← ee2]
+      rw [← mul_le_mul_left (Right.mul_pos hr (norm_pos_iff'.mpr hnz))]
+      rw [← mul_assoc]
+      rw [IsUnit.mul_inv_cancel q2]
+      rw [one_mul]
+      rw [mul_comm, ← mul_assoc]
+      rw [IsUnit.inv_mul_cancel (Ne.isUnit (Ne.symm (ne_of_lt hr)))]
+      rw [one_mul]
   · simp only [sInter_image, mem_setOf_eq, le_eq_subset, subset_iInter_iff, and_imp]
     exact fun F _ hF₂ => le_trans (by
       conv_lhs => rw [← inv_inv r]
