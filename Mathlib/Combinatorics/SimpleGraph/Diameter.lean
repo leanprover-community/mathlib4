@@ -40,7 +40,7 @@ lemma ediam_def : G.ediam = ⨆ p : α × α, G.edist p.1 p.2 := by
   rw [ediam, iSup_prod]
 
 lemma edist_le_ediam {u v : α} : G.edist u v ≤ G.ediam :=
-  le_iSup_of_le u <| le_iSup_of_le v le_rfl
+  le_iSup₂ (f := G.edist) u v
 
 lemma ediam_eq_top_iff : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
   simp only [ediam, iSup_eq_top, lt_iSup_iff]
