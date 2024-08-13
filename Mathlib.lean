@@ -2047,7 +2047,6 @@ import Mathlib.Data.DList.Basic
 import Mathlib.Data.DList.Defs
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.ENNReal.Basic
-import Mathlib.Data.ENNReal.Floor
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Operations
 import Mathlib.Data.ENNReal.Real
@@ -4446,6 +4445,7 @@ import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.CantorSet
 import Mathlib.Topology.Instances.Complex
 import Mathlib.Topology.Instances.Discrete
+import Mathlib.Topology.Instances.ENat
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.Instances.Int
