@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash, Bhavik Mehta
+Authors: Oliver Nash, Bhavik Mehta, Daniel Weber
 -/
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Separation
@@ -32,6 +32,7 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 
 In a topological space the sets which are open with discrete complement form a filter. We
 formalise this as `Filter.codiscrete`. This is also the supremum of all punctured neighborhoods.
+We also define `Filter.codiscreteWithin`, which is a filter of codiscrete functions on a subset.
 
 -/
 
@@ -117,7 +118,7 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
 /-- In any topological space, we form a filter from the supremum of all punctured neighborhoods. -/
-abbrev Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteWithin Set.univ
+def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteWithin Set.univ
 
 lemma mem_codiscrete {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
@@ -133,7 +134,7 @@ lemma mem_codiscrete' {S : Set X} :
 
 lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     U ∈ codiscrete S ↔ Subtype.val '' U ∈ codiscreteWithin S := by
-  simp only [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
+  simp [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
     mem_codiscreteWithin]
   congr! with x hx
   constructor
