@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 
 /-!
 # Product of pseudometric spaces
