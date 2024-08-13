@@ -6,7 +6,9 @@ package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`debug.byAsSorry, true⟩
+    ⟨`debug.byAsSorry, true⟩,
+    ⟨`weak.linter.unreachableTactic, false⟩,
+    ⟨`weak.linter.unusedVariables, false⟩
   ]
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
