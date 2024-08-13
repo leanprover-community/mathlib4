@@ -57,7 +57,11 @@ instance : EFloorSemiring ℕ∞ where
   gc_floor _ := by rfl
   floor_lt _ := by rfl
 
-class CastNatENatClass (α : Type*) [Semiring α] [Preorder α] [CoeTC ℕ∞ α] where
+/-- A type class for types with a consistent coercions from `ℕ` and `ℕ∞`.
+The consistency requirements are commutation of the coercion triangle
+(`((↑) : ℕ∞ → α) ∘ ((↑) : ℕ → ℕ∞) = ((↑) : ℕ → α)`) and the coercion from `ℕ∞`
+respecting order relations `<`, `≤`, and nonnegativity. -/
+class CastNatENatClass (α : Type*) [Semiring α] [Preorder α] [CoeTC ℕ∞ α] : Prop where
   cast_nat : ∀ (n : ℕ), (n : ℕ∞) = (n : α)
   cast_enat_lt_iff : ∀ (n m : ℕ∞), (n : α) < (m : α) ↔ n < m
   cast_enat_le_iff : ∀ (n m : ℕ∞), (n : α) ≤ (m : α) ↔ n ≤ m
@@ -119,21 +123,13 @@ notation "⌊" a "⌋ₑ" => ENat.floor a
 
 end OrderedSemiring
 
-
-
-section GaloisConnection
-
 open EFloorSemiring in
-instance {α : Type*} [CanonicallyOrderedCommSemiring α] [ZeroLEOneClass α] [CoeTC ℕ∞ α]
-    [EFloorSemiring α] [CastNatENatClass α] :
+lemma galoisConnection_coe_floor {α : Type*} [CanonicallyOrderedCommSemiring α]
+    [CoeTC ℕ∞ α] [EFloorSemiring α] :
     GaloisConnection (fun (n : ℕ∞) ↦ (n : α)) (fun (a : α) ↦ ⌊a⌋ₑ) := by
   intro n a
   rw [← gc_floor (zero_le a)]
   rfl
-
-end GaloisConnection
-
-
 
 section LinearOrderedSemiring
 
