@@ -112,6 +112,8 @@ namespace IsPullback
 
 variable (h : sq.IsPullback)
 
+include h
+
 lemma flip : sq.flip.IsPullback := CategoryTheory.IsPullback.flip h
 
 lemma mono_f₁₃ [Mono sq.f₂₄] : Mono sq.f₁₃ :=
@@ -126,6 +128,8 @@ end IsPullback
 namespace IsPushout
 
 variable (h : sq.IsPushout)
+
+include h
 
 lemma flip : sq.flip.IsPushout := CategoryTheory.IsPushout.flip h
 
