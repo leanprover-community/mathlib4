@@ -24,7 +24,7 @@ open CategoryTheory Order
 
 /-- The category of Boolean rings. -/
 def BoolRing :=
-  Bundled BooleanRing
+   Bundled BooleanRing
 
 namespace BoolRing
 
