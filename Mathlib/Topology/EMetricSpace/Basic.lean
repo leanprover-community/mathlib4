@@ -3,11 +3,11 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Real
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Data.ENNReal.Inv
 
 /-!
 # Extended metric spaces
