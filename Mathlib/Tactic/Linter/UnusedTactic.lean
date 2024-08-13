@@ -197,11 +197,11 @@ partial def eraseUsedTactics : InfoTree → M Unit
 end
 
 /-- Gets the value of the `linter.unusedTactic` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.unusedTactic o
+def getLinterUnusedTactic (o : Options) : Bool := Linter.getLinterValue linter.unusedTactic o
 
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
-  unless getLinterHash (← getOptions) && (← getInfoState).enabled do
+  unless getLinterUnusedTactic (← getOptions) && (← getInfoState).enabled do
     return
   if (← get).messages.hasErrors then
     return

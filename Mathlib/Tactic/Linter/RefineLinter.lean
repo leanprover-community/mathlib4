@@ -42,11 +42,11 @@ The tactics `refine` and `refine'` are similar, but they handle meta-variables s
 This means that they are not completely interchangeable, nor can one completely replace the other.
 However, `refine` is more readable and (heuristically) tends to be more efficient on average.
 -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine o
+def getLinterRefine (o : Options) : Bool := Linter.getLinterValue linter.refine o
 
-@[inherit_doc getLinterHash]
+@[inherit_doc getLinterRefine]
 def refineLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless getLinterHash (← getOptions) do
+  unless getLinterRefine (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return

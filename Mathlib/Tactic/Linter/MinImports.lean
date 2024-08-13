@@ -54,11 +54,11 @@ namespace MinImports
 open Mathlib.Command.MinImports
 
 /-- Gets the value of the `linter.minImports` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.minImports o
+def getLinterMinImports (o : Options) : Bool := Linter.getLinterValue linter.minImports o
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
-    unless linter.minImports.get (← getOptions) do
+    unless getLinterMinImports (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return

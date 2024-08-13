@@ -130,7 +130,7 @@ register_option linter.missingEnd : Bool := {
 namespace MissingEnd
 
 /-- Gets the value of the `linter.missingEnd` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
+def getLinterMissingEnd (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
 
 @[inherit_doc Mathlib.Linter.linter.missingEnd]
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -139,7 +139,7 @@ def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
     unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
-    if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
+    if getLinterMissingEnd (← getOptions) && !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
       -- `namespace`s. We are interested in any *other* unclosed scopes.
@@ -203,11 +203,11 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 namespace CDotLinter
 
 /-- Gets the value of the `linter.generic` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.cdot o
+def getLinterMissingEnd (o : Options) : Bool := Linter.getLinterValue linter.cdot o
 
 @[inherit_doc linter.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterHash (← getOptions) do
+    unless getLinterMissingEnd (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -230,11 +230,11 @@ register_option linter.longLine : Bool := {
 namespace LongLine
 
 /-- Gets the value of the `linter.longLine` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.longLine o
+def getLinterMissingEnd (o : Options) : Bool := Linter.getLinterValue linter.longLine o
 
 @[inherit_doc Mathlib.Linter.linter.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterHash (← getOptions) do
+    unless getLinterMissingEnd (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
