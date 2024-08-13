@@ -233,7 +233,3 @@ protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : �
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
     Tendsto (fun x => nndist (f x) (g x)) x (𝓝 (nndist a b)) :=
   (continuous_nndist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
-
-instance : PseudoMetricSpace (Additive α) := ‹_›
-instance : PseudoMetricSpace (Multiplicative α) := ‹_›
-instance : PseudoMetricSpace αᵒᵈ := ‹_›

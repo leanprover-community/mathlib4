@@ -1145,3 +1145,7 @@ theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Se
 theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
   rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
+
+instance : PseudoMetricSpace (Additive α) := ‹_›
+instance : PseudoMetricSpace (Multiplicative α) := ‹_›
+instance : PseudoMetricSpace αᵒᵈ := ‹_›
