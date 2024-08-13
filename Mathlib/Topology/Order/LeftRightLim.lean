@@ -149,8 +149,7 @@ theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
-  · simp [leftLim, h']
-    exact rightLim_le hf h
+  · simpa [leftLim, h'] using rightLim_le hf h
   obtain ⟨a, ⟨xa, ay⟩⟩ : (Ioo x y).Nonempty :=
     forall_mem_nonempty_iff_neBot.2 (neBot_iff.2 h') (Ioo x y)
       (Ioo_mem_nhdsWithin_Iio ⟨h, le_refl _⟩)
