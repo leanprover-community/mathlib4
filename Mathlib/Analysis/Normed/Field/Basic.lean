@@ -848,6 +848,46 @@ protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
 example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
     ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
 
+namespace NormedDivisionRing
+
+section Discrete
+
+variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [DiscreteTopology 𝕜]
+
+lemma norm_eq_one_iff_ne_zero_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 := by
+  constructor <;> intro hx
+  · contrapose! hx
+    simp [hx]
+  · have : IsOpen {(0 : 𝕜)} := isOpen_discrete {0}
+    simp_rw [Metric.isOpen_singleton_iff, dist_eq_norm, sub_zero] at this
+    obtain ⟨ε, εpos, h'⟩ := this
+    wlog h : ‖x‖ < 1 generalizing 𝕜 with H
+    · push_neg at h
+      rcases h.eq_or_lt with h|h
+      · rw [h]
+      replace h := norm_inv x ▸ _root_.inv_lt_one_iff.mpr (Or.inr h)
+      rw [← inv_inj, inv_one, ← norm_inv]
+      exact H (by simpa) h' h
+    obtain ⟨k, hk⟩ : ∃ k : ℕ, ‖x‖ ^ k < ε := exists_pow_lt_of_lt_one εpos h
+    rw [← norm_pow] at hk
+    specialize h' _ hk
+    simp [hx] at h'
+
+@[simp]
+lemma norm_le_one_of_discrete
+    (x : 𝕜) : ‖x‖ ≤ 1 := by
+  rcases eq_or_ne x 0 with rfl|hx
+  · simp
+  · simp [norm_eq_one_iff_ne_zero_discrete.mpr hx]
+
+lemma discreteTopology_unit_closedBall_eq_univ : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
+  ext
+  simp
+
+end Discrete
+
+end NormedDivisionRing
+
 end NormedDivisionRing
 
 /-- A normed field is a field with a norm satisfying ‖x y‖ = ‖x‖ ‖y‖. -/
@@ -981,6 +1021,26 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
       rw [norm_inv]
       exact one_lt_inv (norm_pos_iff.2 hx) hlt
     · exact ⟨x, hlt⟩
+
+lemma NormedField.discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedField 𝕜] :
+    DiscreteTopology 𝕜 ∨ Nonempty ({h' : NontriviallyNormedField 𝕜 // h'.toNormedField = h}) := by
+  by_cases H : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1
+  · exact Or.inr ⟨(⟨NontriviallyNormedField.ofNormNeOne H, rfl⟩)⟩
+  · simp_rw [discreteTopology_iff_isOpen_singleton_zero, Metric.isOpen_singleton_iff, dist_eq_norm,
+             sub_zero]
+    refine Or.inl ⟨1, zero_lt_one, ?_⟩
+    contrapose! H
+    refine H.imp ?_
+    simp (config := {contextual := true}) [add_comm, ne_of_lt]
+
+lemma NormedField.discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
+    (h : BddAbove (Set.range fun k : 𝕜 ↦ ‖k‖)) :
+    DiscreteTopology 𝕜 := by
+  refine (NormedField.discreteTopology_or_nontriviallyNormedField _).resolve_right ?_
+  rintro ⟨_, rfl⟩
+  obtain ⟨x, h⟩ := h
+  obtain ⟨k, hk⟩ := NormedField.exists_lt_norm 𝕜 x
+  exact hk.not_le (h (Set.mem_range_self k))
 
 instance Real.normedCommRing : NormedCommRing ℝ :=
   { Real.normedAddCommGroup, Real.commRing with norm_mul := fun x y => (abs_mul x y).le }
@@ -1190,6 +1250,46 @@ theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
   { norm_one := (congr_arg norm (map_one f)).trans norm_one }
 
 end Induced
+
+@[to_additive CauchySeq.norm_bddAbove]
+lemma CauchySeq.norm_bddAbove' {G : Type*} [SeminormedCommGroup G] {u : ℕ → G}
+    (hu : CauchySeq u) : BddAbove (Set.range (fun n ↦ ‖u n‖)) := by
+  obtain ⟨C, -, hC⟩ := cauchySeq_bdd hu
+  simp_rw [SeminormedGroup.dist_eq] at hC
+  have : ∀ n, ‖u n‖ ≤ C + ‖u 0‖ := by
+    intro n
+    rw [← mul_div_cancel (u 0) (u n), mul_comm]
+    exact (norm_mul_le' _ _).trans (add_le_add_right (hC _ _).le _)
+  rw [bddAbove_def]
+  exact ⟨C + ‖u 0‖, by simpa using this⟩
+
+section Complete
+
+lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedField K] :
+    CompleteSpace K ↔ IsComplete (Metric.closedBall 0 1 : Set K) := by
+  constructor <;> intro h
+  · exact Metric.isClosed_ball.isComplete
+  rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _|⟨_, rfl⟩
+  · rwa [completeSpace_iff_isComplete_univ,
+         ← NormedDivisionRing.discreteTopology_unit_closedBall_eq_univ]
+  refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
+  obtain ⟨k, hk⟩ := hu.norm_bddAbove
+  have kpos : 0 ≤ k := (_root_.norm_nonneg (u 0)).trans (hk (by simp))
+  obtain ⟨x, hx⟩ := NormedField.exists_lt_norm K k
+  have hu' : CauchySeq ((· / x) ∘ u) := (uniformContinuous_div_const' x).comp_cauchySeq hu
+  have hb : ∀ n, ((· / x) ∘ u) n ∈ Metric.closedBall 0 1 := by
+    intro
+    simp only [Function.comp_apply, Metric.mem_closedBall, dist_zero_right, norm_div]
+    rw [div_le_one (kpos.trans_lt hx)]
+    exact hx.le.trans' (hk (by simp))
+  obtain ⟨a, -, ha'⟩ := cauchySeq_tendsto_of_isComplete h hb hu'
+  refine ⟨a * x, (((continuous_mul_right x).tendsto a).comp ha').congr ?_⟩
+  have hx' : x ≠ 0 := by
+    contrapose! hx
+    simp [hx, kpos]
+  simp [div_mul_cancel₀ _ hx']
+
+end Complete
 
 namespace SubringClass
 

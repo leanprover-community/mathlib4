@@ -116,6 +116,38 @@ instance UniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [Unif
     [UniformGroup G] : UniformContinuousConstSMul G G :=
   ⟨fun _ => uniformContinuous_const.mul uniformContinuous_id⟩
 
+section Ring
+
+variable {R β : Type*} [Ring R] [UniformSpace R] [UniformAddGroup R] [ContinuousMul R]
+  [UniformSpace β] {f : β → R}
+
+theorem UniformContinuous.const_mul' (hf : UniformContinuous f) (a : R) :
+    UniformContinuous fun x ↦ a * f x :=
+  hf.const_smul a
+
+theorem UniformContinuous.mul_const' (hf : UniformContinuous f) (a : R) :
+    UniformContinuous fun x ↦ f x * a :=
+  hf.const_smul (MulOpposite.op a)
+
+theorem uniformContinuous_mul_left' (a : R) : UniformContinuous fun b : R => a * b :=
+  uniformContinuous_id.const_mul' _
+
+theorem uniformContinuous_mul_right' (a : R) : UniformContinuous fun b : R => b * a :=
+  uniformContinuous_id.mul_const' _
+
+theorem UniformContinuous.div_const' {R β : Type*} [DivisionRing R] [UniformSpace R]
+    [UniformAddGroup R] [ContinuousMul R] [UniformSpace β] {f : β → R}
+    (hf : UniformContinuous f) (a : R) :
+    UniformContinuous fun x ↦ f x / a := by
+  simpa [div_eq_mul_inv] using hf.mul_const' a⁻¹
+
+theorem uniformContinuous_div_const' {R : Type*} [DivisionRing R] [UniformSpace R]
+    [UniformAddGroup R] [ContinuousMul R] (a : R) :
+    UniformContinuous fun b : R => b / a :=
+  uniformContinuous_id.div_const' _
+
+end Ring
+
 namespace UniformSpace
 
 namespace Completion
