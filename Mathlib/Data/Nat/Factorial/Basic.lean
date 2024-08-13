@@ -355,7 +355,7 @@ theorem factorial_mul_descFactorial : ∀ {n k : ℕ}, k ≤ n → (n - k)! * n.
       Nat.mul_assoc, factorial_mul_descFactorial (Nat.succ_le_succ_iff.1 h), factorial_succ]
 
 theorem descFactorial_mul_descFactorial {n : ℕ} : ∀ {m k : ℕ}, k ≤ m →
-  (n - k).descFactorial (m - k) * n.descFactorial k = n.descFactorial m
+    (n - k).descFactorial (m - k) * n.descFactorial k = n.descFactorial m
   | m, 0 => fun _ => by rw [Nat.sub_zero, Nat.sub_zero, descFactorial_zero, Nat.mul_one]
   | 0, Nat.succ k => fun h => by
     exfalso
@@ -367,21 +367,19 @@ theorem descFactorial_mul_descFactorial {n : ℕ} : ∀ {m k : ℕ}, k ≤ m →
     rw [← succ_descFactorial_succ (n - k.succ) _]
     rw [← h1]
     rw [descFactorial_succ]
-    have h2 : n - k - (m - k) = n - m
-    refine Nat.sub_sub_sub_cancel_right ?h2.h
-    exact Nat.le_of_lt_succ h
+    have h2 : n - k - (m - k) = n - m := by
+      apply Nat.sub_sub_sub_cancel_right ?h2.h
+      exact Nat.le_of_lt_succ h
     rw [h2]
-    rw [mul_assoc]
+    rw [Nat.mul_assoc]
     rw [descFactorial_mul_descFactorial]
     rw [descFactorial_succ]
     exact Nat.le_of_lt_succ h
-    have h3 : n - k = 0
-    omega
+    have h3 : n - k = 0 := by omega
     rw [h3]
-    rw [zero_mul]
-    rw [zero_mul]
-    have h4 : n < m.succ
-    omega
+    rw [Nat.zero_mul]
+    rw [Nat.zero_mul]
+    have h4 : n < m.succ := by omega
     exact Eq.symm ((fun {_} => descFactorial_eq_zero_iff_lt.mpr) h4)
 
 /-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
@@ -391,8 +389,7 @@ theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n !
   exact (Nat.mul_div_cancel' <| factorial_dvd_factorial <| Nat.sub_le n k).symm
 
 theorem descFactorial_le (n k m : ℕ) (h : k ≤ m) :
-  k.descFactorial n ≤ m.descFactorial n :=
-by
+    k.descFactorial n ≤ m.descFactorial n := by
   induction n with
   | zero => exact Nat.le_of_ble_eq_true rfl
   | succ n ih =>
