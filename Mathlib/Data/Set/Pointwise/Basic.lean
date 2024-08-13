@@ -51,6 +51,8 @@ pointwise subtraction
 -/
 
 
+assert_not_exists OrderedAddCommMonoid
+
 library_note "pointwise nat action"/--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
 `SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
@@ -71,8 +73,6 @@ variable {F α β γ : Type*}
 namespace Set
 
 /-! ### `0`/`1` as sets -/
-
-assert_not_exists OrderedAddCommMonoid
 
 section One
 

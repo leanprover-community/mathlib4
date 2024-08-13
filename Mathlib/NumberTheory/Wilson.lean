@@ -24,7 +24,7 @@ This could be generalized to similar results about finite abelian groups.
 * Give `wilsons_lemma` a descriptive name.
 -/
 
-assert_not_exists legendre_sym.quadratic_reciprocity
+assert_not_exists legendreSym.quadratic_reciprocity
 
 open Finset Nat FiniteField ZMod
 

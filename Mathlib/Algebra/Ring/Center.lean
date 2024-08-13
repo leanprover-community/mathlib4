@@ -15,7 +15,6 @@ import Mathlib.Data.Int.Cast.Lemmas
 assert_not_exists Finset
 assert_not_exists Subsemigroup
 
-
 variable {M : Type*}
 
 namespace Set
