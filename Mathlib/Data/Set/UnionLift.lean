@@ -139,7 +139,6 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
   have hxy : (Set.inclusion (Set.subset_iUnion S k) (opi k ⟨x, hik hi⟩ ⟨y, hjk hj⟩) : α) ∈ S k :=
     (opi k ⟨x, hik hi⟩ ⟨y, hjk hj⟩).prop
   conv_lhs => rw [hx, hy, ← hopi, iUnionLift_of_mem _ hxy]
-  rfl
 
 end UnionLift
 
