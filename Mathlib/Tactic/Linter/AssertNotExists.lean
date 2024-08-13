@@ -71,7 +71,7 @@ It emits a warning on each `assert_not_exists` that is not preceded by
 
 in this order.
 -/
-register_option linter.assertNotExists : Bool := {
+register_option linter.style.assertNotExists : Bool := {
   defValue := true
   descr := "enable the assertNotExists linter"
 }
