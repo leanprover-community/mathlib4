@@ -1,6 +1,5 @@
 import Mathlib.Analysis.Calculus.Rademacher
 import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.Algebra.Order.AddTorsor
 
 open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Submodule
 
