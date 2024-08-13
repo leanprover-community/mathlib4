@@ -64,6 +64,16 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   id p := ⟨𝟙 p.1, by aesop_cat⟩
   comp {X Y Z} f g := ⟨f.val ≫ g.val, by simp [f.2, g.2]⟩
 
+/-- The functor mapping a functor (C ⥤ Type w) to its category of elements -/
+def Functor.ElementsFunctor :  (C ⥤ Type w) ⥤ Cat where
+  obj F := Cat.of F.Elements
+  map {F G} n := {
+    obj := fun ⟨X,x⟩ ↦  ⟨X, n.app X x ⟩
+    map := fun ⟨X, x⟩ {Y} ⟨f,_⟩ ↦
+    match Y with | ⟨Y, y⟩ => ⟨f, by have := congrFun (n.naturality f) x;aesop_cat⟩
+  }
+
+
 namespace CategoryOfElements
 
 /-- Constructor for morphisms in the category of elements of a functor to types. -/
