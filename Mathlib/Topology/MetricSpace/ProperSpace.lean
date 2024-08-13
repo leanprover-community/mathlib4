@@ -7,6 +7,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.Order.IsLUB
 import Mathlib.Topology.Support
+import Mathlib.Topology.MetricSpace.Pseudo.Basic
 
 /-! ## Proper spaces
 
