@@ -383,7 +383,7 @@ noncomputable instance :
   leftUnitor_naturality := by intros; simp [monoidalCategoryStruct]
   rightUnitor_naturality := fun f ↦ (rightUnitor L W ε).hom.naturality f
   pentagon := pentagon
-  triangle := sorry
+  triangle := triangle
 
 end Monoidal
 
