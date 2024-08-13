@@ -19,7 +19,7 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 class IsImmersion (f : X ⟶ Y) : Prop where
   base_embedding : Embedding f.1.base
   isLocallyClosed_range : IsLocallyClosed (Set.range f.1.base)
-  surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
+  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 namespace IsImmersion
 

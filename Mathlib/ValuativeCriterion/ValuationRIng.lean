@@ -29,10 +29,6 @@ lemma LocalSubring.range_eq_range {R : Type*} {S : Type*} [CommRing R] [LocalRin
     (f : R →+* S) : (LocalSubring.range f).1 = Subring.map f ⊤ := by
   exact rfl
 
--- lemma test  {R : Type*} {S : Type*} [CommRing R] [LocalRing R] [CommRing S]
---     (f₁ f₂ : R →+* S) (h : f₁ = f₂) : LocalSubring.range f₁ = LocalSubring.range f₂ :=
---       congrArg LocalSubring.range h
-
 instance {K : Type*} [Ring K] (_ : LocalSubring K) : SetLike (LocalSubring K) K where
   coe A := A.1
   coe_injective' := by
@@ -71,7 +67,7 @@ lemma ValuationSubring.toLocalSubring_injective :
     Function.Injective (ValuationSubring.toLocalSubring (K := K)) := sorry
 
 def maximalLocalSubrings (K : Type*) [Field K] : Set (LocalSubring K) :=
-  maximals (· ≤ ·) (Set.univ (α := LocalSubring K))
+  {R | Maximal (fun _ => True) R}
 
 /--
 If not, then it is contained in some maximal ideal. The localization of that maximal ideal is

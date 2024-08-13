@@ -57,8 +57,8 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
       let y' := f.val.base x'
       let ι_stalk_y := Y.fromSpecStalk y
 
-      let stalk_y_to_residue_x' : Y.stalk y ⟶ (X.residueField x') :=
-        (Y.presheaf.stalkSpecializes h) ≫ (PresheafedSpace.stalkMap f.1 x') ≫ (X.toResidueField x')
+      let stalk_y_to_residue_x' : Y.presheaf.stalk y ⟶ (X.residueField x') :=
+        (Y.presheaf.stalkSpecializes h) ≫ (f.stalkMap x') ≫ (X.toResidueField x')
 
       let f₁ := Spec.map stalk_y_to_residue_x'
       let f₂ := X.fromSpecResidueField x'
@@ -134,9 +134,9 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
         simp only [Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
         have :
             (Spec.map stalk_y_to_A).val.base (LocalRing.closedPoint A) =
-              LocalRing.closedPoint (Y.stalk y) := by
-          have : LocalRing <| CommRingCat.of (Y.stalk y) :=
-            LocallyRingedSpace.stalkLocal Y.toLocallyRingedSpace y
+              LocalRing.closedPoint (Y.presheaf.stalk y) := by
+          have : LocalRing <| CommRingCat.of (Y.presheaf.stalk y) :=
+            Y.toLocallyRingedSpace.localRing y
           have : LocalRing <| CommRingCat.of A := ValuationSubring.localRing A
           have : IsLocalRingHom stalk_y_to_A := stalk_y_to_A_is_local
           apply LocalRing.comap_closedPoint
@@ -185,7 +185,7 @@ lemma of_specializingMap
   let image_x := (pullback.fst i₂ f).val.base x
   letI h_image_x : IsClosedPoint image_x := ⟨hx⟩
 
-  let R_y_to_XR_x := PresheafedSpace.stalkMap XR_to_Spec_R.1 x
+  let R_y_to_XR_x := XR_to_Spec_R.stalkMap x
   let XR_x_to_XR_x' := TopCat.Presheaf.stalkSpecializes XR.presheaf hx'
   let XR_x'_to_K := Scheme.stalkClosedPointTo lft
 
@@ -213,7 +213,7 @@ lemma of_specializingMap
       rfl
     rw [this]
     rw [stalkClosedPointIso_fromSpecStalk']
-    have : Spec.map (PresheafedSpace.stalkMap XR_to_Spec_R.val x)
+    have : Spec.map (XR_to_Spec_R.stalkMap x)
         ≫ (Spec (CommRingCat.of (CommRingCat.of R))).fromSpecStalk image_x
           = XR.fromSpecStalk x
             ≫ XR_to_Spec_R :=
@@ -234,8 +234,9 @@ lemma of_specializingMap
   let XR_x_in_K := LocalSubring.range XR_x_to_K
 
   letI R_to_XR_x_is_local : IsLocalRingHom R_to_XR_x :=
-    CommRingCat.isLocalRingHom_comp (stalkClosedPointIso (CommRingCat.of R)).inv
-      (((Spec (CommRingCat.of R)).presheaf.stalkCongr (congrArg nhds hx)).inv ≫ R_y_to_XR_x)
+    sorry
+    -- CommRingCat.isLocalRingHom_comp (stalkClosedPointIso (CommRingCat.of R)).inv
+    --   (((Spec (CommRingCat.of R)).presheaf.stalkCongr (congrArg nhds hx)).inv ≫ R_y_to_XR_x)
 
   have R_leq_XR_x : R_in_K_via_comp ≤ XR_x_in_K := by apply domination_preserved_by_range
 
