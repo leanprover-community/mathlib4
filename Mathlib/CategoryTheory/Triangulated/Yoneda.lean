@@ -50,12 +50,13 @@ noncomputable instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).ShiftSequence
   Functor.ShiftSequence.tautological _ _
 
 lemma preadditiveCoyoneda_homologySequenceδ_apply
-    (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {A : Cᵒᵖ} (x : A.unop ⟶ T.obj₃⟦n₀⟧) :
+    {C : Type*} [Category C] [Preadditive C] [HasShift C ℤ]
+    (A : Cᵒᵖ) (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (x : A.unop ⟶ T.obj₃⟦n₀⟧) :
     (preadditiveCoyoneda.obj A).homologySequenceδ T n₀ n₁ h x =
       x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by omega)).inv.app _ := by
   apply Category.assoc
 
-noncomputable instance blah (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ where
+noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ where
   sequence n := preadditiveYoneda.obj (B⟦n⟧)
   isoZero := preadditiveYoneda.mapIso ((shiftFunctorZero C ℤ).app B)
   shiftIso n a a' h := NatIso.ofComponents (fun A ↦ AddEquiv.toAddCommGrpIso
