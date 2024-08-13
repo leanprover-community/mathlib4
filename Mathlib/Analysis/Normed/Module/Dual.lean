@@ -239,7 +239,7 @@ theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := le
   (fun _ hx => hx _ rfl)
   (fun x hx => (mem_polar_iff _ _).mpr (fun _ hb => by rw [mem_singleton_iff.mp hb]; exact hx))
 
-theorem polar_singleton_mem {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
+theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
   rw [polar_singleton]
   exact mem_setOf
 
@@ -260,7 +260,7 @@ theorem sInter_polar_finite_reciprocal_ball {𝕜 E : Type*} [RCLike 𝕜] [Norm
       rw [IsUnit.inv_mul_cancel sUnit]
       rw [← Real.norm_of_nonneg (le_of_lt hr), ← norm_norm a, ← norm_mul, ← norm_inv,
         ← norm_algebraMap' 𝕜, ← norm_mul, ← smul_eq_mul, ← map_smul]
-      rw [← polar_singleton_mem]
+      rw [← mem_polar_singleton]
       apply hx {(RCLike.ofReal (K := 𝕜)  (r * ‖a‖)⁻¹) • a} (finite_singleton _)
       rw [singleton_subset_iff, mem_closedBall, dist_zero_right]
       rw [norm_smul, norm_algebraMap', norm_inv, norm_mul, norm_norm,
