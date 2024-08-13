@@ -602,7 +602,7 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
 
 open Set
 
-/-- If `S : Subalgebra 𝕜 A` is a closed subalgebra of a Banach algebra `A`, then for any
+/-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any
 `x : S`, the boundary of the spectrum of `x` relative to `S` is a subset of the spectrum of
 `↑x : A` relative to `A`. -/
 lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x : A) := by
