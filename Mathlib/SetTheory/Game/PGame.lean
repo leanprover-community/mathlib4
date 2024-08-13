@@ -1718,7 +1718,7 @@ theorem insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' �
     · simpa using h
   · simpa using lf_moveRight (toRightMovesInsertLeft i)
 
-/-- The pregame constructed by inserting `x'` as a new right option into x. -/
+/-- The pregame constructed by inserting `x'` as a new right option into `x`. -/
 def insertRight (x x' : PGame.{u}) : PGame :=
   match x with
   | mk xl xr xL xR => mk xl (Option xr) xL (fun x => x.elim x' xR)
