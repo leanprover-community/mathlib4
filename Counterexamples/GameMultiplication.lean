@@ -13,7 +13,7 @@ import Mathlib.Tactic.FinCases
 We show that there exist equivalent pregames `x₁ ≈ x₂` and `y` such that `x₁ * y ≉ x₂ * y`. In
 particular, we cannot define the multiplication of games in general.
 
-The specific counterexample we use is `x₁ = y = {0 | 0}` and `x₂ = {-1, 0 | 0, -1}`. The first game
+The specific counterexample we use is `x₁ = y = {0 | 0}` and `x₂ = {-1, 0 | 0, 1}`. The first game
 is colloquially known as `star`, so we use the name `star'` for the second. We prove that
 `star ≈ star'` and `star * star ≈ star`, but `star' * star ≉ star`.
 -/
