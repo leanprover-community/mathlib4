@@ -269,4 +269,19 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
   · exact htop A
   · exact A _
 
+lemma toNat_eq_toNat {a b :ℕ∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    a.toNat = b.toNat ↔ a = b :=
+  ⟨fun h ↦ by simpa [ha, hb] using WithTop.untop'_eq_untop'_iff.mp h, fun h ↦ congrArg toNat h⟩
+
+open Set
+
+lemma range_nat_cast : Set.range ((↑) : ℕ → ℕ∞) = Iio (⊤ : ℕ∞) := by
+  ext n
+  simp only [mem_Iio]
+  exact ⟨fun ⟨m, hm⟩ ↦ hm.symm ▸ coe_lt_top m, fun h ↦ Option.ne_none_iff_exists.mp h.ne_top⟩
+
+lemma Ico_eq_Iio (b : ℕ∞) : Ico 0 b = Iio b := by ext x; simp
+
+lemma Icc_eq_Iic (b : ℕ∞) : Icc 0 b = Iic b := by ext x; simp
+
 end ENat
