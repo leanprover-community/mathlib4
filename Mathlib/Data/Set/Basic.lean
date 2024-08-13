@@ -435,6 +435,11 @@ theorem Nonempty.to_type : s.Nonempty → Nonempty α := fun ⟨x, _⟩ => ⟨x�
 instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
   Set.univ_nonempty.to_subtype
 
+-- Redeclare for refined keys
+-- `Nonempty (@Subtype _ (@Membership.mem _ (Set _) _ (@Top.top (Set _) _)))`
+instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
+  inferInstanceAs (Nonempty (univ : Set α))
+
 theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
   nonempty_subtype.mp ‹_›
 
