@@ -111,7 +111,7 @@ theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n �
 theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
-    expMapCircle_apply, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
+    Circle.exp_apply, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
     Complex.ofReal_mul, Complex.ofReal_intCast]
   norm_num
   congr 1; ring
@@ -145,7 +145,7 @@ theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier
   induction x using QuotientAddGroup.induction_on
   simp_rw [fourier_apply, toCircle]
   rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_zsmul]
-  simp_rw [Function.Periodic.lift_coe, ← coe_inv_circle_eq_conj, ← expMapCircle_neg,
+  simp_rw [Function.Periodic.lift_coe, ← Circle.coe_inv_eq_conj, ← Circle.exp_neg,
     neg_smul, mul_neg]
 
 @[simp]
@@ -154,7 +154,7 @@ theorem fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = co
 
 -- @[simp] -- Porting note: simp normal form is `fourier_add'`
 theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
-  simp_rw [fourier_apply, add_zsmul, toCircle_add, coe_mul_unitSphere]
+  simp_rw [fourier_apply, add_zsmul, toCircle_add, Circle.coe_mul]
 
 @[simp]
 theorem fourier_add' {m n : ℤ} {x : AddCircle T} :
@@ -163,7 +163,7 @@ theorem fourier_add' {m n : ℤ} {x : AddCircle T} :
 
 theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
-  have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => abs_coe_circle _
+  have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => Circle.abs_coe _
   simp_rw [this]
   exact @ciSup_const _ _ _ Zero.instNonempty _
 
@@ -173,7 +173,7 @@ theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : Ad
   rw [fourier_apply, zsmul_add, ← QuotientAddGroup.mk_zsmul, toCircle_add, coe_mul_unitSphere]
   have : (n : ℂ) ≠ 0 := by simpa using hn
   have : (@toCircle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
-    rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, expMapCircle_apply]
+    rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, Circle.exp_apply]
     replace hT := Complex.ofReal_ne_zero.mpr hT.ne'
     convert Complex.exp_pi_mul_I using 3
     field_simp; ring

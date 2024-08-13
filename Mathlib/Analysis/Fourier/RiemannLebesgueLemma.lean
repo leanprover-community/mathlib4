@@ -69,7 +69,7 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
     (fun v : V => 𝐞 (-⟪v, w⟫) • f (v + i w)) =
       fun v : V => (fun x : V => -(𝐞 (-⟪x, w⟫) • f x)) (v + i w) := by
     ext1 v
-    simp_rw [inner_add_left, hiw, Submonoid.smul_def, Real.fourierChar_apply, neg_add, mul_add,
+    simp_rw [inner_add_left, hiw, Circle.smul_def, Real.fourierChar_apply, neg_add, mul_add,
       ofReal_add, add_mul, exp_add]
     have : 2 * π * -(1 / 2) = -π := by field_simp; ring
     rw [this, ofReal_neg, neg_mul, exp_neg, exp_pi_mul_I, inv_neg, inv_one, mul_neg_one, neg_smul,
@@ -142,7 +142,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
       (hf1.integrable_of_hasCompactSupport hf2),
     norm_smul, this, inv_mul_eq_div, div_lt_iff' two_pos]
   refine lt_of_le_of_lt (norm_integral_le_integral_norm _) ?_
-  simp_rw [norm_circle_smul]
+  simp_rw [Circle.norm_smul]
   --* Show integral can be taken over A only.
   have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
     refine (setIntegral_eq_integral_of_forall_compl_eq_zero fun v hv => ?_).symm

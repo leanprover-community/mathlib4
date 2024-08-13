@@ -97,23 +97,23 @@ theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
 instance : Inhabited 𝔻 :=
   ⟨0⟩
 
-instance circleAction : MulAction circle 𝔻 :=
+instance circleAction : MulAction Circle 𝔻 :=
   mulActionSphereBall
 
-instance isScalarTower_circle_circle : IsScalarTower circle circle 𝔻 :=
+instance isScalarTower_circle_circle : IsScalarTower Circle Circle 𝔻 :=
   isScalarTower_sphere_sphere_ball
 
-instance isScalarTower_circle : IsScalarTower circle 𝔻 𝔻 :=
+instance isScalarTower_circle : IsScalarTower Circle 𝔻 𝔻 :=
   isScalarTower_sphere_ball_ball
 
-instance instSMulCommClass_circle : SMulCommClass circle 𝔻 𝔻 :=
+instance instSMulCommClass_circle : SMulCommClass Circle 𝔻 𝔻 :=
   instSMulCommClass_sphere_ball_ball
 
-instance instSMulCommClass_circle' : SMulCommClass 𝔻 circle 𝔻 :=
+instance instSMulCommClass_circle' : SMulCommClass 𝔻 Circle 𝔻 :=
   SMulCommClass.symm _ _ _
 
 @[simp, norm_cast]
-theorem coe_smul_circle (z : circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
+theorem coe_smul_circle (z : Circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
 
 instance closedBallAction : MulAction (closedBall (0 : ℂ) 1) 𝔻 :=
@@ -132,10 +132,10 @@ instance instSMulCommClass_closedBall : SMulCommClass (closedBall (0 : ℂ) 1) �
 instance instSMulCommClass_closedBall' : SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 :=
   SMulCommClass.symm _ _ _
 
-instance instSMulCommClass_circle_closedBall : SMulCommClass circle (closedBall (0 : ℂ) 1) 𝔻 :=
+instance instSMulCommClass_circle_closedBall : SMulCommClass Circle (closedBall (0 : ℂ) 1) 𝔻 :=
   instSMulCommClass_sphere_closedBall_ball
 
-instance instSMulCommClass_closedBall_circle : SMulCommClass (closedBall (0 : ℂ) 1) circle 𝔻 :=
+instance instSMulCommClass_closedBall_circle : SMulCommClass (closedBall (0 : ℂ) 1) Circle 𝔻 :=
   SMulCommClass.symm _ _ _
 
 @[simp, norm_cast]
