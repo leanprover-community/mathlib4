@@ -212,18 +212,41 @@ lemma whiskerRight_id (X Y : LocalizedMonoidal L W ε) :
     (𝟙 X) ▷ Y = 𝟙 _ := by simp [monoidalCategoryStruct]
 
 @[reassoc]
+lemma whisker_exchange {Q X Y Z : LocalizedMonoidal L W ε} (f : Q ⟶ X) (g : Y ⟶ Z) :
+    Q ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
+  simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, id_comp, comp_id]
+
+@[reassoc]
 lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ f₂ ⊗ f₃) := by
   sorry
 
+lemma associator_naturality₁ {X₁ X₂ X₃ Y₁ : LocalizedMonoidal L W ε} (f₁ : X₁ ⟶ Y₁) :
+    ((f₁ ▷ X₂) ▷ X₃) ≫ (α_ Y₁ X₂ X₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ▷ (X₂ ⊗ X₃)) := by
+  simp only [← tensorHom_id, associator_naturality, Iso.cancel_iso_hom_left, tensor_id]
+
 lemma associator_naturality₂ {X₁ X₂ X₃ Y₂ : LocalizedMonoidal L W ε} (f₂ : X₂ ⟶ Y₂) :
     ((X₁ ◁ f₂) ▷ X₃) ≫ (α_ X₁ Y₂ X₃).hom = (α_ X₁ X₂ X₃).hom ≫ (X₁ ◁ (f₂ ▷ X₃)) := by
   simp only [← tensorHom_id, ← id_tensorHom, associator_naturality]
 
-lemma pentagon_aux {X₁ X₂ X₃ Y₂ : LocalizedMonoidal L W ε} (i : X₂ ≅ Y₂) :
+lemma associator_naturality₃ {X₁ X₂ X₃ Y₃ : LocalizedMonoidal L W ε} (f₃ : X₃ ⟶ Y₃) :
+    ((X₁ ⊗ X₂) ◁ f₃) ≫ (α_ X₁ X₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (X₁ ◁ (X₂ ◁ f₃)) := by
+  simp only [← id_tensorHom, ← tensor_id, associator_naturality]
+
+lemma pentagon_aux₁ {X₁ X₂ X₃ Y₁ : LocalizedMonoidal L W ε} (i : X₁ ≅ Y₁) :
+    ((i.hom ▷ X₂) ▷ X₃) ≫ (α_ Y₁ X₂ X₃).hom  ≫ (i.inv ▷ (X₂ ⊗ X₃)) = (α_ X₁ X₂ X₃).hom := by
+  simp only [← assoc, associator_naturality₁]
+  simp [← whiskerRight_comp, ← whiskerLeft_comp, whiskerRight_id, whiskerLeft_id]
+
+lemma pentagon_aux₂ {X₁ X₂ X₃ Y₂ : LocalizedMonoidal L W ε} (i : X₂ ≅ Y₂) :
     ((X₁ ◁ i.hom) ▷ X₃) ≫ (α_ X₁ Y₂ X₃).hom  ≫ (X₁ ◁ (i.inv ▷ X₃)) = (α_ X₁ X₂ X₃).hom := by
   simp only [← assoc, associator_naturality₂]
+  simp [← whiskerRight_comp, ← whiskerLeft_comp, whiskerRight_id, whiskerLeft_id]
+
+lemma pentagon_aux₃ {X₁ X₂ X₃ Y₃ : LocalizedMonoidal L W ε} (i : X₃ ≅ Y₃) :
+    ((X₁ ⊗ X₂) ◁ i.hom) ≫ (α_ X₁ X₂ Y₃).hom  ≫ (X₁ ◁ (X₂ ◁ i.inv)) = (α_ X₁ X₂ X₃).hom := by
+  simp only [← assoc, associator_naturality₃]
   simp [← whiskerRight_comp, ← whiskerLeft_comp, whiskerRight_id, whiskerLeft_id]
 
 variable {L W ε} in
@@ -248,43 +271,37 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
         ← tensor_comp, e₁.inv_hom_id, ← tensor_comp, e₂.inv_hom_id, ← tensor_comp,
         e₃.inv_hom_id, e₄.inv_hom_id, tensor_id, tensor_id, tensor_id, comp_id]
   dsimp [Pentagon]
-  let a := (((μ L W ε X₁ X₂).hom ⊗ 𝟙 _) ⊗ 𝟙 _) ≫ ((μ L W ε _ X₃).hom ⊗ 𝟙 _) ≫ (μ L W ε _ X₄).hom
-  let b := (μ L W ε X₁ _).inv ≫ (𝟙 _ ⊗ (μ L W ε X₂ _).inv) ≫ (𝟙 _ ⊗ 𝟙 _ ⊗ (μ L W ε X₃ X₄).inv)
-  convert a ≫= (L').congr_map (MonoidalCategory.pentagon X₁ X₂ X₃ X₄) =≫ b using 1
-  · dsimp [a, b]
-    rw [assoc, assoc, ← id_tensorHom, ← tensorHom_id, associator_hom_app]
-    nth_rw 1 [← id_comp (𝟙 ((L').obj X₄))]
-    nth_rw 2 [← id_comp (𝟙 ((L').obj X₄))]
-    simp only [tensor_comp]
-    simp only [assoc]
-    congr 2
-    simp only [tensorHom_id, id_tensorHom]
-    rw [associator_hom_app]
-    simp only [Functor.map_comp, assoc]
-    rw [← μ_inv_natural_right_assoc]
-    rw [← whiskerLeft_comp, ← whiskerLeft_comp]
-    rw [tensorHom_id, whiskerLeft_comp, whiskerLeft_comp, id_tensorHom]
-    simp only [← assoc]
-    congr 1
-    simp only [assoc]
-    rw [← μ_natural_left_assoc]
-    have : ((L').obj X₁ ◁ (μ L W ε X₂ X₃).inv) ▷ (L').obj X₄ ≫
-        (α_ ((L').obj X₁) ((L').obj X₂ ⊗ (L').obj X₃) ((L').obj X₄)).hom ≫
-          (L').obj X₁ ◁ (μ L W ε X₂ X₃).hom ▷ (L').obj X₄ =
-            (α_ ((L').obj X₁) ((L').obj (X₂ ⊗ X₃)) ((L').obj X₄)).hom :=
-      pentagon_aux _ _ _ (μ L W ε X₂ X₃).symm
-    rw [whiskerRight_comp, whiskerRight_comp]
-    simp only [assoc, reassoc_of% this]
-    congr 1
-    rw [associator_hom_app]
-    rw [tensorHom_id]
-    simp only [assoc]
-    rw [← whiskerRight_comp_assoc]
-    rw [id_tensorHom, ← whiskerLeft_comp]
-    simp [whiskerLeft_id, whiskerRight_id]
-    -- TODO: clean up this proof, add simp lemmas...
-  · dsimp [a, b]
-    sorry
+  have : ((L').obj X₁ ◁ (μ L W ε X₂ X₃).inv) ▷ (L').obj X₄ ≫
+      (α_ ((L').obj X₁) ((L').obj X₂ ⊗ (L').obj X₃) ((L').obj X₄)).hom ≫
+        (L').obj X₁ ◁ (μ L W ε X₂ X₃).hom ▷ (L').obj X₄ =
+          (α_ ((L').obj X₁) ((L').obj (X₂ ⊗ X₃)) ((L').obj X₄)).hom :=
+    pentagon_aux₂ _ _ _ (μ L W ε X₂ X₃).symm
+  rw [associator_hom_app, tensorHom_id, id_tensorHom, associator_hom_app, tensorHom_id,
+    whiskerLeft_comp, whiskerRight_comp,  whiskerRight_comp,  whiskerRight_comp, assoc, assoc,
+    assoc, whiskerRight_comp, assoc]
+  rw [reassoc_of% this, associator_hom_app, tensorHom_id,
+    ← pentagon_aux₁ (X₂ := (L').obj X₃) (X₃ := (L').obj X₄) (i := μ L W ε X₁ X₂),
+    ← pentagon_aux₃ (X₁ := (L').obj X₁) (X₂ := (L').obj X₂) (i := μ L W ε X₃ X₄),
+    associator_hom_app, associator_hom_app]
+  simp only [assoc, ← whiskerRight_comp_assoc, Iso.inv_hom_id, comp_id, μ_natural_left_assoc,
+    id_tensorHom, ← whiskerLeft_comp, Iso.inv_hom_id_assoc]
+  rw [← (L').map_comp_assoc, whiskerLeft_comp, μ_inv_natural_right_assoc, ← (L').map_comp_assoc]
+  simp only [assoc, MonoidalCategory.pentagon, Functor.map_comp]
+  simp only [tensorHom_id, id_tensorHom, whiskerLeft_comp, whiskerLeft_comp_assoc,
+    whiskerRight_comp, whiskerRight_comp_assoc, assoc]
+  congr 3
+  simp only [← assoc]
+  congr
+  rw [← comp_id ((L').map (α_ (X₁ ⊗ X₂) X₃ X₄).hom)]
+  simp only [assoc]
+  congr
+  simp only [id_comp]
+  rw [Iso.eq_inv_comp]
+  simp only [← assoc]
+  rw [← Iso.comp_inv_eq]
+  simp only [comp_id, Iso.hom_inv_id, assoc]
+  rw [whisker_exchange, ← whiskerRight_comp_assoc]
+  simp only [Iso.inv_hom_id, whiskerRight_id, id_comp, ← whiskerLeft_comp, whiskerLeft_id]
 
 noncomputable instance :
     MonoidalCategory (LocalizedMonoidal L W ε) where
