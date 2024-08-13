@@ -37,7 +37,7 @@ structure Digraph (V : Type u) where
   Adj : V → V → Prop
 
 noncomputable instance {V : Type u} [Fintype V] : Fintype (Digraph V) := by
-  classical exact Fintype.ofInjective Digraph.Adj Digraph.ext
+  classical exact Fintype.ofInjective Digraph.Adj (fun _ _ ↦ Digraph.ext)
 
 /-- Constructor for digraphs using a boolean function. -/
 @[simps]
@@ -72,7 +72,7 @@ variable {ι : Sort _} {𝕜 : Type _} {V : Type u} {W : Type v} {X : Type w} (G
   (G' : Digraph W) {a b c u v w : V}
 
 theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) :=
-  Digraph.ext
+  fun _ _ ↦ Digraph.ext
 
 @[simp]
 theorem adj_inj {G H : Digraph V} : G.Adj = H.Adj ↔ G = H :=
@@ -230,7 +230,7 @@ instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
 instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ H.Adj v w
 
-instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
+instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ ¬H.Adj v w
 
 variable [DecidableEq V]
