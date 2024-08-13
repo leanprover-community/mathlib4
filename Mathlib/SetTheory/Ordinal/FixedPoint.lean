@@ -490,7 +490,7 @@ theorem nfp_zero : nfp 0 = id := by
 theorem deriv_zero : deriv 0 = id :=
   deriv_eq_id_of_nfp_eq_id nfp_zero
 
-theorem deriv_zero_left (a) : deriv 0 a = a :=
+theorem deriv_zero_left (a) : deriv 0 a = a := by
   rw [deriv_zero]
 
 end
