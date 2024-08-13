@@ -69,7 +69,7 @@ elab "assert_not_exists " n:ident : command => do
     and exist in order to ensure that \"complicated\" parts of the library \
     are not accidentally introduced as dependencies of \"simple\" parts of the library."
 
-/-- `assert_not_imported m₁ m₂ ... mₙ` checks that each one of the modules `m₁ m₂ ... mₙ` are not
+/-- `assert_not_imported m₁ m₂ ... mₙ` checks that each one of the modules `m₁ m₂ ... mₙ` is not
 among the transitive imports of the current file.
 
 It also checks that each one of `m₁ m₂ ... mₙ` is actually the name of an existing module, just
