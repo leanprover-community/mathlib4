@@ -672,6 +672,11 @@ lemma truncLTt_obj_obj_isLE (n : ℤ) (i : ℤt) (h : i ≤ ℤt.mk (n + 1)) (X 
 
 noncomputable def Gr'' (n : ℤ) : C ⥤ C := truncGELE n n ⋙ @shiftFunctor C _ _ _ Shift₂ (-n)
 
+variable (n : ℤ)
+
+instance (n : ℤ) : Functor.Additive (hP.Gr'' n) := by
+  dsimp [Gr'']; infer_instance
+
 instance (X : C) (n : ℤ) : IsLE ((Gr'' n).obj X) 0 :=
   isLE_shift _ n (-n) 0 (add_left_neg _)
 
