@@ -360,9 +360,9 @@ theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (
   refine ⟨sameRay_of_mem_segment, fun h => ?_⟩
   rcases h.exists_eq_smul_add with ⟨a, b, ha, hb, hab, hxy, hzx⟩
   rw [add_comm, sub_add_sub_cancel] at hxy hzx
-  rw [← mem_segment_translate _ (-x), neg_add_self]
+  rw [← mem_segment_translate _ (-x), neg_add_cancel]
   refine ⟨b, a, hb, ha, add_comm a b ▸ hab, ?_⟩
-  rw [← sub_eq_neg_add, ← neg_sub, hxy, ← sub_eq_neg_add, hzx, smul_neg, smul_comm, neg_add_self]
+  rw [← sub_eq_neg_add, ← neg_sub, hxy, ← sub_eq_neg_add, hzx, smul_neg, smul_comm, neg_add_cancel]
 
 open AffineMap
 

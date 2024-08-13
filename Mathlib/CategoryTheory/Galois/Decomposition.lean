@@ -40,7 +40,6 @@ variable {C : Type u₁} [Category.{u₂} C]
 
 namespace PreGaloisCategory
 
-variable [GaloisCategory C]
 
 section Decomposition
 
@@ -69,6 +68,8 @@ private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial
   use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by aesop)
     (fun s m _ ↦ IsInitial.hom_ext h m _)
   exact ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
+
+variable [GaloisCategory C]
 
 /- Show decomposition by inducting on `Nat.card (F.obj X)`. -/
 private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
@@ -184,7 +185,7 @@ Reference: [lenstraGSchemes, 3.14]
 
 -/
 
-variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
+variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
 section GaloisRepAux
 
@@ -208,6 +209,7 @@ private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProd
 
 variable {X} {A : C} (u : A ⟶ selfProd F X)
   (a : F.obj A) (h : F.map u a = mkSelfProdFib F X) {F}
+include h
 
 /-- For each `x : F.obj X`, this is the composition of `u` with the projection at `x`. -/
 @[simp]
@@ -300,6 +302,7 @@ lemma exists_hom_from_galois_of_fiber_nonempty (X : C) (h : Nonempty (F.obj X)) 
   obtain ⟨A, f, a, h1, _⟩ := exists_hom_from_galois_of_fiber F X x
   exact ⟨A, f, h1⟩
 
+include F in
 /-- Any connected object admits a hom from a Galois object. -/
 lemma exists_hom_from_galois_of_connected (X : C) [IsConnected X] :
     ∃ (A : C) (_ : A ⟶ X), IsGalois A :=
