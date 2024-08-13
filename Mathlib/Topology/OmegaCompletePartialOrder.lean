@@ -19,15 +19,11 @@ of continuity is equivalent to continuity in ωCPOs.
 
 -/
 
-
 open Set OmegaCompletePartialOrder
-
-open scoped Classical
 
 universe u
 
 -- "Scott", "ωSup"
-
 namespace Scott
 
 /-- `x` is an `ω`-Sup of a chain `c` if it is the least upper bound of the range of `c`. -/

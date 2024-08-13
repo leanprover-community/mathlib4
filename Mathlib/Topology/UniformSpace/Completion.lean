@@ -40,14 +40,12 @@ This formalization is mostly based on
 From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
 
-
 noncomputable section
 
 open Filter Set
 
 universe u v w x
 
-open scoped Classical
 open Uniformity Topology Filter
 
 /-- Space of Cauchy filters
@@ -222,6 +220,7 @@ instance [h : Nonempty α] : Nonempty (CauchyFilter α) :=
 
 section Extend
 
+open Classical in
 /-- Extend a uniformly continuous function `α → β` to a function `CauchyFilter α → β`.
 Outputs junk when `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyFilter α → β :=
