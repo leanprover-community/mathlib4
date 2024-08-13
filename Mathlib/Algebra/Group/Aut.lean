@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.GroupTheory.Perm.Basic
 
 /-!
@@ -27,7 +26,6 @@ MulAut, AddAut
 -/
 
 assert_not_exists MonoidWithZero
-assert_not_exists Ring
 
 variable {A : Type*} {M : Type*} {G : Type*}
 
@@ -101,12 +99,10 @@ def toPerm : MulAut M →* Equiv.Perm M where
 /-- The tautological action by `MulAut M` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyMulDistribMulAction {M} [Monoid M] : MulDistribMulAction (MulAut M) M where
+instance applyMulAction {M} [Monoid M] : MulAction (MulAut M) M where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-  smul_one := map_one
-  smul_mul := map_mul
 
 @[simp]
 protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a :=
@@ -208,10 +204,8 @@ def toPerm : AddAut A →* Equiv.Perm A where
 /-- The tautological action by `AddAut A` on `A`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyDistribMulAction {A} [AddMonoid A] : DistribMulAction (AddAut A) A where
+instance applyMulAction {A} [AddMonoid A] : MulAction (AddAut A) A where
   smul := (· <| ·)
-  smul_zero := map_zero
-  smul_add := map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
