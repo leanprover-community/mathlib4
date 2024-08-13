@@ -425,9 +425,6 @@ initialize_simps_projections ContinuousLinearMap (toLinearMap_toFun → apply, t
 theorem ext {f g : M₁ →SL[σ₁₂] M₂} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : M₁ →SL[σ₁₂] M₂} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 /-- Copy of a `ContinuousLinearMap` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : M₁ →SL[σ₁₂] M₂ where
@@ -474,9 +471,6 @@ theorem coe_coe (f : M₁ →SL[σ₁₂] M₂) : ⇑(f : M₁ →ₛₗ[σ₁�
 @[ext]
 theorem ext_ring [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} (h : f 1 = g 1) : f = g :=
   coe_inj.1 <| LinearMap.ext_ring h
-
-theorem ext_ring_iff [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h => h ▸ rfl, ext_ring⟩
 
 /-- If two continuous linear maps are equal on a set `s`, then they are equal on the closure
 of the `Submodule.span` of this set. -/
@@ -644,19 +638,19 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_zero := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_comm := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_assoc := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   nsmul := (· • ·)
   nsmul_zero f := by
     ext
@@ -1068,7 +1062,7 @@ theorem smulRight_one_one (c : R₁ →L[R₁] M₂) : smulRight (1 : R₁ →L[
 @[simp]
 theorem smulRight_one_eq_iff {f f' : M₂} :
     smulRight (1 : R₁ →L[R₁] R₁) f = smulRight (1 : R₁ →L[R₁] R₁) f' ↔ f = f' := by
-  simp only [ext_ring_iff, smulRight_apply, one_apply, one_smul]
+  simp only [ContinuousLinearMap.ext_ring_iff, smulRight_apply, one_apply, one_smul]
 
 theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
     (smulRight (1 : R₁ →L[R₁] R₁) x).comp (smulRight (1 : R₁ →L[R₁] R₁) c) =
@@ -1132,7 +1126,7 @@ theorem pi_apply (f : ∀ i, M →L[R] φ i) (c : M) (i : ι) : pi f c i = f i c
   rfl
 
 theorem pi_eq_zero (f : ∀ i, M →L[R] φ i) : pi f = 0 ↔ ∀ i, f i = 0 := by
-  simp only [ext_iff, pi_apply, Function.funext_iff]
+  simp only [ContinuousLinearMap.ext_iff, pi_apply, Function.funext_iff]
   exact forall_swap
 
 theorem pi_zero : pi (fun _ => 0 : ∀ i, M →L[R] φ i) = 0 :=
@@ -1269,7 +1263,7 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
   zsmul_neg' n f := by ext; simp [add_smul]
-  add_left_neg _ := by ext; apply add_left_neg
+  neg_add_cancel _ := by ext; apply neg_add_cancel
 
 theorem sub_apply (f g : M →SL[σ₁₂] M₂) (x : M) : (f - g) x = f x - g x :=
   rfl
@@ -1995,7 +1989,7 @@ instance automorphismGroup : Group (M₁ ≃L[R₁] M₁) where
   one_mul f := by
     ext
     rfl
-  mul_left_inv f := by
+  inv_mul_cancel f := by
     ext x
     exact f.left_inv x
 
@@ -2081,9 +2075,6 @@ section
 
 /-! The next theorems cover the identification between `M ≃L[𝕜] M`and the group of units of the ring
 `M →L[R] M`. -/
-
-
-variable [TopologicalAddGroup M]
 
 /-- An invertible continuous linear map `f` determines a continuous equivalence from `M` to itself.
 -/
@@ -2279,7 +2270,7 @@ end
 section
 
 variable [Ring R]
-variable [AddCommGroup M] [TopologicalAddGroup M] [Module R M]
+variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]

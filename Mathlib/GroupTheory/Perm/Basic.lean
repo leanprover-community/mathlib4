@@ -34,7 +34,7 @@ instance permGroup : Group (Perm α) where
   mul_assoc f g h := (trans_assoc _ _ _).symm
   one_mul := trans_refl
   mul_one := refl_trans
-  mul_left_inv := self_trans_symm
+  inv_mul_cancel := self_trans_symm
   npow n f := f ^ n
   npow_succ n f := coe_fn_injective $ Function.iterate_succ _ _
   zpow := zpowRec fun n f ↦ f ^ n
@@ -281,8 +281,8 @@ def extendDomainHom : Perm α →* Perm β where
 
 theorem extendDomainHom_injective : Function.Injective (extendDomainHom f) :=
   (injective_iff_map_eq_one (extendDomainHom f)).mpr fun e he =>
-    ext fun x =>
-      f.injective (Subtype.ext ((extendDomain_apply_image e f x).symm.trans (ext_iff.mp he (f x))))
+    ext fun x => f.injective <|
+      Subtype.ext ((extendDomain_apply_image e f x).symm.trans (Perm.ext_iff.mp he (f x)))
 
 @[simp]
 theorem extendDomain_eq_one_iff {e : Perm α} {f : α ≃ Subtype p} : e.extendDomain f = 1 ↔ e = 1 :=
@@ -346,9 +346,9 @@ private theorem pow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℕ} (x), p x �
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
     (f.subtypePerm hf : Perm { x // p x }) ^ n = (f ^ n).subtypePerm (pow_aux hf) := by
-  induction' n with n ih
-  · simp
-  · simp_rw [pow_succ', ih, subtypePerm_mul]
+  induction n with
+  | zero => simp
+  | succ n ih => simp_rw [pow_succ', ih, subtypePerm_mul]
 
 private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x ↔ p ((f ^ n) x)
   | Int.ofNat n => pow_aux hf
@@ -359,9 +359,9 @@ private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x 
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
     (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by
-  induction' n with n ih
-  · exact subtypePerm_pow _ _ _
-  · simp only [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]
+  induction n with
+  | ofNat n => exact subtypePerm_pow _ _ _
+  | negSucc n => simp only [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]
 
 variable [DecidablePred p] {a : α}
 

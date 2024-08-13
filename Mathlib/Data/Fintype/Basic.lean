@@ -282,6 +282,11 @@ theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y 
 theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :
     (univ.filter p : Set α) = { x | p x } := by simp
 
+end Finset
+
+namespace Finset
+variable  {s t : Finset α}
+
 @[simp] lemma subtype_eq_univ {p : α → Prop} [DecidablePred p] [Fintype {a // p a}] :
     s.subtype p = univ ↔ ∀ ⦃a⦄, p a → a ∈ s := by simp [ext_iff]
 
@@ -959,7 +964,7 @@ variable [Fintype α] (p : α → Prop) [DecidablePred p]
 /-- Given a fintype `α` and a predicate `p`, associate to a proof that there is a unique element of
 `α` satisfying `p` this unique element, as an element of the corresponding subtype. -/
 def chooseX (hp : ∃! a : α, p a) : { a // p a } :=
-  ⟨Finset.choose p univ (by simp; exact hp), Finset.choose_property _ _ _⟩
+  ⟨Finset.choose p univ (by simpa), Finset.choose_property _ _ _⟩
 
 /-- Given a fintype `α` and a predicate `p`, associate to a proof that there is a unique element of
 `α` satisfying `p` this unique element, as an element of `α`. -/

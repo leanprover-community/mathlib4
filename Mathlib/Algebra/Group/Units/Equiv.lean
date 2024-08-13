@@ -19,7 +19,7 @@ variable {F α β A B M N P Q G H : Type*}
 @[to_additive (attr := simps apply_val symm_apply)
 "An additive group is isomorphic to its group of additive units"]
 def toUnits [Group G] : G ≃* Gˣ where
-  toFun x := ⟨x, x⁻¹, mul_inv_self _, inv_mul_self _⟩
+  toFun x := ⟨x, x⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩
   invFun x := x
   left_inv _ := rfl
   right_inv _ := Units.ext rfl

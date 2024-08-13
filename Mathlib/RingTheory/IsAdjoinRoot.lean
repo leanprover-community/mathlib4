@@ -177,7 +177,11 @@ theorem ext (h h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
 
 section lift
 
-variable {T : Type*} [CommRing T] {i : R →+* T} {x : T} (hx : f.eval₂ i x = 0)
+variable {T : Type*} [CommRing T] {i : R →+* T} {x : T}
+
+section
+variable (hx : f.eval₂ i x = 0)
+include hx
 
 /-- Auxiliary lemma for `IsAdjoinRoot.lift` -/
 theorem eval₂_repr_eq_eval₂_of_map_eq (h : IsAdjoinRoot S f) (z : S) (w : R[X])
@@ -235,6 +239,8 @@ theorem apply_eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (a
 theorem eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (algebraMap R S a) = i a)
     (hroot : g h.root = x) : g = h.lift i x hx :=
   RingHom.ext (h.apply_eq_lift hx g hmap hroot)
+
+end
 
 variable [Algebra R T] (hx' : aeval x f = 0)
 variable (x)
@@ -572,11 +578,13 @@ def aequiv (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
 
 @[simp]
 theorem aequiv_map (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) (z : R[X]) :
-    h.aequiv h' (h.map z) = h'.map z := by rw [aequiv, AlgEquiv.coe_mk, liftHom_map, aeval_eq]
+    h.aequiv h' (h.map z) = h'.map z := by
+  rw [aequiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_map, aeval_eq]
 
 @[simp]
 theorem aequiv_root (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) :
-    h.aequiv h' h.root = h'.root := by rw [aequiv, AlgEquiv.coe_mk, liftHom_root]
+    h.aequiv h' h.root = h'.root := by
+  rw [aequiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_root]
 
 @[simp]
 theorem aequiv_self (h : IsAdjoinRoot S f) : h.aequiv h = AlgEquiv.refl := by
