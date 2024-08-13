@@ -28,7 +28,7 @@ open Lean Elab Command
 
 namespace Mathlib.Linter
 
-/-- `onlyImportsOneModDocAsserts stx` checks whether `stx` is the syntax for a module that
+/-- `onlyImportsModDocsAsserts stx` checks whether `stx` is the syntax for a module that
 only consists of
 * any number of `import` statements (possibly none) followed by
 * any number of doc-module strings (possibly none) followed by
@@ -41,16 +41,6 @@ def onlyImportsModDocsAsserts : Syntax → Bool
     let dropDocs := args.toList.dropWhile (·.isOfKind ``Lean.Parser.Command.moduleDoc)
     let dropAssertNotExists := dropDocs.dropWhile (·.isOfKind ``commandAssert_not_exists_)
     dropAssertNotExists.isEmpty
-  | _=> false
-
-/-- `onlyImportsOneModDoc stx` checks whether `stx` is the syntax for a module that
-only consists of
-* any number of `import` statements (possibly none) followed by
-* at least one doc-module strings.
--/
-def onlyImportsOneModDoc : Syntax → Bool
-  | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] =>
-    (args.getD 0 default).isOfKind ``Lean.Parser.Command.moduleDoc
   | _=> false
 
 /-- `parseUpToHere stx post` takes as input a `Syntax` `stx` and a `String` `post`.
@@ -107,44 +97,5 @@ def assertNotExistsLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter assertNotExistsLinter
 
 end Style.AssertNotExists
-
-/--
-The "docModuleString" linter checks that a file starts with
-```
-import*
-/-! doc-module -/
-```
-It emits a warning if a file does not have a doc-module string right after the `import`s.
--/
-register_option linter.docModuleString : Bool := {
-  defValue := true
-  descr := "enable the docModuleString linter"
-}
-
-namespace Style.DocModuleString
-
---/-- Gets the value of the `linter.docModuleString` option. -/
---def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.docModuleString o
-
-#check Lean.Parser.Command.exit
-
-@[inherit_doc Mathlib.Linter.linter.docModuleString]
-def docModuleStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless getLinterHash (← getOptions) do
-    return
-  if (← MonadState.get).messages.hasErrors then
-    return
-  if stx.isOfKind ``Lean.Parser.Command.moduleDoc then return
-  let upToStx ← parseUpToHere stx "\nassert_not_exists XXX" <|> return Syntax.missing
-  if ! onlyImportsOneModDoc upToStx then
-    logInfoAt stx "no docs!!"
-  --if ! onlyImportsModDocsAsserts upToStx then
-    Linter.logLint linter.docModuleString stx
-      m!"`{stx}` appears too late: it can only be preceded by `import` statements \
-      doc-module strings and other `assert_not_exists` statements."
-
-initialize addLinter docModuleStringLinter
-
-end Style.DocModuleString
 
 end Mathlib.Linter
