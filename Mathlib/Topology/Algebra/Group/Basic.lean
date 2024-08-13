@@ -950,7 +950,7 @@ lemma Filter.tendsto_div_const_iff {G : Type*}
     {b : G} (hb : b ≠ 0) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (f · / b) l (𝓝 (c / b)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.div_const' h b⟩
-  convert h.div_const' b⁻¹ with k <;> rw [div_div, mul_inv_cancel hb, div_one]
+  convert h.div_const' b⁻¹ with k <;> rw [div_div, mul_inv_cancel₀ hb, div_one]
 
 lemma Filter.tendsto_sub_const_iff {G : Type*}
     [AddCommGroup G] [TopologicalSpace G] [ContinuousSub G]
@@ -1332,7 +1332,7 @@ theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U �
   suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
   rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
-  exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_self])
+  exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_cancel])
 
 /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
 is closed, symmetric, and satisfies `V * V ⊆ U`. -/

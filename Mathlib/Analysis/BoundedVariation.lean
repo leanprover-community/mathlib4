@@ -633,7 +633,7 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
   symm
   refine additive_of_isTotal ((· : α) ≤ ·) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
-    simp only [variationOnFromTo.eq_neg_swap f s y x, Subtype.coe_mk, add_right_neg,
+    simp only [variationOnFromTo.eq_neg_swap f s y x, Subtype.coe_mk, add_neg_cancel,
       forall_true_left]
   · rintro x y z xy yz xs ys zs
     rw [variationOnFromTo.eq_of_le f s xy, variationOnFromTo.eq_of_le f s yz,
@@ -645,7 +645,7 @@ protected theorem edist_zero_of_eq_zero {f : α → E} {s : Set α} (hf : Locall
     edist (f a) (f b) = 0 := by
   wlog h' : a ≤ b
   · rw [edist_comm]
-    apply this f s hf hb ha _ (le_of_not_le h')
+    apply this hf hb ha _ (le_of_not_le h')
     rw [variationOnFromTo.eq_neg_swap, h, neg_zero]
   · apply le_antisymm _ (zero_le _)
     rw [← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',
