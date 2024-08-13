@@ -97,7 +97,7 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (plt1 : p < 1) : 0 < qa
     exact binEntropy_pos pgt0 plt1
   linarith
 
-/-- Outside usual range of `binEntropy`, it is negative. This is due to `log p = log |p|` -/
+/-- Outside the usual range of `binEntropy`, it is negative. This is due to `log p = log |p|` -/
 lemma binEntropy_neg_of_neg {p : ℝ} (hp : p < 0) : binEntropy p < 0 := by
   simp only [binEntropy_apply]
   suffices -p * log p < (1-p) * log (1-p) by linarith
@@ -112,7 +112,7 @@ lemma binEntropy_neg_of_neg {p : ℝ} (hp : p < 0) : binEntropy p < 0 := by
       · nlinarith [log_neg_of_lt_zero hp h]
     nlinarith [(log_pos (by linarith) : 0 < log (1 - p))]
 
-/-- Outside usual range of `binEntropy`, it is negative. This is due to `log p = log |p|` -/
+/-- Outside the usual range of `binEntropy`, it is negative. This is due to `log p = log |p|` -/
 lemma binEntropy_neg_of_gt_one {p : ℝ} (hp : 1 < p) : binEntropy p < 0 := by
   let x := p - 2⁻¹
   rw [show p = 2⁻¹ + x by ring, binEntropy_two_inv_add]
@@ -160,7 +160,8 @@ lemma binEntropy_lt_log2_of_gt_half {p : ℝ} (h : 1/2 < p) (h2 : p ≤ 1) :
   exact binEntropy_lt_log2_of_lt_one_half (by linarith) (by linarith)
 
 lemma binEntropy_eq_log2_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
-    binEntropy p = log 2 ↔ p = 1/2 := by
+    binEntropy p = log 2 ↔ p = 2⁻¹ := by
+  rw [show (2⁻¹ : ℝ) = 1/2 by norm_num]
   constructor <;> intro h
   · by_cases h' : p < 1/2
     · linarith [binEntropy_lt_log2_of_lt_one_half pge0 h']
@@ -169,7 +170,7 @@ lemma binEntropy_eq_log2_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1)
       · linarith
   · simp only [one_div, binEntropy_two_inv, h]
 
-lemma binEntropy_le_log2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
+lemma binEntropy_le_log_two {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
     binEntropy p ≤ log 2 := by
   by_cases hh: p = 1/2
   · simp only [one_div, binEntropy_two_inv, le_refl, hh]
