@@ -569,6 +569,115 @@ end CharacterSpace
 
 end WeakDual
 
+section BoundarySpectrum
+
+local notation "σ" => spectrum
+
+variable {𝕜 A SA : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [SetLike SA A] [SubringClass SA A] [instSMulMem : SMulMemClass SA 𝕜 A]
+variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
+
+open Topology Filter
+
+open SubalgebraClass in
+include instSMulMem in
+/-- Let `S` be a closed subalgebra of a Banach algebra `A`. If `a : S` is invertible in `A`,
+and for all `x : S` sufficiently close to `a` within some filter `l`, `x` is invertible in `S`,
+then `a` is invertible in `S` as well. -/
+lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S}
+    (ha : IsUnit (a : A)) (hla : l ≤ 𝓝 a) (hl : ∀ᶠ x in l, IsUnit x) (hl' : l.NeBot) :
+    IsUnit a := by
+  have hla₂ : Tendsto Ring.inverse (map (val S) l) (𝓝 (↑ha.unit⁻¹ : A)) := by
+    rw [← Ring.inverse_unit]
+    exact (NormedRing.inverse_continuousAt _).tendsto.comp <|
+      continuousAt_subtype_val.tendsto.comp <| map_mono hla
+  suffices mem : (↑ha.unit⁻¹ : A) ∈ S by
+    refine ⟨⟨a, ⟨(↑ha.unit⁻¹ : A), mem⟩, ?_, ?_⟩, rfl⟩
+    all_goals ext; simp
+  apply hS.mem_of_tendsto hla₂
+  rw [Filter.eventually_map]
+  apply hl.mp <| eventually_of_forall fun x hx ↦ ?_
+  suffices Ring.inverse (val S x) = (val S ↑hx.unit⁻¹) from this ▸ Subtype.property _
+  rw [← (hx.map (val S)).unit_spec, Ring.inverse_unit (hx.map (val S)).unit, val]
+  apply Units.mul_eq_one_iff_inv_eq.mp
+  simpa [-IsUnit.mul_val_inv] using congr(($hx.mul_val_inv : A))
+
+open Set
+
+/-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any
+`x : S`, the boundary of the spectrum of `x` relative to `S` is a subset of the spectrum of
+`↑x : A` relative to `A`. -/
+lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x : A) := by
+  have : CompleteSpace S := hS.completeSpace_coe
+  intro μ hμ
+  by_contra h
+  rw [spectrum.not_mem_iff] at h
+  rw [← frontier_compl, (spectrum.isClosed _).isOpen_compl.frontier_eq, mem_diff] at hμ
+  obtain ⟨hμ₁, hμ₂⟩ := hμ
+  rw [mem_closure_iff_clusterPt] at hμ₁
+  apply hμ₂
+  rw [mem_compl_iff, spectrum.not_mem_iff]
+  refine Subalgebra.isUnit_of_isUnit_val_of_eventually S h ?_ ?_ <| .map hμ₁ (algebraMap 𝕜 S · - x)
+  · calc
+      _ ≤ map _ (𝓝 μ) := map_mono (by simp)
+      _ ≤ _ := by rw [← Filter.Tendsto, ← ContinuousAt]; fun_prop
+  · rw [eventually_map]
+    apply Eventually.filter_mono inf_le_right
+    simp [spectrum.not_mem_iff]
+
+/-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the boundary of
+the spectrum of `x` relative to `S` is a subset of the boundary of the spectrum of `↑x : A`
+relative to `A`. -/
+lemma Subalgebra.frontier_subset_frontier :
+    frontier (σ 𝕜 x) ⊆ frontier (σ 𝕜 (x : A)) := by
+  rw [frontier_eq_closure_inter_closure (s := σ 𝕜 (x : A)),
+    (spectrum.isClosed (x : A)).closure_eq]
+  apply subset_inter (frontier_spectrum S x)
+  rw [frontier_eq_closure_inter_closure]
+  exact inter_subset_right |>.trans <|
+    closure_mono <| compl_subset_compl.mpr <| spectrum.subset_subalgebra x
+
+open Set Notation
+
+/-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the spectrum of `x`
+is the spectrum of `↑x : A` along with the connected components of the complement of the spectrum of
+`↑x : A` which contain an element of the spectrum of `x : S`. -/
+lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
+    σ 𝕜 x = σ 𝕜 (x : A) ∪ (⋃ z ∈ (σ 𝕜 x \ σ 𝕜 (x : A)), connectedComponentIn (σ 𝕜 (x : A))ᶜ z) := by
+  suffices IsClopen ((σ 𝕜 (x : A))ᶜ ↓∩ (σ 𝕜 x \ σ 𝕜 (x : A))) by
+    rw [← this.biUnion_connectedComponentIn (diff_subset_compl _ _),
+      union_diff_cancel (spectrum.subset_subalgebra x)]
+  have : CompleteSpace S := hS.completeSpace_coe
+  have h_open : IsOpen (σ 𝕜 x \ σ 𝕜 (x : A)) := by
+    rw [← (spectrum.isClosed (𝕜 := 𝕜) x).closure_eq, closure_eq_interior_union_frontier,
+      union_diff_distrib, diff_eq_empty.mpr (frontier_spectrum S x),
+      diff_eq_compl_inter, union_empty]
+    exact (spectrum.isClosed _).isOpen_compl.inter isOpen_interior
+  apply isClopen_preimage_val h_open
+  suffices h_frontier : frontier (σ 𝕜 x \ σ 𝕜 (x : A)) ⊆ frontier (σ 𝕜 (x : A)) from
+    disjoint_of_subset_left h_frontier <| disjoint_compl_right.frontier_left
+      (spectrum.isClosed _).isOpen_compl
+  rw [diff_eq_compl_inter]
+  apply (frontier_inter_subset _ _).trans
+  rw [frontier_compl]
+  apply union_subset <| inter_subset_left
+  refine inter_subset_inter_right _ ?_ |>.trans <| inter_subset_right
+  exact frontier_subset_frontier S x
+
+/-- Let `S` be a closed subalgebra of a Banach algebra `A`, and let `x : S`. If `z` is in the
+spectrum of `x`, then the connected component of `z` in the complement of the spectrum of `↑x : A`
+is bounded (or else `z` actually belongs to the spectrum of `↑x : A`). -/
+lemma Subalgebra.spectrum_isBounded_connectedComponentIn {z : 𝕜} (hz : z ∈ σ 𝕜 x) :
+    Bornology.IsBounded (connectedComponentIn (σ 𝕜 (x : A))ᶜ z) := by
+  by_cases hz' : z ∈ σ 𝕜 (x : A)
+  · simp [connectedComponentIn_eq_empty (show z ∉ (σ 𝕜 (x : A))ᶜ from not_not.mpr hz')]
+  · have : CompleteSpace S := hS.completeSpace_coe
+    suffices connectedComponentIn (σ 𝕜 (x : A))ᶜ z ⊆ σ 𝕜 x from spectrum.isBounded x |>.subset this
+    rw [spectrum_sUnion_connectedComponentIn S]
+    exact subset_biUnion_of_mem (mem_diff_of_mem hz hz') |>.trans subset_union_right
+
+end BoundarySpectrum
+
 namespace SpectrumRestricts
 
 open NNReal ENNReal
