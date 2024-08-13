@@ -492,6 +492,7 @@ theorem deriv_zero : deriv 0 = id :=
 
 theorem deriv_zero_left (a) : deriv 0 a = a := by
   rw [deriv_zero]
+  rfl
 
 end
 
@@ -562,10 +563,7 @@ theorem nfp_mul_eq_opow_omega {a b : Ordinal} (hb : 0 < b) (hba : b ≤ (a^omega
     nfp (a * ·) b = (a^omega.{u}) := by
   rcases eq_zero_or_pos a with ha | ha
   · rw [ha, zero_opow omega_ne_zero] at hba ⊢
-    rw [Ordinal.le_zero.1 hba]
-    convert congr_fun nfp_zero 0
-    ext
-    rw [zero_mul]
+    simp_rw [Ordinal.le_zero.1 hba, zero_mul, nfp_zero]
     rfl
   apply le_antisymm
   · apply nfp_le_fp (mul_isNormal ha).monotone hba
