@@ -268,9 +268,6 @@ lemma carrier_equiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
     rintro ⟨rfl : T = T', e⟩
     simpa [e]
 
--- lemma uniqqq (X : Scheme) (p : X) : Unique (PrimeSpectrum (X.residueField p)) := by
---   exact PrimeSpectrum.instUnique
-
 def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
   toFun t := ⟨.ofPoint t, SpecOfPoint t⟩
   invFun T := T.1.SpecTensorTo.1.base T.2
