@@ -159,7 +159,7 @@ variable {a b : G₀}
   or the `/ₚ` operation, it is possible to write a division
   as a partial function with three arguments. -/
 def mk0 (a : G₀) (ha : a ≠ 0) : G₀ˣ :=
-  ⟨a, a⁻¹, mul_inv_cancel ha, inv_mul_cancel ha⟩
+  ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩
 
 @[simp]
 theorem mk0_one (h := one_ne_zero) : mk0 (1 : G₀) h = 1 := by
@@ -176,11 +176,11 @@ theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
 
 -- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
-  mul_inv_cancel u.ne_zero
+  mul_inv_cancel₀ u.ne_zero
 
 -- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
-  inv_mul_cancel u.ne_zero
+  inv_mul_cancel₀ u.ne_zero
 
 @[simp]
 theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
@@ -370,7 +370,7 @@ lemma zpow_eq_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
 lemma zpow_ne_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (zpow_eq_zero_iff hn).ne
 
 lemma zpow_neg_mul_zpow_self (n : ℤ) (ha : a ≠ 0) : a ^ (-n) * a ^ n = 1 := by
-  rw [zpow_neg]; exact inv_mul_cancel (zpow_ne_zero n ha)
+  rw [zpow_neg]; exact inv_mul_cancel₀ (zpow_ne_zero n ha)
 
 theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
