@@ -398,7 +398,7 @@ variable {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
 theorem leibniz_inv (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
-  · exact D.leibniz_of_mul_eq_one (inv_mul_cancel ha)
+  · exact D.leibniz_of_mul_eq_one (inv_mul_cancel₀ ha)
 
 theorem leibniz_div (a b : K) : D (a / b) = b⁻¹ ^ 2 • (b • D a - a • D b) := by
   simp only [div_eq_mul_inv, leibniz, leibniz_inv, inv_pow, neg_smul, smul_neg, smul_smul, add_comm,

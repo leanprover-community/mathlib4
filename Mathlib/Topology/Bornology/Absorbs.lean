@@ -244,3 +244,10 @@ lemma Absorbent.zero_mem [NeBot (cobounded G₀)] [AddMonoid E] [DistribMulActio
   absorbs_zero_iff.1 (hs 0)
 
 end GroupWithZero
+
+protected theorem Absorbs.restrict_scalars
+    {M N α : Type*} [Monoid N] [SMul M N] [SMul M α] [MulAction N α]
+    [IsScalarTower M N α] [Bornology M] [Bornology N] {s t : Set α} (h : Absorbs N s t)
+    (hbdd : Tendsto (· • 1 : M → N) (cobounded M) (cobounded N)) :
+    Absorbs M s t :=
+  (hbdd.eventually h).mono <| fun x hx ↦ by rwa [smul_one_smul N x s] at hx

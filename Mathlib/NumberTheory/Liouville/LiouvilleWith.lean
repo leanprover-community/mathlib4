@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.NumberTheory.Liouville.Basic
@@ -124,7 +124,7 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
 `x` satisfies the same condition. -/
 theorem mul_rat_iff (hr : r ≠ 0) : LiouvilleWith p (x * r) ↔ LiouvilleWith p x :=
   ⟨fun h => by
-    simpa only [mul_assoc, ← Rat.cast_mul, mul_inv_cancel hr, Rat.cast_one, mul_one] using
+    simpa only [mul_assoc, ← Rat.cast_mul, mul_inv_cancel₀ hr, Rat.cast_one, mul_one] using
       h.mul_rat (inv_ne_zero hr),
     fun h => h.mul_rat hr⟩
 
@@ -280,7 +280,7 @@ protected theorem irrational (h : LiouvilleWith p x) (hp : 1 < p) : Irrational x
   rcases eq_or_ne r 0 with (rfl | h0)
   · refine h.ne_cast_int hp 0 ?_; rw [Rat.cast_zero, Int.cast_zero]
   · refine (h.mul_rat (inv_ne_zero h0)).ne_cast_int hp 1 ?_
-    rw [Rat.cast_inv, mul_inv_cancel]
+    rw [Rat.cast_inv, mul_inv_cancel₀]
     exacts [Int.cast_one.symm, Rat.cast_ne_zero.mpr h0]
 
 end LiouvilleWith
