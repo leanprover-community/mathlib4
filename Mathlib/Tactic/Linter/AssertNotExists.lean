@@ -71,7 +71,7 @@ It emits a warning on each `assert_not_exists` that is not preceded by
 
 in this order.
 -/
-register_option linter.assertNotExists : Bool := {
+register_option linter.style.assertNotExists : Bool := {
   defValue := true
   descr := "enable the assertNotExists linter"
 }
@@ -79,9 +79,9 @@ register_option linter.assertNotExists : Bool := {
 namespace Style.AssertNotExists
 
 /-- Gets the value of the `linter.assertNotExists` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.assertNotExists o
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.style.assertNotExists o
 
-@[inherit_doc Mathlib.Linter.linter.assertNotExists]
+@[inherit_doc Mathlib.Linter.linter.style.assertNotExists]
 def assertNotExistsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterHash (← getOptions) do
     return
@@ -90,7 +90,7 @@ def assertNotExistsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless stx.isOfKind ``commandAssert_not_exists_ do return
   let upToStx ← parseUpToHere stx "\nassert_not_exists XXX" <|> return Syntax.missing
   if ! onlyImportsModDocsAsserts upToStx then
-    Linter.logLint linter.assertNotExists stx
+    Linter.logLint linter.style.assertNotExists stx
       m!"`{stx}` appears too late: it can only be preceded by `import` statements \
       doc-module strings and other `assert_not_exists` statements."
 
