@@ -25,7 +25,7 @@ namespace Function
 open Filter
 variable {α : Type*} [PartialOrder α] [Finite α] {f : α → α}
 
-/-- The function `g : ι → α` will eventually be constant if `>` relation on `α` is well-ordered. -/
+/-- The function `g : ι → α` will eventually be constant if the `>` relation on `α` is well-founded. -/
 lemma eventually_constant_monotone {ι : Type*}
     [SemilatticeSup ι] [Nonempty ι] [hα : WellFoundedGT α] {g : ι → α} (hg : Monotone g) :
     EventuallyConst g atTop := by
