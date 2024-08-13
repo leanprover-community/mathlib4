@@ -275,7 +275,7 @@ lemma toNat_eq_toNat {a b :ℕ∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
 
 @[simp] lemma sub_ne_top_iff {a b : ℕ∞} : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := by simp [← not_iff_not]
 
-lemma sub_add_cancel {a b : ℕ∞} (h : b ≤ a) : a - b + b = a := by
+protected lemma sub_add_cancel {a b : ℕ∞} (h : b ≤ a) : a - b + b = a := by
   induction' a using recTopCoe with a'
   · by_cases b_top : b = ⊤
     · simp [b_top]
@@ -287,7 +287,7 @@ lemma sub_add_cancel {a b : ℕ∞} (h : b ≤ a) : a - b + b = a := by
 
 open Set
 
-lemma range_nat_cast : Set.range ((↑) : ℕ → ℕ∞) = Iio (⊤ : ℕ∞) := by
+lemma range_natCast : Set.range ((↑) : ℕ → ℕ∞) = Iio (⊤ : ℕ∞) := by
   ext n
   simp only [mem_Iio]
   exact ⟨fun ⟨m, hm⟩ ↦ hm.symm ▸ coe_lt_top m, fun h ↦ Option.ne_none_iff_exists.mp h.ne_top⟩
