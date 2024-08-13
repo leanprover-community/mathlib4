@@ -86,6 +86,7 @@ instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
 
 variable {F}
 
+/-- Being a representably flat functor is closed under natural isomorphisms. -/
 theorem RepresentablyFlat.of_iso [RepresentablyFlat F] {G : C ⥤ D} (α : F ≅ G) :
     RepresentablyFlat G where
   cofiltered X := by
