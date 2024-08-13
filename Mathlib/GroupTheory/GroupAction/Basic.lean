@@ -773,6 +773,7 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
 theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
     g ∈ stabilizer G s ↔ g • s ⊆ s := by
   haveI : Fintype s := Set.Finite.fintype hs
+  haveI : Finite (g • s : Set α) := Finite.Set.finite_image ..
   haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
   rw [mem_stabilizer_iff]
   constructor
