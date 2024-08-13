@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Localization.Bifunctor
+import Mathlib.CategoryTheory.Functor.Trifunctor
 
 namespace CategoryTheory
 
@@ -72,6 +73,9 @@ variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) {W₁ : MorphismProperty C₁} {W₂
   [W₁.ContainsIdentities] [W₂.ContainsIdentities] [W₃.ContainsIdentities]
 
 noncomputable def lift₃ : D₁ ⥤ D₂ ⥤ D₃ ⥤ E :=
+  curry.obj (lift₂ (uncurry.obj F) hF (L₁.prod L₂) L₃)
+
+noncomputable def lift₃' : D₁ ⥤ D₂ ⥤ D₃ ⥤ E :=
   curry.obj (lift₂ (uncurry.obj F) hF (L₁.prod L₂) L₃)
 
 -- noncomputable instance : Lifting₂ L₁ L₂ W₁ W₂ F (lift₂ F hF L₁ L₂) where

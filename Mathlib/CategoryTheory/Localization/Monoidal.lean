@@ -101,15 +101,27 @@ noncomputable def leftUnitor : tensorLeftFunctor L W ε unit ≅ 𝟭 _ :=
   (tensorBifunctor L W ε).mapIso ε.symm ≪≫
     Localization.liftNatIso L' W (tensorLeft (𝟙_ C) ⋙ L') L'
       (tensorLeftFunctor L W ε ((L').obj (𝟙_ _))) _
-      (isoWhiskerRight (leftUnitorNatIso C) _ ≪≫ L.leftUnitor)
+        (isoWhiskerRight (leftUnitorNatIso C) _ ≪≫ L.leftUnitor)
 
 noncomputable def rightUnitor : tensorRightFunctor L W ε unit ≅ 𝟭 _ :=
   (tensorBifunctor L W ε).flip.mapIso ε.symm ≪≫
     Localization.liftNatIso L' W (tensorRight (𝟙_ C) ⋙ L') L'
       (tensorRightFunctor L W ε ((L').obj (𝟙_ _))) _
-      (isoWhiskerRight (rightUnitorNatIso C) _ ≪≫ L.leftUnitor)
+        (isoWhiskerRight (rightUnitorNatIso C) _ ≪≫ L.leftUnitor)
 
--- lemma isInvertedBy₃ : MorphismProperty.IsInvertedBy₃ W W W (𝟭 C) :=
+noncomputable def tensorTrifunctorLeft : LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε ⥤
+    LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=
+  bifunctorComp₁₂ (tensorBifunctor L W ε) (tensorBifunctor L W ε)
+  -- this is `fun X Y Z ↦ (X ⊗ Y) ⊗ Z`, see the example below
+
+noncomputable def tensorTrifunctorRight : LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε ⥤
+    LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=
+  bifunctorComp₂₃ (tensorBifunctor L W ε) (tensorBifunctor L W ε)
+   -- this is `fun X Y Z ↦ X ⊗ (Y ⊗ Z)` see the example below
+
+noncomputable def associator : tensorTrifunctorLeft L W ε ≅ tensorTrifunctorRight L W ε := sorry
+
+-- lemma isInvertedBy₃ : MorphismProperty.IsInvertedBy₃ W W W _ :=
 
 noncomputable instance monoidalCategoryStruct :
     MonoidalCategoryStruct (LocalizedMonoidal L W ε) where
@@ -117,9 +129,21 @@ noncomputable instance monoidalCategoryStruct :
   whiskerLeft X _ _ g := (tensorLeftFunctor L W ε X).map g
   whiskerRight f Y := (tensorRightFunctor L W ε Y).map f
   tensorUnit := unit
-  associator := sorry -- needs localization of trifunctors
+  associator X Y Z := (((associator L W ε).app X).app Y).app Z
   leftUnitor Y := (leftUnitor L W ε).app Y
   rightUnitor X := (rightUnitor L W ε).app X
+
+example (X Y Z : LocalizedMonoidal L W ε) :
+    (((tensorTrifunctorLeft L W ε).obj X).obj Y).obj Z = (X ⊗ Y) ⊗ Z := rfl
+
+example (X Y Z : LocalizedMonoidal L W ε) :
+    (((tensorTrifunctorRight L W ε).obj X).obj Y).obj Z = X ⊗ Y ⊗ Z := rfl
+
+example (X Y Z Z' : LocalizedMonoidal L W ε) (f : Z ⟶ Z') :
+    (((tensorTrifunctorLeft L W ε).obj X).obj Y).map f = (X ⊗ Y) ◁ f := rfl
+
+example (X Y Z Z' : LocalizedMonoidal L W ε) (f : Z ⟶ Z') :
+    (((tensorTrifunctorRight L W ε).obj X).obj Y).map f = X ◁ (Y ◁ f) := rfl
 
 noncomputable def μ (X Y : C) : (L').obj X ⊗ (L').obj Y ≅ (L').obj (X ⊗ Y) :=
   ((tensorBifunctorIso L W ε).app X).app Y
@@ -130,7 +154,6 @@ lemma μ_natural_left {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
       (μ L W ε X₁ Y).hom ≫ (L').map (f ▷ Y) :=
   NatTrans.naturality_app (tensorBifunctorIso L W ε).hom Y f
 
--- is this necessary?
 @[reassoc (attr := simp)]
 lemma μ_inv_natural_left {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
     (μ L W ε X₁ Y).inv ≫ (L').map f ▷ (L').obj Y =
@@ -216,11 +239,45 @@ lemma whisker_exchange {Q X Y Z : LocalizedMonoidal L W ε} (f : Q ⟶ X) (g : Y
     Q ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
   simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, id_comp, comp_id]
 
+lemma tensorTrifunctorRight_maps_aux {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε} (f₁ : X₁ ⟶ Y₁)
+    (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
+    (((tensorTrifunctorRight L W ε).map f₁).app X₂).app X₃
+      ≫ (((tensorTrifunctorRight L W ε).obj Y₁).map f₂).app X₃
+        ≫ (((tensorTrifunctorRight L W ε).obj Y₁).obj Y₂).map f₃ =
+          f₁ ▷ (X₂ ⊗ X₃) ≫ Y₁ ◁ (f₂ ▷ X₃) ≫ Y₁ ◁ (Y₂ ◁ f₃) := rfl
+
+lemma tensorTrifunctorRight_maps_aux₂ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε} (f₁ : X₁ ⟶ Y₁)
+    (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) : f₁ ▷ (X₂ ⊗ X₃) ≫ Y₁ ◁ (f₂ ▷ X₃) ≫ Y₁ ◁ (Y₂ ◁ f₃) =
+      f₁ ⊗ (f₂ ⊗ f₃) := by
+  simp only [← tensorHom_id, ← id_tensorHom, ← tensor_comp, comp_id, id_comp]
+
+lemma tensorTrifunctorLeft_maps_aux {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε} (f₁ : X₁ ⟶ Y₁)
+    (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
+    (((tensorTrifunctorLeft L W ε).map f₁).app X₂).app X₃
+      ≫ (((tensorTrifunctorLeft L W ε).obj Y₁).map f₂).app X₃
+        ≫ (((tensorTrifunctorLeft L W ε).obj Y₁).obj Y₂).map f₃ =
+          ((f₁ ▷ X₂) ▷ X₃) ≫ ((Y₁ ◁ f₂) ▷ X₃) ≫ ((Y₁ ⊗ Y₂) ◁ f₃) := rfl
+
+lemma tensorTrifunctorLeft_maps_aux₂ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε} (f₁ : X₁ ⟶ Y₁)
+    (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) : ((f₁ ▷ X₂) ▷ X₃) ≫ ((Y₁ ◁ f₂) ▷ X₃) ≫ ((Y₁ ⊗ Y₂) ◁ f₃) =
+      (f₁ ⊗ f₂) ⊗ f₃ := by
+  simp only [← tensorHom_id, ← id_tensorHom, ← tensor_comp, comp_id, id_comp]
+
 @[reassoc]
 lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ f₂ ⊗ f₃) := by
-  sorry
+  rw [← tensorTrifunctorRight_maps_aux₂, ← tensorTrifunctorRight_maps_aux]
+  rw [← tensorTrifunctorLeft_maps_aux₂, ← tensorTrifunctorLeft_maps_aux]
+  simp only [assoc]
+  erw [(((associator L W ε).hom.app Y₁).app Y₂).naturality f₃]
+  rw [← NatTrans.comp_app_assoc, ← NatTrans.comp_app_assoc]
+  simp only [assoc]
+  erw [((associator L W ε).hom.app Y₁).naturality f₂]
+  rw [← NatTrans.comp_app_assoc]
+  erw [(associator L W ε).hom.naturality f₁]
+  simp
+  rfl
 
 lemma associator_naturality₁ {X₁ X₂ X₃ Y₁ : LocalizedMonoidal L W ε} (f₁ : X₁ ⟶ Y₁) :
     ((f₁ ▷ X₂) ▷ X₃) ≫ (α_ Y₁ X₂ X₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ▷ (X₂ ⊗ X₃)) := by
