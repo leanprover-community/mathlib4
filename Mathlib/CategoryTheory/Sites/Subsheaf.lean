@@ -359,7 +359,7 @@ instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ TypeMax.{v, w}} (f : F ⟶ F'
     rw [isIso_iff_bijective]
     constructor
     · intro x y e
-      have := (NatTrans.mono_iff_mono_app _ _).mp hf X
+      have := (NatTrans.mono_iff_mono_app f).mp hf X
       rw [mono_iff_injective] at this
       exact this (congr_arg Subtype.val e : _)
     · rintro ⟨_, ⟨x, rfl⟩⟩
