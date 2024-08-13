@@ -53,6 +53,7 @@ lemma preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply
 
 variable (X)
 
+include hS in
 lemma covariant_sequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.f).postcomp X (add_zero n)))
       (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n))) (by
@@ -137,6 +138,7 @@ lemma covariant_sequence_exact₁ {n₁ : ℕ} (x₁ : Ext X S.X₁ n₁)
   rw [ShortComplex.ab_exact_iff] at this
   exact this x₁ hx₁
 
+include hS in
 lemma covariant_sequence_exact₂ {n : ℕ} (x₂ : Ext X S.X₂ n)
     (hx₂ : x₂.comp (mk₀ S.g) (add_zero n) = 0) :
     ∃ (x₁ : Ext X S.X₁ n), x₁.comp (mk₀ S.f) (add_zero n) = x₂ := by

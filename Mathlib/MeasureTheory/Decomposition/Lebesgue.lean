@@ -604,7 +604,7 @@ theorem rnDeriv_smul_right (ν μ : Measure α) [IsFiniteMeasure ν]
       rwa [add_right_inj] at this
     rw [← ν.haveLebesgueDecomposition_add (r • μ), singularPart_smul_right _ _ _ hr,
       ENNReal.smul_def r, withDensity_smul_measure, ← ENNReal.smul_def, ← smul_assoc,
-      smul_eq_mul, inv_mul_cancel hr, one_smul]
+      smul_eq_mul, inv_mul_cancel₀ hr, one_smul]
     exact ν.haveLebesgueDecomposition_add μ
 
 /-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
@@ -691,7 +691,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       have hb₁ : (0 : ℝ) < (νA : ℝ)⁻¹ := by rw [_root_.inv_pos]; exact hb
       have h' : 1 / (↑n + 1) * νA < c := by
         rw [← NNReal.coe_lt_coe, ← mul_lt_mul_right hb₁, NNReal.coe_mul, mul_assoc, ←
-          NNReal.coe_inv, ← NNReal.coe_mul, _root_.mul_inv_cancel, ← NNReal.coe_mul, mul_one,
+          NNReal.coe_inv, ← NNReal.coe_mul, mul_inv_cancel₀, ← NNReal.coe_mul, mul_one,
           NNReal.coe_inv]
         · exact hn
         · exact hb.ne'
@@ -990,7 +990,7 @@ theorem rnDeriv_smul_right' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite �
       rwa [add_right_inj] at this
     rw [← ν.haveLebesgueDecomposition_add (r • μ), singularPart_smul_right _ _ _ hr,
       ENNReal.smul_def r, withDensity_smul_measure, ← ENNReal.smul_def, ← smul_assoc,
-      smul_eq_mul, inv_mul_cancel hr, one_smul]
+      smul_eq_mul, inv_mul_cancel₀ hr, one_smul]
     exact ν.haveLebesgueDecomposition_add μ
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _

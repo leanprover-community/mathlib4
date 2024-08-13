@@ -68,7 +68,7 @@ This file expands on the development in the core library.
 -/
 
 assert_not_exists Monoid
-
+assert_not_exists Fintype
 universe u v
 
 open Fin Nat Function
@@ -544,8 +544,6 @@ def castLEEmb (h : n ≤ m) : Fin n ↪ Fin m where
 /- The next proof can be golfed a lot using `Fintype.card`.
 It is written this way to define `ENat.card` and `Nat.card` without a `Fintype` dependency
 (not done yet). -/
-assert_not_exists Fintype
-
 lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨castLEEmb h⟩⟩
   induction n generalizing m with
@@ -576,7 +574,7 @@ lemma equiv_iff_eq : Nonempty (Fin m ≃ Fin n) ↔ m = n :=
 
 @[simp]
 theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
-  Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, Fin.ext rfl⟩⟩
+  Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
 
 @[simp]
 theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
@@ -682,8 +680,7 @@ The `Fin.castSucc_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
-theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 :=
-  ext rfl
+theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 := rfl
 
 /-- `castSucc i` is positive when `i` is positive.
 
