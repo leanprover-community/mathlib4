@@ -63,6 +63,49 @@ theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℕ} :
 theorem nhds_coe {r : ℕ} : 𝓝 (r : ℕ∞) = (𝓝 r).map (↑) :=
   (openEmbedding_coe.map_nhds_eq r).symm
 
+lemma isOpen_Ico :
+    IsOpen (Ico a b) := by
+  by_cases a_zero : a = 0
+  · simpa [a_zero, Ico_eq_Iio] using isOpen_Iio
+  · simpa [Ico_eq_Ioo a_zero b] using isOpen_Ioo
+
+lemma isOpen_Ioc :
+    IsOpen (Ioc a b) := by
+  by_cases b_top : b = ⊤
+  · simpa [b_top, Ioc_eq_Ioi] using isOpen_Ioi
+  · simpa [Ioc_eq_Ioo a b_top] using isOpen_Ioo
+
+lemma isOpen_Icc (h : a ≠ ⊤ ∨ b ≠ ⊤) :
+    IsOpen (Icc a b) := by
+  by_cases b_top : b = ⊤
+  · simp only [ne_eq, b_top, not_true_eq_false, or_false, Icc_top] at h ⊢
+    by_cases a_zero : a = 0
+    · convert isOpen_univ
+      ext x
+      simp [a_zero]
+    · simpa [Ici_eq_Ioi a_zero h] using isOpen_Ioi
+  · simpa [Icc_eq_Ico _ b_top] using isOpen_Ico
+
+lemma isOpen_singleton {n : ℕ∞} (n_ne_top : n ≠ ⊤) :
+    IsOpen {n} := by
+  rw [← Icc_self n]
+  refine isOpen_Icc <| Or.inl n_ne_top
+
+lemma isClopen_singleton {n : ℕ∞} (n_ne_top : n ≠ ⊤) :
+    IsClopen {n} :=
+  ⟨isClosed_singleton, isOpen_singleton n_ne_top⟩
+
+lemma isClopen_finite {s : Set ℕ∞} (s_finite : Finite s) (top_nmem : ⊤ ∉ s) :
+    IsClopen s := by
+  rw [← biUnion_of_singleton s]
+  exact ⟨Finite.isClosed_biUnion s_finite fun _ _  ↦ isClosed_singleton,
+         isOpen_biUnion fun i hi ↦ isOpen_singleton <| ne_of_mem_of_not_mem hi top_nmem⟩
+
+@[simp] lemma mem_nhds_iff_of_ne_top {n : ℕ∞} (n_ne_top : n ≠ ⊤) (s : Set ℕ∞) :
+    s ∈ 𝓝 n ↔ n ∈ s := by
+  refine ⟨fun h ↦ mem_of_mem_nhds h, fun h ↦ ?_⟩
+  exact mem_of_superset ((isOpen_singleton n_ne_top).mem_nhds rfl) <| singleton_subset_iff.mpr h
+
 theorem tendsto_nhds_coe_iff {α : Type*} {l : Filter α} {x : ℕ} {f : ℕ∞ → α} :
     Tendsto f (𝓝 ↑x) l ↔ Tendsto (f ∘ (↑) : ℕ → α) (𝓝 x) l := by
   rw [nhds_coe, tendsto_map'_iff]

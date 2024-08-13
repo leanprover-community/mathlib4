@@ -271,6 +271,20 @@ lemma toNat_eq_toNat {a b :ℕ∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     a.toNat = b.toNat ↔ a = b :=
   ⟨fun h ↦ by simpa [ha, hb] using WithTop.untop'_eq_untop'_iff.mp h, fun h ↦ congrArg toNat h⟩
 
+@[simp] lemma sub_eq_top_iff {a b : ℕ∞} : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
+
+@[simp] lemma sub_ne_top_iff {a b : ℕ∞} : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := by simp [← not_iff_not]
+
+lemma sub_add_cancel {a b : ℕ∞} (h : b ≤ a) : a - b + b = a := by
+  induction' a using recTopCoe with a'
+  · by_cases b_top : b = ⊤
+    · simp [b_top]
+    · simp [show ⊤ - b = ⊤ from WithTop.sub_eq_top_iff.mpr ⟨rfl, b_top⟩]
+  · have b_lt_top : b < ⊤ := lt_of_le_of_lt h <| coe_lt_top a'
+    rw [show b = b.toNat from ((@coe_toNat_eq_self b).mpr b_lt_top.ne).symm]
+    rw [← ENat.coe_sub, ← ENat.coe_add, tsub_add_cancel_of_le]
+    exact toNat_le_of_le_coe h
+
 open Set
 
 lemma range_nat_cast : Set.range ((↑) : ℕ → ℕ∞) = Iio (⊤ : ℕ∞) := by
@@ -281,5 +295,37 @@ lemma range_nat_cast : Set.range ((↑) : ℕ → ℕ∞) = Iio (⊤ : ℕ∞) :
 lemma Ico_eq_Iio (b : ℕ∞) : Ico 0 b = Iio b := by ext x; simp
 
 lemma Icc_eq_Iic (b : ℕ∞) : Icc 0 b = Iic b := by ext x; simp
+
+lemma Ioc_eq_Ioi (a : ℕ∞) : Ioc a ⊤ = Ioi a := by ext x; simp
+
+lemma Icc_eq_Ici (a : ℕ∞) : Icc a ⊤ = Ici a := by ext x; simp
+
+lemma Ico_eq_Ioo {a : ℕ∞} (ha : a ≠ 0) (b : ℕ∞) : Ico a b = Ioo (a - 1) b := by
+  ext n;
+  simp only [mem_Ico, mem_Ioo, and_congr_left_iff]
+  intro h
+  let c := a - 1
+  by_cases a_top : a = ⊤
+  · simpa [a_top] using h.ne_top
+  · have a_eq : a = c + 1 := by rw [sub_add_cancel <| one_le_iff_ne_zero.mpr ha]
+    convert add_one_le_iff <| sub_ne_top_iff.mpr <| Or.inl a_top
+
+lemma Icc_eq_Ico (a : ℕ∞) {b : ℕ∞} (hb : b ≠ ⊤) : Icc a b = Ico a (b + 1) := by
+  ext n
+  simpa using fun _ ↦ Iff.symm (lt_add_one_iff hb)
+
+lemma Icc_eq_Ioo {a b : ℕ∞} (ha : a ≠ 0) (hb : b ≠ ⊤) : Icc a b = Ioo (a - 1) (b + 1) := by
+  rw [Icc_eq_Ico _ hb, Ico_eq_Ioo ha]
+
+lemma Ioc_eq_Ioo (a : ℕ∞) {b : ℕ∞} (hb : b ≠ ⊤) : Ioc a b = Ioo a (b + 1) := by
+  ext n
+  simpa using fun _ ↦ Iff.symm (lt_add_one_iff hb)
+
+lemma Ici_eq_Ioi {a : ℕ∞} (a_ne_zero : a ≠ 0) (a_ne_top : a ≠ ⊤) : Ici a = Ioi (a - 1) := by
+  ext n
+  simp only [mem_Ici, mem_Ioi]
+  let c := a - 1
+  have a_eq : a = c + 1 := by rw [sub_add_cancel <| one_le_iff_ne_zero.mpr a_ne_zero]
+  convert add_one_le_iff <| sub_ne_top_iff.mpr <| Or.inl a_ne_top
 
 end ENat
