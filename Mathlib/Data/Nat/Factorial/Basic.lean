@@ -375,7 +375,7 @@ theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n !
 theorem descFactorial_le (n : ℕ) {k m : ℕ} (h : k ≤ m) :
     k.descFactorial n ≤ m.descFactorial n := by
   induction n with
-  | zero => exact Nat.le_of_ble_eq_true rfl
+  | zero => rfl
   | succ n ih =>
     rw [descFactorial_succ, descFactorial_succ]
     apply Nat.mul_le_mul
