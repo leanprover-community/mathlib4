@@ -315,7 +315,7 @@ def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f
 
 protected theorem IsBoundedBilinearMap.isBigO (h : IsBoundedBilinearMap 𝕜 f) :
     f =O[⊤] fun p : E × F => ‖p.1‖ * ‖p.2‖ :=
-  let ⟨C, le_iff_exists_add, hC⟩ := h.bound
+  let ⟨C, _, hC⟩ := h.bound
   Asymptotics.IsBigO.of_bound C <|
     Filter.eventually_of_forall fun ⟨x, y⟩ => by simpa [mul_assoc] using hC x y
 
