@@ -10,6 +10,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Algebra.Order.Ring.WithTop
 
 /-!
 # Theory of univariate polynomials
@@ -523,7 +524,7 @@ theorem ne_zero_of_natDegree_gt {n : ℕ} (h : n < natDegree p) : p ≠ 0 := fun
 
 theorem degree_lt_degree (h : natDegree p < natDegree q) : degree p < degree q := by
   by_cases hp : p = 0
-  · simp [hp]
+  · simp only [hp, degree_zero]
     rw [bot_lt_iff_ne_bot]
     intro hq
     simp [hp, degree_eq_bot.mp hq, lt_irrefl] at h

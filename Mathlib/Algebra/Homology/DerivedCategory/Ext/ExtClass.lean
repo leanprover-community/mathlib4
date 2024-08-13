@@ -50,12 +50,14 @@ instance : HasSmallLocalizedShiftedHom.{w} W ℤ (S').X₃ (S').X₁ := by
   dsimp
   infer_instance
 
+include hS in
 private lemma hasSmallLocalizedHom_S'_X₃_K :
     HasSmallLocalizedHom.{w} W (S').X₃ K := by
   rw [Localization.hasSmallLocalizedHom_iff_target W (S').X₃ qis hqis]
   dsimp
   apply Localization.hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ (M := ℤ)
 
+include hS in
 private lemma hasSmallLocalizedShiftedHom_K_S'_X₁ :
     HasSmallLocalizedShiftedHom.{w} W ℤ K (S').X₁ := by
   rw [Localization.hasSmallLocalizedShiftedHom_iff_source.{w} W ℤ qis hqis (S').X₁]

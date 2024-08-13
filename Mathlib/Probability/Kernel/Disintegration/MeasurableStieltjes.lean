@@ -48,7 +48,7 @@ open scoped NNReal ENNReal MeasureTheory Topology
 
 namespace ProbabilityTheory
 
-variable {α β ι : Type*} [MeasurableSpace α]
+variable {α β ι : Type*}
 
 section IsMeasurableRatCDF
 
@@ -68,7 +68,7 @@ lemma isRatStieltjesPoint_unit_prod_iff (f : α → ℚ → ℝ) (a : α) :
   constructor <;>
     exact fun h ↦ ⟨h.mono, h.tendsto_atTop_one, h.tendsto_atBot_zero, h.iInf_rat_gt_eq⟩
 
-lemma measurableSet_isRatStieltjesPoint (hf : Measurable f) :
+lemma measurableSet_isRatStieltjesPoint [MeasurableSpace α] (hf : Measurable f) :
     MeasurableSet {a | IsRatStieltjesPoint f a} := by
   have h1 : MeasurableSet {a | Monotone (f a)} := by
     change MeasurableSet {a | ∀ q r (_ : q ≤ r), f a q ≤ f a r}
@@ -106,6 +106,7 @@ lemma IsRatStieltjesPoint.ite {f g : α → ℚ → ℝ} {a : α} (p : α → Pr
     split_ifs with h; exacts [(hf h).tendsto_atBot_zero, (hg h).tendsto_atBot_zero]
   iInf_rat_gt_eq := by split_ifs with h; exacts [(hf h).iInf_rat_gt_eq, (hg h).iInf_rat_gt_eq]
 
+variable [MeasurableSpace α]
 
 /-- A function `f : α → ℚ → ℝ` is a (kernel) rational cumulative distribution function if it is
 measurable in the first argument and if `f a` satisfies a list of properties for all `a : α`:
@@ -232,6 +233,13 @@ lemma toRatCDF_of_isRatStieltjesPoint {a : α} (h : IsRatStieltjesPoint f a) (q 
     toRatCDF f a q = f a q := by
   rw [toRatCDF, if_pos h]
 
+lemma toRatCDF_unit_prod (a : α) :
+    toRatCDF (fun (p : Unit × α) ↦ f p.2) ((), a) = toRatCDF f a := by
+  unfold toRatCDF
+  rw [isRatStieltjesPoint_unit_prod_iff]
+
+variable [MeasurableSpace α]
+
 lemma measurable_toRatCDF (hf : Measurable f) : Measurable (toRatCDF f) :=
   Measurable.ite (measurableSet_isRatStieltjesPoint hf) hf measurable_const
 
@@ -242,11 +250,6 @@ lemma isMeasurableRatCDF_toRatCDF (hf : Measurable f) :
     exact IsRatStieltjesPoint.ite (IsRatStieltjesPoint f) id
       (fun _ ↦ isRatStieltjesPoint_defaultRatCDF a)
   measurable := measurable_toRatCDF hf
-
-lemma toRatCDF_unit_prod (a : α) :
-    toRatCDF (fun (p : Unit × α) ↦ f p.2) ((), a) = toRatCDF f a := by
-  unfold toRatCDF
-  rw [isRatStieltjesPoint_unit_prod_iff]
 
 end ToRatCDF
 
@@ -268,7 +271,8 @@ lemma IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod {f : α → ℚ → ℝ}
       = IsMeasurableRatCDF.stieltjesFunctionAux f a := by
   simp_rw [IsMeasurableRatCDF.stieltjesFunctionAux_def']
 
-variable {f : α → ℚ → ℝ} (hf : IsMeasurableRatCDF f)
+variable {f : α → ℚ → ℝ} [MeasurableSpace α] (hf : IsMeasurableRatCDF f)
+include hf
 
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
     IsMeasurableRatCDF.stieltjesFunctionAux f a r = f a r := by
@@ -435,7 +439,7 @@ end IsMeasurableRatCDF.stieltjesFunction
 
 section stieltjesOfMeasurableRat
 
-variable {f : α → ℚ → ℝ}
+variable {f : α → ℚ → ℝ} [MeasurableSpace α]
 
 /-- Turn a measurable function `f : α → ℚ → ℝ` into a measurable function `α → StieltjesFunction`.
 Composition of `toRatCDF` and `IsMeasurableRatCDF.stieltjesFunction`. -/
