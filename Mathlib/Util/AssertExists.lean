@@ -78,6 +78,6 @@ one that is not currently imported!
 elab "assert_not_imported " ids:ident* : command => do
   let mods := (← getEnv).allImportedModuleNames
   for id in ids do
-    if mods.contains id.getId then logWarningAt id m!"'{id}' is imported"
+    if mods.contains id.getId then logWarningAt id m!"the module '{id}' is (transitively) imported"
     if let none ← (← searchPathRef.get).findModuleWithExt "olean" id.getId then
-      logWarningAt id m!"'{id}' does not exist"
+      logErrorAt id m!"the module '{id}' does not exist"
