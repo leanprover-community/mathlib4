@@ -197,7 +197,7 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
 /-- The linear equivalence between linear functions on a finite product of modules and
 families of functions on these modules. See note [bundled maps over different rings]. -/
 @[simps symm_apply]
-def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semiring S] [Module S M]
+def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S] [Module S M]
     [SMulCommClass R S M] : ((i : ι) → φ i →ₗ[R] M) ≃ₗ[S] ((i : ι) → φ i) →ₗ[R] M where
   toFun f := ∑ i : ι, (f i).comp (proj i)
   invFun f i := f.comp (single R φ i)

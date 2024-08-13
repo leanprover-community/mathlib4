@@ -333,7 +333,7 @@ partial def DTExpr.size : DTExpr → Nat
 private def DTExpr.eqv (a b : DTExpr) : Bool :=
   (go a b).run' {}
 where
-  go (a b : DTExpr) : StateM (HashMap MVarId MVarId) Bool :=
+  go (a b : DTExpr) : StateM (Std.HashMap MVarId MVarId) Bool :=
     match a, b with
     | .opaque           , .opaque            => pure true
     | .const n₁ as₁     , .const n₂ as₂      => pure (n₁ == n₂) <&&> goArray as₁ as₂
@@ -346,12 +346,12 @@ where
     | .proj n₁ i₁ a₁ as₁, .proj n₂ i₂ a₂ as₂ => pure (n₁ == n₂ && i₁ == i₂)
                                             <&&> go a₁ a₂ <&&> goArray as₁ as₂
     | .star none        , .star none         => pure true
-    | .star (some id₁)  , .star (some id₂)   => modifyGet fun map => match map.find? id₁ with
+    | .star (some id₁)  , .star (some id₂)   => modifyGet fun map => match map[id₁]? with
       | some id => (id == id₂, map)
       | none => (true, map.insert id₁ id₂)
     | _ , _ => return false
 
-  goArray (as bs : Array DTExpr) : StateM (HashMap MVarId MVarId) Bool := do
+  goArray (as bs : Array DTExpr) : StateM (Std.HashMap MVarId MVarId) Bool := do
     if h : as.size = bs.size then
       for g : i in [:as.size] do
         unless ← go as[i] (bs[i]'(h ▸ g.2)) do
@@ -977,9 +977,9 @@ private structure State where
   /-- Score representing how good the match is. -/
   score : Nat := 0
   /-- Metavariable assignments for the `Key.star` patterns in the `RefinedDiscrTree`. -/
-  starAssignments : HashMap Nat DTExpr := {}
+  starAssignments : Std.HashMap Nat DTExpr := {}
   /-- Metavariable assignments for the `Expr.mvar` in the expression. -/
-  mvarAssignments : HashMap MVarId (Array Key) := {}
+  mvarAssignments : Std.HashMap MVarId (Array Key) := {}
 
 
 private abbrev M := ReaderT Context $ StateListM State
@@ -1000,7 +1000,7 @@ private def insertStarAssignment (n : Nat) (e : DTExpr) : M Unit :=
 /-- Log a metavariable assignment in the `State`. -/
 private def assignMVar (mvarId : MVarId) (e : Array Key) : M Unit := do
   let { mvarAssignments, .. } ← get
-  match mvarAssignments.find? mvarId with
+  match mvarAssignments[mvarId]? with
   | some e' => guard (e == e')
   | none =>
     modify fun s => { s with mvarAssignments := s.mvarAssignments.insert mvarId e }
@@ -1033,7 +1033,7 @@ def matchTreeStars (e : DTExpr) (t : Trie α) : M (Trie α) := do
   so this loops through all of them. -/
   for (k, c) in t.children! do
     let .star i := k | break
-    if let some assignment := starAssignments.find? i then
+    if let some assignment := starAssignments[i]? then
       if e == assignment then
         result := (incrementScore e.size *> pure c) <|> result
     else
