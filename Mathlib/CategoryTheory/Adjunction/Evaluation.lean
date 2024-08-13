@@ -73,13 +73,6 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
 instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
 
-theorem NatTrans.mono_iff_mono_app {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ ∀ c, Mono (η.app c) := by
-  constructor
-  · intro h c
-    exact (inferInstance : Mono (((evaluation _ _).obj c).map η))
-  · intro _
-    apply NatTrans.mono_of_mono_app
-
 end
 
 section
@@ -127,13 +120,6 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
 
 instance evaluationIsLeftAdjoint (c : C) : ((evaluation _ D).obj c).IsLeftAdjoint :=
   ⟨_, ⟨evaluationAdjunctionLeft _ _⟩⟩
-
-theorem NatTrans.epi_iff_epi_app {F G : C ⥤ D} (η : F ⟶ G) : Epi η ↔ ∀ c, Epi (η.app c) := by
-  constructor
-  · intro h c
-    exact (inferInstance : Epi (((evaluation _ _).obj c).map η))
-  · intros
-    apply NatTrans.epi_of_epi_app
 
 end
 
