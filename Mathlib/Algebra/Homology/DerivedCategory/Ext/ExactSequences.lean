@@ -175,6 +175,7 @@ lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
     comp_hom, hS.extClass_hom, ShiftedHom.comp]
   rfl
 
+include hS in
 lemma contravariant_sequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.g).precomp Y (zero_add n)))
       (AddCommGrp.ofHom ((mk₀ S.f).precomp Y (zero_add n))) (by
@@ -254,6 +255,7 @@ lemma contravariant_sequence_exact₁ {n₀ : ℕ} (x₁ : Ext S.X₁ Y n₀) {n
   rw [ShortComplex.ab_exact_iff] at this
   exact this x₁ hx₁
 
+include hS in
 lemma contravariant_sequence_exact₂ {n : ℕ} (x₂ : Ext S.X₂ Y n)
     (hx₂ : (mk₀ S.f).comp x₂ (zero_add n) = 0) :
     ∃ (x₁ : Ext S.X₃ Y n), (mk₀ S.g).comp x₁ (zero_add n) = x₂ := by

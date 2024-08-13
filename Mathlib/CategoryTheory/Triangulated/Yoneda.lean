@@ -63,7 +63,11 @@ lemma preadditiveCoyoneda_homologySequenceδ_apply
       x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by omega)).inv.app _ := by
   apply Category.assoc
 
-noncomputable instance blah (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ where
+section
+
+variable [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ where
   sequence n := preadditiveYoneda.obj (B⟦n⟧)
   isoZero := preadditiveYoneda.mapIso ((shiftFunctorZero C ℤ).app B)
   shiftIso n a a' h := NatIso.ofComponents (fun A ↦ AddEquiv.toAddCommGrpIso
@@ -93,6 +97,8 @@ lemma preadditiveYoneda_homologySequenceδ_apply
   apply (ShiftedHom.opEquiv _).injective
   rw [Equiv.apply_symm_apply]
   rfl
+
+end
 
 end Pretriangulated
 
