@@ -523,7 +523,7 @@ noncomputable def supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x 
     E →ₗ.[K] F :=
   -- Porting note: `simpa [..]` → `simp [..]; exact ..`
   f.sup (mkSpanSingleton x y fun h₀ => hx <| h₀.symm ▸ f.domain.zero_mem) <|
-    sup_h_of_disjoint _ _ <| by simp [disjoint_span_singleton]; exact fun h => False.elim <| hx h
+    sup_h_of_disjoint _ _ <| by simpa [disjoint_span_singleton] using fun h ↦ False.elim <| hx h
 
 @[simp]
 theorem domain_supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉ f.domain) :
