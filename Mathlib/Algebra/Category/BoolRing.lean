@@ -84,7 +84,7 @@ instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
 
 -- Porting note: Added. somehow it does not find this instance.
 instance {X : BoolAlg} :
-     BooleanAlgebra ↑(BddDistLat.toBddLat (X.toBddDistLat)).toLat :=
+    BooleanAlgebra ↑(BddDistLat.toBddLat (X.toBddDistLat)).toLat :=
   BoolAlg.instBooleanAlgebra _
 
 @[simps]
