@@ -3,7 +3,6 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.ModEq
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.GCongr
 
@@ -26,7 +25,7 @@ let mut goalTypeWithMetaVars := goalType
 for pos in subexprPos do
   goalTypeWithMetaVars ← insertMetaVar goalTypeWithMetaVars pos
 
-let side := if goalType.isAppOf ``Int.ModEq then
+let side := if goalType.isAppOf `Int.ModEq then
               if subexprPos[0]!.toArray[0]! = 0 then 1 else 2
             else
               if subexprPos[0]!.toArray[0]! = 0 then 2 else 3
