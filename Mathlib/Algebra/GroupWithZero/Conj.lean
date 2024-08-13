@@ -11,6 +11,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 -/
 
 assert_not_exists Multiset
+-- TODO
 -- assert_not_exists DenselyOrdered
 
 variable {α : Type*} [GroupWithZero α] {a b : α}
