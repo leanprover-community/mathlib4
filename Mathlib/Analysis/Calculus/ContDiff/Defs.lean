@@ -1489,11 +1489,13 @@ theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
 derivative. -/
 theorem iteratedFDerivWithin_of_isOpen (n : ℕ) (hs : IsOpen s) :
     EqOn (iteratedFDerivWithin 𝕜 n f s) (iteratedFDeriv 𝕜 n f) s := by
-  induction' n with n IH
-  · intro x _
+  induction n with
+  | zero =>
+    intro x _
     ext1
     simp only [Nat.zero_eq, iteratedFDerivWithin_zero_apply, iteratedFDeriv_zero_apply]
-  · intro x hx
+  | succ n IH =>
+    intro x hx
     rw [iteratedFDeriv_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left]
     dsimp
     congr 1
