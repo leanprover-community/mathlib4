@@ -184,7 +184,7 @@ theorem numeric_one : Numeric 1 :=
 
 namespace Numeric
 
-theorem neg : ∀ {x : PGame} (_ : Numeric x), Numeric (-x)
+theorem neg : ∀ {x : PGame}, Numeric x → Numeric (-x)
   | ⟨_, _, _, _⟩, o =>
     ⟨fun j i => neg_lt_neg_iff.2 (o.1 i j), fun j => (o.2.2 j).neg, fun i => (o.2.1 i).neg⟩
 
@@ -200,7 +200,7 @@ theorem lt_moveRight {x : PGame} (o : Numeric x) (j) : x < x.moveRight j :=
 theorem le_moveRight {x : PGame} (o : Numeric x) (j) : x ≤ x.moveRight j :=
   (o.lt_moveRight j).le
 
-theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
+theorem add : ∀ {x y : PGame}, Numeric x → Numeric y → Numeric (x + y)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ox, oy =>
     ⟨by
       rintro (ix | iy) (jx | jy)
