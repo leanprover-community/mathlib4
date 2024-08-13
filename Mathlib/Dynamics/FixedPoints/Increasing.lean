@@ -23,12 +23,12 @@ a finite type, then the sequence `x, f(x), f(f(x)), ...` will eventually be a co
 namespace Function
 
 open Filter
-variable {α : Type*} [PartialOrder α] [WellFoundedGT α] {f : α → α}
+variable {α : Type*} [PartialOrder α] [hα : WellFoundedGT α] {f : α → α}
 
 /-- The function `g : ι → α` will eventually be constant if the `>` relation on `α`
   is well-founded. -/
 lemma eventually_constant_monotone {ι : Type*}
-    [SemilatticeSup ι] [Nonempty ι] [hα : WellFoundedGT α] {g : ι → α} (hg : Monotone g) :
+    [SemilatticeSup ι] [Nonempty ι] {g : ι → α} (hg : Monotone g) :
     EventuallyConst g atTop := by
   rw [eventuallyConst_atTop]
   obtain ⟨x, hx⟩ : ∃ x, g x = _ := hα.wf.min_mem _ (Set.range_nonempty _)
