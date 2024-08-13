@@ -259,10 +259,8 @@ lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : 
   exact this
 
 @[simp]
-lemma coverMincard_of_empty {T : X → X} {U : Set (X × X)} {n : ℕ} : coverMincard T ∅ U n = 0 := by
-  apply le_antisymm (sInf_le _) (zero_le (coverMincard T ∅ U n))
-  use ∅
-  simp [IsDynCoverOf]
+lemma coverMincard_of_empty {T : X → X} {U : Set (X × X)} {n : ℕ} : coverMincard T ∅ U n = 0 :=
+  le_antisymm (sInf_le (by simp [IsDynCoverOf])) (zero_le (coverMincard T ∅ U n))
 
 lemma coverMincard_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
     coverMincard T F U n = 0 ↔ F = ∅ := by
@@ -370,8 +368,7 @@ lemma inter_ball_of_minimal_dynCover {T : X → X} {F : Set X} {U : Set (X × X)
     exact mem_inter y_F hz
   apply not_lt_of_le (coverMincard_le_card t_smaller_cover)
   rw [← h']
-  norm_cast
-  exact Finset.card_erase_lt_of_mem x_s
+  exact_mod_cast Finset.card_erase_lt_of_mem x_s
 
 open ENNReal EReal
 
@@ -504,11 +501,9 @@ lemma coverEntropyInfUni_le_log_card_div {T : X → X} {F : Set X} (F_inv : Maps
     {U : Set (X × X)} (U_symm : SymmetricRel U) {n : ℕ} (n_pos : 0 < n) {s : Finset X}
     (h : IsDynCoverOf T F U n s) :
     coverEntropyInfUni T F (U ○ U) ≤ log s.card / n := by
-  apply le_trans (coverEntropyInfUni_le_log_coverMincard_div F_inv U_symm n_pos)
-  apply EReal.monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-  apply log_monotone
-  norm_cast
-  exact coverMincard_le_card h
+  apply le_trans (coverEntropyInfUni_le_log_coverMincard_div F_inv U_symm n_pos) _
+  apply EReal.monotone_div_right_of_nonneg (Nat.cast_nonneg' n) (log_monotone _)
+  exact_mod_cast coverMincard_le_card h
 
 lemma coverEntropySupUni_le_log_coverMincard_div {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) {n : ℕ} (n_pos : 0 < n) :
@@ -527,8 +522,7 @@ lemma coverEntropySupUni_le_log_coverMincard_div {T : X → X} {F : Set X} (F_in
     apply eventually_atTop.2
     use 1
     simp only [Pi.add_apply, w, u, v]
-    intro m m_pos
-    exact log_coverMincard_comp_le F_inv U_symm n_pos m_pos
+    exact fun m m_pos ↦ log_coverMincard_comp_le F_inv U_symm n_pos m_pos
   apply le_trans (Filter.limsup_le_limsup key)
   suffices h : atTop.limsup v = 0 by
     have := @limsup_add_le_add_limsup ℕ atTop u v
@@ -540,8 +534,7 @@ lemma coverEntropySupUni_le_log_coverMincard_div {T : X → X} {F : Set X} (F_in
 lemma coverEntropySupUni_le_coverEntropyInfUni {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) :
     coverEntropySupUni T F (U ○ U) ≤ coverEntropyInfUni T F U := by
-  apply (Filter.le_liminf_of_le)
-  apply eventually_atTop.2
+  apply (Filter.le_liminf_of_le) (eventually_atTop.2 _)
   use 1
   exact fun m m_pos ↦ coverEntropySupUni_le_log_coverMincard_div F_inv U_symm m_pos
 
@@ -553,8 +546,7 @@ lemma finite_coverEntropyInfUni_of_compact_invariant [UniformSpace X] {T : X →
   apply lt_of_le_of_lt (coverEntropyInfUni_antitone T F V_U)
   apply lt_of_le_of_lt (coverEntropyInfUni_le_log_card_div F_inv V_symm zero_lt_one s_cover)
   rw [Nat.cast_one, div_one, log_lt_top_iff, ← ENat.toENNReal_top]
-  norm_cast
-  exact Ne.lt_top (ENat.coe_ne_top (Finset.card s))
+  exact_mod_cast Ne.lt_top (ENat.coe_ne_top (Finset.card s))
 
 lemma finite_coverEntropySupUni_of_compact_invariant [UniformSpace X] {T : X → X} {F : Set X}
     (F_inv : MapsTo T F F) (F_comp : IsCompact F) {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) :
@@ -579,16 +571,12 @@ noncomputable def coverEntropySup [UniformSpace X] (T : X → X) (F : Set X) :=
   ⨆ U ∈ 𝓤 X, coverEntropySupUni T F U
 
 lemma coverEntropyInf_antitone_uniformity (T : X → X) (F : Set X) :
-    Antitone fun (u : UniformSpace X) ↦ @coverEntropyInf X u T F := by
-  intro u₁ u₂ h
-  refine iSup₂_mono' (fun U U_uni₂ ↦ ?_)
-  use U, (le_def.1 h) U U_uni₂
+    Antitone fun (u : UniformSpace X) ↦ @coverEntropyInf X u T F :=
+  fun u₁ u₂ h ↦ iSup₂_mono' (fun U U_uni₂ ↦ (by use U, (le_def.1 h) U U_uni₂))
 
 lemma coverEntropySup_antitone_uniformity (T : X → X) (F : Set X) :
-    Antitone fun (u : UniformSpace X) ↦ @coverEntropySup X u T F := by
-  intro u₁ u₂ h
-  refine iSup₂_mono' (fun U U_uni₂ ↦ ?_)
-  use U, (le_def.1 h) U U_uni₂
+    Antitone fun (u : UniformSpace X) ↦ @coverEntropySup X u T F :=
+  fun u₁ u₂ h ↦ iSup₂_mono' (fun U U_uni₂ ↦ (by use U, (le_def.1 h) U U_uni₂))
 
 variable [UniformSpace X]
 
@@ -608,10 +596,9 @@ lemma coverEntropyInf_eq_iSup_basis {ι : Sort*} {p : ι → Prop} {s : ι → S
   apply le_antisymm
   · refine iSup₂_le (fun U U_uni ↦ ?_)
     rcases (HasBasis.mem_iff h).1 U_uni with ⟨i, h_i, si_U⟩
-    apply le_trans (coverEntropyInfUni_antitone T F si_U)
+    apply le_trans (coverEntropyInfUni_antitone T F si_U) _
     apply le_iSup₂ i h_i
-  · refine iSup₂_mono' (fun i h_i ↦ ?_)
-    use s i, HasBasis.mem_of_mem h h_i
+  · exact iSup₂_mono' (fun i h_i ↦ (by use s i, HasBasis.mem_of_mem h h_i))
 
 lemma coverEntropySup_eq_iSup_basis {ι : Sort*} {p : ι → Prop} {s : ι → Set (X × X)}
     (h : (𝓤 X).HasBasis p s) (T : X → X) (F : Set X) :
@@ -621,8 +608,7 @@ lemma coverEntropySup_eq_iSup_basis {ι : Sort*} {p : ι → Prop} {s : ι → S
     rcases (HasBasis.mem_iff h).1 U_uni with ⟨i, h_i, si_U⟩
     apply le_trans (coverEntropySupUni_antitone T F si_U)
     apply le_iSup₂ i h_i
-  · refine iSup₂_mono' (fun i h_i ↦ ?_)
-    use s i, HasBasis.mem_of_mem h h_i
+  · exact iSup₂_mono' (fun i h_i ↦ (by use s i, HasBasis.mem_of_mem h h_i))
 
 lemma coverEntropyInf_le_coverEntropySup (T : X → X) (F : Set X) :
     coverEntropyInf T F ≤ coverEntropySup T F :=
