@@ -3,7 +3,9 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Module.Defs
+import Mathlib.RingTheory.Finiteness
+import Mathlib.Topology.Bornology.Constructions
+import Mathlib.Topology.UniformSpace.Equiv
 
 /-! # Type synonym for types with a `CStarModule` structure
 
