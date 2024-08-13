@@ -3,19 +3,7 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Interval.Set.Group
-import Mathlib.Algebra.Group.Int
-import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Nat.Cast.Order.Field
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Order.GaloisConnection
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Topology.Instances.ENNReal
-import Mathlib.Data.Real.ENatENNReal
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Floor in extended nonnegative numbers
@@ -27,13 +15,13 @@ We define the extended natural number -valued floor functions.
 ## Main Definitions
 
 * `EFloorSemiring`: An ordered semiring with natural-valued floor.
-* `Nat.floor a`: Greatest natural `n` such that `n ≤ a`. Equal to `0` if `a < 0`.
+* `ENat.floor a`: Greatest extended natural `n` such that `n ≤ a`. Equal to `0` if `a < 0`.
 
 ## Notations
 
-* `⌊a⌋ᵢ` is `ENat.floor a`.
+* `⌊a⌋ₑ` is `ENat.floor a`.
 
-The index `ᵢ` in the notations for `ENat.floor` indicates the possibility of `+∞` (`⊤`) and
+The index `ₑ` in the notations for `ENat.floor` indicates the possibility of `+∞` (`⊤`) and
 disambiguates from the common floor notation.
 
 ## TODO
@@ -45,12 +33,7 @@ Add `ENat.ceil`.
 floor
 -/
 
-
-open Set ENNReal
-
--- TODO: Add. (Counterpart of `Nat.pos_of_ne_zero`.)
-lemma ENat.pos_of_ne_zero {n : ℕ∞} (hn : n ≠ 0) : 0 < n :=
-  pos_iff_ne_zero.mpr hn
+open Set
 
 variable {F α β : Type*}
 
@@ -118,27 +101,21 @@ noncomputable instance : CastNatENatClass ℕ∞ where
   cast_enat_le_iff _ _ := by rfl
   cast_nonneg := zero_le _
 
-noncomputable instance : CastNatENatClass ℝ≥0∞ where
-  cast_nat _ := rfl
-  cast_enat_lt_iff n m := by rw [← ENat.toENNReal_lt]; rfl
-  cast_enat_le_iff n m := by rw [← ENat.toENNReal_le]; rfl
-  cast_nonneg := zero_le _
-
 namespace ENat
 
 section OrderedSemiring
 
 variable [Semiring α] [Preorder α] [CoeTC ℕ∞ α] [EFloorSemiring α] {a : α} {n : ℕ∞}
 
-/-- `⌊a⌋ᵢ` is the greatest extended natural number `n` such that `n ≤ a`. If `a` is negative,
-then `⌊a⌋ᵢ = 0`. -/
+/-- `⌊a⌋ₑ` is the greatest extended natural number `n` such that `n ≤ a`. If `a` is negative,
+then `⌊a⌋ₑ = 0`. -/
 def floor : α → ℕ∞ := EFloorSemiring.floor
 
 @[simp]
 lemma floor_enat : (ENat.floor : ℕ∞ → ℕ∞) = id := rfl
 
 @[inherit_doc]
-notation "⌊" a "⌋ᵢ" => ENat.floor a
+notation "⌊" a "⌋ₑ" => ENat.floor a
 
 end OrderedSemiring
 
@@ -149,7 +126,7 @@ section GaloisConnection
 open EFloorSemiring in
 instance {α : Type*} [CanonicallyOrderedCommSemiring α] [ZeroLEOneClass α] [CoeTC ℕ∞ α]
     [EFloorSemiring α] [CastNatENatClass α] :
-    GaloisConnection (fun (n : ℕ∞) ↦ (n : α)) (fun (a : α) ↦ ⌊a⌋ᵢ) := by
+    GaloisConnection (fun (n : ℕ∞) ↦ (n : α)) (fun (a : α) ↦ ⌊a⌋ₑ) := by
   intro n a
   rw [← gc_floor (zero_le a)]
   rfl
@@ -164,38 +141,38 @@ variable [Semiring α] [LinearOrder α] [ZeroLEOneClass α]
 variable [CoeTC ℕ∞ α] [EFloorSemiring α] [CastNatENatClass α]
 variable {a : α} {n : ℕ∞}
 
-lemma le_floor_iff (ha : 0 ≤ a) : n ≤ ⌊a⌋ᵢ ↔ (n : α) ≤ a :=
+lemma le_floor_iff (ha : 0 ≤ a) : n ≤ ⌊a⌋ₑ ↔ (n : α) ≤ a :=
   EFloorSemiring.gc_floor ha
 
-lemma le_floor (h : (n : α) ≤ a) : n ≤ ⌊a⌋ᵢ := (le_floor_iff <| n.cast_nonneg.trans h).2 h
+lemma le_floor (h : (n : α) ≤ a) : n ≤ ⌊a⌋ₑ := (le_floor_iff <| n.cast_nonneg.trans h).2 h
 
-lemma floor_lt (ha : 0 ≤ a) : ⌊a⌋ᵢ < n ↔ a < n := lt_iff_lt_of_le_iff_le <| le_floor_iff ha
+lemma floor_lt (ha : 0 ≤ a) : ⌊a⌋ₑ < n ↔ a < n := lt_iff_lt_of_le_iff_le <| le_floor_iff ha
 
-lemma floor_lt_one (ha : 0 ≤ a) : ⌊a⌋ᵢ < 1 ↔ a < 1 := by simpa using (floor_lt ha (n := 1))
+lemma floor_lt_one (ha : 0 ≤ a) : ⌊a⌋ₑ < 1 ↔ a < 1 := by simpa using (floor_lt ha (n := 1))
 
-lemma lt_of_floor_lt (h : ⌊a⌋ᵢ < n) : a < n := lt_of_not_le fun h' => (le_floor h').not_lt h
+lemma lt_of_floor_lt (h : ⌊a⌋ₑ < n) : a < n := lt_of_not_le fun h' => (le_floor h').not_lt h
 
-lemma lt_one_of_floor_lt_one (h : ⌊a⌋ᵢ < 1) : a < 1 := by simpa using lt_of_floor_lt h
+lemma lt_one_of_floor_lt_one (h : ⌊a⌋ₑ < 1) : a < 1 := by simpa using lt_of_floor_lt h
 
-lemma floor_le (ha : 0 ≤ a) : (⌊a⌋ᵢ : α) ≤ a := (le_floor_iff ha).1 le_rfl
+lemma floor_le (ha : 0 ≤ a) : (⌊a⌋ₑ : α) ≤ a := (le_floor_iff ha).1 le_rfl
 
 @[simp]
-lemma floor_enatCast (n : ℕ∞) : ⌊(n : α)⌋ᵢ = n :=
+lemma floor_enatCast (n : ℕ∞) : ⌊(n : α)⌋ₑ = n :=
   eq_of_forall_le_iff fun a => by
     rw [le_floor_iff n.cast_nonneg]
     exact cast_enat_le_iff
 
 @[simp]
-lemma floor_zero : ⌊(0 : α)⌋ᵢ = 0 := by
+lemma floor_zero : ⌊(0 : α)⌋ₑ = 0 := by
   rw [← Nat.cast_zero, ← floor_enatCast (α := α) 0]
   simp
 
 @[simp]
-lemma floor_one : ⌊(1 : α)⌋ᵢ = 1 := by
+lemma floor_one : ⌊(1 : α)⌋ₑ = 1 := by
   rw [← Nat.cast_one, ← floor_enatCast (α := α) 1]
   simp
 
-lemma floor_of_nonpos (ha : a ≤ 0) : ⌊a⌋ᵢ = 0 :=
+lemma floor_of_nonpos (ha : a ≤ 0) : ⌊a⌋ₑ = 0 :=
   ha.lt_or_eq.elim EFloorSemiring.floor_of_neg <| by
     rintro rfl
     exact floor_zero
@@ -207,11 +184,11 @@ lemma floor_mono : Monotone (floor : α → ℕ∞) := fun a b h => by
   · exact le_floor ((floor_le ha).trans h)
 
 @[gcongr]
-lemma floor_le_floor : ∀ x y : α, x ≤ y → ⌊x⌋ᵢ ≤ ⌊y⌋ᵢ := floor_mono
+lemma floor_le_floor : ∀ x y : α, x ≤ y → ⌊x⌋ₑ ≤ ⌊y⌋ₑ := floor_mono
 
 variable [Nontrivial α]
 
-lemma le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋ᵢ ↔ (n : α) ≤ a := by
+lemma le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋ₑ ↔ (n : α) ≤ a := by
   obtain ha | ha := le_total a 0
   · rw [floor_of_nonpos ha, iff_of_false (ENat.pos_of_ne_zero hn).not_le]
     apply not_le_of_lt (ha.trans_lt _)
@@ -221,30 +198,30 @@ lemma le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋ᵢ ↔ (n : α) ≤ a := by
   · exact le_floor_iff ha
 
 @[simp] lemma one_le_floor_iff (x : α) :
-    1 ≤ ⌊x⌋ᵢ ↔ 1 ≤ x := by
+    1 ≤ ⌊x⌋ₑ ↔ 1 ≤ x := by
   simp [@le_floor_iff' α _ _ _ _ _ _ x 1 _ one_ne_zero]
 
-lemma floor_lt' (hn : n ≠ 0) : ⌊a⌋ᵢ < n ↔ a < n := lt_iff_lt_of_le_iff_le <| le_floor_iff' hn
+lemma floor_lt' (hn : n ≠ 0) : ⌊a⌋ₑ < n ↔ a < n := lt_iff_lt_of_le_iff_le <| le_floor_iff' hn
 
-lemma floor_pos : 0 < ⌊a⌋ᵢ ↔ 1 ≤ a := by simpa [← one_le_floor_iff] using one_le_iff_pos.symm
+lemma floor_pos : 0 < ⌊a⌋ₑ ↔ 1 ≤ a := by simpa [← one_le_floor_iff] using one_le_iff_pos.symm
 
-lemma pos_of_floor_pos (h : 0 < ⌊a⌋ᵢ) :
+lemma pos_of_floor_pos (h : 0 < ⌊a⌋ₑ) :
     0 < a := by
   rw [floor_pos] at h; exact lt_of_lt_of_le zero_lt_one h
 
-lemma lt_of_lt_floor (h : n < ⌊a⌋ᵢ) :
+lemma lt_of_lt_floor (h : n < ⌊a⌋ₑ) :
     ↑n < a := by
   apply lt_of_lt_of_le _ <| floor_le (pos_of_floor_pos <| (zero_le n).trans_lt h).le
   rwa [← cast_enat_lt_iff (α := α)] at h
 
-lemma floor_le_of_le (h : a ≤ n) : ⌊a⌋ᵢ ≤ n := le_imp_le_iff_lt_imp_lt.2 lt_of_lt_floor h
+lemma floor_le_of_le (h : a ≤ n) : ⌊a⌋ₑ ≤ n := le_imp_le_iff_lt_imp_lt.2 lt_of_lt_floor h
 
 lemma floor_le_one_of_le_one (h : a ≤ 1) :
-    ⌊a⌋ᵢ ≤ 1 :=
+    ⌊a⌋ₑ ≤ 1 :=
   floor_le_of_le <| h.trans_eq <| ENat.cast_one.symm
 
 @[simp] lemma floor_eq_zero :
-    ⌊a⌋ᵢ = 0 ↔ a < 1 := by
+    ⌊a⌋ₑ = 0 ↔ a < 1 := by
   rw [lt_one_iff_eq_zero.symm, ← @cast_one α]
   exact floor_lt' one_ne_zero
 
