@@ -179,15 +179,13 @@ lemma exists_dist_eq_diam_of_finite [Nonempty α] [Finite α] :
   use u, v
   rw [diam, dist, congrArg ENat.toNat huv]
 
-lemma diam_mono_of_ne_zero (h : G ≤ G') (hn₁ : G'.diam ≠ 0) (hn₂ : G.diam ≠ 0) :
-    G'.diam ≤ G.diam :=
-  have : Nontrivial α := nontrivial_of_diam_ne_zero hn₁
-  ENat.toNat_le_toNat (ediam_mono_of_ne_top h (ediam_ne_top_of_diam_ne_zero hn₁))
-    <| ediam_ne_top_of_diam_ne_zero hn₂
-
-lemma diam_mono_of_finite [Nonempty α] [Finite α] (h : G ≤ G') (hn : G.diam ≠ 0) :
-    G'.diam ≤ G.diam :=
-  ENat.toNat_le_toNat (ediam_mono_of_finite h) <| ediam_ne_top_of_diam_ne_zero hn
+lemma diam_mono_of_ne_zero (h : G ≤ G') (hn : G.diam ≠ 0) :
+    G'.diam ≤ G.diam := by
+  by_cases hn' : G'.diam = 0
+  · omega
+  · have : Nontrivial α := nontrivial_of_diam_ne_zero hn
+    exact ENat.toNat_le_toNat (ediam_mono_of_ne_top h (ediam_ne_top_of_diam_ne_zero hn'))
+      <| ediam_ne_top_of_diam_ne_zero hn
 
 @[simp]
 lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
