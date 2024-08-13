@@ -120,6 +120,7 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
 
 variable [CStarRing A]
 
+include hp₁ in
 open Unitization NonUnitalStarAlgHom in
 theorem RCLike.nonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus 𝕜 (p : A → Prop) where
