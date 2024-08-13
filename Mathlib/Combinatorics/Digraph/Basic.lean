@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2024 Kyle Miller, Jack Cheverton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Jack Cheverton
+Authors: Kyle Miller, Jack Cheverton, Jeremy Tan
 -/
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Data.Fintype.Pi
-import Mathlib.Tactic.ApplyFun
 
 /-!
 # Digraphs
@@ -26,23 +25,19 @@ language as basic. Furthermore, `Digraph` is not intended to be used as a class.
 
 open Finset Function
 
-universe u v w
-
-/-- A directed graph is a relation `Adj` on a vertex type `V`.
-The relation describes which pairs of vertices are adjacent.
--/
+/-- A digraph is a relation `Adj` on a vertex type `V`.
+The relation describes which pairs of vertices are adjacent. -/
 @[ext]
-structure Digraph (V : Type u) where
+structure Digraph (V : Type*) where
   /-- The adjacency relation of a digraph. -/
   Adj : V → V → Prop
 
-noncomputable instance {V : Type u} [Fintype V] : Fintype (Digraph V) := by
+noncomputable instance {V : Type*} [Fintype V] : Fintype (Digraph V) := by
   classical exact Fintype.ofInjective Digraph.Adj (fun _ _ ↦ Digraph.ext)
 
 /-- Constructor for digraphs using a boolean function. -/
 @[simps]
-def Digraph.mk' {V : Type u} :
-    (V → V → Bool) ↪ Digraph V where
+def Digraph.mk' {V : Type*} : (V → V → Bool) ↪ Digraph V where
   toFun x := ⟨fun v w ↦ x v w⟩
   inj' := by
     intro adj adj'
@@ -51,13 +46,12 @@ def Digraph.mk' {V : Type u} :
     funext v w
     simpa only [eq_iff_iff, Bool.coe_iff_coe] using congr_fun₂ h v w
 
-/-- The complete digraph on a type `V` is the digraph with all pairs of vertices
-adjacent. In `Mathlib`, this is usually referred to as `⊤`. Note that all vertices are adjacent to
-themselves. -/
-def Digraph.completeGraph (V : Type u) : Digraph V where Adj := ⊤
+/-- The complete digraph on a type `V` is the digraph with all pairs of distinct vertices
+adjacent. In `Mathlib`, this is usually referred to as `⊤`. -/
+def completeDigraph (V : Type*) : Digraph V where Adj := ⊤
 
-/-- The graph with no edges on a given vertex type `V`. `Mathlib` prefers the notation `⊥`. -/
-def Digraph.emptyGraph (V : Type u) : Digraph V where Adj _ _ := False
+/-- The digraph with no edges on a given vertex type `V`. `Mathlib` prefers the notation `⊥`. -/
+def emptyDigraph (V : Type*) : Digraph V where Adj _ _ := False
 
 /-- Two vertices are adjacent in the complete bipartite digraph on two vertex types
 if and only if they are not from the same side.
@@ -68,8 +62,7 @@ def Digraph.completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
 
 namespace Digraph
 
-variable {ι : Sort _} {𝕜 : Type _} {V : Type u} {W : Type v} {X : Type w} (G : Digraph V)
-  (G' : Digraph W) {a b c u v w : V}
+variable {ι : Sort*} {V W X : Type*} (G : Digraph V) (G' : Digraph W) {a b c u v w : V}
 
 theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) :=
   fun _ _ ↦ Digraph.ext
@@ -92,7 +85,7 @@ instance : LE (Digraph V) :=
 theorem isSubgraph_eq_le : (IsSubgraph : Digraph V → Digraph V → Prop) = (· ≤ ·) :=
   rfl
 
-/-- The supremum of two graphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
+/-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Sup (Digraph V) where
   sup x y :=
     { Adj := x.Adj ⊔ y.Adj }
@@ -111,8 +104,7 @@ theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w �
   Iff.rfl
 
 /-- We define `Gᶜ` to be the `Digraph V` such that no two adjacent vertices in `G`
-are adjacent in the complement, and every nonadjacent pair of vertices is adjacent
-(still ensuring that vertices are not adjacent to themselves). -/
+are adjacent in the complement, and every nonadjacent pair of vertices is adjacent. -/
 instance hasCompl : HasCompl (Digraph V) where
   compl G :=
     { Adj := fun v w => ¬G.Adj v w }
@@ -121,7 +113,7 @@ instance hasCompl : HasCompl (Digraph V) where
 theorem compl_adj (G : Digraph V) (v w : V) : Gᶜ.Adj v w ↔ ¬G.Adj v w :=
   Iff.rfl
 
-/-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
+/-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
 instance sdiff : SDiff (Digraph V) where
   sdiff x y :=
     { Adj := x.Adj \ y.Adj }
@@ -159,15 +151,15 @@ instance distribLattice : DistribLattice (Digraph V) :=
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
     le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
-instance completeBooleanAlgebra : CompleteBooleanAlgebra (Digraph V) :=
+instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) :=
   { Digraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
     compl := HasCompl.compl
     sdiff := (· \ ·)
-    top := completeGraph V
-    bot := emptyGraph V
+    top := completeDigraph V
+    bot := emptyDigraph V
     le_top := fun x v w _ => trivial
     bot_le := fun x v w h => h.elim
     sdiff_eq := fun x y => by
@@ -183,9 +175,7 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (Digraph V) :=
     sInf := sInf
     sInf_le := fun s G hG a b hab => hab hG
     le_sInf := fun s G hG a b hab => fun H hH => hG _ hH hab
-    inf_sSup_le_iSup_inf := fun G s a b hab => by simpa using hab
-    iInf_sup_le_sup_sInf := fun G s a b hab => by
-      simpa [forall_and, forall_or_left, or_and_right] using hab }
+    iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
@@ -195,27 +185,25 @@ theorem bot_adj (v w : V) : (⊥ : Digraph V).Adj v w ↔ False :=
   Iff.rfl
 
 @[simp]
-theorem completeGraph_eq_top (V : Type u) : completeGraph V = ⊤ :=
+theorem completeDigraph_eq_top (V : Type*) : completeDigraph V = ⊤ :=
   rfl
 
 @[simp]
-theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
+theorem emptyDigraph_eq_bot (V : Type*) : emptyDigraph V = ⊥ :=
   rfl
 
 @[simps]
-instance (V : Type u) : Inhabited (Digraph V) :=
+instance (V : Type*) : Inhabited (Digraph V) :=
   ⟨⊥⟩
 
 instance [IsEmpty V] : Unique (Digraph V) where
   default := ⊥
   uniq G := by ext1; congr!
 
-instance [h : Nonempty V] : Nontrivial (Digraph V) := by
+instance [Nonempty V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
-  obtain ⟨v⟩ := h
-  apply_fun (·.Adj v v)
-  simp
-
+  obtain ⟨v⟩ := ‹Nonempty V›
+  exact ne_of_apply_ne (·.Adj v v) (by simp)
 
 section Decidable
 
@@ -244,4 +232,5 @@ instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
 end Decidable
 
 end Order
+
 end Digraph
