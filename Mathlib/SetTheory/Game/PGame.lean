@@ -160,9 +160,16 @@ theorem leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (
 theorem rightMoves_ofLists (L R : List PGame) : (ofLists L R).RightMoves = ULift (Fin R.length) :=
   rfl
 
+
+/-- Converts a number into a left move for `ofLists`.
+
+This is just an abbreviation for `Equiv.ULift.symm` -/
 abbrev toOfListsLeftMoves : Fin L.length ≃ (ofLists L R).LeftMoves :=
   Equiv.ULift.symm
 
+/-- Converts a number into a right move for `ofLists`.
+
+This is just an abbreviation for `Equiv.ULift.symm` -/
 abbrev toOfListsRightMoves : Fin R.length ≃ (ofLists L R).RightMoves :=
   Equiv.ULift.symm
 
