@@ -107,7 +107,7 @@ theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w �
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent. -/
 instance hasCompl : HasCompl (Digraph V) where
   compl G :=
-    { Adj := fun v w => ¬G.Adj v w }
+    { Adj := fun v w ↦ ¬G.Adj v w }
 
 @[simp]
 theorem compl_adj (G : Digraph V) (v w : V) : Gᶜ.Adj v w ↔ ¬G.Adj v w :=
@@ -124,11 +124,11 @@ theorem sdiff_adj (x y : Digraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w �
 
 instance supSet : SupSet (Digraph V) where
   sSup s :=
-    { Adj := fun a b => ∃ G ∈ s, Adj G a b }
+    { Adj := fun a b ↦ ∃ G ∈ s, Adj G a b }
 
 instance infSet : InfSet (Digraph V) where
   sInf s :=
-    { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) }
+    { Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b) }
 
 @[simp]
 theorem sSup_adj {s : Set (Digraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
@@ -148,8 +148,8 @@ theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i)
 /-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance distribLattice : DistribLattice (Digraph V) :=
   { show DistribLattice (Digraph V) from
-      adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
-    le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
+      adj_injective.distribLattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
+    le := fun G H ↦ ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
 instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) :=
   { Digraph.distribLattice with
@@ -160,22 +160,22 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V)
     sdiff := (· \ ·)
     top := completeDigraph V
     bot := emptyDigraph V
-    le_top := fun x v w _ => trivial
-    bot_le := fun x v w h => h.elim
-    sdiff_eq := fun x y => by
+    le_top := fun x v w _ ↦ trivial
+    bot_le := fun x v w h ↦ h.elim
+    sdiff_eq := fun x y ↦ by
       ext (v w)
       exact Iff.rfl
-    inf_compl_le_bot := fun G v w h => False.elim <| h.2 h.1
-    top_le_sup_compl := fun G v w _ => by tauto
+    inf_compl_le_bot := fun G v w h ↦ False.elim <| h.2 h.1
+    top_le_sup_compl := fun G v w _ ↦ by tauto
     sSup := sSup
-    le_sSup := fun s G hG a b hab => ⟨G, hG, hab⟩
-    sSup_le := fun s G hG a b => by
+    le_sSup := fun s G hG a b hab ↦ ⟨G, hG, hab⟩
+    sSup_le := fun s G hG a b ↦ by
       rintro ⟨H, hH, hab⟩
       exact hG _ hH hab
     sInf := sInf
-    sInf_le := fun s G hG a b hab => hab hG
-    le_sInf := fun s G hG a b hab => fun H hH => hG _ hH hab
-    iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
+    sInf_le := fun s G hG a b hab ↦ hab hG
+    le_sInf := fun s G hG a b hab ↦ fun H hH ↦ hG _ hH hab
+    iInf_iSup_eq := fun f ↦ by ext; simp [Classical.skolem] }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
@@ -210,24 +210,24 @@ section Decidable
 variable (V) (H : Digraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
 instance Bot.adjDecidable : DecidableRel (⊥ : Digraph V).Adj :=
-  inferInstanceAs <| DecidableRel fun _ _ => False
+  inferInstanceAs <| DecidableRel fun _ _ ↦ False
 
 instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
-  inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∨ H.Adj v w
+  inferInstanceAs <| DecidableRel fun v w ↦ G.Adj v w ∨ H.Adj v w
 
 instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
-  inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ H.Adj v w
+  inferInstanceAs <| DecidableRel fun v w ↦ G.Adj v w ∧ H.Adj v w
 
 instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
-  inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ ¬H.Adj v w
+  inferInstanceAs <| DecidableRel fun v w ↦ G.Adj v w ∧ ¬H.Adj v w
 
 variable [DecidableEq V]
 
 instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
-  inferInstanceAs <| DecidableRel fun _ _ => True
+  inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
 instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
-  inferInstanceAs <| DecidableRel fun v w => ¬G.Adj v w
+  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w
 
 end Decidable
 
