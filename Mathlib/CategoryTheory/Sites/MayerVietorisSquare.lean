@@ -196,11 +196,6 @@ lemma map_f₃₄_op_glue : P.map S.f₃₄.op (h.glue u v huv) = v :=
 
 end SheafCondition
 
---private lemma sheafCondition_of_sheaf' (F : Sheaf J (Type v)) :
---    S.SheafCondition F.val :=
---  (F.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff S.toSquare).1
---    (S.isPushout.op.map (yoneda.obj F))
-
 lemma sheafCondition_of_sheaf {A : Type u'} [Category.{v} A]
     (F : Sheaf J A) : S.SheafCondition F.val := by
   rw [sheafCondition_iff_comp_coyoneda]
