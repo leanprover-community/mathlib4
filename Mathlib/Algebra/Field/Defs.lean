@@ -47,7 +47,7 @@ field, division ring, skew field, skew-field, skewfield
 assert_not_exists NeZero
 
 -- Check that we have not imported `Mathlib.Tactic.Common` yet.
-assert_not_exists Mathlib.Tactic.LibrarySearch.librarySearch
+assert_not_exists Mathlib.Tactic.scopedNS
 
 assert_not_exists MonoidHom
 
