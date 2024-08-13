@@ -354,33 +354,17 @@ theorem factorial_mul_descFactorial : ∀ {n k : ℕ}, k ≤ n → (n - k)! * n.
     rw [succ_descFactorial_succ, succ_sub_succ, ← Nat.mul_assoc, Nat.mul_comm (n - k)!,
       Nat.mul_assoc, factorial_mul_descFactorial (Nat.succ_le_succ_iff.1 h), factorial_succ]
 
-theorem descFactorial_mul_descFactorial {n : ℕ} : ∀ {m k : ℕ}, k ≤ m →
-    (n - k).descFactorial (m - k) * n.descFactorial k = n.descFactorial m
-  | m, 0 => fun _ => by rw [Nat.sub_zero, Nat.sub_zero, descFactorial_zero, Nat.mul_one]
-  | 0, Nat.succ k => fun h => by
-    exfalso
-    exact Nat.not_succ_le_zero k h
-  | Nat.succ m, Nat.succ k => fun h => by
-    rw [Nat.succ_sub_succ, descFactorial_succ, ← Nat.mul_assoc, Nat.mul_comm _ (n - k)]
-    by_cases h1 : n - k = n - k.succ + 1
-    rw [h1]
-    rw [← succ_descFactorial_succ (n - k.succ) _]
-    rw [← h1]
-    rw [descFactorial_succ]
-    have h2 : n - k - (m - k) = n - m := by
-      apply Nat.sub_sub_sub_cancel_right ?h2.h
-      exact Nat.le_of_lt_succ h
-    rw [h2]
-    rw [Nat.mul_assoc]
-    rw [descFactorial_mul_descFactorial]
-    rw [descFactorial_succ]
-    exact Nat.le_of_lt_succ h
-    have h3 : n - k = 0 := by omega
-    rw [h3]
-    rw [Nat.zero_mul]
-    rw [Nat.zero_mul]
-    have h4 : n < m.succ := by omega
-    exact Eq.symm ((fun {_} => descFactorial_eq_zero_iff_lt.mpr) h4)
+theorem descFactorial_mul_descFactorial {k m n : ℕ} (hkm : k ≤ m) :
+    (n - k).descFactorial (m - k) * n.descFactorial k = n.descFactorial m := by
+  by_cases hmn : m ≤ n
+  · apply Nat.mul_left_cancel (n - m).factorial_pos
+    rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by omega, ← Nat.mul_assoc,
+      factorial_mul_descFactorial (show m - k ≤ n - k by omega),
+      factorial_mul_descFactorial (le_trans hkm hmn)]
+  · rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by omega)]
+    by_cases hkn : k ≤ n
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by omega), Nat.zero_mul]
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by omega), Nat.mul_zero]
 
 /-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
 theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n ! / (n - k)! := by
