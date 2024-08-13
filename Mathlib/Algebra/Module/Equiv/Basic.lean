@@ -81,7 +81,7 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul_assoc f g h := rfl
   mul_one f := ext fun x ↦ rfl
   one_mul f := ext fun x ↦ rfl
-  mul_left_inv f := ext <| f.left_inv
+  inv_mul_cancel f := ext <| f.left_inv
 
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl

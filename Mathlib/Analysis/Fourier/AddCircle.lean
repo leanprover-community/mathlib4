@@ -243,7 +243,7 @@ theorem coeFn_fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) :
 theorem span_fourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p ≠ ∞) :
     (span ℂ (range (@fourierLp T _ p _))).topologicalClosure = ⊤ := by
   convert
-    (ContinuousMap.toLp_denseRange ℂ (@haarAddCircle T hT) hp ℂ).topologicalClosure_map_submodule
+    (ContinuousMap.toLp_denseRange ℂ (@haarAddCircle T hT) ℂ hp).topologicalClosure_map_submodule
       span_fourier_closure_eq_top
   erw [map_span, range_comp]
   simp only [ContinuousLinearMap.coe_coe]
@@ -255,7 +255,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   rw [ContinuousMap.inner_toLp (@haarAddCircle T hT) (fourier i) (fourier j)]
   simp_rw [← fourier_neg, ← fourier_add]
   split_ifs with h
-  · simp_rw [h, neg_add_self]
+  · simp_rw [h, neg_add_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
     rw [this, integral_const, measure_univ, ENNReal.one_toReal, Complex.real_smul,
       Complex.ofReal_one, mul_one]
@@ -274,7 +274,7 @@ variable [hT : Fact (0 < T)]
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `AddCircle T → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `AddCircle T` of `fourier (-n) t • f t`. -/
