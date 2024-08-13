@@ -442,7 +442,7 @@ theorem deriv_eq_derivFamily (f : Ordinal → Ordinal) : deriv f = derivFamily f
   rfl
 
 @[simp]
-theorem deriv_zero (f) : deriv f 0 = nfp f 0 :=
+theorem deriv_zero_right (f) : deriv f 0 = nfp f 0 :=
   derivFamily_zero _
 
 @[simp]
@@ -487,8 +487,11 @@ theorem nfp_zero : nfp 0 = id := by
   exact Ordinal.zero_le a
 
 @[simp]
-theorem deriv_zero' : deriv 0 = id :=
+theorem deriv_zero : deriv 0 = id :=
   deriv_eq_id_of_nfp_eq_id nfp_zero
+
+theorem deriv_zero_left (a) : deriv 0 a = a :=
+  rw [deriv_zero]
 
 end
 
@@ -511,7 +514,7 @@ theorem nfp_add_eq_mul_omega {a b} (hba : b ≤ a * omega) : nfp (a + ·) b = a 
 
 theorem add_eq_right_iff_mul_omega_le {a b : Ordinal} : a + b = b ↔ a * omega ≤ b := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [← nfp_add_zero a, ← deriv_zero]
+  · rw [← nfp_add_zero a, ← deriv_zero_right]
     cases' (add_isNormal a).fp_iff_deriv.1 h with c hc
     rw [← hc]
     exact (deriv_isNormal _).monotone (Ordinal.zero_le _)
@@ -527,7 +530,7 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
   revert b
   rw [← funext_iff, IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (add_isNormal _)]
   refine ⟨?_, fun a h => ?_⟩
-  · rw [deriv_zero, add_zero]
+  · rw [deriv_zero_right, add_zero]
     exact nfp_add_zero a
   · rw [deriv_succ, h, add_succ]
     exact nfp_eq_self (add_eq_right_iff_mul_omega_le.2 ((le_add_right _ _).trans (le_succ _)))
@@ -624,7 +627,7 @@ theorem deriv_mul_eq_opow_omega_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
   rw [← funext_iff,
     IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (mul_isNormal (opow_pos omega ha))]
   refine ⟨?_, fun c h => ?_⟩
-  · dsimp only; rw [deriv_zero, nfp_mul_zero, mul_zero]
+  · dsimp only; rw [deriv_zero_right, nfp_mul_zero, mul_zero]
   · rw [deriv_succ, h]
     exact nfp_mul_opow_omega_add c ha zero_lt_one (one_le_iff_pos.2 (opow_pos _ ha))
 
