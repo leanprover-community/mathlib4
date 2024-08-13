@@ -964,7 +964,7 @@ theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x :
 /-- One-dimensional formal multilinear series representing the same function are equal. -/
 theorem HasFPowerSeriesAt.eq_formalMultilinearSeries {p₁ p₂ : FormalMultilinearSeries 𝕜 𝕜 E}
     {f : 𝕜 → E} {x : 𝕜} (h₁ : HasFPowerSeriesAt f p₁ x) (h₂ : HasFPowerSeriesAt f p₂ x) : p₁ = p₂ :=
-  sub_eq_zero.mp (HasFPowerSeriesAt.eq_zero (by simpa only [sub_self] using h₁.sub h₂))
+  sub_eq_zero.mp (HasFPowerSeriesAt.eq_zero (x := x) (by simpa only [sub_self] using h₁.sub h₂))
 
 theorem HasFPowerSeriesAt.eq_formalMultilinearSeries_of_eventually
     {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {x : 𝕜} (hp : HasFPowerSeriesAt f p x)
