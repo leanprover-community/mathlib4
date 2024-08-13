@@ -95,6 +95,7 @@ theorem coe_pow_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] (x : cl
   rfl
 
 /-- Unit sphere in a normed division ring as a bundled `Submonoid`. -/
+@[simps]
 def Submonoid.unitSphere (𝕜 : Type*) [NormedDivisionRing 𝕜] : Submonoid 𝕜 where
   carrier := sphere (0 : 𝕜) 1
   mul_mem' hx hy := by
