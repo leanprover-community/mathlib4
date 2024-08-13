@@ -5,7 +5,7 @@ open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Subm
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-theorem unique1 [FiniteDimensional ℝ E] {x : E} (hx : ‖x‖ = 1) (h : DifferentiableAt ℝ (‖·‖) x)
+theorem unique1 [FiniteDimensional ℝ E] {x : E} (nx : ‖x‖ = 1) (hx : DifferentiableAt ℝ (‖·‖) x)
     (φ : E → ℝ) (hφ : LipschitzWith 1 φ) (φ_eq : ∀ t : ℝ, φ (t • x) = t) :
     φ = fderiv ℝ (‖·‖) x := by
   ext y
@@ -14,25 +14,21 @@ theorem unique1 [FiniteDimensional ℝ E] {x : E} (hx : ‖x‖ = 1) (h : Differ
     simp
   have this (t : ℝ) : 1 ≤ ‖x - t • (y - (φ y) • x)‖ := by
     rcases eq_or_ne t 0 with rfl | ht
-    · rw [zero_smul, sub_zero, hx]
+    · rw [zero_smul, sub_zero, nx]
     · calc
-        1 = |t * (φ y) - t * (φ (((φ y) + 1 / t) • x))| := this t ht
-        _ = |t| * |φ y - φ (((φ y) + 1 / t) • x)| := by
-          rw [← abs_mul]
-          congr
-          ring
+        1 = |t| * |φ y - φ (((φ y) + 1 / t) • x)| := by
+          nth_rw 1 [this t ht, ← abs_mul, mul_sub]
         _ ≤ |t| * ‖y - (φ y + 1 / t) • x‖ := by
-          rw [_root_.mul_le_mul_left]
-          convert hφ.dist_le_mul y ((φ y + 1 / t) • x) using 1
-          · simp [dist_eq_norm]
-          · exact abs_pos.2 ht
+          rw [_root_.mul_le_mul_left (abs_pos.2 ht), ← norm_eq_abs]
+          convert hφ.norm_sub_le _ _
+          simp
         _ = ‖x - t • (y - (φ y) • x)‖ := by
           rw [← norm_eq_abs, ← norm_smul, ← norm_neg, smul_sub, smul_smul, mul_add,
             mul_one_div_cancel ht, add_smul, one_smul, mul_smul, smul_sub]
           congr 1
           abel
   have : IsLocalMin (fun t : ℝ ↦ ‖x - t • (y - (φ y) • x)‖) 0 := by
-    simp [IsLocalMin, IsMinFilter, hx, this]
+    simp [IsLocalMin, IsMinFilter, nx, this]
   have aux := this.deriv_eq_zero
   have : deriv (fun t : ℝ ↦ ‖x - t • (y - (φ y) • x)‖) 0 = - fderiv ℝ (‖·‖) x (y - (φ y) • x) := by
     conv_lhs => enter [1]; change ((‖·‖) ∘ (fun t : ℝ ↦ x - t • (y - (φ y) • x)))
@@ -42,7 +38,7 @@ theorem unique1 [FiniteDimensional ℝ E] {x : E} (hx : ‖x‖ = 1) (h : Differ
       exact differentiableAt_id
     · simpa
     · simp
-  rw [aux, map_sub, _root_.map_smul, fderiv_norm_self h, hx] at this
+  rw [aux, map_sub, _root_.map_smul, fderiv_norm_self hx, nx] at this
   simp only [smul_eq_mul, mul_one, neg_sub] at this
   exact sub_eq_zero.1 this.symm
 
