@@ -1746,14 +1746,14 @@ def toRightMovesInsertRight {x x' : PGame.{u}} :
     Option x.RightMoves ≃ (insertRight x x').RightMoves :=
   Equiv.cast (rightMoves_insertRight x _).symm
 
-@[simp]
-theorem moveLeft_insertRight' {x x' : PGame} (i) :
-    (insertRight x x').moveLeft i = x.moveLeft (toLeftMovesInsertRight.symm i) := by
+theorem moveLeft_insertRight {x x' : PGame} (i) :
+    (insertRight x x').moveLeft (toLeftMovesInsertRight i) = x.moveLeft i := by
   cases x
   rfl
 
-theorem moveLeft_insertRight {x x' : PGame} (i) :
-    (insertRight x x').moveLeft (toLeftMovesInsertRight i) = x.moveLeft i := by
+@[simp]
+theorem moveLeft_insertRight' {x x' : PGame} (i) :
+    (insertRight x x').moveLeft i = x.moveLeft (toLeftMovesInsertRight.symm i) := by
   cases x
   rfl
 
