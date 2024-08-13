@@ -543,7 +543,10 @@ theorem le_of_forall_lt {x y : PGame} (h₁ : ∀ i, x.moveLeft i < y) (h₂ : �
     x ≤ y :=
   le_of_forall_lf (fun i => (h₁ i).lf) fun i => (h₂ i).lf
 
-/-- The definition of `x ≤ y` on pre-games, in terms of `≤` two moves later. -/
+/-- The definition of `x ≤ y` on pre-games, in terms of `≤` two moves later.
+
+Note that it's often more convenient to use `le_iff_forall_lf`, which only unfolds the definition by
+one step. -/
 theorem le_def {x y : PGame} :
     x ≤ y ↔
       (∀ i, (∃ i', x.moveLeft i ≤ y.moveLeft i') ∨ ∃ j, (x.moveLeft i).moveRight j ≤ y) ∧
@@ -553,7 +556,10 @@ theorem le_def {x y : PGame} :
     lhs
     simp only [lf_iff_exists_le]
 
-/-- The definition of `x ⧏ y` on pre-games, in terms of `⧏` two moves later. -/
+/-- The definition of `x ⧏ y` on pre-games, in terms of `⧏` two moves later.
+
+Note that it's often more convenient to use `lf_iff_exists_le`, which only unfolds the definition by
+one step. -/
 theorem lf_def {x y : PGame} :
     x ⧏ y ↔
       (∃ i, (∀ i', x.moveLeft i' ⧏ y.moveLeft i) ∧ ∀ j, x ⧏ (y.moveLeft i).moveRight j) ∨
@@ -1390,7 +1396,7 @@ theorem add_moveRight_inr (x : PGame) {y : PGame} (i) :
   cases y
   rfl
 
-theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
+def leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Sort*}
     (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) :
     P k := by
   rw [← toLeftMovesAdd.apply_symm_apply k]
@@ -1398,7 +1404,7 @@ theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
   · exact hl i
   · exact hr i
 
-theorem rightMoves_add_cases {x y : PGame} (k) {P : (x + y).RightMoves → Prop}
+def rightMoves_add_cases {x y : PGame} (k) {P : (x + y).RightMoves → Sort*}
     (hl : ∀ j, P <| toRightMovesAdd (Sum.inl j)) (hr : ∀ j, P <| toRightMovesAdd (Sum.inr j)) :
     P k := by
   rw [← toRightMovesAdd.apply_symm_apply k]
@@ -1624,57 +1630,152 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
 
 /-! ### Inserting an option -/
 
-/-- The pregame constructed by inserting `x'` as a new left option into x. -/
+/-- The pregame constructed by inserting `x'` as a new left option into `x`. -/
 def insertLeft (x x' : PGame.{u}) : PGame :=
   match x with
-  | mk xl xr xL xR => mk (xl ⊕ PUnit) xr (Sum.elim xL fun _ => x') xR
+  | mk xl xr xL xR => mk (Option xl) xr (fun x => x.elim x' xL) xR
+
+theorem leftMoves_insertLeft (x x' : PGame) :
+    (insertLeft x x').LeftMoves = Option (x.LeftMoves) := by
+  cases x
+  rfl
+
+theorem rightMoves_insertLeft (x x' : PGame) :
+    (insertLeft x x').RightMoves = x.RightMoves := by
+  cases x
+  rfl
+
+/-- Turns a left move for `x`, or a `none` value, into a left move for `insertLeft x x'` and vice
+versa.
+
+Even though these types are the same (not definitionally so), this is the preferred way to convert
+between them. -/
+def toLeftMovesInsertLeft {x x' : PGame.{u}} : Option x.LeftMoves ≃ (insertLeft x x').LeftMoves :=
+  Equiv.cast (leftMoves_insertLeft x _).symm
+
+/-- Turns a right move for `x` into a right move for `insertLeft x x'` and vice versa.
+
+Even though these types are the same (not definitionally so), this is the preferred way to convert
+between them. -/
+def toRightMovesInsertLeft {x x' : PGame.{u}} : x.RightMoves ≃ (insertLeft x x').RightMoves :=
+  Equiv.cast (rightMoves_insertLeft x _).symm
+
+@[simp]
+theorem moveLeft_insertLeft_some {x x' : PGame} (i) :
+    (insertLeft x x').moveLeft (toLeftMovesInsertLeft (some i)) = x.moveLeft i := by
+  cases x
+  rfl
+
+@[simp]
+theorem moveLeft_insertLeft_none {x x' : PGame} :
+    (insertLeft x x').moveLeft (toLeftMovesInsertLeft none) = x' := by
+  cases x
+  rfl
+
+theorem moveRight_insertLeft {x x' : PGame} (i) :
+    (insertLeft x x').moveRight (toRightMovesInsertLeft i) = x.moveRight i := by
+  cases x
+  rfl
+
+@[simp]
+theorem moveRight_insertLeft' {x x' : PGame} (i) :
+    (insertLeft x x').moveRight i = x.moveRight (toRightMovesInsertLeft.symm i) := by
+  cases x
+  rfl
+
+def leftMoves_insertLeft_cases {x x' : PGame} (k) {P : (insertLeft x x').LeftMoves → Sort*}
+    (hs : ∀ i, P <| toLeftMovesInsertLeft (some i)) (hn : P <| toLeftMovesInsertLeft none) :
+    P k := by
+  rw [← toLeftMovesInsertLeft.apply_symm_apply k]
+  cases' toLeftMovesInsertLeft.symm k with i
+  · exact hn
+  · exact hs i
+
+lemma lf_insertLeft (x x' : PGame) : x' ⧏ insertLeft x x' := by
+  simpa using moveLeft_lf (toLeftMovesInsertLeft none)
 
 /-- A new left option cannot hurt Left. -/
 lemma le_insertLeft (x x' : PGame) : x ≤ insertLeft x x' := by
-  rw [le_def]
-  constructor
-  · intro i
-    left
-    rcases x with ⟨xl, xr, xL, xR⟩
-    simp only [insertLeft, leftMoves_mk, moveLeft_mk, Sum.exists, Sum.elim_inl]
-    left
-    use i
-  · intro j
-    right
-    rcases x with ⟨xl, xr, xL, xR⟩
-    simp only [rightMoves_mk, moveRight_mk, insertLeft]
-    use j
+  rw [le_iff_forall_lf]
+  constructor <;>
+  intro i
+  · simpa using moveLeft_lf (toLeftMovesInsertLeft (some i))
+  · simpa using lf_moveRight _
 
 /-- Adding a gift horse left option does not change the value of `x`. A gift horse left option is
  a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
  "gift" of a new option, but actually the value of the game did not change. -/
 lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈ x := by
-  rw [equiv_def]
-  constructor
-  · rw [le_def]
-    constructor
-    · intro i
-      rcases x with ⟨xl, xr, xL, xR⟩
-      simp only [insertLeft, leftMoves_mk, moveLeft_mk] at i ⊢
-      rcases i with i | _
-      · simp only [Sum.elim_inl]
-        left
-        use i
-      · simp only [Sum.elim_inr]
-        rw [lf_iff_exists_le] at h
-        simp only [leftMoves_mk, moveLeft_mk] at h
-        exact h
-    · intro j
-      right
-      rcases x with ⟨xl, xr, xL, xR⟩
-      simp only [insertLeft, rightMoves_mk, moveRight_mk]
-      use j
-  · apply le_insertLeft
+  refine ⟨?_, le_insertLeft x x'⟩
+  rw [le_iff_forall_lf]
+  constructor <;>
+  intro i
+  · apply leftMoves_insertLeft_cases i
+    · simpa using moveLeft_lf
+    · simpa using h
+  · simpa using lf_moveRight (toRightMovesInsertLeft i)
 
 /-- The pregame constructed by inserting `x'` as a new right option into x. -/
 def insertRight (x x' : PGame.{u}) : PGame :=
   match x with
-  | mk xl xr xL xR => mk xl (xr ⊕ PUnit) xL (Sum.elim xR fun _ => x')
+  | mk xl xr xL xR => mk xl (Option xr) xL (fun x => x.elim x' xR)
+
+theorem leftMoves_insertRight (x x' : PGame) :
+    (insertRight x x').LeftMoves = x.LeftMoves := by
+  cases x
+  rfl
+
+theorem rightMoves_insertRight (x x' : PGame) :
+    (insertRight x x').RightMoves = Option x.RightMoves := by
+  cases x
+  rfl
+
+/-- Turns a right move for `x` into a right move for `insertRight x x'` and vice versa.
+
+Even though these types are the same (not definitionally so), this is the preferred way to convert
+between them. -/
+def toLeftMovesInsertRight {x x' : PGame.{u}} : x.LeftMoves ≃ (insertRight x x').LeftMoves :=
+  Equiv.cast (leftMoves_insertRight x _).symm
+
+/-- Turns a left move for `x`, or a `none` value, into a left move for `insertRight x x'` and vice
+versa.
+
+Even though these types are the same (not definitionally so), this is the preferred way to convert
+between them. -/
+def toRightMovesInsertRight {x x' : PGame.{u}} :
+    Option x.RightMoves ≃ (insertRight x x').RightMoves :=
+  Equiv.cast (rightMoves_insertRight x _).symm
+
+@[simp]
+theorem moveLeft_insertRight' {x x' : PGame} (i) :
+    (insertRight x x').moveLeft i = x.moveLeft (toLeftMovesInsertRight.symm i) := by
+  cases x
+  rfl
+
+theorem moveLeft_insertRight {x x' : PGame} (i) :
+    (insertRight x x').moveLeft (toLeftMovesInsertRight i) = x.moveLeft i := by
+  cases x
+  rfl
+
+@[simp]
+theorem moveRight_insertRight_none {x x' : PGame} :
+    (insertRight x x').moveRight (toRightMovesInsertRight none) = x' := by
+  cases x
+  rfl
+
+@[simp]
+theorem moveRight_insertRight_some {x x' : PGame} (i) :
+    (insertRight x x').moveRight (toRightMovesInsertRight (some i)) = x.moveRight i := by
+  cases x
+  rfl
+
+def rightMoves_insertRight_cases {x x' : PGame} (k) {P : (insertRight x x').RightMoves → Sort*}
+    (hs : ∀ i, P <| toRightMovesInsertRight (some i)) (hn : P <| toRightMovesInsertRight none) :
+    P k := by
+  rw [← toRightMovesInsertRight.apply_symm_apply k]
+  cases' toRightMovesInsertRight.symm k with i
+  · exact hn
+  · exact hs i
 
 theorem neg_insertRight_neg (x x' : PGame.{u}) : (-x).insertRight (-x') = -x.insertLeft x' := by
   cases x
@@ -1684,6 +1785,9 @@ theorem neg_insertRight_neg (x x' : PGame.{u}) : (-x).insertRight (-x') = -x.ins
 
 theorem neg_insertLeft_neg (x x' : PGame.{u}) : (-x).insertLeft (-x') = -x.insertRight x' := by
   rw [← neg_eq_iff_eq_neg, ← neg_insertRight_neg, neg_neg, neg_neg]
+
+lemma insertRight_lf (x x' : PGame) : insertRight x x' ⧏ x' := by
+  simpa using lf_moveRight (toRightMovesInsertRight none)
 
 /-- A new right option cannot hurt Right. -/
 lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
