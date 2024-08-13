@@ -21,9 +21,6 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 -- Guard against import creep
 assert_not_exists Finset
 
--- Guard against import creep
-assert_not_exists Finset
-
 variable {M : Type*} {S T : Set M}
 namespace Subsemigroup
 

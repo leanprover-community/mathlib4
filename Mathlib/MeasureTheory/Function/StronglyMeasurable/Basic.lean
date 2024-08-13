@@ -57,9 +57,6 @@ measurable functions, as a basis for the Bochner integral.
 -- Guard against import creep
 assert_not_exists InnerProductSpace
 
--- Guard against import creep
-assert_not_exists InnerProductSpace
-
 open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 
 open ENNReal Topology MeasureTheory NNReal

@@ -31,9 +31,6 @@ and prove basic properties of this quotient.
 assert_not_exists OrderedCommMonoid
 assert_not_exists Multiset
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset
-
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 section Prime

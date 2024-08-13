@@ -66,7 +66,6 @@ This file expands on the development in the core library.
   by `i ↦ n-(i+1)`
 -/
 
-
 assert_not_exists Monoid
 assert_not_exists Fintype
 universe u v
