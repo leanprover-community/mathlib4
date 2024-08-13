@@ -35,7 +35,8 @@ open Set
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
-@[to_additive]
+@[to_additive "In two linearly ordered additive groups, the closure of an element of one group
+is isomorphic (and order-isomorphic) to the closure of an element in the other group."]
 noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
     [LinearOrderedCommGroup G] [LinearOrderedCommGroup G'] (x : G) (y : G') (hxy : x = 1 ↔ y = 1) :
     {f : closure ({x} : Set G) ≃* closure ({y} : Set G') // StrictMono f} :=
