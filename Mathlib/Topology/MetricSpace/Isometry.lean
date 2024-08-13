@@ -451,7 +451,7 @@ instance : Group (α ≃ᵢ α) where
   mul_assoc e₁ e₂ e₃ := rfl
   one_mul e := ext fun _ => rfl
   mul_one e := ext fun _ => rfl
-  mul_left_inv e := ext e.symm_apply_apply
+  inv_mul_cancel e := ext e.symm_apply_apply
 
 @[simp] theorem coe_one : ⇑(1 : α ≃ᵢ α) = id := rfl
 
@@ -498,6 +498,7 @@ theorem diam_image (s : Set α) : Metric.diam (h '' s) = Metric.diam s :=
 theorem diam_preimage (s : Set β) : Metric.diam (h ⁻¹' s) = Metric.diam s := by
   rw [← image_symm, diam_image]
 
+include h in
 theorem diam_univ : Metric.diam (univ : Set α) = Metric.diam (univ : Set β) :=
   congr_arg ENNReal.toReal h.ediam_univ
 
