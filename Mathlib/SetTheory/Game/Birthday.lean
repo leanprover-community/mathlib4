@@ -221,6 +221,10 @@ theorem birthday_natCast (n : ℕ) : birthday n = n := by
   exact toPGame_birthday _
 
 @[simp]
+theorem birthday_ofNat (n : ℕ) [n.AtLeastTwo] : birthday (no_index (OfNat.ofNat n)) = n :=
+  birthday_natCast n
+
+@[simp]
 theorem birthday_one : birthday 1 = 1 := by
   rw [← Nat.cast_one, birthday_natCast, Nat.cast_one]
 
@@ -264,6 +268,9 @@ theorem birthday_add_le (x y : Game) : (x + y).birthday ≤ x.birthday ♯ y.bir
 theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.birthday := by
   apply (birthday_add_le x _).trans_eq
   rw [birthday_neg]
+
+/- The bound `(x * y).birthday ≤ x.birthday ⨳ y.birthday` is currently an open problem. See
+  https://mathoverflow.net/a/476829/147705. -/
 
 end Game
 
