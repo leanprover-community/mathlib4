@@ -31,7 +31,7 @@ variable {α : Type*} [DecidableEq α] [Fintype α]
 
 /-- `a : α` belongs to the support of `k • g` iff
   `k⁻¹ * a` belongs to the support of `g` -/
-theorem conj_support_eq (k : ConjAct (Perm α)) (g : Perm α) (a : α) :
+theorem mem_conj_support (k : ConjAct (Perm α)) (g : Perm α) (a : α) :
     a ∈ (k • g).support ↔ ConjAct.ofConjAct k⁻¹ a ∈ g.support := by
   simp only [mem_support, ConjAct.smul_def, not_iff_not, coe_mul,
     Function.comp_apply, ConjAct.ofConjAct_inv]
