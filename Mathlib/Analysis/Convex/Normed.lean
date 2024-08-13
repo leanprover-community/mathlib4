@@ -145,8 +145,6 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s
 lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
     ∃ b : AffineBasis (Fin (finrank ℝ E + 1)) ℝ E,
       x ∈ interior (convexHull ℝ (range b)) ∧ convexHull ℝ (range b) ⊆ s := by
-  -- Lean nonsense
-  clear P ι
   classical
   -- By translating, WLOG `x` is the origin.
   wlog hx : x = 0
