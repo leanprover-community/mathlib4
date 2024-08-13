@@ -839,11 +839,11 @@ lemma iteratedFDerivWithin_two_apply (f : E → F) {z : E} (hs : UniqueDiffOn �
 
 theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ t =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f t := by
-  induction' n with n ihn
-  · exact h.mono fun y hy => DFunLike.ext _ _ fun _ => hy
-  · have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderivWithin' ht
-    apply this.mono
-    intro y hy
+  induction n with
+  | zero => exact h.mono fun y hy => DFunLike.ext _ _ fun _ => hy
+  | succ n ihn =>
+    have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderivWithin' ht
+    refine this.mono fun y hy => ?_
     simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]
 
 protected theorem Filter.EventuallyEq.iteratedFDerivWithin (h : f₁ =ᶠ[𝓝[s] x] f) (n : ℕ) :
@@ -873,9 +873,10 @@ protected theorem Set.EqOn.iteratedFDerivWithin (hs : EqOn f₁ f s) (n : ℕ) :
 
 theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 n f t := by
-  induction' n with n ihn generalizing x
-  · rfl
-  · refine (eventually_nhds_nhdsWithin.2 h).mono fun y hy => ?_
+  induction n generalizing x with
+  | zero => rfl
+  | succ n ihn =>
+    refine (eventually_nhds_nhdsWithin.2 h).mono fun y hy => ?_
     simp only [iteratedFDerivWithin_succ_eq_comp_left, (· ∘ ·)]
     rw [(ihn hy).fderivWithin_eq_nhds, fderivWithin_congr_set' _ hy]
 
@@ -907,8 +908,7 @@ theorem iteratedFDerivWithin_inter_open {n : ℕ} (hu : IsOpen u) (hx : x ∈ u)
 
 @[simp]
 theorem contDiffOn_zero : ContDiffOn 𝕜 0 f s ↔ ContinuousOn f s := by
-  refine ⟨fun H => H.continuousOn, fun H => ?_⟩
-  intro x hx m hm
+  refine ⟨fun H => H.continuousOn, fun H => fun x hx m hm ↦ ?_⟩
   have : (m : ℕ∞) = 0 := le_antisymm hm bot_le
   rw [this]
   refine ⟨insert x s, self_mem_nhdsWithin, ftaylorSeriesWithin 𝕜 f s, ?_⟩
@@ -1470,9 +1470,10 @@ theorem norm_fderiv_iteratedFDeriv {n : ℕ} :
 
 theorem iteratedFDerivWithin_univ {n : ℕ} :
     iteratedFDerivWithin 𝕜 n f univ = iteratedFDeriv 𝕜 n f := by
-  induction' n with n IH
-  · ext x; simp
-  · ext x m
+  induction n with
+  | zero => ext x; simp
+  | succ n IH =>
+    ext x m
     rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
