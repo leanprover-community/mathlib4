@@ -9,7 +9,7 @@ import Mathlib.Util.AssertExists
 /-!
 #  The "assertNotExists" linter
 
-The "assertNotExists" linter checks that a file starts with
+The "assertNotExists" style linter checks that a file starts with
 ```
 import*
 doc-module*
@@ -57,7 +57,7 @@ def parseUpToHere (stx : Syntax) (post : String := "") : CommandElabM Syntax := 
   Parser.testParseModule (← getEnv) "linter.assertNotExists" (upToHere.toString ++ post)
 
 /--
-The "assertNotExists" linter checks that a file starts with
+The "assertNotExists" style linter checks that a file starts with
 ```
 import*
 /-! doc-module -/*
