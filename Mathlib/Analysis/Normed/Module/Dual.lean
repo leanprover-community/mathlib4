@@ -250,7 +250,20 @@ theorem inter_polar_finite_reciprocal_ball {𝕜 E : Type*} [RCLike 𝕜] [Norme
     intro a _
     cases' eq_or_ne a 0 with hz hnz
     · simp only [hz, map_zero, norm_zero, mul_zero, le_refl]
-    · have e1 :  x ∈ polar 𝕜 {(RCLike.ofReal (K := 𝕜) (r * ‖a‖)⁻¹) • a} := by
+    · have q1 :  0 < (r * ‖a‖)⁻¹  := inv_pos.mpr (Right.mul_pos hr (norm_pos_iff'.mpr hnz))
+      rw [← mul_le_mul_left q1]
+      have q3 : r * ‖a‖ > 0 := by exact inv_pos.mp q1
+      /-
+      have q2' : IsUnit (r * ‖a‖) := by
+        apply IsUnit.mul
+        sorry
+        sorry
+      -/
+      have q2 : IsUnit (r * ‖a‖) := by
+        rw [isUnit_iff_ne_zero]
+        exact Ne.symm (ne_of_lt q3)
+      rw [IsUnit.inv_mul_cancel q2]
+      have e1 :  x ∈ polar 𝕜 {(RCLike.ofReal (K := 𝕜) (r * ‖a‖)⁻¹) • a} := by
         apply hx {(RCLike.ofReal (K := 𝕜)  (r * ‖a‖)⁻¹) • a} (finite_singleton _)
         simp only [map_inv₀, singleton_subset_iff, mem_closedBall, dist_zero_right]
         rw [norm_smul, norm_inv, norm_algebraMap', norm_mul, Real.norm_of_nonneg (le_of_lt hr),
@@ -264,26 +277,7 @@ theorem inter_polar_finite_reciprocal_ball {𝕜 E : Type*} [RCLike 𝕜] [Norme
         --, map_smul, smul_eq_mul, norm_mul, norm_inv, norm_algebraMap',
         --norm_norm, mem_setOf_eq] at e1
       rw [Real.norm_of_nonneg (le_of_lt hr)] at e1
-
-      --rw [mul_comm, ← mul_assoc] at e1
-      --simp at ha
-      --rw [← mul_le_mul_left (inv_pos.mpr (hr))]
-      --rw [IsUnit.inv_mul_cancel_left (Ne.isUnit (Ne.symm (ne_of_lt hr)))]
-      have q1 :  0 < (r * ‖a‖)⁻¹  := inv_pos.mpr (Right.mul_pos hr (norm_pos_iff'.mpr hnz))
-      rw [← mul_le_mul_left q1]
-      have q3 : r * ‖a‖ > 0 := by exact inv_pos.mp q1
-      /-
-      have q2' : IsUnit (r * ‖a‖) := by
-        apply IsUnit.mul
-        sorry
-        sorry
-      -/
-      have q2 : IsUnit (r * ‖a‖) := by
-        rw [isUnit_iff_ne_zero]
-        exact Ne.symm (ne_of_lt q3)
-      rw [IsUnit.inv_mul_cancel]
       exact e1
-      exact q2
   · simp only [sInter_image, mem_setOf_eq, le_eq_subset, subset_iInter_iff, and_imp]
     exact fun F _ hF₂ => le_trans (by
       conv_lhs => rw [← inv_inv r]
