@@ -182,31 +182,11 @@ theorem numeric_zero : Numeric 0 :=
 theorem numeric_one : Numeric 1 :=
   numeric_of_isEmpty_rightMoves 1 fun _ => numeric_zero
 
-theorem Numeric.neg : ∀ {x : PGame} (_ : Numeric x), Numeric (-x)
+namespace Numeric
+
+theorem neg : ∀ {x : PGame} (_ : Numeric x), Numeric (-x)
   | ⟨_, _, _, _⟩, o =>
     ⟨fun j i => neg_lt_neg_iff.2 (o.1 i j), fun j => (o.2.2 j).neg, fun i => (o.2.1 i).neg⟩
-
-/-- Inserting a smaller numeric left option into a numeric game results in a numeric game. -/
-theorem insertLeft_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
-    (h : x' ≤ x) : (insertLeft x x').Numeric := by
-  rw [le_iff_forall_lt x'_num x_num] at h
-  unfold Numeric at x_num ⊢
-  rcases x with ⟨xl, xr, xL, xR⟩
-  simp only [insertLeft, Sum.forall, forall_const, Sum.elim_inl, Sum.elim_inr] at x_num ⊢
-  constructor
-  · simp only [x_num.1, implies_true, true_and]
-    simp only [rightMoves_mk, moveRight_mk] at h
-    exact h.2
-  · simp only [x_num, implies_true, x'_num, and_self]
-
-/-- Inserting a larger numeric right option into a numeric game results in a numeric game. -/
-theorem insertRight_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
-    (h : x ≤ x') : (insertRight x x').Numeric := by
-  rw [← neg_neg (x.insertRight x'), ← neg_insertLeft_neg]
-  apply Numeric.neg
-  exact insertLeft_numeric (Numeric.neg x_num) (Numeric.neg x'_num) (neg_le_neg_iff.mpr h)
-
-namespace Numeric
 
 theorem moveLeft_lt {x : PGame} (o : Numeric x) (i) : x.moveLeft i < x :=
   (moveLeft_lf i).lt (o.moveLeft i) o
@@ -241,6 +221,26 @@ termination_by x y => (x, y) -- Porting note: Added `termination_by`
 
 theorem sub {x y : PGame} (ox : Numeric x) (oy : Numeric y) : Numeric (x - y) :=
   ox.add oy.neg
+
+/-- Inserting a smaller numeric left option into a numeric game results in a numeric game. -/
+theorem insertLeft {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
+    (h : x' ≤ x) : (insertLeft x x').Numeric := by
+  apply Numeric.mk <;>
+  intro i
+  · apply leftMoves_insertLeft_cases i <;>
+    intros
+    · simpa using x_num.left_lt_right _ _
+    · simpa using h.trans_lt (x_num.lt_moveRight _)
+  · apply leftMoves_insertLeft_cases i
+    · simpa using x_num.moveLeft
+    · simpa using x'_num
+  · simpa using x_num.moveRight _
+
+/-- Inserting a larger numeric right option into a numeric game results in a numeric game. -/
+theorem insertRight {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
+    (h : x ≤ x') : (insertRight x x').Numeric := by
+  rw [← neg_neg (x.insertRight x'), ← neg_insertLeft_neg]
+  exact (x_num.neg.insertLeft x'_num.neg (neg_le_neg_iff.mpr h)).neg
 
 end Numeric
 
