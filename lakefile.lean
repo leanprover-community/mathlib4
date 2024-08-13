@@ -7,6 +7,7 @@ package mathlib where
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`debug.byAsSorry, true⟩,
+    ⟨`weak.linter.haveLet, .ofNat 0⟩,
     ⟨`weak.linter.unreachableTactic, false⟩,
     ⟨`weak.linter.unusedVariables, false⟩
   ]
