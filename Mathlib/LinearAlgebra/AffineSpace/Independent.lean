@@ -81,6 +81,14 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
 
 protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affineIndependent_vadd
 
+@[simp] lemma affineIndependent_smul {G : Type*} [Group G] [DistribMulAction G V]
+    [SMulCommClass G k V] {p : ι → V} {a : G} :
+    AffineIndependent k (a • p) ↔ AffineIndependent k p := by
+  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_smul,
+    ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
+
+protected alias ⟨AffineIndependent.of_smul, AffineIndependent.smul⟩ := affineIndependent_smul
+
 /-- A family is affinely independent if and only if the differences
 from a base point in that family are linearly independent. -/
 theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
