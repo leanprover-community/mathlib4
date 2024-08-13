@@ -18,7 +18,7 @@ bornologies agree, which can then be used with `PseudoMetricSpace.replaceUniform
 `PseudoMetricSpace.replaceBornology`.
 
 With the tooling outside this file, this can be a bit cumbersome, especially when it occurs
-repeatedly, and moreover it can lend itself to abuse of the definitional equality inherant in the
+repeatedly, and moreover it can lend itself to abuse of the definitional equality inherent in the
 type synonym. In this file, we make this pattern more convenient by providing lemmas which take
 directly the conditions that the map is bilipschitz, and then prove the relevant equalities.
 Moreover, because there are no type synonyms here, it is necessary to phrase these equalities in
