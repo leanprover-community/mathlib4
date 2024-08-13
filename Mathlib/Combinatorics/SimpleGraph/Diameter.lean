@@ -173,8 +173,7 @@ lemma exists_dist_eq_diam_of_ne_zero [Nonempty α] :
     ∃ u v, G.dist u v = G.diam := by
   by_cases h : G.diam = 0
   · simp [h]
-  · have : Nontrivial α := nontrivial_of_diam_ne_zero h
-    obtain ⟨u, v, huv⟩ := exists_edist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
+  · obtain ⟨u, v, huv⟩ := exists_edist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
     use u, v
     rw [diam, dist, congrArg ENat.toNat huv]
 
