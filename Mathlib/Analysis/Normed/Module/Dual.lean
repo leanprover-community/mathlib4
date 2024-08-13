@@ -247,7 +247,7 @@ theorem inter_polar_finite_reciprocal_ball {𝕜 E : Type*} [RCLike 𝕜] [Norme
     simp at hx
     simp only [mem_closedBall, dist_zero_right]
     apply ContinuousLinearMap.opNorm_le_of_ball one_pos (le_of_lt hr)
-    intro a ha
+    intro a _
     cases' eq_or_ne a 0 with hz hnz
     · simp only [hz, map_zero, norm_zero, mul_zero, le_refl]
     · have e1 :  x ∈ polar 𝕜 {(RCLike.ofReal (K := 𝕜) (r * ‖a‖)⁻¹) • a} := by
