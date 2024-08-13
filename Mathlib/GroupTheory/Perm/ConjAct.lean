@@ -38,7 +38,7 @@ theorem mem_conj_support (k : ConjAct (Perm α)) (g : Perm α) (a : α) :
   apply Equiv.apply_eq_iff_eq_symm_apply
 
 theorem cycleFactorsFinset_conj (g k : Perm α) :
-    (ConjAct.toConjAct k • g).cycleFactorsFinset  =
+    (ConjAct.toConjAct k • g).cycleFactorsFinset =
       Finset.map (MulAut.conj k).toEquiv.toEmbedding g.cycleFactorsFinset := by
   ext c
   rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct]
