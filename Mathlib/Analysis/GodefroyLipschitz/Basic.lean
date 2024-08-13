@@ -72,65 +72,9 @@ theorem aux (a b c : ℝ) (ha : |a| ≤ c) (hb : |b| ≤ c) (h : a - b = 2 * c) 
     have hb : -c < b := lt_of_le_of_ne hb hb'.symm
     linarith
 
-theorem lol' (x : E) (nx : x ≠ 0) : ∃ f : E →L[ℝ] ℝ, ‖f‖ = 1 ∧ f x = ‖x‖ := by
-  let g' : span ℝ {x} →ₗ[ℝ] ℝ :=
-    { toFun := fun y ↦
-        let t := (mem_span_singleton.1 y.2).choose
-        t * ‖x‖
-      map_add' := by
-        intro y z
-        let t1 := (mem_span_singleton.1 y.2).choose
-        have ht1 : t1 • x = y := (mem_span_singleton.1 y.2).choose_spec
-        let t2 := (mem_span_singleton.1 z.2).choose
-        have ht2 : t2 • x = z := (mem_span_singleton.1 z.2).choose_spec
-        let t3 := (mem_span_singleton.1 (y + z).2).choose
-        have ht3 : t3 • x = y + z := (mem_span_singleton.1 (y + z).2).choose_spec
-        change t3 * ‖x‖ = t1 * ‖x‖ + t2 * ‖x‖
-        rw [← ht1, ← ht2, ← add_smul] at ht3
-        have : t3 = t1 + t2 := by
-          apply smul_left_injective ℝ nx
-          exact ht3
-        rw [← add_mul, this]
-      map_smul' := by
-        intro t y
-        let t1 := (mem_span_singleton.1 y.2).choose
-        have ht1 : t1 • x = y := (mem_span_singleton.1 y.2).choose_spec
-        let t2 := (mem_span_singleton.1 (t • y).2).choose
-        have ht2 : t2 • x = t • y := (mem_span_singleton.1 (t • y).2).choose_spec
-        change t2 * ‖x‖ = t • (t1 * ‖x‖)
-        rw [← ht1, smul_smul] at ht2
-        have : t2 = t * t1 := by
-          apply smul_left_injective ℝ nx
-          exact ht2
-        rw [this, mul_assoc]
-        rfl }
-  let g := LinearMap.toContinuousLinearMap g'
-  have ng y : ‖g y‖ = ‖y‖ := by
-    let t := (mem_span_singleton.1 y.2).choose
-    have ht : t • x = y := (mem_span_singleton.1 y.2).choose_spec
-    change ‖t * ‖x‖‖ = ‖y‖
-    rw [norm_mul, norm_norm, ← norm_smul, ht, norm_coe]
-  rcases Real.exists_extension_norm_eq (span ℝ {x}) g with ⟨f, hf, nf⟩
-  have hx : x ∈ span ℝ {x} := mem_span_singleton_self x
-  refine ⟨f, ?_, ?_⟩
-  · rw [nf]
-    apply le_antisymm
-    · refine g.opNorm_le_bound (by norm_num) (fun y ↦ ?_)
-      simp [ng]
-    · apply le_of_mul_le_mul_right _ (norm_pos_iff.2 nx)
-      rw [one_mul, show ‖x‖ = ‖(⟨x, hx⟩ : span ℝ {x})‖ by rfl]
-      nth_rw 1 [← ng ⟨x, hx⟩]
-      exact g.le_opNorm _
-  · change f (⟨x, hx⟩ : span ℝ {x}) = ‖(⟨x, hx⟩ : span ℝ {x})‖
-    rw [hf]
-    let t := (mem_span_singleton.1 hx).choose
-    let ht : t • x = x := (mem_span_singleton.1 hx).choose_spec
-    change t * ‖x‖ = ‖x‖
-    have : t = 1 := by
-      nth_rw 2 [← one_smul ℝ x] at ht
-      apply smul_left_injective ℝ nx
-      exact ht
-    rw [this, one_mul]
+theorem Isometry.map_norm_sub {φ : E → F} (hφ : Isometry φ) (x y : E) :
+    ‖φ x - φ y‖ = ‖x - y‖ := by
+  rw [← dist_eq_norm, hφ.dist_eq, dist_eq_norm]
 
 theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
     ∃ (f : F →L[ℝ] ℝ), ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ t) = t := by
@@ -138,13 +82,11 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
       ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, t ∈ Icc (-k : ℝ) k → f (φ t) = t := by
     obtain ⟨f, nf, hf⟩ : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ f ((φ k) - (φ (-k))) = 2 * k := by
       have nk : ‖(φ k) - (φ (-k))‖ = 2 * k := by
-        rw [← dist_eq_norm, hφ.dist_eq, dist_eq_norm, norm_eq_abs, sub_neg_eq_add, two_mul,
-          abs_eq_self.2]
+        rw [hφ.map_norm_sub, norm_eq_abs, sub_neg_eq_add, two_mul, abs_eq_self.2 (by positivity)]
+      have hnk : (φ k) - (φ (-k)) ≠ 0 := by
+        rw [← norm_pos_iff, nk]
         positivity
-      have hnk : 0 < ‖(φ k) - (φ (-k))‖ := by
-        rw [nk]
-        positivity
-      obtain ⟨f, nf, hfk⟩ := lol' _ (norm_pos_iff.1 hnk)
+      obtain ⟨f, nf, hfk⟩ := exists_eq_norm _ hnk
       use f, nf
       rw [hfk, nk]
     refine ⟨f, nf, fun t tmem ↦ ?_⟩
@@ -152,12 +94,11 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
       apply aux
       · rw [← norm_eq_abs]
         convert f.le_opNorm (φ k)
-        rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_eq_abs, abs_eq_self.2]
-        positivity
+        rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_eq_abs, abs_eq_self.2 (by positivity)]
       · rw [← norm_eq_abs]
         convert f.le_opNorm (φ (-k))
-        rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_eq_abs, abs_eq_neg_self.2, neg_neg]
-        simp
+        rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_eq_abs, abs_eq_neg_self.2 (by simp),
+          neg_neg]
       · rw [← map_sub, hf]
     rcases le_total t 0 with ht | ht
     · have : f ((φ t) - (φ (-k))) = t - (-k) := by
@@ -165,7 +106,7 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
         · apply le_trans <| le_abs_self _
           rw [← norm_eq_abs]
           apply le_trans <| f.le_opNorm _
-          rw [nf, one_mul, ← dist_eq_norm, hφ.dist_eq, dist_eq_norm, norm_eq_abs, abs_eq_self.2]
+          rw [nf, one_mul, hφ.map_norm_sub, norm_eq_abs, abs_eq_self.2]
           linarith [mem_Icc.1 tmem |>.1]
         · have : |f (φ t)| ≤ -t := by
             rw [← norm_eq_abs]
@@ -173,14 +114,13 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
             rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_eq_abs, abs_eq_neg_self.2 ht]
           rw [map_sub, h2]
           linarith [abs_le.1 this |>.1]
-      rw [map_sub, h2] at this
-      simpa using this
+      simpa [map_sub, h2] using this
     · have : f ((φ k) - (φ t)) = k - t := by
         apply le_antisymm
         · apply le_trans <| le_abs_self _
           rw [← norm_eq_abs]
           apply le_trans <| f.le_opNorm _
-          rw [nf, one_mul, ← dist_eq_norm, hφ.dist_eq, dist_eq_norm, norm_eq_abs, abs_eq_self.2]
+          rw [nf, one_mul, hφ.map_norm_sub, norm_eq_abs, abs_eq_self.2]
           linarith [mem_Icc.1 tmem |>.2]
         · have : |f (φ t)| ≤ t := by
             rw [← norm_eq_abs]

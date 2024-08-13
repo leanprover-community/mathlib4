@@ -176,3 +176,54 @@ theorem norm_fderiv_norm [Nontrivial E] {x : E} (h : DifferentiableAt ℝ (‖·
       1 * ‖x‖ = fderiv ℝ (‖·‖) x x := by rw [one_mul, fderiv_norm_self h]
       _ ≤ ‖fderiv ℝ (‖·‖) x x‖ := le_norm_self _
       _ ≤ ‖fderiv ℝ (‖·‖) x‖ * ‖x‖ := ContinuousLinearMap.le_opNorm _ _
+
+noncomputable def CoeffSpan {x : E} (nx : x ≠ 0) : span ℝ {x} →ₗ[ℝ] ℝ where
+  toFun y := (mem_span_singleton.1 y.2).choose
+  map_add' y z := by
+    have h1 := (mem_span_singleton.1 y.2).choose_spec
+    have h2 := (mem_span_singleton.1 z.2).choose_spec
+    have h3 : (mem_span_singleton.1 (y + z).2).choose • x = y + z :=
+      (mem_span_singleton.1 (y + z).2).choose_spec
+    rw [← h1, ← h2, ← add_smul] at h3
+    exact smul_left_injective ℝ nx h3
+  map_smul' t y := by
+    have h1 := (mem_span_singleton.1 y.2).choose_spec
+    have h2 : (mem_span_singleton.1 (t • y).2).choose • x = t • y :=
+      (mem_span_singleton.1 (t • y).2).choose_spec
+    rw [← h1, smul_smul] at h2
+    exact smul_left_injective ℝ nx h2
+
+theorem coeffSpan_smul {x : E} (nx : x ≠ 0) (y : span ℝ {x}) : (CoeffSpan nx y) • x = y :=
+  (mem_span_singleton.1 y.2).choose_spec
+
+theorem coeffSpan_self {x : E} (nx : x ≠ 0) :
+    CoeffSpan nx ⟨x, mem_span_singleton_self x⟩ = 1 := by
+  have hx : x ∈ span ℝ {x} := mem_span_singleton_self x
+  have : (CoeffSpan nx ⟨x, hx⟩) • x = x := coeffSpan_smul nx _
+  apply smul_left_injective ℝ nx
+  simp [this]
+
+theorem exists_eq_norm (x : E) (nx : x ≠ 0) : ∃ f : E →L[ℝ] ℝ, ‖f‖ = 1 ∧ f x = ‖x‖ := by
+  let g' : span ℝ {x} →ₗ[ℝ] ℝ :=
+    { toFun := fun y ↦ (CoeffSpan nx y) * ‖x‖
+      map_add' := fun y z ↦ by simp [add_mul]
+      map_smul' := fun t y ↦ by simp [mul_assoc] }
+  let g := LinearMap.toContinuousLinearMap g'
+  have ng y : ‖g y‖ = ‖y‖ := by
+    change ‖(CoeffSpan nx y) * ‖x‖‖ = ‖y‖
+    rw [← norm_coe y, ← coeffSpan_smul nx y, norm_smul, norm_mul, norm_norm]
+  rcases Real.exists_extension_norm_eq (span ℝ {x}) g with ⟨f, hf, nf⟩
+  have hx : x ∈ span ℝ {x} := mem_span_singleton_self x
+  refine ⟨f, ?_, ?_⟩
+  · rw [nf]
+    apply le_antisymm
+    · refine g.opNorm_le_bound (by norm_num) (fun y ↦ ?_)
+      simp [ng]
+    · apply le_of_mul_le_mul_right _ (norm_pos_iff.2 nx)
+      rw [one_mul, show ‖x‖ = ‖(⟨x, hx⟩ : span ℝ {x})‖ by rfl]
+      nth_rw 1 [← ng ⟨x, hx⟩]
+      exact g.le_opNorm _
+  · change f (⟨x, hx⟩ : span ℝ {x}) = ‖(⟨x, hx⟩ : span ℝ {x})‖
+    rw [hf]
+    change (CoeffSpan nx ⟨x, hx⟩) * ‖x‖ = ‖x‖
+    rw [coeffSpan_self, one_mul]
