@@ -1542,6 +1542,7 @@ import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategoryEpiMono
 import Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IndYoneda
