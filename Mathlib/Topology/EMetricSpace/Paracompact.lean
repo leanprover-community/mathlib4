@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.GCongr
-import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Topology.EMetricSpace.Diam
 import Mathlib.Topology.Compactness.Paracompact
 
 /-!
