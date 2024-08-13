@@ -481,6 +481,7 @@ def mkInductiveAux₁ :
 
 section
 
+set_option debug.byAsSorry false in
 /-- An auxiliary construction for `mkInductive`.
 -/
 def mkInductiveAux₂ :
@@ -611,6 +612,7 @@ def mkCoinductiveAux₁ :
 
 section
 
+set_option debug.byAsSorry false in
 /-- An auxiliary construction for `mkInductive`.
 -/
 def mkCoinductiveAux₂ :
