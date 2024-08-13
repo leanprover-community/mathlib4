@@ -979,7 +979,7 @@ private structure State where
   /-- Metavariable assignments for the `Key.star` patterns in the `RefinedDiscrTree`. -/
   starAssignments : Std.HashMap Nat DTExpr := {}
   /-- Metavariable assignments for the `Expr.mvar` in the expression. -/
-  mvarAssignments :  Std.HashMap MVarId (Array Key) := {}
+  mvarAssignments : Std.HashMap MVarId (Array Key) := {}
 
 
 private abbrev M := ReaderT Context $ StateListM State

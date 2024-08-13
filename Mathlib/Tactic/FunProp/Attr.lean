@@ -12,13 +12,18 @@ import Mathlib.Tactic.FunProp.Theorems
 ## `funProp` attribute
 -/
 
+
 namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunProp
 
+-- TODO: add support for specifying priority and discharger
+-- open Lean.Parser.Tactic
+-- syntax (name:=Attr.funProp) "funProp" (prio)? (discharger)? : attr
+
 private def funPropHelpString : String :=
-"`fun_prop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
+"`funProp` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
 
 /-- Initialization of `funProp` attribute -/
 initialize funPropAttr : Unit ←
