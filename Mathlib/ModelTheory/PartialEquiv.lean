@@ -367,6 +367,7 @@ instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
 /-- Maps to the symmetric finitely-generated partial equivalence. -/
+@[simps]
 def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
 
 lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
