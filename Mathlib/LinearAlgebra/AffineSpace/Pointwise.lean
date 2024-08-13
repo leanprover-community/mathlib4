@@ -75,7 +75,8 @@ theorem map_pointwise_vadd (f : P₁ →ᵃ[k] P₂) (v : V₁) (s : AffineSubsp
   exact f.map_vadd _ _
 
 section SMul
-variable [Monoid M] [DistribMulAction M V] [SMulCommClass M k V] {a : M}
+variable [Monoid M] [DistribMulAction M V] [SMulCommClass M k V] {a : M} {s : AffineSubspace k V}
+  {p : V}
 
 /-- The multiplicative action on an affine subspace corresponding to applying the action to every
 element.
@@ -107,8 +108,15 @@ scoped[Pointwise] attribute [instance] AffineSubspace.mulAction
 lemma smul_eq_map (a : M) (s : AffineSubspace k V) :
     a • s = s.map (DistribMulAction.toLinearMap k _ a).toAffineMap := rfl
 
-lemma smul_mem_smul_iff (ha : IsUnit a) {s : AffineSubspace k V} {p : V} :
-    a • p ∈ a • s ↔ p ∈ s := smul_mem_smul_set_iff (a := ha.unit)
+lemma smul_mem_smul_iff {G : Type*} [Group G] [DistribMulAction G V] [SMulCommClass G k V] {a : G}
+    : a • p ∈ a • s ↔ p ∈ s := smul_mem_smul_set_iff
+
+lemma smul_mem_smul_iff_of_isUnit (ha : IsUnit a) : a • p ∈ a • s ↔ p ∈ s :=
+  smul_mem_smul_iff (a := ha.unit)
+
+lemma smul_mem_smul_iff₀ {G₀ : Type*} [GroupWithZero G₀] [DistribMulAction G₀ V]
+    [SMulCommClass G₀ k V] {a : G₀} (ha : a ≠ 0) : a • p ∈ a • s ↔ p ∈ s :=
+  smul_mem_smul_iff_of_isUnit ha.isUnit
 
 @[simp] lemma smul_bot (a : M) : a • (⊥ : AffineSubspace k V) = ⊥ := by
   ext; simp [smul_eq_map, map_bot]
