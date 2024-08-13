@@ -41,16 +41,13 @@ variable {N : ℕ} [NeZero N]
 
 /-- The additive character from `ZMod N` to the unit circle in `ℂ`, sending `j mod N` to
 `exp (2 * π * I * j / N)`. -/
-noncomputable def toCircle : AddChar (ZMod N) Circle where
-  toFun := fun j ↦ (toAddCircle j).toCircle
-  map_add_eq_mul' a b := by simp_rw [map_add, AddCircle.toCircle_add]
-  map_zero_eq_one' := by simp_rw [map_zero, AddCircle.toCircle, ← QuotientAddGroup.mk_zero,
-    Function.Periodic.lift_coe, mul_zero, Circle.exp_zero]
+noncomputable def toCircle : AddChar (ZMod N) Circle :=
+  toCircle_addChar.compAddMonoidHom toAddCircle
 
 lemma toCircle_intCast (j : ℤ) :
     toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
-  rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_intCast,
-    Function.Periodic.lift_coe, Circle.exp_apply]
+  rw [toCircle, AddChar.compAddMonoidHom_apply, toCircle_addChar, AddChar.coe_mk,
+    AddCircle.toCircle, toAddCircle_intCast, Function.Periodic.lift_coe, Circle.exp_apply]
   push_cast
   ring_nf
 
