@@ -243,11 +243,12 @@ jobs:
       - name: check that assert_not_exists declarations exist later on
         run: |
           { printf 'import Mathlib\n'
-            git ls-files '*.lean' | xargs awk $'BEGIN{ print "import Mathlib" }
-              /^assert_not_exists .*$/ {
-                gsub(/^assert_not/, "assert")
-                acc[$0]=0
-              } END { for(i in acc){ print i } }'
+            git ls-files '*.lean' |
+              xargs awk $'
+                /^assert_not_exists .*$/ {
+                  gsub(/^assert_not/, "assert")
+                  acc[$0]=0
+                } END { for(i in acc){ print i } }'
           } > Mathlib/NonExistingDeclaration.lean
           lake build Mathlib.NonExistingDeclaration
 
