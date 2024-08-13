@@ -139,6 +139,15 @@ lemma continuousAt_toNat (hx : x ≠ ⊤) : ContinuousAt ENat.toNat x :=
 theorem nhds_top : 𝓝 (⊤ : ℕ∞) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp [lt_top_iff_ne_top, Ioi]
 
+theorem nhds_top_basis :
+    (𝓝 (⊤ : ℕ∞)).HasBasis (fun a ↦ a < ⊤) fun a ↦ Ioi a :=
+  _root_.nhds_top_basis
+
+theorem tendsto_nhds_top_iff_nat {m : α → ℕ∞} {f : Filter α} :
+    Tendsto m f (𝓝 ⊤) ↔ ∀ n : ℕ, ∀ᶠ i in f, n < m i := by
+  simp only [nhds_top, ne_eq, tendsto_iInf, tendsto_principal, mem_Ioi]
+  exact ⟨fun h k ↦ h k (coe_ne_top k), fun h n n_ne_top ↦ (coe_toNat n_ne_top).symm ▸ h n.toNat⟩
+
 end TopologicalSpace
 
 end ENat
