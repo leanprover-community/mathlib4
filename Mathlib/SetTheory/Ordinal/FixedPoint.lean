@@ -486,6 +486,10 @@ theorem nfp_zero : nfp 0 = id := by
   rw [Function.iterate_succ']
   exact Ordinal.zero_le a
 
+theorem nfp_zero_left (a) : nfp 0 a = a := by
+  rw [nfp_zero]
+  rfl
+
 @[simp]
 theorem deriv_zero : deriv 0 = id :=
   deriv_eq_id_of_nfp_eq_id nfp_zero
@@ -563,8 +567,8 @@ theorem nfp_mul_eq_opow_omega {a b : Ordinal} (hb : 0 < b) (hba : b ≤ (a^omega
     nfp (a * ·) b = (a^omega.{u}) := by
   rcases eq_zero_or_pos a with ha | ha
   · rw [ha, zero_opow omega_ne_zero] at hba ⊢
-    simp_rw [Ordinal.le_zero.1 hba, zero_mul, nfp_zero]
-    rfl
+    simp_rw [Ordinal.le_zero.1 hba, zero_mul]
+    exact nfp_zero_left 0
   apply le_antisymm
   · apply nfp_le_fp (mul_isNormal ha).monotone hba
     rw [← opow_one_add, one_add_omega]
