@@ -174,7 +174,7 @@ theorem iteratedDerivWithin_succ {x : 𝕜} (hxs : UniqueDiffWithinAt 𝕜 s x) 
 iterating `n` times the differentiation operation. -/
 theorem iteratedDerivWithin_eq_iterate {x : 𝕜} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedDerivWithin n f s x = (fun g : 𝕜 → F => derivWithin g s)^[n] f x := by
-  induction n with
+  induction n generalizing x with
   | zero => simp
   | succ n IH =>
     rw [iteratedDerivWithin_succ (hs x hx), Function.iterate_succ']
