@@ -64,9 +64,7 @@ This file expands on the development in the core library.
 
 * `Fin.revPerm : Equiv.Perm (Fin n)` : `Fin.rev` as an `Equiv.Perm`, the antitone involution given
   by `i ↦ n-(i+1)`
-
 -/
-
 
 assert_not_exists Monoid
 assert_not_exists Fintype
