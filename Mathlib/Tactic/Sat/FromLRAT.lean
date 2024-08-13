@@ -39,8 +39,6 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 
-set_option autoImplicit true
-
 open Lean hiding Literal HashMap
 open Batteries
 
@@ -120,7 +118,8 @@ def Fmla.proof (f : Fmla) (c : Clause) : Prop :=
   ∀ v : Valuation, v.satisfies_fmla f → v.satisfies c
 
 /-- If `f` subsumes `c` (i.e. `c ∈ f`), then `f.proof c`. -/
-theorem Fmla.proof_of_subsumes (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
+theorem Fmla.proof_of_subsumes {f : Fmla} {c : Clause}
+    (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
   fun _ h ↦ h.1 _ <| H.1 _ <| List.Mem.head ..
 
 /-- The core unit-propagation step.
@@ -153,7 +152,7 @@ def Valuation.mk : List Prop → Valuation
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
-theorem Valuation.mk_implies {as ps} (as₁) : as = List.reverseAux as₁ ps →
+theorem Valuation.mk_implies {p} {as ps} (as₁) : as = List.reverseAux as₁ ps →
     (Valuation.mk as).implies p ps as₁.length → p := by
   induction ps generalizing as₁ with
   | nil => exact fun _ ↦ id
@@ -169,16 +168,18 @@ theorem Valuation.mk_implies {as ps} (as₁) : as = List.reverseAux as₁ ps →
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
   prop : ¬ v.satisfies_fmla f → p
 
+variable {v : Valuation}
+
 /-- If `f` is unsatisfiable, and every `v` which agrees with `ps` implies `¬⟦f⟧_v → p`, then `p`.
 Equivalently, there exists a valuation `v` which agrees with `ps`,
 and every such valuation yields `¬⟦f⟧_v` because `f` is unsatisfiable. -/
-theorem Fmla.refute {ps} (f : Fmla) (hf : f.proof [])
+theorem Fmla.refute {p : Prop} {ps} (f : Fmla) (hf : f.proof [])
     (hv : ∀ v, Valuation.implies v (Fmla.reify v f p) ps 0) : p :=
   (Valuation.mk_implies [] rfl (hv _)).1 (hf _)
 
 /-- Negation turns AND into OR, so `¬⟦f₁ ∧ f₂⟧_v ≡ ¬⟦f₁⟧_v ∨ ¬⟦f₂⟧_v`. -/
-theorem Fmla.reify_or (h₁ : Fmla.reify v f₁ a) (h₂ : Fmla.reify v f₂ b) :
-    Fmla.reify v (f₁.and f₂) (a ∨ b) := by
+theorem Fmla.reify_or {f₁ : Fmla} {a : Prop} {f₂ : Fmla} {b : Prop}
+    (h₁ : Fmla.reify v f₁ a) (h₂ : Fmla.reify v f₂ b) : Fmla.reify v (f₁.and f₂) (a ∨ b) := by
   refine ⟨fun H ↦ by_contra fun hn ↦ H ⟨fun c h ↦ by_contra fun hn' ↦ ?_⟩⟩
   rcases List.mem_append.1 h with h | h
   · exact hn <| Or.inl <| h₁.1 fun Hc ↦ hn' <| Hc.1 _ h
@@ -189,7 +190,8 @@ structure Clause.reify (v : Valuation) (c : Clause) (p : Prop) : Prop where
   prop : ¬ v.satisfies c → p
 
 /-- Reification of a single clause formula. -/
-theorem Fmla.reify_one (h : Clause.reify v c a) : Fmla.reify v (Fmla.one c) a :=
+theorem Fmla.reify_one {c : Clause} {a : Prop} (h : Clause.reify v c a) :
+    Fmla.reify v (Fmla.one c) a :=
   ⟨fun H ↦ h.1 fun h ↦ H ⟨fun | _, List.Mem.head .. => h⟩⟩
 
 /-- Asserts that `¬⟦l⟧_v` implies `p`. -/
@@ -197,7 +199,8 @@ structure Literal.reify (v : Valuation) (l : Literal) (p : Prop) : Prop where
   prop : v.neg l → p
 
 /-- Negation turns OR into AND, so `¬⟦l ∨ c⟧_v ≡ ¬⟦l⟧_v ∧ ¬⟦c⟧_v`. -/
-theorem Clause.reify_and (h₁ : Literal.reify v l a) (h₂ : Clause.reify v c b) :
+theorem Clause.reify_and {l : Literal} {a : Prop} {c : Clause} {b : Prop}
+    (h₁ : Literal.reify v l a) (h₂ : Clause.reify v c b) :
     Clause.reify v (Clause.cons l c) (a ∧ b) :=
   ⟨fun H ↦ ⟨h₁.1 (by_contra fun hn ↦ H hn.elim), h₂.1 fun h ↦ H fun _ ↦ h⟩⟩
 
@@ -205,14 +208,15 @@ theorem Clause.reify_and (h₁ : Literal.reify v l a) (h₂ : Clause.reify v c b
 theorem Clause.reify_zero : Clause.reify v Clause.nil True := ⟨fun _ ↦ trivial⟩
 
 /-- The reification of a singleton clause `¬⟦l⟧_v ≡ ¬⟦l⟧_v`. -/
-theorem Clause.reify_one (h₁ : Literal.reify v l a) : Clause.reify v (Clause.nil.cons l) a :=
+theorem Clause.reify_one {l : Literal} {a : Prop}
+    (h₁ : Literal.reify v l a) : Clause.reify v (Clause.nil.cons l) a :=
   ⟨fun H ↦ ((Clause.reify_and h₁ Clause.reify_zero).1 H).1⟩
 
 /-- The reification of a positive literal `¬⟦a⟧_v ≡ ¬a`. -/
-theorem Literal.reify_pos (h : v n ↔ a) : (Literal.pos n).reify v ¬a := ⟨mt h.2⟩
+theorem Literal.reify_pos {a : Prop} {n : ℕ} (h : v n ↔ a) : (Literal.pos n).reify v ¬a := ⟨mt h.2⟩
 
 /-- The reification of a negative literal `¬⟦¬a⟧_v ≡ a`. -/
-theorem Literal.reify_neg (h : v n ↔ a) : (Literal.neg n).reify v a := ⟨h.1⟩
+theorem Literal.reify_neg {a : Prop} {n : ℕ} (h : v n ↔ a) : (Literal.neg n).reify v a := ⟨h.1⟩
 
 end Sat
 

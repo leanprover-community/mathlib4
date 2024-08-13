@@ -22,15 +22,15 @@ A morphism from `Spec(O_x)` to `X`, which is defined with the help of an affine 
 neighborhood `U` of `x`.
 -/
 noncomputable def IsAffineOpen.fromSpecStalk
-    {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) :
-    Spec (X.stalk x) ⟶ X :=
+    {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) :
+    Spec (X.presheaf.stalk x) ⟶ X :=
   Spec.map (X.presheaf.germ ⟨x, hxU⟩) ≫ hU.fromSpec
 
 /--
 The morphism from `Spec(O_x)` to `X` given by `IsAffineOpen.fromSpec` does not depend on the affine
 open neighborhood of `x` we choose.
 -/
-theorem IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : TopologicalSpace.Opens X}
+theorem IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : X.Opens}
     (hU : IsAffineOpen U) (hV : IsAffineOpen V) (hxU : x ∈ U) (hxV : x ∈ V) :
     hU.fromSpecStalk hxU = hV.fromSpecStalk hxV := by
   obtain ⟨U', h₁, h₂, h₃ : U' ≤ U ⊓ V⟩ :=
@@ -51,12 +51,12 @@ theorem IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : TopologicalSpa
 If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`.
 -/
 noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
-    Scheme.Spec.obj (op (X.stalk x)) ⟶ X :=
+    Scheme.Spec.obj (op (X.presheaf.stalk x)) ⟶ X :=
   (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
 
 @[simp]
 theorem IsAffineOpen.fromSpecStalk_eq_fromSpecStalk
-    {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) :
+    {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) :
     hU.fromSpecStalk hxU = X.fromSpecStalk x := fromSpecStalk_eq ..
 
 end AlgebraicGeometry

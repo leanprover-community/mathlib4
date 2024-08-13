@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 E.W.Ayers. All rights reserved.
+Copyright (c) 2022 Edward Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: E.W.Ayers
+Authors: Edward Ayers
 -/
 import Lean.Exception
 
@@ -14,14 +14,13 @@ This file contains two additional methods for working with `Exception`s
 
 -/
 
-set_option autoImplicit true
-
 open Lean
 
 /--
 A generalisation of `fail_if_success` to an arbitrary `MonadError`.
 -/
-def successIfFail [MonadError M] [Monad M] (m : M α) : M Exception := do
+def successIfFail {α : Type} {M : Type → Type} [MonadError M] [Monad M] (m : M α) :
+    M Exception := do
   match ← tryCatch (m *> pure none) (pure ∘ some) with
   | none => throwError "Expected an exception."
   | some ex => return ex

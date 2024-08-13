@@ -6,8 +6,6 @@ Authors: Leonardo de Moura, Mario Carneiro
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Data.List.Basic
 
-#align_import data.array.lemmas from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-
 /-!
 Porting note:
 Following the discussion on [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-
@@ -36,7 +34,6 @@ namespace Array'
 
 -- theorem toList_of_hEq {n₁ n₂ α} {a₁ : Array' n₁ α} {a₂ : Array' n₂ α} (hn : n₁ = n₂)
 --     (ha : HEq a₁ a₂) : a₁.toList = a₂.toList := by congr <;> assumption
-#noalign array.to_list_of_heq
 
 -- rev_list
 section RevList
@@ -49,17 +46,14 @@ section RevList
 --         a.revIterateAux (fun _ => (· :: ·)) i h t
 --   | 0, h, t => rfl
 --   | i + 1, h, t => rev_list_reverse_aux i _ _
-#noalign array.rev_list_reverse_aux -- Array'.rev_list_reverse_aux
 
 -- @[simp]
 -- theorem revList_reverse : a.revList.reverse = a.toList :=
 --   rev_list_reverse_aux _ _ _
-#noalign array.rev_list_reverse -- Array'.revList_reverse
 
 -- @[simp]
 -- theorem toList_reverse : a.toList.reverse = a.revList := by
 --   rw [← rev_list_reverse, List.reverse_reverse]
-#noalign array.to_list_reverse -- Array'.toList_reverse
 
 end RevList
 
@@ -70,7 +64,6 @@ section Mem
 
 -- theorem Mem.def : v ∈ a ↔ ∃ i, a.read i = v :=
 --   Iff.rfl
-#noalign array.mem.def --Array'.Mem.def
 
 -- theorem mem_rev_list_aux :
 --     ∀ {i} (h : i ≤ n),
@@ -91,7 +84,6 @@ section Mem
 --       exact
 --         let ⟨j, ji, e⟩ := IH.2 m'
 --         ⟨j, Nat.le_succ_of_le ji, e⟩⟩
-#noalign array.mem_rev_list_aux --Array'.mem_rev_list_aux
 
 -- @[simp]
 -- theorem mem_revList : v ∈ a.revList ↔ v ∈ a :=
@@ -100,12 +92,10 @@ section Mem
 --       (exists_congr fun j =>
 --         Iff.symm <| show j.1 < n ∧ read a j = v ↔ read a j = v from and_iff_right j.2)
 --       (mem_rev_list_aux _)
-#noalign array.mem_rev_list --Array'.mem_revList
 
 -- @[simp]
 -- theorem mem_toList : v ∈ a.toList ↔ v ∈ a := by
 --   rw [← rev_list_reverse] <;> exact list.mem_reverse.trans mem_rev_list
-#noalign array.mem_to_list --Array'.mem_toList
 
 end Mem
 
@@ -120,11 +110,9 @@ section Foldr
 --         DArray.iterateAux a (fun _ => f) i h b
 --   | 0, h => rfl
 --   | j + 1, h => congr_arg (f (read a ⟨j, h⟩)) (rev_list_foldr_aux _)
-#noalign array.rev_list_foldr_aux --Array'.rev_list_foldr_aux
 
 -- theorem revList_foldr : a.revList.foldr f b = a.foldl b f :=
 --   rev_list_foldr_aux _
-#noalign array.rev_list_foldr --Array'.revList_foldr
 
 end Foldr
 
@@ -135,7 +123,6 @@ section Foldl
 
 -- theorem toList_foldl : a.toList.foldl f b = a.foldl b (Function.swap f) := by
 --   rw [← rev_list_reverse, List.foldl_reverse, rev_list_foldr]
-#noalign array.to_list_foldl --Array'.toList_foldl
 
 
 end Foldl
@@ -148,17 +135,14 @@ section Length
 -- theorem rev_list_length_aux (a : Array' n α) (i h) :
 --     (a.iterateAux (fun _ => (· :: ·)) i h []).length = i := by
 --   induction i <;> simp [*, DArray.iterateAux]
-#noalign array.rev_list_length_aux -- Array'.rev_list_length_aux
 
 -- @[simp]
 -- theorem revList_length (a : Array' n α) : a.revList.length = n :=
 --   rev_list_length_aux a _ _
-#noalign array.rev_list_length --Array'.revList_length
 
 -- @[simp]
 -- theorem toList_length (a : Array' n α) : a.toList.length = n := by
 --   rw [← rev_list_reverse, List.length_reverse, rev_list_length]
-#noalign array.to_list_length --Array'.toList_length
 
 end Length
 
@@ -181,17 +165,14 @@ section Nth
 --           | _, rfl, _ => rfl
 --         | k' + 1, _, tl => by
 --           simp [List.nthLe] <;> exact al _ _ (by simp [add_comm, add_assoc, *] <;> cc)
-#noalign array.to_list_nth_le_aux --Array'.to_list_nthLe_aux
 
 -- theorem toList_nthLe (i : ℕ) (h h') : List.nthLe a.toList i h' = a.read ⟨i, h⟩ :=
 --   to_list_nthLe_aux _ _ _ fun k tl => absurd tl k.not_lt_zero
-#noalign array.to_list_nth_le --Array'.toList_nthLe
 
 -- @[simp]
 -- theorem toList_nth_le' (a : Array' n α) (i : Fin n) (h') : List.nthLe a.toList i h'
 --    = a.read i := by
 --   cases i <;> apply to_list_nth_le
-#noalign array.to_list_nth_le' -- Array'.toList_nth_le'
 
 -- theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v := by
 --   rw [List.get?_eq_some']
@@ -199,7 +180,6 @@ section Nth
 --   constructor <;> intro h <;> cases' h with h e <;> subst v
 --   · exact ⟨ll ▸ h, (to_list_nth_le _ _ _).symm⟩
 --   · exact ⟨ll.symm ▸ h, to_list_nth_le _ _ _⟩
-#noalign array.to_list_nth --Array'.toList_get?
 
 -- theorem write_toList {i v} : (a.write i v).toList = a.toList.set i v :=
 --   List.ext_nthLe (by simp) fun j h₁ h₂ => by
@@ -215,7 +195,6 @@ section Nth
 --       simp [h₃]
 --     · rw [List.get?_set_ne _ _ ij, a.read_write_of_ne, to_list_nth.2 ⟨h₃, rfl⟩]
 --       exact Fin.ne_of_vne ij
-#noalign array.write_to_list --Array'.write_toList
 
 end Nth
 
@@ -226,7 +205,6 @@ section Enum
 
 -- theorem mem_toList_enum {i v} : (i, v) ∈ a.toList.enum ↔ ∃ h, a.read ⟨i, h⟩ = v := by
 --   simp [List.mem_iff_get?, to_list_nth, and_comm, and_assoc, and_left_comm]
-#noalign array.mem_to_list_enum --Array'.mem_toList_enum
 
 end Enum
 
@@ -244,12 +222,10 @@ section ToArray
 --             (@DArray.mk m (fun _ => α) fun v => a.toList.nthLe v.1 <| e.symm ▸ v.2))
 --         a.toList_length HEq.rfl) <|
 --     DArray.ext fun ⟨i, h⟩ => toList_nthLe i h _
-#noalign array.to_list_to_array --Array'.toList_toArray
 
 -- @[simp]
 -- theorem toArray_toList (l : List α) : l.toArray.toList = l :=
 --   List.ext_nthLe (toList_length _) fun n h1 h2 => toList_nthLe _ h2 _
-#noalign array.to_array_to_list --Array'.toArray_toList
 
 end ToArray
 
@@ -269,7 +245,6 @@ section PushBack
 --     dsimp [read, DArray.read, push_back]
 --     rw [dif_neg]; rfl
 --     exact ne_of_lt h'
-#noalign array.push_back_rev_list_aux -- Array'.pushBack_rev_list_aux
 
 -- @[simp]
 -- theorem pushBack_revList : (a.pushBack v).revList = v :: a.revList := by
@@ -278,26 +253,22 @@ section PushBack
 --   rw [dif_pos (Eq.refl n)]
 --   apply congr_arg
 --   apply push_back_rev_list_aux
-#noalign array.push_back_rev_list -- Array'.pushBack_revList
 
 -- @[simp]
 -- theorem pushBack_toList : (a.pushBack v).toList = a.toList ++ [v] := by
 --   rw [← rev_list_reverse, ← rev_list_reverse, push_back_rev_list, List.reverse_cons]
-#noalign array.push_back_to_list -- Array'.pushBack_toList
 
 -- @[simp]
 -- theorem read_pushBack_left (i : Fin n) : (a.pushBack v).read i.cast_succ = a.read i := by
 --   cases' i with i hi
 --   have : ¬i = n := ne_of_lt hi
 --   simp [push_back, this, Fin.castSucc, Fin.castAdd, Fin.castLe, Fin.castLt, read, DArray.read]
-#noalign array.read_push_back_left -- Array'.read_pushBack_left
 
 -- @[simp]
 -- theorem read_pushBack_right : (a.pushBack v).read (Fin.last _) = v := by
 --   cases' hn : Fin.last n with k hk
 --   have : k = n := by simpa [Fin.ext_iff] using hn.symm
 --   simp [push_back, this, Fin.castSucc, Fin.castAdd, Fin.castLe, Fin.castLt, read, DArray.read]
-#noalign array.read_push_back_right -- Array'.read_pushBack_right
 
 end PushBack
 
@@ -309,7 +280,6 @@ section Foreach
 -- @[simp]
 -- theorem read_foreach : (foreach a f).read i = f i (a.read i) :=
 --   rfl
-#noalign array.read_foreach -- Array'.read_foreach
 
 end Foreach
 
@@ -320,7 +290,6 @@ section Map
 --
 -- theorem read_map : (a.map f).read i = f (a.read i) :=
 --   read_foreach
-#noalign array.read_map -- Array'.read_map
 
 end Map
 
@@ -332,7 +301,6 @@ section Map₂
 -- @[simp]
 -- theorem read_map₂ : (map₂ f a₁ a₂).read i = f (a₁.read i) (a₂.read i) :=
 --   read_foreach
-#noalign array.read_map₂ --Array'.read_map₂
 
 end Map₂
 
