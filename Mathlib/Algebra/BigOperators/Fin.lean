@@ -220,7 +220,7 @@ theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n
     simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
     -- Porting note: was
     -- assoc_rw [hi, inv_mul_cancel_left]
-    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, mul_left_inv]
+    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, inv_mul_cancel]
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
 Then if `k < j`, this says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ = gₖ`.
