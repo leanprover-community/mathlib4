@@ -127,6 +127,7 @@ theorem antipode_comul₁ (A : Hopf_ C) :
   simp
 
 /--
+Auxiliary calculation for `antipode_comul`.
 This calculation calls for some ASCII art out of This Week's Finds.
 
    |   |
