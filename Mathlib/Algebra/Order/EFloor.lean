@@ -64,7 +64,7 @@ class CastNatENatClass (α : Type*) [Semiring α] [Preorder α] [CoeTC ℕ∞ α
   cast_nonneg {n : ℕ∞} : (0 : α) ≤ n
 
 @[simp, norm_cast]
-lemma ENat.cast_nat [Semiring α] [Preorder α] [CoeTC ℕ∞ α] [CastNatENatClass α] {n : ℕ} :
+lemma ENat.cast_natCast [Semiring α] [Preorder α] [CoeTC ℕ∞ α] [CastNatENatClass α] {n : ℕ} :
     (n : ℕ∞) = (n : α) :=
   CastNatENatClass.cast_nat n
 
