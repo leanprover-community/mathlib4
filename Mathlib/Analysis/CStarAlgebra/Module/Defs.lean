@@ -10,9 +10,8 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 # Hilbert C⋆-modules
 
 A Hilbert C⋆-module is a complex module `E` together with a right `A`-module structure, where `A`
-is a C⋆-algebra, and with an "inner product" that takes values in `A`. This inner
-product satisfies the Cauchy-Schwarz inequality, and induces a norm that makes `E` a normed
-vector space.
+is a C⋆-algebra, and with an `A`-valued inner product. This inner product satisfies the
+Cauchy-Schwarz inequality, and induces a norm that makes `E` a normed vector space over `ℂ`.
 
 ## Main declarations
 
@@ -28,13 +27,26 @@ vector space.
 
 ## Implementation notes
 
-The class `CStarModule A E` requires `E` to already have a `Norm E` instance on it, but
-no other norm-related instances. We then include the fact that this norm agrees with the norm
-induced by the inner product among the axioms of the class. Furthermore, instead of registering
-`NormedAddCommGroup E` and `NormedSpace ℂ E` instances (which might already be present on the type,
-and which would send the type class search algorithm on a chase for `A`), we provide a
-`NormedSpace.Core` structure which enables downstream users of the class to easily register
-these instances themselves on a particular type.
+Unlike the vast majority of other classes in Mathlib, notably `InnerProductSpace`, the class
+`CStarModule A E` does *not* take a `Norm E` instance as an argument, nor does it extend `Norm E`.
+Instead, we utilize the `A`-valued inner product to define a norm on `E` and establish the
+`NormedAddCommGroup E` and `NormedSpace ℂ E` instances via a `NormedSpace.Core` structure. This
+goes against the standard procedure in Mathlib of forgetful inheritance, but with good reason.
+
+Firstly, we will always either construct a `CStarModule` from scratch, as with the *standard
+Hilbert C⋆-module on `A`*, or we will use the `WithCStarModule` type synonym which will not be
+equipped with a norm. This is further justified by the fact that the norm on a Hilbert C⋆-module
+almost never coincides with the norm on the underlying type, and so it is not useful to try and
+pass it as an instance argument. The two notable exceptions to this are when we view `A` as a
+C⋆-module over itself, or when `A := ℂ`. In the former case, it's natural just to use a type
+synonym, and in latter case we should just use `InnerProductSpace` instead.
+
+As an example of just how different the norm can be, consider `CStarModule`s `E` and `F` over `A`.
+One would like to put a `CStarModule` structure on (a type synonrm of) `E × F`, where the `A`-valued
+inner product is given, for `x y : E × F`, `⟪x, y⟫_A := ⟪x.1, y.1⟫_A + ⟪x.2, y.2⟫_A`. The norm this
+induces satisfies `‖x‖ ^ 2 = ‖⟪x.1, y.1⟫ + ⟪x.2, y.2⟫‖`, but this doesn't coincide with *any*
+natural norm on `E × F` unless `A := ℂ`, in which case it is `WithLp 2 (E × F)` because `E × F` is
+then an `InnerProductSpace` over `ℂ`.
 
 ## References
 
@@ -145,13 +157,12 @@ variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [PartialOrder A]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
 
-variable (A) in
 /-- The norm associated with a Hilbert C⋆-module. It is not registered as a norm, since a type
 might already have a norm defined on it. -/
-noncomputable def norm : Norm E where
-  norm x := Real.sqrt ‖⟪x, x⟫‖
+noncomputable def norm (A : Type*) {E : Type*} [Norm A] [Inner A E] : Norm E where
+  norm x := Real.sqrt ‖⟪x, x⟫_A‖
 
-lemma inner_self_eq_norm_sq {x : E} : ‖⟪x, x⟫‖ = ‖x‖ ^ 2 := by simp [norm_eq_sqrt_norm_inner_self]
+lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sqrt_norm_inner_self]
 
 section
 
@@ -169,11 +180,9 @@ protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inne
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
   ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self, inner_self] using h,
-    fun h => by simp [norm, h]; rw [CStarModule.norm_zero] ⟩
+    fun h => by simp [norm, h, norm_eq_sqrt_norm_inner_self]⟩
 
 end
-
-lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sqrt_norm_inner_self]
 
 variable [CStarRing A] [StarOrderedRing A] [StarModule ℂ A]
   [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
@@ -244,13 +253,18 @@ lemma normedSpaceCore [CompleteSpace A] : NormedSpace.Core ℂ E where
   norm_smul c x := by simp [norm_eq_sqrt_norm_inner_self, norm_smul, ← mul_assoc]
   norm_triangle x y := CStarModule.norm_triangle x y
 
+/-- This is not listed as an instance because we often want to replace the topology, uniformity
+and bornology instead of inheriting them from the norm. -/
+abbrev normedAddCommGroup [CompleteSpace A] : NormedAddCommGroup E :=
+  NormedAddCommGroup.ofCore CStarModule.normedSpaceCore
+
 lemma norm_eq_csSup [CompleteSpace A] (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
   let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore normedSpaceCore
   let instNS : NormedSpace ℂ E := .ofCore normedSpaceCore
   refine Eq.symm <| IsGreatest.csSup_eq ⟨⟨‖v‖⁻¹ • v, ?_, ?_⟩, ?_⟩
   · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le le_rfl (by positivity)
-  · simp [norm_smul, CStarModule.inner_self_eq_norm_sq, pow_two, ← mul_assoc]
+  · simp [norm_smul, ← norm_sq_eq, pow_two, ← mul_assoc]
   · rintro - ⟨w, hw, rfl⟩
     calc _ ≤ ‖w‖ * ‖v‖ := norm_inner_le E
       _ ≤ 1 * ‖v‖ := by gcongr
@@ -260,6 +274,10 @@ end norm
 
 section NormedAddCommGroup
 
+/- Note: one generally creates a `CStarModule` instance for a type `E` first before getting the
+`NormedAddCommGroup` and `NormedSpace` instances via `CStarModule.normedSpaceCore`, especially by
+using `NormedAddCommGroup.ofCoreReplaceAll` and `NormedSpace.ofCore`. See
+`Analysis.CStarAlgebra.Module.Constructions` for examples. -/
 variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [PartialOrder A]
   [StarOrderedRing A] [NormedSpace ℂ A] [SMul Aᵐᵒᵖ E] [CompleteSpace A]
   [NormedAddCommGroup E] [NormedSpace ℂ E] [StarModule ℂ A] [CStarModule A E] [IsScalarTower ℂ A A]
