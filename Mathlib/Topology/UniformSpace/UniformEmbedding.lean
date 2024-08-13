@@ -389,8 +389,6 @@ theorem Embedding.to_uniformEmbedding {α β} [TopologicalSpace α] [u : Uniform
 
 section UniformExtension
 
-set_option debug.byAsSorry false
-
 variable {α : Type*} {β : Type*} {γ : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
   {e : β → α} (h_e : UniformInducing e) (h_dense : DenseRange e) {f : β → γ}
   (h_f : UniformContinuous f)

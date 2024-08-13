@@ -453,7 +453,6 @@ end PartialOrder
 end Set
 
 section Image
-set_option debug.byAsSorry false
 
 variable [Preorder α] {β : Type*} [Preorder β] {s : Set α} {t : Set β}
 section Function
