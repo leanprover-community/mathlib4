@@ -378,9 +378,7 @@ lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
 
 namespace IsExtensionPair
 
-lemma cod (h : L.IsExtensionPair M N) (f : L.FGEquiv N M) (m : M) :
-    ∃ g, m ∈ g.1.cod ∧ f ≤ g :=
-  IsExtensionPair_iff_cod.1 h f m
+protected alias ⟨cod, _⟩ := IsExtensionPair_iff_cod
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
 def definedAtLeft

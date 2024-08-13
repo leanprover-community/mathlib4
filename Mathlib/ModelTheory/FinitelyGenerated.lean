@@ -61,7 +61,7 @@ theorem fg_iff_exists_fin_generating_family {N : L.Substructure M} :
 theorem fg_bot : (⊥ : L.Substructure M).FG :=
   ⟨∅, by rw [Finset.coe_empty, closure_empty]⟩
 
-instance instInhabited_finiteEquiv : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
+instance instInhabited_fg : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
 
 theorem fg_closure {s : Set M} (hs : s.Finite) : FG (closure L s) :=
   ⟨hs.toFinset, by rw [hs.coe_toFinset]⟩
