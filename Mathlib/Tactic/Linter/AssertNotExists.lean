@@ -36,27 +36,25 @@ only consists of
 
 and nothing else.
 -/
-def onlyImportsOneModDocAsserts : Syntax → Bool
+def onlyImportsModDocsAsserts : Syntax → Bool
   | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] =>
     let dropDocs := args.toList.dropWhile (·.isOfKind ``Lean.Parser.Command.moduleDoc)
     let dropAssertNotExists := dropDocs.dropWhile (·.isOfKind ``commandAssert_not_exists_)
     dropAssertNotExists.isEmpty
   | _=> false
 
-/-- `parseUpToHere stx` takes as input the `Syntax` `stx`, and parses the file containing
-`stx` up to and excluding `stx`.
+/-- `parseUpToHere stx post` takes as input a `Syntax` `stx` and a `String` `post`.
+It parses the file containing `stx` up to and excluding `stx`, appending `post` at the end.
 
-Since this is intended for use by the `linter.assertNotExists`, the code also adds a final
-`assert_not_exists XXX`, to make sure that a dangling `#guard_msgs in` still allows to test
-the linter.
+The option of appending a final string to the text gives more control to avoid syntax errors,
+for instance in the presence of `#guard_msgs in` or `set_option ... in`.
 -/
-def parseUpToHere (stx : Syntax) : CommandElabM Syntax := do
+def parseUpToHere (stx : Syntax) (post : String := "") : CommandElabM Syntax := do
   let fm ← getFileMap
   let startPos := stx.getPos?.getD default
-  let before : Substring:= { str := fm.source, startPos := ⟨0⟩, stopPos := startPos}
-  Parser.testParseModule (← getEnv) "linter.assertNotExists"
-    -- add a "fake" `assert_not_exists XXX` so that `#guard_msgs in` can be used to test
-    (before.toString ++ "\nassert_not_exists XXX")
+  let upToHere : Substring:= { str := fm.source, startPos := ⟨0⟩, stopPos := startPos}
+  -- append a further string after the `upToHere` content
+  Parser.testParseModule (← getEnv) "linter.assertNotExists" (upToHere.toString ++ post)
 
 /--
 The "assertNotExists" linter checks that a file starts with
@@ -85,16 +83,16 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.assertNot
 
 @[inherit_doc Mathlib.Linter.linter.assertNotExists]
 def assertNotExistsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterHash (← getOptions) do
-      return
-    if (← MonadState.get).messages.hasErrors then
-      return
-    unless stx.isOfKind ``commandAssert_not_exists_ do return
-    let upToStx ← parseUpToHere stx <|> return Syntax.missing
-    if ! onlyImportsOneModDocAsserts upToStx then
-      Linter.logLint linter.assertNotExists stx
-        m!"`{stx}` appears too late: it can only be preceded by `import` statements \
-        doc-module strings and other `assert_not_exists` statements."
+  unless getLinterHash (← getOptions) do
+    return
+  if (← MonadState.get).messages.hasErrors then
+    return
+  unless stx.isOfKind ``commandAssert_not_exists_ do return
+  let upToStx ← parseUpToHere stx "\nassert_not_exists XXX" <|> return Syntax.missing
+  if ! onlyImportsModDocsAsserts upToStx then
+    Linter.logLint linter.assertNotExists stx
+      m!"`{stx}` appears too late: it can only be preceded by `import` statements \
+      doc-module strings and other `assert_not_exists` statements."
 
 initialize addLinter assertNotExistsLinter
 
