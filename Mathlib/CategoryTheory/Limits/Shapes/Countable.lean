@@ -107,7 +107,6 @@ theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor
 
 instance sequentialFunctor_initial : (sequentialFunctor J).Initial  where
   out d := by
-    clear! C
     obtain ⟨n, (g : (sequentialFunctor J).obj ⟨n⟩ ≤ d)⟩ := sequentialFunctor_initial_aux J d
     have : Nonempty (CostructuredArrow (sequentialFunctor J) d) :=
       ⟨CostructuredArrow.mk (homOfLE g)⟩
@@ -115,6 +114,7 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial  where
     refine fun i j ↦ ⟨[j], ?_⟩
     simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
       List.getLast_cons, not_true_eq_false, List.getLast_singleton']
+    clear! C
     wlog h : (unop i.left) ≤ (unop j.left)
     · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
     · right
