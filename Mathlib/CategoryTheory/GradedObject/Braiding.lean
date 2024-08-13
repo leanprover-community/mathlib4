@@ -13,7 +13,7 @@ In this file, we construct the braiding
 for two objects `X` and `Y` in `GradedObject I C`, when `I` is a commutative
 additive monoid (and suitable coproducts exist in a braided category `C`).
 
-When `C` is a braided cateogry and suitable assumptions are made, we obtain the braided category
+When `C` is a braided category and suitable assumptions are made, we obtain the braided category
 structure on `GradedObject I C` and show that it is symmetric if `C` is symmetric.
 
 -/
@@ -69,7 +69,6 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
         whiskerLeft Y (braiding X Z).hom := by
   ext k i₁ i₂ i₃ h
   dsimp [braiding]
-  -- working on the LHS
   conv_lhs => rw [ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl,
     assoc, ι_tensorObjDesc_assoc, assoc, ← MonoidalCategory.id_tensorHom,
     BraidedCategory.braiding_naturality_assoc,
@@ -77,7 +76,6 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     MonoidalCategory.tensorHom_id,
     ← ιTensorObj₃'_eq_assoc Y Z X i₂ i₃ i₁ k (by rw [add_comm _ i₁, ← add_assoc, h]) _ rfl,
     ιTensorObj₃'_associator_hom, Iso.inv_hom_id_assoc]
-  -- working on the RHS
   conv_rhs => rw [ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
     ← MonoidalCategory.tensorHom_id,
     ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
@@ -109,7 +107,6 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
         whiskerRight (braiding X Z).hom Y := by
   ext k i₁ i₂ i₃ h
   dsimp [braiding]
-  -- working on the LHS
   conv_lhs => rw [ιTensorObj₃_associator_inv_assoc, ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc,
     ι_tensorObjDesc_assoc, assoc, ← MonoidalCategory.tensorHom_id,
     BraidedCategory.braiding_naturality_assoc,
@@ -117,7 +114,6 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     MonoidalCategory.id_tensorHom,
     ← ιTensorObj₃_eq_assoc Z X Y i₃ i₁ i₂ k (by rw [add_assoc, add_comm i₃, h]) _ rfl,
     ιTensorObj₃_associator_inv, Iso.hom_inv_id_assoc]
-  -- working on the RHS
   conv_rhs => rw [ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
     ← MonoidalCategory.id_tensorHom,
     ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
@@ -169,21 +165,13 @@ noncomputable instance symmetricCategory [SymmetricCategory C] :
     SymmetricCategory (GradedObject I C) where
   symmetry _ _ := Monoidal.symmetry _ _
 
-section HasFiniteCoproducts
-
-variable [HasFiniteCoproducts C]
-    [∀ (X : C), PreservesFiniteCoproducts ((MonoidalCategory.curriedTensor C).obj X)]
-    [∀ (X : C), PreservesFiniteCoproducts ((MonoidalCategory.curriedTensor C).flip.obj X)]
-
-noncomputable example [BraidedCategory C] :
-    BraidedCategory (GradedObject ℕ C) :=
-  inferInstance
-
-noncomputable example [SymmetricCategory C] :
-    SymmetricCategory (GradedObject ℕ C) :=
-  inferInstance
-
-end HasFiniteCoproducts
+/-!
+The braided/symmetric monoidal category structure on `GradedObject ℕ C` can
+be inferred from the assumptions `[HasFiniteCoproducts C]`,
+`[∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).obj X)]` and
+`[∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).flip.obj X)]`.
+This requires importing `Mathlib.CategoryTheory.Limits.Preserves.Finite`.
+-/
 
 end Instances
 
