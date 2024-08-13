@@ -70,11 +70,11 @@ lemma ENat.cast_natCast [Semiring α] [Preorder α] [CoeTC ℕ∞ α] [CastNatEN
 
 @[simp] lemma ENat.cast_zero [Semiring α] [Preorder α] [CoeTC ℕ∞ α] [CastNatENatClass α] :
     (0 : ℕ∞) = (0 : α) := by
-  exact_mod_cast ENat.cast_nat (α := α) (n := 0)
+  exact_mod_cast ENat.cast_natCast (α := α) (n := 0)
 
 @[simp] lemma ENat.cast_one [Semiring α] [Preorder α] [CoeTC ℕ∞ α] [CastNatENatClass α] :
     (1 : ℕ∞) = (1 : α) := by
-  exact_mod_cast ENat.cast_nat (α := α) (n := 1)
+  exact_mod_cast ENat.cast_natCast (α := α) (n := 1)
 
 @[simp]
 lemma cast_enat_lt_iff [Semiring α] [Preorder α] [CoeTC ℕ∞ α] [CastNatENatClass α] {n m : ℕ∞} :
