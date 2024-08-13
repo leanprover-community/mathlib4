@@ -27,19 +27,20 @@ Cauchy-Schwarz inequality, and induces a norm that makes `E` a normed vector spa
 
 ## Implementation notes
 
-Unlike the vast majority of other classes in Mathlib, notably `InnerProductSpace`, the class
-`CStarModule A E` does *not* take a `Norm E` instance as an argument, nor does it extend `Norm E`.
-Instead, we utilize the `A`-valued inner product to define a norm on `E` and establish the
-`NormedAddCommGroup E` and `NormedSpace ℂ E` instances via a `NormedSpace.Core` structure. This
-goes against the standard procedure in Mathlib of forgetful inheritance, but with good reason.
+The class `CStarModule A E` requires `E` to already have a `Norm E` instance on it, but
+no other norm-related instances. We then include the fact that this norm agrees with the norm
+induced by the inner product among the axioms of the class. Furthermore, instead of registering
+`NormedAddCommGroup E` and `NormedSpace ℂ E` instances (which might already be present on the type,
+and which would send the type class search algorithm on a chase for `A`), we provide a
+`NormedSpace.Core` structure which enables downstream users of the class to easily register
+these instances themselves on a particular type.
 
-Firstly, we will always either construct a `CStarModule` from scratch, as with the *standard
-Hilbert C⋆-module on `A`*, or we will use the `WithCStarModule` type synonym which will not be
-equipped with a norm. This is further justified by the fact that the norm on a Hilbert C⋆-module
-almost never coincides with the norm on the underlying type, and so it is not useful to try and
-pass it as an instance argument. The two notable exceptions to this are when we view `A` as a
-C⋆-module over itself, or when `A := ℂ`. In the former case, it's natural just to use a type
-synonym, and in latter case we should just use `InnerProductSpace` instead.
+Although the `Norm` is passed as a parameter, it almost never coincides with the norm on the
+underlying type, unless that it is a purpose built type, as with the *standard Hilbert C⋆-module*,
+However, with generic types already equipped with a norm, the norm as a Hilbert C⋆-module almost
+never coincides with the norm on the underlying type. The two notable exceptions to this are when
+we view `A` as a C⋆-module over itself, or when `A := ℂ`.  For this reason we will later use the
+type synonym `WithCStarModule`.
 
 As an example of just how different the norm can be, consider `CStarModule`s `E` and `F` over `A`.
 One would like to put a `CStarModule` structure on (a type synonrm of) `E × F`, where the `A`-valued
