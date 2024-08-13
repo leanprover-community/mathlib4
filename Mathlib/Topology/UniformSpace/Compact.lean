@@ -33,8 +33,6 @@ loop.
 uniform space, uniform continuity, compact space
 -/
 
-
-open scoped Classical
 open Uniformity Topology Filter UniformSpace Set
 
 variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
@@ -42,7 +40,6 @@ variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 /-!
 ### Uniformity on compact spaces
 -/
-
 
 /-- On a compact uniform space, the topology determines the uniform structure, entourages are
 exactly the neighborhoods of the diagonal. -/
