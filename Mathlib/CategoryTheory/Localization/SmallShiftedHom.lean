@@ -55,13 +55,15 @@ lemma hasSmallLocalizedShiftedHom_iff
   simp only [hasSmallLocalizedHom_iff _ L, eq]
 
 variable {Y} in
-lemma hasSmallLocalizedShiftedHom_iff_target {Y' : C} (f : Y ⟶  Y') (hf : W f) :
+lemma hasSmallLocalizedShiftedHom_iff_target [W.IsCompatibleWithShift M]
+    {Y' : C} (f : Y ⟶  Y') (hf : W f) :
     HasSmallLocalizedShiftedHom.{w} W M X Y ↔ HasSmallLocalizedShiftedHom.{w} W M X Y' :=
   forall_congr' (fun a ↦ forall_congr' (fun b ↦
     hasSmallLocalizedHom_iff_target W (X⟦a⟧) (f⟦b⟧') (W.shift hf b)))
 
 variable {X} in
-lemma hasSmallLocalizedShiftedHom_iff_source {X' : C} (f : X ⟶  X') (hf : W f) (Y : C) :
+lemma hasSmallLocalizedShiftedHom_iff_source [W.IsCompatibleWithShift M]
+    {X' : C} (f : X ⟶  X') (hf : W f) (Y : C) :
     HasSmallLocalizedShiftedHom.{w} W M X Y ↔ HasSmallLocalizedShiftedHom.{w} W M X' Y :=
   forall_congr' (fun a ↦ forall_congr' (fun b ↦
     hasSmallLocalizedHom_iff_source W (f⟦a⟧') (W.shift hf a) (Y⟦b⟧)))
@@ -69,7 +71,6 @@ lemma hasSmallLocalizedShiftedHom_iff_source {X' : C} (f : X ⟶  X') (hf : W f)
 variable [HasSmallLocalizedShiftedHom.{w} W M X Y]
 
 include M in
-variable (M) in
 lemma hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ :
     HasSmallLocalizedHom.{w} W X Y :=
   (hasSmallLocalizedHom_iff_of_isos W
