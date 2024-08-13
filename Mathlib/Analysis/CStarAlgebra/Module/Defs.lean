@@ -165,6 +165,7 @@ noncomputable def norm (A : Type*) {E : Type*} [Norm A] [Inner A E] : Norm E whe
 lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sqrt_norm_inner_self]
 
 section
+include A
 
 protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]; positivity
 

@@ -936,7 +936,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
         rw [← mul_assoc]
         simp [norm_mul, mul_pow]
       _ ≤ 0 + ε := by
-        rw [inv_mul_cancel (norm_pos_iff.mp k_pos)]
+        rw [inv_mul_cancel₀ (norm_pos_iff.mp k_pos)]
         simpa using h₃.le
 
 /-- If a formal multilinear series `p` represents the zero function at `x : E`, then the
