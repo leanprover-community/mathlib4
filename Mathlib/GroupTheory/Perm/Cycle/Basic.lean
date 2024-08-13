@@ -1011,38 +1011,6 @@ def subtypePerm_of_support_le (c : Perm α) {s : Finset α}
     (hcs : c.support ⊆ s) : Equiv.Perm s :=
   subtypePerm c (isInvariant_of_support_le hcs)
 
-/- Four lemmas added but maybe for nothing worth -/
-lemma subtypePerm_of_support_le_mul {c d : Perm α} {s : Finset α}
-    (hcs : c.support ⊆ s) (hds : d.support ⊆ s) :
-    let hcds : (c * d).support ⊆ s :=
-      subset_trans (Equiv.Perm.support_mul_le c d) (union_subset hcs hds)
-    (subtypePerm_of_support_le (c * d) hcds) =
-      (subtypePerm_of_support_le c hcs) * (subtypePerm_of_support_le d hds) := by
-  intro _
-  rfl
-
-lemma subtypePerm_of_support_le_inv {c : Perm α} {s : Finset α} (hcs : c.support ⊆ s) :
-    let hc's : c⁻¹.support ⊆ s := by simp only [support_inv]; exact hcs
-    (subtypePerm_of_support_le c⁻¹ hc's) = (subtypePerm_of_support_le c hcs)⁻¹ := by
-  intro hc's
-  rfl
-
-lemma subtypePerm_of_support_le_pow {c : Perm α} {s : Finset α} (hcs : c.support ⊆ s) (k : ℕ) :
-    let hc's : (c ^ k).support ⊆ s := subset_trans (Equiv.Perm.support_pow_le c k) hcs
-    (subtypePerm_of_support_le (c ^ k) hc's) = (subtypePerm_of_support_le c hcs) ^ k := by
-  intro _
-  unfold subtypePerm_of_support_le
-  ext
-  simp only [subtypePerm_apply, subtypePerm_pow]
-
-lemma subtypePerm_of_support_le_zpow {c : Perm α} {s : Finset α} (hcs : c.support ⊆ s) (k : ℤ) :
-    let hc's : (c ^ k).support ⊆ s := subset_trans (Equiv.Perm.support_zpow_le c k) hcs
-    (subtypePerm_of_support_le (c ^ k) hc's) = (subtypePerm_of_support_le c hcs) ^ k := by
-  intro _
-  unfold subtypePerm_of_support_le
-  ext
-  simp only [subtypePerm_apply, subtypePerm_zpow]
-
 /-- Support of a cycle is nonempty -/
 theorem IsCycle.nonempty_support {g : Perm α} (hg : g.IsCycle) :
     g.support.Nonempty := by
