@@ -303,6 +303,75 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
   rw [whisker_exchange, ← whiskerRight_comp_assoc]
   simp only [Iso.inv_hom_id, whiskerRight_id, id_comp, ← whiskerLeft_comp, whiskerLeft_id]
 
+@[reassoc]
+lemma triangle_aux {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
+    (i₁ : X₁ ≅ Y₁) (i₂ : X₂ ≅ Y₂) (i₃ : X₃ ≅ Y₃) :
+    ((i₁.hom ⊗ i₂.hom) ⊗ i₃.hom) ≫ (α_ Y₁ Y₂ Y₃).hom ≫ (i₁.inv ⊗ i₂.inv ⊗ i₃.inv) =
+      (α_ X₁ X₂ X₃).hom := by
+  rw [← assoc, associator_naturality]
+  simp only [assoc, ← tensor_comp, Iso.hom_inv_id, id_tensorHom, whiskerLeft_id, comp_id]
+
+lemma leftUnitor_naturality {X Y : LocalizedMonoidal L W ε} (f : X ⟶ Y) :
+    𝟙_ (LocalizedMonoidal L W ε) ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
+  simp [monoidalCategoryStruct]
+
+lemma rightUnitor_naturality {X Y : LocalizedMonoidal L W ε} (f : X ⟶ Y) :
+    f ▷ 𝟙_ (LocalizedMonoidal L W ε) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f :=
+  (rightUnitor L W ε).hom.naturality f
+
+lemma triangle_aux₁ {X Y  : LocalizedMonoidal L W ε} {X' Y' : C}
+    (e₁ : (L').obj X' ≅ X) (e₂ : (L').obj Y' ≅ Y) :
+      e₁.hom ⊗ (ε.hom ⊗ e₂.hom) ≫ (λ_ Y).hom =
+        (L').obj X' ◁ ((ε' L W ε).hom ▷ (L').obj Y' ≫
+          𝟙_ _ ◁ e₂.hom ≫ (λ_ Y).hom) ≫ e₁.hom ▷ Y := by
+  simp only [← tensorHom_id, ← id_tensorHom, ← tensor_comp, comp_id, id_comp,
+    ← tensor_comp_assoc, id_comp]
+  erw [comp_id]
+
+lemma triangle_aux₂ {X Y  : LocalizedMonoidal L W ε} {X' Y' : C}
+    (e₁ : (L').obj X' ≅ X) (e₂ : (L').obj Y' ≅ Y) : (ρ_ X).hom ▷ _ =
+      ((e₁.inv ⊗ ε.inv) ⊗ e₂.inv) ≫ _ ◁ e₂.hom ≫ ((μ L W ε X' (𝟙_ C)).hom ≫
+        (L').map (ρ_ X').hom) ▷ Y ≫ e₁.hom ▷ Y := by
+  simp only [← tensorHom_id, ← id_tensorHom, ← tensor_comp, assoc, comp_id, id_comp, Iso.inv_hom_id]
+  congr
+  rw [← assoc, ← assoc, ← Iso.comp_inv_eq, ← rightUnitor_naturality, rightUnitor_hom_app]
+  simp only [← tensorHom_id, ← id_tensorHom, ← tensor_comp_assoc, comp_id, id_comp, assoc]
+
+variable {L W ε} in
+lemma triangle (X Y : LocalizedMonoidal L W ε) :
+    (α_ X (𝟙_ _) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
+  have : (L').EssSurj := Localization.essSurj L' W
+  obtain ⟨X', ⟨e₁⟩⟩ : ∃ X₁, Nonempty ((L').obj X₁ ≅ X) := ⟨_, ⟨(L').objObjPreimageIso X⟩⟩
+  obtain ⟨Y', ⟨e₂⟩⟩ : ∃ X₂, Nonempty ((L').obj X₂ ≅ Y) := ⟨_, ⟨(L').objObjPreimageIso Y⟩⟩
+  have := (((μ L W ε _ _).hom ⊗ 𝟙 _) ≫ (μ L W ε _ _).hom) ≫=
+    ((L').congr_map (MonoidalCategory.triangle X' Y'))
+  have ha := (associator_hom_app L W ε X' (𝟙_ _) Y' =≫
+    (𝟙 ((L').obj X') ⊗ (μ L W ε (𝟙_ C) Y').hom))
+  simp only [assoc, id_tensorHom, ← whiskerLeft_comp,
+    Iso.inv_hom_id, whiskerLeft_id, comp_id] at ha
+  simp only [← assoc] at ha
+  rw [Iso.eq_comp_inv] at ha
+  simp only [assoc, Functor.map_comp] at this
+  rw [← reassoc_of% ha] at this
+  erw [← triangle_aux _ _ _ e₁.symm ε.symm e₂.symm]
+  simp only [Iso.symm_hom, Iso.symm_inv, assoc]
+  simp only [← id_tensorHom, ← tensor_comp, comp_id]
+  rw [← μ_natural_left, tensorHom_id, ← whiskerRight_comp_assoc] at this
+  rw [← μ_natural_right] at this
+  rw [← Iso.comp_inv_eq] at this
+  simp only [assoc, Iso.hom_inv_id, comp_id] at this
+  have hl := (ε' L W ε).hom ▷ (L').obj Y' ≫= leftUnitor_hom_app L W ε Y'
+  simp only [← whiskerRight_comp_assoc, Iso.hom_inv_id, whiskerRight_id, id_comp] at hl
+  rw [← whiskerLeft_comp, ← hl] at this
+  have hh := this =≫ (_ ◁ e₂.hom)
+  simp only [assoc] at hh
+  rw [← whiskerLeft_comp, assoc, ← leftUnitor_naturality, ← whisker_exchange] at hh
+  have hhh := ((e₁.inv ⊗ ε.inv) ⊗ e₂.inv) ≫= hh =≫ (e₁.hom ▷ _)
+  simp only [assoc] at hhh
+  convert hhh
+  · exact triangle_aux₁ _ _ _ e₁ e₂
+  · exact triangle_aux₂ _ _ _ e₁ e₂
+
 noncomputable instance :
     MonoidalCategory (LocalizedMonoidal L W ε) where
   tensorHom_def := by intros; simp [monoidalCategoryStruct]
@@ -312,7 +381,7 @@ noncomputable instance :
   id_whiskerRight := by intros; simp [monoidalCategoryStruct]
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := by apply associator_naturality
   leftUnitor_naturality := by intros; simp [monoidalCategoryStruct]
-  rightUnitor_naturality f := (rightUnitor L W ε).hom.naturality f
+  rightUnitor_naturality := fun f ↦ (rightUnitor L W ε).hom.naturality f
   pentagon := pentagon
   triangle := sorry
 
