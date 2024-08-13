@@ -284,6 +284,8 @@ instance : Inhabited Surreal :=
 
 lemma mk_eq_mk {x y : PGame.{u}} {hx hy} : mk x hx = mk y hy ↔ x ≈ y := Quotient.eq
 
+alias ⟨_, mk_eq⟩ := mk_eq_mk
+
 lemma mk_eq_zero {x : PGame.{u}} {hx} : mk x hx = 0 ↔ x ≈ 0 := Quotient.eq
 
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
@@ -306,12 +308,16 @@ instance instLE : LE Surreal :=
 @[simp]
 lemma mk_le_mk {x y : PGame.{u}} {hx hy} : mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
 
+alias ⟨_, mk_le⟩ := mk_le_mk
+
 lemma zero_le_mk {x : PGame.{u}} {hx} : 0 ≤ mk x hx ↔ 0 ≤ x := Iff.rfl
 
 instance instLT : LT Surreal :=
   ⟨lift₂ (fun x y _ _ => x < y) fun _ _ _ _ hx hy => propext (lt_congr hx hy)⟩
 
 lemma mk_lt_mk {x y : PGame.{u}} {hx hy} : mk x hx < mk y hy ↔ x < y := Iff.rfl
+
+alias ⟨_, mk_lt⟩ := mk_lt_mk
 
 lemma zero_lt_mk {x : PGame.{u}} {hx} : 0 < mk x hx ↔ 0 < x := Iff.rfl
 
@@ -378,16 +384,38 @@ def toGame : Surreal →+o Game where
   map_add' := by rintro ⟨_, _⟩ ⟨_, _⟩; rfl
   monotone' := by rintro ⟨_, _⟩ ⟨_, _⟩; exact id
 
-theorem zero_toGame : toGame 0 = 0 :=
+theorem toGame_zero : toGame 0 = 0 :=
   rfl
 
 @[simp]
-theorem one_toGame : toGame 1 = 1 :=
+theorem toGame_one : toGame 1 = 1 :=
   rfl
 
 @[simp]
-theorem nat_toGame : ∀ n : ℕ, toGame n = n :=
-  map_natCast' _ one_toGame
+theorem toGame_nat : ∀ n : ℕ, toGame n = n :=
+  map_natCast' _ rfl
+
+@[simp]
+theorem toGame_mk {x : PGame} (o : x.Numeric) : toGame (mk x o) = ⟦x⟧ := by
+  rfl
+
+theorem toGame_injective : Function.Injective toGame := by
+  rintro ⟨_, _⟩ ⟨_, _⟩ h
+  exact mk_eq (equiv_iff_game_eq.2 h)
+
+@[simp]
+theorem toGame_le_iff : ∀ {x y : Surreal}, toGame x ≤ toGame y ↔ x ≤ y := by
+  rintro ⟨_, _⟩ ⟨_, _⟩
+  rfl
+
+@[simp]
+theorem toGame_lt_iff : ∀ {x y : Surreal}, toGame x < toGame y ↔ x < y := by
+  rintro ⟨_, _⟩ ⟨_, _⟩
+  rfl
+
+@[simp]
+theorem toGame_eq_iff : ∀ {x y : Surreal}, toGame x = toGame y ↔ x = y :=
+  toGame_injective.eq_iff
 
 /-- A small family of surreals is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
@@ -442,5 +470,39 @@ noncomputable def toSurreal : Ordinal ↪o Surreal where
   toFun o := mk _ (numeric_toPGame o)
   inj' a b h := toPGame_equiv_iff.1 (by apply Quotient.exact h) -- Porting note: Added `by apply`
   map_rel_iff' := @toPGame_le_iff
+
+theorem toSurreal_injective : Function.Injective toSurreal :=
+  fun _ _ h => toPGame_equiv_iff.1 (mk_eq_mk.1 h)
+
+@[simp]
+theorem toSurreal_le_iff {a b : Ordinal} : toSurreal a ≤ toSurreal b ↔ a ≤ b :=
+  toPGame_le_iff
+
+@[simp]
+theorem toSurreal_lt_iff {a b : Ordinal} : toSurreal a < toSurreal b ↔ a < b :=
+  toPGame_lt_iff
+
+@[simp]
+theorem toSurreal_eq_iff {a b : Ordinal} : toSurreal a = toSurreal b ↔ a = b :=
+  toSurreal_injective.eq_iff
+
+@[simp]
+theorem toSurreal_zero : toSurreal 0 = 0 :=
+  Surreal.mk_eq toPGame_zero
+
+@[simp]
+theorem toSurreal_one : toSurreal 1 = 1 :=
+  Surreal.mk_eq toPGame_one
+
+@[simp]
+theorem toGame_toSurreal (a : Ordinal) : Surreal.toGame (toSurreal a) = toGame a := by
+  rfl
+
+@[simp]
+theorem toSurreal_natCast (n : ℕ) : toSurreal n = n := by
+  rw [← Surreal.toGame_eq_iff, toGame_toSurreal, toGame_natCast, toGame_nat]
+
+theorem toSurreal_nadd (a b : Ordinal) : toSurreal (nadd a b) = toSurreal a + toSurreal b :=
+  Surreal.mk_eq <| toPGame_nadd a b
 
 end Ordinal
