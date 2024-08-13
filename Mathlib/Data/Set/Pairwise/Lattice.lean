@@ -71,7 +71,7 @@ theorem PairwiseDisjoint.biUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → 
   obtain ⟨c, hc, ha⟩ := ha
   obtain ⟨d, hd, hb⟩ := hb
   obtain hcd | hcd := eq_or_ne (g c) (g d)
-  · exact hg d hd (hcd.subst ha) hb hab
+  · exact hg d hd (hcd ▸ ha) hb hab
   -- Porting note: the elaborator couldn't figure out `f` here.
   · exact (hs hc hd <| ne_of_apply_ne _ hcd).mono
       (le_iSup₂ (f := fun i (_ : i ∈ g c) => f i) a ha)

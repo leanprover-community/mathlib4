@@ -201,7 +201,7 @@ end Rec
 section Mem
 
 /-- `a ∈ s` means that `a` has nonzero multiplicity in `s`. -/
-def Mem (a : α) (s : Multiset α) : Prop :=
+def Mem (s : Multiset α) (a : α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
 
 instance : Membership α (Multiset α) :=

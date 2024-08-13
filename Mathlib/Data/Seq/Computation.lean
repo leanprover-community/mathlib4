@@ -280,7 +280,7 @@ end Bisim
 -- It's more of a stretch to use ∈ for this relation, but it
 -- asserts that the computation limits to the given value.
 /-- Assertion that a `Computation` limits to a given value-/
-protected def Mem (a : α) (s : Computation α) :=
+protected def Mem (s : Computation α) (a : α) :=
   some a ∈ s.1
 
 instance : Membership α (Computation α) :=
@@ -753,7 +753,7 @@ theorem exists_of_mem_map {f : α → β} {b : β} {s : Computation α} (h : b �
   exact ⟨a, as, mem_unique (ret_mem _) fb⟩
 
 instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := by
-  rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (f (get s))))
+  rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (α := β) (f (get s))))
 
 theorem terminates_map_iff (f : α → β) (s : Computation α) : Terminates (map f s) ↔ Terminates s :=
   ⟨fun ⟨⟨_, h⟩⟩ =>

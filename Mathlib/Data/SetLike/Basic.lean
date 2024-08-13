@@ -106,7 +106,7 @@ variable {A : Type*} {B : Type*} [i : SetLike A B]
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
 instance (priority := 100) instMembership : Membership B A :=
-  ⟨fun x p => x ∈ (p : Set B)⟩
+  ⟨fun p x => x ∈ (p : Set B)⟩
 
 instance (priority := 100) : CoeSort A (Type _) :=
   ⟨fun p => { x : B // x ∈ p }⟩

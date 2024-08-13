@@ -142,7 +142,7 @@ theorem card_coe : Multiset.card (s : Multiset α) = n := s.prop
 /-- `α ∈ s` means that `a` appears as one of the factors in `s`.
 -/
 instance : Membership α (Sym α n) :=
-  ⟨fun a s => a ∈ s.1⟩
+  ⟨fun s a => a ∈ s.1⟩
 
 instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a ∈ s) :=
   s.1.decidableMem _
