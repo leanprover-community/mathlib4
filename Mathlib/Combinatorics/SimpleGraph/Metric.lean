@@ -268,6 +268,7 @@ lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then
   by_cases h : u = v <;> simp [h]
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
+@[gcongr]
 protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
     G'.dist u v ≤ G.dist u v := by
   obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
