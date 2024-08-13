@@ -42,11 +42,11 @@ given by a tuple consisting of $[x:y:z]$ and the nonsingular condition on any re
 ## Implementation notes
 
 A point representative is implemented as a term `P` of type `Fin 3 → R`, which allows for the vector
-notation `![x, y, z]`. However, `P` is not syntactically equivalent to the expanded vector
+notation `![x, y, z]`. However, `P` is not definitionally equivalent to the expanded vector
 `![P x, P y, P z]`, so the lemmas `fin3_def` and `fin3_def_ext` can be used to convert between the
 two forms. The equivalence of two point representatives `P` and `Q` is implemented as an equivalence
 of orbits of the action of `Rˣ`, or equivalently that there is some unit `u` of `R` such that
-`P = u • Q`. However, `u • Q` is not syntactically equal to `![u * Q x, u * Q y, u * Q z]`, so the
+`P = u • Q`. However, `u • Q` is not definitionally equal to `![u * Q x, u * Q y, u * Q z]`, so the
 lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms.
 
 ## References
