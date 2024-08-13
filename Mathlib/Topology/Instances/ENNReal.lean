@@ -9,6 +9,7 @@ import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.T5
+import Mathlib.Topology.MetricSpace.Pseudo.Real
 
 /-!
 # Topology on extended non-negative reals
