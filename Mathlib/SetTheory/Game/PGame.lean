@@ -1694,11 +1694,11 @@ def leftMoves_insertLeft_cases {x x' : PGame} (k) {P : (insertLeft x x').LeftMov
   · exact hn
   · exact hs i
 
-lemma lf_insertLeft (x x' : PGame) : x' ⧏ insertLeft x x' := by
+theorem lf_insertLeft (x x' : PGame) : x' ⧏ insertLeft x x' := by
   simpa using moveLeft_lf (toLeftMovesInsertLeft none)
 
 /-- A new left option cannot hurt Left. -/
-lemma le_insertLeft (x x' : PGame) : x ≤ insertLeft x x' := by
+theorem le_insertLeft (x x' : PGame) : x ≤ insertLeft x x' := by
   rw [le_iff_forall_lf]
   constructor <;>
   intro i
@@ -1708,7 +1708,7 @@ lemma le_insertLeft (x x' : PGame) : x ≤ insertLeft x x' := by
 /-- Adding a gift horse left option does not change the value of `x`. A gift horse left option is
  a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
  "gift" of a new option, but actually the value of the game did not change. -/
-lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈ x := by
+theorem insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈ x := by
   refine ⟨?_, le_insertLeft x x'⟩
   rw [le_iff_forall_lf]
   constructor <;>
@@ -1790,18 +1790,18 @@ theorem neg_insertRight_neg (x x' : PGame.{u}) : (-x).insertRight (-x') = -x.ins
 theorem neg_insertLeft_neg (x x' : PGame.{u}) : (-x).insertLeft (-x') = -x.insertRight x' := by
   rw [← neg_eq_iff_eq_neg, ← neg_insertRight_neg, neg_neg, neg_neg]
 
-lemma insertRight_lf (x x' : PGame) : insertRight x x' ⧏ x' := by
+theorem insertRight_lf (x x' : PGame) : insertRight x x' ⧏ x' := by
   simpa using lf_moveRight (toRightMovesInsertRight none)
 
 /-- A new right option cannot hurt Right. -/
-lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
+theorem insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
   rw [← neg_le_neg_iff, ← neg_insertLeft_neg]
   exact le_insertLeft _ _
 
 /-- Adding a gift horse right option does not change the value of `x`. A gift horse right option is
  a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
  "gift" of a new option, but actually the value of the game did not change. -/
-lemma insertRight_equiv_of_lf {x x' : PGame} (h : x ⧏ x') : insertRight x x' ≈ x := by
+theorem insertRight_equiv_of_lf {x x' : PGame} (h : x ⧏ x') : insertRight x x' ≈ x := by
   rw [← neg_equiv_neg_iff, ← neg_insertLeft_neg]
   exact insertLeft_equiv_of_lf (neg_lf_neg_iff.mpr h)
 
