@@ -174,7 +174,7 @@ theorem ofLists_moveLeft {L R : List PGame} (i : Fin L.length) :
 
 @[simp]
 theorem ofLists_moveLeft' {L R : List PGame} (i : (ofLists L R).LeftMoves) :
-    (ofLists L R).moveLeft i = L[toOfListsLeftMoves.symm i] :=
+    (ofLists L R).moveLeft i = L[i.down] :=
   rfl
 
 theorem ofLists_moveRight {L R : List PGame} (i : Fin R.length) :
@@ -183,7 +183,7 @@ theorem ofLists_moveRight {L R : List PGame} (i : Fin R.length) :
 
 @[simp]
 theorem ofLists_moveRight' {L R : List PGame} (i : (ofLists L R).RightMoves) :
-    (ofLists L R).moveRight i = R[toOfListsRightMoves.symm i] :=
+    (ofLists L R).moveRight i = R[i.down] :=
   rfl
 
 /-- A variant of `PGame.recOn` expressed in terms of `PGame.moveLeft` and `PGame.moveRight`.
@@ -1728,15 +1728,18 @@ instance uniqueStarLeftMoves : Unique star.LeftMoves :=
 instance uniqueStarRightMoves : Unique star.RightMoves :=
   PUnit.unique
 
+theorem zero_lf_star : 0 ⧏ star := by
+  rw [zero_lf]
+  use default
+  rintro ⟨⟩
+
+theorem star_lf_zero : star ⧏ 0 := by
+  rw [lf_zero]
+  use default
+  rintro ⟨⟩
+
 theorem star_fuzzy_zero : star ‖ 0 :=
-  ⟨by
-    rw [lf_zero]
-    use default
-    rintro ⟨⟩,
-   by
-    rw [zero_lf]
-    use default
-    rintro ⟨⟩⟩
+  ⟨star_lf_zero, zero_lf_star⟩
 
 @[simp]
 theorem neg_star : -star = star := by simp [star]

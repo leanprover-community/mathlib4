@@ -412,6 +412,20 @@ instance isEmpty_rightMoves_mul (x y : PGame.{u})
   cases y
   assumption
 
+instance inhabited_leftMoves_mul (x y : PGame.{u})
+    [Inhabited (x.LeftMoves × y.LeftMoves ⊕ x.RightMoves × y.RightMoves)] :
+    Inhabited (x * y).LeftMoves := by
+  cases x
+  cases y
+  assumption
+
+instance inhabited_rightMoves_mul (x y : PGame.{u})
+    [Inhabited (x.LeftMoves × y.RightMoves ⊕ x.RightMoves × y.LeftMoves)] :
+    Inhabited (x * y).RightMoves := by
+  cases x
+  cases y
+  assumption
+
 /-- `x * 0` has exactly the same moves as `0`. -/
 def mulZeroRelabelling (x : PGame) : x * 0 ≡r 0 :=
   Relabelling.isEmpty _
