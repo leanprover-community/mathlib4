@@ -574,12 +574,13 @@ section BoundarySpectrum
 local notation "σ" => spectrum
 
 variable {𝕜 A SA : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-variable [SetLike SA A] [SubringClass SA A] [SMulMemClass SA 𝕜 A]
+variable [SetLike SA A] [SubringClass SA A] [instSMulMem : SMulMemClass SA 𝕜 A]
 variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
 open Topology Filter
 
 open SubalgebraClass in
+include instSMulMem in
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`. If `a : S` is invertible in `A`,
 and for all `x : S` sufficiently close to `a` within some filter `l`, `x` is invertible in `S`,
 then `a` is invertible in `S` as well. -/
