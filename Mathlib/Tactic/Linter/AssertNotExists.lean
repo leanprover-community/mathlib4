@@ -79,11 +79,12 @@ register_option linter.style.assertNotExists : Bool := {
 namespace Style.AssertNotExists
 
 /-- Gets the value of the `linter.assertNotExists` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.style.assertNotExists o
+def getLinterAssertNotExists (o : Options) : Bool :=
+  Linter.getLinterValue linter.style.assertNotExists o
 
 @[inherit_doc Mathlib.Linter.linter.style.assertNotExists]
 def assertNotExistsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless getLinterHash (← getOptions) do
+  unless getLinterAssertNotExists (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
