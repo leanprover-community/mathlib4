@@ -18,6 +18,9 @@ of characteristic zero. The result that the complex numbers are algebraically cl
 `FieldTheory.AlgebraicClosure`.
 -/
 
+assert_not_exists Multiset
+assert_not_exists Algebra
+
 open Set Function
 
 /-! ### Definition and basic arithmetic -/
@@ -809,6 +812,3 @@ unsafe instance instRepr : Repr ℂ where
       reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
 
 end Complex
-
-assert_not_exists Multiset
-assert_not_exists Algebra

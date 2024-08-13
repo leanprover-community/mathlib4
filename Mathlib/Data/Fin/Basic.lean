@@ -64,11 +64,10 @@ This file expands on the development in the core library.
 
 * `Fin.revPerm : Equiv.Perm (Fin n)` : `Fin.rev` as an `Equiv.Perm`, the antitone involution given
   by `i ↦ n-(i+1)`
-
 -/
 
 assert_not_exists Monoid
-
+assert_not_exists Fintype
 universe u v
 
 open Fin Nat Function
@@ -544,8 +543,6 @@ def castLEEmb (h : n ≤ m) : Fin n ↪ Fin m where
 /- The next proof can be golfed a lot using `Fintype.card`.
 It is written this way to define `ENat.card` and `Nat.card` without a `Fintype` dependency
 (not done yet). -/
-assert_not_exists Fintype
-
 lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨castLEEmb h⟩⟩
   induction n generalizing m with
