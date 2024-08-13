@@ -57,7 +57,7 @@ end SMulInvariantMeasure
 
 section AE_smul
 
-variable {m : MeasurableSpace α} [MeasurableSpace G] [SMul G α]
+variable {m : MeasurableSpace α} [SMul G α]
   (μ : Measure α) [SMulInvariantMeasure G α μ] {s : Set α}
 
 /-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/
@@ -88,7 +88,7 @@ end AE_smul
 
 section AE
 
-variable {m : MeasurableSpace α} [MeasurableSpace G] [Group G] [MulAction G α]
+variable {m : MeasurableSpace α} [Group G] [MulAction G α]
   (μ : Measure α) [SMulInvariantMeasure G α μ]
 
 @[to_additive (attr := simp)]
@@ -198,9 +198,9 @@ instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N 
 
 end SMulHomClass
 
-variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] [MeasurableSpace G]
-  [MeasurableSMul G α] (c : G) (μ : Measure α)
+variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (c : G) (μ : Measure α)
 
+variable [MeasurableSpace G] [MeasurableSMul G α] in
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
 
 - 0: `SMulInvariantMeasure G α μ`;
@@ -268,7 +268,7 @@ variable {G}
 variable [SMulInvariantMeasure G α μ]
 
 variable {μ}
-
+variable [MeasurableSpace G] [MeasurableSMul G α] in
 @[to_additive]
 theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
     NullMeasurableSet (c • s) μ := by
@@ -280,6 +280,7 @@ section IsMinimal
 variable (G)
 variable [TopologicalSpace α] [ContinuousConstSMul G α] [MulAction.IsMinimal G α] {K U : Set α}
 
+include G in
 /-- If measure `μ` is invariant under a group action and is nonzero on a compact set `K`, then it is
 positive on any nonempty open set. In case of a regular measure, one can assume `μ ≠ 0` instead of
 `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_smulInvariant_of_ne_zero`. -/
@@ -296,6 +297,8 @@ theorem measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero (hK : IsCompact K
 then it is positive on any nonempty open set. In case of a regular measure, one can assume `μ ≠ 0`
 instead of `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_vaddInvariant_of_ne_zero`. -/
 add_decl_doc measure_isOpen_pos_of_vaddInvariant_of_compact_ne_zero
+
+include G
 
 @[to_additive]
 theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :

@@ -67,6 +67,9 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
 
+-- Guard against import creep
+assert_not_exists InnerProductSpace
+
 noncomputable section
 
 open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
@@ -902,6 +905,3 @@ def toAEEqFunLinearMap : C(α, γ) →ₗ[𝕜] α →ₘ[μ] γ :=
     map_smul' := fun c f => AEEqFun.smul_mk c f f.continuous.aestronglyMeasurable }
 
 end ContinuousMap
-
--- Guard against import creep
-assert_not_exists InnerProductSpace
