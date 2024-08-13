@@ -223,7 +223,7 @@ lemma mk₀_f_comp_biprodIso_inv_apply
   erw [← comp_apply, ← comp_apply, Iso.hom_inv_id, id_apply]
   exact congr_fun ((forget _).congr_map (S.biprodIso_hom_fromBiprod F n)).symm y
 
-/-- Comparison isomorphisms from the Mayer-Vietoris sequence and the
+/-- Comparison isomorphism from the Mayer-Vietoris sequence and the
 contravariant sequence of `Ext`-groups. -/
 noncomputable def sequenceIso : S.sequence F n₀ n₁ h ≅
     Ext.contravariantSequence S.shortComplex_shortExact F n₀ n₁ (by omega) :=
