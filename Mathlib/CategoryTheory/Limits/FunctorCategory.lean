@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 /-!
@@ -179,15 +178,6 @@ instance evaluationPreservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
     exact preservesLimitOfPreservesLimitCone (combinedIsLimit _ _) <|
       IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
 
-instance [HasLimitsOfShape WalkingCospan C] {F G : K ⥤ C} (f : F ⟶ G) [Mono f] (k : K) :
-    Mono (f.app k) :=
-  inferInstanceAs (Mono (((evaluation K C).obj k).map f))
-
-instance [HasLimitsOfShape WalkingCospan C] {F G : K ⥤ C} (f : F ⟶ G) [Mono f] (H : C ⥤ D)
-    [H.PreservesMonomorphisms] : Mono (whiskerRight f H) := by
-  have : ∀ X, Mono ((whiskerRight f H).app X) := by intros; dsimp; infer_instance
-  apply NatTrans.mono_of_mono_app
-
 /-- If `F : J ⥤ K ⥤ C` is a functor into a functor category which has a limit,
 then the evaluation of that limit at `k` is the limit of the evaluations of `F.obj j` at `k`.
 -/
@@ -243,15 +233,6 @@ instance evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
       fun k => getColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
     refine preservesColimitOfPreservesColimitCocone (combinedIsColimit _ _) <|
       IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
-
-instance [HasColimitsOfShape WalkingSpan C] {F G : K ⥤ C} (f : F ⟶ G) [Epi f] (k : K) :
-    Epi (f.app k) :=
-  inferInstanceAs (Epi (((evaluation K C).obj k).map f))
-
-instance [HasColimitsOfShape WalkingSpan C] {F G : K ⥤ C} (f : F ⟶ G) [Epi f] (H : C ⥤ D)
-    [H.PreservesEpimorphisms] : Epi (whiskerRight f H) := by
-  have : ∀ X, Epi ((whiskerRight f H).app X) := by intros; dsimp; infer_instance
-  apply NatTrans.epi_of_epi_app
 
 /-- If `F : J ⥤ K ⥤ C` is a functor into a functor category which has a colimit,
 then the evaluation of that colimit at `k` is the colimit of the evaluations of `F.obj j` at `k`.
