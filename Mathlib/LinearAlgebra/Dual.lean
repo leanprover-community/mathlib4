@@ -718,6 +718,7 @@ theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.total _ _ R e
 open Module
 
 variable [DecidableEq ι] (h : DualBases e ε)
+include h
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
   rw [lc, _root_.map_finsupp_sum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
@@ -1308,15 +1309,20 @@ variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 namespace Module.Dual
 
-variable [FiniteDimensional K V₁] {f : Module.Dual K V₁} (hf : f ≠ 0)
+variable {f : Module.Dual K V₁}
 
-open FiniteDimensional
+section
+variable (hf : f ≠ 0)
+include hf
 
 lemma range_eq_top_of_ne_zero :
     LinearMap.range f = ⊤ := by
   obtain ⟨v, hv⟩ : ∃ v, f v ≠ 0 := by contrapose! hf; ext v; simpa using hf v
   rw [eq_top_iff]
   exact fun x _ ↦ ⟨x • (f v)⁻¹ • v, by simp [inv_mul_cancel₀ hv]⟩
+
+open FiniteDimensional
+variable [FiniteDimensional K V₁]
 
 lemma finrank_ker_add_one_of_ne_zero :
     finrank K (LinearMap.ker f) + 1 = finrank K V₁ := by
@@ -1334,7 +1340,9 @@ lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
   rwa [finrank_top, this, ← finrank_ker_add_one_of_ne_zero hf, add_le_add_iff_left,
     Submodule.one_le_finrank_iff]
 
-lemma eq_of_ker_eq_of_apply_eq {f g : Module.Dual K V₁} (x : V₁)
+end
+
+lemma eq_of_ker_eq_of_apply_eq [FiniteDimensional K V₁] {f g : Module.Dual K V₁} (x : V₁)
     (h : LinearMap.ker f = LinearMap.ker g) (h' : f x = g x) (hx : f x ≠ 0) :
     f = g := by
   let p := K ∙ x

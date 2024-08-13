@@ -37,7 +37,7 @@ namespace InvariantForm
 section ring
 
 variable {R L M : Type*}
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 
 variable (Φ : LinearMap.BilinForm R M) (hΦ_nondeg : Φ.Nondegenerate)
@@ -50,7 +50,7 @@ for all `x : L` and `y z : M` the condition `Φ ⁅x, y⁆ z = -Φ y ⁅x, z⁆`
 def _root_.LinearMap.BilinForm.lieInvariant : Prop :=
   ∀ (x : L) (y z : M), Φ ⁅x, y⁆ z = -Φ y ⁅x, z⁆
 
-lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieModule R L M] :
+lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieAlgebra R L] [LieModule R L M] :
     Φ.lieInvariant L ↔ Φ ∈ LieModule.maxTrivSubmodule R L (LinearMap.BilinForm R M) := by
   refine ⟨fun h x ↦ ?_, fun h x y z ↦ ?_⟩
   · ext y z
@@ -87,6 +87,8 @@ lemma mem_orthogonal (N : LieSubmodule R L M) (y : M) :
     y ∈ orthogonal Φ hΦ_inv N ↔ ∀ x ∈ N, Φ x y = 0 := by
   simp [orthogonal, LinearMap.BilinForm.isOrtho_def, LinearMap.BilinForm.mem_orthogonal_iff]
 
+variable [LieAlgebra R L]
+
 lemma orthogonal_disjoint
     (Φ : LinearMap.BilinForm R L) (hΦ_nondeg : Φ.Nondegenerate) (hΦ_inv : Φ.lieInvariant L)
     -- TODO: replace the following assumption by a typeclass assumption `[HasNonAbelianAtoms]`
@@ -120,6 +122,7 @@ variable (Φ : LinearMap.BilinForm K L) (hΦ_nondeg : Φ.Nondegenerate)
 variable (hΦ_inv : Φ.lieInvariant L) (hΦ_refl : Φ.IsRefl)
 -- TODO: replace the following assumption by a typeclass assumption `[HasNonAbelianAtoms]`
 variable (hL : ∀ I : LieIdeal K L, IsAtom I → ¬IsLieAbelian I)
+include hΦ_nondeg hΦ_refl hL
 
 open FiniteDimensional Submodule in
 lemma orthogonal_isCompl_coe_submodule (I : LieIdeal K L) (hI : IsAtom I) :
@@ -133,6 +136,8 @@ lemma orthogonal_isCompl (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I (orthogonal Φ hΦ_inv I) := by
   rw [LieSubmodule.isCompl_iff_coe_toSubmodule]
   exact orthogonal_isCompl_coe_submodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI
+
+include hΦ_inv
 
 lemma restrict_nondegenerate (I : LieIdeal K L) (hI : IsAtom I) :
     (Φ.restrict I).Nondegenerate := by

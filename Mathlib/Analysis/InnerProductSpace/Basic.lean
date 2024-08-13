@@ -1133,12 +1133,14 @@ theorem real_inner_le_norm (x y : F) : ⟪x, y⟫_ℝ ≤ ‖x‖ * ‖y‖ :=
 
 variable (𝕜)
 
+include 𝕜 in
 theorem parallelogram_law_with_norm (x y : E) :
     ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) := by
   simp only [← @inner_self_eq_norm_mul_norm 𝕜]
   rw [← re.map_add, parallelogram_law, two_mul, two_mul]
   simp only [re.map_add]
 
+include 𝕜 in
 theorem parallelogram_law_with_nnnorm (x y : E) :
     ‖x + y‖₊ * ‖x + y‖₊ + ‖x - y‖₊ * ‖x - y‖₊ = 2 * (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) :=
   Subtype.ext <| parallelogram_law_with_norm 𝕜 x y
@@ -1993,11 +1995,15 @@ def OrthogonalFamily (G : ι → Type*) [∀ i, SeminormedAddCommGroup (G i)]
 
 variable {𝕜}
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
-  {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V) [dec_V : ∀ (i) (x : G i), Decidable (x ≠ 0)]
+  {V : ∀ i, G i →ₗᵢ[𝕜] E}
 
 theorem Orthonormal.orthogonalFamily {v : ι → E} (hv : Orthonormal 𝕜 v) :
     OrthogonalFamily 𝕜 (fun _i : ι => 𝕜) fun i => LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
   fun i j hij a b => by simp [inner_smul_left, inner_smul_right, hv.2 hij]
+
+section
+variable (hV : OrthogonalFamily 𝕜 G V)
+include hV
 
 theorem OrthogonalFamily.eq_ite [DecidableEq ι] {i j : ι} (v : G i) (w : G j) :
     ⟪V i v, V j w⟫ = ite (i = j) ⟪V i v, V j w⟫ 0 := by
@@ -2005,7 +2011,8 @@ theorem OrthogonalFamily.eq_ite [DecidableEq ι] {i j : ι} (v : G i) (w : G j) 
   · rfl
   · exact hV h v w
 
-theorem OrthogonalFamily.inner_right_dfinsupp [DecidableEq ι] (l : ⨁ i, G i) (i : ι) (v : G i) :
+theorem OrthogonalFamily.inner_right_dfinsupp
+    [∀ (i) (x : G i), Decidable (x ≠ 0)] [DecidableEq ι] (l : ⨁ i, G i) (i : ι) (v : G i) :
     ⟪V i v, l.sum fun j => V j⟫ = ⟪v, l i⟫ :=
   calc
     ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
@@ -2136,6 +2143,8 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
         · simp
         · exact fun i => sq_nonneg _
       linarith
+
+end
 
 end OrthogonalFamily_Seminormed
 
