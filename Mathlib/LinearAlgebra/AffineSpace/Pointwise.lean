@@ -108,8 +108,8 @@ scoped[Pointwise] attribute [instance] AffineSubspace.mulAction
 lemma smul_eq_map (a : M) (s : AffineSubspace k V) :
     a • s = s.map (DistribMulAction.toLinearMap k _ a).toAffineMap := rfl
 
-lemma smul_mem_smul_iff {G : Type*} [Group G] [DistribMulAction G V] [SMulCommClass G k V] {a : G}
-    : a • p ∈ a • s ↔ p ∈ s := smul_mem_smul_set_iff
+lemma smul_mem_smul_iff {G : Type*} [Group G] [DistribMulAction G V] [SMulCommClass G k V] {a : G} :
+    a • p ∈ a • s ↔ p ∈ s := smul_mem_smul_set_iff
 
 lemma smul_mem_smul_iff_of_isUnit (ha : IsUnit a) : a • p ∈ a • s ↔ p ∈ s :=
   smul_mem_smul_iff (a := ha.unit)
