@@ -54,7 +54,7 @@ section
 
 open Real in
 set_option synthInstance.maxHeartbeats 10000 in
-example : expMapCircle (2 * π) = 1 := by simp
+example : Circle.exp (2 * π) = 1 := by simp
 
 end
 
