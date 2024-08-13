@@ -261,18 +261,15 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
 lemma carrier_equiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
     T₁ = T₂ ↔ ∃ e : T₁.1 = T₂.1, (Spec.map (Triplet.tensorCongr e).inv).1.base T₁.2 = T₂.2 := by
   constructor
-  · intro e
-    subst e
-    simp only [Triplet.tensorCongr_refl, Iso.refl_inv, Spec.map_id, id_val_base, TopCat.coe_id,
-      id_eq, exists_const]
-  · intro ⟨h₁, h₂⟩
-    apply Sigma.ext h₁
-    apply heq_of_cast_eq
-    ·
-      rw [← h₂]
-      simp
-      sorry
-    · rw [h₁]
+  · rintro rfl
+    simp
+  · obtain ⟨T, _⟩ := T₁
+    obtain ⟨T', _⟩ := T₂
+    rintro ⟨rfl : T = T', e⟩
+    simpa [e]
+
+-- lemma uniqqq (X : Scheme) (p : X) : Unique (PrimeSpectrum (X.residueField p)) := by
+--   exact PrimeSpectrum.instUnique
 
 def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
   toFun t := ⟨.ofPoint t, SpecOfPoint t⟩
@@ -283,13 +280,16 @@ def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
     apply carrier_equiv_eq_iff.mpr
     constructor
     · let e := T.ofPoint_SpectensorTo p
-      change (Spec.map (Triplet.tensorCongr e).inv).val.base (SpecOfPoint (T.SpecTensorTo.val.base p)) = p
-      have := fromSpecResidueField_apply p (⊥ : PrimeSpectrum _)
-      sorry
-      --  [this]
-
-
-    -- · exact Triplet.ofPoint_SpectensorTo T p
+      change ((Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))) ≫ (Spec.map (Triplet.tensorCongr e).inv)).val.base (⊥ : PrimeSpectrum _) = p
+      conv =>
+        rhs
+        rw [← fromSpecResidueField_apply p (⊥ : PrimeSpectrum _)]
+        rw [← Triplet.Spec_ofPointTensor_SpecTensorTo T p]
+      have : (Spec.map (Hom.residueFieldMap T.SpecTensorTo p)).val.base (⊥ : PrimeSpectrum _) = (⊥ : PrimeSpectrum _) := by
+        apply (PrimeSpectrum.instUnique).uniq
+      rw [← this]
+      simp only [Triplet.tensorCongr_inv, comp_coeBase, TopCat.coe_comp, Function.comp_apply,
+        Spec.map_comp, Category.assoc]
 
 -- move me to `Mathlib\Algebra\Category\Ring\Constructions.lean`
 lemma CommRingCat.nontrivial_pushout_of_isField {A B C : CommRingCat.{u}}
