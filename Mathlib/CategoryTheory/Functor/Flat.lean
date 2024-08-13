@@ -109,7 +109,7 @@ variable (F : C ⥤ D) [RepresentablyFlat F] {c : Cone K} (hc : IsLimit c) (s : 
 
 /-- (Implementation).
 Given a limit cone `c : cone K` and a cone `s : cone (K ⋙ F)` with `F` representably flat,
-`s` can factor through `F.map_cone c`.
+`s` can factor through `F.mapCone c`.
 -/
 noncomputable def lift : s.pt ⟶ F.obj c.pt :=
   let s' := IsCofiltered.cone (s.toStructuredArrow ⋙ StructuredArrow.pre _ K F)

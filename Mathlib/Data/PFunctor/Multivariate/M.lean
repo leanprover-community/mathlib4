@@ -299,7 +299,8 @@ theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β))
     (h : ∀ x : P.M α, lastFun g x = (dropFun g <$$> x : P.M β)) :
     g <$$> M.dest P x = M.dest P (dropFun g <$$> x) := by
   rw [M.dest_map]; congr
-  apply eq_of_drop_last_eq <;> simp
+  apply eq_of_drop_last_eq (by simp)
+  simp only [lastFun_appendFun]
   ext1; apply h
 
 end MvPFunctor

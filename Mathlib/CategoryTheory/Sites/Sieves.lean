@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, E. W. Ayers
+Authors: Bhavik Mehta, Edward Ayers
 -/
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
@@ -746,6 +746,16 @@ lemma functorPushforward_inverse {X : D} (S : Sieve X) (e : C ≌ D) :
 lemma mem_functorPushforward_inverse {X : D} {S : Sieve X} {e : C ≌ D} {f : Y ⟶ e.inverse.obj X} :
     S.functorPushforward e.inverse f ↔ S (e.functor.map f ≫ e.counit.app X) :=
   congr($(S.functorPushforward_inverse e).arrows f)
+
+variable (e : C ≌ D)
+
+lemma functorPushforward_equivalence_eq_pullback {U : C} (S : Sieve U) :
+    Sieve.functorPushforward e.inverse (Sieve.functorPushforward e.functor S) =
+      Sieve.pullback (e.unitInv.app U) S := by ext; simp
+
+lemma pullback_functorPushforward_equivalence_eq {X : C} (S : Sieve X) :
+    Sieve.pullback (e.unit.app X) (Sieve.functorPushforward e.inverse
+      (Sieve.functorPushforward e.functor S)) = S := by ext; simp
 
 end Functor
 

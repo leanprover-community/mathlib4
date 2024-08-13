@@ -699,7 +699,7 @@ end
 then a multilinear map on `M₁` defines a multilinear map on the restriction of `M₁` to
 `{a // P a}`, by fixing the arguments out of `{a // P a}` equal to the values of `z`. -/
 
-lemma domDomRestrict_aux [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
+lemma domDomRestrict_aux {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred P] {M₁ : ι → Type*}
     [DecidableEq {a // P a}]
     (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) (i : {a : ι // P a})
     (c : M₁ i) : (fun j ↦ if h : P j then Function.update x i c ⟨j, h⟩ else z ⟨j, h⟩) =
@@ -716,7 +716,7 @@ lemma domDomRestrict_aux [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
       rw [Function.update_noteq h'']
     · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
 
-lemma domDomRestrict_aux_right [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
+lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred P] {M₁ : ι → Type*}
     [DecidableEq {a // ¬ P a}]
     (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) (i : {a : ι // ¬ P a})
     (c : M₁ i) : (fun j ↦ if h : P j then x ⟨j, h⟩ else Function.update z i c ⟨j, h⟩) =
@@ -954,7 +954,7 @@ def domDomRestrictₗ (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [Decida
     ext v
     simp [domDomRestrict_aux_right]
 
-lemma iteratedFDeriv_aux {α : Type*} [DecidableEq α]
+lemma iteratedFDeriv_aux {ι} {M₁ : ι → Type*} {α : Type*} [DecidableEq α]
     (s : Set ι) [DecidableEq { x // x ∈ s }] (e : α ≃ s)
     (m : α → ((i : ι) → M₁ i)) (a : α) (z : (i : ι) → M₁ i) :
     (fun i ↦ update m a z (e.symm i) i) =
@@ -1213,7 +1213,7 @@ theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
 
 instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
   { MultilinearMap.addCommMonoid with
-    add_left_neg := fun a => MultilinearMap.ext fun v => add_left_neg _
+    neg_add_cancel := fun a => MultilinearMap.ext fun v => neg_add_cancel _
     sub_eq_add_neg := fun a b => MultilinearMap.ext fun v => sub_eq_add_neg _ _
     zsmul := fun n f =>
       { toFun := fun m => n • f m
@@ -1235,7 +1235,7 @@ variable [Semiring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i,
 theorem map_neg [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x : M₁ i) :
     f (update m i (-x)) = -f (update m i x) :=
   eq_neg_of_add_eq_zero_left <| by
-    rw [← MultilinearMap.map_add, add_left_neg, f.map_coord_zero i (update_same i 0 m)]
+    rw [← MultilinearMap.map_add, neg_add_cancel, f.map_coord_zero i (update_same i 0 m)]
 
 @[simp]
 theorem map_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :

@@ -140,8 +140,8 @@ instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
   ⟨AlgEquiv.toRingEquiv⟩
 
 @[simp]
-theorem coe_mk {toFun invFun left_inv right_inv map_mul map_add commutes} :
-    ⇑(⟨⟨toFun, invFun, left_inv, right_inv⟩, map_mul, map_add, commutes⟩ : A₁ ≃ₐ[R] A₂) = toFun :=
+theorem coe_mk {toEquiv map_mul map_add commutes} :
+    ⇑(⟨toEquiv, map_mul, map_add, commutes⟩ : A₁ ≃ₐ[R] A₂) = toEquiv :=
   rfl
 
 @[simp]
@@ -604,7 +604,7 @@ instance aut : Group (A₁ ≃ₐ[R] A₁) where
   one_mul ϕ := ext fun x => rfl
   mul_one ϕ := ext fun x => rfl
   inv := symm
-  mul_left_inv ϕ := ext <| symm_apply_apply ϕ
+  inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
 
 theorem aut_mul (ϕ ψ : A₁ ≃ₐ[R] A₁) : ϕ * ψ = ψ.trans ϕ :=
   rfl
@@ -665,11 +665,13 @@ protected theorem smul_def (f : A₁ ≃ₐ[R] A₁) (a : A₁) : f • a = f a 
 instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
   ⟨AlgEquiv.ext⟩
 
-instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁ where
-  smul_comm r e a := (map_smul e r a).symm
+instance apply_smulCommClass {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
+    SMulCommClass S (A₁ ≃ₐ[R] A₁) A₁ where
+  smul_comm r e a := (e.toLinearEquiv.map_smul_of_tower r a).symm
 
-instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
-  smul_comm e r a := map_smul e r a
+instance apply_smulCommClass' {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
+    SMulCommClass (A₁ ≃ₐ[R] A₁) S A₁ :=
+  SMulCommClass.symm _ _ _
 
 instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
   smul := fun f => Units.map f
@@ -712,8 +714,8 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
   toFun := fun f ↦
     { (f : S →ₐ[R] S) with
       invFun := ↑(f⁻¹)
-      left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_self]; rfl)
-      right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_self]; rfl) }
+      left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_cancel]; rfl)
+      right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_cancel]; rfl) }
   invFun := fun f ↦ ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
   left_inv := fun _ ↦ rfl
   right_inv := fun _ ↦ rfl

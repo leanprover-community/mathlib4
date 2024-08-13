@@ -218,7 +218,7 @@ theorem suffixLevenshtein_cons₂ (xs : List α) (y ys) :
     suffixLevenshtein C xs (y :: ys) = (impl C xs) y (suffixLevenshtein C xs ys) :=
   rfl
 
-theorem suffixLevenshtein_cons₁_aux {x y : {r : List δ // 0 < r.length}}
+theorem suffixLevenshtein_cons₁_aux {α} {x y : { l : List α // 0 < l.length }}
     (w₀ : x.1[0]'x.2 = y.1[0]'y.2) (w : x.1.tail = y.1.tail) : x = y := by
   match x, y with
   | ⟨hx :: tx, _⟩, ⟨hy :: ty, _⟩ => simp_all

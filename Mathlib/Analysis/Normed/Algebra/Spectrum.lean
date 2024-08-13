@@ -6,10 +6,10 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Analysis.Complex.Liouville
-import Mathlib.Analysis.Complex.Polynomial
+import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
-import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
@@ -426,6 +426,7 @@ end NonemptySpectrum
 section GelfandMazurIsomorphism
 
 variable [NormedRing A] [NormedAlgebra ℂ A] (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0)
+include hA
 
 local notation "σ" => spectrum ℂ
 
@@ -689,7 +690,7 @@ lemma real_iff [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] {a
 
 end QuasispectrumRestricts
 
-variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
+variable {A : Type*} [Ring A] [PartialOrder A]
 
 lemma coe_mem_spectrum_real_of_nonneg [Algebra ℝ A] [NonnegSpectrumClass ℝ A] {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) :

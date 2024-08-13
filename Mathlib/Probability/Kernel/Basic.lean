@@ -67,6 +67,14 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
 
 @[deprecated (since := "2024-07-22")] alias kernel := Kernel
 
+/-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/
+scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
+
+/-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain and codomain. -/
+scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
+
+initialize_simps_projections Kernel (toFun → apply)
+
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace Kernel
@@ -207,10 +215,9 @@ protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : Measurab
   (Measure.measurable_coe hs).comp κ.measurable
 
 lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y' ∈ measurableAtom y) :
-  κ y' = κ y := by
+    κ y' = κ y := by
   ext s hs
-  exact mem_of_mem_measurableAtom hy'
-    (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
+  exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
 lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
@@ -226,6 +233,14 @@ lemma IsMarkovKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsMarkovKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x => (κ x s).toReal) μ :=
   IsFiniteKernel.integrable μ κ hs
+
+lemma integral_congr_ae₂ {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : α → β → E}
+    {μ : Measure α} (h : ∀ᵐ a ∂μ, f a =ᵐ[κ a] g a) :
+    ∫ a, ∫ b, f a b ∂(κ a) ∂μ = ∫ a, ∫ b, g a b ∂(κ a) ∂μ := by
+  apply integral_congr_ae
+  filter_upwards [h] with _ ha
+  apply integral_congr_ae
+  filter_upwards [ha] with _ hb using hb
 
 section Sum
 

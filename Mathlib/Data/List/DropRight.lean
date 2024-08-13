@@ -131,7 +131,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
     refine ⟨fun h => ?_, fun h => ?_⟩
     · intro _ H
       rw [get] at H
-      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons _ _))
+      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons_self _ _))
       rw [← h]
       simp only [H]
       exact List.IsSuffix.sublist (dropWhile_suffix p)

@@ -223,7 +223,7 @@ theorem map_add_add_add_map (x y z : M) :
   abel
 
 theorem map_add_self (x : M) : Q (x + x) = 4 • Q x := by
-  rw [← two_smul R x, map_smul, nsmul_eq_smul_cast R]
+  rw [← two_smul R x, map_smul, ← Nat.cast_smul_eq_nsmul R]
   norm_num
 
 -- not @[simp] because it is superseded by `ZeroHomClass.map_zero`
@@ -643,7 +643,7 @@ end QuadraticMap
 
 Over a commutative ring with an inverse of 2, the theory of quadratic maps is
 basically identical to that of symmetric bilinear maps. The map from quadratic
-maps to bilinear maps giving this identification is called the `associated`
+maps to bilinear maps giving this identification is called the <`associated`
 quadratic map.
 -/
 
@@ -766,7 +766,7 @@ theorem _root_.QuadraticMap.polarBilin_injective (h : IsUnit (2 : R)) :
   intro Q₁ Q₂ h₁₂
   apply h.smul_left_cancel.mp
   rw [show (2 : R) = (2 : ℕ) by rfl]
-  simp_rw [← nsmul_eq_smul_cast R, ← QuadraticMap.toQuadraticMap_polarBilin]
+  simp_rw [Nat.cast_smul_eq_nsmul R, ← QuadraticMap.toQuadraticMap_polarBilin]
   exact congrArg toQuadraticMap h₁₂
 
 section
@@ -780,12 +780,14 @@ theorem _root_.QuadraticMap.polarBilin_comp (Q : QuadraticMap R N' N) (f : M →
 
 end
 
-variable {N' : Type*} [AddCommGroup N'] [Module R N']
+variable {N' : Type*} [AddCommGroup N']
 
 theorem _root_.LinearMap.compQuadraticMap_polar [CommSemiring S] [Algebra S R] [Module S N]
     [Module S N'] [IsScalarTower S R N] [Module S M] [IsScalarTower S R M] (f : N →ₗ[S] N')
     (Q : QuadraticMap R M N) (x y : M) : polar (f.compQuadraticMap' Q) x y = f (polar Q x y) := by
   simp [polar]
+
+variable [Module R N']
 
 theorem _root_.LinearMap.compQuadraticMap_polarBilin (f : N →ₗ[R] N') (Q : QuadraticMap R M N) :
     (f.compQuadraticMap' Q).polarBilin = Q.polarBilin.compr₂ f := by
@@ -1032,7 +1034,7 @@ end Anisotropic
 section PosDef
 
 variable {R₂ : Type u} [CommSemiring R₂] [AddCommMonoid M] [Module R₂ M]
-variable [PartialOrder N] [AddCommMonoid N] [Module R₂ N] [CovariantClass N N (· + ·) (· < ·)]
+variable [PartialOrder N] [AddCommMonoid N] [Module R₂ N]
 variable {Q₂ : QuadraticMap R₂ M N}
 
 /-- A positive definite quadratic form is positive on nonzero vectors. -/
@@ -1057,13 +1059,16 @@ theorem PosDef.anisotropic {Q : QuadraticMap R₂ M N} (hQ : Q.PosDef) : Q.Aniso
       exact this
 
 theorem posDef_of_nonneg {Q : QuadraticMap R₂ M N} (h : ∀ x, 0 ≤ Q x) (h0 : Q.Anisotropic) :
-    PosDef Q := fun x hx => lt_of_le_of_ne (h x) (Ne.symm fun hQx => hx <| h0 _ hQx)
+    PosDef Q :=
+  fun x hx => lt_of_le_of_ne (h x) (Ne.symm fun hQx => hx <| h0 _ hQx)
 
 theorem posDef_iff_nonneg {Q : QuadraticMap R₂ M N} : PosDef Q ↔ (∀ x, 0 ≤ Q x) ∧ Q.Anisotropic :=
   ⟨fun h => ⟨h.nonneg, h.anisotropic⟩, fun ⟨n, a⟩ => posDef_of_nonneg n a⟩
 
-theorem PosDef.add (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef Q') :
-    PosDef (Q + Q') := fun x hx => add_pos (hQ x hx) (hQ' x hx)
+theorem PosDef.add [CovariantClass N N (· + ·) (· < ·)]
+    (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef Q') :
+    PosDef (Q + Q') :=
+  fun x hx => add_pos (hQ x hx) (hQ' x hx)
 
 theorem linMulLinSelfPosDef {R} [LinearOrderedCommRing R] [Module R M] [LinearOrderedSemiring A]
     [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
@@ -1217,7 +1222,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
         refine ⟨-B x y / B x x, fun z hz => ?_⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
         rw [IsOrtho, map_smul, smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
-          div_mul_cancel₀ _ hx, add_neg_self, mul_zero])
+          div_mul_cancel₀ _ hx, add_neg_cancel, mul_zero])
   refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]
   intro j i

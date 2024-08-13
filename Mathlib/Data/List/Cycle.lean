@@ -168,7 +168,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take, getElem?_cons_zero,
       Option.some_inj] at hk'
     · exact hy (Eq.symm hk')
-    rw [length_cons, Nat.pred_succ]
+    rw [length_cons]
     exact length_pos_of_mem (by assumption)
   suffices k + 1 = l.length by simp [this] at hk
   cases' l with hd tl
@@ -462,7 +462,7 @@ instance : Inhabited (Cycle α) :=
 theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
   Quotient.inductionOn' s fun l => by
-    refine List.recOn l ?_ ?_ <;> simp
+    refine List.recOn l ?_ ?_ <;> simp only [mk''_eq_coe, coe_nil]
     assumption'
 
 /-- For `x : α`, `s : Cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/

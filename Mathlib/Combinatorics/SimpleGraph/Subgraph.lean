@@ -847,7 +847,7 @@ theorem neighborSet_subgraphOfAdj_of_ne_of_ne {u v w : V} (hvw : G.Adj v w) (hv 
 theorem neighborSet_subgraphOfAdj [DecidableEq V] {u v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).neighborSet u =
     (if u = v then {w} else ∅) ∪ if u = w then {v} else ∅ := by
-  split_ifs <;> subst_vars <;> simp [*, Set.singleton_def]
+  split_ifs <;> subst_vars <;> simp [*]
 
 theorem singletonSubgraph_fst_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
     G.singletonSubgraph u ≤ G.subgraphOfAdj h := by

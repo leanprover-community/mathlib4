@@ -32,11 +32,7 @@ Hahn series.
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
-
-open Finset Function
-
-open scoped Classical
-open Pointwise
+open Finset Function Pointwise
 
 noncomputable section
 
@@ -49,6 +45,7 @@ variable [Zero Γ] [PartialOrder Γ]
 instance [Zero R] [One R] : One (HahnSeries Γ R) :=
   ⟨single 0 1⟩
 
+open Classical in
 @[simp]
 theorem one_coeff [Zero R] [One R] {a : Γ} :
     (1 : HahnSeries Γ R).coeff a = if a = 0 then 1 else 0 :=
@@ -154,7 +151,7 @@ end SMul
 
 section SMulZeroClass
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Zero R]
+variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
   [AddCommMonoid V]
 
 instance instBaseSMulZeroClass [SMulZeroClass R V] :
@@ -163,8 +160,10 @@ instance instBaseSMulZeroClass [SMulZeroClass R V] :
 
 @[simp] theorem of_smul [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
   (of R) (r • x) = r • (of R) x := rfl
-@[simp] theorem of_symm_smul [PartialOrder Γ] [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
+@[simp] theorem of_symm_smul [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
   (of R).symm (r • x) = r • (of R).symm x := rfl
+
+variable [Zero R]
 
 instance instSMulZeroClass [SMulZeroClass R V] :
     SMulZeroClass (HahnSeries Γ R) (HahnModule Γ' R V) where
@@ -177,6 +176,7 @@ theorem smul_coeff_right [SMulZeroClass R V] {x : HahnSeries Γ R} {y : HahnModu
     ((of R).symm <| x • y).coeff a =
       ∑ ij ∈ VAddAntidiagonal x.isPWO_support hs a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd := by
+  classical
   rw [smul_coeff]
   apply sum_subset_zero_on_sdiff (vaddAntidiagonal_mono_right hys) _ fun _ _ => rfl
   intro b hb
@@ -189,6 +189,7 @@ theorem smul_coeff_left [SMulWithZero R V] {x : HahnSeries Γ R}
     ((of R).symm <| x • y).coeff a =
       ∑ ij ∈ VAddAntidiagonal hs ((of R).symm y).isPWO_support a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd := by
+  classical
   rw [smul_coeff]
   apply sum_subset_zero_on_sdiff (vaddAntidiagonal_mono_left hxs) _ fun _ _ => rfl
   intro b hb
