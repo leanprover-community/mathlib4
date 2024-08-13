@@ -21,8 +21,6 @@ independence and linear span of sets in a vector space but where the scalars are
 * `Finset.mulSpan`/`Finset.addSpan`: Span of a finset.
 -/
 
-open scoped BigOperators Pointwise
-
 variable {α β : Type*} [CommGroup α] [CommGroup β]
 
 section dissociation

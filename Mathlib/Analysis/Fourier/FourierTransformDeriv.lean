@@ -225,7 +225,7 @@ theorem hasFDerivAt_fourierIntegral
     exact (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
     filter_upwards with v w' _
-    rw [norm_circle_smul _ (fourierSMulRight L f v)]
+    rw [Circle.norm_smul _ (fourierSMulRight L f v)]
     exact norm_fourierSMulRight_le L f v
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
@@ -420,7 +420,11 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
       Nat.cast_pow, Nat.cast_ofNat, Nat.cast_add, Nat.cast_one, ← mul_pow, mul_add]
 
-variable [SecondCountableTopology V] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+variable [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+
+section SecondCountableTopology
+
+variable [SecondCountableTopology V]
 
 lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierPowSMulRight
     (hf : AEStronglyMeasurable f μ) (n : ℕ) :
@@ -505,6 +509,8 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) := by
   ext w : 1
   exact ((hasFTaylorSeriesUpTo_fourierIntegral L hf h'f).eq_iteratedFDeriv hn w).symm
+
+end SecondCountableTopology
 
 /-- The Fourier integral of the `n`-th derivative of a function is obtained by multiplying the
 Fourier integral of the original function by `(2πI L w ⬝ )^n`. -/
@@ -702,7 +708,7 @@ theorem fourierIntegral_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
 
 /-- One can bound `‖w‖^n * ‖D^k (𝓕 f) w‖` in terms of integrals of the derivatives of `f` (or order
 at most `n`) multiplied by powers of `v` (of order at most `k`). -/
-lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
+lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le
     {K N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖))
     {k n : ℕ} (hk : k ≤ K) (hn : n ≤ N) (w : V) :
@@ -720,7 +726,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     rwa [pow_two, mul_pow, mul_assoc] at this
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, one_mul, mul_one, zero_add, Finset.range_one, Finset.product_singleton,
-      Finset.sum_map, Function.Embedding.coeFn_mk, norm_iteratedFDeriv_zero, ge_iff_le] at Z ⊢
+      Finset.sum_map, Function.Embedding.coeFn_mk, norm_iteratedFDeriv_zero] at Z ⊢
     apply Z.trans
     conv_rhs => rw [← mul_one π]
     gcongr

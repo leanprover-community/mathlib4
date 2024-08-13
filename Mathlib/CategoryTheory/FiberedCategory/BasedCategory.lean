@@ -203,7 +203,7 @@ instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
       isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
     aesop
 
-instance {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso α] : IsIso (X:=F.toFunctor) α.toNatTrans := by
+instance {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso α] : IsIso (X := F.toFunctor) α.toNatTrans := by
   rw [← forgetful_map]; infer_instance
 
 end BasedNatTrans
