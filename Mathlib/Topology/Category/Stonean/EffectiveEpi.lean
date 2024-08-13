@@ -44,16 +44,19 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨effectiveEpiStruct π hπ⟩⟩
   tfae_finish
 
+set_option debug.byAsSorry false in
 instance : Stonean.toCompHaus.PreservesEffectiveEpis where
   preserves f h :=
     ((CompHaus.effectiveEpi_tfae (Stonean.toCompHaus.map f)).out 0 2).mpr
       (((Stonean.effectiveEpi_tfae f).out 0 2).mp h)
 
+set_option debug.byAsSorry false in
 instance : Stonean.toCompHaus.ReflectsEffectiveEpis where
   reflects f h :=
     ((Stonean.effectiveEpi_tfae f).out 0 2).mpr
       (((CompHaus.effectiveEpi_tfae (Stonean.toCompHaus.map f)).out 0 2).mp h)
 
+set_option debug.byAsSorry false in
 /--
 An effective presentation of an `X : CompHaus` with respect to the inclusion functor from `Stonean`
 -/
