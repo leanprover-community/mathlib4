@@ -13,7 +13,7 @@ synonym with those of the underlying type.
 
 The most common way to do this is to activate a local instance for something which puts a
 `PseudoMetricSpace` structure on the type synonym, prove that this metric is bilipschitz equivalent
-to the metric on th eunderlying type, and then use this to show that the uniformities and
+to the metric on the underlying type, and then use this to show that the uniformities and
 bornologies agree, which can then be used with `PseudoMetricSpace.replaceUniformity` or
 `PseudoMetricSpace.replaceBornology`.
 
