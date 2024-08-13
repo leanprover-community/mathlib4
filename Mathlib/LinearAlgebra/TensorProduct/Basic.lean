@@ -837,9 +837,9 @@ theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N) :
 @[simp]
 protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
     map f g ^ n = map (f ^ n) (g ^ n) := by
-  induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero, map_one]
-  · simp only [pow_succ', ih, map_mul]
+  induction n with
+  | zero => simp only [Nat.zero_eq, pow_zero, map_one]
+  | succ n ih => simp only [pow_succ', ih, map_mul]
 
 theorem map_add_left (f₁ f₂ : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
