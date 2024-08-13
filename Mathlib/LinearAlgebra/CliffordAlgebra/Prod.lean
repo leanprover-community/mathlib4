@@ -41,6 +41,7 @@ section map_mul_map
 variable {Q₁ Q₂ Qₙ}
 variable (f₁ : Q₁ →qᵢ Qₙ) (f₂ : Q₂ →qᵢ Qₙ) (hf : ∀ x y, Qₙ.IsOrtho (f₁ x) (f₂ y))
 variable (m₁ : CliffordAlgebra Q₁) (m₂ : CliffordAlgebra Q₂)
+include hf
 
 /-- If `m₁` and `m₂` are both homogenous,
 and the quadratic spaces `Q₁` and `Q₂` map into

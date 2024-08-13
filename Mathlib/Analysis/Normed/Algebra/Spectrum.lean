@@ -426,6 +426,7 @@ end NonemptySpectrum
 section GelfandMazurIsomorphism
 
 variable [NormedRing A] [NormedAlgebra ℂ A] (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0)
+include hA
 
 local notation "σ" => spectrum ℂ
 
@@ -578,10 +579,11 @@ open Topology Filter Set
 
 section NormedField
 
-variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [SMulMemClass SA 𝕜 A]
+variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
 variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
 open SubalgebraClass in
+include instSMulMem in
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`. If `a : S` is invertible in `A`,
 and for all `x : S` sufficiently close to `a` within some filter `l`, `x` is invertible in `S`,
 then `a` is invertible in `S` as well. -/
@@ -817,7 +819,7 @@ lemma real_iff [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] {a
 
 end QuasispectrumRestricts
 
-variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
+variable {A : Type*} [Ring A] [PartialOrder A]
 
 lemma coe_mem_spectrum_real_of_nonneg [Algebra ℝ A] [NonnegSpectrumClass ℝ A] {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) :

@@ -129,7 +129,7 @@ theorem Memℒp.aestronglyMeasurable {f : α → E} {p : ℝ≥0∞} (h : Memℒ
 
 theorem lintegral_rpow_nnnorm_eq_rpow_eLpNorm' {f : α → F} (hq0_lt : 0 < q) :
     ∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ = eLpNorm' f q μ ^ q := by
-  rw [eLpNorm', ← ENNReal.rpow_mul, one_div, inv_mul_cancel, ENNReal.rpow_one]
+  rw [eLpNorm', ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
   exact (ne_of_lt hq0_lt).symm
 
 @[deprecated (since := "2024-07-27")]
@@ -350,7 +350,7 @@ theorem eLpNorm'_const (c : F) (hq_pos : 0 < q) :
   congr
   rw [← ENNReal.rpow_mul]
   suffices hq_cancel : q * (1 / q) = 1 by rw [hq_cancel, ENNReal.rpow_one]
-  rw [one_div, mul_inv_cancel (ne_of_lt hq_pos).symm]
+  rw [one_div, mul_inv_cancel₀ (ne_of_lt hq_pos).symm]
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_const := eLpNorm'_const
@@ -361,7 +361,7 @@ theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_
   · congr
     rw [← ENNReal.rpow_mul]
     suffices hp_cancel : q * (1 / q) = 1 by rw [hp_cancel, ENNReal.rpow_one]
-    rw [one_div, mul_inv_cancel hq_ne_zero]
+    rw [one_div, mul_inv_cancel₀ hq_ne_zero]
   · rw [Ne, ENNReal.rpow_eq_top_iff, not_or, not_and_or, not_and_or]
     constructor
     · left
@@ -637,7 +637,7 @@ theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
   simp_rw [eLpNorm']
   rw [← ENNReal.rpow_mul, ← one_div_mul_one_div]
   simp_rw [one_div]
-  rw [mul_assoc, inv_mul_cancel hq_pos.ne.symm, mul_one]
+  rw [mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one]
   congr
   ext1 x
   simp_rw [← ofReal_norm_eq_coe_nnnorm]
@@ -1082,7 +1082,7 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
   simp_rw [eLpNorm']
   rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.smul_def, smul_eq_mul,
     ENNReal.mul_rpow_of_nonneg _ _ hp.le]
-  simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel hp.ne.symm, ENNReal.rpow_one,
+  simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne.symm, ENNReal.rpow_one,
     ENNReal.coe_rpow_of_nonneg _ hp.le, ← lintegral_const_mul' _ _ ENNReal.coe_ne_top, ←
     ENNReal.coe_mul]
   apply lintegral_mono_ae
@@ -1255,7 +1255,7 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
   rw [ENNReal.smul_def, smul_eq_mul, eLpNorm_eq_lintegral_rpow_nnnorm hp hp',
     one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
-    inv_mul_cancel (ENNReal.toReal_pos hp hp').ne.symm, ENNReal.rpow_one, ← setLIntegral_const,
+    inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne.symm, ENNReal.rpow_one, ← setLIntegral_const,
     ← lintegral_indicator _ hs]
   refine lintegral_mono_ae ?_
   filter_upwards [hf] with x hx
@@ -1347,7 +1347,7 @@ theorem ae_bdd_liminf_atTop_of_eLpNorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : 
     refine (OrderIso.liminf_apply (ENNReal.orderIsoRpow p.toReal _) ?_ ?_ ?_ ?_).symm <;>
       isBoundedDefault
   rw [this] at hx
-  rw [← ENNReal.rpow_one (liminf (fun n => ‖f n x‖₊) atTop), ← mul_inv_cancel hppos.ne.symm,
+  rw [← ENNReal.rpow_one (liminf (fun n => ‖f n x‖₊) atTop), ← mul_inv_cancel₀ hppos.ne.symm,
     ENNReal.rpow_mul]
   exact ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.2 hppos.le) hx.ne
 
