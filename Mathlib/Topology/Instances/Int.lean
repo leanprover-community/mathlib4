@@ -8,7 +8,7 @@ import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.MetricSpace.Pseudo.Real
 import Mathlib.Order.Filter.Archimedean
 
 /-!
