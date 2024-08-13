@@ -203,7 +203,6 @@
   ["Mathlib.Topology.Algebra.UniformRing"],
   "Mathlib.Tactic.Widget.SelectPanelUtils":
   ["ProofWidgets.Component.OfRpcMethod"],
-  "Mathlib.Tactic.Widget.GCongr": ["Mathlib.Algebra.ModEq"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Batteries.Logic"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
