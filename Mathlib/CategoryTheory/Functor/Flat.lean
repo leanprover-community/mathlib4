@@ -93,6 +93,8 @@ theorem RepresentablyFlat.of_iso [RepresentablyFlat F] {G : C ⥤ D} (α : F ≅
     haveI : IsCofiltered (StructuredArrow X F) := cofiltered X
     apply IsCofiltered.of_equivalence (StructuredArrow.mapNatIso α)
 
+end RepresentablyFlat
+
 section HasLimit
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
