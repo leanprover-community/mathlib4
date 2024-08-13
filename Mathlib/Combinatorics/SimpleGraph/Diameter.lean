@@ -166,12 +166,17 @@ lemma diam_eq_zero_of_not_connected (h : ¬G.Connected) : G.diam = 0 := by
 lemma ediam_ne_top_of_diam_ne_zero (h : G.diam ≠ 0) : G.ediam ≠ ⊤ :=
   Ne.symm <| ne_of_apply_ne ENat.toNat fun a ↦ h <| id a.symm
 
-lemma exists_dist_eq_diam_of_ne_zero (h : G.diam ≠ 0) :
+lemma diam_eq_zero_of_ediam_ne_top (h : G.ediam = ⊤) : G.diam = 0 :=
+  ediam_ne_top_of_diam_ne_zero.mtr h
+
+lemma exists_dist_eq_diam_of_ne_zero [Nonempty α] :
     ∃ u v, G.dist u v = G.diam := by
-  have : Nontrivial α := nontrivial_of_diam_ne_zero h
-  obtain ⟨u, v, huv⟩ := exists_edist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
-  use u, v
-  rw [diam, dist, congrArg ENat.toNat huv]
+  by_cases h : G.diam = 0
+  · simp [h]
+  · have : Nontrivial α := nontrivial_of_diam_ne_zero h
+    obtain ⟨u, v, huv⟩ := exists_edist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
+    use u, v
+    rw [diam, dist, congrArg ENat.toNat huv]
 
 lemma exists_dist_eq_diam_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.dist u v = G.diam := by
@@ -191,7 +196,7 @@ lemma diam_mono_of_ne_zero (h : G ≤ G') (hn : G.diam ≠ 0) :
 lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
   rw [diam, ENat.toNat_eq_zero]
   cases subsingleton_or_nontrivial α
-  · exact Or.inl <| ediam_eq_zero_iff_subsingleton.mpr ‹_›
+  · exact Or.inl ediam_eq_zero_of_subsingleton
   · exact Or.inr ediam_bot
 
 @[simp]
