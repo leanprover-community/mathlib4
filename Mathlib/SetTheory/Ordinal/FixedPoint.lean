@@ -499,20 +499,6 @@ theorem deriv_zero_left (a) : deriv 0 a = a := by
 
 end
 
-@[simp]
-theorem nfp_zero : nfp 0 = id := by
-  ext a
-  rw [← sup_iterate_eq_nfp]
-  refine (sup_le fun n => ?_).antisymm (le_sup (fun n => 0^[n] a) 0)
-  induction' n with n _
-  · rfl
-  rw [Function.iterate_succ']
-  exact Ordinal.zero_le a
-
-@[simp]
-theorem deriv_zero' : deriv 0 = id :=
-  deriv_eq_id_of_nfp_eq_id nfp_zero
-
 /-! ### Fixed points of addition -/
 
 @[simp]
