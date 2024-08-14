@@ -845,7 +845,7 @@ end BoundedQuantifiers
 
 section ite
 
-variable {α : Sort*} {σ : α → Sort*} {P Q R : Prop} [Decidable P] [Decidable Q]
+variable {α : Sort*} {σ : α → Sort*} {P Q R : Prop} [Decidable P]
   {a b c : α} {A : P → α} {B : ¬P → α}
 
 theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := by
@@ -956,7 +956,7 @@ variable {P Q}
 theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
   by_cases p : P <;> simp [p]
 
-theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} :
     dite P Q R ↔ (∃ p, Q p) ∨ (∃ p, R p) := by
   by_cases h : P <;> simp [h, exists_prop_of_false, exists_prop_of_true]
 
@@ -964,7 +964,7 @@ theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
 theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬ P → R)) := by
   by_cases p : P <;> simp [p]
 
-theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} :
     dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
   by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
@@ -976,6 +976,9 @@ theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a �
 theorem beq_eq_decide {α : Type*} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
   rw [← beq_iff_eq a b]
   cases a == b <;> simp
+
+@[simp] lemma beq_eq_beq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {a₁ a₂ : α}
+    {b₁ b₂ : β} : (a₁ == a₂) = (b₁ == b₂) ↔ (a₁ = a₂ ↔ b₁ = b₂) := by rw [Bool.eq_iff_iff]; simp
 
 @[ext]
 theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)

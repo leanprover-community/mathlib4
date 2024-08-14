@@ -6,6 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Co
 
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Theory of univariate polynomials
