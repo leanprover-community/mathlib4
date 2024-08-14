@@ -127,7 +127,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   rcases F.eq_empty_or_nonempty with (rfl | F_nemp)
   · use ∅; simp
   have _ : Nonempty X := nonempty_of_exists F_nemp
-  have s_nemp := IsDynCoverOf.nonempty F_nemp h
+  have s_nemp := h.nonempty F_nemp
   rcases F_nemp with ⟨x, x_F⟩
   rcases m.eq_zero_or_pos with (rfl | m_pos)
   · use {x}
@@ -207,10 +207,10 @@ lemma isDynCoverOf_compact_invariant [UniformSpace X] {T : X → X} {F : Set X} 
     simp only [dynEntourage, Nat.lt_one_iff, iInter_iInter_eq_left, Function.iterate_zero,
       Prod.map_id, preimage_id_eq, id_eq, mem_iUnion]
     use y, y_s
-  rcases IsDynCoverOf.iterate_le_pow F_inv V_symm n this with ⟨t, t_dyncover, t_card⟩
+  rcases this.iterate_le_pow F_inv V_symm n with ⟨t, t_dyncover, t_card⟩
   rw [one_mul n] at t_dyncover
   use t
-  exact IsDynCoverOf.of_entourage_subset V_U t_dyncover
+  exact t_dyncover.of_entourage_subset V_U
 
 /-! ### Minimal cardinal of dynamical covers -/
 
@@ -225,11 +225,11 @@ lemma coverMincard_le_card {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ
 
 lemma coverMincard_monotone_time (T : X → X) (F : Set X) (U : Set (X × X)) :
     Monotone (fun n : ℕ ↦ coverMincard T F U n) :=
-  fun _ _ m_n ↦ biInf_mono fun _ h ↦ IsDynCoverOf.of_le m_n h
+  fun _ _ m_n ↦ biInf_mono fun _ h ↦ h.of_le m_n
 
 lemma coverMincard_antitone_entourage (T : X → X) (F : Set X) (n : ℕ) :
     Antitone (fun U : Set (X × X) ↦ coverMincard T F U n) :=
-  fun _ _ U_V ↦ biInf_mono fun _ h ↦ IsDynCoverOf.of_entourage_subset U_V h
+  fun _ _ U_V ↦ biInf_mono fun _ h ↦ h.of_entourage_subset U_V
 
 lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
     coverMincard T F U n < ⊤ ↔
@@ -300,7 +300,7 @@ lemma coverMincard_iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   rcases eq_top_or_lt_top (coverMincard T F U m) with (h | h)
   · exact h ▸ le_of_le_of_eq (le_top (α := ℕ∞)) (Eq.symm (ENat.top_pow n_pos))
   · rcases (coverMincard_finite_iff T F U m).1 h with ⟨s, s_cover, s_coverMincard⟩
-    rcases IsDynCoverOf.iterate_le_pow F_inv U_symm n s_cover with ⟨t, t_cover, t_le_sn⟩
+    rcases s_cover.iterate_le_pow F_inv U_symm n with ⟨t, t_cover, t_le_sn⟩
     rw [← s_coverMincard]
     exact le_trans (coverMincard_le_card t_cover) (WithTop.coe_le_coe.2 t_le_sn)
 
