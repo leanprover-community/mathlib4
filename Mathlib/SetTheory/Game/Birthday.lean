@@ -110,7 +110,7 @@ theorem birthday_neg : ∀ x : PGame, (-x).birthday = x.birthday
     congr <;> funext <;> apply birthday_neg
 
 @[simp]
-theorem toPGame_birthday (o : Ordinal) : o.toPGame.birthday = o := by
+theorem birthday_toPGame (o : Ordinal) : o.toPGame.birthday = o := by
   induction' o using Ordinal.induction with o IH
   rw [toPGame_def, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
@@ -206,9 +206,9 @@ theorem birthday_eq_zero {x : Game} : birthday x = 0 ↔ x = 0 := by
     exact birthday_zero
 
 @[simp]
-theorem toPGame_birthday (o : Ordinal) : birthday o.toGame = o := by
+theorem birthday_toGame (o : Ordinal) : birthday o.toGame = o := by
   apply le_antisymm
-  · conv_rhs => rw [← PGame.toPGame_birthday o]
+  · conv_rhs => rw [← PGame.birthday_toGame o]
     apply birthday_le_pGame_birthday
   · let ⟨x, hx₁, hx₂⟩ := birthday_eq_pGame_birthday o.toGame
     rw [← hx₂, ← toPGame_le_iff]
@@ -218,7 +218,7 @@ theorem toPGame_birthday (o : Ordinal) : birthday o.toGame = o := by
 @[simp]
 theorem birthday_natCast (n : ℕ) : birthday n = n := by
   rw [← toGame_natCast]
-  exact toPGame_birthday _
+  exact birthday_toGame _
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
