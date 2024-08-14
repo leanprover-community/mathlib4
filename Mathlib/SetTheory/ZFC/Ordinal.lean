@@ -106,10 +106,10 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 
 /-- A set `x` is a von Neumann ordinal when it's a transitive set, that's transitive under `∈`. We
-prove that this further implies that `x` is well-ordered under `∈`.
+  prove that this further implies that `x` is well-ordered under `∈`.
 
-The transitivity condition is written in an even weaker form, where `a ∈ b` and `b ∈ c` imply
-`a ∈ c` when only `c ∈ x` and not `a ∈ x` or `b ∈ x` are known a priori. -/
+  The transitivity condition is written in an even weaker form, where `a ∈ b` and `b ∈ c` imply
+  `a ∈ c` when only `c ∈ x` and not `a ∈ x` or `b ∈ x` are known a priori. -/
 def IsOrdinal (x : ZFSet) : Prop :=
   x.IsTransitive ∧ ∀ a b c : ZFSet, a ∈ b → b ∈ c → c ∈ x → a ∈ c
 
@@ -130,9 +130,11 @@ theorem mem_trans' (hx : x.IsOrdinal) : y ∈ z → z ∈ w → w ∈ x → y �
 protected theorem isTrans (h : x.IsOrdinal) : IsTrans x.toSet (Subrel (· ∈ ·) _) :=
   ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.2⟩
 
+end IsOrdinal
+
 /-- The simplified form of transitivity used within `IsOrdinal` yields an equivalent definition to
   the standard one. -/
-theorem _root_.isOrdinal_iff_isTrans :
+theorem isOrdinal_iff_isTrans :
     x.IsOrdinal ↔ x.IsTransitive ∧ IsTrans x.toSet (Subrel (· ∈ ·) _) := by
   constructor
   · intro h
@@ -142,7 +144,5 @@ theorem _root_.isOrdinal_iff_isTrans :
     intro y z w hyz hzw hwx
     let hzx := h₁.mem_trans hzw hwx
     exact h₂ ⟨y, h₁.mem_trans hyz hzx⟩ ⟨z, hzx⟩ ⟨w, hwx⟩ hyz hzw
-
-end IsOrdinal
 
 end ZFSet
