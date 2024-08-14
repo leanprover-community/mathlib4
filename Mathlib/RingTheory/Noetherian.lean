@@ -34,8 +34,8 @@ Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodul
 
 ## Main statements
 
-* `isNoetherian_iff_wellFounded` is the theorem that an R-module M is Noetherian iff
-  `>` is well-founded on `Submodule R M`.
+* `isNoetherian_iff` is the theorem that an R-module M is Noetherian iff `>` is well-founded on
+  `Submodule R M`.
 
 Note that the Hilbert basis theorem, that if a commutative ring R is Noetherian then so is R[X],
 is proved in `RingTheory.Polynomial`.
@@ -298,6 +298,8 @@ theorem isNoetherian_iff :
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
 
+alias ⟨IsNoetherian.wf, _⟩ := isNoetherian_iff
+
 theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
   rw [isNoetherian_iff, ← isWellFounded_iff]
 
@@ -423,7 +425,7 @@ lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
   · rw [← hn _ (hm.trans h), hn _ hm]
   · exact f.iterateKer.monotone h.le
 
-/-- **Orzech's theorem** for Noetherian module: if `R` is a ring (not necessarily commutative),
+/-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),
 `M` and `N` are `R`-modules, `M` is Noetherian, `i : N →ₗ[R] M` is injective,
 `f : N →ₗ[R] M` is surjective, then `f` is also injective. The proof here is adapted from
 Djoković's paper *Epimorphisms of modules which must be isomorphisms* [djokovic1973],
@@ -437,7 +439,7 @@ theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
   exact LinearMap.ker_eq_bot.1 <| bot_unique <|
     f.ker_le_of_iterateMapComap_eq_succ i ⊥ n (H _ (Nat.le_succ _)) hf hi
 
-/-- **Orzech's theorem** for Noetherian module: if `R` is a ring (not necessarily commutative),
+/-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),
 `M` is a Noetherian `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective, then `f` is also
 injective. -/
 theorem IsNoetherian.injective_of_surjective_of_submodule
@@ -456,8 +458,7 @@ theorem IsNoetherian.bijective_of_surjective_endomorphism (f : M →ₗ[R] M)
 
 /-- A sequence `f` of submodules of a noetherian module,
 with `f (n+1)` disjoint from the supremum of `f 0`, ..., `f n`,
-is eventually zero.
--/
+is eventually zero. -/
 theorem IsNoetherian.disjoint_partialSups_eventually_bot
     (f : ℕ → Submodule R M) (h : ∀ n, Disjoint (partialSups f n) (f (n + 1))) :
     ∃ n : ℕ, ∀ m, n ≤ m → f m = ⊥ := by
@@ -490,8 +491,7 @@ def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M)
 end
 
 /-- A (semi)ring is Noetherian if it is Noetherian as a module over itself,
-i.e. all its ideals are finitely generated.
--/
+i.e. all its ideals are finitely generated. -/
 abbrev IsNoetherianRing (R) [Semiring R] :=
   IsNoetherian R R
 
@@ -516,16 +516,14 @@ instance (priority := 100) isNoetherian_of_subsingleton (R M) [Subsingleton R] [
   isNoetherian_of_finite R M
 
 theorem isNoetherian_of_submodule_of_noetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M]
-    (N : Submodule R M) (h : IsNoetherian R M) : IsNoetherian R N := by
-  rw [isNoetherian_iff] at h ⊢
-  exact OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h
+    (N : Submodule R M) (h : IsNoetherian R M) : IsNoetherian R N :=
+  isNoetherian_mk ⟨OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h.wf⟩
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Noetherian, then `M / S` is
 also noetherian. -/
 theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
-    [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M := by
-  rw [isNoetherian_iff] at h ⊢
-  exact (Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h
+    [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M :=
+  isNoetherian_mk ⟨(Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h.wf⟩
 
 theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) [I : IsNoetherianRing R] (hN : N.FG) : IsNoetherian R N := by
@@ -575,9 +573,8 @@ theorem isNoetherian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R 
   isNoetherian_of_fg_of_noetherian _ (Submodule.fg_def.mpr ⟨A, hA, rfl⟩)
 
 theorem isNoetherianRing_of_surjective (R) [Ring R] (S) [Ring S] (f : R →+* S)
-    (hf : Function.Surjective f) [H : IsNoetherianRing R] : IsNoetherianRing S := by
-  rw [isNoetherianRing_iff, isNoetherian_iff] at H ⊢
-  exact OrderEmbedding.wellFounded (Ideal.orderEmbeddingOfSurjective f hf).dual H
+    (hf : Function.Surjective f) [H : IsNoetherianRing R] : IsNoetherianRing S :=
+  isNoetherian_mk ⟨OrderEmbedding.wellFounded (Ideal.orderEmbeddingOfSurjective f hf).dual H.wf⟩
 
 instance isNoetherianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsNoetherianRing R] :
     IsNoetherianRing f.range :=
