@@ -404,6 +404,7 @@
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
+  "Mathlib.Algebra.Order.Module.Defs": ["Mathlib.Algebra.Order.Module.Synonym"],
   "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Data.Setoid.Basic"],
   "Mathlib.Algebra.Module.LinearMap.Star":
   ["Mathlib.Algebra.Module.Equiv",
