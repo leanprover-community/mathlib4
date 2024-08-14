@@ -611,7 +611,7 @@ def principalUnitGroupEquiv :
       A.coe_mem_principalUnitGroup_iff.1 x.2⟩
   invFun x :=
     ⟨A.unitGroupMulEquiv.symm x, by
-      rw [A.coe_mem_principalUnitGroup_iff]; simpa using SetLike.coe_mem x⟩
+      rw [A.coe_mem_principalUnitGroup_iff]; simp⟩
   left_inv x := by simp
   right_inv x := by simp
   map_mul' x y := rfl
