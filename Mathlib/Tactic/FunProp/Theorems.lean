@@ -119,17 +119,10 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
         d.theorems.insert (e.funPropName, e.thmArgs.type) (es.push e)}
   }
 
-<<<<<<< HEAD
-/-- -/
-def getLambdaTheorem (funPropName : Name) (type : LambdaTheoremType) :
-    CoreM (Option LambdaTheorem) := do
-  return (lambdaTheoremsExt.getState (← getEnv)).theorems[(funPropName,type)]?
-=======
 /-- Get lambda theorems for particular function property `funPropName`. -/
 def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
     CoreM (Array LambdaTheorem) := do
   return (lambdaTheoremsExt.getState (← getEnv)).theorems.getD (funPropName,type) #[]
->>>>>>> origin/master
 
 
 --------------------------------------------------------------------------------
