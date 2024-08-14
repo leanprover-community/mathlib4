@@ -154,7 +154,7 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     rw [mul_pow, mul_pow, I_sq, div_eq_iff hx']
     ring
   rw [h1, h2, h3, h4, ← mul_assoc, mul_comm (cexp _), mul_assoc _ (cexp _) (cexp _),
-    ← Complex.exp_add, neg_add_self, Complex.exp_zero, mul_one, ofReal_div, ofReal_one]
+    ← Complex.exp_add, neg_add_cancel, Complex.exp_zero, mul_one, ofReal_div, ofReal_one]
 
 end kernel_defs
 
@@ -198,7 +198,7 @@ lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
   split_ifs with h
   · obtain ⟨k, rfl⟩ := h
     simp_rw [← Int.cast_add, Int.cast_eq_zero, add_eq_zero_iff_eq_neg]
-    simpa only [Int.cast_add, neg_mul, Int.cast_neg, add_left_neg, ne_eq, OfNat.ofNat_ne_zero,
+    simpa only [Int.cast_add, neg_mul, Int.cast_neg, neg_add_cancel, ne_eq, OfNat.ofNat_ne_zero,
       not_false_eq_true, zero_pow, mul_zero, zero_mul, Real.exp_zero]
       using hasSum_ite_sub_hasSum (hasSum_int_evenKernel (k : ℝ) ht) (-k)
   · suffices ∀ (n : ℤ), n + a ≠ 0 by simpa [this] using hasSum_int_evenKernel a ht
@@ -657,7 +657,7 @@ lemma differentiableAt_hurwitzZetaEven_sub_one_div (a : UnitAddCircle) :
   simp_rw [← sub_div, div_eq_mul_inv _ (Gammaℝ _)]
   refine DifferentiableAt.mul ?_ differentiable_Gammaℝ_inv.differentiableAt
   simp_rw [completedHurwitzZetaEven_eq, sub_sub, add_assoc]
-  conv => enter [2, s, 2]; rw [← neg_sub, div_neg, neg_add_self, add_zero]
+  conv => enter [2, s, 2]; rw [← neg_sub, div_neg, neg_add_cancel, add_zero]
   exact (differentiable_completedHurwitzZetaEven₀ a _).sub
     <| (differentiableAt_const _).div differentiableAt_id one_ne_zero
 

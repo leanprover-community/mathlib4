@@ -57,6 +57,7 @@ alias ⟨exists_card_eq, _⟩ := iff_card
 section GIsPGroup
 
 variable (hG : IsPGroup p G)
+include hG
 
 theorem of_injective {H : Type*} [Group H] (ϕ : H →* G) (hϕ : Function.Injective ϕ) :
     IsPGroup p H := by
