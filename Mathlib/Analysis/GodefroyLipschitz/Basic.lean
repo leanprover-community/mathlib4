@@ -74,7 +74,7 @@ theorem Isometry.map_norm_sub {φ : E → F} (hφ : Isometry φ) (x y : E) :
 
 theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
     ∃ (f : F →L[ℝ] ℝ), ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ t) = t := by
-  have this (k : ℕ) (hk : 1 ≤ k) :
+  have (k : ℕ) (hk : 1 ≤ k) :
       ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, t ∈ Icc (-k : ℝ) k → f (φ t) = t := by
     obtain ⟨f, nf, hf⟩ : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ f ((φ k) - (φ (-k))) = 2 * k := by
       have nk : ‖(φ k) - (φ (-k))‖ = 2 * k := by
@@ -83,8 +83,7 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
         rw [← norm_pos_iff, nk]
         positivity
       obtain ⟨f, nf, hfk⟩ := exists_eq_norm _ hnk
-      use f, nf
-      rw [hfk, nk]
+      exact ⟨f, nf, by rw [hfk, nk]⟩
     refine ⟨f, nf, fun t tmem ↦ ?_⟩
     have ⟨h1, h2⟩ : f (φ k) = k ∧ f (φ (-k)) = -k := by
       apply aux
@@ -176,25 +175,26 @@ theorem dense_seq {X : Type*} [TopologicalSpace X] [FrechetUrysohnSpace X]
     ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ Tendsto u atTop (𝓝 x) := by
   rw [← mem_closure_iff_seq_limit, dense_iff_closure_eq.1 hs]; trivial
 
+theorem ne_zero_of_differentiableAt_norm [Nontrivial E]
+    {x : E} (h : DifferentiableAt ℝ (‖·‖) x) : x ≠ 0 :=
+  fun hx ↦ (not_differentiableAt_norm_zero E (hx ▸ h)).elim
+
 theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
     (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
-    (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
+    (hdφ : Dense (Submodule.span ℝ (range φ) : Set F)) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   have main (x : E) (nx : ‖x‖ = 1) : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ (t • x)) = t := by
-    apply exists_inverse
-    · apply Isometry.of_dist_eq
-      intro x₁ x₂
-      rw [hφ.dist_eq, dist_eq_norm, ← sub_smul, norm_smul, nx, mul_one, dist_eq_norm]
-    · simpa using φz
+    refine exists_inverse _ (Isometry.of_dist_eq fun x₁ x₂ ↦ ?_) (by simpa)
+    rw [hφ.dist_eq, dist_eq_norm, ← sub_smul, norm_smul, nx, mul_one, dist_eq_norm]
   choose! f nf hf using main
-  have aux2 : Dense {x : E | DifferentiableAt ℝ (‖·‖) x} := by
+  have dense_diff : Dense {x : E | DifferentiableAt ℝ (‖·‖) x} := by
     let _ : MeasurableSpace E := borel E
     have _ : BorelSpace E := ⟨rfl⟩
     let w := FiniteDimensional.finBasis ℝ E
     exact dense_of_ae (lipschitzWith_one_norm.ae_differentiableAt (μ := w.addHaar))
   let s := {f : E →ₗ[ℝ] ℝ | ∃ x' : E, DifferentiableAt ℝ (‖·‖) x' ∧ f = fderiv ℝ (‖·‖) x'}
   have aux3 (z : E) (hz : z ≠ 0) : ∃ f ∈ s, f z ≠ 0 := by
-    obtain ⟨u, hu, htu⟩ := dense_seq aux2 z
+    obtain ⟨u, hu, htu⟩ := dense_seq dense_diff z
     have := (tendsto_differentiable hu htu).eventually_ne (norm_ne_zero_iff.2 hz)
     rcases eventually_atTop.1 this with ⟨N, hN⟩
     exact ⟨fderiv ℝ (‖·‖) (u N), ⟨u N, hu N, rfl⟩, hN N (le_refl N)⟩
@@ -202,19 +202,16 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
   have hb i : ∃ y : E, ‖y‖ = 1 ∧ DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y := by
     obtain ⟨y, dy, hy⟩ : ∃ y : E, DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y :=
       basisOfSpan_subset (span_eq_top_of_ne_zero aux3) ⟨i, rfl⟩
-    have yn : y ≠ 0 := by
-      intro hyn
-      rw [hyn, fderiv_zero_of_not_differentiableAt <| not_differentiableAt_norm_zero E] at hy
-      exact b.ne_zero i hy
+    have yn : y ≠ 0 := ne_zero_of_differentiableAt_norm dy
     refine ⟨(1 / ‖y‖) • y, norm_normalize yn,
       (differentiableAt_norm_smul (one_div_ne_zero (norm_ne_zero_iff.2 yn))).1 dy, ?_⟩
     rw [fderiv_norm_smul_pos (one_div_pos.2 <| norm_pos_iff.2 yn), hy]
   choose y ny dy hy using hb
-  let c := (b.dualBasis).map (Module.evalEquiv ℝ E).symm
-  have mdr i j : b i (c j) = if i = j then 1 else 0 := by
+  let c := (b.dualBasis).map (evalEquiv ℝ E).symm
+  have b_map_c i j : b i (c j) = if i = j then 1 else 0 := by
     calc
-      (b i) (c j) = Module.evalEquiv ℝ E ((Module.evalEquiv ℝ E).symm (b.dualBasis j)) (b i) := rfl
-      _ = b.dualBasis j (b i) := by rw [(Module.evalEquiv ℝ E).apply_symm_apply]
+      (b i) (c j) = evalEquiv ℝ E ((evalEquiv ℝ E).symm (b.dualBasis j)) (b i) := rfl
+      _ = b.dualBasis j (b i) := by rw [(evalEquiv ℝ E).apply_symm_apply]
       _ = if i = j then 1 else 0 := b.dualBasis_apply_self j i
   let T : F →L[ℝ] E :=
     { toFun := fun z ↦ ∑ i, (f (y i) z) • (c i)
@@ -236,23 +233,23 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
       { toFun := fun y ↦ ∑ i, (b i y) • (c i)
         map_add' := fun _ ↦ by simp [Finset.sum_add_distrib, add_smul]
         map_smul' := fun _ ↦ by simp [Finset.smul_sum, smul_smul] }
-    have : g = LinearMap.id := c.ext fun i ↦ by simp [g, mdr]
+    have : g = LinearMap.id := c.ext fun i ↦ by simp [g, b_map_c]
     exact DFunLike.congr_fun this x
   constructor
   · apply le_antisymm
     · have prim {x : E} (nx : ‖x‖ = 1) (hx : DifferentiableAt ℝ (‖·‖) x) :
           f x = (fderiv ℝ (‖·‖) x).comp T := by
-        apply ContinuousLinearMap.ext_on hlol
+        apply ContinuousLinearMap.ext_on hdφ
         rintro - ⟨y, rfl⟩
         simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, Tφ]
         exact congrFun (fφ_eq nx hx) y
       refine T.opNorm_le_bound (by norm_num) fun y ↦ ?_
-      obtain ⟨u, hu, htu⟩ := dense_seq aux2 (T y)
+      obtain ⟨u, hu, htu⟩ := dense_seq dense_diff (T y)
       have := tendsto_differentiable hu htu
       have unez n : u n ≠ 0 := fun h ↦ not_differentiableAt_norm_zero E (h ▸ hu n)
       have obv n : 1 / ‖u n‖ > 0 := one_div_pos.2 <| norm_pos_iff.2 <| unez n
       simp_rw [← fun n ↦ fderiv_norm_smul_pos (x := u n) (obv n)] at this
-      refine le_of_tendsto this <| eventually_of_forall fun n ↦ ?_
+      refine le_of_tendsto' this fun n ↦ ?_
       have : fderiv ℝ (‖·‖) ((1 / ‖u n‖) • (u n)) (T y) = f ((1 / ‖u n‖) • (u n)) y :=
         DFunLike.congr_fun (prim (norm_normalize (unez n))
           ((differentiableAt_norm_smul (obv n).ne.symm).1 (hu n))).symm y
@@ -273,10 +270,7 @@ theorem isup_fin :
     univ = ⋃ (F : Submodule ℝ E) (_ : FiniteDimensional ℝ F), (F : Set E) := by
   ext x
   simp only [mem_univ, mem_iUnion, SetLike.mem_coe, exists_prop, true_iff]
-  refine ⟨span ℝ {x}, ?_, ?_⟩
-  · exact Finite.span_singleton ℝ x
-  apply subset_span
-  exact mem_singleton _
+  exact ⟨span ℝ {x}, Finite.span_singleton ℝ x, subset_span <| mem_singleton _⟩
 
 theorem Dense.denseInducing_val {X : Type*} [TopologicalSpace X] {s : Set X} (hs : Dense s) :
     DenseInducing (@Subtype.val X s) := ⟨inducing_subtype_val, hs.denseRange_val⟩
@@ -286,7 +280,7 @@ theorem uniformInducing_val {X : Type*} [UniformSpace X] (s : Set X) :
 
 theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
     (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
-    (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
+    (hdφ : Dense (X := F) (Submodule.span ℝ (range φ))) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   let A : Submodule ℝ E → Submodule ℝ F := fun p ↦ span ℝ (φ '' p)
   have mA : Monotone A := fun p q hpq ↦ span_mono (image_mono hpq)
@@ -426,7 +420,7 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
     rw [span_iUnion₂]
     simp_rw [span_span]
     rw [← span_iUnion₂, ← image_iUnion₂, ← isup_fin, image_univ]
-    exact hlol
+    exact hdφ
   have dQ := dQ.denseRange_val
   have ui := uniformInducing_val (span ℝ Q : Set F)
   have cg : UniformContinuous g := by
