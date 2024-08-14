@@ -52,9 +52,6 @@ Various other basic arithmetic results are given in `Principal.lean` instead.
 assert_not_exists Field
 assert_not_exists Module
 
--- Temporary fix until the Ordinal.sup API is cleaned up.
-set_option linter.deprecated false
-
 noncomputable section
 
 open Function Cardinal Set Equiv Order
@@ -1349,7 +1346,7 @@ theorem bsup_const {o : Ordinal.{u}} (ho : o ≠ 0) (a : Ordinal.{max u v}) :
 
 @[simp]
 theorem bsup_one (f : ∀ a < (1 : Ordinal), Ordinal) : bsup 1 f = f 0 zero_lt_one := by
-  simp_rw [← sup_eq_bsup, iSup_unique, familyOfBFamily, familyOfBFamily', typein_one_out]
+  simp_rw [← sup_eq_bsup, ciSup_unique, familyOfBFamily, familyOfBFamily', typein_one_out]
 
 theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f ⊆ brange o' g) : bsup.{u, max v w} o f ≤ bsup.{v, max u w} o' g :=
@@ -1452,16 +1449,17 @@ theorem lsub_eq_zero_iff {ι : Type u} (f : ι → Ordinal.{max u v}) :
 
 @[simp]
 theorem lsub_const {ι} [Nonempty ι] (o : Ordinal) : (lsub fun _ : ι => o) = succ o :=
-  iSup_const (succ o)
+  ciSup_const
 
 @[simp]
 theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f default) :=
-  iSup_unique _
+  ciSup_unique
 
-theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
+theorem lsub_le_of_range_subset {ι} {ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
-  iSup_le_of_range_subset.{u, v, max u v w}
+  Ordinal.sSup_le_sSup
     (by convert Set.image_subset succ h <;> apply Set.range_comp)
+    (bddAbove_range.{v, max u w} _)
 
 theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : lsub.{u, max v w} f = lsub.{v, max u w} g :=
