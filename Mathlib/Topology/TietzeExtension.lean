@@ -227,9 +227,10 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
     Function.iterate_succ_apply' _ _ _
   have hgf : ∀ n, dist ((g n).compContinuous e) f ≤ (2 / 3) ^ n * ‖f‖ := by
     intro n
-    induction' n with n ihn
-    · simp [g0]
-    · rw [g_succ n, add_compContinuous, ← dist_sub_right, add_sub_cancel_left, pow_succ', mul_assoc]
+    induction n with
+    | zero => simp [g0]
+    | succ n ihn =>
+      rw [g_succ n, add_compContinuous, ← dist_sub_right, add_sub_cancel_left, pow_succ', mul_assoc]
       refine (hF_dist _).trans (mul_le_mul_of_nonneg_left ?_ (by norm_num1))
       rwa [← dist_eq_norm']
   have hg_dist : ∀ n, dist (g n) (g (n + 1)) ≤ 1 / 3 * ‖f‖ * (2 / 3) ^ n := by

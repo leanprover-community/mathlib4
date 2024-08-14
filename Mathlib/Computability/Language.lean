@@ -261,10 +261,11 @@ instance : KleeneAlgebra (Language α) :=
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
       refine iSup_le (fun n ↦ ?_)
-      induction' n with n ih
-      · simp
-      rw [pow_succ, ← mul_assoc m (l^n) l]
-      exact le_trans (le_mul_congr ih le_rfl) h }
+      induction n with
+      | zero => simp
+      | succ n ih =>
+        rw [pow_succ, ← mul_assoc m (l^n) l]
+        exact le_trans (le_mul_congr ih le_rfl) h }
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
