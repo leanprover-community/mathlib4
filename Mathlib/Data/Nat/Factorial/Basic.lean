@@ -61,9 +61,9 @@ theorem factorial_ne_zero (n : ℕ) : n ! ≠ 0 :=
   ne_of_gt (factorial_pos _)
 
 theorem factorial_dvd_factorial {m n} (h : m ≤ n) : m ! ∣ n ! := by
-  induction' h with n _ ih
-  · exact Nat.dvd_refl _
-  · exact Nat.dvd_trans ih (Nat.dvd_mul_left _ _)
+  induction h with
+  | refl => exact Nat.dvd_refl _
+  | step _ ih => exact Nat.dvd_trans ih (Nat.dvd_mul_left _ _)
 
 theorem dvd_factorial : ∀ {m n}, 0 < m → m ≤ n → m ∣ n !
   | succ _, _, _, h => Nat.dvd_trans (Nat.dvd_mul_right _ _) (factorial_dvd_factorial h)
@@ -84,9 +84,9 @@ theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
     intro k hk
     rw [factorial_succ, succ_mul, Nat.lt_add_left_iff_pos]
     exact Nat.mul_pos hk k.factorial_pos
-  induction' h with k hnk ih generalizing hn
-  · exact this hn
-  · exact lt_trans (ih hn) $ this <| lt_trans hn <| lt_of_succ_le hnk
+  induction h generalizing hn with
+  | refl => exact this hn
+  | step hnk ih => exact lt_trans (ih hn) $ this <| lt_trans hn <| lt_of_succ_le hnk
 
 @[gcongr]
 lemma factorial_lt_of_lt {m n : ℕ} (hn : 0 < n) (h : n < m) : n ! < m ! := (factorial_lt hn).mpr h
