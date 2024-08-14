@@ -1800,6 +1800,10 @@ import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Triangulated.Basic
+import Mathlib.CategoryTheory.Triangulated.Filtered.Basic
+import Mathlib.CategoryTheory.Triangulated.Filtered.Forget
+import Mathlib.CategoryTheory.Triangulated.Filtered.TruncationDef
+import Mathlib.CategoryTheory.Triangulated.Filtered.TruncationProp
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.CategoryTheory.Triangulated.Opposite

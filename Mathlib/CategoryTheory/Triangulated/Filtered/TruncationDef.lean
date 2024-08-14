@@ -798,7 +798,7 @@ noncomputable def descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [hP.IsLE Y n] :
 
 @[reassoc (attr := simp)]
 lemma π_descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [hP.IsLE Y n] :
-    (hP.truncLEπ n).app X ≫ hP.descTruncLE f n  = f :=
+    (hP.truncLEπ n).app X ≫ hP.descTruncLE f n = f :=
   (hP.descTruncLE' f n).choose_spec.symm
 
 noncomputable def descTruncLT {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [hP.IsLE Y n₀] :
@@ -811,7 +811,6 @@ lemma π_descTruncLT {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n
   simp only [Functor.id_obj, π_truncLEIsoTruncLT_inv_app_assoc, π_descTruncLE]
 
 variable [IsTriangulated C]
-
 
 noncomputable instance (n : ℤ) : (hP.truncLT n).IsTriangulated where
   map_distinguished T hT := by

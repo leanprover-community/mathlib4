@@ -28,9 +28,13 @@ open Category Pretriangulated ZeroObject
 /-
 We work in a preadditive category `C` equipped with an additive shift.
 -/
-variable {C : Type u} [Category.{v, u} C] [HasZeroObject C] [HasShift C (ℤ × ℤ)] [Preadditive C]
+variable {C : Type u} [Category.{v, u} C] [HasZeroObject C] [Preadditive C]
 
 attribute [local instance] endofunctorMonoidalCategory
+
+section
+
+variable [HasShift C (ℤ × ℤ)]
 
 instance Shift₁ : HasShift C ℤ where
   shift := (Discrete.addMonoidalFunctor (AddMonoidHom.inl ℤ ℤ)).comp HasShift.shift
@@ -104,6 +108,8 @@ add := by
   rw [shift₁FunctorAdd_eq_shiftFunctorAdd]
 -/
 
+end
+
 set_option quotPrecheck false in
 /-- shifting an object `X` by `(0, n)` is obtained by the notation `X⟪n⟫` -/
 notation -- Any better notational suggestions?
@@ -116,6 +122,7 @@ notation f "⟪" n "⟫'" => (@shiftFunctor C _ _ _ Shift₂ n).map f
 namespace Triangulated
 
 variable (C)
+variable [HasShift C (ℤ × ℤ)]
 
 /-- Definition of a filtered pretriangulated category.
 -/
