@@ -3,6 +3,7 @@ import Mathlib.CategoryTheory.Triangulated.Filtered.TruncationProp
 import Mathlib.Data.Int.Interval
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Data.Int.ConditionallyCompleteOrder
 
 namespace CategoryTheory
 
@@ -369,6 +370,24 @@ lemma isZero_of_Gr_zero (X : C) (hX : ∀ (n : ℤ), IsZero ((Gr'' n).obj X)) : 
   rw [← isLE_iff_isZero_truncGE_obj (-1) 0 (by linarith)]
   exact isLE_of_Gr_zero X (-1) (fun n _ ↦ hX n)
 
+lemma Gr_ι_isIso_of_GE (X : C) (n m : ℤ) (h : n ≤ m) :
+    IsIso ((Gr'' m).map ((truncGEι n).app X)) := by
+  have := (Gr'' m).map_distinguished _ (triangleGELT_distinguished n X)
+  erw [← Triangle.isZero₃_iff_isIso₁ _ this]
+  simp only [Functor.mapTriangle_obj, triangleGELT_obj_obj₁, triangleGELT_obj_obj₂,
+    triangleGELT_obj_obj₃, triangleGELT_obj_mor₁, triangleGELT_obj_mor₂, triangleGELT_obj_mor₃,
+    Triangle.mk_obj₃]
+  exact Gr_zero_of_isLE ((truncLT n).obj X) (n - 1) m (by linarith)
+
+lemma Gr_π_isIso_of_LE (X : C) (n m : ℤ) (h : m ≤ n) :
+    IsIso ((Gr'' m).map ((truncLEπ n).app X)) := by
+  have := (Gr'' m).map_distinguished _ (triangleGELT_distinguished (n + 1) X)
+  erw [← Triangle.isZero₁_iff_isIso₂ _ this]
+  simp only [Functor.mapTriangle_obj, triangleGELT_obj_obj₁, triangleGELT_obj_obj₂,
+    triangleGELT_obj_obj₃, triangleGELT_obj_mor₁, triangleGELT_obj_mor₂, triangleGELT_obj_mor₃,
+    Triangle.mk_obj₁]
+  exact Gr_zero_of_isGE ((truncGE (n + 1)).obj X) (n + 1) m (by linarith)
+
 variable [∀ (X : C) (n : ℤ), Decidable (IsZero ((Gr'' n).obj X))]
 
 /- Support of an object `X` of `C`. That's the set of integers `n` such that `Gr'' n X` is nonzero,
@@ -472,18 +491,57 @@ lemma isCore_iff_support_sub_0 (X : C) : tCore.P X ↔ support X ⊆ {0} := by
     simp only [Set.mem_inter_iff, Set.mem_Iic, le_refl, Set.mem_Ici, and_self]
 
 lemma shift_isCore_iff_support_sub_singleton (X : C) (n : ℤ) :
-    tCore.P ((@shiftFunctor C _ _ _ Shift₂ n).obj X) ↔ support X ⊆ {n} := by
+    tCore.P ((@shiftFunctor C _ _ _ Shift₂ (-n)).obj X) ↔ support X ⊆ {n} := by
   rw [isCore_iff_support_sub_0]
-  sorry
+  constructor
+  · intro h a ha
+    rw [support_def] at ha
+    rw [Iso.isZero_iff ((Gr_shift a (-n) (a - n) (by linarith)).symm.app X),
+      Functor.comp_obj, ← support_def] at ha
+    have := h ha
+    rw [Finset.mem_singleton, Int.sub_eq_zero] at this
+    rw [this, Finset.mem_singleton]
+  · intro h a ha
+    rw [support_def] at ha
+    erw [Iso.isZero_iff ((Gr_shift (C := C) (a + n) (-n) a (by linarith)).app X)] at ha
+    rw [← support_def] at ha
+    have := h ha
+    rw [Finset.mem_singleton] at this
+    have : a = 0 := by linarith
+    rw [this, Finset.mem_singleton]
 
--- Support of a truncation, how to make the support smaller.
+lemma support_truncLE (X : C) (n : ℤ) :
+    support ((truncLE n).obj X) = (support X).filter (fun a ↦ a ≤ n) := by
+  ext a
+  simp only [support_def, Finset.mem_filter]
+  by_cases h : a ≤ n
+  · simp only [h, and_true]
+    have := Gr_π_isIso_of_LE X n a h
+    rw [← (asIso ((Gr'' a).map ((truncLEπ n).app X))).isZero_iff]
+    rfl
+  · simp only [h, and_false, iff_false, Decidable.not_not]
+    exact Gr_zero_of_isLE ((truncLE n).obj X) n a (by linarith)
+
+lemma support_truncGE (X : C) (n : ℤ) :
+    support ((truncGE n).obj X) = (support X).filter (fun a ↦ n ≤ a) := by
+  ext a
+  simp only [support_def, Finset.mem_filter]
+  by_cases h : n ≤ a
+  · simp only [h, and_true]
+    have := Gr_ι_isIso_of_GE X n a h
+    rw [(asIso ((Gr'' a).map ((truncGEι n).app X))).isZero_iff]
+    rfl
+  · simp only [h, and_false, iff_false, Decidable.not_not]
+    exact Gr_zero_of_isGE ((truncGE n).obj X) n a (by linarith)
 
 /- The functor forgetting filtrations on the subcategory of objects `X` such that `IsLE X 0`.-/
 
-lemma existence_omega_aux (X : C) [IsLE X 0] (n : ℕ) : Finset.card (support X) = n →
+lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (support X) = n →
     ∃ (Y : hP.Core') (s : X ⟶ Y.1),
     ∀ (Z : C), IsGE Z 0 → IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) := by
-  refine Nat.le_induction (m := 0) (fun h ↦ ?_) ?_ n (Nat.zero_le n)
+  refine Nat.strongRec ?_ n
+  intro n hn X _ hX
+  by_cases h : n = 0
   · existsi 0, 0
     intro Z hZ
     have  h₁: IsZero ((preadditiveYoneda.obj Z).obj (Opposite.op (FullSubcategory.obj
@@ -503,15 +561,19 @@ lemma existence_omega_aux (X : C) [IsLE X 0] (n : ℕ) : Finset.card (support X)
       simp only [preadditiveYoneda_obj, Functor.comp_obj, preadditiveYonedaObj_obj,
         ModuleCat.forget₂_obj]
       have h₀ : IsZero X := by
-        rw [isZero_iff_empty_support, ← Finset.card_eq_zero]
-        exact h
+        rw [isZero_iff_empty_support, ← Finset.card_eq_zero, ← h]
+        exact hX
       refine @AddCommGrp.isZero_of_subsingleton _ (Subsingleton.intro ?_)
       simp only [AddCommGrp.coe_of]
       change ∀ (a b : (X ⟶ Z)), a = b
       intro f g
       rw [Limits.IsZero.eq_zero_of_src h₀ f, Limits.IsZero.eq_zero_of_src h₀ g]
     exact Limits.isIso_of_isInitial h₁.isInitial h₂.isInitial _
-  · sorry
+  · set b := sSup (support X).toSet
+    sorry
+
+  #exit
+
 
 lemma existence_omega (X : C) [IsLE X 0] : ∃ (Y : hP.Core') (s : X ⟶ Y.1),
     ∀ (Z : C), IsGE Z 0 → Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) := sorry

@@ -607,6 +607,46 @@ instance (a b : ℤ) : (hP.truncGELE a b).Additive := by
   dsimp only [truncGELE]
   infer_instance
 
+instance (a b : ℤ) : (hP.truncLTGE a b).Additive := by
+  dsimp only [truncLTGE]
+  infer_instance
+
+instance (a b : ℤ) : (hP.truncLEGE a b).Additive := by
+  dsimp only [truncLEGE]
+  infer_instance
+
+noncomputable instance (a b : ℤ) : (hP.truncGELT a b).CommShift ℤ := by
+  dsimp only [truncGELT]
+  infer_instance
+
+noncomputable instance (a b : ℤ) : (hP.truncGELE a b).CommShift ℤ := by
+  dsimp only [truncGELE]
+  infer_instance
+
+noncomputable instance (a b : ℤ) : (hP.truncLTGE a b).CommShift ℤ := by
+  dsimp only [truncLTGE]
+  infer_instance
+
+noncomputable instance (a b : ℤ) : (hP.truncLEGE a b).CommShift ℤ := by
+  dsimp only [truncLEGE]
+  infer_instance
+
+noncomputable instance (a b : ℤ) : (hP.truncGELT a b).IsTriangulated := by
+  dsimp only [truncGELT]
+  infer_instance
+
+noncomputable instance (a b : ℤ) : (hP.truncGELE a b).IsTriangulated := by
+  dsimp only [truncGELE]
+  infer_instance
+
+noncomputable instance (a b : ℤ) : (hP.truncLTGE a b).IsTriangulated := by
+  dsimp only [truncLTGE]
+  infer_instance
+
+noncomputable instance (a b : ℤ) : (hP.truncLEGE a b).IsTriangulated := by
+  dsimp only [truncLEGE]
+  infer_instance
+
 /-
 instance (i : ℤt) : (t.truncGEt.obj i).Additive := by
   obtain (rfl|⟨i, rfl⟩|rfl) := i.three_cases
@@ -635,6 +675,7 @@ lemma isZero_truncLTt_obj_obj (X : C) (n : ℤ) [t.IsGE X n] (j : ℤt) (hj : j 
     dsimp
     rw [← t.isGE_iff_isZero_truncLT_obj]
     exact t.isGE_of_GE  _ _ _ hj
+
   · simp at hj
 
 lemma isZero_truncGEt_obj_obj (X : C) (n : ℤ) [t.IsLE X n] (j : ℤt) (hj : ℤt.mk n < j) :
@@ -676,6 +717,14 @@ variable (n : ℤ)
 
 instance (n : ℤ) : Functor.Additive (hP.Gr'' n) := by
   dsimp [Gr'']; infer_instance
+
+noncomputable instance (n : ℤ) : (hP.Gr'' n).CommShift ℤ := by
+  dsimp [Gr'']; infer_instance
+
+instance (n : ℤ) : Functor.IsTriangulated (hP.Gr'' n) := by
+  dsimp [Gr'']
+  have := hP.shift₂_triangle
+  infer_instance
 
 instance (X : C) (n : ℤ) : IsLE ((Gr'' n).obj X) 0 :=
   isLE_shift _ n (-n) 0 (add_left_neg _)
