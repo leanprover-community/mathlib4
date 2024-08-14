@@ -121,7 +121,7 @@ protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) :
   h (toOrdinal a)
 
 /-- `Ordinal.induction` but for `NatOrdinal`. -/
-theorem induction {p : NatOrdinal → Prop} : ∀ (i) (_ : ∀ j, (∀ k, k < j → p k) → p j), p i :=
+theorem induction {p : NatOrdinal → Prop} : ∀ i, (∀ j, (∀ k, k < j → p k) → p j) → p i :=
   Ordinal.induction
 
 end NatOrdinal
