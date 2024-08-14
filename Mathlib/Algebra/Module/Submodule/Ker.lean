@@ -192,11 +192,11 @@ theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective 
   · intro x ⟨hx, h'x⟩
     have : ⟨x, hx⟩ ∈ LinearMap.ker (LinearMap.domRestrict f S) := by simpa using h'x
     rw [h] at this
-    simpa using this
+    simpa [mk_eq_zero] using this
   · rintro ⟨x, hx⟩ h'x
     have : x ∈ S ⊓ LinearMap.ker f := ⟨hx, h'x⟩
     rw [h] at this
-    simpa using this
+    simpa [mk_eq_zero] using this
 
 @[simp] theorem injective_restrict_iff_disjoint {p : Submodule R M} {f : M →ₗ[R] M}
     (hf : ∀ x ∈ p, f x ∈ p) :

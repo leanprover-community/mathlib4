@@ -34,9 +34,6 @@ namespace Subgroup
 variable {G : Type*} [Group G] {X : Type*} [MulAction G X] (S : Subgroup G)
 
 @[to_additive (attr := simp)]
-lemma smul_def (g : { x // x ∈ S }) (a : X) : g • a = ↑g • a := rfl
-
-@[to_additive (attr := simp)]
 lemma mk_smul (g : G) (hg : g ∈ S) (x : X) : (⟨g, hg⟩ : S) • x = g • x := rfl
 
 end Subgroup
@@ -450,8 +447,8 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
     simp_rw [H.toSubmonoid.smul_def, ← mul_smul, ← mem_stabilizer_iff] at h
     exact (mul_mem_cancel_right b.2).mp (hH h)
   · intro hg
-    rw [mem_stabilizer_iff, ← Subgroup.coe_mk H g hg, ← Subgroup.smul_def]
-    apply smul_orbit
+    rw [mem_stabilizer_iff, ← Subgroup.coe_mk H g hg, ← Submonoid.smul_def (S := H.toSubmonoid)]
+    apply smul_orbit (G := H)
 
 variable (G)
 
