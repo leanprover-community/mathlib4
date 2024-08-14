@@ -315,8 +315,8 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
 def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
   StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
     (continuous_exp.subtype_mk _).surjective
-      (by simp only [tendsto_Ioi_atTop, Subtype.coe_mk, tendsto_exp_atTop])
-      (by simp [tendsto_exp_atBot_nhdsWithin])
+      (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
+      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsWithin])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=

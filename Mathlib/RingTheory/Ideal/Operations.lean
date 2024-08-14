@@ -1209,7 +1209,8 @@ theorem range_finsuppTotal :
   refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, ?_⟩
   rintro ⟨a, ha, rfl⟩
   classical
-    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by simp), ?_⟩
+    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0)
+      (by simp only [Submodule.zero_mem, ↓reduceDIte]; rfl), ?_⟩
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _
