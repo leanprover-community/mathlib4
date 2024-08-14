@@ -45,8 +45,12 @@ theorem empty_isTransitive : IsTransitive ∅ :=
 theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x :=
   h y
 
-theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈ y → y ∈ z → x ∈ z :=
-  ⟨fun h _ _ hx hy => h.subset_of_mem hy hx, fun H _ hx _ hy => H hy hx⟩
+theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈ y → y ∈ z → x ∈ z := by
+  constructor
+  · intro h _ _ hx hy
+    exact h.subset_of_mem hy hx
+  · intro h _ hx _ hy
+    exact h hy hx
 
 alias ⟨IsTransitive.mem_trans, _⟩ := isTransitive_iff_mem_trans
 
