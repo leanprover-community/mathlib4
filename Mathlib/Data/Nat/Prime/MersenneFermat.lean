@@ -155,11 +155,11 @@ lemma fermat_primeFactors (n p : ℕ) (hP : p.Prime) (hp' : p ≠ 2)
   · left
 
     rw [h] at hpdvd
-    exact (Nat.prime_dvd_prime_iff_eq hP prime_three).mp hpdvd
+    exact (prime_dvd_prime_iff_eq hP prime_three).mp hpdvd
   · right; left
     rw [h] at hpdvd
     norm_num at hpdvd
-    exact (Nat.prime_dvd_prime_iff_eq hP prime_five).mp hpdvd
+    exact (prime_dvd_prime_iff_eq hP prime_five).mp hpdvd
   · right; right
     exact fermat_primeFactors_one_lt n p h hP hp' hpdvd
 
