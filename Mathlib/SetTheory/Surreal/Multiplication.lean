@@ -569,9 +569,8 @@ theorem toSurreal_one : toSurreal 1 = 1 :=
 theorem toGame_toSurreal (a : NatOrdinal) : Surreal.toGame (toSurreal a) = toGame a := by
   rfl
 
-@[simp]
 theorem toSurreal_natCast : ∀ n : ℕ, toSurreal n = n :=
-  map_natCast' _ toSurreal_one
+  map_natCast _
 
 theorem toSurreal_add : ∀ a b : NatOrdinal, toSurreal (a + b) = toSurreal a + toSurreal b :=
   map_add _
