@@ -7,7 +7,6 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.FinitelyGenerated
-import Mathlib.Order.Ideal
 
 /-!
 # Direct Limits of First-Order Structures
@@ -23,18 +22,8 @@ This file constructs the direct limit of a directed system of first-order embedd
   a unique map out of the direct limit.
 - `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
   isomorphic direct systems.
-* `FirstOrder.Language.DirectLimit.partialEquiv_limit` is the limit of a directed system
-  of PartialEquivs.
-
-## Main Results
-* `FirstOrder.Language.BackAndForth.embedding_from_cg` For a countably generated structure `M`
-  and a structure `N`, if any PartialEquiv between finitely generated substructures
-  can be extended to any element in the domain, then there exists an embedding of `M` in `N`.
-* `FirstOrder.Language.BackAndForth.equiv_between_cg` For two countably generated structure
-  `M` and `N`, if any PartialEquiv between finitely generated substructures can be extended to
-  any element in the domain and to any element in the codomain, then there exists an equivalence
-  between `M` and `N`.
 -/
+
 
 universe v w w' u₁ u₂
 
@@ -428,7 +417,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     Structure.CG L (DirectLimit G f) := by
   refine ⟨⟨⋃ i, DirectLimit.of L ι G f i '' Classical.choose (h i).out, ?_, ?_⟩⟩
   · exact Set.countable_iUnion fun i => Set.Countable.image (Classical.choose_spec (h i).out).1 _
-  · rw [eq_top_iff, Substructure.closure_iUnion]
+  · rw [eq_top_iff, Substructure.closure_unionᵢ]
     simp_rw [← Embedding.coe_toHom, Substructure.closure_image]
     rw [le_iSup_iff]
     intro S hS x _
@@ -485,11 +474,11 @@ noncomputable def Equiv_iSup :
     simpa only [F, Embedding.codRestrict_apply', Subtype.mk.injEq]
   exact ⟨Equiv.ofBijective F ⟨F.injective, F_surj⟩, F.map_fun', F.map_rel'⟩
 
-theorem Equiv_iSup_of_apply {i : ι} (x : S i) :
+theorem Equiv_isup_of_apply {i : ι} (x : S i) :
     Equiv_iSup S (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
     = Substructure.inclusion (le_iSup _ _) x := rfl
 
-theorem Equiv_iSup_symm_inclusion_apply {i : ι} (x : S i) :
+theorem Equiv_isup_symm_inclusion_apply {i : ι} (x : S i) :
     (Equiv_iSup S).symm (Substructure.inclusion (le_iSup _ _) x)
     = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x := by
   apply (Equiv_iSup S).injective
@@ -497,10 +486,10 @@ theorem Equiv_iSup_symm_inclusion_apply {i : ι} (x : S i) :
   rfl
 
 @[simp]
-theorem Equiv_iSup_symm_inclusion (i : ι) :
+theorem Equiv_isup_symm_inclusion (i : ι) :
     (Equiv_iSup S).symm.toEmbedding.comp (Substructure.inclusion (le_iSup _ _))
     = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i := by
-  ext x; exact Equiv_iSup_symm_inclusion_apply _ x
+  ext x; exact Equiv_isup_symm_inclusion_apply _ x
 
 end DirectLimit
 
