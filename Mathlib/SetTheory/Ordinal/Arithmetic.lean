@@ -2637,6 +2637,21 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
   · exact (mul_isNormal ho).apply_omega
 #align ordinal.sup_mul_nat Ordinal.sup_mul_nat
 
+def relIso_nat_omega : ℕ ≃o Iio ω where
+  toFun n := ⟨n, nat_lt_omega n⟩
+  invFun n := Classical.choose (lt_omega.1 n.2)
+  left_inv n := by
+    have h : ∃ m : ℕ, n = (m : Ordinal) := ⟨n, rfl⟩
+    exact (Ordinal.natCast_inj.1 (Classical.choose_spec h)).symm
+  right_inv n := Subtype.eq (Classical.choose_spec (lt_omega.1 n.2)).symm
+  map_rel_iff' := @natCast_le
+
+theorem relIso_nat_omega.symm_eq {o : Ordinal} (h : o < ω) :
+    ↑(relIso_nat_omega.symm ⟨o, h⟩) = o := by
+  dsimp [relIso_nat_omega, OrderIso.symm]
+  generalize_proofs pf
+  exact (Classical.choose_spec pf).symm
+
 end Ordinal
 
 variable {α : Type u} {r : α → α → Prop} {a b : α}

@@ -1201,6 +1201,13 @@ noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α where
     apply enum_le_enum'
 #align ordinal.enum_iso_out Ordinal.enumIsoOut
 
+instance {o : Ordinal} : IsWellOrder (Iio o) (· < ·) := IsWellOrder.mk
+
+@[simp]
+theorem type_Iio (o : Ordinal.{u}) : type (α := Iio o) (· < ·) = lift.{u + 1, u} o := by
+  rw [← type_out o, ← lift_id.{u + 1} (type _), lift_type_eq.{u + 1, u, u + 1}]
+  exact ⟨enumIso o.out.r⟩
+
 /-- `o.out.α` is an `OrderBot` whenever `0 < o`. -/
 def outOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.out.α where
   bot_le := enum_zero_le' ho
@@ -1212,42 +1219,6 @@ theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
       ⊥ :=
   rfl
 #align ordinal.enum_zero_eq_bot Ordinal.enum_zero_eq_bot
-
-instance {o : Ordinal} : IsWellOrder (Iio o) (· < ·) := IsWellOrder.mk
-
-theorem type_Iio (o : Ordinal.{u}) : type (α := Iio o) (· < ·) = lift.{u + 1, u} o := by
-  let f : o.out.α → Iio o := fun x ↦
-    ⟨typein ((· < ·) : o.out.α → o.out.α → Prop) x, typein_lt_self x⟩
-  have fsur : Function.Surjective f := fun b ↦
-    ⟨enum (· < ·) b.val
-        (by
-          rw [type_lt]
-          exact b.prop),
-      Subtype.ext (typein_enum _ _)⟩
-  have finj : Function.Injective f := fun _ _ _ ↦ by
-    simp_all only [Subtype.mk.injEq, typein_inj, f]
-  have : ((· < ·) : o.out.α → o.out.α → Prop) ≃r ((· < ·) : Iio o → Iio o → Prop) := by
-    use Equiv.ofBijective f ⟨finj, fsur⟩
-    intro a b
-    simp_all only [Equiv.ofBijective_apply, Subtype.mk_lt_mk, typein_lt_typein, f]
-  have : ((· < ·) : (ULift.{u + 1, u} o.out.α) → (ULift.{u + 1, u} o.out.α) → Prop) ≃r
-      ((· < ·) : Iio o → Iio o → Prop) := by
-    refine' ⟨⟨fun ⟨x⟩ ↦ this x, fun x ↦ ⟨this.invFun x⟩, _, this.1.4⟩, this.map_rel_iff'⟩
-    · convert this.1.3
-      exact (iff_true_right this.1.3).mpr fun x ↦ congrArg ULift.up (this.1.3 x.down)
-  have aux : IsWellOrder (ULift.{u + 1, u} (Quotient.out o).α) (· < ·) := by
-    have : o.out.r ≃r fun x y : ULift.{u + 1, u} o.out.α ↦ x < y :=
-      ⟨⟨fun x ↦ ⟨x⟩, by aesop, congrFun rfl, congrFun rfl⟩, by aesop⟩
-    exact this.isWellOrder
-  convert this.symm.ordinal_type_eq
-  have : type fun x x_1 : ULift.{u + 1, u} (Quotient.out o).α ↦ x < x_1 =
-      lift.{u + 1, u} (type fun x x' : (Quotient.out o).α ↦ x < x') := rfl
-  rw [this, type_lt]
-
-theorem relIso_nat_omega : Nonempty (((· < ·) : ℕ → ℕ → Prop)
-    ≃r ((· < ·) : (Iio ω : Set Ordinal.{u}) → Iio ω → Prop)) := by
-  have := @lift_type_eq.{0, u + 1, 0} ℕ (Iio ω : Set Ordinal.{u}) (· < ·) (· < ·) _
-  rw [← this, type_nat_lt, lift_uzero, type_Iio, lift_omega, lift_omega]
 
 /-! ### Universal ordinal -/
 

@@ -124,23 +124,11 @@ theorem exists_above_of_lt_cof {p : Ordinal} (hp : p < o) (hSemp : Nonempty S)
 theorem strictMono_of_succ_lt_omega (f : Π p < ω, Iio o)
     (hf : ∀ i, (hi : i < ω) → f i hi < f (i + 1) (omega_isLimit.succ_lt hi)) (i j hi hj)
     (iltj : i < j) : f i hi < f j hj := by
-  have : (hj : j < ω) → ∀ k, (kltj : k < j) → f k (kltj.trans hj) < f j hj := Ordinal.limitRecOn j
-    (by
-      intro _ _ h
-      cases (Ordinal.zero_le _).not_lt h)
-    (by
-      intro i ih hj k hk
-      cases (lt_succ_iff.mp hk).lt_or_eq with
-      | inl h =>
-          specialize ih ((lt_succ i).trans hj) k h
-          exact ih.trans <| hf i ((lt_succ i).trans hj)
-      | inr h =>
-          simp_rw [h]
-          exact hf i ((lt_succ i).trans hj))
-    (by
-      intro _ h _ h'
-      cases (omega_le_of_isLimit h).not_lt h')
-  exact this hj i iltj
+  have mono := strictMono_nat_of_lt_succ fun n ↦ hf n (nat_lt_omega n)
+  have := @mono (relIso_nat_omega.symm ⟨i, hi⟩) (relIso_nat_omega.symm ⟨j, hj⟩)
+    ((OrderIso.lt_iff_lt relIso_nat_omega.symm).mpr iltj)
+  simp_rw [relIso_nat_omega.symm_eq] at this
+  exact this
 
 /--
 Given a limit ordinal `o` and a property on pairs of ordinals `P`, such that
