@@ -18,10 +18,8 @@ import Mathlib.Topology.Metrizable.Basic
 # Topological properties of ℝ
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Filter Int Metric Set TopologicalSpace Bornology
 open scoped Topology Uniformity Interval
 

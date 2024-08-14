@@ -21,7 +21,7 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {X : Type*}
 
-open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
+open scoped Uniformity Topology NNReal ENNReal Pointwise
 
 variable [PseudoEMetricSpace α]
 
