@@ -66,12 +66,9 @@ register_option linter.oldObtain : Bool := {
   descr := "enable the `oldObtain` linter"
 }
 
-/-- Gets the value of the `linter.oldObtain` option. -/
-def getLinterOldObtain (o : Options) : Bool := Linter.getLinterValue linter.oldObtain o
-
 /-- The `oldObtain` linter: see docstring above -/
 def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterOldObtain (← getOptions) do
+    unless Linter.getLinterValue linter.oldObtain (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
