@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Gabin Kolly
 import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.ModelTheory.PartialEquiv
 import Mathlib.ModelTheory.Bundled
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Fraïssé Classes and Fraïssé Limits

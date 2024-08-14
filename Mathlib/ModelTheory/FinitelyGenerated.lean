@@ -61,7 +61,7 @@ theorem fg_iff_exists_fin_generating_family {N : L.Substructure M} :
 theorem fg_bot : (⊥ : L.Substructure M).FG :=
   ⟨∅, by rw [Finset.coe_empty, closure_empty]⟩
 
-instance instInhabited_finiteEquiv : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
+instance instInhabited_fg : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
 
 theorem fg_closure {s : Set M} (hs : s.Finite) : FG (closure L s) :=
   ⟨hs.toFinset, by rw [hs.coe_toFinset]⟩
@@ -165,6 +165,7 @@ theorem cg_iff_countable [Countable (Σl, L.Functions l)] {s : L.Substructure M}
 
 theorem cg_of_countable {s : L.Substructure M} [h : Countable s] : s.CG :=
   ⟨s, h.to_set, s.closure_eq⟩
+
 end Substructure
 
 open Substructure
@@ -201,7 +202,7 @@ theorem FG.map_of_surjective {N : Type*} [L.Structure N] (h : FG L M) (f : M →
   rw [fg_def, ← hs]
   exact h.range f
 
-theorem FG.countable_Hom_to_countable (N : Type*) [L.Structure N] [Countable N] (h : FG L M) :
+theorem FG.countable_hom (N : Type*) [L.Structure N] [Countable N] (h : FG L M) :
     Countable (M →[L] N) := by
   let ⟨S, finite_S, closure_S⟩ := fg_iff.1 h
   let g : (M →[L] N) → (S → N) :=
@@ -214,17 +215,17 @@ theorem FG.countable_Hom_to_countable (N : Type*) [L.Structure N] [Countable N] 
   have : Finite ↑S := (S.finite_coe_iff).2 finite_S
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
-instance FG.instCountable_Hom_to_countable (N : Type*) [L.Structure N] [Countable N] [h : FG L M] :
+instance FG.instCountable_hom (N : Type*) [L.Structure N] [Countable N] [h : FG L M] :
     Countable (M →[L] N) :=
-  FG.countable_Hom_to_countable N h
+  FG.countable_hom N h
 
-theorem FG.countable_Embedding_to_countable (N : Type*) [L.Structure N] [Countable N] (_ : FG L M) :
+theorem FG.countable_embedding (N : Type*) [L.Structure N] [Countable N] (_ : FG L M) :
     Countable (M ↪[L] N) :=
   Function.Embedding.countable ⟨Embedding.toHom, Embedding.toHom_injective⟩
 
-instance Fg.instCountable_Embedding_to_countable (N : Type*) [L.Structure N]
+instance Fg.instCountable_embedding (N : Type*) [L.Structure N]
     [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
-  FG.countable_Embedding_to_countable N h
+  FG.countable_embedding N h
 
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩

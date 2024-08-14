@@ -1393,16 +1393,15 @@ theorem IsBigO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (hn : n ≠ 0) 
 theorem IsLittleO.pow {f : α → R} {g : α → 𝕜} (h : f =o[l] g) {n : ℕ} (hn : 0 < n) :
     (fun x => f x ^ n) =o[l] fun x => g x ^ n := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
-  induction' n with n ihn
-  · simpa only [Nat.zero_eq, ← Nat.one_eq_succ_zero, pow_one]
-  · convert ihn.mul h <;> simp [pow_succ]
+  induction n with
+  | zero => simpa only [Nat.zero_eq, ← Nat.one_eq_succ_zero, pow_one]
+  | succ n ihn => convert ihn.mul h <;> simp [pow_succ]
 
 theorem IsLittleO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) :
     f =o[l] g :=
   IsLittleO.of_isBigOWith fun _c hc => (h.def' <| pow_pos hc _).of_pow hn le_rfl hc.le
 
 /-! ### Inverse -/
-
 
 theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith c l f g)
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) : IsBigOWith c l (fun x => (g x)⁻¹) fun x => (f x)⁻¹ := by
