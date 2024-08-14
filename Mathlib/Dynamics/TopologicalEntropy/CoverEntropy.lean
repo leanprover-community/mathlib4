@@ -120,7 +120,7 @@ lemma IsDynCoverOf.nonempty_inter {T : X → X} {F : Set X} {U : Set (X × X)} {
   far-reaching consequences such as explicit bounds for the topological entropy
   (`coverEntropyInfUni_le_card_div`) and an equality between two notions of topological entropy
   (`coverEntropyInf_eq_coverEntropySup_of_inv`).-/
-lemma IsDynCoverOf.iterate {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
+lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) {m : ℕ} (n : ℕ) {s : Finset X} (h : IsDynCoverOf T F U m s) :
     ∃ t : Finset X, IsDynCoverOf T F (U ○ U) (m * n) t ∧ t.card ≤ s.card ^ n := by
   classical
@@ -207,7 +207,7 @@ lemma isDynCoverOf_compact_invariant [UniformSpace X] {T : X → X} {F : Set X} 
     simp only [dynEntourage, Nat.lt_one_iff, iInter_iInter_eq_left, Function.iterate_zero,
       Prod.map_id, preimage_id_eq, id_eq, mem_iUnion]
     use y, y_s
-  rcases IsDynCoverOf.iterate F_inv V_symm n this with ⟨t, t_dyncover, t_card⟩
+  rcases IsDynCoverOf.iterate_le_pow F_inv V_symm n this with ⟨t, t_dyncover, t_card⟩
   rw [one_mul n] at t_dyncover
   use t
   exact IsDynCoverOf.of_entourage_subset V_U t_dyncover
@@ -290,7 +290,7 @@ lemma coverMincard_univ (T : X → X) {F : Set X} (h : F.Nonempty) (n : ℕ) :
   apply le_of_le_of_eq (coverMincard_le_card this)
   rw [Finset.card_singleton, Nat.cast_one]
 
-lemma coverMincard_iterate {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
+lemma coverMincard_iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) (m n : ℕ) :
     coverMincard T F (U ○ U) (m * n) ≤ coverMincard T F U m ^ n := by
   rcases F.eq_empty_or_nonempty with (rfl | F_nonempty)
@@ -300,15 +300,15 @@ lemma coverMincard_iterate {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U :
   rcases eq_top_or_lt_top (coverMincard T F U m) with (h | h)
   · exact h ▸ le_of_le_of_eq (le_top (α := ℕ∞)) (Eq.symm (ENat.top_pow n_pos))
   · rcases (coverMincard_finite_iff T F U m).1 h with ⟨s, s_cover, s_coverMincard⟩
-    rcases IsDynCoverOf.iterate F_inv U_symm n s_cover with ⟨t, t_cover, t_le_sn⟩
+    rcases IsDynCoverOf.iterate_le_pow F_inv U_symm n s_cover with ⟨t, t_cover, t_le_sn⟩
     rw [← s_coverMincard]
     exact le_trans (coverMincard_le_card t_cover) (WithTop.coe_le_coe.2 t_le_sn)
 
-lemma coverMincard_comp_le {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
+lemma coverMincard_comp_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) {m : ℕ} (m_pos : 0 < m) (n : ℕ) :
     coverMincard T F (U ○ U) n ≤ coverMincard T F U m ^ (n / m + 1) :=
   le_trans (coverMincard_monotone_time T F (U ○ U) (le_of_lt (Nat.lt_mul_div_succ n m_pos)))
-    (coverMincard_iterate F_inv U_symm m (n / m + 1))
+    (coverMincard_iterate_le_pow F_inv U_symm m (n / m + 1))
 
 lemma coverMincard_finite_of_compact_continuous [UniformSpace X] {T : X → X}
     (h : UniformContinuous T) {F : Set X} (F_comp : IsCompact F) {U : Set (X × X)} (U_uni : U ∈ 𝓤 X)
@@ -356,14 +356,14 @@ lemma log_coverMincard_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) (U : Se
   rw [← ENat.toENNReal_one, ENat.toENNReal_le]
   exact (coverMincard_pos_iff T F U n).2 h
 
-lemma log_coverMincard_iterate {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
+lemma log_coverMincard_iterate_le {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) (m : ℕ) {n : ℕ} (n_pos : 0 < n) :
     log (coverMincard T F (U ○ U) (m * n)) / n ≤ log (coverMincard T F U m) := by
   apply (EReal.div_le_iff_le_mul (b := n) (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)).2
   rw [← log_pow, StrictMono.le_iff_le log_strictMono]
   nth_rw 2 [← ENat.toENNRealRingHom_apply]
   rw [← RingHom.map_pow ENat.toENNRealRingHom _ n, ENat.toENNRealRingHom_apply, ENat.toENNReal_le]
-  exact coverMincard_iterate F_inv U_symm m n
+  exact coverMincard_iterate_le_pow F_inv U_symm m n
 
 lemma log_coverMincard_comp_le {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) {m n : ℕ} (m_pos : 0 < m) (n_pos : 0 < n) :
@@ -378,7 +378,7 @@ lemma log_coverMincard_comp_le {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
   have n_div_n := EReal.div_self (natCast_ne_bot n) (natCast_ne_top n)
     (ne_of_gt (Nat.cast_pos'.2 n_pos))
   apply le_trans <| div_le_div_right_of_nonneg (le_of_lt (Nat.cast_pos'.2 n_pos))
-    (log_monotone (ENat.toENNReal_le.2 (coverMincard_comp_le F_inv U_symm m_pos n)))
+    (log_monotone (ENat.toENNReal_le.2 (coverMincard_comp_le_pow F_inv U_symm m_pos n)))
   rw [ENat.toENNReal_pow, log_pow, Nat.cast_add, Nat.cast_one, right_distrib_of_nonneg h_nm
     zero_le_one, one_mul, div_right_distrib_of_nonneg (Left.mul_nonneg h_nm h_log) h_log, mul_comm,
     ← EReal.mul_div, div_eq_mul_inv _ (m : EReal)]
@@ -464,7 +464,8 @@ lemma coverEntropyInfUni_le_log_coverMincard_div {T : X → X} {F : Set X} (F_in
     · rw [max_eq_right (Nat.one_le_of_lt N_pos)]
       nth_rw 2 [← mul_one N]
       exact Nat.mul_le_mul_left N (Nat.one_le_of_lt n_pos)
-  · have := log_coverMincard_iterate F_inv U_symm n (lt_of_lt_of_le zero_lt_one (le_max_left 1 N))
+  · have := log_coverMincard_iterate_le F_inv U_symm n
+      (lt_of_lt_of_le zero_lt_one (le_max_left 1 N))
     rw [mul_comm n (max 1 N)] at this
     apply le_of_eq_of_le _ (div_le_div_right_of_nonneg (Nat.cast_nonneg' n) this)
     rw [EReal.div_div]
