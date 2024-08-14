@@ -69,6 +69,7 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E] [
   (μ : Measure E) [IsAddHaarMeasure μ] {g : E → ℝ} (h1 : g 0 = 0) (h2 : ∀ x, g (- x) = g x)
   (h3 : ∀ x y, g (x + y) ≤ g x + g y) (h4 : ∀ {x}, g x = 0 → x = 0)
   (h5 : ∀ r x, g (r • x) ≤ |r| * (g x))
+include h1 h2 h3 h4 h5
 
 theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
     μ {x : E | g x < 1} =
@@ -161,9 +162,9 @@ section LpSpace
 
 open Real Fintype ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure
 
-variable (ι : Type*) [Fintype ι] {p : ℝ} (hp : 1 ≤ p)
+variable (ι : Type*) [Fintype ι] {p : ℝ}
 
-theorem MeasureTheory.volume_sum_rpow_lt_one :
+theorem MeasureTheory.volume_sum_rpow_lt_one (hp : 1 ≤ p) :
     volume {x : ι → ℝ | ∑ i, |x i| ^ p < 1} =
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
@@ -328,7 +329,7 @@ theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
         .ofReal (Real.sqrt π ^ card ι / Gamma (card ι / 2 + 1)) by
       rw [Measure.addHaar_ball _ _ hr, this, ofReal_pow hr, finrank_euclideanSpace]
     rw [← ((EuclideanSpace.volume_preserving_measurableEquiv _).symm).measure_preimage
-      measurableSet_ball]
+      measurableSet_ball.nullMeasurableSet]
     convert (volume_sum_rpow_lt_one ι one_le_two) using 4
     · simp_rw [EuclideanSpace.ball_zero_eq _ zero_le_one, one_pow, Real.rpow_two, sq_abs,
         Set.setOf_app_iff]
@@ -358,7 +359,7 @@ theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ finrank ℝ E *
       .ofReal (sqrt π ^ finrank ℝ E / Gamma (finrank ℝ E / 2 + 1)) := by
   rw [← ((stdOrthonormalBasis ℝ E).measurePreserving_repr_symm).measure_preimage
-      measurableSet_ball]
+      measurableSet_ball.nullMeasurableSet]
   have : Nonempty (Fin (finrank ℝ E)) := Fin.pos_iff_nonempty.mp finrank_pos
   have := EuclideanSpace.volume_ball (Fin (finrank ℝ E)) ((stdOrthonormalBasis ℝ E).repr x) r
   simp_rw [Fintype.card_fin] at this

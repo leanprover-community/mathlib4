@@ -59,9 +59,7 @@ assert_not_exists Field
 noncomputable section
 
 open Function Cardinal Set Equiv Order
-
-open scoped Classical
-open Cardinal InitialSeg
+open scoped Cardinal InitialSeg
 
 universe u v w
 
@@ -1061,7 +1059,7 @@ def outOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.out.α where
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (· < ·) 0 (by rwa [type_lt]) =
       haveI H := outOrderBotOfPos ho
-      ⊥ :=
+      (⊥ : (Quotient.out o).α) :=
   rfl
 
 /-! ### Universal ordinal -/
@@ -1140,7 +1138,7 @@ open Ordinal
 
 @[simp]
 theorem mk_ordinal_out (o : Ordinal) : #o.out.α = o.card :=
-  (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_lt]
+  (Ordinal.card_type (· < ·)).symm.trans <| by rw [Ordinal.type_lt]
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/

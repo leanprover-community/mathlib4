@@ -364,6 +364,37 @@ theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
+section Order
+
+/-!
+## The specialization order
+
+We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
+This is exactly the specialization order.
+See the corresponding section at `Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic`.
+-/
+
+instance : PartialOrder (PrimeSpectrum R) :=
+  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
+
+@[simp]
+theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
+  Iff.rfl
+
+@[simp]
+theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
+  Iff.rfl
+
+instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
+  bot := ⟨⊥, Ideal.bot_prime⟩
+  bot_le I := @bot_le _ _ _ I.asIdeal
+
+instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
+  default := ⊥
+  uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
+
+end Order
+
 section Noetherian
 
 open Submodule

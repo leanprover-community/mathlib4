@@ -3,7 +3,8 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.Constructions
+import Mathlib.Tactic.TFAE
 
 /-!
 # Locally closed sets
@@ -24,23 +25,11 @@ import Mathlib.Topology.LocalAtTarget
 
 -/
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {s t : Set α} {f : α → β}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X} {f : X → Y}
 
 open scoped Topology Set.Notation
 
 open Set
-
-/--
-The coborder is defined as the complement of `closure s \ s`,
-or the union of `s` and the complement of `∂(s)`.
-This is the largest set such that `s` is closed in, and `s` is locally closed if and only if
-`coborder s` is open.
-
-This is unnamed in the literature, and this name is due to the fact that `coborder s = (border sᶜ)ᶜ`
-where `border s = s \ interior s` is the border in the sense of Hausdorff.
--/
-def coborder (s : Set α) : Set α :=
-  (closure s \ s)ᶜ
 
 lemma subset_coborder :
     s ⊆ coborder s := by
@@ -74,36 +63,30 @@ lemma coborder_eq_compl_frontier_iff :
 
 alias ⟨_, IsOpen.coborder_eq⟩ := coborder_eq_compl_frontier_iff
 
-lemma IsOpenMap.coborder_preimage_subset (hf : IsOpenMap f) (s : Set β) :
+lemma IsOpenMap.coborder_preimage_subset (hf : IsOpenMap f) (s : Set Y) :
     coborder (f ⁻¹' s) ⊆ f ⁻¹' (coborder s) := by
   rw [coborder, coborder, preimage_compl, preimage_diff, compl_subset_compl]
   apply diff_subset_diff_left
   exact hf.preimage_closure_subset_closure_preimage
 
-lemma Continuous.preimage_coborder_subset (hf : Continuous f) (s : Set β) :
+lemma Continuous.preimage_coborder_subset (hf : Continuous f) (s : Set Y) :
     f ⁻¹' (coborder s) ⊆ coborder (f ⁻¹' s) := by
   rw [coborder, coborder, preimage_compl, preimage_diff, compl_subset_compl]
   apply diff_subset_diff_left
   exact hf.closure_preimage_subset s
 
-lemma coborder_preimage (hf : IsOpenMap f) (hf' : Continuous f) (s : Set β) :
+lemma coborder_preimage (hf : IsOpenMap f) (hf' : Continuous f) (s : Set Y) :
     coborder (f ⁻¹' s) = f ⁻¹' (coborder s) :=
   (hf.coborder_preimage_subset s).antisymm (hf'.preimage_coborder_subset s)
 
 protected
-lemma OpenEmbedding.coborder_preimage (hf : OpenEmbedding f) (s : Set β) :
+lemma OpenEmbedding.coborder_preimage (hf : OpenEmbedding f) (s : Set Y) :
     coborder (f ⁻¹' s) = f ⁻¹' (coborder s) :=
   coborder_preimage hf.isOpenMap hf.continuous s
 
 lemma isClosed_preimage_val_coborder :
     IsClosed (coborder s ↓∩ s) := by
   rw [isClosed_preimage_val, inter_eq_right.mpr subset_coborder, coborder_inter_closure]
-
-/--
-A set is locally closed if it is the intersection of some open set and some closed set.
-Also see `isLocallyClosed_tfae`.
--/
-def IsLocallyClosed (s : Set α) : Prop := ∃ (U Z : Set α), IsOpen U ∧ IsClosed Z ∧ s = U ∩ Z
 
 lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
   ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
@@ -117,16 +100,16 @@ lemma IsLocallyClosed.inter (hs : IsLocallyClosed s) (ht : IsLocallyClosed t) :
   obtain ⟨U₂, Z₂, hU₂, hZ₂, rfl⟩ := ht
   refine ⟨_, _, hU₁.inter hU₂, hZ₁.inter hZ₂, inter_inter_inter_comm U₁ Z₁ U₂ Z₂⟩
 
-lemma IsLocallyClosed.preimage {s : Set β} (hs : IsLocallyClosed s)
-    {f : α → β} (hf : Continuous f) :
+lemma IsLocallyClosed.preimage {s : Set Y} (hs : IsLocallyClosed s)
+    {f : X → Y} (hf : Continuous f) :
     IsLocallyClosed (f ⁻¹' s) := by
   obtain ⟨U, Z, hU, hZ, rfl⟩ := hs
   exact ⟨_, _, hU.preimage hf, hZ.preimage hf, preimage_inter⟩
 
 nonrec
-lemma Inducing.isLocallyClosed_iff {s : Set α}
-    {f : α → β} (hf : Inducing f) :
-    IsLocallyClosed s ↔ ∃ s' : Set β, IsLocallyClosed s' ∧ f ⁻¹' s' = s := by
+lemma Inducing.isLocallyClosed_iff {s : Set X}
+    {f : X → Y} (hf : Inducing f) :
+    IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ f ⁻¹' s' = s := by
   simp_rw [IsLocallyClosed, hf.isOpen_iff, hf.isClosed_iff]
   constructor
   · rintro ⟨_, _, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
@@ -134,14 +117,14 @@ lemma Inducing.isLocallyClosed_iff {s : Set α}
   · rintro ⟨_, ⟨U, Z, hU, hZ, rfl⟩, rfl⟩
     exact ⟨_, _, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
 
-lemma Embedding.isLocallyClosed_iff {s : Set α}
-    {f : α → β} (hf : Embedding f) :
-    IsLocallyClosed s ↔ ∃ s' : Set β, IsLocallyClosed s' ∧ s' ∩ range f = f '' s := by
+lemma Embedding.isLocallyClosed_iff {s : Set X}
+    {f : X → Y} (hf : Embedding f) :
+    IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ s' ∩ range f = f '' s := by
   simp_rw [hf.toInducing.isLocallyClosed_iff,
     ← (image_injective.mpr hf.inj).eq_iff, image_preimage_eq_inter_range]
 
-lemma IsLocallyClosed.image {s : Set α} (hs : IsLocallyClosed s)
-    {f : α → β} (hf : Inducing f) (hf' : IsLocallyClosed (range f)) :
+lemma IsLocallyClosed.image {s : Set X} (hs : IsLocallyClosed s)
+    {f : X → Y} (hf : Inducing f) (hf' : IsLocallyClosed (range f)) :
     IsLocallyClosed (f '' s) := by
   obtain ⟨t, ht, rfl⟩ := hf.isLocallyClosed_iff.mp hs
   rw [image_preimage_eq_inter_range]
@@ -155,7 +138,7 @@ A set `s` is locally closed if one of the equivalent conditions below hold
 4. Every `x ∈ s` has some open neighborhood `U` such that `U ∩ closure s ⊆ s`.
 5. `s` is open in the closure of `s`.
 -/
-lemma isLocallyClosed_tfae (s : Set α) :
+lemma isLocallyClosed_tfae (s : Set X) :
     List.TFAE
     [ IsLocallyClosed s,
       IsOpen (coborder s),
@@ -202,13 +185,3 @@ alias ⟨IsLocallyClosed.isOpen_coborder, _⟩ := isLocallyClosed_iff_isOpen_cob
 lemma IsLocallyClosed.isOpen_preimage_val_closure (hs : IsLocallyClosed s) :
     IsOpen (closure s ↓∩ s) :=
   ((isLocallyClosed_tfae s).out 0 4).mp hs
-
-open TopologicalSpace
-
-variable {ι : Type*} {U : ι → Opens β} (hU : iSup U = ⊤)
-
-theorem isLocallyClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
-    IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) := by
-  simp_rw [isLocallyClosed_iff_isOpen_coborder]
-  rw [isOpen_iff_coe_preimage_of_iSup_eq_top hU]
-  exact forall_congr' fun i ↦ by rw [(U i).isOpen.openEmbedding_subtype_val.coborder_preimage]
