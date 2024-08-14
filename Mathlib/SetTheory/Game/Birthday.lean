@@ -208,7 +208,7 @@ theorem birthday_eq_zero {x : Game} : birthday x = 0 ↔ x = 0 := by
 @[simp]
 theorem birthday_toGame (o : Ordinal) : birthday (toGame o) = o := by
   apply le_antisymm
-  · conv_rhs => rw [← PGame.birthday_toGame o]
+  · conv_rhs => rw [← PGame.birthday_toPGame o]
     apply birthday_le_pGame_birthday
   · let ⟨x, hx₁, hx₂⟩ := birthday_eq_pGame_birthday (toGame o)
     rw [← hx₂, ← toPGame_le_iff]
