@@ -168,8 +168,6 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
       have aux2 := hg (φ t)
       exact tendsto_nhds_unique aux2 aux1
 
-
-
 theorem norm_normalize {x : E} (hx : x ≠ 0) : ‖(1 / ‖x‖) • x‖ = 1 := by
   rw [norm_smul, norm_div, norm_one, norm_norm, one_div_mul_cancel (norm_ne_zero_iff.2 hx)]
 
@@ -197,126 +195,76 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
   let s := {f : E →ₗ[ℝ] ℝ | ∃ x' : E, DifferentiableAt ℝ (‖·‖) x' ∧ f = fderiv ℝ (‖·‖) x'}
   have aux3 (z : E) (hz : z ≠ 0) : ∃ f ∈ s, f z ≠ 0 := by
     obtain ⟨u, hu, htu⟩ := dense_seq aux2 z
-    have := tendsto_differentiable hu htu
-    have := this.eventually_ne (norm_ne_zero_iff.2 hz)
-    rw [eventually_atTop] at this
-    rcases this with ⟨N, hN⟩
+    have := (tendsto_differentiable hu htu).eventually_ne (norm_ne_zero_iff.2 hz)
+    rcases eventually_atTop.1 this with ⟨N, hN⟩
     exact ⟨fderiv ℝ (‖·‖) (u N), ⟨u N, hu N, rfl⟩, hN N (le_refl N)⟩
   let b := BasisOfSpan (span_eq_top_of_ne_zero aux3)
   have hb i : ∃ y : E, ‖y‖ = 1 ∧ DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y := by
     obtain ⟨y, dy, hy⟩ : ∃ y : E, DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y :=
       basisOfSpan_subset (span_eq_top_of_ne_zero aux3) ⟨i, rfl⟩
-    have bin := b.ne_zero i
     have yn : y ≠ 0 := by
       intro hyn
-      rw [hyn, fderiv_zero_of_not_differentiableAt] at hy
-      exact bin hy
-      exact not_differentiableAt_norm_zero E
+      rw [hyn, fderiv_zero_of_not_differentiableAt <| not_differentiableAt_norm_zero E] at hy
+      exact b.ne_zero i hy
     refine ⟨(1 / ‖y‖) • y, norm_normalize yn,
       (differentiableAt_norm_smul (one_div_ne_zero (norm_ne_zero_iff.2 yn))).1 dy, ?_⟩
-    rw [fderiv_norm_smul_pos, hy]
-    exact one_div_pos.2 <| norm_pos_iff.2 yn
+    rw [fderiv_norm_smul_pos (one_div_pos.2 <| norm_pos_iff.2 yn), hy]
   choose y ny dy hy using hb
   let c := (b.dualBasis).map (Module.evalEquiv ℝ E).symm
   have mdr i j : b i (c j) = if i = j then 1 else 0 := by
     calc
-      (b i) (c j)
-        = Module.evalEquiv ℝ E ((Module.evalEquiv ℝ E).symm (b.dualBasis j)) (b i) := rfl
-      _ = b.dualBasis j (b i) := by
-        rw [(Module.evalEquiv ℝ E).apply_symm_apply]
+      (b i) (c j) = Module.evalEquiv ℝ E ((Module.evalEquiv ℝ E).symm (b.dualBasis j)) (b i) := rfl
+      _ = b.dualBasis j (b i) := by rw [(Module.evalEquiv ℝ E).apply_symm_apply]
       _ = if i = j then 1 else 0 := b.dualBasis_apply_self j i
   let T : F →L[ℝ] E :=
     { toFun := fun z ↦ ∑ i, (f (y i) z) • (c i)
-      map_add' := by
-        intro z w
-        simp_rw [map_add, add_smul]
-        rw [Finset.sum_add_distrib]
-      map_smul' := by
-        intro m z
-        simp_rw [_root_.map_smul, smul_eq_mul, ← smul_smul]
-        rw [← Finset.smul_sum]
-        rfl
-      cont :=
-        continuous_finset_sum (@Finset.univ (Fin _) _) fun _ ↦ by fun_prop }
+      map_add' := fun _ ↦ by simp [Finset.sum_add_distrib, add_smul]
+      map_smul' := fun _ ↦ by simp [Finset.smul_sum, smul_smul]
+      cont := continuous_finset_sum (@Finset.univ (Fin _) _) fun _ ↦ by fun_prop }
   use T
+  have lipfφ {x : E} (nx : ‖x‖ = 1) : LipschitzWith 1 ((f x) ∘ φ) := by
+    convert (f x).lipschitz.comp hφ.lipschitz
+    rw [← norm_toNNReal, nf x nx, mul_one, toNNReal_one]
+  have fφ_eq {x : E} (nx : ‖x‖ = 1) (hx : DifferentiableAt ℝ (‖·‖) x) :=
+    unique1 nx hx ((f x) ∘ φ) (lipfφ nx) (hf x nx)
   have Tφ x : T (φ x) = x := by
-    have this i : LipschitzWith 1 ((f (y i)) ∘ φ) := by
-      convert (f (y i)).lipschitz.comp hφ.lipschitz
-      rw [← norm_toNNReal, nf _ (ny i), mul_one, toNNReal_one]
-    have aux1 i x : f (y i) (φ x) = fderiv ℝ (‖·‖) (y i) x :=
-      congrFun (unique1 (ny i) (dy i) ((f (y i)) ∘ φ) (this i) (hf _ (ny i))) x
     have aux2 i x : f (y i) (φ x) = b i x := by
-      rw [aux1]
-      exact (LinearMap.congr_fun (hy i) x).symm
+      convert congrFun (fφ_eq (ny i) (dy i)) x using 1
+      exact DFunLike.congr_fun (hy i) x
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, aux2, T]
     let g : E →ₗ[ℝ] E :=
       { toFun := fun y ↦ ∑ i, (b i y) • (c i)
-        map_add' := by
-          intro y z
-          simp_rw [map_add, add_smul]
-          rw [Finset.sum_add_distrib]
-        map_smul' := by
-          intro m y
-          simp_rw [_root_.map_smul, smul_eq_mul, ← smul_smul]
-          rw [← Finset.smul_sum]
-          rfl }
-    have : g = LinearMap.id := by
-      apply c.ext
-      intro i
-      simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearMap.id_coe, id_eq, g]
-      simp_rw [mdr, ite_smul, one_smul, zero_smul]
-      rw [Fintype.sum_ite_eq']
-    exact LinearMap.congr_fun this x
+        map_add' := fun _ ↦ by simp [Finset.sum_add_distrib, add_smul]
+        map_smul' := fun _ ↦ by simp [Finset.smul_sum, smul_smul] }
+    have : g = LinearMap.id := c.ext fun i ↦ by simp [g, mdr]
+    exact DFunLike.congr_fun this x
   constructor
   · apply le_antisymm
-    · have prim : ∀ x : E, ‖x‖ = 1 → DifferentiableAt ℝ (‖·‖) x →
-          f x = (fderiv ℝ (‖·‖) x) ∘ T := by
-        intro x nx dx
-        apply Continuous.ext_on hlol
-        · exact (f x).continuous
-        · exact (ContinuousLinearMap.continuous _).comp T.continuous
-        · intro y hy
-          change f x y = ((fderiv ℝ (‖·‖) x).comp T) y
-          apply LinearMap.eqOn_span (R := ℝ) _ hy
-          rintro - ⟨z, rfl⟩
-          have : LipschitzWith 1 ((f x) ∘ φ) := by
-            convert (f x).lipschitz.comp hφ.lipschitz
-            rw [← norm_toNNReal, nf x nx, mul_one, toNNReal_one]
-          have aux1 := unique1 nx dx ((f x) ∘ φ) this (hf x nx)
-          simp only [ContinuousLinearMap.coe_comp', Function.comp_apply]
-          rw [Tφ]
-          exact congrFun aux1 z
-      apply ContinuousLinearMap.opNorm_le_bound _ (by norm_num)
-      intro y
+    · have prim {x : E} (nx : ‖x‖ = 1) (hx : DifferentiableAt ℝ (‖·‖) x) :
+          f x = (fderiv ℝ (‖·‖) x).comp T := by
+        apply ContinuousLinearMap.ext_on hlol
+        rintro - ⟨y, rfl⟩
+        simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, Tφ]
+        exact congrFun (fφ_eq nx hx) y
+      refine T.opNorm_le_bound (by norm_num) fun y ↦ ?_
       obtain ⟨u, hu, htu⟩ := dense_seq aux2 (T y)
       have := tendsto_differentiable hu htu
-      have unez n : u n ≠ 0 := by
-        intro h
-        have := h ▸ hu n
-        exact not_differentiableAt_norm_zero E this
+      have unez n : u n ≠ 0 := fun h ↦ not_differentiableAt_norm_zero E (h ▸ hu n)
       have obv n : 1 / ‖u n‖ > 0 := one_div_pos.2 <| norm_pos_iff.2 <| unez n
-      have mdr n : fderiv ℝ (‖·‖) (u n) = fderiv ℝ (‖·‖) ((1 / ‖u n‖) • (u n)) :=
-        (fderiv_norm_smul_pos (obv n)).symm
-      simp_rw [mdr] at this
-      apply le_of_tendsto this
-      apply eventually_of_forall
-      intro n
-      have : fderiv ℝ (‖·‖) ((1 / ‖u n‖) • (u n)) (T y) = f ((1 / ‖u n‖) • (u n)) y := by
-        have putain : DifferentiableAt ℝ (‖·‖) ((1 / ‖u n‖) • (u n)) :=
-          (differentiableAt_norm_smul (obv n).ne.symm).1 (hu n)
-        exact congrFun (prim _ (norm_normalize (unez n)) putain).symm y
+      simp_rw [← fun n ↦ fderiv_norm_smul_pos (x := u n) (obv n)] at this
+      refine le_of_tendsto this <| eventually_of_forall fun n ↦ ?_
+      have : fderiv ℝ (‖·‖) ((1 / ‖u n‖) • (u n)) (T y) = f ((1 / ‖u n‖) • (u n)) y :=
+        DFunLike.congr_fun (prim (norm_normalize (unez n))
+          ((differentiableAt_norm_smul (obv n).ne.symm).1 (hu n))).symm y
       rw [this]
       calc
-        f ((1 / ‖u n‖) • (u n)) y ≤ ‖f ((1 / ‖u n‖) • (u n)) y‖ := by
-          rw [norm_eq_abs]
-          exact le_abs_self _
+        f ((1 / ‖u n‖) • (u n)) y ≤ ‖f ((1 / ‖u n‖) • (u n)) y‖ := norm_eq_abs _ ▸ le_abs_self _
         _ ≤ ‖f ((1 / ‖u n‖) • (u n))‖ * ‖y‖ := ContinuousLinearMap.le_opNorm _ y
         _ = 1 * ‖y‖ := by rw [nf _ (norm_normalize (unez n))]
-    · have nφ := hφ.norm_map_of_map_zero φz
-      rcases NormedSpace.exists_lt_norm ℝ E 0 with ⟨x, hx⟩
+    · rcases NormedSpace.exists_lt_norm ℝ E 0 with ⟨x, hx⟩
       apply le_of_mul_le_mul_right _ hx
       nth_rw 1 [← Tφ x]
-      rw [← nφ x, one_mul]
+      rw [← hφ.norm_map_of_map_zero φz x, one_mul]
       exact T.le_opNorm _
   · ext x
     exact Tφ x
