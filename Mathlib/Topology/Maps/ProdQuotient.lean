@@ -1,9 +1,111 @@
 import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Sets.Closeds
 
 open Function Set Filter TopologicalSpace
 open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
+namespace TopologicalSpace
+
+/-- Topology on `TopologicalSpace.Opens X` defined in
+
+On topological quotient maps preserved by pullbacks or products
+B. J. DAY AND G. M. KELLY
+
+-/
+protected def dayKelly (α : Type*) [CompleteLattice α] : TopologicalSpace α where
+  IsOpen S := IsUpperSet S ∧ ∀ U : Set α, sSup U ∈ S → ∃ u ⊆ U, u.Finite ∧ sSup u ∈ S
+  isOpen_univ := ⟨isUpperSet_univ, fun _ _ ↦ ⟨∅, by simp⟩⟩
+  isOpen_inter s t hs ht := by
+    refine ⟨hs.1.inter ht.1, fun U ⟨hUs, hUt⟩ ↦ ?_⟩
+    rcases hs.2 U hUs with ⟨us, husU, husf, hus⟩
+    rcases ht.2 U hUt with ⟨ut, hutU, hutf, hut⟩
+    refine ⟨us ∪ ut, union_subset husU hutU, husf.union hutf, ?_⟩
+    rw [sSup_union]
+    exact ⟨hs.1 le_sup_left hus, ht.1 le_sup_right hut⟩
+  isOpen_sUnion S hS := by
+    refine ⟨isUpperSet_sUnion fun s hs ↦ (hS s hs).1, fun U hU ↦ ?_⟩
+    rcases mem_sUnion.1 hU with ⟨s, hsS, hsU⟩
+    rcases (hS s hsS).2 U hsU with ⟨u, huU, huf, hus⟩
+    exact ⟨u, huU, huf, s, hsS, hus⟩
+
+theorem isOpen_dayKelly_setOf_isCompact_subset {K : Set X} (hK : IsCompact K) :
+    IsOpen[.dayKelly (Opens X)] {U | K ⊆ U} := by
+  refine ⟨fun V U hV hle ↦ hle.trans hV, fun U hU ↦ ?_⟩
+  rw [mem_setOf, Opens.coe_sSup] at hU
+  simpa using hK.elim_finite_subcover_image (fun u _ ↦ u.isOpen) hU
+
+end TopologicalSpace
+
+variable (X) in
+class ProdQuotientMapSpace : Prop where
+  exists_dayKelly_isOpen : ∀ U : Opens X, ∀ x ∈ U,
+    ∃ S : Set (Opens X), U ∈ S ∧ IsOpen[.dayKelly (Opens X)] S ∧ (⋂ s ∈ S, (s : Set X)) ∈ 𝓝 x
+
+instance (priority := 100) [LocallyCompactSpace X] : ProdQuotientMapSpace X := by
+  refine ⟨fun U x hxU ↦ ?_⟩
+  rcases local_compact_nhds (U.isOpen.mem_nhds hxU) with ⟨K, hKx, hKU, hKc⟩
+  exact ⟨{V | K ⊆ V}, hKU, isOpen_dayKelly_setOf_isCompact_subset hKc,
+    mem_of_superset hKx <| subset_iInter₂ fun _ ↦ id⟩
+
+instance {α} : Trans (Membership.mem : α → Set α → Prop) Subset Membership.mem :=
+  ⟨fun h₁ h₂ => h₂ h₁⟩
+
+instance (priority := 100) [R1Space X] [ProdQuotientMapSpace X] : LocallyCompactSpace X := by
+  suffices WeaklyLocallyCompactSpace X from inferInstance
+  have : RegularSpace X := by
+    refine .of_exists_mem_nhds_isClosed_subset fun x s hxs ↦ ?_
+    wlog hso : IsOpen s generalizing s
+    · rcases this (interior s) (interior_mem_nhds.2 hxs) isOpen_interior with ⟨t, htx, htc, hts⟩
+      exact ⟨t, htx, htc, hts.trans interior_subset⟩
+    lift s to Opens X using hso
+    rcases ProdQuotientMapSpace.exists_dayKelly_isOpen s x (mem_of_mem_nhds hxs)
+      with ⟨S, hS, hSo, hxS⟩
+    set t : Set X := ⋂ s ∈ S, s
+    refine ⟨_, mem_of_superset hxS subset_closure, isClosed_closure, ?_⟩
+    intro y hyS
+    by_contra hys
+    have : ∀ z ∈ s, ∃ U : Opens X, z ∈ U ∧ y ∉ closure U := by
+      intro z hz
+      have : ¬y ⤳ z := by
+        simp only [specializes_iff_forall_open, not_forall]
+        exact ⟨_, s.isOpen, hz, hys⟩
+      rw [← disjoint_nhds_nhds_iff_not_specializes, (nhds_basis_opens _).disjoint_iff_right] at this
+      rcases this with ⟨U, ⟨hzU, hUo⟩, hU⟩
+      refine ⟨⟨U, hUo⟩, hzU, ?_⟩
+      rwa [Opens.coe_mk, ← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds]
+    choose! U hmem hyU using this
+    have : sSup (U '' s) ∈ S := by
+      refine hSo.1 (fun z hz ↦ ?_) hS
+      simp only [SetLike.mem_coe, sSup_image, Opens.mem_iSup]
+      exact ⟨z, hz, hmem z hz⟩
+    rcases exists_subset_image_finite_and.1 (hSo.2 _ this) with ⟨v, hsub, hvf, hv⟩
+    have := calc
+      y ∈ closure t := hyS
+      _ ⊆ closure ↑(sSup (U '' v)) := closure_mono <| iInter₂_subset _ ‹_›
+      _ = ⋃ z ∈ v, closure (U z) := by
+        simp_rw [sSup_image, Opens.coe_iSup, hvf.closure_biUnion]
+    rcases mem_iUnion₂.1 this with ⟨z, hzv, hyz⟩
+    exact hyU _ (hsub hzv) hyz
+  refine ⟨fun x ↦ ?_⟩
+  rcases ProdQuotientMapSpace.exists_dayKelly_isOpen ⊤ x trivial with ⟨S, hS, hSo, hxS⟩
+  rcases exists_mem_nhds_isClosed_subset hxS with ⟨K, hxK, hKc, hKS⟩
+  simp only [subset_iInter_iff] at hKS
+  lift K to Closeds X using hKc
+  refine ⟨_, isCompact_of_finite_subcover_sUnion fun V hVo hKV ↦ ?_, hxK⟩
+  lift V to Set (Opens X) using hVo
+  replace hSV : sSup (insert K.compl V) = ⊤ := by
+    rwa [sSup_insert, ← SetLike.coe_set_eq, Opens.coe_sup, Opens.coe_sSup, Opens.coe_top,
+      Closeds.compl_coe, ← sUnion_image, ← compl_subset_iff_union, compl_compl]
+  rcases hSo.2 _ (hSV ▸ hS) with ⟨T, hTsub, hTf, hTS⟩
+  rw [exists_subset_image_finite_and]
+  refine ⟨T \ {K.compl}, diff_singleton_subset_iff.2 hTsub, hTf.diff _, fun z hz ↦ ?_⟩
+  rcases Opens.mem_sSup.1 (hKS _ hTS hz) with ⟨v, hvT, hzv⟩
+  rw [sUnion_image, mem_iUnion₂]
+  refine ⟨v, ⟨hvT, ?_⟩, hzv⟩
+  rintro rfl
+  exact hzv hz
 
 structure IsOpenQuotientMap (f : X → Y) : Prop where
   surjective : Surjective f

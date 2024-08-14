@@ -115,6 +115,7 @@ def Simps.coe (U : Opens α) : Set α := U
 initialize_simps_projections Opens (carrier → coe)
 
 /-- The interior of a set, as an element of `Opens`. -/
+@[simps]
 nonrec def interior (s : Set α) : Opens α :=
   ⟨interior s, isOpen_interior⟩
 
