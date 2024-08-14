@@ -2792,7 +2792,6 @@ import Mathlib.InformationTheory.Hamming
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Classical
 import Mathlib.Init.Core
-import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
