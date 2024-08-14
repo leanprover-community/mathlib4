@@ -18,7 +18,6 @@ import Mathlib.Order.Nat
 # Lattice operations on finsets
 -/
 
--- TODO:
 assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidWithZero
 

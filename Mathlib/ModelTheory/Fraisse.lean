@@ -300,8 +300,8 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
     Equiv.coe_toHom, Embedding.coe_toHom, coeSubtype] at eq'
   simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]
   apply (Embedding.equivRange (Embedding.comp r g)).injective
-  simp only [Equiv.apply_symm_apply]
-  rfl
+  ext
+  simp only [Equiv.apply_symm_apply, Embedding.equivRange_apply, s]
 
 /-- A countably generated structure is ultrahomogeneous if and only if any equivalence between
 finitely generated substructures can be extended to any element in the domain.-/
@@ -382,8 +382,8 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
     ((subtype f.cod).comp f.toEquiv.toEmbedding) (inclusion (le_sup_left : _ ≤ S))
   refine ⟨⟨⟨S, g.toHom.range, g.equivRange⟩, S_FG⟩,
     subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨le_sup_left, ?_⟩⟩
-  simp only [Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
-  rfl
+  ext
+  simp [Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
 
 /-- The Fraïssé limit of a class is unique, in that any two Fraïssé limits are isomorphic. -/
 theorem nonempty_equiv : Nonempty (M ≃[L] N) := by

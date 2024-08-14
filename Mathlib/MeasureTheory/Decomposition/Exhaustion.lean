@@ -306,9 +306,8 @@ lemma measurableSet_sigmaFiniteSet : MeasurableSet μ.sigmaFiniteSet :=
 lemma measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet [SFinite μ]
     (ht_subset : t ⊆ μ.sigmaFiniteSetᶜ) :
     μ t = 0 ∨ μ t = ∞ := by
-  by_cases h0 : μ t = 0
-  · exact Or.inl h0
-  · exact Or.inr <| measure_eq_top_of_subset_compl_sigmaFiniteSetWRT ht_subset h0
+  rw [or_iff_not_imp_left]
+  exact measure_eq_top_of_subset_compl_sigmaFiniteSetWRT ht_subset
 
 /-- The measure `μ.restrict μ.sigmaFiniteSetᶜ` takes only two values: 0 and ∞ . -/
 lemma restrict_compl_sigmaFiniteSet_eq_zero_or_top (μ : Measure α) [SFinite μ] (s : Set α) :

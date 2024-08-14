@@ -190,13 +190,11 @@ lemma diam_top [Nontrivial α] : (⊤ : SimpleGraph α).diam = 1 := by
 
 @[simp]
 lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
-  rw [diam, ENat.toNat_eq_zero]
-  aesop
+  rw [diam, ENat.toNat_eq_zero, or_comm, ediam_eq_zero_iff_subsingleton]
 
 @[simp]
 lemma diam_eq_one [Nontrivial α] : G.diam = 1 ↔ G = ⊤ := by
-  rw [diam, ENat.toNat_eq_iff (by decide)]
-  exact ediam_eq_one
+  rw [diam, ENat.toNat_eq_iff one_ne_zero, Nat.cast_one, ediam_eq_one]
 
 end diam
 

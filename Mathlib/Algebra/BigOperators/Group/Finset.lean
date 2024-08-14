@@ -1527,11 +1527,11 @@ lemma prod_involution (g : ∀ a ∈ s, α) (hg₁ : ∀ a ha, f a * f (g a ha) 
   have : {x, g x hx} ⊆ s := by simp [insert_subset_iff, hx, g_mem]
   suffices h : ∏ x ∈ s \ {x, g x hx}, f x = 1 by
     rw [← prod_sdiff this, h, one_mul]
-    rcases eq_or_ne (g x hx) x
-    case inl hx' => simpa [hx'] using hg₃ x hx
-    case inr hx' => rw [prod_pair hx'.symm, hg₁]
-  suffices h₃ : ∀ a (ha : a ∈ s \ {x, g x hx}), g a (sdiff_subset ha) ∈ s \ {x, g x hx} by
-    exact ih (s \ {x, g x hx}) (ssubset_iff.2 ⟨x, by simp [insert_subset_iff, hx]⟩) _
+    cases eq_or_ne (g x hx) x with
+    | inl hx' => simpa [hx'] using hg₃ x hx
+    | inr hx' => rw [prod_pair hx'.symm, hg₁]
+  suffices h₃ : ∀ a (ha : a ∈ s \ {x, g x hx}), g a (sdiff_subset ha) ∈ s \ {x, g x hx} from
+    ih (s \ {x, g x hx}) (ssubset_iff.2 ⟨x, by simp [insert_subset_iff, hx]⟩) _
       (by simp [hg₁]) (fun _ _ => hg₃ _ _) h₃ (fun _ _ => hg₄ _ _)
   simp only [mem_sdiff, mem_insert, mem_singleton, not_or, g_mem, true_and]
   rintro a ⟨ha₁, ha₂, ha₃⟩
