@@ -112,7 +112,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
   · rw [map_smulₛₗ, H, smul_zero]
   · rw [map_smulₛₗ, smul_eq_zero] at H
     cases' H with H H
-    · simp at H
+    · simp only [map_eq_zero] at H
       exfalso
       exact ha H
     · exact H
@@ -149,18 +149,20 @@ def IsRefl (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
 
 namespace IsRefl
 
+section
 variable (H : B.IsRefl)
+include H
 
 theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 
 theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   ⟨eq_zero H, eq_zero H⟩
 
-theorem domRestrict (H : B.IsRefl) (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
+theorem domRestrict (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
   fun _ _ ↦ by
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
-
+end
 @[simp]
 theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
   ⟨fun h x y H ↦ h y x ((B.flip_apply _ _).trans H), fun h x y ↦ h y x⟩
@@ -239,6 +241,7 @@ def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
   ∀ x, B x x = 0
 
 variable (H : B.IsAlt)
+include H
 
 theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
   H x

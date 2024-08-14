@@ -180,7 +180,7 @@ instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid α�
 @[to_additive]
 instance instGroup [Group α] : Group αᵐᵒᵖ where
   toDivInvMonoid := instDivInvMonoid
-  mul_left_inv _ := unop_injective <| mul_inv_self _
+  inv_mul_cancel _ := unop_injective <| mul_inv_cancel _
 
 @[to_additive]
 instance instCommGroup [CommGroup α] : CommGroup αᵐᵒᵖ where

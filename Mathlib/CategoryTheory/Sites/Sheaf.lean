@@ -265,6 +265,7 @@ variable {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) {I : Type*} {S : C} {X 
   (x : ∀ i, E ⟶ P.obj (op (X i)))
   (hx : ∀ ⦃W : C⦄ ⦃i j : I⦄ (a : W ⟶ X i) (b : W ⟶ X j),
     a ≫ f i = b ≫ f j → x i ≫ P.map a.op = x j ≫ P.map b.op)
+include hP hf hx
 
 lemma IsSheaf.exists_unique_amalgamation_ofArrows :
     ∃! (g : E ⟶ P.obj (op S)), ∀ (i : I), g ≫ P.map (f i).op = x i :=
