@@ -280,8 +280,7 @@ instance hasNPowNat : Pow (CentroidHom α) ℕ :=
         | zero => rfl
         | succ n ih =>
           rw [pow_succ']
-          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)
-    }⟩
+          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)}⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : CentroidHom α) = 0 :=
