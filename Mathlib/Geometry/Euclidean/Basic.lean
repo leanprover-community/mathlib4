@@ -47,7 +47,7 @@ theorems that need it.
 
 noncomputable section
 
-open scoped Classical
+open scoped Classical NNReal
 
 open RealInnerProductSpace
 
@@ -69,6 +69,11 @@ variable [NormedAddTorsor V P]
 theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
     dist p1 (midpoint ℝ p1 p2) = dist p2 (midpoint ℝ p1 p2) := by
   rw [dist_left_midpoint (𝕜 := ℝ) p1 p2, dist_right_midpoint (𝕜 := ℝ) p1 p2]
+
+@[inherit_doc dist_left_midpoint_eq_dist_right_midpoint]
+theorem nndist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
+    nndist p1 (midpoint ℝ p1 p2) = nndist p2 (midpoint ℝ p1 p2) := by
+  rw [nndist_left_midpoint (𝕜 := ℝ) p1 p2, nndist_right_midpoint (𝕜 := ℝ) p1 p2]
 
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
@@ -183,6 +188,18 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
   rw [hp₂.symm] at hpc₁
   cases' hpc₁ with hpc₁ hpc₁ <;> simp [hpc₁]
 
+@[inherit_doc eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two]
+theorem eq_of_nndist_eq_of_nndist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace ℝ P}
+    [FiniteDimensional ℝ s.direction] (hd : finrank ℝ s.direction = 2) {c₁ c₂ p₁ p₂ p : P}
+    (hc₁s : c₁ ∈ s) (hc₂s : c₂ ∈ s) (hp₁s : p₁ ∈ s) (hp₂s : p₂ ∈ s) (hps : p ∈ s) {r₁ r₂ : ℝ≥0}
+    (hc : c₁ ≠ c₂) (hp : p₁ ≠ p₂) (hp₁c₁ : nndist p₁ c₁ = r₁) (hp₂c₁ : nndist p₂ c₁ = r₁)
+    (hpc₁ : nndist p c₁ = r₁) (hp₁c₂ : nndist p₁ c₂ = r₂) (hp₂c₂ : nndist p₂ c₂ = r₂)
+    (hpc₂ : nndist p c₂ = r₂) : p = p₁ ∨ p = p₂ :=
+  eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two
+    hd hc₁s hc₂s hp₁s hp₂s hps hc hp
+    (congrArg NNReal.toReal hp₁c₁) (congrArg NNReal.toReal hp₂c₁) (congrArg NNReal.toReal hpc₁)
+    (congrArg NNReal.toReal hp₁c₂) (congrArg NNReal.toReal hp₂c₂) (congrArg NNReal.toReal hpc₂)
+
 /-- Distances `r₁` `r₂` of `p` from two different points `c₁` `c₂` determine at
 most two points `p₁` `p₂` in two-dimensional space (two circles intersect in at
 most two points). -/
@@ -195,6 +212,16 @@ theorem eq_of_dist_eq_of_dist_eq_of_finrank_eq_two [FiniteDimensional ℝ V] (hd
     exact hd
   eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two hd' (mem_top ℝ V _) (mem_top ℝ V _)
     (mem_top ℝ V _) (mem_top ℝ V _) (mem_top ℝ V _) hc hp hp₁c₁ hp₂c₁ hpc₁ hp₁c₂ hp₂c₂ hpc₂
+
+@[inherit_doc eq_of_dist_eq_of_dist_eq_of_finrank_eq_two]
+theorem eq_of_nndist_eq_of_nndist_eq_of_finrank_eq_two [FiniteDimensional ℝ V]
+    (hd : finrank ℝ V = 2)
+    {c₁ c₂ p₁ p₂ p : P} {r₁ r₂ : ℝ≥0} (hc : c₁ ≠ c₂) (hp : p₁ ≠ p₂) (hp₁c₁ : nndist p₁ c₁ = r₁)
+    (hp₂c₁ : nndist p₂ c₁ = r₁) (hpc₁ : nndist p c₁ = r₁) (hp₁c₂ : nndist p₁ c₂ = r₂)
+    (hp₂c₂ : nndist p₂ c₂ = r₂) (hpc₂ : nndist p c₂ = r₂) : p = p₁ ∨ p = p₂ :=
+  eq_of_dist_eq_of_dist_eq_of_finrank_eq_two hd hc hp
+    (congrArg NNReal.toReal hp₁c₁) (congrArg NNReal.toReal hp₂c₁) (congrArg NNReal.toReal hpc₁)
+    (congrArg NNReal.toReal hp₁c₂) (congrArg NNReal.toReal hp₂c₂) (congrArg NNReal.toReal hpc₂)
 
 /-- The orthogonal projection of a point onto a nonempty affine
 subspace, whose direction is complete, as an unbundled function. This
@@ -374,12 +401,24 @@ theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace ℝ P} [Nonemp
     dist p (orthogonalProjection s p) = 0 ↔ p ∈ s := by
   rw [dist_comm, dist_eq_zero, orthogonalProjection_eq_self_iff]
 
+@[inherit_doc dist_orthogonalProjection_eq_zero_iff]
+theorem nndist_orthogonalProjection_eq_zero_iff {s : AffineSubspace ℝ P} [Nonempty s]
+    [HasOrthogonalProjection s.direction] {p : P} :
+    nndist p (orthogonalProjection s p) = 0 ↔ p ∈ s := by
+  rw [nndist_comm, nndist_eq_zero, orthogonalProjection_eq_self_iff]
+
 /-- The distance between a point and its orthogonal projection is
 nonzero if it does not lie in the subspace. -/
 theorem dist_orthogonalProjection_ne_zero_of_not_mem {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] {p : P} (hp : p ∉ s) :
     dist p (orthogonalProjection s p) ≠ 0 :=
   mt dist_orthogonalProjection_eq_zero_iff.mp hp
+
+@[inherit_doc dist_orthogonalProjection_ne_zero_of_not_mem]
+theorem nndist_orthogonalProjection_ne_zero_of_not_mem {s : AffineSubspace ℝ P} [Nonempty s]
+    [HasOrthogonalProjection s.direction] {p : P} (hp : p ∉ s) :
+    nndist p (orthogonalProjection s p) ≠ 0 :=
+  mt nndist_orthogonalProjection_eq_zero_iff.mp hp
 
 /-- Subtracting `p` from its `orthogonalProjection` produces a result
 in the orthogonal direction. -/
@@ -443,9 +482,39 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
   exact Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p2 hp1)
     (orthogonalProjection_vsub_mem_direction_orthogonal s p2)
 
+@[inherit_doc dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq]
+theorem nndist_sq_eq_nndist_orthogonalProjection_sq_add_nndist_orthogonalProjection_sq
+    {s : AffineSubspace ℝ P} [Nonempty s] [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P)
+    (hp1 : p1 ∈ s) :
+    nndist p1 p2 * nndist p1 p2 =
+      nndist p1 (orthogonalProjection s p2) * nndist p1 (orthogonalProjection s p2) +
+        nndist p2 (orthogonalProjection s p2) * nndist p2 (orthogonalProjection s p2) := by
+  ext
+  push_cast
+  exact dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p2 hp1
+
 /-- The square of the distance between two points constructed by
 adding multiples of the same orthogonal vector to points in the same
 subspace. -/
+theorem nndist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd {s : AffineSubspace ℝ P} {p1 p2 : P}
+    (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) (r1 r2 : ℝ) {v : V} (hv : v ∈ s.directionᗮ) :
+    nndist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) * nndist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) =
+      nndist p1 p2 * nndist p1 p2 + (nndist r1 r2) * (nndist r1 r2) * (‖v‖₊ * ‖v‖₊) := by
+  calc
+    nndist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) * nndist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) =
+        ‖p1 -ᵥ p2 + (r1 - r2) • v‖ * ‖p1 -ᵥ p2 + (r1 - r2) • v‖ := by
+      rw [nndist_eq_nnnorm_vsub V (r1 • v +ᵥ p1), vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, sub_smul,
+        add_comm, add_sub_assoc]
+    _ = ‖p1 -ᵥ p2‖₊ * ‖p1 -ᵥ p2‖₊ + ‖(r1 - r2) • v‖₊ * ‖(r1 - r2) • v‖₊ :=
+      (norm_add_sq_eq_norm_sq_add_norm_sq_real
+        (Submodule.inner_right_of_mem_orthogonal (vsub_mem_direction hp1 hp2)
+          (Submodule.smul_mem _ _ hv)))
+    _ = ‖(p1 -ᵥ p2 : V)‖₊ * ‖(p1 -ᵥ p2 : V)‖₊ + ‖r1 - r2‖₊ * ‖r1 - r2‖₊ * ‖v‖ * ‖v‖ := by
+      rw [norm_smul, Real.norm_eq_abs]
+      ring
+    _ = dist p1 p2 * dist p1 p2 + (r1 - r2) * (r1 - r2) * (‖v‖ * ‖v‖) := by
+      rw [dist_eq_norm_vsub V p1, abs_mul_abs_self, mul_assoc]
+
 theorem dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd {s : AffineSubspace ℝ P} {p1 p2 : P}
     (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) (r1 r2 : ℝ) {v : V} (hv : v ∈ s.directionᗮ) :
     dist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) * dist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) =
@@ -464,6 +533,15 @@ theorem dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd {s : AffineSubspace �
       ring
     _ = dist p1 p2 * dist p1 p2 + (r1 - r2) * (r1 - r2) * (‖v‖ * ‖v‖) := by
       rw [dist_eq_norm_vsub V p1, abs_mul_abs_self, mul_assoc]
+
+theorem nndist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd {s : AffineSubspace ℝ P} {p1 p2 : P}
+    (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) (r1 r2 : ℝ) {v : V} (hv : v ∈ s.directionᗮ) :
+    nndist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) * nndist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) =
+      nndist p1 p2 * nndist p1 p2 + (nndist r1 r2) * (nndist r1 r2) * (‖v‖₊ * ‖v‖₊) := by
+  ext
+  push_cast
+  convert dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd hp1 hp2 r1 r2 hv using 3
+  rw [Real.dist_eq]
 
 /-- Reflection in an affine subspace, which is expected to be nonempty
 and complete. The word "reflection" is sometimes understood to mean

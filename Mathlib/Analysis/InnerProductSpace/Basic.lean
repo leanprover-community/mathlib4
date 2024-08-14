@@ -1411,11 +1411,25 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero (x y : F) :
   rw [@norm_add_mul_self ℝ, add_right_cancel_iff, add_right_eq_self, mul_eq_zero]
   norm_num
 
+@[inherit_doc norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
+theorem nnnorm_add_sq_eq_nnnorm_sq_addnn_norm_sq_iff_real_inner_eq_zero (x y : F) :
+    ‖x + y‖₊ * ‖x + y‖₊ = ‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊ ↔ ⟪x, y⟫_ℝ = 0 := by
+  rw [NNReal.eq_iff]
+  push_cast
+  rw [norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
+
 /-- Pythagorean theorem, if-and-if vector inner product form using square roots. -/
 theorem norm_add_eq_sqrt_iff_real_inner_eq_zero {x y : F} :
     ‖x + y‖ = √(‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) ↔ ⟪x, y⟫_ℝ = 0 := by
   rw [← norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero, eq_comm,
     sqrt_eq_iff_mul_self_eq (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)) (norm_nonneg _)]
+
+@[inherit_doc norm_add_eq_sqrt_iff_real_inner_eq_zero]
+theorem nnnorm_add_eq_sqrt_iff_real_inner_eq_zero {x y : F} :
+    ‖x + y‖₊ = .sqrt (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) ↔ ⟪x, y⟫_ℝ = 0 := by
+  rw [NNReal.eq_iff]
+  push_cast
+  rw [norm_add_eq_sqrt_iff_real_inner_eq_zero]
 
 /-- Pythagorean theorem, vector inner product form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (x y : E) (h : ⟪x, y⟫ = 0) :
@@ -1424,10 +1438,20 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (x y : E) (h : ⟪x,
   apply Or.inr
   simp only [h, zero_re']
 
+@[inherit_doc norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero]
+theorem nnnorm_add_sq_eq_nnnorm_sq_add_nnnorm_sq_of_inner_eq_zero (x y : E) (h : ⟪x, y⟫ = 0) :
+    ‖x + y‖₊ * ‖x + y‖₊ = ‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊ :=
+  NNReal.eq <| norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero x y h
+
 /-- Pythagorean theorem, vector inner product form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_real {x y : F} (h : ⟪x, y⟫_ℝ = 0) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ :=
   (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero x y).2 h
+
+@[inherit_doc norm_add_sq_eq_norm_sq_add_norm_sq_real]
+theorem nnnorm_add_sq_eq_nnnorm_sq_add_nnnorm_sq_real {x y : F} (h : ⟪x, y⟫_ℝ = 0) :
+    ‖x + y‖₊ * ‖x + y‖₊ = ‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊ :=
+  NNReal.eq <| norm_add_sq_eq_norm_sq_add_norm_sq_real h
 
 /-- Pythagorean theorem, subtracting vectors, if-and-only-if vector
 inner product form. -/
@@ -1436,6 +1460,11 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero (x y : F) :
   rw [@norm_sub_mul_self ℝ, add_right_cancel_iff, sub_eq_add_neg, add_right_eq_self, neg_eq_zero,
     mul_eq_zero]
   norm_num
+
+@[inherit_doc norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
+theorem nnnorm_sub_sq_eq_nnnorm_sq_add_nnnorm_sq_iff_real_inner_eq_zero (x y : F) :
+    ‖x - y‖₊ * ‖x - y‖₊ = ‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊ ↔ ⟪x, y⟫_ℝ = 0 :=
+  NNReal.eq_iff.trans <| norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero x y
 
 /-- Pythagorean theorem, subtracting vectors, if-and-if vector inner product form using square
 roots. -/
