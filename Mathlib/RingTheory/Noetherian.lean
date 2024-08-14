@@ -289,7 +289,7 @@ universe w
 variable {R M P : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
   [Module R N] [AddCommMonoid P] [Module R P]
 
-theorem isNoetherian_iff_wellFounded :
+theorem isNoetherian_iff :
     IsNoetherian R M ↔ WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) := by
   have := (CompleteLattice.wellFounded_characterisations <| Submodule R M).out 0 3
   -- Porting note: inlining this makes rw complain about it being a metavariable
@@ -298,20 +298,26 @@ theorem isNoetherian_iff_wellFounded :
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
 
+theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
+  rw [isNoetherian_iff, ← isWellFounded_iff]
+
+alias ⟨_, isNoetherian_mk⟩ := isNoetherian_iff'
+
+instance wellFoundedGT [h : IsNoetherian R M] : WellFoundedGT (Submodule R M) :=
+  isNoetherian_iff'.1 h
+
 theorem isNoetherian_iff_fg_wellFounded :
-    IsNoetherian R M ↔
-      WellFounded
-        ((· > ·) : { N : Submodule R M // N.FG } → { N : Submodule R M // N.FG } → Prop) := by
+    IsNoetherian R M ↔ WellFoundedGT { N : Submodule R M // N.FG } := by
   let α := { N : Submodule R M // N.FG }
   constructor
   · intro H
     let f : α ↪o Submodule R M := OrderEmbedding.subtype _
-    exact OrderEmbedding.wellFounded f.dual (isNoetherian_iff_wellFounded.mp H)
+    exact OrderEmbedding.wellFoundedLT f.dual
   · intro H
     constructor
     intro N
     obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
-      WellFounded.has_min H { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
+      WellFounded.has_min H.wf { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
     convert h₁
     refine (e.antisymm ?_).symm
     by_contra h₃
@@ -322,24 +328,16 @@ theorem isNoetherian_iff_fg_wellFounded :
       sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) e)]
     exact (le_sup_left : (R ∙ x) ≤ _) (Submodule.mem_span_singleton_self _)
 
-variable (R M)
-
-theorem wellFounded_submodule_gt (R M) [Semiring R] [AddCommMonoid M] [Module R M] :
-    ∀ [IsNoetherian R M], WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) :=
-  isNoetherian_iff_wellFounded.mp ‹_›
-
-variable {R M}
-
 /-- A module is Noetherian iff every nonempty set of submodules has a maximal submodule among them.
 -/
 theorem set_has_maximal_iff_noetherian :
     (∀ a : Set <| Submodule R M, a.Nonempty → ∃ M' ∈ a, ∀ I ∈ a, ¬M' < I) ↔ IsNoetherian R M := by
-  rw [isNoetherian_iff_wellFounded, WellFounded.wellFounded_iff_has_min]
+  rw [isNoetherian_iff, WellFounded.wellFounded_iff_has_min]
 
 /-- A module is Noetherian iff every increasing chain of submodules stabilizes. -/
 theorem monotone_stabilizes_iff_noetherian :
     (∀ f : ℕ →o Submodule R M, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsNoetherian R M := by
-  rw [isNoetherian_iff_wellFounded, WellFounded.monotone_chain_condition]
+  rw [isNoetherian_iff, WellFounded.monotone_chain_condition]
 
 theorem eventuallyConst_of_isNoetherian [IsNoetherian R M] (f : ℕ →o Submodule R M) :
     atTop.EventuallyConst f := by
@@ -349,7 +347,7 @@ theorem eventuallyConst_of_isNoetherian [IsNoetherian R M] (f : ℕ →o Submodu
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
 theorem IsNoetherian.induction [IsNoetherian R M] {P : Submodule R M → Prop}
     (hgt : ∀ I, (∀ J > I, P J) → P I) (I : Submodule R M) : P I :=
-  WellFounded.recursion (wellFounded_submodule_gt R M) I hgt
+  IsWellFounded.induction _ I hgt
 
 end
 
@@ -364,14 +362,14 @@ lemma Submodule.finite_ne_bot_of_independent {ι : Type*} {N : ι → Submodule 
     (h : CompleteLattice.Independent N) :
     Set.Finite {i | N i ≠ ⊥} :=
   CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    (isNoetherian_iff_wellFounded.mp inferInstance) h
+    (IsWellFounded.wf) h
 
 /-- A linearly-independent family of vectors in a module over a non-trivial ring must be finite if
 the module is Noetherian. -/
 theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι → M}
     (hv : LinearIndependent R v) : Finite ι := by
-  have hwf := isNoetherian_iff_wellFounded.mp (by infer_instance : IsNoetherian R M)
-  refine CompleteLattice.WellFounded.finite_of_independent hwf hv.independent_span_singleton
+  refine CompleteLattice.WellFounded.finite_of_independent IsWellFounded.wf
+    hv.independent_span_singleton
     fun i contra => ?_
   apply hv.ne_zero i
   have : v i ∈ R ∙ v i := Submodule.mem_span_singleton_self (v i)
@@ -389,9 +387,8 @@ alias finite_of_linearIndependent := LinearIndependent.set_finite_of_isNoetheria
 theorem isNoetherian_of_range_eq_ker [IsNoetherian R P]
     (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : LinearMap.range f = LinearMap.ker g) :
     IsNoetherian R N :=
-  isNoetherian_iff_wellFounded.2 <|
+  isNoetherian_mk <|
     wellFounded_gt_exact_sequence
-      (wellFounded_submodule_gt R _) (wellFounded_submodule_gt R _)
       (LinearMap.range f)
       (Submodule.map (f.ker.liftQ f <| le_rfl))
       (Submodule.comap (f.ker.liftQ f <| le_rfl))
@@ -520,14 +517,14 @@ instance (priority := 100) isNoetherian_of_subsingleton (R M) [Subsingleton R] [
 
 theorem isNoetherian_of_submodule_of_noetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M]
     (N : Submodule R M) (h : IsNoetherian R M) : IsNoetherian R N := by
-  rw [isNoetherian_iff_wellFounded] at h ⊢
+  rw [isNoetherian_iff] at h ⊢
   exact OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Noetherian, then `M / S` is
 also noetherian. -/
 theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M := by
-  rw [isNoetherian_iff_wellFounded] at h ⊢
+  rw [isNoetherian_iff] at h ⊢
   exact (Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h
 
 theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module R M]
@@ -579,7 +576,7 @@ theorem isNoetherian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R 
 
 theorem isNoetherianRing_of_surjective (R) [Ring R] (S) [Ring S] (f : R →+* S)
     (hf : Function.Surjective f) [H : IsNoetherianRing R] : IsNoetherianRing S := by
-  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H ⊢
+  rw [isNoetherianRing_iff, isNoetherian_iff] at H ⊢
   exact OrderEmbedding.wellFounded (Ideal.orderEmbeddingOfSurjective f hf).dual H
 
 instance isNoetherianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsNoetherianRing R] :
