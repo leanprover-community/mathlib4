@@ -50,16 +50,22 @@ namespace Style.DocModule
 def docModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.docModule (← getOptions) do
     return
-  if (← MonadState.get).messages.hasErrors then
+  if (← get).messages.hasErrors then
     return
   let undoc? ← undocumented.get
-  if Parser.isTerminalCommand stx then undocumented.set false
+  -- `terminal?` is `true` iff `stx` is the end of the file, or
+  -- (unreachable by the linter) `import X`
+  let terminal? := Parser.isTerminalCommand stx
+  -- if we reached the end of the file, we reset to false the `undocumented` counter and
+  -- report nothing: thus, `import`-only files do not get flagged by the linter
+  if terminal? then
+    undocumented.set false
+    return
   unless ! undoc? do return
   if undoc? || !stx.isOfKind ``Lean.Parser.Command.moduleDoc then
     Linter.logLint linter.docModule stx
       m!"Add the doc-module string before this command\n\
-        `{stx.getKind}` appears too late: it can only be preceded by `import` statements \
-        doc-module strings and other `assert_not_exists` statements."
+        `Mathlib` files must contain a doc-module string before their first non-`import` command."
   undocumented.set true
 
 initialize addLinter docModuleLinter
