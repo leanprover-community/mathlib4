@@ -57,7 +57,7 @@ jobs:
             });
 
       - run: |
-          printf 'gh issue edit %s --add-label %s\n' "$NUMBER" "$LABELS"
+          printf $'gh issue edit \'%s\' --add-label \'%s\'\n' "$NUMBER" "$LABELS"
           gh issue edit "$NUMBER" --add-label "$LABELS"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
