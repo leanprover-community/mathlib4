@@ -49,4 +49,42 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
   refine this.trans ?_
   simp [Nat.one_le_iff_ne_zero]
 
+/-- If a set `A` is contained in the span of another `B` then the span of `A` is also contained. -/
+lemma sub_span_span_sub {A B : Set (MvPolynomial σ R)} (h : A ⊆ Ideal.span B) :
+    SetLike.coe (Ideal.span A) ⊆ Ideal.span B := by
+  simp only [SetLike.coe_subset_coe, Ideal.span_le.mpr h]
+
+/-- Spans of two sets `A`, `B` are equal if and only if each is contained in the span of the
+other -/
+lemma span_eq_iff_basis_sub (A B : Set (MvPolynomial σ R)) :
+    Ideal.span A = Ideal.span B ↔ A ⊆ Ideal.span B ∧ B ⊆ Ideal.span A := by
+  constructor
+  · intro h
+    constructor
+    · simpa [← h] using Ideal.subset_span
+    · simpa [h] using Ideal.subset_span
+  · intro ⟨hA, hB⟩
+    simpa [← SetLike.coe_set_eq, Set.Subset.antisymm_iff] using
+    ⟨sub_span_span_sub hA, sub_span_span_sub hB⟩
+
+/-- If an element is a member of the basis of a span, it is in the span. -/
+lemma mem_basis_mem_span {x : MvPolynomial σ R} {A : Set (MvPolynomial σ R)} (h : x ∈ A) :
+    x ∈ Ideal.span A := by
+  apply Ideal.subset_span
+  simp_all only
+
+variable [Nontrivial R]
+
+/-- If a monomial `m` is contained in the span of a basis of monomials, there must be an
+element of the basis dividing `m`. -/
+lemma mem_span_exists_dvd_mem_basis {S : Set (σ →₀ ℕ)} (s : σ →₀ ℕ)
+    (h : monomial s 1 ∈ Ideal.span ((fun s ↦ monomial s (1 : R)) '' S)) :
+    ∃ i ∈ S, monomial i (1 : R) ∣ monomial s 1 := by
+ classical
+ rcases mem_ideal_span_monomial_image_iff_dvd.1 h s (by
+  simp only [support_monomial, if_neg one_ne_zero, Finset.mem_singleton_self]) with ⟨j, hS, hj⟩
+ use j, hS
+ simpa [coeff_monomial, if_pos] using hj
+
+
 end MvPolynomial
