@@ -107,7 +107,6 @@ theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor
 
 instance sequentialFunctor_initial : (sequentialFunctor J).Initial  where
   out d := by
-    clear! C
     obtain ⟨n, (g : (sequentialFunctor J).obj ⟨n⟩ ≤ d)⟩ := sequentialFunctor_initial_aux J d
     have : Nonempty (CostructuredArrow (sequentialFunctor J) d) :=
       ⟨CostructuredArrow.mk (homOfLE g)⟩
