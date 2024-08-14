@@ -55,8 +55,11 @@ Implemented as a structure with four fields: `re`, `imI`, `imJ`, and `imK`. -/
 structure QuaternionAlgebra (R : Type*) (a b : R) where
   /-- Real part of a quaternion. -/
   re : R
+  /-- First imaginary part of a quaternion (i). -/
   imI : R
+  /-- Second imaginary part of a quaternion (j). -/
   imJ : R
+  /-- Third imaginary part of a quaternion (k). -/
   imK : R
 
 @[inherit_doc]
