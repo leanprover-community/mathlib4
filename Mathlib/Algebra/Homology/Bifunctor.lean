@@ -172,7 +172,7 @@ noncomputable def D₁ :
     (mapBifunctor K₁ K₂ F c).X j ⟶ (mapBifunctor K₁ K₂ F c).X j' :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).D₁ c j j'
 
-/-- The second differential on`mapBifunctor K₁ K₂ F c` -/
+/-- The second differential on `mapBifunctor K₁ K₂ F c` -/
 noncomputable def D₂ :
     (mapBifunctor K₁ K₂ F c).X j ⟶ (mapBifunctor K₁ K₂ F c).X j' :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).D₂ c j j'

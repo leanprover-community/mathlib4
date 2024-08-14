@@ -771,7 +771,11 @@ open MeasureTheory Measure
 
 namespace MeasurableEmbedding
 
-variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} (hf : MeasurableEmbedding f)
+variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β}
+
+section
+variable (hf : MeasurableEmbedding f)
+include hf
 
 theorem map_comap (μ : Measure β) : (comap f μ).map f = μ.restrict (range f) := by
   ext1 t ht
@@ -810,6 +814,8 @@ lemma comap_restrict (μ : Measure β) (s : Set β) :
 lemma restrict_comap (μ : Measure β) (s : Set α) :
     (μ.comap f).restrict s = (μ.restrict (f '' s)).comap f := by
   rw [comap_restrict hf, preimage_image_eq _ hf.injective]
+
+end
 
 theorem _root_.MeasurableEquiv.restrict_map (e : α ≃ᵐ β) (μ : Measure α) (s : Set β) :
     (μ.map e).restrict s = (μ.restrict <| e ⁻¹' s).map e :=

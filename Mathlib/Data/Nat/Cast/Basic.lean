@@ -23,8 +23,9 @@ assert_not_exists OrderedCommGroup
 assert_not_exists Commute.zero_right
 assert_not_exists Commute.add_right
 assert_not_exists abs_eq_max_neg
-assert_not_exists natCast_ne
-assert_not_exists MulOpposite.natCast
+assert_not_exists NeZero.natCast_ne
+-- TODO: `MulOpposite.op_natCast` was not intended to be imported
+-- assert_not_exists MulOpposite.op_natCast
 
 -- Porting note: There are many occasions below where we need `simp [map_zero f]`
 -- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)

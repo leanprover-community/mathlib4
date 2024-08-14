@@ -27,11 +27,15 @@ namespace HomologicalComplex
 
 variable {C : Type*} [Category C] [MonoidalCategory C] [Preadditive C] [HasZeroObject C]
   [(curriedTensor C).Additive] [∀ (X₁ : C), ((curriedTensor C).obj X₁).Additive]
-  {I : Type*} [AddMonoid I] [DecidableEq I] {c : ComplexShape I} [c.TensorSigns]
+  {I : Type*} [AddMonoid I] {c : ComplexShape I} [c.TensorSigns]
 
 /-- If `K₁` and `K₂` are two homological complexes, this is the property that
 for all `j`, the coproduct of `K₁ i₁ ⊗ K₂ i₂` for `i₁ + i₂ = j` exists. -/
 abbrev HasTensor (K₁ K₂ : HomologicalComplex C c) := HasMapBifunctor K₁ K₂ (curriedTensor C) c
+
+section
+
+variable [DecidableEq I]
 
 /-- The tensor product of two homological complexes. -/
 noncomputable abbrev tensorObj (K₁ K₂ : HomologicalComplex C c) [HasTensor K₁ K₂] :
@@ -86,27 +90,26 @@ noncomputable def tensorUnitIso :
         hom_inv_id := (GradedObject.isInitialSingleObjApply 0 (𝟙_ C) i hi).hom_ext _ _
         inv_hom_id := (isZero_single_obj_X c 0 (𝟙_ C) i hi).eq_of_src _ _ })
 
-variable
-  [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ X₂]
-  [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensor₁₂Tensor X₁ X₂ X₃]
-  [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensorTensor₂₃ X₁ X₂ X₃]
-  [DecidableEq I] [HasInitial C]
-  [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
-  [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
-  [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), GradedObject.HasTensor₄ObjExt X₁ X₂ X₃ X₄]
+end
+
+variable [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ X₂]
 
 instance (K₁ K₂ : HomologicalComplex C c) : HasTensor K₁ K₂ :=
   inferInstanceAs (GradedObject.HasTensor K₁.X K₂.X)
 
-instance (K₁ K₂ K₃ : HomologicalComplex C c) : HasGoodTensor₁₂ K₁ K₂ K₃ :=
+instance (K₁ K₂ K₃ : HomologicalComplex C c)
+    [GradedObject.HasGoodTensor₁₂Tensor K₁.X K₂.X K₃.X] :
+    HasGoodTensor₁₂ K₁ K₂ K₃ :=
   inferInstanceAs (GradedObject.HasGoodTensor₁₂Tensor K₁.X K₂.X K₃.X)
 
-instance (K₁ K₂ K₃ : HomologicalComplex C c) : HasGoodTensor₂₃ K₁ K₂ K₃ :=
+instance (K₁ K₂ K₃ : HomologicalComplex C c)
+    [GradedObject.HasGoodTensorTensor₂₃ K₁.X K₂.X K₃.X] :
+    HasGoodTensor₂₃ K₁ K₂ K₃ :=
   inferInstanceAs (GradedObject.HasGoodTensorTensor₂₃ K₁.X K₂.X K₃.X)
 
-section Unitor
+section
 
-variable (K : HomologicalComplex C c)
+variable (K : HomologicalComplex C c) [DecidableEq I]
 
 @[simp]
 lemma unit_tensor_d₁ (i₁ i₂ j : I) :
@@ -127,6 +130,18 @@ lemma tensor_unit_d₂ (i₁ i₂ j : I) :
         zero_comp, smul_zero]
     · rw [mapBifunctor.d₂_eq_zero' _ _ _ _ _ h₁ _ h₂]
   · rw [mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₁]
+
+end
+
+variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
+  [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
+  [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), GradedObject.HasTensor₄ObjExt X₁ X₂ X₃ X₄]
+  [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensor₁₂Tensor X₁ X₂ X₃]
+  [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensorTensor₂₃ X₁ X₂ X₃]
+
+section Unitor
+
+variable (K : HomologicalComplex C c) [DecidableEq I]
 
 /-- Auxiliary definition for `leftUnitor`. -/
 noncomputable def leftUnitor' :
@@ -212,6 +227,7 @@ noncomputable def rightUnitor :
 end Unitor
 
 variable (C c)
+variable [DecidableEq I]
 
 noncomputable instance monoidalCategoryStruct :
     MonoidalCategoryStruct (HomologicalComplex C c) where
