@@ -10,13 +10,15 @@ import Mathlib.SetTheory.ZFC.Basic
 # Von Neumann ordinals
 
 This file works towards the development of von Neumann ordinals, i.e. transitive sets, well-ordered
-under `∈`. We currently only have an initial development of transitive sets.
+under `∈`.
 
-Further development can be found on the Mathlib 3 branch `von_neumann_v2`.
+We currently only have an initial development of transitive sets and ordinals. Further development
+can be found on the Mathlib 3 branch `von_neumann_v2`.
 
 ## Definitions
 
 - `ZFSet.IsTransitive` means that every element of a set is a subset.
+- `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`.
 
 ## TODO
 
@@ -125,7 +127,7 @@ protected theorem isTrans (h : x.IsOrdinal) : IsTrans x.toSet (Subrel (· ∈ ·
   ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.2⟩
 
 /-- The simplified form of transitivity used within `IsOrdinal` yields an equivalent definition to
-  the more standard one. -/
+  the standard one. -/
 theorem _root_.isOrdinal_iff_isTrans :
     x.IsOrdinal ↔ x.IsTransitive ∧ IsTrans x.toSet (Subrel (· ∈ ·) _) := by
   constructor
