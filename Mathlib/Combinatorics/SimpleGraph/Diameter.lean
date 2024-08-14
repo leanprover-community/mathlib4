@@ -157,11 +157,11 @@ lemma diam_eq_zero_of_not_connected (h : ¬G.Connected) : G.diam = 0 := by
   · rw [diam, ediam, ciSup_of_empty, bot_eq_zero']; rfl
   · rw [diam, ediam_eq_top_of_not_connected h, ENat.toNat_top]
 
-lemma ediam_ne_top_of_diam_ne_zero (h : G.diam ≠ 0) : G.ediam ≠ ⊤ :=
-  Ne.symm <| ne_of_apply_ne ENat.toNat fun a ↦ h <| id a.symm
+lemma diam_eq_zero_of_ediam_eq_top (h : G.ediam = ⊤) : G.diam = 0 := by
+  rw [diam, h, ENat.toNat_top]
 
-lemma diam_eq_zero_of_ediam_ne_top (h : G.ediam = ⊤) : G.diam = 0 :=
-  ediam_ne_top_of_diam_ne_zero.mtr h
+lemma ediam_ne_top_of_diam_ne_zero (h : G.diam ≠ 0) : G.ediam ≠ ⊤ :=
+  mt diam_eq_zero_of_ediam_eq_top  h
 
 lemma exists_dist_eq_diam_of_ne_zero [Nonempty α] :
     ∃ u v, G.dist u v = G.diam := by
@@ -172,7 +172,7 @@ lemma exists_dist_eq_diam_of_ne_zero [Nonempty α] :
     rw [diam, dist, congrArg ENat.toNat huv]
 
 @[gcongr]
-lemma diam_mono_of_ediam_ne_top (h : G ≤ G') (hn : G.ediam ≠ ⊤) : G'.diam ≤ G.diam :=
+lemma diam_anti_of_ediam_ne_top (h : G ≤ G') (hn : G.ediam ≠ ⊤) : G'.diam ≤ G.diam :=
   ENat.toNat_le_toNat (ediam_anti h) hn
 
 @[simp]
