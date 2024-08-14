@@ -21,6 +21,7 @@ import Batteries.Data.List.Perm
 assert_not_exists Set.range
 assert_not_exists GroupWithZero
 assert_not_exists Ring
+assert_not_exists Lattice
 
 open Function
 
@@ -1529,6 +1530,8 @@ section FoldlEqFoldlr'
 variable {f : α → β → α}
 variable (hf : ∀ a b c, f (f a b) c = f (f a c) b)
 
+include hf
+
 theorem foldl_eq_of_comm' : ∀ a b l, foldl f a (b :: l) = f (foldl f a l) b
   | a, b, [] => rfl
   | a, b, c :: l => by rw [foldl, foldl, foldl, ← foldl_eq_of_comm' .., foldl, hf]
@@ -2600,5 +2603,3 @@ lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
 end lookup
 
 end List
-
-assert_not_exists Lattice
