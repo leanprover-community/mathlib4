@@ -147,12 +147,13 @@ private lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hP : p.Prime)
   omega
 
 /-- Prime factors of `Fₙ = 2 ^ (2 ^ n) + 1` are either 3, 5, or of form `k * 2 ^ (n + 2) + 1`. -/
-private lemma fermat_primeFactors (n p : ℕ) (hP : p.Prime) (hp' : p ≠ 2)
+lemma fermat_primeFactors (n p : ℕ) (hP : p.Prime) (hp' : p ≠ 2)
     (hpdvd : p ∣ 2 ^ (2 ^ n) + 1) :
     p = 3 ∨ p = 5 ∨ ∃ k, p = k * 2 ^ (n + 2) + 1 := by
   have : n = 0 ∨ n = 1 ∨ 1 < n := by omega
   rcases this with h | ⟨h | h⟩
   · left
+
     rw [h] at hpdvd
     exact (Nat.prime_dvd_prime_iff_eq hP prime_three).mp hpdvd
   · right; left
