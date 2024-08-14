@@ -217,7 +217,7 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
 
 #adaptation_note
 /--
-At nightly-2024-08-12 we needed to increase the maxHeartbeats here.
+At nightly-2024-08-08 we needed to significantly increase the maxHeartbeats here.
 -/
 set_option maxHeartbeats 800000 in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` and a map `p : I₁ × I₂ × I₃ → J`,
@@ -226,7 +226,6 @@ this is the functor
 sending `X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂` and `X₃ : GradedObject I₃ C₃`
 to the `J`-graded object sending `j` to the coproduct of
 `((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃)` for `p ⟨i₁, i₂, i₃⟩ = j`. -/
-@[simps]
 noncomputable def mapTrifunctorMap
     [∀ X₁ X₂ X₃, HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p] :
     GradedObject I₁ C₁ ⥤ GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject J C₄ where
@@ -247,6 +246,8 @@ noncomputable def mapTrifunctorMap
         simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp,
           NatTrans.naturality_app_assoc] }
+
+attribute [simps] mapTrifunctorMap
 
 end
 
