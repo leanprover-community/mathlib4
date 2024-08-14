@@ -224,4 +224,13 @@ theorem greedyColoring'_le_maxDegree {V} [Fintype V] (G : SimpleGraph V) [Decida
   rw [← Finset.image_image]
   simp
 
+noncomputable def greedyColoring'' {V} [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] :
+    Coloring G (Fin (G.maxDegree + 1)) :=
+  Coloring.mk (fun v =>
+      ⟨G.greedyColoring' v, by have := greedyColoring'_le_maxDegree G v; omega⟩) <| by
+    simp only [ne_eq, Fin.mk.injEq]
+    intros
+    apply Coloring.valid
+    assumption
+
 end SimpleGraph
