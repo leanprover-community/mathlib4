@@ -303,10 +303,10 @@ alias ⟨IsNoetherian.wf, _⟩ := isNoetherian_iff
 theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
   rw [isNoetherian_iff, ← isWellFounded_iff]
 
-alias ⟨_, isNoetherian_mk⟩ := isNoetherian_iff'
+alias ⟨IsNoetherian.wellFoundedGT, isNoetherian_mk⟩ := isNoetherian_iff'
 
 instance wellFoundedGT [h : IsNoetherian R M] : WellFoundedGT (Submodule R M) :=
-  isNoetherian_iff'.1 h
+  h.wellFoundedGT
 
 theorem isNoetherian_iff_fg_wellFounded :
     IsNoetherian R M ↔ WellFoundedGT { N : Submodule R M // N.FG } := by

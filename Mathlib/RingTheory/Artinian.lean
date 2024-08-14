@@ -99,10 +99,10 @@ theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtin
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
-  ⟨wellFounded_lt_exact_sequence (LinearMap.range f) (Submodule.map f)
+  wellFounded_lt_exact_sequence (LinearMap.range f) (Submodule.map f)
     (Submodule.comap f) (Submodule.comap g) (Submodule.map g) (Submodule.gciMapComap hf)
     (Submodule.giMapComap hg)
-    (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])⟩
+    (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])
 
 instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
   isArtinian_of_range_eq_ker (LinearMap.inl R M P) (LinearMap.snd R M P) LinearMap.inl_injective
