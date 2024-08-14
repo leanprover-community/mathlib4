@@ -827,10 +827,10 @@ theorem map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
   simp only [mk_apply, id_coe, compr₂_apply, _root_.id, map_tmul]
 
 @[simp]
-theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
+protected theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
   map_id
 
-theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N) :
+protected theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N) :
     map (f₁ * f₂) (g₁ * g₂) = map f₁ g₁ * map f₂ g₂ :=
   map_comp f₁ f₂ g₁ g₂
 
@@ -838,8 +838,8 @@ theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N) :
 protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
     map f g ^ n = map (f ^ n) (g ^ n) := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero, map_one]
-  · simp only [pow_succ', ih, map_mul]
+  · simp only [pow_zero, TensorProduct.map_one]
+  · simp only [pow_succ', ih, TensorProduct.map_mul]
 
 theorem map_add_left (f₁ f₂ : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
