@@ -62,7 +62,6 @@ variable {S : ι → Set α} {f : ∀ i, S i → β}
 theorem iUnionLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
     iUnionLift S f hf T hT ⟨x, hx⟩ = f i x := hf _ i x _ _
 
-@[simp]
 theorem iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
     iUnionLift S f hf T hT (Set.inclusion h x) = f i x :=
   iUnionLift_mk x _
