@@ -18,8 +18,7 @@ A graph-specialized version is in development and will hopefully be added under 
 sometime soon.
 -/
 
--- Make sure we haven't imported `Data.Nat.Order.Basic`
-assert_not_exists OrderedSub
+assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 universe u v
 
