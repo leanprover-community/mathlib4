@@ -64,7 +64,7 @@ def docModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     undocumented.set false
     return
   unless ! undoc? do return
-  if undoc? || !stx.isOfKind ``Lean.Parser.Command.moduleDoc then
+  if !stx.isOfKind ``Lean.Parser.Command.moduleDoc then
     Linter.logLint linter.docModule stx
       m!"Add the doc-module string before this command\n\
         `Mathlib` files must contain a doc-module string before their first non-`import` command."
