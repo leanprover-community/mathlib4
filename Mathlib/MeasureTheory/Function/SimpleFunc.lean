@@ -913,7 +913,8 @@ theorem const_lintegral (c : ℝ≥0∞) : (const α c).lintegral μ = c * μ un
   rw [lintegral]
   cases isEmpty_or_nonempty α
   · simp [μ.eq_zero_of_isEmpty]
-  · simp; unfold Function.const; rw [preimage_const_of_mem (mem_singleton c)]
+  · simp only [range_const, coe_const, Finset.sum_singleton]
+    unfold Function.const; rw [preimage_const_of_mem (mem_singleton c)]
 
 theorem const_lintegral_restrict (c : ℝ≥0∞) (s : Set α) :
     (const α c).lintegral (μ.restrict s) = c * μ s := by
