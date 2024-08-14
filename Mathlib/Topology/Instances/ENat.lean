@@ -21,18 +21,18 @@ instance : TopologicalSpace ℕ∞ := Preorder.topology ℕ∞
 
 instance : OrderTopology ℕ∞ := ⟨rfl⟩
 
-@[simp] theorem range_coe' : range ((↑) : ℕ → ℕ∞) = Iio ⊤ :=
+@[simp] theorem range_natCast : range ((↑) : ℕ → ℕ∞) = Iio ⊤ :=
   WithTop.range_coe
 
-theorem embedding_coe : Embedding ((↑) : ℕ → ℕ∞) :=
-  Nat.strictMono_cast.embedding_of_ordConnected <| range_coe' ▸ ordConnected_Iio
+theorem embedding_natCast : Embedding ((↑) : ℕ → ℕ∞) :=
+  Nat.strictMono_cast.embedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : ℕ → ℕ∞) :=
-  ⟨embedding_coe, range_coe' ▸ isOpen_Iio⟩
+theorem openEmbedding_natCast : OpenEmbedding ((↑) : ℕ → ℕ∞) :=
+  ⟨embedding_natCast, range_natCast ▸ isOpen_Iio⟩
 
 theorem isOpen_singleton {x : ℕ∞} (hx : x ≠ ⊤) : IsOpen {x} := by
   lift x to ℕ using hx
-  rw [← image_singleton, ← openEmbedding_coe.open_iff_image_open]
+  rw [← image_singleton, ← openEmbedding_natCast.open_iff_image_open]
   trivial
 
 theorem mem_nhds_iff {x : ℕ∞} {s : Set ℕ∞} (hx : x ≠ ⊤) : s ∈ 𝓝 x ↔ x ∈ s := by
@@ -42,12 +42,12 @@ theorem mem_nhds_iff {x : ℕ∞} {s : Set ℕ∞} (hx : x ≠ ⊤) : s ∈ 𝓝
 theorem mem_nhds_coe_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞) ↔ (n : ℕ∞) ∈ s :=
   mem_nhds_iff (coe_ne_top _)
 
-@[simp] theorem nhds_cast_eq (n : ℕ) : 𝓝 (n : ℕ∞) = 𝓟 ({(n : ℕ∞)}) := by
+@[simp] theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = 𝓟 ({(n : ℕ∞)}) := by
   ext; simp [mem_nhds_coe_iff]
 
-@[simp] theorem nhds_cast_cast {m n : ℕ} :
+@[simp] theorem nhds_natCast_natCast {m n : ℕ} :
     𝓝 ((m : ℕ∞), (n : ℕ∞)) = 𝓟 {((m : ℕ∞),(n : ℕ∞))} := by
-  rw [((openEmbedding_coe.prod openEmbedding_coe).map_nhds_eq (m, n)).symm]
+  rw [((openEmbedding_natCast.prod openEmbedding_natCast).map_nhds_eq (m, n)).symm]
   simp
 
 instance : ContinuousAdd ℕ∞ := by
@@ -57,7 +57,7 @@ instance : ContinuousAdd ℕ∞ := by
   rcases b with (_ | b)
   · exact tendsto_nhds_top_mono' continuousAt_snd fun p ↦ le_add_left le_rfl
   simp only [ContinuousAt, WithTop.some_eq_coe, ENat.some_eq_coe]
-  rw [nhds_cast_cast, ← Nat.cast_add, nhds_cast_eq]
+  rw [nhds_natCast_natCast, ← Nat.cast_add, nhds_natCast]
   simp
 
 end ENat
