@@ -1,0 +1,41 @@
+name: PR Comment on Fork
+
+on:
+  pull_request_target:
+
+jobs:
+  comment-on-pr-from-fork:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Print something
+        run: |
+          echo "Name: '${{ github.event.pull_request.head.repo.full_name }}'"
+          echo "!= 'org/repo': '${{ github.event.pull_request.head.repo.full_name != 'org/repo' }}'"
+          echo "== 'org/repo': '${{ github.event.pull_request.head.repo.full_name == 'org/repo' }}'"
+      - name: Post a comment on the PR
+        if: ${{ github.event.pull_request.head.repo.full_name != 'org/repo' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "Thank you for opening a PR from your fork! `Mathlib`'s CI is designed to work from a branch, though, rather than from a fork: please, ask for permission to push to non-master branches on Zulip, close this PR and re-open it as a branch!"
+            })
+
+      - name: Post a comment on the PR
+        if: ${{ github.event.pull_request.head.repo.full_name == 'org/repo' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "Thank you for opening a PR from your fork! `Mathlib`'s CI is designed to work from a branch, though, rather than from a fork: please, ask for permission to push to non-master branches on Zulip, close this PR and re-open it as a branch!"
+            })
