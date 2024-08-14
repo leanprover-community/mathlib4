@@ -364,7 +364,7 @@ protected theorem integrableOn_iff (hs : IsFundamentalDomain G s μ) (ht : IsFun
     {f : α → E} (hf : ∀ (g : G) (x), f (g • x) = f x) : IntegrableOn f s μ ↔ IntegrableOn f t μ :=
   and_congr (hs.aEStronglyMeasurable_on_iff ht hf) (hs.hasFiniteIntegral_on_iff ht hf)
 
-variable [NormedSpace ℝ E] [CompleteSpace E]
+variable [NormedSpace ℝ E]
 
 @[to_additive]
 theorem integral_eq_tsum_of_ac (h : IsFundamentalDomain G s μ) (hν : ν ≪ μ) (f : α → E)
@@ -587,10 +587,12 @@ end MeasurableSpace
 
 namespace IsFundamentalDomain
 
-section Group
-
 variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α] {μ : Measure α} {s : Set α}
   (hs : IsFundamentalDomain G s μ)
+include hs
+
+section Group
+
 
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier]
 theorem measure_fundamentalFrontier : μ (fundamentalFrontier G s) = 0 := by
@@ -603,9 +605,7 @@ theorem measure_fundamentalInterior : μ (fundamentalInterior G s) = μ s :=
 
 end Group
 
-variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α] {μ : Measure α} {s : Set α}
-  (hs : IsFundamentalDomain G s μ) [MeasurableSpace G] [MeasurableSMul G α]
-  [SMulInvariantMeasure G α μ]
+variable [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α μ]
 
 protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInterior G s) μ where
   nullMeasurableSet := hs.nullMeasurableSet.fundamentalInterior _ _
@@ -698,7 +698,7 @@ noncomputable def covolume (G α : Type*) [One G] [SMul G α] [MeasurableSpace �
     (ν : Measure α := by volume_tac) : ℝ≥0∞ :=
   if funDom : HasFundamentalDomain G α ν then ν funDom.ExistsIsFundamentalDomain.choose else 0
 
-variable [Group G] [MulAction G α] [MeasurableSpace G] [MeasurableSpace α]
+variable [Group G] [MulAction G α] [MeasurableSpace α]
 
 /-- If there is a fundamental domain `s`, then `HasFundamentalDomain` holds. -/
 @[to_additive]
@@ -709,7 +709,7 @@ lemma IsFundamentalDomain.hasFundamentalDomain (ν : Measure α) {s : Set α}
 /-- The `covolume` can be computed by taking the `volume` of any given fundamental domain `s`. -/
 @[to_additive]
 lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α) [Countable G]
-    [MeasurableSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
+    [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
     (fund_dom_s : IsFundamentalDomain G s ν) : covolume G α ν = ν s := by
   dsimp [covolume]
   simp only [(fund_dom_s.hasFundamentalDomain ν), ↓reduceDIte]
@@ -780,25 +780,7 @@ lemma IsFundamentalDomain.projection_respects_measure_apply {ν : Measure α}
     (meas_U : MeasurableSet U) : μ U = ν (π ⁻¹' U ∩ t) := by
   rw [fund_dom_t.projection_respects_measure (μ := μ), measure_map_restrict_apply ν t meas_U]
 
-variable {ν : Measure α} [Countable G] [MeasurableSpace G]
-  [SMulInvariantMeasure G α ν] [MeasurableSMul G α]
-
-/-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
-an artificial way to generate a measure downstairs such that the pair satisfies the
-`QuotientMeasureEqMeasurePreimage` typeclass. -/
-@[to_additive]
-lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage_quotientMeasure
-    {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) :
-    QuotientMeasureEqMeasurePreimage ν ((ν.restrict s).map π) where
-  projection_respects_measure' t fund_dom_t := by rw [fund_dom_s.quotientMeasure_eq _ fund_dom_t]
-
-/-- One can prove `QuotientMeasureEqMeasurePreimage` by checking behavior with respect to a single
-fundamental domain. -/
-@[to_additive]
-lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage {μ : Measure (Quotient α_mod_G)}
-    {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) (h : μ = (ν.restrict s).map π) :
-    QuotientMeasureEqMeasurePreimage ν μ := by
-  simpa [h] using fund_dom_s.quotientMeasureEqMeasurePreimage_quotientMeasure
+variable {ν : Measure α}
 
 /-- Any two measures satisfying `QuotientMeasureEqMeasurePreimage` are equal. -/
 @[to_additive]
@@ -820,6 +802,26 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
   map_eq := by
     haveI : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
     rw [h𝓕.projection_respects_measure (μ := μ)]
+
+variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableSpace G] [MeasurableSMul G α]
+
+/-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
+an artificial way to generate a measure downstairs such that the pair satisfies the
+`QuotientMeasureEqMeasurePreimage` typeclass. -/
+@[to_additive]
+lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage_quotientMeasure
+    {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) :
+    QuotientMeasureEqMeasurePreimage ν ((ν.restrict s).map π) where
+  projection_respects_measure' t fund_dom_t := by rw [fund_dom_s.quotientMeasure_eq _ fund_dom_t]
+
+/-- One can prove `QuotientMeasureEqMeasurePreimage` by checking behavior with respect to a single
+fundamental domain. -/
+@[to_additive]
+lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage {μ : Measure (Quotient α_mod_G)}
+    {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) (h : μ = (ν.restrict s).map π) :
+    QuotientMeasureEqMeasurePreimage ν μ := by
+  simpa [h] using fund_dom_s.quotientMeasureEqMeasurePreimage_quotientMeasure
+
 
 /-- If a fundamental domain has volume 0, then `QuotientMeasureEqMeasurePreimage` holds. -/
 @[to_additive]
