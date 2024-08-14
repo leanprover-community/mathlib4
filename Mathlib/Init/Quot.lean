@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
+import Mathlib.Init
 /-!
 # Note about `Mathlib/Init/`
 The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
