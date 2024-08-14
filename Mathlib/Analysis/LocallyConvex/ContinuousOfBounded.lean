@@ -63,8 +63,7 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
         _ ⊆ f ⁻¹' U := by rw [inv_smul_smul₀ x_ne _]
     -- Using this inclusion, it suffices to show that `x⁻¹ • V` is in `𝓝 0`, which is trivial.
     refine mem_of_superset ?_ this
-    convert set_smul_mem_nhds_smul hV (inv_ne_zero x_ne)
-    exact (smul_zero _).symm⟩
+    rwa [set_smul_mem_nhds_zero_iff (inv_ne_zero x_ne)]⟩
 
 theorem LinearMap.clmOfExistsBoundedImage_coe {f : E →ₗ[𝕜] F}
     {h : ∃ V ∈ 𝓝 (0 : E), Bornology.IsVonNBounded 𝕜 (f '' V)} :
@@ -137,7 +136,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     rcases hu n h with ⟨y, hy, hu1⟩
     convert hy
     rw [← hu1, ← mul_smul]
-    simp only [h, mul_inv_cancel, Ne, Nat.cast_eq_zero, not_false_iff, one_smul]
+    simp only [h, mul_inv_cancel₀, Ne, Nat.cast_eq_zero, not_false_iff, one_smul]
   -- The image `(fun n ↦ n • u n)` is von Neumann bounded:
   have h_bounded : IsVonNBounded 𝕜 (Set.range fun n : ℕ => (n : 𝕜) • u n) :=
     h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜

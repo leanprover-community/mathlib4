@@ -561,6 +561,10 @@ theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restri
 theorem ae_restrict_mem (hs : MeasurableSet s) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
   ae_restrict_mem₀ hs.nullMeasurableSet
 
+theorem ae_restrict_of_forall_mem {μ : Measure α} {s : Set α}
+    (hs : MeasurableSet s) {p : α → Prop} (h : ∀ x ∈ s, p x) : ∀ᵐ (x : α) ∂μ.restrict s, p x :=
+  (ae_restrict_mem hs).mono h
+
 theorem ae_restrict_of_ae {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ, p x) : ∀ᵐ x ∂μ.restrict s, p x :=
   h.filter_mono (ae_mono Measure.restrict_le_self)
 
@@ -588,7 +592,7 @@ theorem ae_smul_measure {p : α → Prop} [Monoid R] [DistribMulAction R ℝ≥0
 
 theorem ae_add_measure_iff {p : α → Prop} {ν} :
     (∀ᵐ x ∂μ + ν, p x) ↔ (∀ᵐ x ∂μ, p x) ∧ ∀ᵐ x ∂ν, p x :=
-  add_eq_zero_iff
+  add_eq_zero
 
 theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ)
     (h : g =ᵐ[ν] g') (h2 : μ.map f ≪ ν) : g ∘ f =ᵐ[μ] g' ∘ f :=
@@ -767,7 +771,11 @@ open MeasureTheory Measure
 
 namespace MeasurableEmbedding
 
-variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} (hf : MeasurableEmbedding f)
+variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β}
+
+section
+variable (hf : MeasurableEmbedding f)
+include hf
 
 theorem map_comap (μ : Measure β) : (comap f μ).map f = μ.restrict (range f) := by
   ext1 t ht
@@ -806,6 +814,8 @@ lemma comap_restrict (μ : Measure β) (s : Set β) :
 lemma restrict_comap (μ : Measure β) (s : Set α) :
     (μ.comap f).restrict s = (μ.restrict (f '' s)).comap f := by
   rw [comap_restrict hf, preimage_image_eq _ hf.injective]
+
+end
 
 theorem _root_.MeasurableEquiv.restrict_map (e : α ≃ᵐ β) (μ : Measure α) (s : Set β) :
     (μ.map e).restrict s = (μ.restrict <| e ⁻¹' s).map e :=

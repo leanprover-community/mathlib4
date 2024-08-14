@@ -274,6 +274,7 @@ section IsIntegralClosure
 
 variable (S) {A : Type*} [CommRing A]
 variable [Algebra R A] [Algebra A S] [IsScalarTower R A S] [IsIntegralClosure A R S]
+include S
 
 theorem IsIntegralClosure.comap_lt_comap {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
     I.comap (algebraMap R A) < J.comap (algebraMap R A) :=
@@ -340,9 +341,9 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
   refine ⟨comap (algebraMap S Sₚ) Qₚ, ⟨comap_isPrime _ Qₚ, ?_⟩⟩
   convert Localization.AtPrime.comap_maximalIdeal (I := P)
   rw [comap_comap, ← LocalRing.eq_maximalIdeal Qₚ_max,
-    ← @IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
-    (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ) _
-    _ _ _ _ _ (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩) _ _]
+    ← IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
+    (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ)
+    (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩) ]
   rfl
 
 end
@@ -407,7 +408,7 @@ theorem exists_ideal_over_maximal_of_isIntegral [Algebra.IsIntegral R S]
   obtain ⟨Q, -, Q_prime, hQ⟩ := exists_ideal_over_prime_of_isIntegral P ⊥ hP
   exact ⟨Q, isMaximal_of_isIntegral_of_isMaximal_comap _ (hQ.symm ▸ P_max), hQ⟩
 
-lemma map_eq_top_iff_of_ker_le
+lemma map_eq_top_iff_of_ker_le {R S} [CommRing R] [CommRing S]
     (f : R →+* S) {I : Ideal R} (hf₁ : RingHom.ker f ≤ I) (hf₂ : f.IsIntegral) :
     I.map f = ⊤ ↔ I = ⊤ := by
   constructor; swap
@@ -421,7 +422,7 @@ lemma map_eq_top_iff_of_ker_le
   rw [← map_le_iff_le_comap] at hm
   exact (hm.trans_lt (lt_top_iff_ne_top.mpr (IsMaximal.ne_top ‹_›))).ne
 
-lemma map_eq_top_iff
+lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
     (f : R →+* S) {I : Ideal R} (hf₁ : Function.Injective f) (hf₂ : f.IsIntegral) :
     I.map f = ⊤ ↔ I = ⊤ :=
   map_eq_top_iff_of_ker_le f (by simp [f.injective_iff_ker_eq_bot.mp hf₁]) hf₂
