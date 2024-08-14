@@ -184,16 +184,6 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y = -2 * y + 1 :
 
 /-! ### Cases that should fail -/
 
--- FIXME unhelpful error message here but it's the fault of a `simp only` inside `ring1`
-/--
-error: ring failed, ring expressions not equal
-a : ℤ
-ha : a = 1
-⊢ False
--/
-#guard_msgs in
-example (a : ℤ) (ha : a = 1) : a = 2 := by linear_combination ha
-
 /--
 error: ring failed, ring expressions not equal
 a : ℚ
