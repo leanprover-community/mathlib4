@@ -38,34 +38,6 @@ variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H]
 
 namespace MeasureTheory
 
-namespace Measure
-
-/-- A measure `μ` on a measurable additive group is left invariant
-  if the measure of left translations of a set are equal to the measure of the set itself. -/
-class IsAddLeftInvariant [Add G] (μ : Measure G) : Prop where
-  map_add_left_eq_self : ∀ g : G, map (g + ·) μ = μ
-
-/-- A measure `μ` on a measurable group is left invariant
-  if the measure of left translations of a set are equal to the measure of the set itself. -/
-@[to_additive existing]
-class IsMulLeftInvariant [Mul G] (μ : Measure G) : Prop where
-  map_mul_left_eq_self : ∀ g : G, map (g * ·) μ = μ
-
-/-- A measure `μ` on a measurable additive group is right invariant
-  if the measure of right translations of a set are equal to the measure of the set itself. -/
-class IsAddRightInvariant [Add G] (μ : Measure G) : Prop where
-  map_add_right_eq_self : ∀ g : G, map (· + g) μ = μ
-
-/-- A measure `μ` on a measurable group is right invariant
-  if the measure of right translations of a set are equal to the measure of the set itself. -/
-@[to_additive existing]
-class IsMulRightInvariant [Mul G] (μ : Measure G) : Prop where
-  map_mul_right_eq_self : ∀ g : G, map (· * g) μ = μ
-
-end Measure
-
-open Measure
-
 section Mul
 
 variable [Mul G] {μ : Measure G}
@@ -97,16 +69,6 @@ instance isMulLeftInvariant_smul_nnreal [IsMulLeftInvariant μ] (c : ℝ≥0) :
 instance isMulRightInvariant_smul_nnreal [IsMulRightInvariant μ] (c : ℝ≥0) :
     IsMulRightInvariant (c • μ) :=
   MeasureTheory.isMulRightInvariant_smul (c : ℝ≥0∞)
-
-@[to_additive]
-instance IsMulLeftInvariant.smulInvariantMeasure [IsMulLeftInvariant μ] :
-    SMulInvariantMeasure G G μ :=
-  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_left_eq_self _ _) hs.nullMeasurableSet⟩
-
-@[to_additive]
-instance IsMulRightInvariant.toSMulInvariantMeasure_op [μ.IsMulRightInvariant] :
-    SMulInvariantMeasure Gᵐᵒᵖ G μ :=
-  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_right_eq_self _ _) hs.nullMeasurableSet⟩
 
 section MeasurableMul
 

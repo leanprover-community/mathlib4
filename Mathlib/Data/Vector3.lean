@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Init.Logic
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 import Mathlib.Tactic.TypeStar
 
 /-!
