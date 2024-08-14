@@ -357,9 +357,10 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
   suffices ∀ (n : ℕ) (s : ℂ), GammaAux n (conj s) = conj (GammaAux n s) by
     simp [Gamma, this]
   intro n
-  induction' n with n IH
-  · rw [GammaAux]; exact GammaIntegral_conj
-  · intro s
+  induction n with
+  | zero => rw [GammaAux]; exact GammaIntegral_conj
+  | succ n IH =>
+    intro s
     rw [GammaAux]
     dsimp only
     rw [div_eq_mul_inv _ s, RingHom.map_mul, conj_inv, ← div_eq_mul_inv]

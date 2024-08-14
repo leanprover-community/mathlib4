@@ -73,9 +73,9 @@ variable {R L}
 local notation "D" => derivedSeriesOfIdeal R L
 
 theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
-  induction' k with k ih
-  · rw [Nat.zero_add, derivedSeriesOfIdeal_zero]
-  · rw [Nat.succ_add k l, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ, ih]
+  induction k with
+  | zero => rw [Nat.zero_add, derivedSeriesOfIdeal_zero]
+  | succ k ih => rw [Nat.succ_add k l, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ, ih]
 
 @[mono]
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
@@ -172,12 +172,14 @@ theorem derivedSeries_map_eq (k : ℕ) (h : Function.Surjective f) :
 theorem derivedSeries_succ_eq_top_iff (n : ℕ) :
     derivedSeries R L (n + 1) = ⊤ ↔ derivedSeries R L 1 = ⊤ := by
   simp only [derivedSeries_def]
-  induction' n with n ih; · simp
-  rw [derivedSeriesOfIdeal_succ]
-  refine ⟨fun h ↦ ?_, fun h ↦ by rwa [ih.mpr h]⟩
-  rw [← ih, eq_top_iff]
-  conv_lhs => rw [← h]
-  exact LieSubmodule.lie_le_right _ _
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [derivedSeriesOfIdeal_succ]
+    refine ⟨fun h ↦ ?_, fun h ↦ by rwa [ih.mpr h]⟩
+    rw [← ih, eq_top_iff]
+    conv_lhs => rw [← h]
+    exact LieSubmodule.lie_le_right _ _
 
 theorem derivedSeries_eq_top (n : ℕ) (h : derivedSeries R L 1 = ⊤) :
     derivedSeries R L n = ⊤ := by

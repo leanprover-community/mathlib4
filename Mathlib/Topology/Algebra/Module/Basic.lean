@@ -1315,10 +1315,9 @@ theorem intCast_apply [TopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L
 
 theorem smulRight_one_pow [TopologicalSpace R] [TopologicalRing R] (c : R) (n : ℕ) :
     smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
-  induction' n with n ihn
-  · ext
-    simp
-  · rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
+  induction n with
+  | zero => ext; simp
+  | succ n ihn => rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
 
 section
 
