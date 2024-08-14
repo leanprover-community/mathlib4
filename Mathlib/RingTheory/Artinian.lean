@@ -99,8 +99,7 @@ theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtin
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
-  ⟨wellFounded_lt_exact_sequence IsWellFounded.wf
-    IsWellFounded.wf (LinearMap.range f) (Submodule.map f)
+  ⟨wellFounded_lt_exact_sequence (LinearMap.range f) (Submodule.map f)
     (Submodule.comap f) (Submodule.comap g) (Submodule.map g) (Submodule.gciMapComap hf)
     (Submodule.giMapComap hg)
     (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])⟩
@@ -199,7 +198,7 @@ theorem eventuallyConst_of_isArtinian (f : ℕ →o (Submodule R M)ᵒᵈ) :
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
 theorem induction {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) → P I) (I : Submodule R M) :
     P I :=
-  IsWellFounded.wf.induction I hgt
+  WellFoundedLT.induction I hgt
 
 end IsArtinian
 
@@ -385,7 +384,7 @@ theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F}
     [FunLike F R S] [RingHomClass F R S]
     {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S := by
   rw [isArtinianRing_iff] at H ⊢
-  exact ⟨(Ideal.orderEmbeddingOfSurjective f hf).wellFounded H.wf⟩ 
+  exact ⟨(Ideal.orderEmbeddingOfSurjective f hf).wellFounded H.wf⟩
 
 instance isArtinianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsArtinianRing R] :
     IsArtinianRing f.range :=
