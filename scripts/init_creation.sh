@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
  : <<'BASH_MODULE_DOC'
 
 These are the commands to generate a "root" `Mathlib/Init.lean` file, imported by all the
