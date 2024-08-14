@@ -105,7 +105,7 @@ lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
 
 @[gcongr]
 lemma ediam_anti (h : G ≤ G') : G'.ediam ≤ G.ediam :=
-  iSup₂_mono fun _ _ ↦ edist_le_subgraph_edist h
+  iSup₂_mono fun _ _ ↦ edist_anti h
 
 @[simp]
 lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
