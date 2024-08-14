@@ -559,11 +559,14 @@ theorem toSurreal_eq_iff (a b : NatOrdinal) : toSurreal a = toSurreal b ↔ a = 
   Ordinal.toSurreal_eq_iff
 
 theorem toSurreal_zero : toSurreal 0 = 0 :=
-  Ordinal.toSurreal_zero
+  map_zero _
+
+theorem toSurreal_one : toSurreal 1 = 1 :=
+  map_one _
 
 @[simp]
-theorem toSurreal_one : toSurreal 1 = 1 :=
-  Ordinal.toSurreal_one
+theorem toGame_toSurreal (a : NatOrdinal) : Surreal.toGame (toSurreal a) = toGame a := by
+  rfl
 
 @[simp]
 theorem toSurreal_natCast : ∀ n : ℕ, toSurreal n = n :=

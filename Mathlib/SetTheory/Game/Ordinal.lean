@@ -3,7 +3,6 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.SetTheory.Ordinal.NaturalOps
 
@@ -182,15 +181,12 @@ theorem toGame_injective : Function.Injective toGame :=
 theorem toGame_lf_iff {a b : Ordinal} : Game.LF (toGame a) (toGame b) ↔ a < b :=
   toPGame_lf_iff
 
-@[simp]
 theorem toGame_le_iff {a b : Ordinal} : toGame a ≤ toGame b ↔ a ≤ b :=
   toPGame_le_iff
 
-@[simp]
 theorem toGame_lt_iff {a b : Ordinal} : toGame a < toGame b ↔ a < b :=
   toPGame_lt_iff
 
-@[simp]
 theorem toGame_eq_iff {a b : Ordinal} : toGame a = toGame b ↔ a = b :=
   toGame_injective.eq_iff
 
@@ -269,11 +265,9 @@ noncomputable def toPGame : NatOrdinal.{u} ↪o PGame.{u} where
 theorem toPGame_lf_iff (a b : NatOrdinal) : toPGame a ⧏ toPGame b ↔ a < b :=
   Ordinal.toPGame_lf_iff
 
-@[simp]
 theorem toPGame_le_iff (a b : NatOrdinal) : toPGame a ≤ toPGame b ↔ a ≤ b :=
   Ordinal.toPGame_le_iff
 
-@[simp]
 theorem toPGame_lt_iff (a b : NatOrdinal) : toPGame a < toPGame b ↔ a < b :=
   Ordinal.toPGame_lt_iff
 
@@ -281,7 +275,6 @@ theorem toPGame_lt_iff (a b : NatOrdinal) : toPGame a < toPGame b ↔ a < b :=
 theorem toPGame_equiv_iff (a b : NatOrdinal) : toPGame a ≈ toPGame b ↔ a = b :=
   Ordinal.toPGame_equiv_iff
 
-@[simp]
 theorem toPGame_eq_iff (a b : NatOrdinal) : toPGame a = toPGame b ↔ a = b :=
   Ordinal.toPGame_eq_iff
 

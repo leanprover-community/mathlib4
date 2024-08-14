@@ -474,15 +474,12 @@ noncomputable def toSurreal : Ordinal ↪o Surreal where
 theorem toSurreal_injective : Function.Injective toSurreal :=
   fun _ _ h => toPGame_equiv_iff.1 (mk_eq_mk.1 h)
 
-@[simp]
 theorem toSurreal_le_iff {a b : Ordinal} : toSurreal a ≤ toSurreal b ↔ a ≤ b :=
   toPGame_le_iff
 
-@[simp]
 theorem toSurreal_lt_iff {a b : Ordinal} : toSurreal a < toSurreal b ↔ a < b :=
   toPGame_lt_iff
 
-@[simp]
 theorem toSurreal_eq_iff {a b : Ordinal} : toSurreal a = toSurreal b ↔ a = b :=
   toSurreal_injective.eq_iff
 
