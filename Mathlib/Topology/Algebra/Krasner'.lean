@@ -34,14 +34,14 @@ def IsConjRoot (x x' : A) : Prop := (minpoly R x) = (minpoly R x')
 
 namespace IsConjRoot
 
-theorem refl {x : A} : IsConjRoot R x x := sorry
+theorem refl {x : A} : IsConjRoot R x x := rfl
 
-theorem symm {x x' : A} (h : IsConjRoot R x x') : IsConjRoot R x' x := sorry -- Eq.symm h
+theorem symm {x x' : A} (h : IsConjRoot R x x') : IsConjRoot R x' x := Eq.symm h
 
 theorem trans {x x' x'': A} (h₁ : IsConjRoot R x x') (h₂ : IsConjRoot R x' x'') :
-    IsConjRoot R x x'' := sorry
+    IsConjRoot R x x'' := Eq.trans
 
-theorem of_minpoly_eq {x x' : A} (h : minpoly R x = minpoly R x') : IsConjRoot R x x' := sorry
+₁eorem of_minpoly_eq {x x' : A} (h : minpoly R x = minpoly R x') : IsConjRoot R x x' := h
 
 theorem algEquiv_apply (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R x (s x) := sorry
 
