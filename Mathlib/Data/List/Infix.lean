@@ -186,7 +186,7 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
       (@instDecidableOr _ _ (l₁.decidablePrefix (b :: l₂)) (l₁.decidableInfix l₂))
       infix_cons_iff.symm
 
-theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
+theorem prefix_take_le_iff {L : List α} (hm : m < L.length) :
     L.take m <+: L.take n ↔ m ≤ n := by
   simp only [prefix_iff_eq_take, length_take]
   induction m generalizing L n with
@@ -202,21 +202,16 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
         simp only [length_cons, succ_eq_add_one, Nat.add_lt_add_iff_right] at hm
         simp [← @IH n ls hm, Nat.min_eq_left, Nat.le_of_lt hm]
 
+@[deprecated cons_prefix_cons (since := "2024-08-14")]
 theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
-  constructor
-  · rintro ⟨L, hL⟩
-    simp only [cons_append] at hL
-    injection hL with hLLeft hLRight
-    exact ⟨hLLeft, ⟨L, hLRight⟩⟩
-  · rintro ⟨rfl, h⟩
-    rwa [prefix_cons_inj]
+  simp
 
 protected theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.map f := by
   induction' l₁ with hd tl hl generalizing l₂
   · simp only [nil_prefix, map_nil]
   · cases' l₂ with hd₂ tl₂
     · simpa only using eq_nil_of_prefix_nil h
-    · rw [cons_prefix_iff] at h
+    · rw [cons_prefix_cons] at h
       simp only [List.map_cons, h, prefix_cons_inj, hl, map]
 
 protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) :
@@ -225,7 +220,7 @@ protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) 
   · simp only [nil_prefix, filterMap_nil]
   · cases' l₂ with hd₂ tl₂
     · simpa only using eq_nil_of_prefix_nil h
-    · rw [cons_prefix_iff] at h
+    · rw [cons_prefix_cons] at h
       rw [← @singleton_append _ hd₁ _, ← @singleton_append _ hd₂ _, filterMap_append,
         filterMap_append, h.left, prefix_append_right_inj]
       exact hl h.right
