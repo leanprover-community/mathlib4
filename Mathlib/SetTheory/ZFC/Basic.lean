@@ -339,15 +339,6 @@ instance : LawfulSingleton PSet PSet :=
 instance (x y : PSet) : Inhabited (insert x y).Type :=
   inferInstanceAs (Inhabited <| Option y.Type)
 
-/-- The n-th von Neumann ordinal -/
-def ofNat : ℕ → PSet
-  | 0 => ∅
-  | n + 1 => insert (ofNat n) (ofNat n)
-
-/-- The von Neumann ordinal ω -/
-def omega : PSet :=
-  ⟨ULift ℕ, fun n => ofNat n.down⟩
-
 /-- The pre-set separation operation `{x ∈ a | p x}` -/
 protected def sep (p : PSet → Prop) (x : PSet) : PSet :=
   ⟨{ a // p (x.Func a) }, fun y => x.Func y.1⟩
@@ -766,23 +757,6 @@ theorem singleton_nonempty (u : ZFSet) : ZFSet.Nonempty {u} :=
 
 theorem mem_pair {x y z : ZFSet.{u}} : x ∈ ({y, z} : ZFSet) ↔ x = y ∨ x = z := by
   simp
-
-/-- `omega` is the first infinite von Neumann ordinal -/
-def omega : ZFSet :=
-  mk PSet.omega
-
-@[simp]
-theorem omega_zero : ∅ ∈ omega :=
-  ⟨⟨0⟩, Equiv.rfl⟩
-
-@[simp]
-theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
-  Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
-    ⟨⟨n + 1⟩,
-      ZFSet.exact <|
-        show insert (mk x) (mk x) = insert (mk <| ofNat n) (mk <| ofNat n) by
-          rw [ZFSet.sound h]
-          rfl⟩
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
