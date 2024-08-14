@@ -30,6 +30,13 @@ def zero_to {α : Ordinal.{v}} (γ : Ordinal.{v}) (hγ : γ ≤ α) : ord_zero_l
 def to_succ {α β : Ordinal.{v}} (hβ : β < α) : (ord_le_of_lt hβ) ⟶ (ord_succ_le_of_lt hβ) :=
   LE.le.hom (Ordinal.le_add_right β 1)
 
+/-
+  f is a transfinite composition if we have an ordinal α,
+  and a colimit preserving F : {β | β ≤ α} ⥤ C
+  such that F(β ⟶ β + 1) is of type S for all β < α.
+  AND we have for this α that F(0 ⟶ α) is the same transfinite composition
+  so that f = F(0 ⟶ α) (?)
+-/
 inductive IsTransfiniteCompositionAux
     (S : MorphismProperty C) : ⦃X Y : C⦄ → (X ⟶ Y) → Prop where
   | mk
