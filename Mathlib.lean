@@ -920,7 +920,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
 import Mathlib.Analysis.CStarAlgebra.Exponential
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 import Mathlib.Analysis.CStarAlgebra.Matrix
-import Mathlib.Analysis.CStarAlgebra.Module
+import Mathlib.Analysis.CStarAlgebra.Module.Defs
 import Mathlib.Analysis.CStarAlgebra.Multiplier
 import Mathlib.Analysis.CStarAlgebra.Spectrum
 import Mathlib.Analysis.CStarAlgebra.Unitization
@@ -2791,7 +2791,6 @@ import Mathlib.InformationTheory.Hamming
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Classical
 import Mathlib.Init.Core
-import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
@@ -4490,6 +4489,7 @@ import Mathlib.Topology.Maps.Proper.UniversallyClosed
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.Bilipschitz
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Topology.MetricSpace.CantorScheme
 import Mathlib.Topology.MetricSpace.CauSeqFilter
