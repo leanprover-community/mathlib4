@@ -476,18 +476,18 @@ theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoi
 theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
   (IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) IsNormal.refl).2 <| by simp [h]
 
-@[simp]
-theorem nfp_zero : nfp 0 = id := by
+theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← sup_iterate_eq_nfp]
-  refine funext fun a => (sup_le fun n => ?_).antisymm (le_sup (fun n => 0^[n] a) 0)
+  apply (sup_le fun n => ?_).antisymm (le_sup (fun n => 0^[n] a) 0)
   induction' n with n _
   · rfl
-  rw [Function.iterate_succ']
-  exact Ordinal.zero_le a
+  · rw [Function.iterate_succ']
+    exact Ordinal.zero_le a
 
-theorem nfp_zero_left (a) : nfp 0 a = a := by
-  rw [nfp_zero]
-  rfl
+@[simp]
+theorem nfp_zero : nfp 0 = id := by
+  ext
+  exact nfp_zero_left _
 
 @[simp]
 theorem deriv_zero : deriv 0 = id :=
