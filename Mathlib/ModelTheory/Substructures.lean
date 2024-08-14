@@ -890,6 +890,10 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy
 
+@[simp]
+lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
+    T.subtype.comp (inclusion h) = S.subtype := rfl
+
 end Substructure
 
 end Language
