@@ -220,7 +220,7 @@ theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n
     simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
     -- Porting note: was
     -- assoc_rw [hi, inv_mul_cancel_left]
-    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, mul_left_inv]
+    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, inv_mul_cancel]
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
 Then if `k < j`, this says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ = gₖ`.
@@ -406,7 +406,7 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
     · have A : (ofFn f).take i = (ofFn f).take i.succ := by
         rw [← length_ofFn f] at h
         have : length (ofFn f) ≤ i := not_lt.mp h
-        rw [take_all_of_le this, take_all_of_le (le_trans this (Nat.le_succ _))]
+        rw [take_of_length_le this, take_of_length_le (le_trans this (Nat.le_succ _))]
       have B : ∀ j : Fin n, ((j : ℕ) < i.succ) = ((j : ℕ) < i) := by
         intro j
         have : (j : ℕ) < i := lt_of_lt_of_le j.2 (not_lt.mp h)
@@ -421,18 +421,18 @@ end CommMonoid
 
 @[to_additive]
 theorem alternatingProd_eq_finset_prod {G : Type*} [CommGroup G] :
-    ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ)
+    ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
     rw [alternatingProd, Finset.prod_eq_one]
     rintro ⟨i, ⟨⟩⟩
   | g::[] => by
-    show g = ∏ i : Fin 1, [g].get i ^ (-1 : ℤ) ^ (i : ℕ)
+    show g = ∏ i : Fin 1, [g][i] ^ (-1 : ℤ) ^ (i : ℕ)
     rw [Fin.prod_univ_succ]; simp
   | g::h::L =>
     calc g * h⁻¹ * L.alternatingProd
-      = g * h⁻¹ * ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ) :=
+      = g * h⁻¹ * ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ) :=
         congr_arg _ (alternatingProd_eq_finset_prod _)
-    _ = ∏ i : Fin (L.length + 2), List.get (g::h::L) i ^ (-1 : ℤ) ^ (i : ℕ) := by
+    _ = ∏ i : Fin (L.length + 2), (g::h::L)[i] ^ (-1 : ℤ) ^ (i : ℕ) := by
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
           simp [pow_add]}
 

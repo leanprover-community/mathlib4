@@ -30,7 +30,7 @@ namespace NNRat
     exact nsmul_mem (subset_closure <| mem_range_self _) _
   rw [nsmul_eq_mul]
   push_cast
-  rw [mul_assoc, pow_sub₀, pow_one, mul_right_comm, ← mul_pow, mul_inv_cancel, one_pow, one_mul,
+  rw [mul_assoc, pow_sub₀, pow_one, mul_right_comm, ← mul_pow, mul_inv_cancel₀, one_pow, one_mul,
     ← div_eq_mul_inv, num_div_den]
   all_goals simp [x.den_pos.ne', Nat.one_le_iff_ne_zero, *]
 

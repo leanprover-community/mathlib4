@@ -146,7 +146,7 @@ lemma measure_symmDiff_preimage_iterate_le
 
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,
 then for some `x ∈ s` and `0 < m < n`, `f^[m] x ∈ s`. -/
-theorem exists_mem_iterate_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f μ μ)
+theorem exists_mem_iterate_mem_of_measure_univ_lt_mul_measure (hf : MeasurePreserving f μ μ)
     (hs : NullMeasurableSet s μ) {n : ℕ} (hvol : μ (Set.univ : Set α) < n * μ s) :
     ∃ x ∈ s, ∃ m ∈ Set.Ioo 0 n, f^[m] x ∈ s := by
   have A : ∀ m, NullMeasurableSet (f^[m] ⁻¹' s) μ := fun m ↦
@@ -161,6 +161,10 @@ theorem exists_mem_iterate_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f
   refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, ?_⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
 
+@[deprecated (since := "2024-08-12")]
+alias exists_mem_iterate_mem_of_volume_lt_mul_volume :=
+  exists_mem_iterate_mem_of_measure_univ_lt_mul_measure
+
 /-- A self-map preserving a finite measure is conservative: if `μ s ≠ 0`, then at least one point
 `x ∈ s` comes back to `s` under iterations of `f`. Actually, a.e. point of `s` comes back to `s`
 infinitely many times, see `MeasureTheory.MeasurePreserving.conservative` and theorems about
@@ -168,7 +172,7 @@ infinitely many times, see `MeasureTheory.MeasurePreserving.conservative` and th
 theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ μ)
     (hs : NullMeasurableSet s μ) (hs' : μ s ≠ 0) : ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by
   rcases ENNReal.exists_nat_mul_gt hs' (measure_ne_top μ (Set.univ : Set α)) with ⟨N, hN⟩
-  rcases hf.exists_mem_iterate_mem_of_volume_lt_mul_volume hs hN with ⟨x, hx, m, hm, hmx⟩
+  rcases hf.exists_mem_iterate_mem_of_measure_univ_lt_mul_measure hs hN with ⟨x, hx, m, hm, hmx⟩
   exact ⟨x, hx, m, hm.1.ne', hmx⟩
 
 end MeasurePreserving

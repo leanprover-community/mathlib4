@@ -201,7 +201,7 @@ theorem coe_to_submodule : ((L' : Submodule R L) : Set L) = L' :=
 section LieModule
 
 variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
-variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieModule R L N]
+variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
 `M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
@@ -215,11 +215,11 @@ instance lieRingModule : LieRingModule L' M where
 theorem coe_bracket_of_module (x : L') (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
   rfl
 
-variable [Module R M] [LieModule R L M]
+variable [Module R M]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
-instance lieModule : LieModule R L' M where
+instance lieModule [LieModule R L M] : LieModule R L' M where
   smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
 

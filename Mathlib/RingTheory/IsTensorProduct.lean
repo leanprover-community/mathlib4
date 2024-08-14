@@ -167,6 +167,9 @@ theorem IsBaseChange.lift_comp (g : M →ₗ[R] Q) : ((h.lift g).restrictScalars
 
 end
 
+section
+include h
+
 @[elab_as_elim]
 nonrec theorem IsBaseChange.inductionOn (x : N) (P : N → Prop) (h₁ : P 0) (h₂ : ∀ m : M, P (f m))
     (h₃ : ∀ (s : S) (n), P n → P (s • n)) (h₄ : ∀ n₁ n₂, P n₁ → P n₂ → P (n₁ + n₂)) : P x :=
@@ -174,7 +177,7 @@ nonrec theorem IsBaseChange.inductionOn (x : N) (P : N → Prop) (h₁ : P 0) (h
 
 theorem IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f x) = g₂ (f x)) : g₁ = g₂ := by
   ext x
-  refine h.inductionOn x ?_ ?_ ?_ ?_
+  refine h.inductionOn x _ ?_ ?_ ?_ ?_
   · rw [map_zero, map_zero]
   · assumption
   · intro s n e'
@@ -185,6 +188,8 @@ theorem IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f 
 theorem IsBaseChange.algHom_ext' [Module R Q] [IsScalarTower R S Q] (g₁ g₂ : N →ₗ[S] Q)
     (e : (g₁.restrictScalars R).comp f = (g₂.restrictScalars R).comp f) : g₁ = g₂ :=
   h.algHom_ext g₁ g₂ (LinearMap.congr_fun e)
+
+end
 
 variable (R M N S)
 
@@ -396,7 +401,7 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
   · dsimp only [LinearMap.restrictScalars_apply]
     rw [← (algebraMap R' S').map_one, this, _root_.map_one]
   · intro x y
-    refine H.out.inductionOn x ?_ ?_ ?_ ?_
+    refine H.out.inductionOn x _ ?_ ?_ ?_ ?_
     · rw [zero_mul, map_zero, zero_mul]
     rotate_left
     · intro s s' e
@@ -408,7 +413,7 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
     intro x
     dsimp
     rw [this]
-    refine H.out.inductionOn y ?_ ?_ ?_ ?_
+    refine H.out.inductionOn y _ ?_ ?_ ?_ ?_
     · rw [mul_zero, map_zero, mul_zero]
     · intro y
       dsimp
@@ -453,12 +458,12 @@ theorem Algebra.lift_algHom_comp_right [Algebra.IsPushout R S R' S'] {A : Type*}
     (Algebra.pushoutDesc S' f g H).comp (toAlgHom R R' S') = g :=
   AlgHom.ext fun x => (Algebra.pushoutDesc_right S' f g H x : _)
 
-@[ext]
+@[ext (iff := false)]
 theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] {f g : S' →ₐ[R] A} (h₁ : f.comp (toAlgHom R R' S') = g.comp (toAlgHom R R' S'))
     (h₂ : f.comp (toAlgHom R S S') = g.comp (toAlgHom R S S')) : f = g := by
   ext x
-  refine H.1.inductionOn x ?_ ?_ ?_ ?_
+  refine H.1.inductionOn x _ ?_ ?_ ?_ ?_
   · simp only [map_zero]
   · exact AlgHom.congr_fun h₁
   · intro s s' e

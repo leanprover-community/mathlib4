@@ -30,7 +30,6 @@ open Category
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   (W : MorphismProperty C) {M : Type w'} [AddMonoid M] [HasShift C M] [HasShift D M]
-  [W.IsCompatibleWithShift M]
 
 namespace Localization
 
@@ -58,6 +57,7 @@ lemma hasSmallLocalizedShiftedHom_iff
 
 variable [HasSmallLocalizedShiftedHom.{w} W M X Y]
 
+include M in
 variable (M) in
 lemma hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ :
     HasSmallLocalizedHom.{w} W X Y :=
@@ -85,7 +85,7 @@ end
 namespace SmallHom
 
 variable {W}
-variable (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
+variable [W.IsCompatibleWithShift M] (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
   {X Y : C} [HasSmallLocalizedHom.{w} W X Y]
   (f : SmallHom.{w} W X Y) (a : M) [HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦a⟧)]
 
@@ -111,6 +111,7 @@ namespace SmallShiftedHom
 section
 
 variable {W}
+variable [W.IsCompatibleWithShift M]
 variable {X Y Z : C}
 
 /-- Given `f : SmallShiftedHom.{w} W X Y a`, this is the element in
@@ -142,7 +143,7 @@ end
 
 section
 
-variable (L : C ⥤ D) [L.IsLocalization W] [HasShift D M] [L.CommShift M]
+variable (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
   {X Y Z T : C}
 
 /-- The bijection `SmallShiftedHom.{w} W X Y m ≃ ShiftedHom (L.obj X) (L.obj Y) m`
@@ -152,6 +153,9 @@ and `L` commutes with the shifts. -/
 noncomputable def equiv [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} :
     SmallShiftedHom.{w} W X Y m ≃ ShiftedHom (L.obj X) (L.obj Y) m :=
   (SmallHom.equiv W L).trans ((L.commShiftIso m).app Y).homToEquiv
+
+section
+variable [W.IsCompatibleWithShift M]
 
 lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
@@ -184,6 +188,8 @@ lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
     comp_id, Functor.map_comp]
   rfl
 
+end
+
 @[simp]
 lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
@@ -197,6 +203,8 @@ lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id, id_comp]
 
 end
+
+variable [W.IsCompatibleWithShift M]
 
 lemma comp_assoc {X Y Z T : C} {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
     [HasSmallLocalizedShiftedHom.{w} W M X Y] [HasSmallLocalizedShiftedHom.{w} W M X Z]

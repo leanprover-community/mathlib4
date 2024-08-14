@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
@@ -47,7 +47,7 @@ In this section we prove a version of the Whitney embedding theorem: for any com
 `M`, for sufficiently large `n` there exists a smooth embedding `M → ℝ^n`.
 -/
 
-variable [T2Space M] [hi : Fintype ι] {s : Set M} (f : SmoothBumpCovering ι I M s)
+variable [T2Space M] [Fintype ι] {s : Set M} (f : SmoothBumpCovering ι I M s)
 
 /-- Smooth embedding of `M` into `(E × ℝ) ^ ι`. -/
 def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × ℝ⟯ where
@@ -106,7 +106,7 @@ theorem embeddingPiTangent_injective_mfderiv (x : M) (hx : x ∈ s) :
 /-- Baby version of the **Whitney weak embedding theorem**: if `M` admits a finite covering by
 supports of bump functions, then for some `n` it can be immersed into the `n`-dimensional
 Euclidean space. -/
-theorem exists_immersion_euclidean [Finite ι] (f : SmoothBumpCovering ι I M) :
+theorem exists_immersion_euclidean {ι : Type*} [Finite ι] (f : SmoothBumpCovering ι I M) :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
       Smooth I (𝓡 n) e ∧ Injective e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
   cases nonempty_fintype ι

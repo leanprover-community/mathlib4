@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, E. W. Ayers
+Authors: Bhavik Mehta, Edward Ayers
 -/
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
@@ -266,9 +266,6 @@ theorem arrows_ext : ∀ {R S : Sieve X}, R.arrows = S.arrows → R = S := by
 @[ext]
 protected theorem ext {R S : Sieve X} (h : ∀ ⦃Y⦄ (f : Y ⟶ X), R f ↔ S f) : R = S :=
   arrows_ext <| funext fun _ => funext fun f => propext <| h f
-
-protected theorem ext_iff {R S : Sieve X} : R = S ↔ ∀ ⦃Y⦄ (f : Y ⟶ X), R f ↔ S f :=
-  ⟨fun h _ _ => h ▸ Iff.rfl, Sieve.ext⟩
 
 open Lattice
 
