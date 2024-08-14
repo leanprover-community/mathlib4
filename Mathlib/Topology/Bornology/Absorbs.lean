@@ -33,10 +33,10 @@ They can be added later when someone needs them.
 absorbs, absorbent
 -/
 
+assert_not_exists Real
+
 open Set Bornology Filter
 open scoped Pointwise
-
-assert_not_exists Real
 
 section Defs
 
