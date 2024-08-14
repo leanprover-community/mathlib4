@@ -373,38 +373,40 @@ theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : U
   rfl
 
 theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
-    (sup fun n : ℕ => f^[n] a) = nfp f a := by
-  refine le_antisymm ?_ (sup_le fun l => ?_)
-  · rw [sup_le_iff]
+    (⨆ n : ℕ, f^[n] a) = nfp f a := by
+  apply le_antisymm
+  · rw [Ordinal.ciSup_le_iff]
     intro n
     rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
-    apply le_sup
-  · rw [List.foldr_const f a l]
-    exact le_sup _ _
+    exact Ordinal.le_ciSup _ _
+  · apply Ordinal.ciSup_le
+    intro l
+    rw [List.foldr_const f a l]
+    exact Ordinal.le_ciSup _ _
 
 theorem iterate_le_nfp (f a n) : f^[n] a ≤ nfp f a := by
   rw [← sup_iterate_eq_nfp]
-  exact le_sup _ n
+  exact Ordinal.le_ciSup _ n
 
 theorem le_nfp (f a) : a ≤ nfp f a :=
   iterate_le_nfp f a 0
 
 theorem lt_nfp {a b} : a < nfp f b ↔ ∃ n, a < f^[n] b := by
   rw [← sup_iterate_eq_nfp]
-  exact lt_sup
+  exact Ordinal.lt_ciSup
 
 theorem nfp_le_iff {a b} : nfp f a ≤ b ↔ ∀ n, f^[n] a ≤ b := by
   rw [← sup_iterate_eq_nfp]
-  exact sup_le_iff
+  exact Ordinal.ciSup_le_iff
 
 theorem nfp_le {a b} : (∀ n, f^[n] a ≤ b) → nfp f a ≤ b :=
   nfp_le_iff.2
 
 @[simp]
-theorem nfp_id : nfp id = id :=
-  funext fun a => by
-    simp_rw [← sup_iterate_eq_nfp, iterate_id]
-    exact sup_const a
+theorem nfp_id : nfp id = id := by
+  ext
+  simp_rw [← sup_iterate_eq_nfp, iterate_id]
+  exact ciSup_const
 
 theorem nfp_monotone (hf : Monotone f) : Monotone (nfp f) :=
   nfpFamily_monotone fun _ => hf
@@ -482,7 +484,8 @@ theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : de
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← sup_iterate_eq_nfp]
-  apply (sup_le fun n => ?_).antisymm (le_sup (fun n => 0^[n] a) 0)
+  apply (Ordinal.ciSup_le ?_).antisymm (Ordinal.le_ciSup _ 0)
+  intro n
   induction' n with n _
   · rfl
   · rw [Function.iterate_succ']
