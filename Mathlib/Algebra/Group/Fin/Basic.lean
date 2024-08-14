@@ -50,7 +50,7 @@ instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
 instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
   __ := addCommMonoid n
   __ := neg n
-  add_left_neg := fun ⟨a, ha⟩ ↦
+  neg_add_cancel := fun ⟨a, ha⟩ ↦
     Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
       rw [Fin.val_zero', Nat.sub_add_cancel, Nat.mod_self]
       exact le_of_lt ha

@@ -290,6 +290,7 @@ import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Pi
@@ -2560,6 +2561,7 @@ import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.Newton
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.Adjoin
@@ -4079,7 +4081,6 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.FunProp.AEMeasurable
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Tactic.FunProp.Core

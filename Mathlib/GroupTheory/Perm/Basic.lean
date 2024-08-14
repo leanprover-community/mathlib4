@@ -34,7 +34,7 @@ instance permGroup : Group (Perm α) where
   mul_assoc f g h := (trans_assoc _ _ _).symm
   one_mul := trans_refl
   mul_one := refl_trans
-  mul_left_inv := self_trans_symm
+  inv_mul_cancel := self_trans_symm
   npow n f := f ^ n
   npow_succ n f := coe_fn_injective $ Function.iterate_succ _ _
   zpow := zpowRec fun n f ↦ f ^ n

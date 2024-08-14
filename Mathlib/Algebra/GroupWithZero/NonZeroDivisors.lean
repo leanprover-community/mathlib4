@@ -182,8 +182,8 @@ theorem mul_mem_nonZeroDivisors {a b : M₁} : a * b ∈ M₁⁰ ↔ a ∈ M₁�
 
 theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
     (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
-  ⟨⟨x, x⁻¹, mul_inv_cancel (nonZeroDivisors.ne_zero hx),
-    inv_mul_cancel (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
+  ⟨⟨x, x⁻¹, mul_inv_cancel₀ (nonZeroDivisors.ne_zero hx),
+    inv_mul_cancel₀ (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
 
 lemma IsUnit.mem_nonZeroDivisors {a : M} (ha : IsUnit a) : a ∈ M⁰ :=
   fun _ h ↦ ha.mul_left_eq_zero.mp h

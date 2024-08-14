@@ -467,6 +467,7 @@ theorem Continuous.measurable {f : α → γ} (hf : Continuous f) : Measurable f
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is ae-measurable. -/
+@[fun_prop]
 theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
   h.measurable.aemeasurable
 

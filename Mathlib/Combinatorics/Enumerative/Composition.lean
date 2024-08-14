@@ -761,8 +761,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
       add_left_inj, false_or, true_and]
     erw [Set.mem_setOf_eq]
-    simp [this, false_or_iff, add_right_inj, add_eq_zero, one_ne_zero, false_and_iff,
-      Fin.val_mk]
+    simp only [Finset.mem_val]
     constructor
     · intro h
       cases' h with n h

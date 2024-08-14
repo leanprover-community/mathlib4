@@ -121,6 +121,7 @@ instance [K.HasHomology i] [K.HasHomology j] :
   dsimp
   infer_instance
 
+include hij in
 /-- The diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j` is exact
 when `c.Rel i j`. -/
 lemma composableArrows₃_exact [CategoryWithHomology C] :
@@ -296,6 +297,7 @@ lemma comp_δ : HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
 lemma homology_exact₁ : (ShortComplex.mk _ _ (δ_comp hS i j hij)).Exact :=
   (snakeInput hS i j hij).L₂'_exact
 
+include hS in
 /-- Exactness of `S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i`. -/
 lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i)
     (HomologicalComplex.homologyMap S.g i) (by rw [← HomologicalComplex.homologyMap_comp,
