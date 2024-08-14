@@ -191,9 +191,10 @@ variable {x}
 protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
     HasFDerivAtFilter f^[n] (f' ^ n) x L := by
-  induction' n with n ihn
-  · exact hasFDerivAtFilter_id x L
-  · rw [Function.iterate_succ, pow_succ]
+  induction n with
+  | zero => exact hasFDerivAtFilter_id x L
+  | succ n ihn =>
+    rw [Function.iterate_succ, pow_succ]
     rw [← hx] at ihn
     exact ihn.comp x hf hL
 
@@ -218,9 +219,10 @@ protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
 protected theorem HasStrictFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasStrictFDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictFDerivAt f^[n] (f' ^ n) x := by
-  induction' n with n ihn
-  · exact hasStrictFDerivAt_id x
-  · rw [Function.iterate_succ, pow_succ]
+  induction n with
+  | zero => exact hasStrictFDerivAt_id x
+  | succ n ihn =>
+    rw [Function.iterate_succ, pow_succ]
     rw [← hx] at ihn
     exact ihn.comp x hf
 

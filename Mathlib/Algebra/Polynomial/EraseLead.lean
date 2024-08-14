@@ -339,9 +339,10 @@ theorem card_support_eq {n : ℕ} :
       ∃ (k : Fin n → ℕ) (x : Fin n → R) (hk : StrictMono k) (hx : ∀ i, x i ≠ 0),
         f = ∑ i, C (x i) * X ^ k i := by
   refine ⟨?_, fun ⟨k, x, hk, hx, hf⟩ => hf.symm ▸ card_support_eq' k x hk.injective hx⟩
-  induction' n with n hn generalizing f
-  · exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
-  · intro h
+  induction n generalizing f with
+  | zero => exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
+  | succ n hn =>
+    intro h
     obtain ⟨k, x, hk, hx, hf⟩ := hn (card_support_eraseLead' h)
     have H : ¬∃ k : Fin n, Fin.castSucc k = Fin.last n := by
       rintro ⟨i, hi⟩
