@@ -14,9 +14,11 @@ import Mathlib.Util.AssertExists
 This file provides theorems for working with the `getD` and `getI` functions. These are used to
 access an element of a list by numerical index, with a default value as a fallback when the index
 is out of range.
+
 -/
 
-assert_not_imported Mathlib.Algebra.Order.Group.Nat
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists OrderedSub
 
 namespace List
 
