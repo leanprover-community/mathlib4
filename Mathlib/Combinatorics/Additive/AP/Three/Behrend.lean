@@ -182,12 +182,12 @@ theorem threeAPFree_image_sphere :
   rw [coe_image]
   apply ThreeAPFree.image' (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
     (map_injOn.mono _) threeAPFree_sphere
-  rw [Set.add_subset_iff]
-  rintro a ha b hb i
-  have hai := mem_box.1 (sphere_subset_box ha) i
-  have hbi := mem_box.1 (sphere_subset_box hb) i
-  rw [lt_tsub_iff_right, ← succ_le_iff, two_mul]
-  exact (add_add_add_comm _ _ 1 1).trans_le (_root_.add_le_add hai hbi)
+  · rw [Set.add_subset_iff]
+    rintro a ha b hb i
+    have hai := mem_box.1 (sphere_subset_box ha) i
+    have hbi := mem_box.1 (sphere_subset_box hb) i
+    rw [lt_tsub_iff_right, ← succ_le_iff, two_mul]
+    exact (add_add_add_comm _ _ 1 1).trans_le (_root_.add_le_add hai hbi)
 
 theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n * (d - 1) ^ 2 := by
   rw [mem_box] at hx
