@@ -16,7 +16,9 @@ recursively as the least ordinal larger than the birthdays of its left and right
 other hand, the birthday of a game is the smallest birthday among all pre-games that quotient to it.
 
 The birthday of a pre-game can be understood as representing the depth of its game tree. On the
-other hand, the birthday of a game more closely matches Conway's original description.
+other hand, the birthday of a game more closely matches Conway's original description. The lemmas
+`SetTheory.Game.birthday_eq_pGame_birthday` and `SetTheory.Game.birthday_eq_pGame_birthday` link both
+definitions together.
 
 # Main declarations
 
@@ -39,8 +41,8 @@ open scoped NaturalOps PGame
 namespace PGame
 
 /-- The birthday of a pre-game is inductively defined as the least strict upper bound of the
-  birthdays of its left and right games. It may be thought as the "step" in which a certain game is
-  constructed. -/
+birthdays of its left and right games. It may be thought as the "step" in which a certain game is
+constructed. -/
 noncomputable def birthday : PGame.{u} → Ordinal.{u}
   | ⟨_, _, xL, xR⟩ =>
     max (lsub.{u, u} fun i => birthday (xL i)) (lsub.{u, u} fun i => birthday (xR i))
