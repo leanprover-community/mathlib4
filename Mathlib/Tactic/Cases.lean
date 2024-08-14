@@ -68,7 +68,7 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
 
 open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 /-- The `induction'` tactic is similar to the `induction` tactic in Lean 4 core,
-but with slightly different (such as, no requirement to name the constructors).
+but with slightly different syntax (such as, no requirement to name the constructors).
 
 ```
 open Nat
