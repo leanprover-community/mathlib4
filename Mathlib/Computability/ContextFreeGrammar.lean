@@ -314,7 +314,7 @@ lemma EmbeddedContextFreeGrammar.projectNT_inverse_embedNT (G : EmbeddedContextF
   | inl case_valu => exact hnx case_valu.symm
   | inr case_none => exact Option.noConfusion (hx ▸ case_none)
 
-lemma EmbeddedContextFreeGrammar.Produces_map {G : EmbeddedContextFreeGrammar T}
+lemma EmbeddedContextFreeGrammar.produces_map {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g₀.NT)} (hG : G.g₀.Produces w₁ w₂) :
     G.g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
   rcases hG with ⟨r, rin, hr⟩
@@ -327,12 +327,12 @@ lemma EmbeddedContextFreeGrammar.Produces_map {G : EmbeddedContextFreeGrammar T}
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
 /-- Derivation by `G.g₀` can be mirrored by `G.g` derivation. -/
-lemma EmbeddedContextFreeGrammar.Derives_map {G : EmbeddedContextFreeGrammar T}
+lemma EmbeddedContextFreeGrammar.derives_map {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g₀.NT)} (hG : G.g₀.Derives w₁ w₂) :
     G.g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
   induction hG with
   | refl => rfl
-  | tail _ orig ih => exact ih.trans_produces (Produces_map orig)
+  | tail _ orig ih => exact ih.trans_produces (produces_map orig)
 
 /-- A `Symbol` is good iff it is one of those nonterminals that result from projecting or it is any
 terminal. -/
@@ -349,7 +349,7 @@ lemma EmbeddedContextFreeGrammar.singletonGoodString {G : EmbeddedContextFreeGra
     {s : Symbol T G.g.NT} (hs : G.Good s) : G.GoodString [s] := by
   simpa [GoodString] using hs
 
-lemma EmbeddedContextFreeGrammar.Produces_filterMap {G : EmbeddedContextFreeGrammar T}
+lemma EmbeddedContextFreeGrammar.produces_filterMap {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Produces w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Produces
       (w₁.filterMap (Symbol.filterMap G.projectNT))
@@ -401,7 +401,7 @@ lemma EmbeddedContextFreeGrammar.Produces_filterMap {G : EmbeddedContextFreeGram
     | terminal _ => exact False.elim (Symbol.noConfusion hs)
     | nonterminal s' => exact ⟨s', G.projectNT_embedNT s'⟩
 
-lemma EmbeddedContextFreeGrammar.Derives_filterMap_aux {G : EmbeddedContextFreeGrammar T}
+lemma EmbeddedContextFreeGrammar.derives_filterMap_aux {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
@@ -410,17 +410,17 @@ lemma EmbeddedContextFreeGrammar.Derives_filterMap_aux {G : EmbeddedContextFreeG
   induction hG with
   | refl => exact ⟨by rfl, hw₁⟩
   | tail _ orig ih =>
-    have both := Produces_filterMap orig ih.right
+    have both := produces_filterMap orig ih.right
     exact ⟨ContextFreeGrammar.Derives.trans_produces ih.left both.left, both.right⟩
 
 /-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
 any nonterminals that `G.g₀` lacks. -/
-lemma EmbeddedContextFreeGrammar.Derives_filterMap (G : EmbeddedContextFreeGrammar T)
+lemma EmbeddedContextFreeGrammar.derives_filterMap (G : EmbeddedContextFreeGrammar T)
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) :=
-  (Derives_filterMap_aux hG hw₁).left
+  (derives_filterMap_aux hG hw₁).left
 
 end embed_project
 
@@ -605,11 +605,11 @@ variable {w : List T}
 
 private lemma in_union_of_in_left (hw : w ∈ g₁.language) : w ∈ (g₁.union g₂).language :=
   union_derives_left_initial.trans
-    (List.map_map (Symbol.map g₁g.embedNT) Symbol.terminal w ▸ g₁g.Derives_map hw)
+    (List.map_map (Symbol.map g₁g.embedNT) Symbol.terminal w ▸ g₁g.derives_map hw)
 
 private lemma in_union_of_in_right (hw : w ∈ g₂.language) : w ∈ (g₁.union g₂).language :=
   union_derives_right_initial.trans
-    (List.map_map (Symbol.map g₂g.embedNT) Symbol.terminal w ▸ g₂g.Derives_map hw)
+    (List.map_map (Symbol.map g₂g.embedNT) Symbol.terminal w ▸ g₂g.derives_map hw)
 
 private lemma List.filterMap_symbol_filterMap_terminal {N₀ N : Type*}
     (projectN : N → Option N₀) (w : List T) :
@@ -622,7 +622,7 @@ private lemma in_left_of_in_union (hw : (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inl g₁.initial))]
       (List.map Symbol.terminal w)) :
     w ∈ g₁.language := by
-  apply w.filterMap_symbol_filterMap_terminal g₁g.projectNT ▸ g₁g.Derives_filterMap hw
+  apply w.filterMap_symbol_filterMap_terminal g₁g.projectNT ▸ g₁g.derives_filterMap hw
   apply EmbeddedContextFreeGrammar.singletonGoodString
   constructor
   rfl
@@ -631,7 +631,7 @@ private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inr g₂.initial))]
       (List.map Symbol.terminal w)) :
     w ∈ g₂.language := by
-  apply w.filterMap_symbol_filterMap_terminal g₂g.projectNT ▸ g₂g.Derives_filterMap hw
+  apply w.filterMap_symbol_filterMap_terminal g₂g.projectNT ▸ g₂g.derives_filterMap hw
   apply EmbeddedContextFreeGrammar.singletonGoodString
   constructor
   rfl
