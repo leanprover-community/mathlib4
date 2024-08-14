@@ -408,6 +408,14 @@ section
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
+theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
+    f ⊗ g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=
+  Iso.ext (tensorHom_def f.hom g.hom)
+
+theorem tensorIso_def' {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
+    f ⊗ g = whiskerLeftIso X g ≪≫ whiskerRightIso f Y' :=
+  Iso.ext (tensorHom_def' f.hom g.hom)
+
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
   (asIso f ⊗ asIso g).isIso_hom
 

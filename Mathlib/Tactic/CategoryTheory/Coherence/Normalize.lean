@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
+import Mathlib.CategoryTheory.Category.Basic
+
+import Mathlib.Util.CountHeartbeats
 
 open Lean Meta
 
@@ -17,7 +20,9 @@ open BicategoryLike
 -- open
 --  Eval₁
 
-variable {m : Type → Type} [Monad m]
+section
+
+-- variable {m : Type → Type} [Monad m]
 -- [Eval₁ m]
 
 -- /-- Construct a `Mor₁` expression from a Lean expression. -/
@@ -73,13 +78,13 @@ class MkEvalWhiskerLeft (m : Type → Type) where
   /-- Evaluatte `f ◁ α` -/
   mkEvalWhiskerLeftNil (f : Mor₁) (α : StructuralIso) : m Expr
   /-- Evaluate `f ◁ (α ≫ η ≫ ηs)`. -/
-  mkEvalWhiskerLeftOfCons (f : Atom₁) (α : StructuralIso) (η : WhiskerLeft) (ηs f_ηs : NormalExpr)
-    (e_f_ηs : Expr) : m Expr
+  mkEvalWhiskerLeftOfCons (f : Atom₁) (α : StructuralIso) (η : WhiskerLeft) (ηs θ : NormalExpr)
+    (pf_θ : Expr) : m Expr
   /-- Evaluate `(f ≫ g) ◁ η` -/
-  mkEvalWhiskerLeftComp (f g : Mor₁) (η gη fgη fgη' fgη'' : NormalExpr)
-    (e_gη e_fgη e_fgη' e_fgη'' : Expr) : m Expr
+  mkEvalWhiskerLeftComp (f g : Mor₁) (η η₁ η₂ η₃ η₄ : NormalExpr)
+    (e_η₁ e_η₂ e_η₃ e_η₄ : Expr) : m Expr
   /-- Evaluate `𝟙 _ ◁ η` -/
-  mkEvalWhiskerLeftId (η η' η'' : NormalExpr) (e_η' e_η'' : Expr) : m Expr
+  mkEvalWhiskerLeftId (η η₁ η₂ : NormalExpr) (e_η₁ e_η₂ : Expr) : m Expr
 
 -- class MkEvalWhiskerRightAux (m : Type → Type) where
 --   /-- Evaluate `η ▷ f` -/
@@ -132,28 +137,33 @@ class MkEval (m : Type → Type) extends
   mkEvalMonoidalComp (η θ : Mor₂) (α : StructuralIso) (η' θ' αθ ηαθ : NormalExpr)
     (e_η e_θ e_αθ e_ηαθ : Expr) : m Expr
 
-open MkEvalComp MonadStructuralIso MonadNormalExpr
+variable {ρ : Type} [Context ρ]
+variable [MonadMor₂Iso (CoherenceM ρ)] [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)]
 
-def evalCompNil [MonadStructuralIso m] [MonadNormalExpr m] [MkEval m] (α : StructuralIso) :
-    NormalExpr → m Eval.Result
-  | .nil β => do return ⟨.nil (← comp₂M α β), ← mkEvalCompNilNil α β⟩
+open MkEvalComp MonadMor₂Iso MonadNormalExpr
+
+
+def evalCompNil (α : StructuralIso) :
+    NormalExpr → CoherenceM ρ Eval.Result
+  | .nil _ β => do return ⟨← nilM (← comp₂M α β), ← mkEvalCompNilNil α β⟩
   | .cons _ β η ηs => do return ⟨← consM (← comp₂M α β) η ηs, ← mkEvalCompNilCons α β η ηs⟩
 
 /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
-def evalComp [MonadStructuralIso m] [MonadNormalExpr m] [MkEval m] : NormalExpr → NormalExpr → m Eval.Result
-  | .nil α, η => do evalCompNil α η
+def evalComp : NormalExpr → NormalExpr →  CoherenceM ρ Eval.Result
+  | .nil _ α, η => do evalCompNil α η
   | .cons _ α η ηs, θ => do
     let ⟨ι, e_ι⟩ ← evalComp ηs θ
     return ⟨← consM α η ι, ← mkEvalCompCons α η ηs θ ι e_ι⟩
 
 open MkEvalWhiskerLeft
 
+variable [MonadMor₁ (CoherenceM ρ)] [MonadStructuralIsoAtom (CoherenceM ρ)]
+
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
-def evalWhiskerLeft [MonadMor₁ m] [MonadNormalExpr m] [MonadStructuralIso m]
-    [MkEval m] :
-    Mor₁ → NormalExpr → m Eval.Result
-  | f, .nil α => do
-    return ⟨.nil (← whiskerLeftM f α), ← mkEvalWhiskerLeftNil f α⟩
+def evalWhiskerLeft :
+    Mor₁ → NormalExpr → CoherenceM ρ Eval.Result
+  | f, .nil _ α => do
+    return ⟨← nilM (← whiskerLeftM f α), ← mkEvalWhiskerLeftNil f α⟩
   | .of f, .cons _ α η ηs => do
     let η' ← MonadWhiskerLeft.whiskerLeftM f η
     let ⟨θ, e_θ⟩ ← evalWhiskerLeft (.of f) ηs
@@ -175,14 +185,13 @@ def evalWhiskerLeft [MonadMor₁ m] [MonadNormalExpr m] [MonadStructuralIso m]
     return ⟨η'', ← mkEvalWhiskerLeftId η η' η'' e_η' e_η''⟩
 
 open MkEvalWhiskerRight MkEvalHorizontalComp
-open MonadStructuralIso
+open MonadMor₂Iso Mor₂Iso
 
 
 mutual
 
 /-- Evaluate the expression `η ▷ f` into a normalized form. -/
-partial def evalWhiskerRightAux [MonadMor₁ m] [MonadNormalExpr m] [MonadStructuralIso m]
-    [MkEval m] : HorizontalComp → Atom₁ → m Eval.Result
+partial def evalWhiskerRightAux : HorizontalComp → Atom₁ → CoherenceM ρ Eval.Result
   | .of η, f => do
     let η' ← NormalExpr.ofM <| .of <| .of <| ← MonadWhiskerRight.whiskerRightM η f
     return ⟨η', ← mkEvalWhiskerRightAuxOf η f⟩
@@ -194,10 +203,9 @@ partial def evalWhiskerRightAux [MonadMor₁ m] [MonadNormalExpr m] [MonadStruct
     return ⟨η₃, ← mkEvalWhiskerRightAuxCons f η ηs ηs' η₁ η₂ η₃ e_ηs' e_η₁ e_η₂ e_η₃⟩
 
 /-- Evaluate the expression `η ▷ f` into a normalized form. -/
-partial def evalWhiskerRight [MonadMor₁ m] [MonadNormalExpr m] [MonadStructuralIso m]
-    [MkEval m] : NormalExpr → Mor₁ → m Eval.Result
-  | .nil α, h => do
-    return ⟨.nil (← whiskerRightM α h), ← mkEvalWhiskerRightNil α h⟩
+partial def evalWhiskerRight : NormalExpr → Mor₁ → CoherenceM ρ Eval.Result
+  | .nil _ α, h => do
+    return ⟨← nilM (← whiskerRightM α h), ← mkEvalWhiskerRightNil α h⟩
   | .cons _ α (.of η) ηs, .of f => do
     let ⟨ηs₁, e_ηs₁⟩ ← evalWhiskerRight ηs (.of f)
     let ⟨η₁, e_η₁⟩ ← evalWhiskerRightAux η f
@@ -207,14 +215,14 @@ partial def evalWhiskerRight [MonadMor₁ m] [MonadNormalExpr m] [MonadStructura
   | .cons _ α (.whisker _ f η) ηs, h => do
     let g ← η.srcM
     let g' ← η.tgtM
-    let ⟨η₁, e_η₁⟩ ← evalWhiskerRight (← consM (← id₂M g) η (← NormalExpr.idM g')) h
+    let ⟨η₁, e_η₁⟩ ← evalWhiskerRight (← consM (← id₂M' g) η (← NormalExpr.idM g')) h
     let ⟨η₂, e_η₂⟩ ← evalWhiskerLeft (.of f) η₁
     let ⟨ηs₁, e_ηs₁⟩ ← evalWhiskerRight ηs h
     let α' ← whiskerRightM α h
     let ⟨ηs₂, e_ηs₂⟩ ← evalComp (← NormalExpr.associatorInvM (.of f) g' h) ηs₁
     let ⟨η₃, e_η₃⟩ ← evalComp η₂ ηs₂
     let ⟨η₄, e_η₄⟩ ← evalComp (← NormalExpr.associatorM (.of f) g h) η₃
-    let ⟨η₅, e_η₅⟩ ← evalComp (.nil α') η₄
+    let ⟨η₅, e_η₅⟩ ← evalComp (← nilM α') η₄
     return ⟨η₅, ← mkEvalWhiskerRightConsWhisker f h α η ηs η₁ η₂ ηs₁ ηs₂ η₃ η₄ η₅
       e_η₁ e_η₂ e_ηs₁ e_ηs₂ e_η₃ e_η₄ e_η₅⟩
   | η, .comp _ g h => do
@@ -233,8 +241,7 @@ partial def evalWhiskerRight [MonadMor₁ m] [MonadNormalExpr m] [MonadStructura
     return ⟨η₂, ← mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂⟩
 
 /-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
-partial def evalHorizontalCompAux [MonadMor₁ m] [MonadNormalExpr m] [MonadStructuralIso m]
-    [MkEval m] : HorizontalComp → HorizontalComp → m Eval.Result
+partial def evalHorizontalCompAux : HorizontalComp → HorizontalComp → CoherenceM ρ Eval.Result
   | .of η, θ => do
     return ⟨← NormalExpr.ofM <| .of <| ← MonadHorizontalComp.hConsM η θ,
       ← mkEvalHorizontalCompAuxOf η θ⟩
@@ -248,8 +255,7 @@ partial def evalHorizontalCompAux [MonadMor₁ m] [MonadNormalExpr m] [MonadStru
     return ⟨ηθ₂, ← mkEvalHorizontalCompAuxCons η ηs θ ηθ η₁ ηθ₁ ηθ₂ e_ηθ e_η₁ e_ηθ₁ e_ηθ₂⟩
 
 /-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
-partial def evalHorizontalCompAux' [MonadMor₁ m] [MonadNormalExpr m] [MonadStructuralIso m]
-    [MkEval m] : WhiskerLeft → WhiskerLeft → m Eval.Result
+partial def evalHorizontalCompAux' : WhiskerLeft → WhiskerLeft → CoherenceM ρ Eval.Result
   | .of η, .of θ => evalHorizontalCompAux η θ
   | .whisker _ f η, θ => do
     let ⟨ηθ, e_ηθ⟩ ← evalHorizontalCompAux' η θ
@@ -265,17 +271,16 @@ partial def evalHorizontalCompAux' [MonadMor₁ m] [MonadNormalExpr m] [MonadStr
     return ⟨ηθ₂, ← mkEvalHorizontalCompAux'OfWhisker f η θ ηθ η₁ ηθ₁ ηθ₂ e_η₁ e_ηθ e_ηθ₁ e_ηθ₂⟩
 
 /-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
-partial def evalHorizontalComp [MonadMor₁ m] [MonadNormalExpr m] [MonadStructuralIso m]
-    [MkEval m] : NormalExpr → NormalExpr → m Eval.Result
-  | .nil α, .nil β => do
-    return ⟨.nil <| ← horizontalCompM α β, ← mkEvalHorizontalCompNilNil α β⟩
-  | .nil α, .cons _ β η ηs => do
+partial def evalHorizontalComp : NormalExpr → NormalExpr → CoherenceM ρ Eval.Result
+  | .nil _ α, .nil _ β => do
+    return ⟨← nilM <| ← horizontalCompM α β, ← mkEvalHorizontalCompNilNil α β⟩
+  | .nil _ α, .cons _ β η ηs => do
     let ⟨η₁, e_η₁⟩ ← evalWhiskerLeft (← α.tgtM) (← NormalExpr.ofM η)
     let ⟨ηs₁, e_ηs₁⟩ ← evalWhiskerLeft (← α.tgtM) ηs
     let ⟨η₂, e_η₂⟩ ← evalComp η₁ ηs₁
     let ⟨η₃, e_η₃⟩ ← evalCompNil (← horizontalCompM α β) η₂
     return ⟨η₃, ← mkEvalHorizontalCompNilCons α β η ηs η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃⟩
-  | .cons _ α η ηs, .nil β => do
+  | .cons _ α η ηs, .nil _ β => do
     let ⟨η₁, e_η₁⟩ ← evalWhiskerRight (← NormalExpr.ofM η) (← β.tgtM)
     let ⟨ηs₁, e_ηs₁⟩ ← evalWhiskerRight ηs (← β.tgtM)
     let ⟨η₂, e_η₂⟩ ← evalComp η₁ ηs₁
@@ -292,67 +297,98 @@ partial def evalHorizontalComp [MonadMor₁ m] [MonadNormalExpr m] [MonadStructu
 end
 
 variable
-[MonadMor₁ m] [MonadStructuralIso m]
+[MonadMor₁ m]
     [MonadLift MetaM m] [MonadAlwaysExcept Exception m] [MonadRef m]
-    [MonadStructuralIso m] [MonadNormalExpr m] [MkEval m]
+    -- [MonadStructuralIso m]
+    [MonadNormalExpr m]
+    [MkEval m]
 
-open MonadMor₂ MkEval
+-- open MonadMor₂
+open MkEval
 
-variable [MkMor₁ m] [MonadMor₂ m]
+variable [MkMor₁ m]
+-- [MonadMor₂ m]
+
+variable {ρ : Type} [Context ρ]
+    -- [MkClass (CoherenceM ρ)]
+    -- (eval : Expr → CoherenceM ρ Eval.Result)
+    [MonadMor₁ (CoherenceM ρ)]
+    -- [MonadStructuralIso (CoherenceM ρ)]
+    [MonadStructuralIsoAtom (CoherenceM ρ)]
+    [MonadMor₂Iso (CoherenceM ρ)]
+    [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)]
+    [MonadMor₂ (CoherenceM ρ)]
+    [MkMor₂ (CoherenceM ρ)]
 
 -- def mkEvalComp (η θ : Mor₂) (η' θ' ι : NormalExpr) (e_η e_θ e_ηθ : Expr) : m Expr := do sorry
 
 -- def evalComp : NormalExpr → NormalExpr → m Eval.Result := sorry
 
-def traceProof (nm : Name) (result : Expr) : m Unit := do
+def traceProof (nm : Name) (result : Expr) : CoherenceM ρ Unit := do
   withTraceNode nm (fun _ => return m!"{checkEmoji} {← inferType result}") do
     if ← isTracingEnabledFor nm then addTrace nm m!"proof: {result}"
 
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
-def eval (nm : Name) (e : Mor₂) : m Eval.Result := do
+def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
   -- let e ← instantiateMVars e
   withTraceNode nm (fun _ => return m!"eval: {e.e}") do
     match e with
-    | .structuralAtom α =>
-      return ⟨.nil <| .atom α, ← mkEqRefl α.e⟩
+    | .isoHom _ _ α => withTraceNode nm (fun _ => return m!"Iso.hom") do match α with
+      | .structuralAtom α => return ⟨← nilM <| .structuralAtom α, ← mkEqRefl e.e⟩
+      | .of η =>
+        let η ← Mor₂.homAtomM η
+        let result ← mkEvalOf η
+        traceProof nm result
+        return ⟨← NormalExpr.ofAtomM η, result⟩
+      | _ => throwError "not implemented. try dsimp first."
+    | .isoInv _ _ α => withTraceNode nm (fun _ => return m!"Iso.inv") do match α with
+      | .structuralAtom α => return ⟨← nilM <| (← symmM (.structuralAtom α)), ← mkEqRefl e.e⟩
+      | .of η =>
+        let η ← Mor₂.invAtomM η
+        let result ← mkEvalOf η
+        traceProof nm result
+        return ⟨← NormalExpr.ofAtomM η, result⟩
+      | _ => throwError "not implemented. try dsimp first."
     -- if let .some α ← structuralAtom? e then
       -- return ⟨.nil <| .atom α, ← mkEqRefl (← α.e)⟩
     -- else
       -- match (← whnfR e).getAppFnArgs with
-    -- | .id e f  =>
-    --   return ⟨.nil (.id e f), ← mkEqRefl ((← id₂M f).e)⟩
-    | .comp _ η θ => withTraceNode nm (fun _ => return m!"comp") do
+    | .id _ _ f  =>
+      let α ← StructuralIsoAtom.id₂M f
+      return  ⟨← nilM <| .structuralAtom α, ← mkEqRefl e.e⟩
+    | .comp _ _ _ _ _ η θ => withTraceNode nm (fun _ => return m!"comp") do
       let ⟨η', e_η⟩ ← eval nm η
       let ⟨θ', e_θ⟩ ← eval nm θ
       let ⟨ηθ, pf⟩ ← evalComp η' θ'
       let result ← mkEvalComp η θ η' θ' ηθ e_η e_θ pf
       traceProof nm result
       return ⟨ηθ, result⟩
-    | .whiskerLeft _ f η => withTraceNode nm (fun _ => return m!"whiskerLeft") do
+    | .whiskerLeft _ _ f _ _ η => withTraceNode nm (fun _ => return m!"whiskerLeft") do
       let ⟨η', e_η⟩ ← eval nm η
       let ⟨θ, e_θ⟩ ← evalWhiskerLeft f η'
-      let result ← mkEvalWhiskerLeft f η θ η' e_η e_θ
+      let result ← mkEvalWhiskerLeft f η η' θ e_η e_θ
       traceProof nm result
       return ⟨θ, result⟩
-    | .whiskerRight _ η h =>
+    | .whiskerRight _ _ f g η h =>
       withTraceNode `monoidal (fun _ => return m!"whiskerRight") do
         let ⟨η', e_η⟩ ← eval nm η
         let ⟨θ, e_θ⟩ ← evalWhiskerRight η' h
         let result ← mkEvalWhiskerRight η h η' θ e_η e_θ
         traceProof nm result
         return ⟨θ, result⟩
-    | .coherenceComp _ _ α₀ η θ =>
+    | .coherenceComp _ _ _ _ _ _ α₀ η θ =>
       withTraceNode `monoidal (fun _ => return m!"monoidalComp") do
         let ⟨η', e_η⟩ ← eval nm η
         -- let α₀ ← structuralOfMonoidalComp e
-        let α := NormalExpr.nil α₀
+        let α₀ := .structuralAtom <| .coherenceHom α₀
+        let α ← nilM α₀
         let ⟨θ', e_θ⟩ ← eval nm θ
         let ⟨αθ, e_αθ⟩ ← evalComp α θ'
         let ⟨ηαθ, e_ηαθ⟩ ← evalComp η' αθ
         let result ← mkEvalMonoidalComp η θ α₀ η' θ' αθ ηαθ e_η e_θ e_αθ e_ηαθ
         traceProof nm result
         return ⟨ηαθ, result⟩
-    | .horizontalComp _ η θ =>
+    | .horizontalComp _ _ _ _ _ _ η θ =>
       withTraceNode `monoidal (fun _ => return m!"tensorHom") do
         let ⟨η', e_η⟩ ← eval nm η
         let ⟨θ', e_θ⟩ ← eval nm θ
@@ -364,5 +400,106 @@ def eval (nm : Name) (e : Mor₂) : m Eval.Result := do
       let result ← mkEvalOf η
       traceProof nm result
       return ⟨← NormalExpr.ofAtomM η, result⟩
+
+theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
+  simp [h, ha, hb]
+
+end
+
+def normalForm (nm : Name) (ρ : Type) [Context ρ]
+    -- [MkClass (CoherenceM ρ)]
+    -- (eval : Expr → CoherenceM ρ Eval.Result)
+    [MonadMor₁ (CoherenceM ρ)]
+    -- [MonadStructuralIso (CoherenceM ρ)]
+    [MonadStructuralIsoAtom (CoherenceM ρ)]
+    [MonadMor₂Iso (CoherenceM ρ)]
+    [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)]
+    [MkMor₂ (CoherenceM ρ)]
+    [MonadMor₂ (CoherenceM ρ)]
+    (mvarId : MVarId) : MetaM (List MVarId) := do
+  mvarId.withContext do
+    let e ← instantiateMVars <| ← mvarId.getType
+    withTraceNode nm (fun _ => return m!"normalize: {e}") do
+      let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| e).eq?
+        | throwError "{nm}_nf requires an equality goal"
+      let ctx : ρ ← Context.mkContext e₁
+      ReaderT.run (r := ctx) <| show CoherenceM ρ (List MVarId) from do
+        let e₁' ← MkMor₂.ofExpr e₁
+        let e₂' ← MkMor₂.ofExpr e₂
+        let e₁'' ← eval nm e₁'
+        let e₂'' ← eval nm e₂'
+        let H ← mkAppM ``mk_eq #[e₁, e₂, e₁''.expr.e, e₂''.expr.e, e₁''.proof, e₂''.proof]
+        mvarId.apply H
+
+open CategoryTheory
+universe v u
+theorem mk_eq_of_cons {C : Type u} [CategoryStruct.{v} C]
+    {f₁ f₂ f₃ f₄ : C}
+    (α α' : f₁ ⟶ f₂) (η η' : f₂ ⟶ f₃) (ηs ηs' : f₃ ⟶ f₄)
+    (pf_α : α = α') (pf_η : η = η') (pf_ηs : ηs = ηs') :
+    α ≫ η ≫ ηs = α' ≫ η' ≫ ηs' := by
+  simp [pf_α, pf_η, pf_ηs]
+
+
+
+/-- Transform an equality between 2-morphisms into the equality between their normalizations. -/
+def mkEqOfHom₂ (ρ : Type) [Context ρ]     [MonadMor₁ (CoherenceM ρ)]
+    -- [MonadStructuralIso (CoherenceM ρ)]
+    [MonadStructuralIsoAtom (CoherenceM ρ)]
+    [MonadMor₂Iso (CoherenceM ρ)]
+    [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)]
+    [MkMor₂ (CoherenceM ρ)]
+    [MonadMor₂ (CoherenceM ρ)] (nm : Name) (mvarId : MVarId) : MetaM Expr := do
+  let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| ← mvarId.getType).eq?
+    | throwError "bicategory requires an equality goal"
+  let ctx : ρ  ← Context.mkContext e₁
+  CoherenceM.run ctx do
+    let ⟨e₁', p₁⟩ ← eval nm (← MkMor₂.ofExpr e₁)
+    let ⟨e₂', p₂⟩ ← eval nm (← MkMor₂.ofExpr e₂)
+    mkAppM ``mk_eq #[e₁, e₂, e₁'.e, e₂'.e, p₁, p₂]
+
+def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
+  mvarId.withContext do
+    let e ← instantiateMVars <| ← mvarId.getType
+    let some (_, e₁, e₂) := (← whnfR e).eq? | throwError "requires an equality goal"
+    match (← whnfR e₁).getAppFnArgs, (← whnfR e₂).getAppFnArgs with
+    | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]) ,
+      (``CategoryStruct.comp, #[_, _, _, _, _, α', η']) =>
+      match (← whnfR η).getAppFnArgs, (← whnfR η').getAppFnArgs with
+      | (``CategoryStruct.comp, #[_, _, _, _, _, η, ηs]),
+        (``CategoryStruct.comp, #[_, _, _, _, _, η', ηs']) =>
+        let pf_α ← mkFreshExprMVar (← Meta.mkEq α α')
+        let pf_η  ← mkFreshExprMVar (← Meta.mkEq η η')
+        let pf_ηs ← mkFreshExprMVar (← Meta.mkEq ηs ηs')
+        let x ← mvarId.apply (← mkAppM ``mk_eq_of_cons #[α, α', η, η', ηs, ηs', pf_α, pf_η, pf_ηs])
+        return x
+      | _, _ => throwError "failed to make a normalized equality for {e}"
+    | _, _ => throwError "failed to make a normalized equality for {e}"
+
+def main (ρ : Type) [Context ρ]     [MonadMor₁ (CoherenceM ρ)]
+    -- [MonadStructuralIso (CoherenceM ρ)]
+    [MonadStructuralIsoAtom (CoherenceM ρ)]
+    [MonadMor₂Iso (CoherenceM ρ)]
+    [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)]
+    [MkMor₂ (CoherenceM ρ)]
+    [MonadMor₂ (CoherenceM ρ)]
+    [MonadCoherehnceHom (CoherenceM ρ)]
+    [MonadNormalizeNaturality (CoherenceM ρ)]
+    (mkEqOfNormalizedEq : Array Expr → MetaM Expr)
+    (nm : Name) (mvarId : MVarId) : MetaM (List MVarId) :=
+  mvarId.withContext do
+    let mvarIds ← mvarId.apply (← mkEqOfHom₂ ρ nm mvarId)
+    let mvarIds' ← repeat' ofNormalizedEq mvarIds
+    let mvarIds'' ← mvarIds'.mapM fun mvarId => do
+      withTraceNode nm (fun _ => do return m!"goal: {← mvarId.getType}") do
+        try
+          mvarId.refl
+          trace[bicategory] m!"{checkEmoji} refl"
+          return [mvarId]
+        catch _ =>
+          try
+            pureCoherence nm ρ mkEqOfNormalizedEq mvarId
+          catch _ => return [mvarId]
+    return mvarIds''.join
 
 end Mathlib.Tactic.BicategoryLike
