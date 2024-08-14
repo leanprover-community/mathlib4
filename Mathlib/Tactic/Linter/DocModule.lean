@@ -52,6 +52,8 @@ def docModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  -- `test` files are not required to have a doc-module string
+  if let `test::_ := (← getMainModule).components then return
   let undoc? ← undocumented.get
   -- `terminal?` is `true` iff `stx` is the end of the file, or
   -- (unreachable by the linter) `import X`
