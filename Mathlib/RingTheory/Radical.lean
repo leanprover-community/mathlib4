@@ -29,6 +29,7 @@ This is different from the radical of an ideal.
 - Make a comparison with `Ideal.radical`. Especially, for principal ideal,
   `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 - Prove `radical (radical a) = radical a`.
+- Prove a comparison between `primeFactors` and `Nat.primeFactors`.
 -/
 
 noncomputable section
