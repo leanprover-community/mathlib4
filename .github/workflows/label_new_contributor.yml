@@ -58,10 +58,11 @@ jobs:
             });
 
       - run: |
+          LABELS='CI,RFC'
           printf $'gh issue edit \'%s\' --add-label \'%s\'\n' "$NUMBER" "$LABELS"
           gh issue edit "$NUMBER" --add-label "$LABELS"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.number }} #${{ github.event.issue.number }}
-          LABELS: CI,RFC
+          #LABELS: CI,RFC
