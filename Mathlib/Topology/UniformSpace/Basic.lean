@@ -1398,8 +1398,8 @@ theorem mem_uniformity_of_uniformContinuous_invariant [UniformSpace α] [Uniform
   rcases mem_prod_iff.1 (mem_map.1 <| hf hs) with ⟨u, hu, v, hv, huvt⟩
   exact ⟨u, hu, fun a b c hab => @huvt ((_, _), (_, _)) ⟨hab, refl_mem_uniformity hv⟩⟩
 
-/-- An entourage of the diagonal in α and an entourage in β yield an entourage in α × β once we
-permute coordinates.-/
+/-- An entourage of the diagonal in `α` and an entourage in `β` yield an entourage in `α × β`
+once we permute coordinates.-/
 def entourageProd (u : Set (α × α)) (v : Set (β × β)) : Set ((α × β) × α × β) :=
     {((a₁, b₁),(a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
 
@@ -1411,7 +1411,7 @@ theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpa
     entourageProd u v ∈ 𝓤 (α × β) := by
   rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap hu) (preimage_mem_comap hv)
 
-theorem ball_prod (u : Set (α × α)) (v : Set (β × β)) (x : α × β) :
+theorem ball_entourageProd (u : Set (α × α)) (v : Set (β × β)) (x : α × β) :
     ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
   ext p; simp only [ball, entourageProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
 
