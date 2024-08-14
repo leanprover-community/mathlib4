@@ -214,7 +214,7 @@ theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomi
     rw [hf, coeff_zero, zero_eq_mul] at this
     cases' this with h'
     · rw [h']
-    rename_i _ _ _ _ h'
+    rename_i _ _ _ h'
     rw [← Nat.cast_succ, CharP.cast_eq_zero_iff R p] at h'
     exact absurd h' h
 

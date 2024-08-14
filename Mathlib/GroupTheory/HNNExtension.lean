@@ -345,7 +345,7 @@ theorem unitsSMulGroup_snd (u : ℤˣ) (g : G) :
     (unitsSMulGroup φ d u g).2 = ((d.compl u).equiv g).2 := by
   rcases Int.units_eq_one_or u with rfl | rfl <;> rfl
 
-variable {d} [DecidableEq G]
+variable {d}
 
 /-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurence
 of `t^-u` when when we multiply `t^u` by `w`. -/
