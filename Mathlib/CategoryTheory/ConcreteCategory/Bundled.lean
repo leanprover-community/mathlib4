@@ -52,7 +52,7 @@ theorem coe_mk (α) (str) : (@Bundled.mk c α str : Type u) = α :=
   rfl
 
 /-- Map over the bundled structure -/
-def map (f : ∀ {α}, c α → d α) (b : Bundled c) : Bundled d :=
+abbrev map (f : ∀ {α}, c α → d α) (b : Bundled c) : Bundled d :=
   ⟨b, f b.str⟩
 
 end Bundled
