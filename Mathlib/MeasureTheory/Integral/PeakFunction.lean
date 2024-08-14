@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
-#align_import measure_theory.integral.peak_function from "leanprover-community/mathlib"@"13b0d72fd8533ba459ac66e9a885e35ffabb32b2"
-
 /-!
 # Integrals against peak functions
 
@@ -32,7 +30,7 @@ functions are also called approximations of unity, or approximations of identity
   at `0` and integrable.
 
 Note that there are related results about convolution with respect to peak functions in the file
-`Analysis.Convolution`, such as `convolution_tendsto_right` there.
+`Analysis.Convolution`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
@@ -84,13 +82,10 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
       exact (norm_lt_of_mem_ball (hu x hx)).le
   convert A.union B
   simp only [diff_union_inter]
-#align integrable_on_peak_smul_of_integrable_on_of_continuous_within_at integrableOn_peak_smul_of_integrableOn_of_tendsto
 
 @[deprecated (since := "2024-02-20")]
 alias integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt :=
   integrableOn_peak_smul_of_integrableOn_of_tendsto
-
-variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -180,11 +175,12 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
           (h''i.mono_set diff_subset) (h''i.mono_set inter_subset_left)]
     _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le _ _
     _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ := add_le_add C B
-#align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at_aux tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
 
 @[deprecated (since := "2024-02-20")]
 alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
   tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
+
+variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -223,7 +219,6 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
   apply Integrable.smul_const
   rw [restrict_restrict ht, inter_eq_left.mpr hts]
   exact .of_integral_ne_zero (fun h ↦ by simp [h] at h'i)
-#align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
 
 @[deprecated (since := "2024-02-20")]
 alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt :=
@@ -293,7 +288,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     apply (hμ u u_open x₀_u).trans_le
     exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
   have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n => by
-    rw [integral_mul_left, inv_mul_cancel (P n).ne']
+    rw [integral_mul_left, inv_mul_cancel₀ (P n).ne']
   have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 atTop (s \ u) := by
     intro u u_open x₀u
     obtain ⟨t, t_pos, tx₀, ht⟩ : ∃ t, 0 ≤ t ∧ t < c x₀ ∧ ∀ x ∈ s \ u, c x ≤ t := by
@@ -352,7 +347,6 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
       hs.measure_lt_top.ne (eventually_of_forall hnφ) A B C hmg hcg
   convert this
   simp_rw [φ, ← smul_smul, integral_smul]
-#align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_measure_nhds_within_pos tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_nhdsWithin_pos
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
 then the sequence of functions `(c x) ^ n / ∫ (c x) ^ n` is a sequence of peak functions
@@ -379,7 +373,6 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_integrabl
     0 < μ (u ∩ interior s) :=
       (u_open.inter isOpen_interior).measure_pos μ (_root_.mem_closure_iff.1 h₀ u u_open x₀_u)
     _ ≤ μ (u ∩ s) := by gcongr; apply interior_subset
-#align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_integrable_on tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
 then the sequence of functions `(c x) ^ n / ∫ (c x) ^ n` is a sequence of peak functions
@@ -394,7 +387,6 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuou
   haveI : x₀ ∈ s := by rw [← hs.isClosed.closure_eq]; exact closure_mono interior_subset h₀
   tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn hs hc h'c hnc hnc₀ h₀
     (hmg.integrableOn_compact hs) (hmg x₀ this)
-#align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_continuous_on tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn
 
 /-!
 ### Peak functions of the form `x ↦ c ^ dim * φ (c x)`
@@ -456,7 +448,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
     apply this.congr'
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     rw [integral_mul_left, setIntegral_comp_smul_of_pos _ _ _ hc, smul_eq_mul, ← mul_assoc,
-      mul_inv_cancel (by positivity), _root_.smul_closedBall _ _ zero_le_one]
+      mul_inv_cancel₀ (by positivity), _root_.smul_closedBall _ _ zero_le_one]
     simp [abs_of_nonneg hc.le]
   · filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     exact (I.comp_smul hc.ne').aestronglyMeasurable.const_mul _

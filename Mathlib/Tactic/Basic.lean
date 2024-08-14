@@ -4,12 +4,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
-import Batteries
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Linter.OldObtain
+
+/-!
+# Basic tactics and utilities for tactic writing
+
+This file defines some basic utilities for tactic writing, and also
+- the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
+and explicitly name the non-dependent hypotheses,
+- an `assumption` macro, calling the `assumption` tactic on all goals
+- the tactics `match_target`, `clear_aux_decl` (clearing all auxiliary declarations from the
+context) and `clear_value` (which clears the bodies of given local definitions,
+changing them into regular hypotheses).
+-/
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta

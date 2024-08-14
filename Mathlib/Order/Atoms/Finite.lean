@@ -6,8 +6,6 @@ Authors: Aaron Anderson
 import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Atoms
 
-#align_import order.atoms.finite from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
-
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
 
@@ -47,11 +45,9 @@ theorem univ : (Finset.univ : Finset α) = {⊤, ⊥} := by
   rw [Fintype.univ_bool]
   simp only [Finset.map_insert, Function.Embedding.coeFn_mk, Finset.map_singleton]
   rfl
-#align fintype.is_simple_order.univ Fintype.IsSimpleOrder.univ
 
 theorem card : Fintype.card α = 2 :=
   (Fintype.ofEquiv_card _).trans Fintype.card_bool
-#align fintype.is_simple_order.card Fintype.IsSimpleOrder.card
 
 end IsSimpleOrder
 
@@ -81,13 +77,11 @@ instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] 
   by_contra hyt
   obtain rfl : c = y := hmax y ⟨hc.1.trans hcy.le, hyt⟩ hcy.le
   exact (lt_self_iff_false _).mp hcy
-#align finite.to_is_coatomic Finite.to_isCoatomic
 
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [Finite α] :
     IsAtomic α :=
   isCoatomic_dual_iff_isAtomic.mp Finite.to_isCoatomic
-#align finite.to_is_atomic Finite.to_isAtomic
 
 end Fintype
 
