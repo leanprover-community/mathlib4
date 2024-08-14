@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Claus Clausen, Patrick Massot
 -/
 import Mathlib.Probability.Notation
-import Mathlib.Probability.Cdf
+import Mathlib.Probability.CDF
 import Mathlib.Probability.Distributions.Gamma
 
 /-! # Exponential distributions over ℝ
@@ -167,8 +167,10 @@ lemma exponentialCDFReal_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
   rw [exponentialCDFReal_eq_lintegral hr, lintegral_exponentialPDF_eq_antiDeriv hr x,
     ENNReal.toReal_ofReal_eq_iff]
   split_ifs with h
-  · simp only [sub_nonneg, exp_le_one_iff, Left.neg_nonpos_iff, gt_iff_lt, ge_iff_le]
+  · simp only [sub_nonneg, exp_le_one_iff, Left.neg_nonpos_iff]
     exact mul_nonneg hr.le h
   · exact le_rfl
 
 end ExponentialCDF
+
+end ProbabilityTheory

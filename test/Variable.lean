@@ -54,7 +54,7 @@ section
 /--
 error: failed to synthesize
   Semiring R
-use `set_option diagnostics true` to get diagnostic information
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 variable? [Module R M] => [Module R M]
