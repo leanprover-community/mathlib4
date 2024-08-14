@@ -1088,7 +1088,8 @@ protected theorem ciSup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
   ciSup_le'
 
 -- TODO: generalize to conditionally complete lattices.
-theorem lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < iSup f ↔ ∃ i, a < f i := by
+protected theorem lt_ciSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+    a < iSup f ↔ ∃ i, a < f i := by
   rw [← not_iff_not]
   simpa using Ordinal.ciSup_le_iff
 
