@@ -167,15 +167,12 @@ abbrev _root_.CategoryTheory.GradedObject.HasGoodTensorTensor₂₃ (X₁ X₂ X
 
 section
 
-variable (Z : C) (X₁ X₂ X₃ : GradedObject I C) [HasTensor X₁ X₂] [HasTensor X₂ X₃]
-  [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor X₁ (tensorObj X₂ X₃)]
-  {Y₁ Y₂ Y₃ : GradedObject I C} [HasTensor Y₁ Y₂] [HasTensor Y₂ Y₃]
-  [HasTensor (tensorObj Y₁ Y₂) Y₃] [HasTensor Y₁ (tensorObj Y₂ Y₃)]
+variable (Z : C) (X₁ X₂ X₃ : GradedObject I C)
+  {Y₁ Y₂ Y₃ : GradedObject I C}
 
-/-- The associator isomorphism for graded objects. -/
-noncomputable def associator [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃] :
-  tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
-    mapBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
+section
+variable [HasTensor X₂ X₃] [HasTensor X₁ (tensorObj X₂ X₃)] [HasTensor Y₂ Y₃]
+  [HasTensor Y₁ (tensorObj Y₂ Y₃)]
 
 /-- The inclusion `X₁ i₁ ⊗ X₂ i₂ ⊗ X₃ i₃ ⟶ tensorObj X₁ (tensorObj X₂ X₃) j`
 when `i₁ + i₂ + i₃ = j`. -/
@@ -191,6 +188,34 @@ lemma ιTensorObj₃_eq (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) (i�
         ιTensorObj X₁ (tensorObj X₂ X₃) i₁ i₂₃ j (by rw [← h', ← add_assoc, h]) := by
   subst h'
   rfl
+
+variable {X₁ X₂ X₃}
+
+@[reassoc (attr := simp)]
+lemma ιTensorObj₃_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃)
+    (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
+    ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ tensorHom f₁ (tensorHom f₂ f₃) j =
+      (f₁ i₁ ⊗ f₂ i₂ ⊗ f₃ i₃) ≫ ιTensorObj₃ Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
+  rw [ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl,
+    ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl, assoc, ι_tensorHom,
+    ← id_tensorHom, ← id_tensorHom, ← MonoidalCategory.tensor_comp_assoc, ι_tensorHom,
+    ← MonoidalCategory.tensor_comp_assoc, id_comp, comp_id]
+
+@[ext (iff := false)]
+lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
+    [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
+    (h : ∀ (i₁ i₂ i₃ : I) (hi : i₁ + i₂ + i₃ = j),
+      ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ f = ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ g) :
+      f = g := by
+  apply mapBifunctorBifunctor₂₃MapObj_ext (H := H)
+  intro i₁ i₂ i₃ hi
+  exact h i₁ i₂ i₃ hi
+
+end
+
+section
+variable [HasTensor X₁ X₂] [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor Y₁ Y₂]
+  [HasTensor (tensorObj Y₁ Y₂) Y₃]
 
 /-- The inclusion `X₁ i₁ ⊗ X₂ i₂ ⊗ X₃ i₃ ⟶ tensorObj (tensorObj X₁ X₂) X₃ j`
 when `i₁ + i₂ + i₃ = j`. -/
@@ -211,16 +236,6 @@ lemma ιTensorObj₃'_eq (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) (i�
 variable {X₁ X₂ X₃}
 
 @[reassoc (attr := simp)]
-lemma ιTensorObj₃_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃)
-    (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
-    ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ tensorHom f₁ (tensorHom f₂ f₃) j =
-      (f₁ i₁ ⊗ f₂ i₂ ⊗ f₃ i₃) ≫ ιTensorObj₃ Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
-  rw [ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl,
-    ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl, assoc, ι_tensorHom,
-    ← id_tensorHom, ← id_tensorHom, ← MonoidalCategory.tensor_comp_assoc, ι_tensorHom,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp, comp_id]
-
-@[reassoc (attr := simp)]
 lemma ιTensorObj₃'_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃)
     (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ tensorHom (tensorHom f₁ f₂) f₃ j =
@@ -230,17 +245,7 @@ lemma ιTensorObj₃'_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f
     ← tensorHom_id, ← tensorHom_id, ← MonoidalCategory.tensor_comp_assoc, id_comp,
     ι_tensorHom, ← MonoidalCategory.tensor_comp_assoc, comp_id]
 
-@[ext]
-lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
-    [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
-    (h : ∀ (i₁ i₂ i₃ : I) (hi : i₁ + i₂ + i₃ = j),
-      ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ f = ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ g) :
-      f = g := by
-  apply mapBifunctorBifunctor₂₃MapObj_ext (H := H)
-  intro i₁ i₂ i₃ hi
-  exact h i₁ i₂ i₃ hi
-
-@[ext]
+@[ext (iff := false)]
 lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X₃ j ⟶ A)
     [H : HasGoodTensor₁₂Tensor X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
@@ -250,7 +255,16 @@ lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X
   intro i₁ i₂ i₃ hi
   exact h i₁ i₂ i₃ hi
 
-variable (X₁ X₂ X₃)
+end
+
+section
+variable [HasTensor X₁ X₂] [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor X₂ X₃]
+  [HasTensor X₁ (tensorObj X₂ X₃)]
+
+/-- The associator isomorphism for graded objects. -/
+noncomputable def associator [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃] :
+  tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
+    mapBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
 
 @[reassoc (attr := simp)]
 lemma ιTensorObj₃'_associator_hom
@@ -272,13 +286,15 @@ lemma ιTensorObj₃_associator_inv
 
 variable {X₁ X₂ X₃}
 
+variable [HasTensor Y₁ Y₂] [HasTensor (tensorObj Y₁ Y₂) Y₃] [HasTensor Y₂ Y₃]
+  [HasTensor Y₁ (tensorObj Y₂ Y₃)] in
 lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃)
     [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃]
     [HasGoodTensor₁₂Tensor Y₁ Y₂ Y₃] [HasGoodTensorTensor₂₃ Y₁ Y₂ Y₃] :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
       (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by aesop_cat
 
-variable (X₁ X₂ X₃)
+end
 
 /-- Given `Z : C` and three graded objects `X₁`, `X₂` and `X₃` in `GradedObject I C`,
 this typeclass expresses that functor `Z ⊗ _` commutes with the coproduct of
@@ -291,8 +307,9 @@ abbrev _root_.CategoryTheory.GradedObject.HasLeftTensor₃ObjExt (j : I) := Pres
    ((curriedTensor C).obj Z)
 
 variable {X₁ X₂ X₃}
+variable [HasTensor X₂ X₃] [HasTensor X₁ (tensorObj X₂ X₃)]
 
-@[ext]
+@[ext (iff := false)]
 lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C)
     (f g : Z ⊗ tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
@@ -339,7 +356,7 @@ abbrev _root_.CategoryTheory.GradedObject.HasTensor₄ObjExt :=
 
 variable {X₁ X₂ X₃ X₄}
 
-@[ext]
+@[ext (iff := false)]
 lemma tensorObj₄_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ (tensorObj X₃ X₄)) j ⟶ A)
     [HasGoodTensorTensor₂₃ X₂ X₃ X₄]
     [H : HasTensor₄ObjExt X₁ X₂ X₃ X₄]
@@ -404,7 +421,7 @@ lemma pentagon_inv :
       MonoidalCategory.whiskerLeft_comp_assoc,
       ← ιTensorObj₃_eq_assoc X₁ X₂ (tensorObj X₃ X₄) i₁ i₂ (i₃ + i₄) j
         (by rw [← add_assoc, h]) (i₂ + i₃ + i₄) (by rw [add_assoc]),
-      ιTensorObj₃_associator_inv_assoc, whiskerLeft_whiskerLeft_associator_inv_assoc,
+      ιTensorObj₃_associator_inv_assoc, associator_inv_naturality_right_assoc,
       ιTensorObj₃'_eq_assoc X₁ X₂ (tensorObj X₃ X₄) i₁ i₂ (i₃ + i₄) j
         (by rw [← add_assoc, h]) _ rfl, whisker_exchange_assoc,
       ← ιTensorObj₃_eq_assoc (tensorObj X₁ X₂) X₃ X₄ (i₁ + i₂) i₃ i₄ j h _ rfl,

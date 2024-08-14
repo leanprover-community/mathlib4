@@ -42,13 +42,10 @@ cofinality, regular cardinals, limits cardinals, inaccessible cardinals,
 infinite pigeonhole principle
 -/
 
-
 noncomputable section
 
 open Function Cardinal Set Order
-
-open scoped Classical
-open Cardinal Ordinal
+open scoped Ordinal
 
 universe u v w
 

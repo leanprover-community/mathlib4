@@ -42,9 +42,6 @@ def parse_set_option : Syntax → Option Name
 def is_set_option : Syntax → Bool :=
   fun stx ↦ parse_set_option stx matches some _name
 
-/-- Gets the value of the `linter.setOption` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.setOption o
-
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option.
 
@@ -54,7 +51,7 @@ used in production code.
 (Some tests will intentionally use one of these options; in this case, simply allow the linter.)
 -/
 def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterHash (← getOptions) do
+    unless Linter.getLinterValue linter.setOption (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
