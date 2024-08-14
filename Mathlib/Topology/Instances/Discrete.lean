@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Instances related to the discrete topology
