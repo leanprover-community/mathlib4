@@ -413,9 +413,6 @@ theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
   eq_bot_or_bot_lt
 #align ordinal.eq_zero_or_pos Ordinal.eq_zero_or_pos
 
-theorem pos_of_gt {o p : Ordinal} (h : p < o) : 0 < o :=
-  lt_of_le_of_lt bot_le h
-
 instance zeroLEOneClass : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
 
