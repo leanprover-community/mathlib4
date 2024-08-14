@@ -123,12 +123,10 @@ theorem le_floor (h : (n : α) ≤ a) : n ≤ ⌊a⌋₊ :=
 
 theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
   FloorSemiring.gc_ceil
-#align nat.gc_ceil_coe Nat.gc_ceil_coe
 
 @[simp]
 theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
   gc_ceil_coe _ _
-#align nat.ceil_le Nat.ceil_le
 
 end OrderedSemiring
 
