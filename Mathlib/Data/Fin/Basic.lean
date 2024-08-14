@@ -78,6 +78,11 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
 
 namespace Fin
 
+@[deprecated (since := "2024-02-15")] alias eq_of_veq := eq_of_val_eq
+@[deprecated (since := "2024-02-15")] alias veq_of_eq := val_eq_of_eq
+@[deprecated (since := "2024-08-13")] alias ne_of_vne := ne_of_val_ne
+@[deprecated (since := "2024-08-13")] alias vne_of_ne := val_ne_of_ne
+
 instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
 
