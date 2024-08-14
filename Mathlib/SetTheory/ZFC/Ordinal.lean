@@ -20,10 +20,8 @@ Further development can be found on the Mathlib 3 branch `von_neumann_v2`.
 
 ## TODO
 
-- Define von Neumann ordinals.
-- Define the basic arithmetic operations on ordinals from a purely set-theoretic perspective.
-- Prove the equivalences between these definitions and those provided in
-  `SetTheory/Ordinal/Arithmetic.lean`.
+- Define von Neumann ordinals and the von Neumann hierarchy.
+- Build correspondences between these notions and those of the standard `Ordinal` type.
 -/
 
 
