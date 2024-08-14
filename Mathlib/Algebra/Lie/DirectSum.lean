@@ -229,10 +229,13 @@ variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
 Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
+  letI : (i : ι) → LieRing (I i) := fun _ => LieIdeal.lieRing ..
   DirectSum.lieRing fun i => ↥(I i)
 
 /-- See `DirectSum.lieRingOfIdeals` comment. -/
 instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) :=
+  letI : (i : ι) → LieAlgebra R (I i) := fun _ => LieIdeal.lieAlgebra ..
+  letI : (i : ι) → LieRing (I i) := fun _ => LieIdeal.lieRing ..
   DirectSum.lieAlgebra fun i => ↥(I i)
 
 end Ideals
