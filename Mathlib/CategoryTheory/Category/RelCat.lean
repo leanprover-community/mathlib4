@@ -27,7 +27,7 @@ universe u
 
 -- This file is about Lean 3 declaration "Rel".
 
-/-- A type synonym for `Type`, which carries the category instance for which
+/-- A type synonym for `Type u`, which carries the category instance for which
     morphisms are binary relations. -/
 def RelCat :=
   Type u
@@ -83,7 +83,7 @@ instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
 
 /-- A relation is an isomorphism in `RelCat` iff it is the image of an isomorphism in
-`Type`. -/
+`Type u`. -/
 theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     IsIso (C := RelCat) r ↔ ∃ f : (Iso (C := Type u) X Y), graphFunctor.map f.hom = r := by
   constructor
