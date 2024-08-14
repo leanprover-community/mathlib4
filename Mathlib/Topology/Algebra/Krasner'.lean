@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.RingTheory.Henselian
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Connected.Separation
+import Mathlib.FieldTheory.Normal
 
 
 import Mathlib.Topology.Algebra.KrasnerDependency
@@ -17,7 +18,11 @@ import Mathlib.Topology.Algebra.KrasnerDependency
 2. proof ‖z‖ = ‖z'‖ -- finished
 3. add dictionary --
 4. fill the version of valuations
+
+5. Furthur change theorem like `Normal.minpoly_eq_iff_mem_orbit` using `IsConjRoot`
 -/
+
+open Polynomial minpoly IntermediateField
 
 variable {R : Type*} {A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
@@ -39,16 +44,29 @@ theorem refl {x : A} : IsConjRoot R x x := rfl
 theorem symm {x x' : A} (h : IsConjRoot R x x') : IsConjRoot R x' x := Eq.symm h
 
 theorem trans {x x' x'': A} (h₁ : IsConjRoot R x x') (h₂ : IsConjRoot R x' x'') :
-    IsConjRoot R x x'' := Eq.trans
+    IsConjRoot R x x'' := Eq.trans h₁ h₂
 
-₁eorem of_minpoly_eq {x x' : A} (h : minpoly R x = minpoly R x') : IsConjRoot R x x' := h
+theorem of_minpoly_eq {x x' : A} (h : minpoly R x = minpoly R x') : IsConjRoot R x x' := h
 
-theorem algEquiv_apply (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R x (s x) := sorry
+theorem algEquiv_apply (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R x (s x) :=
+  Eq.symm (minpoly.algEquiv_eq s x)
 
-theorem algEquiv_apply₂ (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRoot R (s₁ x) (s₂ x) := sorry
+theorem algEquiv_apply₂ (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRoot R (s₁ x) (s₂ x) :=
+  of_minpoly_eq <| (minpoly.algEquiv_eq s₂ x) ▸ (minpoly.algEquiv_eq s₁ x)
 
 variable {K} in
-theorem exist_algEquiv {x x': L} (h : IsConjRoot K x x') : ∃ σ : L ≃ₐ[K] L, x' = σ x := sorry
+theorem exist_algEquiv [Normal K L] {x x': L} (h : IsConjRoot K x x') :
+    ∃ σ : L ≃ₐ[K] L, x' = σ x := by
+  obtain ⟨σ, hσ⟩ :=
+    exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x')
+  exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ.symm⟩
+
+theorem eq_of_degree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
+    (g : degree (minpoly R x) = 1) : x = x' := by
+  sorry
+
+theorem eq_of_natDegree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
+    (g : natDegree (minpoly R x) = 1) : x = x' := sorry
 
 theorem eq_of_isConjRoot_algebraMap {r : R} {x : A} (h : IsConjRoot R x (algebraMap R A r)) :
     x = algebraMap R A r := sorry
@@ -250,7 +268,7 @@ theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
   }
   have eq_spnML: (norm : L → ℝ) = spectralNorm M L := by
     apply Eq.trans eq_spnL
-    apply (funext <| spectralNorm_unique_field_norm_ext (K := K)
+    apply (_root_.funext <| spectralNorm_unique_field_norm_ext (K := K)
       (f := (spectralMulAlgNorm is_naM).toMulRingNorm) _ is_na).symm
     apply functionExtends_of_functionExtends_of_functionExtends (fA := (norm : M → ℝ))
     · intro m
@@ -259,6 +277,7 @@ theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
   have norm_eq: ‖z‖ = ‖z'‖ := by
     rw [eq_spnML]
     obtain ⟨σ , h⟩ := IsConjRoot.exist_algEquiv h1
+    -- `sigma should be L to L map? or M should be Normal closure of K(y)?`
     exact h.symm ▸ @spectralNorm_aut_isom M _ L _ M.toAlgebra σ z
     -- spectralNorm K L = spectralnorm M L
   -- IsConjRoot.val_eq M hM (Polynomial.Separable.isIntegral zsep) h1 -- need rank one -- exist_algEquiv
