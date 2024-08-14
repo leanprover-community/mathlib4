@@ -42,11 +42,8 @@ def getAdmit (stx : Syntax) : Array Syntax :=
 The tactics `admit` and `sorry` are synonyms.
 The use of `sorry` is much more common and should be preferred.
 -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.admit o
-
-@[inherit_doc getLinterHash]
 def admitLinter : Linter where run := withSetOptionIn fun stx => do
-  unless getLinterHash (← getOptions) do
+  unless Linter.getLinterValue linter.admit (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
