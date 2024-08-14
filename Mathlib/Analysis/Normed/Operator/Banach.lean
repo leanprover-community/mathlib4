@@ -177,9 +177,10 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   refine ⟨2 * C + 1, by linarith, fun y => ?_⟩
   have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
-    induction' n with n IH
-    · simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
-    · rw [iterate_succ']
+    induction n with
+    | zero => simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
+    | succ n IH =>
+      rw [iterate_succ']
       apply le_trans (hle _) _
       rw [pow_succ', mul_assoc]
       gcongr
@@ -205,9 +206,9 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ = (2 * C + 1) * ‖y‖ := by ring
   have fsumeq : ∀ n : ℕ, f (∑ i ∈ Finset.range n, u i) = y - h^[n] y := by
     intro n
-    induction' n with n IH
-    · simp [f.map_zero]
-    · rw [sum_range_succ, f.map_add, IH, iterate_succ_apply', sub_add]
+    induction n with
+    | zero => simp [f.map_zero]
+    | succ n IH => rw [sum_range_succ, f.map_add, IH, iterate_succ_apply', sub_add]
   have : Tendsto (fun n => ∑ i ∈ Finset.range n, u i) atTop (𝓝 x) := su.hasSum.tendsto_sum_nat
   have L₁ : Tendsto (fun n => f (∑ i ∈ Finset.range n, u i)) atTop (𝓝 (f x)) :=
     (f.continuous.tendsto _).comp this

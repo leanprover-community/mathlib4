@@ -48,16 +48,17 @@ variable {M : Type*} [OrderedAddCommMonoid M] {f : ℕ → M} {u : ℕ → ℕ}
 theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : Monotone u) (n : ℕ) :
     (∑ k ∈ Ico (u 0) (u n), f k) ≤ ∑ k ∈ range n, (u (k + 1) - u k) • f (u k) := by
-  induction' n with n ihn
-  · simp
-  suffices (∑ k ∈ Ico (u n) (u (n + 1)), f k) ≤ (u (n + 1) - u n) • f (u n) by
-    rw [sum_range_succ, ← sum_Ico_consecutive]
-    · exact add_le_add ihn this
-    exacts [hu n.zero_le, hu n.le_succ]
-  have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
-    hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
-  convert sum_le_sum this
-  simp [pow_succ, mul_two]
+  induction n with
+  | zero => simp
+  | succ n ihn =>
+    suffices (∑ k ∈ Ico (u n) (u (n + 1)), f k) ≤ (u (n + 1) - u n) • f (u n) by
+      rw [sum_range_succ, ← sum_Ico_consecutive]
+      · exact add_le_add ihn this
+      exacts [hu n.zero_le, hu n.le_succ]
+    have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
+      hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
+    convert sum_le_sum this
+    simp [pow_succ, mul_two]
 
 theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ Ico 1 (2 ^ n), f k) ≤ ∑ k ∈ range n, 2 ^ k • f (2 ^ k) := by
