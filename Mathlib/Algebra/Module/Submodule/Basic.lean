@@ -236,6 +236,7 @@ instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐ�
 protected theorem nonempty : (p : Set M).Nonempty :=
   ⟨0, p.zero_mem⟩
 
+@[simp]
 theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 

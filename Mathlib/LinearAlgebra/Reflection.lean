@@ -170,9 +170,10 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
   have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
-    simp only [Φ'] at hy'
+    simp only [Φ'] at hy' ⊢
     rw [range_inclusion] at hy'
     simp only [SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
+    rw [range_inclusion]
     exact hF hy'
   exact eq_of_preReflection_mapsTo hx' hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
 
