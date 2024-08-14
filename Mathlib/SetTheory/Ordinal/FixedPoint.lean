@@ -442,7 +442,7 @@ theorem deriv_eq_derivFamily (f : Ordinal → Ordinal) : deriv f = derivFamily f
   rfl
 
 @[simp]
-theorem deriv_zero (f) : deriv f 0 = nfp f 0 :=
+theorem deriv_zero_right (f) : deriv f 0 = nfp f 0 :=
   derivFamily_zero _
 
 @[simp]
@@ -477,6 +477,27 @@ theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoi
 theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
   (IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) IsNormal.refl).2 <| by simp [h]
 
+@[simp]
+theorem nfp_zero : nfp 0 = id := by
+  rw [← sup_iterate_eq_nfp]
+  refine funext fun a => (sup_le fun n => ?_).antisymm (le_sup (fun n => 0^[n] a) 0)
+  induction' n with n _
+  · rfl
+  rw [Function.iterate_succ']
+  exact Ordinal.zero_le a
+
+theorem nfp_zero_left (a) : nfp 0 a = a := by
+  rw [nfp_zero]
+  rfl
+
+@[simp]
+theorem deriv_zero : deriv 0 = id :=
+  deriv_eq_id_of_nfp_eq_id nfp_zero
+
+theorem deriv_zero_left (a) : deriv 0 a = a := by
+  rw [deriv_zero]
+  rfl
+
 end
 
 /-! ### Fixed points of addition -/
@@ -498,7 +519,7 @@ theorem nfp_add_eq_mul_omega {a b} (hba : b ≤ a * omega) : nfp (a + ·) b = a 
 
 theorem add_eq_right_iff_mul_omega_le {a b : Ordinal} : a + b = b ↔ a * omega ≤ b := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [← nfp_add_zero a, ← deriv_zero]
+  · rw [← nfp_add_zero a, ← deriv_zero_right]
     cases' (add_isNormal a).fp_iff_deriv.1 h with c hc
     rw [← hc]
     exact (deriv_isNormal _).monotone (Ordinal.zero_le _)
@@ -514,7 +535,7 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
   revert b
   rw [← funext_iff, IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (add_isNormal _)]
   refine ⟨?_, fun a h => ?_⟩
-  · rw [deriv_zero, add_zero]
+  · rw [deriv_zero_right, add_zero]
     exact nfp_add_zero a
   · rw [deriv_succ, h, add_succ]
     exact nfp_eq_self (add_eq_right_iff_mul_omega_le.2 ((le_add_right _ _).trans (le_succ _)))
@@ -542,27 +563,12 @@ theorem nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by
   induction' n with n hn; · rfl
   dsimp only; rwa [iterate_succ_apply, mul_zero]
 
-@[simp]
-theorem nfp_zero_mul : nfp (HMul.hMul 0) = id := by
-  rw [← sup_iterate_eq_nfp]
-  refine funext fun a => (sup_le fun n => ?_).antisymm (le_sup (fun n => (0 * ·)^[n] a) 0)
-  induction' n with n _
-  · rfl
-  rw [Function.iterate_succ']
-  change 0 * _ ≤ a
-  rw [zero_mul]
-  exact Ordinal.zero_le a
-
-@[simp]
-theorem deriv_mul_zero : deriv (HMul.hMul 0) = id :=
-  deriv_eq_id_of_nfp_eq_id nfp_zero_mul
-
 theorem nfp_mul_eq_opow_omega {a b : Ordinal} (hb : 0 < b) (hba : b ≤ (a^omega)) :
     nfp (a * ·) b = (a^omega.{u}) := by
   rcases eq_zero_or_pos a with ha | ha
   · rw [ha, zero_opow omega_ne_zero] at hba ⊢
-    rw [Ordinal.le_zero.1 hba, nfp_zero_mul]
-    rfl
+    simp_rw [Ordinal.le_zero.1 hba, zero_mul]
+    exact nfp_zero_left 0
   apply le_antisymm
   · apply nfp_le_fp (mul_isNormal ha).monotone hba
     rw [← opow_one_add, one_add_omega]
@@ -623,7 +629,7 @@ theorem deriv_mul_eq_opow_omega_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
   rw [← funext_iff,
     IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (mul_isNormal (opow_pos omega ha))]
   refine ⟨?_, fun c h => ?_⟩
-  · dsimp only; rw [deriv_zero, nfp_mul_zero, mul_zero]
+  · dsimp only; rw [deriv_zero_right, nfp_mul_zero, mul_zero]
   · rw [deriv_succ, h]
     exact nfp_mul_opow_omega_add c ha zero_lt_one (one_le_iff_pos.2 (opow_pos _ ha))
 
