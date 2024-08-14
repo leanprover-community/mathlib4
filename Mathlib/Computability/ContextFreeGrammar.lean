@@ -255,14 +255,14 @@ theorem Language.IsContextFree.reverse (L : Language T) :
 
 end closure_reversal
 
-section lift_sink
+section embed_project
 
 /-! This section contains only auxiliary constructions that will shorten upcoming proofs of
 closure properties. When combining several grammars together, we usually want to take a sum type of
-their nonterminal types and lift respective nonterminals to this sum type. We subsequently show
+their nonterminal types and embed respective nonterminals to this sum type. We subsequently show
 that the resulting grammar preserves derivations of those strings that may contain any terminals but
-only the proper nonterminals. The lifting operation must be injective. The sinking operation must be
-injective on those symbols where it is defined. -/
+only the proper nonterminals. The embedding operation must be injective. The projection operation
+must be injective on those symbols where it is defined. -/
 
 /-- Mapping `Symbol` when it is a nonterminal. -/
 def Symbol.map {N₀ N : Type*} (f : N₀ → N) : Symbol T N₀ → Symbol T N
@@ -274,100 +274,100 @@ def Symbol.filterMap {N₀ N : Type*} (f : N → Option N₀) : Symbol T N → O
   | Symbol.terminal t => some (Symbol.terminal t)
   | Symbol.nonterminal n => Option.map Symbol.nonterminal (f n)
 
-/-- Lifting `ContextFreeRule` to a larger nonterminal type. -/
-def ContextFreeRule.lift {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ → N) :
+/-- Mapping `ContextFreeRule` to a another nonterminal type. -/
+def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ → N) :
     ContextFreeRule T N :=
   ⟨f r.input, r.output.map (Symbol.map f)⟩
 
 /-- A pair of `ContextFreeGrammar`s that, roughly speaking, work the same way. -/
-structure LiftedContextFreeGrammar (T : Type uT) where
+structure EmbeddedContextFreeGrammar (T : Type uT) where
   /-- The smaller grammar. -/
   g₀ : ContextFreeGrammar.{uN} T
   /-- The bigger grammar. -/
   g : ContextFreeGrammar.{uN} T
   /-- Mapping nonterminals from the smaller type to the bigger type. -/
-  liftNT : g₀.NT → g.NT
+  embedNT : g₀.NT → g.NT
   /-- Mapping nonterminals from the bigger type to the smaller type. -/
-  sinkNT : g.NT → Option g₀.NT
+  projectNT : g.NT → Option g₀.NT
   /-- The former map is injective. -/
-  lift_inj : Function.Injective liftNT
+  embed_inj : Function.Injective embedNT
   /-- The latter map is injective where defined. -/
-  sink_inj : ∀ x y, sinkNT x = sinkNT y → x = y ∨ sinkNT x = none
+  project_inj : ∀ x y, projectNT x = projectNT y → x = y ∨ projectNT x = none
   /-- The two mappings are essentially inverses. -/
-  sinkNT_liftNT : ∀ n₀ : g₀.NT, sinkNT (liftNT n₀) = some n₀
+  projectNT_embedNT : ∀ n₀ : g₀.NT, projectNT (embedNT n₀) = some n₀
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
-  lift_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.lift liftNT ∈ g.rules
+  embed_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.map embedNT ∈ g.rules
   /-- Each rule of the bigger grammar whose input nonterminal the smaller grammar recognizes
   has a corresponding rule in the smaller grammar. -/
   preimage_of_rules :
     ∀ r : ContextFreeRule T g.NT,
       r ∈ g.rules → ∀ n₀ : g₀.NT,
-        liftNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.lift liftNT = r
+        embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
 
-lemma LiftedContextFreeGrammar.sinkNT_inverse_liftNT (G : LiftedContextFreeGrammar T) :
-    ∀ x : G.g.NT, (∃ n₀, G.sinkNT x = some n₀) → (Option.map G.liftNT (G.sinkNT x) = x) := by
+lemma EmbeddedContextFreeGrammar.projectNT_inverse_embedNT (G : EmbeddedContextFreeGrammar T) :
+    ∀ x : G.g.NT, (∃ n₀, G.projectNT x = some n₀) → (Option.map G.embedNT (G.projectNT x) = x) := by
   intro x ⟨n₀, hx⟩
   rw [hx, Option.map_some']
   apply congr_arg
   by_contra hnx
-  cases (G.sinkNT_liftNT n₀ ▸ G.sink_inj x (G.liftNT n₀)) hx with
+  cases (G.projectNT_embedNT n₀ ▸ G.project_inj x (G.embedNT n₀)) hx with
   | inl case_valu => exact hnx case_valu.symm
   | inr case_none => exact Option.noConfusion (hx ▸ case_none)
 
-lemma LiftedContextFreeGrammar.Produces_map {G : LiftedContextFreeGrammar T}
+lemma EmbeddedContextFreeGrammar.Produces_map {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g₀.NT)} (hG : G.g₀.Produces w₁ w₂) :
-    G.g.Produces (w₁.map (Symbol.map G.liftNT)) (w₂.map (Symbol.map G.liftNT)) := by
+    G.g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
-  refine ⟨r.lift G.liftNT, G.lift_mem_rules r rin, ?_⟩
+  refine ⟨r.map G.embedNT, G.embed_mem_rules r rin, ?_⟩
   rw [ContextFreeRule.rewrites_iff]
-  use u.map (Symbol.map G.liftNT), v.map (Symbol.map G.liftNT)
+  use u.map (Symbol.map G.embedNT), v.map (Symbol.map G.embedNT)
   constructor
-  · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.liftNT)) bef
-  · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.liftNT)) aft
+  · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) bef
+  · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
 /-- Derivation by `G.g₀` can be mirrored by `G.g` derivation. -/
-lemma LiftedContextFreeGrammar.Derives_map {G : LiftedContextFreeGrammar T}
+lemma EmbeddedContextFreeGrammar.Derives_map {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g₀.NT)} (hG : G.g₀.Derives w₁ w₂) :
-    G.g.Derives (w₁.map (Symbol.map G.liftNT)) (w₂.map (Symbol.map G.liftNT)) := by
+    G.g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
   induction hG with
   | refl => rfl
   | tail _ orig ih => exact ih.trans_produces (Produces_map orig)
 
-/-- A `Symbol` is good iff it is one of those nonterminals that result from sinking or it is any
+/-- A `Symbol` is good iff it is one of those nonterminals that result from projecting or it is any
 terminal. -/
-def LiftedContextFreeGrammar.GoodLetter {G : LiftedContextFreeGrammar T} : Symbol T G.g.NT → Prop
+def EmbeddedContextFreeGrammar.Good {G : EmbeddedContextFreeGrammar T} : Symbol T G.g.NT → Prop
   | Symbol.terminal _ => True
-  | Symbol.nonterminal n => ∃ n₀ : G.g₀.NT, G.sinkNT n = n₀
+  | Symbol.nonterminal n => ∃ n₀ : G.g₀.NT, G.projectNT n = n₀
 
 /-- A string is good iff every `Symbol` in it is good. -/
-def LiftedContextFreeGrammar.GoodString {G : LiftedContextFreeGrammar T}
+def EmbeddedContextFreeGrammar.GoodString {G : EmbeddedContextFreeGrammar T}
     (s : List (Symbol T G.g.NT)) : Prop :=
-  ∀ a ∈ s, GoodLetter a
+  ∀ a ∈ s, Good a
 
-lemma LiftedContextFreeGrammar.singletonGoodString {G : LiftedContextFreeGrammar T}
-    {s : Symbol T G.g.NT} (hs : G.GoodLetter s) : G.GoodString [s] := by
+lemma EmbeddedContextFreeGrammar.singletonGoodString {G : EmbeddedContextFreeGrammar T}
+    {s : Symbol T G.g.NT} (hs : G.Good s) : G.GoodString [s] := by
   simpa [GoodString] using hs
 
-lemma LiftedContextFreeGrammar.Produces_filterMap {G : LiftedContextFreeGrammar T}
+lemma EmbeddedContextFreeGrammar.Produces_filterMap {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Produces w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Produces
-      (w₁.filterMap (Symbol.filterMap G.sinkNT))
-      (w₂.filterMap (Symbol.filterMap G.sinkNT)) ∧
+      (w₁.filterMap (Symbol.filterMap G.projectNT))
+      (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
     GoodString w₂ := by
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
-  obtain ⟨n₀, hn₀⟩ : GoodLetter (Symbol.nonterminal r.input) := by apply hw₁; simp
+  obtain ⟨n₀, hn₀⟩ : Good (Symbol.nonterminal r.input) := by apply hw₁; simp
   rcases G.preimage_of_rules r rin n₀ (by
-    simpa [G.sinkNT_inverse_liftNT r.input ⟨n₀, hn₀⟩, Option.map_some'] using
-      congr_arg (Option.map G.liftNT) hn₀.symm)
+    simpa [G.projectNT_inverse_embedNT r.input ⟨n₀, hn₀⟩, Option.map_some'] using
+      congr_arg (Option.map G.embedNT) hn₀.symm)
     with ⟨r₀, hr₀, hrr₀⟩
   constructor
   · refine ⟨r₀, hr₀, ?_⟩
     rw [ContextFreeRule.rewrites_iff]
-    use u.filterMap (Symbol.filterMap G.sinkNT), v.filterMap (Symbol.filterMap G.sinkNT)
-    have correct_inverse : Symbol.filterMap (T := T) G.sinkNT ∘ Symbol.map G.liftNT =
+    use u.filterMap (Symbol.filterMap G.projectNT), v.filterMap (Symbol.filterMap G.projectNT)
+    have correct_inverse : Symbol.filterMap (T := T) G.projectNT ∘ Symbol.map G.embedNT =
         Option.some := by
       ext1 x
       cases x
@@ -375,37 +375,37 @@ lemma LiftedContextFreeGrammar.Produces_filterMap {G : LiftedContextFreeGrammar 
       rw [Function.comp_apply]
       simp only [Symbol.filterMap, Symbol.map, Option.map_eq_some', Symbol.nonterminal.injEq]
       rw [exists_eq_right]
-      apply G.sinkNT_liftNT
+      apply G.projectNT_embedNT
     constructor
     · have middle :
-        List.filterMap (Symbol.filterMap (T := T) G.sinkNT)
-          [Symbol.nonterminal (G.liftNT r₀.input)] =
+        List.filterMap (Symbol.filterMap (T := T) G.projectNT)
+          [Symbol.nonterminal (G.embedNT r₀.input)] =
           [Symbol.nonterminal r₀.input] := by
-        simp [Symbol.filterMap, G.sinkNT_liftNT]
-      simpa only [List.filterMap_append, ContextFreeRule.lift, ← hrr₀, middle]
-        using congr_arg (List.filterMap (Symbol.filterMap G.sinkNT)) bef
-    · simpa only [List.filterMap_append, ContextFreeRule.lift,
+        simp [Symbol.filterMap, G.projectNT_embedNT]
+      simpa only [List.filterMap_append, ContextFreeRule.map, ← hrr₀, middle]
+        using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) bef
+    · simpa only [List.filterMap_append, ContextFreeRule.map,
           List.filterMap_map, List.filterMap_some, ← hrr₀, correct_inverse]
-        using congr_arg (List.filterMap (Symbol.filterMap G.sinkNT)) aft
+        using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) aft
   · rw [aft, ← hrr₀]
     simp only [GoodString, List.forall_mem_append] at hw₁ ⊢
     refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
     intro a ha
     cases a
-    · simp [GoodLetter]
-    dsimp only [ContextFreeRule.lift] at ha
+    · simp [Good]
+    dsimp only [ContextFreeRule.map] at ha
     rw [List.mem_map] at ha
     rcases ha with ⟨s, -, hs⟩
     rw [← hs]
     cases s with
     | terminal _ => exact False.elim (Symbol.noConfusion hs)
-    | nonterminal s' => exact ⟨s', G.sinkNT_liftNT s'⟩
+    | nonterminal s' => exact ⟨s', G.projectNT_embedNT s'⟩
 
-lemma LiftedContextFreeGrammar.Derives_filterMap_aux {G : LiftedContextFreeGrammar T}
+lemma EmbeddedContextFreeGrammar.Derives_filterMap_aux {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Derives
-      (w₁.filterMap (Symbol.filterMap G.sinkNT))
-      (w₂.filterMap (Symbol.filterMap G.sinkNT)) ∧
+      (w₁.filterMap (Symbol.filterMap G.projectNT))
+      (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
     GoodString w₂ := by
   induction hG with
   | refl => exact ⟨by rfl, hw₁⟩
@@ -415,14 +415,14 @@ lemma LiftedContextFreeGrammar.Derives_filterMap_aux {G : LiftedContextFreeGramm
 
 /-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
 any nonterminals that `G.g₀` lacks. -/
-lemma LiftedContextFreeGrammar.Derives_filterMap (G : LiftedContextFreeGrammar T)
+lemma EmbeddedContextFreeGrammar.Derives_filterMap (G : EmbeddedContextFreeGrammar T)
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Derives
-      (w₁.filterMap (Symbol.filterMap G.sinkNT))
-      (w₂.filterMap (Symbol.filterMap G.sinkNT)) :=
+      (w₁.filterMap (Symbol.filterMap G.projectNT))
+      (w₂.filterMap (Symbol.filterMap G.projectNT)) :=
   (Derives_filterMap_aux hG hw₁).left
 
-end lift_sink
+end embed_project
 
 section closure_union
 
@@ -431,8 +431,8 @@ def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGra
   ContextFreeGrammar.mk (Option (g₁.NT ⊕ g₂.NT)) none (
     ⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩ :: (
     ⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩ :: (
-    List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inl)) g₁.rules ++
-    List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inr)) g₂.rules)))
+    List.map (ContextFreeRule.map · (Option.some ∘ Sum.inl)) g₁.rules ++
+    List.map (ContextFreeRule.map · (Option.some ∘ Sum.inr)) g₂.rules)))
 
 section union_aux
 
@@ -456,7 +456,7 @@ private def oN₂_of_N : (g₁.union g₂).NT → Option g₂.NT
   | some (Sum.inl _) => none
   | some (Sum.inr n) => some n
 
-private def g₁g : LiftedContextFreeGrammar T :=
+private def g₁g : EmbeddedContextFreeGrammar T :=
   ⟨g₁, g₁.union g₂, some ∘ Sum.inl, oN₁_of_N,
     (fun x y hxy => Sum.inl_injective (Option.some_injective _ hxy)),
     (by
@@ -515,11 +515,11 @@ private def g₁g : LiftedContextFreeGrammar T :=
             exfalso
             rw [List.mem_map] at hr
             rcases hr with ⟨_, -, rfl⟩
-            simp only [ContextFreeRule.lift, Function.comp_apply] at imposs
+            simp only [ContextFreeRule.map, Function.comp_apply] at imposs
             rw [Option.some_inj] at imposs
             exact Sum.noConfusion imposs)⟩
 
-private def g₂g : LiftedContextFreeGrammar T :=
+private def g₂g : EmbeddedContextFreeGrammar T :=
   ⟨g₂, g₁.union g₂, some ∘ Sum.inr, oN₂_of_N,
     (fun x y hxy => Sum.inr_injective (Option.some_injective _ hxy)),
     (by
@@ -575,7 +575,7 @@ private def g₂g : LiftedContextFreeGrammar T :=
             exfalso
             rw [List.mem_map] at hr
             rcases hr with ⟨_, -, rfl⟩
-            simp only [ContextFreeRule.lift, Function.comp_apply] at imposs
+            simp only [ContextFreeRule.map, Function.comp_apply] at imposs
             rw [Option.some_inj] at imposs
             exact Sum.noConfusion imposs
           | inr hr =>
@@ -605,15 +605,15 @@ variable {w : List T}
 
 private lemma in_union_of_in_left (hw : w ∈ g₁.language) : w ∈ (g₁.union g₂).language :=
   union_derives_left_initial.trans
-    (List.map_map (Symbol.map g₁g.liftNT) Symbol.terminal w ▸ g₁g.Derives_map hw)
+    (List.map_map (Symbol.map g₁g.embedNT) Symbol.terminal w ▸ g₁g.Derives_map hw)
 
 private lemma in_union_of_in_right (hw : w ∈ g₂.language) : w ∈ (g₁.union g₂).language :=
   union_derives_right_initial.trans
-    (List.map_map (Symbol.map g₂g.liftNT) Symbol.terminal w ▸ g₂g.Derives_map hw)
+    (List.map_map (Symbol.map g₂g.embedNT) Symbol.terminal w ▸ g₂g.Derives_map hw)
 
 private lemma List.filterMap_symbol_filterMap_terminal {N₀ N : Type*}
-    (sinkN : N → Option N₀) (w : List T) :
-    List.filterMap (Symbol.filterMap sinkN) (w.map Symbol.terminal) = w.map Symbol.terminal := by
+    (projectN : N → Option N₀) (w : List T) :
+    List.filterMap (Symbol.filterMap projectN) (w.map Symbol.terminal) = w.map Symbol.terminal := by
   induction w with
   | nil => rfl
   | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
@@ -622,8 +622,8 @@ private lemma in_left_of_in_union (hw : (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inl g₁.initial))]
       (List.map Symbol.terminal w)) :
     w ∈ g₁.language := by
-  apply w.filterMap_symbol_filterMap_terminal g₁g.sinkNT ▸ g₁g.Derives_filterMap hw
-  apply LiftedContextFreeGrammar.singletonGoodString
+  apply w.filterMap_symbol_filterMap_terminal g₁g.projectNT ▸ g₁g.Derives_filterMap hw
+  apply EmbeddedContextFreeGrammar.singletonGoodString
   constructor
   rfl
 
@@ -631,8 +631,8 @@ private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inr g₂.initial))]
       (List.map Symbol.terminal w)) :
     w ∈ g₂.language := by
-  apply w.filterMap_symbol_filterMap_terminal g₂g.sinkNT ▸ g₂g.Derives_filterMap hw
-  apply LiftedContextFreeGrammar.singletonGoodString
+  apply w.filterMap_symbol_filterMap_terminal g₂g.projectNT ▸ g₂g.Derives_filterMap hw
+  apply EmbeddedContextFreeGrammar.singletonGoodString
   constructor
   rfl
 
@@ -641,8 +641,8 @@ private lemma impossible_rule {r : ContextFreeRule T (g₁.union g₂).NT}
       ([] : List (Symbol T (g₁.union g₂).NT)) ++ [Symbol.nonterminal r.input] ++
       ([] : List (Symbol T (g₁.union g₂).NT)))
     (hr : r ∈
-      List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inl)) g₁.rules ++
-      List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inr)) g₂.rules) :
+      List.map (ContextFreeRule.map · (Option.some ∘ Sum.inl)) g₁.rules ++
+      List.map (ContextFreeRule.map · (Option.some ∘ Sum.inr)) g₂.rules) :
     False := by
   have rule_root : none = r.input := Symbol.nonterminal.inj (List.head_eq_of_cons_eq hg)
   rw [List.mem_append] at hr
