@@ -42,7 +42,7 @@ lemma ediam_def : G.ediam = ⨆ p : α × α, G.edist p.1 p.2 := by
 lemma edist_le_ediam {u v : α} : G.edist u v ≤ G.ediam :=
   le_iSup₂ (f := G.edist) u v
 
-lemma ediam_eq_top_iff : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
+lemma ediam_eq_top : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
   simp only [ediam, iSup_eq_top, lt_iSup_iff]
 
 lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
@@ -91,8 +91,7 @@ lemma ediam_eq_top_of_not_preconnected (h : ¬G.Preconnected) : G.ediam = ⊤ :=
 
 lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
     ∃ u v, G.edist u v = G.ediam :=
-  Prod.exists'.mp
-    <| ediam_def ▸ (ENat.sSup_mem_of_Nonempty_of_lt_top <| lt_top_iff_ne_top.mpr <| ediam_def ▸ h)
+  ENat.exists_eq_iSup₂_of_lt_top h.lt_top
 
 lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.edist u v = G.ediam := by
@@ -163,7 +162,7 @@ lemma diam_eq_zero_of_ediam_eq_top (h : G.ediam = ⊤) : G.diam = 0 := by
 lemma ediam_ne_top_of_diam_ne_zero (h : G.diam ≠ 0) : G.ediam ≠ ⊤ :=
   mt diam_eq_zero_of_ediam_eq_top  h
 
-lemma exists_dist_eq_diam_of_ne_zero [Nonempty α] :
+lemma exists_dist_eq_diam [Nonempty α] :
     ∃ u v, G.dist u v = G.diam := by
   by_cases h : G.diam = 0
   · simp [h]
