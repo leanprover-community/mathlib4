@@ -397,15 +397,12 @@ theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^
   | n + 1 => by
     rw [pow_succ, natCast_mul, natCast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_opow := natCast_opow
-
-theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : Ordinal)) = o ^ ω := by
+theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (⨆ n : ℕ, o ^ (n : Ordinal)) = o ^ ω := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)
   · exact (opow_isNormal ho₁).apply_omega
   · rw [one_opow]
-    refine le_antisymm (sup_le fun n => by rw [one_opow]) ?_
-    convert le_sup (fun n : ℕ => 1 ^ (n : Ordinal)) 0
+    refine le_antisymm (Ordinal.ciSup_le fun n => by rw [one_opow]) ?_
+    convert Ordinal.le_ciSup (fun n : ℕ => 1 ^ (n : Ordinal)) 0
     rw [Nat.cast_zero, opow_zero]
 
 end Ordinal

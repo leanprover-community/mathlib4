@@ -86,7 +86,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       ∃ t, t ⊆ s ∧ t.Nonempty ∧ BddAbove t ∧ sSup t = a,
       ∃ (o : Ordinal.{u}), o ≠ 0 ∧ ∃ (f : ∀ x < o, Ordinal),
         (∀ x hx, f x hx ∈ s) ∧ bsup.{u, u} o f = a,
-      ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ sup.{u, u} f = a] := by
+      ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ iSup f = a] := by
   tfae_have 1 → 2
   · simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter', nhds_left_eq_nhds]
     exact id
@@ -114,19 +114,18 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     exact ⟨_, out_nonempty_iff_ne_zero.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
   tfae_have 6 → 1
   · rintro ⟨ι, hne, f, hfs, rfl⟩
-    rw [sup, iSup]
     exact closure_mono (range_subset_iff.2 hfs) <| csSup_mem_closure (range_nonempty f)
       (bddAbove_range.{u, u} f)
   tfae_finish
 
 theorem mem_closure_iff_sup :
     a ∈ closure s ↔
-      ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ sup.{u, u} f = a :=
+      ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ iSup f = a :=
   ((mem_closure_tfae a s).out 0 5).trans <| by simp only [exists_prop]
 
 theorem mem_closed_iff_sup (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
-      (∀ i, f i ∈ s) ∧ sup.{u, u} f = a := by
+      (∀ i, f i ∈ s) ∧ iSup f = a := by
   rw [← mem_closure_iff_sup, hs.closure_eq]
 
 theorem mem_closure_iff_bsup :
@@ -143,7 +142,7 @@ theorem mem_closed_iff_bsup (hs : IsClosed s) :
 
 theorem isClosed_iff_sup :
     IsClosed s ↔
-      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → sup.{u, u} f ∈ s := by
+      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → iSup f ∈ s := by
   use fun hs ι hι f hf => (mem_closed_iff_sup hs).2 ⟨ι, hι, f, hf, rfl⟩
   rw [← closure_subset_iff_isClosed]
   intro h x hx
@@ -200,10 +199,10 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
     ⟨fun h => isClosed_iff_sup.2 fun {ι} hι f hf => ?_, fun h =>
       (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => ?_⟩⟩
   · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso hs).symm ⟨_, hf i⟩
-    suffices enumOrd s (sup.{u, u} g) = sup.{u, u} f by
+    suffices enumOrd s (iSup g) = iSup f by
       rw [← this]
       exact enumOrd_mem hs _
-    rw [@IsNormal.sup.{u, u, u} _ h ι g hι]
+    rw [@IsNormal.iSup.{u, u, u} _ h ι g hι]
     congr
     ext x
     change ((enumOrdOrderIso hs) _).val = f x
