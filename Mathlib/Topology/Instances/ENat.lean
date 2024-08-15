@@ -48,13 +48,10 @@ theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞
   mem_nhds_iff (coe_ne_top _)
 
 instance : ContinuousAdd ℕ∞ := by
-  refine ⟨continuous_iff_continuousAt.2 ?_⟩
-  rintro ⟨_ | a, b⟩
-  · exact tendsto_nhds_top_mono' continuousAt_fst fun p ↦ le_add_right le_rfl
-  rcases b with (_ | b)
-  · exact tendsto_nhds_top_mono' continuousAt_snd fun p ↦ le_add_left le_rfl
-  simp only [ContinuousAt, WithTop.some_eq_coe, ENat.some_eq_coe]
-  rw [nhds_prod_eq, nhds_natCast, nhds_natCast, ← Nat.cast_add, nhds_natCast]
-  simp
+  refine ⟨continuous_iff_continuousAt.2 fun (a, b) ↦ ?_⟩
+  match a, b with
+  | ⊤, _ => exact tendsto_nhds_top_mono' continuousAt_fst fun p ↦ le_add_right le_rfl
+  | (a : ℕ), ⊤ => exact tendsto_nhds_top_mono' continuousAt_snd fun p ↦ le_add_left le_rfl
+  | (a : ℕ), (b : ℕ) => simp [ContinuousAt, nhds_prod_eq, tendsto_pure_nhds]
 
 end ENat
