@@ -2219,6 +2219,7 @@ import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
+import Mathlib.Data.List.Monad
 import Mathlib.Data.List.NatAntidiagonal
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.NodupEquivFin
@@ -2538,6 +2539,7 @@ import Mathlib.Data.ZMod.Parity
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.Data.ZMod.Units
 import Mathlib.Deprecated.Aliases
+import Mathlib.Deprecated.Combinator
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.HashMap
 import Mathlib.Deprecated.Ring
@@ -2792,16 +2794,10 @@ import Mathlib.GroupTheory.Torsion
 import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Init.Classical
-import Mathlib.Init.Core
 import Mathlib.Init.Data.Int.Order
-import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Quot
-import Mathlib.Init.Data.Sigma.Basic
-import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Init.Logic
 import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Quot
@@ -3109,6 +3105,7 @@ import Mathlib.MeasureTheory.Covering.LiminfLimsup
 import Mathlib.MeasureTheory.Covering.OneDim
 import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Covering.VitaliFamily
+import Mathlib.MeasureTheory.Decomposition.Exhaustion
 import Mathlib.MeasureTheory.Decomposition.Jordan
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym

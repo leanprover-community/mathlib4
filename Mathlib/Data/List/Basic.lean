@@ -6,8 +6,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
-import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.List.Instances
+import Mathlib.Data.List.Monad
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
@@ -32,6 +31,12 @@ namespace List
 universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+
+/-- `≤` implies not `>` for lists. -/
+@[deprecated (since := "2024-07-27")]
+theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
+
+@[deprecated (since := "2024-06-07")] alias toArray_data := Array.data_toArray
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -90,12 +95,6 @@ theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
     a ∈ map f l ↔ f a ∈ l := by rw [mem_map, hf.exists_mem_and_apply_eq_iff]
 
-attribute [simp] List.mem_join
-
-attribute [simp] List.mem_bind
-
--- Porting note: bExists in Lean3, And in Lean4
-
 /-! ### length -/
 
 alias ⟨_, length_pos_of_ne_nil⟩ := length_pos
@@ -132,13 +131,10 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
 
 /-! ### set-theoretic notation of lists -/
 
--- ADHOC Porting note: instance from Lean3 core
 instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
 
--- ADHOC Porting note: instance from Lean3 core
 instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
--- ADHOC Porting note: instance from Lean3 core
 instance [DecidableEq α] : LawfulSingleton α (List α) :=
   { insert_emptyc_eq := fun x =>
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg (not_mem_nil _) }
@@ -185,9 +181,6 @@ theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
 
 /-! ### list subset -/
 
-instance : IsTrans (List α) Subset where
-  trans := fun _ _ _ => List.Subset.trans
-
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
     (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
   cons_subset.2 ⟨ainm, lsubm⟩
@@ -208,8 +201,6 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
 
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
   rfl
-
--- Porting note: in Batteries
 
 @[deprecated (since := "2024-03-24")] alias append_eq_cons_iff := append_eq_cons
 
@@ -289,9 +280,6 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
 /-! ### concat -/
 
 /-! ### reverse -/
-
--- Porting note: Do we need this?
-attribute [local simp] reverseAux
 
 theorem reverse_cons' (a : α) (l : List α) : reverse (a :: l) = concat (reverse l) a := by
   simp only [reverse_cons, concat_eq_append]
@@ -401,7 +389,6 @@ lemma getLast_filter {p : α → Bool} :
 
 /-! ### getLast? -/
 
--- Porting note: Moved earlier in file, for use in subsequent lemmas.
 @[simp]
 theorem getLast?_cons_cons (a b : α) (l : List α) :
     getLast? (a :: b :: l) = getLast? (b :: l) := rfl
@@ -720,7 +707,6 @@ theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ 
 @[deprecated (since := "2024-04-07")]
 theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
 
-attribute [simp] cons_sublist_cons
 @[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
 
 -- Porting note: this lemma seems to have been renamed on the occasion of its move to Batteries
@@ -1598,15 +1584,7 @@ theorem intersperse_cons_cons (a b c : α) (tl : List α) :
 
 section SplitAtOn
 
-/- Porting note: the new version of `splitOnP` uses a `Bool`-valued predicate instead of a
-  `Prop`-valued one. All downstream definitions have been updated to match. -/
-
 variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α → List α)
-
-/- Porting note: this had to be rewritten because of the new implementation of `splitAt`. It's
-  long in large part because `splitAt.go` (`splitAt`'s auxiliary function) works differently
-  in the case where n ≥ length l, requiring two separate cases (and two separate inductions). Still,
-  this can hopefully be golfed. -/
 
 @[simp]
 theorem splitAt_eq_take_drop (n : ℕ) (l : List α) : splitAt n l = (take n l, drop n l) := by
@@ -1649,10 +1627,6 @@ theorem splitOn_nil [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
 @[simp]
 theorem splitOnP_nil : [].splitOnP p = [[]] :=
   rfl
-
-/- Porting note: `split_on_p_aux` and `split_on_p_aux'` were used to prove facts about
-  `split_on_p`. `splitOnP` has a different structure, and we need different facts about
-  `splitOnP.go`. Theorems involving `split_on_p_aux` have been omitted where possible. -/
 
 theorem splitOnP.go_ne_nil (xs acc : List α) : splitOnP.go p xs acc ≠ [] := by
   induction xs generalizing acc <;> simp [go]; split <;> simp [*]
@@ -1756,7 +1730,6 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
 
 end SplitAtOn
 
-/- Porting note: new; here tentatively -/
 /-! ### modifyLast -/
 
 section ModifyLast
@@ -1827,18 +1800,6 @@ theorem nthLe_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : 
 section find?
 
 variable {p : α → Bool} {l : List α} {a : α}
-
--- @[simp]
--- Later porting note (at time of this lemma moving to Batteries):
--- removing attribute `nolint simpNF`
-attribute [simp 1100] find?_cons_of_pos
-
--- @[simp]
--- Later porting note (at time of this lemma moving to Batteries):
--- removing attribute `nolint simpNF`
-attribute [simp 1100] find?_cons_of_neg
-
-attribute [simp] find?_eq_none
 
 @[deprecated (since := "2024-05-05")] alias find?_mem := mem_of_find?_eq_some
 
@@ -2066,9 +2027,6 @@ theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length)
     by_cases hp : p hd
     · simp [hp, IH]
     · simp [hp, nthLe_cons]
--- Porting note: How did the Lean 3 proof work,
--- without mentioning nthLe_cons?
--- Same question for takeWhile_eq_nil_iff below
 
 variable {p} {l : List α}
 
@@ -2445,13 +2403,6 @@ theorem zipRight_eq_zipRight' : zipRight as bs = (zipRight' as bs).fst := by
   induction as generalizing bs <;> cases bs <;> simp [*]
 
 end ZipRight
-
-/-! ### toChunks -/
-
--- Porting note:
--- The definition of `toChunks` has changed substantially from Lean 3.
--- The theorems about `toChunks` are not used anywhere in mathlib, anyways.
--- TODO: Prove these theorems for the new definitions.
 
 /-! ### Forall -/
 
