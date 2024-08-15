@@ -55,12 +55,13 @@ variable [LieAlgebra.IsNilpotent R L] (χ₁ χ₂ : L → R) (p q : ℤ)
 section
 
 variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+include hχ₁
 
 lemma eventually_weightSpace_smul_add_eq_bot :
     ∀ᶠ (k : ℕ) in Filter.atTop, weightSpace M (k • χ₁ + χ₂) = ⊥ := by
   let f : ℕ → L → R := fun k ↦ k • χ₁ + χ₂
   suffices Injective f by
-    rw [← Nat.cofinite_eq_atTop, Filter.eventually_cofinite, ← finite_image_iff (this.injOn _)]
+    rw [← Nat.cofinite_eq_atTop, Filter.eventually_cofinite, ← finite_image_iff this.injOn]
     apply (finite_weightSpace_ne_bot R L M).subset
     simp [f]
   intro k l hkl
@@ -222,7 +223,7 @@ section
 variable {M}
 variable [LieAlgebra.IsNilpotent R L]
 variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
-variable (α : L → R) (β : Weight R L M) (hα : α ≠ 0)
+variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/
 noncomputable
@@ -242,6 +243,10 @@ def chainBotCoeff : ℕ := chainTopCoeff (-α) β
 
 @[simp] lemma chainTopCoeff_zero : chainTopCoeff 0 β = 0 := dif_pos rfl
 @[simp] lemma chainBotCoeff_zero : chainBotCoeff 0 β = 0 := dif_pos neg_zero
+
+section
+variable (hα : α ≠ 0)
+include hα
 
 lemma chainTopCoeff_add_one :
     letI := Classical.propDecidable
@@ -265,8 +270,15 @@ lemma weightSpace_chainTopCoeff_add_one_nsmul_add :
 
 lemma weightSpace_chainTopCoeff_add_one_zsmul_add :
     weightSpace M ((chainTopCoeff α β + 1 : ℤ) • α + β : L → R) = ⊥ := by
-  rw [← weightSpace_chainTopCoeff_add_one_nsmul_add α β hα, nsmul_eq_smul_cast ℤ,
+  rw [← weightSpace_chainTopCoeff_add_one_nsmul_add α β hα, ← Nat.cast_smul_eq_nsmul ℤ,
     Nat.cast_add, Nat.cast_one]
+
+lemma weightSpace_chainBotCoeff_sub_one_zsmul_sub :
+    weightSpace M ((-chainBotCoeff α β - 1 : ℤ) • α + β : L → R) = ⊥ := by
+  rw [sub_eq_add_neg, ← neg_add, neg_smul, ← smul_neg, chainBotCoeff,
+    weightSpace_chainTopCoeff_add_one_zsmul_add _ _ (by simpa using hα)]
+
+end
 
 lemma weightSpace_nsmul_add_ne_bot_of_le {n} (hn : n ≤ chainTopCoeff α β) :
     weightSpace M (n • α + β : L → R) ≠ ⊥ := by
@@ -276,19 +288,14 @@ lemma weightSpace_nsmul_add_ne_bot_of_le {n} (hn : n ≤ chainTopCoeff α β) :
   rw [← Nat.lt_succ, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
   exact Nat.find_min (eventually_weightSpace_smul_add_eq_bot M α β hα).exists hn
 
-lemma weightSpace_chainBotCoeff_sub_one_zsmul_sub :
-    weightSpace M ((-chainBotCoeff α β - 1 : ℤ) • α + β : L → R) = ⊥ := by
-  rw [sub_eq_add_neg, ← neg_add, neg_smul, ← smul_neg, chainBotCoeff,
-    weightSpace_chainTopCoeff_add_one_zsmul_add _ _ (by simpa using hα)]
-
 lemma weightSpace_zsmul_add_ne_bot {n : ℤ}
     (hn : -chainBotCoeff α β ≤ n) (hn' : n ≤ chainTopCoeff α β) :
       weightSpace M (n • α + β : L → R) ≠ ⊥ := by
   rcases n with (n | n)
-  · simp only [Int.ofNat_eq_coe, Nat.cast_le, ← nsmul_eq_smul_cast] at hn' ⊢
+  · simp only [Int.ofNat_eq_coe, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
     exact weightSpace_nsmul_add_ne_bot_of_le α β hn'
   · simp only [Int.negSucc_eq, ← Nat.cast_succ, neg_le_neg_iff, Nat.cast_le] at hn ⊢
-    rw [neg_smul, ← smul_neg, ← nsmul_eq_smul_cast]
+    rw [neg_smul, ← smul_neg, Nat.cast_smul_eq_nsmul]
     exact weightSpace_nsmul_add_ne_bot_of_le (-α) β hn
 
 lemma weightSpace_neg_zsmul_add_ne_bot {n : ℕ} (hn : n ≤ chainBotCoeff α β) :
@@ -308,7 +315,7 @@ def chainBot (α : L → R) (β : Weight R L M) : Weight R L M :=
 lemma coe_chainTop' : (chainTop α β : L → R) = chainTopCoeff α β • α + β := rfl
 
 @[simp] lemma coe_chainTop : (chainTop α β : L → R) = (chainTopCoeff α β : ℤ) • α + β := by
-  rw [← nsmul_eq_smul_cast ℤ]; rfl
+  rw [Nat.cast_smul_eq_nsmul ℤ]; rfl
 @[simp] lemma coe_chainBot : (chainBot α β : L → R) = (-chainBotCoeff α β : ℤ) • α + β := rfl
 
 @[simp] lemma chainTop_neg : chainTop (-α) β = chainBot α β := by ext; simp
@@ -316,6 +323,10 @@ lemma coe_chainTop' : (chainTop α β : L → R) = chainTopCoeff α β • α + 
 
 @[simp] lemma chainTop_zero : chainTop 0 β = β := by ext; simp
 @[simp] lemma chainBot_zero : chainBot 0 β = β := by ext; simp
+
+section
+variable (hα : α ≠ 0)
+include hα
 
 lemma weightSpace_add_chainTop :
     weightSpace M (α + chainTop α β : L → R) = ⊥ := by
@@ -330,6 +341,8 @@ lemma chainTop_isNonZero' (hα' : weightSpace M α ≠ ⊥) :
   by_contra e
   apply hα'
   rw [← add_zero (α : L → R), ← e, weightSpace_add_chainTop _ _ hα]
+
+end
 
 lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
     (chainTop α β).IsNonZero :=

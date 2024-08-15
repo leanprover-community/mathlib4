@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
 import Qq
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
 
@@ -101,7 +101,7 @@ where
 variable (hyps : Array (ℕ × ℕ × Expr)) (atoms : Array Q(Prop))
 
 /-- Uses depth-first search to find a path from `P` to `P'`. -/
-partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (HashSet ℕ) MetaM Q($P') := do
+partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (Std.HashSet ℕ) MetaM Q($P') := do
   if i == j then
     return hP
   modify (·.insert i)
@@ -221,7 +221,7 @@ elab_rules : tactic
   let goal ← getMainGoal
   goal.withContext do
     let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
-    closeMainGoal <|← AtomM.run .reducible do
+    closeMainGoal `tfae_finish <|← AtomM.run .reducible do
       let is ← tfaeList.mapM AtomM.addAtom
       let mut hyps := #[]
       for hyp in ← getLocalHyps do

@@ -8,8 +8,6 @@ import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 
-#align_import topology.sheaves.locally_surjective from "leanprover-community/mathlib"@"fb7698eb37544cbb66292b68b40e54d001f8d1a9"
-
 /-!
 
 # Locally surjective maps of presheaves.
@@ -59,15 +57,11 @@ See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
 def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
       ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
   ⟨fun h _ => h.imageSieve_mem, fun h => ⟨h _⟩⟩
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective_iff TopCat.Presheaf.isLocallySurjective_iff
 
 section SurjectiveOnStalks
 
@@ -116,8 +110,6 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     refine ⟨W, hWU, ⟨ℱ.map hWV.op s, ?_⟩, hxW⟩
     convert h_eq using 1
     simp only [← comp_apply, T.naturality]
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.locally_surjective_iff_surjective_on_stalks TopCat.Presheaf.locally_surjective_iff_surjective_on_stalks
 
 end SurjectiveOnStalks
 

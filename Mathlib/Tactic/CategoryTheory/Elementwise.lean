@@ -32,8 +32,6 @@ This closely follows the implementation of the `@[reassoc]` attribute, due to Si
 reimplemented by Scott Morrison in Lean 4.
 -/
 
-set_option autoImplicit true
-
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
@@ -42,6 +40,8 @@ open CategoryTheory
 
 section theorems
 
+universe u
+
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
     (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
@@ -49,7 +49,7 @@ attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeT
 
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
-theorem hom_elementwise [Category C] [ConcreteCategory C]
+theorem hom_elementwise {C : Type*} [Category C] [ConcreteCategory C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
 
 end theorems
@@ -80,7 +80,7 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
     MetaM (Expr × Option Level) := do
   let type := (← instantiateMVars type).cleanupAnnotations
   forallTelescope type fun fvars type' => do
-    mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr? => do
+    mkHomElementwise type' (← mkExpectedTypeHint (mkAppN pf fvars) type') fun eqPf instConcr? => do
       -- First simplify using elementwise-specific lemmas
       let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
       if (← inferType eqPf') == .const ``True [] then

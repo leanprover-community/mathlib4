@@ -92,7 +92,6 @@ lemma SupClosed.finsetSup'_mem (hs : SupClosed s) (ht : t.Nonempty) :
 lemma SupClosed.finsetSup_mem [OrderBot α] (hs : SupClosed s) (ht : t.Nonempty) :
     (∀ i ∈ t, f i ∈ s) → t.sup f ∈ s :=
   sup'_eq_sup ht f ▸ hs.finsetSup'_mem ht
-#align finset.sup_closed_of_sup_closed SupClosed.finsetSup_mem
 
 end Finset
 end SemilatticeSup
@@ -158,7 +157,6 @@ lemma InfClosed.finsetInf'_mem (hs : InfClosed s) (ht : t.Nonempty) :
 lemma InfClosed.finsetInf_mem [OrderTop α] (hs : InfClosed s) (ht : t.Nonempty) :
     (∀ i ∈ t, f i ∈ s) → t.inf f ∈ s :=
   inf'_eq_inf ht f ▸ hs.finsetInf'_mem ht
-#align finset.inf_closed_of_inf_closed InfClosed.finsetInf_mem
 
 end Finset
 end SemilatticeInf
@@ -266,7 +264,7 @@ def supClosure : ClosureOperator (Set α) := .ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine' ⟨_, ht.mono <| subset_union_left _ _, _, sup'_union ht hu _⟩
+    refine ⟨_, ht.mono subset_union_left, ?_, sup'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
   (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetSup'_mem ht fun i hi ↦ hs <| hts hi)
@@ -308,12 +306,21 @@ lemma supClosure_min : s ⊆ t → SupClosed t → supClosure s ⊆ t := supClos
 protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine' ((s.powerset.filter Finset.Nonempty).attach.image
-    fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset _
+  refine ((s.powerset.filter Finset.Nonempty).attach.image
+    fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
     Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]
   exact ⟨t, ⟨hts, ht⟩, rfl⟩
+
+@[simp] lemma supClosure_prod (s : Set α) (t : Set β) :
+    supClosure (s ×ˢ t) = supClosure s ×ˢ supClosure t :=
+  le_antisymm (supClosure_min (Set.prod_mono subset_supClosure subset_supClosure) $
+    supClosed_supClosure.prod supClosed_supClosure) $ by
+      rintro ⟨_, _⟩ ⟨⟨u, hu, hus, rfl⟩, v, hv, hvt, rfl⟩
+      refine ⟨u ×ˢ v, hu.product hv, ?_, ?_⟩
+      · simpa only [coe_product] using Set.prod_mono hus hvt
+      · simp [prodMk_sup'_sup']
 
 end SemilatticeSup
 
@@ -329,7 +336,7 @@ def infClosure : ClosureOperator (Set α) := ClosureOperator.ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine' ⟨_, ht.mono <| subset_union_left _ _, _, inf'_union ht hu _⟩
+    refine ⟨_, ht.mono subset_union_left, ?_, inf'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
   (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetInf'_mem ht fun i hi ↦ hs <| hts hi)
@@ -371,12 +378,21 @@ lemma infClosure_min : s ⊆ t → InfClosed t → infClosure s ⊆ t := infClos
 protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine' ((s.powerset.filter Finset.Nonempty).attach.image
-    fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset _
+  refine ((s.powerset.filter Finset.Nonempty).attach.image
+    fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
     Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]
   exact ⟨t, ⟨hts, ht⟩, rfl⟩
+
+@[simp] lemma infClosure_prod (s : Set α) (t : Set β) :
+    infClosure (s ×ˢ t) = infClosure s ×ˢ infClosure t :=
+  le_antisymm (infClosure_min (Set.prod_mono subset_infClosure subset_infClosure) $
+    infClosed_infClosure.prod infClosed_infClosure) $ by
+      rintro ⟨_, _⟩ ⟨⟨u, hu, hus, rfl⟩, v, hv, hvt, rfl⟩
+      refine ⟨u ×ˢ v, hu.product hv, ?_, ?_⟩
+      · simpa only [coe_product] using Set.prod_mono hus hvt
+      · simp [prodMk_inf'_inf']
 
 end SemilatticeInf
 
@@ -441,6 +457,10 @@ protected lemma InfClosed.supClosure (hs : InfClosed s) : InfClosed (supClosure 
 
 lemma Set.Finite.latticeClosure (hs : s.Finite) : (latticeClosure s).Finite := by
   rw [← supClosure_infClosure]; exact hs.infClosure.supClosure
+
+@[simp] lemma latticeClosure_prod (s : Set α) (t : Set β) :
+    latticeClosure (s ×ˢ t) = latticeClosure s ×ˢ latticeClosure t := by
+  simp_rw [← supClosure_infClosure]; simp
 
 end DistribLattice
 

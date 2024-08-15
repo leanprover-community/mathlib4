@@ -9,8 +9,6 @@ import Lean.Meta.DiscrTree
 # Additions to `Lean.Meta.DiscrTree`
 -/
 
-set_option autoImplicit true
-
 namespace Lean.Meta.DiscrTree
 
 /--
@@ -24,8 +22,8 @@ Implementation: we reverse the results from `getMatch`,
 so that we return lemmas matching larger subexpressions first,
 and amongst those we return more specific lemmas first.
 -/
-partial def getSubexpressionMatches (d : DiscrTree α) (e : Expr) (config : WhnfCoreConfig) :
-    MetaM (Array α) := do
+partial def getSubexpressionMatches {α : Type}
+    (d : DiscrTree α) (e : Expr) (config : WhnfCoreConfig) : MetaM (Array α) := do
   match e with
   | .bvar _ => return #[]
   | .forallE _ _ _ _ => forallTelescope e (fun args body => do
@@ -46,6 +44,6 @@ Check if a `keys : Array DiscTree.Key` is "specific",
 i.e. something other than `[*]` or `[=, *, *, *]`.
 -/
 def keysSpecific (keys : Array DiscrTree.Key) : Bool :=
-  keys != #[Key.star] && keys != #[Key.const `Eq 3, Key.star, Key.star, Key.star]
+  keys != #[Key.star] && keys != #[Key.const ``Eq 3, Key.star, Key.star, Key.star]
 
 end Lean.Meta.DiscrTree

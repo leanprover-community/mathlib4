@@ -5,8 +5,7 @@ open Lake DSL
 package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
-    ⟨`autoImplicit, false⟩,
-    ⟨`relaxedAutoImplicit, false⟩
+    ⟨`autoImplicit, false⟩
   ]
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
@@ -36,7 +35,7 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 lean_lib Mathlib
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
--- `Mathlib/Util/GetAllModules.lean`.
+-- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
 lean_lib Archive
@@ -53,8 +52,8 @@ lean_lib docs where
 lean_exe cache where
   root := `Cache.Main
 
-/-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
-lean_exe checkYaml where
+/-- `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
+lean_exe «check-yaml» where
   srcDir := "scripts"
   supportInterpreter := true
 
@@ -62,11 +61,17 @@ lean_exe checkYaml where
 lean_exe mk_all where
   srcDir := "scripts"
   supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
+
+/-- `lake exe lint-style` runs text-based style linters. -/
+lean_exe «lint-style» where
+  srcDir := "scripts"
 
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
@@ -76,6 +81,8 @@ and then calculates the longest pole
 lean_exe pole where
   root := `LongestPole.Main
   supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /--
 `lake exe test` is a thin wrapper around `lake exe batteries/test`, until
