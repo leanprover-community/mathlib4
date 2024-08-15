@@ -6,7 +6,6 @@ Authors: Kenny Lau, Yury Kudryashov
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Further basic results about `Algebra`'s over `ℚ`.
