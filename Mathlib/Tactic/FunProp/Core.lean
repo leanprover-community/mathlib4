@@ -40,18 +40,12 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
 
 
 /-- Synthesize arguments `xs` either with typeclass synthesis, with `fun_prop` or with discharger. -/
-def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
+def synthesizeArgs (thmId : Origin) (xs : Array Expr)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM Bool := do
   let mut postponed : Array Expr := #[]
-  for x in xs, bi in bis do
+  for x in xs do
     let type ← inferType x
-    -- if bi.isInstImplicit then
-    --   unless (← synthesizeInstance thmId x type) do
-    --     logError s!"Failed to synthesize instance `{← ppExpr type}` \
-    --     when applying theorem `{← ppOrigin' thmId}`."
-    --     return false
-    -- else
     if (← instantiateMVars x).isMVar then
 
       -- try type class
@@ -104,14 +98,14 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
 
 /-- Try to apply theorem - core function -/
-def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr)
+def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
 
   if (← isDefEq type e) then
 
-    if ¬(← synthesizeArgs thmId xs bis funProp) then
+    if ¬(← synthesizeArgs thmId xs funProp) then
       return none
     let proof ← instantiateMVars (mkAppN val xs)
 
@@ -129,7 +123,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
     let type ← inferType thmProof
-    let (xs, bis, type) ← forallMetaTelescope type
+    let (xs, _, type) ← forallMetaTelescope type
 
     for (i,x) in hint do
       try
@@ -139,7 +133,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
         trace[Meta.Tactic.fun_trans]
           "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
 
-    tryTheoremCore xs bis thmProof type e thmOrigin funProp
+    tryTheoremCore xs thmProof type e thmOrigin funProp
 
   -- `simp` introduces new meta variable context depth for some reason
   -- This is probably to avoid mvar assignment when trying a theorem fails
