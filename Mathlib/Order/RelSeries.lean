@@ -496,6 +496,14 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 
 @[simp] lemma last_eraseLast (p : RelSeries r) :
     p.eraseLast.last = p ⟨p.length.pred, Nat.lt_succ_iff.2 (Nat.pred_le _)⟩ := rfl
+
+/-- In a non-trivial series `p`, the last element of `p.eraseLast` is related to `p.last` -/
+lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
+    r p.eraseLast.last p.last := by
+  simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
+  convert p.step ⟨p.length - 1, by omega⟩
+  simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
+
 /--
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
 then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
@@ -674,6 +682,8 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
 
+lemma head_le_last (x : LTSeries α) : x.head ≤ x.last :=
+  LTSeries.monotone x (Fin.zero_le _)
 
 /-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
 @[simps]
