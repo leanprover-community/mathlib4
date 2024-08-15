@@ -45,7 +45,7 @@ abbrev ofList (rs : List R) := span { r | r ∈ rs }
   have : { r | r ∈ rs₁ ++ rs₂ } = _ := Set.ext (fun _ => List.mem_append)
   Eq.trans (congrArg span this) (span_union _ _)
 
-@[simp] lemma ofList_singleton (r : R) : ofList [r] = span {r} :=
+lemma ofList_singleton (r : R) : ofList [r] = span {r} :=
   congrArg span (Set.ext fun _ => List.mem_singleton)
 
 @[simp] lemma ofList_cons (r : R) (rs : List R) :

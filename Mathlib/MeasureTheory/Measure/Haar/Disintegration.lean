@@ -50,7 +50,6 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   is also true for linear equivalences, as they map Haar measure to Haar measure. The general case
   follows from these two and linear algebra, as `L` can be interpreted as the composition of the
   projection `P` on a complement `T` to its kernel `S`, together with a linear equivalence. -/
-  have : ProperSpace E := .of_locallyCompactSpace 𝕜
   have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   have : ProperSpace F := by
     rcases subsingleton_or_nontrivial E with hE|hE
