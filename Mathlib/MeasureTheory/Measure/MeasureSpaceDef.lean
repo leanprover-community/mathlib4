@@ -71,6 +71,9 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
   trim_le : toOuterMeasure.trim ≤ toOuterMeasure
 
+/-- Notation for `Measure` with respect to a non-standard σ-algebra in the domain. -/
+scoped notation "Measure[" mα "]" α:arg => @Measure α mα
+
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
@@ -122,9 +125,6 @@ theorem ofMeasurable_apply {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
 theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :=
   toOuterMeasure_injective <| by
   rw [← trimmed, OuterMeasure.trim_congr (h _), trimmed]
-
-theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s :=
-  ⟨by rintro rfl s _hs; rfl, Measure.ext⟩
 
 theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
   ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
@@ -265,7 +265,8 @@ disjoint unions, then the predicate holds for almost every `x : β` and all meas
 
 This is an AE version of `MeasurableSpace.induction_on_inter` where the condition is dependent
 on a measurable space `β`. -/
-theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {μ : Measure β}
+theorem _root_.MeasurableSpace.ae_induction_on_inter
+    {α β : Type*} [MeasurableSpace β] {μ : Measure β}
     {C : β → Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
     (h_eq : m = MeasurableSpace.generateFrom s)
     (h_inter : IsPiSystem s) (h_empty : ∀ᵐ x ∂μ, C x ∅) (h_basic : ∀ᵐ x ∂μ, ∀ t ∈ s, C x t)

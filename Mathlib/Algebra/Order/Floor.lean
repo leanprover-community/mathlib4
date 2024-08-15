@@ -54,7 +54,6 @@ many lemmas.
 rounding, floor, ceil
 -/
 
-
 open Set
 
 variable {F α β : Type*}
@@ -116,17 +115,24 @@ notation "⌊" a "⌋₊" => Nat.floor a
 @[inherit_doc]
 notation "⌈" a "⌉₊" => Nat.ceil a
 
-end OrderedSemiring
-
-section LinearOrderedSemiring
-
-variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
-
 theorem le_floor_iff (ha : 0 ≤ a) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a :=
   FloorSemiring.gc_floor ha
 
 theorem le_floor (h : (n : α) ≤ a) : n ≤ ⌊a⌋₊ :=
   (le_floor_iff <| n.cast_nonneg.trans h).2 h
+
+theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
+  FloorSemiring.gc_ceil
+
+@[simp]
+theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
+  gc_ceil_coe _ _
+
+end OrderedSemiring
+
+section LinearOrderedSemiring
+
+variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
 
 theorem floor_lt (ha : 0 ≤ a) : ⌊a⌋₊ < n ↔ a < n :=
   lt_iff_lt_of_le_iff_le <| le_floor_iff ha
@@ -241,14 +247,6 @@ theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
   ext fun _ => floor_eq_iff' hn
 
 /-! #### Ceil -/
-
-
-theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
-  FloorSemiring.gc_ceil
-
-@[simp]
-theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
-  gc_ceil_coe _ _
 
 theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
@@ -446,6 +444,7 @@ theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌈a + (no_index (OfNat.ofNat n))⌉₊ = ⌈a⌉₊ + OfNat.ofNat n :=
   ceil_add_nat ha n
 
+@[bound]
 theorem ceil_lt_add_one (ha : 0 ≤ a) : (⌈a⌉₊ : α) < a + 1 :=
   lt_ceil.1 <| (Nat.lt_succ_self _).trans_le (ceil_add_one ha).ge
 
@@ -1060,6 +1059,7 @@ theorem ceil_le_floor_add_one (a : α) : ⌈a⌉ ≤ ⌊a⌋ + 1 := by
   rw [ceil_le, Int.cast_add, Int.cast_one]
   exact (lt_floor_add_one a).le
 
+@[bound]
 theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 
@@ -1373,7 +1373,7 @@ theorem round_two_inv : round (2⁻¹ : α) = 1 := by
 
 @[simp]
 theorem round_neg_two_inv : round (-2⁻¹ : α) = 0 := by
-  simp only [round_eq, ← one_div, add_left_neg, floor_zero]
+  simp only [round_eq, ← one_div, neg_add_cancel, floor_zero]
 
 @[simp]
 theorem round_eq_zero_iff {x : α} : round x = 0 ↔ x ∈ Ico (-(1 / 2)) ((1 : α) / 2) := by

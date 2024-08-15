@@ -9,40 +9,44 @@ import Mathlib.Data.List.ProdSigma
 
 /-!
 # Basics on First-Order Semantics
+
 This file defines the interpretations of first-order terms, formulas, sentences, and theories
 in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 
 ## Main Definitions
-* `FirstOrder.Language.Term.realize` is defined so that `t.realize v` is the term `t` evaluated at
-variables `v`.
-* `FirstOrder.Language.BoundedFormula.Realize` is defined so that `φ.Realize v xs` is the bounded
-formula `φ` evaluated at tuples of variables `v` and `xs`.
-* `FirstOrder.Language.Formula.Realize` is defined so that `φ.Realize v` is the formula `φ`
-evaluated at variables `v`.
-* `FirstOrder.Language.Sentence.Realize` is defined so that `φ.Realize M` is the sentence `φ`
-evaluated in the structure `M`. Also denoted `M ⊨ φ`.
-* `FirstOrder.Language.Theory.Model` is defined so that `T.Model M` is true if and only if every
-sentence of `T` is realized in `M`. Also denoted `T ⊨ φ`.
+
+- `FirstOrder.Language.Term.realize` is defined so that `t.realize v` is the term `t` evaluated at
+  variables `v`.
+- `FirstOrder.Language.BoundedFormula.Realize` is defined so that `φ.Realize v xs` is the bounded
+  formula `φ` evaluated at tuples of variables `v` and `xs`.
+- `FirstOrder.Language.Formula.Realize` is defined so that `φ.Realize v` is the formula `φ`
+  evaluated at variables `v`.
+- `FirstOrder.Language.Sentence.Realize` is defined so that `φ.Realize M` is the sentence `φ`
+  evaluated in the structure `M`. Also denoted `M ⊨ φ`.
+- `FirstOrder.Language.Theory.Model` is defined so that `T.Model M` is true if and only if every
+  sentence of `T` is realized in `M`. Also denoted `T ⊨ φ`.
 
 ## Main Results
-* Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
-`liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
-sentences, and theories.
+
+- Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
+  `liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
+  sentences, and theories.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
-is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
-`n : Fin (n + 1)`.
+
+- Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
+  is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
+  indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
+  `∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
+  `n : Fin (n + 1)`.
 
 ## References
+
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
-
+  the continuum hypothesis*][flypitch_itp]
 -/
 
 
