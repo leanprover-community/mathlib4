@@ -1441,9 +1441,9 @@ This is a discrete analogue of the fundamental theorem of calculus."]
 theorem prod_range_induction (f s : ℕ → β) (base : s 0 = 1)
     (step : ∀ n, s (n + 1) = s n * f n) (n : ℕ) :
     ∏ k ∈ Finset.range n, f k = s n := by
-  induction' n with k hk
-  · rw [Finset.prod_range_zero, base]
-  · simp only [hk, Finset.prod_range_succ, step, mul_comm]
+  induction n with
+  | zero => rw [Finset.prod_range_zero, base]
+  | succ k hk => simp only [hk, Finset.prod_range_succ, step, mul_comm]
 
 /-- A telescoping product along `{0, ..., n - 1}` of a commutative group valued function reduces to
 the ratio of the last and first factors. -/
@@ -1519,9 +1519,10 @@ lemma prod_powersetCard (n : ℕ) (s : Finset α) (f : ℕ → β) :
 @[to_additive]
 theorem prod_flip {n : ℕ} (f : ℕ → β) :
     (∏ r ∈ range (n + 1), f (n - r)) = ∏ k ∈ range (n + 1), f k := by
-  induction' n with n ih
-  · rw [prod_range_one, prod_range_one]
-  · rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
+  induction n with
+  | zero => rw [prod_range_one, prod_range_one]
+  | succ n ih =>
+    rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
     simp [← ih]
 
 @[to_additive]

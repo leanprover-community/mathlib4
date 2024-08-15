@@ -5,6 +5,7 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+import Mathlib.Data.Fintype.Order
 
 /-!
 # Matchings
@@ -192,9 +193,10 @@ namespace ConnectedComponent
 
 section Finite
 
-variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+variable [Fintype V]
 
-lemma even_card_of_isPerfectMatching (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
+lemma even_card_of_isPerfectMatching [DecidableEq V] [DecidableRel G.Adj]
+    (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
   classical simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
@@ -217,6 +219,7 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
 
   apply Nat.odd_iff_not_even.mp codd
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
+  classical
   have hMeven := Subgraph.IsMatching.even_card hMmatch
   haveI : Fintype (c.supp) := Fintype.ofFinite _
   simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image,
@@ -226,4 +229,28 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
 
 end Finite
 end ConnectedComponent
+
+/--
+A graph is matching free if it has no perfect matching. It does not make much sense to
+consider a graph being free of just matchings, because any non-trivial graph has those.
+-/
+def IsMatchingFree (G : SimpleGraph V) := ∀ M : Subgraph G, ¬ M.IsPerfectMatching
+
+lemma IsMatchingFree.mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatchingFree) :
+    G.IsMatchingFree := by
+  intro x
+  by_contra! hc
+  apply hmf (x.map (SimpleGraph.Hom.ofLE h))
+  refine ⟨hc.1.map_ofLE h, ?_⟩
+  intro v
+  simp only [Subgraph.map_verts, Hom.coe_ofLE, id_eq, Set.image_id']
+  exact hc.2 v
+
+lemma exists_maximal_isMatchingFree [Fintype V] [DecidableEq V]
+    (h : G.IsMatchingFree) : ∃ Gmax : SimpleGraph V,
+    G ≤ Gmax ∧ Gmax.IsMatchingFree ∧ ∀ G', G' > Gmax → ∃ M : Subgraph G', M.IsPerfectMatching := by
+  simp_rw [← @not_forall_not _ Subgraph.IsPerfectMatching]
+  obtain ⟨Gmax, hGmax⟩ := Finite.exists_le_maximal h
+  exact ⟨Gmax, ⟨hGmax.1, ⟨hGmax.2.prop, fun _ h' ↦ hGmax.2.not_prop_of_gt h'⟩⟩⟩
+
 end SimpleGraph

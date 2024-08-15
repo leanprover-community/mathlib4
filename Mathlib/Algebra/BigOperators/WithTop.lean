@@ -18,7 +18,7 @@ variable {ι α : Type*}
 
 namespace WithTop
 section AddCommMonoid
-variable [AddCommMonoid α] [LT α] {s : Finset ι} {f : ι → WithTop α}
+variable [AddCommMonoid α] {s : Finset ι} {f : ι → WithTop α}
 
 @[simp, norm_cast] lemma coe_sum (s : Finset ι) (f : ι → α) :
     ∑ i ∈ s, f i = ∑ i ∈ s, (f i : WithTop α) := map_sum addHom f s
@@ -26,6 +26,8 @@ variable [AddCommMonoid α] [LT α] {s : Finset ι} {f : ι → WithTop α}
 /-- A sum is infinite iff one term is infinite. -/
 lemma sum_eq_top_iff : ∑ i ∈ s, f i = ⊤ ↔ ∃ i ∈ s, f i = ⊤ := by
   induction s using Finset.cons_induction <;> simp [*]
+
+variable [LT α]
 
 /-- A sum is finite iff all terms are finite. -/
 lemma sum_lt_top_iff : ∑ i ∈ s, f i < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
@@ -47,7 +49,7 @@ end WithTop
 
 namespace WithBot
 section AddCommMonoid
-variable [AddCommMonoid α] [LT α] {s : Finset ι} {f : ι → WithBot α}
+variable [AddCommMonoid α] {s : Finset ι} {f : ι → WithBot α}
 
 @[simp, norm_cast] lemma coe_sum (s : Finset ι) (f : ι → α) :
     ∑ i ∈ s, f i = ∑ i ∈ s, (f i : WithBot α) := map_sum addHom f s
@@ -55,6 +57,8 @@ variable [AddCommMonoid α] [LT α] {s : Finset ι} {f : ι → WithBot α}
 /-- A sum is infinite iff one term is infinite. -/
 lemma sum_eq_bot_iff : ∑ i ∈ s, f i = ⊥ ↔ ∃ i ∈ s, f i = ⊥ := by
   induction s using Finset.cons_induction <;> simp [*]
+
+variable [LT α]
 
 /-- A sum is finite iff all terms are finite. -/
 lemma bot_lt_sum_iff : ⊥ < ∑ i ∈ s, f i ↔ ∀ i ∈ s, ⊥ < f i := by

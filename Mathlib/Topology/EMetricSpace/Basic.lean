@@ -27,10 +27,8 @@ theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y`
 to `EMetricSpace` at the end.
 -/
 
-
-open Set Filter Classical
-
-open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
+open Set Filter
+open scoped Uniformity Topology NNReal ENNReal Pointwise
 
 universe u v w
 
