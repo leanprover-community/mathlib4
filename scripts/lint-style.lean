@@ -25,10 +25,10 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Read all module names to lint.
   let mut allModules := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    -- note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually
-    allModules := allModules.append ((← IO.FS.lines s).filter (!·.containsSubstr "Batteries")
-      |>.map (·.stripPrefix "import "))
-  let numberErrorFiles ← lintModules allModules mode
+    allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
+  -- note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually
+  allModules := allModules.erase "Batteries"
+  let numberErrorFiles ← lintModules allModules mode (args.hasFlag "fix")
   -- Make sure to return an exit code of at most 125, so this return value can be used further
   -- in shell scripts.
   return min numberErrorFiles 125
@@ -48,6 +48,7 @@ def lintStyle : Cmd := `[Cli|
       and tries to not modify exception entries unless necessary.
       To fully regenerate the list of style exceptions, delete `style-exceptions.txt`
       and run this script again with this flag."
+    fix;        "Automatically fix the style error, if possible"
 ]
 
 /-- The entry point to the `lake exe lint-style` command. -/
