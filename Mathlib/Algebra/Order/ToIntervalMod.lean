@@ -38,6 +38,9 @@ section LinearOrderedAddCommGroup
 variable {α : Type*} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
   {a b c : α} {n : ℤ}
 
+section
+include hp
+
 /--
 The unique integer such that this multiple of `p`, subtracted from `b`, is in `Ico a (a + p)`. -/
 def toIcoDiv (a b : α) : ℤ :=
@@ -528,7 +531,7 @@ theorem tfae_modEq :
   · intro h
     rw [h, eq_comm, toIocMod_eq_iff, Set.right_mem_Ioc]
     refine ⟨lt_add_of_pos_right a hp, toIcoDiv hp a b - 1, ?_⟩
-    rw [sub_one_zsmul, add_add_add_comm, add_right_neg, add_zero]
+    rw [sub_one_zsmul, add_add_add_comm, add_neg_cancel, add_zero]
     conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul hp a b, h]
   tfae_have 2 → 1
   · rw [← not_exists, not_imp_comm]
@@ -706,6 +709,7 @@ theorem QuotientAddGroup.equivIocMod_coe (a b : α) :
 theorem QuotientAddGroup.equivIocMod_zero (a : α) :
     QuotientAddGroup.equivIocMod hp a 0 = ⟨toIocMod hp a 0, toIocMod_mem_Ioc hp a _⟩ :=
   rfl
+end
 
 /-!
 ### The circular order structure on `α ⧸ AddSubgroup.zmultiples p`
@@ -713,6 +717,8 @@ theorem QuotientAddGroup.equivIocMod_zero (a : α) :
 
 
 section Circular
+
+open AddCommGroup
 
 private theorem toIxxMod_iff (x₁ x₂ x₃ : α) : toIcoMod hp x₁ x₂ ≤ toIocMod hp x₁ x₃ ↔
     toIcoMod hp 0 (x₂ - x₁) + toIcoMod hp 0 (x₁ - x₃) ≤ p := by
@@ -901,6 +907,7 @@ open Set Int
 section LinearOrderedAddCommGroup
 
 variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
+include hp
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
   refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
