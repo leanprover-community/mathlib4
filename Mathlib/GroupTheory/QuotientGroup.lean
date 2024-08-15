@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Coset
+import Mathlib.Algebra.Group.Subgroup.Actions
 
 /-!
 # Quotients of groups by normal subgroups
