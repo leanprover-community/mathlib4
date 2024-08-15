@@ -659,11 +659,9 @@ end Functor
 
 namespace StructuredArrow
 
-variable {D : Type u₂} [Category.{v₂} D]
-
 /-- Characterization of the structured arrow category on the projection functor of any
 structured arrow category. -/
-def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
+def ofStructuredArrowProjEquivalence {D : Type u₂} [Category.{v₂} D] (F : D ⥤ T) (Y : T) (X : D) :
     StructuredArrow X (StructuredArrow.proj Y F) ≌ StructuredArrow Y (Under.forget X ⋙ F) :=
   Equivalence.mk
     (Functor.toStructuredArrow
@@ -682,7 +680,7 @@ def ofDiagEquivalence (X : T × T) :
     StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.2 (Under.forget X.1) :=
   Equivalence.mk
     (Functor.toStructuredArrow
-      (Functor.toUnder (StructuredArrow.proj _ _) _
+      (Functor.toUnder (StructuredArrow.proj X _) _
         (fun f => by exact f.hom.1) (fun m => by have := m.w; aesop_cat)) _ _
       (fun f => f.hom.2) (fun m => by have := m.w; aesop_cat))
     (Functor.toStructuredArrow (StructuredArrow.proj _ _ ⋙ Under.forget _) _ _
@@ -691,5 +689,40 @@ def ofDiagEquivalence (X : T × T) :
     (by aesop_cat)
 
 end StructuredArrow
+
+namespace CostructuredArrow
+
+/-- Characterization of the costructured arrow category on the projection functor of any
+costructured arrow category. -/
+def ofCostructuredArrowProjEquivalence {D : Type u₂} [Category.{v₂} D]
+    (F : T ⥤ D) (Y : D) (X : T) :
+    CostructuredArrow (CostructuredArrow.proj F Y) X ≌ CostructuredArrow (Over.forget X ⋙ F) Y :=
+  Equivalence.mk
+    (Functor.toCostructuredArrow
+      (Functor.toOver (CostructuredArrow.proj _ X ⋙ CostructuredArrow.proj F Y) _
+        (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
+      (fun f => f.left.hom) (by simp))
+    (Functor.toCostructuredArrow
+      (Functor.toCostructuredArrow (CostructuredArrow.proj _ Y ⋙ Over.forget X) _ _
+        (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
+      (fun f => f.left.hom) (by simp))
+    (by aesop_cat)
+    (by aesop_cat)
+
+/-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
+def ofDiagEquivalence (X : T × T) :
+    CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.1) X.2 :=
+  Equivalence.mk
+    (Functor.toCostructuredArrow
+      (Functor.toOver (CostructuredArrow.proj _ X) _
+        (fun g => by exact g.hom.1) (fun m => by have := congrArg (·.1) m.w; aesop_cat))
+      _ _
+      (fun f => f.hom.2) (fun m => by have := congrArg (·.2) m.w; aesop_cat))
+    (Functor.toCostructuredArrow (CostructuredArrow.proj _ _ ⋙ Over.forget _) _ X
+      (fun f => (f.left.hom, f.hom)) (fun m => by have := m.w; aesop_cat))
+    (by aesop_cat)
+    (by aesop_cat)
+
+end CostructuredArrow
 
 end CategoryTheory
