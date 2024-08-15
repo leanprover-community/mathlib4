@@ -1190,7 +1190,7 @@ lemma prod_image_of_disjoint [PartialOrder α] [OrderBot α] [DecidableEq α]
   · classical
     suffices filter (fun j ↦ f j = f n) I = filter (fun j ↦ j = n) I by
       simp only [this, prod_filter, prod_ite_eq', if_pos hnI]
-    refine filter_congr (fun j hj ↦ ?_)
+    congr! with j hj
     exact ⟨fun h ↦ hf_disj.elim hj hnI (by simpa [h]), by congr!⟩
 
 section indicator
