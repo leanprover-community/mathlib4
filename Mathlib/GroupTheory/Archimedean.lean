@@ -274,7 +274,7 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_mulEquiv_of_isLeast_
   let f' := LinearOrderedAddCommGroup.int_addEquiv_of_isLeast_pos (G := Additive G) this
   exact ⟨AddEquiv.toMultiplicative' f'.val, f'.prop⟩
 
-/-- Any linearly ordered archimedean additive group is either is isomorphic (and order-isomorphic)
+/-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*) [LinearOrderedAddCommGroup G]
     [Archimedean G] : (∃ f : G ≃+ ℤ, StrictMono f) ∨ DenselyOrdered G := by
@@ -293,7 +293,7 @@ lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*) [LinearOr
     · simpa [lt_sub_iff_add_lt'] using hz.right
 
 variable (G) in
-/-- Any linearly ordered mul-archimedean group is either is isomorphic (and order-isomorphic)
+/-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
 @[to_additive existing]
 lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
@@ -301,3 +301,37 @@ lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
   refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
   rintro ⟨f, hf⟩
   exact ⟨AddEquiv.toMultiplicative' f, hf⟩
+
+/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
+either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
+lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
+    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    (∃ f : G ≃* WithZero (Multiplicative ℤ), StrictMono f) ∨ DenselyOrdered G := by
+  classical
+  refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp ?_ ?_
+  · intro ⟨f, hf⟩
+    refine ⟨(WithZero.unitsWithZeroEquivGroupWithZero _).symm.trans f.withZeroCongr, ?_⟩
+    intro x y h
+    simp only [WithZero.unitsWithZeroEquivGroupWithZero, MulEquiv.symm_mk, MulEquiv.withZeroCongr,
+      MulEquiv.toMonoidHom_eq_coe, MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk,
+      Equiv.coe_fn_mk]
+    split_ifs
+    · simp_all
+    · exact WithZero.zero_lt_coe (f _)
+    · simp_all
+    · simpa using hf h
+  · intro H
+    refine ⟨fun x y h ↦ ?_⟩
+    rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
+    · let y' := Units.mk0 y h.ne'
+      have hy' : y = y' := rfl
+      rw [hy']
+      obtain ⟨z, hz⟩ := exists_ne (1 : Gˣ)
+      refine ⟨(y' * |z|ₘ⁻¹ : Gˣ), ?_, ?_⟩
+      · simp [zero_lt_iff]
+      · rw [Units.val_lt_val]
+        simp [hz]
+    · obtain ⟨z, hz, hz'⟩ := H.dense (Units.mk0 x hx.ne') (Units.mk0 y (hx.trans h).ne')
+        (by simp [← Units.val_lt_val, h])
+      refine ⟨z, ?_, ?_⟩ <;>
+      simpa [← Units.val_lt_val]
