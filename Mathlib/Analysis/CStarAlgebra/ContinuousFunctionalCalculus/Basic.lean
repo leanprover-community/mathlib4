@@ -235,7 +235,7 @@ theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
       ContinuousMap.coe_mk] using h
   · rintro ⟨z, hz⟩
     have hz' := (StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ a)
-      ⟨a, self_mem ℂ a⟩).symm.subst hz
+      ⟨a, self_mem ℂ a⟩).symm ▸ hz
     rw [CharacterSpace.mem_spectrum_iff_exists] at hz'
     obtain ⟨φ, rfl⟩ := hz'
     exact ⟨φ, rfl⟩
