@@ -54,7 +54,6 @@ many lemmas.
 rounding, floor, ceil
 -/
 
-
 open Set
 
 variable {F α β : Type*}
@@ -116,17 +115,24 @@ notation "⌊" a "⌋₊" => Nat.floor a
 @[inherit_doc]
 notation "⌈" a "⌉₊" => Nat.ceil a
 
-end OrderedSemiring
-
-section LinearOrderedSemiring
-
-variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
-
 theorem le_floor_iff (ha : 0 ≤ a) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a :=
   FloorSemiring.gc_floor ha
 
 theorem le_floor (h : (n : α) ≤ a) : n ≤ ⌊a⌋₊ :=
   (le_floor_iff <| n.cast_nonneg.trans h).2 h
+
+theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
+  FloorSemiring.gc_ceil
+
+@[simp]
+theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
+  gc_ceil_coe _ _
+
+end OrderedSemiring
+
+section LinearOrderedSemiring
+
+variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
 
 theorem floor_lt (ha : 0 ≤ a) : ⌊a⌋₊ < n ↔ a < n :=
   lt_iff_lt_of_le_iff_le <| le_floor_iff ha
@@ -241,14 +247,6 @@ theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
   ext fun _ => floor_eq_iff' hn
 
 /-! #### Ceil -/
-
-
-theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
-  FloorSemiring.gc_ceil
-
-@[simp]
-theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
-  gc_ceil_coe _ _
 
 theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
