@@ -61,9 +61,10 @@ theorem cycleOf_inv (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
 theorem cycleOf_pow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     ∀ n : ℕ, (cycleOf f x ^ n) x = (f ^ n) x := by
   intro n
-  induction' n with n hn
-  · rfl
-  · rw [pow_succ', mul_apply, cycleOf_apply, hn, if_pos, pow_succ', mul_apply]
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    rw [pow_succ', mul_apply, cycleOf_apply, hn, if_pos, pow_succ', mul_apply]
     exact ⟨n, rfl⟩
 
 @[simp]

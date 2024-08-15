@@ -3,7 +3,7 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
-Some proofs and docs came from `Algebra/Commute` (c) Neil Strickland
+Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Logic
@@ -121,7 +121,7 @@ variable [Group G] {a x y : G}
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
 theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
-  unfold SemiconjBy; rw [mul_assoc, inv_mul_self, mul_one]
+  unfold SemiconjBy; rw [mul_assoc, inv_mul_cancel, mul_one]
 
 @[to_additive (attr := simp)]
 theorem conj_iff {a x y b : G} :

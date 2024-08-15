@@ -199,7 +199,7 @@ abbrev SeminormedGroup.ofMulDist [Norm E] [Group E] [PseudoMetricSpace E]
     SeminormedGroup E where
   dist_eq x y := by
     rw [h₁]; apply le_antisymm
-    · simpa only [div_eq_mul_inv, ← mul_right_inv y] using h₂ _ _ _
+    · simpa only [div_eq_mul_inv, ← mul_inv_cancel y] using h₂ _ _ _
     · simpa only [div_mul_cancel, one_mul] using h₂ (x / y) 1 y
 
 -- See note [reducible non-instances]
@@ -212,7 +212,7 @@ abbrev SeminormedGroup.ofMulDist' [Norm E] [Group E] [PseudoMetricSpace E]
   dist_eq x y := by
     rw [h₁]; apply le_antisymm
     · simpa only [div_mul_cancel, one_mul] using h₂ (x / y) 1 y
-    · simpa only [div_eq_mul_inv, ← mul_right_inv y] using h₂ _ _ _
+    · simpa only [div_eq_mul_inv, ← mul_inv_cancel y] using h₂ _ _ _
 
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
@@ -1022,8 +1022,10 @@ theorem preimage_mul_sphere (a b : E) (r : ℝ) : (b * ·) ⁻¹' sphere a r = s
 
 @[to_additive norm_nsmul_le]
 theorem norm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖ ≤ n * ‖a‖ := by
-  induction' n with n ih; · simp
-  simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le ih le_rfl
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le ih le_rfl
 
 @[to_additive nnnorm_nsmul_le]
 theorem nnnorm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by

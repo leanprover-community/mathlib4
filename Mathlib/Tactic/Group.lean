@@ -56,7 +56,7 @@ macro_rules
       one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
       ← mul_assoc,
       ← zpow_add, ← zpow_add_one, ← zpow_one_add, zpow_trick, zpow_trick_one, zpow_trick_one',
-      tsub_self, sub_self, add_neg_self, neg_add_self]
+      tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
   $[at $location]?)
 
 /-- Auxiliary tactic for the `group` tactic. Calls `ring_nf` to normalize exponents. -/

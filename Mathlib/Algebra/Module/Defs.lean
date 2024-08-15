@@ -226,7 +226,7 @@ variable [Ring R] [AddCommGroup M] [Module R M] (r s : R) (x y : M)
 
 @[simp]
 theorem neg_smul : -r • x = -(r • x) :=
-  eq_neg_of_add_eq_zero_left <| by rw [← add_smul, add_left_neg, zero_smul]
+  eq_neg_of_add_eq_zero_left <| by rw [← add_smul, neg_add_cancel, zero_smul]
 
 -- Porting note (#10618): simp can prove this
 --@[simp]
@@ -256,10 +256,10 @@ abbrev Module.addCommMonoidToAddCommGroup
     [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
   { (inferInstance : AddCommMonoid M) with
     neg := fun a => (-1 : R) • a
-    add_left_neg := fun a =>
+    neg_add_cancel := fun a =>
       show (-1 : R) • a + a = 0 by
         nth_rw 2 [← one_smul R a]
-        rw [← add_smul, add_left_neg, zero_smul]
+        rw [← add_smul, neg_add_cancel, zero_smul]
     zsmul := fun z a => (z : R) • a
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
@@ -355,9 +355,10 @@ def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
-  smul_assoc n x y :=
-    Nat.recOn n (by simp only [Nat.zero_eq, zero_smul])
-    fun n ih => by simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
+  smul_assoc n x y := by
+    induction n with
+    | zero => simp only [zero_smul]
+    | succ n ih => simp only [add_smul, one_smul, ih]
 
 end AddCommMonoid
 

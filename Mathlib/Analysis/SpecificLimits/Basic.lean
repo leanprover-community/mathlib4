@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Johannes Hölzl, Yury G. Kudryashov, Patrick Massot
+Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Order.Filter.Archimedean
@@ -382,6 +382,7 @@ section EdistLeGeometric
 variable [PseudoEMetricSpace α] (r C : ℝ≥0∞) (hr : r < 1) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C * r ^ n)
 
+include hr hC hu in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, `C ≠ ∞`, `r < 1`,
 then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
@@ -390,6 +391,7 @@ theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   refine ENNReal.mul_ne_top hC (ENNReal.inv_ne_top.2 ?_)
   exact (tsub_pos_iff_lt.2 hr).ne'
 
+include hu in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
 `f n` to the limit of `f` is bounded above by `C * r^n / (1 - r)`. -/
 theorem edist_le_of_edist_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
@@ -397,6 +399,7 @@ theorem edist_le_of_edist_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop
   convert edist_le_tsum_of_edist_le_of_tendsto _ hu ha _
   simp only [pow_add, ENNReal.tsum_mul_left, ENNReal.tsum_geometric, div_eq_mul_inv, mul_assoc]
 
+include hu in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `C / (1 - r)`. -/
 theorem edist_le_of_edist_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f atTop (𝓝 a)) :
@@ -410,12 +413,14 @@ section EdistLeGeometricTwo
 variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C / 2 ^ n) {a : α} (ha : Tendsto f atTop (𝓝 a))
 
+include hC hu in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric_two : CauchySeq f := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at hu
   refine cauchySeq_of_edist_le_geometric 2⁻¹ C ?_ hC hu
   simp [ENNReal.one_lt_two]
 
+include hu ha in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
 `f n` to the limit of `f` is bounded above by `2 * C * 2^-n`. -/
 theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a ≤ 2 * C / 2 ^ n := by
@@ -424,6 +429,7 @@ theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a 
   convert edist_le_of_edist_le_geometric_of_tendsto 2⁻¹ C hu ha n using 1
   rw [ENNReal.one_sub_inv_two, div_eq_mul_inv, inv_inv]
 
+include hu ha in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `2 * C`. -/
 theorem edist_le_of_edist_le_geometric_two_of_tendsto₀ : edist (f 0) a ≤ 2 * C := by
@@ -434,9 +440,13 @@ end EdistLeGeometricTwo
 
 section LeGeometric
 
-variable [PseudoMetricSpace α] {r C : ℝ} (hr : r < 1) {f : ℕ → α}
-  (hu : ∀ n, dist (f n) (f (n + 1)) ≤ C * r ^ n)
+variable [PseudoMetricSpace α] {r C : ℝ} {f : ℕ → α}
 
+section
+variable (hr : r < 1) (hu : ∀ n, dist (f n) (f (n + 1)) ≤ C * r ^ n)
+include hr hu
+
+/-- If `dist (f n) (f (n+1))` is bounded by `C * r^n`, `r < 1`, then `f` is a Cauchy sequence. -/
 theorem aux_hasSum_of_le_geometric : HasSum (fun n : ℕ ↦ C * r ^ n) (C / (1 - r)) := by
   rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ dist_nonneg.trans (hu n) with (rfl | ⟨_, r₀⟩)
   · simp [hasSum_zero]
@@ -467,7 +477,10 @@ theorem dist_le_of_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 
   rw [mul_comm]
   exact (this.mul_left _).tsum_eq.symm
 
+end
+
 variable (hu₂ : ∀ n, dist (f n) (f (n + 1)) ≤ C / 2 / 2 ^ n)
+include hu₂
 
 /-- If `dist (f n) (f (n+1))` is bounded by `(C / 2) / 2^n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_le_geometric_two : CauchySeq f :=
@@ -642,7 +655,7 @@ theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' A tendsto_const_nhds
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
     simp only [le_div_iff (zero_lt_one.trans_le hx), _root_.sub_mul,
-      inv_mul_cancel (zero_lt_one.trans_le hx).ne']
+      inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne']
     have := Nat.lt_floor_add_one (a * x)
     linarith
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
@@ -662,7 +675,7 @@ theorem tendsto_nat_ceil_mul_div_atTop {a : R} (ha : 0 ≤ a) :
     rw [le_div_iff (zero_lt_one.trans_le hx)]
     exact Nat.le_ceil _
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    simp [div_le_iff (zero_lt_one.trans_le hx), inv_mul_cancel (zero_lt_one.trans_le hx).ne',
+    simp [div_le_iff (zero_lt_one.trans_le hx), inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne',
       (Nat.ceil_lt_add_one (mul_nonneg ha (zero_le_one.trans hx))).le, add_mul]
 
 theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x ↦ (⌈x⌉₊ : R) / x) atTop (𝓝 1) := by
