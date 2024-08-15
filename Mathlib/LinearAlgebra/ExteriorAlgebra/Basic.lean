@@ -244,9 +244,10 @@ theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     (ι R <| f i) * (List.ofFn fun i => ι R <| f i).prod = 0 := by
-  induction' n with n hn
-  · exact i.elim0
-  · rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
+  induction n with
+  | zero => exact i.elim0
+  | succ n hn =>
+    rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
     by_cases h : i = 0
     · rw [h, ι_sq_zero, zero_mul]
     · replace hn :=

@@ -112,9 +112,7 @@ theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans <| c
 @[simp]
 theorem card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
   (card_map _).trans <|
-    Int.ofNat.inj <| by
-      -- Porting note (#11215): TODO: Restore `Int.ofNat.inj` and remove the `change`
-      change ((↑) : ℕ → ℤ) _ = ((↑) : ℕ → ℤ) _
+    Nat.cast_inj.mp <| by
       rw [card_range, sup_eq_max, inf_eq_min,
         Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.ofNat_add,
         Int.natCast_natAbs, add_comm, add_sub_assoc, max_sub_min_eq_abs, add_comm, Int.ofNat_one]
