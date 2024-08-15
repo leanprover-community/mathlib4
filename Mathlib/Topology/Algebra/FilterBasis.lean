@@ -148,17 +148,11 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
     rcases GroupFilterBasis.mul U_in with ⟨V, V_in, hVU⟩
     filter_upwards [image_mem_map (B.mem_filter_of_mem V_in)]
     rintro _ ⟨x, hx, rfl⟩
-    sorry
-    -- calc
-    --   (a * x) • V ∈ (a * x) • B.filter := smul_set_mem_smul_filter <| B.mem_filter_of_mem V_in
-    --   _ = a • x • V := smul_smul .. |>.symm
-    --   -- _ ⊆ a • (V * V) := smul_set_mono <| smul_set_subset_smul hx
-    --   -- _ ⊆ a • U := smul_set_mono hVU
-
-      -- a • U ⊇ a • (V * V) := smul_set_mono hVU
-      -- _ ⊇ a • x • V := smul_set_mono <| smul_set_subset_smul hx
-      -- _ = (a * x) • V := smul_smul ..
-      -- _ ∈ (a * x) • B.filter := smul_set_mem_smul_filter <| B.mem_filter_of_mem V_in
+    calc
+      (a * x) • V ∈ (a * x) • B.filter := smul_set_mem_smul_filter <| B.mem_filter_of_mem V_in
+      _ = a • x • V := smul_smul .. |>.symm
+      _ ⊆ a • (V * V) := smul_set_mono <| smul_set_subset_smul hx
+      _ ⊆ a • U := smul_set_mono hVU
 
 @[to_additive]
 theorem nhds_one_eq (B : GroupFilterBasis G) :

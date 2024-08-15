@@ -139,6 +139,9 @@ theorem mem_of_superset {x y : Set α} (hx : x ∈ f) (hxy : x ⊆ y) : y ∈ f 
 instance : Trans (· ⊇ ·) ((· ∈ ·) : Set α → Filter α → Prop) (· ∈ ·) where
   trans h₁ h₂ := mem_of_superset h₂ h₁
 
+instance : Trans Membership.mem (· ⊆ ·) (Membership.mem : Filter α → Set α → Prop) where
+  trans h₁ h₂ := mem_of_superset h₁ h₂
+
 theorem inter_mem {s t : Set α} (hs : s ∈ f) (ht : t ∈ f) : s ∩ t ∈ f :=
   f.inter_sets hs ht
 
