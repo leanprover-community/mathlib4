@@ -21,9 +21,7 @@ jobs:
           fetch-depth: 0
 
       - run: |
-          ls
-          pwd
-          cat scripts/autolabels.sh
+          ./scripts/autolabels.sh long
           LABELS="$(./scripts/autolabels.sh)"
           printf $'gh issue edit \'%s\' --add-label \'%s\'\n' "$NUMBER" "$LABELS"
           gh issue edit "$NUMBER" --add-label "$LABELS"
