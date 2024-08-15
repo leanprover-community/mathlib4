@@ -1,4 +1,4 @@
-/-
+/-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
 
 For this reason, the imports of this files are carefully curated.
