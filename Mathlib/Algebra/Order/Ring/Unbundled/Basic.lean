@@ -113,7 +113,6 @@ TODO: the mixin assumptiosn can be relaxed in most cases
 
 -/
 
-
 assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidHom
 
@@ -578,7 +577,7 @@ variable [ContravariantClass α α (· + ·) (· < ·)]
 
 /-- Binary strict **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
-    [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)]
+    [CovariantClass α α (· + ·) (· < ·)]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
@@ -587,7 +586,7 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE α] [MulPosStrictMono α]
-    [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)]
+    [CovariantClass α α (· + ·) (· < ·)]
     (hba : b < a) (hdc : d < c) : a * d + b * c < a * c + b * d := by
   rw [add_comm (a * d), add_comm (a * c)]
   exact mul_add_mul_lt_mul_add_mul hba hdc
@@ -915,7 +914,7 @@ lemma mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]
     [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α]
     [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· < ·)] :
     a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
-  rw [add_eq_zero_iff', mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
+  rw [add_eq_zero_iff_of_nonneg, mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
     apply mul_self_nonneg
 
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]

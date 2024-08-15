@@ -152,8 +152,9 @@ theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R]
   simp_rw [map_add, hf, ← Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
   rw [add_eq_zero_iff_eq_neg] at hx ⊢
   by_cases hr : r = 0
-  · ext <;> simp [hr] at hx ⊢
-    exact hx
+  · ext
+    · simp [hr]
+    · simpa [hr] using hx
   · exact (h r hr <| hx ▸ (neg_mem a.property)).elim
 
 /-- This is a generic version which allows us to prove both

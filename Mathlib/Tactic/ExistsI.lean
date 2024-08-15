@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Moritz Doll
 -/
 
+import Mathlib.Init
 /-!
 # The `existsi` tactic
 This file defines the `existsi` tactic: its purpose is to instantiate existential quantifiers.
