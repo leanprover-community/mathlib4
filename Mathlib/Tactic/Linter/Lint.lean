@@ -221,16 +221,14 @@ end CDotLinter
 /-!
 #  The "longFile" linter
 
-The "longFile" linter emits a warning on files whose line number exceeds the value of the linter's
-option.
-The default value for the option is `1500`.
+The "longFile" linter emits a warning on files which are longer than a certain number of lines
+(1500 by default).
 -/
 
 /--
-The "longFile" linter emits a warning on files whose line number exceeds the value of the linter's
-option.
-The default value for the option is `1500`.
-A value of `0` silences the linter entirely.
+The "longFile" linter emits a warning on files which are longer than a certain number of lines
+(1500 by default). If this option is set to `N` lines, the linter warns once a file has more than
+`N` lines. A value of `0` silences the linter entirely.
 -/
 register_option linter.longFile : Nat := {
   defValue := 1500
@@ -251,18 +249,20 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let lastLine := ((← getFileMap).toPosition init).line - 1
     -- `candidate` is divisible by `100` and satisfies `lastLine + 100 < candidate ≤ lastLine + 200`
     let candidate := (lastLine / 100) * 100 + 200
-    let endMsg := m!"using `set_option linter.longFile {candidate}`.\n\
-                    You can disable completely this linter by setting the length limit to `0`."
+
     if linterBound < lastLine then
       logWarningAt stx <| .tagged linter.longFile.name
         m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
-          You can extend the default length of the file {endMsg}"
+          You can extend the allowed length of the file using \
+          `set_option linter.longFile {candidate}`.\nYou can completely disable this linter \
+          by setting the length limit to `0`."
     else
     let candidate := max candidate 1500
-    if 1500 < linterBound && lastLine + 200 < linterBound &&  linterBound != candidate then
+    if 1500 < linterBound && lastLine + 200 < linterBound && linterBound != candidate then
       logWarningAt stx <| .tagged linter.longFile.name
-        m!"For this file, the recommended limit for the number of lines is {candidate}, instead of \
-          {linterBound}.\n\nPlease adjust the limit to the recommended value {endMsg}"
+        m!"For this file, the recommended limit for the number of lines is {candidate}, \
+          instead of {linterBound}.\n\nPlease adjust the limit to the recommended value \
+          using `set_option linter.longFile {candidate}`."
 
 initialize addLinter longFileLinter
 
