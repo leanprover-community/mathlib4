@@ -10,8 +10,8 @@ import Mathlib.Topology.UniformSpace.Equiv
 /-! # Type synonym for types with a `CStarModule` structure
 
 It is often the case that we want to construct a `CStarModule` instance on a type that is already
-endowed with a norm, and it has a different norm which makes it into a `CStarModule`. For this
-reason, we create a type synonym `WithCStarModule` which is endowed with the requisite
+endowed with a norm, but this norm is not the one associated to its `CStarModule` structure. For
+this reason, we create a type synonym `WithCStarModule` which is endowed with the requisite
 `CStarModule` instance. We also introduce the scoped notation `C⋆ᵐᵒᵈ` for this type synonym.
 
 The common use cases are, when `A` is a C⋆-algebra:
