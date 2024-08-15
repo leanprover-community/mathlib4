@@ -29,9 +29,6 @@ Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2170 lin
 Mathlib/Data/Set/Finite.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1535 lines, try to split it up
 Mathlib/Data/Set/Function.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1740 lines, try to split it up
 Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1932 lines, try to split it up
-Mathlib/Init.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
-Mathlib/Init.lean : line 3 : ERR_COP : Malformed or missing copyright header: Second line should be "Released under Apache 2.0 license as described in the file LICENSE."
-Mathlib/Init.lean : line 4 : ERR_COP : Malformed or missing copyright header: The third line should describe the file's main authors
 Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1693 lines, try to split it up
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1738 lines, try to split it up
 Mathlib/LinearAlgebra/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1775 lines, try to split it up
