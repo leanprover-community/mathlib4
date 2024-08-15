@@ -28,20 +28,12 @@ In these definitions and the results below, `μ` is an s-finite measure (`SFinit
   If `μ ≠ 0`, this is a probability measure.
 * `MeasureTheory.Measure.densityToFinite`: a measurable function such that
   `μ = μ.toFinite.withDensity μ.densityToFinite`.
-* `MeasureTheory.Measure.sigmaFiniteSet`: a measurable set such that `μ.restrict μ.sigmaFiniteSet`
-  is sigma-finite, and for all sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0` or `μ s = ∞`.
 
 ## Main statements
 
 * `absolutelyContinuous_toFinite`: `μ ≪ μ.toFinite`.
 * `toFinite_absolutelyContinuous`: `μ.toFinite ≪ μ`.
 * `withDensity_densitytoFinite`: `μ.toFinite.withDensity μ.densityToFinite = μ`.
-
-* An instance showing that `μ.restrict μ.sigmaFiniteSet` is sigma-finite.
-* `restrict_compl_sigmaFiniteSet_eq_zero_or_top`: the measure `μ.restrict μ.sigmaFiniteSetᶜ` takes
-  only two values: 0 and ∞ .
-* `measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite`: an s-finite measure `μ` is sigma-finite
-  iff `μ μ.sigmaFiniteSetᶜ = 0`.
 
 -/
 
@@ -180,100 +172,16 @@ lemma densityToFinite_ae_ne_top (μ : Measure α) [SigmaFinite μ] :
     ∀ᵐ x ∂μ, μ.densityToFinite x ≠ ∞ :=
   (densityToFinite_ae_lt_top μ).mono (fun _ hx ↦ hx.ne)
 
-section SigmaFiniteSet
-
-variable {s t : Set α}
-
-/-- A measurable set such that `μ.restrict μ.sigmaFiniteSet` is sigma-finite,
-  and for all measurable sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0` or `μ s = ∞`. -/
-def Measure.sigmaFiniteSet (μ : Measure α) [SFinite μ] : Set α := {x | μ.densityToFinite x ≠ ∞}
-
-lemma measurableSet_sigmaFiniteSet (μ : Measure α) [SFinite μ] :
-    MeasurableSet μ.sigmaFiniteSet :=
-  (measurable_densityToFinite μ (measurableSet_singleton ∞)).compl
-
 lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
     μ.restrict μ.sigmaFiniteSetᶜ = ∞ • μ.toFinite.restrict μ.sigmaFiniteSetᶜ := by
+  rw [Measure.sigmaFiniteSet,
+    restrict_compl_sigmaFiniteSetWRT (Measure.AbsolutelyContinuous.refl μ)]
   ext t ht
-  have : μ.restrict μ.sigmaFiniteSetᶜ
-      = (μ.toFinite.withDensity μ.densityToFinite).restrict μ.sigmaFiniteSetᶜ := by
-    rw [withDensity_densitytoFinite μ]
-  simp only [Measure.coe_smul, Pi.smul_apply, smul_eq_mul]
-  rw [this, Measure.restrict_apply ht,
-    withDensity_apply _ (ht.inter (measurableSet_sigmaFiniteSet μ).compl),
-    Measure.restrict_apply ht]
-  calc ∫⁻ a in t ∩ μ.sigmaFiniteSetᶜ, μ.densityToFinite a ∂μ.toFinite
-  _ = ∫⁻ _ in t ∩ μ.sigmaFiniteSetᶜ, ∞ ∂μ.toFinite := by
-        refine setLIntegral_congr_fun (ht.inter (measurableSet_sigmaFiniteSet μ).compl)
-          (ae_of_all _ (fun x hx ↦ ?_))
-        simpa [Measure.sigmaFiniteSet] using ((Set.inter_subset_right) hx)
-  _ = ∞ * μ.toFinite (t ∩ μ.sigmaFiniteSetᶜ) := by simp
-
-/-- The measure `μ.restrict μ.sigmaFiniteSetᶜ` takes only two values: 0 and ∞ . -/
-lemma restrict_compl_sigmaFiniteSet_eq_zero_or_top (μ : Measure α) [SFinite μ] (s : Set α) :
-    μ.restrict μ.sigmaFiniteSetᶜ s = 0 ∨ μ.restrict μ.sigmaFiniteSetᶜ s = ∞ := by
-  rw [restrict_compl_sigmaFiniteSet]
-  simp only [Measure.coe_smul, Pi.smul_apply, smul_eq_mul, mul_eq_zero, ENNReal.top_ne_zero,
-    false_or]
-  rw [Measure.restrict_apply' (measurableSet_sigmaFiniteSet μ).compl]
-  by_cases h_zero : μ.toFinite (s ∩ μ.sigmaFiniteSetᶜ) = 0
-  · exact Or.inl h_zero
-  · exact Or.inr (ENNReal.top_mul h_zero)
-
-lemma measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet [SFinite μ]
-    (ht_subset : t ⊆ μ.sigmaFiniteSetᶜ) :
-    μ t = 0 ∨ μ t = ∞ := by
-  have : μ t = μ.restrict μ.sigmaFiniteSetᶜ t := by
-    rw [Measure.restrict_apply' (measurableSet_sigmaFiniteSet μ).compl,
-      Set.inter_eq_left.mpr ht_subset]
-  rw [this]
-  exact restrict_compl_sigmaFiniteSet_eq_zero_or_top μ t
-
-lemma toFinite_withDensity_restrict_sigmaFiniteSet (μ : Measure α) [SFinite μ] :
-    (μ.toFinite.withDensity
-        (fun x ↦ if μ.densityToFinite x ≠ ∞ then μ.densityToFinite x else 1)).restrict
-        μ.sigmaFiniteSet
-      = μ.restrict μ.sigmaFiniteSet := by
-  have : μ.restrict μ.sigmaFiniteSet
-      = (μ.toFinite.withDensity μ.densityToFinite).restrict μ.sigmaFiniteSet := by
-    rw [withDensity_densitytoFinite μ]
-  rw [this]
-  ext s hs
-  rw [Measure.restrict_apply hs, Measure.restrict_apply hs,
-    withDensity_apply _ (hs.inter (measurableSet_sigmaFiniteSet μ)),
-    withDensity_apply _ (hs.inter (measurableSet_sigmaFiniteSet μ))]
-  refine setLIntegral_congr_fun (hs.inter (measurableSet_sigmaFiniteSet μ))
-    (ae_of_all _ (fun x hx ↦ Eq.symm ?_))
-  simp only [Measure.sigmaFiniteSet, Set.mem_inter_iff, Set.mem_compl_iff, Set.mem_setOf_eq,
-    ne_eq] at hx
-  rw [if_pos hx.2]
-
-/-- The restriction of an s-finite measure `μ` to `μ.sigmaFiniteSet` is sigma-finite. -/
-instance (μ : Measure α) [SFinite μ] : SigmaFinite (μ.restrict μ.sigmaFiniteSet) := by
-  rw [← toFinite_withDensity_restrict_sigmaFiniteSet]
-  have : SigmaFinite (μ.toFinite.withDensity
-      (fun x ↦ if μ.densityToFinite x ≠ ∞ then μ.densityToFinite x else 1)) := by
-    refine SigmaFinite.withDensity_of_ne_top ?_
-    · refine ae_of_all _ (fun x ↦ ?_)
-      split_ifs with h <;> simp [h]
-  exact Restrict.sigmaFinite _ _
-
-lemma sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero [SFinite μ]
-    (h : μ μ.sigmaFiniteSetᶜ = 0) :
-    SigmaFinite μ := by
-  rw [← Measure.restrict_add_restrict_compl (μ := μ) (measurableSet_sigmaFiniteSet μ),
-    Measure.restrict_eq_zero.mpr h, add_zero]
-  infer_instance
-
-@[simp]
-lemma measure_compl_sigmaFiniteSet (μ : Measure α) [SigmaFinite μ] : μ μ.sigmaFiniteSetᶜ = 0 :=
-  densityToFinite_ae_ne_top μ
-
-/-- An s-finite measure `μ` is sigma-finite iff `μ μ.sigmaFiniteSetᶜ = 0`. -/
-lemma measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite (μ : Measure α) [SFinite μ] :
-    μ μ.sigmaFiniteSetᶜ = 0 ↔ SigmaFinite μ :=
-  ⟨sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero, fun _ ↦ measure_compl_sigmaFiniteSet μ⟩
-
-end SigmaFiniteSet
+  simp only [Measure.smul_apply, smul_eq_mul]
+  rw [Measure.restrict_apply ht, Measure.restrict_apply ht]
+  by_cases hμt : μ (t ∩ (μ.sigmaFiniteSetWRT μ)ᶜ) = 0
+  · rw [hμt, toFinite_absolutelyContinuous μ hμt]
+  · rw [ENNReal.top_mul hμt, ENNReal.top_mul]
+    exact fun h ↦ hμt (absolutelyContinuous_toFinite μ h)
 
 end MeasureTheory
