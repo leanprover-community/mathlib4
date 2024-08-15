@@ -25,7 +25,7 @@ Comma, Slice, Coslice, Over, Under
 
 namespace CategoryTheory
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {T : Type u₁} [Category.{v₁} T]
@@ -656,5 +656,40 @@ lemma toUnder_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
   rfl
 
 end Functor
+
+namespace StructuredArrow
+
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- Characterization of the structured arrow category on the projection functor of any
+structured arrow category. -/
+def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
+    StructuredArrow X (StructuredArrow.proj Y F) ≌ StructuredArrow Y (Under.forget X ⋙ F) :=
+  Equivalence.mk
+    (Functor.toStructuredArrow
+      (Functor.toUnder (StructuredArrow.proj X _ ⋙ StructuredArrow.proj Y _) _
+        (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
+      (fun f => f.right.hom) (by simp))
+    (Functor.toStructuredArrow
+      (Functor.toStructuredArrow (StructuredArrow.proj Y _ ⋙ Under.forget X) _ _
+         (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
+      (fun f => f.right.hom) (by simp))
+    (by aesop_cat)
+    (by aesop_cat)
+
+/-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
+def ofDiagEquivalence (X : T × T) :
+    StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.2 (Under.forget X.1) :=
+  Equivalence.mk
+    (Functor.toStructuredArrow
+      (Functor.toUnder (StructuredArrow.proj _ _) _
+        (fun f => by exact f.hom.1) (fun m => by have := m.w; aesop_cat)) _ _
+      (fun f => f.hom.2) (fun m => by have := m.w; aesop_cat))
+    (Functor.toStructuredArrow (StructuredArrow.proj _ _ ⋙ Under.forget _) _ _
+      (fun f => (f.right.hom, f.hom)) (fun m => by have := m.w; aesop_cat))
+    (by aesop_cat)
+    (by aesop_cat)
+
+end StructuredArrow
 
 end CategoryTheory
