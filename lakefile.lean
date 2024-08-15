@@ -5,8 +5,7 @@ open Lake DSL
 package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
-    ⟨`autoImplicit, false⟩,
-    ⟨`relaxedAutoImplicit, false⟩
+    ⟨`autoImplicit, false⟩
   ]
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
@@ -18,11 +17,11 @@ package mathlib where
 ## Mathlib dependencies on upstream projects.
 -/
 
-require "leanprover-community" / "batteries" @ "git#main"
-require "leanprover-community" / "Qq" @ "git#master"
-require "leanprover-community" / "aesop" @ "git#master"
-require "leanprover-community" / "proofwidgets" @ "git#v0.0.39"
-require "leanprover-community" / "importGraph" @ "git#main"
+require "leanprover-community" / "batteries" @ git "main"
+require "leanprover-community" / "Qq" @ git "master"
+require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.41"
+require "leanprover-community" / "importGraph" @ git "main"
 
 /-!
 ## Mathlib libraries

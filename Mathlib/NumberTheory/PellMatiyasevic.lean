@@ -151,6 +151,7 @@ def az (a : ℕ) : ℤ :=
 
 end
 
+include a1 in
 theorem asq_pos : 0 < a * a :=
   le_trans (le_of_lt a1)
     (by have := @Nat.mul_le_mul_left 1 a a (le_of_lt a1); rwa [mul_one] at this)
@@ -197,7 +198,7 @@ theorem isPell_pellZd : ∀ n : ℕ, IsPell (pellZd a1 n)
   | 0 => rfl
   | n + 1 => by
     let o := isPell_one a1
-    simp; exact Pell.isPell_mul (isPell_pellZd n) o
+    simpa using Pell.isPell_mul (isPell_pellZd n) o
 
 @[simp]
 theorem pell_eqz (n : ℕ) : xz a1 n * xz a1 n - d a1 * yz a1 n * yz a1 n = 1 :=
@@ -228,6 +229,7 @@ theorem xn_ge_a_pow : ∀ n : ℕ, a ^ n ≤ xn a1 n
     simp only [_root_.pow_succ, xn_succ]
     exact le_trans (Nat.mul_le_mul_right _ (xn_ge_a_pow n)) (Nat.le_add_right _ _)
 
+include a1 in
 theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
   | 0 => Nat.le_refl 1
   | n + 1 => by
@@ -280,7 +282,7 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
                       (mul_le_mul_of_nonneg_left hn (le_trans zero_le_one h1)) a1p
               erw [bm, one_mul, mul_assoc, Eq.trans (mul_comm _ _) a1m, mul_one] at t
               exact ha t
-        simp only [sub_self, sub_neg_eq_add] at y0l; simp only [Zsqrtd.neg_re, add_right_neg,
+        simp only [sub_self, sub_neg_eq_add] at y0l; simp only [Zsqrtd.neg_re, add_neg_cancel,
           Zsqrtd.neg_im, neg_neg] at yl2
         exact
           match y, y0l, (yl2 : (⟨_, _⟩ : ℤ√_) < ⟨_, _⟩) with
@@ -356,7 +358,7 @@ theorem strictMono_y : StrictMono (yn a1)
     have : yn a1 m ≤ yn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_y hl)
         fun e => by rw [e]
-    simp; refine lt_of_le_of_lt ?_ (Nat.lt_add_of_pos_left <| x_pos a1 n)
+    simp only [yn_succ, gt_iff_lt]; refine lt_of_le_of_lt ?_ (Nat.lt_add_of_pos_left <| x_pos a1 n)
     rw [← mul_one (yn a1 m)]
     exact mul_le_mul this (le_of_lt a1) (Nat.zero_le _) (Nat.zero_le _)
 
@@ -366,7 +368,8 @@ theorem strictMono_x : StrictMono (xn a1)
     have : xn a1 m ≤ xn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_x hl)
         fun e => by rw [e]
-    simp; refine lt_of_lt_of_le (lt_of_le_of_lt this ?_) (Nat.le_add_right _ _)
+    simp only [xn_succ, gt_iff_lt]
+    refine lt_of_lt_of_le (lt_of_le_of_lt this ?_) (Nat.le_add_right _ _)
     have t := Nat.mul_lt_mul_of_pos_left a1 (x_pos a1 n)
     rwa [mul_one] at t
 
@@ -401,7 +404,7 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
 theorem xy_modEq_yn (n) :
     ∀ k, xn a1 (n * k) ≡ xn a1 n ^ k [MOD yn a1 n ^ 2] ∧ yn a1 (n * k) ≡
         k * xn a1 n ^ (k - 1) * yn a1 n [MOD yn a1 n ^ 3]
-  | 0 => by constructor <;> simp <;> exact Nat.ModEq.refl _
+  | 0 => by constructor <;> simpa using Nat.ModEq.refl _
   | k + 1 => by
     let ⟨hx, hy⟩ := xy_modEq_yn n k
     have L : xn a1 (n * k) * xn a1 n + d a1 * yn a1 (n * k) * yn a1 n ≡
@@ -745,7 +748,7 @@ end
 theorem xy_modEq_of_modEq {a b c} (a1 : 1 < a) (b1 : 1 < b) (h : a ≡ b [MOD c]) :
     ∀ n, xn a1 n ≡ xn b1 n [MOD c] ∧ yn a1 n ≡ yn b1 n [MOD c]
   | 0 => by constructor <;> rfl
-  | 1 => by simp; exact ⟨h, ModEq.refl 1⟩
+  | 1 => by simpa using ⟨h, ModEq.refl 1⟩
   | n + 2 =>
     ⟨(xy_modEq_of_modEq a1 b1 h n).left.add_right_cancel <| by
         rw [xn_succ_succ a1, xn_succ_succ b1]
@@ -787,7 +790,7 @@ theorem matiyasevic {a k x y} :
       have vp : 0 < v := strictMono_y a1 (lt_trans zero_lt_one m1)
       have b1 : 1 < b :=
         have : xn a1 1 < u := strictMono_x a1 m1
-        have : a < u := by simp at this; exact this
+        have : a < u := by simpa using this
         lt_of_lt_of_le a1 <| by
           delta ModEq at ba; rw [Nat.mod_eq_of_lt this] at ba; rw [← ba]
           apply Nat.mod_le
@@ -814,7 +817,9 @@ theorem matiyasevic {a k x y} :
             (tk : yn b1 j ≡ k [MOD 4 * yn a1 i])⟩,
           (ky : k ≤ yn a1 i) =>
           (Nat.eq_zero_or_pos i).elim
-            (fun i0 => by simp [i0] at ky; rw [i0, ky]; exact ⟨rfl, rfl⟩) fun ipos => by
+            (fun i0 => by
+              simp only [i0, yn_zero, nonpos_iff_eq_zero] at ky; rw [i0, ky]; exact ⟨rfl, rfl⟩)
+            fun ipos => by
             suffices i = k by rw [this]; exact ⟨rfl, rfl⟩
             clear o rem xy uv st
             have iln : i ≤ n :=

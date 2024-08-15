@@ -78,8 +78,8 @@ theorem univ_sigma_univ : (@univ ι).sigma (fun _ ↦ @univ (α i)) = univ := ex
 theorem sigma_univ : s.sigma (fun _ ↦ univ : ∀ i, Set (α i)) = Sigma.fst ⁻¹' s :=
   ext fun _ ↦ and_true_iff _
 
-@[simp] theorem univ_sigma_preimage (s : Set (Σ i, α i)) :
-    (@univ ι).sigma (fun i ↦ Sigma.mk i ⁻¹' s) = s :=
+@[simp] theorem univ_sigma_preimage_mk (s : Set (Σ i, α i)) :
+    (univ : Set ι).sigma (fun i ↦ Sigma.mk i ⁻¹' s) = s :=
   ext <| by simp
 
 @[simp]
@@ -153,7 +153,6 @@ variable {β : ι → Type*}
 
 theorem insert_sigma : (insert i s).sigma t = Sigma.mk i '' t i ∪ s.sigma t := by
   rw [insert_eq, union_sigma, singleton_sigma]
-  exact a
 
 theorem sigma_insert {a : ∀ i, α i} :
     s.sigma (fun i ↦ insert (a i) (t i)) = (fun i ↦ ⟨i, a i⟩) '' s ∪ s.sigma t := by

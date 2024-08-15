@@ -102,19 +102,19 @@ variable {β} [Nonempty β]
 
 @[to_additive (attr := simp) const_nonneg]
 theorem one_le_const : 1 ≤ const β a ↔ 1 ≤ a :=
-  @const_le_const _ _ _ _ 1 _
+  const_le_const
 
 @[to_additive (attr := simp) const_pos]
 theorem one_lt_const : 1 < const β a ↔ 1 < a :=
-  @const_lt_const _ _ _ _ 1 a
+  const_lt_const
 
 @[to_additive (attr := simp)]
 theorem const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
-  @const_le_const _ _ _ _ _ 1
+  const_le_const
 
 @[to_additive (attr := simp) const_neg']
 theorem const_lt_one : const β a < 1 ↔ a < 1 :=
-  @const_lt_const _ _ _ _ _ 1
+  const_lt_const
 
 end const
 
