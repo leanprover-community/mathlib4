@@ -24,8 +24,8 @@ jobs:
           ./scripts/autolabels.sh long
           ./scripts/autolabels.sh
           LABELS="$(./scripts/autolabels.sh)"
-          if [[ $LABELS != *,* ]]
           printf $'gh issue edit \'%s\' --add-label \'%s\'\n' "$NUMBER" "$LABELS"
+          if [[ $LABELS != *,* ]]
           then
             printf 'Actually doing it!\n'
             gh issue edit "$NUMBER" --add-label "$LABELS"
