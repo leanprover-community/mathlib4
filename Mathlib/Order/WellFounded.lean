@@ -76,6 +76,46 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   by_contra hy'
   exact hm' y hy' hy
 
+end WellFounded
+
+namespace WellFoundedLT
+
+variable [LT α] [H : WellFoundedLT α]
+
+/-- A minimal element of a nonempty set in a well-founded order.
+
+If you're working with a nonempty linear order, consider defining a
+`ConditionallyCompleteLinearOrderBot` instance via
+`WellFounded.conditionallyCompleteLinearOrderWithBot` and using `Inf` instead. -/
+noncomputable def min (s : Set α) (h : s.Nonempty) : α :=
+  WellFounded.min H.wf s h
+
+theorem min_mem (s : Set α) (h : s.Nonempty) : H.min s h ∈ s :=
+  WellFounded.min_mem H.wf s h
+
+theorem not_lt_min (s : Set α) (h : s.Nonempty) {x} (hx : x ∈ s) : ¬x < H.min s h :=
+  WellFounded.not_lt_min H.wf s h hx
+
+end WellFoundedLT
+
+namespace WellFoundedGT
+
+variable [LT α] [H : WellFoundedGT α]
+
+/-- A maximal element of a nonempty set in a well-founded order. -/
+noncomputable def max (s : Set α) (h : s.Nonempty) : α :=
+  WellFounded.min H.wf s h
+
+theorem max_mem (s : Set α) (h : s.Nonempty) : H.max s h ∈ s :=
+  WellFounded.min_mem H.wf s h
+
+theorem not_gt_max (s : Set α) (h : s.Nonempty) {x} (hx : x ∈ s) : ¬H.max s h < x :=
+  WellFounded.not_lt_min H.wf s h hx
+
+end WellFoundedGT
+
+namespace WellFounded
+
 open Set
 
 /-- The supremum of a bounded, well-founded order -/
@@ -123,7 +163,7 @@ section LinearOrder
 
 variable [LinearOrder β] [PartialOrder γ]
 
-theorem min_le (h : WellFounded ((· < ·) : β → β → Prop)) {x : β} {s : Set β} (hx : x ∈ s)
+theorem min_le [h : WellFoundedLT β] {x : β} {s : Set β} (hx : x ∈ s)
     (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
 
@@ -140,19 +180,21 @@ private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMon
   · rw [← hc]
     exact hf.monotone hbc
 
-theorem eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → Prop))
-    {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
-    Set.range f = Set.range g ↔ f = g :=
-  ⟨fun hfg => by
-    funext a
-    apply h.induction a
-    exact fun b H =>
-      le_antisymm (eq_strictMono_iff_eq_range_aux hf hg hfg H)
-        (eq_strictMono_iff_eq_range_aux hg hf hfg.symm fun a hab => (H a hab).symm),
-    congr_arg _⟩
+/-- Two strictly monotonic functions with the same range on a linear order with well-founded `<` are
+equal. -/
+theorem eq_strictMono_iff_eq_range [WellFoundedLT β] {f g : β → γ}
+    (hf : StrictMono f) (hg : StrictMono g) : Set.range f = Set.range g ↔ f = g := by
+  refine ⟨?_, congr_arg _⟩
+  intro hfg
+  ext a
+  apply WellFoundedLT.induction a
+  intro b h
+  exact (eq_strictMono_iff_eq_range_aux hf hg hfg h).antisymm
+    (eq_strictMono_iff_eq_range_aux hg hf hfg.symm fun a hab => (h a hab).symm)
 
-theorem self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop))
-    {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
+/-- A strictly monotonic function on a linear order with well-founded `<` satisfies `id ≤ f`. -/
+theorem id_le_of_strictMono [h : WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
+  change ∀ _, _
   by_contra! h₁
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
@@ -167,45 +209,45 @@ variable (f : α → β)
 
 section LT
 
-variable [LT β] (h : WellFounded ((· < ·) : β → β → Prop))
+variable [LT β] [H : WellFoundedLT β]
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, this is an element of `α`
 whose image under `f` is minimal in the sense of `Function.not_lt_argmin`. -/
 noncomputable def argmin [Nonempty α] : α :=
-  WellFounded.min (InvImage.wf f h) Set.univ Set.univ_nonempty
+  WellFounded.min (InvImage.wf f H.wf) Set.univ Set.univ_nonempty
 
-theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f h) :=
-  WellFounded.not_lt_min (InvImage.wf f h) _ _ (Set.mem_univ a)
+theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f) :=
+  WellFounded.not_lt_min (InvImage.wf f H.wf) _ _ (Set.mem_univ a)
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is minimal in the sense of
 `Function.not_lt_argminOn`. -/
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
-  WellFounded.min (InvImage.wf f h) s hs
+  WellFounded.min (InvImage.wf f H.wf) s hs
 
 @[simp]
-theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
+theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
 -- Porting note (#11119): @[simp] removed as it will never apply
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
-    (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
-  WellFounded.not_lt_min (InvImage.wf f h) s hs ha
+    (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f s hs) :=
+  WellFounded.not_lt_min (InvImage.wf f H.wf) s hs ha
 
 end LT
 
 section LinearOrder
 
-variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop))
+variable [LinearOrder β] [H : WellFoundedLT β]
 
 -- Porting note (#11119): @[simp] removed as it will never apply
-theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
-  not_lt.mp <| not_lt_argmin f h a
+theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
+  not_lt.mp <| not_lt_argmin f a
 
 -- Porting note (#11119): @[simp] removed as it will never apply
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
-    f (argminOn f h s hs) ≤ f a :=
-  not_lt.mp <| not_lt_argminOn f h s ha hs
+    f (argminOn f s hs) ≤ f a :=
+  not_lt.mp <| not_lt_argminOn f s ha hs
 
 end LinearOrder
 

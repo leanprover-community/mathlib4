@@ -229,10 +229,10 @@ instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, Well
   ⟨by
     obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
     · convert emptyWf.wf
-    letI : ∀ i, Zero (α i) := fun i => ⟨(hw i).wf.min ⊤ ⟨x i, trivial⟩⟩
+    letI : ∀ i, Zero (α i) := fun i => ⟨(hw i).min ⊤ ⟨x i, trivial⟩⟩
     haveI := Fintype.ofFinite ι
     refine InvImage.wf equivFunOnFintype.symm (DFinsupp.wellFoundedLT fun i a => ?_).wf
-    exact (hw i).wf.not_lt_min ⊤ _ trivial⟩
+    exact (hw i).not_lt_min ⊤ _ trivial⟩
 
 instance Function.wellFoundedLT {α} [Finite ι] [Preorder α] [WellFoundedLT α] :
     WellFoundedLT (ι → α) :=
