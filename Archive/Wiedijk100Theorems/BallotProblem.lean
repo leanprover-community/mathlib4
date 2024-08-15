@@ -52,7 +52,7 @@ theorem staysPositive_cons {x : ℤ} {l : List ℤ} :
 
 theorem sum_nonneg_of_staysPositive : ∀ {l : List ℤ}, l ∈ staysPositive → 0 ≤ l.sum
   | [], _ => le_rfl
-  | (_::_), h => (h _ (List.cons_ne_nil _ _) (List.suffix_refl _)).le
+  | (_::_), h => (h _ (List.cons_ne_nil _ _) List.suffix_refl).le
 
 theorem staysPositive_cons_pos (x : ℤ) (hx : 0 < x) (l : List ℤ) :
     (x::l) ∈ staysPositive ↔ l ∈ staysPositive := by

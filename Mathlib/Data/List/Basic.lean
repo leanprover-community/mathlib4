@@ -334,7 +334,7 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
 -- Porting note: this does not work as desired
 -- attribute [simp] List.isEmpty
 
-theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;> simp [isEmpty]
+@[deprecated (since := "2024-08-15")] alias isEmpty_iff_eq_nil := isEmpty_iff
 
 /-! ### dropLast -/
 
