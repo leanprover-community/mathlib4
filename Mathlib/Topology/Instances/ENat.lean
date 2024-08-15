@@ -17,6 +17,12 @@ open scoped Topology Filter
 
 namespace ENat
 
+/--
+Topology on `ℕ∞`.
+
+Note: this is different from the `EMetricSpace` topology. The `EMetricSpace` topology has
+`IsOpen {∞}`, but all neighborhoods of `∞` in `ℕ∞` contain infinite intervals.
+-/
 instance : TopologicalSpace ℕ∞ := Preorder.topology ℕ∞
 
 instance : OrderTopology ℕ∞ := ⟨rfl⟩
