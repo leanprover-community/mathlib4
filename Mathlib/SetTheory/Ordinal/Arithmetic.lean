@@ -2637,6 +2637,7 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
   · exact (mul_isNormal ho).apply_omega
 #align ordinal.sup_mul_nat Ordinal.sup_mul_nat
 
+/-- The natural isomorphism between ℕ and the first ω ordinals. -/
 def relIso_nat_omega : ℕ ≃o Iio ω where
   toFun n := ⟨n, nat_lt_omega n⟩
   invFun n := Classical.choose (lt_omega.1 n.2)
