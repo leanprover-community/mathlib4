@@ -58,7 +58,10 @@ export Nat (add)
 
 end add
 
-set_option linter.cdot false in
+section cdotLinter
+
+set_option linter.cdot false
+
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.cdot false`
@@ -78,7 +81,6 @@ instance : Inhabited Nat where
       · have : Nat → Nat → Nat := (· + .)
         . exact 0
 
-set_option linter.cdot false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.cdot false`
@@ -86,6 +88,39 @@ note: this linter can be disabled with `set_option linter.cdot false`
 #guard_msgs in
 set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
+
+/--
+warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+---
+warning: This central dot `·` is isolated; please merge it with the next line.
+---
+warning: This central dot `·` is isolated; please merge it with the next line.
+-/
+#guard_msgs in
+set_option linter.cdot true in
+example : Nat := by
+  have : Nat := by
+    ·
+      -- some empty have
+      have := 0
+      ·
+
+        -- another
+        have := 1
+        . exact 2
+  exact 0
+
+#guard_msgs in
+set_option linter.cdot true in
+example : True := by
+  have : Nat := by
+    -- This is how code should look: no error.
+    · -- comment
+      exact 37
+  trivial
+
+end cdotLinter
 
 set_option linter.longLine false
 /--
