@@ -5,19 +5,19 @@
 This file contains the dictionary for converting a list of modified directories into a github label,
 as well as a script to actually compute which label(s) to apply to the current changes.
 
-Rules:
+Dictionary entries must follow the following rules:
 * only lines starting with `|t-` are considered;
 * repeated spaces, commas and pipes (|) are ignored;
 * `Mathlib` is added by default to each "root folder".
 
-Exception: `Tactic/Linter` is converted into `Tactic-Linter` internally, to simplify separating it from
-`Tactic/anything_other_than_linter`.
+Exception: `Tactic/Linter` is converted into `Tactic-Linter` internally, to easily distinguish it
+from `Tactic/anything_other_than_linter`.
 
 |Label                   |Root folders                                                                       |
 |-                       |-                                                                                  |
 |t-algebra               | Algebra, FieldTheory, RingTheory, GroupTheory, RepresentationTheory, LinearAlgebra|
 |t-algebraic-geometry    | AlgebraicGeometry, Geometry/RingedSpace                                           |
-|t-euclidean-geometry    | Geometry.Euclidean                                                                |
+|t-euclidean-geometry    | Geometry/Euclidean                                                                |
 |t-differential-geometry | Geometry/Manifold                                                                 |
 |t-analysis              | Analysis                                                                          |
 |t-category-theory       | CategoryTheory                                                                    |
@@ -29,7 +29,7 @@ Exception: `Tactic/Linter` is converted into `Tactic-Linter` internally, to simp
 |t-linter                | Tactic/Linter                                                                     |
 |t-logic                 | Logic, ModelTheory                                                                |
 |t-measure-probability   | MeasureTheory, Probability, InformationTheory                                     |
-|t-meta                  | Tactic, Lean, Init, Util, Mathport, Control, Testing                              |
+|t-meta                  | Tactic, Lean, Util, Mathport, Control, Testing                              |
 |t-number-theory         | NumberTheory                                                                      |
 |t-order                 | Order                                                                             |
 |t-topology              | Topology, AlgebraicTopology                                                       |
@@ -37,7 +37,7 @@ Exception: `Tactic/Linter` is converted into `Tactic-Linter` internally, to simp
 
 BASH_MODULE_DOCS
 
-# strips replaces repeated `|, ` with a single space, then only keeps lines beginning with `t-`
+# replaces repeated `|, ` with a single space, then only keeps lines beginning with `t-`
 mdToSpaces () { tr -s '|, ' ' ' < scripts/autolabels.sh | sed -n 's=^ *t-=t-=p; /^BASH_MODULE_DOCS$/Q' ; }
 
 # parses the names of the files that have been modified and the dictionary above
