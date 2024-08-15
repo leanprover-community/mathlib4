@@ -14,6 +14,8 @@ namespace Mathlib.Tactic
 
 open Lean Elab.Tactic Meta
 
+/-- A parser for a single rename to perform in the `rename` tactic:
+these should have the form `h => hnew` (describing a rename of a hypothesis `h` to `hnew`). -/
 syntax renameArg := term " => " ident
 
 /-- `rename' h => hnew` renames the hypothesis named `h` to `hnew`.
