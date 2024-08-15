@@ -42,6 +42,12 @@ lemma ediam_def : G.ediam = ⨆ p : α × α, G.edist p.1 p.2 := by
 lemma edist_le_ediam {u v : α} : G.edist u v ≤ G.ediam :=
   le_iSup₂ (f := G.edist) u v
 
+lemma ediam_le_of_edist_le {k : ℕ∞} (h : ∀ u v, G.edist u v ≤ k ) : G.ediam ≤ k :=
+  iSup₂_le h
+
+lemma ediam_le_iff {k : ℕ∞} : G.ediam ≤ k ↔ ∀ u v, G.edist u v ≤ k :=
+  iSup₂_le_iff
+
 lemma ediam_eq_top : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
   simp only [ediam, iSup_eq_top, lt_iSup_iff]
 
