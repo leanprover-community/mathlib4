@@ -30,11 +30,26 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      # run the same linting step as in lint_and_suggest_pr.yaml
+      # run the same linting steps as in lint_and_suggest_pr.yaml
+
       - name: lint
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           ./scripts/lint-style.sh --fix
+
+      - name: Install bibtool
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bibtool
+
+      - name: lint references.bib
+        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
+        run: |
+          ./scripts/lint-bib.sh
+
+      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
+        run: lake exe mk_all
 
       - name: Commit and push changes
         run: |
@@ -42,5 +57,5 @@ jobs:
           git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
           git add .
           # Don't fail if there's nothing to commit
-          git commit -m "commit changes from lint-style.sh --fix" || true
+          git commit -m "commit changes from style linters" || true
           git push origin HEAD
