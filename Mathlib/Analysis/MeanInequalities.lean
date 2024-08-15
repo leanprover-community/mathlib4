@@ -268,7 +268,7 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
     have p_pos : 0 < ∏ i in s, (z i)⁻¹ ^ w i :=
       prod_pos fun i hi => rpow_pos_of_pos (inv_pos.2 (hz i hi)) _
     have s_pos : 0 < ∑ i in s, w i * (z i)⁻¹ :=
-      sum_pos (fun i hi => Real.mul_pos (hw i hi) (inv_pos.2 (hz i hi))) hs
+      sum_pos (fun i hi => mul_pos (hw i hi) (inv_pos.2 (hz i hi))) hs
     norm_num at this
     rw [← inv_le_inv s_pos p_pos] at this
     apply le_trans this

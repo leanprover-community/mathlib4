@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
+import Mathlib.Init
 /-!
 # Note about `Mathlib/Init/`
 The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
@@ -27,7 +28,6 @@ protected abbrev Quot.recOn'
     (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (Quot.sound p) = f b) :
     motive q :=
  q.rec f h
--- expected token
 
 /-- Version of `Quot.recOnSubsingleton` tagged with `elab_as_elim` -/
 @[elab_as_elim] -- Porting note: this attribute is missing in core

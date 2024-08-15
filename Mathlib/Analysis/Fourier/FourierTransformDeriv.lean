@@ -225,7 +225,7 @@ theorem hasFDerivAt_fourierIntegral
     exact (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
     filter_upwards with v w' _
-    rw [norm_circle_smul _ (fourierSMulRight L f v)]
+    rw [Circle.norm_smul _ (fourierSMulRight L f v)]
     exact norm_fourierSMulRight_le L f v
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=

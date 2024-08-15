@@ -3,6 +3,7 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
+import Mathlib.Init
 import Lean.Elab.Command
 
 /-!
@@ -68,3 +69,14 @@ elab "assert_not_exists " n:ident : command => do
     These invariants are maintained by `assert_not_exists` statements, \
     and exist in order to ensure that \"complicated\" parts of the library \
     are not accidentally introduced as dependencies of \"simple\" parts of the library."
+
+/-- `assert_not_imported m₁ m₂ ... mₙ` checks that each one of the modules `m₁ m₂ ... mₙ` is not
+among the transitive imports of the current file.
+
+The command does not currently check whether the modules `m₁ m₂ ... mₙ` actually exist.
+-/
+-- TODO: make sure that each one of `m₁ m₂ ... mₙ` is the name of an actually existing module!
+elab "assert_not_imported " ids:ident+ : command => do
+  let mods := (← getEnv).allImportedModuleNames
+  for id in ids do
+    if mods.contains id.getId then logWarningAt id m!"the module '{id}' is (transitively) imported"
