@@ -29,9 +29,13 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 * `polar 𝕜 s` is the subset of `Dual 𝕜 E` consisting of those functionals `x'` for which
   `‖x' z‖ ≤ 1` for every `z ∈ s`.
 
+## References
+
+* [Conway, John B., A course in functional analysis][conway1990]
+
 ## Tags
 
-dual
+dual, polar
 -/
 
 
