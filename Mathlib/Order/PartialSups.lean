@@ -94,7 +94,7 @@ theorem Monotone.partialSups_eq {f : ℕ → α} (hf : Monotone f) : (partialSup
 theorem partialSups_mono : Monotone (partialSups : (ℕ → α) → ℕ →o α) := fun _f _g h _n ↦
   partialSups_le_iff.2 fun k hk ↦ (h k).trans (le_partialSups_of_le _ hk)
 
-lemma monotone_partialSups (f : ℕ → α) : Monotone (partialSups f) :=
+lemma partialSups_monotone (f : ℕ → α) : Monotone (partialSups f) :=
   fun n _ hnm ↦ partialSups_le f n _ (fun _ hm'n ↦ le_partialSups_of_le _ (hm'n.trans hnm))
 
 /-- `partialSups` forms a Galois insertion with the coercion from monotone functions to functions.
