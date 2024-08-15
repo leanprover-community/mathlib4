@@ -1,6 +1,6 @@
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Nat
 
 example {x : Nat} (h : x ∈ [0, 2, 37]) : x ≤ 57 := by
   fin_cases h
@@ -23,8 +23,8 @@ example (f : Nat → Prop) (p : Fin 3) (h0 : f 0) (h1 : f 1) (h2 : f 2) : f p.va
   all_goals
     assumption
 
-example (f : Nat → Prop) (p : Fin 0) : f p.val :=
-by fin_cases p
+example (f : Nat → Prop) (p : Fin 0) : f p.val := by
+  fin_cases p
 
 example (x2 : Fin 2) (x3 : Fin 3) : True := by
   fin_cases x2, x3
@@ -61,7 +61,7 @@ example (x2 : Fin 2) (x3 : Fin 3) (n : Nat) (y : Fin n) : x2.val * x3.val = x3.v
 --  -- testing that `with` arguments are elaborated with respect to the expected type:
 -- example (x : Int) (h : x ∈ ([2,3] : List Int)) : x = 2 ∨ x = 3 := by
 --   fin_cases h with [2,3]
---   all_goals { simp }
+--   all_goals simp
 
 -- example (n : ℕ) (h : n % 3 ∈ [0,1]) : True := by
 --   fin_cases h
@@ -70,55 +70,49 @@ example (x2 : Fin 2) (x3 : Fin 3) (n : Nat) (y : Fin n) : x2.val * x3.val = x3.v
 --   · guard_hyp h : n % 3 = 1
 --     trivial
 
--- instance (n : ℕ) : decidable (nat.prime n) := decidable_prime_1 n
+-- instance (n : ℕ) : Decidable (Nat.Prime n) := decidablePrime_1 n
 -- example (x : ℕ) (h : x ∈ (List.range 10).filter Nat.prime) : x = 2 ∨ x = 3 ∨ x = 5 ∨ x = 7 := by
 --   fin_cases h <;> decide
 
--- open equiv.perm
--- example (x : (Σ (a : fin 4), fin 4)) (h : x ∈ fin_pairs_lt 4) : x.1.val < 4 :=
--- begin
---   fin_cases h; simp,
---   any_goals { exact dec_trivial },
--- end
+-- open Equiv.Perm
+-- example (x : (Σ (a : Fin 4), Fin 4)) (h : x ∈ finPairsLT 4) : x.1.val < 4 := by
+--   fin_cases h; simp
+--   any_goals exact dec_trivial
 
 -- /-
 -- In some circumstances involving `let`,
 -- the temporary hypothesis that `fin_cases` creates does not get deleted.
 -- We test that this is correctly named and that the name can be changed.
 
--- Note: after `fin_cases`, we have `this : (a : fin 3) = (0 : fin (2 + 1))`
+-- Note: after `fin_cases`, we have `this : (a : Fin 3) = (0 : Fin (2 + 1))`
 -- for some reason. I don't know why, and it complicates the test.
 -- -/
--- example (f : ℕ → fin 3) : true :=
--- begin
---   let a := f 3,
---   fin_cases a,
---   guard_hyp a := f 3,
---   guard_hyp this : a = (0 : fin (2 + 1)),
---   trivial, trivial,
+-- example (f : ℕ → Fin 3) : true := by
+--   let a := f 3
+--   fin_cases a
+--   guard_hyp a := f 3
+--   guard_hyp this : a = (0 : Fin (2 + 1))
+--   trivial; trivial
 
---   let b := f 2,
---   fin_cases b using what,
---   guard_hyp what : b = (0 : fin (2 + 1)),
+--   let b := f 2
+--   fin_cases b using what
+--   guard_hyp what : b = (0 : Fin (2 + 1))
 
---   all_goals {trivial}
--- end
+--   all_goals trivial
 
 -- /-
 -- The behavior above can be worked around with `fin_cases with`.
 -- -/
--- example (f : ℕ → fin 3) : true :=
--- begin
---   let a := f 3,
---   fin_cases a with [0, 1, 2],
---   guard_hyp a := f 3,
---   guard_hyp this : a = 0,
---   trivial,
---   guard_hyp this : a = 1,
---   trivial,
---   guard_hyp this : a = 2,
---   let b := f 2,
---   fin_cases b with [0, 1, 2] using what,
---   guard_hyp what : b = 0,
---   all_goals {trivial}
--- end
+-- example (f : ℕ → Fin 3) : true := by
+--   let a := f 3
+--   fin_cases a with [0, 1, 2]
+--   guard_hyp a := f 3
+--   guard_hyp this : a = 0
+--   trivial
+--   guard_hyp this : a = 1
+--   trivial
+--   guard_hyp this : a = 2
+--   let b := f 2
+--   fin_cases b with [0, 1, 2] using what
+--   guard_hyp what : b = 0
+--   all_goals trivial

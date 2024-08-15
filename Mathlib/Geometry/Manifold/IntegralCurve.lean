@@ -63,7 +63,7 @@ open scoped Manifold Topology
 open Function Set
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
@@ -147,9 +147,8 @@ lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
   have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
   hγ.continuousAt <| mem_of_mem_nhds hs
 
-lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
-    Continuous γ := continuous_iff_continuousAt.mpr
-      fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
+lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
+  continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
@@ -267,7 +266,7 @@ lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a 
   convert h.comp_mul a
   ext t
   rw [mem_setOf_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
-    lt_div_iff (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel _ ha]
+    lt_div_iff (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
 
 lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
@@ -276,7 +275,7 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   · ext t
     simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
-  · simp only [div_inv_eq_mul, div_mul_cancel _ ha]
+  · simp only [div_inv_eq_mul, div_mul_cancel₀ _ ha]
 
 lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
     IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
@@ -309,7 +308,7 @@ variable (t₀) {x₀ : M}
 
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a smooth
 manifold. -/
-theorem exists_isIntegralCurveAt_of_contMDiffAt
+theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀)
     (hx : I.IsInteriorPoint x₀) :
     ∃ γ : ℝ → M, γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ := by
@@ -363,7 +362,8 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
 
 /-- Existence of local integral curves for a $C^1$ vector field on a smooth manifold without
 boundary. -/
-lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
+lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless
+    [CompleteSpace E] [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀) :
     ∃ γ : ℝ → M, γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt t₀ hv (BoundarylessManifold.isInteriorPoint I)
@@ -386,7 +386,7 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   -- extract a set `s` on which `v'` is Lipschitz
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
-  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
+  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ 𝓝 _, LipschitzOnWith K v' s :=
     (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd.exists_lipschitzOnWith
   have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
   -- internal lemmas to reduce code duplication
@@ -438,14 +438,14 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by
   set s := {t | γ t = γ' t} ∩ Ioo a b with hs
   -- since `Ioo a b` is connected, we get `s = Ioo a b` by showing that `s` is clopen in `Ioo a b`
-  -- in the subtype toplogy (`s` is also non-empty by assumption)
+  -- in the subtype topology (`s` is also non-empty by assumption)
   -- here we use a slightly weaker alternative theorem
   suffices hsub : Ioo a b ⊆ s from fun t ht ↦ mem_setOf.mp ((subset_def ▸ hsub) t ht).1
   apply isPreconnected_Ioo.subset_of_closure_inter_subset (s := Ioo a b) (u := s) _
     ⟨t₀, ⟨ht₀, ⟨h, ht₀⟩⟩⟩
   · -- is this really the most convenient way to pass to subtype topology?
     -- TODO: shorten this when better API around subtype topology exists
-    rw [hs, ← Subtype.image_preimage_val, ← Subtype.image_preimage_val,
+    rw [hs, inter_comm, ← Subtype.image_preimage_val, inter_comm, ← Subtype.image_preimage_val,
       image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
     intros t ht
     rw [mem_preimage, ← closure_subtype] at ht
@@ -509,7 +509,7 @@ lemma IsIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
   intro t
   apply congrFun <|
     isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := b) hv (hγ.comp_add _) hγ _
-  rw [comp_apply, add_sub_cancel'_right, heq]
+  rw [comp_apply, add_sub_cancel, heq]
 
 /-- A global integral curve is injective xor periodic with positive period. -/
 lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]

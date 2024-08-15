@@ -6,7 +6,7 @@ Authors: Kyle Miller
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Logic.Basic
-import Mathlib.Tactic.Congr!
+import Mathlib.Tactic.CongrExclamation
 
 /-! # `congr(...)` congruence quotations
 
@@ -47,7 +47,7 @@ it eagerly wants to solve for instance arguments. The current version is able to
 expected LHS and RHS to fill in arguments before solving for instance arguments.
 -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib.Tactic.TermCongr
 open Lean Elab Meta
@@ -416,7 +416,7 @@ def CongrResult.mkDefault' (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM Con
   CongrResult.mkDefault lhs rhs
 
 /-- Throw an internal error. -/
-def throwCongrEx (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
+def throwCongrEx {α : Type} (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
   throwError "congr(...) failed with left-hand side{indentD lhs}\n\
     and right-hand side {indentD rhs}\n{msg}"
 
@@ -621,7 +621,7 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
         unless ← isDefEq expRhs rhs do
           throwError "Right-hand side of elaborated pattern{indentD rhs}\n\
             is not definitionally equal to right-hand side of expected type{indentD expectedType}"
-        Term.synthesizeSyntheticMVars (mayPostpone := true)
+        Term.synthesizeSyntheticMVars (postpone := .yes)
         let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
         let expectedType' ← whnf expectedType
         let pf ← if expectedType'.iff?.isSome then res.iff
@@ -632,7 +632,7 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
     -- Case 2: No expected type or it's not obviously Iff/Eq/HEq. We generate an Eq.
     let lhs ← elaboratePattern t none true
     let rhs ← elaboratePattern t none false
-    Term.synthesizeSyntheticMVars (mayPostpone := true)
+    Term.synthesizeSyntheticMVars (postpone := .yes)
     let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
     let pf ← res.eq
     let ty ← mkEq res.lhs res.rhs

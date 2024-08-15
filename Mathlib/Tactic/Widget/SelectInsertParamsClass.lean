@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Lean.Widget.InteractiveGoal
-import Lean.Elab.Deriving.Ord
+import Lean.Elab.Deriving.Basic
 
 /-! # SelectInsertParamsClass
 
@@ -43,5 +43,5 @@ def mkSelectInsertParamsInstanceHandler (declNames : Array Name) : CommandElabM 
   else
     return false
 
-initialize registerDerivingHandler `SelectInsertParamsClass mkSelectInsertParamsInstanceHandler
+initialize registerDerivingHandler ``SelectInsertParamsClass mkSelectInsertParamsInstanceHandler
 end Lean.Elab

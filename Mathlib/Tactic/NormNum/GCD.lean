@@ -21,8 +21,8 @@ namespace NormNum
 
 theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
     (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
-  refine Nat.dvd_antisymm ?_ (Int.coe_nat_dvd.1 (Int.dvd_gcd h₁ h₂))
-  rw [← Int.coe_nat_dvd, ← h₃]
+  refine Nat.dvd_antisymm ?_ (Int.natCast_dvd_natCast.1 (Int.dvd_gcd h₁ h₂))
+  rw [← Int.natCast_dvd_natCast, ← h₃]
   apply dvd_add
   · exact Int.gcd_dvd_left.mul_right _
   · exact Int.gcd_dvd_right.mul_right _
@@ -35,10 +35,10 @@ theorem nat_gcd_helper_dvd_right (x y : ℕ) (h : x % y = 0) : Nat.gcd x y = y :
 
 theorem nat_gcd_helper_2 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
     (h : x * a = y * b + d) : Nat.gcd x y = d := by
-  rw [← Int.coe_nat_gcd]
+  rw [← Int.gcd_natCast_natCast]
   apply int_gcd_helper' a (-b)
-    (Int.coe_nat_dvd.mpr (Nat.dvd_of_mod_eq_zero hu))
-    (Int.coe_nat_dvd.mpr (Nat.dvd_of_mod_eq_zero hv))
+    (Int.natCast_dvd_natCast.mpr (Nat.dvd_of_mod_eq_zero hu))
+    (Int.natCast_dvd_natCast.mpr (Nat.dvd_of_mod_eq_zero hv))
   rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
   exact mod_cast h
 
