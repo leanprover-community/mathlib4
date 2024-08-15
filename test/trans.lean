@@ -90,6 +90,7 @@ example {A B C : Prop} (h : A → B) (g : B → C) : A → C := by
   · guard_target =ₛ B → C
     exact g
 
+set_option linter.unusedTactic false in
 /-- `trans` for arrows between types. -/
 example {A B C : Type} (h : A → B) (g : B → C) : A → C := by
   trans
@@ -99,6 +100,7 @@ example {A B C : Type} (h : A → B) (g : B → C) : A → C := by
 
 universe u v w
 
+set_option linter.unusedTactic false in
 /-- `trans` for arrows between types. -/
 example {A : Type u} {B : Type v} {C : Type w} (h : A → B) (g : B → C) : A → C := by
   trans
