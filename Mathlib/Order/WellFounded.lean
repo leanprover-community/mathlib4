@@ -93,6 +93,7 @@ noncomputable def min (s : Set α) (h : s.Nonempty) : α :=
 theorem min_mem (s : Set α) (h : s.Nonempty) : H.min s h ∈ s :=
   WellFounded.min_mem H.wf s h
 
+-- TODO: make `h` into an `opt-param`
 theorem not_lt_min (s : Set α) (h : s.Nonempty) {x} (hx : x ∈ s) : ¬x < H.min s h :=
   WellFounded.not_lt_min H.wf s h hx
 
@@ -109,6 +110,7 @@ noncomputable def max (s : Set α) (h : s.Nonempty) : α :=
 theorem max_mem (s : Set α) (h : s.Nonempty) : H.max s h ∈ s :=
   WellFounded.min_mem H.wf s h
 
+-- TODO: make `h` into an `opt-param`
 theorem not_gt_max (s : Set α) (h : s.Nonempty) {x} (hx : x ∈ s) : ¬H.max s h < x :=
   WellFounded.not_lt_min H.wf s h hx
 
@@ -116,15 +118,14 @@ end WellFoundedGT
 
 namespace WellFounded
 
-open Set
+variable {r : α → α → Prop}
 
 /-- The supremum of a bounded, well-founded order -/
-protected noncomputable def sup {r : α → α → Prop} (wf : WellFounded r) (s : Set α)
-    (h : Bounded r s) : α :=
+protected noncomputable def sup (wf : WellFounded r) (s : Set α) (h : Set.Bounded r s) : α :=
   wf.min { x | ∀ a ∈ s, r a x } h
 
-protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set α} (h : Bounded r s) {x}
-    (hx : x ∈ s) : r x (wf.sup s h) :=
+protected theorem lt_sup (wf : WellFounded r) {s : Set α} (h : Set.Bounded r s) {x} (hx : x ∈ s) :
+    r x (wf.sup s h) :=
   min_mem wf { x | ∀ a ∈ s, r a x } h x hx
 
 section
@@ -132,17 +133,17 @@ section
 open Classical in
 /-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
 `x < y` if one exists. Otherwise it is `x` itself. -/
-protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (x : α) : α :=
+protected noncomputable def succ (wf : WellFounded r) (x : α) : α :=
   if h : ∃ y, r x y then wf.min { y | r x y } h else x
 
-protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
+protected theorem lt_succ (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
     r x (wf.succ x) := by
   rw [WellFounded.succ, dif_pos h]
   apply min_mem
 
 end
 
-protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
+protected theorem lt_succ_iff [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
     (y : α) : r y (wo.wf.succ x) ↔ r y x ∨ y = x := by
   constructor
   · intro h'
@@ -159,7 +160,9 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
     exact hy
   rintro (hy | rfl); (· exact _root_.trans hy (wo.wf.lt_succ h)); exact wo.wf.lt_succ h
 
-section LinearOrder
+end WellFounded
+
+namespace WellFoundedLT
 
 variable [LinearOrder β] [PartialOrder γ]
 
@@ -167,8 +170,8 @@ theorem min_le [h : WellFoundedLT β] {x : β} {s : Set β} (hx : x ∈ s)
     (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
 
-private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMono f)
-    (hg : StrictMono g) (hfg : Set.range f = Set.range g) {b : β} (H : ∀ a < b, f a = g a) :
+private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g)
+    (hfg : Set.range f = Set.range g) {b : β} (H : ∀ a < b, f a = g a) :
     f b ≤ g b := by
   obtain ⟨c, hc⟩ : g b ∈ Set.range f := by
     rw [hfg]
@@ -199,9 +202,7 @@ theorem id_le_of_strictMono [h : WellFoundedLT β] {f : β → β} (hf : StrictM
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
 
-end LinearOrder
-
-end WellFounded
+end WellFoundedLT
 
 namespace Function
 

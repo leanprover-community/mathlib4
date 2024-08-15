@@ -378,7 +378,7 @@ theorem IsNormal.inj {f} (H : IsNormal f) {a b} : f a = f b ↔ a = b := by
   simp only [le_antisymm_iff, H.le_iff]
 
 theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a :=
-  lt_wf.self_le_of_strictMono H.strictMono a
+  WellFoundedLT.id_le_of_strictMono H.strictMono a
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
@@ -1943,7 +1943,7 @@ theorem enumOrd_surjective (hS : Unbounded (· < ·) S) : ∀ s ∈ S, ∃ a, en
       exact (enumOrd_strictMono hS hab).trans_le hb
     · by_contra! h
       exact
-        (le_csSup ⟨s, fun a => (lt_wf.self_le_of_strictMono (enumOrd_strictMono hS) a).trans⟩
+        (le_csSup ⟨s, fun a => (WellFoundedLT.id_le_of_strictMono (enumOrd_strictMono hS) a).trans⟩
               (enumOrd_succ_le hS hs h)).not_lt
           (lt_succ _)⟩
 

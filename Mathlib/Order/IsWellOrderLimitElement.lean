@@ -38,7 +38,7 @@ lemma self_le_wellOrderSucc (a : α) : a ≤ wellOrderSucc a := by
 lemma wellOrderSucc_le {a b : α} (ha : a < b) : wellOrderSucc a ≤ b := by
   dsimp [wellOrderSucc, WellFounded.succ]
   rw [dif_pos ⟨_, ha⟩]
-  exact WellFounded.min_le _ ha
+  exact WellFoundedLT.min_le ha
 
 lemma self_lt_wellOrderSucc {a b : α} (h : a < b) : a < wellOrderSucc a :=
   IsWellFounded.wf.lt_succ ⟨b, h⟩

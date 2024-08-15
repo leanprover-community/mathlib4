@@ -176,11 +176,11 @@ variable (α)
 
 /-- A well-order is a `SuccOrder`. -/
 noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder α :=
-  ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
+  ofCore (fun a ↦ if h : (Ioi a).Nonempty then WellFoundedLT.min _ h else a)
     (fun ha _ ↦ by
       rw [not_isMax_iff] at ha
       simp_rw [Set.Nonempty, mem_Ioi, dif_pos ha]
-      exact ⟨(wellFounded_lt.min_le · ha), lt_of_lt_of_le (wellFounded_lt.min_mem _ ha)⟩)
+      exact ⟨(WellFoundedLT.min_le · ha), lt_of_lt_of_le (WellFoundedLT.min_mem _ ha)⟩)
     fun a ha ↦ dif_neg (not_not_intro ha <| not_isMax_iff.mpr ·)
 
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/

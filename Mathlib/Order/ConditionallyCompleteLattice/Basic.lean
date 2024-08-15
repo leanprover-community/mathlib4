@@ -252,31 +252,31 @@ instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrde
 open scoped Classical in
 /-- A well founded linear order is conditionally complete, with a bottom element. -/
 noncomputable abbrev IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*)
-  [i₁ : _root_.LinearOrder α] [i₂ : OrderBot α] [h : IsWellOrder α (· < ·)] :
+  [i₁ : _root_.LinearOrder α] [i₂ : OrderBot α] [IsWellOrder α (· < ·)] :
     ConditionallyCompleteLinearOrderBot α :=
   { i₁, i₂, LinearOrder.toLattice with
-    sInf := fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥
+    sInf := fun s => if hs : s.Nonempty then WellFoundedLT.min s hs else ⊥
     csInf_le := fun s a _ has => by
       have s_ne : s.Nonempty := ⟨a, has⟩
-      simpa [s_ne] using not_lt.1 (h.wf.not_lt_min s s_ne has)
+      simpa [s_ne] using WellFoundedLT.min_le has
     le_csInf := fun s a hs has => by
       simp only [hs, dif_pos]
-      exact has (h.wf.min_mem s hs)
-    sSup := fun s => if hs : (upperBounds s).Nonempty then h.wf.min _ hs else ⊥
+      exact has (WellFoundedLT.min_mem s hs)
+    sSup := fun s => if hs : (upperBounds s).Nonempty then WellFoundedLT.min _ hs else ⊥
     le_csSup := fun s a hs has => by
       have h's : (upperBounds s).Nonempty := hs
       simp only [h's, dif_pos]
-      exact h.wf.min_mem _ h's has
+      exact WellFoundedLT.min_mem _ h's has
     csSup_le := fun s a _ has => by
       have h's : (upperBounds s).Nonempty := ⟨a, has⟩
       simp only [h's, dif_pos]
-      simpa using h.wf.not_lt_min _ h's has
-    csSup_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥)
+      exact WellFoundedLT.min_le has
+    csSup_empty := by simpa using eq_bot_iff.2 (WellFoundedLT.min_le <| mem_univ ⊥)
     csSup_of_not_bddAbove := by
       intro s H
       have B : ¬((upperBounds s).Nonempty) := H
       simp only [B, dite_false, upperBounds_empty, univ_nonempty, dite_true]
-      exact le_antisymm bot_le (WellFounded.min_le _ (mem_univ _))
+      exact bot_le.antisymm (WellFoundedLT.min_le (mem_univ _))
     csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim }
 
 namespace OrderDual
@@ -1108,12 +1108,12 @@ open Function
 
 variable [IsWellOrder α (· < ·)]
 
-theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id wellFounded_lt s hs :=
-  IsLeast.csInf_eq ⟨argminOn_mem _ _ _ _, fun _ ha => argminOn_le id _ _ ha⟩
+theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id s hs :=
+  IsLeast.csInf_eq ⟨argminOn_mem _ _ _, fun _ ha => argminOn_le id _ ha⟩
 
 theorem isLeast_csInf (hs : s.Nonempty) : IsLeast s (sInf s) := by
   rw [sInf_eq_argmin_on hs]
-  exact ⟨argminOn_mem _ _ _ _, fun a ha => argminOn_le id _ _ ha⟩
+  exact ⟨argminOn_mem _ _ _, fun a ha => argminOn_le id _ ha⟩
 
 theorem le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :=
   le_isGLB_iff (isLeast_csInf hs).isGLB
