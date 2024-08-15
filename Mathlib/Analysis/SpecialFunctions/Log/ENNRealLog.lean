@@ -163,7 +163,7 @@ theorem log_mul_add {x y : ℝ≥0∞} : log (x * y) = log x + log y := by
     rcases ENNReal.trichotomy y with (rfl | rfl | y_real)
     · simp
     · simp [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).1)]
-    · have xy_real := Real.mul_pos x_real y_real
+    · have xy_real := mul_pos x_real y_real
       rw [← ENNReal.toReal_mul] at xy_real
       rw_mod_cast [log_pos_real' xy_real, log_pos_real' y_real, ENNReal.toReal_mul]
       exact Real.log_mul (Ne.symm (ne_of_lt x_real)) (Ne.symm (ne_of_lt y_real))
