@@ -27,11 +27,11 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
   contained in an open immersion factors though the open immersion.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toSheafedSpace`: If `f : X ⟶ Y` is an
   open immersion of presheafed spaces, and `Y` is a sheafed space, then `X` is also a sheafed
-  space. The morphism as morphisms of sheafed spaces is given by `to_SheafedSpaceHom`.
+  space. The morphism as morphisms of sheafed spaces is given by `toSheafedSpaceHom`.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toLocallyRingedSpace`: If `f : X ⟶ Y` is
   an open immersion of presheafed spaces, and `Y` is a locally ringed space, then `X` is also a
   locally ringed space. The morphism as morphisms of locally ringed spaces is given by
-  `to_LocallyRingedSpace_hom`.
+  `toLocallyRingedSpaceHom`.
 
 ## Main results
 
