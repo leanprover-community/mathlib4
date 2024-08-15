@@ -201,7 +201,7 @@ instance divInvOneMonoid [∀ i, DivInvOneMonoid (f i)] : DivInvOneMonoid (∀ i
 instance involutiveInv [∀ i, InvolutiveInv (f i)] : InvolutiveInv (∀ i, f i) where
   inv_inv := by intros; ext; exact inv_inv _
 
-@[to_additive Pi.subtractionMonoid]
+@[to_additive]
 instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f i) where
   __ := divInvMonoid
   __ := involutiveInv

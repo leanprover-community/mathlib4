@@ -789,7 +789,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
     rw [singleton_mul_singleton, h, singleton_one]
 
 /-- `Set α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive subtractionMonoid
+@[to_additive
     "`Set α` is a subtraction monoid under pointwise operations if `α` is."]
 protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
