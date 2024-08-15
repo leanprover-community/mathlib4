@@ -1247,7 +1247,6 @@ theorem sup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     iSup (familyOfBFamily o f) = bsup.{_, v} o f :=
   rfl
 
-@[simp]
 theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
     (f : ∀ a < o, Ordinal.{max u v}) : iSup (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
   ciSup_eq_ciSup r _ ho _ f
