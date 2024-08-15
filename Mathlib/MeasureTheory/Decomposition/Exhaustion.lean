@@ -78,8 +78,6 @@ instance : SigmaFinite (μ.restrict (μ.sigmaFiniteSetWRT ν)) := by
 
 section IsFiniteMeasure
 
-variable [IsFiniteMeasure ν]
-
 /-! We prove that the condition in the definition of `sigmaFiniteSetWRT` is true for finite
 measures. Since every s-finite measure is absolutely continuous with respect to a finite measure,
 the condition will then also be true for s-finite measures. -/
@@ -152,9 +150,8 @@ lemma tendsto_measure_sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν]
   simp only [one_div]
   exact ENNReal.tendsto_inv_nat_nhds_zero
 
-/-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetWRT ν)` is sigma-finite and
-`ν (μ.sigmaFiniteSetWRT ν)` has maximal measure among such sets.
-This is an auxiliary definition for `Measure.sigmaFiniteSetWRT`. -/
+/-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetWRT' ν)` is sigma-finite and
+`ν (μ.sigmaFiniteSetWRT' ν)` has maximal measure among such sets. -/
 def Measure.sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeasure ν] : Set α :=
   ⋃ n, μ.sigmaFiniteSetGE ν n
 
@@ -208,7 +205,7 @@ lemma measure_sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeasure ν] :
       (fun _ ↦ measure_mono (Set.subset_iUnion _ _))
 
 /-- Auxiliary lemma for `measure_eq_top_of_subset_compl_sigmaFiniteSetWRT'`. -/
-lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT'_of_measurableSet
+lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT'_of_measurableSet [IsFiniteMeasure ν]
     (hs : MeasurableSet s) (hs_subset : s ⊆ (μ.sigmaFiniteSetWRT' ν)ᶜ) (hνs : ν s ≠ 0) :
     μ s = ∞ := by
   suffices ¬ SigmaFinite (μ.restrict s) by
@@ -231,14 +228,14 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT'_of_measurableSet
   exact h_lt.not_le h_le
 
 /-- For all sets `s` in `(μ.sigmaFiniteSetWRT ν)ᶜ`, if `ν s ≠ 0` then `μ s = ∞`. -/
-lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT'
+lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT' [IsFiniteMeasure ν]
     (hs_subset : s ⊆ (μ.sigmaFiniteSetWRT' ν)ᶜ) (hνs : ν s ≠ 0) :
     μ s = ∞ := by
   rw [measure_eq_iInf]
   simp_rw [iInf_eq_top]
-  suffices ∀ t, t ⊆ (μ.sigmaFiniteSetWRT' ν)ᶜ → s ⊆ t → MeasurableSet t → μ t = ⊤ by
+  suffices ∀ t, t ⊆ (μ.sigmaFiniteSetWRT' ν)ᶜ → s ⊆ t → MeasurableSet t → μ t = ∞ by
     intro t hts ht
-    suffices μ (t ∩ (μ.sigmaFiniteSetWRT' ν)ᶜ) = ⊤ from
+    suffices μ (t ∩ (μ.sigmaFiniteSetWRT' ν)ᶜ) = ∞ from
       measure_mono_top Set.inter_subset_left this
     have hs_subset_t : s ⊆ t ∩ (μ.sigmaFiniteSetWRT' ν)ᶜ := Set.subset_inter hts hs_subset
     exact this (t ∩ (μ.sigmaFiniteSetWRT' ν)ᶜ) Set.inter_subset_right hs_subset_t
@@ -282,7 +279,7 @@ end SFinite
 @[simp]
 lemma measure_compl_sigmaFiniteSetWRT (hμν : μ ≪ ν) [SigmaFinite μ] [SFinite ν] :
     ν (μ.sigmaFiniteSetWRT ν)ᶜ = 0 := by
-  have h : ν (μ.sigmaFiniteSetWRT ν)ᶜ ≠ 0 → μ (μ.sigmaFiniteSetWRT ν)ᶜ = ⊤ :=
+  have h : ν (μ.sigmaFiniteSetWRT ν)ᶜ ≠ 0 → μ (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ :=
     measure_eq_top_of_subset_compl_sigmaFiniteSetWRT subset_rfl
   by_contra h0
   refine ENNReal.top_ne_zero ?_
