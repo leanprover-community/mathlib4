@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Infix
 import Mathlib.Order.Fin.Basic
 
 /-!
