@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.List.Basic
 
 /-!
