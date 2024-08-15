@@ -303,23 +303,23 @@ theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
     (∀ i, f i < c) → lsub.{u, u} f < c :=
   lsub_lt_ord_lift (by rwa [(#ι).lift_id])
 
-theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, v} f) :
-    cof (sup.{u, v} f) ≤ Cardinal.lift.{v, u} #ι := by
+theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
+    cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
   rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
   rw [H]
   exact cof_lsub_le_lift f
 
-theorem cof_sup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, u} f) :
-    cof (sup.{u, u} f) ≤ #ι := by
+theorem cof_sup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
+    cof (iSup f) ≤ #ι := by
   rw [← (#ι).lift_id]
   exact cof_sup_le_lift H
 
 theorem sup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
-    (hf : ∀ i, f i < c) : sup.{u, v} f < c :=
+    (hf : ∀ i, f i < c) : iSup f < c :=
   (sup_le_lsub.{u, v} f).trans_lt (lsub_lt_ord_lift hι hf)
 
 theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
-    (∀ i, f i < c) → sup.{u, u} f < c :=
+    (∀ i, f i < c) → iSup f < c :=
   sup_lt_ord_lift (by rwa [(#ι).lift_id])
 
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
@@ -685,11 +685,11 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       cases' Quotient.exact e with f
       have f := Equiv.ulift.symm.trans f
       let g a := (f a).1
-      let o := succ (sup.{u, u} g)
+      let o := succ (iSup g)
       rcases H o with ⟨b, h, l⟩
       refine l (lt_succ_iff.2 ?_)
       rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
-      apply le_sup)
+      apply Ordinal.le_ciSup)
 
 /-! ### Infinite pigeonhole principle -/
 
@@ -953,11 +953,11 @@ theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c
   lsub_lt_ord (by rwa [hc.cof_eq])
 
 theorem sup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.sup.{u, v} f < c.ord :=
+    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → iSup f < c.ord :=
   sup_lt_ord_lift (by rwa [hc.cof_eq])
 
 theorem sup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
-    (∀ i, f i < c.ord) → Ordinal.sup f < c.ord :=
+    (∀ i, f i < c.ord) → iSup f < c.ord :=
   sup_lt_ord (by rwa [hc.cof_eq])
 
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
@@ -1145,8 +1145,10 @@ namespace Ordinal
 open Cardinal
 open scoped Ordinal
 
-lemma sup_sequence_lt_omega1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ n, o n < ω₁) :
-    sup o < ω₁ := by
+-- TODO: generalize universes
+lemma sup_sequence_lt_omega1 {α : Type u} [Countable α]
+    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < ω₁) :
+    iSup o < ω₁ := by
   apply sup_lt_ord_lift _ ho
   rw [Cardinal.isRegular_aleph_one.cof_eq]
   exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
