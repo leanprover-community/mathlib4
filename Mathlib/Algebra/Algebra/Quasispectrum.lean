@@ -236,7 +236,7 @@ lemma isQuasiregular_iff_isUnit' (R : Type*) {A : Type*} [CommSemiring R] [NonUn
   · exact ⟨(Unitization.unitsFstOne_mulEquiv_quasiregular R) ⟨hx.unit, by simp⟩, by simp⟩
 
 variable (R : Type*) {A : Type*} [CommSemiring R] [NonUnitalRing A]
-  [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+  [Module R A]
 
 /-- If `A` is a non-unital `R`-algebra, the `R`-quasispectrum of `a : A` consists of those `r : R`
 such that if `r` is invertible (in `R`), then `-(r⁻¹ • a)` is not quasiregular.
@@ -291,6 +291,7 @@ lemma mem_quasispectrum_iff {R A : Type*} [Semifield R] [Ring A]
   simp [quasispectrum_eq_spectrum_union_zero]
 
 namespace Unitization
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 lemma isQuasiregular_inr_iff (a : A) :
     IsQuasiregular (a : Unitization R A) ↔ IsQuasiregular a := by
@@ -406,7 +407,7 @@ namespace QuasispectrumRestricts
 section NonUnital
 
 variable {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A] [Module R A] [Module S A]
-variable [IsScalarTower S A A] [SMulCommClass S A A] [Algebra R S] {a : A} {f : S → R}
+variable [Algebra R S] {a : A} {f : S → R}
 
 protected theorem map_zero (h : QuasispectrumRestricts a f) : f 0 = 0 := by
   rw [← h.left_inv 0, map_zero (algebraMap R S)]
@@ -416,27 +417,30 @@ theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
   rightInvOn := fun s hs => by obtain ⟨r, rfl⟩ := h hs; rw [hf r]
   left_inv := hf
 
-variable [IsScalarTower R S A] (h : QuasispectrumRestricts a f)
+lemma of_quasispectrum_eq {a b : A} {f : S → R} (ha : QuasispectrumRestricts a f)
+    (h : quasispectrum S a = quasispectrum S b) : QuasispectrumRestricts b f where
+  rightInvOn := h ▸ ha.rightInvOn
+  left_inv := ha.left_inv
 
-theorem algebraMap_image : algebraMap R S '' quasispectrum R a = quasispectrum S a := by
+variable [IsScalarTower S A A] [SMulCommClass S A A] [IsScalarTower R S A]
+
+theorem algebraMap_image (h : QuasispectrumRestricts a f) :
+    algebraMap R S '' quasispectrum R a = quasispectrum S a := by
   refine Set.eq_of_subset_of_subset ?_ fun s hs => ⟨f s, ?_⟩
   · simpa only [quasispectrum.preimage_algebraMap] using
       (quasispectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨quasispectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
 
-theorem image : f '' quasispectrum S a = quasispectrum R a := by
+theorem image (h : QuasispectrumRestricts a f) : f '' quasispectrum S a = quasispectrum R a := by
   simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
 
-theorem apply_mem {s : S} (hs : s ∈ quasispectrum S a) : f s ∈ quasispectrum R a :=
+theorem apply_mem (h : QuasispectrumRestricts a f) {s : S} (hs : s ∈ quasispectrum S a) :
+    f s ∈ quasispectrum R a :=
   h.image ▸ ⟨s, hs, rfl⟩
 
-theorem subset_preimage : quasispectrum S a ⊆ f ⁻¹' quasispectrum R a :=
+theorem subset_preimage (h : QuasispectrumRestricts a f) :
+    quasispectrum S a ⊆ f ⁻¹' quasispectrum R a :=
   h.image ▸ (quasispectrum S a).subset_preimage_image f
-
-lemma of_quasispectrum_eq {a b : A} {f : S → R} (ha : QuasispectrumRestricts a f)
-    (h : quasispectrum S a = quasispectrum S b) : QuasispectrumRestricts b f where
-  rightInvOn := h ▸ ha.rightInvOn
-  left_inv := ha.left_inv
 
 protected lemma comp {R₁ R₂ R₃ A : Type*} [Semifield R₁] [Field R₂] [Field R₃]
     [NonUnitalRing A] [Module R₁ A] [Module R₂ A] [Module R₃ A] [Algebra R₁ R₂] [Algebra R₂ R₃]
@@ -497,29 +501,31 @@ theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
       rw [hf r]
   left_inv := hf
 
-variable [IsScalarTower R S A] (h : SpectrumRestricts a f)
-
-theorem algebraMap_image : algebraMap R S '' spectrum R a = spectrum S a := by
-  refine Set.eq_of_subset_of_subset ?_ fun s hs => ⟨f s, ?_⟩
-  · simpa only [spectrum.preimage_algebraMap] using
-      (spectrum S a).image_preimage_subset (algebraMap R S)
-  exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
-
-theorem image : f '' spectrum S a = spectrum R a := by
-  simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
-
-theorem apply_mem {s : S} (hs : s ∈ spectrum S a) : f s ∈ spectrum R a :=
-  h.image ▸ ⟨s, hs, rfl⟩
-
-theorem subset_preimage : spectrum S a ⊆ f ⁻¹' spectrum R a :=
-  h.image ▸ (spectrum S a).subset_preimage_image f
-
 lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
     (h : spectrum S a = spectrum S b) : SpectrumRestricts b f where
   rightInvOn :=  by
     rw [quasispectrum_eq_spectrum_union_zero, ← h, ← quasispectrum_eq_spectrum_union_zero]
     exact QuasispectrumRestricts.rightInvOn ha
   left_inv := ha.left_inv
+
+variable [IsScalarTower R S A]
+
+theorem algebraMap_image (h : SpectrumRestricts a f) :
+    algebraMap R S '' spectrum R a = spectrum S a := by
+  refine Set.eq_of_subset_of_subset ?_ fun s hs => ⟨f s, ?_⟩
+  · simpa only [spectrum.preimage_algebraMap] using
+      (spectrum S a).image_preimage_subset (algebraMap R S)
+  exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
+
+theorem image (h : SpectrumRestricts a f) : f '' spectrum S a = spectrum R a := by
+  simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
+
+theorem apply_mem (h : SpectrumRestricts a f) {s : S} (hs : s ∈ spectrum S a) :
+    f s ∈ spectrum R a :=
+  h.image ▸ ⟨s, hs, rfl⟩
+
+theorem subset_preimage (h : SpectrumRestricts a f) : spectrum S a ⊆ f ⁻¹' spectrum R a :=
+  h.image ▸ (spectrum S a).subset_preimage_image f
 
 end Unital
 

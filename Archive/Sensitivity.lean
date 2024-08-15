@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2019 Reid Barton, Johan Commelin, Jesse Han, Chris Hughes, Robert Y. Lewis,
+Copyright (c) 2019 Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Johan Commelin, Jesse Han, Chris Hughes, Robert Y. Lewis, Patrick Massot
+Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
+  Patrick Massot
 -/
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.ApplyFun
@@ -19,7 +20,7 @@ dimension n ≥ 1, if one colors more than half the vertices then at least one
 vertex has at least √n colored neighbors.
 
 A fun summer collaboration by
-Reid Barton, Johan Commelin, Jesse Han, Chris Hughes, Robert Y. Lewis, and Patrick Massot,
+Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis, and Patrick Massot,
 based on Don Knuth's account of the story
 (https://www.cs.stanford.edu/~knuth/papers/huang.pdf),
 using the Lean theorem prover (https://leanprover.github.io/),

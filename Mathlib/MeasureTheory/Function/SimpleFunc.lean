@@ -51,17 +51,14 @@ section Measurable
 
 variable [MeasurableSpace α]
 
-attribute [coe] toFun
+instance instFunLike : FunLike (α →ₛ β) α β where
+  coe := toFun
+  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
-instance instCoeFun : CoeFun (α →ₛ β) fun _ => α → β :=
-  ⟨toFun⟩
-
-theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := by
-  cases f; cases g; congr
+theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := DFunLike.ext' H
 
 @[ext]
-theorem ext {f g : α →ₛ β} (H : ∀ a, f a = g a) : f = g :=
-  coe_injective <| funext H
+theorem ext {f g : α →ₛ β} (H : ∀ a, f a = g a) : f = g := DFunLike.ext _ _ H
 
 theorem finite_range (f : α →ₛ β) : (Set.range f).Finite :=
   f.finite_range'
@@ -69,7 +66,8 @@ theorem finite_range (f : α →ₛ β) : (Set.range f).Finite :=
 theorem measurableSet_fiber (f : α →ₛ β) (x : β) : MeasurableSet (f ⁻¹' {x}) :=
   f.measurableSet_fiber' x
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp] theorem coe_mk (f : α → β) (h h') : ⇑(mk f h h') = f := rfl
+
 theorem apply_mk (f : α → β) (h h') (x : α) : SimpleFunc.mk f h h' x = f x :=
   rfl
 
@@ -870,6 +868,10 @@ theorem lintegral_smul (f : α →ₛ ℝ≥0∞) (c : ℝ≥0∞) : f.lintegral
 theorem lintegral_zero [MeasurableSpace α] (f : α →ₛ ℝ≥0∞) : f.lintegral 0 = 0 :=
   (lintegralₗ f).map_zero
 
+theorem lintegral_finset_sum {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) (s : Finset ι) :
+    f.lintegral (∑ i ∈ s, μ i) = ∑ i ∈ s, f.lintegral (μ i) :=
+  map_sum (lintegralₗ f) ..
+
 theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) :
     f.lintegral (Measure.sum μ) = ∑' i, f.lintegral (μ i) := by
   simp only [lintegral, Measure.sum_apply, f.measurableSet_preimage, ← Finset.tsum_subtype, ←
@@ -911,7 +913,8 @@ theorem const_lintegral (c : ℝ≥0∞) : (const α c).lintegral μ = c * μ un
   rw [lintegral]
   cases isEmpty_or_nonempty α
   · simp [μ.eq_zero_of_isEmpty]
-  · simp; unfold Function.const; rw [preimage_const_of_mem (mem_singleton c)]
+  · simp only [range_const, coe_const, Finset.sum_singleton]
+    unfold Function.const; rw [preimage_const_of_mem (mem_singleton c)]
 
 theorem const_lintegral_restrict (c : ℝ≥0∞) (s : Set α) :
     (const α c).lintegral (μ.restrict s) = c * μ s := by
