@@ -165,18 +165,26 @@ lemma isOpen_iff :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
       a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by erw [topology_eq_scottHausdorff (α := α)]; rfl
 
-lemma isOpen_of_isLowerSet (h : IsLowerSet s) : IsOpen s :=
-  isOpen_iff.2 fun _d ⟨b, hb⟩ _ _ hda ha ↦ ⟨b, hb, fun _ hc ↦ h (mem_upperBounds.1 hda.1 _ hc.2) ha⟩
-
-lemma isClosed_of_isUpperSet (h : IsUpperSet s) : IsClosed s :=
-  isOpen_compl_iff.1 <| isOpen_of_isLowerSet h.compl
-
 lemma dirSupInacc_of_isOpen (h : IsOpen s) : DirSupInacc s :=
   fun d hd₁ hd₂ a hda hd₃ ↦ by
     obtain ⟨b, hbd, hb⟩ := isOpen_iff.1 h hd₁ hd₂ hda hd₃; exact ⟨b, hbd, hb ⟨le_rfl, hbd⟩⟩
 
 lemma dirSupClosed_of_isClosed (h : IsClosed s) : DirSupClosed s :=
   (dirSupInacc_of_isOpen h.isOpen_compl).of_compl
+
+end IsScottHausdorff
+end ScottHausdorff
+
+section ScottHausdorff
+namespace IsScottHausdorff
+
+variable {s : Set α} [Preorder α] {t : TopologicalSpace α} [IsScottHausdorff α]
+
+lemma isOpen_of_isLowerSet (h : IsLowerSet s) : IsOpen s :=
+  isOpen_iff.2 fun _d ⟨b, hb⟩ _ _ hda ha ↦ ⟨b, hb, fun _ hc ↦ h (mem_upperBounds.1 hda.1 _ hc.2) ha⟩
+
+lemma isClosed_of_isUpperSet (h : IsUpperSet s) : IsClosed s :=
+  isOpen_compl_iff.1 <| isOpen_of_isLowerSet h.compl
 
 end IsScottHausdorff
 end ScottHausdorff
@@ -391,7 +399,7 @@ lemma IsScott.scottHausdorff_le [IsScott α] : scottHausdorff α ≤ ‹Topologi
 
 lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff α ≤ ‹TopologicalSpace α› :=
   fun _ h ↦
-    @IsScottHausdorff.isOpen_of_isLowerSet _ _ (scottHausdorff α) _ _
+    IsScottHausdorff.isOpen_of_isLowerSet (t := scottHausdorff α)
       <| IsLower.isLowerSet_of_isOpen h
 
 end Topology
