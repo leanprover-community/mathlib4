@@ -284,15 +284,14 @@ structure IsFraisseLimit [Countable (Σ l, L.Functions l)] [Countable M] : Prop 
 variable {M}
 
 /-- Any embedding from a finitely generated `S` to an ultrahomogeneous structure `M`
-can be extended to an embedding from any structure with an embedding to `M`.-/
+can be extended to an embedding from any structure with an embedding to `M`. -/
 theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {S : Type*}
     [L.Structure S] (S_FG : FG L S) {T : Type*} [L.Structure T] [h : Nonempty (T ↪[L] M)]
     (f : S ↪[L] M) (g : S ↪[L] T) :
     ∃ f' : T ↪[L] M, f = f'.comp g := by
   let ⟨r⟩ := h
-  let s := (r.comp g)
-  let S'' := s.toHom.range
-  let ⟨t, eq⟩ := M_homog S'' (S_FG.range s.toHom) (f.comp s.equivRange.symm.toEmbedding)
+  let s := r.comp g
+  let ⟨t, eq⟩ := M_homog s.toHom.range (S_FG.range s.toHom) (f.comp s.equivRange.symm.toEmbedding)
   use t.toEmbedding.comp r
   change _ = t.toEmbedding.comp s
   ext x
