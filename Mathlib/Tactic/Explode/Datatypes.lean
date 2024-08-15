@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
-import Lean
+import Lean.Util.Trace
 
 /-!
 # Explode command: datatypes
@@ -65,7 +65,7 @@ structure Entries : Type where
 
 /-- Find a row where `Entry.expr` == `e`. -/
 def Entries.find? (es : Entries) (e : Expr) : Option Entry :=
-  es.s.find? e
+  es.s[e]?
 
 /-- Length of our entries. -/
 def Entries.size (es : Entries) : Nat :=

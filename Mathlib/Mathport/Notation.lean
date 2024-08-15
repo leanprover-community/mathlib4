@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Mathlib.Lean.Elab.Term
-import Mathlib.Lean.Expr
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
-import Mathlib.Util.Syntax
-import Std.Data.Option.Basic
+import Batteries.Linter.UnreachableTactic
+import Batteries.Util.ExtendedBinder
+import Batteries.Lean.Syntax
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
@@ -19,13 +19,11 @@ import Std.Data.Option.Basic
 
 namespace Mathlib.Notation3
 open Lean Parser Meta Elab Command PrettyPrinter.Delaborator SubExpr
-open Std.ExtendedBinder
+open Batteries.ExtendedBinder
 
 initialize registerTraceClass `notation3
 
 /-! ### Syntaxes supporting `notation3` -/
-
-set_option autoImplicit true
 
 /--
 Expands binders into nested combinators.
@@ -99,12 +97,12 @@ structure MatchState where
   that have been found so far during the course of the matching algorithm.
   We store the contexts since we need to delaborate expressions after we leave
   scoping constructs. -/
-  vars : HashMap Name (SubExpr × LocalContext × LocalInstances)
+  vars : Std.HashMap Name (SubExpr × LocalContext × LocalInstances)
   /-- The binders accumulated while matching a `scoped` expression. -/
   scopeState : Option (Array (TSyntax ``extBinderParenthesized))
   /-- The arrays of delaborated `Term`s accumulated while matching
   `foldl` and `foldr` expressions. For `foldl`, the arrays are stored in reverse order. -/
-  foldState : HashMap Name (Array Term)
+  foldState : Std.HashMap Name (Array Term)
 
 /-- A matcher is a delaboration function that transforms `MatchState`s. -/
 def Matcher := MatchState → DelabM MatchState
@@ -118,9 +116,9 @@ def MatchState.empty : MatchState where
 
 /-- Evaluate `f` with the given variable's value as the `SubExpr` and within that subexpression's
 saved context. Fails if the variable has no value. -/
-def MatchState.withVar (s : MatchState) (name : Name)
+def MatchState.withVar {α : Type} (s : MatchState) (name : Name)
     (m : DelabM α) : DelabM α := do
-  let some (se, lctx, linsts) := s.vars.find? name | failure
+  let some (se, lctx, linsts) := s.vars[name]? | failure
   withLCtx lctx linsts <| withTheReader SubExpr (fun _ => se) <| m
 
 /-- Delaborate the given variable's value. Fails if the variable has no value.
@@ -140,7 +138,7 @@ def MatchState.captureSubexpr (s : MatchState) (name : Name) : DelabM MatchState
 /-- Get the accumulated array of delaborated terms for a given foldr/foldl.
 Returns `#[]` if nothing has been pushed yet. -/
 def MatchState.getFoldArray (s : MatchState) (name : Name) : Array Term :=
-  (s.foldState.find? name).getD #[]
+  s.foldState[name]?.getD #[]
 
 /-- Get the accumulated array of delaborated terms for a given foldr/foldl.
 Returns `#[]` if nothing has been pushed yet. -/
@@ -155,7 +153,7 @@ def MatchState.pushFold (s : MatchState) (name : Name) (t : Term) : MatchState :
 /-- Matcher that assigns the current `SubExpr` into the match state;
 if a value already exists, then it checks for equality. -/
 def matchVar (c : Name) : Matcher := fun s => do
-  if let some (se, _, _) := s.vars.find? c then
+  if let some (se, _, _) := s.vars[c]? then
     guard <| se.expr == (← getExpr)
     return s
   else
@@ -179,7 +177,7 @@ def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
 
 /-- Matches raw nat lits. -/
 def natLitMatcher (n : Nat) : Matcher := fun s => do
-  guard <| (← getExpr).natLit? == n
+  guard <| (← getExpr).rawNatLit? == n
   return s
 
 /-- Matches applications. -/
@@ -208,7 +206,7 @@ def matchLambda (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher :=
 with types that are fresh metavariables.
 This is used for example when initializing `p` in `(scoped p => ...)` when elaborating `...`. -/
 def setupLCtx (lctx : LocalContext) (boundNames : Array Name) :
-    MetaM (LocalContext × HashMap FVarId Name) := do
+    MetaM (LocalContext × Std.HashMap FVarId Name) := do
   let mut lctx := lctx
   let mut boundFVars := {}
   for name in boundNames do
@@ -226,18 +224,18 @@ If it succeeds generating a matcher, returns
 1. a list of keys that should be used for the `delab` attribute
    when defining the elaborator
 2. a `Term` that represents a `Matcher` for the given expression `e`. -/
-partial def exprToMatcher (boundFVars : HashMap FVarId Name) (localFVars : HashMap FVarId Term)
-      (e : Expr) :
+partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
+    (localFVars : Std.HashMap FVarId Term) (e : Expr) :
     OptionT TermElabM (List Name × Term) := do
   match e with
   | .mvar .. => return ([], ← `(pure))
   | .const n _ => return ([`app ++ n], ← ``(matchExpr (Expr.isConstOf · $(quote n))))
   | .sort .. => return ([`sort], ← ``(matchExpr Expr.isSort))
   | .fvar fvarId =>
-    if let some n := boundFVars.find? fvarId then
+    if let some n := boundFVars[fvarId]? then
       -- This fvar is a pattern variable.
       return ([], ← ``(matchVar $(quote n)))
-    else if let some s := localFVars.find? fvarId then
+    else if let some s := localFVars[fvarId]? then
       -- This fvar is bound by a lambda or forall expression in the pattern itself
       return ([], ← ``(matchExpr (· == $s)))
     else
@@ -250,10 +248,25 @@ partial def exprToMatcher (boundFVars : HashMap FVarId Name) (localFVars : HashM
         -- This is an fvar from a `variable`. Match by name and type.
         let (_, m) ← exprToMatcher boundFVars localFVars (← instantiateMVars (← inferType e))
         return ([`fvar], ← ``(matchFVar $(quote n) $m))
-  | .app f arg =>
-    let (keys, matchF) ← exprToMatcher boundFVars localFVars f
-    let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
-    return (if keys.isEmpty then [`app] else keys, ← ``(matchApp $matchF $matchArg))
+  | .app .. =>
+    e.withApp fun f args => do
+      let (keys, matchF) ← exprToMatcher boundFVars localFVars f
+      let mut fty ← inferType f
+      let mut matcher := matchF
+      for arg in args do
+        fty ← whnf fty
+        guard fty.isForall
+        let bi := fty.bindingInfo!
+        fty := fty.bindingBody!.instantiate1 arg
+        if bi.isInstImplicit then
+          -- Assumption: elaborated instances are canonical, so no need to match.
+          -- The type of the instance is already accounted for by the previous arguments
+          -- and the type of `f`.
+          matcher ← ``(matchApp $matcher pure)
+        else
+          let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
+          matcher ← ``(matchApp $matcher $matchArg)
+      return (if keys.isEmpty then [`app] else keys, matcher)
   | .lit (.natVal n) => return ([`lit], ← ``(natLitMatcher $(quote n)))
   | .forallE n t b bi =>
     let (_, matchDom) ← exprToMatcher boundFVars localFVars t
@@ -340,7 +353,7 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
       else
         return {s with scopeState := binders}
 
-/- Create a `Term` that represents a matcher for `scoped` notation.
+/-- Create a `Term` that represents a matcher for `scoped` notation.
 Fails in the `OptionT` sense if a matcher couldn't be constructed.
 Also returns a delaborator key like in `mkExprMatcher`.
 Reminder: `$lit:ident : (scoped $scopedId:ident => $scopedTerm:Term)` -/
@@ -364,7 +377,7 @@ partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
     -- y gives the next element of the list
     let s := s.pushFold lit (← s.delabVar y expr)
     -- x gives the next lit
-    let some newLit := s.vars.find? x | failure
+    let some newLit := s.vars[x]? | failure
     -- If progress was not made, fail
     if newLit.1.expr == expr then failure
     -- Progress was made, so recurse
@@ -445,17 +458,17 @@ This command can be used in mathlib4 but it has an uncertain future and was crea
 for backward compatibility.
 -/
 elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
-    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)? pp?:(prettyPrintOpt)?
-    ppSpace items:(notation3Item)+ " => " val:term : command => do
+    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
+    pp?:(ppSpace prettyPrintOpt)? items:(ppSpace notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
   -- identifiers that appear in `items`
-  let mut boundIdents : HashMap Name Ident := {}
+  let mut boundIdents : Std.HashMap Name Ident := {}
   -- Replacements to use for the `macro`
-  let mut boundValues : HashMap Name Syntax := {}
+  let mut boundValues : Std.HashMap Name Syntax := {}
   -- The names of the bound names in order, used when constructing patterns for delaboration.
   let mut boundNames : Array Name := #[]
   -- The normal/foldl/foldr type of each variable (for delaborator)
-  let mut boundType : HashMap Name BoundValueType := {}
+  let mut boundType : Std.HashMap Name BoundValueType := {}
   -- Function to update `syntaxArgs` and `pattArgs` using `macroArg` syntax
   let pushMacro (syntaxArgs : Array (TSyntax `stx)) (pattArgs : Array Syntax)
       (mac : TSyntax ``macroArg) := do
@@ -493,8 +506,8 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
         `(macroArg| $id:ident:sepBy(term $(prec?)?, $sep:str))
       -- N.B. `Syntax.getId` returns `.anonymous` for non-idents
-      let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
-      let init' ← init.replaceM fun s => pure (boundValues.find? s.getId)
+      let scopedTerm' ← scopedTerm.replaceM fun s => pure boundValues[s.getId]?
+      let init' ← init.replaceM fun s => pure boundValues[s.getId]?
       boundIdents := boundIdents.insert id.getId id
       match kind with
         | `(foldKind| foldl) =>
@@ -518,7 +531,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
         mkScopedMatcher lit.getId scopedId.getId scopedTerm boundNames
-      let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
+      let scopedTerm' ← scopedTerm.replaceM fun s => pure boundValues[s.getId]?
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
         `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
@@ -530,7 +543,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| lit.1.mkAntiquotNode `term
       boundNames := boundNames.push lit.getId
-    | stx => throwUnsupportedSyntax
+    | _stx => throwUnsupportedSyntax
   if hasScoped && !hasBindersItem then
     throwError "If there is a `scoped` item then there must be a `(...)` item for binders."
 
@@ -547,7 +560,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   let fullName := currNamespace ++ name
   trace[notation3] "syntax declaration has name {fullName}"
   let pat : Term := ⟨mkNode fullName pattArgs⟩
-  let val' ← val.replaceM fun s => pure (boundValues.find? s.getId)
+  let val' ← val.replaceM fun s => pure boundValues[s.getId]?
   let mut macroDecl ← `(macro_rules | `($pat) => `($val'))
   if isLocalAttrKind attrKind then
     -- For local notation, take section variables into account
@@ -568,10 +581,10 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       trace[notation3] "Matcher creation succeeded; assembling delaborator"
       let delabName := name ++ `delab
       let matcher ← ms.foldrM (fun m t => `($(m.2) >=> $t)) (← `(pure))
-      trace[notation3] "matcher: {indentD matcher}"
+      trace[notation3] "matcher:{indentD matcher}"
       let mut result ← `(`($pat))
       for (name, id) in boundIdents.toArray do
-        match boundType.findD name .normal with
+        match boundType.getD name .normal with
         | .normal => result ← `(MatchState.delabVar s $(quote name) (some e) >>= fun $id => $result)
         | .foldl => result ←
           `(let $id := (MatchState.getFoldArray s $(quote name)).reverse; $result)
@@ -599,7 +612,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         pretty printing relies on deriving an expression matcher from the expansion. \
         (Use `set_option trace.notation3 true` to get some debug information.)"
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
 
 /-! `scoped[ns]` support -/
 

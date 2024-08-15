@@ -8,21 +8,21 @@ import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.Algebra.Field.MinimalAxioms
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
-
 # The First Order Theory of Fields
 
 This file defines the first order theory of fields as a theory over the language of rings.
 
 ## Main definitions
-* `FirstOrder.Language.Theory.field` : the theory of fields
-* `FirstOrder.Model.fieldOfModelField` : a model of the theory of fields on a type `K` that
-  already has ring operations.
-* `FirstOrder.Model.compatibleRingOfModelField` : shows that the ring operations on `K` given
-by `fieldOfModelField` are compatible with the ring operations on `K` given by the
-`Language.ring.Structure` instance.
 
+- `FirstOrder.Language.Theory.field` : the theory of fields
+- `FirstOrder.Model.fieldOfModelField` : a model of the theory of fields on a type `K` that
+  already has ring operations.
+- `FirstOrder.Model.compatibleRingOfModelField` : shows that the ring operations on `K` given
+  by `fieldOfModelField` are compatible with the ring operations on `K` given by the
+  `Language.ring.Structure` instance.
 -/
 
 variable {K : Type*}
@@ -99,8 +99,7 @@ already have instances for ring operations.
 
 When this is used, it is almost always useful to also add locally the instance
 `compatibleFieldOfModelField` afterwards. -/
-@[reducible]
-noncomputable def fieldOfModelField (K : Type*) [Language.ring.Structure K]
+noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
     [Theory.field.Model K] : Field K :=
   letI : DecidableEq K := Classical.decEq K
   letI := addOfRingStructure K
@@ -135,8 +134,7 @@ not already have the ring operations on the Type.
 
 Always add `fieldOfModelField` as a local instance first before using this instance.
   -/
-@[reducible]
-noncomputable def compatibleRingOfModelField (K : Type*) [Language.ring.Structure K]
+noncomputable abbrev compatibleRingOfModelField (K : Type*) [Language.ring.Structure K]
     [Theory.field.Model K] : CompatibleRing K :=
   compatibleRingOfRingStructure K
 

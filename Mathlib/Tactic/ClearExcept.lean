@@ -3,7 +3,14 @@ Copyright (c) 2022 Joshua Clune. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
-import Lean
+import Lean.Elab.Tactic.ElabTerm
+
+/-!
+# The `clear*` tactic
+
+This file provides a variant of the `clear` tactic, which clears all hypotheses it can
+besides a provided list.
+-/
 
 open Lean.Meta
 

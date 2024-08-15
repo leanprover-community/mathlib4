@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2023 Apurva Nakade All rights reserved.
+Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Analysis.Convex.Cone.Dual
+import Mathlib.Analysis.Convex.Cone.InnerDual
 import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Algebra.Module.Submodule.Basic
 
@@ -70,8 +70,8 @@ def _root_.ConvexCone.toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) : P
       convert hS
       simp [← hzero]
     · apply ConvexCone.smul_mem
-      convert hpos
-      exact hx
+      · convert hpos
+      · exact hx
 
 @[simp]
 lemma _root_.ConvexCone.mem_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) (x : E) :

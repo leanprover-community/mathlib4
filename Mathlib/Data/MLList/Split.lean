@@ -3,17 +3,16 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Data.MLList.Basic
+import Batteries.Data.MLList.Basic
 import Mathlib.Data.ULift
 
 /-!
 # Functions for splitting monadic lazy lists.
 -/
 
-set_option autoImplicit true
-
 namespace MLList
 
+universe u
 variable {α β : Type u} {m : Type u → Type u} [Monad m]
 
 /--

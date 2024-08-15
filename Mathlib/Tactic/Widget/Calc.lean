@@ -3,11 +3,12 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-
-import Std.CodeAction
+import Lean.Elab.Tactic.Calc
 
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.SelectPanelUtils
+import Batteries.CodeAction.Attr
+import Batteries.Lean.Position
 
 /-! # Calc widget
 
@@ -135,9 +136,9 @@ elab_rules : tactic
   for step in ← Lean.Elab.Term.getCalcSteps steps do
     let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
     let `(calcStep| $(_) := $proofTerm) := step | unreachable!
-    let json := open scoped Std.Json in json% {"replaceRange": $(replaceRange),
-                                                        "isFirst": $(isFirst),
-                                                        "indent": $(indent)}
+    let json := json% {"replaceRange": $(replaceRange),
+                        "isFirst": $(isFirst),
+                        "indent": $(indent)}
     Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) proofTerm
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))

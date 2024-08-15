@@ -4,18 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean
-import Lean.Elab.AuxDef
-import Std.Lean.Command
 
 /-!
 # Pretty printing projection notation
 
+**Deprecated** as of 2024-05-02 with Lean v4.8.0 since dot notation is now default with
+the introduction of `pp.fieldNotation.generalized`, which handles dot notation pervasively
+and correctly.
+
+
 This module contains the `@[pp_dot]` attribute, which is used to configure functions to pretty print
 using projection notation (i.e., like `x.f y` rather than `C.f x y`).
 
-This module also contains a delaborator for collapsing chains of ancestor projections.
-For example, to turn `x.toFoo.toBar` into `x.toBar`. The `pp_dot` attribute works together
-with this attribute to completely collapse such chains.
+Core's projection delaborator collapses chains of ancestor projections.
+For example, to turn `x.toFoo.toBar` into `x.toBar`.
+The `pp_dot` attribute works together with this delaborator to completely collapse such chains.
 -/
 
 namespace Mathlib.ProjectionNotation
@@ -23,49 +26,6 @@ namespace Mathlib.ProjectionNotation
 open Lean Parser Elab Term
 open PrettyPrinter.Delaborator SubExpr
 open Lean.Elab.Command
-
-register_option pp.collapseStructureProjections : Bool := {
-  defValue := true
-  group := "pp"
-  descr := "(pretty printer, Mathlib extension) display structure projections using field notation"
-}
-
-def getPPCollapseStructureProjections (o : Options) : Bool :=
-  o.get pp.structureProjections.name (!getPPAll o)
-
-/-- Like the projection delaborator from core Lean, but collapses projections to parent
-structures into a single projection.
-
-The only functional difference from `Lean.PrettyPrinter.Delaborator.delabProjectionApp` is
-the `walkUp` function. -/
-@[delab app]
-partial def delabProjectionApp' : Delab := whenPPOption getPPCollapseStructureProjections <| do
-  let e@(Expr.app fn _) ← getExpr | failure
-  let .const c@(.str _ f) _ := fn.getAppFn | failure
-  let env ← getEnv
-  let some info := env.getProjectionFnInfo? c | failure
-  -- can't use with classes since the instance parameter is implicit
-  guard <| !info.fromClass
-  -- projection function should be fully applied (#struct params + 1 instance parameter)
-  -- TODO: support over-application
-  guard <| e.getAppNumArgs == info.numParams + 1
-  -- If pp.explicit is true, and the structure has parameters, we should not
-  -- use field notation because we will not be able to see the parameters.
-  let expl ← getPPOption getPPExplicit
-  guard <| !expl || info.numParams == 0
-
-  /- Consume projections to parent structures. -/
-  let rec walkUp {α} (done : DelabM α) : DelabM α := withAppArg do
-    let (Expr.app fn _) ← getExpr | done
-    let .const c@(.str _ field) _ := fn.getAppFn | done
-    let some structName := env.getProjectionStructureName? c | failure
-    let some _ := isSubobjectField? env structName field | done
-    walkUp done
-
-  walkUp do
-    let appStx ← delab
-    `($(appStx).$(mkIdent f):ident)
-
 
 /-- Given a function `f` that is either a true projection or a generalized projection
 (i.e., a function that works using extended field notation, a.k.a. "dot notation"), generates
@@ -84,17 +44,14 @@ def mkExtendedFieldNotationUnexpander (f : Name) : CommandElabM Unit := do
       aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
         -- Having a zero-argument pattern prevents unnecessary parenthesization in output
         | `($$_ $$(x).$(mkIdent toA))
-        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
-        | `($$_ $$(x).$(mkIdent toA) $$args*)
-        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
+        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent (.mkSimple projName)))
         | _ => throw ())
   else
     elabCommand <| ← `(command|
       @[app_unexpander $(mkIdent f)]
       aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
         -- Having this zero-argument pattern prevents unnecessary parenthesization in output
-        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
-        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
+        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent (.mkSimple projName)))
         | _ => throw ())
 
 /--
@@ -116,8 +73,8 @@ structure A where
 def A.foo (a : A) (m : Nat) : Nat := a.n + m
 ```
 Now, `A.foo x m` pretty prints as `x.foo m`. If `A` is a structure, it also adds a rule that
-`A.foo x.toA m` pretty prints as `x.foo m`. This rule is meant to combine with
-the projection collapse delaborator defined in this module, where together `A.foo x.toB.toA m`
+`A.foo x.toA m` pretty prints as `x.foo m`. This rule is meant to combine with core's
+the projection collapse delaborator, where together `A.foo x.toB.toA m`
 will pretty print as `x.foo m`.
 
 Since the mentioned rule is a purely syntactic transformation,
@@ -161,6 +118,9 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
   | `(attr| pp_dot) => do
+    logWarning "\
+      The @[pp_dot] attribute is deprecated now that dot notation is the default \
+      with the introduction of `pp.fieldNotation.generalized` in Lean v4.8.0."
     if (kind != AttributeKind.global) then
       throwError "`pp_dot` can only be used as a global attribute"
     liftCommandElabM <| withRef ref <| mkExtendedFieldNotationUnexpander src

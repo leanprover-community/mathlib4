@@ -7,9 +7,6 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-import Mathlib.Topology.Order.Bounded
-
-#align_import measure_theory.measure.portmanteau from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures
@@ -122,14 +119,12 @@ theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type*} {L : Filter ι
     (fun i => μs i E) (ENNReal.continuous_sub_left ENNReal.one_ne_top).continuousAt
   simp_rw [← this]
   exact antitone_const_tsub h
-#align measure_theory.le_measure_compl_liminf_of_limsup_measure_le MeasureTheory.le_measure_compl_liminf_of_limsup_measure_le
 
 theorem le_measure_liminf_of_limsup_measure_compl_le {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i Eᶜ) ≤ μ Eᶜ) :
     μ E ≤ L.liminf fun i => μs i E :=
   compl_compl E ▸ le_measure_compl_liminf_of_limsup_measure_le (MeasurableSet.compl E_mble) h
-#align measure_theory.le_measure_liminf_of_limsup_measure_compl_le MeasureTheory.le_measure_liminf_of_limsup_measure_compl_le
 
 theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
@@ -150,14 +145,12 @@ theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type*} {L : Filter ι
     (fun i => μs i E) (ENNReal.continuous_sub_left ENNReal.one_ne_top).continuousAt
   simp_rw [← this]
   exact antitone_const_tsub h
-#align measure_theory.limsup_measure_compl_le_of_le_liminf_measure MeasureTheory.limsup_measure_compl_le_of_le_liminf_measure
 
 theorem limsup_measure_le_of_le_liminf_measure_compl {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : μ Eᶜ ≤ L.liminf fun i => μs i Eᶜ) :
     (L.limsup fun i => μs i E) ≤ μ E :=
   compl_compl E ▸ limsup_measure_compl_le_of_le_liminf_measure (MeasurableSet.compl E_mble) h
-#align measure_theory.limsup_measure_le_of_le_liminf_measure_compl MeasureTheory.limsup_measure_le_of_le_liminf_measure_compl
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
@@ -182,7 +175,6 @@ theorem limsup_measure_closed_le_iff_liminf_measure_open_ge {ι : Type*} {L : Fi
   · intro h F F_closed
     exact limsup_measure_le_of_le_liminf_measure_compl
       F_closed.measurableSet (h Fᶜ (isOpen_compl_iff.mpr F_closed))
-#align measure_theory.limsup_measure_closed_le_iff_liminf_measure_open_ge MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge
 
 end LimsupClosedLEAndLELiminfOpen -- section
 
@@ -230,7 +222,6 @@ theorem tendsto_measure_of_le_liminf_measure_of_limsup_measure_le {ι : Type*} {
       _ = μ E := measure_congr E_ae_eq_E₁.symm
   · infer_param
   · infer_param
-#align measure_theory.tendsto_measure_of_le_liminf_measure_of_limsup_measure_le MeasureTheory.tendsto_measure_of_le_liminf_measure_of_limsup_measure_le
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
@@ -248,7 +239,6 @@ theorem tendsto_measure_of_null_frontier {ι : Type*} {L : Filter ι} {μ : Meas
     limsup_measure_closed_le_iff_liminf_measure_open_ge.mpr h_opens
   tendsto_measure_of_le_liminf_measure_of_limsup_measure_le interior_subset subset_closure
     E_nullbdry (h_opens _ isOpen_interior) (h_closeds _ isClosed_closure)
-#align measure_theory.tendsto_measure_of_null_frontier MeasureTheory.tendsto_measure_of_null_frontier
 
 end TendstoOfNullFrontier --section
 
@@ -310,20 +300,18 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
   rw [limsup_const]
   apply le_trans (add_le_add (hM M rfl.le).le (le_refl (ε / 2 : ℝ≥0∞)))
   simp only [add_assoc, ENNReal.add_halves, le_refl]
-#align measure_theory.finite_measure.limsup_measure_closed_le_of_tendsto MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto
 
 /-- One implication of the portmanteau theorem:
 Weak convergence of probability measures implies that the limsup of the measures of any closed
 set is at most the measure of the closed set under the limit probability measure.
 -/
 theorem ProbabilityMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : Filter ι}
-    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
     {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
     {F : Set Ω} (F_closed : IsClosed F) :
     (L.limsup fun i => (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
   apply FiniteMeasure.limsup_measure_closed_le_of_tendsto
     ((ProbabilityMeasure.tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds L).mp μs_lim) F_closed
-#align measure_theory.probability_measure.limsup_measure_closed_le_of_tendsto MeasureTheory.ProbabilityMeasure.limsup_measure_closed_le_of_tendsto
 
 /-- One implication of the portmanteau theorem:
 Weak convergence of probability measures implies that the liminf of the measures of any open set
@@ -338,7 +326,6 @@ theorem ProbabilityMeasure.le_liminf_measure_open_of_tendsto {Ω ι : Type*} {L 
     fun _ F_closed => ProbabilityMeasure.limsup_measure_closed_le_of_tendsto μs_lim F_closed
   le_measure_liminf_of_limsup_measure_compl_le G_open.measurableSet
     (h_closeds _ (isClosed_compl_iff.mpr G_open))
-#align measure_theory.probability_measure.le_liminf_measure_open_of_tendsto MeasureTheory.ProbabilityMeasure.le_liminf_measure_open_of_tendsto
 
 theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto' {Ω ι : Type*}
     {L : Filter ι} [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
@@ -348,7 +335,6 @@ theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto' {Ω ι :
   haveI h_opens : ∀ G, IsOpen G → (μ : Measure Ω) G ≤ L.liminf fun i => (μs i : Measure Ω) G :=
     fun _ G_open => ProbabilityMeasure.le_liminf_measure_open_of_tendsto μs_lim G_open
   tendsto_measure_of_null_frontier h_opens E_nullbdry
-#align measure_theory.probability_measure.tendsto_measure_of_null_frontier_of_tendsto' MeasureTheory.ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto'
 
 /-- One implication of the portmanteau theorem:
 Weak convergence of probability measures implies that if the boundary of a Borel set
@@ -366,7 +352,6 @@ theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : 
     rw [← ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, E_nullbdry, ENNReal.coe_zero]
   have key := ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto' μs_lim E_nullbdry'
   exact (ENNReal.tendsto_toNNReal (measure_ne_top (↑μ) E)).comp key
-#align measure_theory.probability_measure.tendsto_measure_of_null_frontier_of_tendsto MeasureTheory.ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto
 
 end ConvergenceImpliesLimsupClosedLE --section
 
@@ -397,30 +382,28 @@ open ENNReal
 
 variable {Ω : Type*} [PseudoEMetricSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 
-theorem exists_null_frontier_thickening (μ : Measure Ω) [SigmaFinite μ] (s : Set Ω) {a b : ℝ}
+theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) {a b : ℝ}
     (hab : a < b) : ∃ r ∈ Ioo a b, μ (frontier (Metric.thickening r s)) = 0 := by
   have mbles : ∀ r : ℝ, MeasurableSet (frontier (Metric.thickening r s)) :=
     fun r => isClosed_frontier.measurableSet
   have disjs := Metric.frontier_thickening_disjoint s
   have key := Measure.countable_meas_pos_of_disjoint_iUnion (μ := μ) mbles disjs
-  have aux := measure_diff_null (s₁ := Ioo a b) (Set.Countable.measure_zero key volume)
+  have aux := measure_diff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
   rcases nonempty_of_measure_ne_zero len_pos.ne.symm with ⟨r, ⟨r_in_Ioo, hr⟩⟩
-  refine' ⟨r, r_in_Ioo, _⟩
+  refine ⟨r, r_in_Ioo, ?_⟩
   simpa only [mem_setOf_eq, not_lt, le_zero_iff] using hr
-#align measure_theory.exists_null_frontier_thickening MeasureTheory.exists_null_frontier_thickening
 
-theorem exists_null_frontiers_thickening (μ : Measure Ω) [SigmaFinite μ] (s : Set Ω) :
+theorem exists_null_frontiers_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) :
     ∃ rs : ℕ → ℝ,
       Tendsto rs atTop (𝓝 0) ∧ ∀ n, 0 < rs n ∧ μ (frontier (Metric.thickening (rs n) s)) = 0 := by
   rcases exists_seq_strictAnti_tendsto (0 : ℝ) with ⟨Rs, ⟨_, ⟨Rs_pos, Rs_lim⟩⟩⟩
   have obs := fun n : ℕ => exists_null_frontier_thickening μ s (Rs_pos n)
-  refine' ⟨fun n : ℕ => (obs n).choose, ⟨_, _⟩⟩
+  refine ⟨fun n : ℕ => (obs n).choose, ⟨?_, ?_⟩⟩
   · exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds Rs_lim
       (fun n => (obs n).choose_spec.1.1.le) fun n => (obs n).choose_spec.1.2.le
   · exact fun n => ⟨(obs n).choose_spec.1.1, (obs n).choose_spec.2⟩
-#align measure_theory.exists_null_frontiers_thickening MeasureTheory.exists_null_frontiers_thickening
 
 /-- One implication of the portmanteau theorem:
 Assuming that for all Borel sets E whose boundary ∂E carries no probability mass under a
@@ -451,7 +434,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
     apply Iio_mem_nhds
     exact ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
   specialize rs_lim (keyB nhd)
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
+  simp only [mem_map, mem_atTop_sets, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux' := fun i ↦ measure_mono (μ := μs i) (Metric.self_subset_thickening (rs_pos m) F)
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
@@ -523,7 +506,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
     have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
-      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using
+      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one] using
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
     apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (eventually_of_forall bound)
   · exact (f.lintegral_of_real_lt_top μ).ne
@@ -532,7 +515,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     simp only [measure_univ, mul_one] at obs
     apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
     apply liminf_le_of_le
-    · refine ⟨0, eventually_of_forall (by simp only [ge_iff_le, zero_le, forall_const])⟩
+    · refine ⟨0, eventually_of_forall (by simp only [zero_le, forall_const])⟩
     · intro x hx
       obtain ⟨i, hi⟩ := hx.exists
       apply le_trans hi
@@ -542,32 +525,6 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
       rw [aux]
       congr
       exact (Real.norm_of_nonneg (f_nn x)).symm
-
-lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : Filter ι}
-    {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
-    (h : ∀ f : Ω →ᵇ ℝ, 0 ≤ f → ∫ x, (f x) ∂μ ≤ L.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)))
-    (f : Ω →ᵇ ℝ) :
-    Tendsto (fun i ↦ ∫ x, (f x) ∂ (μs i)) L (𝓝 (∫ x, (f x) ∂μ)) := by
-  rcases eq_or_neBot L with rfl|hL
-  · simp only [tendsto_bot]
-  have obs := BoundedContinuousFunction.isBounded_range_integral μs f
-  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ (x : Ω), f x ∂μs i) :=
-    isBounded_le_map_of_bounded_range _ obs
-  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ (x : Ω), f x ∂μs i) :=
-    isBounded_ge_map_of_bounded_range _ obs
-  apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ L (fun i ↦ ∫ x, (f x) ∂ (μs i)) (∫ x, (f x) ∂μ)
-  · have key := h _ (f.add_norm_nonneg)
-    simp_rw [f.integral_add_const ‖f‖] at key
-    simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
-    have := liminf_add_const L (fun i ↦ ∫ x, (f x) ∂ (μs i)) ‖f‖ bdd_above bdd_below
-    rwa [this, add_le_add_iff_right] at key
-  · have key := h _ (f.norm_sub_nonneg)
-    simp_rw [f.integral_const_sub ‖f‖] at key
-    simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
-    have := liminf_const_sub L (fun i ↦ ∫ x, (f x) ∂ (μs i)) ‖f‖ bdd_above bdd_below
-    rwa [this, sub_le_sub_iff_left] at key
-  · exact bdd_above
-  · exact bdd_below
 
 /-- One implication of the portmanteau theorem:
 If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
@@ -582,16 +539,15 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
   apply integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure (f := f) f_nn
   intro G G_open
   specialize h_opens G G_open
-  simp only at h_opens
-  have aux : ENNReal.ofNNReal (liminf (fun i ↦ ENNReal.toNNReal ((μs i : Measure Ω) G)) atTop) =
-          liminf (ENNReal.ofNNReal ∘ fun i ↦ (ENNReal.toNNReal ((μs i : Measure Ω) G))) atTop := by
+  have aux : ENNReal.ofNNReal (liminf (fun i ↦ μs i G) atTop) =
+          liminf (ENNReal.ofNNReal ∘ fun i ↦ μs i G) atTop := by
     refine Monotone.map_liminf_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · G) ?_ ?_ ?_
     · apply ENNReal.continuous_coe.continuousAt
-    · use 1
+    · apply IsBoundedUnder.isCoboundedUnder_ge ⟨1, ?_⟩
       simp only [eventually_map, ProbabilityMeasure.apply_le_one, eventually_atTop, ge_iff_le,
         implies_true, forall_const, exists_const]
     · use 0
-      simp only [zero_le, eventually_map, eventually_atTop, ge_iff_le, implies_true, forall_const,
+      simp only [zero_le, eventually_map, eventually_atTop, implies_true, forall_const,
         exists_const]
   have obs := ENNReal.coe_mono h_opens
   simp only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
