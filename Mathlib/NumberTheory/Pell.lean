@@ -263,7 +263,7 @@ natural exponents have positive `y`. -/
 theorem y_pow_succ_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (n : ℕ) :
     0 < (a ^ n.succ).y := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, ← Nat.one_eq_succ_zero, hay, pow_one]
+  · simp only [pow_one, hay]
   · rw [pow_succ']
     exact y_mul_pos hax hay (x_pow_pos hax _) ih
 

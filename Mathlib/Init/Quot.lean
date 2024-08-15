@@ -27,7 +27,6 @@ protected abbrev Quot.recOn'
     (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (Quot.sound p) = f b) :
     motive q :=
  q.rec f h
--- expected token
 
 /-- Version of `Quot.recOnSubsingleton` tagged with `elab_as_elim` -/
 @[elab_as_elim] -- Porting note: this attribute is missing in core

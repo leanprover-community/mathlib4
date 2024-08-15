@@ -61,6 +61,10 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
 theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
   | ⟨_, _⟩ => rfl
 
+protected theorem eq {α : Type*} {β : α → Type*} : ∀ {p₁ p₂ : Σ a, β a} (h₁ : p₁.1 = p₂.1),
+    (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
+  | ⟨_, _⟩, _, rfl, rfl => rfl
+
 /-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/
 theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type*} [Nonempty γ]
     {a b : α} {f : γ → β a} {g : γ → β b} (h : Sigma.mk a ∘ f = Sigma.mk b ∘ g) :
@@ -209,6 +213,8 @@ def elim {γ} (f : ∀ a, β a → γ) (a : PSigma β) : γ :=
 theorem elim_val {γ} (f : ∀ a, β a → γ) (a b) : PSigma.elim f ⟨a, b⟩ = f a b :=
   rfl
 
+@[deprecated (since := "2024-07-27")] alias ex_of_psig := ex_of_PSigma
+
 instance [Inhabited α] [Inhabited (β default)] : Inhabited (PSigma β) :=
   ⟨⟨default, default⟩⟩
 
@@ -231,6 +237,11 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
   (Iff.intro PSigma.mk.inj) fun ⟨h₁, h₂⟩ ↦
     match a₁, a₂, b₁, b₂, h₁, h₂ with
     | _, _, _, _, Eq.refl _, HEq.refl _ => rfl
+
+@[deprecated PSigma.ext_iff (since := "2024-07-27")]
+protected theorem eq {α : Sort*} {β : α → Sort*} : ∀ {p₁ p₂ : Σ' a, β a} (h₁ : p₁.1 = p₂.1),
+    (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
+  | ⟨_, _⟩, _, rfl, rfl => rfl
 
 @[simp]
 theorem «forall» {p : (Σ'a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=

@@ -20,6 +20,10 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 namespace Prod
 
+def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
+    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
+  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
+
 @[simp]
 theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
   | (_, _) => rfl
