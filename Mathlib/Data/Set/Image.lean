@@ -938,19 +938,7 @@ theorem range_diff_image {f : α → β} (H : Injective f) (s : Set α) : range 
 @[simp]
 theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α) ∈ s } := by
   ext ⟨x, hx⟩
-  -- Porting note: `simp [inclusion]` doesn't solve goal
-  apply Iff.intro
-  · rw [mem_range]
-    rintro ⟨a, ha⟩
-    rw [inclusion, Subtype.mk.injEq] at ha
-    rw [mem_setOf, Subtype.coe_mk, ← ha]
-    exact Subtype.coe_prop _
-  · rw [mem_setOf, Subtype.coe_mk, mem_range]
-    intro hx'
-    use ⟨x, hx'⟩
-    trivial
-  -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
-  -- rw [SetCoe.exists, Subtype.coe_mk, exists_prop, exists_eq_right, mem_set_of, Subtype.coe_mk]
+  simp
 
 -- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :
