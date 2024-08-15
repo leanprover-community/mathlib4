@@ -1044,6 +1044,8 @@ def fixAbbreviation : List String → List String
   | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
   | "three" :: "GPFree" :: s         => "three" :: "APFree" :: fixAbbreviation s
   | "Three" :: "GPFree" :: s         => "Three" :: "APFree" :: fixAbbreviation s
+  | "Division" :: "Add" :: "Monoid" :: s => "SubtractionMonoid" :: fixAbbreviation s
+  | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 

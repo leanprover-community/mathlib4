@@ -749,14 +749,7 @@ theorem univ_mul_of_one_mem (ht : (1 : α) ∈ t) : univ * t = univ :=
 theorem univ_mul_univ : (univ : Set α) * univ = univ :=
   mul_univ_of_one_mem <| mem_univ _
 
---TODO: `to_additive` trips up on the `1 : ℕ` used in the pattern-matching.
-@[simp]
-theorem nsmul_univ {α : Type*} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
-  | 0 => fun h => (h rfl).elim
-  | 1 => fun _ => one_nsmul _
-  | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]
-
-@[to_additive existing (attr := simp) nsmul_univ]
+@[to_additive (attr := simp) nsmul_univ]
 theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => pow_one _
