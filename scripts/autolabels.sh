@@ -41,7 +41,7 @@ mdToSpaces () { tr -s '|, ' ' ' < scripts/autolabels.sh | sed -n 's=^ *t-=t-=p; 
 
 (
   mdToSpaces
-  git diff --name-only master
+  git diff --name-only origin/master
 ) |
 awk -v long="${1}" '
     { gsub(/Tactic\/Linter/, "Tactic-Linter") }
