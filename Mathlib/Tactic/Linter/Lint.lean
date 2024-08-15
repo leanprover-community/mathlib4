@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 
 import Lean.Linter.Util
---import Batteries.Data.String.Matcher
 import Batteries.Tactic.Lint
 
 /-!
