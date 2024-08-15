@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser
 -/
 import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.Algebra.Order.Field.Defs
 
 /-!
 # Semireal rings
