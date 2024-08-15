@@ -128,7 +128,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
   let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
   refine
     ⟨galActionHom_injective p ℂ, fun x =>
-      (congr_arg (Membership.mem x) (show (galActionHom p ℂ).range = ⊤ from ?_)).mpr
+      (congr_arg (x ∈ ·) (show (galActionHom p ℂ).range = ⊤ from ?_)).mpr
         (Subgroup.mem_top x)⟩
   apply Equiv.Perm.subgroup_eq_top_of_swap_mem
   · rwa [h1]
