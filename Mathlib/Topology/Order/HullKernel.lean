@@ -65,15 +65,17 @@ open Set.Notation
 
 section SemilatticeInf
 
-variable [SemilatticeInf α] [TopologicalSpace α] [IsLower α]
+variable [SemilatticeInf α] --[TopologicalSpace α] [IsLower α]
 
-variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
+
 
 namespace PrimitiveSpectrum
 
+variable {T : Set α}
+
 /- The set of relative-closed sets of the form `T ↓∩ Ici a` for some `a` in `α` is closed under
 pairwise union. -/
-lemma Ici_union_Ici_eq (a b : α) :
+lemma Ici_union_Ici_eq (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     (T ↓∩ Ici a) ∪ (T ↓∩ Ici b) = T ↓∩ Ici (a ⊓ b) := by
   ext p
   constructor <;> intro h
@@ -84,7 +86,7 @@ lemma Ici_union_Ici_eq (a b : α) :
 
 /- The set of relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α` is closed under
 pairwise intersection. -/
-lemma Ici_compl_inter_Ici_compl_eq (a b : α) :
+lemma Ici_compl_inter_Ici_compl_eq (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = T ↓∩ (Ici (a ⊓ b))ᶜ := by
   rw [preimage_compl, preimage_compl, preimage_compl, ← (Ici_union_Ici_eq hT), compl_union]
 
@@ -93,7 +95,7 @@ variable [DecidableEq α] [OrderTop α]
 /- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
 relative-closed set of the form `T ↓∩ Ici a` where `a = ⊓ F`. -/
 open Finset in
-lemma upperClosureFinite_eq  (F : Finset α) :
+lemma upperClosureFinite_eq (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     T ↓∩ ↑(upperClosure F.toSet) = T ↓∩ Ici (inf F id) := by
   rw [coe_upperClosure]
   induction' F using Finset.induction_on with a F' _ I4
@@ -110,15 +112,17 @@ lemma upperClosureFinite_eq  (F : Finset α) :
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
 set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⊓ F`. -/
 open Finset in
-lemma upperClosureFiniteCompl_eq  (F : Finset α) :
+lemma upperClosureFiniteCompl_eq (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
   rw [Set.preimage_compl, Set.preimage_compl, (upperClosureFinite_eq hT)]
+
+variable [TopologicalSpace α] [IsLower α]
 
 /-
 The relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for `a` in `α` form a basis for the relative
 Lower topology.
 -/
-lemma relativeLowerIsTopologicalBasis :
+lemma relativeLowerIsTopologicalBasis (hT : ∀ p ∈ T, InfPrime p) :
     IsTopologicalBasis { S : Set T | ∃ (a : α), T ↓∩ (Ici a)ᶜ = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
   ext R
@@ -143,9 +147,9 @@ end SemilatticeInf
 
 section PrimativeSpectrum
 
-variable [CompleteLattice α] [TopologicalSpace α] [IsLower α] [DecidableEq α]
+variable [CompleteLattice α] --[TopologicalSpace α] [IsLower α] [DecidableEq α]
 
-variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
+variable {T : Set α} --(hT : ∀ p ∈ T, InfPrime p)
 
 namespace PrimitiveSpectrum
 
@@ -171,7 +175,8 @@ lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S 
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
-lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
+lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
+    (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
   constructor <;> intro h
   · let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
     use sSup R
@@ -184,7 +189,8 @@ lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)�
 
 /- When `α` is complete, a set is Lower topology relative-closed if and only if it is of the form
 `T ↓∩ Ici a` for some `a` in `α`.-/
-lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a := by
+lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
+    (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a := by
   rw [← isOpen_compl_iff, (isOpen_iff hT)]
   constructor <;> (intro h; cases' h with a ha; use a)
   · exact compl_inj_iff.mp ha
@@ -218,12 +224,11 @@ that `a` is the inf of `S`. -/
 def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = sInf (S : Set α)
 
 variable {T}
-variable (hG : OrderGenerate T)
 
 /--
 When `T` is order generating, the kernel and the hull form a Galois insertion
 -/
-def gi : GaloisInsertion (α := Set T) (β := αᵒᵈ)
+def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (sInf (S : Set α)))
     (fun a => T ↓∩ Ici (OrderDual.ofDual a)) :=
   gc.toGaloisInsertion fun a ↦ (by
@@ -233,18 +238,21 @@ def gi : GaloisInsertion (α := Set T) (β := αᵒᵈ)
       (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
       (hS.symm))
 
-lemma kernel_hull_eq (a : α) : sInf (T ↓∩ Ici a : Set α) = a := by
+lemma kernel_hull_eq (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a := by
   conv_rhs => rw [← (OrderDual.ofDual_toDual a),
     ← (GaloisInsertion.l_u_eq (gi hG) a)]
   rfl
 
-lemma gc_closureOperator_of_isClosed {C : Set T} (h : IsClosed C) : gc.closureOperator C = C := by
+lemma gc_closureOperator_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α]
+    (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
+    gc.closureOperator C = C := by
   cases' ((isClosed_iff hT C).mp h) with a ha
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq, ha,
     (kernel_hull_eq hG)]
 
-lemma lowerTopology_closureOperator_eq (S : Set T) :
+lemma lowerTopology_closureOperator_eq [TopologicalSpace α] [IsLower α] [DecidableEq α]
+    (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) (S : Set T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S  = T ↓∩ Ici (sInf S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   have e1 : IsClosed (T ↓∩ Ici (sInf ↑S)) ∧ S ⊆ T ↓∩ Ici (sInf ↑S) := by
@@ -259,7 +267,9 @@ lemma lowerTopology_closureOperator_eq (S : Set T) :
     rw [← (gc_closureOperator_of_isClosed hT hG hR.1), ← gc_closureOperator_eq]
     exact ClosureOperator.monotone _ hR.2
 
-theorem lowerTopology_closureOperator_eq_gc_closureOperator :
+theorem lowerTopology_closureOperator_eq_gc_closureOperator
+    [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
+    (hG : OrderGenerate T):
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator = gc.closureOperator := by
   ext S a
   rw [gc_closureOperator_eq, (lowerTopology_closureOperator_eq hT hG)]
