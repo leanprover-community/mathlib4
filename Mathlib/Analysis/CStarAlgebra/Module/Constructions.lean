@@ -393,8 +393,12 @@ private lemma isBounded_iff_of_inner_aux (s : Set (C⋆ᵐᵒᵈ E)) :
 
 end Aux
 
-noncomputable instance : NormedAddCommGroup (C⋆ᵐᵒᵈ E) :=
+noncomputable instance instNormedAddCommGroupOfInner : NormedAddCommGroup (C⋆ᵐᵒᵈ E) :=
   .ofCoreReplaceAll normedSpaceCore uniformity_eq_of_inner_aux isBounded_iff_of_inner_aux
+
+-- Ensures that the two ways to obtain `NormedAddCommGroup (C⋆ᵐᵒᵈ ℂ)` are definitionally equal.
+example : instNormedAddCommGroup (A := ℂ) = instNormedAddCommGroupOfInner := by
+  with_reducible_and_instances rfl
 
 instance : NormedSpace ℂ (C⋆ᵐᵒᵈ E) := .ofCore normedSpaceCore
 
