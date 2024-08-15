@@ -29,7 +29,7 @@ from `Tactic/anything_other_than_linter`.
 |t-linter                | Tactic/Linter                                                                     |
 |t-logic                 | Logic, ModelTheory                                                                |
 |t-measure-probability   | MeasureTheory, Probability, InformationTheory                                     |
-|t-meta                  | Tactic, Lean, Util, Mathport, Control, Testing                              |
+|t-meta                  | Tactic, Lean, Util, Mathport, Control, Testing                                    |
 |t-number-theory         | NumberTheory                                                                      |
 |t-order                 | Order                                                                             |
 |t-topology              | Topology, AlgebraicTopology                                                       |
