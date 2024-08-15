@@ -77,8 +77,8 @@ instance : ContinuousStar ℝ≥0 where
   continuous_star := continuous_id
 section coe
 
-lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) := by
-  rw [← bot_eq_zero, Ico_bot]; exact isOpen_Iio
+lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
+  Ico_bot (a := x) ▸ isOpen_Iio
 
 variable {α : Type*}
 
