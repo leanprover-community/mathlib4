@@ -1510,7 +1510,10 @@ theorem prod_flip {n : ℕ} (f : ℕ → β) :
     rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
     simp [← ih]
 
-@[to_additive]
+/-- The difference with `Finset.prod_ninvolution` is that the involution is allowed to use
+membership of the domain of the product, rather than being a non-dependent function. -/
+@[to_additive "The difference with `Finset.sum_ninvolution` is that the involution is allowed to use
+membership of the domain of the sum, rather than being a non-dependent function."]
 lemma prod_involution (g : ∀ a ∈ s, α) (hg₁ : ∀ a ha, f a * f (g a ha) = 1)
     (hg₃ : ∀ a ha, f a ≠ 1 → g a ha ≠ a)
     (g_mem : ∀ a ha, g a ha ∈ s) (hg₄ : ∀ a ha, g (g a ha) (g_mem a ha) = a) :
@@ -1534,7 +1537,10 @@ lemma prod_involution (g : ∀ a ∈ s, α) (hg₁ : ∀ a ha, f a * f (g a ha) 
   have : g (g a ha₁) (g_mem _ _) = g (g x hx) (g_mem _ _) := by simp only [h]
   exact ha₂ (by simpa [hg₄] using this)
 
-@[to_additive]
+/-- The difference with `Finset.prod_involution` is that the involution is a non-dependent function,
+rather than being allowed to use membership of the domain of the product. -/
+@[to_additive "The difference with `Finset.sum_involution` is that the involution is a non-dependent
+function, rather than being allowed to use membership of the domain of the sum."]
 lemma prod_ninvolution (g : α → α) (hg₁ : ∀ a, f a * f (g a) = 1) (hg₂ : ∀ a, f a ≠ 1 → g a ≠ a)
     (g_mem : ∀ a, g a ∈ s) (hg₃ : ∀ a, g (g a) = a) : ∏ x ∈ s, f x = 1 :=
   prod_involution (fun i _ => g i) (fun i _ => hg₁ i) (fun _ _ hi => hg₂ _ hi)
