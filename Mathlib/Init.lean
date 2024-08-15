@@ -15,11 +15,9 @@ Here are some general guidelines:
 -- and have no imports beyond `Lean`.
 import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.RefineLinter
--- xxx: this file imports Batteries.Lean.HashSet; is this acceptable?
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
--- xxx: this file imports Batteries.Data.String.Matcher and Batteries.Tactic.Lint; acceptable?
+-- this file imports Batteries.Tactic.Lint, where `env_linter` attribute is defined
 import Mathlib.Tactic.Linter.Lint
--- xxx: this files imports Batterires.Tactic.Unreachable; is this acceptable?
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
