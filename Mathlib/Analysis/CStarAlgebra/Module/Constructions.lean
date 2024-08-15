@@ -333,6 +333,7 @@ variable [instSMulOp : SMul ℂᵐᵒᵖ E] [instCentral : IsCentralScalar ℂ E
 
 -- we include the inner product space instance in order to guarantee that this instance isn't
 -- triggered in other situations
+@[nolint unusedArguments]
 noncomputable instance {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] :
     Norm (C⋆ᵐᵒᵈ E) where
   norm x := ‖equiv _ x‖
