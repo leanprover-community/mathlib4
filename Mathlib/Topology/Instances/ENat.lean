@@ -30,20 +30,22 @@ theorem embedding_natCast : Embedding ((↑) : ℕ → ℕ∞) :=
 theorem openEmbedding_natCast : OpenEmbedding ((↑) : ℕ → ℕ∞) :=
   ⟨embedding_natCast, range_natCast ▸ isOpen_Iio⟩
 
+theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = pure (n : ℕ∞) := by
+  simp [← openEmbedding_natCast.map_nhds_eq]
+
+@[simp]
+protected theorem nhds_eq_pure {n : ℕ∞} (h : n ≠ ⊤) : 𝓝 n = pure n := by
+  lift n to ℕ using h
+  simp [nhds_natCast]
+
 theorem isOpen_singleton {x : ℕ∞} (hx : x ≠ ⊤) : IsOpen {x} := by
-  lift x to ℕ using hx
-  rw [← image_singleton, ← openEmbedding_natCast.open_iff_image_open]
-  trivial
+  rw [isOpen_singleton_iff_nhds_eq_pure, ENat.nhds_eq_pure hx]
 
 theorem mem_nhds_iff {x : ℕ∞} {s : Set ℕ∞} (hx : x ≠ ⊤) : s ∈ 𝓝 x ↔ x ∈ s := by
-  rw [_root_.mem_nhds_iff]
-  exact ⟨fun ⟨_, h, _, h'⟩ ↦ h h', fun h ↦ ⟨_, singleton_subset_iff.2 h, isOpen_singleton hx, rfl⟩⟩
+  simp [hx]
 
 theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞) ↔ (n : ℕ∞) ∈ s :=
   mem_nhds_iff (coe_ne_top _)
-
-@[simp] theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = 𝓟 ({(n : ℕ∞)}) := by
-  ext; simp [mem_nhds_natCast_iff]
 
 instance : ContinuousAdd ℕ∞ := by
   refine ⟨continuous_iff_continuousAt.2 ?_⟩
