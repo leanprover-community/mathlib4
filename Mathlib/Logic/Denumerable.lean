@@ -189,10 +189,9 @@ variable {s : Set ℕ} [Infinite s]
 
 section Classical
 
-open scoped Classical
-
-theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
-  _root_.by_contradiction fun h =>
+theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
+  classical
+  exact _root_.by_contradiction fun h =>
     have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
       lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, Nat.add_sub_cancel' hax]⟩
     Fintype.false
