@@ -1394,7 +1394,7 @@ theorem IsLittleO.pow {f : α → R} {g : α → 𝕜} (h : f =o[l] g) {n : ℕ}
     (fun x => f x ^ n) =o[l] fun x => g x ^ n := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
   induction n with
-  | zero => simpa only [Nat.zero_eq, ← Nat.one_eq_succ_zero, pow_one]
+  | zero => simpa only [pow_one]
   | succ n ihn => convert ihn.mul h <;> simp [pow_succ]
 
 theorem IsLittleO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) :
