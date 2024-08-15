@@ -51,20 +51,8 @@ instance coeSort : CoeSort (Bundled c) (Type u) :=
 theorem coe_mk (α) (str) : (@Bundled.mk c α str : Type u) = α :=
   rfl
 
-/-
-`Bundled.map` is reducible so that, if we define a category
-
-  def Ring : Type (u+1) := induced_category SemiRing (bundled.map @ring.to_semiring)
-
-instance search is able to "see" that a morphism R ⟶ S in Ring is really
-a (semi)ring homomorphism from R.α to S.α, and not merely from
-`(Bundled.map @Ring.toSemiring R).α` to `(Bundled.map @Ring.toSemiring S).α`.
-
-TODO: Once at least one use of this has been ported, check if this still needs to be reducible in
-Lean 4.
--/
 /-- Map over the bundled structure -/
-def map (f : ∀ {α}, c α → d α) (b : Bundled c) : Bundled d :=
+abbrev map (f : ∀ {α}, c α → d α) (b : Bundled c) : Bundled d :=
   ⟨b, f b.str⟩
 
 end Bundled

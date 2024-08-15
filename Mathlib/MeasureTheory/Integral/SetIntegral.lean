@@ -57,9 +57,11 @@ open Set Filter TopologicalSpace MeasureTheory Function RCLike
 
 open scoped Classical Topology ENNReal NNReal
 
-variable {X Y E F : Type*} [MeasurableSpace X]
+variable {X Y E F : Type*}
 
 namespace MeasureTheory
+
+variable [MeasurableSpace X]
 
 section NormedAddCommGroup
 
@@ -728,8 +730,11 @@ end NormedAddCommGroup
 
 section Mono
 
-variable {μ : Measure X} {f g : X → ℝ} {s t : Set X} (hf : IntegrableOn f s μ)
-  (hg : IntegrableOn g s μ)
+variable {μ : Measure X} {f g : X → ℝ} {s t : Set X}
+
+section
+variable (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ)
+include hf hg
 
 theorem setIntegral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
@@ -764,6 +769,8 @@ theorem setIntegral_mono (h : f ≤ g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g
 
 @[deprecated (since := "2024-04-17")]
 alias set_integral_mono := setIntegral_mono
+
+end
 
 theorem setIntegral_mono_set (hfi : IntegrableOn f t μ) (hf : 0 ≤ᵐ[μ.restrict t] f)
     (hst : s ≤ᵐ[μ] t) : ∫ x in s, f x ∂μ ≤ ∫ x in t, f x ∂μ :=
@@ -989,9 +996,10 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
 `(Lp.memℒp f).restrict s).toLp f`. This map is non-expansive. -/
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
-  rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top _) (Lp.snorm_ne_top _)]
-  apply (le_of_eq _).trans (snorm_mono_measure _ (Measure.restrict_le_self (s := s)))
-  exact snorm_congr_ae (Memℒp.coeFn_toLp _)
+  rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _)
+    (Lp.eLpNorm_ne_top _)]
+  apply (le_of_eq _).trans (eLpNorm_mono_measure _ (Measure.restrict_le_self (s := s)))
+  exact eLpNorm_congr_ae (Memℒp.coeFn_toLp _)
 
 variable (X F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in
@@ -1031,7 +1039,8 @@ section OpenPos
 
 open Measure
 
-variable [TopologicalSpace X] [OpensMeasurableSpace X] {μ : Measure X} [IsOpenPosMeasure μ]
+variable [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
+  {μ : Measure X} [IsOpenPosMeasure μ]
 
 theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMeasureOnCompacts μ]
     {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
@@ -1046,7 +1055,7 @@ section FTC
 
 open MeasureTheory Asymptotics Metric
 
-variable {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable [MeasurableSpace X] {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Fundamental theorem of calculus for set integrals:
 if `μ` is a measure that is finite at a filter `l` and
@@ -1138,6 +1147,8 @@ theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [Open
 end FTC
 
 section
+
+variable [MeasurableSpace X]
 
 /-! ### Continuous linear maps composed with integration
 
@@ -1254,6 +1265,18 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x)
   · simp [integral, *]
 
 end ContinuousLinearEquiv
+
+namespace ContinuousMap
+
+lemma integral_apply [TopologicalSpace Y] [CompactSpace Y] [NormedSpace ℝ E]
+    [CompleteSpace E] {f : X → C(Y, E)} (hf : Integrable f μ) (y : Y) :
+    (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
+  calc (∫ x, f x ∂μ) y = ContinuousMap.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
+    _ = ∫ x, ContinuousMap.evalCLM ℝ y (f x) ∂μ :=
+          (ContinuousLinearMap.integral_comp_comm _ hf).symm
+    _ = _ := rfl
+
+end ContinuousMap
 
 @[norm_cast]
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
@@ -1417,7 +1440,7 @@ end
 
 section thickenedIndicator
 
-variable [PseudoEMetricSpace X]
+variable [MeasurableSpace X] [PseudoEMetricSpace X]
 
 theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure X) {E : Set X}
     (E_mble : MeasurableSet E) (δ : ℝ) : μ E ≤ ∫⁻ x, (thickenedIndicatorAux δ E x : ℝ≥0∞) ∂μ := by
@@ -1436,11 +1459,15 @@ theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
 
 end thickenedIndicator
 
+-- We declare a new `{X : Type*}` to discard the instance `[MeasureableSpace X]`
+-- which has been in scope for the entire file up to this point.
+variable {X : Type*}
+
 section BilinearMap
 
 namespace MeasureTheory
 
-variable {f : X → ℝ} {m m0 : MeasurableSpace X} {μ : Measure X}
+variable {X : Type*} {f : X → ℝ} {m m0 : MeasurableSpace X} {μ : Measure X}
 
 theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) :
     Integrable (⇑g * f) μ := by
@@ -1481,7 +1508,7 @@ open Metric ContinuousLinearMap
   under mild assumptions on the topologies involved. -/
 theorem continuous_parametric_integral_of_continuous
     [FirstCountableTopology X] [LocallyCompactSpace X]
-    [OpensMeasurableSpace Y] [SecondCountableTopologyEither Y E] [IsLocallyFiniteMeasure μ]
+    [SecondCountableTopologyEither Y E] [IsLocallyFiniteMeasure μ]
     {f : X → Y → E} (hf : Continuous f.uncurry) {s : Set Y} (hs : IsCompact s) :
     Continuous (∫ y in s, f · y ∂μ) := by
   rw [continuous_iff_continuousAt]

@@ -296,7 +296,7 @@ theorem totient_eq_mul_prod_factors (n : ℕ) :
   refine prod_congr rfl fun p hp => ?_
   have hp := pos_of_mem_primeFactorsList (List.mem_toFinset.mp hp)
   have hp' : (p : ℚ) ≠ 0 := cast_ne_zero.mpr hp.ne.symm
-  rw [sub_mul, one_mul, mul_comm, mul_inv_cancel hp', cast_pred hp]
+  rw [sub_mul, one_mul, mul_comm, mul_inv_cancel₀ hp', cast_pred hp]
 
 theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ a * φ b * a.gcd b := by
   have shuffle :

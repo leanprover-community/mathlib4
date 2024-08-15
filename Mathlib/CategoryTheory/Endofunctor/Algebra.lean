@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Rob Lewis, Joseph Hua
+Authors: Scott Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Robert Y. Lewis, Joseph Hua
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
@@ -86,7 +86,7 @@ instance (F : C ⥤ C) : CategoryStruct (Algebra F) where
 
 @[ext]
 lemma ext {A B : Algebra F} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
-  Hom.ext _ _ w
+  Hom.ext w
 
 @[simp]
 theorem id_eq_id : Algebra.Hom.id A = 𝟙 A :=
@@ -279,7 +279,7 @@ instance (F : C ⥤ C) : CategoryStruct (Coalgebra F) where
 
 @[ext]
 lemma ext {A B : Coalgebra F} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
-  Hom.ext _ _ w
+  Hom.ext w
 
 @[simp]
 theorem id_eq_id : Coalgebra.Hom.id V = 𝟙 V :=

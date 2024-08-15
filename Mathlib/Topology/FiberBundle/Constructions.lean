@@ -25,14 +25,9 @@ fiber bundle, fibre bundle, fiberwise product, pullback
 
 -/
 
-
 open TopologicalSpace Filter Set Bundle
 
-open scoped Classical
-open Topology Bundle
-
 /-! ### The trivial bundle -/
-
 
 namespace Bundle
 
@@ -258,7 +253,7 @@ universe u v w₁ w₂ U
 variable {B : Type u} (F : Type v) (E : B → Type w₁) {B' : Type w₂} (f : B' → B)
 
 instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
-  -- Porting note: Original proof was `delta_instance bundle.pullback`
+  -- Porting note: Original proof was `delta_instance Bundle.Pullback`
   intro x
   rw [Bundle.Pullback]
   infer_instance

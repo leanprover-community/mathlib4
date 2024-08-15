@@ -118,7 +118,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out')) _]
         · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
         · intro k hk
-          simp only [if_neg hk, inv_mul_self]
+          simp only [if_neg hk, inv_mul_cancel]
           exact map_one ϕ
 
 /-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
@@ -185,6 +185,7 @@ theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
 section BurnsideTransfer
 
 variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ centralizer (P : Set G))
+include hP
 
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=

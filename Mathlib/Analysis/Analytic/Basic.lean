@@ -7,6 +7,7 @@ import Mathlib.Algebra.Star.Order
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
@@ -80,10 +81,7 @@ noncomputable section
 
 variable {𝕜 E F G : Type*}
 
-open scoped Classical
-open Topology NNReal Filter ENNReal
-
-open Set Filter Asymptotics
+open Topology NNReal Filter ENNReal Set Asymptotics
 
 namespace FormalMultilinearSeries
 
@@ -375,6 +373,9 @@ def HasFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : 
 /-- Analogue of `HasFPowerSeriesAt` where convergence is required only on a set `s`. -/
 def HasFPowerSeriesWithinAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (s : Set E) (x : E) :=
   ∃ r, HasFPowerSeriesWithinOnBall f p s x r
+
+-- Teach the `bound` tactic that power series have positive radius
+attribute [bound_forward] HasFPowerSeriesOnBall.r_pos HasFPowerSeriesWithinOnBall.r_pos
 
 variable (𝕜)
 
@@ -935,7 +936,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
         rw [← mul_assoc]
         simp [norm_mul, mul_pow]
       _ ≤ 0 + ε := by
-        rw [inv_mul_cancel (norm_pos_iff.mp k_pos)]
+        rw [inv_mul_cancel₀ (norm_pos_iff.mp k_pos)]
         simpa using h₃.le
 
 /-- If a formal multilinear series `p` represents the zero function at `x : E`, then the

@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Emily Riehl
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Whiskering
+import Mathlib.CategoryTheory.HomCongr
 
 import Mathlib.Tactic.ApplyFun
 
@@ -436,8 +432,7 @@ theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
     (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
   have vcompd := congr_app vcomp d
   dsimp [mateEquiv, leftAdjointSquare.vcomp, rightAdjointSquare.vcomp] at vcompd
-  simp at vcompd
-  simp only [comp_id, id_comp, assoc, map_comp]
+  simp only [comp_id, id_comp, assoc, map_comp] at vcompd ⊢
   rw [vcompd]
 
 theorem conjugateEquiv_symm_comp (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
