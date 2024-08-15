@@ -7,9 +7,14 @@ A tactic that adds a vacuous `sorry`. Useful for testing the chattiness of the `
 elab "noise" : tactic => do
   Lean.Elab.Tactic.evalTactic (← `(tactic| have : 0 = 0 := sorry; clear this ))
 
-set_option linter.haveLet 2 in
+set_option linter.haveLet 0 in
+/--
+warning: 'eq : 0 = 0' is a Prop and not a Type. Consider using 'have' instead of 'let'.
+You can disable this linter using `set_option linter.haveLet 0` let eq := (rfl : 0 = 0)
+-/
 #guard_msgs in
 -- check that `tauto`, `replace`, `classical` are ignored
+set_option linter.haveLet 2 in
 example : True := by
   classical
   let zero' := 0
@@ -92,6 +97,22 @@ example : True := by
   have _b : 0 = 0 := rfl
   have _oh : Nat := 0
   have _b : Nat := 2
+  tauto
+
+/--
+warning: declaration uses 'sorry'
+---
+warning: '_b : 0 = 0' is a Prop and not a Type. Consider using 'have' instead of 'let'.
+You can disable this linter using `set_option linter.haveLet 0` let _b : 0 = 0 := rfl
+-/
+#guard_msgs in
+example : True := by
+  noise
+  let _a := 0
+  let _b : Nat := 0
+  let _b : 0 = 0 := rfl
+  let _oh : Nat := 0
+  let _b : Nat := 2
   tauto
 
 set_option linter.haveLet 0 in
