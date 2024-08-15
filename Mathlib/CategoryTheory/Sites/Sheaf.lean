@@ -265,6 +265,7 @@ variable {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) {I : Type*} {S : C} {X 
   (x : ∀ i, E ⟶ P.obj (op (X i)))
   (hx : ∀ ⦃W : C⦄ ⦃i j : I⦄ (a : W ⟶ X i) (b : W ⟶ X j),
     a ≫ f i = b ≫ f j → x i ≫ P.map a.op = x j ≫ P.map b.op)
+include hP hf hx
 
 lemma IsSheaf.exists_unique_amalgamation_ofArrows :
     ∃! (g : E ⟶ P.obj (op S)), ∀ (i : I), g ≫ P.map (f i).op = x i :=
@@ -461,9 +462,9 @@ instance sheafHomHasNSMul : SMul ℕ (P ⟶ Q) where
     Sheaf.Hom.mk
       { app := fun U => n • f.1.app U
         naturality := fun U V i => by
-          induction' n with n ih
-          · simp only [zero_smul, comp_zero, zero_comp, Nat.zero_eq]
-          · simp only [Nat.succ_eq_add_one, add_smul, ih, one_nsmul, comp_add,
+          induction n with
+          | zero => simp only [zero_smul, comp_zero, zero_comp, Nat.zero_eq]
+          | succ n ih => simp only [Nat.succ_eq_add_one, add_smul, ih, one_nsmul, comp_add,
               NatTrans.naturality, add_comp] }
 
 instance : Zero (P ⟶ Q) where zero := Sheaf.Hom.mk 0
