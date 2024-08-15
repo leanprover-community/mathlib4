@@ -371,32 +371,25 @@ variable (hM : IsFraisseLimit K M) (hN : IsFraisseLimit K N)
 
 include hM hN
 
-protected theorem IsExtensionPair : L.IsExtensionPair M N := by
+protected theorem isExtensionPair : L.IsExtensionPair M N := by
   intro ⟨f, f_FG⟩ m
   let S := f.dom ⊔ closure L {m}
-  have dom_le_S : f.dom ≤ S := by
-    simp only [S, closure_union, closure_eq, ge_iff_le, le_sup_left]
   have S_FG : S.FG := f_FG.sup (Substructure.fg_closure_singleton _)
   have S_in_age_N : ⟨S, inferInstance⟩ ∈ L.age N := by
     rw [hN.age, ← hM.age]
     exact ⟨(fg_iff_structure_fg S).1 S_FG, ⟨subtype _⟩⟩
-  let nonempty_S_N : Nonempty (S ↪[L] N) := by
-    let ⟨_, this⟩ := S_in_age_N
-    exact this
-  let ⟨g, eq⟩ := hN.ultrahomogeneous.extend_embedding (f.dom.fg_iff_structure_fg.1 f_FG)
-    ((subtype f.cod).comp f.toEquiv.toEmbedding) (inclusion dom_le_S)
+  haveI nonempty_S_N : Nonempty (S ↪[L] N) := S_in_age_N.2
+  let ⟨g, g_eq⟩ := hN.ultrahomogeneous.extend_embedding (f.dom.fg_iff_structure_fg.1 f_FG)
+    ((subtype f.cod).comp f.toEquiv.toEmbedding) (inclusion (le_sup_left : _ ≤ S))
   refine ⟨⟨⟨S, g.toHom.range, g.equivRange⟩, S_FG⟩,
-    subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ?_⟩
-  simp only [Subtype.mk_le_mk, PartialEquiv.le_def]
-  use dom_le_S
-  rw [eq]
+    subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨le_sup_left, ?_⟩⟩
+  simp only [Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
   rfl
 
-theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
-  let S := closure L (∅ : Set M)
-  have S_fg : FG L S := by
-    simp only [← fg_iff_structure_fg, closure_empty, S]
-    exact Substructure.fg_bot
+/-- The Fraïssé limit of a class is unique, in that any two Fraïssé limits are isomorphic. -/
+theorem nonempty_equiv : Nonempty (M ≃[L] N) := by
+  let S : L.Substructure M := ⊥
+  have S_fg : FG L S := (fg_iff_structure_fg _).1 Substructure.fg_bot
   obtain ⟨_, ⟨emb_S : S ↪[L] N⟩⟩ : ⟨S, inferInstance⟩ ∈ L.age N := by
     rw [hN.age, ← hM.age]
     exact ⟨S_fg, ⟨subtype _⟩⟩
@@ -406,14 +399,8 @@ theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
     toEquiv := emb_S.equivRange
   }
   exact ⟨Exists.choose (equiv_between_cg cg_of_countable cg_of_countable
-    ⟨v, ((Substructure.fg_iff_structure_fg _).2 S_fg)⟩ (hM.IsExtensionPair hN)
-      (hN.IsExtensionPair hM))⟩
-
-instance [K_fraisse : IsFraisse K] : Nonempty ↑(Quotient.mk' '' K) :=
-  (K_fraisse.is_nonempty.image Quotient.mk').coe_sort
-
-instance [K_fraisse : IsFraisse K] : ∀ S : K, Countable S :=
-  fun S ↦ Structure.cg_iff_countable.mp (K_fraisse.FG _ S.prop).cg
+    ⟨v, ((Substructure.fg_iff_structure_fg _).2 S_fg)⟩ (hM.isExtensionPair hN)
+      (hN.isExtensionPair hM))⟩
 
 end IsFraisseLimit
 

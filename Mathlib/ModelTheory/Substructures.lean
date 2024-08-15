@@ -356,7 +356,7 @@ theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
 -- This proof uses the fact that `Substructure.closure` is finitary.
 theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Substructure M}
     (hS : Directed (· ≤ ·) S) {x : M} :
-    x ∈ (iSup S : L.Substructure M) ↔ ∃ i, x ∈ S i := by
+    x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
@@ -453,7 +453,7 @@ theorem map_sup (S T : L.Substructure M) (f : M →[L] N) : (S ⊔ T).map f = S.
   (gc_map_comap f).l_sup
 
 theorem map_iSup {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure M) :
-    (iSup s).map f = ⨆ i, (s i).map f :=
+    (⨆ i, s i).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 
 theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
@@ -461,7 +461,7 @@ theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
   (gc_map_comap f).u_inf
 
 theorem comap_iInf {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure N) :
-    (iInf s).comap f = ⨅ i, (s i).comap f :=
+    (⨅ i, s i).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
 @[simp]
@@ -509,14 +509,14 @@ theorem comap_inf_map_of_injective (S T : L.Substructure M) : (S.map f ⊓ T.map
   (gciMapComap hf).u_inf_l _ _
 
 theorem comap_iInf_map_of_injective (S : ι → L.Substructure M) :
-    (⨅ i, (S i).map f).comap f = iInf S :=
+    (⨅ i, (S i).map f).comap f = ⨅ i, S i :=
   (gciMapComap hf).u_iInf_l _
 
 theorem comap_sup_map_of_injective (S T : L.Substructure M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
   (gciMapComap hf).u_sup_l _ _
 
 theorem comap_iSup_map_of_injective (S : ι → L.Substructure M) :
-    (⨆ i, (S i).map f).comap f = iSup S :=
+    (⨆ i, (S i).map f).comap f = ⨆ i, S i :=
   (gciMapComap hf).u_iSup_l _
 
 theorem map_le_map_iff_of_injective {S T : L.Substructure M} : S.map f ≤ T.map f ↔ S ≤ T :=
@@ -552,7 +552,7 @@ theorem map_inf_comap_of_surjective (S T : L.Substructure N) :
   (giMapComap hf).l_inf_u _ _
 
 theorem map_iInf_comap_of_surjective (S : ι → L.Substructure N) :
-    (⨅ i, (S i).comap f).map f = iInf S :=
+    (⨅ i, (S i).comap f).map f = ⨅ i, S i :=
   (giMapComap hf).l_iInf_u _
 
 theorem map_sup_comap_of_surjective (S T : L.Substructure N) :
@@ -560,7 +560,7 @@ theorem map_sup_comap_of_surjective (S T : L.Substructure N) :
   (giMapComap hf).l_sup_u _ _
 
 theorem map_iSup_comap_of_surjective (S : ι → L.Substructure N) :
-    (⨆ i, (S i).comap f).map f = iSup S :=
+    (⨆ i, (S i).comap f).map f = ⨆ i, S i :=
   (giMapComap hf).l_iSup_u _
 
 theorem comap_le_comap_iff_of_surjective {S T : L.Substructure N} : S.comap f ≤ T.comap f ↔ S ≤ T :=
