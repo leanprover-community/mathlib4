@@ -16,7 +16,11 @@ open Lean.Meta
 
 namespace Lean.Elab.Tactic
 
-/-- Clears all hypotheses it can besides those provided -/
+/-- Clears all hypotheses it can, except those provided after a minus sign. Example:
+```
+  clear * - h₁ h₂
+```
+-/
 syntax (name := clearExcept) "clear " "*" " -" (ppSpace colGt ident)* : tactic
 
 elab_rules : tactic

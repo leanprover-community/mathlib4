@@ -195,8 +195,6 @@ namespace Kernel
 @[ext]
 theorem ext {η : Kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
 
-protected theorem ext_iff {η : Kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
-
 theorem ext_iff' {η : Kernel α β} :
     κ = η ↔ ∀ a s, MeasurableSet s → κ a s = η a s := by
   simp_rw [Kernel.ext_iff, Measure.ext_iff]
@@ -217,10 +215,9 @@ protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : Measurab
   (Measure.measurable_coe hs).comp κ.measurable
 
 lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y' ∈ measurableAtom y) :
-  κ y' = κ y := by
+    κ y' = κ y := by
   ext s hs
-  exact mem_of_mem_measurableAtom hy'
-    (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
+  exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
 lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
@@ -236,6 +233,14 @@ lemma IsMarkovKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsMarkovKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x => (κ x s).toReal) μ :=
   IsFiniteKernel.integrable μ κ hs
+
+lemma integral_congr_ae₂ {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : α → β → E}
+    {μ : Measure α} (h : ∀ᵐ a ∂μ, f a =ᵐ[κ a] g a) :
+    ∫ a, ∫ b, f a b ∂(κ a) ∂μ = ∫ a, ∫ b, g a b ∂(κ a) ∂μ := by
+  apply integral_congr_ae
+  filter_upwards [h] with _ ha
+  apply integral_congr_ae
+  filter_upwards [ha] with _ hb using hb
 
 section Sum
 

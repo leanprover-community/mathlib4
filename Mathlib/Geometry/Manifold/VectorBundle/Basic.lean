@@ -125,7 +125,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
   (IB : ModelWithCorners 𝕜 EB HB) (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
   [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-  [Is : SmoothManifoldWithCorners IM M] {n : ℕ∞}
+  {n : ℕ∞}
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
@@ -252,9 +252,9 @@ end
 
 variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] (IB : ModelWithCorners 𝕜 EB HB) [TopologicalSpace B]
-  [ChartedSpace HB B] [SmoothManifoldWithCorners IB B] {EM : Type*} [NormedAddCommGroup EM]
+  [ChartedSpace HB B] {EM : Type*} [NormedAddCommGroup EM]
   [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM}
-  [TopologicalSpace M] [ChartedSpace HM M] [Is : SmoothManifoldWithCorners IM M] {n : ℕ∞}
+  [TopologicalSpace M] [ChartedSpace HM M] {n : ℕ∞}
   [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section WithTopology
@@ -403,8 +403,9 @@ protected theorem Smooth.coordChange (hf : Smooth IM IB f)
     Smooth IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
 
-variable (IB e e')
+variable (e e')
 
+variable (IB) in
 theorem Trivialization.contMDiffOn_symm_trans :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n
       (e.toPartialHomeomorph.symm ≫ₕ e'.toPartialHomeomorph) (e.target ∩ e'.target) := by
@@ -420,7 +421,7 @@ theorem Trivialization.contMDiffOn_symm_trans :
     simp_all only [Trivialization.mem_target, mfld_simps]
   exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
 
-variable {IB e e'}
+variable {e e'}
 
 theorem ContMDiffWithinAt.change_section_trivialization {f : M → TotalSpace F E}
     (hp : ContMDiffWithinAt IM IB n (π F E ∘ f) s x)
@@ -442,6 +443,7 @@ theorem Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → TotalSpace F
 
 end SmoothCoordChange
 
+variable [SmoothManifoldWithCorners IB B] in
 /-- For a smooth vector bundle `E` over `B` with fiber modelled on `F`, the change-of-co-ordinates
 between two trivializations `e`, `e'` for `E`, considered as charts to `B × F`, is smooth and
 fiberwise linear. -/
@@ -460,8 +462,9 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     · rintro ⟨b, v⟩ hb
       exact (e.apply_symm_apply_eq_coordChangeL e' hb.1 v).symm
 
+variable [SmoothManifoldWithCorners IB B] in
 /-- A smooth vector bundle `E` is naturally a smooth manifold. -/
-instance Bundle.TotalSpace.smoothManifoldWithCorners :
+instance Bundle.TotalSpace.smoothManifoldWithCorners [SmoothManifoldWithCorners IB B] :
     SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace F E) := by
   refine { StructureGroupoid.HasGroupoid.comp (smoothFiberwiseLinear B F IB) ?_ with }
   intro e he
@@ -551,8 +554,8 @@ end
 
 namespace VectorBundleCore
 
-variable {ι : Type*} {F}
-variable (Z : VectorBundleCore 𝕜 B F ι)
+variable {F}
+variable {ι : Type*} (Z : VectorBundleCore 𝕜 B F ι)
 
 /-- Mixin for a `VectorBundleCore` stating smoothness (of transition functions). -/
 class IsSmooth (IB : ModelWithCorners 𝕜 EB HB) : Prop where
@@ -601,6 +604,8 @@ variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ 
 variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁]
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂] [SmoothVectorBundle F₁ E₁ IB]
   [SmoothVectorBundle F₂ E₂ IB]
+
+variable [SmoothManifoldWithCorners IB B]
 
 /-- The direct sum of two smooth vector bundles over the same base is a smooth vector bundle. -/
 instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E₁ ×ᵇ E₂) IB where

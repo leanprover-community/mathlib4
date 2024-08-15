@@ -83,7 +83,7 @@ theorem mk'_surjective : Surjective <| mk' N :=
 
 @[to_additive]
 theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
-  QuotientGroup.eq'.trans <| by
+  QuotientGroup.eq.trans <| by
     simp only [← _root_.eq_inv_mul_iff_mul_eq, exists_prop, exists_eq_right]
 
 open scoped Pointwise in
@@ -217,7 +217,7 @@ theorem map_mk' (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f)
 @[to_additive]
 theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
     map N N (MonoidHom.id _) h x = x :=
-  induction_on' x fun _x => rfl
+  induction_on x fun _x => rfl
 
 @[to_additive (attr := simp)]
 theorem map_id (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) :
@@ -230,7 +230,7 @@ theorem map_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.Norma
     (hgf : N ≤ Subgroup.comap (g.comp f) O :=
       hf.trans ((Subgroup.comap_mono hg).trans_eq (Subgroup.comap_comap _ _ _)))
     (x : G ⧸ N) : map M O g hg (map N M f hf x) = map N O (g.comp f) hgf x := by
-  refine induction_on' x fun x => ?_
+  refine induction_on x fun x => ?_
   simp only [map_mk, MonoidHom.comp_apply]
 
 @[to_additive (attr := simp)]
@@ -334,7 +334,7 @@ theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
 @[to_additive]
 theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
   Quotient.inductionOn₂' a b fun a b (h : φ a = φ b) =>
-    Quotient.sound' <| by rw [leftRel_apply, mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_self]
+    Quotient.sound' <| by rw [leftRel_apply, mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_cancel]
 
 -- Note that `ker φ` isn't definitionally `ker (φ.rangeRestrict)`
 -- so there is a bit of annoying code duplication here
@@ -348,7 +348,7 @@ theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
   Quotient.inductionOn₂' a b fun a b (h : φ.rangeRestrict a = φ.rangeRestrict b) =>
     Quotient.sound' <| by
       rw [leftRel_apply, ← ker_rangeRestrict, mem_ker, φ.rangeRestrict.map_mul, ← h,
-        φ.rangeRestrict.map_inv, inv_mul_self]
+        φ.rangeRestrict.map_inv, inv_mul_cancel]
 
 @[to_additive]
 theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) := by
@@ -523,7 +523,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       change Setoid.r _ _
       rw [leftRel_apply]
       change h⁻¹ * (h * n) ∈ N
-      rwa [← mul_assoc, inv_mul_self, one_mul]
+      rwa [← mul_assoc, inv_mul_cancel, one_mul]
   (quotientMulEquivOfEq (by simp [φ, ← comap_ker])).trans
     (quotientKerEquivOfSurjective φ φ_surjective)
 
@@ -597,6 +597,20 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
     eq_iff_div_mem, mk_div]
 
 end QuotientGroup
+
+namespace QuotientAddGroup
+
+variable {R : Type*} [NonAssocRing R] (N : AddSubgroup R) [N.Normal]
+
+@[simp]
+theorem mk_nat_mul (n : ℕ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := by
+  rw [← nsmul_eq_mul, mk_nsmul N a n]
+
+@[simp]
+theorem mk_int_mul (n : ℤ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := by
+  rw [← zsmul_eq_mul, mk_zsmul N a n]
+
+end QuotientAddGroup
 
 namespace Group
 

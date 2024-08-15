@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Lean.Linter.Util
-import Batteries.Data.Array.Basic
 import Batteries.Data.String.Matcher
 import Batteries.Tactic.Lint
 
@@ -80,9 +79,6 @@ namespace DupNamespaceLinter
 
 open Lean Parser Elab Command Meta
 
-/-- Gets the value of the `linter.dupNamespace` option. -/
-def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
-
 /-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`.
 If `stx` is an `alias` or an `export`, then it extracts an `ident`, instead of a `declId`. -/
 partial
@@ -95,7 +91,7 @@ def getIds : Syntax → Array Syntax
 
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx => do
-  if getLinterDupNamespace (← getOptions) then
+  if Linter.getLinterValue linter.dupNamespace (← getOptions) then
     match getIds stx with
       | #[id] =>
         let ns := (← getScope).currNamespace
@@ -130,9 +126,6 @@ register_option linter.missingEnd : Bool := {
 
 namespace MissingEnd
 
-/-- Gets the value of the `linter.missingEnd` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
-
 @[inherit_doc Mathlib.Linter.linter.missingEnd]
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
@@ -140,7 +133,8 @@ def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
     unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
-    if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
+    if Linter.getLinterValue linter.missingEnd (← getOptions) &&
+        !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
       -- `namespace`s. We are interested in any *other* unclosed scopes.
@@ -203,21 +197,20 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 
 namespace CDotLinter
 
-/-- Gets the value of the `linter.generic` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.cdot o
-
 @[inherit_doc linter.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterHash (← getOptions) do
+    unless Linter.getLinterValue linter.cdot (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     for s in unwanted_cdot stx do
-      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\·`) instead of '{s}' as 'cdot'."
+      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
 
 initialize addLinter cdotLinter
 
 end CDotLinter
+
+/-! # The "longLine linter" -/
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
@@ -228,17 +221,13 @@ register_option linter.longLine : Bool := {
 
 namespace LongLine
 
-/-- Gets the value of the `linter.longLine` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.longLine o
-
 @[inherit_doc Mathlib.Linter.linter.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterHash (← getOptions) do
+    unless Linter.getLinterValue linter.longLine (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    -- TODO: once per-project settings are available,
-    -- revert this hack to make it only apply on `Mathlib`
+    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
     unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
     -- The linter ignores the `#guard_msgs` command, in particular its doc-string.
@@ -248,11 +237,10 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- if the linter reached the end of the file, then we scan the `import` syntax instead
     let stx := ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
-        let fname ← getFileName
-        if !(← System.FilePath.pathExists fname) then return default
-        let contents ← IO.FS.readFile fname
+        let fileMap ← getFileMap
         -- `impMods` is the syntax for the modules imported in the current file
-        let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
+        let (impMods, _) ← Parser.parseHeader
+          { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
         return impMods
       else return stx
     let sstr := stx.getSubstring?

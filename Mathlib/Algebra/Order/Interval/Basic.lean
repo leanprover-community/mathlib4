@@ -187,8 +187,8 @@ variable [Monoid α] [Preorder α]
 
 @[to_additive existing]
 instance NonemptyInterval.hasPow
-  [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
-  Pow (NonemptyInterval α) ℕ :=
+    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
+    Pow (NonemptyInterval α) ℕ :=
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 
 namespace NonemptyInterval
@@ -453,11 +453,11 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     neg := Neg.neg
     sub := Sub.sub
     sub_eq_add_neg := fun s t => by
-      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact sub_eq_add_neg _ _
     neg_neg := fun s => by apply NonemptyInterval.ext; exact neg_neg _
     neg_add_rev := fun s t => by
-      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact neg_add_rev _ _
     neg_eq_of_add := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
@@ -471,11 +471,11 @@ instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
     inv := Inv.inv
     div := (· / ·)
     div_eq_mul_inv := fun s t => by
-      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact div_eq_mul_inv _ _
     inv_inv := fun s => by apply NonemptyInterval.ext; exact inv_inv _
     mul_inv_rev := fun s t => by
-      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact mul_inv_rev _ _
     inv_eq_of_mul := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.mul_eq_one_iff.1 h

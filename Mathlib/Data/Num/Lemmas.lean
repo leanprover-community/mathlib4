@@ -1277,7 +1277,7 @@ instance addCommGroup : AddCommGroup ZNum :=
     add_comm := by transfer
     neg := Neg.neg
     zsmul := zsmulRec
-    add_left_neg := by transfer }
+    neg_add_cancel := by transfer }
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
@@ -1414,7 +1414,8 @@ theorem divMod_to_nat (d n : PosNum) :
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
     apply divMod_to_nat_aux
-    · simp; rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]
+    · simp only [Num.cast_bit0, cast_bit0]
+      rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]
     · simpa using IH.2
 
 @[simp]

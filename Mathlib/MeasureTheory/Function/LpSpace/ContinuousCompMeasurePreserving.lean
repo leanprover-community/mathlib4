@@ -45,7 +45,7 @@ More precisely, the measure of the symmetric difference of these two sets tends 
 theorem tendsto_measure_symmDiff_preimage_nhds_zero
     {l : Filter α} {f : α → C(X, Y)} {g : C(X, Y)} {s : Set Y} (hfg : Tendsto f l (𝓝 g))
     (hf : ∀ᶠ a in l, MeasurePreserving (f a) μ ν) (hg : MeasurePreserving g μ ν)
-    (hs : MeasurableSet s) (hνs : ν s ≠ ∞) :
+    (hs : NullMeasurableSet s ν) (hνs : ν s ≠ ∞) :
     Tendsto (fun a ↦ μ ((f a ⁻¹' s) ∆ (g ⁻¹' s))) l (𝓝 0) := by
   have : ν.InnerRegularCompactLTTop := by
     rw [← hg.map_eq]
@@ -58,7 +58,7 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
     -- Indeed, we can choose an open set `U` such that `ν (U ∆ s) < ε / 3`,
     -- apply the lemma to `U`, then use the triangle inequality for `μ (_ ∆ _)`.
     rcases hs.exists_isOpen_symmDiff_lt hνs H.ne' with ⟨U, hUo, hU, hUs⟩
-    have hmU : MeasurableSet U := hUo.measurableSet
+    have hmU : NullMeasurableSet U ν := hUo.measurableSet.nullMeasurableSet
     replace hUs := hUs.le
     filter_upwards [hf, this hmU hU.ne _ H hUo] with a hfa ha
     calc
@@ -70,16 +70,15 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
         apply measure_symmDiff_le
       _ ≤ ε / 3 + ε / 3 + ε / 3 := by
         gcongr
-        · rwa [← preimage_symmDiff, hfa.measure_preimage (hs.symmDiff hmU).nullMeasurableSet,
-            symmDiff_comm]
-        · rwa [← preimage_symmDiff, hg.measure_preimage (hmU.symmDiff hs).nullMeasurableSet]
+        · rwa [← preimage_symmDiff, hfa.measure_preimage (hs.symmDiff hmU), symmDiff_comm]
+        · rwa [← preimage_symmDiff, hg.measure_preimage (hmU.symmDiff hs)]
       _ = ε := by simp
   -- Take a compact closed subset `K ⊆ g ⁻¹' s` of almost full measure,
   -- `μ (g ⁻¹' s \ K) < ε / 2`.
-  have hνs' : μ (g ⁻¹' s) ≠ ∞ := by rwa [hg.measure_preimage hs.nullMeasurableSet]
+  have hνs' : μ (g ⁻¹' s) ≠ ∞ := by rwa [hg.measure_preimage hs]
   obtain ⟨K, hKg, hKco, hKcl, hKμ⟩ :
       ∃ K, MapsTo g K s ∧ IsCompact K ∧ IsClosed K ∧ μ (g ⁻¹' s \ K) < ε / 2 :=
-    (hs.preimage hg.measurable).exists_isCompact_isClosed_diff_lt hνs' <| by simp [hε.ne']
+    (hg.measurable hso.measurableSet).exists_isCompact_isClosed_diff_lt hνs' <| by simp [hε.ne']
   have hKm : MeasurableSet K := hKcl.measurableSet
   -- Take `a` such that `f a` is measure preserving and maps `K` to `s`.
   -- This is possible, because `K` is a compact set and `s` is an open set.
@@ -91,9 +90,8 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   rw [symmDiff_of_ge ha.subset_preimage, symmDiff_of_le hKg.subset_preimage]
   gcongr
   have hK' : μ K ≠ ∞ := ne_top_of_le_ne_top hνs' <| measure_mono hKg.subset_preimage
-  rw [measure_diff_le_iff_le_add hKm ha.subset_preimage hK',
-    hfa.measure_preimage hs.nullMeasurableSet, ← hg.measure_preimage hs.nullMeasurableSet,
-    ← measure_diff_le_iff_le_add hKm hKg.subset_preimage hK']
+  rw [measure_diff_le_iff_le_add hKm ha.subset_preimage hK', hfa.measure_preimage hs,
+    ← hg.measure_preimage hs, ← measure_diff_le_iff_le_add hKm hKg.subset_preimage hK']
   exact hKμ.le
 
 namespace Lp
@@ -122,7 +120,8 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
   | @h_ind c s hs hνs =>
     dsimp only [Lp.simpleFunc.coe_indicatorConst, Lp.indicatorConstLp_compMeasurePreserving]
     refine continuous_indicatorConstLp_set hp fun f ↦ ?_
-    apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtype_val _ f.2 hs hνs.ne
+    apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtype_val _ f.2
+      hs.nullMeasurableSet hνs.ne
     exact eventually_of_forall Subtype.property
 
 end Lp

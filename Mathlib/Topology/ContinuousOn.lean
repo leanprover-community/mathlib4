@@ -950,7 +950,7 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
   have := ct x ⟨xs, xt⟩
   rwa [ContinuousWithinAt, ← nhdsWithin_restrict _ xt open_t] at this
 
-theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
+theorem continuousOn_to_generateFrom_iff {β} {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
     delta ContinuousWithinAt
@@ -1093,7 +1093,7 @@ theorem continuous_if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a
     (hg : ContinuousOn g (closure { x | ¬p x })) :
     Continuous fun a => if p a then f a else g a := by
   rw [continuous_iff_continuousOn_univ]
-  apply ContinuousOn.if <;> simp <;> assumption
+  apply ContinuousOn.if <;> simpa
 
 theorem Continuous.if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : Continuous f) (hg : Continuous g) :
