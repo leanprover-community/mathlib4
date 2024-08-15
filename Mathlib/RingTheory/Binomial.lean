@@ -168,9 +168,10 @@ namespace Polynomial
 theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssocSemiring S]
     [Pow S ℕ] [Module R S] [IsScalarTower R S S] [NatPowAssoc S]
     (x : S) (n : ℕ) : (ascPochhammer R n).smeval x = (ascPochhammer ℕ n).smeval x := by
-  induction' n with n hn
-  · simp only [Nat.zero_eq, ascPochhammer_zero, smeval_one, one_smul]
-  · simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
+  induction n with
+  | zero => simp only [Nat.zero_eq, ascPochhammer_zero, smeval_one, one_smul]
+  | succ n hn =>
+    simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
     simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
     simp only [nsmul_eq_mul, Nat.cast_id]
 
@@ -288,7 +289,7 @@ theorem smeval_ascPochhammer_self_neg : ∀ n : ℕ,
 theorem smeval_ascPochhammer_succ_neg (n : ℕ) :
     smeval (ascPochhammer ℕ (n + 1)) (-n : ℤ) = 0 := by
   rw [ascPochhammer_succ_right, smeval_mul, smeval_add, smeval_X, ← C_eq_natCast, smeval_C,
-    pow_zero, pow_one, Nat.cast_id, nsmul_eq_mul, mul_one, add_left_neg, mul_zero]
+    pow_zero, pow_one, Nat.cast_id, nsmul_eq_mul, mul_one, neg_add_cancel, mul_zero]
 
 theorem smeval_ascPochhammer_neg_add (n : ℕ) : ∀ k : ℕ,
     smeval (ascPochhammer ℕ (n + k + 1)) (-n : ℤ) = 0
