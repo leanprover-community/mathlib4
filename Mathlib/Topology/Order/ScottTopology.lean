@@ -142,7 +142,7 @@ def scottHausdorff (α : Type*) [Preorder α] : TopologicalSpace α where
     obtain ⟨b, hbd, hbds₀⟩ := h s₀ hs₀s hd₁ hd₂ hd₃ has₀
     exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩
 
-variable (α) [t : TopologicalSpace α]
+variable (α) [TopologicalSpace α]
 
 /-- Predicate for an ordered topological space to be equipped with its Scott-Hausdorff topology.
 
