@@ -58,6 +58,8 @@ jobs:
             });
 
       - run: |
+          ls
+          pwd
           cat scripts/autolabels.sh
           LABELS="$(./scripts/autolabels.sh)"
           printf $'gh issue edit \'%s\' --add-label \'%s\'\n' "$NUMBER" "$LABELS"
