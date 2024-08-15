@@ -35,6 +35,6 @@ theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :
 
 instance : LinearOrderedCommGroup { x : K // 0 < x } :=
   { Positive.Subtype.inv, Positive.linearOrderedCancelCommMonoid with
-    mul_left_inv := fun a => Subtype.ext <| inv_mul_cancel a.2.ne' }
+    inv_mul_cancel := fun a => Subtype.ext <| inv_mul_cancel₀ a.2.ne' }
 
 end Positive

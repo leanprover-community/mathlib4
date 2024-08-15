@@ -107,9 +107,9 @@ theorem smeval_add : (p + q).smeval x = p.smeval x + q.smeval x := by
   · rw [smul_pow, smul_pow, smul_pow, add_smul]
 
 theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
-  induction' n with n ih
-  · simp only [smeval_zero, Nat.cast_zero, Nat.zero_eq, zero_smul]
-  · rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
+  induction n with
+  | zero => simp only [smeval_zero, Nat.cast_zero, Nat.zero_eq, zero_smul]
+  | succ n ih => rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
 
 @[deprecated (since := "2024-04-17")]
 alias smeval_nat_cast := smeval_natCast
@@ -153,7 +153,7 @@ variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R
 
 @[simp]
 theorem smeval_neg : (-p).smeval x = - p.smeval x := by
-  rw [← add_eq_zero_iff_eq_neg, ← smeval_add, add_left_neg, smeval_zero]
+  rw [← add_eq_zero_iff_eq_neg, ← smeval_add, neg_add_cancel, smeval_zero]
 
 @[simp]
 theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by

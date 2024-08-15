@@ -213,7 +213,7 @@ when the domain has odd characteristic. -/
 theorem quadraticChar_ne_one (hF : ringChar F ≠ 2) : quadraticChar F ≠ 1 := by
   rcases quadraticChar_exists_neg_one' hF with ⟨a, ha⟩
   intro hχ
-  simp only [hχ, one_apply a.isUnit, eq_neg_self_iff, one_ne_zero] at ha
+  simp only [hχ, one_apply a.isUnit, one_ne_zero] at ha
 
 set_option linter.deprecated false in
 @[deprecated quadraticChar_ne_one (since := "2024-06-16")]
@@ -243,7 +243,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]
       exact card_pair (Ne.symm (mt (Ring.eq_self_iff_eq_zero_of_char_ne_two hF).mp h₀))
     · rw [quadraticChar_neg_one_iff_not_isSquare.mpr h]
-      simp only [add_left_neg, Int.natCast_eq_zero, card_eq_zero]
+      simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero]
       ext1
       -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
       -- added (Set.mem_toFinset), Set.mem_setOf
