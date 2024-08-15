@@ -441,7 +441,7 @@ def basicOpenSectionsToAffine :
 instance basicOpenSectionsToAffine_isIso :
     IsIso (basicOpenSectionsToAffine hU f) := by
   delta basicOpenSectionsToAffine
-  apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
+  refine IsIso.comp_isIso' ?_ inferInstance
   apply PresheafedSpace.IsOpenImmersion.isIso_of_subset
   rw [hU.range_fromSpec]
   exact RingedSpace.basicOpen_le _ _
