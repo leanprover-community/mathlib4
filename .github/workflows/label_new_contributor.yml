@@ -29,6 +29,8 @@ jobs:
           then
             printf 'Actually doing it!\n'
             gh issue edit "$NUMBER" --add-label "$LABELS"
+          else
+            printf 'More than one label found: not adding a label\n'
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
