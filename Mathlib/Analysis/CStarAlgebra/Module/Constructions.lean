@@ -226,23 +226,12 @@ lemma pi_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) : ‖x‖ = √‖∑ i, ⟪x i, x
 lemma pi_norm_sq (x : C⋆ᵐᵒᵈ (Π i, E i)) : ‖x‖ ^ 2 = ‖∑ i, ⟪x i, x i⟫_A‖ := by
   simp [pi_norm]
 
--- MOVE ME
-open Finset in
-lemma _root_.Finset.sum_sq_le_sq_sum_of_nonneg {ι : Type*} [Fintype ι] {f : ι → ℝ}
-    (hf : ∀ i, 0 ≤ f i) : ∑ i, f i ^ 2 ≤ (∑ i, f i) ^ 2 := by
-  simp only [sq, sum_mul_sum]
-  refine sum_le_sum fun i _ ↦ ?_
-  rw [← mul_sum]
-  gcongr
-  · exact hf i
-  · exact single_le_sum (fun _ ↦ hf ·) (mem_univ i)
-
 open Finset in
 lemma pi_norm_le_sum_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) : ‖x‖ ≤ ∑ i, ‖x i‖ := by
   refine abs_le_of_sq_le_sq' ?_ (by positivity) |>.2
   calc ‖x‖ ^ 2 ≤ ∑ i, ‖⟪x i, x i⟫_A‖ := pi_norm_sq x ▸ norm_sum_le _ _
     _ = ∑ i, ‖x i‖ ^ 2 := by simp only [norm_sq_eq]
-    _ ≤ (∑ i, ‖x i‖) ^ 2 := sum_sq_le_sq_sum_of_nonneg (fun _ ↦ norm_nonneg _)
+    _ ≤ (∑ i, ‖x i‖) ^ 2 := sum_sq_le_sq_sum_of_nonneg (fun _ _ ↦ norm_nonneg _)
 
 variable [StarModule ℂ A] [StarOrderedRing A]
 
