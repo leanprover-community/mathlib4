@@ -383,7 +383,7 @@ protected theorem Inducing.isOpenMap (hi : Inducing f) (ho : IsOpen (range f)) :
 
 /-- Preimage of a dense set under an open map is dense. -/
 protected theorem Dense.preimage {s : Set Y} (hs : Dense s) (hf : IsOpenMap f) :
-    Dense (f ⁻¹' s) :=  fun x ↦
+    Dense (f ⁻¹' s) := fun x ↦
   hf.preimage_closure_subset_closure_preimage <| hs (f x)
 
 end OpenMap
