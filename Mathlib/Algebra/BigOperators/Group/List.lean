@@ -21,7 +21,9 @@ of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their a
 counterparts.
 -/
 
-assert_not_imported Mathlib.Algebra.Order.Group.Nat
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists OrderedSub
+assert_not_exists Ring
 
 variable {ι α β M N P G : Type*}
 

@@ -27,11 +27,13 @@ variable {R : Type*} [CommRing R] [IsDomain R] [Infinite R]
 
 private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     (h : ∀ x : Fin n → R, eval x p = 0) : p = 0 := by
-  induction' n with n ih
-  · apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
+  induction n with
+  | zero =>
+    apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
     rw [RingEquiv.map_zero]
     convert h finZeroElim
-  · apply (finSuccEquiv R n).injective
+  | succ n ih =>
+    apply (finSuccEquiv R n).injective
     simp only [map_zero]
     refine Polynomial.funext fun q => ?_
     rw [Polynomial.eval_zero]
