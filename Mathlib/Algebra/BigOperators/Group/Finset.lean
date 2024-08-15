@@ -1186,18 +1186,12 @@ lemma prod_image_of_disjoint [PartialOrder α] [OrderBot α] [DecidableEq α]
   intro n hnI
   by_cases hfn : f n = ⊥
   · simp only [hfn, hg_bot]
-    refine (prod_eq_one fun i hi ↦ ?_).symm
-    rw [mem_filter] at hi
-    rw [hi.2, hg_bot]
+    exact (prod_eq_one fun i hi ↦ by aesop).symm
   · classical
     suffices filter (fun j ↦ f j = f n) I = filter (fun j ↦ j = n) I by
       simp only [this, prod_filter, prod_ite_eq', if_pos hnI]
     refine filter_congr (fun j hj ↦ ?_)
-    refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
-    by_contra hij
-    have h_dis : Disjoint (f j) (f n) := hf_disj hj hnI hij
-    rw [h] at h_dis
-    exact hfn (disjoint_self.mp h_dis)
+    exact ⟨fun h ↦ hf_disj.elim hj hnI (by simpa [h]), by congr!⟩
 
 section indicator
 open Set
