@@ -72,12 +72,10 @@ elab "assert_not_exists " n:ident : command => do
 /-- `assert_not_imported m₁ m₂ ... mₙ` checks that each one of the modules `m₁ m₂ ... mₙ` is not
 among the transitive imports of the current file.
 
-It also checks that each one of `m₁ m₂ ... mₙ` is actually the name of an existing module, just
-one that is not currently imported!
+The command does not currently check whether the modules `m₁ m₂ ... mₙ` actually exist.
 -/
+-- TODO: make sure that each one of `m₁ m₂ ... mₙ` is the name of an actually existing module!
 elab "assert_not_imported " ids:ident+ : command => do
   let mods := (← getEnv).allImportedModuleNames
   for id in ids do
     if mods.contains id.getId then logWarningAt id m!"the module '{id}' is (transitively) imported"
-    if let none ← (← searchPathRef.get).findModuleWithExt "olean" id.getId then
-      logErrorAt id m!"the module '{id}' does not exist"
