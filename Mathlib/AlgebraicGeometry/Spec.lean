@@ -306,8 +306,7 @@ theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
   erw [← localRingHom_comp_stalkIso]
   -- Porting note: replaced `apply (config := { instances := false })`.
   -- See https://github.com/leanprover/lean4/issues/2273
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ _ (?_)
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ (?_) _
+  refine IsIso.comp_isIso' inferInstance (IsIso.comp_isIso' ?_ inferInstance)
   /- I do not know why this is defeq to the goal, but I'm happy to accept that it is. -/
   show
     IsIso (IsLocalization.localizationLocalizationAtPrimeIsoLocalization M
