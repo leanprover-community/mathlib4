@@ -1014,6 +1014,11 @@ theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n 
 theorem closure_singleton_one : closure ({1} : Set G) = ⊥ := by
   simp [eq_bot_iff_forall, mem_closure_singleton]
 
+@[to_additive (attr := simp)]
+lemma mem_closure_singleton_self (x : G) : x ∈ closure ({x} : Set G) := by
+  rw [mem_closure_singleton]
+  exact ⟨1, zpow_one _⟩
+
 @[to_additive]
 theorem le_closure_toSubmonoid (S : Set G) : Submonoid.closure S ≤ (closure S).toSubmonoid :=
   Submonoid.closure_le.2 subset_closure
@@ -1048,6 +1053,32 @@ theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : D
   haveI : Nonempty K := Kne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, Subtype.coe_mk,
     exists_prop]
+
+-- non-pointwise lemma versions
+@[to_additive]
+lemma image_inv_coe : (·⁻¹) '' K = (K : Set G) := by
+  ext
+  simp [inv_eq_iff_eq_inv]
+
+@[to_additive]
+lemma preimage_inv_coe : (·⁻¹) ⁻¹' K = (K : Set G) := by
+  ext
+  simp
+
+@[to_additive]
+lemma closure_image_inv : closure ((·⁻¹) '' k) = closure k := by
+  ext
+  simp [mem_closure, preimage_inv_coe]
+
+@[to_additive]
+lemma closure_preimage_inv : closure ((·⁻¹) ⁻¹' k) = closure k := by
+  rw [← closure_image_inv]
+  simp only [inv_surjective, image_preimage_eq]
+
+@[to_additive (attr := simp)]
+lemma closure_singleton_inv (x : G) : closure ({x⁻¹}) = closure {x} := by
+  rw [← closure_image_inv]
+  simp
 
 variable {N : Type*} [Group N] {P : Type*} [Group P]
 
