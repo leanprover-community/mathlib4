@@ -1510,45 +1510,41 @@ theorem prod_flip {n : ℕ} (f : ℕ → β) :
     rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
     simp [← ih]
 
-@[to_additive]
-theorem prod_involution {s : Finset α} {f : α → β} :
-    ∀ (g : ∀ a ∈ s, α) (_ : ∀ a ha, f a * f (g a ha) = 1) (_ : ∀ a ha, f a ≠ 1 → g a ha ≠ a)
-      (g_mem : ∀ a ha, g a ha ∈ s) (_ : ∀ a ha, g (g a ha) (g_mem a ha) = a),
-      ∏ x ∈ s, f x = 1 := by
-  haveI := Classical.decEq α; haveI := Classical.decEq β
-  exact
-    Finset.strongInductionOn s fun s ih g h g_ne g_mem g_inv =>
-      s.eq_empty_or_nonempty.elim (fun hs => hs.symm ▸ rfl) fun ⟨x, hx⟩ =>
-        have hmem : ∀ y ∈ (s.erase x).erase (g x hx), y ∈ s := fun y hy =>
-          mem_of_mem_erase (mem_of_mem_erase hy)
-        have g_inj : ∀ {x hx y hy}, g x hx = g y hy → x = y := fun {x hx y hy} h => by
-          rw [← g_inv x hx, ← g_inv y hy]; simp [h]
-        have ih' : (∏ y ∈ erase (erase s x) (g x hx), f y) = (1 : β) :=
-          ih ((s.erase x).erase (g x hx))
-            ⟨Subset.trans (erase_subset _ _) (erase_subset _ _), fun h =>
-              not_mem_erase (g x hx) (s.erase x) (h (g_mem x hx))⟩
-            (fun y hy => g y (hmem y hy)) (fun y hy => h y (hmem y hy))
-            (fun y hy => g_ne y (hmem y hy))
-            (fun y hy =>
-              mem_erase.2
-                ⟨fun h : g y _ = g x hx => by simp [g_inj h] at hy,
-                  mem_erase.2
-                    ⟨fun h : g y _ = x => by
-                      have : y = g x hx := g_inv y (hmem y hy) ▸ by simp [h]
-                      simp [this] at hy, g_mem y (hmem y hy)⟩⟩)
-            fun y hy => g_inv y (hmem y hy)
-        if hx1 : f x = 1 then
-          ih' ▸
-            Eq.symm
-              (prod_subset hmem fun y hy hy₁ =>
-                have : y = x ∨ y = g x hx := by
-                  simpa [hy, -not_and, mem_erase, not_and_or, or_comm] using hy₁
-                this.elim (fun hy => hy.symm ▸ hx1) fun hy =>
-                  h x hx ▸ hy ▸ hx1.symm ▸ (one_mul _).symm)
-        else by
-          rw [← insert_erase hx, prod_insert (not_mem_erase _ _), ←
-            insert_erase (mem_erase.2 ⟨g_ne x hx hx1, g_mem x hx⟩),
-            prod_insert (not_mem_erase _ _), ih', mul_one, h x hx]
+/-- The difference with `Finset.prod_ninvolution` is that the involution is allowed to use
+membership of the domain of the product, rather than being a non-dependent function. -/
+@[to_additive "The difference with `Finset.sum_ninvolution` is that the involution is allowed to use
+membership of the domain of the sum, rather than being a non-dependent function."]
+lemma prod_involution (g : ∀ a ∈ s, α) (hg₁ : ∀ a ha, f a * f (g a ha) = 1)
+    (hg₃ : ∀ a ha, f a ≠ 1 → g a ha ≠ a)
+    (g_mem : ∀ a ha, g a ha ∈ s) (hg₄ : ∀ a ha, g (g a ha) (g_mem a ha) = a) :
+    ∏ x ∈ s, f x = 1 := by
+  classical
+  induction' s using Finset.strongInduction with s ih
+  obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
+  · simp
+  have : {x, g x hx} ⊆ s := by simp [insert_subset_iff, hx, g_mem]
+  suffices h : ∏ x ∈ s \ {x, g x hx}, f x = 1 by
+    rw [← prod_sdiff this, h, one_mul]
+    rcases eq_or_ne (g x hx) x
+    case inl hx' => simpa [hx'] using hg₃ x hx
+    case inr hx' => rw [prod_pair hx'.symm, hg₁]
+  suffices h₃ : ∀ a (ha : a ∈ s \ {x, g x hx}), g a (sdiff_subset ha) ∈ s \ {x, g x hx} by
+    exact ih (s \ {x, g x hx}) (ssubset_iff.2 ⟨x, by simp [insert_subset_iff, hx]⟩) _
+      (by simp [hg₁]) (fun _ _ => hg₃ _ _) h₃ (fun _ _ => hg₄ _ _)
+  simp only [mem_sdiff, mem_insert, mem_singleton, not_or, g_mem, true_and]
+  rintro a ⟨ha₁, ha₂, ha₃⟩
+  refine ⟨fun h => by simp [← h, hg₄] at ha₃, fun h => ?_⟩
+  have : g (g a ha₁) (g_mem _ _) = g (g x hx) (g_mem _ _) := by simp only [h]
+  exact ha₂ (by simpa [hg₄] using this)
+
+/-- The difference with `Finset.prod_involution` is that the involution is a non-dependent function,
+rather than being allowed to use membership of the domain of the product. -/
+@[to_additive "The difference with `Finset.sum_involution` is that the involution is a non-dependent
+function, rather than being allowed to use membership of the domain of the sum."]
+lemma prod_ninvolution (g : α → α) (hg₁ : ∀ a, f a * f (g a) = 1) (hg₂ : ∀ a, f a ≠ 1 → g a ≠ a)
+    (g_mem : ∀ a, g a ∈ s) (hg₃ : ∀ a, g (g a) = a) : ∏ x ∈ s, f x = 1 :=
+  prod_involution (fun i _ => g i) (fun i _ => hg₁ i) (fun _ _ hi => hg₂ _ hi)
+    (fun i _ => g_mem i) (fun i _ => hg₃ i)
 
 /-- The product of the composition of functions `f` and `g`, is the product over `b ∈ s.image g` of
 `f b` to the power of the cardinality of the fibre of `b`. See also `Finset.prod_image`. -/
@@ -1674,7 +1670,7 @@ theorem prod_erase [DecidableEq α] (s : Finset α) {f : α → β} {a : α} (h 
   rw [sdiff_singleton_eq_erase] at hnx
   rwa [eq_of_mem_of_not_mem_erase hx hnx]
 
-/-- See also `Finset.prod_boole`. -/
+/-- See also `Finset.prod_ite_zero`. -/
 @[to_additive "See also `Finset.sum_boole`."]
 theorem prod_ite_one (s : Finset α) (p : α → Prop) [DecidablePred p]
     (h : ∀ i ∈ s, ∀ j ∈ s, p i → p j → i = j) (a : β) :
