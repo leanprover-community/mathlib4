@@ -156,9 +156,6 @@ lemma prod_inner (x y : C⋆ᵐᵒᵈ (E × F)) : ⟪x, y⟫_A = ⟪x.1, y.1⟫_
 
 variable [CStarRing A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A] [CompleteSpace A]
 
--- this may be a bad idea? can we `scope` lemmas for `aesop`?
-attribute [aesop 10% apply] CStarModule.inner_self_nonneg
-
 lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ (E × F)) : max ‖x.1‖ ‖x.2‖ ≤ ‖x‖ := by
   rw [prod_norm]
   simp only [equiv_fst, norm_eq_sqrt_norm_inner_self, equiv_snd, max_le_iff, norm_nonneg,
@@ -167,7 +164,7 @@ lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ (E × F)) : max ‖x.1‖ ‖x.2‖ �
   all_goals
     apply norm_le_norm_of_nonneg_of_le
     all_goals
-      aesop
+      aesop (add safe apply CStarModule.inner_self_nonneg)
 
 lemma norm_equiv_le_norm_prod (x : C⋆ᵐᵒᵈ (E × F)) : ‖equiv (E × F) x‖ ≤ ‖x‖ :=
   max_le_prod_norm x
