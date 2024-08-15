@@ -160,9 +160,8 @@ end ConditionallyCompleteLattice
 
 section CompleteLattice
 
-variable [CompleteLattice α]
-
-theorem partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i ≤ n, f i := by
+theorem partialSups_eq_biSup [CompleteLattice α] (f : ℕ → α) (n : ℕ) :
+    partialSups f n = ⨆ i ≤ n, f i := by
   simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f n
 
 lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
@@ -172,6 +171,8 @@ lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n
 lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃ i ∈ Finset.range (n + 1), s i := by
   ext; simp [partialSups_eq_biSup, Nat.lt_succ]
+
+variable [CompleteLattice α]
 
 -- Porting note (#10618): simp can prove this @[simp]
 theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
