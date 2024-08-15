@@ -47,7 +47,7 @@ end Semiring
 section DivisionSemiring
 variable [DivisionSemiring S] [CharZero S]
 
-instance instAlgebra : Algebra ℚ≥0 R where
+instance _root_.DivisionSemiring.toNNRatAlgebra : Algebra ℚ≥0 R where
   smul_def' := smul_def
   toRingHom := castHom _
   commutes' := cast_commute
@@ -87,7 +87,7 @@ end Ring
 section DivisionRing
 variable [DivisionRing S] [CharZero S]
 
-instance instAlgebra : Algebra ℚ R where
+instance _root_.DivisionRing.toRatAlgebra : Algebra ℚ R where
   smul_def' := smul_def
   toRingHom := castHom _
   commutes' := cast_commute
