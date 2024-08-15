@@ -412,7 +412,7 @@ lemma LevyProkhorov.continuous_toProbabilityMeasure :
     have key := (tendsto_integral_meas_thickening_le f (A := Ioc 0 ‖f‖) (by simp) P).comp ε_of_room'
     have aux : ∀ (z : ℝ), Iio (z + δ/2) ∈ 𝓝 z := fun z ↦ Iio_mem_nhds (by linarith)
     filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
-                      Real.mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
+                      mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
       with n hn hn'
     simp only [mem_preimage, mem_Iio] at *
     specialize εs_pos n
