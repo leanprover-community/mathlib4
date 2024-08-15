@@ -6,6 +6,7 @@ Authors: Eric Wieser, Zhangir Azerbayev
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Data.Fintype.Perm
 import Mathlib.LinearAlgebra.Multilinear.Basis
+import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Alternating Maps
@@ -124,9 +125,6 @@ theorem coe_inj {f g : M [⋀^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f
 @[ext]
 theorem ext {f f' : M [⋀^ι]→ₗ[R] N} (H : ∀ x, f x = f' x) : f = f' :=
   DFunLike.ext _ _ H
-
-protected theorem ext_iff {f g : M [⋀^ι]→ₗ[R] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 
 attribute [coe] AlternatingMap.toMultilinearMap
 

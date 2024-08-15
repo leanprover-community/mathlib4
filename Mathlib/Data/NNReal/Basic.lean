@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Algebra.Ring.Regular
 
@@ -92,9 +93,6 @@ instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
 @[ext] protected theorem eq {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) → n = m :=
   Subtype.eq
 
-protected theorem eq_iff {n m : ℝ≥0} : n = m ↔ (n : ℝ) = (m : ℝ) :=
-  Subtype.ext_iff
-
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
   NNReal.eq_iff.symm.not
 
@@ -119,7 +117,7 @@ theorem _root_.Real.toNNReal_of_nonneg {r : ℝ} (hr : 0 ≤ r) : r.toNNReal = �
 theorem _root_.Real.le_coe_toNNReal (r : ℝ) : r ≤ Real.toNNReal r :=
   le_max_left r 0
 
-theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
+@[bound] theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
 
 @[simp, norm_cast] theorem coe_mk (a : ℝ) (ha) : toReal ⟨a, ha⟩ = a := rfl
 
@@ -326,7 +324,11 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
+@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
+
+@[bound] private alias ⟨_, Bound.coe_pos_of_pos⟩ := coe_pos
 
 @[simp, norm_cast] lemma one_le_coe : 1 ≤ (r : ℝ) ↔ 1 ≤ r := by rw [← coe_le_coe, coe_one]
 @[simp, norm_cast] lemma one_lt_coe : 1 < (r : ℝ) ↔ 1 < r := by rw [← coe_lt_coe, coe_one]
@@ -796,22 +798,22 @@ section Inv
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h]
+  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
 
 theorem inv_le_of_le_mul {r p : ℝ≥0} (h : 1 ≤ r * p) : r⁻¹ ≤ p := by
   by_cases r = 0 <;> simp [*, inv_le]
 
 @[simp]
 theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p ≤ 1 := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h, mul_comm]
+  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 @[simp]
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
-  rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h, mul_comm]
+  rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 theorem mul_le_iff_le_inv {a b r : ℝ≥0} (hr : r ≠ 0) : r * a ≤ b ↔ a ≤ r⁻¹ * b := by
   have : 0 < r := lt_of_le_of_ne (zero_le r) hr.symm
-  rw [← mul_le_mul_left (inv_pos.mpr this), ← mul_assoc, inv_mul_cancel hr, one_mul]
+  rw [← mul_le_mul_left (inv_pos.mpr this), ← mul_assoc, inv_mul_cancel₀ hr, one_mul]
 
 theorem le_div_iff_mul_le {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
   le_div_iff₀ hr
@@ -863,7 +865,7 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) 
     have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
     have : a * x⁻¹ * x ≤ y := h _ this
-    rwa [mul_assoc, inv_mul_cancel hx, mul_one] at this
+    rwa [mul_assoc, inv_mul_cancel₀ hx, mul_one] at this
 
 nonrec theorem half_le_self (a : ℝ≥0) : a / 2 ≤ a :=
   half_le_self bot_le
@@ -1061,15 +1063,15 @@ theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*�
   have hfu : f u < 1 := by
     rw [hu]
     split_ifs with hu1
-    · rw [← _root_.map_one f]; exact hf hu1
+    · rw [← map_one f]; exact hf hu1
     · have hfg0 : f g ≠ 0 :=
         fun h0 ↦ (Units.ne_zero g) ((map_eq_zero f).mp h0)
       have hg1' : 1 < g := lt_of_le_of_ne (not_lt.mp hu1) hg1.symm
-      rw [Units.val_inv_eq_inv_val, map_inv₀, inv_lt_one_iff hfg0, ← _root_.map_one f]
+      rw [Units.val_inv_eq_inv_val, map_inv₀, inv_lt_one_iff hfg0, ← map_one f]
       exact hf hg1'
   obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hr hfu
   use u ^ n
-  rwa [Units.val_pow_eq_pow_val, _root_.map_pow]
+  rwa [Units.val_pow_eq_pow_val, map_pow]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
   real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/

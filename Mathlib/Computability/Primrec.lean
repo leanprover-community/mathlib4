@@ -763,15 +763,16 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
       hG)
   suffices ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n) by
     refine hF.of_eq fun a => ?_
-    rw [this, List.take_all_of_le (length_le_encode _)]
+    rw [this, List.take_of_length_le (length_le_encode _)]
   introv
   dsimp only [F]
   generalize f a = l
   generalize g a = x
-  induction' n with n IH generalizing l x
-  · rfl
-  simp only [iterate_succ, comp_apply]
-  cases' l with b l <;> simp [IH]
+  induction n generalizing l x with
+  | zero => rfl
+  | succ n IH =>
+    simp only [iterate_succ, comp_apply]
+    cases' l with b l <;> simp [IH]
 
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
   letI := prim H
@@ -993,8 +994,9 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
                 option_map (hg.comp (fst.comp fst) snd)
                   (to₂ <| list_concat.comp (snd.comp fst) snd))).of_eq
       fun a n => by
-      induction' n with n IH; · rfl
-      simp [IH, H, List.range_succ]
+      induction n with
+      | zero => rfl
+      | succ n IH => simp [IH, H, List.range_succ]
 
 theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α × β) → Option β) :=
   (to₂ <| list_rec snd (const none) <|
