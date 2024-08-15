@@ -53,7 +53,7 @@ suppress_compilation
 open scoped TensorProduct
 
 variable {R ι A B : Type*}
-variable [CommSemiring ι] [Module ι (Additive ℤˣ)] [DecidableEq ι]
+variable [CommSemiring ι] [DecidableEq ι]
 variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B)
 variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
@@ -134,6 +134,8 @@ theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
 
 theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
   (LinearEquiv.symm_apply_eq _).mpr (auxEquiv_one _ _).symm
+
+variable [Module ι (Additive ℤˣ)]
 
 /-- Auxiliary construction used to build the `Mul` instance and get distributivity of `+` and
 `\smul`. -/
@@ -305,7 +307,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ᵍ⊗[R] ℬ →ₗ[R] A ⊗[R] B))
     (by
       dsimp [Algebra.TensorProduct.one_def]
-      simp only [_root_.map_one, mul_one])
+      simp only [map_one, mul_one])
     (by
       rw [LinearMap.map_mul_iff]
       ext a₁ : 3
@@ -318,7 +320,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R, map_smul, map_smul, map_smul]
       rw [Int.cast_smul_eq_zsmul R, ← @Units.smul_def _ _ (_) (_)]
       rw [of_symm_of, map_tmul, LinearMap.mul'_apply]
-      simp_rw [AlgHom.toLinearMap_apply, _root_.map_mul]
+      simp_rw [AlgHom.toLinearMap_apply, map_mul]
       simp_rw [mul_assoc (f a₁), ← mul_assoc _ _ (g b₂), h_anti_commutes, mul_smul_comm,
         smul_mul_assoc, smul_smul, Int.units_mul_self, one_smul])
 
@@ -338,14 +340,14 @@ def liftEquiv :
   toFun fg := lift 𝒜 ℬ _ _ fg.prop
   invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b => by
     dsimp
-    rw [← _root_.map_mul, ← _root_.map_mul F, tmul_coe_mul_coe_tmul, one_mul, mul_one,
-      AlgHom.map_smul_of_tower, tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
-  left_inv fg := by ext <;> (dsimp; simp only [_root_.map_one, mul_one, one_mul])
+    rw [← map_mul, ← map_mul F, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
+      tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
+  left_inv fg := by ext <;> (dsimp; simp only [map_one, mul_one, one_mul])
   right_inv F := by
     apply AlgHom.toLinearMap_injective
     ext
     dsimp
-    rw [← _root_.map_mul, tmul_one_mul_one_tmul]
+    rw [← map_mul, tmul_one_mul_one_tmul]
 
 /-- Two algebra morphism from the graded tensor product agree if their compositions with the left
 and right inclusions agree. -/
