@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Recover
 
+set_option linter.unusedTactic false
+
 /-- problematic tactic for testing recovery -/
 elab "this" "is" "a" "problem" : tactic =>
   Lean.Elab.Tactic.setGoals []
