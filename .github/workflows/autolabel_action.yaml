@@ -20,7 +20,7 @@ jobs:
 
       - run: |
           ./scripts/autolabels.sh long
-          printf 'Just the labels: "%s"\n' "$(./scripts/autolabels.sh)"
+          printf 'About to add the following labels: "%s"\n' "$(./scripts/autolabels.sh)"
           LABELS="$(./scripts/autolabels.sh)"
           printf $'gh issue edit \'%s\' --add-label \'%s\'\n' "$NUMBER" "$LABELS"
           if [ -z "$LABELS" ]

@@ -2,13 +2,13 @@
 
  : <<'BASH_MODULE_DOCS'
 
-This file contains the dictionary for converting a modified dir into a github label,
-as well as the script to perform the conversion.
+This file contains the dictionary for converting a list of modified directories into a github label,
+as well as a script to actually compute which label(s) to apply to the current changes.
 
 Rules:
 * only lines starting with `|t-` are considered;
 * repeated spaces, commas and pipes (|) are ignored;
-* `Mathlib` is added by default to each `Root folder`.
+* `Mathlib` is added by default to each "root folder".
 
 Exception: `Tactic/Linter` is converted into `Tactic-Linter` internally, to simplify separating it from
 `Tactic/anything_other_than_linter`.
