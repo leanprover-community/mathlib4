@@ -263,7 +263,7 @@ theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
       eq_on_inv₀ f g]
     apply h
 
-/-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the integers then they are equal.
+/-- If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal.
 
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
@@ -271,7 +271,7 @@ theorem ext_rat {f g : ℚ →*₀ M₀}
     (h : f.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) = g.comp (Int.castRingHom ℚ)) : f = g :=
   ext_rat' <| DFunLike.congr_fun h
 
-/-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the positive naturals and `-1` then
+/-- If monoid with zero homs `f` and `g` from `ℚ` agree on the positive naturals and `-1` then
 they are equal. -/
 theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
     (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=

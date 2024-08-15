@@ -30,10 +30,11 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 `Subtype.val`. Else your lemma will never apply.
 -/
 
-library_note "specialised high prio simp lemma" /--
-It sometimes happens that a simp lemma declared early in the library can be proved by `simp` using
-later, more general simp lemmas. In that case, the following reasons might be arguments for the
-early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or unsimped):
+library_note "specialised high priority simp lemma" /--
+It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
+using later, more general simp lemmas. In that case, the following reasons might be arguments for
+the early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or
+un``@[simp]``ed):
 1. There is a significant portion of the library which needs the early lemma to be available via
   `simp` and which doesn't have access to the more general lemmas.
 2. The more general lemmas have more complicated typeclass assumptions, causing rewrites with them
@@ -66,7 +67,7 @@ theorem ext : (p : ℚ) = (q : ℚ) → p = q :=
 protected theorem coe_injective : Injective ((↑) : ℚ≥0 → ℚ) :=
   Subtype.coe_injective
 
--- See note [specialised high prio simp lemma]
+-- See note [specialised high priority simp lemma]
 @[simp high, norm_cast]
 theorem coe_inj : (p : ℚ) = q ↔ p = q :=
   Subtype.coe_inj
@@ -120,7 +121,7 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
   max_eq_left <| le_sub_comm.2 <| by rwa [sub_zero]
 
--- See note [specialised high prio simp lemma]
+-- See note [specialised high priority simp lemma]
 @[simp high]
 theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
 
