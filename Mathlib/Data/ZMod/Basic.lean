@@ -231,6 +231,9 @@ theorem intCast_surjective : Function.Surjective ((↑) : ℤ → ZMod n) :=
 @[deprecated (since := "2024-04-17")]
 alias int_cast_surjective := intCast_surjective
 
+lemma «forall» {P : ZMod n → Prop} : (∀ x, P x) ↔ ∀ x : ℤ, P x := intCast_surjective.forall
+lemma «exists» {P : ZMod n → Prop} : (∃ x, P x) ↔ ∃ x : ℤ, P x := intCast_surjective.exists
+
 theorem cast_id : ∀ (n) (i : ZMod n), (ZMod.cast i : ZMod n) = i
   | 0, _ => Int.cast_id
   | _ + 1, i => natCast_zmod_val i
