@@ -10,7 +10,7 @@ Rules:
 * repeated spaces, commas and pipes (|) are ignored;
 * `Mathlib` is added by default to each `Root folder`.
 
-Exception: `Tactic/Linter` is converted into `Linter` internally, to simplify separating it from
+Exception: `Tactic/Linter` is converted into `Tactic-Linter` internally, to simplify separating it from
 `Tactic/anything_other_than_linter`.
 
 |Label                   |Root folders                                                                       |
@@ -37,14 +37,14 @@ Exception: `Tactic/Linter` is converted into `Linter` internally, to simplify se
 
 BASH_MODULE_DOCS
 
-mdToSpaces () { tr -s '|, ' ' ' < scripts/autolabels.sh | sed -n 's=^ *t-=t-=p' ; }
+mdToSpaces () { tr -s '|, ' ' ' < scripts/autolabels.sh | sed -n 's=^ *t-=t-=p; /^BASH_MODULE_DOCS$/Q' ; }
 
 (
   mdToSpaces
   git diff --name-only origin/master
 ) |
 awk -v long="${1}" '
-    gsub(/Tactic\/Linter/, "Linter")
+    gsub(/Tactic\/Linter/, "Tactic-Linter")
     (2 <= NF) {
       for(i=2; i<=NF; i++) {
         dir="Mathlib/"$i"/"
