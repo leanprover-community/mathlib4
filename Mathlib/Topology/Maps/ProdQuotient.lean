@@ -4,7 +4,8 @@ import Mathlib.Topology.Sets.Closeds
 open Function Set Filter TopologicalSpace
 open scoped Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+universe u v
+variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
 
 namespace TopologicalSpace
 
@@ -255,6 +256,40 @@ protected theorem pullback {Z : Type*} [TopologicalSpace Z] {f : X → Y}
     rcases hxl hs (j := (t, u)) ⟨ht, hu⟩
       with ⟨x', hx's : x' ∈ s, z', ⟨hz't : z' ∈ t, hz'u : z' ∈ u⟩, hfxz'⟩
     refine ⟨⟨(x', z'), hfxz'.symm⟩, ⟨hx's, hz't⟩, hz'u⟩
+
+theorem of_continuous_forall_pullback {f : X → Y} (hf : Continuous f)
+    (h : ∀ (Z : Type v) (z : Z) (l : Filter Z) (e : Z ≃ Y), Tendsto e l (𝓝 (e z)) →
+      letI : TopologicalSpace Z := nhdsAdjoint z l
+      QuotientMap (Pullback.snd : f.Pullback e → Z)) :
+    IsPullbackQuotientMap f := by
+  refine ⟨hf, fun {y l'} hyl' ↦ ?_⟩
+  obtain ⟨Z, z, e, l, rfl, hlBot, hlz, hll'⟩ : ∃ (Z : Type v) (z : Z) (e : Z ≃ Y) (l : Filter Z),
+      e z = y ∧ l.NeBot ∧ Tendsto e l (𝓝 y) ∧ Tendsto e l l' :=
+    ⟨Y, y, .refl _, 𝓝 y ⊓ l', rfl, hyl', inf_le_left, inf_le_right⟩
+  letI := nhdsAdjoint z l
+  by_contra! H
+  have hzo : IsOpen {z} := by
+    rw [← (h Z z l e hlz).isOpen_preimage, isOpen_iff_mem_nhds]
+    rintro ⟨⟨x, z⟩, hxz : f x = e z⟩ rfl
+    obtain ⟨U, hU, s, hs, hUS⟩ : ∃ U ∈ 𝓝 x, ∃ s ∈ l', Disjoint U (f ⁻¹' s) := by
+      simpa only [(basis_sets _).clusterPt_iff (l'.basis_sets.comap _), not_forall, id, exists_prop,
+        ← not_disjoint_iff_nonempty_inter.not_right] using H x hxz
+    have : insert z (e ⁻¹' s) ∈ 𝓝 z := by
+      rw [nhds_nhdsAdjoint_same]
+      exact union_mem_sup singleton_mem_pure (hll' hs)
+    rw [nhds_subtype_eq_comap]
+    filter_upwards [preimage_mem_comap <| prod_mem_nhds hU this]
+    suffices ∀ x' z', f x' = e z' → x' ∈ U → e z' ∈ s → z' = z by
+      simpa [Pullback.snd, or_imp]
+    intro x' z' hx'z' hx' hz'
+    refine absurd ?_ (disjoint_left.1 hUS hx')
+    rwa [mem_preimage, hx'z']
+  obtain rfl : l = pure z := hlBot.eq_pure_iff.2 (hzo rfl)
+  rcases (h Z z (pure z) e hlz).surjective z with ⟨⟨⟨x', z⟩, heq⟩, rfl⟩
+  refine H x' heq (ClusterPt.mono ?_ (comap_mono hll'))
+  simp only [map_pure, Pullback.snd, comap_pure, ← mem_closure_iff_clusterPt]
+  apply subset_closure
+  simp [heq]
 
 end IsPullbackQuotientMap
 
