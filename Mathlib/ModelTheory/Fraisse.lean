@@ -42,7 +42,7 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
   essentially countable.
 - `FirstOrder.Language.exists_countable_is_age_of_iff` gives necessary and sufficient conditions
   for a class to be the age of a countable structure in a language with countably many functions.
-- `FirstOrder.Language.IsFraisseLimit.unique_FraisseLimit` shows that any class which is Fraïsse has
+- `FirstOrder.Language.IsFraisseLimit.nonempty_equiv` shows that any class which is Fraïsse has
   at most one Fraïsse limit up to equivalence.
 
 ## Implementation Notes
