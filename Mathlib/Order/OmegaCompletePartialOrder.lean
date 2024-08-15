@@ -739,7 +739,11 @@ def apply : (α →𝒄 β) × α →𝒄 β where
     apply le_antisymm
     · apply ωSup_le
       intro i
-      dsimp
+      dsimp []
+      -- TODO: This is a rfl lemma, why does this not work?
+      fail_if_success dsimp [Function.eval.eq_1]
+      -- Why do we need this?
+      dsimp [Function.eval]
       rw [(c _).fst.continuous]
       apply ωSup_le
       intro j
