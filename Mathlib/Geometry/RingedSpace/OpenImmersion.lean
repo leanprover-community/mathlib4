@@ -152,7 +152,7 @@ instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
     generalize_proofs h
     dsimp only [AlgebraicGeometry.PresheafedSpace.comp_c_app, unop_op, Functor.op, comp_base,
       Opens.map_comp_obj]
-    apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
+    apply IsIso.comp_isIso'
     · exact c_iso' g ((opensFunctor f).obj U) (by ext; simp)
     · apply c_iso' f U
       ext1
@@ -738,7 +738,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.
       delta PresheafedSpace.Hom.stalkMap at H
       haveI H' :=
         TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_openEmbedding C hf X.presheaf y
-      have := @IsIso.comp_isIso _ _ _ _ _ _ _ H (@IsIso.inv_isIso _ _ _ _ _ H')
+      have := IsIso.comp_isIso' H (@IsIso.inv_isIso _ _ _ _ _ H')
       rwa [Category.assoc, IsIso.hom_inv_id, Category.comp_id] at this }
 
 end OfStalkIso
@@ -1086,7 +1086,7 @@ theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.1.base ⊆ Set.rang
   erw [← PreservesPullback.iso_hom_snd
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) f g]
   -- Porting note: was `inferInstance`
-  exact @IsIso.comp_isIso _ _ _ _ _ _ _ _ <|
+  exact IsIso.comp_isIso' inferInstance <|
     PresheafedSpace.IsOpenImmersion.pullback_snd_isIso_of_range_subset _ _ H'
 
 /-- The universal property of open immersions:

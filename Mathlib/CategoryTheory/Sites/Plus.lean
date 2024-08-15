@@ -246,7 +246,7 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
   rw [Presheaf.isSheaf_iff_multiequalizer] at hP
   suffices ∀ X, IsIso ((J.toPlus P).app X) from NatIso.isIso_of_isIso_app _
   intro X
-  suffices IsIso (colimit.ι (J.diagram P X.unop) (op ⊤)) from IsIso.comp_isIso
+  refine IsIso.comp_isIso' inferInstance ?_
   suffices ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f) from
     isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop) _
   intro S T e
