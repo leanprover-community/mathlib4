@@ -402,6 +402,8 @@ lemma disjoint_lowerCentralSeries_maxTrivSubmodule_iff [IsNilpotent R L M] :
   suffices ¬ Nontrivial (lowerCentralSeriesLast R L M) by
     exact this (nontrivial_lowerCentralSeriesLast R L M)
   rw [h.eq_bot, le_bot_iff] at this
+  letI unique : Unique (⊥ : LieSubmodule R L M) := Submodule.uniqueBot
+  letI subsing : Subsingleton (⊥ : LieSubmodule R L M) := Unique.instSubsingleton
   exact this ▸ not_nontrivial _
 
 theorem nontrivial_max_triv_of_isNilpotent [Nontrivial M] [IsNilpotent R L M] :
@@ -574,7 +576,13 @@ theorem LieModule.isNilpotent_of_top_iff :
   Equiv.lieModule_isNilpotent_iff LieSubalgebra.topEquiv (1 : M ≃ₗ[R] M) fun _ _ => rfl
 
 @[simp] lemma LieModule.isNilpotent_of_top_iff' :
+    letI : LieRingModule L (⊤ : LieSubmodule R L M) :=
+      LieSubmodule.instLieRingModuleSubtypeMemSubmodule ..
     IsNilpotent R L {x // x ∈ (⊤ : LieSubmodule R L M)} ↔ IsNilpotent R L M :=
+  letI : LieRingModule L (⊤ : LieSubmodule R L M) :=
+    LieSubmodule.instLieRingModuleSubtypeMemSubmodule ..
+  letI : LieModule R L {x // x ∈ (⊤ : LieSubmodule R L M)} :=
+    LieSubmodule.instLieModule ⊤
   Equiv.lieModule_isNilpotent_iff 1 (LinearEquiv.ofTop ⊤ rfl) fun _ _ ↦ rfl
 
 end Morphisms

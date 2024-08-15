@@ -439,14 +439,15 @@ open Vector3
 open scoped Vector3
 
 -- Porting note: Fails because declaration is in an imported module
--- attribute [local reducible] Vector3
+set_option allowUnsafeReducibility true in
+attribute [local reducible] Vector3
 
 theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Vector3 ℕ n → ℕ}
     (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v::v) ∈ S} :=
   Dioph.ext (diophFn_comp1 (reindex_dioph _ (none::some) d) df) (fun v => by
     dsimp
     -- Porting note: `congr` use to be enough here
-    refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+    suffices ((f v ::ₒ v) ∘ none :: some) = f v :: v by rw [this]; rfl
     ext x; cases x <;> rfl)
 
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
@@ -470,7 +471,7 @@ theorem diophFn_compn :
     ext (reindex_dioph _ (id ⊗ Fin2.elim0) d) fun v => by
       dsimp
       -- Porting note: `congr` use to be enough here
-      refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+      suffices v ∘ (id ⊗ elim0) = v ⊗ fun i ↦ f i v by rw [this]
       ext x; obtain _ | _ | _ := x; rfl
   | succ n, S, d, f =>
     f.consElim fun f fl => by
@@ -482,14 +483,15 @@ theorem diophFn_compn :
               fun v => by
                 dsimp
                 -- Porting note: `congr` use to be enough here
-                refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+                suffices (f (v ∘ inl) ::ₒ v) ∘ (some ∘ inl ⊗ none :: some ∘ inr) =
+                    v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr by rw [this]
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
             @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
           ext this fun v => by
             dsimp
             -- Porting note: `congr` use to be enough here
-            refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+            suffices (v ⊗ f v :: fun i ↦ fl i v) = v ⊗ fun i ↦ (f :: fl) i v by rw [this]
             ext x; obtain _ | _ | _ := x <;> rfl
 
 theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α → ℕ) → ℕ) n)
