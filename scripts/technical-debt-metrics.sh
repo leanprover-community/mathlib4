@@ -59,6 +59,11 @@ printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare ope
 # We print the number of files, not the number of matches --- hence, the nested grep.
 printf '%s|%s\n' "$(git grep -c 'autoImplicit true' | grep -c -v 'test')" "non-test files with autoImplicit true"
 
+deprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *==')"
+
+printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Deprecated\` files"
+printf '%s|%s\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
+
 initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l | sed 's=^ *==')"
 
 printf '%s|%s\n' "$(printf '%s' "${initFiles}" | wc -l)" "\`Init\` files"
