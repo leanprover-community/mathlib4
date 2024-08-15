@@ -378,9 +378,7 @@ theorem descFactorial_le (n : ℕ) {k m : ℕ} (h : k ≤ m) :
   | zero => rfl
   | succ n ih =>
     rw [descFactorial_succ, descFactorial_succ]
-    apply Nat.mul_le_mul
-    exact Nat.sub_le_sub_right h n
-    exact ih
+    exact Nat.mul_le_mul (Nat.sub_le_sub_right h n) ih
 
 theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.descFactorial k
   | 0 => by rw [descFactorial_zero, Nat.pow_zero]
