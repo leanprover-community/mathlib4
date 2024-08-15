@@ -46,12 +46,13 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
   let mut postponed : Array Expr := #[]
   for x in xs, bi in bis do
     let type ← inferType x
-    if bi.isInstImplicit then
-      unless (← synthesizeInstance thmId x type) do
-        logError s!"Failed to synthesize instance `{← ppExpr type}` \
-        when applying theorem `{← ppOrigin' thmId}`."
-        return false
-    else if (← instantiateMVars x).isMVar then
+    -- if bi.isInstImplicit then
+    --   unless (← synthesizeInstance thmId x type) do
+    --     logError s!"Failed to synthesize instance `{← ppExpr type}` \
+    --     when applying theorem `{← ppOrigin' thmId}`."
+    --     return false
+    -- else
+    if (← instantiateMVars x).isMVar then
 
       -- try type class
       if (← isClass? type).isSome then
