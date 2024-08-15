@@ -267,8 +267,91 @@ noncomputable def tensorTrifunctorRight : LocalizedMonoidal L W ε ⥤ Localized
   bifunctorComp₂₃ (tensorBifunctor L W ε) (tensorBifunctor L W ε)
    -- this is `fun X Y Z ↦ X ⊗ (Y ⊗ Z)`, see the example below
 
+lemma associatorRightHalf_aux_naturality {X₁ X₂ Y₁ Y₂ : C} (Z : C) (f₁ : X₁ ⟶ X₂) (f₂ : Y₁ ⟶ Y₂) :
+    ((tensorBifunctor L W ε).map
+      (L.map f₁)).app (((tensorBifunctor L W ε).obj (L.obj Y₁)).obj (L.obj Z)) ≫
+        ((tensorBifunctor L W ε).obj (L.obj X₂)).map
+          (((tensorBifunctor L W ε).map (L.map f₂)).app (L.obj Z)) ≫
+            ((tensorBifunctor L W ε).obj (L.obj X₂)).map
+              (((tensorBifunctorIso L W ε).hom.app Y₂).app Z) ≫
+                ((tensorBifunctorIso L W ε).hom.app X₂).app (Y₂ ⊗ Z) =
+      ((tensorBifunctor L W ε).obj (L.obj X₁)).map
+        (((tensorBifunctorIso L W ε).hom.app Y₁).app Z) ≫
+          ((tensorBifunctorIso L W ε).hom.app X₁).app (Y₁ ⊗ Z) ≫ (L').map (f₁ ⊗ f₂ ▷ Z) := by
+  rw [← ((tensorBifunctor L W ε).obj (L.obj X₂)).map_comp_assoc]
+  slice_lhs 2 2 =>
+    rw [← whiskerLeft_app, ← NatTrans.comp_app]
+    erw [(tensorBifunctorIso L W ε).hom.naturality f₂]
+  erw [← ((tensorBifunctor L W ε).map (L.map f₁)).naturality_assoc]
+  simp only [whiskeringRight₂'_obj_obj_obj, curriedTensor_obj_obj, NatTrans.comp_app,
+    Functor.comp_obj, whiskeringRight₂'_obj_map_app, curriedTensor_map_app, Functor.map_comp, assoc,
+    whiskeringLeft₂ObjObj_obj_obj_obj]
+  congr 1
+  simp only [NatTrans.naturality_assoc]
+  erw [((tensorBifunctorIso L W ε).hom.app X₂).naturality]
+  simp only [whiskeringLeft₂ObjObj_obj_obj_obj, whiskeringRight₂'_obj_obj_obj,
+    curriedTensor_obj_obj, whiskeringRight₂'_obj_obj_map, curriedTensor_obj_map]
+  rw [← whiskerLeft_app, ← NatTrans.comp_app_assoc]
+  erw [(tensorBifunctorIso L W ε).hom.naturality f₁]
+  simp only [Functor.comp_obj, whiskeringRight₂'_obj_obj_obj, curriedTensor_obj_obj,
+    NatTrans.comp_app, whiskeringRight₂'_obj_map_app, curriedTensor_map_app, whiskerRight_tensor,
+    Functor.map_comp, assoc]
+  simp [← Functor.map_comp, ← tensorHom_id, ← id_tensorHom, ← tensor_comp]
+
+set_option maxHeartbeats 400000 in
+noncomputable instance : Lifting₂ (L.prod L) L (W.prod W) W
+    ((whiskeringRight₂' (C × C) C L').obj (rightAssocTensorAux C))
+      (curry.obj (prod.associator _ _ _ ⋙ uncurry.obj (uncurry.obj
+        (tensorBifunctor L W ε) ⋙ (tensorBifunctor L W ε).flip).flip)) where
+  iso' := by
+    refine NatIso.ofComponents (fun ⟨X, Y⟩ ↦ NatIso.ofComponents (fun Z ↦ ?_) ?_) ?_
+    · exact ((tensorBifunctor L W ε).obj _).mapIso (((tensorBifunctorIso L W ε).app _).app _)  ≪≫
+        ((tensorBifunctorIso L W ε).app _).app _
+    · intro Z₁ Z₂ f
+      simp only [whiskeringLeft₂ObjObj_obj_obj_obj, Functor.prod_obj, curry_obj_obj_obj,
+        Functor.comp_obj, prod.associator_obj, uncurry_obj_obj, Functor.flip_obj_obj,
+        whiskeringRight₂'_obj_obj_obj, rightAssocTensorAux_obj_obj,
+        whiskeringLeft₂ObjObj_obj_obj_map, curry_obj_obj_map, prod_Hom, prod_id, Functor.comp_map,
+        prod.associator_map, uncurry_obj_map, Functor.map_id, NatTrans.id_app, Functor.flip_obj_map,
+        id_comp, Functor.flip_map_app, curriedTensor_obj_obj, Iso.trans_hom, Functor.mapIso_hom,
+        Iso.app_hom, whiskeringRight₂'_obj_obj_map, rightAssocTensorAux_obj_map, assoc]
+      have := ((tensorBifunctorIso L W ε).hom.app X).naturality (Y ◁ f)
+      simp only [whiskeringLeft₂ObjObj_obj_obj_obj, whiskeringRight₂'_obj_obj_obj,
+        curriedTensor_obj_obj, whiskeringLeft₂ObjObj_obj_obj_map, whiskeringRight₂'_obj_obj_map,
+        curriedTensor_obj_map] at this
+      rw [← this]
+      simp only [← assoc]
+      erw [← ((tensorBifunctor L W ε).obj ((L').obj X)).map_comp,
+        ← ((tensorBifunctor L W ε).obj ((L').obj X)).map_comp,
+        ((tensorBifunctorIso L W ε).hom.app Y).naturality]
+      rfl
+    · intro ⟨X₁, Y₁⟩ ⟨X₂, Y₂⟩ ⟨f₁, f₂⟩
+      ext Z
+      simp only [whiskeringLeft₂ObjObj_obj_obj_obj, Functor.prod_obj, curry_obj_obj_obj,
+        Functor.comp_obj, prod.associator_obj, uncurry_obj_obj, Functor.flip_obj_obj,
+        whiskeringRight₂'_obj_obj_obj, rightAssocTensorAux_obj_obj, curriedTensor_obj_obj,
+        NatTrans.comp_app, whiskeringLeft₂ObjObj_obj_map_app, Functor.prod_map, curry_obj_map_app,
+        prod_Hom, Functor.comp_map, prod.associator_map, uncurry_obj_map, Functor.flip_map_app,
+        Functor.flip_obj_map, Functor.map_id, comp_id, NatIso.ofComponents_hom_app, Iso.trans_hom,
+        Functor.mapIso_hom, Iso.app_hom, assoc, whiskeringRight₂'_obj_map_app,
+        rightAssocTensorAux_map_app]
+      exact associatorRightHalf_aux_naturality L W ε Z f₁ f₂
+
+noncomputable def associatorRightHalf :
+    curry.obj (tensorTrifunctorRightAux L W ε) ≅ tensorTrifunctorRight L W ε := by
+  refine curry.mapIso ?_ ≪≫ (bifunctorComp₂₃Iso _ _).symm
+  exact lift₂NatIso' (W₁ := W.prod W) (W₂ := W)
+    (F₁ := ((whiskeringRight₂' (C × C) C L').obj (rightAssocTensorAux C)))
+    (F₂ := ((whiskeringRight₂' (C × C) C L').obj (rightAssocTensorAux C)))
+    (L.prod L) L
+    (lift₂ _ (isInvertedBy₂_rightAssocTensorAux L W ε) (L.prod L) L)
+    (curry.obj (prod.associator _ _ _ ⋙ uncurry.obj (uncurry.obj
+      (tensorBifunctor L W ε) ⋙ (tensorBifunctor L W ε).flip).flip))
+    (Iso.refl _)
+
 noncomputable def associator : tensorTrifunctorLeft L W ε ≅ tensorTrifunctorRight L W ε :=
-  (associatorLeftHalf L W ε).symm ≪≫ curry.mapIso (tensorTrifunctorLeftRightAuxIso L W ε) ≪≫ sorry
+  (associatorLeftHalf L W ε).symm ≪≫ curry.mapIso (tensorTrifunctorLeftRightAuxIso L W ε) ≪≫
+    associatorRightHalf L W ε
 
 noncomputable instance monoidalCategoryStruct :
     MonoidalCategoryStruct (LocalizedMonoidal L W ε) where
@@ -283,6 +366,9 @@ noncomputable instance monoidalCategoryStruct :
 -- TODO: remove these examples, they are just for remembering what the trifunctors do.
 example (X Y Z : LocalizedMonoidal L W ε) :
     (((tensorTrifunctorLeft L W ε).obj X).obj Y).obj Z = (X ⊗ Y) ⊗ Z := rfl
+
+-- example (X Y Z : LocalizedMonoidal L W ε) :
+--     ((tensorTrifunctorRightAux L W ε).obj (X, Y)).obj Z = (X ⊗ Y) ⊗ Z := rfl
 
 example (X Y Z : LocalizedMonoidal L W ε) :
     (((tensorTrifunctorRight L W ε).obj X).obj Y).obj Z = X ⊗ Y ⊗ Z := rfl
@@ -345,6 +431,9 @@ lemma associator_hom_app (X₁ X₂ X₃ : C) :
     (α_ ((L').obj X₁) ((L').obj X₂) ((L').obj X₃)).hom =
       ((μ L W ε _ _).hom ⊗ 𝟙 _) ≫ (μ L W ε _ _).hom ≫ (L').map (α_ X₁ X₂ X₃).hom ≫
         (μ L W ε  _ _).inv ≫ (𝟙 _ ⊗ (μ L W ε  _ _).inv) := by
+  simp only [monoidalCategoryStruct, Functor.flip_obj_map, associator, NatIso.trans_app,
+    curry_obj_obj_obj, Iso.trans_hom, Iso.app_hom, Iso.symm_hom, Functor.mapIso_hom,
+    curry_map_app_app, Functor.map_id, comp_id, NatTrans.id_app, id_comp]
   sorry
 
 lemma id_tensorHom (X : LocalizedMonoidal L W ε) {Y₁ Y₂ : LocalizedMonoidal L W ε} (f : Y₁ ⟶ Y₂) :

@@ -14,7 +14,12 @@ def bifunctorComp₁₂Iso : bifunctorComp₁₂ F₁₂ G ≅ curry.obj (uncurr
 
 variable (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
 
-def bifunctorComp₂₃Iso : bifunctorComp₂₃ F G₂₃ ≅ sorry :=
-  sorry
+def bifunctorComp₂₃Iso : bifunctorComp₂₃ F G₂₃ ≅
+    curry.obj (curry.obj (prod.associator _ _ _ ⋙ uncurry.obj (uncurry.obj G₂₃ ⋙ F.flip).flip)) :=
+  NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦
+    NatIso.ofComponents (fun _ ↦ Iso.refl _)))
+
+
+
 
 end CategoryTheory
