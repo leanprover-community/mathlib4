@@ -10,13 +10,13 @@ import Cli.Basic
 /-!
 # Text-based style linters
 
-This files defines the `lint_style` executable which runs all text-based style linters.
+This files defines the `lint-style` executable which runs all text-based style linters.
 The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
 -/
 
 open Cli
 
-/-- Implementation of the `lint_style` command line program. -/
+/-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "github") with
     | (true, _) => OutputSetting.update
@@ -25,16 +25,18 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Read all module names to lint.
   let mut allModules := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
+    -- note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually
+    allModules := allModules.append ((← IO.FS.lines s).filter (!·.containsSubstr "Batteries")
+      |>.map (·.stripPrefix "import "))
   let numberErrorFiles ← lintModules allModules mode
   -- Make sure to return an exit code of at most 125, so this return value can be used further
   -- in shell scripts.
   return min numberErrorFiles 125
 
-/-- Setting up command line options and help text for `lake exe lint_style`. -/
+/-- Setting up command line options and help text for `lake exe lint-style`. -/
 -- so far, no help options or so: perhaps that is fine?
-def lint_style : Cmd := `[Cli|
-  lint_style VIA lintStyleCli; ["0.0.1"]
+def lintStyle : Cmd := `[Cli|
+  «lint-style» VIA lintStyleCli; ["0.0.1"]
   "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/.
   Print errors about any unexpected style errors to standard output."
 
@@ -48,5 +50,5 @@ def lint_style : Cmd := `[Cli|
       and run this script again with this flag."
 ]
 
-/-- The entry point to the `lake exe lint_style` command. -/
-def main (args : List String) : IO UInt32 := do lint_style.validate args
+/-- The entry point to the `lake exe lint-style` command. -/
+def main (args : List String) : IO UInt32 := do lintStyle.validate args

@@ -72,7 +72,7 @@ We then set up an API for `Pell.Solution₁ d`.
 -/
 
 
-open Zsqrtd
+open CharZero Zsqrtd
 
 /-- An element of `ℤ√d` has norm one (i.e., `a.re^2 - d*a.im^2 = 1`) if and only if
 it is contained in the submonoid of unitary elements.
@@ -263,7 +263,7 @@ natural exponents have positive `y`. -/
 theorem y_pow_succ_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (n : ℕ) :
     0 < (a ^ n.succ).y := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, ← Nat.one_eq_succ_zero, hay, pow_one]
+  · simp only [pow_one, hay]
   · rw [pow_succ']
     exact y_mul_pos hax hay (x_pow_pos hax _) ih
 
@@ -624,7 +624,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     lift (a * a₁⁻¹).x to ℕ using hxx₁.le with x' hx'
     -- Porting note: `ih` has its arguments in a different order compared to lean 3.
     obtain ⟨n, hn⟩ := ih x' (mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
-    exact ⟨n + 1, by rw [pow_succ', ← hn, mul_comm a, ← mul_assoc, mul_inv_self, one_mul]⟩
+    exact ⟨n + 1, by rw [pow_succ', ← hn, mul_comm a, ← mul_assoc, mul_inv_cancel, one_mul]⟩
 
 /-- Every solution is, up to a sign, a power of a given fundamental solution. -/
 theorem eq_zpow_or_neg_zpow {a₁ : Solution₁ d} (h : IsFundamental a₁) (a : Solution₁ d) :

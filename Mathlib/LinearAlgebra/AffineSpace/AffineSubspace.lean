@@ -35,7 +35,8 @@ from `P`) in most cases. As for modules, `k` is an explicit argument rather than
 `V`.
 
 This file only provides purely algebraic definitions and results. Those depending on analysis or
-topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and `Topology.Algebra.Affine`.
+topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
+`Topology.Algebra.Affine`.
 
 ## References
 
@@ -1619,7 +1620,7 @@ scoped[Affine] infixl:50 " ∥ " => AffineSubspace.Parallel
 theorem Parallel.symm {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) : s₂ ∥ s₁ := by
   rcases h with ⟨v, rfl⟩
   refine ⟨-v, ?_⟩
-  rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add, neg_add_self, constVAdd_zero,
+  rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add, neg_add_cancel, constVAdd_zero,
     coe_refl_to_affineMap, map_id]
 
 theorem parallel_comm {s₁ s₂ : AffineSubspace k P} : s₁ ∥ s₂ ↔ s₂ ∥ s₁ :=

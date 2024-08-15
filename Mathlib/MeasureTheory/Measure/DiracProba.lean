@@ -122,7 +122,9 @@ guarantee injectivity of `diracProba`). -/
 noncomputable def diracProbaInverse : range (diracProba (X := X)) → X :=
   fun μ' ↦ (mem_range.mp μ'.prop).choose
 
-@[simp] lemma diracProba_diracProbaInverse (μ : range (diracProba (X := X))) :
+-- We redeclare `X` here to temporarily avoid the `[TopologicalSpace X]` instance.
+@[simp] lemma diracProba_diracProbaInverse {X : Type*} [MeasurableSpace X]
+    (μ : range (diracProba (X := X))) :
     diracProba (diracProbaInverse μ) = μ := (mem_range.mp μ.prop).choose_spec
 
 lemma diracProbaInverse_eq [T0Space X] {x : X} {μ : range (diracProba (X := X))}
@@ -171,15 +173,15 @@ lemma continuous_diracProbaEquivSymm [T0Space X] [CompletelyRegularSpace X] :
 
 /-- In a completely regular T0 topological space `X`, `diracProbaEquiv` is a homeomorphism to
 its image in `ProbabilityMeasure X`. -/
-noncomputable def diracProbaHomeomorph [T0Space X] [CompletelyRegularSpace X]
-    [MeasurableSpace X] [OpensMeasurableSpace X] : X ≃ₜ range (diracProba (X := X)) :=
+noncomputable def diracProbaHomeomorph [T0Space X] [CompletelyRegularSpace X] :
+    X ≃ₜ range (diracProba (X := X)) :=
   @Homeomorph.mk X _ _ _ diracProbaEquiv continuous_diracProbaEquiv continuous_diracProbaEquivSymm
 
 /-- If `X` is a completely regular T0 space with its Borel sigma algebra, then the mapping
 that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
 `X → ProbabilityMeasure X`. -/
-theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X]
-    [MeasurableSpace X] [OpensMeasurableSpace X] : Embedding (fun (x : X) ↦ diracProba x) :=
+theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
+    Embedding (fun (x : X) ↦ diracProba x) :=
   embedding_subtype_val.comp diracProbaHomeomorph.embedding
 
 end embed_to_probabilityMeasure

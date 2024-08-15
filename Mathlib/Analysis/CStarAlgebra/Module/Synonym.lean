@@ -3,13 +3,15 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Module.Defs
+import Mathlib.RingTheory.Finiteness
+import Mathlib.Topology.Bornology.Constructions
+import Mathlib.Topology.UniformSpace.Equiv
 
 /-! # Type synonym for types with a `CStarModule` structure
 
 It is often the case that we want to construct a `CStarModule` instance on a type that is already
-endowed with a norm, and it has a different norm which makes it into a `CStarModule`. For this
-reason, we create a type synonym `WithCStarModule` which is endowed with the requisite
+endowed with a norm, but this norm is not the one associated to its `CStarModule` structure. For
+this reason, we create a type synonym `WithCStarModule` which is endowed with the requisite
 `CStarModule` instance. We also introduce the scoped notation `C⋆ᵐᵒᵈ` for this type synonym.
 
 The common use cases are, when `A` is a C⋆-algebra:
@@ -57,6 +59,7 @@ def WithCStarModule (E : Type*) := E
 
 namespace WithCStarModule
 
+@[inherit_doc]
 scoped notation "C⋆ᵐᵒᵈ" => WithCStarModule
 
 section Basic
@@ -72,13 +75,12 @@ instance instInhabited [Inhabited E] : Inhabited (WithCStarModule E) := ‹Inhab
 instance instNonempty [Nonempty E] : Nonempty (WithCStarModule E) := ‹Nonempty E›
 instance instUnique [Unique E] : Unique (WithCStarModule E) := ‹Unique E›
 
-variable [AddCommGroup E]
-
 /-! ## `WithCStarModule E` inherits various module-adjacent structures from `E`. -/
 
-instance instAddCommGroup : AddCommGroup (WithCStarModule E) := ‹AddCommGroup E›
+instance instAddCommGroup [AddCommGroup E] : AddCommGroup (WithCStarModule E) := ‹AddCommGroup E›
 instance instSMul {R : Type*} [SMul R E] : SMul R (WithCStarModule E) := ‹SMul R E›
-instance instModule {R : Type*} [Semiring R] [Module R E] : Module R (WithCStarModule E) :=
+instance instModule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
+    Module R (WithCStarModule E) :=
   ‹Module R E›
 
 instance instIsScalarTower [SMul R R'] [SMul R E] [SMul R' E]
@@ -89,7 +91,7 @@ instance instSMulCommClass [SMul R E] [SMul R' E] [SMulCommClass R R' E] :
     SMulCommClass R R' (WithCStarModule E) :=
   ‹SMulCommClass R R' E›
 
-instance instModuleFinite [Semiring R] [Module R E] [Module.Finite R E] :
+instance instModuleFinite [Semiring R] [AddCommGroup E] [Module R E] [Module.Finite R E] :
     Module.Finite R (WithCStarModule E) :=
   ‹Module.Finite R E›
 
@@ -100,6 +102,10 @@ variable {R E}
 variable [SMul R E] (c : R) (x y : WithCStarModule E) (x' y' : E)
 
 /-! `WithCStarModule.equiv` preserves the module structure. -/
+
+section AddCommGroup
+
+variable [AddCommGroup E]
 
 @[simp]
 theorem equiv_zero : equiv E 0 = 0 :=
@@ -135,6 +141,8 @@ theorem equiv_neg : equiv E (-x) = -equiv E x :=
 theorem equiv_symm_neg : (equiv E).symm (-x') = -(equiv E).symm x' :=
   rfl
 
+end AddCommGroup
+
 @[simp]
 theorem equiv_smul : equiv E (c • x) = c • equiv E x :=
   rfl
@@ -147,7 +155,7 @@ end Equiv
 
 /-- `WithCStarModule.equiv` as a linear equivalence. -/
 @[simps (config := .asFn)]
-def linearEquiv [Semiring R] [Module R E] : C⋆ᵐᵒᵈ E ≃ₗ[R] E :=
+def linearEquiv [Semiring R] [AddCommGroup E] [Module R E] : C⋆ᵐᵒᵈ E ≃ₗ[R] E :=
   { LinearEquiv.refl _ _ with
     toFun := equiv _
     invFun := (equiv _).symm }
@@ -176,8 +184,12 @@ the usual lemmas for `Prod` will not trigger. -/
 section Prod
 
 variable {R E F : Type*}
-variable [SMul R E] [SMul R F] [AddCommGroup E] [AddCommGroup F]
+variable [SMul R E] [SMul R F]
 variable (x y : C⋆ᵐᵒᵈ (E × F)) (c : R)
+
+section AddCommGroup
+
+variable [AddCommGroup E] [AddCommGroup F]
 
 @[simp]
 theorem zero_fst : (0 : C⋆ᵐᵒᵈ (E × F)).fst = 0 :=
@@ -210,6 +222,8 @@ theorem neg_fst : (-x).fst = -x.fst :=
 @[simp]
 theorem neg_snd : (-x).snd = -x.snd :=
   rfl
+
+end AddCommGroup
 
 @[simp]
 theorem smul_fst : (c • x).fst = c • x.fst :=
@@ -260,8 +274,12 @@ protected theorem ext {ι : Type*} {E : ι → Type*} {x y : C⋆ᵐᵒᵈ (Π i
   funext h
 
 variable {R ι : Type*} {E : ι → Type*}
-variable [∀ i, SMul R (E i)] [∀ i, AddCommGroup (E i)]
+variable [∀ i, SMul R (E i)]
 variable (c : R) (x y : C⋆ᵐᵒᵈ (Π i, E i)) (i : ι)
+
+section AddCommGroup
+
+variable [∀ i, AddCommGroup (E i)]
 
 @[simp]
 theorem zero_apply : (0 : C⋆ᵐᵒᵈ (Π i, E i)) i = 0 :=
@@ -276,11 +294,13 @@ theorem sub_apply : (x - y) i = x i - y i :=
   rfl
 
 @[simp]
-theorem smul_apply : (c • x) i = c • x i :=
+theorem neg_apply : (-x) i = -x i :=
   rfl
 
+end AddCommGroup
+
 @[simp]
-theorem neg_apply : (-x) i = -x i :=
+theorem smul_apply : (c • x) i = c • x i :=
   rfl
 
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
