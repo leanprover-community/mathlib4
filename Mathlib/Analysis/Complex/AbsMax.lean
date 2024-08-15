@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.NormedSpace.Completion
+import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.NormedSpace.Extr
 import Mathlib.Topology.Order.ExtrClosure
 

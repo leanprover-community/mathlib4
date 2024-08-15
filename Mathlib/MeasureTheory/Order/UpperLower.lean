@@ -73,10 +73,9 @@ private lemma aux₀
         = volume (closedBall (f (ε n) (hε' n)) (ε n / 4)) / volume (closedBall x (ε n)) := ?_
       _ ≤ volume (closure s ∩ closedBall x (ε n)) / volume (closedBall x (ε n)) := by
         gcongr; exact subset_inter ((hf₁ _ $ hε' n).trans interior_subset_closure) $ hf₀ _ $ hε' n
-    dsimp
     have := hε' n
-    rw [Real.volume_pi_closedBall, Real.volume_pi_closedBall, ← ENNReal.ofReal_div_of_pos, ← div_pow,
-      mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
+    rw [Real.volume_pi_closedBall, Real.volume_pi_closedBall, ← ENNReal.ofReal_div_of_pos,
+      ← div_pow, mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
   all_goals positivity
 
 /-- If we can fit a small ball inside a set `sᶜ` intersected with any neighborhood of `x`, then the

@@ -119,9 +119,6 @@ theorem coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
 theorem ext ⦃f g : r →r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : r →r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 /-- Identity map is a relation homomorphism. -/
 @[refl, simps]
 protected def id (r : α → α → Prop) : r →r r :=
@@ -224,6 +221,13 @@ theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β
 theorem coe_toRelHom {f : r ↪r s} : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
+theorem toEmbedding_injective : Injective (toEmbedding : r ↪r s → (α ↪ β)) := by
+  rintro ⟨f, -⟩ ⟨g, -⟩; simp
+
+@[simp]
+theorem toEmbedding_inj {f g : r ↪r s} : f.toEmbedding = g.toEmbedding ↔ f = g :=
+  toEmbedding_injective.eq_iff
+
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 
@@ -243,9 +247,6 @@ theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
 @[ext]
 theorem ext ⦃f g : r ↪r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
-
-theorem ext_iff {f g : r ↪r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Identity map is a relation embedding. -/
 @[refl, simps!]
@@ -426,8 +427,9 @@ def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b
     r ↪r s := by
   haveI := @IsAsymm.isIrrefl β s _
   refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
-  · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_ <;>
-      exact fun h => @irrefl _ s _ _ (by simpa [e] using H _ _ h)
+  · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_
+    · exact fun h => irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
+    · exact fun h => irrefl (r := s) (f b) (by simpa [e] using H _ _ h)
   · refine (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => ?_) fun h' => ?_)
     · subst e
       exact irrefl _ h
@@ -566,16 +568,13 @@ theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
 
 /-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
-`function.injective (fun e : r ≃r s ↦ (e : α → β))`, so we use a trick to say the same. -/
+`Function.Injective (fun e : r ≃r s ↦ (e : α → β))`, so we use a trick to say the same. -/
 theorem coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
   DFunLike.coe_injective
 
 @[ext]
 theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : r ≃r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Inverse map of a relation isomorphism is a relation isomorphism. -/
 protected def symm (f : r ≃r s) : s ≃r r :=

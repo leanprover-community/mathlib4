@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
-import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Topology.Algebra.Order.Floor
 
@@ -158,7 +157,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
     rw [← map_map AddCircle.measurable_mk' measurable_subtype_coe, ← map_comap_subtype_coe m]
     rfl
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 attribute [local instance] Subtype.measureSpace in
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
@@ -206,7 +205,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : UnitAddCircle → ℝ≥0∞
     (∫⁻ a in Ioc t (t + 1), f a) = ∫⁻ b : UnitAddCircle, f b :=
   AddCircle.lintegral_preimage 1 t f
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
 equal to the integral over an interval (t, t + 1] in `ℝ` of its lift to `ℝ`. -/
@@ -222,7 +221,7 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) 
 
 end UnitAddCircle
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 namespace Function
 
@@ -286,6 +285,7 @@ open Filter
 
 variable {g : ℝ → ℝ}
 variable (hg : Periodic g T) (h_int : ∀ t₁ t₂, IntervalIntegrable g MeasureSpace.volume t₁ t₂)
+include hg h_int
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function
 `t ↦ ∫ x in 0..t, g x` is bounded below by `t ↦ X + ⌊t/T⌋ • Y` for appropriate constants `X` and
