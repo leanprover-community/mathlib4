@@ -24,8 +24,12 @@ jobs:
           ./scripts/autolabels.sh long
           ./scripts/autolabels.sh
           LABELS="$(./scripts/autolabels.sh)"
+          if [[ $LABELS != *,* ]]
           printf $'gh issue edit \'%s\' --add-label \'%s\'\n' "$NUMBER" "$LABELS"
-          gh issue edit "$NUMBER" --add-label "$LABELS"
+          then
+            printf 'Actually doing it!\n'
+            gh issue edit "$NUMBER" --add-label "$LABELS"
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
