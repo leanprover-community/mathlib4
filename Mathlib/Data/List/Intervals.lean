@@ -5,8 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.Bool.Basic
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Lattice
+
 /-!
 # Intervals in ℕ
 
@@ -116,9 +116,7 @@ theorem eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
 
 @[simp]
 theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
-  dsimp [Ico]
-  rw [Nat.sub_sub_self (succ_le_of_lt h)]
-  simp [← Nat.one_eq_succ_zero]
+  simp [Ico, Nat.sub_sub_self (succ_le_of_lt h)]
 
 theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
   by_cases h : n < m
