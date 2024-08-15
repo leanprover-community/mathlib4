@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.Rewrite
 import Batteries.Lean.Expr
 import Batteries.Data.Rat.Basic
