@@ -45,11 +45,6 @@ theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞
 @[simp] theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = 𝓟 ({(n : ℕ∞)}) := by
   ext; simp [mem_nhds_natCast_iff]
 
-@[simp] theorem nhds_natCast_natCast {m n : ℕ} :
-    𝓝 ((m : ℕ∞), (n : ℕ∞)) = 𝓟 {((m : ℕ∞),(n : ℕ∞))} := by
-  rw [((openEmbedding_natCast.prod openEmbedding_natCast).map_nhds_eq (m, n)).symm]
-  simp
-
 instance : ContinuousAdd ℕ∞ := by
   refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨_ | a, b⟩
@@ -57,7 +52,7 @@ instance : ContinuousAdd ℕ∞ := by
   rcases b with (_ | b)
   · exact tendsto_nhds_top_mono' continuousAt_snd fun p ↦ le_add_left le_rfl
   simp only [ContinuousAt, WithTop.some_eq_coe, ENat.some_eq_coe]
-  rw [nhds_natCast_natCast, ← Nat.cast_add, nhds_natCast]
+  rw [nhds_prod_eq, nhds_natCast, nhds_natCast, ← Nat.cast_add, nhds_natCast]
   simp
 
 end ENat
