@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Infix
 
 /-!
 # Relation chain
