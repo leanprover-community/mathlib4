@@ -46,6 +46,12 @@ theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a �
 theorem Set.Finite.lt_csInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
   @Set.Finite.csSup_lt_iff αᵒᵈ _ _ _ hs h
 
+theorem Finite.ciSup_mem [Nonempty ι] [Finite ι] {f : ι → α} : ∃ i, f i = ⨆ i, f i :=
+  Nonempty.csSup_mem (range_nonempty f) (finite_range f)
+
+theorem Finite.ciInf_mem [Nonempty ι] [Finite ι] {f : ι → α} : ∃ i, f i = ⨅ i, f i :=
+  Nonempty.csInf_mem (range_nonempty f) (finite_range f)
+
 end ConditionallyCompleteLinearOrder
 
 /-!

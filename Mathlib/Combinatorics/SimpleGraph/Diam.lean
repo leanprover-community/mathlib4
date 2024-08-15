@@ -93,14 +93,10 @@ lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
     ∃ u v, G.edist u v = G.ediam :=
   ENat.exists_eq_iSup₂_of_lt_top h.lt_top
 
+-- Note: Neither `Finite α` nor `G.ediam ≠ ⊤` implies the other.
 lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
-    ∃ u v, G.edist u v = G.ediam := by
-  let f : (α × α) → ℕ∞ := fun p ↦ G.edist p.1 p.2
-  by_cases h : G.ediam = ⊤
-  · have : ⨆ p, f p = ⊤ := by simp [f, ediam_def ▸ h]
-    have : ⊤ ∈ Set.range f := this ▸ (Set.range_nonempty _).csSup_mem (Set.finite_range _)
-    simp_all
-  · exact exists_edist_eq_ediam_of_ne_top h
+    ∃ u v, G.edist u v = G.ediam :=
+  Prod.exists'.mp <| ediam_def ▸ Finite.ciSup_mem
 
 @[gcongr]
 lemma ediam_anti (h : G ≤ G') : G'.ediam ≤ G.ediam :=
