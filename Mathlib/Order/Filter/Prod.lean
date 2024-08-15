@@ -378,7 +378,7 @@ theorem prod_pure {b : β} : f ×ˢ pure b = map (fun a => (a, b)) f := by
 theorem prod_pure_pure {a : α} {b : β} :
     (pure a : Filter α) ×ˢ (pure b : Filter β) = pure (a, b) := by simp
 
-theorem principal_prod_principle (a : α) (b : β) : 𝓟 {a} ×ˢ 𝓟 {b} = 𝓟 {(a, b)} := by
+theorem principal_prod_principal (a : α) (b : β) : 𝓟 {a} ×ˢ 𝓟 {b} = 𝓟 {(a, b)} := by
   simp
 
 @[simp]
