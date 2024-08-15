@@ -62,6 +62,8 @@ local notation "L'" => toMonoidalCategory L W ε
 
 instance : (L').IsLocalization W := inferInstanceAs (L.IsLocalization W)
 
+#check ((whiskeringRight₂' _ _ L').obj (curriedTensor C))
+
 lemma isInvertedBy₂ :
     MorphismProperty.IsInvertedBy₂ W W
       ((whiskeringRight₂' _ _ L').obj (curriedTensor C)) := by
@@ -114,12 +116,156 @@ noncomputable def tensorTrifunctorLeft : LocalizedMonoidal L W ε ⥤ LocalizedM
   bifunctorComp₁₂ (tensorBifunctor L W ε) (tensorBifunctor L W ε)
   -- this is `fun X Y Z ↦ (X ⊗ Y) ⊗ Z`, see the example below
 
+@[simps!]
+def leftAssocTensorAux (C : Type*) [Category C] [MonoidalCategory C] : C × C ⥤ C ⥤ C :=
+  curry.obj (prod.associator _ _ _ ⋙ leftAssocTensor C)
+
+lemma isInvertedBy₂_leftAssocTensorAux :
+    (W.prod W).IsInvertedBy₂ W ((whiskeringRight₂' _ _ L').obj (leftAssocTensorAux C)) := by
+  rintro ⟨⟨X₁, Y₁⟩, Z₁⟩ ⟨⟨X₂, Y₂⟩, Z₂⟩ ⟨⟨f₁, f₂⟩, f₃⟩ ⟨⟨hf₁, hf₂⟩, hf₃⟩
+  have := Localization.inverts (L') W _ (W.whiskerRight_mem _ (W.whiskerRight_mem f₁ hf₁ Y₂) Z₁)
+  have := Localization.inverts (L') W _ (W.whiskerRight_mem _ (W.whiskerLeft_mem X₁ _ hf₂) Z₁)
+  have := Localization.inverts (L') W _ (W.whiskerLeft_mem X₂ _ (W.whiskerLeft_mem Y₂ _ hf₃))
+  simp only [leftAssocTensorAux, uncurry_obj_obj, whiskeringRight₂'_obj_obj_obj, curry_obj_obj_obj,
+    Functor.comp_obj, prod.associator_obj, leftAssocTensor_obj, prod_Hom, uncurry_obj_map,
+    whiskeringRight₂'_obj_map_app, curry_obj_map_app, Functor.comp_map, prod.associator_map,
+    leftAssocTensor_map, tensorHom_id, whiskeringRight₂'_obj_obj_map, curry_obj_obj_map, prod_id,
+    id_whiskerRight, id_tensorHom, tensor_whiskerLeft, Functor.map_comp]
+  have h : f₁ ⊗ f₂ = (X₁ ◁ f₂) ≫ (f₁ ▷ Y₂) :=
+    by simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
+  rw [h, MonoidalCategory.comp_whiskerRight, Functor.map_comp]
+  infer_instance
+
+noncomputable def tensorTrifunctorLeftAux : LocalizedMonoidal L W ε × LocalizedMonoidal L W ε ⥤
+    LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=
+  lift₂ _ (isInvertedBy₂_leftAssocTensorAux L W ε) (L.prod L) L
+
+@[simps!]
+def rightAssocTensorAux (C : Type*) [Category C] [MonoidalCategory C] : C × C ⥤ C ⥤ C :=
+  curry.obj (prod.associator _ _ _ ⋙ rightAssocTensor C)
+
+lemma isInvertedBy₂_rightAssocTensorAux :
+    (W.prod W).IsInvertedBy₂ W ((whiskeringRight₂' _ _ L').obj (rightAssocTensorAux C)) := by
+  rintro ⟨⟨X₁, Y₁⟩, Z₁⟩ ⟨⟨X₂, Y₂⟩, Z₂⟩ ⟨⟨f₁, f₂⟩, f₃⟩ ⟨⟨hf₁, hf₂⟩, hf₃⟩
+  simp only [rightAssocTensorAux, uncurry_obj_obj, whiskeringRight₂'_obj_obj_obj, curry_obj_obj_obj,
+    Functor.comp_obj, prod.associator_obj, rightAssocTensor_obj, prod_Hom, uncurry_obj_map,
+    whiskeringRight₂'_obj_map_app, curry_obj_map_app, Functor.comp_map, prod.associator_map,
+    rightAssocTensor_map, tensorHom_id, whiskeringRight₂'_obj_obj_map, curry_obj_obj_map, prod_id,
+    id_tensorHom]
+  have h : f₁ ⊗ f₂ ▷ Z₁ = (X₁ ◁ f₂ ▷ Z₁) ≫ (f₁ ▷ (Y₂ ⊗ Z₁)) :=
+    by simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
+  rw [h, Functor.map_comp]
+  sorry -- infer_instance
+
+noncomputable def tensorTrifunctorRightAux : LocalizedMonoidal L W ε × LocalizedMonoidal L W ε ⥤
+    LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=
+  lift₂ _ (isInvertedBy₂_rightAssocTensorAux L W ε) (L.prod L) L
+
+noncomputable def tensorTrifunctorLeftRightAuxIso :
+    tensorTrifunctorLeftAux L W ε ≅ tensorTrifunctorRightAux L W ε :=
+  lift₂NatIso (L.prod L) L (isInvertedBy₂_leftAssocTensorAux L W ε)
+    (isInvertedBy₂_rightAssocTensorAux L W ε) (Functor.mapIso _
+      (curry.mapIso (isoWhiskerLeft _ (associatorNatIso C))))
+
+lemma associatorLeftHalf_aux {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ X₂) (f₂ : Y₁ ⟶ Y₂) :
+    ((tensorBifunctor L W ε).map (L.map f₁)).app (L.obj Y₁) ≫
+      ((tensorBifunctor L W ε).obj (L.obj X₂)).map (L.map f₂) =
+        (((tensorBifunctorIso L W ε).hom.app X₁).app Y₁) ≫ (L').map (f₁ ⊗ f₂)
+          ≫ (((tensorBifunctorIso L W ε).inv.app X₂).app Y₂) := by
+  have h : f₁ ⊗ f₂ = (X₁ ◁ f₂) ≫ (f₁ ▷ Y₂) := by
+    simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
+  have := ((tensorBifunctorIso L W ε).hom.app X₁).naturality (f₂)
+  simp only [whiskeringLeft₂ObjObj_obj_obj_obj, whiskeringRight₂'_obj_obj_obj,
+    curriedTensor_obj_obj, whiskeringLeft₂ObjObj_obj_obj_map, whiskeringRight₂'_obj_obj_map,
+    curriedTensor_obj_map] at this
+  rw [h, Functor.map_comp]
+  slice_rhs 0 1 => rw [← this]
+  simp only [whiskeringLeft₂ObjObj_obj_obj_obj, assoc]
+  rw [← ((tensorBifunctor L W ε).map (L.map f₁)).naturality]
+  congr 1
+  change _ = _ ≫ _ ≫ (((tensorBifunctorIso L W ε).app X₂).app Y₂).inv
+  rw [← assoc, Iso.eq_comp_inv]
+  change _ ≫ (((tensorBifunctorIso L W ε).hom.app X₂).app Y₂) = _
+  change ((L ⋙ tensorBifunctor L W ε).map _).app _ ≫ _ = _
+  rw [← whiskerLeft_app, ← NatTrans.comp_app]
+  erw [(tensorBifunctorIso L W ε).hom.naturality f₁]
+  rfl
+
+lemma associatorLeftHalf_aux_naturality {X₁ X₂ Y₁ Y₂ : C} (Z : C) (f₁ : X₁ ⟶ X₂) (f₂ : Y₁ ⟶ Y₂) :
+    ((tensorBifunctor L W ε).map
+      (((tensorBifunctor L W ε).map (L.map f₁)).app (L.obj Y₁))).app (L.obj Z) ≫
+        ((tensorBifunctor L W ε).map
+          (((tensorBifunctor L W ε).obj (L.obj X₂)).map (L.map f₂))).app (L.obj Z) ≫
+            ((tensorBifunctor L W ε).map
+              (((tensorBifunctorIso L W ε).hom.app X₂).app Y₂)).app (L.obj Z) ≫
+                ((tensorBifunctorIso L W ε).hom.app (X₂ ⊗ Y₂)).app Z =
+    ((tensorBifunctor L W ε).map
+      (((tensorBifunctorIso L W ε).hom.app X₁).app Y₁)).app (L.obj Z) ≫
+        ((tensorBifunctorIso L W ε).hom.app (X₁ ⊗ Y₁)).app Z ≫ (L').map ((f₁ ⊗ f₂) ▷ Z) := by
+  simp only [← NatTrans.comp_app_assoc, ← Functor.map_comp]
+  have h : ((tensorBifunctor L W ε).map (L.map f₁)).app (L.obj Y₁) ≫
+      ((tensorBifunctor L W ε).obj (L.obj X₂)).map (L.map f₂) =
+        (((tensorBifunctorIso L W ε).hom.app X₁).app Y₁) ≫ (L').map (f₁ ⊗ f₂)
+          ≫ (((tensorBifunctorIso L W ε).inv.app X₂).app Y₂) :=
+    associatorLeftHalf_aux L W ε f₁ f₂
+  rw [reassoc_of% h, ← NatTrans.comp_app, ← NatTrans.comp_app]
+  simp only [whiskeringRight₂'_obj_obj_obj, curriedTensor_obj_obj, Iso.inv_hom_id,
+    NatTrans.id_app, comp_id, Functor.map_comp]
+  simp only [NatTrans.comp_app, assoc]
+  congr 1
+  rw [← whiskerLeft_app, ← NatTrans.comp_app]
+  erw [(tensorBifunctorIso L W ε).hom.naturality (f₁ ⊗ f₂)]
+  simp
+
+noncomputable instance : Lifting₂ (L.prod L) L (W.prod W) W
+    ((whiskeringRight₂' (C × C) C L').obj (leftAssocTensorAux C))
+      (uncurry.obj (tensorBifunctor L W ε) ⋙ tensorBifunctor L W ε) where
+  iso' := by
+    refine NatIso.ofComponents (fun ⟨X, Y⟩ ↦ NatIso.ofComponents (fun Z ↦ ?_) ?_) ?_
+    · exact ((tensorBifunctor L W ε).flip.obj _).mapIso
+        (((tensorBifunctorIso L W ε).app _).app _) ≪≫ ((tensorBifunctorIso L W ε).app _).app _
+    · intro Z₁ Z₂ f
+      simp only [whiskeringLeft₂ObjObj_obj_obj_obj, Functor.prod_obj, Functor.comp_obj,
+        uncurry_obj_obj, whiskeringRight₂'_obj_obj_obj, leftAssocTensorAux_obj_obj,
+        whiskeringLeft₂ObjObj_obj_obj_map, curriedTensor_obj_obj, Functor.flip_obj_obj,
+        Iso.trans_hom, Functor.mapIso_hom, Iso.app_hom, Functor.flip_obj_map,
+        NatTrans.naturality_assoc, whiskeringRight₂'_obj_obj_map, leftAssocTensorAux_obj_map,
+        Functor.map_comp, assoc]
+      have := ((tensorBifunctorIso L W ε).hom.app (X ⊗ Y)).naturality f
+      simp only [whiskeringLeft₂ObjObj_obj_obj_obj, whiskeringRight₂'_obj_obj_obj,
+        curriedTensor_obj_obj, whiskeringLeft₂ObjObj_obj_obj_map,
+        whiskeringRight₂'_obj_obj_map, curriedTensor_obj_map, tensor_whiskerLeft,
+        Functor.map_comp] at this
+      rw [← this]
+      rfl
+    · intro ⟨X₁, Y₁⟩ ⟨X₂, Y₂⟩ ⟨f₁, f₂⟩
+      ext Z
+      simp only [whiskeringLeft₂ObjObj_obj_obj_obj, Functor.prod_obj, Functor.comp_obj,
+        uncurry_obj_obj, whiskeringRight₂'_obj_obj_obj, leftAssocTensorAux_obj_obj,
+        curriedTensor_obj_obj, Functor.flip_obj_obj, NatTrans.comp_app,
+        whiskeringLeft₂ObjObj_obj_map_app, Functor.prod_map, Functor.comp_map,
+        uncurry_obj_map, Functor.map_comp, NatIso.ofComponents_hom_app, Iso.trans_hom,
+        Functor.mapIso_hom, Iso.app_hom, Functor.flip_obj_map, assoc,
+        whiskeringRight₂'_obj_map_app, leftAssocTensorAux_map_app]
+      exact associatorLeftHalf_aux_naturality L W ε Z f₁ f₂
+
+noncomputable def associatorLeftHalf :
+    curry.obj (tensorTrifunctorLeftAux L W ε) ≅ tensorTrifunctorLeft L W ε := by
+  refine curry.mapIso ?_ ≪≫ (bifunctorComp₁₂Iso _ _).symm
+  exact lift₂NatIso' (W₁ := W.prod W) (W₂ := W)
+    (F₁ := ((whiskeringRight₂' (C × C) C L').obj (leftAssocTensorAux C)))
+    (F₂ := ((whiskeringRight₂' (C × C) C L').obj (leftAssocTensorAux C)))
+    (L.prod L) L
+    (lift₂ _ (isInvertedBy₂_leftAssocTensorAux L W ε) (L.prod L) L)
+    (uncurry.obj (tensorBifunctor L W ε) ⋙ tensorBifunctor L W ε) (Iso.refl _)
+
 noncomputable def tensorTrifunctorRight : LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε ⥤
     LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=
   bifunctorComp₂₃ (tensorBifunctor L W ε) (tensorBifunctor L W ε)
    -- this is `fun X Y Z ↦ X ⊗ (Y ⊗ Z)`, see the example below
 
-noncomputable def associator : tensorTrifunctorLeft L W ε ≅ tensorTrifunctorRight L W ε := sorry
+noncomputable def associator : tensorTrifunctorLeft L W ε ≅ tensorTrifunctorRight L W ε :=
+  (associatorLeftHalf L W ε).symm ≪≫ curry.mapIso (tensorTrifunctorLeftRightAuxIso L W ε) ≪≫ sorry
 
 noncomputable instance monoidalCategoryStruct :
     MonoidalCategoryStruct (LocalizedMonoidal L W ε) where
