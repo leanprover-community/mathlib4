@@ -94,7 +94,7 @@ set_option linter.minImports false in
 
 /--
 warning: Imports increased to
-[Init.Guard, Lean.Parser.Term, Mathlib.Data.Int.Notation]
+[Init.Guard, Mathlib.Data.Int.Notation]
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
