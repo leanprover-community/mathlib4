@@ -14,14 +14,8 @@ This file defines various mathlib linters which are based on reading the source 
 In practice, only style linters will have this form.
 All of these have been rewritten from the `lint-style.py` script.
 
-For now, this only contains linters checking
-- that the copyright header and authors line are correctly formatted
-- for certain disallowed imports
-- if the string "adaptation note" is used instead of the command #adaptation_note
-- lines are at most 100 chars
-- files are at most 1500 lines long (unless specifically allowed).
-
-Further linters will be ported in subsequent PRs.
+For now, this only contains the linters for the copyright and author headers and large files:
+further linters will be ported in subsequent PRs.
 
 An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
