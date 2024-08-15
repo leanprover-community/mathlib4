@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
 import Mathlib.Order.SuccPred.CompleteLinearOrder
@@ -78,7 +77,6 @@ Cantor's theorem, König's theorem, Konig's theorem
 -/
 
 assert_not_exists Field
-assert_not_exists Module
 
 open Mathlib (Vector)
 open Function Set Order
@@ -1216,14 +1214,6 @@ theorem mk_coe_finset {α : Type u} {s : Finset α} : #s = ↑(Finset.card s) :=
 
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
   simp [Pow.pow]
-
-@[simp]
-theorem mk_finsupp_lift_of_fintype (α : Type u) (β : Type v) [Fintype α] [Zero β] :
-    #(α →₀ β) = lift.{u} #β ^ Fintype.card α := by
-  simpa using (@Finsupp.equivFunOnFinite α β _ _).cardinal_eq
-
-theorem mk_finsupp_of_fintype (α β : Type u) [Fintype α] [Zero β] :
-    #(α →₀ β) = #β ^ Fintype.card α := by simp
 
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _

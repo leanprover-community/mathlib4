@@ -345,8 +345,8 @@ instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   (asIso f ≪≫ asIso h).isIso_hom
 
 /--
-The composition of isomorphisms is an isomorphism. Here the arguments of type `IsIso` are
-explicit, to make this easier to use with the `refine` tactic, for instance.
+The composition of isomorphisms is an isomorphism. Here the arguments of type `IsIso` are
+explicit, to make this easier to use with the `refine` tactic, for instance.
 -/
 lemma comp_isIso' (_ : IsIso f) (_ : IsIso h) : IsIso (f ≫ h) := inferInstance
 

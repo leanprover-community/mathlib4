@@ -293,11 +293,13 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
-    induction' n with n IH
-    · simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
+    induction n with
+    | zero =>
+      simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
       rfl
-    · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
+    | succ n IH =>
+      have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]
           using (diff_union_of_subset subset_union_left).symm
       rw [this, f.additive]

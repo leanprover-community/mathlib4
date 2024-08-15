@@ -283,14 +283,14 @@ noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
     have hnx : -x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius := by
       rw [EMetric.mem_ball, ← neg_zero, edist_neg_neg]
       exact hx
-    rw [← exp_add_of_commute_of_mem_ball (Commute.neg_left <| Commute.refl x) hnx hx, neg_add_self,
-      exp_zero]
+    rw [← exp_add_of_commute_of_mem_ball (Commute.neg_left <| Commute.refl x) hnx hx,
+      neg_add_cancel, exp_zero]
   mul_invOf_self := by
     have hnx : -x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius := by
       rw [EMetric.mem_ball, ← neg_zero, edist_neg_neg]
       exact hx
-    rw [← exp_add_of_commute_of_mem_ball (Commute.neg_right <| Commute.refl x) hx hnx, add_neg_self,
-      exp_zero]
+    rw [← exp_add_of_commute_of_mem_ball (Commute.neg_right <| Commute.refl x) hx hnx,
+      add_neg_cancel, exp_zero]
 
 theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : IsUnit (exp 𝕂 x) :=
@@ -463,7 +463,7 @@ theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸]
     (h : x ∈ skewAdjoint 𝔸) : exp 𝕂 x ∈ unitary 𝔸 := by
   rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
-    add_left_neg, add_right_neg, exp_zero, and_self_iff]
+    neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 
 end
 
@@ -482,9 +482,9 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     exact h.of_refl (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
 
 theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp 𝕂 (n • x) = exp 𝕂 x ^ n := by
-  induction' n with n ih
-  · rw [zero_smul, pow_zero, exp_zero]
-  · rw [succ_nsmul, pow_succ, exp_add_of_commute ((Commute.refl x).smul_left n), ih]
+  induction n with
+  | zero => rw [zero_smul, pow_zero, exp_zero]
+  | succ n ih => rw [succ_nsmul, pow_succ, exp_add_of_commute ((Commute.refl x).smul_left n), ih]
 
 variable (𝕂)
 
@@ -542,6 +542,7 @@ section DivisionAlgebra
 
 variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 variable (𝕂)
+include 𝕂
 
 theorem norm_expSeries_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n ! : 𝔸)‖ :=
   norm_expSeries_div_summable_of_mem_ball 𝕂 x

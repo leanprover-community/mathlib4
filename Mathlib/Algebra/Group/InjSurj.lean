@@ -291,7 +291,7 @@ protected abbrev group [Group M₂] (f : M₁ → M₂) (hf : Injective f) (one 
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₁ :=
   { hf.divInvMonoid f one mul inv div npow zpow with
-    mul_left_inv := fun x => hf <| by erw [mul, inv, mul_left_inv, one] }
+    inv_mul_cancel := fun x => hf <| by erw [mul, inv, inv_mul_cancel, one] }
 
 /-- A type endowed with `0`, `1` and `+` is an additive group with one, if it admits an injective
 map that preserves `0`, `1` and `+` to an additive group with one.  See note
@@ -476,7 +476,7 @@ protected abbrev group [Group M₁] (f : M₁ → M₂) (hf : Surjective f) (one
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₂ :=
   { hf.divInvMonoid f one mul inv div npow zpow with
-    mul_left_inv := hf.forall.2 fun x => by erw [← inv, ← mul, mul_left_inv, one] }
+    inv_mul_cancel := hf.forall.2 fun x => by erw [← inv, ← mul, inv_mul_cancel, one] }
 
 /-- A type endowed with `0`, `1`, `+` is an additive group with one,
 if it admits a surjective map that preserves `0`, `1`, and `+` to an additive group with one.

@@ -22,16 +22,11 @@ inherits a metric space structure from the Hausdorff distance, as the Hausdorff 
 always finite in this context.
 -/
 
-
 noncomputable section
-
-open scoped Classical
-open Topology ENNReal
 
 universe u
 
-open scoped Classical
-open Set Function TopologicalSpace Filter
+open Set Function TopologicalSpace Filter Topology ENNReal
 
 namespace EMetric
 

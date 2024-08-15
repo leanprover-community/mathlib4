@@ -132,6 +132,7 @@ structure Correct (cs : ι → Cube n) : Prop where
 namespace Correct
 
 variable (h : Correct cs)
+include h
 
 theorem toSet_subset_unitCube {i} : (cs i).toSet ⊆ unitCube.toSet := by
   convert h.iUnion_eq ▸ subset_iUnion _ i
@@ -261,6 +262,7 @@ theorem t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) :
   · simp [hw]
 
 section
+include h v
 
 /-- Every cube in the valley must be smaller than it -/
 theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
@@ -514,6 +516,7 @@ end
 
 variable [Finite ι] [Nontrivial ι]
 
+include h in
 theorem strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
   strictAnti_nat_of_succ_lt fun k => by
     let v := (sequenceOfCubes h k).2; dsimp only [decreasingSequence, sequenceOfCubes]
