@@ -8,6 +8,7 @@ import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Algebra.Group.Subgroup.Actions
 
 /-! # Blocks
 
@@ -28,15 +29,6 @@ We follow [wieland1964].
 -/
 
 open scoped BigOperators Pointwise
-
-namespace Subgroup
-
-variable {G : Type*} [Group G] {X : Type*} [MulAction G X] (S : Subgroup G)
-
-@[to_additive (attr := simp)]
-lemma mk_smul (g : G) (hg : g ∈ S) (x : X) : (⟨g, hg⟩ : S) • x = g • x := rfl
-
-end Subgroup
 
 namespace MulAction
 
