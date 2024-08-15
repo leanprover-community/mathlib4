@@ -252,7 +252,7 @@ theorem ballot_edge (p : ℕ) : condCount (countedSequence (p + 1) 0) staysPosit
   rw [counted_right_zero]
   refine condCount_eq_one_of (finite_singleton _) (singleton_nonempty _) ?_
   refine singleton_subset_iff.2 fun l hl₁ hl₂ => List.sum_pos _ (fun x hx => ?_) hl₁
-  rw [List.eq_of_mem_replicate (List.mem_of_mem_suffix hx hl₂)]
+  rw [List.eq_of_mem_replicate (hl₂.mem hx)]
   norm_num
 
 theorem countedSequence_int_pos_counted_succ_succ (p q : ℕ) :
