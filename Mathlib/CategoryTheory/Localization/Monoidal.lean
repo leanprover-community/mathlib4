@@ -131,8 +131,8 @@ lemma isInvertedBy₂_leftAssocTensorAux :
     whiskeringRight₂'_obj_map_app, curry_obj_map_app, Functor.comp_map, prod.associator_map,
     leftAssocTensor_map, tensorHom_id, whiskeringRight₂'_obj_obj_map, curry_obj_obj_map, prod_id,
     id_whiskerRight, id_tensorHom, tensor_whiskerLeft, Functor.map_comp]
-  have h : f₁ ⊗ f₂ = (X₁ ◁ f₂) ≫ (f₁ ▷ Y₂) :=
-    by simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
+  have h : f₁ ⊗ f₂ = (X₁ ◁ f₂) ≫ (f₁ ▷ Y₂) := by
+    simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
   rw [h, MonoidalCategory.comp_whiskerRight, Functor.map_comp]
   infer_instance
 
@@ -147,15 +147,18 @@ def rightAssocTensorAux (C : Type*) [Category C] [MonoidalCategory C] : C × C �
 lemma isInvertedBy₂_rightAssocTensorAux :
     (W.prod W).IsInvertedBy₂ W ((whiskeringRight₂' _ _ L').obj (rightAssocTensorAux C)) := by
   rintro ⟨⟨X₁, Y₁⟩, Z₁⟩ ⟨⟨X₂, Y₂⟩, Z₂⟩ ⟨⟨f₁, f₂⟩, f₃⟩ ⟨⟨hf₁, hf₂⟩, hf₃⟩
+  have := Localization.inverts (L') W _ (W.whiskerRight_mem _ hf₁ (Y₂ ⊗ Z₁))
+  have := Localization.inverts (L') W _ (W.whiskerLeft_mem X₁ _ (W.whiskerRight_mem _ hf₂ Z₁))
+  have := Localization.inverts (L') W _ (W.whiskerLeft_mem X₂ _ (W.whiskerLeft_mem Y₂ _ hf₃))
   simp only [rightAssocTensorAux, uncurry_obj_obj, whiskeringRight₂'_obj_obj_obj, curry_obj_obj_obj,
     Functor.comp_obj, prod.associator_obj, rightAssocTensor_obj, prod_Hom, uncurry_obj_map,
     whiskeringRight₂'_obj_map_app, curry_obj_map_app, Functor.comp_map, prod.associator_map,
     rightAssocTensor_map, tensorHom_id, whiskeringRight₂'_obj_obj_map, curry_obj_obj_map, prod_id,
     id_tensorHom]
-  have h : f₁ ⊗ f₂ ▷ Z₁ = (X₁ ◁ f₂ ▷ Z₁) ≫ (f₁ ▷ (Y₂ ⊗ Z₁)) :=
-    by simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
+  have h : f₁ ⊗ f₂ ▷ Z₁ = (X₁ ◁ f₂ ▷ Z₁) ≫ (f₁ ▷ (Y₂ ⊗ Z₁)) := by
+    simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
   rw [h, Functor.map_comp]
-  sorry -- infer_instance
+  infer_instance
 
 noncomputable def tensorTrifunctorRightAux : LocalizedMonoidal L W ε × LocalizedMonoidal L W ε ⥤
     LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=

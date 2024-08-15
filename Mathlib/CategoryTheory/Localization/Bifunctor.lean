@@ -113,22 +113,6 @@ noncomputable abbrev lift₂NatIso {F₁ F₂ : C₁ ⥤ C₂ ⥤ E}
     (hF₂ : W₁.IsInvertedBy₂ W₂ F₂)
     (e : F₁ ≅ F₂) : lift₂ _ hF₁ L₁ L₂  ≅ lift₂ _ hF₂ L₁ L₂ :=
   curry.mapIso (liftNatIso (L₁.prod L₂) (W₁.prod W₂) _ _ _ _ (uncurry.mapIso e))
-    -- (F₁' F₂' : D₁ ⥤ D₂ ⥤ E) [Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁']
-    -- [Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂']
-
-noncomputable def liftCompRight {C D E E' : Type*} [Category C] [Category D] [Category E]
-    [Category E'] {W : MorphismProperty C} (F : C ⥤ E) (L : C ⥤ D) (G : E ⥤ E')
-    (hF : W.IsInvertedBy F) [L.IsLocalization W] :
-      lift F hF L ⋙ G ≅ lift (F ⋙ G) (hF.of_comp W F G) L :=
-  liftNatIso L W (F ⋙ G) (F ⋙ G) _ _ (Iso.refl _)
-
--- def liftLift {D : Type*} [Category D] (F₁ : C₁ ⥤ C₂) (F₂ : C₂ ⥤ D) (L₁ : C₁ ⥤ D) (L₂ : C₂ ⥤ D)
---   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (X : D)
---     (hF₁ : W₁.IsInvertedBy F₁) (hF₂ : W₂.IsInvertedBy F₂) :
---       F₂.obj ((lift F₁ hF₁ L₁).obj ((lift F₂ hF₂ L₂).obj X)) ≅ (lift (F₁ ⋙ F₂) (hF₁.comp hF₂) L₁).obj X := by
---   #check (lift F₁ hF₁ L₁)
---   #check (lift F₂ hF₂ L₂)
---   sorry
 
 end
 
