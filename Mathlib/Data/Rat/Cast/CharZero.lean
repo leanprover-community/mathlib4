@@ -30,7 +30,7 @@ lemma cast_injective : Injective ((↑) : ℚ → α)
 
 @[simp, norm_cast] lemma cast_inj : (p : α) = q ↔ p = q := cast_injective.eq_iff
 
-@[simp, norm_cast] lemma cast_eq_zero : (p : α) = 0 ↔ p = 0 := by rw [← cast_zero, cast_inj]
+@[simp, norm_cast] lemma cast_eq_zero : (p : α) = 0 ↔ p = 0 := cast_injective.eq_iff' cast_zero
 lemma cast_ne_zero : (p : α) ≠ 0 ↔ p ≠ 0 := cast_eq_zero.ne
 
 @[simp, norm_cast] lemma cast_add (p q : ℚ) : ↑(p + q) = (p + q : α) :=
