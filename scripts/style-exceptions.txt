@@ -1,4 +1,3 @@
-Mathlib/SetTheory/Ordinal/Segfault.lean : line 6 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Algebra/BigOperators/Group/Finset.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2245 lines, try to split it up
 Mathlib/Algebra/Group/Subgroup/Basic.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2893 lines, try to split it up
 Mathlib/Algebra/MonoidAlgebra/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1965 lines, try to split it up
@@ -52,7 +51,6 @@ Mathlib/Order/LiminfLimsup.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1791
 Mathlib/Order/UpperLower/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1795 lines, try to split it up
 Mathlib/RingTheory/UniqueFactorizationDomain.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1982 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2004 lines, try to split it up
-Mathlib/SetTheory/Cardinal/Ordinal.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1501 lines, try to split it up
 Mathlib/SetTheory/Game/PGame.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1753 lines, try to split it up
 Mathlib/SetTheory/Ordinal/Arithmetic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2269 lines, try to split it up
 Mathlib/SetTheory/ZFC/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1549 lines, try to split it up
