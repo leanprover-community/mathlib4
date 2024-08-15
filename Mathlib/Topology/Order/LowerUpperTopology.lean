@@ -306,7 +306,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
   apply Or.inr
   convert IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
   constructor
-  · intro ⟨a,ha⟩
+  · intro ⟨a, ha⟩
     use {U}
     constructor
     · apply subset_trans (singleton_subset_iff.mpr _) (subset_insert _ _)
