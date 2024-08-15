@@ -1,3 +1,4 @@
+import Batteries
 import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddTorsor
@@ -921,6 +922,7 @@ import Mathlib.Analysis.CStarAlgebra.Exponential
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 import Mathlib.Analysis.CStarAlgebra.Matrix
 import Mathlib.Analysis.CStarAlgebra.Module.Defs
+import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 import Mathlib.Analysis.CStarAlgebra.Multiplier
 import Mathlib.Analysis.CStarAlgebra.Spectrum
 import Mathlib.Analysis.CStarAlgebra.Unitization
