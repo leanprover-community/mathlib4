@@ -39,11 +39,11 @@ theorem mem_nhds_iff {x : ℕ∞} {s : Set ℕ∞} (hx : x ≠ ⊤) : s ∈ 𝓝
   rw [_root_.mem_nhds_iff]
   exact ⟨fun ⟨_, h, _, h'⟩ ↦ h h', fun h ↦ ⟨_, singleton_subset_iff.2 h, isOpen_singleton hx, rfl⟩⟩
 
-theorem mem_nhds_coe_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞) ↔ (n : ℕ∞) ∈ s :=
+theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞) ↔ (n : ℕ∞) ∈ s :=
   mem_nhds_iff (coe_ne_top _)
 
 @[simp] theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = 𝓟 ({(n : ℕ∞)}) := by
-  ext; simp [mem_nhds_coe_iff]
+  ext; simp [mem_nhds_natCast_iff]
 
 @[simp] theorem nhds_natCast_natCast {m n : ℕ} :
     𝓝 ((m : ℕ∞), (n : ℕ∞)) = 𝓟 {((m : ℕ∞),(n : ℕ∞))} := by
