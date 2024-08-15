@@ -88,7 +88,7 @@ theorem exists_above_of_lt_cof {p : Ordinal} (hp : p < o) (hSemp : Nonempty S)
     ∃ q, q < o ∧ p < q ∧ ∀ U ∈ S, (U ∩ Ioo p q).Nonempty := by
   rw [lift_cof] at hScard
   have oLim : IsLimit o := hSemp.casesOn fun ⟨T, hT⟩ ↦
-    (hSunb T hT).isLimit (pos_of_gt hp).ne.symm
+    (hSunb T hT).isLimit (pos_of_gt' hp).ne.symm
   let f : ↑S → Ordinal := fun U ↦ lift.{u + 1, u} (sInf (U ∩ (Ioo p o)))
   have infMem : ∀ U : S, sInf (↑U ∩ Ioo p o) ∈ ↑U ∩ Ioo p o := fun U ↦
     csInf_mem ((hSunb U.1 U.2).inter_Ioo_nonempty hp : (↑U ∩ Ioo p o).Nonempty)
@@ -188,9 +188,9 @@ theorem exists_omega_seq_succ_prop_pos (onelto : 1 < o) {P : Ordinal → Ordinal
   have rltf0 := hf.2.2
   by_cases hi' : i = 0
   · subst hi'
-    exact this.resolve_left (pos_of_gt rltf0).ne.symm
+    exact this.resolve_left (pos_of_gt' rltf0).ne.symm
   · have rltfi := rltf0.trans <| hf.2.1 0 i omega_pos hi (Ordinal.pos_iff_ne_zero.mpr hi')
-    exact this.resolve_left (pos_of_gt rltfi).ne.symm
+    exact this.resolve_left (pos_of_gt' rltfi).ne.symm
 
 /-- If between every 2 consecutive elements of an increasing `δ`-sequence
   there is an element of `C`, and `δ` is a limit ordinal,
@@ -201,7 +201,7 @@ theorem isAcc_bsup_of_between {δ : Ordinal} (C : Set Ordinal) (δLim : δ.IsLim
     IsAcc (bsup δ s) C := by
   use (by
     apply Ordinal.pos_iff_ne_zero.mp; apply (lt_bsup s).mpr
-    exact ⟨0 + 1, δLim.nat_lt (0 + 1), pos_of_gt (sInc 0 δLim.pos)⟩)
+    exact ⟨0 + 1, δLim.nat_lt (0 + 1), pos_of_gt' (sInc 0 δLim.pos)⟩)
   intro p pltsup
   rw [lt_bsup] at pltsup
   rcases pltsup with ⟨i, hi, plt⟩

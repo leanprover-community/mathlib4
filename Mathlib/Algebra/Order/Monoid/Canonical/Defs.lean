@@ -288,9 +288,12 @@ theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔
 
 end CanonicallyOrderedCommMonoid
 
-theorem pos_of_gt {M : Type*} [Preorder M] [OrderBot M] {n m : M} (h : n < m) : ⊥ < m :=
-  lt_of_le_of_lt bot_le h
+theorem pos_of_gt {M : Type*} [CanonicallyOrderedAddCommMonoid M] {n m : M} (h : n < m) : 0 < m :=
+  lt_of_le_of_lt (zero_le _) h
 #align pos_of_gt pos_of_gt
+
+theorem pos_of_gt' {M : Type*} [Preorder M] [OrderBot M] {n m : M} (h : n < m) : ⊥ < m :=
+  lt_of_le_of_lt bot_le h
 
 namespace NeZero
 
@@ -299,7 +302,7 @@ theorem pos {M} (a : M) [CanonicallyOrderedAddCommMonoid M] [NeZero a] : 0 < a :
 #align ne_zero.pos NeZero.pos
 
 theorem of_gt {M} [CanonicallyOrderedAddCommMonoid M] {x y : M} (h : x < y) : NeZero y :=
-  of_pos <| @bot_eq_zero M _ ▸ pos_of_gt h
+  of_pos <| pos_of_gt h
 #align ne_zero.of_gt NeZero.of_gt
 
 -- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`

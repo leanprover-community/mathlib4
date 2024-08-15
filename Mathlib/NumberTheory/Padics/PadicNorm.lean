@@ -79,7 +79,7 @@ protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 
 See also `padicNorm.padicNorm_p_of_prime` for a version assuming `p` is prime. -/
 theorem padicNorm_p (hp : 1 < p) : padicNorm p p = (p : ℚ)⁻¹ := by
-  simp_all [padicNorm, (pos_of_gt hp).ne', padicValNat.self hp]
+  simp [padicNorm, (pos_of_gt hp).ne', padicValNat.self hp]
 #align padic_norm.padic_norm_p padicNorm.padicNorm_p
 
 /-- The `p`-adic norm of `p` is `p⁻¹` if `p` is prime.
