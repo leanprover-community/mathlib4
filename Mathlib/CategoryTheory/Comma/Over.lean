@@ -672,8 +672,8 @@ def ofStructuredArrowProjEquivalence {D : Type u₂} [Category.{v₂} D] (F : D 
       (Functor.toStructuredArrow (StructuredArrow.proj Y _ ⋙ Under.forget X) _ _
          (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
       (fun f => f.right.hom) (by simp))
-    (by aesop_cat)
-    (by aesop_cat)
+    (NatIso.ofComponents (fun x => by rfl) (by simp))
+    (NatIso.ofComponents (fun x => by rfl) (by aesop_cat))
 
 /-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
 def ofDiagEquivalence (X : T × T) :
@@ -685,8 +685,8 @@ def ofDiagEquivalence (X : T × T) :
       (fun f => f.hom.2) (fun m => by have := m.w; aesop_cat))
     (Functor.toStructuredArrow (StructuredArrow.proj _ _ ⋙ Under.forget _) _ _
       (fun f => (f.right.hom, f.hom)) (fun m => by have := m.w; aesop_cat))
-    (by aesop_cat)
-    (by aesop_cat)
+    (NatIso.ofComponents (fun x => by rfl) (by simp))
+    (NatIso.ofComponents (fun x => by rfl) (by aesop_cat))
 
 end StructuredArrow
 
@@ -706,10 +706,10 @@ def ofCostructuredArrowProjEquivalence {D : Type u₂} [Category.{v₂} D]
       (Functor.toCostructuredArrow (CostructuredArrow.proj _ Y ⋙ Over.forget X) _ _
         (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
       (fun f => f.left.hom) (by simp))
-    (by aesop_cat)
-    (by aesop_cat)
+    (NatIso.ofComponents (fun x => by rfl) (by simp))
+    (NatIso.ofComponents (fun x => by rfl) (by aesop_cat))
 
-/-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
+/-- Characterization of the costructured arrow category on the diagonal functor `T ⥤ T × T`. -/
 def ofDiagEquivalence (X : T × T) :
     CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.1) X.2 :=
   Equivalence.mk
@@ -720,8 +720,8 @@ def ofDiagEquivalence (X : T × T) :
       (fun f => f.hom.2) (fun m => by have := congrArg (·.2) m.w; aesop_cat))
     (Functor.toCostructuredArrow (CostructuredArrow.proj _ _ ⋙ Over.forget _) _ X
       (fun f => (f.left.hom, f.hom)) (fun m => by have := m.w; aesop_cat))
-    (by aesop_cat)
-    (by aesop_cat)
+    (NatIso.ofComponents (fun x => by rfl) (by simp))
+    (NatIso.ofComponents (fun x => by rfl) (by aesop_cat))
 
 end CostructuredArrow
 
