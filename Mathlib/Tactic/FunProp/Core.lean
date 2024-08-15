@@ -690,3 +690,9 @@ mutual
           return none
 
 end
+
+end FunProp
+
+end Meta
+
+end Mathlib

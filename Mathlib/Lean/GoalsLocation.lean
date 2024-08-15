@@ -30,3 +30,9 @@ def location : GoalsLocation → MetaM (Option Name)
   | ⟨_, .hypType fvarId _⟩  => some <$> fvarId.getUserName
   | ⟨_, .hypValue fvarId _⟩ => some <$> fvarId.getUserName
   | ⟨_, .target _⟩          => return none
+
+end GoalsLocation
+
+end SubExpr
+
+end Lean

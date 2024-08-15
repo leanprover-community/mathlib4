@@ -54,3 +54,9 @@ elab_rules : tactic
   | `(tactic| inhabit $[$h_name:ident :]? $term) => do
     let goal ← evalInhabit (← getMainGoal) h_name term
     replaceMainGoal [goal]
+
+end Tactic
+
+end Elab
+
+end Lean

@@ -62,3 +62,5 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
   ⟨c.1.flip⟩
 
 
+
+end OrderDual

@@ -150,3 +150,11 @@ def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
     match x with
     | ⟨x, .none⟩ => (f.app x)
     | ⟨x, .some coe⟩ => (coe.app f).app x)
+
+end Mor
+
+end FunProp
+
+end Meta
+
+end Mathlib

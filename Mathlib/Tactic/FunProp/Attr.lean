@@ -38,3 +38,9 @@ initialize funPropAttr : Unit ←
     erase := fun _declName =>
       throwError "can't remove `funProp` attribute (not implemented yet)"
   }
+
+end FunProp
+
+end Meta
+
+end Mathlib

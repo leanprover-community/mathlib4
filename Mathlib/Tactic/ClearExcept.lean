@@ -34,3 +34,9 @@ elab_rules : tactic
           if let none ← isClass? decl.type then
             toClear := toClear.push decl.fvarId
       goal.tryClearMany toClear
+
+end Tactic
+
+end Elab
+
+end Lean

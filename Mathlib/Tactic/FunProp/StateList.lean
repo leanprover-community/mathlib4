@@ -169,3 +169,9 @@ instance StateListT.monadControl : MonadControl m (StateListT σ m) where
   stM      := StateList σ
   liftWith := fun f => do let s ← get; liftM (f (fun x => x s))
   restoreM := fun x _ => x
+
+end FunProp
+
+end Meta
+
+end Mathlib

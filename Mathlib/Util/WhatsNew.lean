@@ -117,3 +117,7 @@ elab "whatsnew " "in" ppLine cmd:command : command => do
   finally
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
+
+end WhatsNew
+
+end Mathlib

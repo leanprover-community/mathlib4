@@ -142,3 +142,9 @@ elab_rules : tactic
     Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) proofTerm
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))
+
+end Tactic
+
+end Elab
+
+end Lean
