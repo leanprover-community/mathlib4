@@ -90,6 +90,26 @@ theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
   Subtype.range_val
 @[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
 
+-- TODO: generalise to other values of `p`
+theorem interior_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+    interior {y : EuclideanSpace ℝ (Fin n) | a ≤ y i} = {y | a < y i} := by
+  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change interior (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ioi a
+  rw [f.interior_preimage (Function.surjective_eval _), interior_Ici]
+
+theorem closure_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+    closure {y : EuclideanSpace ℝ (Fin n)| a ≤ y i} = {y | a ≤ y i} := by
+  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change closure (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ici a
+  rw [f.closure_preimage (Function.surjective_eval _), closure_Ici]
+
+theorem frontier_halfspace {a : ℝ} (n : ℕ) [inst : Zero (Fin n)] :
+    frontier {y : EuclideanSpace ℝ (Fin n)| a ≤ y 0} = {y | a = y 0} := by
+  rw [frontier, interior_halfspace, closure_halfspace]
+  ext y
+  simp only [mem_diff, mem_setOf_eq, not_lt] at *
+  exact ⟨fun h ↦ by linarith, fun h ↦ ⟨by linarith, by linarith⟩⟩
+
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -160,25 +180,13 @@ scoped[Manifold]
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
   range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
 
--- TODO: generalise to other values of `p`
-theorem interior_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
-    interior {y : EuclideanSpace ℝ (Fin n) | a ≤ y i} = {y | a < y i} := by
-  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  change interior (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ioi a
-  rw [f.interior_preimage (Function.surjective_eval _), interior_Ici]
-
-theorem closure_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
-    closure {y : EuclideanSpace ℝ (Fin n)| a ≤ y i} = {y | a ≤ y i} := by
-  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  change closure (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ici a
-  rw [f.closure_preimage (Function.surjective_eval _), closure_Ici]
-
-theorem frontier_halfspace {a : ℝ} (n : ℕ) [inst : Zero (Fin n)] :
-    frontier {y : EuclideanSpace ℝ (Fin n)| a ≤ y 0} = {y | a = y 0} := by
-  rw [frontier, interior_halfspace, closure_halfspace]
-  ext y
-  simp only [mem_diff, mem_setOf_eq, not_lt] at *
-  exact ⟨fun h ↦ by linarith, fun h ↦ ⟨by linarith, by linarith⟩⟩
+lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+    frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
+  calc frontier (range (𝓡∂ n))
+    _ = frontier ({ y | 0 ≤ y 0 }) := by
+      congr!
+      apply range_euclideanHalfSpace
+    _ = { y | 0 = y 0 } := frontier_halfspace n
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
@@ -244,6 +252,11 @@ lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) X = 
       norm_num
     _ = 0 := rfl
 
+lemma IccLeftChart_boundary : (IccLeftChart x y).extend (𝓡∂ 1) X ∈ frontier (range (𝓡∂ 1)) := by
+  rw [IccLeftChart_extend_left_eq]
+  rw [frontier_range_modelWithCornersEuclideanHalfSpace]
+  exact rfl
+
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -300,6 +313,11 @@ lemma IccRightChart_extend_right_eq : (IccRightChart x y).extend (𝓡∂ 1) Y =
       congr; ext; rw [IccRightChart]
       norm_num
     _ = 0 := rfl
+
+lemma IccRightChart_boundary : (IccRightChart x y).extend (𝓡∂ 1) Y ∈ frontier (range (𝓡∂ 1)) := by
+  rw [IccRightChart_extend_right_eq]
+  rw [frontier_range_modelWithCornersEuclideanHalfSpace]
+  exact rfl
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.

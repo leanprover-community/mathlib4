@@ -134,30 +134,12 @@ section BoundaryIntervals
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
-lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
-    frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
-  calc frontier (range (𝓡∂ n))
-    _ = frontier ({ y | 0 ≤ y 0 }) := by
-      congr!
-      apply range_euclideanHalfSpace
-    _ = { y | 0 = y 0 } := frontier_halfspace n
-
-lemma IccLeftChart_boundary : (IccLeftChart x y).extend (𝓡∂ 1) X ∈ frontier (range (𝓡∂ 1)) := by
-  rw [IccLeftChart_extend_left_eq]
-  rw [frontier_range_modelWithCornersEuclideanHalfSpace]
-  exact rfl
-
 lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
   have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y := by
     sorry -- follows by construction of the charted space structure; XXX: how can I use this?
   suffices ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) by convert this
   exact IccLeftChart_boundary
-
-lemma IccRightChart_boundary : (IccRightChart x y).extend (𝓡∂ 1) Y ∈ frontier (range (𝓡∂ 1)) := by
-  rw [IccRightChart_extend_right_eq]
-  rw [frontier_range_modelWithCornersEuclideanHalfSpace]
-  exact rfl
 
 lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
