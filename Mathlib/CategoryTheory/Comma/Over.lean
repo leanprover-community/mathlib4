@@ -673,13 +673,13 @@ def ofStructuredArrowProjEquivalence {D : Type u₂} [Category.{v₂} D] (F : D 
          (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
       (fun f => f.right.hom) (by simp))
     (NatIso.ofComponents (fun x => by
-      simp only [Functor.id_obj, Functor.const_obj_obj, proj_obj, left_eq_id, Functor.const_obj_map,
-        proj_map, Functor.comp_obj, Functor.comp_map, eq_mp_eq_cast, id_eq, Under.forget_obj,
-        Under.forget_map, Functor.toStructuredArrow_obj, Functor.toUnder_obj, mk_right,
-        mk_hom_eq_self]
+      dsimp only [Functor.id_obj, Functor.const_obj_obj, proj_obj, left_eq_id,
+        Functor.const_obj_map, proj_map, Functor.comp_obj, Functor.comp_map, eq_mp_eq_cast, id_eq,
+        Under.forget_obj, Under.forget_map, Functor.toStructuredArrow_obj, Functor.toUnder_obj,
+        mk_right, mk_hom_eq_self]
       apply eta) (by simp))
     (NatIso.ofComponents (fun x => by
-      simp only [Functor.const_obj_obj, Functor.comp_obj, Under.forget_obj, left_eq_id,
+      dsimp only [Functor.const_obj_obj, Functor.comp_obj, Under.forget_obj, left_eq_id,
         Functor.const_obj_map, Functor.comp_map, Under.forget_map, proj_obj, proj_map,
         eq_mp_eq_cast, id_eq, Functor.toStructuredArrow_obj, Functor.toUnder_obj, mk_right,
         mk_hom_eq_self, Functor.id_obj]
@@ -697,18 +697,24 @@ def ofDiagEquivalence (X : T × T) :
     (Functor.toStructuredArrow (StructuredArrow.proj _ _ ⋙ Under.forget _) _ _
       (fun f => (f.right.hom, f.hom)) (fun m => by have := m.w; aesop_cat))
     (NatIso.ofComponents (fun x => by
-      simp only [Functor.id_obj, Functor.const_obj_obj, Functor.diag_obj, prod_Hom, left_eq_id,
+      dsimp only [Functor.id_obj, Functor.const_obj_obj, Functor.diag_obj, prod_Hom, left_eq_id,
         Functor.const_obj_map, prod_comp, prod_id_fst, prod_id_snd, Functor.diag_map, proj_obj,
         proj_map, eq_mp_eq_cast, id_eq, Functor.comp_obj, Under.forget_obj,
         Functor.toStructuredArrow_obj, Functor.toUnder_obj, mk_right, mk_hom_eq_self, Prod.mk.eta]
       apply eta) (by simp))
     (NatIso.ofComponents (fun x => by
-      simp only [Functor.comp_obj, proj_obj, Under.forget_obj, Functor.diag_obj,
+      dsimp only [Functor.comp_obj, proj_obj, Under.forget_obj, Functor.diag_obj,
         Functor.const_obj_obj, prod_Hom, left_eq_id, Functor.const_obj_map, prod_comp,
         Functor.id_obj, prod_id_fst, prod_id_snd, Functor.diag_map, proj_map, eq_mp_eq_cast, id_eq,
         Functor.toStructuredArrow_obj, Functor.toUnder_obj, mk_right, mk_hom_eq_self]
       symm
       apply eta) (by aesop_cat))
+
+def ofDiagEquivalence' (X : T × T) :
+    StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.1 (Under.forget X.2) :=
+  (ofDiagEquivalence X).trans
+    <| (ofStructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans
+    <| StructuredArrow.mapNatIso (eqToIso (Functor.comp_id _))
 
 end StructuredArrow
 
@@ -729,13 +735,13 @@ def ofCostructuredArrowProjEquivalence {D : Type u₂} [Category.{v₂} D]
         (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
       (fun f => f.left.hom) (by simp))
     (NatIso.ofComponents (fun x => by
-      simp only [Functor.id_obj, proj_obj, Functor.const_obj_obj,
+      dsimp only [Functor.id_obj, proj_obj, Functor.const_obj_obj,
         proj_map, right_eq_id, Functor.const_obj_map, Functor.comp_obj, Functor.comp_map,
         eq_mp_eq_cast, id_eq, Over.forget_obj, Over.forget_map, Functor.toCostructuredArrow_obj,
         Functor.toOver_obj, mk_left, mk_hom_eq_self]
       apply eta) (by simp))
     (NatIso.ofComponents (fun x => by
-      simp only [Functor.comp_obj, Over.forget_obj, Functor.const_obj_obj, Functor.comp_map,
+      dsimp only [Functor.comp_obj, Over.forget_obj, Functor.const_obj_obj, Functor.comp_map,
         Over.forget_map, right_eq_id, Functor.const_obj_map, proj_obj, proj_map, eq_mp_eq_cast,
         id_eq, Functor.toCostructuredArrow_obj, Functor.toOver_obj, mk_left, mk_hom_eq_self,
         Functor.id_obj]
@@ -754,16 +760,22 @@ def ofDiagEquivalence (X : T × T) :
     (Functor.toCostructuredArrow (CostructuredArrow.proj _ _ ⋙ Over.forget _) _ X
       (fun f => (f.left.hom, f.hom)) (fun m => by have := m.w; aesop_cat))
     (NatIso.ofComponents (fun x => by
-      simp only [Functor.id_obj, Functor.const_obj_obj, right_eq_id, Functor.const_obj_map,
+      dsimp only [Functor.id_obj, Functor.const_obj_obj, right_eq_id, Functor.const_obj_map,
         proj_obj, proj_map, eq_mp_eq_cast, id_eq, Functor.comp_obj, Over.forget_obj,
         Functor.toCostructuredArrow_obj, Functor.toOver_obj, mk_left, mk_hom_eq_self]
       apply eta) (by simp))
     (NatIso.ofComponents (fun x => by
-      simp only [Functor.comp_obj, proj_obj, Over.forget_obj, Functor.const_obj_obj, right_eq_id,
+      dsimp only [Functor.comp_obj, proj_obj, Over.forget_obj, Functor.const_obj_obj, right_eq_id,
         Functor.const_obj_map, proj_map, eq_mp_eq_cast, id_eq, Functor.toCostructuredArrow_obj,
         Functor.toOver_obj, mk_left, mk_hom_eq_self, Functor.id_obj]
       symm
       apply eta) (by aesop_cat))
+
+def ofDiagEquivalence' (X : T × T) :
+    CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.2) X.1 :=
+  (ofDiagEquivalence X).trans
+    <| (ofCostructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans
+    <| CostructuredArrow.mapNatIso (eqToIso (Functor.comp_id _))
 
 end CostructuredArrow
 
