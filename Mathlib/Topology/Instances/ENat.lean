@@ -6,6 +6,7 @@ Authors: Peter Nelson
 import Mathlib.Data.ENat.Basic
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Instances.Discrete
+import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # Topology on extended natural numbers
