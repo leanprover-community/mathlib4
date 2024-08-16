@@ -289,12 +289,12 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
   induction' l with y l hl generalizing n x
   · simp
   · rcases n with (_ | _ | n)
-    · simp [Nat.add_succ_sub_one, add_zero, List.prev_cons_cons_eq, Nat.zero_eq, List.length,
+    · simp [Nat.add_succ_sub_one, add_zero, List.prev_cons_cons_eq, List.length,
         List.nthLe, Nat.succ_add_sub_one, zero_add, getLast_eq_get,
         Nat.mod_eq_of_lt (Nat.succ_lt_succ l.length.lt_succ_self)]
     · simp only [mem_cons, nodup_cons] at h
       push_neg at h
-      simp only [List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, Nat.zero_eq, List.length,
+      simp only [List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, List.length,
         List.nthLe, add_comm, eq_self_iff_true, Nat.succ_add_sub_one, Nat.mod_self, zero_add,
         List.get]
     · rw [prev_ne_cons_cons]
@@ -806,7 +806,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
       · dsimp only
         cases' hab with n hn
         induction' n with d hd generalizing a b l m
-        · simp only [Nat.zero_eq, rotate_zero, cons.injEq] at hn
+        · simp only [rotate_zero, cons.injEq] at hn
           rw [hn.1, hn.2]
         · cases' l with c s
           · simp only [rotate_cons_succ, nil_append, rotate_singleton, cons.injEq] at hn

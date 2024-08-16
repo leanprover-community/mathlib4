@@ -597,7 +597,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
   have M : ∀ n, μ (L n) = (n + 1 : ℕ) * μ K := by
     intro n
     induction' n with n IH
-    · simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_eq, Nat.zero_add]
+    · simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_add]
     · calc
         μ (L (n + 1)) = μ (L n) + μ (g (L n) • K) := by
           simp_rw [L, iterate_succ']

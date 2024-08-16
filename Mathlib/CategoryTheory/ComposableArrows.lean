@@ -185,7 +185,7 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
     intro k
     induction' k with k hk
     · intro i j hj hj'
-      simp only [Nat.zero_eq, add_zero] at hj
+      simp only [add_zero] at hj
       obtain rfl := hj
       rw [F.map'_self i, G.map'_self i, id_comp, comp_id]
     · intro i j hj hj'

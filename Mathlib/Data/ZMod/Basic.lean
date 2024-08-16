@@ -100,7 +100,7 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff' := by
     intro k
     cases' n with n
-    · simp [zero_dvd_iff, Int.natCast_eq_zero, Nat.zero_eq]
+    · simp [zero_dvd_iff, Int.natCast_eq_zero]
     · exact Fin.natCast_eq_zero
 
 @[simp]
@@ -112,7 +112,7 @@ where `a ≠ 0` is `addOrderOf_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
   cases' a with a
-  · simp only [Nat.zero_eq, Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
+  · simp only [Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
       Nat.pos_of_ne_zero n0, Nat.div_self]
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
 

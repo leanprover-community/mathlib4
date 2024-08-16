@@ -312,7 +312,7 @@ retrieved via `head`, is the starting value `b : β`.
 @[simp]
 theorem scanl_head : (scanl f b v).head = b := by
   cases n
-  · have : v = nil := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]
+  · have : v = nil := by simp only [eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
     simp only [← get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,

@@ -81,7 +81,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
       | zero => rfl
       | succ m =>
         have h' : enumerate sel (s \ {a}) m = some a := by
-          simp_all only [enumerate, Nat.zero_eq, Nat.add_eq, zero_add]; exact h₂
+          simp_all only [enumerate, Nat.add_eq, zero_add]; exact h₂
         have : a ∈ s \ {a} := enumerate_mem sel h_sel h'
         simp_all [Set.mem_diff_singleton]
     | succ k ih =>

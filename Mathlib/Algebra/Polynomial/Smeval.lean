@@ -108,7 +108,7 @@ theorem smeval_add : (p + q).smeval x = p.smeval x + q.smeval x := by
 
 theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
   induction n with
-  | zero => simp only [smeval_zero, Nat.cast_zero, Nat.zero_eq, zero_smul]
+  | zero => simp only [smeval_zero, Nat.cast_zero, zero_smul]
   | succ n ih => rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
 
 @[deprecated (since := "2024-04-17")]
@@ -210,7 +210,7 @@ theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
     simp_all only [smeval_add, coeff_add, add_smul]
   | h_monomial n a =>
     cases n with
-    | zero => simp only [Nat.zero_eq, monomial_zero_left, smeval_C, npow_zero, coeff_C_zero]
+    | zero => simp only [monomial_zero_left, smeval_C, npow_zero, coeff_C_zero]
     | succ n => rw [coeff_monomial_succ, smeval_monomial, npow_add, npow_one, mul_zero, zero_smul,
         smul_zero]
 
