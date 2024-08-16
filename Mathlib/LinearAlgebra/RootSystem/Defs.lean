@@ -192,6 +192,22 @@ lemma reflection_inv :
     (P.reflection i)⁻¹ = P.reflection i :=
   rfl
 
+@[simp]
+lemma reflection_sq :
+    P.reflection i ^ 2 = 1 :=
+  mul_eq_one_iff_eq_inv.mpr rfl
+
+@[simp]
+lemma reflection_perm_sq :
+    P.reflection_perm i ^ 2 = 1 := by
+  ext j
+  refine Embedding.injective P.root ?_
+  simp only [sq, Equiv.Perm.mul_apply, root_reflection_perm, reflection_same, Equiv.Perm.one_apply]
+
+@[simp]
+lemma reflection_perm_inv :
+    (P.reflection_perm i)⁻¹ = P.reflection_perm i :=
+  (mul_eq_one_iff_eq_inv.mp <| P.reflection_perm_sq i).symm
 lemma bijOn_reflection_root :
     BijOn (P.reflection i) (range P.root) (range P.root) :=
   Module.bijOn_reflection_of_mapsTo _ <| P.mapsTo_reflection_root i
@@ -232,6 +248,16 @@ lemma coreflection_apply_self :
 lemma coreflection_same (x : N) :
     P.coreflection i (P.coreflection i x) = x :=
   Module.involutive_reflection (P.flip.coroot_root_two i) x
+
+@[simp]
+lemma coreflection_inv :
+    (P.coreflection i)⁻¹ = P.coreflection i :=
+  rfl
+
+@[simp]
+lemma coreflection_sq :
+    P.coreflection i ^ 2 = 1 :=
+  mul_eq_one_iff_eq_inv.mpr rfl
 
 lemma bijOn_coreflection_coroot : BijOn (P.coreflection i) (range P.coroot) (range P.coroot) :=
   bijOn_reflection_root P.flip i
@@ -292,58 +318,108 @@ def weylGroup : Subgroup (M ≃ₗ[R] M) :=
 lemma reflection_mem_weylGroup : P.reflection i ∈ P.weylGroup :=
   Subgroup.subset_closure <| mem_range_self i
 
-lemma weylGroup_apply_root (w : P.weylGroup) : ∀ i, ∃ j, w • (P.root i) = P.root j := by
-  obtain ⟨w, hw⟩ := w
-  induction hw using Subgroup.closure_induction'' with
-  | one => simp
-  | mem x hx =>
-    obtain ⟨k, hk⟩ := hx
-    simp only [← hk, Submonoid.mk_smul, LinearEquiv.smul_def]
-    exact fun i => Exists.intro ((P.reflection_perm k) i) (P.root_reflection_perm k i).symm
-  | inv_mem x hx =>
-    obtain ⟨k, hk⟩ := hx
-    simp only [← hk, reflection_inv, Submonoid.mk_smul, LinearEquiv.smul_def]
-    exact fun i => Exists.intro ((P.reflection_perm k) i) (P.root_reflection_perm k i).symm
-  | mul _ _ _ _ hjk hij =>
-    intro i
-    obtain ⟨j, hj⟩ := hij i
-    obtain ⟨k, hk⟩ := hjk j
-    use k
-    simp_all only [Submonoid.mk_smul, LinearEquiv.smul_def, mul_smul]
+lemma mem_range_root_of_mem_range_reflection_of_mem_range_root
+    {r : M ≃ₗ[R] M} {α : M} (hr : r ∈ range P.reflection) (hα : α ∈ range P.root) :
+    r • α ∈ range P.root := by
+  obtain ⟨i, rfl⟩ := hr
+  obtain ⟨j, rfl⟩ := hα
+  exact ⟨P.reflection_perm i j, P.root_reflection_perm i j⟩
+
+lemma exists_root_eq_smul_of_mem_weylGroup {w : M ≃ₗ[R] M} (hw : w ∈ P.weylGroup) (i : ι) :
+    ∃ j, P.root j = w • P.root i :=
+  Subgroup.smul_mem_of_mem_closure_of_mem (by simp)
+  (fun _ h _ ↦ P.mem_range_root_of_mem_range_reflection_of_mem_range_root h) hw (mem_range_self i)
 
 /-- The permutation representation of the Weyl group induced by `reflection_perm`. -/
 def weylGroupToPerm : P.weylGroup →* Equiv.Perm ι where
   toFun w := {
-    toFun := fun i => (P.weylGroup_apply_root w i).choose
-    invFun := fun i => (P.weylGroup_apply_root w⁻¹ i).choose
+    toFun := fun i => (P.exists_root_eq_smul_of_mem_weylGroup w.2 i).choose
+    invFun := fun i => (P.exists_root_eq_smul_of_mem_weylGroup w⁻¹.2 i).choose
     left_inv := fun i => by
-      refine Embedding.injective P.root ?_
-      rw [← (P.weylGroup_apply_root w⁻¹ ((P.weylGroup_apply_root w i).choose)).choose_spec,
-        ← (P.weylGroup_apply_root w i).choose_spec, inv_smul_eq_iff]
+      obtain ⟨w, hw⟩ := w
+      apply P.root.injective
+      rw [(P.exists_root_eq_smul_of_mem_weylGroup ((Subgroup.inv_mem_iff P.weylGroup).mpr hw)
+          ((P.exists_root_eq_smul_of_mem_weylGroup hw i).choose)).choose_spec,
+        (P.exists_root_eq_smul_of_mem_weylGroup hw i).choose_spec, inv_smul_smul]
     right_inv := fun i => by
-      refine Embedding.injective P.root ?_
-      rw [← (P.weylGroup_apply_root w ((P.weylGroup_apply_root w⁻¹ i).choose)).choose_spec,
-        ← (P.weylGroup_apply_root w⁻¹ i).choose_spec, smul_inv_smul] }
+      obtain ⟨w, hw⟩ := w
+      have hw' : w⁻¹ ∈ P.weylGroup := (Subgroup.inv_mem_iff P.weylGroup).mpr hw
+      apply P.root.injective
+      rw [(P.exists_root_eq_smul_of_mem_weylGroup hw
+          ((P.exists_root_eq_smul_of_mem_weylGroup hw' i).choose)).choose_spec,
+        (P.exists_root_eq_smul_of_mem_weylGroup hw' i).choose_spec, smul_inv_smul] }
   map_one' := by
     ext
     simp
   map_mul' x y := by
+    obtain ⟨x, hx⟩ := x
+    obtain ⟨y, hy⟩ := y
     ext i
-    refine Embedding.injective P.root ?_
+    apply P.root.injective
     simp only [Equiv.coe_fn_mk, Equiv.Perm.coe_mul, comp_apply]
-    rw [← (P.weylGroup_apply_root (x * y) i).choose_spec,
-      ← (P.weylGroup_apply_root x ((P.weylGroup_apply_root y i).choose)).choose_spec,
-      ← (P.weylGroup_apply_root y i).choose_spec, mul_smul]
+    rw [(P.exists_root_eq_smul_of_mem_weylGroup (mul_mem hx hy) i).choose_spec,
+      (P.exists_root_eq_smul_of_mem_weylGroup hx
+        ((P.exists_root_eq_smul_of_mem_weylGroup hy i).choose)).choose_spec,
+      (P.exists_root_eq_smul_of_mem_weylGroup hy i).choose_spec, mul_smul]
 
 @[simp]
 lemma weylGroupToPerm_apply_reflection :
     P.weylGroupToPerm ⟨P.reflection i, P.reflection_mem_weylGroup i⟩ = P.reflection_perm i := by
   ext j
-  refine Embedding.injective P.root ?_
+  apply P.root.injective
   rw [weylGroupToPerm, MonoidHom.coe_mk, OneHom.coe_mk, Equiv.coe_fn_mk, root_reflection_perm,
-    ← (P.weylGroup_apply_root ⟨P.reflection i, P.reflection_mem_weylGroup i⟩ j).choose_spec,
-    Subgroup.mk_smul, LinearEquiv.smul_def]
+    (P.exists_root_eq_smul_of_mem_weylGroup (P.reflection_mem_weylGroup i) j).choose_spec,
+    LinearEquiv.smul_def]
 
+lemma pairing_smul_root_eq (k : ι) (hij : P.reflection_perm i = P.reflection_perm j) :
+    P.pairing k i • P.root i = P.pairing k j • P.root j := by
+  have h : P.reflection i (P.root k) = P.reflection j (P.root k) := by
+    simp only [← root_reflection_perm, hij]
+  simpa only [reflection_apply_root, sub_right_inj] using h
+
+lemma pairing_smul_coroot_eq (k : ι) (hij : P.reflection_perm i = P.reflection_perm j) :
+    P.pairing i k • P.coroot i = P.pairing j k • P.coroot j := by
+  have h : P.coreflection i (P.coroot k) = P.coreflection j (P.coroot k) := by
+    simp only [← coroot_reflection_perm, hij]
+  simpa only [coreflection_apply_coroot, sub_right_inj] using h
+
+lemma two_smul_reflection_sub (x : M) (hij : P.reflection_perm i = P.reflection_perm j) :
+    2 • (P.reflection i x - P.reflection j x) = 0 := by
+  simp only [reflection_apply, sub_sub_sub_cancel_left, nsmul_sub, sub_eq_zero]
+  rw [smul_comm _ _ (P.root j), show 2 • P.root j = P.pairing j j • P.root j by rw [two_nsmul,
+    P.pairing_same, two_smul], ← P.pairing_smul_root_eq i j j hij,
+    show 2 • (P.toLin x) (P.coroot i) • P.root i = (P.toLin x) ((2 : R) • P.coroot i) • P.root i by
+    rw [two_nsmul, two_smul, map_add, add_smul], ← P.pairing_same i,
+    P.pairing_smul_coroot_eq i j i hij, map_smul, smul_assoc, smul_comm]
+
+lemma reflection_perm_eq_reflection_perm_iff_of_isSMulRegular (h2 : IsSMulRegular M 2) :
+    P.reflection_perm i = P.reflection_perm j ↔ P.reflection i = P.reflection j := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Equiv.ext fun k ↦ P.root.injective <| by simp [h]⟩
+  ext x
+  refine h2 ?_
+  rw [← sub_eq_zero, ← @nsmul_sub, P.two_smul_reflection_sub i j x h]
+
+lemma reflection_perm_eq_reflection_perm_iff_of_span :
+    P.reflection_perm i = P.reflection_perm j ↔
+    ∀ x ∈ span R (range P.root), P.reflection i x = P.reflection j x := by
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
+  · induction hx using Submodule.span_induction' with
+    | mem x hx =>
+      obtain ⟨k, rfl⟩ := hx
+      simp only [← root_reflection_perm, h]
+    | zero => simp
+    | add x _ y _ hx hy => simp [hx, hy]
+    | smul t x _ hx => simp [hx]
+  · ext k
+    apply P.root.injective
+    simp [h (P.root k) (Submodule.subset_span <| mem_range_self k)]
+
+lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem ι R M N) (i j : ι) :
+    P.reflection_perm i = P.reflection_perm j ↔ P.reflection i = P.reflection j := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Equiv.ext fun k ↦ P.root.injective <| by simp [h]⟩
+  ext x
+  have hx : x ∈ span R (range P.root) := by simp [P.span_eq_top]
+  exact (reflection_perm_eq_reflection_perm_iff_of_span P.toRootPairing i j).mp h x hx
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
