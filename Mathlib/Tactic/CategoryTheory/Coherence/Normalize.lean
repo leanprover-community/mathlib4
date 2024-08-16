@@ -370,14 +370,14 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
       traceProof nm result
       return ⟨θ, result⟩
     | .whiskerRight _ _ f g η h =>
-      withTraceNode `monoidal (fun _ => return m!"whiskerRight") do
+      withTraceNode nm (fun _ => return m!"whiskerRight") do
         let ⟨η', e_η⟩ ← eval nm η
         let ⟨θ, e_θ⟩ ← evalWhiskerRight η' h
         let result ← mkEvalWhiskerRight η h η' θ e_η e_θ
         traceProof nm result
         return ⟨θ, result⟩
     | .coherenceComp _ _ _ _ _ _ α₀ η θ =>
-      withTraceNode `monoidal (fun _ => return m!"monoidalComp") do
+      withTraceNode nm (fun _ => return m!"monoidalComp") do
         let ⟨η', e_η⟩ ← eval nm η
         -- let α₀ ← structuralOfMonoidalComp e
         let α₀ := .structuralAtom <| .coherenceHom α₀
@@ -389,7 +389,7 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
         traceProof nm result
         return ⟨ηαθ, result⟩
     | .horizontalComp _ _ _ _ _ _ η θ =>
-      withTraceNode `monoidal (fun _ => return m!"tensorHom") do
+      withTraceNode nm (fun _ => return m!"tensorHom") do
         let ⟨η', e_η⟩ ← eval nm η
         let ⟨θ', e_θ⟩ ← eval nm θ
         let ⟨ηθ, e_ηθ⟩ ← evalHorizontalComp η' θ'

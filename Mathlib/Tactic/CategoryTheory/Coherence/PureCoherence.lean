@@ -86,18 +86,18 @@ partial def naturality {ρ : Type} [Context ρ]
     | .coherenceHom α => withTraceNode nm (fun _ => return m!"coherenceHom") do
       let α ← MonadCoherehnceHom.unfoldM α
       naturality nm p α
-    | .associator _ _ _  f g h => withTraceNode nm (fun _ => return m!"associator") do
+    | .associator _ f g h => withTraceNode nm (fun _ => return m!"associator") do
       let ⟨pf, η_f⟩ ← normalize p f
       let ⟨pfg, η_g⟩ ← normalize pf g
       let ⟨pfgh, η_h⟩ ← normalize pfg h
       mkNaturalityAssociator p pf pfg pfgh f g h η_f η_g η_h
-    | .leftUnitor _ _ _ f => withTraceNode nm (fun _ => return m!"leftUnitor") do
+    | .leftUnitor _ f => withTraceNode nm (fun _ => return m!"leftUnitor") do
       let ⟨pf, η_f⟩ ← normalize p f
       mkNaturalityLeftUnitor p pf f η_f
-    | .rightUnitor _ _ _ f => withTraceNode nm (fun _ => return m!"rightUnitor") do
+    | .rightUnitor _ f => withTraceNode nm (fun _ => return m!"rightUnitor") do
       let ⟨pf, η_f⟩ ← normalize p f
       mkNaturalityRightUnitor p pf f η_f
-    | .id _ _ _ f => withTraceNode nm (fun _ => return m!"id") do
+    | .id _ f => withTraceNode nm (fun _ => return m!"id") do
     let ⟨pf, η_f⟩ ← normalize p f
     mkNaturalityId p pf f η_f
   | .comp _ f g h η θ => withTraceNode nm (fun _ => return m!"comp") do

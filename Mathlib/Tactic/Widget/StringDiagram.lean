@@ -5,7 +5,7 @@ Authors: Yuma Mizuno
 -/
 import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Presentation.Expr
-import Mathlib.Tactic.CategoryTheory.Monoidal
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 /-!
 # String Diagram Widget
@@ -54,7 +54,7 @@ namespace Mathlib.Tactic
 open Lean Meta Elab
 open CategoryTheory
 
-open Mathlib.Tactic.Monoidal ProofWidgets.Penrose
+open Mathlib.Tactic ProofWidgets.Penrose BicategoryLike
 
 namespace Widget.StringDiagram
 
@@ -119,10 +119,6 @@ def Node.hPosTar : Node → ℕ
   | Node.atom n => n.hPosTar
   | Node.id n => n.hPosTar
 
-/-- The list of nodes at the top of a string diagram. -/
-def topNodes (η : WhiskerLeftExpr) : List Node :=
-  η.src.toList.enum.map (fun (i, f) => .id ⟨0, i, i, f⟩)
-
 /-- Strings in a string diagram. -/
 structure Strand : Type where
   /-- The horizontal position of the strand in the string diagram. -/
@@ -140,15 +136,15 @@ def Strand.vPos (s : Strand) : ℕ :=
 
 end Widget.StringDiagram
 
-namespace Monoidal
+namespace BicategoryLike
 
 open Widget.StringDiagram
 
 /-- The list of nodes associated with a 2-morphism. The position is counted from the
 specified natural numbers. -/
-def WhiskerRightExpr.nodes (v h₁ h₂ : ℕ) : WhiskerRightExpr → List Node
-  | WhiskerRightExpr.of η => [.atom ⟨v, h₁, h₂, η⟩]
-  | WhiskerRightExpr.whisker η f =>
+def WhiskerRight.nodes (v h₁ h₂ : ℕ) : WhiskerRight → List Node
+  | WhiskerRight.of η => [.atom ⟨v, h₁, h₂, η⟩]
+  | WhiskerRight.whisker _ η f =>
     let ηs := η.nodes v h₁ h₂
     let k₁ := (ηs.map (fun n ↦ n.srcList)).join.length
     let k₂ := (ηs.map (fun n ↦ n.tarList)).join.length
@@ -157,9 +153,9 @@ def WhiskerRightExpr.nodes (v h₁ h₂ : ℕ) : WhiskerRightExpr → List Node
 
 /-- The list of nodes associated with a 2-morphism. The position is counted from the
 specified natural numbers. -/
-def TensorHomExpr.nodes (v h₁ h₂ : ℕ) : TensorHomExpr → List Node
-  | TensorHomExpr.of η => η.nodes v h₁ h₂
-  | TensorHomExpr.cons η ηs =>
+def HorizontalComp.nodes (v h₁ h₂ : ℕ) : HorizontalComp → List Node
+  | HorizontalComp.of η => η.nodes v h₁ h₂
+  | HorizontalComp.cons _ η ηs =>
     let s₁ := η.nodes v h₁ h₂
     let k₁ := (s₁.map (fun n ↦ n.srcList)).join.length
     let k₂ := (s₁.map (fun n ↦ n.tarList)).join.length
@@ -168,35 +164,43 @@ def TensorHomExpr.nodes (v h₁ h₂ : ℕ) : TensorHomExpr → List Node
 
 /-- The list of nodes associated with a 2-morphism. The position is counted from the
 specified natural numbers. -/
-def WhiskerLeftExpr.nodes (v h₁ h₂ : ℕ) : WhiskerLeftExpr → List Node
-  | WhiskerLeftExpr.of η => η.nodes v h₁ h₂
-  | WhiskerLeftExpr.whisker f η =>
+def WhiskerLeft.nodes (v h₁ h₂ : ℕ) : WhiskerLeft → List Node
+  | WhiskerLeft.of η => η.nodes v h₁ h₂
+  | WhiskerLeft.whisker _ f η =>
     let s : Node := .id ⟨v, h₁, h₂, f⟩
     let ss := η.nodes v (h₁ + 1) (h₂ + 1)
     s :: ss
 
+open BicategoryLike
+variable {ρ : Type} [Context ρ] [MonadMor₁ (CoherenceM ρ)]
+
+/-- The list of nodes at the top of a string diagram. -/
+def topNodes (η : WhiskerLeft) : CoherenceM ρ (List Node) := do
+  return (← η.srcM).toList.enum.map (fun (i, f) => .id ⟨0, i, i, f⟩)
+
+
 /-- The list of nodes at the top of a string diagram. The position is counted from the
 specified natural number. -/
-def NormalExpr.nodesAux (v : ℕ) : NormalExpr → List (List Node)
-  | NormalExpr.nil α => [(α.src).toList.enum.map (fun (i, f) => .id ⟨v, i, i, f⟩)]
-  | NormalExpr.cons _ η ηs =>
+def NormalExpr.nodesAux (v : ℕ) : NormalExpr → CoherenceM ρ (List (List Node))
+  | NormalExpr.nil _ α => return [(← α.srcM).toList.enum.map (fun (i, f) => .id ⟨v, i, i, f⟩)]
+  | NormalExpr.cons _ _ η ηs => do
     let s₁ := η.nodes v 0 0
-    let s₂ := ηs.nodesAux (v + 1)
-    s₁ :: s₂
+    let s₂ ← ηs.nodesAux (v + 1)
+    return s₁ :: s₂
 
 /-- The list of nodes associated with a 2-morphism. -/
-def NormalExpr.nodes (e : NormalExpr) : List (List Node) :=
+def NormalExpr.nodes (e : NormalExpr) : CoherenceM ρ (List (List Node)) :=
   match e with
-  | NormalExpr.nil _ => []
-  | NormalExpr.cons _ η _ => topNodes η :: (e.nodesAux 1)
+  | NormalExpr.nil _ _ => return []
+  | NormalExpr.cons _ _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
 
 /-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
 def pairs {α : Type} : List α → List (α × α) :=
   fun l => l.zip (l.drop 1)
 
 /-- The list of strands associated with a 2-morphism. -/
-def NormalExpr.strands (e : NormalExpr) : MetaM (List (List Strand)) := do
-  let l := e.nodes
+def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do
+  let l ← e.nodes
   (pairs l).mapM fun (x, y) ↦ do
     let xs := (x.map (fun n ↦ n.tarList)).join
     let ys := (y.map (fun n ↦ n.srcList)).join
@@ -206,7 +210,7 @@ def NormalExpr.strands (e : NormalExpr) : MetaM (List (List Strand)) := do
     (xs.zip ys).enum.mapM fun (k, (n₁, f₁), (n₂, _)) => do
       return ⟨n₁.hPosTar + k, n₁, n₂, f₁⟩
 
-end Monoidal
+end BicategoryLike
 
 namespace Widget.StringDiagram
 
@@ -256,9 +260,8 @@ def StringDiagramM.run {α : Type} (c : Monoidal.Context) (x : StringDiagramM α
 open scoped Jsx in
 /-- Construct a string diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
-def mkStringDiagram (e : NormalExpr) : DiagramBuilderM PUnit := do
-  let nodes := e.nodes
-  let strands ← e.strands
+def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
+    DiagramBuilderM PUnit := do
   /- Add 2-morphisms. -/
   for x in nodes.join do
     match x with
@@ -289,11 +292,22 @@ def sty :=
 
 open scoped Jsx in
 /-- Construct a string diagram from the expression of a 2-morphism. -/
-def fromExpr (e : Expr) : MetaM Html := do
-  let ctx ← Monoidal.mkContext e
-  let e' ← MonoidalM.run ctx do return (← eval e).expr
+def fromExpr (e : Expr) :
+    MetaM Html := do
+  let k ← BicategoryLike.mkKind e
+  let (nodes, strands) ← match k with
+    | .monoidal =>
+      let ctx ← Context.mkContext (ρ := Monoidal.Context) e
+      CoherenceM.run ctx do
+        let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
+        return (← e'.nodes, ← e'.strands)
+    | .bicategory =>
+      let ctx ← Context.mkContext (ρ := Bicategory.Context) e
+      CoherenceM.run ctx do
+        let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
+        return (← e'.nodes, ← e'.strands)
   DiagramBuilderM.run do
-    mkStringDiagram e'
+    mkStringDiagram nodes strands
     match ← DiagramBuilderM.buildDiagram dsl sty with
     | some html => return html
     | none => return <span>No non-structural morphisms found.</span>

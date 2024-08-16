@@ -198,11 +198,13 @@ theorem rightZigzagIso_hom : (rightZigzagIso η ε).hom = rightZigzag η.hom ε.
 
 @[simp]
 theorem leftZigzagIso_inv : (leftZigzagIso η ε).inv = rightZigzag ε.inv η.inv := by
-  simp [bicategoricalComp, bicategoricalIsoComp]
+  dsimp [bicategoricalIsoComp]
+  coherence
 
 @[simp]
 theorem rightZigzagIso_inv : (rightZigzagIso η ε).inv = leftZigzag ε.inv η.inv := by
-  simp [bicategoricalComp, bicategoricalIsoComp]
+  dsimp [bicategoricalIsoComp]
+  coherence
 
 @[simp]
 theorem leftZigzagIso_symm : (leftZigzagIso η ε).symm = rightZigzagIso ε.symm η.symm :=

@@ -47,35 +47,42 @@ def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
     (𝟙 _ ⊗≫ u ◁ s.unit ⊗≫ adj.counit ▷ s.extension ⊗≫ 𝟙 _ : u ≫ h ⟶ s.extension) <|
       calc _
         _ = 𝟙 _ ⊗≫ (adj.unit ▷ _ ≫ _ ◁ s.unit) ⊗≫ f ◁ adj.counit ▷ s.extension ⊗≫ 𝟙 _ := by
-          simp [bicategoricalComp]
+          dsimp only [whisker_extension, StructuredArrow.mk_right, whisker_unit,
+            StructuredArrow.mk_hom_eq_self]
+          coherence
         _ = 𝟙 _ ⊗≫ s.unit ⊗≫ leftZigzag adj.unit adj.counit ▷ s.extension ⊗≫ 𝟙 _ := by
-          rw [← whisker_exchange, leftZigzag]; simp [bicategoricalComp]
+          rw [← whisker_exchange, leftZigzag]; coherence
         _ = s.unit := by
-          rw [adj.left_triangle]; simp [bicategoricalComp]) <| by
+          rw [adj.left_triangle]; coherence) <| by
     intro s τ₀
     ext
     /- We need to specify the type of `τ` to use the notation `⊗≫`. -/
     let τ : u ≫ h ⟶ s.extension := τ₀.right
     have hτ : adj.unit ▷ h ⊗≫ f ◁ τ = s.unit := by
-      simpa [bicategoricalComp] using LeftExtension.w τ₀
+      rw [← LeftExtension.w τ₀]
+      dsimp only [whisker_extension, StructuredArrow.mk_right, whisker_unit,
+        StructuredArrow.mk_hom_eq_self]
+      coherence
     calc τ
       _ = 𝟙 _ ⊗≫ rightZigzag adj.unit adj.counit ▷ h ⊗≫ τ ⊗≫ 𝟙 _ := by
-        rw [adj.right_triangle]; simp [bicategoricalComp]
+        rw [adj.right_triangle]; coherence
       _ = 𝟙 _ ⊗≫ u ◁ adj.unit ▷ h ⊗≫ (adj.counit ▷ _ ≫ _ ◁ τ) ⊗≫ 𝟙 _ := by
-        rw [rightZigzag]; simp [bicategoricalComp]
+        rw [rightZigzag]; coherence
       _ = 𝟙 _ ⊗≫ u ◁ (adj.unit ▷ h ⊗≫ f ◁ τ) ⊗≫ adj.counit ▷ s.extension ⊗≫ 𝟙 _ := by
-        rw [← whisker_exchange]; simp [bicategoricalComp]
+        rw [← whisker_exchange]; coherence
       _ = _ := by
-        rw [hτ]; simp [bicategoricalComp]
+        rw [hτ]; dsimp
 
 /-- A left Kan extension of the identity along `f` such that `f` commutes with is a right adjoint
 to `f`. The unit of this adjoint is given by the unit of the Kan extension. -/
 def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
     (H : IsKan t) (H' : IsKan (t.whisker f)) :
       f ⊣ t.extension :=
-  let ε : t.extension ≫ f ⟶ 𝟙 b := H'.desc <| .mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
-  have Hε : leftZigzag t.unit ε = (λ_ f).hom ≫ (ρ_ f).inv := by
-    simpa [leftZigzag, bicategoricalComp] using H'.fac <| .mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
+  let t' := LeftExtension.mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
+  let ε : t.extension ≫ f ⟶ 𝟙 b := H'.desc t'
+  have Hε := calc leftZigzag t.unit ε = t.unit ▷ f ⊗≫ f ◁ ε := rfl
+    _ = (t.unit ▷ f ≫ (α_ _ _ _).hom) ≫ f ◁ H'.desc t' := by coherence
+    _ = (λ_ f).hom ≫ (ρ_ f).inv := H'.fac t'
   { unit := t.unit
     counit := ε
     left_triangle := Hε
@@ -84,13 +91,13 @@ def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
       apply H.hom_ext
       calc _
         _ = 𝟙 _ ⊗≫ t.unit ⊗≫ f ◁ rightZigzag t.unit ε ⊗≫ 𝟙 _ := by
-          simp [bicategoricalComp]
+          coherence
         _ = 𝟙 _ ⊗≫ (t.unit ▷ _ ≫ _ ◁ t.unit) ⊗≫ f ◁ ε ▷ t.extension ⊗≫ 𝟙 _ := by
-          rw [rightZigzag]; simp [bicategoricalComp]
+          rw [rightZigzag]; coherence
         _ = 𝟙 _ ⊗≫ t.unit ⊗≫ (t.unit ▷ f ⊗≫ f ◁ ε) ▷ t.extension ⊗≫ 𝟙 _ := by
-          rw [← whisker_exchange]; simp [bicategoricalComp]
+          rw [← whisker_exchange]; coherence
         _ = _ := by
-          rw [← leftZigzag, Hε]; simp [bicategoricalComp] }
+          rw [← leftZigzag, Hε]; coherence }
 
 /-- For an adjuntion `f ⊣ u`, `u` is a left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
@@ -128,34 +135,43 @@ def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u)
     (𝟙 _ ⊗≫ s.unit ▷ f ⊗≫ s.lift ◁ adj.counit ⊗≫ 𝟙 _ : h ≫ f ⟶ s.lift) <|
       calc _
       _ = 𝟙 _ ⊗≫ (_ ◁ adj.unit ≫ s.unit ▷ _) ⊗≫ s.lift ◁ adj.counit ▷ u ⊗≫ 𝟙 _ := by
-        simp [bicategoricalComp]
+        dsimp only [whisker_lift, StructuredArrow.mk_right, whisker_unit,
+          StructuredArrow.mk_hom_eq_self]
+        coherence
       _ = s.unit ⊗≫ s.lift ◁ (rightZigzag adj.unit adj.counit) ⊗≫ 𝟙 _ := by
-        rw [whisker_exchange, rightZigzag]; simp [bicategoricalComp]
+        rw [whisker_exchange, rightZigzag]; coherence
       _ = s.unit := by
-        rw [adj.right_triangle]; simp [bicategoricalComp]) <| by
+        rw [adj.right_triangle]; coherence) <| by
       intro s τ₀
       ext
       /- We need to specify the type of `τ` to use the notation `⊗≫`. -/
       let τ : h ≫ f ⟶ s.lift := τ₀.right
-      have hτ : h ◁ adj.unit ⊗≫ τ ▷ u = s.unit := by simpa [bicategoricalComp] using LeftLift.w τ₀
+      have hτ : h ◁ adj.unit ⊗≫ τ ▷ u = s.unit := by
+        rw [← LeftLift.w τ₀]
+        dsimp only [whisker_lift, StructuredArrow.mk_right, whisker_unit,
+          StructuredArrow.mk_hom_eq_self]
+        coherence
       calc τ
         _ = 𝟙 _ ⊗≫ h ◁ leftZigzag adj.unit adj.counit ⊗≫ τ ⊗≫ 𝟙 _ := by
-          rw [adj.left_triangle]; simp [bicategoricalComp]
+          rw [adj.left_triangle]; coherence
         _ = 𝟙 _ ⊗≫ h ◁ adj.unit ▷ f ⊗≫ (_ ◁ adj.counit ≫ τ ▷ _) ⊗≫ 𝟙 _ := by
-          rw [leftZigzag]; simp [bicategoricalComp]
+          rw [leftZigzag]; coherence
         _ = 𝟙 _ ⊗≫ (h ◁ adj.unit ⊗≫ τ ▷ u) ▷ f ⊗≫ s.lift ◁ adj.counit ⊗≫ 𝟙 _ := by
-          rw [whisker_exchange]; simp [bicategoricalComp]
+          rw [whisker_exchange]; coherence
         _ = _ := by
-          rw [hτ]; simp [bicategoricalComp]
+          rw [hτ]; dsimp
 
 /-- A left Kan lift of the identity along `u` such that `u` commutes with is a left adjoint
 to `u`. The unit of this adjoint is given by the unit of the Kan lift. -/
 def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
     (H : IsKan t) (H' : IsKan (t.whisker u)) :
       t.lift ⊣ u :=
-  let ε : u ≫ t.lift ⟶ 𝟙 b := H'.desc <| .mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
-  have Hε : rightZigzag t.unit ε = (ρ_ u).hom ≫ (λ_ u).inv := by
-    simpa [rightZigzag, bicategoricalComp] using H'.fac <| .mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
+  let t' := LeftLift.mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
+  let ε : u ≫ t.lift ⟶ 𝟙 b := H'.desc t'
+  have Hε := calc
+    rightZigzag t.unit ε = (u ◁ t.unit ≫ (α_ _ _ _).inv) ≫ H'.desc t' ▷ u := by
+      dsimp only [rightZigzag]; coherence
+    _ = (ρ_ u).hom ≫ (λ_ u).inv := H'.fac t'
   { unit := t.unit
     counit := ε
     left_triangle := by
@@ -163,13 +179,13 @@ def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
       apply H.hom_ext
       calc _
         _ = 𝟙 _ ⊗≫ t.unit ⊗≫ leftZigzag t.unit ε ▷ u ⊗≫ 𝟙 _ := by
-          simp [bicategoricalComp]
+          coherence
         _ = 𝟙 _ ⊗≫ (_ ◁ t.unit ≫ t.unit ▷ _) ⊗≫ t.lift ◁ ε ▷ u ⊗≫ 𝟙 _ := by
-          rw [leftZigzag]; simp [bicategoricalComp]
+          rw [leftZigzag]; coherence
         _ = 𝟙 _ ⊗≫ t.unit ⊗≫ t.lift ◁ (u ◁ t.unit ⊗≫ ε ▷ u) ⊗≫ 𝟙 _ := by
-          rw [whisker_exchange]; simp [bicategoricalComp]
+          rw [whisker_exchange]; coherence
         _ = _ := by
-          rw [← rightZigzag, Hε]; simp [bicategoricalComp]
+          rw [← rightZigzag, Hε]; coherence
     right_triangle := Hε }
 
 /-- For an adjuntion `f ⊣ u`, `f` is a left Kan lift of the identity along `u`.
@@ -211,18 +227,25 @@ def isKanOfWhiskerLeftAdjoint
     let τ : t.extension ⟶ k ≫ u := H.desc (.mk _ <| 𝟙 _ ⊗≫ g ◁ η' ⊗≫ θ ▷ u ⊗≫ 𝟙 _)
     let σ : t.extension ≫ h ⟶ k := H'.desc <| (.mk _ <| (ρ_ _).hom ≫ τ)
     LeftExtension.homMk σ <| (H' g).hom_ext <| by
-      have Hσ : t.extension ◁ η' ⊗≫ σ ▷ u  = 𝟙 _ ⊗≫ τ := by
-        simpa [bicategoricalComp] using (H' _).fac (.mk _ <| (ρ_ _).hom ≫ τ)
+      have Hσ := calc
+        t.extension ◁ η' ⊗≫ σ ▷ u
+        _ = (t.extension ◁ η' ≫ (α_ _ _ _).inv) ≫ (H' t.extension).desc (LeftLift.mk k _) ▷ u := by
+          coherence
+        _ = (ρ_ t.extension).hom ≫ τ := (H' _).fac (.mk _ <| (ρ_ _).hom ≫ τ)
+        _ = 𝟙 _ ⊗≫ τ := by coherence
       calc _
         _ = 𝟙 _ ⊗≫ (g ◁ η' ≫ t.unit ▷ (h ≫ u)) ⊗≫ f ◁ σ ▷ u ⊗≫ 𝟙 _ := by
-          simp [bicategoricalComp]
+          dsimp only [LeftLift.whisker_lift, StructuredArrow.mk_right, LeftLift.whisker_unit,
+            StructuredArrow.mk_hom_eq_self, whisker_extension, whisker_unit]
+          coherence
         _ = 𝟙 _ ⊗≫ t.unit ▷ (𝟙 c) ⊗≫ f ◁ (t.extension ◁ η' ⊗≫ σ ▷ u) ⊗≫ 𝟙 _ := by
-          rw [whisker_exchange]; simp [bicategoricalComp]
+          rw [whisker_exchange]; coherence
         _ = _ := by
-          rw [Hσ]; simp [τ, bicategoricalComp]) <| by
+          rw [Hσ]; simp [τ, bicategoricalComp, BicategoricalCoherence.hom]) <| by
     intro s' τ₀'
     let τ' : t.extension ≫ h ⟶ s'.extension := τ₀'.right
-    have Hτ' : t.unit ▷ h ⊗≫ f ◁ τ' = s'.unit := by simpa [bicategoricalComp] using τ₀'.w.symm
+    have Hτ' : t.unit ▷ h ⊗≫ f ◁ τ' = s'.unit := by
+      simpa [bicategoricalComp, BicategoricalCoherence.hom] using τ₀'.w.symm
     ext
     apply (H' _).hom_ext
     dsimp only [StructuredArrow.homMk_right]
@@ -231,11 +254,13 @@ def isKanOfWhiskerLeftAdjoint
     apply H.hom_ext
     calc _
       _ = 𝟙 _ ⊗≫ (t.unit ▷ (𝟙 c) ≫ (f ≫ t.extension) ◁ η') ⊗≫ f ◁ τ' ▷ u := by
-        simp [bicategoricalComp]
+        dsimp only [LeftLift.whisker_lift, StructuredArrow.mk_right, LeftLift.whisker_unit,
+          StructuredArrow.mk_hom_eq_self]
+        coherence
       _ = 𝟙 g ⊗≫ g ◁ η' ⊗≫ (t.unit ▷ h ⊗≫ f ◁ τ') ▷ u ⊗≫ 𝟙 _ := by
-        rw [← whisker_exchange]; simp [bicategoricalComp]
+        rw [← whisker_exchange]; coherence
       _ = _ := by
-        rw [Hτ']; simp [bicategoricalComp]
+        rw [Hτ']; simp
 
 instance {f : a ⟶ b} {g : a ⟶ c} {x : B} {h : c ⟶ x} [IsLeftAdjoint h] [HasLeftKanExtension f g] :
     Lan.CommuteWith f g h :=

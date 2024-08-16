@@ -23,8 +23,11 @@ def mkContext? {ρ : Type} (e : Expr) [Context ρ] : MetaM (Option ρ) := do
   try return some (← Context.mkContext e) catch _ => return none
 
 structure Obj where
-  e : Option Expr
+  e? : Option Expr
   deriving Inhabited
+
+def Obj.e (a : Obj) : Expr :=
+  a.e?.get!
 
 /-- Expressions for atomic 1-morphisms. -/
 structure Atom₁ : Type where
@@ -91,8 +94,6 @@ section PureCoherence
 
 structure CoherenceHom where
   e : Expr
-  eHom : Expr
-  eq : Expr
   src : Mor₁
   tgt : Mor₁
   inst : Expr
@@ -107,12 +108,12 @@ structure AtomIso where
 
 inductive StructuralIsoAtom : Type
   /-- The expression for the associator `α_ f g h`. -/
-  | associator (e eHom eq : Expr) (f g h : Mor₁) : StructuralIsoAtom
+  | associator (e : Expr) (f g h : Mor₁) : StructuralIsoAtom
   /-- The expression for the left unitor `λ_ f`. -/
-  | leftUnitor (e eHom eq : Expr) (f : Mor₁) : StructuralIsoAtom
+  | leftUnitor (e : Expr) (f : Mor₁) : StructuralIsoAtom
   /-- The expression for the right unitor `ρ_ f`. -/
-  | rightUnitor (e eHom eq : Expr) (f : Mor₁) : StructuralIsoAtom
-  | id (e eHom eq : Expr) (f : Mor₁) : StructuralIsoAtom
+  | rightUnitor (e : Expr) (f : Mor₁) : StructuralIsoAtom
+  | id (e : Expr) (f : Mor₁) : StructuralIsoAtom
   | coherenceHom (α : CoherenceHom) : StructuralIsoAtom
   deriving Inhabited
 
@@ -146,17 +147,17 @@ def StructuralIsoAtom.e : StructuralIsoAtom → Expr
 open MonadMor₁
 
 def StructuralIsoAtom.srcM {m : Type → Type} [Monad m] [MonadMor₁ m] : StructuralIsoAtom → m Mor₁
-  | .associator _ _ _ f g h => do comp₁M (← comp₁M f g) h
-  | .leftUnitor _ _ _ f => do comp₁M (← id₁M f.src) f
-  | .rightUnitor _ _ _ f => do comp₁M f (← id₁M f.tgt)
-  | .id _ _ _ f => return f
+  | .associator _ f g h => do comp₁M (← comp₁M f g) h
+  | .leftUnitor _ f => do comp₁M (← id₁M f.src) f
+  | .rightUnitor _ f => do comp₁M f (← id₁M f.tgt)
+  | .id _ f => return f
   | .coherenceHom α => return α.src
 
 def StructuralIsoAtom.tgtM {m : Type → Type} [Monad m] [MonadMor₁ m] : StructuralIsoAtom → m Mor₁
-  | .associator _ _ _ f g h => do comp₁M f (← comp₁M g h)
-  | .leftUnitor _ _ _ f => return f
-  | .rightUnitor _ _ _ f => return f
-  | .id _ _ _ f => return f
+  | .associator _ f g h => do comp₁M f (← comp₁M g h)
+  | .leftUnitor _ f => return f
+  | .rightUnitor _ f => return f
+  | .id _ f => return f
   | .coherenceHom α => return α.tgt
 
 def Mor₂Iso.e : Mor₂Iso → Expr

@@ -64,6 +64,8 @@ open CategoryTheory Mathlib.Tactic.BicategoryLike
 
 namespace Mathlib.Tactic
 
+namespace Monoidal
+
 /-- The domain of a morphism. -/
 def srcExpr (η : Expr) : MetaM Expr := do
   match (← whnfR (← inferType η)).getAppFnArgs with
@@ -96,8 +98,6 @@ def tgtExprOfIso (η : Expr) : MetaM Expr := do
   | (``Iso, #[_, _, _, g]) => return g
   | _ => throwError m!"{η} is not a morphism"
 
-namespace Monoidal
-
 initialize registerTraceClass `monoidal
 
 /-- The context for evaluating expressions. -/
@@ -105,21 +105,26 @@ structure Context where
   /-- The expression for the underlying category. -/
   C : Expr
   instCat : Expr
-  instMonoidal : Expr
+  instMonoidal : Option Expr
   level₁ : Level
   level₂ : Level
 
 /-- Populate a `context` object for evaluating `e`. -/
 def mkContext (e : Expr) : MetaM Context := do
-  match (← whnfR (← inferType e)).getAppFnArgs with
+  let e ← instantiateMVars e
+  let e ← (match (← whnfR e).eq? with
+    | some (_, lhs, _) => return lhs
+    | none => return e)
+  let type ← instantiateMVars <| ← inferType e
+  match (← whnfR type).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) =>
-    let C ← inferType f
+    let C ← instantiateMVars <| ← inferType f
     let .succ level₁ ← getLevel C |
       throwError m!"faled to get the universe level of {C}"
-    let .succ level₂ ← getLevel (← inferType e) |
-      throwError m!"failed to get the universe level of {e}"
+    let .succ level₂ ← getLevel type |
+      throwError m!"failed to get the universe level of {type}"
     let instCat ← synthInstance (mkAppN (.const ``Category [level₂, level₁]) #[C])
-    let instMonoidal ← synthInstance
+    let instMonoidal ← synthInstance?
       (mkAppN (.const ``MonoidalCategory [level₂, level₁]) #[C, instCat])
     return ⟨C, instCat, instMonoidal, level₁, level₂⟩
   | _ => throwError m!"{e} is not a morphism"
@@ -142,10 +147,18 @@ def mkCategoryStructInst : MonoidalM Expr := do
   let ctx ← read
   return mkAppN (.const ``Category.toCategoryStruct (← getLevels)) #[ctx.C, ctx.instCat]
 
+def mkMonoidalCategoryInst : MonoidalM Expr := do
+  let ctx ← read
+  match ctx.instMonoidal with
+  | some inst => return inst
+  | none =>
+    trace[monoidal] "synthesizing monoidal category instance"
+    throwError m!"failed to find monoidal category instance on {ctx.C}"
+
 def mkMonoidalCategoryStructInst : MonoidalM Expr := do
   let ctx ← read
   return mkAppN (.const ``MonoidalCategory.toMonoidalCategoryStruct (← getLevels))
-    #[ctx.C, ctx.instCat, ctx.instMonoidal]
+    #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst]
 
 def mkMonoidalCoherenceHom (f g inst : Expr) : MonoidalM Expr := do
   let ctx ← read
@@ -250,33 +263,33 @@ instance : MonadStructuralIsoAtom MonoidalM where
     let e := mkAppN (.const ``MonoidalCategoryStruct.associator (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryStructInst, f.e, g.e, h.e]
     let eHom ← mkIsoHom e
-    return .associator e eHom (← mkEqRefl eHom) f g h
+    return .associator e f g h
   leftUnitorM f := do
     let ctx ← read
     let e := mkAppN (.const ``MonoidalCategoryStruct.leftUnitor (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryStructInst, f.e]
     let eHom ← mkIsoHom e
-    return .leftUnitor e eHom (← mkEqRefl eHom) f
+    return .leftUnitor e f
   rightUnitorM f := do
     let ctx ← read
     let e := mkAppN (.const ``MonoidalCategoryStruct.rightUnitor (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryStructInst, f.e]
     let eHom ← mkIsoHom e
-    return .rightUnitor e eHom (← mkEqRefl eHom) f
+    return .rightUnitor e f
   id₂M f := do
     let ctx ← read
     let e := mkAppN (.const ``Iso.refl (← getLevels)) #[ctx.C, ctx.instCat, f.e]
     let eHom := mkAppN (.const ``CategoryStruct.id (← getLevels)) #[ctx.C, ← mkCategoryStructInst, f.e]
     let eq := mkAppN (.const ``Iso.refl_hom (← getLevels)) #[ctx.C, ctx.instCat, f.e]
-    return .id e eHom eq f
+    return .id e f
   coherenceHomM f g inst := do
     let ctx ← read
     match (← whnfI inst).getAppFnArgs with
     | (``MonoidalCoherence.mk, #[_, _, _, _, α]) =>
-      let e := mkAppN (.const ``monoidalIso (← getLevels))
+      let e := mkAppN (.const ``MonoidalCoherence.iso (← getLevels))
         #[ctx.C, ctx.instCat, f.e, g.e, inst]
       let eHom ← mkIsoHom e
-      return ⟨e, eHom, ← mkEqRefl eHom, f, g, inst, α⟩
+      return ⟨e, f, g, inst, α⟩
     | _ => throwError m!"failed to unfold {inst}"
 
 
@@ -294,14 +307,14 @@ instance : MonadMor₂Iso MonoidalM where
     let g ← η.srcM
     let h ← η.tgtM
     let e := mkAppN (.const ``MonoidalCategory.whiskerLeftIso (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, f.e, g.e, h.e, η.e]
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, η.e]
     return .whiskerLeft e f g h η
   whiskerRightM η h := do
     let ctx ← read
     let f ← η.srcM
     let g ← η.tgtM
     let e := mkAppN (.const ``MonoidalCategory.whiskerRightIso (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, f.e, g.e, η.e, h.e]
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, η.e, h.e]
     return .whiskerRight e f g η h
   horizontalCompM η θ := do
     let ctx ← read
@@ -310,7 +323,7 @@ instance : MonadMor₂Iso MonoidalM where
     let f₂ ← θ.srcM
     let g₂ ← θ.tgtM
     let e := mkAppN (.const ``tensorIso (← getLevels))
-      #[ctx.C, f₁.e, g₁.e, f₂.e, g₂.e, ctx.instCat, ctx.instMonoidal, η.e, θ.e]
+      #[ctx.C, f₁.e, g₁.e, f₂.e, g₂.e, ctx.instCat, ← mkMonoidalCategoryInst, η.e, θ.e]
     return .horizontalComp e f₁ g₁ f₂ g₂ η θ
   symmM η := do
     let ctx ← read
@@ -356,7 +369,7 @@ instance : MonadMor₂ MonoidalM where
     let f := η.src
     let g := η.tgt
     let e := mkAppN (.const ``Iso.inv (← getLevels)) #[ctx.C, ctx.instCat, f.e, g.e, η.e]
-    return .mk e f g
+    return .mk e g f
   id₂M f := do
     let ctx ← read
     let e := mkAppN (.const ``CategoryStruct.id (← getLevels)) #[ctx.C, ← mkCategoryStructInst, f.e]
@@ -396,7 +409,7 @@ instance : MonadMor₂ MonoidalM where
     let isoLift? ← (match η.isoLift? with
       | some ηIso => do
         let eq := mkAppN (.const ``structuralIsoOfExpr_whiskerRight (← getLevels))
-          #[ctx.C, ctx.instCat, ctx.instMonoidal, f.e, g.e, h.e, η.e, ηIso.iso.e, ηIso.eq]
+          #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, η.e, ηIso.iso.e, ηIso.eq]
         return .some ⟨← MonadMor₂Iso.whiskerRightM ηIso.iso h, eq⟩
       | _ => return none)
     let e := mkAppN (.const ``MonoidalCategoryStruct.whiskerRight (← getLevels))
@@ -411,7 +424,7 @@ instance : MonadMor₂ MonoidalM where
     let isoLift? ← (match (η.isoLift?, θ.isoLift?) with
       | (some ηIso, some θIso) => do
         let eq := mkAppN (.const ``structuralIsoOfExpr_horizontalComp (← getLevels))
-          #[ctx.C, ctx.instCat, ctx.instMonoidal, f₁.e, g₁.e, f₂.e, g₂.e,
+          #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f₁.e, g₁.e, f₂.e, g₂.e,
             η.e, ηIso.iso.e, ηIso.eq, θ.e, θIso.iso.e, θIso.eq]
         return .some ⟨← MonadMor₂Iso.horizontalCompM ηIso.iso θIso.iso, eq⟩
       | _ => return none)
@@ -511,45 +524,45 @@ instance : MonadNormalizeNaturality MonoidalM where
   mkNaturalityAssociator p pf pfg pfgh f g h η_f η_g η_h := do
     let ctx ← read
     return mkAppN (.const ``naturality_associator (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, p.e.e, f.e, g.e, h.e,
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, p.e.e, f.e, g.e, h.e,
         pf.e.e, pfg.e.e, pfgh.e.e,
         η_f.e, η_g.e, η_h.e]
   mkNaturalityLeftUnitor p pf f η_f := do
     let ctx ← read
     return mkAppN (.const ``naturality_leftUnitor (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, p.e.e, f.e, pf.e.e, η_f.e]
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, p.e.e, f.e, pf.e.e, η_f.e]
   mkNaturalityRightUnitor p pf f η_f := do
     let ctx ← read
     return mkAppN (.const ``naturality_rightUnitor (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, p.e.e, f.e, pf.e.e, η_f.e]
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, p.e.e, f.e, pf.e.e, η_f.e]
   mkNaturalityId p pf f η_f := do
     let ctx ← read
     return mkAppN (.const ``naturality_id (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, p.e.e, f.e, pf.e.e, η_f.e]
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, p.e.e, f.e, pf.e.e, η_f.e]
   mkNaturalityComp p pf f g h η θ η_f η_g η_h ih_η ih_θ := do
     let ctx ← read
     return mkAppN (.const ``naturality_comp (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, p.e.e, f.e, g.e, h.e, pf.e.e, η.e, θ.e,
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, p.e.e, f.e, g.e, h.e, pf.e.e, η.e, θ.e,
         η_f.e, η_g.e, η_h.e, ih_η, ih_θ]
   mkNaturalityWhiskerLeft p pf pfg f g h η η_f η_fg η_fh ih_η := do
     let ctx ← read
     return mkAppN (.const ``naturality_whiskerLeft (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, p.e.e, f.e, g.e, h.e,
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, p.e.e, f.e, g.e, h.e,
         pf.e.e, pfg.e.e, η.e, η_f.e, η_fg.e, η_fh.e, ih_η]
   mkNaturalityWhiskerRight p pf pfh f g h η η_f η_g η_fh ih_η := do
     let ctx ← read
     return mkAppN (.const ``naturality_whiskerRight (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, p.e.e, f.e, g.e, h.e,
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, p.e.e, f.e, g.e, h.e,
         pf.e.e, pfh.e.e, η.e, η_f.e, η_g.e, η_fh.e, ih_η]
   mkNaturalityHorizontalComp p pf₁ pf₁f₂ f₁ g₁ f₂ g₂ η θ η_f₁ η_g₁ η_f₂ η_g₂ ih_η ih_θ := do
     let ctx ← read
     return mkAppN (.const ``naturality_tensorHom (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, p.e.e, f₁.e, g₁.e, f₂.e, g₂.e,
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, p.e.e, f₁.e, g₁.e, f₂.e, g₂.e,
         pf₁.e.e, pf₁f₂.e.e, η.e, θ.e, η_f₁.e, η_g₁.e, η_f₂.e, η_g₂.e, ih_η, ih_θ]
   mkNaturalityInv p pf f g η η_f η_g ih := do
     let ctx ← read
     return mkAppN (.const ``naturality_inv (← getLevels))
-      #[ctx.C, ctx.instCat, ctx.instMonoidal, p.e.e,
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, p.e.e,
         f.e, g.e, pf.e.e, η.e, η_f.e, η_g.e, ih]
 
 theorem of_normalize_eq {f g f' : C} {η θ : f ≅ g} (η_f : 𝟙_ C ⊗ f ≅ f') (η_g : 𝟙_ C ⊗ g ≅ f')
@@ -571,24 +584,43 @@ def Atom₁.mkM (e : Expr) : MetaM Atom₁ := do
   let tgt ← tgtExpr? e
   return ⟨e, ⟨src⟩, ⟨tgt⟩⟩
 
+-- def isId₁? (e : Expr) : MonoidalM (Option Obj) := do
+--   let ctx ← read
+--   let f ← mkFreshExprMVar ctx.C
+--   let unit ← withReader _ (id₁M ⟨none⟩)
+--   if ← withDefault <| isDefEq e unit.e then
+--     return .some ⟨none⟩
+--   else
+--     return none
+
+
 def isId₁? (e : Expr) : MonoidalM (Option Obj) := do
-  let unit ← id₁M ⟨none⟩
-  if ← withDefault <| isDefEq e unit.e then
-    return .some ⟨none⟩
-  else
-    return none
+  let ctx ← read
+  match ctx.instMonoidal with
+  | none => return none
+  | some _ => do
+    let unit := mkAppN (.const ``MonoidalCategoryStruct.tensorUnit (← getLevels))
+      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryStructInst]
+    if ← withDefault <| isDefEq e unit then
+      return .some ⟨none⟩
+    else
+      return none
 
 def isComp₁? (e : Expr) : MonoidalM (Option (Mor₁ × Mor₁)) := do
   let ctx ← read
   let f ← mkFreshExprMVar ctx.C
   let g ← mkFreshExprMVar ctx.C
-  let fg ← mkComp₁ f g
-  if ← withDefault <| isDefEq e fg then
-    let f ← instantiateMVars f
-    let g ← instantiateMVars g
-    return .some ((.of ⟨f, ⟨none⟩, ⟨none⟩⟩ : Mor₁), (.of ⟨g, ⟨none⟩, ⟨none⟩⟩ : Mor₁))
-  else
-    return none
+  match ctx.instMonoidal with
+    | none => return none
+    | some _ => do
+      let fg := mkAppN (.const ``MonoidalCategoryStruct.tensorObj (← getLevels))
+          #[ctx.C, ctx.instCat, ← mkMonoidalCategoryStructInst, f, g]
+      if ← withDefault <| isDefEq e fg then
+        let f ← instantiateMVars f
+        let g ← instantiateMVars g
+        return .some ((.of ⟨f, ⟨none⟩, ⟨none⟩⟩ : Mor₁), (.of ⟨g, ⟨none⟩, ⟨none⟩⟩ : Mor₁))
+      else
+        return none
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def mor₁OfExpr (e : Expr) : MonoidalM Mor₁ := do
@@ -638,7 +670,6 @@ partial def Mor₂IsoOfExpr (e : Expr) : MonoidalM Mor₂Iso := do
     --   return Mor₂Iso.coherenceHom (← Mor₂IsoOfExpr α)
       -- Mor₂IsoOfExpr α
     -- | _ => throwError m!"could not unfold {← whnfI inst}"
-  -- TODO: add `Iso.trans` etc.
   | _ =>
     return .of ⟨e, ← MkMor₁.ofExpr (← srcExprOfIso e), ← MkMor₁.ofExpr (← tgtExprOfIso e)⟩
     -- let result ← mkEvalOf e
