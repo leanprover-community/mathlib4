@@ -13,7 +13,7 @@ import Mathlib.Tactic.TFAE
 # Day's reflection theorem
 -/
 
-open CategoryTheory MonoidalCategory MonoidalClosed
+open CategoryTheory MonoidalCategory MonoidalClosed BraidedCategory
 
 namespace CategoryTheory.Monoidal.Reflective
 
@@ -28,10 +28,24 @@ theorem day_reflection [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)  :
     List.TFAE
     [ ∀ (c : C) (d : D), IsIso (adj.unit.app ((ihom d).obj (R.obj c)))
     , ∀ (c : C) (d : D), IsIso ((internalHom.map (adj.unit.app d).op).app (R.obj c))
-    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (𝟙 d')))
+    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ▷ d'))
     , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))] := by
   tfae_have 3 → 4
-  · sorry
+  · intro h
+    have h' : ∀ d d', IsIso (L.map (d ◁ (adj.unit.app d'))) := by
+      intro d d'
+      have := BraidedCategory.braiding_naturality (𝟙 d) (adj.unit.app d')
+      rw [← Iso.eq_comp_inv, id_tensorHom] at this
+      rw [this]
+      simp only [Functor.map_comp, Functor.id_obj, Functor.comp_obj, tensorHom_id, Category.assoc]
+      infer_instance
+    intro d d'
+    have : (adj.unit.app d) ⊗ (adj.unit.app d') =
+        (adj.unit.app d ▷ d') ≫ (((L ⋙ R).obj _) ◁ adj.unit.app d') := by
+      simp [← tensorHom_id, ← id_tensorHom, ← tensor_comp]
+    rw [this]
+    simp only [Functor.id_obj, Functor.comp_obj, Functor.map_comp]
+    infer_instance
   tfae_have 4 → 1
   · sorry
   tfae_have 1 → 3
