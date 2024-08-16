@@ -77,13 +77,10 @@ variable {T : Submonoid P} (hy : M ≤ T.comap g) {Q : Type*} [CommRing Q]
 variable [Algebra P Q] [IsLocalization T Q]
 variable [IsLocalization M S]
 
-section
-
+include M in
 theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h ⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
-
-end
 
 variable {S M}
 

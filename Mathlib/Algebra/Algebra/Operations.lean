@@ -422,15 +422,15 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
     -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A}
     (hx : x ∈ M ^ n) : C n x hx := by
-  induction' n with n n_ih generalizing x
-  · rw [pow_zero] at hx
+  induction n generalizing x with
+  | zero =>
+    rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx
     exact algebraMap r
-  revert hx
-  simp_rw [pow_succ']
-  intro hx
-  exact
-    Submodule.mul_induction_on' (fun m hm x ih => mem_mul _ hm _ _ _ (n_ih ih))
+  | succ n n_ih =>
+    revert hx
+    simp_rw [pow_succ']
+    exact fun hx ↦ Submodule.mul_induction_on' (fun m hm x ih => mem_mul _ hm _ _ _ (n_ih ih))
       (fun x hx y hy Cx Cy => add _ _ _ _ _ Cx Cy) hx
 
 /-- Dependent version of `Submodule.pow_induction_on_right`. -/
@@ -443,15 +443,15 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
         ∀ m (hm : m ∈ M), C i.succ (x * m) (mul_mem_mul hx hm))
     -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A} (hx : x ∈ M ^ n) : C n x hx := by
-  induction' n with n n_ih generalizing x
-  · rw [pow_zero] at hx
+  induction n generalizing x with
+  | zero =>
+    rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx
     exact algebraMap r
-  revert hx
-  simp_rw [pow_succ]
-  intro hx
-  exact
-    Submodule.mul_induction_on' (fun m hm x ih => mul_mem _ _ hm (n_ih _) _ ih)
+  | succ n n_ih =>
+    revert hx
+    simp_rw [pow_succ]
+    exact fun hx ↦ Submodule.mul_induction_on' (fun m hm x ih => mul_mem _ _ hm (n_ih _) _ ih)
       (fun x hx y hy Cx Cy => add _ _ _ _ _ Cx Cy) hx
 
 /-- To show a property on elements of `M ^ n` holds, it suffices to show that it holds for scalars,

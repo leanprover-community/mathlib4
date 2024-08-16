@@ -586,7 +586,7 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE α] [MulPosStrictMono α]
-    [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)]
+    [CovariantClass α α (· + ·) (· < ·)]
     (hba : b < a) (hdc : d < c) : a * d + b * c < a * c + b * d := by
   rw [add_comm (a * d), add_comm (a * c)]
   exact mul_add_mul_lt_mul_add_mul hba hdc

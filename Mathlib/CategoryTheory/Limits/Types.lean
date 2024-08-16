@@ -642,6 +642,7 @@ private noncomputable def limitOfSurjectionsSurjective.preimage
     | 0 => a
     | n+1 => (hF n (preimage a n)).choose
 
+include hF in
 open limitOfSurjectionsSurjective in
 /-- Auxiliary lemma. Use `limit_of_surjections_surjective` instead. -/
 lemma surjective_π_app_zero_of_surjective_map_aux :
