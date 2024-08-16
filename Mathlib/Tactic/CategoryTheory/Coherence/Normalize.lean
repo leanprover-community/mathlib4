@@ -16,45 +16,8 @@ namespace BicategoryLike
 
 
 open BicategoryLike
--- CategoryTheory
--- open
---  Eval₁
 
 section
-
--- variable {m : Type → Type} [Monad m]
--- [Eval₁ m]
-
--- /-- Construct a `Mor₁` expression from a Lean expression. -/
--- partial def eval₁ (e : Expr) : m Mor₁ := do
---   if let some a ← isId₁? e then
---     return Mor₁.id e a
---   else if let some (f, g) ← isComp₁? e then
---     return Mor₁.comp e f g
---   else
---     return Mor₁.of (← mkAtom₁ e)
-
--- def mkAtomM (e : Expr) : m Atom := do
---   let src ← eval₁ (← srcExpr e)
---   let tgt ← eval₁ (← tgtExpr e)
---   return ⟨e, src, tgt⟩
-
--- def mkCategoryStructInst : MonoidalM Expr := do
---   let ctx ← read
---   return mkAppN (.const ``Category.toCategoryStruct (← getLevels)) #[ctx.C, ctx.instCat]
-
--- def mkQuiverInst : MonoidalM Expr := do
---   let ctx ← read
---   return mkAppN (.const ``CategoryStruct.toQuiver (← getLevels)) #[ctx.C, ← mkCategoryStructInst]
-
--- def mkHom (f g : Expr) : MonoidalM Expr := do
---   let ctx ← read
---   return mkAppN (.const ``Quiver.Hom [ctx.level₂.succ, ctx.level₁]) #[ctx.C, ← mkQuiverInst, f, g]
-
-
--- /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
--- def NormalExpr.ofExpr (η : Expr) : m NormalExpr := do
---   return NormalExpr.of <| .of <| .of <| .of ⟨η, ← eval₁ (← srcExpr η), ← eval₁ (← tgtExpr η)⟩
 
 /-- The result of evaluating an expression into normal form. -/
 structure Eval.Result where
@@ -79,7 +42,7 @@ class MkEvalWhiskerLeft (m : Type → Type) where
   mkEvalWhiskerLeftNil (f : Mor₁) (α : StructuralIso) : m Expr
   /-- Evaluate `f ◁ (α ≫ η ≫ ηs)`. -/
   mkEvalWhiskerLeftOfCons (f : Atom₁) (α : StructuralIso) (η : WhiskerLeft) (ηs θ : NormalExpr)
-    (pf_θ : Expr) : m Expr
+    (e_θ : Expr) : m Expr
   /-- Evaluate `(f ≫ g) ◁ η` -/
   mkEvalWhiskerLeftComp (f g : Mor₁) (η η₁ η₂ η₃ η₄ : NormalExpr)
     (e_η₁ e_η₂ e_η₃ e_η₄ : Expr) : m Expr
@@ -349,10 +312,6 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
         traceProof nm result
         return ⟨← NormalExpr.ofAtomM η, result⟩
       | _ => throwError "not implemented. try dsimp first."
-    -- if let .some α ← structuralAtom? e then
-      -- return ⟨.nil <| .atom α, ← mkEqRefl (← α.e)⟩
-    -- else
-      -- match (← whnfR e).getAppFnArgs with
     | .id _ _ f  =>
       let α ← StructuralIsoAtom.id₂M f
       return  ⟨← nilM <| .structuralAtom α, ← mkEqRefl e.e⟩
@@ -369,7 +328,7 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
       let result ← mkEvalWhiskerLeft f η η' θ e_η e_θ
       traceProof nm result
       return ⟨θ, result⟩
-    | .whiskerRight _ _ f g η h =>
+    | .whiskerRight _ _ _ _ η h =>
       withTraceNode nm (fun _ => return m!"whiskerRight") do
         let ⟨η', e_η⟩ ← eval nm η
         let ⟨θ, e_θ⟩ ← evalWhiskerRight η' h
@@ -379,7 +338,6 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
     | .coherenceComp _ _ _ _ _ _ α₀ η θ =>
       withTraceNode nm (fun _ => return m!"monoidalComp") do
         let ⟨η', e_η⟩ ← eval nm η
-        -- let α₀ ← structuralOfMonoidalComp e
         let α₀ := .structuralAtom <| .coherenceHom α₀
         let α ← nilM α₀
         let ⟨θ', e_θ⟩ ← eval nm θ
@@ -407,10 +365,7 @@ theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a'
 end
 
 def normalForm (nm : Name) (ρ : Type) [Context ρ]
-    -- [MkClass (CoherenceM ρ)]
-    -- (eval : Expr → CoherenceM ρ Eval.Result)
     [MonadMor₁ (CoherenceM ρ)]
-    -- [MonadStructuralIso (CoherenceM ρ)]
     [MonadStructuralIsoAtom (CoherenceM ρ)]
     [MonadMor₂Iso (CoherenceM ρ)]
     [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)]
@@ -436,9 +391,9 @@ universe v u
 theorem mk_eq_of_cons {C : Type u} [CategoryStruct.{v} C]
     {f₁ f₂ f₃ f₄ : C}
     (α α' : f₁ ⟶ f₂) (η η' : f₂ ⟶ f₃) (ηs ηs' : f₃ ⟶ f₄)
-    (pf_α : α = α') (pf_η : η = η') (pf_ηs : ηs = ηs') :
+    (e_α : α = α') (e_η : η = η') (e_ηs : ηs = ηs') :
     α ≫ η ≫ ηs = α' ≫ η' ≫ ηs' := by
-  simp [pf_α, pf_η, pf_ηs]
+  simp [e_α, e_η, e_ηs]
 
 
 
@@ -468,10 +423,10 @@ def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
       match (← whnfR η).getAppFnArgs, (← whnfR η').getAppFnArgs with
       | (``CategoryStruct.comp, #[_, _, _, _, _, η, ηs]),
         (``CategoryStruct.comp, #[_, _, _, _, _, η', ηs']) =>
-        let pf_α ← mkFreshExprMVar (← Meta.mkEq α α')
-        let pf_η  ← mkFreshExprMVar (← Meta.mkEq η η')
-        let pf_ηs ← mkFreshExprMVar (← Meta.mkEq ηs ηs')
-        let x ← mvarId.apply (← mkAppM ``mk_eq_of_cons #[α, α', η, η', ηs, ηs', pf_α, pf_η, pf_ηs])
+        let e_α ← mkFreshExprMVar (← Meta.mkEq α α')
+        let e_η  ← mkFreshExprMVar (← Meta.mkEq η η')
+        let e_ηs ← mkFreshExprMVar (← Meta.mkEq ηs ηs')
+        let x ← mvarId.apply (← mkAppM ``mk_eq_of_cons #[α, α', η, η', ηs, ηs', e_α, e_η, e_ηs])
         return x
       | _, _ => throwError "failed to make a normalized equality for {e}"
     | _, _ => throwError "failed to make a normalized equality for {e}"

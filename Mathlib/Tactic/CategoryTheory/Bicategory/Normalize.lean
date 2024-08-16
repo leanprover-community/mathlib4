@@ -115,7 +115,8 @@ theorem evalWhiskerRight_cons_whisker
     {η₅ : g ≫ k ⟶ j ≫ k}
     (e_η₁ : ((Iso.refl _).hom ≫ η ≫ (Iso.refl _).hom) ▷ k = η₁) (e_η₂ : f ◁ η₁ = η₂)
     (e_ηs₁ : ηs ▷ k = ηs₁) (e_ηs₂ : (α_ _ _ _).inv ≫ ηs₁ = ηs₂)
-    (e_η₃ : η₂ ≫ ηs₂ = η₃) (e_η₄ : (α_ _ _ _).hom ≫ η₃ = η₄) (e_η₅ : (whiskerRightIso α k).hom ≫ η₄ = η₅) :
+    (e_η₃ : η₂ ≫ ηs₂ = η₃) (e_η₄ : (α_ _ _ _).hom ≫ η₃ = η₄)
+    (e_η₅ : (whiskerRightIso α k).hom ≫ η₄ = η₅) :
     (α.hom ≫ (f ◁ η) ≫ ηs) ▷ k = η₅ := by
   simp at e_η₁ e_η₅
   simp [e_η₁, e_η₂, e_ηs₁, e_ηs₂, e_η₃, e_η₄, e_η₅]
@@ -199,7 +200,6 @@ instance : MkEvalWhiskerLeft BicategoryM where
     let c := g.tgt
     return mkAppN (.const ``evalWhiskerLeft_of_cons (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, i.e, j.e, α.e, η.e, ηs.e, θ.e, e_θ]
-
   mkEvalWhiskerLeftComp f g η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
     let h ← η.srcM
@@ -209,9 +209,8 @@ instance : MkEvalWhiskerLeft BicategoryM where
     let c := g.tgt
     let d := h.tgt
     return mkAppN (.const ``evalWhiskerLeft_comp (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, d.e, f.e, g.e, h.e, i.e, η.e, η₁.e, η₂.e, η₃.e, η₄.e,
-        e_η₁, e_η₂, e_η₃, e_η₄]
-
+      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, d.e, f.e, g.e, h.e, i.e,
+        η.e, η₁.e, η₂.e, η₃.e, η₄.e, e_η₁, e_η₂, e_η₃, e_η₄]
   mkEvalWhiskerLeftId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
     let f ← η.srcM
@@ -231,10 +230,8 @@ instance : MkEvalWhiskerRight BicategoryM where
     let c := h.tgt
     return mkAppN (.const ``evalWhiskerRightAux_of (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, η.e, h.e]
-
-  mkEvalWhiskerRightAuxCons f η ηs ηs' η₁ η₂ η₃ e_ηs' e_η₁ e_η₂ e_η₃ := do
+  mkEvalWhiskerRightAuxCons _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
-
   mkEvalWhiskerRightNil α h := do
     let ctx ← read
     let f ← α.srcM
@@ -244,7 +241,6 @@ instance : MkEvalWhiskerRight BicategoryM where
     let c := h.tgt
     return mkAppN (.const ``evalWhiskerRight_nil (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, α.e, h.e]
-
   mkEvalWhiskerRightConsOfOf j α η ηs ηs₁ η₁ η₂ η₃ e_ηs₁ e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
     let f ← α.srcM
@@ -257,7 +253,6 @@ instance : MkEvalWhiskerRight BicategoryM where
     return mkAppN (.const ``evalWhiskerRight_cons_of_of (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, i.e, j.e,
         α.e, η.e, ηs.e, ηs₁.e, η₁.e, η₂.e, η₃.e, e_ηs₁, e_η₁, e_η₂, e_η₃]
-
   mkEvalWhiskerRightConsWhisker f k α η ηs η₁ η₂ ηs₁ ηs₂ η₃ η₄ η₅
       e_η₁ e_η₂ e_ηs₁ e_ηs₂ e_η₃ e_η₄ e_η₅ := do
     let ctx ← read
@@ -273,7 +268,6 @@ instance : MkEvalWhiskerRight BicategoryM where
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, d.e, f.e, g.e, h.e, i.e, j.e, k.e,
         α.e, η.e, ηs.e, η₁.e, η₂.e, ηs₁.e, ηs₂.e, η₃.e, η₄.e, η₅.e,
         e_η₁, e_η₂, e_ηs₁, e_ηs₂, e_η₃, e_η₄, e_η₅]
-
   mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
     let f ← η.srcM
@@ -285,7 +279,6 @@ instance : MkEvalWhiskerRight BicategoryM where
     return mkAppN (.const ``evalWhiskerRight_comp (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, d.e, f.e, f'.e, g.e, h.e,
         η.e, η₁.e, η₂.e, η₃.e, η₄.e, e_η₁, e_η₂, e_η₃, e_η₄]
-
   mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
     let f ← η.srcM
@@ -296,28 +289,21 @@ instance : MkEvalWhiskerRight BicategoryM where
       #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, η.e, η₁.e, η₂.e, e_η₁, e_η₂]
 
 instance : MkEvalHorizontalComp BicategoryM where
-  mkEvalHorizontalCompAuxOf η θ := do
+  mkEvalHorizontalCompAuxOf _ _ := do
     throwError "not implemented"
-
-  mkEvalHorizontalCompAuxCons η ηs θ ηθ η₁ ηθ₁ ηθ₂ e_ηθ e_η₁ e_ηθ₁ e_ηθ₂ := do
+  mkEvalHorizontalCompAuxCons _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
-
-  mkEvalHorizontalCompAux'Whisker f η θ ηθ η₁ η₂ η₃ e_ηθ e_η₁ e_η₂ e_η₃ := do
+  mkEvalHorizontalCompAux'Whisker _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
-
-  mkEvalHorizontalCompAux'OfWhisker f η θ η₁ ηθ ηθ₁ ηθ₂ e_η₁ e_ηθ e_ηθ₁ e_ηθ₂ := do
+  mkEvalHorizontalCompAux'OfWhisker _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
-
-  mkEvalHorizontalCompNilNil α β := do
+  mkEvalHorizontalCompNilNil _ _ := do
     throwError "not implemented"
-
-  mkEvalHorizontalCompNilCons α β η ηs η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃ := do
+  mkEvalHorizontalCompNilCons _ _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
-
-  mkEvalHorizontalCompConsNil α η ηs β η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃ := do
+  mkEvalHorizontalCompConsNil _ _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
-
-  mkEvalHorizontalCompConsCons α β η θ ηs θs ηθ ηθs ηθ₁ ηθ₂ e_ηθ e_ηθs e_ηθ₁ e_ηθ₂ := do
+  mkEvalHorizontalCompConsCons _ _ _ _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
 
 instance : MkEval BicategoryM where
@@ -329,8 +315,8 @@ instance : MkEval BicategoryM where
     let a := f.src
     let b := f.tgt
     return mkAppN (.const ``eval_comp (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e, η.e, η'.e, θ.e, θ'.e, ι.e, pf_η, pf_θ, pf_ηθ]
-
+      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e,
+        η.e, η'.e, θ.e, θ'.e, ι.e, pf_η, pf_θ, pf_ηθ]
   mkEvalWhiskerLeft f η η' θ pf_η pf_θ := do
     let ctx ← read
     let g ← η'.srcM
@@ -340,7 +326,6 @@ instance : MkEval BicategoryM where
     let c := g.tgt
     return mkAppN (.const ``eval_whiskerLeft (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, η.e, η'.e, θ.e, pf_η, pf_θ]
-
   mkEvalWhiskerRight η h η' θ pf_η pf_θ := do
     let ctx ← read
     let f ← η'.srcM
@@ -350,10 +335,8 @@ instance : MkEval BicategoryM where
     let c := h.tgt
     return mkAppN (.const ``eval_whiskerRight (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, η.e, η'.e, θ.e, pf_η, pf_θ]
-
-  mkEvalHorizontalComp η θ η' θ' ι pf_η pf_θ pf_ι := do
+  mkEvalHorizontalComp _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
-
   mkEvalOf η := do
     let ctx ← read
     let f := η.src
@@ -362,7 +345,6 @@ instance : MkEval BicategoryM where
     let b := f.tgt
     return mkAppN (.const ``eval_of (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, η.e]
-
   mkEvalMonoidalComp η θ α η' θ' αθ ηαθ pf_η pf_θ pf_αθ pf_ηαθ := do
     let ctx ← read
     let f ← η'.srcM
@@ -386,7 +368,7 @@ instance : MonadNormalExpr BicategoryM where
     let e := mkAppN (.const ``Bicategory.whiskerRight (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, η.e, h.e]
     return .whisker e η h
-  hConsM η θ := do
+  hConsM _ _ := do
     throwError "not implemented"
   whiskerLeftM f η := do
     let ctx ← read
@@ -408,23 +390,11 @@ instance : MonadNormalExpr BicategoryM where
     let i ← ηs.tgtM
     let a := f.src
     let b := f.tgt
-    -- let c := h.tgt
-    -- let d := i.tgt
-    -- let α' ← MkMor₂.ofExpr (← MonadMor₂.homM α).e
-    -- let α'' ← (match α' with
-    -- | .isoHom _ _ (.structuralAtom (.coherenceHom α'')) => return α''
-    -- | _ => throwError "failed to unfold {α'.e}")
-    -- -- let α''' ← coherenceHomM' α''.src α''.tgt α''.inst
-    -- let e := mkAppN (.const ``monoidalComp (← getLevels))
-    --   #[ctx.C, ctx.instCat, f.e, g.e, h.e, i.e, α''.inst]
     let e := mkAppN (.const ``CategoryStruct.comp [ctx.level₂, ctx.level₁])
       #[← mkHom₁ a.e b.e, ← mkHomCatStructInst a.e b.e, g.e, h.e, i.e, η.e, ηs.e]
     let e' := mkAppN (.const ``CategoryStruct.comp [ctx.level₂, ctx.level₁])
       #[← mkHom₁ a.e b.e, ← mkHomCatStructInst a.e b.e, f.e, g.e, i.e, (← mkIsoHom α.e), e]
     return .cons e' α η ηs
-
--- f ⟶ g ⟶ h ⟶ i
--- α η ηs
 
 instance : MkMor₂ BicategoryM where
   ofExpr := Mor₂OfExpr

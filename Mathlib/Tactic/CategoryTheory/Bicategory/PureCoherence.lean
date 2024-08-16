@@ -109,23 +109,6 @@ structure Context where
   level₁ : Level
   level₂ : Level
 
--- /-- Populate a `context` object for evaluating `e`. -/
--- def mkContext (e : Expr) : MetaM Context := do
---   let e ← instantiateMVars e
---   let type ← instantiateMVars <| ← inferType e
---   match (← whnfR type).getAppFnArgs with
---   | (``Quiver.Hom, #[_, _, f, _]) =>
---     let C ← instantiateMVars <| ← inferType f
---     let .succ level₁ ← getLevel C |
---       throwError m!"faled to get the universe level of {C}"
---     let .succ level₂ ← getLevel type |
---       throwError m!"failed to get the universe level of {type}"
---     let instCat ← synthInstance (mkAppN (.const ``Category [level₂, level₁]) #[C])
---     let instMonoidal ← synthInstance?
---       (mkAppN (.const ``MonoidalCategory [level₂, level₁]) #[C, instCat])
---     return ⟨C, instCat, instMonoidal, level₁, level₂⟩
---   | _ => throwError m!"{e} is not a morphism"
-
 /-- Populate a `context` object for evaluating `e`. -/
 def mkContext (e : Expr) : MetaM Context := do
   let e ← instantiateMVars e
@@ -156,10 +139,6 @@ instance : BicategoryLike.Context Bicategory.Context where
 
 /-- The monad for the normalization of 2-morphisms. -/
 abbrev BicategoryM := CoherenceM Context
-
--- /-- Run a computation in the `BicategoryM` monad. -/
--- abbrev BicategoryM.run {α : Type} (c : Context) (m : BicategoryM α) : MetaM α :=
---   ReaderT.run m c
 
 def getLevels : BicategoryM (List Level) := do
   let ctx ← read
@@ -289,16 +268,6 @@ end
 
 open MonadMor₁
 
--- instance : MkCoherenceHom BicategoryM  where
---   ofExpr inst := do
---     let ctx ← read
---     match (← whnfI inst).getAppFnArgs with
---     | (``MonoidalCoherence.mk, #[_, _, f, g, α, isIso]) =>
---       let e := mkAppN (.const ``monoidalIso (← getLevels))
---         #[ctx.B, ctx.instCat, f, g, inst]
---       ⟨⟩
---     | _ => throwError m!"failed to unfold {inst}"
-
 instance : MonadStructuralIsoAtom BicategoryM where
   associatorM f g h := do
     let ctx ← read
@@ -373,7 +342,7 @@ instance : MonadMor₂Iso BicategoryM where
     let e := mkAppN (.const ``Bicategory.whiskerRightIso (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, η.e, h.e]
     return .whiskerRight e f g η h
-  horizontalCompM η θ := throwError "horizontal composition is not implemented"
+  horizontalCompM _ _ := throwError "horizontal composition is not implemented"
   symmM η := do
     let ctx ← read
     let f ← η.srcM
@@ -493,7 +462,7 @@ instance : MonadMor₂ BicategoryM where
     let e := mkAppN (.const ``Bicategory.whiskerRight (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, η.e, h.e]
     return .whiskerRight e isoLift? f g η h
-  horizontalCompM η θ := throwError "horizontal composition is not implemented"
+  horizontalCompM _ _ := throwError "horizontal composition is not implemented"
   coherenceCompM α η θ := do
     let ctx ← read
     let f ← η.srcM
@@ -654,22 +623,10 @@ theorem of_normalize_eq {f g f' : a ⟶ b} {η θ : f ≅ g} (η_f : 𝟙 a ≫ 
 
 end
 
--- def eval₁ (e : Expr) : BicategoryM Mor₁ := sorry
-
 def Atom₁.mkM (e : Expr) : MetaM Atom₁ := do
   let src ← srcExpr? e
   let tgt ← tgtExpr? e
   return ⟨e, ⟨src⟩, ⟨tgt⟩⟩
-
--- def isId₁? (e : Expr) : BicategoryM (Option Obj) := do
---   let ctx ← read
---   let f ← mkFreshExprMVar ctx.B
---   let unit ← withReader _ (id₁M ⟨none⟩)
---   if ← withDefault <| isDefEq e unit.e then
---     return .some ⟨none⟩
---   else
---     return none
-
 
 def isId₁? (e : Expr) : BicategoryM (Option Obj) := do
   let ctx ← read
@@ -712,8 +669,6 @@ partial def mor₁OfExpr (e : Expr) : BicategoryM Mor₁ := do
 instance : MkMor₁ BicategoryM where
   ofExpr := mor₁OfExpr
 
--- open MonadStructuralIso
-open MonadMor₂Iso in
 
 partial def Mor₂IsoOfExpr (e : Expr) : BicategoryM Mor₂Iso := do
   match (← whnfR e).getAppFnArgs with
@@ -729,9 +684,9 @@ partial def Mor₂IsoOfExpr (e : Expr) : BicategoryM Mor₂Iso := do
     Mor₂Iso.symmM (← Mor₂IsoOfExpr η)
   | (``Iso.trans, #[_, _, _, _, _, η, θ]) =>
     Mor₂Iso.comp₂M (← Mor₂IsoOfExpr η) (← Mor₂IsoOfExpr θ)
-  | (``Bicategory.whiskerLeftIso, #[_, _, _, _, _, f, g, h, η]) =>
+  | (``Bicategory.whiskerLeftIso, #[_, _, _, _, _, f, _, _, η]) =>
     Mor₂Iso.whiskerLeftM (← MkMor₁.ofExpr f) (← Mor₂IsoOfExpr η)
-  | (``Bicategory.whiskerRightIso, #[_, _, _, _, _, f, g, η, h]) =>
+  | (``Bicategory.whiskerRightIso, #[_, _, _, _, _, _, _, η, h]) =>
     Mor₂Iso.whiskerRightM (← Mor₂IsoOfExpr η) (← MkMor₁.ofExpr h)
   | (``bicategoricalIsoComp, #[_, _, _, _, _, g, h, _, inst, η, θ]) =>
     -- let α ← Mor₂Iso.coherenceHomM' (← MkMor₁.ofExpr g) (← MkMor₁.ofExpr h) inst
@@ -744,12 +699,7 @@ partial def Mor₂IsoOfExpr (e : Expr) : BicategoryM Mor₂Iso := do
     Mor₂Iso.coherenceHomM' (← MkMor₁.ofExpr f) (← MkMor₁.ofExpr g) inst
   | _ =>
     return .of ⟨e, ← MkMor₁.ofExpr (← srcExprOfIso e), ← MkMor₁.ofExpr (← tgtExprOfIso e)⟩
-    -- let result ← mkEvalOf e
-    -- trace[monoidal] m!"{checkEmoji} {← inferType result}"
-    -- return ⟨← NormalExpr.ofExpr e, result⟩
-  -- throwError m!"could not identify a structural 2-morphism {e}"
 
--- set_option trace.profiler true in
 open MonadMor₂ in
 partial def Mor₂OfExpr (e : Expr) : BicategoryM Mor₂ := do
   match ← whnfR e with
@@ -758,36 +708,17 @@ partial def Mor₂OfExpr (e : Expr) : BicategoryM Mor₂ := do
   -- whnfR version of `Iso.inv η`
   | .proj ``Iso 1 η => invM (← Mor₂IsoOfExpr η)
   | .app .. => match (← whnfR e).getAppFnArgs with
-    -- | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
-    --   Mor₂OfExpr (← mkMonoidalCoherenceHom f g inst)
     | (``CategoryStruct.id, #[_, _, f]) => id₂M (← MkMor₁.ofExpr f)
     | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
       comp₂M (← Mor₂OfExpr η) (← Mor₂OfExpr θ)
-    | (``Bicategory.whiskerLeft, #[_, _, _, _, _, f, g, h, η]) =>
+    | (``Bicategory.whiskerLeft, #[_, _, _, _, _, f, _, _, η]) =>
       whiskerLeftM (← MkMor₁.ofExpr f) (← Mor₂OfExpr η)
-    | (``Bicategory.whiskerRight, #[_, _, _, _, _, f, g, η, h]) =>
+    | (``Bicategory.whiskerRight, #[_, _, _, _, _, _, _, η, h]) =>
       whiskerRightM (← Mor₂OfExpr η) (← MkMor₁.ofExpr h)
     | (``bicategoricalComp, #[_, _, _, _, _, g, h, _, inst, η, θ]) =>
-      coherenceCompM (← MonadStructuralIsoAtom.coherenceHomM (← MkMor₁.ofExpr g) (← MkMor₁.ofExpr h) inst) (← Mor₂OfExpr η) (← Mor₂OfExpr θ)
-      -- let α ← Mor₂IsoOfExpr <| ← mkMonoidalCoherenceIso g h inst
-      -- logInfo m!"α: {α.e}"
-      -- match α with
-      -- | .structuralAtom (.coherenceHom α) =>
-      --   coherenceCompM α (← Mor₂OfExpr η) (← Mor₂OfExpr θ)
-      -- | _ => throwError m!"{α.e}"
-
-      -- throwError m!"could not identify a structural 2-morphism {e}"
+      coherenceCompM (← MonadStructuralIsoAtom.coherenceHomM
+        (← MkMor₁.ofExpr g) (← MkMor₁.ofExpr h) inst) (← Mor₂OfExpr η) (← Mor₂OfExpr θ)
     | _ => return .of ⟨e, ← MkMor₁.ofExpr (← srcExpr e), ← MkMor₁.ofExpr (← tgtExpr e)⟩
-    -- throwError m!"could not identify a structural 2-morphism {e}"
-      -- let α ← mkMonoidalCoherenceHom g h inst
-      -- comp₂M (← Mor₂OfExpr η)
-        -- (← comp₂M (← Mor₂OfExpr α) (← Mor₂OfExpr θ))
-    -- | (Name.anonymous, _) => match ← whnfR e with
-    --   -- whnfR version of `Iso.hom η`
-    --   | .proj ``Iso 0 η => homM (← Mor₂IsoOfExpr η)
-    --   -- whnfR version of `Iso.inv η`
-    --   | .proj ``Iso 1 η => invM (← Mor₂IsoOfExpr η)
-    --   | _ => throwError "could't find a structural 2-morphism"
   | _ =>
     return .of ⟨e, ← MkMor₁.ofExpr (← srcExpr e), ← MkMor₁.ofExpr (← tgtExpr e)⟩
 

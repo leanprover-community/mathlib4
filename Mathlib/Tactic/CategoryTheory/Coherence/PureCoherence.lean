@@ -21,12 +21,7 @@ structure Normalize.Result where
 
 open Mor₂Iso MonadMor₂Iso
 
--- variable {m : Type → Type} [Monad m]
--- -- variable
--- private abbrev M (Ctx : Type) := ReaderT Ctx MetaM
-
 variable {ρ : Type} [Context ρ]
--- [Monad m]
 
 /-- Meta version of `CategoryTheory.FreeBicategory.normalizeIso`. -/
 def normalize [MonadMor₁ (CoherenceM ρ)] [MonadStructuralIsoAtom (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)] (p : NormalizedHom) (f : Mor₁) :
