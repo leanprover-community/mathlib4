@@ -109,8 +109,8 @@ section lambdaSyntaxLinter
 set_option linter.lambdaSyntax false
 
 /--
-warning:
-        Please use 'fun' and not λ to define anonymous functions.The latter syntax has been deprecated in mathlib 4.
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The latter syntax has been deprecated in mathlib 4.
 note: this linter can be disabled with `set_option linter.lambdaSyntax false`
 -/
 #guard_msgs in
@@ -118,8 +118,8 @@ set_option linter.lambdaSyntax true in
 example : ℕ → ℕ := λ _ ↦ 0
 
 /--
-warning:
-        Please use 'fun' and not λ to define anonymous functions.The latter syntax has been deprecated in mathlib 4.
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The latter syntax has been deprecated in mathlib 4.
 note: this linter can be disabled with `set_option linter.lambdaSyntax false`
 -/
 #guard_msgs in

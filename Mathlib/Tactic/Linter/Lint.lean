@@ -268,7 +268,7 @@ namespace LambdaSyntaxLinter
 /--
 `findLambdaSyntax stx` extracts from `stx` all syntax nodes of `kind` `Term.fun`. -/
 partial
-def findLambdaSyntax : Syntax → Array Syntax
+def findLambdaSyntax : Syntax → Array (Syntax)
   | stx@(.node _ kind args) =>
     let dargs := (args.map findLambdaSyntax).flatten
     match kind with
@@ -282,12 +282,10 @@ def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-
     for s in findLambdaSyntax stx do
-      -- XXX: find a better way to extract the actual syntax used...
-      if s!"{s.getArgs[0]!}" == "\"λ\"" then
-        Linter.logLint linter.lambdaSyntax s m!"
-        Please use 'fun' and not λ to define anonymous functions.\
+      if let .atom _ "λ" := s.getArgs[0]! then
+        Linter.logLint linter.lambdaSyntax s m!"\
+        Please use 'fun' and not 'λ' to define anonymous functions.\n\
         The latter syntax has been deprecated in mathlib 4."
 
 initialize addLinter lambdaSyntaxLinter
