@@ -1309,6 +1309,8 @@ protected theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f
 theorem EventuallyEq.symm {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g) : g =ᶠ[l] f :=
   H.mono fun _ => Eq.symm
 
+lemma eventuallyEq_comm {f g : α → β} {l : Filter α} : f =ᶠ[l] g ↔ g =ᶠ[l] f := ⟨.symm, .symm⟩
+
 @[trans]
 theorem EventuallyEq.trans {l : Filter α} {f g h : α → β} (H₁ : f =ᶠ[l] g) (H₂ : g =ᶠ[l] h) :
     f =ᶠ[l] h :=

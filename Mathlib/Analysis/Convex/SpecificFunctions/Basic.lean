@@ -95,7 +95,7 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     1 + p * s < (1 + s) ^ p := by
   have hp' : 0 < p := zero_lt_one.trans hp
   rcases eq_or_lt_of_le hs with rfl | hs
-  · rwa [add_right_neg, zero_rpow hp'.ne', mul_neg_one, add_neg_lt_iff_lt_add, zero_add]
+  · rwa [add_neg_cancel, zero_rpow hp'.ne', mul_neg_one, add_neg_lt_iff_lt_add, zero_add]
   have hs1 : 0 < 1 + s := neg_lt_iff_pos_add'.mp hs
   rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
   · exact hs2.trans_lt (rpow_pos_of_pos hs1 _)
@@ -131,7 +131,7 @@ with `s ≠ 0`, we have `(1 + s) ^ p < 1 + p * s`. -/
 theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp1 : 0 < p)
     (hp2 : p < 1) : (1 + s) ^ p < 1 + p * s := by
   rcases eq_or_lt_of_le hs with rfl | hs
-  · rwa [add_right_neg, zero_rpow hp1.ne', mul_neg_one, lt_add_neg_iff_add_lt, zero_add]
+  · rwa [add_neg_cancel, zero_rpow hp1.ne', mul_neg_one, lt_add_neg_iff_add_lt, zero_add]
   have hs1 : 0 < 1 + s := neg_lt_iff_pos_add'.mp hs
   have hs2 : 0 < 1 + p * s := by
     rw [← neg_lt_iff_pos_add']
@@ -180,7 +180,7 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
       mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one, mul_assoc, ← div_eq_inv_mul,
       sub_eq_add_neg, ← mul_neg, ← neg_div, neg_sub, _root_.sub_div, div_self hy.ne']
     apply one_add_mul_self_lt_rpow_one_add _ _ hp
-    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]
+    · rw [le_sub_iff_add_le, neg_add_cancel, div_nonneg_iff]
       exact Or.inl ⟨hx, hy.le⟩
     · rw [sub_ne_zero]
       exact ((div_lt_one hy).mpr hxy).ne
@@ -190,7 +190,7 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
       ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one,
       mul_assoc, ← div_eq_inv_mul, _root_.sub_div, div_self hy.ne']
     apply one_add_mul_self_lt_rpow_one_add _ _ hp
-    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]
+    · rw [le_sub_iff_add_le, neg_add_cancel, div_nonneg_iff]
       exact Or.inl ⟨hz, hy.le⟩
     · rw [sub_ne_zero]
       exact ((one_lt_div hy).mpr hyz).ne'

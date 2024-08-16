@@ -966,9 +966,12 @@ section PowIsSubgroup
 @[to_additive "A nonempty idempotent subset of a finite cancellative add monoid is a submonoid"]
 def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M)
     (hS1 : S.Nonempty) (hS2 : S * S = S) : Submonoid M :=
-  have pow_mem : ∀ a : M, a ∈ S → ∀ n : ℕ, a ^ (n + 1) ∈ S := fun a ha =>
-    Nat.rec (by rwa [Nat.zero_eq, zero_add, pow_one]) fun n ih =>
-      (congr_arg₂ (· ∈ ·) (pow_succ a (n + 1)).symm hS2).mp (Set.mul_mem_mul ih ha)
+  have pow_mem (a : M) (ha : a ∈ S) (n : ℕ) : a ^ (n + 1) ∈ S := by
+    induction n with
+    | zero => rwa [zero_add, pow_one]
+    | succ n ih =>
+      rw [← hS2, pow_succ]
+      exact Set.mul_mem_mul ih ha
   { carrier := S
     one_mem' := by
       obtain ⟨a, ha⟩ := hS1

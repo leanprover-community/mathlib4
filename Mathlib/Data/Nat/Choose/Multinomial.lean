@@ -73,9 +73,9 @@ lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
 @[simp]
 theorem multinomial_insert_one [DecidableEq α] (h : a ∉ s) (h₁ : f a = 1) :
     multinomial (insert a s) f = (s.sum f).succ * multinomial s f := by
-  simp only [multinomial, one_mul, factorial]
+  simp only [multinomial]
   rw [Finset.sum_insert h, Finset.prod_insert h, h₁, add_comm, ← succ_eq_add_one, factorial_succ]
-  simp only [factorial_one, one_mul, Function.comp_apply, factorial, mul_one, ← one_eq_succ_zero]
+  simp only [factorial, succ_eq_add_one, zero_add, mul_one, one_mul]
   rw [Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum _ _)]
 
 theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
