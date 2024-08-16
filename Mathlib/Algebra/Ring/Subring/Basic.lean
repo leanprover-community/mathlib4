@@ -837,6 +837,8 @@ def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b =
           (fun x₁ x₂ y h₁ h₂ => by rw [← mul_assoc, ← h₁, mul_assoc x₁ y x₂, ← h₂, mul_assoc])
           fun x₁ x₂ y h₁ h₂ => by rw [← mul_assoc, h₁, mul_assoc, h₂, ← mul_assoc] }
 
+-- Needs thought: medium large simp set, complex proof
+set_option linter.flexible false in
 theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x :=
   AddSubgroup.closure_induction (G := R)

@@ -21,6 +21,8 @@ section WithDivRing
 
 variable [DivisionRing α]
 
+-- Needs thought: longer, more complicated proof
+set_option linter.flexible false in
 @[simp, norm_cast]
 theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ => by

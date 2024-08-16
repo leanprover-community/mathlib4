@@ -412,6 +412,7 @@ theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = �
   have : ∀ x ∈ closure s, p x := fun x hx => closure_induction hx mem one mul
   simpa [hs] using this x
 
+set_option linter.flexible false in
 /-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by

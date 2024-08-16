@@ -48,6 +48,8 @@ theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
   unfold stdBasisMatrix; ext
   split_ifs with h <;> simp [h]
 
+-- Needs thought: simp followed by more complex proof; medium sized simp let
+set_option linter.flexible false in
 theorem mulVec_stdBasisMatrix [Fintype m] (i : n) (j : m) (c : α) (x : m → α) :
     mulVec (stdBasisMatrix i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'

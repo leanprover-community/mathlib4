@@ -56,6 +56,8 @@ theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) �
     f ≫ g = (f.1 ≫ g.1, f.2 ≫ g.2) :=
   rfl
 
+-- Needs thought: morally, is just simpa -> just allow the linter?
+set_option linter.flexible false in
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor

@@ -218,6 +218,8 @@ powerset lattice. -/
 noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   exact birkhoffSet.trans Fintype.finsetOrderIsoSet.symm.toOrderEmbedding
 
+-- Needs thought: simp followed by rw, with medium-long simp set; related to porting note
+set_option linter.flexible false in
 @[simp] lemma coe_birkhoffFinset (a : α) : birkhoffFinset a = birkhoffSet a := by
   classical
   -- TODO: This should be a single `simp` call but `simp` refuses to use
@@ -232,9 +234,11 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
 @[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
+-- Needs thought: simp and exact cannot be combined into simpa
+set_option linter.flexible false in
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl
+  simp [birkhoffSet]; exact rfl
 
 variable [DecidableEq α]
 

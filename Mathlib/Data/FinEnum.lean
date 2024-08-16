@@ -58,10 +58,12 @@ def toList (α) [FinEnum α] : List α :=
 
 open Function
 
+set_option linter.flexible false in -- needs more thought
 @[simp]
 theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
   simp [toList]; exists equiv x; simp
 
+set_option linter.flexible false in -- needs more thought
 @[simp]
 theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
   simp [toList]; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
@@ -109,6 +111,7 @@ def Finset.enum [DecidableEq α] : List α → List (Finset α)
     let r ← Finset.enum xs
     [r, {x} ∪ r]
 
+set_option linter.flexible false in -- needs more thought
 @[simp]
 theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
     s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs := by
@@ -196,6 +199,7 @@ theorem Pi.mem_enum (f : ∀ a, β a) :
 instance Pi.finEnum : FinEnum (∀ a, β a) :=
   ofList (Pi.enum _) fun _ => Pi.mem_enum _
 
+set_option linter.flexible false in -- needs more thought
 instance pfunFinEnum (p : Prop) [Decidable p] (α : p → Type) [∀ hp, FinEnum (α hp)] :
     FinEnum (∀ hp : p, α hp) :=
   if hp : p then

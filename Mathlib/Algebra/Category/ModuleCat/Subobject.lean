@@ -31,6 +31,8 @@ namespace ModuleCat
 
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
+-- Needs thought: simp followed by rw; simp set is medium long
+set_option linter.flexible false in
 /-- The categorical subobjects of a module `M` are in one-to-one correspondence with its
     submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=

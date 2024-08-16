@@ -262,6 +262,8 @@ theorem nonuniformWitness_mem_nonuniformWitnesses (h : ¬G.IsUniform ε s t) (ht
 
 /-! ### Equipartitions -/
 
+-- needs thought: combining into a simpa would not be very readable
+set_option linter.flexible false in
 open SimpleGraph in
 lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     (hε : 0 ≤ ε) :

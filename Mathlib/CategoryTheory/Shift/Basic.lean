@@ -651,6 +651,8 @@ lemma map_add_inv_app (a b : A) (X : C) :
 
 end hasShift
 
+-- Needs thought: simp followed by erw -> solve that issue first
+set_option linter.flexible false in
 open hasShift in
 /-- Given a family of endomorphisms of `C` which are intertwined by a fully faithful `F : C ⥤ D`
 with shift functors on `D`, we can promote that family to shift functors on `C`. -/

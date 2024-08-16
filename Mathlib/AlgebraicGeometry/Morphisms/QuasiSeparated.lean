@@ -347,6 +347,8 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCom
     refine ⟨⟨_, n, rfl⟩, ?_⟩
     simpa [mul_comm z] using e
 
+-- Needs more thought: simp-set is medium large
+set_option linter.flexible false in
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
 theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]

@@ -706,6 +706,8 @@ theorem fourierIntegral_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
   rw [← innerSL_real_flip V]
   exact VectorFourier.fourierIntegral_iteratedFDeriv (innerSL ℝ) hf h'f hn
 
+-- Needs more thought: squeezing simp is less readable
+set_option linter.flexible false in
 /-- One can bound `‖w‖^n * ‖D^k (𝓕 f) w‖` in terms of integrals of the derivatives of `f` (or order
 at most `n`) multiplied by powers of `v` (of order at most `k`). -/
 lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le

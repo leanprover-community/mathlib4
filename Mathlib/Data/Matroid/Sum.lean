@@ -170,6 +170,8 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
   ext
   simp
 
+-- Needs thought: simp set is medium long
+set_option linter.flexible false in
 @[simp] lemma sum'_basis_iff {I X} :
     (Matroid.sum' M).Basis I X ↔ ∀ i, (M i).Basis (Prod.mk i ⁻¹' I) (Prod.mk i ⁻¹' X) := by
   simp [Matroid.sum']

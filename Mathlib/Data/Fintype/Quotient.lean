@@ -17,7 +17,8 @@ to a quotient of finite families.
 
 -/
 
-
+-- Needs thought: simp and subst don't combine easily
+set_option linter.flexible false in
 /-- An auxiliary function for `Quotient.finChoice`.  Given a
 collection of setoids indexed by a type `ι`, a (finite) list `l` of
 indices, and a function that for each `i ∈ l` gives a term of the
@@ -37,6 +38,8 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
       exact h₁
     · simpa [e] using h₂ _ _
 
+-- Needs thought: simp and subst don't combine easily
+set_option linter.flexible false in
 theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [S : ∀ i, Setoid (α i)] :
     ∀ (l : List ι) (f : ∀ i ∈ l, α i), (Quotient.finChoiceAux l fun i h => ⟦f i h⟧) = ⟦f⟧

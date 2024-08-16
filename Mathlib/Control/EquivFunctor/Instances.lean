@@ -25,6 +25,7 @@ instance EquivFunctorPerm : EquivFunctor Perm where
   map_refl' α := by ext; simp
   map_trans' _ _ := by ext; simp
 
+set_option linter.flexible false in -- needs more thought
 -- There is a classical instance of `LawfulFunctor Finset` available,
 -- but we provide this computable alternative separately.
 instance EquivFunctorFinset : EquivFunctor Finset where

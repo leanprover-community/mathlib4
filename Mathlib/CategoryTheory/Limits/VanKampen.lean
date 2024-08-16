@@ -639,6 +639,8 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   · simp only [Fin.cases_zero]
   · simp only [Fin.cases_succ]
 
+-- Needs thought: complex proof; long simp set
+set_option linter.flexible false in
 theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     {c₁ : Cofan fun i : Fin n ↦ f i.succ} {c₂ : BinaryCofan (f 0) c₁.pt}
     (t₁ : IsVanKampenColimit c₁) (t₂ : IsVanKampenColimit c₂)

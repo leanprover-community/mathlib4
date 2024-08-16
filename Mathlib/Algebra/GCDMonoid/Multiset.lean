@@ -79,6 +79,8 @@ nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔
 
 variable [DecidableEq α]
 
+-- Needs thought: simp applies to both cases at once; more complex proof
+set_option linter.flexible false in
 @[simp]
 theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
   Multiset.induction_on s (by simp) fun a s IH ↦ by
@@ -167,6 +169,8 @@ section
 
 variable [DecidableEq α]
 
+-- Needs thought: simp applies to both cases at once; more complex proof
+set_option linter.flexible false in
 @[simp]
 theorem gcd_dedup (s : Multiset α) : (dedup s).gcd = s.gcd :=
   Multiset.induction_on s (by simp) fun a s IH ↦ by

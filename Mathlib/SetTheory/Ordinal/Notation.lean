@@ -24,8 +24,6 @@ Various operations (addition, subtraction, multiplication, power function)
 are defined on `ONote` and `NONote`.
 -/
 
-
-
 open Ordinal Order
 
 -- Porting note: the generated theorem is warned by `simpNF`.
@@ -467,6 +465,8 @@ theorem sub_nfBelow : ∀ {o₁ o₂ b}, NFBelow o₁ b → NF o₂ → NFBelow 
 instance sub_nf (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ - o₂)
   | ⟨⟨b₁, h₁⟩⟩, h₂ => ⟨⟨b₁, sub_nfBelow h₁ h₂⟩⟩
 
+-- Needs thought: complex proof; medium large simp set
+set_option linter.flexible false in
 @[simp]
 theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = repr o₁ - repr o₂
   | 0, o, _, h₂ => by cases o <;> exact (Ordinal.zero_sub _).symm
@@ -544,6 +544,8 @@ instance mul_nf : ∀ (o₁ o₂) [NF o₁] [NF o₂], NF (o₁ * o₂)
   | 0, o, _, h₂ => by cases o <;> exact NF.zero
   | oadd e n a, o, ⟨⟨b₁, hb₁⟩⟩, ⟨⟨b₂, hb₂⟩⟩ => ⟨⟨_, oadd_mul_nfBelow hb₁ hb₂⟩⟩
 
+-- Needs thought: complex proof; medium sized simp set
+set_option linter.flexible false in
 @[simp]
 theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = repr o₁ * repr o₂
   | 0, o, _, h₂ => by cases o <;> exact (zero_mul _).symm
@@ -659,6 +661,8 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
       substs o' m
       simp [scale, this]
 
+-- Needs thought: simp acts on several goals, with different medium-sized simp sets
+set_option linter.flexible false in
 theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ repr o = ω * repr o' + m
   | 0, o', m, _, p => by injection p; substs o' m; simp [NF.zero]
   | oadd e n a, o', m, h, p => by
@@ -801,6 +805,8 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
 
 section
 
+-- Needs thought: simp acts on multiple goals with different simp sets, resp. with medium simp set
+set_option linter.flexible false in
 -- Porting note: `R'` is used in the proof but marked as an unused variable.
 set_option linter.unusedVariables false in
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
@@ -881,6 +887,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
 
 end
 
+-- Needs thought: simp acts on multiple goals, with different medium-sized simp set
+set_option linter.flexible false in
 theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o₁ ^ repr o₂ := by
   cases' e₁ : split o₁ with a m
   cases' nf_repr_split e₁ with N₁ r₁

@@ -92,6 +92,8 @@ theorem fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ :
     ((s₁ ∪ s₂).fold op b₁ * (s₁ ∩ s₂).fold op b₂) = s₁.fold op b₁ * s₂.fold op b₂ := by
   rw [← fold_add op, union_add_inter, fold_add op]
 
+-- Needs thought: simp applies to both cases
+set_option linter.flexible false in
 @[simp]
 theorem fold_dedup_idem [DecidableEq α] [hi : Std.IdempotentOp op] (s : Multiset α) (b : α) :
     (dedup s).fold op b = s.fold op b :=

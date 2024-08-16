@@ -42,6 +42,9 @@ private lemma mk_mem_triangleIndices : (a, b, c) ∈ triangleIndices A ↔ (a, b
 
 @[simp] private lemma card_triangleIndices : (triangleIndices A).card = A.card := card_map _
 
+-- Needs thought: simp acts on multiple goals and local hypotheses,
+-- with different (very short) simp sets
+set_option linter.flexible false in
 private instance triangleIndices.instExplicitDisjoint : ExplicitDisjoint (triangleIndices A) := by
   constructor
   all_goals

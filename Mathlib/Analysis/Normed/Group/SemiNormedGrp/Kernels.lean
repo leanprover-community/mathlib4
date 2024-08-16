@@ -23,7 +23,6 @@ and in `SemiNormedGrp` one can always take a cokernel and rescale its norm
 
 -/
 
-
 open CategoryTheory CategoryTheory.Limits
 
 universe u
@@ -50,6 +49,8 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       use x
       rfl)
 
+-- simp followed by erw, related to lean4#2644
+set_option linter.flexible false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
     (cokernelCocone f).pt ⟶ s.pt := by
@@ -64,6 +65,8 @@ def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork 
   -- The lift has norm at most one:
   exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.2
 
+-- simp followed by erw, related to lean4#2644
+set_option linter.flexible false in
 instance : HasCokernels SemiNormedGrp₁.{u} where
   has_colimit f :=
     HasColimit.mk
@@ -156,6 +159,8 @@ def cokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Cofork f 0 :=
     -- This used to be `simp only [exists_apply_eq_apply]` before leanprover/lean4#2644
       convert exists_apply_eq_apply f a)
 
+-- This is related to simp, erw and leanprover/lean4#2644.
+set_option linter.flexible false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp`. -/
 noncomputable
 def cokernelLift {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
@@ -168,6 +173,8 @@ def cokernelLift {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) (s : CokernelCofork f) 
       -- This used to be the end of the proof before leanprover/lean4#2644
       erw [zero_apply])
 
+-- This is related to simp, erw and leanprover/lean4#2644.
+set_option linter.flexible false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp`. -/
 noncomputable
 def isColimitCokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :

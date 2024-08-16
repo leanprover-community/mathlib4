@@ -93,6 +93,8 @@ theorem comp_toNatTrans {F G H : MonoidalFunctor C D} {α : F ⟶ G} {β : G ⟶
 
 variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
 
+-- Needs thought: simp followed by rw
+set_option linter.flexible false in
 /-- Horizontal composition of monoidal natural transformations. -/
 @[simps]
 def hcomp {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor D E} (α : MonoidalNatTrans F G)

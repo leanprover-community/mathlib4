@@ -83,6 +83,8 @@ instance : MonoidalCategoryStruct (Dial C) where
 
 theorem tensor_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ 𝟙 X₂ : _ ⟶ _) = 𝟙 (X₁ ⊗ X₂ : Dial C) := by aesop_cat
 
+-- Needs more thought: simp-set is medium large; simp acts on multiple goals; complicated proof
+set_option linter.flexible false in
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
@@ -93,10 +95,14 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
     (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by aesop_cat
 
+-- Needs more thought: simp-set is medium large; simp acts on multiple goals; complicated proof
+set_option linter.flexible false in
 theorem leftUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (𝟙 (𝟙_ (Dial C)) ⊗ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
 
+-- Needs more thought: simp-set is medium large; simp acts on multiple goals; complicated proof
+set_option linter.flexible false in
 theorem rightUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (f ⊗ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp

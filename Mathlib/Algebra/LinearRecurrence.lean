@@ -114,6 +114,7 @@ theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → α} {init : Fin E.order → α}
     (heq : ∀ n : Fin E.order, u n = init n) : u = E.mkSol init :=
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
 
+set_option linter.flexible false in -- needs more thought
 /-- The space of solutions of `E`, as a `Submodule` over `α` of the module `ℕ → α`. -/
 def solSpace : Submodule α (ℕ → α) where
   carrier := { u | E.IsSolution u }
@@ -157,7 +158,7 @@ theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSol
   where `n := E.order`. This operation is quite useful for determining closed-form
   solutions of `E`. -/
 
-
+set_option linter.flexible false in -- needs more thought
 /-- `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
   where `n := E.order`. -/
 def tupleSucc : (Fin E.order → α) →ₗ[α] Fin E.order → α where

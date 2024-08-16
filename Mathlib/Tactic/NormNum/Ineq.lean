@@ -43,6 +43,8 @@ theorem isNat_lt_false [OrderedSemiring α] {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
   not_lt_of_le (isNat_le_true hb ha h)
 
+-- Needs thought: combining rwa with simp does not work
+set_option linter.flexible false in
 theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db →
     decide (Int.mul na (.ofNat db) ≤ Int.mul nb (.ofNat da)) → a ≤ b

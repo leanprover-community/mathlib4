@@ -208,6 +208,9 @@ def toTruncate [HasZeroObject V] [HasZeroMorphisms V] (C : CochainComplex V ℕ)
 
 variable [HasZeroMorphisms V]
 
+-- Needs thought: complex proof; simp acts on multiple goals with different simp sets,
+-- some quite long
+set_option linter.flexible false in
 /-- We can "augment" a cochain complex by inserting an arbitrary object in degree zero
 (shifting everything else up), along with a suitable differential.
 -/

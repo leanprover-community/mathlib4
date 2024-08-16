@@ -523,6 +523,8 @@ end FreeAlgebra
 `CoeSort` below. Closing it and reopening it fixes it... -/
 namespace FreeAlgebra
 
+-- Needs thought: simp; exact cannot be combined into simpa
+set_option linter.flexible false in
 /-- An induction principle for the free algebra.
 
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
