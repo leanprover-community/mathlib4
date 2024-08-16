@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Density of a finite set
@@ -102,6 +103,12 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   · exact mod_cast Fintype.card_pos
   · exact Fintype.card_le_of_injective _ f.2
 
+@[simp] lemma dens_map_equiv [Fintype β] (e : α ≃ β) : (s.map e.toEmbedding).dens = s.dens := by
+  simp [dens, Fintype.card_congr e]
+
+lemma cast_dens [Semifield 𝕜] [CharZero 𝕜] (s : Finset α) :
+    (s.dens : 𝕜) = s.card / Fintype.card α := by simp [dens]
+
 section Nonempty
 variable [Nonempty α]
 
@@ -113,6 +120,11 @@ variable [Nonempty α]
 lemma dens_ne_one : dens s ≠ 1 ↔ s ≠ univ := dens_eq_one.not
 
 end Nonempty
+
+@[simp] lemma dens_le_one : s.dens ≤ 1 := by
+  cases isEmpty_or_nonempty α
+  · simp [Subsingleton.elim s ∅]
+  · simpa using dens_le_dens s.subset_univ
 
 section Lattice
 variable [DecidableEq α]
