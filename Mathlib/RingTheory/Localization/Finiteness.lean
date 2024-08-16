@@ -37,6 +37,7 @@ variable {M : Type w} [AddCommMonoid M] [Module R M]
 variable {Mₚ : Type t} [AddCommMonoid Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
 variable (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f]
 
+include S f in
 lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
   classical
   obtain ⟨T, hT⟩ := ‹Module.Finite R M›

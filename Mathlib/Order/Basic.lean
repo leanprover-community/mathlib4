@@ -298,75 +298,64 @@ alias LE.le.not_lt := not_lt_of_le
 
 theorem ne_of_not_le [Preorder α] {a b : α} (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
+section PartialOrder
+variable [PartialOrder α] {a b : α}
+
 -- See Note [decidable namespace]
-protected theorem Decidable.le_iff_eq_or_lt [PartialOrder α] [@DecidableRel α (· ≤ ·)] {a b : α} :
-    a ≤ b ↔ a = b ∨ a < b :=
+protected theorem Decidable.le_iff_eq_or_lt [@DecidableRel α (· ≤ ·)] : a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
-theorem le_iff_eq_or_lt [PartialOrder α] {a b : α} : a ≤ b ↔ a = b ∨ a < b :=
-  le_iff_lt_or_eq.trans or_comm
+theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
 
-theorem lt_iff_le_and_ne [PartialOrder α] {a b : α} : a < b ↔ a ≤ b ∧ a ≠ b :=
+theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 
-theorem eq_iff_not_lt_of_le [PartialOrder α] {x y : α} : x ≤ y → y = x ↔ ¬x < y := by
-  rw [lt_iff_le_and_ne, not_and, Classical.not_not, eq_comm]
+lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := by simp [hab, lt_iff_le_and_ne]
+
+alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
-protected theorem Decidable.eq_iff_le_not_lt [PartialOrder α] [@DecidableRel α (· ≤ ·)] {a b : α} :
+protected theorem Decidable.eq_iff_le_not_lt [@DecidableRel α (· ≤ ·)] :
     a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
     h₁.antisymm <| Decidable.by_contradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
 
-theorem eq_iff_le_not_lt [PartialOrder α] {a b : α} : a = b ↔ a ≤ b ∧ ¬a < b :=
+theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b :=
   haveI := Classical.dec
   Decidable.eq_iff_le_not_lt
 
-theorem eq_or_lt_of_le [PartialOrder α] {a b : α} (h : a ≤ b) : a = b ∨ a < b :=
-  h.lt_or_eq.symm
-
-theorem eq_or_gt_of_le [PartialOrder α] {a b : α} (h : a ≤ b) : b = a ∨ a < b :=
-  h.lt_or_eq.symm.imp Eq.symm id
-
-theorem gt_or_eq_of_le [PartialOrder α] {a b : α} (h : a ≤ b) : a < b ∨ b = a :=
-  (eq_or_gt_of_le h).symm
+theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := h.lt_or_eq.symm
+theorem eq_or_gt_of_le (h : a ≤ b) : b = a ∨ a < b := h.lt_or_eq.symm.imp Eq.symm id
+theorem gt_or_eq_of_le (h : a ≤ b) : a < b ∨ b = a := (eq_or_gt_of_le h).symm
 
 alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
-
 alias LE.le.eq_or_lt := eq_or_lt_of_le
-
 alias LE.le.eq_or_gt := eq_or_gt_of_le
-
 alias LE.le.gt_or_eq := gt_or_eq_of_le
 
 -- Porting note: no `decidable_classical` linter
 -- attribute [nolint decidable_classical] LE.le.eq_or_lt_dec
 
-theorem eq_of_le_of_not_lt [PartialOrder α] {a b : α} (hab : a ≤ b) (hba : ¬a < b) : a = b :=
-  hab.eq_or_lt.resolve_right hba
-
-theorem eq_of_ge_of_not_gt [PartialOrder α] {a b : α} (hab : a ≤ b) (hba : ¬a < b) : b = a :=
-  (hab.eq_or_lt.resolve_right hba).symm
+theorem eq_of_le_of_not_lt (hab : a ≤ b) (hba : ¬a < b) : a = b := hab.eq_or_lt.resolve_right hba
+theorem eq_of_ge_of_not_gt (hab : a ≤ b) (hba : ¬a < b) : b = a := (eq_of_le_of_not_lt hab hba).symm
 
 alias LE.le.eq_of_not_lt := eq_of_le_of_not_lt
-
 alias LE.le.eq_of_not_gt := eq_of_ge_of_not_gt
 
-theorem Ne.le_iff_lt [PartialOrder α] {a b : α} (h : a ≠ b) : a ≤ b ↔ a < b :=
-  ⟨fun h' ↦ lt_of_le_of_ne h' h, fun h ↦ h.le⟩
+theorem Ne.le_iff_lt (h : a ≠ b) : a ≤ b ↔ a < b := ⟨fun h' ↦ lt_of_le_of_ne h' h, fun h ↦ h.le⟩
 
-theorem Ne.not_le_or_not_le [PartialOrder α] {a b : α} (h : a ≠ b) : ¬a ≤ b ∨ ¬b ≤ a :=
-  not_and_or.1 <| le_antisymm_iff.not.1 h
+theorem Ne.not_le_or_not_le (h : a ≠ b) : ¬a ≤ b ∨ ¬b ≤ a := not_and_or.1 <| le_antisymm_iff.not.1 h
 
 -- See Note [decidable namespace]
-protected theorem Decidable.ne_iff_lt_iff_le [PartialOrder α] [DecidableEq α] {a b : α} :
-    (a ≠ b ↔ a < b) ↔ a ≤ b :=
+protected theorem Decidable.ne_iff_lt_iff_le [DecidableEq α] : (a ≠ b ↔ a < b) ↔ a ≤ b :=
   ⟨fun h ↦ Decidable.byCases le_of_eq (le_of_lt ∘ h.mp), fun h ↦ ⟨lt_of_le_of_ne h, ne_of_lt⟩⟩
 
 @[simp]
-theorem ne_iff_lt_iff_le [PartialOrder α] {a b : α} : (a ≠ b ↔ a < b) ↔ a ≤ b :=
+theorem ne_iff_lt_iff_le : (a ≠ b ↔ a < b) ↔ a ≤ b :=
   haveI := Classical.dec
   Decidable.ne_iff_lt_iff_le
+
+end PartialOrder
 
 -- Variant of `min_def` with the branches reversed.
 theorem min_def' [LinearOrder α] (a b : α) : min a b = if b ≤ a then b else a := by
