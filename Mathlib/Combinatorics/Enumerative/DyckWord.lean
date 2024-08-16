@@ -81,7 +81,7 @@ namespace DyckWord
 variable {p q : DyckWord}
 
 lemma toList_eq_nil : p.toList = [] ↔ p = 0 := by rw [DyckWord.ext_iff]; rfl
-lemma toList_ne_nil : p.toList ≠ [] ↔ p ≠ 0 := by rw [not_iff_not, toList_eq_nil]
+lemma toList_ne_nil : p.toList ≠ [] ↔ p ≠ 0 := toList_eq_nil.ne
 
 variable (h : p ≠ 0)
 
@@ -115,7 +115,7 @@ lemma cons_tail_dropLast_concat : U :: p.toList.dropLast.tail ++ [D] = p := by
 
 variable (p) in
 /-- Prefix of a Dyck word as a Dyck word, given that the count of `U`s and `D`s in it are equal. -/
-def take {i : ℕ} (hi : (p.toList.take i).count U = (p.toList.take i).count D) : DyckWord where
+def take (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) : DyckWord where
   toList := p.toList.take i
   count_U_eq_count_D := hi
   count_D_le_count_U k := by rw [take_take]; exact p.count_D_le_count_U (min k i)
@@ -123,7 +123,7 @@ def take {i : ℕ} (hi : (p.toList.take i).count U = (p.toList.take i).count D) 
 variable (p) in
 /-- Suffix of a Dyck word as a Dyck word, given that the count of `U`s and `D`s in the prefix
 are equal. -/
-def drop {i : ℕ} (hi : (p.toList.take i).count U = (p.toList.take i).count D) : DyckWord where
+def drop (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) : DyckWord where
   toList := p.toList.drop i
   count_U_eq_count_D := by
     have := p.count_U_eq_count_D
@@ -284,10 +284,14 @@ lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
   · simp_rw [length_range, u, length_append, length_cons]
     exact Nat.lt_add_one _
 
+lemma nest_add_firstReturn : (p.nest + q).firstReturn = p.toList.length + 1 := by
+  rw [firstReturn_add, firstReturn_nest, ite_eq_right_iff, ← toList_eq_nil]; intro; contradiction
+
 variable (p) in
-/-- The left part of the Dyck word decomposition. -/
-def leftPart : DyckWord :=
-  (p.take (count_take_firstReturn_add_one h)).denest
+/-- The left part of the Dyck word decomposition,
+inside the `U,D` pair that `firstReturn` refers to. `insidePart 0 = 0`. -/
+def insidePart : DyckWord :=
+  (p.take (p.firstReturn + 1) (count_take_firstReturn_add_one h)).denest
     (by rw [← toList_ne_nil, take]; simpa using toList_ne_nil.mpr h)
     (fun i lb ub ↦ by
       simp only [take, length_take, lt_min_iff] at ub ⊢
@@ -298,47 +302,49 @@ def leftPart : DyckWord :=
       exact count_lt_count_of_lt_firstReturn ub)
 
 variable (p) in
-/-- The right part of the Dyck word decomposition. -/
-def rightPart : DyckWord := p.drop (count_take_firstReturn_add_one h)
+/-- The right part of the Dyck word decomposition,
+outside the `U,D` pair that `firstReturn` refers to. `outsidePart 0 = 0`. -/
+def outsidePart : DyckWord :=
+  p.drop (p.firstReturn + 1) (count_take_firstReturn_add_one h)
+
+-- @[simp] lemma insidePart_zero : insidePart 0 = 0 := by simp [insidePart]
+-- @[simp] lemma outsidePart_zero : outsidePart 0 = 0 := by simp [outsidePart]
 
 @[simp]
-theorem leftPart_nest_add_rightPart : (p.leftPart h).nest + p.rightPart h = p := by
-  rw [DyckWord.ext_iff, leftPart, denest_nest]
+theorem insidePart_nest_add_outsidePart : (p.insidePart h).nest + p.outsidePart h = p := by
+  rw [DyckWord.ext_iff, insidePart, denest_nest]
   apply take_append_drop
 
-lemma length_leftPart_lt : (p.leftPart h).toList.length < p.toList.length := by
-  nth_rw 2 [← leftPart_nest_add_rightPart h]
-  change _ < (U :: (p.leftPart h).toList ++ [D] ++ (p.rightPart h).toList).length
+lemma length_insidePart_lt : (p.insidePart h).toList.length < p.toList.length := by
+  nth_rw 2 [← insidePart_nest_add_outsidePart h]
+  change _ < (U :: (p.insidePart h).toList ++ [D] ++ (p.outsidePart h).toList).length
   simp_rw [length_append, length_singleton, length_cons]; omega
 
-theorem semilength_leftPart_lt : (p.leftPart h).semilength < p.semilength := by
+theorem semilength_insidePart_lt : (p.insidePart h).semilength < p.semilength := by
   rw [← Nat.mul_lt_mul_left zero_lt_two]
   simp_rw [two_mul_semilength_eq_length]
-  exact length_leftPart_lt h
+  exact length_insidePart_lt h
 
-lemma length_rightPart_lt : (p.rightPart h).toList.length < p.toList.length := by
-  nth_rw 2 [← leftPart_nest_add_rightPart h]
-  change _ < (U :: (p.leftPart h).toList ++ [D] ++ (p.rightPart h).toList).length
+lemma length_outsidePart_lt : (p.outsidePart h).toList.length < p.toList.length := by
+  nth_rw 2 [← insidePart_nest_add_outsidePart h]
+  change _ < (U :: (p.insidePart h).toList ++ [D] ++ (p.outsidePart h).toList).length
   simp_rw [length_append, length_singleton, length_cons]; omega
 
-theorem semilength_rightPart_lt : (p.rightPart h).semilength < p.semilength := by
+theorem semilength_outsidePart_lt : (p.outsidePart h).semilength < p.semilength := by
   rw [← Nat.mul_lt_mul_left zero_lt_two]
   simp_rw [two_mul_semilength_eq_length]
-  exact length_rightPart_lt h
+  exact length_outsidePart_lt h
 
-lemma nest_add_firstReturn : (p.nest + q).firstReturn = p.toList.length + 1 := by
-  rw [firstReturn_add, firstReturn_nest, ite_eq_right_iff, ← toList_eq_nil]; intro; contradiction
-
-theorem nest_add_leftPart_eq : (p.nest + q).leftPart nest_add_ne_empty = p := by
+theorem nest_add_insidePart_eq : (p.nest + q).insidePart nest_add_ne_empty = p := by
   have : p.toList.length + 1 + 1 = p.nest.toList.length := by simp [nest]
-  simp_rw [leftPart, nest_add_firstReturn, take, DyckWord.ext_iff,
+  simp_rw [insidePart, nest_add_firstReturn, take, DyckWord.ext_iff,
     show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl, take_append_eq_append_take,
     this, take_length, tsub_self, take_zero, append_nil, denest, nest, dropLast_concat]
   rfl
 
-theorem nest_add_rightPart_eq : (p.nest + q).rightPart nest_add_ne_empty = q := by
+theorem nest_add_outsidePart_eq : (p.nest + q).outsidePart nest_add_ne_empty = q := by
   have : p.toList.length + 1 + 1 = p.nest.toList.length := by simp [nest]
-  simp_rw [rightPart, nest_add_firstReturn, drop, DyckWord.ext_iff,
+  simp_rw [outsidePart, nest_add_firstReturn, drop, DyckWord.ext_iff,
     show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl, drop_append_eq_append_drop,
     this, drop_length, nil_append, tsub_self, drop_zero]
 
