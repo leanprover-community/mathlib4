@@ -85,20 +85,16 @@ lemma associator_hom (X : Cat )(Y : Cat )(Z : Cat ) :
       (Prod.snd (X × Y) Z :(X × Y) × Z ⥤ Z))) := rfl
 
 lemma associator_inv (X : Cat )(Y : Cat )(Z : Cat ) :
-    (associator X Y Z).inv = Functor.prod' ( Functor.prod' (Prod.fst X (Y × Z) : X × (Y × Z) ⥤ X)
+    (associator X Y Z).inv = Functor.prod' (Functor.prod' (Prod.fst X (Y × Z) : X × (Y × Z) ⥤ X)
       (Prod.snd X (Y × Z) ⋙ Prod.fst Y Z)) (Prod.snd X (Y × Z) ⋙ Prod.snd Y Z) := rfl
 
-lemma leftUnitor_hom (C : Cat) :
-    (λ_ C).hom = Prod.snd _ _  := rfl
+lemma leftUnitor_hom (C : Cat) : (λ_ C).hom = Prod.snd _ _  := rfl
 
-lemma leftUnitor_inv (C : Cat) :
-    (λ_ C).inv = Prod.sectr ⟨⟨⟨⟩⟩⟩ _  := rfl
+lemma leftUnitor_inv (C : Cat) : (λ_ C).inv = Prod.sectr ⟨⟨⟨⟩⟩⟩ _  := rfl
 
-lemma rightUnitor_hom (C : Cat) :
-    (ρ_ C).hom = Prod.fst _ _  := rfl
+lemma rightUnitor_hom (C : Cat) : (ρ_ C).hom = Prod.fst _ _  := rfl
 
-lemma rightUnitor_inv (C : Cat) :
-    (ρ_ C).inv = Prod.sectl _ ⟨⟨⟨⟩⟩⟩  := rfl
+lemma rightUnitor_inv (C : Cat) : (ρ_ C).inv = Prod.sectl _ ⟨⟨⟨⟩⟩⟩  := rfl
 
 
 end Monoidal
