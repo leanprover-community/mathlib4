@@ -26,4 +26,20 @@ check_labels
 
 def gd : String := "SetTheory/Ordinals/Basic.lean"
 
+produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
+Mathlib/SetTheory/Ordinals/Basic.lean
+Mathlib/AlgebraicGeometry/Ordinals/Basic.lean
+Mathlib/Algebra/Ordinals/Basic.lean
+Mathlib/Tactic/Linarith/Basic.lean
+Mathlib/Tactic/Linter/Basic.lean
+
+"
+
+open Lean Elab
+run_cmd
+  let out ← IO.Process.run { cmd := "git", args := #["diff", "--name-only", "master"] }
+--  dbg_trace out
+  let labels := produceLabels (← getEnv) out
+  dbg_trace String.intercalate "," labels.toList
+
 end AutoLabel.Label
