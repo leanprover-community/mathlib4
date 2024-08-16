@@ -559,7 +559,7 @@ instance moduleFiber (x : B) : Module R (Z.Fiber x) :=
   inferInstanceAs (Module R F)
 
 /-- The projection from the total space of a fiber bundle core, on its base. -/
-@[reducible, simp, mfld_simps]
+@[reducible]
 protected def proj : TotalSpace F Z.Fiber → B :=
   TotalSpace.proj
 
