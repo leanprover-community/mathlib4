@@ -35,15 +35,12 @@ variable {l l₁ l₂ l₃ : List α} {a b : α} {m n : ℕ}
 
 section Fix
 
-@[deprecated prefix_refl (since := "2024-08-15")]
 theorem prefix_rfl : l <+: l :=
   prefix_refl
 
-@[deprecated suffix_refl (since := "2024-08-15")]
 theorem suffix_rfl : l <:+ l :=
   suffix_refl
 
-@[deprecated infix_refl (since := "2024-08-15")]
 theorem infix_rfl : l <:+: l :=
   infix_refl
 

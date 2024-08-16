@@ -189,8 +189,6 @@ theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l�
     l₁ ++ l₂ ⊆ l :=
   fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 
--- Porting note: in Batteries
-
 theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
     map f l₁ ⊆ map f l₂ ↔ l₁ ⊆ l₂ := by
   refine ⟨?_, map_subset f⟩; intro h2 x hx
@@ -318,9 +316,6 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   simp only [reverseAux_eq, map_append, map_reverse]
 
 /-! ### empty -/
-
--- Porting note: this does not work as desired
--- attribute [simp] List.isEmpty
 
 @[deprecated (since := "2024-08-15")] alias isEmpty_iff_eq_nil := isEmpty_iff
 
@@ -941,7 +936,7 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
       simp only [h]
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 
-@[deprecated getElem_reverse_aux₂ (since := "2024-08-15")]
+@[deprecated (since := "2024-08-15")]
 theorem getElem_reverse_aux₂ :
     ∀ (l r : List α) (i : Nat) (h1) (h2),
       (reverseAux l r)[length l - 1 - i]'h1 = l[i]'h2
@@ -956,7 +951,7 @@ theorem getElem_reverse_aux₂ :
     rw [← heq] at aux
     apply aux
 
-@[deprecated getElem_reverse_aux₂ (since := "2024-06-12")]
+@[deprecated (since := "2024-06-12")]
 theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
     get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
   simp [getElem_reverse_aux₂, h1, h2]
