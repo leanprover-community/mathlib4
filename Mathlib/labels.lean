@@ -24,8 +24,8 @@ add_label topology dirs: Topology AlgebraicTopology
 
 check_labels
 
-def gd : String := "SetTheory/Ordinals/Basic.lean"
-
+/-- info: [t-algebra, t-algebraic-geometry, t-linter, t-meta, t-set-theory] -/
+#guard_msgs in
 produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/AlgebraicGeometry/Ordinals/Basic.lean
@@ -35,11 +35,24 @@ Mathlib/Tactic/Linter/Basic.lean
 
 "
 
+/-- info: [t-linter, t-set-theory] -/
+#guard_msgs in
+produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
+Mathlib/Tactic/Linter/Basic.lean"
+
+/-- info: [t-meta, t-set-theory] -/
+#guard_msgs in
+produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
+Mathlib/Tactic/Linarith/Basic.lean"
+
 open Lean Elab
 run_cmd
   let out ← IO.Process.run { cmd := "git", args := #["diff", "--name-only", "master"] }
 --  dbg_trace out
   let labels := produceLabels (← getEnv) out
-  dbg_trace String.intercalate "," labels.toList
-
+  let number := 12345
+  let csLabs := String.intercalate "," labels.toList
+  --dbg_trace (s!"gh issue edit {number} '" ++ (String.intercalate "," labels.toList).push '\'')
+  let gh : IO.Process.SpawnArgs := { cmd := "gh", args := #["issue", "edit", s!"{number}", csLabs] }
+-- gh issue edit "$NUMBER" --add-label "$LABELS"
 end AutoLabel.Label
