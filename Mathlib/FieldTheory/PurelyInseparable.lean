@@ -823,7 +823,7 @@ theorem perfectField_of_isSeparable_of_perfectField_top [Algebra.IsSeparable F E
 separable. -/
 theorem perfectField_iff_isSeparable_algebraicClosure [IsAlgClosure F E] :
     PerfectField F ↔ Algebra.IsSeparable F E :=
-  ⟨fun _ ↦ IsSepClosure.separable, fun _ ↦ haveI : IsAlgClosed E := IsAlgClosure.alg_closed F;
+  ⟨fun _ ↦ IsSepClosure.separable, fun _ ↦ haveI : IsAlgClosed E := IsAlgClosure.alg_closed F
     perfectField_of_isSeparable_of_perfectField_top F E⟩
 
 namespace Field

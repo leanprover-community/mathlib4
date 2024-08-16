@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Data.Nat.Lattice
 
-#align_import topology.metric_space.metrizable_uniformity from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
-
 /-!
 # Metrizable uniform spaces
 
@@ -63,7 +61,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
   dist_comm x y :=
     NNReal.coe_inj.2 <| by
       refine reverse_surjective.iInf_congr _ fun l ↦ ?_
-      rw [← sum_reverse, zipWith_distrib_reverse, reverse_append, reverse_reverse,
+      rw [← sum_reverse, reverse_zipWith, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
         zipWith_comm_of_comm _ dist_comm]
       simp only [length, length_append]
@@ -82,7 +80,6 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
         rw [length_cons, length_append, length_singleton]
   -- Porting note: `edist_dist` is no longer inferred
   edist_dist x y := rfl
-#align pseudo_metric_space.of_prenndist PseudoMetricSpace.ofPreNNDist
 
 theorem dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) (x y : X) :
@@ -90,7 +87,6 @@ theorem dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0
         y =
       ↑(⨅ l : List X, ((x::l).zipWith d (l ++ [y])).sum : ℝ≥0) :=
   rfl
-#align pseudo_metric_space.dist_of_prenndist PseudoMetricSpace.dist_ofPreNNDist
 
 theorem dist_ofPreNNDist_le (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) (x y : X) :
@@ -98,7 +94,6 @@ theorem dist_ofPreNNDist_le (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x 
         y ≤
       d x y :=
   NNReal.coe_le_coe.2 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp
-#align pseudo_metric_space.dist_of_prenndist_le PseudoMetricSpace.dist_ofPreNNDist_le
 
 /-- Consider a function `d : X → X → ℝ≥0` such that `d x x = 0` and `d x y = d y x` for all `x`,
 `y`. Let `dist` be the largest pseudometric distance such that `dist x y ≤ d x y`, see
@@ -139,7 +134,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       intro m hm
       rw [← not_lt, Nat.lt_iff_add_one_le, ← hL_len]
       intro hLm
-      rw [mem_setOf_eq, take_all_of_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
+      rw [mem_setOf_eq, take_of_length_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
           sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
           ← chain_append_singleton_iff_forall₂]
           at hm <;>
@@ -159,7 +154,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
-      rw [zipWith_distrib_take, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
+      rw [take_zipWith, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
@@ -174,8 +169,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
       sum_take_add_sum_drop, ← two_mul] at hMs'
     convert hMs'
-    rwa [zipWith_distrib_drop, drop, drop_append_of_le_length]
-#align pseudo_metric_space.le_two_mul_dist_of_prenndist PseudoMetricSpace.le_two_mul_dist_ofPreNNDist
+    rwa [drop_zipWith, drop, drop_append_of_le_length]
 
 end PseudoMetricSpace
 
@@ -249,27 +243,23 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     refine le_trans ?_ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
     rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ,
       mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel₀ _ (two_ne_zero' ℝ≥0), hle_d]
-#align uniform_space.metrizable_uniformity UniformSpace.metrizable_uniformity
 
 /-- A `PseudoMetricSpace` instance compatible with a given `UniformSpace` structure. -/
 protected noncomputable def UniformSpace.pseudoMetricSpace (X : Type*) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : PseudoMetricSpace X :=
   (UniformSpace.metrizable_uniformity X).choose.replaceUniformity <|
     congr_arg _ (UniformSpace.metrizable_uniformity X).choose_spec.symm
-#align uniform_space.pseudo_metric_space UniformSpace.pseudoMetricSpace
 
 /-- A `MetricSpace` instance compatible with a given `UniformSpace` structure. -/
 protected noncomputable def UniformSpace.metricSpace (X : Type*) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] [T0Space X] : MetricSpace X :=
   @MetricSpace.ofT0PseudoMetricSpace X (UniformSpace.pseudoMetricSpace X) _
-#align uniform_space.metric_space UniformSpace.metricSpace
 
 /-- A uniform space with countably generated `𝓤 X` is pseudo metrizable. -/
 instance (priority := 100) UniformSpace.pseudoMetrizableSpace [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : TopologicalSpace.PseudoMetrizableSpace X := by
   letI := UniformSpace.pseudoMetricSpace X
   infer_instance
-#align uniform_space.pseudo_metrizable_space UniformSpace.pseudoMetrizableSpace
 
 /-- A T₀ uniform space with countably generated `𝓤 X` is metrizable. This is not an instance to
 avoid loops. -/
@@ -277,12 +267,11 @@ theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (�
     TopologicalSpace.MetrizableSpace X := by
   letI := UniformSpace.metricSpace X
   infer_instance
-#align uniform_space.metrizable_space UniformSpace.metrizableSpace
 
 /-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
 from the more general `EMetric.subset_countable_closure_of_almost_dense_set`.-/
 lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (𝓤 X)]
-    {s : Set X} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s:= by
+    {s : Set X} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s := by
   letI := (UniformSpace.pseudoMetricSpace (X := X)).toPseudoEMetricSpace
   rw [EMetric.totallyBounded_iff] at h
   have h' : ∀ ε > 0, ∃ t, Set.Countable t ∧ s ⊆ ⋃ y ∈ t, EMetric.closedBall y ε := by
@@ -293,3 +282,10 @@ lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (�
     exact EMetric.ball_subset_closedBall
   obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
   exact ⟨t, htc, hts⟩
+
+open TopologicalSpace in
+instance (priority := 100) DiscreteTopology.metrizableSpace
+    {α} [TopologicalSpace α] [DiscreteTopology α] :
+    MetrizableSpace α := by
+  obtain rfl := DiscreteTopology.eq_bot (α := α)
+  exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _

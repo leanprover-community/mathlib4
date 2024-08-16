@@ -18,8 +18,6 @@ import Qq
 Tactic to clear denominators in algebraic expressions, based on `simp` with a specific simpset.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.FieldSimp
 
 open Lean Elab.Tactic Parser.Tactic Lean.Meta
@@ -28,7 +26,8 @@ open Qq
 initialize registerTraceClass `Tactic.field_simp
 
 /-- Constructs a trace message for the `discharge` function. -/
-private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → SimpM MessageData
+private def dischargerTraceMessage {ε : Type*} (prop: Expr) :
+    Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
 
@@ -194,3 +193,9 @@ elab_rules : tactic
       pure { ctx, simprocs := {} }
 
   _ ← simpLocation r.ctx {} dis loc
+
+end FieldSimp
+
+end Tactic
+
+end Mathlib

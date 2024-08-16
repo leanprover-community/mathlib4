@@ -134,3 +134,9 @@ def commutativeSquarePresenter : ExprPresenter where
     if let some d ← commSquareM? type then
       return d
     throwError "Couldn't find a commutative square."
+
+end Widget
+
+end Tactic
+
+end Mathlib
