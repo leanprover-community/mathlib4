@@ -203,9 +203,9 @@ lemma absolutelyContinuous_compProd_right [SFinite μ] [IsSFiniteKernel η]
 
 lemma absolutelyContinuous_compProd [SFinite ν] [IsSFiniteKernel η]
     (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
-    μ ⊗ₘ κ ≪ ν ⊗ₘ η := by
+    μ ⊗ₘ κ ≪ ν ⊗ₘ η :=
   have : SFinite μ := sFinite_of_absolutelyContinuous hμν
-  exact (Measure.absolutelyContinuous_compProd_right hκη).trans
+  (Measure.absolutelyContinuous_compProd_right hκη).trans
     (Measure.absolutelyContinuous_compProd_left hμν _)
 
 lemma absolutelyContinuous_of_compProd [SFinite μ] [IsSFiniteKernel κ] [h_zero : ∀ a, NeZero (κ a)]
