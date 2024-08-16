@@ -45,12 +45,14 @@ section reflection_perm
 
 variable (p : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N) (i j : ι)
   (h : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
+include h
 
 private theorem exist_eq_reflection_of_mapsTo  :
     ∃ k, root k = (preReflection (root i) (p.toLin.flip (coroot i))) (root j) :=
   h i (mem_range_self j)
 
 variable (hp : ∀ i, p.toLin (root i) (coroot i) = 2)
+include hp
 
 private theorem choose_choose_eq_of_mapsTo :
     (exist_eq_reflection_of_mapsTo p root coroot i

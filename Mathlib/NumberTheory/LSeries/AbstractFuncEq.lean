@@ -144,7 +144,7 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
   have h_nv : P.ε⁻¹ * ↑(x ^ P.k) ≠ 0 := mul_ne_zero P.symm.hε h_nv2
   specialize hC' hx
   simp_rw [Function.comp_apply, ← one_div, P.h_feq' _ hx] at hC'
-  rw [← ((mul_inv_cancel h_nv).symm ▸ one_smul ℂ P.g₀ :), mul_smul _ _ P.g₀, ← smul_sub, norm_smul,
+  rw [← ((mul_inv_cancel₀ h_nv).symm ▸ one_smul ℂ P.g₀ :), mul_smul _ _ P.g₀, ← smul_sub, norm_smul,
     ← le_div_iff' (lt_of_le_of_ne (norm_nonneg _) (norm_ne_zero_iff.mpr h_nv).symm)] at hC'
   convert hC' using 1
   · congr 3
@@ -430,7 +430,7 @@ theorem functional_equation (s : ℂ) :
   have := P.functional_equation₀ s
   rw [P.Λ₀_eq, P.symm_Λ₀_eq, sub_sub_cancel] at this
   rwa [smul_add, smul_add, ← mul_smul, mul_one_div, ← mul_smul, ← mul_div_assoc,
-    mul_inv_cancel P.hε, add_assoc, add_comm (_ • _), add_assoc, add_left_inj] at this
+    mul_inv_cancel₀ P.hε, add_assoc, add_comm (_ • _), add_assoc, add_left_inj] at this
 
 /-- The residue of `Λ` at `s = k` is equal to `ε • g₀`. -/
 theorem Λ_residue_k :

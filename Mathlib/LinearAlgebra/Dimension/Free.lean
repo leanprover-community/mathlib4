@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Rank of free modules

@@ -598,9 +598,8 @@ protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pur
     rw [pure_mul_pure, h, pure_one]
 
 /-- `Filter α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive subtractionMonoid "`Filter α` is a subtraction monoid under pointwise operations if
+@[to_additive "`Filter α` is a subtraction monoid under pointwise operations if
  `α` is."]
--- Porting note: `to_additive` guessed `divisionAddMonoid`
 protected def divisionMonoid : DivisionMonoid (Filter α) :=
   { Filter.monoid, Filter.instInvolutiveInv, Filter.instDiv, Filter.instZPow (α := α) with
     mul_inv_rev := fun s t => map_map₂_antidistrib mul_inv_rev

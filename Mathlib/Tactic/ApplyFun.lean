@@ -214,3 +214,5 @@ elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
     (atTarget := withMainContext do
       replaceMainGoal <| ← applyFunTarget f P (← getMainGoal))
     (failed := fun _ ↦ throwError "apply_fun failed")
+
+end Mathlib.Tactic
