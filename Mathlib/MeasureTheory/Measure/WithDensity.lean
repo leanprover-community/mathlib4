@@ -661,10 +661,6 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
     restrict_compl_sigmaFiniteSetWRT hμν]
   infer_instance
 
-instance [SFinite μ] (c : ℝ≥0∞) : SFinite (c • μ) := by
-  rw [← withDensity_const]
-  exact sFinite_withDensity_of_measurable _ measurable_const
-
 end SFinite
 
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
