@@ -98,17 +98,18 @@ theorem taylor_within_zero_eval (f : ℝ → E) (s : Set ℝ) (x₀ x : ℝ) :
 @[simp]
 theorem taylorWithinEval_self (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ : ℝ) :
     taylorWithinEval f n s x₀ x₀ = f x₀ := by
-  induction' n with k hk
-  · exact taylor_within_zero_eval _ _ _ _
-  simp [hk]
+  induction n with
+  | zero => exact taylor_within_zero_eval _ _ _ _
+  | succ k hk => simp [hk]
 
 theorem taylor_within_apply (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ x : ℝ) :
     taylorWithinEval f n s x₀ x =
       ∑ k ∈ Finset.range (n + 1), ((k ! : ℝ)⁻¹ * (x - x₀) ^ k) • iteratedDerivWithin k f s x₀ := by
-  induction' n with k hk
-  · simp
-  rw [taylorWithinEval_succ, Finset.sum_range_succ, hk]
-  simp [Nat.factorial]
+  induction n with
+  | zero => simp
+  | succ k hk =>
+    rw [taylorWithinEval_succ, Finset.sum_range_succ, hk]
+    simp [Nat.factorial]
 
 /-- If `f` is `n` times continuous differentiable on a set `s`, then the Taylor polynomial
   `taylorWithinEval f n s x₀ x` is continuous in `x₀`. -/
