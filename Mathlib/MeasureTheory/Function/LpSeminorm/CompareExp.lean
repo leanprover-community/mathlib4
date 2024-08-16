@@ -306,7 +306,7 @@ variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [Norme
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ)
     (φ : α → 𝕜) : eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ :=
   (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hf (· • ·)
-    (eventually_of_forall fun _ => nnnorm_smul_le _ _) : _)
+    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) : _)
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_smul_le_snorm_top_mul_snorm := eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm
@@ -314,7 +314,7 @@ alias snorm_smul_le_snorm_top_mul_snorm := eLpNorm_smul_le_eLpNorm_top_mul_eLpNo
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (f : α → E) {φ : α → 𝕜}
     (hφ : AEStronglyMeasurable φ μ) : eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ :=
   (eLpNorm_le_eLpNorm_mul_eLpNorm_top p hφ f (· • ·)
-    (eventually_of_forall fun _ => nnnorm_smul_le _ _) : _)
+    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) : _)
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_smul_le_snorm_mul_snorm_top := eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top
@@ -322,7 +322,7 @@ alias snorm_smul_le_snorm_mul_snorm_top := eLpNorm_smul_le_eLpNorm_mul_eLpNorm_t
 theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} {f : α → E} (hf : AEStronglyMeasurable f μ)
     {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hp0_lt : 0 < p) (hpq : p < q)
     (hpqr : 1 / p = 1 / q + 1 / r) : eLpNorm' (φ • f) p μ ≤ eLpNorm' φ q μ * eLpNorm' f r μ :=
-  eLpNorm'_le_eLpNorm'_mul_eLpNorm' hφ hf (· • ·) (eventually_of_forall fun _ => nnnorm_smul_le _ _)
+  eLpNorm'_le_eLpNorm'_mul_eLpNorm' hφ hf (· • ·) (Eventually.of_forall fun _ => nnnorm_smul_le _ _)
     hp0_lt hpq hpqr
 
 @[deprecated (since := "2024-07-27")]
@@ -333,7 +333,7 @@ theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞} {f : α → E} (hf : AE
     {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hpqr : 1 / p = 1 / q + 1 / r) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ q μ * eLpNorm f r μ :=
   (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hφ hf (· • ·)
-      (eventually_of_forall fun _ => nnnorm_smul_le _ _) hpqr :
+      (Eventually.of_forall fun _ => nnnorm_smul_le _ _) hpqr :
     _)
 
 @[deprecated (since := "2024-07-27")]
