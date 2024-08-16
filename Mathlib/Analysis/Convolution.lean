@@ -49,12 +49,12 @@ This generality has several advantages
   `smul` to multiply the functions, that would be an asymmetric definition.
 
 # Main Definitions
-* `convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ` is the convolution of
-  `f` and `g` w.r.t. the continuous bilinear map `L` and measure `μ`.
-* `ConvolutionExistsAt f g x L μ` states that the convolution `(f ⋆[L, μ] g) x` is well-defined
-  (i.e. the integral exists).
-* `ConvolutionExists f g L μ` states that the convolution `f ⋆[L, μ] g` is well-defined at each
-  point.
+* `MeasureTheory.convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ`
+  is the convolution of `f` and `g` w.r.t. the continuous bilinear map `L` and measure `μ`.
+* `MeasureTheory.ConvolutionExistsAt f g x L μ` states that the convolution `(f ⋆[L, μ] g) x`
+  is well-defined (i.e. the integral exists).
+* `MeasureTheory.ConvolutionExists f g L μ` states that the convolution `f ⋆[L, μ] g`
+  is well-defined at each point.
 
 # Main Results
 * `HasCompactSupport.hasFDerivAt_convolution_right` and
@@ -66,12 +66,12 @@ This generality has several advantages
 
 Versions of these statements for functions depending on a parameter are also given.
 
-* `convolution_tendsto_right`: Given a sequence of nonnegative normalized functions whose support
-  tends to a small neighborhood around `0`, the convolution tends to the right argument.
-  This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
+* `MeasureTheory.convolution_tendsto_right`: Given a sequence of nonnegative normalized functions
+  whose support tends to a small neighborhood around `0`, the convolution tends to the right
+  argument. This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
 
 # Notation
-The following notations are localized in the locale `convolution`:
+The following notations are localized in the locale `Convolution`:
 * `f ⋆[L, μ] g` for the convolution. Note: you have to use parentheses to apply the convolution
   to an argument: `(f ⋆[L, μ] g) x`.
 * `f ⋆[L] g := f ⋆[L, volume] g`
@@ -829,12 +829,11 @@ variable [NormedSpace 𝕜 E']
 variable [NormedSpace 𝕜 E'']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
 variable {n : ℕ∞}
-variable [CompleteSpace F]
 variable [MeasurableSpace G] {μ ν : Measure G}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 section Assoc
-
+variable [CompleteSpace F]
 variable [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [CompleteSpace F']
 variable [NormedAddCommGroup F''] [NormedSpace ℝ F''] [NormedSpace 𝕜 F''] [CompleteSpace F'']
 variable {k : G → E''}
@@ -854,7 +853,7 @@ theorem integral_convolution [MeasurableAdd₂ G] [MeasurableNeg G] [NormedSpace
 variable [MeasurableAdd₂ G] [IsAddRightInvariant ν] [MeasurableNeg G]
 
 /-- Convolution is associative. This has a weak but inconvenient integrability condition.
-See also `convolution_assoc`. -/
+See also `MeasureTheory.convolution_assoc`. -/
 theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z = L₃ x (L₄ y z))
     {x₀ : G} (hfg : ∀ᵐ y ∂μ, ConvolutionExistsAt f g y L ν)
     (hgk : ∀ᵐ x ∂ν, ConvolutionExistsAt g k x L₄ μ)
@@ -994,7 +993,6 @@ variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
 variable {f₀ : 𝕜 → E} {g₀ : 𝕜 → E'}
 variable {n : ℕ∞}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
-variable [CompleteSpace F]
 variable {μ : Measure 𝕜}
 variable [IsAddLeftInvariant μ] [SFinite μ]
 
@@ -1016,7 +1014,7 @@ end Real
 section WithParam
 
 variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
-  [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
+  [NormedSpace 𝕜 F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
@@ -1168,7 +1166,7 @@ In this version, all the types belong to the same universe (to get an induction 
 proof). Use instead `contDiffOn_convolution_right_with_param`, which removes this restriction. -/
 theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP} {F : Type uP}
     {P : Type uP} [NormedAddCommGroup E'] [NormedAddCommGroup F] [NormedSpace 𝕜 E']
-    [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G]
+    [NormedSpace ℝ F] [NormedSpace 𝕜 F] [MeasurableSpace G]
     {μ : Measure G}
     [NormedAddCommGroup G] [BorelSpace G] [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P]
     {f : G → E} {n : ℕ∞} (L : E →L[𝕜] E' →L[𝕜] F) {g : P → G → E'} {s : Set P} {k : Set G}
@@ -1227,10 +1225,10 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
   let eE' : Type max uE' uG uF uP := ULift.{max uG uF uP} E'
   let eF : Type max uF uG uE' uP := ULift.{max uG uE' uP} F
   let eP : Type max uP uG uE' uF := ULift.{max uG uE' uF} P
-  have isoG : eG ≃L[𝕜] G := ContinuousLinearEquiv.ulift
-  have isoE' : eE' ≃L[𝕜] E' := ContinuousLinearEquiv.ulift
-  have isoF : eF ≃L[𝕜] F := ContinuousLinearEquiv.ulift
-  have isoP : eP ≃L[𝕜] P := ContinuousLinearEquiv.ulift
+  let isoG : eG ≃L[𝕜] G := ContinuousLinearEquiv.ulift
+  let isoE' : eE' ≃L[𝕜] E' := ContinuousLinearEquiv.ulift
+  let isoF : eF ≃L[𝕜] F := ContinuousLinearEquiv.ulift
+  let isoP : eP ≃L[𝕜] P := ContinuousLinearEquiv.ulift
   let ef := f ∘ isoG
   let eμ : Measure eG := Measure.map isoG.symm μ
   let eg : eP → eG → eE' := fun ep ex => isoE'.symm (g (isoP ep) (isoG ex))
@@ -1246,11 +1244,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
       simp only [eg, (· ∘ ·), ContinuousLinearEquiv.prod_apply, LinearIsometryEquiv.coe_coe,
         ContinuousLinearEquiv.map_eq_zero_iff]
       exact hgs _ _ hp hx
-    · apply (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2
-      convert hf
-      ext1 x
-      simp only [ef, ContinuousLinearEquiv.coe_toHomeomorph, (· ∘ ·),
-        ContinuousLinearEquiv.apply_symm_apply]
+    · exact (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2 hf
     · apply isoE'.symm.contDiff.comp_contDiffOn
       apply hg.comp (isoP.prod isoG).contDiff.contDiffOn
       rintro ⟨p, x⟩ ⟨hp, -⟩
@@ -1269,13 +1263,8 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
       ContinuousLinearEquiv.prod_apply]
     simp only [R, convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
     rw [ClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
-    swap; · exact isoG.symm.toHomeomorph.closedEmbedding
-    congr 1
-    ext1 a
-    simp only [ef, eg, eL, (· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
-      ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.map_sub,
-      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
-      ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply]
+    · rfl
+    · exact isoG.symm.toHomeomorph.closedEmbedding
   simp_rw [this] at A
   exact A
 
@@ -1331,7 +1320,7 @@ end WithParam
 
 section Nonneg
 
-variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [NormedSpace ℝ F] [CompleteSpace F]
+variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [NormedSpace ℝ F]
 
 /-- The forward convolution of two functions `f` and `g` on `ℝ`, with respect to a continuous
 bilinear map `L` and measure `ν`. It is defined to be the function mapping `x` to
@@ -1397,7 +1386,8 @@ theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Meas
 
 /-- The integral over `Ioi 0` of a forward convolution of two functions is equal to the product
 of their integrals over this set. (Compare `integral_convolution` for the two-sided convolution.) -/
-theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] {μ ν : Measure ℝ}
+theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {μ ν : Measure ℝ}
     [SFinite μ] [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     ∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ =

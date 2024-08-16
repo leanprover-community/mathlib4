@@ -54,6 +54,8 @@ measurable functions, as a basis for the Bochner integral.
 
 -/
 
+-- Guard against import creep
+assert_not_exists InnerProductSpace
 
 open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 
@@ -237,7 +239,7 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
     · rwa [one_le_div (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
   · rw [min_eq_right _]
     · rw [norm_div, norm_norm, mul_comm, mul_div, div_eq_mul_inv, mul_comm, ← mul_assoc,
-        inv_mul_cancel h0, one_mul, Real.norm_of_nonneg hc]
+        inv_mul_cancel₀ h0, one_mul, Real.norm_of_nonneg hc]
     · rwa [div_le_one (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
 
 theorem _root_.stronglyMeasurable_bot_iff [Nonempty β] [T2Space β] :
@@ -900,7 +902,8 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet[m] (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, ‖f x‖ ≤ n) ∧
       ⋃ i, s i = Set.univ := by
-  obtain ⟨s, hs, hs_univ⟩ := exists_spanning_measurableSet_le hf.nnnorm.measurable (μ.trim hm)
+  obtain ⟨s, hs, hs_univ⟩ :=
+    @exists_spanning_measurableSet_le _ m _ hf.nnnorm.measurable (μ.trim hm) _
   refine ⟨s, fun n ↦ ⟨(hs n).1, (le_trim hm).trans_lt (hs n).2.1, fun x hx ↦ ?_⟩, hs_univ⟩
   have hx_nnnorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
   rw [← coe_nnnorm]
@@ -1103,6 +1106,9 @@ namespace AEStronglyMeasurable
 
 variable {m : MeasurableSpace α} {μ ν : Measure α} [TopologicalSpace β] [TopologicalSpace γ]
   {f g : α → β}
+
+lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ :=
+  ⟨_, .of_finite _, ae_eq_rfl⟩
 
 section Mk
 
@@ -1874,6 +1880,3 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 
 end MeasureTheory
-
--- Guard against import creep
-assert_not_exists InnerProductSpace

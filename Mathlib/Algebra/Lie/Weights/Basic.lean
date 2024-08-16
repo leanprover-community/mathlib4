@@ -45,7 +45,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 lie character, eigenvalue, eigenspace, weight, weight vector, root, root vector
 -/
 
-variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra.IsNilpotent R L]
+variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieModule
@@ -146,7 +146,7 @@ variable (M)
 `weightSpaceOf M χ x` is the maximal generalized `χ`-eigenspace of the action of `x` on `M`.
 
 It is a Lie submodule because `L` is nilpotent. -/
-def weightSpaceOf (χ : R) (x : L) : LieSubmodule R L M :=
+def weightSpaceOf [LieAlgebra.IsNilpotent R L] (χ : R) (x : L) : LieSubmodule R L M :=
   { 𝕎(M, χ, x) with
     lie_mem := by
       intro y m hm
@@ -158,6 +158,7 @@ def weightSpaceOf (χ : R) (x : L) : LieSubmodule R L M :=
 end notation_weightSpaceOf
 
 variable (M)
+variable [LieAlgebra.IsNilpotent R L]
 
 theorem mem_weightSpaceOf (χ : R) (x : L) (m : M) :
     m ∈ weightSpaceOf M χ x ↔ ∃ k : ℕ, ((toEnd R L M x - χ • ↑1) ^ k) m = 0 := by
@@ -208,7 +209,7 @@ variable {M}
 @[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
   cases' χ₁ with f₁ _; cases' χ₂ with f₂ _; aesop
 
-protected lemma ext_iff {χ₁ χ₂ : Weight R L M} : χ₁ = χ₂ ↔ (χ₁ : L → R) = χ₂ := by aesop
+lemma ext_iff' {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by aesop
 
 lemma exists_ne_zero (χ : Weight R L M) :
     ∃ x ∈ weightSpace M χ, x ≠ 0 := by
@@ -236,7 +237,7 @@ def IsZero (χ : Weight R L M) := (χ : L → R) = 0
 @[simp] lemma coe_eq_zero_iff (χ : Weight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
 
 lemma isZero_iff_eq_zero [Nontrivial (weightSpace M (0 : L → R))] {χ : Weight R L M} :
-    χ.IsZero ↔ χ = 0 := Weight.ext_iff (χ₂ := 0).symm
+    χ.IsZero ↔ χ = 0 := Weight.ext_iff' (χ₂ := 0)
 
 lemma isZero_zero [Nontrivial (weightSpace M (0 : L → R))] : IsZero (0 : Weight R L M) := rfl
 
@@ -455,7 +456,8 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
     simp_rw [← LieSubmodule.mem_coeSubmodule, posFittingCompOf, hk k (le_refl k)]
     apply LinearMap.mem_range_self
   suffices (toEnd R L (M ⧸ F) x ^ k) (LieSubmodule.Quotient.mk (N := F) m) =
-    LieSubmodule.Quotient.mk (N := F) ((toEnd R L M x ^ k) m) by simpa [this]
+    LieSubmodule.Quotient.mk (N := F) ((toEnd R L M x ^ k) m)
+      by simpa [Submodule.Quotient.quot_mk_eq_mk, this]
   have := LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute
     (LieSubmodule.Quotient.toEnd_comp_mk' F x) k) m
   simpa using this
@@ -762,7 +764,6 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
 See also `LieModule.iSup_weightSpace_eq_top'`. -/
 lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, weightSpace M χ = ⊤ := by
-  clear! R -- cf https://github.com/leanprover/lean4/issues/2452
   induction' h_dim : finrank K M using Nat.strong_induction_on with n ih generalizing M
   obtain h' | ⟨y : L, hy : ¬ ∃ φ, weightSpaceOf M φ y = ⊤⟩ :=
     forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), weightSpaceOf M φ x = ⊤)

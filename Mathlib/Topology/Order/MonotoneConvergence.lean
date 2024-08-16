@@ -25,11 +25,8 @@ then `f n ≤ a` for all `n`.
 monotone convergence
 -/
 
-
 open Filter Set Function
-
-open scoped Classical
-open Filter Topology
+open scoped Topology
 
 variable {α β : Type*}
 
@@ -201,8 +198,9 @@ instance Pi.infConvergenceClass' {ι : Type*} [Preorder α] [TopologicalSpace α
 
 theorem tendsto_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
-    Tendsto f atTop atTop ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
-  if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_ciSup h_mono H⟩
+    Tendsto f atTop atTop ∨ ∃ l, Tendsto f atTop (𝓝 l) := by
+  classical
+  exact if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_ciSup h_mono H⟩
   else Or.inl <| tendsto_atTop_atTop_of_monotone' h_mono H
 
 theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]

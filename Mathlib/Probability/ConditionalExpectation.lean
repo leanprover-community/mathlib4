@@ -44,7 +44,7 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
       stronglyMeasurable_const.aeStronglyMeasurable').symm
   rw [setIntegral_const]
   rw [← memℒp_one_iff_integrable] at hfint
-  refine Memℒp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top ?_ ?_ ?_ ?_ hfint ?_
+  refine Memℒp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top _ ?_ ?_ ?_ ?_ hfint ?_
   · exact ⟨f, hf, EventuallyEq.rfl⟩
   · intro c t hmt _
     rw [Indep_iff] at hindp

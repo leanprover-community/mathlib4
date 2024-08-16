@@ -19,7 +19,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
   (A : Type*) [CommRing A] [Algebra R A] [IsLocalization S A]
-  {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+  {M : Type*} [AddCommMonoid M] [Module R M]
   {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module A M'] [IsScalarTower R A M']
   (f : M →ₗ[R] M')
 
@@ -33,7 +33,7 @@ theorem IsLocalizedModule.isBaseChange [IsLocalizedModule S f] : IsBaseChange A 
     cases h₂ (LinearMap.restrictScalars R g'') h; rfl
 
 /-- The map `(f : M →ₗ[R] M')` is a localization of modules iff the map
-`(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
+`(Localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
 bilinear map).
 In particular, there is an isomorphism between `LocalizedModule S M` and `(Localization S) ⊗[R] M`
 given by `m/s ↦ (1/s) ⊗ₜ m`.

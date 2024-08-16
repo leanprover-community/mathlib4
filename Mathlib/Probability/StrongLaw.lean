@@ -371,6 +371,7 @@ variable (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
   (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0))
   (hnonneg : ∀ i ω, 0 ≤ X i ω)
 
+include hint hindep hident hnonneg in
 /-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers (with respect to
 the truncated expectation) along the sequence `c^n`, for any `c > 1`, up to a given `ε > 0`.
 This follows from a variance control. -/
@@ -476,6 +477,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
   simp_rw [S, not_le, mul_comm, sum_apply] at hω
   convert hω; simp only [sum_apply]
 
+include hint hindep hident hnonneg in
 /- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
 (with respect to the truncated expectation) along the sequence
 `c^n`, for any `c > 1`. This follows from `strong_law_aux1` by varying `ε`. -/
@@ -493,6 +495,7 @@ theorem strong_law_aux2 {c : ℝ} (c_one : 1 < c) :
   simp only [Real.norm_eq_abs, abs_abs, Nat.abs_cast]
   exact hn.le.trans (mul_le_mul_of_nonneg_right hi.le (Nat.cast_nonneg _))
 
+include hint hident in
 /-- The expectation of the truncated version of `Xᵢ` behaves asymptotically like the whole
 expectation. This follows from convergence and Cesàro averaging. -/
 theorem strong_law_aux3 :
@@ -507,6 +510,7 @@ theorem strong_law_aux3 :
   rw [integral_finset_sum _ fun i _ => ?_]
   exact ((hident i).symm.integrable_snd hint).1.integrable_truncation
 
+include hint hindep hident hnonneg in
 /- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
 (with respect to the original expectation) along the sequence
 `c^n`, for any `c > 1`. This follows from the version from the truncated expectation, and the
@@ -521,6 +525,7 @@ theorem strong_law_aux4 {c : ℝ} (c_one : 1 < c) :
   ext1 n
   simp
 
+include hint hident hnonneg in
 /-- The truncated and non-truncated versions of `Xᵢ` have the same asymptotic behavior, as they
 almost surely coincide at all but finitely many steps. This follows from a probability computation
 and Borel-Cantelli. -/
@@ -548,6 +553,7 @@ theorem strong_law_aux5 :
   ext n
   rw [sum_sub_distrib]
 
+include hint hindep hident hnonneg in
 /- `Xᵢ` satisfies the strong law of large numbers along the sequence
 `c^n`, for any `c > 1`. This follows from the version for the truncated `Xᵢ`, and the fact that
 `Xᵢ` and its truncated version have the same asymptotic behavior. -/
@@ -570,6 +576,7 @@ theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
   convert L.mul_isBigO (isBigO_refl (fun n : ℕ => (⌊c ^ n⌋₊ : ℝ)⁻¹) atTop) using 1 <;>
   (ext1 n; field_simp [(H n).ne'])
 
+include hint hindep hident hnonneg in
 /-- `Xᵢ` satisfies the strong law of large numbers along all integers. This follows from the
 corresponding fact along the sequences `c^n`, and the fact that any integer can be sandwiched
 between `c^n` and `c^(n+1)` with comparably small error if `c` is close enough to `1`
@@ -621,7 +628,7 @@ section StrongLawVectorSpace
 
 variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-  [MeasurableSpace E] [BorelSpace E]
+  [MeasurableSpace E]
 
 open Set TopologicalSpace
 
@@ -671,6 +678,8 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
       · rfl
       · exact (φ.comp (X 0) h').integrable_of_isFiniteMeasure
       · exact (ψ.comp (X 0) h').integrable_of_isFiniteMeasure
+
+variable [BorelSpace E]
 
 /-- Preliminary lemma for the strong law of large numbers for vector-valued random variables,
 assuming measurability in addition to integrability. This is weakened to ae measurability in

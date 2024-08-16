@@ -183,7 +183,7 @@ lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) 
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
   induction n with
   | zero =>
-    simp only [Nat.zero_eq, pow_zero]
+    simp only [pow_zero]
     apply analyticAt_const
   | succ m hm =>
     simp only [pow_succ]
