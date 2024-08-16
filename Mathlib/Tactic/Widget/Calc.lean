@@ -143,8 +143,4 @@ elab_rules : tactic
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))
 
-end Tactic
-
-end Elab
-
-end Lean
+end Lean.Elab.Tactic

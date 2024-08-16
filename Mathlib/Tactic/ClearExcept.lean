@@ -35,8 +35,4 @@ elab_rules : tactic
             toClear := toClear.push decl.fvarId
       goal.tryClearMany toClear
 
-end Tactic
-
-end Elab
-
-end Lean
+end Lean.Elab.Tactic

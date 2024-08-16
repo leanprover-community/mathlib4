@@ -39,8 +39,6 @@ initialize funPropAttr : Unit ←
       throwError "can't remove `funProp` attribute (not implemented yet)"
   }
 
-end FunProp
-
-end Meta
+end Meta.FunProp
 
 end Mathlib

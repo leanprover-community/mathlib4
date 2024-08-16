@@ -114,8 +114,4 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
   if prot.isSome then
     modifyEnv (addProtected · ((← getCurrNamespace) ++ n.getId))
 
-end Command
-
-end Elab
-
-end Lean
+end Lean.Elab.Command

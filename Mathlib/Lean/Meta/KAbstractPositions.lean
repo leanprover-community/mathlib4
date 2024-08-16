@@ -88,6 +88,4 @@ def kabstractIsTypeCorrect (e subExpr : Expr) (pos : SubExpr.Pos) : MetaM Bool :
   withLocalDeclD `_a (← inferType subExpr) fun fvar => do
     isTypeCorrect (← replaceSubexpr (fun _ => pure fvar) pos e)
 
-end Meta
-
-end Lean
+end Lean.Meta

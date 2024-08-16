@@ -390,8 +390,6 @@ transition theorem: {thm.thmName}
 function property: {thm.funPropName}"
     transitionTheoremsExt.add thm attrKind
 
-end FunProp
-
-end Meta
+end Meta.FunProp
 
 end Mathlib

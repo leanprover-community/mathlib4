@@ -23,8 +23,4 @@ def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := 
       synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
       instantiateMVars t
 
-end Term
-
-end Elab
-
-end Lean
+end Lean.Elab.Term

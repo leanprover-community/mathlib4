@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
 /-! # Unbundled ordered monoid structures on the order dual. -/
 
-
 universe u
 
 variable {α : Type u}
@@ -60,7 +59,5 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
     [c : CovariantClass α α (swap (· * ·)) (· < ·)] :
     CovariantClass αᵒᵈ αᵒᵈ (swap (· * ·)) (· < ·) :=
   ⟨c.1.flip⟩
-
-
 
 end OrderDual

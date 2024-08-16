@@ -132,6 +132,4 @@ initialize addLinter haveLetLinter
 
 end haveLet
 
-end Linter
-
-end Mathlib
+end Mathlib.Linter

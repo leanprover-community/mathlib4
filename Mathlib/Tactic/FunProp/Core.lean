@@ -691,8 +691,6 @@ mutual
 
 end
 
-end FunProp
-
-end Meta
+end Meta.FunProp
 
 end Mathlib

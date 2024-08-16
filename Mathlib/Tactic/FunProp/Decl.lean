@@ -153,8 +153,6 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
 
     return result?
 
-end FunProp
-
-end Meta
+end Meta.FunProp
 
 end Mathlib

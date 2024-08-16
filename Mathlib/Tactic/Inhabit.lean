@@ -55,8 +55,4 @@ elab_rules : tactic
     let goal ← evalInhabit (← getMainGoal) h_name term
     replaceMainGoal [goal]
 
-end Tactic
-
-end Elab
-
-end Lean
+end Lean.Elab.Tactic

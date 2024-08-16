@@ -138,6 +138,4 @@ context. A typical example is exposing an inequality field of a structure, such 
 macro "bound_forward" : attr =>
   `(attr|aesop safe forward (rule_sets := [$(Lean.mkIdent `Bound):ident]))
 
-end Bound
-
-end Mathlib.Tactic
+end Mathlib.Tactic.Bound

@@ -153,8 +153,6 @@ def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
 
 end Mor
 
-end FunProp
-
-end Meta
+end Meta.FunProp
 
 end Mathlib

@@ -85,8 +85,6 @@ def funPropTac : Tactic
 
   | _ => throwUnsupportedSyntax
 
-end FunProp
-
-end Meta
+end Meta.FunProp
 
 end Mathlib

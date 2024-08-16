@@ -1153,10 +1153,4 @@ def mapArraysM (d : RefinedDiscrTree α) (f : Array α → m (Array β)) : m (Re
 def mapArrays (d : RefinedDiscrTree α) (f : Array α → Array β) : RefinedDiscrTree β :=
   d.mapArraysM (m := Id) f
 
-end RefinedDiscrTree
-
-end FunProp
-
-end Meta
-
-end Mathlib
+end Mathlib.Meta.FunProp.RefinedDiscrTree
