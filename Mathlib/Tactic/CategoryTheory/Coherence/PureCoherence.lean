@@ -24,7 +24,7 @@ open Mor₂Iso MonadMor₂Iso
 variable {ρ : Type} [Context ρ]
 
 /-- Meta version of `CategoryTheory.FreeBicategory.normalizeIso`. -/
-def normalize [MonadMor₁ (CoherenceM ρ)] [MonadStructuralIsoAtom (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)] (p : NormalizedHom) (f : Mor₁) :
+def normalize [MonadMor₁ (CoherenceM ρ)] [MonadStructuralAtom (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)] (p : NormalizedHom) (f : Mor₁) :
     CoherenceM ρ Normalize.Result := do
   match f with
   | .id _ _ =>
@@ -65,7 +65,7 @@ open MonadNormalizeNaturality
 /-- Meta version of `CategoryTheory.FreeBicategory.normalize_naturality`. -/
 partial def naturality {ρ : Type} [Context ρ]
     [MonadMor₁ (CoherenceM ρ)]
-    [MonadStructuralIsoAtom (CoherenceM ρ)]
+    [MonadStructuralAtom (CoherenceM ρ)]
     [MonadMor₂Iso (CoherenceM ρ)]
     [MonadCoherehnceHom (CoherenceM ρ)]
     [MonadNormalizeNaturality (CoherenceM ρ)]
@@ -133,7 +133,7 @@ partial def naturality {ρ : Type} [Context ρ]
 
 def pureCoherence (nm : Name) (ρ : Type) [Context ρ]
     [MonadMor₁ (CoherenceM ρ)]
-    [MonadStructuralIsoAtom (CoherenceM ρ)]
+    [MonadStructuralAtom (CoherenceM ρ)]
     [MonadMor₂Iso (CoherenceM ρ)]
     [MkMor₂ (CoherenceM ρ)]
     [MonadCoherehnceHom (CoherenceM ρ)]
@@ -147,7 +147,7 @@ def pureCoherence (nm : Name) (ρ : Type) [Context ρ]
       let e ← instantiateMVars <| ← mvarId.getType
       let some (_, η, θ) := (← whnfR e).eq?
         | throwError "coherence requires an equality goal"
-      let ctx : ρ ← Context.mkContext η
+      let ctx : ρ ← mkContext η
       ReaderT.run (r := ctx) do
         let .some ηIso := (← MkMor₂.ofExpr η).isoLift? |
           throwError "could not find a structural isomorphism {η}"

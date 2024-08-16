@@ -110,27 +110,23 @@ structure Context where
   level₂ : Level
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext (e : Expr) : MetaM Context := do
+def mkContext? (e : Expr) : MetaM (Option Context) := do
   let e ← instantiateMVars e
-  let e ← (match (← whnfR e).eq? with
-    | some (_, lhs, _) => return lhs
-    | none => return e)
   let type ← instantiateMVars <| ← inferType e
   match (← whnfR type).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) =>
     let C ← instantiateMVars <| ← inferType f
-    let .succ level₁ ← getLevel C |
-      throwError m!"faled to get the universe level of {C}"
-    let .succ level₂ ← getLevel type |
-      throwError m!"failed to get the universe level of {type}"
-    let instCat ← synthInstance (mkAppN (.const ``Category [level₂, level₁]) #[C])
+    let .succ level₁ ← getLevel C | return none
+    let .succ level₂ ← getLevel type | return none
+    let .some instCat ← synthInstance? (mkAppN (.const ``Category [level₂, level₁]) #[C]) |
+      return none
     let instMonoidal ← synthInstance?
       (mkAppN (.const ``MonoidalCategory [level₂, level₁]) #[C, instCat])
-    return ⟨C, instCat, instMonoidal, level₁, level₂⟩
-  | _ => throwError m!"{e} is not a morphism"
+    return some ⟨C, instCat, instMonoidal, level₁, level₂⟩
+  | _ => return none
 
 instance : BicategoryLike.Context Monoidal.Context where
-  mkContext := Monoidal.mkContext
+  mkContext? := Monoidal.mkContext?
 
 /-- The monad for the normalization of 2-morphisms. -/
 abbrev MonoidalM := CoherenceM Context
@@ -220,7 +216,7 @@ theorem structuralIsoOfExpr_horizontalComp {f₁ g₁ f₂ g₂ : C}
     (η' ⊗ θ').hom = η ⊗ θ := by
   simp [ih_η, ih_θ]
 
-theorem StructuralIsoOfExpr_monoidalComp {f g h i : C} [MonoidalCoherence g h]
+theorem StructuralOfExpr_monoidalComp {f g h i : C} [MonoidalCoherence g h]
     (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η) (θ : h ⟶ i) (θ' : h ≅ i) (ih_θ : θ'.hom = θ) :
     -- (α : g ≅ h) (ih_α : α.hom = (⊗𝟙 : g ⟶ h)) :
     (monoidalIsoComp η' θ').hom = η ⊗≫ θ := by
@@ -230,7 +226,7 @@ end
 
 open MonadMor₁
 
-instance : MonadStructuralIsoAtom MonoidalM where
+instance : MonadStructuralAtom MonoidalM where
   associatorM f g h := do
     let ctx ← read
     let e := mkAppN (.const ``MonoidalCategoryStruct.associator (← getLevels))
@@ -340,7 +336,7 @@ instance : MonadMor₂ MonoidalM where
     let ctx ← read
     let e := mkAppN (.const ``CategoryStruct.id (← getLevels)) #[ctx.C, ← mkCategoryStructInst, f.e]
     let eq := mkAppN (.const ``Iso.refl_hom (← getLevels)) #[ctx.C, ctx.instCat, f.e]
-    return .id e ⟨(.structuralAtom <| ← StructuralIsoAtom.id₂M f), eq⟩ f
+    return .id e ⟨(.structuralAtom <| ← StructuralAtom.id₂M f), eq⟩ f
   comp₂M η θ := do
     let ctx ← read
     let f ← η.srcM
@@ -405,7 +401,7 @@ instance : MonadMor₂ MonoidalM where
     let i ← θ.tgtM
     let isoLift? ← (match (η.isoLift?, θ.isoLift?) with
       | (some ηIso, some θIso) => do
-        let eq := mkAppN (.const ``StructuralIsoOfExpr_monoidalComp (← getLevels))
+        let eq := mkAppN (.const ``StructuralOfExpr_monoidalComp (← getLevels))
           #[ctx.C, ctx.instCat, f.e, g.e, h.e, i.e, α.inst,
             η.e, ηIso.iso.e, ηIso.eq, θ.e, θIso.iso.e, θIso.eq]
         return .some ⟨← MonadMor₂Iso.coherenceCompM α ηIso.iso θIso.iso, eq⟩
@@ -637,7 +633,7 @@ partial def Mor₂OfExpr (e : Expr) : MonoidalM Mor₂ := do
     | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
       horizontalCompM (← Mor₂OfExpr η) (← Mor₂OfExpr θ)
     | (``monoidalComp, #[_, _, _, g, h, _, inst, η, θ]) =>
-      coherenceCompM (← MonadStructuralIsoAtom.coherenceHomM
+      coherenceCompM (← MonadStructuralAtom.coherenceHomM
         (← MkMor₁.ofExpr g) (← MkMor₁.ofExpr h) inst) (← Mor₂OfExpr η) (← Mor₂OfExpr θ)
     | _ => return .of ⟨e, ← MkMor₁.ofExpr (← srcExpr e), ← MkMor₁.ofExpr (← tgtExpr e)⟩
   | _ =>

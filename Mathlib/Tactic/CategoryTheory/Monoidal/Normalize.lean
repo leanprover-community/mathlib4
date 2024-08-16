@@ -1,10 +1,8 @@
 import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
-
 import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 open Lean Meta Elab
 open CategoryTheory Mathlib.Tactic.BicategoryLike
--- MkClass
 
 namespace Mathlib.Tactic.Monoidal
 
@@ -265,7 +263,6 @@ instance : MkEvalWhiskerLeft MonoidalM where
     return mkAppN (.const ``evalWhiskerLeft_of_cons (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, j.e,
         α.e, η.e, ηs.e, θ.e, e_θ]
-
   mkEvalWhiskerLeftComp f g η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
     let h ← η.srcM
@@ -273,7 +270,6 @@ instance : MkEvalWhiskerLeft MonoidalM where
     return mkAppN (.const ``evalWhiskerLeft_comp (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e,
         η.e, η₁.e, η₂.e, η₃.e, η₄.e, e_η₁, e_η₂, e_η₃, e_η₄]
-
   mkEvalWhiskerLeftId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
     let f ← η.srcM
@@ -288,7 +284,6 @@ instance : MkEvalWhiskerRight MonoidalM where
     let g ← η.tgtM
     return mkAppN (.const ``evalWhiskerRightAux_of (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, η.e, h.e]
-
   mkEvalWhiskerRightAuxCons f η ηs ηs' η₁ η₂ η₃ e_ηs' e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
     let g ← η.srcM
@@ -298,14 +293,12 @@ instance : MkEvalWhiskerRight MonoidalM where
     return mkAppN (.const ``evalWhiskerRightAux_cons (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, j.e, η.e, ηs.e, ηs'.e,
         η₁.e, η₂.e, η₃.e, e_ηs', e_η₁, e_η₂, e_η₃]
-
   mkEvalWhiskerRightNil α h := do
     let ctx ← read
     let f ← α.srcM
     let g ← α.tgtM
     return mkAppN (.const ``evalWhiskerRight_nil (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, α.e, h.e]
-
   mkEvalWhiskerRightConsOfOf j α η ηs ηs₁ η₁ η₂ η₃ e_ηs₁ e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
     let f ← α.srcM
@@ -315,7 +308,6 @@ instance : MkEvalWhiskerRight MonoidalM where
     return mkAppN (.const ``evalWhiskerRight_cons_of_of (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, j.e,
         α.e, η.e, ηs.e, ηs₁.e, η₁.e, η₂.e, η₃.e, e_ηs₁, e_η₁, e_η₂, e_η₃]
-
   mkEvalWhiskerRightConsWhisker f k α η ηs η₁ η₂ ηs₁ ηs₂ η₃ η₄ η₅
       e_η₁ e_η₂ e_ηs₁ e_ηs₂ e_η₃ e_η₄ e_η₅ := do
     let ctx ← read
@@ -327,7 +319,6 @@ instance : MkEvalWhiskerRight MonoidalM where
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, j.e, k.e,
         α.e, η.e, ηs.e, η₁.e, η₂.e, ηs₁.e, ηs₂.e, η₃.e, η₄.e, η₅.e,
         e_η₁, e_η₂, e_ηs₁, e_ηs₂, e_η₃, e_η₄, e_η₅]
-
   mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
     let f ← η.srcM
@@ -335,7 +326,6 @@ instance : MkEvalWhiskerRight MonoidalM where
     return mkAppN (.const ``evalWhiskerRight_comp (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, h.e,
         η.e, η₁.e, η₂.e, η₃.e, η₄.e, e_η₁, e_η₂, e_η₃, e_η₄]
-
   mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
     let f ← η.srcM
@@ -352,7 +342,6 @@ instance : MkEvalHorizontalComp MonoidalM where
     let i ← θ.tgtM
     return mkAppN (.const ``evalHorizontalCompAux_of (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, η.e, θ.e]
-
   mkEvalHorizontalCompAuxCons η ηs θ ηθ η₁ ηθ₁ ηθ₂ e_ηθ e_η₁ e_ηθ₁ e_ηθ₂ := do
     let ctx ← read
     let f ← η.srcM
@@ -364,7 +353,6 @@ instance : MkEvalHorizontalComp MonoidalM where
     return mkAppN (.const ``evalHorizontalCompAux_cons (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e, i.e,
         η.e, ηs.e, θ.e, ηθ.e, η₁.e, ηθ₁.e, ηθ₂.e, e_ηθ, e_η₁, e_ηθ₁, e_ηθ₂]
-
   mkEvalHorizontalCompAux'Whisker f η θ ηθ η₁ η₂ η₃ e_ηθ e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
     let g ← η.srcM
@@ -374,7 +362,6 @@ instance : MkEvalHorizontalComp MonoidalM where
     return mkAppN (.const ``evalHorizontalCompAux'_whisker (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e,
         η.e, θ.e, ηθ.e, η₁.e, η₂.e, η₃.e, e_ηθ, e_η₁, e_η₂, e_η₃]
-
   mkEvalHorizontalCompAux'OfWhisker f η θ η₁ ηθ ηθ₁ ηθ₂ e_η₁ e_ηθ e_ηθ₁ e_ηθ₂ := do
     let ctx ← read
     let g ← η.srcM
@@ -384,7 +371,6 @@ instance : MkEvalHorizontalComp MonoidalM where
     return mkAppN (.const ``evalHorizontalCompAux'_of_whisker (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e,
         η.e, θ.e, η₁.e, ηθ.e, ηθ₁.e, ηθ₂.e, e_η₁, e_ηθ, e_ηθ₁, e_ηθ₂]
-
   mkEvalHorizontalCompNilNil α β := do
     let ctx ← read
     let f ← α.srcM
@@ -393,7 +379,6 @@ instance : MkEvalHorizontalComp MonoidalM where
     let i ← β.tgtM
     return mkAppN (.const ``evalHorizontalComp_nil_nil (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, α.e, β.e]
-
   mkEvalHorizontalCompNilCons α β η ηs η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃ := do
     let ctx ← read
     let f ← α.srcM
@@ -405,7 +390,6 @@ instance : MkEvalHorizontalComp MonoidalM where
     return mkAppN (.const ``evalHorizontalComp_nil_cons (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e, i.e,
         α.e, β.e, η.e, ηs.e, η₁.e, ηs₁.e, η₂.e, η₃.e, e_η₁, e_ηs₁, e_η₂, e_η₃]
-
   mkEvalHorizontalCompConsNil α η ηs β η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃ := do
     let ctx ← read
     let f ← α.srcM
@@ -417,7 +401,6 @@ instance : MkEvalHorizontalComp MonoidalM where
     return mkAppN (.const ``evalHorizontalComp_cons_nil (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e, i.e,
         α.e, η.e, ηs.e, β.e, η₁.e, ηs₁.e, η₂.e, η₃.e, e_η₁, e_ηs₁, e_η₂, e_η₃]
-
   mkEvalHorizontalCompConsCons α β η θ ηs θs ηθ ηθs ηθ₁ ηθ₂ e_ηθ e_ηθs e_ηθ₁ e_ηθ₂ := do
     let ctx ← read
     let f ← α.srcM
@@ -440,21 +423,18 @@ instance : MkEval MonoidalM where
     let h ← θ'.tgtM
     return mkAppN (.const ``eval_comp (← getLevels))
       #[ctx.C, ctx.instCat, f.e, g.e, h.e, η.e, η'.e, θ.e, θ'.e, ι.e, e_η, e_θ, e_ηθ]
-
   mkEvalWhiskerLeft f η η' θ e_η e_θ := do
     let ctx ← read
     let g ← η'.srcM
     let h ← η'.tgtM
     return mkAppN (.const ``eval_whiskerLeft (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, η.e, η'.e, θ.e, e_η, e_θ]
-
   mkEvalWhiskerRight η h η' θ e_η e_θ := do
     let ctx ← read
     let f ← η'.srcM
     let g ← η'.tgtM
     return mkAppN (.const ``eval_whiskerRight (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, η.e, η'.e, θ.e, e_η, e_θ]
-
   mkEvalHorizontalComp η θ η' θ' ι e_η e_θ e_ι := do
     let ctx ← read
     let f ← η'.srcM
@@ -464,14 +444,12 @@ instance : MkEval MonoidalM where
     return mkAppN (.const ``eval_tensorHom (← getLevels))
       #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e,
         η.e, η'.e, θ.e, θ'.e, ι.e, e_η, e_θ, e_ι]
-
   mkEvalOf η := do
     let ctx ← read
     let f := η.src
     let g := η.tgt
     return mkAppN (.const ``eval_of (← getLevels))
       #[ctx.C, ctx.instCat, f.e, g.e, η.e]
-
   mkEvalMonoidalComp η θ α η' θ' αθ ηαθ e_η e_θ e_αθ e_ηαθ := do
     let ctx ← read
     let f ← η'.srcM
@@ -514,13 +492,6 @@ instance : MonadNormalExpr MonoidalM where
     let g ← α.tgtM
     let h ← η.tgtM
     let i ← ηs.tgtM
-    -- let α' ← MkMor₂.ofExpr (← MonadMor₂.homM α).e
-    -- let α'' ← (match α' with
-    -- | .isoHom _ _ (.structuralAtom (.coherenceHom α'')) => return α''
-    -- | _ => throwError "failed to unfold {α'.e}")
-    -- -- let α''' ← coherenceHomM' α''.src α''.tgt α''.inst
-    -- let e := mkAppN (.const ``monoidalComp (← getLevels))
-    --   #[ctx.C, ctx.instCat, f.e, g.e, h.e, i.e, α''.inst]
     let e := mkAppN (.const ``CategoryStruct.comp (← getLevels))
       #[ctx.C, ← mkCategoryStructInst, g.e, h.e, i.e, η.e, ηs.e]
     let e' := mkAppN (.const ``CategoryStruct.comp (← getLevels))
@@ -537,7 +508,6 @@ open Lean Elab Tactic
 /-- Normalize the both sides of an equality. -/
 elab "monoidal_nf" : tactic => withMainContext do
   replaceMainGoal (← monoidalNf (← getMainGoal))
-
 
 def monoidal (mvarId : MVarId) : MetaM (List MVarId) :=
   BicategoryLike.main Monoidal.Context (mkAppM ``mk_eq_of_normalized_eq) `monoidal mvarId

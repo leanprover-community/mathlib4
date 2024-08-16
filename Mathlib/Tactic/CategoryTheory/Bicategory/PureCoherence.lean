@@ -60,7 +60,6 @@ and `pf` is a proof that `e = e'`.
 
 open Lean Meta Elab
 open CategoryTheory Mathlib.Tactic.BicategoryLike
--- MkClass
 
 namespace Mathlib.Tactic
 
@@ -110,11 +109,8 @@ structure Context where
   level₂ : Level
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext (e : Expr) : MetaM Context := do
+def mkContext? (e : Expr) : MetaM (Option Context) := do
   let e ← instantiateMVars e
-  let e ← (match (← whnfR e).eq? with
-    | some (_, lhs, _) => return lhs
-    | none => return e)
   let type ← instantiateMVars <| ← inferType e
   match (← whnfR (← inferType e)).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) =>
@@ -122,20 +118,18 @@ def mkContext (e : Expr) : MetaM Context := do
     match (← whnfR fType).getAppFnArgs with
     | (``Quiver.Hom, #[_, _, a, _]) =>
       let B ← inferType a
-      let .succ level₀ ← getLevel B |
-        throwError m!"faled to get the universe level of {B}"
-      let .succ level₁ ← getLevel fType |
-        throwError m!"faled to get the universe level of {fType}"
-      let .succ level₂ ← getLevel type |
-        throwError m!"faled to get the universe level of {type}"
-      let instBicategory ← synthInstance
-        (mkAppN (.const ``Bicategory [level₂, level₁, level₀]) #[B])
-      return ⟨B, instBicategory, level₀, level₁, level₂⟩
-    | _ => throwError m!"{f} is not a morphism"
-  | _ => throwError m!"{e} is not a morphism"
+      trace[monoidal] m!"getting universe levels of {B}, {fType}, and {type}"
+      let .succ level₀ ← getLevel B | return none
+      let .succ level₁ ← getLevel fType | return none
+      let .succ level₂ ← getLevel type | return none
+      let .some instBicategory ← synthInstance?
+        (mkAppN (.const ``Bicategory [level₂, level₁, level₀]) #[B]) | return none
+      return some ⟨B, instBicategory, level₀, level₁, level₂⟩
+    | _ => return none
+  | _ => return none
 
 instance : BicategoryLike.Context Bicategory.Context where
-  mkContext := Bicategory.mkContext
+  mkContext? := Bicategory.mkContext?
 
 /-- The monad for the normalization of 2-morphisms. -/
 abbrev BicategoryM := CoherenceM Context
@@ -193,15 +187,6 @@ def mkBicategoricalCoherenceHom (f g inst : Expr) : BicategoryM Expr := do
   return mkAppN (.const ``BicategoricalCoherence.hom (← getLevels))
     #[ctx.B, ctx.instBicategory, a, b, f, g, inst]
 
--- def mkMonoidalCoherenceHom' (α : Expr) : BicategoryM Expr := do
---   let ctx ← read
---   match (← whnfR α).getAppFnArgs with
---   | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
---     return mkAppN (.const ``MonoidalCoherence.hom (← getLevels))
---       #[ctx.B, ctx.instCat, f, g, inst]
-  -- return mkAppN (.const ``MonoidalCoherence.hom (← getLevels))
-  --   #[ctx.B, ctx.instCat, f, g, inst]
-
 def mkMonoidalCoherenceIso (a b f g inst : Expr) : BicategoryM Expr := do
   let ctx ← read
   return mkAppN (.const ``BicategoricalCoherence.iso (← getLevels))
@@ -258,9 +243,8 @@ theorem structuralIsoOfExpr_whiskerRight {f g : a ⟶ b} {h : b ⟶ c}
     (whiskerRightIso η' h).hom = η ▷ h := by
   simp [ih_η]
 
-theorem StructuralIsoOfExpr_bicategoricalComp {f g h i : a ⟶ b} [BicategoricalCoherence g h]
+theorem StructuralOfExpr_bicategoricalComp {f g h i : a ⟶ b} [BicategoricalCoherence g h]
     (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η) (θ : h ⟶ i) (θ' : h ≅ i) (ih_θ : θ'.hom = θ) :
-    -- (α : g ≅ h) (ih_α : α.hom = (≫𝟙 : g ⟶ h)) :
     (bicategoricalIsoComp η' θ').hom = η ⊗≫ θ := by
   simp [ih_η, ih_θ, bicategoricalIsoComp, bicategoricalComp]
 
@@ -268,7 +252,7 @@ end
 
 open MonadMor₁
 
-instance : MonadStructuralIsoAtom BicategoryM where
+instance : MonadStructuralAtom BicategoryM where
   associatorM f g h := do
     let ctx ← read
     let a := f.src
@@ -412,7 +396,7 @@ instance : MonadMor₂ BicategoryM where
       #[← mkHom₁ a.e b.e, ← mkHomCatStructInst a.e b.e, f.e]
     let eq := mkAppN (.const ``Iso.refl_hom [ctx.level₂, ctx.level₁])
       #[← mkHom₁ a.e b.e, ← mkHomCatInst a.e b.e, f.e]
-    return .id e ⟨(.structuralAtom <| ← StructuralIsoAtom.id₂M f), eq⟩ f
+    return .id e ⟨(.structuralAtom <| ← StructuralAtom.id₂M f), eq⟩ f
   comp₂M η θ := do
     let ctx ← read
     let f ← η.srcM
@@ -473,7 +457,7 @@ instance : MonadMor₂ BicategoryM where
     let b := f.tgt
     let isoLift? ← (match (η.isoLift?, θ.isoLift?) with
       | (some ηIso, some θIso) => do
-        let eq := mkAppN (.const ``StructuralIsoOfExpr_bicategoricalComp (← getLevels))
+        let eq := mkAppN (.const ``StructuralOfExpr_bicategoricalComp (← getLevels))
           #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e, i.e, α.inst,
             η.e, ηIso.iso.e, ηIso.eq, θ.e, θIso.iso.e, θIso.eq]
         return .some ⟨← MonadMor₂Iso.coherenceCompM α ηIso.iso θIso.iso, eq⟩
@@ -716,7 +700,7 @@ partial def Mor₂OfExpr (e : Expr) : BicategoryM Mor₂ := do
     | (``Bicategory.whiskerRight, #[_, _, _, _, _, _, _, η, h]) =>
       whiskerRightM (← Mor₂OfExpr η) (← MkMor₁.ofExpr h)
     | (``bicategoricalComp, #[_, _, _, _, _, g, h, _, inst, η, θ]) =>
-      coherenceCompM (← MonadStructuralIsoAtom.coherenceHomM
+      coherenceCompM (← MonadStructuralAtom.coherenceHomM
         (← MkMor₁.ofExpr g) (← MkMor₁.ofExpr h) inst) (← Mor₂OfExpr η) (← Mor₂OfExpr θ)
     | _ => return .of ⟨e, ← MkMor₁.ofExpr (← srcExpr e), ← MkMor₁.ofExpr (← tgtExpr e)⟩
   | _ =>

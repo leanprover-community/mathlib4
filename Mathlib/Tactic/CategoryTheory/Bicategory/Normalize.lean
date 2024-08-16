@@ -4,7 +4,6 @@ import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 
 open Lean Meta Elab
 open CategoryTheory Mathlib.Tactic.BicategoryLike
--- MkClass
 
 namespace Mathlib.Tactic.Bicategory
 
@@ -64,30 +63,30 @@ theorem evalWhiskerLeft_comp
     {f : a ⟶ b} {g : b ⟶ c} {h i : c ⟶ d}
     {η : h ⟶ i} {θ : g ≫ h ⟶ g ≫ i} {ι : f ≫ g ≫ h ⟶ f ≫ g ≫ i}
     {ι' : f ≫ g ≫ h ⟶ (f ≫ g) ≫ i} {ι'' : (f ≫ g) ≫ h ⟶ (f ≫ g) ≫ i}
-    (pf_θ : g ◁ η = θ) (pf_ι : f ◁ θ = ι)
-    (pf_ι' : ι ≫ (α_ _ _ _).inv = ι') (pf_ι'' : (α_ _ _ _).hom ≫ ι' = ι'') :
+    (e_θ : g ◁ η = θ) (e_ι : f ◁ θ = ι)
+    (e_ι' : ι ≫ (α_ _ _ _).inv = ι') (e_ι'' : (α_ _ _ _).hom ≫ ι' = ι'') :
     (f ≫ g) ◁ η = ι'' := by
-  simp [pf_θ, pf_ι, pf_ι', pf_ι'']
+  simp [e_θ, e_ι, e_ι', e_ι'']
 
 theorem evalWhiskerLeft_id {η : f ⟶ g}
     {η' : f ⟶ 𝟙 a ≫ g} {η'' : 𝟙 a ≫ f ⟶ 𝟙 a ≫ g}
-    (pf_η' : η ≫ (λ_ _).inv = η') (pf_η'' : (λ_ _).hom ≫ η' = η'') :
+    (e_η' : η ≫ (λ_ _).inv = η') (e_η'' : (λ_ _).hom ≫ η' = η'') :
     𝟙 a ◁ η = η'' := by
-  simp [pf_η', pf_η'']
+  simp [e_η', e_η'']
 
 theorem eval_whiskerLeft
     {f : a ⟶ b} {g h : b ⟶ c}
     {η η' : g ⟶ h} {θ : f ≫ g ⟶ f ≫ h}
-    (pf_η : η = η') (pf_θ : f ◁ η' = θ) :
+    (e_η : η = η') (e_θ : f ◁ η' = θ) :
     f ◁ η = θ := by
-  simp [pf_η, pf_θ]
+  simp [e_η, e_θ]
 
 theorem eval_whiskerRight
     {f g : a ⟶ b} {h : b ⟶ c}
     {η η' : f ⟶ g} {θ : f ≫ h ⟶ g ≫ h}
-    (pf_η : η = η') (pf_θ : η' ▷ h = θ) :
+    (e_η : η = η') (e_θ : η' ▷ h = θ) :
     η ▷ h = θ := by
-  simp [pf_η, pf_θ]
+  simp [e_η, e_θ]
 
 @[nolint synTaut]
 theorem evalWhiskerRight_nil (α : f ≅ g) (h : b ⟶ c) :
@@ -125,16 +124,16 @@ theorem evalWhiskerRight_comp
     {f f' : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d}
     {η : f ⟶ f'} {η₁ : f ≫ g ⟶ f' ≫ g} {η₂ : (f ≫ g) ≫ h ⟶ (f' ≫ g) ≫ h}
     {η₃ : (f ≫ g) ≫ h ⟶ f' ≫ (g ≫ h)} {η₄ : f ≫ (g ≫ h) ⟶ f' ≫ (g ≫ h)}
-    (pf_η₁ : η ▷ g = η₁) (pf_η₂ : η₁ ▷ h = η₂)
-    (pf_η₃ : η₂ ≫ (α_ _ _ _).hom = η₃) (pf_η₄ : (α_ _ _ _).inv ≫ η₃ = η₄) :
+    (e_η₁ : η ▷ g = η₁) (e_η₂ : η₁ ▷ h = η₂)
+    (e_η₃ : η₂ ≫ (α_ _ _ _).hom = η₃) (e_η₄ : (α_ _ _ _).inv ≫ η₃ = η₄) :
     η ▷ (g ≫ h) = η₄ := by
-  simp [pf_η₁, pf_η₂, pf_η₃, pf_η₄]
+  simp [e_η₁, e_η₂, e_η₃, e_η₄]
 
 theorem evalWhiskerRight_id
     {η : f ⟶ g} {η₁ : f ⟶ g ≫ 𝟙 b} {η₂ : f ≫ 𝟙 b ⟶ g ≫ 𝟙 b}
-    (pf_η₁ : η ≫ (ρ_ _).inv = η₁) (pf_η₂ : (ρ_ _).hom ≫ η₁ = η₂) :
+    (e_η₁ : η ≫ (ρ_ _).inv = η₁) (e_η₂ : (ρ_ _).hom ≫ η₁ = η₂) :
     η ▷ 𝟙 b = η₂ := by
-  simp [pf_η₁, pf_η₂]
+  simp [e_η₁, e_η₂]
 
 theorem eval_bicategoricalComp
     {η η' : f ⟶ g} {α : g ≅ h} {θ θ' : h ⟶ i} {αθ : g ⟶ i} {ηαθ : f ⟶ i}
@@ -307,7 +306,7 @@ instance : MkEvalHorizontalComp BicategoryM where
     throwError "not implemented"
 
 instance : MkEval BicategoryM where
-  mkEvalComp η θ η' θ' ι pf_η pf_θ pf_ηθ := do
+  mkEvalComp η θ η' θ' ι e_η e_θ e_ηθ := do
     let ctx ← read
     let f ← η'.srcM
     let g ← η'.tgtM
@@ -316,8 +315,8 @@ instance : MkEval BicategoryM where
     let b := f.tgt
     return mkAppN (.const ``eval_comp (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e,
-        η.e, η'.e, θ.e, θ'.e, ι.e, pf_η, pf_θ, pf_ηθ]
-  mkEvalWhiskerLeft f η η' θ pf_η pf_θ := do
+        η.e, η'.e, θ.e, θ'.e, ι.e, e_η, e_θ, e_ηθ]
+  mkEvalWhiskerLeft f η η' θ e_η e_θ := do
     let ctx ← read
     let g ← η'.srcM
     let h ← η'.tgtM
@@ -325,8 +324,8 @@ instance : MkEval BicategoryM where
     let b := f.tgt
     let c := g.tgt
     return mkAppN (.const ``eval_whiskerLeft (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, η.e, η'.e, θ.e, pf_η, pf_θ]
-  mkEvalWhiskerRight η h η' θ pf_η pf_θ := do
+      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, η.e, η'.e, θ.e, e_η, e_θ]
+  mkEvalWhiskerRight η h η' θ e_η e_θ := do
     let ctx ← read
     let f ← η'.srcM
     let g ← η'.tgtM
@@ -334,7 +333,7 @@ instance : MkEval BicategoryM where
     let b := f.tgt
     let c := h.tgt
     return mkAppN (.const ``eval_whiskerRight (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, η.e, η'.e, θ.e, pf_η, pf_θ]
+      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, η.e, η'.e, θ.e, e_η, e_θ]
   mkEvalHorizontalComp _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
   mkEvalOf η := do
@@ -345,7 +344,7 @@ instance : MkEval BicategoryM where
     let b := f.tgt
     return mkAppN (.const ``eval_of (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, η.e]
-  mkEvalMonoidalComp η θ α η' θ' αθ ηαθ pf_η pf_θ pf_αθ pf_ηαθ := do
+  mkEvalMonoidalComp η θ α η' θ' αθ ηαθ e_η e_θ e_αθ e_ηαθ := do
     let ctx ← read
     let f ← η'.srcM
     let g ← η'.tgtM
@@ -355,7 +354,7 @@ instance : MkEval BicategoryM where
     let b := f.tgt
     return mkAppN (.const ``eval_monoidalComp (← getLevels))
       #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e, i.e,
-        η.e, η'.e, α.e, θ.e, θ'.e, αθ.e, ηαθ.e, pf_η, pf_θ, pf_αθ, pf_ηαθ]
+        η.e, η'.e, α.e, θ.e, θ'.e, αθ.e, ηαθ.e, e_η, e_θ, e_αθ, e_ηαθ]
 
 instance : MonadNormalExpr BicategoryM where
   whiskerRightM η h := do

@@ -11,16 +11,20 @@ namespace Mathlib.Tactic
 
 namespace BicategoryLike
 
-class Context (ρ  : Type) where
-  mkContext : Expr → MetaM ρ
+class Context (ρ : Type) where
+  mkContext? : Expr → MetaM (Option ρ)
+
+export Context (mkContext?)
 
 abbrev CoherenceM (ρ : Type) [Context ρ] := ReaderT ρ MetaM
 
 def CoherenceM.run {α : Type} {ρ : Type} [Context ρ] (c : ρ) (x : CoherenceM ρ α) : MetaM α :=
   x c
 
-def mkContext? {ρ : Type} (e : Expr) [Context ρ] : MetaM (Option ρ) := do
-  try return some (← Context.mkContext e) catch _ => return none
+def mkContext {ρ  : Type} [Context ρ] (e : Expr) : MetaM ρ := do
+  match ← mkContext? e with
+  | some c => return c
+  | none => throwError "failed to construct a monoidal category or bicategory context from {e}"
 
 structure Obj where
   e? : Option Expr
@@ -106,19 +110,19 @@ structure AtomIso where
   tgt : Mor₁
   deriving Inhabited
 
-inductive StructuralIsoAtom : Type
+inductive StructuralAtom : Type
   /-- The expression for the associator `α_ f g h`. -/
-  | associator (e : Expr) (f g h : Mor₁) : StructuralIsoAtom
+  | associator (e : Expr) (f g h : Mor₁) : StructuralAtom
   /-- The expression for the left unitor `λ_ f`. -/
-  | leftUnitor (e : Expr) (f : Mor₁) : StructuralIsoAtom
+  | leftUnitor (e : Expr) (f : Mor₁) : StructuralAtom
   /-- The expression for the right unitor `ρ_ f`. -/
-  | rightUnitor (e : Expr) (f : Mor₁) : StructuralIsoAtom
-  | id (e : Expr) (f : Mor₁) : StructuralIsoAtom
-  | coherenceHom (α : CoherenceHom) : StructuralIsoAtom
+  | rightUnitor (e : Expr) (f : Mor₁) : StructuralAtom
+  | id (e : Expr) (f : Mor₁) : StructuralAtom
+  | coherenceHom (α : CoherenceHom) : StructuralAtom
   deriving Inhabited
 
 inductive Mor₂Iso : Type where
-  | structuralAtom (α : StructuralIsoAtom) : Mor₂Iso
+  | structuralAtom (α : StructuralAtom) : Mor₂Iso
   | comp (e : Expr) (f g h : Mor₁) (η θ : Mor₂Iso) : Mor₂Iso
   | whiskerLeft (e : Expr) (f g h : Mor₁) (η : Mor₂Iso) : Mor₂Iso
   | whiskerRight (e : Expr) (f g : Mor₁) (η : Mor₂Iso) (h : Mor₁) : Mor₂Iso
@@ -137,7 +141,7 @@ export MonadCoherehnceHom (unfoldM)
 
 end CoherenceHom
 
-def StructuralIsoAtom.e : StructuralIsoAtom → Expr
+def StructuralAtom.e : StructuralAtom → Expr
   | .associator e .. => e
   | .leftUnitor e .. => e
   | .rightUnitor e .. => e
@@ -146,14 +150,16 @@ def StructuralIsoAtom.e : StructuralIsoAtom → Expr
 
 open MonadMor₁
 
-def StructuralIsoAtom.srcM {m : Type → Type} [Monad m] [MonadMor₁ m] : StructuralIsoAtom → m Mor₁
+variable {m : Type → Type} [Monad m]
+
+def StructuralAtom.srcM [MonadMor₁ m] : StructuralAtom → m Mor₁
   | .associator _ f g h => do comp₁M (← comp₁M f g) h
   | .leftUnitor _ f => do comp₁M (← id₁M f.src) f
   | .rightUnitor _ f => do comp₁M f (← id₁M f.tgt)
   | .id _ f => return f
   | .coherenceHom α => return α.src
 
-def StructuralIsoAtom.tgtM {m : Type → Type} [Monad m] [MonadMor₁ m] : StructuralIsoAtom → m Mor₁
+def StructuralAtom.tgtM [MonadMor₁ m] : StructuralAtom → m Mor₁
   | .associator _ f g h => do comp₁M f (← comp₁M g h)
   | .leftUnitor _ f => return f
   | .rightUnitor _ f => return f
@@ -191,18 +197,18 @@ def Mor₂Iso.tgtM {m : Type → Type} [Monad m] [MonadMor₁ m] : Mor₂Iso →
   | .of η => return η.tgt
 
 /-- A monad equipped with the ability to manipulate structural isomorphism. -/
-class MonadStructuralIsoAtom (m : Type → Type) where
-  associatorM (f g h : Mor₁) : m StructuralIsoAtom
-  leftUnitorM (f : Mor₁) : m StructuralIsoAtom
-  rightUnitorM (f : Mor₁) : m StructuralIsoAtom
-  id₂M (f : Mor₁) : m StructuralIsoAtom
+class MonadStructuralAtom (m : Type → Type) where
+  associatorM (f g h : Mor₁) : m StructuralAtom
+  leftUnitorM (f : Mor₁) : m StructuralAtom
+  rightUnitorM (f : Mor₁) : m StructuralAtom
+  id₂M (f : Mor₁) : m StructuralAtom
   coherenceHomM (f g : Mor₁) (inst : Expr) : m CoherenceHom
 
-namespace StructuralIsoAtom
+namespace StructuralAtom
 
-export MonadStructuralIsoAtom (associatorM leftUnitorM rightUnitorM id₂M)
+export MonadStructuralAtom (associatorM leftUnitorM rightUnitorM id₂M)
 
-end StructuralIsoAtom
+end StructuralAtom
 
 /-- Type of normalized 1-morphisms, represented by (reversed) lists. -/
 inductive NormalizedHom : Type
@@ -224,10 +230,6 @@ def NormalizedHom.src : NormalizedHom → Obj
 def NormalizedHom.tgt : NormalizedHom → Obj
   | NormalizedHom.nil _ a => a
   | NormalizedHom.cons _ _  f => f.tgt
-
-open MonadMor₁
-
-variable {m : Type → Type} [Monad m]
 
 /-- Construct the `NormalizedHom.nil` term in `m`. -/
 def normalizedHom.nilM [MonadMor₁ m] (a : Obj) : m NormalizedHom := do
@@ -285,7 +287,6 @@ def Mor₂.e : Mor₂ → Expr
   | .horizontalComp e .. => e
   | .coherenceComp e .. => e
   | .of η => η.e
-  -- | .coherenceHom e .. => e
 
 def Mor₂.isoLift? : Mor₂ → Option IsoLift
   | .isoHom _ isoLift .. => some isoLift
@@ -356,22 +357,22 @@ end Mor₂
 
 namespace Mor₂Iso
 
-variable {m : Type → Type} [Monad m] [MonadStructuralIsoAtom m]
+variable {m : Type → Type} [Monad m] [MonadStructuralAtom m]
 
 def associatorM' (f g h : Mor₁) : m Mor₂Iso := do
-  return .structuralAtom <| ← MonadStructuralIsoAtom.associatorM f g h
+  return .structuralAtom <| ← MonadStructuralAtom.associatorM f g h
 
 def leftUnitorM' (f : Mor₁) : m Mor₂Iso := do
-  return .structuralAtom <| ← MonadStructuralIsoAtom.leftUnitorM f
+  return .structuralAtom <| ← MonadStructuralAtom.leftUnitorM f
 
 def rightUnitorM' (f : Mor₁) : m Mor₂Iso := do
-  return .structuralAtom <| ← MonadStructuralIsoAtom.rightUnitorM f
+  return .structuralAtom <| ← MonadStructuralAtom.rightUnitorM f
 
 def id₂M' (f : Mor₁) : m Mor₂Iso := do
-  return .structuralAtom <| ← MonadStructuralIsoAtom.id₂M f
+  return .structuralAtom <| ← MonadStructuralAtom.id₂M f
 
 def coherenceHomM' (f g : Mor₁) (inst : Expr) : m Mor₂Iso := do
-  return .structuralAtom <| .coherenceHom <| ← MonadStructuralIsoAtom.coherenceHomM f g inst
+  return .structuralAtom <| .coherenceHom <| ← MonadStructuralAtom.coherenceHomM f g inst
 
 end Mor₂Iso
 
@@ -410,14 +411,14 @@ def WhiskerLeft.e : WhiskerLeft → Expr
   | .of η => η.e
   | .whisker e .. => e
 
-abbrev StructuralIso := Mor₂Iso
+abbrev Structural := Mor₂Iso
 
 /-- Normalized expressions for 2-morphisms. -/
 inductive NormalExpr : Type
   /-- Construct the expression for a structural 2-morphism. -/
-  | nil (e : Expr) (α : StructuralIso) : NormalExpr
+  | nil (e : Expr) (α : Structural) : NormalExpr
   /-- Construct the normalized expression of a 2-morphism `α ≫ η ≫ ηs` recursively. -/
-  | cons (e : Expr) (α : StructuralIso) (η : WhiskerLeft) (ηs : NormalExpr) : NormalExpr
+  | cons (e : Expr) (α : Structural) (η : WhiskerLeft) (ηs : NormalExpr) : NormalExpr
   deriving Inhabited
 
 def NormalExpr.e : NormalExpr → Expr
@@ -434,12 +435,8 @@ class MonadWhiskerLeft (m : Type → Type) extends MonadHorizontalComp m where
   whiskerLeftM (f : Atom₁) (η : WhiskerLeft) : m WhiskerLeft
 
 class MonadNormalExpr (m : Type → Type) extends MonadWhiskerLeft m where
-  nilM (α : StructuralIso) : m NormalExpr
-  consM (headStructural : StructuralIso) (η : WhiskerLeft) (ηs : NormalExpr) : m NormalExpr
-
-variable {m : Type → Type} [Monad m] [MonadMor₁ m]
-
-open MonadMor₁
+  nilM (α : Structural) : m NormalExpr
+  consM (headStructural : Structural) (η : WhiskerLeft) (ηs : NormalExpr) : m NormalExpr
 
 /-- The domain of a 2-morphism. -/
 def WhiskerRight.srcM : WhiskerRight → m Mor₁
@@ -471,24 +468,6 @@ def WhiskerLeft.tgtM : WhiskerLeft → m Mor₁
   | WhiskerLeft.of η => η.tgtM
   | WhiskerLeft.whisker _ f η => do comp₁M (.of f) (← η.tgtM)
 
--- /-- The domain of a 2-morphism. -/
--- def Structural.srcM : Structural → m Mor₁
---   | .atom η => η.srcM
---   -- | .id _ f => return f
---   | .comp _ α _ => α.srcM
---   | .whiskerLeft _ f η => do comp₁M f (← η.srcM)
---   | .whiskerRight _ η f => do comp₁M (← η.srcM) f
---   | .horizontalComp _ α β => do comp₁M (← α.srcM) (← β.srcM)
-
--- /-- The codomain of a 2-morphism. -/
--- def Structural.tgtM : Structural → m Mor₁
---   | .atom η => η.tgtM
---   -- | .id _ f => return f
---   | .comp _ _ β => β.tgtM
---   | .whiskerLeft _ f η => do comp₁M f (← η.tgtM)
---   | .whiskerRight _ η f => do comp₁M (← η.tgtM) f
---   | .horizontalComp _ α β => do comp₁M (← α.tgtM) (← β.tgtM)
-
 /-- The domain of a 2-morphism. -/
 def NormalExpr.srcM : NormalExpr → m Mor₁
   | NormalExpr.nil _ η => η.srcM
@@ -499,75 +478,52 @@ def NormalExpr.tgtM : NormalExpr → m Mor₁
   | NormalExpr.nil _ η => η.tgtM
   | NormalExpr.cons _ _ _ ηs => ηs.tgtM
 
-variable [MonadStructuralIsoAtom m]
+section
 
-variable [MonadMor₂Iso m]
-variable [MonadNormalExpr m]
+variable [MonadStructuralAtom m] [MonadMor₂Iso m] [MonadNormalExpr m]
 
 /-- The identity 2-morphism as a term of `normalExpr`. -/
 def NormalExpr.idM (f : Mor₁) : m NormalExpr := do
-  MonadNormalExpr.nilM <| .structuralAtom <| ← MonadStructuralIsoAtom.id₂M f
+  MonadNormalExpr.nilM <| .structuralAtom <| ← MonadStructuralAtom.id₂M f
 
 /-- The associator as a term of `normalExpr`. -/
 def NormalExpr.associatorM (f g h : Mor₁) : m NormalExpr := do
-  MonadNormalExpr.nilM <| .structuralAtom <| ← MonadStructuralIsoAtom.associatorM f g h
+  MonadNormalExpr.nilM <| .structuralAtom <| ← MonadStructuralAtom.associatorM f g h
 
 /-- The inverse of the associator as a term of `normalExpr`. -/
 def NormalExpr.associatorInvM (f g h : Mor₁) : m NormalExpr := do
-  MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <| .structuralAtom <| ← MonadStructuralIsoAtom.associatorM f g h
+  MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <| .structuralAtom <| ← MonadStructuralAtom.associatorM f g h
 
 /-- The left unitor as a term of `normalExpr`. -/
 def NormalExpr.leftUnitorM (f : Mor₁) : m NormalExpr := do
-  MonadNormalExpr.nilM <| .structuralAtom <| ← MonadStructuralIsoAtom.leftUnitorM f
+  MonadNormalExpr.nilM <| .structuralAtom <| ← MonadStructuralAtom.leftUnitorM f
 
 /-- The inverse of the left unitor as a term of `normalExpr`. -/
 def NormalExpr.leftUnitorInvM (f : Mor₁) : m NormalExpr := do
-  MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <| .structuralAtom <| ← MonadStructuralIsoAtom.leftUnitorM f
+  MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <| .structuralAtom <| ← MonadStructuralAtom.leftUnitorM f
 
 /-- The right unitor as a term of `normalExpr`. -/
 def NormalExpr.rightUnitorM (f : Mor₁) : m NormalExpr := do
-  MonadNormalExpr.nilM <| .structuralAtom <| ← MonadStructuralIsoAtom.rightUnitorM f
+  MonadNormalExpr.nilM <| .structuralAtom <| ← MonadStructuralAtom.rightUnitorM f
 
 /-- The inverse of the right unitor as a term of `normalExpr`. -/
 def NormalExpr.rightUnitorInvM (f : Mor₁) : m NormalExpr := do
-  MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <| .structuralAtom <| ← MonadStructuralIsoAtom.rightUnitorM f
+  MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <| .structuralAtom <| ← MonadStructuralAtom.rightUnitorM f
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeft` expression. -/
 def NormalExpr.ofM [MonadNormalExpr m] (η : WhiskerLeft) : m NormalExpr := do
-  MonadNormalExpr.consM ((.structuralAtom <| ← MonadStructuralIsoAtom.id₂M (← η.srcM))) η
-    (← MonadNormalExpr.nilM ((.structuralAtom <| ← MonadStructuralIsoAtom.id₂M (← η.tgtM))))
+  MonadNormalExpr.consM ((.structuralAtom <| ← MonadStructuralAtom.id₂M (← η.srcM))) η
+    (← MonadNormalExpr.nilM ((.structuralAtom <| ← MonadStructuralAtom.id₂M (← η.tgtM))))
 
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
 def NormalExpr.ofAtomM [MonadNormalExpr m] (η : Atom) : m NormalExpr :=
   NormalExpr.ofM <| .of <| .of <| .of η
 
+end
+
 /-- Convert a `NormalExpr` expression into a list of `WhiskerLeft` expressions. -/
 def NormalExpr.toList : NormalExpr → List WhiskerLeft
   | NormalExpr.nil _ _ => []
   | NormalExpr.cons _ _ η ηs => η :: NormalExpr.toList ηs
-
-def WhiskerRight.toMor₂ [MonadMor₂ m] : WhiskerRight → m Mor₂
-  | WhiskerRight.of η => return .of η
-  | WhiskerRight.whisker _ η f => do
-    MonadMor₂.whiskerRightM (← η.toMor₂) (.of f)
-
-def HorizontalComp.toMor₂ [MonadMor₂ m] : HorizontalComp → m Mor₂
-  | HorizontalComp.of η => do η.toMor₂
-  | HorizontalComp.cons _ η ηs => do
-    MonadMor₂.horizontalCompM (← η.toMor₂) (← ηs.toMor₂)
-
-def WhiskerLeft.toMor₂ [MonadMor₂ m] : WhiskerLeft → m Mor₂
-  | WhiskerLeft.of η => do η.toMor₂
-  | WhiskerLeft.whisker _ f η => do
-    MonadMor₂.whiskerLeftM (.of f) (← η.toMor₂)
-
-class MkCoherenceHom (m : Type → Type) where
-  ofStructuralIso (α : StructuralIso) : m CoherenceHom
-
-def NormalExpr.toMor₂ [MkCoherenceHom m] [MonadMor₂ m] : NormalExpr → m Mor₂
-  | NormalExpr.nil _ α => do
-    MonadMor₂.homM α
-  | NormalExpr.cons _ α η ηs => do
-    MonadMor₂.coherenceCompM (← MkCoherenceHom.ofStructuralIso α) (← η.toMor₂) (← ηs.toMor₂)
 
 end Normalize

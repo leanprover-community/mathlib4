@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.Opposite
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.CoherenceNew
 import Mathlib.CategoryTheory.CommSq
 
 /-!

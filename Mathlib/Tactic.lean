@@ -26,7 +26,7 @@ import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
-import Mathlib.Tactic.CategoryTheory.CoherenceDefEq
+import Mathlib.Tactic.CategoryTheory.CoherenceNew
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence

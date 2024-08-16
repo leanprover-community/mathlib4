@@ -5,7 +5,7 @@ Authors: Yuma Mizuno
 -/
 import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Presentation.Expr
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.CoherenceNew
 
 /-!
 # String Diagram Widget
@@ -292,17 +292,16 @@ def sty :=
 
 open scoped Jsx in
 /-- Construct a string diagram from the expression of a 2-morphism. -/
-def fromExpr (e : Expr) :
-    MetaM Html := do
+def fromExpr (e : Expr) : MetaM Html := do
   let k ← BicategoryLike.mkKind e
   let (nodes, strands) ← match k with
     | .monoidal =>
-      let ctx ← Context.mkContext (ρ := Monoidal.Context) e
+      let ctx ← mkContext (ρ := Monoidal.Context) e
       CoherenceM.run ctx do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
         return (← e'.nodes, ← e'.strands)
     | .bicategory =>
-      let ctx ← Context.mkContext (ρ := Bicategory.Context) e
+      let ctx ← mkContext (ρ := Bicategory.Context) e
       CoherenceM.run ctx do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
         return (← e'.nodes, ← e'.strands)

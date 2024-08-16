@@ -1,4 +1,4 @@
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.CoherenceNew
 
 open CategoryTheory
 
@@ -15,16 +15,6 @@ example (X₁ X₂ : C) :
       (𝟙 (𝟙_ C) ⊗ (α_ (𝟙_ C) X₁ X₂).inv) =
     𝟙 (𝟙_ C) ⊗ ((λ_ X₁).inv ⊗ 𝟙 X₂) := by
   pure_coherence
-  -- This is just running:
-  -- change projectMap id _ _ (LiftHom.lift (((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫
-  --     (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫ (𝟙 (𝟙_ C) ⊗ (α_ (𝟙_ C) X₁ X₂).inv))) =
-  --   projectMap id _ _ (LiftHom.lift (𝟙 (𝟙_ C) ⊗ ((λ_ X₁).inv ⊗ 𝟙 X₂)))
-  -- exact congrArg _ (Subsingleton.elim _ _)
-
-example {Y Z : C} (f : Y ⟶ Z) (g) (w : false) : (λ_ _).hom ≫ f = g := by
-  liftable_prefixes
-  guard_target = (𝟙 _ ≫ (λ_ _).hom) ≫ f = (𝟙 _) ≫ g
-  cases w
 
 -- `coherence`
 
@@ -46,7 +36,6 @@ example (W X Y Z : C) (f) :
 
 example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
     f ⊗≫ g = f ≫ (α_ _ _ _).inv ≫ g := by
-  dsimp [monoidalComp, MonoidalCoherence.hom]
   coherence
 
 example : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by coherence
@@ -89,7 +78,7 @@ open scoped Bicategory
 
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
-example {a : B} (f : a ⟶ a) : 𝟙 f ▷ f = 𝟙 (f ≫ f) := by whisker_simps
+example {a : B} (f : a ⟶ a) : 𝟙 f ▷ f = 𝟙 (f ≫ f) := by bicategory_coherence
 
 example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by bicategory_coherence
 example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by bicategory_coherence
