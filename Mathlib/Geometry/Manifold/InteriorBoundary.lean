@@ -181,6 +181,15 @@ lemma Boundaryless.iff_boundary_eq_empty : I.boundary M = ∅ ↔ BoundarylessMa
   rw [h]
   trivial
 
+/-- `M` is boundaryless iff its boundary is empty. -/
+lemma Boundaryless.iff_boundary_eq_empty : I.boundary M = ∅ ↔ BoundarylessManifold I M := by
+  refine ⟨fun h ↦ { isInteriorPoint' := ?_ }, fun a ↦ boundary_eq_empty I⟩
+  intro x
+  show x ∈ I.interior M
+  rw [← compl_interior, compl_empty_iff] at h
+  rw [h]
+  trivial
+
 /-- Manifolds with empty boundary are boundaryless. -/
 lemma Boundaryless.of_boundary_eq_empty (h : I.boundary M = ∅) : BoundarylessManifold I M :=
   (Boundaryless.iff_boundary_eq_empty (I := I)).mp h
