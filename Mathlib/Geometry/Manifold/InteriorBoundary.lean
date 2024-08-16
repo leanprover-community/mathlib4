@@ -102,6 +102,10 @@ lemma compl_interior : (I.interior M)ᶜ = I.boundary M:= by
   apply compl_unique ?_ I.interior_union_boundary_eq_univ
   exact disjoint_iff_inter_eq_empty.mp (I.disjoint_interior_boundary)
 
+/-- The interior is the complement of the boundary. -/
+lemma compl_boundary : (I.boundary M)ᶜ = I.interior M:= by
+  rw [← compl_interior, compl_compl]
+
 variable {I} in
 lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
     range I ∈ 𝓝 (extChartAt I x x) := by
