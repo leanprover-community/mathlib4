@@ -1107,6 +1107,9 @@ namespace AEStronglyMeasurable
 variable {m : MeasurableSpace α} {μ ν : Measure α} [TopologicalSpace β] [TopologicalSpace γ]
   {f g : α → β}
 
+lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ :=
+  ⟨_, .of_finite _, ae_eq_rfl⟩
+
 section Mk
 
 /-- A `StronglyMeasurable` function such that `f =ᵐ[μ] hf.mk f`. See lemmas

@@ -47,32 +47,8 @@ instance instLinearOrder : LinearOrder ℤ where
   decidableLE := by infer_instance
   decidableLT := by infer_instance
 
-theorem neg_mul_eq_neg_mul_symm (a b : ℤ) : -a * b = -(a * b) := (Int.neg_mul_eq_neg_mul a b).symm
-
-theorem mul_neg_eq_neg_mul_symm (a b : ℤ) : a * -b = -(a * b) := (Int.neg_mul_eq_mul_neg a b).symm
+@[deprecated (since := "2024-07-27")] alias mul_neg_eq_neg_mul_symm := Int.mul_neg
+@[deprecated (since := "2024-07-27")] alias neg_mul_eq_neg_mul_symm := Int.neg_mul
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) : a = 0 ∨ b = 0 :=
-  match lt_trichotomy 0 a with
-  | Or.inl hlt₁ =>
-    match lt_trichotomy 0 b with
-    | Or.inl hlt₂ => by
-      have : 0 < a * b := Int.mul_pos hlt₁ hlt₂
-      rw [h] at this
-      exact absurd this (lt_irrefl _)
-    | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
-    | Or.inr (Or.inr hgt₂) => by
-      have : 0 > a * b := Int.mul_neg_of_pos_of_neg hlt₁ hgt₂
-      rw [h] at this
-      exact absurd this (lt_irrefl _)
-  | Or.inr (Or.inl heq₁) => Or.inl heq₁.symm
-  | Or.inr (Or.inr hgt₁) =>
-    match lt_trichotomy 0 b with
-    | Or.inl hlt₂ => by
-      have : 0 > a * b := Int.mul_neg_of_neg_of_pos hgt₁ hlt₂
-      rw [h] at this
-      exact absurd this (lt_irrefl _)
-    | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
-    | Or.inr (Or.inr hgt₂) => by
-      have : 0 < a * b := Int.mul_pos_of_neg_of_neg hgt₁ hgt₂
-      rw [h] at this
-      exact absurd this (lt_irrefl _)
+  Int.mul_eq_zero.mp h

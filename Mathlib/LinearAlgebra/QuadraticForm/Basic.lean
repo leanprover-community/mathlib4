@@ -643,7 +643,7 @@ end QuadraticMap
 
 Over a commutative ring with an inverse of 2, the theory of quadratic maps is
 basically identical to that of symmetric bilinear maps. The map from quadratic
-maps to bilinear maps giving this identification is called the <`associated`
+maps to bilinear maps giving this identification is called the `QuadraticMap.associated`
 quadratic map.
 -/
 
