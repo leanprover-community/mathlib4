@@ -82,7 +82,7 @@ lemma tensorUnit : 𝟙_ Cat = Cat.chosenTerminal := rfl
 lemma associator_hom (X : Cat )(Y : Cat )(Z : Cat ) :
     (associator X Y Z).hom = Functor.prod' (Prod.fst (X × Y) Z ⋙ Prod.fst X Y )
       ((Functor.prod' ((Prod.fst (X × Y) Z ⋙ Prod.snd X Y))
-      (Prod.snd (X × Y) Z :(X × Y) × Z  ⥤ Z))) := rfl
+      (Prod.snd (X × Y) Z :(X × Y) × Z ⥤ Z))) := rfl
 
 lemma associator_inv (X : Cat )(Y : Cat )(Z : Cat ) :
     (associator X Y Z).inv = Functor.prod' ( Functor.prod' (Prod.fst X (Y × Z) : X × (Y × Z) ⥤ X)
