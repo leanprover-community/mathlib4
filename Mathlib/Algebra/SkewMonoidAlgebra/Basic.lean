@@ -6,12 +6,17 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 import Mathlib.Data.Finsupp.Basic
 
 /-!
-This file presents a skewed version of `Mathlib.Algebra.MonoidAlgebra.Basic`.
+This file presents a skewed version of `Mathlib.Algebra.MonoidAlgebra.Basic` with an
+irreducible definition.
 
-We define `SkewMonoidAlgebra k G` attached with a skewed convolution product.
+The definition is separated from `Finsupp` by wrapping it with a structure.
+For #15878, the goal is only to get this separation right. This means that
+most of what makes these objects skewed is currently missing from this PR.
+
+The goal will then be to define a skewed convolution product on `SkewMonoidAlgebra k G`.
 Here, the product of two elements `f g : SkewMonoidAlgebra k G` is the finitely supported
 function whose value at `a` is the sum of `f x * (x • g y)` over all pairs `x, y`
-such that `x * y = a`.
+such that `x * y = a`. (See #10541 at line 558 for an implementation.)
 
 The associativity of the skewed multiplication depends on the `[MulSemiringAction G k]` instance.
 In particular, this means that unlike in `Mathlib.Algebra.MonoidAlgebra.Basic`, `G` will
@@ -51,11 +56,11 @@ private irreducible_def smul {S : Type*} [SMulZeroClass S k] :
     S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | s, ⟨b⟩ => ⟨s • b⟩
 
-instance zero : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
+instance instZero : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
-instance add' : Add (SkewMonoidAlgebra k G) := ⟨add⟩
+instance instAdd' : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
-instance smulZeroClass {S : Type*} [SMulZeroClass S k] :
+instance instSMulZeroClass {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
   smul_zero a := by simp only [smul_def]; exact congr_arg ofFinsupp (smul_zero a)
@@ -118,17 +123,17 @@ theorem toFinsupp_eq_zero {a : SkewMonoidAlgebra k G} : a.toFinsupp = 0 ↔ a = 
 theorem ofFinsupp_eq_zero {a} : (⟨a⟩ : SkewMonoidAlgebra k G) = 0 ↔ a = 0 := by
   rw [← ofFinsupp_zero, ofFinsupp_inj]
 
-instance inhabited : Inhabited (SkewMonoidAlgebra k G) := ⟨0⟩
+instance instInhabited : Inhabited (SkewMonoidAlgebra k G) := ⟨0⟩
 
-instance nontrivial [Nontrivial k] [Nonempty G] :
+instance instNontrivial [Nontrivial k] [Nonempty G] :
     Nontrivial (SkewMonoidAlgebra k G) := Function.Injective.nontrivial ofFinsupp_injective
 
-instance addCommMonoid : AddCommMonoid (SkewMonoidAlgebra k G) where
-    __ := toFinsupp_injective.addCommMonoid _ toFinsupp_zero toFinsupp_add
-      (fun _ _ => toFinsupp_smul _ _)
-    toAdd  := SkewMonoidAlgebra.add'
-    toZero := SkewMonoidAlgebra.zero
-    nsmul  := (· • ·)
+instance instAddCommMonoid : AddCommMonoid (SkewMonoidAlgebra k G) where
+  __ := toFinsupp_injective.addCommMonoid _ toFinsupp_zero toFinsupp_add
+    (fun _ _ => toFinsupp_smul _ _)
+  toAdd  := SkewMonoidAlgebra.instAdd'
+  toZero := SkewMonoidAlgebra.instZero
+  nsmul  := (· • ·)
 
 section Support
 
