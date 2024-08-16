@@ -478,7 +478,7 @@ theorem IsRotated.map {β : Type*} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f :
   use n
 
 theorem IsRotated.cons_getLast_dropLast
-    (L : List α) (hL : L ≠ []) : (L.getLast hL :: L.dropLast) ~r L := by
+    (L : List α) (hL : L ≠ []) : L.getLast hL :: L.dropLast ~r L := by
   induction L using List.reverseRecOn with
   | nil => simp at hL
   | append_singleton a L _ =>
