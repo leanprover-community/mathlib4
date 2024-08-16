@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
 # Order of an element
