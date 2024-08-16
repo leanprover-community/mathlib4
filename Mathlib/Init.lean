@@ -11,13 +11,14 @@ Here are some general guidelines:
   any exception to this rule should by accompanied by a comment explaining the transitive imports.
 -/
 
--- All these linters are meant to run on all of mathlib, are active by default,
--- and have no imports beyond `Lean`.
-import Mathlib.Tactic.Linter.OldObtain
-import Mathlib.Tactic.Linter.RefineLinter
+-- All these linters are meant to run on all of mathlib,
+-- are syntax linters active by default (no need to be imported as early as possible),
+-- and have no imports beyond `Lean` unless noted below.
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
--- this file imports Batteries.Tactic.Lint, where `env_linter` attribute is defined
+-- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
 import Mathlib.Tactic.Linter.Lint
+import Mathlib.Tactic.Linter.OldObtain
+import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
