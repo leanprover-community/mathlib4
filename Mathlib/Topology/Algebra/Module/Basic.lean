@@ -338,7 +338,7 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
 def linearMapOfTendsto (f : M₁ → M₂) (g : α → M₁ →ₛₗ[σ] M₂) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →ₛₗ[σ] M₂ :=
   linearMapOfMemClosureRangeCoe f <|
-    mem_closure_of_tendsto h <| eventually_of_forall fun _ => Set.mem_range_self _
+    mem_closure_of_tendsto h <| Eventually.of_forall fun _ => Set.mem_range_self _
 
 variable (M₁ M₂ σ)
 

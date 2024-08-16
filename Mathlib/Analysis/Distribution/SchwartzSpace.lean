@@ -1070,7 +1070,7 @@ lemma integrable_pow_mul (f : 𝓢(D, V))
 
 lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
-    (eventually_of_forall (fun _ ↦ by simp))
+    (Eventually.of_forall (fun _ ↦ by simp))
 
 variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/

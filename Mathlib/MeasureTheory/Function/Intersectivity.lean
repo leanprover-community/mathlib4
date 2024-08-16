@@ -83,7 +83,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
   have : ∫⁻ x, limsup (f · x) atTop ∂μ ≤ μ univ := by
     rw [← lintegral_one]
     exact lintegral_mono fun a ↦ limsup_le_of_le ⟨0, fun R _ ↦ bot_le⟩ $
-      eventually_of_forall fun n ↦ hf₁ _ _
+      Eventually.of_forall fun n ↦ hf₁ _ _
   -- By the first moment method, there exists some `x ∉ N` such that `limsup f n x` is at least `r`.
   obtain ⟨x, hxN, hx⟩ := exists_not_mem_null_laverage_le hμ
     (ne_top_of_le_ne_top (measure_ne_top μ univ) this) hN₀
@@ -107,7 +107,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
           using Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
     · simp_rw [← hu.mem_toFinset]
       exact hN₁ _ ⟨x, mem_iInter₂.2 fun n hn ↦ hux $ hu.mem_toFinset.1 hn, hxN⟩
-  · refine eventually_of_forall fun n ↦ ?_
+  · refine Eventually.of_forall fun n ↦ ?_
     obtain rfl | _ := eq_zero_or_neZero μ
     · simp
     · rw [← laverage_const μ 1]
