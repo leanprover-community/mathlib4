@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Relation.Trans
+import Mathlib.Tactic.GuardGoalNums
 
 set_option autoImplicit true
 -- testing that the attribute is recognized and used
@@ -80,3 +81,27 @@ def MyLE (n m : Nat) := ∃ k, n + k = m
 
 example {n m k : Nat} (h1 : MyLE n m) (h2 : MyLE m k) : MyLE n k := by
   trans <;> assumption
+
+/-- `trans` for implications. -/
+example {A B C : Prop} (h : A → B) (g : B → C) : A → C := by
+  trans B
+  · guard_target =ₛ A → B -- ensure we have `B` and not a free metavariable.
+    exact h
+  · guard_target =ₛ B → C
+    exact g
+
+/-- `trans` for arrows between types. -/
+example {A B C : Type} (h : A → B) (g : B → C) : A → C := by
+  trans
+  guard_goal_nums 3 -- 3rd goal is the middle term
+  · exact h
+  · exact g
+
+universe u v w
+
+/-- `trans` for arrows between types. -/
+example {A : Type u} {B : Type v} {C : Type w} (h : A → B) (g : B → C) : A → C := by
+  trans
+  guard_goal_nums 3 -- 3rd goal is the middle term
+  · exact h
+  · exact g
