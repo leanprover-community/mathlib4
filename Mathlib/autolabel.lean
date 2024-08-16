@@ -32,6 +32,28 @@ structure Label where
 
 namespace Label
 
+/--
+`findLabel? l modifiedFile` takes as input a `Label` `l` and a string `modifiedFile` and checks
+if there is a string in `l.dirs` that is a prefix to `s`.
+If it finds (at least) one, then it returns `some l.label`, otherwise it returns `none`.
+-/
+def findLabel? (l : Label) (modifiedFile : String) : Option String :=
+  if (l.dirs.map (·.isPrefixOf modifiedFile)).any (·) then some l.label else none
+
+/--
+`findLabels ls modifiedFile` takes as input an array of  `Label`s `ls` and a string `modifiedFile`
+and returns all the applicable labels among `ls` for `modifiedFile`.
+-/
+def findLabels (ls : Array Label) (modifiedFile : String) : Array String :=
+  ls.filterMap (findLabel? · modifiedFile)
+
+/--
+`getLabels ls gitDiff` takes as input an array of  `Label`s `ls` and an array of strings
+`gitDiff` and returns all the labels among `ls` that are applicable to some entry of ` applicable`.
+-/
+def getLabels (ls : Array Label) (gitDiff : Array String) : Array String :=
+  gitDiff.foldl (· ++ findLabels ls ·) #[]
+
 /-- Defines the `labelsExt` extension for adding the `Name` of a `Label` to the environment. -/
 initialize labelsExt :
     PersistentEnvExtension Label Label (Array Label) ←
@@ -89,27 +111,5 @@ It displays all the labels that have already been declared.
 elab "check_labels" : command => do
   for l in labelsExt.getState (← getEnv) do
     logInfo m!"label: {l.label}\ndirs: {l.dirs}\nexclusions: {l.exclusions}"
-
-/--
-`findLabel? l modifiedFile` takes as input a `Label` `l` and a string `modifiedFile` and checks
-if there is a string in `l.dirs` that is a prefix to `s`.
-If it finds (at least) one, then it returns `some l.label`, otherwise it returns `none`.
--/
-def findLabel? (l : Label) (modifiedFile : String) : Option String :=
-  if (l.dirs.map (·.isPrefixOf modifiedFile)).any (·) then some l.label else none
-
-/--
-`findLabels ls modifiedFile` takes as input an array of  `Label`s `ls` and a string `modifiedFile`
-and returns all the applicable labels among `ls` for `modifiedFile`.
--/
-def findLabels (ls : Array Label) (modifiedFile : String) : Array String :=
-  ls.filterMap (findLabel? · modifiedFile)
-
-/--
-`getLabels ls gitDiff` takes as input an array of  `Label`s `ls` and an array of strings
-`gitDiff` and returns all the labels among `ls` that are applicable to some entry of ` applicable`.
--/
-def getLabels (ls : Array Label) (gitDiff : Array String) : Array String :=
-  gitDiff.foldl (· ++ findLabels ls ·) #[]
 
 end AutoLabel.Label
