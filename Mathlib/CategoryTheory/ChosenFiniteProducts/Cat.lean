@@ -60,7 +60,7 @@ lemma whiskerLeft (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
     X ◁ f = (𝟭 X).prod f   := rfl
 
 lemma whiskerLeft_fst (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
-    (X ◁ f) ⋙ Prod.fst _ _ = Prod.fst _ _   := rfl
+    (X ◁ f) ⋙ Prod.fst _ _ = Prod.fst _ _ := rfl
 
 lemma whiskerLeft_snd (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
     (X ◁ f) ⋙ Prod.snd _ _ = Prod.snd _ _ ⋙ f   := rfl
