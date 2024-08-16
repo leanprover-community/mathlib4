@@ -60,7 +60,7 @@ lemma IsGLB.exists_of_nonempty_of_not_isPredLimit
     ∃ i, f i = x := hf.mem_of_nonempty_of_not_isPredLimit (Set.range_nonempty f) hx
 
 open Classical in
-noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [IsWellOrder α (· < ·)] :
+noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α] :
     SuccOrder α where
   succ a := if IsMax a then a else sInf {b | a < b}
   le_succ a := by

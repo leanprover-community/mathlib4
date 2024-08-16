@@ -663,7 +663,7 @@ instance : WellFoundedLT Cardinal.{u} :=
 instance wo : @IsWellOrder Cardinal.{u} (· < ·) where
 
 instance : ConditionallyCompleteLinearOrderBot Cardinal :=
-  IsWellOrder.conditionallyCompleteLinearOrderBot _
+  WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
@@ -685,11 +685,9 @@ lemma iInf_eq_zero_iff {ι : Sort*} {f : ι → Cardinal} :
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 instance : SuccOrder Cardinal := ConditionallyCompleteLinearOrder.toSuccOrder
 
-theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } := by
-  classical
-  change ite _ _ _ = _
-  simp
-
+theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
+  dif_neg <| not_isMax c
+  
 theorem succ_pos : ∀ c : Cardinal, 0 < succ c :=
   bot_lt_succ
 
