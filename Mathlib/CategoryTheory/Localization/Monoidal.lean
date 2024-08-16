@@ -263,10 +263,11 @@ lemma pentagon_aux₃ {X₁ X₂ X₃ Y₃ : LocalizedMonoidal L W ε} (i : X₃
   simp only [← assoc, associator_naturality₃]
   simp [← whiskerRight_comp, ← whiskerLeft_comp, whiskerRight_id, whiskerLeft_id]
 
+instance : (L').EssSurj := Localization.essSurj L' W
+
 variable {L W ε} in
 lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
     Pentagon Y₁ Y₂ Y₃ Y₄ := by
-  have : (L').EssSurj := Localization.essSurj L' W
   obtain ⟨X₁, ⟨e₁⟩⟩ : ∃ X₁, Nonempty ((L').obj X₁ ≅ Y₁) := ⟨_, ⟨(L').objObjPreimageIso Y₁⟩⟩
   obtain ⟨X₂, ⟨e₂⟩⟩ : ∃ X₂, Nonempty ((L').obj X₂ ≅ Y₂) := ⟨_, ⟨(L').objObjPreimageIso Y₂⟩⟩
   obtain ⟨X₃, ⟨e₃⟩⟩ : ∃ X₃, Nonempty ((L').obj X₃ ≅ Y₃) := ⟨_, ⟨(L').objObjPreimageIso Y₃⟩⟩
@@ -354,7 +355,6 @@ lemma triangle_aux₂ {X Y  : LocalizedMonoidal L W ε} {X' Y' : C}
 variable {L W ε} in
 lemma triangle (X Y : LocalizedMonoidal L W ε) :
     (α_ X (𝟙_ _) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
-  have : (L').EssSurj := Localization.essSurj L' W
   obtain ⟨X', ⟨e₁⟩⟩ : ∃ X₁, Nonempty ((L').obj X₁ ≅ X) := ⟨_, ⟨(L').objObjPreimageIso X⟩⟩
   obtain ⟨Y', ⟨e₂⟩⟩ : ∃ X₂, Nonempty ((L').obj X₂ ≅ Y) := ⟨_, ⟨(L').objObjPreimageIso Y⟩⟩
   have := (((μ L W ε _ _).hom ⊗ 𝟙 _) ≫ (μ L W ε _ _).hom) ≫=
