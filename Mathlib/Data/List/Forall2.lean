@@ -324,4 +324,26 @@ theorem Sublist.sublistForall₂ {l₁ l₂ : List α} (h : l₁ <+ l₂) [IsRef
 theorem tail_sublistForall₂_self [IsRefl α Rₐ] (l : List α) : SublistForall₂ Rₐ l.tail l :=
   l.tail_sublist.sublistForall₂
 
+@[simp]
+theorem sublistForall₂_map_left_iff {f : γ → α} :
+    ∀ {l u}, SublistForall₂ R (map f l) u ↔ SublistForall₂ (fun c b => R (f c) b) l u := by
+  simp [sublistForall₂_iff]
+
+@[simp]
+theorem sublistForall₂_map_right_iff {f : γ → β} :
+    ∀ {l u}, SublistForall₂ R l (map f u) ↔ SublistForall₂ (fun a c => R a (f c)) l u := by
+  simp [sublistForall₂_iff]
+  intro l u
+  constructor
+  · rintro ⟨l1, h1, h2⟩
+    rw [sublist_map_iff] at h2
+    obtain ⟨l', hl1, hl2⟩ := h2
+    use l'
+    rw [hl2] at h1
+    simpa [hl1] using h1
+  · rintro ⟨l1, h1, h2⟩
+    use l1.map f
+    simp [h1, h2.map]
+
+
 end List
