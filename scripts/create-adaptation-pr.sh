@@ -61,7 +61,7 @@ echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 
 
 git checkout "bump/$BUMPVERSION"
 git pull
-git merge origin/master
+git merge origin/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -89,7 +89,7 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
-git merge origin/nightly-testing
+git merge origin/nightly-testing || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -161,7 +161,7 @@ echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch 
 
 git checkout nightly-testing
 git pull
-git merge "bump/nightly-$NIGHTLYDATE"
+git merge "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
