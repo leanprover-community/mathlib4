@@ -41,7 +41,7 @@ jobs:
             printf 'Actually doing it!\n'
             sed -i 's=  --\(IO.Process.run gh\)=  \1=' Mathlib/labels.lean
             #gh issue edit "$NUMBER" --add-label "$LABELS"
-            lake build Mathlib/labels.lean
+            lake build Mathlib.labels
           else
             printf 'More than one label found: not adding a label\n'
           fi
