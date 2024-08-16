@@ -75,10 +75,6 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     match ← expandLinearCombo ty e with
     | .const c => .const <$> `(-$c)
     | .proof p => .proof <$> ``(neg_pf $p)
-  | `(← $e) => do
-    match ← expandLinearCombo ty e with
-    | .const c => return .const c
-    | .proof p => .proof <$> ``(Eq.symm $p)
   | `($e₁ * $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
@@ -112,8 +108,8 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
 
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
 def elabLinearCombination
-    (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
-    (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
+    (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
+    Tactic.TacticM Unit := Tactic.withMainContext do
   let some (ty, _) := (← (← Tactic.getMainGoal).getType').eq? |
     throwError "'linear_combination' only proves equalities"
   let p ← match input with
@@ -124,17 +120,11 @@ def elabLinearCombination
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
   Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
-  if twoGoals then
-    `(tactic| (
-      refine eq_trans₃ $p ?a ?b
-      case' a => $norm:tactic
-      case' b => $norm:tactic))
-  else
-    match exp? with
-    | some n =>
-      if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
-      else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-    | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+  match exp? with
+  | some n =>
+    if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+    else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
+  | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
@@ -176,17 +166,6 @@ Note: The left and right sides of all the equalities should have the same
 * `linear_combination (exp := n) e` will take the goal to the `n`th power before subtracting the
   combination `e`. In other words, if the goal is `t1 = t2`, `linear_combination (exp := n) e`
   will change the goal to `(t1 - t2)^n = 0` before proceeding as above.
-  This feature is not supported for `linear_combination2`.
-* `linear_combination2 e` is the same as `linear_combination e` but it produces two
-  subgoals instead of one: rather than proving that `(a - b) - (a' - b') = 0` where
-  `a' = b'` is the linear combination from `e` and `a = b` is the goal,
-  it instead attempts to prove `a = a'` and `b = b'`.
-  Because it does not use subtraction, this form is applicable also to semirings.
-  * Note that a goal which is provable by `linear_combination e` may not be provable
-    by `linear_combination2 e`; in general you may need to add a coefficient to `e`
-    to make both sides match, as in `linear_combination2 e + c`.
-  * You can also reverse equalities using `← h`, so for example if `h₁ : a = b`
-    then `2 * (← h)` is a proof of `2 * b = 2 * a`.
 
 Example Usage:
 ```
@@ -225,10 +204,5 @@ syntax (name := linearCombination) "linear_combination"
 elab_rules : tactic
   | `(tactic| linear_combination $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
     elabLinearCombination tac n e
-
-@[inherit_doc linearCombination]
-syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
-elab_rules : tactic
-  | `(tactic| linear_combination2 $[(norm := $tac)]? $(e)?) => elabLinearCombination tac none e true
 
 end Mathlib.Tactic.LinearCombination

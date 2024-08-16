@@ -216,7 +216,7 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 :=
 --   and ℕ does not.
 example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
   fail_if_success linear_combination h1
-  linear_combination2 h1
+  exact h1
 
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab
