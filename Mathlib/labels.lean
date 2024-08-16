@@ -66,6 +66,6 @@ run_cmd
   let gh : IO.Process.SpawnArgs := {
     cmd := "gh"
 -- gh issue edit "$NUMBER" --add-label "$LABELS"
-    args := #["issue", "edit", s!"'{number}'", "--add-label", "'" ++ csLabs ++ "'"] }
+    args := #["issue", "edit", s!"{number}", "--add-label", csLabs] }
   --IO.Process.run gh
 end AutoLabel.Label
