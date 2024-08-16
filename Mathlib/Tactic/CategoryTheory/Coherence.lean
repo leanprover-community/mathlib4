@@ -293,6 +293,4 @@ elab_rules : tactic
 
 end Coherence
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

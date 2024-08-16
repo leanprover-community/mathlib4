@@ -414,6 +414,4 @@ elab (name := positivity) "positivity" : tactic => do
 
 end Positivity
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

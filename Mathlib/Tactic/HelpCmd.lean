@@ -316,3 +316,5 @@ syntax withPosition("#help " colGt &"command" "+"?
 macro_rules
   | `(#help command%$tk $[+%$more]? $(id)?) =>
     `(#help cat$[+%$more]? $(mkIdentFrom tk `command) $(id)?)
+
+end Mathlib.Tactic

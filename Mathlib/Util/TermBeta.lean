@@ -37,3 +37,5 @@ def elabBeta : TermElab := fun stx expectedType? =>
     let e ← elabTerm t expectedType?
     return (← instantiateMVars e).headBeta
   | _ => throwUnsupportedSyntax
+
+end Mathlib.Util.TermBeta

@@ -67,3 +67,5 @@ elab "recover " tacs:tacticSeq : tactic => do
     let unassignedMVarDependencies ← getUnassignedGoalMVarDependencies mvarId
     unassigned := unassigned.insertMany unassignedMVarDependencies.toList
   setGoals <| ((← getGoals) ++ unassigned.toList).eraseDups
+
+end Mathlib.Tactic

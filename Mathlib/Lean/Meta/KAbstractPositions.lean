@@ -87,3 +87,5 @@ example (h : [5] ≠ []) : List.getLast [5] h = 5 := by
 def kabstractIsTypeCorrect (e subExpr : Expr) (pos : SubExpr.Pos) : MetaM Bool := do
   withLocalDeclD `_a (← inferType subExpr) fun fvar => do
     isTypeCorrect (← replaceSubexpr (fun _ => pure fvar) pos e)
+
+end Lean.Meta

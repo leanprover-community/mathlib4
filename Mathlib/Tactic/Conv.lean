@@ -134,3 +134,5 @@ syntax "#simp" (&" only")? (simpArgs)? " =>"? ppSpace term : command
 macro_rules
   | `(#simp%$tk $[only%$o]? $[[$args,*]]? $[=>]? $e) =>
     `(#conv%$tk simp $[only%$o]? $[[$args,*]]? => $e)
+
+end Mathlib.Tactic.Conv

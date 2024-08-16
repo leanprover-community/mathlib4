@@ -1152,3 +1152,5 @@ def mapArraysM (d : RefinedDiscrTree α) (f : Array α → m (Array β)) : m (Re
 /-- Apply a function to the array of values at each node in a `RefinedDiscrTree`. -/
 def mapArrays (d : RefinedDiscrTree α) (f : Array α → Array β) : RefinedDiscrTree β :=
   d.mapArraysM (m := Id) f
+
+end Mathlib.Meta.FunProp.RefinedDiscrTree
