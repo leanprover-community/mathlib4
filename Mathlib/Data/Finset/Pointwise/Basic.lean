@@ -873,7 +873,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
   simp_rw [← coe_inj, coe_mul, coe_one, Set.mul_eq_one_iff, coe_singleton]
 
 /-- `Finset α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive subtractionMonoid
+@[to_additive
   "`Finset α` is a subtraction monoid under pointwise operations if `α` is."]
 protected def divisionMonoid : DivisionMonoid (Finset α) :=
   coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
