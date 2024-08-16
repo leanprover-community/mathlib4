@@ -10,15 +10,17 @@ import Mathlib.ModelTheory.FinitelyGenerated
 
 /-!
 # Direct Limits of First-Order Structures
+
 This file constructs the direct limit of a directed system of first-order embeddings.
 
 ## Main Definitions
-* `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
+
+- `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
   first-order embeddings between the structures indexed by `G`.
-* `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
+- `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
   from the components to another module that respect the directed system structure give rise to
   a unique map out of the direct limit.
-* `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
+- `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
   isomorphic direct systems.
 -/
 
@@ -415,7 +417,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     Structure.CG L (DirectLimit G f) := by
   refine ⟨⟨⋃ i, DirectLimit.of L ι G f i '' Classical.choose (h i).out, ?_, ?_⟩⟩
   · exact Set.countable_iUnion fun i => Set.Countable.image (Classical.choose_spec (h i).out).1 _
-  · rw [eq_top_iff, Substructure.closure_unionᵢ]
+  · rw [eq_top_iff, Substructure.closure_iUnion]
     simp_rw [← Embedding.coe_toHom, Substructure.closure_image]
     rw [le_iSup_iff]
     intro S hS x _

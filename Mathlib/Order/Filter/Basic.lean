@@ -78,7 +78,7 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 assert_not_exists OrderedSemiring
 
 open Function Set Order
-open scoped Classical
+open scoped symmDiff
 
 universe u v w x y
 
@@ -120,12 +120,9 @@ theorem filter_eq : ∀ {f g : Filter α}, f.sets = g.sets → f = g
 theorem filter_eq_iff : f = g ↔ f.sets = g.sets :=
   ⟨congr_arg _, filter_eq⟩
 
-protected theorem ext_iff : f = g ↔ ∀ s, s ∈ f ↔ s ∈ g := by
-  simp only [filter_eq_iff, ext_iff, Filter.mem_sets]
-
 @[ext]
-protected theorem ext : (∀ s, s ∈ f ↔ s ∈ g) → f = g :=
-  Filter.ext_iff.2
+protected theorem ext (h : ∀ s, s ∈ f ↔ s ∈ g) : f = g := by
+  simpa [filter_eq_iff, Set.ext_iff, Filter.mem_sets]
 
 /-- An extensionality lemma that is useful for filters with good lemmas about `sᶜ ∈ f` (e.g.,
 `Filter.comap`, `Filter.coprod`, `Filter.Coprod`, `Filter.cofinite`). -/
@@ -564,6 +561,7 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
     (U ∈ ⨅ i, s i) ↔
       ∃ I : Set ι, I.Finite ∧ ∃ V : ι → Set α, (∀ i, V i ∈ s i) ∧
         (∀ i ∉ I, V i = univ) ∧ (U = ⋂ i ∈ I, V i) ∧ U = ⋂ i, V i := by
+  classical
   simp only [mem_iInf, SetCoe.forall', biInter_eq_iInter]
   refine ⟨?_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i => V i, fun i => hVs i, hVU⟩⟩
   rintro ⟨I, If, V, hV, rfl⟩
@@ -782,10 +780,11 @@ instance : DistribLattice (Filter α) :=
         ⟨t₁, x.sets_of_superset hs inter_subset_left, ht₁, t₂,
           x.sets_of_superset hs inter_subset_right, ht₂, rfl⟩ }
 
--- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
-instance : Coframe (Filter α) :=
+/-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
+def coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
+      classical
       rw [iInf_subtype']
       rw [sInf_eq_iInf', iInf_sets_eq_finite, mem_iUnion] at h₂
       obtain ⟨u, hu⟩ := h₂
@@ -796,8 +795,11 @@ instance : Coframe (Filter α) :=
       rw [Finset.inf_insert, sup_inf_left]
       exact le_inf (iInf_le _ _) ih }
 
+instance instCoframe : Coframe (Filter α) := .ofMinimalAxioms coframeMinimalAxioms
+
 theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by
+  classical
   simp only [← Finset.set_biInter_coe, biInter_eq_iInter, iInf_subtype']
   refine ⟨fun h => ?_, ?_⟩
   · rcases (mem_iInf_of_finite _).1 h with ⟨p, hp, rfl⟩
@@ -847,6 +849,7 @@ theorem iInf_neBot_iff_of_directed {f : ι → Filter α} [Nonempty α] (hd : Di
 @[elab_as_elim]
 theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f) {p : Set α → Prop}
     (uni : p univ) (ins : ∀ {i s₁ s₂}, s₁ ∈ f i → p s₂ → p (s₁ ∩ s₂)) : p s := by
+  classical
   rw [mem_iInf_finite'] at hs
   simp only [← Finset.inf_eq_iInf] at hs
   rcases hs with ⟨is, his⟩
@@ -915,6 +918,7 @@ theorem principal_le_iff {s : Set α} {f : Filter α} : 𝓟 s ≤ f ↔ ∀ V �
 @[simp]
 theorem iInf_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) :
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
+  classical
   induction' s using Finset.induction_on with i s _ hs
   · simp
   · rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]
@@ -1305,6 +1309,8 @@ protected theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f
 theorem EventuallyEq.symm {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g) : g =ᶠ[l] f :=
   H.mono fun _ => Eq.symm
 
+lemma eventuallyEq_comm {f g : α → β} {l : Filter α} : f =ᶠ[l] g ↔ g =ᶠ[l] f := ⟨.symm, .symm⟩
+
 @[trans]
 theorem EventuallyEq.trans {l : Filter α} {f g h : α → β} (H₁ : f =ᶠ[l] g) (H₂ : g =ᶠ[l] h) :
     f =ᶠ[l] h :=
@@ -1393,6 +1399,10 @@ theorem EventuallyEq.compl {s t : Set α} {l : Filter α} (h : s =ᶠ[l] t) :
 theorem EventuallyEq.diff {s t s' t' : Set α} {l : Filter α} (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') :
     (s \ s' : Set α) =ᶠ[l] (t \ t' : Set α) :=
   h.inter h'.compl
+
+protected theorem EventuallyEq.symmDiff {s t s' t' : Set α} {l : Filter α}
+    (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') : (s ∆ s' : Set α) =ᶠ[l] (t ∆ t' : Set α) :=
+  (h.diff h').union (h'.diff h)
 
 theorem eventuallyEq_empty {s : Set α} {l : Filter α} : s =ᶠ[l] (∅ : Set α) ↔ ∀ᶠ x in l, x ∉ s :=
   eventuallyEq_set.trans <| by simp
@@ -1942,12 +1952,14 @@ The variables in the following lemmas are used as in this diagram:
 -/
 
 
-variable {φ : α → β} {θ : α → γ} {ψ : β → δ} {ρ : γ → δ} (H : ψ ∘ φ = ρ ∘ θ)
+variable {φ : α → β} {θ : α → γ} {ψ : β → δ} {ρ : γ → δ}
 
-theorem map_comm (F : Filter α) : map ψ (map φ F) = map ρ (map θ F) := by
+theorem map_comm (H : ψ ∘ φ = ρ ∘ θ) (F : Filter α) :
+    map ψ (map φ F) = map ρ (map θ F) := by
   rw [Filter.map_map, H, ← Filter.map_map]
 
-theorem comap_comm (G : Filter δ) : comap φ (comap ψ G) = comap θ (comap ρ G) := by
+theorem comap_comm (H : ψ ∘ φ = ρ ∘ θ) (G : Filter δ) :
+    comap φ (comap ψ G) = comap θ (comap ρ G) := by
   rw [Filter.comap_comap, H, ← Filter.comap_comap]
 
 end comm

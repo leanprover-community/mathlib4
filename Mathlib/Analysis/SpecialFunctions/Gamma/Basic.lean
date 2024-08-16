@@ -154,14 +154,14 @@ theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
     Tendsto (fun X : ℝ => partialGamma s X) atTop (𝓝 <| GammaIntegral s) :=
   intervalIntegral_tendsto_integral_Ioi 0 (GammaIntegral_convergent hs) tendsto_id
 
-private theorem Gamma_integrand_interval_integrable (s : ℂ) {X : ℝ} (hs : 0 < s.re) (hX : 0 ≤ X) :
+private theorem Gamma_integrand_intervalIntegrable (s : ℂ) {X : ℝ} (hs : 0 < s.re) (hX : 0 ≤ X) :
     IntervalIntegrable (fun x => (-x).exp * x ^ (s - 1) : ℝ → ℂ) volume 0 X := by
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hX]
   exact IntegrableOn.mono_set (GammaIntegral_convergent hs) Ioc_subset_Ioi_self
 
 private theorem Gamma_integrand_deriv_integrable_A {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
     IntervalIntegrable (fun x => -((-x).exp * x ^ s) : ℝ → ℂ) volume 0 X := by
-  convert (Gamma_integrand_interval_integrable (s + 1) _ hX).neg
+  convert (Gamma_integrand_intervalIntegrable (s + 1) _ hX).neg
   · simp only [ofReal_exp, ofReal_neg, add_sub_cancel_right]; rfl
   · simp only [add_re, one_re]; linarith
 
@@ -258,7 +258,7 @@ noncomputable def GammaAux : ℕ → ℂ → ℂ
 theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux n (s + 1) / s := by
   induction' n with n hn generalizing s
-  · simp only [Nat.zero_eq, CharP.cast_eq_zero, Left.neg_neg_iff] at h1
+  · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]; rw [GammaIntegral_add_one h1]
     rw [mul_comm, mul_div_cancel_right₀]; contrapose! h1; rw [h1]
     simp
@@ -271,7 +271,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux (n + 1) s := by
   cases' n with n n
-  · simp only [Nat.zero_eq, CharP.cast_eq_zero, Left.neg_neg_iff] at h1
+  · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]
     rw [GammaIntegral_add_one h1, mul_div_cancel_left₀]
     rintro rfl
@@ -324,10 +324,12 @@ theorem Gamma_eq_integral {s : ℂ} (hs : 0 < s.re) : Gamma s = GammaIntegral s 
 theorem Gamma_one : Gamma 1 = 1 := by rw [Gamma_eq_integral] <;> simp
 
 theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
-  induction' n with n hn
-  · simp
-  · rw [Gamma_add_one n.succ <| Nat.cast_ne_zero.mpr <| Nat.succ_ne_zero n]
-    simp only [Nat.cast_succ, Nat.factorial_succ, Nat.cast_mul]; congr
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [Gamma_add_one n.succ <| Nat.cast_ne_zero.mpr <| Nat.succ_ne_zero n]
+    simp only [Nat.cast_succ, Nat.factorial_succ, Nat.cast_mul]
+    congr
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
@@ -355,9 +357,10 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
   suffices ∀ (n : ℕ) (s : ℂ), GammaAux n (conj s) = conj (GammaAux n s) by
     simp [Gamma, this]
   intro n
-  induction' n with n IH
-  · rw [GammaAux]; exact GammaIntegral_conj
-  · intro s
+  induction n with
+  | zero => rw [GammaAux]; exact GammaIntegral_conj
+  | succ n IH =>
+    intro s
     rw [GammaAux]
     dsimp only
     rw [div_eq_mul_inv _ s, RingHom.map_mul, conj_inv, ← div_eq_mul_inv]
@@ -376,8 +379,8 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
       refine MeasureTheory.setIntegral_congr measurableSet_Ioi (fun x hx ↦ ?_)
       rw [mem_Ioi] at hx
       rw [mul_cpow_ofReal_nonneg hr.le hx.le, ← mul_assoc, one_div, ← ofReal_inv,
-        ← mul_cpow_ofReal_nonneg (inv_pos.mpr hr).le hr.le, ← ofReal_mul r⁻¹, inv_mul_cancel hr.ne',
-        ofReal_one, one_cpow, one_mul]
+        ← mul_cpow_ofReal_nonneg (inv_pos.mpr hr).le hr.le, ← ofReal_mul r⁻¹,
+        inv_mul_cancel₀ hr.ne', ofReal_one, one_cpow, one_mul]
     _ = 1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
       simp_rw [← ofReal_mul]
       rw [integral_comp_mul_left_Ioi (fun x ↦ _ * x ^ (a - 1) * exp (-x)) _ hr, mul_zero,

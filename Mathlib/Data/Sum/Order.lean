@@ -496,7 +496,7 @@ theorem sumComm_symm (α β : Type*) [LE α] [LE β] :
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
 def sumAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ β) ⊕ γ ≃o α ⊕ (β ⊕ γ) :=
   { Equiv.sumAssoc α β γ with
-    map_rel_iff' := @fun a b => by
+    map_rel_iff' := fun {a b} => by
       rcases a with ((_ | _) | _) <;> rcases b with ((_ | _) | _) <;>
       simp [Equiv.sumAssoc] }
 
@@ -555,7 +555,7 @@ theorem sumDualDistrib_symm_inr : (sumDualDistrib α β).symm (inr (toDual b)) =
 /-- `Equiv.SumAssoc` promoted to an order isomorphism. -/
 def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
   { Equiv.sumAssoc α β γ with
-    map_rel_iff' := @fun a b =>
+    map_rel_iff' := fun {a b} =>
       ⟨fun h =>
         match a, b, h with
         | inlₗ (inlₗ _), inlₗ (inlₗ _), Lex.inl h => Lex.inl <| Lex.inl h
@@ -603,7 +603,7 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
 /-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
 def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
   { Equiv.sumComm α β with
-    map_rel_iff' := @fun a b => by
+    map_rel_iff' := fun {a b} => by
       rcases a with (a | a) <;> rcases b with (b | b)
       · simp
         change
@@ -648,7 +648,7 @@ namespace WithBot
 /-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
-  ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
+  ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, fun {a b} => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
     cases' a <;> cases' b
@@ -685,7 +685,7 @@ namespace WithTop
 /-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
-  ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
+  ⟨(Equiv.optionEquivSumPUnit α).trans toLex, fun {a b} => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
     cases' a <;> cases' b
