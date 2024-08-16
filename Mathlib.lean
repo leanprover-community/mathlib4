@@ -4437,6 +4437,8 @@ import Mathlib.Topology.DerivedSet
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.DiscreteSubset
 import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Topology.EMetricSpace.Defs
+import Mathlib.Topology.EMetricSpace.Diam
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.ExtendFrom
@@ -4502,6 +4504,7 @@ import Mathlib.Topology.MetricSpace.Cauchy
 import Mathlib.Topology.MetricSpace.Closeds
 import Mathlib.Topology.MetricSpace.Completion
 import Mathlib.Topology.MetricSpace.Contracting
+import Mathlib.Topology.MetricSpace.Defs
 import Mathlib.Topology.MetricSpace.Dilation
 import Mathlib.Topology.MetricSpace.DilationEquiv
 import Mathlib.Topology.MetricSpace.Equicontinuity
@@ -4523,9 +4526,12 @@ import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+import Mathlib.Topology.MetricSpace.Pseudo.Basic
 import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.MetricSpace.Pseudo.Pi
+import Mathlib.Topology.MetricSpace.Pseudo.Real
 import Mathlib.Topology.MetricSpace.Sequences
 import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
