@@ -5,7 +5,8 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 
 /-!
 # Real powers defined via the continuous functional calculus
