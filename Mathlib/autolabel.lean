@@ -1,5 +1,5 @@
 import Lean
-import Batteries
+
 open Lean
 
 namespace AutoLabel
@@ -30,17 +30,6 @@ structure Label where
   By default, it is filled in with the empty array. -/
   exclusions : Array String := #[]
 
-/-- A `NamedLabel` is a label associated to a particular declaration. -/
-structure NamedLabel extends Label where
-  /-- The name of the named label. This is just the declaration name without the namespace. -/
-  name : Name
-  /-- The label declaration name -/
-  declName : Name
-
-/-- Gets a label by declaration name. -/
-def getLabel (name declName : Name) : CoreM NamedLabel := unsafe
-  return { ← evalConstCheck Label ``Label declName with name, declName }
-
 namespace Label
 
 /-- Defines the `labelsExt` extension for adding the `Name` of a `Label` to the environment. -/
@@ -54,10 +43,28 @@ initialize labelsExt :
     exportEntriesFn := id --fun es => es.foldl (fun a _ e => a.push e) #[]
   }
 
-open Lean Elab Command
+/-- The simplest way to add a label is to use `add_label label_name`. This adds
+* `t-label-name` as a label and
+* `LabelName` as root folder,
+meaning that any change to `Mathlib.LabelName` will be labeled by `t-label-name`.
 
-syntax "add_label " ident ("label: " ident*)? ("dirs: " ident*)? ("exclusions: " ident*)? : command
+If you want to customize the root folders that are relevant to your label, you can use
+`add_label label_name dirs: d₁ d₂ ... dₙ`.  This adds
+* `t-label-name` as a label and
+* `Mathlib.d₁, Mathlib.d₂, ..., Mathlib.dₙ` as root folders.
 
+Finally, if you also want to filter out of the previous root folders some subfolders, you can use
+`add_label label_name dirs: d₁ d₂ ... dₙ exclusions: e₁ e₂ ... eₘ`.  This adds
+* `t-label-name` as a label and
+* `Mathlib.d₁, Mathlib.d₂, ..., Mathlib.dₙ` as root folders, unless the folder matches
+* `Mathlib.e₁, Mathlib.e₂, ..., Mathlib.eₘ`.
+
+The helper command `check_labels` displays all the labels that have already been declared.
+-/
+syntax (name := addLabelStx)
+  "add_label " ident ("label: " ident*)? ("dirs: " ident*)? ("exclusions: " ident*)? : command
+
+@[inherit_doc addLabelStx]
 elab_rules : command
     | `(command| add_label $id) => do
       setEnv <| labelsExt.addEntry (← getEnv) {
@@ -75,10 +82,12 @@ elab_rules : command
         dirs := dirs.map fun d => (d.getId.toString.splitOn "_").foldl (· ++ ·.capitalize) ""
         exclusions := excs.map (·.getId.toString)
       }
-
+/--
+`check_labels` is a helper command to `add_labels`.
+It displays all the labels that have already been declared.
+-/
 elab "check_labels" : command => do
-  let le := labelsExt.getState (← getEnv)
-  for l in le do
+  for l in labelsExt.getState (← getEnv) do
     logInfo m!"label: {l.label}\ndirs: {l.dirs}\nexclusions: {l.exclusions}"
 
 /--
@@ -102,3 +111,5 @@ def findLabels (ls : Array Label) (modifiedFile : String) : Array String :=
 -/
 def getLabels (ls : Array Label) (gitDiff : Array String) : Array String :=
   gitDiff.foldl (· ++ findLabels ls ·) #[]
+
+end AutoLabel.Label
