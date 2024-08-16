@@ -219,7 +219,7 @@ lemma absolutelyContinuous_of_compProd [SFinite μ] [IsSFiniteKernel κ] [h_zero
     swap; · simp [compProd_of_not_isSFiniteKernel _ _ hη]
     rw [Measure.compProd_apply_prod hs MeasurableSet.univ]
     exact setLIntegral_measure_zero _ _ hs0
-  have h2 := h h1
+  have h2 : (μ ⊗ₘ κ) (s ×ˢ Set.univ) = 0 := h h1
   rw [Measure.compProd_apply_prod hs MeasurableSet.univ, lintegral_eq_zero_iff] at h2
   swap; · exact Kernel.measurable_coe _ MeasurableSet.univ
   by_contra hμs
