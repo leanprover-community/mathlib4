@@ -69,8 +69,11 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
+    | .proof _, .const _ =>
+      throwError "'linear_combination' is agnostic to the subtraction of constants"
+    | .const _, .proof _ =>
+      throwError "'linear_combination' is agnostic to the addition of constants"
     | .proof p₁, .proof p₂ => .proof <$> ``(sub_pf $p₁ $p₂)
-    | _ , _ => throwError "'linear_combination' is agnostic to the subtraction of constants"
   | `(-$e) => do
     match ← expandLinearCombo ty e with
     | .const c => .const <$> `(-$c)
