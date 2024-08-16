@@ -203,6 +203,12 @@ lemma Multiset.iInf_mem_map_of_exists_le_sInf_empty {s : Multiset ι} (f : ι �
   have := s.toFinset.ciInf_mem_image f (by simpa using h)
   simpa using this
 
+theorem exists_eq_ciSup_of_finite [Nonempty ι] [Finite ι] {f : ι → α} : ∃ i, f i = ⨆ i, f i :=
+  Nonempty.csSup_mem (range_nonempty f) (finite_range f)
+
+theorem exists_eq_ciInf_of_finite [Nonempty ι] [Finite ι] {f : ι → α} : ∃ i, f i = ⨅ i, f i :=
+  Nonempty.csInf_mem (range_nonempty f) (finite_range f)
+
 end BigOperators
 
 end ConditionallyCompleteLinearOrder

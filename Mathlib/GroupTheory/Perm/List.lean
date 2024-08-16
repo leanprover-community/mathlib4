@@ -267,9 +267,10 @@ theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) 
 
 theorem formPerm_rotate (l : List α) (h : Nodup l) (n : ℕ) :
     formPerm (l.rotate n) = formPerm l := by
-  induction' n with n hn
-  · simp
-  · rw [← rotate_rotate, formPerm_rotate_one, hn]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [← rotate_rotate, formPerm_rotate_one, hn]
     rwa [IsRotated.nodup_iff]
     exact IsRotated.forall l n
 
@@ -294,9 +295,10 @@ theorem formPerm_reverse : ∀ l : List α, formPerm l.reverse = (formPerm l)⁻
 theorem formPerm_pow_apply_getElem (l : List α) (w : Nodup l) (n : ℕ) (i : ℕ) (h : i < l.length) :
     (formPerm l ^ n) l[i] =
       l[(i + n) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt h)) := by
-  induction' n with n hn
-  · simp [Nat.mod_eq_of_lt h]
-  · simp [pow_succ', mul_apply, hn, formPerm_apply_getElem _ w, Nat.succ_eq_add_one,
+  induction n with
+  | zero => simp [Nat.mod_eq_of_lt h]
+  | succ n hn =>
+    simp [pow_succ', mul_apply, hn, formPerm_apply_getElem _ w, Nat.succ_eq_add_one,
       ← Nat.add_assoc]
 
 @[deprecated formPerm_pow_apply_getElem (since := "2024-08-03")]

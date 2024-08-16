@@ -63,12 +63,24 @@ end
 
 section smulInvariantMeasure
 
-variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
-  [BorelSpace G] [PolishSpace G] (ν : Measure G) {Γ : Subgroup G} [Countable Γ]
-  [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
+variable {G : Type*} [Group G] [MeasurableSpace G]  (ν : Measure G) {Γ : Subgroup G}
+  {μ : Measure (G ⧸ Γ)}
   [QuotientMeasureEqMeasurePreimage ν μ]
 
+/-- Given a subgroup `Γ` of a topological group `G` with measure `ν`, and a measure 'μ' on the
+  quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
+  of `ν` to a fundamental domain is measure-preserving with respect to `μ`. -/
+@[to_additive]
+theorem measurePreserving_quotientGroup_mk_of_QuotientMeasureEqMeasurePreimage
+    {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (μ : Measure (G ⧸ Γ))
+    [QuotientMeasureEqMeasurePreimage ν μ] :
+    MeasurePreserving (@QuotientGroup.mk G _ Γ) (ν.restrict 𝓕) μ :=
+  h𝓕.measurePreserving_quotient_mk μ
+
 local notation "π" => @QuotientGroup.mk G _ Γ
+
+variable [TopologicalSpace G] [TopologicalGroup G] [BorelSpace G] [PolishSpace G]
+  [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)]
 
 /-- If `μ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and right-
   invariant measure `ν` on `G`, then it is a `G` invariant measure on `G ⧸ Γ`. -/
@@ -96,28 +108,17 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
       rw [measure_preimage_mul]
     rw [this, ← preimage_smul_inv]; rfl
 
-/-- Given a subgroup `Γ` of a topological group `G` with measure `ν`, and a measure 'μ' on the
-  quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
-  of `ν` to a fundamental domain is measure-preserving with respect to `μ`. -/
-@[to_additive]
-theorem measurePreserving_quotientGroup_mk_of_QuotientMeasureEqMeasurePreimage
-    {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (μ : Measure (G ⧸ Γ))
-    [QuotientMeasureEqMeasurePreimage ν μ] :
-    MeasurePreserving (@QuotientGroup.mk G _ Γ) (ν.restrict 𝓕) μ :=
-  h𝓕.measurePreserving_quotient_mk μ
-
 end smulInvariantMeasure
 
 section normal
 
 variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
-  [BorelSpace G] [PolishSpace G] {Γ : Subgroup G} [Countable Γ] [Subgroup.Normal Γ]
+  [BorelSpace G] [PolishSpace G] {Γ : Subgroup G} [Subgroup.Normal Γ]
   [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
 
 section mulInvariantMeasure
 
-variable (ν : Measure G) [IsMulLeftInvariant ν] [IsMulRightInvariant ν]
-  [SigmaFinite ν]
+variable (ν : Measure G) [IsMulLeftInvariant ν]
 
 /-- If `μ` on `G ⧸ Γ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and
   right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant
@@ -136,7 +137,8 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
       simp [← MulAction.Quotient.coe_smul_out', ← Quotient.mk''_eq_mk]
     exact smulInvariantMeasure_quotient ν
 
-variable [IsMulLeftInvariant μ] [SigmaFinite μ]
+variable [Countable Γ] [IsMulRightInvariant ν] [SigmaFinite ν]
+  [IsMulLeftInvariant μ] [SigmaFinite μ]
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
@@ -204,7 +206,7 @@ end mulInvariantMeasure
 
 section haarMeasure
 
-variable (ν : Measure G) [SigmaFinite ν] [IsHaarMeasure ν] [IsMulRightInvariant ν]
+variable [Countable Γ] (ν : Measure G) [IsHaarMeasure ν] [IsMulRightInvariant ν]
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
@@ -249,6 +251,8 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     refine lt_of_le_of_lt ?_ finiteCovol.lt_top
     apply measure_mono
     exact inter_subset_right
+
+variable [SigmaFinite ν]
 
 /-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
@@ -319,6 +323,7 @@ variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [Topolog
   [BorelSpace G] {μ : Measure G} {Γ : Subgroup G}
 
 variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 μ)
+include h𝓕
 
 variable [Countable Γ] [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)]
 
