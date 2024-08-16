@@ -134,12 +134,14 @@ theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a 
   rcases a with ⟨a, a2⟩
   rcases b with ⟨b, b2⟩
   cases b
-  · rcases mem_zmod_2 b2 with (rfl | rfl) <;> rcases mem_zmod_2 a2 with (rfl | rfl) <;> simp
+  · rcases mem_zmod_2 b2 with (rfl | rfl) <;> rcases mem_zmod_2 a2 with (rfl | rfl) <;>
+      simp [-Prod.mk_zero_zero]
     -- while this looks like a non-terminal `simp`, it (almost) isn't: there is only one goal where
     -- it does not finish the proof and on that goal it asks to prove `false`
     exact hb rfl
   cases a
-  · rcases mem_zmod_2 b2 with (rfl | rfl) <;> rcases mem_zmod_2 a2 with (rfl | rfl) <;> simp
+  · rcases mem_zmod_2 b2 with (rfl | rfl) <;> rcases mem_zmod_2 a2 with (rfl | rfl) <;>
+      simp [-Prod.mk_zero_zero]
     -- while this looks like a non-terminal `simp`, it (almost) isn't: there is only one goal where
     -- it does not finish the proof and on that goal it asks to prove `false`
     exact ha rfl
