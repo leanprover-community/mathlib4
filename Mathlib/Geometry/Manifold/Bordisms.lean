@@ -134,31 +134,6 @@ section BoundaryIntervals
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
-lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
-  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
-  have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y := by
-    sorry -- follows by construction of the charted space structure; XXX: how can I use this?
-  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) by convert this
-  exact IccLeftChart_boundary
-
-lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
-  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
-  have : chartAt (EuclideanHalfSpace 1) Y = IccRightChart x y := by
-    sorry -- follows by construction of the charted space structure; XXX: how can I use this?
-  suffices ((IccRightChart x y).extend (𝓡∂ 1)) Y ∈ frontier (range (𝓡∂ 1)) by convert this
-  exact IccRightChart_boundary
-
-lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
-    (𝓡∂ 1).IsInteriorPoint p := by
-  have : chartAt (EuclideanHalfSpace 1) p = IccLeftChart x y := by
-    sorry -- follows by construction of the charted space structure; XXX: how can I use this?
-  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) p ∈ interior (range (𝓡∂ 1)) by
-    rw [ModelWithCorners.IsInteriorPoint, extChartAt]
-    convert this
-  -- TODO compute: chart maps this to something positive
-  -- then argue that this lies in the interior
-  sorry
-
 -- TODO: does this exist already? it ought to... same for the version below
 lemma Set.Icc.eq_left_or_interior_or_eq_right {p : ℝ} (hp : p ∈ Set.Icc x y) :
   p = x ∨ (x < p ∧ p < y) ∨ p = y := sorry

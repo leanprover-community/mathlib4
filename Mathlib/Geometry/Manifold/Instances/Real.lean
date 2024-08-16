@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
@@ -335,9 +336,52 @@ instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
 
--- TODO: can I state or prove such a lemma?
--- lemma IccManifold.leftCharts {x y : ℝ} {z : Set.Icc x y} (h : z.val < y) :
---     IccManifold.chartAt z = IccLeftChart x y := rfl
+def IccManifold2 (x y : ℝ) [h : Fact (x < y)] :
+    ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
+  atlas := {IccLeftChart x y, IccRightChart x y}
+  chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
+  mem_chart_source z := by
+    by_cases h' : z.val < y
+    · simp only [h', if_true]
+      exact h'
+    · simp only [h', if_false]
+      apply lt_of_lt_of_le h.out
+      simpa only [not_lt] using h'
+  chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
+
+lemma IccManifold2.leftCharts {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val < y) :
+    (IccManifold2 x y).chartAt z = IccLeftChart x y := by
+  unfold IccManifold2
+  simp_all only [reduceIte]
+
+lemma IccManifold2.rightCharts {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val ≥ y) :
+    (IccManifold2 x y).chartAt z = IccRightChart x y := by
+  unfold IccManifold2
+  simp_all only [reduceIte, not_lt.mpr h]
+
+lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
+  have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y :=
+    IccManifold2.leftCharts (by norm_num [hxy.out])
+  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) by convert this
+  exact IccLeftChart_boundary
+
+lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
+  have : chartAt (EuclideanHalfSpace 1) Y = IccRightChart x y := by
+    apply IccManifold2.rightCharts (by norm_num)
+  suffices ((IccRightChart x y).extend (𝓡∂ 1)) Y ∈ frontier (range (𝓡∂ 1)) by convert this
+  exact IccRightChart_boundary
+
+lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
+    (𝓡∂ 1).IsInteriorPoint p := by
+  have : chartAt (EuclideanHalfSpace 1) p = IccLeftChart x y := IccManifold2.leftCharts hp.2
+  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) p ∈ interior (range (𝓡∂ 1)) by
+    rw [ModelWithCorners.IsInteriorPoint, extChartAt]
+    convert this
+  -- TODO compute: chart maps this to something positive
+  -- then argue that this lies in the interior
+  sorry
 
 /-- The manifold structure on `[x, y]` is smooth.
 -/
