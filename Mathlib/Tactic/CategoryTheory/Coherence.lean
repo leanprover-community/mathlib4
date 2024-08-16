@@ -127,10 +127,10 @@ def monoidal_coherence (g : MVarId) : MetaM Unit := g.withContext do
   let (ty, _) ← dsimp (← g.getType)
     { simpTheorems := #[.addDeclToUnfoldCore {} ``MonoidalCoherence.hom] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
-  let instLhs ← synthInstance (← mkAppM ``LiftHom #[lhs])
-  let instRhs ← synthInstance (← mkAppM ``LiftHom #[rhs])
-  let projectMap_lhs ← mkProjectMapExpr lhs instLhs
-  let projectMap_rhs ← mkProjectMapExpr rhs instRhs
+  let inst_lhs ← synthInstance (← mkAppM ``LiftHom #[lhs])
+  let inst_rhs ← synthInstance (← mkAppM ``LiftHom #[rhs])
+  let projectMap_lhs ← mkProjectMapExpr lhs inst_lhs
+  let projectMap_rhs ← mkProjectMapExpr rhs inst_rhs
   -- This new equation is defeq to the original by assumption
   -- on the `LiftObj` and `LiftHom` instances.
   let g₁ ← g.change (← mkEq projectMap_lhs projectMap_rhs)
