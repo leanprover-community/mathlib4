@@ -99,7 +99,7 @@ theorem IsVonNBounded.of_boundedSpace [BoundedSpace 𝕜] {s : Set E} : IsVonNBo
 
 @[nontriviality]
 theorem IsVonNBounded.of_subsingleton [Subsingleton E] {s : Set E} : IsVonNBounded 𝕜 s :=
-  fun U hU ↦ eventually_of_forall fun c ↦ calc
+  fun U hU ↦ .of_forall fun c ↦ calc
     s ⊆ univ := subset_univ s
     _ = c • U := .symm <| Subsingleton.eq_univ_of_nonempty <| (Filter.nonempty_of_mem hU).image _
 
@@ -255,7 +255,7 @@ theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
   obtain ⟨ε, hε, hε₀⟩ : ∃ ε : ℕ → 𝕜, Tendsto ε atTop (𝓝 0) ∧ ∀ᶠ n in atTop, ε n ≠ 0 := by
     simpa only [tendsto_nhdsWithin_iff] using exists_seq_tendsto (𝓝[≠] (0 : 𝕜))
   refine isVonNBounded_of_smul_tendsto_zero (ε := (ε · • 1)) (by simpa) fun x hx ↦ ?_
-  have := h.smul_tendsto_zero (eventually_of_forall hx) hε
+  have := h.smul_tendsto_zero (.of_forall hx) hε
   simpa only [Pi.smul_def', smul_one_smul]
 
 section NormedField
