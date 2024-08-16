@@ -30,20 +30,20 @@ namespace IsUltrametricDist
 
 section AddGroup
 
-variable {S ι : Type*} [SeminormedAddGroup S] [IsUltrametricDist S]
+variable {S S' ι : Type*} [SeminormedAddGroup S] [SeminormedAddGroup S'] [IsUltrametricDist S]
 
 lemma norm_add_le_max (x y : S) :
     ‖x + y‖ ≤ max ‖x‖ ‖y‖ := by
   simpa [dist_eq_norm x (-y)] using dist_triangle_max x 0 (-y)
 
 lemma isUltrametricDist_of_forall_norm_add_le_max_norm
-    (h : ∀ x y : S, ‖x + y‖ ≤ max ‖x‖ ‖y‖) : IsUltrametricDist S := by
+    (h : ∀ x y : S', ‖x + y‖ ≤ max ‖x‖ ‖y‖) : IsUltrametricDist S' := by
   constructor
   intro x y z
   simpa [dist_eq_norm] using h (x - y) (y - z)
 
 lemma isUltrametricDist_of_isNonarchimedean_norm
-    (h : IsNonarchimedean (norm : S → ℝ)) : IsUltrametricDist S :=
+    (h : IsNonarchimedean (norm : S' → ℝ)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_norm_add_le_max_norm h
 
 lemma nnnorm_add_le_max (x y : S) :
@@ -51,11 +51,11 @@ lemma nnnorm_add_le_max (x y : S) :
   norm_add_le_max _ _
 
 lemma isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm
-    (h : ∀ x y : S, ‖x + y‖₊ ≤ max ‖x‖₊ ‖y‖₊) : IsUltrametricDist S :=
+    (h : ∀ x y : S', ‖x + y‖₊ ≤ max ‖x‖₊ ‖y‖₊) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_norm_add_le_max_norm h
 
 lemma isUltrametricDist_of_isNonarchimedean_nnnorm
-    (h : IsNonarchimedean ((↑) ∘ (nnnorm : S → ℝ≥0))) : IsUltrametricDist S :=
+    (h : IsNonarchimedean ((↑) ∘ (nnnorm : S' → ℝ≥0))) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
 
 lemma _root_.List.nnnorm_sum_le_iSup_nnnorm (l : List S) :
