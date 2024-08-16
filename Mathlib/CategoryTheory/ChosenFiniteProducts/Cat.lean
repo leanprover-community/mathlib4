@@ -57,7 +57,7 @@ open MonoidalCategory
 lemma tensorObj (C : Cat) (D : Cat) : C ⊗ D = Cat.of (C × D)  := rfl
 
 lemma whiskerLeft (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
-    X ◁ f = (𝟭 X).prod f   := rfl
+    X ◁ f = (𝟭 X).prod f := rfl
 
 lemma whiskerLeft_fst (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
     (X ◁ f) ⋙ Prod.fst _ _ = Prod.fst _ _ := rfl
