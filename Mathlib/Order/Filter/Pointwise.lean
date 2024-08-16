@@ -86,6 +86,12 @@ theorem one_mem_one : (1 : Set α) ∈ (1 : Filter α) :=
 theorem pure_one : pure 1 = (1 : Filter α) :=
   rfl
 
+@[to_additive (attr := simp) zero_prod]
+theorem one_prod {l : Filter β} : (1 : Filter α) ×ˢ l = map (1, ·) l := pure_prod
+
+@[to_additive (attr := simp) prod_zero]
+theorem prod_one {l : Filter β} : l ×ˢ (1 : Filter α) = map (·, 1) l := prod_pure
+
 @[to_additive (attr := simp)]
 theorem principal_one : 𝓟 1 = (1 : Filter α) :=
   principal_singleton _
