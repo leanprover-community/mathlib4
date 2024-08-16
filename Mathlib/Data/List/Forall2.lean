@@ -345,5 +345,4 @@ theorem sublistForall₂_map_right_iff {f : γ → β} :
     use l1.map f
     simp [h1, h2.map]
 
-
 end List
