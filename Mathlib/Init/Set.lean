@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Init
 import Batteries.Util.ExtendedBinder
+import Lean.Elab.Term
 
 /-!
 # Note about `Mathlib/Init/`
@@ -39,7 +40,7 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 -/
 
-open Batteries.ExtendedBinder
+open Lean Elab Term Meta Batteries.ExtendedBinder
 
 universe u
 variable {α : Type u}
@@ -86,14 +87,57 @@ instance : HasSubset (Set α) :=
 instance : EmptyCollection (Set α) :=
   ⟨fun _ ↦ False⟩
 
-syntax "{" extBinder " | " term "}" : term
+end Set
 
-macro_rules
-  | `({ $x:ident | $p }) => `(setOf fun $x:ident ↦ $p)
-  | `({ $x:ident : $t | $p }) => `(setOf fun $x:ident : $t ↦ $p)
-  | `({ $x:ident $b:binderPred | $p }) =>
-    `(setOf fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)
+namespace Mathlib.Meta
 
+/-- Set builder syntax. This can be elaborated to either a `Set` or a `Finset` depending on context.
+
+The elaborators for this syntax are located in:
+* `Init.Set` for the `Set` builder notation elaborator for syntax of the form `{x | p x}`,
+  `{x : α | p x}`, `{binder x | p x}`.
+* `Data.Finset.Basic` for the `Finset` builder notation elaborator for syntax of the form
+  `{x ∈ s | p x}`.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator for syntax of the form
+  `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator for syntax of the form
+  `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
+-/
+syntax (name := setBuilder) "{" extBinder " | " term "}" : term
+
+/-- Elaborate set builder notation for `Set`.
+
+* `{x | p x}` is elaborated as `Set.setOf fun x ↦ p x`
+* `{x : α | p x}` is elaborated as `Set.setOf fun x : α ↦ p x`
+* `{binder x | p x}`, where `x` is bound by the `binder` binder, is elaborated as
+  `{x | binder x ∧ p x}`. The typical example is `{x ∈ s | p x}`, which is elaborated as
+  `{x | x ∈ s ∧ p x}`. The possible binders are
+  * `· ∈ s`, `· ∉ s`
+  * `· ⊆ s`, `· ⊂ s`, `· ⊇ s`, `· ⊃ s`
+  * `· ≤ a`, `· ≥ a`, `· < a`, `· > a`, `· ≠ a`
+
+  More binders can be declared using the `binder_predicate` command, see `Init.BinderPredicates` for
+  more info.
+
+See also
+* `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+  syntax of the form `{x ∈ s | p x}`.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+  syntax of the form `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator partly overriding this
+  one for syntax of the form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
+-/
+@[term_elab setBuilder]
+def elabSetBuilder : TermElab
+  | `({ $x:ident | $p }), expectedType? => do
+    elabTerm (← `(setOf fun $x:ident ↦ $p)) expectedType?
+  | `({ $x:ident : $t | $p }), expectedType? => do
+    elabTerm (← `(setOf fun $x:ident : $t ↦ $p)) expectedType?
+  | `({ $x:ident $b:binderPred | $p }), expectedType? => do
+    elabTerm (← `(setOf fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+/-- Unexpander for set builder notation. -/
 @[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
@@ -148,6 +192,10 @@ def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
       else
         throw ()
   | _ => throw ()
+
+end Mathlib.Meta
+
+namespace Set
 
 /-- The universal set on a type `α` is the set containing all elements of `α`.
 
