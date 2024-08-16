@@ -36,20 +36,12 @@ open Elab Meta Term
 
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
 
-theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
-theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
 theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
-theorem pf_sub_c [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
-theorem c_sub_pf [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
 theorem sub_pf [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
 theorem neg_pf [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
 theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
 theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
-theorem mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
-theorem inv_pf [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
 theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
-theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
-theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
 
 /-- Result of `expandLinearCombo`, either an equality proof or a value. -/
 inductive Expanded
@@ -72,15 +64,13 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
   | `($e₁ + $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
-    | .proof p₁, .const c₂ => .proof <$> ``(pf_add_c $p₁ $c₂)
-    | .const c₁, .proof p₂ => .proof <$> ``(c_add_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ $p₂)
+    | _ , _ => throwError "'linear_combination' is agnostic to the addition of constants"
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
-    | .proof p₁, .const c₂ => .proof <$> ``(pf_sub_c $p₁ $c₂)
-    | .const c₁, .proof p₂ => .proof <$> ``(c_sub_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(sub_pf $p₁ $p₂)
+    | _ , _ => throwError "'linear_combination' is agnostic to the subtraction of constants"
   | `(-$e) => do
     match ← expandLinearCombo ty e with
     | .const c => .const <$> `(-$c)
@@ -94,17 +84,12 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_mul_c $p₁ $c₂)
     | .const c₁, .proof p₂ => .proof <$> ``(c_mul_pf $p₂ $c₁)
-    | .proof p₁, .proof p₂ => .proof <$> ``(mul_pf $p₁ $p₂)
-  | `($e⁻¹) => do
-    match ← expandLinearCombo ty e with
-    | .const c => .const <$> `($c⁻¹)
-    | .proof p => .proof <$> ``(inv_pf $p)
+    | .proof _, .proof _ => throwError "'linear_combination' supports only linear operations"
   | `($e₁ / $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ / $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_div_c $p₁ $c₂)
-    | .const c₁, .proof p₂ => .proof <$> ``(c_div_pf $p₂ $c₁)
-    | .proof p₁, .proof p₂ => .proof <$> ``(div_pf $p₁ $p₂)
+    | _, .proof _ => throwError "'linear_combination' supports only linear operations"
   | e =>
     -- We have the expected type from the goal, so we can fully synthesize this leaf node.
     withSynthesize do
