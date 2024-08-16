@@ -48,11 +48,13 @@ variable [AddCommMonoid k]
 @[simp]
 theorem eta (f : SkewMonoidAlgebra k G) : ofFinsupp f.toFinsupp = f := rfl
 
-private irreducible_def add :
+@[irreducible]
+private def add :
     SkewMonoidAlgebra k G → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
-private irreducible_def smul {S : Type*} [SMulZeroClass S k] :
+@[irreducible]
+private def smul {S : Type*} [SMulZeroClass S k] :
     S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | s, ⟨b⟩ => ⟨s • b⟩
 
@@ -60,22 +62,23 @@ instance instZero : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
 instance instAdd' : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
+unseal smul in
 instance instSMulZeroClass {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
-  smul_zero a := by simp only [smul_def]; exact congr_arg ofFinsupp (smul_zero a)
+  smul_zero a := by simp only [smul]; exact congr_arg ofFinsupp (smul_zero a)
 
 @[simp]
 theorem ofFinsupp_zero : (⟨0⟩ : SkewMonoidAlgebra k G) = 0 := rfl
 
 @[simp]
 theorem ofFinsupp_add {a b} : (⟨a + b⟩ : SkewMonoidAlgebra k G) = ⟨a⟩ + ⟨b⟩ :=
-  show _ = add _ _ by rw [add_def]
+  show _ = add _ _ by rw [add]
 
 @[simp]
 theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S k] (a : S) (b : G →₀ k) :
     (⟨a • b⟩ : SkewMonoidAlgebra k G) = (a • ⟨b⟩ : SkewMonoidAlgebra k G) :=
-  show _ = smul _ _ by rw [smul_def]
+  show _ = smul _ _ by rw [smul]
 
 @[simp]
 theorem toFinsupp_zero : (0 : SkewMonoidAlgebra k G).toFinsupp = 0 := rfl
