@@ -522,7 +522,7 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
   induction n with
   | zero =>
     ext w m
-    simp only [iteratedFDeriv_zero_apply, Nat.zero_eq, fourierPowSMulRight_apply, pow_zero,
+    simp only [iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero,
       Finset.univ_eq_empty, ContinuousLinearMap.neg_apply, ContinuousLinearMap.flip_apply,
       Finset.prod_empty, one_smul, fourierIntegral_continuousMultilinearMap_apply' ((h'f 0 bot_le))]
   | succ n ih =>

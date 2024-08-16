@@ -169,7 +169,7 @@ theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n * powHalf n = 1 := by
 @[simp]
 theorem nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n * powHalf (n + k) = powHalf k := by
   induction' k with k hk
-  · simp only [add_zero, Surreal.nsmul_pow_two_powHalf, Nat.zero_eq, eq_self_iff_true,
+  · simp only [add_zero, Surreal.nsmul_pow_two_powHalf, eq_self_iff_true,
       Surreal.powHalf_zero]
   · rw [← double_powHalf_succ_eq_powHalf (n + k), ← double_powHalf_succ_eq_powHalf k,
       ← mul_assoc, mul_comm (2 ^ n) 2, mul_assoc] at hk

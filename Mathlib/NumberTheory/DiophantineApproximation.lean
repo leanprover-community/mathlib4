@@ -341,14 +341,14 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, convergent_zero, floor_zero, cast_zero]
+  · simp only [convergent_zero, floor_zero, cast_zero]
   · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
 theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
   cases n
-  · simp only [Nat.zero_eq, convergent_zero, floor_intCast]
+  · simp only [convergent_zero, floor_intCast]
   · simp only [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
       inv_zero]
 
@@ -363,7 +363,7 @@ open GenContFract
 theorem convs_eq_convergent (ξ : ℝ) (n : ℕ) :
     (GenContFract.of ξ).convs n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
-  · simp only [Nat.zero_eq, zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
+  · simp only [zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
   · rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
     norm_cast
 
