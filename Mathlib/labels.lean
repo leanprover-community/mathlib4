@@ -7,24 +7,8 @@ def algebra : Label where
   dirs := #["Algebra", "FieldTheory", "RingTheory", "GroupTheory", "RepresentationTheory",
             "LinearAlgebra"]
 
-open Lean Elab Command
-run_cmd
-  let le := labelsExt.getState (← getEnv)
-  let newEnv := labelsExt.addEntry (← getEnv) `algebra
-  setEnv newEnv
-  let le := labelsExt.getState (← getEnv)
-  let gle ← liftCoreM do getLabel `algebra `AutoLabel.Label.algebra
-  dbg_trace (gle.name, gle.declName)
-  --_
-
 /-- The `t-algebraic-geometry` label. -/
 def algebraic_geometry : Label where dirs := #["AlgebraicGeometry", "Geometry/RingedSpace" ]
-
-/-- The `t-euclidean-geometry` label. -/
-def euclidean_geometry : Label where dirs := #["Geometry/Euclidean"]
-
-/-- The `t-differential-geometry` label. -/
-def differential_geometry : Label where dirs := #["Geometry/Manifold"]
 
 /-- The `t-analysis` label. -/
 def analysis : Label where
@@ -44,8 +28,14 @@ def condensed : Label where
 /-- The `t-data` label. -/
 def data : Label where
 
+/-- The `t-differential-geometry` label. -/
+def differential_geometry : Label where dirs := #["Geometry/Manifold"]
+
 /-- The `t-dynamics` label. -/
 def dynamics : Label where
+
+/-- The `t-euclidean-geometry` label. -/
+def euclidean_geometry : Label where dirs := #["Geometry/Euclidean"]
 
 /-- The `t-linter` label. -/
 def linter : Label where dirs := #["Tactic/Linter"]
@@ -65,13 +55,49 @@ def number_theory : Label where
 /-- The `t-order` label. -/
 def order : Label where
 
-/-- The `t-topology` label. -/
-def topology : Label where dirs := #["Topology", "AlgebraicTopology"]
-
 /-- The `t-set-theory` label. -/
 def set_theory : Label where
 
+/-- The `t-topology` label. -/
+def topology : Label where dirs := #["Topology", "AlgebraicTopology"]
+
+add_label algebra dirs: Algebra FieldTheory RingTheory GroupTheory RepresentationTheory LinearAlgebra
+add_label algebraic_geometry dirs: AlgebraicGeometry Geometry.RingedSpace
+add_label analysis
+add_label category_theory
+add_label combinatorics
+add_label computability
+add_label condensed
+add_label data
+add_label differential_geometry dirs: Geometry.Manifold
+add_label dynamics
+add_label euclidean_geometry dirs: Geometry.Euclidean
+add_label linter dirs: Tactic.Linter
+add_label logic dirs: Logic ModelTheory
+add_label measure_probability dirs: MeasureTheory Probability InformationTheory
+add_label meta dirs: Tactic exclusions: Tactic.Linter
+add_label number_theory
+add_label order
+add_label set_theory
+add_label topology dirs: Topology AlgebraicTopology
+
+check_labels
+
+#exit
+
 def gd : String := "SetTheory/Ordinals/Basic.lean"
+
+/-
+open Lean Elab Command
+run_cmd
+  let le := labelsExt.getState (← getEnv)
+  let newEnv := labelsExt.addEntry (← getEnv) `algebra
+  setEnv newEnv
+  let le := labelsExt.getState (← getEnv)
+  let gle ← liftCoreM do getLabel `algebra `AutoLabel.Label.algebra
+  dbg_trace (gle.name, gle.declName)
+  --_
+-/
 
 /-- info: #["t-set-theory"] -/
 #guard_msgs in
@@ -80,7 +106,6 @@ def gd : String := "SetTheory/Ordinals/Basic.lean"
 /-- info: #["t-set-theory", "t-order"] -/
 #guard_msgs in
 #eval getLabels #[meta, order, set_theory] #["SetTheory/Ordinals/Basic.lean", "Order/Min/Sup.lean"]
-
 def labeling : HashMap String String := HashMap.empty
   |>.insert "Algebra"              "t-algebra"
   |>.insert "FieldTheory"          "t-algebra"

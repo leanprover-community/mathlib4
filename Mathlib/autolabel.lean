@@ -45,7 +45,7 @@ namespace Label
 
 /-- Defines the `labelsExt` extension for adding the `Name` of a `Label` to the environment. -/
 initialize labelsExt :
-    PersistentEnvExtension Name Name (Array Name) ←
+    PersistentEnvExtension Label Label (Array Label) ←
   let addEntryFn := .push
   registerPersistentEnvExtension {
     mkInitial := pure {}
@@ -54,24 +54,33 @@ initialize labelsExt :
     exportEntriesFn := id --fun es => es.foldl (fun a _ e => a.push e) #[]
   }
 
-syntax (name := auto_label) "label" : attr
+open Lean Elab Command
 
-initialize registerBuiltinAttribute {
-  name := `auto_label
-  descr := "Add this `Label` to the set of available `Label` for automatic GitHub labelling"
-  add   := fun decl _stx _kind => do
-    --let dflt := stx[1].isNone
-    --unless kind == .global do throwError "invalid attribute 'env_linter', must be global"
-    --let shortName := decl.updatePrefix .anonymous
-    --if let some (declName, _) := (batteriesLinterExt.getState (← getEnv)).find? shortName then
-    --  Elab.addConstInfo stx declName
-    --  throwError
-    --    "invalid attribute 'env_linter', linter '{shortName}' has already been declared"
-    let constInfo ← getConstInfo decl
-    unless ← (Meta.isDefEq constInfo.type (mkConst ``Label)).run' do
-      throwError "must have type Label, got {constInfo.type}"
-    modifyEnv fun env => labelsExt.addEntry env decl
-}
+syntax "add_label " ident ("label: " ident*)? ("dirs: " ident*)? ("exclusions: " ident*)? : command
+
+elab_rules : command
+    | `(command| add_label $id) => do
+      setEnv <| labelsExt.addEntry (← getEnv) {
+        label := "t-" ++ id.getId.toString.replace "_" "-"
+        dirs := #[(id.getId.toString.splitOn "_").foldl (· ++ ·.capitalize) ""]
+      }
+    | `(command| add_label $id dirs: $dirs*) => do
+      setEnv <| labelsExt.addEntry (← getEnv) {
+        label := "t-" ++ id.getId.toString.replace "_" "-"
+        dirs := dirs.map fun d => (d.getId.toString.splitOn "_").foldl (· ++ ·.capitalize) ""
+      }
+    | `(command| add_label $id dirs: $dirs* exclusions: $excs*) => do
+      setEnv <| labelsExt.addEntry (← getEnv) {
+        label := "t-" ++ id.getId.toString.replace "_" "-"
+        dirs := dirs.map fun d => (d.getId.toString.splitOn "_").foldl (· ++ ·.capitalize) ""
+        exclusions := excs.map (·.getId.toString)
+      }
+
+elab "check_labels" : command => do
+  let le := labelsExt.getState (← getEnv)
+  for l in le do
+    logInfo m!"label: {l.label}\ndirs: {l.dirs}\nexclusions: {l.exclusions}"
+
 /--
 `findLabel? l modifiedFile` takes as input a `Label` `l` and a string `modifiedFile` and checks
 if there is a string in `l.dirs` that is a prefix to `s`.
