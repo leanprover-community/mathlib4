@@ -133,14 +133,14 @@ lemma div {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromo
   (div_eq_mul_inv f g).symm ▸ (hf.mul hg.inv)
 
 lemma pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
-  induction' n with m hm
-  · simpa only [pow_zero] using MeromorphicAt.const 1 x
-  · simpa only [pow_succ] using hm.mul hf
+  induction n with
+  | zero => simpa only [pow_zero] using MeromorphicAt.const 1 x
+  | succ m hm => simpa only [pow_succ] using hm.mul hf
 
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
-  induction' n with m m
-  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
-  · simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
+  induction n with
+  | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
+  | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
 
 /-- The order of vanishing of a meromorphic function, as an element of `ℤ ∪ ∞` (to include the
 case of functions identically 0 near `x`). -/
