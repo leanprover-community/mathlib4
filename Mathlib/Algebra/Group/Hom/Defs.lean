@@ -312,7 +312,7 @@ variable [MulOneClass M] [MulOneClass N]
 /-- `M →* N` is the type of functions `M → N` that preserve the `Monoid` structure.
 `MonoidHom` is also used for group homomorphisms.
 
-When possible, instead of parametrizing results over `(f : M →+ N)`,
+When possible, instead of parametrizing results over `(f : M →* N)`,
 you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidHomClass`.
