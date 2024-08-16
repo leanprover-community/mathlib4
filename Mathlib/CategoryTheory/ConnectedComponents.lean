@@ -36,6 +36,12 @@ variable {J : Type u₁} [Category.{v₁} J]
 def ConnectedComponents (J : Type u₁) [Category.{v₁} J] : Type u₁ :=
   Quotient (Zigzag.setoid J)
 
+/-- Functors are mapped to functions from the connected components of their domain and target -/
+def Functor.mapConnectedComponents  {K : Type u₂} [Category.{v₂} K] (F : J ⥤ K) :
+    ConnectedComponents J → ConnectedComponents K :=
+  Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj)
+    (fun _ _ ↦ Quot.sound ∘ zigzag_obj_of_zigzag F)
+
 instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
   ⟨Quotient.mk'' default⟩
 
