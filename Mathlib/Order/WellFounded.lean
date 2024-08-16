@@ -280,3 +280,16 @@ theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFo
   StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
 
 end WellFoundedLT
+
+/-- A nonempty linear order with well-founded `<` has a bottom element. -/
+noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
+    OrderBot α where
+  bot := h.wf.min Set.univ Set.univ_nonempty
+  bot_le a := h.wf.min_le (Set.mem_univ a)
+
+/-- A nonempty linear order with well-founded `>` has a top element. -/
+noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [h : WellFoundedGT α] :
+    OrderTop α := by
+  change OrderTop (αᵒᵈᵒᵈ)
+  have := WellFoundedLT.toOrderBot (α := αᵒᵈ)
+  infer_instance
