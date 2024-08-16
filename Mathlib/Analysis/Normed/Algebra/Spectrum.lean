@@ -596,7 +596,7 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
     all_goals ext; simp
   apply hS.mem_of_tendsto hla₂
   rw [Filter.eventually_map]
-  apply hl.mp <| eventually_of_forall fun x hx ↦ ?_
+  apply hl.mono fun x hx ↦ ?_
   suffices Ring.inverse (val S x) = (val S ↑hx.unit⁻¹) from this ▸ Subtype.property _
   rw [← (hx.map (val S)).unit_spec, Ring.inverse_unit (hx.map (val S)).unit, val]
   apply Units.mul_eq_one_iff_inv_eq.mp

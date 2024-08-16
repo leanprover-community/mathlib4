@@ -75,3 +75,5 @@ elab_rules : tactic
       evalTactic (← `(tactic| have%$tk
         $h : ($(← Term.exprToSyntax vale) : $(← Term.exprToSyntax ty)) = $a := rfl))
     | _, _ => pure ()
+
+end Mathlib.Tactic

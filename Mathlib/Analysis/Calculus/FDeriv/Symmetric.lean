@@ -319,4 +319,4 @@ theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E �
 derivative is symmetric. -/
 theorem second_derivative_symmetric {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
-  second_derivative_symmetric_of_eventually (Filter.eventually_of_forall hf) hx v w
+  second_derivative_symmetric_of_eventually (Filter.Eventually.of_forall hf) hx v w

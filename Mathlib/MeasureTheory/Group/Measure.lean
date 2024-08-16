@@ -277,9 +277,7 @@ end Group
 
 namespace Measure
 
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
+-- TODO: noncomputable has to be specified explicitly. #1074 (item 8)
 
 /-- The measure `A ↦ μ (A⁻¹)`, where `A⁻¹` is the pointwise inverse of `A`. -/
 @[to_additive "The measure `A ↦ μ (- A)`, where `- A` is the pointwise negation of `A`."]

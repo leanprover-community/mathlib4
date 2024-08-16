@@ -281,3 +281,5 @@ initialize
   registerAlias `subscript ``subscript subscript
   registerAliasCore Formatter.formatterAliasesRef `subscript subscript.formatter
   registerAliasCore Parenthesizer.parenthesizerAliasesRef `subscript subscript.parenthesizer
+
+end Mathlib.Tactic
