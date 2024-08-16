@@ -96,7 +96,6 @@ uniform space, separated space, Hausdorff space, separation quotient
 -/
 
 open Filter Set Function Topology Uniformity UniformSpace
-open scoped Classical
 
 noncomputable section
 
@@ -248,6 +247,7 @@ theorem uniformContinuous_uncurry_lift₂ {f : α → β → γ}
 theorem comap_mk_uniformity : (𝓤 (SeparationQuotient α)).comap (Prod.map mk mk) = 𝓤 α :=
   comap_map_mk_uniformity
 
+open Classical in
 /-- Factoring functions to a separated space through the separation quotient.
 
 TODO: unify with `SeparationQuotient.lift`. -/

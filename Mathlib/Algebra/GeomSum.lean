@@ -5,6 +5,7 @@ Authors: Neil Strickland
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Abs
@@ -122,7 +123,7 @@ theorem neg_one_geom_sum [Ring α] {n : ℕ} :
     simp only [geom_sum_succ', Nat.even_add_one, hk]
     split_ifs with h
     · rw [h.neg_one_pow, add_zero]
-    · rw [(Nat.odd_iff_not_even.2 h).neg_one_pow, neg_add_self]
+    · rw [(Nat.odd_iff_not_even.2 h).neg_one_pow, neg_add_cancel]
 
 theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * x ^ (n - 1 - i) = n * x ^ (n - 1) :=
@@ -174,6 +175,13 @@ theorem Commute.sub_dvd_pow_sub_pow [Ring α] {x y : α} (h : Commute x y) (n : 
 theorem sub_dvd_pow_sub_pow [CommRing α] (x y : α) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
   (Commute.all x y).sub_dvd_pow_sub_pow n
 
+theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
+  rcases le_or_lt y x with h | h
+  · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
+    exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
+  · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
+    exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
+
 theorem one_sub_dvd_one_sub_pow [Ring α] (x : α) (n : ℕ) :
     1 - x ∣ 1 - x ^ n := by
   conv_rhs => rw [← one_pow n]
@@ -184,12 +192,15 @@ theorem sub_one_dvd_pow_sub_one [Ring α] (x : α) (n : ℕ) :
   conv_rhs => rw [← one_pow n]
   exact (Commute.one_right x).sub_dvd_pow_sub_pow n
 
-theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
-  rcases le_or_lt y x with h | h
-  · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
-    exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
-  · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
-    exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
+lemma pow_one_sub_dvd_pow_mul_sub_one [Ring α] (x : α) (m n : ℕ) :
+    ((x ^ m) - 1 : α) ∣ (x ^ (m * n) - 1) := by
+  rw [npow_mul]
+  exact sub_one_dvd_pow_sub_one (x := x ^ m) (n := n)
+
+lemma nat_pow_one_sub_dvd_pow_mul_sub_one (x m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
+  nth_rw 2 [← Nat.one_pow n]
+  rw [Nat.pow_mul x m n]
+  apply nat_sub_dvd_pow_sub_pow (x ^ m) 1
 
 theorem Odd.add_dvd_pow_add_pow [CommRing α] (x y : α) {n : ℕ} (h : Odd n) :
     x + y ∣ x ^ n + y ^ n := by
@@ -344,11 +355,11 @@ theorem geom_sum_inv [DivisionRing α] {x : α} (hx1 : x ≠ 1) (hx0 : x ≠ 0) 
   have h₃ : x - 1 ≠ 0 := mt sub_eq_zero.1 hx1
   have h₄ : x * (x ^ n)⁻¹ = (x ^ n)⁻¹ * x :=
     Nat.recOn n (by simp) fun n h => by
-      rw [pow_succ', mul_inv_rev, ← mul_assoc, h, mul_assoc, mul_inv_cancel hx0, mul_assoc,
-        inv_mul_cancel hx0]
+      rw [pow_succ', mul_inv_rev, ← mul_assoc, h, mul_assoc, mul_inv_cancel₀ hx0, mul_assoc,
+        inv_mul_cancel₀ hx0]
   rw [geom_sum_eq h₁, div_eq_iff_mul_eq h₂, ← mul_right_inj' h₃, ← mul_assoc, ← mul_assoc,
-    mul_inv_cancel h₃]
-  simp [mul_add, add_mul, mul_inv_cancel hx0, mul_assoc, h₄, sub_eq_add_neg, add_comm,
+    mul_inv_cancel₀ h₃]
+  simp [mul_add, add_mul, mul_inv_cancel₀ hx0, mul_assoc, h₄, sub_eq_add_neg, add_comm,
     add_left_comm]
   rw [add_comm _ (-x), add_assoc, add_assoc _ _ 1]
 
@@ -429,7 +440,7 @@ theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 �
     if Even n then (∑ i ∈ range n, x ^ i) ≤ 0 else 1 ≤ ∑ i ∈ range n, x ^ i := by
   have hx0 : x ≤ 0 := (le_add_of_nonneg_right zero_le_one).trans hx
   induction n with
-  | zero => simp only [Nat.zero_eq, range_zero, sum_empty, le_refl, ite_true, even_zero]
+  | zero => simp only [range_zero, sum_empty, le_refl, ite_true, even_zero]
   | succ n ih =>
     simp only [Nat.even_add_one, geom_sum_succ]
     split_ifs at ih with h

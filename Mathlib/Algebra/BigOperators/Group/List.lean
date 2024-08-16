@@ -21,9 +21,7 @@ of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their a
 counterparts.
 -/
 
--- Make sure we haven't imported `Data.Nat.Order.Basic`
-assert_not_exists OrderedSub
-assert_not_exists Ring
+assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
 
@@ -119,10 +117,9 @@ theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
 
 @[to_additive (attr := simp)]
 theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
-  induction' n with n ih
-  · rw [pow_zero]
-    rfl
-  · rw [replicate_succ, prod_cons, ih, pow_succ']
+  induction n with
+  | zero => rw [pow_zero]; rfl
+  | succ n ih => rw [replicate_succ, prod_cons, ih, pow_succ']
 
 @[to_additive sum_eq_card_nsmul]
 theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
@@ -415,7 +412,7 @@ theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => 
 @[to_additive (attr := simp)
   "Counterpart to `List.sum_take_succ` when we have a negation operation"]
 theorem prod_drop_succ :
-    ∀ (L : List G) (i : ℕ) (p), (L.drop (i + 1)).prod = (L.get ⟨i, p⟩)⁻¹ * (L.drop i).prod
+    ∀ (L : List G) (i : ℕ) (p : i < L.length), (L.drop (i + 1)).prod = L[i]⁻¹ * (L.drop i).prod
   | [], i, p => False.elim (Nat.not_lt_zero _ p)
   | x :: xs, 0, _ => by simp
   | x :: xs, i + 1, p => prod_drop_succ xs i _
@@ -424,9 +421,10 @@ theorem prod_drop_succ :
 @[to_additive "Cancellation of a telescoping sum."]
 theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
     ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
-  induction' n with n h
-  · exact (div_self' (f 0)).symm
-  · rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
+  induction n with
+  | zero => exact (div_self' (f 0)).symm
+  | succ n h =>
+    rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
 
 lemma prod_rotate_eq_one_of_prod_eq_one :
     ∀ {l : List G} (_ : l.prod = 1) (n : ℕ), (l.rotate n).prod = 1
@@ -435,7 +433,7 @@ lemma prod_rotate_eq_one_of_prod_eq_one :
     have : n % List.length (a :: l) ≤ List.length (a :: l) := le_of_lt (Nat.mod_lt _ (by simp))
     rw [← List.take_append_drop (n % List.length (a :: l)) (a :: l)] at hl
     rw [← rotate_mod, rotate_eq_drop_append_take this, List.prod_append, mul_eq_one_iff_inv_eq,
-      ← one_mul (List.prod _)⁻¹, ← hl, List.prod_append, mul_assoc, mul_inv_self, mul_one]
+      ← one_mul (List.prod _)⁻¹, ← hl, List.prod_append, mul_assoc, mul_inv_cancel, mul_one]
 
 end Group
 
@@ -459,7 +457,7 @@ theorem prod_range_div (n : ℕ) (f : ℕ → G) :
 /-- Alternative version of `List.prod_set` when the list is over a group -/
 @[to_additive "Alternative version of `List.sum_set` when the list is over a group"]
 theorem prod_set' (L : List G) (n : ℕ) (a : G) :
-    (L.set n a).prod = L.prod * if hn : n < L.length then (L.get ⟨n, hn⟩)⁻¹ * a else 1 := by
+    (L.set n a).prod = L.prod * if hn : n < L.length then L[n]⁻¹ * a else 1 := by
   refine (prod_set L n a).trans ?_
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←

@@ -21,6 +21,7 @@ in the do block are combined.
 
 -/
 
+import Mathlib.Init
 /-! StateList -/
 
 namespace Mathlib.Meta.FunProp
