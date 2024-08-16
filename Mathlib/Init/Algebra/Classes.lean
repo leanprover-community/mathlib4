@@ -273,6 +273,18 @@ theorem asymm [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
 theorem trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   IsTrichotomous.trichotomous
 
+theorem trans_lt_le [IsStrictTotalOrder α r] {a b c : α} (hab : a ≺ b) (hcb : ¬ c ≺ b) : a ≺ c := by
+  rcases @trichotomous α r _ b c with (lt | rfl | gt)
+  · exact _root_.trans hab lt
+  · exact hab
+  · exact (hcb gt).elim
+
+theorem trans_le_lt [IsStrictTotalOrder α r] {a b c : α} (hab : ¬ b ≺ a) (hcb : b ≺ c) : a ≺ c := by
+  rcases @trichotomous α r _ a b with (lt | rfl | gt)
+  · exact _root_.trans lt hcb
+  · exact hcb
+  · exact (hab gt).elim
+
 theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
     ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   IsIncompTrans.incomp_trans _ _ _
