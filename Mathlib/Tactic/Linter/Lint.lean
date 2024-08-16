@@ -90,14 +90,14 @@ def getIds : Syntax → Array Syntax
   | _ => default
 
 @[inherit_doc linter.dupNamespace]
-def dupNamespace : Linter where run := withSetOptionIn fun stx => do
+def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
     match getIds stx with
       | #[id] =>
         let ns := (← getScope).currNamespace
         let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
         let nm := declName.components
-        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
+        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
           | return
         Linter.logLint linter.dupNamespace id
           m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
@@ -200,7 +200,7 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 namespace CDotLinter
 
 @[inherit_doc linter.cdot]
-def cdotLinter : Linter where run := withSetOptionIn fun stx => do
+def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.cdot (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
@@ -254,7 +254,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
-    let longLines := ((sstr.getD default).splitOn "\n").filter fun line =>
+    let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if !(line.containsSubstr "http") then
