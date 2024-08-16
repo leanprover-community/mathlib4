@@ -11,9 +11,8 @@ import Mathlib.Topology.Instances.Discrete
 # Topology on extended natural numbers
 -/
 
-open Set
-
-open scoped Topology Filter
+open Set Filter
+open scoped Topology
 
 namespace ENat
 
@@ -53,5 +52,22 @@ instance : ContinuousAdd ℕ∞ := by
   | ⊤, _ => exact tendsto_nhds_top_mono' continuousAt_fst fun p ↦ le_add_right le_rfl
   | (a : ℕ), ⊤ => exact tendsto_nhds_top_mono' continuousAt_snd fun p ↦ le_add_left le_rfl
   | (a : ℕ), (b : ℕ) => simp [ContinuousAt, nhds_prod_eq, tendsto_pure_nhds]
+
+instance : ContinuousMul ℕ∞ where
+  continuous_mul :=
+    have key (a : ℕ∞) : ContinuousAt (· * ·).uncurry (a, ⊤) := by
+      rcases (zero_le a).eq_or_gt with rfl | ha
+      · simp [ContinuousAt, nhds_prod_eq]
+      · simp only [ContinuousAt, Function.uncurry, mul_top ha.ne']
+        refine tendsto_nhds_top_mono continuousAt_snd ?_
+        filter_upwards [continuousAt_fst (lt_mem_nhds ha)] with (x, y) (hx : 0 < x)
+        exact le_mul_of_one_le_left (zero_le y) (ENat.one_le_iff_pos.2 hx)
+    continuous_iff_continuousAt.2 <| Prod.forall.2 fun
+      | (a : ℕ∞), ⊤ => key a
+      | ⊤, (b : ℕ∞) =>
+        ((key b).comp_of_eq (continuous_swap.tendsto (⊤, b)) rfl).congr <|
+          eventually_of_forall fun _ ↦ mul_comm ..
+      | (a : ℕ), (b : ℕ) => by
+        simp [ContinuousAt, nhds_prod_eq, tendsto_pure_nhds]
 
 end ENat
