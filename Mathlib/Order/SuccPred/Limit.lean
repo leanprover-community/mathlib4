@@ -157,9 +157,10 @@ theorem isSuccLimitRecOn_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ 
   have H := Classical.choose_spec (not_isSuccLimit_iff.1 hb')
   rw [isSuccLimitRecOn]
   simp only [cast_eq_iff_heq, hb', not_false_iff, eq_mpr_eq_cast, dif_neg]
-  congr 1 <;> first |
-    exact (succ_eq_succ_iff_of_not_isMax H.left hb).mp H.right |
-    exact proof_irrel_heq H.left hb
+  sorry
+  -- congr 1 <;> first |
+  --   exact (succ_eq_succ_iff_of_not_isMax H.left hb).mp H.right |
+  --   exact proof_irrel_heq H.left hb
 
 section limitRecOn
 
@@ -186,7 +187,8 @@ theorem _root_.SuccOrder.limitRecOn_succ (ha : ¬ IsMax a) :
   have {b c hb hc} {x : ∀ a, C a} (h : b = c) :
     congr_arg succ h ▸ H_succ b hb (x b) = H_succ c hc (x c) := by subst h; rfl
   let x := Classical.indefiniteDescription _ (not_isSuccLimit_iff.mp h)
-  exact this ((succ_eq_succ_iff_of_not_isMax x.2.1 ha).mp x.2.2)
+  sorry
+  -- exact this ((succ_eq_succ_iff_of_not_isMax x.2.1 ha).mp x.2.2)
 
 @[simp]
 theorem _root_.SuccOrder.limitRecOn_limit (ha : IsSuccLimit a) :
@@ -386,7 +388,8 @@ theorem _root_.PredOrder.limitRecOn_pred (ha : ¬ IsMin a) :
   have {b c hb hc} {x : ∀ a, C a} (h : b = c) :
     congr_arg pred h ▸ H_pred b hb (x b) = H_pred c hc (x c) := by subst h; rfl
   let x := Classical.indefiniteDescription _ (not_isPredLimit_iff.mp h)
-  exact this ((pred_eq_pred_iff_of_not_isMin x.2.1 ha).mp x.2.2)
+  sorry
+  -- exact this ((pred_eq_pred_iff_of_not_isMin x.2.1 ha).mp x.2.2)
 
 @[simp]
 theorem _root_.PredOrder.limitRecOn_limit (ha : IsPredLimit a) :

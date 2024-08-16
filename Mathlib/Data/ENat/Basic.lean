@@ -46,7 +46,7 @@ namespace ENat
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
 instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
-instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
+instance : StrongSuccOrder ℕ∞ := inferInstanceAs (StrongSuccOrder (WithTop ℕ))
 instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 instance : IsWellOrder ℕ∞ (· < ·) where

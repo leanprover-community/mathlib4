@@ -683,8 +683,8 @@ lemma iInf_eq_zero_iff {ι : Sort*} {f : ι → Cardinal} :
   simp [iInf, sInf_eq_zero_iff]
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
-instance : SuccOrder Cardinal :=
-  SuccOrder.ofSuccLeIff (fun c => sInf { c' | c < c' })
+instance : StrongSuccOrder Cardinal :=
+  StrongSuccOrder.ofSuccLeIff (fun c => sInf { c' | c < c' })
     -- Porting note: Needed to insert `by apply` in the next line
     ⟨by apply lt_of_lt_of_le <| csInf_mem <| exists_gt _,
     -- Porting note used to be just `csInf_le'`

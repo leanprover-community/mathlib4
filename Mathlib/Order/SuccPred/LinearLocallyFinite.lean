@@ -104,15 +104,15 @@ theorem le_of_lt_succFn (j i : ι) (hij : j < succFn i) : j ≤ i := by
   rw [mem_lowerBounds] at hk_lb
   exact not_lt.mp fun hi_lt_j ↦ not_le.mpr hk (hk_lb j hi_lt_j)
 
-noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι where
+noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : StrongSuccOrder ι where
   succ := succFn
   le_succ := le_succFn
   max_of_succ_le h := isMax_of_succFn_le _ h
   succ_le_of_lt h := succFn_le_of_lt _ _ h
   le_of_lt_succ h := le_of_lt_succFn _ _ h
 
-noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : PredOrder ι :=
-  (inferInstance : PredOrder (OrderDual ιᵒᵈ))
+noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : StrongPredOrder ι :=
+  (inferInstance : StrongPredOrder (OrderDual ιᵒᵈ))
 
 end LinearLocallyFiniteOrder
 
@@ -156,7 +156,7 @@ instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [S
     refine ⟨n, ?_⟩
     rw [← hn_eq]
     induction' n with n
-    · simp only [Function.iterate_zero, id]
+    · simp only [Nat.zero_eq, Function.iterate_zero, id]
     · rw [pred_succ_iterate_of_not_isMax]
       rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
       suffices succ^[n] i < succ^[n.succ] i from not_isMax_of_lt this
@@ -240,7 +240,7 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :
 theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     toZ i0 (pred^[n] i0) = -n := by
   cases' n with n n
-  · simp only [Function.iterate_zero, id, toZ_of_eq, Nat.cast_zero, neg_zero]; rfl
+  · simp only [Nat.zero_eq, Function.iterate_zero, id, toZ_of_eq, Nat.cast_zero, neg_zero]; rfl
   have : pred^[n.succ] i0 < i0 := by
     refine lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq ↦ hn ?_
     have h_pred_eq_pred : pred^[n.succ] i0 = pred^[0] i0 := by
