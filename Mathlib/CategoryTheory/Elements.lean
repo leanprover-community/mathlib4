@@ -70,7 +70,7 @@ def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.
   obj := fun ⟨X, x⟩ ↦ ⟨_, φ.app X x⟩
   map {p q} := fun ⟨f,h⟩ ↦ ⟨f, by have hb := congrFun (φ.naturality f) p.2; aesop_cat⟩
 
-/-- The functor mapping functors (C ⥤ Type w) to their category of elements -/
+/-- The functor mapping functors `C ⥤ Type w` to their category of elements -/
 @[simps]
 def Functor.elementsFunctor : (C ⥤ Type w) ⥤ Cat where
   obj F := Cat.of F.Elements
