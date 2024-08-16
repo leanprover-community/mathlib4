@@ -279,7 +279,7 @@ lemma map'_eq_hom₁ (F : ComposableArrows C 1) : F.map' 0 1 = F.hom := rfl
 lemma ext₁ {F G : ComposableArrows C 1}
     (left : F.left = G.left) (right : F.right = G.right)
     (w : F.hom = eqToHom left ≫ G.hom ≫ eqToHom right.symm) : F = G :=
-  Functor.ext_of_iso (isoMk₁ (eqToIso left) (eqToIso right) (by simp [map'_eq_hom₁, w]))
+  Functor.ext_of_iso (isoMk₁ (eqToIso left) (eqToIso right) (by rw [map'_eq_hom₁, w]; simp))
     (fun i => by fin_cases i <;> assumption)
     (fun i => by fin_cases i <;> rfl)
 
