@@ -13,7 +13,7 @@ abbrev whiskeringRight₃ {D : Type*} [Category D] :
     (C₄ ⥤ D) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ D) :=
   (whiskeringRight C₃ _ _) ⋙ (whiskeringRight C₂ _ _) ⋙ (whiskeringRight C₁ _ _)
 
-@[simps! obj map_app_app_app]
+@[simps]
 def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
     (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) where
   obj G := bifunctorComp₁₂ F₁₂ G
@@ -36,8 +36,7 @@ def bifunctorComp₁₂FunctorMap {F₁₂ F₁₂' : C₁ ⥤ C₂ ⥤ C₁₂}
   app := fun G ↦
     { app := fun X₁ ↦
         { app := fun X₂ ↦
-            { app := fun X₃ ↦ (G.map ((φ.app X₁).app X₂)).app X₃
-               }
+            { app := fun X₃ ↦ (G.map ((φ.app X₁).app X₂)).app X₃ }
           naturality := fun X₂ Y₂ f ↦ by
             ext X₃
             dsimp
@@ -55,6 +54,42 @@ def bifunctorComp₁₂FunctorMap {F₁₂ F₁₂' : C₁ ⥤ C₂ ⥤ C₁₂}
 def bifunctorComp₁₂Functor : (C₁ ⥤ C₂ ⥤ C₁₂) ⥤ (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) where
   obj := bifunctorComp₁₂FunctorObj
   map := bifunctorComp₁₂FunctorMap
+
+@[simps]
+def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :
+    (C₂ ⥤ C₃ ⥤ C₂₃) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) where
+  obj G₂₃ := bifunctorComp₂₃ F G₂₃
+  map {G₂₃ G₂₃'} φ :=
+    { app := fun X₁ ↦
+        { app := fun X₂ ↦
+            { app := fun X₃ ↦ (F.obj X₁).map ((φ.app X₂).app X₃)
+              naturality := fun X₃ Y₃ f ↦ by
+                dsimp
+                simp only [← Functor.map_comp, NatTrans.naturality] }
+          naturality := fun X₂ Y₂ f ↦ by
+            ext X₃
+            dsimp
+            simp only [← NatTrans.comp_app, ← Functor.map_comp, NatTrans.naturality] } }
+
+@[simps]
+def bifunctorComp₂₃FunctorMap {F F' : C₁ ⥤ C₂₃ ⥤ C₄} (φ : F ⟶ F') :
+    bifunctorComp₂₃FunctorObj F (C₂ := C₂) (C₃ := C₃) ⟶ bifunctorComp₂₃FunctorObj F' where
+  app G₂₃ :=
+    { app := fun X₁ ↦
+        { app := fun X₂ ↦
+            { app := fun X₃ ↦ (φ.app X₁).app ((G₂₃.obj X₂).obj X₃)
+              naturality := by aesop_cat }
+          naturality := by aesop_cat }
+      naturality := fun X₁ Y₁ f ↦ by
+        ext X₂ X₃
+        dsimp
+        simp only [← NatTrans.comp_app, NatTrans.naturality] }
+
+@[simps]
+def bifunctorComp₂₃Functor :
+    (C₁ ⥤ C₂₃ ⥤ C₄) ⥤ (C₂ ⥤ C₃ ⥤ C₂₃) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) where
+  obj := bifunctorComp₂₃FunctorObj
+  map := bifunctorComp₂₃FunctorMap
 
 variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
 
@@ -235,6 +270,7 @@ theorem natTrans₃_ext {τ τ' : F₁' ⟶ F₂'}
   uncurry₃.map_injective (natTrans_ext (L₁.prod (L₂.prod L₃)) (W₁.prod (W₂.prod W₃))
     (fun _ ↦ h _ _ _))
 
+@[simps]
 noncomputable def lift₃NatIso : F₁' ≅ F₂' where
   hom := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₂ F₁' F₂' e.hom
   inv := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₁ F₂' F₁' e.inv
@@ -253,8 +289,7 @@ variable {C₁ C₂ C₃ C₁₂ C₂₃ C : Type*} [Category C₁] [Category C�
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
   (W₁₂ : MorphismProperty C₁₂) (W₂₃ : MorphismProperty C₂₃) (W : MorphismProperty C)
   [W₁.ContainsIdentities] [W₂.ContainsIdentities] [W₃.ContainsIdentities]
-  [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] [L₃.IsLocalization W₃]
-  [L₁₂.IsLocalization W₁₂] [L₂₃.IsLocalization W₂₃] [L.IsLocalization W]
+  [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] [L₃.IsLocalization W₃] [L.IsLocalization W]
   (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C)
   (F : C₁ ⥤ C₂₃ ⥤ C) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
   (iso : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
@@ -280,14 +315,37 @@ variable {C₁ C₂ C₃ C₁₂ C₂₃ C : Type*} [Category C₁] [Category C�
 noncomputable def Lifting₃.bifunctorComp₂₃ :
     Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
       ((whiskeringRight₃.obj L).obj (bifunctorComp₂₃ F G₂₃))
-      (bifunctorComp₂₃ F' G₂₃') := by
-  have : L₂₃.IsLocalization W₂₃ := inferInstance
-  sorry
+      (bifunctorComp₂₃ F' G₂₃') where
+  iso' :=
+    ((whiskeringLeft _ _ _).obj L₁).mapIso ((bifunctorComp₂₃Functor.obj F').mapIso
+      (Lifting₂.iso L₂ L₃ W₂ W₃ (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃')) ≪≫
+        (bifunctorComp₂₃Functor.mapIso
+          (Lifting₂.iso L₁ L₂₃ W₁ W₂₃ (F ⋙ (whiskeringRight _ _ _).obj L) F')).app G₂₃
+
+variable {F₁₂ G F G₂₃}
 
 noncomputable def associator : bifunctorComp₁₂ F₁₂' G' ≅ bifunctorComp₂₃ F' G₂₃' :=
   letI := Lifting₃.bifunctorComp₁₂ L₁ L₂ L₃ L₁₂ L W₁ W₂ W₃ W₁₂ F₁₂ G F₁₂' G'
   letI := Lifting₃.bifunctorComp₂₃ L₁ L₂ L₃ L₂₃ L W₁ W₂ W₃ W₂₃ F G₂₃ F' G₂₃'
   lift₃NatIso L₁ L₂ L₃ W₁ W₂ W₃ _ _ _ _ ((whiskeringRight₃.obj L).mapIso iso)
+
+lemma associator_hom_app_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
+    (((associator L₁ L₂ L₃ L₁₂ L₂₃ L W₁ W₂ W₃ W₁₂ W₂₃ iso F₁₂' G' F' G₂₃').hom.app (L₁.obj X₁)).app
+      (L₂.obj X₂)).app (L₃.obj X₃) =
+        (G'.map (((Lifting₂.iso L₁ L₂ W₁ W₂
+          (F₁₂ ⋙ (whiskeringRight C₂ C₁₂ D₁₂).obj L₁₂) F₁₂').hom.app X₁).app X₂)).app (L₃.obj X₃) ≫
+          ((Lifting₂.iso L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight C₃ C D).obj L) G').hom.app
+              ((F₁₂.obj X₁).obj X₂)).app X₃ ≫
+            L.map (((iso.hom.app X₁).app X₂).app X₃) ≫
+          ((Lifting₂.iso L₁ L₂₃ W₁ W₂₃
+            (F ⋙ (whiskeringRight _ _ _).obj L) F').inv.app X₁).app ((G₂₃.obj X₂).obj X₃) ≫
+        (F'.obj (L₁.obj X₁)).map
+          (((Lifting₂.iso L₂ L₃ W₂ W₃
+            (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃').inv.app X₂).app X₃) := by
+  dsimp [associator]
+  rw [lift₃NatTrans_app_app_app]
+  dsimp [Lifting₃.iso, Lifting₃.bifunctorComp₁₂, Lifting₃.bifunctorComp₂₃]
+  simp only [Category.assoc]
 
 end
 

@@ -94,11 +94,11 @@ noncomputable instance : Lifting₂ L₁ L₂ W₁ W₂ F (lift₂ F hF L₁ L�
     curry.mapIso (fac (uncurry.obj F) hF (L₁.prod L₂)) ≪≫
     currying.unitIso.symm.app F
 
-noncomputable instance (X₁ : C₁) :
+noncomputable instance Lifting₂.fst' (X₁ : C₁) :
     Lifting L₂ W₂ (F.obj X₁) ((lift₂ F hF L₁ L₂).obj (L₁.obj X₁)) :=
   Lifting₂.fst _ _ W₁ _ _ _ _
 
-noncomputable instance (X₂ : C₂) :
+noncomputable instance Lifting₂.snd' (X₂ : C₂) :
     Lifting L₁ W₁ (F.flip.obj X₂) ((lift₂ F hF L₁ L₂).flip.obj (L₂.obj X₂)) :=
   Lifting₂.snd _ _ _ W₂ _ _ _
 
@@ -150,20 +150,6 @@ noncomputable def lift₂NatIso : F₁' ≅ F₂' where
   inv := lift₂NatTrans L₁ L₂ W₁ W₂ F₂ F₁ F₂' F₁' e.inv
   hom_inv_id := natTrans₂_ext L₁ L₂ W₁ W₂ (by aesop_cat)
   inv_hom_id := natTrans₂_ext L₁ L₂ W₁ W₂ (by aesop_cat)
-
-noncomputable def lift₂NatIso'_old {F₁ F₂ : C₁ ⥤ C₂ ⥤ E} (F₁' F₂' : D₁ ⥤ D₂ ⥤ E)
-    [Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'] [Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'] (e : F₁ ≅ F₂) : F₁' ≅ F₂' := by
-  let i := (liftNatIso (L₁.prod L₂) (W₁.prod W₂) _ _ (uncurry.obj F₁') ((uncurry.obj F₂'))
-    (uncurry.mapIso e))
-  have : (uncurry (C := D₁) (D := D₂) (E := E)).IsEquivalence :=
-    inferInstanceAs currying.functor.IsEquivalence
-  exact uncurry.preimageIso i
-
-noncomputable abbrev lift₂NatIso_old {F₁ F₂ : C₁ ⥤ C₂ ⥤ E}
-    (hF₁ : W₁.IsInvertedBy₂ W₂ F₁)
-    (hF₂ : W₁.IsInvertedBy₂ W₂ F₂)
-    (e : F₁ ≅ F₂) : lift₂ _ hF₁ L₁ L₂  ≅ lift₂ _ hF₂ L₁ L₂ :=
-  curry.mapIso (liftNatIso (L₁.prod L₂) (W₁.prod W₂) _ _ _ _ (uncurry.mapIso e))
 
 end
 
