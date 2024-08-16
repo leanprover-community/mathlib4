@@ -263,7 +263,7 @@ register_option linter.lambdaSyntax : Bool := {
   descr := "enable the `lambdaSyntax` linter"
 }
 
-namespace lambdaSyntaxLinter
+namespace LambdaSyntaxLinter
 
 /--
 `findLambdaSyntax stx` extracts from `stx` all syntax nodes of `kind` `Term.fun`. -/
@@ -276,6 +276,7 @@ def findLambdaSyntax : Syntax → Array Syntax
       | _ =>  dargs
   |_ => #[]
 
+@[inherit_doc linter.lambdaSyntax]
 def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.lambdaSyntax (← getOptions) do
       return
@@ -283,7 +284,7 @@ def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
 
     for s in findLambdaSyntax stx do
-      -- XXX: find a better way to extract the syntax...
+      -- XXX: find a better way to extract the actual syntax used...
       if s!"{s.getArgs[0]!}" == "\"λ\"" then
         Linter.logLint linter.lambdaSyntax s m!"
         Please use 'fun' and not λ to define anonymous functions.\
@@ -291,7 +292,7 @@ def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter lambdaSyntaxLinter
 
-end lambdaSyntaxLinter
+end LambdaSyntaxLinter
 
 /-! # The "longLine linter" -/
 
