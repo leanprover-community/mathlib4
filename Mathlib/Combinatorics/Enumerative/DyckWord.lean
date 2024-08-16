@@ -201,8 +201,8 @@ section FirstReturn
 
 /-- `p.firstReturn` is 0 if `p = 0` and the index of the `D` matching the initial `U` otherwise. -/
 def firstReturn : ℕ :=
-  (range p.toList.length).findIdx (fun i ↦
-    (p.toList.take (i + 1)).count U = (p.toList.take (i + 1)).count D)
+  (range p.toList.length).findIdx fun i ↦
+    (p.toList.take (i + 1)).count U = (p.toList.take (i + 1)).count D
 
 @[simp] lemma firstReturn_zero : firstReturn 0 = 0 := rfl
 
@@ -223,7 +223,7 @@ lemma firstReturn_lt_length (h : p.toList ≠ []) : p.firstReturn < p.toList.len
   exact ⟨by omega, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
     p.count_U_eq_count_D]⟩
 
-lemma count_eq_count_of_take_firstReturn_add_one (h : p.toList ≠ []) :
+lemma count_take_firstReturn_add_one (h : p.toList ≠ []) :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
   have := findIdx_get (w := (length_range p.toList.length).symm ▸ p.firstReturn_lt_length h)
   simpa using this
@@ -245,7 +245,7 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
     constructor
     · rw [take_append_eq_append_take (l₂ := q.toList),
         show p.firstReturn + 1 - p.toList.length = 0 by omega,
-        take_zero, append_nil, p.count_eq_count_of_take_firstReturn_add_one h]
+        take_zero, append_nil, p.count_take_firstReturn_add_one h]
     · intro j hj
       rw [take_append_eq_append_take, show j + 1 - p.toList.length = 0 by omega,
         take_zero, append_nil]
@@ -271,11 +271,11 @@ lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
 
 /-- The right part of the Dyck word decomposition. -/
 def rightPart (h : p.toList ≠ []) : DyckWord :=
-  p.drop (p.firstReturn + 1) (p.count_eq_count_of_take_firstReturn_add_one h)
+  p.drop (p.firstReturn + 1) (p.count_take_firstReturn_add_one h)
 
 /-- The left part of the Dyck word decomposition. -/
 def leftPart (h : p.toList ≠ []) : DyckWord :=
-  (p.take (p.firstReturn + 1) (p.count_eq_count_of_take_firstReturn_add_one h)).denest
+  (p.take (p.firstReturn + 1) (p.count_take_firstReturn_add_one h)).denest
     (by simp [take, h]) (fun i lb ub ↦ by
       simp only [take, length_take, lt_min_iff] at ub ⊢
       replace ub := ub.1
@@ -290,27 +290,27 @@ theorem leftPart_nest_add_rightPart (h : p.toList ≠ []) :
   rw [DyckWord.ext_iff, leftPart, denest_nest]
   apply take_append_drop
 
-lemma leftPart_length_lt (h : p.toList ≠ []) : (p.leftPart h).toList.length < p.toList.length := by
+lemma length_leftPart_lt (h : p.toList ≠ []) : (p.leftPart h).toList.length < p.toList.length := by
   nth_rw 2 [← p.leftPart_nest_add_rightPart h]
   change _ < (U :: (p.leftPart h).toList ++ [D] ++ (p.rightPart h).toList).length
   simp_rw [length_append, length_singleton, length_cons]; omega
 
-theorem leftPart_semilength_lt (h : p.toList ≠ []) : (p.leftPart h).semilength < p.semilength := by
+theorem semilength_leftPart_lt (h : p.toList ≠ []) : (p.leftPart h).semilength < p.semilength := by
   rw [← Nat.mul_lt_mul_left zero_lt_two]
   simp_rw [two_mul_semilength_eq_length]
-  exact p.leftPart_length_lt h
+  exact p.length_leftPart_lt h
 
-lemma rightPart_length_lt (h : p.toList ≠ []) :
+lemma length_rightPart_lt (h : p.toList ≠ []) :
     (p.rightPart h).toList.length < p.toList.length := by
   nth_rw 2 [← p.leftPart_nest_add_rightPart h]
   change _ < (U :: (p.leftPart h).toList ++ [D] ++ (p.rightPart h).toList).length
   simp_rw [length_append, length_singleton, length_cons]; omega
 
-theorem rightPart_semilength_lt (h : p.toList ≠ []) :
+theorem semilength_rightPart_lt (h : p.toList ≠ []) :
     (p.rightPart h).semilength < p.semilength := by
   rw [← Nat.mul_lt_mul_left zero_lt_two]
   simp_rw [two_mul_semilength_eq_length]
-  exact p.rightPart_length_lt h
+  exact p.length_rightPart_lt h
 
 lemma nest_add_ne_empty : (p.nest + q).toList ≠ [] := by change U :: _ ++ _ ≠ []; simp
 
