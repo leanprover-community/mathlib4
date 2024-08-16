@@ -84,14 +84,6 @@ lemma _root_.List.norm_sum_le_iSup_norm (l : List S) :
   rw [← Subtype.coe_le_coe] at this
   simpa using this
 
-lemma _root_.List.iSup_nnnorm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
-    ⨆ x ∈ l, ‖x‖₊ ∈ l.map (‖·‖₊) :=
-  List.iSup_mem_map_of_ne_nil _ hl
-
-lemma _root_.List.iSup_norm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
-    ⨆ x ∈ l, ‖x‖ ∈ l.map (‖·‖) :=
-  List.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using List.exists_mem_of_ne_nil _ hl)
-
 /-- All triangles are isosceles in an ultrametric normed commutative additive group. -/
 lemma norm_add_eq_max_of_norm_ne_norm
     {x y : S} (h : ‖x‖ ≠ ‖y‖) : ‖x + y‖ = max ‖x‖ ‖y‖ := by
@@ -173,14 +165,6 @@ lemma _root_.Multiset.norm_sum_le_iSup_norm (s : Multiset M) :
     ‖s.sum‖ ≤ ⨆ i ∈ s, ‖i‖ :=
   Quotient.inductionOn s (by simpa using List.norm_sum_le_iSup_norm)
 
-lemma _root_.Multiset.iSup_nnnorm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
-    ⨆ x ∈ s, ‖x‖₊ ∈ s.map (‖·‖₊) :=
-  Multiset.iSup_mem_map_of_ne_zero _ hs
-
-lemma _root_.Multiset.iSup_norm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
-    ⨆ x ∈ s, ‖x‖ ∈ s.map (‖·‖) :=
-  Multiset.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using Multiset.exists_mem_of_ne_zero hs)
-
 /-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
 lemma _root_.Finset.nnnorm_sum_le_iSup_nnnorm (s : Finset ι) (f : ι → M) :
     ‖∑ i ∈ s, f i‖₊ ≤ ⨆ i ∈ s, ‖f i‖₊ := by
@@ -233,34 +217,6 @@ lemma _root_.Finset.Nonempty.norm_sum_le_sup'_norm {s : Finset ι} (hs : s.Nonem
   split_ifs with hi
   · exact Finset.le_sup' (f := (‖f ·‖)) hi
   · simpa using hs
-
-/-- A finset achieves its maximum under a nonarchimedean norm for some element. -/
-lemma _root_.Finset.Nonempty.iSup_nnnorm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
-    ⨆ x ∈ s, ‖f x‖₊ ∈ s.image (‖f ·‖₊) := by
-  convert (s.1.map f).iSup_nnnorm_mem_map_of_ne_zero ?_
-  · have : Nonempty ι := nonempty_of_exists hs
-    have : Set.Nonempty (s : Set ι) := hs
-    have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖₊ = ⨆ (_ : i ∈ f '' s), ‖i‖₊ := by
-      simp
-    rw [iSup_congr keyl, ciSup_image this]
-    · simp
-    · simpa [bddAbove_def] using (s.image _).finite_toSet.bddAbove
-    · simp
-  · simpa [Finset.nonempty_iff_ne_empty] using hs
-
-/-- A finset achieves its maximum under a nonarchimedean norm for some element. -/
-lemma _root_.Finset.Nonempty.iSup_norm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
-    ⨆ x ∈ s, ‖f x‖ ∈ s.image (‖f ·‖) := by
-  convert (s.1.map f).iSup_norm_mem_map_of_ne_zero ?_
-  · have : Nonempty ι := nonempty_of_exists hs
-    have : Set.Nonempty (s : Set ι) := hs
-    have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖ = ⨆ (_ : i ∈ f '' s), ‖i‖ := by
-      simp
-    rw [iSup_congr keyl, ciSup_image this]
-    · simp
-    · simpa [bddAbove_def] using (s.image _).finite_toSet.bddAbove
-    · simpa using Real.iSup_nonneg (by simp)
-  · simpa [Finset.nonempty_iff_ne_empty] using hs
 
 /-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
 lemma _root_.Fintype.nnnorm_sum_le_sup_norm (s : Finset ι) (f : ι → M) :

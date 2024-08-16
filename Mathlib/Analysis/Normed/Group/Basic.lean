@@ -1387,3 +1387,53 @@ instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLi
   NormedCommGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 end SubgroupClass
+
+section BigOperators
+
+variable {S M ι : Type*} [SeminormedAddGroup S] [SeminormedAddCommGroup M]
+
+lemma List.iSup_nnnorm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
+    ⨆ x ∈ l, ‖x‖₊ ∈ l.map (‖·‖₊) :=
+  List.iSup_mem_map_of_ne_nil _ hl
+
+lemma List.iSup_norm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
+    ⨆ x ∈ l, ‖x‖ ∈ l.map (‖·‖) :=
+  List.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using List.exists_mem_of_ne_nil _ hl)
+
+lemma Multiset.iSup_nnnorm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
+    ⨆ x ∈ s, ‖x‖₊ ∈ s.map (‖·‖₊) :=
+  Multiset.iSup_mem_map_of_ne_zero _ hs
+
+lemma Multiset.iSup_norm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
+    ⨆ x ∈ s, ‖x‖ ∈ s.map (‖·‖) :=
+  Multiset.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using Multiset.exists_mem_of_ne_zero hs)
+
+/-- A finset achieves its maximum under a norm for some element. -/
+lemma Finset.Nonempty.iSup_nnnorm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
+    ⨆ x ∈ s, ‖f x‖₊ ∈ s.image (‖f ·‖₊) := by
+  convert (s.1.map f).iSup_nnnorm_mem_map_of_ne_zero ?_
+  · have : Nonempty ι := nonempty_of_exists hs
+    have : Set.Nonempty (s : Set ι) := hs
+    have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖₊ = ⨆ (_ : i ∈ f '' s), ‖i‖₊ := by
+      simp
+    rw [iSup_congr keyl, ciSup_image this]
+    · simp
+    · simpa [bddAbove_def] using (s.image _).finite_toSet.bddAbove
+    · simp
+  · simpa [Finset.nonempty_iff_ne_empty] using hs
+
+/-- A finset achieves its maximum under a norm for some element. -/
+lemma Finset.Nonempty.iSup_norm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
+    ⨆ x ∈ s, ‖f x‖ ∈ s.image (‖f ·‖) := by
+  convert (s.1.map f).iSup_norm_mem_map_of_ne_zero ?_
+  · have : Nonempty ι := nonempty_of_exists hs
+    have : Set.Nonempty (s : Set ι) := hs
+    have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖ = ⨆ (_ : i ∈ f '' s), ‖i‖ := by
+      simp
+    rw [iSup_congr keyl, ciSup_image this]
+    · simp
+    · simpa [bddAbove_def] using (s.image _).finite_toSet.bddAbove
+    · simpa using Real.iSup_nonneg (by simp)
+  · simpa [Finset.nonempty_iff_ne_empty] using hs
+
+end BigOperators
