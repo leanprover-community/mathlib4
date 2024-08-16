@@ -9,6 +9,35 @@ section
 variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   [Category C₄] [Category C₁₂] [Category C₂₃]
 
+variable (C₁ C₂ C₃) in
+def whiskeringRight₃Obj {D : Type*} [Category D]
+    (F : C₄ ⥤ D) : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ D) :=
+  (whiskeringRight C₁ _ _).obj ((whiskeringRight C₂ _ _).obj ((whiskeringRight C₃ _ _).obj F))
+
+@[simps! obj]
+def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
+    (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) where
+  obj G := bifunctorComp₁₂ F₁₂ G
+  map {G G'} φ :=
+    { app := fun X₁ ↦
+        { app := fun X₂ ↦
+            { app := fun X₃ ↦ (φ.app ((F₁₂.obj X₁).obj X₂)).app X₃ }
+          naturality := fun X₂ Y₂ f ↦ by
+            ext X₃
+            dsimp
+            simp only [← NatTrans.comp_app, NatTrans.naturality] }
+      naturality := fun X₁ Y₁ f ↦ by
+        ext X₂ X₃
+        dsimp
+        simp only [← NatTrans.comp_app, NatTrans.naturality] }
+
+@[simps! obj]
+def bifunctorComp₁₂Functor : (C₁ ⥤ C₂ ⥤ C₁₂) ⥤ (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) where
+  obj F₁₂ := bifunctorComp₁₂FunctorObj F₁₂
+  map := sorry
+  map_id := sorry
+  map_comp := sorry
+
 variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
 
 def bifunctorComp₁₂Iso : bifunctorComp₁₂ F₁₂ G ≅ curry.obj (uncurry.obj F₁₂ ⋙ G) :=
@@ -195,6 +224,35 @@ noncomputable def lift₃NatIso : F₁' ≅ F₂' where
   inv_hom_id := natTrans₃_ext L₁ L₂ L₃ W₁ W₂ W₃ (by aesop_cat)
 
 end
+
+section
+
+variable {C₁ C₂ C₃ C₁₂ C : Type*} [Category C₁] [Category C₂] [Category C₃]
+  [Category C₁₂] [Category C]
+  {D₁ D₂ D₃ D₁₂ D₂₃ D : Type*} [Category D₁] [Category D₂] [Category D₃]
+  [Category D₁₂] [Category D]
+  (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃) (L₁₂ : C₁₂ ⥤ D₁₂) (L : C ⥤ D)
+  (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
+  (W₁₂ : MorphismProperty C₁₂) (W : MorphismProperty C)
+  [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] [L₃.IsLocalization W₃]
+  [L₁₂.IsLocalization W₁₂] [L.IsLocalization W]
+  (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C)
+  (F₁₂' : D₁ ⥤ D₂ ⥤ D₁₂) (G' : D₁₂ ⥤ D₃ ⥤ D)
+  [Lifting₂ L₁ L₂ W₁ W₂ (F₁₂ ⋙ (whiskeringRight _ _ _).obj L₁₂) F₁₂']
+  [Lifting₂ L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight _ _ _).obj L) G']
+
+noncomputable nonrec def Lifting₃.bifunctorComp₁₂ :
+    Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
+      ((whiskeringRight₃Obj C₁ C₂ C₃ L).obj (bifunctorComp₁₂ F₁₂ G))
+      (bifunctorComp₁₂ F₁₂' G') where
+  iso' := by
+    let e₁ := Lifting₂.iso L₁ L₂ W₁ W₂ (F₁₂ ⋙ (whiskeringRight _ _ _).obj L₁₂) F₁₂'
+    refine ?_ ≪≫ (bifunctorComp₁₂Functor.obj F₁₂).mapIso
+      (Lifting₂.iso L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight _ _ _).obj L) G')
+    sorry
+
+end
+
 
 end Localization
 
