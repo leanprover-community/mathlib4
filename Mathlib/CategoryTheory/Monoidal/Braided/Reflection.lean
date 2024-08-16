@@ -9,7 +9,7 @@ open CategoryTheory MonoidalCategory MonoidalClosed
 namespace CategoryTheory.Monoidal.Reflective
 
 variable {C D : Type*} [Category C] [Category D]
-variable [MonoidalCategory D] [BraidedCategory D] [MonoidalClosed D]
+variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 
 section
 variable (R : C ⥤ D)
@@ -25,7 +25,7 @@ theorem day_reflection [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)  :
 end
 
 section
-variable [MonoidalCategory C] [BraidedCategory C]
+variable [MonoidalCategory C]
 variable (L : MonoidalFunctor D C) (R : C ⥤ D) [R.Faithful] [R.Full] (adj : L.toFunctor ⊣ R)
 
 include adj in
