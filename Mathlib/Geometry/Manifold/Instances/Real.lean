@@ -90,23 +90,22 @@ theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
   Subtype.range_val
 @[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
 
--- TODO: generalise these lemmas to other values of `p`
+open ENNReal in
+theorem interior_halfspace {n : ℕ} {p : ℝ≥0∞} {a : ℝ} {i : Fin n} :
+    interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
+  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  simpa [interior_Ici] using f.interior_preimage (Function.surjective_eval _) (Ici a)
 
-theorem interior_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
-    interior { y : EuclideanSpace ℝ (Fin n) | a ≤ y i } = { y | a < y i } := by
-  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  change interior (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ioi a
-  rw [f.interior_preimage (Function.surjective_eval _), interior_Ici]
-
-theorem closure_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+open ENNReal in
+theorem closure_halfspace {n : ℕ} {p : ℝ≥0∞} {a : ℝ} {i : Fin n} :
     closure { y : EuclideanSpace ℝ (Fin n) | a ≤ y i } = { y | a ≤ y i } := by
-  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  change closure (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ici a
-  rw [f.closure_preimage (Function.surjective_eval _), closure_Ici]
+  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  simpa [closure_Ici] using f.closure_preimage (Function.surjective_eval _) (Ici a)
 
-theorem frontier_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+open ENNReal in
+theorem frontier_halfspace {n : ℕ} {p : ℝ≥0∞} {a : ℝ} {i : Fin n} :
     frontier { y : EuclideanSpace ℝ (Fin n) | a ≤ y i } = { y | a = y i } := by
-  rw [frontier, interior_halfspace, closure_halfspace]
+  rw [frontier, closure_halfspace (p := p), interior_halfspace]
   ext y
   simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
 
@@ -186,7 +185,7 @@ lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)]
     _ = interior ({ y | 0 ≤ y 0}) := by
       congr!
       apply range_euclideanHalfSpace
-    _ = { y | 0 < y 0 } := interior_halfspace 0
+    _ = { y | 0 < y 0 } := interior_halfspace
 
 lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
     frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
@@ -194,7 +193,7 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)]
     _ = frontier ({ y | 0 ≤ y 0 }) := by
       congr!
       apply range_euclideanHalfSpace
-    _ = { y | 0 = y 0 } := frontier_halfspace 0
+    _ = { y | 0 = y 0 } := frontier_halfspace (p := 2)
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
