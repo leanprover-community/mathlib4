@@ -419,6 +419,17 @@ lemma boundary_IccManifold : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
     rw [this]
     apply iff_of_true Icc_isBoundaryPoint_right (mem_insert_of_mem X rfl)
 
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+
+/-- A product `M × [x,y]` for `M` boundaryless has boundary `M × {x,y}`. -/
+lemma boundary_product [I.Boundaryless] :
+    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {X, Y} := by
+  have : (𝓡∂ 1).boundary (Icc x y) = {X, Y} := by rw [boundary_IccManifold]
+  rw [I.boundary_of_boundaryless_left]
+  rw [this]
+
 /-- The manifold structure on `[x, y]` is smooth.
 -/
 instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
