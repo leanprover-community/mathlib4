@@ -831,8 +831,6 @@ theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ 
 theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
 
-theorem exists₂_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
-
 @[deprecated (since := "2024-03-23")] alias bex_of_exists := exists_mem_of_exists
 @[deprecated (since := "2024-03-23")] alias exists_of_bex := exists_of_exists_mem
 @[deprecated (since := "2024-03-23")] alias bex_imp := exists₂_imp

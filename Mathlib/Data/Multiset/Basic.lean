@@ -110,7 +110,7 @@ theorem coe_eq_zero (l : List α) : (l : Multiset α) = 0 ↔ l = [] :=
   Iff.trans coe_eq_coe perm_nil
 
 theorem coe_eq_zero_iff_isEmpty (l : List α) : (l : Multiset α) = 0 ↔ l.isEmpty :=
-  Iff.trans (coe_eq_zero l) isEmpty_iff_eq_nil.symm
+  Iff.trans (coe_eq_zero l) isEmpty_iff.symm
 
 /-! ### `Multiset.cons` -/
 
