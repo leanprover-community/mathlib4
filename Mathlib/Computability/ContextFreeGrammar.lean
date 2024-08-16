@@ -278,7 +278,8 @@ def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ 
     ContextFreeRule T N :=
   ⟨f r.input, r.output.map (Symbol.map f)⟩
 
-/-- A pair of `ContextFreeGrammar`s that, roughly speaking, work the same way. -/
+/-- A pair of `ContextFreeGrammar`s with maps between their nonterminal types that work,
+roughly speaking, in a good way. -/
 structure EmbeddedContextFreeGrammar (T : Type uT) where
   /-- The smaller grammar. -/
   g₀ : ContextFreeGrammar.{uN} T
@@ -313,6 +314,7 @@ lemma EmbeddedContextFreeGrammar.projectNT_inverse_embedNT (G : EmbeddedContextF
   | inl case_valu => exact hnx case_valu.symm
   | inr case_none => exact Option.noConfusion (hx ▸ case_none)
 
+/-- Production by `G.g₀` can be mirrored by `G.g` production. -/
 lemma EmbeddedContextFreeGrammar.produces_map {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g₀.NT)} (hG : G.g₀.Produces w₁ w₂) :
     G.g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
@@ -348,6 +350,8 @@ lemma EmbeddedContextFreeGrammar.singletonGoodString {G : EmbeddedContextFreeGra
     {s : Symbol T G.g.NT} (hs : G.Good s) : G.GoodString [s] := by
   simpa [GoodString] using hs
 
+/-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain
+any nonterminals that `G.g₀` lacks. -/
 lemma EmbeddedContextFreeGrammar.produces_filterMap {G : EmbeddedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Produces w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Produces
