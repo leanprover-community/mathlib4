@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 ## Boundedness in (pseudo)-metric spaces
