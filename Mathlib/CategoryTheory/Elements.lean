@@ -64,7 +64,7 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   id p := ⟨𝟙 p.1, by aesop_cat⟩
   comp {X Y Z} f g := ⟨f.val ≫ g.val, by simp [f.2, g.2]⟩
 
-/-- Natural transformations are mapped to functor between category of elements -/
+/-- Natural transformations are mapped to functors between category of elements -/
 @[simps]
 def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.Elements where
   obj := fun ⟨X, x⟩ ↦ ⟨_, φ.app X x⟩
