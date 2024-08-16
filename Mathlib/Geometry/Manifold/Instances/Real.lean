@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
@@ -349,6 +350,79 @@ instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
       apply lt_of_lt_of_le h.out
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
+
+def IccManifold2 (x y : ℝ) [h : Fact (x < y)] :
+    ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
+  atlas := {IccLeftChart x y, IccRightChart x y}
+  chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
+  mem_chart_source z := by
+    by_cases h' : z.val < y
+    · simp only [h', if_true]
+      exact h'
+    · simp only [h', if_false]
+      apply lt_of_lt_of_le h.out
+      simpa only [not_lt] using h'
+  chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
+
+lemma IccManifold2.leftCharts {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val < y) :
+    (IccManifold2 x y).chartAt z = IccLeftChart x y := by
+  unfold IccManifold2
+  simp_all only [reduceIte]
+
+lemma IccManifold2.rightCharts {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val ≥ y) :
+    (IccManifold2 x y).chartAt z = IccRightChart x y := by
+  unfold IccManifold2
+  simp_all only [reduceIte, not_lt.mpr h]
+
+lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
+  have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y :=
+    IccManifold2.leftCharts (by norm_num [hxy.out])
+  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) by convert this
+  exact IccLeftChart_boundary
+
+lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
+  have : chartAt (EuclideanHalfSpace 1) Y = IccRightChart x y := by
+    apply IccManifold2.rightCharts (by norm_num)
+  suffices ((IccRightChart x y).extend (𝓡∂ 1)) Y ∈ frontier (range (𝓡∂ 1)) by convert this
+  exact IccRightChart_boundary
+
+lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
+    (𝓡∂ 1).IsInteriorPoint p := by
+  have : chartAt (EuclideanHalfSpace 1) p = IccLeftChart x y := IccManifold2.leftCharts hp.2
+  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) p ∈ interior (range (𝓡∂ 1)) by
+    rw [ModelWithCorners.IsInteriorPoint, extChartAt]
+    convert this
+  rw [interior_range_modelWithCornersEuclideanHalfSpace]
+  apply IccLeftChart_extend_interior_pos hp
+
+-- move to Mathlib.Order.Basic
+lemma Set.Icc.eq_left_or_interior_or_eq_right {p : ℝ} (hp : p ∈ Set.Icc x y) :
+    p = x ∨ (x < p ∧ p < y) ∨ p = y := by
+  have h := eq_or_gt_of_le hp.1
+  have h' := eq_or_gt_of_le hp.2
+  tauto
+
+lemma boundary_IccManifold : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
+  ext p
+  rcases Set.Icc.eq_left_or_interior_or_eq_right p.2 with (hp | hp | hp)
+  · have : p = X := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true Icc_isBoundaryPoint_left (mem_insert X {Y})
+  · apply iff_of_false
+    · -- FIXME: golf using compl_boundary once #14972 has landed
+      rw [ModelWithCorners.boundary_eq_complement_interior, not_mem_compl_iff]
+      exact Icc_isInteriorPoint_interior hp
+    · rw [mem_insert_iff, mem_singleton_iff]
+      -- can this be golfed?
+      push_neg
+      constructor
+      · by_contra h; linarith [congrArg Subtype.val h]
+      · by_contra h; linarith [congrArg Subtype.val h]
+  · have : p = Y := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true Icc_isBoundaryPoint_right (mem_insert_of_mem X rfl)
 
 /-- The manifold structure on `[x, y]` is smooth.
 -/
