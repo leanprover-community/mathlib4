@@ -578,7 +578,6 @@
  ["docBlame", "QuaternionAlgebra.Basis.k"],
  ["docBlame", "Sat.Clause.cons"],
  ["docBlame", "Sat.Clause.nil"],
- ["docBlame", "Set.setOf.unexpander"],
  ["docBlame", "SimpleGraph.Subgraph.Adj"],
  ["docBlame", "SimpleGraph.Subgraph.verts"],
  ["docBlame", "SimpleGraph.Walk.notNilRec"],
