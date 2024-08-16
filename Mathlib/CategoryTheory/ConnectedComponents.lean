@@ -36,7 +36,7 @@ variable {J : Type u₁} [Category.{v₁} J]
 def ConnectedComponents (J : Type u₁) [Category.{v₁} J] : Type u₁ :=
   Quotient (Zigzag.setoid J)
 
-/-- Functors are mapped to functions from the connected components of their domain and target -/
+/-- The map `ConnectedComponents J → ConnectedComponents K` induced by a functor `J ⥤ K`. -/
 def Functor.mapConnectedComponents  {K : Type u₂} [Category.{v₂} K] (F : J ⥤ K)
     (x : ConnectedComponents J) : ConnectedComponents K :=
   Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj)
