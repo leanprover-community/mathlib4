@@ -957,7 +957,7 @@ class InvOneClass (G : Type*) extends One G, Inv G where
   protected inv_one : (1 : G)⁻¹ = 1
 
 /-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
-@[to_additive SubNegZeroMonoid]
+@[to_additive]
 class DivInvOneMonoid (G : Type*) extends DivInvMonoid G, InvOneClass G
 
 -- FIXME: `to_additive` is not operating on the second parent. (#660)

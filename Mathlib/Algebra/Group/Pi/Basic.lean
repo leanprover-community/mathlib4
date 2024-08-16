@@ -193,7 +193,7 @@ instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) wh
   zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
   zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
 
-@[to_additive Pi.subNegZeroMonoid]
+@[to_additive]
 instance divInvOneMonoid [∀ i, DivInvOneMonoid (f i)] : DivInvOneMonoid (∀ i, f i) where
   inv_one := by ext; exact inv_one
 
