@@ -10,21 +10,15 @@ import Mathlib.Data.Rat.Cast.Defs
 # Casts of rational numbers into characteristic zero fields (or division rings).
 -/
 
+open Function
 
 variable {F ι α β : Type*}
 
 namespace Rat
+variable [DivisionRing α] [CharZero α] {p q : ℚ}
 
-open Rat
-
-section WithDivRing
-
-variable [DivisionRing α]
-
-@[simp, norm_cast]
-theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
-  | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ => by
-    refine ⟨fun h => ?_, congr_arg _⟩
+lemma cast_injective : Injective ((↑) : ℚ → α)
+  | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩, h => by
     have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0
     have d₂a : (d₂ : α) ≠ 0 := Nat.cast_ne_zero.2 d₂0
     rw [mk'_eq_divInt, mk'_eq_divInt] at h ⊢
@@ -34,30 +28,21 @@ theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
       Int.cast_mul, ← Int.cast_natCast d₂, ← Int.cast_mul, Int.cast_inj, ← mkRat_eq_iff d₁0 d₂0]
       at h
 
-theorem cast_injective [CharZero α] : Function.Injective ((↑) : ℚ → α)
-  | _, _ => cast_inj.1
+@[simp, norm_cast] lemma cast_inj : (p : α) = q ↔ p = q := cast_injective.eq_iff
 
-@[simp]
-theorem cast_eq_zero [CharZero α] {n : ℚ} : (n : α) = 0 ↔ n = 0 := by rw [← cast_zero, cast_inj]
+@[simp, norm_cast] lemma cast_eq_zero : (p : α) = 0 ↔ p = 0 := cast_injective.eq_iff' cast_zero
+lemma cast_ne_zero : (p : α) ≠ 0 ↔ p ≠ 0 := cast_eq_zero.ne
 
-theorem cast_ne_zero [CharZero α] {n : ℚ} : (n : α) ≠ 0 ↔ n ≠ 0 :=
-  not_congr cast_eq_zero
+@[simp, norm_cast] lemma cast_add (p q : ℚ) : ↑(p + q) = (p + q : α) :=
+  cast_add_of_ne_zero (Nat.cast_ne_zero.2 p.pos.ne') (Nat.cast_ne_zero.2 q.pos.ne')
 
-@[simp, norm_cast]
-theorem cast_add [CharZero α] (m n) : ((m + n : ℚ) : α) = m + n :=
-  cast_add_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
+@[simp, norm_cast] lemma cast_sub (p q : ℚ) : ↑(p - q) = (p - q : α) :=
+  cast_sub_of_ne_zero (Nat.cast_ne_zero.2 p.pos.ne') (Nat.cast_ne_zero.2 q.pos.ne')
 
-@[simp, norm_cast]
-theorem cast_sub [CharZero α] (m n) : ((m - n : ℚ) : α) = m - n :=
-  cast_sub_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
+@[simp, norm_cast] lemma cast_mul (p q : ℚ) : ↑(p * q) = (p * q : α) :=
+  cast_mul_of_ne_zero (Nat.cast_ne_zero.2 p.pos.ne') (Nat.cast_ne_zero.2 q.pos.ne')
 
-@[simp, norm_cast]
-theorem cast_mul [CharZero α] (m n) : ((m * n : ℚ) : α) = m * n :=
-  cast_mul_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
-
-variable (α)
-variable [CharZero α]
-
+variable (α) in
 /-- Coercion `ℚ → α` as a `RingHom`. -/
 def castHom : ℚ →+* α where
   toFun := (↑)
@@ -66,32 +51,67 @@ def castHom : ℚ →+* α where
   map_zero' := cast_zero
   map_add' := cast_add
 
-variable {α}
+@[simp] lemma coe_castHom : ⇑(castHom α) = ((↑) : ℚ → α) := rfl
 
-@[simp]
-theorem coe_cast_hom : ⇑(castHom α) = ((↑) : ℚ → α) :=
-  rfl
+@[deprecated (since := "2024-07-22")] alias coe_cast_hom := coe_castHom
 
-@[simp, norm_cast]
-theorem cast_inv (n) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
-  map_inv₀ (castHom α) _
+@[simp, norm_cast] lemma cast_inv (p : ℚ) : ↑(p⁻¹) = (p⁻¹ : α) := map_inv₀ (castHom α) _
+@[simp, norm_cast] lemma cast_div (p q : ℚ) : ↑(p / q) = (p / q : α) := map_div₀ (castHom α) ..
 
 @[simp, norm_cast]
-theorem cast_div (m n) : ((m / n : ℚ) : α) = m / n :=
-  map_div₀ (castHom α) _ _
-
-@[simp, norm_cast]
-theorem cast_zpow (q : ℚ) (n : ℤ) : ((q ^ n : ℚ) : α) = (q : α) ^ n :=
-  map_zpow₀ (castHom α) q n
+lemma cast_zpow (p : ℚ) (n : ℤ) : ↑(p ^ n) = (p ^ n : α) := map_zpow₀ (castHom α) ..
 
 @[norm_cast]
 theorem cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
   simp only [divInt_eq_div, cast_div, cast_intCast]
 
-@[simp, norm_cast]
-theorem cast_pow (q : ℚ) (k : ℕ) : ↑(q ^ k) = (q : α) ^ k :=
-  (castHom α).map_pow q k
-
-end WithDivRing
-
 end Rat
+
+namespace NNRat
+variable [DivisionSemiring α] [CharZero α] {p q : ℚ≥0}
+
+lemma cast_injective : Injective ((↑) : ℚ≥0 → α) := by
+  rintro p q hpq
+  rw [NNRat.cast_def, NNRat.cast_def, Commute.div_eq_div_iff] at hpq
+  rw [← p.num_div_den, ← q.num_div_den, div_eq_div_iff]
+  norm_cast at hpq ⊢
+  any_goals norm_cast
+  any_goals apply den_ne_zero
+  exact Nat.cast_commute ..
+
+@[simp, norm_cast] lemma cast_inj : (p : α) = q ↔ p = q := cast_injective.eq_iff
+
+@[simp, norm_cast] lemma cast_eq_zero : (q : α) = 0 ↔ q = 0 := by rw [← cast_zero, cast_inj]
+lemma cast_ne_zero : (q : α) ≠ 0 ↔ q ≠ 0 := cast_eq_zero.not
+
+@[simp, norm_cast] lemma cast_add (p q : ℚ≥0) : ↑(p + q) = (p + q : α) :=
+  cast_add_of_ne_zero (Nat.cast_ne_zero.2 p.den_pos.ne') (Nat.cast_ne_zero.2 q.den_pos.ne')
+
+@[simp, norm_cast] lemma cast_mul (p q) : (p * q : ℚ≥0) = (p * q : α) :=
+  cast_mul_of_ne_zero (Nat.cast_ne_zero.2 p.den_pos.ne') (Nat.cast_ne_zero.2 q.den_pos.ne')
+
+variable (α) in
+/-- Coercion `ℚ≥0 → α` as a `RingHom`. -/
+def castHom : ℚ≥0 →+* α where
+  toFun := (↑)
+  map_one' := cast_one
+  map_mul' := cast_mul
+  map_zero' := cast_zero
+  map_add' := cast_add
+
+@[simp, norm_cast] lemma coe_castHom : ⇑(castHom α) = (↑) := rfl
+
+@[simp, norm_cast] lemma cast_inv (p) : (p⁻¹ : ℚ≥0) = (p : α)⁻¹ := map_inv₀ (castHom α) _
+@[simp, norm_cast] lemma cast_div (p q) : (p / q : ℚ≥0) = (p / q : α) := map_div₀ (castHom α) ..
+
+@[simp, norm_cast]
+lemma cast_zpow (q : ℚ≥0) (p : ℤ) : ↑(q ^ p) = ((q : α) ^ p : α) := map_zpow₀ (castHom α) ..
+
+@[simp]
+lemma cast_divNat (a b : ℕ) : (divNat a b : α) = a / b := by
+  rw [← cast_natCast, ← cast_natCast b, ← cast_div]
+  congr
+  ext
+  apply Rat.mkRat_eq_div
+
+end NNRat
