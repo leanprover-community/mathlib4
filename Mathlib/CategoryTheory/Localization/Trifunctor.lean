@@ -14,7 +14,7 @@ def whiskeringRight₃Obj {D : Type*} [Category D]
     (F : C₄ ⥤ D) : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ D) :=
   (whiskeringRight C₁ _ _).obj ((whiskeringRight C₂ _ _).obj ((whiskeringRight C₃ _ _).obj F))
 
-@[simps! obj]
+@[simps! obj map_app_app_app]
 def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
     (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) where
   obj G := bifunctorComp₁₂ F₁₂ G
@@ -31,12 +31,31 @@ def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
         dsimp
         simp only [← NatTrans.comp_app, NatTrans.naturality] }
 
-@[simps! obj]
+@[simps]
+def bifunctorComp₁₂FunctorMap {F₁₂ F₁₂' : C₁ ⥤ C₂ ⥤ C₁₂} (φ : F₁₂ ⟶ F₁₂') :
+  bifunctorComp₁₂FunctorObj (C₃ := C₃) (C₄ := C₄) F₁₂ ⟶ bifunctorComp₁₂FunctorObj F₁₂' where
+  app := fun G ↦
+    { app := fun X₁ ↦
+        { app := fun X₂ ↦
+            { app := fun X₃ ↦ (G.map ((φ.app X₁).app X₂)).app X₃
+               }
+          naturality := fun X₂ Y₂ f ↦ by
+            ext X₃
+            dsimp
+            simp only [← NatTrans.comp_app, NatTrans.naturality, ← G.map_comp] }
+      naturality := fun X₁ Y₁ f ↦ by
+        ext X₂ X₃
+        dsimp
+        simp only [← NatTrans.comp_app, NatTrans.naturality, ← G.map_comp] }
+  naturality := fun G G' f ↦ by
+    ext X₁ X₂ X₃
+    dsimp
+    simp only [← NatTrans.comp_app, NatTrans.naturality]
+
+@[simps]
 def bifunctorComp₁₂Functor : (C₁ ⥤ C₂ ⥤ C₁₂) ⥤ (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) where
-  obj F₁₂ := bifunctorComp₁₂FunctorObj F₁₂
-  map := sorry
-  map_id := sorry
-  map_comp := sorry
+  obj := bifunctorComp₁₂FunctorObj
+  map := bifunctorComp₁₂FunctorMap
 
 variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
 
@@ -245,14 +264,15 @@ noncomputable nonrec def Lifting₃.bifunctorComp₁₂ :
     Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
       ((whiskeringRight₃Obj C₁ C₂ C₃ L).obj (bifunctorComp₁₂ F₁₂ G))
       (bifunctorComp₁₂ F₁₂' G') where
-  iso' := by
-    let e₁ := Lifting₂.iso L₁ L₂ W₁ W₂ (F₁₂ ⋙ (whiskeringRight _ _ _).obj L₁₂) F₁₂'
-    refine ?_ ≪≫ (bifunctorComp₁₂Functor.obj F₁₂).mapIso
-      (Lifting₂.iso L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight _ _ _).obj L) G')
-    sorry
+  iso' :=
+    ((whiskeringRight C₁ _ _).obj
+      ((whiskeringRight C₂ _ _).obj ((whiskeringLeft _ _ D).obj L₃))).mapIso
+        ((bifunctorComp₁₂Functor.mapIso
+          (Lifting₂.iso L₁ L₂ W₁ W₂ (F₁₂ ⋙ (whiskeringRight _ _ _).obj L₁₂) F₁₂')).app G') ≪≫
+        (bifunctorComp₁₂Functor.obj F₁₂).mapIso
+          (Lifting₂.iso L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight _ _ _).obj L) G')
 
 end
-
 
 end Localization
 
