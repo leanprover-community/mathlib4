@@ -1381,8 +1381,7 @@ lemma zmod_smul_mem (hx : x ∈ K) : ∀ a : ZMod n, a • x ∈ K := by
   simpa [ZMod.forall, Int.cast_smul_eq_zsmul] using zsmul_mem hx
 
 /-- This cannot be made an instance because of the `[Module (ZMod n) G]` argument and the fact that
-`n` only appears on the right of the colon in `R := ZMod n`, which is an `OutParam` in the
-definition of `SMulMemClass`. -/
+`n` only appears in the second argument of `SMulMemClass`, which is an `OutParam`. -/
 lemma smulMemClass : SMulMemClass S (ZMod n) G where smul_mem _ _ {_x} hx := zmod_smul_mem hx _
 
 namespace AddSubgroupClass
