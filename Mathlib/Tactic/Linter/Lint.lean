@@ -30,7 +30,7 @@ Linter that checks whether a structure should be in Prop.
     -- remark: using `Lean.Meta.isProp` doesn't suffice here, because it doesn't (always?)
     -- recognize predicates as propositional.
     let isProp ← forallTelescopeReducing (← inferType (← mkConstWithLevelParams declName))
-      fun _ ty => return ty == .sort .zero
+      fun _ ty ↦ return ty == .sort .zero
     if isProp then return none
     let projs := (getStructureInfo? (← getEnv) declName).get!.fieldNames
     if projs.isEmpty then return none -- don't flag empty structures
@@ -87,18 +87,18 @@ def getIds : Syntax → Array Syntax
   | .node _ `Batteries.Tactic.Alias.alias args => args[2:3]
   | .node _ ``Lean.Parser.Command.export args => (args[3:4] : Array Syntax).map (·[0])
   | stx@(.node _ _ args) =>
-    ((args.attach.map fun ⟨a, _⟩ => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
+    ((args.attach.map fun ⟨a, _⟩ ↦ getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
 
 @[inherit_doc linter.dupNamespace]
-def dupNamespace : Linter where run := withSetOptionIn fun stx => do
+def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
     match getIds stx with
       | #[id] =>
         let ns := (← getScope).currNamespace
         let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
         let nm := declName.components
-        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
+        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
           | return
         Linter.logLint linter.dupNamespace id
           m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
@@ -182,7 +182,7 @@ def findCDot : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
     let dargs := (args.map findCDot).flatten
     match kind with
-      | ``Lean.Parser.Term.cdot | ``cdotTk=> dargs.push stx
+      | ``Lean.Parser.Term.cdot | ``cdotTk => dargs.push stx
       | _ =>  dargs
   |_ => #[]
 
@@ -196,7 +196,7 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 namespace CDotLinter
 
 @[inherit_doc linter.cdot]
-def cdotLinter : Linter where run := withSetOptionIn fun stx => do
+def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.cdot (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
@@ -325,7 +325,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
-    let longLines := ((sstr.getD default).splitOn "\n").filter fun line =>
+    let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if !(line.containsSubstr "http") then
