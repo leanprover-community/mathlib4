@@ -37,7 +37,7 @@ theorem tail_reverse_eq_reverse_dropLast (l : List α) :
   · rw [getElem?_eq_none, getElem?_eq_none]
     all_goals (simp; omega)
 
-theorem getLast_tail {α} (l : List α) (hl : l.tail ≠ []) :
+theorem getLast_tail (l : List α) (hl : l.tail ≠ []) :
     l.tail.getLast hl = l.getLast (by intro h; rw [h] at hl; simp at hl) := by
   simp only [← drop_one, ne_eq, drop_eq_nil_iff_le,
     not_le, getLast_eq_getElem, length_drop] at hl |-
