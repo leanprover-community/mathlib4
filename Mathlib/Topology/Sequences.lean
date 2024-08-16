@@ -94,7 +94,7 @@ theorem isSeqClosed_iff {s : Set X} : IsSeqClosed s ↔ seqClosure s = s :=
 
 /-- A set is sequentially closed if it is closed. -/
 protected theorem IsClosed.isSeqClosed {s : Set X} (hc : IsClosed s) : IsSeqClosed s :=
-  fun _u _x hu hx => hc.mem_of_tendsto hx (eventually_of_forall hu)
+  fun _u _x hu hx => hc.mem_of_tendsto hx (Eventually.of_forall hu)
 
 theorem seqClosure_eq_closure [FrechetUrysohnSpace X] (s : Set X) : seqClosure s = closure s :=
   seqClosure_subset_closure.antisymm <| FrechetUrysohnSpace.closure_subset_seqClosure s
@@ -121,7 +121,7 @@ theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : 
   refine ⟨closure (f ⁻¹' s), ⟨mt ?_ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
   rw [← seqClosure_eq_closure]
   rintro ⟨u, hus, hu⟩
-  exact hsc.mem_of_tendsto (h u hu) (eventually_of_forall hus)
+  exact hsc.mem_of_tendsto (h u hu) (Eventually.of_forall hus)
 
 /-- An alternative construction for `FrechetUrysohnSpace`: if sequential convergence implies
 convergence, then the space is a Fréchet-Urysohn space. -/
@@ -254,7 +254,7 @@ open FirstCountableTopology
 
 protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
   fun _x x_in =>
-  let ⟨a, a_in, ha⟩ := hs (tendsto_principal.mpr (eventually_of_forall x_in))
+  let ⟨a, a_in, ha⟩ := hs (tendsto_principal.mpr (Eventually.of_forall x_in))
   ⟨a, a_in, tendsto_subseq ha⟩
 
 theorem IsCompact.tendsto_subseq' {s : Set X} {x : ℕ → X} (hs : IsCompact s)
@@ -315,7 +315,7 @@ theorem IsSeqCompact.exists_tendsto_of_frequently_mem (hs : IsSeqCompact s) {u :
 
 theorem IsSeqCompact.exists_tendsto (hs : IsSeqCompact s) {u : ℕ → X} (hu : ∀ n, u n ∈ s)
     (huc : CauchySeq u) : ∃ x ∈ s, Tendsto u atTop (𝓝 x) :=
-  hs.exists_tendsto_of_frequently_mem (frequently_of_forall hu) huc
+  hs.exists_tendsto_of_frequently_mem (Frequently.of_forall hu) huc
 
 /-- A sequentially compact set in a uniform space is totally bounded. -/
 protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBounded s := by

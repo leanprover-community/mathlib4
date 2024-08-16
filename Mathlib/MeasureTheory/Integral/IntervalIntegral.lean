@@ -199,7 +199,7 @@ theorem mono_set_ae (hf : IntervalIntegrable f μ a b) (h : Ι c d ≤ᵐ[μ] Ι
 
 theorem mono_set' (hf : IntervalIntegrable f μ a b) (hsub : Ι c d ⊆ Ι a b) :
     IntervalIntegrable f μ c d :=
-  hf.mono_set_ae <| eventually_of_forall hsub
+  hf.mono_set_ae <| Eventually.of_forall hsub
 
 theorem mono_fun [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
@@ -516,7 +516,7 @@ theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}
 
 theorem norm_integral_le_of_norm_le_const {a b C : ℝ} {f : ℝ → E} (h : ∀ x ∈ Ι a b, ‖f x‖ ≤ C) :
     ‖∫ x in a..b, f x‖ ≤ C * |b - a| :=
-  norm_integral_le_of_norm_le_const_ae <| eventually_of_forall h
+  norm_integral_le_of_norm_le_const_ae <| Eventually.of_forall h
 
 @[simp]
 nonrec theorem integral_add (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
@@ -1004,7 +1004,7 @@ theorem integral_lt_integral_of_continuousOn_of_le_of_exists_lt {f g : ℝ → �
   have h_eq : f =ᵐ[volume.restrict (Ioc a b)] g := by
     simp only [← not_le, ← ae_iff] at hlt
     exact EventuallyLE.antisymm ((ae_restrict_iff' measurableSet_Ioc).2 <|
-      eventually_of_forall hle) hlt
+      Eventually.of_forall hle) hlt
   rw [Measure.restrict_congr_set Ioc_ae_eq_Icc] at h_eq
   exact fun c hc ↦ (Measure.eqOn_Icc_of_ae_eq volume hab.ne h_eq hfc hgc hc).ge
 
@@ -1017,7 +1017,7 @@ theorem integral_nonneg_of_ae (hab : a ≤ b) (hf : 0 ≤ᵐ[μ] f) : 0 ≤ ∫ 
   integral_nonneg_of_ae_restrict hab <| ae_restrict_of_ae hf
 
 theorem integral_nonneg_of_forall (hab : a ≤ b) (hf : ∀ u, 0 ≤ f u) : 0 ≤ ∫ u in a..b, f u ∂μ :=
-  integral_nonneg_of_ae hab <| eventually_of_forall hf
+  integral_nonneg_of_ae hab <| Eventually.of_forall hf
 
 theorem integral_nonneg (hab : a ≤ b) (hf : ∀ u, u ∈ Icc a b → 0 ≤ f u) : 0 ≤ ∫ u in a..b, f u ∂μ :=
   integral_nonneg_of_ae_restrict hab <| (ae_restrict_iff' measurableSet_Icc).mpr <| ae_of_all μ hf

@@ -601,7 +601,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
   have A : Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t)) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 0) := by
     apply
       tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h
-        (eventually_of_forall fun b => zero_le _)
+        (Eventually.of_forall fun b => zero_le _)
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
     rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
@@ -798,7 +798,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
       tendsto_addHaar_inter_smul_one_of_density_one_aux μ _ (measurableSet_toMeasurable _ _) _ _
         t ht h't h''t
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' h tendsto_const_nhds
-    · refine eventually_of_forall fun r ↦ ?_
+    · refine Eventually.of_forall fun r ↦ ?_
       gcongr
       apply subset_toMeasurable
     · filter_upwards [self_mem_nhdsWithin]

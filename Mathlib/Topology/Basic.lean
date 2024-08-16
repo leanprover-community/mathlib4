@@ -1451,7 +1451,7 @@ theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
 
 theorem continuous_of_const (h : ∀ x y, f x = f y) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x =>
-    Filter.EventuallyEq.continuousAt <| eventually_of_forall fun y => h y x
+    Filter.EventuallyEq.continuousAt <| Eventually.of_forall fun y => h y x
 
 theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt

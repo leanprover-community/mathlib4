@@ -833,7 +833,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
       -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
-  refine squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this ?_
+  refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
   refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_
   simp
 

@@ -146,6 +146,6 @@ suffices to check it almost everywhere along all translates of a given vector su
 instance of a disintegration argument for additive Haar measures. -/
 lemma ae_mem_of_ae_add_linearMap_mem [LocallyCompactSpace F] {s : Set F} (hs : MeasurableSet s)
     (h : ∀ y, ∀ᵐ x ∂μ, y + L x ∈ s) : ∀ᵐ y ∂ν, y ∈ s :=
-  (ae_ae_add_linearMap_mem_iff L μ ν hs).1 (Filter.eventually_of_forall h)
+  (ae_ae_add_linearMap_mem_iff L μ ν hs).1 (Filter.Eventually.of_forall h)
 
 end MeasureTheory

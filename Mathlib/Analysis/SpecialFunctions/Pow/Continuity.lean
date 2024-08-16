@@ -441,10 +441,10 @@ theorem eventually_pow_one_div_le {x : ℝ≥0∞} (hx : x ≠ ∞) {y : ℝ≥0
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by
   lift x to ℝ≥0 using hx
   by_cases h : y = ∞
-  · exact eventually_of_forall fun n => h.symm ▸ le_top
+  · exact Eventually.of_forall fun n => h.symm ▸ le_top
   · lift y to ℝ≥0 using h
     have := NNReal.eventually_pow_one_div_le x (mod_cast hy : 1 < y)
-    refine this.congr (eventually_of_forall fun n => ?_)
+    refine this.congr (Eventually.of_forall fun n => ?_)
     rw [coe_rpow_of_nonneg x (by positivity : 0 ≤ (1 / n : ℝ)), coe_le_coe]
 
 private theorem continuousAt_rpow_const_of_pos {x : ℝ≥0∞} {y : ℝ} (h : 0 < y) :

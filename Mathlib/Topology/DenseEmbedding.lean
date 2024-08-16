@@ -165,7 +165,7 @@ theorem extend_unique_at [T2Space γ] {b : β} {f : α → γ} {g : β → γ} (
 
 theorem extend_unique [T2Space γ] {f : α → γ} {g : β → γ} (di : DenseInducing i)
     (hf : ∀ x, g (i x) = f x) (hg : Continuous g) : di.extend f = g :=
-  funext fun _ => extend_unique_at di (eventually_of_forall hf) hg.continuousAt
+  funext fun _ => extend_unique_at di (Eventually.of_forall hf) hg.continuousAt
 
 theorem continuousAt_extend [T3Space γ] {b : β} {f : α → γ} (di : DenseInducing i)
     (hf : ∀ᶠ x in 𝓝 b, ∃ c, Tendsto f (comap i <| 𝓝 x) (𝓝 c)) : ContinuousAt (di.extend f) b := by

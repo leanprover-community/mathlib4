@@ -1077,7 +1077,7 @@ theorem isLittleO_principal {s : Set α} : f'' =o[𝓟 s] g' ↔ ∀ x ∈ s, f'
       ((continuous_id.mul continuous_const).tendsto' _ _ (zero_mul _)).mono_left
         inf_le_left
     apply le_of_tendsto_of_tendsto tendsto_const_nhds this
-    apply eventually_nhdsWithin_iff.2 (eventually_of_forall (fun c hc ↦ ?_))
+    apply eventually_nhdsWithin_iff.2 (Eventually.of_forall (fun c hc ↦ ?_))
     exact eventually_principal.1 (h hc) x hx
   · apply (isLittleO_zero g' _).congr' ?_ EventuallyEq.rfl
     exact fun x hx ↦ (h x hx).symm
@@ -1564,11 +1564,11 @@ theorem isLittleO_iff_tendsto' {f g : α → 𝕜} (hgf : ∀ᶠ x in l, g x = 0
     f =o[l] g ↔ Tendsto (fun x => f x / g x) l (𝓝 0) :=
   ⟨IsLittleO.tendsto_div_nhds_zero, fun h =>
     (((isLittleO_one_iff _).mpr h).mul_isBigO (isBigO_refl g l)).congr'
-      (hgf.mono fun _x => div_mul_cancel_of_imp) (eventually_of_forall fun _x => one_mul _)⟩
+      (hgf.mono fun _x => div_mul_cancel_of_imp) (Eventually.of_forall fun _x => one_mul _)⟩
 
 theorem isLittleO_iff_tendsto {f g : α → 𝕜} (hgf : ∀ x, g x = 0 → f x = 0) :
     f =o[l] g ↔ Tendsto (fun x => f x / g x) l (𝓝 0) :=
-  isLittleO_iff_tendsto' (eventually_of_forall hgf)
+  isLittleO_iff_tendsto' (Eventually.of_forall hgf)
 
 alias ⟨_, isLittleO_of_tendsto'⟩ := isLittleO_iff_tendsto'
 

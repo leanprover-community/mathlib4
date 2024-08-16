@@ -339,7 +339,7 @@ theorem lintegral_nnnorm_eq_of_ae_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ᵐ[�
 
 theorem lintegral_nnnorm_eq_of_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ f) :
     ∫⁻ x, ‖f x‖₊ ∂μ = ∫⁻ x, ENNReal.ofReal (f x) ∂μ :=
-  lintegral_nnnorm_eq_of_ae_nonneg (Filter.eventually_of_forall h_nonneg)
+  lintegral_nnnorm_eq_of_ae_nonneg (Filter.Eventually.of_forall h_nonneg)
 
 /-- **Monotone convergence theorem** -- sometimes called **Beppo-Levi convergence**.
 See `lintegral_iSup_directed` for a more general form. -/
@@ -1410,7 +1410,7 @@ theorem _root_.MeasurableEmbedding.lintegral_map [MeasurableSpace β] {g : α �
     exact le_iSup_of_le (comp f₀ g hg.measurable) (by exact le_iSup (α := ℝ≥0∞) _ this)
   · rw [← f₀.extend_comp_eq hg (const _ 0), ← SimpleFunc.lintegral_map, ←
       SimpleFunc.lintegral_eq_lintegral, ← lintegral]
-    refine lintegral_mono_ae (hg.ae_map_iff.2 <| eventually_of_forall fun x => ?_)
+    refine lintegral_mono_ae (hg.ae_map_iff.2 <| Eventually.of_forall fun x => ?_)
     exact (extend_apply _ _ _ _).trans_le (hf₀ _)
 
 /-- The `lintegral` transforms appropriately under a measurable equivalence `g : α ≃ᵐ β`.
@@ -1753,7 +1753,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
     · exact fun n ↦ (M n).aemeasurable
     · simp_rw [Int_eq]
       exact hf_tendsto
-    · exact eventually_of_forall (fun x ↦ monotone_nat_of_le_succ (fun n ↦ le_max_right _ _))
+    · exact Eventually.of_forall (fun x ↦ monotone_nat_of_le_succ (fun n ↦ le_max_right _ _))
     · filter_upwards [h_bound, I'] with x h'x hx n using (hx n).trans (h'x n)
   filter_upwards [this, I', h_bound] with x hx h'x h''x
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le hx tendsto_const_nhds h'x h''x
@@ -2029,10 +2029,10 @@ lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : Measur
   simp_rw [← MeasureTheory.lintegral_indicator_one A_mble,
            ← MeasureTheory.lintegral_indicator_one (As_mble _)]
   refine tendsto_lintegral_filter_of_dominated_convergence (B.indicator (1 : α → ℝ≥0∞))
-          (eventually_of_forall ?_) ?_ ?_ ?_
+          (Eventually.of_forall ?_) ?_ ?_ ?_
   · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
   · filter_upwards [As_le_B] with i hi
-    exact eventually_of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
+    exact Eventually.of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
   · rwa [← lintegral_indicator_one B_mble] at B_finmeas
   · simpa only [Pi.one_def, tendsto_indicator_const_apply_iff_eventually] using h_lim
 
@@ -2044,7 +2044,7 @@ lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure
     (As_mble : ∀ i, MeasurableSet (As i)) (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
   tendsto_measure_of_ae_tendsto_indicator L A_mble As_mble MeasurableSet.univ
-    (measure_ne_top μ univ) (eventually_of_forall (fun i ↦ subset_univ (As i))) h_lim
+    (measure_ne_top μ univ) (Eventually.of_forall (fun i ↦ subset_univ (As i))) h_lim
 
 end TendstoIndicator -- section
 
