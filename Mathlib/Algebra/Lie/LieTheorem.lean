@@ -214,90 +214,110 @@ def altWeightSpace : LieSubmodule k L V where
 
 end
 
+-- move this
+instance (A : LieIdeal k L) [IsSolvable k L] : IsSolvable k A :=
+  A.incl_injective.lieAlgebra_isSolvable
+
+-- move this
+lemma IsCoatom.lt_top {α : Type*} [PartialOrder α] [OrderTop α] {a : α} (h : IsCoatom a) : a < ⊤ :=
+  h.lt_iff.mpr rfl
+
+-- move this
+lemma Submodule.disjoint_span_of_not_mem
+    {k V : Type*} [Field k] [AddCommGroup V] [Module k V]
+    (A : Submodule k V) (x : V) (hx : x ∉ A) :
+    Disjoint A (k ∙ x) := by
+  rw [disjoint_iff_inf_le]
+  rintro y ⟨(hyA : y ∈ A), (hyx : y ∈ k ∙ x)⟩
+  obtain ⟨c, rfl⟩ : ∃ c, c • x = y := by rwa [Submodule.mem_span_singleton] at hyx
+  apply A.smul_mem c⁻¹ at hyA
+  rcases eq_or_ne c 0 with (rfl | hc) <;> simp_all
+
+-- move this
+lemma Submodule.isCompl_span_of_iscoatom_of_not_mem
+    {k V : Type*} [Field k] [AddCommGroup V] [Module k V]
+    (A : Submodule k V) (x : V) (hA : IsCoatom A) (hx : x ∉ A) :
+    IsCompl A (k ∙ x) := by
+  refine ⟨disjoint_span_of_not_mem A x hx, ?_⟩ 
+  rw [codisjoint_iff_le_sup]
+  apply (hA.2 _ _).ge
+  rw [left_lt_sup]
+  contrapose! hx
+  exact hx <| Submodule.mem_span_singleton_self x
+
+-- move this
+@[simp]
+lemma LinearEquiv.toSpanNonzeroSingleton_symm_apply_smul
+    {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+    (x : M) (h : x ≠ 0) (y) :
+    (LinearEquiv.toSpanNonzeroSingleton R M x h).symm y • x = y := by
+  set e := LinearEquiv.toSpanNonzeroSingleton R M x h
+  show (e (e.symm y) : M) = y
+  simp
+
 section
 
 variable [CharZero k] [Module.Finite k V]
 
 open LieModule in
-theorem extend_weight [LieModule.IsTriangularizable k L V] (A : LieIdeal k L) (z : L) (hz : z ∉ A)
-    (hcompl : IsCompl A.toSubmodule (k ∙ z)) (χ' : Module.Dual k A) (v : V)
-    (hv : v ≠ 0) (hvA' : ∀ (x : A), ⁅x, v⁆ = χ' x • v) :
+theorem extend_weight [LieModule.IsTriangularizable k L V]
+    (A : LieIdeal k L) (z : L) (hA : IsCoatom A.toSubmodule) (hz : z ∉ A)
+    (χ₀ : Module.Dual k A) (v₀ : V)
+    (hv₀ : v₀ ≠ 0) (hv₀A : ∀ (x : A), ⁅x, v₀⁆ = χ₀ x • v₀) :
     ∃ (χ : Module.Dual k L) (v : V), v ≠ 0 ∧ ∀ (x : L), ⁅x, v⁆ = χ x • v := by
-  set Vχ' := altWeightSpace (V := V) A χ'
-  obtain ⟨c, hc⟩ : ∃ c, Module.End.HasEigenvalue (toEnd k _ Vχ' z) c := by
-    have : Nontrivial Vχ' := nontrivial_of_ne ⟨v, hvA'⟩ 0 <| Subtype.coe_ne_coe.mp hv
+  let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
+  have he : ∀ x, e x • z = x := by simp [e]
+  have hcompl : IsCompl A.toSubmodule (k ∙ z) :=
+    Submodule.isCompl_span_of_iscoatom_of_not_mem _ _ hA hz
+  let π₁ : L →ₗ[k] A       := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hcompl
+  let π₂ : L →ₗ[k] (k ∙ z) := (k ∙ z).linearProjOfIsCompl ↑A hcompl.symm
+  have hπ : ∀ x, (π₁ x : L) + π₂ x = x :=
+    Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hcompl
+
+  set Vχ₀ := altWeightSpace (V := V) A χ₀
+  obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ Vχ₀ z).HasEigenvalue c := by
+    have : Nontrivial Vχ₀ := nontrivial_of_ne ⟨v₀, hv₀A⟩ 0 <| Subtype.coe_ne_coe.mp hv₀
     apply Module.End.exists_hasEigenvalue_of_iSup_genEigenspace_eq_top
     exact LieModule.IsTriangularizable.iSup_eq_top z
-  obtain ⟨⟨v', hv'⟩, hv''⟩ := Module.End.HasEigenvalue.exists_hasEigenvector hc
-  have hz' : z ≠ 0 := by
-    rintro rfl
-    apply hz <| A.zero_mem
+  obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
 
-  let π1 := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hcompl
-  let π2 := (k ∙ z).linearProjOfIsCompl ↑A hcompl.symm
-  let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z hz').symm
-
-  use (χ'.comp π1) + c • (e.comp π2), v'
+  use (χ₀.comp π₁) + c • (e.comp π₂), v
   constructor
-  · have := hv''.right
-    rw [ne_eq]
-    intro h
-    apply this
-    apply (Submodule.mk_eq_zero _ _).mpr h
+  · simpa only [ne_eq, AddSubmonoid.mk_eq_zero] using hvc.right
   · intro x
-    have π1_add_π2 : (π1 x : L) + π2 x = x :=
-      Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hcompl x
-    conv_lhs => rw [← π1_add_π2, add_lie]
-    have hzv' : ⁅z, v'⁆ = (toEnd k _ Vχ' z) ⟨v', hv'⟩ := rfl
-    rcases Submodule.mem_span_singleton.mp ((π2 x).prop) with ⟨d, hd⟩
-    obtain rfl : d = e (π2 x) := by
-      rw [LinearEquiv.eq_symm_apply]
-      ext
-      exact hd
-    simp [hv' (π1 x), ← hd, add_smul, mul_smul, hzv', hv''.apply_eq_smul, smul_comm _ c v']
+    suffices ⁅(π₂ x : L), v⁆ = (c • e (π₂ x)) • v by
+      calc ⁅x, v⁆
+          = ⁅(π₁ x : L), v⁆ + ⁅(π₂ x : L), v⁆    := by rw [← add_lie, hπ x]
+        _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v := by rw [hv (π₁ x), this]
+        _ = _ := by simp [add_smul]
+    calc ⁅(π₂ x : L), v⁆
+        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : Vχ₀) := by rw [← he, smul_lie, ← hvc.apply_eq_smul]; rfl
+      _ = (c • e (π₂ x)) • v              := by rw [smul_assoc, smul_comm]; rfl
 
 theorem LieModule.exists_forall_lie_eq_smul_finrank [Nontrivial V] :
     ∀ (L : Type*) [LieRing L] [LieAlgebra k L] [FiniteDimensional k L] [IsSolvable k L]
       [LieRingModule L V] [LieModule k L V] [LieModule.IsTriangularizable k L V],
       ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
   intro L _ _ _ _ _ _ _
-  obtain _inst|_inst := subsingleton_or_nontrivial L
-  · rcases (exists_ne (0 : V)) with ⟨v, hv⟩
-    use 0, v, hv
-    intro x
-    simp only [Subsingleton.elim x 0, zero_lie, map_zero, zero_smul]
   obtain H|⟨A, hcoatomA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
-  · rw [LieSubmodule.coeSubmodule_eq_top_iff] at H
-    exact ((derivedSeries_lt_top_of_solvable k L).ne H).elim
-  obtain ⟨z, hz⟩ : ∃ (z : L), z ∉ A := by
-    by_contra! h
-    apply hcoatomA.1
-    rw [eq_top_iff]
-    exact fun ⦃x⦄ _ => h x
-  have hcompl : IsCompl A (k ∙ z) := by
-    apply IsCompl.of_le
-    · rintro x ⟨(ha : x ∈ A), (hb : x ∈ Submodule.span k _)⟩
-      obtain ⟨c, rfl⟩ : ∃ c, c • z = x := by rwa [Submodule.mem_span_singleton] at hb
-      apply A.smul_mem c⁻¹ at ha
-      rcases eq_or_ne c 0 with (rfl | hc) <;> simp_all
-    · apply (hcoatomA.2 _ _).ge
-      rw [left_lt_sup]
-      contrapose! hz with h
-      exact h <| Submodule.mem_span_singleton_self z
+  · obtain _inst|_inst := subsingleton_or_nontrivial L
+    · use 0
+      simpa using exists_ne _
+    · rw [LieSubmodule.coeSubmodule_eq_top_iff] at H
+      exact ((derivedSeries_lt_top_of_solvable k L).ne H).elim
+  obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hcoatomA.lt_top)
   lift A to LieIdeal k L
   · intros
     exact hAL <| LieSubmodule.lie_mem_lie (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
-  change LieIdeal k L at A -- remove this line when bug in `lift` is fixed
-  have hAsolv : LieAlgebra.IsSolvable k A := A.incl_injective.lieAlgebra_isSolvable
+  change LieIdeal k L at A -- remove this line when bug in `lift` is fixed (#15865)
   obtain ⟨χ', v, hv, hvA⟩ := LieModule.exists_forall_lie_eq_smul_finrank A
-  apply extend_weight A z hz hcompl χ' v hv hvA
+  exact extend_weight A z hcoatomA hz χ' v hv hvA
 termination_by L _ _ _ => finrank k L
 decreasing_by
   simp_wf
   rw [← finrank_top k L]
   apply Submodule.finrank_lt_finrank_of_lt
-  rw [← covBy_top_iff] at hcoatomA
-  exact hcoatomA.1
+  exact hcoatomA.lt_top
 
 -- If `L` is solvable, we can find a non-zero eigenvector
 theorem LieModule.exists_forall_lie_eq_smul_of_Solvable [Nontrivial V]
