@@ -4,7 +4,8 @@ open Lake DSL
 
 /-- These options are used
 * as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
-* as `moreServerArgs`, to set their default value in mathlib.
+* as `moreServerArgs`, to set their default value in mathlib
+  (as well as `Archive`, `Counterexamples` and `test`).
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.hashCommand, true⟩,
@@ -16,18 +17,30 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.setOption, true⟩
 ]
 
-package mathlib where
-  leanOptions := #[
+/-- These options are passed as `leanOptions` to building mathlib, as well as the
+`Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
+abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩
   ] ++ -- options that are used in `lake build`
-    mathlibOnlyLinters.map fun s => { s with name := `weak ++ s.name }
+    mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
+
+package mathlib where
+  leanOptions := mathlibLeanOptions
+  -- Mathlib also enforces these linter options, which are not active by default.
+  moreServerOptions := mathlibOnlyLinters
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
   -- weakLeanArgs := #[]
-  -- these are the linter options that Mathlib enforces, but that would not be active by default
+
+lean_lib Archive where
+  leanOptions := mathlibLeanOptions
+  moreServerOptions := mathlibOnlyLinters
+
+lean_lib Counterexamples where
+  leanOptions := mathlibLeanOptions
   moreServerOptions := mathlibOnlyLinters
 
 /-!
@@ -51,8 +64,7 @@ lean_lib Mathlib
 -- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
-lean_lib Archive
-lean_lib Counterexamples
+-- Archive and Counterexamples are declared above, to pass similar options to their build
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
   roots := #[`docs]
@@ -105,6 +117,7 @@ You can also use it as e.g. `lake exe test conv eval_elab` to only run the named
 -/
 @[test_driver]
 lean_exe test where
+  moreServerOptions := mathlibOnlyLinters
   srcDir := "scripts"
 
 /-!
