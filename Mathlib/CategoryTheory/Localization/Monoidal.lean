@@ -164,7 +164,7 @@ noncomputable def tensorTrifunctorRightAux : LocalizedMonoidal L W ε × Localiz
 
 noncomputable def tensorTrifunctorLeftRightAuxIso :
     tensorTrifunctorLeftAux L W ε ≅ tensorTrifunctorRightAux L W ε :=
-  lift₂NatIso (L.prod L) L (isInvertedBy₂_leftAssocTensorAux L W ε)
+  lift₂NatIso_old (L.prod L) L _ _ (isInvertedBy₂_leftAssocTensorAux L W ε)
     (isInvertedBy₂_rightAssocTensorAux L W ε) (Functor.mapIso _
       (curry.mapIso (isoWhiskerLeft _ (associatorNatIso C))))
 
@@ -253,7 +253,7 @@ noncomputable instance : Lifting₂ (L.prod L) L (W.prod W) W
 noncomputable def associatorLeftHalf :
     curry.obj (tensorTrifunctorLeftAux L W ε) ≅ tensorTrifunctorLeft L W ε := by
   refine curry.mapIso ?_ ≪≫ (bifunctorComp₁₂Iso _ _).symm
-  exact lift₂NatIso' (W₁ := W.prod W) (W₂ := W)
+  exact lift₂NatIso'_old (W₁ := W.prod W) (W₂ := W)
     (F₁ := ((whiskeringRight₂' (C × C) C L').obj (leftAssocTensorAux C)))
     (F₂ := ((whiskeringRight₂' (C × C) C L').obj (leftAssocTensorAux C)))
     (L.prod L) L
@@ -338,7 +338,7 @@ noncomputable instance : Lifting₂ (L.prod L) L (W.prod W) W
 noncomputable def associatorRightHalf :
     curry.obj (tensorTrifunctorRightAux L W ε) ≅ tensorTrifunctorRight L W ε := by
   refine curry.mapIso ?_ ≪≫ (bifunctorComp₂₃Iso _ _).symm
-  exact lift₂NatIso' (W₁ := W.prod W) (W₂ := W)
+  exact lift₂NatIso'_old (W₁ := W.prod W) (W₂ := W)
     (F₁ := ((whiskeringRight₂' (C × C) C L').obj (rightAssocTensorAux C)))
     (F₂ := ((whiskeringRight₂' (C × C) C L').obj (rightAssocTensorAux C)))
     (L.prod L) L

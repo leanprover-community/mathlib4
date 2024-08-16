@@ -83,6 +83,15 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E :=
     (NatIso.ofComponents fun F => NatIso.ofComponents (fun X => eqToIso (by simp))
       (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [← F.map_comp]; simp))
 
+def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
+  (currying).fullyFaithfulFunctor
+
+instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
+  fullyFaithfulUncurry.full
+
+instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Faithful :=
+  fullyFaithfulUncurry.faithful
+
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
 @[simps!]
 def flipIsoCurrySwapUncurry (F : C ⥤ D ⥤ E) : F.flip ≅ curry.obj (Prod.swap _ _ ⋙ uncurry.obj F) :=
