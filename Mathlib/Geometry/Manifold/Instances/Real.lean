@@ -12,7 +12,8 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`.
+boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x,y}`
+whenever `x < y`.
 
 More specifically, we introduce
 * `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
@@ -351,6 +352,7 @@ instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
 
+/-- Copy of `IccManifold`, to be able to state a lemma about its charts at a specific point. -/
 def IccManifold2 (x y : ℝ) [h : Fact (x < y)] :
     ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
   atlas := {IccLeftChart x y, IccRightChart x y}
