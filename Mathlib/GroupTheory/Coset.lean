@@ -267,8 +267,7 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
   If `s` is a normal subgroup, `α ⧸ s` is a group -/
 @[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`.  If `s` is a normal
  subgroup, `α ⧸ s` is a group"]
-instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
-  ⟨fun s => Quotient (leftRel s)⟩
+instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) leftRel := ⟨⟩
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
@@ -360,7 +359,7 @@ abbrev mk (a : α) : α ⧸ s :=
 theorem mk_surjective : Function.Surjective <| @mk _ _ s :=
   Quotient.surjective_Quotient_mk''
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_iff_surjective.mpr mk_surjective
 
 @[to_additive (attr := elab_as_elim)]

@@ -36,13 +36,9 @@ variable {S : Type v}
 -- so this quotient is only useful in a commutative ring.
 -- We should develop quotients by two-sided ideals as well.
 /-- The quotient `R/I` of a ring `R` by an ideal `I`.
-
 The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
-This definition uses `abbrev` so that typeclass instances can be shared between
-`Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
-@[instance] abbrev instHasQuotient : HasQuotient R (Ideal R) :=
-  Submodule.hasQuotient
+instance instHasQuotient : HasQuotient R (Ideal R) Submodule.quotientRel := ⟨⟩
 
 namespace Quotient
 

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Yuyang Zhao
 -/
 import Mathlib.Tactic.Common
 
@@ -35,27 +35,21 @@ ideal quotient, quotient ring
 
 universe u v
 
-/-- `HasQuotient A B` is a notation typeclass that allows us to write `A ⧸ b` for `b : B`.
+/-- `HasQuotient A B s` is a notation typeclass that allows us to write `A ⧸ b` for `b : B`.
 This allows the usual notation for quotients of algebraic structures,
 such as groups, modules and rings.
 
 `A` is a parameter, despite being unused in the definition below, so it appears in the notation.
 -/
-class HasQuotient (A : outParam <| Type u) (B : Type v) where
-  /-- auxiliary quotient function, the one used will have `A` explicit -/
-  quotient' : B → Type max u v
+class HasQuotient (A : outParam <| Type u) (B : Type v) (setoid : outParam <| B → Setoid A) where
 
--- Will be provided by e.g. `Ideal.Quotient.inhabited`
 /-- `HasQuotient.Quotient A b` (with notation `A ⧸ b`) is the quotient
  of the type `A` by `b`.
-
-This differs from `HasQuotient.quotient'` in that the `A` argument is
- explicit, which is necessary to make Lean show the notation in the
- goal state.
 -/
-abbrev HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
-    [HasQuotient A B] (b : B) : Type max u v :=
-  HasQuotient.quotient' b
+@[nolint unusedArguments]
+abbrev HasQuotient.Quotient (A : Type u) {B : Type v} {setoid : B → Setoid A}
+    [HasQuotient A B setoid] (b : B) : Type u :=
+  _root_.Quotient (setoid b)
 
 /-- Quotient notation based on the `HasQuotient` typeclass -/
 notation:35 G " ⧸ " H:34 => HasQuotient.Quotient G H

@@ -165,6 +165,8 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- Similarly: `ψ r` is the characteristic polynomial of `⁅r • u + x, _⁆`
   --   viewed as endomorphism of `Q`. Note that `ψ` is polynomial in its argument `r`.
   let χ : Polynomial (K[X]) := lieCharpoly K E x' u
+  letI : LieRingModule U Q := LieSubmodule.Quotient.lieQuotientLieRingModule _
+  letI : LieModule K U Q := LieSubmodule.Quotient.lieQuotientLieModule _
   let ψ : Polynomial (K[X]) := lieCharpoly K Q x' u
   -- It suffices to show that `χ` is the monomial `X ^ r`.
   suffices χ = X ^ r by

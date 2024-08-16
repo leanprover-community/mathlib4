@@ -38,8 +38,7 @@ variable [LieRingModule L M]
 variable (N N' : LieSubmodule R L M)
 
 /-- The quotient of a Lie module by a Lie submodule. It is a Lie module. -/
-instance : HasQuotient M (LieSubmodule R L M) :=
-  ⟨fun N => M ⧸ N.toSubmodule⟩
+instance : HasQuotient M (LieSubmodule R L M) (fun m ↦ m.toSubmodule.quotientRel) := ⟨⟩
 
 namespace Quotient
 
@@ -68,8 +67,6 @@ lie_submodule of the lie_module `N`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 
--- Porting note: added to replace `mk_eq_zero` as simp lemma.
-@[simp]
 theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
 
