@@ -409,15 +409,12 @@ lemma boundary_IccManifold : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
     rw [this]
     apply iff_of_true Icc_isBoundaryPoint_left (mem_insert X {Y})
   · apply iff_of_false
-    · -- FIXME: golf using compl_boundary once #14972 has landed
-      rw [ModelWithCorners.boundary_eq_complement_interior, not_mem_compl_iff]
+    · rw [← ModelWithCorners.compl_interior, not_mem_compl_iff]
       exact Icc_isInteriorPoint_interior hp
     · rw [mem_insert_iff, mem_singleton_iff]
       -- can this be golfed?
       push_neg
-      constructor
-      · by_contra h; linarith [congrArg Subtype.val h]
-      · by_contra h; linarith [congrArg Subtype.val h]
+      constructor <;> by_contra h <;> linarith [congrArg Subtype.val h]
   · have : p = Y := SetCoe.ext hp
     rw [this]
     apply iff_of_true Icc_isBoundaryPoint_right (mem_insert_of_mem X rfl)
