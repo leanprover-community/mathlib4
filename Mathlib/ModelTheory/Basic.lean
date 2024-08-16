@@ -82,14 +82,10 @@ instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a�
 instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
 
 instance [DecidableEq a₀] [DecidableEq a₁] [DecidableEq a₂] {n : ℕ} :
-    DecidableEq (Sequence₂ a₀ a₁ a₂ n) := by
-  cases n with
-  | zero => infer_instance
-  | succ n => cases n with
-    | zero => infer_instance
-    | succ n => cases n with
-      | zero => infer_instance
-      | succ n => infer_instance
+    DecidableEq (Sequence₂ a₀ a₁ a₂ n) :=
+  match n with
+  | 0 | 1 | 2 => ‹_›
+  | _ + 3 => inferInstance
 
 @[simp]
 theorem lift_mk {i : ℕ} :
