@@ -878,6 +878,12 @@ theorem eLpNorm_le_add_measure_left (f : α → F) (μ ν : Measure α) {p : ℝ
 @[deprecated (since := "2024-07-27")]
 alias snorm_le_add_measure_left := eLpNorm_le_add_measure_left
 
+lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → E) : eLpNormEssSup f μ = ⨆ a, ↑‖f a‖₊ :=
+  essSup_eq_iSup hμ _
+
+@[simp] lemma eLpNormEssSup_count [MeasurableSingletonClass α] (f : α → E) :
+    eLpNormEssSup f .count = ⨆ a, ↑‖f a‖₊ := essSup_count _
+
 theorem Memℒp.left_of_add_measure {f : α → E} (h : Memℒp f p (μ + ν)) : Memℒp f p μ :=
   h.mono_measure <| Measure.le_add_right <| le_refl _
 
