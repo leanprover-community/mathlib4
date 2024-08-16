@@ -3,8 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Algebra.Field.Basic
+import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Some exiled lemmas about casting
@@ -19,6 +20,11 @@ so perhaps this file can simply be deleted.
 namespace Rat
 
 variable {α : Type*} [DivisionRing α]
+
+@[simp, norm_cast]
+lemma cast_pow (p : ℚ) (n : ℕ) : ↑(p ^ n) = (p ^ n : α) := by
+  rw [cast_def, cast_def, den_pow, num_pow, Nat.cast_pow, Int.cast_pow, div_eq_mul_inv, ← inv_pow,
+    ← (Int.cast_commute _ _).mul_pow, ← div_eq_mul_inv]
 
 -- Porting note: rewrote proof
 @[simp]

@@ -129,7 +129,7 @@ lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a �
 
 lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : s₁.biUnion t₁ = s₂.biUnion t₂ :=
   ext fun x ↦ by
-    -- Porting note: this entire proof was `simp [or_and_distrib_right, exists_or_distrib]`
+    -- Porting note: this entire proof was `simp [or_and_right, exists_or]`
     simp_rw [mem_biUnion]
     apply exists_congr
     simp (config := { contextual := true }) only [hs, and_congr_right_iff, ht, implies_true]
