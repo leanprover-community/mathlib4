@@ -62,7 +62,7 @@ noncomputable def Lifting₂.snd (X₂ : C₂) :
 
 noncomputable instance Lifting₂.uncurry [Lifting₂ L₁ L₂ W₁ W₂ F F'] :
     Lifting (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F) (uncurry.obj F') where
-  iso' := uncurry.mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
+  iso' := CategoryTheory.uncurry.mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
 
 end
 
