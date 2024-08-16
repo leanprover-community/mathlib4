@@ -184,13 +184,32 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y = -2 * y + 1 :
 
 /-! ### Cases that should fail -/
 
+/--
+error: ring failed, ring expressions not equal
+a : ℚ
+ha : a = 1
+⊢ -1 = 0
+-/
+#guard_msgs in
+example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
+
 -- This should fail because the second coefficient has a different type than
 --   the equations it is being combined with.  This was a design choice for the
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
+/--
+error: application type mismatch
+  Mathlib.Tactic.LinearCombination.c_mul_pf h2 0
+argument
+  0
+has type
+  ℝ : Type
+but is expected to have type
+  ℤ : Type
+-/
+#guard_msgs in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by
-  fail_if_success linear_combination h1 + (0 : ℝ) * h2
-  linear_combination h1
+  linear_combination h1 + (0 : ℝ) * h2
 
 -- This fails because the linear_combination tactic requires the equations
 --   and coefficients to use a type that fulfills the add_group condition,
