@@ -936,7 +936,7 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
       simp only [h]
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 
-@[deprecated getElem_reverse_aux₂ (since := "2024-08-15")]
+@[deprecated (since := "2024-08-15")]
 theorem getElem_reverse_aux₂ :
     ∀ (l r : List α) (i : Nat) (h1) (h2),
       (reverseAux l r)[length l - 1 - i]'h1 = l[i]'h2
@@ -951,7 +951,7 @@ theorem getElem_reverse_aux₂ :
     rw [← heq] at aux
     apply aux
 
-@[deprecated getElem_reverse_aux₂ (since := "2024-06-12")]
+@[deprecated (since := "2024-06-12")]
 theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
     get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
   simp [getElem_reverse_aux₂, h1, h2]
