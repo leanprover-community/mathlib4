@@ -39,8 +39,8 @@ def ConnectedComponents (J : Type u₁) [Category.{v₁} J] : Type u₁ :=
 /-- The map `ConnectedComponents J → ConnectedComponents K` induced by a functor `J ⥤ K`. -/
 def Functor.mapConnectedComponents {K : Type u₂} [Category.{v₂} K] (F : J ⥤ K)
     (x : ConnectedComponents J) : ConnectedComponents K :=
-  Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj)
-    (fun _ _ ↦ Quot.sound ∘ zigzag_obj_of_zigzag F) x
+  x |> Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj)
+    (fun _ _ ↦ Quot.sound ∘ zigzag_obj_of_zigzag F)
 
 @[simp]
 lemma image_of_cc_is_cc_of_image {K : Type u₂} [Category.{v₂} K] (F : J ⥤ K) :
