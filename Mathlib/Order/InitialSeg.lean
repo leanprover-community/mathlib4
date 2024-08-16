@@ -9,7 +9,8 @@ import Mathlib.Order.WellFounded
 /-!
 # Initial and principal segments
 
-This file defines initial and principal segment embeddings.
+This file defines initial and principal segment embeddings. Though these definitions make sense for
+arbitrary relations, they're intended for use with well orders.
 
 An initial segment within a well order is any downwards closed subset. A principal segment is an
 initial segment other than `Set.univ`.
@@ -122,7 +123,7 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
     rw [f.init_iff, g.init_iff]
     exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
 
-/-- Given a well order `s`, there is a most one principal segment embedding of `r` into `s`. -/
+/-- Given a well order `s`, there is at most one principal segment embedding of `r` into `s`. -/
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
   ⟨fun a => by let _ := a.isWellFounded; exact Subsingleton.elim a⟩
 
@@ -252,7 +253,8 @@ theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : Fals
 instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
   ⟨fun f => f.irrefl⟩
 
-/-- Composition of a principal segment with an initial segment, as a principal segment. -/
+/-- Composition of a principal segment embedding with an initial segment embedding, as a principal
+segment embedding. -/
 def ltLe (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
     simp only [g.init_iff, PrincipalSeg.down, exists_and_left.symm, exists_swap,
@@ -266,7 +268,7 @@ theorem lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f
 theorem lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
   rfl
 
-/-- Composition of two principal segments as a principal segment. -/
+/-- Composition of two principal segment embeddings as a principal segment embedding. -/
 @[trans]
 protected def trans [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : r ≺i t :=
   ltLe f g
@@ -302,7 +304,7 @@ theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a =
 theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
 
-/-- Given a well order `s`, there is a most one principal segment embedding of `r` into `s`. -/
+/-- Given a well order `s`, there is at most one principal segment embedding of `r` into `s`. -/
 instance [IsWellOrder β s] : Subsingleton (r ≺i s) := by
   constructor
   intro f g
@@ -357,7 +359,7 @@ theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) : f (f.subrelIso b)
 theorem subrelIso_apply (f : r ≺i s) (a : α) : f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _
 
-/-- Restrict the codomain of a principal segment. -/
+/-- Restrict the codomain of a principal segment embedding. -/
 def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) : r ≺i Subrel s p :=
   ⟨RelEmbedding.codRestrict p f H, ⟨f.top, H₂⟩, fun ⟨_, _⟩ =>
     f.down.trans <|
