@@ -104,8 +104,8 @@ theorem closure_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
   change closure (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ici a
   rw [f.closure_preimage (Function.surjective_eval _), closure_Ici]
 
-theorem frontier_halfspace {a : ℝ} (n : ℕ) [inst : Zero (Fin n)] :
-    frontier {y : EuclideanSpace ℝ (Fin n)| a ≤ y 0} = {y | a = y 0} := by
+theorem frontier_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+    frontier {y : EuclideanSpace ℝ (Fin n)| a ≤ y i} = {y | a = y i} := by
   rw [frontier, interior_halfspace, closure_halfspace]
   ext y
   simp only [mem_diff, mem_setOf_eq, not_lt] at *
@@ -181,13 +181,21 @@ scoped[Manifold]
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
   range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
 
+lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+    interior (range (𝓡∂ n)) = { y | 0 < y 0 } := by
+  calc interior (range (𝓡∂ n))
+    _ = interior ({ y | 0 ≤ y 0}) := by
+      congr!
+      apply range_euclideanHalfSpace
+    _ = { y | 0 < y 0 } := interior_halfspace 0
+
 lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
     frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
   calc frontier (range (𝓡∂ n))
     _ = frontier ({ y | 0 ≤ y 0 }) := by
       congr!
       apply range_euclideanHalfSpace
-    _ = { y | 0 = y 0 } := frontier_halfspace n
+    _ = { y | 0 = y 0 } := frontier_halfspace 0
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
@@ -253,9 +261,15 @@ lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) X = 
       norm_num
     _ = 0 := rfl
 
+lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
+    (((IccLeftChart x y).extend (𝓡∂ 1)) p) 0 > 0 := by
+  set lhs := (IccLeftChart x y).extend (𝓡∂ 1) p
+  have : lhs 0 = p.val - x := rfl
+  rw [this]
+  norm_num [hp.1]
+
 lemma IccLeftChart_boundary : (IccLeftChart x y).extend (𝓡∂ 1) X ∈ frontier (range (𝓡∂ 1)) := by
-  rw [IccLeftChart_extend_left_eq]
-  rw [frontier_range_modelWithCornersEuclideanHalfSpace]
+  rw [IccLeftChart_extend_left_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
   exact rfl
 
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
@@ -316,8 +330,7 @@ lemma IccRightChart_extend_right_eq : (IccRightChart x y).extend (𝓡∂ 1) Y =
     _ = 0 := rfl
 
 lemma IccRightChart_boundary : (IccRightChart x y).extend (𝓡∂ 1) Y ∈ frontier (range (𝓡∂ 1)) := by
-  rw [IccRightChart_extend_right_eq]
-  rw [frontier_range_modelWithCornersEuclideanHalfSpace]
+  rw [IccRightChart_extend_right_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
   exact rfl
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
@@ -379,9 +392,8 @@ lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val <
   suffices ((IccLeftChart x y).extend (𝓡∂ 1)) p ∈ interior (range (𝓡∂ 1)) by
     rw [ModelWithCorners.IsInteriorPoint, extChartAt]
     convert this
-  -- TODO compute: chart maps this to something positive
-  -- then argue that this lies in the interior
-  sorry
+  rw [interior_range_modelWithCornersEuclideanHalfSpace]
+  apply IccLeftChart_extend_interior_pos hp
 
 /-- The manifold structure on `[x, y]` is smooth.
 -/
