@@ -47,3 +47,7 @@ initialize registerBuiltinAttribute {
       let attr ← Elab.elabAttr <| ← `(Term.attrInstance| delab $(mkIdent <| `app ++ src))
       liftTermElabM <| Term.applyAttributes ``delabWithUniv #[{attr with kind}]
   | _ => throwUnsupportedSyntax }
+
+end PPWithUniv
+
+end Mathlib

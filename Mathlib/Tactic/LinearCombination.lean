@@ -246,8 +246,4 @@ syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
   | `(tactic| linear_combination2 $[(norm := $tac)]? $(e)?) => elabLinearCombination tac none e true
 
-end LinearCombination
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.LinearCombination

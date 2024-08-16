@@ -22,3 +22,7 @@ syntax (name := substs) "substs" (colGt ppSpace ident)* : tactic
 
 macro_rules
 | `(tactic| substs $xs:ident*) => `(tactic| ($[subst $xs]*))
+
+end Substs
+
+end Mathlib.Tactic

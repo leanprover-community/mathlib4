@@ -242,3 +242,7 @@ def elabUnfoldCommand : Command.CommandElab := fun stx =>
       let unfolds := unfolds.toList.map (m! "· {·}")
       logInfo (m! "Unfolds for {e}:\n"
         ++ .joinSep unfolds "\n")
+
+end InteractiveUnfold
+
+end Mathlib.Tactic

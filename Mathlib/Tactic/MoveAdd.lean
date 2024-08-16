@@ -459,3 +459,7 @@ elab "move_mul" rws:rwRuleSeq : tactic => do
   evalTactic (← `(tactic| move_oper $hmul $rws))
 
 end parsing
+
+end MoveAdd
+
+end Mathlib

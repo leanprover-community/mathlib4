@@ -98,3 +98,7 @@ def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [UsableInSim
     return extractSolution res.snd
   else
     throwError "Simplex Algorithm failed"
+
+end SimplexAlgorithm
+
+end Linarith
