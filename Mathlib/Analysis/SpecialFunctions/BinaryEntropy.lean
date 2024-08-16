@@ -193,7 +193,6 @@ This is a generalization of the binary entropy function `binEntropy`. -/
 
 lemma qaryEntropy_pos (hp₀ : 0 < p) (hp₁ : p < 1) : 0 < qaryEntropy q p := by
   unfold qaryEntropy
-  have := log_intCast_nonneg q
   have := binEntropy_pos hp₀ hp₁
   positivity
 
