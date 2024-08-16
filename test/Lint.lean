@@ -104,6 +104,55 @@ instance (f g : Nat → Nat) : Inhabited Nat where
       · have : Nat := f $ g $ 0
         · exact 0
 
+section lambdaSyntaxLinter
+
+set_option linter.lambdaSyntax false
+
+/--
+warning:
+        Please use 'fun' and not λ to define anonymous functions.The latter syntax has been deprecated in mathlib 4.
+note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+-/
+#guard_msgs in
+set_option linter.lambdaSyntax true in
+example : ℕ → ℕ := λ _ ↦ 0
+
+/--
+warning:
+        Please use 'fun' and not λ to define anonymous functions.The latter syntax has been deprecated in mathlib 4.
+note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+-/
+#guard_msgs in
+set_option linter.lambdaSyntax true in
+def foo : Bool := by
+  let _f : ℕ → ℕ := λ _ ↦ 0
+  exact true
+
+example : ℕ → ℕ := fun n ↦ n - 1
+
+example : True := by
+  let _g : ℕ → ℕ := fun n ↦ 3 * n + 1
+  trivial
+
+end lambdaSyntaxLinter
+
+set_option linter.dollarSyntax false in
+/--
+warning: Please use '<|' instead of '$' for the pipe operator.
+note: this linter can be disabled with `set_option linter.dollarSyntax false`
+---
+warning: Please use '<|' instead of '$' for the pipe operator.
+note: this linter can be disabled with `set_option linter.dollarSyntax false`
+-/
+#guard_msgs in
+set_option linter.dollarSyntax true in
+attribute [instance] Int.add in
+instance (f g : Nat → Nat) : Inhabited Nat where
+  default := by
+    · have := 0
+      · have : Nat := f $ g $ 0
+        · exact 0
+
 set_option linter.longLine false
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
