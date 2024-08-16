@@ -7,6 +7,7 @@ package mathlib where
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩
   ]
+  testDriver := "batteries/test"
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -79,16 +80,6 @@ lean_exe pole where
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
-
-/--
-`lake exe test` is a thin wrapper around `lake exe batteries/test`, until
-https://github.com/leanprover/lean4/issues/4121 is resolved.
-
-You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
--/
-@[test_driver]
-lean_exe test where
-  srcDir := "scripts"
 
 /-!
 ## Other configuration
