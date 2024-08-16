@@ -370,6 +370,20 @@ theorem exists_mem_of_measure_ne_zero_of_ae (hs : μ s ≠ 0) {p : α → Prop}
   rw [← μ.restrict_apply_self, ← frequently_ae_mem_iff] at hs
   exact (hs.and_eventually hp).exists
 
+/-- If a quasi measure preserving map `f` maps a set `s` to a set `t`,
+then it is quasi measure preserving with respect to the restrictions of the measures. -/
+theorem QuasiMeasurePreserving.restrict {ν : Measure β} {f : α → β}
+    (hf : QuasiMeasurePreserving f μ ν) {t : Set β} (hmaps : MapsTo f s t) :
+    QuasiMeasurePreserving f (μ.restrict s) (ν.restrict t) where
+  measurable := hf.measurable
+  absolutelyContinuous := by
+    refine AbsolutelyContinuous.mk fun u hum ↦ ?_
+    suffices ν (u ∩ t) = 0 → μ (f ⁻¹' u ∩ s) = 0 by simpa [hum, hf.measurable, hf.measurable hum]
+    refine fun hu ↦ measure_mono_null ?_ (hf.preimage_null hu)
+    rw [preimage_inter]
+    gcongr
+    assumption
+
 /-! ### Extensionality results -/
 
 /-- Two measures are equal if they have equal restrictions on a spanning collection of sets
@@ -771,7 +785,11 @@ open MeasureTheory Measure
 
 namespace MeasurableEmbedding
 
-variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} (hf : MeasurableEmbedding f)
+variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β}
+
+section
+variable (hf : MeasurableEmbedding f)
+include hf
 
 theorem map_comap (μ : Measure β) : (comap f μ).map f = μ.restrict (range f) := by
   ext1 t ht
@@ -810,6 +828,8 @@ lemma comap_restrict (μ : Measure β) (s : Set β) :
 lemma restrict_comap (μ : Measure β) (s : Set α) :
     (μ.comap f).restrict s = (μ.restrict (f '' s)).comap f := by
   rw [comap_restrict hf, preimage_image_eq _ hf.injective]
+
+end
 
 theorem _root_.MeasurableEquiv.restrict_map (e : α ≃ᵐ β) (μ : Measure α) (s : Set β) :
     (μ.map e).restrict s = (μ.restrict <| e ⁻¹' s).map e :=

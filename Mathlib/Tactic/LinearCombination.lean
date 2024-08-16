@@ -138,7 +138,7 @@ def elabLinearCombination
     | .const c => `(Eq.refl $c)
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
-  Tactic.evalTactic <| ← withFreshMacroScope <|
+  Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
   if twoGoals then
     `(tactic| (
       refine eq_trans₃ $p ?a ?b

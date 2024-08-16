@@ -77,7 +77,7 @@ section
 
 theorem conjugate_i (h : ∀ v : V, (π : W → V) (i v) = v) (g : G) (v : V) :
     (conjugate π g : W → V) (i v) = v := by
-  rw [conjugate_apply, ← i.map_smul, h, ← mul_smul, single_mul_single, mul_one, mul_left_inv,
+  rw [conjugate_apply, ← i.map_smul, h, ← mul_smul, single_mul_single, mul_one, inv_mul_cancel,
     ← one_def, one_smul]
 
 end

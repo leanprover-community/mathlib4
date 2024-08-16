@@ -333,7 +333,7 @@ lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAd
   simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
     constFormalMultilinearSeries]
   induction n
-  · simp only [Nat.zero_eq, ContinuousMultilinearMap.curry0_apply]
+  · simp only [ContinuousMultilinearMap.curry0_apply]
   · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
 
 end Const
