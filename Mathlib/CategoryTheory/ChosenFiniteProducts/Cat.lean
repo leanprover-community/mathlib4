@@ -96,8 +96,4 @@ lemma rightUnitor_hom (C : Cat) : (ρ_ C).hom = Prod.fst _ _  := rfl
 
 lemma rightUnitor_inv (C : Cat) : (ρ_ C).inv = Prod.sectl _ ⟨⟨⟨⟩⟩⟩  := rfl
 
-
-end Monoidal
-
-
-end CategoryTheory
+end CategoryTheory.Monoidal
