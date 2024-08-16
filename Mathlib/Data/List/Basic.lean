@@ -41,6 +41,10 @@ theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
 
+theorem getElem?_eq (l : List α) (i : Nat) :
+    l[i]? = if h : i < l.length then some l[i] else none := by
+  split <;> simp_all
+
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
   { instInhabitedList with
