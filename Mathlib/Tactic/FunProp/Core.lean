@@ -688,3 +688,7 @@ mutual
           return none
 
 end
+
+end Meta.FunProp
+
+end Mathlib

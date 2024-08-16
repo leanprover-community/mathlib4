@@ -271,3 +271,7 @@ elab "#explode " stx:term : command => withoutModifyingEnv <| Command.runTermEla
     let entries ← explode e
     let fitchTable : MessageData ← entriesToMessageData entries
     logInfo <|← addMessageContext m!"{heading}\n\n{fitchTable}\n"
+
+end Explode
+
+end Mathlib
