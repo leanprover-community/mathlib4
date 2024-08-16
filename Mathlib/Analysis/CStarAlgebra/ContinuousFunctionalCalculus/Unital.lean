@@ -889,7 +889,7 @@ section NNReal
 open scoped NNReal
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
-  [Algebra ℝ≥0 A] [instCFC : ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
 lemma CFC.inv_nonneg_of_nonneg (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) : (0 : A) ≤ a⁻¹ :=
   cfc_inv_id (R := ℝ≥0) a ▸ cfc_predicate _ (a : A)
