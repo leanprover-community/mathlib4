@@ -71,7 +71,8 @@ instance instMetricSpace : MetricSpace Circle := Subtype.metricSpace
 
 lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 
-@[simp] lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
+-- Not simp because `SetLike.coe_eq_coe` already proves it
+lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
 @[simp] lemma abs_coe (z : Circle) : abs z = 1 := mem_sphere_zero_iff_norm.1 z.2
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_abs]
