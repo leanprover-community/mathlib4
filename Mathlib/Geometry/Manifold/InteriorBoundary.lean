@@ -98,8 +98,8 @@ lemma disjoint_interior_boundary : Disjoint (I.interior M) (I.boundary M) := by
   exact ⟨h1, h2⟩
 
 /-- The boundary is the complement of the interior. -/
-lemma boundary_eq_complement_interior : I.boundary M = (I.interior M)ᶜ := by
-  apply (compl_unique ?_ I.interior_union_boundary_eq_univ).symm
+lemma compl_interior : (I.interior M)ᶜ = I.boundary M:= by
+  apply compl_unique ?_ I.interior_union_boundary_eq_univ
   exact disjoint_iff_inter_eq_empty.mp (I.disjoint_interior_boundary)
 
 variable {I} in
@@ -145,7 +145,7 @@ lemma interior_eq_univ [BoundarylessManifold I M] : I.interior M = univ :=
 
 /-- Boundaryless manifolds have empty boundary. -/
 lemma Boundaryless.boundary_eq_empty [BoundarylessManifold I M] : I.boundary M = ∅ := by
-  rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
+  rw [← I.compl_interior, I.interior_eq_univ, compl_empty_iff]
 
 instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
   isEmpty_coe_sort.mpr (Boundaryless.boundary_eq_empty I)
@@ -154,7 +154,7 @@ instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
 lemma Boundaryless.of_boundary_eq_empty (h : I.boundary M = ∅) : BoundarylessManifold I M where
   isInteriorPoint' x := by
     show x ∈ I.interior M
-    rw [boundary_eq_complement_interior, compl_empty_iff] at h
+    rw [← compl_interior, compl_empty_iff] at h
     rw [h]
     trivial
 
@@ -189,10 +189,10 @@ lemma interior_prod :
 lemma boundary_prod :
     (I.prod J).boundary (M × N) = Set.prod univ (J.boundary N) ∪ Set.prod (I.boundary M) univ := by
   let h := calc (I.prod J).boundary (M × N)
-    _ = ((I.prod J).interior (M × N))ᶜ := (I.prod J).boundary_eq_complement_interior
+    _ = ((I.prod J).interior (M × N))ᶜ := (I.prod J).compl_interior.symm
     _ = ((I.interior M) ×ˢ (J.interior N))ᶜ := by rw [interior_prod]
     _ = (I.interior M)ᶜ ×ˢ univ ∪ univ ×ˢ (J.interior N)ᶜ := by rw [compl_prod_eq_union]
-  rw [h, I.boundary_eq_complement_interior, J.boundary_eq_complement_interior, union_comm]
+  rw [h, I.compl_interior, J.compl_interior, union_comm]
   rfl
 
 /-- If `M` is boundaryless, `∂(M×N) = M × ∂N`. -/
