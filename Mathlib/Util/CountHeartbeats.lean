@@ -147,3 +147,7 @@ elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
   -- Then run once more, keeping the state.
   let counts := (← elabForHeartbeats cmd (revert := false)) :: counts
   logVariation counts
+
+end CountHeartbeats
+
+end Mathlib

@@ -162,3 +162,7 @@ def logError (msg : String) : FunPropM Unit := do
           s.msgLog
         else
           msg::s.msgLog}
+
+end Meta.FunProp
+
+end Mathlib
