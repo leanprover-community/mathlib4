@@ -13,7 +13,7 @@ Mathlib/Computability/TMToPartrec.lean : line 1 : ERR_NUM_LIN : 2200 file contai
 Mathlib/Computability/TuringMachine.lean : line 1 : ERR_NUM_LIN : 2700 file contains 2561 lines, try to split it up
 Mathlib/Data/DFinsupp/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2078 lines, try to split it up
 Mathlib/Data/Fin/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1524 lines, try to split it up
-Mathlib/Data/Finset/Basic.lean : line 1 : ERR_NUM_LIN : 3100 file contains 2999 lines, try to split it up
+Mathlib/Data/Finset/Basic.lean : line 1 : ERR_NUM_LIN : 3200 file contains 3057 lines, try to split it up
 Mathlib/Data/Finset/Lattice.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1968 lines, try to split it up
 Mathlib/Data/Finset/Pointwise/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1997 lines, try to split it up
 Mathlib/Data/Finsupp/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1703 lines, try to split it up

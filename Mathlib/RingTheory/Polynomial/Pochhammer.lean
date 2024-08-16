@@ -178,7 +178,7 @@ variable {S : Type*} [StrictOrderedSemiring S]
 theorem ascPochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (ascPochhammer S n).eval s := by
   induction n with
   | zero =>
-    simp only [Nat.zero_eq, ascPochhammer_zero, eval_one]
+    simp only [ascPochhammer_zero, eval_one]
     exact zero_lt_one
   | succ n ih =>
     rw [ascPochhammer_succ_right, mul_add, eval_add, ← Nat.cast_comm, eval_natCast_mul, eval_mul_X,
