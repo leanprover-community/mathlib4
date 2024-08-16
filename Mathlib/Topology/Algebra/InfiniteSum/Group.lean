@@ -209,7 +209,7 @@ theorem cauchySeq_finset_iff_tprod_vanishing :
     refine ⟨s, fun t hts ↦ oe ?_⟩
     by_cases ht : Multipliable fun a : t ↦ f a
     · classical
-      refine o_closed.mem_of_tendsto ht.hasProd (eventually_of_forall fun t' ↦ ?_)
+      refine o_closed.mem_of_tendsto ht.hasProd (Eventually.of_forall fun t' ↦ ?_)
       rw [← prod_subtype_map_embedding fun _ _ ↦ by rfl]
       apply hs
       simp_rw [Finset.mem_map]

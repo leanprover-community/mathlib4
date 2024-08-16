@@ -84,14 +84,14 @@ alias set_integral_congr_ae := setIntegral_congr_ae
 
 theorem setIntegral_congr₀ (hs : NullMeasurableSet s μ) (h : EqOn f g s) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
-  setIntegral_congr_ae₀ hs <| eventually_of_forall h
+  setIntegral_congr_ae₀ hs <| Eventually.of_forall h
 
 @[deprecated (since := "2024-04-17")]
 alias set_integral_congr₀ := setIntegral_congr₀
 
 theorem setIntegral_congr (hs : MeasurableSet s) (h : EqOn f g s) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
-  setIntegral_congr_ae hs <| eventually_of_forall h
+  setIntegral_congr_ae hs <| Eventually.of_forall h
 
 @[deprecated (since := "2024-04-17")]
 alias set_integral_congr := setIntegral_congr
@@ -312,7 +312,7 @@ alias set_integral_eq_zero_of_ae_eq_zero := setIntegral_eq_zero_of_ae_eq_zero
 
 theorem setIntegral_eq_zero_of_forall_eq_zero (ht_eq : ∀ x ∈ t, f x = 0) :
     ∫ x in t, f x ∂μ = 0 :=
-  setIntegral_eq_zero_of_ae_eq_zero (eventually_of_forall ht_eq)
+  setIntegral_eq_zero_of_ae_eq_zero (Eventually.of_forall ht_eq)
 
 @[deprecated (since := "2024-04-17")]
 alias set_integral_eq_zero_of_forall_eq_zero := setIntegral_eq_zero_of_forall_eq_zero
@@ -353,7 +353,7 @@ theorem integral_union_eq_left_of_ae (ht_eq : ∀ᵐ x ∂μ.restrict t, f x = 0
 
 theorem integral_union_eq_left_of_forall₀ {f : X → E} (ht : NullMeasurableSet t μ)
     (ht_eq : ∀ x ∈ t, f x = 0) : ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ :=
-  integral_union_eq_left_of_ae ((ae_restrict_iff'₀ ht).2 (eventually_of_forall ht_eq))
+  integral_union_eq_left_of_ae ((ae_restrict_iff'₀ ht).2 (Eventually.of_forall ht_eq))
 
 theorem integral_union_eq_left_of_forall {f : X → E} (ht : MeasurableSet t)
     (ht_eq : ∀ x ∈ t, f x = 0) : ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ :=
@@ -418,7 +418,7 @@ and `t` coincide if `t` is measurable. -/
 theorem setIntegral_eq_of_subset_of_forall_diff_eq_zero (ht : MeasurableSet t) (hts : s ⊆ t)
     (h't : ∀ x ∈ t \ s, f x = 0) : ∫ x in t, f x ∂μ = ∫ x in s, f x ∂μ :=
   setIntegral_eq_of_subset_of_ae_diff_eq_zero ht.nullMeasurableSet hts
-    (eventually_of_forall fun x hx => h't x hx)
+    (Eventually.of_forall fun x hx => h't x hx)
 
 @[deprecated (since := "2024-04-17")]
 alias set_integral_eq_of_subset_of_forall_diff_eq_zero :=
@@ -440,7 +440,7 @@ alias set_integral_eq_integral_of_ae_compl_eq_zero := setIntegral_eq_integral_of
 whole space. -/
 theorem setIntegral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s → f x = 0) :
     ∫ x in s, f x ∂μ = ∫ x, f x ∂μ :=
-  setIntegral_eq_integral_of_ae_compl_eq_zero (eventually_of_forall h)
+  setIntegral_eq_integral_of_ae_compl_eq_zero (Eventually.of_forall h)
 
 @[deprecated (since := "2024-04-17")]
 alias set_integral_eq_integral_of_forall_compl_eq_zero :=
@@ -605,14 +605,14 @@ alias norm_set_integral_le_of_norm_le_const_ae'' := norm_setIntegral_le_of_norm_
 
 theorem norm_setIntegral_le_of_norm_le_const {C : ℝ} (hs : μ s < ∞) (hC : ∀ x ∈ s, ‖f x‖ ≤ C)
     (hfm : AEStronglyMeasurable f (μ.restrict s)) : ‖∫ x in s, f x ∂μ‖ ≤ C * (μ s).toReal :=
-  norm_setIntegral_le_of_norm_le_const_ae' hs (eventually_of_forall hC) hfm
+  norm_setIntegral_le_of_norm_le_const_ae' hs (Eventually.of_forall hC) hfm
 
 @[deprecated (since := "2024-04-17")]
 alias norm_set_integral_le_of_norm_le_const := norm_setIntegral_le_of_norm_le_const
 
 theorem norm_setIntegral_le_of_norm_le_const' {C : ℝ} (hs : μ s < ∞) (hsm : MeasurableSet s)
     (hC : ∀ x ∈ s, ‖f x‖ ≤ C) : ‖∫ x in s, f x ∂μ‖ ≤ C * (μ s).toReal :=
-  norm_setIntegral_le_of_norm_le_const_ae'' hs hsm <| eventually_of_forall hC
+  norm_setIntegral_le_of_norm_le_const_ae'' hs hsm <| Eventually.of_forall hC
 
 @[deprecated (since := "2024-04-17")]
 alias norm_set_integral_le_of_norm_le_const' := norm_setIntegral_le_of_norm_le_const'
@@ -648,7 +648,7 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
     rwa [Set.inter_eq_self_of_subset_right]
     exact fun x hx => Ne.symm (ne_of_lt <| sub_pos.2 hx)
   · rw [Pi.zero_def, EventuallyLE, ae_restrict_iff₀]
-    · exact eventually_of_forall fun x hx => sub_nonneg.2 <| le_of_lt hx
+    · exact Eventually.of_forall fun x hx => sub_nonneg.2 <| le_of_lt hx
     · exact nullMeasurableSet_le aemeasurable_zero (hfint.1.aemeasurable.sub aemeasurable_const)
   · exact Integrable.sub hfint this
 
@@ -896,7 +896,7 @@ lemma integral_le_measure {f : X → ℝ} {s : Set X}
     apply ENNReal.ofReal_le_ofReal
     exact integral_mono H g_int (fun x ↦ le_max_left _ _)
   apply this.trans
-  rw [ofReal_integral_eq_lintegral_ofReal g_int (eventually_of_forall (fun x ↦ le_max_right _ _))]
+  rw [ofReal_integral_eq_lintegral_ofReal g_int (Eventually.of_forall (fun x ↦ le_max_right _ _))]
   apply lintegral_le_meas
   · intro x
     apply ENNReal.ofReal_le_of_le_toReal
@@ -1563,7 +1563,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
       apply StronglyMeasurable.aestronglyMeasurable
       apply Continuous.stronglyMeasurable_of_support_subset_isCompact (A p hp) hk
       apply support_subset_iff'.2 (fun y hy ↦ hfs p y hp hy)
-    · apply eventually_of_forall (fun y ↦ (le_opNorm₂ L (g y) (f p y)).trans ?_)
+    · apply Eventually.of_forall (fun y ↦ (le_opNorm₂ L (g y) (f p y)).trans ?_)
       gcongr
       apply hC
   filter_upwards [v_mem, self_mem_nhdsWithin] with p hp h'p
@@ -1578,7 +1578,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
   _ = ‖∫ x in k, L (g x) (f p x) - L (g x) (f q x) ∂μ‖ := by rw [integral_sub (I p h'p) (I q hq)]
   _ ≤ ∫ x in k, ‖L (g x) (f p x) - L (g x) (f q x)‖ ∂μ := norm_integral_le_integral_norm _
   _ ≤ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ := by
-      apply integral_mono_of_nonneg (eventually_of_forall (fun y ↦ by positivity))
+      apply integral_mono_of_nonneg (Eventually.of_forall (fun y ↦ by positivity))
       · exact (hg.norm.const_mul _).mul_const _
       · filter_upwards with y
         by_cases hy : y ∈ k
