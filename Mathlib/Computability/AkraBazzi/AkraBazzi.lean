@@ -1053,7 +1053,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
                   case bn_gt_one =>
                     calc 1 = b i * (b i)⁻¹ := by rw [mul_inv_cancel₀ (by positivity)]
                         _ ≤ b i * ⌈(b i)⁻¹⌉₊ := by gcongr; exact Nat.le_ceil _
-                        _ < b i * n := by gcongr; rw [Nat.cast_lt]; exact hn
+                        _ < b i * n := by gcongr
                   case le => calc b i * n ≤ 1 * n := by have := R.b_lt_one i; gcongr
                                           _ = n := by rw [one_mul]
                 positivity
@@ -1149,7 +1149,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
                 case bn_gt_one =>
                   calc 1 = b i * (b i)⁻¹ := by rw [mul_inv_cancel₀ (by positivity)]
                       _ ≤ b i * ⌈(b i)⁻¹⌉₊ := by gcongr; exact Nat.le_ceil _
-                      _ < b i * n := by gcongr; rw [Nat.cast_lt]; exact hn
+                      _ < b i * n := by gcongr
                 case le => calc b i * n ≤ 1 * n := by have := R.b_lt_one i; gcongr
                                         _ = n := by rw [one_mul]
               positivity
