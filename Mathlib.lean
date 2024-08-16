@@ -1878,6 +1878,7 @@ import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Combinatorics.Enumerative.Composition
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DyckWord
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Basic
