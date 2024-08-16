@@ -464,8 +464,10 @@ theorem enum_type {α β} {r : α → α → Prop} {s : β → β → Prop} [IsW
 
 @[simp]
 theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
-    enum r (typein r a) (typein_lt_type r a) = a :=
-  enum_type (PrincipalSeg.ofElement r a)
+    enum r (typein r a) (typein_lt_type r a) = a := by
+  have : IsWellOrder _ (Subrel r fun b => r b a) := by infer_instance
+  change IsWellOrder {b // r b a} _ at this
+  exact enum_type (PrincipalSeg.ofElement r a)
 
 theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordinal} (h₁ : o₁ < type r)
     (h₂ : o₂ < type r) : r (enum r o₁ h₁) (enum r o₂ h₂) ↔ o₁ < o₂ := by
