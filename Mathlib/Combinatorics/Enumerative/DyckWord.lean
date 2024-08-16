@@ -241,16 +241,13 @@ lemma count_lt_count_of_lt_firstReturn (i : ℕ) (hi : i < p.firstReturn) :
   rw [decide_eq_true_eq, ← ne_eq, get_eq_getElem, getElem_range] at ne
   exact lt_of_le_of_ne (p.count_D_le_count_U (i + 1)) ne.symm
 
-@[simp, nolint unusedHavesSuffices]
+@[simp]
 lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p.firstReturn := by
   split_ifs with h; · simp [h]
   rw [← toList_eq_nil, ← ne_eq] at h
   have u : (p + q).toList = p.toList ++ q.toList := rfl
   have v := p.firstReturn_lt_length h
   rw [firstReturn, findIdx_eq]
-  swap
-  · rw [length_range, u, length_append]
-    exact Nat.lt_add_right _ (p.firstReturn_lt_length h)
   · simp_rw [get_eq_getElem, getElem_range, u, decide_eq_true_eq]
     constructor
     · rw [take_append_eq_append_take (l₂ := q.toList),
@@ -259,17 +256,14 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
     · intro j hj
       rw [take_append_eq_append_take, show j + 1 - p.toList.length = 0 by omega,
         take_zero, append_nil]
-      have := p.count_lt_count_of_lt_firstReturn j hj
-      have := p.count_D_le_count_U j
-      omega
+      exact (p.count_lt_count_of_lt_firstReturn j hj).ne'
+  · rw [length_range, u, length_append]
+    exact Nat.lt_add_right _ (p.firstReturn_lt_length h)
 
 @[simp]
 lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
   have u : p.nest.toList = U :: p.toList ++ [D] := rfl
   rw [firstReturn, findIdx_eq]
-  swap
-  · simp_rw [length_range, u, length_append, length_cons]
-    apply Nat.lt.base
   · simp_rw [get_eq_getElem, getElem_range, u, decide_eq_true_eq]
     constructor
     · rw [take_of_length_le (by simp), ← u, p.nest.count_U_eq_count_D]
@@ -279,6 +273,8 @@ lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
         show j - p.toList.length = 0 by omega, take_zero, append_nil]
       have := p.count_D_le_count_U j
       omega
+  · simp_rw [length_range, u, length_append, length_cons]
+    exact Nat.lt_add_one _
 
 /-- The right part of the Dyck word decomposition. -/
 def rightPart (h : p.toList ≠ []) : DyckWord :=
