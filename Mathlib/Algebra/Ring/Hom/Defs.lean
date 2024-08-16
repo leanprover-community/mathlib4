@@ -506,6 +506,7 @@ theorem codomain_trivial_iff_range_trivial : (0 : β) = 1 ↔ ∀ x, f x = 0 :=
 theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
   mt f.codomain_trivial_iff_map_one_eq_zero.mpr zero_ne_one
 
+include f in
 /-- If there is a homomorphism `f : α →+* β` and `β` is nontrivial, then `α` is nontrivial. -/
 theorem domain_nontrivial [Nontrivial β] : Nontrivial α :=
   ⟨⟨1, 0, mt (fun h => show f 1 = 0 by rw [h, map_zero]) f.map_one_ne_zero⟩⟩

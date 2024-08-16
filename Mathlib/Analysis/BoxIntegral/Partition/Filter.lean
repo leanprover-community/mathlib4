@@ -315,7 +315,7 @@ def toFilterDistortioniUnion (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) 
 /-- A set `s : Set (TaggedPrepartition I)` belongs to `l.toFilteriUnion I π₀` if for any `c : ℝ≥0`
 there exists a function `r : ℝⁿ → (0, ∞)` (or a constant `r` if `l.bRiemann = true`) such that `s`
 contains each prepartition `π` such that `l.MemBaseSet I c r π` and `π.iUnion = π₀.iUnion`. -/
-def toFilteriUnion (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :=
+def toFilteriUnion (I : Box ι) (π₀ : Prepartition I) :=
   ⨆ c : ℝ≥0, l.toFilterDistortioniUnion I c π₀
 
 theorem rCond_of_bRiemann_eq_false {ι} (l : IntegrationParams) (hl : l.bRiemann = false)
@@ -343,15 +343,13 @@ theorem MemBaseSet.mono (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
   hπ.mono' I h hc fun J _ => hr _ <| π.tag_mem_Icc J
 
 theorem MemBaseSet.exists_common_compl
-    {l : IntegrationParams}
     (h₁ : l.MemBaseSet I c₁ r₁ π₁) (h₂ : l.MemBaseSet I c₂ r₂ π₂)
     (hU : π₁.iUnion = π₂.iUnion) :
     ∃ π : Prepartition I, π.iUnion = ↑I \ π₁.iUnion ∧
       (l.bDistortion → π.distortion ≤ c₁) ∧ (l.bDistortion → π.distortion ≤ c₂) := by
-  clear l₁ l₂
   wlog hc : c₁ ≤ c₂ with H
   · simpa [hU, _root_.and_comm] using
-        @H _ _ I J c c₂ c₁ l r₂ r₁ π π₂ π₁ _ h₂ h₁ hU.symm (le_of_not_le hc)
+      @H _ _ I c₂ c₁ l r₂ r₁ π₂ π₁ h₂ h₁ hU.symm (le_of_not_le hc)
   by_cases hD : (l.bDistortion : Prop)
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩

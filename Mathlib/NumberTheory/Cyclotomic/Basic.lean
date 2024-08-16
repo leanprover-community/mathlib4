@@ -3,7 +3,6 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Init.Core
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.FieldTheory.Galois
@@ -451,6 +450,7 @@ def algEquiv (L' : Type*) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} K
 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
+include n in
 theorem isGalois : IsGalois K L :=
   letI := isSplittingField_X_pow_sub_one n K L
   IsGalois.of_separable_splitting_field (X_pow_sub_one_separable_iff.2

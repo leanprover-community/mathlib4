@@ -258,7 +258,7 @@ noncomputable def GammaAux : ℕ → ℂ → ℂ
 theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux n (s + 1) / s := by
   induction' n with n hn generalizing s
-  · simp only [Nat.zero_eq, CharP.cast_eq_zero, Left.neg_neg_iff] at h1
+  · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]; rw [GammaIntegral_add_one h1]
     rw [mul_comm, mul_div_cancel_right₀]; contrapose! h1; rw [h1]
     simp
@@ -271,7 +271,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux (n + 1) s := by
   cases' n with n n
-  · simp only [Nat.zero_eq, CharP.cast_eq_zero, Left.neg_neg_iff] at h1
+  · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]
     rw [GammaIntegral_add_one h1, mul_div_cancel_left₀]
     rintro rfl
@@ -357,9 +357,10 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
   suffices ∀ (n : ℕ) (s : ℂ), GammaAux n (conj s) = conj (GammaAux n s) by
     simp [Gamma, this]
   intro n
-  induction' n with n IH
-  · rw [GammaAux]; exact GammaIntegral_conj
-  · intro s
+  induction n with
+  | zero => rw [GammaAux]; exact GammaIntegral_conj
+  | succ n IH =>
+    intro s
     rw [GammaAux]
     dsimp only
     rw [div_eq_mul_inv _ s, RingHom.map_mul, conj_inv, ← div_eq_mul_inv]

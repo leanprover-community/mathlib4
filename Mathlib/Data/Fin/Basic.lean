@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Defs
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
@@ -64,7 +63,6 @@ This file expands on the development in the core library.
 
 * `Fin.revPerm : Equiv.Perm (Fin n)` : `Fin.rev` as an `Equiv.Perm`, the antitone involution given
   by `i ↦ n-(i+1)`
-
 -/
 
 assert_not_exists Monoid
@@ -78,6 +76,11 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
   x.elim0
 
 namespace Fin
+
+@[deprecated (since := "2024-02-15")] alias eq_of_veq := eq_of_val_eq
+@[deprecated (since := "2024-02-15")] alias veq_of_eq := val_eq_of_eq
+@[deprecated (since := "2024-08-13")] alias ne_of_vne := ne_of_val_ne
+@[deprecated (since := "2024-08-13")] alias vne_of_ne := val_ne_of_ne
 
 instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
@@ -342,8 +345,7 @@ instance nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
-  simp [← Nat.one_eq_succ_zero, Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
--- Porting note: here and in the next lemma, had to use `← Nat.one_eq_succ_zero`.
+  simp [Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
 
 section Monoid
 
@@ -1449,7 +1451,7 @@ theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b
   cases' a with a ha
   cases' b with b hb
   cases n
-  · simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at ha hb
+  · simp only [Nat.zero_add, Nat.lt_one_iff] at ha hb
     simp [ha, hb]
   simp only [le_iff_val_le_val, val_add, lt_iff_val_lt_val, val_mk, val_one] at h ⊢
   rwa [Nat.mod_eq_of_lt, Nat.succ_le_iff]
@@ -1467,7 +1469,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
   cases n
   · cases' a with a ha
     cases' b with b hb
-    simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at ha hb
+    simp only [Nat.zero_add, Nat.lt_one_iff] at ha hb
     simp [ha, hb] at h
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
   have hkb : k < b := by omega
