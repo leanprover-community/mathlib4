@@ -32,7 +32,6 @@ in the file `RingTheory/LaurentSeries`.
 
 
 open Finset Function
-open scoped Classical
 
 noncomputable section
 
@@ -53,7 +52,7 @@ section Zero
 variable [PartialOrder Γ] [Zero R]
 
 theorem coeff_injective : Injective (coeff : HahnSeries Γ R → Γ → R) :=
-  HahnSeries.ext
+  fun _ _ => HahnSeries.ext
 
 @[simp]
 theorem coeff_inj {x y : HahnSeries Γ R} : x.coeff = y.coeff ↔ x = y :=
@@ -84,7 +83,7 @@ instance : Inhabited (HahnSeries Γ R) :=
   ⟨0⟩
 
 instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
-  ⟨fun a b => a.ext b (Subsingleton.elim _ _)⟩
+  ⟨fun _ _ => HahnSeries.ext (by subsingleton)⟩
 
 @[simp]
 theorem zero_coeff {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
@@ -149,32 +148,34 @@ def iterateEquiv {Γ' : Type*} [PartialOrder Γ'] :
   left_inv := congrFun rfl
   right_inv := congrFun rfl
 
+open Classical in
 /-- `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise. -/
 def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
   toFun r :=
     { coeff := Pi.single a r
       isPWO_support' := (Set.isPWO_singleton a).mono Pi.support_single_subset }
-  map_zero' := HahnSeries.ext _ _ (Pi.single_zero _)
+  map_zero' := HahnSeries.ext (Pi.single_zero _)
 
 variable {a b : Γ} {r : R}
 
 @[simp]
-theorem single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r :=
-  Pi.single_eq_same (f := fun _ => R) a r
+theorem single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r := by
+  classical exact Pi.single_eq_same (f := fun _ => R) a r
 
 @[simp]
-theorem single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 :=
-  Pi.single_eq_of_ne (f := fun _ => R) h r
+theorem single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
+  classical exact Pi.single_eq_of_ne (f := fun _ => R) h r
 
+open Classical in
 theorem single_coeff : (single a r).coeff b = if b = a then r else 0 := by
   split_ifs with h <;> simp [h]
 
 @[simp]
-theorem support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} :=
-  Pi.support_single_of_ne h
+theorem support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} := by
+  classical exact Pi.support_single_of_ne h
 
-theorem support_single_subset : support (single a r) ⊆ {a} :=
-  Pi.support_single_subset
+theorem support_single_subset : support (single a r) ⊆ {a} := by
+  classical exact Pi.support_single_subset
 
 theorem eq_of_mem_support_single {b : Γ} (h : b ∈ support (single a r)) : b = a :=
   support_single_subset h
@@ -202,6 +203,7 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
 
 section Order
 
+open Classical in
 /-- The orderTop of a Hahn series `x` is a minimal element of `WithTop Γ` where `x` has a nonzero
 coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. -/
 def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
@@ -327,6 +329,7 @@ theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r 
   simp only [leadingCoeff, single_eq_zero_iff]
   by_cases h : r = 0 <;> simp [h]
 
+open Classical in
 /-- A leading term of a Hahn series is a Hahn series with subsingleton support at minimal-order.
   This is uniquely defined if `Γ` is a linear order. -/
 def leadingTerm (x : HahnSeries Γ R) : HahnSeries Γ R :=
@@ -360,6 +363,7 @@ theorem leadingCoeff_leadingTerm {x : HahnSeries Γ R} :
 
 variable [Zero Γ]
 
+open Classical in
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
   nonzero coefficient, and is defined so that the order of 0 is 0.  It is uniquely defined if `Γ` is
   a linear order.-/
@@ -420,12 +424,12 @@ theorem zero_le_orderTop_iff {x : HahnSeries Γ R} : 0 ≤ x.orderTop ↔ 0 ≤ 
   · simp_all
   · simp_all [order_of_ne h, orderTop_of_ne h, zero_lt_orderTop_iff]
 
-theorem leadingCoeff_eq [Zero Γ] {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
+theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
   by_cases h : x = 0
   · rw [h, leadingCoeff_zero, zero_coeff]
   · rw [leadingCoeff_of_ne h, order_of_ne h]
 
-theorem leadingTerm_eq [Zero Γ] {x : HahnSeries Γ R} :
+theorem leadingTerm_eq {x : HahnSeries Γ R} :
     x.leadingTerm = single x.order (x.coeff x.order) := by
   by_cases h : x = 0
   · rw [h, leadingTerm_zero, order_zero, zero_coeff, single_eq_zero]
@@ -437,6 +441,7 @@ section Domain
 
 variable {Γ' : Type*} [PartialOrder Γ']
 
+open Classical in
 /-- Extends the domain of a `HahnSeries` by an `OrderEmbedding`. -/
 def embDomain (f : Γ ↪o Γ') : HahnSeries Γ R → HahnSeries Γ' R := fun x =>
   { coeff := fun b : Γ' => if h : b ∈ f '' x.support then x.coeff (Classical.choose h) else 0

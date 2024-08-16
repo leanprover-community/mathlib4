@@ -23,7 +23,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function
 
-open scoped Classical Topology Interval Filter ENNReal MeasureTheory
+open scoped Topology Interval Filter ENNReal MeasureTheory
 
 variable {α β E F : Type*} [MeasurableSpace α]
 
@@ -122,7 +122,7 @@ theorem integrableOn_congr_fun_ae (hst : f =ᵐ[μ.restrict s] g) :
 
 theorem IntegrableOn.congr_fun (h : IntegrableOn f s μ) (hst : EqOn f g s) (hs : MeasurableSet s) :
     IntegrableOn g s μ :=
-  h.congr_fun_ae ((ae_restrict_iff' hs).2 (eventually_of_forall hst))
+  h.congr_fun_ae ((ae_restrict_iff' hs).2 (Eventually.of_forall hst))
 
 theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
@@ -294,7 +294,7 @@ theorem IntegrableOn.of_ae_diff_eq_zero (hf : IntegrableOn f s μ) (ht : NullMea
 if `t` is measurable. -/
 theorem IntegrableOn.of_forall_diff_eq_zero (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
-  hf.of_ae_diff_eq_zero ht.nullMeasurableSet (eventually_of_forall h't)
+  hf.of_ae_diff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
 
 /-- If a function is integrable on a set `s` and vanishes almost everywhere on its complement,
 then it is integrable. -/
@@ -308,7 +308,7 @@ theorem IntegrableOn.integrable_of_ae_not_mem_eq_zero (hf : IntegrableOn f s μ)
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_forall_not_mem_eq_zero (hf : IntegrableOn f s μ)
     (h't : ∀ x, x ∉ s → f x = 0) : Integrable f μ :=
-  hf.integrable_of_ae_not_mem_eq_zero (eventually_of_forall fun x hx => h't x hx)
+  hf.integrable_of_ae_not_mem_eq_zero (Eventually.of_forall fun x hx => h't x hx)
 
 theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
     IntegrableOn f s μ ↔ Integrable f μ := by
@@ -444,7 +444,7 @@ theorem Measure.FiniteAtFilter.integrableAtFilter {l : Filter α} [IsMeasurablyG
     ⟨s, hsl, hsm, hfm, hμ, hC⟩
   refine ⟨s, hsl, ⟨hfm, hasFiniteIntegral_restrict_of_bounded hμ (C := C) ?_⟩⟩
   rw [ae_restrict_eq hsm, eventually_inf_principal]
-  exact eventually_of_forall hC
+  exact Eventually.of_forall hC
 
 theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae {l : Filter α}
     [IsMeasurablyGenerated l] (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l) {b}
@@ -504,6 +504,7 @@ variable [NormedAddCommGroup E]
 theorem ContinuousOn.aemeasurable [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
     [TopologicalSpace β] [BorelSpace β] {f : α → β} {s : Set α} {μ : Measure α}
     (hf : ContinuousOn f s) (hs : MeasurableSet s) : AEMeasurable f (μ.restrict s) := by
+  classical
   nontriviality α; inhabit α
   have : (Set.piecewise s f fun _ => f default) =ᵐ[μ.restrict s] f := piecewise_ae_eq_restrict hs
   refine ⟨Set.piecewise s f fun _ => f default, ?_, this.symm⟩

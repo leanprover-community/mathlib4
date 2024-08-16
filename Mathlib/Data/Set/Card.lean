@@ -133,6 +133,8 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
   rw [← not_iff_not, ← Ne, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
 
+alias ⟨_, encard_eq_top⟩ := encard_eq_top_iff
+
 theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
   simp
 
@@ -387,7 +389,7 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
     (f '' s).encard = s.encard :=
   hf.injOn.encard_image
 
-theorem _root_.Function.Embedding.enccard_le (e : s ↪ t) : s.encard ≤ t.encard := by
+theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard := by
   rw [← encard_univ_coe, ← e.injective.encard_image, ← Subtype.coe_injective.encard_image]
   exact encard_mono (by simp)
 
@@ -942,7 +944,7 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
   cases' t.finite_or_infinite with ht ht
   · rw [ncard_eq_toFinset_card _ hs, ncard_eq_toFinset_card _ ht,
       ← @Finite.toFinset_subset_toFinset _ _ _ hs ht, ← Finset.exists_eq_insert_iff]
-    convert Iff.rfl using 2; simp
+    convert Iff.rfl using 2; simp only [Finite.mem_toFinset]
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
   simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and]

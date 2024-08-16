@@ -700,6 +700,11 @@ variable (G)
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
   Equivalence.mk (@Reachable.refl _ G) (@Reachable.symm _ G) (@Reachable.trans _ G)
 
+/-- Distinct vertices are not reachable in the empty graph. -/
+@[simp]
+lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v :=
+  ⟨fun h ↦ h.elim fun p ↦ match p with | .nil => rfl, fun h ↦ h ▸ .rfl⟩
+
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
@@ -713,6 +718,17 @@ theorem Preconnected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H)
 @[mono]
 protected lemma Preconnected.mono  {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.Preconnected) :
     G'.Preconnected := fun u v => (hG u v).mono h
+
+lemma bot_preconnected_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
+  contrapose h
+  simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot, h]
+
+lemma bot_preconnected [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
+  bot_preconnected_iff_subsingleton.mpr ‹_›
+
+lemma bot_not_preconnected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected :=
+  bot_preconnected_iff_subsingleton.not.mpr <| not_subsingleton_iff_nontrivial.mpr ‹_›
 
 lemma top_preconnected : (⊤ : SimpleGraph V).Preconnected := fun x y => by
   if h : x = y then rw [h] else exact Adj.reachable h
@@ -752,6 +768,9 @@ protected lemma Connected.mono {G G' : SimpleGraph V} (h : G ≤ G')
     (hG : G.Connected) : G'.Connected where
   preconnected := hG.preconnected.mono h
   nonempty := hG.nonempty
+
+lemma bot_not_connected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
+  simp [bot_not_preconnected, connected_iff, ‹_›]
 
 lemma top_connected [Nonempty V] : (⊤ : SimpleGraph V).Connected where
   preconnected := top_preconnected

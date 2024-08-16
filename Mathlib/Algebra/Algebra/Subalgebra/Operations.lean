@@ -15,6 +15,7 @@ and `Mathlib.RingTheory.Ideal.Operations` are somewhat of a grab-bag of definiti
 whatever ends up in the intersection.
 -/
 
+assert_not_exists Cardinal
 
 namespace AlgHom
 

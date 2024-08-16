@@ -7,6 +7,7 @@ import Batteries.Lean.Position
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.GoalsLocation
 import Mathlib.Lean.Meta.KAbstractPositions
+import Lean.Util.FoldConsts
 
 /-!
 
@@ -241,3 +242,7 @@ def elabUnfoldCommand : Command.CommandElab := fun stx =>
       let unfolds := unfolds.toList.map (m! "· {·}")
       logInfo (m! "Unfolds for {e}:\n"
         ++ .joinSep unfolds "\n")
+
+end InteractiveUnfold
+
+end Mathlib.Tactic

@@ -149,32 +149,41 @@ The antecedents of such a lemma are classified as generating "main goals" if the
 `x₁ ≈ x₂` for some "varying argument" pair `x₁`/`x₂` (and a possibly different relation `≈` to `∼`),
 or more generally of the form `∀ i h h' j h'', f₁ i j ≈ f₂ i j` (say) for some "varying argument"
 pair `f₁`/`f₂`. (Other antecedents are considered to generate "side goals".) The index of the
-"varying argument" pair corresponding to each "main" antecedent is recorded. -/
+"varying argument" pair corresponding to each "main" antecedent is recorded.
+
+Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the related `bound` tactic. -/
 initialize registerBuiltinAttribute {
   name := `gcongr
   descr := "generalized congruence"
   add := fun decl _ kind ↦ MetaM.run' do
     let declTy := (← getConstInfo decl).type
     withReducible <| forallTelescopeReducing declTy fun xs targetTy => do
-    let fail := throwError "\
-      @[gcongr] attribute only applies to lemmas proving \
-      x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got {declTy}"
-    -- verify that conclusion of the lemma is of the form `rel (head x₁ ... xₙ) (head y₁ ... yₙ)`
-    let .app (.app rel lhs) rhs ← whnf targetTy | fail
-    let some relName := rel.getAppFn.constName? | fail
-    let (some head, lhsArgs) := lhs.withApp fun e a => (e.constName?, a) | fail
-    let (some head', rhsArgs) := rhs.withApp fun e a => (e.constName?, a) | fail
-    unless head == head' && lhsArgs.size == rhsArgs.size do fail
+    let fail (m : MessageData) := throwError "\
+      @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
+      {m} in the conclusion of {declTy}"
+    -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
+    let .app (.app rel lhs) rhs ← whnf targetTy |
+      fail "No relation with at least two arguments found"
+    let some relName := rel.getAppFn.constName? | fail "No relation found"
+    let (some head, lhsArgs) := lhs.withApp fun e a => (e.constName?, a) |
+      fail "LHS is not a function"
+    let (some head', rhsArgs) := rhs.withApp fun e a => (e.constName?, a) |
+      fail "RHS is not a function"
+    unless head == head' && lhsArgs.size == rhsArgs.size do
+      fail "LHS and RHS do not have the same head function and arity"
     let mut varyingArgs := #[]
     let mut pairs := #[]
     -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
     -- the conclusion of the lemma
     for e1 in lhsArgs, e2 in rhsArgs do
       -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
-      let isEq ← isDefEq e1 e2
+      -- (and not proofs)
+      let isEq := (← isDefEq e1 e2) || ((← isProof e1) && (← isProof e2))
       if !isEq then
-        -- verify that the "varying argument" pairs are free variables
-        unless e1.isFVar && e2.isFVar do fail
+        let e1 := e1.eta
+        let e2 := e2.eta
+        -- verify that the "varying argument" pairs are free variables (after eta-reduction)
+        unless e1.isFVar && e2.isFVar do fail "Not all arguments are free variables"
         -- add such a pair to the `pairs` array
         pairs := pairs.push (varyingArgs.size, e1, e2)
       -- record in the `varyingArgs` array a boolean (true for varying, false if LHS/RHS are defeq)
@@ -337,9 +346,12 @@ partial def _root_.Lean.MVarId.gcongr
       -- (if not, stop and report the existing goal)
       return (false, names, #[g])
     -- and also build an array of booleans according to which arguments `_ ... _` to the head
-    -- function differ between the LHS and RHS
-    (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
-      return (none, !(← withReducibleAndInstances <| isDefEq lhsArg rhsArg))
+    -- function differ between the LHS and RHS. We treat always treat proofs as being the same
+    -- (even if they have differing types).
+    (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) => do
+      let isSame ← withReducibleAndInstances <|
+        return (← isDefEq lhsArg rhsArg) || ((← isProof lhsArg) && (← isProof rhsArg))
+      return (none, !isSame)
   -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
   -- supposed to vary, according to the template (if there is one), and in the absence of a template
   -- to record which arguments to the head function differ between the two sides of the goal.
@@ -515,3 +527,7 @@ elab_rules : tactic
       let g := Lean.MessageData.joinSep (unsolvedGoals.map Lean.MessageData.ofExpr) Format.line
       throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. \
         The steps which could not be automatically justified were:\n{g}"
+
+end GCongr
+
+end Mathlib.Tactic

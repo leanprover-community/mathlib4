@@ -121,7 +121,7 @@ The integral closure condition is independent of the choice of field of fraction
 use `isDedekindDomain_iff` to prove `IsDedekindDomain` for a given `fraction_map`.
 
 This is the default implementation, but there are equivalent definitions,
-`is_dedekind_domain_dvr` and `is_dedekind_domain_inv`.
+`IsDedekindDomainDvr` and `IsDedekindDomainInv`.
 TODO: Prove that these are actually equivalent definitions.
 -/
 class IsDedekindDomain

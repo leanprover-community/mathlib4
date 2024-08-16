@@ -36,7 +36,6 @@ commutative domain.
 
 open Finset Function
 
-open scoped Classical
 open Pointwise
 
 noncomputable section
@@ -48,9 +47,9 @@ namespace HahnSeries
 theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] (x : HahnSeries Γ R)
     (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
   induction' n with n ih <;> intro g hn
-  · simp_all only [Nat.zero_eq, pow_zero, mem_support, one_coeff, ne_eq, ite_eq_right_iff,
-    not_forall, exists_prop, SetLike.mem_coe]
-    exact AddSubmonoid.zero_mem (AddSubmonoid.closure (support x))
+  · simp only [pow_zero, support_one, Set.mem_singleton_iff] at hn
+    rw [hn, SetLike.mem_coe]
+    exact AddSubmonoid.zero_mem _
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
@@ -321,9 +320,9 @@ instance : Neg (SummableFamily Γ R α) :=
 instance : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
     zsmul := zsmulRec
-    add_left_neg := fun a => by
+    neg_add_cancel := fun a => by
       ext
-      apply add_left_neg }
+      apply neg_add_cancel }
 
 @[simp]
 theorem coe_neg : ⇑(-s) = -s :=
@@ -637,6 +636,7 @@ section EmbDomain
 
 variable [PartialOrder Γ] [AddCommMonoid R] {α β : Type*}
 
+open Classical in
 /-- A summable family can be reindexed by an embedding without changing its sum. -/
 def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where
   toFun b := if h : b ∈ Set.range f then s (Classical.choose h) else 0
@@ -658,6 +658,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
+open Classical in
 theorem embDomain_apply :
     s.embDomain f b = if h : b ∈ Set.range f then s (Classical.choose h) else 0 :=
   rfl
@@ -673,6 +674,7 @@ theorem embDomain_notin_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := b
 
 @[simp]
 theorem hsum_embDomain : (s.embDomain f).hsum = s.hsum := by
+  classical
   ext g
   simp only [hsum_coeff, embDomain_apply, apply_dite HahnSeries.coeff, dite_apply, zero_coeff]
   exact finsum_emb_domain f fun a => (s a).coeff g
@@ -1132,6 +1134,7 @@ theorem isUnit_iff [IsDomain R] {x : HahnSeries Γ R} :
 
 end CommRing
 
+open Classical in
 instance instField [Field R] : Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv x :=
@@ -1143,7 +1146,7 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
+        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _

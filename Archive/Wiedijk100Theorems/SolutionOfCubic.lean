@@ -41,10 +41,7 @@ section Field
 
 open Polynomial
 
-variable {K : Type*} [Field K]
-variable [Invertible (2 : K)] [Invertible (3 : K)]
-variable (a b c d : K)
-variable {ω p q r s t : K}
+variable {K : Type*} [Field K] (a b c d : K) {ω p q r s t : K}
 
 theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
   simpa [cyclotomic_prime, Finset.sum_range_succ] using hω.isRoot_cyclotomic (by decide)
@@ -67,6 +64,8 @@ theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠
     (x ^ 2 * (s - t) + x * (-ω * (s ^ 2 + t ^ 2) + s * t * (3 + ω ^ 2 - ω)) -
       (-(s ^ 3 - t ^ 3) * (ω - 1) + s ^ 2 * t * ω ^ 2 - s * t ^ 2 * ω ^ 2)) * s ^ 3 * H
 
+variable [Invertible (2 : K)] [Invertible (3 : K)]
+
 /-- Roots of a monic cubic whose discriminant is nonzero. -/
 theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - b ^ 2) / 9)
     (hp_nonzero : p ≠ 0) (hq : q = (9 * b * c - 2 * b ^ 3 - 27 * d) / 54)
@@ -74,8 +73,8 @@ theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - 
     x ^ 3 + b * x ^ 2 + c * x + d = 0 ↔
       x = s - t - b / 3 ∨ x = s * ω - t * ω ^ 2 - b / 3 ∨ x = s * ω ^ 2 - t * ω - b / 3 := by
   let y := x + b / 3
-  have hi2 : (2 : K) ≠ 0 := nonzero_of_invertible _
-  have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
+  have hi2 : (2 : K) ≠ 0 := Invertible.ne_zero _
+  have hi3 : (3 : K) ≠ 0 := Invertible.ne_zero _
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have h₁ : x ^ 3 + b * x ^ 2 + c * x + d = y ^ 3 + 3 * p * y - 2 * q := by
@@ -93,7 +92,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
     a * x ^ 3 + b * x ^ 2 + c * x + d = 0 ↔
       x = s - t - b / (3 * a) ∨
         x = s * ω - t * ω ^ 2 - b / (3 * a) ∨ x = s * ω ^ 2 - t * ω - b / (3 * a) := by
-  have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
+  have hi3 : (3 : K) ≠ 0 := Invertible.ne_zero _
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d
@@ -120,8 +119,8 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
       x = s - b / (3 * a) ∨ x = s * ω - b / (3 * a) ∨ x = s * ω ^ 2 - b / (3 * a) := by
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
     intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
-  have hi2 : (2 : K) ≠ 0 := nonzero_of_invertible _
-  have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
+  have hi2 : (2 : K) ≠ 0 := Invertible.ne_zero _
+  have hi3 : (3 : K) ≠ 0 := Invertible.ne_zero _
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have hb2 : b ^ 2 = 3 * a * c := by rw [sub_eq_zero] at hpz; rw [hpz]
   have hb3 : b ^ 3 = 3 * a * b * c := by rw [pow_succ, hb2]; ring

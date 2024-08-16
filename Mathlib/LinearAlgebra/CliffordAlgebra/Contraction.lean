@@ -231,7 +231,6 @@ theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlg
 
 variable {Q}
 variable {Q' Q'' : QuadraticForm R M} {B B' : BilinForm R M}
-variable (h : B.toQuadraticMap = Q' - Q) (h' : B'.toQuadraticMap = Q'' - Q')
 
 /-- Convert between two algebras of different quadratic form, sending vector to vectors, scalars to
 scalars, and adjusting products by a contraction term.
@@ -249,10 +248,14 @@ def changeForm (h : B.toQuadraticMap = Q' - Q) : CliffordAlgebra Q →ₗ[R] Cli
 theorem changeForm.zero_proof : (0 : BilinForm R M).toQuadraticMap = Q - Q :=
   (sub_self _).symm
 
+variable (h : B.toQuadraticMap = Q' - Q) (h' : B'.toQuadraticMap = Q'' - Q')
+
+include h h' in
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
 theorem changeForm.add_proof : (B + B').toQuadraticMap = Q'' - Q :=
   (congr_arg₂ (· + ·) h h').trans <| sub_add_sub_cancel' _ _ _
 
+include h in
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
 theorem changeForm.neg_proof : (-B).toQuadraticMap = Q - Q' :=
   (congr_arg Neg.neg h).trans <| neg_sub _ _
@@ -334,11 +337,11 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
     left_inv := fun x => by
       dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
-        by simp_rw [(add_neg_self B), changeForm_self_apply]
+        by simp_rw [(add_neg_cancel B), changeForm_self_apply]
     right_inv := fun x => by
       dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
-        by simp_rw [(add_left_neg B), changeForm_self_apply] }
+        by simp_rw [(neg_add_cancel B), changeForm_self_apply] }
 
 @[simp]
 theorem changeFormEquiv_symm :

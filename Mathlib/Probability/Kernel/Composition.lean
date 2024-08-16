@@ -294,8 +294,8 @@ theorem ae_null_of_compProd_null (h : (κ ⊗ₖ η) a s = 0) :
   rw [Filter.eventuallyLE_antisymm_iff]
   exact
     ⟨Filter.EventuallyLE.trans_eq
-        (Filter.eventually_of_forall fun x => (measure_mono (Set.preimage_mono hst) : _)) ht,
-      Filter.eventually_of_forall fun x => zero_le _⟩
+        (Filter.Eventually.of_forall fun x => (measure_mono (Set.preimage_mono hst) : _)) ht,
+      Filter.Eventually.of_forall fun x => zero_le _⟩
 
 theorem ae_ae_of_ae_compProd {p : β × γ → Prop} (h : ∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc) :
     ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=
@@ -1032,6 +1032,17 @@ theorem comp_deterministic_eq_comap (κ : Kernel α β) (hg : Measurable g) :
   ext a s hs
   simp_rw [comap_apply' _ _ _ s, comp_apply' _ _ _ hs, deterministic_apply hg a,
     lintegral_dirac' _ (Kernel.measurable_coe κ hs)]
+
+lemma const_comp (μ : Measure γ) (κ : Kernel α β) :
+    const β μ ∘ₖ κ = fun a ↦ (κ a) Set.univ • μ := by
+  ext _ _ hs
+  simp_rw [comp_apply' _ _ _ hs, const_apply, MeasureTheory.lintegral_const, Measure.smul_apply,
+    smul_eq_mul, mul_comm]
+
+@[simp]
+lemma const_comp' (μ : Measure γ) (κ : Kernel α β) [IsMarkovKernel κ] :
+    const β μ ∘ₖ κ = const α μ := by
+  ext; simp_rw [const_comp, measure_univ, one_smul, const_apply]
 
 end Comp
 
