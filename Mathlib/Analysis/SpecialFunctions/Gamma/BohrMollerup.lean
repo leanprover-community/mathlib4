@@ -261,7 +261,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
       ∀ᶠ n : ℕ in atTop,
         logGammaSeq (x - 1) n =
           logGammaSeq x (n - 1) + x * (log (↑(n - 1) + 1) - log ↑(n - 1)) - log (x - 1) := by
-      refine Eventually.mp (eventually_ge_atTop 1) (eventually_of_forall fun n hn => ?_)
+      refine Eventually.mp (eventually_ge_atTop 1) (Eventually.of_forall fun n hn => ?_)
       have := logGammaSeq_add_one (x - 1) (n - 1)
       rw [sub_add_cancel, Nat.sub_add_cancel hn] at this
       rw [this]

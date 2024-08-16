@@ -183,7 +183,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       have L : Tendsto (fun k => f (a k)) atTop (𝓝 (f x)) := by
         apply (hf' x xs).continuousWithinAt.tendsto.comp
         apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ a_lim
-        exact eventually_of_forall fun k => (aM k).1
+        exact Eventually.of_forall fun k => (aM k).1
       apply Tendsto.sub (tendsto_const_nhds.sub L)
       exact ((f' z).continuous.tendsto _).comp (tendsto_const_nhds.sub a_lim)
     have L2 : Tendsto (fun k : ℕ => (r (f' z) : ℝ) * ‖y - a k‖) atTop (𝓝 (r (f' z) * ‖y - x‖)) :=

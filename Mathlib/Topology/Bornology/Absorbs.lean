@@ -129,7 +129,7 @@ protected lemma add [AddZeroClass E] [DistribSMul M E]
   h₂.mp <| h₁.eventually.mono fun x hx₁ hx₂ ↦ by rw [smul_add]; exact add_subset_add hx₁ hx₂
 
 protected lemma zero [Zero E] [SMulZeroClass M E] {s : Set E} (hs : 0 ∈ s) : Absorbs M s 0 :=
-  eventually_of_forall fun _ ↦ zero_subset.2 <| zero_mem_smul_set hs
+  Eventually.of_forall fun _ ↦ zero_subset.2 <| zero_mem_smul_set hs
 
 end AddZero
 

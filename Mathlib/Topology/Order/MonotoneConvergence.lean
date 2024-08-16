@@ -67,7 +67,7 @@ instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α]
   · rcases ha.exists_between hb with ⟨c, hcs, bc, bca⟩
     lift c to s using hcs
     exact (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
-  · exact eventually_of_forall fun x => (ha.1 x.2).trans_lt hb
+  · exact Eventually.of_forall fun x => (ha.1 x.2).trans_lt hb
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.infConvergenceClass [TopologicalSpace α] [LinearOrder α]

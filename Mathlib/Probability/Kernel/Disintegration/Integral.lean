@@ -294,10 +294,10 @@ theorem Integrable.integral_norm_condKernel {f : α × Ω → F} (hf_int : Integ
 theorem Integrable.norm_integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
     Integrable (fun x ↦ ‖∫ y, f (x, y) ∂ρ.condKernel x‖) ρ.fst := by
   refine hf_int.integral_norm_condKernel.mono hf_int.1.integral_condKernel.norm ?_
-  refine Filter.eventually_of_forall fun x ↦ ?_
+  refine Filter.Eventually.of_forall fun x ↦ ?_
   rw [norm_norm]
   refine (norm_integral_le_integral_norm _).trans_eq (Real.norm_of_nonneg ?_).symm
-  exact integral_nonneg_of_ae (Filter.eventually_of_forall fun y ↦ norm_nonneg _)
+  exact integral_nonneg_of_ae (Filter.Eventually.of_forall fun y ↦ norm_nonneg _)
 
 theorem Integrable.integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
     Integrable (fun x ↦ ∫ y, f (x, y) ∂ρ.condKernel x) ρ.fst :=

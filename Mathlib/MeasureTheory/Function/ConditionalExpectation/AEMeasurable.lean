@@ -379,7 +379,7 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   refine EventuallyEq.trans ?_ (EventuallyEq.neg (lpMeasSubgroupToLpTrim_ae_eq hm f).symm)
   refine (Lp.coeFn_neg _).trans ?_
   simp_rw [lpMeasSubgroup_coe]
-  exact eventually_of_forall fun x => by rfl
+  exact Eventually.of_forall fun x => by rfl
 
 theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm (f - g) =

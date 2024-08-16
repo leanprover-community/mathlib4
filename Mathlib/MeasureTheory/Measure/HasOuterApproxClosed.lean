@@ -59,7 +59,7 @@ theorem tendsto_lintegral_nn_filter_of_le_const {ι : Type*} {L : Filter ι} [L.
     (fs_lim : ∀ᵐ ω : Ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (f ω))) :
     Tendsto (fun i ↦ ∫⁻ ω, fs i ω ∂μ) L (𝓝 (∫⁻ ω, f ω ∂μ)) := by
   refine tendsto_lintegral_filter_of_dominated_convergence (fun _ ↦ c)
-    (eventually_of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
+    (Eventually.of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
     (@lintegral_const_lt_top _ _ μ _ _ (@ENNReal.coe_ne_top c)).ne ?_
   · simpa only [Function.comp_apply, ENNReal.coe_le_coe] using fs_le_const
   · simpa only [Function.comp_apply, ENNReal.tendsto_coe] using fs_lim
@@ -100,7 +100,7 @@ theorem measure_of_cont_bdd_of_tendsto_indicator
     rw [tendsto_pi_nhds] at fs_lim
     exact fun ω ↦ fs_lim ω
   apply measure_of_cont_bdd_of_tendsto_filter_indicator μ E_mble fs
-    (eventually_of_forall fun n ↦ eventually_of_forall (fs_bdd n)) (eventually_of_forall fs_lim')
+    (Eventually.of_forall fun n ↦ Eventually.of_forall (fs_bdd n)) (Eventually.of_forall fs_lim')
 
 /-- The integrals of thickened indicators of a closed set against a finite measure tend to the
 measure of the closed set if the thickening radii tend to zero. -/
