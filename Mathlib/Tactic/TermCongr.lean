@@ -638,3 +638,7 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
     let ty ← mkEq res.lhs res.rhs
     mkExpectedTypeHint pf ty
   | _ => throwUnsupportedSyntax
+
+end TermCongr
+
+end Mathlib.Tactic

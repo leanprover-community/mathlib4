@@ -130,3 +130,7 @@ def etaExpand1 (f : Expr) : MetaM Expr := do
   else
     withDefault do forallBoundedTelescope (← inferType f) (.some 1) fun xs _ => do
       mkLambdaFVars xs (mkAppN f xs)
+
+end Meta.FunProp
+
+end Mathlib

@@ -52,3 +52,5 @@ elab_rules : tactic
   Term.withoutErrToSorry <| withoutRecover do
     let msg ← unsafe Term.evalTerm String (.const ``String []) msg
     successIfFailWithMessage msg (evalTacticSeq tacs) tacs
+
+end Mathlib.Tactic

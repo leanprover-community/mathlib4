@@ -39,3 +39,5 @@ instance {α : Type u} [FromJson α] (p : α → Prop) [DecidablePred p] : FromJ
 
 instance {α : Type u} [ToJson α] (p : α → Prop) : ToJson (Subtype p) where
   toJson x := toJson x.val
+
+end Lean

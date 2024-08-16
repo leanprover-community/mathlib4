@@ -154,3 +154,5 @@ elab_rules : tactic
     splitIfsCore loc names []
     for name in ← names.get do
       logWarningAt name m!"unused name: {name}"
+
+end Mathlib.Tactic

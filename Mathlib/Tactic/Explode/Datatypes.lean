@@ -85,3 +85,7 @@ def Entries.add (entries : Entries) (expr : Expr) (entry : Entry) : Entry × Ent
 This is used by `let` bindings where `expr` is an fvar. -/
 def Entries.addSynonym (entries : Entries) (expr : Expr) (entry : Entry) : Entries :=
   ⟨entries.s.insert expr entry, entries.l⟩
+
+end Explode
+
+end Mathlib

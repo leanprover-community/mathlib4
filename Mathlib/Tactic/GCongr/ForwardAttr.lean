@@ -52,3 +52,7 @@ initialize registerBuiltinAttribute {
       setEnv <| forwardExt.addEntry env (declName, ext)
     | _ => throwUnsupportedSyntax
 }
+
+end GCongr
+
+end Mathlib.Tactic

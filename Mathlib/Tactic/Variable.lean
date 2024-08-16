@@ -308,3 +308,9 @@ where
 def ignorevariable? : Lean.Linter.IgnoreFunction := fun _ stack _ =>
   stack.matches [`null, none, `null, ``Mathlib.Command.Variable.variable?]
   || stack.matches [`null, none, `null, `null, ``Mathlib.Command.Variable.variable?]
+
+end Variable
+
+end Command
+
+end Mathlib

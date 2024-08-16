@@ -223,3 +223,5 @@ theorem findGreatest_of_ne_zero (h : Nat.findGreatest P n = m) (h0 : m ≠ 0) : 
   (findGreatest_eq_iff.1 h).2.1 h0
 
 end FindGreatest
+
+end Nat

@@ -129,3 +129,7 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
           You can disable this linter using `set_option linter.haveLet 0`"
 
 initialize addLinter haveLetLinter
+
+end haveLet
+
+end Mathlib.Linter
