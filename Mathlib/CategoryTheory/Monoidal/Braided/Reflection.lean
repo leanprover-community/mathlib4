@@ -1,8 +1,17 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.Data.List.TFAE
+/-!
+
+# Day's reflection theorem
+-/
 
 open CategoryTheory MonoidalCategory MonoidalClosed
 
@@ -16,11 +25,11 @@ variable (R : C ⥤ D)
 
 /-- Day's reflection theorem. -/
 theorem day_reflection [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)  :
-  List.TFAE
-  [ ∀ (c : C) (d : D), IsIso (adj.unit.app ((ihom d).obj (R.obj c)))
-  , ∀ (c : C) (d : D), IsIso ((internalHom.map (adj.unit.app d).op).app (R.obj c))
-  , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (𝟙 d')))
-  , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))] := sorry
+    List.TFAE
+    [ ∀ (c : C) (d : D), IsIso (adj.unit.app ((ihom d).obj (R.obj c)))
+    , ∀ (c : C) (d : D), IsIso ((internalHom.map (adj.unit.app d).op).app (R.obj c))
+    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (𝟙 d')))
+    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))] := sorry
 
 end
 
@@ -43,6 +52,7 @@ instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   intro d d'
   infer_instance
 
+/-- Auxiliary definition for `monoidalClosed`. -/
 noncomputable def closed (c : C) : Closed c where
   rightAdj := R ⋙ (ihom (R.obj c)) ⋙ L.toFunctor
   adj := by
@@ -58,6 +68,10 @@ noncomputable def closed (c : C) : Closed c where
         simp [← id_tensorHom, ← tensor_comp]
     · exact NatIso.ofComponents (fun _ ↦ asIso (adj.unit.app ((ihom _).obj _)))
 
+/--
+Given a reflective functor `R : C ⥤ D` with a monoidal left adjoint, such that `D` is symmetric
+monoidal closed, then `C` is monoidal closed.
+-/
 noncomputable def monoidalClosed : MonoidalClosed C where
   closed c := closed L R adj c
 
