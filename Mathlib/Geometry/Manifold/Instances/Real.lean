@@ -395,6 +395,33 @@ lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val <
   rw [interior_range_modelWithCornersEuclideanHalfSpace]
   apply IccLeftChart_extend_interior_pos hp
 
+-- move to Mathlib.Order.Basic
+lemma Set.Icc.eq_left_or_interior_or_eq_right {p : ℝ} (hp : p ∈ Set.Icc x y) :
+    p = x ∨ (x < p ∧ p < y) ∨ p = y := by
+  have h := eq_or_gt_of_le hp.1
+  have h' := eq_or_gt_of_le hp.2
+  tauto
+
+lemma boundary_IccManifold : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
+  ext p
+  rcases Set.Icc.eq_left_or_interior_or_eq_right p.2 with (hp | hp | hp)
+  · have : p = X := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true Icc_isBoundaryPoint_left (mem_insert X {Y})
+  · apply iff_of_false
+    · -- FIXME: golf using compl_boundary once #14972 has landed
+      rw [ModelWithCorners.boundary_eq_complement_interior, not_mem_compl_iff]
+      exact Icc_isInteriorPoint_interior hp
+    · rw [mem_insert_iff, mem_singleton_iff]
+      -- can this be golfed?
+      push_neg
+      constructor
+      · by_contra h; linarith [congrArg Subtype.val h]
+      · by_contra h; linarith [congrArg Subtype.val h]
+  · have : p = Y := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true Icc_isBoundaryPoint_right (mem_insert_of_mem X rfl)
+
 /-- The manifold structure on `[x, y]` is smooth.
 -/
 instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :

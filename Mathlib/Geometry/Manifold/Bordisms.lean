@@ -134,36 +134,7 @@ section BoundaryIntervals
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
--- TODO: does this exist already? it ought to... same for the version below
-lemma Set.Icc.eq_left_or_interior_or_eq_right {p : ℝ} (hp : p ∈ Set.Icc x y) :
-  p = x ∨ (x < p ∧ p < y) ∨ p = y := sorry
 
-lemma Set.Icc.eq_left_or_interior_or_eq_right' (p : Set.Icc x y) :
-  p.val = x ∨ (x < p.val ∧ p.val < y) ∨ p.val = y := sorry
-
--- TODO: does this lemma require proving a lemma such as "interior and boundary are independent of
--- the charted space structure" (which is out of reach with current mathlib)?
-lemma boundary_IccManifold : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
-  ext p
-  rcases Set.Icc.eq_left_or_interior_or_eq_right' p with (hp | hp | hp)
-  · have : p = X := SetCoe.ext hp
-    rw [this]
-    apply iff_of_true Icc_isBoundaryPoint_left (mem_insert X {Y})
-  · apply iff_of_false
-    · -- FIXME; want a lemma p ∈ interior ↔ p ∉ boundary, and vice versa
-      rw [ModelWithCorners.boundary_eq_complement_interior, not_mem_compl_iff]
-      exact Icc_isInteriorPoint_interior hp
-    · rw [mem_insert_iff, mem_singleton_iff]
-      -- can this be golfed?
-      push_neg
-      constructor
-      · by_contra h; linarith [congrArg Subtype.val h]
-      · by_contra h; linarith [congrArg Subtype.val h]
-  · have : p = Y := SetCoe.ext hp
-    rw [this]
-    apply iff_of_true Icc_isBoundaryPoint_right (mem_insert_of_mem X rfl)
-
-#exit
 variable {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
   [TopologicalSpace M] [ChartedSpace H M] {I : ModelWithCorners ℝ E H}
   [SmoothManifoldWithCorners I M] [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
@@ -173,13 +144,15 @@ def A : Set (Icc x y) := { ⟨x, ⟨le_refl x, by linarith⟩⟩, ⟨y, ⟨by li
 
 /-- A product `M × [x,y]` has boundary `M × {x,y}`. -/
 lemma boundary_product [h : Fact (x < y)] :
-    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ (A hxy) := by
+    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {X, Y} := by
   have : (𝓡∂ 1).boundary (Icc x y) = A hxy := by
     rw [boundary_IccManifold hxy]; simp only [A]
   rw [I.boundary_of_boundaryless_left]
   rw [this]
 
 end BoundaryIntervals
+
+#exit
 
 -- Let M, M' and W be smooth manifolds.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
