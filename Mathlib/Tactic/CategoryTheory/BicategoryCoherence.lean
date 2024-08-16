@@ -108,7 +108,8 @@ abbrev LiftHom₂.lift' {f g : a ⟶ b} [LiftHom f] [LiftHom g] (η : f ⟶ g) (
   inst.lift
 
 /-- Auxiliary definition for `bicategorical_coherence`. -/
-def mkLiftMap₂LiftExpr (e inst : Expr) : MetaM Expr := do
+def mkLiftMap₂LiftExpr (e : Expr) : MetaM Expr := do
+  let inst ← synthInstance (← mkAppM ``LiftHom₂ #[e])
   let f ← mkAppM ``LiftHom₂.lift' #[e, inst]
   mkAppM ``mkLiftMap₂LiftExprAux #[f]
 
@@ -119,10 +120,8 @@ def bicategory_coherence (g : MVarId) : MetaM Unit := g.withContext do
   let (ty, _) ← dsimp (← g.getType)
     { simpTheorems := #[.addDeclToUnfoldCore {} ``BicategoricalCoherence.hom] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
-  let inst_lhs ← synthInstance (← mkAppM ``LiftHom₂ #[lhs])
-  let inst_rhs ← synthInstance (← mkAppM ``LiftHom₂ #[rhs])
-  let lift_lhs ← mkLiftMap₂LiftExpr lhs inst_lhs
-  let lift_rhs ← mkLiftMap₂LiftExpr rhs inst_rhs
+  let lift_lhs ← mkLiftMap₂LiftExpr lhs
+  let lift_rhs ← mkLiftMap₂LiftExpr rhs
   -- This new equation is defeq to the original by assumption
   -- on the `LiftHom` instances.
   let g₁ ← g.change (← mkEq lift_lhs lift_rhs)

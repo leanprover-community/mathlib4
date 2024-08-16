@@ -116,7 +116,8 @@ abbrev LiftHom.lift' {X Y : C} [LiftObj X] [LiftObj Y] (f : X ⟶ Y) (inst : Lif
   inst.lift
 
 /-- Auxiliary definition for `monoidal_coherence`. -/
-def mkProjectMapExpr (e inst : Expr) : MetaM Expr := do
+def mkProjectMapExpr (e : Expr) : MetaM Expr := do
+  let inst ← synthInstance (← mkAppM ``LiftHom #[e])
   let f ← mkAppM ``LiftHom.lift' #[e, inst]
   mkAppM ``mkProjectMapExprAux #[f]
 
@@ -127,10 +128,8 @@ def monoidal_coherence (g : MVarId) : MetaM Unit := g.withContext do
   let (ty, _) ← dsimp (← g.getType)
     { simpTheorems := #[.addDeclToUnfoldCore {} ``MonoidalCoherence.hom] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
-  let inst_lhs ← synthInstance (← mkAppM ``LiftHom #[lhs])
-  let inst_rhs ← synthInstance (← mkAppM ``LiftHom #[rhs])
-  let projectMap_lhs ← mkProjectMapExpr lhs inst_lhs
-  let projectMap_rhs ← mkProjectMapExpr rhs inst_rhs
+  let projectMap_lhs ← mkProjectMapExpr lhs
+  let projectMap_rhs ← mkProjectMapExpr rhs
   -- This new equation is defeq to the original by assumption
   -- on the `LiftObj` and `LiftHom` instances.
   let g₁ ← g.change (← mkEq projectMap_lhs projectMap_rhs)
