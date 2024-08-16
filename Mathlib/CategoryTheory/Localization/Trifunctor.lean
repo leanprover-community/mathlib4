@@ -9,10 +9,9 @@ section
 variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   [Category C₄] [Category C₁₂] [Category C₂₃]
 
-variable (C₁ C₂ C₃) in
-def whiskeringRight₃Obj {D : Type*} [Category D]
-    (F : C₄ ⥤ D) : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ D) :=
-  (whiskeringRight C₁ _ _).obj ((whiskeringRight C₂ _ _).obj ((whiskeringRight C₃ _ _).obj F))
+abbrev whiskeringRight₃ {D : Type*} [Category D] :
+    (C₄ ⥤ D) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ D) :=
+  (whiskeringRight C₃ _ _) ⋙ (whiskeringRight C₂ _ _) ⋙ (whiskeringRight C₁ _ _)
 
 @[simps! obj map_app_app_app]
 def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
@@ -246,23 +245,29 @@ end
 
 section
 
-variable {C₁ C₂ C₃ C₁₂ C : Type*} [Category C₁] [Category C₂] [Category C₃]
-  [Category C₁₂] [Category C]
+variable {C₁ C₂ C₃ C₁₂ C₂₃ C : Type*} [Category C₁] [Category C₂] [Category C₃]
+  [Category C₁₂] [Category C₂₃] [Category C]
   {D₁ D₂ D₃ D₁₂ D₂₃ D : Type*} [Category D₁] [Category D₂] [Category D₃]
-  [Category D₁₂] [Category D]
-  (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃) (L₁₂ : C₁₂ ⥤ D₁₂) (L : C ⥤ D)
+  [Category D₁₂] [Category D₂₃] [Category D]
+  (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃) (L₁₂ : C₁₂ ⥤ D₁₂) (L₂₃ : C₂₃ ⥤ D₂₃) (L : C ⥤ D)
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
-  (W₁₂ : MorphismProperty C₁₂) (W : MorphismProperty C)
+  (W₁₂ : MorphismProperty C₁₂) (W₂₃ : MorphismProperty C₂₃) (W : MorphismProperty C)
+  [W₁.ContainsIdentities] [W₂.ContainsIdentities] [W₃.ContainsIdentities]
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] [L₃.IsLocalization W₃]
-  [L₁₂.IsLocalization W₁₂] [L.IsLocalization W]
+  [L₁₂.IsLocalization W₁₂] [L₂₃.IsLocalization W₂₃] [L.IsLocalization W]
   (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C)
+  (F : C₁ ⥤ C₂₃ ⥤ C) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
+  (iso : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
   (F₁₂' : D₁ ⥤ D₂ ⥤ D₁₂) (G' : D₁₂ ⥤ D₃ ⥤ D)
+  (F' : D₁ ⥤ D₂₃ ⥤ D) (G₂₃' : D₂ ⥤ D₃ ⥤ D₂₃)
   [Lifting₂ L₁ L₂ W₁ W₂ (F₁₂ ⋙ (whiskeringRight _ _ _).obj L₁₂) F₁₂']
   [Lifting₂ L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight _ _ _).obj L) G']
+  [Lifting₂ L₁ L₂₃ W₁ W₂₃ (F ⋙ (whiskeringRight _ _ _).obj L) F']
+  [Lifting₂ L₂ L₃ W₂ W₃ (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃']
 
-noncomputable nonrec def Lifting₃.bifunctorComp₁₂ :
+ noncomputable def Lifting₃.bifunctorComp₁₂ :
     Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
-      ((whiskeringRight₃Obj C₁ C₂ C₃ L).obj (bifunctorComp₁₂ F₁₂ G))
+      ((whiskeringRight₃.obj L).obj (bifunctorComp₁₂ F₁₂ G))
       (bifunctorComp₁₂ F₁₂' G') where
   iso' :=
     ((whiskeringRight C₁ _ _).obj
@@ -271,6 +276,18 @@ noncomputable nonrec def Lifting₃.bifunctorComp₁₂ :
           (Lifting₂.iso L₁ L₂ W₁ W₂ (F₁₂ ⋙ (whiskeringRight _ _ _).obj L₁₂) F₁₂')).app G') ≪≫
         (bifunctorComp₁₂Functor.obj F₁₂).mapIso
           (Lifting₂.iso L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight _ _ _).obj L) G')
+
+noncomputable def Lifting₃.bifunctorComp₂₃ :
+    Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
+      ((whiskeringRight₃.obj L).obj (bifunctorComp₂₃ F G₂₃))
+      (bifunctorComp₂₃ F' G₂₃') := by
+  have : L₂₃.IsLocalization W₂₃ := inferInstance
+  sorry
+
+noncomputable def associator : bifunctorComp₁₂ F₁₂' G' ≅ bifunctorComp₂₃ F' G₂₃' :=
+  letI := Lifting₃.bifunctorComp₁₂ L₁ L₂ L₃ L₁₂ L W₁ W₂ W₃ W₁₂ F₁₂ G F₁₂' G'
+  letI := Lifting₃.bifunctorComp₂₃ L₁ L₂ L₃ L₂₃ L W₁ W₂ W₃ W₂₃ F G₂₃ F' G₂₃'
+  lift₃NatIso L₁ L₂ L₃ W₁ W₂ W₃ _ _ _ _ ((whiskeringRight₃.obj L).mapIso iso)
 
 end
 
