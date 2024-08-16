@@ -439,6 +439,10 @@ theorem Iio_succ (a : α) : Iio (succ a) = Iic a :=
 theorem Ico_succ_right (a b : α) : Ico a (succ b) = Icc a b :=
   Ico_succ_right_of_not_isMax <| not_isMax _
 
+@[simp]
+theorem Ioo_succ_right (a b : α) : Ioo a (succ b) = Ioc a b :=
+  Ioo_succ_right_of_not_isMax <| not_isMax _
+
 end NoMaxOrder
 
 end PreorderStrong

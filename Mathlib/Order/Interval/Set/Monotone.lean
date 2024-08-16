@@ -178,8 +178,8 @@ theorem StrictMonoOn.Iic_id_le [StrongSuccOrder α] [IsSuccArchimedean α] [Orde
     exact Or.inl rfl
   · exact ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) _ h
 
-theorem StrictMonoOn.Ici_le_id [PredOrder α] [IsPredArchimedean α] [OrderTop α] {n : α} {φ : α → α}
-    (hφ : StrictMonoOn φ (Set.Ici n)) : ∀ m, n ≤ m → φ m ≤ m :=
+theorem StrictMonoOn.Ici_le_id [StrongPredOrder α] [IsPredArchimedean α] [OrderTop α] {n : α}
+    {φ : α → α} (hφ : StrictMonoOn φ (Set.Ici n)) : ∀ m, n ≤ m → φ m ≤ m :=
   StrictMonoOn.Iic_id_le (α := αᵒᵈ) fun _ hi _ hj hij => hφ hj hi hij
 
 variable [Preorder β] {ψ : α → β}
