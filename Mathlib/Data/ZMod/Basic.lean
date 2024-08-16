@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
@@ -1371,6 +1372,29 @@ lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
 end lift
 
 end ZMod
+
+section Module
+variable {S G : Type*} [AddCommGroup G] {n : ℕ} [Module (ZMod n) G] [SetLike S G]
+  [AddSubgroupClass S G] {K : S} {x : G}
+
+lemma zmod_smul_mem (hx : x ∈ K) : ∀ a : ZMod n, a • x ∈ K := by
+  simpa [ZMod.forall, Int.cast_smul_eq_zsmul] using zsmul_mem hx
+
+/-- This cannot be made an instance because of the `[Module (ZMod n) G]` argument and the fact that
+`n` only appears in the second argument of `SMulMemClass`, which is an `OutParam`. -/
+lemma smulMemClass : SMulMemClass S (ZMod n) G where smul_mem _ _ {_x} hx := zmod_smul_mem hx _
+
+namespace AddSubgroupClass
+
+instance instZModSMul : SMul (ZMod n) K where smul a x := ⟨a • x, zmod_smul_mem x.2 _⟩
+
+@[simp, norm_cast] lemma coe_zmod_smul (a : ZMod n) (x : K) : ↑(a • x) = (a • x : G) := rfl
+
+instance instZModModule : Module (ZMod n) K :=
+  Subtype.coe_injective.module _ (AddSubmonoidClass.subtype K) coe_zmod_smul
+
+end AddSubgroupClass
+end Module
 
 section AddGroup
 variable {α : Type*} [AddGroup α] {n : ℕ}
