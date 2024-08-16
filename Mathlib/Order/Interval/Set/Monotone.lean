@@ -161,8 +161,8 @@ open Order
 
 variable {α β : Type*} [PartialOrder α]
 
-theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot α] {n : α} {φ : α → α}
-    (hφ : StrictMonoOn φ (Set.Iic n)) : ∀ m ≤ n, m ≤ φ m := by
+theorem StrictMonoOn.Iic_id_le [StrongSuccOrder α] [IsSuccArchimedean α] [OrderBot α] {n : α}
+    {φ : α → α} (hφ : StrictMonoOn φ (Set.Iic n)) : ∀ m ≤ n, m ≤ φ m := by
   revert hφ
   refine
     Succ.rec_bot (fun n => StrictMonoOn φ (Set.Iic n) → ∀ m ≤ n, m ≤ φ m)

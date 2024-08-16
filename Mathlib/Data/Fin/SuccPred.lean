@@ -19,10 +19,10 @@ to a specific `Fin` instance.
 
 namespace Fin
 
-instance : ∀ {n : ℕ}, SuccOrder (Fin n)
-  | 0 => by constructor <;> intro a <;> exact elim0 a
+instance : ∀ {n : ℕ}, StrongSuccOrder (Fin n)
+  | 0 => by apply StrongSuccOrder.ofSuccLeIffOfLeLtSucc <;> intro a <;> exact elim0 a
   | n + 1 =>
-    SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
+    StrongSuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
       (by
         intro a ha b
         rw [isMax_iff_eq_top, eq_top_iff, not_le, top_eq_last] at ha
@@ -43,10 +43,10 @@ theorem succ_eq {n : ℕ} : SuccOrder.succ = fun a => if a < Fin.last n then a +
 theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a + 1 else a :=
   rfl
 
-instance : ∀ {n : ℕ}, PredOrder (Fin n)
-  | 0 => by constructor <;> first | intro a; exact elim0 a
+instance : ∀ {n : ℕ}, StrongPredOrder (Fin n)
+  | 0 => by apply StrongPredOrder.ofLePredIffOfPredLePred <;> first | intro a; exact elim0 a
   | n + 1 =>
-    PredOrder.ofCore (fun x => if x = 0 then 0 else x - 1)
+    StrongPredOrder.ofCore (fun x => if x = 0 then 0 else x - 1)
       (by
         intro a ha b
         rw [isMin_iff_eq_bot, eq_bot_iff, not_le, bot_eq_zero] at ha
