@@ -160,22 +160,18 @@ scoped[Manifold]
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
   range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
 
-theorem interior_halfspace' {a : ℝ} {p : ENNReal} (n : Type) [Finite n] {i : n} :
-    interior {y : (PiLp p) (fun _ : n ↦ ℝ) | a ≤ y i } = {y | a < y i} := by
-  sorry
+-- TODO: generalise to other values of `p`
+theorem interior_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+    interior {y : EuclideanSpace ℝ (Fin n) | a ≤ y i} = {y | a < y i} := by
+  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change interior (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ioi a
+  rw [f.interior_preimage (Function.surjective_eval _), interior_Ici]
 
-lemma isClosed_halfspace' {a : ℝ} {p : ENNReal} (n : Type) [Finite n] {i : n} :
-    IsClosed {y : (PiLp p) (fun _ : n ↦ ℝ) | a ≤ y i } := sorry
-
-theorem interior_halfspace {a : ℝ} (n : ℕ) [Zero (Fin n)] :
-    interior {y : EuclideanSpace ℝ (Fin n)| a ≤ y 0} = {y | a < y 0} := by apply interior_halfspace'
-
-lemma isClosed_halfspace {a : ℝ} (n : ℕ) [Zero (Fin n)] :
-    IsClosed {y : EuclideanSpace ℝ (Fin n) | a ≤ y 0} := by apply isClosed_halfspace'
-
-theorem closure_halfspace {a : ℝ} (n : ℕ) [Zero (Fin n)] :
-    closure {y : EuclideanSpace ℝ (Fin n)| a ≤ y 0} = {y | a ≤ y 0} :=
-  IsClosed.closure_eq (isClosed_halfspace n)
+theorem closure_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+    closure {y : EuclideanSpace ℝ (Fin n)| a ≤ y i} = {y | a ≤ y i} := by
+  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change closure (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ici a
+  rw [f.closure_preimage (Function.surjective_eval _), closure_Ici]
 
 theorem frontier_halfspace {a : ℝ} (n : ℕ) [inst : Zero (Fin n)] :
     frontier {y : EuclideanSpace ℝ (Fin n)| a ≤ y 0} = {y | a = y 0} := by
