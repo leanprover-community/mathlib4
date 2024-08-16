@@ -11,11 +11,11 @@ import Mathlib.Data.List.Basic
 Proves various lemmas about `List.insertNth`.
 -/
 
+assert_not_exists Set.range
+
 open Function
 
 open Nat hiding one_pos
-
-assert_not_exists Set.range
 
 namespace List
 

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Felix Weilacher, Yury G. Kudryashov, Rémy Degenne
+Authors: Felix Weilacher, Yury Kudryashov, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 import Mathlib.Data.Set.MemPartition
@@ -237,10 +237,9 @@ theorem exists_countablyGenerated_le_of_countablySeparated [m : MeasurableSpace 
   rw [@separatesPoints_iff]
   exact fun x y hxy ↦ hb _ trivial _ trivial fun _ hs ↦ hxy _ $ measurableSet_generateFrom hs
 
-open scoped Classical
-
 open Function
 
+open Classical in
 /-- A map from a measurable space to the Cantor space `ℕ → Bool` induced by a countable
 sequence of sets generating the measurable space. -/
 noncomputable
@@ -374,7 +373,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
     obtain ⟨n, hun⟩ := hu
     induction n generalizing u with
     | zero =>
-      simp only [Nat.zero_eq, memPartition_zero, mem_insert_iff, mem_singleton_iff] at hun
+      simp only [memPartition_zero, mem_insert_iff, mem_singleton_iff] at hun
       rw [hun]
       exact MeasurableSet.univ
     | succ n ih =>
