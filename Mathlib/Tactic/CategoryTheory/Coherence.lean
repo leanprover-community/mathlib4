@@ -111,8 +111,6 @@ def exception' (msg : MessageData) : TacticM Unit := do
 def mkProjectMapExprAux {X Y : FreeMonoidalCategory C} (f : X ⟶ Y) :=
   FreeMonoidalCategory.projectMap id _ _ f
 
-open Qq
-
 /-- Same as `LiftHom.lift`, but the `LiftHom f` instance is explicit. -/
 abbrev LiftHom.lift' {X Y : C} [LiftObj X] [LiftObj Y] (f : X ⟶ Y) (inst : LiftHom f) :=
   inst.lift
