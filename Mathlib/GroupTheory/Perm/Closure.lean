@@ -57,7 +57,7 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     intro n
     induction n with
     | zero =>
-      simp only [Nat.zero_eq, pow_zero, coe_one, id_eq, swap_self, Set.mem_singleton_iff]
+      simp only [pow_zero, coe_one, id_eq, swap_self, Set.mem_singleton_iff]
       convert H.one_mem
     | succ n ih =>
       by_cases h5 : x = (σ ^ n) x

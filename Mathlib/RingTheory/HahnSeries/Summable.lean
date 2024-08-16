@@ -53,7 +53,7 @@ theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring 
       (le_trans (le_of_lt hx) (orderTop_le_of_coeff_ne_zero hg))
   refine Set.iUnion_subset fun n => ?_
   induction' n with n ih <;> intro g hn
-  · simp only [Nat.zero_eq, pow_zero, support_one, Set.mem_singleton_iff] at hn
+  · simp only [pow_zero, support_one, Set.mem_singleton_iff] at hn
     rw [hn, SetLike.mem_coe]
     exact AddSubmonoid.zero_mem _
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn

@@ -301,7 +301,7 @@ theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y
     toList f x ~r toList f y := by
   by_cases hx : x ∈ f.support
   · obtain ⟨_ | k, _, hy⟩ := h.exists_pow_eq_of_mem_support hx
-    · simp only [coe_one, id, pow_zero, Nat.zero_eq] at hy
+    · simp only [coe_one, id, pow_zero] at hy
       -- Porting note: added `IsRotated.refl`
       simp [hy, IsRotated.refl]
     use k.succ

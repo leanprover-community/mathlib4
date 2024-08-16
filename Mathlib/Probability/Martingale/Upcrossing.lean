@@ -176,7 +176,7 @@ variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
 
 theorem upperCrossingTime_le : upperCrossingTime a b f N n ω ≤ N := by
   cases n
-  · simp only [upperCrossingTime_zero, Pi.bot_apply, bot_le, Nat.zero_eq]
+  · simp only [upperCrossingTime_zero, Pi.bot_apply, bot_le]
   · simp only [upperCrossingTime_succ, hitting_le]
 
 @[simp]
@@ -448,7 +448,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
   have h' : upperCrossingTime a b f N n ω < N :=
     lt_of_le_of_lt upperCrossingTime_le_lowerCrossingTime h
   induction' n with k ih
-  · simp only [Nat.zero_eq, upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
+  · simp only [upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
       lowerCrossingTime_zero, true_and_iff, eq_comm]
     refine hitting_eq_hitting_of_exists hNM ?_
     rw [lowerCrossingTime, hitting_lt_iff] at h
@@ -627,9 +627,9 @@ theorem crossing_pos_eq (hab : a < b) :
   · refine ⟨rfl, ?_⟩
     #adaptation_note /-- nightly-2024-03-16: simp was
     simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
-      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq] -/
+      Set.mem_Icc, Set.mem_Iic] -/
     simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting_def,
-      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
+      Set.mem_Icc, Set.mem_Iic]
     ext ω
     split_ifs with h₁ h₂ h₂
     · simp_rw [hf']
