@@ -213,9 +213,9 @@ lemma boundary_of_boundaryless_right [BoundarylessManifold J N] :
 instance BoundarylessManifold.prod [BoundarylessManifold I M] [BoundarylessManifold J N] :
     BoundarylessManifold (I.prod J) (M × N) := by
   apply Boundaryless.of_boundary_eq_empty
-  rw [boundary_of_boundaryless_left, Boundaryless.boundary_eq_empty]
-  have : Set.prod (univ : Set M) (∅ : Set N) = ∅ := Set.prod_empty
-  rw [this]
+  simp [boundary_prod, Boundaryless.boundary_eq_empty]
+  -- TODO: these are simp lemmas; why does `simp` not apply these on its own?
+  exact ⟨Set.prod_empty, Set.empty_prod⟩
 
 end prod
 
