@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Decomposition.Exhaustion
 import Mathlib.Probability.ConditionalProbability
 
 /-!
@@ -184,26 +183,5 @@ lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
   · rw [hμt, toFinite_absolutelyContinuous μ hμt]
   · rw [ENNReal.top_mul hμt, ENNReal.top_mul]
     exact fun h ↦ hμt (absolutelyContinuous_toFinite μ h)
-
-section WithDensitySFinite
-
-variable {μ ν : Measure α}
-
-/-- Auxiliary lemma for `sFinite_of_absolutelyContinuous`. -/
-lemma sFinite_of_absolutelyContinuous_of_isFiniteMeasure [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
-    SFinite μ := by
-  rw [← Measure.restrict_add_restrict_compl (μ := μ) (measurableSet_sigmaFiniteSetWRT μ ν),
-    restrict_compl_sigmaFiniteSetWRT hμν]
-  infer_instance
-
-/-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
-theorem sFinite_of_absolutelyContinuous [SFinite ν] (hμν : μ ≪ ν) : SFinite μ :=
-  sFinite_of_absolutelyContinuous_of_isFiniteMeasure (hμν.trans (absolutelyContinuous_toFinite ν))
-
-/-- If a measure `μ` is s-finite, then `μ.withDensity f` is s-finite for all `f`. -/
-instance [SFinite μ] (f : α → ℝ≥0∞) : SFinite (μ.withDensity f) :=
-  sFinite_of_absolutelyContinuous (withDensity_absolutelyContinuous _ _)
-
-end WithDensitySFinite
 
 end MeasureTheory
