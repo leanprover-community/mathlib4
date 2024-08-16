@@ -3,7 +3,6 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 
@@ -441,5 +440,11 @@ instance Multiplicative.isometricSMul' [Add M] [PseudoEMetricSpace M] [Isometric
 instance Multiplicative.isometricVAdd'' [Add M] [PseudoEMetricSpace M]
     [IsometricVAdd Mᵃᵒᵖ M] : IsometricSMul (Multiplicative M)ᵐᵒᵖ (Multiplicative M) :=
   ⟨fun c x y => edist_vadd_left (AddOpposite.op (toAdd c.unop)) (toAdd x) (toAdd y)⟩
+
+@[to_additive]
+instance QuotientGroupAction.isometricSMul {M : Type u} [Group M] [MulAction M X]
+    [IsometricSMul M X] (N : Subgroup M) [MulAction.QuotientGroupAction N X] :
+    IsometricSMul (M ⧸ N) X :=
+  ⟨fun g => Quotient.inductionOn' g fun A => by refine Eq.subst ?_ <| isometry_smul X A; aesop⟩
 
 end Instances
