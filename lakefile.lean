@@ -35,13 +35,7 @@ package mathlib where
   -- or inconsistent behavior may result
   -- weakLeanArgs := #[]
 
-lean_lib Archive where
-  leanOptions := mathlibLeanOptions
-  moreServerOptions := mathlibOnlyLinters
 
-lean_lib Counterexamples where
-  leanOptions := mathlibLeanOptions
-  moreServerOptions := mathlibOnlyLinters
 
 /-!
 ## Mathlib dependencies on upstream projects.
@@ -64,7 +58,15 @@ lean_lib Mathlib
 -- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
--- Archive and Counterexamples are declared above, to pass similar options to their build
+
+lean_lib Archive where
+  leanOptions := mathlibLeanOptions
+  moreServerOptions := mathlibOnlyLinters
+
+lean_lib Counterexamples where
+  leanOptions := mathlibLeanOptions
+  moreServerOptions := mathlibOnlyLinters
+
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
   roots := #[`docs]
@@ -117,7 +119,8 @@ You can also use it as e.g. `lake exe test conv eval_elab` to only run the named
 -/
 @[test_driver]
 lean_exe test where
-  moreServerOptions := mathlibOnlyLinters
+  -- We could add the above `leanOptions` and `moreServerOptions`: currently, these do not take
+  -- effect as `test` is a `lean_exe`. With a `lean_lib`, it would work...
   srcDir := "scripts"
 
 /-!
