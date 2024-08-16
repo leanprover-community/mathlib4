@@ -57,7 +57,7 @@ Mathlib/Tactic/Linarith/Basic.lean"
 
 open Lean Elab
 run_cmd
-  let out ← IO.Process.run { cmd := "git", args := #["diff", "--name-only", "master...HEAD"] }
+  let out ← IO.Process.run { cmd := "git", args := #["diff", "--name-only", "master"] }
   dbg_trace out
   let labels := produceLabels (← getEnv) out
   let number := 15849
