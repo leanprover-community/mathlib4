@@ -1178,10 +1178,12 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     `n` (but for this we need the spaces at the different steps of the induction to live in the same
     universe, which is why we make the assumption in the lemma that all the relevant spaces
     come from the same universe). -/
-  induction' n using ENat.nat_induction with n ih ih generalizing g E' F
-  · rw [contDiffOn_zero] at hg ⊢
+  induction n using ENat.nat_induction generalizing g E' F with
+  | h0 =>
+    rw [contDiffOn_zero] at hg ⊢
     exact continuousOn_convolution_right_with_param L hk hgs hf hg
-  · let f' : P → G → P × G →L[𝕜] F := fun p a =>
+  | hsuc n ih =>
+    let f' : P → G → P × G →L[𝕜] F := fun p a =>
       (f ⋆[L.precompR (P × G), μ] fun x : G => fderiv 𝕜 (uncurry g) (p, x)) a
     have A : ∀ q₀ : P × G, q₀.1 ∈ s →
         HasFDerivAt (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (f' q₀.1 q₀.2) q₀ :=
@@ -1205,9 +1207,9 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
         exact hgs p y hp hy
       apply ih (L.precompR (P × G) : _) B
       convert hg.2
-  · rw [contDiffOn_top] at hg ⊢
-    intro n
-    exact ih n L hgs (hg n)
+  | htop ih =>
+    rw [contDiffOn_top] at hg ⊢
+    exact fun n ↦ ih n L hgs (hg n)
 
 /-- The convolution `f * g` is `C^n` when `f` is locally integrable and `g` is `C^n` and compactly
 supported. Version where `g` depends on an additional parameter in an open subset `s` of a
