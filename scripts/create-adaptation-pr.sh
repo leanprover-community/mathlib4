@@ -78,9 +78,10 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from 'origin/master' into 'bump/$BUMPVERSION'"
   echo "There seem to be conflicts: please resolve them"
-  echo "Open `pwd` in a new terminal and run 'git status'"
-  echo "Make sure to commit the resolved conflicts, but do not push them"
-  read -p "Press enter to continue, when you are done"
+  echo ""
+  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  2) Make sure to commit the resolved conflicts, but do not push them"
+  read -p "  3) Press enter to continue, when you are done"
 fi
 
 git push
@@ -106,9 +107,10 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
   echo "There seem to be conflicts: please resolve them"
-  echo "Open `pwd` in a new terminal and run 'git status'"
-  echo "Run 'git add' on the resolved files, but do not commit"
-  read -p "Press enter to continue, when you are done"
+  echo ""
+  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  2) Run 'git add' on the resolved files, but do not commit"
+  read -p "  3) Press enter to continue, when you are done"
 fi
 
 echo
@@ -178,9 +180,10 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "We are merging the new PR "bump/nightly-$NIGHTLYDATE" into 'nightly-testing'"
   echo "There seem to be conflicts: please resolve them"
-  echo "Open `pwd` in a new terminal and run 'git status'"
-  echo "Make sure to commit the resolved conflicts, but do not push them"
-  read -p "Press enter to continue, when you are done"
+  echo ""
+  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  2) Make sure to commit the resolved conflicts, but do not push them"
+  read -p "  3) Press enter to continue, when you are done"
 fi
 
 git push
