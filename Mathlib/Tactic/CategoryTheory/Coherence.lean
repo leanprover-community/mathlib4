@@ -113,13 +113,14 @@ def mkProjectMapExprAux {X Y : FreeMonoidalCategory C} (f : X ⟶ Y) :=
 
 open Qq
 
+/-- Same as `LiftHom.lift`, but the `LiftHom f` instance is explicit. -/
+abbrev LiftHom.lift' {X Y : C} [LiftObj X] [LiftObj Y] (f : X ⟶ Y) (inst : LiftHom f) :=
+  inst.lift
+
 /-- Auxiliary definition for `monoidal_coherence`. -/
-def mkProjectMapExpr {v u : Lean.Level} (C : Q(Type u))
-    (_ : Q(Category.{v, u} $C)) (_ : Q(MonoidalCategory $C))
-    (X Y : Q($C)) (_ : Q(LiftObj $X)) (_ : Q(LiftObj $Y))
-    (f : Q($X ⟶ $Y)) (_ : Q(LiftHom $f)) : Expr :=
-  let f' := q(LiftHom.lift $f)
-  q(mkProjectMapExprAux $f')
+def mkProjectMapExpr (e inst : Expr) : MetaM Expr := do
+  let f ← mkAppM ``LiftHom.lift' #[e, inst]
+  mkAppM ``mkProjectMapExprAux #[f]
 
 /-- Coherence tactic for monoidal categories. -/
 def monoidal_coherence (g : MVarId) : MetaM Unit := g.withContext do
@@ -128,20 +129,10 @@ def monoidal_coherence (g : MVarId) : MetaM Unit := g.withContext do
   let (ty, _) ← dsimp (← g.getType)
     { simpTheorems := #[.addDeclToUnfoldCore {} ``MonoidalCoherence.hom] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
-  let u ← mkFreshLevelMVar
-  let ⟨.succ v, ~q(@Quiver.Hom.{v + 1, u} $C $instQ $X $Y), ~q($lhs)⟩ ← inferTypeQ lhs |
-    throwError m!"failed to match {← inferType lhs} with `Quiver.Hom`"
-  let lhs : Q(Quiver.Hom.{v + 1, u} $X $Y) := q($lhs)
-  let rhs : Q(Quiver.Hom.{v + 1, u} $X $Y) := rhs
-  let instC ← synthInstanceQ q(Category.{v, u} $C)
-  let instMC ← synthInstanceQ q(MonoidalCategory.{v, u} $C)
-  let instX ← synthInstanceQ q(LiftObj $X)
-  let instY ← synthInstanceQ q(LiftObj $Y)
-  assertInstancesCommute
-  let inst_lhs ← synthInstanceQ q(LiftHom $lhs)
-  let inst_rhs ← synthInstanceQ q(LiftHom $rhs)
-  let projectMap_lhs := mkProjectMapExpr C instC instMC X Y instX instY lhs inst_lhs
-  let projectMap_rhs := mkProjectMapExpr C instC instMC X Y instX instY rhs inst_rhs
+  let instLhs ← synthInstance (← mkAppM ``LiftHom #[lhs])
+  let instRhs ← synthInstance (← mkAppM ``LiftHom #[rhs])
+  let projectMap_lhs ← mkProjectMapExpr lhs instLhs
+  let projectMap_rhs ← mkProjectMapExpr rhs instRhs
   -- This new equation is defeq to the original by assumption
   -- on the `LiftObj` and `LiftHom` instances.
   let g₁ ← g.change (← mkEq projectMap_lhs projectMap_rhs)
