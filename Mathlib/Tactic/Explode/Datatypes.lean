@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
+import Mathlib.Init
 import Lean.Util.Trace
 
 /-!
@@ -84,3 +85,7 @@ def Entries.add (entries : Entries) (expr : Expr) (entry : Entry) : Entry × Ent
 This is used by `let` bindings where `expr` is an fvar. -/
 def Entries.addSynonym (entries : Entries) (expr : Expr) (entry : Entry) : Entries :=
   ⟨entries.s.insert expr entry, entries.l⟩
+
+end Explode
+
+end Mathlib
