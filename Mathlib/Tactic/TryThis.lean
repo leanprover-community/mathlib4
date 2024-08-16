@@ -26,3 +26,5 @@ elab tk:"try_this" tac:tactic : tactic => do
 elab tk:"try_this" tac:conv : conv => do
   Elab.Tactic.evalTactic tac
   Meta.Tactic.TryThis.addSuggestion tk tac (origSpan? := ← getRef)
+
+end Mathlib.Tactic

@@ -468,3 +468,5 @@ def Result.eqTrans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b 
   | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
 
 end Meta.NormNum
+
+end Mathlib
