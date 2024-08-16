@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.Order.IsWellOrderLimitElement
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.SuccPred.Limit
 
 /-! # Transfinite iterations of a functor
 
@@ -37,7 +38,7 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type*} [Category C] {Φ : C ⥤ C} (ε : 𝟭 C ⟶ Φ)
-  {J : Type u} [LinearOrder J]
+  {J : Type u} [Preorder J]
 
 namespace Functor
 
@@ -47,9 +48,9 @@ variable {j : J} (F : { i // i ≤ j } ⥤ C)
 
 /-- The map `F.obj ⟨i, _⟩ ⟶ F.obj ⟨wellOrderSucc i, _⟩` when `F : { i // i ≤ j } ⥤ C`
 and `i : J` is such that `i < j`. -/
-noncomputable abbrev mapSucc' [IsWellOrder J (· < ·)] (i : J) (hi : i < j) :
-    F.obj ⟨i, hi.le⟩ ⟶ F.obj ⟨wellOrderSucc i, wellOrderSucc_le hi⟩ :=
-  F.map (homOfLE (by simpa only [Subtype.mk_le_mk] using self_le_wellOrderSucc i))
+noncomputable abbrev mapSucc' [SuccOrder J] (i : J) (hi : i < j) :
+    F.obj ⟨i, hi.le⟩ ⟶ F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ :=
+  F.map (homOfLE (by simpa only [Subtype.mk_le_mk] using Order.le_succ i))
 
 variable {i : J} (hi : i ≤ j)
 
@@ -78,14 +79,12 @@ def coconeOfLE : Cocone (restrictionLT F hi) where
 
 end Iteration
 
-variable [IsWellOrder J (· < ·)] [OrderBot J]
-
 /-- The category of `j`th iterations of a functor `Φ` equipped with a natural
 transformation `ε : 𝟭 C ⟶ Φ`. An object consists of the data of all iterations
 of `Φ` for `i : J` such that `i ≤ j` (this is the field `F`). Such objects are
 equipped with data and properties which characterizes the iterations up to a unique
 isomorphism for the three types of elements: `⊥`, successors, limit elements. -/
-structure Iteration (j : J) where
+structure Iteration [Preorder J] [OrderBot J] [SuccOrder J] (j : J) where
   /-- The data of all `i`th iterations for `i : J` such that `i ≤ j`. -/
   F : { i // i ≤ j } ⥤ C ⥤ C
   /-- The zeroth iteration is the identity functor. -/
@@ -93,13 +92,13 @@ structure Iteration (j : J) where
   /-- The iteration on a successor element is obtained by composition of
   the previous iteration with `Φ`. -/
   isoSucc (i : J) (hi : i < j) :
-    F.obj ⟨wellOrderSucc i, wellOrderSucc_le hi⟩ ≅ F.obj ⟨i, hi.le⟩ ⋙ Φ
+    F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ ≅ F.obj ⟨i, hi.le⟩ ⋙ Φ
   /-- The natural map from an iteration to its successor is induced by `ε`. -/
   mapSucc'_eq (i : J) (hi : i < j) :
     Iteration.mapSucc' F i hi = whiskerLeft _ ε ≫ (isoSucc i hi).inv
   /-- If `i` is a limit element, the `i`th iteration is the colimit
   of `k`th iterations for `k < i`. -/
-  isColimit (i : J) [IsWellOrderLimitElement i] (hi : i ≤ j) :
+  isColimit (i : J) (h_bot : i ≠ ⊥) (h_lim : Order.IsSuccLimit i) (hi : i ≤ j) :
     IsColimit (Iteration.coconeOfLE F hi)
 
 namespace Iteration
@@ -109,12 +108,12 @@ variable {j : J}
 
 section
 
-variable (iter : Φ.Iteration ε j)
+variable [OrderBot J] [SuccOrder J] (iter : Φ.Iteration ε j)
 
 /-- For `iter : Φ.Iteration.ε j`, this is the map
-`iter.F.obj ⟨i, _⟩ ⟶ iter.F.obj ⟨wellOrderSucc i, _⟩` if `i : J` is such that `i < j`. -/
+`iter.F.obj ⟨i, _⟩ ⟶ iter.F.obj ⟨Order.succ i, _⟩` if `i : J` is such that `i < j`. -/
 noncomputable abbrev mapSucc (i : J) (hi : i < j) :
-    iter.F.obj ⟨i, hi.le⟩ ⟶ iter.F.obj ⟨wellOrderSucc i, wellOrderSucc_le hi⟩ :=
+    iter.F.obj ⟨i, hi.le⟩ ⟶ iter.F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ :=
   mapSucc' iter.F i hi
 
 lemma mapSucc_eq (i : J) (hi : i < j) :
@@ -123,7 +122,7 @@ lemma mapSucc_eq (i : J) (hi : i < j) :
 
 end
 
-variable (iter₁ iter₂ iter₃ : Φ.Iteration ε j)
+variable [OrderBot J] [SuccOrder J] (iter₁ iter₂ iter₃ : Φ.Iteration ε j)
 
 /-- A morphism between two objects `iter₁` and `iter₂` in the
 category `Φ.Iteration ε j` of `j`th iterations of a functor `Φ`
@@ -136,7 +135,7 @@ structure Hom where
   natTrans_app_zero :
     natTrans.app ⟨⊥, bot_le⟩ = iter₁.isoZero.hom ≫ iter₂.isoZero.inv := by aesop_cat
   natTrans_app_succ (i : J) (hi : i < j) :
-    natTrans.app ⟨wellOrderSucc i, wellOrderSucc_le hi⟩ = (iter₁.isoSucc i hi).hom ≫
+    natTrans.app ⟨Order.succ i, Order.succ_le_of_lt hi⟩ = (iter₁.isoSucc i hi).hom ≫
       whiskerRight (natTrans.app ⟨i, hi.le⟩) _ ≫ (iter₂.isoSucc i hi).inv := by aesop_cat
 
 namespace Hom
@@ -172,17 +171,30 @@ instance : Category (Iteration ε j) where
   id := id
   comp := comp
 
-instance : Subsingleton (iter₁ ⟶ iter₂) where
-  allEq f g := ext' (by
+instance {J} {j : J} [PartialOrder J] [SuccOrder J] [WellFoundedLT J] [OrderBot J]
+    {iter₁ iter₂ : Iteration ε j} :
+    Subsingleton (iter₁ ⟶ iter₂) where
+  allEq f g := by
+    apply ext'
     let P := fun (i : J) => ∀ (hi : i ≤ j), f.natTrans.app ⟨i, hi⟩ = g.natTrans.app ⟨i, hi⟩
     suffices ∀ (i : J), P i by
       ext ⟨i, hi⟩ : 2
       apply this
-    refine fun _ => WellFoundedLT.induction _ (fun i hi hi' => ?_)
-    obtain rfl|⟨i, rfl, hi''⟩|_ := eq_bot_or_eq_succ_or_isWellOrderLimitElement i
+    --refine fun _ => WellFoundedLT.induction _ (fun i hi hi' => ?_)
+    intro i
+    refine SuccOrder.limitRecOn i ?_ ?_
+    · intro i hi hi' hi''
+      rw [Hom.natTrans_app_succ]
+      sorry
+      --simp only [Hom.natTrans_app_succ _ i (lt_of_lt_of_le hi'' hi'), hi i hi'']
+    · intro i hi hi'
+      by_cases h_bot : i = ⊥
+      · rw [h_bot]
+        simp only [natTrans_app_zero]
+
+    /-obtain rfl|⟨i, rfl, hi''⟩|_ := eq_bot_or_eq_succ_or_isWellOrderLimitElement i
     · simp only [natTrans_app_zero]
-    · simp only [Hom.natTrans_app_succ _ i (lt_of_lt_of_le hi'' hi'), hi i hi'']
-    · exact (iter₁.isColimit i hi').hom_ext (fun ⟨k, hk⟩ => by simp [hi k hk]))
+    · exact (iter₁.isColimit i hi').hom_ext (fun ⟨k, hk⟩ => by simp [hi k hk]))-/
 
 end Hom
 
