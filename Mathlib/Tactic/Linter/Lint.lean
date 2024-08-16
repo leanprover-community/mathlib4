@@ -274,8 +274,8 @@ namespace OpenClassical
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.openClassical o
 
 /-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
-returns an array of for the opened names with their corresponding syntax
-(omitting any renamed or hidden items). -/
+returns an array of the syntax corresponding to the opened names,
+omitting any renamed or hidden items. -/
 def extractOpenNames : Syntax → Array Syntax
   | `(command|open $arg hiding $_*)    => #[arg]
   | `(command|open $arg renaming $_,*) => #[arg]

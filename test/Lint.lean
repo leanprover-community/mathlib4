@@ -118,6 +118,7 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 #eval List.range 27
 
 /- Tests for the `openClassical` linter -/
+section openClassical
 
 /--
 warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements
@@ -212,3 +213,5 @@ open scoped Int Classical Nat Classical
 #guard_msgs in
 open Classical (choose) in
 def foo : Nat := 1
+
+end openClassical
