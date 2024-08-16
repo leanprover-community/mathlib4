@@ -652,8 +652,8 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
 /-- In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.  -/
-lemma toFun_add_sub_le_toFun_nat (p : LTSeries ℕ) (i j : Fin (p.length + 1))
-    (hij : i ≤ j) : p i + (j - i) ≤ p j := by
+lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.length + 1))
+    (hij : i ≤ j) : p i + j ≤ p j + i := by
   have ⟨i, hi⟩ := i
   have ⟨j, hj⟩ := j
   simp only [Fin.mk_le_mk] at hij
@@ -661,35 +661,33 @@ lemma toFun_add_sub_le_toFun_nat (p : LTSeries ℕ) (i j : Fin (p.length + 1))
   induction j, hij using Nat.le_induction  with
   | base => simp
   | succ j _hij ih =>
-    have := lt_of_le_of_lt (ih (Nat.lt_of_succ_lt hj)) (p.step ⟨j, Nat.succ_lt_succ_iff.mp hj⟩)
-    apply Nat.le_of_lt_add_one
-    simp only [Fin.succ_mk, Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one] at *
-    omega
+    specialize ih (Nat.lt_of_succ_lt hj)
+    have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩ := p.step ⟨j, by omega⟩
+    norm_cast at *; omega
 
 /-- In ℤ, two entries in an `LTSeries` differ by at least the difference of their indices.  -/
-lemma toFun_add_sub_le_toFun_int (p : LTSeries ℤ) (i j : Fin (p.length + 1))
-    (hij : i ≤ j) : p i + (j - i) ≤ p j := by
-  -- The proof is identical to `LTSeries.toFun_add_sub_le_toFun_nat`, but seemed easier to
-  -- copy rather than to abstract
+lemma apply_add_index_le_apply_add_index_int (p : LTSeries ℤ) (i j : Fin (p.length + 1))
+    (hij : i ≤ j) : p i + j ≤ p j + i := by
+  -- The proof is identical to `LTSeries.apply_add_index_le_apply_add_index_nat`, but seemed easier
+  -- to copy rather than to abstract
   have ⟨i, hi⟩ := i
   have ⟨j, hj⟩ := j
   simp only [Fin.mk_le_mk] at hij
   simp only at *
-  induction j, hij using Nat.le_induction  with
+  induction j, hij using Nat.le_induction with
   | base => simp
   | succ j _hij ih =>
-    have := lt_of_le_of_lt (ih (Nat.lt_of_succ_lt hj)) (p.step ⟨j, Nat.succ_lt_succ_iff.mp hj⟩)
-    apply Int.le_of_lt_add_one
-    simp only [Fin.succ_mk, Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one] at *
-    omega
+    specialize ih (Nat.lt_of_succ_lt hj)
+    have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩:= p.step ⟨j, by omega⟩
+    norm_cast at *; omega
 
 /-- In ℕ, the head and tail of an `LTSeries` differ at least by the length of the series -/
 lemma head_add_length_le_nat (p : LTSeries ℕ) : p.head + p.length ≤ p.last :=
-  LTSeries.toFun_add_sub_le_toFun_nat _ _ (Fin.last _) (Fin.zero_le _)
+  LTSeries.apply_add_index_le_apply_add_index_nat _ _ (Fin.last _) (Fin.zero_le _)
 
 /-- In ℤ, the head and tail of an `LTSeries` differ at least by the length of the series -/
-lemma head_add_length_le_int (p : LTSeries ℤ) : p.head + p.length ≤ p.last :=
-  LTSeries.toFun_add_sub_le_toFun_int _ _ (Fin.last _) (Fin.zero_le _)
+lemma head_add_length_le_int (p : LTSeries ℤ) : p.head + p.length ≤ p.last := by
+  simpa using LTSeries.apply_add_index_le_apply_add_index_int _ _ (Fin.last _) (Fin.zero_le _)
 
 end LTSeries
 
