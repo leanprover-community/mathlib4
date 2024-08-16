@@ -61,7 +61,7 @@ echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 
 
 git checkout "bump/$BUMPVERSION"
 git pull
-git merge origin/master
+git merge origin/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -78,9 +78,10 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from 'origin/master' into 'bump/$BUMPVERSION'"
   echo "There seem to be conflicts: please resolve them"
-  echo "Open `pwd` in a new terminal and run 'git status'"
-  echo "Make sure to commit the resolved conflicts, but do not push them"
-  read -p "Press enter to continue, when you are done"
+  echo ""
+  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  2) Make sure to commit the resolved conflicts, but do not push them"
+  read -p "  3) Press enter to continue, when you are done"
 fi
 
 git push
@@ -89,7 +90,7 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
-git merge origin/nightly-testing
+git merge origin/nightly-testing || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -106,9 +107,10 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
   echo "There seem to be conflicts: please resolve them"
-  echo "Open `pwd` in a new terminal and run 'git status'"
-  echo "Run 'git add' on the resolved files, but do not commit"
-  read -p "Press enter to continue, when you are done"
+  echo ""
+  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  2) Run 'git add' on the resolved files, but do not commit"
+  read -p "  3) Press enter to continue, when you are done"
 fi
 
 echo
@@ -161,7 +163,7 @@ echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch 
 
 git checkout nightly-testing
 git pull
-git merge "bump/nightly-$NIGHTLYDATE"
+git merge "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -178,9 +180,10 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "We are merging the new PR "bump/nightly-$NIGHTLYDATE" into 'nightly-testing'"
   echo "There seem to be conflicts: please resolve them"
-  echo "Open `pwd` in a new terminal and run 'git status'"
-  echo "Make sure to commit the resolved conflicts, but do not push them"
-  read -p "Press enter to continue, when you are done"
+  echo ""
+  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  2) Make sure to commit the resolved conflicts, but do not push them"
+  read -p "  3) Press enter to continue, when you are done"
 fi
 
 git push
