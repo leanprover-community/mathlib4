@@ -74,10 +74,10 @@ lemma whiskerRight_fst {A : Cat} {B : Cat} (f : A ⟶ B)  (X : Cat) :
 lemma whiskerRight_snd {A : Cat} {B : Cat} (f : A ⟶ B)  (X : Cat) :
     (f ▷ X) ⋙ Prod.snd _ _  = Prod.snd _ _ := rfl
 
-lemma tensorHom  {A : Cat} {B : Cat} (f : A ⟶ B)  {X : Cat} {Y : Cat} (g : X ⟶ Y) :
-    f ⊗ g = f.prod g  :=  rfl
+lemma tensorHom {A : Cat} {B : Cat} (f : A ⟶ B)  {X : Cat} {Y : Cat} (g : X ⟶ Y) :
+    f ⊗ g = f.prod g := rfl
 
-lemma tensorUnit  : 𝟙_ Cat = Cat.chosenTerminal := rfl
+lemma tensorUnit : 𝟙_ Cat = Cat.chosenTerminal := rfl
 
 lemma associator_hom (X : Cat )(Y : Cat )(Z : Cat ) :
     (associator X Y Z).hom = Functor.prod' (Prod.fst (X × Y) Z ⋙ Prod.fst X Y )
