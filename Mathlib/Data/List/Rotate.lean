@@ -376,8 +376,6 @@ def IsRotated : Prop :=
 @[inherit_doc List.IsRotated]
 infixr:50 " ~r " => IsRotated
 
-example {a : α} {l : List α} : a :: l ~r a :: l := sorry
-
 variable {l l'}
 
 @[refl]
