@@ -243,6 +243,34 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
 
+variable {x y : ℝ} [hxy : Fact (x < y)]
+
+/-- The endpoint `x ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
+abbrev X : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
+
+/-- The endpoint `y ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
+abbrev Y : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩
+
+lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) X = 0 := by
+  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
+  calc ((IccLeftChart x y).extend (𝓡∂ 1)) X
+    _ = (𝓡∂ 1) ((IccLeftChart x y) X) := rfl
+    _ = (𝓡∂ 1) zero := by
+      congr; ext; rw [IccLeftChart]
+      norm_num
+    _ = 0 := rfl
+
+lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
+    (((IccLeftChart x y).extend (𝓡∂ 1)) p) 0 > 0 := by
+  set lhs := (IccLeftChart x y).extend (𝓡∂ 1) p
+  have : lhs 0 = p.val - x := rfl
+  rw [this]
+  norm_num [hp.1]
+
+lemma IccLeftChart_boundary : (IccLeftChart x y).extend (𝓡∂ 1) X ∈ frontier (range (𝓡∂ 1)) := by
+  rw [IccLeftChart_extend_left_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
+  exact rfl
+
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -290,6 +318,19 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
       (continuous_const.sub continuous_id).max continuous_const
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
+
+lemma IccRightChart_extend_right_eq : (IccRightChart x y).extend (𝓡∂ 1) Y = 0 := by
+  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
+  calc ((IccRightChart x y).extend (𝓡∂ 1)) Y
+    _ = (𝓡∂ 1) ((IccRightChart x y) Y) := rfl
+    _ = (𝓡∂ 1) zero := by
+      congr; ext; rw [IccRightChart]
+      norm_num
+    _ = 0 := rfl
+
+lemma IccRightChart_boundary : (IccRightChart x y).extend (𝓡∂ 1) Y ∈ frontier (range (𝓡∂ 1)) := by
+  rw [IccRightChart_extend_right_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
+  exact rfl
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
