@@ -598,7 +598,7 @@ instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc f g h := comp_assoc _ _ _
-  npow n f := (npowRec n f).copy f^[n] $ by induction' n <;> simp [npowRec, *]
+  npow n f := (npowRec n f).copy f^[n] $ by induction n <;> simp [npowRec, *]
   npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : α →+* α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
