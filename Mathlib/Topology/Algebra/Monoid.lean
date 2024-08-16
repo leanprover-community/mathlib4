@@ -368,6 +368,69 @@ instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul 
     (S : Submonoid M) : ContinuousMul S :=
   S.toSubsemigroup.continuousMul
 
+section MulZeroClass
+
+open Filter
+
+variable {α β : Type*}
+variable [TopologicalSpace M] [MulZeroClass M] [ContinuousMul M]
+variable {f : α → M} {g : β → M}
+
+/-- If `f : α → M` and `g : β → M` are continuous and both tend to zero on the cocompact filter,
+then `fun (i : α × β) ↦ (f i.1) * (g i.2)` also tends to zero on the cocompact filter. -/
+theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace β]
+    (f_cont : Continuous f) (g_cont : Continuous g)
+    (hf : Tendsto f (cocompact α) (𝓝 0)) (hg : Tendsto g (cocompact β) (𝓝 0)) :
+    Tendsto (fun (i : α × β) ↦ (f i.1) * (g i.2)) (cocompact (α × β)) (𝓝 0) := by
+  -- We use the notation `⊤` for `Set.univ` in this proof.
+  have h'f : Disjoint (map f ⊤) (cocompact M) := by
+    apply (disjoint_cocompact_right _).mpr
+    use insert 0 (range f), by simp, Tendsto.isCompact_insert_range_of_cocompact hf f_cont
+  have h'g : Disjoint (map g ⊤) (cocompact M) := by
+    apply (disjoint_cocompact_right _).mpr
+    use insert 0 (range g), by simp, Tendsto.isCompact_insert_range_of_cocompact hg g_cont
+  have h₁ : Tendsto (Prod.map f g) ((cocompact α) ×ˢ ⊤) (𝓝ˢ ({0} ×ˢ ⊤)) := calc
+    map (Prod.map f g) ((cocompact α) ×ˢ ⊤)
+    _ = map f (cocompact α) ×ˢ map g ⊤ := (prod_map_map_eq' _ _ _ _).symm
+    _ ≤ 𝓝 0 ×ˢ map g ⊤                := prod_mono_left _ hf
+    _ = 𝓝ˢ {0} ×ˢ map g ⊤             := congrArg (· ×ˢ map g ⊤) nhdsSet_singleton.symm
+    _ ≤ 𝓝ˢ ({0} ×ˢ ⊤)                 :=
+      nhdsSet_prod_le_of_disjoint_cocompact isCompact_singleton h'g
+  have h₂ : Tendsto (Prod.map f g) (⊤ ×ˢ (cocompact β)) (𝓝ˢ (⊤ ×ˢ {0})) := calc
+    map (Prod.map f g) (⊤ ×ˢ (cocompact β))
+    _ = map f ⊤ ×ˢ map g (cocompact β) := (prod_map_map_eq' _ _ _ _).symm
+    _ ≤ map f ⊤ ×ˢ 𝓝 0                := prod_mono_right _ hg
+    _ = map f ⊤ ×ˢ 𝓝ˢ {0}             := congrArg (map f ⊤ ×ˢ ·) nhdsSet_singleton.symm
+    _ ≤ 𝓝ˢ (⊤ ×ˢ {0})                 :=
+      prod_nhdsSet_le_of_disjoint_cocompact isCompact_singleton h'f
+  have h₃ : Tendsto (Prod.map f g) (cocompact (α × β)) (𝓝ˢ ({0} ×ˢ ⊤ ∪ ⊤ ×ˢ {0})) := by
+    convert h₁.sup_sup h₂
+    · exact coprod_cocompact.symm.trans (coprod_eq_prod_top_sup_top_prod _ _)
+    · exact nhdsSet_union _ _
+  have h₄ : MapsTo (fun (p : M × M) ↦ p.1 * p.2) ({0} ×ˢ ⊤ ∪ ⊤ ×ˢ {0}) {0} := by
+    rintro ⟨x, y⟩ (⟨rfl, _⟩ | ⟨_, rfl⟩)
+    · exact zero_mul y
+    · exact mul_zero x
+  have h₅ : Tendsto (fun (p : M × M) ↦ p.1 * p.2) (𝓝ˢ ({0} ×ˢ ⊤ ∪ ⊤ ×ˢ {0})) (𝓝 0) := by
+    rw [← nhdsSet_singleton]
+    exact continuous_mul.tendsto_nhdsSet h₄
+  exact h₅.comp h₃
+
+/-- If `f : α → M` and `g : β → M` both tend to zero on the cofinite filter, then so does
+`fun (i : α × β) ↦ (f i.1) * (g i.2)`. -/
+theorem tendsto_mul_cofinite_nhds_zero (hf : Tendsto f cofinite (𝓝 0))
+    (hg : Tendsto g cofinite (𝓝 0)) :
+    Tendsto (fun (i : α × β) ↦ (f i.1) * (g i.2)) cofinite (𝓝 0) := by
+  letI : TopologicalSpace α := ⊥
+  haveI : DiscreteTopology α := discreteTopology_bot α
+  letI : TopologicalSpace β := ⊥
+  haveI : DiscreteTopology β := discreteTopology_bot β
+  rw [← cocompact_eq_cofinite] at *
+  exact tendsto_mul_cocompact_nhds_zero
+    continuous_of_discreteTopology continuous_of_discreteTopology hf hg
+
+end MulZeroClass
+
 section MulOneClass
 
 variable [TopologicalSpace M] [MulOneClass M] [ContinuousMul M]
