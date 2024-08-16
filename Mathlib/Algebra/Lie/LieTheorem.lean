@@ -16,13 +16,12 @@ elements of the Lie algebra. This result is named `LieModule.exists_forall_lie_e
 
 open LieAlgebra
 
--- let k be a field of characteristic zero
-variable {k : Type*} [Field k] [CharZero k]
+-- let k be a field (later on assumed to be of characteristic zero)
+variable {k : Type*} [Field k]
 -- Let L be a Lie algebra over k
 variable {L : Type*} [LieRing L] [LieAlgebra k L]
--- and let V be a finite-dimensional k-representation of L
-variable {V : Type*} [AddCommGroup V] [Module k V] [Module.Finite k V]
-  [LieRingModule L V] [LieModule k L V] [Nontrivial V]
+-- and let V be a k-representation of L (later on assumed to be nontrivial / finite-dimensional)
+variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModule k L V]
 
 open FiniteDimensional
 
@@ -74,6 +73,7 @@ abbrev T (w : A) : Module.End k V := (π w) - χ w • 1
 
 variable (z : L) (w : A) {v : V} (hv : ∀ w : A, ⁅w.val, v⁆ = (χ w) • v)
 
+include hv in
 lemma T_apply_succ (n : ℕ) :
     Submodule.map (T A χ w) (iteratedRange v (π z) (n + 1)) ≤ iteratedRange v (π z) n := by
   rw [Submodule.map_span, Submodule.span_le, Set.image_subset_iff]
@@ -97,6 +97,7 @@ lemma T_apply_succ (n : ℕ) :
     · exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨n, n.lt_succ_self, rfl⟩)
     · exact map_iteratedRange_le _ _ _ <| Submodule.mem_map_of_mem <| hn w n n.lt_succ_self
 
+include hv in
 lemma T_map_iSup_iteratedRange' :
     Submodule.map (T A χ w) (iSup_iteratedRange v (π z)) ≤ iSup_iteratedRange v (π z) := by
   rw [Submodule.map_iSup, iSup_le_iff]
@@ -104,6 +105,7 @@ lemma T_map_iSup_iteratedRange' :
   · simp [Submodule.map_span]
   · exact (T_apply_succ A χ z w hv i).trans (le_iSup _ _)
 
+include hv in
 lemma T_map_iSup_iteratedRange (x : V)
     (hx : x ∈ iSup_iteratedRange v (π z)) : (T A χ w) x ∈ iSup_iteratedRange v (π z) :=
   T_map_iSup_iteratedRange' A χ z w hv <| Submodule.mem_map_of_mem hx
@@ -111,12 +113,14 @@ lemma T_map_iSup_iteratedRange (x : V)
 def iSupIR : LieSubmodule k A V where
   toSubmodule := iSup_iteratedRange v (π z)
   lie_mem {w} x hx := by
-    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, Submodule.mem_toAddSubmonoid]
+    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+      Submodule.mem_toAddSubmonoid]
     have hx' : ⁅w, x⁆ = (T A χ w) x + χ w • x := by simp
     rw [hx']
     exact add_mem (T_map_iSup_iteratedRange A χ z w hv x hx)
       (Submodule.smul_mem (iSup_iteratedRange v (π z)) _ hx)
 
+include hv in
 lemma T_map_iteratedRange_nilpotent (N : ℕ) :
     ∀ x ∈ (iteratedRange v (π z)) N, (T A χ w ^ N) x = 0 := by
   induction' N with N ih
@@ -124,6 +128,20 @@ lemma T_map_iteratedRange_nilpotent (N : ℕ) :
   · intro x hx
     rw [pow_succ, LinearMap.mul_apply, ih]
     exact T_apply_succ A χ z w hv N <| Submodule.mem_map_of_mem hx
+
+theorem trace_πza_zero (a : A) :
+    LinearMap.trace k (iSupIR A χ z hv) (LieModule.toEnd k A _ ⁅z, a⁆) = 0 := by
+  set U := iSupIR A χ z hv
+  have hzU : ∀ x ∈ U, (π z) x ∈ U :=
+    fun _ hx ↦ (map_iteratedRange_iSup_le_iSup v (π z)) (Submodule.mem_map_of_mem hx)
+  have hres : LieModule.toEnd k A U ⁅z, a⁆ = ⁅(π z).restrict hzU, LieModule.toEnd k A U a⁆ := by
+    ext ⟨x, hx⟩
+    simp only [LieModule.toEnd_apply_apply, LieSubmodule.coe_bracket,
+      LieIdeal.coe_bracket_of_module, lie_lie, LieHom.lie_apply, Module.End.lie_apply,
+      AddSubgroupClass.coe_sub, LinearMap.restrict_coe_apply]
+  rw [hres, LieRing.of_associative_ring_bracket, map_sub, LinearMap.trace_mul_comm, sub_self]
+
+variable [Module.Finite k V]
 
 theorem T_res_nilpotent :
     IsNilpotent ((T A χ w).restrict (T_map_iSup_iteratedRange A χ z w hv)) := by
@@ -153,18 +171,9 @@ lemma trace_πza (a : A) :
   rw [← LinearMap.trace_id, ← LinearMap.map_smul, ← sub_eq_zero, ← LinearMap.map_sub]
   exact trace_T_res_zero A χ z ⁅z, a⁆ hv
 
-theorem trace_πza_zero (a : A) :
-    LinearMap.trace k (iSupIR A χ z hv) (LieModule.toEnd k A _ ⁅z, a⁆) = 0 := by
-  set U := iSupIR A χ z hv
-  have hzU : ∀ x ∈ U, (π z) x ∈ U :=
-    fun _ hx ↦ (map_iteratedRange_iSup_le_iSup v (π z)) (Submodule.mem_map_of_mem hx)
-  have hres : LieModule.toEnd k A U ⁅z, a⁆ = ⁅(π z).restrict hzU, LieModule.toEnd k A U a⁆ := by
-    ext ⟨x, hx⟩
-    simp only [LieModule.toEnd_apply_apply, LieSubmodule.coe_bracket,
-      LieIdeal.coe_bracket_of_module, lie_lie, LieHom.lie_apply, Module.End.lie_apply,
-      AddSubgroupClass.coe_sub, LinearMap.restrict_coe_apply]
-  rw [hres, LieRing.of_associative_ring_bracket, map_sub, LinearMap.trace_mul_comm, sub_self]
+variable [CharZero k]
 
+include hv in
 lemma chi_za_zero (a : A) (hv' : v ≠ 0) :
     χ ⁅z, a⁆ = 0 := by
   have h := trace_πza A χ z hv a
@@ -207,6 +216,8 @@ end
 
 section
 
+variable [CharZero k] [Module.Finite k V]
+
 open LieModule in
 theorem extend_weight [LieModule.IsTriangularizable k L V] (A : LieIdeal k L) (z : L) (hz : z ∉ A)
     (hcompl : IsCompl A.toSubmodule (k ∙ z)) (χ' : Module.Dual k A) (v : V)
@@ -245,7 +256,7 @@ theorem extend_weight [LieModule.IsTriangularizable k L V] (A : LieIdeal k L) (z
       exact hd
     simp [hv' (π1 x), ← hd, add_smul, mul_smul, hzv', hv''.apply_eq_smul, smul_comm _ c v']
 
-theorem LieModule.exists_forall_lie_eq_smul_finrank :
+theorem LieModule.exists_forall_lie_eq_smul_finrank [Nontrivial V] :
     ∀ (L : Type*) [LieRing L] [LieAlgebra k L] [FiniteDimensional k L] [IsSolvable k L]
       [LieRingModule L V] [LieModule k L V] [LieModule.IsTriangularizable k L V],
       ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
@@ -289,7 +300,7 @@ decreasing_by
   exact hcoatomA.1
 
 -- If `L` is solvable, we can find a non-zero eigenvector
-theorem LieModule.exists_forall_lie_eq_smul_of_Solvable
+theorem LieModule.exists_forall_lie_eq_smul_of_Solvable [Nontrivial V]
     [IsSolvable k L] [LieModule.IsTriangularizable k L V] :
     ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
   let imL := (π).range
@@ -304,3 +315,6 @@ theorem LieModule.exists_forall_lie_eq_smul_of_Solvable
     rw [LinearMap.comp_apply, this, hχ' (toEndo x)]
   have hsolv : IsSolvable k imL := LieHom.isSolvable_range π
   apply LieModule.exists_forall_lie_eq_smul_finrank (L := imL)
+
+end
+
