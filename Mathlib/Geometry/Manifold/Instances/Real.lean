@@ -90,6 +90,26 @@ theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
   Subtype.range_val
 @[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
 
+-- TODO: generalise these lemmas to other values of `p`
+
+theorem interior_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+    interior { y : EuclideanSpace ℝ (Fin n) | a ≤ y i } = { y | a < y i } := by
+  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change interior (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ioi a
+  rw [f.interior_preimage (Function.surjective_eval _), interior_Ici]
+
+theorem closure_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+    closure { y : EuclideanSpace ℝ (Fin n) | a ≤ y i } = { y | a ≤ y i } := by
+  let f : (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change closure (f ⁻¹' Set.Ici a) = f ⁻¹' Set.Ici a
+  rw [f.closure_preimage (Function.surjective_eval _), closure_Ici]
+
+theorem frontier_halfspace {a : ℝ} {n : ℕ} (i : Fin n) :
+    frontier { y : EuclideanSpace ℝ (Fin n) | a ≤ y i } = { y | a = y i } := by
+  rw [frontier, interior_halfspace, closure_halfspace]
+  ext y
+  simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
+
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -156,6 +176,25 @@ scoped[Manifold]
   notation "𝓡∂ " n =>
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
+
+lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+  range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
+
+lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+    interior (range (𝓡∂ n)) = { y | 0 < y 0 } := by
+  calc interior (range (𝓡∂ n))
+    _ = interior ({ y | 0 ≤ y 0}) := by
+      congr!
+      apply range_euclideanHalfSpace
+    _ = { y | 0 < y 0 } := interior_halfspace 0
+
+lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+    frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
+  calc frontier (range (𝓡∂ n))
+    _ = frontier ({ y | 0 ≤ y 0 }) := by
+      congr!
+      apply range_euclideanHalfSpace
+    _ = { y | 0 = y 0 } := frontier_halfspace 0
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
