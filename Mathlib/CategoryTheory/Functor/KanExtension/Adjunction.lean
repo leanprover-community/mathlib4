@@ -18,13 +18,6 @@ Similarly, we define the right Kan extension functor
 `L.ran : (C ⥤ H) ⥤ (D ⥤ H)` which sends a functor `F : C ⥤ H` to its
 right Kan extension along `L`.
 
-## TODO
-- refactor the file `CategoryTheory.Limits.KanExtension` so that
-the definition of `Ran` in that file (which relies on the
-existence of limits) is replaced by a definition
-`Functor.ran` based on the Kan extension API, similarly as
-left Kan extensions have been refactored in #10425.
-
 -/
 
 namespace CategoryTheory

@@ -56,58 +56,6 @@ instance : CommSemiring (BitVec w) :=
     toFin_nsmul
     toFin_pow
     (fun _ => rfl) /- toFin_natCast -/
-
-#align bitvec BitVec
-#align bitvec.zero BitVec.zero
-#noalign bitvec.one
-#align bitvec.cong BitVec.cast
-#align bitvec.append BitVec.append
-#align bitvec.shl BitVec.shiftLeft
-#align bitvec.ushr BitVec.ushiftRight
-#align bitvec.sshr BitVec.sshiftRight
-#align bitvec.not BitVec.not
-#align bitvec.and BitVec.and
-#align bitvec.or BitVec.or
-#align bitvec.xor BitVec.xor
-#align bitvec.neg BitVec.neg
-#align bitvec.adc BitVec.adc
-#align bitvec.add BitVec.add
-#noalign bitvec.sbb
-#align bitvec.sub BitVec.sub
-#align bitvec.mul BitVec.mul
-#align bitvec.uborrow BitVec.ult
-#align bitvec.ult BitVec.ult
-#noalign bitvec.ugt
-#align bitvec.ule BitVec.ule
-#noalign bitvec.uge
-#align bitvec.sborrow BitVec.slt
-#align bitvec.slt BitVec.slt
-#noalign bitvec.sgt
-#align bitvec.sle BitVec.sle
-#noalign bitvec.sge
-#align bitvec.of_nat BitVec.ofNat
-#noalign bitvec.add_lsb
-#noalign bitvec.bits_to_nat
-#align bitvec.to_nat BitVec.toNat
-#align bitvec.of_fin BitVec.ofFin
-#align bitvec.to_fin BitVec.toFin
-#align bitvec.to_int BitVec.toInt
-#noalign bitvec.bits_to_nat_to_list
-#noalign bitvec.to_nat_append
-#noalign bitvec.bits_to_nat_to_bool
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
-#noalign bitvec.of_nat_succ
-#align bitvec.to_nat_of_nat BitVec.toNat_ofNat
-#noalign bitvec.of_fin_val
-#noalign bitvec.add_lsb_eq_twice_add_one
-#noalign bitvec.to_nat_eq_foldr_reverse
-#align bitvec.to_nat_lt BitVec.toNat_lt
-#noalign bitvec.add_lsb_div_two
-#noalign bitvec.to_bool_add_lsb_mod_two
-#noalign bitvec.to_fin_val
-#noalign bitvec.to_fin_le_to_fin_of_le
-#noalign bitvec.of_fin_le_of_fin_of_le
-#noalign bitvec.to_fin_of_fin
-#noalign bitvec.of_fin_to_fin
 
 end BitVec

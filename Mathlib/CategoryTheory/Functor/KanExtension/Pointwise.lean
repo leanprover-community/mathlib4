@@ -22,10 +22,6 @@ and if this holds for all `Y : D`, we construct a functor
 
 A dual API for pointwise right Kan extension is also formalized.
 
-## TODO
-
-* refactor the file `CategoryTheory.Limits.KanExtension` using this new general API
-
 ## References
 * https://ncatlab.org/nlab/show/Kan+extension
 
@@ -124,6 +120,7 @@ def isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
   right_inv h := by aesop
 
 variable (h : E.IsPointwiseLeftKanExtension)
+include h
 
 lemma IsPointwiseLeftKanExtension.hasPointwiseLeftKanExtension :
     HasPointwiseLeftKanExtension L F :=
@@ -140,7 +137,8 @@ def IsPointwiseLeftKanExtension.homFrom (G : LeftExtension L F) : E ⟶ G :=
       ext X
       simpa using (h (L.obj X)).fac (LeftExtension.coconeAt G _) (CostructuredArrow.mk (𝟙 _)))
 
-lemma IsPointwiseLeftKanExtension.hom_ext {G : LeftExtension L F} {f₁ f₂ : E ⟶ G} : f₁ = f₂ := by
+lemma IsPointwiseLeftKanExtension.hom_ext
+    {G : LeftExtension L F} {f₁ f₂ : E ⟶ G} : f₁ = f₂ := by
   ext Y
   apply (h Y).hom_ext
   intro X
@@ -164,9 +162,9 @@ lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
   HasLeftKanExtension.mk E.right E.hom
 
 lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
-    IsIso (E.hom) := by
+    IsIso (E.hom) :=
   have := fun X => (h (L.obj X)).isIso_hom_app
-  apply NatIso.isIso_of_isIso_app
+  NatIso.isIso_of_isIso_app ..
 
 end LeftExtension
 
@@ -235,6 +233,7 @@ def isPointwiseRightKanExtensionEquivOfIso (e : E ≅ E') :
   right_inv h := by aesop
 
 variable (h : E.IsPointwiseRightKanExtension)
+include h
 
 lemma IsPointwiseRightKanExtension.hasPointwiseRightKanExtension :
     HasPointwiseRightKanExtension L F :=
@@ -251,7 +250,8 @@ def IsPointwiseRightKanExtension.homTo (G : RightExtension L F) : G ⟶ E :=
       ext X
       simpa using (h (L.obj X)).fac (RightExtension.coneAt G _) (StructuredArrow.mk (𝟙 _)) )
 
-lemma IsPointwiseRightKanExtension.hom_ext {G : RightExtension L F} {f₁ f₂ : G ⟶ E} : f₁ = f₂ := by
+lemma IsPointwiseRightKanExtension.hom_ext
+    {G : RightExtension L F} {f₁ f₂ : G ⟶ E} : f₁ = f₂ := by
   ext Y
   apply (h Y).hom_ext
   intro X
@@ -274,9 +274,9 @@ lemma IsPointwiseRightKanExtension.hasRightKanExtension :
   HasRightKanExtension.mk E.left E.hom
 
 lemma IsPointwiseRightKanExtension.isIso_hom [L.Full] [L.Faithful] :
-    IsIso (E.hom) := by
+    IsIso (E.hom) :=
   have := fun X => (h (L.obj X)).isIso_hom_app
-  apply NatIso.isIso_of_isIso_app
+  NatIso.isIso_of_isIso_app ..
 
 end RightExtension
 
@@ -391,7 +391,7 @@ noncomputable def pointwiseRightKanExtensionCounit :
     L ⋙ pointwiseRightKanExtension L F ⟶ F where
   app X := limit.π (StructuredArrow.proj (L.obj X) L ⋙ F)
     (StructuredArrow.mk (𝟙 (L.obj X)))
-  naturality {X₁ X₂} f:= by
+  naturality {X₁ X₂} f := by
     simp only [comp_obj, pointwiseRightKanExtension_obj, comp_map,
       pointwiseRightKanExtension_map, limit.lift_π, StructuredArrow.map_mk]
     rw [comp_id]

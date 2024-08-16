@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
+import Mathlib.Order.Fin.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 
@@ -57,7 +58,7 @@ instance [Nonempty α] : Nonempty (RelSeries r) :=
 
 variable {r}
 
-@[ext]
+@[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
     (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
   rcases x with ⟨nx, fx⟩
@@ -71,7 +72,7 @@ lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h :
 
 lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
     r (x i) (x j) ∨ x i = x j :=
-  h.lt_or_eq.imp (x.rel_of_lt ·) (by rw [·])
+  (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
 
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
@@ -104,8 +105,8 @@ lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
 @[simps]
 def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
-  length := x.length.pred
-  toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil)
+  length := x.length - 1
+  toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil) i]
   step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
@@ -218,6 +219,12 @@ lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
+@[simp]
+lemma head_singleton {r : Rel α α} (x : α) : (singleton r x).head = x := by simp [singleton, head]
+
+@[simp]
+lemma last_singleton {r : Rel α α} (x : α) : (singleton r x).last = x := by simp [singleton, last]
+
 end
 
 variable {r s}
@@ -304,6 +311,10 @@ def map (p : RelSeries r) (f : r →r s) : RelSeries s where
 @[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
     p.map f i = f (p i) := rfl
 
+@[simp] lemma head_map (p : RelSeries r) (f : r →r s) : (p.map f).head = f p.head := rfl
+
+@[simp] lemma last_map (p : RelSeries r) (f : r →r s) : (p.map f).last = f p.last := rfl
+
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
 `aᵢ -r→ a -r→ a_ᵢ₊₁`, then
@@ -348,8 +359,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           rw [Fin.insertNth_apply_above]
           swap
           · exact hm.trans (lt_add_one _)
-          simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, ge_iff_le,
-            Fin.succ_mk]
+          simp only [Fin.val_succ, Fin.pred_succ, eq_rec_constant, Fin.succ_mk]
           congr
           exact Fin.ext <| Eq.symm <| Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
       · convert connect_next
@@ -382,6 +392,15 @@ def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
 
 @[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.reverse i = p i.rev := rfl
+
+@[simp] lemma last_reverse (p : RelSeries r) : p.reverse.last = p.head := by
+  simp [RelSeries.last, RelSeries.head]
+
+@[simp] lemma head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
+  simp [RelSeries.last, RelSeries.head]
+
+@[simp] lemma reverse_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.reverse = p := by
+  ext <;> simp
 
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
@@ -477,6 +496,14 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 
 @[simp] lemma last_eraseLast (p : RelSeries r) :
     p.eraseLast.last = p ⟨p.length.pred, Nat.lt_succ_iff.2 (Nat.pred_le _)⟩ := rfl
+
+/-- In a non-trivial series `p`, the last element of `p.eraseLast` is related to `p.last` -/
+lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
+    r p.eraseLast.last p.last := by
+  simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
+  convert p.step ⟨p.length - 1, by omega⟩
+  simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
+
 /--
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
 then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
@@ -553,13 +580,47 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
 @[simp] lemma head_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).head = p.head := by
   delta head smash
-  simp only [Fin.val_zero, Fin.zero_eta, ge_iff_le, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
+  simp only [Fin.val_zero, Fin.zero_eta, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
     ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
   intro H; convert h.symm; congr; aesop
 
 @[simp] lemma last_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).last = q.last := by
   delta smash last; aesop
+
+/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `a₀ -r→ … -r→ aᵢ`. -/
+@[simps! length]
+def take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+  length := i
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
+  step := fun ⟨j, h⟩ => p.step ⟨j, by omega⟩
+
+@[simp]
+lemma head_take (p : RelSeries r) (i : Fin (p.length + 1)) :
+    (p.take i).head = p.head := by simp [take, head]
+
+@[simp]
+lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
+    (p.take i).last = p i := by simp [take, last, Fin.last]
+
+/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aᵢ`. -/
+@[simps! length]
+def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+  length := p.length - i
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by omega⟩
+  step := fun ⟨j, h⟩ => by
+    convert p.step ⟨j+i.1, by omega⟩
+    simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
+
+@[simp]
+lemma head_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).head = p.toFun i := by
+  simp [drop, head]
+
+@[simp]
+lemma last_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).last = p.last := by
+  simp only [last, drop, Fin.last]
+  congr
+  omega
 
 end RelSeries
 
@@ -621,6 +682,8 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
 
+lemma head_le_last (x : LTSeries α) : x.head ≤ x.last :=
+  LTSeries.monotone x (Fin.zero_le _)
 
 /-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
 @[simps]
@@ -637,6 +700,12 @@ can be pushed out to a strict chain of `β` by
 @[simps!]
 def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
   LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
+
+@[simp] lemma head_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
+  (p.map f hf).head = f p.head := rfl
+
+@[simp] lemma last_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
+  (p.map f hf).last = f p.last := rfl
 
 /--
 For two preorders `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a

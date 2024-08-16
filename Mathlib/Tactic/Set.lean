@@ -3,7 +3,19 @@ Copyright (c) 2022 Ian Benway. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Benway
 -/
+import Mathlib.Init
 import Lean
+
+/-!
+# The `set` tactic
+
+This file defines the `set` tactic and its variant `set!`.
+
+`set a := t with h` is a variant of `let a := t`. It adds the hypothesis `h : a = t` to
+the local context and replaces `t` with `a` everywhere it can.
+`set a := t with ← h` will add `h : t = a` instead.
+`set! a := t with h` does not do any replacing.
+-/
 
 namespace Mathlib.Tactic
 open Lean Elab Elab.Tactic Meta

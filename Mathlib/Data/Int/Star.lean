@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Algebra.Order.Ring.Basic
 
 /-!
 # Star ordered ring structure on `ℤ`
