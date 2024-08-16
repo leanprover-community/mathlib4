@@ -26,8 +26,7 @@ Then `p I` is true.
 rectangular box, induction
 -/
 
-
-open Set Finset Function Filter Metric Classical Topology Filter ENNReal
+open Set Function Filter Topology
 
 noncomputable section
 
@@ -37,6 +36,7 @@ namespace Box
 
 variable {ι : Type*} {I J : Box ι}
 
+open Classical in
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also
 `BoxIntegral.Partition.splitCenter` for the corresponding `BoxIntegral.Partition`. -/
@@ -130,7 +130,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   have hJsub : ∀ m i, (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
     intro m i
     induction' m with m ihm
-    · simp [J, Nat.zero_eq]
+    · simp [J]
     simp only [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
   have h0 : J 0 = I := rfl
   clear_value J

@@ -28,16 +28,19 @@ open Limits
 namespace Localization
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (L : C ⥤ D)
-  {W : MorphismProperty C} [L.IsLocalization W] [W.ContainsIdentities]
+  {W : MorphismProperty C} [L.IsLocalization W]
 
 namespace HasProductsOfShapeAux
 
-variable {J : Type} [Finite J] [HasProductsOfShape J C]
+variable {J : Type} [HasProductsOfShape J C]
   (hW : W.IsStableUnderProductsOfShape J)
+include hW
 
 lemma inverts :
     (W.functorCategory (Discrete J)).IsInvertedBy (lim ⋙ L) :=
   fun _ _ f hf => Localization.inverts L W _ (hW.lim_map f hf)
+
+variable [W.ContainsIdentities] [Finite J]
 
 /-- The (candidate) limit functor for the localized category.
 It is induced by `lim ⋙ L : (Discrete J ⥤ C) ⥤ D`. -/
@@ -84,7 +87,9 @@ noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
 end HasProductsOfShapeAux
 
 variable (W)
+variable [W.ContainsIdentities]
 
+include L
 lemma hasProductsOfShape (J : Type) [Finite J] [HasProductsOfShape J C]
     (hW : W.IsStableUnderProductsOfShape J) :
     HasProductsOfShape J D :=
@@ -102,6 +107,7 @@ noncomputable def preservesProductsOfShape (J : Type) [Finite J]
 
 variable [HasFiniteProducts C] [W.IsStableUnderFiniteProducts]
 
+include W in
 lemma hasFiniteProducts : HasFiniteProducts D :=
   ⟨fun _ => hasProductsOfShape L W _
     (W.isStableUnderProductsOfShape_of_isStableUnderFiniteProducts _)⟩

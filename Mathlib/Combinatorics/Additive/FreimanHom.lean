@@ -147,7 +147,7 @@ lemma isMulFreimanHom_two :
   bijOn := hg.bijOn.comp hf.bijOn
   map_prod_eq_map_prod s t hsA htA hs ht := by
     rw [← map_map, ← map_map]
-    rw[ hg.map_prod_eq_map_prod _ _ (by rwa [card_map]) (by rwa [card_map]),
+    rw [hg.map_prod_eq_map_prod _ _ (by rwa [card_map]) (by rwa [card_map]),
       hf.map_prod_eq_map_prod hsA htA hs ht]
     · simpa using fun a h ↦ hf.bijOn.mapsTo (hsA h)
     · simpa using fun a h ↦ hf.bijOn.mapsTo (htA h)

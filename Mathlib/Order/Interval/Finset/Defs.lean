@@ -452,6 +452,51 @@ end Lattice
 
 end Finset
 
+namespace Mathlib.Meta
+open Lean Elab Term Meta Batteries.ExtendedBinder
+
+/-- Elaborate set builder notation for `Finset`.
+
+* `{x ≤ a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) (Finset.Iic a)` if the expected type
+  is `Finset ?α`.
+* `{x ≥ a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) (Finset.Ici a)` if the expected type
+  is `Finset ?α`.
+* `{x < a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) (Finset.Iio a)` if the expected type
+  is `Finset ?α`.
+* `{x > a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) (Finset.Ioi a)` if the expected type
+  is `Finset ?α`.
+
+See also
+* `Init.Set` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+  syntax of the form `{x ∈ s | p x}`.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
+  `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+
+TODO: Write a delaborator
+-/
+@[term_elab setBuilder]
+def elabFinsetBuilderIxx : TermElab
+  | `({ $x:ident ≤ $a | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (Finset.Iic $a))) expectedType?
+  | `({ $x:ident ≥ $a | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (Finset.Ici $a))) expectedType?
+  | `({ $x:ident < $a | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (Finset.Iio $a))) expectedType?
+  | `({ $x:ident > $a | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (Finset.Ioi $a))) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+end Mathlib.Meta
+
 /-! ### Finiteness of `Set` intervals -/
 
 
@@ -790,15 +835,11 @@ Adding a `⊥` to a locally finite `OrderBot` keeps it locally finite.
 
 namespace WithTop
 
-variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
-
--- Porting note: removed attribute [local match_pattern] coe
-
-attribute [local simp] Option.mem_iff
-
 private lemma aux (x : α) (p : α → Prop) :
     (∃ a : α, p a ∧ WithTop.some a = WithTop.some x) ↔ p x := by
   simp
+
+variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 
 instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finsetIcc a b :=
@@ -1031,27 +1072,29 @@ theorem subtype_Ioc_eq : Ioc a b = (Ioc (a : α) b).subtype p :=
 theorem subtype_Ioo_eq : Ioo a b = (Ioo (a : α) b).subtype p :=
   rfl
 
-variable (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x)
-
-theorem map_subtype_embedding_Icc : (Icc a b).map (Embedding.subtype p) = (Icc a b : Finset α) := by
+theorem map_subtype_embedding_Icc (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x):
+    (Icc a b).map (Embedding.subtype p) = (Icc a b : Finset α) := by
   rw [subtype_Icc_eq]
   refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Icc] at hx
   exact hp hx.1 hx.2 a.prop b.prop
 
-theorem map_subtype_embedding_Ico : (Ico a b).map (Embedding.subtype p) = (Ico a b : Finset α) := by
+theorem map_subtype_embedding_Ico (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x):
+    (Ico a b).map (Embedding.subtype p) = (Ico a b : Finset α) := by
   rw [subtype_Ico_eq]
   refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ico] at hx
   exact hp hx.1 hx.2.le a.prop b.prop
 
-theorem map_subtype_embedding_Ioc : (Ioc a b).map (Embedding.subtype p) = (Ioc a b : Finset α) := by
+theorem map_subtype_embedding_Ioc (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x):
+    (Ioc a b).map (Embedding.subtype p) = (Ioc a b : Finset α) := by
   rw [subtype_Ioc_eq]
   refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioc] at hx
   exact hp hx.1.le hx.2 a.prop b.prop
 
-theorem map_subtype_embedding_Ioo : (Ioo a b).map (Embedding.subtype p) = (Ioo a b : Finset α) := by
+theorem map_subtype_embedding_Ioo (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x):
+    (Ioo a b).map (Embedding.subtype p) = (Ioo a b : Finset α) := by
   rw [subtype_Ioo_eq]
   refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioo] at hx
@@ -1069,13 +1112,13 @@ theorem subtype_Ici_eq : Ici a = (Ici (a : α)).subtype p :=
 theorem subtype_Ioi_eq : Ioi a = (Ioi (a : α)).subtype p :=
   rfl
 
-variable (hp : ∀ ⦃a x⦄, a ≤ x → p a → p x)
-
-theorem map_subtype_embedding_Ici : (Ici a).map (Embedding.subtype p) = (Ici a : Finset α) := by
+theorem map_subtype_embedding_Ici (hp : ∀ ⦃a x⦄, a ≤ x → p a → p x) :
+    (Ici a).map (Embedding.subtype p) = (Ici a : Finset α) := by
   rw [subtype_Ici_eq]
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Ici.1 hx) a.prop
 
-theorem map_subtype_embedding_Ioi : (Ioi a).map (Embedding.subtype p) = (Ioi a : Finset α) := by
+theorem map_subtype_embedding_Ioi (hp : ∀ ⦃a x⦄, a ≤ x → p a → p x) :
+    (Ioi a).map (Embedding.subtype p) = (Ioi a : Finset α) := by
   rw [subtype_Ioi_eq]
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Ioi.1 hx).le a.prop
 
@@ -1091,13 +1134,14 @@ theorem subtype_Iic_eq : Iic a = (Iic (a : α)).subtype p :=
 theorem subtype_Iio_eq : Iio a = (Iio (a : α)).subtype p :=
   rfl
 
-variable (hp : ∀ ⦃a x⦄, x ≤ a → p a → p x)
 
-theorem map_subtype_embedding_Iic : (Iic a).map (Embedding.subtype p) = (Iic a : Finset α) := by
+theorem map_subtype_embedding_Iic (hp : ∀ ⦃a x⦄, x ≤ a → p a → p x) :
+    (Iic a).map (Embedding.subtype p) = (Iic a : Finset α) := by
   rw [subtype_Iic_eq]
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Iic.1 hx) a.prop
 
-theorem map_subtype_embedding_Iio : (Iio a).map (Embedding.subtype p) = (Iio a : Finset α) := by
+theorem map_subtype_embedding_Iio (hp : ∀ ⦃a x⦄, x ≤ a → p a → p x) :
+    (Iio a).map (Embedding.subtype p) = (Iio a : Finset α) := by
   rw [subtype_Iio_eq]
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Iio.1 hx).le a.prop
 

@@ -394,7 +394,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
           isCycle_swap_mul_aux₁ n hb
             (show (f⁻¹ ^ n) (f⁻¹ x) = f⁻¹ b by
               rw [← zpow_natCast, ← h, ← mul_apply, ← mul_apply, ← mul_apply, zpow_negSucc,
-                ← inv_pow, pow_succ, mul_assoc, mul_assoc, inv_mul_self, mul_one, zpow_natCast,
+                ← inv_pow, pow_succ, mul_assoc, mul_assoc, inv_mul_cancel, mul_one, zpow_natCast,
                 ← pow_succ', ← pow_succ])
         have h : (swap x (f⁻¹ x) * f⁻¹) (f x) = f⁻¹ x := by
           rw [mul_apply, inv_apply_self, swap_apply_left]
@@ -867,10 +867,10 @@ theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => ?_⟩
   rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
-  rw [← List.indexOf_get ha, ← List.indexOf_get hb]
+  rw [← List.getElem_indexOf ha, ← List.getElem_indexOf hb]
   refine ⟨l.indexOf b - l.indexOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
-    Equiv.Perm.coe_mul, List.formPerm_pow_apply_get _ h, Function.comp]
+    Equiv.Perm.coe_mul, List.formPerm_pow_apply_getElem _ h, Function.comp]
   rw [add_comm]
 
 end

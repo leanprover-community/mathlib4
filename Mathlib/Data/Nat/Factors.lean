@@ -20,6 +20,8 @@ This file deals with the factors of natural numbers.
 
 -/
 
+assert_not_exists Multiset
+
 open Bool Subtype
 
 open Nat
@@ -77,7 +79,7 @@ theorem prod_primeFactorsList : ∀ {n}, n ≠ 0 → List.prod (primeFactorsList
         Nat.mul_div_cancel' (minFac_dvd _)]
 
 theorem primeFactorsList_prime {p : ℕ} (hp : Nat.Prime p) : p.primeFactorsList = [p] := by
-  have : p = p - 2 + 2 := (tsub_eq_iff_eq_add_of_le hp.two_le).mp rfl
+  have : p = p - 2 + 2 := (Nat.sub_add_cancel hp.two_le).symm
   rw [this, primeFactorsList]
   simp only [Eq.symm this]
   have : Nat.minFac p = p := (Nat.prime_def_minFac.mp hp).2
@@ -312,5 +314,3 @@ theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
   · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
 end Nat
-
-assert_not_exists Multiset

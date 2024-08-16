@@ -257,25 +257,13 @@ instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
-      decay' := by
-        have : c • (f : E → F) = (c : ℝ) • f := by
-          ext x
-          simp only [Pi.smul_apply, smul_apply]
-          exact nsmul_eq_smul_cast _ _ _
-        simp only [this]
-        exact ((c : ℝ) • f).decay' }⟩
+      decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
-      decay' := by
-        have : c • (f : E → F) = (c : ℝ) • f := by
-          ext x
-          simp only [Pi.smul_apply, smul_apply]
-          exact zsmul_eq_smul_cast _ _ _
-        simp only [this]
-        exact ((c : ℝ) • f).decay' }⟩
+      decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
 end SMul
 
@@ -585,8 +573,7 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] [FiniteDimensional ℝ D]
+variable [NormedAddCommGroup D] [MeasurableSpace D]
 
 open MeasureTheory FiniteDimensional
 
@@ -604,12 +591,12 @@ def _root_.MeasureTheory.Measure.integrablePower (μ : Measure D) : ℕ :=
 lemma integrable_pow_neg_integrablePower
     (μ : Measure D) [h : μ.HasTemperateGrowth] :
     Integrable (fun x ↦ (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ))) μ := by
-  simp [Measure.integrablePower, h]
-  exact h.exists_integrable.choose_spec
+  simpa [Measure.integrablePower, h] using h.exists_integrable.choose_spec
 
 instance _root_.MeasureTheory.Measure.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
     [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩
 
+variable [NormedSpace ℝ D] [FiniteDimensional ℝ D] [BorelSpace D] in
 instance _root_.MeasureTheory.Measure.IsAddHaarMeasure.instHasTemperateGrowth {μ : Measure D}
     [h : μ.IsAddHaarMeasure] : μ.HasTemperateGrowth :=
   ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; norm_num⟩⟩
@@ -644,11 +631,14 @@ lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (
       · exact Real.rpow_le_rpow_of_nonpos (by linarith) (by linarith) (by simp)
       · exact h₂.trans (by linarith)
 
+variable [BorelSpace D] [SecondCountableTopology D] in
 /-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
 `x ^ k * f` is integrable. The bounds are not relevant for the integrability conclusion, but they
 are relevant for bounding the integral in `integral_pow_mul_le_of_le_of_pow_mul_le`. We formulate
 the two lemmas with the same set of assumptions for ease of applications. -/
+-- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
 lemma integrable_of_le_of_pow_mul_le
+    {E : Type*} [NormedAddCommGroup E]
     {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂)
     (h''f : AEStronglyMeasurable f μ) :
@@ -661,7 +651,9 @@ lemma integrable_of_le_of_pow_mul_le
 
 /-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
 one can bound explicitly the integral of `x ^ k * f`. -/
+-- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
 lemma integral_pow_mul_le_of_le_of_pow_mul_le
+    {E : Type*} [NormedAddCommGroup E]
     {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) :
     ∫ x, ‖x‖ ^ k * ‖f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
@@ -1047,14 +1039,25 @@ open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
-variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D]
+variable [MeasurableSpace D]
 
 variable {μ : Measure D} [hμ : HasTemperateGrowth μ]
 
 attribute [local instance 101] secondCountableTopologyEither_of_left
 
+variable (𝕜 μ) in
+lemma integral_pow_mul_iteratedFDeriv_le (f : 𝓢(D, V)) (k n : ℕ) :
+    ∫ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
+      (∫ x, (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ)) ∂μ) *
+        (SchwartzMap.seminorm 𝕜 0 n f + SchwartzMap.seminorm 𝕜 (k + μ.integrablePower) n f) :=
+  integral_pow_mul_le_of_le_of_pow_mul_le (norm_iteratedFDeriv_le_seminorm ℝ _ _)
+    (le_seminorm ℝ _ _ _)
+
+variable [BorelSpace D] [SecondCountableTopology D]
+
 variable (μ) in
-lemma integrable_pow_mul_iteratedFDeriv (f : 𝓢(D, V))
+lemma integrable_pow_mul_iteratedFDeriv
+    (f : 𝓢(D, V))
     (k n : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖) μ :=
   integrable_of_le_of_pow_mul_le (norm_iteratedFDeriv_le_seminorm ℝ _ _) (le_seminorm ℝ _ _ _)
     ((f.smooth ⊤).continuous_iteratedFDeriv le_top).aestronglyMeasurable
@@ -1064,14 +1067,6 @@ lemma integrable_pow_mul (f : 𝓢(D, V))
     (k : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
   convert integrable_pow_mul_iteratedFDeriv μ f k 0 with x
   simp
-
-variable (𝕜 μ) in
-lemma integral_pow_mul_iteratedFDeriv_le (f : 𝓢(D, V)) (k n : ℕ) :
-    ∫ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
-      (∫ x, (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ)) ∂μ) *
-        (SchwartzMap.seminorm 𝕜 0 n f + SchwartzMap.seminorm 𝕜 (k + μ.integrablePower) n f) :=
-  integral_pow_mul_le_of_le_of_pow_mul_le (norm_iteratedFDeriv_le_seminorm ℝ _ _)
-    (le_seminorm ℝ _ _ _)
 
 lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable

@@ -61,28 +61,12 @@ namespace LocallyRingedSpace
 
 variable (X : LocallyRingedSpace.{u})
 
-/-- The map from the global sections to a stalk. -/
-def ΓToStalk (x : X) : Γ.obj (op X) ⟶ X.presheaf.stalk x :=
-  X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens X))
-
-lemma ΓToStalk_stalkMap {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
-    Y.ΓToStalk (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x =
-      f.val.c.app (op ⊤) ≫ X.ΓToStalk x := by
-  dsimp only [LocallyRingedSpace.ΓToStalk]
-  rw [PresheafedSpace.stalkMap_germ']
-
-lemma ΓToStalk_stalkMap_apply {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X)
-    (a : Y.presheaf.obj (op ⊤)) :
-    PresheafedSpace.stalkMap f.val x (Y.ΓToStalk (f.val.base x) a) =
-      X.ΓToStalk x (f.val.c.app (op ⊤) a) := by
-  simpa using congrFun (congrArg DFunLike.coe <| ΓToStalk_stalkMap f x) a
-
 /-- The canonical map from the underlying set to the prime spectrum of `Γ(X)`. -/
 def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
-  comap (X.ΓToStalk x) (LocalRing.closedPoint (X.presheaf.stalk x))
+  comap (X.presheaf.Γgerm x) (LocalRing.closedPoint (X.presheaf.stalk x))
 
 theorem not_mem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
-    r ∉ (X.toΓSpecFun x).asIdeal ↔ IsUnit (X.ΓToStalk x r) := by
+    r ∉ (X.toΓSpecFun x).asIdeal ↔ IsUnit (X.presheaf.Γgerm x r) := by
   erw [LocalRing.mem_maximalIdeal, Classical.not_not]
 
 /-- The preimage of a basic open in `Spec Γ(X)` under the unit is the basic
@@ -196,14 +180,13 @@ theorem toΓSpecSheafedSpace_app_eq :
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
     stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
-    toStalk _ _ ≫ PresheafedSpace.stalkMap X.toΓSpecSheafedSpace x = X.ΓToStalk x := by
-  rw [PresheafedSpace.stalkMap]
+    toStalk _ _ ≫ X.toΓSpecSheafedSpace.stalkMap x = X.presheaf.Γgerm x := by
+  rw [PresheafedSpace.Hom.stalkMap]
   erw [← toOpen_germ _ (basicOpen (1 : Γ.obj (op X)))
       ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
-  rw [← Category.assoc, toΓSpecSheafedSpace_app_spec]
-  unfold ΓToStalk
+  rw [← Category.assoc, toΓSpecSheafedSpace_app_spec, Γgerm]
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
   congr 1
   change (X.toΓSpecBase _* X.presheaf).map le_top.hom.op ≫ _ = _
@@ -300,7 +283,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       erw [this]
       dsimp [toΓSpecFun]
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
+      erw [← LocalRing.comap_closedPoint (f.stalkMap x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ ⟨x, trivial⟩).symm
@@ -484,12 +467,9 @@ theorem toOpen_unit_app_val_c_app' {X : Scheme.{u}} (U : Opens (PrimeSpectrum Γ
 
 end ΓSpec
 
-theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : Opens X) :
-    (Scheme.ΓSpecIso Γ(X, U)).hom =
-      Scheme.Γ.map (Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).op ≫
-      (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).app ⊤ ≫
-      X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op := by
-  dsimp [-Scheme.SpecΓIdentity_hom_app]
+theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
+    (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).app ⊤ ≫
+      (ΓSpec.adjunction.unit.app U).app ⊤ ≫ U.topIso.hom := by
   rw [ΓSpec.adjunction_unit_app_app_top] -- why can't simp find this
   simp
 
