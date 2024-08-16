@@ -134,32 +134,18 @@ section BoundaryIntervals
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
-/-- The endpoint `x ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
-abbrev X : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
+lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+    frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
+  calc frontier (range (𝓡∂ n))
+    _ = frontier ({ y | 0 ≤ y 0 }) := by
+      congr!
+      apply range_euclideanHalfSpace
+    _ = { y | 0 = y 0 } := frontier_halfspace n
 
-/-- The endpoint `y ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
-abbrev Y : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩
-
-lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) X = 0 := by
-  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
-  calc ((IccLeftChart x y).extend (𝓡∂ 1)) X
-    _ = (𝓡∂ 1) ((IccLeftChart x y) X) := rfl
-    _ = (𝓡∂ 1) zero := by
-      congr; ext; rw [IccLeftChart]
-      norm_num
-    _ = 0 := rfl
-
--- missing lemma 1: range of R∂ 1 has frontier ... (that exists already?)
--- do I need to rewrite from EuclideanSpace ℝ 1 to ℝ? does that exist already?
 lemma IccLeftChart_boundary : (IccLeftChart x y).extend (𝓡∂ 1) X ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccLeftChart_extend_left_eq]
-  let aux := range_euclideanHalfSpace 1 -- does not apply directly...
-  --have almostAux : (0 : EuclideanSpace ℝ (Fin 1)) ∈ frontier {y | 0 ≤ y 0} := sorry
-  -- this times out...
-  -- fully general proof: add a lemma about the frontier of EuclideanHalfSpace (in EuclideanSpace),
-  -- in all n dimensions...
-  -- show (0 : EuclideanSpace ℝ (Fin 1)) ∈ frontier {y | 0 ≤ y 0}
-  sorry
+  rw [frontier_range_modelWithCornersEuclideanHalfSpace]
+  exact rfl
 
 lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
@@ -168,19 +154,10 @@ lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
   suffices ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) by convert this
   exact IccLeftChart_boundary
 
-lemma IccRightChart_extend_right_eq : (IccRightChart x y).extend (𝓡∂ 1) Y = 0 := by
-  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
-  calc ((IccRightChart x y).extend (𝓡∂ 1)) Y
-    _ = (𝓡∂ 1) ((IccRightChart x y) Y) := rfl
-    _ = (𝓡∂ 1) zero := by
-      congr; ext; rw [IccRightChart]
-      norm_num
-    _ = 0 := rfl
-
 lemma IccRightChart_boundary : (IccRightChart x y).extend (𝓡∂ 1) Y ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_right_eq]
-  -- TODO: dualise remaining proof of `IccLeftChart_boundary` (once completed)
-  sorry
+  rw [frontier_range_modelWithCornersEuclideanHalfSpace]
+  exact rfl
 
 lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]

@@ -157,6 +157,33 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
+lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+  range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
+
+theorem interior_halfspace' {a : ℝ} {p : ENNReal} (n : Type) [Finite n] {i : n} :
+    interior {y : (PiLp p) (fun _ : n ↦ ℝ) | a ≤ y i } = {y | a < y i} := by
+  sorry
+
+lemma isClosed_halfspace' {a : ℝ} {p : ENNReal} (n : Type) [Finite n] {i : n} :
+    IsClosed {y : (PiLp p) (fun _ : n ↦ ℝ) | a ≤ y i } := sorry
+
+theorem interior_halfspace {a : ℝ} (n : ℕ) [Zero (Fin n)] :
+    interior {y : EuclideanSpace ℝ (Fin n)| a ≤ y 0} = {y | a < y 0} := by apply interior_halfspace'
+
+lemma isClosed_halfspace {a : ℝ} (n : ℕ) [Zero (Fin n)] :
+    IsClosed {y : EuclideanSpace ℝ (Fin n) | a ≤ y 0} := by apply isClosed_halfspace'
+
+theorem closure_halfspace {a : ℝ} (n : ℕ) [Zero (Fin n)] :
+    closure {y : EuclideanSpace ℝ (Fin n)| a ≤ y 0} = {y | a ≤ y 0} :=
+  IsClosed.closure_eq (isClosed_halfspace n)
+
+theorem frontier_halfspace {a : ℝ} (n : ℕ) [inst : Zero (Fin n)] :
+    frontier {y : EuclideanSpace ℝ (Fin n)| a ≤ y 0} = {y | a = y 0} := by
+  rw [frontier, interior_halfspace, closure_halfspace]
+  ext y
+  simp only [mem_diff, mem_setOf_eq, not_lt] at *
+  exact ⟨fun h ↦ by linarith, fun h ↦ ⟨by linarith, by linarith⟩⟩
+
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -203,6 +230,23 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
       (continuous_id.add continuous_const).min continuous_const
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
+
+variable {x y : ℝ} [hxy : Fact (x < y)]
+
+/-- The endpoint `x ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
+abbrev X : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
+
+/-- The endpoint `y ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
+abbrev Y : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩
+
+lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) X = 0 := by
+  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
+  calc ((IccLeftChart x y).extend (𝓡∂ 1)) X
+    _ = (𝓡∂ 1) ((IccLeftChart x y) X) := rfl
+    _ = (𝓡∂ 1) zero := by
+      congr; ext; rw [IccLeftChart]
+      norm_num
+    _ = 0 := rfl
 
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
@@ -251,6 +295,15 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
       (continuous_const.sub continuous_id).max continuous_const
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
+
+lemma IccRightChart_extend_right_eq : (IccRightChart x y).extend (𝓡∂ 1) Y = 0 := by
+  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
+  calc ((IccRightChart x y).extend (𝓡∂ 1)) Y
+    _ = (𝓡∂ 1) ((IccRightChart x y) Y) := rfl
+    _ = (𝓡∂ 1) zero := by
+      congr; ext; rw [IccRightChart]
+      norm_num
+    _ = 0 := rfl
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
