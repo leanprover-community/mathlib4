@@ -64,12 +64,6 @@ namespace Ring
 
 open ringFunc Language
 
-instance (n : ℕ) : DecidableEq (Language.ring.Functions n) := by
-  dsimp [Language.ring]; infer_instance
-
-instance (n : ℕ) : DecidableEq (Language.ring.Relations n) := by
-  dsimp [Language.ring]; infer_instance
-
 /-- `RingFunc.add`, but with the defeq type `Language.ring.Functions 2` instead
 of `RingFunc 2` -/
 abbrev addFunc : Language.ring.Functions 2 := add

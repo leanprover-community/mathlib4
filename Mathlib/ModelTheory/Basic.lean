@@ -81,6 +81,16 @@ instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a�
 
 instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
 
+instance [DecidableEq a₀] [DecidableEq a₁] [DecidableEq a₂] {n : ℕ} :
+    DecidableEq (Sequence₂ a₀ a₁ a₂ n) := by
+  cases n with
+  | zero => infer_instance
+  | succ n => cases n with
+    | zero => infer_instance
+    | succ n => cases n with
+      | zero => infer_instance
+      | succ n => infer_instance
+
 @[simp]
 theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
@@ -239,6 +249,12 @@ theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
       Cardinal.lift.{v} #c + Cardinal.lift.{v} #f₁ + Cardinal.lift.{v} #f₂ +
           Cardinal.lift.{u} #r₁ + Cardinal.lift.{u} #r₂ := by
   simp [card_eq_card_functions_add_card_relations, add_assoc]
+
+instance {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (f n)] :
+    DecidableEq ((⟨f, R⟩ : Language).Functions n) := inferInstance
+
+instance {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (R n)] :
+    DecidableEq ((⟨f, R⟩ : Language).Relations n) := inferInstance
 
 variable (L) (M : Type w)
 
