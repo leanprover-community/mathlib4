@@ -281,12 +281,6 @@ lemma rpow_neg_mul_rpow {a : A} (x : ℝ) (ha : 0 ∉ spectrum ℝ≥0 a)
     (ha' : 0 ≤ a := by cfc_tac) : a ^ (-x) * a ^ x = 1 := by
   rw [← rpow_add ha, neg_add_cancel, rpow_zero a]
 
-lemma inv_nonneg_of_nonneg (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) : (0 : A) ≤ a⁻¹ :=
-  cfc_inv_id (R := ℝ≥0) a ▸ cfc_predicate _ (a : A)
-
-lemma inv_nonneg (a : Aˣ)  : (0 : A) ≤ a⁻¹ ↔ (0 : A) ≤ a :=
-  ⟨fun _ ↦ inv_inv a ▸ inv_nonneg_of_nonneg a⁻¹, fun _ ↦ inv_nonneg_of_nonneg a⟩
-
 lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
     a ^ (-1 : ℝ) = (↑a⁻¹ : A) := by
   refine a.inv_eq_of_mul_eq_one_left ?_ |>.symm
