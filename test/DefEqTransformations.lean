@@ -182,3 +182,5 @@ example (n : Fin 5) : n = ⟨n.val2, n.prop2⟩ := by
   eta_struct
   guard_target =ₛ n = n
   rfl
+
+end Tests
