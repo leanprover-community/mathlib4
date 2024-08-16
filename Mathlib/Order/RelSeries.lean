@@ -651,7 +651,10 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
-/-- In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.  -/
+/--
+In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.
+(Expressed in a way that avoids subtraction).
+ -/
 lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.length + 1))
     (hij : i ≤ j) : p i + j ≤ p j + i := by
   have ⟨i, hi⟩ := i
@@ -665,7 +668,10 @@ lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.le
     have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩ := p.step ⟨j, by omega⟩
     norm_cast at *; omega
 
-/-- In ℤ, two entries in an `LTSeries` differ by at least the difference of their indices.  -/
+/--
+In ℤ, two entries in an `LTSeries` differ by at least the difference of their indices.
+(Expressed in a way that avoids subtraction).
+-/
 lemma apply_add_index_le_apply_add_index_int (p : LTSeries ℤ) (i j : Fin (p.length + 1))
     (hij : i ≤ j) : p i + j ≤ p j + i := by
   -- The proof is identical to `LTSeries.apply_add_index_le_apply_add_index_nat`, but seemed easier
