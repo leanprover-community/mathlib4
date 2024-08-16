@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.Data.List.TFAE
+import Mathlib.Tactic.TFAE
 /-!
 
 # Day's reflection theorem
@@ -29,7 +29,16 @@ theorem day_reflection [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)  :
     [ ∀ (c : C) (d : D), IsIso (adj.unit.app ((ihom d).obj (R.obj c)))
     , ∀ (c : C) (d : D), IsIso ((internalHom.map (adj.unit.app d).op).app (R.obj c))
     , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (𝟙 d')))
-    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))] := sorry
+    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))] := by
+  tfae_have 3 → 4
+  · sorry
+  tfae_have 4 → 1
+  · sorry
+  tfae_have 1 → 3
+  · sorry
+  tfae_have 2 ↔ 3
+  · sorry
+  tfae_finish
 
 end
 
