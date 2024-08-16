@@ -211,6 +211,53 @@ initialize addLinter cdotLinter
 
 end CDotLinter
 
+/-!
+# The `dollar` linter
+
+The `dollar` linter is a syntax-linter that flags uses of `<|` that are achieved by typing `$`.
+-/
+
+/-- The `dollar` linter flags uses of `<|` that are achieved by typing `$`. -/
+register_option linter.dollar : Bool := {
+  defValue := false
+  descr := "enable the `dollar` linter"
+}
+
+/-- `isDollar? stx` checks whether `stx` is a `Syntax` node corresponding to `$`. -/
+def isDollar? : Syntax → Bool
+  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v] => v == "$"
+  | _ => false
+
+/-- `findDollar stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
+partial
+def findDollar : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let dargs := (args.map findDollar).flatten
+    match kind with
+      | ``Lean.Parser.Term.cdot | ``cdotTk=> dargs.push stx
+      | _ =>  dargs
+  |_ => #[]
+
+/-- `unwanted_dollar stx` returns an array of syntax atoms within `stx`
+corresponding to `$`s. This is precisely what the `dollar` linter flags. -/
+def unwanted_dollar (stx : Syntax) : Array Syntax :=
+  (findDollar stx).filter isDollar?
+
+namespace DollarLinter
+
+@[inherit_doc linter.dollar]
+def dollarLinter : Linter where run := withSetOptionIn fun stx => do
+    unless Linter.getLinterValue linter.dollar (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for s in unwanted_dollar stx do
+      Linter.logLint linter.dollar s m!"Please, use '<|' instead of '$'."
+
+initialize addLinter dollarLinter
+
+end DollarLinter
+
 /-! # The "longLine linter" -/
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
