@@ -210,12 +210,10 @@ theorem polInner_root_self_pos [Finite ι] (j : ι) :
     0 < P.PolInner (P.root j) (P.root j) := by
   simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
     polarization_root_self]
-  refine Finset.sum_pos' ?_ ?_
-  · exact fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)
+  refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
   use j
   refine ⟨letI := Fintype.ofFinite ι; Finset.mem_univ j, ?_⟩
-  rw [pairing, root_coroot_two]
-  norm_num
+  simp only [pairing_same, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
 
 theorem polInner_root_positive [Finite ι] : IsRootPositive P P.PolInner where
   zero_lt_apply_root i := P.polInner_root_self_pos i
