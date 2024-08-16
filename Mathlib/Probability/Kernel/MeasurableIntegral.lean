@@ -285,11 +285,11 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
           (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
       · -- Porting note: was
-        -- exact fun n => eventually_of_forall fun y =>
+        -- exact fun n => Eventually.of_forall fun y =>
         --   SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-        exact fun n => eventually_of_forall fun y =>
+        exact fun n => Eventually.of_forall fun y =>
           SimpleFunc.norm_approxOn_zero_le hf.measurable (by simp) (x, y) n
-      · refine eventually_of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) ?_
+      · refine Eventually.of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) ?_
         apply subset_closure
         simp [-uncurry_apply_pair]
     · simp [f', hfx, integral_undef]

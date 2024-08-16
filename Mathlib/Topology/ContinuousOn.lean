@@ -384,7 +384,7 @@ theorem tendsto_nhdsWithin_iff {a : α} {l : Filter β} {s : Set α} {f : β →
 theorem tendsto_nhdsWithin_range {a : α} {l : Filter β} {f : β → α} :
     Tendsto f l (𝓝[range f] a) ↔ Tendsto f l (𝓝 a) :=
   ⟨fun h => h.mono_right inf_le_left, fun h =>
-    tendsto_inf.2 ⟨h, tendsto_principal.2 <| eventually_of_forall mem_range_self⟩⟩
+    tendsto_inf.2 ⟨h, tendsto_principal.2 <| Eventually.of_forall mem_range_self⟩⟩
 
 theorem Filter.EventuallyEq.eq_of_nhdsWithin {s : Set α} {f g : α → β} {a : α} (h : f =ᶠ[𝓝[s] a] g)
     (hmem : a ∈ s) : f a = g a :=
@@ -711,7 +711,7 @@ theorem continuousWithinAt_update_same [DecidableEq α] {f : α → β} {s : Set
     ContinuousWithinAt (update f x y) s x ↔ Tendsto (update f x y) (𝓝[s \ {x}] x) (𝓝 y) := by
     { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_same] }
     _ ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
-      tendsto_congr' <| eventually_nhdsWithin_iff.2 <| eventually_of_forall
+      tendsto_congr' <| eventually_nhdsWithin_iff.2 <| Eventually.of_forall
         fun z hz => update_noteq hz.2 _ _
 
 @[simp]

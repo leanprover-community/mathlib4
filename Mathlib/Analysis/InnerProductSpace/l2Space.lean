@@ -237,7 +237,7 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
   classical
   refine le_antisymm ?_ ?_
   · rintro x ⟨f, rfl⟩
-    refine mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (eventually_of_forall ?_)
+    refine mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (Eventually.of_forall ?_)
     intro s
     rw [SetLike.mem_coe]
     refine sum_mem ?_
@@ -441,7 +441,7 @@ protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
   classical
     rw [eq_top_iff]
     rintro x -
-    refine mem_closure_of_tendsto (b.hasSum_repr x) (eventually_of_forall ?_)
+    refine mem_closure_of_tendsto (b.hasSum_repr x) (Eventually.of_forall ?_)
     intro s
     simp only [SetLike.mem_coe]
     refine sum_mem ?_

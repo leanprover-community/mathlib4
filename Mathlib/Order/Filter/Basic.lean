@@ -978,8 +978,10 @@ protected theorem Eventually.and {p q : α → Prop} {f : Filter α} :
 
 @[simp] theorem eventually_true (f : Filter α) : ∀ᶠ _ in f, True := univ_mem
 
-theorem eventually_of_forall {p : α → Prop} {f : Filter α} (hp : ∀ x, p x) : ∀ᶠ x in f, p x :=
+theorem Eventually.of_forall {p : α → Prop} {f : Filter α} (hp : ∀ x, p x) : ∀ᶠ x in f, p x :=
   univ_mem' hp
+
+@[deprecated (since := "2024-08-02")] alias eventually_of_forall := Eventually.of_forall
 
 @[simp]
 theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _ in f, False) ↔ f = ⊥ :=
@@ -1003,7 +1005,7 @@ theorem Eventually.mp {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f, p
 
 theorem Eventually.mono {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f, p x)
     (hq : ∀ x, p x → q x) : ∀ᶠ x in f, q x :=
-  hp.mp (eventually_of_forall hq)
+  hp.mp (Eventually.of_forall hq)
 
 theorem forall_eventually_of_eventually_forall {f : Filter α} {p : α → β → Prop}
     (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y :=
@@ -1111,9 +1113,11 @@ theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : �
     ∃ᶠ x in f, p x :=
   compl_not_mem h
 
-theorem frequently_of_forall {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ x, p x) :
+theorem Frequently.of_forall {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ x, p x) :
     ∃ᶠ x in f, p x :=
-  Eventually.frequently (eventually_of_forall h)
+  Eventually.frequently (Eventually.of_forall h)
+
+@[deprecated (since := "2024-08-02")] alias frequently_of_forall := Frequently.of_forall
 
 theorem Frequently.mp {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ᶠ x in f, p x → q x) : ∃ᶠ x in f, q x :=
@@ -1125,7 +1129,7 @@ theorem Frequently.filter_mono {p : α → Prop} {f g : Filter α} (h : ∃ᶠ x
 
 theorem Frequently.mono {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ x, p x → q x) : ∃ᶠ x in f, q x :=
-  h.mp (eventually_of_forall hpq)
+  h.mp (Eventually.of_forall hpq)
 
 theorem Frequently.and_eventually {p q : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x)
     (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x := by
@@ -1138,7 +1142,7 @@ theorem Eventually.and_frequently {p q : α → Prop} {f : Filter α} (hp : ∀�
 
 theorem Frequently.exists {p : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x) : ∃ x, p x := by
   by_contra H
-  replace H : ∀ᶠ x in f, ¬p x := eventually_of_forall (not_exists.1 H)
+  replace H : ∀ᶠ x in f, ¬p x := Eventually.of_forall (not_exists.1 H)
   exact hp H
 
 theorem Eventually.exists {p : α → Prop} {f : Filter α} [NeBot f] (hp : ∀ᶠ x in f, p x) :
@@ -1274,7 +1278,7 @@ theorem EventuallyEq.rw {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) (p :
   hf.congr <| h.mono fun _ hx => hx ▸ Iff.rfl
 
 theorem eventuallyEq_set {s t : Set α} {l : Filter α} : s =ᶠ[l] t ↔ ∀ᶠ x in l, x ∈ s ↔ x ∈ t :=
-  eventually_congr <| eventually_of_forall fun _ ↦ eq_iff_iff
+  eventually_congr <| Eventually.of_forall fun _ ↦ eq_iff_iff
 
 alias ⟨EventuallyEq.mem_iff, Eventually.set_eq⟩ := eventuallyEq_set
 
@@ -1300,7 +1304,7 @@ theorem EventuallyEq.filter_mono {l l' : Filter α} {f g : α → β} (h₁ : f 
 
 @[refl, simp]
 theorem EventuallyEq.refl (l : Filter α) (f : α → β) : f =ᶠ[l] f :=
-  eventually_of_forall fun _ => rfl
+  Eventually.of_forall fun _ => rfl
 
 protected theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f :=
   EventuallyEq.refl l f
@@ -2832,7 +2836,7 @@ theorem Set.EqOn.eventuallyEq_of_mem {α β} {s : Set α} {l : Filter α} {f g :
   h.eventuallyEq.filter_mono <| Filter.le_principal_iff.2 hl
 
 theorem HasSubset.Subset.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
-  Filter.eventually_of_forall h
+  Filter.Eventually.of_forall h
 
 theorem Set.MapsTo.tendsto {α β} {s : Set α} {t : Set β} {f : α → β} (h : MapsTo f s t) :
     Filter.Tendsto f (𝓟 s) (𝓟 t) :=

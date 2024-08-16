@@ -474,8 +474,8 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
   suffices h : Tendsto (fun i => ∫ x : α, (φ i).indicator f x ∂μ) l (𝓝 (∫ x : α, f x ∂μ)) from by
     convert h using 2; rw [integral_indicator (hφ.measurableSet _)]
   tendsto_integral_filter_of_dominated_convergence (fun x => ‖f x‖)
-    (eventually_of_forall fun i => hfi.aestronglyMeasurable.indicator <| hφ.measurableSet i)
-    (eventually_of_forall fun i => ae_of_all _ fun x => norm_indicator_le_norm_self _ _) hfi.norm
+    (Eventually.of_forall fun i => hfi.aestronglyMeasurable.indicator <| hφ.measurableSet i)
+    (Eventually.of_forall fun i => ae_of_all _ fun x => norm_indicator_le_norm_self _ _) hfi.norm
     (hφ.ae_tendsto_indicator f)
 
 /-- Slight reformulation of

@@ -81,7 +81,7 @@ theorem HasDerivAtFilter.scomp_of_eq (hg : HasDerivAtFilter g₁ g₁' y L')
 
 theorem HasDerivWithinAt.scomp_hasDerivAt (hg : HasDerivWithinAt g₁ g₁' s' (h x))
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') : HasDerivAt (g₁ ∘ h) (h' • g₁') x :=
-  hg.scomp x hh <| tendsto_inf.2 ⟨hh.continuousAt, tendsto_principal.2 <| eventually_of_forall hs⟩
+  hg.scomp x hh <| tendsto_inf.2 ⟨hh.continuousAt, tendsto_principal.2 <| Eventually.of_forall hs⟩
 
 theorem HasDerivWithinAt.scomp_hasDerivAt_of_eq (hg : HasDerivWithinAt g₁ g₁' s' y)
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') (hy : y = h x) :

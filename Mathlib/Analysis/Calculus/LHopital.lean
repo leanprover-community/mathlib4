@@ -364,12 +364,12 @@ theorem lhopital_zero_nhds_right (hdf : ∀ᶠ x in 𝓝[>] a, DifferentiableAt 
     (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) (𝓝[>] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[>] a) l := by
   have hdg : ∀ᶠ x in 𝓝[>] a, DifferentiableAt ℝ g x :=
-    hg'.mp (eventually_of_forall fun _ hg' =>
+    hg'.mp (Eventually.of_forall fun _ hg' =>
       by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in 𝓝[>] a, HasDerivAt f (deriv f x) x :=
-    hdf.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in 𝓝[>] a, HasDerivAt g (deriv g x) x :=
-    hdg.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdg.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   exact HasDerivAt.lhopital_zero_nhds_right hdf' hdg' hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real from the left, `deriv` version -/
@@ -379,12 +379,12 @@ theorem lhopital_zero_nhds_left (hdf : ∀ᶠ x in 𝓝[<] a, DifferentiableAt �
     (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) (𝓝[<] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[<] a) l := by
   have hdg : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ g x :=
-    hg'.mp (eventually_of_forall fun _ hg' =>
+    hg'.mp (Eventually.of_forall fun _ hg' =>
       by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (deriv f x) x :=
-    hdf.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in 𝓝[<] a, HasDerivAt g (deriv g x) x :=
-    hdg.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdg.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   exact HasDerivAt.lhopital_zero_nhds_left hdf' hdg' hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real, `deriv` version. This
@@ -413,12 +413,12 @@ theorem lhopital_zero_atTop (hdf : ∀ᶠ x : ℝ in atTop, DifferentiableAt ℝ
     (hgtop : Tendsto g atTop (𝓝 0)) (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) atTop l) :
     Tendsto (fun x => f x / g x) atTop l := by
   have hdg : ∀ᶠ x in atTop, DifferentiableAt ℝ g x := hg'.mp
-    (eventually_of_forall fun _ hg' =>
+    (Eventually.of_forall fun _ hg' =>
       by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in atTop, HasDerivAt f (deriv f x) x :=
-    hdf.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in atTop, HasDerivAt g (deriv g x) x :=
-    hdg.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdg.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   exact HasDerivAt.lhopital_zero_atTop hdf' hdg' hg' hftop hgtop hdiv
 
 /-- **L'Hôpital's rule** for approaching -∞, `deriv` version -/
@@ -427,12 +427,12 @@ theorem lhopital_zero_atBot (hdf : ∀ᶠ x : ℝ in atBot, DifferentiableAt ℝ
     (hgbot : Tendsto g atBot (𝓝 0)) (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) atBot l) :
     Tendsto (fun x => f x / g x) atBot l := by
   have hdg : ∀ᶠ x in atBot, DifferentiableAt ℝ g x :=
-    hg'.mp (eventually_of_forall fun _ hg' =>
+    hg'.mp (Eventually.of_forall fun _ hg' =>
       by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in atBot, HasDerivAt f (deriv f x) x :=
-    hdf.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in atBot, HasDerivAt g (deriv g x) x :=
-    hdg.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdg.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   exact HasDerivAt.lhopital_zero_atBot hdf' hdg' hg' hfbot hgbot hdiv
 
 end deriv

@@ -502,7 +502,7 @@ variable {c : E} {f : α → E} {hf : AEStronglyMeasurable f μ} {s : Set α}
 
 theorem eLpNormEssSup_indicator_le (s : Set α) (f : α → G) :
     eLpNormEssSup (s.indicator f) μ ≤ eLpNormEssSup f μ := by
-  refine essSup_mono_ae (eventually_of_forall fun x => ?_)
+  refine essSup_mono_ae (Eventually.of_forall fun x => ?_)
   rw [ENNReal.coe_le_coe, nnnorm_indicator_eq_indicator_nnnorm]
   exact Set.indicator_le_self s _ x
 
@@ -532,7 +532,7 @@ theorem eLpNormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0
 alias snormEssSup_indicator_const_eq := eLpNormEssSup_indicator_const_eq
 
 theorem eLpNorm_indicator_le (f : α → E) : eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
-  refine eLpNorm_mono_ae (eventually_of_forall fun x => ?_)
+  refine eLpNorm_mono_ae (Eventually.of_forall fun x => ?_)
   suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ by exact NNReal.coe_mono this
   rw [nnnorm_indicator_eq_indicator_nnnorm]
   exact s.indicator_le_self _ x
@@ -1052,7 +1052,7 @@ theorem LipschitzWith.comp_memℒp {α E F} {K} [MeasurableSpace α] {μ : Measu
   have : ∀ x, ‖g (f x)‖ ≤ K * ‖f x‖ := fun x ↦ by
     -- TODO: add `LipschitzWith.nnnorm_sub_le` and `LipschitzWith.nnnorm_le`
     simpa [g0] using hg.norm_sub_le (f x) 0
-  hL.of_le_mul (hg.continuous.comp_aestronglyMeasurable hL.1) (eventually_of_forall this)
+  hL.of_le_mul (hg.continuous.comp_aestronglyMeasurable hL.1) (Eventually.of_forall this)
 
 theorem MeasureTheory.Memℒp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableSpace α]
     {μ : Measure α} [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F}
@@ -1065,7 +1065,7 @@ theorem MeasureTheory.Memℒp.of_comp_antilipschitzWith {α E F} {K'} [Measurabl
     apply hg'.le_mul_dist
   have B : AEStronglyMeasurable f μ :=
     (hg'.uniformEmbedding hg).embedding.aestronglyMeasurable_comp_iff.1 hL.1
-  exact hL.of_le_mul B (Filter.eventually_of_forall A)
+  exact hL.of_le_mul B (Filter.Eventually.of_forall A)
 
 namespace LipschitzWith
 
@@ -1547,7 +1547,7 @@ private theorem lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum {f : ℕ → α → E
       (Finset.aemeasurable_sum (Finset.range (n + 1)) fun i _ =>
             ((hf (i + 1)).sub (hf i)).ennnorm).pow_const
         _
-  · exact liminf_le_of_frequently_le' (frequently_of_forall h)
+  · exact liminf_le_of_frequently_le' (Frequently.of_forall h)
 
 private theorem tsum_nnnorm_sub_ae_lt_top {f : ℕ → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)

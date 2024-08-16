@@ -1066,9 +1066,9 @@ theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.ra
   · apply memℓp_infty
     use C
     rintro _ ⟨a, rfl⟩
-    exact norm_apply_le_of_tendsto (eventually_of_forall hCF) hf a
+    exact norm_apply_le_of_tendsto (Eventually.of_forall hCF) hf a
   · apply memℓp_gen'
-    exact sum_rpow_le_of_tendsto hp.ne (eventually_of_forall hCF) hf
+    exact sum_rpow_le_of_tendsto hp.ne (Eventually.of_forall hCF) hf
 
 /-- If a sequence is Cauchy in the `lp E p` topology and pointwise convergent to an element `f` of
 `lp E p`, then it converges to `f` in the `lp E p` topology. -/

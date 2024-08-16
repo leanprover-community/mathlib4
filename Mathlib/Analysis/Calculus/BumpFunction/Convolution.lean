@@ -85,8 +85,8 @@ nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)}
     (hig : ∀ᶠ i in l, AEStronglyMeasurable (g i) μ) (hcg : Tendsto (uncurry g) (l ×ˢ 𝓝 x₀) (𝓝 z₀))
     (hk : Tendsto k l (𝓝 x₀)) :
     Tendsto (fun i => ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g i) (k i)) l (𝓝 z₀) :=
-  convolution_tendsto_right (eventually_of_forall fun i => (φ i).nonneg_normed)
-    (eventually_of_forall fun i => (φ i).integral_normed) (tendsto_support_normed_smallSets hφ) hig
+  convolution_tendsto_right (Eventually.of_forall fun i => (φ i).nonneg_normed)
+    (Eventually.of_forall fun i => (φ i).integral_normed) (tendsto_support_normed_smallSets hφ) hig
     hcg hk
 
 /-- Special case of `ContDiffBump.convolution_tendsto_right` where `g` is continuous,
@@ -94,7 +94,7 @@ nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)}
 theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι}
     (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) (hg : Continuous g) (x₀ : G) :
     Tendsto (fun i => ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀) l (𝓝 (g x₀)) :=
-  convolution_tendsto_right hφ (eventually_of_forall fun _ => hg.aestronglyMeasurable)
+  convolution_tendsto_right hφ (Eventually.of_forall fun _ => hg.aestronglyMeasurable)
     ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
 
 /-- If a function `g` is locally integrable, then the convolution `φ i * g` converges almost
@@ -112,7 +112,7 @@ theorem ae_convolution_tendsto_right_of_locallyIntegrable
   filter_upwards [(Besicovitch.vitaliFamily μ).ae_tendsto_average_norm_sub hg] with x₀ h₀
   simp only [convolution_eq_swap, lsmul_apply]
   have hφ' : Tendsto (fun i ↦ (φ i).rOut) l (𝓝[>] 0) :=
-    tendsto_nhdsWithin_iff.2 ⟨hφ, eventually_of_forall (fun i ↦ (φ i).rOut_pos)⟩
+    tendsto_nhdsWithin_iff.2 ⟨hφ, Eventually.of_forall (fun i ↦ (φ i).rOut_pos)⟩
   have := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
   simp only [Function.comp] at this
   apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (FiniteDimensional.finrank ℝ G)) this

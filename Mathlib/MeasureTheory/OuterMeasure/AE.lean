@@ -85,7 +85,7 @@ theorem measure_zero_iff_ae_nmem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ, a �
   compl_mem_ae_iff.symm
 
 theorem ae_of_all {p : α → Prop} (μ : F) : (∀ a, p a) → ∀ᵐ a ∂μ, p a :=
-  eventually_of_forall
+  Eventually.of_forall
 
 instance instCountableInterFilter : CountableInterFilter (ae μ) := by
   unfold ae; infer_instance

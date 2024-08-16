@@ -120,7 +120,7 @@ theorem Filter.EventuallyEq.of_mulIndicator [One β] {l : Filter α} {f : α →
 @[to_additive]
 theorem Filter.EventuallyEq.of_mulIndicator_const [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
     {s t : Set α} (h : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator fun _ ↦ c) : s =ᶠ[l] t :=
-  .of_mulIndicator (eventually_of_forall fun _ ↦ hc) h
+  .of_mulIndicator (Eventually.of_forall fun _ ↦ hc) h
 
 @[to_additive]
 theorem Filter.mulIndicator_const_eventuallyEq [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
