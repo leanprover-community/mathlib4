@@ -273,7 +273,7 @@ def Symbol.filterMap {N₀ N : Type*} (f : N → Option N₀) : Symbol T N → O
   | Symbol.terminal t => some (Symbol.terminal t)
   | Symbol.nonterminal n => Option.map Symbol.nonterminal (f n)
 
-/-- Mapping `ContextFreeRule` to a another nonterminal type. -/
+/-- Map the type of nonterminal symbols of a `ContextFreeRule` . -/
 def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ → N) :
     ContextFreeRule T N :=
   ⟨f r.input, r.output.map (Symbol.map f)⟩
