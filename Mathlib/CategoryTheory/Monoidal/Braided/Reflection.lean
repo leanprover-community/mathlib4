@@ -43,21 +43,6 @@ instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   intro d d'
   infer_instance
 
-include adj in
-instance (c : C) (d : D) :
-    IsIso ((internalHom.map (adj.unit.app d).op).app (R.obj c)) := by
-  revert c d
-  rw [((day_reflection _ _ adj).out 1 3:)]
-  intro d d'
-  infer_instance
-
-include adj in
-instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ (𝟙 d'))) := by
-  revert d d'
-  rw [((day_reflection _ _ adj).out 2 3:)]
-  intro d d'
-  infer_instance
-
 noncomputable def closed (c : C) : Closed c where
   rightAdj := R ⋙ (ihom (R.obj c)) ⋙ L.toFunctor
   adj := by
