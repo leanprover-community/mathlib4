@@ -115,7 +115,7 @@ Finally, if you also want to filter out of the previous root folders some subfol
 The helper command `check_labels` displays all the labels that have already been declared.
 -/
 syntax (name := addLabelStx)
-  "add_label " ident ("label: " ident*)? ("dirs: " ident*)? ("exclusions: " ident*)? : command
+  "add_label " ident ("dirs: " ident*)? ("exclusions: " ident*)? : command
 
 open Elab.Command in
 @[inherit_doc addLabelStx]
