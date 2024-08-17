@@ -96,7 +96,7 @@ example (f : a ⟶ b) (g : b ⟶ c) :
 example : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
   bicategory_coherence
 
-example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (w : false) :
+example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (_w : false) :
   (λ_ (𝟙 a)).hom ≫ η ≫ θ = (ρ_ (𝟙 a)).hom ≫ η ≫ θ := by
   coherence
 
