@@ -189,11 +189,11 @@ lemma pow_sub_mul_pow (a : M) (h : m ≤ n) : a ^ (n - m) * a ^ m = a ^ n := by
 
 @[to_additive sub_one_nsmul_add]
 lemma mul_pow_sub_one (hn : n ≠ 0) (a : M) : a * a ^ (n - 1) = a ^ n := by
-  rw [← pow_succ', Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
+  rw [← pow_succ', Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.2 hn]
 
 @[to_additive add_sub_one_nsmul]
 lemma pow_sub_one_mul (hn : n ≠ 0) (a : M) : a ^ (n - 1) * a = a ^ n := by
-  rw [← pow_succ, Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
+  rw [← pow_succ, Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.2 hn]
 
 /-- If `x ^ n = 1`, then `x ^ m` is the same as `x ^ (m % n)` -/
 @[to_additive nsmul_eq_mod_nsmul "If `n • x = 0`, then `m • x` is the same as `(m % n) • x`"]
@@ -409,7 +409,7 @@ theorem one_div_one_div : 1 / (1 / a) = a := by simp
 theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
   inv_inj.symm.trans <| by simp only [inv_div]
 
-@[to_additive SubtractionMonoid.toSubNegZeroMonoid]
+@[to_additive]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
   { DivisionMonoid.toDivInvMonoid with
     inv_one := by simpa only [one_div, inv_inv] using (inv_div (1 : α) 1).symm }
