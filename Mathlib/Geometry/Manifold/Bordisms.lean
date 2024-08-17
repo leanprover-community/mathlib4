@@ -301,26 +301,115 @@ variable {M : Type*} [TopologicalSpace M] [cm : ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [cm': ChartedSpace H M']
   /-{I' : ModelWithCorners ℝ E H}-/ [SmoothManifoldWithCorners I M']
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
-  {I'' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I'' M'']
+  {I'' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M'']
+
+-- TODO: the construction below is bound to generalise... how far?
+-- this should work: given an open subset U ⊆ M and a partial homeo U → H, do I get one M → H?
+-- def PartialHomeomorph.extension {U : Set M} (hU : IsOpen U) (φ : PartialHomeomorph U H) :
+--   PartialHomeomorph M H := by
+--   refine ?e.disjointUnion ?e' ?Hs ?Ht
+--   sorry
+
+-- or, define some version of piecewise --- just extending
+--> PartialEquiv first, then a PartialHomeo; ideally halfing the duplication
+-- related: PartialEquiv.disjUnion; piecewise
 
 /-- A partial homeomorphism `M → H` defines a partial homeomorphism `M ⊕ M' → H`. -/
-def foo (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕ M') H := sorry
+def foo [h : Nonempty H] (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕ M') H where
+  -- TODO: this should be describable in terms of existing constructions!
+  toFun := Sum.elim φ (Classical.arbitrary _)
+  invFun := Sum.inl ∘ φ.symm
+  source := Sum.inl '' φ.source
+  target := φ.target
+  map_source' := by
+    rintro x ⟨x', hx', hx'eq⟩
+    rw [← hx'eq, Sum.elim_inl]
+    apply φ.map_source hx'
+  map_target' x hx := ⟨φ.symm x, φ.map_target' hx, rfl⟩
+  left_inv' := by
+    rintro x ⟨x', hx', hx'eq⟩
+    rw [← hx'eq, Sum.elim_inl]
+    dsimp
+    congr
+    exact PartialHomeomorph.left_inv φ hx'
+  right_inv' x hx := by
+    rw [Function.comp, Sum.elim_inl]
+    exact φ.right_inv' hx
+  open_source := (openEmbedding_inl.open_iff_image_open).mp φ.open_source
+  open_target := φ.open_target
+  -- TODO: missing lemma, want a stronger version of `continuous_sum_elim`;
+  -- perhaps use `continuous_sup_dom` to prove
+  continuousOn_toFun := sorry
+  continuousOn_invFun := sorry
 
-def bar (φ : PartialHomeomorph M' H) : PartialHomeomorph (M ⊕ M') H := sorry
+lemma foo_source [Nonempty H] (φ : PartialHomeomorph M H) :
+    (foo φ (M' := M')).source = Sum.inl '' φ.source := rfl
 
-def foo' (A : Set (PartialHomeomorph M H)) : Set (PartialHomeomorph (M ⊕ M') H) := { foo φ | φ : A }
+/-- A partial homeomorphism `M' → H` defines a partial homeomorphism `M ⊕ M' → H`. -/
+def bar [Nonempty H] (φ : PartialHomeomorph M' H) : PartialHomeomorph (M ⊕ M') H where
+  toFun := Sum.elim (Classical.arbitrary _) φ
+  invFun := Sum.inr ∘ φ.symm
+  left_inv' := by
+    rintro x ⟨x', hx', hx'eq⟩
+    rw [← hx'eq, Sum.elim_inr]
+    dsimp
+    congr
+    exact PartialHomeomorph.left_inv φ hx'
+  right_inv' x hx := by
+    rw [Function.comp, Sum.elim_inr]
+    exact φ.right_inv' hx
+  source := Sum.inr '' φ.source
+  target := φ.target
+  map_source' := by
+    rintro x ⟨x', hx', hx'eq⟩
+    rw [← hx'eq, Sum.elim_inr]
+    apply φ.map_source hx'
+  map_target' x hx := ⟨φ.symm x, φ.map_target' hx, rfl⟩
+  open_source := (openEmbedding_inr.open_iff_image_open).mp φ.open_source
+  open_target := φ.open_target
+  continuousOn_toFun := sorry
+  continuousOn_invFun := sorry
 
-def bar' (A : Set (PartialHomeomorph M' H)) : Set (PartialHomeomorph (M ⊕ M') H) := { bar φ | φ : A }
+lemma bar_source [Nonempty H] (φ : PartialHomeomorph M' H) :
+    (bar φ (M := M)).source = Sum.inr '' φ.source := rfl
+
+variable [Nonempty H] -- not sure if I really need this... will see
 
 /-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
-  atlas := (foo' cm.atlas) ∪ (bar' cm'.atlas)
-  -- others should be easy
-  chartAt x := by sorry
-    --by_cases h : x ∈ M
-    --if x ∈ M then foo (cm.chartAt x) else
-  mem_chart_source p := sorry
-  chart_mem_atlas := sorry
+  atlas := (foo '' cm.atlas) ∪ (bar '' cm'.atlas)
+  -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
+  chartAt := Sum.elim (fun x ↦ foo (cm.chartAt x)) (fun x ↦ bar (cm'.chartAt x))
+  mem_chart_source p := by
+    by_cases h : Sum.isLeft p
+    · let x := Sum.getLeft p h
+      rw [Sum.eq_left_getLeft_of_isLeft h]
+      let aux := cm.mem_chart_source x
+      dsimp
+      rw [foo_source]
+      use x
+    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
+      let x := Sum.getRight p h'
+      rw [Sum.eq_right_getRight_of_isRight h']
+      let aux := cm'.mem_chart_source x
+      dsimp
+      rw [bar_source]
+      use x
+  chart_mem_atlas p := by
+    by_cases h : Sum.isLeft p
+    · let x := Sum.getLeft p h
+      rw [Sum.eq_left_getLeft_of_isLeft h]
+      dsimp
+      left
+      let aux := cm.chart_mem_atlas x
+      use ChartedSpace.chartAt x
+    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
+      let x := Sum.getRight p h'
+      rw [Sum.eq_right_getRight_of_isRight h']
+      dsimp
+      right
+      let aux := cm'.chart_mem_atlas x
+      use ChartedSpace.chartAt x
 
 /-- The disjoint union of two smooth manifolds modelled on `(E,H)`
 is a smooth manifold modeled on `(E, H)`. -/
@@ -333,16 +422,86 @@ lemma ContMDiff.inl : ContMDiff I I ∞ (M' := M ⊕ M') Sum.inl := sorry
 /-- The inclusion `M' → M ⊕ M'` is smooth. -/
 lemma ContMDiff.inr : ContMDiff I I ∞ (M' := M ⊕ M') Sum.inr := sorry
 
--- TODO: name this nicely; add associativity version as well
+variable {N J : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+  {J : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners J N]
+variable {N' : Type*} [TopologicalSpace N'] [ChartedSpace H' N'] [SmoothManifoldWithCorners J N']
+
+lemma ContMDiff.sum_elim {f : M → N} {g : M' → N} (hf : Smooth I J f) (hg : Smooth I J g) :
+    ContMDiff I J ∞ (Sum.elim f g) := sorry
+
+-- actually, want an iff version here...
+lemma ContMDiff.sum_map [Nonempty H'] {f : M → N} {g : M' → N'} (hf : Smooth I J f) (hg : Smooth I J g) :
+    ContMDiff I J ∞ (Sum.map f g) := sorry
+
+lemma ContMDiff.swap : ContMDiff I I ∞ (@Sum.swap M M') := ContMDiff.sum_elim inr inl
+
+def Sum.swapEquiv : M ⊕ M' ≃ M' ⊕ M where
+  toFun := Sum.swap
+  invFun := Sum.swap
+  left_inv := Sum.swap_leftInverse
+  right_inv := Sum.swap_leftInverse
+
+def Sum.assocLeft : M ⊕ (M' ⊕ N) → (M ⊕ M') ⊕ N :=
+  Sum.elim (fun x ↦ Sum.inl (Sum.inl x)) (Sum.map Sum.inr id)
+
+def Sum.assocRight : (M ⊕ M') ⊕ N → M ⊕ (M' ⊕ N) :=
+  Sum.elim (Sum.map id Sum.inl) (fun x ↦ Sum.inr (Sum.inr x))
+
+def Equiv.swapAssociativity : M ⊕ (M' ⊕ N) ≃ (M ⊕ M') ⊕ N where
+  toFun := Sum.assocLeft
+  invFun := Sum.assocRight
+  left_inv x := by aesop
+  right_inv x := by aesop
+
+lemma Continuous.swap : Continuous (@Sum.swap M M') :=
+  Continuous.sum_elim continuous_inr continuous_inl
+
+def Homeomorph.swap : M ⊕ M' ≃ₜ M' ⊕ M where
+  toEquiv := Sum.swapEquiv
+  continuous_toFun := Continuous.swap
+  continuous_invFun := Continuous.swap
+
+-- FUTURE: can fun_prop be powered up to solve these automatically? also for differentiability?
+def Homeomorph.associativity : M ⊕ (M' ⊕ N) ≃ₜ (M ⊕ M') ⊕ N where
+  toEquiv := Equiv.swapAssociativity
+  continuous_toFun := by
+    apply Continuous.sum_elim (by fun_prop)
+    exact Continuous.sum_map continuous_inr continuous_id
+  continuous_invFun := by
+    apply Continuous.sum_elim (by fun_prop)
+    exact Continuous.comp continuous_inr continuous_inr
+
+-- TODO: add associativity version as well
 -- this seems to be missing for sums of topological spaces (but surely exists abstractly):
 variable (I M M') in -- TODO: argument order is weird!
-def equivDisjUnionSum : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ := sorry
+def Diffeomorph.swap : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ where
+  toEquiv := Sum.swapEquiv
+  contMDiff_toFun := ContMDiff.swap
+  contMDiff_invFun := ContMDiff.swap
 
-lemma sdfdsf : (equivDisjUnionSum M I M') ∘ Sum.inl = Sum.inr := sorry
+variable (I M M') in
+def Diffeomorph.associativity : Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') ∞ where
+  toEquiv := Equiv.swapAssociativity
+  contMDiff_toFun := by
+    apply ContMDiff.sum_elim
+    · exact ContMDiff.comp ContMDiff.inl ContMDiff.inl -- xxx: can I power up fun_prop to do this?
+    · exact ContMDiff.sum_map ContMDiff.inr contMDiff_id
+  contMDiff_invFun := by
+    apply ContMDiff.sum_elim
+    · exact ContMDiff.sum_map contMDiff_id ContMDiff.inl
+    · exact ContMDiff.comp ContMDiff.inr ContMDiff.inr
 
-lemma hogehoge : (equivDisjUnionSum M I M') ∘ Sum.inr = Sum.inl := sorry
+lemma sdfdsf : (Diffeomorph.swap M I M') ∘ Sum.inl = Sum.inr := by
+  ext
+  exact Sum.swap_inl
+
+lemma hogehoge : (Diffeomorph.swap M I M') ∘ Sum.inr = Sum.inl := by
+  ext
+  exact Sum.swap_inr
 
 end DisjUnion
+
+#exit
 
 namespace UnorientedCobordism
 
