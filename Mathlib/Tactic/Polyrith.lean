@@ -426,8 +426,4 @@ elab_rules : tactic
       if !traceMe then Lean.Meta.Tactic.TryThis.addSuggestion tk stx
     | .error g => replaceMainGoal [g]
 
-end Polyrith
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.Polyrith

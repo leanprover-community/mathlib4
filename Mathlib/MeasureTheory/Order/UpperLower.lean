@@ -64,7 +64,7 @@ private lemma aux₀
   intro H
   obtain ⟨ε, -, hε', hε₀⟩ := exists_seq_strictAnti_tendsto_nhdsWithin (0 : ℝ)
   refine not_eventually.2
-    (frequently_of_forall fun _ ↦ lt_irrefl $ ENNReal.ofReal $ 4⁻¹ ^ Fintype.card ι)
+    (Frequently.of_forall fun _ ↦ lt_irrefl $ ENNReal.ofReal $ 4⁻¹ ^ Fintype.card ι)
     ((Filter.Tendsto.eventually_lt (H.comp hε₀) tendsto_const_nhds ?_).mono fun n ↦
       lt_of_le_of_lt ?_)
   on_goal 2 =>
@@ -92,7 +92,7 @@ private lemma aux₁
   intro H
   obtain ⟨ε, -, hε', hε₀⟩ := exists_seq_strictAnti_tendsto_nhdsWithin (0 : ℝ)
   refine not_eventually.2
-      (frequently_of_forall fun _ ↦ lt_irrefl $ 1 - ENNReal.ofReal (4⁻¹ ^ Fintype.card ι))
+      (Frequently.of_forall fun _ ↦ lt_irrefl $ 1 - ENNReal.ofReal (4⁻¹ ^ Fintype.card ι))
       ((Filter.Tendsto.eventually_lt tendsto_const_nhds (H.comp hε₀) $
             ENNReal.sub_lt_self ENNReal.one_ne_top one_ne_zero ?_).mono
         fun n ↦ lt_of_le_of_lt' ?_)

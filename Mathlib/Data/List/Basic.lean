@@ -41,6 +41,10 @@ theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
 
+theorem getElem?_eq (l : List α) (i : Nat) :
+    l[i]? = if h : i < l.length then some l[i] else none := by
+  split <;> simp_all
+
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
   { instInhabitedList with
@@ -189,8 +193,6 @@ theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l�
     l₁ ++ l₂ ⊆ l :=
   fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 
--- Porting note: in Batteries
-
 theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
     map f l₁ ⊆ map f l₂ ↔ l₁ ⊆ l₂ := by
   refine ⟨?_, map_subset f⟩; intro h2 x hx
@@ -318,9 +320,6 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   simp only [reverseAux_eq, map_append, map_reverse]
 
 /-! ### empty -/
-
--- Porting note: this does not work as desired
--- attribute [simp] List.isEmpty
 
 @[deprecated (since := "2024-08-15")] alias isEmpty_iff_eq_nil := isEmpty_iff
 
@@ -941,7 +940,7 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
       simp only [h]
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 
-@[deprecated getElem_reverse_aux₂ (since := "2024-08-15")]
+@[deprecated (since := "2024-08-15")]
 theorem getElem_reverse_aux₂ :
     ∀ (l r : List α) (i : Nat) (h1) (h2),
       (reverseAux l r)[length l - 1 - i]'h1 = l[i]'h2
@@ -956,7 +955,7 @@ theorem getElem_reverse_aux₂ :
     rw [← heq] at aux
     apply aux
 
-@[deprecated getElem_reverse_aux₂ (since := "2024-06-12")]
+@[deprecated (since := "2024-06-12")]
 theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
     get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
   simp [getElem_reverse_aux₂, h1, h2]
@@ -1586,39 +1585,9 @@ section SplitAtOn
 
 variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α → List α)
 
-@[simp]
-theorem splitAt_eq_take_drop (n : ℕ) (l : List α) : splitAt n l = (take n l, drop n l) := by
-  by_cases h : n < l.length <;> rw [splitAt, go_eq_take_drop]
-  · rw [if_pos h]; rfl
-  · rw [if_neg h, take_of_length_le <| le_of_not_lt h, drop_eq_nil_of_le <| le_of_not_lt h]
-where
-  go_eq_take_drop (n : ℕ) (l xs : List α) (acc : Array α) : splitAt.go l xs n acc =
-      if n < xs.length then (acc.toList ++ take n xs, drop n xs) else (l, []) := by
-    split_ifs with h
-    · induction n generalizing xs acc with
-      | zero =>
-        rw [splitAt.go, take, drop, append_nil]
-        · intros h₁; rw [h₁] at h; contradiction
-        · intros; contradiction
-      | succ _ ih =>
-        cases xs with
-        | nil => contradiction
-        | cons hd tl =>
-          rw [length] at h
-          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
-            ← Array.toList_eq]
-          exact ih _ _ <| (by omega)
-    · induction n generalizing xs acc with
-      | zero =>
-        replace h : xs.length = 0 := by omega
-        rw [eq_nil_of_length_eq_zero h, splitAt.go]
-      | succ _ ih =>
-        cases xs with
-        | nil => rw [splitAt.go]
-        | cons hd tl =>
-          rw [length] at h
-          rw [splitAt.go]
-          exact ih _ _ <| not_imp_not.mpr (Nat.add_lt_add_right · 1) h
+attribute [simp] splitAt_eq
+
+@[deprecated (since := "2024-08-17")] alias splitAt_eq_take_drop := splitAt_eq
 
 @[simp]
 theorem splitOn_nil [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
