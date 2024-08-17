@@ -8,6 +8,49 @@ import Mathlib.RingTheory.Noetherian
 import Batteries.Tactic.ShowUnused
 
 -- move this
+section
+
+open LieAlgebra
+
+class LieTower (L₁ L₂ M : Type*) [Add M] [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] where
+    leibniz_lie : ∀ (x : L₁) (y : L₂) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
+
+lemma leibniz_lie' {L₁ L₂ M : Type*}
+    [Add M] [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] [LieTower L₁ L₂ M]
+    (x : L₁) (y : L₂) (m : M) :
+    ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆ := LieTower.leibniz_lie x y m
+
+lemma lie_swap_lie {L₁ L₂ M : Type*} [AddCommGroup M]
+    [Bracket L₁ L₂] [Bracket L₂ L₁] [Bracket L₁ M] [Bracket L₂ M]
+    [LieTower L₁ L₂ M] [LieTower L₂ L₁ M]
+    (x : L₁) (y : L₂) (m : M) :
+    ⁅⁅x, y⁆, m⁆ = -⁅⁅y, x⁆, m⁆ := by
+  have h1 := leibniz_lie' x y m
+  have h2 := leibniz_lie' y x m
+  convert congr($h1.symm - $h2) using 1 <;> abel
+
+instance {L : Type*} (M : Type*) [LieRing L] [AddCommGroup M] [LieRingModule L M] :
+    LieTower L L M where
+  leibniz_lie x y m := leibniz_lie x y m
+
+instance {R L : Type*} (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+    [AddCommGroup M] [LieRingModule L M] (A : LieSubalgebra R L) :
+    LieTower A L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+instance {R L : Type*} (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+    [AddCommGroup M] [LieRingModule L M] (A : LieIdeal R L) :
+    LieTower A L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+instance {R L : Type*} (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+    [AddCommGroup M] [LieRingModule L M] (A : LieIdeal R L) :
+    LieTower L A M where
+  leibniz_lie x y m := leibniz_lie x y.val m
+
+end
+
+-- move this
 open LieAlgebra in
 instance (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   (A : LieIdeal R L) [IsSolvable R L] : IsSolvable R A :=
@@ -81,44 +124,6 @@ lemma map_iteratedRange_iSup_le_iSup :
   exact fun i ↦ (map_iteratedRange_le x f i).trans (le_iSup _ _)
 
 end LinearMap.End
-
-open LieAlgebra
-
-class LieTower (L₁ L₂ M : Type*) [Add M] [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] where
-    leibniz_lie : ∀ (x : L₁) (y : L₂) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
-
-section
-
-lemma leibniz_lie' {L₁ L₂ M : Type*}
-    [Add M] [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] [LieTower L₁ L₂ M]
-    (x : L₁) (y : L₂) (m : M) :
-    ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆ := LieTower.leibniz_lie x y m
-
-lemma lie_swap_lie {L₁ L₂ M : Type*} [AddCommGroup M]
-    [Bracket L₁ L₂] [Bracket L₂ L₁] [Bracket L₁ M] [Bracket L₂ M]
-    [LieTower L₁ L₂ M] [LieTower L₂ L₁ M]
-    (x : L₁) (y : L₂) (m : M) :
-    ⁅⁅x, y⁆, m⁆ = -⁅⁅y, x⁆, m⁆ := by
-  have h1 := leibniz_lie' x y m
-  have h2 := leibniz_lie' y x m
-  convert congr($h1.symm - $h2) using 1 <;> abel
-
-instance {R L : Type*} (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-    [AddCommGroup M] [LieRingModule L M] (A : LieSubalgebra R L) :
-    LieTower A L M where
-  leibniz_lie x y m := leibniz_lie x.val y m
-
-instance {R L : Type*} (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-    [AddCommGroup M] [LieRingModule L M] (A : LieIdeal R L) :
-    LieTower A L M where
-  leibniz_lie x y m := leibniz_lie x.val y m
-
-instance {R L : Type*} (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-    [AddCommGroup M] [LieRingModule L M] (A : LieIdeal R L) :
-    LieTower L A M where
-  leibniz_lie x y m := leibniz_lie x y.val m
-
-end
 
 variable {R L A V : Type*} [CommRing R]
 variable [LieRing L] [LieAlgebra R L]
@@ -259,7 +264,7 @@ lemma trace_πza (a : A) :
 variable [CharZero R]
 
 include hv in
-lemma chi_za_zero (a : A) (hv' : v ≠ 0) :
+lemma chi_za_zero (a : A) (hv₀ : v ≠ 0) :
     χ ⁅z, a⁆ = 0 := by
   have h := trace_πza χ z hv a
   rw [trace_πza_zero χ z hv a] at h
@@ -270,7 +275,7 @@ lemma chi_za_zero (a : A) (hv' : v ≠ 0) :
     use 0, zero_lt_one
     rw [pow_zero, LinearMap.one_apply]
   have iSup_iteratedRange_nontrivial : Nontrivial (iSupIR χ z hv) :=
-    ⟨⟨v,hvU⟩,0, by simp only [ne_eq, Submodule.mk_eq_zero, hv', not_false_eq_true]⟩
+    ⟨⟨v,hvU⟩,0, by simp only [ne_eq, Submodule.mk_eq_zero, hv₀, not_false_eq_true]⟩
   apply Nat.ne_of_lt'
   apply FiniteDimensional.finrank_pos
 
@@ -291,3 +296,16 @@ def altWeightSpace : LieSubmodule R L V where
     · rw [leibniz_lie', hv a, lie_smul, lie_swap_lie, hv,
         chi_za_zero χ z hv a hv', zero_smul, neg_zero, zero_add]
 
+#check LieModule.weightSpace
+-- LieModule.weightSpace.{u_2, u_3, u_4} {R : Type u_2} {L : Type u_3} (M : Type u_4)
+--  [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M] [LieRingModule L M]
+--  [LieModule R L M] [LieAlgebra.IsNilpotent R L] (χ : L → R) : LieSubmodule R L M
+
+def weightSpace' (χ : L → R) : LieSubmodule R L V :=
+  altWeightSpace χ
+
+#check weightSpace'
+-- weightSpace'.{u_1, u_2, u_4} {R : Type u_1} {L : Type u_2} {V : Type u_4}
+--  [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup V] [Module R V] [LieRingModule L V]
+--  [LieModule R L V] [IsNoetherian R V] [IsPrincipalIdealRing R]
+--  [IsDomain R] [Module.Free R V] [CharZero R] (χ : L → R) : LieSubmodule R L V
