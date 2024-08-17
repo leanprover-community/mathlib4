@@ -410,7 +410,8 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
-  errors := errors.append (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
+  errors := errors.append
+    (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return errors
 
 /-- Lint a collection of modules for style violations.

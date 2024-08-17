@@ -573,11 +573,14 @@ section BoundarySpectrum
 
 local notation "σ" => spectrum
 
-variable {𝕜 A SA : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-variable [SetLike SA A] [SubringClass SA A] [instSMulMem : SMulMemClass SA 𝕜 A]
-variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
+variable {𝕜 A SA : Type*} [NormedRing A] [CompleteSpace A] [SetLike SA A] [SubringClass SA A]
 
-open Topology Filter
+open Topology Filter Set
+
+section NormedField
+
+variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
+variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
 open SubalgebraClass in
 include instSMulMem in
@@ -602,9 +605,7 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
   apply Units.mul_eq_one_iff_inv_eq.mp
   simpa [-IsUnit.mul_val_inv] using congr(($hx.mul_val_inv : A))
 
-open Set
-
-/-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any
+/-- If `S : Subalgebra 𝕜 A` is a closed subalgebra of a Banach algebra `A`, then for any
 `x : S`, the boundary of the spectrum of `x` relative to `S` is a subset of the spectrum of
 `↑x : A` relative to `A`. -/
 lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x : A) := by
@@ -675,6 +676,25 @@ lemma Subalgebra.spectrum_isBounded_connectedComponentIn {z : 𝕜} (hz : z ∈ 
     suffices connectedComponentIn (σ 𝕜 (x : A))ᶜ z ⊆ σ 𝕜 x from spectrum.isBounded x |>.subset this
     rw [spectrum_sUnion_connectedComponentIn S]
     exact subset_biUnion_of_mem (mem_diff_of_mem hz hz') |>.trans subset_union_right
+
+end NormedField
+
+variable [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A] [SMulMemClass SA 𝕜 A]
+variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
+
+/-- Let `S` be a closed subalgebra of a Banach algebra `A`. If for `x : S` the complement of the
+spectrum of `↑x : A` is connected, then `spectrum 𝕜 x = spectrum 𝕜 (x : A)`. -/
+lemma Subalgebra.spectrum_eq_of_isPreconnected_compl (h : IsPreconnected (σ 𝕜 (x : A))ᶜ) :
+    σ 𝕜 x = σ 𝕜 (x : A) := by
+  nontriviality A
+  suffices σ 𝕜 x \ σ 𝕜 (x : A) = ∅ by
+    rw [spectrum_sUnion_connectedComponentIn, this]
+    simp
+  refine eq_empty_of_forall_not_mem fun z hz ↦ NormedSpace.unbounded_univ 𝕜 𝕜 ?_
+  obtain ⟨hz, hz'⟩ := mem_diff _ |>.mp hz
+  have := (spectrum.isBounded (x : A)).union <|
+    h.connectedComponentIn hz' ▸ spectrum_isBounded_connectedComponentIn S x hz
+  simpa
 
 end BoundarySpectrum
 
