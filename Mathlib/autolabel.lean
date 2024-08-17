@@ -25,7 +25,10 @@ def getLast : Name → String
   in one of these paths should be labeled by `label`.
 * The `exclusions` field is the array of all "root paths" that are excluded, among the
   ones that start with the ones in `dirs`.
- -/
+
+It is not really intended to be used directly.
+The command `add_label` manages `Label`s: it creates them and adds them to the `Environment`.
+-/
 structure Label where
   /-- The GitHub label.  This is expected to be in the form `t-label-name-kebab-case]`. -/
   label : String
