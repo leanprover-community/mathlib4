@@ -33,7 +33,7 @@ namespace Monotone
 /-- If `α` is a linear archimedean succ order and `β` is a linear order, then for any monotone
 function `f` and `m n : α`, the union of intervals `Set.Ioc (f i) (f (Order.succ i))`, `m ≤ i < n`,
 is equal to `Set.Ioc (f m) (f n)` -/
-theorem biUnion_Ico_Ioc_map_succ [StrongSuccOrder α] [IsSuccArchimedean α] [LinearOrder β]
+theorem biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β]
     {f : α → β} (hf : Monotone f) (m n : α) :
     ⋃ i ∈ Ico m n, Ioc (f i) (f (succ i)) = Ioc (f m) (f n) := by
   rcases le_total n m with hnm | hmn

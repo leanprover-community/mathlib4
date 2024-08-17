@@ -378,9 +378,11 @@ end IsPredArchimedean
 
 end PartialOrder
 
-section StrongSucc
+section LinearOrder
 
-variable [PartialOrder α] [StrongSuccOrder α] {a b : α} {C : α → Sort*}
+section Succ
+
+variable [LinearOrder α] [SuccOrder α] {a b : α} {C : α → Sort*}
 
 theorem isSuccLimitRecOn_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ a, IsSuccLimit a → C a)
     {b : α} (hb : ¬IsMax b) : @isSuccLimitRecOn α _ _ C (succ b) hs hl = hs b hb := by
@@ -422,11 +424,11 @@ theorem isSuccLimitRecOn_succ (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ a
 
 end NoMaxOrder
 
-end StrongSucc
+end Succ
 
-section StrongPred
+section Pred
 
-variable [PartialOrder α] [StrongPredOrder α] {a b : α} {C : α → Sort*}
+variable [LinearOrder α] [PredOrder α] {a b : α} {C : α → Sort*}
 
 theorem isPredLimitRecOn_pred' (hs : ∀ a, ¬IsMin a → C (pred a)) (hl : ∀ a, IsPredLimit a → C a)
     {b : α} (hb : ¬IsMin b) : @isPredLimitRecOn α _ _ C (pred b) hs hl = hs b hb :=
@@ -447,8 +449,7 @@ theorem _root_.PredOrder.limitRecOn_pred (ha : ¬ IsMin a) :
   have {b c hb hc} {x : ∀ a, C a} (h : b = c) :
     congr_arg pred h ▸ H_pred b hb (x b) = H_pred c hc (x c) := by subst h; rfl
   let x := Classical.indefiniteDescription _ (not_isPredLimit_iff.mp h)
-  sorry
-  -- exact this ((pred_eq_pred_iff_of_not_isMin x.2.1 ha).mp x.2.2)
+  exact this ((pred_eq_pred_iff_of_not_isMin x.2.1 ha).mp x.2.2)
 
 end limitRecOn
 
@@ -463,6 +464,8 @@ theorem isPredLimitRecOn_pred (hs : ∀ a, ¬IsMin a → C (pred a)) (hl : ∀ a
 
 end NoMinOrder
 
-end StrongPred
+end Pred
+
+end LinearOrder
 
 end Order

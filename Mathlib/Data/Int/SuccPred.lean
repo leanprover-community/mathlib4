@@ -18,8 +18,8 @@ open Function Order
 namespace Int
 
 -- so that Lean reads `Int.succ` through `SuccOrder.succ`
-@[instance] abbrev instSuccOrder : StrongSuccOrder ℤ :=
-  { StrongSuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
+@[instance] abbrev instSuccOrder : SuccOrder ℤ :=
+  { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
 -- so that Lean reads `Int.pred` through `PredOrder.pred`
 @[instance] abbrev instPredOrder : StrongPredOrder ℤ where

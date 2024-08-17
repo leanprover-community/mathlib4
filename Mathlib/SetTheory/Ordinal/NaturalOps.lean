@@ -54,7 +54,7 @@ def NatOrdinal : Type _ :=
 
 instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
 
-instance NatOrdinal.strongSuccOrder : StrongSuccOrder NatOrdinal := {Ordinal.strongSuccOrder with}
+instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]

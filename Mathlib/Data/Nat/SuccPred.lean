@@ -20,11 +20,11 @@ namespace Nat
 variable {m n : ℕ}
 
 -- so that Lean reads `Nat.succ` through `succ_order.succ`
-@[instance] abbrev instStrongSuccOrder : StrongSuccOrder ℕ :=
-  StrongSuccOrder.ofSuccLeIff succ Nat.succ_le
+@[instance] abbrev instSuccOrder : SuccOrder ℕ :=
+  SuccOrder.ofSuccLeIff succ Nat.succ_le
 
 -- so that Lean reads `Nat.pred` through `pred_order.pred`
-@[instance] abbrev instStrongPredOrder : StrongPredOrder ℕ where
+@[instance] abbrev instStrongPredOrder : PredOrder ℕ where
   pred := pred
   pred_le := pred_le
   min_of_le_pred {a} ha := by
@@ -35,10 +35,6 @@ variable {m n : ℕ}
     cases b
     · exact (a.not_lt_zero h).elim
     · exact le_of_succ_le_succ h
-  le_of_pred_lt {a} {b} h := by
-    cases a
-    · exact b.zero_le
-    · exact h
 
 @[simp]
 theorem succ_eq_succ : Order.succ = succ :=
