@@ -107,8 +107,7 @@ lemma IsDynCoverOf.nonempty_inter {T : X → X} {F : Set X} {U : Set (X × X)} {
   classical
   use Finset.filter (fun x : X ↦ ((ball x (dynEntourage T U n)) ∩ F).Nonempty) s
   simp only [Finset.coe_filter, Finset.mem_filter, and_imp, imp_self, implies_true, and_true]
-  apply And.intro _ (Finset.card_mono (Finset.filter_subset _ s))
-  intros y y_F
+  refine ⟨fun y y_F ↦ ?_, Finset.card_mono (Finset.filter_subset _ s)⟩
   specialize h y_F
   simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, exists_prop] at h
   rcases h with ⟨z, z_s, y_Bz⟩
@@ -134,17 +133,13 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     simp only [zero_mul, Finset.coe_singleton, Finset.card_singleton]
     exact And.intro (isDynCoverOf_zero T F (U ○ U) (singleton_nonempty x))
       <| one_le_pow_of_one_le' (Nat.one_le_of_lt (Finset.Nonempty.card_pos s_nemp)) n
-  have : ∀ β : Fin n → s, ∃ y : X, (⋂ k : Fin n, T^[m * k] ⁻¹' ball (β k) (dynEntourage T U m)) ⊆
+  have (t : Fin n → s) : ∃ y : X, (⋂ k : Fin n, T^[m * k] ⁻¹' ball (t k) (dynEntourage T U m)) ⊆
       ball y (dynEntourage T (U ○ U) (m * n)) := by
-    intro t
     rcases (⋂ k : Fin n, T^[m * k] ⁻¹' ball (t k) (dynEntourage T U m)).eq_empty_or_nonempty
-      with (inter_empt | inter_nemp)
-    · rw [inter_empt]
-      use x
-      exact empty_subset _
+      with inter_empt | inter_nemp
+    · exact inter_empt ▸ ⟨x, empty_subset _⟩
     · rcases inter_nemp with ⟨y, y_int⟩
-      use y
-      intro z z_int
+      refine ⟨y, fun z z_int ↦ ?_⟩
       simp only [ball, dynEntourage, Prod.map_iterate, mem_preimage, mem_iInter,
         Prod.map_apply] at y_int z_int ⊢
       intro k k_mn
@@ -155,7 +150,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
       exact mem_comp_of_mem_ball U_symm y_int z_int
   choose! dyncover h_dyncover using this
   let sn := range dyncover
-  have _ := fintypeRange dyncover
+  have := fintypeRange dyncover
   use sn.toFinset
   constructor
   · rw [Finset.coe_nonempty] at s_nemp
@@ -166,8 +161,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
       have := h (MapsTo.iterate F_inv (m * k) y_F)
       simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, exists_prop] at this
       rcases this with ⟨z, z_s, hz⟩
-      use ⟨z, z_s⟩
-      exact hz
+      exact ⟨⟨z, z_s⟩, hz⟩
     choose! t ht using key
     specialize h_dyncover t
     simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, toFinset_range,
@@ -183,8 +177,8 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     apply le_trans (Fintype.card_range_le dyncover)
     simp only [Fintype.card_fun, Fintype.card_coe, Fintype.card_fin, le_refl]
 
-lemma isDynCoverOf_compact_continuous [UniformSpace X] {T : X → X} (h : UniformContinuous T)
-    {F : Set X} (F_comp : IsCompact F) {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
+lemma exists_isDynCoverOf_of_isCompact_uniformContinuous [UniformSpace X] {T : X → X} {F : Set X}
+    {U : Set (X × X)} (F_comp : IsCompact F) (h : UniformContinuous T) (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     ∃ s : Finset X, IsDynCoverOf T F U n s := by
   have uni_ite := dynEntourage_mem_uniformity h U_uni n
   let open_cover := fun x : X ↦ ball x (dynEntourage T U n)
@@ -209,8 +203,7 @@ lemma isDynCoverOf_compact_invariant [UniformSpace X] {T : X → X} {F : Set X} 
     use y, y_s
   rcases this.iterate_le_pow F_inv V_symm n with ⟨t, t_dyncover, t_card⟩
   rw [one_mul n] at t_dyncover
-  use t
-  exact t_dyncover.of_entourage_subset V_U
+  exact ⟨t, t_dyncover.of_entourage_subset V_U⟩
 
 /-! ### Minimal cardinal of dynamical covers -/
 
@@ -314,7 +307,7 @@ lemma coverMincard_finite_of_compact_continuous [UniformSpace X] {T : X → X}
     (h : UniformContinuous T) {F : Set X} (F_comp : IsCompact F) {U : Set (X × X)} (U_uni : U ∈ 𝓤 X)
     (n : ℕ) :
     coverMincard T F U n < ⊤ := by
-  rcases isDynCoverOf_compact_continuous h F_comp U_uni n with ⟨s, s_cover⟩
+  rcases exists_isDynCoverOf_of_isCompact_uniformContinuous F_comp h U_uni n with ⟨s, s_cover⟩
   exact lt_of_le_of_lt (coverMincard_le_card s_cover) (WithTop.coe_lt_top s.card)
 
 lemma coverMincard_finite_of_compact_invariant [UniformSpace X] {T : X → X} {F : Set X}
