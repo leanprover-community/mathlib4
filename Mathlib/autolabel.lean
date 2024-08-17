@@ -133,8 +133,8 @@ It displays all the labels that have already been declared.
 `check_labels "t-abc"` shows only the labels starting with `t-abc`.
 -/
 elab "check_labels" st:(ppSpace str)? : command => do
+  let str := (st.getD default).getString
   for l in labelsExt.getState (← getEnv) do
-    let str := (st.getD default).getString
     if str.isPrefixOf l.label then
       logInfo m!"label: {l.label}\ndirs: {l.dirs}\nexclusions: {l.exclusions}"
 
