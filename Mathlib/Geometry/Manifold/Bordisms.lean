@@ -121,6 +121,7 @@ lemma comap_f [Fact (finrank ℝ E = n)] (s : SingularNManifold X n M' I')
     {φ : M → M'} (hφ : Smooth I I' φ) : (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
+variable (M) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
 def empty [Fact (finrank ℝ E = n)] [IsEmpty M] : SingularNManifold X n M I where
@@ -630,7 +631,8 @@ def Homeomorph.associativity : M ⊕ (M' ⊕ N) ≃ₜ (M ⊕ M') ⊕ N where
     exact Continuous.comp continuous_inr continuous_inr
 
 variable (I M M') in
-def Diffeomorph.associativity [Nonempty H] [Nonempty H'] : Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') ∞ where
+def Diffeomorph.associativity [Nonempty H] [Nonempty H'] :
+    Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') ∞ where
   toEquiv := Equiv.swapAssociativity
   contMDiff_toFun := by
     apply ContMDiff.sum_elim
@@ -665,6 +667,7 @@ lemma contMDiff_of_const {f : M → N} (h : ∀ (x y : M), f x = f y) : ContMDif
   rw [this]
   apply contMDiff_const
 
+variable (M) in
 def Diffeomorph.sum_empty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M ∞ where
   toEquiv := Equiv.sum_empty
   contMDiff_toFun := ContMDiff.sum_elim contMDiff_id (contMDiff_of_const (fun _ ↦ congrFun rfl))
@@ -919,6 +922,13 @@ def _root_.SingularNManifold.disjointUnion : SingularNManifold X n (M ⊕ M') I 
   hf := Continuous.sum_elim s.hf t.hf
   hdim := s.hdim
 
+-- /-- The canonical cobordism between a singular `n`-simple `M` and `M ⊔ ∅`. -/
+-- def sumEmpty [IsEmpty M'] [Fact (finrank ℝ E = n)]:
+--     UnorientedCobordism (s.disjointUnion (SingularNManifold.empty M')) s
+--     ((productBoundaryData M I 0 1)) := by
+--   let S := UnorientedCobordism.refl s
+--   convert S.comap_fst (Diffeomorph.sum_empty M)
+
 -- The boundary of a disjoint union is the disjoint union of its boundaries.
 -- TODO: prove the same for the interiors
 def _root_.boundary_sum : I.boundary (M ⊕ M') ≃ I.boundary M ⊕ (I.boundary M') := sorry
@@ -926,12 +936,15 @@ def _root_.boundary_sum : I.boundary (M ⊕ M') ≃ I.boundary M ⊕ (I.boundary
 def _root_.BoundaryManifoldData.sum [Nonempty H''] (bd : BoundaryManifoldData W J)
     (bd' : BoundaryManifoldData W' J) : BoundaryManifoldData (W ⊕ W') J := sorry
 
+-- TODO: this is actually not fully true; for it certainly requires the boundaries
+-- to have the same dimension
 instance [Nonempty H''] (bd : BoundaryManifoldData W J) (bd' : BoundaryManifoldData W' J)
     [HasNiceBoundary bd] [HasNiceBoundary bd' ]: HasNiceBoundary (bd.sum bd') := sorry
 
 -- TODO: impose further conditions, such as bd and bd' having the same model...
 -- so I guess I actually need an equivalence of models here? Ugh!
--- def HasNiceBoundary.equiv_boundary_sum [Nonempty H''] (bd : BoundaryManifoldData W J) (bd' : BoundaryManifoldData W' J) [HasNiceBoundary bd] [HasNiceBoundary bd'] :
+-- def HasNiceBoundary.equiv_boundary_sum [Nonempty H''] (bd : BoundaryManifoldData W J)
+-- (bd' : BoundaryManifoldData W' J) [HasNiceBoundary bd] [HasNiceBoundary bd'] :
 --     Diffeomorph (bd.sum bd').model (bd.sum bd').model (bd.sum bd').model.boundary (W ⊕ W')
 --       (bd.model.sum bd'.model).boundary (W ⊕ W') n := sorry
 
@@ -964,6 +977,8 @@ def disjointUnion [Nonempty H''] (φ : UnorientedCobordism s t bd)
 
 -- define: empty cobordism = class of SingularNManifold.empty
 -- define addition, by the disjoint union of cobordisms
+-- prove this is well-defined: this is where the above sorry enters
+
 -- M cobordant to M ⊔ ∅ : easy, by that diffeo
 -- being cobordant is associative: TODO think; shouldn't be hard
 -- commutative: use Diffeomorph.swap and the diffeo operation
