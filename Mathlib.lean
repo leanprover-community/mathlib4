@@ -644,11 +644,13 @@ import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Algebra.Order.Ring.Synonym
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Order.Sub.Prod
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Hom
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.Sum
 import Mathlib.Algebra.Order.ToIntervalMod
@@ -2291,6 +2293,7 @@ import Mathlib.Data.Multiset.Interval
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Multiset.NatAntidiagonal
 import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Data.Multiset.Pi
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Multiset.Range
