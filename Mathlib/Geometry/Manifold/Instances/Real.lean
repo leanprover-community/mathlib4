@@ -47,7 +47,7 @@ open scoped Manifold
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
 -/
-def EuclideanHalfSpace (n : ℕ) [Zero (Fin n)] : Type :=
+def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
   { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
 
 /--
@@ -64,13 +64,13 @@ without the following reducibility attribute (which is only set in this section)
 
 variable {n : ℕ}
 
-instance [Zero (Fin n)] : TopologicalSpace (EuclideanHalfSpace n) :=
+instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n) :=
   instTopologicalSpaceSubtype
 
 instance : TopologicalSpace (EuclideanQuadrant n) :=
   instTopologicalSpaceSubtype
 
-instance [Zero (Fin n)] : Inhabited (EuclideanHalfSpace n) :=
+instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
   ⟨⟨0, le_rfl⟩⟩
 
 instance : Inhabited (EuclideanQuadrant n) :=
@@ -81,11 +81,11 @@ theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = 
   Subtype.eq h
 
 @[ext]
-theorem EuclideanHalfSpace.ext [Zero (Fin n)] (x y : EuclideanHalfSpace n)
+theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
-theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
 @[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
@@ -123,7 +123,7 @@ end
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the locale `Manifold`, use the shortcut `𝓡∂ n`.
 -/
-def modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
   toFun := Subtype.val
   invFun x := ⟨update x 0 (max (x 0) 0), by simp [le_refl]⟩
