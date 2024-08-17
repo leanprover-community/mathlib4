@@ -71,8 +71,8 @@ theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b 
   rel_of_pairwise_cons
 
 nonrec theorem Sorted.cons {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α}
-    (h : r b a) (ha : Sorted r (a :: l)) : Sorted r (b :: a :: l) :=
-  ha.cons <| forall_mem_cons.2 ⟨h, fun _ hx => _root_.trans h <| rel_of_sorted_cons ha _ hx⟩
+    (hab : r a b) (h : Sorted r (b :: l)) : Sorted r (a :: b :: l) :=
+  h.cons <| forall_mem_cons.2 ⟨hab, fun _ hx => _root_.trans hab <| rel_of_sorted_cons h _ hx⟩
 
 theorem Sorted.cons_iff {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α} :
     r b a ∧ Sorted r (a :: l) ↔ Sorted r (b :: a :: l) := by
