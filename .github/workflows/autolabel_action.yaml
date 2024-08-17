@@ -40,10 +40,13 @@ jobs:
           then
             printf 'Actually doing it!\n'
             sed -i 's=--\(run_cmd ghAddLabels\)=\1=' Mathlib/labels.lean
-            printf '* File after sed:\n%s\n\n' "$(cat Mathlib/labels.lean)"
+            #printf '* File after sed:\n%s\n\n' "$(cat Mathlib/labels.lean)"
             printf '\n\nNow `lake build`ing:\n\n'
             #gh issue edit "$NUMBER" --add-label "$LABELS"
             lake build Mathlib.labels
+            var="$(lake build Mathlib.labels | sed -z 's=.*\ninfo[^\n]*\n\(.*\)\nBuild.*=\1=')"
+            echo "var is: '$var'"
+            gh issue edit "$NUMBER" --add-label "$var"
           else
             printf 'More than one label found: not adding a label\n'
           fi
