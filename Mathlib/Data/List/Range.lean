@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Pairwise
 
 /-!
 # Ranges of naturals as lists
