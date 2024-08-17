@@ -47,8 +47,7 @@ open System.FilePath (pathSeparator) in
 if there is a string in `l.dirs` that is a prefix to `s`.
 If it finds (at least) one, then it returns `some l.label`, otherwise it returns `none`.
 -/
-def findLabel? (l : Label) (modifiedFile : String) :
-    Option String :=
+def findLabel? (l : Label) (modifiedFile : String) : Option String :=
   -- check that the path does not match any of the forbidden ones in `exclusions`
   if (l.exclusions.map fun d => d.toString.isPrefixOf modifiedFile).any (·) then
     none
@@ -60,8 +59,7 @@ def findLabel? (l : Label) (modifiedFile : String) :
 `findLabels ls modifiedFile` takes as input an array of  `Label`s `ls` and a string `modifiedFile`
 and returns all the applicable labels among `ls` for `modifiedFile`.
 -/
-def findLabels (ls : Array Label) (modifiedFile : String) :
-    Array String :=
+def findLabels (ls : Array Label) (modifiedFile : String) : Array String :=
   ls.filterMap (findLabel? · modifiedFile)
 
 /--
@@ -120,15 +118,15 @@ syntax (name := addLabelStx)
 open Elab.Command in
 @[inherit_doc addLabelStx]
 elab_rules : command
-    | `(command| add_label $id dirs: $dirs* exclusions: $excs*) => do
-      setEnv <| labelsExt.addEntry (← getEnv)
-        { label := "t-" ++ id.getId.toString.replace "_" "-"
-          dirs := formatIdsToDirs dirs
-          exclusions := formatIdsToDirs excs }
-    | `(command| add_label $id dirs: $dirs*) => do
-      elabCommand (← `(command| add_label $id dirs: $dirs* exclusions:))
-    | `(command| add_label $id) => do
-      elabCommand (← `(command| add_label $id dirs: $id))
+  | `(command| add_label $id dirs: $dirs* exclusions: $excs*) => do
+    setEnv <| labelsExt.addEntry (← getEnv)
+      { label := "t-" ++ id.getId.toString.replace "_" "-"
+        dirs := formatIdsToDirs dirs
+        exclusions := formatIdsToDirs excs }
+  | `(command| add_label $id dirs: $dirs*) => do
+    elabCommand (← `(command| add_label $id dirs: $dirs* exclusions:))
+  | `(command| add_label $id) => do
+    elabCommand (← `(command| add_label $id dirs: $id))
 /--
 `check_labels` is a helper command to `add_labels`.
 It displays all the labels that have already been declared.
