@@ -82,10 +82,10 @@ protected alias ⟨_, Nonempty.dens_pos⟩ := dens_pos
 protected alias ⟨_, Nonempty.dens_ne_zero⟩ := dens_ne_zero
 
 lemma dens_le_dens (h : s ⊆ t) : dens s ≤ dens t :=
-  div_le_div_of_nonneg_right (mod_cast card_mono h) $ by positivity
+  div_le_div_of_nonneg_right (mod_cast card_mono h) <| by positivity
 
 lemma dens_lt_dens (h : s ⊂ t) : dens s < dens t :=
-  div_lt_div_of_pos_right (mod_cast card_strictMono h) $ by
+  div_lt_div_of_pos_right (mod_cast card_strictMono h) <| by
     cases isEmpty_or_nonempty α
     · simp [Subsingleton.elim s t, ssubset_irrfl] at h
     · exact mod_cast Fintype.card_pos
@@ -134,7 +134,7 @@ lemma dens_sdiff_add_dens (s t : Finset α) : dens (s \ t) + dens t = (s ∪ t).
   rw [← dens_union_of_disjoint sdiff_disjoint, sdiff_union_self_eq_union]
 
 lemma dens_sdiff_comm (h : card s = card t) : dens (s \ t) = dens (t \ s) :=
-  add_left_injective (dens t) $ by
+  add_left_injective (dens t) <| by
     simp_rw [dens_sdiff_add_dens, union_comm s, ← dens_sdiff_add_dens, dens, h]
 
 @[simp]
