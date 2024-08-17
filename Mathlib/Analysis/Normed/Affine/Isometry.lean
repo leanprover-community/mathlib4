@@ -447,8 +447,7 @@ theorem symm_apply_apply (x : P) : e.symm (e x) = x :=
   e.toAffineEquiv.symm_apply_apply x
 
 @[simp]
-theorem symm_symm : e.symm.symm = e :=
-  ext fun _ => rfl
+theorem symm_symm : e.symm.symm = e := rfl
 
 @[simp]
 theorem toAffineEquiv_symm : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=

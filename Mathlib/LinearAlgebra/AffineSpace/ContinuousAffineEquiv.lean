@@ -174,9 +174,7 @@ theorem apply_eq_iff_eq (e : P₁ ≃ᵃL[k] P₂) {p₁ p₂ : P₁} : e p₁ =
   e.toEquiv.apply_eq_iff_eq
 
 @[simp]
-theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := by
-  ext x
-  rfl
+theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := rfl
 
 theorem symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
   rfl
