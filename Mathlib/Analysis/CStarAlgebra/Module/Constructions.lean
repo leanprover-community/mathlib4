@@ -7,7 +7,7 @@ import Mathlib.Analysis.CStarAlgebra.Module.Defs
 import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 import Mathlib.Topology.MetricSpace.Bilipschitz
 
-/-! # Constructions
+/-! # Constructions of Hilbert C⋆-modules
 
 In this file we define the following constructions of `CStarModule`s where `A` denotes a C⋆-algebra.
 Note that for each type `E`, the instance is declared on the type synonym `WithCStarModule E` (with
@@ -17,7 +17,7 @@ the notation `C⋆ᵐᵒᵈ E`), instead of on `E` itself.
 2. `E × F` as a `CStarModule` over `A`, when `E` and `F` are themselves `CStarModule`s over `A`.
 3. `Π i : ι, E i` as a `CStarModule` over `A`, when each `E i` is a `CStarModule` over `A` and `ι`
   is a `Fintype`.
-4. `E` as a `CStarModule` over `A`, when `E` is an `InnerProductSpace` over `ℂ`.
+4. `E` as a `CStarModule` over `ℂ`, when `E` is an `InnerProductSpace` over `ℂ`.
 
 For more details on the importance of the `WithCStarModule` type synonym, see the module
 documentation for `Analysis.CStarAlgebra.Module.Synonym`.
@@ -75,6 +75,8 @@ variable [StarModule ℂ A] [IsScalarTower ℂ A A] [CompleteSpace A]
 
 section Aux
 
+-- We temporarily disable the uniform space and bornology on `C⋆ᵐᵒᵈ A` while proving
+-- that those induced by the new norm are equal to the old ones.
 attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBornology
 attribute [local instance]  CStarModule.normedAddCommGroup
 
