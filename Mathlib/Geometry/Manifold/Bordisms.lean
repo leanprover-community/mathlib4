@@ -922,28 +922,26 @@ variable {u : SingularNManifold X n M'' I}
 def glue (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') : Type* := sorry
 
 instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
-    TopologicalSpace (glue s t φ ψ) := sorry
+    TopologicalSpace (glue φ ψ) := sorry
 
 -- This and the next item require the collar neighbourhood theorem.
 instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
-    ChartedSpace H (glue s t φ ψ) := sorry
+    ChartedSpace H (glue φ ψ) := sorry
 
--- TODO: can I remove the s and t variables from this one?
 def glueModel (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
     ModelWithCorners ℝ E H := sorry
 
 instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
-    SmoothManifoldWithCorners (glueModel s t φ ψ) (glue s t φ ψ) := sorry
+    SmoothManifoldWithCorners (glueModel φ ψ) (glue φ ψ) := sorry
 
--- TODO: can I remove the s and t variables from this one?
 def glueBoundaryData (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
-    BoundaryManifoldData (glue s t φ ψ) (glueModel s t φ ψ) := sorry
+    BoundaryManifoldData (glue φ ψ) (glueModel φ ψ) := sorry
 
 instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
-    HasNiceBoundary (glueBoundaryData s t φ ψ) := sorry
+    HasNiceBoundary (glueBoundaryData φ ψ) := sorry
 
 noncomputable def trans (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
-    UnorientedCobordism s u (glueBoundaryData s t φ ψ) where
+    UnorientedCobordism s u (glueBoundaryData φ ψ) where
   hW := sorry
   hW' := sorry
   F := sorry
