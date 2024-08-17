@@ -89,10 +89,10 @@ theorem CNF_ne_zero {b o : Ordinal} (ho : o ≠ 0) :
   CNFRec_pos b ho _ _
 
 theorem zero_CNF {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [⟨0, o⟩] := by
-  simp [CNF_ne_zero ho, CNF_zero]
+  simp [CNF_ne_zero ho]
 
 theorem one_CNF {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [⟨0, o⟩] := by
-  simp [CNF_ne_zero ho, CNF_zero]
+  simp [CNF_ne_zero ho]
 
 theorem CNF_of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [⟨0, o⟩] := by
   rcases le_one_iff.1 hb with (rfl | rfl)
@@ -103,18 +103,22 @@ theorem CNF_of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [⟨0,
   simp only [CNF_ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, CNF_zero]
 
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
-theorem CNF_foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o :=
-  CNFRec b (by rw [CNF_zero]; rfl)
-    (fun o ho IH ↦ by rw [CNF_ne_zero ho, foldr_cons, IH, div_add_mod]) o
+theorem CNF_foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o := by
+  refine CNFRec b ?_ ?_ o
+  · rw [CNF_zero]
+    rfl
+  · intro o ho IH
+    rw [CNF_ne_zero ho, foldr_cons, IH, div_add_mod]
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `log b o`. -/
 theorem le_log_of_mem_CNF_exponents {b o : Ordinal.{u}} {x : Ordinal} :
     x ∈ CNF.exponents b o → x ≤ log b o := by
   rw [CNF.exponents]
-  refine CNFRec b ?_ (fun o ho H ↦ ?_) o
+  refine CNFRec b ?_ ?_ o
   · rw [CNF_zero]
     rintro ⟨⟩
-  · rw [CNF_ne_zero ho, keys_cons, mem_cons]
+  · intro o ho H
+    rw [CNF_ne_zero ho, keys_cons, mem_cons]
     rintro (rfl | h)
     · exact le_rfl
     · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
@@ -135,11 +139,11 @@ theorem pos_of_mem_CNF_coefficients {b o : Ordinal.{u}} {x : Ordinal} :
 theorem lt_of_mem_CNF_coefficients {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal} :
     x ∈ CNF.coefficients b o → x < b := by
   rw [CNF.coefficients]
-  refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
+  refine CNFRec b ?_ ?_ o
   · rw [CNF_zero]
     rintro ⟨⟩
-  · rw [CNF_ne_zero ho]
-    intro h
+  · intro o ho IH h
+    rw [CNF_ne_zero ho] at h
     cases' (mem_cons.mp h) with h h
     · rw [h]
       simpa only using div_opow_log_lt o hb
@@ -155,8 +159,8 @@ theorem CNF_exponents_sorted (b o : Ordinal) : (CNF.exponents b o).Sorted (· > 
     obtain hb | hb := le_or_gt b 1
     · rw [CNF_of_le_one hb ho]
       exact sorted_singleton _
-    · obtain hbo | hbo := lt_or_le o b
-      · rw [CNF_of_lt ho hbo]
+    · obtain hob | hbo := lt_or_le o b
+      · rw [CNF_of_lt ho hob]
         exact sorted_singleton _
       · rw [CNF_ne_zero ho, keys_cons, sorted_cons]
         refine ⟨?_, IH⟩
