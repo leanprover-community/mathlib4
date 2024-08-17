@@ -49,7 +49,6 @@ section Self
 instance : Norm (C⋆ᵐᵒᵈ A) where
   norm x := ‖equiv _ x‖
 
--- we include all the
 lemma norm_equiv {A : Type*} [NonUnitalNormedRing A] (x : C⋆ᵐᵒᵈ A) : ‖equiv A x‖ = ‖x‖ :=
   rfl
 
@@ -173,12 +172,14 @@ lemma norm_equiv_le_norm_prod (x : C⋆ᵐᵒᵈ (E × F)) : ‖equiv (E × F) x
 
 section Aux
 
+-- We temporarily disable the uniform space and bornology on `C⋆ᵐᵒᵈ A` while proving
+-- that those induced by the new norm are equal to the old ones.
 attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBornology
 attribute [local instance] CStarModule.normedAddCommGroup
 
 open Filter Uniformity Bornology
 
-lemma antilipschitzWith_two_equiv_prod_aux : AntilipschitzWith 2 (equiv (E × F)) :=
+private lemma antilipschitzWith_two_equiv_prod_aux : AntilipschitzWith 2 (equiv (E × F)) :=
   AddMonoidHomClass.antilipschitz_of_bound (linearEquiv ℂ (E × F)) fun x ↦ by
     apply prod_norm_le_norm_add x |>.trans
     simp only [NNReal.coe_ofNat, linearEquiv_apply, two_mul]
@@ -186,15 +187,15 @@ lemma antilipschitzWith_two_equiv_prod_aux : AntilipschitzWith 2 (equiv (E × F)
     · exact norm_fst_le x
     · exact norm_snd_le x
 
-lemma lipschitzWith_one_equiv_prod_aux : LipschitzWith 1 (equiv (E × F)) :=
+private lemma lipschitzWith_one_equiv_prod_aux : LipschitzWith 1 (equiv (E × F)) :=
   AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ (E × F)) 1 <| by
     simpa using norm_equiv_le_norm_prod
 
-lemma uniformity_prod_eq_aux :
+private lemma uniformity_prod_eq_aux :
     𝓤[(inferInstance : UniformSpace (E × F)).comap <| equiv _] = 𝓤 (C⋆ᵐᵒᵈ (E × F)) :=
   uniformity_eq_of_bilipschitz antilipschitzWith_two_equiv_prod_aux lipschitzWith_one_equiv_prod_aux
 
-lemma isBounded_prod_iff_aux (s : Set (C⋆ᵐᵒᵈ (E × F))) :
+private lemma isBounded_prod_iff_aux (s : Set (C⋆ᵐᵒᵈ (E × F))) :
     @IsBounded _ (induced <| equiv (E × F)) s ↔ IsBounded s :=
   isBounded_iff_of_bilipschitz antilipschitzWith_two_equiv_prod_aux
     lipschitzWith_one_equiv_prod_aux s
@@ -220,7 +221,7 @@ noncomputable instance : Norm (C⋆ᵐᵒᵈ (Π i, E i)) where
   norm x := √‖∑ i, ⟪x i, x i⟫_A‖
 
 lemma pi_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) : ‖x‖ = √‖∑ i, ⟪x i, x i⟫_A‖ := by
-  with_reducible_and_instances rfl -- this would fail without `⇑`, ensures no defeq abuse
+  with_reducible_and_instances rfl
 
 lemma pi_norm_sq (x : C⋆ᵐᵒᵈ (Π i, E i)) : ‖x‖ ^ 2 = ‖∑ i, ⟪x i, x i⟫_A‖ := by
   simp [pi_norm]
@@ -289,12 +290,14 @@ lemma norm_equiv_le_norm_pi (x : C⋆ᵐᵒᵈ (Π i, E i)) : ‖equiv _ x‖ �
 
 section Aux
 
+-- We temporarily disable the uniform space and bornology on `C⋆ᵐᵒᵈ A` while proving
+-- that those induced by the new norm are equal to the old ones.
 attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBornology
 attribute [local instance] CStarModule.normedAddCommGroup
 
 open Uniformity Bornology
 
-lemma antilipschitzWith_card_equiv_pi_aux :
+private lemma antilipschitzWith_card_equiv_pi_aux :
     AntilipschitzWith (Fintype.card ι) (equiv (Π i, E i)) :=
   AddMonoidHomClass.antilipschitz_of_bound (linearEquiv ℂ (Π i, E i)) fun x ↦ by
     simp only [NNReal.coe_natCast, linearEquiv_apply]
@@ -302,15 +305,15 @@ lemma antilipschitzWith_card_equiv_pi_aux :
       _ ≤ ∑ _, ‖⇑x‖ := Finset.sum_le_sum fun _ _ ↦ norm_le_pi_norm ..
       _ ≤ Fintype.card ι * ‖⇑x‖ := by simp
 
-lemma lipschitzWith_one_equiv_pi_aux : LipschitzWith 1 (equiv (Π i, E i)) :=
+private lemma lipschitzWith_one_equiv_pi_aux : LipschitzWith 1 (equiv (Π i, E i)) :=
   AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ (Π i, E i)) 1 <| by
     simpa using norm_equiv_le_norm_pi
 
-lemma uniformity_pi_eq_aux :
+private lemma uniformity_pi_eq_aux :
     𝓤[(inferInstance : UniformSpace (Π i, E i)).comap <| equiv _] = 𝓤 (C⋆ᵐᵒᵈ (Π i, E i)) :=
   uniformity_eq_of_bilipschitz antilipschitzWith_card_equiv_pi_aux lipschitzWith_one_equiv_pi_aux
 
-lemma isBounded_pi_iff_aux (s : Set (C⋆ᵐᵒᵈ (Π i, E i))) :
+private lemma isBounded_pi_iff_aux (s : Set (C⋆ᵐᵒᵈ (Π i, E i))) :
     @IsBounded _ (induced <| equiv (Π i, E i)) s ↔ IsBounded s :=
   isBounded_iff_of_bilipschitz antilipschitzWith_card_equiv_pi_aux lipschitzWith_one_equiv_pi_aux s
 
@@ -371,6 +374,8 @@ lemma inner_eq_inner (x y : C⋆ᵐᵒᵈ E) : ⟪x, y⟫_ℂ = ⟪equiv E x, eq
 
 section Aux
 
+-- We temporarily disable the uniform space and bornology on `C⋆ᵐᵒᵈ A` while proving
+-- that those induced by the new norm are equal to the old ones.
 attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBornology
 attribute [local instance]  CStarModule.normedAddCommGroup
 
