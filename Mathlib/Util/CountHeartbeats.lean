@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Init
 import Lean.Util.Heartbeats
 import Lean.Meta.Tactic.TryThis
 
@@ -146,3 +147,7 @@ elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
   -- Then run once more, keeping the state.
   let counts := (← elabForHeartbeats cmd (revert := false)) :: counts
   logVariation counts
+
+end CountHeartbeats
+
+end Mathlib

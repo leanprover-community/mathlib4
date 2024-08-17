@@ -50,7 +50,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     original spaces, which explains why we assume in the lemma that all spaces live in the same
     universe. -/
   induction' n with n IH generalizing Eu Fu Gu
-  · simp only [Nat.zero_eq, norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
+  · simp only [norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
       Finset.sum_singleton, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_zero, ← mul_assoc]
     apply B.le_opNorm₂
   · have In : (n : ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]

@@ -254,7 +254,7 @@ theorem y_mul_pos {a b : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (hbx : 0
 have positive `x`. -/
 theorem x_pow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℕ) : 0 < (a ^ n).x := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero, x_one, zero_lt_one]
+  · simp only [pow_zero, x_one, zero_lt_one]
   · rw [pow_succ]
     exact x_mul_pos ih hax
 

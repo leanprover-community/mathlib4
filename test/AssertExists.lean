@@ -1,10 +1,6 @@
 import Mathlib.Util.AssertExists
 
-/--
-warning: the module 'Lean.Elab.Command' is (transitively) imported
----
-error: the module 'I_do_not_exist' does not exist
--/
+/-- warning: the module 'Lean.Elab.Command' is (transitively) imported -/
 #guard_msgs in
 assert_not_imported
   Mathlib.Tactic.Common

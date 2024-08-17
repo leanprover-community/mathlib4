@@ -132,7 +132,7 @@ end OrderedSemiring
 
 section LinearOrderedSemiring
 
-variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
+variable [LinearOrderedSemiring α] [FloorSemiring α] {a b : α} {n : ℕ}
 
 theorem floor_lt (ha : 0 ≤ a) : ⌊a⌋₊ < n ↔ a < n :=
   lt_iff_lt_of_le_iff_le <| le_floor_iff ha
@@ -183,8 +183,7 @@ theorem floor_mono : Monotone (floor : α → ℕ) := fun a b h => by
     exact Nat.zero_le _
   · exact le_floor ((floor_le ha).trans h)
 
-@[gcongr]
-theorem floor_le_floor : ∀ x y : α, x ≤ y → ⌊x⌋₊ ≤ ⌊y⌋₊ := floor_mono
+@[gcongr] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋₊ ≤ ⌊b⌋₊ := floor_mono hab
 
 theorem le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a := by
   obtain ha | ha := le_total a 0
@@ -281,8 +280,7 @@ theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉₊ = n :=
 theorem ceil_mono : Monotone (ceil : α → ℕ) :=
   gc_ceil_coe.monotone_l
 
-@[gcongr]
-theorem ceil_le_ceil : ∀ x y : α, x ≤ y → ⌈x⌉₊ ≤ ⌈y⌉₊ := ceil_mono
+@[gcongr] lemma ceil_le_ceil (hab : a ≤ b) : ⌈a⌉₊ ≤ ⌈b⌉₊ := ceil_mono hab
 
 @[simp]
 theorem ceil_zero : ⌈(0 : α)⌉₊ = 0 := by rw [← Nat.cast_zero, ceil_natCast]
@@ -556,7 +554,7 @@ def FloorRing.ofCeil (α) [LinearOrderedRing α] (ceil : α → ℤ)
 
 namespace Int
 
-variable [LinearOrderedRing α] [FloorRing α] {z : ℤ} {a : α}
+variable [LinearOrderedRing α] [FloorRing α] {z : ℤ} {a b : α}
 
 /-- `Int.floor a` is the greatest integer `z` such that `z ≤ a`. It is denoted with `⌊a⌋`. -/
 def floor : α → ℤ :=
@@ -658,8 +656,7 @@ theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_intCast]
 theorem floor_mono : Monotone (floor : α → ℤ) :=
   gc_coe_floor.monotone_u
 
-@[gcongr]
-theorem floor_le_floor : ∀ x y : α, x ≤ y → ⌊x⌋ ≤ ⌊y⌋ := floor_mono
+@[gcongr] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
 
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
   -- Porting note: broken `convert le_floor`
@@ -1078,8 +1075,7 @@ theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(no_index (OfNat.ofNat n : α))
 theorem ceil_mono : Monotone (ceil : α → ℤ) :=
   gc_ceil_coe.monotone_l
 
-@[gcongr]
-theorem ceil_le_ceil : ∀ x y : α, x ≤ y → ⌈x⌉ ≤ ⌈y⌉ := ceil_mono
+@[gcongr] lemma ceil_le_ceil (hab : a ≤ b) : ⌈a⌉ ≤ ⌈b⌉ := ceil_mono hab
 
 @[simp]
 theorem ceil_add_int (a : α) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
