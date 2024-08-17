@@ -89,12 +89,20 @@ example : Add Nat where add := (. + ·)
 
 set_option linter.dollarSyntax false in
 /--
-warning: Please use '<|' and not '$' for the pipe operator.
+warning: Please use '<|' instead of '$' for the pipe operator.
+note: this linter can be disabled with `set_option linter.dollarSyntax false`
+---
+warning: Please use '<|' instead of '$' for the pipe operator.
 note: this linter can be disabled with `set_option linter.dollarSyntax false`
 -/
 #guard_msgs in
 set_option linter.dollarSyntax true in
-example (f g : Nat → Nat) : Nat := f $ g 0
+attribute [instance] Int.add in
+instance (f g : Nat → Nat) : Inhabited Nat where
+  default := by
+    · have := 0
+      · have : Nat := f $ g $ 0
+        · exact 0
 
 set_option linter.longLine false
 /--

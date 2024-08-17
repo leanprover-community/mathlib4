@@ -215,9 +215,11 @@ end CDotLinter
 # The `dollarSyntax` linter
 
 The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
+These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`.
 -/
 
-/-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`. -/
+/-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
+These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`. -/
 register_option linter.dollarSyntax : Bool := {
   defValue := true
   descr := "enable the `dollarSyntax` linter"
@@ -242,7 +244,7 @@ def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     for s in findDollarSyntax stx do
-      Linter.logLint linter.dollarSyntax s m!"Please use '<|' and not '$' for the pipe operator."
+      Linter.logLint linter.dollarSyntax s m!"Please use '<|' instead of '$' for the pipe operator."
 
 initialize addLinter dollarSyntaxLinter
 
