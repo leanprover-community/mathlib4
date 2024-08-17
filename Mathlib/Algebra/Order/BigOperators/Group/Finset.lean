@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.Positivity.Core
