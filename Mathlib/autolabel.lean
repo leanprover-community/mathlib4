@@ -41,6 +41,7 @@ structure Label where
   exclusions : Array System.FilePath
 
 namespace Label
+
 open System.FilePath (pathSeparator) in
 /--
 `findLabel? l modifiedFile` takes as input a `Label` `l` and a string `modifiedFile` and checks
@@ -127,6 +128,7 @@ elab_rules : command
     elabCommand (← `(command| add_label $id dirs: $dirs* exclusions:))
   | `(command| add_label $id) => do
     elabCommand (← `(command| add_label $id dirs: $id))
+
 /--
 `check_labels` is a helper command to `add_labels`.
 It displays all the labels that have already been declared.
