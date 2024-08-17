@@ -95,7 +95,7 @@ section Preorder
 
 variable [Preorder α]
 
-/-- A constructor for `SuccOrder α`. -/
+/-- A constructor for `SuccOrder α` usable when `α` has no maximal element. -/
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
     SuccOrder α :=
   { succ
@@ -103,7 +103,7 @@ def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a �
     max_of_succ_le := fun ha => (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
     succ_le_of_lt := fun h => hsucc_le_iff.2 h }
 
-/-- A constructor for `PredOrder α`. -/
+/-- A constructor for `PredOrder α` usable when `α` has no minimal element. -/
 def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) :
     PredOrder α :=
   { pred
@@ -209,7 +209,7 @@ theorem succ_le_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ b ↔ a < b :=
   ⟨(lt_succ_of_not_isMax ha).trans_le, succ_le_of_lt⟩
 
 lemma succ_lt_succ_of_not_isMax (h : a < b) (hb : ¬ IsMax b) : succ a < succ b :=
-  (lt_succ_of_not_isMax_of_le hb) <| succ_le_of_lt h
+  lt_succ_of_not_isMax_of_le hb <| succ_le_of_lt h
 
 @[simp, mono]
 theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
@@ -562,9 +562,6 @@ theorem le_pred_of_lt {a b : α} : a < b → a ≤ pred b :=
 
 alias _root_.LT.lt.le_pred := le_pred_of_lt
 
--- theorem le_of_pred_lt {a b : α} : pred a < b → a ≤ b :=
---   PredOrder.le_of_pred_lt
-
 @[simp]
 theorem le_pred_iff_isMin : a ≤ pred a ↔ IsMin a :=
   ⟨min_of_le_pred, fun h => h <| pred_le _⟩
@@ -583,25 +580,19 @@ theorem pred_wcovBy (a : α) : pred a ⩿ a :=
 theorem pred_covBy_of_not_isMin (h : ¬IsMin a) : pred a ⋖ a :=
   (pred_wcovBy a).covBy_of_lt <| pred_lt_of_not_isMin h
 
-theorem pred_lt_iff_of_not_isMin (ha : ¬IsMin a) : a ≤ b → pred a < b :=
+theorem pred_lt_of_not_isMin_of_le (ha : ¬IsMin a) : a ≤ b → pred a < b :=
   (pred_lt_of_not_isMin ha).trans_le
 
 theorem le_pred_iff_of_not_isMin (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
   ⟨fun h => h.trans_lt <| pred_lt_of_not_isMin ha, le_pred_of_lt⟩
 
 lemma pred_lt_pred_of_not_isMin (h : a < b) (ha : ¬ IsMin a) : pred a < pred b :=
-  pred_lt_iff_of_not_isMin ha <| le_pred_of_lt h
+  pred_lt_of_not_isMin_of_le ha <| le_pred_of_lt h
 
-theorem pred_lt_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
-    a < b → pred a < pred b := by
-  intro
-  apply pred_lt_iff_of_not_isMin ha
-  rwa [le_pred_iff_of_not_isMin hb]
-
-theorem pred_le_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+theorem pred_le_pred_of_not_isMin_of_le (ha : ¬IsMin a) (hb : ¬IsMin b) :
     a ≤ b → pred a ≤ pred b := by
   rw [le_pred_iff_of_not_isMin hb]
-  apply pred_lt_iff_of_not_isMin ha
+  apply pred_lt_of_not_isMin_of_le ha
 
 @[simp, mono]
 theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
@@ -630,21 +621,21 @@ theorem isMin_iterate_pred_of_eq_of_ne {n m : ℕ} (h_eq : pred^[n] a = pred^[m]
     (h_ne : n ≠ m) : IsMin (pred^[n] a) :=
   @isMax_iterate_succ_of_eq_of_ne αᵒᵈ _ _ _ _ _ h_eq h_ne
 
-theorem Ioi_pred_of_not_isMin (ha : ¬IsMin a) : Ici a ⊆ Ioi (pred a) :=
-  fun _ ↦ pred_lt_iff_of_not_isMin ha
+theorem subset_Ioi_pred_of_not_isMin (ha : ¬IsMin a) : Ici a ⊆ Ioi (pred a) :=
+  fun _ ↦ pred_lt_of_not_isMin_of_le ha
 
 theorem Iic_pred_of_not_isMin (ha : ¬IsMin a) : Iic (pred a) = Iio a :=
   Set.ext fun _ => le_pred_iff_of_not_isMin ha
 
-theorem Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Icc a b ⊆ Ioc (pred a) b := by
+theorem subset_Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Icc a b ⊆ Ioc (pred a) b := by
  rw [← Ioi_inter_Iic, ← Ici_inter_Iic]
  gcongr
- apply Ioi_pred_of_not_isMin ha
+ apply subset_Ioi_pred_of_not_isMin ha
 
-theorem Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ico a b ⊆ Ioo (pred a) b  := by
+theorem subset_Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ico a b ⊆ Ioo (pred a) b  := by
   rw [← Ioi_inter_Iio, ← Ici_inter_Iio]
   gcongr
-  apply Ioi_pred_of_not_isMin ha
+  apply subset_Ioi_pred_of_not_isMin ha
 
 theorem Icc_pred_right_of_not_isMin (ha : ¬IsMin b) : Icc a (pred b) = Ico a b := by
   rw [← Ici_inter_Iic, Iic_pred_of_not_isMin ha, Ici_inter_Iio]
@@ -660,20 +651,16 @@ theorem pred_lt (a : α) : pred a < a :=
   pred_lt_of_not_isMin <| not_isMin a
 
 @[simp]
-theorem pred_lt_iff : a ≤ b → pred a < b :=
-  pred_lt_iff_of_not_isMin <| not_isMin a
+theorem pred_lt_of_le : a ≤ b → pred a < b :=
+  pred_lt_of_not_isMin_of_le <| not_isMin a
 
 @[simp]
 theorem le_pred_iff : a ≤ pred b ↔ a < b :=
   le_pred_iff_of_not_isMin <| not_isMin b
 
-theorem pred_le_pred_iff : a ≤ b → pred a ≤ pred b := by intro; simp_all
+theorem pred_le_pred_of_le : a ≤ b → pred a ≤ pred b := by intro; simp_all
 
-theorem pred_lt_pred_iff : a < b → pred a < pred b := by intro; simp_all
-
--- alias ⟨le_of_pred_le_pred, _⟩ := pred_le_pred_iff
-
-alias pred_lt_pred := pred_lt_pred_iff
+theorem pred_lt_pred : a < b → pred a < pred b := by intro; simp_all
 
 theorem pred_strictMono : StrictMono (pred : α → α) := fun _ _ => pred_lt_pred
 
@@ -681,20 +668,20 @@ theorem pred_covBy (a : α) : pred a ⋖ a :=
   pred_covBy_of_not_isMin <| not_isMin a
 
 @[simp]
-theorem Ioi_pred (a : α) : Ici a ⊆ Ioi (pred a) :=
-  Ioi_pred_of_not_isMin <| not_isMin a
+theorem subset_Ioi_pred (a : α) : Ici a ⊆ Ioi (pred a) :=
+  subset_Ioi_pred_of_not_isMin <| not_isMin a
 
 @[simp]
 theorem Iic_pred (a : α) : Iic (pred a) = Iio a :=
   Iic_pred_of_not_isMin <| not_isMin a
 
 @[simp]
-theorem Ioc_pred_left (a b : α) : Icc a b ⊆ Ioc (pred a) b :=
-  Ioc_pred_left_of_not_isMin <| not_isMin _
+theorem subset_Ioc_pred_left (a b : α) : Icc a b ⊆ Ioc (pred a) b :=
+  subset_Ioc_pred_left_of_not_isMin <| not_isMin _
 
 @[simp]
-theorem Ioo_pred_left (a b : α) : Ico a b ⊆ Ioo (pred a) b :=
-  Ioo_pred_left_of_not_isMin <| not_isMin _
+theorem subset_Ioo_pred_left (a b : α) : Ico a b ⊆ Ioo (pred a) b :=
+  subset_Ioo_pred_left_of_not_isMin <| not_isMin _
 
 @[simp]
 theorem Icc_pred_right (a b : α) : Icc a (pred b) = Ico a b :=
@@ -718,11 +705,6 @@ theorem pred_eq_iff_isMin : pred a = a ↔ IsMin a :=
 
 alias ⟨_, _root_.IsMin.pred_eq⟩ := pred_eq_iff_isMin
 
--- theorem pred_eq_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
---     pred a = pred b ↔ a = b := by
---   rw [eq_iff_le_not_lt, eq_iff_le_not_lt, pred_le_pred_iff_of_not_isMin ha hb,
---     pred_lt_pred_iff_of_not_isMin ha hb]
-
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
   refine
     ⟨fun h =>
@@ -736,58 +718,14 @@ lemma pred_eq_of_covBy (h : a ⋖ b) : pred b = a := h.wcovBy.pred_le.antisymm (
 
 alias _root_.CovBy.pred_eq := pred_eq_of_covBy
 
--- theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
---   by_cases ha : IsMin a
---   · rw [ha.pred_eq, or_iff_right_of_imp ge_of_eq]
---   · rw [← pred_lt_iff_of_not_isMin ha, le_iff_eq_or_lt, eq_comm]
-
--- theorem pred_lt_iff_eq_or_lt_of_not_isMin (ha : ¬IsMin a) : pred a < b ↔ a = b ∨ a < b :=
---   (pred_lt_iff_of_not_isMin ha).trans le_iff_eq_or_lt
-
--- theorem Ici_pred (a : α) : Ici (pred a) = insert (pred a) (Ici a) :=
---   ext fun _ => pred_le_iff_eq_or_le
-
--- theorem Ioi_pred_eq_insert_of_not_isMin (ha : ¬IsMin a) : Ioi (pred a) = insert a (Ioi a) := by
---   ext x; simp only [insert, mem_setOf, @eq_comm _ x a, mem_Ioi, Set.insert]
---   exact pred_lt_iff_eq_or_lt_of_not_isMin ha
-
--- theorem Icc_pred_left (h : pred a ≤ b) : Icc (pred a) b = insert (pred a) (Icc a b) := by
---   simp_rw [← Ici_inter_Iic, Ici_pred, insert_inter_of_mem (mem_Iic.2 h)]
-
--- theorem Ico_pred_left (h : pred a < b) : Ico (pred a) b = insert (pred a) (Ico a b) := by
---   simp_rw [← Ici_inter_Iio, Ici_pred, insert_inter_of_mem (mem_Iio.2 h)]
-
 section NoMinOrder
 
 variable [NoMinOrder α]
-
--- @[simp]
--- theorem pred_eq_pred_iff : pred a = pred b ↔ a = b := by
---   simp_rw [eq_iff_le_not_lt, pred_le_pred_iff, pred_lt_pred_iff]
-
--- theorem pred_injective : Injective (pred : α → α) := fun _ _ => pred_eq_pred_iff.1
-
--- theorem pred_ne_pred_iff : pred a ≠ pred b ↔ a ≠ b :=
---   pred_injective.ne_iff
-
--- alias ⟨_, pred_ne_pred⟩ := pred_ne_pred_iff
-
--- theorem pred_lt_iff_eq_or_lt : pred a < b ↔ a = b ∨ a < b :=
---   pred_lt_iff.trans le_iff_eq_or_lt
 
 theorem pred_eq_iff_covBy : pred b = a ↔ a ⋖ b :=
   ⟨by
     rintro rfl
     exact pred_covBy _, CovBy.pred_eq⟩
-
--- theorem Ioi_pred_eq_insert (a : α) : Ioi (pred a) = insert a (Ioi a) :=
---   ext fun _ => pred_lt_iff_eq_or_lt.trans <| or_congr_left eq_comm
-
--- theorem Ico_pred_right_eq_insert (h : a ≤ b) : Ioc (pred a) b = insert a (Ioc a b) := by
---   simp_rw [← Ioi_inter_Iic, Ioi_pred_eq_insert, insert_inter_of_mem (mem_Iic.2 h)]
-
--- theorem Ioo_pred_right_eq_insert (h : a < b) : Ioo (pred a) b = insert a (Ioo a b) := by
-  -- simp_rw [← Ioi_inter_Iio, Ioi_pred_eq_insert, insert_inter_of_mem (mem_Iio.2 h)]
 
 end NoMinOrder
 
@@ -811,16 +749,7 @@ end OrderBot
 
 section OrderTop
 
-variable [OrderTop α]
-
--- Porting note (#10618): removing @[simp],`simp` can prove it
--- theorem pred_top_lt_iff [NoMinOrder α] : pred ⊤ < a ↔ a = ⊤ :=
---   @lt_succ_bot_iff αᵒᵈ _ _ _ _ _
-
--- theorem pred_top_le_iff : pred ⊤ ≤ a ↔ a = ⊤ ∨ a = pred ⊤ :=
---   @le_succ_bot_iff αᵒᵈ _ _ _ _
-
-variable [Nontrivial α]
+variable [OrderTop α] [Nontrivial α]
 
 theorem pred_lt_top (a : α) : pred a < ⊤ :=
   (pred_mono le_top).trans_lt <| pred_lt_of_not_isMin not_isMin_top
@@ -831,6 +760,128 @@ theorem pred_ne_top (a : α) : pred a ≠ ⊤ :=
 end OrderTop
 
 end PartialOrder
+
+section LinearOrder
+
+variable [LinearOrder α] [PredOrder α] {a b : α}
+
+theorem le_of_pred_lt {a b : α} : pred a < b → a ≤ b := fun h ↦ by
+  by_contra! nh
+  exact le_pred_of_lt nh |>.trans_lt h |>.false
+
+theorem pred_lt_iff_of_not_isMin (ha : ¬IsMin a) : pred a < b ↔ a ≤ b :=
+  ⟨le_of_pred_lt, (pred_lt_of_not_isMin ha).trans_le⟩
+
+theorem pred_lt_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a < pred b ↔ a < b := by
+  rw [pred_lt_iff_of_not_isMin ha, le_pred_iff_of_not_isMin hb]
+
+theorem pred_le_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a ≤ pred b ↔ a ≤ b := by
+  rw [le_pred_iff_of_not_isMin hb, pred_lt_iff_of_not_isMin ha]
+
+theorem Ioi_pred_of_not_isMin (ha : ¬IsMin a) : Ioi (pred a) = Ici a :=
+  Set.ext fun _ => pred_lt_iff_of_not_isMin ha
+
+theorem Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Ioc (pred a) b = Icc a b := by
+  rw [← Ioi_inter_Iic, Ioi_pred_of_not_isMin ha, Ici_inter_Iic]
+
+theorem Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ioo (pred a) b = Ico a b := by
+  rw [← Ioi_inter_Iio, Ioi_pred_of_not_isMin ha, Ici_inter_Iio]
+
+theorem pred_eq_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a = pred b ↔ a = b := by
+  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, pred_le_pred_iff_of_not_isMin ha hb,
+    pred_lt_pred_iff_of_not_isMin ha hb]
+
+theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
+  by_cases ha : IsMin a
+  · rw [ha.pred_eq, or_iff_right_of_imp ge_of_eq]
+  · rw [← pred_lt_iff_of_not_isMin ha, le_iff_eq_or_lt, eq_comm]
+
+theorem pred_lt_iff_eq_or_lt_of_not_isMin (ha : ¬IsMin a) : pred a < b ↔ a = b ∨ a < b :=
+  (pred_lt_iff_of_not_isMin ha).trans le_iff_eq_or_lt
+
+theorem Ici_pred (a : α) : Ici (pred a) = insert (pred a) (Ici a) :=
+  ext fun _ => pred_le_iff_eq_or_le
+
+theorem Ioi_pred_eq_insert_of_not_isMin (ha : ¬IsMin a) : Ioi (pred a) = insert a (Ioi a) := by
+  ext x; simp only [insert, mem_setOf, @eq_comm _ x a, mem_Ioi, Set.insert]
+  exact pred_lt_iff_eq_or_lt_of_not_isMin ha
+
+theorem Icc_pred_left (h : pred a ≤ b) : Icc (pred a) b = insert (pred a) (Icc a b) := by
+  simp_rw [← Ici_inter_Iic, Ici_pred, insert_inter_of_mem (mem_Iic.2 h)]
+
+theorem Ico_pred_left (h : pred a < b) : Ico (pred a) b = insert (pred a) (Ico a b) := by
+  simp_rw [← Ici_inter_Iio, Ici_pred, insert_inter_of_mem (mem_Iio.2 h)]
+
+section NoMinOrder
+
+variable [NoMinOrder α]
+
+@[simp]
+theorem pred_lt_iff : pred a < b ↔ a ≤ b :=
+  pred_lt_iff_of_not_isMin <| not_isMin a
+
+theorem pred_le_pred_iff : pred a ≤ pred b ↔ a ≤ b := by simp
+
+theorem pred_lt_pred_iff : pred a < pred b ↔ a < b := by simp
+
+alias ⟨le_of_pred_le_pred, _⟩ := pred_le_pred_iff
+
+alias ⟨lt_of_pred_lt_pred, _⟩ := pred_lt_pred_iff
+
+@[simp]
+theorem Ioi_pred (a : α) : Ioi (pred a) = Ici a :=
+  Ioi_pred_of_not_isMin <| not_isMin a
+
+@[simp]
+theorem Ioc_pred_left (a b : α) : Ioc (pred a) b = Icc a b :=
+  Ioc_pred_left_of_not_isMin <| not_isMin _
+
+@[simp]
+theorem Ioo_pred_left (a b : α) : Ioo (pred a) b = Ico a b :=
+  Ioo_pred_left_of_not_isMin <| not_isMin _
+
+@[simp]
+theorem pred_eq_pred_iff : pred a = pred b ↔ a = b := by
+  simp_rw [eq_iff_le_not_lt, pred_le_pred_iff, pred_lt_pred_iff]
+
+theorem pred_injective : Injective (pred : α → α) := fun _ _ => pred_eq_pred_iff.1
+
+theorem pred_ne_pred_iff : pred a ≠ pred b ↔ a ≠ b :=
+  pred_injective.ne_iff
+
+alias ⟨_, pred_ne_pred⟩ := pred_ne_pred_iff
+
+theorem pred_lt_iff_eq_or_lt : pred a < b ↔ a = b ∨ a < b :=
+  pred_lt_iff.trans le_iff_eq_or_lt
+
+theorem Ioi_pred_eq_insert (a : α) : Ioi (pred a) = insert a (Ioi a) :=
+  ext fun _ => pred_lt_iff_eq_or_lt.trans <| or_congr_left eq_comm
+
+theorem Ico_pred_right_eq_insert (h : a ≤ b) : Ioc (pred a) b = insert a (Ioc a b) := by
+  simp_rw [← Ioi_inter_Iic, Ioi_pred_eq_insert, insert_inter_of_mem (mem_Iic.2 h)]
+
+theorem Ioo_pred_right_eq_insert (h : a < b) : Ioo (pred a) b = insert a (Ioo a b) := by
+  simp_rw [← Ioi_inter_Iio, Ioi_pred_eq_insert, insert_inter_of_mem (mem_Iio.2 h)]
+
+end NoMinOrder
+
+section OrderTop
+
+variable [OrderTop α]
+
+-- Porting note (#10618): removing @[simp],`simp` can prove it
+theorem pred_top_lt_iff [NoMinOrder α] : pred ⊤ < a ↔ a = ⊤ :=
+  @lt_succ_bot_iff αᵒᵈ _ _ _ _ _
+
+theorem pred_top_le_iff : pred ⊤ ≤ a ↔ a = ⊤ ∨ a = pred ⊤ :=
+  @le_succ_bot_iff αᵒᵈ _ _ _ _
+
+end OrderTop
+
+end LinearOrder
 
 /-- There is at most one way to define the predecessors in a `PartialOrder`. -/
 instance [PartialOrder α] : Subsingleton (PredOrder α) :=
