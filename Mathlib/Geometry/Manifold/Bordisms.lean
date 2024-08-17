@@ -622,9 +622,29 @@ variable {x y : ℝ} [Fact (x < y)] in
 instance : HasNiceBoundary (foo M I x y) := sorry
 
 /-- If `M` is boundaryless, `∂(M × [0,1])` is diffeomorphic to the disjoint union `M ⊔ M`. -/
+-- XXX below is a definition, but that will surely *not* be nice to work with... can I get sth better?
 def Diffeomorph.productInterval_sum : Diffeomorph ((foo M I 0 1).model) I
-    ((I.prod (𝓡∂ 1)).boundary (M × (Icc (0 : ℝ) 1))) (M ⊕ M') ∞ :=
-  sorry
+    ((I.prod (𝓡∂ 1)).boundary (M × (Icc (0 : ℝ) 1))) (M ⊕ M) ∞ where
+  toFun := by
+    rw [boundary_product]
+    -- We send M × {0} to the first factor and M × {1} to the second.
+    exact fun p ↦ if p.1.2 = 0 then Sum.inl p.1.1 else Sum.inr p.1.1
+  invFun := by
+    rw [boundary_product]
+    exact Sum.elim (fun x ↦ ⟨(x, 0), trivial, by tauto⟩) (fun x ↦ ⟨(x, 1), trivial, by tauto⟩)
+  left_inv := sorry
+  right_inv := sorry
+  contMDiff_toFun := by
+    dsimp
+    -- Several pieces still missing:
+    -- f is C^n iff each restriction to M x {0} is C^n
+    -- working with the actual terms.
+    sorry
+  contMDiff_invFun := by
+    -- the following code errors...
+    --suffices ContMDiff I (foo M I 0 1).model ∞ (Sum.elim (fun x ↦ ⟨(x, 0), trivial, by tauto⟩) (fun x ↦ ⟨(x, 1), trivial, by tauto⟩)) by
+    --  sorry
+    sorry
 
 /-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
 def refl (s : SingularNManifold X n M I) : UnorientedCobordism s s (foo M I 0 1) where
