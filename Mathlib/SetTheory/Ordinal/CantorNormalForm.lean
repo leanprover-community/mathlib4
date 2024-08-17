@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Violeta Hernández Palacios
 -/
-import Mathlib.Data.List.Sigma
+import Mathlib.Data.Finsupp.AList
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Exponential
 
@@ -25,7 +25,6 @@ normal form:
 
 # Todo
 
-- Add API for the coefficients of the Cantor normal form.
 - Prove the basic results relating the CNF to the arithmetic operations on ordinals.
 -/
 
@@ -166,5 +165,69 @@ theorem CNF_exponents_sorted (b o : Ordinal) : (CNF.exponents b o).Sorted (· > 
         refine ⟨?_, IH⟩
         intro a H
         exact (le_log_of_mem_CNF_exponents H).trans_lt <| log_mod_opow_log_lt_log_self hb hbo
+
+open AList Finsupp
+
+/-- Cantor normal form `CNF` as an `AList`. -/
+@[pp_nodot]
+def CNF_AList (b o : Ordinal) : AList (fun _ : Ordinal => Ordinal) where
+  entries := CNF b o
+  nodupKeys := (CNF_exponents_sorted b o).nodup
+
+@[simp]
+theorem CNF_AList_entries (b o : Ordinal) : (CNF_AList b o).entries = CNF b o :=
+  rfl
+
+@[simp]
+theorem CNF_AList_keys (b o : Ordinal) : (CNF_AList b o).keys = CNF.exponents b o :=
+  rfl
+
+/-- The finitely supported function returning the coefficients of the `CNF` associated to each
+exponent. -/
+@[pp_nodot]
+def CNF_coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
+  (CNF_AList b o).lookupFinsupp
+
+theorem CNF_coeff_of_mem_CNF {b o e c : Ordinal} (h : ⟨e, c⟩ ∈ CNF b o) :
+    CNF_coeff b o e = c := by
+  rw [← CNF_AList_entries] at h
+  rw [CNF_coeff, lookupFinsupp_apply, mem_lookup_iff.2 h]
+  rfl
+
+theorem CNF_coeff_of_not_mem_CNF {b o e : Ordinal} (h : e ∉ CNF.exponents b o) :
+    CNF_coeff b o e = 0 := by
+  rw [CNF_coeff, lookupFinsupp_apply, lookup_eq_none.2 h, Option.getD_none]
+
+theorem CNF_coeff_zero_apply (b e : Ordinal) : CNF_coeff b 0 e = 0 := by
+  apply CNF_coeff_of_not_mem_CNF
+  rw [CNF.exponents_zero]
+  exact not_mem_nil e
+
+@[simp]
+theorem CNF_coeff_zero_right (b : Ordinal) : CNF_coeff b 0 = 0 := by
+  ext e
+  exact CNF_coeff_zero_apply b e
+
+theorem CNF_coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) :
+    CNF_coeff b o = single 0 o := by
+  ext a
+  obtain rfl | ho := eq_or_ne o 0
+  · simp
+  · obtain rfl | ha := eq_or_ne a 0
+    · apply CNF_coeff_of_mem_CNF
+      rw [CNF_of_le_one hb ho]
+      simp
+    · rw [single_eq_of_ne ha.symm]
+      apply CNF_coeff_of_not_mem_CNF
+      rw [CNF.exponents, CNF_of_le_one hb ho]
+      simpa using ha
+
+@[simp]
+theorem CNF_coeff_zero_left (o : Ordinal) : CNF_coeff 0 o = single 0 o :=
+  CNF_coeff_of_le_one zero_le_one o
+
+@[simp]
+theorem CNF_coeff_one (o : Ordinal) : CNF_coeff 1 o = single 0 o :=
+  CNF_coeff_of_le_one le_rfl o
 
 end Ordinal
