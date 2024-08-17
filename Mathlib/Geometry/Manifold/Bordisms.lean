@@ -671,6 +671,7 @@ def warmup {X : Type*} [TopologicalSpace X] : X × ({0, 1} : Set ℝ) ≃ₜ X �
   continuous_invFun := sorry
   continuous_toFun := sorry
 
+variable (I M) in
 /-- If `M` is boundaryless, `∂(M × [0,1])` is diffeomorphic to the disjoint union `M ⊔ M`. -/
 -- XXX below is a definition, but that will surely *not* be nice to work with...
 -- can I get something better behaved?
@@ -697,16 +698,52 @@ def Diffeomorph.productInterval_sum : Diffeomorph ((productBoundaryData M I 0 1)
     --  sorry
     sorry
 
+variable (I M) in
+lemma Diffeomorph.productInterval_sum_toFun :
+    (Diffeomorph.productInterval_sum M I).toFun =
+  (fun p ↦ if p.1.2 = 0 then Sum.inl p.1.1 else Sum.inr p.1.1) := sorry
+
+-- TODO: how to state this nicely?
+-- variable (I M) in
+-- lemma Diffeomorph.productInterval_sum_invFun_comp_inl :
+--     (Subtype.val ∘ Sum.left) ∘ (Diffeomorph.productInterval_sum M I).invFun =
+--   Sum.elim (fun x ↦ ⟨(x, 0), trivial, by tauto⟩) (fun x ↦ ⟨(x, 1), trivial, by tauto⟩) := sorry
+
+--lemma api1 : fun p : M × ↑(Icc 0 1)↦ p.1 ∘ Subtype.val ∘ Diffeomorph.productInterval_sum.symm ∘ Sum.inl = id := sorry
+
+theorem api_lemma1 {E : Type u_1} {H : Type u_5}
+  [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : TopologicalSpace H] {M : Type u_12}
+  [inst_3 : TopologicalSpace M] [inst_4 : ChartedSpace H M] {I : ModelWithCorners ℝ E H}
+  [inst_5 : SmoothManifoldWithCorners I M] {M' : Type u_13} [inst_6 : TopologicalSpace M'] [inst_7 : ChartedSpace H M']
+  [inst_8 : SmoothManifoldWithCorners I M'] {M'' : Type u_14} [inst_9 : TopologicalSpace M'']
+  [inst_10 : ChartedSpace H M''] [inst_11 : SmoothManifoldWithCorners I M''] [inst_12 : CompactSpace M]
+  [inst_13 : BoundarylessManifold I M] [inst_14 : CompactSpace M'] [inst_15 : BoundarylessManifold I M']
+  [inst_16 : CompactSpace M''] [inst_17 : BoundarylessManifold I M''] [inst_18 : CompactSpace M]
+  [inst_19 : FiniteDimensional ℝ E] [inst_20 : CompactSpace M'] [inst_21 : CompactSpace M''] [inst_22 : Nonempty H] :
+  -- sdfsdf
+  (fun p ↦ p.1) ∘ Subtype.val ∘ (Diffeomorph.productInterval_sum.symm M I) ∘ Sum.inl = id := sorry
+
+lemma bar {α β γ : Type*} {f f' : α → β} {g : β → γ} (h : f = f') : g ∘ f = g ∘ f' := sorry
+
 /-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
 def refl (s : SingularNManifold X n M I) : UnorientedCobordism s s (productBoundaryData M I 0 1) where
   hW := by infer_instance
   hW' := by rw [finrank_prod, s.hdim.out, finrank_euclideanSpace_fin]
   F := s.f ∘ (fun p ↦ p.1)
   hF := s.hf.comp continuous_fst
-  φ := Diffeomorph.productInterval_sum
+  φ := Diffeomorph.productInterval_sum M I
   -- TODO: most of these proofs should become API lemmas about `Diffeomorph.productInterval_sum`
   hFf := sorry
-  hFg := sorry
+    -- calc (s.f ∘ fun p ↦ p.1) ∘ Subtype.val ∘ (Diffeomorph.productInterval_sum M I).symm ∘ Sum.inl
+    --   _ = s.f ∘ ((fun p ↦ p.1) ∘ Subtype.val ∘ (Diffeomorph.productInterval_sum M I).symm ∘ Sum.inl) := rfl
+    --   _ = s.f ∘ @id M := by
+    --     apply bar
+    --     ext p
+    --     -- first API lemma: writing this suffers a lot, perhaps due to the `rw` in the definition...
+    --     -- mathematically, I want to rw [Sum.elim_inl], then remove the subtype.val part
+    --     -- and it should be obvious...
+    --   _ = s.f := rfl
+  hFg := sorry -- same argument, just with inr
 
 variable (s : SingularNManifold X n M I) (t : SingularNManifold X n M' I)
   {W : Type*} [TopologicalSpace W] [ChartedSpace H'' W]
@@ -720,9 +757,14 @@ def symm (φ : UnorientedCobordism s t bd) : UnorientedCobordism t s bd where
   F := φ.F
   hF := φ.hF
   φ := Diffeomorph.trans φ.φ (Diffeomorph.swap M I M')
-  -- apply Diffeomorph.{inl_inr}, and combine with φ.hFf and φ.hFg
-  hFf := sorry
+  -- apply Diffeomorph.{inl, inr}, and combine with φ.hFf and φ.hFg
+  hFf := by
+    have : (Diffeomorph.swap M I M').symm = @Sum.swap M' M := rfl -- TODO: make API lemma
+    rw [← this]
+    sorry
   hFg := sorry
+
+#exit
 
 -- Fleshing out the details for transitivity will take us too far: we merely sketch the necessary
 -- pieces.
