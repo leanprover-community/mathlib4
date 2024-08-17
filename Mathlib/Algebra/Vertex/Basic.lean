@@ -250,7 +250,7 @@ theorem toNat_neg_succ_sub_eq_Nat (x y : ℤ) (n : ℕ) (h : Int.toNat (-x - y) 
   rw [neg_add', sub_right_comm]
   exact h
 
-theorem borcherds1Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
+theorem borcherds1Recursion
     (a b c : V) (r s t : ℤ) : Borcherds_sum_1 R a b c (r + 1) s t =
     Borcherds_sum_1 R a b c r (s + 1) t + Borcherds_sum_1 R a b c r s (t + 1) := by
   unfold Borcherds_sum_1
@@ -270,7 +270,7 @@ theorem borcherds1Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
     rw [← Nat.add_one, Nat.cast_add, sub_add_eq_sub_sub_swap, add_assoc t, add_comm 1, Nat.cast_one,
       add_sub_right_comm, Int.add_sub_cancel] -- end third sum
 
-theorem borcherds2Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
+theorem borcherds2Recursion
     (a b c : V) (r s t : ℤ) : Borcherds_sum_2 R a b c (r + 1) s t =
     Borcherds_sum_2 R a b c r (s + 1) t + Borcherds_sum_2 R a b c r s (t + 1) := by
   unfold Borcherds_sum_2
@@ -295,7 +295,7 @@ theorem borcherds2Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
       rw [add_assoc, add_comm 1 t] --end second sum
       rw [Ring.choose_zero_right (t + 1), Ring.choose_zero_right t, add_assoc, add_comm 1 t]
 
-theorem borcherds3Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
+theorem borcherds3Recursion
     (a b c : V) (r s t : ℤ) : Borcherds_sum_3 R a b c (r + 1) s t =
     Borcherds_sum_3 R a b c r (s + 1) t + Borcherds_sum_3 R a b c r s (t + 1) := by
   unfold Borcherds_sum_3

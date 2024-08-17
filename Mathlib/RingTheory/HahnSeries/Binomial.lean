@@ -111,7 +111,7 @@ theorem unitBinomial_eq_single_add_single {g g' : Γ} {hg : IsAddUnit g} {hgg' :
   simp only [UnitBinomial, AddUnits.neg_eq_val_neg, Units.inv_eq_val_inv, Units.val_mul,
     val_UnitSingle, IsUnit.unit_spec, mul_sub, mul_one, single_mul_single, sub_right_inj]
   rw [← add_assoc, IsAddUnit.add_val_neg, zero_add, ← mul_assoc, IsUnit.mul_val_inv, one_mul,
-    sub_eq_iff_eq_add, add_assoc, ← single_add, add_neg_self, single_eq_zero, add_zero]
+    sub_eq_iff_eq_add, add_assoc, ← single_add, add_neg_cancel, single_eq_zero, add_zero]
 
 theorem orderTop_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R}
     (ha : IsUnit a) (b : R) : (UnitBinomial hg hgg' ha b).val.orderTop = g := by
@@ -130,13 +130,9 @@ theorem leadingCoeff_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) 
   rw [leadingCoeff_eq, order_unitBinomial, unitBinomial_eq_single_add_single, add_coeff,
     single_coeff_same, single_coeff_of_ne (ne_of_lt hgg'), add_zero]
 
-
-
 --theorem unitBinomial_npow_coeff
 
 -- coefficients of powers - use embDomain_coeff and embDomain_notin_range from Basic
-
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
 
 theorem orderTop_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     (single g a + single g' b).orderTop = g := by

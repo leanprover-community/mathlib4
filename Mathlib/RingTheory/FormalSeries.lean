@@ -131,9 +131,9 @@ instance [AddCommMonoid C] : AddCommMonoid (FormalSeries Γ C) where
 /-- The space of formal series is an additive group if the space of its coefficients is an
 additive group. -/
 instance [AddGroup C] : AddGroup (FormalSeries Γ C) where
-  add_left_neg f := by
+  neg_add_cancel f := by
     ext p
-    simp only [instAdd_add_coef, instNeg_neg_coef, add_left_neg, instZero_zero_coef]
+    simp only [instAdd_add_coef, instNeg_neg_coef, neg_add_cancel, instZero_zero_coef]
   zsmul := zsmulRec
 
 /-- The space of formal series is an additive commutative group if the space of its coefficients

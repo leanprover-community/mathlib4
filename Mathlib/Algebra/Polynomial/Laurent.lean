@@ -635,7 +635,7 @@ end Module
 
 section Algebra
 
-variable [Semiring R] [Semiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
+variable [Semiring R] [Semiring S] [Module R S] [SMulCommClass R S S]
 (f g : R[T;T⁻¹]) (x y : Sˣ)
 
 theorem eval_T_pow_mul (n : ℤ) : (T n * f).eval x = (x ^ n).val * f.eval x := by
@@ -647,7 +647,7 @@ theorem eval_T_pow_mul (n : ℤ) : (T n * f).eval x = (x ^ n).val * f.eval x := 
       ← smul_eq_mul, smul_comm, smul_eq_mul]
 
 @[simp]
-theorem eval_mul : (f * g).eval x = f.eval x * g.eval x := by
+theorem eval_mul [IsScalarTower R S S] : (f * g).eval x = f.eval x * g.eval x := by
   induction f using LaurentPolynomial.induction_on' with
   | h_add _ _ hp hq=>
     rw [add_mul, eval_add, eval_add, hp, hq, add_mul]

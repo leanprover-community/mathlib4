@@ -64,6 +64,7 @@ theorem support_one_subset [Zero R] [One R] : support (1 : HahnSeries Γ R) ⊆ 
 theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries Γ R) = {0} :=
   support_single_of_ne one_ne_zero
 
+open Classical in
 theorem orderTop_one_ite [Zero R] [One R] :
     orderTop (1 : HahnSeries Γ R) = if (0 : R) = 1 then ⊤ else 0 := by
   by_cases h : (0 : R) = 1
@@ -113,8 +114,7 @@ def rec [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → So
   fun x => h <| (of R).symm x
 
 @[ext]
-theorem ext [PartialOrder Γ] [Zero V] [SMul R V] (x y : HahnModule Γ R V)
-    (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
+theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
 end

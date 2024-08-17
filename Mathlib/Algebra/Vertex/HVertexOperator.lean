@@ -37,7 +37,7 @@ assert_not_exists Cardinal
 
 noncomputable section
 
-variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]
+variable {Γ Γ' R U V W : Type*} [CommRing R]
   [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
@@ -50,10 +50,9 @@ namespace HVertexOperator
 
 section Coeff
 
-variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
-
 open HahnModule
+
+variable [PartialOrder Γ]
 
 @[ext]
 theorem ext (A B : HVertexOperator Γ R V W) (h : ∀ v : V, A v = B v) :
@@ -137,10 +136,9 @@ theorem nsmul_coeff (A : HVertexOperator Γ R V W) {n : ℕ} : (n • A).coeff =
 
 end Coeff
 
-
 section Module
 
-variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
+variable [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
   [IsOrderedCancelVAdd Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
   [Module R V] [AddCommGroup W] [Module R W]
 
@@ -384,13 +382,12 @@ abbrev HStateFieldMap (Γ R U V W : Type*) [PartialOrder Γ] [CommRing R] [AddCo
 
 namespace VertexAlg
 
-variable {U} (R) {X Y : Type*} [CommRing R] [AddCommGroup U] [Module R U] [AddCommGroup V]
-  [Module R V] [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R X] [AddCommGroup Y]
-  [Module R Y]
+variable (R) {X Y : Type*}
 
 /-- The coefficient function of a heterogeneous state-field map. -/
 @[simps]
-def coeff (A : HStateFieldMap Γ R U V W) (g : Γ) : U →ₗ[R] V →ₗ[R] W where
+def coeff [PartialOrder Γ] [CommRing R] [AddCommGroup U] [Module R U] [Module R V] [Module R W]
+    (A : HStateFieldMap Γ R U V W) (g : Γ) : U →ₗ[R] V →ₗ[R] W where
   toFun u := (A u).coeff g
   map_add' a b := by simp
   map_smul' r a := by simp
@@ -399,17 +396,18 @@ open TensorProduct
 
 /-- The standard equivalence between heterogeneous state field maps and heterogeneous vertex
 operators on the tensor product. -/
-def uncurry : HStateFieldMap Γ R U V W ≃ₗ[R] HVertexOperator Γ R (U ⊗[R] V) W :=
+def uncurry [PartialOrder Γ] [AddCommGroup U] [Module R U] :
+    HStateFieldMap Γ R U V W ≃ₗ[R] HVertexOperator Γ R (U ⊗[R] V) W :=
   lift.equiv R U V (HahnModule Γ R W)
 
 @[simp]
-theorem uncurry_apply (A : HStateFieldMap Γ R U V W) (u : U) (v : V) :
-    uncurry R A (u ⊗ₜ v) = A u v :=
+theorem uncurry_apply [PartialOrder Γ] [AddCommGroup U] [Module R U] (A : HStateFieldMap Γ R U V W)
+    (u : U) (v : V) : uncurry R A (u ⊗ₜ v) = A u v :=
   rfl
 
 @[simp]
-theorem uncurry_symm_apply (A : HVertexOperator Γ R (U ⊗[R] V) W) (u : U) (v : V) :
-    (uncurry R).symm A u v = A (u ⊗ₜ v) :=
+theorem uncurry_symm_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
+    (A : HVertexOperator Γ R (U ⊗[R] V) W) (u : U) (v : V) : (uncurry R).symm A u v = A (u ⊗ₜ v) :=
   rfl
 
 /-! Iterate starting with `Y_{UV}^W : U ⊗ V → W((z))` and `Y_{WX}^Y : W ⊗ X → Y((w))`, make

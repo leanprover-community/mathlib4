@@ -510,9 +510,9 @@ theorem nonzero_of_nonzero_add_leading [AddMonoid R] {x y : HahnSeries Γ R}
   rw [hx, leadingTerm_zero, add_zero] at hxy
   exact hy (id hxy.symm)
 
-variable [AddCancelCommMonoid R] {x y : HahnSeries Γ R} (hxy : x = y + x.leadingTerm)
+variable [AddCancelCommMonoid R] {x y : HahnSeries Γ R}
 
-theorem coeff_add_leading (h : x ≠ 0) :
+theorem coeff_add_leading (hxy : x = y + x.leadingTerm) (h : x ≠ 0) :
     y.coeff (x.isWF_support.min (support_nonempty_iff.2 h)) = 0 := by
   let xo := x.isWF_support.min (support_nonempty_iff.2 h)
   have hx : x.coeff xo = y.coeff xo + x.leadingTerm.coeff xo := by
@@ -522,7 +522,8 @@ theorem coeff_add_leading (h : x ≠ 0) :
   rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_leadingTerm, self_eq_add_left] at hx
   exact hx
 
-theorem add_leading_orderTop_ne (hy : y ≠ 0) : x.orderTop ≠ y.orderTop := by
+theorem add_leading_orderTop_ne (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
+    x.orderTop ≠ y.orderTop := by
   intro h
   have hyne : y.leadingTerm ≠ 0 := leadingTerm_ne_iff.mp hy
   have hx : x ≠ 0 := nonzero_of_nonzero_add_leading hxy hy
@@ -532,7 +533,8 @@ theorem add_leading_orderTop_ne (hy : y ≠ 0) : x.orderTop ≠ y.orderTop := by
     single_eq_zero] at hyne
   exact hyne rfl
 
-theorem coeff_eq_of_not_orderTop (g : Γ) (hg : ↑g ≠ x.orderTop) : y.coeff g = x.coeff g := by
+theorem coeff_eq_of_not_orderTop (hxy : x = y + x.leadingTerm) (g : Γ) (hg : ↑g ≠ x.orderTop) :
+    y.coeff g = x.coeff g := by
   rw [hxy, add_coeff, leadingTerm]
   simp only [self_eq_add_right]
   split_ifs with hx
@@ -540,7 +542,8 @@ theorem coeff_eq_of_not_orderTop (g : Γ) (hg : ↑g ≠ x.orderTop) : y.coeff g
   · simp only [orderTop_of_ne hx, ne_eq, WithTop.coe_eq_coe] at hg
     exact single_coeff_of_ne hg
 
-theorem support_subset_add_single_support : y.support ⊆ x.support := by
+theorem support_subset_add_single_support (hxy : x = y + x.leadingTerm) :
+    y.support ⊆ x.support := by
   intro g hg
   by_cases hgx : g = orderTop x
   · intro hx
@@ -548,13 +551,15 @@ theorem support_subset_add_single_support : y.support ⊆ x.support := by
   · exact fun hxg => hg (Eq.mp (congrArg (fun r ↦ r = 0)
     (coeff_eq_of_not_orderTop hxy g hgx).symm) hxg)
 
-theorem orderTop_lt_add_single_support_orderTop (hy : y ≠ 0) : x.orderTop < y.orderTop := by
+theorem orderTop_lt_add_single_support_orderTop (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
+    x.orderTop < y.orderTop := by
   refine lt_of_le_of_ne ?_ (add_leading_orderTop_ne hxy hy)
   rw [orderTop_of_ne hy, orderTop_of_ne <| nonzero_of_nonzero_add_leading hxy hy]
   exact WithTop.coe_le_coe.mpr <| Set.IsWF.min_le_min_of_subset <|
     support_subset_add_single_support hxy
 
-theorem order_lt_add_single_support_order [Zero Γ] (hy : y ≠ 0) : x.order < y.order := by
+theorem order_lt_add_single_support_order [Zero Γ] (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
+    x.order < y.order := by
   rw [← WithTop.coe_lt_coe, order_eq_orderTop_of_ne hy, order_eq_orderTop_of_ne <|
     nonzero_of_nonzero_add_leading hxy hy]
   exact orderTop_lt_add_single_support_orderTop hxy hy

@@ -22,7 +22,7 @@ variable {G P : Type*}
 
 namespace WithTop
 
-variable [LE G] [LE P] [_root_.VAdd G P] [IsOrderedVAdd G P] {g : WithTop G} {p : WithTop P}
+variable [_root_.VAdd G P] {g : WithTop G} {p : WithTop P}
 
 instance VAdd : VAdd (WithTop G) (WithTop P) :=
   ⟨Option.map₂ (· +ᵥ ·)⟩
