@@ -75,12 +75,12 @@ nonrec theorem Sorted.cons {r : α → α → Prop} [IsTrans α r] {l : List α}
   ha.cons <| forall_mem_cons.2 ⟨h, fun _ hx => _root_.trans h <| rel_of_sorted_cons ha _ hx⟩
 
 theorem Sorted.cons_iff {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α} :
-    r b a ∧ Sorted r (a :: l) ↔ Sorted r (b :: a :: l) := by
+    Sorted r (b :: a :: l) ↔ r b a ∧ Sorted r (a :: l) := by
   constructor
-  · rintro ⟨h, ha⟩
-    exact ha.cons h
   · intro h
     exact ⟨rel_of_sorted_cons h _ (mem_cons_self a _), h.of_cons⟩
+  · rintro ⟨h, ha⟩
+    exact ha.cons h
 
 theorem Sorted.head!_le [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· < ·) l)
     (ha : a ∈ l) : l.head! ≤ a := by
