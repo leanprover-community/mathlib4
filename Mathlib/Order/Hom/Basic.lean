@@ -774,9 +774,7 @@ theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = 
   e.toEquiv.symm_apply_eq
 
 @[simp]
-theorem symm_symm (e : α ≃o β) : e.symm.symm = e := by
-  ext
-  rfl
+theorem symm_symm (e : α ≃o β) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (OrderIso.symm : (α ≃o β) → β ≃o α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
