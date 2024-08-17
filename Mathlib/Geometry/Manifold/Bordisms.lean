@@ -536,8 +536,8 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N} (hf : Smooth I J f) (hg : 
 lemma ContMDiff.sum_map {n : ℕ∞} [Nonempty H'] {f : M → N} {g : M' → N'}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) := sorry
 
-def Diffeomorph.sum_map [Nonempty H'] {n : ℕ∞} (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-    Diffeomorph I J (M ⊕ M') (N ⊕ N') n where
+def Diffeomorph.sum_map [Nonempty H'] {n : ℕ∞} (φ : Diffeomorph I J M N n)
+    (ψ : Diffeomorph I J M' N' n) : Diffeomorph I J (M ⊕ M') (N ⊕ N') n where
   toFun := Sum.map φ ψ
   invFun := Sum.map φ.symm ψ.symm
   left_inv := by
@@ -560,6 +560,22 @@ def Diffeomorph.sum_map [Nonempty H'] {n : ℕ∞} (φ : Diffeomorph I J M N n) 
       _ = id := Sum.map_id_id
   contMDiff_toFun := ContMDiff.sum_map φ.contMDiff_toFun ψ.contMDiff_toFun
   contMDiff_invFun := ContMDiff.sum_map φ.contMDiff_invFun ψ.contMDiff_invFun
+
+lemma Diffeomorph.sum_map_symm_symm [Nonempty H'] {n : ℕ∞} (φ : Diffeomorph I J M N n)
+    (ψ : Diffeomorph I J M' N' n) :
+  Diffeomorph.sum_map φ.symm ψ.symm = (Diffeomorph.sum_map φ ψ).symm := rfl
+
+lemma Diffeomorph.sum_map_coe [Nonempty H'] {n : ℕ∞} (φ : Diffeomorph I J M N n)
+    (ψ : Diffeomorph I J M' N' n) :
+  Diffeomorph.sum_map φ ψ = Sum.map φ ψ := rfl
+
+lemma Diffeomorph.sum_map_inl [Nonempty H'] {n : ℕ∞} (φ : Diffeomorph I J M N n)
+    (ψ : Diffeomorph I J M' N' n) :
+  (Diffeomorph.sum_map φ ψ) ∘ Sum.inl = Sum.inl ∘ φ := rfl
+
+lemma Diffeomorph.sum_map_inr [Nonempty H'] {n : ℕ∞} (φ : Diffeomorph I J M N n)
+    (ψ : Diffeomorph I J M' N' n) :
+  (Diffeomorph.sum_map φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
 
 -- To what extent do these results exist abstractly?
 def Sum.swapEquiv : M ⊕ M' ≃ M' ⊕ M where
@@ -813,6 +829,10 @@ def refl (s : SingularNManifold X n M I) : UnorientedCobordism s s (productBound
     --   _ = s.f := rfl
   hFg := sorry -- same argument, just with inr
 
+-- Slight code smell, is there a better way?
+-- congr solves everything; would like to use lemmas instead of defeq abuse...
+-- need to repeat everything all the time -> more clever design?
+
 /-- Being cobordant is symmetric. -/
 def symm (φ : UnorientedCobordism s t bd) : UnorientedCobordism t s bd where
   hW := φ.hW
@@ -840,13 +860,47 @@ def comap_fst (φ : UnorientedCobordism s t bd) (f : Diffeomorph I I M'' M ∞) 
   F := φ.F
   hF := φ.hF
   φ := Diffeomorph.trans φ.φ (Diffeomorph.sum_map f.symm (Diffeomorph.refl _ M' _))
-  hFf := sorry
-  hFg := sorry
+  hFf := by
+    have := s.hdim
+    calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans (f.symm.sum_map (Diffeomorph.refl I M' ⊤))).symm ∘ Sum.inl
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (f.sum_map (Diffeomorph.refl I M' ⊤)) ∘ Sum.inl := by congr
+      -- These are the interesting part.
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl ∘ f := by congr
+      _ = (s.comap f.contMDiff_toFun).f := by rw [SingularNManifold.comap_f, ← φ.hFf]; congr
+  hFg := by
+    have := t.hdim
+    -- Nothing interesting happens: the map is the same on this end.
+    calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans (f.symm.sum_map (Diffeomorph.refl I M' ⊤))).symm ∘ Sum.inr
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (f.sum_map (Diffeomorph.refl I M' ⊤)) ∘ Sum.inr := by congr
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (Sum.inr ∘ (Diffeomorph.refl I M' ⊤)) := by congr
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inr := by congr
+      _ = t.f := φ.hFg
 
+/-- Suppose `W` is a cobordism between `M` and `N`.
+Then a diffeomorphism `f : N'' → N` induces a cobordism between `M` and `N''`. -/
+def comap_snd (φ : UnorientedCobordism s t bd) (f : Diffeomorph I I M'' M' ∞) :
+    UnorientedCobordism s (have := t.hdim; t.comap f.contMDiff_toFun) bd where
+  hW := φ.hW
+  hW' := φ.hW'
+  F := φ.F
+  hF := φ.hF
+  φ := Diffeomorph.trans φ.φ (Diffeomorph.sum_map (Diffeomorph.refl _ M _) f.symm)
+  hFf := by
+    have := s.hdim
+    -- Nothing interesting happens: the map is the same on this end.
+    calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans ((Diffeomorph.refl I M _).sum_map f.symm)).symm ∘ Sum.inl
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl ∘ (Diffeomorph.refl I M ⊤) := by congr
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl := by congr
+      _ = s.f := φ.hFf
+  hFg := by
+    have := t.hdim
+    calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans ((Diffeomorph.refl I M _).sum_map f.symm)).symm ∘ Sum.inr
+      -- These are the interesting part.
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inr ∘ f := by congr
+      _ = (t.comap f.contMDiff_toFun).f := by
+        rw [SingularNManifold.comap_f, ← φ.hFg]; congr
 
-
-
-#exit
+-- FUTURE: transporting a cobordism under a diffeomorphism in general
 
 -- Fleshing out the details for transitivity will take us too far: we merely sketch the necessary
 -- pieces.
