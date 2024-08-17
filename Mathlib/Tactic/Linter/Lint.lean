@@ -212,51 +212,41 @@ initialize addLinter cdotLinter
 end CDotLinter
 
 /-!
-# The `dollar` linter
+# The `dollarSyntax` linter
 
-The `dollar` linter is a syntax-linter that flags uses of `<|` that are achieved by typing `$`.
+The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 -/
 
-/-- The `dollar` linter flags uses of `<|` that are achieved by typing `$`. -/
-register_option linter.dollar : Bool := {
-  defValue := false
-  descr := "enable the `dollar` linter"
+/-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`. -/
+register_option linter.dollarSyntax : Bool := {
+  defValue := true
+  descr := "enable the `dollarSyntax` linter"
 }
 
-/-- `isDollar? stx` checks whether `stx` is a `Syntax` node corresponding to `$`. -/
-def isDollar? : Syntax → Bool
-  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v] => v == "$"
-  | _ => false
+namespace DollarSyntaxLinter
 
-/-- `findDollar stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
+/-- `findDollarSyntax stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
 partial
-def findDollar : Syntax → Array Syntax
+def findDollarSyntax : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
-    let dargs := (args.map findDollar).flatten
+    let dargs := (args.map findDollarSyntax).flatten
     match kind with
-      | ``Lean.Parser.Term.cdot | ``cdotTk=> dargs.push stx
-      | _ =>  dargs
+      | ``«term_$__» => dargs.push stx
+      | _ => dargs
   |_ => #[]
 
-/-- `unwanted_dollar stx` returns an array of syntax atoms within `stx`
-corresponding to `$`s. This is precisely what the `dollar` linter flags. -/
-def unwanted_dollar (stx : Syntax) : Array Syntax :=
-  (findDollar stx).filter isDollar?
-
-namespace DollarLinter
-
-@[inherit_doc linter.dollar]
-def dollarLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.dollar (← getOptions) do
+@[inherit_doc linter.dollarSyntax]
+def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless Linter.getLinterValue linter.dollarSyntax (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    for s in unwanted_dollar stx do
-      Linter.logLint linter.dollar s m!"Please, use '<|' instead of '$'."
+    for s in findDollarSyntax stx do
+      Linter.logLint linter.dollarSyntax s m!"Please use '<|' and not '$' for the pipe operator."
 
-initialize addLinter dollarLinter
+initialize addLinter dollarSyntaxLinter
 
-end DollarLinter
+end DollarSyntaxLinter
 
 /-! # The "longLine linter" -/
 
