@@ -97,8 +97,8 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     -- This next block proves that a set of strictly positive natural density is infinite, mixed
     -- with the fact that `{n | x ∈ s n}` has strictly positive natural density.
     -- TODO: Separate it out to a lemma once we have a natural density API.
-    · refine ENNReal.div_ne_zero.2 ⟨hr₀, measure_ne_top _ _⟩ <| eq_bot_mono hx <| Tendsto.limsup_eq <|
-        tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+    · refine ENNReal.div_ne_zero.2 ⟨hr₀, measure_ne_top _ _⟩ <| eq_bot_mono hx <|
+        Tendsto.limsup_eq <| tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
         (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_left' ?_ _
       · simpa using ENNReal.Tendsto.mul_const (ENNReal.tendsto_inv_nat_nhds_zero.comp <|
           tendsto_add_atTop_nat 1) (.inr <| ENNReal.natCast_ne_top _)
