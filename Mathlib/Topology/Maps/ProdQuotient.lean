@@ -1,11 +1,25 @@
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Sets.Closeds
+import Mathlib.Topology.AlexandrovDiscrete
+import Mathlib.Topology.Homeomorph
+import Mathlib.Data.Fintype.Option
 
 open Function Set Filter TopologicalSpace
 open scoped Topology
 
 universe u v
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
+
+-- TODO: prove `Continuous Pullback.fst` and `Continuous Pullback.snd`
+
+@[simps]
+def Homeomorph.pullbackProdFst (f : X → Y) (hf : Continuous f) (Z : Type*) [TopologicalSpace Z] :
+    ((f : X → Y).Pullback (Prod.fst : Y × Z → Y)) ≃ₜ X × Z where
+  toFun a := (a.fst, a.snd.2)
+  invFun a := ⟨(a.1, f a.1, a.2), rfl⟩
+  left_inv a := Subtype.eq <| Prod.ext rfl <| Prod.ext a.2 rfl
+  right_inv _ := rfl
+  continuous_toFun := by simp only [Pullback.fst, Pullback.snd]; fun_prop
 
 namespace TopologicalSpace
 
@@ -141,6 +155,11 @@ protected theorem id : IsOpenQuotientMap (id : X → X) :=
 
 end IsOpenQuotientMap  
 
+theorem Homeomorph.isOpenQuotientMap (f : X ≃ₜ Y) : IsOpenQuotientMap f where
+  surjective := f.surjective
+  continuous := f.continuous
+  isOpenMap := f.isOpenMap
+
 @[mk_iff]
 structure IsPullbackQuotientMap (f : X → Y) : Prop where
   continuous : Continuous f
@@ -200,10 +219,21 @@ theorem IsOpenQuotientMap.isPullbackQuotientMap {f : X → Y} (hf : IsOpenQuotie
     rw [ClusterPt, ← map_neBot_iff, Filter.push_pull]
     exact h.neBot.mono <| inf_le_inf_right _ (hf.isOpenMap.nhds_le _)
 
+theorem Homeomorph.isPullbackQuotientMap (f : X ≃ₜ Y) : IsPullbackQuotientMap f :=
+  f.isOpenQuotientMap.isPullbackQuotientMap
+
 namespace IsPullbackQuotientMap
 
 protected theorem surjective {f : X → Y} (hf : IsPullbackQuotientMap f) : Surjective f := fun _ ↦
   (hf.exists_clusterPt_comap (.of_le_nhds le_rfl)).imp fun _ ↦ And.left
+
+protected theorem quotientMap {f : X → Y} (hf : IsPullbackQuotientMap f) : QuotientMap f := by
+  refine quotientMap_iff.2 ⟨hf.surjective, fun U ↦ ⟨fun h ↦ h.preimage hf.continuous, fun h ↦ ?_⟩⟩
+  rw [← isClosed_compl_iff, isClosed_iff_clusterPt]
+  intro y hy
+  rcases hf.exists_clusterPt_comap hy with ⟨x, rfl, hx⟩
+  rwa [comap_principal, ← mem_closure_iff_clusterPt, preimage_compl, closure_compl,
+    h.interior_eq] at hx
 
 protected theorem id : IsPullbackQuotientMap (id : X → X) :=
   IsOpenQuotientMap.id.isPullbackQuotientMap
@@ -244,10 +274,7 @@ protected theorem pullback {Z : Type*} [TopologicalSpace Z] {f : X → Y}
     IsPullbackQuotientMap (Function.Pullback.snd : f.Pullback g → Z) where
   continuous := continuous_snd.comp continuous_subtype_val
   exists_clusterPt_comap {z l} h := by
-    have : ClusterPt (g z) (map g (𝓝 z ⊓ l)) := by
-      refine ClusterPt.map ?_ hg.continuousAt tendsto_map
-      rwa [ClusterPt, inf_left_idem]
-    rcases hf.exists_clusterPt_comap this with ⟨x, hxz, hxl⟩
+    rcases hf.exists_clusterPt_comap (h.nhds_inf.map hg.continuousAt tendsto_map) with ⟨x, hxz, hxl⟩
     refine ⟨⟨(x, z), hxz⟩, rfl, ?_⟩
     rw [(embedding_subtype_val.basis_nhds
       ((basis_sets _).prod_nhds (basis_sets _))).clusterPt_iff (comap_hasBasis _ _)]
@@ -257,7 +284,45 @@ protected theorem pullback {Z : Type*} [TopologicalSpace Z] {f : X → Y}
       with ⟨x', hx's : x' ∈ s, z', ⟨hz't : z' ∈ t, hz'u : z' ∈ u⟩, hfxz'⟩
     refine ⟨⟨(x', z'), hfxz'.symm⟩, ⟨hx's, hz't⟩, hz'u⟩
 
-theorem of_continuous_forall_pullback {f : X → Y} (hf : Continuous f)
+protected theorem prodSwap : IsPullbackQuotientMap (Prod.swap : X × Y → Y × X) :=
+  (Homeomorph.prodComm X Y).isPullbackQuotientMap
+
+protected theorem prodMap {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
+    {f : X → Y} {g : X' → Y'} (hf : IsPullbackQuotientMap f) (hg : IsPullbackQuotientMap g) :
+    IsPullbackQuotientMap (Prod.map f g) :=
+  have H₁ : IsPullbackQuotientMap (Prod.map f id : X × X' → Y × X') :=
+    (hf.pullback continuous_fst).comp
+      (Homeomorph.pullbackProdFst f hf.continuous X').symm.isPullbackQuotientMap
+  have H₂ : IsPullbackQuotientMap (Prod.map g id : X' × Y → Y' × Y) :=
+    (hg.pullback continuous_fst).comp
+      (Homeomorph.pullbackProdFst g hg.continuous Y).symm.isPullbackQuotientMap
+  have H₃ : IsPullbackQuotientMap (Prod.map id g: Y × X' → Y × Y') :=
+    IsPullbackQuotientMap.prodSwap.comp (H₂.comp .prodSwap)
+  H₃.comp H₁
+
+-- Use the next lemma instead
+private theorem piMap_fin {n : ℕ} {X Y : Fin n → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, TopologicalSpace (Y i)] {f : ∀ i, X i → Y i} (h : ∀ i, IsPullbackQuotientMap (f i)) :
+    IsPullbackQuotientMap (f _ ∘' · : (∀ i, X i) → (∀ i, Y i)) := by
+  induction n with
+  | zero => _
+  | succ n ihn => _
+
+protected theorem piMap {ι : Type*} {X Y : ι → Type*} [Finite ι] [∀ i, TopologicalSpace (X i)]
+    [∀ i, TopologicalSpace (Y i)] {f : ∀ i, X i → Y i} (h : ∀ i, IsPullbackQuotientMap (f i)) :
+    IsPullbackQuotientMap (f _ ∘' · : (∀ i, X i) → (∀ i, Y i)) := by
+  rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
+  have H₁ : IsPullbackQuotientMap (f _ ∘' · : (∀ k, X (e.symm k)) → _) := piMap_fin fun _ ↦ h _
+  have H₂ : IsPullbackQuotientMap
+      (fun x k ↦ f (e.symm k) (x (e.symm k)) : (∀ i, X i) → (∀ k, Y (e.symm k))) :=
+    H₁.comp (Homeomorph.piCongrLeft e.symm).symm.isPullbackQuotientMap
+  convert (Homeomorph.piCongrLeft e.symm).isPullbackQuotientMap.comp H₂ with x
+  ext y i
+  rcases e.symm.surjective i with ⟨k, rfl⟩
+  dsimp [(· ∘' ·)]
+  rw [Equiv.piCongrLeft'_symm_apply_apply]
+
+theorem of_forall_pullback {f : X → Y} (hf : Continuous f)
     (h : ∀ (Z : Type v) (z : Z) (l : Filter Z) (e : Z ≃ Y), Tendsto e l (𝓝 (e z)) →
       letI : TopologicalSpace Z := nhdsAdjoint z l
       QuotientMap (Pullback.snd : f.Pullback e → Z)) :
@@ -294,42 +359,31 @@ theorem of_continuous_forall_pullback {f : X → Y} (hf : Continuous f)
 end IsPullbackQuotientMap
 
 structure IsProdQuotientMap (f : X → Y) : Prop where
-  surjective : Surjective f
-  continuous : Continuous f
+  toQuotientMap : QuotientMap f
+  -- TODO: should we try to reformulate it with filters?
   exists_finite_image_mem_nhds :
     ∀ V : Set Y, ∀ S : Set (Set X), (∀ s ∈ S, IsOpen s) → (⋃₀ S = f ⁻¹' V) →
-      ∀ y ∈ V, ∃ T ⊆ S, T.Finite ∧ (𝓝ˢ (f '' ⋃₀ T)).ker ∈ 𝓝 y
+      ∀ y ∈ V, ∃ T ⊆ S, T.Finite ∧ exterior (f '' ⋃₀ T) ∈ 𝓝 y
+
+theorem IsPullbackQuotientMap.isProdQuotientMap {f : X → Y} (h : IsPullbackQuotientMap f) :
+    IsProdQuotientMap f where
+  toQuotientMap := h.quotientMap
+  exists_finite_image_mem_nhds V S hSo hSV y hy := by
+    rw [isPullbackQuotientMap_iff_exists_finite_image_mem_nhds] at h
+    rcases h.2 y S hSo (hSV.symm ▸ preimage_mono (singleton_subset_iff.2 hy)) with ⟨T, hTS, hTf, hT⟩
+    exact ⟨T, hTS, hTf, mem_of_superset hT subset_exterior⟩
+
+theorem IsOpenQuotientMap.isProdQuotientMap {f : X → Y} (h : IsOpenQuotientMap f) :
+    IsProdQuotientMap f :=
+  h.isPullbackQuotientMap.isProdQuotientMap
 
 namespace IsProdQuotientMap
-
--- theorem quotientMap {f : X → Y} (hf : IsProdQuotientMap f) : QuotientMap f := by
---   refine quotientMap_iff.2
---     ⟨hf.surjective, fun V ↦ ⟨fun h ↦ h.preimage hf.continuous, fun ho ↦ ?_⟩⟩
---   refine isOpen_iff_mem_nhds.2 fun y hy ↦ ?_
---   obtain ⟨T, hTV, -, hTy⟩ : ∃ T ⊆ {f ⁻¹' V}, T.Finite ∧ f '' ⋃₀ T ∈ 𝓝 y :=
---     hf.exists_finite_image_mem_nhds V {f ⁻¹' V} (sUnion_singleton _) (by simp [ho]) y hy
---   calc
---     V = f '' ⋃₀ {f ⁻¹' V} := by simp [hf.surjective]
---     _ ⊇ f '' ⋃₀ T := by gcongr
---     _ ∈ 𝓝 y := hTy
-
--- theorem of_open {f : X → Y} (hfc : Continuous f) (hfo : IsOpenMap f) (hsurj : Surjective f) :
---     IsProdQuotientMap f := by
---   refine ⟨hsurj, hfc, fun V S hSV hSo y hy ↦ ?_⟩
---   rcases hsurj y with ⟨x, rfl⟩
---   rw [← mem_preimage, ← hSV, mem_sUnion] at hy
---   rcases hy with ⟨U, hUS, hxU⟩
---   refine ⟨{U}, by simp [hUS], by simp, ?_⟩
---   simpa using hfo.image_mem_nhds ((hSo U hUS).mem_nhds hxU)
-
--- theorem of_locallyCompact [LocallyCompactSpace Y] {f : X → Y} (hf : QuotientMap f) :
---     IsProdQuotientMap f := by
---   refine ⟨hf.surjective, hf.continuous, fun V S hSV hSo y hy ↦ ?_⟩
   
+protected theorem id : IsProdQuotientMap (id : X → X) :=
+  IsOpenQuotientMap.id.isProdQuotientMap
 
--- protected theorem id : IsProdQuotientMap (id : X → X) :=
---   .of_open continuous_id IsOpenMap.id surjective_id
-  
+theorem IsProdQuotientMap.comp
+
 -- theorem prodMap {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 --     {f : X → Y} (hf : IsProdQuotientMap f) {g : X' → Y'} (hg : IsProdQuotientMap g) :
 --     IsProdQuotientMap (Prod.map f g) := by

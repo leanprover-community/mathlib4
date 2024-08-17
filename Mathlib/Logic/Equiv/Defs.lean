@@ -259,9 +259,7 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 @[simp] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
 
--- The `simp` attribute is needed to make this a `dsimp` lemma.
--- `simp` will always rewrite with `Equiv.symm_symm` before this has a chance to fire.
-@[simp, nolint simpNF] theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
+theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 
 theorem apply_eq_iff_eq (f : α ≃ β) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f
 
@@ -288,7 +286,7 @@ theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :
 theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :=
   (eq_comm.trans e.symm_apply_eq).trans eq_comm
 
-@[simp] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := by cases e; rfl
+@[simp] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃ α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
