@@ -342,6 +342,21 @@ variable {M : Type*} [TopologicalSpace M] [cm : ChartedSpace H M]
 -- if U ≠ M, the extended map needs to have *some* junk value in H...
 variable [Nonempty H]
 
+open scoped Topology
+
+/-- Any extension of a continuous function `f : U → Y` on an open set `U ⊆ X` to `X`
+remains continuous on `U`. -/
+lemma continuous_subtype_extension
+    {X Y : Type*} [Nonempty Y] [TopologicalSpace X] [TopologicalSpace Y]
+    {U : Set X} (hU : IsOpen U) {f : U → Y} (hf : Continuous f) :
+    ContinuousOn (Function.extend Subtype.val f (Classical.arbitrary _)) U := by
+  let F := Function.extend Subtype.val f (Classical.arbitrary _)
+  suffices h : ∀ x : U, ContinuousAt F x from
+    ContinuousAt.continuousOn (by convert h; exact Iff.symm Subtype.forall)
+  intro x
+  rw [← (hU.openEmbedding_subtype_val).continuousAt_iff, Function.extend_comp Subtype.val_injective]
+  exact hf.continuousAt
+
 /-- Extend a partial homeomorphism from an open subset `U ⊆ M` to all of `M`. -/
 -- experiment: does this work the same as foo?
 def PartialHomeomorph.extend_subtype {U : Set M} (φ : PartialHomeomorph U H) (hU : IsOpen U) :
@@ -369,6 +384,30 @@ def PartialHomeomorph.extend_subtype {U : Set M} (φ : PartialHomeomorph U H) (h
   -- TODO: missing lemma, want a stronger version of `continuous_sum_elim`;
   -- perhaps use `continuous_sup_dom` to prove
   continuousOn_toFun := by
+    -- mimicking the proof above
+    set F := Function.extend Subtype.val φ (Classical.arbitrary _)
+    dsimp
+    show ContinuousOn F (Subtype.val '' φ.source)
+    suffices h : ∀ x : (Subtype.val '' φ.source), ContinuousAt F x from
+      ContinuousAt.continuousOn (by convert h; exact Iff.symm Subtype.forall)
+    intro x
+    have h := (hU.openEmbedding_subtype_val.open_iff_image_open).mp φ.open_source
+    rw [← (h.openEmbedding_subtype_val).continuousAt_iff]
+    --rw [Function.extend_comp Subtype.val_injective]
+    let g : (Subtype.val '' φ.source) → H := (F ∘ Subtype.val)
+    show ContinuousAt g x
+    apply Continuous.continuousAt -- remains: g is continuous
+    sorry
+    -- dsimp
+    -- let myf := (φ.source).restrict φ.toFun
+    -- let h := φ.open_source
+    -- convert continuous_subtype_extension h (f := myf) ?hf--_(hf := φ.continuousOn_toFun)
+    -- · congr
+    --   --apply?
+    --   sorry
+    -- · sorry
+  continuousOn_invFun := sorry
+    #exit
     dsimp
     -- TODO: why is the extension continuous? mathematically, there's not much to fuss about,
     -- `source` is open, also within U, so we can locally argue with that...
@@ -381,6 +420,8 @@ def PartialHomeomorph.extend_subtype {U : Set M} (φ : PartialHomeomorph U H) (h
     sorry -- want to use toFun = φ on U...
     sorry
   continuousOn_invFun := sorry
+
+#exit
 
 /-- A partial homeomorphism `M → H` defines a partial homeomorphism `M ⊕ M' → H`. -/
 def foo (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕ M') H where
