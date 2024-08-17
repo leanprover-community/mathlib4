@@ -333,17 +333,15 @@ def ModP (K : Type u₁) [Field K] (v : Valuation K ℝ≥0) (O : Type u₂) [Co
     (_ : v.Integers O) (p : ℕ) :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
 
-variable [hp : Fact p.Prime] [hvp : Fact (v p ≠ 1)]
-
 namespace ModP
 
 instance commRing : CommRing (ModP K v O hv p) :=
   Ideal.Quotient.commRing (Ideal.span {(p : O)} : Ideal O)
 
-instance charP : CharP (ModP K v O hv p) p :=
+instance charP [Fact p.Prime] [hvp : Fact (v p ≠ 1)] : CharP (ModP K v O hv p) p :=
   CharP.quotient O p <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
 
-instance : Nontrivial (ModP K v O hv p) :=
+instance [hp : Fact p.Prime] [Fact (v p ≠ 1)] : Nontrivial (ModP K v O hv p) :=
   CharP.nontrivial_of_char_ne_one hp.1.ne_one
 
 section Classical
@@ -406,6 +404,7 @@ theorem preVal_eq_zero {x : ModP K v O hv p} : preVal K v O hv p x = 0 ↔ x = 0
     fun hx => hx.symm ▸ preVal_zero⟩
 
 variable (hv) -- Porting note: Originally `(hv hvp)`. Removed `(hvp)` because it caused an error.
+include hv
 
 theorem v_p_lt_val {x : O} :
     v p < v (algebraMap O K x) ↔ (Ideal.Quotient.mk _ x : ModP K v O hv p) ≠ 0 := by
@@ -415,6 +414,7 @@ theorem v_p_lt_val {x : O} :
 open NNReal
 
 variable {hv} -- Porting note: Originally `{hv} (hvp)`. Removed `(hvp)` because it caused an error.
+variable [hp : Fact p.Prime]
 
 theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) (hy : y ^ p ≠ 0) :
     x * y ≠ 0 := by
@@ -445,6 +445,8 @@ def PreTilt :=
   Ring.Perfection (ModP K v O hv p) p
 
 namespace PreTilt
+
+variable [Fact p.Prime] [Fact (v p ≠ 1)]
 
 instance : CommRing (PreTilt K v O hv p) :=
   Perfection.commRing p _
@@ -561,7 +563,7 @@ theorem map_eq_zero {f : PreTilt K v O hv p} : val K v O hv p f = 0 ↔ f = 0 :=
 
 end Classical
 
-instance : IsDomain (PreTilt K v O hv p) := by
+instance [hp : Fact p.Prime] : IsDomain (PreTilt K v O hv p) := by
   haveI : Nontrivial (PreTilt K v O hv p) := ⟨(CharP.nontrivial_of_char_ne_one hp.1.ne_one).1⟩
   haveI : NoZeroDivisors (PreTilt K v O hv p) :=
     ⟨fun hfg => by
@@ -575,12 +577,12 @@ end PreTilt
 [scholze2011perfectoid]. Given a field `K` with valuation `K → ℝ≥0` and ring of integers `O`,
 this is implemented as the fraction field of the perfection of `O/(p)`. -/
 -- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
-def Tilt :=
+def Tilt [Fact p.Prime] [Fact (v p ≠ 1)] :=
   FractionRing (PreTilt K v O hv p)
 
 namespace Tilt
 
-noncomputable instance : Field (Tilt K v O hv p) :=
+noncomputable instance [Fact p.Prime] [Fact (v p ≠ 1)] : Field (Tilt K v O hv p) :=
   FractionRing.field _
 
 end Tilt

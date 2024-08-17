@@ -42,6 +42,4 @@ instance {n n' k} [h1 : CSLiftVal (n : ℕ+) n'] :
 
 end Ring
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

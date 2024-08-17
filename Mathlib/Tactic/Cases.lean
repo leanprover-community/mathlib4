@@ -8,10 +8,9 @@ import Batteries.Tactic.OpenPrivate
 import Mathlib.Lean.Expr.Basic
 
 /-!
-
 # Backward compatible implementation of lean 3 `cases` tactic
 
-This tactic is similar to the `cases` tactic in lean 4 core, but the syntax for giving
+This tactic is similar to the `cases` tactic in Lean 4 core, but the syntax for giving
 names is different:
 
 ```
@@ -58,7 +57,7 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     let (introduced, g) ← g.introNP generalized.size
     let subst := (generalized.zip introduced).foldl (init := subst) fun subst (a, b) =>
       subst.insert a (.fvar b)
-    let g ← liftM $ toClear.foldlM (·.tryClear) g
+    let g ← liftM <| toClear.foldlM (·.tryClear) g
     g.withContext do
       for (stx, fvar) in toTag do
         Term.addLocalVarInfo stx (subst.get fvar)
@@ -68,6 +67,29 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
   pure subgoals
 
 open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
+/-- The `induction'` tactic is similar to the `induction` tactic in Lean 4 core,
+but with slightly different syntax (such as, no requirement to name the constructors).
+
+```
+open Nat
+
+example (n : ℕ) : 0 < factorial n := by
+  induction' n with n ih
+  · rw [factorial_zero]
+    simp
+  · rw [factorial_succ]
+    apply mul_pos (succ_pos n) ih
+
+example (n : ℕ) : 0 < factorial n := by
+  induction n
+  case zero =>
+    rw [factorial_zero]
+    simp
+  case succ n ih =>
+    rw [factorial_succ]
+    apply mul_pos (succ_pos n) ih
+```
+ -/
 elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
     usingArg:((" using " ident)?)
     withArg:((" with" (ppSpace colGt binderIdent)+)?)
@@ -101,6 +123,28 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
           (generalized := fvarIds) (toClear := targetFVarIds) (toTag := toTag)
         setGoals <| (subgoals ++ result.others).toList ++ gs
 
+/-- The `cases'` tactic is similar to the `cases` tactic in Lean 4 core, but the syntax for giving
+names is different:
+
+```
+example (h : p ∨ q) : q ∨ p := by
+  cases h with
+  | inl hp => exact Or.inr hp
+  | inr hq => exact Or.inl hq
+
+example (h : p ∨ q) : q ∨ p := by
+  cases' h with hp hq
+  · exact Or.inr hp
+  · exact Or.inl hq
+
+example (h : p ∨ q) : q ∨ p := by
+  rcases h with hp | hq
+  · exact Or.inr hp
+  · exact Or.inl hq
+```
+
+Prefer `cases` or `rcases` when possible, because these tactics promote structured proofs.
+-/
 elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" using " ident)?)
   withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
   let (targets, toTag) ← elabCasesTargets tgts.1.getSepArgs
@@ -120,3 +164,5 @@ elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" 
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
          (numEqs := targets.size) (toClear := targetsNew) (toTag := toTag)
       setGoals <| subgoals.toList ++ gs
+
+end Mathlib.Tactic

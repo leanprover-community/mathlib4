@@ -124,8 +124,6 @@ protected theorem congr_arg {f : Equiv α β} {x x' : α} : x = x' → f x = f x
 protected theorem congr_fun {f g : Equiv α β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem ext_iff {f g : Equiv α β} : f = g ↔ ∀ x, f x = g x := DFunLike.ext_iff
-
 @[ext] theorem Perm.ext {σ τ : Equiv.Perm α} (H : ∀ x, σ x = τ x) : σ = τ := Equiv.ext H
 
 protected theorem Perm.congr_arg {f : Equiv.Perm α} {x x' : α} : x = x' → f x = f x' :=
@@ -133,8 +131,6 @@ protected theorem Perm.congr_arg {f : Equiv.Perm α} {x x' : α} : x = x' → f 
 
 protected theorem Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f x = g x :=
   Equiv.congr_fun h x
-
-protected theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x := Equiv.ext_iff
 
 /-- Any type is equivalent to itself. -/
 @[refl] protected def refl (α : Sort*) : α ≃ α := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
@@ -725,13 +721,13 @@ protected lemma exists_congr_left : (∃ a, p a) ↔ ∃ b, p (e.symm b) :=
   e.symm.exists_congr_right.symm
 
 protected lemma exists_congr (h : ∀ a, p a ↔ q (e a)) : (∃ a, p a) ↔ ∃ b, q b :=
-  e.exists_congr_left.trans $ by simp [h]
+  e.exists_congr_left.trans <| by simp [h]
 
 protected lemma exists_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃ a, p a) ↔ ∃ b, q b :=
-  e.exists_congr_left.trans $ by simp [h]
+  e.exists_congr_left.trans <| by simp [h]
 
 protected lemma existsUnique_congr_right : (∃! a, q (e a)) ↔ ∃! b, q b :=
-  e.exists_congr $ by simpa using fun _ _ ↦ e.forall_congr (by simp)
+  e.exists_congr <| by simpa using fun _ _ ↦ e.forall_congr (by simp)
 
 protected lemma existsUnique_congr_left : (∃! a, p a) ↔ ∃! b, p (e.symm b) :=
   e.symm.existsUnique_congr_right.symm
@@ -743,12 +739,12 @@ alias exists_unique_congr_left := Equiv.existsUnique_congr_right
 alias exists_unique_congr_left' := Equiv.existsUnique_congr_left
 
 protected lemma existsUnique_congr (h : ∀ a, p a ↔ q (e a)) : (∃! a, p a) ↔ ∃! b, q b :=
-  e.existsUnique_congr_left.trans $ by simp [h]
+  e.existsUnique_congr_left.trans <| by simp [h]
 
 @[deprecated (since := "2024-06-11")] alias exists_unique_congr := Equiv.existsUnique_congr
 
 protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a, p a) ↔ ∃! b, q b :=
-  e.existsUnique_congr_left.trans $ by simp [h]
+  e.existsUnique_congr_left.trans <| by simp [h]
 
 -- We next build some higher arity versions of `Equiv.forall_congr`.
 -- Although they appear to just be repeated applications of `Equiv.forall_congr`,
@@ -760,7 +756,7 @@ protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a,
 protected theorem forall₂_congr {α₁ α₂ β₁ β₂ : Sort*} {p : α₁ → β₁ → Prop} {q : α₂ → β₂ → Prop}
     (eα : α₁ ≃ α₂) (eβ : β₁ ≃ β₂) (h : ∀ {x y}, p x y ↔ q (eα x) (eβ y)) :
     (∀ x y, p x y) ↔ ∀ x y, q x y :=
-  eα.forall_congr fun _ ↦ eβ.forall_congr $ @h _
+  eα.forall_congr fun _ ↦ eβ.forall_congr <| @h _
 
 protected theorem forall₂_congr' {α₁ α₂ β₁ β₂ : Sort*} {p : α₁ → β₁ → Prop} {q : α₂ → β₂ → Prop}
     (eα : α₁ ≃ α₂) (eβ : β₁ ≃ β₂) (h : ∀ {x y}, p (eα.symm x) (eβ.symm y) ↔ q x y) :
@@ -770,7 +766,7 @@ protected theorem forall₃_congr
     {α₁ α₂ β₁ β₂ γ₁ γ₂ : Sort*} {p : α₁ → β₁ → γ₁ → Prop} {q : α₂ → β₂ → γ₂ → Prop}
     (eα : α₁ ≃ α₂) (eβ : β₁ ≃ β₂) (eγ : γ₁ ≃ γ₂) (h : ∀ {x y z}, p x y z ↔ q (eα x) (eβ y) (eγ z)) :
     (∀ x y z, p x y z) ↔ ∀ x y z, q x y z :=
-  Equiv.forall₂_congr _ _ <| Equiv.forall_congr _ $ @h _ _
+  Equiv.forall₂_congr _ _ <| Equiv.forall_congr _ <| @h _ _
 
 protected theorem forall₃_congr'
     {α₁ α₂ β₁ β₂ γ₁ γ₂ : Sort*} {p : α₁ → β₁ → γ₁ → Prop} {q : α₂ → β₂ → γ₂ → Prop}

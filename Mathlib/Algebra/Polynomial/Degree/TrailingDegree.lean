@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Data.ENat.Basic
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Trailing degree of univariate polynomials
@@ -121,7 +122,7 @@ theorem natTrailingDegree_le_of_ne_zero (h : coeff p n ≠ 0) : natTrailingDegre
   constructor
   · rintro h
     by_contra hp
-    obtain ⟨n, hpn, hn⟩ := by simpa using min_mem_image_coe $ support_nonempty.2 hp
+    obtain ⟨n, hpn, hn⟩ := by simpa using min_mem_image_coe <| support_nonempty.2 hp
     obtain rfl := (trailingDegree_eq_iff_natTrailingDegree_eq hp).1 hn.symm
     exact hpn h
   · rintro rfl
@@ -138,7 +139,7 @@ lemma trailingDegree_eq_zero : trailingDegree p = 0 ↔ coeff p 0 ≠ 0 :=
   simp [natTrailingDegree, or_comm]
 
 lemma natTrailingDegree_ne_zero : natTrailingDegree p ≠ 0 ↔ p ≠ 0 ∧ coeff p 0 = 0 :=
-  natTrailingDegree_eq_zero.not.trans $ by rw [not_or, not_ne_iff]
+  natTrailingDegree_eq_zero.not.trans <| by rw [not_or, not_ne_iff]
 
 lemma trailingDegree_ne_zero : trailingDegree p ≠ 0 ↔ coeff p 0 = 0 :=
   trailingDegree_eq_zero.not_left
