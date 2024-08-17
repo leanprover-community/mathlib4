@@ -177,4 +177,10 @@ It displays the array of pairs `(lab, #[paths with label lab])`.
 elab tk:"show_pairings " st:str : command => do
   logInfoAt tk m!"{(labelsToFiles (← getEnv) st.getString).toArray.qsort (·.1 < ·.1)}"
 
+/-- `git_labels` shows the label-files pairing using as files the currently modified files
+with respect to master. -/
+elab "git_labels" : command => do
+  let out ← IO.Process.run { cmd := "git", args := #["diff", "--name-only", "master...HEAD"] }
+  logInfo m!"{(labelsToFiles (← getEnv) out).toArray.qsort (·.1 < ·.1)}"
+
 end AutoLabel.Label
