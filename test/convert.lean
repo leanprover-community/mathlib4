@@ -125,3 +125,5 @@ example (x y z : Nat) (h : x + y = z) : y + x = z := by
   convert_to y + x = _ at h
   · rw [Nat.add_comm]
   exact h
+
+end Tests
