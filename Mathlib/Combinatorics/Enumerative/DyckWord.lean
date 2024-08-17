@@ -69,12 +69,15 @@ instance : Add DyckWord where
 
 instance : Zero DyckWord := ⟨[], by simp, by simp⟩
 
-/-- Dyck words form an additive monoid under concatenation, with the empty word as 0. -/
-instance : AddMonoid DyckWord where
+/-- Dyck words form an additive cancellative monoid under concatenation,
+with the empty word as 0. -/
+instance : AddCancelMonoid DyckWord where
   add_zero p := by ext1; exact append_nil _
   zero_add p := by ext1; rfl
   add_assoc p q r := by ext1; apply append_assoc
   nsmul := nsmulRec
+  add_left_cancel p q r h := by rw [DyckWord.ext_iff] at *; exact append_cancel_left h
+  add_right_cancel p q r h := by rw [DyckWord.ext_iff] at *; exact append_cancel_right h
 
 namespace DyckWord
 
@@ -83,12 +86,14 @@ variable {p q : DyckWord}
 lemma toList_eq_nil : p.toList = [] ↔ p = 0 := by rw [DyckWord.ext_iff]; rfl
 lemma toList_ne_nil : p.toList ≠ [] ↔ p ≠ 0 := toList_eq_nil.ne
 
-@[simp]
-lemma add_eq_zero_iff : p + q = 0 ↔ p = 0 ∧ q = 0 := by
-  simp_rw [← toList_eq_nil]; apply append_eq_nil
-
-lemma add_ne_zero_iff : p + q ≠ 0 ↔ p ≠ 0 ∨ q ≠ 0 := by
-  rw [not_iff_comm, add_eq_zero_iff]; tauto
+/-- The only Dyck word that is an additive unit is the empty word. -/
+instance : Unique (AddUnits DyckWord) where
+  uniq p := by
+    obtain ⟨a, b, h, -⟩ := p
+    obtain ⟨ha, hb⟩ := append_eq_nil.mp (toList_eq_nil.mpr h)
+    congr
+    · exact toList_eq_nil.mp ha
+    · exact toList_eq_nil.mp hb
 
 variable (h : p ≠ 0)
 
@@ -348,9 +353,9 @@ theorem nest_add_insidePart_eq : (p.nest + q).insidePart = p := by
 
 theorem nest_add_outsidePart_eq : (p.nest + q).outsidePart = q := by
   have : p.toList.length + 1 + 1 = p.nest.toList.length := by simp [nest]
-  simp_rw [outsidePart, add_eq_zero_iff, nest_ne_zero, false_and, dite_false, firstReturn_nest_add,
-    drop, show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl, drop_append_eq_append_drop,
-    this, drop_length, nil_append, tsub_self, drop_zero]
+  simp_rw [outsidePart, AddLeftCancelMonoid.add_eq_zero, nest_ne_zero, false_and, dite_false,
+    firstReturn_nest_add, drop, show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl,
+    drop_append_eq_append_drop, this, drop_length, nil_append, tsub_self, drop_zero]
 
 end FirstReturn
 
