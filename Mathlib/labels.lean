@@ -57,15 +57,15 @@ Mathlib/Tactic/Linarith/Basic.lean"
 
 open Lean Elab
 run_cmd
-  let out ← IO.Process.run { cmd := "git", args := #["diff", "--name-only", "master"] }
+  let gitArgs := #["diff", "--name-only", "master"]
+  let out ← IO.Process.run { cmd := "git", args := gitArgs }
   dbg_trace out
   let labels := produceLabels (← getEnv) out
   let number := 15849
   let csLabs := String.intercalate "," labels.toList
   --dbg_trace (s!"gh issue edit {number} '" ++ (String.intercalate "," labels.toList).push '\'')
-  let gh : IO.Process.SpawnArgs := {
-    cmd := "gh"
 -- gh issue edit "$NUMBER" --add-label "$LABELS"
-    args := #["issue", "edit", s!"{number}", "--add-label", csLabs] }
+  let ghArgs := #["issue", "edit", s!"{number}", "--add-label", csLabs]
+  let gh : IO.Process.SpawnArgs := { cmd := "gh", args := ghArgs }
   --IO.Process.run gh
 end AutoLabel.Label
