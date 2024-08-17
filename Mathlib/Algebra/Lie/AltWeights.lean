@@ -84,33 +84,51 @@ end LinearMap.End
 
 open LieAlgebra
 
-namespace quux
+class LieTower (L₁ L₂ M : Type*) [Add M] [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] where
+    leibniz_lie : ∀ (x : L₁) (y : L₂) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
+
+section
+
+lemma leibniz_lie' {L₁ L₂ M : Type*}
+    [Add M] [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] [LieTower L₁ L₂ M]
+    (x : L₁) (y : L₂) (m : M) :
+    ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆ := LieTower.leibniz_lie x y m
+
+lemma lie_swap_lie {L₁ L₂ M : Type*} [AddCommGroup M]
+    [Bracket L₁ L₂] [Bracket L₂ L₁] [Bracket L₁ M] [Bracket L₂ M]
+    [LieTower L₁ L₂ M] [LieTower L₂ L₁ M]
+    (x : L₁) (y : L₂) (m : M) :
+    ⁅⁅x, y⁆, m⁆ = -⁅⁅y, x⁆, m⁆ := by
+  have h1 := leibniz_lie' x y m
+  have h2 := leibniz_lie' y x m
+  convert congr($h1.symm - $h2) using 1 <;> abel
+
+instance {R L : Type*} (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+    [AddCommGroup M] [LieRingModule L M] (A : LieSubalgebra R L) :
+    LieTower A L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+instance {R L : Type*} (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+    [AddCommGroup M] [LieRingModule L M] (A : LieIdeal R L) :
+    LieTower A L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+instance {R L : Type*} (M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+    [AddCommGroup M] [LieRingModule L M] (A : LieIdeal R L) :
+    LieTower L A M where
+  leibniz_lie x y m := leibniz_lie x y.val m
+
+end
 
 variable {R L A V : Type*} [CommRing R]
 variable [LieRing L] [LieAlgebra R L]
 variable [LieRing A] [LieAlgebra R A]
-variable [LieRingModule L A] [LieModule R L A]
-variable [LieRingModule A L] [LieModule R A L]
+variable [LieRingModule L A]
+variable [LieRingModule A L]
 variable [AddCommGroup V] [Module R V]
 variable [LieRingModule L V] [LieModule R L V]
 variable [LieRingModule A V] [LieModule R A V]
-
--- #check LieRingModule
-  -- protected leibniz_lie : ∀ (x y : L) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
-
--- x : L, a : A, v : V
--- ⁅x, v⁆
--- ⁅a, v⁆
--- ⁅x, a⁆
--- ⁅a, x⁆
--- ⁅⁅x, a⁆, v⁆
--- ⁅x, ⁅a, v⁆⁆
--- ⁅⁅a, x⁆, v⁆
--- ⁅a, ⁅x, v⁆⁆
-
--- ⁅x, ⁅a, v⁆⁆ = ⁅⁅x, a⁆, v⁆ + ⁅a, ⁅x, v⁆⁆
--- ⁅a, ⁅x, v⁆⁆ = ⁅⁅a, x⁆, v⁆ + ⁅x, ⁅a, v⁆⁆
-
+variable [LieTower L A V] [LieTower A L V]
 
 local notation "π" => LieModule.toEnd R _ V
 
@@ -149,156 +167,67 @@ lemma T_apply_succ (n : ℕ) :
     intro m hm
     obtain (hm | rfl) : m < n + 1 ∨ m = n + 1 := by omega
     · exact iteratedRange_mono v _ (Nat.le_succ n) (hn w m hm)
-    let wz : A := ⟨⁅w, z⁆, lie_mem_left R L A w.val z w.prop⟩
-    have hwz : wz.val = ⁅w.val, z⁆ := rfl
-    have H : ∀ w, ⁅w.val, (π z ^ n) v⁆ = (T A χ w) ((π z ^ n) v) + χ w • ((π z ^ n) v) := by simp
+    have H : ∀ w, ⁅w, (π z ^ n) v⁆ = (T χ w) ((π z ^ n) v) + χ w • ((π z ^ n) v) := by simp
     rw [T, LinearMap.sub_apply, pow_succ', LinearMap.mul_apply, LieModule.toEnd_apply_apply,
-      LieModule.toEnd_apply_apply, LinearMap.smul_apply, LinearMap.one_apply, leibniz_lie,
-      ← hwz, H, H, lie_add, lie_smul, add_sub_assoc, add_sub_assoc, sub_self, add_zero]
-    refine add_mem (add_mem ?_ ?_) ?_
-    · exact iteratedRange_mono v _ n.le_succ (hn wz n n.lt_succ_self)
-    · exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨n, n.lt_succ_self, rfl⟩)
-    · exact map_iteratedRange_le _ _ _ <| Submodule.mem_map_of_mem <| hn w n n.lt_succ_self
-
-end quux
-
-section
-
--- Let `R` be a commutative ring (later on assumed to be a field of characteristic zero)
-variable {R : Type*} [CommRing R]
--- Let `L` be a Lie algebra over `R`
-variable {L : Type*} [LieRing L] [LieAlgebra R L]
--- Let `V` be an `R`-representation of `L` (later on assumed to be nontrivial / finite-dimensional)
-variable {V : Type*} [AddCommGroup V] [Module R V] [LieRingModule L V] [LieModule R L V]
-
-open LinearMap.End
-
--- the lie action of `L` on `V`
-local notation "π" => LieModule.toEnd R L V
-
-variable (R L) in
-class LieThmPkg where
-  A : LieIdeal R L
-  χ : Module.Dual R A
-
-namespace LieThmPkg
-
-variable [LieThmPkg R L]
-
-open LieThmPkg
-
-abbrev T (w : (A : LieIdeal R L)) : Module.End R V := (π w) - χ w • 1
-
-/- private def W' : Submodule k V := -/
-/-   (⨅ w : A, (LinearMap.ker (M := V) (T w))).copy {v | ∀ a : A, ⁅a.val, v⁆ = (χ a) • v} <| by -/
-/-   ext v -/
-/-   simp only [Subtype.forall, Set.mem_setOf_eq, T, Submodule.iInf_coe, Set.mem_iInter, -/
-/-     SetLike.mem_coe, LinearMap.mem_ker, LinearMap.sub_apply, LieModule.toEnd_apply_apply, -/
-/-     LinearMap.smul_apply, LinearMap.one_apply, sub_eq_zero] -/
-
-end LieThmPkg
-
-section
-
-variable (A : LieIdeal R L) (χ : Module.Dual R A)
-
-/-- Temporary definition until we clear up `altWeightSpace`.
-
-See also `LieModule.shiftedWeightSpace`. -/
-abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
-
-/-- The intersection of all eigenspaces of `V` of weight `χ : A → k`
-with respect to the action of all elements in a Lie ideal `A`.
-
-Notes:
-- This is a variant of `LieModule.weightSpace`.
-  The latter assumes a nilpotent Lie algebra and works with generalized eigenspaces.
-- This is a `LieSubmodule`, see `altWeightSpace`. -/
-private def altWeightSpace' : Submodule R V :=
-  (⨅ w : A, (LinearMap.ker (M := V) (T A χ w))).copy {v | ∀ a : A, ⁅a.val, v⁆ = (χ a) • v} <| by
-  ext v
-  simp only [Subtype.forall, Set.mem_setOf_eq, T, Submodule.iInf_coe, Set.mem_iInter,
-    SetLike.mem_coe, LinearMap.mem_ker, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
-    LinearMap.smul_apply, LinearMap.one_apply, sub_eq_zero]
-
-variable (z : L) (w : A) {v : V} (hv : ∀ w : A, ⁅w.val, v⁆ = (χ w) • v)
-
-include hv in
-lemma T_apply_succ (n : ℕ) :
-    Submodule.map (T A χ w) (iteratedRange v (π z) (n + 1)) ≤ iteratedRange v (π z) n := by
-  rw [Submodule.map_span, Submodule.span_le, Set.image_subset_iff]
-  simp only [Set.subset_def, Set.mem_setOf_eq, Set.mem_preimage, SetLike.mem_coe,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  induction n generalizing w
-  · simp only [zero_add, Nat.lt_one_iff, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
-      LinearMap.smul_apply, LinearMap.one_apply, forall_eq, pow_zero, hv w, sub_self, zero_mem]
-  · next n hn =>
-    intro m hm
-    obtain (hm | rfl) : m < n + 1 ∨ m = n + 1 := by omega
-    · exact iteratedRange_mono v _ (Nat.le_succ n) (hn w m hm)
-    let wz : A := ⟨⁅w, z⁆, lie_mem_left R L A w.val z w.prop⟩
-    have hwz : wz.val = ⁅w.val, z⁆ := rfl
-    have H : ∀ w, ⁅w.val, (π z ^ n) v⁆ = (T A χ w) ((π z ^ n) v) + χ w • ((π z ^ n) v) := by simp
-    rw [T, LinearMap.sub_apply, pow_succ', LinearMap.mul_apply, LieModule.toEnd_apply_apply,
-      LieModule.toEnd_apply_apply, LinearMap.smul_apply, LinearMap.one_apply, leibniz_lie,
-      ← hwz, H, H, lie_add, lie_smul, add_sub_assoc, add_sub_assoc, sub_self, add_zero]
-    refine add_mem (add_mem ?_ ?_) ?_
-    · exact iteratedRange_mono v _ n.le_succ (hn wz n n.lt_succ_self)
+      LieModule.toEnd_apply_apply, LinearMap.smul_apply, LinearMap.one_apply, leibniz_lie',
+      lie_swap_lie w z, H, H, lie_add, lie_smul, add_sub_assoc, add_sub_assoc, sub_self, add_zero]
+    refine add_mem (neg_mem <| add_mem ?_ ?_) ?_
+    · exact iteratedRange_mono v _ n.le_succ (hn _ n n.lt_succ_self)
     · exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨n, n.lt_succ_self, rfl⟩)
     · exact map_iteratedRange_le _ _ _ <| Submodule.mem_map_of_mem <| hn w n n.lt_succ_self
 
 include hv in
 lemma T_map_iSup_iteratedRange' :
-    Submodule.map (T A χ w) (iSup_iteratedRange v (π z)) ≤ iSup_iteratedRange v (π z) := by
+    Submodule.map (T χ w) (iSup_iteratedRange v (π z)) ≤ iSup_iteratedRange v (π z) := by
   rw [Submodule.map_iSup, iSup_le_iff]
   rintro (_|i)
   · simp [Submodule.map_span]
-  · exact (T_apply_succ A χ z w hv i).trans (le_iSup _ _)
+  · exact (T_apply_succ χ z w hv i).trans (le_iSup _ _)
 
 include hv in
 lemma T_map_iSup_iteratedRange (x : V)
-    (hx : x ∈ iSup_iteratedRange v (π z)) : (T A χ w) x ∈ iSup_iteratedRange v (π z) :=
-  T_map_iSup_iteratedRange' A χ z w hv <| Submodule.mem_map_of_mem hx
+    (hx : x ∈ iSup_iteratedRange v (π z)) : (T χ w) x ∈ iSup_iteratedRange v (π z) :=
+  T_map_iSup_iteratedRange' χ z w hv <| Submodule.mem_map_of_mem hx
 
 def iSupIR : LieSubmodule R A V where
   toSubmodule := iSup_iteratedRange v (π z)
   lie_mem {w} x hx := by
     simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
       Submodule.mem_toAddSubmonoid]
-    have hx' : ⁅w, x⁆ = (T A χ w) x + χ w • x := by simp
+    have hx' : ⁅w, x⁆ = (T χ w) x + χ w • x := by simp
     rw [hx']
-    exact add_mem (T_map_iSup_iteratedRange A χ z w hv x hx)
+    exact add_mem (T_map_iSup_iteratedRange χ z w hv x hx)
       (Submodule.smul_mem (iSup_iteratedRange v (π z)) _ hx)
 
 include hv in
 lemma T_map_iteratedRange_nilpotent (N : ℕ) :
-    ∀ x ∈ (iteratedRange v (π z)) N, (T A χ w ^ N) x = 0 := by
+    ∀ x ∈ (iteratedRange v (π z)) N, (T χ w ^ N) x = 0 := by
   induction' N with N ih
   · simp [iteratedRange]
   · intro x hx
     rw [pow_succ, LinearMap.mul_apply, ih]
-    exact T_apply_succ A χ z w hv N <| Submodule.mem_map_of_mem hx
+    exact T_apply_succ χ z w hv N <| Submodule.mem_map_of_mem hx
 
 theorem trace_πza_zero (a : A) :
-    LinearMap.trace R (iSupIR A χ z hv) (LieModule.toEnd R A _ ⁅z, a⁆) = 0 := by
-  set U := iSupIR A χ z hv
+    LinearMap.trace R (iSupIR χ z hv) (LieModule.toEnd R A _ ⁅z, a⁆) = 0 := by
+  set U := iSupIR χ z hv
   have hzU : ∀ x ∈ U, (π z) x ∈ U :=
     fun _ hx ↦ (map_iteratedRange_iSup_le_iSup v (π z)) (Submodule.mem_map_of_mem hx)
   have hres : LieModule.toEnd R A U ⁅z, a⁆ = ⁅(π z).restrict hzU, LieModule.toEnd R A U a⁆ := by
     ext ⟨x, hx⟩
-    simp only [LieModule.toEnd_apply_apply, LieSubmodule.coe_bracket,
-      LieIdeal.coe_bracket_of_module, lie_lie, LieHom.lie_apply, Module.End.lie_apply,
-      AddSubgroupClass.coe_sub, LinearMap.restrict_coe_apply]
+    simp only [LieModule.toEnd_apply_apply, LieSubmodule.coe_bracket, LieHom.lie_apply,
+      Module.End.lie_apply, AddSubgroupClass.coe_sub, LinearMap.restrict_coe_apply,
+      leibniz_lie' z a, add_sub_cancel_right]
   rw [hres, LieRing.of_associative_ring_bracket, map_sub, LinearMap.trace_mul_comm, sub_self]
 
 variable [IsNoetherian R V]
 
 theorem T_res_nilpotent :
-    IsNilpotent ((T A χ w).restrict (T_map_iSup_iteratedRange A χ z w hv)) := by
-  suffices iSup_iteratedRange v (π z) ≤ Module.End.maxGenEigenspace (T A χ w) 0 by
+    IsNilpotent ((T χ w).restrict (T_map_iSup_iteratedRange χ z w hv)) := by
+  suffices iSup_iteratedRange v (π z) ≤ Module.End.maxGenEigenspace (T χ w) 0 by
     rw [Module.Finite.Module.End.isNilpotent_iff_of_finite]
     intro x
-    obtain ⟨n, hn⟩ : ∃ n : ℕ, (T A χ w ^ n) x.1 = 0 := by
+    obtain ⟨n, hn⟩ : ∃ n : ℕ, (T χ w ^ n) x.1 = 0 := by
       simpa [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] using this x.2
     use n
     rw [LinearMap.pow_restrict, Subtype.ext_iff, LinearMap.restrict_apply, Subtype.coe_mk, hn,
@@ -307,7 +236,7 @@ theorem T_res_nilpotent :
   intro i x hx
   simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero]
   use i
-  exact T_map_iteratedRange_nilpotent A χ z w hv i x hx
+  exact T_map_iteratedRange_nilpotent χ z w hv i x hx
 
 variable [IsPrincipalIdealRing R]
 variable [IsDomain R]
@@ -315,32 +244,32 @@ variable [Module.Free R V]
 
 lemma trace_T_res_zero :
     LinearMap.trace R (iSup_iteratedRange v (π z))
-      ((T A χ w).restrict (T_map_iSup_iteratedRange A χ z w hv)) = 0 := by
+      ((T χ w).restrict (T_map_iSup_iteratedRange χ z w hv)) = 0 := by
   apply IsNilpotent.eq_zero
-  exact LinearMap.isNilpotent_trace_of_isNilpotent (T_res_nilpotent A χ z w hv)
+  exact LinearMap.isNilpotent_trace_of_isNilpotent (T_res_nilpotent χ z w hv)
 
 open FiniteDimensional
 
 lemma trace_πza (a : A) :
-    LinearMap.trace R (iSupIR A χ z hv) (LieModule.toEnd R A _ ⁅z, a⁆) =
-      χ ⁅z, a⁆ • (finrank R (iSupIR A χ z hv)) := by
+    LinearMap.trace R (iSupIR χ z hv) (LieModule.toEnd R A _ ⁅z, a⁆) =
+      χ ⁅z, a⁆ • (finrank R (iSupIR χ z hv)) := by
   rw [← LinearMap.trace_id, ← LinearMap.map_smul, ← sub_eq_zero, ← LinearMap.map_sub]
-  exact trace_T_res_zero A χ z ⁅z, a⁆ hv
+  exact trace_T_res_zero χ z ⁅z, a⁆ hv
 
 variable [CharZero R]
 
 include hv in
 lemma chi_za_zero (a : A) (hv' : v ≠ 0) :
     χ ⁅z, a⁆ = 0 := by
-  have h := trace_πza A χ z hv a
-  rw [trace_πza_zero A χ z hv a] at h
-  suffices h' : finrank R ↥(iSupIR A χ z hv).toSubmodule ≠ 0 by aesop
-  have hvU : v ∈ iSupIR A χ z hv := by
+  have h := trace_πza χ z hv a
+  rw [trace_πza_zero χ z hv a] at h
+  suffices h' : finrank R ↥(iSupIR χ z hv).toSubmodule ≠ 0 by aesop
+  have hvU : v ∈ iSupIR χ z hv := by
     apply Submodule.mem_iSup_of_mem 1
     apply Submodule.subset_span
     use 0, zero_lt_one
     rw [pow_zero, LinearMap.one_apply]
-  have iSup_iteratedRange_nontrivial : Nontrivial (iSupIR A χ z hv) :=
+  have iSup_iteratedRange_nontrivial : Nontrivial (iSupIR χ z hv) :=
     ⟨⟨v,hvU⟩,0, by simp only [ne_eq, Submodule.mk_eq_zero, hv', not_false_eq_true]⟩
   apply Nat.ne_of_lt'
   apply FiniteDimensional.finrank_pos
@@ -354,61 +283,11 @@ Note:
   The latter assumes a nilpotent Lie algebra and works with generalized eigenspaces.
 -/
 def altWeightSpace : LieSubmodule R L V where
-  toSubmodule := altWeightSpace' A χ
+  toSubmodule := altWeightSpace' χ
   lie_mem {z v} hv := by
     intro a
     rcases eq_or_ne v 0 with (rfl | hv')
     · simp only [lie_zero, smul_zero]
-    · have aux : ⁅a.val, z⁆ = (-⁅z, a⁆).val := by
-        simp only [NegMemClass.coe_neg, LieSubmodule.coe_bracket, lie_skew]
-      rw [leibniz_lie, hv a, lie_smul, aux, hv, map_neg,
-        chi_za_zero A χ z hv a hv', neg_zero, zero_smul, zero_add]
+    · rw [leibniz_lie', hv a, lie_smul, lie_swap_lie, hv,
+        chi_za_zero χ z hv a hv', zero_smul, neg_zero, zero_add]
 
-end
-
-end
-
-section
-
-variable {k : Type*} [Field k]
-variable {L : Type*} [LieRing L] [LieAlgebra k L]
-variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModule k L V]
-
-variable [CharZero k] [Module.Finite k V]
-
-open LieModule Submodule in
-theorem extend_weight [LieModule.IsTriangularizable k L V]
-    (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
-    (χ₀ : Module.Dual k A) (v₀ : V) (hv₀ : v₀ ≠ 0) (hv₀A : ∀ (x : A), ⁅x, v₀⁆ = χ₀ x • v₀) :
-    ∃ (χ : Module.Dual k L) (v : V), v ≠ 0 ∧ ∀ (x : L), ⁅x, v⁆ = χ x • v := by
-  obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hA.lt_top)
-  let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
-  have he : ∀ x, e x • z = x := by simp [e]
-  have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_of_iscoatom_of_not_mem _ _ hA hz
-  let π₁ : L →ₗ[k] A       := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hA
-  let π₂ : L →ₗ[k] (k ∙ z) := (k ∙ z).linearProjOfIsCompl ↑A hA.symm
-  have hπ : ∀ x, (π₁ x : L) + π₂ x = x := linear_proj_add_linearProjOfIsCompl_eq_self hA
-
-  set Vχ₀ := altWeightSpace (V := V) A χ₀
-  obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ Vχ₀ z).HasEigenvalue c := by
-    have : Nontrivial Vχ₀ := nontrivial_of_ne ⟨v₀, hv₀A⟩ 0 <| Subtype.coe_ne_coe.mp hv₀
-    apply Module.End.exists_hasEigenvalue_of_iSup_genEigenspace_eq_top
-    exact LieModule.IsTriangularizable.iSup_eq_top z
-  obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
-
-  use (χ₀.comp π₁) + c • (e.comp π₂), v
-  constructor
-  · simpa only [ne_eq, AddSubmonoid.mk_eq_zero] using hvc.right
-  · intro x
-    suffices ⁅(π₂ x : L), v⁆ = (c • e (π₂ x)) • v by
-      calc ⁅x, v⁆
-          = ⁅(π₁ x : L), v⁆ + ⁅(π₂ x : L), v⁆    := by rw [← add_lie, hπ x]
-        _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v := by rw [hv (π₁ x), this]
-        _ = _ := by simp [add_smul]
-    calc ⁅(π₂ x : L), v⁆
-        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : Vχ₀) := by rw [← he, smul_lie, ← hvc.apply_eq_smul]; rfl
-      _ = (c • e (π₂ x)) • v              := by rw [smul_assoc, smul_comm]; rfl
-
-end
-
-#show_unused extend_weight

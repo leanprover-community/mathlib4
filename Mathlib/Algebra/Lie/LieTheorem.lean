@@ -19,6 +19,49 @@ section
 variable {k : Type*} [Field k]
 variable {L : Type*} [LieRing L] [LieAlgebra k L]
 variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModule k L V]
+
+variable [CharZero k] [Module.Finite k V]
+
+open LieModule Submodule in
+theorem extend_weight [LieModule.IsTriangularizable k L V]
+    (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
+    (χ₀ : Module.Dual k A) (v₀ : V) (hv₀ : v₀ ≠ 0) (hv₀A : ∀ (x : A), ⁅x, v₀⁆ = χ₀ x • v₀) :
+    ∃ (χ : Module.Dual k L) (v : V), v ≠ 0 ∧ ∀ (x : L), ⁅x, v⁆ = χ x • v := by
+  obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hA.lt_top)
+  let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
+  have he : ∀ x, e x • z = x := by simp [e]
+  have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_of_iscoatom_of_not_mem _ _ hA hz
+  let π₁ : L →ₗ[k] A       := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hA
+  let π₂ : L →ₗ[k] (k ∙ z) := (k ∙ z).linearProjOfIsCompl ↑A hA.symm
+
+  set Vχ₀ := altWeightSpace (L := L) (V := V) χ₀
+  obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ Vχ₀ z).HasEigenvalue c := by
+    have : Nontrivial Vχ₀ := nontrivial_of_ne ⟨v₀, hv₀A⟩ 0 <| Subtype.coe_ne_coe.mp hv₀
+    apply Module.End.exists_hasEigenvalue_of_iSup_genEigenspace_eq_top
+    exact LieModule.IsTriangularizable.iSup_eq_top z
+  obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
+
+  use (χ₀.comp π₁) + c • (e.comp π₂), v
+  constructor
+  · simpa only [ne_eq, AddSubmonoid.mk_eq_zero] using hvc.right
+  · intro x
+    have hπ : (π₁ x : L) + π₂ x = x := linear_proj_add_linearProjOfIsCompl_eq_self hA x
+    suffices ⁅(π₂ x : L), v⁆ = (c • e (π₂ x)) • v by
+      calc ⁅x, v⁆
+          = ⁅π₁ x, v⁆       + ⁅(π₂ x : L), v⁆    := congr(⁅$hπ.symm, v⁆) ▸ add_lie _ _ _
+        _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v := by rw [hv (π₁ x), this]
+        _ = _ := by simp [add_smul]
+    calc ⁅(π₂ x : L), v⁆
+        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : Vχ₀) := by rw [← he, smul_lie, ← hvc.apply_eq_smul]; rfl
+      _ = (c • e (π₂ x)) • v              := by rw [smul_assoc, smul_comm]; rfl
+
+end
+
+section
+
+variable {k : Type*} [Field k]
+variable {L : Type*} [LieRing L] [LieAlgebra k L]
+variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModule k L V]
 variable [CharZero k] [Module.Finite k V]
 
 open LieAlgebra
