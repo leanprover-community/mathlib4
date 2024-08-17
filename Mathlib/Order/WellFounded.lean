@@ -288,7 +288,7 @@ noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [
   bot_le a := h.wf.min_le (Set.mem_univ a)
 
 /-- A nonempty linear order with well-founded `>` has a top element. -/
-noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [h : WellFoundedGT α] :
+noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
     OrderTop α := by
   change OrderTop (αᵒᵈᵒᵈ)
   have := WellFoundedLT.toOrderBot (α := αᵒᵈ)
