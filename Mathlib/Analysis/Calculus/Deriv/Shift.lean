@@ -57,7 +57,7 @@ lemma deriv_comp_add_const : deriv (fun x ↦ f (x + a)) x = deriv f (x + a) := 
   simpa [add_comm] using deriv_comp_const_add f a x
 
 lemma deriv_comp_const_sub : deriv (fun x ↦ f (a - x)) x = -deriv f (a - x) := by
-  simp_rw [sub_eq_add_neg, deriv_comp_neg (f $ a + ·), deriv_comp_const_add]
+  simp_rw [sub_eq_add_neg, deriv_comp_neg (f <| a + ·), deriv_comp_const_add]
 
 lemma deriv_comp_sub_const : deriv (fun x ↦ f (x - a)) x = deriv f (x - a) := by
   simp_rw [sub_eq_add_neg, deriv_comp_add_const]

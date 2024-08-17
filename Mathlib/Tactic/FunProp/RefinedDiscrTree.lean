@@ -135,16 +135,16 @@ inductive Key where
   deriving Inhabited, BEq, Repr
 
 private nonrec def Key.hash : Key → UInt64
-  | .star i     => mixHash 7883 $ hash i
+  | .star i     => mixHash 7883 <| hash i
   | .opaque     => 342
-  | .const n a  => mixHash 5237 $ mixHash (hash n) (hash a)
-  | .fvar  n a  => mixHash 8765 $ mixHash (hash n) (hash a)
-  | .bvar i a   => mixHash 4323 $ mixHash (hash i) (hash a)
-  | .lit v      => mixHash 1879 $ hash v
+  | .const n a  => mixHash 5237 <| mixHash (hash n) (hash a)
+  | .fvar  n a  => mixHash 8765 <| mixHash (hash n) (hash a)
+  | .bvar i a   => mixHash 4323 <| mixHash (hash i) (hash a)
+  | .lit v      => mixHash 1879 <| hash v
   | .sort       => 2411
   | .lam        => 4742
   | .«forall»   => 9752
-  | .proj s i a => mixHash (hash a) $ mixHash (hash s) (hash i)
+  | .proj s i a => mixHash (hash a) <| mixHash (hash s) (hash i)
 
 instance : Hashable Key := ⟨Key.hash⟩
 
@@ -242,7 +242,7 @@ def Trie.children! : Trie α → Array (Key × Trie α)
   | .values _ => panic! "did not expect .values constructor"
 
 private partial def Trie.format [ToFormat α] : Trie α → Format
-  | .node cs => Format.group $ Format.paren $
+  | .node cs => Format.group <| Format.paren <|
     "node " ++ Format.join (cs.toList.map fun (k, c) =>
       Format.line ++ Format.paren (format (prepend k c)))
   | .values vs => if vs.isEmpty then Format.nil else Std.format vs
@@ -708,7 +708,7 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
   | _           => unreachable!
 
 
-private abbrev M := StateListT (AssocList Expr DTExpr) $ ReaderT Context MetaM
+private abbrev M := StateListT (AssocList Expr DTExpr) <| ReaderT Context MetaM
 
 /-
 Caching values is a bit dangerous, because when two expressions are be equal and they live under
@@ -889,7 +889,7 @@ termination_by vs.size - i
 partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie α → Trie α
   | .node cs =>
       let k := keys[i]!
-      let c := Id.run $ cs.binInsertM
+      let c := Id.run <| cs.binInsertM
         (fun a b => a.1 < b.1)
         (fun (k', s) => (k', insertInTrie keys v (i+1) s))
         (fun _ => (k, Trie.singleton keys v (i+1)))
@@ -982,7 +982,7 @@ private structure State where
   mvarAssignments : Std.HashMap MVarId (Array Key) := {}
 
 
-private abbrev M := ReaderT Context $ StateListM State
+private abbrev M := ReaderT Context <| StateListM State
 
 /-- Return all values from `x` in an array, together with their scores. -/
 private def M.run (unify : Bool) (config : WhnfCoreConfig) (x : M (Trie α)) :

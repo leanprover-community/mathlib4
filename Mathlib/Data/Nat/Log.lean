@@ -60,7 +60,7 @@ theorem log_of_one_lt_of_le {b n : ℕ} (h : 1 < b) (hn : b ≤ n) : log b n = l
   rw [log]
   exact if_pos ⟨hn, h⟩
 
-@[simp] lemma log_zero_left : ∀ n, log 0 n = 0 := log_of_left_le_one $ Nat.zero_le _
+@[simp] lemma log_zero_left : ∀ n, log 0 n = 0 := log_of_left_le_one <| Nat.zero_le _
 
 @[simp]
 theorem log_zero_right (b : ℕ) : log b 0 = 0 :=

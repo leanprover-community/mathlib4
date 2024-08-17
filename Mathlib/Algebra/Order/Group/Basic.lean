@@ -89,7 +89,7 @@ that here because importing that definition would create import cycles."]
 lemma zpow_left_injective (hn : n ≠ 0) : Injective ((· ^ n) : α → α) := by
   obtain hn | hn := hn.lt_or_lt
   · refine fun a b (hab : a ^ n = b ^ n) ↦
-      (zpow_strictMono_left _ $ Int.neg_pos_of_neg hn).injective ?_
+      (zpow_strictMono_left _ <| Int.neg_pos_of_neg hn).injective ?_
     rw [zpow_neg, zpow_neg, hab]
   · exact (zpow_strictMono_left _ hn).injective
 

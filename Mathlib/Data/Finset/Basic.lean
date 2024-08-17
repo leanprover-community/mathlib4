@@ -1592,7 +1592,7 @@ theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
 
 protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).Nonempty :=
-  (hs.exists_ne a).imp $ by aesop
+  (hs.exists_ne a).imp <| by aesop
 
 @[simp] lemma erase_nonempty (ha : a ∈ s) : (s.erase a).Nonempty ↔ s.Nontrivial := by
   simp only [Finset.Nonempty, mem_erase, and_comm (b := _ ∈ _)]

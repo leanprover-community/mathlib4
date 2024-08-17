@@ -30,10 +30,10 @@ instance instMulZeroClass : MulZeroClass (WithTop α) where
     | ⊤, (b : α) => if b = 0 then 0 else ⊤
     | ⊤, ⊤ => ⊤
   mul_zero a := match a with
-    | (a : α) => congr_arg some $ mul_zero _
+    | (a : α) => congr_arg some <| mul_zero _
     | ⊤ => if_pos rfl
   zero_mul b := match b with
-    | (b : α) => congr_arg some $ zero_mul _
+    | (b : α) => congr_arg some <| zero_mul _
     | ⊤ => if_pos rfl
 
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithTop α) = a * b := rfl
