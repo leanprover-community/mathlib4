@@ -56,19 +56,18 @@ def findLabel? (l : Label) (modifiedFile : String) : Option String :=
   else if (l.dirs.map fun d => d.toString.isPrefixOf modifiedFile).any (·) then
   some l.label else none
 
-/--
-`findLabels ls modifiedFile` takes as input an array of  `Label`s `ls` and a string `modifiedFile`
-and returns all the applicable labels among `ls` for `modifiedFile`.
--/
-def findLabels (ls : Array Label) (modifiedFile : String) : Array String :=
-  ls.filterMap (findLabel? · modifiedFile)
-
-/--
-`getLabels ls gitDiff` takes as input an array of  `Label`s `ls` and an array of strings
-`gitDiff` and returns all the labels among `ls` that are applicable to some entry of ` applicable`.
--/
-def getLabels (ls : Array Label) (gitDiff : Array String) : HashSet String :=
-  HashSet.empty.insertMany (gitDiff.foldl (· ++ findLabels ls ·) #[])
+/-- `addAllLabels gitDiffs ls` takes as input an array of string `gitDiffs` and an array of
+`Label`s `ls`.
+It returns the `HashMap` that assigns to each entry of `gitDiffs` the `.label` field from the
+appropriate `Label` in `ls`. -/
+def addAllLabels (gitDiffs : Array String) (ls : Array Label) : HashMap String String :=
+  Id.run do
+  let mut tot := {}
+  for l in ls do
+    for modifiedFile in gitDiffs do
+      if let some lab := findLabel? l modifiedFile then
+        tot := tot.insert modifiedFile lab
+  return tot
 
 /-- Defines the `labelsExt` extension for adding the `Name` of a `Label` to the environment. -/
 initialize labelsExt :
@@ -141,14 +140,25 @@ elab "check_labels" st:(ppSpace str)? : command => do
       logInfo m!"label: {l.label}\ndirs: {l.dirs}\nexclusions: {l.exclusions}"
 
 /--
+`labelsToFiles env gitDiffs` takes as input an `Environment` `env` and a string `gitDiffs`.
+It assumes that `gitDiffs` is a line-break-separated list of paths to files.
+It returns the pairings `Label.label → Array filenames` as a `HashMap`.
+-/
+def labelsToFiles (env : Environment) (gitDiffs : String) : HashMap String (Array String) :=
+  let labels := labelsExt.getState env
+  let gitDiffs := (gitDiffs.splitOn "\n").toArray
+  let hash := addAllLabels gitDiffs labels
+  (gitDiffs.groupByKey (hash.find? · |>.getD "")).erase ""
+
+/--
 `produceLabels env gitDiffs` takes as input an `Environment` `env` and a string `gitDiffs`.
 It assumes that `gitDiffs` is a line-break-separate list of paths to files.
 It uses the paths to check if any of the labels in the environment is applicable.
 It returns the sorted array of the applicable labels with no repetitions.
 -/
 def produceLabels (env : Environment) (gitDiffs : String) : Array String :=
-  let hash := getLabels (labelsExt.getState env) <| (gitDiffs.splitOn "\n").toArray
-  hash.toArray.qsort (· < ·)
+  let grouped := labelsToFiles env gitDiffs
+  ((grouped.toArray.map Prod.fst).filter (· != "")).qsort (· < ·)
 
 /--
 `produce_labels "A/B/C.lean⏎D/E.lean"` takes as input a string, assuming that it is a
@@ -158,5 +168,13 @@ It prints the sorted array of the applicable labels with no repetitions.
 -/
 elab tk:"produce_labels " st:str : command => do
   logInfoAt tk m!"{produceLabels (← getEnv) st.getString}"
+
+/--
+`show_pairing "A/B/C.lean⏎D/E.lean"` takes as input a string, assuming that it is a
+line-break-separated list of paths to files.
+It displays the array of pairs `(lab, #[paths with label lab])`.
+-/
+elab tk:"show_pairings " st:str : command => do
+  logInfoAt tk m!"{(labelsToFiles (← getEnv) st.getString).toArray.qsort (·.1 < ·.1)}"
 
 end AutoLabel.Label
