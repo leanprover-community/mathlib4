@@ -115,7 +115,15 @@ dirs: [Mathlib/Topology/, Mathlib/AlgebraicTopology/]
 exclusions: []
 -/
 #guard_msgs in
-check_labels
+check_labels "t-"
+
+/--
+info: label: t-euclidean-geometry
+dirs: [Mathlib/Geometry/Euclidean/]
+exclusions: []
+-/
+#guard_msgs in
+check_labels "t-e"
 
 /-- info: [t-algebra, t-algebraic-geometry, t-linter, t-meta, t-set-theory] -/
 #guard_msgs in

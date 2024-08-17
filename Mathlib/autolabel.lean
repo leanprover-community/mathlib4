@@ -130,10 +130,13 @@ elab_rules : command
 /--
 `check_labels` is a helper command to `add_labels`.
 It displays all the labels that have already been declared.
+`check_labels "t-abc"` shows only the labels starting with `t-abc`.
 -/
-elab "check_labels" : command => do
+elab "check_labels" st:(ppSpace str)? : command => do
   for l in labelsExt.getState (← getEnv) do
-    logInfo m!"label: {l.label}\ndirs: {l.dirs}\nexclusions: {l.exclusions}"
+    let str := (st.getD default).getString
+    if str.isPrefixOf l.label then
+      logInfo m!"label: {l.label}\ndirs: {l.dirs}\nexclusions: {l.exclusions}"
 
 /--
 `produceLabels env gitDiffs` takes as input an `Environment` `env` and a string `gitDiffs`.
