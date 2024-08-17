@@ -170,7 +170,7 @@ info:
  (t-set-theory, [Mathlib/SetTheory/Ordinals/Basic.lean, Mathlib/SetTheory/Ordinals/Basic.lean])]
 -/
 #guard_msgs in
-aal "Mathlib/SetTheory/Ordinals/Basic.lean
+show_pairings "Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/AlgebraicGeometry/Ordinals/Basic.lean
 Mathlib/Algebra/Ordinals/Basic.lean
