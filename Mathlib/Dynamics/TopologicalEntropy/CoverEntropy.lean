@@ -570,7 +570,7 @@ lemma coverEntropySup_eq_iSup_basis {ι : Sort*} {p : ι → Prop} {s : ι → S
   apply le_antisymm
   · refine iSup₂_le (fun U U_uni ↦ ?_)
     rcases (HasBasis.mem_iff h).1 U_uni with ⟨i, h_i, si_U⟩
-    apply le_trans (coverEntropySupUni_antitone T F si_U) _
+    apply le_trans (coverEntropySupUni_antitone T F si_U)
     apply le_iSup₂ i h_i
   · exact iSup₂_mono' (fun i h_i ↦ (by use s i, HasBasis.mem_of_mem h h_i))
 
