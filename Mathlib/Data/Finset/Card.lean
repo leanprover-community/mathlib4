@@ -426,7 +426,7 @@ lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha 
     intro ⟨_, _⟩ ⟨_, _⟩ h
     exact Subtype.eq <| hinj _ _ _ _ h
   obtain rfl : image (fun a : { a // a ∈ s } => f a a.prop) s.attach = t :=
-    eq_of_subset_of_card_le (image_subset_iff.2 $ by simpa) (by simp [hst, h])
+    eq_of_subset_of_card_le (image_subset_iff.2 <| by simpa) (by simp [hst, h])
   simp only [mem_image, mem_attach, true_and, Subtype.exists, forall_exists_index]
   exact fun b a ha hb ↦ ⟨a, ha, hb.symm⟩
 

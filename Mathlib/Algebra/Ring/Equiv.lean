@@ -246,8 +246,7 @@ theorem invFun_eq_symm (f : R ≃+* S) : EquivLike.inv f = f.symm :=
   rfl
 
 @[simp]
-theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
-  ext fun _ => rfl
+theorem symm_symm (e : R ≃+* S) : e.symm.symm = e := rfl
 
 @[simp]
 theorem symm_refl : (RingEquiv.refl R).symm = RingEquiv.refl R :=

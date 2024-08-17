@@ -965,9 +965,6 @@ theorem mul_eq_one_iff_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)]
       have : b = 1 := le_antisymm this hb
       And.intro ‹a = 1› ‹b = 1›)
     (by rintro ⟨rfl, rfl⟩; rw [mul_one])
-    -- Porting note: original proof of the second implication,
-    -- `fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]`,
-    -- had its `to_additive`-ization fail due to some bug
 
 @[deprecated (since := "2024-07-24")] alias mul_eq_one_iff' := mul_eq_one_iff_of_one_le
 @[deprecated (since := "2024-07-24")] alias add_eq_zero_iff' := add_eq_zero_iff_of_nonneg
