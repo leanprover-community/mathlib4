@@ -93,7 +93,7 @@ lemma add_ne_zero_iff : p + q ≠ 0 ↔ p ≠ 0 ∨ q ≠ 0 := by
 variable (h : p ≠ 0)
 
 /-- The first element of a nonempty Dyck word is `U`. -/
-lemma head_eq_U (p : DyckWord) (h) : p.toList.head (toList_ne_nil.mpr h) = U := by
+lemma head_eq_U (p : DyckWord) (h) : p.toList.head h = U := by
   rcases p with - | s; · tauto
   rw [head_cons]
   by_contra f
@@ -101,9 +101,9 @@ lemma head_eq_U (p : DyckWord) (h) : p.toList.head (toList_ne_nil.mpr h) = U := 
   simpa [s.dichotomy.resolve_left f] using nonneg 1
 
 /-- The last element of a nonempty Dyck word is `D`. -/
-lemma getLast_eq_D (p : DyckWord) (h) : p.toList.getLast (toList_ne_nil.mpr h) = D := by
+lemma getLast_eq_D (p : DyckWord) (h) : p.toList.getLast h = D := by
   by_contra f; have s := p.count_U_eq_count_D
-  rw [← dropLast_append_getLast (toList_ne_nil.mpr h), (dichotomy _).resolve_right f] at s
+  rw [← dropLast_append_getLast h, (dichotomy _).resolve_right f] at s
   simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, ite_false] at s
   have := p.count_D_le_count_U (p.toList.length - 1); omega
 
@@ -117,7 +117,7 @@ lemma cons_tail_dropLast_concat : U :: p.toList.dropLast.tail ++ [D] = p := by
       cases s <;> simp at bal
     · tauto
   nth_rw 2 [← p.toList.dropLast_append_getLast h', ← p.toList.dropLast.take_append_drop 1]
-  rw [p.getLast_eq_D h, drop_one, this, p.head_eq_U h]
+  rw [getLast_eq_D, drop_one, this, head_eq_U]
   rfl
 
 variable (p) in
@@ -186,7 +186,7 @@ def denest (pos : ∀ i, 0 < i → i < p.toList.length →
     have eq := pos _ lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
-      min_eq_left (by omega), l1, p.head_eq_U h] at eq
+      min_eq_left (by omega), l1, head_eq_U] at eq
     simp only [count_singleton', ite_true, ite_false] at eq
     omega
 
