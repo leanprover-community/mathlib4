@@ -13,7 +13,7 @@ elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
   let ctx : Monoidal.Context ← mkContext e
   CoherenceM.run ctx do
-    return (← BicategoryLike.eval `monoidal (← MkMor₂.ofExpr e)).expr.e
+    return (← BicategoryLike.eval `monoidal (← MkMor₂.ofExpr e)).expr.e.e
 
 universe v u
 

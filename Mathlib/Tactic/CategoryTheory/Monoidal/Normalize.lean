@@ -1,8 +1,8 @@
 import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
-open Lean Meta Elab
-open CategoryTheory Mathlib.Tactic.BicategoryLike
+open Lean Meta Elab Qq
+open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
 namespace Mathlib.Tactic.Monoidal
 
@@ -61,18 +61,18 @@ theorem evalWhiskerLeft_of_cons {f g h i j : C}
   simp [e_θ]
 
 theorem evalWhiskerLeft_comp {f g h i : C}
-    {η : h ⟶ i} {θ : g ⊗ h ⟶ g ⊗ i} {ι : f ⊗ g ⊗ h ⟶ f ⊗ g ⊗ i}
-    {ι' : f ⊗ g ⊗ h ⟶ (f ⊗ g) ⊗ i} {ι'' : (f ⊗ g) ⊗ h ⟶ (f ⊗ g) ⊗ i}
-    (e_θ : g ◁ η = θ) (e_ι : f ◁ θ = ι)
-    (e_ι' : ι ≫ (α_ _ _ _).inv = ι') (e_ι'' : (α_ _ _ _).hom ≫ ι' = ι'') :
-    (f ⊗ g) ◁ η = ι'' := by
-  simp [e_θ, e_ι, e_ι', e_ι'']
+    {η : h ⟶ i} {η₁ : g ⊗ h ⟶ g ⊗ i} {η₂ : f ⊗ g ⊗ h ⟶ f ⊗ g ⊗ i}
+    {η₃ : f ⊗ g ⊗ h ⟶ (f ⊗ g) ⊗ i} {η₄ : (f ⊗ g) ⊗ h ⟶ (f ⊗ g) ⊗ i}
+    (e_η₁ : g ◁ η = η₁) (e_η₂ : f ◁ η₁ = η₂)
+    (e_η₃ : η₂ ≫ (α_ _ _ _).inv = η₃) (e_η₄ : (α_ _ _ _).hom ≫ η₃ = η₄) :
+    (f ⊗ g) ◁ η = η₄ := by
+  simp [e_η₁, e_η₂, e_η₃, e_η₄]
 
 theorem evalWhiskerLeft_id {f g : C} {η : f ⟶ g}
-    {η' : f ⟶ 𝟙_ C ⊗ g} {η'' : 𝟙_ C ⊗ f ⟶ 𝟙_ C ⊗ g}
-    (e_η' : η ≫ (λ_ _).inv = η') (e_η'' : (λ_ _).hom ≫ η' = η'') :
-    𝟙_ C ◁ η = η'' := by
-  simp [e_η', e_η'']
+    {η₁ : f ⟶ 𝟙_ C ⊗ g} {η₂ : 𝟙_ C ⊗ f ⟶ 𝟙_ C ⊗ g}
+    (e_η₁ : η ≫ (λ_ _).inv = η₁) (e_η₂ : (λ_ _).hom ≫ η₁ = η₂) :
+    𝟙_ C ◁ η = η₂ := by
+  simp [e_η₁, e_η₂]
 
 theorem eval_whiskerLeft {f g h : C}
     {η η' : g ⟶ h} {θ : f ⊗ g ⟶ f ⊗ h}
@@ -223,186 +223,453 @@ open Mor₂Iso
 instance : MkEvalComp MonoidalM where
   mkEvalCompNilNil α β := do
     let ctx ← read
+    let _cat := ctx.instCat
     let f ← α.srcM
     let g ← α.tgtM
     let h ← β.tgtM
-    return mkAppN (.const ``evalComp_nil_nil (← getLevels))
-      #[ctx.C, ctx.instCat, f.e, g.e, h.e, α.e, β.e]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have α : Q($f ≅ $g) := α.e
+    have β : Q($g ≅ $h) := β.e
+    return q(evalComp_nil_nil $α $β)
   mkEvalCompNilCons α β η ηs := do
     let ctx ← read
+    let _cat := ctx.instCat
     let f ← α.srcM
     let g ← α.tgtM
     let h ← β.tgtM
     let i ← η.tgtM
     let j ← ηs.tgtM
-    return mkAppN (.const ``evalComp_nil_cons (← getLevels))
-      #[ctx.C, ctx.instCat, f.e, g.e, h.e, i.e, j.e, α.e, β.e, η.e, ηs.e]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have j : Q($ctx.C) := j.e
+    have α : Q($f ≅ $g) := α.e
+    have β : Q($g ≅ $h) := β.e
+    have η : Q($h ⟶ $i) := η.e.e
+    have ηs : Q($i ⟶ $j) := ηs.e.e
+    return q(evalComp_nil_cons $α $β $η $ηs)
   mkEvalCompCons α η ηs θ ι e_ι := do
     let ctx ← read
+    let _cat := ctx.instCat
     let f ← α.srcM
     let g ← α.tgtM
     let h ← η.tgtM
     let i ← ηs.tgtM
     let j ← θ.tgtM
-    return mkAppN (.const ``evalComp_cons (← getLevels))
-      #[ctx.C, ctx.instCat, f.e, g.e, h.e, i.e, j.e, α.e, η.e, ηs.e, θ.e, ι.e, e_ι]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have j : Q($ctx.C) := j.e
+    have α : Q($f ≅ $g) := α.e
+    have η : Q($g ⟶ $h) := η.e.e
+    have ηs : Q($h ⟶ $i) := ηs.e.e
+    have θ : Q($i ⟶ $j) := θ.e.e
+    have ι : Q($h ⟶ $j) := ι.e.e
+    have e_ι : Q($ηs ≫ $θ = $ι) := e_ι
+    return q(evalComp_cons $α $η $e_ι)
 
 instance : MkEvalWhiskerLeft MonoidalM where
   mkEvalWhiskerLeftNil f α := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← α.srcM
     let h ← α.tgtM
-    return mkAppN (.const ``evalWhiskerLeft_nil (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, α.e]
+    have f_e : Q($ctx.C) := f.e
+    have g_e : Q($ctx.C) := g.e
+    have h_e : Q($ctx.C) := h.e
+    have α_e : Q($g_e ≅ $h_e) := α.e
+    return q(evalWhiskerLeft_nil $f_e $α_e)
   mkEvalWhiskerLeftOfCons f α η ηs θ e_θ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← α.srcM
     let h ← α.tgtM
     let i ← η.tgtM
     let j ← ηs.tgtM
-    return mkAppN (.const ``evalWhiskerLeft_of_cons (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, j.e,
-        α.e, η.e, ηs.e, θ.e, e_θ]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have j : Q($ctx.C) := j.e
+    have α : Q($g ≅ $h) := α.e
+    have η : Q($h ⟶ $i) := η.e.e
+    have ηs : Q($i ⟶ $j) := ηs.e.e
+    have θ : Q($f ⊗ $i ⟶ $f ⊗ $j) := θ.e.e
+    have e_θ : Q($f ◁ $ηs = $θ) := e_θ
+    return q(evalWhiskerLeft_of_cons $α $η $e_θ)
   mkEvalWhiskerLeftComp f g η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let h ← η.srcM
     let i ← η.tgtM
-    return mkAppN (.const ``evalWhiskerLeft_comp (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e,
-        η.e, η₁.e, η₂.e, η₃.e, η₄.e, e_η₁, e_η₂, e_η₃, e_η₄]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have η : Q($h ⟶ $i) := η.e.e
+    have η₁ : Q($g ⊗ $h ⟶ $g ⊗ $i) := η₁.e.e
+    have η₂ : Q($f ⊗ $g ⊗ $h ⟶ $f ⊗ $g ⊗ $i) := η₂.e.e
+    have η₃ : Q($f ⊗ $g ⊗ $h ⟶ ($f ⊗ $g) ⊗ $i) := η₃.e.e
+    have η₄ : Q(($f ⊗ $g) ⊗ $h ⟶ ($f ⊗ $g) ⊗ $i) := η₄.e.e
+    have e_η₁ : Q($g ◁ $η = $η₁) := e_η₁
+    have e_η₂ : Q($f ◁ $η₁ = $η₂) := e_η₂
+    have e_η₃ : Q($η₂ ≫ (α_ _ _ _).inv = $η₃) := e_η₃
+    have e_η₄ : Q((α_ _ _ _).hom ≫ $η₃ = $η₄) := e_η₄
+    return q(evalWhiskerLeft_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
   mkEvalWhiskerLeftId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
-    return mkAppN (.const ``evalWhiskerLeft_id (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, η.e, η₁.e, η₂.e, e_η₁, e_η₂]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have η : Q($f ⟶ $g) := η.e.e
+    have η₁ : Q($f ⟶ 𝟙_ _ ⊗ $g) := η₁.e.e
+    have η₂ : Q(𝟙_ _ ⊗ $f ⟶ 𝟙_ _ ⊗ $g) := η₂.e.e
+    have e_η₁ : Q($η ≫ (λ_ _).inv = $η₁) := e_η₁
+    have e_η₂ : Q((λ_ _).hom ≫ $η₁ = $η₂) := e_η₂
+    return q(evalWhiskerLeft_id $e_η₁ $e_η₂)
 
 instance : MkEvalWhiskerRight MonoidalM where
   mkEvalWhiskerRightAuxOf η h := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
-    return mkAppN (.const ``evalWhiskerRightAux_of (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, η.e, h.e]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have η : Q($f ⟶ $g) := η.e.e
+    have h : Q($ctx.C) := h.e
+    return q(evalWhiskerRightAux_of $η $h)
   mkEvalWhiskerRightAuxCons f η ηs ηs' η₁ η₂ η₃ e_ηs' e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     let i ← ηs.srcM
     let j ← ηs.tgtM
-    return mkAppN (.const ``evalWhiskerRightAux_cons (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, j.e, η.e, ηs.e, ηs'.e,
-        η₁.e, η₂.e, η₃.e, e_ηs', e_η₁, e_η₂, e_η₃]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have j : Q($ctx.C) := j.e
+    have η : Q($g ⟶ $h) := η.e.e
+    have ηs : Q($i ⟶ $j) := ηs.e.e
+    have ηs' : Q($i ⊗ $f ⟶ $j ⊗ $f) := ηs'.e.e
+    have η₁ : Q($g ⊗ ($i ⊗ $f) ⟶ $h ⊗ ($j ⊗ $f)) := η₁.e.e
+    have η₂ : Q($g ⊗ ($i ⊗ $f) ⟶ ($h ⊗ $j) ⊗ $f) := η₂.e.e
+    have η₃ : Q(($g ⊗ $i) ⊗ $f ⟶ ($h ⊗ $j) ⊗ $f) := η₃.e.e
+    have e_ηs' : Q($ηs ▷ $f = $ηs') := e_ηs'
+    have e_η₁ : Q(((Iso.refl _).hom ≫ $η ≫ (Iso.refl _).hom) ⊗ $ηs' = $η₁) := e_η₁
+    have e_η₂ : Q($η₁ ≫ (α_ _ _ _).inv = $η₂) := e_η₂
+    have e_η₃ : Q((α_ _ _ _).hom ≫ $η₂ = $η₃) := e_η₃
+    return q(evalWhiskerRightAux_cons $e_ηs' $e_η₁ $e_η₂ $e_η₃)
   mkEvalWhiskerRightNil α h := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
-    return mkAppN (.const ``evalWhiskerRight_nil (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, α.e, h.e]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have α : Q($f ≅ $g) := α.e
+    return q(evalWhiskerRight_nil $α $h)
   mkEvalWhiskerRightConsOfOf j α η ηs ηs₁ η₁ η₂ η₃ e_ηs₁ e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let h ← η.tgtM
     let i ← ηs.tgtM
-    return mkAppN (.const ``evalWhiskerRight_cons_of_of (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, j.e,
-        α.e, η.e, ηs.e, ηs₁.e, η₁.e, η₂.e, η₃.e, e_ηs₁, e_η₁, e_η₂, e_η₃]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have j : Q($ctx.C) := j.e
+    have α : Q($f ≅ $g) := α.e
+    have η : Q($g ⟶ $h) := η.e.e
+    have ηs : Q($h ⟶ $i) := ηs.e.e
+    have ηs₁ : Q($h ⊗ $j ⟶ $i ⊗ $j) := ηs₁.e.e
+    have η₁ : Q($g ⊗ $j ⟶ $h ⊗ $j) := η₁.e.e
+    have η₂ : Q($g ⊗ $j ⟶ $i ⊗ $j) := η₂.e.e
+    have η₃ : Q($f ⊗ $j ⟶ $i ⊗ $j) := η₃.e.e
+    have e_ηs₁ : Q($ηs ▷ $j = $ηs₁) := e_ηs₁
+    have e_η₁ : Q($η ▷ $j = $η₁) := e_η₁
+    have e_η₂ : Q($η₁ ≫ $ηs₁ = $η₂) := e_η₂
+    have e_η₃ : Q((whiskerRightIso $α $j).hom ≫ $η₂ = $η₃) := e_η₃
+    return q(evalWhiskerRight_cons_of_of $e_ηs₁ $e_η₁ $e_η₂ $e_η₃)
   mkEvalWhiskerRightConsWhisker f k α η ηs η₁ η₂ ηs₁ ηs₂ η₃ η₄ η₅
       e_η₁ e_η₂ e_ηs₁ e_ηs₂ e_η₃ e_η₄ e_η₅ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← α.srcM
     let h ← η.srcM
     let i ← η.tgtM
     let j ← ηs.tgtM
-    return mkAppN (.const ``evalWhiskerRight_cons_whisker (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, j.e, k.e,
-        α.e, η.e, ηs.e, η₁.e, η₂.e, ηs₁.e, ηs₂.e, η₃.e, η₄.e, η₅.e,
-        e_η₁, e_η₂, e_ηs₁, e_ηs₂, e_η₃, e_η₄, e_η₅]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have j : Q($ctx.C) := j.e
+    have k : Q($ctx.C) := k.e
+    have α : Q($g ≅ $f ⊗ $h) := α.e
+    have η : Q($h ⟶ $i) := η.e.e
+    have ηs : Q($f ⊗ $i ⟶ $j) := ηs.e.e
+    have η₁ : Q($h ⊗ $k ⟶ $i ⊗ $k) := η₁.e.e
+    have η₂ : Q($f ⊗ ($h ⊗ $k) ⟶ $f ⊗ ($i ⊗ $k)) := η₂.e.e
+    have ηs₁ : Q(($f ⊗ $i) ⊗ $k ⟶ $j ⊗ $k) := ηs₁.e.e
+    have ηs₂ : Q($f ⊗ ($i ⊗ $k) ⟶ $j ⊗ $k) := ηs₂.e.e
+    have η₃ : Q($f ⊗ ($h ⊗ $k) ⟶ $j ⊗ $k) := η₃.e.e
+    have η₄ : Q(($f ⊗ $h) ⊗ $k ⟶ $j ⊗ $k) := η₄.e.e
+    have η₅ : Q($g ⊗ $k ⟶ $j ⊗ $k) := η₅.e.e
+    have e_η₁ : Q(((Iso.refl _).hom ≫ $η ≫ (Iso.refl _).hom) ▷ $k = $η₁) := e_η₁
+    have e_η₂ : Q($f ◁ $η₁ = $η₂) := e_η₂
+    have e_ηs₁ : Q($ηs ▷ $k = $ηs₁) := e_ηs₁
+    have e_ηs₂ : Q((α_ _ _ _).inv ≫ $ηs₁ = $ηs₂) := e_ηs₂
+    have e_η₃ : Q($η₂ ≫ $ηs₂ = $η₃) := e_η₃
+    have e_η₄ : Q((α_ _ _ _).hom ≫ $η₃ = $η₄) := e_η₄
+    have e_η₅ : Q((whiskerRightIso $α $k).hom ≫ $η₄ = $η₅) := e_η₅
+    return q(evalWhiskerRight_cons_whisker $e_η₁ $e_η₂ $e_ηs₁ $e_ηs₂ $e_η₃ $e_η₄ $e_η₅)
+/-
   mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← η.srcM
     let f' ← η.tgtM
-    return mkAppN (.const ``evalWhiskerRight_comp (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, h.e,
-        η.e, η₁.e, η₂.e, η₃.e, η₄.e, e_η₁, e_η₂, e_η₃, e_η₄]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := g.tgt.e
+    have d : Q($ctx.B) := h.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have f' : Q($a ⟶ $b) := f'.e
+    have g : Q($b ⟶ $c) := g.e
+    have h : Q($c ⟶ $d) := h.e
+    have η : Q($f ⟶ $f') := η.e.e
+    have η₁ : Q($f ≫ $g ⟶ $f' ≫ $g) := η₁.e.e
+    have η₂ : Q(($f ≫ $g) ≫ $h ⟶ ($f' ≫ $g) ≫ $h) := η₂.e.e
+    have η₃ : Q(($f ≫ $g) ≫ $h ⟶ $f' ≫ ($g ≫ $h)) := η₃.e.e
+    have η₄ : Q($f ≫ ($g ≫ $h) ⟶ $f' ≫ ($g ≫ $h)) := η₄.e.e
+    have e_η₁ : Q($η ▷ $g = $η₁) := e_η₁
+    have e_η₂ : Q($η₁ ▷ $h = $η₂) := e_η₂
+    have e_η₃ : Q($η₂ ≫ (α_ _ _ _).hom = $η₃) := e_η₃
+    have e_η₄ : Q((α_ _ _ _).inv ≫ $η₃ = $η₄) := e_η₄
+    return q(evalWhiskerRight_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
   mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
-    return mkAppN (.const ``evalWhiskerRight_id (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, η.e, η₁.e, η₂.e, e_η₁, e_η₂]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have η : Q($f ⟶ $g) := η.e.e
+    have η₁ : Q($f ⟶ $g ≫ 𝟙 $b) := η₁.e.e
+    have η₂ : Q($f ≫ 𝟙 $b ⟶ $g ≫ 𝟙 $b) := η₂.e.e
+    have e_η₁ : Q($η ≫ (ρ_ _).inv = $η₁) := e_η₁
+    have e_η₂ : Q((ρ_ _).hom ≫ $η₁ = $η₂) := e_η₂
+    return q(evalWhiskerRight_id $e_η₁ $e_η₂)
+
+-/
+
+  mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
+    let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let f ← η.srcM
+    let f' ← η.tgtM
+    have f : Q($ctx.C) := f.e
+    have f' : Q($ctx.C) := f'.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have η : Q($f ⟶ $f') := η.e.e
+    have η₁ : Q($f ⊗ $g ⟶ $f' ⊗ $g) := η₁.e.e
+    have η₂ : Q(($f ⊗ $g) ⊗ $h ⟶ ($f' ⊗ $g) ⊗ $h) := η₂.e.e
+    have η₃ : Q(($f ⊗ $g) ⊗ $h ⟶ $f' ⊗ ($g ⊗ $h)) := η₃.e.e
+    have η₄ : Q($f ⊗ ($g ⊗ $h) ⟶ $f' ⊗ ($g ⊗ $h)) := η₄.e.e
+    have e_η₁ : Q($η ▷ $g = $η₁) := e_η₁
+    have e_η₂ : Q($η₁ ▷ $h = $η₂) := e_η₂
+    have e_η₃ : Q($η₂ ≫ (α_ _ _ _).hom = $η₃) := e_η₃
+    have e_η₄ : Q((α_ _ _ _).inv ≫ $η₃ = $η₄) := e_η₄
+    return q(evalWhiskerRight_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
+  mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂ := do
+    let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let f ← η.srcM
+    let g ← η.tgtM
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have η : Q($f ⟶ $g) := η.e.e
+    have η₁ : Q($f ⟶ $g ⊗ 𝟙_ _) := η₁.e.e
+    have η₂ : Q($f ⊗ 𝟙_ _ ⟶ $g ⊗ 𝟙_ _) := η₂.e.e
+    have e_η₁ : Q($η ≫ (ρ_ _).inv = $η₁) := e_η₁
+    have e_η₂ : Q((ρ_ _).hom ≫ $η₁ = $η₂) := e_η₂
+    return q(evalWhiskerRight_id $e_η₁ $e_η₂)
 
 instance : MkEvalHorizontalComp MonoidalM where
   mkEvalHorizontalCompAuxOf η θ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     let h ← θ.srcM
     let i ← θ.tgtM
-    return mkAppN (.const ``evalHorizontalCompAux_of (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, η.e, θ.e]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have η : Q($f ⟶ $g) := η.e.e
+    have θ : Q($h ⟶ $i) := θ.e.e
+    return q(evalHorizontalCompAux_of $η $θ)
   mkEvalHorizontalCompAuxCons η ηs θ ηθ η₁ ηθ₁ ηθ₂ e_ηθ e_η₁ e_ηθ₁ e_ηθ₂ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     let f' ← ηs.srcM
     let g' ← ηs.tgtM
     let h ← θ.srcM
     let i ← θ.tgtM
-    return mkAppN (.const ``evalHorizontalCompAux_cons (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e, i.e,
-        η.e, ηs.e, θ.e, ηθ.e, η₁.e, ηθ₁.e, ηθ₂.e, e_ηθ, e_η₁, e_ηθ₁, e_ηθ₂]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have f' : Q($ctx.C) := f'.e
+    have g' : Q($ctx.C) := g'.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have η : Q($f ⟶ $g) := η.e.e
+    have ηs : Q($f' ⟶ $g') := ηs.e.e
+    have θ : Q($h ⟶ $i) := θ.e.e
+    have ηθ : Q($f' ⊗ $h ⟶ $g' ⊗ $i) := ηθ.e.e
+    have η₁ : Q($f ⊗ ($f' ⊗ $h) ⟶ $g ⊗ ($g' ⊗ $i)) := η₁.e.e
+    have ηθ₁ : Q($f ⊗ ($f' ⊗ $h) ⟶ ($g ⊗ $g') ⊗ $i) := ηθ₁.e.e
+    have ηθ₂ : Q(($f ⊗ $f') ⊗ $h ⟶ ($g ⊗ $g') ⊗ $i) := ηθ₂.e.e
+    have e_ηθ : Q($ηs ⊗ $θ = $ηθ) := e_ηθ
+    have e_η₁ : Q(((Iso.refl _).hom ≫ $η ≫ (Iso.refl _).hom) ⊗ $ηθ = $η₁) := e_η₁
+    have e_ηθ₁ : Q($η₁ ≫ (α_ _ _ _).inv = $ηθ₁) := e_ηθ₁
+    have e_ηθ₂ : Q((α_ _ _ _).hom ≫ $ηθ₁ = $ηθ₂) := e_ηθ₂
+    return q(evalHorizontalCompAux_cons $e_ηθ $e_η₁ $e_ηθ₁ $e_ηθ₂)
   mkEvalHorizontalCompAux'Whisker f η θ ηθ η₁ η₂ η₃ e_ηθ e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     let f' ← θ.srcM
     let g' ← θ.tgtM
-    return mkAppN (.const ``evalHorizontalCompAux'_whisker (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e,
-        η.e, θ.e, ηθ.e, η₁.e, η₂.e, η₃.e, e_ηθ, e_η₁, e_η₂, e_η₃]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have f' : Q($ctx.C) := f'.e
+    have g' : Q($ctx.C) := g'.e
+    have η : Q($g ⟶ $h) := η.e.e
+    have θ : Q($f' ⟶ $g') := θ.e.e
+    have ηθ : Q($g ⊗ $f' ⟶ $h ⊗ $g') := ηθ.e.e
+    have η₁ : Q($f ⊗ ($g ⊗ $f') ⟶ $f ⊗ ($h ⊗ $g')) := η₁.e.e
+    have η₂ : Q($f ⊗ ($g ⊗ $f') ⟶ ($f ⊗ $h) ⊗ $g') := η₂.e.e
+    have η₃ : Q(($f ⊗ $g) ⊗ $f' ⟶ ($f ⊗ $h) ⊗ $g') := η₃.e.e
+    have e_ηθ : Q($η ⊗ $θ = $ηθ) := e_ηθ
+    have e_η₁ : Q($f ◁ $ηθ = $η₁) := e_η₁
+    have e_η₂ : Q($η₁ ≫ (α_ _ _ _).inv = $η₂) := e_η₂
+    have e_η₃ : Q((α_ _ _ _).hom ≫ $η₂ = $η₃) := e_η₃
+    return q(evalHorizontalCompAux'_whisker $e_ηθ $e_η₁ $e_η₂ $e_η₃)
   mkEvalHorizontalCompAux'OfWhisker f η θ η₁ ηθ ηθ₁ ηθ₂ e_η₁ e_ηθ e_ηθ₁ e_ηθ₂ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     let f' ← θ.srcM
     let g' ← θ.tgtM
-    return mkAppN (.const ``evalHorizontalCompAux'_of_whisker (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e,
-        η.e, θ.e, η₁.e, ηθ.e, ηθ₁.e, ηθ₂.e, e_η₁, e_ηθ, e_ηθ₁, e_ηθ₂]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have f' : Q($ctx.C) := f'.e
+    have g' : Q($ctx.C) := g'.e
+    have η : Q($g ⟶ $h) := η.e.e
+    have θ : Q($f' ⟶ $g') := θ.e.e
+    have η₁ : Q($g ⊗ $f ⟶ $h ⊗ $f) := η₁.e.e
+    have ηθ : Q(($g ⊗ $f) ⊗ $f' ⟶ ($h ⊗ $f) ⊗ $g') := ηθ.e.e
+    have ηθ₁ : Q(($g ⊗ $f) ⊗ $f' ⟶ $h ⊗ ($f ⊗ $g')) := ηθ₁.e.e
+    have ηθ₂ : Q($g ⊗ ($f ⊗ $f') ⟶ $h ⊗ ($f ⊗ $g')) := ηθ₂.e.e
+    have e_η₁ : Q($η ▷ $f = $η₁) := e_η₁
+    have e_ηθ : Q($η₁ ⊗ ((Iso.refl _).hom ≫ $θ ≫ (Iso.refl _).hom) = $ηθ) := e_ηθ
+    have e_ηθ₁ : Q($ηθ ≫ (α_ _ _ _).hom = $ηθ₁) := e_ηθ₁
+    have e_ηθ₂ : Q((α_ _ _ _).inv ≫ $ηθ₁ = $ηθ₂) := e_ηθ₂
+    return q(evalHorizontalCompAux'_of_whisker $e_η₁ $e_ηθ $e_ηθ₁ $e_ηθ₂)
   mkEvalHorizontalCompNilNil α β := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let h ← β.srcM
     let i ← β.tgtM
-    return mkAppN (.const ``evalHorizontalComp_nil_nil (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e, α.e, β.e]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have α : Q($f ≅ $g) := α.e
+    have β : Q($h ≅ $i) := β.e
+    return q(evalHorizontalComp_nil_nil $α $β)
   mkEvalHorizontalCompNilCons α β η ηs η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let f' ← β.srcM
     let g' ← β.tgtM
     let h ← η.tgtM
     let i ← ηs.tgtM
-    return mkAppN (.const ``evalHorizontalComp_nil_cons (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e, i.e,
-        α.e, β.e, η.e, ηs.e, η₁.e, ηs₁.e, η₂.e, η₃.e, e_η₁, e_ηs₁, e_η₂, e_η₃]
-  mkEvalHorizontalCompConsNil α η ηs β η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃ := do
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have f' : Q($ctx.C) := f'.e
+    have g' : Q($ctx.C) := g'.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have α : Q($f ≅ $g) := α.e
+    have β : Q($f' ≅ $g') := β.e
+    have η : Q($g' ⟶ $h) := η.e.e
+    have ηs : Q($h ⟶ $i) := ηs.e.e
+    have η₁ : Q($g ⊗ $g' ⟶ $g ⊗ $h) := η₁.e.e
+    have ηs₁ : Q($g ⊗ $h ⟶ $g ⊗ $i) := ηs₁.e.e
+    have η₂ : Q($g ⊗ $g' ⟶ $g ⊗ $i) := η₂.e.e
+    have η₃ : Q($f ⊗ $f' ⟶ $g ⊗ $i) := η₃.e.e
+    have e_η₁ : Q($g ◁ ((Iso.refl _).hom ≫ $η ≫ (Iso.refl _).hom) = $η₁) := e_η₁
+    have e_ηs₁ : Q($g ◁ $ηs = $ηs₁) := e_ηs₁
+    have e_η₂ : Q($η₁ ≫ $ηs₁ = $η₂) := e_η₂
+    have e_η₃ : Q(($α ⊗ $β).hom ≫ $η₂ = $η₃) := e_η₃
+    return q(evalHorizontalComp_nil_cons $e_η₁ $e_ηs₁ $e_η₂ $e_η₃)
+  mkEvalHorizontalCompConsNil α β η ηs η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let h ← η.tgtM
     let i ← ηs.tgtM
     let f' ← β.srcM
     let g' ← β.tgtM
-    return mkAppN (.const ``evalHorizontalComp_cons_nil (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e, i.e,
-        α.e, η.e, ηs.e, β.e, η₁.e, ηs₁.e, η₂.e, η₃.e, e_η₁, e_ηs₁, e_η₂, e_η₃]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have f' : Q($ctx.C) := f'.e
+    have g' : Q($ctx.C) := g'.e
+    have α : Q($f ≅ $g) := α.e
+    have η : Q($g ⟶ $h) := η.e.e
+    have ηs : Q($h ⟶ $i) := ηs.e.e
+    have β : Q($f' ≅ $g') := β.e
+    have η₁ : Q($g ⊗ $g' ⟶ $h ⊗ $g') := η₁.e.e
+    have ηs₁ : Q($h ⊗ $g' ⟶ $i ⊗ $g') := ηs₁.e.e
+    have η₂ : Q($g ⊗ $g' ⟶ $i ⊗ $g') := η₂.e.e
+    have η₃ : Q($f ⊗ $f' ⟶ $i ⊗ $g') := η₃.e.e
+    have e_η₁ : Q(((Iso.refl _).hom ≫ $η ≫ (Iso.refl _).hom) ▷ $g' = $η₁) := e_η₁
+    have e_ηs₁ : Q($ηs ▷ $g' = $ηs₁) := e_ηs₁
+    have e_η₂ : Q($η₁ ≫ $ηs₁ = $η₂) := e_η₂
+    have e_η₃ : Q(($α ⊗ $β).hom ≫ $η₂ = $η₃) := e_η₃
+    return q(evalHorizontalComp_cons_nil $e_η₁ $e_ηs₁ $e_η₂ $e_η₃)
   mkEvalHorizontalCompConsCons α β η θ ηs θs ηθ ηθs ηθ₁ ηθ₂ e_ηθ e_ηθs e_ηθ₁ e_ηθ₂ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let h ← η.tgtM
@@ -411,92 +678,158 @@ instance : MkEvalHorizontalComp MonoidalM where
     let g' ← β.tgtM
     let h' ← θ.tgtM
     let i' ← θs.tgtM
-    return mkAppN (.const ``evalHorizontalComp_cons_cons (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, f'.e, g.e, g'.e, h.e, h'.e, i.e, i'.e,
-        α.e, η.e, ηs.e, β.e, θ.e, θs.e, ηθ.e, ηθs.e, ηθ₁.e, ηθ₂.e, e_ηθ, e_ηθs, e_ηθ₁, e_ηθ₂]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have f' : Q($ctx.C) := f'.e
+    have g' : Q($ctx.C) := g'.e
+    have h' : Q($ctx.C) := h'.e
+    have i' : Q($ctx.C) := i'.e
+    have α : Q($f ≅ $g) := α.e
+    have η : Q($g ⟶ $h) := η.e.e
+    have ηs : Q($h ⟶ $i) := ηs.e.e
+    have β : Q($f' ≅ $g') := β.e
+    have θ : Q($g' ⟶ $h') := θ.e.e
+    have θs : Q($h' ⟶ $i') := θs.e.e
+    have ηθ : Q($g ⊗ $g' ⟶ $h ⊗ $h') := ηθ.e.e
+    have ηθs : Q($h ⊗ $h' ⟶ $i ⊗ $i') := ηθs.e.e
+    have ηθ₁ : Q($g ⊗ $g' ⟶ $i ⊗ $i') := ηθ₁.e.e
+    have ηθ₂ : Q($f ⊗ $f' ⟶ $i ⊗ $i') := ηθ₂.e.e
+    have e_ηθ : Q($η ⊗ $θ = $ηθ) := e_ηθ
+    have e_ηθs : Q($ηs ⊗ $θs = $ηθs) := e_ηθs
+    have e_ηθ₁ : Q($ηθ ≫ $ηθs = $ηθ₁) := e_ηθ₁
+    have e_ηθ₂ : Q(($α ⊗ $β).hom ≫ $ηθ₁ = $ηθ₂) := e_ηθ₂
+    return q(evalHorizontalComp_cons_cons $e_ηθ $e_ηθs $e_ηθ₁ $e_ηθ₂)
 
 instance : MkEval MonoidalM where
   mkEvalComp η θ η' θ' ι e_η e_θ e_ηθ := do
     let ctx ← read
+    let _cat := ctx.instCat
     let f ← η'.srcM
     let g ← η'.tgtM
     let h ← θ'.tgtM
-    return mkAppN (.const ``eval_comp (← getLevels))
-      #[ctx.C, ctx.instCat, f.e, g.e, h.e, η.e, η'.e, θ.e, θ'.e, ι.e, e_η, e_θ, e_ηθ]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have η : Q($f ⟶ $g) := η.e
+    have η' : Q($f ⟶ $g) := η'.e.e
+    have θ : Q($g ⟶ $h) := θ.e
+    have θ' : Q($g ⟶ $h) := θ'.e.e
+    have ι : Q($f ⟶ $h) := ι.e.e
+    have e_η : Q($η = $η') := e_η
+    have e_θ : Q($θ = $θ') := e_θ
+    have e_ηθ : Q($η' ≫ $θ' = $ι) := e_ηθ
+    return q(eval_comp $e_η $e_θ $e_ηθ)
+--     theorem eval_whiskerLeft {f g h : C}
+--     {η η' : g ⟶ h} {θ : f ⊗ g ⟶ f ⊗ h}
+--     (e_η : η = η') (e_θ : f ◁ η' = θ) :
+--     f ◁ η = θ := by
+--   simp [e_η, e_θ]
+
+-- theorem eval_whiskerRight {f g h : C}
+--     {η η' : f ⟶ g} {θ : f ⊗ h ⟶ g ⊗ h}
+--     (e_η : η = η') (e_θ : η' ▷ h = θ) :
+--     η ▷ h = θ := by
+--   simp [e_η, e_θ]
+
+-- theorem eval_tensorHom {f g h i : C}
+--     {η η' : f ⟶ g} {θ θ' : h ⟶ i} {ι : f ⊗ h ⟶ g ⊗ i}
+--     (e_η : η = η') (e_θ : θ = θ') (e_ι : η' ⊗ θ' = ι) :
+--     η ⊗ θ = ι := by
+--   simp [e_η, e_θ, e_ι]
   mkEvalWhiskerLeft f η η' θ e_η e_θ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η'.srcM
     let h ← η'.tgtM
-    return mkAppN (.const ``eval_whiskerLeft (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, η.e, η'.e, θ.e, e_η, e_θ]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have η : Q($g ⟶ $h) := η.e
+    have η' : Q($g ⟶ $h) := η'.e.e
+    have θ : Q($f ⊗ $g ⟶ $f ⊗ $h) := θ.e.e
+    have e_η : Q($η = $η') := e_η
+    have e_θ : Q($f ◁ $η' = $θ) := e_θ
+    return q(eval_whiskerLeft $e_η $e_θ)
   mkEvalWhiskerRight η h η' θ e_η e_θ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η'.srcM
     let g ← η'.tgtM
-    return mkAppN (.const ``eval_whiskerRight (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, η.e, η'.e, θ.e, e_η, e_θ]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have η : Q($f ⟶ $g) := η.e
+    have η' : Q($f ⟶ $g) := η'.e.e
+    have θ : Q($f ⊗ $h ⟶ $g ⊗ $h) := θ.e.e
+    have e_η : Q($η = $η') := e_η
+    have e_θ : Q($η' ▷ $h = $θ) := e_θ
+    return q(eval_whiskerRight $e_η $e_θ)
   mkEvalHorizontalComp η θ η' θ' ι e_η e_θ e_ι := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η'.srcM
     let g ← η'.tgtM
     let h ← θ'.srcM
     let i ← θ'.tgtM
-    return mkAppN (.const ``eval_tensorHom (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryInst, f.e, g.e, h.e, i.e,
-        η.e, η'.e, θ.e, θ'.e, ι.e, e_η, e_θ, e_ι]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have η : Q($f ⟶ $g) := η.e
+    have η' : Q($f ⟶ $g) := η'.e.e
+    have θ : Q($h ⟶ $i) := θ.e
+    have θ' : Q($h ⟶ $i) := θ'.e.e
+    have ι : Q($f ⊗ $h ⟶ $g ⊗ $i) := ι.e.e
+    have e_η : Q($η = $η') := e_η
+    have e_θ : Q($θ = $θ') := e_θ
+    have e_ι : Q($η' ⊗ $θ' = $ι) := e_ι
+    return q(eval_tensorHom $e_η $e_θ $e_ι)
   mkEvalOf η := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f := η.src
     let g := η.tgt
-    return mkAppN (.const ``eval_of (← getLevels))
-      #[ctx.C, ctx.instCat, f.e, g.e, η.e]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have η : Q($f ⟶ $g) := η.e
+    return q(eval_of $η)
   mkEvalMonoidalComp η θ α η' θ' αθ ηαθ e_η e_θ e_αθ e_ηαθ := do
     let ctx ← read
+    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η'.srcM
     let g ← η'.tgtM
     let h ← α.tgtM
     let i ← θ'.tgtM
-    return mkAppN (.const ``eval_monoidalComp (← getLevels))
-      #[ctx.C, ctx.instCat, f.e, g.e, h.e, i.e,
-        η.e, η'.e, α.e, θ.e, θ'.e, αθ.e, ηαθ.e, e_η, e_θ, e_αθ, e_ηαθ]
+    have f : Q($ctx.C) := f.e
+    have g : Q($ctx.C) := g.e
+    have h : Q($ctx.C) := h.e
+    have i : Q($ctx.C) := i.e
+    have η : Q($f ⟶ $g) := η.e
+    have η' : Q($f ⟶ $g) := η'.e.e
+    have α : Q($g ≅ $h) := α.e
+    have θ : Q($h ⟶ $i) := θ.e
+    have θ' : Q($h ⟶ $i) := θ'.e.e
+    have αθ : Q($g ⟶ $i) := αθ.e.e
+    have ηαθ : Q($f ⟶ $i) := ηαθ.e.e
+    have e_η : Q($η = $η') := e_η
+    have e_θ : Q($θ = $θ') := e_θ
+    have e_αθ : Q(Iso.hom $α ≫ $θ' = $αθ) := e_αθ
+    have e_ηαθ : Q($η' ≫ $αθ = $ηαθ) := e_ηαθ
+    return q(eval_monoidalComp $e_η $e_θ $e_αθ $e_ηαθ)
 
 instance : MonadNormalExpr MonoidalM where
   whiskerRightM η h := do
-    let ctx ← read
-    let f ← η.srcM
-    let g ← η.tgtM
-    let e := mkAppN (.const ``MonoidalCategoryStruct.whiskerRight (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryStructInst, f.e, g.e, η.e, h.e]
-    return .whisker e η h
+    return .whisker (← Mor₂.whiskerRightM η.e (.of h)) η h
   hConsM η θ := do
-    let ctx ← read
-    let f ← η.srcM
-    let g ← η.tgtM
-    let h ← θ.srcM
-    let i ← θ.tgtM
-    let e := mkAppN (.const ``MonoidalCategoryStruct.tensorHom (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryStructInst, f.e, g.e, h.e, i.e, η.e, θ.e]
-    return .cons e η θ
+    return .cons (← Mor₂.horizontalCompM η.e θ.e) η θ
   whiskerLeftM f η := do
-    let ctx ← read
-    let g ← η.srcM
-    let h ← η.tgtM
-    let e := mkAppN (.const ``MonoidalCategoryStruct.whiskerLeft (← getLevels))
-      #[ctx.C, ctx.instCat, ← mkMonoidalCategoryStructInst, f.e, g.e, h.e, η.e]
-    return .whisker e f η
+    return .whisker (← Mor₂.whiskerLeftM (.of f) η.e) f η
   nilM α := do
-    return .nil (← Mor₂.homM α).e α
+    return .nil (← Mor₂.homM α) α
   consM α η ηs := do
-    let ctx ← read
-    let f ← α.srcM
-    let g ← α.tgtM
-    let h ← η.tgtM
-    let i ← ηs.tgtM
-    let e := mkAppN (.const ``CategoryStruct.comp (← getLevels))
-      #[ctx.C, ← mkCategoryStructInst, g.e, h.e, i.e, η.e, ηs.e]
-    let e' := mkAppN (.const ``CategoryStruct.comp (← getLevels))
-      #[ctx.C, ← mkCategoryStructInst, f.e, g.e, i.e, (← mkIsoHom α.e), e]
-    return .cons e' α η ηs
+    return .cons (← Mor₂.comp₂M (← Mor₂.homM α) (← Mor₂.comp₂M η.e ηs.e)) α η ηs
 
 instance : MkMor₂ MonoidalM where
   ofExpr := Mor₂OfExpr

@@ -266,7 +266,7 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
     | .isoHom _ _ α => withTraceNode nm (fun _ => return m!"Iso.hom") do match α with
       | .structuralAtom α => return ⟨← nilM <| .structuralAtom α, ← mkEqRefl e.e⟩
       | .of η =>
-        let η ← Mor₂.homAtomM η
+        let η ← Mor₂.atomHomM η
         let result ← mkEvalOf η
         traceProof nm result
         return ⟨← NormalExpr.ofAtomM η, result⟩
@@ -274,7 +274,7 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
     | .isoInv _ _ α => withTraceNode nm (fun _ => return m!"Iso.inv") do match α with
       | .structuralAtom α => return ⟨← nilM <| (← symmM (.structuralAtom α)), ← mkEqRefl e.e⟩
       | .of η =>
-        let η ← Mor₂.invAtomM η
+        let η ← Mor₂.atomInvM η
         let result ← mkEvalOf η
         traceProof nm result
         return ⟨← NormalExpr.ofAtomM η, result⟩
@@ -350,7 +350,7 @@ def normalForm (nm : Name) (ρ : Type) [Context ρ]
         let e₂' ← MkMor₂.ofExpr e₂
         let e₁'' ← eval nm e₁'
         let e₂'' ← eval nm e₂'
-        let H ← mkAppM ``mk_eq #[e₁, e₂, e₁''.expr.e, e₂''.expr.e, e₁''.proof, e₂''.proof]
+        let H ← mkAppM ``mk_eq #[e₁, e₂, e₁''.expr.e.e, e₂''.expr.e.e, e₁''.proof, e₂''.proof]
         mvarId.apply H
 
 open CategoryTheory
@@ -375,7 +375,7 @@ def mkEqOfHom₂ (ρ : Type) [Context ρ]     [MonadMor₁ (CoherenceM ρ)]
   CoherenceM.run ctx do
     let ⟨e₁', p₁⟩ ← eval nm (← MkMor₂.ofExpr e₁)
     let ⟨e₂', p₂⟩ ← eval nm (← MkMor₂.ofExpr e₂)
-    mkAppM ``mk_eq #[e₁, e₂, e₁'.e, e₂'.e, p₁, p₂]
+    mkAppM ``mk_eq #[e₁, e₂, e₁'.e.e, e₂'.e.e, p₁, p₂]
 
 def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
   mvarId.withContext do

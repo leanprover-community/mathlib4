@@ -338,9 +338,9 @@ end Mor₂Iso
 
 class MonadMor₂ (m : Type → Type) where
   homM (iso : Mor₂Iso) : m Mor₂
-  homAtomM (η : AtomIso) : m Atom
+  atomHomM (η : AtomIso) : m Atom
   invM (iso : Mor₂Iso) : m Mor₂
-  invAtomM (η : AtomIso) : m Atom
+  atomInvM (η : AtomIso) : m Atom
   id₂M (f : Mor₁) : m Mor₂
   comp₂M (η θ : Mor₂) : m Mor₂
   whiskerLeftM (f : Mor₁) (η : Mor₂) : m Mor₂
@@ -351,7 +351,7 @@ class MonadMor₂ (m : Type → Type) where
 namespace Mor₂
 
 export MonadMor₂
-  (homM homAtomM invM invAtomM id₂M comp₂M whiskerLeftM whiskerRightM horizontalCompM coherenceCompM)
+  (homM atomHomM invM atomInvM id₂M comp₂M whiskerLeftM whiskerRightM horizontalCompM coherenceCompM)
 
 end Mor₂
 
@@ -381,21 +381,21 @@ inductive WhiskerRight : Type
   /-- Construct the expression for an atomic 2-morphism. -/
   | of (η : Atom) : WhiskerRight
   /-- Construct the expression for `η ▷ f`. -/
-  | whisker (e : Expr) (η : WhiskerRight) (f : Atom₁) : WhiskerRight
+  | whisker (e : Mor₂) (η : WhiskerRight) (f : Atom₁) : WhiskerRight
   deriving Inhabited
 
-def WhiskerRight.e : WhiskerRight → Expr
-  | .of η => η.e
+def WhiskerRight.e : WhiskerRight → Mor₂
+  | .of η => .of η
   | .whisker e .. => e
 
 /-- Expressions of the form `η₁ ⊗ ... ⊗ ηₙ`. -/
 inductive HorizontalComp : Type
   | of (η : WhiskerRight) : HorizontalComp
-  | cons (e : Expr) (η : WhiskerRight) (ηs : HorizontalComp) :
+  | cons (e : Mor₂) (η : WhiskerRight) (ηs : HorizontalComp) :
     HorizontalComp
   deriving Inhabited
 
-def HorizontalComp.e : HorizontalComp → Expr
+def HorizontalComp.e : HorizontalComp → Mor₂
   | .of η => η.e
   | .cons e .. => e
 
@@ -404,24 +404,35 @@ inductive WhiskerLeft : Type
   /-- Construct the expression for a right-whiskered 2-morphism. -/
   | of (η : HorizontalComp) : WhiskerLeft
   /-- Construct the expression for `f ◁ η`. -/
-  | whisker (e : Expr) (f : Atom₁) (η : WhiskerLeft) : WhiskerLeft
+  | whisker (e : Mor₂) (f : Atom₁) (η : WhiskerLeft) : WhiskerLeft
   deriving Inhabited
 
-def WhiskerLeft.e : WhiskerLeft → Expr
+def WhiskerLeft.e : WhiskerLeft → Mor₂
   | .of η => η.e
   | .whisker e .. => e
 
 abbrev Structural := Mor₂Iso
 
+def Mor₂Iso.isStructural (α : Mor₂Iso) : Bool :=
+  match α with
+  | .structuralAtom _ => true
+  | .comp _ _ _ _ η θ => η.isStructural && θ.isStructural
+  | .whiskerLeft _ _ _ _ η => η.isStructural
+  | .whiskerRight _ _ _ η _ => η.isStructural
+  | .horizontalComp _ _ _ _ _ η θ => η.isStructural && θ.isStructural
+  | .inv _ _ _ η => η.isStructural
+  | .coherenceComp _ _ _ _ _ _ η θ => η.isStructural && θ.isStructural
+  | .of _ => false
+
 /-- Normalized expressions for 2-morphisms. -/
 inductive NormalExpr : Type
   /-- Construct the expression for a structural 2-morphism. -/
-  | nil (e : Expr) (α : Structural) : NormalExpr
+  | nil (e : Mor₂) (α : Structural) : NormalExpr
   /-- Construct the normalized expression of a 2-morphism `α ≫ η ≫ ηs` recursively. -/
-  | cons (e : Expr) (α : Structural) (η : WhiskerLeft) (ηs : NormalExpr) : NormalExpr
+  | cons (e : Mor₂) (α : Structural) (η : WhiskerLeft) (ηs : NormalExpr) : NormalExpr
   deriving Inhabited
 
-def NormalExpr.e : NormalExpr → Expr
+def NormalExpr.e : NormalExpr → Mor₂
   | .nil e .. => e
   | .cons e .. => e
 

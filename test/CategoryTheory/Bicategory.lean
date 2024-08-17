@@ -17,8 +17,7 @@ elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
   let ctx : Bicategory.Context ← mkContext e
   CoherenceM.run ctx do
-    return (← BicategoryLike.eval `bicategory (← MkMor₂.ofExpr e)).expr.e
-
+    return (← BicategoryLike.eval `bicategory (← MkMor₂.ofExpr e)).expr.e.e
 
 variable {B : Type u} [Bicategory.{w, v} B]
 

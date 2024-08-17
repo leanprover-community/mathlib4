@@ -61,18 +61,18 @@ theorem evalWhiskerLeft_of_cons
 
 theorem evalWhiskerLeft_comp
     {f : a ⟶ b} {g : b ⟶ c} {h i : c ⟶ d}
-    {η : h ⟶ i} {θ : g ≫ h ⟶ g ≫ i} {ι : f ≫ g ≫ h ⟶ f ≫ g ≫ i}
-    {ι' : f ≫ g ≫ h ⟶ (f ≫ g) ≫ i} {ι'' : (f ≫ g) ≫ h ⟶ (f ≫ g) ≫ i}
-    (e_θ : g ◁ η = θ) (e_ι : f ◁ θ = ι)
-    (e_ι' : ι ≫ (α_ _ _ _).inv = ι') (e_ι'' : (α_ _ _ _).hom ≫ ι' = ι'') :
-    (f ≫ g) ◁ η = ι'' := by
-  simp [e_θ, e_ι, e_ι', e_ι'']
+    {η : h ⟶ i} {η₁ : g ≫ h ⟶ g ≫ i} {η₂ : f ≫ g ≫ h ⟶ f ≫ g ≫ i}
+    {η₃ : f ≫ g ≫ h ⟶ (f ≫ g) ≫ i} {η₄ : (f ≫ g) ≫ h ⟶ (f ≫ g) ≫ i}
+    (e_η₁ : g ◁ η = η₁) (e_η₂ : f ◁ η₁ = η₂)
+    (e_η₃ : η₂ ≫ (α_ _ _ _).inv = η₃) (e_η₄ : (α_ _ _ _).hom ≫ η₃ = η₄) :
+    (f ≫ g) ◁ η = η₄ := by
+  simp [e_η₁, e_η₂, e_η₃, e_η₄]
 
 theorem evalWhiskerLeft_id {η : f ⟶ g}
-    {η' : f ⟶ 𝟙 a ≫ g} {η'' : 𝟙 a ≫ f ⟶ 𝟙 a ≫ g}
-    (e_η' : η ≫ (λ_ _).inv = η') (e_η'' : (λ_ _).hom ≫ η' = η'') :
-    𝟙 a ◁ η = η'' := by
-  simp [e_η', e_η'']
+    {η₁ : f ⟶ 𝟙 a ≫ g} {η₂ : 𝟙 a ≫ f ⟶ 𝟙 a ≫ g}
+    (e_η₁ : η ≫ (λ_ _).inv = η₁) (e_η₂ : (λ_ _).hom ≫ η₁ = η₂) :
+    𝟙 a ◁ η = η₂ := by
+  simp [e_η₁, e_η₂]
 
 theorem eval_whiskerLeft
     {f : a ⟶ b} {g h : b ⟶ c}
@@ -107,7 +107,7 @@ theorem evalWhiskerRight_cons_of_of
   simp_all
 
 theorem evalWhiskerRight_cons_whisker
-    {f : a ⟶ b} {g : a ⟶ c} {h : b ⟶ c} {i : b ⟶ c} {j : a ⟶ c} {k : c ⟶ d}
+    {f : a ⟶ b} {g : a ⟶ c} {h i : b ⟶ c} {j : a ⟶ c} {k : c ⟶ d}
     {α : g ≅ f ≫ h} {η : h ⟶ i} {ηs : f ≫ i ⟶ j}
     {η₁ : h ≫ k ⟶ i ≫ k} {η₂ : f ≫ (h ≫ k) ⟶ f ≫ (i ≫ k)} {ηs₁ : (f ≫ i) ≫ k ⟶ j ≫ k}
     {ηs₂ : f ≫ (i ≫ k) ⟶ j ≫ k} {η₃ : f ≫ (h ≫ k) ⟶ j ≫ k} {η₄ : (f ≫ h) ≫ k ⟶ j ≫ k}
@@ -143,149 +143,270 @@ theorem eval_bicategoricalComp
 
 end
 
-open Mor₂Iso
+open Mor₂Iso Qq Bicategory
 
 instance : MkEvalComp BicategoryM where
   mkEvalCompNilNil α β := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← α.srcM
     let g ← α.tgtM
     let h ← β.tgtM
-    let a := f.src
-    let b := f.tgt
-    return mkAppN (.const ``evalComp_nil_nil (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e, α.e, β.e]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have h : Q($a ⟶ $b) := h.e
+    have α : Q($f ≅ $g) := α.e
+    have β : Q($g ≅ $h) := β.e
+    return q(evalComp_nil_nil $α $β)
   mkEvalCompNilCons α β η ηs := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← α.srcM
     let g ← α.tgtM
     let h ← β.tgtM
     let i ← η.tgtM
     let j ← ηs.tgtM
-    let a := f.src
-    let b := f.tgt
-    return mkAppN (.const ``evalComp_nil_cons (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e, i.e, j.e, α.e, β.e, η.e, ηs.e]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have h : Q($a ⟶ $b) := h.e
+    have i : Q($a ⟶ $b) := i.e
+    have j : Q($a ⟶ $b) := j.e
+    have α : Q($f ≅ $g) := α.e
+    have β : Q($g ≅ $h) := β.e
+    have η : Q($h ⟶ $i) := η.e.e
+    have ηs : Q($i ⟶ $j) := ηs.e.e
+    return q(evalComp_nil_cons $α $β $η $ηs)
   mkEvalCompCons α η ηs θ ι e_ι := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← α.srcM
     let g ← α.tgtM
     let h ← η.tgtM
     let i ← ηs.tgtM
     let j ← θ.tgtM
-    let a := f.src
-    let b := f.tgt
-    return mkAppN (.const ``evalComp_cons (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e, i.e, j.e, α.e, η.e, ηs.e, θ.e, ι.e, e_ι]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have h : Q($a ⟶ $b) := h.e
+    have i : Q($a ⟶ $b) := i.e
+    have j : Q($a ⟶ $b) := j.e
+    have α : Q($f ≅ $g) := α.e
+    have η : Q($g ⟶ $h) := η.e.e
+    have ηs : Q($h ⟶ $i) := ηs.e.e
+    have θ : Q($i ⟶ $j) := θ.e.e
+    have ι : Q($h ⟶ $j) := ι.e.e
+    have e_ι : Q($ηs ≫ $θ = $ι) := e_ι
+    return q(evalComp_cons $α $η $e_ι)
 
 instance : MkEvalWhiskerLeft BicategoryM where
   mkEvalWhiskerLeftNil f α := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let g ← α.srcM
     let h ← α.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := g.tgt
-    return mkAppN (.const ``evalWhiskerLeft_nil (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, α.e]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := g.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($b ⟶ $c) := g.e
+    have h : Q($b ⟶ $c) := h.e
+    have α : Q($g ≅ $h) := α.e
+    return q(evalWhiskerLeft_nil $f $α)
   mkEvalWhiskerLeftOfCons f α η ηs θ e_θ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let g ← α.srcM
     let h ← α.tgtM
     let i ← η.tgtM
     let j ← ηs.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := g.tgt
-    return mkAppN (.const ``evalWhiskerLeft_of_cons (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, i.e, j.e, α.e, η.e, ηs.e, θ.e, e_θ]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := g.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($b ⟶ $c) := g.e
+    have h : Q($b ⟶ $c) := h.e
+    have i : Q($b ⟶ $c) := i.e
+    have j : Q($b ⟶ $c) := j.e
+    have α : Q($g ≅ $h) := α.e
+    have η : Q($h ⟶ $i) := η.e.e
+    have ηs : Q($i ⟶ $j) := ηs.e.e
+    have θ : Q($f ≫ $i ⟶ $f ≫ $j) := θ.e.e
+    have e_θ : Q($f ◁ $ηs = $θ) := e_θ
+    return q(evalWhiskerLeft_of_cons $α $η $e_θ)
   mkEvalWhiskerLeftComp f g η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let h ← η.srcM
     let i ← η.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := g.tgt
-    let d := h.tgt
-    return mkAppN (.const ``evalWhiskerLeft_comp (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, d.e, f.e, g.e, h.e, i.e,
-        η.e, η₁.e, η₂.e, η₃.e, η₄.e, e_η₁, e_η₂, e_η₃, e_η₄]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := g.tgt.e
+    have d : Q($ctx.B) := h.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($b ⟶ $c) := g.e
+    have h : Q($c ⟶ $d) := h.e
+    have i : Q($c ⟶ $d) := i.e
+    have η : Q($h ⟶ $i) := η.e.e
+    have η₁ : Q($g ≫ $h ⟶ $g ≫ $i) := η₁.e.e
+    have η₂ : Q($f ≫ $g ≫ $h ⟶ $f ≫ $g ≫ $i) := η₂.e.e
+    have η₃ : Q($f ≫ $g ≫ $h ⟶ ($f ≫ $g) ≫ $i) := η₃.e.e
+    have η₄ : Q(($f ≫ $g) ≫ $h ⟶ ($f ≫ $g) ≫ $i) := η₄.e.e
+    have e_η₁ : Q($g ◁ $η = $η₁) := e_η₁
+    have e_η₂ : Q($f ◁ $η₁ = $η₂) := e_η₂
+    have e_η₃ : Q($η₂ ≫ (α_ _ _ _).inv = $η₃) := e_η₃
+    have e_η₄ : Q((α_ _ _ _).hom ≫ $η₃ = $η₄) := e_η₄
+    return q(evalWhiskerLeft_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
   mkEvalWhiskerLeftId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
-    let a := f.src
-    let b := f.tgt
-    return mkAppN (.const ``evalWhiskerLeft_id (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, η.e, η₁.e, η₂.e, e_η₁, e_η₂]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have η : Q($f ⟶ $g) := η.e.e
+    have η₁ : Q($f ⟶ 𝟙 $a ≫ $g) := η₁.e.e
+    have η₂ : Q(𝟙 $a ≫ $f ⟶ 𝟙 $a ≫ $g) := η₂.e.e
+    have e_η₁ : Q($η ≫ (λ_ _).inv = $η₁) := e_η₁
+    have e_η₂ : Q((λ_ _).hom ≫ $η₁ = $η₂) := e_η₂
+    return q(evalWhiskerLeft_id $e_η₁ $e_η₂)
 
 instance : MkEvalWhiskerRight BicategoryM where
   mkEvalWhiskerRightAuxOf η h := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := h.tgt
-    return mkAppN (.const ``evalWhiskerRightAux_of (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, η.e, h.e]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := h.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have h : Q($b ⟶ $c) := h.e
+    have η : Q($f ⟶ $g) := η.e.e
+    return q(evalWhiskerRightAux_of $η $h)
   mkEvalWhiskerRightAuxCons _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
   mkEvalWhiskerRightNil α h := do
-    let ctx ← read
-    let f ← α.srcM
-    let g ← α.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := h.tgt
-    return mkAppN (.const ``evalWhiskerRight_nil (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, α.e, h.e]
+      let ctx ← read
+      let _bicat := ctx.instBicategory
+      let f ← α.srcM
+      let g ← α.tgtM
+      have a : Q($ctx.B) := f.src.e
+      have b : Q($ctx.B) := f.tgt.e
+      have c : Q($ctx.B) := h.tgt.e
+      have f : Q($a ⟶ $b) := f.e
+      have g : Q($a ⟶ $b) := g.e
+      have h : Q($b ⟶ $c) := h.e
+      have α : Q($f ≅ $g) := α.e
+      return q(evalWhiskerRight_nil $α $h)
   mkEvalWhiskerRightConsOfOf j α η ηs ηs₁ η₁ η₂ η₃ e_ηs₁ e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← α.srcM
     let g ← α.tgtM
     let h ← η.tgtM
     let i ← ηs.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := j.tgt
-    return mkAppN (.const ``evalWhiskerRight_cons_of_of (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, i.e, j.e,
-        α.e, η.e, ηs.e, ηs₁.e, η₁.e, η₂.e, η₃.e, e_ηs₁, e_η₁, e_η₂, e_η₃]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := j.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have h : Q($a ⟶ $b) := h.e
+    have i : Q($a ⟶ $b) := i.e
+    have j : Q($b ⟶ $c) := j.e
+    have α : Q($f ≅ $g) := α.e
+    have η : Q($g ⟶ $h) := η.e.e
+    have ηs : Q($h ⟶ $i) := ηs.e.e
+    have ηs₁ : Q($h ≫ $j ⟶ $i ≫ $j) := ηs₁.e.e
+    have η₁ : Q($g ≫ $j ⟶ $h ≫ $j) := η₁.e.e
+    have η₂ : Q($g ≫ $j ⟶ $i ≫ $j) := η₂.e.e
+    have η₃ : Q($f ≫ $j ⟶ $i ≫ $j) := η₃.e.e
+    have e_ηs₁ : Q($ηs ▷ $j = $ηs₁) := e_ηs₁
+    have e_η₁ : Q($η ▷ $j = $η₁) := e_η₁
+    have e_η₂ : Q($η₁ ≫ $ηs₁ = $η₂) := e_η₂
+    have e_η₃ : Q((whiskerRightIso $α $j).hom ≫ $η₂ = $η₃) := e_η₃
+    return q(evalWhiskerRight_cons_of_of $e_ηs₁ $e_η₁ $e_η₂ $e_η₃)
   mkEvalWhiskerRightConsWhisker f k α η ηs η₁ η₂ ηs₁ ηs₂ η₃ η₄ η₅
       e_η₁ e_η₂ e_ηs₁ e_ηs₂ e_η₃ e_η₄ e_η₅ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let g ← α.srcM
     let h ← η.srcM
     let i ← η.tgtM
     let j ← ηs.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := h.tgt
-    let d := k.tgt
-    return mkAppN (.const ``evalWhiskerRight_cons_whisker (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, d.e, f.e, g.e, h.e, i.e, j.e, k.e,
-        α.e, η.e, ηs.e, η₁.e, η₂.e, ηs₁.e, ηs₂.e, η₃.e, η₄.e, η₅.e,
-        e_η₁, e_η₂, e_ηs₁, e_ηs₂, e_η₃, e_η₄, e_η₅]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := h.tgt.e
+    have d : Q($ctx.B) := k.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $c) := g.e
+    have h : Q($b ⟶ $c) := h.e
+    have i : Q($b ⟶ $c) := i.e
+    have j : Q($a ⟶ $c) := j.e
+    have k : Q($c ⟶ $d) := k.e
+    have α : Q($g ≅ $f ≫ $h) := α.e
+    have η : Q($h ⟶ $i) := η.e.e
+    have ηs : Q($f ≫ $i ⟶ $j) := ηs.e.e
+    have η₁ : Q($h ≫ $k ⟶ $i ≫ $k) := η₁.e.e
+    have η₂ : Q($f ≫ ($h ≫ $k) ⟶ $f ≫ ($i ≫ $k)) := η₂.e.e
+    have ηs₁ : Q(($f ≫ $i) ≫ $k ⟶ $j ≫ $k) := ηs₁.e.e
+    have ηs₂ : Q($f ≫ ($i ≫ $k) ⟶ $j ≫ $k) := ηs₂.e.e
+    have η₃ : Q($f ≫ ($h ≫ $k) ⟶ $j ≫ $k) := η₃.e.e
+    have η₄ : Q(($f ≫ $h) ≫ $k ⟶ $j ≫ $k) := η₄.e.e
+    have η₅ : Q($g ≫ $k ⟶ $j ≫ $k) := η₅.e.e
+    have e_η₁ : Q(((Iso.refl _).hom ≫ $η ≫ (Iso.refl _).hom) ▷ $k = $η₁) := e_η₁
+    have e_η₂ : Q($f ◁ $η₁ = $η₂) := e_η₂
+    have e_ηs₁ : Q($ηs ▷ $k = $ηs₁) := e_ηs₁
+    have e_ηs₂ : Q((α_ _ _ _).inv ≫ $ηs₁ = $ηs₂) := e_ηs₂
+    have e_η₃ : Q($η₂ ≫ $ηs₂ = $η₃) := e_η₃
+    have e_η₄ : Q((α_ _ _ _).hom ≫ $η₃ = $η₄) := e_η₄
+    have e_η₅ : Q((whiskerRightIso $α $k).hom ≫ $η₄ = $η₅) := e_η₅
+    return q(evalWhiskerRight_cons_whisker $e_η₁ $e_η₂ $e_ηs₁ $e_ηs₂ $e_η₃ $e_η₄ $e_η₅)
   mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← η.srcM
     let f' ← η.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := g.tgt
-    let d := h.tgt
-    return mkAppN (.const ``evalWhiskerRight_comp (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, d.e, f.e, f'.e, g.e, h.e,
-        η.e, η₁.e, η₂.e, η₃.e, η₄.e, e_η₁, e_η₂, e_η₃, e_η₄]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := g.tgt.e
+    have d : Q($ctx.B) := h.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have f' : Q($a ⟶ $b) := f'.e
+    have g : Q($b ⟶ $c) := g.e
+    have h : Q($c ⟶ $d) := h.e
+    have η : Q($f ⟶ $f') := η.e.e
+    have η₁ : Q($f ≫ $g ⟶ $f' ≫ $g) := η₁.e.e
+    have η₂ : Q(($f ≫ $g) ≫ $h ⟶ ($f' ≫ $g) ≫ $h) := η₂.e.e
+    have η₃ : Q(($f ≫ $g) ≫ $h ⟶ $f' ≫ ($g ≫ $h)) := η₃.e.e
+    have η₄ : Q($f ≫ ($g ≫ $h) ⟶ $f' ≫ ($g ≫ $h)) := η₄.e.e
+    have e_η₁ : Q($η ▷ $g = $η₁) := e_η₁
+    have e_η₂ : Q($η₁ ▷ $h = $η₂) := e_η₂
+    have e_η₃ : Q($η₂ ≫ (α_ _ _ _).hom = $η₃) := e_η₃
+    have e_η₄ : Q((α_ _ _ _).inv ≫ $η₃ = $η₄) := e_η₄
+    return q(evalWhiskerRight_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
   mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
-    let a := f.src
-    let b := f.tgt
-    return mkAppN (.const ``evalWhiskerRight_id (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, η.e, η₁.e, η₂.e, e_η₁, e_η₂]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have η : Q($f ⟶ $g) := η.e.e
+    have η₁ : Q($f ⟶ $g ≫ 𝟙 $b) := η₁.e.e
+    have η₂ : Q($f ≫ 𝟙 $b ⟶ $g ≫ 𝟙 $b) := η₂.e.e
+    have e_η₁ : Q($η ≫ (ρ_ _).inv = $η₁) := e_η₁
+    have e_η₂ : Q((ρ_ _).hom ≫ $η₁ = $η₂) := e_η₂
+    return q(evalWhiskerRight_id $e_η₁ $e_η₂)
 
 instance : MkEvalHorizontalComp BicategoryM where
   mkEvalHorizontalCompAuxOf _ _ := do
@@ -308,92 +429,108 @@ instance : MkEvalHorizontalComp BicategoryM where
 instance : MkEval BicategoryM where
   mkEvalComp η θ η' θ' ι e_η e_θ e_ηθ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← η'.srcM
     let g ← η'.tgtM
     let h ← θ'.tgtM
-    let a := f.src
-    let b := f.tgt
-    return mkAppN (.const ``eval_comp (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e,
-        η.e, η'.e, θ.e, θ'.e, ι.e, e_η, e_θ, e_ηθ]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have h : Q($a ⟶ $b) := h.e
+    have η : Q($f ⟶ $g) := η.e
+    have η' : Q($f ⟶ $g) := η'.e.e
+    have θ : Q($g ⟶ $h) := θ.e
+    have θ' : Q($g ⟶ $h) := θ'.e.e
+    have ι : Q($f ⟶ $h) := ι.e.e
+    have e_η : Q($η = $η') := e_η
+    have e_θ : Q($θ = $θ') := e_θ
+    have e_ηθ : Q($η' ≫ $θ' = $ι) := e_ηθ
+    return q(eval_comp $e_η $e_θ $e_ηθ)
   mkEvalWhiskerLeft f η η' θ e_η e_θ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let g ← η'.srcM
     let h ← η'.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := g.tgt
-    return mkAppN (.const ``eval_whiskerLeft (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, η.e, η'.e, θ.e, e_η, e_θ]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := g.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($b ⟶ $c) := g.e
+    have h : Q($b ⟶ $c) := h.e
+    have η : Q($g ⟶ $h) := η.e
+    have η' : Q($g ⟶ $h) := η'.e.e
+    have θ : Q($f ≫ $g ⟶ $f ≫ $h) := θ.e.e
+    have e_η : Q($η = $η') := e_η
+    have e_θ : Q($f ◁ $η' = $θ) := e_θ
+    return q(eval_whiskerLeft $e_η $e_θ)
   mkEvalWhiskerRight η h η' θ e_η e_θ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← η'.srcM
     let g ← η'.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := h.tgt
-    return mkAppN (.const ``eval_whiskerRight (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, η.e, η'.e, θ.e, e_η, e_θ]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have c : Q($ctx.B) := h.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have h : Q($b ⟶ $c) := h.e
+    have η : Q($f ⟶ $g) := η.e
+    have η' : Q($f ⟶ $g) := η'.e.e
+    have θ : Q($f ≫ $h ⟶ $g ≫ $h) := θ.e.e
+    have e_η : Q($η = $η') := e_η
+    have e_θ : Q($η' ▷ $h = $θ) := e_θ
+    return q(eval_whiskerRight $e_η $e_θ)
   mkEvalHorizontalComp _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
   mkEvalOf η := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f := η.src
     let g := η.tgt
-    let a := f.src
-    let b := f.tgt
-    return mkAppN (.const ``eval_of (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, η.e]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have η : Q($f ⟶ $g) := η.e
+    return q(eval_of $η)
   mkEvalMonoidalComp η θ α η' θ' αθ ηαθ e_η e_θ e_αθ e_ηαθ := do
     let ctx ← read
+    let _bicat := ctx.instBicategory
     let f ← η'.srcM
     let g ← η'.tgtM
     let h ← α.tgtM
     let i ← θ'.tgtM
-    let a := f.src
-    let b := f.tgt
-    return mkAppN (.const ``eval_monoidalComp (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, f.e, g.e, h.e, i.e,
-        η.e, η'.e, α.e, θ.e, θ'.e, αθ.e, ηαθ.e, e_η, e_θ, e_αθ, e_ηαθ]
+    have a : Q($ctx.B) := f.src.e
+    have b : Q($ctx.B) := f.tgt.e
+    have f : Q($a ⟶ $b) := f.e
+    have g : Q($a ⟶ $b) := g.e
+    have h : Q($a ⟶ $b) := h.e
+    have i : Q($a ⟶ $b) := i.e
+    have η : Q($f ⟶ $g) := η.e
+    have η' : Q($f ⟶ $g) := η'.e.e
+    have α : Q($g ≅ $h) := α.e
+    have θ : Q($h ⟶ $i) := θ.e
+    have θ' : Q($h ⟶ $i) := θ'.e.e
+    have αθ : Q($g ⟶ $i) := αθ.e.e
+    have ηαθ : Q($f ⟶ $i) := ηαθ.e.e
+    have e_η : Q($η = $η') := e_η
+    have e_θ : Q($θ = $θ') := e_θ
+    have e_αθ : Q(Iso.hom $α ≫ $θ' = $αθ) := e_αθ
+    have e_ηαθ : Q($η' ≫ $αθ = $ηαθ) := e_ηαθ
+    return q(eval_bicategoricalComp $e_η $e_θ $e_αθ $e_ηαθ)
 
 instance : MonadNormalExpr BicategoryM where
   whiskerRightM η h := do
-    let ctx ← read
-    let f ← η.srcM
-    let g ← η.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := h.tgt
-    let e := mkAppN (.const ``Bicategory.whiskerRight (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, η.e, h.e]
-    return .whisker e η h
+    return .whisker (← Mor₂.whiskerRightM η.e (.of h)) η h
   hConsM _ _ := do
     throwError "not implemented"
   whiskerLeftM f η := do
-    let ctx ← read
-    let g ← η.srcM
-    let h ← η.tgtM
-    let a := f.src
-    let b := f.tgt
-    let c := g.tgt
-    let e := mkAppN (.const ``Bicategory.whiskerLeft (← getLevels))
-      #[ctx.B, ctx.instBicategory, a.e, b.e, c.e, f.e, g.e, h.e, η.e]
-    return .whisker e f η
+    return .whisker (← Mor₂.whiskerLeftM (.of f) η.e) f η
   nilM α := do
-    return .nil (← Mor₂.homM α).e α
+    return .nil (← Mor₂.homM α) α
   consM α η ηs := do
-    let ctx ← read
-    let f ← α.srcM
-    let g ← α.tgtM
-    let h ← η.tgtM
-    let i ← ηs.tgtM
-    let a := f.src
-    let b := f.tgt
-    let e := mkAppN (.const ``CategoryStruct.comp [ctx.level₂, ctx.level₁])
-      #[← mkHom₁ a.e b.e, ← mkHomCatStructInst a.e b.e, g.e, h.e, i.e, η.e, ηs.e]
-    let e' := mkAppN (.const ``CategoryStruct.comp [ctx.level₂, ctx.level₁])
-      #[← mkHom₁ a.e b.e, ← mkHomCatStructInst a.e b.e, f.e, g.e, i.e, (← mkIsoHom α.e), e]
-    return .cons e' α η ηs
+    return .cons (← Mor₂.comp₂M (← Mor₂.homM α) (← Mor₂.comp₂M η.e ηs.e)) α η ηs
 
 instance : MkMor₂ BicategoryM where
   ofExpr := Mor₂OfExpr
@@ -405,7 +542,6 @@ open Lean Elab Tactic
 /-- Normalize the both sides of an equality. -/
 elab "bicategory_nf" : tactic => withMainContext do
   replaceMainGoal (← monoidalNf (← getMainGoal))
-
 
 def bicategory (mvarId : MVarId) : MetaM (List MVarId) :=
   BicategoryLike.main  Bicategory.Context (mkAppM ``mk_eq_of_normalized_eq) `bicategory mvarId
