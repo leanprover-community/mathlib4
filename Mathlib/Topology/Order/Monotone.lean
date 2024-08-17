@@ -34,7 +34,7 @@ theorem MonotoneOn.map_sSup_of_continuousWithinAt' {f : α → β} {A : Set α}
     f (sSup A) = sSup (f '' A) :=
   --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
   .symm <| ((isLUB_csSup A_nonemp A_bdd).isLUB_of_tendsto Mf A_nonemp <|
-    Cf.mono_left fun ⦃U⦄ a ↦ a).csSup_eq (A_nonemp.image f)
+    Cf.mono_left fun ⦃_⦄ a ↦ a).csSup_eq (A_nonemp.image f)
 
 /-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
 the supremum of the image of this set. -/
