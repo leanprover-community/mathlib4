@@ -193,8 +193,6 @@ theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l�
     l₁ ++ l₂ ⊆ l :=
   fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 
-alias ⟨eq_nil_of_subset_nil, _⟩ := subset_nil
-
 theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
     map f l₁ ⊆ map f l₂ ↔ l₁ ⊆ l₂ := by
   refine ⟨?_, map_subset f⟩; intro h2 x hx
@@ -323,7 +321,7 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
 
 /-! ### empty -/
 
-theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;> simp [isEmpty]
+@[deprecated (since := "2024-08-15")] alias isEmpty_iff_eq_nil := isEmpty_iff
 
 /-! ### dropLast -/
 
@@ -705,25 +703,10 @@ lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l�
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
 
-theorem tail_sublist : ∀ l : List α, tail l <+ l
-  | [] => .slnil
-  | a::l => sublist_cons_self a l
-
-@[gcongr] protected theorem Sublist.tail : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → tail l₁ <+ tail l₂
-  | _, _, slnil => .slnil
-  | _, _, Sublist.cons _ h => (tail_sublist _).trans h
-  | _, _, Sublist.cons₂ _ h => h
-
-theorem Sublist.of_cons_cons {l₁ l₂ : List α} {a b : α} (h : a :: l₁ <+ b :: l₂) : l₁ <+ l₂ :=
-  h.tail
-
 @[deprecated (since := "2024-04-07")]
 theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
 
 @[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
-
-theorem eq_nil_of_sublist_nil {l : List α} (s : l <+ []) : l = [] :=
-  eq_nil_of_subset_nil <| s.subset
 
 -- Porting note: this lemma seems to have been renamed on the occasion of its move to Batteries
 alias sublist_nil_iff_eq_nil := sublist_nil
@@ -957,6 +940,7 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
       simp only [h]
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 
+@[deprecated (since := "2024-08-15")]
 theorem getElem_reverse_aux₂ :
     ∀ (l r : List α) (i : Nat) (h1) (h2),
       (reverseAux l r)[length l - 1 - i]'h1 = l[i]'h2
@@ -971,11 +955,7 @@ theorem getElem_reverse_aux₂ :
     rw [← heq] at aux
     apply aux
 
-@[simp] theorem getElem_reverse (l : List α) (i : Nat) (h1 h2) :
-    (reverse l)[length l - 1 - i]'h1 = l[i]'h2 :=
-  getElem_reverse_aux₂ _ _ _ _ _
-
-@[deprecated getElem_reverse_aux₂ (since := "2024-06-12")]
+@[deprecated (since := "2024-06-12")]
 theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
     get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
   simp [getElem_reverse_aux₂, h1, h2]
@@ -1188,10 +1168,6 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
 
 theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: take n l :=
   rfl
-
-@[simp]
-theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
-  rw [← drop_drop, drop_one]
 
 theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
     l[n] :: l.drop (n + 1) = l.drop n :=
