@@ -474,12 +474,12 @@ lemma measure_sub_singularPart (μ ν : Measure α) [HaveLebesgueDecomposition �
     [IsFiniteMeasure μ] :
     μ - μ.singularPart ν = ν.withDensity (μ.rnDeriv ν) := by
   nth_rw 1 [← rnDeriv_add_singularPart μ ν]
-  exact add_sub_cancel
+  exact Measure.add_sub_cancel
 
 lemma measure_sub_rnDeriv (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] [IsFiniteMeasure μ] :
     μ - ν.withDensity (μ.rnDeriv ν) = μ.singularPart ν := by
   nth_rw 1 [← singularPart_add_rnDeriv μ ν]
-  exact add_sub_cancel
+  exact Measure.add_sub_cancel
 
 /-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.
