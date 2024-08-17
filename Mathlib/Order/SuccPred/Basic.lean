@@ -73,18 +73,6 @@ class PredOrder (α : Type*) [Preorder α] where
   /-- Proof that `pred` satisfies ordering invariants between `LT` and `LE`-/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
-/-- Order equipped with a sensible successor function. -/
-@[ext]
-class StrongSuccOrder (α : Type*) [Preorder α] extends SuccOrder α where
-  /-- Proof that `succ` satisfies ordering invariants between `LE` and `LT`-/
-  le_of_lt_succ {a b} : a < succ b → a ≤ b
-
-/-- Order equipped with a sensible predecessor function. -/
-@[ext]
-class StrongPredOrder (α : Type*) [Preorder α] extends PredOrder α where
-  /-- Proof that `pred` satisfies ordering invariants between `LE` and `LT`-/
-  le_of_pred_lt {a b} : pred a < b → a ≤ b
-
 instance [Preorder α] [SuccOrder α] :
     PredOrder αᵒᵈ where
   pred := toDual ∘ SuccOrder.succ ∘ ofDual
@@ -93,10 +81,6 @@ instance [Preorder α] [SuccOrder α] :
      SuccOrder.le_succ, implies_true]
   min_of_le_pred h := by apply SuccOrder.max_of_succ_le h
   le_pred_of_lt := by intro a b h; exact SuccOrder.succ_le_of_lt h
-
-instance [Preorder α] [StrongSuccOrder α] :
-    StrongPredOrder αᵒᵈ where
-  le_of_pred_lt := StrongSuccOrder.le_of_lt_succ
 
 instance [Preorder α] [PredOrder α] :
     SuccOrder αᵒᵈ where
@@ -107,51 +91,25 @@ instance [Preorder α] [PredOrder α] :
   max_of_succ_le h := by apply PredOrder.min_of_le_pred h
   succ_le_of_lt := by intro a b h; exact PredOrder.le_pred_of_lt h
 
-instance [Preorder α] [StrongPredOrder α] :
-    StrongSuccOrder αᵒᵈ where
-  le_of_lt_succ := StrongPredOrder.le_of_pred_lt
-
 section Preorder
 
 variable [Preorder α]
 
--- TODO: this interacts annoyingly with StrongSuccOrder.ofSuccLeIff, which is for linear orders
-
--- /-- A constructor for `SuccOrder α` usable when `α` has no maximal element. -/
--- def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
---     SuccOrder α :=
---   { succ
---     le_succ := fun _ => (hsucc_le_iff.1 le_rfl).le
---     max_of_succ_le := fun ha => (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
---     succ_le_of_lt := fun h => hsucc_le_iff.2 h }
-
--- /-- A constructor for `PredOrder α` usable when `α` has no minimal element. -/
--- def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) :
---     PredOrder α :=
---   { pred
---     pred_le := fun _ => (hle_pred_iff.1 le_rfl).le
---     min_of_le_pred := fun ha => (lt_irrefl _ <| hle_pred_iff.1 ha).elim
---     le_pred_of_lt := fun h => hle_pred_iff.2 h }
-
-/-- A constructor for `SuccOrder α` usable when `α` has no maximal element. -/
-def StrongSuccOrder.ofSuccLeIffOfLeLtSucc (succ : α → α)
-    (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) (hle_of_lt_succ : ∀ {a b}, a < succ b → a ≤ b) :
-    StrongSuccOrder α :=
+/-- A constructor for `SuccOrder α`. -/
+def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
+    SuccOrder α :=
   { succ
     le_succ := fun _ => (hsucc_le_iff.1 le_rfl).le
     max_of_succ_le := fun ha => (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
-    succ_le_of_lt := fun h => hsucc_le_iff.2 h
-    le_of_lt_succ := fun h => hle_of_lt_succ h}
+    succ_le_of_lt := fun h => hsucc_le_iff.2 h }
 
-/-- A constructor for `PredOrder α` usable when `α` has no minimal element. -/
-def StrongPredOrder.ofLePredIffOfPredLePred (pred : α → α)
-    (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) (hle_of_pred_lt : ∀ {a b}, pred a < b → a ≤ b) :
-    StrongPredOrder α :=
+/-- A constructor for `PredOrder α`. -/
+def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) :
+    PredOrder α :=
   { pred
     pred_le := fun _ => (hle_pred_iff.1 le_rfl).le
     min_of_le_pred := fun ha => (lt_irrefl _ <| hle_pred_iff.1 ha).elim
-    le_pred_of_lt := fun h => hle_pred_iff.2 h
-    le_of_pred_lt := fun h => hle_of_pred_lt h }
+    le_pred_of_lt := fun h => hle_pred_iff.2 h }
 
 end Preorder
 
@@ -161,55 +119,33 @@ variable [LinearOrder α]
 
 /-- A constructor for `SuccOrder α` for `α` a linear order. -/
 @[simps]
-def StrongSuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < b ↔ succ a ≤ b)
-    (hm : ∀ a, IsMax a → succ a = a) : StrongSuccOrder α :=
+def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < b ↔ succ a ≤ b)
+    (hm : ∀ a, IsMax a → succ a = a) : SuccOrder α :=
   { succ
     succ_le_of_lt := fun {a b} =>
       by_cases (fun h hab => (hm a h).symm ▸ hab.le) fun h => (hn h b).mp
     le_succ := fun a =>
       by_cases (fun h => (hm a h).symm.le) fun h => le_of_lt <| by simpa using (hn h a).not
-    le_of_lt_succ := fun {a b} (hab : a < succ b) =>
-      by_cases (fun h => hm b h ▸ hab.le) fun h => by simpa [hab] using (hn h a).not
     max_of_succ_le := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
 
 /-- A constructor for `PredOrder α` for `α` a linear order. -/
 @[simps]
-def StrongPredOrder.ofCore {α} [LinearOrder α] (pred : α → α)
+def PredOrder.ofCore (pred : α → α)
     (hn : ∀ {a}, ¬IsMin a → ∀ b, b ≤ pred a ↔ b < a) (hm : ∀ a, IsMin a → pred a = a) :
-    StrongPredOrder α :=
+    PredOrder α :=
   { pred
     le_pred_of_lt := fun {a b} =>
       by_cases (fun h hab => (hm b h).symm ▸ hab.le) fun h => (hn h a).mpr
     pred_le := fun a =>
       by_cases (fun h => (hm a h).le) fun h => le_of_lt <| by simpa using (hn h a).not
-    le_of_pred_lt := fun {a b} (hab : pred a < b) =>
-      by_cases (fun h => hm a h ▸ hab.le) fun h => by simpa [hab] using (hn h b).not
     min_of_le_pred := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
-
-/-- A constructor for `SuccOrder α` usable when `α` is a linear order with no maximal element. -/
-def StrongSuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
-    StrongSuccOrder α :=
-  { succ
-    le_succ := fun _ => (hsucc_le_iff.1 le_rfl).le
-    max_of_succ_le := fun ha => (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
-    succ_le_of_lt := fun h => hsucc_le_iff.2 h
-    le_of_lt_succ := fun {_ _} h => le_of_not_lt ((not_congr hsucc_le_iff).1 h.not_le) }
-
-/-- A constructor for `PredOrder α` usable when `α` is a linear order with no minimal element. -/
-def StrongPredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) :
-    StrongPredOrder α :=
-  { pred
-    pred_le := fun _ => (hle_pred_iff.1 le_rfl).le
-    min_of_le_pred := fun ha => (lt_irrefl _ <| hle_pred_iff.1 ha).elim
-    le_pred_of_lt := fun h => hle_pred_iff.2 h
-    le_of_pred_lt := fun {_ _} h => le_of_not_lt ((not_congr hle_pred_iff).1 h.not_le) }
 
 open scoped Classical
 
 variable (α)
 
 /-- A well-order is a `SuccOrder`. -/
-noncomputable def StrongSuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : StrongSuccOrder α :=
+noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder α :=
   ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
     (fun ha _ ↦ by
       rw [not_isMax_iff] at ha
@@ -218,10 +154,8 @@ noncomputable def StrongSuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : Str
     fun a ha ↦ dif_neg (not_not_intro ha <| not_isMax_iff.mpr ·)
 
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/
-noncomputable def StrongPredOrder.ofLinearWellFoundedGT (α) [LinearOrder α] [WellFoundedGT α] :
-    StrongPredOrder α :=
-      letI := StrongSuccOrder.ofLinearWellFoundedLT αᵒᵈ
-      inferInstanceAs (StrongPredOrder αᵒᵈᵒᵈ)
+noncomputable def PredOrder.ofLinearWellFoundedGT (α) [LinearOrder α] [WellFoundedGT α] :
+    PredOrder α := letI := SuccOrder.ofLinearWellFoundedLT αᵒᵈ; inferInstanceAs (PredOrder αᵒᵈᵒᵈ)
 
 end LinearOrder
 
@@ -388,65 +322,6 @@ end NoMaxOrder
 
 end Preorder
 
-section PreorderStrong
-
-variable [Preorder α] [StrongSuccOrder α] {a b : α}
-
-theorem le_of_lt_succ {a b : α} : a < succ b → a ≤ b :=
-  StrongSuccOrder.le_of_lt_succ
-
-theorem lt_succ_iff_of_not_isMax (ha : ¬IsMax a) : b < succ a ↔ b ≤ a :=
-  ⟨le_of_lt_succ, fun h => h.trans_lt <| lt_succ_of_not_isMax ha⟩
-
-theorem succ_lt_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
-    succ a < succ b ↔ a < b := by
-  rw [lt_succ_iff_of_not_isMax hb, succ_le_iff_of_not_isMax ha]
-
-theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
-    succ a ≤ succ b ↔ a ≤ b := by
-  rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
-
-theorem Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iio (succ a) = Iic a :=
-  Set.ext fun _ => lt_succ_iff_of_not_isMax ha
-
-theorem Ico_succ_right_of_not_isMax (hb : ¬IsMax b) : Ico a (succ b) = Icc a b := by
-  rw [← Ici_inter_Iio, Iio_succ_of_not_isMax hb, Ici_inter_Iic]
-
-theorem Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioo a (succ b) = Ioc a b := by
-  rw [← Ioi_inter_Iio, Iio_succ_of_not_isMax hb, Ioi_inter_Iic]
-
-section NoMaxOrder
-
-variable [NoMaxOrder α]
-
-@[simp]
-theorem lt_succ_iff : a < succ b ↔ a ≤ b :=
-  lt_succ_iff_of_not_isMax <| not_isMax b
-
-theorem succ_le_succ_iff : succ a ≤ succ b ↔ a ≤ b := by simp
-
-theorem succ_lt_succ_iff : succ a < succ b ↔ a < b := by simp
-
-alias ⟨le_of_succ_le_succ, _⟩ := succ_le_succ_iff
-
-alias ⟨lt_of_succ_lt_succ, _⟩ := succ_lt_succ_iff
-
-@[simp]
-theorem Iio_succ (a : α) : Iio (succ a) = Iic a :=
-  Iio_succ_of_not_isMax <| not_isMax _
-
-@[simp]
-theorem Ico_succ_right (a b : α) : Ico a (succ b) = Icc a b :=
-  Ico_succ_right_of_not_isMax <| not_isMax _
-
-@[simp]
-theorem Ioo_succ_right (a b : α) : Ioo a (succ b) = Ioc a b :=
-  Ioo_succ_right_of_not_isMax <| not_isMax _
-
-end NoMaxOrder
-
-end PreorderStrong
-
 section PartialOrder
 
 variable [PartialOrder α] [SuccOrder α] {a b : α}
@@ -515,9 +390,33 @@ end OrderBot
 
 end PartialOrder
 
-section PartialOrderStrong
+section LinearOrder
 
-variable [PartialOrder α] [StrongSuccOrder α] {a b : α}
+variable [LinearOrder α] [SuccOrder α] {a b : α}
+
+theorem le_of_lt_succ {a b : α} : a < succ b → a ≤ b := fun h ↦ by
+  by_contra! nh
+  exact (h.trans_le (succ_le_of_lt nh)).false
+
+theorem lt_succ_iff_of_not_isMax (ha : ¬IsMax a) : b < succ a ↔ b ≤ a :=
+  ⟨le_of_lt_succ, fun h => h.trans_lt <| lt_succ_of_not_isMax ha⟩
+
+theorem succ_lt_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
+    succ a < succ b ↔ a < b := by
+  rw [lt_succ_iff_of_not_isMax hb, succ_le_iff_of_not_isMax ha]
+
+theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
+    succ a ≤ succ b ↔ a ≤ b := by
+  rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
+
+theorem Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iio (succ a) = Iic a :=
+  Set.ext fun _ => lt_succ_iff_of_not_isMax ha
+
+theorem Ico_succ_right_of_not_isMax (hb : ¬IsMax b) : Ico a (succ b) = Icc a b := by
+  rw [← Ici_inter_Iio, Iio_succ_of_not_isMax hb, Ici_inter_Iic]
+
+theorem Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioo a (succ b) = Ioc a b := by
+  rw [← Ioi_inter_Iio, Iio_succ_of_not_isMax hb, Ioi_inter_Iic]
 
 theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
     succ a = succ b ↔ a = b := by
@@ -557,6 +456,30 @@ section NoMaxOrder
 variable [NoMaxOrder α]
 
 @[simp]
+theorem lt_succ_iff : a < succ b ↔ a ≤ b :=
+  lt_succ_iff_of_not_isMax <| not_isMax b
+
+theorem succ_le_succ_iff : succ a ≤ succ b ↔ a ≤ b := by simp
+
+theorem succ_lt_succ_iff : succ a < succ b ↔ a < b := by simp
+
+alias ⟨le_of_succ_le_succ, _⟩ := succ_le_succ_iff
+
+alias ⟨lt_of_succ_lt_succ, _⟩ := succ_lt_succ_iff
+
+@[simp]
+theorem Iio_succ (a : α) : Iio (succ a) = Iic a :=
+  Iio_succ_of_not_isMax <| not_isMax _
+
+@[simp]
+theorem Ico_succ_right (a b : α) : Ico a (succ b) = Icc a b :=
+  Ico_succ_right_of_not_isMax <| not_isMax _
+
+@[simp]
+theorem Ioo_succ_right (a b : α) : Ioo a (succ b) = Ioc a b :=
+  Ioo_succ_right_of_not_isMax <| not_isMax _
+
+@[simp]
 theorem succ_eq_succ_iff : succ a = succ b ↔ a = b :=
   succ_eq_succ_iff_of_not_isMax (not_isMax a) (not_isMax b)
 
@@ -593,7 +516,7 @@ theorem le_succ_bot_iff : a ≤ succ ⊥ ↔ a = ⊥ ∨ a = succ ⊥ := by
 
 end OrderBot
 
-end PartialOrderStrong
+end LinearOrder
 
 /-- There is at most one way to define the successors in a `PartialOrder`. -/
 instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
@@ -1099,39 +1022,6 @@ theorem pred_untop :
 
 end Pred
 
-section StrongSucc
-
-variable [DecidableEq α] [PartialOrder α] [OrderTop α] [StrongSuccOrder α]
-
-instance : StrongSuccOrder (WithTop α) where
-  le_of_lt_succ {a b} h := by
-    cases a
-    · exact (not_top_lt h).elim
-    cases b
-    · exact le_top
-    dsimp only [SuccOrder.succ] at h
-    rw [coe_le_coe]
-    split_ifs at h with hb
-    · rw [hb]
-      exact le_top
-    · exact StrongSuccOrder.le_of_lt_succ (coe_lt_coe.1 h)
-
-end StrongSucc
-
-section StrongPred
-
-variable [DecidableEq α] [PartialOrder α] [OrderTop α] [StrongPredOrder α]
-
-instance : StrongPredOrder (WithTop α) where
-  le_of_pred_lt {a b} h := by
-    cases b
-    · exact le_top
-    cases a
-    · exact (not_top_lt <| coe_lt_coe.1 h).elim
-    · exact coe_le_coe.2 (StrongPredOrder.le_of_pred_lt <| coe_lt_coe.1 h)
-
-end StrongPred
-
 /-! #### Adding a `⊤` to a `NoMaxOrder` -/
 
 section Succ
@@ -1179,20 +1069,6 @@ instance [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) :=
 
 end Pred
 
-section StrongSucc
-
-variable [Preorder α] [NoMaxOrder α] [StrongSuccOrder α]
-
-instance : StrongSuccOrder (WithTop α) where
-  le_of_lt_succ {a b} h := by
-    cases a
-    · exact (not_top_lt h).elim
-    cases b
-    · exact le_top
-    · exact coe_le_coe.2 (StrongSuccOrder.le_of_lt_succ <| coe_lt_coe.1 h)
-
-end StrongSucc
-
 end WithTop
 
 namespace WithBot
@@ -1222,12 +1098,6 @@ instance : SuccOrder (WithBot α) where
     cases a
     · exact coe_le_coe.2 bot_le
     · exact coe_le_coe.2 (succ_le_of_lt <| coe_lt_coe.1 h)
-  -- le_of_lt_succ {a b} h := by
-  --   cases a
-  --   · exact bot_le
-  --   cases b
-  --   · exact (not_lt_bot <| coe_lt_coe.1 h).elim
-  --   · exact coe_le_coe.2 (le_of_lt_succ <| coe_lt_coe.1 h)
 
 @[simp]
 theorem succ_bot : succ (⊥ : WithBot α) = ↑(⊥ : α) :=
@@ -1281,17 +1151,6 @@ instance : PredOrder (WithBot α) where
     · rw [hb] at h
       exact (not_lt_bot h).elim
     · exact coe_le_coe.2 (le_pred_of_lt h)
-  -- le_of_pred_lt {a b} h := by
-  --   cases b
-  --   · exact (not_lt_bot h).elim
-  --   cases a
-  --   · exact bot_le
-  --   dsimp only at h
-  --   rw [coe_le_coe]
-  --   split_ifs at h with ha
-  --   · rw [ha]
-  --     exact bot_le
-  --   · exact le_of_pred_lt (coe_lt_coe.1 h)
 
 @[simp]
 theorem pred_coe_bot : pred ↑(⊥ : α) = (⊥ : WithBot α) :=
@@ -1342,12 +1201,6 @@ instance predOrderOfNoMinOrder : PredOrder (WithBot α) where
     cases a
     · exact bot_le
     · exact coe_le_coe.2 (le_pred_of_lt <| coe_lt_coe.1 h)
-  -- le_of_pred_lt {a b} h := by
-  --   cases b
-  --   · exact (not_lt_bot h).elim
-  --   cases a
-  --   · exact bot_le
-  --   · exact coe_le_coe.2 (le_of_pred_lt <| coe_lt_coe.1 h)
 
 @[simp]
 theorem pred_coe (a : α) : pred (↑a : WithBot α) = ↑(pred a) :=
