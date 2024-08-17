@@ -55,8 +55,9 @@ Mathlib/Tactic/Linter/Basic.lean"
 produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/Tactic/Linarith/Basic.lean"
 
-open Lean Elab
-def outputLabels : Command.CommandElabM Unit := do
+open Lean Elab.Command in
+/-- `run_cmd outputLabels` examines the diff with master and reports the appropriate labels. -/
+def outputLabels : CommandElabM Unit := do
   let gitArgs := #["diff", "--name-only", "master"]
   let out ← IO.Process.run { cmd := "git", args := gitArgs }
   let labels := produceLabels (← getEnv) out
