@@ -43,9 +43,8 @@ def Functor.mapConnectedComponents {K : Type u₂} [Category.{v₂} K] (F : J �
     (fun _ _ ↦ Quot.sound ∘ zigzag_obj_of_zigzag F)
 
 @[simp]
-lemma image_of_cc_is_cc_of_image {K : Type u₂} [Category.{v₂} K] (F : J ⥤ K) :
-    F.mapConnectedComponents ∘ (Quotient.mk (Zigzag.setoid J))
-      =  Quotient.mk (Zigzag.setoid K) ∘ F.obj := rfl
+lemma Functor.mapConnectedComponents_mk {K : Type u₂} [Category.{v₂} K] (F : J ⥤ K) (j : J) :
+    F.mapConnectedComponents (Quotient.mk _ j) = Quotient.mk _ (F.obj j) := rfl
 
 instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
   ⟨Quotient.mk'' default⟩
