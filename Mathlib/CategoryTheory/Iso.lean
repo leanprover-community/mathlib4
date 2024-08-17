@@ -100,7 +100,7 @@ theorem symm_mk {X Y : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_
   rfl
 
 @[simp]
-theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := by cases α; rfl
+theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := rfl
 
 @[simp]
 theorem symm_eq_iff {X Y : C} {α β : X ≅ Y} : α.symm = β.symm ↔ α = β :=
