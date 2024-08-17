@@ -522,7 +522,7 @@ theorem eq_one_of_mul_right' (h : a * b = 1) : a = 1 := LeftCancelMonoid.eq_one_
 @[to_additive]
 theorem eq_one_of_mul_left' (h : a * b = 1) : b = 1 := LeftCancelMonoid.eq_one_of_mul_left h
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mul_eq_one' : a * b = 1 ↔ a = 1 ∧ b = 1 := LeftCancelMonoid.mul_eq_one
 
 @[to_additive]
