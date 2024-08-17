@@ -56,7 +56,7 @@ produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/Tactic/Linarith/Basic.lean"
 
 open Lean Elab
-run_cmd
+def ghAddLabels : Command.CommandElabM Unit := do
   let gitArgs := #["diff", "--name-only", "master"]
   dbg_trace "gitArgs: {gitArgs}"
   let out ← IO.Process.run { cmd := "git", args := gitArgs }
@@ -68,5 +68,7 @@ run_cmd
 -- gh issue edit "$NUMBER" --add-label "$LABELS"
   let ghArgs := #["issue", "edit", s!"{number}", "--add-label", csLabs]
   let gh : IO.Process.SpawnArgs := { cmd := "gh", args := ghArgs }
-  --IO.Process.run gh
+  dbg_trace ← IO.Process.run gh
+
+--run_cmd ghAddLabels
 end AutoLabel.Label
