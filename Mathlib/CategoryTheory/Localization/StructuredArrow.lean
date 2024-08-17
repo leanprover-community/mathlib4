@@ -57,14 +57,15 @@ section
 
 variable (W : MorphismProperty C) {X : C}
   (P : StructuredArrow (W.Q.obj X) W.Q → Prop)
-  (hP₀ : P (StructuredArrow.mk (𝟙 (W.Q.obj X))))
-  (hP₁ : ∀ ⦃Y₁ Y₂ : C⦄ (f : Y₁ ⟶ Y₂) (φ : W.Q.obj X ⟶ W.Q.obj Y₁),
-    P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ W.Q.map f)))
-  (hP₂ : ∀ ⦃Y₁ Y₂ : C⦄ (w : Y₁ ⟶ Y₂) (hw : W w) (φ : W.Q.obj X ⟶ W.Q.obj Y₂),
-    P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ (isoOfHom W.Q W w hw).inv)))
 
 open Construction in
-private lemma induction_structuredArrow' (g : StructuredArrow (W.Q.obj X) W.Q) : P g := by
+private lemma induction_structuredArrow'
+    (hP₀ : P (StructuredArrow.mk (𝟙 (W.Q.obj X))))
+    (hP₁ : ∀ ⦃Y₁ Y₂ : C⦄ (f : Y₁ ⟶ Y₂) (φ : W.Q.obj X ⟶ W.Q.obj Y₁),
+      P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ W.Q.map f)))
+    (hP₂ : ∀ ⦃Y₁ Y₂ : C⦄ (w : Y₁ ⟶ Y₂) (hw : W w) (φ : W.Q.obj X ⟶ W.Q.obj Y₂),
+      P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ (isoOfHom W.Q W w hw).inv)))
+    (g : StructuredArrow (W.Q.obj X) W.Q) : P g := by
   let X₀ : Paths (LocQuiver W) := ⟨X⟩
   suffices ∀ ⦃Y₀ : Paths (LocQuiver W)⦄ (f : X₀ ⟶ Y₀),
       P (StructuredArrow.mk ((Quotient.functor (relations W)).map f)) by
@@ -85,14 +86,16 @@ section
 
 variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {X : C}
   (P : StructuredArrow (L.obj X) L → Prop)
-  (hP₀ : P (StructuredArrow.mk (𝟙 (L.obj X))))
-  (hP₁ : ∀ ⦃Y₁ Y₂ : C⦄ (f : Y₁ ⟶ Y₂) (φ : L.obj X ⟶ L.obj Y₁),
-    P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ L.map f)))
-  (hP₂ : ∀ ⦃Y₁ Y₂ : C⦄ (w : Y₁ ⟶ Y₂) (hw : W w) (φ : L.obj X ⟶ L.obj Y₂),
-    P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ (isoOfHom L W w hw).inv)))
+
 
 @[elab_as_elim]
-lemma induction_structuredArrow (g : StructuredArrow (L.obj X) L) : P g := by
+lemma induction_structuredArrow
+    (hP₀ : P (StructuredArrow.mk (𝟙 (L.obj X))))
+    (hP₁ : ∀ ⦃Y₁ Y₂ : C⦄ (f : Y₁ ⟶ Y₂) (φ : L.obj X ⟶ L.obj Y₁),
+      P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ L.map f)))
+    (hP₂ : ∀ ⦃Y₁ Y₂ : C⦄ (w : Y₁ ⟶ Y₂) (hw : W w) (φ : L.obj X ⟶ L.obj Y₂),
+      P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ (isoOfHom L W w hw).inv)))
+    (g : StructuredArrow (L.obj X) L) : P g := by
   let P' : StructuredArrow (W.Q.obj X) W.Q → Prop :=
     fun g ↦ P (structuredArrowEquiv W W.Q L g)
   rw [← (structuredArrowEquiv W W.Q L).apply_symm_apply g]
@@ -112,14 +115,15 @@ section
 
 variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {Y : C}
   (P : CostructuredArrow L (L.obj Y) → Prop)
-  (hP₀ : P (CostructuredArrow.mk (𝟙 (L.obj Y))))
-  (hP₁ : ∀ ⦃X₁ X₂ : C⦄ (f : X₁ ⟶ X₂) (φ : L.obj X₂ ⟶ L.obj Y),
-    P (CostructuredArrow.mk φ) → P (CostructuredArrow.mk (L.map f ≫ φ)))
-  (hP₂ : ∀ ⦃X₁ X₂ : C⦄ (w : X₁ ⟶ X₂) (hw : W w) (φ : L.obj X₁ ⟶ L.obj Y),
-    P (CostructuredArrow.mk φ) → P (CostructuredArrow.mk ((isoOfHom L W w hw).inv ≫ φ)))
 
 @[elab_as_elim]
-lemma induction_costructuredArrow (g : CostructuredArrow L (L.obj Y)) : P g := by
+lemma induction_costructuredArrow
+    (hP₀ : P (CostructuredArrow.mk (𝟙 (L.obj Y))))
+    (hP₁ : ∀ ⦃X₁ X₂ : C⦄ (f : X₁ ⟶ X₂) (φ : L.obj X₂ ⟶ L.obj Y),
+      P (CostructuredArrow.mk φ) → P (CostructuredArrow.mk (L.map f ≫ φ)))
+    (hP₂ : ∀ ⦃X₁ X₂ : C⦄ (w : X₁ ⟶ X₂) (hw : W w) (φ : L.obj X₁ ⟶ L.obj Y),
+      P (CostructuredArrow.mk φ) → P (CostructuredArrow.mk ((isoOfHom L W w hw).inv ≫ φ)))
+    (g : CostructuredArrow L (L.obj Y)) : P g := by
   let g' := StructuredArrow.mk (T := L.op) (Y := op g.left) g.hom.op
   show P (CostructuredArrow.mk g'.hom.unop)
   induction g' using induction_structuredArrow L.op W.op with

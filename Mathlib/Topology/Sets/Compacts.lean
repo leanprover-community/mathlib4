@@ -509,6 +509,7 @@ instance instHImp : HImp (CompactOpens α) where
 
 instance instBooleanAlgebra : BooleanAlgebra (CompactOpens α) :=
   SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
+    coe_himp
 
 end Top.Compl
 

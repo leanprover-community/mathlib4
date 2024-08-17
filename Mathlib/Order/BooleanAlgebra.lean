@@ -751,12 +751,14 @@ protected abbrev Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] 
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
 protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
-    [SDiff α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
+    [SDiff α] [HImp α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
-    (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : BooleanAlgebra α where
+    (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) :
+    BooleanAlgebra α where
   __ := hf.generalizedBooleanAlgebra f map_sup map_inf map_bot map_sdiff
   compl := compl
+  himp := himp
   top := ⊤
   le_top a := (@le_top β _ _ _).trans map_top.ge
   bot_le a := map_bot.le.trans bot_le
@@ -765,6 +767,7 @@ protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [B
   sdiff_eq a b := by
     refine hf ((map_sdiff _ _).trans (sdiff_eq.trans ?_))
     rw [map_inf, map_compl]
+  himp_eq a b := hf $ (map_himp _ _).trans $ himp_eq.trans $ by rw [map_sup, map_compl]
 
 end lift
 

@@ -312,7 +312,7 @@ variable [MulOneClass M] [MulOneClass N]
 /-- `M →* N` is the type of functions `M → N` that preserve the `Monoid` structure.
 `MonoidHom` is also used for group homomorphisms.
 
-When possible, instead of parametrizing results over `(f : M →+ N)`,
+When possible, instead of parametrizing results over `(f : M →* N)`,
 you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidHomClass`.
@@ -395,7 +395,7 @@ lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f 
 @[to_additive (attr := simp) "Additive group homomorphisms preserve negation."]
 theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
-  eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_self _
+  eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_cancel _
 
 @[to_additive (attr := simp)]
 lemma map_comp_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) :

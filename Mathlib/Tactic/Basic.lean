@@ -15,6 +15,7 @@ import Mathlib.Tactic.Linter.Multigoal
 # Basic tactics and utilities for tactic writing
 
 This file defines some basic utilities for tactic writing, and also
+- a dummy `variables` macro (which warns that the Lean 4 name is `variable`)
 - the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
 and explicitly name the non-dependent hypotheses,
 - an `assumption` macro, calling the `assumption` tactic on all goals
@@ -26,8 +27,12 @@ changing them into regular hypotheses).
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
+/-- Syntax for the `variables` command: this command is just a stub,
+and merely warns that it has been renamed to `variable` in Lean 4. -/
 syntax (name := «variables») "variables" (ppSpace bracketedBinder)* : command
 
+/-- The `variables` command: this is just a stub,
+and merely warns that it has been renamed to `variable` in Lean 4. -/
 @[command_elab «variables»] def elabVariables : CommandElab
   | `(variables%$pos $binders*) => do
     logWarningAt pos "'variables' has been replaced by 'variable' in lean 4"
@@ -153,3 +158,5 @@ elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic =>
       replaceMainGoal [mvarId]
 
 attribute [pp_with_univ] ULift PUnit PEmpty
+
+end Mathlib.Tactic

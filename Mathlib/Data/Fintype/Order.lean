@@ -91,11 +91,10 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
   le_sInf := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb
 
--- Porting note: `convert` doesn't work as well as it used to.
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
-noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
-    CompleteDistribLattice α where
+noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
+    CompleteDistribLattice.MinimalAxioms α where
   __ := toCompleteLattice α
   iInf_sup_le_sup_sInf := fun a s => by
     convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
@@ -107,6 +106,11 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
     rw [Finset.sup_eq_iSup]
     simp_rw [Set.mem_toFinset]
     rfl
+
+-- See note [reducible non-instances]
+/-- A finite bounded distributive lattice is completely distributive. -/
+noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
+    CompleteDistribLattice α := .ofMinimalAxioms (toCompleteDistribLatticeMinimalAxioms _)
 
 -- See note [reducible non-instances]
 /-- A finite bounded linear order is complete. -/
@@ -150,6 +154,18 @@ end Nonempty
 
 end Fintype
 
+/-! ### Properties for PartialOrders -/
+
+lemma Finite.exists_ge_minimal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
+    ∃ b, b ≤ a ∧ Minimal p b := by
+  obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ :=
+    Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
+  exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
+
+lemma Finite.exists_le_maximal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
+    ∃ b, a ≤ b ∧ Maximal p b :=
+  Finite.exists_ge_minimal (α := αᵒᵈ) h
+
 /-! ### Concrete instances -/
 
 noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=
@@ -168,12 +184,13 @@ noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBoolean
 
 
 variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
-  [Finite β] (D : Directed r f)
+  [Finite β]
 
-theorem Directed.finite_set_le {s : Set γ} (hs : s.Finite) : ∃ z, ∀ i ∈ s, r (f i) (f z) := by
+theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
+    ∃ z, ∀ i ∈ s, r (f i) (f z) := by
   convert D.finset_le hs.toFinset; rw [Set.Finite.mem_toFinset]
 
-theorem Directed.finite_le (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
+theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
     obtain ⟨z, hz⟩ := D.finite_set_le (Set.finite_range g)
     exact ⟨z, fun i => hz (g i) ⟨i, rfl⟩⟩
