@@ -58,7 +58,7 @@ Mathlib/Tactic/Linarith/Basic.lean"
 open Lean Elab.Command in
 /-- `run_cmd outputLabels` examines the diff with master and reports the appropriate labels. -/
 def outputLabels : CommandElabM Unit := do
-  let gitArgs := #["diff", "--name-only", "master"]
+  let gitArgs := #["diff", "--name-only", "master...HEAD"]
   let out ← IO.Process.run { cmd := "git", args := gitArgs }
   let labels := produceLabels (← getEnv) out
   let csLabs := String.intercalate "," labels.toList
