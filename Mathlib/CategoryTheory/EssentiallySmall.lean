@@ -164,7 +164,7 @@ noncomputable def inverse : ShrinkHoms C ⥤ C where
 
 /-- The categorical equivalence between `C` and `ShrinkHoms C`, when `C` is locally small.
 -/
-@[simps!]
+@[simps]
 noncomputable def equivalence : C ≌ ShrinkHoms C where
   functor := functor C
   inverse := inverse C
