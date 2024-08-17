@@ -91,19 +91,22 @@ theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
 @[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
 
 open ENNReal in
-theorem interior_halfspace {n : ℕ} {p : ℝ≥0∞} {a : ℝ} {i : Fin n} :
+@[simp]
+theorem interior_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
   let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
   simpa [interior_Ici] using f.interior_preimage (Function.surjective_eval _) (Ici a)
 
 open ENNReal in
-theorem closure_halfspace {n : ℕ} {p : ℝ≥0∞} {a : ℝ} {i : Fin n} :
+@[simp]
+theorem closure_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
   let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
   simpa [closure_Ici] using f.closure_preimage (Function.surjective_eval _) (Ici a)
 
 open ENNReal in
-theorem frontier_halfspace {n : ℕ} {p : ℝ≥0∞} {a : ℝ} {i : Fin n} :
+@[simp]
+theorem frontier_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfspace, interior_halfspace]
   ext y
@@ -176,24 +179,24 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
-lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
   range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
 
-lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     interior (range (𝓡∂ n)) = { y | 0 < y 0 } := by
   calc interior (range (𝓡∂ n))
     _ = interior ({ y | 0 ≤ y 0}) := by
       congr!
       apply range_euclideanHalfSpace
-    _ = { y | 0 < y 0 } := interior_halfspace
+    _ = { y | 0 < y 0 } := interior_halfspace _ _ _
 
-lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
   calc frontier (range (𝓡∂ n))
     _ = frontier ({ y | 0 ≤ y 0 }) := by
       congr!
       apply range_euclideanHalfSpace
-    _ = { y | 0 = y 0 } := frontier_halfspace (p := 2)
+    _ = { y | 0 = y 0 } := frontier_halfspace 2 _ _
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
