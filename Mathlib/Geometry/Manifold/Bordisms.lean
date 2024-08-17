@@ -621,6 +621,23 @@ abbrev foo  : BoundaryManifoldData (M × (Icc x y)) (I.prod (𝓡∂ 1)) :=
 variable {x y : ℝ} [Fact (x < y)] in
 instance : HasNiceBoundary (foo M I x y) := sorry
 
+def warmup {X : Type*} [TopologicalSpace X] : X × ({0, 1} : Set ℝ) ≃ₜ X ⊕ X where
+  toFun x := if x.2 = (0 : ℝ) then Sum.inl x.1 else Sum.inr x.1
+  invFun := Sum.elim (fun x ↦ ⟨x, 0, by norm_num⟩) (fun x ↦ ⟨x, 1, by norm_num⟩)
+  left_inv x := by
+    by_cases h : x.2 = (0 : ℝ)
+    · simp only [h, ↓reduceIte, Sum.elim_inl]
+      congr
+      exact h.symm
+    · simp only [h, ↓reduceIte, Sum.elim_inr]
+      congr
+      let h := x.2.2
+      simp only [mem_insert_iff, mem_singleton_iff] at h
+      tauto
+  right_inv x := by by_cases h : x.isLeft <;> aesop
+  continuous_invFun := sorry
+  continuous_toFun := sorry
+
 /-- If `M` is boundaryless, `∂(M × [0,1])` is diffeomorphic to the disjoint union `M ⊔ M`. -/
 -- XXX below is a definition, but that will surely *not* be nice to work with... can I get sth better?
 def Diffeomorph.productInterval_sum : Diffeomorph ((foo M I 0 1).model) I
