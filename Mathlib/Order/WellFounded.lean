@@ -284,12 +284,11 @@ end WellFoundedLT
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
 noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
-  bot := h.wf.min Set.univ Set.univ_nonempty
+  bot := h.wf.min _ Set.univ_nonempty
   bot_le a := h.wf.min_le (Set.mem_univ a)
 
 /-- A nonempty linear order with well-founded `>` has a top element. -/
 noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
-    OrderTop α := by
-  change OrderTop (αᵒᵈᵒᵈ)
+    OrderTop α :=
   have := WellFoundedLT.toOrderBot (α := αᵒᵈ)
-  infer_instance
+  inferInstanceAs <| OrderTop (αᵒᵈᵒᵈ)
