@@ -25,10 +25,14 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - run: |
+      - name: get master's cache
+        run: |
           git checkout master
           lake exe cache get
           git checkout -
+
+      - name: Auto-label script
+        run: |
           ./scripts/autolabels.sh long
           printf 'About to add the following labels: "%s"\n' "$(./scripts/autolabels.sh)"
           LABELS="$(./scripts/autolabels.sh)"
