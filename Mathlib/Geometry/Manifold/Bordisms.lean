@@ -15,26 +15,26 @@ In this file, we sketch the beginnings of unoriented bordism theory.
 Not all of this might end up in mathlib already (depending on how many pre-requisites are missing),
 but a fair number of pieces already can be upstreamed!
 
--/
+This file currently has about 75 sorries remaining: prove these would be very welcome.
+Some particular loose ends include:
+- show the disjoint union of smooth manifolds is smooth,
+ and that the natural maps are smooth
 
-/-
-Missing API for this to work nicely:
-- define the disjoint union of smooth manifolds, and the associated maps: show they are smooth
-(perhaps prove as abstract nonsense? will see!)
+- complete lemmas about BoundaryManifoldData; perhaps revise the design as needed
+Currently, there is a fair amount of DTT hell... perhaps there is a better way!
+- prove the boundary behaves well w.r.t. to disjoint unions
 
-- then: complete constructions of unoriented cobordisms
-- fight DTT hell: why is the product with an interval not recognised?
+- prove reflexivity: the idea is clear; needs some DTT fighting
+- prove transitivity of the bordism relation: this entails proving a number of lemmas
+about attaching maps in topological spaces, and the collar neighbourhood theorem
 
-- define the bordism relation/how to define the set of equivalence classes?
-equivalences work nicely in the standard design... that's a "how to do X in Lean" question
-- postponed: transitivity of the bordism relation (uses the collar neighbourhood theorem)
-
-- define induced maps between bordism groups (on singular n-manifolds is easy and done)
-- functoriality: what exactly do I have to show? also DTT question
+- actually define the bordism groups (and prove it is a group, if I can):
+is not hard; just need to read up on how to do this
 
 - prove some of the easy axioms of homology... perhaps all of it?
 - does mathlib have a typeclass for "extraordinary homology theory"?
   proving this is an instance could be interesting...
+
 -/
 
 open scoped Manifold
@@ -952,11 +952,15 @@ def disjointUnion [Nonempty H''] (φ : UnorientedCobordism s t bd)
   hFf := sorry
   hFg := sorry
 
-#exit
 -- FUTURE: transporting a cobordism under a diffeomorphism in general
 
--- bordism relation is an equiv relation: all pieces sketched (trans below)
+-- define the bordism relation (hard part: how to state this in Lean?)
+-- Two singular `n`-manifolds are cobordant iff there exists a smooth cobordism between them.
+
+-- bordism relation is an equiv relation: all pieces sketched (transivitity is below)
 -- define: equivalence classes, are the cobordism classes I care about
+-- The unoriented `n`-bordism group `Ω_n^O(X)` of `X` is the set of all equivalence classes
+-- of singular n-manifolds up to bordism.
 
 -- define: empty cobordism = class of SingularNManifold.empty
 -- define addition, by the disjoint union of cobordisms
@@ -967,6 +971,7 @@ def disjointUnion [Nonempty H''] (φ : UnorientedCobordism s t bd)
 -- prove: every element is self-inverse => define cobordism of M ⊔ M to the empty set
 -- (mostly "done" already; except that part is needs some more lemmas)
 -- then: group operations are done
+--
 
 -- Fleshing out the details for transitivity will take us too far: we merely sketch the necessary
 -- pieces.
@@ -1018,12 +1023,15 @@ noncomputable def trans (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobord
 
 end transSketch
 
+-- Fun things one could prove, once the bordism groups are defined
+
+-- functor between them: already have this on the level of singular n-manifolds
+-- need to show this is well-defined, of course (and functoriality, which should be easy)
+
+-- prove: every element in Ω_n^O(X) has order two; essentially already shown above
+-- direct sum property of bordism groups
+-- homotopy axiom: a homotopy basically gives a cobordism already
+-- harder: relative bordism groups; long exact sequence, excision; proving bordism groups form
+-- an extraordinary homology theory
+
 end UnorientedCobordism
-
--- how to encode this in Lean?
--- Two singular `n`-manifolds are cobordant iff there exists a smooth cobordism between them.
--- The unoriented `n`-bordism group `Ω_n^O(X)` of `X` is the set of all equivalence classes
--- of singular n-manifolds up to bordism.
--- then: functor between these...
-
--- prove: every element in Ω_n^O(X) has order two
