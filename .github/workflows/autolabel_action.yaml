@@ -43,7 +43,7 @@ jobs:
           elif [[ $LABELS != *,* ]]
           then
             printf 'Actually doing it!\n'
-            sed -i 's=--\(run_cmd ghAddLabels\)=\1=' Mathlib/labels.lean
+            sed -i 's=/-remove me during CI==' Mathlib/labels.lean
             #printf '* File after sed:\n%s\n\n' "$(cat Mathlib/labels.lean)"
             printf $'\n\nNow \'lake build\'ing:\n\n'
             #gh issue edit "$NUMBER" --add-label "$LABELS"

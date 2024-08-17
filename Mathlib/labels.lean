@@ -64,5 +64,7 @@ def outputLabels : CommandElabM Unit := do
   let csLabs := String.intercalate "," labels.toList
   dbg_trace csLabs
 
---run_cmd outputLabels
+/-remove me during CI
+run_cmd outputLabels
+--/
 end AutoLabel.Label
