@@ -519,6 +519,9 @@ is a smooth manifold modeled on `(E, H)`. -/
 -- XXX. do I really need the same model twice??
 instance SmoothManifoldWithCorners.sum : SmoothManifoldWithCorners I (M ⊕ M') := sorry
 
+/-- The disjoint union of two boundaryless manifolds is boundaryless. -/
+instance BoundarylessManifold.sum : BoundarylessManifold I (M ⊕ M') := sorry
+
 /-- The inclusion `M → M ⊕ M'` is smooth. -/
 lemma ContMDiff.inl : ContMDiff I I ∞ (M' := M ⊕ M') Sum.inl := sorry
 
@@ -876,31 +879,94 @@ def comap_fst (φ : UnorientedCobordism s t bd) (f : Diffeomorph I I M'' M ∞) 
       _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inr := by congr
       _ = t.f := φ.hFg
 
-/-- Suppose `W` is a cobordism between `M` and `N`.
-Then a diffeomorphism `f : N'' → N` induces a cobordism between `M` and `N''`. -/
-def comap_snd (φ : UnorientedCobordism s t bd) (f : Diffeomorph I I M'' M' ∞) :
-    UnorientedCobordism s (have := t.hdim; t.comap f.contMDiff_toFun) bd where
-  hW := φ.hW
-  hW' := φ.hW'
-  F := φ.F
-  hF := φ.hF
-  φ := Diffeomorph.trans φ.φ (Diffeomorph.sum_map (Diffeomorph.refl _ M _) f.symm)
-  hFf := by
-    have := s.hdim
-    -- Nothing interesting happens: the map is the same on this end.
-    calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans ((Diffeomorph.refl I M _).sum_map f.symm)).symm ∘ Sum.inl
-      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl ∘ (Diffeomorph.refl I M ⊤) := by congr
-      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl := by congr
-      _ = s.f := φ.hFf
-  hFg := by
-    have := t.hdim
-    calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans ((Diffeomorph.refl I M _).sum_map f.symm)).symm ∘ Sum.inr
-      -- These are the interesting part.
-      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inr ∘ f := by congr
-      _ = (t.comap f.contMDiff_toFun).f := by
-        rw [SingularNManifold.comap_f, ← φ.hFg]; congr
+-- Actually, I don't need these: when I want to argue with "manifolds are cobordant",
+-- I'll use symmetry of the bordism relation instead!
+-- /-- Suppose `W` is a cobordism between `M` and `N`.
+-- Then a diffeomorphism `f : N'' → N` induces a cobordism between `M` and `N''`. -/
+-- def comap_snd (φ : UnorientedCobordism s t bd) (f : Diffeomorph I I M'' M' ∞) :
+--     UnorientedCobordism s (have := t.hdim; t.comap f.contMDiff_toFun) bd where
+--   hW := φ.hW
+--   hW' := φ.hW'
+--   F := φ.F
+--   hF := φ.hF
+--   φ := Diffeomorph.trans φ.φ (Diffeomorph.sum_map (Diffeomorph.refl _ M _) f.symm)
+--   hFf := by
+--     have := s.hdim
+--     -- Nothing interesting happens: the map is the same on this end.
+--     calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans ((Diffeomorph.refl I M _).sum_map f.symm)).symm ∘ Sum.inl
+--       _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl ∘ (Diffeomorph.refl I M ⊤) := by congr
+--       _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl := by congr
+--       _ = s.f := φ.hFf
+--   hFg := by
+--     have := t.hdim
+--     calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans ((Diffeomorph.refl I M _).sum_map f.symm)).symm ∘ Sum.inr
+--       -- These are the interesting part.
+--       _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inr ∘ f := by congr
+--       _ = (t.comap f.contMDiff_toFun).f := by
+--         rw [SingularNManifold.comap_f, ← φ.hFg]; congr
 
+variable {N N' : Type*} [TopologicalSpace N] [ChartedSpace H N] [SmoothManifoldWithCorners I N]
+  [TopologicalSpace N'] [ChartedSpace H N'] [SmoothManifoldWithCorners I N']
+  [CompactSpace N] [BoundarylessManifold I N] [CompactSpace N'] [BoundarylessManifold I N']
+variable {s' : SingularNManifold X n N I} {t' : SingularNManifold X n N' I}
+  {W' : Type*} [TopologicalSpace W'] [ChartedSpace H'' W'] [SmoothManifoldWithCorners J W']
+  {bd' : BoundaryManifoldData W' J} [HasNiceBoundary bd']
+
+variable (s t) in
+/-- The disjoint union of two singular `n`-manifolds `(M,f)` and `(N, g)` into `X`. -/
+def _root_.SingularNManifold.disjointUnion : SingularNManifold X n (M ⊕ M') I where
+  f := Sum.elim s.f t.f
+  hf := Continuous.sum_elim s.hf t.hf
+  hdim := s.hdim
+
+-- The boundary of a disjoint union is the disjoint union of its boundaries.
+-- TODO: prove the same for the interiors
+def _root_.boundary_sum : I.boundary (M ⊕ M') ≃ I.boundary M ⊕ (I.boundary M') := sorry
+
+def _root_.BoundaryManifoldData.sum [Nonempty H''] (bd : BoundaryManifoldData W J)
+    (bd' : BoundaryManifoldData W' J) : BoundaryManifoldData (W ⊕ W') J := sorry
+
+instance [Nonempty H''] (bd : BoundaryManifoldData W J) (bd' : BoundaryManifoldData W' J)
+    [HasNiceBoundary bd] [HasNiceBoundary bd' ]: HasNiceBoundary (bd.sum bd') := sorry
+
+-- TODO: impose further conditions, such as bd and bd' having the same model...
+-- so I guess I actually need an equivalence of models here? Ugh!
+-- def HasNiceBoundary.equiv_boundary_sum [Nonempty H''] (bd : BoundaryManifoldData W J) (bd' : BoundaryManifoldData W' J) [HasNiceBoundary bd] [HasNiceBoundary bd'] :
+--     Diffeomorph (bd.sum bd').model (bd.sum bd').model (bd.sum bd').model.boundary (W ⊕ W')
+--       (bd.model.sum bd'.model).boundary (W ⊕ W') n := sorry
+
+/-- The disjoint union of two oriented cobordisms `W` between `M` and `N` and
+`W'` between `M'` and `N'`. -/
+def disjointUnion [Nonempty H''] (φ : UnorientedCobordism s t bd)
+    (ψ : UnorientedCobordism s' t' bd')  :
+    UnorientedCobordism (s.disjointUnion s') (t.disjointUnion t') (bd.sum bd') where
+  hW := sorry -- not hard: disjoint union of compact spaces is compact
+  hW' := φ.hW'
+  F := Sum.elim φ.F ψ.F
+  hF := Continuous.sum_elim φ.hF ψ.hF
+  φ := by
+    -- idea: boundary is the disjoint union of the boundaries; in fact diffeomorphic
+    -- apply Diffeomorph.map_sum after composing with such diffeomorphism
+    -- TODO: need to rewrite by an equivalence again... how to do this nicely?
+    sorry
+  hFf := sorry
+  hFg := sorry
+
+#exit
 -- FUTURE: transporting a cobordism under a diffeomorphism in general
+
+-- bordism relation is an equiv relation: all pieces sketched (trans below)
+-- define: equivalence classes, are the cobordism classes I care about
+
+-- define: empty cobordism = class of SingularNManifold.empty
+-- define addition, by the disjoint union of cobordisms
+-- M cobordant to M ⊔ ∅ : easy, by that diffeo
+-- being cobordant is associative: TODO think; shouldn't be hard
+-- commutative: use Diffeomorph.swap and the diffeo operation
+
+-- prove: every element is self-inverse => define cobordism of M ⊔ M to the empty set
+-- (mostly "done" already; except that part is needs some more lemmas)
+-- then: group operations are done
 
 -- Fleshing out the details for transitivity will take us too far: we merely sketch the necessary
 -- pieces.
