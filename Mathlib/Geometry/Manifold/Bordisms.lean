@@ -149,7 +149,9 @@ end SingularNManifold
 
 section HasNiceBoundary
 
-universe u in
+-- TODO: E' and H' live in different universes, but only occur together:
+-- naively constraining them to the same yields errors later... revisit and fix this!
+
 /-- All data defining a smooth manifold structure on the boundary of a smooth manifold:
 a charted space structure on the boundary, a model with corners and a smooth manifold structure.
 This need not exist (say, if `M` has corners); if `M` has no boundary or boundary and no corners,
@@ -159,11 +161,11 @@ such a structure is in fact canonically induced.
 structure BoundaryManifoldData (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M] where
   /-- The Euclidean space the boundary is modelled on. -/
-  E' : Type u
+  E' : Type*
   [normedAddCommGroup : NormedAddCommGroup E']
   [normedSpace : NormedSpace ℝ E']
   /-- The topological space the boundary is a charted space on. -/
-  H' : Type u
+  H' : Type*
   [topologicalSpace : TopologicalSpace H']
   /-- A chosen charted space structure on `I.boundary M` on `H'` -/
   charts : ChartedSpace H' (I.boundary M)
@@ -223,7 +225,11 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
     -- TODO: convert between these... mathematically equivalent...
     -- ChartedSpace (ModelProd H bd.H') ↑((I.prod J).boundary (M × N)) =
     --   ChartedSpace (ModelProd H bd.H') (M × ↑(J.boundary N))
-    sorry
+    congr
+    · -- TODO: this is close, but I want an equivality (or equivalence?) of types here!
+      rw [ModelWithCorners.boundary_of_boundaryless_left]
+      sorry
+    · sorry -- this goal is sketchy!
   model := I.prod bd.model
   smoothManifold := by
     convert SmoothManifoldWithCorners.prod (I := I) (I' := bd.model) M (J.boundary N)
@@ -244,6 +250,10 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
   model := bd.model.prod J
   smoothManifold := sorry -- similar
 
+lemma BoundaryManifoldData.prod_of_boundaryless_right_model
+    (bd : BoundaryManifoldData M I) [BoundarylessManifold J N] :
+  (BoundaryManifoldData.prod_of_boundaryless_right N J bd).model = bd.model.prod J := rfl
+
 /-- If `M` is modelled on finite-dimensional Euclidean half-space, it has nice boundary.
 Proving this requires knowing homology groups of spheres (or similar). -/
 def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) [Zero (Fin n)]
@@ -262,7 +272,7 @@ instance manifolds with corners violate it, but it is satisfied in most cases of
 `HasNiceBoundary d` formalises this: the boundary of the manifold `M` modelled on `I`
 has a charted space structure and model (included in `d`) which makes it a smooth manifold,
 such that the inclusion `∂M → M` is smooth. -/
-class HasNiceBoundary (bd : BoundaryManifoldData M I) where
+class HasNiceBoundary (bd : BoundaryManifoldData M I) : Prop where
   /-- The inclusion of `∂M` into `M` is smooth w.r.t. `d`. -/
   smooth_inclusion : ContMDiff bd.model I 1 ((fun ⟨x, _⟩ ↦ x) : (I.boundary M) → M)
 
@@ -273,21 +283,40 @@ instance [BoundarylessManifold I M] :
     have : I.boundary M = ∅ := ModelWithCorners.Boundaryless.boundary_eq_empty I
     fun p ↦ False.elim (IsEmpty.false p)
 
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H'' M']
+  {I' : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners I' M']
+  {N' : Type*} [TopologicalSpace N'] [ChartedSpace H''' N']
+  {J' : ModelWithCorners ℝ E''' H'''} [SmoothManifoldWithCorners J' N']
+
+-- missing lemma in the library...
+lemma missing {k : ℕ∞} {f : M → N} {g : M' → N'} (hf : ContMDiff I J k f) (hg : ContMDiff I' J' k g) :
+    ContMDiff (I.prod I') (J.prod J') k (fun (x, y) ↦ (f x, g y)) := by
+  refine ContMDiff.prod_mk ?hf ?hg
+  · sorry -- convert hf should do it, missing API lemma
+    -- maybe need to write this as a composition, and argue with a product?
+  · sorry
+
+-- missing lemma in mathlib: though I probably won't need it...
+variable {f f₁ : M → M'} {n :ℕ } in
+theorem contMDiff_congr (h₁ : ∀ y , f₁ y = f y) :
+    ContMDiff I I' n f₁ ↔ ContMDiff I I' n f := by
+  rw [← contMDiffOn_univ, contMDiffOn_congr (fun y _hy ↦ h₁ y), contMDiffOn_univ]
+
 /-- If `M` has nice boundary and `N` is boundaryless, `M × N` also has nice boundary. -/
 instance (bd : BoundaryManifoldData M I) [h : HasNiceBoundary bd] [BoundarylessManifold J N] :
     HasNiceBoundary (BoundaryManifoldData.prod_of_boundaryless_right N J bd) where
   smooth_inclusion := by
     let bd'' := BoundaryManifoldData.prod_of_boundaryless_right N J bd
     let I'' := bd''.model
-    have h : ContMDiff bd.model I 1 ((fun ⟨x, _⟩ ↦ x) : (I.boundary M) → M) := h.smooth_inclusion
-    have h' : ContMDiff J J 1 (fun x ↦ x : N → N) := contMDiff_id
     have : ContMDiff ((bd.model).prod J) (I.prod J) 1
-        (fun (⟨x, _⟩, y) ↦ (x, y) : (I.boundary M) × N → M × N) := by
-      -- TODO: how to apply prod with just two factors? let aux := ContMDiff.prod h h'
-      sorry
+        (fun (x, y) ↦ (Subtype.val x, y) : (I.boundary M) × N → M × N) :=
+      missing h.smooth_inclusion contMDiff_id
     convert this
-    -- xxx: add as API lemma, that bd''.model is what we think it is... simp only [bd''.model]
-    -- TODO need to rewrite: boundary is the product of boundaries, f factors accordingly...
+    rw [BoundaryManifoldData.prod_of_boundaryless_right_model]
+    -- TODO: F and G have different domain; need to address this...
+    let F : ↑((I.prod J).boundary (M × N)) → M × N := fun x ↦ match x with | ⟨x, property⟩ => x
+    let G : ↑(I.boundary M) × N → M × N := fun x ↦ match x with | (x, y) => (↑x, y)
+    -- apply contMDiff_congr (I := bd.model.prod J) (I' := I.prod J) (n := 1) (f := F) (f₁ := G)
     sorry
 
 /-- If `M` is boundaryless and `N` has nice boundary, `M × N` also has nice boundary. -/
@@ -296,9 +325,6 @@ instance (bd : BoundaryManifoldData N J) [HasNiceBoundary bd] [BoundarylessManif
   smooth_inclusion := sorry
 
 end HasNiceBoundary
-
-#lint
-#exit
 
 section DisjUnion
 
@@ -569,9 +595,6 @@ lemma Diffeomorph.swap_inr : (Diffeomorph.swap M I M') ∘ Sum.inr = Sum.inl := 
 
 end DisjUnion
 
-#lint
-
-#exit
 namespace UnorientedCobordism
 
 -- TODO: for now, assume all manifolds are modelled on the same chart and model space...
@@ -595,7 +618,7 @@ variable [Nonempty H]
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
 resp. `g` in the obvious way. -/
-structure UnorientedCobordism (s : SingularNManifold X n M I)
+structure _root_.UnorientedCobordism (s : SingularNManifold X n M I)
     (t : SingularNManifold X n M' I) {W : Type*} [TopologicalSpace W]
     [ChartedSpace H'' W] {J : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners J W]
     (bd : BoundaryManifoldData W J) [HasNiceBoundary bd] where
