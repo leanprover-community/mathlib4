@@ -469,13 +469,28 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N} (hf : Smooth I J f) (hg : 
 lemma ContMDiff.sum_map [Nonempty H'] {f : M → N} {g : M' → N'} (hf : Smooth I J f) (hg : Smooth I J g) :
     ContMDiff I J ∞ (Sum.map f g) := sorry
 
-lemma ContMDiff.swap : ContMDiff I I ∞ (@Sum.swap M M') := ContMDiff.sum_elim inr inl
-
+-- To what extent to these results exist abstractly?
 def Sum.swapEquiv : M ⊕ M' ≃ M' ⊕ M where
   toFun := Sum.swap
   invFun := Sum.swap
   left_inv := Sum.swap_leftInverse
   right_inv := Sum.swap_leftInverse
+
+lemma Continuous.swap : Continuous (@Sum.swap M M') :=
+  Continuous.sum_elim continuous_inr continuous_inl
+
+def Homeomorph.swap : M ⊕ M' ≃ₜ M' ⊕ M where
+  toEquiv := Sum.swapEquiv
+  continuous_toFun := Continuous.swap
+  continuous_invFun := Continuous.swap
+
+lemma ContMDiff.swap : ContMDiff I I ∞ (@Sum.swap M M') := ContMDiff.sum_elim inr inl
+
+variable (I M M') in -- TODO: argument order is weird!
+def Diffeomorph.swap : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ where
+  toEquiv := Sum.swapEquiv
+  contMDiff_toFun := ContMDiff.swap
+  contMDiff_invFun := ContMDiff.swap
 
 def Sum.assocLeft : M ⊕ (M' ⊕ N) → (M ⊕ M') ⊕ N :=
   Sum.elim (fun x ↦ Sum.inl (Sum.inl x)) (Sum.map Sum.inr id)
@@ -489,14 +504,6 @@ def Equiv.swapAssociativity : M ⊕ (M' ⊕ N) ≃ (M ⊕ M') ⊕ N where
   left_inv x := by aesop
   right_inv x := by aesop
 
-lemma Continuous.swap : Continuous (@Sum.swap M M') :=
-  Continuous.sum_elim continuous_inr continuous_inl
-
-def Homeomorph.swap : M ⊕ M' ≃ₜ M' ⊕ M where
-  toEquiv := Sum.swapEquiv
-  continuous_toFun := Continuous.swap
-  continuous_invFun := Continuous.swap
-
 -- FUTURE: can fun_prop be powered up to solve these automatically? also for differentiability?
 def Homeomorph.associativity : M ⊕ (M' ⊕ N) ≃ₜ (M ⊕ M') ⊕ N where
   toEquiv := Equiv.swapAssociativity
@@ -506,14 +513,6 @@ def Homeomorph.associativity : M ⊕ (M' ⊕ N) ≃ₜ (M ⊕ M') ⊕ N where
   continuous_invFun := by
     apply Continuous.sum_elim (by fun_prop)
     exact Continuous.comp continuous_inr continuous_inr
-
--- TODO: add associativity version as well
--- this seems to be missing for sums of topological spaces (but surely exists abstractly):
-variable (I M M') in -- TODO: argument order is weird!
-def Diffeomorph.swap : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ where
-  toEquiv := Sum.swapEquiv
-  contMDiff_toFun := ContMDiff.swap
-  contMDiff_invFun := ContMDiff.swap
 
 variable (I M M') in
 def Diffeomorph.associativity : Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') ∞ where
@@ -526,6 +525,35 @@ def Diffeomorph.associativity : Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M')
     apply ContMDiff.sum_elim
     · exact ContMDiff.sum_map contMDiff_id ContMDiff.inl
     · exact ContMDiff.comp ContMDiff.inr ContMDiff.inr
+
+def Equiv.sum_empty {α β : Type*} [IsEmpty β] : α ⊕ β ≃ α where
+  toFun := Sum.elim (@id α) fun x ↦ (IsEmpty.false x).elim
+  invFun := Sum.inl
+  left_inv x := by
+    by_cases h : Sum.isLeft x
+    · rw [Sum.eq_left_getLeft_of_isLeft h]
+      dsimp only [Sum.elim_inl, id_eq]
+    · have h' : Sum.isRight x := Sum.not_isLeft.mp h
+      exact (IsEmpty.false (Sum.getRight x h')).elim
+  right_inv x := by aesop
+
+def Homeomorph.sum_empty {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [IsEmpty Y] :
+  X ⊕ Y ≃ₜ X where
+  toEquiv := Equiv.sum_empty
+  continuous_toFun := Continuous.sum_elim continuous_id (continuous_of_const fun _ ↦ congrFun rfl)
+  continuous_invFun := continuous_inl
+
+-- should be similar to the continuous version...
+lemma contMDiff_of_const {f : M → N} (h : ∀ (x y : M), f x = f y) : ContMDiff I J ∞ f := by
+  intro x
+  have : f = fun _ ↦ f x := by ext y; exact h y x
+  rw [this]
+  apply contMDiff_const
+
+def Diffeomorph.sum_empty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M ∞ where
+  toEquiv := Equiv.sum_empty
+  contMDiff_toFun := ContMDiff.sum_elim contMDiff_id (contMDiff_of_const (fun _ ↦ congrFun rfl))
+  contMDiff_invFun := ContMDiff.inl
 
 lemma sdfdsf : (Diffeomorph.swap M I M') ∘ Sum.inl = Sum.inr := by
   ext
