@@ -184,7 +184,7 @@ theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsi
   exact finCongr (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
 
 theorem length_ne_zero_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : s.length ≠ 0 :=
-  fun hs ↦ h.not_subsingleton $ subsingleton_of_length_eq_zero hs
+  fun hs ↦ h.not_subsingleton <| subsingleton_of_length_eq_zero hs
 
 theorem length_pos_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : 0 < s.length :=
   Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h

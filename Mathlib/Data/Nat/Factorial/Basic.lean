@@ -86,7 +86,7 @@ theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
     exact Nat.mul_pos hk k.factorial_pos
   induction h generalizing hn with
   | refl => exact this hn
-  | step hnk ih => exact lt_trans (ih hn) $ this <| lt_trans hn <| lt_of_succ_le hnk
+  | step hnk ih => exact lt_trans (ih hn) <| this <| lt_trans hn <| lt_of_succ_le hnk
 
 @[gcongr]
 lemma factorial_lt_of_lt {m n : ℕ} (hn : 0 < n) (h : n < m) : n ! < m ! := (factorial_lt hn).mpr h
