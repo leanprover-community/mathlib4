@@ -1050,3 +1050,59 @@ end transSketch
 -- an extraordinary homology theory
 
 end UnorientedCobordism
+
+-- We declare these variables *after* the definition above, so `SingularNManifold` can have
+-- its current order of arguments.
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [SmoothManifoldWithCorners I M'] {n : ℕ}
+  [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
+  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E'']
+  --[BoundarylessManifold I M'] [CompactSpace M'] [FiniteDimensional ℝ E']
+
+-- The oriented bordism relation on the space of singular `n`-manifolds on `X`
+-- whose charts are modelled on some fixed space `E`.
+-- (I'm not sure if this requirement is essential: it can certainly be eased later.)
+
+#exit
+-- TODO: can I vary M and I as well? How to prescribe these? Packaging it all into one structure
+-- also does not fully solve it...
+universe u in
+structure BoundaryWithBordism (s t : SingularNManifold X n M I) where
+  W := Type u
+  H'' := Type u
+  [hn : Nonempty H]
+  [ht : TopologicalSpace H'']
+  [htW : TopologicalSpace W]
+  [charts : ChartedSpace H'' W]
+  [model : ModelWithCorners ℝ E'' H'']
+  [mfd : have:= charts; SmoothManifoldWithCorners model W]
+  boundaryData : BoundaryManifoldData W model
+  hasNiceBoundary : HasNiceBoundary boundaryData
+  bordism : UnorientedCobordism s t boundaryData
+-- #lint
+-- variable (n X M I) in
+-- def orientedBordismRelation : (SingularNManifold X n M I) → (SingularNManifold X n M I) → Prop :=
+--   fun s t ↦ ∃ φ : BoundaryWithBordism s t (E := E) (E'' := E'')
+
+def sdf : Setoid (SingularNManifold X n M I) where
+  r s t := ∃ φ : BoundaryWithBordism s t (E := E) (E'' := E''), True--orientedBordismRelation X M I n (bd := bd)
+  iseqv := by
+    apply Equivalence.mk
+    · intro s
+      -- TODO: my definition is not right, as I cannot "choose" bd here...
+      sorry -- use UnorientedCobordism.refl s
+    · intro s t hst
+      choose φ _ using hst
+      sorry -- synthesisation order is wrong... something is very funky here!
+      --have := φ.ht
+      --use UnorientedCobordism.symm φ.bordism
+    · intro s t u hst htu
+      choose φ _ using hst
+      choose ψ _ using htu
+      -- TODO: the definition is not quite right, as bd must be chosen
+      sorry -- use UnorientedCobordism.trans φ ψ
+
+-- Is there already a notion of "post-compose a PartialHom with an OpenEmbedding?
+-- Because that would suffice for my purposes...
+-- I vaguely recall something like that for structomorphisms, or Winston Yin speaking about this.
