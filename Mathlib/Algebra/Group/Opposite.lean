@@ -165,7 +165,7 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
     rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
   zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
 
-@[to_additive AddOpposite.instSubtractionMonoid]
+@[to_additive]
 instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid αᵐᵒᵖ where
   toDivInvMonoid := instDivInvMonoid
   __ := instInvolutiveInv

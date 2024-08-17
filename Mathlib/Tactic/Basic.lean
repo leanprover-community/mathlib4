@@ -157,3 +157,5 @@ elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic =>
       replaceMainGoal [mvarId]
 
 attribute [pp_with_univ] ULift PUnit PEmpty
+
+end Mathlib.Tactic

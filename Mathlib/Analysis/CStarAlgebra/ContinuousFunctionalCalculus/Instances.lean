@@ -169,7 +169,7 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [NormedRing A
     case hom_map_spectrum =>
       intro f
       simp only [StarAlgHom.comp_apply, StarAlgHom.coe_coe, StarSubalgebra.coe_subtype]
-      rw [← StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ a),
+      rw [← StarSubalgebra.spectrum_eq (hS := elementalStarAlgebra.isClosed ℂ a),
         AlgEquiv.spectrum_eq (continuousFunctionalCalculus a), ContinuousMap.spectrum_eq_range]
     case predicate_hom => exact fun f ↦ ⟨by rw [← map_star]; exact Commute.all (star f) f |>.map _⟩
 
