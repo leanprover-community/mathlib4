@@ -406,8 +406,7 @@ def PartialHomeomorph.extend_subtype {U : Set M} (φ : PartialHomeomorph U H) (h
     --   --apply?
     --   sorry
     -- · sorry
-  continuousOn_invFun := sorry
-    #exit
+    /-#exit
     dsimp
     -- TODO: why is the extension continuous? mathematically, there's not much to fuss about,
     -- `source` is open, also within U, so we can locally argue with that...
@@ -418,10 +417,8 @@ def PartialHomeomorph.extend_subtype {U : Set M} (φ : PartialHomeomorph U H) (h
     apply ContinuousAt.congr
     · sorry -- apply this--(φ.continuousOn_toFun).continuousAt (x := x') ?_
     sorry -- want to use toFun = φ on U...
-    sorry
+    sorry-/
   continuousOn_invFun := sorry
-
-#exit
 
 /-- A partial homeomorphism `M → H` defines a partial homeomorphism `M ⊕ M' → H`. -/
 def foo (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕ M') H where
@@ -563,6 +560,10 @@ def Diffeomorph.swap : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ where
   contMDiff_toFun := ContMDiff.swap
   contMDiff_invFun := ContMDiff.swap
 
+theorem Diffeomorph.coe_swap : (Diffeomorph.swap M I M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
+
+theorem Diffeomorph.swap_symm : (Diffeomorph.swap M I M').symm = Diffeomorph.swap M' I M := rfl
+
 def Sum.assocLeft : M ⊕ (M' ⊕ N) → (M ⊕ M') ⊕ N :=
   Sum.elim (fun x ↦ Sum.inl (Sum.inl x)) (Sum.map Sum.inr id)
 
@@ -626,10 +627,12 @@ def Diffeomorph.sum_empty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M ∞ where
   contMDiff_toFun := ContMDiff.sum_elim contMDiff_id (contMDiff_of_const (fun _ ↦ congrFun rfl))
   contMDiff_invFun := ContMDiff.inl
 
+variable (M M' I) in
 lemma Diffeomorph.swap_inl : (Diffeomorph.swap M I M') ∘ Sum.inl = Sum.inr := by
   ext
   exact Sum.swap_inl
 
+variable (M M' I) in
 lemma Diffeomorph.swap_inr : (Diffeomorph.swap M I M') ∘ Sum.inr = Sum.inl := by
   ext
   exact Sum.swap_inr
@@ -752,7 +755,7 @@ lemma Diffeomorph.productInterval_sum_toFun :
 
 --lemma api1 : fun p : M × ↑(Icc 0 1)↦ p.1 ∘ Subtype.val ∘ Diffeomorph.productInterval_sum.symm ∘ Sum.inl = id := sorry
 
-theorem api_lemma1 {E : Type u_1} {H : Type u_5}
+/- theorem api_lemma1 {E : Type u_1} {H : Type u_5}
   [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : TopologicalSpace H] {M : Type u_12}
   [inst_3 : TopologicalSpace M] [inst_4 : ChartedSpace H M] {I : ModelWithCorners ℝ E H}
   [inst_5 : SmoothManifoldWithCorners I M] {M' : Type u_13} [inst_6 : TopologicalSpace M'] [inst_7 : ChartedSpace H M']
@@ -762,7 +765,7 @@ theorem api_lemma1 {E : Type u_1} {H : Type u_5}
   [inst_16 : CompactSpace M''] [inst_17 : BoundarylessManifold I M''] [inst_18 : CompactSpace M]
   [inst_19 : FiniteDimensional ℝ E] [inst_20 : CompactSpace M'] [inst_21 : CompactSpace M''] [inst_22 : Nonempty H] :
   -- sdfsdf
-  (fun p ↦ p.1) ∘ Subtype.val ∘ (Diffeomorph.productInterval_sum.symm M I) ∘ Sum.inl = id := sorry
+  (fun p ↦ p.1) ∘ Subtype.val ∘ (Diffeomorph.productInterval_sum.symm M I) ∘ Sum.inl = id := sorry -/
 
 lemma bar {α β γ : Type*} {f f' : α → β} {g : β → γ} (h : f = f') : g ∘ f = g ∘ f' := sorry
 
@@ -798,12 +801,16 @@ def symm (φ : UnorientedCobordism s t bd) : UnorientedCobordism t s bd where
   F := φ.F
   hF := φ.hF
   φ := Diffeomorph.trans φ.φ (Diffeomorph.swap M I M')
-  -- apply Diffeomorph.{inl, inr}, and combine with φ.hFf and φ.hFg
   hFf := by
-    have : (Diffeomorph.swap M I M').symm = @Sum.swap M' M := rfl -- TODO: make API lemma
-    rw [← this]
-    sorry
-  hFg := sorry
+    calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans (Diffeomorph.swap M I M')).symm ∘ Sum.inl
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (Diffeomorph.swap M' I M) ∘ Sum.inl := by congr
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inr := by congr
+      _ = t.f := φ.hFg
+  hFg := by
+      calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans (Diffeomorph.swap M I M')).symm ∘ Sum.inr
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (Diffeomorph.swap M' I M) ∘ Sum.inr := by congr
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl := by congr
+      _ = s.f := φ.hFf
 
 #exit
 
