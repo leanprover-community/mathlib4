@@ -291,4 +291,4 @@ noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [
 noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
     OrderTop α :=
   have := WellFoundedLT.toOrderBot (α := αᵒᵈ)
-  inferInstanceAs <| OrderTop (αᵒᵈᵒᵈ)
+  inferInstanceAs (OrderTop αᵒᵈᵒᵈ)
