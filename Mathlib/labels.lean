@@ -118,12 +118,12 @@ exclusions: []
 check_labels "t-"
 
 /--
-info: label: t-euclidean-geometry
-dirs: [Mathlib/Geometry/Euclidean/]
-exclusions: []
+info: label: t-meta
+dirs: [Mathlib/Tactic/]
+exclusions: [Mathlib/Tactic/Linter/]
 -/
 #guard_msgs in
-check_labels "t-e"
+check_labels "t-met"
 
 /-- info: [t-algebra, t-algebraic-geometry, t-linter, t-meta, t-set-theory] -/
 #guard_msgs in
