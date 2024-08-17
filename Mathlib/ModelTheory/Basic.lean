@@ -255,7 +255,7 @@ instance instDecidableEqFunctions {f : ℕ → Type*} {R : ℕ → Type*} (n : �
 /-- Passes a `DecidableEq` instance on a type of relation symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
 see the `example`s in `ModelTheory/Ring/Basic`.  -/
-instance {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (R n)] :
+instance instDecidableEqRelations {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (R n)] :
     DecidableEq ((⟨f, R⟩ : Language).Relations n) := inferInstance
 
 variable (L) (M : Type w)
