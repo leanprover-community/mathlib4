@@ -151,7 +151,7 @@ lemma pow_le_pow_of_le_one [ZeroLEOneClass α] [PosMulMono α] [MulPosMono α]
   | _, _, Nat.le.refl => le_rfl
   | _, _, Nat.le.step h => by
     rw [pow_succ']
-    exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans $ pow_le_pow_of_le_one ha₀ ha₁ h
+    exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans <| pow_le_pow_of_le_one ha₀ ha₁ h
 
 lemma pow_le_of_le_one [ZeroLEOneClass α] [PosMulMono α] [MulPosMono α]
     (h₀ : 0 ≤ a) (h₁ : a ≤ 1) {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ a :=

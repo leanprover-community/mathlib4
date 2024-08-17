@@ -343,7 +343,7 @@ lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = di
 @[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]; rfl
 
 @[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=
-  ext $ by rw [← (q : ℚ).mkRat_num_den']; simp [num_coe, den_coe]
+  ext <| by rw [← (q : ℚ).mkRat_num_den']; simp [num_coe, den_coe]
 
 lemma natCast_eq_divNat (n : ℕ) : (n : ℚ≥0) = divNat n 1 := (num_divNat_den _).symm
 
