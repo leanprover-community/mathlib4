@@ -117,24 +117,18 @@ The helper command `check_labels` displays all the labels that have already been
 syntax (name := addLabelStx)
   "add_label " ident ("label: " ident*)? ("dirs: " ident*)? ("exclusions: " ident*)? : command
 
+open Elab.Command in
 @[inherit_doc addLabelStx]
 elab_rules : command
-    | `(command| add_label $id) => do
-      setEnv <| labelsExt.addEntry (← getEnv) {
-        label := "t-" ++ id.getId.toString.replace "_" "-"
-        dirs := formatIdsToDirs #[id]
-      }
-    | `(command| add_label $id dirs: $dirs*) => do
-      setEnv <| labelsExt.addEntry (← getEnv) {
-        label := "t-" ++ id.getId.toString.replace "_" "-"
-        dirs := formatIdsToDirs dirs
-      }
     | `(command| add_label $id dirs: $dirs* exclusions: $excs*) => do
-      setEnv <| labelsExt.addEntry (← getEnv) {
-        label := "t-" ++ id.getId.toString.replace "_" "-"
-        dirs := formatIdsToDirs dirs
-        exclusions := formatIdsToDirs excs
-      }
+      setEnv <| labelsExt.addEntry (← getEnv)
+        { label := "t-" ++ id.getId.toString.replace "_" "-"
+          dirs := formatIdsToDirs dirs
+          exclusions := formatIdsToDirs excs }
+    | `(command| add_label $id dirs: $dirs*) => do
+      elabCommand (← `(command| add_label $id dirs: $dirs* exclusions:))
+    | `(command| add_label $id) => do
+      elabCommand (← `(command| add_label $id dirs: $id))
 /--
 `check_labels` is a helper command to `add_labels`.
 It displays all the labels that have already been declared.

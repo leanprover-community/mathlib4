@@ -32,7 +32,90 @@ add_label order
 add_label set_theory
 add_label topology dirs: Topology AlgebraicTopology
 
---check_labels
+/--
+info: label: t-algebra
+dirs: [Mathlib/Algebra/,
+ Mathlib/FieldTheory/,
+ Mathlib/RingTheory/,
+ Mathlib/GroupTheory/,
+ Mathlib/RepresentationTheory/,
+ Mathlib/LinearAlgebra/]
+exclusions: []
+---
+info: label: t-algebraic-geometry
+dirs: [Mathlib/AlgebraicGeometry/, Mathlib/Geometry/RingedSpace/]
+exclusions: []
+---
+info: label: t-analysis
+dirs: [Mathlib/Analysis/]
+exclusions: []
+---
+info: label: t-category-theory
+dirs: [Mathlib/CategoryTheory/]
+exclusions: []
+---
+info: label: t-combinatorics
+dirs: [Mathlib/Combinatorics/]
+exclusions: []
+---
+info: label: t-computability
+dirs: [Mathlib/Computability/]
+exclusions: []
+---
+info: label: t-condensed
+dirs: [Mathlib/Condensed/]
+exclusions: []
+---
+info: label: t-data
+dirs: [Mathlib/Data/]
+exclusions: []
+---
+info: label: t-differential-geometry
+dirs: [Mathlib/Geometry/Manifold/]
+exclusions: []
+---
+info: label: t-dynamics
+dirs: [Mathlib/Dynamics/]
+exclusions: []
+---
+info: label: t-euclidean-geometry
+dirs: [Mathlib/Geometry/Euclidean/]
+exclusions: []
+---
+info: label: t-linter
+dirs: [Mathlib/Tactic/Linter/]
+exclusions: []
+---
+info: label: t-logic
+dirs: [Mathlib/Logic/, Mathlib/ModelTheory/]
+exclusions: []
+---
+info: label: t-measure-probability
+dirs: [Mathlib/MeasureTheory/, Mathlib/Probability/, Mathlib/InformationTheory/]
+exclusions: []
+---
+info: label: t-meta
+dirs: [Mathlib/Tactic/]
+exclusions: [Mathlib/Tactic/Linter/]
+---
+info: label: t-number-theory
+dirs: [Mathlib/NumberTheory/]
+exclusions: []
+---
+info: label: t-order
+dirs: [Mathlib/Order/]
+exclusions: []
+---
+info: label: t-set-theory
+dirs: [Mathlib/SetTheory/]
+exclusions: []
+---
+info: label: t-topology
+dirs: [Mathlib/Topology/, Mathlib/AlgebraicTopology/]
+exclusions: []
+-/
+#guard_msgs in
+check_labels
 
 /-- info: [t-algebra, t-algebraic-geometry, t-linter, t-meta, t-set-theory] -/
 #guard_msgs in
