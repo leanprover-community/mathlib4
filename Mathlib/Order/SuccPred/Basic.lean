@@ -505,8 +505,6 @@ instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
     · exact (@IsMax.succ_eq _ _ h₀ _ ha).trans ha.succ_eq.symm
     · exact @CovBy.succ_eq _ _ h₀ _ _ (covBy_succ_of_not_isMax ha)⟩
 
-section Lattice
-
 theorem succ_eq_sInf [CompleteLattice α] [SuccOrder α] (a : α) :
     succ a = sInf (Set.Ioi a) := by
   apply (le_sInf fun b => succ_le_of_lt).antisymm
@@ -519,8 +517,6 @@ theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrd
     succ a = sInf (Set.Ioi a) := by
   apply (le_csInf nonempty_Ioi fun b => succ_le_of_lt).antisymm
   exact csInf_le ⟨a, fun b => le_of_lt⟩ <| lt_succ a
-
-end Lattice
 
 /-! ### Predecessor order -/
 
@@ -816,8 +812,6 @@ instance [PartialOrder α] : Subsingleton (PredOrder α) :=
     · exact (@IsMin.pred_eq _ _ h₀ _ ha).trans ha.pred_eq.symm
     · exact @CovBy.pred_eq _ _ h₀ _ _ (pred_covBy_of_not_isMin ha)⟩
 
-section Lattice
-
 theorem pred_eq_sSup [CompleteLattice α] [PredOrder α] :
     ∀ a : α, pred a = sSup (Set.Iio a) :=
   succ_eq_sInf (α := αᵒᵈ)
@@ -825,8 +819,6 @@ theorem pred_eq_sSup [CompleteLattice α] [PredOrder α] :
 theorem pred_eq_csSup [ConditionallyCompleteLattice α] [PredOrder α] [NoMinOrder α] :
     ∀ a : α, pred a = sSup (Set.Iio a) :=
   succ_eq_csInf (α := αᵒᵈ)
-
-end Lattice
 
 /-! ### Successor-predecessor orders -/
 
