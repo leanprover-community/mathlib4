@@ -2956,6 +2956,13 @@ theorem disjoint_toFinset {m1 m2 : Multiset α} :
     rw [Multiset.mem_toFinset] at ha hb
     exact h ha hb
 
+@[simp]
+lemma replicate_toFinset (n : ℕ) (a : α) : 
+    (replicate n a).toFinset = if n = 0 then ∅ else {a} := by 
+  ext x
+  simp only [mem_toFinset, Finset.mem_singleton, mem_replicate]
+  split_ifs with hn <;> simp [hn]
+
 end Multiset
 
 namespace List
