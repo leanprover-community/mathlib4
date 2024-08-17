@@ -83,6 +83,7 @@ theorem CNF.exponents_zero (b : Ordinal) : CNF.exponents b 0 = [] := by
 theorem CNF.coefficients_zero (b : Ordinal) : CNF.coefficients b 0 = [] := by
   rw [coefficients, CNF_zero, map_nil]
 
+/-- Recursive definition for the Cantor normal form. -/
 theorem CNF_ne_zero {b o : Ordinal} (ho : o ≠ 0) :
     CNF b o = ⟨log b o, o / b ^ log b o⟩::CNF b (o % b ^ log b o) :=
   CNFRec_pos b ho _ _
