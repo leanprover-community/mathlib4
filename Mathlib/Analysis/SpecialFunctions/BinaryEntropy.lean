@@ -22,6 +22,11 @@ and all other outcomes are equally likely.
 This file assumes that entropy is measured in Nats, hence the use of natural logarithms.
 Most lemmas are also valid using a logarithm in a different base.
 
+## Main declarations
+
+* `Real.binEntropy`: the binary entropy function
+* `Real.qaryEntropy`: the `q`-ary entropy function
+
 ## Tags
 
 entropy, Shannon, binary, nit, nepit
