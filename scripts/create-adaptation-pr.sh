@@ -111,6 +111,11 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "  1) Open `pwd` in a new terminal and run 'git status'"
   echo "  2) Run 'git add' on the resolved files, but do not commit"
   read -p "  3) Press enter to continue, when you are done"
+else
+  echo
+  echo "### [auto] No further conflicts"
+  echo "Committing the changes"
+  git commit -m "chore: merge latest changes from 'origin/nightly-testing'"
 fi
 
 echo
@@ -136,13 +141,13 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   	# Extract the PR number from the output
   	pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
   fi
-  
+
   echo
   echo "### [user] post a link to the PR on Zulip"
-  
+
   zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
   zulip_body="> $pr_title #$pr_number"
-  
+
   echo "Post the link to the PR in a new thread on the #nightly-testing channel on Zulip"
   echo "Here is a suggested message:"
   echo "Title: $zulip_title"
