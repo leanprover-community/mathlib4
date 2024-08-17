@@ -164,3 +164,5 @@ elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" 
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
          (numEqs := targets.size) (toClear := targetsNew) (toTag := toTag)
       setGoals <| subgoals.toList ++ gs
+
+end Mathlib.Tactic

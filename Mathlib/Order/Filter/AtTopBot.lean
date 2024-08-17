@@ -343,7 +343,7 @@ theorem tendsto_atBot_mono' [Preorder β] (l : Filter α) ⦃f₁ f₂ : α → 
 
 theorem tendsto_atTop_mono [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ n, f n ≤ g n) :
     Tendsto f l atTop → Tendsto g l atTop :=
-  tendsto_atTop_mono' l <| eventually_of_forall h
+  tendsto_atTop_mono' l <| Eventually.of_forall h
 
 theorem tendsto_atBot_mono [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ n, f n ≤ g n) :
     Tendsto g l atBot → Tendsto f l atBot :=
@@ -577,7 +577,7 @@ theorem tendsto_atBot_add_nonpos_left' (hf : ∀ᶠ x in l, f x ≤ 0) (hg : Ten
 
 theorem tendsto_atTop_add_nonneg_left (hf : ∀ x, 0 ≤ f x) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop :=
-  tendsto_atTop_add_nonneg_left' (eventually_of_forall hf) hg
+  tendsto_atTop_add_nonneg_left' (Eventually.of_forall hf) hg
 
 theorem tendsto_atBot_add_nonpos_left (hf : ∀ x, f x ≤ 0) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
@@ -593,7 +593,7 @@ theorem tendsto_atBot_add_nonpos_right' (hf : Tendsto f l atBot) (hg : ∀ᶠ x 
 
 theorem tendsto_atTop_add_nonneg_right (hf : Tendsto f l atTop) (hg : ∀ x, 0 ≤ g x) :
     Tendsto (fun x => f x + g x) l atTop :=
-  tendsto_atTop_add_nonneg_right' hf (eventually_of_forall hg)
+  tendsto_atTop_add_nonneg_right' hf (Eventually.of_forall hg)
 
 theorem tendsto_atBot_add_nonpos_right (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ 0) :
     Tendsto (fun x => f x + g x) l atBot :=
@@ -1737,7 +1737,7 @@ lemma frequently_iff_seq_forall {ι : Type*} {l : Filter ι} {p : ι → Prop}
     [l.IsCountablyGenerated] :
     (∃ᶠ n in l, p n) ↔ ∃ ns : ℕ → ι, Tendsto ns atTop l ∧ ∀ n, p (ns n) :=
   ⟨exists_seq_forall_of_frequently, fun ⟨_ns, hnsl, hpns⟩ ↦
-    hnsl.frequently <| frequently_of_forall hpns⟩
+    hnsl.frequently <| Frequently.of_forall hpns⟩
 
 /-- A sequence converges if every subsequence has a convergent subsequence. -/
 theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {l : Filter ι}
