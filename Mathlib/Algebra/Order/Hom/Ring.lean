@@ -388,8 +388,7 @@ def Simps.symm_apply (e : α ≃+*o β) : β → α :=
   e.symm
 
 @[simp]
-theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e :=
-  ext fun _ => rfl
+theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e := rfl
 
 /-- Composition of `OrderRingIso`s as an `OrderRingIso`. -/
 @[trans]
