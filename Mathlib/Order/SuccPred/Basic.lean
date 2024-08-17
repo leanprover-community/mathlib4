@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Cover
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.Iterate
@@ -505,18 +505,22 @@ instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
     · exact (@IsMax.succ_eq _ _ h₀ _ ha).trans ha.succ_eq.symm
     · exact @CovBy.succ_eq _ _ h₀ _ _ (covBy_succ_of_not_isMax ha)⟩
 
-section CompleteLattice
+section Lattice
 
-variable [CompleteLattice α] [SuccOrder α]
-
-theorem succ_eq_iInf (a : α) : succ a = ⨅ (b) (_ : a < b), b := by
-  refine le_antisymm (le_iInf fun b => le_iInf succ_le_of_lt) ?_
+theorem succ_eq_sInf [CompleteLattice α] [SuccOrder α] (a : α) :
+    succ a = sInf (Set.Ioi a) := by
+  apply (le_sInf fun b => succ_le_of_lt).antisymm
   obtain rfl | ha := eq_or_ne a ⊤
   · rw [succ_top]
     exact le_top
-  exact iInf₂_le _ (lt_succ_iff_ne_top.2 ha)
+  · exact sInf_le (lt_succ_iff_ne_top.2 ha)
 
-end CompleteLattice
+theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrder α] (a : α) :
+    succ a = sInf (Set.Ioi a) := by
+  apply (le_csInf nonempty_Ioi fun b => succ_le_of_lt).antisymm
+  exact csInf_le ⟨a, fun b => le_of_lt⟩ <| lt_succ a
+
+end Lattice
 
 /-! ### Predecessor order -/
 
@@ -812,18 +816,17 @@ instance [PartialOrder α] : Subsingleton (PredOrder α) :=
     · exact (@IsMin.pred_eq _ _ h₀ _ ha).trans ha.pred_eq.symm
     · exact @CovBy.pred_eq _ _ h₀ _ _ (pred_covBy_of_not_isMin ha)⟩
 
-section CompleteLattice
+section Lattice
 
-variable [CompleteLattice α] [PredOrder α]
+theorem pred_eq_sSup [CompleteLattice α] [PredOrder α] :
+    ∀ a : α, pred a = sSup (Set.Iio a) :=
+  succ_eq_sInf (α := αᵒᵈ)
 
-theorem pred_eq_iSup (a : α) : pred a = ⨆ (b) (_ : b < a), b := by
-  refine le_antisymm ?_ (iSup_le fun b => iSup_le le_pred_of_lt)
-  obtain rfl | ha := eq_or_ne a ⊥
-  · rw [pred_bot]
-    exact bot_le
-  · exact @le_iSup₂ _ _ (fun b => b < a) _ (fun a _ => a) (pred a) (pred_lt_iff_ne_bot.2 ha)
+theorem pred_eq_csSup [ConditionallyCompleteLattice α] [PredOrder α] [NoMinOrder α] :
+    ∀ a : α, pred a = sSup (Set.Iio a) :=
+  succ_eq_csInf (α := αᵒᵈ)
 
-end CompleteLattice
+end Lattice
 
 /-! ### Successor-predecessor orders -/
 
