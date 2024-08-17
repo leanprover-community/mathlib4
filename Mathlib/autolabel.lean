@@ -27,18 +27,15 @@ def getLast : Name → String
   ones that start with the ones in `dirs`.
  -/
 structure Label where
-  /-- The GitHub label.  By default, it is filled in by `t-[Label name]` with the automatic
-  replacement of underscores (`_`) in the name with dashes (`-`). -/
-  label : String := by exact "t-" ++ (getLast decl_name%).replace "_" "-"
-  /-- The array of "root paths".  By default, it is filled in with the singleton array consisting
-  of the `[label name]` in UpperCamelCase. -/
-  dirs : Array System.FilePath := by
-    exact #[((getLast decl_name%).splitOn "_").foldl (· ++ ·.capitalize) ""]
+  /-- The GitHub label.  This is expected to be in the form `t-label-name-kebab-case]`. -/
+  label : String
+  /-- The array of "root paths". -/
+  dirs : Array System.FilePath
   /-- The array of paths that satisfy the `dirs` constraint, but are nonetheless excluded.
   This gives finer control: for instance, all `Tactic` modifications should get the `t-meta` label,
   *except* for the `Tactic/Linter` modifications that should get the `t-linter` label.
-  By default, it is filled in with the empty array. -/
-  exclusions : Array System.FilePath := #[]
+  Most of the times, this field is empty. -/
+  exclusions : Array System.FilePath
 
 namespace Label
 open System.FilePath (pathSeparator) in
