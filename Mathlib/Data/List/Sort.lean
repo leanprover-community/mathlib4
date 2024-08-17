@@ -70,6 +70,15 @@ theorem Sorted.tail {r : α → α → Prop} {l : List α} (h : Sorted r l) : So
 theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b ∈ l, r a b :=
   rel_of_pairwise_cons
 
+theorem Sorted.cons {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α}
+    (ha : Sorted r (a :: l)) (h : r b a) : Sorted r (b :: a :: l) := by
+  refine List.pairwise_cons.2 ⟨?_, ha⟩
+  rintro c (_ | _)
+  · exact h
+  · apply trans h
+    apply rel_of_sorted_cons ha
+    assumption
+
 theorem Sorted.head!_le [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· < ·) l)
     (ha : a ∈ l) : l.head! ≤ a := by
   rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
