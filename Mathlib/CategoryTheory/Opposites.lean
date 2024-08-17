@@ -160,6 +160,14 @@ protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ where
   obj X := op (F.obj (unop X))
   map f := (F.map f.unop).op
 
+/-- The functor which assigns to a functor its opposite -/
+def opFunctor  :  (C ⥤ D)ᵒᵖ ⥤ (Cᵒᵖ ⥤ Dᵒᵖ)  where
+  obj f := Functor.op (Opposite.unop f)
+  map nop := {
+    app := fun ao =>  Opposite.op ((Opposite.unop nop).app (Opposite.unop ao))
+    naturality := fun _ _ uo => congrArg Quiver.Hom.op ((nop.unop.naturality uo.unop).symm)
+  }
+
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
 -/
