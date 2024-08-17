@@ -112,14 +112,13 @@ lemma map_f [Fact (finrank ℝ E = n)]
 
 /-- If `(M', f)` is a singular `n`-manifold on `X` and `M'` another `n`-dimensional smooth manifold,
 a smooth map `φ : M → M'` induces a singular `n`-manifold structore on `M`. -/
-noncomputable def comap [Fact (finrank ℝ E = n)] [Fact (finrank ℝ E' = n)]
-    (s : SingularNManifold X n M' I')
+noncomputable def comap [Fact (finrank ℝ E = n)] (s : SingularNManifold X n M' I')
     {φ : M → M'} (hφ : Smooth I I' φ) : SingularNManifold X n M I where
   f := s.f ∘ φ
   hf := s.hf.comp hφ.continuous
 
 @[simp]
-lemma comap_f [Fact (finrank ℝ E = n)] [Fact (finrank ℝ E' = n)] (s : SingularNManifold X n M' I')
+lemma comap_f [Fact (finrank ℝ E = n)] (s : SingularNManifold X n M' I')
     {φ : M → M'} (hφ : Smooth I I' φ) : (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
@@ -150,6 +149,7 @@ end SingularNManifold
 
 section HasNiceBoundary
 
+universe u in
 /-- All data defining a smooth manifold structure on the boundary of a smooth manifold:
 a charted space structure on the boundary, a model with corners and a smooth manifold structure.
 This need not exist (say, if `M` has corners); if `M` has no boundary or boundary and no corners,
@@ -158,13 +158,18 @@ such a structure is in fact canonically induced.
 -/
 structure BoundaryManifoldData (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M] where
-  E' : Type*
+  /-- The Euclidean space the boundary is modelled on. -/
+  E' : Type u
   [normedAddCommGroup : NormedAddCommGroup E']
   [normedSpace : NormedSpace ℝ E']
-  H' : Type*
+  /-- The topological space the boundary is a charted space on. -/
+  H' : Type u
   [topologicalSpace : TopologicalSpace H']
+  /-- A chosen charted space structure on `I.boundary M` on `H'` -/
   charts : ChartedSpace H' (I.boundary M)
+  /-- A chosen model with corners for the boundary -/
   model : ModelWithCorners ℝ E' H'
+  /-- `I.boundary M` is a smooth manifold with corners, w.r.t. our chosen model -/
   smoothManifold : SmoothManifoldWithCorners model (I.boundary M)
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -291,6 +296,9 @@ instance (bd : BoundaryManifoldData N J) [HasNiceBoundary bd] [BoundarylessManif
   smooth_inclusion := sorry
 
 end HasNiceBoundary
+
+#lint
+#exit
 
 section DisjUnion
 
@@ -462,8 +470,8 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N} (hf : Smooth I J f) (hg : 
     ContMDiff I J ∞ (Sum.elim f g) := sorry
 
 -- actually, want an iff version here...
-lemma ContMDiff.sum_map [Nonempty H'] {f : M → N} {g : M' → N'} (hf : Smooth I J f) (hg : Smooth I J g) :
-    ContMDiff I J ∞ (Sum.map f g) := sorry
+lemma ContMDiff.sum_map [Nonempty H'] {f : M → N} {g : M' → N'}
+    (hf : Smooth I J f) (hg : Smooth I J g) : ContMDiff I J ∞ (Sum.map f g) := sorry
 
 -- To what extent to these results exist abstractly?
 def Sum.swapEquiv : M ⊕ M' ≃ M' ⊕ M where
@@ -539,7 +547,7 @@ def Homeomorph.sum_empty {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   continuous_toFun := Continuous.sum_elim continuous_id (continuous_of_const fun _ ↦ congrFun rfl)
   continuous_invFun := continuous_inl
 
--- should be similar to the continuous version...
+-- TODO: move next to contMDiff_const
 lemma contMDiff_of_const {f : M → N} (h : ∀ (x y : M), f x = f y) : ContMDiff I J ∞ f := by
   intro x
   have : f = fun _ ↦ f x := by ext y; exact h y x
@@ -561,6 +569,9 @@ lemma Diffeomorph.swap_inr : (Diffeomorph.swap M I M') ∘ Sum.inr = Sum.inl := 
 
 end DisjUnion
 
+#lint
+
+#exit
 namespace UnorientedCobordism
 
 -- TODO: for now, assume all manifolds are modelled on the same chart and model space...
