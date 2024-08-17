@@ -328,19 +328,19 @@ is a smooth manifold modeled on `(E, H)`. -/
 instance SmoothManifoldWithCorners.sum : SmoothManifoldWithCorners I (M ⊕ M') := sorry
 
 /-- The inclusion `M → M ⊕ M'` is smooth. -/
-lemma ContMDiff.inl : ContMDiff I I ∞ (M' := M ⊕ M') (fun x ↦ Sum.inl x) := sorry
+lemma ContMDiff.inl : ContMDiff I I ∞ (M' := M ⊕ M') Sum.inl := sorry
 
 /-- The inclusion `M' → M ⊕ M'` is smooth. -/
-lemma ContMDiff.inr : ContMDiff I I ∞ (M' := M ⊕ M') (fun x ↦ Sum.inr x) := sorry
+lemma ContMDiff.inr : ContMDiff I I ∞ (M' := M ⊕ M') Sum.inr := sorry
 
 -- TODO: name this nicely; add associativity version as well
 -- this seems to be missing for sums of topological spaces (but surely exists abstractly):
 variable (I M M') in -- TODO: argument order is weird!
 def equivDisjUnionSum : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ := sorry
 
-lemma sdfdsf : (equivDisjUnionSum M I M') ∘ (fun x ↦ Sum.inl x) = (fun x ↦ Sum.inr x) := sorry
+lemma sdfdsf : (equivDisjUnionSum M I M') ∘ Sum.inl = Sum.inr := sorry
 
-lemma hogehoge : (equivDisjUnionSum M I M') ∘ (fun x ↦ Sum.inr x) = (fun x ↦ Sum.inl x) := sorry
+lemma hogehoge : (equivDisjUnionSum M I M') ∘ Sum.inr = Sum.inl := sorry
 
 end DisjUnion
 
@@ -378,9 +378,9 @@ structure UnorientedCobordism (s : SingularNManifold X n M I)
   φ : Diffeomorph bd.model I (J.boundary W) (M ⊕ M') ∞
   /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
   `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
-  hFf : F ∘ ((fun ⟨x, _⟩ ↦ x : J.boundary W → W)) ∘ φ.symm ∘ (fun x ↦ Sum.inl x) = s.f
+  hFf : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inl = s.f
   /-- `F` restricted to `N ↪ ∂W` equals `g` -/
-  hFg : F ∘ ((fun ⟨x, _⟩ ↦ x : J.boundary W → W)) ∘ φ.symm ∘ (fun x ↦ Sum.inr x) = t.f
+  hFg : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inr = t.f
 
 variable {s : SingularNManifold X n M I}
   {t : SingularNManifold X n M' I} {W : Type*} [TopologicalSpace W] [ChartedSpace H'' W]
@@ -399,7 +399,7 @@ abbrev foo  : BoundaryManifoldData (M × (Icc x y)) (I.prod (𝓡∂ 1)) :=
 variable {x y : ℝ} [Fact (x < y)] in
 instance : HasNiceBoundary (foo M I x y) := sorry
 
-/-- If `M` is boundaryless, `∂(M × [0,1])` is diffeomorph to the disjoint union `M ⊔ M`. -/
+/-- If `M` is boundaryless, `∂(M × [0,1])` is diffeomorphic to the disjoint union `M ⊔ M`. -/
 def Diffeomorph.productInterval_sum : Diffeomorph ((foo M I 0 1).model) I
     ((I.prod (𝓡∂ 1)).boundary (M × (Icc (0 : ℝ) 1))) (M ⊕ M') ∞ :=
   sorry
