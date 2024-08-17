@@ -338,7 +338,7 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
 def linearMapOfTendsto (f : M₁ → M₂) (g : α → M₁ →ₛₗ[σ] M₂) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →ₛₗ[σ] M₂ :=
   linearMapOfMemClosureRangeCoe f <|
-    mem_closure_of_tendsto h <| eventually_of_forall fun _ => Set.mem_range_self _
+    mem_closure_of_tendsto h <| Eventually.of_forall fun _ => Set.mem_range_self _
 
 variable (M₁ M₂ σ)
 
@@ -638,19 +638,19 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_zero := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_comm := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_assoc := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   nsmul := (· • ·)
   nsmul_zero f := by
     ext
@@ -1263,7 +1263,7 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
   zsmul_neg' n f := by ext; simp [add_smul]
-  add_left_neg _ := by ext; apply add_left_neg
+  neg_add_cancel _ := by ext; apply neg_add_cancel
 
 theorem sub_apply (f g : M →SL[σ₁₂] M₂) (x : M) : (f - g) x = f x - g x :=
   rfl
@@ -1315,10 +1315,9 @@ theorem intCast_apply [TopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L
 
 theorem smulRight_one_pow [TopologicalSpace R] [TopologicalRing R] (c : R) (n : ℕ) :
     smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
-  induction' n with n ihn
-  · ext
-    simp
-  · rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
+  induction n with
+  | zero => ext; simp
+  | succ n ihn => rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
 
 section
 
@@ -1989,7 +1988,7 @@ instance automorphismGroup : Group (M₁ ≃L[R₁] M₁) where
   one_mul f := by
     ext
     rfl
-  mul_left_inv f := by
+  inv_mul_cancel f := by
     ext x
     exact f.left_inv x
 
@@ -2075,9 +2074,6 @@ section
 
 /-! The next theorems cover the identification between `M ≃L[𝕜] M`and the group of units of the ring
 `M →L[R] M`. -/
-
-
-variable [TopologicalAddGroup M]
 
 /-- An invertible continuous linear map `f` determines a continuous equivalence from `M` to itself.
 -/
@@ -2273,7 +2269,7 @@ end
 section
 
 variable [Ring R]
-variable [AddCommGroup M] [TopologicalAddGroup M] [Module R M]
+variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]

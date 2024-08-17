@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Init.Data.Quot
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Unique
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 
 /-!
 # Quotient types

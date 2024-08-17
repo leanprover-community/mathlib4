@@ -235,3 +235,5 @@ elab "push_neg" loc:(location)? : tactic =>
     pushNegLocalDecl
     pushNegTarget
     (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+
+end Mathlib.Tactic.PushNeg
