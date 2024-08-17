@@ -46,9 +46,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   /-- The range of the embedding is downwards closed. -/
   init' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
-/-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
-embedding whose `Set.range` is downwards closed. That is, whenever `b < f a` in `β` then `b` is in
-the range of `f`. -/
+@[inherit_doc]
 infixl:25 " ≼i " => InitialSeg
 
 namespace InitialSeg
@@ -208,9 +206,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   /-- The range of the order embedding is `Iio top`. -/
   down' : ∀ a, s a top ↔ a ∈ Set.range toRelEmbedding
 
-/-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an initial
-segment embedding that isn't surjective. We express this via the existence of `top` such that the
-range of `f` is `Iio top`. -/
+@[inherit_doc]
 infixl:25 " ≺i " => PrincipalSeg
 
 namespace PrincipalSeg
