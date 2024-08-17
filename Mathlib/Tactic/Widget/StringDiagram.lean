@@ -292,8 +292,9 @@ def sty :=
   include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.sty"
 
 open scoped Jsx in
-/-- Construct a string diagram from the expression of a 2-morphism. -/
-def fromExpr (e : Expr) : MetaM Html := do
+/-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
+def stringM? (e : Expr) : MetaM (Option Html) := do
+  let e ← instantiateMVars e
   let k ← BicategoryLike.mkKind e
   let (nodes, strands) ← match k with
     | .monoidal =>
@@ -306,16 +307,12 @@ def fromExpr (e : Expr) : MetaM Html := do
       CoherenceM.run ctx do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
         return (← e'.nodes, ← e'.strands)
+    | .none => return .none
   DiagramBuilderM.run do
     mkStringDiagram nodes strands
     match ← DiagramBuilderM.buildDiagram dsl sty with
     | some html => return html
     | none => return <span>No non-structural morphisms found.</span>
-
-/-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
-def stringM? (e : Expr) : MetaM (Option Html) := do
-  let e ← instantiateMVars e
-  return some <| ← fromExpr e
 
 open scoped Jsx in
 /-- Help function for displaying two string diagrams in an equality. -/

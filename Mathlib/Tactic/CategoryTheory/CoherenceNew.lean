@@ -31,10 +31,12 @@ open Mathlib.Tactic.Bicategory
 inductive Kind where
   | monoidal : Kind
   | bicategory : Kind
+  | none : Kind
 
 def Kind.name : Kind → Name
   | Kind.monoidal => `monoidal
   | Kind.bicategory => `bicategory
+  | Kind.none => default
 
 def mkKind (e : Expr) : MetaM Kind := do
   let e ← instantiateMVars e
@@ -48,24 +50,28 @@ def mkKind (e : Expr) : MetaM Kind := do
     let ctx? ← mkContext? (ρ := Monoidal.Context) e
     match ctx? with
     | .some _ => return .monoidal
-    | .none => throwError "failed to construct a monoidal category or bicategory context from {e}"
+    | .none => return .none
 
 def pureCoherenceMain (mvarId : MVarId) : MetaM (List MVarId) := do
-  let k ← mkKind (← mvarId.getType)
+  let e ← mvarId.getType
+  let k ← mkKind e
   withTraceNode k.name (fun _ => return m!"{checkEmoji} {k.name}") do
     match k with
     | .monoidal => Monoidal.pureCoherence mvarId
     | .bicategory => Bicategory.pureCoherence mvarId
+    | .none => throwError "failed to construct a monoidal category or bicategory context from {e}"
 
 elab "pure_coherence" : tactic => withMainContext do
   replaceMainGoal <| ← pureCoherenceMain <| ← getMainGoal
 
 def coherence (mvarId : MVarId) : MetaM (List MVarId) := do
-  let k ← mkKind (← mvarId.getType)
-  withTraceNode k.name (fun _ => return m!"{checkEmoji} {k.name}") do
-    match k with
-    | .monoidal => Monoidal.monoidal mvarId
-    | .bicategory => Bicategory.bicategory mvarId
+    let e ← mvarId.getType
+    let k ← mkKind e
+    withTraceNode k.name (fun _ => return m!"{checkEmoji} {k.name}") do
+      match k with
+      | .monoidal => Monoidal.monoidal mvarId
+      | .bicategory => Bicategory.bicategory mvarId
+      | .none => throwError "failed to construct a monoidal category or bicategory context from {e}"
 
 elab "coherence" : tactic => withMainContext do
   replaceMainGoal <| ← coherence <| ← getMainGoal

@@ -147,7 +147,7 @@ open Mor₂Iso Qq Bicategory
 
 instance : MkEvalComp BicategoryM where
   mkEvalCompNilNil α β := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← α.srcM
     let g ← α.tgtM
@@ -161,7 +161,7 @@ instance : MkEvalComp BicategoryM where
     have β : Q($g ≅ $h) := β.e
     return q(evalComp_nil_nil $α $β)
   mkEvalCompNilCons α β η ηs := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← α.srcM
     let g ← α.tgtM
@@ -181,7 +181,7 @@ instance : MkEvalComp BicategoryM where
     have ηs : Q($i ⟶ $j) := ηs.e.e
     return q(evalComp_nil_cons $α $β $η $ηs)
   mkEvalCompCons α η ηs θ ι e_ι := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← α.srcM
     let g ← α.tgtM
@@ -205,7 +205,7 @@ instance : MkEvalComp BicategoryM where
 
 instance : MkEvalWhiskerLeft BicategoryM where
   mkEvalWhiskerLeftNil f α := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let g ← α.srcM
     let h ← α.tgtM
@@ -218,7 +218,7 @@ instance : MkEvalWhiskerLeft BicategoryM where
     have α : Q($g ≅ $h) := α.e
     return q(evalWhiskerLeft_nil $f $α)
   mkEvalWhiskerLeftOfCons f α η ηs θ e_θ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let g ← α.srcM
     let h ← α.tgtM
@@ -239,7 +239,7 @@ instance : MkEvalWhiskerLeft BicategoryM where
     have e_θ : Q($f ◁ $ηs = $θ) := e_θ
     return q(evalWhiskerLeft_of_cons $α $η $e_θ)
   mkEvalWhiskerLeftComp f g η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let h ← η.srcM
     let i ← η.tgtM
@@ -262,7 +262,7 @@ instance : MkEvalWhiskerLeft BicategoryM where
     have e_η₄ : Q((α_ _ _ _).hom ≫ $η₃ = $η₄) := e_η₄
     return q(evalWhiskerLeft_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
   mkEvalWhiskerLeftId η η₁ η₂ e_η₁ e_η₂ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -279,7 +279,7 @@ instance : MkEvalWhiskerLeft BicategoryM where
 
 instance : MkEvalWhiskerRight BicategoryM where
   mkEvalWhiskerRightAuxOf η h := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -294,7 +294,7 @@ instance : MkEvalWhiskerRight BicategoryM where
   mkEvalWhiskerRightAuxCons _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
   mkEvalWhiskerRightNil α h := do
-      let ctx ← read
+      let ctx ← get
       let _bicat := ctx.instBicategory
       let f ← α.srcM
       let g ← α.tgtM
@@ -307,7 +307,7 @@ instance : MkEvalWhiskerRight BicategoryM where
       have α : Q($f ≅ $g) := α.e
       return q(evalWhiskerRight_nil $α $h)
   mkEvalWhiskerRightConsOfOf j α η ηs ηs₁ η₁ η₂ η₃ e_ηs₁ e_η₁ e_η₂ e_η₃ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← α.srcM
     let g ← α.tgtM
@@ -335,7 +335,7 @@ instance : MkEvalWhiskerRight BicategoryM where
     return q(evalWhiskerRight_cons_of_of $e_ηs₁ $e_η₁ $e_η₂ $e_η₃)
   mkEvalWhiskerRightConsWhisker f k α η ηs η₁ η₂ ηs₁ ηs₂ η₃ η₄ η₅
       e_η₁ e_η₂ e_ηs₁ e_ηs₂ e_η₃ e_η₄ e_η₅ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let g ← α.srcM
     let h ← η.srcM
@@ -370,7 +370,7 @@ instance : MkEvalWhiskerRight BicategoryM where
     have e_η₅ : Q((whiskerRightIso $α $k).hom ≫ $η₄ = $η₅) := e_η₅
     return q(evalWhiskerRight_cons_whisker $e_η₁ $e_η₂ $e_ηs₁ $e_ηs₂ $e_η₃ $e_η₄ $e_η₅)
   mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let f' ← η.tgtM
@@ -393,7 +393,7 @@ instance : MkEvalWhiskerRight BicategoryM where
     have e_η₄ : Q((α_ _ _ _).inv ≫ $η₃ = $η₄) := e_η₄
     return q(evalWhiskerRight_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
   mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -428,7 +428,7 @@ instance : MkEvalHorizontalComp BicategoryM where
 
 instance : MkEval BicategoryM where
   mkEvalComp η θ η' θ' ι e_η e_θ e_ηθ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η'.srcM
     let g ← η'.tgtM
@@ -448,7 +448,7 @@ instance : MkEval BicategoryM where
     have e_ηθ : Q($η' ≫ $θ' = $ι) := e_ηθ
     return q(eval_comp $e_η $e_θ $e_ηθ)
   mkEvalWhiskerLeft f η η' θ e_η e_θ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let g ← η'.srcM
     let h ← η'.tgtM
@@ -465,7 +465,7 @@ instance : MkEval BicategoryM where
     have e_θ : Q($f ◁ $η' = $θ) := e_θ
     return q(eval_whiskerLeft $e_η $e_θ)
   mkEvalWhiskerRight η h η' θ e_η e_θ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η'.srcM
     let g ← η'.tgtM
@@ -484,7 +484,7 @@ instance : MkEval BicategoryM where
   mkEvalHorizontalComp _ _ _ _ _ _ _ _ := do
     throwError "not implemented"
   mkEvalOf η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f := η.src
     let g := η.tgt
@@ -495,7 +495,7 @@ instance : MkEval BicategoryM where
     have η : Q($f ⟶ $g) := η.e
     return q(eval_of $η)
   mkEvalMonoidalComp η θ α η' θ' αθ ηαθ e_η e_θ e_αθ e_ηαθ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η'.srcM
     let g ← η'.tgtM

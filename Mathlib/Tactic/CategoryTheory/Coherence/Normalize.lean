@@ -345,7 +345,7 @@ def normalForm (nm : Name) (ρ : Type) [Context ρ]
       let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| e).eq?
         | throwError "{nm}_nf requires an equality goal"
       let ctx : ρ ← mkContext e₁
-      ReaderT.run (r := ctx) <| show CoherenceM ρ (List MVarId) from do
+      CoherenceM.run ctx <| show CoherenceM ρ (List MVarId) from do
         let e₁' ← MkMor₂.ofExpr e₁
         let e₂' ← MkMor₂.ofExpr e₂
         let e₁'' ← eval nm e₁'

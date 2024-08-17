@@ -103,6 +103,7 @@ structure Context where
   /-- The expression for the underlying category. -/
   B : Q(Type level₀)
   instBicategory : Q(Bicategory.{level₂, level₁} $B)
+  cache : PHashMap Expr Mor₁ := {}
 
 /-- Populate a `context` object for evaluating `e`. -/
 def mkContext? (e : Expr) : MetaM (Option Context) := do
@@ -119,7 +120,7 @@ def mkContext? (e : Expr) : MetaM (Option Context) := do
       let .succ level₂ ← getLevel type | return none
       let .some instBicategory ← synthInstance?
         (mkAppN (.const ``Bicategory [level₂, level₁, level₀]) #[B]) | return none
-      return some ⟨level₂, level₁, level₀, B, instBicategory⟩
+      return some ⟨level₂, level₁, level₀, B, instBicategory, {}⟩
     | _ => return none
   | _ => return none
 
@@ -131,12 +132,12 @@ abbrev BicategoryM := CoherenceM Context
 
 instance : MonadMor₁ BicategoryM where
   id₁M a := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a_e : Q($ctx.B) := a.e
     return .id q(𝟙 $a_e) a
   comp₁M f g := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := f.src.e
     have b : Q($ctx.B) := f.tgt.e
@@ -184,7 +185,7 @@ open MonadMor₁
 
 instance : MonadStructuralAtom BicategoryM where
   associatorM f g h := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := f.src.e
     have b : Q($ctx.B) := f.tgt.e
@@ -195,28 +196,28 @@ instance : MonadStructuralAtom BicategoryM where
     have h_e : Q($c ⟶ $d) := h.e
     return .associator q(α_ $f_e $g_e $h_e) f g h
   leftUnitorM f := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := f.src.e
     have b : Q($ctx.B) := f.tgt.e
     have f_e : Q($a ⟶ $b) := f.e
     return .leftUnitor q(λ_ $f_e) f
   rightUnitorM f := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := f.src.e
     have b : Q($ctx.B) := f.tgt.e
     have f_e : Q($a ⟶ $b) := f.e
     return .rightUnitor q(ρ_ $f_e) f
   id₂M f := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := f.src.e
     have b : Q($ctx.B) := f.tgt.e
     have f_e : Q($a ⟶ $b) := f.e
     return .id q(Iso.refl $f_e) f
   coherenceHomM f g inst := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := f.src.e
     have b : Q($ctx.B) := f.tgt.e
@@ -231,7 +232,7 @@ instance : MonadStructuralAtom BicategoryM where
 
 instance : MonadMor₂Iso BicategoryM where
   comp₂M η θ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -245,7 +246,7 @@ instance : MonadMor₂Iso BicategoryM where
     have θ_e : Q($g_e ≅ $h_e) := θ.e
     return .comp q($η_e ≪≫ $θ_e) f g h η θ
   whiskerLeftM f η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let g ← η.srcM
     let h ← η.tgtM
@@ -258,7 +259,7 @@ instance : MonadMor₂Iso BicategoryM where
     have η_e : Q($g_e ≅ $h_e) := η.e
     return .whiskerLeft q(whiskerLeftIso $f_e $η_e) f g h η
   whiskerRightM η h := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -272,7 +273,7 @@ instance : MonadMor₂Iso BicategoryM where
     return .whiskerRight q(whiskerRightIso $η_e $h_e) f g η h
   horizontalCompM _ _ := throwError "horizontal composition is not implemented"
   symmM η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -283,7 +284,7 @@ instance : MonadMor₂Iso BicategoryM where
     have η_e : Q($f_e ≅ $g_e) := η.e
     return .inv q(Iso.symm $η_e) f g η
   coherenceCompM α η θ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -302,7 +303,7 @@ instance : MonadMor₂Iso BicategoryM where
 
 instance : MonadMor₂ BicategoryM where
   homM η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -315,7 +316,7 @@ instance : MonadMor₂ BicategoryM where
     have eq : Q(Iso.hom $η_e = $e) := q(rfl)
     return .isoHom q(Iso.hom $η_e) ⟨η, eq⟩ η
   atomHomM η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f := η.src
     let g := η.tgt
@@ -326,7 +327,7 @@ instance : MonadMor₂ BicategoryM where
     have η_e : Q($f_e ≅ $g_e) := η.e
     return .mk q(Iso.hom $η_e) f g
   invM η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -340,7 +341,7 @@ instance : MonadMor₂ BicategoryM where
     let eq : Q(Iso.inv $η_e = $e) := q(Iso.symm_hom $η_e)
     return .isoInv e ⟨η_inv, eq⟩ η
   atomInvM η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f := η.src
     let g := η.tgt
@@ -351,7 +352,7 @@ instance : MonadMor₂ BicategoryM where
     have η_e : Q($f_e ≅ $g_e) := η.e
     return .mk q(Iso.inv $η_e) g f
   id₂M f := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := f.src.e
     have b : Q($ctx.B) := f.tgt.e
@@ -360,7 +361,7 @@ instance : MonadMor₂ BicategoryM where
     let eq : Q(𝟙 $f_e = $e) := q(Iso.refl_hom $f_e)
     return .id e ⟨.structuralAtom <| ← StructuralAtom.id₂M f, eq⟩ f
   comp₂M η θ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -384,7 +385,7 @@ instance : MonadMor₂ BicategoryM where
     let e : Q($f_e ⟶ $h_e) := q($η_e ≫ $θ_e)
     return .comp e iso_lift? f g h η θ
   whiskerLeftM f η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let g ← η.srcM
     let h ← η.tgtM
@@ -405,7 +406,7 @@ instance : MonadMor₂ BicategoryM where
     let e : Q($f_e ≫ $g_e ⟶ $f_e ≫ $h_e) := q($f_e ◁ $η_e)
     return .whiskerLeft e iso_lift? f g h η
   whiskerRightM η h := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -427,7 +428,7 @@ instance : MonadMor₂ BicategoryM where
     return .whiskerRight e iso_lift? f g η h
   horizontalCompM _ _ := throwError "horizontal composition is not implemented"
   coherenceCompM α η θ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     let f ← η.srcM
     let g ← η.tgtM
@@ -521,7 +522,7 @@ set_option autoImplicit false
 
 instance : MonadNormalizeNaturality BicategoryM where
   mkNaturalityAssociator p pf pfg pfgh f g h η_f η_g η_h := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := p.src.e
     have b : Q($ctx.B) := p.tgt.e
@@ -540,7 +541,7 @@ instance : MonadNormalizeNaturality BicategoryM where
     have η_h : Q($pfg ≫ $h ≅ $pfgh) := η_h.e
     return q(naturality_associator $η_f $η_g $η_h)
   mkNaturalityLeftUnitor p pf f η_f := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := p.src.e
     have b : Q($ctx.B) := p.tgt.e
@@ -551,7 +552,7 @@ instance : MonadNormalizeNaturality BicategoryM where
     have η_f : Q($p ≫ $f ≅ $pf) := η_f.e
     return q(naturality_leftUnitor $η_f)
   mkNaturalityRightUnitor p pf f η_f := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := p.src.e
     have b : Q($ctx.B) := p.tgt.e
@@ -562,7 +563,7 @@ instance : MonadNormalizeNaturality BicategoryM where
     have η_f : Q($p ≫ $f ≅ $pf) := η_f.e
     return q(naturality_rightUnitor $η_f)
   mkNaturalityId p pf f η_f := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := p.src.e
     have b : Q($ctx.B) := p.tgt.e
@@ -573,7 +574,7 @@ instance : MonadNormalizeNaturality BicategoryM where
     have η_f : Q($p ≫ $f ≅ $pf) := η_f.e
     return q(naturality_id $η_f)
   mkNaturalityComp p pf f g h η θ η_f η_g η_h ih_η ih_θ := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := p.src.e
     have b : Q($ctx.B) := p.tgt.e
@@ -592,7 +593,7 @@ instance : MonadNormalizeNaturality BicategoryM where
     have ih_θ : Q($p ◁ $θ ≪≫ $η_h = $η_g) := ih_θ
     return q(naturality_comp $η_f $η_g $η_h $ih_η $ih_θ)
   mkNaturalityWhiskerLeft p pf pfg f g h η η_f η_fg η_fh ih_η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := p.src.e
     have b : Q($ctx.B) := p.tgt.e
@@ -611,7 +612,7 @@ instance : MonadNormalizeNaturality BicategoryM where
     have ih_η : Q($pf ◁ $η ≪≫ $η_fh = $η_fg) := ih_η
     return q(naturality_whiskerLeft $η_f $η_fg $η_fh $ih_η)
   mkNaturalityWhiskerRight p pf pfh f g h η η_f η_g η_fh ih_η := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := p.src.e
     have b : Q($ctx.B) := p.tgt.e
@@ -632,7 +633,7 @@ instance : MonadNormalizeNaturality BicategoryM where
   mkNaturalityHorizontalComp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ := do
     throwError "horizontal composition is not implemented"
   mkNaturalityInv p pf f g η η_f η_g ih := do
-    let ctx ← read
+    let ctx ← get
     let _bicat := ctx.instBicategory
     have a : Q($ctx.B) := p.src.e
     have b : Q($ctx.B) := p.tgt.e
@@ -665,7 +666,7 @@ def Atom₁.mkM (e : Expr) : MetaM Atom₁ := do
   return ⟨e, ⟨src⟩, ⟨tgt⟩⟩
 
 def isId₁? (e : Expr) : BicategoryM (Option Obj) := do
-  let ctx ← read
+  let ctx ← get
   let _bicat := ctx.instBicategory
   let a : Q($ctx.B) ← mkFreshExprMVar ctx.B
   if ← withDefault <| isDefEq e q(𝟙 $a) then
@@ -674,7 +675,7 @@ def isId₁? (e : Expr) : BicategoryM (Option Obj) := do
     return none
 
 def isComp₁? (e : Expr) : BicategoryM (Option (Mor₁ × Mor₁)) := do
-  let ctx ← read
+  let ctx ← get
   let _bicat := ctx.instBicategory
   let a ← mkFreshExprMVarQ ctx.B
   let b ← mkFreshExprMVarQ ctx.B
@@ -693,16 +694,21 @@ def isComp₁? (e : Expr) : BicategoryM (Option (Mor₁ × Mor₁)) := do
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def mor₁OfExpr (e : Expr) : BicategoryM Mor₁ := do
-  if let some a ← isId₁? e then
-    MonadMor₁.id₁M a
-  else if let some (f, g) ← isComp₁? e then
-    MonadMor₁.comp₁M (← mor₁OfExpr f.e) (← mor₁OfExpr g.e)
-  else
-    return Mor₁.of (← Atom₁.mkM e)
+  let ctx ← get
+  if let some f := ctx.cache.find? e then
+    return f
+  let f ←
+    if let some a ← isId₁? e then
+      MonadMor₁.id₁M a
+    else if let some (f, g) ← isComp₁? e then
+      MonadMor₁.comp₁M (← mor₁OfExpr f.e) (← mor₁OfExpr g.e)
+    else
+      return Mor₁.of (← Atom₁.mkM e)
+  modify fun s => { s with cache := s.cache.insert e f }
+  return f
 
 instance : MkMor₁ BicategoryM where
   ofExpr := mor₁OfExpr
-
 
 partial def Mor₂IsoOfExpr (e : Expr) : BicategoryM Mor₂Iso := do
   match (← whnfR e).getAppFnArgs with

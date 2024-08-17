@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
--- import Mathlib.Tactic.linter.Lint
 
 open Lean Meta
 
@@ -148,7 +147,7 @@ def pureCoherence (nm : Name) (ρ : Type) [Context ρ]
       let some (_, η, θ) := (← whnfR e).eq?
         | throwError "coherence requires an equality goal"
       let ctx : ρ ← mkContext η
-      ReaderT.run (r := ctx) do
+      CoherenceM.run ctx do
         let .some ηIso := (← MkMor₂.ofExpr η).isoLift? |
           throwError "could not find a structural isomorphism {η}"
         let .some θIso := (← MkMor₂.ofExpr θ).isoLift? |

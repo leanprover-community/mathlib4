@@ -16,10 +16,10 @@ class Context (ρ : Type) where
 
 export Context (mkContext?)
 
-abbrev CoherenceM (ρ : Type) [Context ρ] := ReaderT ρ MetaM
+abbrev CoherenceM (ρ : Type) [Context ρ] := StateT ρ MetaM
 
 def CoherenceM.run {α : Type} {ρ : Type} [Context ρ] (c : ρ) (x : CoherenceM ρ α) : MetaM α :=
-  x c
+  StateT.run' x c
 
 def mkContext {ρ  : Type} [Context ρ] (e : Expr) : MetaM ρ := do
   match ← mkContext? e with
