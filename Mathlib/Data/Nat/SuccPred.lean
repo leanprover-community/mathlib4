@@ -24,7 +24,7 @@ variable {m n : ℕ}
   SuccOrder.ofSuccLeIff succ Nat.succ_le
 
 -- so that Lean reads `Nat.pred` through `pred_order.pred`
-@[instance] abbrev instStrongPredOrder : PredOrder ℕ where
+@[instance] abbrev instPredOrder : PredOrder ℕ where
   pred := pred
   pred_le := pred_le
   min_of_le_pred {a} ha := by
