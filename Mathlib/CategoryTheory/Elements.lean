@@ -219,20 +219,6 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 
-/-- The unit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
-theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
-    (toCostructuredArrow F).rightOp ⋙ fromCostructuredArrow F = 𝟭 _ := by
-  refine Functor.ext ?_ ?_
-  · intro X
-    exact Functor.Elements.ext _ _ rfl (by simp [yonedaEquiv])
-  · intro X Y f
-    have : ∀ {a b : F.Elements} (H : a = b),
-        (eqToHom H).1 = eqToHom (show a.fst = b.fst by cases H; rfl) := by
-      rintro _ _ rfl
-      simp
-    ext
-    simp [this]
-
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 @[simps]
 def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
