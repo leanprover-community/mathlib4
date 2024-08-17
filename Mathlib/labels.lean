@@ -72,5 +72,5 @@ def ghAddLabels : Command.CommandElabM Unit := do
   --let gh : IO.Process.SpawnArgs := { cmd := "gh", args := ghArgs }
   --dbg_trace ← IO.Process.run gh
 
-run_cmd ghAddLabels
+--run_cmd ghAddLabels
 end AutoLabel.Label
