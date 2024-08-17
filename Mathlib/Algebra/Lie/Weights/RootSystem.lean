@@ -50,9 +50,9 @@ private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (
   obtain ⟨h, e, f, isSl2, he, hf⟩ := exists_isSl2Triple_of_weight_isNonZero hα
   obtain rfl := isSl2.h_eq_coroot hα he hf
   have : isSl2.HasPrimitiveVectorWith x (chainTop α β (coroot α)) :=
-    have := lie_mem_weightSpace_of_mem_weightSpace he hx
+    have := lie_mem_genWeightSpace_of_mem_genWeightSpace he hx
     ⟨hx', by rw [← lie_eq_smul_of_mem_rootSpace hx]; rfl,
-      by rwa [weightSpace_add_chainTop α β hα] at this⟩
+      by rwa [genWeightSpace_add_chainTop α β hα] at this⟩
   obtain ⟨μ, hμ⟩ := this.exists_nat
   exact ⟨μ, by rw [← Nat.cast_smul_eq_nsmul K, ← hμ, lie_eq_smul_of_mem_rootSpace hx]⟩
 
@@ -101,8 +101,8 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength �
   obtain ⟨h, e, f, isSl2, he, hf⟩ := exists_isSl2Triple_of_weight_isNonZero hα
   obtain rfl := isSl2.h_eq_coroot hα he hf
   have prim : isSl2.HasPrimitiveVectorWith x (chainLength α β : K) :=
-    have := lie_mem_weightSpace_of_mem_weightSpace he hx
-    ⟨x_ne0, (chainLength_smul _ _ hx).symm, by rwa [weightSpace_add_chainTop _ _ hα] at this⟩
+    have := lie_mem_genWeightSpace_of_mem_genWeightSpace he hx
+    ⟨x_ne0, (chainLength_smul _ _ hx).symm, by rwa [genWeightSpace_add_chainTop _ _ hα] at this⟩
   simp only [← smul_neg, ne_eq, LieSubmodule.eq_bot_iff, not_forall]
   exact ⟨_, toEnd_pow_apply_mem hf hx n, prim.pow_toEnd_f_ne_zero_of_eq_nat rfl hn⟩
 
@@ -127,14 +127,14 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn 
     ring
   have := rootSpace_neg_nsmul_add_chainTop_of_le (-α) W H₁
   rw [Weight.coe_neg, ← smul_neg, neg_neg, ← Weight.coe_neg, H₂] at this
-  exact this (weightSpace_chainTopCoeff_add_one_nsmul_add α β hα)
+  exact this (genWeightSpace_chainTopCoeff_add_one_nsmul_add α β hα)
 
 lemma chainTopCoeff_le_chainLength : chainTopCoeff α β ≤ chainLength α β := by
   by_cases hα : α.IsZero
   · simp only [hα.eq, chainTopCoeff_zero, zero_le]
   rw [← not_lt, ← Nat.succ_le]
   intro e
-  apply weightSpace_nsmul_add_ne_bot_of_le α β
+  apply genWeightSpace_nsmul_add_ne_bot_of_le α β
     (Nat.sub_le (chainTopCoeff α β) (chainLength α β).succ)
   rw [← Nat.cast_smul_eq_nsmul ℤ, Nat.cast_sub e, sub_smul, sub_eq_neg_add,
     add_assoc, ← coe_chainTop, Nat.cast_smul_eq_nsmul]
@@ -148,7 +148,7 @@ lemma chainBotCoeff_add_chainTopCoeff :
   · rw [← Nat.le_sub_iff_add_le (chainTopCoeff_le_chainLength α β),
       ← not_lt, ← Nat.succ_le, chainBotCoeff, ← Weight.coe_neg]
     intro e
-    apply weightSpace_nsmul_add_ne_bot_of_le _ _ e
+    apply genWeightSpace_nsmul_add_ne_bot_of_le _ _ e
     rw [← Nat.cast_smul_eq_nsmul ℤ, Nat.cast_succ, Nat.cast_sub (chainTopCoeff_le_chainLength α β),
       LieModule.Weight.coe_neg, smul_neg, ← neg_smul, neg_add_rev, neg_sub, sub_eq_neg_add,
       ← add_assoc, ← neg_add_rev, add_smul, add_assoc, ← coe_chainTop, neg_smul,
@@ -160,7 +160,7 @@ lemma chainBotCoeff_add_chainTopCoeff :
     rw [← Nat.succ_add, ← Nat.cast_smul_eq_nsmul ℤ, ← neg_smul, coe_chainTop, ← add_assoc,
       ← add_smul, Nat.cast_add, neg_add, add_assoc, neg_add_cancel, add_zero, neg_smul, ← smul_neg,
       Nat.cast_smul_eq_nsmul]
-    exact weightSpace_chainTopCoeff_add_one_nsmul_add (-α) β (Weight.IsNonZero.neg hα)
+    exact genWeightSpace_chainTopCoeff_add_one_nsmul_add (-α) β (Weight.IsNonZero.neg hα)
 
 lemma chainTopCoeff_add_chainBotCoeff :
     chainTopCoeff α β + chainBotCoeff α β = chainLength α β := by
@@ -254,13 +254,13 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
   · rw [Nat.one_le_iff_ne_zero]
     intro e
     exact α.2 (by simpa [e, Weight.coe_zero] using
-      weightSpace_chainTopCoeff_add_one_nsmul_add α (0 : Weight K H L) hα)
+      genWeightSpace_chainTopCoeff_add_one_nsmul_add α (0 : Weight K H L) hα)
   obtain ⟨x, hx, x_ne0⟩ := (chainTop α (0 : Weight K H L)).exists_ne_zero
   obtain ⟨h, e, f, isSl2, he, hf⟩ := exists_isSl2Triple_of_weight_isNonZero hα
   obtain rfl := isSl2.h_eq_coroot hα he hf
   have prim : isSl2.HasPrimitiveVectorWith x (chainLength α (0 : Weight K H L) : K) :=
-    have := lie_mem_weightSpace_of_mem_weightSpace he hx
-    ⟨x_ne0, (chainLength_smul _ _ hx).symm, by rwa [weightSpace_add_chainTop _ _ hα] at this⟩
+    have := lie_mem_genWeightSpace_of_mem_genWeightSpace he hx
+    ⟨x_ne0, (chainLength_smul _ _ hx).symm, by rwa [genWeightSpace_add_chainTop _ _ hα] at this⟩
   obtain ⟨k, hk⟩ : ∃ k : K, k • f =
       (toEnd K L L f ^ (chainTopCoeff α (0 : Weight K H L) + 1)) x := by
     have : (toEnd K L L f ^ (chainTopCoeff α (0 : Weight K H L) + 1)) x ∈ rootSpace H (-α) := by
@@ -290,7 +290,7 @@ lemma rootSpace_two_smul (hα : α.IsNonZero) : rootSpace H (2 • α) = ⊥ := 
   cases subsingleton_or_nontrivial L
   · exact IsEmpty.elim inferInstance α
   simpa [chainTopCoeff_zero_right α hα] using
-    weightSpace_chainTopCoeff_add_one_nsmul_add α (0 : Weight K H L) hα
+    genWeightSpace_chainTopCoeff_add_one_nsmul_add α (0 : Weight K H L) hα
 
 lemma rootSpace_one_div_two_smul (hα : α.IsNonZero) : rootSpace H ((2⁻¹ : K) • α) = ⊥ := by
   by_contra h
@@ -298,7 +298,7 @@ lemma rootSpace_one_div_two_smul (hα : α.IsNonZero) : rootSpace H ((2⁻¹ : K
   have hW : 2 • (W : H → K) = α := by
     show 2 • (2⁻¹ : K) • (α : H → K) = α
     rw [← Nat.cast_smul_eq_nsmul K, smul_smul]; simp
-  apply α.weightSpace_ne_bot
+  apply α.genWeightSpace_ne_bot
   have := rootSpace_two_smul W (fun (e : (W : H → K) = 0) ↦ hα <| by
     apply_fun (2 • ·) at e; simpa [hW] using e)
   rwa [hW] at this
@@ -353,9 +353,9 @@ lemma eq_neg_or_eq_of_eq_smul (hβ : β.IsNonZero) (k : K) (h : (β : H → K) =
 /-- The reflection of a root along another. -/
 def reflectRoot (α β : Weight K H L) : Weight K H L where
   toFun := β - β (coroot α) • α
-  weightSpace_ne_bot' := by
+  genWeightSpace_ne_bot' := by
     by_cases hα : α.IsZero
-    · simpa [hα.eq] using β.weightSpace_ne_bot
+    · simpa [hα.eq] using β.genWeightSpace_ne_bot
     rw [sub_eq_neg_add, apply_coroot_eq_cast α β, ← neg_smul, ← Int.cast_neg,
       Int.cast_smul_eq_zsmul, rootSpace_zsmul_add_ne_bot_iff α β hα]
     omega
