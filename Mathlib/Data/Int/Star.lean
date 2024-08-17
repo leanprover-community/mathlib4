@@ -23,7 +23,7 @@ namespace Int
   refine le_antisymm (closure_le.2 <| range_subset_iff.2 hn.pow_nonneg) fun x hx ↦ ?_
   have : x = x.natAbs • 1 ^ n := by simpa [eq_comm (a := x)] using hx
   rw [this]
-  exact nsmul_mem (subset_closure $ mem_range_self _) _
+  exact nsmul_mem (subset_closure <| mem_range_self _) _
 
 @[simp]
 lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℤ ↦ x * x) = nonneg _ := by
