@@ -6,7 +6,62 @@ Authors: Damiano Testa
 import Lean.Elab.Command
 
 /-!
-The file with the attribute and the basic API
+# Automatic labelling of PRs
+
+This file contains the basic definitions, the environment extension and the API commands
+to automatically assign a GitHub label to a PR.
+
+The heuristic used to assign a label is to assign labels to certain folder inside `Mathlib/`
+and assign a label to a PR if the PR modifies files within the corresponding folders.
+
+Ultimately, this produces a `HashMap String String` that takes a string representing a path
+to a modified file and returns the corresponding GitHub label.
+
+Since the labels are independent of the modified file, we define a `PersistentEnvExtension`
+that keeps track of an array of `Label`s.
+
+## The `Label` structure
+
+A `Label` is a structure containing
+* the GitHub label (as a `String` -- `Label.label`);
+* the array of folders associated to the given label (as an `Array String` -- `Label.dirs`);
+* the array of folders that forbid a given label, even though a path may satisfy the conditions
+  implied by `dirs` (as an `Array String` -- `Label.exclusions`).
+
+For example, the files in the `Tactic` folder should be labelled as `t-meta`,
+except the ones in `Tactic/Linter` that should be labelled `t-linter`.
+This would be encoded by
+```lean
+{ Label.label      := "t-meta"
+  Label.dirs       := #["Tactic"]
+  Label.exclusions := #[Tactic/Linter] }`
+```
+a term of type `Label`.
+
+## The `add_label` command
+
+Since `Label`s are managed by an environment extension, there is a user command to add them.
+Thus, the previous label would be added using
+```
+add_label meta dirs: Tactic exclusions Tactic.Linter
+```
+Note that the "strings" are passed as identifiers, so that the path-separators `/` should be entered as `.`.
+Note also that the prefix `t-` in front of `meta` is automatically added by `add_label`.
+
+Look at the documentation for `add_label` for further shortcuts.
+
+## Further commands
+
+The file also defines
+* the `check_labels` command that displays what `Label` are present in the environment;
+* the `produce_labels str` command that takes as input a string of line-break-separated paths
+  and shows which labels modifications in those files would get;
+* the `show_pairings str` command that takes as input a string of line-break-separated paths
+  and shows which labels modifications in those files would get, together with the files that
+  trigger such modifications;
+* the `git_labels` command that shows which labels the current modifications to master imply
+  (this command run `git diff --name-only master...HEAD` in the background to figure out
+  which files have been modified).
 -/
 
 open Lean
@@ -69,7 +124,7 @@ def addAllLabels (gitDiffs : Array String) (ls : Array Label) : HashMap String S
         tot := tot.insert modifiedFile lab
   return tot
 
-/-- Defines the `labelsExt` extension for adding the `Name` of a `Label` to the environment. -/
+/-- Defines the `labelsExt` extension for adding an `Array` of `Label`s to the environment. -/
 initialize labelsExt :
     PersistentEnvExtension Label Label (Array Label) ←
   let addEntryFn := .push
@@ -77,7 +132,7 @@ initialize labelsExt :
     mkInitial := pure {}
     addImportedFn := (pure <| .flatten ·)
     addEntryFn
-    exportEntriesFn := id --fun es => es.foldl (fun a _ e => a.push e) #[]
+    exportEntriesFn := id
   }
 
 /--
@@ -177,10 +232,18 @@ It displays the array of pairs `(lab, #[paths with label lab])`.
 elab tk:"show_pairings " st:str : command => do
   logInfoAt tk m!"{(labelsToFiles (← getEnv) st.getString).toArray.qsort (·.1 < ·.1)}"
 
-/-- `git_labels` shows the label-files pairing using as files the currently modified files
-with respect to master. -/
-elab "git_labels" : command => do
+/--
+`git_labels` shows the labels for the currently modified files with respect to master.
+The `git_labels!` variant shows additionally, for each label, the array of files that justify it.
+-/
+elab (name := gitLabels) "git_labels" tk:("!")? : command => do
   let out ← IO.Process.run { cmd := "git", args := #["diff", "--name-only", "master...HEAD"] }
-  logInfo m!"{(labelsToFiles (← getEnv) out).toArray.qsort (·.1 < ·.1)}"
+  let labelsAndFiles := (labelsToFiles (← getEnv) out).toArray.qsort (·.1 < ·.1)
+  if tk.isSome then logInfo m!"{labelsAndFiles}"
+  else logInfo m!"{labelsAndFiles.map Prod.fst}"
+
+@[inherit_doc gitLabels]
+elab "git_labels!" : command => do
+  Elab.Command.elabCommand (← `(git_labels !))
 
 end AutoLabel.Label
