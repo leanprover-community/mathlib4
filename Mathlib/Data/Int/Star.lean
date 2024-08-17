@@ -7,6 +7,7 @@ import Mathlib.Algebra.Star.Order
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Int
 
 /-!
 # Star ordered ring structure on `ℤ`
