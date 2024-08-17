@@ -89,6 +89,7 @@ theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = �
 theorem map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.val) p.2 = q.2 :=
   f.property
 
+/-- Constructor for isomorphisms in the category of elements of a functor to types. -/
 @[simps]
 def isoMk {F : C ⥤ Type w} (x y : F.Elements) (e : x.1 ≅ y.1) (he : F.map e.hom x.snd = y.snd) :
     x ≅ y where
@@ -231,11 +232,6 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
         rintro ⟨x⟩ ⟨y⟩ ⟨f : y ⟶ x⟩
         exact Quiver.Hom.unop_inj (by ext; simp))
   counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
-
--- Porting note:
--- Running `@[simps! unitIso_hom]` is mysteriously slow.
--- We separate it out to avoid needing to increase the maxHeartbeats.
-attribute [simps! unitIso_hom] costructuredArrowYonedaEquivalence
 
 /-- The equivalence `(-.Elements)ᵒᵖ ≅ (yoneda, -)` of is actually a natural isomorphism of functors.
 -/

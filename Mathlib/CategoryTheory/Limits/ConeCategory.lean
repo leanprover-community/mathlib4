@@ -138,6 +138,8 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
         dsimp
         simp }
 
+/-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
+    functor. -/
 @[simps]
 def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F where
   functor := Cone.toCostructuredArrow F
