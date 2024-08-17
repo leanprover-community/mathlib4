@@ -906,8 +906,8 @@ lemma pow_mod_natCard {G} [Group G] (a : G) (n : ℕ) : a ^ (n % Nat.card G) = a
 
 @[to_additive (attr := simp) mod_natCard_zsmul]
 lemma zpow_mod_natCard {G} [Group G] (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n := by
-  rw [eq_comm, ← zpow_mod_orderOf,
-    ← Int.emod_emod_of_dvd n <| Int.natCast_dvd_natCast.2 <| orderOf_dvd_natCard _, zpow_mod_orderOf]
+  rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n <|
+    Int.natCast_dvd_natCast.2 <| orderOf_dvd_natCard _, zpow_mod_orderOf]
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]

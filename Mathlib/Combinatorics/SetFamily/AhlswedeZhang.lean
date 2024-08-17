@@ -124,7 +124,7 @@ lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
 
 lemma truncatedSup_of_not_mem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dif_neg h
 
-@[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_not_mem <| by simp
+@[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_not_mem (by simp)
 
 @[simp] lemma truncatedSup_singleton (b a : α) : truncatedSup {b} a = if a ≤ b then b else ⊤ := by
   simp [truncatedSup]; split_ifs <;> simp [Finset.filter_true_of_mem, *]
@@ -204,7 +204,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
     exact hba.trans' <| inf'_le id <| mem_filter.2 ⟨hb, ‹_›⟩
   · exact bot_le
 
-@[simp] lemma truncatedInf_empty (a : α) : truncatedInf ∅ a = ⊥ := truncatedInf_of_not_mem <| by simp
+@[simp] lemma truncatedInf_empty (a : α) : truncatedInf ∅ a = ⊥ := truncatedInf_of_not_mem (by simp)
 
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
   simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
