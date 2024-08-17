@@ -323,14 +323,17 @@ lemma logHeight_smul (n : ℤ) : ∃ C : ℝ, ∀ P : W.Point,
         abs_le.mp <| h' P, abs_le.mp <| h'' P]
   | neg => simpa only [neg_smul, logHeight_neg, Int.cast_neg, neg_sq]
 
-/-! ### The canonical height -/
+/-! ### The canonical height sequence -/
 
 /-- The Cauchy sequence of logarithmic heights used to construct the canonical height. -/
 noncomputable def canonHeightSeq (P : W.Point) (n : ℕ) : ℝ :=
-  W.logHeight ((2 ^ n) • P) * 4⁻¹ ^ n
+  W.logHeight (2 ^ n • P) * 4⁻¹ ^ n
 
 lemma canonHeightSeq_zero (P : W.Point) : canonHeightSeq P 0 = W.logHeight P := by
   rw [canonHeightSeq, pow_zero, one_smul, pow_zero, mul_one]
+
+lemma canonHeightSeq_nonneg (P : W.Point) (n : ℕ) : 0 ≤ W.canonHeightSeq P n :=
+  mul_nonneg (logHeight_nonneg <| 2 ^ n • P) <| pow_nonneg (inv_nonneg_of_nonneg zero_le_four) n
 
 lemma canonHeightSeq_sub_succ : ∃ C : ℝ, ∀ P : W.Point, ∀ n : ℕ,
     |canonHeightSeq P n - canonHeightSeq P (n + 1)| ≤ C * 4⁻¹ ^ n := by
@@ -339,7 +342,7 @@ lemma canonHeightSeq_sub_succ : ∃ C : ℝ, ∀ P : W.Point, ∀ n : ℕ,
   rw [abs_sub_comm, canonHeightSeq, pow_succ', mul_smul, canonHeightSeq,
     ← mul_inv_cancel_right₀ four_ne_zero <| W.logHeight (_ • P), mul_comm _ 4, mul_assoc,
     ← pow_succ', ← sub_mul, abs_mul, abs_pow, abs_inv, Nat.abs_ofNat, mul_assoc, ← pow_succ',
-    mul_le_mul_right <| pow_pos (inv_pos_of_pos four_pos) _, show (4 : ℝ) = (2 ^ 2) by norm_num1]
+    mul_le_mul_right <| pow_pos (inv_pos_of_pos four_pos) _, show (4 : ℝ) = 2 ^ 2 by norm_num1]
   exact h <| 2 ^ n • P
 
 lemma cauchySeq_canonHeightSeq (P : W.Point) : CauchySeq <| canonHeightSeq P := by
@@ -355,6 +358,8 @@ lemma canonHeightSeq_parLaw : ∃ C : ℝ, ∀ P Q : W.Point, ∀ n : ℕ,
     canonHeightSeq, ← mul_assoc, ← add_mul, ← sub_mul, abs_mul, abs_pow, abs_inv, Nat.abs_ofNat]
   exact (mul_le_mul_right <| pow_pos (inv_pos_of_pos four_pos) n).mpr <| h (2 ^ n • P) (2 ^ n • Q)
 
+/-! ### The canonical height function -/
+
 variable (W) in
 /-- The canonical height parallelogram map on a Weierstrass curve. -/
 @[simps]
@@ -369,6 +374,10 @@ lemma canonHeightSeq_tendsto_canonHeight (P : W.Point) :
     Filter.atTop.Tendsto (canonHeightSeq P) <| nhds <| W.canonHeight P :=
   (cauchySeq_tendsto_of_complete <| cauchySeq_canonHeightSeq P).choose_spec
 
+lemma canonHeight_parLaw (P Q : W.Point) :
+    W.canonHeight (P + Q) + W.canonHeight (P - Q) = 2 * W.canonHeight P + 2 * W.canonHeight Q :=
+  W.canonHeight.parLaw P Q
+
 lemma canonHeight_zero : W.canonHeight 0 = 0 :=
   W.canonHeight.zero
 
@@ -379,27 +388,56 @@ lemma canonHeight_smul (n : ℤ) (P : W.Point) : W.canonHeight (n • P) = n ^ 2
   W.canonHeight.smul n P
 
 lemma canonHeight_nonneg (P : W.Point) : 0 ≤ W.canonHeight P :=
-  ge_of_tendsto' (canonHeightSeq_tendsto_canonHeight P) fun n =>
-    mul_nonneg (logHeight_nonneg <| 2 ^ n • P) <| pow_nonneg (inv_nonneg_of_nonneg zero_le_four) n
+  ge_of_tendsto' (canonHeightSeq_tendsto_canonHeight P) <| canonHeightSeq_nonneg P
+
+lemma canonHeight_sub_canonHeightSeq : ∃ C : ℝ, ∀ P : W.Point, ∀ n : ℕ,
+    |W.canonHeight P - canonHeightSeq P n| ≤ C * 4⁻¹ ^ n := by
+  rcases W.canonHeightSeq_sub_succ with ⟨C, h⟩
+  refine ⟨C / (1 - 4⁻¹), fun P n => ?_⟩
+  rw [abs_sub_comm, ← mul_div_right_comm]
+  exact dist_le_of_le_geometric_of_tendsto 4⁻¹ C (by norm_num1) (by exact h P)
+    (canonHeightSeq_tendsto_canonHeight P) n
 
 lemma canonHeight_sub_logHeight : ∃ C : ℝ, ∀ P : W.Point,
     |W.canonHeight P - W.logHeight P| ≤ C := by
-  rcases W.canonHeightSeq_sub_succ with ⟨C, h⟩
-  refine ⟨C / (1 - 4⁻¹), fun P => ?_⟩
-  rw [abs_sub_comm, ← canonHeightSeq_zero]
-  exact dist_le_of_le_geometric_of_tendsto₀ 4⁻¹ C (by norm_num1) (by exact h P) <|
-    canonHeightSeq_tendsto_canonHeight P
+  rcases W.canonHeight_sub_canonHeightSeq with ⟨C, h⟩
+  exact ⟨C, fun P => mul_one C ▸ canonHeightSeq_zero P ▸ h P 0⟩
 
 lemma canonHeight_unique {h : W.Point → ℝ}
     (hsub : ∃ C : ℝ, ∀ P : W.Point, |h P - W.logHeight P| ≤ C)
-    (hsmul : ∀ n : ℤ, ∀ P : W.Point, h (n • P) = n ^ 2 * h P) (P : W.Point) :
+    (hsmul : ∃ n : ℤ, 1 < |n| ∧ ∀ P : W.Point, h (n • P) = n ^ 2 * h P) (P : W.Point) :
     h P = W.canonHeight P := by
-  rcases hsub, W.canonHeight_sub_logHeight with ⟨⟨C, hsub⟩, ⟨C', hsub'⟩⟩
-  refine eq_of_norm_le_geometric (by norm_num [abs_div]) (C := C + C') (x := |2 ^ 2|⁻¹) fun n => ?_
-  erw [inv_pow, ← abs_pow, pow_right_comm, ← Int.cast_pow, ← div_eq_mul_inv,
-    le_div_iff' <| abs_pos_of_pos <| pow_pos (Int.cast_pos.mpr <| pow_pos two_pos n) 2, ← abs_mul,
-    mul_sub, ← hsmul, ← canonHeight_smul, ← sub_sub_sub_cancel_right]
-  exact (abs_sub ..).trans <| add_le_add (hsub <| 2 ^ n • P) (hsub' <| 2 ^ n • P)
+  rcases hsub, hsmul, W.canonHeight_sub_logHeight with ⟨⟨C, hsub⟩, ⟨n, hn, hsmul⟩, ⟨C', hsub'⟩⟩
+  replace hn : 1 < |(n : ℝ)| := by exact_mod_cast hn
+  have hn' : |(|(n : ℝ) ^ 2|⁻¹)| < 1 := by
+    simpa only [abs_inv, abs_abs, abs_pow] using inv_lt_one <| one_lt_pow hn two_ne_zero
+  refine eq_of_norm_le_geometric hn' (C := C + C') fun m => ?_
+  induction m generalizing P with
+  | zero =>
+    rw [pow_zero, mul_one, ← sub_sub_sub_cancel_right]
+    exact norm_sub_le_of_le (hsub P) (hsub' P)
+  | succ _ ih =>
+    rw [pow_succ, ← mul_assoc, ← div_eq_mul_inv, le_div_iff' <| abs_pow (n : ℝ) 2 ▸ pow_pos
+        (one_pos.trans hn) 2, Real.norm_eq_abs, ← abs_mul, mul_sub, ← hsmul, ← canonHeight_smul]
+    exact ih <| n • P
+
+lemma canonHeight_eq_zero (P : W.Point) : W.canonHeight P = 0 ↔ ∃ n : ℤ, n ≠ 0 ∧ n • P = 0 := by
+  rw [← isOfFinAddOrder_iff_zsmul_eq_zero, ← finite_multiples]
+  refine ⟨fun hP => ?_, fun hP => ?_⟩
+  · rcases W.canonHeight_sub_logHeight with ⟨C, h⟩
+    replace hP (n : ℤ) : W.logHeight (n • P) ≤ C := by
+      convert h <| n • P using 1
+      rw [canonHeight_smul, hP, mul_zero, zero_sub, abs_neg, abs_of_nonneg <| logHeight_nonneg _]
+    exact @Finite.of_injective _ _ (W.logHeight_le_finite C)
+      (fun ⟨Q, hQ⟩ => ⟨Q, hQ.choose_spec ▸ hP hQ.choose⟩) fun _ _ => Subtype.ext ∘ Subtype.mk.inj
+  · replace hP : (Set.range fun n => 2 ^ n • P).Finite := @Finite.of_injective _ _ hP
+      (fun ⟨_, h⟩ => ⟨_, _, h.choose_spec⟩) fun _ _ => Subtype.ext ∘ Subtype.mk.inj
+    rcases Set.exists_max_image _ W.logHeight hP ⟨P, 0, one_smul ..⟩ with ⟨Q, _, hQ⟩
+    refine eq_zero_of_tendsto_norm_le_geometric (canonHeightSeq_tendsto_canonHeight P)
+      (by norm_num [abs_div]) (C := W.logHeight Q) (x := 4⁻¹) fun n => ?_
+    rw [Real.norm_of_nonneg <| canonHeightSeq_nonneg P n, canonHeightSeq,
+      mul_le_mul_right <| pow_pos (inv_pos_of_pos four_pos) n]
+    exact hQ (2 ^ n • P) ⟨n, rfl⟩
 
 /-! ### The canonical height pairing -/
 
