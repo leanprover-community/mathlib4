@@ -41,10 +41,6 @@ theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
 
-theorem getElem?_eq (l : List α) (i : Nat) :
-    l[i]? = if h : i < l.length then some l[i] else none := by
-  split <;> simp_all
-
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
   { instInhabitedList with
@@ -1300,52 +1296,6 @@ theorem injective_foldl_comp {l : List (α → α)} {f : α → α}
   · apply l_ih fun _ h => hl _ (List.mem_cons_of_mem _ h)
     apply Function.Injective.comp hf
     apply hl _ (List.mem_cons_self _ _)
-
-/-- Induction principle for values produced by a `foldr`: if a property holds
-for the seed element `b : β` and for all incremental `op : α → β → β`
-performed on the elements `(a : α) ∈ l`. The principle is given for
-a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
-def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
-    (hl : ∀ b, C b → ∀ a ∈ l, C (op a b)) : C (foldr op b l) := by
-  induction l with
-  | nil => exact hb
-  | cons hd tl IH =>
-    refine hl _ ?_ hd (mem_cons_self hd tl)
-    refine IH ?_
-    intro y hy x hx
-    exact hl y hy x (mem_cons_of_mem hd hx)
-
-/-- Induction principle for values produced by a `foldl`: if a property holds
-for the seed element `b : β` and for all incremental `op : β → α → β`
-performed on the elements `(a : α) ∈ l`. The principle is given for
-a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
-def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β) (hb : C b)
-    (hl : ∀ b, C b → ∀ a ∈ l, C (op b a)) : C (foldl op b l) := by
-  induction l generalizing b with
-  | nil => exact hb
-  | cons hd tl IH =>
-    refine IH _ ?_ ?_
-    · exact hl b hb hd (mem_cons_self hd tl)
-    · intro y hy x hx
-      exact hl y hy x (mem_cons_of_mem hd hx)
-
-@[simp]
-theorem foldrRecOn_nil {C : β → Sort*} (op : α → β → β) (b) (hb : C b) (hl) :
-    foldrRecOn [] op b hb hl = hb :=
-  rfl
-
-@[simp]
-theorem foldrRecOn_cons {C : β → Sort*} (x : α) (l : List α) (op : α → β → β) (b) (hb : C b)
-    (hl : ∀ b, C b → ∀ a ∈ x :: l, C (op a b)) :
-    foldrRecOn (x :: l) op b hb hl =
-      hl _ (foldrRecOn l op b hb fun b hb a ha => hl b hb a (mem_cons_of_mem _ ha)) x
-        (mem_cons_self _ _) :=
-  rfl
-
-@[simp]
-theorem foldlRecOn_nil {C : β → Sort*} (op : β → α → β) (b) (hb : C b) (hl) :
-    foldlRecOn [] op b hb hl = hb :=
-  rfl
 
 /-- Consider two lists `l₁` and `l₂` with designated elements `a₁` and `a₂` somewhere in them:
 `l₁ = x₁ ++ [a₁] ++ z₁` and `l₂ = x₂ ++ [a₂] ++ z₂`.
