@@ -43,116 +43,23 @@ open FiniteDimensional Set
 
 noncomputable section
 
--- Closed and `n`-dimensional manifolds: these should also move to a separate file.
-section ClosedManifold
-
-variable (n : ℕ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  -- declare a smooth manifold `M` over the pair `(E, H)`.
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-  (I : ModelWithCorners 𝕜 E H) [SmoothManifoldWithCorners I M]
-
-/-- A topological manifold is called **closed** iff it is compact without boundary. -/
-structure ClosedManifold [CompactSpace M] [BoundarylessManifold I M]
-
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type*} [TopologicalSpace H'] (N : Type*) [TopologicalSpace N] [ChartedSpace H' N]
-  (J : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners J N]
-
-instance ClosedManifold.prod [CompactSpace M] [BoundarylessManifold I M]
-    [CompactSpace N] [BoundarylessManifold J N] :
-  ClosedManifold (M × N) (I.prod J) where
-
-/-- An **n-manifold** is a smooth `n`-dimensional manifold. -/
-structure NManifold [NormedAddCommGroup E]  [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
-    {H : Type*} [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners 𝕜 E H) [SmoothManifoldWithCorners I M] where
-  hdim : finrank 𝕜 E = n
-
-/-- The product of an `n`- and and an `m`-manifold is an `n+m`-manifold. -/
-instance NManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
-    (s : NManifold m M I) (t : NManifold n N J) : NManifold (m + n) (M × N) (I.prod J) where
-  hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
-
-structure ClosedNManifold [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional 𝕜 E]
-    extends NManifold n M I
-
-instance ClosedNManifold.ClosedManifold [CompactSpace M] [BoundarylessManifold I M]
-  [FiniteDimensional 𝕜 E] : ClosedManifold M I where
-
-variable {n}
-
-/-- The product of a closed `n`- and a closed closed `m`-manifold is a closed `n+m`-manifold. -/
-instance ClosedNManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
-    [CompactSpace M] [BoundarylessManifold I M] [CompactSpace N] [BoundarylessManifold J N]
-    (s : ClosedNManifold m M I) (t : ClosedNManifold n N J) :
-    ClosedNManifold (m + n) (M × N) (I.prod J) where
-  -- TODO: can I inherit this from `NManifold.prod`?
-  hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
-
-section examples
-
--- Let `E` be a finite-dimensional real normed space.
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-
--- TODO: move the empty manifold here, once its definition is in a separate file
-
-/- TODO: these two examples worked when ClosedManifold only demanded `I.Boundaryless`;
--- diagnose and fix this!
-/-- The standard `n`-sphere is a closed manifold. -/
-example {n : ℕ} [FiniteDimensional ℝ E] [Fact (finrank ℝ E = n + 1)] :
-  ClosedManifold (sphere (0 : E) 1) (𝓡 n) where
-
-/-- The standard `2`-torus is a closed manifold. -/
-example [FiniteDimensional ℝ E] [Fact (finrank ℝ E = 1 + 1)] :
-    ClosedManifold ((sphere (0 : E) 1) × (sphere (0 : E) 1)) ((𝓡 2).prod (𝓡 2)) where
--/
-
--- The standard Euclidean space is an `n`-manifold. -/
-example {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
-    [SmoothManifoldWithCorners (𝓡 n) M] : NManifold n M (𝓡 n) where
-  hdim := finrank_euclideanSpace_fin
-
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-
-/-- The standard `n`-sphere is a closed `n`-manifold. -/
-example {n : ℕ} [Fact (finrank ℝ F = n + 1)] : ClosedNManifold n (sphere (0 : F) 1) (𝓡 n) where
-  hdim := finrank_euclideanSpace_fin
-
-/-- The standard 2-torus is a closed two-manifold. -/
-example [Fact (finrank ℝ F = 1 + 1)] :
-    ClosedNManifold 2 ((sphere (0 : F) 1) × (sphere (0 : F) 1)) ((𝓡 1).prod (𝓡 1)) where
-  hdim := by rw [finrank_prod, finrank_euclideanSpace_fin]
-
-end examples
-
-end ClosedManifold
-
 -- Pre-requisite: the interval `Icc x y has boundary {x, y}`, and related results.
--- TODO: move to `Instances/Real` (and make that import `InteriorBoundary`)
+-- TODO: move to `Instances/Real`
 section BoundaryIntervals
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
-
 variable {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
   [TopologicalSpace M] [ChartedSpace H M] {I : ModelWithCorners ℝ E H}
-  [SmoothManifoldWithCorners I M] [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
-
-/-- The boundary of the interval [x,y], as a subset of `Icc x y`. -/
-def A : Set (Icc x y) := { ⟨x, ⟨le_refl x, by linarith⟩⟩, ⟨y, ⟨by linarith, le_refl y⟩⟩}
+  [BoundarylessManifold I M]
 
 /-- A product `M × [x,y]` has boundary `M × {x,y}`. -/
-lemma boundary_product [h : Fact (x < y)] :
-    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {X, Y} := by
-  have : (𝓡∂ 1).boundary (Icc x y) = A hxy := by
-    rw [boundary_IccManifold hxy]; simp only [A]
+lemma boundary_product : (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {X, Y} := by
+  have : (𝓡∂ 1).boundary (Icc x y) = {X, Y} := by rw [boundary_IccManifold]
   rw [I.boundary_of_boundaryless_left]
   rw [this]
 
 end BoundaryIntervals
-
-#exit
 
 -- Let M, M' and W be smooth manifolds.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -162,16 +69,18 @@ variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpa
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-namespace SingularNManifold
-
 /-- A **singular `n`-manifold** on a topological space `X` consists of a
 closed smooth `n`-manifold `M` and a continuous map `f : M → X`. -/
-structure _root_.SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ)
-    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [CompactSpace M]
+structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ)
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M]
-    [BoundarylessManifold I M] [FiniteDimensional ℝ E] extends ClosedNManifold n M I where
+    [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional ℝ E] where
+  [hdim : Fact (finrank ℝ E = n)]
+  /-- The underlying map `M → X` of a singular `n`-manifold `(M,f)` on `X` -/
   f : M → X
   hf : Continuous f
+
+namespace SingularNManifold
 
 -- We declare these variables *after* the definition above, so `SingularNManifold` can have
 -- its current order of arguments.
@@ -180,29 +89,61 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M'] {n : ℕ}
   [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
+  [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
 
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
 noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n M I where
-  hdim := hdim
+  hdim := Fact.mk hdim
   f := id
   hf := continuous_id
 
--- functoriality: pre-step towards functoriality of the bordism groups
--- xxx: good name?
-noncomputable def map (s : SingularNManifold X n M I)
+/-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
+-- This is part of proving functoriality of the bordism groups.
+noncomputable def map [Fact (finrank ℝ E = n)] (s : SingularNManifold X n M I)
     {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n M I where
-  hdim := s.hdim
   f := φ ∘ s.f
   hf := hφ.comp s.hf
 
 @[simp]
-lemma map_f (s : SingularNManifold X n M I) {φ : X → Y} (hφ : Continuous φ) :
-    (s.map hφ).f = φ ∘ s.f := rfl
+lemma map_f [Fact (finrank ℝ E = n)]
+    (s : SingularNManifold X n M I) {φ : X → Y} (hφ : Continuous φ) : (s.map hφ).f = φ ∘ s.f :=
+  rfl
 
--- useful, or special case of the above?
-lemma map_comp (s : SingularNManifold X n M I)
-    {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ):
-    ((s.map hφ).map hψ).f = (s.map (hψ.comp hφ)).f := rfl
+/-- If `(M', f)` is a singular `n`-manifold on `X` and `M'` another `n`-dimensional smooth manifold,
+a smooth map `φ : M → M'` induces a singular `n`-manifold structore on `M`. -/
+noncomputable def comap [Fact (finrank ℝ E = n)] [Fact (finrank ℝ E' = n)]
+    (s : SingularNManifold X n M' I')
+    {φ : M → M'} (hφ : Smooth I I' φ) : SingularNManifold X n M I where
+  f := s.f ∘ φ
+  hf := s.hf.comp hφ.continuous
+
+@[simp]
+lemma comap_f [Fact (finrank ℝ E = n)] [Fact (finrank ℝ E' = n)] (s : SingularNManifold X n M' I')
+    {φ : M → M'} (hφ : Smooth I I' φ) : (s.comap hφ).f = s.f ∘ φ :=
+  rfl
+
+/-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
+manifold, i.e. modelled on an `n`-dimensional space). -/
+def empty [Fact (finrank ℝ E = n)] [IsEmpty M] : SingularNManifold X n M I where
+  f := fun x ↦ (IsEmpty.false x).elim
+  hf := by
+    rw [continuous_iff_continuousAt]
+    exact fun x ↦ (IsEmpty.false x).elim
+
+/-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
+def trivial [Fact (finrank ℝ E = n)] : SingularNManifold PUnit n M I where
+  f := fun _ ↦ PUnit.unit
+  hf := continuous_const
+
+/-- The product of a singular `n`- and a `m`-manifold into a one-point space
+is a singular `n+m`-manifold. -/
+-- FUTURE: prove that this observation inducess a commutative ring structure
+-- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
+def prod {m n : ℕ} [h : Fact (finrank ℝ E = m)] [k : Fact (finrank ℝ E' = n)] :
+    SingularNManifold PUnit (m + n) (M × M') (I.prod I') where
+  f := fun _ ↦ PUnit.unit
+  hf := continuous_const
+  hdim := Fact.mk (by rw [finrank_prod, h.out, k.out])
 
 end SingularNManifold
 
@@ -243,46 +184,6 @@ instance (d : BoundaryManifoldData M I) : SmoothManifoldWithCorners d.model (I.b
 
 -- In general, constructing `BoundaryManifoldData` requires deep results: some cases and results
 -- we can state already. Boundaryless manifolds have nice boundary, as do products.
-
--- move to `ChartedSpace.lean`
-/-- An empty type is a charted space over any topological space. -/
-def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
-    (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
-  atlas := ∅
-  chartAt x := False.elim (IsEmpty.false x)
-  mem_chart_source x := False.elim (IsEmpty.false x)
-  chart_mem_atlas x := False.elim (IsEmpty.false x)
-
--- move to `InteriorBoundary.lean`
-instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
-  isEmpty_coe_sort.mpr (ModelWithCorners.Boundaryless.boundary_eq_empty I)
-
-/-- The empty set is a smooth manifold w.r.t. any charted space and model. -/
-instance SmoothManifoldWithCorners.empty [IsEmpty M] : SmoothManifoldWithCorners I M := by
-  apply smoothManifoldWithCorners_of_contDiffOn
-  intro e e' _ _ x hx
-  set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I
-  -- Since `M` is empty, the condition about compatibility of transition maps is vacuous.
-  have : (e.symm ≫ₕ e').source = ∅ := calc (e.symm ≫ₕ e').source
-    _ = (e.symm.source) ∩ e.symm ⁻¹' e'.source := by rw [← PartialHomeomorph.trans_source]
-    _ = (e.symm.source) ∩ e.symm ⁻¹' ∅ := by rw [eq_empty_of_isEmpty (e'.source)]
-    _ = (e.symm.source) ∩ ∅ := by rw [preimage_empty]
-    _ = ∅ := inter_empty e.symm.source
-  have : t = ∅ := calc t
-    _ = I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I := by
-      rw [← Subtype.preimage_val_eq_preimage_val_iff]
-    _ = ∅ ∩ range I := by rw [this, preimage_empty]
-    _ = ∅ := empty_inter (range I)
-  rw [this] at hx
-  apply False.elim hx
-
-/-- The empty manifold is boundaryless. -/
-instance ModelWithCorners.BoundarylessManifold.of_empty [IsEmpty M] :
-    BoundarylessManifold I M where
-  isInteriorPoint' x := False.elim (IsEmpty.false x)
-
-/-- The empty manifold is closed. -/
-example [IsEmpty M] : ClosedManifold M I where
 
 /- n-dimensionality, however, requires a finite-dimensional model...
 -- FIXME: is this the right design decision?
@@ -506,7 +407,7 @@ def Diffeomorph.productInterval_sum : Diffeomorph ((foo M I 0 1).model) I
 /-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
 def refl (s : SingularNManifold X n M I) : UnorientedCobordism s s (foo M I 0 1) where
   hW := by infer_instance
-  hW' := by rw [finrank_prod, s.hdim, finrank_euclideanSpace_fin]
+  hW' := by rw [finrank_prod, s.hdim.out, finrank_euclideanSpace_fin]
   F := s.f ∘ (fun p ↦ p.1)
   hF := s.hf.comp continuous_fst
   φ := Diffeomorph.productInterval_sum
