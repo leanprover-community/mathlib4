@@ -27,6 +27,22 @@ Most lemmas are also valid using a logarithm in a different base.
 * `Real.binEntropy`: the binary entropy function
 * `Real.qaryEntropy`: the `q`-ary entropy function
 
+## Main results
+
+The functions are also defined outside the interval `Icc 0 1` due to `log x = log |x|`.
+
+* They are continuous everywhere (`binEntropy_continuous` and `qaryEntropy_continuous`).
+* They are differentiable everywhere except at points `0` or `1`
+  (`hasDerivAt_binEntropy` and `hasDerivAt_qaryEntropy`).
+  In addition, due to junk values, `deriv binEntropy p = log (1 - p) - log p`
+  holds everywhere (`deriv_binEntropy`).
+* they are strictly increasing on `Icc 0 (1 - 1/q))`
+  (`qaryEntropy_strictMonoOn`, `binEntropy_strictMonoOn`)
+  and strictly decreasing on `Icc (1 - 1/q) 1`
+  (`binEntropy_strictAntiOn` and `qaryEntropy_strictAntiOn`).
+* they are strictly concave on `Icc 0 1`
+  (`strictConcaveOn_qaryEntropy` and `strictConcave_binEntropy`).
+
 ## Tags
 
 entropy, Shannon, binary, nit, nepit
