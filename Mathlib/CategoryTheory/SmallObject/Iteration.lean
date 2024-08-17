@@ -46,11 +46,11 @@ namespace Iteration
 
 variable {j : J} (F : { i // i ≤ j } ⥤ C)
 
-/-- The map `F.obj ⟨i, _⟩ ⟶ F.obj ⟨wellOrderSucc i, _⟩` when `F : { i // i ≤ j } ⥤ C`
+/-- The map `F.obj ⟨i, _⟩ ⟶ F.obj ⟨Order.succ i, _⟩` when `F : { i // i ≤ j } ⥤ C`
 and `i : J` is such that `i < j`. -/
 noncomputable abbrev mapSucc' [SuccOrder J] (i : J) (hi : i < j) :
     F.obj ⟨i, hi.le⟩ ⟶ F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ :=
-  F.map (homOfLE (by simpa only [Subtype.mk_le_mk] using Order.le_succ i))
+  F.map <| homOfLE <| Subtype.mk_le_mk.2 <| Order.le_succ i
 
 variable {i : J} (hi : i ≤ j)
 
@@ -61,11 +61,11 @@ def restrictionLT : { k // k < i } ⥤ C :=
 
 @[simp]
 lemma restrictionLT_obj (k : J) (hk : k < i) :
-    (restrictionLT F hi).obj ⟨k, hk⟩ = F.obj ⟨k, hk.le.trans hi⟩ := rfl
+  (restrictionLT F hi).obj ⟨k, hk⟩ = F.obj ⟨k, hk.le.trans hi⟩ := rfl
 
 @[simp]
 lemma restrictionLT_map {k₁ k₂ : { k // k < i }} (φ : k₁ ⟶ k₂) :
-    (restrictionLT F hi).map φ = F.map (homOfLE (by simpa using leOfHom φ)) := rfl
+  (restrictionLT F hi).map φ = F.map (homOfLE (by simpa using leOfHom φ)) := rfl
 
 /-- Given `F : { i // i ≤ j } ⥤ C`, `i : J` such that `hi : i ≤ j`, this is the
 cocone consisting of all maps `F.obj ⟨k, hk⟩ ⟶ F.obj ⟨i, hi⟩` for `k : J` such that `k < i`. -/
@@ -91,8 +91,7 @@ structure Iteration [Preorder J] [OrderBot J] [SuccOrder J] (j : J) where
   isoZero : F.obj ⟨⊥, bot_le⟩ ≅ 𝟭 C
   /-- The iteration on a successor element is obtained by composition of
   the previous iteration with `Φ`. -/
-  isoSucc (i : J) (hi : i < j) :
-    F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ ≅ F.obj ⟨i, hi.le⟩ ⋙ Φ
+  isoSucc (i : J) (hi : i < j) : F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ ≅ F.obj ⟨i, hi.le⟩ ⋙ Φ
   /-- The natural map from an iteration to its successor is induced by `ε`. -/
   mapSucc'_eq (i : J) (hi : i < j) :
     Iteration.mapSucc' F i hi = whiskerLeft _ ε ≫ (isoSucc i hi).inv
