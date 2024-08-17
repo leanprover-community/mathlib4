@@ -98,14 +98,14 @@ theorem interior_halfspace {n : ℕ} {p : ℝ≥0∞} {a : ℝ} {i : Fin n} :
 
 open ENNReal in
 theorem closure_halfspace {n : ℕ} {p : ℝ≥0∞} {a : ℝ} {i : Fin n} :
-    closure { y : EuclideanSpace ℝ (Fin n) | a ≤ y i } = { y | a ≤ y i } := by
+    closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
   let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
   simpa [closure_Ici] using f.closure_preimage (Function.surjective_eval _) (Ici a)
 
 open ENNReal in
 theorem frontier_halfspace {n : ℕ} {p : ℝ≥0∞} {a : ℝ} {i : Fin n} :
-    frontier { y : EuclideanSpace ℝ (Fin n) | a ≤ y i } = { y | a = y i } := by
-  rw [frontier, closure_halfspace (p := p), interior_halfspace]
+    frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
+  rw [frontier, closure_halfspace, interior_halfspace]
   ext y
   simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
 
