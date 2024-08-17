@@ -85,7 +85,7 @@ lemma toList_ne_nil : p.toList ≠ [] ↔ p ≠ 0 := toList_eq_nil.ne
 
 @[simp]
 lemma add_eq_zero_iff : p + q = 0 ↔ p = 0 ∧ q = 0 := by
-  simp_rw [← toList_eq_nil]; apply List.append_eq_nil
+  simp_rw [← toList_eq_nil]; apply append_eq_nil
 
 lemma add_ne_zero_iff : p + q ≠ 0 ↔ p ≠ 0 ∨ q ≠ 0 := by
   rw [not_iff_comm, add_eq_zero_iff]; tauto
