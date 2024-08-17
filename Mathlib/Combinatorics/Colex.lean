@@ -345,15 +345,15 @@ lemma lt_iff_exists_filter_lt :
     have mem_u {w : α} : w ∈ u ↔ w ∈ t ∧ w ∉ s ∧ ∀ a ∈ s, a ∉ t → a < w := by simp [u, and_assoc]
     have hu : u.Nonempty := h.imp fun _ ↦ mem_u.2
     let m := max' _ hu
-    have ⟨hmt, hms, hm⟩ : m ∈ t ∧ m ∉ s ∧ ∀ a ∈ s, a ∉ t → a < m := mem_u.1 $ max'_mem _ _
+    have ⟨hmt, hms, hm⟩ : m ∈ t ∧ m ∉ s ∧ ∀ a ∈ s, a ∉ t → a < m := mem_u.1 <| max'_mem _ _
     refine ⟨m, hmt, hms, fun a hma ↦ ⟨fun has ↦ not_imp_comm.1 (hm _ has) hma.asymm, fun hat ↦ ?_⟩⟩
     by_contra has
     have hau : a ∈ u := mem_u.2 ⟨hat, has, fun b hbs hbt ↦ (hm _ hbs hbt).trans hma⟩
-    exact hma.not_le $ le_max' _ _ hau
+    exact hma.not_le <| le_max' _ _ hau
   · rintro ⟨w, hwt, hws, hw⟩
     refine ⟨w, hwt, hws, fun a has hat ↦ ?_⟩
     by_contra! hwa
-    exact hat $ (hw $ hwa.lt_of_ne $ ne_of_mem_of_not_mem hwt hat).1 has
+    exact hat <| (hw <| hwa.lt_of_ne <| ne_of_mem_of_not_mem hwt hat).1 has
 
 /-- If `s ≤ t` in colex and `s.card ≤ t.card`, then `s \ {a} ≤ t \ {min t}` for any `a ∈ s`. -/
 lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.card) (ha : a ∈ s) :
@@ -364,9 +364,9 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.
   -- Case on whether `s = t`
   obtain rfl | h' := eq_or_ne s t
   -- If `s = t`, then `s \ {a} ≤ s \ {m}` because `m ≤ a`
-  · exact (erase_le_erase ha $ min'_mem _ _).2 $ min'_le _ _ $ ha
+  · exact (erase_le_erase ha <| min'_mem _ _).2 <| min'_le _ _ <| ha
   -- If `s ≠ t`, call `w` the colex witness. Case on whether `w < a` or `a < w`
-  replace hst := hst.lt_of_ne $ toColex_inj.not.2 h'
+  replace hst := hst.lt_of_ne <| toColex_inj.not.2 h'
   simp only [lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc] at hst
   obtain ⟨w, hwt, hws, hw⟩ := hst
   obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_lt
@@ -379,14 +379,15 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.
     obtain rfl | hbt := hbt
     · assumption
     · by_contra! hab
-      exact hbt $ (hw $ hwa.trans_le hab).1 $ mem_of_mem_erase hbs
+      exact hbt <| (hw <| hwa.trans_le hab).1 <| mem_of_mem_erase hbs
   -- If `a < w`, case on whether `m < w` or `m = w`
   obtain rfl | hmw : m = w ∨ m < w := (min'_le _ _ hwt).eq_or_lt
   -- If `m = w`, then `s \ {a} = t \ {m}`
   · have : erase t m ⊆ erase s a := by
       rintro b hb
       rw [mem_erase] at hb ⊢
-      exact ⟨(haw.trans_le $ min'_le _ _ hb.2).ne', (hw $ hb.1.lt_of_le' $ min'_le _ _ hb.2).2 hb.2⟩
+      exact ⟨(haw.trans_le <| min'_le _ _ hb.2).ne',
+        (hw <| hb.1.lt_of_le' <| min'_le _ _ hb.2).2 hb.2⟩
     rw [eq_of_subset_of_card_le this]
     rw [card_erase_of_mem ha, card_erase_of_mem (min'_mem _ _)]
     exact tsub_le_tsub_right hcard _
@@ -398,7 +399,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.
     obtain rfl | hbt := hbt
     · assumption
     · by_contra! hwb
-      exact hbt $ (hw $ hwb.lt_of_ne $ ne_of_mem_of_not_mem hwt hbt).1 $ mem_of_mem_erase hbs
+      exact hbt <| (hw <| hwb.lt_of_ne <| ne_of_mem_of_not_mem hwt hbt).1 <| mem_of_mem_erase hbs
 
 /-- Strictly monotone functions preserve the colex ordering. -/
 lemma toColex_image_le_toColex_image (hf : StrictMono f) :

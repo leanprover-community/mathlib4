@@ -505,7 +505,7 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
       (single (-x.order)) (x.leadingCoeff)⁻¹ *
         (SummableFamily.powers _ (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))).hsum
   inv_zero := dif_pos rfl
-  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
+  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
         (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))

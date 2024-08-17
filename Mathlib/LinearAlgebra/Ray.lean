@@ -106,7 +106,7 @@ lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) :=
   obtain h | h := (algebraMap_nonneg R h).eq_or_gt
   · rw [← algebraMap_smul R a v, h, zero_smul]
     exact zero_right _
-  · refine Or.inr $ Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
+  · refine Or.inr <| Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
     rw [algebraMap_smul, one_smul]
 
 /-- A nonnegative multiple of a vector is in the same ray as that vector. -/

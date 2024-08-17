@@ -121,7 +121,7 @@ theorem ae_eq_trans {f g h : α → β} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ]
   refine ⟨fun h a ha ↦ by simpa [ha] using (h {a}ᶜ).1, fun h s ↦ ⟨fun hs ↦ ?_, ?_⟩⟩
   · rw [← compl_empty_iff, ← not_nonempty_iff_eq_empty]
     rintro ⟨a, ha⟩
-    exact h _ $ measure_mono_null (singleton_subset_iff.2 ha) hs
+    exact h _ <| measure_mono_null (singleton_subset_iff.2 ha) hs
   · rintro rfl
     simp
 

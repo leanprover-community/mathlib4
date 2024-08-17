@@ -456,7 +456,7 @@ of `s`, and over all subsets of `s` to which one adds `x`. -/
 of `s`, and over all subsets of `s` to which one adds `x`."]
 lemma prod_powerset_cons (ha : a ∉ s) (f : Finset α → β) :
     ∏ t ∈ (s.cons a ha).powerset, f t = (∏ t ∈ s.powerset, f t) *
-      ∏ t ∈ s.powerset.attach, f (cons a t $ not_mem_mono (mem_powerset.1 t.2) ha) := by
+      ∏ t ∈ s.powerset.attach, f (cons a t <| not_mem_mono (mem_powerset.1 t.2) ha) := by
   classical
   simp_rw [cons_eq_insert]
   rw [prod_powerset_insert ha, prod_attach _ fun t ↦ f (insert a t)]
@@ -721,7 +721,7 @@ but differ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ
 lemma prod_univ_pi [DecidableEq ι] [Fintype ι] {κ : ι → Type*} (t : ∀ i, Finset (κ i))
     (f : (∀ i ∈ (univ : Finset ι), κ i) → β) :
     ∏ x ∈ univ.pi t, f x = ∏ x ∈ Fintype.piFinset t, f fun a _ ↦ x a := by
-  apply prod_nbij' (fun x i ↦ x i $ mem_univ _) (fun x i _ ↦ x i) <;> simp
+  apply prod_nbij' (fun x i ↦ x i <| mem_univ _) (fun x i _ ↦ x i) <;> simp
 
 @[to_additive (attr := simp)]
 lemma prod_diag [DecidableEq α] (s : Finset α) (f : α × α → β) :
@@ -1751,7 +1751,7 @@ variable [DecidableEq ι] [CancelCommMonoid α] {s t : Finset ι} {f : ι → α
 @[to_additive]
 lemma prod_sdiff_eq_prod_sdiff_iff :
     ∏ i ∈ s \ t, f i = ∏ i ∈ t \ s, f i ↔ ∏ i ∈ s, f i = ∏ i ∈ t, f i :=
-  eq_comm.trans $ eq_iff_eq_of_mul_eq_mul $ by
+  eq_comm.trans <| eq_iff_eq_of_mul_eq_mul <| by
     rw [← prod_union disjoint_sdiff_self_left, ← prod_union disjoint_sdiff_self_left,
       sdiff_union_self_eq_union, sdiff_union_self_eq_union, union_comm]
 
@@ -1985,7 +1985,7 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
 
 @[to_additive] lemma prod_subset {s : Finset ι} {f : ι → α} (h : ∀ i, f i ≠ 1 → i ∈ s) :
     ∏ i ∈ s, f i = ∏ i, f i :=
-  Finset.prod_subset s.subset_univ $ by simpa [not_imp_comm (a := _ ∈ s)]
+  Finset.prod_subset s.subset_univ <| by simpa [not_imp_comm (a := _ ∈ s)]
 
 @[to_additive]
 lemma prod_ite_eq_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → p j → i = j)
@@ -2032,7 +2032,7 @@ variable [CommMonoid α]
 @[to_additive (attr := simp)]
 lemma prod_attach_univ [Fintype ι] (f : {i // i ∈ @univ ι _} → α) :
     ∏ i ∈ univ.attach, f i = ∏ i, f ⟨i, mem_univ _⟩ :=
-  Fintype.prod_equiv (Equiv.subtypeUnivEquiv mem_univ) _ _ $ by simp
+  Fintype.prod_equiv (Equiv.subtypeUnivEquiv mem_univ) _ _ <| by simp
 
 @[to_additive]
 theorem prod_erase_attach [DecidableEq ι] {s : Finset ι} (f : ι → α) (i : ↑s) :

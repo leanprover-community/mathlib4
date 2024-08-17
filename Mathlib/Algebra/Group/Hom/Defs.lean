@@ -837,8 +837,8 @@ instance : Monoid (Monoid.End M) where
   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
-  npow n f := (npowRec n f).copy f^[n] $ by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
+  npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *] <;> rfl
+  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 instance : Inhabited (Monoid.End M) := ⟨1⟩
 
@@ -878,8 +878,8 @@ instance monoid : Monoid (AddMonoid.End A) where
   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
   mul_one := AddMonoidHom.comp_id
   one_mul := AddMonoidHom.id_comp
-  npow n f := (npowRec n f).copy (Nat.iterate f n) $ by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
+  npow n f := (npowRec n f).copy (Nat.iterate f n) <| by induction n <;> simp [npowRec, *] <;> rfl
+  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : AddMonoid.End A) (n : ℕ) : (↑(f ^ n) : A → A) = f^[n] := rfl
 
