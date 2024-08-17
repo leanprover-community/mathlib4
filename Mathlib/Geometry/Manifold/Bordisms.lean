@@ -34,7 +34,8 @@ equivalences work nicely in the standard design... that's a "how to do X in Lean
 - functoriality: what exactly do I have to show? also DTT question
 
 - prove some of the easy axioms of homology... perhaps all of it?
-- does mathlib have a class "extraordinary homology theory"? this could be an interesting instance...
+- does mathlib have a typeclass for "extraordinary homology theory"?
+  proving this is an instance could be interesting...
 -/
 
 open scoped Manifold
@@ -303,17 +304,14 @@ variable {M : Type*} [TopologicalSpace M] [cm : ChartedSpace H M]
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
   {I'' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M'']
 
--- TODO: the construction below is bound to generalise... how far?
--- this should work: given an open subset U ⊆ M and a partial homeo U → H, do I get one M → H?
--- def PartialHomeomorph.extension {U : Set M} (hU : IsOpen U) (φ : PartialHomeomorph U H) :
---   PartialHomeomorph M H := by
---   refine ?e.disjointUnion ?e' ?Hs ?Ht
---   sorry
+-- TODO: can I avoid this assumption anywhere? It seems actually not:
+-- if U ≠ M, the extended map needs to have *some* junk value in H...
+variable [Nonempty H]
 
 /-- Extend a partial homeomorphism from an open subset `U ⊆ M` to all of `M`. -/
 -- experiment: does this work the same as foo?
-def PartialHomeomorph.extend_subtype {U : Set M} [Nonempty H] (φ : PartialHomeomorph U H)
-    (hU : IsOpen U) : PartialHomeomorph M H where
+def PartialHomeomorph.extend_subtype {U : Set M} (φ : PartialHomeomorph U H) (hU : IsOpen U) :
+    PartialHomeomorph M H where
   toFun := Function.extend Subtype.val φ (Classical.arbitrary _)
   invFun := Subtype.val ∘ φ.symm
   left_inv' := by
@@ -351,7 +349,7 @@ def PartialHomeomorph.extend_subtype {U : Set M} [Nonempty H] (φ : PartialHomeo
   continuousOn_invFun := sorry
 
 /-- A partial homeomorphism `M → H` defines a partial homeomorphism `M ⊕ M' → H`. -/
-def foo [h : Nonempty H] (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕ M') H where
+def foo (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕ M') H where
   -- TODO: this should be describable in terms of existing constructions!
   toFun := Sum.elim φ (Classical.arbitrary _)
   invFun := Sum.inl ∘ φ.symm
@@ -378,11 +376,11 @@ def foo [h : Nonempty H] (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕
   continuousOn_toFun := sorry
   continuousOn_invFun := sorry
 
-lemma foo_source [Nonempty H] (φ : PartialHomeomorph M H) :
+lemma foo_source (φ : PartialHomeomorph M H) :
     (foo φ (M' := M')).source = Sum.inl '' φ.source := rfl
 
 /-- A partial homeomorphism `M' → H` defines a partial homeomorphism `M ⊕ M' → H`. -/
-def bar [Nonempty H] (φ : PartialHomeomorph M' H) : PartialHomeomorph (M ⊕ M') H where
+def bar (φ : PartialHomeomorph M' H) : PartialHomeomorph (M ⊕ M') H where
   toFun := Sum.elim (Classical.arbitrary _) φ
   invFun := Sum.inr ∘ φ.symm
   left_inv' := by
@@ -406,10 +404,8 @@ def bar [Nonempty H] (φ : PartialHomeomorph M' H) : PartialHomeomorph (M ⊕ M'
   continuousOn_toFun := sorry
   continuousOn_invFun := sorry
 
-lemma bar_source [Nonempty H] (φ : PartialHomeomorph M' H) :
+lemma bar_source (φ : PartialHomeomorph M' H) :
     (bar φ (M := M)).source = Sum.inr '' φ.source := rfl
-
-variable [Nonempty H] -- not sure if I really need this... will see
 
 /-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
@@ -555,11 +551,11 @@ def Diffeomorph.sum_empty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M ∞ where
   contMDiff_toFun := ContMDiff.sum_elim contMDiff_id (contMDiff_of_const (fun _ ↦ congrFun rfl))
   contMDiff_invFun := ContMDiff.inl
 
-lemma sdfdsf : (Diffeomorph.swap M I M') ∘ Sum.inl = Sum.inr := by
+lemma Diffeomorph.swap_inl : (Diffeomorph.swap M I M') ∘ Sum.inl = Sum.inr := by
   ext
   exact Sum.swap_inl
 
-lemma hogehoge : (Diffeomorph.swap M I M') ∘ Sum.inr = Sum.inl := by
+lemma Diffeomorph.swap_inr : (Diffeomorph.swap M I M') ∘ Sum.inr = Sum.inl := by
   ext
   exact Sum.swap_inr
 
@@ -609,18 +605,21 @@ variable {s : SingularNManifold X n M I}
   {J : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners J W]
   {bd : BoundaryManifoldData W J} [HasNiceBoundary bd]
 
--- TODO: can I remove the `Fact`, concluding the empty set otherwise? or is this not useful?
+-- TODO: can I remove this `Fact`, concluding the empty set otherwise? would this be useful?
 variable {x y : ℝ} [Fact (x < y)] in
 def _root_.boundaryData_IccManifold : BoundaryManifoldData ((Icc x y)) (𝓡∂ 1) := sorry
 
 variable (x y : ℝ) [Fact (x < y)] (M I) in
-abbrev foo  : BoundaryManifoldData (M × (Icc x y)) (I.prod (𝓡∂ 1)) :=
+/-- The standard boundary data on a product `M × [x,y]`
+of a boundaryless manifold `M` with an interval. -/
+abbrev productBoundaryData : BoundaryManifoldData (M × (Icc x y)) (I.prod (𝓡∂ 1)) :=
   BoundaryManifoldData.prod_of_boundaryless_left (M := M) (I := I)
     (boundaryData_IccManifold (x := x) (y := y))
 
 variable {x y : ℝ} [Fact (x < y)] in
-instance : HasNiceBoundary (foo M I x y) := sorry
+instance : HasNiceBoundary (productBoundaryData M I x y) := sorry
 
+/-- Warm-up for `productInterval_sum below. -/
 def warmup {X : Type*} [TopologicalSpace X] : X × ({0, 1} : Set ℝ) ≃ₜ X ⊕ X where
   toFun x := if x.2 = (0 : ℝ) then Sum.inl x.1 else Sum.inr x.1
   invFun := Sum.elim (fun x ↦ ⟨x, 0, by norm_num⟩) (fun x ↦ ⟨x, 1, by norm_num⟩)
@@ -639,8 +638,9 @@ def warmup {X : Type*} [TopologicalSpace X] : X × ({0, 1} : Set ℝ) ≃ₜ X �
   continuous_toFun := sorry
 
 /-- If `M` is boundaryless, `∂(M × [0,1])` is diffeomorphic to the disjoint union `M ⊔ M`. -/
--- XXX below is a definition, but that will surely *not* be nice to work with... can I get sth better?
-def Diffeomorph.productInterval_sum : Diffeomorph ((foo M I 0 1).model) I
+-- XXX below is a definition, but that will surely *not* be nice to work with...
+-- can I get something better behaved?
+def Diffeomorph.productInterval_sum : Diffeomorph ((productBoundaryData M I 0 1).model) I
     ((I.prod (𝓡∂ 1)).boundary (M × (Icc (0 : ℝ) 1))) (M ⊕ M) ∞ where
   toFun := by
     rw [boundary_product]
@@ -664,7 +664,7 @@ def Diffeomorph.productInterval_sum : Diffeomorph ((foo M I 0 1).model) I
     sorry
 
 /-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
-def refl (s : SingularNManifold X n M I) : UnorientedCobordism s s (foo M I 0 1) where
+def refl (s : SingularNManifold X n M I) : UnorientedCobordism s s (productBoundaryData M I 0 1) where
   hW := by infer_instance
   hW' := by rw [finrank_prod, s.hdim.out, finrank_euclideanSpace_fin]
   F := s.f ∘ (fun p ↦ p.1)
@@ -686,7 +686,7 @@ def symm (φ : UnorientedCobordism s t bd) : UnorientedCobordism t s bd where
   F := φ.F
   hF := φ.hF
   φ := Diffeomorph.trans φ.φ (Diffeomorph.swap M I M')
-  -- apply sdfdsf resp. hogehoge, and combine with φ.hFf and φ.hFg
+  -- apply Diffeomorph.{inl_inr}, and combine with φ.hFf and φ.hFg
   hFf := sorry
   hFg := sorry
 
