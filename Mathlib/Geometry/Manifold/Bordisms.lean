@@ -19,11 +19,10 @@ but a fair number of pieces already can be upstreamed!
 
 /-
 Missing API for this to work nicely:
-- add disjoint union of top. spaces and induced maps: mathlib has this
 - define the disjoint union of smooth manifolds, and the associated maps: show they are smooth
 (perhaps prove as abstract nonsense? will see!)
 
-- then: complete definition of unoriented cobordisms; complete constructions I had
+- then: complete constructions of unoriented cobordisms
 - fight DTT hell: why is the product with an interval not recognised?
 
 - define the bordism relation/how to define the set of equivalence classes?
@@ -534,10 +533,35 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N} (hf : Smooth I J f) (hg : 
     ContMDiff I J ∞ (Sum.elim f g) := sorry
 
 -- actually, want an iff version here...
-lemma ContMDiff.sum_map [Nonempty H'] {f : M → N} {g : M' → N'}
-    (hf : Smooth I J f) (hg : Smooth I J g) : ContMDiff I J ∞ (Sum.map f g) := sorry
+lemma ContMDiff.sum_map {n : ℕ∞} [Nonempty H'] {f : M → N} {g : M' → N'}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) := sorry
 
--- To what extent to these results exist abstractly?
+def Diffeomorph.sum_map [Nonempty H'] {n : ℕ∞} (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+    Diffeomorph I J (M ⊕ M') (N ⊕ N') n where
+  toFun := Sum.map φ ψ
+  invFun := Sum.map φ.symm ψ.symm
+  left_inv := by
+    apply congrFun
+    calc (Sum.map φ.symm ψ.symm) ∘ Sum.map φ ψ
+      _ = Sum.map (φ.symm ∘ φ) (ψ.symm ∘ ψ) := by apply Sum.map_comp_map
+      _ = Sum.map id id := by
+        have h : φ.symm ∘ φ = id := by ext x; apply φ.left_inv x
+        have : ψ.symm ∘ ψ = id := by ext x; apply ψ.left_inv x
+        rw [h, this]
+      _ = id := Sum.map_id_id
+  right_inv := by
+    apply congrFun
+    calc (Sum.map φ ψ) ∘ (Sum.map φ.symm ψ.symm)
+      _ = Sum.map (φ ∘ φ.symm) (ψ ∘ ψ.symm) := by apply Sum.map_comp_map
+      _ = Sum.map id id := by
+        have h : φ ∘ φ.symm = id := by ext x; apply φ.right_inv x
+        have : ψ ∘ ψ.symm = id := by ext x; apply ψ.right_inv x
+        rw [h, this]
+      _ = id := Sum.map_id_id
+  contMDiff_toFun := ContMDiff.sum_map φ.contMDiff_toFun ψ.contMDiff_toFun
+  contMDiff_invFun := ContMDiff.sum_map φ.contMDiff_invFun ψ.contMDiff_invFun
+
+-- To what extent do these results exist abstractly?
 def Sum.swapEquiv : M ⊕ M' ≃ M' ⊕ M where
   toFun := Sum.swap
   invFun := Sum.swap
@@ -587,7 +611,7 @@ def Homeomorph.associativity : M ⊕ (M' ⊕ N) ≃ₜ (M ⊕ M') ⊕ N where
     exact Continuous.comp continuous_inr continuous_inr
 
 variable (I M M') in
-def Diffeomorph.associativity : Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') ∞ where
+def Diffeomorph.associativity [Nonempty H] [Nonempty H'] : Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') ∞ where
   toEquiv := Equiv.swapAssociativity
   contMDiff_toFun := by
     apply ContMDiff.sum_elim
@@ -642,7 +666,7 @@ end DisjUnion
 namespace UnorientedCobordism
 
 -- TODO: for now, assume all manifolds are modelled on the same chart and model space...
--- Is this necessary (`H` presumably is necessary for disjoint unions to work out...)?
+-- Is this necessary (`H` presumably is necessary for disjoint unions to work out)?
 -- How would that work in practice? Post-compose with a suitable equivalence of H resp. E?
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -789,11 +813,6 @@ def refl (s : SingularNManifold X n M I) : UnorientedCobordism s s (productBound
     --   _ = s.f := rfl
   hFg := sorry -- same argument, just with inr
 
-variable (s : SingularNManifold X n M I) (t : SingularNManifold X n M' I)
-  {W : Type*} [TopologicalSpace W] [ChartedSpace H'' W]
-  {J : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners J W]
-  {bd : BoundaryManifoldData W J} [HasNiceBoundary bd]
-
 /-- Being cobordant is symmetric. -/
 def symm (φ : UnorientedCobordism s t bd) : UnorientedCobordism t s bd where
   hW := φ.hW
@@ -811,6 +830,21 @@ def symm (φ : UnorientedCobordism s t bd) : UnorientedCobordism t s bd where
       _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (Diffeomorph.swap M' I M) ∘ Sum.inr := by congr
       _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl := by congr
       _ = s.f := φ.hFf
+
+/-- Suppose `W` is a cobordism between `M` and `N`.
+Then a diffeomorphism `f : M'' → M` induces a cobordism between `M''` and `N`. -/
+def comap_fst (φ : UnorientedCobordism s t bd) (f : Diffeomorph I I M'' M ∞) :
+    UnorientedCobordism (have := s.hdim; s.comap f.contMDiff_toFun) t bd where
+  hW := φ.hW
+  hW' := φ.hW'
+  F := φ.F
+  hF := φ.hF
+  φ := Diffeomorph.trans φ.φ (Diffeomorph.sum_map f.symm (Diffeomorph.refl _ M' _))
+  hFf := sorry
+  hFg := sorry
+
+
+
 
 #exit
 
