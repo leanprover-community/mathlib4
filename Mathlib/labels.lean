@@ -58,6 +58,7 @@ Mathlib/Tactic/Linarith/Basic.lean"
 open Lean Elab
 run_cmd
   let gitArgs := #["diff", "--name-only", "master"]
+  dbg_trace "gitArgs: {gitArgs}"
   let out ← IO.Process.run { cmd := "git", args := gitArgs }
   dbg_trace out
   let labels := produceLabels (← getEnv) out
