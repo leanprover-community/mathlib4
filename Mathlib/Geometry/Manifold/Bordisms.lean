@@ -310,9 +310,45 @@ variable {M : Type*} [TopologicalSpace M] [cm : ChartedSpace H M]
 --   refine ?e.disjointUnion ?e' ?Hs ?Ht
 --   sorry
 
--- or, define some version of piecewise --- just extending
---> PartialEquiv first, then a PartialHomeo; ideally halfing the duplication
--- related: PartialEquiv.disjUnion; piecewise
+/-- Extend a partial homeomorphism from an open subset `U ⊆ M` to all of `M`. -/
+-- experiment: does this work the same as foo?
+def PartialHomeomorph.extend_subtype {U : Set M} [Nonempty H] (φ : PartialHomeomorph U H)
+    (hU : IsOpen U) : PartialHomeomorph M H where
+  toFun := Function.extend Subtype.val φ (Classical.arbitrary _)
+  invFun := Subtype.val ∘ φ.symm
+  left_inv' := by
+    rintro x ⟨x', hx', hx'eq⟩
+    rw [← hx'eq, Subtype.val_injective.extend_apply]
+    dsimp
+    congr
+    exact PartialHomeomorph.left_inv φ hx'
+  right_inv' x hx := by
+    rw [Function.comp, Subtype.val_injective.extend_apply]
+    exact φ.right_inv' hx
+  source := Subtype.val '' φ.source
+  target := φ.target
+  map_source' := by
+    rintro x ⟨x', hx', hx'eq⟩
+    rw [← hx'eq, Subtype.val_injective.extend_apply]
+    apply φ.map_source hx'
+  map_target' x hx := ⟨φ.symm x, φ.map_target' hx, rfl⟩
+  open_source := (hU.openEmbedding_subtype_val.open_iff_image_open).mp φ.open_source
+  open_target := φ.open_target
+  -- TODO: missing lemma, want a stronger version of `continuous_sum_elim`;
+  -- perhaps use `continuous_sup_dom` to prove
+  continuousOn_toFun := by
+    dsimp
+    -- TODO: why is the extension continuous? mathematically, there's not much to fuss about,
+    -- `source` is open, also within U, so we can locally argue with that...
+    -- in practice, this seems very annoying!
+    refine ContinuousAt.continuousOn ?hcont
+    rintro x ⟨x', hx', hx'eq⟩
+    have : ContinuousAt φ x' := sorry -- is x', not x
+    apply ContinuousAt.congr
+    · sorry -- apply this--(φ.continuousOn_toFun).continuousAt (x := x') ?_
+    sorry -- want to use toFun = φ on U...
+    sorry
+  continuousOn_invFun := sorry
 
 /-- A partial homeomorphism `M → H` defines a partial homeomorphism `M ⊕ M' → H`. -/
 def foo [h : Nonempty H] (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕ M') H where
