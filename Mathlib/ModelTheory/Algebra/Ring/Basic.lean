@@ -64,11 +64,13 @@ namespace Ring
 
 open ringFunc Language
 
-instance (n : ℕ) : DecidableEq (Language.ring.Functions n) := by
-  dsimp [Language.ring]; infer_instance
+/-- This instance does not get inferred without `instDecidableEqFunctions` in
+`ModelTheory/Basic`. -/
+example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
 
-instance (n : ℕ) : DecidableEq (Language.ring.Relations n) := by
-  dsimp [Language.ring]; infer_instance
+/-- This instance does not get inferred without `instDecidableEqRelations` in
+`ModelTheory/Basic`. -/
+example (n : ℕ) : DecidableEq (Language.ring.Relations n) := inferInstance
 
 /-- `RingFunc.add`, but with the defeq type `Language.ring.Functions 2` instead
 of `RingFunc 2` -/
