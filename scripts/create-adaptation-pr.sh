@@ -82,6 +82,11 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "  1) Open `pwd` in a new terminal and run 'git status'"
   echo "  2) Make sure to commit the resolved conflicts, but do not push them"
   read -p "  3) Press enter to continue, when you are done"
+else
+  echo
+  echo "### [auto] no further conflicts"
+  echo "### Committing the changes"
+  git commit -m "chore: merge origin/master"
 fi
 
 git push
@@ -114,7 +119,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
 else
   echo
   echo "### [auto] No further conflicts"
-  echo "Committing the changes"
+  echo "### Committing the changes"
   git commit -m "chore: merge latest changes from 'origin/nightly-testing'"
 fi
 
@@ -189,6 +194,11 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "  1) Open `pwd` in a new terminal and run 'git status'"
   echo "  2) Make sure to commit the resolved conflicts, but do not push them"
   read -p "  3) Press enter to continue, when you are done"
+else
+  echo
+  echo "### [auto] no further conflicts"
+  echo "### Committing the changes"
+  git commit -m "chore: merge 'bump/nightly-$NIGHTLYDATE' into 'nightly-testing'"
 fi
 
 git push
