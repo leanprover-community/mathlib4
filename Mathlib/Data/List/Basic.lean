@@ -1609,39 +1609,9 @@ section SplitAtOn
 
 variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α → List α)
 
-@[simp]
-theorem splitAt_eq_take_drop (n : ℕ) (l : List α) : splitAt n l = (take n l, drop n l) := by
-  by_cases h : n < l.length <;> rw [splitAt, go_eq_take_drop]
-  · rw [if_pos h]; rfl
-  · rw [if_neg h, take_of_length_le <| le_of_not_lt h, drop_eq_nil_of_le <| le_of_not_lt h]
-where
-  go_eq_take_drop (n : ℕ) (l xs : List α) (acc : Array α) : splitAt.go l xs n acc =
-      if n < xs.length then (acc.toList ++ take n xs, drop n xs) else (l, []) := by
-    split_ifs with h
-    · induction n generalizing xs acc with
-      | zero =>
-        rw [splitAt.go, take, drop, append_nil]
-        · intros h₁; rw [h₁] at h; contradiction
-        · intros; contradiction
-      | succ _ ih =>
-        cases xs with
-        | nil => contradiction
-        | cons hd tl =>
-          rw [length] at h
-          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
-            ← Array.toList_eq]
-          exact ih _ _ <| (by omega)
-    · induction n generalizing xs acc with
-      | zero =>
-        replace h : xs.length = 0 := by omega
-        rw [eq_nil_of_length_eq_zero h, splitAt.go]
-      | succ _ ih =>
-        cases xs with
-        | nil => rw [splitAt.go]
-        | cons hd tl =>
-          rw [length] at h
-          rw [splitAt.go]
-          exact ih _ _ <| not_imp_not.mpr (Nat.add_lt_add_right · 1) h
+attribute [simp] splitAt_eq
+
+@[deprecated (since := "2024-08-17")] alias splitAt_eq_take_drop := splitAt_eq
 
 @[simp]
 theorem splitOn_nil [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
