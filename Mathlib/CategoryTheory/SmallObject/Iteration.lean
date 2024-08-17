@@ -181,14 +181,13 @@ instance {J} {j : J} [ConditionallyCompleteLinearOrderBot J] [WellFoundedLT J] [
       ext ⟨i, hi⟩ : 2
       apply this
     intro i
-    refine SuccOrder.limitRecOn i ?_ ?_
-    · intro j h_succ IH hj
-      have hj' := (Order.lt_succ_of_not_isMax h_succ).trans_le hj
+    refine SuccOrder.limitRecOn i ?_ ?_ <;>
+    intro j H IH hj
+    · have hj' := (Order.lt_succ_of_not_isMax H).trans_le hj
       simp [Hom.natTrans_app_succ, IH, hj']
-    · intro j h_lim IH hj
-      rcases eq_or_ne j ⊥ with rfl | h_bot
+    · rcases eq_or_ne j ⊥ with rfl | h_bot
       · simp only [natTrans_app_zero]
-      · apply (iter₁.isColimit j h_bot h_lim hj).hom_ext
+      · apply (iter₁.isColimit j h_bot H hj).hom_ext
         rintro ⟨k, hk⟩
         simp [IH k hk]
 
