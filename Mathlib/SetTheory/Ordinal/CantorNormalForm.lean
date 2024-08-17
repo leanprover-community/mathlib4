@@ -204,7 +204,7 @@ theorem CNF_coeff_zero_apply (b e : Ordinal) : CNF_coeff b 0 e = 0 := by
   exact not_mem_nil e
 
 @[simp]
-theorem CNF_coeff_zero_right (b : Ordinal) : CNF_coeff b 0 = 0 := by
+theorem CNF_coeff_zero (b : Ordinal) : CNF_coeff b 0 = 0 := by
   ext e
   exact CNF_coeff_zero_apply b e
 
@@ -223,11 +223,11 @@ theorem CNF_coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) :
       simpa using ha
 
 @[simp]
-theorem CNF_coeff_zero_left (o : Ordinal) : CNF_coeff 0 o = single 0 o :=
+theorem zero_CNF_coeff (o : Ordinal) : CNF_coeff 0 o = single 0 o :=
   CNF_coeff_of_le_one zero_le_one o
 
 @[simp]
-theorem CNF_coeff_one (o : Ordinal) : CNF_coeff 1 o = single 0 o :=
+theorem one_CNF_coeff (o : Ordinal) : CNF_coeff 1 o = single 0 o :=
   CNF_coeff_of_le_one le_rfl o
 
 end Ordinal
