@@ -139,6 +139,7 @@ variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algeb
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 /-! and that Rₘ and Sₘ are localizations of R and S at M. -/
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
+include M
 
 -- Porting note: no longer supported
 -- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on

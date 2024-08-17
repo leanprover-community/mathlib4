@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomas Skrivan
+Authors: Tomáš Skřivan
 -/
+import Mathlib.Init
 import Lean
 
 /-!
@@ -129,3 +130,7 @@ def etaExpand1 (f : Expr) : MetaM Expr := do
   else
     withDefault do forallBoundedTelescope (← inferType f) (.some 1) fun xs _ => do
       mkLambdaFVars xs (mkAppN f xs)
+
+end Meta.FunProp
+
+end Mathlib

@@ -68,7 +68,7 @@ For a homogeneous element `f` of degree `m`
   defined by sending `x : Proj| (pbo f)` to `A⁰_f ∩ span {g / 1 | g ∈ x}`. We also denote this map
   as `ψ`.
 * `ProjIsoSpecTopComponent.ToSpec.preimage_eq`: for any `a: A`, if `a/f^m` has degree zero,
-  then the preimage of `sbo a/f^m` under `to_Spec f` is `pbo f ∩ pbo a`.
+  then the preimage of `sbo a/f^m` under `toSpec f` is `pbo f ∩ pbo a`.
 
 If we further assume `m` is positive
 * `ProjIsoSpecTopComponent.fromSpec`: the continuous map between `Spec.T A⁰_f` and `Proj.T| pbo f`
@@ -87,7 +87,6 @@ Finally,
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
-
 
 noncomputable section
 
@@ -377,6 +376,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   · simp_rw [pow_add]; rfl
 
 variable (hm : 0 < m) (q : Spec.T A⁰_ f)
+include hm
 
 theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
   convert Submodule.zero_mem q.1 using 1
@@ -497,7 +497,7 @@ section fromSpecToSpec
 
 lemma fromSpec_toSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x : Proj.T| pbo f) :
     FromSpec.toFun f_deg hm (toSpec 𝒜 f x) = x := by
-  refine Subtype.ext <| ProjectiveSpectrum.ext _ _ <| HomogeneousIdeal.ext' ?_
+  refine Subtype.ext <| ProjectiveSpectrum.ext <| HomogeneousIdeal.ext' ?_
   intros i z hzi
   refine (FromSpec.mem_carrier_iff_of_mem f_deg hm _ _ hzi).trans ?_
   exact (ToSpec.mk_mem_carrier _ _).trans (x.1.2.pow_mem_iff_mem m hm)
@@ -522,6 +522,7 @@ end fromSpecToSpec
 namespace toSpec
 
 variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
+include hm
 
 variable {𝒜} in
 lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
@@ -643,7 +644,7 @@ lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
 
 lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).1.base x = ProjIsoSpecTopComponent.toSpec 𝒜 f x :=
-  toSpec_base_apply_eq_comap 𝒜 x |>.trans <| PrimeSpectrum.ext _ _ <| Ideal.ext fun z =>
+  toSpec_base_apply_eq_comap 𝒜 x |>.trans <| PrimeSpectrum.ext <| Ideal.ext fun z =>
   show ¬ IsUnit _ ↔ z ∈ ProjIsoSpecTopComponent.ToSpec.carrier _ by
   obtain ⟨z, rfl⟩ := z.mk_surjective
   rw [← HomogeneousLocalization.isUnit_iff_isUnit_val,

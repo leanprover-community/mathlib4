@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Order.MonotoneConvergence
@@ -287,4 +287,4 @@ theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace 
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
   inv_inv f ▸ Filter.Tendsto.inv_tendsto_zero <|
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
-      eventually_of_forall fun _ ↦ inv_pos.2 (hf' _)
+      Eventually.of_forall fun _ ↦ inv_pos.2 (hf' _)
