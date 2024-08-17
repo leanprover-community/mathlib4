@@ -267,7 +267,7 @@ end NatTrans
 @[simps]
 def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
   obj FG := FG.1.prod FG.2
-  map nm :=  NatTrans.prod nm.1 nm.2
+  map nm := NatTrans.prod nm.1 nm.2
 
 namespace NatIso
 
