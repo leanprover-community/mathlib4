@@ -354,7 +354,7 @@ theorem summable_norm_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] {k
 
 theorem summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] (k : ℕ) {r : R}
     (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖((n : R) ^ k * r ^ n : R)‖ := by
-  simp [← cast_pow]
+  simp only [← cast_pow]
   exact summable_norm_mul_geometric_of_norm_lt_one (k := k) (u := fun n ↦ n ^ k) hr
     (isBigO_refl _ _)
 
@@ -439,7 +439,7 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one
   · symm
     calc 1 / (1 - r) ^ 2 - (1 - r) ⁻¹
     _ = 1 / (1 - r) ^ 2 - ((1 - r) * (1 - r) ⁻¹) * (1 - r) ⁻¹ := by
-      rw [mul_inv_cancel, one_mul]
+      rw [mul_inv_cancel₀, one_mul]
       intro h
       simp only [sub_eq_zero] at h
       simp [← h] at hr
