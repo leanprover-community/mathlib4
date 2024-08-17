@@ -820,12 +820,12 @@ theorem pred_eq_sSup [CompleteLattice α] [PredOrder α] :
     ∀ a : α, pred a = sSup (Set.Iio a) :=
   succ_eq_sInf (α := αᵒᵈ)
 
-theorem pred_eq_iSup [CompleteLattice α] [PredOrder α] : ∀ a : α, pred a = ⨆ b < a, b :=
-  succ_eq_iInf (α := αᵒᵈ)
+theorem pred_eq_iSup [CompleteLattice α] [PredOrder α] (a : α) : pred a = ⨆ b < a, b :=
+  succ_eq_iInf (α := αᵒᵈ) a
 
-theorem pred_eq_csSup [ConditionallyCompleteLattice α] [PredOrder α] [NoMinOrder α] :
-    ∀ a : α, pred a = sSup (Set.Iio a) :=
-  succ_eq_csInf (α := αᵒᵈ)
+theorem pred_eq_csSup [ConditionallyCompleteLattice α] [PredOrder α] [NoMinOrder α] (a : α) :
+    pred a = sSup (Set.Iio a) :=
+  succ_eq_csInf (α := αᵒᵈ) a
 
 /-! ### Successor-predecessor orders -/
 
