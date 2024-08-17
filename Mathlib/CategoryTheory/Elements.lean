@@ -89,6 +89,12 @@ theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = �
 theorem map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.val) p.2 = q.2 :=
   f.property
 
+@[simps]
+def isoMk {F : C ⥤ Type w} (x y : F.Elements) (e : x.1 ≅ y.1) (he : F.map e.hom x.snd = y.snd) :
+    x ≅ y where
+  hom := homMk x y e.hom he
+  inv := homMk y x e.inv (by rw [← he, FunctorToTypes.map_inv_map_hom_apply])
+
 end CategoryOfElements
 
 instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
@@ -169,12 +175,12 @@ theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
 
 /-- The equivalence between the category of elements `F.Elements`
     and the comma category `(*, F)`. -/
-@[simps! functor_obj functor_map inverse_obj inverse_map unitIso_hom
-  unitIso_inv counitIso_hom counitIso_inv]
-def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F :=
-  Equivalence.mk (toStructuredArrow F) (fromStructuredArrow F)
-    (NatIso.ofComponents fun X => eqToIso (by aesop_cat))
-    (NatIso.ofComponents fun X => StructuredArrow.isoMk (Iso.refl _))
+@[simps]
+def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F where
+  functor := toStructuredArrow F
+  inverse := fromStructuredArrow F
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 open Opposite
 
@@ -227,27 +233,18 @@ theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     ext
     simp [this]
 
-/-- The counit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
-theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
-    (fromCostructuredArrow F).rightOp ⋙ toCostructuredArrow F = 𝟭 _ := by
-  refine Functor.ext ?_ ?_
-  · intro X
-    cases' X with X_left X_right X_hom
-    cases X_right
-    simp only [Functor.id_obj, Functor.rightOp_obj, toCostructuredArrow_obj, Functor.comp_obj,
-      CostructuredArrow.mk]
-    congr
-    ext x f
-    convert congr_fun (X_hom.naturality f.op).symm (𝟙 X_left)
-    simp
-  · aesop
-
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
-@[simps! functor_obj functor_map inverse_obj inverse_map unitIso_inv counitIso_hom counitIso_inv]
+@[simps]
 def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
-    F.Elementsᵒᵖ ≌ CostructuredArrow yoneda F :=
-  Equivalence.mk (toCostructuredArrow F) (fromCostructuredArrow F).rightOp
-    (NatIso.op (eqToIso (from_toCostructuredArrow_eq F))) (eqToIso <| to_fromCostructuredArrow_eq F)
+    F.Elementsᵒᵖ ≌ CostructuredArrow yoneda F where
+  functor := toCostructuredArrow F
+  inverse := (fromCostructuredArrow F).rightOp
+  unitIso :=
+    NatIso.ofComponents
+      (fun X ↦ Iso.op (CategoryOfElements.isoMk _ _ (Iso.refl _) (by simp))) (by
+        rintro ⟨x⟩ ⟨y⟩ ⟨f : y ⟶ x⟩
+        exact Quiver.Hom.unop_inj (by ext; simp))
+  counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
 
 -- Porting note:
 -- Running `@[simps! unitIso_hom]` is mysteriously slow.
