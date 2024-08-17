@@ -29,7 +29,7 @@ lemma cons_mem_piFinset_cons {x₀ : α 0} {x : ∀ i : Fin n, α i.succ}
   simp_rw [mem_piFinset_succ, cons_zero, tail_cons]
 
 lemma snoc_mem_piFinset_snoc {x : ∀ i : Fin n, α i.castSucc} {xₙ : α (.last n)}
-    {s : ∀ i : Fin n, Finset (α i.castSucc)} {sₙ : Finset (α $ .last n)} :
+    {s : ∀ i : Fin n, Finset (α i.castSucc)} {sₙ : Finset (α <| .last n)} :
     snoc x xₙ ∈ piFinset (snoc s sₙ) ↔ x ∈ piFinset s ∧ xₙ ∈ sₙ := by
   simp_rw [mem_piFinset_succ', init_snoc, snoc_last]
 

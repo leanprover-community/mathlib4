@@ -559,8 +559,8 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
       intro b
       convert mul_le_mul_right' (mul_le_mul_left' (f.le_opNNNorm b) C) ‖b‖₊ using 1
       ring
-    have := NNReal.div_le_of_le_mul $ f.opNNNorm_le_bound _ $ by
-      simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 $ (h b).trans (h1 b)
+    have := NNReal.div_le_of_le_mul <| f.opNNNorm_le_bound _ <| by
+      simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 <| (h b).trans (h1 b)
     convert NNReal.rpow_le_rpow this two_pos.le
     · simp only [NNReal.rpow_two, div_pow, sq_sqrt]
       simp only [sq, mul_self_div_self]

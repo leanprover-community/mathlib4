@@ -87,9 +87,9 @@ private lemma Fintype.sum_div_mul_card_choose_card :
   have (n) (hn : n ∈ range (card α + 1)) :
       ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹ := by
     rw [div_mul_cancel_right₀]
-    exact cast_ne_zero.2 (choose_pos $ mem_range_succ_iff.1 hn).ne'
+    exact cast_ne_zero.2 (choose_pos <| mem_range_succ_iff.1 hn).ne'
   simp only [sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
-  convert Or.inl $ sum_range_reflect _ _ with a ha
+  convert Or.inl <| sum_range_reflect _ _ with a ha
   rw [add_tsub_cancel_right, cast_sub (mem_range_succ_iff.mp ha)]
 
 end
@@ -124,7 +124,7 @@ lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
 
 lemma truncatedSup_of_not_mem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dif_neg h
 
-@[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_not_mem $ by simp
+@[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_not_mem (by simp)
 
 @[simp] lemma truncatedSup_singleton (b a : α) : truncatedSup {b} a = if a ≤ b then b else ⊤ := by
   simp [truncatedSup]; split_ifs <;> simp [Finset.filter_true_of_mem, *]
@@ -133,7 +133,7 @@ lemma le_truncatedSup : a ≤ truncatedSup s a := by
   rw [truncatedSup]
   split_ifs with h
   · obtain ⟨ℬ, hb, h⟩ := h
-    exact h.trans $ le_sup' id $ mem_filter.2 ⟨hb, h⟩
+    exact h.trans <| le_sup' id <| mem_filter.2 ⟨hb, h⟩
   · exact le_top
 
 lemma map_truncatedSup [@DecidableRel β (· ≤ ·)] (e : α ≃o β) (s : Finset α) (a : α) :
@@ -201,10 +201,10 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
   unfold truncatedInf
   split_ifs with h
   · obtain ⟨b, hb, hba⟩ := h
-    exact hba.trans' $ inf'_le id $ mem_filter.2 ⟨hb, ‹_›⟩
+    exact hba.trans' <| inf'_le id <| mem_filter.2 ⟨hb, ‹_›⟩
   · exact bot_le
 
-@[simp] lemma truncatedInf_empty (a : α) : truncatedInf ∅ a = ⊥ := truncatedInf_of_not_mem $ by simp
+@[simp] lemma truncatedInf_empty (a : α) : truncatedInf ∅ a = ⊥ := truncatedInf_of_not_mem (by simp)
 
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
   simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
@@ -245,7 +245,7 @@ lemma truncatedInf_union_right (hs : a ∉ upperClosure s) (ht : a ∈ upperClos
 
 lemma truncatedInf_union_of_not_mem (hs : a ∉ upperClosure s) (ht : a ∉ upperClosure t) :
     truncatedInf (s ∪ t) a = ⊥ :=
-  truncatedInf_of_not_mem $ by rw [coe_union, upperClosure_union]; exact fun h ↦ h.elim hs ht
+  truncatedInf_of_not_mem <| by rw [coe_union, upperClosure_union]; exact fun h ↦ h.elim hs ht
 
 end SemilatticeInf
 
@@ -277,11 +277,11 @@ lemma truncatedInf_sups (hs : a ∈ upperClosure s) (ht : a ∈ upperClosure t) 
 
 lemma truncatedSup_infs_of_not_mem (ha : a ∉ lowerClosure s ⊓ lowerClosure t) :
     truncatedSup (s ⊼ t) a = ⊤ :=
-  truncatedSup_of_not_mem $ by rwa [coe_infs, lowerClosure_infs]
+  truncatedSup_of_not_mem <| by rwa [coe_infs, lowerClosure_infs]
 
 lemma truncatedInf_sups_of_not_mem (ha : a ∉ upperClosure s ⊔ upperClosure t) :
     truncatedInf (s ⊻ t) a = ⊥ :=
-  truncatedInf_of_not_mem $ by rwa [coe_sups, upperClosure_sups]
+  truncatedInf_of_not_mem <| by rwa [coe_sups, upperClosure_sups]
 
 end DistribLattice
 
@@ -301,8 +301,8 @@ variable [DecidableEq α] [Fintype α]
 lemma card_truncatedSup_union_add_card_truncatedSup_infs (𝒜 ℬ : Finset (Finset α)) (s : Finset α) :
     (truncatedSup (𝒜 ∪ ℬ) s).card + (truncatedSup (𝒜 ⊼ ℬ) s).card =
       (truncatedSup 𝒜 s).card + (truncatedSup ℬ s).card := by
-  by_cases h𝒜 : s ∈ lowerClosure (𝒜 : Set $ Finset α) <;>
-    by_cases hℬ : s ∈ lowerClosure (ℬ : Set $ Finset α)
+  by_cases h𝒜 : s ∈ lowerClosure (𝒜 : Set <| Finset α) <;>
+    by_cases hℬ : s ∈ lowerClosure (ℬ : Set <| Finset α)
   · rw [truncatedSup_union h𝒜 hℬ, truncatedSup_infs h𝒜 hℬ]
     exact card_union_add_card_inter _ _
   · rw [truncatedSup_union_left h𝒜 hℬ, truncatedSup_of_not_mem hℬ,
@@ -315,8 +315,8 @@ lemma card_truncatedSup_union_add_card_truncatedSup_infs (𝒜 ℬ : Finset (Fin
 lemma card_truncatedInf_union_add_card_truncatedInf_sups (𝒜 ℬ : Finset (Finset α)) (s : Finset α) :
     (truncatedInf (𝒜 ∪ ℬ) s).card + (truncatedInf (𝒜 ⊻ ℬ) s).card =
       (truncatedInf 𝒜 s).card + (truncatedInf ℬ s).card := by
-  by_cases h𝒜 : s ∈ upperClosure (𝒜 : Set $ Finset α) <;>
-    by_cases hℬ : s ∈ upperClosure (ℬ : Set $ Finset α)
+  by_cases h𝒜 : s ∈ upperClosure (𝒜 : Set <| Finset α) <;>
+    by_cases hℬ : s ∈ upperClosure (ℬ : Set <| Finset α)
   · rw [truncatedInf_union h𝒜 hℬ, truncatedInf_sups h𝒜 hℬ]
     exact card_inter_add_card_union _ _
   · rw [truncatedInf_union_left h𝒜 hℬ, truncatedInf_of_not_mem hℬ,
@@ -365,7 +365,7 @@ lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset
     _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
   refine sum_congr rfl fun s hs ↦ ?_
   rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
-  have := (nonempty_iff_ne_empty.2 $ ne_of_mem_of_not_mem hs h𝒜₀).card_pos
+  have := (nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs h𝒜₀).card_pos
   positivity
 
 variable [Nonempty α]

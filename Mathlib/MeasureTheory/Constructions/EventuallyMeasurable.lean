@@ -75,7 +75,7 @@ namespace EventuallyMeasurableSpace
 
 instance measurableSingleton [MeasurableSingletonClass α] :
     @MeasurableSingletonClass α (EventuallyMeasurableSpace m l) :=
-  @MeasurableSingletonClass.mk _ (_) $ fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
+  @MeasurableSingletonClass.mk _ (_) <| fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
 
 end EventuallyMeasurableSpace
 

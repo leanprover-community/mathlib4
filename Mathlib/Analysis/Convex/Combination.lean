@@ -376,7 +376,7 @@ lemma Finset.mem_convexHull' {s : Finset E} {x : E} :
     x ∈ convexHull R (s : Set E) ↔
       ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y ∈ s, w y = 1 ∧ ∑ y ∈ s, w y • y = x := by
   rw [mem_convexHull]
-  refine exists_congr fun w ↦ and_congr_right' $ and_congr_right fun hw ↦ ?_
+  refine exists_congr fun w ↦ and_congr_right' <| and_congr_right fun hw ↦ ?_
   simp_rw [centerMass_eq_of_sum_1 _ _ hw, id_eq]
 
 theorem Set.Finite.convexHull_eq {s : Set E} (hs : s.Finite) : convexHull R s =
@@ -517,13 +517,13 @@ variable {s t t₁ t₂ : Finset E}
 lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s → E))
     (ht₁ : t₁ ⊆ s) (ht₂ : t₂ ⊆ s) :
     convexHull R (t₁ ∩ t₂ : Set E) = convexHull R t₁ ∩ convexHull R t₂ := by
-  refine (Set.subset_inter (convexHull_mono inf_le_left) $
+  refine (Set.subset_inter (convexHull_mono inf_le_left) <|
     convexHull_mono inf_le_right).antisymm ?_
   simp_rw [Set.subset_def, mem_inter_iff, Set.inf_eq_inter, ← coe_inter, mem_convexHull']
   rintro x ⟨⟨w₁, h₁w₁, h₂w₁, h₃w₁⟩, w₂, -, h₂w₂, h₃w₂⟩
   let w (x : E) : R := (if x ∈ t₁ then w₁ x else 0) - if x ∈ t₂ then w₂ x else 0
   have h₁w : ∑ i ∈ s, w i = 0 := by simp [w, Finset.inter_eq_right.2, *]
-  replace hs := hs.eq_zero_of_sum_eq_zero_subtype h₁w $ by
+  replace hs := hs.eq_zero_of_sum_eq_zero_subtype h₁w <| by
     simp only [w, sub_smul, zero_smul, ite_smul, Finset.sum_sub_distrib, ← Finset.sum_filter, h₃w₁,
       Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht₁, Finset.inter_eq_right.2 ht₂, h₃w₂,
       sub_self]
@@ -593,7 +593,7 @@ lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈
 
 @[simp] lemma convexHull_pi (s : Set ι) (t : Π i, Set (E i)) :
     convexHull 𝕜 (s.pi t) = s.pi (fun i ↦ convexHull 𝕜 (t i)) :=
-  Set.Subset.antisymm (convexHull_min (Set.pi_mono fun _ _ ↦ subset_convexHull _ _) $ convex_pi $
+  Set.Subset.antisymm (convexHull_min (Set.pi_mono fun _ _ ↦ subset_convexHull _ _) <| convex_pi <|
     fun _ _ ↦ convex_convexHull _ _) fun _ ↦ mem_convexHull_pi
 
 end pi

@@ -57,7 +57,7 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     let (introduced, g) ← g.introNP generalized.size
     let subst := (generalized.zip introduced).foldl (init := subst) fun subst (a, b) =>
       subst.insert a (.fvar b)
-    let g ← liftM $ toClear.foldlM (·.tryClear) g
+    let g ← liftM <| toClear.foldlM (·.tryClear) g
     g.withContext do
       for (stx, fvar) in toTag do
         Term.addLocalVarInfo stx (subst.get fvar)

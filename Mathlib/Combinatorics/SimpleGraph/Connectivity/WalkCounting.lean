@@ -169,7 +169,7 @@ instance : Decidable G.Connected := by
   infer_instance
 
 instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
-  c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
+  c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
 lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔

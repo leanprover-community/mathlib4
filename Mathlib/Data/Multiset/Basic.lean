@@ -1468,7 +1468,7 @@ theorem sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase erase_comm s
 
 @[simp]
 theorem card_sub {s t : Multiset α} (h : t ≤ s) : card (s - t) = card s - card t :=
-  Nat.eq_sub_of_add_eq $ by rw [← card_add, tsub_add_cancel_of_le h]
+  Nat.eq_sub_of_add_eq <| by rw [← card_add, tsub_add_cancel_of_le h]
 
 /-! ### Union -/
 
@@ -2206,7 +2206,7 @@ theorem ext' {s t : Multiset α} : (∀ a, count a s = count a t) → s = t :=
   ext.2
 
 lemma count_injective : Injective fun (s : Multiset α) a ↦ s.count a :=
-  fun _s _t hst ↦ ext' $ congr_fun hst
+  fun _s _t hst ↦ ext' <| congr_fun hst
 
 @[simp]
 theorem coe_inter (s t : List α) : (s ∩ t : Multiset α) = (s.bagInter t : List α) := by ext; simp
