@@ -565,8 +565,6 @@ lemma hogehoge : (Diffeomorph.swap M I M') ∘ Sum.inr = Sum.inl := by
 
 end DisjUnion
 
-#exit
-
 namespace UnorientedCobordism
 
 -- TODO: for now, assume all manifolds are modelled on the same chart and model space...
@@ -584,6 +582,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [CompactSpace M] [FiniteDimensional ℝ E]
   [CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
 
+variable [Nonempty H]
 
 /-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
@@ -649,7 +648,7 @@ def symm (φ : UnorientedCobordism s t bd) : UnorientedCobordism t s bd where
   hW' := φ.hW'
   F := φ.F
   hF := φ.hF
-  φ := Diffeomorph.trans φ.φ (equivDisjUnionSum M I M')
+  φ := Diffeomorph.trans φ.φ (Diffeomorph.swap M I M')
   -- apply sdfdsf resp. hogehoge, and combine with φ.hFf and φ.hFg
   hFf := sorry
   hFg := sorry
