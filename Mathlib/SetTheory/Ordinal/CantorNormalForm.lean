@@ -182,8 +182,8 @@ theorem CNF_AList_entries (b o : Ordinal) : (CNF_AList b o).entries = CNF b o :=
 theorem CNF_AList_keys (b o : Ordinal) : (CNF_AList b o).keys = CNF.exponents b o :=
   rfl
 
-/-- The finitely supported function returning the coefficients of the `CNF` associated to each
-exponent. -/
+/-- `CNF_coeff b o` is the finitely supported function, returning the coefficient of `b^e` in the
+`CNF` of `o`, for each `e`. -/
 @[pp_nodot]
 def CNF_coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
   (CNF_AList b o).lookupFinsupp
