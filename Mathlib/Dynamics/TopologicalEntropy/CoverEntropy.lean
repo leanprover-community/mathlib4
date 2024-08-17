@@ -124,12 +124,12 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     (U_symm : SymmetricRel U) {m : ℕ} (n : ℕ) {s : Finset X} (h : IsDynCoverOf T F U m s) :
     ∃ t : Finset X, IsDynCoverOf T F (U ○ U) (m * n) t ∧ t.card ≤ s.card ^ n := by
   classical
-  rcases F.eq_empty_or_nonempty with (rfl | F_nemp)
+  rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · use ∅; simp
   have _ : Nonempty X := nonempty_of_exists F_nemp
   have s_nemp := h.nonempty F_nemp
   rcases F_nemp with ⟨x, x_F⟩
-  rcases m.eq_zero_or_pos with (rfl | m_pos)
+  rcases m.eq_zero_or_pos with rfl | m_pos
   · use {x}
     simp only [zero_mul, Finset.coe_singleton, Finset.card_singleton]
     exact And.intro (isDynCoverOf_zero T F (U ○ U) (singleton_nonempty x))
@@ -293,11 +293,11 @@ lemma coverMincard_univ (T : X → X) {F : Set X} (h : F.Nonempty) (n : ℕ) :
 lemma coverMincard_iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) (m n : ℕ) :
     coverMincard T F (U ○ U) (m * n) ≤ coverMincard T F U m ^ n := by
-  rcases F.eq_empty_or_nonempty with (rfl | F_nonempty)
+  rcases F.eq_empty_or_nonempty with rfl | F_nonempty
   · rw [coverMincard_empty]; exact zero_le _
-  rcases n.eq_zero_or_pos with (rfl | n_pos)
+  rcases n.eq_zero_or_pos with rfl | n_pos
   · rw [mul_zero, coverMincard_zero T F_nonempty (U ○ U), pow_zero]
-  rcases eq_top_or_lt_top (coverMincard T F U m) with (h | h)
+  rcases eq_top_or_lt_top (coverMincard T F U m) with h | h
   · exact h ▸ le_of_le_of_eq (le_top (α := ℕ∞)) (Eq.symm (ENat.top_pow n_pos))
   · rcases (coverMincard_finite_iff T F U m).1 h with ⟨s, s_cover, s_coverMincard⟩
     rcases s_cover.iterate_le_pow F_inv U_symm n with ⟨t, t_cover, t_le_sn⟩
@@ -369,7 +369,7 @@ lemma log_coverMincard_comp_le {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) {m n : ℕ} (m_pos : 0 < m) (n_pos : 0 < n) :
     log (coverMincard T F (U ○ U) n) / n
     ≤ log (coverMincard T F U m) / m + log (coverMincard T F U m) / n := by
-  rcases F.eq_empty_or_nonempty with (rfl | F_nemp)
+  rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · rw [coverMincard_empty, ENat.toENNReal_zero, log_zero,
       bot_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)]
     exact bot_le
@@ -459,7 +459,7 @@ lemma coverEntropyInfUni_le_log_coverMincard_div {T : X → X} {F : Set X} (F_in
   intro N
   use (max 1 N) * n
   constructor
-  · rcases eq_zero_or_pos N with (rfl | N_pos)
+  · rcases eq_zero_or_pos N with rfl | N_pos
     · exact zero_le ((max 1 0) * n)
     · rw [max_eq_right (Nat.one_le_of_lt N_pos)]
       nth_rw 2 [← mul_one N]
@@ -483,11 +483,11 @@ lemma coverEntropyInfUni_le_log_card_div {T : X → X} {F : Set X} (F_inv : Maps
 lemma coverEntropySupUni_le_log_coverMincard_div {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) {n : ℕ} (n_pos : 0 < n) :
     coverEntropySupUni T F (U ○ U) ≤ log (coverMincard T F U n) / n := by
-  rcases eq_or_ne (log (coverMincard T F U n)) ⊥ with (logm_bot | logm_nneg)
+  rcases eq_or_ne (log (coverMincard T F U n)) ⊥ with logm_bot | logm_nneg
   · rw [log_eq_bot_iff, ← ENat.toENNReal_zero, ENat.toENNReal_coe_eq_iff,
       coverMincard_eq_zero_iff T F U n] at logm_bot
     simp [logm_bot]
-  rcases eq_or_ne (log (coverMincard T F U n)) ⊤ with (logm_top | logm_fin)
+  rcases eq_or_ne (log (coverMincard T F U n)) ⊤ with logm_top | logm_fin
   · rw [logm_top, top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)]
     exact le_top
   let u := fun _ : ℕ ↦ log (coverMincard T F U n) / n
