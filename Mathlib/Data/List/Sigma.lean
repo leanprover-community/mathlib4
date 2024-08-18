@@ -282,6 +282,24 @@ theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodu
     (p : l₁ ~ l₂) : lookupAll a l₁ = lookupAll a l₂ := by
   simp [lookupAll_eq_dlookup, nd₁, nd₂, perm_dlookup a nd₁ nd₂ p]
 
+theorem dlookup_append_of_not_mem_left {l₀ : List (Sigma β)} {a : α} (h : a ∉ l₀.keys)
+    (l₁ : List (Sigma β)) : (l₀ ++ l₁).dlookup a = l₁.dlookup a := by
+  induction' l₀ with b l₀ IH
+  · rfl
+  · rw [keys_cons, mem_cons, not_or] at h
+    rw [cons_append, dlookup_cons_ne _ _ h.1, IH]
+    exact h.2
+
+theorem dlookup_append_of_not_mem_right {l₁ : List (Sigma β)} {a : α} (l₀ : List (Sigma β))
+    (h : a ∉ l₁.keys) : (l₀ ++ l₁).dlookup a = l₀.dlookup a := by
+  induction' l₀ with b l₀ IH
+  · rwa [nil_append, dlookup_nil, dlookup_eq_none]
+  · rw [cons_append]
+    obtain rfl | hab := eq_or_ne a b.1
+    · iterate 2 rw [dlookup_cons_eq]
+    · iterate 2 rw [dlookup_cons_ne _ _ hab]
+      rw [IH]
+
 /-! ### `kreplace` -/
 
 
