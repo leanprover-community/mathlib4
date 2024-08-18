@@ -33,7 +33,7 @@ exclusions: [Mathlib/Tactic/Linter/]
 #guard_msgs in
 check_labels "t-met"
 
-/-- info: Applicable labels: -/
+/-- info: No applicable label. -/
 #guard_msgs in
 -- non-existing label
 produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean"
