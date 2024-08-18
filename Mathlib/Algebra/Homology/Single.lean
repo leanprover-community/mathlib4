@@ -5,8 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 
-#align_import algebra.homology.single from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
-
 /-!
 # Homological complexes supported in a single degree
 
@@ -58,7 +56,6 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     · subst h
       simp
     · simp
-#align homological_complex.single HomologicalComplex.single
 
 variable {V}
 
@@ -80,8 +77,6 @@ noncomputable def singleObjXIsoOfEq (j : ι) (A : V) (i : ι) (hi : i = j) :
 /-- The object in degree `j` of `(single V c h).obj A` is just `A`. -/
 noncomputable def singleObjXSelf (j : ι) (A : V) : ((single V c j).obj A).X j ≅ A :=
   singleObjXIsoOfEq c j A j rfl
-set_option linter.uppercaseLean3 false in
-#align homological_complex.single_obj_X_self HomologicalComplex.singleObjXSelf
 
 @[simp]
 lemma single_obj_d (j : ι) (A : V) (k l : ι) :
@@ -94,7 +89,18 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
   dsimp [single]
   rw [dif_pos rfl]
   rfl
-#align homological_complex.single_map_f_self HomologicalComplex.single_map_f_self
+
+variable (V)
+
+/-- The natural isomorphism `single V c j ⋙ eval V c j ≅ 𝟭 V`. -/
+@[simps!]
+noncomputable def singleCompEvalIsoSelf (j : ι) : single V c j ⋙ eval V c j ≅ 𝟭 V :=
+  NatIso.ofComponents (singleObjXSelf c j) (fun {A B} f => by simp [single_map_f_self])
+
+lemma isZero_single_comp_eval (j i : ι) (hi : i ≠ j) : IsZero (single V c j ⋙ eval V c i) :=
+  Functor.isZero _ (fun _ ↦ isZero_single_obj_X c _ _ _ hi)
+
+variable {V c}
 
 @[ext]
 lemma from_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
@@ -125,8 +131,6 @@ instance (j : ι) : (single V c j).Full where
     ⟨(singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom, by
       ext
       simp [single_map_f_self]⟩
-
-variable {c}
 
 /-- Constructor for morphisms to a single homological complex. -/
 noncomputable def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)
@@ -188,7 +192,7 @@ noncomputable abbrev single₀ : V ⥤ ChainComplex V ℕ :=
 
 variable {V}
 
-@[simp, nolint simpNF]
+@[simp]
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
@@ -234,7 +238,6 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   invFun f := HomologicalComplex.mkHomFromSingle f (fun i hi => by simp at hi)
   left_inv := by aesop_cat
   right_inv := by aesop_cat
-#align chain_complex.from_single₀_equiv ChainComplex.fromSingle₀Equiv
 
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
@@ -257,7 +260,7 @@ noncomputable abbrev single₀ : V ⥤ CochainComplex V ℕ :=
 
 variable {V}
 
-@[simp, nolint simpNF]
+@[simp]
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 

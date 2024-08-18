@@ -45,7 +45,7 @@ jobs:
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py "Mathlib/" > base.json
 
-        # switch back to the current branch: the `no_lost_declarations` script should be here
+        # switch back to the current branch: the `declarations_diff` script should be here
         git checkout "${currentHash}"
     - name: Post or update the summary comment
       env:
@@ -56,16 +56,20 @@ jobs:
         title="### PR summary"
 
         ## Import count comment
-        importCount=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
+        importCount=$(
+          python ./scripts/import-graph-report.py base.json head.json changed_files.txt
+          ./scripts/import_trans_difference.sh
+        )
+
         if [ "$(printf '%s' "${importCount}" | wc -l)" -gt 12 ]
         then
-          importCount="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Import changes" "${importCount}")"
+          importCount="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Import changes for modified files" "${importCount}")"
         else
-          importCount="$(printf '#### Import changes\n\n%s\n' "${importCount}")"
+          importCount="$(printf '#### Import changes for modified files\n\n%s\n' "${importCount}")"
         fi
 
         ## Declarations' diff comment
-        declDiff=$(./scripts/no_lost_declarations.sh short)
+        declDiff=$(./scripts/declarations_diff.sh)
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
