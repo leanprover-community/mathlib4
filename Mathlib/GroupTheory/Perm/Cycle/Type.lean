@@ -377,7 +377,7 @@ by appending the inverse of the product of `v`. -/
 @[simps]
 def vectorEquiv : Vector G n ≃ vectorsProdEqOne G (n + 1) where
   toFun v := ⟨v.toList.prod⁻¹ ::ᵥ v, by
-    rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_self]⟩
+    rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_cancel]⟩
   invFun v := v.1.tail
   left_inv v := v.tail_cons v.toList.prod⁻¹
   right_inv v := Subtype.ext <|

@@ -67,7 +67,7 @@ theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n :=
       rfl⟩
 
 theorem nodup_finRange (n : ℕ) : (finRange n).Nodup :=
-  (Pairwise.pmap (nodup_range n) _) fun _ _ _ _ => @Fin.ne_of_vne _ ⟨_, _⟩ ⟨_, _⟩
+  (Pairwise.pmap (nodup_range n) _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
 
 @[simp]
 theorem length_finRange (n : ℕ) : (finRange n).length = n := by
@@ -169,7 +169,7 @@ lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
 
 /-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
-  (List.pairwise_join.mp $ by rw [ranges_join']; exact nodup_range _).1 s hs
+  (List.pairwise_join.mp <| by rw [ranges_join']; exact nodup_range _).1 s hs
 
 end Ranges
 

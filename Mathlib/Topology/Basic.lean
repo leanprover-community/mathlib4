@@ -1091,7 +1091,7 @@ theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x)
 lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t ∩ s).Nonempty := by
   rw [nhdsWithin, inf_neBot_iff]
   exact forall₂_congr fun U _ ↦
-    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono $ inter_subset_inter_right _ hsu⟩
+    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono <| inter_subset_inter_right _ hsu⟩
 
 @[gcongr]
 theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
@@ -1368,6 +1368,14 @@ theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
 
+/-- If a function ``f` tends to somewhere other than `𝓝 (f x)` at `x`,
+then `f` is not continuous at `x`
+-/
+lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter Y} {x : X}
+    (hf : Tendsto f l₁ l₂) [l₁.NeBot] (hl₁ : l₁ ≤ 𝓝 x) (hl₂ : Disjoint (𝓝 (f x)) l₂) :
+    ¬ ContinuousAt f x := fun cont ↦
+  (cont.mono_left hl₁).not_tendsto hl₂ hf
+
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
 @[deprecated (since := "2024-01-15")]
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {f : X → M₀} :
@@ -1449,7 +1457,7 @@ theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
 
 theorem continuous_of_const (h : ∀ x y, f x = f y) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x =>
-    Filter.EventuallyEq.continuousAt <| eventually_of_forall fun y => h y x
+    Filter.EventuallyEq.continuousAt <| Eventually.of_forall fun y => h y x
 
 theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt

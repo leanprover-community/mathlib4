@@ -149,7 +149,7 @@ theorem tfae_equational_criterion : List.TFAE [
     constructor
     · apply Finsupp.basisSingleOne.ext
       intro i
-      simpa [total_apply, sum_fintype, single_apply] using ha'y' i
+      simpa [total_apply, sum_fintype, Finsupp.single_apply] using ha'y' i
     · ext j
       simp only [total_apply, zero_smul, implies_true, sum_fintype, finset_sum_apply]
       exact ha' j

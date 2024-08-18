@@ -239,7 +239,7 @@ lemma convexOn_of_hasDerivWithinAt2_nonneg {D : Set ℝ} (hD : Convex ℝ D) {f 
     convert hf''₀ _ hx using 1
     dsimp
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
-    exact (hf'' _ hy).congr this $ by rw [this hy]
+    exact (hf'' _ hy).congr this <| by rw [this hy]
 
 /-- If a function `f` is continuous on a convex set `D ⊆ ℝ`, is twice differentiable on its
 interior, and `f''` is nonpositive on the interior, then `f` is concave on `D`. -/
@@ -255,7 +255,7 @@ lemma concaveOn_of_hasDerivWithinAt2_nonpos {D : Set ℝ} (hD : Convex ℝ D) {f
     convert hf''₀ _ hx using 1
     dsimp
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
-    exact (hf'' _ hy).congr this $ by rw [this hy]
+    exact (hf'' _ hy).congr this <| by rw [this hy]
 
 /-- If a function `f` is continuous on a convex set `D ⊆ ℝ` and `f''` is strictly positive on the
 interior, then `f` is strictly convex on `D`.
