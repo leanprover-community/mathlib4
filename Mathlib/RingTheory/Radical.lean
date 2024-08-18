@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Jineon Back and Seewoo Lee. All rights reserved.
+Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
@@ -36,7 +36,7 @@ noncomputable section
 
 open scoped Classical
 
-open UniqueFactorizationMonoid
+namespace UniqueFactorizationMonoid
 
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
@@ -103,3 +103,5 @@ theorem radical_pow_of_prime {a : M} (ha : Prime a) {n : ℕ} (hn : 0 < n) :
     radical (a ^ n) = normalize a := by
   rw [radical_pow a hn]
   exact radical_of_prime ha
+
+end UniqueFactorizationMonoid

@@ -233,7 +233,7 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
 
 theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y := by
   induction' n with n ih
-  · simp only [inner_, Nat.zero_eq, zero_sub, Nat.cast_zero, zero_mul,
+  · simp only [inner_, zero_sub, Nat.cast_zero, zero_mul,
       eq_self_iff_true, zero_smul, zero_add, mul_zero, sub_self, norm_neg, smul_zero]
   · simp only [Nat.cast_succ, add_smul, one_smul]
     rw [add_left, ih, add_mul, one_mul]
