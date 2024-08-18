@@ -4,6 +4,8 @@ import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Data.Set.Card
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 
+/-! # Alon's Combinatorial Nullstellensatz -/
+
 variable {R : Type*} [CommRing R] [IsDomain R]
 
 theorem Polynomial.eq_zero_of_eval_zero (P : Polynomial R) (S : Set R)
