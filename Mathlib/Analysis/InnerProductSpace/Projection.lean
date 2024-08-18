@@ -97,7 +97,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     let b := fun n : ℕ => 8 * δ * (1 / (n + 1)) + 4 * (1 / (n + 1)) * (1 / (n + 1))
     use fun n => √(b n)
     constructor
-    -- first goal :  `∀ (n : ℕ), 0 ≤ √(b n)`
+    -- first goal : `∀ (n : ℕ), 0 ≤ √(b n)`
     · intro n
       exact sqrt_nonneg _
     constructor

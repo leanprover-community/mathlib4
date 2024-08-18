@@ -71,7 +71,7 @@ theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂)
 
 /-- The projections from a family of modules are linear maps.
 
-Note:  known here as `LinearMap.proj`, this construction is in other categories called `eval`, for
+Note: known here as `LinearMap.proj`, this construction is in other categories called `eval`, for
 example `Pi.evalMonoidHom`, `Pi.evalRingHom`. -/
 def proj (i : ι) : ((i : ι) → φ i) →ₗ[R] φ i where
   toFun := Function.eval i

@@ -313,7 +313,7 @@ variable (N)
 
 theorem finite_of_discr_bdd_of_isReal :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
-      haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
+      haveI : NumberField K := @NumberField.mk _ _ inferInstance K.prop
       {w : InfinitePlace K | IsReal w}.Nonempty ∧ |discr K| ≤ N }.Finite := by
   -- The bound on the degree of the generating polynomials
   let D := rankOfDiscrBdd N
@@ -360,7 +360,7 @@ theorem finite_of_discr_bdd_of_isReal :
 
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
-      haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
+      haveI : NumberField K := @NumberField.mk _ _ inferInstance K.prop
       {w : InfinitePlace K | IsComplex w}.Nonempty ∧ |discr K| ≤ N }.Finite := by
   -- The bound on the degree of the generating polynomials
   let D := rankOfDiscrBdd N
@@ -410,7 +410,7 @@ theorem finite_of_discr_bdd_of_isComplex :
 (in some fixed extension of `ℚ`) of discriminant bounded by `N`. -/
 theorem _root_.NumberField.finite_of_discr_bdd :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
-      haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
+      haveI : NumberField K := @NumberField.mk _ _ inferInstance K.prop
       |discr K| ≤ N }.Finite := by
   refine Set.Finite.subset (Set.Finite.union (finite_of_discr_bdd_of_isReal A N)
     (finite_of_discr_bdd_of_isComplex A N)) ?_

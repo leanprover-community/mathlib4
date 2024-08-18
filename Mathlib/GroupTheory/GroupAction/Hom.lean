@@ -518,7 +518,7 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 
 variable {M C ψ χ}
 
--- porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
+-- porting note: `simp` used to prove this, but now `change` is needed to push past the coercions
 instance : Zero (A →ₑ+[φ] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by change (0 : B) = (φ m) • (0 : B); rw [smul_zero]}⟩
 

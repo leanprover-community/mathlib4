@@ -461,7 +461,7 @@ lemma closure_iInter_eq_iInter_closure_of_iUnion_indep [hι : Nonempty ι] (Is :
   simp
 
 lemma closure_sInter_eq_biInter_closure_of_sUnion_indep (Is : Set (Set α)) (hIs : Is.Nonempty)
-    (h : M.Indep (⋃₀ Is)) :  M.closure (⋂₀ Is) = (⋂ I ∈ Is, M.closure I) :=
+    (h : M.Indep (⋃₀ Is)) : M.closure (⋂₀ Is) = (⋂ I ∈ Is, M.closure I) :=
   h.closure_sInter_eq_biInter_closure_of_forall_subset hIs (fun _ ↦ subset_sUnion_of_mem)
 
 lemma closure_biInter_eq_biInter_closure_of_biUnion_indep {ι : Type*} {A : Set ι} (hA : A.Nonempty)

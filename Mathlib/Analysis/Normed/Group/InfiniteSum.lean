@@ -109,7 +109,7 @@ theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : �
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := by
   classical exact le_of_tendsto_of_tendsto' hf.norm hg fun _s ↦ norm_sum_le_of_le _ fun i _hi ↦ h i
 
-/-- Quantitative result associated to the direct comparison test for series:  If `∑' i, g i` is
+/-- Quantitative result associated to the direct comparison test for series: If `∑' i, g i` is
 summable, and for all `i`, `‖f i‖ ≤ g i`, then `‖∑' i, f i‖ ≤ ∑' i, g i`. Note that we do not
 assume that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete space. -/
 theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : HasSum g a)
@@ -142,13 +142,13 @@ theorem nnnorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : �
 
 variable [CompleteSpace E]
 
-/-- Variant of the direct comparison test for series:  if the norm of `f` is eventually bounded by a
+/-- Variant of the direct comparison test for series: if the norm of `f` is eventually bounded by a
 real function `g` which is summable, then `f` is summable. -/
 theorem Summable.of_norm_bounded_eventually {f : ι → E} (g : ι → ℝ) (hg : Summable g)
     (h : ∀ᶠ i in cofinite, ‖f i‖ ≤ g i) : Summable f :=
   summable_iff_cauchySeq_finset.2 <| cauchySeq_finset_of_norm_bounded_eventually hg h
 
-/-- Variant of the direct comparison test for series:  if the norm of `f` is eventually bounded by a
+/-- Variant of the direct comparison test for series: if the norm of `f` is eventually bounded by a
 real function `g` which is summable, then `f` is summable. -/
 theorem Summable.of_norm_bounded_eventually_nat {f : ℕ → E} (g : ℕ → ℝ) (hg : Summable g)
     (h : ∀ᶠ i in atTop, ‖f i‖ ≤ g i) : Summable f :=

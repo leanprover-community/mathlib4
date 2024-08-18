@@ -143,7 +143,7 @@ theorem toNatOrdinal_symm_eq : toNatOrdinal.symm = NatOrdinal.toOrdinal :=
   rfl
 
 @[simp]
-theorem toNatOrdinal_toOrdinal (a : Ordinal) :  NatOrdinal.toOrdinal (toNatOrdinal a) = a :=
+theorem toNatOrdinal_toOrdinal (a : Ordinal) : NatOrdinal.toOrdinal (toNatOrdinal a) = a :=
   rfl
 
 @[simp]

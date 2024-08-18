@@ -401,7 +401,7 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
       rfl)
 
 instance (n : ℕ) :
-    SmoothManifoldWithCorners (𝓡 n) (sphere (0 :  EuclideanSpace ℝ (Fin (n + 1))) 1) :=
+    SmoothManifoldWithCorners (𝓡 n) (sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1) :=
   haveI := Fact.mk (@finrank_euclideanSpace_fin ℝ _ (n + 1))
   EuclideanSpace.instSmoothManifoldWithCornersSphere
 

@@ -21,7 +21,7 @@ type synonym.
 
 ## Notation
 
-* `α ⊕ₗ β`:  The linear sum of `α` and `β`.
+* `α ⊕ₗ β`: The linear sum of `α` and `β`.
 -/
 
 

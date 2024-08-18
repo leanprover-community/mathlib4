@@ -16,7 +16,7 @@ This file introduces abstract configurations of points and lines, and proves som
   and imposes uniqueness of intersection points.
 * `Configuration.HasPoints`: A nondegenerate configuration in which
   every pair of lines has an intersection point.
-* `Configuration.HasLines`:  A nondegenerate configuration in which
+* `Configuration.HasLines`: A nondegenerate configuration in which
   every pair of points has a line through them.
 * `Configuration.lineCount`: The number of lines through a given point.
 * `Configuration.pointCount`: The number of lines through a given line.
