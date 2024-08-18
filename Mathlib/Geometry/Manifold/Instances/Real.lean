@@ -247,10 +247,12 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
 /-- The endpoint `x ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
-abbrev X : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
+abbrev IccManifold.X : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
 
 /-- The endpoint `y ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
-abbrev Y : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩
+abbrev IccManifold.Y : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩
+
+open IccManifold (X Y)
 
 lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) X = 0 := by
   let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
