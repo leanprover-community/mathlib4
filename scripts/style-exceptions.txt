@@ -6,3 +6,4 @@ Mathlib/Order/CompleteLattice.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1
 Mathlib/Order/Hom/Lattice.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1661 lines, try to split it up
 Mathlib/Order/Interval/Set/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1652 lines, try to split it up
 Mathlib/Tactic/CC/Addition.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2100 lines, try to split it up
+Mathlib/Tactic/ToAdditive/Frontend.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1502 lines, try to split it up
