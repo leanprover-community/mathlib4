@@ -114,11 +114,11 @@ lemma evaluation_coevaluation :
 
 lemma coevaluation_evaluation'' :
     Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙 := by
-  convert coevaluation_evaluation X Y <;> simp [monoidalComp]
+  convert coevaluation_evaluation X Y <;> simp [monoidalComp, MonoidalCoherence.hom]
 
 lemma evaluation_coevaluation'' :
     η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙 := by
-  convert evaluation_coevaluation X Y <;> simp [monoidalComp]
+  convert evaluation_coevaluation X Y <;> simp [monoidalComp, MonoidalCoherence.hom]
 
 end ExactPairing
 
@@ -494,7 +494,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
       _ = (λ_ X).hom ≫ (ρ_ X).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
-        simp [monoidalComp]
+        simp [monoidalComp, MonoidalCoherence.hom]
   coevaluation_evaluation' := by
     calc
       _ = Y ◁ η_ X' Y ≫ Y ◁ (i.inv ≫ i.hom) ▷ Y ⊗≫ ε_ X' Y ▷ Y := by
@@ -504,7 +504,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
       _ = _ := by
         rw [coevaluation_evaluation'']
         -- coherence failed
-        simp [monoidalComp]
+        simp [monoidalComp, MonoidalCoherence.hom]
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
 def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : ExactPairing X Y where
@@ -519,7 +519,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       _ = _ := by
         rw [evaluation_coevaluation'']
         -- coherence failed
-        simp [monoidalComp]
+        simp [monoidalComp, MonoidalCoherence.hom]
   coevaluation_evaluation' :=
     calc
       _ = Y ◁ η_ X Y' ⊗≫ (Y ◁ (X ◁ i.inv) ≫ i.hom ▷ (X ⊗ Y)) ⊗≫ ε_ X Y' ▷ Y := by
@@ -534,7 +534,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       _ = (ρ_ Y).hom ≫ (λ_ Y).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
-        simp [monoidalComp]
+        simp [monoidalComp, MonoidalCoherence.hom]
 
 /-- Transport an exact pairing across isomorphisms. -/
 def exactPairingCongr {X X' Y Y' : C} [ExactPairing X' Y'] (i : X ≅ X') (j : Y ≅ Y') :
