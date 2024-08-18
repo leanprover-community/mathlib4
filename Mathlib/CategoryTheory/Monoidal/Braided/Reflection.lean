@@ -3,7 +3,6 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Monad.Adjunction
@@ -40,7 +39,7 @@ lemma isSplitMono_iff_isIso_unit (R : C ⥤ D) [R.Faithful] [R.Full] (L : D ⥤ 
   rw [this]
   simp
 
-lemma isIso_coyoneda_unit (R : C ⥤ D) [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)
+lemma isIso_coyoneda_unit (R : C ⥤ D) [R.Full] (L : D ⥤ C) (adj : L ⊣ R)
     (d d' : D) : IsIso ((coyoneda.map (adj.unit.app d).op).app ((L ⋙ R).obj d')) := by
   constructor
   refine ⟨?_, ?_, ?_⟩
@@ -55,11 +54,37 @@ lemma isIso_coyoneda_unit (R : C ⥤ D) [R.Faithful] [R.Full] (L : D ⥤ C) (adj
   · ext
     simp
 
+lemma isIso_iff_isIso_coyoneda_map {X Y : C} (f : X ⟶ Y) :
+    IsIso f ↔ ∀ c : C, IsIso ((coyoneda.map f.op).app c) := by
+  constructor
+  · intro
+    rw [← NatTrans.isIso_iff_isIso_app]
+    infer_instance
+  · intro h
+    apply isIso_of_coyoneda_map_bijective
+    intro c
+    rw [← isIso_iff_bijective]
+    exact h c
+
+lemma isIso_iff_isIso_yoneda_map {X Y : C} (f : X ⟶ Y) :
+    IsIso f ↔ ∀ c : C, IsIso ((yoneda.map f).app ⟨c⟩) := by
+  constructor
+  · intro
+    have : IsIso (yoneda.map f) := inferInstance
+    intro c
+    infer_instance
+  · intro h
+    apply isIso_of_yoneda_map_bijective
+    intro c
+    rw [← isIso_iff_bijective]
+    exact h c
+
 variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 
 section
 variable (R : C ⥤ D)
 
+/-- Auxiliary definition for `adjRetraction`. -/
 noncomputable def adjRetractionAux [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
   d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
@@ -67,6 +92,7 @@ noncomputable def adjRetractionAux [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L 
     R.map (inv (L.map (adj.unit.app _ ⊗ adj.unit.app _))) ≫ (L ⋙ R).map (β_ _ _).hom ≫
       (L ⋙ R).map ((ihom.ev _).app _) ≫ inv (adj.unit.app _)
 
+/-- The left inverse to the unit in the proof of `4 → 1` in `day_reflection` below. -/
 noncomputable def adjRetraction [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
@@ -90,14 +116,14 @@ lemma adjRetraction_is_retraction [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L �
 theorem day_reflection [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)  :
     List.TFAE
     [ ∀ (c : C) (d : D), IsIso (adj.unit.app ((ihom d).obj (R.obj c)))
-    , ∀ (c : C) (d : D), IsIso ((internalHom.map (adj.unit.app d).op).app (R.obj c))
+    , ∀ (c : C) (d : D), IsIso ((pre (adj.unit.app d)).app (R.obj c))
     , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ▷ d'))
     , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))] := by
   tfae_have 3 → 4
   · intro h
     have h' : ∀ d d', IsIso (L.map (d ◁ (adj.unit.app d'))) := by
       intro d d'
-      have := BraidedCategory.braiding_naturality (𝟙 d) (adj.unit.app d')
+      have := braiding_naturality (𝟙 d) (adj.unit.app d')
       rw [← Iso.eq_comp_inv, id_tensorHom] at this
       rw [this]
       simp only [Functor.map_comp, Functor.id_obj, Functor.comp_obj, tensorHom_id, assoc]
@@ -115,14 +141,13 @@ theorem day_reflection [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)  :
     exact ⟨⟨adjRetraction R L adj _ _, adjRetraction_is_retraction R L adj _ _⟩⟩
   tfae_have 1 → 3
   · intro h d d'
-    let i := coyoneda.map (L.map (adj.unit.app d ▷ d')).op
-    suffices ∀ c, IsIso (i.app c) by
+    suffices ∀ c, IsIso ((coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c) by
       rw [← NatTrans.isIso_iff_isIso_app] at this
       exact (isIso_op_iff _).mp <| isIso_of_reflects_iso (L.map (adj.unit.app d ▷ d')).op coyoneda
     intro c
-    have w : i.app c = (adj.homEquiv _ _).symm ∘
-      (coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c) ∘ adj.homEquiv _ _ := by ext; simp [i]
-    rw [w, isIso_iff_bijective]
+    have w₁ : (coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c = (adj.homEquiv _ _).symm ∘
+      (coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c) ∘ adj.homEquiv _ _ := by ext; simp
+    rw [w₁, isIso_iff_bijective]
     simp only [Functor.comp_obj, coyoneda_obj_obj, Functor.id_obj, EquivLike.comp_bijective,
       EquivLike.bijective_comp]
     have w₂ : ((coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c)) =
@@ -154,7 +179,33 @@ theorem day_reflection [R.Faithful] [R.Full] (L : D ⥤ C) (adj : L ⊣ R)  :
     refine IsIso.comp_isIso' inferInstance ?_
     exact isIso_coyoneda_unit _ _ _ _ _
   tfae_have 2 ↔ 3
-  · sorry
+  · -- `simp_rw [isIso_iff_isIso_coyoneda_map]` times out, so instead we use `conv`:
+    conv => lhs; intro c d; rw [isIso_iff_isIso_yoneda_map]
+    conv => rhs; intro d d'; rw [isIso_iff_isIso_coyoneda_map]
+    -- this seems unnecessarily complicated to bring the quantifiers out of the `↔`:
+    rw [forall_swap]; apply forall_congr'; intro d
+    rw [forall_swap]; apply forall₂_congr; intro d' c
+    have w₁ : ((coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c) =
+        (adj.homEquiv _ _).symm ∘
+          (coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c) ∘
+            (adj.homEquiv _ _) := by ext; simp
+    have w₂' : ((yoneda.map ((pre (adj.unit.app d)).app (R.obj c))).app ⟨d'⟩) ∘
+        ((ihom.adjunction ((L ⋙ R).obj d)).homEquiv _ _) =
+          ((ihom.adjunction d).homEquiv _ _) ∘
+            ((coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c)) := by
+      ext
+      simp only [Functor.id_obj, yoneda_obj_obj, Functor.comp_obj, tensorLeft_obj,
+        Function.comp_apply, yoneda_map_app, op_tensorObj, coyoneda_obj_obj, unop_tensorObj,
+        op_whiskerRight, coyoneda_map_app, unop_whiskerRight, Quiver.Hom.unop_op]
+      erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
+      simp
+    have w₂ : ((yoneda.map ((pre (adj.unit.app d)).app (R.obj c))).app ⟨d'⟩) =
+          ((ihom.adjunction d).homEquiv _ _) ∘
+            ((coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c)) ∘
+              ((ihom.adjunction ((L ⋙ R).obj d)).homEquiv _ _).symm := by
+      rw [← Function.comp.assoc, ← w₂']; ext; simp
+    rw [w₂, w₁, isIso_iff_bijective, isIso_iff_bijective]
+    simp
   tfae_finish
 
 end
