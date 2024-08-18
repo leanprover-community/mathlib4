@@ -956,11 +956,17 @@ theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x := by
 theorem mul_mod (x y : Ordinal) : x * y % x = 0 := by
   simpa using mul_add_mod_self x y 0
 
+theorem mul_add_mod_mul {w x : Ordinal} (hw : w < x) (y z : Ordinal) :
+    (x * y + w) % (x * z) = x * (y % z) + w := by
+  rw [mod_def, mul_add_div_mul hw]
+  apply sub_eq_of_add_eq
+  rw [← add_assoc, mul_assoc, ← mul_add, div_add_mod]
+
 theorem mul_mod_mul (x y z : Ordinal) : (x * y) % (x * z) = x * (y % z) := by
-  obtain rfl | hx := eq_or_ne x 0
-  · repeat rw [zero_mul]
-    rw [zero_mod]
-  · rw [mod_def, mul_div_mul_cancel hx, mul_assoc, ← mul_sub, ← mod_def]
+  obtain rfl | hx := Ordinal.eq_zero_or_pos x
+  · simp
+  · convert mul_add_mod_mul hx y z using 1 <;>
+    rw [add_zero]
 
 theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c = a % c := by
   nth_rw 2 [← div_add_mod a b]
