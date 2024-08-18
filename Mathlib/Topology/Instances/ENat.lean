@@ -78,7 +78,7 @@ instance : ContinuousMul ℕ∞ where
       | (a : ℕ∞), ⊤ => key a
       | ⊤, (b : ℕ∞) =>
         ((key b).comp_of_eq (continuous_swap.tendsto (⊤, b)) rfl).congr <|
-          eventually_of_forall fun _ ↦ mul_comm ..
+          .of_forall fun _ ↦ mul_comm ..
       | (a : ℕ), (b : ℕ) => by
         simp [ContinuousAt, nhds_prod_eq, tendsto_pure_nhds]
 
