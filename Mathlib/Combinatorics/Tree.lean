@@ -1,6 +1,6 @@
+import Mathlib.Combinatorics.ToMathlib
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.WellFoundedSet
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Order.Atoms
@@ -16,6 +16,13 @@ structure RootedTree where
 attribute [coe] RootedTree.α
 
 instance coeSort : CoeSort RootedTree (Type*) := ⟨RootedTree.α⟩
+
+def LabeledTree (α : Type*) := (s : RootedTree) × (s → α)
+
+@[coe, reducible]
+def LabeledTree.coeLTree {α : Type*} (t : LabeledTree α) := t.1
+
+instance coeLTree {α : Type*} : CoeOut (LabeledTree α) RootedTree := ⟨LabeledTree.coeLTree⟩
 
 variable (t : RootedTree) (r : t)
 
@@ -40,132 +47,6 @@ instance : SemilatticeInf t := t.order
 instance : PredOrder t := t.pred
 instance : OrderBot t := t.bot
 instance : IsPredArchimedean t := t.pred_archimedean
-
-instance Set.Ici.predOrder {α : Type*} [DecidableEq α] [PartialOrder α] [PredOrder α] {a : α} :
-  PredOrder (Set.Ici a) where
-  pred := fun x ↦ if ha : x.1 = a then ⟨a, by simp⟩ else
-    ⟨Order.pred x.1, Order.le_pred_of_lt <| lt_of_le_of_ne (by simpa using x.2) <| Ne.symm ha⟩
-  pred_le := fun ⟨x, hx⟩ ↦ by dsimp; split <;> simp_all [Order.pred_le]
-  min_of_le_pred := @fun ⟨x, hx⟩ h ↦ by
-    dsimp at h
-    rw [isMin_iff_eq_bot]
-    apply Subtype.val_injective
-    simp only [coe_bot]
-    split at h
-    · assumption
-    · simp only [Subtype.mk_le_mk] at h
-      apply Order.min_of_le_pred at h
-      exact (h.eq_of_le hx).symm
-  -- le_of_pred_lt := @fun ⟨b, hb⟩ ⟨c, hc⟩ h ↦ by
-  --   dsimp only at h
-  --   rw [Subtype.mk_le_mk]
-  --   split at h
-  --   · simp_all [le_of_lt]
-  --   · exact Order.le_of_pred_lt h
-  le_pred_of_lt := @fun ⟨b, hb⟩ ⟨c, hc⟩ h ↦ by
-    rw [Subtype.mk_lt_mk] at h
-    dsimp only
-    split
-    · simp_all [le_of_lt]
-    · exact Order.le_pred_of_lt h
-
-instance Set.Ici.isPredArchimedean {α : Type*} [DecidableEq α] [PartialOrder α] [PredOrder α]
-    [IsPredArchimedean α] {a : α} : IsPredArchimedean (Set.Ici a) where
-  exists_pred_iterate_of_le := @fun ⟨b, hb⟩ ⟨c, hc⟩ hbc ↦ by
-    rw [Subtype.mk_le_mk] at hbc
-    obtain ⟨n, hn⟩ := IsPredArchimedean.exists_pred_iterate_of_le hbc
-    use n
-    clear hbc
-    induction n generalizing b
-    · simpa
-    case succ n hn1 =>
-      simp_all only [mem_Ici, Function.iterate_succ', Function.comp_apply]
-      rw [mem_Ici] at hb hc
-      rw [hn1 (Order.pred^[n] c)]
-      · change dite .. = _
-        apply Subtype.val_injective
-        simp only [apply_dite Subtype.val, dite_eq_ite, ← hn, ite_eq_right_iff]
-        intro h
-        rw [h] at hn ⊢
-        rw [← hn] at hb
-        apply le_antisymm hb (Order.pred_le a)
-      · apply le_trans _ (Order.pred_le ..)
-        rwa [hn]
-      · rfl
-
-lemma IsPredArchimedean.le_total_of_le {α : Type*} [DecidableEq α] [PartialOrder α] [PredOrder α]
-    [IsPredArchimedean α] (r v₁ v₂ : α) (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) :
-    v₁ ≤ v₂ ∨ v₂ ≤ v₁ := by
-  obtain ⟨n, rfl⟩ := h₁.exists_pred_iterate
-  obtain ⟨m, rfl⟩ := h₂.exists_pred_iterate
-  clear h₁ h₂
-  wlog h : n ≤ m
-  · rw [Or.comm]
-    apply this
-    omega
-  right
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
-  rw [add_comm, Function.iterate_add, Function.comp_apply]
-  apply Order.pred_iterate_le
-
-lemma IsPredArchimedean.lt_or_le_of_le {α : Type*} [DecidableEq α] [PartialOrder α] [PredOrder α]
-    [IsPredArchimedean α] (r v₁ v₂ : α) (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) :
-    v₁ < v₂ ∨ v₂ ≤ v₁ := by
-  rw [Classical.or_iff_not_imp_right]
-  intro nh
-  rcases le_total_of_le r v₁ v₂ h₁ h₂ with h | h
-  · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
-  · contradiction
-
-def IsPredArchimedean.find_atom {α : Type*} [DecidableEq α] [PartialOrder α] [OrderBot α]
-    [PredOrder α] [IsPredArchimedean α] (r : α) : α :=
-  Order.pred^[Nat.find (bot_le (a := r)).exists_pred_iterate - 1] r
-
-lemma IsPredArchimedean.find_atom_le {α : Type*} [DecidableEq α] [PartialOrder α] [OrderBot α]
-    [PredOrder α] [IsPredArchimedean α] (r : α) : IsPredArchimedean.find_atom r ≤ r :=
-  Order.pred_iterate_le _ _
-
-@[simp]
-lemma IsPredArchimedean.pred_find_atom {α : Type*} [DecidableEq α] [PartialOrder α] [OrderBot α]
-    [PredOrder α] [IsPredArchimedean α] (r : α) :
-    Order.pred (IsPredArchimedean.find_atom r) = ⊥ := by
-  unfold find_atom
-  generalize h : Nat.find (bot_le (a := r)).exists_pred_iterate = n
-  cases n
-  · have : Order.pred^[0] r = ⊥ := by
-      rw [← h]
-      apply Nat.find_spec (bot_le (a := r)).exists_pred_iterate
-    simp only [Function.iterate_zero, id_eq] at this
-    simp [this]
-  · simp only [add_tsub_cancel_right, ← Function.iterate_succ_apply', Nat.succ_eq_add_one]
-    rw [←h]
-    apply Nat.find_spec (bot_le (a := r)).exists_pred_iterate
-
-lemma IsPredArchimedean.find_atom_ne_bot {α : Type*} [DecidableEq α] [PartialOrder α] [OrderBot α]
-    [PredOrder α] [IsPredArchimedean α] (r : α) (hr : r ≠ ⊥) :
-    IsPredArchimedean.find_atom r ≠ ⊥ := by
-  unfold find_atom
-  intro nh
-  have := Nat.find_min' (bot_le (a := r)).exists_pred_iterate nh
-  replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by omega
-  simp [this, hr] at nh
-
-def IsPredArchimedean.find_atom_is_atom {α : Type*} [DecidableEq α] [PartialOrder α] [OrderBot α]
-    [PredOrder α] [IsPredArchimedean α] (r : α) (hr : r ≠ ⊥) :
-    IsAtom (IsPredArchimedean.find_atom r) := by
-  constructor
-  · apply find_atom_ne_bot r hr
-  · intro b hb
-    apply Order.le_pred_of_lt at hb
-    simpa using hb
-
-
-instance IsPredArchimedean.instIsAtomic {α : Type*} [DecidableEq α] [PartialOrder α] [OrderBot α]
-    [PredOrder α] [IsPredArchimedean α] : IsAtomic α where
-  eq_bot_or_exists_atom_le b := by
-    rw [Classical.or_iff_not_imp_left]
-    intro hb
-    use find_atom b, find_atom_is_atom b hb, find_atom_le b
 
 @[coe, reducible]
 def coeTree {t : RootedTree} [DecidableEq t] (r : SubRootedTree t) : RootedTree :=
@@ -259,15 +140,29 @@ instance : IsRefl RootedTree RootedTree.homeomorphism where
 instance : IsTrans RootedTree RootedTree.homeomorphism where
   trans _ _ _ := fun ⟨ab, hab⟩ ⟨bc, hbc⟩ ↦ ⟨bc.comp ab, hbc.comp hab⟩
 
-def InfHom.subtype_val  {α : Type*} [SemilatticeInf α] {P : α → Prop}
-    (Pinf : ∀ ⦃x y : α⦄, P x → P y → P (x ⊓ y)) :
-    letI := Subtype.semilatticeInf Pinf
-    InfHom {x : α // P x} α :=
-  letI := Subtype.semilatticeInf Pinf
-  InfHom.mk Subtype.val (by simp)
+def LabeledTree.homeomorphism {α β : Type*} (r : α → β → Prop) (a : LabeledTree α)
+    (b : LabeledTree β) : Prop :=
+  ∃ f : InfHom a b, Function.Injective f ∧ ∀ x, r (a.2 x) (b.2 (f x))
 
-def InfHom.Ici_val  {α : Type*} [SemilatticeInf α] {r : α} :
-    InfHom (Set.Ici r) α := InfHom.subtype_val (fun _ _ ↦ le_inf)
+def LabeledTree.subtrees {α : Type*} (t : LabeledTree α) [DecidableEq t] :=
+  t.1.subtrees
+
+@[coe, reducible]
+def coeTreeL {α : Type*} {t : LabeledTree α} [DecidableEq t] (r : SubRootedTree t) :
+    LabeledTree α :=
+  ⟨r, fun x ↦ t.2 x⟩
+
+instance {α : Type*} {t : LabeledTree α} [DecidableEq t] :
+  CoeOut (SubRootedTree t) (LabeledTree α) := ⟨coeTreeL⟩
+
+instance {α : Type*} (r : α → α → Prop) [IsRefl α r] :
+    IsRefl (LabeledTree α) (LabeledTree.homeomorphism r) where
+  refl a := ⟨InfHom.id a, fun ⦃_ _⦄ ↦ id, fun _ ↦ IsRefl.refl _⟩
+
+instance {α : Type*} (r : α → α → Prop) [IsTrans α r] :
+    IsTrans (LabeledTree α) (LabeledTree.homeomorphism r) where
+  trans _ _ _ := fun ⟨ab, ⟨hab, hab2⟩⟩ ⟨bc, ⟨hbc, hbc2⟩⟩ ↦
+    ⟨bc.comp ab, hbc.comp hab, fun _ ↦ Trans.trans (hab2 _) (hbc2 _)⟩
 
 lemma RootedTree.homeomorphism_of_subtree {a b : RootedTree} [DecidableEq b.α] {x : b}
     (h : a.homeomorphism (b.subtree x)) : a.homeomorphism b := by
@@ -277,6 +172,18 @@ lemma RootedTree.homeomorphism_of_subtree {a b : RootedTree} [DecidableEq b.α] 
   apply Function.Injective.comp _ hf
   exact Subtype.val_injective
 
+lemma LabeledTree.homeomorphism_of_subtree {α β : Type*} (r : α → β → Prop) {a : LabeledTree α}
+    {b : LabeledTree β} [DecidableEq b] {x : b.1}
+    (h : a.homeomorphism r (b.1.subtree x)) : a.homeomorphism r b := by
+  obtain ⟨f, hf⟩ := h
+  use InfHom.comp InfHom.Ici_val f
+  rw [InfHom.coe_comp]
+  constructor
+  · apply Function.Injective.comp _ hf.1
+    exact Subtype.val_injective
+  · intro x
+    apply hf.2
+
 lemma RootedTree.subtree_card_lt {a : RootedTree} [Finite a] [DecidableEq a.α]
     {x : a} (hx : x ≠ ⊥) :
     Nat.card (a.subtree x) < Nat.card a := Finite.card_subtype_lt (x := ⊥) (by simpa)
@@ -284,32 +191,37 @@ lemma RootedTree.subtree_card_lt {a : RootedTree} [Finite a] [DecidableEq a.α]
 def Set.embeddingRel {α β : Type*} (r : α → β → Prop) (a : Set α) (b : Set β) : Prop :=
   ∃ f : a ↪ b, ∀ x : a, r x (f x)
 
-theorem RootedTree.homeomorphism_of_subtrees_embeddingRel (t₁ t₂ : RootedTree)
-    [DecidableEq t₁] [DecidableEq t₂]
+theorem LabeledTree.homeomorphism_of_subtrees_embeddingRel {α : Type*} (r : α → α → Prop)
+    (t₁ t₂ : LabeledTree α) (hr : r (t₁.2 ⊥) (t₂.2 ⊥)) [DecidableEq t₁] [DecidableEq t₂]
     (h : Set.embeddingRel
-      (fun (x : SubRootedTree t₁) (y : SubRootedTree t₂) ↦ RootedTree.homeomorphism x y)
+      (fun (x : SubRootedTree t₁) (y : SubRootedTree t₂) ↦ LabeledTree.homeomorphism r x y)
       t₁.subtrees t₂.subtrees) :
-    t₁.homeomorphism t₂ := by classical
+    t₁.homeomorphism r t₂ := by classical
   obtain ⟨g, hg⟩ := h
   choose g' hg' using hg
-  let g'' (t : t₁.subtrees) (b : t₁) : t₂ := if h : b ∈ ↑t.1 then g' t ⟨b, h⟩ else ⊥
+  let g'' (t : t₁.subtrees) (b : t₁.1) : t₂.1 := if h : b ∈ ↑t.1 then g' t ⟨b, h⟩ else ⊥
   have hg''1 (t : t₁.subtrees) : Set.MapsTo (g'' t) t (g t) := fun x hx ↦ by
     simp only [hx, ↓reduceDIte, g'']
     apply Subtype.coe_prop
   have hg''2 (t : t₁.subtrees) : Set.InjOn (g'' t) t := fun x hx y hy hxy ↦ by
     simp only [hx, ↓reduceDIte, hy, g'', Subtype.val_inj] at hxy
-    apply hg' at hxy
+    apply (hg' _).1 at hxy
     simpa using hxy
+  have hg''3 (t : t₁.subtrees) :
+      ∀ x ∈ (t : Set t₁), r (t₁.2 x) (t₂.2 (g'' t x)) := fun x hx ↦ by
+    simp only [hx, ↓reduceDIte, g'', Subtype.val_inj]
+    change r ((t : LabeledTree α).2 ⟨x, hx⟩) _
+    apply (hg' t).2
   clear hg'
-  let ans (b : t₁) : t₂ := if h : b = ⊥ then ⊥ else g'' (t₁.subtreeOf b h) b
-  use InfHom.mk ans ?minf
+  let ans (b : t₁.1) : t₂.1 := if h : b = ⊥ then ⊥ else g'' (t₁.1.subtreeOf b h) b
+  use InfHom.mk ans ?minf, ?_, ?_
   case minf =>
     intro a b
     by_cases ha : a = ⊥
     · simp [ha, ans]
     by_cases hb : b = ⊥
     · simp [hb, ans]
-    by_cases hab : t₁.subtreeOf a ha = t₁.subtreeOf b hb
+    by_cases hab : t₁.1.subtreeOf a ha = t₁.1.subtreeOf b hb
     · simp only [ha, ↓reduceDIte, hab, hb, ans]
       have : a ⊓ b ≠ ⊥ := by
         simp [subtrees_inf_eq_bot_iff a b (RootedTree.mem_subtreeOf _ ha)
@@ -331,8 +243,8 @@ theorem RootedTree.homeomorphism_of_subtrees_embeddingRel (t₁ t₂ : RootedTre
       · simp [ans, subtrees_inf_eq_bot_iff a b (RootedTree.mem_subtreeOf _ ha)
           (RootedTree.mem_subtreeOf _ hb), hab]
       · rw [eq_comm, subtrees_inf_eq_bot_iff
-          (t₁ := g <| t₁.subtreeOf a ha) (t₂ := g <| t₁.subtreeOf b hb)]
-        · simp [hab]
+          (t₁ := g <| t₁.1.subtreeOf a ha) (t₂ := g <| t₁.1.subtreeOf b hb)]
+        · simpa [g.apply_eq_iff_eq]
         · simp [ans, ha]
           apply hg''1
           apply RootedTree.mem_subtreeOf _ ha
@@ -352,12 +264,18 @@ theorem RootedTree.homeomorphism_of_subtrees_embeddingRel (t₁ t₂ : RootedTre
       exact (mem_subtree_ne_bot _ hxy).elim
     · have m1 := RootedTree.mem_subtreeOf _ hx
       have m2 := RootedTree.mem_subtreeOf _ hy
-      have : t₁.subtreeOf x hx = t₁.subtreeOf y hy := by
+      have : t₁.1.subtreeOf x hx = t₁.1.subtreeOf y hy := by
         simp only [m1, ↓reduceDIte, m2, g''] at hxy
         apply subtrees_val_inj at hxy
         exact g.injective hxy
       rw [this] at m1 hxy
       apply hg''2 _ m1 m2 hxy
+  · intro x
+    dsimp only [InfHom.coe_mk, ans]
+    split_ifs with h
+    · simpa [h]
+    · apply hg''3
+      apply RootedTree.mem_subtreeOf
 
 
 def Finset.embeddingRel {α β : Type*} (r : α → β → Prop) (a : Finset α) (b : Finset β) : Prop :=
@@ -439,32 +357,58 @@ theorem Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_finiteSetEmbedding {α
 
 -- This is Kruskal's tree theorem.
 -- Following the proof in "On well-quasi-ordering finite trees, C. ST. J. A. NASH-WILLIAMS"
-lemma Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_trees :
-    {f : RootedTree | Finite f}.PartiallyWellOrderedOn RootedTree.homeomorphism := by classical
-  rw [Set.PartiallyWellOrderedOn.iff_not_exists_isMinBadSeq (Nat.card ∘ RootedTree.α)]
+lemma Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_trees {α : Type*}
+    (r : α → α → Prop) [IsRefl α r] [IsTrans α r] (s : Set α) (hs : s.PartiallyWellOrderedOn r) :
+    {f : LabeledTree α | Finite f ∧ Set.range f.2 ⊆ s}.PartiallyWellOrderedOn
+      (LabeledTree.homeomorphism r) := by classical
+  rw [Set.PartiallyWellOrderedOn.iff_not_exists_isMinBadSeq (Nat.card ·.1)]
   rintro ⟨f, ⟨hf1, hf2⟩, hf3⟩
-  haveI : ∀ i, Finite (f i).α := hf1
-  clear hf1
-  let 𝔹 : Set RootedTree := ⋃ i, (↑) '' (f i).subtrees
-  have : 𝔹.PartiallyWellOrderedOn RootedTree.homeomorphism := by
+  simp only [mem_setOf_eq, forall_and] at hf1
+  obtain ⟨hf11, hf12⟩ := hf1
+  haveI : ∀ i, Finite (f i).1 := hf11
+  clear hf11
+  let 𝔹 : Set (LabeledTree α) := ⋃ i, (↑) '' (f i).subtrees
+  have : 𝔹.PartiallyWellOrderedOn (LabeledTree.homeomorphism r) := by
     rw [Set.PartiallyWellOrderedOn.iff_forall_not_isBadSeq]
     rintro g ⟨hg', hg⟩
     simp only [mem_iUnion, 𝔹] at hg'
     choose gi hgi using hg'
     have : (Set.univ : Set ℕ).IsPWO := Set.IsWF.isPWO wellFounded_lt
     obtain ⟨g', hg'⟩ := this.exists_monotone_subseq gi (by simp)
-    let f' (i : ℕ) : RootedTree := if i < gi (g' 0) then f i else g (g' (i - gi (g' 0)))
-    have : IsBadSeq RootedTree.homeomorphism {f | Finite f.α} f' := by
+    let f' (i : ℕ) : LabeledTree α := if i < gi (g' 0) then f i else g (g' (i - gi (g' 0)))
+    have : IsBadSeq (LabeledTree.homeomorphism r) {f | Finite f ∧ Set.range f.2 ⊆ s} f' := by
       constructor
       · intro n
-        simp only [mem_setOf_eq, f']
-        split
-        · infer_instance
-        · have := hgi (g' (n - gi (g' 0)))
-          simp only [mem_range, RootedTree.subtrees, RootedTree.subtree] at this
-          obtain ⟨x, -, hx⟩ := this
-          rw [← hx]
-          infer_instance
+        constructor
+        · simp only [f']
+          split
+          · infer_instance
+          · have := hgi (g' (n - gi (g' 0)))
+            simp only [mem_range, RootedTree.subtrees, RootedTree.subtree] at this
+            obtain ⟨x, -, hx⟩ := this
+            rw [← hx]
+            infer_instance
+        · unfold_let f'
+          dsimp
+          split_ifs with h
+          · have : (if n < gi (g' 0) then f n else g (g' (n - gi (g' 0)))) =
+                f n := by
+              simp [h]
+            rw [this]
+            apply hf12
+          · have : (if n < gi (g' 0) then f n else g (g' (n - gi (g' 0)))) =
+                g (g' (n - gi (g' 0))) := by
+              simp [h]
+            rw [this]
+            have := hgi (g' (n - gi (g' 0)))
+            simp only [mem_image, LabeledTree.subtrees, RootedTree.subtrees, RootedTree.subtree] at this
+            obtain ⟨x, -, hx⟩ := this
+            rw [← hx]
+            trans Set.range (f (gi (g' (n - gi (g' 0))))).snd
+            · rw [Set.range_subset_range_iff_exists_comp]
+              use (↑)
+              rfl
+            · apply hf12
       · intro n m hnm
         unfold_let f'
         dsimp only
@@ -478,7 +422,7 @@ lemma Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_trees :
             simp only [mem_range, RootedTree.subtrees, RootedTree.subtree] at this
             obtain ⟨x, -, hx⟩ := this
             rw [← hx]
-            apply mt RootedTree.homeomorphism_of_subtree
+            apply mt (LabeledTree.homeomorphism_of_subtree r)
             apply hf2
             apply hn.trans_le
             apply hg'
@@ -496,7 +440,7 @@ lemma Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_trees :
     apply RootedTree.subtree_card_lt
     exact hx1.1
   replace this := Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_finiteSetEmbedding
-    (β := fun n ↦ SubRootedTree (f n)) (↑) RootedTree.homeomorphism this
+    (β := fun n ↦ SubRootedTree (f n)) (↑) (LabeledTree.homeomorphism r) this
   specialize this (fun i ↦ (f i).subtrees) _
   · intro n
     constructor
@@ -507,7 +451,5 @@ lemma Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_trees :
       use n, x, hx
   obtain ⟨n, m, hnm, g⟩ := this
   apply hf2 n m hnm
-  apply RootedTree.homeomorphism_of_subtrees_embeddingRel
+  apply LabeledTree.homeomorphism_of_subtrees_embeddingRel
   exact g
-
-#print axioms Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_trees
