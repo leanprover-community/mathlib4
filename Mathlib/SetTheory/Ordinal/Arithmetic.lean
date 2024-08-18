@@ -824,17 +824,25 @@ theorem div_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a / b = 0 := by
 theorem mul_div_cancel (a) {b : Ordinal} (b0 : b ≠ 0) : b * a / b = a := by
   simpa only [add_zero, zero_div] using mul_add_div a b0 0
 
-theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
-  have ha' := Ordinal.pos_iff_ne_zero.2 ha
-  obtain rfl | hc := eq_zero_or_pos c
+theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
+    (a * b + c) / (a * d) = b / d := by
+  have ha : a ≠ 0 := ((Ordinal.zero_le c).trans_lt hc).ne'
+  obtain rfl | hd := eq_or_ne d 0
   · rw [mul_zero, div_zero, div_zero]
-  · have h := mul_ne_zero ha hc.ne'
+  · have H := mul_ne_zero ha hd
     apply le_antisymm
-    · rw [div_le h, mul_assoc]
-      apply mul_lt_mul_of_pos_left _ ha'
-      rw [← div_le hc.ne']
-    · rw [div_le hc.ne']
-      rw [← mul_lt_mul_iff_left ha', ← mul_assoc, ← div_le h]
+    · rw [← lt_succ_iff, div_lt H, mul_assoc]
+      · apply (add_lt_add_left hc _).trans_le
+        rw [← mul_succ]
+        apply mul_le_mul_left'
+        rw [succ_le_iff]
+        exact lt_mul_succ_div b hd
+    · rw [le_div H, mul_assoc]
+      exact (mul_le_mul_left' (mul_div_le b d) a).trans (le_add_right _ c)
+
+theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
+  convert mul_add_div_mul (Ordinal.pos_iff_ne_zero.2 ha) b c using 1
+  rw [add_zero]
 
 @[simp]
 theorem div_one (a : Ordinal) : a / 1 = a := by
