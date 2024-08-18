@@ -251,7 +251,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless stx.isOfKind ``Lean.Parser.Command.eoi do return
   -- We exclude `Mathlib.lean` from the linter: it exceeds linter's default number of allowed
   -- lines, and it is an auto-generated import-only file.
-  -- TODO: if there be more such files, revise the implementation.
+  -- TODO: if there are more such files, revise the implementation.
   if (← getMainModule) == `Mathlib then return
   if let some init := stx.getPos? then
     -- the last line: we subtract 1, since the last line is expected to be empty
