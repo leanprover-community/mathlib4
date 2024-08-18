@@ -204,6 +204,25 @@ theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁
   mem_ext nd₀.nodup nd₁.nodup fun ⟨a, b⟩ => by
     rw [← mem_dlookup_iff, ← mem_dlookup_iff, h] <;> assumption
 
+theorem dlookup_map₁ {γ δ} [DecidableEq γ]
+    {l : List (Σ _ : α, δ)} {f : α → γ} (hf : Function.Injective f) (a : α) :
+    (l.map fun x => ⟨f x.1, x.2⟩ : List (Σ _ : γ, δ)).dlookup (f a) = l.dlookup a := by
+  induction' l with b l IH
+  · rw [map_nil, dlookup_nil, dlookup_nil]
+  · rw [map_cons]
+    obtain h | h := eq_or_ne (f a) (f b.1)
+    · rw [h, hf h, dlookup_cons_eq, dlookup_cons_eq]
+    · rw [dlookup_cons_ne _ _ h, dlookup_cons_ne _ _ (fun he => (he ▸ h) rfl), IH]
+
+theorem dlookup_map₂ {γ δ} {l : List (Σ _ : α, γ)} {f : γ → δ} (a : α) :
+    (l.map fun x => ⟨x.1, f x.2⟩ : List (Σ _ : α, δ)).dlookup a = (l.dlookup a).map f := by
+  induction' l with b l IH
+  · rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none']
+  · rw [map_cons]
+    obtain rfl | h := eq_or_ne a b.1
+    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.map_some']
+    · rw [dlookup_cons_ne _ _ h, dlookup_cons_ne _ _ (fun he => (he ▸ h) rfl), IH]
+
 /-! ### `lookupAll` -/
 
 
