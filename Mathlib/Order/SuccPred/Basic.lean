@@ -1427,3 +1427,74 @@ lemma SuccOrder.forall_ne_bot_iff
   rw [← Nat.succ_pred_eq_of_pos hj]
   simp only [Function.iterate_succ', Function.comp_apply]
   apply h
+
+namespace EquivLike
+
+variable {X Y F : Type*} [EquivLike F X Y] [LinearOrder X] [LinearOrder Y]
+
+@[reducible]
+protected def SuccOrder [SuccOrder X] (f : F) (hf : Monotone f) : SuccOrder Y where
+  succ y := f (Order.succ (inv f y))
+  le_succ y := by
+    obtain ⟨x, rfl⟩ := EquivLike.surjective f y
+    simpa using hf (Order.le_succ x)
+  max_of_succ_le {y} hy := by
+    obtain ⟨x, rfl⟩ := EquivLike.surjective f y
+    have hf := hf.strictMono_of_injective (EquivLike.injective f)
+    simp only [inv_apply_apply, hf.le_iff_le] at hy
+    have := Order.max_of_succ_le hy
+    -- is there some StrictMono.isMax_map_iff? seems like it needs surjective
+    intro b hb
+    obtain ⟨y, rfl⟩ := EquivLike.surjective f b
+    rw [hf.le_iff_le] at hb ⊢
+    exact this hb
+  succ_le_of_lt {a b} h := by
+    obtain ⟨x, rfl⟩ := EquivLike.surjective f b
+    have hf := hf.strictMono_of_injective (EquivLike.injective f)
+    simp only [hf.le_iff_le]
+    refine Order.succ_le_of_lt ?_
+    simp [← hf.lt_iff_lt, h]
+  le_of_lt_succ {a b} h := by
+    obtain ⟨x, rfl⟩ := EquivLike.surjective f a
+    obtain ⟨y, rfl⟩ := EquivLike.surjective f b
+    have hf := hf.strictMono_of_injective (EquivLike.injective f)
+    simp only [inv_apply_apply, hf.lt_iff_lt] at h
+    simp [hf.le_iff_le, Order.le_of_lt_succ h]
+
+@[reducible]
+protected def PredOrder [PredOrder X] (f : F) (hf : Monotone f) : PredOrder Y := by
+  let _ := EquivLike.SuccOrder (X := Xᵒᵈ) (Y := Yᵒᵈ) f (fun {a b} h ↦ hf h)
+  let e : PredOrder Yᵒᵈᵒᵈ := by infer_instance
+  exact e
+
+@[reducible]
+protected def IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X]
+    (f : F) (hf : Monotone f) : IsSuccArchimedean Y where
+  exists_succ_iterate_of_le {a b} h := by
+    have : ∀ x, Order.succ (f x) = f (Order.succ x) := by
+      have ho : (Order.succ : Y → Y) = (EquivLike.SuccOrder f hf).succ := by
+        simp [(Order.instSubsingletonSuccOrder (α := Y)).elim]
+        rfl
+      have : ∀ y, (EquivLike.SuccOrder f hf).succ y = f (Order.succ (inv f y)) := fun _ ↦ rfl
+      intro x
+      simp [ho, this]
+    have hf := hf.strictMono_of_injective (EquivLike.injective f)
+    obtain ⟨x, rfl⟩ := EquivLike.surjective f a
+    obtain ⟨y, rfl⟩ := EquivLike.surjective f b
+    obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le (hf.le_iff_le.mp h)
+    clear h
+    refine ⟨n, ?_⟩
+    induction n with
+    | zero => simp
+    | succ n IH =>
+      rw [Function.iterate_succ', Function.comp_apply, IH, Function.iterate_succ',
+          Function.comp_apply, this]
+
+@[reducible]
+protected def IsPredArchimedean [PredOrder X] [PredOrder Y] [IsPredArchimedean X]
+    (f : F) (hf : Monotone f) : IsPredArchimedean Y := by
+  let _ := EquivLike.IsSuccArchimedean (X := Xᵒᵈ) (Y := Yᵒᵈ) f (fun {a b} h ↦ hf h)
+  let e : IsPredArchimedean Yᵒᵈᵒᵈ := by infer_instance
+  exact e
+
+end EquivLike
