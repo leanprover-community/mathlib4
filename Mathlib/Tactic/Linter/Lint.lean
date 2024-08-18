@@ -121,7 +121,7 @@ open Lean Elab Command
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 register_option linter.missingEnd : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the missing end linter"
 }
 
@@ -167,7 +167,7 @@ The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a ch
 different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
 register_option linter.cdot : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `cdot` linter"
 }
 
@@ -216,7 +216,7 @@ end CDotLinter
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
 register_option linter.longLine : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the longLine linter"
 }
 
