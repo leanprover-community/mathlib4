@@ -221,7 +221,7 @@ def produceLabels (env : Environment) (gitDiffs : String) : Array String :=
 `produce_labels "A/B/C.lean⏎D/E.lean"` takes as input a string, assuming that it is a
 line-break-separated list of paths to files.
 It uses the paths to check if any of the labels in the environment is applicable.
-It prints the sorted array of the applicable labels with no repetitions.
+It prints the sorted, comma-separated string of the applicable labels with no repetitions.
 
 `produce_labels! "A/B/C.lean⏎D/E.lean"`, with the `!` flag, displays, for each label,
 the paths that have that label.
@@ -236,7 +236,10 @@ elab (name := produceLabelsCmd) tk:"produce_labels" lab:("!")? st:(ppSpace str) 
   let labToFiles := (labelsToFiles (← getEnv) str).toArray.qsort (·.1 < ·.1)
   match lab with
     | some _ => logInfoAt tk m!"{labToFiles}"
-    | none => logInfoAt tk m!"{(labToFiles.map Prod.fst).filter (· != "unlabeled")}"
+    | none =>
+      let labels := ((labToFiles.map Prod.fst).filter (· != "unlabeled")).toList
+      let csvLabels := String.intercalate "," labels
+      logInfoAt tk m!"{csvLabels}"
 
 @[inherit_doc produceLabelsCmd]
 macro "produce_labels! " st:str : command => `(produce_labels ! $st)

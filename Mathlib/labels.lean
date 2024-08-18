@@ -125,7 +125,7 @@ exclusions: [Mathlib/Tactic/Linter/]
 #guard_msgs in
 check_labels "t-met"
 
-/-- info: [t-algebra, t-algebraic-geometry, t-linter, t-meta, t-set-theory] -/
+/-- info: t-algebra,t-algebraic-geometry,t-linter,t-meta,t-set-theory -/
 #guard_msgs in
 produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/SetTheory/Ordinals/Basic.lean
@@ -157,28 +157,18 @@ Mathlib/Tactic/Linter/AnotherOne.lean
 Mathlib/Tactic/MoreTactics/Basic.lean
 
 "
-/-- info: [t-linter, t-set-theory] -/
+/-- info: t-linter,t-set-theory -/
 #guard_msgs in
 produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/Tactic/Linter/Basic.lean"
 
-/-- info: [t-meta, t-set-theory] -/
+/-- info: t-meta,t-set-theory -/
 #guard_msgs in
 produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/Tactic/Linarith/Basic.lean"
 
-produce_labels! "git"
-
-open Lean Elab.Command in
-/-- `run_cmd outputLabels` examines the diff with master and reports the appropriate labels. -/
-def outputLabels : CommandElabM Unit := do
-  let gitArgs := #["diff", "--name-only", "master...HEAD"]
-  let out ← IO.Process.run { cmd := "git", args := gitArgs }
-  let labels := produceLabels (← getEnv) out
-  let csLabs := String.intercalate "," labels.toList
-  dbg_trace csLabs
-
 /-remove me during CI
-run_cmd outputLabels
+produce_labels "git"
 --/
+
 end AutoLabel.Label
