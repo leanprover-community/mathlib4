@@ -1432,6 +1432,7 @@ namespace EquivLike
 
 variable {X Y F : Type*} [EquivLike F X Y] [LinearOrder X] [LinearOrder Y]
 
+/-- `SuccOrder` transfers across monotonic equivalences between linear orders. -/
 @[reducible]
 protected def SuccOrder [SuccOrder X] (f : F) (hf : Monotone f) : SuccOrder Y where
   succ y := f (Order.succ (inv f y))
@@ -1461,12 +1462,14 @@ protected def SuccOrder [SuccOrder X] (f : F) (hf : Monotone f) : SuccOrder Y wh
     simp only [inv_apply_apply, hf.lt_iff_lt] at h
     simp [hf.le_iff_le, Order.le_of_lt_succ h]
 
+/-- `PredOrder` transfers across monotonic equivalences between linear orders. -/
 @[reducible]
 protected def PredOrder [PredOrder X] (f : F) (hf : Monotone f) : PredOrder Y := by
   let _ := EquivLike.SuccOrder (X := Xᵒᵈ) (Y := Yᵒᵈ) f (fun {a b} h ↦ hf h)
   let e : PredOrder Yᵒᵈᵒᵈ := by infer_instance
   exact e
 
+/-- `IsSuccArchimedean` transfers across monotonic equivalences between linear `SuccOrder`s. -/
 @[reducible]
 protected def IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X]
     (f : F) (hf : Monotone f) : IsSuccArchimedean Y where
@@ -1490,6 +1493,7 @@ protected def IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X
       rw [Function.iterate_succ', Function.comp_apply, IH, Function.iterate_succ',
           Function.comp_apply, this]
 
+/-- `IsPredArchimedean` transfers across monotonic equivalences between linear `PredOrder`s. -/
 @[reducible]
 protected def IsPredArchimedean [PredOrder X] [PredOrder Y] [IsPredArchimedean X]
     (f : F) (hf : Monotone f) : IsPredArchimedean Y := by
