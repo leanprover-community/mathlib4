@@ -40,7 +40,6 @@ After that, it applies some pre-emptive changes:
 * doc-module beginnings tend to have some whitespace following them, so we add a space back in;
 * name quotations such as ``` ``Nat``` get pretty-printed as ``` `` Nat```, so we remove a space
   after double back-ticks, but take care of adding one more for triple (or more) back-ticks;
-* `notation3` is not followed by a pretty-printer space, so we add it here (https://github.com/leanprover-community/mathlib4/pull/15515).
 -/
 def polishPP (s : String) : String :=
   let s := s.split (·.isWhitespace)
@@ -50,7 +49,7 @@ def polishPP (s : String) : String :=
                               -- as a consequence of the following replacement
     |>.replace "`` " "``" -- weird pp ```#eval ``«Nat»``` pretty-prints as ```#eval `` «Nat»```
     |>.replace "notation3(" "notation3 ("
-    |>.replace "notation3\"" "notation3 \""
+    --|>.replace "{" "{"   -- probably better?
 
 /-- `polishSource s` is similar to `polishPP s`, but expects the input to be actual source code.
 For this reason, `polishSource s` performs more conservative changes:
