@@ -33,6 +33,11 @@ import Mathlib.Tactic.Linter.Lint
 -- This linter is also active by default.
 import Mathlib.Tactic.Linter.UnusedTactic
 
+-- The `haveLet` linter warns on `have`s introducing hypotheses whose type is not Prop:
+-- `have` will erase access to this data, which can be confusing.
+-- By default, this linter only warnings on noisy declarations (i.e., in-progress proofs).
+-- As that setting could be useful to outside projects, it is enabled by default.
+import Mathlib.Tactic.Linter.HaveLetLinter
 
 -- The following linters are "restriction lints": they warn about a particular idiom,
 -- where there are better alternatives. As this is somewhat subjective,
