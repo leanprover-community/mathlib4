@@ -203,13 +203,13 @@ theorem covBy_succ_of_not_isMax (h : ¬IsMax a) : a ⋖ succ a :=
   (wcovBy_succ a).covBy_of_lt <| lt_succ_of_not_isMax h
 
 theorem lt_succ_of_le_of_not_isMax (hab : b ≤ a) (ha : ¬IsMax a) : b < succ a :=
-  fun h => h.trans_lt <| lt_succ_of_not_isMax ha
+  hab.trans_lt <| lt_succ_of_not_isMax ha
 
 theorem succ_le_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ b ↔ a < b :=
   ⟨(lt_succ_of_not_isMax ha).trans_le, succ_le_of_lt⟩
 
 lemma succ_lt_succ_of_not_isMax (h : a < b) (hb : ¬ IsMax b) : succ a < succ b :=
-  lt_succ_of_not_isMax_of_le hb <| succ_le_of_lt h
+  lt_succ_of_le_of_not_isMax (succ_le_of_lt h) hb
 
 @[simp, mono]
 theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
@@ -218,7 +218,7 @@ theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
     · exact (hb <| hba.trans <| le_succ _).trans (le_succ _)
     · exact succ_le_of_lt ((h.lt_of_not_le hba).trans_le <| le_succ b)
   · rw [succ_le_iff_of_not_isMax fun ha => hb <| ha.mono h]
-    apply lt_succ_of_not_isMax_of_le hb h
+    apply lt_succ_of_le_of_not_isMax h hb
 
 theorem succ_mono : Monotone (succ : α → α) := fun _ _ => succ_le_succ
 
@@ -251,7 +251,7 @@ theorem isMax_iterate_succ_of_eq_of_ne {n m : ℕ} (h_eq : succ^[n] a = succ^[m]
     exact isMax_iterate_succ_of_eq_of_lt h_eq.symm (lt_of_le_of_ne h h_ne.symm)
 
 theorem Iic_subset_Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iic a ⊆ Iio (succ a) :=
-  fun _ => lt_succ_of_not_isMax_of_le ha
+  fun _ => (lt_succ_of_le_of_not_isMax · ha)
 
 theorem Ici_succ_of_not_isMax (ha : ¬IsMax a) : Ici (succ a) = Ioi a :=
   Set.ext fun _ => succ_le_iff_of_not_isMax ha
@@ -259,12 +259,14 @@ theorem Ici_succ_of_not_isMax (ha : ¬IsMax a) : Ici (succ a) = Ioi a :=
 theorem Icc_subset_Ico_succ_right_of_not_isMax (hb : ¬IsMax b) : Icc a b ⊆ Ico a (succ b) := by
   rw [← Ici_inter_Iio, ← Ici_inter_Iic]
   gcongr
-  apply subset_Iio_succ_of_not_isMax hb
+  intro _ h
+  apply lt_succ_of_le_of_not_isMax h hb
 
 theorem Ioc_subset_Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioc a b ⊆ Ioo a (succ b) := by
   rw [← Ioi_inter_Iio, ← Ioi_inter_Iic]
   gcongr
-  apply subset_Iio_succ_of_not_isMax hb
+  intro _ h
+  apply Iic_subset_Iio_succ_of_not_isMax hb h
 
 theorem Icc_succ_left_of_not_isMax (ha : ¬IsMax a) : Icc (succ a) b = Ioc a b := by
   rw [← Ici_inter_Iic, Ici_succ_of_not_isMax ha, Ioi_inter_Iic]
@@ -281,13 +283,13 @@ theorem lt_succ (a : α) : a < succ a :=
 
 @[simp]
 theorem lt_succ_of_le : a ≤ b → a < succ b :=
-  lt_succ_of_not_isMax_of_le <| not_isMax b
+  (lt_succ_of_le_of_not_isMax · <| not_isMax b)
 
 @[simp]
 theorem succ_le_iff : succ a ≤ b ↔ a < b :=
   succ_le_iff_of_not_isMax <| not_isMax a
 
-@[gcongr] theorem succ_lt_succ (hab : a < b) : succ a < succ b := by simp
+@[gcongr] theorem succ_lt_succ (hab : a < b) : succ a < succ b := by simp [hab]
 
 theorem succ_strictMono : StrictMono (succ : α → α) := fun _ _ => succ_lt_succ
 
@@ -296,7 +298,7 @@ theorem covBy_succ (a : α) : a ⋖ succ a :=
 
 @[simp]
 theorem subset_Iio_succ (a : α) : Iic a ⊆ Iio (succ a) :=
-  subset_Iio_succ_of_not_isMax <| not_isMax _
+  Iic_subset_Iio_succ_of_not_isMax <| not_isMax _
 
 @[simp]
 theorem Ici_succ (a : α) : Ici (succ a) = Ioi a :=
@@ -304,11 +306,11 @@ theorem Ici_succ (a : α) : Ici (succ a) = Ioi a :=
 
 @[simp]
 theorem subset_Ico_succ_right (a b : α) : Icc a b ⊆ Ico a (succ b) :=
-  subset_Ico_succ_right_of_not_isMax <| not_isMax _
+  Icc_subset_Ico_succ_right_of_not_isMax <| not_isMax _
 
 @[simp]
 theorem subset_Ioo_succ_right (a b : α) : Ioc a b ⊆ Ioo a (succ b) :=
-  subset_Ioo_succ_right_of_not_isMax <| not_isMax _
+  Ioc_subset_Ioo_succ_right_of_not_isMax <| not_isMax _
 
 @[simp]
 theorem Icc_succ_left (a b : α) : Icc (succ a) b = Ioc a b :=
