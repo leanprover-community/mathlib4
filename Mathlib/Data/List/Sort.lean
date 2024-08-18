@@ -237,8 +237,8 @@ theorem mem_orderedInsert {a b : α} {l : List α} :
     · simp [orderedInsert]
     · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
 
-theorem map_orderedInsert (l : List α) (x : α) (f : α → β) (hl₁ : ∀ a ∈ l, r a x ↔ s (f a) (f x))
-    (hl₂ : ∀ a ∈ l, r x a ↔ s (f x) (f a)) :
+theorem map_orderedInsert (l : List α) (x : α) (f : α → β)
+    (hl₁ : ∀ a ∈ l, r a x ↔ s (f a) (f x)) (hl₂ : ∀ a ∈ l, r x a ↔ s (f x) (f a)) :
     (l.orderedInsert r x).map f = (l.map f).orderedInsert s (f x) := by
   induction l with
   | nil => simp
