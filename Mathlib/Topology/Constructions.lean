@@ -713,6 +713,14 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
       simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false_iff] at H
       exact H.1.prod H.2
 
+theorem quotientMap_fst [Nonempty Y] : QuotientMap (Prod.fst : X × Y → X) := by
+  simp only [quotientMap_iff, Prod.fst_surjective, ← prod_univ, isOpen_prod_iff']
+  simp
+
+theorem quotientMap_snd [Nonempty X] : QuotientMap (Prod.snd : X × Y → Y) := by
+  simp only [quotientMap_iff, Prod.snd_surjective, ← univ_prod, isOpen_prod_iff']
+  simp
+
 theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s ×ˢ closure t :=
   ext fun ⟨a, b⟩ => by
     simp_rw [mem_prod, mem_closure_iff_nhdsWithin_neBot, nhdsWithin_prod_eq, prod_neBot]

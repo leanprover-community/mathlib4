@@ -146,8 +146,11 @@ lemma IsOpen.exterior_eq (h : IsOpen s) : exterior s = s :=
 lemma IsOpen.exterior_subset_iff (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
   ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
 
-@[mono] lemma exterior_mono : Monotone (exterior : Set α → Set α) :=
-  fun _s _t h ↦ ker_mono <| nhdsSet_mono h
+@[mono, gcongr] lemma exterior_mono (h : s ⊆ t)  : exterior s ⊆ exterior t :=
+  ker_mono <| nhdsSet_mono h
+
+lemma exterior_monotone : Monotone (exterior : Set α → Set α) :=
+  fun _s _t h ↦ exterior_mono h
 
 @[simp] lemma exterior_empty : exterior (∅ : Set α) = ∅ := isOpen_empty.exterior_eq
 @[simp] lemma exterior_univ : exterior (univ : Set α) = univ := isOpen_univ.exterior_eq
@@ -225,6 +228,9 @@ lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) int
 
 @[simp] lemma exterior_union (s t : Set α) : exterior (s ∪ t) = exterior s ∪ exterior t :=
   gc_exterior_interior.l_sup
+
+@[simp] lemma exterior_iUnion (s : ι → Set α) : exterior (⋃ i, s i) = ⋃ i, exterior (s i) :=
+  gc_exterior_interior.l_iSup
 
 @[simp] lemma nhdsSet_exterior (s : Set α) : 𝓝ˢ (exterior s) = 𝓝ˢ s := by
   ext t; simp_rw [← exterior_subset_iff_mem_nhdsSet, exterior_exterior]
