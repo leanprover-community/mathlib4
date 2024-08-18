@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
+import Mathlib.GroupTheory.QuotientGroup.Finite
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.RingTheory.Ideal.Basic
@@ -354,7 +355,7 @@ lemma univ_eq_iUnion_image_add {R : Type*} [Ring R] (I : Ideal R) :
   QuotientAddGroup.univ_eq_iUnion_image_add I.toAddSubgroup
 
 lemma _root_.Finite.of_finite_quot_finite_ideal {R : Type*} [Ring R] {I : Ideal R}
-    (hI : Set.Finite (I : Set R)) (h : Finite (R ⧸ I)) : Finite R :=
-  Finite.of_finite_quot_finite_addSubgroup hI h
+    [hI : Finite I] [h : Finite (R ⧸ I)] : Finite R :=
+  @Finite.of_finite_quot_finite_addSubgroup _ _ _ hI h
 
 end Ideal
