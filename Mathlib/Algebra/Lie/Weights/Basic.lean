@@ -615,7 +615,7 @@ lemma isCompl_genWeightSpace_zero_posFittingComp :
     exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mp this
   refine (LieSubmodule.wellFoundedLT_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
   refine isCompl_genWeightSpace_zero_posFittingComp_aux R L N fun N' hN' ↦ ?_
-  suffices IsCompl (weightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl)) by
+  suffices IsCompl (genWeightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl)) by
     let e := LieSubmodule.equivMapOfInjective N' N.injective_incl
     rw [← map_genWeightSpace_eq e, ← map_posFittingComp_eq e] at this
     exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mpr this
