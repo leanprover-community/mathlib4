@@ -757,7 +757,7 @@ theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.None
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
 instance div : Div Ordinal :=
-  ⟨fun a b => if _h : b = 0 then 0 else sInf { o | a < b * succ o }⟩
+  ⟨fun a b => if b = 0 then 0 else sInf { o | a < b * succ o }⟩
 
 @[simp]
 theorem div_zero (a : Ordinal) : a / 0 = 0 :=
@@ -823,6 +823,18 @@ theorem div_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a / b = 0 := by
 @[simp]
 theorem mul_div_cancel (a) {b : Ordinal} (b0 : b ≠ 0) : b * a / b = a := by
   simpa only [add_zero, zero_div] using mul_add_div a b0 0
+
+theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
+  have ha' := Ordinal.pos_iff_ne_zero.2 ha
+  obtain rfl | hc := eq_zero_or_pos c
+  · rw [mul_zero, div_zero, div_zero]
+  · have h := mul_ne_zero ha hc.ne'
+    apply le_antisymm
+    · rw [div_le h, mul_assoc]
+      apply mul_lt_mul_of_pos_left _ ha'
+      rw [← div_le hc.ne']
+    · rw [div_le hc.ne']
+      rw [← mul_lt_mul_iff_left ha', ← mul_assoc, ← div_le h]
 
 @[simp]
 theorem div_one (a : Ordinal) : a / 1 = a := by
@@ -935,6 +947,12 @@ theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x := by
 @[simp]
 theorem mul_mod (x y : Ordinal) : x * y % x = 0 := by
   simpa using mul_add_mod_self x y 0
+
+theorem mul_mod_mul (x y z : Ordinal) : (x * y) % (x * z) = x * (y % z) := by
+  obtain rfl | hx := eq_or_ne x 0
+  · repeat rw [zero_mul]
+    rw [zero_mod]
+  · rw [mod_def, mul_div_mul_cancel hx, mul_assoc, ← mul_sub, ← mod_def]
 
 theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c = a % c := by
   nth_rw 2 [← div_add_mod a b]
