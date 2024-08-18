@@ -6,6 +6,8 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 
 import Mathlib.Order.RelSeries
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Topology.Order.Monotone
+import Mathlib.Topology.Instances.ENat
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -52,39 +54,6 @@ Krull dimension of a preorder.
 section in_other_prs -- should be empty when this PR gets submitted
 
 variable {α : Type*}
-
--- https://github.com/leanprover-community/mathlib4/pull/15344
-lemma ENat.iSup_add (ι : Type*) [Nonempty ι] (f : ι → ℕ∞) (n : ℕ∞) :
-    (⨆ x, f x) + n = (⨆ x, f x + n) := by
-  cases n; simp; next n =>
-  apply le_antisymm
-  · apply le_iSup_iff.mpr
-    intro m hm
-    cases m; simp; next m =>
-    have hnm : n ≤ m := by
-      specialize hm Classical.ofNonempty
-      revert hm
-      cases f Classical.ofNonempty
-      · simp
-      · intro h; norm_cast at *; omega
-    suffices (⨆ x, f x) ≤ ↑(m - n) by
-      revert this
-      generalize (⨆ x, f x) = k
-      cases k
-      · intro h; exfalso
-        simp only [top_le_iff, coe_ne_top] at h
-      · norm_cast; omega
-    apply iSup_le
-    intro i
-    specialize hm i
-    revert hm
-    cases f i <;> intro hm
-    · exfalso; simp at hm
-    · norm_cast at *; omega
-  · apply iSup_le
-    intro i
-    gcongr
-    exact le_iSup f i
 
 /-- https://github.com/leanprover-community/mathlib4/pull/15555 -/
 def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
@@ -232,7 +201,9 @@ lemma coheight_mono : Antitone (α := α) coheight :=
 private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α ) (_ : p.last = a), p.length + n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
-  rw [height, iSup_subtype', iSup_subtype', ENat.iSup_add]
+  rw [height, iSup_subtype', iSup_subtype']
+  rw [Monotone.map_iSup_of_continuousAt' (f := (· + n))
+    (continuousAt_id.add continuousAt_const) (monotone_id.add monotone_const)]
 
 -- only true for finite height
 lemma height_strictMono (x y : α) (hxy : x < y) (hfin : height y < ⊤) :
@@ -724,9 +695,10 @@ lemma coheight_coe_WithBot (x : α) : coheight (x : WithBot α) = coheight x :=
 
 @[simp]
 lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
-  rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty]
+  rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_isup_lt_height]
   norm_cast
-  rw [ENat.iSup_add, height_eq_isup_lt_height]
+  rw [Monotone.map_iSup_of_continuousAt' (f := (· + 1))
+    (continuousAt_id.add continuousAt_const) (monotone_id.add monotone_const)]
   apply le_antisymm
   · apply iSup₂_le
     intro x h
