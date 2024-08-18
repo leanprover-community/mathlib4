@@ -16,7 +16,8 @@ In this file, we sketch the beginnings of unoriented bordism theory.
 Not all of this might end up in mathlib already (depending on how many pre-requisites are missing),
 but a fair number of pieces already can be upstreamed!
 
-This file currently has about 75 sorries remaining: prove these would be very welcome.
+This file and its dependents currently have about 75 sorries remaining:
+help proving these would be very welcome.
 Some particular loose ends include:
 - show the disjoint union of smooth manifolds is smooth,
  and that the natural maps are smooth
@@ -29,8 +30,15 @@ Currently, there is a fair amount of DTT hell... perhaps there is a better way!
 - prove transitivity of the bordism relation: this entails proving a number of lemmas
 about attaching maps in topological spaces, and the collar neighbourhood theorem
 
-- actually define the bordism groups (and prove it is a group, if I can):
-is not hard; just need to read up on how to do this
+- refactor the definition of singular n-manifolds and unoriented cobordisms:
+I want to make the manifold M (and the associated spaces E, H and I) part of the *data*
+of a singular n-manifold, as opposed to prescribed before.
+The naive attempt (at the branch `MR-variables-into-singularnmanifold`)
+runs into errors with typeclass synthesis order...
+
+- define the unoriented bordism groups: I have a dummy definition below; once the above refactoring
+is complete, replace this by the actual definition I want
+- prove each unoriented bordism group is a group
 
 - prove some of the easy axioms of homology... perhaps all of it?
 - does mathlib have a typeclass for "extraordinary homology theory"?
@@ -521,8 +529,59 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 -- whose charts are modelled on some fixed space `E`.
 -- (I'm not sure if this requirement is essential: it can certainly be eased later.)
 
-#exit
--- TODO: can I vary M and I as well? How to prescribe these? Packaging it all into one structure
+-- TODO: it would be nice to make M and I part of the data of `SingularNManifold X n`,
+-- and E and H along with it. Doing so yields errors I don't yet understand.
+
+
+-- Dummy version of SingularNManifold: no conditions, but the signature I want.
+-- TODO: make E, H and M part of the real definition's data, and replace this structure!
+-- Designed to play with equivalence relations: that part is fine.
+
+structure SingularNManifoldDummy (X : Type*) [TopologicalSpace X] (n : ℕ) where
+
+-- The empty set as a bordism class: TODO replace by `SingularNManifold.empty`!
+def SingularNManifoldDummy.empty (X : Type*) [TopologicalSpace X] (n : ℕ) :
+  SingularNManifoldDummy X n where
+
+-- Placeholder for the actual unoriented bordism relation.
+def unorientedBordismRelationDummy (X : Type*) [TopologicalSpace X] (n : ℕ) :
+    SingularNManifoldDummy X n → SingularNManifoldDummy X n → Prop :=
+  fun _s _t ↦ true
+
+def uBordismRelationDummy (X : Type*) [TopologicalSpace X] (n : ℕ) :
+    Equivalence (unorientedBordismRelationDummy X n) := by
+  apply Equivalence.mk
+  · exact fun _s ↦ by trivial
+  · intro _s _t h
+    exact h
+  · intro _s _t _u _hst _htu
+    trivial
+
+def ubSetoid (X : Type*) [TopologicalSpace X] (n : ℕ) :
+  Setoid (SingularNManifoldDummy X n) := Setoid.mk _ (uBordismRelationDummy X n)
+
+/-- The type of unoriented `n`-bordism classes on `X`. -/
+abbrev uBordismClasses (X : Type*) [TopologicalSpace X] (n : ℕ) :=
+  Quotient (Setoid.mk _ (uBordismRelationDummy X n))--(ubSetoid X n)
+
+/-- The unoriented bordism class of a singular `n`-manifold `(M,f)` on `X`. -/
+-- placeholder definition!
+def unorientedBordismClassDummy (s : SingularNManifoldDummy X n) :=
+  Quotient.mk ((Setoid.mk _ (uBordismRelationDummy X n))) s
+
+namespace UnorientedBordismClass
+
+variable (X : Type*) [TopologicalSpace X] (n : ℕ)
+
+/-- The bordism class of the empty set. -/
+def empty := unorientedBordismClassDummy (SingularNManifoldDummy.empty X n)
+
+end UnorientedBordismClass
+
+-- Some attempts at making the real definition work...
+
+/-
+TODO: can I vary M and I as well? How to prescribe these? Packaging it all into one structure
 -- also does not fully solve it...
 universe u in
 structure BoundaryWithBordism (s t : SingularNManifold X n M I) where
@@ -539,26 +598,28 @@ structure BoundaryWithBordism (s t : SingularNManifold X n M I) where
   bordism : UnorientedCobordism s t boundaryData
 -- #lint
 -- variable (n X M I) in
--- def orientedBordismRelation : (SingularNManifold X n M I) → (SingularNManifold X n M I) → Prop :=
+-- def unorientedBordismRel : (SingularNManifold X n M I) → (SingularNManifold X n M I) → Prop :=
 --   fun s t ↦ ∃ φ : BoundaryWithBordism s t (E := E) (E'' := E'')
+-/
 
-def sdf : Setoid (SingularNManifold X n M I) where
-  r s t := ∃ φ : BoundaryWithBordism s t (E := E) (E'' := E''), True--orientedBordismRelation X M I n (bd := bd)
-  iseqv := by
-    apply Equivalence.mk
-    · intro s
-      -- TODO: my definition is not right, as I cannot "choose" bd here...
-      sorry -- use UnorientedCobordism.refl s
-    · intro s t hst
-      choose φ _ using hst
-      sorry -- synthesisation order is wrong... something is very funky here!
-      --have := φ.ht
-      --use UnorientedCobordism.symm φ.bordism
-    · intro s t u hst htu
-      choose φ _ using hst
-      choose ψ _ using htu
-      -- TODO: the definition is not quite right, as bd must be chosen
-      sorry -- use UnorientedCobordism.trans φ ψ
+
+-- def sdf : Setoid (SingularNManifold X n M I) where
+--   r s t := True --∃ φ : BoundaryWithBordism s t (E := E) (E'' := E''), True--orientedBordismRelation X M I n (bd := bd)
+--   iseqv := by
+--     apply Equivalence.mk
+--     · intro s; exact trivial
+--       -- real def is more complicated; TODO: my definition is not right, as I cannot "choose" bd here...
+--       -- sorry -- use UnorientedCobordism.refl s
+--     · intro s t hst
+--       trivial--choose φ _ using hst
+--       --sorry -- synthesisation order is wrong... something is very funky here!
+--       --have := φ.ht
+--       --use UnorientedCobordism.symm φ.bordism
+--     · intro s t u hst htu
+--       choose φ _ using hst
+--       choose ψ _ using htu
+--       -- TODO: the definition is not quite right, as bd must be chosen
+--       sorry -- use UnorientedCobordism.trans φ ψ
 
 -- Is there already a notion of "post-compose a PartialHom with an OpenEmbedding?
 -- Because that would suffice for my purposes...
