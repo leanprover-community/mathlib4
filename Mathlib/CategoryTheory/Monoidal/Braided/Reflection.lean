@@ -239,8 +239,8 @@ noncomputable def closed (c : C) : Closed c where
     · refine NatIso.ofComponents (fun _ ↦ ?_) (fun _ ↦ ?_)
       · exact (asIso (L.μ _ _)).symm ≪≫ asIso ((adj.counit.app _) ⊗ (adj.counit.app _))
       · simp? says simp only [Functor.comp_obj, tensorLeft_obj, Functor.id_obj, Functor.comp_map,
-          tensorLeft_map, id_eq, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom, Functor.id_map,
-          assoc, IsIso.eq_inv_comp]
+          tensorLeft_map, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom, Functor.id_map, assoc,
+          IsIso.eq_inv_comp]
         rw [← L.μ_natural_right_assoc]
         simp [← id_tensorHom, ← tensor_comp]
     · exact NatIso.ofComponents (fun _ ↦ asIso (adj.unit.app ((ihom _).obj _)))
