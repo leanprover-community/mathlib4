@@ -11,11 +11,21 @@ import Mathlib.Data.Nat.Notation
 ## Text-based linters
 
 This file defines various mathlib linters which are based on reading the source code only.
-In practice, only style linters will have this form.
-All of these have been rewritten from the `lint-style.py` script.
+In practice, all such linters check for code style issues.
 
-For now, this only contains the linters for the copyright and author headers and large files:
-further linters will be ported in subsequent PRs.
+For now, this only contains linters checking
+- that the copyright header and authors line are correctly formatted
+- existence of module docstrings (in the right place)
+- for certain disallowed imports
+- if the string "adaptation note" is used instead of the command #adaptation_note
+- lines are at most 100 characters long (except for URLs)
+- files are at most 1500 lines long (unless specifically allowed).
+
+For historic reasons, some of these checks are still written in a Python script `lint-style.py`:
+these are gradually being rewritten in Lean.
+
+This linter maintains a list of exceptions, for legacy reasons.
+Ideally, the length of the list of exceptions tends to 0.
 
 The `longFile` and the `longLine` *syntax* linter take care of flagging lines that exceed the
 100 character limit and files that exceed the 1500 line limit.
@@ -404,7 +414,6 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
     IO (Array ErrorContext) := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
-  -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if isImportsOnlyFile lines then
     return #[]
   let mut errors := #[]
@@ -413,7 +422,8 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
-  errors := errors.append (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
+  errors := errors.append
+    (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return errors
 
 /-- Lint a collection of modules for style violations.
@@ -421,8 +431,9 @@ Print formatted errors for all unexpected style violations to standard output;
 update the list of style exceptions if configured so.
 Return the number of files which had new style errors.
 `moduleNames` are all the modules to lint,
-`mode` specifies what kind of output this script should produce. -/
-def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 := do
+`mode` specifies what kind of output this script should produce,
+`fix` configures whether fixable errors should be corrected in-place. -/
+def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool) : IO UInt32 := do
   -- Read the style exceptions file.
   -- We also have a `nolints` file with manual exceptions for the linter.
   let exceptionsFilePath : FilePath := "scripts" / "style-exceptions.txt"
@@ -453,6 +464,12 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
       numberErrorFiles := numberErrorFiles + 1
   match mode with
   | OutputSetting.print style =>
+    -- Run the remaining python linters. It is easier to just run on all files.
+    -- If this poses an issue, I can either filter the output
+    -- or wait until lint-style.py is fully rewritten in Lean.
+    let args := if fix then #["--fix"] else #[]
+    let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh", args := args }
+    if pythonOutput != "" then IO.println pythonOutput
     formatErrors allUnexpectedErrors style
     if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
       IO.println s!"error: found {allUnexpectedErrors.size} new style errors\n\

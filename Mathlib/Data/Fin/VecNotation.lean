@@ -317,7 +317,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
   cases n with
   | zero =>
     cases' i with i hi
-    simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
+    simp only [Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> congr
     · simp [Nat.mod_eq_of_lt, h]

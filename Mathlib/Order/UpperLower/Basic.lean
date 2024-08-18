@@ -536,7 +536,7 @@ instance completeLattice : CompleteLattice (UpperSet α) :=
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
-  .ofMinimalAxioms $
+  .ofMinimalAxioms <|
     (toDual.injective.comp SetLike.coe_injective).completelyDistribLatticeMinimalAxioms .of _
       (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
@@ -671,7 +671,7 @@ instance completeLattice : CompleteLattice (LowerSet α) :=
     (fun _ => rfl) rfl rfl
 
 instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
-  .ofMinimalAxioms $ SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
+  .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance : Inhabited (LowerSet α) :=

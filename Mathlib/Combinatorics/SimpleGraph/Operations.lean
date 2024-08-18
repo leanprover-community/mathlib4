@@ -32,6 +32,7 @@ namespace Iso
 
 variable {G} {W : Type*} {G' : SimpleGraph W} (f : G ≃g G')
 
+include f in
 theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
     G.edgeFinset.card = G'.edgeFinset.card := by
   apply Finset.card_eq_of_equiv

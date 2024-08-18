@@ -29,6 +29,8 @@ while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
 
+-- Guard against import creep
+assert_not_exists Multiset
 
 open Function OrderDual Set
 
@@ -1354,6 +1356,7 @@ end WithTop
 namespace Monotone
 
 variable [Preorder α] [ConditionallyCompleteLattice β] {f : α → β} (h_mono : Monotone f)
+include h_mono
 
 /-! A monotone function into a conditionally complete lattice preserves the ordering properties of
 `sSup` and `sInf`. -/
@@ -1636,8 +1639,5 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : WithTop α) < ⊤ ↔ Nonempty ι := by
 
 end WithTop
 end WithTopBot
-
--- Guard against import creep
-assert_not_exists Multiset
 
 set_option linter.longFile 1700

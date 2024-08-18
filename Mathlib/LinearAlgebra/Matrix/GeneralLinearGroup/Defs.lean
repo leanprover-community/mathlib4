@@ -159,8 +159,8 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 @[coe]
 def coeToGL (A : SpecialLinearGroup n R) : GL n R :=
   ⟨↑A, ↑A⁻¹,
-    congr_arg ((↑) : _ → Matrix n n R) (mul_right_inv A),
-    congr_arg ((↑) : _ → Matrix n n R) (mul_left_inv A)⟩
+    congr_arg ((↑) : _ → Matrix n n R) (mul_inv_cancel A),
+    congr_arg ((↑) : _ → Matrix n n R) (inv_mul_cancel A)⟩
 
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
   ⟨coeToGL⟩
