@@ -199,7 +199,7 @@ theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
   rw [det_transpose]
   exact h
 
-/-! ### A noncomputable `Inv` instance  -/
+/-! ### A noncomputable `Inv` instance -/
 
 
 /-- The inverse of a square matrix, when it is invertible (and zero otherwise). -/
