@@ -674,6 +674,7 @@ theorem iff_dayKelly_mem_admissibleTopologies :
 theorem quotientMap_snd_totalSpace :
     letI := TopologicalSpace.dayKelly (Opens X)
     QuotientMap fun x : TotalSpace X ↦ x.2 := by
+  letI := TopologicalSpace.dayKelly (Opens X)
   refine ⟨fun x ↦ ⟨⟨⟨⊥, bot_mem_admissibleTopologies⟩, x⟩, rfl⟩, ?_⟩
   unfold instTopologicalSpaceSigma instTopologicalSpaceFiber
   simp_rw [coinduced_iSup, iSup_subtype, coinduced_compose, (· ∘ ·), ← Function.id_def,
