@@ -178,7 +178,7 @@ The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 
 /-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`. -/
 register_option linter.dollarSyntax : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `dollarSyntax` linter"
 }
 
