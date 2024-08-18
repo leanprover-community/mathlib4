@@ -41,6 +41,8 @@ theorem coe_ceil (q : ℚ≥0) : ↑⌈q⌉₊ = ⌈(q : ℚ)⌉ := Int.ofNat_ce
 protected theorem floor_def (q : ℚ≥0) : ⌊q⌋₊ = q.num / q.den := by
   rw [← Int.natCast_inj, NNRat.coe_floor, Rat.floor_def, Int.ofNat_ediv, den_coe, num_coe]
 
+section Semifield
+
 variable {K} [LinearOrderedSemifield K] [FloorSemiring K]
 
 @[simp, norm_cast]
@@ -52,6 +54,35 @@ theorem ceil_cast (x : ℚ≥0) : ⌈(x : K)⌉₊ = ⌈x⌉₊ := by
   obtain rfl | hx := eq_or_ne x 0
   · simp
   · refine (Nat.ceil_eq_iff ?_).2 (mod_cast (Nat.ceil_eq_iff ?_).1 (Eq.refl ⌈x⌉₊)) <;> simpa
+
+end Semifield
+
+section Field
+
+variable {K} [LinearOrderedField K] [FloorRing K]
+
+#check NNRat.natCast_le_cast
+
+@[simp, norm_cast]
+theorem intFloor_cast (x : ℚ≥0) : ⌊(x : K)⌋ = ⌊(x : ℚ)⌋ := by
+  rw [Int.floor_eq_iff (α := K), ← coe_floor]
+  norm_cast
+  norm_cast
+  rw [Nat.cast_add_one, ← Nat.floor_eq_iff (zero_le _)]
+
+@[simp, norm_cast]
+theorem intCeil_cast (x : ℚ≥0) : ⌈(x : K)⌉ = ⌈(x : ℚ)⌉ := by
+  obtain rfl | hx := eq_or_ne x 0
+  · simp only [cast_zero, Int.ceil_zero]
+  · rw [Int.ceil_eq_iff, ← coe_ceil, sub_lt_iff_lt_add]
+    constructor
+    · have := NNRat.cast_strictMono (K := K) <| Nat.ceil_lt_add_one <| zero_le x
+      sorry
+    · norm_cast
+      norm_cast
+      rw [← Nat.ceil_le]
+
+end Field
 
 @[norm_cast]
 theorem floor_natCast_div_natCast (n d : ℕ) : ⌊(↑n / ↑d : ℚ≥0)⌋₊ = n / d :=
