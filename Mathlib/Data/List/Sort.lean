@@ -278,8 +278,7 @@ theorem mem_insertionSort  {l : List α} {x : α} : x ∈ l.insertionSort r ↔ 
 theorem length_insertionSort (l : List α) : (insertionSort r l).length = l.length :=
   (perm_insertionSort r _).length_eq
 
-theorem map_insertionSort (l : List α) (f : α → β)
-    (hl : ∀ a ∈ l, ∀ b ∈ l, r a b ↔ s (f a) (f b)) :
+theorem map_insertionSort (l : List α) (f : α → β) (hl : ∀ a ∈ l, ∀ b ∈ l, r a b ↔ s (f a) (f b)) :
     (l.insertionSort r).map f = (l.map f).insertionSort s := by
   induction l with
   | nil => simp
