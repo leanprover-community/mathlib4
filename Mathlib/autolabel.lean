@@ -34,7 +34,7 @@ This would be encoded by
 ```lean
 { Label.label      := "t-meta"
   Label.dirs       := #["Tactic"]
-  Label.exclusions := #[Tactic/Linter] }`
+  Label.exclusions := #["Tactic/Linter"] }`
 ```
 a term of type `Label`.
 
@@ -52,7 +52,7 @@ Look at the documentation for `add_label` for further shortcuts.
 
 ## Further commands
 
-The file also defines the commands `check_labels` and `produce_labels(!)? (str)?`.
+The file also defines the commands `check_labels` and `produce_labels(!)? str`.
 These are mostly intended as "debugging commands", as they display what `Label`s are
 currently present in the environment and to test-run the automatic application of the labels
 to user-input/`git diff` output.
@@ -226,9 +226,9 @@ It prints the sorted array of the applicable labels with no repetitions.
 `produce_labels! "A/B/C.lean⏎D/E.lean"`, with the `!` flag, displays, for each label,
 the paths that have that label.
 
-Finally, if the input string is not present, that is, using `produce_labels` or
-`produce_labels!`, is equivalent to passing the output of `git diff --name-only master...HEAD`
-to the respective `produce_labels(!)` command.
+Finally, if the input string is `"git"`, then `produce_labels`/`produce_labels!`
+uses the output of `git diff --name-only master...HEAD`, instead of `"git"`
+to show what labels would get assigned to the current modifications.
 -/
 elab (name := produceLabelsCmd) tk:"produce_labels" lab:("!")? st:(ppSpace str) : command => do
   let str := ← if st.getString != "git" then return st.getString else
