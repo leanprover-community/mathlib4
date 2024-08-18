@@ -14,6 +14,8 @@ universe v u
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
+section
+
 lemma left_triangle {X Y : C} (η : 𝟙_ _ ⟶ X ⊗ Y) (ε : Y ⊗ X ⟶ 𝟙_ _) (w : False) :
     η ▷ X ≫ (α_ _ _ _).hom ≫ X ◁ ε = (λ_ _).hom ≫ (ρ_ _).inv := by
   /- Displays string diagrams for the both sides of the goal. -/
@@ -56,5 +58,31 @@ example {X Y : C} (f : X ⟶ Y) (g : 𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y) (w : False
 example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ := by
   rw [MonoidalCategory.whisker_exchange]
   rw [MonoidalCategory.tensorHom_def]
+
+end
+
+variable {C : Type u} [Category.{v} C] [i : MonoidalCategory C] {X Y : C}
+
+#string_diagram @MonoidalCategory.whisker_exchange
+#string_diagram @MonoidalCategory.whisker_exchange_assoc
+#string_diagram @MonoidalCategory.pentagon
+#string_diagram @MonoidalCategory.whiskerLeft_id
+#string_diagram @left_triangle
+#string_diagram @yang_baxter
+#string_diagram @yang_baxter'
+#string_diagram @yang_baxter''
+#string_diagram @Category.assoc
+#string_diagram @Functor.map_comp
+#string_diagram @NatTrans.naturality
+
+variable (f : 𝟙_ _ ⟶ X ⊗ Y) in
+#string_diagram f
+variable (g : Y ⊗ X ⟶ 𝟙_ _) in
+#string_diagram g
+
+abbrev yangBaxterLhs {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) :=
+  R V₁ V₂ ▷ V₃ ≫ (α_ _ ..).hom ≫ _ ◁ R _ _ ≫ (α_ _ ..).inv ≫ R _ _ ▷ _ ≫ (α_ _ ..).hom
+
+#string_diagram @yangBaxterLhs
 
 end MonoidalCategory
