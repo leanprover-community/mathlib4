@@ -79,9 +79,17 @@ theorem CNF_zero (b : Ordinal) : CNF b 0 = [] :=
 theorem CNF.exponents_zero (b : Ordinal) : CNF.exponents b 0 = [] := by
   rw [exponents, CNF_zero, keys_nil]
 
+theorem CNF_mem_exponents_iff {b o e : Ordinal} :
+    e ∈ CNF.exponents b o ↔ ∃ c, ⟨e, c⟩ ∈ CNF b o := by
+  rw [CNF.exponents, mem_keys]
+
 @[simp]
 theorem CNF.coefficients_zero (b : Ordinal) : CNF.coefficients b 0 = [] := by
   rw [coefficients, CNF_zero, map_nil]
+
+theorem CNF_mem_coefficients_iff {b o c : Ordinal} :
+    c ∈ CNF.coefficients b o ↔ ∃ e, ⟨e, c⟩ ∈ CNF b o := by
+  simp [CNF.coefficients]
 
 /-- Recursive definition for the Cantor normal form. -/
 theorem CNF_ne_zero {b o : Ordinal} (ho : o ≠ 0) :
