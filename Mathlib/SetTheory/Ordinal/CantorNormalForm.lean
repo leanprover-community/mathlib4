@@ -94,6 +94,16 @@ theorem CNF_ne_zero {b o : Ordinal} (ho : o ≠ 0) :
     CNF b o = ⟨log b o, o / b ^ log b o⟩::CNF b (o % b ^ log b o) :=
   CNFRec_pos b ho _ _
 
+@[simp]
+theorem CNF_eq_nil {b o : Ordinal} : CNF b o = [] ↔ o = 0 := by
+  constructor
+  · intro h
+    by_contra ho
+    rw [CNF_ne_zero ho] at h
+    exact cons_ne_nil _ _ h
+  · rintro rfl
+    exact CNF_zero b
+
 theorem zero_CNF {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [⟨0, o⟩] := by
   simp [CNF_ne_zero ho]
 
