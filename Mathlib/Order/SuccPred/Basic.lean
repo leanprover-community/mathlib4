@@ -1433,8 +1433,7 @@ namespace EquivLike
 variable {X Y F : Type*} [EquivLike F X Y] [LinearOrder X] [LinearOrder Y]
 
 /-- `SuccOrder` transfers across monotonic equivalences between linear orders. -/
-@[reducible]
-protected def SuccOrder [SuccOrder X] (f : F) (hf : Monotone f) : SuccOrder Y where
+@[reducible] protected def SuccOrder [SuccOrder X] (f : F) (hf : Monotone f) : SuccOrder Y where
   succ y := f (Order.succ (inv f y))
   le_succ y := by
     obtain ⟨x, rfl⟩ := EquivLike.surjective f y
@@ -1463,23 +1462,20 @@ protected def SuccOrder [SuccOrder X] (f : F) (hf : Monotone f) : SuccOrder Y wh
     simp [hf.le_iff_le, Order.le_of_lt_succ h]
 
 /-- `PredOrder` transfers across monotonic equivalences between linear orders. -/
-@[reducible]
-protected def PredOrder [PredOrder X] (f : F) (hf : Monotone f) : PredOrder Y := by
+@[reducible] protected def PredOrder [PredOrder X] (f : F) (hf : Monotone f) : PredOrder Y := by
   let _ := EquivLike.SuccOrder (X := Xᵒᵈ) (Y := Yᵒᵈ) f (fun {a b} h ↦ hf h)
   let e : PredOrder Yᵒᵈᵒᵈ := by infer_instance
   exact e
 
 /-- `IsSuccArchimedean` transfers across monotonic equivalences between linear `SuccOrder`s. -/
-@[reducible]
-protected def IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X]
+@[reducible] protected def IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X]
     (f : F) (hf : Monotone f) : IsSuccArchimedean Y where
   exists_succ_iterate_of_le {a b} h := by
     have : ∀ x, Order.succ (f x) = f (Order.succ x) := by
       have ho : (Order.succ : Y → Y) = (EquivLike.SuccOrder f hf).succ := by
-        simp [(Order.instSubsingletonSuccOrder (α := Y)).elim]
+        simp only [(Order.instSubsingletonSuccOrder (α := Y)).elim]
         rfl
       have : ∀ y, (EquivLike.SuccOrder f hf).succ y = f (Order.succ (inv f y)) := fun _ ↦ rfl
-      intro x
       simp [ho, this]
     have hf := hf.strictMono_of_injective (EquivLike.injective f)
     obtain ⟨x, rfl⟩ := EquivLike.surjective f a
@@ -1489,13 +1485,11 @@ protected def IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X
     refine ⟨n, ?_⟩
     induction n with
     | zero => simp
-    | succ n IH =>
-      rw [Function.iterate_succ', Function.comp_apply, IH, Function.iterate_succ',
-          Function.comp_apply, this]
+    | succ n IH => rw [Function.iterate_succ', Function.comp_apply, IH, Function.iterate_succ',
+                       Function.comp_apply, this]
 
 /-- `IsPredArchimedean` transfers across monotonic equivalences between linear `PredOrder`s. -/
-@[reducible]
-protected def IsPredArchimedean [PredOrder X] [PredOrder Y] [IsPredArchimedean X]
+@[reducible] protected def IsPredArchimedean [PredOrder X] [PredOrder Y] [IsPredArchimedean X]
     (f : F) (hf : Monotone f) : IsPredArchimedean Y := by
   let _ := EquivLike.IsSuccArchimedean (X := Xᵒᵈ) (Y := Yᵒᵈ) f (fun {a b} h ↦ hf h)
   let e : IsPredArchimedean Yᵒᵈᵒᵈ := by infer_instance
