@@ -238,7 +238,7 @@ theorem mem_orderedInsert {a b : α} {l : List α} :
     · simp [orderedInsert]
     · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
 
-theorem map_orderedInsert (l : List α) (x : α) (f : α → β)
+theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
     (hl₁ : ∀ a ∈ l, a ≼ x ↔ f a ≼ f x) (hl₂ : ∀ a ∈ l, x ≼ a ↔ f x ≼ f a) :
     (l.orderedInsert r x).map f = (l.map f).orderedInsert s (f x) := by
   induction l with
@@ -279,7 +279,7 @@ theorem mem_insertionSort  {l : List α} {x : α} : x ∈ l.insertionSort r ↔ 
 theorem length_insertionSort (l : List α) : (insertionSort r l).length = l.length :=
   (perm_insertionSort r _).length_eq
 
-theorem map_insertionSort (l : List α) (f : α → β) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
+theorem map_insertionSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
     (l.insertionSort r).map f = (l.map f).insertionSort s := by
   induction l with
   | nil => simp
@@ -536,7 +536,7 @@ theorem mergeSort_nil : [].mergeSort r = [] := by rw [List.mergeSort]
 @[simp]
 theorem mergeSort_singleton (a : α) : [a].mergeSort r = [a] := by rw [List.mergeSort]
 
-theorem map_merge (r : α → α → Bool) (s : β → β → Bool) (l l' : List α) (f : α → β)
+theorem map_merge (f : α → β) (r : α → α → Bool) (s : β → β → Bool) (l l' : List α)
     (hl : ∀ a ∈ l, ∀ b ∈ l', r a b = s (f a) (f b)) :
     (l.merge r l').map f = (l.map f).merge s (l'.map f) := by
   match l, l' with
@@ -547,14 +547,14 @@ theorem map_merge (r : α → α → Bool) (s : β → β → Bool) (l l' : List
     simp_rw [List.map, List.cons_merge_cons]
     rw [← hl.1.1]
     split
-    · rw [List.map, map_merge r s, List.map]
+    · rw [List.map, map_merge _ r s, List.map]
       simp_rw [List.forall_mem_cons, forall_and]
       exact ⟨hl.2.1, hl.2.2⟩
-    · rw [List.map, map_merge r s, List.map]
+    · rw [List.map, map_merge _ r s, List.map]
       simp_rw [List.forall_mem_cons]
       exact ⟨hl.1.2, hl.2.2⟩
 
-theorem map_mergeSort (l : List α) (f : α → β) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
+theorem map_mergeSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
     (l.mergeSort r).map f = (l.map f).mergeSort s :=
   match l with
   | [] => by simp
@@ -570,7 +570,7 @@ theorem map_mergeSort (l : List α) (f : α → β) (hl : ∀ a ∈ l, ∀ b ∈
     have := length_split_snd_le l
     simp_rw [List.map]
     rw [List.mergeSort_cons_cons _ e, List.mergeSort_cons_cons _ fe,
-      map_merge (r · ·) (s · ·), map_mergeSort l₁ _ hl.1.1, map_mergeSort l₂ _ hl.2.2]
+      map_merge _ (r · ·) (s · ·), map_mergeSort _ l₁ hl.1.1, map_mergeSort _ l₂ hl.2.2]
     simp_rw [mem_mergeSort, decide_eq_decide]
     exact hl.1.2
   termination_by length l
