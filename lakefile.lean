@@ -8,6 +8,7 @@ open Lake DSL
   (as well as `Archive`, `Counterexamples` and `test`).
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
+  ⟨`linter.admitLinter, true⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.missingEnd, true⟩,
   ⟨`linter.cdot, true⟩,
