@@ -22,6 +22,8 @@ import Mathlib.Tactic.Linter.GlobalAttributeIn
 -- The `structureInType` and `dupNamespace` linters check for two features which are useful
 -- when designing a large library. They are enabled by default since their warnings usually
 -- indicate code that ought to be fixed.
+-- The `deprecatedNoSince` linter ensures all deprecation tags come with dates.
+-- This convention is used beyond mathlib; this linter need not be... hmm.
 --
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
 -- The environment linter *could* be split out, if desired.
