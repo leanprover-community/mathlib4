@@ -55,7 +55,6 @@ theorem sum_Ico_by_parts (hmn : m < n) :
     abel
   simp_rw [this, sum_neg_distrib, sum_range_succ, smul_add]
   abel
-#align finset.sum_Ico_by_parts Finset.sum_Ico_by_parts
 
 variable (n)
 
@@ -67,6 +66,5 @@ theorem sum_range_by_parts :
   · simp [hn]
   · rw [range_eq_Ico, sum_Ico_by_parts f g (Nat.pos_of_ne_zero hn), sum_range_zero, smul_zero,
       sub_zero, range_eq_Ico]
-#align finset.sum_range_by_parts Finset.sum_range_by_parts
 
 end Finset

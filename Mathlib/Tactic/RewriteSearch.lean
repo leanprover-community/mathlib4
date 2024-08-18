@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Order.Interval.Finset.Nat
+import Batteries.Data.MLList.Heartbeats
 
 /-!
 # The `rw_search` tactic
@@ -327,6 +328,4 @@ elab_rules : tactic |
 
 end RewriteSearch
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

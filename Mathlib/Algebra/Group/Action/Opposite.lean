@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Opposite
 
-#align_import group_theory.group_action.opposite from "leanprover-community/mathlib"@"4330aae21f538b862f8aead371cfb6ee556398f1"
-
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
 
@@ -62,12 +60,10 @@ instance instIsCentralScalar [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M
 @[to_additive]
 lemma op_smul_eq_op_smul_op [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] (r : M) (a : α) :
     op (r • a) = op r • op a := (op_smul_eq_smul r (op a)).symm
-#align mul_opposite.op_smul_eq_op_smul_op MulOpposite.op_smul_eq_op_smul_op
 
 @[to_additive]
 lemma unop_smul_eq_unop_smul_unop [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] (r : Mᵐᵒᵖ)
     (a : αᵐᵒᵖ) : unop (r • a) = unop r • unop a := (unop_smul_eq_smul r (unop a)).symm
-#align mul_opposite.unop_smul_eq_unop_smul_unop MulOpposite.unop_smul_eq_unop_smul_unop
 
 end MulOpposite
 
@@ -156,42 +152,28 @@ See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWit
 
   See also `AddMonoid.toOppositeAddAction`."]
 instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α where smul c x := x * c.unop
-#align has_mul.to_has_opposite_smul Mul.toHasOppositeSMul
-#align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
 
 @[to_additive] lemma op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a := rfl
-#align op_smul_eq_mul op_smul_eq_mul
-#align op_vadd_eq_add op_vadd_eq_add
 
 @[to_additive (attr := simp)]
 lemma MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a • a' = a' * a.unop := rfl
-#align mul_opposite.smul_eq_mul_unop MulOpposite.smul_eq_mul_unop
-#align add_opposite.vadd_eq_add_unop AddOpposite.vadd_eq_add_unop
 
 /-- The right regular action of a group on itself is transitive. -/
 @[to_additive "The right regular action of an additive group on itself is transitive."]
 instance MulAction.OppositeRegular.isPretransitive {G : Type*} [Group G] : IsPretransitive Gᵐᵒᵖ G :=
   ⟨fun x y => ⟨op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
-#align mul_action.opposite_regular.is_pretransitive MulAction.OppositeRegular.isPretransitive
-#align add_action.opposite_regular.is_pretransitive AddAction.OppositeRegular.isPretransitive
 
 @[to_additive]
 instance Semigroup.opposite_smulCommClass [Semigroup α] : SMulCommClass αᵐᵒᵖ α α where
   smul_comm _ _ _ := mul_assoc _ _ _
-#align semigroup.opposite_smul_comm_class Semigroup.opposite_smulCommClass
-#align add_semigroup.opposite_vadd_comm_class AddSemigroup.opposite_vaddCommClass
 
 @[to_additive]
 instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α αᵐᵒᵖ α :=
   SMulCommClass.symm _ _ _
-#align semigroup.opposite_smul_comm_class' Semigroup.opposite_smulCommClass'
-#align add_semigroup.opposite_vadd_comm_class' AddSemigroup.opposite_vaddCommClass'
 
 @[to_additive]
 instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α α where
   op_smul_eq_smul _ _ := mul_comm _ _
-#align comm_semigroup.is_central_scalar CommSemigroup.isCentralScalar
-#align add_comm_semigroup.is_central_scalar AddCommSemigroup.isCentralVAdd
 
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
 @[to_additive "Like `AddMonoid.toAddAction`, but adds on the right."]
@@ -199,15 +181,11 @@ instance Monoid.toOppositeMulAction [Monoid α] : MulAction αᵐᵒᵖ α where
   smul := (· • ·)
   one_smul := mul_one
   mul_smul _ _ _ := (mul_assoc _ _ _).symm
-#align monoid.to_opposite_mul_action Monoid.toOppositeMulAction
-#align add_monoid.to_opposite_add_action AddMonoid.toOppositeAddAction
 
 @[to_additive]
 instance IsScalarTower.opposite_mid {M N} [Mul N] [SMul M N] [SMulCommClass M N N] :
     IsScalarTower M Nᵐᵒᵖ N where
   smul_assoc _ _ _ := mul_smul_comm _ _ _
-#align is_scalar_tower.opposite_mid IsScalarTower.opposite_mid
-#align vadd_assoc_class.opposite_mid VAddAssocClass.opposite_mid
 
 @[to_additive]
 instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N N] :
@@ -215,8 +193,6 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
   smul_comm x y z := by
     induction y using MulOpposite.rec'
     simp only [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]
-#align smul_comm_class.opposite_mid SMulCommClass.opposite_mid
-#align vadd_comm_class.opposite_mid VAddCommClass.opposite_mid
 
 -- The above instance does not create an unwanted diamond, the two paths to
 -- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.
@@ -228,5 +204,3 @@ example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.instMulAction
 instance LeftCancelMonoid.toFaithfulSMul_opposite [LeftCancelMonoid α] :
     FaithfulSMul αᵐᵒᵖ α where
   eq_of_smul_eq_smul h := unop_injective <| mul_left_cancel (h 1)
-#align left_cancel_monoid.to_has_faithful_opposite_scalar LeftCancelMonoid.toFaithfulSMul_opposite
-#align add_left_cancel_monoid.to_has_faithful_opposite_scalar AddLeftCancelMonoid.toFaithfulVAdd_opposite

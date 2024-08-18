@@ -1,9 +1,8 @@
 /-
-Copyright (c) 2024 Jineon Back and Seewoo Lee. All rights reserved.
+Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 /-!
@@ -30,18 +29,20 @@ This is different from the radical of an ideal.
 - Make a comparison with `Ideal.radical`. Especially, for principal ideal,
   `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 - Prove `radical (radical a) = radical a`.
+- Prove a comparison between `primeFactors` and `Nat.primeFactors`.
 -/
 
 noncomputable section
 
 open scoped Classical
 
-open UniqueFactorizationMonoid
+namespace UniqueFactorizationMonoid
 
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M]
-variable {R : Type _} [CommRing R] [IsDomain R] [NormalizationMonoid R] [UniqueFactorizationMonoid R]
+variable {R : Type _} [CommRing R] [IsDomain R] [NormalizationMonoid R]
+  [UniqueFactorizationMonoid R]
 
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
 def primeFactors (a : M) : Finset M :=
@@ -105,11 +106,18 @@ theorem radical_pow_of_prime {a : M} (ha : Prime a) {n : ℕ} (hn : 0 < n) :
   rw [radical_pow a hn]
   exact radical_of_prime ha
 
+-- TODO: This may holds for "nontrivial" monoids - do not need ring assumption.
+theorem radical_ne_zero (a : R) : radical a ≠ 0 := by
+  rw [radical, ← Finset.prod_val]
+  apply Multiset.prod_ne_zero
+  rw [primeFactors]
+  simp only [Multiset.toFinset_val, Multiset.mem_dedup]
+  exact zero_not_mem_normalizedFactors _
 
 -- Theorems for commutative rings
 
 /-- Coprime elements have disjoint prime factors (as multisets). -/
-theorem IsCoprime.disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
+theorem disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
     (normalizedFactors a).Disjoint (normalizedFactors b) := by
   intro x hxa hxb
   have x_dvd_a := dvd_of_mem_normalizedFactors hxa
@@ -118,13 +126,14 @@ theorem IsCoprime.disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
   exact xp.not_unit (hc.isUnit_of_dvd' x_dvd_a x_dvd_b)
 
 /-- Coprime elements have disjoint prime factors (as finsets). -/
-theorem IsCoprime.disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
+theorem disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
     Disjoint (primeFactors a) (primeFactors b) :=
-  Multiset.disjoint_toFinset.mpr (hc.disjoint_normalizedFactors)
+  Multiset.disjoint_toFinset.mpr (disjoint_normalizedFactors hc)
 
-theorem IsCoprime.hMul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
+theorem hMul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
     (hc : IsCoprime a b) :
-    primeFactors (a * b) = (primeFactors a).disjUnion (primeFactors b) hc.disjoint_primeFactors := by
+    primeFactors (a * b) = (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc)
+    := by
   rw [Finset.disjUnion_eq_union]
   simp_rw [primeFactors]
   rw [normalizedFactors_mul ha hb, Multiset.toFinset_add]
@@ -143,16 +152,10 @@ theorem radical_hMul {a b : R} (hc : IsCoprime a b) :
   · subst hb; rw [isCoprime_zero_right] at hc
     simp only [MulZeroClass.mul_zero, radical_zero_eq, mul_one, radical_unit_eq_one hc]
   simp_rw [radical]
-  rw [hc.hMul_primeFactors_disjUnion ha hb]
-  rw [Finset.prod_disjUnion hc.disjoint_primeFactors]
+  rw [hMul_primeFactors_disjUnion ha hb hc]
+  rw [Finset.prod_disjUnion (disjoint_primeFactors hc)]
 
 theorem radical_neg {a : R} : radical (-a) = radical a :=
   neg_one_mul a ▸ (radical_eq_of_associated <| associated_unit_mul_left a (-1) isUnit_one.neg)
 
--- TODO: This may holds for "nontrivial" monoids - do not need ring assumption.
-theorem radical_ne_zero (a : R) : radical a ≠ 0 := by
-  rw [radical, ← Finset.prod_val]
-  apply Multiset.prod_ne_zero
-  rw [primeFactors]
-  simp only [Multiset.toFinset_val, Multiset.mem_dedup]
-  exact zero_not_mem_normalizedFactors _
+end UniqueFactorizationMonoid
