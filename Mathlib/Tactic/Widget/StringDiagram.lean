@@ -391,6 +391,7 @@ def elabStringDiagramCmd : CommandElab := fun
   | stx@`(#string_diagram $t:term) => do
     let html ← runTermElabM fun _ => do
       let e ← Term.elabTerm t none
+      let e ← Term.levelMVarToParam (← instantiateMVars e)
       match ← StringDiagram.stringMorOrEqM? e with
       | .some html => return html
       | .none => throwError "could not find a morphism or equality: {e}"
