@@ -88,8 +88,8 @@ development in PR #xxx.
 The `openClassicalLinter` is a syntax linter, so should be imported here. It is not fully certain
 if that linter will land; it is implemented in #15454. About 200 instances in mathlib still need
 to be fixed.
-Both of these linters will be enabled in mathlib, but might be disabled globally. That can/will still
-be decided later.
+Both of these linters will be enabled in mathlib, but might be disabled globally. That can
+(and will) still be decided later.
 
 The `multigoal` linter warns if multiple goals are present without being appropropriately focused.
 This is purely a style question, but might be a useful setting outside of mathlib.
