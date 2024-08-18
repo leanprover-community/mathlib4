@@ -437,6 +437,19 @@ lemma isIso_of_yoneda_map_bijective {X Y : C} (f : X ⟶ Y)
   obtain ⟨g, hg : g ≫ f = 𝟙 Y⟩ := (hf Y).2 (𝟙 Y)
   exact ⟨g, (hf _).1 (by aesop_cat), hg⟩
 
+lemma isIso_iff_isIso_yoneda_map {X Y : C} (f : X ⟶ Y) :
+    IsIso f ↔ ∀ c : C, IsIso ((yoneda.map f).app ⟨c⟩) := by
+  constructor
+  · intro
+    have : IsIso (yoneda.map f) := inferInstance
+    intro c
+    infer_instance
+  · intro h
+    apply isIso_of_yoneda_map_bijective
+    intro c
+    rw [← isIso_iff_bijective]
+    exact h c
+
 end YonedaLemma
 
 section CoyonedaLemma
@@ -601,6 +614,18 @@ lemma isIso_of_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y)
   obtain ⟨g, hg : f ≫ g = 𝟙 X⟩ := (hf X).2 (𝟙 X)
   refine ⟨g, hg, (hf _).1 ?_⟩
   simp only [Category.comp_id, ← Category.assoc, hg, Category.id_comp]
+
+lemma isIso_iff_isIso_coyoneda_map {X Y : C} (f : X ⟶ Y) :
+    IsIso f ↔ ∀ c : C, IsIso ((coyoneda.map f.op).app c) := by
+  constructor
+  · intro
+    rw [← NatTrans.isIso_iff_isIso_app]
+    infer_instance
+  · intro h
+    apply isIso_of_coyoneda_map_bijective
+    intro c
+    rw [← isIso_iff_bijective]
+    exact h c
 
 end CoyonedaLemma
 
