@@ -226,8 +226,8 @@ It prints the sorted array of the applicable labels with no repetitions.
 `produce_labels! "A/B/C.lean⏎D/E.lean"`, with the `!` flag, displays, for each label,
 the paths that have that label.
 
-Finally, if the input string is `"git"`, then `produce_labels`/`produce_labels!`
-uses the output of `git diff --name-only master...HEAD`, instead of `"git"`
+Finally, if the input string is `"git"`, then `produce_labels "git`/`produce_labels! "git`
+use the output of `git diff --name-only master...HEAD`, instead of literally `"git"`,
 to show what labels would get assigned to the current modifications.
 -/
 elab (name := produceLabelsCmd) tk:"produce_labels" lab:("!")? st:(ppSpace str) : command => do
