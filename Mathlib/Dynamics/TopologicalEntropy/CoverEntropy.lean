@@ -150,8 +150,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   choose! dyncover h_dyncover using this
   let sn := range dyncover
   have := fintypeRange dyncover
-  use sn.toFinset
-  constructor
+  refine ⟨sn.toFinset, ?_, ?_⟩
   · rw [Finset.coe_nonempty] at s_nemp
     have _ : Nonempty s := Finset.Nonempty.coe_sort s_nemp
     intro y y_F
@@ -183,7 +182,7 @@ lemma exists_isDynCoverOf_of_isCompact_uniformContinuous [UniformSpace X] {T : X
   let open_cover := fun x : X ↦ ball x (dynEntourage T U n)
   have := IsCompact.elim_nhds_subcover F_comp open_cover (fun (x : X) _ ↦ ball_mem_nhds x uni_ite)
   rcases this with ⟨s, _, s_cover⟩
-  use s, s_cover
+  exact ⟨s, s_cover⟩
 
 lemma isDynCoverOf_compact_invariant [UniformSpace X] {T : X → X} {F : Set X} (F_comp : IsCompact F)
     (F_inv : MapsTo T F F) {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
@@ -445,9 +444,7 @@ lemma coverEntropyInfUni_le_log_coverMincard_div {T : X → X} {F : Set X} (F_in
     coverEntropyInfUni T F (U ○ U) ≤ log (coverMincard T F U n) / n := by
   apply liminf_le_of_frequently_le'
   rw [frequently_atTop]
-  intro N
-  use (max 1 N) * n
-  constructor
+  refine fun N ↦ ⟨(max 1 N) * n, ?_, ?_⟩
   · rcases eq_zero_or_pos N with rfl | N_pos
     · exact zero_le ((max 1 0) * n)
     · rw [max_eq_right (Nat.one_le_of_lt N_pos)]
@@ -482,11 +479,8 @@ lemma coverEntropySupUni_le_log_coverMincard_div {T : X → X} {F : Set X} (F_in
   let u := fun _ : ℕ ↦ log (coverMincard T F U n) / n
   let v := fun m : ℕ ↦ log (coverMincard T F U n) / m
   let w := fun m : ℕ ↦ log (coverMincard T F (U ○ U) m) / m
-  have key : w ≤ᶠ[atTop] u + v := by
-    apply eventually_atTop.2
-    use 1
-    simp only [Pi.add_apply, w, u, v]
-    exact fun m m_pos ↦ log_coverMincard_comp_le F_inv U_symm n_pos m_pos
+  have key : w ≤ᶠ[atTop] u + v :=
+    eventually_atTop.2 ⟨1, fun m m_pos ↦ log_coverMincard_comp_le F_inv U_symm n_pos m_pos⟩
   apply le_trans (Filter.limsup_le_limsup key)
   suffices h : atTop.limsup v = 0 by
     have := @limsup_add_le_add_limsup ℕ atTop u v
@@ -497,10 +491,9 @@ lemma coverEntropySupUni_le_log_coverMincard_div {T : X → X} {F : Set X} (F_in
 
 lemma coverEntropySupUni_le_coverEntropyInfUni {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) :
-    coverEntropySupUni T F (U ○ U) ≤ coverEntropyInfUni T F U := by
-  apply (Filter.le_liminf_of_le) (eventually_atTop.2 _)
-  use 1
-  exact fun m m_pos ↦ coverEntropySupUni_le_log_coverMincard_div F_inv U_symm m_pos
+    coverEntropySupUni T F (U ○ U) ≤ coverEntropyInfUni T F U :=
+  (Filter.le_liminf_of_le) (eventually_atTop.2
+  ⟨1, fun m m_pos ↦ coverEntropySupUni_le_log_coverMincard_div F_inv U_symm m_pos⟩)
 
 lemma coverEntropyInfUni_finite_of_compact_invariant [UniformSpace X] {T : X → X} {F : Set X}
     (F_inv : MapsTo T F F) (F_comp : IsCompact F) {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) :
@@ -536,11 +529,11 @@ noncomputable def coverEntropySup [UniformSpace X] (T : X → X) (F : Set X) :=
 
 lemma coverEntropyInf_antitone_uniformity (T : X → X) (F : Set X) :
     Antitone fun (u : UniformSpace X) ↦ @coverEntropyInf X u T F :=
-  fun u₁ u₂ h ↦ iSup₂_mono' (fun U U_uni₂ ↦ (by use U, (le_def.1 h) U U_uni₂))
+  fun u₁ u₂ h ↦ iSup₂_mono' (fun U U_uni₂ ↦ by use U, (le_def.1 h) U U_uni₂)
 
 lemma coverEntropySup_antitone_uniformity (T : X → X) (F : Set X) :
     Antitone fun (u : UniformSpace X) ↦ @coverEntropySup X u T F :=
-  fun u₁ u₂ h ↦ iSup₂_mono' (fun U U_uni₂ ↦ (by use U, (le_def.1 h) U U_uni₂))
+  fun u₁ u₂ h ↦ iSup₂_mono' (fun U U_uni₂ ↦ by use U, (le_def.1 h) U U_uni₂)
 
 variable [UniformSpace X]
 
