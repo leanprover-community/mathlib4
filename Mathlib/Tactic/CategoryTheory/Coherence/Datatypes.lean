@@ -11,21 +11,6 @@ namespace Mathlib.Tactic
 
 namespace BicategoryLike
 
-class Context (ρ : Type) where
-  mkContext? : Expr → MetaM (Option ρ)
-
-export Context (mkContext?)
-
-abbrev CoherenceM (ρ : Type) [Context ρ] := StateT ρ MetaM
-
-def CoherenceM.run {α : Type} {ρ : Type} [Context ρ] (c : ρ) (x : CoherenceM ρ α) : MetaM α :=
-  StateT.run' x c
-
-def mkContext {ρ  : Type} [Context ρ] (e : Expr) : MetaM ρ := do
-  match ← mkContext? e with
-  | some c => return c
-  | none => throwError "failed to construct a monoidal category or bicategory context from {e}"
-
 structure Obj where
   e? : Option Expr
   deriving Inhabited
@@ -93,6 +78,25 @@ abbrev Mor₁.compM {m : Type → Type} [MonadMor₁ m] (f g : Mor₁) : m Mor�
 
 abbrev Mor₁.idM {m : Type → Type} [MonadMor₁ m] (a : Obj) : m Mor₁ :=
   MonadMor₁.id₁M a
+
+class Context (ρ : Type) where
+  mkContext? : Expr → MetaM (Option ρ)
+
+export Context (mkContext?)
+
+structure State where
+  cache : PHashMap Expr Mor₁ := {}
+
+abbrev CoherenceM (ρ : Type) [Context ρ] := ReaderT ρ <| StateT State MetaM
+
+def CoherenceM.run {α ρ : Type} [Context ρ] (x : CoherenceM ρ α) (ctx : ρ) (s : State := {}) :
+    MetaM α := do
+  Prod.fst <$> ReaderT.run x ctx s
+
+def mkContext {ρ  : Type} [Context ρ] (e : Expr) : MetaM ρ := do
+  match ← mkContext? e with
+  | some c => return c
+  | none => throwError "failed to construct a monoidal category or bicategory context from {e}"
 
 section PureCoherence
 

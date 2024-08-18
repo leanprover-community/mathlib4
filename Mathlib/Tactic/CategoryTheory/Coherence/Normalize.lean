@@ -345,7 +345,7 @@ def normalForm (nm : Name) (ρ : Type) [Context ρ]
       let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| e).eq?
         | throwError "{nm}_nf requires an equality goal"
       let ctx : ρ ← mkContext e₁
-      CoherenceM.run ctx <| show CoherenceM ρ (List MVarId) from do
+      CoherenceM.run (ctx := ctx) do
         let e₁' ← MkMor₂.ofExpr e₁
         let e₂' ← MkMor₂.ofExpr e₂
         let e₁'' ← eval nm e₁'
@@ -363,7 +363,7 @@ theorem mk_eq_of_cons {C : Type u} [CategoryStruct.{v} C]
   simp [e_α, e_η, e_ηs]
 
 /-- Transform an equality between 2-morphisms into the equality between their normalizations. -/
-def mkEqOfHom₂ (ρ : Type) [Context ρ]     [MonadMor₁ (CoherenceM ρ)]
+def mkEqOfHom₂ (ρ : Type) [Context ρ] [MonadMor₁ (CoherenceM ρ)]
     [MonadStructuralAtom (CoherenceM ρ)]
     [MonadMor₂Iso (CoherenceM ρ)]
     [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)]
@@ -371,8 +371,8 @@ def mkEqOfHom₂ (ρ : Type) [Context ρ]     [MonadMor₁ (CoherenceM ρ)]
     [MonadMor₂ (CoherenceM ρ)] (nm : Name) (mvarId : MVarId) : MetaM Expr := do
   let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| ← mvarId.getType).eq?
     | throwError "bicategory requires an equality goal"
-  let ctx : ρ  ← mkContext e₁
-  CoherenceM.run ctx do
+  let ctx : ρ ← mkContext e₁
+  CoherenceM.run (ctx := ctx) do
     let ⟨e₁', p₁⟩ ← eval nm (← MkMor₂.ofExpr e₁)
     let ⟨e₂', p₂⟩ ← eval nm (← MkMor₂.ofExpr e₂)
     mkAppM ``mk_eq #[e₁, e₂, e₁'.e.e, e₂'.e.e, p₁, p₂]
