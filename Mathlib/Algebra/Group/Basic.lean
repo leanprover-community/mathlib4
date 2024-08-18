@@ -524,6 +524,8 @@ theorem div_eq_inv_mul : a / b = b⁻¹ * a := by simp
 @[to_additive]
 theorem inv_mul_eq_div : a⁻¹ * b = b / a := by simp
 
+@[to_additive] lemma inv_div_comm (a b : α) : a⁻¹ / b = b⁻¹ / a := by simp
+
 @[to_additive]
 theorem inv_mul' : (a * b)⁻¹ = a⁻¹ / b := by simp
 
