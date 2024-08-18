@@ -210,7 +210,7 @@ theorem CNF_AList_eq_empty {b o : Ordinal} : CNF_AList b o = ∅ ↔ o = 0 := by
   rw [AList.ext_iff]
   exact CNF_eq_nil
 
-/-- `CNF_coeff b o` is the finitely supported function returning the coefficient of `b^e` in the
+/-- `CNF_coeff b o` is the finitely supported function returning the coefficient of `b ^ e` in the
 `CNF` of `o`, for each `e`. -/
 @[pp_nodot]
 def CNF_coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
