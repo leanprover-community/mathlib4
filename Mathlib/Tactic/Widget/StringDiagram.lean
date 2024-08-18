@@ -22,6 +22,12 @@ show_panel_widgets [local StringDiagram]
 ```
 to enable the string diagram widget in the current section.
 
+We also have the `#string_diagram` command. For example,
+```lean
+#string_diagram @MonoidalCategory.whisker_exchange
+```
+displays the string diagram for the exchange law of the left and right whiskerings.
+
 String diagrams are graphical representations of morphisms in monoidal categories, which are
 useful for rewriting computations. More precisely, objects in a monoidal category is represented
 by strings, and morphisms between two objects is represented by nodes connecting two strings
