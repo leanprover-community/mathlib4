@@ -9,7 +9,8 @@ FROM ubuntu:jammy
 
 USER root
 
-RUN apt-get update && apt-get install sudo git curl git bash-completion texlive latexmk graphviz graphviz-dev python3 python3-pip python3-requests -y && apt-get clean
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install sudo git curl git bash-completion texlive texlive-xetex latexmk graphviz graphviz-dev python3 python3-pip python3-requests -y && apt-get clean
 
 RUN useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod gitpod \
     # passwordless sudo for users in the 'sudo' group
