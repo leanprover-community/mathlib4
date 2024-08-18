@@ -61,8 +61,6 @@ section Field
 
 variable {K} [LinearOrderedField K] [FloorRing K]
 
-#check NNRat.natCast_le_cast
-
 @[simp, norm_cast]
 theorem intFloor_cast (x : ℚ≥0) : ⌊(x : K)⌋ = ⌊(x : ℚ)⌋ := by
   rw [Int.floor_eq_iff (α := K), ← coe_floor]

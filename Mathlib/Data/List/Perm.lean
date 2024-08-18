@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Dedup
+import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Permutation
@@ -569,7 +570,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   intro H
   obtain ⟨k, hk, hk'⟩ := nthLe_of_mem H
   rw [nodup_iff_nthLe_inj] at h
-  refine k.succ_ne_self.symm $ h k (k + 1) ?_ ?_ ?_
+  refine k.succ_ne_self.symm <| h k (k + 1) ?_ ?_ ?_
   · simpa [Nat.lt_succ_iff] using hk.le
   · simpa using hk
   rw [nthLe_permutations'Aux, nthLe_permutations'Aux]
@@ -632,7 +633,23 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
         rw [← hx, nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hn)]
         exact nthLe_mem _ _ _
 
--- TODO: `nodup s.permutations ↔ nodup s`
+lemma permutations_take_two (x y : α) (s : List α) :
+    (x :: y :: s).permutations.take 2 = [x :: y :: s, y :: x :: s] := by
+  induction s <;> simp only [take, permutationsAux, permutationsAux.rec, permutationsAux2, id_eq]
+
+@[simp]
+theorem nodup_permutations_iff {s : List α} : Nodup s.permutations ↔ Nodup s := by
+  refine ⟨?_, nodup_permutations s⟩
+  contrapose
+  rw [← exists_duplicate_iff_not_nodup]
+  intro ⟨x, hs⟩
+  rw [duplicate_iff_sublist] at hs
+  obtain ⟨l, ht⟩ := List.Sublist.exists_perm_append hs
+  rw [List.Perm.nodup_iff (List.Perm.permutations ht), ← exists_duplicate_iff_not_nodup]
+  use x :: x :: l
+  rw [List.duplicate_iff_sublist, ← permutations_take_two]
+  exact take_sublist 2 _
+
 -- TODO: `count s s.permutations = (zipWith count s s.tails).prod`
 end Permutations
 

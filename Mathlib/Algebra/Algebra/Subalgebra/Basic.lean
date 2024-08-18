@@ -13,7 +13,6 @@ In this file we define `Subalgebra`s and the usual operations on them (`map`, `c
 More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 -/
 
-
 universe u u' v w w'
 
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
@@ -242,7 +241,7 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 /- TODO: bundle other forgetful maps between algebraic substructures, e.g.
-  `to_subsemiring` and `to_subring` in this file. -/
+  `toSubsemiring` and `toSubring` in this file. -/
 @[simp]
 theorem mem_toSubmodule {x} : x ∈ (toSubmodule S) ↔ x ∈ S := Iff.rfl
 
