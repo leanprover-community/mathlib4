@@ -297,7 +297,7 @@ theorem covBy_succ (a : α) : a ⋖ succ a :=
   covBy_succ_of_not_isMax <| not_isMax a
 
 @[simp]
-theorem subset_Iio_succ (a : α) : Iic a ⊆ Iio (succ a) :=
+theorem Iic_subset_Iio_succ (a : α) : Iic a ⊆ Iio (succ a) :=
   Iic_subset_Iio_succ_of_not_isMax <| not_isMax _
 
 @[simp]
@@ -305,11 +305,11 @@ theorem Ici_succ (a : α) : Ici (succ a) = Ioi a :=
   Ici_succ_of_not_isMax <| not_isMax _
 
 @[simp]
-theorem subset_Ico_succ_right (a b : α) : Icc a b ⊆ Ico a (succ b) :=
+theorem Icc_subset_Ico_succ_right (a b : α) : Icc a b ⊆ Ico a (succ b) :=
   Icc_subset_Ico_succ_right_of_not_isMax <| not_isMax _
 
 @[simp]
-theorem subset_Ioo_succ_right (a b : α) : Ioc a b ⊆ Ioo a (succ b) :=
+theorem Ioc_subset_Ioo_succ_right (a b : α) : Ioc a b ⊆ Ioo a (succ b) :=
   Ioc_subset_Ioo_succ_right_of_not_isMax <| not_isMax _
 
 @[simp]
@@ -621,21 +621,21 @@ theorem isMin_iterate_pred_of_eq_of_ne {n m : ℕ} (h_eq : pred^[n] a = pred^[m]
     (h_ne : n ≠ m) : IsMin (pred^[n] a) :=
   @isMax_iterate_succ_of_eq_of_ne αᵒᵈ _ _ _ _ _ h_eq h_ne
 
-theorem subset_Ioi_pred_of_not_isMin (ha : ¬IsMin a) : Ici a ⊆ Ioi (pred a) :=
+theorem Ici_subset_Ioi_pred_of_not_isMin (ha : ¬IsMin a) : Ici a ⊆ Ioi (pred a) :=
   fun _ ↦ pred_lt_of_not_isMin_of_le ha
 
 theorem Iic_pred_of_not_isMin (ha : ¬IsMin a) : Iic (pred a) = Iio a :=
   Set.ext fun _ => le_pred_iff_of_not_isMin ha
 
-theorem subset_Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Icc a b ⊆ Ioc (pred a) b := by
+theorem Icc_subset_Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Icc a b ⊆ Ioc (pred a) b := by
  rw [← Ioi_inter_Iic, ← Ici_inter_Iic]
  gcongr
- apply subset_Ioi_pred_of_not_isMin ha
+ apply Ici_subset_Ioi_pred_of_not_isMin ha
 
-theorem subset_Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ico a b ⊆ Ioo (pred a) b  := by
+theorem Ico_subset_Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ico a b ⊆ Ioo (pred a) b  := by
   rw [← Ioi_inter_Iio, ← Ici_inter_Iio]
   gcongr
-  apply subset_Ioi_pred_of_not_isMin ha
+  apply Ici_subset_Ioi_pred_of_not_isMin ha
 
 theorem Icc_pred_right_of_not_isMin (ha : ¬IsMin b) : Icc a (pred b) = Ico a b := by
   rw [← Ici_inter_Iic, Iic_pred_of_not_isMin ha, Ici_inter_Iio]
@@ -668,20 +668,20 @@ theorem pred_covBy (a : α) : pred a ⋖ a :=
   pred_covBy_of_not_isMin <| not_isMin a
 
 @[simp]
-theorem subset_Ioi_pred (a : α) : Ici a ⊆ Ioi (pred a) :=
-  subset_Ioi_pred_of_not_isMin <| not_isMin a
+theorem Ici_subset_Ioi_pred (a : α) : Ici a ⊆ Ioi (pred a) :=
+  Ici_subset_Ioi_pred_of_not_isMin <| not_isMin a
 
 @[simp]
 theorem Iic_pred (a : α) : Iic (pred a) = Iio a :=
   Iic_pred_of_not_isMin <| not_isMin a
 
 @[simp]
-theorem subset_Ioc_pred_left (a b : α) : Icc a b ⊆ Ioc (pred a) b :=
-  subset_Ioc_pred_left_of_not_isMin <| not_isMin _
+theorem Icc_subset_Ioc_pred_left (a b : α) : Icc a b ⊆ Ioc (pred a) b :=
+  Icc_subset_Ioc_pred_left_of_not_isMin <| not_isMin _
 
 @[simp]
-theorem subset_Ioo_pred_left (a b : α) : Ico a b ⊆ Ioo (pred a) b :=
-  subset_Ioo_pred_left_of_not_isMin <| not_isMin _
+theorem Ico_subset_Ioo_pred_left (a b : α) : Ico a b ⊆ Ioo (pred a) b :=
+  Ico_subset_Ioo_pred_left_of_not_isMin <| not_isMin _
 
 @[simp]
 theorem Icc_pred_right (a b : α) : Icc a (pred b) = Ico a b :=
