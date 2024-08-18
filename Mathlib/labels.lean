@@ -139,29 +139,6 @@ Mathlib/Tactic/MoreTactics/Basic.lean
 "
 
 /--
-info: [(Mathlib/SetTheory/Ordinals/Basic.lean, t-set-theory),
- (Mathlib/Tactic/Linarith/Basic.lean, t-meta),
- (Mathlib/AlgebraicGeometry/Ordinals/Basic.lean, t-algebraic-geometry),
- (Mathlib/Tactic/Linter/AnotherOne.lean, t-linter),
- (Mathlib/Tactic/Linter/Basic.lean, t-linter),
- (Mathlib/Algebra/Ordinals/Basic.lean, t-algebra),
- (Mathlib/Tactic/MoreTactics/Basic.lean, t-meta)]
--/
-#guard_msgs in
-run_cmd
-  Lean.logInfo m!"{(addAllLabels ("Mathlib/SetTheory/Ordinals/Basic.lean
-Mathlib/SetTheory/Ordinals/Basic.lean
-Mathlib/AlgebraicGeometry/Ordinals/Basic.lean
-Mathlib/Algebra/Ordinals/Basic.lean
-Mathlib/Tactic/Linarith/Basic.lean
-Mathlib/Tactic/Linter/Basic.lean
-Mathlib/Tactic/Linter/AnotherOne.lean
-Mathlib/Tactic/MoreTactics/Basic.lean
-
-".splitOn "\n").toArray (labelsExt.getState (← Lean.getEnv))).toArray}"
-
-
-/--
 info:
 [(t-algebra, [Mathlib/Algebra/Ordinals/Basic.lean]),
  (t-algebraic-geometry, [Mathlib/AlgebraicGeometry/Ordinals/Basic.lean]),
@@ -170,7 +147,7 @@ info:
  (t-set-theory, [Mathlib/SetTheory/Ordinals/Basic.lean, Mathlib/SetTheory/Ordinals/Basic.lean])]
 -/
 #guard_msgs in
-show_pairings "Mathlib/SetTheory/Ordinals/Basic.lean
+produce_labels! "Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/AlgebraicGeometry/Ordinals/Basic.lean
 Mathlib/Algebra/Ordinals/Basic.lean
@@ -189,6 +166,8 @@ Mathlib/Tactic/Linter/Basic.lean"
 #guard_msgs in
 produce_labels "Mathlib/SetTheory/Ordinals/Basic.lean
 Mathlib/Tactic/Linarith/Basic.lean"
+
+produce_labels! "git"
 
 open Lean Elab.Command in
 /-- `run_cmd outputLabels` examines the diff with master and reports the appropriate labels. -/

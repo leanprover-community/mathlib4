@@ -45,23 +45,19 @@ Thus, the previous label would be added using
 ```
 add_label meta dirs: Tactic exclusions Tactic.Linter
 ```
-Note that the "strings" are passed as identifiers, so that the path-separators `/` should be entered as `.`.
-Note also that the prefix `t-` in front of `meta` is automatically added by `add_label`.
+The "strings" are passed as identifiers, so that the path-separators `/` should be entered as `.`.
+The prefix `t-` in front of `meta` is automatically added by `add_label`.
 
 Look at the documentation for `add_label` for further shortcuts.
 
 ## Further commands
 
-The file also defines
-* the `check_labels` command that displays what `Label` are present in the environment;
-* the `produce_labels str` command that takes as input a string of line-break-separated paths
-  and shows which labels modifications in those files would get;
-* the `show_pairings str` command that takes as input a string of line-break-separated paths
-  and shows which labels modifications in those files would get, together with the files that
-  trigger such modifications;
-* the `git_labels` command that shows which labels the current modifications to master imply
-  (this command run `git diff --name-only master...HEAD` in the background to figure out
-  which files have been modified).
+The file also defines the commands `check_labels` and `produce_labels(!)? (str)?`.
+These are mostly intended as "debugging commands", as they display what `Label`s are
+currently present in the environment and to test-run the automatic application of the labels
+to user-input/`git diff` output.
+
+See the doc-strings of `check_labels` and `produce_labels` for more details.
 -/
 
 open Lean
@@ -203,7 +199,13 @@ def labelsToFiles (env : Environment) (gitDiffs : String) : HashMap String (Arra
   let labels := labelsExt.getState env
   let gitDiffs := (gitDiffs.splitOn "\n").toArray
   let hash := addAllLabels gitDiffs labels
-  (gitDiffs.groupByKey (hash.find? · |>.getD "")).erase ""
+  let grouped := gitDiffs.groupByKey (hash.find? · |>.getD "")
+  let matched := grouped.erase ""
+  let unmatched := ((grouped.find? "").getD #[]).filter (!·.isEmpty)
+  if unmatched.isEmpty then
+      matched
+    else
+      matched.insert "unlabeled" unmatched
 
 /--
 `produceLabels env gitDiffs` takes as input an `Environment` `env` and a string `gitDiffs`.
@@ -220,30 +222,23 @@ def produceLabels (env : Environment) (gitDiffs : String) : Array String :=
 line-break-separated list of paths to files.
 It uses the paths to check if any of the labels in the environment is applicable.
 It prints the sorted array of the applicable labels with no repetitions.
--/
-elab tk:"produce_labels " st:str : command => do
-  logInfoAt tk m!"{produceLabels (← getEnv) st.getString}"
 
-/--
-`show_pairing "A/B/C.lean⏎D/E.lean"` takes as input a string, assuming that it is a
-line-break-separated list of paths to files.
-It displays the array of pairs `(lab, #[paths with label lab])`.
--/
-elab tk:"show_pairings " st:str : command => do
-  logInfoAt tk m!"{(labelsToFiles (← getEnv) st.getString).toArray.qsort (·.1 < ·.1)}"
+`produce_labels! "A/B/C.lean⏎D/E.lean"`, with the `!` flag, displays, for each label,
+the paths that have that label.
 
-/--
-`git_labels` shows the labels for the currently modified files with respect to master.
-The `git_labels!` variant shows additionally, for each label, the array of files that justify it.
+Finally, if the input string is not present, that is, using `produce_labels` or
+`produce_labels!`, is equivalent to passing the output of `git diff --name-only master...HEAD`
+to the respective `produce_labels(!)` command.
 -/
-elab (name := gitLabels) "git_labels" tk:("!")? : command => do
-  let out ← IO.Process.run { cmd := "git", args := #["diff", "--name-only", "master...HEAD"] }
-  let labelsAndFiles := (labelsToFiles (← getEnv) out).toArray.qsort (·.1 < ·.1)
-  if tk.isSome then logInfo m!"{labelsAndFiles}"
-  else logInfo m!"{labelsAndFiles.map Prod.fst}"
+elab (name := produceLabelsCmd) tk:"produce_labels" lab:("!")? st:(ppSpace str) : command => do
+  let str := ← if st.getString != "git" then return st.getString else
+    IO.Process.run { cmd := "git", args := #["diff", "--name-only", "origin/master...HEAD"] }
+  let labToFiles := (labelsToFiles (← getEnv) str).toArray.qsort (·.1 < ·.1)
+  match lab with
+    | some _ => logInfoAt tk m!"{labToFiles}"
+    | none => logInfoAt tk m!"{(labToFiles.map Prod.fst).filter (· != "unlabeled")}"
 
-@[inherit_doc gitLabels]
-elab "git_labels!" : command => do
-  Elab.Command.elabCommand (← `(git_labels !))
+@[inherit_doc produceLabelsCmd]
+macro "produce_labels! " st:str : command => `(produce_labels ! $st)
 
 end AutoLabel.Label
