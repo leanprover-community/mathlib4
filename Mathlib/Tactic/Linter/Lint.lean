@@ -235,10 +235,10 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let linterBound := linter.longFile.get (← getOptions)
   if linterBound == 0 then
     return
-  let defVal := linter.longFile.defValue
+  let default := linter.longFile.defValue
   if linterBound < linter.longFile.defValue then
     logWarningAt stx
-        m!"The default value of the `longFile` linter is {defVal}.\n\
+        m!"The default value of the `longFile` linter is {default}.\n\
           The current bound of {linterBound} is smaller than allowed. \
           Please, remove the `set_option linter.longFile {linterBound}`."
   unless stx.isOfKind ``Lean.Parser.Command.eoi do return
@@ -259,11 +259,14 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
           `set_option linter.longFile {candidate}`.\nYou can completely disable this linter \
           by setting the length limit to `0`."
     else
-    if linterBound != defVal && lastLine + 200 < linterBound && linterBound != candidate then
-      logWarningAt stx <| .tagged linter.longFile.name
-        m!"For this file, the recommended limit for the number of lines is {candidate}, \
-          instead of {linterBound}.\n\nPlease adjust the limit to the recommended value \
-          using `set_option linter.longFile {candidate}`."
+    if lastLine + 200 < linterBound then
+      -- Avoid nonsensical suggestions, such as the current state or a number smaller than `default`.
+      let candidate := max default candidate
+      if candidate != default && linterBound != candidate then
+        logWarningAt stx <| .tagged linter.longFile.name
+          m!"For this file, the recommended limit for the number of lines is {candidate}, \
+            instead of {linterBound}.\n\nPlease adjust the limit to the recommended value \
+            using `set_option linter.longFile {candidate}`."
 
 initialize addLinter longFileLinter
 

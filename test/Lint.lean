@@ -124,3 +124,5 @@ The current bound of 100 is smaller than allowed. Please, remove the `set_option
 #guard_msgs in
 set_option linter.longFile 100 in
 run_cmd return
+
+set_option linter.longFile 2000
