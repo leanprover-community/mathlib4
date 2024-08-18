@@ -144,6 +144,68 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
   obtain ⟨a, ha⟩ := exists_of_le_one hv h
   exacts [⟨a, Or.inl ha.symm⟩, ⟨a, Or.inr ha.symm⟩]
 
+lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
+    I.IsPrincipal ↔ ∃ x, IsGreatest ((v ∘ algebraMap O F) '' I) x := by
+  constructor <;> rintro ⟨x, hx⟩
+  · refine ⟨(v ∘ algebraMap O F) x, ?_, ?_⟩
+    · refine Set.mem_image_of_mem _ ?_
+      simp [hx, Ideal.mem_span_singleton_self]
+    · intro y hy
+      simp only [Function.comp_apply, hx, Ideal.submodule_span_eq, Set.mem_image,
+        SetLike.mem_coe, Ideal.mem_span_singleton] at hy
+      obtain ⟨y, hy, rfl⟩ := hy
+      exact le_of_dvd hv hy
+  · obtain ⟨a, ha, rfl⟩ : ∃ a ∈ I, (v ∘ algebraMap O F) a = x := by simpa using hx.left
+    refine ⟨a, ?_⟩
+    ext b
+    simp only [Ideal.submodule_span_eq, Ideal.mem_span_singleton]
+    constructor <;> intro hb
+    · exact dvd_of_le hv (hx.right <| Set.mem_image_of_mem _ hb)
+    · obtain ⟨c, rfl⟩ := hb
+      exact Ideal.mul_mem_right c I ha
+
+lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : Integers v O) :
+    ¬ DenselyOrdered (Set.range v) := by
+  intro H
+  -- nonunits as an ideal isn't defined here, nor shown to be equivalent to `v x < 1`
+  set I : Ideal O := {
+    carrier := (v ∘ algebraMap O F) ⁻¹' Set.Iio (1 : Γ₀)
+    add_mem' := by
+      intro a b ha hb
+      simpa using map_add_lt v ha hb
+    zero_mem' := by simp
+    smul_mem' := by
+      intro c x
+      simp only [Set.mem_preimage, Function.comp_apply, Set.mem_Iio, smul_eq_mul, _root_.map_mul]
+      intro hx
+      exact Right.mul_lt_one_of_le_of_lt (hv.map_le_one c) hx
+  } with hI
+  obtain ⟨x, hx⟩ : ∃ x, IsGreatest ((v ∘ algebraMap O F) '' I) x := by
+    rw [← hv.isPrincipal_iff_exists_isGreatest]
+    exact IsPrincipalIdealRing.principal I
+  simp only [hI, Submodule.coe_set_mk, AddSubmonoid.coe_set_mk,
+    AddSubsemigroup.coe_set_mk, Set.image_preimage_eq_inter_range] at hx
+  have := hx.left
+  simp only [Set.mem_inter_iff, Set.mem_Iio, Set.mem_range, Function.comp_apply] at this
+  obtain ⟨hx', y, rfl⟩ := this
+  rw [← v.map_one] at hx'
+  obtain ⟨⟨z, hzv⟩, hz, hz'⟩ := H.dense ⟨v (algebraMap O F y), Set.mem_range_self _⟩
+    ⟨v 1, Set.mem_range_self _⟩ hx'
+  simp only [Set.mem_range] at hzv
+  obtain ⟨z, rfl⟩ := hzv
+  have := hx.right
+  rw [mem_upperBounds] at this
+  refine (this _ ?_).not_lt hz
+  simp only [Set.mem_inter_iff, Set.mem_Iio, Set.mem_range, Function.comp_apply, and_imp,
+    forall_exists_index] at this
+  specialize this (v z) (by simpa using hz')
+  refine ⟨?_, ?_⟩
+  · simpa using hz'
+  · obtain ⟨a, rfl⟩ := hv.exists_of_le_one (by simpa using hz'.le)
+    simp
+
+-- TODO: isPrincipalIdealRing_iff_not_denselyOrdered when MulArchimedean
+
 end Integers
 
 end Field
