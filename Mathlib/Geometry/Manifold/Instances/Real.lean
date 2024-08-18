@@ -247,19 +247,15 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
-/-- The endpoint `x ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
+/-- The endpoint `x ∈ Icc x y`, as a point in `Icc x y` (assuming `x < y`). -/
 abbrev X : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
 
-/-- The endpoint `y ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
+/-- The endpoint `y ∈ Icc x y`, as a point in `Icc x y` (assuming `x < y`). -/
 abbrev Y : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩
 
 lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) X = 0 := by
-  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
   calc ((IccLeftChart x y).extend (𝓡∂ 1)) X
-    _ = (𝓡∂ 1) ((IccLeftChart x y) X) := rfl
-    _ = (𝓡∂ 1) zero := by
-      congr; ext; rw [IccLeftChart]
-      norm_num
+    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccLeftChart]
     _ = 0 := rfl
 
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
@@ -322,12 +318,8 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     exact (A.comp B).comp continuous_subtype_val
 
 lemma IccRightChart_extend_right_eq : (IccRightChart x y).extend (𝓡∂ 1) Y = 0 := by
-  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
   calc ((IccRightChart x y).extend (𝓡∂ 1)) Y
-    _ = (𝓡∂ 1) ((IccRightChart x y) Y) := rfl
-    _ = (𝓡∂ 1) zero := by
-      congr; ext; rw [IccRightChart]
-      norm_num
+    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccRightChart]
     _ = 0 := rfl
 
 lemma IccRightChart_boundary : (IccRightChart x y).extend (𝓡∂ 1) Y ∈ frontier (range (𝓡∂ 1)) := by
