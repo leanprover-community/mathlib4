@@ -85,8 +85,7 @@ theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
   refine exists_unique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
   rw [← hy₁, ← hy₂]
 
-open scoped Classical
-
+open Classical in
 /-- If `f` is closable, then `f.closure` is the closure. Otherwise it is defined
 as `f.closure = f`. -/
 noncomputable def closure (f : E →ₗ.[R] F) : E →ₗ.[R] F :=

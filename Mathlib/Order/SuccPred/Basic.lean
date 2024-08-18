@@ -44,7 +44,6 @@ The stricter condition of every element having a sensible successor can be obtai
 combination of `SuccOrder α` and `NoMaxOrder α`.
 -/
 
-
 open Function OrderDual Set
 
 variable {α β : Type*}
@@ -170,10 +169,9 @@ def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pr
     le_pred_of_lt := fun h => hle_pred_iff.2 h
     le_of_pred_lt := fun {_ _} h => le_of_not_lt ((not_congr hle_pred_iff).1 h.not_le) }
 
-open scoped Classical
-
 variable (α)
 
+open Classical in
 /-- A well-order is a `SuccOrder`. -/
 noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder α :=
   ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
