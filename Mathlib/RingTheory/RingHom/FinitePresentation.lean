@@ -103,7 +103,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
   `MvPolynomial (Fin n) R →ₐ[R] S`. To reason about the kernel, we want to check it on the stalks
   of preimages of `s`. But the preimages do not necessarily span `MvPolynomial (Fin n) R`, so
   we quotient out by an ideal and apply `finitePresentation_ofLocalizationSpanTarget_aux`.
-  -/
+ -/
   have hfintype : Algebra.FiniteType R S := by
     apply finiteType_ofLocalizationSpanTarget f s hs
     intro r

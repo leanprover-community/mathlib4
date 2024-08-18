@@ -281,7 +281,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   to specify the `(S := R)` argument, or use `set_option maxSynthPendingDepth 2 in`.
 
   In either case this step is too slow!
-  -/
+ -/
   set_option maxSynthPendingDepth 2 in
   have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
   have : Module.Finite K S := .trans R S

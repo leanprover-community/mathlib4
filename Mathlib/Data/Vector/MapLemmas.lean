@@ -310,7 +310,7 @@ theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × �
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
-  -/
+ -/
 @[simp]
 theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
     (h : ∀ x s, (f x (s, s)).fst.fst = (f x (s, s)).fst.snd) :
@@ -323,7 +323,7 @@ theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
-  -/
+ -/
 @[simp]
 theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ) × γ)
     (h : ∀ x y s, let s' := (f x y (s, s)).fst; s'.fst = s'.snd) :

@@ -240,7 +240,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
        case, the induced "distance" on `X ⊕ Y` belongs to the candidates family introduced in the
        definition of the optimal coupling, and the conclusion follows from the optimality
        of the optimal coupling within this family.
-    -/
+   -/
   have A :
     ∀ p q : NonemptyCompacts ℓ_infty_ℝ,
       ⟦p⟧ = toGHSpace X →

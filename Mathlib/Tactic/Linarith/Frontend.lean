@@ -327,7 +327,7 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
     hypotheses in multiple types, we will run `linarith` on the goal type first.
     In this case we also receive a new variable from moving the goal to a hypothesis.
     Otherwise, there is no preferred type and no new variable; we simply change the goal to `False`.
-  -/
+ -/
 
   let (g, target_type, new_var) ← match ← applyContrLemma g with
   | (none, g) =>

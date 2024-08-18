@@ -348,7 +348,7 @@ lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
 
 alias natAbs_pow_two := natAbs_sq
 
-/-! ### `/`  -/
+/-! ### `/` -/
 
 @[simp, norm_cast] lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
 

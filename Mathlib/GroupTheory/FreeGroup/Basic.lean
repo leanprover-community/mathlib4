@@ -92,7 +92,7 @@ theorem Red.trans : Red L₁ L₂ → Red L₂ L₃ → Red L₁ L₃ :=
 namespace Red
 
 /-- Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there are words
-`w₃ w₄` and letter `x` such that `w₁ = w₃xx⁻¹w₄` and `w₂ = w₃w₄`  -/
+`w₃ w₄` and letter `x` such that `w₁ = w₃xx⁻¹w₄` and `w₂ = w₃w₄` -/
 @[to_additive "Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there
   are words `w₃ w₄` and letter `x` such that `w₁ = w₃ + x + (-x) + w₄` and `w₂ = w₃w₄`"]
 theorem Step.length : ∀ {L₁ L₂ : List (α × Bool)}, Step L₁ L₂ → L₂.length + 2 = L₁.length

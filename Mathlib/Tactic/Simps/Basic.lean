@@ -1021,7 +1021,7 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   `toApply` is non-empty after a custom projection that is a composition of multiple projections
   was just used. In that case we need to apply these projections before we continue changing `lhs`.
   `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
-  -/
+ -/
 partial def addProjections (nm : Name) (type lhs rhs : Expr)
   (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
   (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do

@@ -70,7 +70,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   intersect any element of `u`, with `δ a'` almost as large as possible. One checks easily
   that `u ∪ {a'}` still has this property, contradicting the maximality. Therefore, `u`
   intersects all elements of `t`, and by definition it satisfies all the desired properties.
-  -/
+ -/
   let T : Set (Set ι) := { u | u ⊆ t ∧ u.PairwiseDisjoint B ∧
     ∀ a ∈ t, ∀ b ∈ u, (B a ∩ B b).Nonempty → ∃ c ∈ u, (B a ∩ B c).Nonempty ∧ δ a ≤ τ * δ c }
   -- By Zorn, choose a maximal family in the good set `T` of disjoint families.
@@ -226,7 +226,7 @@ theorem exists_disjoint_covering_ae
   strategy, but locally restricted to balls on which the measure is finite. For this, we do not
   use the whole family `t`, but a subfamily `t'` supported on small balls (which is possible since
   the family is assumed to be fine at every point of `s`).
-  -/
+ -/
   classical
   -- choose around each `x` a small ball on which the measure is finite
   have : ∀ x, ∃ R, 0 < R ∧ R ≤ 1 ∧ μ (closedBall x (20 * R)) < ∞ := fun x ↦ by

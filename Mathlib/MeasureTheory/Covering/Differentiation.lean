@@ -287,7 +287,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
     For the rigorous proof, we need to work on a part of the space where the measure is finite
     (provided by `spanningSets (ρ + μ)`) and to restrict to the set where the limit is well defined
     (called `s` below, of full measure). Otherwise, the argument goes through.
-    -/
+   -/
   let s := {x | ∃ c, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 c)}
   let o : ℕ → Set α := spanningSets (ρ + μ)
   let u n := s ∩ {x | v.limRatio ρ x < p} ∩ o n

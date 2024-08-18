@@ -82,7 +82,7 @@ variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e f : α}
 
 section Flat
 
-/-- A flat is a maximal set having a given basis  -/
+/-- A flat is a maximal set having a given basis -/
 @[mk_iff]
 structure Flat (M : Matroid α) (F : Set α) : Prop where
   subset_of_basis_of_basis : ∀ ⦃I X⦄, M.Basis I F → M.Basis I X → X ⊆ F

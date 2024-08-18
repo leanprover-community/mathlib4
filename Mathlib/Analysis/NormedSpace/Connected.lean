@@ -48,7 +48,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   intersect `s`. In the same way, there are countably many `t`s for which the segment
   from `b = c + x` to `c + ty` intersects `s`. Choosing `t` outside of these countable exceptions,
   one gets a path in the complement of `s` from `a` to `z = c + ty` and then to `b`.
-  -/
+ -/
   let c := (2 : ℝ)⁻¹ • (a + b)
   let x := (2 : ℝ)⁻¹ • (b - a)
   have Ia : c - x = a := by

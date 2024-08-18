@@ -218,8 +218,8 @@ theorem hasMFDerivAt_fst (x : M × M') :
     /- porting note: was
     apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin (I.prod I') x)
     mfld_set_tac
-    -/
-    filter_upwards [extChartAt_target_mem_nhdsWithin x] with y hy
+   -/
+    filter_upwards [extChartAt_target_mem_nhdsWithin (I.prod I') x] with y hy
     rw [extChartAt_prod] at hy
     exact (extChartAt I x.1).right_inv hy.1
   apply HasFDerivWithinAt.congr_of_eventuallyEq hasFDerivWithinAt_fst this
@@ -280,8 +280,8 @@ theorem hasMFDerivAt_snd (x : M × M') :
     /- porting note: was
     apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin (I.prod I') x)
     mfld_set_tac
-    -/
-    filter_upwards [extChartAt_target_mem_nhdsWithin x] with y hy
+   -/
+    filter_upwards [extChartAt_target_mem_nhdsWithin (I.prod I') x] with y hy
     rw [extChartAt_prod] at hy
     exact (extChartAt I' x.2).right_inv hy.2
   apply HasFDerivWithinAt.congr_of_eventuallyEq hasFDerivWithinAt_snd this

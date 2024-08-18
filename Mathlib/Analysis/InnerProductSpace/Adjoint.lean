@@ -322,7 +322,7 @@ def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
     But removing one of the `have`s makes it fail. The reason is that `E` and `F` don't live
     in the same universe, so the first `have` can no longer be used for `F` after its universe
     metavariable has been assigned to that of `E`!
-  -/
+ -/
   ((LinearMap.toContinuousLinearMap : (E →ₗ[𝕜] F) ≃ₗ[𝕜] E →L[𝕜] F).trans
       ContinuousLinearMap.adjoint.toLinearEquiv).trans
     LinearMap.toContinuousLinearMap.symm

@@ -120,7 +120,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
     and moreover in every closed ball of radius `u n / 3` inside it the map is well approximated by
     `f' z`. Using countably many closed balls to split `M n z` into small diameter subsets
     `K n z p`, one obtains the desired sets `t q` after reindexing.
-    -/
+   -/
   -- exclude the trivial case where `s` is empty
   rcases eq_empty_or_nonempty s with (rfl | hs)
   · refine ⟨fun _ => ∅, fun _ => 0, ?_, ?_, ?_, ?_⟩ <;> simp

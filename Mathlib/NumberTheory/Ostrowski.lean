@@ -263,7 +263,7 @@ theorem mulRingNorm_equiv_padic_of_bounded :
     rcases eq_or_ne n 0 with rfl | hn -- Separate cases n=0 and n ≠ 0
     · simp only [Nat.cast_zero, map_zero, ne_eq, ht, not_false_eq_true, zero_rpow]
     · /- Any natural number can be written as a power of p times a natural number not divisible
-      by p  -/
+      by p -/
       rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hprime.ne_one with ⟨e, m, hpm, rfl⟩
       simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, mulRingNorm_eq_padic_norm,
         padicNorm.padicNorm_p_of_prime, Rat.cast_inv, Rat.cast_natCast, inv_pow,

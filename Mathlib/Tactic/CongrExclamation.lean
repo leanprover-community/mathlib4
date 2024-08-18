@@ -477,7 +477,7 @@ def Lean.MVarId.congrPasses! :
 where
   /--
   Conditionally runs a congruence strategy depending on the predicate `b` applied to the config.
-  -/
+ -/
   when (b : Congr!.Config → Bool) (f : Congr!.Config → MVarId → MetaM (Option (List MVarId)))
       (config : Congr!.Config) (mvar : MVarId) : MetaM (Option (List MVarId)) := do
     unless b config do return none

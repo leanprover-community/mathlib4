@@ -220,7 +220,7 @@ partial def matchAndNorm (expensive := false) (e : Expr) : MetaM Simp.Result := 
     /- Here we could add a `natLike` result using only a `Semiring` instance.
     This would activate only the less-powerful procedures
     that cannot handle subtraction.
-    -/
+   -/
 
     | .failure =>
       throwError "inferred type `{α}` does not have a known characteristic"

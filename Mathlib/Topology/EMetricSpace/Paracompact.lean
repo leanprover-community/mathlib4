@@ -62,7 +62,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     * `ball x (3 / 2 ^ n) ⊆ s i`;
 
     We define this sequence using `Nat.strongRecOn'`, then restate it as `Dn` and `memD`.
-  -/
+ -/
   set D : ℕ → ι → Set α := fun n =>
     Nat.strongRecOn' n fun n D' i =>
       ⋃ (x : α) (hxs : ind x = i) (hb : ball x (3 * 2⁻¹ ^ n) ⊆ s i) (hlt :

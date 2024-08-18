@@ -509,7 +509,7 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
   /-
   simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
     add_lim_zero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
-  -/
+ -/
 
 theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by

@@ -154,7 +154,7 @@ private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f�
   /--
   After https://github.com/leanprover/lean4/pull/4119 we either need
   to specify the `f.flip` argument, or use `set_option maxSynthPendingDepth 2 in`.
-  -/
+ -/
   f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_opNorm₂ y x

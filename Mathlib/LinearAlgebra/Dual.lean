@@ -1720,7 +1720,7 @@ theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)
       have := Free.of_divisionRing K ↥W
       have := Basis.dual_finite (R := K) (M := W)
       ```
-      -/
+     -/
       set_option maxSynthPendingDepth 2 in
       exact FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 

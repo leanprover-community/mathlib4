@@ -33,7 +33,7 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
         avoiding infinite loops. On failure, we roll back the MetaM state
         and ignore this hypothesis. See
         https://github.com/leanprover-community/mathlib4/issues/10590.
-      -/
+     -/
       let newGoal ← result.mvarId.clear fvarId
       return { result with mvarId := newGoal }
 

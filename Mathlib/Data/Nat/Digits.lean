@@ -688,7 +688,7 @@ theorem modEq_eleven_digits_sum (n : ℕ) :
   have t := zmodeq_ofDigits_digits 11 10 (-1 : ℤ) (by unfold Int.ModEq; rfl) n
   rwa [ofDigits_neg_one] at t
 
-/-! ## Divisibility  -/
+/-! ## Divisibility -/
 
 
 theorem dvd_iff_dvd_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) :
