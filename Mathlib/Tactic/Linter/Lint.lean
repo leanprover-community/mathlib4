@@ -237,10 +237,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   let defValue := linter.longFile.defValue
   let setO := match stx with
-      | `(set_option linter.longFile $x) =>
-        if TSyntax.getNat (⟨x.raw⟩) ≤ 1500 then
-          true
-        else false
+      | `(set_option linter.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
   if setO then logWarningAt stx m!"The default value of the `longFile` linter is {defValue}.\n\
                                   The current bound of {linterBound} smaller than allowed. \
