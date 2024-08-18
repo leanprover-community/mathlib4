@@ -151,6 +151,7 @@ note: this linter can be disabled with `set_option linter.cdot false`
 -/
 #guard_msgs in
 set_option linter.cdot true in
+set_option linter.haveLet 0 in
 attribute [instance] Int.add in
 instance : Inhabited Nat where
   default := by

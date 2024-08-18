@@ -27,6 +27,7 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
 error: Tactic `have := 0` did not produce any messages.
 -/
 #guard_msgs in
+set_option linter.haveLet 0 in
 example : true := by
   have := 0 says
 
