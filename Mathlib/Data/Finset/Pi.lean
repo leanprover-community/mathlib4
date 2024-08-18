@@ -33,7 +33,10 @@ def Pi.empty (β : α → Sort*) (a : α) (h : a ∈ (∅ : Finset α)) : β a :
   Multiset.Pi.empty β a h
 
 universe u v
-variable {β : α → Type u} {δ : α → Sort v} [DecidableEq α] {s : Finset α} {t : ∀ a, Finset (β a)}
+variable {β : α → Type u} {δ : α → Sort v} {s : Finset α} {t : ∀ a, Finset (β a)}
+
+section
+variable [DecidableEq α]
 
 /-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `s.pi t` of all functions defined on elements of `s` taking values in `t a` for `a ∈ s`.
@@ -127,6 +130,8 @@ theorem pi_disjoint_of_disjoint {δ : α → Type*} {s : Finset α} (t₁ t₂ :
   disjoint_iff_ne.2 fun f₁ hf₁ f₂ hf₂ eq₁₂ =>
     disjoint_iff_ne.1 h (f₁ a ha) (mem_pi.mp hf₁ a ha) (f₂ a ha) (mem_pi.mp hf₂ a ha) <|
       congr_fun (congr_fun eq₁₂ a) ha
+
+end
 
 /-! ### Diagonal -/
 

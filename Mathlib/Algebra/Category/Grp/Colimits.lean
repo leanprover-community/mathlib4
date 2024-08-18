@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # The category of additive commutative groups has all colimits.
@@ -82,7 +82,7 @@ inductive Relation : Prequotient.{w} F → Prequotient.{w} F → Prop
   -- And one relation per axiom
   | zero_add : ∀ x, Relation (add zero x) x
   | add_zero : ∀ x, Relation (add x zero) x
-  | add_left_neg : ∀ x, Relation (add (neg x) x) zero
+  | neg_add_cancel : ∀ x, Relation (add (neg x) x) zero
   | add_comm : ∀ x y, Relation (add x y) (add y x)
   | add_assoc : ∀ x y z, Relation (add (add x y) z) (add x (add y z))
 
@@ -113,7 +113,7 @@ instance : Add (ColimitType.{w} F) where
 instance : AddCommGroup (ColimitType.{w} F) where
   zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
   add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  neg_add_cancel := Quotient.ind <| fun _ => Quotient.sound <| Relation.neg_add_cancel _
   add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
   add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
@@ -201,7 +201,7 @@ def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
     | add_2 _ _ _ _ r_ih => dsimp; rw [r_ih]
     | zero_add => dsimp; rw [zero_add]
     | add_zero => dsimp; rw [add_zero]
-    | add_left_neg => dsimp; rw [add_left_neg]
+    | neg_add_cancel => dsimp; rw [neg_add_cancel]
     | add_comm => dsimp; rw [add_comm]
     | add_assoc => dsimp; rw [add_assoc]
 

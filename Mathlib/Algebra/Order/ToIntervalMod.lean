@@ -5,10 +5,9 @@ Authors: Joseph Myers
 -/
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Int.SuccPred
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.Set.Lattice
@@ -37,6 +36,9 @@ section LinearOrderedAddCommGroup
 
 variable {α : Type*} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
   {a b c : α} {n : ℤ}
+
+section
+include hp
 
 /--
 The unique integer such that this multiple of `p`, subtracted from `b`, is in `Ico a (a + p)`. -/
@@ -528,7 +530,7 @@ theorem tfae_modEq :
   · intro h
     rw [h, eq_comm, toIocMod_eq_iff, Set.right_mem_Ioc]
     refine ⟨lt_add_of_pos_right a hp, toIcoDiv hp a b - 1, ?_⟩
-    rw [sub_one_zsmul, add_add_add_comm, add_right_neg, add_zero]
+    rw [sub_one_zsmul, add_add_add_comm, add_neg_cancel, add_zero]
     conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul hp a b, h]
   tfae_have 2 → 1
   · rw [← not_exists, not_imp_comm]
@@ -665,11 +667,11 @@ end Zero
 @[simps symm_apply]
 def QuotientAddGroup.equivIcoMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ico a (a + p) where
   toFun b :=
-    ⟨(toIcoMod_periodic hp a).lift b, QuotientAddGroup.induction_on' b <| toIcoMod_mem_Ico hp a⟩
+    ⟨(toIcoMod_periodic hp a).lift b, QuotientAddGroup.induction_on b <| toIcoMod_mem_Ico hp a⟩
   invFun := (↑)
   right_inv b := Subtype.ext <| (toIcoMod_eq_self hp).mpr b.prop
   left_inv b := by
-    induction b using QuotientAddGroup.induction_on'
+    induction b using QuotientAddGroup.induction_on
     dsimp
     rw [QuotientAddGroup.eq_iff_sub_mem, toIcoMod_sub_self]
     apply AddSubgroup.zsmul_mem_zmultiples
@@ -688,11 +690,11 @@ theorem QuotientAddGroup.equivIcoMod_zero (a : α) :
 @[simps symm_apply]
 def QuotientAddGroup.equivIocMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ioc a (a + p) where
   toFun b :=
-    ⟨(toIocMod_periodic hp a).lift b, QuotientAddGroup.induction_on' b <| toIocMod_mem_Ioc hp a⟩
+    ⟨(toIocMod_periodic hp a).lift b, QuotientAddGroup.induction_on b <| toIocMod_mem_Ioc hp a⟩
   invFun := (↑)
   right_inv b := Subtype.ext <| (toIocMod_eq_self hp).mpr b.prop
   left_inv b := by
-    induction b using QuotientAddGroup.induction_on'
+    induction b using QuotientAddGroup.induction_on
     dsimp
     rw [QuotientAddGroup.eq_iff_sub_mem, toIocMod_sub_self]
     apply AddSubgroup.zsmul_mem_zmultiples
@@ -706,6 +708,7 @@ theorem QuotientAddGroup.equivIocMod_coe (a b : α) :
 theorem QuotientAddGroup.equivIocMod_zero (a : α) :
     QuotientAddGroup.equivIocMod hp a 0 = ⟨toIocMod hp a 0, toIocMod_mem_Ioc hp a _⟩ :=
   rfl
+end
 
 /-!
 ### The circular order structure on `α ⧸ AddSubgroup.zmultiples p`
@@ -713,6 +716,8 @@ theorem QuotientAddGroup.equivIocMod_zero (a : α) :
 
 
 section Circular
+
+open AddCommGroup
 
 private theorem toIxxMod_iff (x₁ x₂ x₃ : α) : toIcoMod hp x₁ x₂ ≤ toIocMod hp x₁ x₃ ↔
     toIcoMod hp 0 (x₂ - x₁) + toIcoMod hp 0 (x₁ - x₃) ≤ p := by
@@ -805,36 +810,36 @@ theorem btw_coe_iff {x₁ x₂ x₃ : α} :
 instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) where
   btw_refl x := show _ ≤ _ by simp [sub_self, hp'.out.le]
   btw_cyclic_left {x₁ x₂ x₃} h := by
-    induction x₁ using QuotientAddGroup.induction_on'
-    induction x₂ using QuotientAddGroup.induction_on'
-    induction x₃ using QuotientAddGroup.induction_on'
+    induction x₁ using QuotientAddGroup.induction_on
+    induction x₂ using QuotientAddGroup.induction_on
+    induction x₃ using QuotientAddGroup.induction_on
     simp_rw [btw_coe_iff] at h ⊢
     apply toIxxMod_cyclic_left _ h
   sbtw := _
   sbtw_iff_btw_not_btw := Iff.rfl
   sbtw_trans_left {x₁ x₂ x₃ x₄} (h₁₂₃ : _ ∧ _) (h₂₃₄ : _ ∧ _) :=
     show _ ∧ _ by
-      induction x₁ using QuotientAddGroup.induction_on'
-      induction x₂ using QuotientAddGroup.induction_on'
-      induction x₃ using QuotientAddGroup.induction_on'
-      induction x₄ using QuotientAddGroup.induction_on'
+      induction x₁ using QuotientAddGroup.induction_on
+      induction x₂ using QuotientAddGroup.induction_on
+      induction x₃ using QuotientAddGroup.induction_on
+      induction x₄ using QuotientAddGroup.induction_on
       simp_rw [btw_coe_iff] at h₁₂₃ h₂₃₄ ⊢
       apply toIxxMod_trans _ h₁₂₃ h₂₃₄
 
 instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
   { QuotientAddGroup.circularPreorder with
     btw_antisymm := fun {x₁ x₂ x₃} h₁₂₃ h₃₂₁ => by
-      induction x₁ using QuotientAddGroup.induction_on'
-      induction x₂ using QuotientAddGroup.induction_on'
-      induction x₃ using QuotientAddGroup.induction_on'
+      induction x₁ using QuotientAddGroup.induction_on
+      induction x₂ using QuotientAddGroup.induction_on
+      induction x₃ using QuotientAddGroup.induction_on
       rw [btw_cyclic] at h₃₂₁
       simp_rw [btw_coe_iff] at h₁₂₃ h₃₂₁
       simp_rw [← modEq_iff_eq_mod_zmultiples]
       exact toIxxMod_antisymm _ h₁₂₃ h₃₂₁
     btw_total := fun x₁ x₂ x₃ => by
-      induction x₁ using QuotientAddGroup.induction_on'
-      induction x₂ using QuotientAddGroup.induction_on'
-      induction x₃ using QuotientAddGroup.induction_on'
+      induction x₁ using QuotientAddGroup.induction_on
+      induction x₂ using QuotientAddGroup.induction_on
+      induction x₃ using QuotientAddGroup.induction_on
       simp_rw [btw_coe_iff]
       apply toIxxMod_total }
 
@@ -901,6 +906,7 @@ open Set Int
 section LinearOrderedAddCommGroup
 
 variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
+include hp
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
   refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
