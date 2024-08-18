@@ -235,7 +235,17 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let linterBound := linter.longFile.get (← getOptions)
   if linterBound == 0 then
     return
+  let defVal := linter.longFile.defValue
+  if linterBound < linter.longFile.defValue then
+    logWarningAt stx
+        m!"The default value of the `longFile` is {defVal}. \
+          The current bound is {linterBound} and it is smaller than the allowed bound.\n\n\
+          Please, remove the `set_option linter.longFile {linterBound}`.\n\
+          You can completely disable this linter by setting the length limit to `0`."
   unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+  -- we exclude `Mathlib.lean` from the linter: it exceeds linter's default number of allowed
+  -- lines, and it is an auto-generated import-only file.
+  -- TODO: if there be more such files, revise the implementation.
   if (← getMainModule) == `Mathlib then return
   if let some init := stx.getPos? then
     -- the last line: we subtract 1, since the last line is expected to be empty
@@ -250,8 +260,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
           `set_option linter.longFile {candidate}`.\nYou can completely disable this linter \
           by setting the length limit to `0`."
     else
-    let candidate := max candidate 1500
-    if 1500 < linterBound && lastLine + 200 < linterBound && linterBound != candidate then
+    if linterBound != defVal && lastLine + 200 < linterBound && linterBound != candidate then
       logWarningAt stx <| .tagged linter.longFile.name
         m!"For this file, the recommended limit for the number of lines is {candidate}, \
           instead of {linterBound}.\n\nPlease adjust the limit to the recommended value \
