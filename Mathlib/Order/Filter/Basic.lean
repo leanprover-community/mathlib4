@@ -2399,6 +2399,10 @@ theorem disjoint_comap_iff_map {f : α → β} {F : Filter α} {G : Filter β} :
     Disjoint F (comap f G) ↔ Disjoint (map f F) G := by
   simp only [disjoint_iff, ← Filter.push_pull, map_eq_bot_iff]
 
+theorem disjoint_comap_iff_map' {f : α → β} {F : Filter α} {G : Filter β} :
+    Disjoint (comap f G) F ↔ Disjoint G (map f F) := by
+  simp only [disjoint_iff, ← Filter.push_pull', map_eq_bot_iff]
+
 theorem neBot_inf_comap_iff_map {f : α → β} {F : Filter α} {G : Filter β} :
     NeBot (F ⊓ comap f G) ↔ NeBot (map f F ⊓ G) := by
   rw [← map_neBot_iff, Filter.push_pull]
