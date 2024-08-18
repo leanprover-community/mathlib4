@@ -361,7 +361,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
     · simp
       rfl
 
-instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint :=
   (skyscraperPresheafStalkAdjunction _).isRightAdjoint
 
 instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint  :=
@@ -384,7 +384,7 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   right_triangle_components _ :=
     Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
 
-instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
 
 end

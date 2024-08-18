@@ -54,7 +54,7 @@ namespace Topology
 /-- Topology whose open sets are upper sets.
 
 Note: In general the upper set topology does not coincide with the upper topology. -/
-def upperSet (α :  Type*) [Preorder α] : TopologicalSpace α where
+def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsUpperSet
   isOpen_univ := isUpperSet_univ
   isOpen_inter _ _ := IsUpperSet.inter
@@ -63,7 +63,7 @@ def upperSet (α :  Type*) [Preorder α] : TopologicalSpace α where
 /-- Topology whose open sets are lower sets.
 
 Note: In general the lower set topology does not coincide with the lower topology. -/
-def lowerSet (α :  Type*) [Preorder α] : TopologicalSpace α where
+def lowerSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsLowerSet
   isOpen_univ := isLowerSet_univ
   isOpen_inter _ _ := IsLowerSet.inter

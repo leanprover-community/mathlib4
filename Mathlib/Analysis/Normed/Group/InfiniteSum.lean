@@ -98,7 +98,7 @@ theorem hasSum_iff_tendsto_nat_of_summable_norm {f : ℕ → E} {a : E} (hf : Su
     HasSum f a ↔ Tendsto (fun n : ℕ => ∑ i ∈ range n, f i) atTop (𝓝 a) :=
   ⟨fun h => h.tendsto_sum_nat, fun h => hasSum_of_subseq_of_summable hf tendsto_finset_range h⟩
 
-/-- The direct comparison test for series:  if the norm of `f` is bounded by a real function `g`
+/-- The direct comparison test for series: if the norm of `f` is bounded by a real function `g`
 which is summable, then `f` is summable. -/
 theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} (g : ι → ℝ) (hg : Summable g)
     (h : ∀ i, ‖f i‖ ≤ g i) : Summable f := by
