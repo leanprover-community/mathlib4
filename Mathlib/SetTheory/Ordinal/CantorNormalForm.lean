@@ -178,13 +178,15 @@ theorem CNF_exponents_sorted (b o : Ordinal) : (CNF.exponents b o).Sorted (· > 
         intro a H
         exact (le_log_of_mem_CNF_exponents H).trans_lt <| log_mod_opow_log_lt_log_self hb hbo
 
+theorem CNF_nodupKeys (b o : Ordinal) : (CNF b o).NodupKeys :=
+  (CNF_exponents_sorted b o).nodup
+
 open AList Finsupp
 
 /-- Cantor normal form `CNF` as an `AList`. -/
 @[pp_nodot]
-def CNF_AList (b o : Ordinal) : AList (fun _ : Ordinal => Ordinal) where
-  entries := CNF b o
-  nodupKeys := (CNF_exponents_sorted b o).nodup
+def CNF_AList (b o : Ordinal) : AList (fun _ : Ordinal => Ordinal) :=
+  ⟨_, CNF_nodupKeys b o⟩
 
 @[simp]
 theorem CNF_AList_entries (b o : Ordinal) : (CNF_AList b o).entries = CNF b o :=
@@ -193,6 +195,20 @@ theorem CNF_AList_entries (b o : Ordinal) : (CNF_AList b o).entries = CNF b o :=
 @[simp]
 theorem CNF_AList_keys (b o : Ordinal) : (CNF_AList b o).keys = CNF.exponents b o :=
   rfl
+
+@[simp]
+theorem mem_CNF_AList_iff {b o e : Ordinal} : e ∈ CNF_AList b o ↔ e ∈ CNF.exponents b o :=
+  Iff.rfl
+
+@[simp]
+theorem mem_CNF_AList_lookup_iff {b o e c : Ordinal} :
+    c ∈ (CNF_AList b o).lookup e ↔ ⟨e, c⟩ ∈ CNF b o :=
+  mem_lookup_iff
+
+@[simp]
+theorem CNF_AList_eq_empty {b o : Ordinal} : CNF_AList b o = ∅ ↔ o = 0 := by
+  rw [AList.ext_iff]
+  exact CNF_eq_nil
 
 /-- `CNF_coeff b o` is the finitely supported function returning the coefficient of `b^e` in the
 `CNF` of `o`, for each `e`. -/
