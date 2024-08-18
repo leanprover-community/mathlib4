@@ -257,7 +257,7 @@ def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
       g (f (m • x)) = g (φ m • f x) := by rw [map_smulₛₗ]
       _ = ψ (φ m) • g (f x) := by rw [map_smulₛₗ]
       _ = (ψ ∘ φ) m • g (f x) := rfl
-      _ = χ m • g (f x) := by rw [κ.comp_eq] ⟩
+      _ = χ m • g (f x) := by rw [κ.comp_eq]⟩
 
 @[to_additive (attr := simp)]
 theorem comp_apply
@@ -447,7 +447,7 @@ see also Algebra.Hom.Group -/
 def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
     [DistribMulActionSemiHomClass F φ A B]
     (f : F) : A →ₑ+[φ] B :=
-  { (f : A →+ B),  (f : A →ₑ[φ] B) with }
+  { (f : A →+ B), (f : A →ₑ[φ] B) with }
 
 /-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
 via `MulActionHomClass.toMulActionHom`. -/
@@ -696,7 +696,7 @@ see also Algebra.Hom.Group -/
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
     [MulSemiringActionSemiHomClass F φ R S]
     (f : F) : R →ₑ+*[φ] S :=
- { (f : R →+* S),  (f : R →ₑ+[φ] S) with }
+ { (f : R →+* S), (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/

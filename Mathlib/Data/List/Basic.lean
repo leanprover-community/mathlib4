@@ -1695,7 +1695,7 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
     · simp
     cases' ha : f a with b <;> simp [ha, filterMap_cons]
     · intro h
-      simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
+      simpa [show (filterMap f l).length = l.length + 1 from by simp [h], Nat.add_one_le_iff]
         using List.length_filterMap_le f l
     · rintro rfl h
       exact ⟨rfl, ih h⟩
