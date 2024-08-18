@@ -49,6 +49,7 @@ note: this linter can be disabled with `set_option linter.hashCommand false`
 #guard_msgs in
 #guard true
 
+set_option linter.unusedTactic false in
 /--
 warning: `#`-commands, such as '#check_tactic', are not allowed in 'Mathlib'
 note: this linter can be disabled with `set_option linter.hashCommand false`

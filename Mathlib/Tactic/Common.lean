@@ -61,7 +61,10 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Linter
+-- Import any linters which are not imported in `Mathlib.Init`, such as
+-- syntax linters which are disabled by default in mathlib.
+import Mathlib.Tactic.Linter.HaveLetLinter
+
 import Mathlib.Tactic.MkIffOfInductiveProp
 -- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic
