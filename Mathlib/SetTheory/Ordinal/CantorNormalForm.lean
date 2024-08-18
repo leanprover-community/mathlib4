@@ -59,17 +59,17 @@ theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o �
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
 
-We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
+We special-case `CNF 0 o = CNF 1 o = [⟨0, o⟩]` for `o ≠ 0`.
 
-`CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [(u₁, v₁), (u₂, v₂)]` -/
+`CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [⟨u₁, v₁⟩, ⟨u₂, v₂⟩]` -/
 @[pp_nodot]
 def CNF (b o : Ordinal) : List (Σ _ : Ordinal, Ordinal) :=
   CNFRec b [] (fun o _ho IH ↦ ⟨log b o, o / b ^ log b o⟩::IH) o
 
 /-- The exponents of the Cantor normal form are stored in the first entries. -/
-abbrev CNF.exponents (b o : Ordinal) := (CNF b o).keys
+def CNF.exponents (b o : Ordinal) := (CNF b o).keys
 /-- The coefficients of the Cantor normal form are stored in the second entries. -/
-abbrev CNF.coefficients (b o : Ordinal) := (CNF b o).map Sigma.snd
+def CNF.coefficients (b o : Ordinal) := (CNF b o).map Sigma.snd
 
 @[simp]
 theorem CNF_zero (b : Ordinal) : CNF b 0 = [] :=
@@ -79,9 +79,8 @@ theorem CNF_zero (b : Ordinal) : CNF b 0 = [] :=
 theorem CNF.exponents_zero (b : Ordinal) : CNF.exponents b 0 = [] := by
   rw [exponents, CNF_zero, keys_nil]
 
-theorem CNF_mem_exponents_iff {b o e : Ordinal} :
-    e ∈ CNF.exponents b o ↔ ∃ c, ⟨e, c⟩ ∈ CNF b o := by
-  rw [CNF.exponents, mem_keys]
+theorem CNF_mem_exponents_iff {b o e : Ordinal} : e ∈ CNF.exponents b o ↔ ∃ c, ⟨e, c⟩ ∈ CNF b o :=
+  mem_keys
 
 @[simp]
 theorem CNF.coefficients_zero (b : Ordinal) : CNF.coefficients b 0 = [] := by
@@ -113,8 +112,7 @@ theorem CNF_of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [⟨0,
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
 theorem CNF_foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o := by
   refine CNFRec b ?_ ?_ o
-  · rw [CNF_zero]
-    rfl
+  · simp
   · intro o ho IH
     rw [CNF_ne_zero ho, foldr_cons, IH, div_add_mod]
 
@@ -123,8 +121,7 @@ theorem le_log_of_mem_CNF_exponents {b o : Ordinal.{u}} {x : Ordinal} :
     x ∈ CNF.exponents b o → x ≤ log b o := by
   rw [CNF.exponents]
   refine CNFRec b ?_ ?_ o
-  · rw [CNF_zero]
-    rintro ⟨⟩
+  · simp
   · intro o ho H
     rw [CNF_ne_zero ho, keys_cons, mem_cons]
     rintro (rfl | h)
@@ -148,21 +145,18 @@ theorem lt_of_mem_CNF_coefficients {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal
     x ∈ CNF.coefficients b o → x < b := by
   rw [CNF.coefficients]
   refine CNFRec b ?_ ?_ o
-  · rw [CNF_zero]
-    rintro ⟨⟩
+  · simp
   · intro o ho IH h
     rw [CNF_ne_zero ho] at h
-    cases' (mem_cons.mp h) with h h
-    · rw [h]
-      simpa only using div_opow_log_lt o hb
+    obtain rfl | h := mem_cons.mp h
+    · simpa only using div_opow_log_lt o hb
     · exact IH h
 
 /-- The exponents of the `CNF` are a decreasing sequence. -/
 theorem CNF_exponents_sorted (b o : Ordinal) : (CNF.exponents b o).Sorted (· > ·) := by
   rw [CNF.exponents]
   refine CNFRec b ?_ ?_ o
-  · rw [CNF_zero]
-    exact sorted_nil
+  · simp
   · intro o ho IH
     obtain hb | hb := le_or_gt b 1
     · rw [CNF_of_le_one hb ho]
