@@ -6,6 +6,7 @@ Authors: Peter Nelson
 import Mathlib.Data.ENat.Basic
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Instances.Discrete
+import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # Topology on extended natural numbers
@@ -16,6 +17,12 @@ open scoped Topology
 
 namespace ENat
 
+/--
+Topology on `ℕ∞`.
+
+Note: this is different from the `EMetricSpace` topology. The `EMetricSpace` topology has
+`IsOpen {∞}`, but all neighborhoods of `∞` in `ℕ∞` contain infinite intervals.
+-/
 instance : TopologicalSpace ℕ∞ := Preorder.topology ℕ∞
 
 instance : OrderTopology ℕ∞ := ⟨rfl⟩
