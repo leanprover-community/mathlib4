@@ -263,6 +263,12 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
    use instead `α.prod β` or `NatTrans.prod α β`. -/
 end NatTrans
 
+/-- The cartesian product functor between functor categories -/
+@[simps]
+def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
+  obj FG := FG.1.prod FG.2
+  map nm := NatTrans.prod nm.1 nm.2
+
 namespace NatIso
 
 /-- The cartesian product of two natural isomorphisms. -/

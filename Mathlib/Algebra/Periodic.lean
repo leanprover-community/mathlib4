@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Subgroup.ZPowers
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Coset.Card
 
 /-!
 # Periodicity
