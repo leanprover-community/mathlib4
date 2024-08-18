@@ -202,7 +202,7 @@ theorem wcovBy_succ (a : α) : a ⩿ succ a :=
 theorem covBy_succ_of_not_isMax (h : ¬IsMax a) : a ⋖ succ a :=
   (wcovBy_succ a).covBy_of_lt <| lt_succ_of_not_isMax h
 
-theorem lt_succ_of_not_isMax_of_le (ha : ¬IsMax a) : b ≤ a → b < succ a :=
+theorem lt_succ_of_le_of_not_isMax (hab : b ≤ a) (ha : ¬IsMax a) : b < succ a :=
   fun h => h.trans_lt <| lt_succ_of_not_isMax ha
 
 theorem succ_le_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ b ↔ a < b :=
@@ -250,18 +250,18 @@ theorem isMax_iterate_succ_of_eq_of_ne {n m : ℕ} (h_eq : succ^[n] a = succ^[m]
   · rw [h_eq]
     exact isMax_iterate_succ_of_eq_of_lt h_eq.symm (lt_of_le_of_ne h h_ne.symm)
 
-theorem subset_Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iic a ⊆ Iio (succ a) :=
+theorem Iic_subset_Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iic a ⊆ Iio (succ a) :=
   fun _ => lt_succ_of_not_isMax_of_le ha
 
 theorem Ici_succ_of_not_isMax (ha : ¬IsMax a) : Ici (succ a) = Ioi a :=
   Set.ext fun _ => succ_le_iff_of_not_isMax ha
 
-theorem subset_Ico_succ_right_of_not_isMax (hb : ¬IsMax b) : Icc a b ⊆ Ico a (succ b) := by
+theorem Icc_subset_Ico_succ_right_of_not_isMax (hb : ¬IsMax b) : Icc a b ⊆ Ico a (succ b) := by
   rw [← Ici_inter_Iio, ← Ici_inter_Iic]
   gcongr
   apply subset_Iio_succ_of_not_isMax hb
 
-theorem subset_Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioc a b ⊆ Ioo a (succ b) := by
+theorem Ioc_subset_Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioc a b ⊆ Ioo a (succ b) := by
   rw [← Ioi_inter_Iio, ← Ioi_inter_Iic]
   gcongr
   apply subset_Iio_succ_of_not_isMax hb
@@ -287,7 +287,7 @@ theorem lt_succ_of_le : a ≤ b → a < succ b :=
 theorem succ_le_iff : succ a ≤ b ↔ a < b :=
   succ_le_iff_of_not_isMax <| not_isMax a
 
-theorem succ_lt_succ : a < b → succ a < succ b := by intro; simp_all
+@[gcongr] theorem succ_lt_succ (hab : a < b) : succ a < succ b := by simp
 
 theorem succ_strictMono : StrictMono (succ : α → α) := fun _ _ => succ_lt_succ
 
@@ -352,9 +352,7 @@ section NoMaxOrder
 variable [NoMaxOrder α]
 
 theorem succ_eq_iff_covBy : succ a = b ↔ a ⋖ b :=
-  ⟨by
-    rintro rfl
-    exact covBy_succ _, CovBy.succ_eq⟩
+  ⟨by rintro rfl; exact covBy_succ _, CovBy.succ_eq⟩
 
 end NoMaxOrder
 
