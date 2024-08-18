@@ -2264,13 +2264,6 @@ theorem comap_eval_neBot {ι : Type*} {α : ι → Type*} [∀ j, Nonempty (α j
     (f : Filter (α i)) [NeBot f] : (comap (eval i) f).NeBot :=
   comap_eval_neBot_iff.2 ‹_›
 
-theorem comap_inf_principal_neBot_of_image_mem {f : Filter β} {m : α → β} (hf : NeBot f) {s : Set α}
-    (hs : m '' s ∈ f) : NeBot (comap m f ⊓ 𝓟 s) := by
-  refine ⟨compl_compl s ▸ mt mem_of_eq_bot ?_⟩
-  rintro ⟨t, ht, hts⟩
-  rcases hf.nonempty_of_mem (inter_mem hs ht) with ⟨_, ⟨x, hxs, rfl⟩, hxt⟩
-  exact absurd hxs (hts hxt)
-
 theorem comap_coe_neBot_of_le_principal {s : Set γ} {l : Filter γ} [h : NeBot l] (h' : l ≤ 𝓟 s) :
     NeBot (comap ((↑) : s → γ) l) :=
   h.comap_of_range_mem <| (@Subtype.range_coe γ s).symm ▸ h' (mem_principal_self s)
@@ -2401,6 +2394,27 @@ protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
 
 protected theorem push_pull' (f : α → β) (F : Filter α) (G : Filter β) :
     map f (comap f G ⊓ F) = G ⊓ map f F := by simp only [Filter.push_pull, inf_comm]
+
+theorem disjoint_comap_iff_map {f : α → β} {F : Filter α} {G : Filter β} :
+    Disjoint F (comap f G) ↔ Disjoint (map f F) G := by
+  simp only [disjoint_iff, ← Filter.push_pull, map_eq_bot_iff]
+
+theorem disjoint_comap_iff_map' {f : α → β} {F : Filter α} {G : Filter β} :
+    Disjoint (comap f G) F ↔ Disjoint G (map f F) := by
+  simp only [disjoint_iff, ← Filter.push_pull', map_eq_bot_iff]
+
+theorem neBot_inf_comap_iff_map {f : α → β} {F : Filter α} {G : Filter β} :
+    NeBot (F ⊓ comap f G) ↔ NeBot (map f F ⊓ G) := by
+  rw [← map_neBot_iff, Filter.push_pull]
+
+theorem neBot_inf_comap_iff_map' {f : α → β} {F : Filter α} {G : Filter β} :
+    NeBot (comap f G ⊓ F) ↔ NeBot (G ⊓ map f F) := by
+  rw [← map_neBot_iff, Filter.push_pull']
+
+theorem comap_inf_principal_neBot_of_image_mem {f : Filter β} {m : α → β} (hf : NeBot f) {s : Set α}
+    (hs : m '' s ∈ f) : NeBot (comap m f ⊓ 𝓟 s) := by
+  rw [neBot_inf_comap_iff_map', map_principal, ← frequently_mem_iff_neBot]
+  exact Eventually.frequently hs
 
 theorem principal_eq_map_coe_top (s : Set α) : 𝓟 s = map ((↑) : s → α) ⊤ := by simp
 
