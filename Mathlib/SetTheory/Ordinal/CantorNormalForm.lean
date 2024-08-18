@@ -202,7 +202,7 @@ theorem mem_CNF_AList_iff {b o e : Ordinal} : e ∈ CNF_AList b o ↔ e ∈ CNF.
 
 @[simp]
 theorem mem_CNF_AList_lookup_iff {b o e c : Ordinal} :
-    c ∈ (CNF_AList b o).lookup e ↔ ⟨e, c⟩ ∈ CNF b o :=
+    (CNF_AList b o).lookup e = some c ↔ ⟨e, c⟩ ∈ CNF b o :=
   mem_lookup_iff
 
 @[simp]
