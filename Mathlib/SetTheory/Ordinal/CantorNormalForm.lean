@@ -55,6 +55,8 @@ theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o �
     CNFRec b H0 H o = H o ho (@CNFRec b C H0 H _) := by
   rw [CNFRec, dif_neg ho]
 
+/-! ### Cantor normal form as a list -/
+
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
 
@@ -181,46 +183,19 @@ theorem CNF_exponents_sorted (b o : Ordinal) : (CNF.exponents b o).Sorted (· > 
 theorem CNF_nodupKeys (b o : Ordinal) : (CNF b o).NodupKeys :=
   (CNF_exponents_sorted b o).nodup
 
+/-! ### Cantor normal form as a finsupp -/
+
 open AList Finsupp
-
-/-- Cantor normal form `CNF` as an `AList`. -/
-@[pp_nodot]
-def CNF_AList (b o : Ordinal) : AList (fun _ : Ordinal => Ordinal) :=
-  ⟨_, CNF_nodupKeys b o⟩
-
-@[simp]
-theorem CNF_AList_entries (b o : Ordinal) : (CNF_AList b o).entries = CNF b o :=
-  rfl
-
-@[simp]
-theorem CNF_AList_keys (b o : Ordinal) : (CNF_AList b o).keys = CNF.exponents b o :=
-  rfl
-
-@[simp]
-theorem mem_CNF_AList_iff {b o e : Ordinal} : e ∈ CNF_AList b o ↔ e ∈ CNF.exponents b o :=
-  Iff.rfl
-
-@[simp]
-theorem mem_CNF_AList_lookup_iff {b o e c : Ordinal} :
-    (CNF_AList b o).lookup e = some c ↔ ⟨e, c⟩ ∈ CNF b o :=
-  mem_lookup_iff
-
-@[simp]
-theorem CNF_AList_eq_empty {b o : Ordinal} : CNF_AList b o = ∅ ↔ o = 0 := by
-  rw [AList.ext_iff]
-  exact CNF_eq_nil
 
 /-- `CNF_coeff b o` is the finitely supported function returning the coefficient of `b ^ e` in the
 `CNF` of `o`, for each `e`. -/
 @[pp_nodot]
 def CNF_coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
-  (CNF_AList b o).lookupFinsupp
+  lookupFinsupp ⟨_, CNF_nodupKeys b o⟩
 
 theorem CNF_coeff_of_mem_CNF {b o e c : Ordinal} (h : ⟨e, c⟩ ∈ CNF b o) :
     CNF_coeff b o e = c := by
-  rw [← CNF_AList_entries] at h
-  rw [CNF_coeff, lookupFinsupp_apply, mem_lookup_iff.2 h]
-  rfl
+  rw [CNF_coeff, lookupFinsupp_apply, mem_lookup_iff.2 h, Option.getD_some]
 
 theorem CNF_coeff_of_not_mem_CNF {b o e : Ordinal} (h : e ∉ CNF.exponents b o) :
     CNF_coeff b o e = 0 := by
