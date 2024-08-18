@@ -116,7 +116,7 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     _ ≤ ∑ m ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = _ := by simp
 
-/-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
+/-- **Zhu Shijie's identity** aka hockey-stick identity. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
   rcases lt_or_le n k with h | h
   · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
@@ -125,13 +125,6 @@ theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).cho
     | succ n _ ih =>
       rw [← Ico_insert_right (by omega), sum_insert (by simp),
         show Ico k (n + 1) = Icc k n by rfl, ih, choose_succ_succ' (n + 1)]
-
-/-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`. -/
-lemma sum_range_add_choose (n k : ℕ) :
-    ∑ i ∈ range (n + 1), (i + k).choose k = (n + k + 1).choose (k + 1) := by
-  rw [← sum_Icc_choose (n + k) k, range_eq_Ico]
-  convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
-  rw [map_add_right_Ico, zero_add, add_right_comm]; rfl
 
 end Nat
 
