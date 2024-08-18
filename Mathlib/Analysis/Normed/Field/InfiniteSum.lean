@@ -60,7 +60,7 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
 
 /-- Product of two infinite sums indexed by arbitrary types.
     See also `tsum_mul_tsum` if `f` and `g` are *not* absolutely summable, and
-    `tsum_mul_tsum_of_summable_norm` when the space is not complete. -/
+    `tsum_mul_tsum_of_summable_norm'` when the space is not complete. -/
 theorem tsum_mul_tsum_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × ι', f z.1 * g z.2 :=
