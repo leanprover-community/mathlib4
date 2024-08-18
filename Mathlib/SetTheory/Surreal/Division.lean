@@ -14,7 +14,7 @@ In this file, we prove that if `x` is a nonzero surreal number, then `x⁻¹` (d
 `Mathlib.SetTheory.Game.Basic`) is a number and is a multiplicative inverse for `x`. We use that
 to define the field structure on `Surreal`.
 
-We essentially follow the proof in ONAG [Conway2001], chapter 1, section 10, with a few minor
+We essentially follow the proof in ONAG [Conway2001], chapter 1, theorem 10, with a few minor
 differences explained below. There are four lemmas stated there, (i) through (iv). They are only
 proved for positive numbers `x`. Once we have defined the inverse for positive `x`, it is extended
 in the obvious way to negative numbers.
@@ -90,54 +90,37 @@ def normalization (x : PGame) : PGame :=
 
 lemma num_of_normalization_num : (normalization x).Numeric := by
   rcases x with ⟨xl, xr, xL, xR⟩
-  simp only [normalization]
-  apply insertLeft_numeric
+  rw [normalization]
+  apply insertLeft_numeric _ numeric_zero _
   · rw [numeric_def] at x_num ⊢
     simp only [leftMoves_mk, rightMoves_mk, moveLeft_mk, moveRight_mk, Subtype.forall] at x_num ⊢
     simp only [x_num, implies_true, and_self]
-  · exact numeric_zero
   · rw [PGame.zero_le]
-    simp only [rightMoves_mk, moveRight_mk]
-    have : 0 ≤ PGame.mk xl xr xL xR := by exact le_of_lt x_pos
-    rw [PGame.zero_le] at this
-    simp only [rightMoves_mk, moveRight_mk] at this
-    exact this
+    simpa only [rightMoves_mk, moveRight_mk] using PGame.zero_le.1 <| x_pos.le
 
-lemma pos_num_eq_normalization :
+lemma eq_normalization_of_pos:
     mk x x_num = mk (normalization x) (num_of_normalization_num x_num x_pos) := by
-  simp only [mk_eq_mk]
-  apply PGame.Equiv.trans  -- we show: x ≈ x.insertLeft 0 ≈ normalization x
-  · symm
-    apply insertLeft_equiv_of_lf (lf_of_lt x_pos)
+  rw [mk_eq_mk]
+   -- we show: x ≈ x.insertLeft 0 ≈ normalization x
+  apply trans <| symm <| insertLeft_equiv_of_lf x_pos.lf
   rw [equiv_def]
   rcases x with ⟨xl, xr, xL, xR⟩
   simp only [normalization, insertLeft]
   constructor <;> (
     rw [le_def]
-    simp only [leftMoves_mk, moveLeft_mk, Sum.exists, Sum.elim_inl, Subtype.exists, exists_prop,
-      Sum.elim_inr, exists_const, Sum.forall, le_refl, or_true, zero_rightMoves, IsEmpty.exists_iff,
-      or_false, implies_true, and_true, rightMoves_mk, moveRight_mk]
-  )
-  · constructor
-    · intro i
-      left
-      by_contra bad
-      simp only [not_or, not_exists, not_and, PGame.not_le] at bad
-      rw [lf_iff_lt numeric_zero (x_num.2.1 i)] at bad
-      rcases bad with ⟨bad1, bad2⟩
-      specialize bad1 i bad2
-      exact lf_irrefl _ bad1
-    · intro j
-      right
-      use j
-  · constructor
-    · intro i
-      left
-      left
-      use i
-    · intro j
-      right
-      use j
+    simp only [leftMoves_mk, moveLeft_mk, Sum.exists, Sum.elim_inl, Subtype.exists,
+      Sum.elim_inr, exists_const, Sum.forall, le_refl, or_true, IsEmpty.exists_iff,
+      or_false, implies_true, and_true, moveRight_mk]
+  ) <;>
+  constructor <;>
+  intro i
+  · left
+    cases' le_or_gf (xL i) 0 with h h
+    · right; exact h
+    · left; use i, h.lt numeric_zero (x_num.moveLeft _)
+  · right; use i
+  · left; left; use i
+  · right; use i
 
 /-! ### Options of inv' are numeric
 
@@ -147,24 +130,19 @@ lemma pos_num_eq_normalization :
   proven later in `onag_1_10_ii`.
 -/
 
-lemma invVal_numeric {l r} {L : l → PGame} {R : r → PGame}
+lemma numeric_invVal {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (i : InvTy {i // 0 < L i} r b) :
       (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv') (fun j => (R j).inv')
         (PGame.mk l r L R) i).Numeric := by
-  induction i <;> simp only [invVal]
+  induction i <;> rw [invVal]
   · exact numeric_zero
   all_goals
     case _ i j ih =>
       apply Numeric.mul
-      · apply Numeric.add
-        · exact numeric_one
-        · apply Numeric.mul
-          · apply Numeric.sub
-            · first | exact h5.2.1 i | exact h5.2.2 i
-            · exact h5
-          · exact ih
+      · apply numeric_one.add <| (Numeric.sub _ h5).mul ih
+        · first | exact h5.2.1 i | exact h5.2.2 i
       · first | exact h4 i | exact h3 i i.2
 
 lemma inv'_numeric (ih_xl : ∀ i, 0 < x.moveLeft i → (x.moveLeft i).inv'.Numeric)
@@ -173,7 +151,7 @@ lemma inv'_numeric (ih_xl : ∀ i, 0 < x.moveLeft i → (x.moveLeft i).inv'.Nume
   constructor <;> (
     intro i
     rcases x with ⟨xl, xr, xL, xR⟩
-    exact invVal_numeric ih_xl ih_xr x_num i
+    exact numeric_invVal ih_xl ih_xr x_num i
   )
 
 lemma inv'_numeric_left (ih_xl : ∀ i, 0 < x.moveLeft i → (x.moveLeft i).inv'.Numeric)
@@ -197,7 +175,7 @@ def components {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (x_pos : 0 < PGame.mk l r L R)
-    (i'' : InvTy {i // 0 < L i} r b) :=
+    (i'' : InvTy {i // 0 < L i} r b) : Surreal × Surreal × Surreal :=
   match i'' with
   | InvTy.zero => (0, 0, 0)
   | InvTy.left₁ i j =>
@@ -230,14 +208,14 @@ lemma eq1 {l r} {L : l → PGame} {R : r → PGame}
         (by apply inv'_numeric_right <;> tauto)
     match i'' with
     | InvTy.zero => true
-    | _ => 1 - x*y'' = (1 - x * y')*(x' - x)*x'_inv := by
+    | _ => 1 - x * y'' = (1 - x * y') * (x' - x) * x'_inv := by
   cases i'' <;> simp only [components]
   all_goals
     simp only [inv', moveLeft_mk, invVal, moveRight_mk]
     rw [mk_mul, mk_add, mk_mul, mk_sub]
     on_goal 2 => first | apply h5.2.1 | apply h5.2.2
     on_goal 2 => exact h5
-    on_goal 2 => apply invVal_numeric <;> tauto
+    on_goal 2 => apply numeric_invVal <;> tauto
     on_goal 2 => exact numeric_one
     on_goal 2 => case _ j _ => first | exact h3 j j.2 | exact h4 j
     simp only [← one_def]
@@ -266,7 +244,7 @@ lemma onag_1_10_i' {l r} {L : l → PGame} {R : r → PGame}
     let x := mk (PGame.mk l r L R) h5
     let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) i')
-      (by apply invVal_numeric <;> tauto)
+      (by apply numeric_invVal <;> tauto)
     match b with
     | false => x * y' < 1
     | true => 1 < x * y' := by
@@ -344,7 +322,7 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     let x := mk (PGame.mk l r L R) h5
     let y'' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) i'')
-      (by apply invVal_numeric <;> tauto)
+      (by apply numeric_invVal <;> tauto)
     let y := mk ((PGame.mk l r L R).inv') inv_numeric
     match i'' with
     | InvTy.zero => true
@@ -355,7 +333,7 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     rw [mk_mul, mk_add, mk_mul, mk_sub]
     on_goal 2 => first | apply h5.2.1 | apply h5.2.2
     on_goal 2 => exact h5
-    on_goal 2 => apply invVal_numeric <;> tauto
+    on_goal 2 => apply numeric_invVal <;> tauto
     on_goal 2 => exact numeric_one
     on_goal 2 => case _ j _ => first | exact h3 j j.2 | exact h4 j
     simp only [← one_def]
@@ -398,13 +376,13 @@ lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
       let x' := mk (L i) (h5.2.1 i)
       let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
-        (by apply invVal_numeric <;> tauto)
+        (by apply numeric_invVal <;> tauto)
       x' * y + x * y' - x' * y' < 1
     | Sum.inr ⟨i, j⟩ =>
       let x' := mk (R i) (h5.2.2 i)
       let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
-        (by apply invVal_numeric <;> tauto)
+        (by apply numeric_invVal <;> tauto)
       x' * y + x * y' - x' * y' < 1 := by
   rcases ij <;> simp only
   · case _ val =>
@@ -458,13 +436,13 @@ lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
       let x' := mk (L i) (h5.2.1 i)
       let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
-        (by apply invVal_numeric <;> tauto)
+        (by apply numeric_invVal <;> tauto)
       1 < x' * y + x * y' - x' * y'
     | Sum.inr ⟨i, j⟩ =>
       let x' := mk (R i) (h5.2.2 i)
       let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
-        (by apply invVal_numeric <;> tauto)
+        (by apply numeric_invVal <;> tauto)
       1 < x' * y + x * y' - x' * y' := by
   rcases ij <;> simp only
   · case _ val =>
@@ -560,19 +538,19 @@ lemma onag_1_10 :
       · case _ val =>
           rcases val with ⟨i | val, j⟩
           · specialize this (Sum.inl ⟨i, j⟩)
-            rw [pos_num_eq_normalization x_num x_pos] at this
+            rw [eq_normalization_of_pos x_num x_pos] at this
             exact this
           · cases val   -- the case `x' = 0`, not mentioned in ONAG
             rw [Game.PGame.lt_iff_game_lt]
             simp only [normalization, insertLeft, inv', mk_mul_moveLeft_inl]
             simp only [Sum.elim_inr, quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
             have := onag_1_10_i_left j
-            rw [pos_num_eq_normalization x_num x_pos] at this
+            rw [eq_normalization_of_pos x_num x_pos] at this
             exact this
       · case _ val =>
           rcases val with ⟨i, j⟩
           specialize this (Sum.inr ⟨i, j⟩)
-          rw [pos_num_eq_normalization x_num x_pos] at this
+          rw [eq_normalization_of_pos x_num x_pos] at this
           exact this
 
     have onag_1_10_iii_right : ∀ j, 1 < ((normalization x) * x.inv').moveRight j := by
@@ -583,19 +561,19 @@ lemma onag_1_10 :
       · case _ val =>
           rcases val with ⟨i | val, j⟩
           · specialize this (Sum.inl ⟨i, j⟩)
-            rw [pos_num_eq_normalization x_num x_pos] at this
+            rw [eq_normalization_of_pos x_num x_pos] at this
             exact this
           · cases val  -- the case `x' = 0`, not mentioned in ONAG
             rw [Game.PGame.lt_iff_game_lt]
             simp only [normalization, insertLeft, inv', mk_mul_moveRight_inl]
             simp only [Sum.elim_inr, quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
             have := onag_1_10_i_right j
-            rw [pos_num_eq_normalization x_num x_pos] at this
+            rw [eq_normalization_of_pos x_num x_pos] at this
             exact this
       · case _ val =>
           rcases val with ⟨i, j⟩
           specialize this (Sum.inr ⟨i, j⟩)
-          rw [pos_num_eq_normalization x_num x_pos] at this
+          rw [eq_normalization_of_pos x_num x_pos] at this
           exact this
 
     have onag_1_10_iv' :
@@ -626,7 +604,7 @@ lemma onag_1_10 :
       suffices mk x x_num * mk x.inv' onag_1_10_ii = 1 by
         simp only [← mk_mul, one_def, mk_eq_mk] at this
         exact this
-      rwa [pos_num_eq_normalization x_num x_pos]
+      rwa [eq_normalization_of_pos x_num x_pos]
 
     exact ⟨onag_1_10_ii, onag_1_10_iv⟩
 
