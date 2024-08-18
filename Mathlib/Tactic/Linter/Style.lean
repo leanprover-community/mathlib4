@@ -87,7 +87,7 @@ register_option linter.missingEnd : Bool := {
   descr := "enable the missing end linter"
 }
 
-namespace MissingEnd
+namespace Style.MissingEnd
 
 @[inherit_doc Mathlib.Linter.linter.missingEnd]
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -111,7 +111,7 @@ def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter missingEndLinter
 
-end MissingEnd
+end Style.MissingEnd
 
 /-!
 # The `cdot` linter
@@ -155,7 +155,7 @@ This is precisely what the `cdot` linter flags.
 def unwanted_cdot (stx : Syntax) : Array Syntax :=
   (findCDot stx).filter (!isCDot? ·)
 
-namespace CDotLinter
+namespace Style.CDotLinter
 
 @[inherit_doc linter.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx => do
@@ -168,7 +168,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter cdotLinter
 
-end CDotLinter
+end Style.CDotLinter
 
 /-!
 # The `dollarSyntax` linter
@@ -182,7 +182,7 @@ register_option linter.dollarSyntax : Bool := {
   descr := "enable the `dollarSyntax` linter"
 }
 
-namespace DollarSyntaxLinter
+namespace Style.dollarSyntax
 
 /-- `findDollarSyntax stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
 partial
@@ -205,7 +205,7 @@ def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter dollarSyntaxLinter
 
-end DollarSyntaxLinter
+end Style.dollarSyntax
 
 /-! # The "longLine linter" -/
 
@@ -216,7 +216,7 @@ register_option linter.longLine : Bool := {
   descr := "enable the longLine linter"
 }
 
-namespace LongLine
+namespace Style.longLine
 
 @[inherit_doc Mathlib.Linter.linter.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -248,6 +248,6 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter longLineLinter
 
-end LongLine
+end Style.longLine
 
 end Mathlib.Linter
