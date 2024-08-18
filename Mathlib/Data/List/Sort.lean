@@ -182,6 +182,7 @@ variable {α : Type u} {β : Type v} (r : α → α → Prop) (s : β → β →
 variable [DecidableRel r] [DecidableRel s]
 
 local infixl:50 " ≼ " => r
+local infixl:50 " ≼ " => s
 
 /-! ### Insertion sort -/
 
@@ -238,7 +239,7 @@ theorem mem_orderedInsert {a b : α} {l : List α} :
     · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
 
 theorem map_orderedInsert (l : List α) (x : α) (f : α → β)
-    (hl₁ : ∀ a ∈ l, r a x ↔ s (f a) (f x)) (hl₂ : ∀ a ∈ l, r x a ↔ s (f x) (f a)) :
+    (hl₁ : ∀ a ∈ l, a ≼ x ↔ f a ≼ f x) (hl₂ : ∀ a ∈ l, x ≼ a ↔ f x ≼ f a) :
     (l.orderedInsert r x).map f = (l.map f).orderedInsert s (f x) := by
   induction l with
   | nil => simp
@@ -278,7 +279,7 @@ theorem mem_insertionSort  {l : List α} {x : α} : x ∈ l.insertionSort r ↔ 
 theorem length_insertionSort (l : List α) : (insertionSort r l).length = l.length :=
   (perm_insertionSort r _).length_eq
 
-theorem map_insertionSort (l : List α) (f : α → β) (hl : ∀ a ∈ l, ∀ b ∈ l, r a b ↔ s (f a) (f b)) :
+theorem map_insertionSort (l : List α) (f : α → β) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
     (l.insertionSort r).map f = (l.map f).insertionSort s := by
   induction l with
   | nil => simp
@@ -553,7 +554,7 @@ theorem map_merge (r : α → α → Bool) (s : β → β → Bool) (l l' : List
       simp_rw [List.forall_mem_cons]
       exact ⟨hl.1.2, hl.2.2⟩
 
-theorem map_mergeSort (l : List α) (f : α → β) (hl : ∀ a ∈ l, ∀ b ∈ l, r a b ↔ s (f a) (f b)) :
+theorem map_mergeSort (l : List α) (f : α → β) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
     (l.mergeSort r).map f = (l.map f).mergeSort s :=
   match l with
   | [] => by simp
