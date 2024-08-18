@@ -79,7 +79,7 @@ theorem comul_counit_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) 
 
 @[reassoc] theorem comul_assoc_flip :
     M.comul ≫ (M.comul ▷ M.X) = M.comul ≫ (M.X ◁ M.comul) ≫ (α_ M.X M.X M.X).inv := by
-  simp [← comul_assoc]
+  simp
 
 /-- A morphism of comonoid objects. -/
 @[ext]
@@ -156,11 +156,11 @@ def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.
         slice_rhs 1 2 => rw [f_comul]
         simp }
 
+@[simps]
 instance uniqueHomToTrivial (A : Comon_ C) : Unique (A ⟶ trivial C) where
   default :=
     { hom := A.counit
-      hom_counit := by dsimp; simp
-      hom_comul := by dsimp; simp [A.comul_counit, unitors_inv_equal] }
+      hom_comul := by simp [A.comul_counit, unitors_inv_equal] }
   uniq f := by
     ext; simp
     rw [← Category.comp_id f.hom]

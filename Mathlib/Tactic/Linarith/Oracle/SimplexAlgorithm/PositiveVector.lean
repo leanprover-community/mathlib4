@@ -3,6 +3,7 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
+import Lean.Meta.Basic
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
 
@@ -97,3 +98,7 @@ def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [UsableInSim
     return extractSolution res.snd
   else
     throwError "Simplex Algorithm failed"
+
+end SimplexAlgorithm
+
+end Linarith

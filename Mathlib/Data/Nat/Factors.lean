@@ -20,6 +20,8 @@ This file deals with the factors of natural numbers.
 
 -/
 
+assert_not_exists Multiset
+
 open Bool Subtype
 
 open Nat
@@ -312,5 +314,3 @@ theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
   · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
 end Nat
-
-assert_not_exists Multiset
