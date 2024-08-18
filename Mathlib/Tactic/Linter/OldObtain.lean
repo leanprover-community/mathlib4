@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Linter.Util
 
@@ -66,12 +67,9 @@ register_option linter.oldObtain : Bool := {
   descr := "enable the `oldObtain` linter"
 }
 
-/-- Gets the value of the `linter.oldObtain` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.oldObtain o
-
 /-- The `oldObtain` linter: see docstring above -/
 def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterHash (← getOptions) do
+    unless Linter.getLinterValue linter.oldObtain (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return

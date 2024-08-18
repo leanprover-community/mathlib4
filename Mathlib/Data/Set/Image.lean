@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.WithBot
+import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
 
 /-!
@@ -190,7 +191,7 @@ theorem _root_.Function.Injective.mem_set_image {f : α → β} (hf : Injective 
 
 lemma preimage_subset_of_surjOn {t : Set β} (hf : Injective f) (h : SurjOn f s t) :
     f ⁻¹' t ⊆ s := fun _ hx ↦
-  hf.mem_set_image.1 $ h hx
+  hf.mem_set_image.1 <| h hx
 
 theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∀ y ∈ f '' s, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
@@ -937,19 +938,7 @@ theorem range_diff_image {f : α → β} (H : Injective f) (s : Set α) : range 
 @[simp]
 theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α) ∈ s } := by
   ext ⟨x, hx⟩
-  -- Porting note: `simp [inclusion]` doesn't solve goal
-  apply Iff.intro
-  · rw [mem_range]
-    rintro ⟨a, ha⟩
-    rw [inclusion, Subtype.mk.injEq] at ha
-    rw [mem_setOf, Subtype.coe_mk, ← ha]
-    exact Subtype.coe_prop _
-  · rw [mem_setOf, Subtype.coe_mk, mem_range]
-    intro hx'
-    use ⟨x, hx'⟩
-    trivial
-  -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
-  -- rw [SetCoe.exists, Subtype.coe_mk, exists_prop, exists_eq_right, mem_set_of, Subtype.coe_mk]
+  simp
 
 -- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :

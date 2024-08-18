@@ -46,7 +46,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
   ext1 v
   classical
   suffices ∑ i, (w i / |(u i : ℝ)|) * v i ^ 2 = ∑ i, w i * (v i ^ 2 * |(u i : ℝ)|⁻¹) by
-    simpa [basisRepr_apply, Basis.unitsSMul_apply, ← _root_.sq, mul_pow, ← hwu]
+    simpa [basisRepr_apply, Basis.unitsSMul_apply, ← _root_.sq, mul_pow, ← hwu, Pi.single_apply]
   exact sum_congr rfl fun j _ ↦ by ring
 
 /-- **Sylvester's law of inertia**: A nondegenerate real quadratic form is equivalent to a weighted

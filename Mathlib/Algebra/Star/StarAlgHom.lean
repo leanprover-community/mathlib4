@@ -765,9 +765,6 @@ theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
 theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : A ≃⋆ₐ[R] B} : f = g ↔ ∀ a, f a = g a :=
-  DFunLike.ext_iff
-
 /-- The identity map is a star algebra isomorphism. -/
 @[refl]
 def refl : A ≃⋆ₐ[R] A :=
@@ -810,9 +807,7 @@ theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
   rfl
 
 @[simp]
-theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := by
-  ext
-  rfl
+theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩

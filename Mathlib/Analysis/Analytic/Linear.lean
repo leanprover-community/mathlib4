@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Basic
 
@@ -17,8 +17,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open scoped Topology Classical NNReal ENNReal
-
+open scoped Topology NNReal ENNReal
 open Set Filter Asymptotics
 
 noncomputable section

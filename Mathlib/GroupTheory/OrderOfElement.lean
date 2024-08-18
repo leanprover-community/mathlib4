@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
 # Order of an element
@@ -751,10 +752,28 @@ lemma orderOf_eq_card_powers : orderOf x = Fintype.card (powers x : Set G) :=
 end FiniteCancelMonoid
 
 section FiniteGroup
-variable [Group G]
+variable [Group G] {x y : G}
+
+@[to_additive]
+theorem zpow_eq_one_iff_modEq {n : ℤ} : x ^ n = 1 ↔ n ≡ 0 [ZMOD orderOf x] := by
+  rw [Int.modEq_zero_iff_dvd, orderOf_dvd_iff_zpow_eq_one]
+
+
+@[to_additive]
+theorem zpow_eq_zpow_iff_modEq {m n : ℤ} : x ^ m = x ^ n ↔ m ≡ n [ZMOD orderOf x] := by
+  rw [← mul_inv_eq_one, ← zpow_sub, zpow_eq_one_iff_modEq, Int.modEq_iff_dvd, Int.modEq_iff_dvd,
+    zero_sub, neg_sub]
+
+@[to_additive (attr := simp)]
+theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) ↔ ¬IsOfFinOrder x := by
+  refine ⟨?_, fun h n m hnm => ?_⟩
+  · simp_rw [isOfFinOrder_iff_pow_eq_one]
+    rintro h ⟨n, hn, hx⟩
+    exact Nat.cast_ne_zero.2 hn.ne' (h <| by simpa using hx)
+  rwa [zpow_eq_zpow_iff_modEq, orderOf_eq_zero_iff.2 h, Nat.cast_zero, Int.modEq_zero_iff] at hnm
 
 section Finite
-variable [Finite G] {x y : G}
+variable [Finite G]
 
 @[to_additive]
 theorem exists_zpow_eq_one (x : G) : ∃ (i : ℤ) (_ : i ≠ 0), x ^ (i : ℤ) = 1 := by
@@ -775,23 +794,6 @@ lemma powers_eq_zpowers (x : G) : (powers x : Set G) = zpowers x :=
 lemma mem_zpowers_iff_mem_range_orderOf [DecidableEq G] :
     y ∈ zpowers x ↔ y ∈ (Finset.range (orderOf x)).image (x ^ ·) :=
   (isOfFinOrder_of_finite _).mem_zpowers_iff_mem_range_orderOf
-
-@[to_additive]
-theorem zpow_eq_one_iff_modEq {n : ℤ} : x ^ n = 1 ↔ n ≡ 0 [ZMOD orderOf x] := by
-  rw [Int.modEq_zero_iff_dvd, orderOf_dvd_iff_zpow_eq_one]
-
-@[to_additive]
-theorem zpow_eq_zpow_iff_modEq {m n : ℤ} : x ^ m = x ^ n ↔ m ≡ n [ZMOD orderOf x] := by
-  rw [← mul_inv_eq_one, ← zpow_sub, zpow_eq_one_iff_modEq, Int.modEq_iff_dvd, Int.modEq_iff_dvd,
-    zero_sub, neg_sub]
-
-@[to_additive (attr := simp)]
-theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) ↔ ¬IsOfFinOrder x := by
-  refine ⟨?_, fun h n m hnm => ?_⟩
-  · simp_rw [isOfFinOrder_iff_pow_eq_one]
-    rintro h ⟨n, hn, hx⟩
-    exact Nat.cast_ne_zero.2 hn.ne' (h <| by simpa using hx)
-  rwa [zpow_eq_zpow_iff_modEq, orderOf_eq_zero_iff.2 h, Nat.cast_zero, Int.modEq_zero_iff] at hnm
 
 /-- The equivalence between `Subgroup.zpowers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
@@ -862,18 +864,18 @@ theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.ca
   · simp only [card_eq_zero_of_infinite, dvd_zero]
 
 @[to_additive]
-nonrec lemma Subgroup.orderOf_dvd_natCard (s : Subgroup G) (hx : x ∈ s) :
+nonrec lemma Subgroup.orderOf_dvd_natCard {G : Type*} [Group G] (s : Subgroup G) {x} (hx : x ∈ s) :
   orderOf x ∣ Nat.card s := by simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)
 
 @[to_additive]
-lemma Subgroup.orderOf_le_card (s : Subgroup G) (hs : (s : Set G).Finite) (hx : x ∈ s) :
-    orderOf x ≤ Nat.card s :=
+lemma Subgroup.orderOf_le_card {G : Type*} [Group G] (s : Subgroup G) (hs : (s : Set G).Finite)
+    {x} (hx : x ∈ s) : orderOf x ≤ Nat.card s :=
   le_of_dvd (Nat.card_pos_iff.2 <| ⟨s.coe_nonempty.to_subtype, hs.to_subtype⟩) <|
     s.orderOf_dvd_natCard hx
 
 @[to_additive]
-lemma Submonoid.orderOf_le_card (s : Submonoid G) (hs : (s : Set G).Finite) (hx : x ∈ s) :
-    orderOf x ≤ Nat.card s := by
+lemma Submonoid.orderOf_le_card {G : Type*} [Group G] (s : Submonoid G) (hs : (s : Set G).Finite)
+    {x} (hx : x ∈ s) : orderOf x ≤ Nat.card s := by
   rw [← Nat.card_submonoidPowers]; exact Nat.card_mono hs <| powers_le.2 hx
 
 @[to_additive (attr := simp) card_nsmul_eq_zero']
@@ -899,13 +901,13 @@ theorem zpow_mod_card (a : G) (n : ℤ) : a ^ (n % Fintype.card G : ℤ) = a ^ n
     (Int.natCast_dvd_natCast.2 orderOf_dvd_card), zpow_mod_orderOf]
 
 @[to_additive (attr := simp) mod_natCard_nsmul]
-lemma pow_mod_natCard (a : G) (n : ℕ) : a ^ (n % Nat.card G) = a ^ n := by
-  rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n $ orderOf_dvd_natCard _, pow_mod_orderOf]
+lemma pow_mod_natCard {G} [Group G] (a : G) (n : ℕ) : a ^ (n % Nat.card G) = a ^ n := by
+  rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n <| orderOf_dvd_natCard _, pow_mod_orderOf]
 
 @[to_additive (attr := simp) mod_natCard_zsmul]
-lemma zpow_mod_natCard (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n := by
-  rw [eq_comm, ← zpow_mod_orderOf,
-    ← Int.emod_emod_of_dvd n $ Int.natCast_dvd_natCast.2 $ orderOf_dvd_natCard _, zpow_mod_orderOf]
+lemma zpow_mod_natCard {G} [Group G] (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n := by
+  rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n <|
+    Int.natCast_dvd_natCast.2 <| orderOf_dvd_natCard _, zpow_mod_orderOf]
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
@@ -933,7 +935,8 @@ theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).Coprime n) {g : G
   inv_pow g n
 
 @[to_additive Nat.Coprime.nsmul_right_bijective]
-lemma Nat.Coprime.pow_left_bijective (hn : (Nat.card G).Coprime n) : Bijective (· ^ n : G → G) :=
+lemma Nat.Coprime.pow_left_bijective {G} [Group G] (hn : (Nat.card G).Coprime n) :
+    Bijective (· ^ n : G → G) :=
   (powCoprime hn).bijective
 
 @[to_additive add_inf_eq_bot_of_coprime]
@@ -964,9 +967,12 @@ section PowIsSubgroup
 @[to_additive "A nonempty idempotent subset of a finite cancellative add monoid is a submonoid"]
 def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M)
     (hS1 : S.Nonempty) (hS2 : S * S = S) : Submonoid M :=
-  have pow_mem : ∀ a : M, a ∈ S → ∀ n : ℕ, a ^ (n + 1) ∈ S := fun a ha =>
-    Nat.rec (by rwa [Nat.zero_eq, zero_add, pow_one]) fun n ih =>
-      (congr_arg₂ (· ∈ ·) (pow_succ a (n + 1)).symm hS2).mp (Set.mul_mem_mul ih ha)
+  have pow_mem (a : M) (ha : a ∈ S) (n : ℕ) : a ^ (n + 1) ∈ S := by
+    induction n with
+    | zero => rwa [zero_add, pow_one]
+    | succ n ih =>
+      rw [← hS2, pow_succ]
+      exact Set.mul_mem_mul ih ha
   { carrier := S
     one_mem' := by
       obtain ⟨a, ha⟩ := hS1
@@ -1080,10 +1086,12 @@ lemma Nat.cast_card_eq_zero (R) [AddGroupWithOne R] [Fintype R] : (Fintype.card 
   rw [← nsmul_one, card_nsmul_eq_zero]
 
 section NonAssocRing
-variable (R : Type*) [NonAssocRing R] [Fintype R] (p : ℕ)
+variable (R : Type*) [NonAssocRing R] (p : ℕ)
 
 lemma CharP.addOrderOf_one : CharP R (addOrderOf (1 : R)) where
   cast_eq_zero_iff' n := by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]
+
+variable [Fintype R]
 
 variable {R} in
 lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0) : CharP R p where
@@ -1106,7 +1114,7 @@ lemma charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p n : ℕ) [hp : Fa
   obtain ⟨c, hc⟩ := CharP.exists R
   have hcpn : c ∣ p ^ n := by rw [← CharP.cast_eq_zero_iff R c, ← hn, Nat.cast_card_eq_zero]
   obtain ⟨i, hi, rfl⟩ : ∃ i ≤ n, c = p ^ i := by rwa [Nat.dvd_prime_pow hp.1] at hcpn
-  obtain rfl : i = n := hR i hi $ by rw [← Nat.cast_pow, CharP.cast_eq_zero]
+  obtain rfl : i = n := hR i hi <| by rw [← Nat.cast_pow, CharP.cast_eq_zero]
   assumption
 
 namespace SemiconjBy

@@ -84,7 +84,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     · simp
     have hx := norm_coe_mul p x p⁻¹
     rw [abs_inv, eq_inv_mul_iff_mul_eq₀ ((not_congr abs_eq_zero).mpr hp)] at hx
-    rw [← hx, inv_mul_cancel hp, this, ← abs_mul, mul_sub, mul_inv_cancel_left₀ hp, mul_comm p]
+    rw [← hx, inv_mul_cancel₀ hp, this, ← abs_mul, mul_sub, mul_inv_cancel_left₀ hp, mul_comm p]
   clear! x p
   intros x
   rw [quotient_norm_eq, abs_sub_round_eq_min]
@@ -121,13 +121,13 @@ theorem norm_le_half_period {x : AddCircle p} (hp : p ≠ 0) : ‖x‖ ≤ |p| /
   obtain ⟨x⟩ := x
   change ‖(x : AddCircle p)‖ ≤ |p| / 2
   rw [norm_eq, ← mul_le_mul_left (abs_pos.mpr (inv_ne_zero hp)), ← abs_mul, mul_sub, mul_left_comm,
-    ← mul_div_assoc, ← abs_mul, inv_mul_cancel hp, mul_one, abs_one]
+    ← mul_div_assoc, ← abs_mul, inv_mul_cancel₀ hp, mul_one, abs_one]
   exact abs_sub_round (p⁻¹ * x)
 
 @[simp]
 theorem norm_half_period_eq : ‖(↑(p / 2) : AddCircle p)‖ = |p| / 2 := by
   rcases eq_or_ne p 0 with (rfl | hp); · simp
-  rw [norm_eq, ← mul_div_assoc, inv_mul_cancel hp, one_div, round_two_inv, Int.cast_one,
+  rw [norm_eq, ← mul_div_assoc, inv_mul_cancel₀ hp, one_div, round_two_inv, Int.cast_one,
     one_mul, (by linarith : p / 2 - p = -(p / 2)), abs_neg, abs_div, abs_two]
 
 theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ = |x| ↔ |x| ≤ |p| / 2 := by
@@ -149,9 +149,9 @@ theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ =
   obtain ⟨hx₁, hx₂⟩ := abs_le.mp hx
   replace hx₂ := Ne.lt_of_le hx' hx₂
   constructor
-  · rwa [← mul_le_mul_left hp, ← mul_assoc, mul_inv_cancel hp.ne.symm, one_mul, mul_neg, ←
+  · rwa [← mul_le_mul_left hp, ← mul_assoc, mul_inv_cancel₀ hp.ne.symm, one_mul, mul_neg, ←
       mul_div_assoc, mul_one]
-  · rwa [← mul_lt_mul_left hp, ← mul_assoc, mul_inv_cancel hp.ne.symm, one_mul, ← mul_div_assoc,
+  · rwa [← mul_lt_mul_left hp, ← mul_assoc, mul_inv_cancel₀ hp.ne.symm, one_mul, ← mul_div_assoc,
       mul_one]
 
 open Metric

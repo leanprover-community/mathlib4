@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Yury G. Kudryashov, Scott Morrison
+Authors: Johannes Hölzl, Yury Kudryashov, Scott Morrison
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
@@ -1508,7 +1508,7 @@ theorem of'_eq_of [AddZeroClass G] (a : G) : of' k G a = of k G (.ofAdd a) := rf
 theorem of_injective [Nontrivial k] [AddZeroClass G] : Function.Injective (of k G) :=
   MonoidAlgebra.of_injective
 
-theorem of'_commute [Semiring k] [AddZeroClass G] {a : G} (h : ∀ a', AddCommute a a')
+theorem of'_commute [AddZeroClass G] {a : G} (h : ∀ a', AddCommute a a')
     (f : AddMonoidAlgebra k G) :
     Commute (of' k G a) f :=
   MonoidAlgebra.of_commute (G := Multiplicative G) h f
