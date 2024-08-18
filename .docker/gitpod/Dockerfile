@@ -1,12 +1,11 @@
 # This is the Dockerfile for `leanprovercommunity/mathlib:gitpod`.
+# As well as elan and mathlib, we also install leanblueprint and all of its dependencies.
 
-# gitpod doesn't support multiple FROM statements, (or rather, you can't copy from one to another)
-# so we just install everything in one go
 FROM ubuntu:jammy
 
 USER root
 
-RUN apt-get update && apt-get install sudo git curl git bash-completion python3 python3-requests -y && apt-get clean
+RUN apt-get update && apt-get install sudo git curl git bash-completion texlive latexmk graphviz graphviz-dev python3 python3-pip python3-requests -y && apt-get clean
 
 RUN useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod gitpod \
     # passwordless sudo for users in the 'sudo' group
@@ -29,6 +28,9 @@ RUN . ~/.profile && elan toolchain install $(curl https://raw.githubusercontent.
 RUN curl -s -L https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz | tar xzf - && sudo mv nvim-linux64 /opt/nvim
 
 ENV PATH="/home/gitpod/.local/bin:/home/gitpod/.elan/bin:/opt/nvim/bin:${PATH}"
+
+# install leanblueprint
+RUN python3 -m pip install leanblueprint invoke
 
 # fix the infoview when the container is used on gitpod:
 ENV VSCODE_API_VERSION="1.50.0"
