@@ -39,7 +39,8 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
     return false
 
 
-/-- Synthesize arguments `xs` either with typeclass synthesis, with `fun_prop` or with discharger. -/
+/-- Synthesize arguments `xs` either with typeclass synthesis,
+with `fun_prop` or with a discharger. -/
 def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM Bool := do
