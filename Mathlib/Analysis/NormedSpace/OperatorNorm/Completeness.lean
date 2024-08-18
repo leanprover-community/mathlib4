@@ -151,7 +151,7 @@ theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f :
     f ∈ closedBall f₀ r := by
   have hr : 0 ≤ r := nonempty_closedBall.1 (closure_nonempty_iff.1 ⟨_, hf⟩).of_image
   refine mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x => ?_)
-  have : IsClosed { g : E' → F | ‖g x - f₀ x‖ ≤ r * ‖x‖ } :=
+  have : IsClosed {g : E' → F | ‖g x - f₀ x‖ ≤ r * ‖x‖} :=
     isClosed_Iic.preimage ((@continuous_apply E' (fun _ => F) _ x).sub continuous_const).norm
   refine this.closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf
   exact (g - f₀).le_of_opNorm_le (mem_closedBall_iff_norm.1 hg) _
