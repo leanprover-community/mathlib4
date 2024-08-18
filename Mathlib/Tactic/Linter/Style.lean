@@ -8,12 +8,37 @@ import Lean.Elab.Command
 import Lean.Linter.Util
 
 /-!
-## Style linters
+# Style linters
 
-This file contains (currently one, eventually more) linters about stylistic aspects:
-these are only about coding style, but do not affect correctness nor global coherence of mathlib.
+This file contains linters about stylistic and formatting aspects of code:
+these do not affect the behaviour of the Lean code.
+Some of these were ported from the `lint-style.py` Python script.
 
-Historically, these were ported from the `lint-style.py` Python script.
+This file defines the following linters:
+- the `set_option` linter checks for the presence of `set_option` commands activating
+options disallowed in mathlib: these are meant to be temporary, and not for polished code
+
+- the `missingEnd` linter checks for sections or namespaces which are not closed by the end
+of the file: enforcing this invariant makes minimising files or moving code between files easier
+
+- the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
+this is allowed Lean syntax, but it is nicer to be uniform
+
+- the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
+similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
+the `|>` symbol
+
+- the `lambdaSyntax` linter checks for uses of the `λ` symbol for ananomous functions,
+instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
+(This linter is still under review in PR #15896.)
+
+- the `longLine` linter checks for lines which have more than 100 characters
+- the `longFile` linter checks for files which have more than 1500 lines:
+this linter is still under development in PR #15610.
+
+All of these linters are enabled in mathlib by default, but disabled globally
+since they enforce conventions which are inherently subjective.
+
 -/
 
 open Lean Elab Command
