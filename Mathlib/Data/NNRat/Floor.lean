@@ -70,15 +70,14 @@ theorem intFloor_cast (x : ℚ≥0) : ⌊(x : K)⌋ = ⌊(x : ℚ)⌋ := by
 
 @[simp, norm_cast]
 theorem intCeil_cast (x : ℚ≥0) : ⌈(x : K)⌉ = ⌈(x : ℚ)⌉ := by
-  obtain rfl | hx := eq_or_ne x 0
-  · simp only [cast_zero, Int.ceil_zero]
-  · rw [Int.ceil_eq_iff, ← coe_ceil, sub_lt_iff_lt_add]
-    constructor
-    · have := NNRat.cast_strictMono (K := K) <| Nat.ceil_lt_add_one <| zero_le x
-      sorry
-    · norm_cast
-      norm_cast
-      rw [← Nat.ceil_le]
+  rw [Int.ceil_eq_iff, ← coe_ceil, sub_lt_iff_lt_add]
+  constructor
+  · have := NNRat.cast_strictMono (K := K) <| Nat.ceil_lt_add_one <| zero_le x
+    rw [NNRat.cast_add, NNRat.cast_one] at this
+    refine Eq.trans_lt ?_ this
+    norm_cast
+  · rw [Int.cast_natCast, NNRat.cast_le_natCast]
+    exact Nat.le_ceil _
 
 end Field
 
