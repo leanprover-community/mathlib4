@@ -213,10 +213,9 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
         -- porting note (#10745): was simp [smul_tmul', Algebra.ofId_apply]
-        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul,
-          LinearMap.mul_apply, LinearMap.smul_apply, IsTensorProduct.equiv_apply,
-          Module.algebraMap_end_apply, _root_.map_mul, smul_tmul', eq_self_iff_true,
-          LinearMap.coe_restrictScalars, LinearMap.flip_apply]
+        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, LinearMap.mul_apply,
+          LinearMap.smul_apply, IsTensorProduct.equiv_apply, Module.algebraMap_end_apply, map_mul,
+          smul_tmul', eq_self_iff_true, LinearMap.coe_restrictScalars, LinearMap.flip_apply]
       · intro x y hx hy
         rw [map_add, smul_add, map_add, smul_add, hx, hy] }
 
@@ -353,8 +352,7 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
     · intro x y
       simp only [smul_tmul', smul_eq_mul, TensorProduct.comm_tmul, smul_def,
         TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply, TensorProduct.tmul_mul_tmul,
-        one_mul, h.1.equiv_tmul, AlgHom.toLinearMap_apply, _root_.map_mul,
-        IsScalarTower.coe_toAlgHom']
+        one_mul, h.1.equiv_tmul, AlgHom.toLinearMap_apply, map_mul, IsScalarTower.coe_toAlgHom']
       ring
     · intro x y hx hy
       rw [map_add, map_add, smul_add, map_add, map_add, hx, hy, smul_add]
@@ -399,7 +397,7 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
   have : ∀ x, H.out.lift g.toLinearMap (algebraMap R' S' x) = g x := H.out.lift_eq _
   refine AlgHom.ofLinearMap ((H.out.lift g.toLinearMap).restrictScalars R) ?_ ?_
   · dsimp only [LinearMap.restrictScalars_apply]
-    rw [← (algebraMap R' S').map_one, this, _root_.map_one]
+    rw [← (algebraMap R' S').map_one, this, map_one]
   · intro x y
     refine H.out.inductionOn x _ ?_ ?_ ?_ ?_
     · rw [zero_mul, map_zero, zero_mul]
@@ -417,7 +415,7 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
     · rw [mul_zero, map_zero, mul_zero]
     · intro y
       dsimp
-      rw [← _root_.map_mul, this, this, _root_.map_mul]
+      rw [← map_mul, this, this, map_mul]
     · intro s s' e
       rw [mul_comm, smul_mul_assoc, LinearMap.map_smul, LinearMap.map_smul, mul_comm, e]
       change f s * (g x * _) = g x * (f s * _)
@@ -435,7 +433,7 @@ theorem Algebra.pushoutDesc_left [H : Algebra.IsPushout R S R' S'] {A : Type*} [
         show f (r • s) * a = r • (f s * a) by rw [map_smul, smul_mul_assoc] }
   haveI : IsScalarTower S A A := { smul_assoc := fun r a b => mul_assoc _ _ _ }
   rw [Algebra.algebraMap_eq_smul_one, pushoutDesc_apply, map_smul, ←
-    Algebra.pushoutDesc_apply S' f g H, _root_.map_one]
+    Algebra.pushoutDesc_apply S' f g H, map_one]
   exact mul_one (f x)
 
 theorem Algebra.lift_algHom_comp_left [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
@@ -467,7 +465,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
   · simp only [map_zero]
   · exact AlgHom.congr_fun h₁
   · intro s s' e
-    rw [Algebra.smul_def, _root_.map_mul, _root_.map_mul, e]
+    rw [Algebra.smul_def, map_mul, map_mul, e]
     congr 1
     exact (AlgHom.congr_fun h₂ s : _)
   · intro s₁ s₂ e₁ e₂

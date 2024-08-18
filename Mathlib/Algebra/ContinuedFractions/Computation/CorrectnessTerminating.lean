@@ -96,12 +96,13 @@ theorem compExactValue_correctness_of_stream_eq_some :
     ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v n = some ifp_n →
       v = compExactValue ((of v).contsAux n) ((of v).contsAux <| n + 1) ifp_n.fr := by
   let g := of v
-  induction' n with n IH
-  · intro ifp_zero stream_zero_eq
+  induction n with
+  | zero =>
+    intro ifp_zero stream_zero_eq
     -- Nat.zero
     have : IntFractPair.of v = ifp_zero := by
       have : IntFractPair.stream v 0 = some (IntFractPair.of v) := rfl
-      simpa only [Nat.zero_eq, this, Option.some.injEq] using stream_zero_eq
+      simpa only [this, Option.some.injEq] using stream_zero_eq
     cases this
     cases' Decidable.em (Int.fract v = 0) with fract_eq_zero fract_ne_zero
     -- Int.fract v = 0; we must then have `v = ⌊v⌋`
@@ -118,7 +119,8 @@ theorem compExactValue_correctness_of_stream_eq_some :
       -- Porting note: this and the if_neg rewrite are needed
       have : (IntFractPair.of v).fr = Int.fract v := rfl
       rw [this, if_neg fract_ne_zero, Int.floor_add_fract]
-  · intro ifp_succ_n succ_nth_stream_eq
+  | succ n IH =>
+    intro ifp_succ_n succ_nth_stream_eq
     -- Nat.succ
     obtain ⟨ifp_n, nth_stream_eq, nth_fract_ne_zero, -⟩ :
       ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
