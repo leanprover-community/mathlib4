@@ -513,7 +513,6 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
   dsimp [Equivalence.counit]
   rw [← prod_id, G.map_id]
   simp
-  sorry
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp]
