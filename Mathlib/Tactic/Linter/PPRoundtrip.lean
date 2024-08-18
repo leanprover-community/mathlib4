@@ -142,6 +142,7 @@ def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
 
       let mut errData := m!"source context\n'{srcCtxt}'\n'{ppCtxt}'\npretty-printed context"
       -- Heuristic on unhelpful errors: print additionally the full diff.
+      -- XXX: both of these seem to not fire...
       if srcCtxt.isEmpty && ppCtxt.isEmpty then
         errData := m!"source context\n'{srcCtxt}'\n'{ppCtxt}'\npretty-printed context;¬\
         the full diff is\n{st}{real}\nactual code last"
