@@ -118,10 +118,8 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 #eval List.range 27
 
 /--
-warning: The default value of the `longFile` is 1500. The current bound is 100 and it is smaller than the allowed bound.
-
-Please, remove the `set_option linter.longFile 100`.
-You can completely disable this linter by setting the length limit to `0`.
+warning: The default value of the `longFile` linter is 1500.
+The current bound of 100 is smaller than allowed. Please, remove the `set_option linter.longFile 100`.
 -/
 #guard_msgs in
 set_option linter.longFile 100 in

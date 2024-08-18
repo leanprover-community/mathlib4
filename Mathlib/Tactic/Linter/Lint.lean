@@ -238,12 +238,11 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let defVal := linter.longFile.defValue
   if linterBound < linter.longFile.defValue then
     logWarningAt stx
-        m!"The default value of the `longFile` is {defVal}. \
-          The current bound is {linterBound} and it is smaller than the allowed bound.\n\n\
-          Please, remove the `set_option linter.longFile {linterBound}`.\n\
-          You can completely disable this linter by setting the length limit to `0`."
+        m!"The default value of the `longFile` linter is {defVal}.\n\
+          The current bound of {linterBound} is smaller than allowed. \
+          Please, remove the `set_option linter.longFile {linterBound}`."
   unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-  -- we exclude `Mathlib.lean` from the linter: it exceeds linter's default number of allowed
+  -- We exclude `Mathlib.lean` from the linter: it exceeds linter's default number of allowed
   -- lines, and it is an auto-generated import-only file.
   -- TODO: if there be more such files, revise the implementation.
   if (← getMainModule) == `Mathlib then return
