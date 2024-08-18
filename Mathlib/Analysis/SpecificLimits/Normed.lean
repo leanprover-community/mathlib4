@@ -391,7 +391,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one
           apply Finset.sum_congr rfl (fun i hi ↦ ?_)
           simp only [Finset.mem_range] at hi
           rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
-        simp only [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose k n]
+        simp only [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose n k]
       · rw [ih.tsum_eq, (hasSum_geometric_of_norm_lt_one hr).tsum_eq, pow_succ]
         simp only [one_div, ← mul_inv_rev, ← pow_succ, ← _root_.pow_succ']
 
