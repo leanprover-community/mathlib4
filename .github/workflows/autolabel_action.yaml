@@ -1,0 +1,55 @@
+name: Autolabel PRs
+
+on: pull_request
+
+jobs:
+  apply_one_t_label:
+    runs-on: ubuntu-latest
+    # Don't run on forks, where we wouldn't have permissions to add the label anyway.
+    if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      issues: write
+      checks: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: get cache for `Lean.Elab.Command`
+        run: |
+          git checkout master
+          git checkout -
+          lake exe cache get Mathlib/Tactic/Linter/HashCommandLinter.lean
+
+      - name: Auto-label script
+        run: |
+          printf '\nproduce_labels! "git"\n\nproduce_labels "git"\n' >> Mathlib/Tactic/Autolabels/Labels.lean
+          lake build Mathlib.Tactic.Autolabels.Labels
+          labels="$(lake build Mathlib.Tactic.Autolabels.Labels |
+            sed -n 's=.*Applicable labels: *\(.*\)=\1=p')"
+          if [ -z "${labels}" ]
+          then
+            printf 'No label found\n'
+          elif
+            [[ ${labels} =~ , ]]
+          then
+            printf 'More than one label found: not adding a label\n'
+          else
+            printf 'Exactly one label found: running\n'
+            printf $'\'gh issue edit %s --add-label %s\'\n' "$NUMBER" "${labels}"
+            gh issue edit "$NUMBER" --add-label "${labels}"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.number }}

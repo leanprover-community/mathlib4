@@ -4034,6 +4034,8 @@ import Mathlib.Tactic.ArithMult
 import Mathlib.Tactic.ArithMult.Init
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Autolabels.EnvExtension
+import Mathlib.Tactic.Autolabels.Labels
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Bound
 import Mathlib.Tactic.Bound.Attribute
