@@ -63,7 +63,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
 /-- A version of `Commute.add_pow` that avoids ℕ-subtraction by summing over the antidiagonal and
 also with the binomial coefficient applied via scalar action of ℕ. -/
 theorem add_pow' (h : Commute x y) (n : ℕ) :
-    (x + y) ^ n = ∑ m ∈ antidiagonal n, n.choose m.fst • (x ^ m.fst * y ^ m.snd) := by
+    (x + y) ^ n = ∑ m ∈ antidiagonal n, n.choose m.1 • (x ^ m.1 * y ^ m.2) := by
   simp_rw [Nat.sum_antidiagonal_eq_sum_range_succ fun m p ↦ n.choose m • (x ^ m * y ^ p),
     nsmul_eq_mul, cast_comm, h.add_pow]
 
@@ -118,13 +118,13 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
-  rcases le_or_gt k n with h | h
+  rcases lt_or_le n k with h | h
+  · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
   · induction n, h using le_induction with
     | base => simp
     | succ n _ ih =>
       rw [← Ico_insert_right (by omega), sum_insert (by simp),
         show Ico k (n + 1) = Icc k n by rfl, ih, choose_succ_succ' (n + 1)]
-  · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`. -/
 lemma sum_range_add_choose (n k : ℕ) :
@@ -170,10 +170,8 @@ theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset 
 
 theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (h0 : x.Nonempty) :
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
-  classical
-    rw [sum_powerset_neg_one_pow_card, if_neg]
-    rw [← Ne, ← nonempty_iff_ne_empty]
-    apply h0
+  classical rw [sum_powerset_neg_one_pow_card]
+  exact if_neg (by rwa [← Ne, ← nonempty_iff_ne_empty])
 
 variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
 
@@ -184,8 +182,7 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
         ∏ i ∈ range (n + 1), f (i + 1) (n - i) ^ n.choose i := by
   have A : (∏ i ∈ range (n + 1), f (i + 1) (n - i) ^ (n.choose (i + 1))) * f 0 (n + 1) =
       ∏ i ∈ range (n + 1), f i (n + 1 - i) ^ (n.choose i) := by
-    rw [prod_range_succ, prod_range_succ']
-    simp
+    rw [prod_range_succ, prod_range_succ']; simp
   rw [prod_range_succ']
   simpa [choose_succ_succ, pow_add, prod_mul_distrib, A, mul_assoc] using mul_comm _ _
 
