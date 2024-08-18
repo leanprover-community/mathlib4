@@ -125,4 +125,7 @@ The current bound of 100 is smaller than allowed. Please, remove the `set_option
 set_option linter.longFile 100 in
 run_cmd return
 
-set_option linter.longFile 2000
+-- Manual test: leaving this line commented should not produce any warning,
+-- in particular should not suggest a new limit of 300.
+-- Uncommenting it should produce a warning, suggesting to remove this line (as it is superfluous).
+-- set_option linter.longFile 2000

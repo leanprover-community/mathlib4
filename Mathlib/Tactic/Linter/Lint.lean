@@ -259,10 +259,14 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
           `set_option linter.longFile {candidate}`.\nYou can completely disable this linter \
           by setting the length limit to `0`."
     else
-    if lastLine + 200 < linterBound then
+    if linterBound != default && lastLine + 200 < linterBound then
       -- Avoid nonsensical suggestions, such as the current state or a number smaller than `default`.
       let candidate := max default candidate
-      if candidate != default && linterBound != candidate then
+      if candidate == default then
+        logWarningAt stx <| .tagged linter.longFile.name
+          m!"This file fits within the recommended number of at most {default} lines:
+            You can simple remove the `set_option linter.longFile {linterBound}`."
+      else if linterBound != candidate then
         logWarningAt stx <| .tagged linter.longFile.name
           m!"For this file, the recommended limit for the number of lines is {candidate}, \
             instead of {linterBound}.\n\nPlease adjust the limit to the recommended value \
