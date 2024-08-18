@@ -1,6 +1,10 @@
 # This is the Dockerfile for `leanprovercommunity/mathlib:gitpod`.
 # As well as elan and mathlib, we also install leanblueprint and all of its dependencies.
 
+# This container does not come with a pre-installed version of mathlib.
+# When a gitpod container is spawned, elan will be updated and mathlib will be downloaded:
+# see the .gitpod.yml file for more information.
+
 FROM ubuntu:jammy
 
 USER root
