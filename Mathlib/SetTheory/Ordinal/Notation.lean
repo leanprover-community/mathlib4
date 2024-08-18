@@ -557,8 +557,8 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       apply add_absorp h₁.snd'.repr_lt
       simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos _ omega_pos).2 (natCast_le.2 n₁.2)
     by_cases e0 : e₂ = 0
-    · simp [e0, mul]
-      cases' Nat.exists_eq_succ_of_ne_zero n₂.ne_zero with x xe
+    · cases' Nat.exists_eq_succ_of_ne_zero n₂.ne_zero with x xe
+      simp only [e0, repr, PNat.mul_coe, natCast_mul, opow_zero, one_mul]
       simp only [xe, h₂.zero_of_zero e0, repr, add_zero]
       rw [natCast_succ x, add_mul_succ _ ao, mul_assoc]
     · simp only [repr]
@@ -639,7 +639,7 @@ theorem opow_def (o₁ o₂ : ONote) : o₁ ^ o₂ = opowAux2 o₂ (split o₁) 
 theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → split o = (scale 1 o', m)
   | 0, o', m, _, p => by injection p; substs o' m; rfl
   | oadd e n a, o', m, h, p => by
-    by_cases e0 : e = 0 <;> simp [e0, split, split'] at p ⊢
+    by_cases e0 : e = 0 <;> simp only [split', e0, ↓reduceIte, Prod.mk.injEq, split] at p ⊢
     · rcases p with ⟨rfl, rfl⟩
       exact ⟨rfl, rfl⟩
     · revert p
@@ -755,9 +755,9 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
         decide
       · simp only [(· ^ ·), Pow.pow, pow, opow, opowAux2, mulNat_eq_mul, ofNat, *]
         infer_instance
-  · simp [(· ^ ·),Pow.pow,pow, opow, opowAux2, e₁, e₂, split_eq_scale_split' e₂]
+  · simp only [(· ^ ·), Pow.pow, opow, opowAux2, e₁, split_eq_scale_split' e₂, mulNat_eq_mul]
     have := na.fst
-    cases' k with k <;> simp
+    cases' k with k
     · infer_instance
     · cases k <;> cases m <;> infer_instance
 
@@ -892,7 +892,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     · cases' e₂ : split' o₂ with b' k
       cases' nf_repr_split' e₂ with _ r₂
       by_cases h : m = 0
-      · simp [opow_def, opow, e₁, h, r₁, e₂, r₂, ← Nat.one_eq_succ_zero]
+      · simp [opow_def, opow, e₁, h, r₁, e₂, r₂]
       simp only [opow_def, opowAux2, opow, e₁, h, r₁, e₂, r₂, repr,
           opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add, mul_one,
           add_zero, one_opow, npow_eq_pow]

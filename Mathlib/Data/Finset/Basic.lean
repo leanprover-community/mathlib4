@@ -118,9 +118,11 @@ finite sets, finset
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen
-assert_not_exists Multiset.Powerset
+assert_not_exists Multiset.powerset
 
 assert_not_exists CompleteLattice
+
+assert_not_exists OrderedCommMonoid
 
 open Multiset Subtype Nat Function
 
@@ -1592,7 +1594,7 @@ theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
 
 protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).Nonempty :=
-  (hs.exists_ne a).imp $ by aesop
+  (hs.exists_ne a).imp <| by aesop
 
 @[simp] lemma erase_nonempty (ha : a ∈ s) : (s.erase a).Nonempty ↔ s.Nontrivial := by
   simp only [Finset.Nonempty, mem_erase, and_comm (b := _ ∈ _)]
@@ -1745,7 +1747,7 @@ variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `s \ t` is the set consisting of the elements of `s` that are not in `t`. -/
 instance : SDiff (Finset α) :=
-  ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le tsub_le_self s₁.2⟩⟩
+  ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le (Multiset.sub_le_self ..) s₁.2⟩⟩
 
 @[simp]
 theorem sdiff_val (s₁ s₂ : Finset α) : (s₁ \ s₂).val = s₁.val - s₂.val :=
@@ -2146,6 +2148,67 @@ as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). -/
 def filter (s : Finset α) : Finset α :=
   ⟨_, s.2.filter p⟩
 
+end Finset.Filter
+
+namespace Mathlib.Meta
+open Lean Elab Term Meta Batteries.ExtendedBinder
+
+/-- Return `true` if `expectedType?` is `some (Finset ?α)`, throws `throwUnsupportedSyntax` if it is
+`some (Set ?α)`, and returns `false` otherwise. -/
+def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
+  -- As we want to reason about the expected type, we would like to wait for it to be available.
+  -- However this means that if we fall back on `elabSetBuilder` we will have postponed.
+  -- This is undesirable as we want set builder notation to quickly elaborate to a `Set` when no
+  -- expected type is available.
+  -- tryPostponeIfNoneOrMVar expectedType?
+  match expectedType? with
+  | some expectedType =>
+    match_expr expectedType with
+    -- If the expected type is known to be `Finset ?α`, return `true`.
+    | Finset _ => pure true
+    -- If the expected type is known to be `Set ?α`, give up.
+    | Set _ => throwUnsupportedSyntax
+    -- If the expected type is known to not be `Finset ?α` or `Set ?α`, return `false`.
+    | _ => pure false
+  -- If the expected type is not known, return `false`.
+  | none => pure false
+
+/-- Elaborate set builder notation for `Finset`.
+
+`{x ∈ s | p x}` is elaborated as `Finset.filter (fun x ↦ p x) s` if either the expected type is
+`Finset ?α` or the expected type is not `Set ?α` and `s` has expected type `Finset ?α`.
+
+See also
+* `Init.Set` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
+  `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
+  form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
+
+TODO: Write a delaborator
+-/
+@[term_elab setBuilder]
+def elabFinsetBuilderSep : TermElab
+  | `({ $x:ident ∈ $s:term | $p }), expectedType? => do
+    -- If the expected type is known to be `Set ?α`, give up. If it is not known to be `Set ?α` or
+    -- `Finset ?α`, check the expected type of `s`.
+    unless ← knownToBeFinsetNotSet expectedType? do
+      let ty ← try whnfR (← inferType (← elabTerm s none)) catch _ => throwUnsupportedSyntax
+      -- If the expected type of `s` is not known to be `Finset ?α`, give up.
+      match_expr ty with
+      | Finset _ => pure ()
+      | _ => throwUnsupportedSyntax
+    -- Finally, we can elaborate the syntax as a finset.
+    -- TODO: Seems a bit wasteful to have computed the expected type but still use `expectedType?`.
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) $s)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+end Mathlib.Meta
+
+namespace Finset
+section Filter
+variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
+
 @[simp]
 theorem filter_val (s : Finset α) : (filter p s).1 = s.1.filter p :=
   rfl
@@ -2519,7 +2582,7 @@ theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then 
 
 lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
   rw [Finset.Nontrivial, Finset.coe_range]
-  exact ⟨0, Nat.zero_lt_one.trans hn, 1, hn, zero_ne_one⟩
+  exact ⟨0, Nat.zero_lt_one.trans hn, 1, hn, Nat.zero_ne_one⟩
 
 end Range
 
@@ -2806,9 +2869,7 @@ theorem mem_toList {a : α} {s : Finset α} : a ∈ s.toList ↔ a ∈ s :=
 theorem toList_eq_nil {s : Finset α} : s.toList = [] ↔ s = ∅ :=
   Multiset.toList_eq_nil.trans val_eq_zero
 
-@[simp]
-theorem empty_toList {s : Finset α} : s.toList.isEmpty ↔ s = ∅ :=
-  List.isEmpty_iff_eq_nil.trans toList_eq_nil
+theorem empty_toList {s : Finset α} : s.toList.isEmpty ↔ s = ∅ := by simp
 
 @[simp]
 theorem toList_empty : (∅ : Finset α).toList = [] :=
