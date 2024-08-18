@@ -119,13 +119,7 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 
 /--
 warning: The default value of the `longFile` linter is 1500.
-The current bound of 100 is smaller than allowed. Please, remove the `set_option linter.longFile 100`.
+The current bound of 1500 smaller than allowed. Please, remove the `set_option linter.longFile 1500`.
 -/
 #guard_msgs in
-set_option linter.longFile 100 in
-run_cmd return
-
--- Manual test: leaving this line commented should not produce any warning,
--- in particular should not suggest a new limit of 300.
--- Uncommenting it should produce a warning, suggesting to remove this line (as it is superfluous).
--- set_option linter.longFile 2000
+set_option linter.longFile 1500
