@@ -171,7 +171,7 @@ theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset 
 theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (h0 : x.Nonempty) :
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
   classical rw [sum_powerset_neg_one_pow_card]
-  exact if_neg (by rwa [← Ne, ← nonempty_iff_ne_empty])
+  exact if_neg (nonempty_iff_ne_empty.mp h0)
 
 variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
 
