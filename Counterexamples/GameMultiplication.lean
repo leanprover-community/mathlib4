@@ -27,6 +27,7 @@ open SetTheory PGame
 /-- The game `{-1, 0 | 0, 1}`, which is equivalent but not identical to `*`. -/
 def star' : PGame := ofLists [0, -1] [0, 1]
 
+/-- `*'` is its own negative. -/
 theorem neg_star' : -star' = star' := by
   simp [star']
 
