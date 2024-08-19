@@ -159,14 +159,14 @@ end MissingEnd
 The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
 by typing a character different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
-It also flags "isolated cdots", i.e. when the `⬝` is on its own line.
+It also flags "isolated cdots", i.e. when the `·` is on its own line.
 -/
 
 /--
 The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a character
 different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
-It also flags "isolated cdots", i.e. when the `⬝` is on its own line. -/
+It also flags "isolated cdots", i.e. when the `·` is on its own line. -/
 register_option linter.cdot : Bool := {
   defValue := true
   descr := "enable the `cdot` linter"
