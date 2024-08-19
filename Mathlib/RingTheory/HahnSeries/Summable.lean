@@ -57,9 +57,9 @@ namespace HahnSeries
 theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] (x : HahnSeries Γ R)
     (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
   induction' n with n ih <;> intro g hn
-  · simp_all only [Nat.zero_eq, pow_zero, mem_support, one_coeff, ne_eq, ite_eq_right_iff,
-    not_forall, exists_prop, SetLike.mem_coe]
-    exact AddSubmonoid.zero_mem (AddSubmonoid.closure (support x))
+  · simp only [pow_zero, support_one, Set.mem_singleton_iff] at hn
+    rw [hn, SetLike.mem_coe]
+    exact AddSubmonoid.zero_mem _
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
@@ -210,9 +210,9 @@ instance : Neg (SummableFamily Γ R α) :=
 instance : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
     zsmul := zsmulRec
-    add_left_neg := fun a => by
+    neg_add_cancel := fun a => by
       ext
-      apply add_left_neg }
+      apply neg_add_cancel }
 
 @[simp]
 theorem coe_neg : ⇑(-s) = -s :=
@@ -538,10 +538,10 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
       (single (-x.order)) (x.leadingCoeff)⁻¹ *
         (SummableFamily.powers (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))).hsum
   inv_zero := dif_pos rfl
-  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
+  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
+        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _

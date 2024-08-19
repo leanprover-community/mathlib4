@@ -191,7 +191,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
     f x ≤ S.bind f := by
   classical
   refine le_iff_count.2 fun a ↦ ?_
-  obtain ⟨m', hm'⟩ := exists_cons_of_mem $ mem_map_of_mem (fun b ↦ count a (f b)) hx
+  obtain ⟨m', hm'⟩ := exists_cons_of_mem <| mem_map_of_mem (fun b ↦ count a (f b)) hx
   rw [count_bind, hm', sum_cons]
   exact Nat.le_add_right _ _
 

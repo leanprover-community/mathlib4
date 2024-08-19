@@ -33,7 +33,6 @@ Hahn series.
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
-
 open Finset Function Pointwise
 
 noncomputable section
@@ -105,10 +104,6 @@ def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, mot
 theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
-protected theorem ext_iff (x y : HahnModule Γ R V) :
-    x = y ↔ ((of R).symm x).coeff = ((of R).symm y).coeff  := by
-  simp_all only [HahnSeries.coeff_inj, EmbeddingLike.apply_eq_iff_eq]
-
 end
 
 section SMul
@@ -157,7 +152,7 @@ end SMul
 
 section SMulZeroClass
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Zero R]
+variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
   [AddCommMonoid V]
 
 instance instBaseSMulZeroClass [SMulZeroClass R V] :
@@ -168,6 +163,8 @@ instance instBaseSMulZeroClass [SMulZeroClass R V] :
   (of R) (r • x) = r • (of R) x := rfl
 @[simp] theorem of_symm_smul [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
   (of R).symm (r • x) = r • (of R).symm x := rfl
+
+variable [Zero R]
 
 instance instSMulZeroClass [SMulZeroClass R V] :
     SMulZeroClass (HahnSeries Γ R) (HahnModule Γ' R V) where
