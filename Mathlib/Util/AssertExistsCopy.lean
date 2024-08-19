@@ -5,6 +5,7 @@ Authors: Patrick Massot, Scott Morrison
 -/
 import Mathlib.Init
 import Lean.Elab.Command
+import Mathlib.Tactic.Linter.AssertNot
 
 /-!
 # User commands for assert the (non-)existence of declaration or instances.
@@ -52,7 +53,11 @@ You should *not* delete the `assert_not_exists` statement without careful discus
 `assert_not_exists` statements should generally live at the top of the file, after the module doc.
 -/
 elab "assert_not_exists " n:ident : command => do
-  let decl ← try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n catch _ => return
+  let decl := ←
+      ((liftCoreM <| realizeGlobalConstNoOverloadWithInfo n) <|> return .anonymous)
+  if decl == .anonymous then
+    Mathlib.Linter.addDeclEntry n.getId true
+  else
   let env ← getEnv
   let c ← mkConstWithLevelParams decl
   let msg ← (do
@@ -79,6 +84,7 @@ The command does not currently check whether the modules `m₁ m₂ ... mₙ` ac
 elab "assert_not_imported " ids:ident+ : command => do
   let mods := (← getEnv).allImportedModuleNames
   for id in ids do
-    if mods.contains id.getId then logWarningAt id m!"the module '{id}' is (transitively) imported"
-
-end
+    if mods.contains id.getId then
+      logWarningAt id m!"the module '{id}' is (transitively) imported"
+    else
+      Mathlib.Linter.addDeclEntry id.getId false
