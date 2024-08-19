@@ -10,8 +10,6 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity.Basic
 
-#align_import imo.imo2013_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 2013 Q1
 
@@ -32,7 +30,6 @@ namespace Imo2013Q1
 
 -- Porting note: simplified proof using `positivity`
 theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ := by positivity
-#align imo2013_q1.arith_lemma Imo2013Q1.arith_lemma
 
 theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
     ∏ i ∈ Finset.range k, ((1 : ℚ) + 1 / ↑(if i < k then m i else nm)) =
@@ -41,7 +38,6 @@ theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
     Finset.prod_congr rfl this
   intro i hi
   simp [Finset.mem_range.mp hi]
-#align imo2013_q1.prod_lemma Imo2013Q1.prod_lemma
 
 end Imo2013Q1
 
@@ -96,4 +92,3 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       _ = (∏ i ∈ Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / ↑(m pk)) := by
         rw [prod_lemma, hpm, ← hmpk, mul_comm]
       _ = ∏ i ∈ Finset.range pk.succ, (1 + 1 / (m i : ℚ)) := by rw [← Finset.prod_range_succ _ pk]
-#align imo2013_q1 imo2013_q1
