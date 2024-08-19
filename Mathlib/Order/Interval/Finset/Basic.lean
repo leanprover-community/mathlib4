@@ -844,7 +844,7 @@ theorem eq_of_mem_uIcc_of_mem_uIcc' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = 
   exact Set.eq_of_mem_uIcc_of_mem_uIcc'
 
 theorem uIcc_injective_right (a : α) : Injective fun b => [[b, a]] := fun b c h => by
-  rw [ext_iff] at h
+  rw [Finset.ext_iff] at h
   exact eq_of_mem_uIcc_of_mem_uIcc ((h _).1 left_mem_uIcc) ((h _).2 left_mem_uIcc)
 
 theorem uIcc_injective_left (a : α) : Injective (uIcc a) := by
