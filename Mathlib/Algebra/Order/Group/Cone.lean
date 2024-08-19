@@ -37,13 +37,10 @@ instance PositiveCone.instSetLike (G : Type*) [AddCommGroup G] : SetLike (Positi
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance PositiveCone.instAddSubmonoidClass (G : Type*) [AddCommGroup G] :
-    AddSubmonoidClass (PositiveCone G) G where
-  add_mem {s} := s.add_mem'
-  zero_mem {s} := s.zero_mem'
-
 instance PositiveCone.instPositiveConeClass (G : Type*) [AddCommGroup G] :
     PositiveConeClass (PositiveCone G) G where
+  add_mem {s} := s.add_mem'
+  zero_mem {s} := s.zero_mem'
   eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
 
 /-- `TotalPositiveConeClass S G` says that `S` is a type of `TotalPositiveCone`s in `G`. -/
@@ -55,7 +52,7 @@ export TotalPositiveConeClass (mem_or_neg_mem)
 
 /-- A total positive cone in an `AddCommGroup` is a `PositiveCone` containing
 either `a` or `-a` for every `a`.
-This is equivalent to being the set of non-negative elements of an `LinearOrderedAddCommGroup`. -/
+This is equivalent to being the set of non-negative elements of a `LinearOrderedAddCommGroup`. -/
 structure TotalPositiveCone (G : Type*) [AddCommGroup G] extends PositiveCone G where
   mem_or_neg_mem' : ∀ a, a ∈ carrier ∨ -a ∈ carrier
 
