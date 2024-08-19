@@ -149,65 +149,82 @@ theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
 /-! ### The predecessor of an ordinal -/
 
 open Classical in
-/-- The ordinal predecessor of `o` is `o'` if `o = succ o'`,
-  and `o` otherwise. -/
+/-- The ordinal predecessor of `o` is `o'` if `o = succ o'`, and `o` otherwise.
+
+Note that this cannot be implemented as `Order.pred`, as `pred ω = ω` despite `ω` not being minimal.
+-/
 def pred (o : Ordinal) : Ordinal :=
-  if h : ∃ a, o = succ a then Classical.choose h else o
+  if h : o ∈ range succ then Classical.choose h else o
 
 @[simp]
 theorem pred_succ (o) : pred (succ o) = o := by
-  have h : ∃ a, succ o = succ a := ⟨_, rfl⟩
-  simpa only [pred, dif_pos h] using (succ_injective <| Classical.choose_spec h).symm
+  have h : succ o ∈  _ := mem_range_self _
+  rw [pred, dif_pos h]
+  exact succ_injective <| Classical.choose_spec h
+
+theorem pred_eq {o} (h : o ∉ range succ) : pred o = o := by
+  rw [pred, dif_neg h]
 
 theorem pred_le_self (o) : pred o ≤ o := by
-  classical
-  exact if h : ∃ a, o = succ a then by
-    let ⟨a, e⟩ := h
-    rw [e, pred_succ]; exact le_succ a
-  else by rw [pred, dif_neg h]
+  by_cases h : o ∈ range succ
+  · obtain ⟨a, rfl⟩ := h
+    rw [pred_succ]
+    exact le_succ a
+  · rw [pred_eq h]
 
-theorem pred_eq_iff_not_succ {o} : pred o = o ↔ ¬∃ a, o = succ a :=
-  ⟨fun e ⟨a, e'⟩ => by rw [e', pred_succ] at e; exact (lt_succ a).ne e, fun h => dif_neg h⟩
+theorem pred_eq_iff_not_succ {o} : pred o = o ↔ o ∉ range succ := by
+  refine ⟨?_, pred_eq⟩
+  rintro h ⟨a, rfl⟩
+  rw [pred_succ] at h
+  exact (lt_succ a).ne h
 
-theorem pred_eq_iff_not_succ' {o} : pred o = o ↔ ∀ a, o ≠ succ a := by
-  simpa using pred_eq_iff_not_succ
+theorem pred_eq_iff_not_succ' {o} : pred o = o ↔ ∀ a, succ a ≠ o := by
+  rw [pred_eq_iff_not_succ, mem_range, not_exists]
 
-theorem pred_lt_iff_is_succ {o} : pred o < o ↔ ∃ a, o = succ a :=
-  Iff.trans (by simp only [le_antisymm_iff, pred_le_self, true_and_iff, not_le])
-    (iff_not_comm.1 pred_eq_iff_not_succ).symm
+theorem pred_lt_iff_is_succ {o} : pred o < o ↔ o ∈ range succ := by
+  rw [(pred_le_self o).lt_iff_ne, not_iff_comm, pred_eq_iff_not_succ]
 
 @[simp]
 theorem pred_zero : pred 0 = 0 :=
-  pred_eq_iff_not_succ'.2 fun a => (succ_ne_zero a).symm
+  Ordinal.le_zero.1 <| pred_le_self 0
 
-theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a :=
-  ⟨fun e => ⟨_, e.symm⟩, fun ⟨a, e⟩ => by simp only [e, pred_succ]⟩
+@[simp]
+theorem pred_one : pred 1 = 0 := by
+  rw [← succ_zero, pred_succ]
 
-theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b < o ↔ b < o :=
-  ⟨(lt_succ b).trans, fun l => lt_of_le_of_ne (succ_le_of_lt l) fun e => h ⟨_, e.symm⟩⟩
+theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ o ∈ range succ := by
+  use fun h => ⟨_, h⟩
+  rintro ⟨_, rfl⟩
+  rw [pred_succ]
+
+theorem succ_lt_of_not_succ {o b : Ordinal} (h : o ∉ range succ) : succ b < o ↔ b < o :=
+  ⟨(lt_succ b).trans, fun l => (succ_le_of_lt l).lt_of_ne fun e => h ⟨_, e⟩⟩
 
 theorem lt_pred {a b} : a < pred b ↔ succ a < b := by
-  classical
-  exact if h : ∃ a, b = succ a then by
-    let ⟨c, e⟩ := h
-    rw [e, pred_succ, succ_lt_succ_iff]
-  else by simp only [pred, dif_neg h, succ_lt_of_not_succ h]
+  by_cases h : b ∈ range succ
+  · obtain ⟨c, rfl⟩ := h
+    rw [pred_succ, succ_lt_succ_iff]
+  · rw [pred_eq h, succ_lt_of_not_succ h]
 
 theorem pred_le {a b} : pred a ≤ b ↔ a ≤ succ b :=
   le_iff_le_iff_lt_iff_lt.2 lt_pred
 
 @[simp]
-theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a :=
-  ⟨fun ⟨a, h⟩ =>
-    let ⟨b, e⟩ := lift_down <| show a ≤ lift.{u} o from le_of_lt <| h.symm ▸ lt_succ a
-    ⟨b, (lift_inj.{u,v}).1 <| by rw [h, ← e, lift_succ]⟩,
-    fun ⟨a, h⟩ => ⟨lift.{u} a, by simp only [h, lift_succ]⟩⟩
+theorem lift_is_succ {o : Ordinal.{v}} : lift.{u} o ∈ range succ ↔ o ∈ range succ := by
+  constructor <;>
+  rintro ⟨a, h⟩
+  · obtain ⟨b, rfl⟩ := lift_down (h ▸ lt_succ a).le
+    use b
+    rwa [← lift_succ, lift_inj] at h
+  · use lift a
+    rw [← h, lift_succ]
 
 @[simp]
 theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by
-  classical
-  exact if h : ∃ a, o = succ a then by cases' h with a e; simp only [e, pred_succ, lift_succ]
-  else by rw [pred_eq_iff_not_succ.2 h, pred_eq_iff_not_succ.2 (mt lift_is_succ.1 h)]
+  by_cases h : o ∈ range succ
+  · obtain ⟨a, rfl⟩ := h
+    rw [lift_succ, pred_succ, pred_succ]
+  · rw [pred_eq h, pred_eq (mt lift_is_succ.1 h)]
 
 /-! ### Limit ordinals -/
 
@@ -265,12 +282,10 @@ theorem IsLimit.nat_lt {o : Ordinal} (h : IsLimit o) : ∀ n : ℕ, (n : Ordinal
   | 0 => h.pos
   | n + 1 => h.2 _ (IsLimit.nat_lt h n)
 
-theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o := by
-  classical
-  exact if o0 : o = 0 then Or.inl o0
-  else
-    if h : ∃ a, o = succ a then Or.inr (Or.inl h)
-    else Or.inr <| Or.inr ⟨o0, fun _a => (succ_lt_of_not_succ h).2⟩
+theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsLimit o := by
+  rw [or_iff_not_imp_left, or_iff_not_imp_left]
+  intro ho hs
+  exact ⟨ho, fun _ => (succ_lt_of_not_succ hs).2⟩
 
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
@@ -486,7 +501,7 @@ protected theorem add_sub_cancel_of_le {a b : Ordinal} (h : b ≤ a) : b + (a - 
     (by
       rcases zero_or_succ_or_limit (a - b) with (e | ⟨c, e⟩ | l)
       · simp only [e, add_zero, h]
-      · rw [e, add_succ, succ_le_iff, ← lt_sub, e]
+      · rw [← e, add_succ, succ_le_iff, ← lt_sub, ← e]
         exact lt_succ c
       · exact (add_le_of_limit l).2 fun c l => (lt_sub.1 l).le)
 
@@ -1044,7 +1059,7 @@ theorem brange_bfamilyOfFamily {ι : Type u} (f : ι → α) : brange _ (bfamily
 @[simp]
 theorem brange_const {o : Ordinal} (ho : o ≠ 0) {c : α} : (brange o fun _ _ => c) = {c} := by
   rw [← range_familyOfBFamily]
-  exact @Set.range_const _ o.out.α (out_nonempty_iff_ne_zero.2 ho) c
+  exact @range_const _ o.out.α (out_nonempty_iff_ne_zero.2 ho) c
 
 theorem comp_bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α)
     (g : α → β) : (fun i hi => g (bfamilyOfFamily' r f i hi)) = bfamilyOfFamily' r (g ∘ f) :=
@@ -1072,12 +1087,12 @@ def sup {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal.{max u v} :=
   iSup f
 
 @[simp]
-theorem sSup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : sSup (Set.range f) = sup.{_, v} f :=
+theorem sSup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : sSup (range f) = sup.{_, v} f :=
   rfl
 
 /-- The range of an indexed ordinal function, whose outputs live in a higher universe than the
     inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
-theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
+theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (range f) :=
   ⟨(iSup (succ ∘ card ∘ f)).ord, by
     rintro a ⟨i, rfl⟩
     exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
@@ -1133,13 +1148,13 @@ theorem sup_unique {ι} [Unique ι] (f : ι → Ordinal) : sup f = f default :=
   ciSup_unique
 
 theorem sup_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
-    (h : Set.range f ⊆ Set.range g) : sup.{u, max v w} f ≤ sup.{v, max u w} g :=
+    (h : range f ⊆ range g) : sup.{u, max v w} f ≤ sup.{v, max u w} g :=
   sup_le fun i =>
     match h (mem_range_self i) with
     | ⟨_j, hj⟩ => hj ▸ le_sup _ _
 
 theorem sup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
-    (h : Set.range f = Set.range g) : sup.{u, max v w} f = sup.{v, max u w} g :=
+    (h : range f = range g) : sup.{u, max v w} f = sup.{v, max u w} g :=
   (sup_le_of_range_subset.{u, v, w} h.le).antisymm (sup_le_of_range_subset.{v, u, w} h.ge)
 
 @[simp]
@@ -1447,11 +1462,11 @@ theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f def
   sup_unique _
 
 theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
-    (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
-  sup_le_of_range_subset.{u, v, w} (by convert Set.image_subset succ h <;> apply Set.range_comp)
+    (h : range f ⊆ range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
+  sup_le_of_range_subset.{u, v, w} (by convert Set.image_subset succ h <;> apply range_comp)
 
 theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
-    (h : Set.range f = Set.range g) : lsub.{u, max v w} f = lsub.{v, max u w} g :=
+    (h : range f = range g) : lsub.{u, max v w} f = lsub.{v, max u w} g :=
   (lsub_le_of_range_subset.{u, v, w} h.le).antisymm (lsub_le_of_range_subset.{v, u, w} h.ge)
 
 @[simp]
@@ -1461,10 +1476,10 @@ theorem lsub_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
   sup_sum _
 
 theorem lsub_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    lsub.{_, v} f ∉ Set.range f := fun ⟨i, h⟩ =>
+    lsub.{_, v} f ∉ range f := fun ⟨i, h⟩ =>
   h.not_lt (lt_lsub f i)
 
-theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set.range f)ᶜ.Nonempty :=
+theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (range f)ᶜ.Nonempty :=
   ⟨_, lsub_not_mem_range.{_, v} f⟩
 
 @[simp]
@@ -1727,9 +1742,9 @@ theorem lt_blsub₂ {o₁ o₂ : Ordinal}
 
 /-- The minimum excluded ordinal in a family of ordinals. -/
 def mex {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
-  sInf (Set.range f)ᶜ
+  sInf (range f)ᶜ
 
-theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ∉ Set.range f :=
+theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ∉ range f :=
   csInf_mem (nonempty_compl_range.{_, v} f)
 
 theorem le_mex_of_forall {ι : Type u} {f : ι → Ordinal.{max u v}} {a : Ordinal}
@@ -1751,7 +1766,7 @@ theorem mex_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f 
   csInf_le' (lsub_not_mem_range f)
 
 theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β → Ordinal.{max u v}}
-    (h : Set.range f ⊆ Set.range g) : mex.{_, v} f ≤ mex.{_, v} g := by
+    (h : range f ⊆ range g) : mex.{_, v} f ≤ mex.{_, v} g := by
   refine mex_le_of_ne fun i hi => ?_
   cases' h ⟨i, rfl⟩ with j hj
   rw [← hj] at hi
