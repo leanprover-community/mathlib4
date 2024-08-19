@@ -225,7 +225,7 @@ register_option linter.dollarSyntax : Bool := {
   descr := "enable the `dollarSyntax` linter"
 }
 
-namespace Style.dollarSyntaxLinter
+namespace Style.dollarSyntax
 
 /-- `findDollarSyntax stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
 partial
@@ -248,7 +248,7 @@ def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter dollarSyntaxLinter
 
-end Style.dollarSyntaxLinter
+end Style.dollarSyntax
 
 /-! # The "longLine linter" -/
 
