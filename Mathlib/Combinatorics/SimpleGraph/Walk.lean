@@ -1345,6 +1345,7 @@ theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
   rw [edges_transfer]
   apply edges_subset_edgeSet p
 
+open Classical in
 /-- Convert a list of vertices to a walk. -/
 noncomputable def fromList {l : List V} (ne : l ≠ []) (hl : l.Chain' (fun u v => G.Adj u v)) :
     G.Walk (l.head ne) (l.getLast ne) :=
