@@ -1042,7 +1042,7 @@ private theorem dropUntil_not_nil {u v w : V} {p : G.Walk u v} (hw : w ∈ p.sup
   | @nil u =>
     simp only [support_nil, List.mem_singleton] at hw
     exact False.elim (ne hw)
-  | @cons u' v' w' adj tail ih =>
+  | cons _ _ ih =>
     simp only [support_cons, List.mem_cons] at hw
     cases' hw with hw₁ hw₂
     · subst hw₁
