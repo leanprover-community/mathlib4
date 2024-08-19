@@ -177,7 +177,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     simp only [Fintype.card_fun, Fintype.card_coe, Fintype.card_fin, le_refl]
 
 lemma exists_isDynCoverOf_of_isCompact_uniformContinuous [UniformSpace X] {T : X → X} {F : Set X}
-    {U : Set (X × X)} (F_comp : IsCompact F) (h : UniformContinuous T) (U_uni : U ∈ 𝓤 X) (n : ℕ) :
+    (F_comp : IsCompact F) (h : UniformContinuous T) {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     ∃ s : Finset X, IsDynCoverOf T F U n s := by
   have uni_ite := dynEntourage_mem_uniformity h U_uni n
   let open_cover := fun x : X ↦ ball x (dynEntourage T U n)
