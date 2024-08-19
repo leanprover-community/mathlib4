@@ -154,6 +154,18 @@ end Nonempty
 
 end Fintype
 
+/-! ### Properties for PartialOrders -/
+
+lemma Finite.exists_ge_minimal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
+    ∃ b, b ≤ a ∧ Minimal p b := by
+  obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ :=
+    Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
+  exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
+
+lemma Finite.exists_le_maximal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
+    ∃ b, a ≤ b ∧ Maximal p b :=
+  Finite.exists_ge_minimal (α := αᵒᵈ) h
+
 /-! ### Concrete instances -/
 
 noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=

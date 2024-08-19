@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Normed.Group.Lemmas
-import Mathlib.Analysis.NormedSpace.AddTorsor
-import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Pointwise
@@ -508,7 +508,7 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     simpa [_root_.smul_closedBall' this] using hr.smul (c ^ n)
   have hTop : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
-  exact .of_seq_closedBall hTop (eventually_of_forall hC)
+  exact .of_seq_closedBall hTop (Eventually.of_forall hC)
 
 @[deprecated (since := "2024-01-31")]
 alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace
