@@ -23,7 +23,30 @@ Implement `assert_instance` and `assert_no_instance`
 section
 open Lean Elab Meta Command
 
-open Mathlib.Linter in
+namespace Mathlib.Linter
+
+/-- A linter for checking that declarations that were asserted to not exist in one module,
+do exist somewhere. -/
+@[env_linter] def Linter.AssertExists : Std.Tactic.Lint.Linter where
+  noErrorsFound := "All declarations and modules that were expected to exist do actually exist."
+  errorsFound := "DECLARATIONS AND MODULES THAT DO NOT EXIST BUT SHOULD EXIST:"
+  test declName := do
+    let env ← getEnv
+    let ext := assertExistsExt.getState env
+    if ext.isEmpty || declName.components.length ≤ 1 then return none
+    let last2 := declName.components.drop (declName.components.length - 2)
+    let declTail := last2[0]! ++ last2[1]!
+    for d in ext do
+      if d.freshName == declTail then
+        let msg (txt : String) :=
+          s!"The {txt} '{d.givenName}' was required to not exist in '{d.modName}'.\n\
+            This message means that the {txt} actually *never* exists."
+        if d.isDecl && !env.contains d.givenName then
+          return some (msg "declaration")
+        else if !d.isDecl && !env.allImportedModuleNames.contains d.givenName then
+          return some (msg "module")
+    return none
+
 /--
 `addDeclEntry declName isDecl` takes as input the `Name` `declName` and the `Bool`ean `isDecl`.
 It adds to the environment a new private declaration with a fresh name `freshName` and extends the
@@ -37,6 +60,9 @@ def addDeclEntry (declName : Name) (isDecl : Bool) : CommandElabM Unit := do
   setEnv <| assertExistsExt.addEntry (← getEnv)
     { isDecl := isDecl, freshName := nm, givenName := declName, modName := ← getMainModule }
 
+end Mathlib.Linter
+
+open Mathlib.Linter
 /--
 `assert_exists1 n` is a user command that asserts that a declaration named `n` exists
 in the current import scope.

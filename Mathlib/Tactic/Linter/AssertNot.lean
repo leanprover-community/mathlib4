@@ -42,26 +42,4 @@ initialize assertExistsExt :
     exportEntriesFn := id
   }
 
-/-- A linter for checking that declarations that were asserted to not exist in one module,
-do exist somewhere. -/
-@[env_linter] def Linter.AssertExists : Std.Tactic.Lint.Linter where
-  noErrorsFound := "All declarations and modules that were expected to exist do actually exist."
-  errorsFound := "DECLARATIONS AND MODULES THAT DO NOT EXIST BUT SHOULD EXIST:"
-  test declName := do
-    let env ← getEnv
-    let ext := assertExistsExt.getState env
-    if ext.isEmpty || declName.components.length ≤ 1 then return none
-    let last2 := declName.components.drop (declName.components.length - 2)
-    let declTail := last2[0]! ++ last2[1]!
-    for d in ext do
-      if d.freshName == declTail then
-        let msg (txt : String) :=
-          s!"The {txt} '{d.givenName}' was required to not exist in '{d.modName}'.\n\
-            This message means that the {txt} actually *never* exists."
-        if d.isDecl && !env.contains d.givenName then
-          return some (msg "declaration")
-        else if !d.isDecl && !env.allImportedModuleNames.contains d.givenName then
-          return some (msg "module")
-    return none
-
 end Mathlib.Linter
