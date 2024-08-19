@@ -163,7 +163,7 @@ For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
 The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a character
 different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
-register_option linter.cdot : Bool := {
+register_option linter.style.cdot : Bool := {
   defValue := false
   descr := "enable the `cdot` linter"
 }
@@ -195,14 +195,14 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 
 namespace Style.cDotLinter
 
-@[inherit_doc linter.cdot]
+@[inherit_doc linter.style.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.cdot (← getOptions) do
+    unless Linter.getLinterValue linter.style.cdot (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     for s in unwanted_cdot stx do
-      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
+      Linter.logLint linter.style.cdot s m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
 
 initialize addLinter cdotLinter
 
@@ -217,7 +217,7 @@ These are disallowed by the mathlib style guide, as using `<|` pairs better with
 
 /-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`. -/
-register_option linter.dollarSyntax : Bool := {
+register_option linter.style.dollarSyntax : Bool := {
   defValue := false
   descr := "enable the `dollarSyntax` linter"
 }
@@ -234,14 +234,14 @@ def findDollarSyntax : Syntax → Array Syntax
       | _ => dargs
   |_ => #[]
 
-@[inherit_doc linter.dollarSyntax]
+@[inherit_doc linter.style.dollarSyntax]
 def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.dollarSyntax (← getOptions) do
+    unless Linter.getLinterValue linter.style.dollarSyntax (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     for s in findDollarSyntax stx do
-      Linter.logLint linter.dollarSyntax s m!"Please use '<|' instead of '$' for the pipe operator."
+      Linter.logLint linter.style.dollarSyntax s m!"Please use '<|' instead of '$' for the pipe operator."
 
 initialize addLinter dollarSyntaxLinter
 
@@ -251,16 +251,16 @@ end Style.dollarSyntax
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
-register_option linter.longLine : Bool := {
+register_option linter.style.longLine : Bool := {
   defValue := false
   descr := "enable the longLine linter"
 }
 
 namespace Style.longLine
 
-@[inherit_doc Mathlib.Linter.linter.longLine]
+@[inherit_doc Mathlib.Linter.linter.style.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.longLine (← getOptions) do
+    unless Linter.getLinterValue linter.style.longLine (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -283,7 +283,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if !(line.containsSubstr "http") then
-        Linter.logLint linter.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
+        Linter.logLint linter.style.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
           m!"This line exceeds the 100 character limit, please shorten it!"
 
 initialize addLinter longLineLinter
