@@ -87,6 +87,23 @@ note: this linter can be disabled with `set_option linter.cdot false`
 set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
 
+set_option linter.dollarSyntax false in
+/--
+warning: Please use '<|' instead of '$' for the pipe operator.
+note: this linter can be disabled with `set_option linter.dollarSyntax false`
+---
+warning: Please use '<|' instead of '$' for the pipe operator.
+note: this linter can be disabled with `set_option linter.dollarSyntax false`
+-/
+#guard_msgs in
+set_option linter.dollarSyntax true in
+attribute [instance] Int.add in
+instance (f g : Nat → Nat) : Inhabited Nat where
+  default := by
+    · have := 0
+      · have : Nat := f $ g $ 0
+        · exact 0
+
 set_option linter.longLine false
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
