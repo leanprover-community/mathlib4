@@ -60,8 +60,6 @@ register_option linter.flexible : Bool := {
   descr := "enable the flexible linter"
 }
 
-namespace flexible
-
 /-- `flexible? stx` is `true` if `stx` is syntax for a tactic that takes a "wide" variety of inputs and modifies
 them in possibly unpredictable ways.
 
@@ -73,8 +71,6 @@ def flexible? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
   | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
   | _ => false
-
-end flexible
 
 end Mathlib.Linter
 
@@ -102,7 +98,7 @@ def activeGoalsAfter (t : TacticInfo) : List MVarId :=
 end Lean.Elab.TacticInfo
 end goals_heuristic
 
-namespace Mathlib.Linter.flexible
+namespace Mathlib.Linter.Flexible
 
 variable (take? : Syntax → Bool) in
 -- also returns the preceding goals that change.  is there only one always?
@@ -190,9 +186,6 @@ acting on the main goal. -/
 def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : HashSet Stained :=
   let out := getStained stx all?
   if out.size == 0 then {.goal} else out
-
-/-- Gets the value of the `linter.flexible` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.flexible o
 
 /-- `Stained.toFMVarId mv lctx st` takes a metavariable `mv`, a local context `lctx` and
 a `Stained` `st` and returns the array of pairs `(FVarId, mv)`s that `lctx` assigns to `st`
@@ -330,7 +323,7 @@ def reallyPersist
 
 /-- The main implementation of the flexible linter. -/
 def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless getLinterHash (← getOptions) && (← getInfoState).enabled do
+  unless Linter.getLinterValue linter.flexible (← getOptions) && (← getInfoState).enabled do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -383,3 +376,5 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     logInfoAt s m!"… and '{s}' uses '{d}'!"
 
 initialize addLinter flexibleLinter
+
+end Mathlib.Linter.Flexible
