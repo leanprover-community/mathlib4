@@ -120,6 +120,36 @@ lemma continuous_subtype_extension (hU : IsOpen U) (hf : Continuous f) {g : X �
   rw [← (hU.openEmbedding_subtype_val).continuousAt_iff, Function.extend_comp Subtype.val_injective]
   exact hf.continuousAt
 
+/-- Corollary. *Any* extension `F:X→ Y` of `f : U → Y` to `X` is continuous on `U`. -/
+lemma continuous_subtype_extension' (hU : IsOpen U) (hf : Continuous f)
+    {F : X → Y} (hg : Set.restrict U F = f) : ContinuousOn F U := by
+  let F' := Function.extend Subtype.val f F
+  have : ContinuousOn F' U := continuous_subtype_extension hU hf
+  apply ContinuousOn.congr this
+  show Set.EqOn F F' U -- should be obvious, let's do the details...
+  intro x hx
+  suffices F x = f ⟨x, hx⟩ ∧ F' x = f ⟨x, hx⟩ from Eq.trans this.1 this.2.symm
+  constructor
+  · rw [← hg]
+    exact rfl
+  · sorry -- apply Function.Injective.extend_apply, sth sth about extensions...
+
+lemma real_lemma {V : Set X} (hV : IsOpen V) {U : Set V} (hU : IsOpen U)
+    {f : V → Y} (hf : ContinuousOn f U)
+    {F : X → Y} (hF : Set.restrict V F = f) : ContinuousOn F U := by
+  let g : U → Y := Set.restrict U f
+  have : Continuous g := continuousOn_iff_continuous_restrict.mp hf
+
+  -- F extends g; should also be easy (F extends f and f extends g)
+  -- xxx: this doesn't type-check... think! because I have subtypes twice?!
+  -- have : (Set.restrict U F) = g := sorry
+
+  -- thus, F is continuous on U; by the corollary above
+  sorry
+
+-- TODO: state a more general version of real_lemma, for open embeddings (or so);
+-- the proof should be just the same
+
 end extensions
 
 -- Let M, M' and M'' be smooth manifolds *over the same space* `H`, with *the same* `model `I`.
@@ -174,20 +204,25 @@ def PartialHomeomorph.extend_subtype {U : Set M} (φ : PartialHomeomorph U H) (h
   -- TODO: missing lemma, want a stronger version of `continuous_sum_elim`;
   -- perhaps use `continuous_sup_dom` to prove
   continuousOn_toFun := by
-    -- mimicking the proof above
-    set F := Function.extend Subtype.val φ (Classical.arbitrary _)
-    dsimp
-    show ContinuousOn F (Subtype.val '' φ.source)
-    suffices h : ∀ x : (Subtype.val '' φ.source), ContinuousAt F x from
-      ContinuousAt.continuousOn (by convert h; exact Iff.symm Subtype.forall)
-    intro x
-    have h := (hU.openEmbedding_subtype_val.open_iff_image_open).mp φ.open_source
-    rw [← (h.openEmbedding_subtype_val).continuousAt_iff]
-    --rw [Function.extend_comp Subtype.val_injective]
-    let g : (Subtype.val '' φ.source) → H := (F ∘ Subtype.val)
-    show ContinuousAt g x
-    apply Continuous.continuousAt -- remains: g is continuous
-    sorry
+    -- first ingredient towards generalising real_lemma...
+    --have hU : IsOpen U := (hU.openEmbedding_subtype_val.open_iff_image_open).mp φ.open_source
+
+    apply real_lemma hU φ.open_source φ.continuousOn_toFun
+    apply Function.extend_comp Subtype.val_injective
+    -- -- mimicking the proof above
+    -- set F := Function.extend Subtype.val φ (Classical.arbitrary _)
+    -- dsimp
+    -- show ContinuousOn F (Subtype.val '' φ.source)
+    -- suffices h : ∀ x : (Subtype.val '' φ.source), ContinuousAt F x from
+    --   ContinuousAt.continuousOn (by convert h; exact Iff.symm Subtype.forall)
+    -- intro x
+    -- have h := (hU.openEmbedding_subtype_val.open_iff_image_open).mp φ.open_source
+    -- rw [← (h.openEmbedding_subtype_val).continuousAt_iff]
+    -- --rw [Function.extend_comp Subtype.val_injective]
+    -- let g : (Subtype.val '' φ.source) → H := (F ∘ Subtype.val)
+    -- show ContinuousAt g x
+    -- apply Continuous.continuousAt -- remains: g is continuous
+
     -- dsimp
     -- let myf := (φ.source).restrict φ.toFun
     -- let h := φ.open_source
