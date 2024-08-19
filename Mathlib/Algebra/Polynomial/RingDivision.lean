@@ -130,7 +130,7 @@ theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p
   classical
   obtain rfl | hp := eq_or_ne p 0
   · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
-  exact natDegree_pow' $ by
+  exact natDegree_pow' <| by
     rw [← leadingCoeff_pow, Ne, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp
 
 theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
