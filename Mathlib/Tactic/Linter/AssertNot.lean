@@ -64,18 +64,4 @@ do exist somewhere. -/
           return some (msg "module")
     return none
 
-open Elab.Command in
-/--
-`addDeclEntry declName isDecl` takes as input the `Name` `declName` and the `Bool`ean `isDecl`.
-It adds to the environment a new private declaration with a fresh name `freshName` and extends the
-`AssertExists` environment extension with the data `isDecl, freshName, declName, currentModuleName`.
-This information is used by the `assertExists` linter to capture declarations and modules that
-are required to now exist/be imported at some point, but should eventually exist/be imported.
--/
-def addDeclEntry (declName : Name) (isDecl : Bool) : CommandElabM Unit := do
-  let nm ← liftCoreM do mkFreshId
-  elabCommand (← `(private theorem $(mkIdent nm) : True := .intro))
-  setEnv <| assertExistsExt.addEntry (← getEnv)
-    { isDecl := isDecl, freshName := nm, givenName := declName, modName := ← getMainModule }
-
 end Mathlib.Linter
