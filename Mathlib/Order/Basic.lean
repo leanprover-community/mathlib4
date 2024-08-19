@@ -1172,6 +1172,23 @@ lemma mk_lt_mk_of_le_of_lt (h₁ : a₁ ≤ a₂) (h₂ : b₁ < b₂) : (a₁, 
 
 end Preorder
 
+section PartialOrder
+
+variable [PartialOrder α] [Preorder β] {x y : α × β}
+
+lemma toLex (h : x < y) : Prod.Lex (· < ·) (· < ·) x y := by
+  cases y
+  cases' lt_iff.1 h with h₁ h₂
+  · exact Lex.left _ _ h₁.1
+  · obtain h₂ | rfl := lt_or_eq_of_le h₂.1
+    · exact Lex.left _ _ h₂
+    · exact Lex.right _ h₂.2
+
+lemma Lex.lt_of_le_of_lt (h₁ : x.1 ≤ y.1) (h₂ : x.2 < y.2) : Prod.Lex (· < ·) (· < ·) x y :=
+  toLex (Prod.lt_of_le_of_lt h₁ h₂)
+
+end PartialOrder
+
 /-- The pointwise partial order on a product.
     (The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
     available via the type synonym `α ×ₗ β = α × β`.) -/
