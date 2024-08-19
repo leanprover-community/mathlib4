@@ -2506,6 +2506,23 @@ theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
   rw [← pmap_eq_map _ _ _ (fun _ _ ↦ trivial), ← pmap_eq_map _ _ _ (fun _ _ ↦ trivial)]
   exact disjoint_pmap _ _ (fun _ _ _ _ h' ↦ hf h') h
 
+
+theorem Perm.disjoint_left {l₁ l₂ l : List α} (p : List.Perm l₁ l₂) :
+    Disjoint l₁ l ↔ Disjoint l₂ l := by
+  simp_rw [List.disjoint_left, p.mem_iff]
+
+theorem Perm.disjoint_right {l₁ l₂ l : List α} (p : List.Perm l₁ l₂) :
+    Disjoint l l₁ ↔ Disjoint l l₂ := by
+  simp_rw [List.disjoint_right, p.mem_iff]
+
+@[simp]
+theorem disjoint_reverse_left {l₁ l₂ : List α} : Disjoint l₁.reverse l₂ ↔ Disjoint l₁ l₂ :=
+  reverse_perm _ |>.disjoint_left
+
+@[simp]
+theorem disjoint_reverse_right {l₁ l₂ : List α} : Disjoint l₁ l₂.reverse ↔ Disjoint l₁ l₂ :=
+  reverse_perm _ |>.disjoint_right
+
 end Disjoint
 
 section lookup

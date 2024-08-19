@@ -197,7 +197,6 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
       exact dif_pos i.prop
 
 variable {C}
-variable (hC : IsCompact C)
 
 /--
 For a given compact subset `C` of `I → Bool`, `spanFunctor` is the functor from the poset of finsets
@@ -205,7 +204,7 @@ of `I` to `Profinite`, sending a finite subset set `J` to the image of `C` under
 `Proj J`.
 -/
 noncomputable
-def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
+def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
     (Finset I)ᵒᵖ ⥤ Profinite.{u} where
   obj s := @Profinite.of (π C (· ∈ (unop s))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (continuous_proj _)) _ _
@@ -215,7 +214,8 @@ def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
 
 /-- The limit cone on `spanFunctor` with point `C`. -/
 noncomputable
-def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] : Cone (spanFunctor hC) where
+def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
+    Cone (spanFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π :=
   { app := fun s ↦ ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
@@ -228,7 +228,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] : Cone (spanFunct
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
-def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
+def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
     CategoryTheory.Limits.IsLimit (spanCone hC) := by
   refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
     (fun s ↦ (CompHausLike.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
@@ -1424,7 +1424,8 @@ theorem sum_to_range :
 /-- The equivalence from the sum of `GoodProducts (π C (ord I · < o))` and
     `(MaxProducts C ho)` to `GoodProducts C`. -/
 noncomputable
-def sum_equiv : GoodProducts (π C (ord I · < o)) ⊕ (MaxProducts C ho) ≃ GoodProducts C :=
+def sum_equiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (·<· : I → I → Prop)) :
+    GoodProducts (π C (ord I · < o)) ⊕ (MaxProducts C ho) ≃ GoodProducts C :=
   calc _ ≃ Set.range (sum_to C ho) := Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho)
        _ ≃ _ := Equiv.Set.ofEq <| by rw [sum_to_range C ho, union_succ C hsC ho]
 
