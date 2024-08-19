@@ -214,13 +214,4 @@ theorem UniformInducing.completableTopField
   apply CompletableTopField.nice _ F_cau
   rw [← Filter.push_pull', ← map_zero f, ← hf.inducing.nhds_eq_comap, inf_F, Filter.map_bot]
 
-namespace UniformSpace
-
-instance comap_completableTopField (f : α →+* β)
-    [@T0Space α (UniformSpace.comap f b).toTopologicalSpace] :
-    @CompletableTopField _ _ (UniformSpace.comap f b) :=
-  letI := UniformSpace.comap f b; (uniformInducing_iff_uniformSpace.2 rfl).completableTopField
-
-end UniformSpace
-
 end Pullback
