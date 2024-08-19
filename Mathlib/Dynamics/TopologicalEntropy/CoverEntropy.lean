@@ -76,8 +76,8 @@ lemma IsDynCoverOf.of_entourage_subset {T : X → X} {F : Set X} {U V : Set (X �
     (iUnion₂_mono fun x _ ↦ ball_mono (dynEntourage_monotone T n U_V) x)
 
 @[simp]
-lemma isDynCoverOf_empty {T : X → X} {U : Set (X × X)} {n : ℕ} :
-    IsDynCoverOf T ∅ U n ∅ := by
+lemma isDynCoverOf_empty {T : X → X} {U : Set (X × X)} {n : ℕ} {s : Set X} :
+    IsDynCoverOf T ∅ U n s := by
   simp only [IsDynCoverOf, empty_subset]
 
 lemma IsDynCoverOf.nonempty {T : X → X} {F : Set X} (h : F.Nonempty) {U : Set (X × X)} {n : ℕ}
@@ -88,15 +88,15 @@ lemma IsDynCoverOf.nonempty {T : X → X} {F : Set X} (h : F.Nonempty) {U : Set 
 
 lemma isDynCoverOf_zero (T : X → X) (F : Set X) (U : Set (X × X)) {s : Set X} (h : s.Nonempty) :
     IsDynCoverOf T F U 0 s := by
-  simp only [IsDynCoverOf, ball, dynEntourage, not_lt_zero', Prod.map_iterate,
-    iInter_of_empty, iInter_univ, preimage_univ]
+  simp only [IsDynCoverOf, ball, dynEntourage, not_lt_zero', Prod.map_iterate, iInter_of_empty,
+    iInter_univ, preimage_univ]
   rcases h with ⟨x, x_s⟩
   exact subset_iUnion₂_of_subset x x_s (subset_univ F)
 
 lemma isDynCoverOf_univ (T : X → X) (F : Set X) (n : ℕ) {s : Set X} (h : s.Nonempty) :
     IsDynCoverOf T F univ n s := by
-  simp only [IsDynCoverOf, ball, dynEntourage, Prod.map_iterate, preimage_univ,
-    iInter_univ, iUnion_coe_set]
+  simp only [IsDynCoverOf, ball, dynEntourage, Prod.map_iterate, preimage_univ, iInter_univ,
+    iUnion_coe_set]
   rcases h with ⟨x, x_s⟩
   exact subset_iUnion₂_of_subset x x_s (subset_univ F)
 
@@ -114,10 +114,11 @@ lemma IsDynCoverOf.nonempty_inter {T : X → X} {F : Set X} {U : Set (X × X)} {
   simp only [coe_setOf, mem_setOf_eq, mem_iUnion, Subtype.exists, exists_prop]
   exact ⟨z, ⟨z_s, nonempty_of_mem ⟨y_Bz, y_F⟩⟩, y_Bz⟩
 
-/-This lemma is the first step in a submultiplicative-like property of `coverMincard`, with
-  far-reaching consequences such as explicit bounds for the topological entropy
-  (`coverEntropyInfUni_le_card_div`) and an equality between two notions of topological entropy
-  (`coverEntropyInf_eq_coverEntropySup_of_inv`).-/
+/-- From a dynamical cover `s` with entourage `U` and time `m`, we construct covers with entourage
+`U ○ U` and any multiple `m * n` of `m` with controlled cardinality. This lemma is the first step
+in a submultiplicative-like property of `coverMincard`, with consequences such as explicit bounds
+for the topological entropy (`coverEntropyInfUni_le_card_div`) and an equality between two notions
+of topological entropy (`coverEntropyInf_eq_coverEntropySup_of_inv`).-/
 lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) {m : ℕ} (n : ℕ) {s : Finset X} (h : IsDynCoverOf T F U m s) :
     ∃ t : Finset X, IsDynCoverOf T F (U ○ U) (m * n) t ∧ t.card ≤ s.card ^ n := by
