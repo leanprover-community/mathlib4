@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 import Mathlib.Logic.Function.Iterate
 
 /-!
