@@ -5,6 +5,7 @@ Authors: Patrick Massot, Scott Morrison
 -/
 import Mathlib.Init
 import Lean.Elab.Command
+import Mathlib.Util.Attr
 
 /-!
 # User commands for assert the (non-)existence of declaration or instances.
@@ -23,21 +24,6 @@ section
 open Lean Elab Meta Command
 
 namespace Mathlib.AssertNotExist
-structure AssertExists where
-  /-- The fully qualified name of a declaration that is expected to exist. -/
-  isDecl : Bool
-  givenName : Name
-  modName : Name
-
-/-- Defines the `assertExistsExt` extension for adding an `Array` of `AssertExists`s
-to the environment. -/
-initialize assertExistsExt : PersistentEnvExtension AssertExists AssertExists (Array AssertExists) ←
-  registerPersistentEnvExtension {
-    mkInitial := pure {}
-    addImportedFn := (return .flatten ·)
-    addEntryFn := .push
-    exportEntriesFn := id
-  }
 
 open Lean Elab Command
 elab "finalize_assertions" : command => do
