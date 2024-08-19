@@ -163,7 +163,7 @@ theorem mapIdx_eq_nil {f : ℕ → α → β} {l : List α} : List.mapIdx f l = 
 @[simp]
 theorem get_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :
-    (l.mapIdx f).get ⟨i, h'⟩ = f i (l.get ⟨i, h⟩) := by
+    (l.mapIdx f)[i] = f i l[i] := by
   simp [mapIdx_eq_enum_map, enum_eq_zip_range]
 
 theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
