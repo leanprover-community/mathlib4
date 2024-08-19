@@ -155,7 +155,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
         · exact f.map_point.symm
         simp_all [Option.casesOn'_eq_elim, Part.elim_toOption]
   functor_unitIso_comp X := by
-    ext (_|x)
+    ext (_ | x)
     · rfl
     · simp
       rfl
