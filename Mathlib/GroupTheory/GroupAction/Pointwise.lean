@@ -47,6 +47,7 @@ variable [MulAction R M] [MulAction S N] [MulAction R M₁] [MulAction R M₂]
 variable {F : Type*} (h : F)
 
 section MulActionSemiHomClass
+set_option debug.byAsSorry false
 
 variable [FunLike F M N] [MulActionSemiHomClass F σ M N]
     (c : R) (s : Set M) (t : Set N)

@@ -98,6 +98,7 @@ variable [Semiring R] [Semiring S] {φ : R →+* S}
   {A B : Type*} [NonUnitalNonAssocSemiring A] [Module R A]
   [NonUnitalNonAssocSemiring B] [Module S B]
 
+set_option debug.byAsSorry false in
 -- see Note [lower instance priority]
 instance (priority := 100) {F R S A B : Type*}
     {_ : Semiring R} {_ : Semiring S} {φ : R →+* S}

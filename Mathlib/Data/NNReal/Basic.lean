@@ -94,7 +94,7 @@ instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
   Subtype.eq
 
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
-  NNReal.eq_iff.symm.not
+  not_congr <| NNReal.eq_iff.symm
 
 protected theorem «forall» {p : ℝ≥0 → Prop} :
     (∀ x : ℝ≥0, p x) ↔ ∀ (x : ℝ) (hx : 0 ≤ x), p ⟨x, hx⟩ :=
@@ -795,6 +795,7 @@ theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=
 end Sub
 
 section Inv
+
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by

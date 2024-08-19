@@ -475,6 +475,7 @@ This is the bundled version of `Set.rangeFactorization`. -/
 abbrev rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
   NonUnitalAlgHom.codRestrict f (NonUnitalAlgHom.range f) (NonUnitalAlgHom.mem_range_self f)
 
+set_option debug.byAsSorry false in
 /-- The equalizer of two non-unital `R`-algebra homomorphisms -/
 def equalizer (ϕ ψ : F) : NonUnitalSubalgebra R A where
   carrier := {a | (ϕ a : B) = ψ a}

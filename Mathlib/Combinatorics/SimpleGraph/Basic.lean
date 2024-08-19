@@ -420,6 +420,7 @@ def edgeSetEmbedding (V : Type*) : SimpleGraph V ↪o Set (Sym2 V) :=
 This is an abbreviation for `edgeSetEmbedding G` that permits dot notation. -/
 abbrev edgeSet (G : SimpleGraph V) : Set (Sym2 V) := edgeSetEmbedding V G
 
+
 @[simp]
 theorem mem_edgeSet : s(v, w) ∈ G.edgeSet ↔ G.Adj v w :=
   Iff.rfl

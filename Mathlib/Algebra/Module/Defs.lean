@@ -473,6 +473,7 @@ end SMulWithZero
 section Module
 
 section Nat
+set_option debug.byAsSorry false
 
 theorem Nat.noZeroSMulDivisors
     (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] :
@@ -520,6 +521,7 @@ theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M}
 end SMulInjective
 
 section Nat
+set_option debug.byAsSorry false
 
 theorem self_eq_neg
     (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]

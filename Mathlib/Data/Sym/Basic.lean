@@ -463,6 +463,7 @@ theorem coe_append (s : Sym α n) (s' : Sym α n') : (s.append s' : Multiset α)
 theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈ s' :=
   Multiset.mem_add
 
+set_option debug.byAsSorry false in
 /-- `a ↦ {a}` as an equivalence between `α` and `Sym α 1`. -/
 @[simps apply]
 def oneEquiv : α ≃ Sym α 1 where

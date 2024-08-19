@@ -175,11 +175,12 @@ class inductive ListShort : List PGame.{u} → Type (u + 1)
 
 attribute [instance] ListShort.nil
 
-instance ListShort.cons (hd : PGame.{u}) [short_hd : Short hd]
-                        (tl : List PGame.{u}) [short_tl : ListShort tl] :
+instance ListShort.cons
+    (hd : PGame.{u}) [short_hd : Short hd] (tl : List PGame.{u}) [short_tl : ListShort tl] :
     ListShort (hd::tl) :=
   cons' short_hd short_tl
 
+set_option debug.byAsSorry false in
 instance listShortGet :
     ∀ (L : List PGame.{u}) [ListShort L] (i : Nat) (h : i < List.length L), Short L[i]
   | _::_, ListShort.cons' S _, 0, _ => S
@@ -188,9 +189,7 @@ instance listShortGet :
 
 instance shortOfLists : ∀ (L R : List PGame) [ListShort L] [ListShort R], Short (PGame.ofLists L R)
   | L, R, _, _ => by
-    apply Short.mk
-    · intros; infer_instance
-    · intros; apply PGame.listShortGet
+    exact Short.mk (fun i ↦ inferInstance) fun j ↦ listShortGet R (↑j.down) (ofLists.proof_2 R j)
 
 /-- If `x` is a short game, and `y` is a relabelling of `x`, then `y` is also short. -/
 def shortOfRelabelling : ∀ {x y : PGame.{u}}, Relabelling x y → Short x → Short y

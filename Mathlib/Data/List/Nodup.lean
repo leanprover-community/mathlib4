@@ -107,7 +107,7 @@ theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
   constructor
   · intro h i j hij hj
     rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
-    exact h _ _ _ _ hij
+    exact h _ _ (by omega) hj hij
   · intro h i j hi hj hij
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
     exact h i j hij hj
@@ -145,6 +145,7 @@ theorem indexOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (
 theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
     indexOf (get l i) l = i := by
   simp [indexOf_getElem, H]
+
 
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|

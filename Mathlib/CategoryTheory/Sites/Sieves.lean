@@ -91,6 +91,7 @@ def singleton : Presieve X := singleton' f
 
 lemma singleton.mk {f : Y ⟶ X} : singleton f f := singleton'.mk
 
+
 @[simp]
 theorem singleton_eq_iff_domain (f g : Y ⟶ X) : singleton f g ↔ f = g := by
   constructor

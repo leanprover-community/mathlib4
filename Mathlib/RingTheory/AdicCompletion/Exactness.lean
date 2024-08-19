@@ -26,6 +26,8 @@ All results are proven directly without using Mittag-Leffler systems.
 
 -/
 
+set_option debug.byAsSorry false
+
 universe u v w t
 
 open LinearMap
@@ -39,14 +41,13 @@ section Surjectivity
 variable {M : Type v} [AddCommGroup M] [Module R M]
 variable {N : Type w} [AddCommGroup N] [Module R N]
 
-variable {f : M →ₗ[R] N} (hf : Function.Surjective f)
-include hf
+variable {f : M →ₗ[R] N}
 
 /- In each step, a preimage is constructed from the preimage of the previous step by
 subtracting this delta. -/
-private noncomputable def mapPreimageDelta (x : AdicCauchySequence I N)
+private noncomputable def mapPreimageDelta (hf : Function.Surjective f) (x : AdicCauchySequence I N)
     {n : ℕ} {y yₙ : M} (hy : f y = x (n + 1)) (hyₙ : f yₙ = x n) :
-    { d : (I ^ n • ⊤ : Submodule R M) | f d = f (yₙ - y) } :=
+    {d : (I ^ n • ⊤ : Submodule R M) | f d = f (yₙ - y) } :=
   have h : f (yₙ - y) ∈ Submodule.map f (I ^ n • ⊤ : Submodule R M) := by
     rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr hf, map_sub,
       hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub, ← SModEq.sub_mem]
@@ -54,15 +55,18 @@ private noncomputable def mapPreimageDelta (x : AdicCauchySequence I N)
   ⟨⟨h.choose, h.choose_spec.1⟩, h.choose_spec.2⟩
 
 /- Inductively construct preimage of cauchy sequence. -/
-private noncomputable def mapPreimage (x : AdicCauchySequence I N) :
+private noncomputable def mapPreimage (hf : Function.Surjective f) (x : AdicCauchySequence I N) :
     (n : ℕ) → f ⁻¹' {x n}
   | .zero => ⟨(hf (x 0)).choose, (hf (x 0)).choose_spec⟩
   | .succ n =>
       let y := (hf (x (n + 1))).choose
       have hy := (hf (x (n + 1))).choose_spec
-      let ⟨yₙ, (hyₙ : f yₙ = x n)⟩ := mapPreimage x n
+      let ⟨yₙ, (hyₙ : f yₙ = x n)⟩ := mapPreimage hf x n
       let ⟨⟨d, _⟩, (p : f d = f (yₙ - y))⟩ := mapPreimageDelta hf x hy hyₙ
       ⟨yₙ - d, by simpa [p]⟩
+
+variable (hf : Function.Surjective f)
+include hf
 
 variable (I)
 
