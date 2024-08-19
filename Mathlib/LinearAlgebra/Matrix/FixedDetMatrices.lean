@@ -6,6 +6,13 @@ Authors: Chris Birkbeck
 
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
+/-!
+# Matrices with fixed determinant
+
+This file defines the type of matrices with fixed determinant `m` and proves some basic results
+about them.
+-/
+
 variable (n : Type*) [DecidableEq n] [Fintype n] (R : Type*) [CommRing R]
 
 /--The set of matrices with fixed determinant `m`. -/
@@ -88,16 +95,17 @@ lemma reduce_aux (m : ℤ) (A : Δ m) (h : Int.natAbs (A.1 1 0) ≠ 0) :
 /--Reduction lemma for integral FixedDetMatrices. -/
 @[elab_as_elim]
 def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, Int.natAbs (A.1 1 0) = 0 → C A)
-  (h1 : ∀ A : Δ m, Int.natAbs ((A.1 1 0)) ≠ 0 → C (reduce_step m A) → C A) : ∀ A, C A := fun A => by
-    by_cases h : Int.natAbs (A.1 1 0) = 0
-    · apply h0 _ h
-    · exact h1 A h (reduce_rec h0 h1 (reduce_step m A))
-    termination_by A => Int.natAbs (A.1 1 0)
-    decreasing_by
-      apply reduce_aux m A
-      simp only [Int.cast_id, Fin.isValue, ne_eq, Int.natAbs_eq_zero]
-      rw [@Int.natAbs_eq_zero] at h
-      exact h
+  (h1 : ∀ A : Δ m, Int.natAbs ((A.1 1 0)) ≠ 0 → C (reduce_step m A) → C A) :
+    ∀ A, C A := fun A => by
+  by_cases h : Int.natAbs (A.1 1 0) = 0
+  · apply h0 _ h
+  · exact h1 A h (reduce_rec h0 h1 (reduce_step m A))
+  termination_by A => Int.natAbs (A.1 1 0)
+  decreasing_by
+    apply reduce_aux m A
+    simp only [Int.cast_id, Fin.isValue, ne_eq, Int.natAbs_eq_zero]
+    rw [@Int.natAbs_eq_zero] at h
+    exact h
 
 set_option linter.unusedVariables false in
 /--Map from `Δ m → Δ m` which reduces a FixedDetMatrix towards a representative element in reps. -/
@@ -162,7 +170,7 @@ lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0) : ∀ A : Δ m, reduce m A ∈ re
     rw [smul_coe]
     simp [coe_T_zpow, vecMul, vecHead, vecTail]
     refine ⟨ Int.natAbs_eq_zero.mp h, by simp at h; rw [h]; simp [h1], by
-      apply Int.ediv_mul_le ; apply A_d_ne_zero _ _ (by simpa using h) hm, by
+      apply Int.ediv_mul_le; apply A_d_ne_zero _ _ (by simpa using h) hm, by
       rw [mul_comm, ← @Int.sub_eq_add_neg, (Int.emod_def (A.1 0 1) (A.1 1 1)).symm]
       apply le_trans _ (Int.emod_lt (A.1 0 1) (by apply A_d_ne_zero _ _ (by simpa using h) hm))
       rw [abs_eq_self.mpr ( Int.emod_nonneg (A.1 0 1) (A_d_ne_zero _ _ (by simpa using h) hm))]⟩
@@ -184,7 +192,7 @@ lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0) : ∀ A : Δ m, reduce m A ∈ re
         simp only [Fin.isValue, mul_zero, Left.neg_pos_iff]
         rw [Int.lt_iff_le_and_ne]
         refine ⟨h1, by apply A_a_ne_zero _ _ (by simpa using h) hm⟩, by
-        apply Int.ediv_mul_le ; apply A_d_ne_zero _ _ (by simpa using h) hm, by
+        apply Int.ediv_mul_le; apply A_d_ne_zero _ _ (by simpa using h) hm, by
         rw [mul_comm, ← @Int.sub_eq_add_neg, (Int.emod_def (-A.1 0 1) (A.1 1 1)).symm]
         apply le_trans _ (Int.emod_lt (-A.1 0 1) (by apply A_d_ne_zero _ _ (by simpa using h) hm))
         rw [abs_eq_self.mpr (Int.emod_nonneg (-A.1 0 1) (A_d_ne_zero _ _ (by simpa using h) hm))]⟩
@@ -207,8 +215,8 @@ lemma T_S_rel (A : Δ m) : (S • S • S • T • S • T • S • A) = T⁻�
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
   (h0 : ∀ A : Δ m, A.1 1 0 = 0 → A.1 0 0 * A.1 1 1 = m → 0 < A.1 0 0 → 0 ≤ A.1 0 1 →
-  Int.natAbs (A.1 0 1) < Int.natAbs (A.1 1 1) → C A) (hS : ∀ B, C B → C (S • B))
-  (hT : ∀ B, C B → C (T • B)) : C A := by
+    Int.natAbs (A.1 0 1) < Int.natAbs (A.1 1 1) → C A) (hS : ∀ B, C B → C (S • B))
+      (hT : ∀ B, C B → C (T • B)) : C A := by
   have hS' : ∀ B, C (S • B) → C B := by
     intro B ih
     rw [← (S_smul_four m B)]
