@@ -5,10 +5,9 @@ Authors: Kevin Buzzard, Patrick Massot
 
 This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 -/
-import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Quotients of groups by normal subgroups
@@ -334,7 +333,7 @@ theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
 @[to_additive]
 theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
   Quotient.inductionOn₂' a b fun a b (h : φ a = φ b) =>
-    Quotient.sound' <| by rw [leftRel_apply, mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_self]
+    Quotient.sound' <| by rw [leftRel_apply, mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_cancel]
 
 -- Note that `ker φ` isn't definitionally `ker (φ.rangeRestrict)`
 -- so there is a bit of annoying code duplication here
@@ -348,7 +347,7 @@ theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
   Quotient.inductionOn₂' a b fun a b (h : φ.rangeRestrict a = φ.rangeRestrict b) =>
     Quotient.sound' <| by
       rw [leftRel_apply, ← ker_rangeRestrict, mem_ker, φ.rangeRestrict.map_mul, ← h,
-        φ.rangeRestrict.map_inv, inv_mul_self]
+        φ.rangeRestrict.map_inv, inv_mul_cancel]
 
 @[to_additive]
 theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) := by
@@ -523,7 +522,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       change Setoid.r _ _
       rw [leftRel_apply]
       change h⁻¹ * (h * n) ∈ N
-      rwa [← mul_assoc, inv_mul_self, one_mul]
+      rwa [← mul_assoc, inv_mul_cancel, one_mul]
   (quotientMulEquivOfEq (by simp [φ, ← comap_ker])).trans
     (quotientKerEquivOfSurjective φ φ_surjective)
 
@@ -611,38 +610,3 @@ theorem mk_int_mul (n : ℤ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := b
   rw [← zsmul_eq_mul, mk_zsmul N a n]
 
 end QuotientAddGroup
-
-namespace Group
-
-open scoped Classical
-
-open QuotientGroup Subgroup
-
-variable {F G H : Type u} [Group F] [Group G] [Group H] [Fintype F] [Fintype H]
-variable (f : F →* G) (g : G →* H)
-
-/-- If `F` and `H` are finite such that `ker(G →* H) ≤ im(F →* G)`, then `G` is finite. -/
-@[to_additive "If `F` and `H` are finite such that `ker(G →+ H) ≤ im(F →+ G)`, then `G` is finite."]
-noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=
-  @Fintype.ofEquiv _ _
-    (@instFintypeProd _ _ (Fintype.ofInjective _ <| kerLift_injective g) <|
-      Fintype.ofInjective _ <| inclusion_injective h)
-    groupEquivQuotientProdSubgroup.symm
-
-/-- If `F` and `H` are finite such that `ker(G →* H) = im(F →* G)`, then `G` is finite. -/
-@[to_additive "If `F` and `H` are finite such that `ker(G →+ H) = im(F →+ G)`, then `G` is finite."]
-noncomputable def fintypeOfKerEqRange (h : g.ker = f.range) : Fintype G :=
-  fintypeOfKerLeRange _ _ h.le
-
-/-- If `ker(G →* H)` and `H` are finite, then `G` is finite. -/
-@[to_additive "If `ker(G →+ H)` and `H` are finite, then `G` is finite."]
-noncomputable def fintypeOfKerOfCodom [Fintype g.ker] : Fintype G :=
-  fintypeOfKerLeRange ((topEquiv : _ ≃* G).toMonoidHom.comp <| inclusion le_top) g fun x hx =>
-    ⟨⟨x, hx⟩, rfl⟩
-
-/-- If `F` and `coker(F →* G)` are finite, then `G` is finite. -/
-@[to_additive "If `F` and `coker(F →+ G)` are finite, then `G` is finite."]
-noncomputable def fintypeOfDomOfCoker [Normal f.range] [Fintype <| G ⧸ f.range] : Fintype G :=
-  fintypeOfKerLeRange _ (mk' f.range) fun x => (eq_one_iff x).mp
-
-end Group

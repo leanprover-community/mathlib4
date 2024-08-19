@@ -29,6 +29,9 @@ example {n} (y : ℝ) (hy : y≠0) :
     ContDiffAt ℝ n foo y := by
   unfold foo; fun_prop (disch:=aesop)
 
+example : Continuous fun ((x, _, _) : ℝ × ℝ × ℝ) ↦ x := by fun_prop
+example : Continuous fun ((_, y, _) : ℝ × ℝ × ℝ) ↦ y := by fun_prop
+example : Continuous fun ((_, _, z) : ℝ × ℝ × ℝ) ↦ z := by fun_prop
 
 -- This theorem is meant to work together with `measurable_of_continuousOn_compl_singleton`
 -- Unification of `(hf : ContinuousOn f {a}ᶜ)` with this theorem determines the point `a` to be `0`
@@ -41,7 +44,7 @@ example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
 
 -- Notice that no theorems about measuability of log are used. It is infered from continuity.
 example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
-  fun_prop
+  fun_prop (config:={maxTransitionDepth:=2})
 
 
 

@@ -49,6 +49,7 @@ class IsRootPositive (P : RootPairing ι R M N) (B : M →ₗ[R] M →ₗ[R] R) 
   apply_reflection_eq : ∀ i x y, B (P.reflection i x) (P.reflection i y) = B x y
 
 variable {P : RootPairing ι R M N} (B : M →ₗ[R] M →ₗ[R] R) [IsRootPositive P B] (i j : ι)
+include B
 
 lemma two_mul_apply_root_root :
     2 * B (P.root i) (P.root j) = P.pairing i j * B (P.root j) (P.root j) := by

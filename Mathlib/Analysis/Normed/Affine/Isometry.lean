@@ -447,8 +447,7 @@ theorem symm_apply_apply (x : P) : e.symm (e x) = x :=
   e.toAffineEquiv.symm_apply_apply x
 
 @[simp]
-theorem symm_symm : e.symm.symm = e :=
-  ext fun _ => rfl
+theorem symm_symm : e.symm.symm = e := rfl
 
 @[simp]
 theorem toAffineEquiv_symm : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
@@ -503,7 +502,7 @@ instance instGroup : Group (P ≃ᵃⁱ[𝕜] P) where
   one_mul := trans_refl
   mul_one := refl_trans
   mul_assoc _ _ _ := trans_assoc _ _ _
-  mul_left_inv := self_trans_symm
+  inv_mul_cancel := self_trans_symm
 
 @[simp]
 theorem coe_one : ⇑(1 : P ≃ᵃⁱ[𝕜] P) = id :=
@@ -636,6 +635,7 @@ theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = 
 theorem constVAdd_zero : constVAdd 𝕜 P (0 : V) = refl 𝕜 P :=
   ext <| zero_vadd V
 
+include 𝕜 in
 /-- The map `g` from `V` to `V₂` corresponding to a map `f` from `P` to `P₂`, at a base point `p`,
 is an isometry if `f` is one. -/
 theorem vadd_vsub {f : P → P₂} (hf : Isometry f) {p : P} {g : V → V₂}
