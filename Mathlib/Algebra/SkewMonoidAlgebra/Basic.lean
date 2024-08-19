@@ -98,13 +98,13 @@ theorem toFinsupp_smul {S : Type*} [SMulZeroClass S k] (a : S) (b : SkewMonoidAl
 
 theorem _root_.IsSMulRegular.skewMonoidAlgebra {S : Type*} [Monoid S] [DistribMulAction S k] {a : S}
     (ha : IsSMulRegular k a) : IsSMulRegular (SkewMonoidAlgebra k G) a
-  | ⟨_x⟩, ⟨_y⟩, h => by
+  | ⟨_⟩, ⟨_⟩, h => by
     simp only [← ofFinsupp_smul] at h
     exact congr_arg _ <| ha.finsupp (ofFinsupp.inj (h))
 
 theorem toFinsupp_injective :
     Function.Injective (toFinsupp : SkewMonoidAlgebra k G → Finsupp _ _) :=
-  fun ⟨_x⟩ ⟨_y⟩ => congr_arg _
+  fun ⟨_⟩ _ => congr_arg _
 
 @[simp]
 theorem toFinsupp_inj {a b : SkewMonoidAlgebra k G} : a.toFinsupp = b.toFinsupp ↔ a = b :=
@@ -112,7 +112,7 @@ theorem toFinsupp_inj {a b : SkewMonoidAlgebra k G} : a.toFinsupp = b.toFinsupp 
 
 theorem ofFinsupp_injective :
     Function.Injective (ofFinsupp : Finsupp _ _ → SkewMonoidAlgebra k G) :=
-  fun _x _y => congr_arg toFinsupp
+  fun _ _ => congr_arg toFinsupp
 
 /-- A more convenient spelling of `SkewMonoidAlgebra.ofFinsupp.injEq` in terms of `Iff`. -/
 theorem ofFinsupp_inj {a b} : (⟨a⟩ : SkewMonoidAlgebra k G) = ⟨b⟩ ↔ a = b :=
