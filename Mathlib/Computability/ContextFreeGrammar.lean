@@ -259,8 +259,8 @@ section embed_project
 /-! This section contains only auxiliary constructions that will shorten upcoming proofs of
 closure properties. When combining several grammars together, we usually want to take a sum type of
 their nonterminal types and embed respective nonterminals to this sum type. We subsequently show
-that the resulting grammar preserves derivations of those strings that may contain any terminals but
-only the proper nonterminals. The embedding operation must be injective. The projection operation
+that the resulting grammar preserves derivations of those strings that may contain any terminal symbols but
+only the proper nonterminal symbols. The embedding operation must be injective. The projection operation
 must be injective on those symbols where it is defined. -/
 
 /-- Mapping `Symbol` when it is a nonterminal. -/
