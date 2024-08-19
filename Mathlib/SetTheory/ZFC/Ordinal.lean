@@ -106,7 +106,7 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 
 /-- A set `x` is a von Neumann ordinal when it's a transitive set, that's transitive under `∈`. We
-prove that this further implies that `x` is well-ordered under `∈`.
+will prove that this further implies that `x` is well-ordered under `∈`.
 
 The transitivity condition is written in an even weaker form, where `a ∈ b` and `b ∈ c` imply
 `a ∈ c` when only `c ∈ x` and not `a ∈ x` or `b ∈ x` are known a priori. -/
