@@ -95,7 +95,7 @@ lemma reduce_aux (m : ℤ) (A : Δ m) (h : Int.natAbs (A.1 1 0) ≠ 0) :
 /--Reduction lemma for integral FixedDetMatrices. -/
 @[elab_as_elim]
 def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, Int.natAbs (A.1 1 0) = 0 → C A)
-  (h1 : ∀ A : Δ m, Int.natAbs ((A.1 1 0)) ≠ 0 → C (reduce_step m A) → C A) :
+    (h1 : ∀ A : Δ m, Int.natAbs ((A.1 1 0)) ≠ 0 → C (reduce_step m A) → C A) :
     ∀ A, C A := fun A => by
   by_cases h : Int.natAbs (A.1 1 0) = 0
   · apply h0 _ h
@@ -214,9 +214,9 @@ lemma T_S_rel (A : Δ m) : (S • S • S • T • S • T • S • A) = T⁻�
 
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
-  (h0 : ∀ A : Δ m, A.1 1 0 = 0 → A.1 0 0 * A.1 1 1 = m → 0 < A.1 0 0 → 0 ≤ A.1 0 1 →
-    Int.natAbs (A.1 0 1) < Int.natAbs (A.1 1 1) → C A) (hS : ∀ B, C B → C (S • B))
-      (hT : ∀ B, C B → C (T • B)) : C A := by
+    (h0 : ∀ A : Δ m, A.1 1 0 = 0 → A.1 0 0 * A.1 1 1 = m → 0 < A.1 0 0 → 0 ≤ A.1 0 1 →
+      Int.natAbs (A.1 0 1) < Int.natAbs (A.1 1 1) → C A) (hS : ∀ B, C B → C (S • B))
+        (hT : ∀ B, C B → C (T • B)) : C A := by
   have hS' : ∀ B, C (S • B) → C B := by
     intro B ih
     rw [← (S_smul_four m B)]
