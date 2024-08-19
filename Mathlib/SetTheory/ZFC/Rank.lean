@@ -25,6 +25,7 @@ open Ordinal
 
 namespace PSet
 
+/-- The ordinal rank of a pre-set -/
 noncomputable def rank : PSet.{u} → Ordinal.{u}
   | ⟨_, A⟩ => lsub fun a => rank (A a)
 
@@ -52,6 +53,7 @@ namespace ZFSet
 
 variable {x y : ZFSet.{u}}
 
+/-- The ordinal rank of a ZFC set -/
 noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
   Quotient.lift PSet.rank PSet.rank_eq_of_equiv
 
