@@ -49,8 +49,6 @@ equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. The
 in general not be used once the basic API for polynomials is constructed.
 -/
 
-
-
 noncomputable section
 
 /-- `Polynomial R` is the type of univariate polynomials over `R`.
@@ -65,8 +63,6 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute
-
-open Polynomial
 
 namespace Polynomial
 

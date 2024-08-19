@@ -22,8 +22,7 @@ section SpectrumDiagonal
 
 variable {R n M : Type*} [DecidableEq n] [Fintype n]
 
-open Matrix
-open Module.End
+open Matrix Module.End
 
 section NontrivialCommRing
 

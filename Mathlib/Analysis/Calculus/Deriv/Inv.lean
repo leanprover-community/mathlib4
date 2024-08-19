@@ -23,9 +23,7 @@ derivative
 
 universe u v w
 
-open scoped Classical
-open Topology Filter ENNReal
-
+open scoped Classical Topology ENNReal
 open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
