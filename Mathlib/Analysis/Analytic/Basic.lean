@@ -330,7 +330,7 @@ theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries �
   apply le_radius_of_isBigO
   apply (IsBigO.trans_isLittleO _ (p.isLittleO_one_of_lt_radius hr)).isBigO
   refine IsBigO.mul (@IsBigOWith.isBigO _ _ _ _ _ ‖f‖ _ _ _ ?_) (isBigO_refl _ _)
-  refine IsBigOWith.of_bound (eventually_of_forall fun n => ?_)
+  refine IsBigOWith.of_bound (Eventually.of_forall fun n => ?_)
   simpa only [norm_norm] using f.norm_compContinuousMultilinearMap_le (p n)
 
 end FormalMultilinearSeries
@@ -829,7 +829,7 @@ theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn' (hf : HasFPowerSeriesOn
 protected theorem HasFPowerSeriesOnBall.continuousOn (hf : HasFPowerSeriesOnBall f p x r) :
     ContinuousOn f (EMetric.ball x r) :=
   hf.tendstoLocallyUniformlyOn'.continuousOn <|
-    eventually_of_forall fun n =>
+    Eventually.of_forall fun n =>
       ((p.partialSum_continuous n).comp (continuous_id.sub continuous_const)).continuousOn
 
 protected theorem HasFPowerSeriesAt.continuousAt (hf : HasFPowerSeriesAt f p x) :
@@ -897,9 +897,9 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
   cases' n with n
   · exact norm_eq_zero.mp (by
       -- Porting note: the symmetric difference of the `simpa only` sets:
-      -- added `Nat.zero_eq, zero_add, pow_one`
+      -- added `zero_add, pow_one`
       -- removed `zero_pow, Ne.def, Nat.one_ne_zero, not_false_iff`
-      simpa only [Nat.zero_eq, fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
+      simpa only [fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
         mul_zero, norm_le_zero_iff] using ht 0 (δε (Metric.mem_ball_self δ_pos)))
   · refine Or.elim (Classical.em (y = 0))
       (fun hy => by simpa only [hy] using p.map_zero) fun hy => ?_
