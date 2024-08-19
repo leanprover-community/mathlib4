@@ -61,10 +61,11 @@ noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where
   map {X Y} := Fintype.equivFin _
 
 /-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
-noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α :=
-  Equivalence.mk (asTypeToObjAsType α) (objAsTypeToAsType α)
-    (NatIso.ofComponents Iso.refl)
-    (NatIso.ofComponents Iso.refl)
+noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where
+  functor := asTypeToObjAsType α
+  inverse := objAsTypeToAsType α
+  unitIso := NatIso.ofComponents Iso.refl
+  counitIso := NatIso.ofComponents Iso.refl
 
 noncomputable instance asTypeFinCategory : FinCategory (AsType α) where
   fintypeHom := fun _ _ => show Fintype (Fin _) from inferInstance
