@@ -97,7 +97,7 @@ variable {α : Type*} [Group α] [HasDistribNeg α]
 
 @[simp]
 theorem inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
-  rw [eq_comm, eq_inv_iff_mul_eq_one, neg_mul, mul_neg, neg_neg, mul_left_inv]
+  rw [eq_comm, eq_inv_iff_mul_eq_one, neg_mul, mul_neg, neg_neg, inv_mul_cancel]
 
 end Group
 

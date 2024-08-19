@@ -87,7 +87,7 @@ theorem eval_at_1 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 1 = if ν = n
   split_ifs with h
   · subst h; simp
   · obtain hνn | hnν := Ne.lt_or_lt h
-    · simp [zero_pow $ Nat.sub_ne_zero_of_lt hνn]
+    · simp [zero_pow <| Nat.sub_ne_zero_of_lt hνn]
     · simp [Nat.choose_eq_zero_of_lt hnν]
 
 theorem derivative_succ_aux (n ν : ℕ) :
