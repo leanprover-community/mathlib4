@@ -14,14 +14,14 @@ open System IO
 
 structure HashMemo where
   rootHash : UInt64
-  depsMap  : Lean.HashMap FilePath (Array FilePath) := {}
-  cache    : Lean.HashMap FilePath (Option UInt64) := {}
+  depsMap  : Std.HashMap FilePath (Array FilePath) := {}
+  cache    : Std.HashMap FilePath (Option UInt64) := {}
   hashMap  : HashMap := {}
   deriving Inhabited
 
 partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
   if hashMap.contains path then hashMap else
-  match (hashMemo.depsMap.find? path, hashMemo.hashMap.find? path) with
+  match (hashMemo.depsMap[path]?, hashMemo.hashMap[path]?) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert path hash)
   | _ => hashMap
 
@@ -85,7 +85,7 @@ Computes the hash of a file, which mixes:
 * The hashes of the imported files that are part of `Mathlib`
 -/
 partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
-  match (← get).cache.find? filePath with
+  match (← get).cache[filePath]? with
   | some hash? => return hash?
   | none =>
     let fixedPath := (← IO.getPackageDir filePath) / filePath

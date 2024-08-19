@@ -9,6 +9,9 @@ import Mathlib.Tactic.ArithMult.Init
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CC
 import Mathlib.Tactic.CC.Addition
@@ -18,6 +21,7 @@ import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
@@ -40,6 +44,7 @@ import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
@@ -64,7 +69,6 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.FunProp.AEMeasurable
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Tactic.FunProp.Core
@@ -116,13 +120,17 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
+import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.Lint
+import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.OldObtain
+import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Tactic.Linter.TextBased
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.MinImports
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Monotonicity
@@ -220,6 +228,8 @@ import Mathlib.Tactic.Widget.CommDiag
 import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.Widget.GCongr
+import Mathlib.Tactic.Widget.InteractiveUnfold
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
+import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.Zify

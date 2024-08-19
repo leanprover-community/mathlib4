@@ -7,8 +7,6 @@ import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
 import Mathlib.NumberTheory.ClassNumber.Finite
 import Mathlib.NumberTheory.FunctionField
 
-#align_import number_theory.class_number.function_field from "leanprover-community/mathlib"@"d0259b01c82eed3f50390a60404c63faf9e60b1f"
-
 /-!
 # Class numbers of function fields
 
@@ -47,12 +45,10 @@ end RingOfIntegers
 /-- The class number in a function field is the (finite) cardinality of the class group. -/
 noncomputable def classNumber : ℕ :=
   Fintype.card (ClassGroup (ringOfIntegers Fq F))
-#align function_field.class_number FunctionField.classNumber
 
 /-- The class number of a function field is `1` iff the ring of integers is a PID. -/
 theorem classNumber_eq_one_iff :
     classNumber Fq F = 1 ↔ IsPrincipalIdealRing (ringOfIntegers Fq F) :=
   card_classGroup_eq_one_iff
-#align function_field.class_number_eq_one_iff FunctionField.classNumber_eq_one_iff
 
 end FunctionField

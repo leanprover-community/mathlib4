@@ -5,8 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Order.Partition.Equipartition
 
-#align_import combinatorics.simple_graph.regularity.equitabilise from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
-
 /-!
 # Equitabilising a partition
 
@@ -137,7 +135,6 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
   · rw [hR₃, if_pos h]
   · rw [card_insert_of_not_mem, hR₃, if_neg h, Nat.sub_add_cancel (hab.resolve_left h)]
     intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
-#align finpartition.equitabilise_aux Finpartition.equitabilise_aux
 
 variable (h : a * m + b * (m + 1) = s.card)
 
@@ -148,25 +145,21 @@ parts of `Q` plus at most `m` extra elements, there are `b` parts of size `m + 1
 hence `a + b` parts in total. -/
 noncomputable def equitabilise : Finpartition s :=
   (P.equitabilise_aux h).choose
-#align finpartition.equitabilise Finpartition.equitabilise
 
 variable {h}
 
 theorem card_eq_of_mem_parts_equitabilise :
     t ∈ (P.equitabilise h).parts → t.card = m ∨ t.card = m + 1 :=
   (P.equitabilise_aux h).choose_spec.1 _
-#align finpartition.card_eq_of_mem_parts_equitabilise Finpartition.card_eq_of_mem_parts_equitabilise
 
 theorem equitabilise_isEquipartition : (P.equitabilise h).IsEquipartition :=
   Set.equitableOn_iff_exists_eq_eq_add_one.2 ⟨m, fun _ => card_eq_of_mem_parts_equitabilise⟩
-#align finpartition.equitabilise_is_equipartition Finpartition.equitabilise_isEquipartition
 
 variable (P h)
 
 theorem card_filter_equitabilise_big :
     ((P.equitabilise h).parts.filter fun u : Finset α => u.card = m + 1).card = b :=
   (P.equitabilise_aux h).choose_spec.2.2
-#align finpartition.card_filter_equitabilise_big Finpartition.card_filter_equitabilise_big
 
 theorem card_filter_equitabilise_small (hm : m ≠ 0) :
     ((P.equitabilise h).parts.filter fun u : Finset α => u.card = m).card = a := by
@@ -185,19 +178,16 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
   intro x ha hb i h
   apply succ_ne_self m _
   exact (hb i h).symm.trans (ha i h)
-#align finpartition.card_filter_equitabilise_small Finpartition.card_filter_equitabilise_small
 
 theorem card_parts_equitabilise (hm : m ≠ 0) : (P.equitabilise h).parts.card = a + b := by
   rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or,
     card_union_of_disjoint, P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
   -- Porting note (#11187): was `infer_instance`
   exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
-#align finpartition.card_parts_equitabilise Finpartition.card_parts_equitabilise
 
 theorem card_parts_equitabilise_subset_le :
     t ∈ P.parts → (t \ ((P.equitabilise h).parts.filter fun u => u ⊆ t).biUnion id).card ≤ m :=
   (Classical.choose_spec <| P.equitabilise_aux h).2.1 t
-#align finpartition.card_parts_equitabilise_subset_le Finpartition.card_parts_equitabilise_subset_le
 
 variable (s)
 
@@ -213,6 +203,5 @@ theorem exists_equipartition_card_eq (hn : n ≠ 0) (hs : n ≤ s.card) :
     ⟨(indiscrete (card_pos.1 <| hn.trans_le hs).ne_empty).equitabilise this,
       equitabilise_isEquipartition, ?_⟩
   rw [card_parts_equitabilise _ _ (Nat.div_pos hs hn).ne', tsub_add_cancel_of_le (mod_lt _ hn).le]
-#align finpartition.exists_equipartition_card_eq Finpartition.exists_equipartition_card_eq
 
 end Finpartition
