@@ -305,7 +305,8 @@ structure EmbeddedContextFreeGrammar (T : Type uT) where
         embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
 
 lemma EmbeddedContextFreeGrammar.projectNT_inverse_embedNT (G : EmbeddedContextFreeGrammar T) :
-    ∀ x : G.g.NT, (∃ n₀, G.projectNT x = some n₀) → (Option.map G.embedNT (G.projectNT x) = x) := by
+lemma EmbeddedContextFreeGrammar.projectNT_inverse_embedNT (G : EmbeddedContextFreeGrammar T) {x n₀} :
+    G.projectNT x = some n₀ → G.embedNT n₀ = x := by
   intro x ⟨n₀, hx⟩
   rw [hx, Option.map_some']
   apply congr_arg
