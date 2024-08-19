@@ -1187,6 +1187,10 @@ lemma toLex (h : x < y) : Prod.Lex (· < ·) (· < ·) x y := by
 lemma Lex.lt_of_le_of_lt (h₁ : x.1 ≤ y.1) (h₂ : x.2 < y.2) : Prod.Lex (· < ·) (· < ·) x y :=
   toLex (Prod.lt_of_le_of_lt h₁ h₂)
 
+lemma Lex.mk_lt_of_le_of_lt {a₁ a₂ : α} {b₁ b₂ : β} (h₁ : a₁ ≤ a₂) (h₂ : b₁ < b₂) :
+    Prod.Lex (· < ·) (· < ·) (a₁, b₁) (a₂, b₂) :=
+  Lex.lt_of_le_of_lt h₁ h₂
+
 end PartialOrder
 
 /-- The pointwise partial order on a product.
