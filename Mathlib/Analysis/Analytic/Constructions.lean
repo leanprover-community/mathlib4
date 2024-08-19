@@ -19,10 +19,8 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Classical
-open Topology NNReal Filter ENNReal
-
-open Set Filter Asymptotics
+open scoped Classical Topology
+open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
