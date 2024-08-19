@@ -24,7 +24,8 @@ variable {α β γ : Sort*} {f : α → β}
 
 /-- Evaluate a function at an argument. Useful if you want to talk about the partially applied
   `Function.eval x : (∀ x, β x) → β x`. -/
-@[reducible, simp, nolint simpVarHead] def eval {β : α → Sort*} (x : α) (f : ∀ x, β x) : β x := f x
+@[reducible, simp] def eval {β : α → Sort*} (x : α) (f : ∀ x, β x) : β x := f x
+attribute [nolint simpVarHead] eval.eq_1
 
 theorem eval_apply {β : α → Sort*} (x : α) (f : ∀ x, β x) : eval x f = f x :=
   rfl
