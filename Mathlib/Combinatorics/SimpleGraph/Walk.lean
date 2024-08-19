@@ -1050,7 +1050,7 @@ private theorem dropUntil_not_nil {u v w : V} {p : G.Walk u v} (hw : w ∈ p.sup
     · simp only [dropUntil, support_cons]
       split_ifs with hw₃
       · subst hw₃
-        simp
+        exact not_nil_cons
       · exact ih hw₂ ne
 
 lemma sum_takeUntil_dropUntil_length {u v w : V} {p : G.Walk u v} (hw : w ∈ p.support) :
