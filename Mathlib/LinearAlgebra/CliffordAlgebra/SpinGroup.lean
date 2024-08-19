@@ -203,12 +203,12 @@ theorem mul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : x
 /-- See `star_mem_iff` for both directions. -/
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pinGroup Q := by
   rw [mem_iff] at hx ⊢
-  refine' ⟨_, unitary.star_mem hx.2⟩
+  refine ⟨?_, unitary.star_mem hx.2⟩
   rcases hx with ⟨⟨y, hy₁, hy₂⟩, _hx₂, hx₃⟩
   simp only [Subgroup.coe_toSubmonoid, SetLike.mem_coe] at hy₁
   simp only [Units.coeHom_apply] at hy₂
   simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply, exists_prop]
-  refine' ⟨star y, _, by simp only [hy₂, Units.coe_star]⟩
+  refine ⟨star y, ?_, by simp only [hy₂, Units.coe_star]⟩
   rw [← hy₂] at hx₃
   have hy₃ : y * star y = 1 := by
     rw [← Units.eq_iff]
@@ -221,7 +221,7 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pi
 See `star_mem` for only one direction. -/
 @[simp]
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ pinGroup Q := by
-  refine' ⟨_, star_mem⟩
+  refine ⟨?_, star_mem⟩
   intro hx
   convert star_mem hx
   exact (star_star x).symm
@@ -250,7 +250,7 @@ theorem mul_star_self (x : pinGroup Q) : x * star x = 1 :=
 /-- `pinGroup Q` forms a group where the inverse is `star`. -/
 instance : Group (pinGroup Q) where
   inv := star
-  mul_left_inv := star_mul_self
+  inv_mul_cancel := star_mul_self
 
 instance : StarMul (pinGroup Q) where
   star_involutive _ := Subtype.ext <| star_involutive _
@@ -342,7 +342,7 @@ theorem mul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : 
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ spinGroup Q := by
   rw [mem_iff] at hx ⊢
   cases' hx with hx₁ hx₂
-  refine' ⟨pinGroup.star_mem hx₁, _⟩
+  refine ⟨pinGroup.star_mem hx₁, ?_⟩
   dsimp only [CliffordAlgebra.even] at hx₂ ⊢
   simp only [Submodule.mem_toSubalgebra] at hx₂ ⊢
   simp only [star_def, reverse_mem_evenOdd_iff, involute_mem_evenOdd_iff, hx₂]
@@ -352,7 +352,7 @@ See `star_mem` for only one direction.
 -/
 @[simp]
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ spinGroup Q ↔ x ∈ spinGroup Q := by
-  refine' ⟨_, star_mem⟩
+  refine ⟨?_, star_mem⟩
   intro hx
   convert star_mem hx
   exact (star_star x).symm
@@ -381,7 +381,7 @@ theorem mul_star_self (x : spinGroup Q) : x * star x = 1 :=
 /-- `spinGroup Q` forms a group where the inverse is `star`. -/
 instance : Group (spinGroup Q) where
   inv := star
-  mul_left_inv := star_mul_self
+  inv_mul_cancel := star_mul_self
 
 instance : StarMul (spinGroup Q) where
   star_involutive _ := Subtype.ext <| star_involutive _
