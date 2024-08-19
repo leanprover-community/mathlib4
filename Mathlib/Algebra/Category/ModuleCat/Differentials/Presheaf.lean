@@ -149,7 +149,8 @@ variable (d : ∀ (X : Dᵒᵖ), (M.obj X).Derivation (φ'.app X))
 /-- Given a morphism of presheaves of commutative rings `φ'`, this is the
 in derivation `M.Derivation' φ'` that is given by a compatible family of derivations
 with values in the modules `M.obj X` for all `X`. -/
-def mk : M.Derivation' φ' where
+def mk (d_map : ∀ ⦃X Y : Dᵒᵖ⦄ (f : X ⟶ Y) (x : R.obj X),
+      (d Y).d ((R.map f) x) = (M.map f) ((d X).d x)) : M.Derivation' φ' where
   d {X} := AddMonoidHom.mk' (d X).d (by simp)
 
 @[simp]
