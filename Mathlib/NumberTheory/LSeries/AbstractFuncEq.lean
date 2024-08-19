@@ -67,7 +67,7 @@ noncomputable section
 
 open Real Complex Filter Topology Asymptotics Set MeasureTheory
 
-variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-!
 ## Definitions and symmetry
@@ -103,7 +103,7 @@ section symmetry
 /-- Reformulated functional equation with `f` and `g` interchanged. -/
 lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
     P.g (1 / x) = (P.ε⁻¹ * ↑(x ^ P.k)) • P.f x := by
-  rw [(div_div_cancel' (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx) :), ← mul_smul]
+  rw [(div_div_cancel' (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
   convert (one_smul ℂ (P.g (1 / x))).symm using 2
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
@@ -144,7 +144,7 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
   have h_nv : P.ε⁻¹ * ↑(x ^ P.k) ≠ 0 := mul_ne_zero P.symm.hε h_nv2
   specialize hC' hx
   simp_rw [Function.comp_apply, ← one_div, P.h_feq' _ hx] at hC'
-  rw [← ((mul_inv_cancel h_nv).symm ▸ one_smul ℂ P.g₀ :), mul_smul _ _ P.g₀, ← smul_sub, norm_smul,
+  rw [← ((mul_inv_cancel₀ h_nv).symm ▸ one_smul ℂ P.g₀ :), mul_smul _ _ P.g₀, ← smul_sub, norm_smul,
     ← le_div_iff' (lt_of_le_of_ne (norm_nonneg _) (norm_ne_zero_iff.mpr h_nv).symm)] at hC'
   convert hC' using 1
   · congr 3
@@ -269,12 +269,12 @@ lemma hf_modif_int :
     refine ⟨s, hs, ?_⟩
     rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioi, IntegrableOn,
       Measure.restrict_restrict measurableSet_Ioi, ← IntegrableOn]
-    exact hs'.mono_set (Set.inter_subset_right _ _)
+    exact hs'.mono_set Set.inter_subset_right
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub this x hx
     refine ⟨s, hs, ?_⟩
     rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioo, IntegrableOn,
       Measure.restrict_restrict measurableSet_Ioo, ← IntegrableOn]
-    exact hs'.mono_set (Set.inter_subset_right _ _)
+    exact hs'.mono_set Set.inter_subset_right
 
 lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     P.f_modif (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_modif x := by
@@ -335,7 +335,7 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
 
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
 `0` and `∞`. -/
-lemma f_modif_aux2 {s : ℂ} (hs : P.k < re s) :
+lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
     mellin (fun x ↦ P.f_modif x - P.f x + P.f₀) s = (1 / s) • P.f₀ + (P.ε  / (P.k - s)) • P.g₀ := by
   have h_re1 : -1 < re (s - 1) := by simpa using P.hk.trans hs
   have h_re2 : -1 < re (s - P.k - 1) := by simpa using hs
@@ -406,7 +406,8 @@ theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠
     · simpa only [hs', smul_zero] using differentiableAt_const (0 : E)
 
 /-- Relation between `Λ s` and the Mellin transform of `f - f₀`, where the latter is defined. -/
-theorem hasMellin {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.Λ s) := by
+theorem hasMellin [CompleteSpace E]
+    {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.Λ s) := by
   have hc1 : MellinConvergent (P.f · - P.f₀) s :=
     let ⟨_, ht⟩ := exists_gt s.re
     mellinConvergent_of_isBigO_rpow (P.hf_int.sub (locallyIntegrableOn_const _)) (P.hf_top _) ht
@@ -429,7 +430,7 @@ theorem functional_equation (s : ℂ) :
   have := P.functional_equation₀ s
   rw [P.Λ₀_eq, P.symm_Λ₀_eq, sub_sub_cancel] at this
   rwa [smul_add, smul_add, ← mul_smul, mul_one_div, ← mul_smul, ← mul_div_assoc,
-    mul_inv_cancel P.hε, add_assoc, add_comm (_ • _), add_assoc, add_left_inj] at this
+    mul_inv_cancel₀ P.hε, add_assoc, add_comm (_ • _), add_assoc, add_left_inj] at this
 
 /-- The residue of `Λ` at `s = k` is equal to `ε • g₀`. -/
 theorem Λ_residue_k :
@@ -461,3 +462,5 @@ theorem Λ_residue_zero :
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds
+
+end WeakFEPair

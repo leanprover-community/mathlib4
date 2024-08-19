@@ -35,7 +35,7 @@ variable {R : Type u} [CommRing R] [Invertible (2 : R)]
 
 namespace QuadraticModuleCat
 
-open QuadraticForm
+open QuadraticMap QuadraticForm
 
 namespace instMonoidalCategory
 

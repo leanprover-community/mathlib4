@@ -1,5 +1,6 @@
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Nat.Defs
 
 set_option pp.unicode.fun true
 set_option autoImplicit true
@@ -201,3 +202,5 @@ notation3 "δNat" => (default : Nat)
 #guard_msgs in #check (default : Nat)
 /-- info: δNat : ℕ -/
 #guard_msgs in #check @default Nat (Inhabited.mk 5)
+
+end Test

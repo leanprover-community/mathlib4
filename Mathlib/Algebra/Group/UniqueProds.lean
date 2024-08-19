@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Data.DFinsupp.Basic
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.LinearAlgebra.Basis.VectorSpace
-
-#align_import algebra.group.unique_prods from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Unique products and related notions
@@ -56,8 +54,6 @@ let `a0 b0 : G` be two elements.  `UniqueAdd A B a0 b0` asserts `a0 + b0` can be
 most one way as a sum of an element from `A` and an element from `B`."]
 def UniqueMul {G} [Mul G] (A B : Finset G) (a0 b0 : G) : Prop :=
   ∀ ⦃a b⦄, a ∈ A → b ∈ B → a * b = a0 * b0 → a = a0 ∧ b = b0
-#align unique_mul UniqueMul
-#align unique_add UniqueAdd
 
 namespace UniqueMul
 
@@ -79,7 +75,6 @@ theorem mt (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
   contrapose! k
   exact h ha hb k
-#align unique_mul.mt UniqueMul.mt
 
 @[to_additive]
 theorem subsingleton (h : UniqueMul A B a0 b0) :
@@ -88,8 +83,6 @@ theorem subsingleton (h : UniqueMul A B a0 b0) :
     Subtype.ext <|
       Prod.ext ((h ha hb ab).1.trans (h ha' hb' ab').1.symm) <|
         (h ha hb ab).2.trans (h ha' hb' ab').2.symm⟩
-#align unique_mul.subsingleton UniqueMul.subsingleton
-#align unique_add.subsingleton UniqueAdd.subsingleton
 
 @[to_additive]
 theorem set_subsingleton (h : UniqueMul A B a0 b0) :
@@ -99,8 +92,6 @@ theorem set_subsingleton (h : UniqueMul A B a0 b0) :
   rcases h hx.1 hx.2.1 hx.2.2 with ⟨rfl, rfl⟩
   rcases h hy.1 hy.2.1 hy.2.2 with ⟨rfl, rfl⟩
   rfl
-#align unique_mul.set_subsingleton UniqueMul.set_subsingleton
-#align unique_add.set_subsingleton UniqueAdd.set_subsingleton
 
 -- Porting note: mathport warning: expanding binder collection
 --  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
@@ -113,8 +104,6 @@ theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
         rintro ⟨x1, x2⟩ _ J x y hx hy l
         rcases Prod.mk.inj_iff.mp (J (a0, b0) ⟨Finset.mk_mem_product aA bB, rfl⟩) with ⟨rfl, rfl⟩
         exact Prod.mk.inj_iff.mp (J (x, y) ⟨Finset.mk_mem_product hx hy, l⟩))⟩
-#align unique_mul.iff_exists_unique UniqueMul.iff_existsUniqueₓ
-#align unique_add.iff_exists_unique UniqueAdd.iff_existsUniqueₓ
 
 open Finset in
 @[to_additive]
@@ -139,20 +128,15 @@ theorem exists_iff_exists_existsUnique :
     rcases h' with ⟨⟨a, b⟩, ⟨hab, rfl, -⟩, -⟩
     cases' Finset.mem_product.mp hab with ha hb
     exact ⟨a, b, ha, hb, (iff_existsUnique ha hb).mpr h⟩⟩
-#align unique_mul.exists_iff_exists_exists_unique UniqueMul.exists_iff_exists_existsUniqueₓ
-#align unique_add.exists_iff_exists_exists_unique UniqueAdd.exists_iff_exists_existsUniqueₓ
 
 /-- `UniqueMul` is preserved by inverse images under injective, multiplicative maps. -/
 @[to_additive "`UniqueAdd` is preserved by inverse images under injective, additive maps."]
 theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G) {A B : Finset H}
     (u : UniqueMul A B (f a0) (f b0)) :
-    UniqueMul (A.preimage f (Set.injOn_of_injective hf _))
-      (B.preimage f (Set.injOn_of_injective hf _)) a0 b0 := by
+    UniqueMul (A.preimage f hf.injOn) (B.preimage f hf.injOn) a0 b0 := by
   intro a b ha hb ab
   simp only [← hf.eq_iff, map_mul] at ab ⊢
   exact u (Finset.mem_preimage.mp ha) (Finset.mem_preimage.mp hb) ab
-#align unique_mul.mul_hom_preimage UniqueMul.mulHom_preimage
-#align unique_add.add_hom_preimage UniqueAdd.addHom_preimage
 
 @[to_additive] theorem of_mulHom_image [DecidableEq H] (f : G →ₙ* H)
     (hf : ∀ ⦃a b c d : G⦄, a * b = c * d → f a = f c ∧ f b = f d → a = c ∧ b = d)
@@ -174,8 +158,6 @@ theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Inject
     rintro ⟨a, aA, rfl⟩ ⟨b, bB, rfl⟩ ab
     simp_rw [← map_mul, hf.eq_iff] at ab ⊢
     exact h aA bB ab⟩
-#align unique_mul.mul_hom_image_iff UniqueMul.mulHom_image_iff
-#align unique_add.add_hom_image_iff UniqueAdd.addHom_image_iff
 
 /-- `UniqueMul` is preserved under embeddings that are multiplicative.
 
@@ -187,8 +169,6 @@ See `UniqueAdd.addHom_image_iff` for a version with swapped bundling."]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
   classical simp_rw [← mulHom_image_iff ⟨f, mul⟩ f.2, Finset.map_eq_image]; rfl
-#align unique_mul.mul_hom_map_iff UniqueMul.mulHom_map_iff
-#align unique_add.add_hom_map_iff UniqueAdd.addHom_map_iff
 
 section Opposites
 open Finset MulOpposite
@@ -234,7 +214,6 @@ class UniqueSums (G) [Add G] : Prop where
 `UniqueAdd A B a0 b0` -/
   uniqueAdd_of_nonempty :
     ∀ {A B : Finset G}, A.Nonempty → B.Nonempty → ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueAdd A B a0 b0
-#align unique_sums UniqueSums
 
 /-- Let `G` be a Type with multiplication.  `UniqueProds G` asserts that any two non-empty
 finite subsets of `G` have the `UniqueMul` property, with respect to some element of their
@@ -244,7 +223,6 @@ class UniqueProds (G) [Mul G] : Prop where
 `UniqueMul A B a0 b0` -/
   uniqueMul_of_nonempty :
     ∀ {A B : Finset G}, A.Nonempty → B.Nonempty → ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueMul A B a0 b0
-#align unique_prods UniqueProds
 
 attribute [to_additive] UniqueProds
 
@@ -303,9 +281,6 @@ instance {M} [Mul M] [TwoUniqueProds M] : TwoUniqueSums (Additive M) where
   uniqueAdd_of_one_lt_card := TwoUniqueProds.uniqueMul_of_one_lt_card (G := M)
 
 end Additive
-
-#noalign covariants.to_unique_prods
-#noalign covariants.to_unique_sums
 
 universe u v
 variable (G : Type u) (H : Type v) [Mul G] [Mul H]
@@ -401,8 +376,8 @@ open MulOpposite in
     let C := A.map ⟨_, mul_right_injective a⁻¹⟩ -- C = a⁻¹A
     let D := B.map ⟨_, mul_left_injective b⁻¹⟩  -- D = Bb⁻¹
     have hcard : 1 < C.card ∨ 1 < D.card := by simp_rw [C, D, card_map]; exact hc.2.2
-    have hC : 1 ∈ C := mem_map.mpr ⟨a, ha, inv_mul_self a⟩
-    have hD : 1 ∈ D := mem_map.mpr ⟨b, hb, mul_inv_self b⟩
+    have hC : 1 ∈ C := mem_map.mpr ⟨a, ha, inv_mul_cancel a⟩
+    have hD : 1 ∈ D := mem_map.mpr ⟨b, hb, mul_inv_cancel b⟩
     suffices ∃ c ∈ C, ∃ d ∈ D, (c ≠ 1 ∨ d ≠ 1) ∧ UniqueMul C D c d by
       simp_rw [mem_product]
       obtain ⟨c, hc, d, hd, hne, hu'⟩ := this
@@ -458,8 +433,8 @@ open UniqueMul in
     obtain ⟨ai, hA, bi, hB, hi⟩ := uniqueMul_of_nonempty (hA.image (· i)) (hB.image (· i))
     rw [mem_image, ← filter_nonempty_iff] at hA hB
     let A' := A.filter (· i = ai); let B' := B.filter (· i = bi)
-    obtain ⟨a0, ha0, b0, hb0, hu⟩ : ∃ a0 ∈ A', ∃ b0 ∈ B', UniqueMul A' B' a0 b0
-    · rcases hc with hc | hc; · exact ihA A' (hc.2 ai) hA hB
+    obtain ⟨a0, ha0, b0, hb0, hu⟩ : ∃ a0 ∈ A', ∃ b0 ∈ B', UniqueMul A' B' a0 b0 := by
+      rcases hc with hc | hc; · exact ihA A' (hc.2 ai) hA hB
       by_cases hA' : A' = A
       · rw [hA']
         exact ihB B' (hc.2 bi) hB
@@ -634,15 +609,22 @@ instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
 
 end TwoUniqueProds
 
--- deprecated 2024-02-04
-@[deprecated] alias UniqueProds.mulHom_image_of_injective := UniqueProds.of_injective_mulHom
-@[deprecated] alias UniqueSums.addHom_image_of_injective := UniqueSums.of_injective_addHom
-@[deprecated] alias UniqueProds.mulHom_image_iff := MulEquiv.uniqueProds_iff
-@[deprecated] alias UniqueSums.addHom_image_iff := AddEquiv.uniqueSums_iff
-@[deprecated] alias TwoUniqueProds.mulHom_image_of_injective := TwoUniqueProds.of_injective_mulHom
-@[deprecated] alias TwoUniqueSums.addHom_image_of_injective := TwoUniqueSums.of_injective_addHom
-@[deprecated] alias TwoUniqueProds.mulHom_image_iff := MulEquiv.twoUniqueProds_iff
-@[deprecated] alias TwoUniqueSums.addHom_image_iff := AddEquiv.twoUniqueSums_iff
+@[deprecated (since := "2024-02-04")]
+alias UniqueProds.mulHom_image_of_injective := UniqueProds.of_injective_mulHom
+@[deprecated (since := "2024-02-04")]
+alias UniqueSums.addHom_image_of_injective := UniqueSums.of_injective_addHom
+@[deprecated (since := "2024-02-04")]
+alias UniqueProds.mulHom_image_iff := MulEquiv.uniqueProds_iff
+@[deprecated (since := "2024-02-04")]
+alias UniqueSums.addHom_image_iff := AddEquiv.uniqueSums_iff
+@[deprecated (since := "2024-02-04")]
+alias TwoUniqueProds.mulHom_image_of_injective := TwoUniqueProds.of_injective_mulHom
+@[deprecated (since := "2024-02-04")]
+alias TwoUniqueSums.addHom_image_of_injective := TwoUniqueSums.of_injective_addHom
+@[deprecated (since := "2024-02-04")]
+alias TwoUniqueProds.mulHom_image_iff := MulEquiv.twoUniqueProds_iff
+@[deprecated (since := "2024-02-04")]
+alias TwoUniqueSums.addHom_image_iff := AddEquiv.twoUniqueSums_iff
 
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
     TwoUniqueSums (Π₀ i, G i) :=
