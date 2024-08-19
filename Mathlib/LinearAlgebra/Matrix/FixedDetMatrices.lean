@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2024 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck
+-/
+
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 variable (n : Type*) [DecidableEq n] [Fintype n] (R : Type*) [CommRing R]
@@ -19,13 +25,14 @@ lemma ext (m : R) {A B : FixedDetMatrices n R m} (h : ∀ i j , A.1 i j = B.1 i 
 
 open ModularGroup Matrix SpecialLinearGroup MatrixGroups
 
-local notation:1024 "↑ₘ" A:1024 => ((A : SpecialLinearGroup (Fin 2) ℤ) : Matrix (Fin 2) (Fin 2)  ℤ)
+local notation:1024 "↑ₘ" A:1024 => ((A : SpecialLinearGroup (Fin 2) ℤ) : Matrix (Fin 2) (Fin 2) ℤ)
 
 local notation:1024 "Δ" m : 1024 => (FixedDetMatrices (Fin 2) ℤ m)
 
 lemma S_pow_two : ↑ₘ(S ^ 2) = -1 := by
-  simp_rw [S, pow_two]
-  simp
+  simp only [S, Int.reduceNeg, pow_two, coe_mul, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
+    vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
+    empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
   exact Eq.symm (eta_fin_two (-1))
 
 lemma S_mul_self : (S.1 * S.1) = -1 := by
@@ -34,38 +41,38 @@ lemma S_mul_self : (S.1 * S.1) = -1 := by
 
 /--Set of representatives for the orbits under `S` and `T`. -/
 def reps (m : ℤ) : Set (Δ m) :=
-  { A : Δ m | (A.1 1 0) = 0 ∧ 0 < A.1 0 0 ∧ 0 ≤ A.1 0 1 ∧  |(A.1 0 1)| < |(A.1 1 1)|}
+  { A : Δ m | (A.1 1 0) = 0 ∧ 0 < A.1 0 0 ∧ 0 ≤ A.1 0 1 ∧ |(A.1 0 1)| < |(A.1 1 1)|}
 
 variable (m : ℤ) (g : SpecialLinearGroup n R) (A : Δ m) (R : Type*) [CommRing R]
 
-instance (m : outParam R)  : HSMul (SpecialLinearGroup n R) (FixedDetMatrices n R m)
+instance (m : outParam R) : HSMul (SpecialLinearGroup n R) (FixedDetMatrices n R m)
   ((FixedDetMatrices n R m)) :=
 { hSMul := fun g A => ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩}
 
 lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrices n R m)) : g • A =
-  ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩ := rfl
+    ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩ := rfl
 
 instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrices n R m) where
   smul := fun g A => g • A
   one_smul := by intro b; rw [smul_def]; simp
   mul_smul := by
       intro x y b
-      simp_rw [smul_def, ←mul_assoc]
+      simp_rw [smul_def, ← mul_assoc]
       rfl
 
 lemma smul_coe (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrices n R m)) :
-  (g • A).1 = g * A.1 := by
+    (g • A).1 = g * A.1 := by
   rw [smul_def]
 
-lemma aux1 (m : ℤ)  (A : Δ m) : A.1 0 0 -( A.1 1 0)*(A.1 0 0/ A.1 1 0)= A.1 0 0 % A.1 1 0:= by
+lemma aux1 (m : ℤ) (A : Δ m) : A.1 0 0 -( A.1 1 0)*(A.1 0 0/ A.1 1 0)= A.1 0 0 % A.1 1 0 := by
   simp only [Int.cast_id, Fin.isValue]
   exact Eq.symm (Int.emod_def (A.1 0 0) (A.1 1 0))
 
 /--Reduction step for matrices in `Δ m` which moves the matrices towards `reps`.-/
-def reduce_step (A : Δ m) : Δ m :=  S • ( (T^(-((A.1 0 0)/(A.1 1 0)))) • A)
+def reduce_step (A : Δ m) : Δ m := S • ( (T^(-((A.1 0 0)/(A.1 1 0)))) • A)
 
 lemma reduce_aux (m : ℤ) (A : Δ m) (h : Int.natAbs (A.1 1 0) ≠ 0) :
-  Int.natAbs ((reduce_step m A).1 1 0) < Int.natAbs (A.1 1 0) := by
+    Int.natAbs ((reduce_step m A).1 1 0) < Int.natAbs (A.1 1 0) := by
   simp_rw [reduce_step, smul_coe, coe_T_zpow, S]
   simp only [Int.reduceNeg, Fin.isValue, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul,
     Equiv.symm_apply_apply, vecMul_cons, vecHead, cons_val_zero, zero_smul, vecTail,
@@ -80,9 +87,8 @@ lemma reduce_aux (m : ℤ) (A : Δ m) (h : Int.natAbs (A.1 1 0) ≠ 0) :
 
 /--Reduction lemma for integral FixedDetMatrices. -/
 @[elab_as_elim]
-def reduce_rec {C : Δ m → Sort*}
-(h0 : ∀ A : Δ m, Int.natAbs (A.1 1 0) = 0 → C A)
-(h1 : ∀ A : Δ m, Int.natAbs ((A.1 1 0)) ≠ 0 → C (reduce_step m A) → C A): ∀ A, C A := fun A => by
+def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, Int.natAbs (A.1 1 0) = 0 → C A)
+  (h1 : ∀ A : Δ m, Int.natAbs ((A.1 1 0)) ≠ 0 → C (reduce_step m A) → C A) : ∀ A, C A := fun A => by
     by_cases h : Int.natAbs (A.1 1 0) = 0
     · apply h0 _ h
     · exact h1 A h (reduce_rec h0 h1 (reduce_step m A))
@@ -109,21 +115,21 @@ def reduce : Δ m → Δ m := fun A => by
       exact h
 
 lemma reduce_eqn1 (A : Δ m) (hc : Int.natAbs (A.1 1 0) = 0) (ha : 0 < A.1 0 0) :
-  reduce m A = (T^(-(A.1 0 1/A.1 1 1))) • A := by
+    reduce m A = (T^(-(A.1 0 1/A.1 1 1))) • A := by
   rw [reduce]
   simp only [Int.cast_id, Fin.isValue, Int.natAbs_eq_zero, zpow_neg, Int.ediv_neg, neg_neg,
     dite_eq_ite] at *
   simp_rw [if_pos hc, if_pos ha]
 
 lemma reduce_eqn2 (A : Δ m) (hc : Int.natAbs (A.1 1 0) = 0) (ha : ¬ 0 < A.1 0 0) :
-  reduce m A = (T^(-(-A.1 0 1/ -A.1 1 1))) • ( S • ( S • A)) := by
+    reduce m A = (T^(-(-A.1 0 1/ -A.1 1 1))) • ( S • ( S • A)) := by
   rw [reduce]
   simp only [Int.cast_id, Fin.isValue, Int.natAbs_eq_zero, zpow_neg, Int.ediv_neg, neg_neg,
     dite_eq_ite] at *
   simp_rw [if_pos hc, if_neg ha]
 
 lemma reduce_eqn3 (A : Δ m) (hc : ¬ Int.natAbs (A.1 1 0) = 0) :
-  reduce m A = reduce m (reduce_step m A) := by
+    reduce m A = reduce m (reduce_step m A) := by
   rw [reduce]
   simp only [Int.cast_id, Fin.isValue, Int.natAbs_eq_zero, zpow_neg, Int.ediv_neg, neg_neg,
     dite_eq_ite] at *
@@ -141,13 +147,13 @@ lemma A_a_ne_zero (A : Δ m) (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 0 0 ≠ 0 :
   simp only [Int.cast_id, Fin.isValue, mul_zero, sub_zero] at this
   aesop
 
-lemma A_b_eq_zero (A : Δ m) (ha : A.1 1 0 = 0)  : A.1 0 0 * A.1 1 1 = m := by
+lemma A_b_eq_zero (A : Δ m) (ha : A.1 1 0 = 0) : A.1 0 0 * A.1 1 1 = m := by
   have := A.2
   rw [@det_fin_two, ha] at this
   simp only [Int.cast_id, Fin.isValue, mul_zero, sub_zero] at this
   aesop
 
-lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0)  : ∀ A : Δ m, reduce m A ∈ reps m := by
+lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0) : ∀ A : Δ m, reduce m A ∈ reps m := by
   apply reduce_rec
   · intro A h
     by_cases h1 : 0 < A.1 0 0
@@ -201,8 +207,8 @@ lemma T_S_rel (A : Δ m) : (S • S • S • T • S • T • S • A) = T⁻�
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
   (h0 : ∀ A : Δ m, A.1 1 0 = 0 → A.1 0 0 * A.1 1 1 = m → 0 < A.1 0 0 → 0 ≤ A.1 0 1 →
-    Int.natAbs (A.1 0 1) < Int.natAbs (A.1 1 1) → C A)
-  (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C ( T • B)) : C A := by
+  Int.natAbs (A.1 0 1) < Int.natAbs (A.1 1 1) → C A) (hS : ∀ B, C B → C (S • B))
+  (hT : ∀ B, C B → C (T • B)) : C A := by
   have hS' : ∀ B, C (S • B) → C B := by
     intro B ih
     rw [← (S_smul_four m B)]
@@ -239,7 +245,7 @@ theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
     · zify
       apply H4
     · apply A_b_eq_zero _ _ H1
-  suffices  ∀ A : Δ m, C (reduce m A) → C A from this _ h_reduce
+  suffices ∀ A : Δ m, C (reduce m A) → C A from this _ h_reduce
   apply reduce_rec
   · intro A h
     by_cases h1 : 0 < A.1 0 0
@@ -264,11 +270,11 @@ lemma T_mem_S_T_subgroup : T ∈ S_T_subgroup := by
   apply Subgroup.subset_closure
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_true]
 
-lemma S_smul_mem_S_T_subgroup (B : Δ 1) (hB : B ∈  S_T_subgroup) : (S • B) ∈ S_T_subgroup := by
+lemma S_smul_mem_S_T_subgroup (B : Δ 1) (hB : B ∈ S_T_subgroup) : (S • B) ∈ S_T_subgroup := by
   rw [smul_eq_mul]
   apply Subgroup.mul_mem _ (S_mem_S_T_subgroup) (hB)
 
-lemma T_smul_mem_S_T_subgroup (B : Δ 1) (hB : B ∈  S_T_subgroup) : (T • B) ∈ S_T_subgroup := by
+lemma T_smul_mem_S_T_subgroup (B : Δ 1) (hB : B ∈ S_T_subgroup) : (T • B) ∈ S_T_subgroup := by
   rw [smul_eq_mul]
   apply Subgroup.mul_mem _ (T_mem_S_T_subgroup) (hB)
 
@@ -298,7 +304,7 @@ lemma det_one_mem_G : ∀ A : Δ 1, A ∈ S_T_subgroup := by
   next B hb => apply (S_smul_mem_S_T_subgroup B) hb
   next B hb => apply (T_smul_mem_S_T_subgroup B) hb
 
-lemma SL2Z_generators : S_T_subgroup = (⊤ : Subgroup (SL(2,ℤ)))  := by
+lemma SL2Z_generators : S_T_subgroup = (⊤ : Subgroup (SL(2,ℤ))) := by
     refine (Subgroup.eq_top_iff' S_T_subgroup).mpr (fun _ => det_one_mem_G _)
 
 end FixedDetMatrices
