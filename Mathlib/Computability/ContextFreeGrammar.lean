@@ -347,7 +347,7 @@ def EmbeddedContextFreeGrammar.GoodString {G : EmbeddedContextFreeGrammar T}
     (s : List (Symbol T G.g.NT)) : Prop :=
   ∀ ⦃a⦄, a ∈ s → Good a
 
-lemma EmbeddedContextFreeGrammar.singletonGoodString {G : EmbeddedContextFreeGrammar T}
+lemma EmbeddedContextFreeGrammar.goodString_singleton {G : EmbeddedContextFreeGrammar T}
     {s : Symbol T G.g.NT} (hs : G.Good s) : G.GoodString [s] := by
   simpa [GoodString] using hs
 
