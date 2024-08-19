@@ -791,7 +791,7 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 
 lemma firstDart_mem_darts {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) :
     p.firstDart hp ∈ p.darts := by
-  induction p <;> simp [Walk.firstDart, Walk.sndOfNotNil, Walk.notNilRec] at hp |-
+  induction p <;> simp [Walk.firstDart, Walk.sndOfNotNil, Walk.notNilRec] at hp ⊢
 
 lemma darts_getElem_zero {u v} {p : G.Walk u v} (hi : 0 < p.length) :
     (p.darts[0]'(by simp; omega)).fst = u := by
