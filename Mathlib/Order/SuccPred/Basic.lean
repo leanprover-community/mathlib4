@@ -979,13 +979,13 @@ namespace WithTop
 
 section Succ
 
-variable [DecidableEq α] [PartialOrder α] [OrderTop α] [SuccOrder α]
+variable [DecidableEq α] [PartialOrder α] [SuccOrder α]
 
 instance : SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
-    | Option.some a => ite (a = ⊤) ⊤ (some (succ a))
+    | Option.some a => ite (succ a = a) ⊤ (some (succ a))
   le_succ a := by
     cases' a with a a
     · exact le_top
@@ -999,7 +999,7 @@ instance : SuccOrder (WithTop α) where
     dsimp only at ha
     split_ifs at ha with ha'
     · exact (not_top_le_coe _ ha).elim
-    · rw [coe_le_coe, succ_le_iff_eq_top] at ha
+    · rw [coe_le_coe, succ_le_iff_isMax, ← succ_eq_iff_isMax] at ha
       exact (ha' ha).elim
   succ_le_of_lt {a b} h := by
     cases b
@@ -1009,16 +1009,16 @@ instance : SuccOrder (WithTop α) where
     rw [coe_lt_coe] at h
     change ite _ _ _ ≤ _
     split_ifs with ha
-    · rw [ha] at h
-      exact (not_top_lt h).elim
+    · rw [succ_eq_iff_isMax] at ha
+      exact (ha.not_lt h).elim
     · exact coe_le_coe.2 (succ_le_of_lt h)
 
 @[simp]
-theorem succ_coe_top : succ ↑(⊤ : α) = (⊤ : WithTop α) :=
-  dif_pos rfl
+theorem succ_coe_of_isMax {a : α} (h : IsMax a) : succ ↑a = (⊤ : WithTop α) :=
+  dif_pos (succ_eq_iff_isMax.2 h)
 
-theorem succ_coe_of_ne_top {a : α} (h : a ≠ ⊤) : succ (↑a : WithTop α) = ↑(succ a) :=
-  dif_neg h
+theorem succ_coe_of_not_isMax {a : α} (h : ¬ IsMax a) : succ (↑a : WithTop α) = ↑(succ a) :=
+  dif_neg (succ_eq_iff_isMax.not.2 h)
 
 end Succ
 
@@ -1062,38 +1062,6 @@ theorem pred_untop :
   | (a : α), _ => rfl
 
 end Pred
-
-/-! #### Adding a `⊤` to a `NoMaxOrder` -/
-
-section Succ
-
-variable [Preorder α] [NoMaxOrder α] [SuccOrder α]
-
-instance succOrderOfNoMaxOrder : SuccOrder (WithTop α) where
-  succ a :=
-    match a with
-    | ⊤ => ⊤
-    | Option.some a => some (succ a)
-  le_succ a := by
-    cases' a with a a
-    · exact le_top
-    · exact coe_le_coe.2 (le_succ a)
-  max_of_succ_le {a} ha := by
-    cases a
-    · exact isMax_top
-    · exact (not_isMax _ <| max_of_succ_le <| coe_le_coe.1 ha).elim
-  succ_le_of_lt {a b} h := by
-    cases a
-    · exact (not_top_lt h).elim
-    cases b
-    · exact le_top
-    · exact coe_le_coe.2 (succ_le_of_lt <| coe_lt_coe.1 h)
-
-@[simp]
-theorem succ_coe (a : α) : succ (↑a : WithTop α) = ↑(succ a) :=
-  rfl
-
-end Succ
 
 section Pred
 
@@ -1159,13 +1127,13 @@ end Succ
 
 section Pred
 
-variable [DecidableEq α] [PartialOrder α] [OrderBot α] [PredOrder α]
+variable [DecidableEq α] [PartialOrder α] [PredOrder α]
 
 instance : PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
-    | Option.some a => ite (a = ⊥) ⊥ (some (pred a))
+    | Option.some a => ite (pred a = a) ⊥ (some (pred a))
   pred_le a := by
     cases' a with a a
     · exact bot_le
@@ -1179,7 +1147,7 @@ instance : PredOrder (WithBot α) where
     dsimp only at ha
     split_ifs at ha with ha'
     · exact (not_coe_le_bot _ ha).elim
-    · rw [coe_le_coe, le_pred_iff_eq_bot] at ha
+    · rw [coe_le_coe, le_pred_iff_isMin, ← pred_eq_iff_isMin] at ha
       exact (ha' ha).elim
   le_pred_of_lt {a b} h := by
     cases a
@@ -1189,16 +1157,16 @@ instance : PredOrder (WithBot α) where
     rw [coe_lt_coe] at h
     change _ ≤ ite _ _ _
     split_ifs with hb
-    · rw [hb] at h
-      exact (not_lt_bot h).elim
+    · rw [pred_eq_iff_isMin] at hb
+      exact (hb.not_lt h).elim
     · exact coe_le_coe.2 (le_pred_of_lt h)
 
 @[simp]
-theorem pred_coe_bot : pred ↑(⊥ : α) = (⊥ : WithBot α) :=
-  dif_pos rfl
+theorem pred_coe_of_isMin {a : α} (h : IsMin a) : pred ↑a = (⊥ : WithBot α) :=
+  dif_pos (pred_eq_iff_isMin.2 h)
 
-theorem pred_coe_of_ne_bot {a : α} (h : a ≠ ⊥) : pred (↑a : WithBot α) = ↑(pred a) :=
-  dif_neg h
+theorem pred_coe_of_not_isMin {a : α} (h : ¬ IsMin a) : pred (↑a : WithBot α) = ↑(pred a) :=
+  dif_neg (pred_eq_iff_isMin.not.2 h)
 
 end Pred
 
@@ -1218,36 +1186,6 @@ instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
       exact (succ_le_of_lt (bot_lt_coe _)).not_lt hc⟩
 
 end Succ
-
-section Pred
-
-variable [Preorder α] [NoMinOrder α] [PredOrder α]
-
-instance predOrderOfNoMinOrder : PredOrder (WithBot α) where
-  pred a :=
-    match a with
-    | ⊥ => ⊥
-    | Option.some a => some (pred a)
-  pred_le a := by
-    cases' a with a a
-    · exact bot_le
-    · exact coe_le_coe.2 (pred_le a)
-  min_of_le_pred {a} ha := by
-    cases a
-    · exact isMin_bot
-    · exact (not_isMin _ <| min_of_le_pred <| coe_le_coe.1 ha).elim
-  le_pred_of_lt {a b} h := by
-    cases b
-    · exact (not_lt_bot h).elim
-    cases a
-    · exact bot_le
-    · exact coe_le_coe.2 (le_pred_of_lt <| coe_lt_coe.1 h)
-
-@[simp]
-theorem pred_coe (a : α) : pred (↑a : WithBot α) = ↑(pred a) :=
-  rfl
-
-end Pred
 
 end WithBot
 
