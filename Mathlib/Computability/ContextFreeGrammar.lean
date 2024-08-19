@@ -278,7 +278,7 @@ def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ 
     ContextFreeRule T N :=
   ⟨f r.input, r.output.map (Symbol.map f)⟩
 
-/-- A pair of `ContextFreeGrammar`s with maps between their nonterminal types that work,
+/-- A pair of `ContextFreeGrammar`s with maps between their types of nonterminal symbols that work,
 roughly speaking, in a good way. -/
 structure EmbeddedContextFreeGrammar (T : Type uT) where
   /-- The smaller grammar. -/
