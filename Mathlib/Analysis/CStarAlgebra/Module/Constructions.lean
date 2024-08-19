@@ -10,8 +10,9 @@ import Mathlib.Topology.MetricSpace.Bilipschitz
 /-! # Constructions of Hilbert C⋆-modules
 
 In this file we define the following constructions of `CStarModule`s where `A` denotes a C⋆-algebra.
-Note that for each type `E`, the instance is declared on the type synonym `WithCStarModule E` (with
-the notation `C⋆ᵐᵒᵈ E`), instead of on `E` itself.
+Note that for each type `E` listed below, the instance is declared on the type synonym
+`WithCStarModule E` (with the notation `C⋆ᵐᵒᵈ E`), instead of on `E` itself; we explain the
+reasoning behind each decision below.
 
 1. `A` as a `CStarModule` over itself.
 2. `E × F` as a `CStarModule` over `A`, when `E` and `F` are themselves `CStarModule`s over `A`.
@@ -19,8 +20,34 @@ the notation `C⋆ᵐᵒᵈ E`), instead of on `E` itself.
   is a `Fintype`.
 4. `E` as a `CStarModule` over `ℂ`, when `E` is an `InnerProductSpace` over `ℂ`.
 
+For `E × F` and `Π i : ι, E i`, we are required to declare the instance on a type synonym rather
+than on the product or pi-type itself because the existing norm on these types does not agree with
+the one induced by the C⋆-module structure. Moreover, the norm induced by the C⋆-module structure
+doesn't agree with any other natural norm on these types (e.g., `WithLp 2 (E × F)` unless `A := ℂ`),
+so we need a new synonym.
+
+As for `A` as a C⋆-module over itself, or `E` as a C⋆-module over `ℂ` when `e` is an inner product
+space, we note while it is *possible* to declare the instances on `A` and `E` themselves without
+causing instance diamonds, we explicitly choose not to do so. To understand why first note that
+since `ℂ` is both a C⋆-algebra and an inner product space, whatever choice we make for one of these,
+we should make the same choice for the other, for otherwise we would be left with two different ways
+to view `ℂ` as a C⋆-module over itself. Moreover, note that if `F` is a C⋆-module over `A`, it will
+often be the case that we'll be considering expressions involving terms of `A` and terms of `F`
+simultaneously. If we were to declare the instance on `A` itself, rather than on `C⋆ᵐᵒᵈ A`, then
+any `rw` or `simp` lemmas about C⋆-modules would apply to both `A` and `F`, and we would therefore
+need all of these lemmas to take explicit arguments, and use them regularly, to avoid ambiguity.
+Not only would this be painful, our stance is that, when considering `F` as a C⋆-module over `A`, it
+is not usually the case that we are interested in the C⋆-module structure of `A` itself, but rather
+its C⋆-algebra structure.
+
 For more details on the importance of the `WithCStarModule` type synonym, see the module
 documentation for `Analysis.CStarAlgebra.Module.Synonym`.
+
+## Implementation notes
+
+When `A := ℂ` and `E := ℂ`, then `E` is both a C⋆-algebra (so it inherits a `CStarModule` instance
+via (1) above) and an inner product space (so it inherits a `CStarModule` instance via (4) above).
+We provide a sanity check ensuring that these two instances are definitionally equal.
 
 Note that `C⋆ᵐᵒᵈ E` is *already* equipped with a bornology and uniformity whenever `E` is (namely,
 the pullback of the respective structures through `WithCStarModule.equiv`), so in each of the above
@@ -29,11 +56,6 @@ show the resulting type is bilipschitz equivalent to `E` via `WithCStarModule.eq
 and last case, this map is actually trivially an isometry), and then replace the uniformity and
 bornology with the correct ones.
 
-## Implementation notes
-
-When `A := ℂ` and `E := ℂ`, then `E` is both a C⋆-algebra (so it inherits a `CStarModule` instance
-via (1) above) and an inner product space (so it inherits a `CStarModule` instance via (4) above).
-We provide a sanity check ensuring that these two instances are definitionally equal.
 -/
 
 open CStarModule CStarRing
