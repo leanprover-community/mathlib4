@@ -512,6 +512,38 @@ section
 
 variable (X Y Z)
 
+/-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
+def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
+  toEquiv := Equiv.sumComm X Y
+  continuous_toFun := continuous_sum_swap
+  continuous_invFun := continuous_sum_swap
+
+@[simp]
+theorem sumComm_symm : (sumComm X Y).symm = sumComm Y X :=
+  rfl
+
+@[simp]
+theorem coe_sumComm : ⇑(sumComm X Y) = Sum.swap :=
+  rfl
+
+/-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
+def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
+  toEquiv := Equiv.sumAssoc X Y Z
+  continuous_toFun := Continuous.sum_elim (by fun_prop) (by fun_prop)
+  continuous_invFun := Continuous.sum_elim (by fun_prop) (by fun_prop)
+
+/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
+@[simps! (config := .asFn) apply]
+def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
+  toEquiv := Equiv.sumEmpty X Y
+  continuous_toFun := Continuous.sum_elim continuous_id (by fun_prop)
+  continuous_invFun := continuous_inl
+
+/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
+def emptySum [IsEmpty Y] : Y ⊕ X ≃ₜ X := (sumComm Y X).trans (sumEmpty X Y)
+
+@[simp] theorem coe_emptySum [IsEmpty Y] : (emptySum X Y).toEquiv = Equiv.emptySum Y X := rfl
+
 /-- `X × Y` is homeomorphic to `Y × X`. -/
 def prodComm : X × Y ≃ₜ Y × X where
   continuous_toFun := continuous_snd.prod_mk continuous_fst
