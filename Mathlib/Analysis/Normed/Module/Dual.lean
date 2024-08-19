@@ -250,33 +250,9 @@ theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔
 theorem sInter_polar_finite_reciprocal_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
     ⋂₀ (polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
-  apply le_antisymm _ _
-  · intro x hx
-    simp only [sInter_image, mem_setOf_eq, mem_iInter, and_imp] at hx
-    simp only [mem_closedBall, dist_zero_right]
-    apply ContinuousLinearMap.opNorm_le_of_ball one_pos (le_of_lt hr)
-    intro a _
-    cases' eq_or_ne a 0 with hz hnz
-    · simp only [hz, map_zero, norm_zero, mul_zero, le_refl]
-    · have spos :  0 < (r * ‖a‖)⁻¹  := inv_pos.mpr (Right.mul_pos hr (norm_pos_iff'.mpr hnz))
-      rw [← mul_le_mul_left spos]
-      have sUnit : IsUnit (r * ‖a‖) := isUnit_iff_ne_zero.mpr (Ne.symm (ne_of_lt (inv_pos.mp spos)))
-      rw [IsUnit.inv_mul_cancel sUnit]
-      rw [← Real.norm_of_nonneg (le_of_lt hr), ← norm_norm a, ← norm_mul, ← norm_inv,
-        ← norm_algebraMap' 𝕜, ← norm_mul, ← smul_eq_mul, ← map_smul]
-      rw [← mem_polar_singleton]
-      apply hx {(RCLike.ofReal (K := 𝕜)  (r * ‖a‖)⁻¹) • a} (finite_singleton _)
-      rw [singleton_subset_iff, mem_closedBall, dist_zero_right]
-      rw [norm_smul, norm_algebraMap', norm_inv, norm_mul, norm_norm,
-        Real.norm_of_nonneg (le_of_lt hr)]
-      rw [← mul_le_mul_left (Right.mul_pos hr (norm_pos_iff'.mpr hnz)), ← mul_assoc,
-        IsUnit.mul_inv_cancel sUnit, one_mul, mul_comm, ← mul_assoc,
-        IsUnit.inv_mul_cancel (Ne.isUnit (Ne.symm (ne_of_lt hr))), one_mul]
-  · simp only [sInter_image, mem_setOf_eq, le_eq_subset, subset_iInter_iff, and_imp]
-    exact fun F _ hF₂ => le_trans (by
-      conv_lhs => rw [← inv_inv r]
-      exact closedBall_inv_subset_polar_closedBall _)
-      ((dualPairing 𝕜 E).flip.polar_antitone hF₂)
+  conv_rhs => rw [← inv_inv r]
+  rw [← polar_closedBall (inv_pos_of_pos hr), polar,
+    (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
 
 end PolarSets
 
