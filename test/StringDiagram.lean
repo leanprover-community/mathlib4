@@ -63,17 +63,17 @@ end
 
 variable {C : Type u} [Category.{v} C] [i : MonoidalCategory C] {X Y : C}
 
-#string_diagram @MonoidalCategory.whisker_exchange
-#string_diagram @MonoidalCategory.whisker_exchange_assoc
-#string_diagram @MonoidalCategory.pentagon
-#string_diagram @MonoidalCategory.whiskerLeft_id
-#string_diagram @left_triangle
-#string_diagram @yang_baxter
-#string_diagram @yang_baxter'
-#string_diagram @yang_baxter''
-#string_diagram @Category.assoc
-#string_diagram @Functor.map_comp
-#string_diagram @NatTrans.naturality
+#string_diagram MonoidalCategory.whisker_exchange
+#string_diagram MonoidalCategory.whisker_exchange_assoc
+#string_diagram MonoidalCategory.pentagon
+#string_diagram MonoidalCategory.whiskerLeft_id
+#string_diagram left_triangle
+#string_diagram yang_baxter
+#string_diagram yang_baxter'
+#string_diagram yang_baxter''
+#string_diagram Category.assoc
+#string_diagram Functor.map_comp
+#string_diagram NatTrans.naturality
 
 variable (f : 𝟙_ _ ⟶ X ⊗ Y) in
 #string_diagram f
@@ -83,6 +83,6 @@ variable (g : Y ⊗ X ⟶ 𝟙_ _) in
 abbrev yangBaxterLhs {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) :=
   R V₁ V₂ ▷ V₃ ≫ (α_ _ ..).hom ≫ _ ◁ R _ _ ≫ (α_ _ ..).inv ≫ R _ _ ▷ _ ≫ (α_ _ ..).hom
 
-#string_diagram @yangBaxterLhs
+#string_diagram yangBaxterLhs
 
 end MonoidalCategory

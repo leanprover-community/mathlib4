@@ -24,7 +24,7 @@ to enable the string diagram widget in the current section.
 
 We also have the `#string_diagram` command. For example,
 ```lean
-#string_diagram @MonoidalCategory.whisker_exchange
+#string_diagram MonoidalCategory.whisker_exchange
 ```
 displays the string diagram for the exchange law of the left and right whiskerings.
 
@@ -376,8 +376,8 @@ Display the string diagram for a given term.
 
 Example usage:
 ```
-/- String diagram for the equality theorem. We need `@` at the beginning of the theorem name. -/
-#string_diagram @MonoidalCategory.whisker_exchange
+/- String diagram for the equality theorem. -/
+#string_diagram MonoidalCategory.whisker_exchange
 
 /- String diagram for the morphism. -/
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C] {X Y : C} (f : 𝟙_ C ⟶ X ⊗ Y) in
@@ -390,8 +390,8 @@ syntax (name := stringDiagram) "#string_diagram " term : command
 def elabStringDiagramCmd : CommandElab := fun
   | stx@`(#string_diagram $t:term) => do
     let html ← runTermElabM fun _ => do
-      let e ← Term.elabTerm t none
-      let e ← Term.levelMVarToParam (← instantiateMVars e)
+      let e ← try mkConstWithFreshMVarLevels (← realizeGlobalConstNoOverloadWithInfo t)
+        catch _ => Term.levelMVarToParam (← instantiateMVars (← Term.elabTerm t none))
       match ← StringDiagram.stringMorOrEqM? e with
       | .some html => return html
       | .none => throwError "could not find a morphism or equality: {e}"
