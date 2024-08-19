@@ -562,15 +562,6 @@ theorem get_cons {l : List α} {a : α} {n} (hl) :
   · contradiction
   rfl
 
-section deprecated
-set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
-
-/-- nth element of a list `l` given `n < l.length`. -/
-@[deprecated get (since := "2023-01-05")]
-def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
-
-end deprecated
-
 @[simp 1100]
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp

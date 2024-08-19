@@ -513,13 +513,6 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (permutations'Aux x s).get ⟨n, hn⟩ = s.insertNth n x := by
   simp [getElem_permutations'Aux]
 
-set_option linter.deprecated false in
-@[deprecated get_permutations'Aux (since := "2024-04-23")]
-theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
-    (hn : n < length (permutations'Aux x s)) :
-    (permutations'Aux x s).nthLe n hn = s.insertNth n x :=
-  get_permutations'Aux s x n hn
-
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
   induction' l with y l IH generalizing x

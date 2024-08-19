@@ -3,15 +3,15 @@ import Mathlib.Tactic.GeneralizeProofs
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
-noncomputable def List.nthLe (l : List α) (n) (_h : n < l.length) : α := test_sorry
+noncomputable def List.get' (l : List α) (n) (_h : n < l.length) : α := test_sorry
 
 -- For debugging `generalize_proofs`
 -- set_option trace.Tactic.generalize_proofs true
 
-example : List.nthLe [1, 2] 1 (by simp) = 2 := by
+example : List.get' [1, 2] 1 (by simp) = 2 := by
   generalize_proofs h
   guard_hyp h :ₛ 1 < List.length [1, 2]
-  guard_target =ₛ [1, 2].nthLe 1 h = 2
+  guard_target =ₛ [1, 2].get' 1 h = 2
   exact test_sorry
 
 example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) < 2 := by
