@@ -99,11 +99,11 @@ def separation_of_regular (x : N) (hx : IsRegularElement P x) :
     have hij' : P.root j = - P.root i := (neg_eq_of_add_eq_zero_right hij).symm
     constructor
     · intro hi
-      simp_all only [gt_iff_lt, not_lt, add_right_neg, map_neg, LinearMap.neg_apply,
+      simp_all only [gt_iff_lt, not_lt, add_neg_cancel, map_neg, LinearMap.neg_apply,
         Left.neg_nonpos_iff]
       linarith
     · intro hi
-      simp_all only [add_right_neg, map_neg, LinearMap.neg_apply, gt_iff_lt, Left.neg_pos_iff,
+      simp_all only [add_neg_cancel, map_neg, LinearMap.neg_apply, gt_iff_lt, Left.neg_pos_iff,
         not_lt]
       have hi' : P.toLin (P.root i) x ≠ 0 := by
         simp_all only [IsRegularElement, ne_eq, not_false_eq_true]

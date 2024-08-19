@@ -40,6 +40,8 @@ variable {ι R M N : Type*}
 
 namespace RootPairing
 
+section RootPositive
+
 variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 /-- A Prop-valued class for a bilinear form to be compatible with a root pairing. -/
@@ -98,6 +100,8 @@ lemma coxeterWeight_zero_iff_isOrthogonal : P.coxeterWeight i j = 0 ↔ P.IsOrth
   · exact ⟨h, (pairing_zero_iff B i j).mp h⟩
   · exact ⟨(pairing_zero_iff B j i).mp h, h⟩
 
+end RootPositive
+
 section ultraparallel
 /-! We consider the case `4 < P.coxeterWeight i j`.  A pair of roots with this configuration
 are called `ultraparallel` in the literature.  The reflections in ultraparallel roots generate an
@@ -107,7 +111,9 @@ Hmm. If I wait until we do polarization, then it suffices to construct a combina
 nonpositive norm.
 -/
 
-variable (P)
+variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+
+variable (P : RootPairing ι R M N) (i j : ι)
 
 /-- This is a function that describes the coefficients attached to `P.root i` and `P.root j` of the
 roots given by `(P.reflection i) ∘ (P.reflection j) (P.root i)`. -/
@@ -175,10 +181,10 @@ lemma root_reflection_pos_coeff_left {a b : R} (ha : 0 < a) (hab : -2 * b < a)
     a = 2 * a - a := by ring
     2 * a - a < (a + b) * 4 - a := sub_lt_sub_right hapb a
     (a + b) * 4 - a < (a + b) * P.coxeterWeight i j - a := sub_lt_sub_right hab4 a
-
+/-!
 lemma root_reflection_pos_coeff_right {a b : R} (hab : -2 * b < a) : -(a + b) < b := by
   linarith
-
+-/
 lemma root_refl_pos_coeff_right_2 {a b : R} (ha : 0 < a) (hab : -2 * b < a)
     (hc : 4 < P.coxeterWeight i j) : (-2 * -(a + b)) < ((a + b) * P.coxeterWeight i j - a) := by
   have habz : 0 < a + b := by linarith
@@ -241,6 +247,8 @@ nondegenerate root-positive forms that are "in correspondence".  Perhaps I just 
 `B : M →ₗ[R] N` and `B' : N →ₗ[R] M` to be nondegenerate and root-positive.  So, just trivial
 intersection of images with kernels.
 -/
+
+variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 /-- This seems to be the structure in common between finite root data and Kac-Moody root systems-/
 class DualPositive (P : RootPairing ι R M N) where
