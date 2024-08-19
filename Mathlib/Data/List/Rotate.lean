@@ -260,15 +260,6 @@ theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
   rw [← add_mod_mod, Nat.add_right_comm, Nat.sub_add_cancel, add_mod_left, mod_eq_of_lt]
   exacts [k.2, (mod_lt _ (k.1.zero_le.trans_lt k.2)).le]
 
-set_option linter.deprecated false in
-/-- A variant of `List.nthLe_rotate` useful for rewrites from right to left. -/
-@[deprecated get_eq_get_rotate (since := "2023-03-26")]
-theorem nthLe_rotate' (l : List α) (n k : ℕ) (hk : k < l.length) :
-    (l.rotate n).nthLe ((l.length - n % l.length + k) % l.length)
-        ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_le (length_rotate _ _).ge) =
-      l.nthLe k hk :=
-  (get_eq_get_rotate l n ⟨k, hk⟩).symm
-
 theorem rotate_eq_self_iff_eq_replicate [hα : Nonempty α] :
     ∀ {l : List α}, (∀ n, l.rotate n = l) ↔ ∃ a, l = replicate l.length a
   | [] => by simp

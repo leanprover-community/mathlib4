@@ -161,13 +161,6 @@ theorem mapIdx_append (K L : List α) (f : ℕ → α → β) :
 theorem mapIdx_eq_nil {f : ℕ → α → β} {l : List α} : List.mapIdx f l = [] ↔ l = [] := by
   rw [List.mapIdx_eq_enum_map, List.map_eq_nil, List.enum_eq_nil]
 
-set_option linter.deprecated false in
-@[simp, deprecated (since := "2023-02-11")]
-theorem nthLe_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
-    (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :
-    (l.mapIdx f).nthLe i h' = f i (l.nthLe i h) := by
-  simp [mapIdx_eq_enum_map, enum_eq_zip_range]
-
 theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = ofFn fun i : Fin l.length ↦ f (i : ℕ) (l.get i) := by
   induction l generalizing f with
