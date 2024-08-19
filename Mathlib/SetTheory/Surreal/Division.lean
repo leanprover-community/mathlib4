@@ -23,9 +23,9 @@ The desired final results are (ii) and (iv) which state that `x⁻¹` is a numbe
 multiplicative inverse, respectively.
 
 In our proof, lemmas (i) through (iv) are proved for positive numbers in the section labeled
-`Positive` by a series of preliminary lemmas, culminating in the lemma `onag_1_10` which
+`Positive` by a series of preliminary lemmas, culminating in the lemma `main` which
 proves (ii) and (iv) by a joint induction over the two statements. Lemmas (i) and (iii) are used
-only within the proof of `onag_1_10` and are not needed as induction hypotheses.
+only within the proof of `main` and are not needed as induction hypotheses.
 
 We do not use the notation `x⁻¹` in the proof of lemmas (i) to (iv); we use `x.inv'` instead
 since that is the definition for positive `x`. We only use `x⁻¹` at the very end when we define
@@ -310,7 +310,7 @@ lemma onag_1_10_i' {l r} {L : l → PGame} {R : r → PGame}
       · exact ihr_pos j
 
 /-- The identity `x' * y + x * y' - x' * y' = 1 + x' * (y - y'')` -/
-lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
+lemma mul_option_eq_one_add_mul {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (inv_l : ∀ (i : { i // 0 < L i }), mk (L i) (h5.2.1 i) * mk (L i).inv' (h3 i i.2) = 1)
@@ -360,7 +360,8 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     field_simp
     ring
 
-lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
+/-- ONAG 1.10 (iii), (xy)^L < 1 -/
+lemma mul_option_lt_one {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric)
     (inv_l : ∀ (i : { i // 0 < L i }), mk (L i) (h5.2.1 i) * mk (L i).inv' (h3 i i.2) = 1)
@@ -388,7 +389,7 @@ lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
-      have := eq2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₁ i j)
+      have := mul_option_eq_one_add_mul h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₁ i j)
       simp only [components] at this
       conv_lhs at this => {
         pattern (occs := *) (PGame.mk l r L R).inv'.moveLeft j
@@ -405,7 +406,7 @@ lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
-      have := eq2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₂ i j)
+      have := mul_option_eq_one_add_mul h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₂ i j)
       simp only [components] at this
       conv_lhs at this => {
         pattern (occs := *) (PGame.mk l r L R).inv'.moveRight j
@@ -420,7 +421,8 @@ lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
         conv_rhs at this => simp [inv']
         exact this
 
-lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
+/-- ONAG 1.10 (iii), 1 < (xy)^R -/
+lemma one_lt_mul_option {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric)
     (inv_l : ∀ (i : { i // 0 < L i }), mk (L i) (h5.2.1 i) * mk (L i).inv' (h3 i i.2) = 1)
@@ -448,7 +450,7 @@ lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
-      have := eq2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₂ i j)
+      have := mul_option_eq_one_add_mul h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₂ i j)
       simp only [components] at this
       conv_lhs at this => {
         pattern (occs := *) (PGame.mk l r L R).inv'.moveRight j
@@ -465,7 +467,7 @@ lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
-      have := eq2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₁ i j)
+      have := mul_option_eq_one_add_mul h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₁ i j)
       simp only [components] at this
       conv_lhs at this => {
         pattern (occs := *) (PGame.mk l r L R).inv'.moveLeft j
@@ -482,9 +484,9 @@ lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
 
 /-! ### The main lemma -/
 
-lemma onag_1_10 :
-    (x.inv').Numeric ∧ -- (ii)
-    x * x.inv' ≈ 1 := by -- (iv)
+lemma main :
+    (x.inv').Numeric ∧ -- ONAG 1.10 (ii)
+    x * x.inv' ≈ 1 := by -- ONAG 1.10 (iv)
   induction x
   case mk xl xr xL xR ih_xl ih_xr =>
     set x := PGame.mk xl xr xL xR with x_rfl
@@ -531,7 +533,7 @@ lemma onag_1_10 :
         · exact inv'_numeric_right x_num x_pos h3 h4
 
     have onag_1_10_iii_left : ∀ i, ((normalization x) * x.inv').moveLeft i < 1 := by
-      have := onag_1_10_iii_left' h3 h4 x_num inv_l inv_r (by rwa [x_rfl] at onag_1_10_ii) x_pos
+      have := mul_option_lt_one h3 h4 x_num inv_l inv_r (by rwa [x_rfl] at onag_1_10_ii) x_pos
       rw [x_rfl]
       intro i
       cases i
@@ -554,7 +556,7 @@ lemma onag_1_10 :
           exact this
 
     have onag_1_10_iii_right : ∀ j, 1 < ((normalization x) * x.inv').moveRight j := by
-      have := onag_1_10_iii_right' h3 h4 x_num inv_l inv_r (by rwa [x_rfl] at onag_1_10_ii) x_pos
+      have := one_lt_mul_option h3 h4 x_num inv_l inv_r (by rwa [x_rfl] at onag_1_10_ii) x_pos
       rw [x_rfl]
       intro i
       cases i
@@ -608,16 +610,16 @@ lemma onag_1_10 :
 
     exact ⟨onag_1_10_ii, onag_1_10_iv⟩
 
-lemma onag_1_10_ii : (x.inv').Numeric := (onag_1_10 x_num x_pos).1
+lemma Numeric.inv' : (x.inv').Numeric := (main x_num x_pos).1
 
-lemma onag_1_10_iv : x * x.inv' ≈ 1 := (onag_1_10 x_num x_pos).2
+lemma mul_inv'_self : x * x.inv' ≈ 1 := (main x_num x_pos).2
 
 end Positive
 
-lemma inv_surreal (hx : ¬ x ≈ 0) : x * x⁻¹ ≈ 1 := by
+lemma mul_inv_self (hx : ¬ x ≈ 0) : x * x⁻¹ ≈ 1 := by
   by_cases h : 0 < x
   · rw [inv_eq_of_pos h]
-    exact onag_1_10_iv x_num h
+    exact mul_inv'_self x_num h
   · have x_lf_0 : x ⧏ 0 := by
       apply PGame.not_le.mp
       by_contra bad
@@ -628,7 +630,7 @@ lemma inv_surreal (hx : ¬ x ≈ 0) : x * x⁻¹ ≈ 1 := by
       have := le_of_lf x_lf_0 x_num numeric_zero
       exact lt_of_le_of_lf this x_lf_0
     rw [inv_eq_of_lf_zero x_lf_0]
-    have := onag_1_10_iv x_num.neg this
+    have := mul_inv'_self x_num.neg this
     rw [← Quotient.eq] at this ⊢
     simp only [quot_neg_mul, quot_mul_neg] at this ⊢
     exact this
@@ -642,11 +644,11 @@ lemma Numeric.inv (x_num : x.Numeric) : x⁻¹.Numeric := by
   rcases lt_or_equiv_or_gt x_num numeric_zero with neg | zero | pos
   · have neg_x_pos : 0 < -x := zero_lt_neg_iff.mpr neg
     rw [inv_eq_of_lf_zero (lf_of_lt neg)]
-    exact (onag_1_10_ii x_num.neg neg_x_pos).neg
+    exact (Numeric.inv' x_num.neg neg_x_pos).neg
   · rw [inv_eq_of_equiv_zero zero]
     exact numeric_zero
   · rw [inv_eq_of_pos pos]
-    exact onag_1_10_ii x_num pos
+    exact Numeric.inv' x_num pos
 
 lemma Equiv.inv_congr {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) (eq : x ≈ y) : x⁻¹ ≈ y⁻¹ := by
   by_cases h : x ≈ 0
@@ -658,8 +660,8 @@ lemma Equiv.inv_congr {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) (eq : x �
     have : x * y⁻¹ ≈ x * x⁻¹ := by
       calc
         x * y⁻¹ ≈ y * y⁻¹ := mul_congr_left hx hy hy.inv eq
-        _        ≈ 1        := inv_surreal hy h'
-        _        ≈ x * x⁻¹ := symm (inv_surreal hx h)
+        _        ≈ 1        := mul_inv_self hy h'
+        _        ≈ x * x⁻¹ := symm (mul_inv_self hx h)
     apply Surreal.mul_left_cancel hx hy.inv hx.inv h at this
     exact symm this
 
@@ -676,7 +678,7 @@ noncomputable instance : LinearOrderedField Surreal where
   mul_inv_cancel := by
     rintro ⟨a, oa⟩
     intro nz
-    exact Quotient.sound (inv_surreal oa (by
+    exact Quotient.sound (mul_inv_self oa (by
       change ¬ ⟦(⟨a, oa⟩ : Subtype Numeric)⟧ = ⟦⟨0, _⟩⟧ at nz
       simp only [Quotient.eq] at nz
       exact nz
