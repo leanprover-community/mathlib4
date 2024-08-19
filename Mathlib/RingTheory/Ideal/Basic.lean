@@ -8,6 +8,8 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Tactic.Abel
+import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.RingTheory.NonUnitalSubring.Basic
 
 /-!
 
@@ -816,3 +818,7 @@ theorem exists_max_ideal_of_mem_nonunits [CommSemiring α] (h : a ∈ nonunits �
   apply H
   apply Ideal.subset_span
   exact Set.mem_singleton a
+
+instance {R} [Semiring R] : NonUnitalSubsemiringClass (Ideal R) R where
+  mul_mem _ hb := Ideal.mul_mem_left _ _ hb
+instance {R} [Ring R] : NonUnitalSubringClass (Ideal R) R where
