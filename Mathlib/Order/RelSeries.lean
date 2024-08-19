@@ -8,7 +8,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
-import Mathlib.Tactic.Abel
 
 /-!
 # Series of a relation
@@ -236,7 +235,7 @@ such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
 @[simps length]
 def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   length := p.length + q.length + 1
-  toFun := Fin.append p q ∘ Fin.cast (by abel)
+  toFun := Fin.append p q ∘ Fin.cast (by omega)
   step i := by
     obtain hi | rfl | hi :=
       lt_trichotomy i (Fin.castLE (by omega) (Fin.last _ : Fin (p.length + 1)))
@@ -258,14 +257,14 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
         rfl
       rw [hx, Fin.append_right, hy, Fin.append_right]
       convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-        by convert i.2 using 1; abel⟩
+        by convert i.2 using 1; exact Nat.add_right_comm ..⟩
       rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
         Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
       exact hi
 
 lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
     (i : Fin (p.length + 1)) :
-    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; abel)) = p i := by
+    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; omega)) = p i := by
   delta append
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
