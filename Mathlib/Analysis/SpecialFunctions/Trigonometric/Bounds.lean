@@ -5,8 +5,6 @@ Authors: David Loeffler, Yaël Dillies
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
-#align_import analysis.special_functions.trigonometric.bounds from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
-
 /-!
 # Polynomial bounds for trigonometric functions
 
@@ -47,7 +45,6 @@ theorem sin_lt (h : 0 < x) : sin x < x := by
   refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
   norm_num
-#align real.sin_lt Real.sin_lt
 
 lemma sin_le (hx : 0 ≤ x) : sin x ≤ x := by
   obtain rfl | hx := hx.eq_or_lt
@@ -59,7 +56,7 @@ lemma le_sin (hx : x ≤ 0) : x ≤ sin x := by simpa using sin_le <| neg_nonneg
 
 lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
   wlog hx₀ : 0 ≤ x
-  · simpa using this $ neg_nonneg.2 $ le_of_not_le hx₀
+  · simpa using this <| neg_nonneg.2 <| le_of_not_le hx₀
   suffices MonotoneOn (fun x ↦ cos x + x ^ 2 / 2) (Ici 0) by
     simpa using this left_mem_Ici hx₀ hx₀
   refine monotoneOn_of_hasDerivWithinAt_nonneg
@@ -72,12 +69,12 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
 lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x ≤ sin x := by
   rw [← sub_nonneg]
   suffices ConcaveOn ℝ (Icc 0 (π / 2)) (fun x ↦ sin x - 2 / π * x) by
-    refine (le_min ?_ ?_).trans $ this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
+    refine (le_min ?_ ?_).trans <| this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
   exact concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-    (Continuous.continuousOn $ by fun_prop)
-    (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
+    (Continuous.continuousOn <| by fun_prop)
+    (fun x _ ↦ ((hasDerivAt_sin ..).sub <| (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
     (fun x _ ↦ (hasDerivAt_cos ..).hasDerivWithinAt.sub_const _)
-    fun x hx ↦ neg_nonpos.2 $ sin_nonneg_of_mem_Icc $ Icc_subset_Icc_right (by linarith) $
+    fun x hx ↦ neg_nonpos.2 <| sin_nonneg_of_mem_Icc <| Icc_subset_Icc_right (by linarith) <|
     interior_subset hx
 
 /-- **Jordan's inequality** for negative values. -/
@@ -91,11 +88,11 @@ lemma one_sub_two_div_pi_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 
 
 lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
-  · simpa using this (by rwa [abs_neg]) $ neg_nonneg.2 $ le_of_not_le hx₀
+  · simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
   rw [abs_of_nonneg hx₀] at hx
   -- TODO: `compute_deriv` tactic?
   have hderiv (x) : HasDerivAt (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) _ x :=
-    (((hasDerivAt_pow ..).const_mul _).const_sub _).sub $ hasDerivAt_cos _
+    (((hasDerivAt_pow ..).const_mul _).const_sub _).sub <| hasDerivAt_cos _
   simp only [Nat.cast_ofNat, Nat.succ_sub_succ_eq_sub, tsub_zero, pow_one, ← neg_sub', neg_sub,
     ← mul_assoc] at hderiv
   have hmono : MonotoneOn (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) (Icc 0 (π / 2)) := by
@@ -103,7 +100,7 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
     set_option tactic.skipAssignedInstances false in
     refine monotoneOn_of_hasDerivWithinAt_nonneg
       (convex_Icc ..)
-      (Continuous.continuousOn $ by fun_prop)
+      (Continuous.continuousOn <| by fun_prop)
       (fun x _ ↦ (hderiv _).hasDerivWithinAt)
       fun x hx ↦ sub_nonneg.2 ?_
     have ⟨hx₀, hx⟩ := interior_subset hx
@@ -116,20 +113,20 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
     -- Compiles without this option, but somewhat slower.
     set_option tactic.skipAssignedInstances false in
     refine concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-      (Continuous.continuousOn $ by fun_prop) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
-      (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul _).hasDerivWithinAt)
+      (Continuous.continuousOn <| by fun_prop) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
+      (fun x _ ↦ ((hasDerivAt_sin ..).sub <| (hasDerivAt_id ..).const_mul _).hasDerivWithinAt)
       fun x hx ↦ ?_
     have ⟨hx, hx'⟩ := interior_subset hx
     calc
       _ ≤ (0 : ℝ) - 0 := by
           gcongr
-          · exact cos_nonpos_of_pi_div_two_le_of_le hx $ hx'.trans $ by linarith
+          · exact cos_nonpos_of_pi_div_two_le_of_le hx <| hx'.trans <| by linarith
           · positivity
       _ = 0 := sub_zero _
   rw [← sub_nonneg]
   obtain hx' | hx' := le_total x (π / 2)
-  · simpa using hmono (left_mem_Icc.2 $ by positivity) ⟨hx₀, hx'⟩ hx₀
-  · refine (le_min ?_ ?_).trans $ hconc.min_le_of_mem_Icc ⟨hx', hx⟩ <;> field_simp <;> norm_num
+  · simpa using hmono (left_mem_Icc.2 <| by positivity) ⟨hx₀, hx'⟩ hx₀
+  · refine (le_min ?_ ?_).trans <| hconc.min_le_of_mem_Icc ⟨hx', hx⟩ <;> field_simp <;> norm_num
 
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 
@@ -146,13 +143,11 @@ theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < s
   refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
   norm_num
-#align real.sin_gt_sub_cube Real.sin_gt_sub_cube
 
 /-- The derivative of `tan x - x` is `1/(cos x)^2 - 1` away from the zeroes of cos. -/
 theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
     deriv (fun y : ℝ => tan y - y) x = 1 / cos x ^ 2 - 1 :=
   HasDerivAt.deriv <| by simpa using (hasDerivAt_tan h).add (hasDerivAt_id x).neg
-#align real.deriv_tan_sub_id Real.deriv_tan_sub_id
 
 /-- For all `0 < x < π/2` we have `x < tan x`.
 
@@ -191,13 +186,11 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
   have zero_in_U : (0 : ℝ) ∈ U := by rwa [left_mem_Ico]
   have x_in_U : x ∈ U := ⟨h1.le, h2⟩
   simpa only [tan_zero, sub_zero, sub_pos] using mono zero_in_U x_in_U h1
-#align real.lt_tan Real.lt_tan
 
 theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x := by
   rcases eq_or_lt_of_le h1 with (rfl | h1')
   · rw [tan_zero]
   · exact le_of_lt (lt_tan h1' h2)
-#align real.le_tan Real.le_tan
 
 theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2)
     (hx3 : x ≠ 0) : cos x < (1 / √(x ^ 2 + 1) : ℝ) := by
@@ -221,13 +214,11 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   · -- Easy case : `π / 2 ≤ y ≤ 3 * π / 2`
     refine lt_of_le_of_lt ?_ (one_div_pos.mpr <| sqrt_pos_of_pos hy3)
     exact cos_nonpos_of_pi_div_two_le_of_le hy1' (by linarith [pi_pos])
-#align real.cos_lt_one_div_sqrt_sq_add_one Real.cos_lt_one_div_sqrt_sq_add_one
 
 theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2) :
     cos x ≤ (1 : ℝ) / √(x ^ 2 + 1) := by
   rcases eq_or_ne x 0 with (rfl | hx3)
   · simp
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
-#align real.cos_le_one_div_sqrt_sq_add_one Real.cos_le_one_div_sqrt_sq_add_one
 
 end Real

@@ -6,8 +6,6 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Lie.Semisimple.Defs
 import Mathlib.Order.BooleanGenerators
 
-#align_import algebra.lie.semisimple from "leanprover-community/mathlib"@"356447fe00e75e54777321045cdff7c9ea212e60"
-
 /-!
 # Semisimple Lie algebras
 
@@ -56,7 +54,6 @@ theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
 @[simp]
 theorem HasTrivialRadical.center_eq_bot [HasTrivialRadical R L] : center R L = ⊥ :=
   HasTrivialRadical.eq_bot_of_isSolvable _
-#align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.HasTrivialRadical.center_eq_bot
 
 variable {R L} in
 theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥) :
@@ -66,7 +63,6 @@ theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSol
 theorem hasTrivialRadical_iff_no_solvable_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
   ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
-#align lie_algebra.is_semisimple_iff_no_solvable_ideals LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals
 
 theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
@@ -75,7 +71,6 @@ theorem hasTrivialRadical_iff_no_abelian_ideals :
   · exact h₁ _ <| LieAlgebra.ofAbelianIsSolvable R I
   · rw [← abelian_of_solvable_ideal_eq_bot_iff]
     exact h₁ _ <| abelian_derivedAbelianOfIdeal I
-#align lie_algebra.is_semisimple_iff_no_abelian_ideals LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals
 
 namespace IsSimple
 
@@ -303,12 +298,10 @@ theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h
     Subsingleton L := by
   rw [isLieAbelian_iff_center_eq_top R L, HasTrivialRadical.center_eq_bot] at h
   exact (LieSubmodule.subsingleton_iff R L L).mp (subsingleton_of_bot_eq_top h)
-#align lie_algebra.subsingleton_of_semisimple_lie_abelian LieAlgebra.subsingleton_of_hasTrivialRadical_lie_abelian
 
 theorem abelian_radical_of_hasTrivialRadical [HasTrivialRadical R L] :
     IsLieAbelian (radical R L) := by
   rw [HasTrivialRadical.radical_eq_bot]; infer_instance
-#align lie_algebra.abelian_radical_of_semisimple LieAlgebra.abelian_radical_of_hasTrivialRadical
 
 /-- The two properties shown to be equivalent here are possible definitions for a Lie algebra
 to be reductive.
@@ -322,9 +315,7 @@ theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
     rw [LieIdeal.solvable_iff_le_radical] at h₂
     exact (LieIdeal.inclusion_injective h₂).isLieAbelian h₁
   · intro h; apply h; infer_instance
-#align lie_algebra.abelian_radical_iff_solvable_is_abelian LieAlgebra.abelian_radical_iff_solvable_is_abelian
 
 theorem ad_ker_eq_bot_of_hasTrivialRadical [HasTrivialRadical R L] : (ad R L).ker = ⊥ := by simp
-#align lie_algebra.ad_ker_eq_bot_of_semisimple LieAlgebra.ad_ker_eq_bot_of_hasTrivialRadical
 
 end LieAlgebra
