@@ -36,7 +36,7 @@ Actions on the opposite type just act on the underlying type.
 
 namespace MulOpposite
 
-instance instSMulZeroClass [Monoid M] [AddMonoid α] [SMulZeroClass M α] : SMulZeroClass M αᵐᵒᵖ where
+instance instSMulZeroClass [AddMonoid α] [SMulZeroClass M α] : SMulZeroClass M αᵐᵒᵖ where
   smul_zero _ := unop_injective <| smul_zero _
 
 instance instSMulWithZero [MonoidWithZero M] [AddMonoid α] [SMulWithZero M α] :
