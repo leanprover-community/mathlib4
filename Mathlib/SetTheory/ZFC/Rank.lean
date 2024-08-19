@@ -91,10 +91,6 @@ theorem rank_union : rank (x ∪ y) = max (rank x) (rank y) := by
     intro; exact Or.imp rank_lt_of_mem rank_lt_of_mem
   · simp; constructor <;> apply rank_le_of_subset <;> intro _ h <;> simp [h]
 
-theorem rank_insert : rank (insert x y) = max (rank x + 1) (rank y) := by
-  have : insert x y = {x} ∪ y := by ext; simp
-  rw [this, rank_union, rank_singleton]
-
 theorem rank_powerset : rank (powerset x) = rank x + 1 := by
   apply le_antisymm
   · apply rank_le_of_forall_mem_rank_lt; simp
