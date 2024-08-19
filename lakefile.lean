@@ -8,14 +8,14 @@ open Lake DSL
   (as well as `Archive`, `Counterexamples` and `test`).
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
-  ⟨`linter.hashCommand, true⟩,
   ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.cdot, true⟩,
   ⟨`linter.style.dollarSyntax, true⟩,
   ⟨`linter.style.longLine, true⟩,
-  ⟨`linter.oldObtain, true,⟩,
+  ⟨`linter.style.setOption, true⟩,
+    ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
-  ⟨`linter.style.setOption, true⟩
+  ⟨`linter.hashCommand, true⟩
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
