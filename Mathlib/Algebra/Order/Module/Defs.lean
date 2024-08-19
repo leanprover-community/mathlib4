@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Field.Unbundled.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Order.Field.Unbundled.Basic
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
