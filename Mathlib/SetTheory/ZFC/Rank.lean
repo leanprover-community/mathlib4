@@ -40,7 +40,7 @@ theorem rank_eq_of_equiv : (x y : PSet) → Equiv x y → rank x = rank y
 
 theorem rank_lt_of_mem : {x y : PSet} → y ∈ x → rank y < rank x
   | ⟨_, _⟩, _, ⟨_, h⟩ => by
-    rw [PSet.rank_eq_of_equiv _ _ h]
+    rw [rank_eq_of_equiv _ _ h]
     apply lt_lsub
 
 theorem rank_le_of_forall_mem_rank_lt {o : Ordinal} :
