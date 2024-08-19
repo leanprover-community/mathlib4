@@ -49,7 +49,7 @@ instance Set.Ici.isPredArchimedean {α : Type*} [DecidableEq α] [PartialOrder �
         rwa [hn]
       · rfl
 
-lemma IsPredArchimedean.le_total_of_le {α : Type*} [DecidableEq α] [PartialOrder α] [PredOrder α]
+lemma IsPredArchimedean.le_total_of_le {α : Type*} [Preorder α] [PredOrder α]
     [IsPredArchimedean α] (r v₁ v₂ : α) (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) :
     v₁ ≤ v₂ ∨ v₂ ≤ v₁ := by
   obtain ⟨n, rfl⟩ := h₁.exists_pred_iterate
@@ -64,7 +64,7 @@ lemma IsPredArchimedean.le_total_of_le {α : Type*} [DecidableEq α] [PartialOrd
   rw [Nat.add_comm, Function.iterate_add, Function.comp_apply]
   apply Order.pred_iterate_le
 
-lemma IsPredArchimedean.lt_or_le_of_le {α : Type*} [DecidableEq α] [PartialOrder α] [PredOrder α]
+lemma IsPredArchimedean.lt_or_le_of_le {α : Type*} [PartialOrder α] [PredOrder α]
     [IsPredArchimedean α] (r v₁ v₂ : α) (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) :
     v₁ < v₂ ∨ v₂ ≤ v₁ := by
   rw [Classical.or_iff_not_imp_right]

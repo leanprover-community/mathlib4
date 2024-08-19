@@ -323,10 +323,10 @@ theorem Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_finsetEmbedding {α : 
     (r : α → α → Prop) [IsRefl α r] [IsTrans α r] {s : Set α}
     (h : s.PartiallyWellOrderedOn r) :
     ∀ f : (n : ℕ) → Finset (β n), (∀ n, dβ '' (f n).toSet ⊆ s) →
-      ∃ m n : ℕ, m < n ∧ Finset.embeddingRel (fun a b ↦ r (dβ a) (dβ b))
-      (f m) (f n) := by classical
+      ∃ g : ℕ ↪o ℕ, ∀ n m, n ≤ m → Finset.embeddingRel (fun a b ↦ r (dβ a) (dβ b))
+      (f (g n)) (f (g m)) := by classical
   intro f hf
-  have := partiallyWellOrderedOn_sublistForall₂ r h
+  have := partiallyWellOrderedOn_sublistForall₂ r h |>.exists_monotone_subseq
   specialize this (fun n ↦ (f n).toList.map dβ) _
   · intro n x
     simp only [List.mem_map, Finset.mem_toList, forall_exists_index, and_imp]
@@ -334,26 +334,28 @@ theorem Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_finsetEmbedding {α : 
     apply hf
     simp only [mem_image, Finset.mem_coe]
     use x, hx
-  obtain ⟨n, m, hnm, h⟩ := this
-  use n, m, hnm
-  simp only [List.sublistForall₂_map_right_iff, List.sublistForall₂_map_left_iff] at h
-  apply Finset.embeddingRel_of_toList_sublistForall₂ _ _ _ h
+  obtain ⟨g, hg⟩ := this
+  use g
+  intro n m hnm
+  specialize hg n m hnm
+  simp only [List.sublistForall₂_map_right_iff, List.sublistForall₂_map_left_iff] at hg
+  apply Finset.embeddingRel_of_toList_sublistForall₂ _ _ _ hg
 
 theorem Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_finiteSetEmbedding {α : Type*}
     {β : ℕ → Type*} (dβ : {n : ℕ} → β n → α)
     (r : α → α → Prop) [IsRefl α r] [IsTrans α r] {s : Set α}
     (h : s.PartiallyWellOrderedOn r) :
     ∀ f : (n : ℕ) → Set (β n), (∀ n, (f n).Finite ∧ dβ '' (f n) ⊆ s) →
-      ∃ m n : ℕ, m < n ∧ Set.embeddingRel (fun a b ↦ r (dβ a) (dβ b))
-      (f m) (f n) := by
-  intro f hf
-  obtain ⟨n, m, hnm, ⟨g, hg⟩⟩ :=
+      ∃ g : ℕ ↪o ℕ, ∀ n m, n ≤ m → Set.embeddingRel (fun a b ↦ r (dβ a) (dβ b))
+      (f (g n)) (f (g m)) := fun f hf ↦
+  have ⟨g, hg⟩ :=
     Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_finsetEmbedding dβ r h
     (fun n ↦ (hf n).1.toFinset) (by simp [hf])
-  use n, m, hnm, (hf n).1.subtypeEquivToFinset.toEmbedding.trans
-    <| g.trans (hf m).1.subtypeEquivToFinset.symm.toEmbedding
-  intro x
-  exact hg <| (hf n).1.subtypeEquivToFinset x
+  ⟨g, fun n m hnm ↦
+    have ⟨g', hg'⟩ := hg n m hnm
+    ⟨(hf _).1.subtypeEquivToFinset.toEmbedding.trans <|
+      g'.trans (hf _).1.subtypeEquivToFinset.symm.toEmbedding,
+        fun x ↦ hg' <| (hf _).1.subtypeEquivToFinset x⟩⟩
 
 -- This is Kruskal's tree theorem.
 -- Following the proof in "On well-quasi-ordering finite trees, C. ST. J. A. NASH-WILLIAMS"
@@ -401,7 +403,7 @@ lemma Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_trees {α : Type*}
               simp [h]
             rw [this]
             have := hgi (g' (n - gi (g' 0)))
-            simp only [mem_image, LabeledTree.subtrees, RootedTree.subtrees, RootedTree.subtree] at this
+            simp only [LabeledTree.subtrees, RootedTree.subtrees, mem_image] at this
             obtain ⟨x, -, hx⟩ := this
             rw [← hx]
             trans Set.range (f (gi (g' (n - gi (g' 0))))).snd
@@ -449,7 +451,10 @@ lemma Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_trees {α : Type*}
       intro x hx
       simp only [preimage_iUnion, mem_iUnion, mem_preimage, mem_image, RootedTree.mk.injEq, 𝔹]
       use n, x, hx
-  obtain ⟨n, m, hnm, g⟩ := this
-  apply hf2 n m hnm
+  obtain ⟨g, hg⟩ := this
+  specialize hs (fun n ↦ (f (g n)).2 ⊥) (fun n ↦ hf12 (g n) (by simp))
+  obtain ⟨n, m, hnm, hr⟩ := hs
+  apply hf2 (g n) (g m) (g.strictMono hnm)
   apply LabeledTree.homeomorphism_of_subtrees_embeddingRel
-  exact g
+  exact hr
+  apply hg _ _ hnm.le
