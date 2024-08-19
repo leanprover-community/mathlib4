@@ -48,6 +48,24 @@ noncomputable section
 
 open Set Function Finset Finsupp AddMonoidAlgebra
 
+theorem Finset.exists_sup_eq {α β : Type*} [LinearOrder β] [OrderBot β]
+    (s : Finset α) (f : α → β) (h : s.sup f ≠ ⊥) :
+    ∃ a ∈ s, s.sup f = f a := by 
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp only [sup_empty, ne_eq, not_true_eq_false] at h
+  | @insert a s _ hrec => 
+    by_cases hs : s.sup f = ⊥
+    · rw [sup_insert, hs, sup_bot_eq] at h
+      refine ⟨a, Finset.mem_insert_self a s, ?_⟩
+      rw [sup_insert, hs, sup_bot_eq]
+    · obtain ⟨b, hb, h⟩ := hrec hs
+      by_cases hab : f a ≤ f b 
+      · refine ⟨b, s.mem_insert_of_mem hb, ?_⟩
+        rw [sup_insert, h, sup_of_le_right hab]
+      · refine ⟨a, s.mem_insert_self _, ?_⟩
+        rw [sup_insert, h, sup_of_le_left (le_of_not_ge hab)]
+
 variable {R M : Type*} [CommSemiring R]
 
 namespace MvPolynomial
@@ -81,9 +99,67 @@ theorem weightedTotalDegree'_zero (w : σ → M) :
     weightedTotalDegree' w (0 : MvPolynomial σ R) = ⊥ := by
   simp only [weightedTotalDegree', support_zero, Finset.sup_empty]
 
+theorem le_weightedTotalDegree' (w : σ → M) {φ : MvPolynomial σ R} {d : σ →₀ ℕ}
+    (hd : d ∈ φ.support) : weight w d ≤ φ.weightedTotalDegree' w := by
+  convert le_sup hd
+  simp only
+  
+theorem le_weightedTotalDegree'_iff (w : σ → M) {φ : MvPolynomial σ R} {m : WithBot M} :
+    φ.weightedTotalDegree' w ≤ m ↔ ∀ d ∈ φ.support, weight w d ≤ m := by
+  simp only [weightedTotalDegree', Finset.sup_le_iff, mem_support_iff, ne_eq]
+
+theorem weightedTotalDegree'_add (w : σ → M) {φ ψ : MvPolynomial σ R} :
+    (φ + ψ).weightedTotalDegree' w ≤ (φ.weightedTotalDegree' w) ⊔ (ψ.weightedTotalDegree' w) := by
+  rw [le_weightedTotalDegree'_iff]
+  intro d hd
+  simp only [mem_support_iff, coeff_add, ne_eq] at hd
+  by_cases h : coeff d φ = 0
+  · rw [h, zero_add, ← ne_eq, ← mem_support_iff] at hd
+    exact le_trans (le_weightedTotalDegree' _ hd) (le_sup_right)
+  · rw [← ne_eq, ← mem_support_iff] at h
+    exact le_trans (le_weightedTotalDegree' _ h) (le_sup_left)
+
+end SemilatticeSup
+
+section CanonicallyLinearOrderedAddCommMonoid 
+
+variable [CanonicallyLinearOrderedAddCommMonoid M]  
+
+theorem exists_coeff_ne_zero_and_weight_eq' (w : σ → M) {φ : MvPolynomial σ R} (hφ : φ ≠ 0) :
+    ∃ d, coeff d φ ≠ 0 ∧ weight w d = φ.weightedTotalDegree' w := by
+  rw [ne_eq, ← weightedTotalDegree'_eq_bot_iff w] at hφ
+  obtain ⟨d, hd, h⟩ := Finset.exists_sup_eq _ _ hφ
+  exact ⟨d, mem_support_iff.mp hd, h.symm⟩
+  
+theorem weightedTotalDegree'_mul (w : σ → M) {φ ψ : MvPolynomial σ R} :
+    (φ * ψ).weightedTotalDegree' w ≤ (φ.weightedTotalDegree' w) + (ψ.weightedTotalDegree' w) := by
+  classical
+  rw [le_weightedTotalDegree'_iff]
+  intro d hd
+  have : ∃ u v, coeff u φ ≠ 0 ∧ coeff v ψ ≠ 0 ∧ u + v = d := by
+    by_contra h
+    simp only [not_exists, not_and_or, ne_eq, not_not, ← or_assoc] at h
+    simp_rw [← imp_iff_or_not] at h
+    simp only [mem_support_iff, ne_eq, coeff_mul] at hd
+    apply hd
+    apply Finset.sum_eq_zero
+    rintro ⟨u, v⟩ huv
+    dsimp only
+    simp only [mem_antidiagonal] at huv
+    rcases h u v huv with (h | h) <;> simp only [h, zero_mul, mul_zero]
+  obtain ⟨u, v, hu, hv, huv⟩ := this
+  simp only [← huv, map_add, WithBot.coe_add, ge_iff_le]
+  simp only [← ne_eq, ← mem_support_iff] at hu hv
+  replace hu := le_weightedTotalDegree' w hu
+  replace hv := le_weightedTotalDegree' w hv
+  sorry
+
+
+end CanonicallyLinearOrderedAddCommMonoid 
+
 section OrderBot
 
-variable [OrderBot M]
+variable [SemilatticeSup M] [OrderBot M]
 
 /-- When `M` has a `⊥` element, we can define the weighted total degree of a multivariate
   polynomial as a function taking values in `M`. -/
@@ -112,6 +188,95 @@ theorem weightedTotalDegree_zero (w : σ → M) :
 theorem le_weightedTotalDegree (w : σ → M) {φ : MvPolynomial σ R} {d : σ →₀ ℕ}
     (hd : d ∈ φ.support) : weight w d ≤ φ.weightedTotalDegree w :=
   le_sup hd
+
+theorem weightedTotalDegree_le_iff (w : σ → M) {φ : MvPolynomial σ R} {m : M} :
+    φ.weightedTotalDegree w ≤ m ↔ ∀ d ∈ φ.support, weight w d ≤ m := by
+  simp only [weightedTotalDegree, Finset.sup_le_iff, mem_support_iff, ne_eq]
+
+theorem weightedTotalDegree_add (w : σ → M) {φ ψ : MvPolynomial σ R} :
+    (φ + ψ).weightedTotalDegree w ≤ (φ.weightedTotalDegree w) ⊔ (ψ.weightedTotalDegree w) := by
+  rw [le_weightedTotalDegree_iff]
+  intro d hd
+  simp only [mem_support_iff, coeff_add, ne_eq] at hd
+  by_cases h : coeff d φ = 0
+  · rw [h, zero_add, ← ne_eq, ← mem_support_iff] at hd
+    exact le_trans (le_weightedTotalDegree _ hd) (le_sup_right)
+  · rw [← ne_eq, ← mem_support_iff] at h
+    exact le_trans (le_weightedTotalDegree _ h) (le_sup_left)
+
+end OrderBot 
+
+section CanonicallyLinearOrderedAddCommMonoid
+
+variable {M : Type*} [CanonicallyLinearOrderedAddCommMonoid M]
+
+theorem weightedTotalDegree_eq_zero_iff (w : σ → M) {φ : MvPolynomial σ R} :
+    φ.weightedTotalDegree w = 0 ↔ ∀ d ∈ φ.support, weight w d = 0 := by 
+  rw [← bot_eq_zero, eq_bot_iff]
+  rw [weightedTotalDegree_le_iff]
+  simp_rw [← eq_bot_iff]
+
+theorem exists_coeff_ne_zero_and_weight_eq (w : σ → M) {φ : MvPolynomial σ R} (hφ : φ ≠ 0) :
+    ∃ d, coeff d φ ≠ 0 ∧ weight w d = φ.weightedTotalDegree w := by
+  obtain ⟨d, hd, h⟩ := exists_coeff_ne_zero_and_weight_eq' w hφ
+  rw [weightedTotalDegree_coe w _ hφ, WithBot.coe_inj] at h
+  exact ⟨d, hd, h⟩
+  
+theorem weightedTotalDegree_mul (w : σ → M) {φ ψ : MvPolynomial σ R} :
+    (φ * ψ).weightedTotalDegree w ≤ (φ.weightedTotalDegree w) + (ψ.weightedTotalDegree w) := by
+  classical
+  rw [weightedTotalDegree_le_iff]
+  intro d hd
+  rw [mem_support_iff, coeff_mul] at hd
+  obtain ⟨⟨u,v⟩, huv, h⟩ := Finset.exists_ne_zero_of_sum_ne_zero hd
+  simp only [mem_antidiagonal] at huv
+  replace h : weight w u ≤ weightedTotalDegree w φ ∧ weight w v ≤ weightedTotalDegree w ψ := by
+    constructor
+    · apply le_weightedTotalDegree; rw [mem_support_iff] 
+      exact left_ne_zero_of_mul h
+    · apply le_weightedTotalDegree; rw [mem_support_iff] 
+      exact right_ne_zero_of_mul h
+  simp only [← huv, map_add, ge_iff_le]
+  apply add_le_add h.1 h.2
+
+theorem weightedTotalDegree_mul_eq [IsDomain R] (w : σ → M) {φ ψ : MvPolynomial σ R} 
+    (hφ : φ ≠ 0) (hψ : ψ ≠ 0) :
+    (φ * ψ).weightedTotalDegree w = (φ.weightedTotalDegree w) + (ψ.weightedTotalDegree w) := by
+  apply le_antisymm (weightedTotalDegree_mul w)
+  obtain ⟨d, hd, hφ⟩ := exists_coeff_ne_zero_and_weight_eq w hφ
+  obtain ⟨e, he, hψ⟩ := exists_coeff_ne_zero_and_weight_eq w hψ
+  rw [← hφ, ← hψ, ← map_add]
+  rw [← not_lt]
+  intro H
+  rw [weightedTotalDegree, Finset.sup_lt_iff] at H
+  specialize H (d + e) ?_
+  · classical
+    rw [mem_support_iff, coeff_mul]
+    rw [Finset.sum_eq_single ⟨d, e⟩] 
+    · exact mul_ne_zero hd he
+    · rintro ⟨u,v⟩ h h'
+      sorry
+    · sorry
+  · sorry
+  
+ 
+end  CanonicallyLinearOrderedAddCommMonoid
+
+
+  
+  rw [le_weightedTotalDegree_iff]
+  intro d hd
+  rw [mem_support_iff, coeff_mul] at hd
+  obtain ⟨⟨u,v⟩, huv, h⟩ := Finset.exists_ne_zero_of_sum_ne_zero hd
+  simp only [mem_antidiagonal] at huv
+  replace h : weight w u ≤ weightedTotalDegree w φ ∧ weight w v ≤ weightedTotalDegree w ψ := by
+    constructor
+    · apply le_weightedTotalDegree; rw [mem_support_iff] 
+      exact left_ne_zero_of_mul h
+    · apply le_weightedTotalDegree; rw [mem_support_iff] 
+      exact right_ne_zero_of_mul h
+  simp only [← huv, map_add, ge_iff_le]
+  apply add_le_add h.1 h.2
 
 end OrderBot
 

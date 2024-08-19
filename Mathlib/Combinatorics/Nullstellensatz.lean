@@ -3,6 +3,7 @@ import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Data.Set.Card
 import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Data.Finsupp.Lex
 
 /-! # Alon's Combinatorial Nullstellensatz -/
 
@@ -25,6 +26,8 @@ theorem Polynomial.eq_zero_of_eval_zero (P : Polynomial R) (S : Set R)
   exact Finset.finite_toSet P.roots.toFinset
 
 namespace MvPolynomial
+
+open Finsupp 
 
 variable {n : ℕ} 
 
@@ -111,6 +114,96 @@ noncomputable example (s : R) : Polynomial R := Polynomial.X (R := R) - Polynomi
 noncomputable example (S : Finset R) : Polynomial R := 
   S.prod (fun s ↦ Polynomial.X - Polynomial.C s)
 
+lemma prod_totalDegree_aux {ι : Type*} (i : ι) (s : Finset R) :
+    (s.prod (fun r ↦ X i - C r)).totalDegree = s.card := by
+  have hle (s : Finset R) : (s.prod (fun r ↦ X i - C r)).totalDegree ≤ s.card := by 
+    apply le_trans (totalDegree_finset_prod s (fun r ↦ X i - C r))
+    refine le_trans (s.sum_le_card_nsmul (fun r ↦ (X i - C r).totalDegree) 1 ?_) ?_
+    · intro r _
+      simp only
+      apply le_trans (totalDegree_sub_C_le _ _)
+      rw [totalDegree_X]
+    · simp only [smul_eq_mul, mul_one, le_refl]
+  apply le_antisymm (hle s)
+  apply le_trans _ (le_totalDegree (s := Finsupp.single i s.card) ?_)
+  · apply le_of_eq
+    simp only [sum_single_index]
+  · rw [mem_support_iff]
+    convert one_ne_zero
+    classical
+    induction s using Finset.induction_on with
+    | empty => simp
+    | @insert a s has hrec => 
+      have hs' : (insert a s).card = s.card + 1 := by
+        rw [← Finset.cons_eq_insert _ _ has, Finset.card_cons] 
+      rw [Finset.prod_insert has]
+      rw [coeff_mul]
+      rw [Finset.sum_eq_single ⟨single i 1, single i s.card⟩]
+      · simp only [hrec, mul_one]
+        simp only [coeff_sub, coeff_single_X, and_self, ↓reduceIte, coeff_C, sub_eq_self,
+          ite_eq_right_iff]
+        intro h
+        exfalso
+        apply zero_ne_one (α := R)
+        simp only [Finsupp.ext_iff] at h
+        simpa using h i
+      · rintro ⟨u, v⟩ h h'
+        simp only [antidiagonal_single, Finset.mem_map, Finset.mem_antidiagonal,
+          Function.Embedding.coe_prodMap, Function.Embedding.coeFn_mk, Prod.exists,
+          Prod.map_apply, Prod.mk.injEq] at h
+        obtain ⟨k, l, hkl, hu, hv⟩ := h
+        simp only [← hu, ← hv]
+        by_cases hk : k = 0
+        · rw [hk, zero_add, hs'] at hkl
+          convert mul_zero _
+          apply coeff_eq_zero_of_totalDegree_lt
+          apply lt_of_le_of_lt (hle _)
+          rw [Finset.sum_eq_single i]
+          · simp [hkl]
+          · intro b _ hb
+            rw [single_apply, if_neg hb.symm]
+          · simp
+        · convert zero_mul _
+          simp only [coeff_sub, coeff_single_X, and_true, coeff_C]
+          rw [if_neg, if_neg, sub_zero]
+          · intro h
+            apply hk
+            rw [Finsupp.ext_iff] at h
+            simpa [Ne.symm hk] using h i
+          · intro h
+            apply h'
+            simp only [← hu, ← hv, Prod.mk.injEq, congr_arg (single i) h, true_and]
+            apply congr_arg
+            rw [h, hs', add_comm] at hkl
+            simpa using hkl
+      · intro h
+        simp only [antidiagonal_single, Finset.mem_map, Finset.mem_antidiagonal,
+          Function.Embedding.coe_prodMap, Function.Embedding.coeFn_mk, Prod.exists, Prod.map_apply,
+          Prod.mk.injEq, not_exists, not_and] at h
+        exfalso
+        apply h 1 s.card
+        · rw [hs', add_comm]
+        · rfl
+        · rfl
+    infer_instance
+
+#check Finset.nonempty
+
+lemma euclDivd_aux (D : ℕ) (f : MvPolynomial (Fin n) R) (hD : f.totalDegree ≤ D) 
+    (S : Fin n → Finset R) (Sne : ∀ i, (S i).nonempty) :
+    ∃ (h : Fin n → MvPolynomial (Fin n) R) (r : MvPolynomial (Fin n) R),
+    f = Finset.univ.sum (fun i => (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) + r ∧
+    (∀ i w, (h i).weightedTotalDegree w + (S i).card * (w i) ≤ f.weightedTotalDegree w) ∧
+    (∀ i, r.weightedTotalDegree (Finsupp.single i 1) < (S i).card) := by  sorry
+
+lemma euclDivd (f : MvPolynomial (Fin n) R) (S : Fin n → Finset R) (Sne : ∀ i, (S i).nonempty) :
+    ∃ (h : Fin n → MvPolynomial (Fin n) R) (r : MvPolynomial (Fin n) R),
+    f = Finset.univ.sum (fun i => (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) + r ∧
+    (∀ i w, (h i).weightedTotalDegree w + (S i).card * (w i) ≤ f.weightedTotalDegree w) ∧
+    (∀ i, r.weightedTotalDegree (Finsupp.single i 1) < (S i).card) := 
+  euclDivd_aux f.totalDegree f le_refl S Sne
+
+
 theorem Alon1 (f : MvPolynomial (Fin n) R) (S : Fin n → Finset R)
     (Heval : ∀ (x : Fin n → R), (∀ i, x i ∈ S i) → eval x f = 0) : 
     ∃ (h : Fin n → MvPolynomial (Fin n) R)
@@ -132,37 +225,60 @@ theorem Alon2 (f : MvPolynomial (Fin n) R)
   rw [Finset.sum_eq_zero]
   rintro ⟨d, e⟩ hde
   simp only [Finset.mem_antidiagonal] at hde
-  dsimp only
-  by_cases hd : d.degree ≤ (h i).totalDegree 
-  · suffices coeff e ((S i).prod (fun s ↦ X i - C s)) = 0 by 
-      rw [this, mul_zero]
-    by_cases he : e = Finsupp.single i (e.degree)
-    · suffices (S i).card < e.degree by 
-        sorry
-      specialize hh i
-      specialize htS i
-
-      rw [← not_le] at htS ⊢
-      intro he'; apply htS
-
-      rw [ht', ← hde] at hh
-      rw [Finsupp.degree_eq_weight_one, map_add, ← Finsupp.degree_eq_weight_one] at hh
-      -- , ← map_add, hde, ← Finsupp.degree_eq_weight_one, ← ht'] at hh
-      have := add_le_add hd he'
-      rw [Finsupp.degree_eq_weight_one, ← map_add, hde, ← Finsupp.degree_eq_weight_one, ← ht'] at this
-      
-
+  
+  by_contra h'
+  simp only [mul_eq_zero, not_or, ← ne_eq, ← mem_support_iff] at h'
+  rcases h' with ⟨hd, he⟩
+  suffices e = Finsupp.single i (S i).card by
+    apply not_le.mpr (htS i)
+    rw [← hde, Finsupp.coe_add, Pi.add_apply, this]
+    simp only [Finsupp.single_eq_same, le_add_iff_nonneg_left, zero_le]
+  suffices e i = (S i).card by
+    ext j 
+    by_cases hj : i = j
+    · simp [hj.symm, this]
+    · rw [single_apply, if_neg hj]
       sorry
-    · sorry
-  · suffices coeff d (h i) = 0 by 
-      rw [this, zero_mul]
-    by_contra h'; apply hd
-    rw [← ne_eq, ← MvPolynomial.mem_support_iff] at h'
-    exact le_totalDegree h'
-
-    
+  suffices e.degree = (S i).card by
+    apply le_antisymm
+    · rw [← this]
+      conv_rhs => 
+        rw [← Finsupp.erase_add_single i e]
+      simp only [degree_eq_weight_one]
+      simp only [map_add]
+      suffices weight 1 (single i (e i)) = e i by 
+        rw [this]
+        apply le_add_of_nonneg_left
+        exact Nat.zero_le ((weight 1) (erase i e))
+      simp only [Finsupp.weight]
+      simp
+    · -- rw [← not_lt]
+      -- intro H
+      rw [← add_le_add_iff_left (d i)]
+      rw [Finsupp.ext_iff] at hde
+      specialize hde i
+      simp only [coe_add, Pi.add_apply] at hde
+      rw [hde]
+      sorry
+  apply le_antisymm
+  · have := le_totalDegree he
+    rw [prod_totalDegree_aux] at this
+    apply le_trans _ this
+    apply le_of_eq
+    rfl
+  · rw [← not_lt]
+    intro H
+    rw [← add_lt_add_iff_left d.degree, 
+      degree_eq_weight_one, ← map_add, hde, ← degree_eq_weight_one] at H
     sorry
+  /- This polynomial has degree (h i).totalDegree  + (S i).card ≤ t.degree
+     so if coeff t _ ≠ 0, then t is a maximal monomial in _
+     maximal monomials in the product :
+     `d` a maximal monomial in `h i`
+     (h i).totalDegree = d.degree
+      maximal monomial in the product : d + single i (S i)
+      at i : > t i
+      This should be a contradiction
+  -/
 
-
-  sorry 
 end MvPolynomial
