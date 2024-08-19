@@ -10,12 +10,12 @@ open Lake DSL
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.missingEnd, true⟩,
-  ⟨`linter.cdot, true⟩,
-  ⟨`linter.dollarSyntax, true⟩,
-  ⟨`linter.longLine, true⟩,
+  ⟨`linter.style.cdot, true⟩,
+  ⟨`linter.style.dollarSyntax, true⟩,
+  ⟨`linter.style.longLine, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
-  ⟨`linter.setOption, true⟩
+  ⟨`linter.style.setOption, true⟩
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
