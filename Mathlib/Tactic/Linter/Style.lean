@@ -61,8 +61,8 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
         let forbidden := [`debug, `pp, `profiler, `trace]
         if forbidden.contains name.getRoot then
           Linter.logLint linter.style.setOption head
-            m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
-               is only intended for development and not for final code. \
+            m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}'\n\
+               is only intended for development and not for final code.\n\
                If you intend to submit this contribution to the Mathlib project, \
                please remove 'set_option {name}'."
 
