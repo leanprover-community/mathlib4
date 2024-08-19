@@ -1456,5 +1456,3 @@ end OrdinalIndices
 end Ordinal
 
 end Initial
-
-set_option linter.longFile 1700
