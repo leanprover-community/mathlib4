@@ -66,13 +66,6 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
   simp_rw [TendstoInMeasure, dist_eq_norm]
 #align measure_theory.tendsto_in_measure_iff_norm MeasureTheory.tendstoInMeasure_iff_norm
 
--- The ae-limit is ae-unique.
-theorem tendsto_ae_unique {α ι E : Type*} [TopologicalSpace E] [T2Space E]
-    {x : MeasurableSpace α} {μ : Measure α} {g h : α → E} {f : ι → α → E} {l : Filter ι} [l.NeBot]
-    (hg : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (𝓝 (g ω)))
-    (hh : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (𝓝 (h ω))) : g =ᵐ[μ] h := by
-  filter_upwards [hg, hh] with ω hg1 hh1 using tendsto_nhds_unique hg1 hh1
-
 /-- This notion is helpful for finite measures since we don't have to deal with the
 possibility that some set measures to ∞ -/
 def TendstoInMeasure' [Dist E] {_ : MeasurableSpace α} (μ : Measure α) (f : ι → α → E)
