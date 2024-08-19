@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
-import Mathlib.Data.List.Basic
+import Batteries.Data.List.Pairwise
 
 /-!
 # Pairwise relations on a list
