@@ -292,7 +292,7 @@ structure EmbeddedContextFreeGrammar (T : Type uT) where
   /-- The former map is injective. -/
   embed_inj : Function.Injective embedNT
   /-- The latter map is injective where defined. -/
-  project_inj : ∀ x y, projectNT x = projectNT y → x = y ∨ projectNT x = none
+  project_inj ⦃x y⦄ : projectNT x ≠ none → projectNT x = projectNT y → x = y
   /-- The two mappings are essentially inverses. -/
   projectNT_embedNT : ∀ n₀ : g₀.NT, projectNT (embedNT n₀) = some n₀
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
