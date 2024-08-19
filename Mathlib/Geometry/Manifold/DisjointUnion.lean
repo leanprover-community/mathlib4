@@ -107,32 +107,33 @@ end Basic
 -- Perhaps these exist already, but if so, I cannot find them...
 section extensions
 
-variable [Nonempty Y] {U : Set X} {f : U → Y}
+variable {U : Set X} {f : U → Y}
+
+open Function
 
 /-- Any extension of a continuous function `f : U → Y` on an open set `U ⊆ X` to `X`
 remains continuous on `U`. -/
 lemma continuous_subtype_extension (hU : IsOpen U) (hf : Continuous f) {g : X → Y} :
-    ContinuousOn (Function.extend Subtype.val f g) U := by
-  let F := Function.extend Subtype.val f g
+    ContinuousOn (extend Subtype.val f g) U := by
+  let F := extend Subtype.val f g
   suffices h : ∀ x : U, ContinuousAt F x from
     ContinuousAt.continuousOn (by convert h; exact Iff.symm Subtype.forall)
   intro x
-  rw [← (hU.openEmbedding_subtype_val).continuousAt_iff, Function.extend_comp Subtype.val_injective]
+  rw [← (hU.openEmbedding_subtype_val).continuousAt_iff, extend_comp Subtype.val_injective]
   exact hf.continuousAt
 
 /-- Corollary. *Any* extension `F:X→ Y` of `f : U → Y` to `X` is continuous on `U`. -/
 lemma continuous_subtype_extension' (hU : IsOpen U) (hf : Continuous f)
     {F : X → Y} (hg : Set.restrict U F = f) : ContinuousOn F U := by
-  let F' := Function.extend Subtype.val f F
-  have : ContinuousOn F' U := continuous_subtype_extension hU hf
-  apply ContinuousOn.congr this
+  let F' := extend Subtype.val f F
+  apply (continuous_subtype_extension hU hf).congr
   show Set.EqOn F F' U -- should be obvious, let's do the details...
   intro x hx
   suffices F x = f ⟨x, hx⟩ ∧ F' x = f ⟨x, hx⟩ from Eq.trans this.1 this.2.symm
   constructor
   · rw [← hg]
     exact rfl
-  · sorry -- apply Function.Injective.extend_apply, sth sth about extensions...
+  · sorry -- apply Injective.extend_apply, sth sth about extensions...
 
 lemma real_lemma {V : Set X} (hV : IsOpen V) {U : Set V} (hU : IsOpen U)
     {f : V → Y} (hf : ContinuousOn f U)
