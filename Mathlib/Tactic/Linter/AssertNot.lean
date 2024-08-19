@@ -3,7 +3,6 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
 import Batteries.Tactic.Lint.Basic
 
 /-!
@@ -33,11 +32,10 @@ structure AssertExists where
 
 /-- Defines the `assertExistsExt` extension for adding an `Array` of `AssertExists`s
 to the environment. -/
-initialize assertExistsExt :
-    PersistentEnvExtension AssertExists AssertExists (Array AssertExists) ←
+initialize assertExistsExt : PersistentEnvExtension AssertExists AssertExists (Array AssertExists) ←
   registerPersistentEnvExtension {
     mkInitial := pure {}
-    addImportedFn := (pure <| .flatten ·)
+    addImportedFn := (return .flatten ·)
     addEntryFn := .push
     exportEntriesFn := id
   }
