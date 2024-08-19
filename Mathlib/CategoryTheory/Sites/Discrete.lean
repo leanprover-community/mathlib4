@@ -22,9 +22,11 @@ the one element space in `CompHaus`.
 ## Main results
 
 * `isDiscrete_iff_mem_essImage` : A sheaf is discrete if and only if it is in the essential image
-of the constant sheaf functor.
+of the constant sheaf functor, if the constant sheaf functor is fully faithful.
 * `isDiscrete_iff_of_equivalence` : The property of a sheaf of being discrete is invariant under
-equivalence of sheaf categories.
+equivalence of sheaf categories, if the constant sheaf functor is fully faithful (the assumption
+on the constant sheaf functor is probably unnecessary, but it's low priority to prove this in more
+generality, because in all cases of interest, the assumption holds).
 * `isDiscrete_iff_forget` : Given a "forgetful" functor `U : A ⥤ B` a sheaf `F : Sheaf J A` is
 discrete if and only if the sheaf given by postcomposition with `U` is discrete.
 
