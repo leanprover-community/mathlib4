@@ -769,7 +769,7 @@ theorem lintegral_indicator (f : α → ℝ≥0∞) {s : Set α} (hs : Measurabl
   refine ⟨⟨φ.restrict s, fun x => ?_⟩, le_rfl⟩
   simp [hφ x, hs, indicator_le_indicator]
 
-lemma setLintegral_indicator (f : α → ℝ≥0∞) {s t : Set α} (hs : MeasurableSet s) :
+lemma setLIntegral_indicator (f : α → ℝ≥0∞) {s t : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
   rw [lintegral_indicator _ hs, Measure.restrict_restrict hs]
 
@@ -779,7 +779,7 @@ theorem lintegral_indicator₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMe
     lintegral_indicator _ (measurableSet_toMeasurable _ _),
     Measure.restrict_congr_set hs.toMeasurable_ae_eq]
 
-lemma setLintegral_indicator₀ (f : α → ℝ≥0∞) {s t : Set α}
+lemma setLIntegral_indicator₀ (f : α → ℝ≥0∞) {s t : Set α}
     (hs : NullMeasurableSet s (μ.restrict t)) :
     ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
   rw [lintegral_indicator₀ _ hs, Measure.restrict_restrict₀ hs]
@@ -873,7 +873,7 @@ lemma lintegral_le_meas {s : Set α} {f : α → ℝ≥0∞} (hf : ∀ a, f a �
   · simpa [hx] using hf x
   · simpa [hx] using h'f x hx
 
-lemma setLintegral_le_meas {s t : Set α} (hs : MeasurableSet s)
+lemma setLIntegral_le_meas {s t : Set α} (hs : MeasurableSet s)
     {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≤ 1)
     (hf' : ∀ a ∈ s \ t, f a = 0) : ∫⁻ a in s, f a ∂μ ≤ μ t := by
   rw [← lintegral_indicator _ hs]
