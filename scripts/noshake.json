@@ -353,6 +353,7 @@
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
+  "Mathlib.Data.Int.Order.Basic": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
