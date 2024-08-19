@@ -425,8 +425,8 @@ theorem isPredLimitRecOn_pred' (hs : ∀ a, ¬IsMin a → C (pred a)) (hl : ∀ 
 
 @[simp]
 theorem _root_.PredOrder.limitRecOn_pred [WellFoundedGT α]
-  (H_pred : ∀ a, ¬IsMin a → C a → C (pred a)) (H_lim : ∀ a, IsPredLimit a → (∀ b > a, C b) → C a)
-  (ha : ¬ IsMin a) :
+    (H_pred : ∀ a, ¬IsMin a → C a → C (pred a)) (H_lim : ∀ a, IsPredLimit a → (∀ b > a, C b) → C a)
+    (ha : ¬ IsMin a) :
     PredOrder.limitRecOn (pred a) H_pred H_lim
       = H_pred a ha (PredOrder.limitRecOn a H_pred H_lim) := by
   have h := not_isPredLimit_pred_of_not_isMin ha
