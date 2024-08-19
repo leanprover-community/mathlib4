@@ -223,7 +223,7 @@ variable {d : TransversalPair G A B}
 
 @[ext]
 theorem ext {w w' : NormalWord d}
-    (h1 : w.head = w'.head) (h2 : w.toList = w'.toList): w = w' := by
+    (h1 : w.head = w'.head) (h2 : w.toList = w'.toList) : w = w' := by
   rcases w with ⟨⟨⟩, _⟩; cases w'; simp_all
 
 /-- The empty word -/
@@ -345,7 +345,7 @@ theorem unitsSMulGroup_snd (u : ℤˣ) (g : G) :
     (unitsSMulGroup φ d u g).2 = ((d.compl u).equiv g).2 := by
   rcases Int.units_eq_one_or u with rfl | rfl <;> rfl
 
-variable {d} [DecidableEq G]
+variable {d}
 
 /-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurence
 of `t^-u` when when we multiply `t^u` by `w`. -/
@@ -529,11 +529,11 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
       -- This used to be the end of the proof before leanprover/lean4#2644
-      erw [(d.compl _).equiv_snd_eq_inv_mul]
+      erw [(d.compl 1).equiv_snd_eq_inv_mul]
       simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
     · simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
       -- This used to be the end of the proof before leanprover/lean4#2644
-      erw [equiv_symm_eq_conj, (d.compl _).equiv_snd_eq_inv_mul]
+      erw [equiv_symm_eq_conj, (d.compl (-1)).equiv_snd_eq_inv_mul]
       simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
 
 @[simp]
@@ -645,8 +645,8 @@ theorem exists_normalWord_prod_eq
         have : a.fst = -a.fst := by
           have hl : l ≠ [] := by rintro rfl; simp_all
           have : a.fst = (l.head hl).fst := (List.chain'_cons'.1 chain).1 (l.head hl)
-            (List.head?_eq_head _ _) hS
-          rwa [List.head?_eq_head _ hl, Option.map_some', ← this, Option.some_inj] at hx'
+            (List.head?_eq_head _) hS
+          rwa [List.head?_eq_head hl, Option.map_some', ← this, Option.some_inj] at hx'
         simp at this
       erw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
         t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]

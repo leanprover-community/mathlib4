@@ -7,8 +7,6 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Covering.Besicovitch
 import Mathlib.Tactic.AdaptationNote
 
-#align_import measure_theory.covering.besicovitch_vector_space from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
-
 /-!
 # Satellite configurations for Besicovitch covering lemma in vector spaces
 
@@ -78,16 +76,13 @@ def centerAndRescale : SatelliteConfig E N τ where
     simp (disch := positivity) only [dist_smul₀, ← mul_add, dist_sub_right, Real.norm_of_nonneg]
     gcongr
     exact a.inter i hi
-#align besicovitch.satellite_config.center_and_rescale Besicovitch.SatelliteConfig.centerAndRescale
 
 theorem centerAndRescale_center : a.centerAndRescale.c (last N) = 0 := by
   simp [SatelliteConfig.centerAndRescale]
-#align besicovitch.satellite_config.center_and_rescale_center Besicovitch.SatelliteConfig.centerAndRescale_center
 
 theorem centerAndRescale_radius {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) :
     a.centerAndRescale.r (last N) = 1 := by
-  simp [SatelliteConfig.centerAndRescale, inv_mul_cancel (a.rpos _).ne']
-#align besicovitch.satellite_config.center_and_rescale_radius Besicovitch.SatelliteConfig.centerAndRescale_radius
+  simp [SatelliteConfig.centerAndRescale, inv_mul_cancel₀ (a.rpos _).ne']
 
 end SatelliteConfig
 
@@ -98,7 +93,6 @@ end SatelliteConfig
 optimal number of families in the Besicovitch covering theorem. -/
 def multiplicity (E : Type*) [NormedAddCommGroup E] :=
   sSup {N | ∃ s : Finset E, s.card = N ∧ (∀ c ∈ s, ‖c‖ ≤ 2) ∧ ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖}
-#align besicovitch.multiplicity Besicovitch.multiplicity
 
 section
 
@@ -125,7 +119,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     convert h c hc d hd hcd
     norm_num
   have A_subset : A ⊆ ball (0 : E) ρ := by
-    refine' iUnion₂_subset fun x hx => _
+    refine iUnion₂_subset fun x hx => ?_
     apply ball_subset_ball'
     calc
       δ + dist x 0 ≤ δ + 2 := by rw [dist_zero_right]; exact add_le_add le_rfl (hs x hx)
@@ -148,24 +142,21 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     have := ENNReal.toReal_le_of_le_ofReal (pow_nonneg ρpos.le _) J
     simpa [ρ, δ, div_eq_mul_inv, mul_pow] using this
   exact mod_cast K
-#align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
 
 theorem multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
   apply csSup_le
-  · refine' ⟨0, ⟨∅, by simp⟩⟩
+  · refine ⟨0, ⟨∅, by simp⟩⟩
   · rintro _ ⟨s, ⟨rfl, h⟩⟩
     exact Besicovitch.card_le_of_separated s h.1 h.2
-#align besicovitch.multiplicity_le Besicovitch.multiplicity_le
 
 theorem card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖) : s.card ≤ multiplicity E := by
   apply le_csSup
-  · refine' ⟨5 ^ finrank ℝ E, _⟩
+  · refine ⟨5 ^ finrank ℝ E, ?_⟩
     rintro _ ⟨s, ⟨rfl, h⟩⟩
     exact Besicovitch.card_le_of_separated s h.1 h.2
   · simp only [mem_setOf_eq, Ne]
     exact ⟨s, rfl, hs, h's⟩
-#align besicovitch.card_le_multiplicity Besicovitch.card_le_multiplicity
 
 variable (E)
 
@@ -196,7 +187,7 @@ theorem exists_goodδ :
     · exact
         ⟨fun _ => 0, by simp, fun i j _ => by
           simpa only [norm_zero, sub_nonpos, sub_self]⟩
-  -- For `δ > 0`, `F δ` is a function from `fin N` to the ball of radius `2` for which two points
+  -- For `δ > 0`, `F δ` is a function from `Fin N` to the ball of radius `2` for which two points
   -- in the image are separated by `1 - δ`.
   choose! F hF using this
   -- Choose a converging subsequence when `δ → 0`.
@@ -213,7 +204,7 @@ theorem exists_goodδ :
       ∃ f ∈ closedBall (0 : Fin N → E) 2,
         ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto ((F ∘ u) ∘ φ) atTop (𝓝 f) :=
       IsCompact.tendsto_subseq (isCompact_closedBall _ _) A
-    refine' ⟨f, fun i => _, fun i j hij => _⟩
+    refine ⟨f, fun i => ?_, fun i j hij => ?_⟩
     · simp only [pi_norm_le_iff_of_nonneg zero_le_two, mem_closedBall, dist_zero_right] at fmem
       exact fmem i
     · have A : Tendsto (fun n => ‖F (u (φ n)) i - F (u (φ n)) j‖) atTop (𝓝 ‖f i - f j‖) :=
@@ -244,35 +235,29 @@ theorem exists_goodδ :
   have : s.card ≤ multiplicity E := card_le_multiplicity hs h's
   rw [s_card, hN] at this
   exact lt_irrefl _ ((Nat.lt_succ_self (multiplicity E)).trans_le this)
-#align besicovitch.exists_good_δ Besicovitch.exists_goodδ
 
 /-- A small positive number such that any `1 - δ`-separated set in the ball of radius `2` has
 cardinality at most `Besicovitch.multiplicity E`. -/
 def goodδ : ℝ :=
   (exists_goodδ E).choose
-#align besicovitch.good_δ Besicovitch.goodδ
 
 theorem goodδ_lt_one : goodδ E < 1 :=
   (exists_goodδ E).choose_spec.2.1
-#align besicovitch.good_δ_lt_one Besicovitch.goodδ_lt_one
 
 /-- A number `τ > 1`, but chosen close enough to `1` so that the construction in the Besicovitch
 covering theorem using this parameter `τ` will give the smallest possible number of covering
 families. -/
 def goodτ : ℝ :=
   1 + goodδ E / 4
-#align besicovitch.good_τ Besicovitch.goodτ
 
 theorem one_lt_goodτ : 1 < goodτ E := by
   dsimp [goodτ, goodδ]; linarith [(exists_goodδ E).choose_spec.1]
-#align besicovitch.one_lt_good_τ Besicovitch.one_lt_goodτ
 
 variable {E}
 
 theorem card_le_multiplicity_of_δ {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 - goodδ E ≤ ‖c - d‖) : s.card ≤ multiplicity E :=
   (Classical.choose_spec (exists_goodδ E)).2.2 s hs h's
-#align besicovitch.card_le_multiplicity_of_δ Besicovitch.card_le_multiplicity_of_δ
 
 theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖f i‖ ≤ 2)
     (h' : Pairwise fun i j => 1 - goodδ E ≤ ‖f i - f j‖) : n ≤ multiplicity E := by
@@ -296,7 +281,6 @@ theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖
     exact h' this
   have : s.card ≤ multiplicity E := card_le_multiplicity_of_δ hs h's
   rwa [s_card] at this
-#align besicovitch.le_multiplicity_of_δ_of_fin Besicovitch.le_multiplicity_of_δ_of_fin
 
 end
 
@@ -347,14 +331,9 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
   · rw [norm_sub_rev]
     apply le_trans _ H.1
     exact hτ' j
-#align besicovitch.satellite_config.exists_normalized_aux1 Besicovitch.SatelliteConfig.exists_normalized_aux1
 
 variable [NormedSpace ℝ E]
 
-#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
-(Part of the code was ignoring the `maxDischargeDepth` setting:
- now that we have to increase it, other paths becomes slow.) -/
-set_option maxHeartbeats 400000 in
 theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
     (hδ2 : δ ≤ 1) (i j : Fin N.succ) (inej : i ≠ j) (hi : ‖a.c i‖ ≤ 2) (hj : 2 < ‖a.c j‖) :
@@ -389,8 +368,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     calc
       a.r j - δ ≤ a.r j - a.r j / 4 * δ := by
         gcongr _ - ?_
-        refine' mul_le_of_le_one_left δnonneg _
-        linarith only [C]
+        exact mul_le_of_le_one_left δnonneg (by linarith only [C])
       _ = (1 - δ / 4) * a.r j := by ring
       _ ≤ (1 - δ / 4) * (τ * a.r i) := mul_le_mul_of_nonneg_left H.2 D
       _ ≤ 1 * a.r i := by rw [← mul_assoc]; gcongr
@@ -408,7 +386,6 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         field_simp [(zero_le_two.trans_lt hj).ne']
         linarith only [hcrj]
   linarith only [this]
-#align besicovitch.satellite_config.exists_normalized_aux2 Besicovitch.SatelliteConfig.exists_normalized_aux2
 
 theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
@@ -465,7 +442,6 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       rw [← Real.norm_eq_abs, ← norm_smul, smul_sub, hd, smul_smul]
       congr 3
       field_simp [spos.ne']
-#align besicovitch.satellite_config.exists_normalized_aux3 Besicovitch.SatelliteConfig.exists_normalized_aux3
 
 theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (lastc : a.c (last N) = 0)
     (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4) (hδ2 : δ ≤ 1) :
@@ -476,7 +452,7 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
     simp only [c']
     split_ifs with h; · exact h
     by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]
-  refine' ⟨c', fun n => norm_c'_le n, fun i j inej => _⟩
+  refine ⟨c', fun n => norm_c'_le n, fun i j inej => ?_⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
   · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_le hij)
@@ -494,7 +470,6 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
       have H'i : ‖a.c i‖ ≤ 2 ↔ False := by simpa only [not_le, iff_false_iff] using Hi
       simp_rw [c', H'i, if_false, H'j, if_false]
       exact exists_normalized_aux3 a lastc lastr hτ δ hδ1 i j inej Hi hij
-#align besicovitch.satellite_config.exists_normalized Besicovitch.SatelliteConfig.exists_normalized
 
 end SatelliteConfig
 
@@ -515,10 +490,8 @@ theorem isEmpty_satelliteConfig_multiplicity :
       ⟨c', c'_le_two, hc'⟩
     exact
       lt_irrefl _ ((Nat.lt_succ_self _).trans_le (le_multiplicity_of_δ_of_fin c' c'_le_two hc'))⟩
-#align besicovitch.is_empty_satellite_config_multiplicity Besicovitch.isEmpty_satelliteConfig_multiplicity
 
 instance (priority := 100) instHasBesicovitchCovering : HasBesicovitchCovering E :=
   ⟨⟨multiplicity E, goodτ E, one_lt_goodτ E, isEmpty_satelliteConfig_multiplicity E⟩⟩
-#align besicovitch.has_besicovitch_covering Besicovitch.instHasBesicovitchCovering
 
 end Besicovitch

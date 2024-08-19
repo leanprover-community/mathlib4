@@ -102,6 +102,9 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 -- TODO: is it worth adding lemmas for Prime and Coprime as well?
 -- Doing so in this file would require adding imports.
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_dvd := natCast_dvd
+
 
 -- `Nat.cast_sub` is already tagged as `norm_cast` but it does allow to use assumptions like
 -- `m < n` or more generally `m + k ≤ n`. We add two lemmas to increase the probability that
@@ -114,3 +117,7 @@ variable {R : Type*} [AddGroupWithOne R]
 
 @[norm_cast] theorem Nat.cast_sub_of_lt {m n} (h : m < n) :
     ((n - m : ℕ) : R) = n - m := Nat.cast_sub h.le
+
+end Zify
+
+end Mathlib.Tactic

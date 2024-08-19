@@ -20,8 +20,6 @@ This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the ea
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w
 
 variable {R A B C : Type*}
@@ -158,9 +156,6 @@ variable {e e'}
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
-
-theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
 
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e

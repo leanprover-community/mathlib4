@@ -95,6 +95,9 @@ theorem natDegree_natCast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegre
 theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
+@[deprecated (since := "2024-04-17")]
+alias natDegree_nat_cast_le := natDegree_natCast_le
+
 theorem coeff_add_of_eq {n : ℕ} {a b : R} {f g : R[X]}
     (h_add_left : f.coeff n = a) (h_add_right : g.coeff n = b) :
     (f + g).coeff n = a + b := by subst ‹_› ‹_›; apply coeff_add
@@ -161,10 +164,13 @@ theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R
   · obtain ⟨m, rfl⟩ := WithBot.ne_bot_iff_exists.mp hh
     exact degree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
-variable {m n : ℕ} {f : R[X]} {r : R} (h : coeff f m = r) (natDeg_eq_coeff : m = n)
+variable {m n : ℕ} {f : R[X]} {r : R}
 
-theorem coeff_congr_lhs : coeff f n = r := natDeg_eq_coeff ▸ h
-theorem coeff_congr {s : R} (rs : r = s) : coeff f n = s := natDeg_eq_coeff ▸ rs ▸ h
+theorem coeff_congr_lhs (h : coeff f m = r) (natDeg_eq_coeff : m = n) : coeff f n = r :=
+  natDeg_eq_coeff ▸ h
+theorem coeff_congr (h : coeff f m = r) (natDeg_eq_coeff : m = n) {s : R} (rs : r = s) :
+    coeff f n = s :=
+  natDeg_eq_coeff ▸ rs ▸ h
 
 end congr_lemmas
 
@@ -175,11 +181,17 @@ variable [Ring R]
 
 theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_intCast _).le
 
+@[deprecated (since := "2024-04-17")]
+alias natDegree_int_cast_le := natDegree_intCast_le
+
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
     (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
 
 theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
   simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
+
+@[deprecated (since := "2024-04-17")]
+alias coeff_int_cast_ite := coeff_intCast_ite
 
 end ring
 
@@ -198,7 +210,7 @@ It returns
 * the name of the relation (`Eq` or `LE.le`), or else `.anonymous` if it's none of these.
 * either
   * `.inl zero`, `.inl one`, or `.inl many` if the polynomial in a numeral
-  * or `.inr` of the the head symbol of `f`
+  * or `.inr` of the head symbol of `f`
   * or `.inl .anonymous` if inapplicable
 * if it exists, whether the `rhs` is a metavariable
 * if the LHS is `coeff f d`, whether `d` is a metavariable
@@ -211,7 +223,7 @@ Sample outputs:
 * `degree (f * g) = d => (degree, Eq, HMul.hMul, d.isMVar, none)` (similarly for `≤`);
 * `coeff (1 : ℕ[X]) c = x => (coeff, Eq, one, x.isMVar, c.isMVar)` (no `≤` option!).
 -/
-def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.run do
+def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id.run do
   let (eq_or_le, lhs, rhs) ← match e.getAppFnArgs with
     | (na@``Eq, #[_, lhs, rhs])       => pure (na, lhs, rhs)
     | (na@``LE.le, #[_, _, lhs, rhs]) => pure (na, lhs, rhs)
@@ -288,7 +300,7 @@ Using the information contained in `twoH`, it decides which lemma is the most ap
 --  Internally, `dispatchLemma` produces 3 names: these are the lemmas that are appropriate
 --  for goals of the form `natDegree f ≤ d`, `degree f ≤ d`, `coeff f d = a`, in this order.
 def dispatchLemma
-    (twoH : Name × Name × Sum Name Name × List Bool) (debug : Bool := false) : Name :=
+    (twoH : Name × Name × (Name ⊕ Name) × List Bool) (debug : Bool := false) : Name :=
   match twoH with
     | (.anonymous, _, _) => ``id -- `twoH` gave default value, so we do nothing
     | (_, .anonymous, _) => ``id -- `twoH` gave default value, so we do nothing
@@ -432,7 +444,7 @@ The tactic may leave goals of the form `d' = d` `d' ≤ d`, or `r ≠ 0`, where 
 `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
 leading coefficient of `f`.
 
-`compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to clos them.
+`compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to close them.
 
 The variant `compute_degree!` first applies `compute_degree`.
 Then it uses `norm_num` on all the whole remaining goals and tries `assumption`.

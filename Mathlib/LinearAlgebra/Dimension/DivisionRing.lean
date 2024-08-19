@@ -9,8 +9,6 @@ import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.SetTheory.Cardinal.Subfield
 import Mathlib.LinearAlgebra.Dimension.RankNullity
 
-#align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
-
 /-!
 # Dimension of vector spaces
 
@@ -38,7 +36,7 @@ universe u₀ u v v' v'' u₁' w w'
 variable {K R : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open BigOperators Cardinal Basis Submodule Function Set
+open Cardinal Basis Submodule Function Set
 
 section Module
 
@@ -53,7 +51,6 @@ variable [AddCommGroup V₁] [Module K V₁]
 theorem Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V < ℵ₀) :
     (Basis.ofVectorSpaceIndex K V).Finite :=
   finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
-#align basis.finite_of_vector_space_index_of_rank_lt_aleph_0 Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0
 
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
@@ -89,12 +86,12 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
   congr 1
   apply LinearEquiv.rank_eq
   let L : V₁ →ₗ[K] ker (coprod db eb) := by -- Porting note: this is needed to avoid a timeout
-    refine' LinearMap.codRestrict _ (prod cd (-ce)) _
+    refine LinearMap.codRestrict _ (prod cd (-ce)) ?_
     · intro c
       simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, Pi.prod, coprod_apply,
         neg_neg, map_neg, neg_apply]
       exact LinearMap.ext_iff.1 eq c
-  refine' LinearEquiv.ofBijective L ⟨_, _⟩
+  refine LinearEquiv.ofBijective L ⟨?_, ?_⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
   · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap, Submodule.map_top,
       range_subtype]
@@ -104,143 +101,12 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
       Prod.mk.inj_iff, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
     intro hde
     rcases h hde with ⟨c, h₁, h₂⟩
-    refine' ⟨c, h₁, _⟩
+    refine ⟨c, h₁, ?_⟩
     rw [h₂, _root_.neg_neg]
-#align rank_add_rank_split rank_add_rank_split
 
 end
 
 end DivisionRing
-
-variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
-variable [AddCommGroup V'] [Module K V']
-
-/-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
-
-See also `FiniteDimensional.finBasis`.
--/
-def Basis.ofRankEqZero {ι : Type*} [IsEmpty ι] (hV : Module.rank K V = 0) : Basis ι K V :=
-  haveI : Subsingleton V := rank_zero_iff.1 hV
-  Basis.empty _
-#align basis.of_rank_eq_zero Basis.ofRankEqZero
-
-@[simp]
-theorem Basis.ofRankEqZero_apply {ι : Type*} [IsEmpty ι] (hV : Module.rank K V = 0) (i : ι) :
-    Basis.ofRankEqZero hV i = 0 :=
-  rfl
-#align basis.of_rank_eq_zero_apply Basis.ofRankEqZero_apply
-
-theorem le_rank_iff_exists_linearIndependent {c : Cardinal} :
-    c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndependent K ((↑) : s → V) := by
-  constructor
-  · intro h
-    let t := Basis.ofVectorSpace K V
-    rw [← t.mk_eq_rank'', Cardinal.le_mk_iff_exists_subset] at h
-    rcases h with ⟨s, hst, hsc⟩
-    exact ⟨s, hsc, (ofVectorSpaceIndex.linearIndependent K V).mono hst⟩
-  · rintro ⟨s, rfl, si⟩
-    exact si.cardinal_le_rank
-#align le_rank_iff_exists_linear_independent le_rank_iff_exists_linearIndependent
-
-theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} : ↑n ≤ Module.rank K V ↔
-    ∃ s : Finset V, s.card = n ∧ LinearIndependent K ((↑) : ↥(s : Set V) → V) := by
-  simp only [le_rank_iff_exists_linearIndependent, Cardinal.mk_set_eq_nat_iff_finset]
-  constructor
-  · rintro ⟨s, ⟨t, rfl, rfl⟩, si⟩
-    exact ⟨t, rfl, si⟩
-  · rintro ⟨s, rfl, si⟩
-    exact ⟨s, ⟨s, rfl, rfl⟩, si⟩
-#align le_rank_iff_exists_linear_independent_finset le_rank_iff_exists_linearIndependent_finset
-
-/-- A vector space has dimension at most `1` if and only if there is a
-single vector of which all vectors are multiples. -/
-theorem rank_le_one_iff : Module.rank K V ≤ 1 ↔ ∃ v₀ : V, ∀ v, ∃ r : K, r • v₀ = v := by
-  let b := Basis.ofVectorSpace K V
-  constructor
-  · intro hd
-    rw [← b.mk_eq_rank'', Cardinal.le_one_iff_subsingleton, subsingleton_coe] at hd
-    rcases eq_empty_or_nonempty (ofVectorSpaceIndex K V) with (hb | ⟨⟨v₀, hv₀⟩⟩)
-    · use 0
-      have h' : ∀ v : V, v = 0 := by simpa [b, hb, Submodule.eq_bot_iff] using b.span_eq.symm
-      intro v
-      simp [h' v]
-    · use v₀
-      have h' : (K ∙ v₀) = ⊤ := by simpa [b, hd.eq_singleton_of_mem hv₀] using b.span_eq
-      intro v
-      have hv : v ∈ (⊤ : Submodule K V) := mem_top
-      rwa [← h', mem_span_singleton] at hv
-  · rintro ⟨v₀, hv₀⟩
-    have h : (K ∙ v₀) = ⊤ := by
-      ext
-      simp [mem_span_singleton, hv₀]
-    rw [← rank_top, ← h]
-    refine' (rank_span_le _).trans_eq _
-    simp
-#align rank_le_one_iff rank_le_one_iff
-
-/-- A submodule has dimension at most `1` if and only if there is a
-single vector in the submodule such that the submodule is contained in
-its span. -/
-theorem rank_submodule_le_one_iff (s : Submodule K V) :
-    Module.rank K s ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K ∙ v₀ := by
-  simp_rw [rank_le_one_iff, le_span_singleton_iff]
-  constructor
-  · rintro ⟨⟨v₀, hv₀⟩, h⟩
-    use v₀, hv₀
-    intro v hv
-    obtain ⟨r, hr⟩ := h ⟨v, hv⟩
-    use r
-    simp_rw [Subtype.ext_iff, coe_smul] at hr
-    exact hr
-  · rintro ⟨v₀, hv₀, h⟩
-    use ⟨v₀, hv₀⟩
-    rintro ⟨v, hv⟩
-    obtain ⟨r, hr⟩ := h v hv
-    use r
-    simp_rw [Subtype.ext_iff, coe_smul]
-    exact hr
-#align rank_submodule_le_one_iff rank_submodule_le_one_iff
-
-/-- A submodule has dimension at most `1` if and only if there is a
-single vector, not necessarily in the submodule, such that the
-submodule is contained in its span. -/
-theorem rank_submodule_le_one_iff' (s : Submodule K V) :
-    Module.rank K s ≤ 1 ↔ ∃ v₀, s ≤ K ∙ v₀ := by
-  rw [rank_submodule_le_one_iff]
-  constructor
-  · rintro ⟨v₀, _, h⟩
-    exact ⟨v₀, h⟩
-  · rintro ⟨v₀, h⟩
-    by_cases hw : ∃ w : V, w ∈ s ∧ w ≠ 0
-    · rcases hw with ⟨w, hw, hw0⟩
-      use w, hw
-      rcases mem_span_singleton.1 (h hw) with ⟨r', rfl⟩
-      have h0 : r' ≠ 0 := by
-        rintro rfl
-        simp at hw0
-      rwa [span_singleton_smul_eq (IsUnit.mk0 _ h0) _]
-    · push_neg at hw
-      rw [← Submodule.eq_bot_iff] at hw
-      simp [hw]
-#align rank_submodule_le_one_iff' rank_submodule_le_one_iff'
-
-theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) :
-    Module.rank K W ≤ 1 ↔ W.IsPrincipal := by
-  simp only [rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
-    span_singleton_le_iff_mem]
-  constructor
-  · rintro ⟨⟨m, hm⟩, hm'⟩
-    choose f hf using hm'
-    exact ⟨m, ⟨fun v hv => ⟨f ⟨v, hv⟩, congr_arg ((↑) : W → V) (hf ⟨v, hv⟩)⟩, hm⟩⟩
-  · rintro ⟨a, ⟨h, ha⟩⟩
-    choose f hf using h
-    exact ⟨⟨a, ha⟩, fun v => ⟨f v.1 v.2, Subtype.ext (hf v.1 v.2)⟩⟩
-#align submodule.rank_le_one_iff_is_principal Submodule.rank_le_one_iff_isPrincipal
-
-theorem Module.rank_le_one_iff_top_isPrincipal :
-    Module.rank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
-  rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
-#align module.rank_le_one_iff_top_is_principal Module.rank_le_one_iff_top_isPrincipal
 
 end Module
 
@@ -258,8 +124,8 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     by_contra gx_ne_zero
     -- We'll derive a contradiction by showing `b '' (univ \ {i})` of cardinality `n - 1`
     -- spans a vector space of dimension `n`.
-    refine' not_le_of_gt (span_lt_top_of_card_lt_finrank
-      (show (b '' (Set.univ \ {i})).toFinset.card < finrank K V from _)) _
+    refine not_le_of_gt (span_lt_top_of_card_lt_finrank
+      (show (b '' (Set.univ \ {i})).toFinset.card < finrank K V from ?_)) ?_
     · calc
         (b '' (Set.univ \ {i})).toFinset.card = ((Set.univ \ {i}).toFinset.image b).card := by
           rw [Set.toFinset_card, Fintype.card_ofFinset]
@@ -269,32 +135,31 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
         _ = finrank K V := card_eq
     -- We already have that `b '' univ` spans the whole space,
     -- so we only need to show that the span of `b '' (univ \ {i})` contains each `b j`.
-    refine' spans.trans (span_le.mpr _)
+    refine spans.trans (span_le.mpr ?_)
     rintro _ ⟨j, rfl, rfl⟩
     -- The case that `j ≠ i` is easy because `b j ∈ b '' (univ \ {i})`.
     by_cases j_eq : j = i
     swap
-    · refine' subset_span ⟨j, (Set.mem_diff _).mpr ⟨Set.mem_univ _, _⟩, rfl⟩
+    · refine subset_span ⟨j, (Set.mem_diff _).mpr ⟨Set.mem_univ _, ?_⟩, rfl⟩
       exact mt Set.mem_singleton_iff.mp j_eq
     -- To show `b i ∈ span (b '' (univ \ {i}))`, we use that it's a weighted sum
     -- of the other `b j`s.
     rw [j_eq, SetLike.mem_coe, show b i = -((g i)⁻¹ • (s.erase i).sum fun j => g j • b j) from _]
-    · refine' neg_mem (smul_mem _ _ (sum_mem fun k hk => _))
+    · refine neg_mem (smul_mem _ _ (sum_mem fun k hk => ?_))
       obtain ⟨k_ne_i, _⟩ := Finset.mem_erase.mp hk
-      refine' smul_mem _ _ (subset_span ⟨k, _, rfl⟩)
+      refine smul_mem _ _ (subset_span ⟨k, ?_, rfl⟩)
       simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff, and_self, not_false_eq_true]
     -- To show `b i` is a weighted sum of the other `b j`s, we'll rewrite this sum
     -- to have the form of the assumption `dependent`.
     apply eq_neg_of_add_eq_zero_left
     calc
       (b i + (g i)⁻¹ • (s.erase i).sum fun j => g j • b j) =
-          (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) :=
-        by rw [smul_add, ← mul_smul, inv_mul_cancel gx_ne_zero, one_smul]
+          (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) := by
+        rw [smul_add, ← mul_smul, inv_mul_cancel₀ gx_ne_zero, one_smul]
       _ = (g i)⁻¹ • (0 : V) := congr_arg _ ?_
       _ = 0 := smul_zero _
     -- And then it's just a bit of manipulation with finite sums.
     rwa [← Finset.insert_erase i_mem_s, Finset.sum_insert (Finset.not_mem_erase _ _)] at dependent
-#align linear_independent_of_top_le_span_of_card_eq_finrank linearIndependent_of_top_le_span_of_card_eq_finrank
 
 /-- A finite family of vectors is linearly independent if and only if
 its cardinality equals the dimension of its span. -/
@@ -321,25 +186,21 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
       simpa [f, mem_map] using hx
     have hi : LinearMap.ker f = ⊥ := ker_subtype _
     convert (linearIndependent_of_top_le_span_of_card_eq_finrank hs hc).map' _ hi
-#align linear_independent_iff_card_eq_finrank_span linearIndependent_iff_card_eq_finrank_span
 
 theorem linearIndependent_iff_card_le_finrank_span {ι : Type*} [Fintype ι] {b : ι → V} :
     LinearIndependent K b ↔ Fintype.card ι ≤ (Set.range b).finrank K := by
   rw [linearIndependent_iff_card_eq_finrank_span, (finrank_range_le_card _).le_iff_eq]
-#align linear_independent_iff_card_le_finrank_span linearIndependent_iff_card_le_finrank_span
 
 /-- A family of `finrank K V` vectors forms a basis if they span the whole space. -/
 noncomputable def basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
     (le_span : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) : Basis ι K V :=
   Basis.mk (linearIndependent_of_top_le_span_of_card_eq_finrank le_span card_eq) le_span
-#align basis_of_top_le_span_of_card_eq_finrank basisOfTopLeSpanOfCardEqFinrank
 
 @[simp]
 theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
     (le_span : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     ⇑(basisOfTopLeSpanOfCardEqFinrank b le_span card_eq) = b :=
   Basis.coe_mk _ _
-#align coe_basis_of_top_le_span_of_card_eq_finrank coe_basisOfTopLeSpanOfCardEqFinrank
 
 /-- A finset of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
@@ -348,7 +209,6 @@ noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
   basisOfTopLeSpanOfCardEqFinrank ((↑) : ↥(s : Set V) → V)
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
-#align finset_basis_of_top_le_span_of_card_eq_finrank finsetBasisOfTopLeSpanOfCardEqFinrank
 
 /-- A set of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
@@ -356,7 +216,6 @@ noncomputable def setBasisOfTopLeSpanOfCardEqFinrank {s : Set V} [Fintype s]
     (le_span : ⊤ ≤ span K s) (card_eq : s.toFinset.card = finrank K V) : Basis s K V :=
   basisOfTopLeSpanOfCardEqFinrank ((↑) : s → V) ((@Subtype.range_coe_subtype _ s).symm ▸ le_span)
     (_root_.trans s.toFinset_card.symm card_eq)
-#align set_basis_of_top_le_span_of_card_eq_finrank setBasisOfTopLeSpanOfCardEqFinrank
 
 end Basis
 

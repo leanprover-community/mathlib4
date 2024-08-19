@@ -41,12 +41,17 @@ variable (hv : LinearIndependent R v) {u : ι ⊕ ι' → S.X₂}
   (hw : LinearIndependent R (S.g ∘ u ∘ Sum.inr))
   (hm : Mono S.f) (huv : u ∘ Sum.inl = S.f ∘ v)
 
+section
+include hS hw huv
+
 theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
-  refine' Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) _
+  refine Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) ?_
   rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f), hS.moduleCat_range_eq_ker]
   exact range_ker_disjoint hw
+
+include hv hm in
 
 /-- In the commutative diagram
 ```
@@ -61,12 +66,15 @@ where the top row is an exact sequence of modules and the maps on the bottom are
 independent. -/
 theorem linearIndependent_leftExact : LinearIndependent R u := by
   rw [linearIndependent_sum]
-  refine' ⟨_, LinearIndependent.of_comp S.g hw, disjoint_span_sum hS hw huv⟩
+  refine ⟨?_, LinearIndependent.of_comp S.g hw, disjoint_span_sum hS hw huv⟩
   rw [huv, LinearMap.linearIndependent_iff S.f]; swap
   · rw [LinearMap.ker_eq_bot, ← mono_iff_injective]
     infer_instance
   exact hv
 
+end
+
+include hS' hv in
 /-- Given a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of `R`-modules and linearly independent
     families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
 theorem linearIndependent_shortExact {w : ι' → S.X₃} (hw : LinearIndependent R w) :
@@ -81,6 +89,7 @@ end LinearIndependent
 
 section Span
 
+include hS in
 /-- In the commutative diagram
 ```
     f     g
@@ -124,12 +133,13 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
     use cm.mapDomain (Sum.inr)
     rw [Finsupp.sum_mapDomain_index_inj Sum.inr_injective]
 
+include hS in
 /-- Given an exact sequence `X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of `R`-modules and spanning
     families `v : ι → X₁` and `w : ι' → X₃`, we get a spanning family `ι ⊕ ι' → X₂` -/
 theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range w)) (hE : Epi S.g) :
     ⊤ ≤ span R (range (Sum.elim (S.f ∘ v) (S.g.toFun.invFun ∘ w))) := by
-  refine' span_exact hS _ hv _
+  refine span_exact hS ?_ hv ?_
   · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
   · convert hw
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
@@ -146,6 +156,8 @@ def Basis.ofShortExact
     (bN : Basis ι R S.X₁) (bP : Basis ι' R S.X₃) : Basis (ι ⊕ ι') R S.X₂ :=
   Basis.mk (linearIndependent_shortExact hS' bN.linearIndependent bP.linearIndependent)
     (span_rightExact hS'.exact (le_of_eq (bN.span_eq.symm)) (le_of_eq (bP.span_eq.symm)) hS'.epi_g)
+
+include hS'
 
 /-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, if `X₁` and `X₃` are free,
 then `X₂` is free. -/

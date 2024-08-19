@@ -21,8 +21,6 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w u₁ v₁
 
 variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁}
@@ -195,9 +193,6 @@ variable {e e'}
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
-
-theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
 
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
