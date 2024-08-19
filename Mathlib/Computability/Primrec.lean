@@ -28,7 +28,6 @@ for this.)
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
-
 open Mathlib (Vector)
 open Denumerable Encodable Function
 

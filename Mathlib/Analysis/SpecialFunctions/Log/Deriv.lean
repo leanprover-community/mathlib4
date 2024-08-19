@@ -140,7 +140,7 @@ theorem DifferentiableWithinAt.log (hf : DifferentiableWithinAt ℝ f s x) (hx :
     DifferentiableWithinAt ℝ (fun x => log (f x)) s x :=
   (hf.hasFDerivWithinAt.log hx).differentiableWithinAt
 
-@[simp]
+@[simp, fun_prop]
 theorem DifferentiableAt.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
     DifferentiableAt ℝ (fun x => log (f x)) x :=
   (hf.hasFDerivAt.log hx).differentiableAt

@@ -920,6 +920,7 @@ theorem Metric.emetric_ball_top (x : α) : EMetric.ball x ⊤ = univ :=
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionaly) equal to some given uniform structure.
 See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α :=
@@ -935,11 +936,13 @@ theorem PseudoMetricSpace.replaceUniformity_eq {α} [U : UniformSpace α] (m : P
 -- ensure that the bornology is unchanged when replacing the uniformity.
 example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) :
-  (PseudoMetricSpace.replaceUniformity m H).toBornology = m.toBornology := rfl
+    (PseudoMetricSpace.replaceUniformity m H).toBornology = m.toBornology := by
+  with_reducible_and_instances rfl
 
 /-- Build a new pseudo metric space from an old one where the bundled topological structure is
 provably (but typically non-definitionaly) equal to some given topological structure.
 See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev PseudoMetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : PseudoMetricSpace γ)
     (H : U = m.toUniformSpace.toTopologicalSpace) : PseudoMetricSpace γ :=
@@ -982,6 +985,7 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionaly) equal to some given bornology structure.
 See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev PseudoMetricSpace.replaceBornology {α} [B : Bornology α] (m : PseudoMetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
@@ -1000,7 +1004,8 @@ theorem PseudoMetricSpace.replaceBornology_eq {α} [m : PseudoMetricSpace α] [B
 -- ensure that the uniformity is unchanged when replacing the bornology.
 example {α} [B : Bornology α] (m : PseudoMetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
-  (PseudoMetricSpace.replaceBornology m H).toUniformSpace = m.toUniformSpace := rfl
+    (PseudoMetricSpace.replaceBornology m H).toUniformSpace = m.toUniformSpace := by
+  with_reducible_and_instances rfl
 
 section Real
 

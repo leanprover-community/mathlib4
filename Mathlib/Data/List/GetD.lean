@@ -110,11 +110,11 @@ theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
   rfl
 
 theorem getI_eq_getElem {n : ℕ} (hn : n < l.length) : l.getI n = l[n] :=
-  getD_eq_getElem ..
+  getD_eq_getElem l default hn
 
 @[deprecated getI_eq_getElem (since := "2024-08-02")]
 theorem getI_eq_get {n : ℕ} (hn : n < l.length) : l.getI n = l.get ⟨n, hn⟩ :=
-  getD_eq_getElem ..
+  getD_eq_getElem l default hn
 
 theorem getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=
   getD_eq_default _ _ hn
