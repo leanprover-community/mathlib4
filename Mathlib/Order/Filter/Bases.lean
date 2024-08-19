@@ -72,7 +72,7 @@ We use the latter one because, e.g., `𝓝 x` in an `EMetricSpace` or in a `Metr
 of this form. The other two can be emulated using `s = id` or `p = fun _ ↦ True`.
 
 With this approach sometimes one needs to `simp` the statement provided by the `Filter.HasBasis`
-machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help with the case
+machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can help with the case
 `p = fun _ ↦ True`.
 -/
 

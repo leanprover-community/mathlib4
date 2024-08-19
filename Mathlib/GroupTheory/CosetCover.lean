@@ -77,6 +77,7 @@ theorem leftCoset_cover_const_iff_surjOn :
     QuotientGroup.forall_mk, QuotientGroup.eq]
 
 variable (hcovers : ⋃ i ∈ s, g i • (H : Set G) = Set.univ)
+include hcovers
 
 /-- If `H` is a subgroup of `G` and `G` is the union of a finite family of left cosets of `H`
 then `H` has finite index. -/
@@ -119,6 +120,7 @@ section
 
 variable {ι : Type*} {H : ι → Subgroup G} {g : ι → G} {s : Finset ι}
     (hcovers : ⋃ i ∈ s, (g i) • (H i : Set G) = Set.univ)
+include hcovers
 
 -- Inductive inner part of `Subgroup.exists_finiteIndex_of_leftCoset_cover`
 @[to_additive]
@@ -149,7 +151,7 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
     let κ := ↥(s.filter (H · ≠ H j)) × Option ↥(s.filter (H · = H j))
     let f : κ → G
     | ⟨k₁, some k₂⟩ => g k₂ * x⁻¹ * g k₁
-    | ⟨k₁, none⟩  => g k₁
+    | ⟨k₁, none⟩ => g k₁
     let K (k : κ) : Subgroup G := H k.1.val
     have hK' (k : κ) : K k ∈ (s.image H).erase (H j) := by
       have := Finset.mem_filter.mp k.1.property
@@ -271,7 +273,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
         f, K, hHD, ← (ht i hi _).2, hi, hfi, hkfi]
   · rw [hdensity]
     refine le_of_mul_le_mul_right ?_ (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hD.finiteIndex))
-    rw [one_mul, mul_assoc, inv_mul_cancel (Nat.cast_ne_zero.mpr hD.finiteIndex), mul_one,
+    rw [one_mul, mul_assoc, inv_mul_cancel₀ (Nat.cast_ne_zero.mpr hD.finiteIndex), mul_one,
       Nat.cast_le]
     exact index_le_of_leftCoset_cover_const hcovers'
   · rw [hdensity, mul_inv_eq_one₀ (Nat.cast_ne_zero.mpr hD.finiteIndex),
@@ -332,10 +334,10 @@ theorem exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
   by_contra! h
   apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_lt
-  by_cases hs : s = ∅
-  · simp only [hs, Finset.sum_empty, show (0 : ℚ) < 1 from rfl]
-  rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
-  have hs' : 0 < s.card := Nat.pos_of_ne_zero (Finset.card_ne_zero.mpr hs)
+  cases s.eq_empty_or_nonempty with
+  | inl hs => simp only [hs, Finset.sum_empty, zero_lt_one]
+  | inr hs =>
+  have hs' : 0 < s.card := hs.card_pos
   have hlt : ∀ i ∈ s, ((H i).index : ℚ)⁻¹ < (s.card : ℚ)⁻¹ := fun i hi ↦ by
     cases eq_or_ne (H i).index 0 with
     | inl hindex =>
@@ -343,7 +345,7 @@ theorem exists_index_le_card_of_leftCoset_cover :
     | inr hindex =>
       exact inv_lt_inv_of_lt (by exact_mod_cast hs') (by exact_mod_cast h i hi ⟨hindex⟩)
   apply (Finset.sum_lt_sum_of_nonempty hs hlt).trans_eq
-  rw [Finset.sum_const, nsmul_eq_mul, mul_inv_cancel (Nat.cast_ne_zero.mpr hs'.ne')]
+  rw [Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr hs'.ne')]
 
 end
 
@@ -353,9 +355,8 @@ section Submodule
 
 variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M]
     {p : ι → Submodule R M} {s : Finset ι}
-    (hcovers : ⋃ i ∈ s, (p i : Set M) = Set.univ)
 
-theorem Submodule.exists_finiteIndex_of_cover :
+theorem Submodule.exists_finiteIndex_of_cover (hcovers : ⋃ i ∈ s, (p i : Set M) = Set.univ) :
     ∃ k ∈ s, (p k).toAddSubgroup.FiniteIndex :=
   have hcovers' : ⋃ i ∈ s, (0 : M) +ᵥ ((p i).toAddSubgroup : Set M) = Set.univ := by
     simpa only [zero_vadd] using hcovers

@@ -9,7 +9,7 @@ import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-!
-# The structure sheaf on `projective_spectrum 𝒜`.
+# The structure sheaf on `ProjectiveSpectrum 𝒜`.
 
 In `Mathlib.AlgebraicGeometry.Topology`, we have given a topology on `ProjectiveSpectrum 𝒜`; in
 this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
