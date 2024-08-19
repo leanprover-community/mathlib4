@@ -329,6 +329,13 @@ lemma mem_range_root_of_mem_range_reflection_of_mem_range_root
   obtain ⟨j, rfl⟩ := hα
   exact ⟨P.reflection_perm i j, P.root_reflection_perm i j⟩
 
+lemma mem_range_coroot_of_mem_range_coreflection_of_mem_range_coroot
+    {r : N ≃ₗ[R] N} {α : N} (hr : r ∈ range P.coreflection) (hα : α ∈ range P.coroot) :
+    r • α ∈ range P.coroot := by
+  obtain ⟨i, rfl⟩ := hr
+  obtain ⟨j, rfl⟩ := hα
+  exact ⟨P.reflection_perm i j, P.coroot_reflection_perm i j⟩
+
 lemma exists_root_eq_smul_of_mem_weylGroup {w : M ≃ₗ[R] M} (hw : w ∈ P.weylGroup) (i : ι) :
     ∃ j, P.root j = w • P.root i :=
   Subgroup.smul_mem_of_mem_closure_of_mem (by simp)
