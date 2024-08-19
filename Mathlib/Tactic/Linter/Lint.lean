@@ -121,7 +121,7 @@ open Lean Elab Command
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 register_option linter.missingEnd : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the missing end linter"
 }
 
@@ -167,7 +167,7 @@ The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a ch
 different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
 register_option linter.cdot : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `cdot` linter"
 }
 
@@ -211,12 +211,51 @@ initialize addLinter cdotLinter
 
 end CDotLinter
 
+/-!
+# The `dollarSyntax` linter
+
+The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
+These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`.
+-/
+
+/-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
+These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`. -/
+register_option linter.dollarSyntax : Bool := {
+  defValue := true
+  descr := "enable the `dollarSyntax` linter"
+}
+
+namespace DollarSyntaxLinter
+
+/-- `findDollarSyntax stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
+partial
+def findDollarSyntax : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let dargs := (args.map findDollarSyntax).flatten
+    match kind with
+      | ``«term_$__» => dargs.push stx
+      | _ => dargs
+  |_ => #[]
+
+@[inherit_doc linter.dollarSyntax]
+def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless Linter.getLinterValue linter.dollarSyntax (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for s in findDollarSyntax stx do
+      Linter.logLint linter.dollarSyntax s m!"Please use '<|' instead of '$' for the pipe operator."
+
+initialize addLinter dollarSyntaxLinter
+
+end DollarSyntaxLinter
+
 /-! # The "longLine linter" -/
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
 register_option linter.longLine : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the longLine linter"
 }
 
