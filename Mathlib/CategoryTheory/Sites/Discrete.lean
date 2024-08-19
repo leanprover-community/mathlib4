@@ -130,6 +130,8 @@ noncomputable def equivCommuteConstant' : let e : Sheaf J A ≌ Sheaf K A := she
 The property of a sheaf of being a discrete object is invariant under equivalence of sheaf
 categories.
 -/
+-- TODO: Remove the assumptions `[(constantSheaf J A).Faithful] [(constantSheaf J A).Full]` by
+-- proving the necessary lemmas about commuting the counit with the equivalences.
 lemma isDiscrete_iff_of_equivalence (F : Sheaf K A)
     [(constantSheaf J A).Faithful] [(constantSheaf J A).Full] :
     let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
