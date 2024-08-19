@@ -278,22 +278,13 @@ lemma T_mem_S_T_subgroup : T ∈ S_T_subgroup := by
   apply Subgroup.subset_closure
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_true]
 
-lemma S_smul_mem_S_T_subgroup (B : Δ 1) (hB : B ∈ S_T_subgroup) : (S • B) ∈ S_T_subgroup := by
-  rw [smul_eq_mul]
-  apply Subgroup.mul_mem _ (S_mem_S_T_subgroup) (hB)
-
-lemma T_smul_mem_S_T_subgroup (B : Δ 1) (hB : B ∈ S_T_subgroup) : (T • B) ∈ S_T_subgroup := by
-  rw [smul_eq_mul]
-  apply Subgroup.mul_mem _ (T_mem_S_T_subgroup) (hB)
-
 lemma det_one_mem_G : ∀ A : Δ 1, A ∈ S_T_subgroup := by
   intro A
-  induction A using (induction_on 1 )
-  exact Int.one_ne_zero
+  induction A using (induction_on 1 _  Int.one_ne_zero)
   next A a1 a2 a4 a5 a6 =>
     have : A = (1 : SL(2,ℤ)) := by
       ext i j
-      fin_cases i; fin_cases j
+      fin_cases i <;> fin_cases j
       · simp only [Int.cast_id, Fin.zero_eta, Fin.isValue, coe_one, one_apply_eq]
         have := Int.mul_eq_one_iff_eq_one_or_neg_one.mp (A_b_eq_zero 1 A a1)
         aesop
@@ -301,7 +292,6 @@ lemma det_one_mem_G : ∀ A : Δ 1, A ∈ S_T_subgroup := by
         not_false_eq_true, one_apply_ne]
         have := Int.mul_eq_one_iff_eq_one_or_neg_one.mp (A_b_eq_zero 1 A a1)
         aesop
-      fin_cases j
       · simp only [Int.cast_id, Fin.mk_one, Fin.isValue, Fin.zero_eta, a1, coe_one, ne_eq,
         one_ne_zero, not_false_eq_true, one_apply_ne]
       · simp only [Int.cast_id, Fin.mk_one, Fin.isValue, coe_one, one_apply_eq]
@@ -309,8 +299,12 @@ lemma det_one_mem_G : ∀ A : Δ 1, A ∈ S_T_subgroup := by
         aesop
     rw [this]
     exact Subgroup.one_mem S_T_subgroup
-  next B hb => apply (S_smul_mem_S_T_subgroup B) hb
-  next B hb => apply (T_smul_mem_S_T_subgroup B) hb
+  next B hb =>
+    rw [smul_eq_mul]
+    apply Subgroup.mul_mem _ (S_mem_S_T_subgroup) (hb)
+  next B hb =>
+    rw [smul_eq_mul]
+    apply Subgroup.mul_mem _ (T_mem_S_T_subgroup) (hb)
 
 lemma SL2Z_generators : S_T_subgroup = (⊤ : Subgroup (SL(2,ℤ))) := by
     refine (Subgroup.eq_top_iff' S_T_subgroup).mpr (fun _ => det_one_mem_G _)
