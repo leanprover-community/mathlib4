@@ -1,6 +1,10 @@
-# This is the Dockerfile for `leanprovercommunity/lean`.
+# This is the Dockerfile for `leanprovercommunity/lean4`.
 # It is based on the generic `debian` image, and installs `elan` and the current stable version of `lean`.
-# See also the image `leanprovercommunity/mathlib`.
+
+# This container does not come with a pre-installed version of mathlib;
+# you should call `lake exe cache get` which will download the most recent version.
+# The only difference between this Dockerfile and leanprovercommunity/lean4 is that this image
+# bypasses a warning that could occur when trying to connect to github for the first time.
 
 # NOTE: to run this docker image on macos or windows,
 # you will need to increase the allowed memory (in the docker GUI) beyond 2GB
@@ -27,3 +31,6 @@ RUN curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -
     . ~/.profile && \
     elan toolchain install $(curl https://raw.githubusercontent.com/leanprover-community/mathlib/master/leanpkg.toml | grep lean_version | awk -F'"' '{print $2}') && \
     elan default stable
+
+# ssh to github once to bypass the unknown fingerprint warning
+RUN ssh -o StrictHostKeyChecking=no github.com || true
