@@ -34,9 +34,9 @@ theorem rank_eq_of_equiv : (x y : PSet) → Equiv x y → rank x = rank y
     lsub_eq_of_range_eq (by
       ext; constructor <;> simp <;> intro a h
       · obtain ⟨b, h'⟩ := αβ a
-        exists b; rw [←h, rank_eq_of_equiv _ _ h']
+        exists b; rw [← h, rank_eq_of_equiv _ _ h']
       · obtain ⟨b, h'⟩ := βα a
-        exists b; rw [←h, rank_eq_of_equiv _ _ h'])
+        exists b; rw [← h, rank_eq_of_equiv _ _ h'])
 
 theorem rank_lt_of_mem : {x y : PSet} → y ∈ x → rank y < rank x
   | ⟨_, _⟩, _, ⟨_, h⟩ => by
@@ -69,7 +69,7 @@ theorem rank_le_of_subset (h : x ⊆ y) : rank x ≤ rank y :=
   rank_le_of_forall_mem_rank_lt fun _ h₁ => rank_lt_of_mem (h h₁)
 
 theorem rank_empty : rank ∅ = 0 := by
-  rw [←Ordinal.le_zero]; apply rank_le_of_forall_mem_rank_lt; simp
+  rw [← Ordinal.le_zero]; apply rank_le_of_forall_mem_rank_lt; simp
 
 theorem rank_insert : rank (insert x y) = max (rank x + 1) (rank y) := by
   apply le_antisymm
@@ -104,7 +104,7 @@ theorem rank_sUnion_le : rank (⋃₀ x : ZFSet) ≤ rank x := by
   simp; intros; trans <;> apply rank_lt_of_mem <;> assumption
 
 theorem succ_rank_sUnion_ge : rank (⋃₀ x : ZFSet) + 1 ≥ rank x := by
-  rw [←rank_powerset]
+  rw [← rank_powerset]
   apply rank_le_of_subset
   intro z _; simp; intro _ _; simp; exists z
 
@@ -118,13 +118,13 @@ theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
 theorem rank_eq_wf_rank : lift.{u+1,u} (rank x) = mem_wf.rank x := by
   induction' x using inductionOn with x ih
   rw [mem_wf.rank_eq]
-  simp_rw [←fun y : { y // y ∈ x } => ih y y.2]
+  simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply le_antisymm
   · apply le_of_forall_lt
     intro _ h
     rw [lt_lift_iff] at h
     rcases h with ⟨o, h₁, h₂⟩
-    by_contra h₃; simp [sup_le_iff, ←h₁] at h₃
+    by_contra h₃; simp [sup_le_iff, ← h₁] at h₃
     exact not_le_of_lt h₂ (rank_le_of_forall_mem_rank_lt h₃)
   · apply Ordinal.sup_le
     intro ⟨_, h⟩; simp; exact rank_lt_of_mem h
