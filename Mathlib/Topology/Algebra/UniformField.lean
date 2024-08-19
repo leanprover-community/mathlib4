@@ -195,8 +195,6 @@ instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L]
         map (fun x => x⁻¹) F ≤ map (fun x => x⁻¹) (𝓝 x) := map_mono hx
         _ ≤ 𝓝 x⁻¹ := continuousAt_inv₀ hx'
 
-section Pullback
-
 variable {α β : Type*} [Field β] [b : UniformSpace β] [CompletableTopField β]
   [Field α]
 
@@ -213,5 +211,3 @@ theorem UniformInducing.completableTopField
   rw [Filter.map_comm h_comm]
   apply CompletableTopField.nice _ F_cau
   rw [← Filter.push_pull', ← map_zero f, ← hf.inducing.nhds_eq_comap, inf_F, Filter.map_bot]
-
-end Pullback
