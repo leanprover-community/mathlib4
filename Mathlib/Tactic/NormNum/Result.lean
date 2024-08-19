@@ -238,7 +238,7 @@ theorem IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ)
   ⟨this, by simp [div_eq_mul_inv]⟩
 
 theorem IsRat.den_nz {α} [DivisionRing α] {a n d} : IsRat (a : α) n d → (d : α) ≠ 0
-  | ⟨_, _⟩ => nonzero_of_invertible (d : α)
+  | ⟨_, _⟩ => Invertible.ne_zero (d : α)
 
 /-- The result of `norm_num` running on an expression `x` of type `α`.
 Untyped version of `Result`. -/
@@ -468,3 +468,5 @@ def Result.eqTrans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b 
   | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
 
 end Meta.NormNum
+
+end Mathlib

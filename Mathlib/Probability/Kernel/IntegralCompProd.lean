@@ -84,7 +84,7 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
   simp only [HasFiniteIntegral]
   rw [Kernel.lintegral_compProd _ _ _ h1f.ennnorm]
-  have : ∀ x, ∀ᵐ y ∂η (a, x), 0 ≤ ‖f (x, y)‖ := fun x => eventually_of_forall fun y => norm_nonneg _
+  have : ∀ x, ∀ᵐ y ∂η (a, x), 0 ≤ ‖f (x, y)‖ := fun x => Eventually.of_forall fun y => norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prod_mk_left).aestronglyMeasurable,
     ennnorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
@@ -130,11 +130,11 @@ theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E]
     ⦃f : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a)) :
     Integrable (fun x => ∫ y, f (x, y) ∂η (a, x)) (κ a) :=
   Integrable.mono hf.integral_norm_compProd hf.aestronglyMeasurable.integral_kernel_compProd <|
-    eventually_of_forall fun x =>
+    Eventually.of_forall fun x =>
       (norm_integral_le_integral_norm _).trans_eq <|
         (norm_of_nonneg <|
             integral_nonneg_of_ae <|
-              eventually_of_forall fun y => (norm_nonneg (f (x, y)) : _)).symm
+              Eventually.of_forall fun y => (norm_nonneg (f (x, y)) : _)).symm
 
 /-! ### Bochner integral -/
 
@@ -199,7 +199,7 @@ theorem Kernel.continuous_integral_integral :
   rw [continuous_iff_continuousAt]; intro g
   refine
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd
-      (eventually_of_forall fun h => (L1.integrable_coeFn h).integral_compProd) ?_
+      (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_compProd) ?_
   simp_rw [←
     Kernel.lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
       (L1.integrable_coeFn g)]
