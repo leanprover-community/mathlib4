@@ -639,15 +639,14 @@ namespace SetTheory.PGame
 open Surreal.Division
 
 lemma Numeric.inv (x_num : x.Numeric) : x⁻¹.Numeric := by
-  rcases lf_or_equiv_or_gf x 0 with neg | zero | pos
-  · have neg_x_pos : 0 < -x := zero_lt_neg_iff.mpr (lt_of_lf neg x_num numeric_zero)
-    rw [inv_eq_of_lf_zero neg]
+  rcases lt_or_equiv_or_gt x_num numeric_zero with neg | zero | pos
+  · have neg_x_pos : 0 < -x := zero_lt_neg_iff.mpr neg
+    rw [inv_eq_of_lf_zero (lf_of_lt neg)]
     exact (onag_1_10_ii x_num.neg neg_x_pos).neg
   · rw [inv_eq_of_equiv_zero zero]
     exact numeric_zero
-  · have := lt_of_lf pos numeric_zero x_num
-    rw [inv_eq_of_pos this]
-    apply onag_1_10_ii x_num this
+  · rw [inv_eq_of_pos pos]
+    exact onag_1_10_ii x_num pos
 
 lemma Equiv.inv_congr {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) (eq : x ≈ y) : x⁻¹ ≈ y⁻¹ := by
   by_cases h : x ≈ 0
