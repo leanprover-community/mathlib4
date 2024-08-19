@@ -42,9 +42,9 @@ theorem star'_equiv_star : star' ≈ star := by
     · exact fun _ => lf_zero_le.2 ⟨⟨0, Nat.zero_lt_two⟩, le_rfl⟩
   constructor
   case' right => rw [← neg_le_neg_iff, neg_star, neg_star']
-  all_goals exact le
+  assumption'
 
-/-- The equation `** = *` is an identity, but not a relabelling. -/
+/-- The equation `** = *` is an identity, though not a relabelling. -/
 theorem star_sq : star * star ≈ star := by
   have le : star * star ≤ star := by
     rw [le_iff_forall_lf]
@@ -53,7 +53,7 @@ theorem star_sq : star * star ≈ star := by
     · apply leftMoves_mul_cases i <;>
       intro _ _
       case' hl => rw [mul_moveLeft_inl]
-      case' hr => rw [mul_moveLeft_inr];
+      case' hr => rw [mul_moveLeft_inr]
       all_goals rw [lf_iff_game_lf]; simpa using zero_lf_star
     · refine lf_zero.2 ⟨default, ?_⟩
       rintro (j | j) <;> -- Instance can't be inferred otherwise.
@@ -63,7 +63,7 @@ theorem star_sq : star * star ≈ star := by
     rw [← neg_le_neg_iff];
     apply (negMulRelabelling _ _).symm.equiv.1.trans;
     rw [neg_star]
-  all_goals exact le
+  assumption'
 
 /-- `*'* ⧏ *` implies `*'* ≉ *`.-/
 theorem star'_mul_star_lf : star' * star ⧏ star := by
