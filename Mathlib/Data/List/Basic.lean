@@ -545,9 +545,9 @@ theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
   simp [getElem_eq_iff]
 
-@[simp] theorem get_tail (l : List α) (i) (h : i < l.tail.length)
+theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
-    l.tail[i] = l[i + 1] := by
+    l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   cases l <;> [cases h; rfl]
 
 theorem get_cons {l : List α} {a : α} {n} (hl) :
