@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
+Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Artie Khovanov
 -/
 import Mathlib.Algebra.Order.Group.Cone
 import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Constructing an ordered ring from a ring with a specified positive cone.
@@ -15,30 +16,23 @@ import Mathlib.Algebra.Order.Ring.Defs
 /-! ### Positive cones -/
 
 
-variable {α : Type*} [Ring α] [Nontrivial α]
+variable {R : Type*} [Ring R]
 
 namespace Ring
 
-/-- A positive cone in a ring consists of a positive cone in underlying `AddCommGroup`,
-which contains `1` and such that the positive elements are closed under multiplication. -/
-structure PositiveCone (α : Type*) [Ring α] extends AddCommGroup.PositiveCone α where
-  /-- In a positive cone, `1` is `nonneg` -/
-  one_nonneg : nonneg 1
-  /-- In a positive cone, if `a` and `b` are `pos` then so is `a * b` -/
-  mul_pos : ∀ a b, pos a → pos b → pos (a * b)
+/-- `PositiveConeClass S R` says that `S` is a type of `PositiveCone`s in `R`. -/
+class PositiveConeClass (S R : Type*) [Ring R] [SetLike S R]
+    extends AddCommGroup.PositiveConeClass S R, SubsemiringClass S R : Prop
 
-/-- Forget that a positive cone in a ring respects the multiplicative structure. -/
-add_decl_doc PositiveCone.toPositiveCone
+/-- A positive cone in a `Ring` is a `Subsemiring` that
+does not contain both `a` and `-a` for any nonzero `a`.
+This is equivalent to being the set of non-negative elements of an `OrderedRing`. -/
+structure PositiveCone (R : Type*) [Ring R] extends Subsemiring R where
+  eq_zero_of_mem_of_neg_mem' : ∀ {a}, a ∈ carrier → -a ∈ carrier → a = 0
 
 /-- A total positive cone in a nontrivial ring induces a linear order. -/
 structure TotalPositiveCone (α : Type*) [Ring α] extends PositiveCone α,
   AddCommGroup.TotalPositiveCone α
-
-/-- Forget that a `TotalPositiveCone` in a ring is total. -/
-add_decl_doc TotalPositiveCone.toPositiveCone_1
-
-/-- Forget that a `TotalPositiveCone` in a ring respects the multiplicative structure. -/
-add_decl_doc TotalPositiveCone.toTotalPositiveCone
 
 theorem PositiveCone.one_pos (C : PositiveCone α) : C.pos 1 :=
   (C.pos_iff _).2 ⟨C.one_nonneg, fun h => one_ne_zero <| C.nonneg_antisymm C.one_nonneg h⟩

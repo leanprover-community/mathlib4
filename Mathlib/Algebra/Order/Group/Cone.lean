@@ -98,8 +98,7 @@ def mkOfOrderedAddCommGroup (G : Type*) [OrderedAddCommGroup G] : (PositiveCone 
   carrier := {x | x ≥ 0}
   add_mem' := add_nonneg
   zero_mem' := by simp
-  eq_zero_of_mem_of_neg_mem' := by simp; intro a ap an; apply (le_antisymm ap an).symm
-
+  eq_zero_of_mem_of_neg_mem' := by simp; exact ge_antisymm
 
 end OrderedAddCommGroup
 
