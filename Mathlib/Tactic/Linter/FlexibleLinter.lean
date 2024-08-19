@@ -60,8 +60,8 @@ register_option linter.flexible : Bool := {
   descr := "enable the flexible linter"
 }
 
-/-- `flexible? stx` is `true` if `stx` is syntax for a tactic that takes a "wide" variety of inputs and modifies
-them in possibly unpredictable ways.
+/-- `flexible? stx` is `true` if `stx` is syntax for a tactic that takes a "wide" variety of
+inputs and modifies them in possibly unpredictable ways.
 
 The prototypical flexible tactic is `simp`.
 The prototypical non-flexible tactic `rw`.
