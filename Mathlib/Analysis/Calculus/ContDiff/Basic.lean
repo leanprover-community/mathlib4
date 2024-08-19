@@ -240,7 +240,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
       (g : F →L[𝕜] G).compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) := by
   induction' i with i IH generalizing x
   · ext1 m
-    simp only [Nat.zero_eq, iteratedFDerivWithin_zero_apply, comp_apply,
+    simp only [iteratedFDerivWithin_zero_apply, comp_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, coe_coe]
   · ext1 m
     rw [iteratedFDerivWithin_succ_apply_left]
@@ -382,7 +382,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g := by
   induction' i with i IH generalizing x
   · ext1
-    simp only [Nat.zero_eq, iteratedFDerivWithin_zero_apply, comp_apply,
+    simp only [iteratedFDerivWithin_zero_apply, comp_apply,
      ContinuousMultilinearMap.compContinuousLinearMap_apply]
   · ext1 m
     simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply,
@@ -1042,7 +1042,7 @@ continuous. -/
 theorem ContDiffOn.continuousOn_fderivWithin_apply (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
     (hn : 1 ≤ n) :
     ContinuousOn (fun p : E × E => (fderivWithin 𝕜 f s p.1 : E → F) p.2) (s ×ˢ univ) :=
-  (contDiffOn_fderivWithin_apply hf hs <| by rwa [zero_add]).continuousOn
+  (contDiffOn_fderivWithin_apply (m := 0) hf hs hn).continuousOn
 
 /-- The bundled derivative of a `C^{n+1}` function is `C^n`. -/
 theorem ContDiff.contDiff_fderiv_apply {f : E → F} (hf : ContDiff 𝕜 n f) (hmn : m + 1 ≤ n) :

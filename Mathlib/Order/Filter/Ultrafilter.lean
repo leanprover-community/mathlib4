@@ -19,15 +19,11 @@ In this file we define
 * `hyperfilter`: the ultrafilter extending the cofinite filter.
 -/
 
-
 universe u v
 
 variable {α : Type u} {β : Type v} {γ : Type*}
 
 open Set Filter Function
-
-open scoped Classical
-open Filter
 
 /-- `Filter α` is an atomic type: for every filter there exists an ultrafilter that is less than or
 equal to this filter. -/
