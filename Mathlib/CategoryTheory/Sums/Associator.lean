@@ -116,10 +116,10 @@ theorem inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)
 def associativity : (C ⊕ D) ⊕ E ≌ C ⊕ (D ⊕ E) where
   functor := associator C D E
   inverse := inverseAssociator C D E
-  unitIso := NatIso.ofComponents (by rintro ((_|_)|_) <;> exact Iso.refl _) (by
-    rintro ((_|_)|_) ((_|_)|_) f <;> first | cases f | aesop_cat)
-  counitIso := NatIso.ofComponents (by rintro (_|(_|_)) <;> exact Iso.refl _) (by
-    rintro (_|(_|_)) (_|(_|_)) f <;> first | cases f | aesop_cat)
+  unitIso := NatIso.ofComponents (by rintro ((_ | _) | _) <;> exact Iso.refl _) (by
+    rintro ((_ | _) | _) ((_ | _) | _) f <;> first | cases f | aesop_cat)
+  counitIso := NatIso.ofComponents (by rintro (_ | (_ | _)) <;> exact Iso.refl _) (by
+    rintro (_ | (_ | _)) (_ | (_ | _)) f <;> first | cases f | aesop_cat)
 
 instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
   (by infer_instance : (associativity C D E).functor.IsEquivalence)
