@@ -398,10 +398,10 @@ lemma pentagon_inv :
         tensorHom (associator X₁ X₂ X₃).inv (𝟙 X₄) =
     (associator X₁ X₂ (tensorObj X₃ X₄)).inv ≫ (associator (tensorObj X₁ X₂) X₃ X₄).inv := by
   ext j i₁ i₂ i₃ i₄ h
-  dsimp
+  dsimp only [categoryOfGradedObjects_comp]
   conv_lhs =>
     rw [ιTensorObj₄_eq X₁ X₂ X₃ X₄ i₁ i₂ i₃ i₄ j h _ rfl, assoc, ι_tensorHom_assoc]
-    dsimp
+    dsimp only [categoryOfGradedObjects_id, id_eq, eq_mpr_eq_cast, cast_eq]
     rw [id_tensorHom, ← MonoidalCategory.whiskerLeft_comp_assoc, ιTensorObj₃_associator_inv,
       ιTensorObj₃'_eq X₂ X₃ X₄ i₂ i₃ i₄ _ rfl _ rfl, MonoidalCategory.whiskerLeft_comp_assoc,
       MonoidalCategory.whiskerLeft_comp_assoc,
@@ -409,7 +409,7 @@ lemma pentagon_inv :
         (by simp only [← add_assoc, h]) _ rfl, ιTensorObj₃_associator_inv_assoc,
       ιTensorObj₃'_eq_assoc X₁ (tensorObj X₂ X₃) X₄ i₁ (i₂ + i₃) i₄ j
         (by simp only [← add_assoc, h]) (i₁ + i₂ + i₃) (by rw [add_assoc]), ι_tensorHom]
-    dsimp
+    dsimp only [id_eq, eq_mpr_eq_cast, categoryOfGradedObjects_id]
     rw [tensorHom_id, whisker_assoc_symm_assoc, Iso.hom_inv_id_assoc,
       ← MonoidalCategory.comp_whiskerRight_assoc, ← MonoidalCategory.comp_whiskerRight_assoc,
       ← ιTensorObj₃_eq X₁ X₂ X₃ i₁ i₂ i₃ _ rfl _ rfl, ιTensorObj₃_associator_inv,
