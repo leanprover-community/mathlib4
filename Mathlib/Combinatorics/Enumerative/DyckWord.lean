@@ -5,6 +5,7 @@ Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.List.Nodup
+import Batteries.Data.List.Count
 
 /-!
 # Dyck words
