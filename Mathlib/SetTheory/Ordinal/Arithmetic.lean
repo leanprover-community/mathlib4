@@ -209,7 +209,6 @@ theorem lt_pred {a b} : a < pred b ↔ succ a < b := by
 theorem pred_le {a b} : pred a ≤ b ↔ a ≤ succ b :=
   le_iff_le_iff_lt_iff_lt.2 lt_pred
 
-@[simp]
 theorem lift_is_succ {o : Ordinal.{v}} : lift.{u} o ∈ range succ ↔ o ∈ range succ := by
   constructor <;>
   rintro ⟨a, h⟩
@@ -218,6 +217,10 @@ theorem lift_is_succ {o : Ordinal.{v}} : lift.{u} o ∈ range succ ↔ o ∈ ran
     rwa [← lift_succ, lift_inj] at h
   · use lift a
     rw [← h, lift_succ]
+
+@[simp]
+theorem lift_is_succ' {o : Ordinal.{v}} : (∃ a, succ a = lift.{u} o) ↔ ∃ a, succ a = o :=
+  lift_is_succ
 
 @[simp]
 theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by
