@@ -28,7 +28,7 @@ register_option linter.setOption : Bool := {
   descr := "enable the `setOption` linter"
 }
 
-namespace Style.SetOption
+namespace Style.setOption
 
 /-- Whether a syntax element is a `set_option` command, tactic or term:
 Return the name of the option being set, if any. -/
@@ -68,6 +68,6 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter setOptionLinter
 
-end Style.SetOption
+end Style.setOption
 
 end Mathlib.Linter

@@ -193,7 +193,7 @@ This is precisely what the `cdot` linter flags.
 def unwanted_cdot (stx : Syntax) : Array Syntax :=
   (findCDot stx).filter (!isCDot? ·)
 
-namespace CDotLinter
+namespace Style.cDotLinter
 
 @[inherit_doc linter.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx => do
@@ -206,7 +206,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter cdotLinter
 
-end CDotLinter
+end Style.cDotLinter
 
 /-!
 # The `dollarSyntax` linter
@@ -256,7 +256,7 @@ register_option linter.longLine : Bool := {
   descr := "enable the longLine linter"
 }
 
-namespace LongLine
+namespace Style.longLine
 
 @[inherit_doc Mathlib.Linter.linter.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -288,6 +288,6 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter longLineLinter
 
-end LongLine
+end Style.longLine
 
 end Mathlib.Linter
