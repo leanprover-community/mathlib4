@@ -7,6 +7,8 @@ import Mathlib.Tactic.Linter.OldObtain
 
 /-! Tests for the `oldObtain` linter. -/
 
+set_option linter.oldObtain false
+
 -- These cases are fine.
 theorem foo : True := by
   obtain := trivial
@@ -17,7 +19,6 @@ theorem foo : True := by
 
 -- These cases are linted against.
 
-set_option linter.oldObtain false in
 /--
 warning: Please remove stream-of-conciousness `obtain` syntax
 note: this linter can be disabled with `set_option linter.oldObtain false`
@@ -29,7 +30,6 @@ theorem foo' : True := by
   · trivial
   trivial
 
-set_option linter.oldObtain false in
 /--
 warning: Please remove stream-of-conciousness `obtain` syntax
 note: this linter can be disabled with `set_option linter.oldObtain false`

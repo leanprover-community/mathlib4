@@ -50,3 +50,5 @@ where put
   stdin.putStr input
   stdin.flush
   return child
+
+end MLList

@@ -145,7 +145,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
             · intro h
               split_ifs at h with ha
               rw [some_inj] at h
-              exact ⟨b, ⟨ha, h.symm⟩, rfl⟩) $
+              exact ⟨b, ⟨ha, h.symm⟩, rfl⟩) <|
     NatIso.ofComponents
       (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
