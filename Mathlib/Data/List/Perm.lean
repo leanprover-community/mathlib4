@@ -10,6 +10,7 @@ import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.Nat.Factorial.Basic
+import Batteries.Data.List.Perm
 
 /-!
 # List Permutations
