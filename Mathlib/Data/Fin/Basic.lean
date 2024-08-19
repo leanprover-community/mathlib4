@@ -111,10 +111,10 @@ protected lemma lt_of_lt_of_le : a < b → b ≤ c → a < c := Nat.lt_of_lt_of_
 protected lemma le_rfl : a ≤ a := Nat.le_refl _
 protected lemma lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b := by
   rw [← val_ne_iff]; exact Nat.lt_iff_le_and_ne
-protected lemma lt_or_lt_of_ne (h : a ≠ b) : a < b ∨ b < a := Nat.lt_or_lt_of_ne $ val_ne_iff.2 h
+protected lemma lt_or_lt_of_ne (h : a ≠ b) : a < b ∨ b < a := Nat.lt_or_lt_of_ne <| val_ne_iff.2 h
 protected lemma lt_or_le (a b : Fin n) : a < b ∨ b ≤ a := Nat.lt_or_ge _ _
 protected lemma le_or_lt (a b : Fin n) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
-protected lemma le_of_eq (hab : a = b) : a ≤ b := Nat.le_of_eq $ congr_arg val hab
+protected lemma le_of_eq (hab : a = b) : a ≤ b := Nat.le_of_eq <| congr_arg val hab
 protected lemma ge_of_eq (hab : a = b) : b ≤ a := Fin.le_of_eq hab.symm
 protected lemma eq_or_lt_of_le : a ≤ b → a = b ∨ a < b := by
   rw [Fin.ext_iff]; exact Nat.eq_or_lt_of_le
@@ -127,10 +127,10 @@ lemma lt_last_iff_ne_last {a : Fin (n + 1)} : a < last n ↔ a ≠ last n := by
   simp [Fin.lt_iff_le_and_ne, le_last]
 
 lemma ne_zero_of_lt {a b : Fin (n + 1)} (hab : a < b) : b ≠ 0 :=
-  Fin.ne_of_gt $ Fin.lt_of_le_of_lt a.zero_le hab
+  Fin.ne_of_gt <| Fin.lt_of_le_of_lt a.zero_le hab
 
 lemma ne_last_of_lt {a b : Fin (n + 1)} (hab : a < b) : a ≠ last n :=
-  Fin.ne_of_lt $ Fin.lt_of_lt_of_le hab b.le_last
+  Fin.ne_of_lt <| Fin.lt_of_lt_of_le hab b.le_last
 
 /-- Equivalence between `Fin n` and `{ i // i < n }`. -/
 @[simps apply symm_apply]
@@ -979,7 +979,7 @@ lemma succAbove_castSucc_of_le (p i : Fin n) (h : p ≤ i) : succAbove p.castSuc
   succAbove_castSucc_of_le _ _ Fin.le_rfl
 
 lemma succAbove_pred_of_lt (p i : Fin (n + 1)) (h : p < i)
-    (hi := Fin.ne_of_gt $ Fin.lt_of_le_of_lt p.zero_le h) : succAbove p (i.pred hi) = i := by
+    (hi := Fin.ne_of_gt <| Fin.lt_of_le_of_lt p.zero_le h) : succAbove p (i.pred hi) = i := by
   rw [succAbove_of_lt_succ _ _ (succ_pred _ _ ▸ h), succ_pred]
 
 lemma succAbove_pred_of_le (p i : Fin (n + 1)) (h : i ≤ p) (hi : i ≠ 0) :
@@ -989,7 +989,7 @@ lemma succAbove_pred_of_le (p i : Fin (n + 1)) (h : i ≤ p) (hi : i ≠ 0) :
     succAbove p (p.pred h) = (p.pred h).castSucc := succAbove_pred_of_le _ _ Fin.le_rfl h
 
 lemma succAbove_castPred_of_lt (p i : Fin (n + 1)) (h : i < p)
-    (hi := Fin.ne_of_lt $ Nat.lt_of_lt_of_le h p.le_last) : succAbove p (i.castPred hi) = i := by
+    (hi := Fin.ne_of_lt <| Nat.lt_of_lt_of_le h p.le_last) : succAbove p (i.castPred hi) = i := by
   rw [succAbove_of_castSucc_lt _ _ (castSucc_castPred _ _ ▸ h), castSucc_castPred]
 
 lemma succAbove_castPred_of_le (p i : Fin (n + 1)) (h : p ≤ i) (hi : i ≠ last n) :
@@ -1028,9 +1028,9 @@ lemma succAbove_right_injective : Injective p.succAbove := by
   split_ifs at hij with hi hj hj
   · exact castSucc_injective _ hij
   · rw [hij] at hi
-    cases hj $ Nat.lt_trans j.castSucc_lt_succ hi
+    cases hj <| Nat.lt_trans j.castSucc_lt_succ hi
   · rw [← hij] at hj
-    cases hi $ Nat.lt_trans i.castSucc_lt_succ hj
+    cases hi <| Nat.lt_trans i.castSucc_lt_succ hj
   · exact succ_injective _ hij
 
 /-- Given a fixed pivot `p : Fin (n + 1)`, `p.succAbove` is injective. -/
@@ -1089,7 +1089,7 @@ lemma succAbove_lt_iff_castSucc_lt (p : Fin (n + 1)) (i : Fin n) :
   cases' castSucc_lt_or_lt_succ p i with H H
   · rwa [iff_true_right H, succAbove_of_castSucc_lt _ _ H]
   · rw [castSucc_lt_iff_succ_le, iff_false_right (Fin.not_le.2 H), succAbove_of_lt_succ _ _ H]
-    exact Fin.not_lt.2 $ Fin.le_of_lt H
+    exact Fin.not_lt.2 <| Fin.le_of_lt H
 
 lemma succAbove_lt_iff_succ_le (p : Fin (n + 1)) (i : Fin n) :
     p.succAbove i < p ↔ succ i ≤ p := by
@@ -1101,7 +1101,7 @@ lemma lt_succAbove_iff_le_castSucc (p : Fin (n + 1)) (i : Fin n) :
     p < p.succAbove i ↔ p ≤ castSucc i := by
   cases' castSucc_lt_or_lt_succ p i with H H
   · rw [iff_false_right (Fin.not_le.2 H), succAbove_of_castSucc_lt _ _ H]
-    exact Fin.not_lt.2 $ Fin.le_of_lt H
+    exact Fin.not_lt.2 <| Fin.le_of_lt H
   · rwa [succAbove_of_lt_succ _ _ H, iff_true_left H, le_castSucc_iff]
 
 lemma lt_succAbove_iff_lt_castSucc (p : Fin (n + 1)) (i : Fin n) :
@@ -1114,12 +1114,12 @@ lemma succAbove_pos [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 < p
   · simp [succAbove_of_le_castSucc _ _ (Fin.not_lt.1 H)]
 
 lemma castPred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : castSucc x < y)
-    (h' := Fin.ne_last_of_lt $ (succAbove_lt_iff_castSucc_lt ..).2 h) :
+    (h' := Fin.ne_last_of_lt <| (succAbove_lt_iff_castSucc_lt ..).2 h) :
     (y.succAbove x).castPred h' = x := by
   rw [castPred_eq_iff_eq_castSucc, succAbove_of_castSucc_lt _ _ h]
 
 lemma pred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : y ≤ castSucc x)
-    (h' := Fin.ne_zero_of_lt $ (lt_succAbove_iff_le_castSucc ..).2 h) :
+    (h' := Fin.ne_zero_of_lt <| (lt_succAbove_iff_le_castSucc ..).2 h) :
     (y.succAbove x).pred h' = x := by simp only [succAbove_of_le_castSucc _ _ h, pred_succ]
 
 lemma exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove z = x := by
@@ -1208,11 +1208,11 @@ section PredAbove
 def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
   if h : castSucc p < i
   then pred i (Fin.ne_zero_of_lt h)
-  else castPred i (Fin.ne_of_lt $ Fin.lt_of_le_of_lt (Fin.not_lt.1 h) (castSucc_lt_last _))
+  else castPred i (Fin.ne_of_lt <| Fin.lt_of_le_of_lt (Fin.not_lt.1 h) (castSucc_lt_last _))
 
 lemma predAbove_of_le_castSucc (p : Fin n) (i : Fin (n + 1)) (h : i ≤ castSucc p)
-    (hi := Fin.ne_of_lt $ Fin.lt_of_le_of_lt h $ castSucc_lt_last _) :
-    p.predAbove i = i.castPred hi := dif_neg $ Fin.not_lt.2 h
+    (hi := Fin.ne_of_lt <| Fin.lt_of_le_of_lt h <| castSucc_lt_last _) :
+    p.predAbove i = i.castPred hi := dif_neg <| Fin.not_lt.2 h
 
 lemma predAbove_of_lt_succ (p : Fin n) (i : Fin (n + 1)) (h : i < succ p)
     (hi := Fin.ne_last_of_lt h) : p.predAbove i = i.castPred hi :=
@@ -1222,7 +1222,7 @@ lemma predAbove_of_castSucc_lt (p : Fin n) (i : Fin (n + 1)) (h : castSucc p < i
     (hi := Fin.ne_zero_of_lt h) : p.predAbove i = i.pred hi := dif_pos h
 
 lemma predAbove_of_succ_le (p : Fin n) (i : Fin (n + 1)) (h : succ p ≤ i)
-    (hi := Fin.ne_of_gt $ Fin.lt_of_lt_of_le (succ_pos _) h) :
+    (hi := Fin.ne_of_gt <| Fin.lt_of_lt_of_le (succ_pos _) h) :
     p.predAbove i = i.pred hi := predAbove_of_castSucc_lt _ _ (castSucc_lt_iff_succ_le.mpr h)
 
 lemma predAbove_succ_of_lt (p i : Fin n) (h : i < p) (hi := succ_ne_last_of_lt h) :
@@ -1250,7 +1250,7 @@ lemma predAbove_pred_of_lt (p i : Fin (n + 1)) (h : i < p) (hp := Fin.ne_zero_of
   rw [predAbove_of_lt_succ _ _ (succ_pred _ _ ▸ h)]
 
 lemma predAbove_pred_of_le (p i : Fin (n + 1)) (h : p ≤ i) (hp : p ≠ 0)
-    (hi := Fin.ne_of_gt $ Fin.lt_of_lt_of_le (Fin.pos_iff_ne_zero.2 hp) h) :
+    (hi := Fin.ne_of_gt <| Fin.lt_of_lt_of_le (Fin.pos_iff_ne_zero.2 hp) h) :
   (pred p hp).predAbove i = pred i hi := by rw [predAbove_of_succ_le _ _ (succ_pred _ _ ▸ h)]
 
 lemma predAbove_pred_self (p : Fin (n + 1)) (hp : p ≠ 0) : (pred p hp).predAbove p = pred p hp :=
@@ -1261,7 +1261,7 @@ lemma predAbove_castPred_of_lt (p i : Fin (n + 1)) (h : p < i) (hp := Fin.ne_las
   rw [predAbove_of_castSucc_lt _ _ (castSucc_castPred _ _ ▸ h)]
 
 lemma predAbove_castPred_of_le (p i : Fin (n + 1)) (h : i ≤ p) (hp : p ≠ last n)
-    (hi := Fin.ne_of_lt $ Fin.lt_of_le_of_lt h $ Fin.lt_last_iff_ne_last.2 hp) :
+    (hi := Fin.ne_of_lt <| Fin.lt_of_le_of_lt h <| Fin.lt_last_iff_ne_last.2 hp) :
     (castPred p hp).predAbove i = castPred i hi := by
   rw [predAbove_of_le_castSucc _ _ (castSucc_castPred _ _ ▸ h)]
 
@@ -1335,7 +1335,7 @@ then back to `Fin n` by subtracting one from anything above `p` is the identity.
 lemma predAbove_succAbove (p : Fin n) (i : Fin n) : p.predAbove ((castSucc p).succAbove i) = i := by
   obtain h | h := p.le_or_lt i
   · rw [succAbove_castSucc_of_le _ _ h, predAbove_succ_of_le _ _ h]
-  · rw [succAbove_castSucc_of_lt _ _ h, predAbove_castSucc_of_le _ _ $ Fin.le_of_lt h]
+  · rw [succAbove_castSucc_of_lt _ _ h, predAbove_castSucc_of_le _ _ <| Fin.le_of_lt h]
 
 /-- `succ` commutes with `predAbove`. -/
 @[simp] lemma succ_predAbove_succ (a : Fin n) (b : Fin (n + 1)) :

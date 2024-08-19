@@ -63,7 +63,7 @@ theorem isBounded_iff : f.IsBounded r ↔ ∃ s ∈ f.sets, ∃ b, s ⊆ { x | r
 
 /-- A bounded function `u` is in particular eventually bounded. -/
 theorem isBoundedUnder_of {f : Filter β} {u : β → α} : (∃ b, ∀ x, r (u x) b) → f.IsBoundedUnder r u
-  | ⟨b, hb⟩ => ⟨b, show ∀ᶠ x in f, r (u x) b from eventually_of_forall hb⟩
+  | ⟨b, hb⟩ => ⟨b, show ∀ᶠ x in f, r (u x) b from Eventually.of_forall hb⟩
 
 theorem isBounded_bot : IsBounded r ⊥ ↔ Nonempty α := by simp [IsBounded, exists_true_iff_nonempty]
 
@@ -95,7 +95,7 @@ theorem IsBoundedUnder.mono_ge [Preorder β] {l : Filter α} {u v : α → β}
   IsBoundedUnder.mono_le (β := βᵒᵈ) hu hv
 
 theorem isBoundedUnder_const [IsRefl α r] {l : Filter β} {a : α} : IsBoundedUnder r l fun _ => a :=
-  ⟨a, eventually_map.2 <| eventually_of_forall fun _ => refl _⟩
+  ⟨a, eventually_map.2 <| Eventually.of_forall fun _ => refl _⟩
 
 theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}
     (hu : ∀ a₀ a₁, r a₀ a₁ → q (u a₀) (u a₁)) : f.IsBounded r → f.IsBoundedUnder q u
@@ -238,12 +238,12 @@ lemma isCoboundedUnder_ge_of_eventually_le [Preorder α] (l : Filter ι) [NeBot 
 lemma isCoboundedUnder_le_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
     (hf : ∀ i, x ≤ f i) :
     IsCoboundedUnder (· ≤ ·) l f :=
-  isCoboundedUnder_le_of_eventually_le l (eventually_of_forall hf)
+  isCoboundedUnder_le_of_eventually_le l (Eventually.of_forall hf)
 
 lemma isCoboundedUnder_ge_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
     (hf : ∀ i, f i ≤ x) :
     IsCoboundedUnder (· ≥ ·) l f :=
-  isCoboundedUnder_ge_of_eventually_le l (eventually_of_forall hf)
+  isCoboundedUnder_ge_of_eventually_le l (Eventually.of_forall hf)
 
 theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 
@@ -350,10 +350,10 @@ theorem isCobounded_ge_of_top [Preorder α] [OrderTop α] {f : Filter α} : f.Is
   ⟨⊤, fun _ _ => le_top⟩
 
 theorem isBounded_le_of_top [Preorder α] [OrderTop α] {f : Filter α} : f.IsBounded (· ≤ ·) :=
-  ⟨⊤, eventually_of_forall fun _ => le_top⟩
+  ⟨⊤, Eventually.of_forall fun _ => le_top⟩
 
 theorem isBounded_ge_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsBounded (· ≥ ·) :=
-  ⟨⊥, eventually_of_forall fun _ => bot_le⟩
+  ⟨⊥, Eventually.of_forall fun _ => bot_le⟩
 
 @[simp]
 theorem _root_.OrderIso.isBoundedUnder_le_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
@@ -388,8 +388,8 @@ theorem isBoundedUnder_le_sup [SemilatticeSup α] {f : Filter β} {u v : β → 
     (f.IsBoundedUnder (· ≤ ·) fun a => u a ⊔ v a) ↔
       f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (· ≤ ·) v :=
   ⟨fun h =>
-    ⟨h.mono_le <| eventually_of_forall fun _ => le_sup_left,
-      h.mono_le <| eventually_of_forall fun _ => le_sup_right⟩,
+    ⟨h.mono_le <| Eventually.of_forall fun _ => le_sup_left,
+      h.mono_le <| Eventually.of_forall fun _ => le_sup_right⟩,
     fun h => h.1.sup h.2⟩
 
 theorem IsBoundedUnder.inf [SemilatticeInf α] {f : Filter β} {u v : β → α} :
@@ -728,7 +728,7 @@ theorem bliminf_false {f : Filter β} {u : β → α} : (bliminf u f fun _ => Fa
 @[simp]
 theorem limsup_const_bot {f : Filter β} : limsup (fun _ : β => (⊥ : α)) f = (⊥ : α) := by
   rw [limsup_eq, eq_bot_iff]
-  exact sInf_le (eventually_of_forall fun _ => le_rfl)
+  exact sInf_le (Eventually.of_forall fun _ => le_rfl)
 
 /-- Same as limsup_const applied to `⊤` but without the `NeBot f` assumption -/
 @[simp]
@@ -753,10 +753,10 @@ theorem limsInf_eq_iSup_sInf {f : Filter α} : limsInf f = ⨆ s ∈ f, sInf s :
   limsSup_eq_iInf_sSup (α := αᵒᵈ)
 
 theorem limsup_le_iSup {f : Filter β} {u : β → α} : limsup u f ≤ ⨆ n, u n :=
-  limsup_le_of_le (by isBoundedDefault) (eventually_of_forall (le_iSup u))
+  limsup_le_of_le (by isBoundedDefault) (Eventually.of_forall (le_iSup u))
 
 theorem iInf_le_liminf {f : Filter β} {u : β → α} : ⨅ n, u n ≤ liminf u f :=
-  le_liminf_of_le (by isBoundedDefault) (eventually_of_forall (iInf_le u))
+  le_liminf_of_le (by isBoundedDefault) (Eventually.of_forall (iInf_le u))
 
 /-- In a complete lattice, the limsup of a function is the infimum over sets `s` in the filter
 of the supremum of the function over `s` -/
@@ -894,13 +894,13 @@ theorem mono_blimsup' (h : ∀ᶠ x in f, p x → u x ≤ v x) : blimsup u f p �
   sInf_le_sInf fun _ ha => (ha.and h).mono fun _ hx hx' => (hx.2 hx').trans (hx.1 hx')
 
 theorem mono_blimsup (h : ∀ x, p x → u x ≤ v x) : blimsup u f p ≤ blimsup v f p :=
-  mono_blimsup' <| eventually_of_forall h
+  mono_blimsup' <| Eventually.of_forall h
 
 theorem mono_bliminf' (h : ∀ᶠ x in f, p x → u x ≤ v x) : bliminf u f p ≤ bliminf v f p :=
   sSup_le_sSup fun _ ha => (ha.and h).mono fun _ hx hx' => (hx.1 hx').trans (hx.2 hx')
 
 theorem mono_bliminf (h : ∀ x, p x → u x ≤ v x) : bliminf u f p ≤ bliminf v f p :=
-  mono_bliminf' <| eventually_of_forall h
+  mono_bliminf' <| Eventually.of_forall h
 
 theorem bliminf_antitone_filter (h : f ≤ g) : bliminf u g p ≤ bliminf u f p :=
   sSup_le_sSup fun _ ha => ha.filter_mono h
@@ -1480,8 +1480,8 @@ theorem limsup_max [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : 
     have hv := eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_right _ _) hb) h₄
     refine mem_of_superset (inter_mem hu hv) (fun _ ↦ by simp)
   · exact max_le (c := limsup (fun a ↦ max (u a) (v a)) f)
-      (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a))) h₁ bddmax)
-      (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a))) h₂ bddmax)
+      (limsup_le_limsup (Eventually.of_forall (fun a : α ↦ le_max_left (u a) (v a))) h₁ bddmax)
+      (limsup_le_limsup (Eventually.of_forall (fun a : α ↦ le_max_right (u a) (v a))) h₂ bddmax)
 
 theorem liminf_min [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : α → β}
     (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
@@ -1562,7 +1562,7 @@ theorem limsup_finset_sup' [ConditionallyCompleteLinearOrder β] {f : Filter α}
       exact lt_of_le_of_lt (Finset.le_sup' (f := fun i ↦ limsup (F i) f) i_s) hb
     · simp only [mem_iInter, mem_setOf_eq, Finset.sup'_apply, sup'_lt_iff, imp_self, implies_true]
   · apply Finset.sup'_le hs (fun i ↦ limsup (F i) f)
-    refine fun i i_s ↦ limsup_le_limsup (eventually_of_forall (fun a ↦ ?_)) (h₁ i i_s) bddsup
+    refine fun i i_s ↦ limsup_le_limsup (Eventually.of_forall (fun a ↦ ?_)) (h₁ i i_s) bddsup
     simp only [Finset.sup'_apply, le_sup'_iff]
     use i, i_s
 
@@ -1608,7 +1608,7 @@ lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
     ∃ l, ∃ᶠ x in F, l ≤ x := by
   obtain ⟨t, ht⟩ := cobdd
   by_cases tbot : IsBot t
-  · refine ⟨t, frequently_of_forall fun r ↦ tbot r⟩
+  · refine ⟨t, Frequently.of_forall fun r ↦ tbot r⟩
   obtain ⟨t', ht'⟩ : ∃ t', t' < t := by
     by_contra!
     exact tbot this

@@ -168,3 +168,5 @@ elab_rules : tactic
       let cmd := if ← Meta.isProp ty then "theorem" else "def"
       pure m!"{cmd} {sig} := sorry"
     logInfo msg
+
+end Mathlib.Tactic.ExtractGoal
