@@ -299,9 +299,11 @@
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
+  "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
-  "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
+  "Mathlib.RepresentationTheory.FDRep":
+  ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.Probability.Notation":
   ["Mathlib.MeasureTheory.Decomposition.Lebesgue",
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
