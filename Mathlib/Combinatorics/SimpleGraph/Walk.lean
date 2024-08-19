@@ -841,7 +841,7 @@ lemma support_getElem_eq_getVert {u v} {p : G.Walk u v} {i} (hi : i < p.length +
   | nil => simp [Walk.getVert]
   | cons v p' ih =>
     cases i
-    · simp
+    · rfl
     · simp [Walk.getVert] at hi
       simpa [Walk.getVert] using ih (by omega)
 
