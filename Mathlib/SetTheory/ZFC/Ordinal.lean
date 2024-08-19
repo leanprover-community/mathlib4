@@ -45,12 +45,8 @@ theorem empty_isTransitive : IsTransitive ∅ :=
 theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x :=
   h y
 
-theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈ y → y ∈ z → x ∈ z := by
-  constructor
-  · intro h _ _ hx hy
-    exact h.subset_of_mem hy hx
-  · intro h _ hx _ hy
-    exact h hy hx
+theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈ y → y ∈ z → x ∈ z :=
+  ⟨fun h _ _ hx hy => h.subset_of_mem hy hx, fun H _ hx _ hy => H hy hx⟩
 
 alias ⟨IsTransitive.mem_trans, _⟩ := isTransitive_iff_mem_trans
 
@@ -96,12 +92,8 @@ theorem isTransitive_iff_sUnion_subset : x.IsTransitive ↔ (⋃₀ x : ZFSet) �
 
 alias ⟨IsTransitive.sUnion_subset, _⟩ := isTransitive_iff_sUnion_subset
 
-theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x := by
-  constructor <;>
-  intro h y hy
-  · exact mem_powerset.2 <| h.subset_of_mem hy
-  · intro z hz
-    exact mem_powerset.1 (h hy) hz
+theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :=
+  ⟨fun h _ hy => mem_powerset.2 <| h.subset_of_mem hy, fun H _ hy _ hz => mem_powerset.1 (H hy) hz⟩
 
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 
@@ -136,13 +128,11 @@ end IsOrdinal
 the standard one. -/
 theorem isOrdinal_iff_isTrans :
     x.IsOrdinal ↔ x.IsTransitive ∧ IsTrans x.toSet (Subrel (· ∈ ·) _) := by
-  constructor
-  · intro h
-    exact ⟨h.isTransitive, h.isTrans⟩
-  · rintro ⟨h₁, ⟨h₂⟩⟩
-    use h₁
-    intro y z w hyz hzw hwx
-    let hzx := h₁.mem_trans hzw hwx
-    exact h₂ ⟨y, h₁.mem_trans hyz hzx⟩ ⟨z, hzx⟩ ⟨w, hwx⟩ hyz hzw
+  use fun h => ⟨h.isTransitive, h.isTrans⟩
+  rintro ⟨h₁, ⟨h₂⟩⟩
+  use h₁
+  intro y z w hyz hzw hwx
+  let hzx := h₁.mem_trans hzw hwx
+  exact h₂ ⟨y, h₁.mem_trans hyz hzx⟩ ⟨z, hzx⟩ ⟨w, hwx⟩ hyz hzw
 
 end ZFSet
