@@ -50,6 +50,7 @@ do exist somewhere. -/
   test declName := do
     let env ← getEnv
     let ext := assertExistsExt.getState env
+    if ext.isEmpty || declName.components.length ≤ 1 then return none
     let last2 := declName.components.drop (declName.components.length - 2)
     let declTail := last2[0]! ++ last2[1]!
     for d in ext do
