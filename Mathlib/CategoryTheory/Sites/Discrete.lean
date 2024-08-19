@@ -126,22 +126,6 @@ noncomputable def equivCommuteConstant' : let e : Sheaf J A ≌ Sheaf K A := she
   isoWhiskerLeft (constantSheaf J A) e.unitIso ≪≫
     isoWhiskerRight (equivCommuteConstant J A ht K G ht') e.inverse
 
-lemma equivCommuteConstant_counit_w (F : Sheaf J A) :
-    let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
-    e.functor.map ((constantSheafAdj J A ht).counit.app F) =
-      ((equivCommuteConstant J A ht K G ht').symm.app (F.val.obj ⟨t⟩)).inv ≫
-        ((constantSheaf K A).mapIso sorry).hom ≫
-          (constantSheafAdj K A ht').counit.app (e.functor.obj F) := sorry
-
-lemma equivCommuteConstant'_counit_w (F : Sheaf K A) :
-    let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
-    e.inverse.map ((constantSheafAdj K A ht').counit.app F) =
-      ((equivCommuteConstant' J A ht K G ht').app (F.val.obj ⟨G.obj t⟩)).inv ≫
-        (constantSheafAdj J A ht).counit.app (e.inverse.obj F) := by
-  intro e
-  simp [equivCommuteConstant', equivCommuteConstant]
-  sorry
-
 /--
 The property of a sheaf of being a discrete object is invariant under equivalence of sheaf
 categories.
