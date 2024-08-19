@@ -220,16 +220,6 @@ theorem get_toList (n : ℕ) (hn : n < length (toList p x)) :
 theorem toList_get_zero (h : x ∈ p.support) :
     (toList p x).get ⟨0, (length_toList_pos_of_mem_support _ _ h)⟩ = x := by simp [toList]
 
-set_option linter.deprecated false in
-@[deprecated get_toList (since := "2024-05-08")]
-theorem nthLe_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x).nthLe n hn = (p ^ n) x := by simp [toList]
-
-set_option linter.deprecated false in
-@[deprecated toList_get_zero (since := "2024-05-08")]
-theorem toList_nthLe_zero (h : x ∈ p.support) :
-    (toList p x).nthLe 0 (length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]
-
 variable {p} {x}
 
 theorem mem_toList_iff {y : α} : y ∈ toList p x ↔ SameCycle p x y ∧ x ∈ p.support := by

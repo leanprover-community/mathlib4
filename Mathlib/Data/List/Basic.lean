@@ -545,34 +545,29 @@ theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
   simp [getElem_eq_iff]
 
-section deprecated
-set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
-
-/-- nth element of a list `l` given `n < l.length`. -/
-@[deprecated get (since := "2023-01-05")]
-def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
-
-@[simp] theorem nthLe_tail (l : List α) (i) (h : i < l.tail.length)
+@[simp] theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
-    l.tail.nthLe i h = l.nthLe (i + 1) h' := by
+    l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   cases l <;> [cases h; rfl]
 
-theorem nthLe_cons_aux {l : List α} {a : α} {n} (hn : n ≠ 0) (h : n < (a :: l).length) :
-    n - 1 < l.length := by
-  contrapose! h
-  rw [length_cons]
-  omega
-
-theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
-    (a :: l).nthLe n hl = if hn : n = 0 then a else l.nthLe (n - 1) (nthLe_cons_aux hn hl) := by
+theorem get_cons {l : List α} {a : α} {n} (hl) :
+    (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
+      l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ := by
   split_ifs with h
-  · simp [nthLe, h]
+  · simp [h]
   cases l
   · rw [length_singleton, Nat.lt_succ_iff] at hl
     omega
   cases n
   · contradiction
   rfl
+
+section deprecated
+set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
+
+/-- nth element of a list `l` given `n < l.length`. -/
+@[deprecated get (since := "2023-01-05")]
+def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
 
 end deprecated
 
@@ -947,8 +942,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
   convert get_reverse l.reverse n (by simpa) n.2 using 1
   simp
 
-theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) :
-    l = [l.nthLe 0 (by omega)] := by
+theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
   refine ext_get (by convert h) fun n h₁ h₂ => ?_
   simp only [get_singleton]
   congr
@@ -1932,16 +1926,16 @@ theorem span.loop_eq_take_drop :
 theorem span_eq_take_drop (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
   simpa using span.loop_eq_take_drop p l []
 
--- TODO update to use `get` instead of `nthLe`
-set_option linter.deprecated false in
-theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
-    ¬p ((l.dropWhile p).nthLe 0 hl) := by
+theorem dropWhile_get_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
+    ¬p ((l.dropWhile p).get ⟨0, hl⟩) := by
   induction' l with hd tl IH
   · cases hl
   · simp only [dropWhile]
     by_cases hp : p hd
-    · simp [hp, IH]
-    · simp [hp, nthLe_cons]
+    · simp_all only [get_eq_getElem]
+      apply IH
+      simp_all only [dropWhile_cons_of_pos]
+    · simp [hp]
 
 variable {p} {l : List α}
 
@@ -1949,23 +1943,21 @@ variable {p} {l : List α}
 theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   induction' l with x xs IH
   · simp [dropWhile]
-  · by_cases hp : p x <;> simp [hp, dropWhile, IH]
+  · by_cases hp : p x <;> simp [hp, IH]
 
 @[simp]
 theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
   induction' l with x xs IH
   · simp
-  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH]
+  · by_cases hp : p x <;> simp [hp, IH]
 
--- TODO update to use `get` instead of `nthLe`
-set_option linter.deprecated false in
 @[simp]
-theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
+theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
   induction' l with x xs IH
   · simp only [takeWhile_nil, Bool.not_eq_true, true_iff]
     intro h
     simp at h
-  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH, nthLe_cons]
+  · by_cases hp : p x <;> simp [hp, IH]
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
   induction l with simp [takeWhile] at hx
