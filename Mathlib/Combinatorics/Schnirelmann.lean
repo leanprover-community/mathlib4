@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Schnirelmann density
@@ -169,6 +170,10 @@ lemma schnirelmannDensity_congr {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A 
     schnirelmannDensity A = schnirelmannDensity B :=
   schnirelmannDensity_congr' (by aesop)
 
+@[simp] lemma schnirelmannDensity_congr_decidable {A : Set ℕ} (h : DecidablePred (· ∈ A))
+    [DecidablePred (· ∈ A)] :
+    @schnirelmannDensity A h = schnirelmannDensity A := by congr
+
 /--
 If the Schnirelmann density is `0`, there is a positive natural for which
 `|A ∩ {1, ..., n}| / n < ε`, for any positive `ε`.
@@ -265,3 +270,99 @@ lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ :
   have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff
   simp only [h]
   rw [schnirelmannDensity_setOf_mod_eq_one (by norm_num1), Nat.cast_two]
+
+open scoped Pointwise
+
+instance {α : Type*} [CanonicallyOrderedAddCommMonoid α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)]
+    [Sub α] [OrderedSub α] [DecidableRel (· ≤ · : α → α → Prop)]
+    {a : α} {B : Set α} [DecidablePred (· ∈ B)] :
+    DecidablePred (· ∈ a +ᵥ B) := fun x =>
+  decidable_of_iff (a ≤ x ∧ x - a ∈ B) <| by
+    simp only [Set.mem_vadd_set, vadd_eq_add]
+    constructor
+    case mp => exact fun h => ⟨_, h.2, add_tsub_cancel_of_le h.1⟩
+    case mpr =>
+      rintro ⟨c, hc, rfl⟩
+      exact ⟨le_self_add, add_tsub_cancel_left a _ ▸ hc⟩
+
+instance {α : Type*} [CanonicallyOrderedAddCommMonoid α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)]
+    [Sub α] [OrderedSub α] [DecidableRel (· ≤ · : α → α → Prop)]
+    {A B : Set α} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] :
+    DecidablePred (· ∈ A + B) := fun x =>
+  sorry
+
+-- instance {α : Type*} [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrderBot α] [DecidableEq α]
+--     {A B : Set α} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] :
+--     DecidablePred (· ∈ A + B) := fun x => by
+--   have : x ∈ A + B ↔ ∃ a ∈ (Finset.Iic x).filter (· ∈ A), x ∈ a +ᵥ B := by
+--     sorry
+--   dsimp
+--   rw [this]
+--   infer_instance
+
+theorem dyson_mann_base {σ : ℝ} {A B : Set ℕ} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)]
+    (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1)
+    (hA0 : 0 ∈ A) (hB0 : 0 ∈ B)
+    (h : ∀ m ∈ Ioc 0 1,
+        σ * (m : ℕ) ≤ ((Ioc 0 m).filter (· ∈ A)).card + ((Ioc 0 m).filter (· ∈ B)).card)
+    {m : ℕ}
+    (hm : m ∈ Ioc 0 1) :
+    σ * m ≤ ((Ioc 0 m).filter (· ∈ A + B)).card := by
+  simp only [Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hm
+  cases hm
+  simp only [Nat.Ioc_succ_singleton, zero_add, mem_singleton, forall_eq, Nat.cast_one, mul_one,
+    filter_singleton, apply_ite Finset.card, card_singleton, card_empty, Nat.cast_ite,
+    Nat.cast_zero] at h ⊢
+  have : 1 ∈ A ∨ 1 ∈ B := by
+    by_contra!
+    simp [this] at h
+    exact h.not_lt hσ₀
+  have : 1 ∈ A + B := by
+    rw [Set.mem_add]
+    cases this
+    case inl hA1 => exact ⟨1, hA1, 0, hB0, by simp⟩
+    case inr hB1 => exact ⟨0, hA0, 1, hB1, by simp⟩
+  rwa [if_pos this]
+
+theorem dyson_mann {σ : ℝ} {n : ℕ} {A B : Set ℕ} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)]
+    (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (hn : 1 ≤ n)
+    (hAn : ∀ i ∈ A, i ≤ n) (hBn : ∀ i ∈ B, i ≤ n)
+    (hA0 : 0 ∈ A) (hB0 : 0 ∈ B)
+    (h : ∀ m ∈ Ioc 0 n,
+        σ * (m : ℕ) ≤ ((Ioc 0 m).filter (· ∈ A)).card + ((Ioc 0 m).filter (· ∈ B)).card)
+    {m : ℕ}
+    (hm : m ∈ Ioc 0 n) :
+    σ * m ≤ ((Ioc 0 m).filter (· ∈ A + B)).card := by
+  induction n, hn using Nat.le_induction
+  case base => exact dyson_mann_base hσ₀ hσ₁ hA0 hB0 h hm
+  case succ n hn ih =>
+    generalize hb : ((Icc 0 (n + 1)).filter (· ∈ B)).card = b
+    have : ((Icc 0 (n + 1)).filter (· ∈ B) : Set ℕ) = B := by
+      ext x
+      simp only [coe_filter, mem_Icc, zero_le, true_and, Set.mem_setOf_eq, and_iff_right_iff_imp]
+      exact hBn x
+    induction b
+    case zero =>
+      simp only [card_eq_zero] at hb
+      rw [←this, hb] at hB0
+      simp only [coe_empty, Set.mem_empty_iff_false] at hB0
+
+      -- rw [hb, eq_comm] at this
+    -- have hb₁ : 1 ≤ b := by
+    --   rw [←hb, one_le_card]
+    --   exact ⟨0, by simp [hB0]⟩
+    -- induction b, hb₁ using Nat.le_induction
+    -- case base =>
+    --   simp only [card_eq_one] at hb
+    --   sorry
+
+      -- rw [hb, coe_empty, eq_comm] at this
+      -- sorry
+    case succ b ih' =>
+      sorry
+
+
+
+-- theorem mann {n : ℝ} {A B : Set ℕ}
