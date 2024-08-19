@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CstarAlgebra.Basic
+import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Algebra.Star.StarAlgHom
@@ -19,18 +19,18 @@ section
 
 open scoped Topology ENNReal
 
-open Filter ENNReal spectrum CstarRing NormedSpace
+open Filter ENNReal spectrum CStarRing NormedSpace
 
 section UnitarySpectrum
 
-variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing E] [CstarRing E]
+variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing E] [CStarRing E]
   [NormedAlgebra 𝕜 E] [CompleteSpace E]
 
 theorem unitary.spectrum_subset_circle (u : unitary E) :
     spectrum 𝕜 (u : E) ⊆ Metric.sphere 0 1 := by
   nontriviality E
   refine fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm ?_ ?_)
-  · simpa only [CstarRing.norm_coe_unitary u] using norm_le_norm_of_mem hk
+  · simpa only [CStarRing.norm_coe_unitary u] using norm_le_norm_of_mem hk
   · rw [← unitary.val_toUnits_apply u] at hk
     have hnk := ne_zero_of_mem_of_unit hk
     rw [← inv_inv (unitary.toUnits u), ← spectrum.map_inv, Set.mem_inv] at hk
@@ -49,7 +49,7 @@ section ComplexScalars
 open Complex
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CstarRing A]
+  [CStarRing A]
 
 local notation "↑ₐ" => algebraMap ℂ A
 
@@ -122,7 +122,7 @@ end ComplexScalars
 namespace StarAlgHom
 
 variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CstarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B]
+  [CStarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CStarRing B]
   [FunLike F A B] [AlgHomClass F ℂ A B] [StarAlgHomClass F ℂ A B] (φ : F)
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
@@ -153,7 +153,7 @@ end StarAlgHom
 namespace StarAlgEquiv
 
 variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CstarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B]
+  [CStarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CStarRing B]
   [EquivLike F A B] [NonUnitalAlgEquivClass F ℂ A B] [StarAlgEquivClass F ℂ A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
@@ -177,7 +177,7 @@ open ContinuousMap Complex
 open scoped ComplexStarModule
 
 variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CstarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
+  [CStarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/
