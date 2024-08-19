@@ -111,9 +111,9 @@ variable [Nonempty Y] {U : Set X} {f : U → Y}
 
 /-- Any extension of a continuous function `f : U → Y` on an open set `U ⊆ X` to `X`
 remains continuous on `U`. -/
-lemma continuous_subtype_extension (hU : IsOpen U) (hf : Continuous f) :
-    ContinuousOn (Function.extend Subtype.val f (Classical.arbitrary _)) U := by
-  let F := Function.extend Subtype.val f (Classical.arbitrary _)
+lemma continuous_subtype_extension (hU : IsOpen U) (hf : Continuous f) {g : X → Y} :
+    ContinuousOn (Function.extend Subtype.val f g) U := by
+  let F := Function.extend Subtype.val f g
   suffices h : ∀ x : U, ContinuousAt F x from
     ContinuousAt.continuousOn (by convert h; exact Iff.symm Subtype.forall)
   intro x
