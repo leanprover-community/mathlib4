@@ -3,6 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
+import Aesop
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod.Basic
@@ -363,6 +364,26 @@ theorem sumAssoc_symm_apply_inr_inl {α β γ} (b) :
 
 @[simp]
 theorem sumAssoc_symm_apply_inr_inr {α β γ} (c) : (sumAssoc α β γ).symm (inr (inr c)) = inr c :=
+  rfl
+
+/-- Four-way commutativity of `sum`. The name matches `add_add_add_comm`. -/
+@[simps apply]
+def sumSumSumComm (α β γ δ) : (α ⊕ β) ⊕ γ ⊕ δ ≃ (α ⊕ γ) ⊕ β ⊕ δ where
+  toFun :=
+    (sumAssoc (α ⊕ γ) β δ) ∘ (Sum.map (sumAssoc α γ β).symm (@id δ))
+      ∘ (Sum.map (Sum.map (@id α) (sumComm β γ)) (@id δ))
+      ∘ (Sum.map (sumAssoc α β γ) (@id δ))
+      ∘ (sumAssoc (α ⊕ β) γ δ).symm
+  invFun :=
+    (sumAssoc (α ⊕ β) γ δ) ∘ (Sum.map (sumAssoc α β γ).symm (@id δ))
+      ∘ (Sum.map (Sum.map (@id α) (sumComm β γ).symm) (@id δ))
+      ∘ (Sum.map (sumAssoc α γ β) (@id δ))
+      ∘ (sumAssoc (α ⊕ γ) β δ).symm
+  left_inv x := by aesop
+  right_inv x := by aesop
+
+@[simp]
+theorem sumSumSumComm_symm (α β γ δ) : (sumSumSumComm α β γ δ).symm = sumSumSumComm α γ β δ :=
   rfl
 
 /-- Sum with `IsEmpty` is equivalent to the original type. -/

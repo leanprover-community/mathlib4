@@ -541,7 +541,35 @@ def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
   continuous_invFun := continuous_sumAssoc_symm X Y Z
 
 @[simp]
-def sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
+lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
+
+-- FIXME: move W further up...
+variable (X Y W Z : Type*)
+  [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
+
+/-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
+def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
+  toEquiv := Equiv.sumSumSumComm X Y W Z
+  continuous_toFun := by
+    show Continuous ((Equiv.sumAssoc (X ⊕ W) Y Z) ∘ (Sum.map (Equiv.sumAssoc X W Y).symm (@id Z))
+      ∘ (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W)) (@id Z))
+      ∘ (Sum.map (Equiv.sumAssoc X Y W) (@id Z))
+      ∘ (Equiv.sumAssoc (X ⊕ Y) W Z).symm)
+    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Equiv.sumComm Y W)) (@id Z)) := by continuity
+    fun_prop
+  continuous_invFun := by
+    show Continuous ((Equiv.sumAssoc (X ⊕ Y) W Z) ∘ (Sum.map (Equiv.sumAssoc X Y W).symm (@id Z))
+      ∘ (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z))
+      ∘ (Sum.map (Equiv.sumAssoc X W Y) (@id Z))
+      ∘ (Equiv.sumAssoc (X ⊕ W) Y Z).symm)
+    have : Continuous (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z)) := by continuity
+    fun_prop
+
+@[simp]
+lemma sumSumSumComm_toEquiv : (sumSumSumComm X Y W Z).toEquiv = (Equiv.sumSumSumComm X Y W Z) := rfl
+
+@[simp]
+lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z) := rfl
 
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
 @[simps! (config := .asFn) apply]
