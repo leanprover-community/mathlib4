@@ -26,6 +26,10 @@ lemma S_pow_two : ↑ₘ(S ^ 2) = -1 := by
   simp
   exact Eq.symm (eta_fin_two (-1))
 
+lemma S_mul_self : (S.1 * S.1) = -1 := by
+  rw [← pow_two]
+  exact S_pow_two
+
 def reps (m : ℤ) : Set (Δ m) :=
   { A : Δ m | (A.1 1 0) = 0 ∧ 0 < A.1 0 0 ∧ 0 ≤ A.1 0 1 ∧  |(A.1 0 1)| < |(A.1 1 1)|}
 
@@ -206,9 +210,20 @@ lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0)  : ∀ A : Δ m, reduce m A ∈ r
     exact h2
     exact h1
 
-lemma S_smul_four (A : Δ m) : (S • ( S • (S • ( S • A)))) = A := by sorry
+lemma S_smul_four (A : Δ m) : (S • ( S • (S • ( S • A)))) = A := by
+  simp_rw [smul_def, ← mul_assoc, S_mul_self]
+  simp
+  simp_rw [S_mul_self]
+  simp
 
-lemma T_S_rel (A : Δ m) : (S • S • S • T • S • T • S • A) = T⁻¹ • A := by sorry
+lemma T_S_rel (A : Δ m) : (S • S • S • T • S • T • S • A) = T⁻¹ • A := by
+  have : S • S • S • T • S • T • S = T⁻¹ := by
+    simp_rw [smul_eq_mul]
+    ext i j
+    fin_cases i <;> fin_cases j
+    all_goals{rfl}
+  simp_rw [← this, ← smul_assoc]
+
 
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
@@ -335,9 +350,19 @@ theorem reduce_spec (m : ℤ) : ∀A : Δ m, ∃ (R: G), R • A = reduce m A :=
     simp_rw [← mul_assoc]
     simp
 
-lemma c2 (B : Δ 1) (hB : B ∈  G) : (S • B) ∈ G := by sorry
+lemma c2 (B : Δ 1) (hB : B ∈  G) : (S • B) ∈ G := by
+  rw [smul_eq_mul]
+  apply Subgroup.mul_mem
+  apply S_mem_G
+  exact hB
 
-lemma test : ∀ A : Δ 1, A ∈ G := by
+lemma c3 (B : Δ 1) (hB : B ∈  G) : (T • B) ∈ G := by
+  rw [smul_eq_mul]
+  apply Subgroup.mul_mem
+  apply T_mem_G
+  exact hB
+
+lemma det_one_mem_G : ∀ A : Δ 1, A ∈ G := by
   intro A
   induction A using (induction_on 1 )
   exact Int.one_ne_zero
@@ -346,157 +371,25 @@ lemma test : ∀ A : Δ 1, A ∈ G := by
       ext i j
       fin_cases i; fin_cases j
       simp
-
-      sorry
+      have := A_b_eq_zero 1 A a1
+      rw [@Int.mul_eq_one_iff_eq_one_or_neg_one] at this
+      aesop
       simp
-
-      sorry
+      have := A_b_eq_zero 1 A a1
+      rw [@Int.mul_eq_one_iff_eq_one_or_neg_one] at this
+      aesop
       fin_cases j
       simp [a1]
       simp
-
-
+      have := A_b_eq_zero 1 A a1
+      rw [@Int.mul_eq_one_iff_eq_one_or_neg_one] at this
+      aesop
     rw [this]
     exact Subgroup.one_mem G
-
   next B hb => apply (c2 B) hb
-  next B hb => sorry
-
-
-
-theorem reps_unique' (m : ℤ) (hm : m ≠ 0) :
-  ∀(M : G) (A B : Δ m), A ∈ reps m → B ∈ reps m →  M • A = B → A = B := by
-  intro M A B hA hB h
-  rw [← h]
-  simp [reps] at *
-
-  sorry
-
-
-/-
-begin
-  rintros  M A B
-    ⟨g_eq, e_pos, f_nonneg, f_bound⟩ ⟨k_eq, H6, f'_nonneg, f'_bound⟩ B_eq, rw ← B_eq,
-    rw m_a_b' at B_eq,
-  have ht: M 1 0 = 0,
-    {rw [k_eq, g_eq] at B_eq,
-    simp only [add_zero, zero_eq_mul, mul_zero] at B_eq,
-    cases B_eq.2.2.1,
-    exact h,
-    rw h at e_pos,
-    exact (irrefl _ e_pos).elim, },
-  have d1: (M 0 0)*(M 1 1)=1,
-    by {have:= matrix.det_fin_two M, simp at *, rw ht at this, simp at this,
-      have hm:= gengroup_det M, rw hm at this, apply this.symm, },
-  have mg0: (M  0 0) > 0, by
-    {rw g_eq at B_eq, simp only [add_zero, mul_zero] at B_eq,
-    exact one_time (B 0 0) (M 0 0) (A 0 0) H6 e_pos B_eq.1, },
-  have htt: M 0 0 =1 ∧ M 1 1 =1, by
-    { rw int.mul_eq_one at d1, apply one_time' (M 0 0) (M 1 1) mg0 d1,},
-  have httv: M 1 1 =1, { simp only [htt], },
-  have htv: ((A 0 1)+ (M 0 1)*(A 1 1)) ≥ 0, by
-    {rw B_eq.2.1 at f'_nonneg,
-    rw htt.1 at f'_nonneg,
-    simp only [one_mul] at f'_nonneg,
-    exact f'_nonneg},
-  have httt: M 0 1 =0, by
-    {rw B_eq.2.2.2 at f'_bound,
-    rw B_eq.2.1 at f'_bound,
-    rw ht at f'_bound,
-    rw htt.1 at f'_bound,
-    rw httv at f'_bound,
-    simp only [one_mul, zero_mul,
-    zero_add] at f'_bound,
-    apply num_gt_sum (A 1 1) (A 0 1) (M 0 1)  f_nonneg  f_bound htv,
-    exact f'_bound, },
-  have M1: ↑M = (1: SL2Z), by
-      {ext i j,
-      fin_cases i;
-      fin_cases j,
-      exact htt.1,
-      exact  httt,
-      exact ht,
-      exact httv},
-    norm_cast at M1,
-    rw M1,
-    simp only [one_smul],
-    exact hm,
-end -/
-
-
-
-def reps_equiv' (hm : m ≠ 0) : Quotient (orbit_rel m ) ≃ reps m where
-  toFun := fun A => Quotient.liftOn A (fun A => ⟨reduce m A, reduce_mem_reps m hm A⟩)
-    (by
-      intro A B ⟨h, a⟩
-      simp
-      obtain ⟨R, hR⟩ := reduce_spec m A
-      obtain ⟨S, hS⟩ := reduce_spec m B
-      simp at a
-      apply reps_unique' m hm ( S • h⁻¹ • R⁻¹) _ _ (reduce_mem_reps m hm A) (reduce_mem_reps m hm B)
-      rw [← hR, ← hS, ← a]
-      simp_rw [smul_assoc]
-      simp)
-  invFun := fun A => ⟦A⟧
-  left_inv := by
-    intro a
-    letI := orbit_rel m
-    simp
-    rw [Quotient.mk_eq_iff_out]
-    rcases a with ⟨A, hA⟩
-    simp
-    have : (Quotient.out (s:= orbit_rel m) (Quot.mk _ ⟨A, hA⟩)) ≈ ⟨A, hA⟩ := by
-      exact Quotient.eq_mk_iff_out.mp rfl
-    apply Setoid.trans (b := ⟨A, hA⟩)
-    have := reduce_spec m ⟨A, hA⟩
-    obtain ⟨R, hR⟩ := this
-    use R
-    exact id (Setoid.symm this)
-  right_inv := by
-    intro a
-    apply Subtype.eq
-    simp only [Quotient.lift_mk]
-    have := reduce_spec m a
-    obtain ⟨R, hR⟩ := this
-    apply reps_unique' m hm R⁻¹
-    exact reduce_mem_reps m hm a
-    exact a.2
-    rw [← hR]
-    simp
-
-lemma sl2_eq_mat_1 : SL(2,ℤ) = Δ 1 := by
-  rw [IntegralMatrices]
-  rfl
-
-def reps_equiv_group_quot : Quotient (orbit_rel 1) ≃ SL(2,ℤ) ⧸ G := by
-  have : (SL(2,ℤ) ⧸ G) = ((Δ 1) ⧸ G) := by
-    congr
-  have := QuotientGroup.quotientRightRelEquivQuotientLeftRel G
-  exact this
-
-lemma reps_sl : reps 1 = {(1 : SL(2,ℤ))} := by
-  rw [reps]
-  ext A
-  constructor
-  intro h
-  simp at *
-  /- ext i j
-  fin_cases i; fin_cases j;
-  simp
-   -/
-
-  sorry
-  sorry
-
-
+  next B hb => apply (c3 B) hb
 
 lemma SL2Z_generators : G = (⊤ : Subgroup (SL(2,ℤ)))  := by
-  apply QuotientGroup.subgroup_eq_top_of_subsingleton
-  have : (SL(2,ℤ) ⧸ G) =
-    Quotient (QuotientGroup.leftRel (Subgroup.closure {S, T})) := by rfl
-  let t := reps_equiv_group_quot
-  rw [← (Equiv.subsingleton_congr t)]
-  let t2 := (reps_equiv' 1 (Int.one_ne_zero))
-  rw [(Equiv.subsingleton_congr t2)]
-  rw [reps_sl]
-  simp
+    refine (Subgroup.eq_top_iff' G).mpr ?_
+    intro x
+    apply det_one_mem_G x
