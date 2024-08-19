@@ -15,7 +15,7 @@ The "flexible" linter makes sure that a "rigid" tactic (such as `rw`) does not a
 output of a "flexible" tactic (such as `simp`).
 
 For example, this ensures that, if you want to use `simp [...]` in the middle of a proof,
-then you should replace `simp [...]` by
+then you should replace `simp [...]` by one of
 * a `suffices \"expr after simp\" by simpa` line;
 * the output of `simp? [...]`, so that the final code contains `simp only [...]`;
 * something else that does not involve `simp`!
@@ -33,7 +33,7 @@ should trigger the linter, since `assumption` uses `h` that has been "stained" b
 However, `assumption` contains no syntax information for the location `h`, so the linter in its
 current form does not catch this.
 
-##  Implementation detail
+## Implementation notes
 
 A large part of the code is devoted to tracking `FVar`s and `MVar`s between tactics.
 
@@ -62,7 +62,7 @@ register_option linter.flexible : Bool := {
 
 namespace flexible
 
-/-- `flexible? stx` is `true` on syntax that takes a "wide" variety of inputs and modifies
+/-- `flexible? stx` is `true` if `stx` is syntax for a tactic that takes a "wide" variety of inputs and modifies
 them in possibly unpredictable ways.
 
 The prototypical flexible tactic is `simp`
@@ -85,7 +85,7 @@ namespace Lean.Elab.TacticInfo
 
 The two definitions `activeGoalsBefore`, `activeGoalsAfter` extract a list of
 `MVarId`s attempting to determine which on which goals the tactic `t` is acting.
-This is mostly based on the heuristic that the tactic with "change" an `MVarId`.
+This is mostly based on the heuristic that the tactic will "change" an `MVarId`.
 -/
 
 /-- `activeGoalsBefore t` are the `MVarId`s before the `TacticInfo` `t` that "disappear" after it.
