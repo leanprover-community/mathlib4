@@ -467,7 +467,7 @@ theorem add_isLimit (a) {b} : IsLimit b → IsLimit (a + b) :=
 
 alias IsLimit.add := add_isLimit
 
-/-! ### Subtraction on ordinals-/
+/-! ### Subtraction on ordinals -/
 
 
 /-- The set in the definition of subtraction is nonempty. -/
