@@ -1,51 +1,70 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison
+Authors: Mario Carneiro, Scott Morrison, Artie Khovanov
 -/
 import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Construct ordered groups from positive cones
 
 In this file we provide structures `PositiveCone` and `TotalPositiveCone`
 that encode axioms of `OrderedAddCommGroup` and `LinearOrderedAddCommGroup`
-in terms of the `(0 ≤ ·)` predicate.
+in terms of the subset of non-negative elements.
 
 We also provide two constructors,
 `OrderedAddCommGroup.mkOfPositiveCone` and `LinearOrderedAddCommGroup.mkOfPositiveCone`,
 that turn these structures into instances of the corresponding typeclasses.
 -/
 
+universe u v w
+
 namespace AddCommGroup
 
 /-- A collection of elements in an `AddCommGroup` designated as "non-negative".
-This is useful for constructing an `OrderedAddCommGroup`
-by choosing a positive cone in an existing `AddCommGroup`. -/
--- Porting note(#5171): @[nolint has_nonempty_instance]
-structure PositiveCone (α : Type*) [AddCommGroup α] where
-  /-- The characteristic predicate of a positive cone. `nonneg a` means that `0 ≤ a` according to
-  the cone. -/
-  nonneg : α → Prop
-  /-- The characteristic predicate of a positive cone. `pos a` means that `0 < a` according to
-  the cone. -/
-  pos : α → Prop := fun a => nonneg a ∧ ¬nonneg (-a)
-  pos_iff : ∀ a, pos a ↔ nonneg a ∧ ¬nonneg (-a) := by intros; rfl
-  zero_nonneg : nonneg 0
-  add_nonneg : ∀ {a b}, nonneg a → nonneg b → nonneg (a + b)
-  nonneg_antisymm : ∀ {a}, nonneg a → nonneg (-a) → a = 0
+This induces an `OrderedAddCommGroup`. -/
+class PositiveConeClass (S : Type u) (G : Type v) [AddCommGroup G] [SetLike S G]
+    extends AddSubmonoidClass S G : Prop where
+  eq_zero_of_mem_of_neg_mem : ∀ {s : S} {a : G}, a ∈ s → -a ∈ s → a = 0
 
-/-- A positive cone in an `AddCommGroup` induces a linear order if
-for every `a`, either `a` or `-a` is non-negative. -/
--- Porting note(#5171): @[nolint has_nonempty_instance]
-structure TotalPositiveCone (α : Type*) [AddCommGroup α] extends PositiveCone α where
-  /-- For any `a` the proposition `nonneg a` is decidable -/
-  nonnegDecidable : DecidablePred nonneg
-  /-- Either `a` or `-a` is `nonneg` -/
-  nonneg_total : ∀ a : α, nonneg a ∨ nonneg (-a)
+export PositiveConeClass (eq_zero_of_mem_of_neg_mem)
 
-/-- Forget that a `TotalPositiveCone` is total. -/
-add_decl_doc TotalPositiveCone.toPositiveCone
+structure PositiveCone (G : Type u) [AddCommGroup G] extends AddSubmonoid G where
+  eq_zero_of_mem_of_neg_mem' : ∀ {a}, a ∈ carrier → -a ∈ carrier → a = 0
+
+instance PositiveCone.instSetLike (G : Type u) [AddCommGroup G] : SetLike (PositiveCone G) G where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+instance PositiveCone.instPositiveConeClass (G : Type u) [AddCommGroup G] :
+    PositiveConeClass (PositiveCone G) G where
+  add_mem {s} := s.add_mem'
+  zero_mem {s} := s.zero_mem'
+  eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
+
+/-- A positive cone such that, for every `a`, either `a` or `-a` is non-negative.
+This indices a `LinearOrderedAddCommGroup`. -/
+class TotalPositiveConeClass (S : Type u) (G : Type v) [AddCommGroup G] [SetLike S G]
+    extends PositiveConeClass S G : Prop where
+  mem_or_neg_mem : ∀ (s : S) (a : G), a ∈ s ∨ -a ∈ s
+
+export TotalPositiveConeClass (mem_or_neg_mem)
+
+structure TotalPositiveCone (G : Type u) [AddCommGroup G] extends PositiveCone G where
+  mem_or_neg_mem' : ∀ a, a ∈ carrier ∨ -a ∈ carrier
+
+instance TotalPositiveCone.instSetLike (G : Type u) [AddCommGroup G] :
+  SetLike (TotalPositiveCone G) G where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+instance TotalPositiveCone.instTotalPositiveConeClass (G : Type u) [AddCommGroup G] :
+    TotalPositiveConeClass (TotalPositiveCone G) G where
+  add_mem {s} := s.add_mem'
+  zero_mem {s} := s.zero_mem'
+  eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
+  mem_or_neg_mem {s} := s.mem_or_neg_mem'
 
 end AddCommGroup
 
@@ -55,15 +74,15 @@ open AddCommGroup
 
 /-- Construct an `OrderedAddCommGroup` by
 designating a positive cone in an existing `AddCommGroup`. -/
-def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : PositiveCone α) : OrderedAddCommGroup α :=
-  { ‹AddCommGroup α› with
-    le := fun a b => C.nonneg (b - a),
-    lt := fun a b => C.pos (b - a),
-    lt_iff_le_not_le := fun a b => by simp [C.pos_iff],
-    le_refl := fun a => by simp [C.zero_nonneg],
-    le_trans := fun a b c nab nbc => by simpa using C.add_nonneg nbc nab,
+def mkOfPositiveCone {S : Type u} {G : Type v}
+    [AddCommGroup G] [SetLike S G] [PositiveConeClass S G] (C : S) :
+    OrderedAddCommGroup G :=
+  { ‹AddCommGroup G› with
+    le := fun a b => a - b ∈ C,
+    le_refl := fun a => by simp [zero_mem],
+    le_trans := fun a b c nab nbc => by simpa using add_mem nbc nab,
     le_antisymm := fun a b nab nba =>
-      eq_of_sub_eq_zero <| C.nonneg_antisymm nba (by rwa [neg_sub]),
+      by apply eq_of_sub_eq_zero; simp at nba; simpa [nba] using eq_zero_of_mem_of_neg_mem nab,
     add_le_add_left := fun a b nab c => by simpa using nab }
 
 end OrderedAddCommGroup
@@ -73,13 +92,13 @@ namespace LinearOrderedAddCommGroup
 open AddCommGroup
 
 /-- Construct a `LinearOrderedAddCommGroup` by
-designating a positive cone in an existing `AddCommGroup`
-such that for every `a`, either `a` or `-a` is non-negative. -/
-def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : TotalPositiveCone α) :
-    LinearOrderedAddCommGroup α :=
-  { OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
-    -- Porting note: was `C.nonneg_total (b - a)`
-    le_total := fun a b => by simpa [neg_sub] using C.nonneg_total (b - a)
-    decidableLE := fun a b => C.nonnegDecidable _ }
+designating a total positive cone in an existing `AddCommGroup`. -/
+def mkOfPositiveCone {S : Type u} {G : Type v}
+    [AddCommGroup G] [SetLike S G] [TotalPositiveConeClass S G]
+    (C : S) (dec : DecidablePred (fun x => x ∈ C)) :
+    LinearOrderedAddCommGroup G :=
+  { OrderedAddCommGroup.mkOfPositiveCone C with
+    le_total := fun a b => by simpa using mem_or_neg_mem C (a - b)
+    decidableLE := fun a b => dec _ }
 
 end LinearOrderedAddCommGroup
