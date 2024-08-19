@@ -76,7 +76,7 @@ abbrev obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by omega⟩
 
 /-- The map `F.obj' i ⟶ F.obj' j` when `F : ComposableArrows C n`, and `i` and `j`
 are natural numbers such that `i ≤ j ≤ n`. -/
-@[simp]
+-- @[simp]: Simp and reducible don't go together nicely with `#4154`
 abbrev map' (i j : ℕ) (hij : i ≤ j := by valid) (hjn : j ≤ n := by valid) :
   F.obj ⟨i, by omega⟩ ⟶ F.obj ⟨j, by omega⟩ := F.map (homOfLE (by
     simp only [Fin.mk_le_mk]
@@ -359,7 +359,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
       rw [id_comp]
     · obtain _ | _ | k := k
       · simp [Nat.succ.injEq] at hjk
-      · simp
+      · simp [map'.eq_1]
       · rfl
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk
