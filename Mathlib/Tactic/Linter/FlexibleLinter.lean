@@ -65,9 +65,10 @@ namespace flexible
 /-- `flexible? stx` is `true` if `stx` is syntax for a tactic that takes a "wide" variety of inputs and modifies
 them in possibly unpredictable ways.
 
-The prototypical flexible tactic is `simp`
+The prototypical flexible tactic is `simp`.
 The prototypical non-flexible tactic `rw`.
 `simp only` is also non-flexible. -/
+--  TODO: adding more entries here, allows to consider more tactics to be flexible
 def flexible? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
   | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
@@ -94,7 +95,7 @@ def activeGoalsBefore (t : TacticInfo) : List MVarId :=
   t.goalsBefore.filter (·.name ∉ t.goalsAfter.map (·.name))
 
 /-- `activeGoalsAfter t` are the `MVarId`s after the `TacticInfo` `t` that were not present before.
-They should correspond to the goals changed by the tactic `t`. -/
+They should correspond to the goals created or changed by the tactic `t`. -/
 def activeGoalsAfter (t : TacticInfo) : List MVarId :=
   t.goalsAfter.filter (·.name ∉ t.goalsBefore.map (·.name))
 
@@ -232,7 +233,6 @@ def combinatorLike : HashSet Name :=
     ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.tacticStop_,
     `Mathlib.Tactic.Abel.abelNF,
-    `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.RingNF.ringNF }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
@@ -251,6 +251,7 @@ def followers : HashSet Name :=
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
     `Mathlib.Tactic.RingNF.ring,
+    `Mathlib.Tactic.normNum,
     `linarith,
     `nlinarith,
     ``Lean.Parser.Tactic.tacticNorm_cast_,
@@ -378,7 +379,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
       stains := new
 
   for (s, stainStx, d) in msgs do
-    Linter.logLint linter.flexible stainStx m!"'{stainStx}' stains '{d}'..."
-    logInfoAt s m!"... and '{s}' uses '{d}'!"
+    Linter.logLint linter.flexible stainStx m!"'{stainStx}' stains '{d}'…"
+    logInfoAt s m!"… and '{s}' uses '{d}'!"
 
 initialize addLinter flexibleLinter
