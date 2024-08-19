@@ -8,13 +8,6 @@ import Batteries.Util.ExtendedBinder
 import Lean.Elab.Term
 
 /-!
-# Note about `Mathlib/Init/`
-The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
-(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
-
-We intend to move all the content of these files out into the main `Mathlib` directory structure.
-Contributions assisting with this are appreciated.
-
 # Sets
 
 This file sets up the theory of sets whose elements have a given type.
@@ -33,9 +26,6 @@ Given a type `X` and a predicate `p : X → Prop`:
 ## Implementation issues
 
 As in Lean 3, `Set X := X → Prop`
-
-I didn't call this file Data.Set.Basic because it contains core Lean 3
-stuff which happens before mathlib3's data.set.basic .
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
 -/
@@ -94,7 +84,7 @@ namespace Mathlib.Meta
 /-- Set builder syntax. This can be elaborated to either a `Set` or a `Finset` depending on context.
 
 The elaborators for this syntax are located in:
-* `Init.Set` for the `Set` builder notation elaborator for syntax of the form `{x | p x}`,
+* `Data.Set.Defs` for the `Set` builder notation elaborator for syntax of the form `{x | p x}`,
   `{x : α | p x}`, `{binder x | p x}`.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator for syntax of the form
   `{x ∈ s | p x}`.

@@ -467,7 +467,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
   is `Finset ?α`.
 
 See also
-* `Init.Set` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
 * `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
