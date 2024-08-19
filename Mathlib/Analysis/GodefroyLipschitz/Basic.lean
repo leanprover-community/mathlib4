@@ -280,7 +280,7 @@ theorem uniformInducing_val {X : Type*} [UniformSpace X] (s : Set X) :
 
 theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
     (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
-    (hdφ : Dense (X := F) (Submodule.span ℝ (range φ))) :
+    (hdφ : Dense (Submodule.span ℝ (range φ) : Set F)) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   let A : Submodule ℝ E → Submodule ℝ F := fun p ↦ span ℝ (φ '' p)
   have mA : Monotone A := fun p q hpq ↦ span_mono (image_mono hpq)
