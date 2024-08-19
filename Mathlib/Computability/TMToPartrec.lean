@@ -898,6 +898,7 @@ def natEnd : Γ' → Bool
   | Γ'.consₗ => true
   | Γ'.cons => true
   | _ => false
+attribute [nolint simpNF] natEnd.eq_3
 
 /-- Pop a value from the stack and place the result in local store. -/
 @[simp]

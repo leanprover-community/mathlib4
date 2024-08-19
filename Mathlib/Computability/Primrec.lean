@@ -55,9 +55,10 @@ namespace Nat
 --   n.cases a f = n.casesOn a f := rfl
 
 /-- Calls the given function on a pair of entries `n`, encoded via the pairing function. -/
-@[simp, reducible]
+@[simp, reducible, nolint simpVarHead]
 def unpaired {α} (f : ℕ → ℕ → α) (n : ℕ) : α :=
   f n.unpair.1 n.unpair.2
+
 
 /-- The primitive recursive functions `ℕ → ℕ`. -/
 protected inductive Primrec : (ℕ → ℕ) → Prop
