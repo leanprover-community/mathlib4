@@ -654,8 +654,8 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
 /-- The strict series `0 < … < n` in ℕ. -/
 def iota (n : ℕ) : LTSeries ℕ where
   length := n
-  toFun := fun i => i
-  step := fun _ => Nat.lt_add_one _
+  toFun := (↑)
+  step i := Nat.lt_add_one i
 
 @[simp] lemma length_iota (n : ℕ) : (iota n).length = n := rfl
 
