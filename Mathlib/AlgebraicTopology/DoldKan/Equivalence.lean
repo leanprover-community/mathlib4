@@ -6,8 +6,6 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
 import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
-#align_import algebraic_topology.dold_kan.equivalence from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
-
 /-!
 
 # The Dold-Kan correspondence
@@ -139,13 +137,10 @@ open AlgebraicTopology.DoldKan
 /-- The functor `N` for the equivalence is `normalizedMooreComplex A` -/
 def N : SimplicialObject A ⥤ ChainComplex A ℕ :=
   AlgebraicTopology.normalizedMooreComplex A
-set_option linter.uppercaseLean3 false in
-#align category_theory.abelian.dold_kan.N CategoryTheory.Abelian.DoldKan.N
 
 /-- The functor `Γ` for the equivalence is the same as in the pseudoabelian case. -/
 def Γ : ChainComplex A ℕ ⥤ SimplicialObject A :=
   Idempotents.DoldKan.Γ
-#align category_theory.abelian.dold_kan.Γ CategoryTheory.Abelian.DoldKan.Γ
 
 /-- The comparison isomorphism between `normalizedMooreComplex A` and
 the functor `Idempotents.DoldKan.N` from the pseudoabelian case -/
@@ -160,18 +155,14 @@ def comparisonN : (N : SimplicialObject A ⥤ _) ≅ Idempotents.DoldKan.N :=
     _ ≅ N₁ ⋙ (toKaroubiEquivalence _).inverse :=
           isoWhiskerRight (N₁_iso_normalizedMooreComplex_comp_toKaroubi A).symm _
     _ ≅ Idempotents.DoldKan.N := Iso.refl _
-set_option linter.uppercaseLean3 false in
-#align category_theory.abelian.dold_kan.comparison_N CategoryTheory.Abelian.DoldKan.comparisonN
 
 /-- The Dold-Kan equivalence for abelian categories -/
 @[simps! functor]
 def equivalence : SimplicialObject A ≌ ChainComplex A ℕ :=
   (Idempotents.DoldKan.equivalence (C := A)).changeFunctor comparisonN.symm
-#align category_theory.abelian.dold_kan.equivalence CategoryTheory.Abelian.DoldKan.equivalence
 
 theorem equivalence_inverse : (equivalence : SimplicialObject A ≌ _).inverse = Γ :=
   rfl
-#align category_theory.abelian.dold_kan.equivalence_inverse CategoryTheory.Abelian.DoldKan.equivalence_inverse
 
 end DoldKan
 

@@ -51,7 +51,7 @@ namespace TensorProduct
 of `M × N`, such that `x` is equal to the sum of `m_i ⊗ₜ[R] n_i`. -/
 theorem exists_multiset (x : M ⊗[R] N) :
     ∃ S : Multiset (M × N), x = (S.map fun i ↦ i.1 ⊗ₜ[R] i.2).sum := by
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero => exact ⟨0, by simp⟩
   | tmul x y => exact ⟨{(x, y)}, by simp⟩
   | add x y hx hy =>
@@ -64,7 +64,7 @@ of `M × N` such that each `m_i` is distinct (we represent it as an element of `
 such that `x` is equal to the sum of `m_i ⊗ₜ[R] n_i`. -/
 theorem exists_finsupp_left (x : M ⊗[R] N) :
     ∃ S : M →₀ N, x = S.sum fun m n ↦ m ⊗ₜ[R] n := by
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero => exact ⟨0, by simp⟩
   | tmul x y => exact ⟨Finsupp.single x y, by simp⟩
   | add x y hx hy =>

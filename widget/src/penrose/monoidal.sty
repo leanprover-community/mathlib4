@@ -1,0 +1,88 @@
+/*
+Copyright (c) 2024 Yuma Mizuno. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yuma Mizuno
+*/
+
+const {
+    -- Minimum size of a row/column in the object grid.
+    gridMinSize = 50
+    gridPadHorizontal = 50
+    gridPadVertical = 50
+    curveOffset = 20
+    labelOffsetFrac = 0.3
+}
+
+layout = [Grid, Arrows, EnsureOnCanvas]
+
+forall Mor2 f {
+    float f.centerX = ? in [Grid, EnsureOnCanvas]
+    float f.centerY = ? in [Grid, EnsureOnCanvas]
+    vec2 f.center = (f.centerX, f.centerY)
+    -- The `textBoxCenter` is where the text box is. It may differ from `center`
+    -- when the label is offset towards one side.
+    vec2 f.textBoxCenter = f.center
+
+    shape f.textBox = Rectangle {
+        center: f.textBoxCenter
+        -- Default size, will be overwritten dynamically.
+        width: 50
+        height: 30
+        strokeColor: theme.tooltipBorder
+    }
+
+    f.left = f.center[0] - f.textBox.width/2.
+    f.right = f.center[0] + f.textBox.width/2.
+    f.top = f.center[1] + f.textBox.height/2.
+    f.bot = f.center[1] - f.textBox.height/2.
+}
+
+forall Id f {
+    f.textBox.fillColor = theme.background
+    f.textBox.cornerRadius = 12
+    f.textBox.strokeWidth = 0.
+}
+
+forall Atom f {
+    f.textBox.fillColor = theme.tooltipBackground
+    f.textBox.cornerRadius = 5
+    f.textBox.strokeWidth = 1.
+}
+
+forall Mor2 A {
+    -- Inspired by `commutative.sty`.
+    float preGridRight = ? in Grid
+    float preGridBelow = ? in Grid
+    float gridRight = preGridRight*preGridRight
+    float gridBelow = preGridBelow*preGridBelow
+    float A.gridRight = const.gridMinSize + gridRight
+    float A.gridBelow = const.gridMinSize + gridBelow
+
+    encourage minimal(gridRight) in Grid
+    encourage minimal(gridBelow) in Grid
+}
+
+forall Mor2 f, g where Left(f, g) {
+    ensure lessThan(f.right, g.left, 15.)
+    ensure equal(f.center[1], g.center[1])
+}
+
+forall Mor2 f, g where Above(f, g) {
+    ensure equal(f.center[1] - g.center[1], 100.)
+}
+
+forall Mor1 X; Mor2 f; Mor2 g
+where X := MakeString(f, g) {
+    shape X.shape = Line {
+        start: f.center
+        end: g.center
+        strokeWidth: 1.0
+        strokeColor: theme.tooltipForeground
+    }
+
+    -- We minimize the length of strings.
+    encourage equal(abs(f.centerX - g.centerX), 0)
+
+    f.textBox above X.shape
+    g.textBox above X.shape
+}
