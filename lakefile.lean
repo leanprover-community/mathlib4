@@ -9,7 +9,7 @@ open Lake DSL
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.hashCommand, true⟩,
-  ⟨`linter.missingEnd, true⟩,
+  ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.cdot, true⟩,
   ⟨`linter.style.dollarSyntax, true⟩,
   ⟨`linter.style.longLine, true⟩,
