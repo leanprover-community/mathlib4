@@ -225,28 +225,16 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
 
 -- Porting note (#10756): new lemma
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
-    (l.rotate n).get k =
-      l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.1.zero_le.trans_lt k.2)⟩ := by
+    (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
   simp [getElem_rotate]
 
 theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l[n]? := by
   rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h,
     get?_eq_getElem?]
 
--- Porting note: moved down from its original location below `get_rotate` so that the
--- non-deprecated lemma does not use the deprecated version
-set_option linter.deprecated false in
-@[deprecated get_rotate (since := "2023-01-13")]
-theorem nthLe_rotate (l : List α) (n k : ℕ) (hk : k < (l.rotate n).length) :
-    (l.rotate n).nthLe k hk =
-      l.nthLe ((k + n) % l.length) (mod_lt _ (length_rotate l n ▸ k.zero_le.trans_lt hk)) :=
-  get_rotate l n ⟨k, hk⟩
-
-set_option linter.deprecated false in
-theorem nthLe_rotate_one (l : List α) (k : ℕ) (hk : k < (l.rotate 1).length) :
-    (l.rotate 1).nthLe k hk =
-      l.nthLe ((k + 1) % l.length) (mod_lt _ (length_rotate l 1 ▸ k.zero_le.trans_lt hk)) :=
-  nthLe_rotate l 1 k hk
+theorem get_rotate_one (l : List α) (k : Fin (l.rotate 1).length) :
+    (l.rotate 1).get k = l.get ⟨(k + 1) % l.length, mod_lt _ (length_rotate l 1 ▸ k.pos)⟩ :=
+  get_rotate l 1 k
 
 /-- A version of `List.get_rotate` that represents `List.get l` in terms of
 `List.get (List.rotate l n)`, not vice versa. Can be used instead of rewriting `List.get_rotate`
