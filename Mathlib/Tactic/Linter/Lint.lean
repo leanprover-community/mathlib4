@@ -258,17 +258,17 @@ prefers the latter as it is considered more readable.
 /--
 The `lambdaSyntax` linter flags uses of the symbol `λ` to define anonymous functions.
 This is syntactically equivalent to the `fun` keyword; mathlib style prefers using the latter.-/
-register_option linter.lambdaSyntax : Bool := {
+register_option linter.style.lambdaSyntax : Bool := {
   defValue := false
   descr := "enable the `lambdaSyntax` linter"
 }
 
-namespace LambdaSyntaxLinter
+namespace Style.lambdaSyntaxLinter
 
 /--
 `findLambdaSyntax stx` extracts from `stx` all syntax nodes of `kind` `Term.fun`. -/
 partial
-def findLambdaSyntax : Syntax → Array (Syntax)
+def findLambdaSyntax : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
     let dargs := (args.map findLambdaSyntax).flatten
     match kind with
@@ -276,21 +276,21 @@ def findLambdaSyntax : Syntax → Array (Syntax)
       | _ =>  dargs
   |_ => #[]
 
-@[inherit_doc linter.lambdaSyntax]
+@[inherit_doc linter.style.lambdaSyntax]
 def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.lambdaSyntax (← getOptions) do
+    unless Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     for s in findLambdaSyntax stx do
       if let .atom _ "λ" := s.getArgs[0]! then
-        Linter.logLint linter.lambdaSyntax s m!"\
+        Linter.logLint linter.style.lambdaSyntax s m!"\
         Please use 'fun' and not 'λ' to define anonymous functions.\n\
         The latter syntax has been deprecated in mathlib 4."
 
 initialize addLinter lambdaSyntaxLinter
 
-end LambdaSyntaxLinter
+end Style.lambdaSyntaxLinter
 
 /-! # The "longLine linter" -/
 

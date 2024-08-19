@@ -107,24 +107,24 @@ instance (f g : Nat → Nat) : Inhabited Nat where
 
 section lambdaSyntaxLinter
 
-set_option linter.lambdaSyntax false
+set_option linter.style.lambdaSyntax false
 
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.lambdaSyntax true in
+set_option linter.style.lambdaSyntax true in
 example : ℕ → ℕ := λ _ ↦ 0
 
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.lambdaSyntax true in
+set_option linter.style.lambdaSyntax true in
 def foo : Bool := by
   let _f : ℕ → ℕ := λ _ ↦ 0
   exact true
@@ -134,10 +134,10 @@ example : ℕ → ℕ := fun n ↦ n - 1
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.lambdaSyntax true in
+set_option linter.style.lambdaSyntax true in
 example : ℕ → ℕ := by exact λ n ↦ 3 * n + 1
 
 /--
@@ -145,18 +145,18 @@ warning: declaration uses 'sorry'
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.lambdaSyntax true in
+set_option linter.style.lambdaSyntax true in
 example : ℕ → ℕ → ℕ → ℕ := by
   have (n : ℕ) : True := trivial
   have : (Set.univ : Set ℕ) = ⋃ (i : ℕ), (Set.iUnion λ j ↦ ({0, j} : Set ℕ)) := sorry
@@ -166,18 +166,18 @@ example : ℕ → ℕ → ℕ → ℕ := by
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.lambdaSyntax true in
+set_option linter.style.lambdaSyntax true in
 example : True := by
   have : 0 = 0 ∧ 0 = 0 ∧ 1 + 3 = 4 := by
     refine ⟨by trivial, by
@@ -196,15 +196,15 @@ example : True := by
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The latter syntax has been deprecated in mathlib 4.
-note: this linter can be disabled with `set_option linter.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.lambdaSyntax true in
-example : ℕ → ℕ := set_option linter.lambdaSyntax false in λ _ ↦ 0
+set_option linter.style.lambdaSyntax true in
+example : ℕ → ℕ := set_option linter.style.lambdaSyntax false in λ _ ↦ 0
 
-set_option linter.lambdaSyntax false
+set_option linter.style.lambdaSyntax false
 #guard_msgs in
-example : ℕ → ℕ := set_option linter.lambdaSyntax true in λ _ ↦ 0
+example : ℕ → ℕ := set_option linter.style.lambdaSyntax true in λ _ ↦ 0
 
 end lambdaSyntaxLinter
 

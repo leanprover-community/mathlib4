@@ -11,7 +11,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.missingEnd, true⟩,
   ⟨`linter.cdot, true⟩,
-  ⟨`linter.lambdaSyntax, true⟩,
+  ⟨`linter.style.lambdaSyntax, true⟩,
   ⟨`linter.longLine, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
