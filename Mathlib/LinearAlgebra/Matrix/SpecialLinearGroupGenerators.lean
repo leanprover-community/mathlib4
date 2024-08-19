@@ -32,6 +32,7 @@ lemma S_mul_self : (S.1 * S.1) = -1 := by
   rw [← pow_two]
   exact S_pow_two
 
+/--Set of representatives for the orbits under `S` and `T`. -/
 def reps (m : ℤ) : Set (Δ m) :=
   { A : Δ m | (A.1 1 0) = 0 ∧ 0 < A.1 0 0 ∧ 0 ≤ A.1 0 1 ∧  |(A.1 0 1)| < |(A.1 1 1)|}
 
@@ -77,6 +78,7 @@ lemma reduce_aux (m : ℤ) (A : Δ m) (h : Int.natAbs (A.1 1 0) ≠ 0) :
   simp only [Fin.isValue, Int.cast_id, add_le_add_iff_right]
   rw [abs_eq_self.mpr (Int.emod_nonneg (A.1 0 0) (Int.natAbs_ne_zero.mp h))]
 
+/--Reduction lemma for integral FixedDetMatrices. -/
 @[elab_as_elim]
 def reduce_rec {C : Δ m → Sort*}
 (h0 : ∀ A : Δ m, Int.natAbs (A.1 1 0) = 0 → C A)
@@ -92,6 +94,7 @@ def reduce_rec {C : Δ m → Sort*}
       exact h
 
 set_option linter.unusedVariables false in
+/--Map from `Δ m → Δ m` which reduces a FixedDetMatrix towards a representative element in reps. -/
 def reduce : Δ m → Δ m := fun A => by
   if h : Int.natAbs (A.1 1 0) = 0 then
     if ha : 0 < A.1 0 0 then exact (T^(-(A.1 0 1/A.1 1 1))) • A else exact
@@ -177,7 +180,6 @@ lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0)  : ∀ A : Δ m, reduce m A ∈ r
         refine ⟨h1, by apply A_a_ne_zero _ _ (by simpa using h) hm⟩, by
         apply Int.ediv_mul_le ; apply A_d_ne_zero _ _ (by simpa using h) hm, by
         rw [mul_comm, ← @Int.sub_eq_add_neg, (Int.emod_def (-A.1 0 1) (A.1 1 1)).symm]
-        have :=  Int.emod_lt (-A.1 0 1) (by apply A_d_ne_zero _ _ (by simpa using h) hm)
         apply le_trans _ (Int.emod_lt (-A.1 0 1) (by apply A_d_ne_zero _ _ (by simpa using h) hm))
         rw [abs_eq_self.mpr (Int.emod_nonneg (-A.1 0 1) (A_d_ne_zero _ _ (by simpa using h) hm))]⟩
   · exact fun A h1 h2 ↦ Eq.mpr (id (congrArg (fun _a ↦ _a ∈ reps m) (reduce_eqn3 m A h1))) h2
@@ -195,7 +197,6 @@ lemma T_S_rel (A : Δ m) : (S • S • S • T • S • T • S • A) = T⁻�
     fin_cases i <;> fin_cases j
     all_goals {rfl}
   simp_rw [← this, ← smul_assoc]
-
 
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
