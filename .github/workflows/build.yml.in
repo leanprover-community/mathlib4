@@ -157,9 +157,8 @@ jobs:
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
-            printf 'import Mathlib\n\nfinalize_assertions\n' > Mathlib/AssertChecks.lean
-            lake build Mathlib.AssertChecks
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI; printf 'import Mathlib\n\nfinalize_assertions\n' > Mathlib/AssertChecks.lean; lake build Mathlib.AssertChecks"
+
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
