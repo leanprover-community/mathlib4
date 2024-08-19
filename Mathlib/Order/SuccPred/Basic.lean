@@ -364,11 +364,9 @@ variable [OrderTop α]
 theorem succ_top : succ (⊤ : α) = ⊤ := by
   rw [succ_eq_iff_isMax, isMax_iff_eq_top]
 
--- Porting note (#10618): removing @[simp],`simp` can prove it
 theorem succ_le_iff_eq_top : succ a ≤ a ↔ a = ⊤ :=
   succ_le_iff_isMax.trans isMax_iff_eq_top
 
--- Porting note (#10618): removing @[simp],`simp` can prove it
 theorem lt_succ_iff_ne_top : a < succ a ↔ a ≠ ⊤ :=
   lt_succ_iff_not_isMax.trans not_isMax_iff_ne_top
 
@@ -506,7 +504,6 @@ section OrderBot
 
 variable [OrderBot α]
 
--- Porting note (#10618): removing @[simp],`simp` can prove it
 theorem lt_succ_bot_iff [NoMaxOrder α] : a < succ ⊥ ↔ a = ⊥ := by rw [lt_succ_iff, le_bot_iff]
 
 theorem le_succ_bot_iff : a ≤ succ ⊥ ↔ a = ⊥ ∨ a = succ ⊥ := by
@@ -735,11 +732,9 @@ variable [OrderBot α]
 theorem pred_bot : pred (⊥ : α) = ⊥ :=
   isMin_bot.pred_eq
 
--- Porting note (#10618): removing @[simp],`simp` can prove it
 theorem le_pred_iff_eq_bot : a ≤ pred a ↔ a = ⊥ :=
   @succ_le_iff_eq_top αᵒᵈ _ _ _ _
 
--- Porting note (#10618): removing @[simp],`simp` can prove it
 theorem pred_lt_iff_ne_bot : pred a < a ↔ a ≠ ⊥ :=
   @lt_succ_iff_ne_top αᵒᵈ _ _ _ _
 
@@ -870,7 +865,6 @@ section OrderTop
 
 variable [OrderTop α]
 
--- Porting note (#10618): removing @[simp],`simp` can prove it
 theorem pred_top_lt_iff [NoMinOrder α] : pred ⊤ < a ↔ a = ⊤ :=
   @lt_succ_bot_iff αᵒᵈ _ _ _ _ _
 
@@ -930,11 +924,9 @@ theorem succ_pred_of_not_isMin (h : ¬IsMin a) : succ (pred a) = a :=
 theorem pred_succ_of_not_isMax (h : ¬IsMax a) : pred (succ a) = a :=
   CovBy.pred_eq (covBy_succ_of_not_isMax h)
 
--- Porting note (#10618): removing @[simp],`simp` can prove it
 theorem succ_pred [NoMinOrder α] (a : α) : succ (pred a) = a :=
   CovBy.succ_eq (pred_covBy _)
 
--- Porting note (#10618): removing @[simp],`simp` can prove it
 theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
   CovBy.pred_eq (covBy_succ _)
 
