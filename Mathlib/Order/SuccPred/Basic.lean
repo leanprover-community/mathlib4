@@ -57,7 +57,7 @@ class SuccOrder (α : Type*) [Preorder α] where
   le_succ : ∀ a, a ≤ succ a
   /-- Proof of interaction between `succ` and maximal element-/
   max_of_succ_le {a} : succ a ≤ a → IsMax a
-  /-- Proof that `succ` satisfies ordering invariants between `LT` and `LE`-/
+  /-- Proof that `succ a` is the minimal element greater than `a`-/
   succ_le_of_lt {a b} : a < b → succ a ≤ b
 
 /-- Order equipped with a sensible predecessor function. -/
@@ -69,7 +69,7 @@ class PredOrder (α : Type*) [Preorder α] where
   pred_le : ∀ a, pred a ≤ a
   /-- Proof of interaction between `pred` and minimal element-/
   min_of_le_pred {a} : a ≤ pred a → IsMin a
-  /-- Proof that `pred` satisfies ordering invariants between `LT` and `LE`-/
+  /-- Proof that `pred b` is the maximal element smaller than `b`-/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
 instance [Preorder α] [SuccOrder α] :
