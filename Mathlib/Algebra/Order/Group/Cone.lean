@@ -119,7 +119,7 @@ the set of positive elements of an existing `LinearOrderedAddCommGroup` -/
 def mkOfLinearOrderedAddCommGroup (G : Type*) [LinearOrderedAddCommGroup G] :
     (TotalPositiveCone G) :=
   { OrderedAddCommGroup.mkOfOrderedAddCommGroup G with
-    mem_or_neg_mem' :=
-      by simp; unfold OrderedAddCommGroup.mkOfOrderedAddCommGroup; simpa using le_total 0 }
+    mem_or_neg_mem' := by
+      simp; unfold OrderedAddCommGroup.mkOfOrderedAddCommGroup; simpa using le_total 0 }
 
 end LinearOrderedAddCommGroup
