@@ -979,13 +979,13 @@ namespace WithTop
 
 section Succ
 
-variable [Preorder α] [@DecidablePred α IsMax] [SuccOrder α]
+variable [DecidableEq α] [PartialOrder α] [SuccOrder α]
 
-noncomputable instance : SuccOrder (WithTop α) where
+instance : SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
-    | Option.some a => ite (IsMax a) ⊤ (some (succ a))
+    | Option.some a => ite (succ a = a) ⊤ (some (succ a))
   le_succ a := by
     cases' a with a a
     · exact le_top
@@ -999,8 +999,8 @@ noncomputable instance : SuccOrder (WithTop α) where
     dsimp only at ha
     split_ifs at ha with ha'
     · exact (not_top_le_coe _ ha).elim
-    · rw [coe_le_coe, succ_le_iff_isMax] at ha
-      contradiction
+    · rw [coe_le_coe, succ_le_iff_isMax, ← succ_eq_iff_isMax] at ha
+      exact (ha' ha).elim
   succ_le_of_lt {a b} h := by
     cases b
     · exact le_top
@@ -1009,15 +1009,20 @@ noncomputable instance : SuccOrder (WithTop α) where
     rw [coe_lt_coe] at h
     change ite _ _ _ ≤ _
     split_ifs with ha
-    · exact (ha.not_lt h).elim
+    · rw [succ_eq_iff_isMax] at ha
+      exact (ha.not_lt h).elim
     · exact coe_le_coe.2 (succ_le_of_lt h)
 
 @[simp]
 theorem succ_coe_of_isMax {a : α} (h : IsMax a) : succ ↑a = (⊤ : WithTop α) :=
-  dif_pos h
+  dif_pos (succ_eq_iff_isMax.2 h)
 
 theorem succ_coe_of_not_isMax {a : α} (h : ¬ IsMax a) : succ (↑a : WithTop α) = ↑(succ a) :=
-  dif_neg h
+  dif_neg (succ_eq_iff_isMax.not.2 h)
+
+@[simp]
+theorem succ_coe [NoMaxOrder α] {a : α} : succ (↑a : WithTop α) = ↑(succ a) :=
+  succ_coe_of_not_isMax <| not_isMax a
 
 end Succ
 
@@ -1126,13 +1131,13 @@ end Succ
 
 section Pred
 
-variable [Preorder α] [@DecidablePred α IsMin] [PredOrder α]
+variable [DecidableEq α] [PartialOrder α] [PredOrder α]
 
 instance : PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
-    | Option.some a => ite (IsMin a) ⊥ (some (pred a))
+    | Option.some a => ite (pred a = a) ⊥ (some (pred a))
   pred_le a := by
     cases' a with a a
     · exact bot_le
@@ -1146,8 +1151,8 @@ instance : PredOrder (WithBot α) where
     dsimp only at ha
     split_ifs at ha with ha'
     · exact (not_coe_le_bot _ ha).elim
-    · rw [coe_le_coe, le_pred_iff_isMin] at ha
-      contradiction
+    · rw [coe_le_coe, le_pred_iff_isMin, ← pred_eq_iff_isMin] at ha
+      exact (ha' ha).elim
   le_pred_of_lt {a b} h := by
     cases a
     · exact bot_le
@@ -1156,15 +1161,19 @@ instance : PredOrder (WithBot α) where
     rw [coe_lt_coe] at h
     change _ ≤ ite _ _ _
     split_ifs with hb
-    · exact (hb.not_lt h).elim
+    · rw [pred_eq_iff_isMin] at hb
+      exact (hb.not_lt h).elim
     · exact coe_le_coe.2 (le_pred_of_lt h)
 
 @[simp]
 theorem pred_coe_of_isMin {a : α} (h : IsMin a) : pred ↑a = (⊥ : WithBot α) :=
-  dif_pos h
+  dif_pos (pred_eq_iff_isMin.2 h)
 
 theorem pred_coe_of_not_isMin {a : α} (h : ¬ IsMin a) : pred (↑a : WithBot α) = ↑(pred a) :=
-  dif_neg h
+  dif_neg (pred_eq_iff_isMin.not.2 h)
+
+theorem pred_coe [NoMinOrder α] {a : α} : pred (↑a : WithBot α) = ↑(pred a) :=
+  pred_coe_of_not_isMin <| not_isMin a
 
 end Pred
 
