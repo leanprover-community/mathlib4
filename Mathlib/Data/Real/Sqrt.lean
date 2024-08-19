@@ -115,15 +115,14 @@ noncomputable def sqrt (x : ℝ) : ℝ :=
 @[inherit_doc]
 prefix:max "√" => Real.sqrt
 
-/- quotient.lift_on x
-  (λ f, mk ⟨sqrt_aux f, (sqrt_aux_converges f).fst⟩)
-  (λ f g e, begin
-    rcases sqrt_aux_converges f with ⟨hf, x, x0, xf, xs⟩,
-    rcases sqrt_aux_converges g with ⟨hg, y, y0, yg, ys⟩,
-    refine xs.trans (eq.trans _ ys.symm),
-    rw [← @mul_self_inj_of_nonneg ℝ _ x y x0 y0, xf, yg],
-    congr' 1, exact quotient.sound e
-  end)-/
+/- Quotient.liftOn x
+  (fun f ↦ mk ⟨sqrt_aux f, (sqrt_aux_converges f).fst⟩)
+  (fun f g e := by
+    rcases sqrt_aux_converges f with ⟨hf, x, x0, xf, xs⟩
+    rcases sqrt_aux_converges g with ⟨hg, y, y0, yg, ys⟩
+    refine xs.trans (eq.trans _ ys.symm)
+    rw [← @mul_self_inj_of_nonneg ℝ _ x y x0 y0, xf, yg]
+    congr' 1, exact quotient.sound e) -/
 variable {x y : ℝ}
 
 @[simp, norm_cast]
