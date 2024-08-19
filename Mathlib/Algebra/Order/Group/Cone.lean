@@ -3,8 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Artie Khovanov
 -/
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Construct ordered groups from positive cones
@@ -71,31 +72,52 @@ instance TotalPositiveCone.instTotalPositiveConeClass (G : Type*) [AddCommGroup 
     TotalPositiveConeClass (TotalPositiveCone G) G where
   mem_or_neg_mem {s} := s.mem_or_neg_mem'
 
-end AddCommGroup
+namespace PositiveCone
+variable {G : Type*} [OrderedAddCommGroup G] {a : G}
 
-namespace OrderedAddCommGroup
+variable (G) in
+/-- Construct a `PositiveCone` from
+the set of positive elements of an existing `OrderedAddCommGroup`. -/
+def nonneg : PositiveCone G where
+  __ := AddSubmonoid.nonneg G
+  eq_zero_of_mem_of_neg_mem' := by simp; exact ge_antisymm
+
+@[simp] lemma nonneg_toAddSubmonoid : (nonneg G).toAddSubmonoid = .nonneg G := rfl
+@[simp] lemma mem_nonneg : a ∈ nonneg G ↔ 0 ≤ a := Iff.rfl
+@[simp, norm_cast] lemma coe_nonneg : nonneg G = {x : G | 0 ≤ x} := rfl
+
+end PositiveCone
+
+namespace TotalPositiveCone
+variable {G : Type*} [LinearOrderedAddCommGroup G] {a : G}
+
+variable (G) in
+/-- Construct a `TotalPositiveCone` from
+the set of positive elements of an existing `LinearOrderedAddCommGroup`. -/
+def nonneg : TotalPositiveCone G where
+  __ := PositiveCone.nonneg G
+  mem_or_neg_mem' := by simpa using le_total 0
+
+@[simp] lemma nonneg_toAddSubmonoid : (nonneg G).toAddSubmonoid = .nonneg G := rfl
+@[simp] lemma mem_nonneg : a ∈ nonneg G ↔ 0 ≤ a := Iff.rfl
+@[simp, norm_cast] lemma coe_nonneg : nonneg G = {x : G | 0 ≤ x} := rfl
+
+end AddCommGroup.TotalPositiveCone
 
 open AddCommGroup
+
+namespace OrderedAddCommGroup
 
 /-- Construct an `OrderedAddCommGroup` by
 designating a positive cone in an existing `AddCommGroup`. -/
 def mkOfPositiveCone {S G : Type*} [AddCommGroup G] [SetLike S G] [PositiveConeClass S G] (C : S) :
-    OrderedAddCommGroup G :=
-  { ‹AddCommGroup G› with
-    le := fun a b => a - b ∈ C,
-    le_refl := fun a => by simp [zero_mem],
-    le_trans := fun a b c nab nbc => by simpa using add_mem nbc nab,
-    le_antisymm := fun a b nab nba =>
-      by apply eq_of_sub_eq_zero; simp at nba; simpa [nba] using eq_zero_of_mem_of_neg_mem nab,
-    add_le_add_left := fun a b nab c => by simpa using nab }
-
-/-- Construct a `PositiveCone` from
-the set of positive elements of an existing `OrderedAddCommGroup` -/
-def mkOfOrderedAddCommGroup (G : Type*) [OrderedAddCommGroup G] : (PositiveCone G) where
-  carrier := {x | x ≥ 0}
-  add_mem' := add_nonneg
-  zero_mem' := by simp
-  eq_zero_of_mem_of_neg_mem' := by simp; exact ge_antisymm
+    OrderedAddCommGroup G where
+  le a b := a - b ∈ C
+  le_refl a := by simp [zero_mem]
+  le_trans a b c nab nbc := by simpa using add_mem nbc nab
+  le_antisymm a b nab nba := by
+    apply eq_of_sub_eq_zero; simp at nba; simpa [nba] using eq_zero_of_mem_of_neg_mem nab
+  add_le_add_left a b nab c := by simpa using nab
 
 end OrderedAddCommGroup
 
@@ -106,17 +128,9 @@ open AddCommGroup
 /-- Construct a `LinearOrderedAddCommGroup` by
 designating a total positive cone in an existing `AddCommGroup`. -/
 def mkOfPositiveCone {S G : Type*} [AddCommGroup G] [SetLike S G] [TotalPositiveConeClass S G]
-    (C : S) (dec : DecidablePred (fun x => x ∈ C)) : LinearOrderedAddCommGroup G :=
-  { OrderedAddCommGroup.mkOfPositiveCone C with
-    le_total := fun a b => by simpa using mem_or_neg_mem C (a - b)
-    decidableLE := fun a b => dec _ }
-
-/-- Construct a `TotalPositiveCone` from
-the set of positive elements of an existing `LinearOrderedAddCommGroup` -/
-def mkOfLinearOrderedAddCommGroup (G : Type*) [LinearOrderedAddCommGroup G] :
-    (TotalPositiveCone G) :=
-  { OrderedAddCommGroup.mkOfOrderedAddCommGroup G with
-    mem_or_neg_mem' := by
-      simp; unfold OrderedAddCommGroup.mkOfOrderedAddCommGroup; simpa using le_total 0 }
+    (C : S) (dec : DecidablePred (fun x => x ∈ C)) : LinearOrderedAddCommGroup G where
+  __ := OrderedAddCommGroup.mkOfPositiveCone C
+  le_total a b := by simpa using mem_or_neg_mem C (a - b)
+  decidableLE a b := dec _
 
 end LinearOrderedAddCommGroup
