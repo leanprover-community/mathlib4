@@ -27,6 +27,9 @@ namespace List
 
 variable {α : Type u}
 
+theorem getElem_range'_1 {n m} (i) (H : i < (range' n m).length) :
+    (range' n m)[i] = n + i := by simp
+
 theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ := by
   rw [range_succ]
@@ -83,6 +86,11 @@ theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp
+
+@[deprecated (since := "2024-08-19")] alias nthLe_range' := get_range'
+@[deprecated (since := "2024-08-19")] alias nthLe_range'_1 := getElem_range'_1
+@[deprecated (since := "2024-08-19")] alias nthLe_range := get_range
+@[deprecated (since := "2024-08-19")] alias nthLe_finRange := get_finRange
 
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=

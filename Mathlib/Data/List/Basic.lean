@@ -1928,6 +1928,10 @@ theorem dropWhile_get_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
       simp_all only [dropWhile_cons_of_pos]
     · simp [hp]
 
+@[deprecated (since := "2024-08-19")] alias nthLe_tail := get_tail
+@[deprecated (since := "2024-08-19")] alias nthLe_cons := get_cons
+@[deprecated (since := "2024-08-19")] alias dropWhile_nthLe_zero_not := dropWhile_get_zero_not
+
 variable {p} {l : List α}
 
 @[simp]

@@ -314,6 +314,8 @@ theorem prev_get (l : List α) (_h : Nodup l) (i : Fin l.length) :
           rw [nodup_iff_injective_get] at _h
           apply _h; rw [← H]; simp
 
+@[deprecated (since := "2024-08-19")] alias prev_nthLe := nthLe_tail
+
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
   apply List.ext_get
   · simp
