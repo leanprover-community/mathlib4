@@ -307,4 +307,42 @@ theorem Monotone.tendsto_nhdsWithin_Ioi {α β : Type*} [LinearOrder α] [Topolo
     {f : α → β} (Mf : Monotone f) (x : α) : Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) :=
   Monotone.tendsto_nhdsWithin_Iio (α := αᵒᵈ) (β := βᵒᵈ) Mf.dual x
 
+lemma AntitoneOn.tendsto_nhdsWithin_Ioo_left {α β : Type*} [LinearOrder α] [TopologicalSpace α]
+    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} {x y : α} (h_nonempty : (Ioo y x).Nonempty) (Af : AntitoneOn f (Ioo y x))
+    (h_bdd : BddBelow (f '' Ioo y x)) :
+    Tendsto f (𝓝[<] x) (𝓝 (sInf (f '' Ioo y x))) :=
+  MonotoneOn.tendsto_nhdsWithin_Ioo_left h_nonempty Af.dual_right h_bdd
+
+lemma AntitoneOn.tendsto_nhdsWithin_Ioo_right {α β : Type*} [LinearOrder α] [TopologicalSpace α]
+    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} {x y : α} (h_nonempty : (Ioo x y).Nonempty) (Af : AntitoneOn f (Ioo x y))
+    (h_bdd : BddAbove (f '' Ioo x y)) :
+    Tendsto f (𝓝[>] x) (𝓝 (sSup (f '' Ioo x y))) :=
+  MonotoneOn.tendsto_nhdsWithin_Ioo_right h_nonempty Af.dual_right h_bdd
+
+lemma AntitoneOn.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [TopologicalSpace α]
+    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} {x : α} (Af : AntitoneOn f (Iio x)) (h_bdd : BddBelow (f '' Iio x)) :
+    Tendsto f (𝓝[<] x) (𝓝 (sInf (f '' Iio x))) :=
+  MonotoneOn.tendsto_nhdsWithin_Iio Af.dual_right h_bdd
+
+lemma AntitoneOn.tendsto_nhdsWithin_Ioi {α β : Type*} [LinearOrder α] [TopologicalSpace α]
+    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} {x : α} (Af : AntitoneOn f (Ioi x)) (h_bdd : BddAbove (f '' Ioi x)) :
+    Tendsto f (𝓝[>] x) (𝓝 (sSup (f '' Ioi x))) :=
+  MonotoneOn.tendsto_nhdsWithin_Ioi Af.dual_right h_bdd
+
+/-- An antitone map has a limit to the left of any point `x`, equal to `sInf (f '' (Iio x))`. -/
+theorem Antitone.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [TopologicalSpace α]
+    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} (Af : Antitone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sInf (f '' Iio x))) :=
+  Monotone.tendsto_nhdsWithin_Iio Af.dual_right x
+
+/-- An antitone map has a limit to the right of any point `x`, equal to `sSup (f '' (Ioi x))`. -/
+theorem Antitone.tendsto_nhdsWithin_Ioi {α β : Type*} [LinearOrder α] [TopologicalSpace α]
+    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} (Af : Antitone f) (x : α) : Tendsto f (𝓝[>] x) (𝓝 (sSup (f '' Ioi x))) :=
+  Monotone.tendsto_nhdsWithin_Ioi Af.dual_right x
+
 end ConditionallyCompleteLinearOrder
