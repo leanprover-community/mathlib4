@@ -265,7 +265,7 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
     congr
     ext _ f
     simpa using congr_fun (α.naturality f.op).symm (unop X).snd
-  · simp [autoParam]
+  · simp
 
 /-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
 @[simps!]
