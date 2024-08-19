@@ -2743,7 +2743,6 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.IterateAct
 import Mathlib.GroupTheory.GroupAction.Period
