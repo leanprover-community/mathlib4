@@ -1404,7 +1404,7 @@ def entourageProd (u : Set (α × α)) (v : Set (β × β)) : Set ((α × β) ×
     {((a₁, b₁),(a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
 
 theorem mem_entourageProd {u : Set (α × α)} {v : Set (β × β)} {p : (α × β) × α × β} :
-    p ∈ entourageProd u v ↔ (p.1.1, p.2.1) ∈ u ∧ (p.1.2, p.2.2) ∈ v := by rfl
+    p ∈ entourageProd u v ↔ (p.1.1, p.2.1) ∈ u ∧ (p.1.2, p.2.2) ∈ v := Iff.rfl
 
 theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpace β] {u : Set (α × α)}
     {v : Set (β × β)} (hu : u ∈ 𝓤 α) (hv : v ∈ 𝓤 β) :
@@ -1415,14 +1415,18 @@ theorem ball_entourageProd (u : Set (α × α)) (v : Set (β × β)) (x : α × 
     ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
   ext p; simp only [ball, entourageProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
 
+theorem Filter.HasBasis.uniformity_prod {ιa ιb : Type*} [UniformSpace α] [UniformSpace β]
+    {pa : ιa → Prop} {pb : ιb → Prop} {sa : ιa → Set (α × α)} {sb : ιb → Set (β × β)}
+    (ha : (𝓤 α).HasBasis pa sa) (hb : (𝓤 β).HasBasis pb sb) :
+    (𝓤 (α × β)).HasBasis (fun i : ιa × ιb ↦ pa i.1 ∧ pb i.2)
+    (fun i ↦ entourageProd (sa i.1) (sb i.2)) :=
+    (ha.comap _).inf (hb.comap _)
+
 theorem entourageProd_subset [UniformSpace α] [UniformSpace β]
     {s : Set ((α × β) × α × β)} (h : s ∈ 𝓤 (α × β)) :
     ∃ u ∈ 𝓤 α, ∃ v ∈ 𝓤 β, entourageProd u v ⊆ s := by
-  simp only [uniformity_prod, mem_inf_iff_superset, mem_comap] at h
-  rcases h with ⟨u, ⟨a, a_uni, a_sub⟩, v, ⟨b, b_uni, b_sub⟩, uv_sub⟩
-  use a, a_uni, b, b_uni
-  refine subset_trans (subset_trans (fun _ ↦ ?_) (inter_subset_inter a_sub b_sub)) uv_sub
-  simp [mem_entourageProd]
+  rcases (((𝓤 α).basis_sets.uniformity_prod (𝓤 β).basis_sets).mem_iff' s).1 h with ⟨w, hw⟩
+  use w.1, hw.1.1, w.2, hw.1.2, hw.2
 
 theorem tendsto_prod_uniformity_fst [UniformSpace α] [UniformSpace β] :
     Tendsto (fun p : (α × β) × α × β => (p.1.1, p.2.1)) (𝓤 (α × β)) (𝓤 α) :=
