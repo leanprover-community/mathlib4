@@ -103,6 +103,25 @@ def Homeomorph.sum_empty [IsEmpty Y] :
 
 end Basic
 
+-- Results about extending a continuous function on a subtype.
+-- Perhaps these exist already, but if so, I cannot find them...
+section extensions
+
+variable [Nonempty Y] {U : Set X} {f : U → Y}
+
+/-- Any extension of a continuous function `f : U → Y` on an open set `U ⊆ X` to `X`
+remains continuous on `U`. -/
+lemma continuous_subtype_extension (hU : IsOpen U) (hf : Continuous f) :
+    ContinuousOn (Function.extend Subtype.val f (Classical.arbitrary _)) U := by
+  let F := Function.extend Subtype.val f (Classical.arbitrary _)
+  suffices h : ∀ x : U, ContinuousAt F x from
+    ContinuousAt.continuousOn (by convert h; exact Iff.symm Subtype.forall)
+  intro x
+  rw [← (hU.openEmbedding_subtype_val).continuousAt_iff, Function.extend_comp Subtype.val_injective]
+  exact hf.continuousAt
+
+end extensions
+
 -- Let M, M' and M'' be smooth manifolds *over the same space* `H`, with *the same* `model `I`.
 -- TODO: need we also assume their models are literally the same? or on the same space E?
 -- or can something weaker suffice?
@@ -126,18 +145,7 @@ variable [Nonempty H]
 
 open scoped Topology
 
-/-- Any extension of a continuous function `f : U → Y` on an open set `U ⊆ X` to `X`
-remains continuous on `U`. -/
-lemma continuous_subtype_extension
-    {X Y : Type*} [Nonempty Y] [TopologicalSpace X] [TopologicalSpace Y]
-    {U : Set X} (hU : IsOpen U) {f : U → Y} (hf : Continuous f) :
-    ContinuousOn (Function.extend Subtype.val f (Classical.arbitrary _)) U := by
-  let F := Function.extend Subtype.val f (Classical.arbitrary _)
-  suffices h : ∀ x : U, ContinuousAt F x from
-    ContinuousAt.continuousOn (by convert h; exact Iff.symm Subtype.forall)
-  intro x
-  rw [← (hU.openEmbedding_subtype_val).continuousAt_iff, Function.extend_comp Subtype.val_injective]
-  exact hf.continuousAt
+-- XXX: can this be deduced from the results above?
 
 /-- Extend a partial homeomorphism from an open subset `U ⊆ M` to all of `M`. -/
 -- experiment: does this work the same as foo?
