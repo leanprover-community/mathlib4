@@ -1055,8 +1055,7 @@ private theorem dropUntil_not_nil {u v w : V} {p : G.Walk u v} (hw : w ∈ p.sup
 
 lemma sum_takeUntil_dropUntil_length {u v w : V} {p : G.Walk u v} (hw : w ∈ p.support) :
     (p.takeUntil w hw).length + (p.dropUntil w hw).length = p.length := by
-  have := congr_arg (·.length) (p.take_spec hw)
-  simpa only [length_append] using this
+  simpa only [length_append] using congr_arg (·.length) (p.take_spec hw)
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
