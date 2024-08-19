@@ -201,7 +201,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n
         induction' n with n ih
-        · simpa only [Nat.zero_eq, Nat.rec_zero, zero_add, pow_one] using h₁
+        · simpa only [Nat.rec_zero, zero_add, pow_one] using h₁
         rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
           add_neg_cancel_comm]
         rw [eval_eq_sum, sum_over_range' _ _ _ (lt_add_of_pos_right _ zero_lt_two), ←
@@ -213,7 +213,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         · erw [Finset.sum_range_succ]
           rw [Finset.range_one, Finset.sum_singleton,
             taylor_coeff_zero, taylor_coeff_one, pow_zero, pow_one, mul_one, mul_neg,
-            mul_left_comm, Ring.mul_inverse_cancel _ (hf'c n), mul_one, add_neg_self]
+            mul_left_comm, Ring.mul_inverse_cancel _ (hf'c n), mul_one, add_neg_cancel]
           exact Ideal.zero_mem _
         · refine Submodule.sum_mem _ ?_
           simp only [Finset.mem_Ico]

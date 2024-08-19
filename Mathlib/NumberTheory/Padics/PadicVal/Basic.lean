@@ -298,7 +298,7 @@ protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} :
 protected theorem inv (q : ℚ) : padicValRat p q⁻¹ = -padicValRat p q := by
   by_cases hq : q = 0
   · simp [hq]
-  · rw [eq_neg_iff_add_eq_zero, ← padicValRat.mul (inv_ne_zero hq) hq, inv_mul_cancel hq,
+  · rw [eq_neg_iff_add_eq_zero, ← padicValRat.mul (inv_ne_zero hq) hq, inv_mul_cancel₀ hq,
       padicValRat.one]
 
 /-- A rewrite lemma for `padicValRat p (q / r)` with conditions `q ≠ 0`, `r ≠ 0`. -/
@@ -582,9 +582,10 @@ theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
 
 theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
-  induction' n with n hn
-  · rw [add_zero]
-  · rw [add_succ, factorial_succ,
+  induction n with
+  | zero => rw [add_zero]
+  | succ n hn =>
+    rw [add_succ, factorial_succ,
       padicValNat.mul (succ_ne_zero (p * m + n)) <| factorial_ne_zero (p * m + _),
       hn <| lt_of_succ_lt h, ← add_succ,
       padicValNat_eq_zero_of_mem_Ioo ⟨(Nat.lt_add_of_pos_right <| succ_pos n),

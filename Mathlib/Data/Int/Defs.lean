@@ -604,3 +604,5 @@ attribute [simp] natCast_pow
 @[deprecated (since := "2024-04-02")] alias sign_coe_nat_of_nonzero := sign_natCast_of_ne_zero
 @[deprecated (since := "2024-04-02")] alias toNat_coe_nat := toNat_natCast
 @[deprecated (since := "2024-04-02")] alias toNat_coe_nat_add_one := toNat_natCast_add_one
+
+end Int

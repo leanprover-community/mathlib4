@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Abhimanyu Pallavi Sudhir
+Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Algebra.Module.Pi
@@ -74,7 +74,7 @@ def Germ (l : Filter α) (β : Type*) : Type _ :=
 def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
   r f g := ∀ᶠ a in l, f a = g a
   iseqv :=
-    ⟨fun _ => eventually_of_forall fun _ => rfl, fun h => h.mono fun _ => Eq.symm,
+    ⟨fun _ => Eventually.of_forall fun _ => rfl, fun h => h.mono fun _ => Eq.symm,
       fun h1 h2 => h1.congr (h2.mono fun _ hx => hx ▸ Iff.rfl)⟩
 
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
@@ -118,7 +118,7 @@ def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
     exact fun f g b hfg hf ↦ (hfg.symm).trans hf
 
 theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ l β).IsConstant :=
-  ⟨b, eventually_of_forall (fun x ↦ h x)⟩
+  ⟨b, Eventually.of_forall (fun x ↦ h x)⟩
 
 @[simp]
 theorem isConstant_coe_const {l : Filter α} {b : β} : (fun _ : α ↦ b : Germ l β).IsConstant := by
@@ -291,7 +291,7 @@ theorem liftPred_coe {p : β → Prop} {f : α → β} : LiftPred p (f : Germ l 
   Iff.rfl
 
 theorem liftPred_const {p : β → Prop} {x : β} (hx : p x) : LiftPred p (↑x : Germ l β) :=
-  eventually_of_forall fun _y => hx
+  Eventually.of_forall fun _y => hx
 
 @[simp]
 theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (↑x : Germ l β) ↔ p x :=
@@ -309,7 +309,7 @@ theorem liftRel_coe {r : β → γ → Prop} {f : α → β} {g : α → γ} :
 
 theorem liftRel_const {r : β → γ → Prop} {x : β} {y : γ} (h : r x y) :
     LiftRel r (↑x : Germ l β) ↑y :=
-  eventually_of_forall fun _ => h
+  Eventually.of_forall fun _ => h
 
 @[simp]
 theorem liftRel_const_iff [NeBot l] {r : β → γ → Prop} {x : β} {y : γ} :
@@ -502,7 +502,7 @@ instance instDivisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
 
 @[to_additive]
 instance instGroup [Group G] : Group (Germ l G) :=
-  { mul_left_inv := Quotient.ind' fun _ => congrArg ofFun <| mul_left_inv _ }
+  { inv_mul_cancel := Quotient.ind' fun _ => congrArg ofFun <| inv_mul_cancel _ }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] : CommGroup (Germ l G) :=
@@ -707,10 +707,10 @@ theorem const_top [Top β] : (↑(⊤ : β) : Germ l β) = ⊤ :=
   rfl
 
 instance instOrderBot [LE β] [OrderBot β] : OrderBot (Germ l β) where
-  bot_le f := inductionOn f fun _ => eventually_of_forall fun _ => bot_le
+  bot_le f := inductionOn f fun _ => Eventually.of_forall fun _ => bot_le
 
 instance instOrderTop [LE β] [OrderTop β] : OrderTop (Germ l β) where
-  le_top f := inductionOn f fun _ => eventually_of_forall fun _ => le_top
+  le_top f := inductionOn f fun _ => Eventually.of_forall fun _ => le_top
 
 instance instBoundedOrder [LE β] [BoundedOrder β] : BoundedOrder (Germ l β) where
   __ := instOrderBot
@@ -728,13 +728,13 @@ theorem const_inf [Inf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l �
   rfl
 
 instance instSemilatticeSup [SemilatticeSup β] : SemilatticeSup (Germ l β) where
-  le_sup_left f g := inductionOn₂ f g fun _f _g => eventually_of_forall fun _x ↦ le_sup_left
-  le_sup_right f g := inductionOn₂ f g fun _f _g ↦ eventually_of_forall fun _x ↦ le_sup_right
+  le_sup_left f g := inductionOn₂ f g fun _f _g => Eventually.of_forall fun _x ↦ le_sup_left
+  le_sup_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ le_sup_right
   sup_le f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ sup_le
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (Germ l β) where
-  inf_le_left f g := inductionOn₂ f g fun _f _g ↦ eventually_of_forall fun _x ↦ inf_le_left
-  inf_le_right f g := inductionOn₂ f g fun _f _g ↦ eventually_of_forall fun _x ↦ inf_le_right
+  inf_le_left f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_left
+  inf_le_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_right
   le_inf f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ le_inf
 
 instance instLattice [Lattice β] : Lattice (Germ l β) where
@@ -742,7 +742,7 @@ instance instLattice [Lattice β] : Lattice (Germ l β) where
   __ := instSemilatticeInf
 
 instance instDistribLattice [DistribLattice β] : DistribLattice (Germ l β) where
-  le_sup_inf f g h := inductionOn₃ f g h fun _f _g _h ↦ eventually_of_forall fun _ ↦ le_sup_inf
+  le_sup_inf f g h := inductionOn₃ f g h fun _f _g _h ↦ Eventually.of_forall fun _ ↦ le_sup_inf
 
 @[to_additive]
 instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ l β) where

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Batteries.Data.Nat.Lemmas
-import Batteries.WF
 import Mathlib.Util.AssertExists
 import Mathlib.Data.Nat.Notation
 
@@ -25,11 +24,8 @@ namespace Nat
 
 /-! multiplication -/
 
-theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
-  | 0, m => fun _ => Or.inl rfl
-  | succ n, m => by
-    rw [succ_mul]; intro h
-    exact Or.inr (Nat.eq_zero_of_add_eq_zero_left h)
+theorem eq_zero_of_mul_eq_zero {n m : ℕ} (h : n * m = 0) : n = 0 ∨ m = 0 :=
+  mul_eq_zero.mp h
 
 /-! properties of inequality -/
 
@@ -42,11 +38,6 @@ protected def ltByCases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : a 
 
 -- TODO: there are four variations, depending on which variables we assume to be nonneg
 
-/-! bit0/bit1 properties -/
-section bit
-
-end bit
-
 /-! successor and predecessor -/
 
 def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ m → B) : B := by
@@ -54,17 +45,13 @@ def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ
   | zero => exact H1 rfl
   | succ n _ => apply H2 _ rfl
 
+-- Unused in Mathlib;
+-- if downstream projects find this essential please copy it or remove the deprecation.
+@[deprecated (since := "2024-07-27")]
 theorem one_eq_succ_zero : 1 = succ 0 :=
   rfl
 
-/-! subtraction
-
-Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
-
-/-! min -/
-
 /-! induction principles -/
-
 
 def twoStepInduction {P : ℕ → Sort u} (H1 : P 0) (H2 : P 1)
     (H3 : ∀ (n : ℕ) (_IH1 : P n) (_IH2 : P (succ n)), P (succ (succ n))) : ∀ a : ℕ, P a
@@ -72,6 +59,9 @@ def twoStepInduction {P : ℕ → Sort u} (H1 : P 0) (H2 : P 1)
   | 1 => H2
   | succ (succ _n) => H3 _ (twoStepInduction H1 H2 H3 _) (twoStepInduction H1 H2 H3 _)
 
+-- Unused in Mathlib;
+-- if downstream projects find this essential please copy it or remove the deprecation.
+@[deprecated (since := "2024-07-27")]
 def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P (succ n) 0)
     (H3 : ∀ n m, P n m → P (succ n) (succ m)) : ∀ n m : ℕ, P n m
   | 0, _m => H1 _
@@ -93,16 +83,12 @@ protected theorem case_strong_induction_on {p : Nat → Prop} (a : Nat) (hz : p 
 
 /-! mod -/
 
+-- Unused in Mathlib;
+-- if downstream projects find this essential please copy it or remove the deprecation.
+@[deprecated (since := "2024-07-27")]
 theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
     cond (@decide (x % 2 = 1) d) 1 0 = x % 2 := by
-  by_cases h : x % 2 = 1
-  · simp! [*]
-  · cases mod_two_eq_zero_or_one x <;> simp! [*, Nat.zero_ne_one]
-
-/-! div -/
-
-/-! dvd -/
-
-
+  simp only [cond_eq_if, decide_eq_true_eq]
+  split <;> omega
 
 end Nat

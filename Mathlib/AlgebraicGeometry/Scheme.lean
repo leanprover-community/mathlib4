@@ -152,11 +152,11 @@ to `X.presheaf.stalk x` for any `x : X`. -/
 def stalkMap (x : X) : Y.presheaf.stalk (f.val.base x) ⟶ X.presheaf.stalk x :=
   f.val.stalkMap x
 
-@[ext]
+@[ext (iff := false)]
 protected lemma ext {f g : X ⟶ Y} (h_base : f.1.base = g.1.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g :=
-  LocallyRingedSpace.Hom.ext _ _ <| SheafedSpace.ext h_base
+  LocallyRingedSpace.Hom.ext <| SheafedSpace.ext _ _ h_base
     (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
 
 lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻¹ᵁ U i :=
