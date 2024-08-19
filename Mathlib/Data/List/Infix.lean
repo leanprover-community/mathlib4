@@ -35,15 +35,6 @@ variable {l l₁ l₂ l₃ : List α} {a b : α} {m n : ℕ}
 
 section Fix
 
-theorem prefix_rfl : l <+: l :=
-  prefix_refl
-
-theorem suffix_rfl : l <:+ l :=
-  suffix_refl
-
-theorem infix_rfl : l <:+: l :=
-  infix_refl
-
 @[deprecated (since := "2024-08-15")] alias isSuffix.reverse := IsSuffix.reverse
 @[deprecated (since := "2024-08-15")] alias isPrefix.reverse := IsPrefix.reverse
 @[deprecated (since := "2024-08-15")] alias isInfix.reverse := IsInfix.reverse
@@ -100,17 +91,17 @@ protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁
   h.filterMap id
 
 instance : IsPartialOrder (List α) (· <+: ·) where
-  refl _ := prefix_refl
+  refl _ := prefix_rfl
   trans _ _ _ := IsPrefix.trans
   antisymm _ _ h₁ h₂ := eq_of_prefix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
 instance : IsPartialOrder (List α) (· <:+ ·) where
-  refl _ := suffix_refl
+  refl _ := suffix_rfl
   trans _ _ _ := IsSuffix.trans
   antisymm _ _ h₁ h₂ := eq_of_suffix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
 instance : IsPartialOrder (List α) (· <:+: ·) where
-  refl _ := infix_refl
+  refl _ := infix_rfl
   trans _ _ _ := IsInfix.trans
   antisymm _ _ h₁ h₂ := eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
@@ -122,7 +113,7 @@ section InitsTails
 theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
   | s, [] =>
     suffices s = nil ↔ s <+: nil by simpa only [inits, mem_singleton]
-    ⟨fun h => h.symm ▸ prefix_refl, eq_nil_of_prefix_nil⟩
+    ⟨fun h => h.symm ▸ prefix_rfl, eq_nil_of_prefix_nil⟩
   | s, a :: t =>
     suffices (s = nil ∨ ∃ l ∈ inits t, a :: l = s) ↔ s <+: a :: t by simpa
     ⟨fun o =>
@@ -148,7 +139,7 @@ theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
       show s = a :: t ∨ s <:+ t ↔ s <:+ a :: t from
         ⟨fun o =>
           match s, t, o with
-          | _, t, Or.inl rfl => suffix_refl
+          | _, t, Or.inl rfl => suffix_rfl
           | s, _, Or.inr ⟨l, rfl⟩ => ⟨a :: l, rfl⟩,
           fun e =>
           match s, t, e with

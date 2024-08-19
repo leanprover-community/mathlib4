@@ -11,7 +11,6 @@ import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Batteries.Data.List.Perm
 
 /-!
 # Basic properties of lists
