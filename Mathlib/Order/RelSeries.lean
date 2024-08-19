@@ -691,7 +691,8 @@ def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono
   step i := strictMono <| lt_add_one i.1
 
 /-- An injection from the type of strictly monotone functions with limited length to `LTSeries`. -/
-def inj (n : ℕ) : {f : (l : Fin n) × (Fin (l + 1) → α) // StrictMono f.2} ↪ LTSeries α where
+def injStrictMono (n : ℕ) :
+    {f : (l : Fin n) × (Fin (l + 1) → α) // StrictMono f.2} ↪ LTSeries α where
   toFun f := mk f.1.1 f.1.2 f.2
   inj' f g e := by
     obtain ⟨⟨lf, f⟩, mf⟩ := f
@@ -743,7 +744,7 @@ lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
   exact absurd he (s.strictMono hl).ne
 
 instance [DecidableRel ((· < ·) : α → α → Prop)] : Fintype (LTSeries α) where
-  elems := Finset.univ.map (inj (Fintype.card α))
+  elems := Finset.univ.map (injStrictMono (Fintype.card α))
   complete s := by
     have bl := s.length_lt_card
     obtain ⟨l, f, mf⟩ := s
