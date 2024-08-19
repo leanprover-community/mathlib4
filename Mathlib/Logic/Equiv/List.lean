@@ -14,7 +14,6 @@ This file defines some additional constructive equivalences using `Encodable` an
 function on `ℕ`.
 -/
 
-
 open Mathlib (Vector)
 open Nat List
 

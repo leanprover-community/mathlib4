@@ -51,13 +51,11 @@ that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
 rectangular box
 -/
 
-
 open Set Function Metric Filter
 
 noncomputable section
 
-open scoped Classical
-open NNReal Topology
+open scoped Classical NNReal Topology
 
 namespace BoxIntegral
 

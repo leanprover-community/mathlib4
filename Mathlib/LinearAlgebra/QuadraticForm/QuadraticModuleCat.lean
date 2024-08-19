@@ -25,8 +25,7 @@ variable {R}
 
 namespace QuadraticModuleCat
 
-open QuadraticForm
-open QuadraticMap
+open QuadraticForm QuadraticMap
 
 instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩

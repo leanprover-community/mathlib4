@@ -37,11 +37,9 @@ Moreover, we show the convergence of the continued fractions computations, that 
 convergence, fractions
 -/
 
-
 variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
 open GenContFract (of)
-open GenContFract
 open scoped Topology
 
 namespace GenContFract
