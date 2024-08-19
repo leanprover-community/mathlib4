@@ -6,7 +6,6 @@ Authors: Scott Morrison, Justus Springer
 import Mathlib.Topology.Category.TopCat.OpenNhds
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
-import Mathlib.CategoryTheory.Adjunction.Evaluation
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Final
@@ -474,7 +473,7 @@ instance stalkFunctor_preserves_mono (x : X) :
       (app_injective_iff_stalkFunctor_map_injective f.1).mpr
         (fun c =>
           (ConcreteCategory.mono_iff_injective_of_preservesPullback (f.1.app (op c))).mp
-            ((NatTrans.mono_iff_mono_app _ f.1).mp
+            ((NatTrans.mono_iff_mono_app f.1).mp
                 (CategoryTheory.presheaf_mono_of_mono ..) <|
               op c))
         x⟩
@@ -486,7 +485,7 @@ theorem stalk_mono_of_mono {F G : Sheaf C X} (f : F ⟶ G) [Mono f] :
 theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.1] :
     Mono f :=
   (Sheaf.Hom.mono_iff_presheaf_mono _ _ _).mpr <|
-    (NatTrans.mono_iff_mono_app _ _).mpr fun U =>
+    (NatTrans.mono_iff_mono_app _).mpr fun U =>
       (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mpr <|
         app_injective_of_stalkFunctor_map_injective f.1 U.unop fun ⟨_x, _hx⟩ =>
           (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mp <| inferInstance
