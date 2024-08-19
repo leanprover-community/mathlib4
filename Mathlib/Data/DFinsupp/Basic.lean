@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Submonoid.Membership
@@ -11,7 +12,6 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Fintype.Quotient
 import Mathlib.Data.Set.Finite
-import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
