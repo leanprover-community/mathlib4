@@ -149,9 +149,9 @@ variable {k G : Type u} [Field k] [Group G]
 noncomputable instance : RightRigidCategory (FDRep k G) := by
   change RightRigidCategory (Action (FGModuleCat k) (Grp.of G)); infer_instance
 
-example : RigidCategory (FdRep k G) := by infer_instance
+example : RigidCategory (FDRep k G) := by infer_instance
 
-end FdRep
+end FDRep
 
 namespace FDRep
 
