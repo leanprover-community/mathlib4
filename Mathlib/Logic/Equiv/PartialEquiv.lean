@@ -291,9 +291,7 @@ theorem symm_target : e.symm.target = e.source :=
   rfl
 
 @[simp, mfld_simps]
-theorem symm_symm : e.symm.symm = e := by
-  cases e
-  rfl
+theorem symm_symm : e.symm.symm = e := rfl
 
 theorem symm_bijective :
     Function.Bijective (PartialEquiv.symm : PartialEquiv α β → PartialEquiv β α) :=

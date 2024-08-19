@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Init.Data.Fin.Basic
 
 /-!
 # Lists with no duplicates
@@ -84,7 +83,7 @@ theorem nodup_iff_nthLe_inj {l : List α} :
     Nodup l ↔ ∀ i j h₁ h₂, nthLe l i h₁ = nthLe l j h₂ → i = j :=
   nodup_iff_injective_get.trans
     ⟨fun hinj _ _ _ _ h => congr_arg Fin.val (hinj h),
-     fun hinj i j h => Fin.eq_of_veq (hinj i j i.2 j.2 h)⟩
+     fun hinj i j h => Fin.eq_of_val_eq (hinj i j i.2 j.2 h)⟩
 
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
     l.get i = l.get j ↔ i = j :=

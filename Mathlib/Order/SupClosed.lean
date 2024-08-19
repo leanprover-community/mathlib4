@@ -315,8 +315,8 @@ protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite :=
 
 @[simp] lemma supClosure_prod (s : Set α) (t : Set β) :
     supClosure (s ×ˢ t) = supClosure s ×ˢ supClosure t :=
-  le_antisymm (supClosure_min (Set.prod_mono subset_supClosure subset_supClosure) $
-    supClosed_supClosure.prod supClosed_supClosure) $ by
+  le_antisymm (supClosure_min (Set.prod_mono subset_supClosure subset_supClosure) <|
+    supClosed_supClosure.prod supClosed_supClosure) <| by
       rintro ⟨_, _⟩ ⟨⟨u, hu, hus, rfl⟩, v, hv, hvt, rfl⟩
       refine ⟨u ×ˢ v, hu.product hv, ?_, ?_⟩
       · simpa only [coe_product] using Set.prod_mono hus hvt
@@ -387,8 +387,8 @@ protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite :=
 
 @[simp] lemma infClosure_prod (s : Set α) (t : Set β) :
     infClosure (s ×ˢ t) = infClosure s ×ˢ infClosure t :=
-  le_antisymm (infClosure_min (Set.prod_mono subset_infClosure subset_infClosure) $
-    infClosed_infClosure.prod infClosed_infClosure) $ by
+  le_antisymm (infClosure_min (Set.prod_mono subset_infClosure subset_infClosure) <|
+    infClosed_infClosure.prod infClosed_infClosure) <| by
       rintro ⟨_, _⟩ ⟨⟨u, hu, hus, rfl⟩, v, hv, hvt, rfl⟩
       refine ⟨u ×ˢ v, hu.product hv, ?_, ?_⟩
       · simpa only [coe_product] using Set.prod_mono hus hvt
