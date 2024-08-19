@@ -214,8 +214,8 @@ theorem dlookup_map₁ {γ δ} [DecidableEq γ]
     · rw [h, hf h, dlookup_cons_eq, dlookup_cons_eq]
     · rw [dlookup_cons_ne _ _ h, dlookup_cons_ne _ _ (fun he => (he ▸ h) rfl), IH]
 
-theorem dlookup_map₂ {γ δ} {l : List (Σ _ : α, γ)} {f : γ → δ} (a : α) :
-    (l.map fun x => ⟨x.1, f x.2⟩ : List (Σ _ : α, δ)).dlookup a = (l.dlookup a).map f := by
+theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a, γ a → δ a} (a : α) :
+    (l.map fun x => ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) := by
   induction' l with b l IH
   · rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none']
   · rw [map_cons]
