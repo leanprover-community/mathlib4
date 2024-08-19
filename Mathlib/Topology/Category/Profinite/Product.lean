@@ -78,22 +78,23 @@ end IndexFunctor
 
 variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
 variable {C}
-variable (hC : IsCompact C)
 
 open CategoryTheory Limits Opposite IndexFunctor
 
 /-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
-def indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
+def indexFunctor (hC : IsCompact C) : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
   obj J := @Profinite.of (obj C (· ∈ (unop J))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (Pi.continuous_precomp' _)) _ _
   map h := map C (leOfHom h.unop)
 
 /-- The limit cone on `indexFunctor` -/
 noncomputable
-def indexCone : Cone (indexFunctor hC) where
+def indexCone (hC : IsCompact C) : Cone (indexFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π := { app := fun J ↦ π_app C (· ∈ unop J) }
+
+variable (hC : IsCompact C)
 
 instance isIso_indexCone_lift :
     IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=

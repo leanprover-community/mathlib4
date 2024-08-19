@@ -476,13 +476,13 @@ theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
 theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
+  (Int.cast_inj (α := ℤ√d)).1 <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
 
 @[simp]
 theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
+  (Int.cast_inj (α := ℤ√d)).1 <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
 
 theorem norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
   add_nonneg (mul_self_nonneg _)

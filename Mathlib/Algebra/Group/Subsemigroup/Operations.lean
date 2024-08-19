@@ -301,14 +301,15 @@ theorem map_id (S : Subsemigroup M) : S.map (MulHom.id M) = S :=
 
 section GaloisCoinsertion
 
-variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Injective f)
-include hf
+variable {ι : Type*} {f : M →ₙ* N}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
-def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
+def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 
+variable (hf : Function.Injective f)
+include hf
 
 @[to_additive]
 theorem comap_map_eq_of_injective (S : Subsemigroup M) : (S.map f).comap f = S :=

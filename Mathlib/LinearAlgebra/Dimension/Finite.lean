@@ -381,7 +381,7 @@ theorem FiniteDimensional.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nont
 natural number. -/
 theorem FiniteDimensional.nontrivial_of_finrank_eq_succ {n : ℕ}
     (hn : finrank R M = n.succ) : Nontrivial M :=
-  nontrivial_of_finrank_pos (by rw [hn]; exact n.succ_pos)
+  nontrivial_of_finrank_pos (R := R) (by rw [hn]; exact n.succ_pos)
 
 end
 
