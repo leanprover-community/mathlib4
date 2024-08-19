@@ -345,7 +345,7 @@ def EmbeddedContextFreeGrammar.Good {G : EmbeddedContextFreeGrammar T} : Symbol 
 /-- A string is good iff every `Symbol` in it is good. -/
 def EmbeddedContextFreeGrammar.GoodString {G : EmbeddedContextFreeGrammar T}
     (s : List (Symbol T G.g.NT)) : Prop :=
-  ∀ a ∈ s, Good a
+  ∀ ⦃a⦄, a ∈ s → Good a
 
 lemma EmbeddedContextFreeGrammar.singletonGoodString {G : EmbeddedContextFreeGrammar T}
     {s : Symbol T G.g.NT} (hs : G.Good s) : G.GoodString [s] := by
