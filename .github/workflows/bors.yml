@@ -225,11 +225,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
-          NOISY_OUTCOME: ${{ steps.noisy.outcome }}
-          ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
-          COUNTEREXAMPLE_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
-          TEST_OUTCOME: ${{ steps.test.outcome }}
         run: |
           scripts/lean-pr-testing-comments.sh
 
