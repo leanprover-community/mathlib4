@@ -259,7 +259,7 @@ prefers the latter as it is considered more readable.
 The `lambdaSyntax` linter flags uses of the symbol `λ` to define anonymous functions.
 This is syntactically equivalent to the `fun` keyword; mathlib style prefers using the latter.-/
 register_option linter.lambdaSyntax : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `lambdaSyntax` linter"
 }
 
