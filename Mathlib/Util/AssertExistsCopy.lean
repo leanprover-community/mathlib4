@@ -55,10 +55,12 @@ This information is used by the `assertExists` linter to capture declarations an
 are required to now exist/be imported at some point, but should eventually exist/be imported.
 -/
 def addDeclEntry (isDecl : Bool) (declName : Name) : CommandElabM Unit := do
-  let nm ← liftCoreM do mkFreshId
+  let nm ← liftCoreM mkFreshId
   elabCommand (← `(private theorem $(mkIdent nm) : True := .intro))
-  setEnv <| assertExistsExt.addEntry (← getEnv)
-    { isDecl := isDecl, freshName := nm, givenName := declName, modName := ← getMainModule }
+  let modName ← getMainModule
+  modifyEnv fun env =>
+    assertExistsExt.addEntry env
+      { isDecl := isDecl, freshName := nm, givenName := declName, modName := modName }
 
 end Mathlib.Linter
 
