@@ -1039,7 +1039,7 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
 private theorem dropUntil_not_nil {u v w : V} {p : G.Walk u v} (hw : w ∈ p.support) (ne : w ≠ v) :
     ¬(p.dropUntil w hw).Nil := by
   induction p with
-  | @nil u =>
+  | nil =>
     simp only [support_nil, List.mem_singleton] at hw
     exact False.elim (ne hw)
   | cons _ _ ih =>
