@@ -460,7 +460,7 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool)
     if pythonOutput != "" then
       numberErrorFiles := numberErrorFiles + 1
       IO.print pythonOutput
-    formatErrors allUnexpectedErrors style        ;    let n := 42
+    formatErrors allUnexpectedErrors style
     if allUnexpectedErrors.size > 0 && mode matches OutputSetting.print _ then
       IO.println s!"error: found {allUnexpectedErrors.size} new style error(s)\n\
         run `lake exe lint-style --update` to ignore all of them"
