@@ -312,7 +312,7 @@ example {h : False} : 0 = 1 ∧ 0 = 1 := by
     rwa [← Classical.not_not (a := False)]
 
 section test_internals
-open Lean Mathlib.Linter.flexible
+open Lean Mathlib.Linter Flexible
 
 /-- `flex? tac` logs an info `true` if the tactic is flexible, logs a warning `false` otherwise. -/
 elab "flex? " tac:tactic : command => do
