@@ -202,7 +202,8 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx => do
     if (← MonadState.get).messages.hasErrors then
       return
     for s in unwanted_cdot stx do
-      Linter.logLint linter.style.cdot s m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
+      Linter.logLint linter.style.cdot s
+        m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
 
 initialize addLinter cdotLinter
 
@@ -241,7 +242,8 @@ def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     for s in findDollarSyntax stx do
-      Linter.logLint linter.style.dollarSyntax s m!"Please use '<|' instead of '$' for the pipe operator."
+      Linter.logLint linter.style.dollarSyntax s
+        m!"Please use '<|' instead of '$' for the pipe operator."
 
 initialize addLinter dollarSyntaxLinter
 
@@ -268,11 +270,11 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- The linter still lints the message guarded by `#guard_msgs`.
     if stx.isOfKind ``Lean.guardMsgsCmd then
       return
-    -- if the linter reached the end of the file, then we scan the `import` syntax instead
+    -- If the linter reached the end of the file, we scan the `import` syntax instead.
     let stx := ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
         let fileMap ← getFileMap
-        -- `impMods` is the syntax for the modules imported in the current file
+        -- `impMods` is the syntax for the modules imported in the current file.
         let (impMods, _) ← Parser.parseHeader
           { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
         return impMods
