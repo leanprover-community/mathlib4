@@ -13,6 +13,8 @@ This file is designed for development of fun_prop and does not depend on most of
 two function properties `Con` and `Lin` which roughly correspond to `Continuity` and `IsLinearMap`.
 -/
 
+set_option linter.longLine false
+
 open Function
 
 variable {α β γ δ ι : Type _} {E : α → Type _}

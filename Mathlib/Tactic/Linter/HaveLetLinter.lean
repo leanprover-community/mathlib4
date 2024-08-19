@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Server.InfoUtils
 
@@ -53,12 +52,6 @@ partial
 def isHave? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.tacticHave_ _ => true
   |_ => false
-
-end haveLet
-
-end Mathlib.Linter
-
-namespace Mathlib.Linter.haveLet
 
 /-- a monadic version of `Lean.Elab.InfoTree.foldInfo`.
 Used to infer types inside a `CommandElabM`. -/

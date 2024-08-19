@@ -27,6 +27,7 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
 error: Tactic `have := 0` did not produce any messages.
 -/
 #guard_msgs in
+set_option linter.haveLet 0 in
 example : true := by
   have := 0 says
 
@@ -57,6 +58,7 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only []
 
 set_option linter.unreachableTactic false
+set_option linter.unusedTactic false in
 -- Now we check that `says` does not consume following tactics unless they are indented.
 /--
 error: Tactic `simp` did not produce any messages.
