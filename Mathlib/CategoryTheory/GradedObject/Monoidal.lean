@@ -109,7 +109,6 @@ lemma tensor_id (X Y : GradedObject I C) [HasTensor X Y] :
     tensorHom (𝟙 X) (𝟙 Y) = 𝟙 _ := by
   dsimp [tensorHom, mapBifunctorMapMap]
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
-  rfl
 
 @[reassoc]
 lemma tensor_comp {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
