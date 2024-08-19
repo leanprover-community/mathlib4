@@ -37,7 +37,7 @@ as a composite `φ ∘ (variationOnFromTo f s a)`, where `φ` has unit speed and
 arc-length, parameterization
 -/
 
-set_option debug.byAsSorry false
+
 
 open scoped NNReal ENNReal
 

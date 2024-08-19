@@ -344,7 +344,7 @@ def RingHomClass.toRingHom (f : F) : α →+* β :=
 instance : CoeTC F (α →+* β) :=
   ⟨RingHomClass.toRingHom⟩
 
-set_option debug.byAsSorry false in
+
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
   { ‹RingHomClass F α β› with }
 

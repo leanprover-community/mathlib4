@@ -118,7 +118,7 @@ end ofSection
 
 section ofRetraction
 
-set_option debug.byAsSorry false
+
 
 variable (l : S ⊗[P] Ω[P⁄R] →ₗ[P] RingHom.ker (algebraMap P S))
 variable (hl : l.comp (kerToTensor R P S) = LinearMap.id)

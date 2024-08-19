@@ -254,7 +254,7 @@ theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : Is
   erw [integralPowerBasis_dim (by rwa [pow_one]),
     pow_one]
 
-set_option debug.byAsSorry false in
+
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]

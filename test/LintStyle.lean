@@ -68,12 +68,12 @@ set_option trace.profiler.output "foo"
 /--
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option debug.moduleNameAtTimeout'.
+Mathlib project, please remove '
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
 set_option linter.setOption true in
-set_option debug.moduleNameAtTimeout false
+
 
 -- The lint does not fire on arbitrary options.
 set_option autoImplicit false

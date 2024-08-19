@@ -23,7 +23,7 @@ The main application lies in proving that higher homotopy groups (`πₙ` for `n
 
 universe u
 
-set_option debug.byAsSorry false
+
 
 namespace EckmannHilton
 

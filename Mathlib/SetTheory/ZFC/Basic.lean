@@ -375,7 +375,7 @@ def sUnion (a : PSet) : PSet :=
 @[inherit_doc]
 prefix:110 "⋃₀ " => sUnion
 
-set_option debug.byAsSorry false in
+
 @[simp]
 theorem mem_sUnion : ∀ {x y : PSet.{u}}, y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z
   | ⟨α, A⟩, y =>

@@ -205,7 +205,7 @@ def VectorAll : ∀ k, (Vector3 α k → Prop) → Prop
 theorem exists_vector_zero (f : Vector3 α 0 → Prop) : Exists f ↔ f [] :=
   ⟨fun ⟨v, fv⟩ => by rw [← eq_nil v]; exact fv, fun f0 => ⟨[], f0⟩⟩
 
-set_option debug.byAsSorry false in
+
 theorem exists_vector_succ (f : Vector3 α (succ n) → Prop) : Exists f ↔ ∃ x v, f (x :: v) :=
   ⟨fun ⟨v, fv⟩ => ⟨_, _, by rw [cons_head_tail v]; exact fv⟩, fun ⟨x, v, fxv⟩ => ⟨_, fxv⟩⟩
 

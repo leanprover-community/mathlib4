@@ -180,7 +180,7 @@ instance ListShort.cons
     ListShort (hd::tl) :=
   cons' short_hd short_tl
 
-set_option debug.byAsSorry false in
+
 instance listShortGet :
     ∀ (L : List PGame.{u}) [ListShort L] (i : Nat) (h : i < List.length L), Short L[i]
   | _::_, ListShort.cons' S _, 0, _ => S

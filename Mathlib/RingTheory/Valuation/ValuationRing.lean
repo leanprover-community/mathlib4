@@ -117,7 +117,7 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     field_simp
     simp only [← RingHom.map_mul, ← h]; congr 1; ring
 
-set_option debug.byAsSorry false in
+
 -- Porting note: it is much faster to split the instance `LinearOrderedCommGroupWithZero`
 -- into two parts
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where

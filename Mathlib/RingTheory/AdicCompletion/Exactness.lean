@@ -26,7 +26,7 @@ All results are proven directly without using Mittag-Leffler systems.
 
 -/
 
-set_option debug.byAsSorry false
+
 
 universe u v w t
 
