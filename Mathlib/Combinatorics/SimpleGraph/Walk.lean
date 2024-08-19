@@ -797,7 +797,7 @@ lemma darts_getElem_zero {u v} {p : G.Walk u v} (hi : 0 < p.length) :
     (p.darts[0]'(by simp; omega)).fst = u := by
   induction p with
   | nil => simp at hi
-  | @cons u' v' w' adj tail _ => simp
+  | cons => simp
 
 theorem darts_getElem_fst
     {u v : V} {p : G.Walk u v} (i : ℕ) (hi : i < p.length) :
