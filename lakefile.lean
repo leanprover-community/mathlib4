@@ -19,15 +19,15 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
 `Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
-abbrev mathlibLeanOptions := #[
+abbrev mathlibLeanOptions : Array LeanOption := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`debug.byAsSorry, true⟩,
-    ⟨`weak.linter.haveLet, .ofNat 0⟩,
-    ⟨`weak.linter.unreachableTactic, false⟩,
-    ⟨`weak.linter.unusedVariables, false⟩
-  ] ++ -- options that are used in `lake build`
-    mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
+    ⟨`linter.all, false⟩,
+    ⟨`weak.linter.haveLet, .ofNat 0⟩
+  ]
+  -- ++ -- options that are used in `lake build`
+  -- mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
 package mathlib where
   leanOptions := mathlibLeanOptions
