@@ -15,7 +15,6 @@ import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-! ### Positive cones -/
 
-
 variable {R : Type*} [Ring R]
 
 namespace Ring
@@ -30,12 +29,69 @@ This is equivalent to being the set of non-negative elements of an `OrderedRing`
 structure PositiveCone (R : Type*) [Ring R] extends Subsemiring R where
   eq_zero_of_mem_of_neg_mem' : ∀ {a}, a ∈ carrier → -a ∈ carrier → a = 0
 
-/-- A total positive cone in a nontrivial ring induces a linear order. -/
-structure TotalPositiveCone (α : Type*) [Ring α] extends PositiveCone α,
-  AddCommGroup.TotalPositiveCone α
+instance PositiveCone.instSetLike (R : Type*) [Ring R] : SetLike (PositiveCone R) R where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-theorem PositiveCone.one_pos (C : PositiveCone α) : C.pos 1 :=
-  (C.pos_iff _).2 ⟨C.one_nonneg, fun h => one_ne_zero <| C.nonneg_antisymm C.one_nonneg h⟩
+instance PositiveCone.instPositiveConeClass (R : Type*) [Ring R] :
+    PositiveConeClass (PositiveCone R) R where
+  add_mem {s} := s.add_mem'
+  zero_mem {s} := s.zero_mem'
+  mul_mem {s} := s.mul_mem'
+  one_mem {s} := s.one_mem'
+  eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
+
+/-- `PositiveConeWithSquaresClass S R` says that `S` is
+a type of positive cones with squares in `R`. -/
+class PositiveConeWithSquaresClass (S R : Type*) [Ring R] [SetLike S R]
+    extends PositiveConeClass S R : Prop where
+  square_mem : ∀ (s : S) (a : R), a * a ∈ s
+
+/-- A positive cone with squares in a `Ring` is a `PositiveCone` containing all squares. -/
+structure PositiveConeWithSquares (R : Type*) [Ring R] extends PositiveCone R where
+  square_mem' : ∀ a, a * a ∈ carrier
+
+instance PositiveConeWithSquares.instSetLike (R : Type*) [Ring R] :
+    SetLike (PositiveConeWithSquares R) R where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+instance PositiveConeWithSquares.instPositiveConeWithSquaresClass (R : Type*) [Ring R] :
+    PositiveConeWithSquaresClass (PositiveConeWithSquares R) R where
+  add_mem {s} := s.add_mem'
+  zero_mem {s} := s.zero_mem'
+  mul_mem {s} := s.mul_mem'
+  one_mem {s} := s.one_mem'
+  eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
+  square_mem {s} := s.square_mem'
+
+/-- `TotalPositiveConeClass S R` says that `S` is a type of `TotalPositiveCone`s in `R`. -/
+class TotalPositiveConeClass (S R : Type*) [Ring R] [IsDomain R] [SetLike S R]
+    extends AddCommGroup.TotalPositiveConeClass S R, PositiveConeClass S R : Prop
+
+/-- A total positive cone in a domain is a `PositiveCone` containing
+either `a` or `-a` for every `a`.
+This is equivalent to being the set of non-negative elements of a `LinearOrderedRing`. -/
+structure TotalPositiveCone (R : Type*) [Ring R] [IsDomain R] extends PositiveCone R where
+  mem_or_neg_mem' : ∀ a, a ∈ carrier ∨ -a ∈ carrier
+
+instance TotalPositiveCone.instSetLike (R : Type*) [Ring R] [IsDomain R] :
+    SetLike (TotalPositiveCone R) R where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+instance TotalPositiveCone.instTotalPositiveConeClass (R : Type*) [Ring R] [IsDomain R] :
+    TotalPositiveConeClass (TotalPositiveCone R) R where
+  add_mem {s} := s.add_mem'
+  zero_mem {s} := s.zero_mem'
+  mul_mem {s} := s.mul_mem'
+  one_mem {s} := s.one_mem'
+  eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
+  mem_or_neg_mem {s} := s.mem_or_neg_mem'
+
+instance TotalPositiveCone.instPositiveConeWithSquaresClass (R : Type*) [Ring R] [IsDomain R] :
+    PositiveConeWithSquaresClass (TotalPositiveCone R) R where
+  square_mem := by
 
 end Ring
 
