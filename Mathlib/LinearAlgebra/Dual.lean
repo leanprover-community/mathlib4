@@ -669,7 +669,7 @@ section DualBases
 open Module
 
 variable {R M ι : Type*}
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
+variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 -- Porting note: replace use_finite_instance tactic
 open Lean.Elab.Tactic in
@@ -682,7 +682,8 @@ elab "use_finite_instance" : tactic => evalUseFiniteInstance
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
 -- @[nolint has_nonempty_instance] Porting note (#5171): removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
-  eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
+  eval_same : ∀ i, ε i (e i) = 1
+  eval_of_ne : ∀ i j, i ≠ j → ε i (e j) = 0
   protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
   protected finite : ∀ m : M, { i | ε i m ≠ 0 }.Finite := by
       use_finite_instance
@@ -717,32 +718,32 @@ theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.total _ _ R e
 
 open Module
 
-variable [DecidableEq ι] (h : DualBases e ε)
+variable (h : DualBases e ε)
 include h
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
   rw [lc, _root_.map_finsupp_sum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
   -- Porting note: cannot get at •
   -- simp only [h.eval, map_smul, smul_eq_mul]
-  · simp [h.eval, smul_eq_mul]
+  · simp [h.eval_same, h.eval_of_ne, smul_eq_mul]
   · intro q _ q_ne
-    simp [q_ne.symm, h.eval, smul_eq_mul]
+    simp [q_ne.symm, h.eval_same, h.eval_of_ne, smul_eq_mul]
   · simp
 
 @[simp]
-theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
+theorem coeffs_lc [DecidableEq ι] (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
   ext i
   rw [h.coeffs_apply, h.dual_lc]
 
 /-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
 @[simp]
-theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
+theorem lc_coeffs [DecidableEq ι] (m : M) : DualBases.lc e (h.coeffs m) = m := by
   refine eq_of_sub_eq_zero <| h.total fun i ↦ ?_
   simp [LinearMap.map_sub, h.dual_lc, sub_eq_zero]
 
 /-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
 @[simps]
-def basis : Basis ι R M :=
+def basis [DecidableEq ι]: Basis ι R M :=
   Basis.ofRepr
     { toFun := coeffs h
       invFun := lc e
@@ -760,11 +761,11 @@ def basis : Basis ι R M :=
 attribute [-simp, nolint simpNF] basis_repr_symm_apply
 
 @[simp]
-theorem coe_basis : ⇑h.basis = e := by
+theorem coe_basis [DecidableEq ι]: ⇑h.basis = e := by
   ext i
   rw [Basis.apply_eq_iff]
   ext j
-  rw [h.basis_repr_apply, coeffs_apply, h.eval, Finsupp.single_apply]
+  rw [h.basis_repr_apply, coeffs_apply, h.eval_same, h.eval_of_ne, Finsupp.single_apply]
   convert if_congr (eq_comm (a := j) (b := i)) rfl rfl
 
 -- `convert` to get rid of a `DecidableEq` mismatch
@@ -775,10 +776,10 @@ theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '
   apply not_imp_comm.mp ((Finsupp.mem_supported' _ _).mp supp_l i)
   rwa [← lc_def, h.dual_lc] at hi
 
-theorem coe_dualBasis [_root_.Finite ι] : ⇑h.basis.dualBasis = ε :=
+theorem coe_dualBasis [_root_.Finite ι] [DecidableEq ι]: ⇑h.basis.dualBasis = ε :=
   funext fun i =>
     h.basis.ext fun j => by
-      rw [h.basis.dualBasis_apply_self, h.coe_basis, h.eval, if_congr eq_comm rfl rfl]
+      rw [h.basis.dualBasis_apply_self, h.coe_basis, h.eval_same, h.eval_of_ne, if_congr eq_comm rfl rfl]
 
 end Module.DualBases
 
