@@ -21,9 +21,10 @@ variable {R : Type*}
 
 namespace Commute
 
-variable [Semiring R] {p : ℕ} {x y : R}
+variable [Semiring R] {p : ℕ} (hp : p.Prime) {x y : R}
+include hp
 
-protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
+protected theorem add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
         p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := by
@@ -37,16 +38,16 @@ protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ
     rw [mem_Ioo] at hi
     rw [Nat.div_mul_cancel (hp.dvd_choose_pow hi.1.ne' hi.2.ne)]
 
-protected theorem add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
+protected theorem add_pow_prime_eq (h : Commute x y) :
     (x + y) ^ p =
       x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) := by
   simpa using h.add_pow_prime_pow_eq hp 1
 
-protected theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
+protected theorem exists_add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
     ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
   ⟨_, h.add_pow_prime_pow_eq hp n⟩
 
-protected theorem exists_add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
+protected theorem exists_add_pow_prime_eq (h : Commute x y) :
     ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
   ⟨_, h.add_pow_prime_eq hp⟩
 
@@ -54,24 +55,25 @@ end Commute
 
 section CommSemiring
 
-variable [CommSemiring R] {p : ℕ} (x y : R) (n : ℕ)
+variable [CommSemiring R] {p : ℕ} (hp : p.Prime) (x y : R) (n : ℕ)
+include hp
 
-theorem add_pow_prime_pow_eq (hp : p.Prime) :
+theorem add_pow_prime_pow_eq :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
         p * ∑ k ∈ Finset.Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
   (Commute.all x y).add_pow_prime_pow_eq hp n
 
-theorem add_pow_prime_eq (hp : p.Prime) :
+theorem add_pow_prime_eq :
     (x + y) ^ p =
       x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
   (Commute.all x y).add_pow_prime_eq hp
 
-theorem exists_add_pow_prime_pow_eq (hp : p.Prime) :
+theorem exists_add_pow_prime_pow_eq :
     ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
   (Commute.all x y).exists_add_pow_prime_pow_eq hp n
 
-theorem exists_add_pow_prime_eq (hp : p.Prime) :
+theorem exists_add_pow_prime_eq :
     ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
   (Commute.all x y).exists_add_pow_prime_eq hp
 
