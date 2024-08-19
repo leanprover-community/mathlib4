@@ -1,4 +1,4 @@
 import Mathlib.Util.AssertExistsCopy
 
-assert_not_exists NNReal
-assert_not_imported Mathlib.Tactic
+assert_not_exists1 NNReal
+assert_not_imported1 Mathlib.Tactic
