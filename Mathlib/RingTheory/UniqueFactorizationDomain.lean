@@ -1849,7 +1849,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
   haveI : NormalizationMonoid M := UniqueFactorizationMonoid.normalizationMonoid
   haveI := Classical.decEq M
   haveI := Classical.decEq (Associates M)
-  -- We'll show `λ (u : Mˣ) (f ⊆ factors y) → u * Π f` is injective
+  -- We'll show `fun (u : Mˣ) (f ⊆ factors y) ↦ u * Π f` is injective
   -- and has image exactly the divisors of `y`.
   refine
     Fintype.ofFinset
