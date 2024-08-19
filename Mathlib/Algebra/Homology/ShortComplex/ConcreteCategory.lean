@@ -51,7 +51,7 @@ lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
 lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget C).map f) := by
   simp only [mono_iff_injective, ← CategoryTheory.mono_iff_injective]
-  apply (MorphismProperty.RespectsIso.monomorphisms (Type w)).arrow_mk_iso_iff
+  apply (MorphismProperty.monomorphisms (Type w)).arrow_mk_iso_iff
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
@@ -66,7 +66,7 @@ lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
 lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget C).map f) := by
   simp only [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective]
-  apply (MorphismProperty.RespectsIso.epimorphisms (Type w)).arrow_mk_iso_iff
+  apply (MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 

@@ -10,8 +10,6 @@ import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 import Mathlib.CategoryTheory.Linear.Yoneda
 
-#align_import category_theory.abelian.ext from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Ext
 
@@ -56,8 +54,6 @@ def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
       -- This should be investigated further.
       map := fun f =>
         NatTrans.leftOp (NatTrans.leftDerived (NatTrans.rightOp ((linearYoneda R C).map f)) n) }
-set_option linter.uppercaseLean3 false in
-#align Ext Ext
 
 open ZeroObject
 
@@ -67,7 +63,7 @@ variable {R C}
 which in degree `i` consists of the module of morphisms `X.X i ⟶ Y`. -/
 @[simps! X d]
 def ChainComplex.linearYonedaObj {α : Type*} [AddRightCancelSemigroup α] [One α]
-    (X : ChainComplex C α) (A : Type*) [Ring A] [Linear A C] (Y : C):
+    (X : ChainComplex C α) (A : Type*) [Ring A] [Linear A C] (Y : C) :
     CochainComplex (ModuleCat A) α :=
   ((((linearYoneda A C).obj Y).rightOp.mapHomologicalComplex _).obj X).unop
 

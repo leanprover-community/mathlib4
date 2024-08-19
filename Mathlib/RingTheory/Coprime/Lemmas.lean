@@ -8,8 +8,6 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Int.GCD
 import Mathlib.RingTheory.Coprime.Basic
 
-#align_import ring_theory.coprime.lemmas from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
-
 /-!
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
 and elements of a monoid satisfying `IsRelPrime`
@@ -41,11 +39,8 @@ theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n
 
 theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Coprime m n := by
   rw [Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast]
-#align nat.is_coprime_iff_coprime Nat.isCoprime_iff_coprime
 
 alias ⟨IsCoprime.nat_coprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
-#align is_coprime.nat_coprime IsCoprime.nat_coprime
-#align nat.coprime.is_coprime Nat.Coprime.isCoprime
 
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) := by
@@ -64,31 +59,25 @@ theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (�
   rw [Finset.prod_insert hbt]
   rw [Finset.forall_mem_insert] at H
   exact H.1.mul_left (ih H.2)
-#align is_coprime.prod_left IsCoprime.prod_left
 
 theorem IsCoprime.prod_right : (∀ i ∈ t, IsCoprime x (s i)) → IsCoprime x (∏ i ∈ t, s i) := by
   simpa only [isCoprime_comm] using IsCoprime.prod_left (R := R)
-#align is_coprime.prod_right IsCoprime.prod_right
 
 theorem IsCoprime.prod_left_iff : IsCoprime (∏ i ∈ t, s i) x ↔ ∀ i ∈ t, IsCoprime (s i) x := by
   classical
   refine Finset.induction_on t (iff_of_true isCoprime_one_left fun _ ↦ by simp) fun b t hbt ih ↦ ?_
   rw [Finset.prod_insert hbt, IsCoprime.mul_left_iff, ih, Finset.forall_mem_insert]
-#align is_coprime.prod_left_iff IsCoprime.prod_left_iff
 
 theorem IsCoprime.prod_right_iff : IsCoprime x (∏ i ∈ t, s i) ↔ ∀ i ∈ t, IsCoprime x (s i) := by
   simpa only [isCoprime_comm] using IsCoprime.prod_left_iff (R := R)
-#align is_coprime.prod_right_iff IsCoprime.prod_right_iff
 
 theorem IsCoprime.of_prod_left (H1 : IsCoprime (∏ i ∈ t, s i) x) (i : I) (hit : i ∈ t) :
     IsCoprime (s i) x :=
   IsCoprime.prod_left_iff.1 H1 i hit
-#align is_coprime.of_prod_left IsCoprime.of_prod_left
 
 theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i ∈ t, s i)) (i : I) (hit : i ∈ t) :
     IsCoprime x (s i) :=
   IsCoprime.prod_right_iff.1 H1 i hit
-#align is_coprime.of_prod_right IsCoprime.of_prod_right
 
 -- Porting note: removed names of things due to linter, but they seem helpful
 theorem Finset.prod_dvd_of_coprime :
@@ -106,12 +95,10 @@ theorem Finset.prod_dvd_of_coprime :
                 exact har hir).mul_dvd
           (Hs1 a aux1) (ih (Hs.mono ?_) fun i hi ↦ Hs1 i <| Finset.mem_insert_of_mem hi)
       simp only [Finset.coe_insert, Set.subset_insert])
-#align finset.prod_dvd_of_coprime Finset.prod_dvd_of_coprime
 
 theorem Fintype.prod_dvd_of_coprime [Fintype I] (Hs : Pairwise (IsCoprime on s))
     (Hs1 : ∀ i, s i ∣ z) : (∏ x, s x) ∣ z :=
   Finset.prod_dvd_of_coprime (Hs.set_pairwise _) fun i _ ↦ Hs1 i
-#align fintype.prod_dvd_of_coprime Fintype.prod_dvd_of_coprime
 
 end
 
@@ -173,13 +160,11 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       rw [prod_eq_prod_diff_singleton_mul (mem x hx) _]
       congr 2
       rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
-#align exists_sum_eq_one_iff_pairwise_coprime exists_sum_eq_one_iff_pairwise_coprime
 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
     (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
   simp only [Function.onFun, pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
-#align exists_sum_eq_one_iff_pairwise_coprime' exists_sum_eq_one_iff_pairwise_coprime'
 
 -- Porting note: a lot of the capitalization wasn't working
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
@@ -192,23 +177,19 @@ theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
   · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
     apply IsCoprime.prod_right_iff.mp (hp i hi)
     exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩
-#align pairwise_coprime_iff_coprime_prod pairwise_coprime_iff_coprime_prod
 
 variable {m n : ℕ}
 
 theorem IsCoprime.pow_left (H : IsCoprime x y) : IsCoprime (x ^ m) y := by
   rw [← Finset.card_range m, ← Finset.prod_const]
   exact IsCoprime.prod_left fun _ _ ↦ H
-#align is_coprime.pow_left IsCoprime.pow_left
 
 theorem IsCoprime.pow_right (H : IsCoprime x y) : IsCoprime x (y ^ n) := by
   rw [← Finset.card_range n, ← Finset.prod_const]
   exact IsCoprime.prod_right fun _ _ ↦ H
-#align is_coprime.pow_right IsCoprime.pow_right
 
 theorem IsCoprime.pow (H : IsCoprime x y) : IsCoprime (x ^ m) (y ^ n) :=
   H.pow_left.pow_right
-#align is_coprime.pow IsCoprime.pow
 
 theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime x y := by
   refine ⟨fun h ↦ ?_, IsCoprime.pow_left⟩
@@ -216,15 +197,12 @@ theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime 
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
   -- Porting note: I'm not sure why `finset` didn't get corrected automatically to `Finset`
   -- by Mathport, nor whether this is an issue
-#align is_coprime.pow_left_iff IsCoprime.pow_left_iff
 
 theorem IsCoprime.pow_right_iff (hm : 0 < m) : IsCoprime x (y ^ m) ↔ IsCoprime x y :=
   isCoprime_comm.trans <| (IsCoprime.pow_left_iff hm).trans <| isCoprime_comm
-#align is_coprime.pow_right_iff IsCoprime.pow_right_iff
 
 theorem IsCoprime.pow_iff (hm : 0 < m) (hn : 0 < n) : IsCoprime (x ^ m) (y ^ n) ↔ IsCoprime x y :=
   (IsCoprime.pow_left_iff hm).trans <| IsCoprime.pow_right_iff hn
-#align is_coprime.pow_iff IsCoprime.pow_iff
 
 end IsCoprime
 

@@ -110,7 +110,7 @@ namespace IndepMatroid
   Base := (· ∈ maximals (· ⊆ ·) {I | M.Indep I})
   Indep := M.Indep
   indep_iff' := by
-    refine fun I ↦ ⟨fun h ↦ ?_, fun ⟨B,⟨h,_⟩,hIB'⟩ ↦ M.indep_subset h hIB'⟩
+    refine fun I ↦ ⟨fun h ↦ ?_, fun ⟨B, ⟨h, _⟩, hIB'⟩ ↦ M.indep_subset h hIB'⟩
     obtain ⟨B, hB⟩ := M.indep_maximal M.E Subset.rfl I h (M.subset_ground I h)
     simp only [mem_maximals_iff, mem_setOf_eq, and_imp] at hB ⊢
     exact ⟨B, ⟨hB.1.1,fun J hJ hBJ ↦ hB.2 hJ (hB.1.2.1.trans hBJ) (M.subset_ground J hJ) hBJ⟩,
@@ -516,3 +516,5 @@ instance ofBaseOfFinite_finite {E : Set α} (hE : E.Finite) Base exists_base
 end Matroid
 
 end Base
+
+end IndepMatroid

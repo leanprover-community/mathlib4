@@ -10,6 +10,7 @@ import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas
+import Batteries.Data.RBMap.Alter
 
 /-!
 # Process when an new equation is added to a congruence closure

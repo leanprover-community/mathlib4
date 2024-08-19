@@ -302,7 +302,7 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
-private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)):
+private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)) :
     (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
@@ -410,21 +410,13 @@ theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
   induction' m with m ih
   · simp [alternatingWord]
   · rw [alternatingWord_succ', wordProd_cons, ih]
-    rcases Nat.even_or_odd m with even | odd
-    · rcases even with ⟨k, rfl⟩
-      ring_nf
-      have : Odd (1 + k * 2) := by use k; ring
-      simp [← two_mul, Nat.odd_iff_not_even.mp this]
-      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
-      norm_num
-    · rcases odd with ⟨k, rfl⟩
-      ring_nf
-      have h₁ : Odd (1 + k * 2) := by use k; ring
-      have h₂ : Even (2 + k * 2) := by use (k + 1); ring
-      simp [Nat.odd_iff_not_even.mp h₁, h₂]
-      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
-      norm_num
-      rw [pow_succ', mul_assoc]
+    by_cases hm : Even m
+    · have h₁ : ¬ Even (m + 1) := by simp [hm, parity_simps]
+      have h₂ : (m + 1) / 2 = m / 2 := Nat.succ_div_of_not_dvd <| by rwa [← even_iff_two_dvd]
+      simp [hm, h₁, h₂]
+    · have h₁ : Even (m + 1) := by simp [hm, parity_simps]
+      have h₂ : (m + 1) / 2 = m / 2 + 1 := Nat.succ_div_of_dvd h₁.two_dvd
+      simp [hm, h₁, h₂, ← pow_succ', ← mul_assoc]
 
 theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by

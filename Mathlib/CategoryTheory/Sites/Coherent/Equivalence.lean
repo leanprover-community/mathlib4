@@ -116,3 +116,5 @@ theorem preregular_isSheaf_iff_of_essentiallySmall [EssentiallySmall C] (F : Cáµ
 end Regular
 
 end Equivalence
+
+end CategoryTheory

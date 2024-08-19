@@ -3,13 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Prod
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.GroupTheory.GroupAction.Prod
-import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Data.Complex.Module
-import Mathlib.RingTheory.Algebraic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
@@ -63,12 +63,11 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
     { toFun := fun z => z.re • reLm
       map_add' := fun z w => by simp [add_smul]
       map_smul' := fun r z => by simp [mul_smul] }
-#align tensor_product.f TensorProduct.f
 
 @[simp]
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
-#align tensor_product.f_apply TensorProduct.f_apply
 
+unseal Algebra.TensorProduct.mul in
 /- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on

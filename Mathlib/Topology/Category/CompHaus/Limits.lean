@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
@@ -126,15 +125,15 @@ def pullbackIsoPullback : CompHaus.pullback f g ≅ Limits.pullback f g :=
 /-- The homeomorphism from the explicit pullback to the abstract pullback. -/
 noncomputable
 def pullbackHomeoPullback : (CompHaus.pullback f g).toTop ≃ₜ (Limits.pullback f g).toTop :=
-  CompHaus.homeoOfIso (pullbackIsoPullback f g)
+  CompHausLike.homeoOfIso (pullbackIsoPullback f g)
 
 theorem pullback_fst_eq :
-    CompHaus.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
+    CompHaus.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst f g := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
 theorem pullback_snd_eq :
-    CompHaus.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd := by
+    CompHaus.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd f g := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
@@ -209,7 +208,7 @@ theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
 /-- The homeomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
 def coproductHomeoCoproduct : finiteCoproduct X ≃ₜ (∐ X : _) :=
-  CompHaus.homeoOfIso (coproductIsoCoproduct X)
+  CompHausLike.homeoOfIso (coproductIsoCoproduct X)
 
 end Iso
 

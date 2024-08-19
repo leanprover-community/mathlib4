@@ -9,8 +9,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Cases
 
-#align_import algebra.group.semiconj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
-
 /-!
 # Semiconjugate elements of a semigroup
 
@@ -39,8 +37,6 @@ variable {S M G : Type*}
 @[to_additive "`x` is additive semiconjugate to `y` by `a` if `a + x = y + a`"]
 def SemiconjBy [Mul M] (a x y : M) : Prop :=
   a * x = y * a
-#align semiconj_by SemiconjBy
-#align add_semiconj_by AddSemiconjBy
 
 namespace SemiconjBy
 
@@ -48,8 +44,6 @@ namespace SemiconjBy
 @[to_additive "Equality behind `AddSemiconjBy a x y`; useful for rewriting."]
 protected theorem eq [Mul S] {a x y : S} (h : SemiconjBy a x y) : a * x = y * a :=
   h
-#align semiconj_by.eq SemiconjBy.eq
-#align add_semiconj_by.eq AddSemiconjBy.eq
 
 section Semigroup
 
@@ -64,8 +58,6 @@ theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
   unfold SemiconjBy
   -- TODO this could be done using `assoc_rw` if/when this is ported to mathlib4
   rw [← mul_assoc, h.eq, mul_assoc, h'.eq, ← mul_assoc]
-#align semiconj_by.mul_right SemiconjBy.mul_right
-#align add_semiconj_by.add_right AddSemiconjBy.add_right
 
 /-- If `b` semiconjugates `x` to `y` and `a` semiconjugates `y` to `z`, then `a * b`
 semiconjugates `x` to `z`. -/
@@ -74,8 +66,6 @@ semiconjugates `x` to `z`."]
 theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a * b) x z := by
   unfold SemiconjBy
   rw [mul_assoc, hb.eq, ← mul_assoc, ha.eq, mul_assoc]
-#align semiconj_by.mul_left SemiconjBy.mul_left
-#align add_semiconj_by.add_left AddSemiconjBy.add_left
 
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a semigroup
 is transitive. -/
@@ -83,8 +73,6 @@ is transitive. -/
 semigroup is transitive."]
 protected theorem transitive : Transitive fun a b : S ↦ ∃ c, SemiconjBy c a b
   | _, _, _, ⟨x, hx⟩, ⟨y, hy⟩ => ⟨y * x, hy.mul_left hx⟩
-#align semiconj_by.transitive SemiconjBy.transitive
-#align add_semiconj_by.transitive SemiconjBy.transitive
 
 end Semigroup
 
@@ -95,15 +83,11 @@ variable [MulOneClass M]
 /-- Any element semiconjugates `1` to `1`. -/
 @[to_additive (attr := simp) "Any element semiconjugates `0` to `0`."]
 theorem one_right (a : M) : SemiconjBy a 1 1 := by rw [SemiconjBy, mul_one, one_mul]
-#align semiconj_by.one_right SemiconjBy.one_right
-#align add_semiconj_by.zero_right AddSemiconjBy.zero_right
 
 /-- One semiconjugates any element to itself. -/
 @[to_additive (attr := simp) "Zero semiconjugates any element to itself."]
 theorem one_left (x : M) : SemiconjBy 1 x x :=
   Eq.symm <| one_right x
-#align semiconj_by.one_left SemiconjBy.one_left
-#align add_semiconj_by.zero_left AddSemiconjBy.zero_left
 
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a monoid (or, more
 generally, on `MulOneClass` type) is reflexive. -/
@@ -111,8 +95,6 @@ generally, on `MulOneClass` type) is reflexive. -/
 monoid (or, more generally, on an `AddZeroClass` type) is reflexive."]
 protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
   | a => ⟨1, one_left a⟩
-#align semiconj_by.reflexive SemiconjBy.reflexive
-#align add_semiconj_by.reflexive AddSemiconjBy.reflexive
 
 end MulOneClass
 
@@ -127,8 +109,6 @@ theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x
     exact SemiconjBy.one_right _
   · rw [pow_succ, pow_succ]
     exact ih.mul_right h
-#align semiconj_by.pow_right SemiconjBy.pow_right
-#align add_semiconj_by.nsmul_right AddSemiconjBy.nsmul_right
 
 end Monoid
 
@@ -140,8 +120,6 @@ variable [Group G] {a x y : G}
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
 theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
   unfold SemiconjBy; rw [mul_assoc, inv_mul_self, mul_one]
-#align semiconj_by.conj_mk SemiconjBy.conj_mk
-#align add_semiconj_by.conj_mk AddSemiconjBy.conj_mk
 
 @[to_additive (attr := simp)]
 theorem conj_iff {a x y b : G} :
@@ -158,5 +136,3 @@ end SemiconjBy
 @[to_additive (attr := simp)]
 theorem semiconjBy_iff_eq [CancelCommMonoid M] {a x y : M} : SemiconjBy a x y ↔ x = y :=
   ⟨fun h => mul_left_cancel (h.trans (mul_comm _ _)), fun h => by rw [h, SemiconjBy, mul_comm]⟩
-#align semiconj_by_iff_eq semiconjBy_iff_eq
-#align add_semiconj_by_iff_eq addSemiconjBy_iff_eq

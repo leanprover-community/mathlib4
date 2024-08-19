@@ -6,8 +6,6 @@ Authors: Alexander Bentkamp
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
-#align_import linear_algebra.eigenspace.is_alg_closed from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
-
 /-!
 # Triangularizable linear endomorphisms
 
@@ -42,8 +40,20 @@ eigenspace, eigenvector, eigenvalue, eigen
 open Set Function Module FiniteDimensional
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+   {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Module.End
+
+theorem exists_hasEigenvalue_of_iSup_genEigenspace_eq_top [Nontrivial M] {f : End R M}
+    (hf : ⨆ μ, ⨆ k, f.genEigenspace μ k = ⊤) :
+    ∃ μ, f.HasEigenvalue μ := by
+  by_contra! contra
+  suffices ∀ μ, ⨆ k, f.genEigenspace μ k = ⊥ by simp [this] at hf
+  intro μ
+  replace contra : ∀ k, f.genEigenspace μ k = ⊥ := fun k ↦ by
+    have hk : ¬ f.HasGenEigenvalue μ k := fun hk ↦ contra μ (f.hasEigenvalue_of_hasGenEigenvalue hk)
+    rwa [HasGenEigenvalue, not_not] at hk
+  simp [contra]
 
 -- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
 /-- In finite dimensions, over an algebraically closed field, every linear endomorphism has an
@@ -52,7 +62,6 @@ theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V]
     ∃ c : K, f.HasEigenvalue c := by
   simp_rw [hasEigenvalue_iff_mem_spectrum]
   exact spectrum.nonempty_of_isAlgClosed_of_finiteDimensional K f
-#align module.End.exists_eigenvalue Module.End.exists_eigenvalue
 
 noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
     Inhabited f.Eigenvalues :=
@@ -121,7 +130,6 @@ theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : E
     show ⨆ (μ : K) (k : ℕ), f.genEigenspace μ k = ⊤
     rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add h_disjoint]
     apply sup_le hER hES
-#align module.End.supr_generalized_eigenspace_eq_top Module.End.iSup_genEigenspace_eq_top
 
 end Module.End
 

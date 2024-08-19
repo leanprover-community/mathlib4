@@ -92,6 +92,23 @@ lemma mapBifunctorMapObj_ext {X : GradedObject I C₁} {Y : GradedObject J C₂}
   rintro ⟨i, j⟩ hij
   exact h i j hij
 
+variable {F p} in
+/-- Constructor for morphisms from `mapBifunctorMapObj F p X Y k`. -/
+noncomputable def mapBifunctorMapObjDesc
+    {X : GradedObject I C₁} {Y : GradedObject J C₂} {A : C₃} {k : K}
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p]
+    (f : ∀ (i : I) (j : J) (_ : p ⟨i, j⟩ = k), (F.obj (X i)).obj (Y j) ⟶ A) :
+    mapBifunctorMapObj F p X Y k ⟶ A :=
+  descMapObj _ _ (fun ⟨i, j⟩ hij => f i j hij)
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctorMapObjDesc {X : GradedObject I C₁} {Y : GradedObject J C₂} {A : C₃} {k : K}
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p]
+    (f : ∀ (i : I) (j : J) (_ : p ⟨i, j⟩ = k), (F.obj (X i)).obj (Y j) ⟶ A)
+    (i : I) (j : J) (hij : p ⟨i, j⟩ = k) :
+    ιMapBifunctorMapObj F p X Y i j k hij ≫ mapBifunctorMapObjDesc f = f i j hij := by
+  apply ι_descMapObj
+
 section
 
 variable {X₁ X₂ : GradedObject I C₁} {Y₁ Y₂ : GradedObject J C₂}

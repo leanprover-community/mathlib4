@@ -200,7 +200,7 @@ theorem Base.compl_inter_basis_of_inter_basis (hB : M.Base B) (hBX : M.Basis (B 
       mem_inter_iff, iff_false_intro he.1.2, and_false, not_false_iff]
   exact hfb.2 (hBX.mem_of_insert_indep (Or.elim (hem.1 hfb.1) (False.elim ∘ hfb.2) id) hi).1
 
-theorem Base.inter_basis_iff_compl_inter_basis_dual (hB : M.Base B) (hX : X ⊆ M.E := by aesop_mat):
+theorem Base.inter_basis_iff_compl_inter_basis_dual (hB : M.Base B) (hX : X ⊆ M.E := by aesop_mat) :
     M.Basis (B ∩ X) X ↔ M✶.Basis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
   refine ⟨hB.compl_inter_basis_of_inter_basis, fun h ↦ ?_⟩
   simpa [inter_eq_self_of_subset_right hX, inter_eq_self_of_subset_right hB.subset_ground] using
@@ -259,3 +259,5 @@ theorem Coindep.exists_subset_compl_base (h : M.Coindep X) : ∃ B, M.Base B ∧
   coindep_iff_subset_compl_base.1 h
 
 end dual
+
+end Matroid

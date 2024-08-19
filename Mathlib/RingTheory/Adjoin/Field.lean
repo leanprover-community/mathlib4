@@ -7,8 +7,6 @@ import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.AdjoinRoot
 
-#align_import ring_theory.adjoin.field from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
-
 /-!
 # Adjoining elements to a field
 
@@ -39,7 +37,6 @@ def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Alg
     obtain ⟨P, rfl⟩ := mk_surjective P₁
     refine AdjoinRoot.mk_eq_zero.mpr (minpoly.dvd F x ?_)
     rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe] at hP₁
-#align alg_equiv.adjoin_singleton_equiv_adjoin_root_minpoly AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly
 
 /-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
 a root of `x`'s minimal polynomial in `T`. -/
@@ -79,7 +76,6 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
       · rw [Polynomial.aeval_map_algebraMap, minpoly.aeval]
     obtain ⟨y, hy⟩ := Polynomial.exists_root_of_splits _ H6 (minpoly.degree_pos H5).ne'
     exact ⟨Subalgebra.ofRestrictScalars F _ <| Algebra.adjoin.liftSingleton Ks a y hy⟩
-#align lift_of_splits Polynomial.lift_of_splits
 
 end Embeddings
 

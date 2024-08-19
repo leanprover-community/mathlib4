@@ -27,10 +27,6 @@ When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives th
 
 variable {F α β γ : Type*} [TopologicalSpace α]
 
-open Topology
-
-open Filter Metric
-
 /-- `C_c(α, β)` is the type of continuous functions `α → β` with compact support from a topological
 space to a topological space with a zero element.
 
@@ -233,8 +229,6 @@ end AddMonoid
 
 instance [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
-
-open BigOperators
 
 @[simp]
 theorem coe_sum [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
@@ -523,8 +517,6 @@ theorem uniformContinuous (f : F) : UniformContinuous (f : β → γ) :=
 end Uniform
 
 section ZeroAtInfty
-
-open ZeroAtInfty
 
 variable [TopologicalSpace β] [TopologicalSpace γ] [Zero γ]
   [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]

@@ -75,7 +75,7 @@ lemma isConnected :
     ⟨(fromRightResolution Φ L y).obj (Classical.arbitrary _)⟩
   suffices ∀ (X : w.CostructuredArrowDownwards y),
       ∃ Y, Zigzag X ((fromRightResolution Φ L y).obj Y) by
-    refine' zigzag_isConnected (fun X X' => _)
+    refine zigzag_isConnected (fun X X' => ?_)
     obtain ⟨Y, hX⟩ := this X
     obtain ⟨Y', hX'⟩ := this X'
     exact hX.trans ((zigzag_obj_of_zigzag _ (isPreconnected_zigzag Y Y')).trans hX'.symm)
@@ -84,12 +84,12 @@ lemma isConnected :
   dsimp [w] at x fac
   rw [id_comp] at fac
   let ρ : Φ.arrow.RightResolution (Arrow.mk g) := Classical.arbitrary _
-  refine' ⟨RightResolution.mk ρ.w.left ρ.hw.1, _⟩
+  refine ⟨RightResolution.mk ρ.w.left ρ.hw.1, ?_⟩
   have := zigzag_obj_of_zigzag
     (fromRightResolution Φ L x ⋙ w.costructuredArrowDownwardsPrecomp x y g fac)
       (isPreconnected_zigzag  (RightResolution.mk (𝟙 _) (W₂.id_mem _))
         (RightResolution.mk ρ.w.right ρ.hw.2))
-  refine' Zigzag.trans _ (Zigzag.trans this _)
+  refine Zigzag.trans ?_ (Zigzag.trans this ?_)
   · exact Zigzag.of_hom (eqToHom (by aesop))
   · apply Zigzag.of_inv
     refine CostructuredArrow.homMk (StructuredArrow.homMk ρ.X₁.hom (by simp)) ?_

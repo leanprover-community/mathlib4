@@ -136,12 +136,12 @@ noncomputable instance : PreservesFiniteLimits F :=
 /-- Fiber functors reflect monomorphisms. -/
 instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   intro X Y f _
-  haveI : IsIso (pullback.fst : pullback (F.map f) (F.map f) ⟶ F.obj X) :=
+  haveI : IsIso (pullback.fst (F.map f) (F.map f)) :=
     fst_iso_of_mono_eq (F.map f)
-  haveI : IsIso (F.map (pullback.fst : pullback f f ⟶ X)) := by
+  haveI : IsIso (F.map (pullback.fst f f)) := by
     rw [← PreservesPullback.iso_hom_fst]
     exact IsIso.comp_isIso
-  haveI : IsIso (pullback.fst : pullback f f ⟶ X) := isIso_of_reflects_iso pullback.fst F
+  haveI : IsIso (pullback.fst f f) := isIso_of_reflects_iso (pullback.fst _ _) F
   exact (pullback.diagonal_isKernelPair f).mono_of_isIso_fst
 
 /-- Fiber functors are faithful. -/
@@ -226,17 +226,19 @@ noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
 @[simp]
 lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :
-    F.map pullback.fst ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = a := by
+    F.map (pullback.fst f g) ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = a := by
   simp [fiberPullbackEquiv]
-  change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map pullback.fst) _ = _
+  change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
+    (F ⋙ FintypeCat.incl).map (pullback.fst f g)) _ = _
   erw [PreservesPullback.iso_inv_fst, Types.pullbackIsoPullback_inv_fst]
 
 @[simp]
 lemma fiberPullbackEquiv_symm_snd_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :
-    F.map pullback.snd ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = b := by
+    F.map (pullback.snd f g) ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = b := by
   simp [fiberPullbackEquiv]
-  change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map pullback.snd) _ = _
+  change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
+    (F ⋙ FintypeCat.incl).map (pullback.snd f g)) _ = _
   erw [PreservesPullback.iso_inv_snd, Types.pullbackIsoPullback_inv_snd]
 
 /-- The fiber of the binary product is the binary product of the fibers. -/

@@ -6,8 +6,6 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Filtered.Basic
 
-#align_import topology.category.Top.limits.cofiltered from "leanprover-community/mathlib"@"dbdf71cee7bb20367cb7e37279c08b0c218cf967"
-
 /-!
 # Cofiltered limits in the category of topological spaces
 
@@ -16,7 +14,6 @@ which contain `Set.univ` and are closed under intersections, the induced *naive*
 of sets in the limit is, in fact, a topological basis.
 -/
 
-set_option linter.uppercaseLean3 false
 
 open TopologicalSpace
 
@@ -119,7 +116,6 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       apply congrArg
       erw [← coe_comp, D.w] -- now `erw` after #13170
       rfl
-#align Top.is_topological_basis_cofiltered_limit TopCat.isTopologicalBasis_cofiltered_limit
 
 end CofilteredLimit
 

@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour, Nim
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.Limits
-import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
 # Effective epimorphic families in `Stonean`
@@ -33,6 +32,8 @@ As a consequence, we obtain instances that `Stonean` is precoherent and preregul
 universe u
 
 open CategoryTheory Limits
+
+attribute [local instance] ConcreteCategory.instFunLike
 
 namespace Stonean
 
@@ -76,11 +77,13 @@ theorem effectiveEpi_tfae
 
 instance : Stonean.toCompHaus.PreservesEffectiveEpis where
   preserves f h :=
-    ((CompHaus.effectiveEpi_tfae f).out 0 2).mpr (((Stonean.effectiveEpi_tfae f).out 0 2).mp h)
+    ((CompHaus.effectiveEpi_tfae (Stonean.toCompHaus.map f)).out 0 2).mpr
+      (((Stonean.effectiveEpi_tfae f).out 0 2).mp h)
 
 instance : Stonean.toCompHaus.ReflectsEffectiveEpis where
   reflects f h :=
-    ((Stonean.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae f).out 0 2).mp h)
+    ((Stonean.effectiveEpi_tfae f).out 0 2).mpr
+      (((CompHaus.effectiveEpi_tfae (Stonean.toCompHaus.map f)).out 0 2).mp h)
 
 /--
 An effective presentation of an `X : CompHaus` with respect to the inclusion functor from `Stonean`

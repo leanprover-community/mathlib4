@@ -55,32 +55,24 @@ variable [Preorder α] [IsOrderBornology α]
 
 lemma isBounded_iff_bddBelow_bddAbove : IsBounded s ↔ BddBelow s ∧ BddAbove s :=
   IsOrderBornology.isBounded_iff_bddBelow_bddAbove _
-#align bounded_iff_bdd_below_bdd_above isBounded_iff_bddBelow_bddAbove
-#align real.bounded_iff_bdd_below_bdd_above isBounded_iff_bddBelow_bddAbove
 
 protected lemma Bornology.IsBounded.bddBelow (hs : IsBounded s) : BddBelow s :=
   (isBounded_iff_bddBelow_bddAbove.1 hs).1
-#align metric.bounded.bdd_below Bornology.IsBounded.bddBelow
 
 protected lemma Bornology.IsBounded.bddAbove (hs : IsBounded s) : BddAbove s :=
   (isBounded_iff_bddBelow_bddAbove.1 hs).2
-#align metric.bounded.bdd_above Bornology.IsBounded.bddAbove
 
 protected lemma BddBelow.isBounded (hs₀ : BddBelow s) (hs₁ : BddAbove s) : IsBounded s :=
   isBounded_iff_bddBelow_bddAbove.2 ⟨hs₀, hs₁⟩
-#align bdd_below.bounded BddBelow.isBounded
 
 protected lemma BddAbove.isBounded (hs₀ : BddAbove s) (hs₁ : BddBelow s) : IsBounded s :=
   isBounded_iff_bddBelow_bddAbove.2 ⟨hs₁, hs₀⟩
-#align bdd_above.bounded BddAbove.isBounded
 
 lemma BddBelow.isBounded_inter (hs : BddBelow s) (ht : BddAbove t) : IsBounded (s ∩ t) :=
   (hs.mono inter_subset_left).isBounded $ ht.mono inter_subset_right
-#align bdd_below.bounded_inter BddBelow.isBounded_inter
 
 lemma BddAbove.isBounded_inter (hs : BddAbove s) (ht : BddBelow t) : IsBounded (s ∩ t) :=
   (hs.mono inter_subset_left).isBounded $ ht.mono inter_subset_right
-#align bdd_above.bounded_inter BddAbove.isBounded_inter
 
 instance OrderDual.instIsOrderBornology : IsOrderBornology αᵒᵈ where
   isBounded_iff_bddBelow_bddAbove s := by
@@ -106,6 +98,5 @@ variable [ConditionallyCompleteLattice α] [IsOrderBornology α] {s : Set α}
 
 protected lemma Bornology.IsBounded.subset_Icc_sInf_sSup (hs : IsBounded s) :
     s ⊆ Icc (sInf s) (sSup s) := subset_Icc_csInf_csSup hs.bddBelow hs.bddAbove
-#align real.subset_Icc_Inf_Sup_of_bounded Bornology.IsBounded.subset_Icc_sInf_sSup
 
 end ConditionallyCompleteLattice

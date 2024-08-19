@@ -37,7 +37,7 @@ def funPropTac : Tactic
       | none => pure emptyDischarge
       | some d =>
         match d with
-        | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
+        | `(discharger| (discharger := $tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
         | _ => pure emptyDischarge
 
     let namesToUnfold : Array Name :=

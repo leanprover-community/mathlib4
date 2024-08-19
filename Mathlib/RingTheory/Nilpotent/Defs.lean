@@ -8,8 +8,6 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Nat.Lattice
 
-#align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
-
 /-!
 # Definition of nilpotent elements
 
@@ -39,18 +37,15 @@ Note that we require only the bare minimum assumptions for the definition to mak
 power-associative. -/
 def IsNilpotent [Zero R] [Pow R ℕ] (x : R) : Prop :=
   ∃ n : ℕ, x ^ n = 0
-#align is_nilpotent IsNilpotent
 
 theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : IsNilpotent x :=
   ⟨n, e⟩
-#align is_nilpotent.mk IsNilpotent.mk
 
 @[simp] lemma isNilpotent_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] : IsNilpotent x :=
   ⟨0, Subsingleton.elim _ _⟩
 
 @[simp] theorem IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
   ⟨1, pow_one 0⟩
-#align is_nilpotent.zero IsNilpotent.zero
 
 theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
     ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
@@ -83,7 +78,6 @@ theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*
     IsNilpotent (f r) := by
   use hr.choose
   rw [← map_pow, hr.choose_spec, map_zero]
-#align is_nilpotent.map IsNilpotent.map
 
 lemma IsNilpotent.map_iff [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
@@ -173,26 +167,21 @@ end NilpotencyClass
 class IsReduced (R : Type*) [Zero R] [Pow R ℕ] : Prop where
   /-- A reduced structure has no nonzero nilpotent elements. -/
   eq_zero : ∀ x : R, IsNilpotent x → x = 0
-#align is_reduced IsReduced
 
 instance (priority := 900) isReduced_of_noZeroDivisors [MonoidWithZero R] [NoZeroDivisors R] :
     IsReduced R :=
   ⟨fun _ ⟨_, hn⟩ => pow_eq_zero hn⟩
-#align is_reduced_of_no_zero_divisors isReduced_of_noZeroDivisors
 
 instance (priority := 900) isReduced_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] :
     IsReduced R :=
   ⟨fun _ _ => Subsingleton.elim _ _⟩
-#align is_reduced_of_subsingleton isReduced_of_subsingleton
 
 theorem IsNilpotent.eq_zero [Zero R] [Pow R ℕ] [IsReduced R] (h : IsNilpotent x) : x = 0 :=
   IsReduced.eq_zero x h
-#align is_nilpotent.eq_zero IsNilpotent.eq_zero
 
 @[simp]
 theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x ↔ x = 0 :=
   ⟨fun h => h.eq_zero, fun h => h.symm ▸ IsNilpotent.zero⟩
-#align is_nilpotent_iff_eq_zero isNilpotent_iff_eq_zero
 
 theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S]
@@ -203,7 +192,6 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
   apply hf
   rw [map_zero]
   exact (hx.map f).eq_zero
-#align is_reduced_of_injective isReduced_of_injective
 
 instance (ι) (R : ι → Type*) [∀ i, Zero (R i)] [∀ i, Pow (R i) ℕ]
     [∀ i, IsReduced (R i)] : IsReduced (∀ i, R i) where
@@ -213,12 +201,10 @@ instance (ι) (R : ι → Type*) [∀ i, Zero (R i)] [∀ i, Pow (R i) ℕ]
   divides a power of `x`. -/
 def IsRadical [Dvd R] [Pow R ℕ] (y : R) : Prop :=
   ∀ (n : ℕ) (x), y ∣ x ^ n → y ∣ x
-#align is_radical IsRadical
 
 theorem isRadical_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsRadical y ↔ ∀ x, y ∣ x ^ k → y ∣ x :=
   ⟨(· k), k.pow_imp_self_of_one_lt hk _ fun _ _ h ↦ .inl (dvd_mul_of_dvd_left h _)⟩
-#align is_radical_iff_pow_one_lt isRadical_iff_pow_one_lt
 
 namespace Commute
 
@@ -230,12 +216,10 @@ theorem isNilpotent_mul_left (h : IsNilpotent x) : IsNilpotent (x * y) := by
   obtain ⟨n, hn⟩ := h
   use n
   rw [h_comm.mul_pow, hn, zero_mul]
-#align commute.is_nilpotent_mul_left Commute.isNilpotent_mul_left
 
 theorem isNilpotent_mul_right (h : IsNilpotent y) : IsNilpotent (x * y) := by
   rw [h_comm.eq]
   exact h_comm.symm.isNilpotent_mul_left h
-#align commute.is_nilpotent_mul_right Commute.isNilpotent_mul_right
 
 end Semiring
 

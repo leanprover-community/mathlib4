@@ -207,7 +207,7 @@ lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiff
 -- FUTURE: if useful, also add "a `PartialDiffeomorph` is a local diffeomorphism on its source"
 
 /-- A local diffeomorphism on `s` is a local homeomorphism on `s`. -/
-theorem IsLocalDiffeomorphOn.isLocalHomeomorphOn {s : Set M} (hf : IsLocalDiffeomorphOn I J n f s):
+theorem IsLocalDiffeomorphOn.isLocalHomeomorphOn {s : Set M} (hf : IsLocalDiffeomorphOn I J n f s) :
     IsLocalHomeomorphOn f s := by
   apply IsLocalHomeomorphOn.mk
   intro x hx

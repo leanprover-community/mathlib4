@@ -6,8 +6,6 @@ Authors: Moritz Doll
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.RCLike.Basic
 
-#align_import analysis.locally_convex.continuous_of_bounded from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
-
 /-!
 # Continuity and Von Neumann boundedness
 
@@ -67,20 +65,17 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
     refine mem_of_superset ?_ this
     convert set_smul_mem_nhds_smul hV (inv_ne_zero x_ne)
     exact (smul_zero _).symm⟩
-#align linear_map.clm_of_exists_bounded_image LinearMap.clmOfExistsBoundedImage
 
 theorem LinearMap.clmOfExistsBoundedImage_coe {f : E →ₗ[𝕜] F}
     {h : ∃ V ∈ 𝓝 (0 : E), Bornology.IsVonNBounded 𝕜 (f '' V)} :
     (f.clmOfExistsBoundedImage h : E →ₗ[𝕜] F) = f :=
   rfl
-#align linear_map.clm_of_exists_bounded_image_coe LinearMap.clmOfExistsBoundedImage_coe
 
 @[simp]
 theorem LinearMap.clmOfExistsBoundedImage_apply {f : E →ₗ[𝕜] F}
     {h : ∃ V ∈ 𝓝 (0 : E), Bornology.IsVonNBounded 𝕜 (f '' V)} {x : E} :
     f.clmOfExistsBoundedImage h x = f x :=
   rfl
-#align linear_map.clm_of_exists_bounded_image_apply LinearMap.clmOfExistsBoundedImage_apply
 
 end NontriviallyNormedField
 
@@ -164,12 +159,10 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     simp only [hn', inv_smul_smul₀, Ne, Nat.cast_eq_zero, not_false_iff] at h'
     rwa [← h']
   exact hu' n hn' h''
-#align linear_map.continuous_at_zero_of_locally_bounded LinearMap.continuousAt_zero_of_locally_bounded
 
 /-- If `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous. -/
 theorem LinearMap.continuous_of_locally_bounded [UniformAddGroup F] (f : E →ₛₗ[σ] F)
     (hf : ∀ s, IsVonNBounded 𝕜 s → IsVonNBounded 𝕜' (f '' s)) : Continuous f :=
   (uniformContinuous_of_continuousAt_zero f <| f.continuousAt_zero_of_locally_bounded hf).continuous
-#align linear_map.continuous_of_locally_bounded LinearMap.continuous_of_locally_bounded
 
 end RCLike
