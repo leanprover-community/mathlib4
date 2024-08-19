@@ -2524,4 +2524,4 @@ end lookup
 
 end List
 
-set_option linter.longFile 2800
+set_option linter.longFile 2700

@@ -236,13 +236,14 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if linterBound == 0 then
     return
   let defValue := linter.longFile.defValue
-  let setO := match stx with
+  let smallOption := match stx with
       | `(set_option linter.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
-  if setO then logWarningAt stx m!"The default value of the `longFile` linter is {defValue}.\n\
-                                  The current bound of {linterBound} smaller than allowed. \
-                                  Please, remove the `set_option linter.longFile {linterBound}`."
-
+  if smallOption then
+    logWarningAt stx m!"The default value of the `longFile` linter is {defValue}.\n\
+                        The current bound of {linterBound} smaller than allowed. \
+                        Please, remove the `set_option linter.longFile {linterBound}`."
+  else
   -- thanks to the above check, the linter option is either not set (and hence equal
   -- to the default) or set to some value *larger* than the default
   unless stx.isOfKind ``Lean.Parser.Command.eoi do return
@@ -253,6 +254,12 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some init := stx.getPos? then
     -- the last line: we subtract 1, since the last line is expected to be empty
     let lastLine := ((← getFileMap).toPosition init).line - 1
+    if lastLine ≤ defValue && defValue < linterBound then
+      logWarningAt stx m!"The default value of the `longFile` linter is {defValue}.\n\
+                          This file is {lastLine} lines long which does not \
+                          exceed the allowed bound. \
+                          Please, remove the `set_option linter.longFile {linterBound}`."
+    else
     -- `candidate` is divisible by `100` and satisfies `lastLine + 100 < candidate ≤ lastLine + 200`
     -- note that `candidate` is necessarily bigger than `lastLine` and hence bigger than `defValue`
     let candidate := (lastLine / 100) * 100 + 200
