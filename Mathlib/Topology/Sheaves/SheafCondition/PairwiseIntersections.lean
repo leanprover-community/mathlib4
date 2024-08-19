@@ -21,15 +21,15 @@ a category with objects corresponding to
 * intersections of pairs of open sets, `pair i j`,
 with morphisms from `pair i j` to both `single i` and `single j`.
 
-Any open cover `U : ι → opens X` provides a functor `diagram U : overlap ι ⥤ (opens X)ᵒᵖ`.
+Any open cover `U : ι → Opens X` provides a functor `diagram U : overlap ι ⥤ (Opens X)ᵒᵖ`.
 
-There is a canonical cone over this functor, `cone U`, whose cone point is `supr U`,
+There is a canonical cone over this functor, `cone U`, whose cone point is `isup U`,
 and in fact this is a limit cone.
 
-A presheaf `F : presheaf C X` is a sheaf precisely if it preserves this limit.
+A presheaf `F : Presheaf C X` is a sheaf precisely if it preserves this limit.
 We express this in two equivalent ways, as
-* `is_limit (F.map_cone (cone U))`, or
-* `preserves_limit (diagram U) F`
+* `isLimit (F.mapCone (cone U))`, or
+* `preservesLimit (diagram U) F`
 
 We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf condition, and
 thereby also equivalent to the default sheaf condition.
@@ -52,8 +52,8 @@ section
 (which we prove equivalent to the usual one below as
 `isSheaf_iff_isSheafPairwiseIntersections`).
 
-A presheaf is a sheaf if `F` sends the cone `(pairwise.cocone U).op` to a limit cone.
-(Recall `Pairwise.cocone U` has cone point `supr U`, mapping down to the `U i` and the `U i ⊓ U j`.)
+A presheaf is a sheaf if `F` sends the cone `(Pairwise.cocone U).op` to a limit cone.
+(Recall `Pairwise.cocone U` has cone point `iSup U`, mapping down to the `U i` and the `U i ⊓ U j`.)
 -/
 def IsSheafPairwiseIntersections (F : Presheaf C X) : Prop :=
   ∀ ⦃ι : Type w⦄ (U : ι → Opens X), Nonempty (IsLimit (F.mapCone (Pairwise.cocone U).op))
@@ -64,7 +64,7 @@ def IsSheafPairwiseIntersections (F : Presheaf C X) : Prop :=
 
 A presheaf is a sheaf if `F` preserves the limit of `Pairwise.diagram U`.
 (Recall `Pairwise.diagram U` is the diagram consisting of the pairwise intersections
-`U i ⊓ U j` mapping into the open sets `U i`. This diagram has limit `supr U`.)
+`U i ⊓ U j` mapping into the open sets `U i`. This diagram has limit `iSup U`.)
 -/
 def IsSheafPreservesLimitPairwiseIntersections (F : Presheaf C X) : Prop :=
   ∀ ⦃ι : Type w⦄ (U : ι → Opens X), Nonempty (PreservesLimit (Pairwise.diagram U).op F)
@@ -78,7 +78,7 @@ variable {ι : Type w} (U : ι → Opens X)
 open CategoryTheory.Pairwise
 
 /-- Implementation detail:
-the object level of `pairwise_to_opens_le_cover : pairwise ι ⥤ opens_le_cover U`
+the object level of `pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U`
 -/
 @[simp]
 def pairwiseToOpensLeCoverObj : Pairwise ι → OpensLeCover U
@@ -88,7 +88,7 @@ def pairwiseToOpensLeCoverObj : Pairwise ι → OpensLeCover U
 open CategoryTheory.Pairwise.Hom
 
 /-- Implementation detail:
-the morphism level of `pairwise_to_opens_le_cover : pairwise ι ⥤ opens_le_cover U`
+the morphism level of `pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U`
 -/
 def pairwiseToOpensLeCoverMap :
     ∀ {V W : Pairwise ι}, (V ⟶ W) → (pairwiseToOpensLeCoverObj U V ⟶ pairwiseToOpensLeCoverObj U W)
@@ -108,7 +108,7 @@ def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
 instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCover U)) :=
   ⟨@StructuredArrow.mk _ _ _ _ _ (single V.index) _ V.homToIndex⟩
 
--- This is a case bash: for each pair of types of objects in `pairwise ι`,
+-- This is a case bash: for each pair of types of objects in `Pairwise ι`,
 -- we have to explicitly construct a zigzag.
 /-- The diagram consisting of the `U i` and `U i ⊓ U j` is cofinal in the diagram
 of all opens contained in some `U i`.
@@ -202,7 +202,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                         right := left i' j' }⟩)
                   List.Chain.nil)))⟩
 
-/-- The diagram in `opens X` indexed by pairwise intersections from `U` is isomorphic
+/-- The diagram in `Opens X` indexed by pairwise intersections from `U` is isomorphic
 (in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
 def pairwiseDiagramIso :
@@ -211,7 +211,7 @@ def pairwiseDiagramIso :
   inv := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
 
 /--
-The cocone `Pairwise.cocone U` with cocone point `supr U` over `Pairwise.diagram U` is isomorphic
+The cocone `Pairwise.cocone U` with cocone point `iSup U` over `Pairwise.diagram U` is isomorphic
 to the cocone `opensLeCoverCocone U` (with the same cocone point)
 after appropriate whiskering and postcomposition.
 -/
@@ -228,7 +228,7 @@ open SheafCondition
 variable (F : Presheaf C X)
 
 /-- The sheaf condition
-in terms of a limit diagram over all `{ V : opens X // ∃ i, V ≤ U i }`
+in terms of a limit diagram over all `{ V : Opens X // ∃ i, V ≤ U i }`
 is equivalent to the reformulation
 in terms of a limit diagram over `U i` and `U i ⊓ U j`.
 -/

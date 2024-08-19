@@ -13,7 +13,6 @@ In this file we define `Subalgebra`s and the usual operations on them (`map`, `c
 More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 -/
 
-
 universe u u' v w w'
 
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
@@ -242,7 +241,7 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 /- TODO: bundle other forgetful maps between algebraic substructures, e.g.
-  `to_subsemiring` and `to_subring` in this file. -/
+  `toSubsemiring` and `toSubring` in this file. -/
 @[simp]
 theorem mem_toSubmodule {x} : x ∈ (toSubmodule S) ↔ x ∈ S := Iff.rfl
 
@@ -1128,10 +1127,10 @@ section Equalizer
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
+variable {F : Type*}
 
 /-- The equalizer of two R-algebra homomorphisms -/
-def equalizer (ϕ ψ : F) : Subalgebra R A where
+def equalizer (ϕ ψ : F) [FunLike F A B] [AlgHomClass F R A B] : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
   zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
   one_mem' := by simp only [Set.mem_setOf_eq, map_one]
@@ -1141,6 +1140,8 @@ def equalizer (ϕ ψ : F) : Subalgebra R A where
     rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
   algebraMap_mem' x := by
     simp only [Set.mem_setOf_eq, AlgHomClass.commutes]
+
+variable [FunLike F A B] [AlgHomClass F R A B]
 
 @[simp]
 theorem mem_equalizer (φ ψ : F) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=
@@ -1170,3 +1171,28 @@ theorem ext_on_codisjoint {φ ψ : F} {S T : Subalgebra R A} (hST : Codisjoint S
 end AlgHom
 
 end Equalizer
+
+section MapComap
+
+namespace Subalgebra
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+
+theorem map_comap_eq (f : A →ₐ[R] B) (S : Subalgebra R B) : (S.comap f).map f = S ⊓ f.range :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self
+    {f : A →ₐ[R] B} {S : Subalgebra R B} (h : S ≤ f.range) : (S.comap f).map f = S := by
+  simpa only [inf_of_le_left h] using map_comap_eq f S
+
+theorem map_comap_eq_self_of_surjective
+    {f : A →ₐ[R] B} (hf : Function.Surjective f) (S : Subalgebra R B) : (S.comap f).map f = S :=
+  map_comap_eq_self <| by simp [(Algebra.range_top_iff_surjective f).2 hf]
+
+theorem comap_map_eq_self_of_injective
+    {f : A →ₐ[R] B} (hf : Function.Injective f) (S : Subalgebra R A) : (S.map f).comap f = S :=
+  SetLike.coe_injective (Set.preimage_image_eq _ hf)
+
+end Subalgebra
+
+end MapComap

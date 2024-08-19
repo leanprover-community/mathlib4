@@ -8,8 +8,8 @@ import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Order.Filter.Archimedean
+import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Topology on the integers
