@@ -526,11 +526,22 @@ theorem sumComm_symm : (sumComm X Y).symm = sumComm Y X :=
 theorem coe_sumComm : ⇑(sumComm X Y) = Sum.swap :=
   rfl
 
+@[continuity, fun_prop]
+lemma continuous_sumAssoc : Continuous (Equiv.sumAssoc X Y Z) :=
+  Continuous.sum_elim (by fun_prop) (by fun_prop)
+
+@[continuity, fun_prop]
+lemma continuous_sumAssoc_symm : Continuous (Equiv.sumAssoc X Y Z).symm :=
+  Continuous.sum_elim (by fun_prop) (by fun_prop)
+
 /-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
 def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumAssoc X Y Z
-  continuous_toFun := Continuous.sum_elim (by fun_prop) (by fun_prop)
-  continuous_invFun := Continuous.sum_elim (by fun_prop) (by fun_prop)
+  continuous_toFun := continuous_sumAssoc X Y Z
+  continuous_invFun := continuous_sumAssoc_symm X Y Z
+
+@[simp]
+def sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
 
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
 @[simps! (config := .asFn) apply]
