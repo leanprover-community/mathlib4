@@ -145,9 +145,6 @@ lemma reduce_eqn3 (A : Δ m) (hc : ¬ Int.natAbs (A.1 1 0) = 0) :
     dite_eq_ite] at *
   simp_rw [if_neg hc]
 
-example (a b : ℤ) : a < b ↔ 0 < b - a := by
-  exact Iff.symm Int.sub_pos
-
 lemma A_d_ne_zero (A : Δ m) (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 1 1 ≠ 0 := by
   have := A.2
   rw [@det_fin_two, ha] at this
@@ -291,64 +288,6 @@ lemma T_mem_G : T ∈ G := by
   apply Subgroup.subset_closure
   simp
 
-def orbit_rel (m : ℤ) : Setoid (Δ m) where
-  r := fun x y => x ∈ MulAction.orbit G y
-  iseqv := by
-    refine ⟨?_, ?_, ?_⟩
-    · intro x
-      apply MulAction.mem_orbit_self
-    · intro x y
-      exact fun a ↦ (MulAction.mem_orbit_symm.mp) a
-    · intro x y z hxy hyz
-      rw [@MulAction.mem_orbit_iff] at *
-      obtain ⟨g, hg⟩ := hxy
-      obtain ⟨h, hh⟩ := hyz
-      refine ⟨g • h, ?_⟩
-      rw [smul_assoc, hh, hg]
-
-theorem reduce_spec (m : ℤ) : ∀A : Δ m, ∃ (R: G), R • A = reduce m A := by
-    apply reduce_rec
-    intro A hc
-    by_cases h : 0 < (A.1 0 0)
-    rw [reduce_eqn1 _ _ hc h]
-    refine ⟨⟨T ^ (-(A.1 0 1 / A.1 1 1)), ?_⟩, ?_⟩
-    refine Subgroup.zpow_mem G ?_ (-(A.1 0 1 / A.1 1 1))
-    rw [G]
-    apply Subgroup.subset_closure
-    simp
-    rfl
-    simp
-    rw [reduce_eqn2 _ _ hc h]
-    refine ⟨T ^ (-(-A.1 0 1 / -A.1 1 1)) • S • S, ?_, ?_⟩
-    simp
-    apply Subgroup.mul_mem
-    refine Subgroup.zpow_mem G ?_ _
-    apply Subgroup.subset_closure
-    simp
-    apply Subgroup.mul_mem
-    apply Subgroup.subset_closure
-    simp
-    apply Subgroup.subset_closure
-    simp
-    simp_rw [smul_assoc]
-    intro A ha
-    rw [reduce_eqn3 _ _ ha]
-    intro ht
-    obtain ⟨R, hR⟩ := ht
-    rw [reduce_step] at *
-    refine ⟨⟨R • S • T ^ (-((A.1 0 0) / (A.1 1 0))), ?_⟩, ?_⟩
-    simp
-    apply Subgroup.mul_mem
-    simp
-    apply Subgroup.mul_mem
-    apply S_mem_G
-    simp
-    apply Subgroup.zpow_mem G T_mem_G
-    rw [← hR]
-    simp
-    simp_rw [smul_def]
-    simp_rw [← mul_assoc]
-    simp
 
 lemma c2 (B : Δ 1) (hB : B ∈  G) : (S • B) ∈ G := by
   rw [smul_eq_mul]
