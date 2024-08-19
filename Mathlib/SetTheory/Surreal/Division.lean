@@ -612,14 +612,14 @@ lemma main :
 
 lemma Numeric.inv' : (x.inv').Numeric := (main x_num x_pos).1
 
-lemma mul_inv'_self : x * x.inv' ≈ 1 := (main x_num x_pos).2
+lemma mul_inv'_cancel : x * x.inv' ≈ 1 := (main x_num x_pos).2
 
 end Positive
 
-lemma mul_inv_self (hx : ¬ x ≈ 0) : x * x⁻¹ ≈ 1 := by
+protected lemma mul_inv_cancel (hx : ¬ x ≈ 0) : x * x⁻¹ ≈ 1 := by
   by_cases h : 0 < x
   · rw [inv_eq_of_pos h]
-    exact mul_inv'_self x_num h
+    exact mul_inv'_cancel x_num h
   · have x_lf_0 : x ⧏ 0 := by
       apply PGame.not_le.mp
       by_contra bad
@@ -630,7 +630,7 @@ lemma mul_inv_self (hx : ¬ x ≈ 0) : x * x⁻¹ ≈ 1 := by
       have := le_of_lf x_lf_0 x_num numeric_zero
       exact lt_of_le_of_lf this x_lf_0
     rw [inv_eq_of_lf_zero x_lf_0]
-    have := mul_inv'_self x_num.neg this
+    have := mul_inv'_cancel x_num.neg this
     rw [← Quotient.eq] at this ⊢
     simp only [quot_neg_mul, quot_mul_neg] at this ⊢
     exact this
@@ -660,8 +660,8 @@ lemma Equiv.inv_congr {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) (eq : x �
     have : x * y⁻¹ ≈ x * x⁻¹ := by
       calc
         x * y⁻¹ ≈ y * y⁻¹ := mul_congr_left hx hy hy.inv eq
-        _        ≈ 1        := mul_inv_self hy h'
-        _        ≈ x * x⁻¹ := symm (mul_inv_self hx h)
+        _        ≈ 1        := Surreal.Division.mul_inv_cancel hy h'
+        _        ≈ x * x⁻¹ := symm (Surreal.Division.mul_inv_cancel hx h)
     apply Surreal.mul_left_cancel hx hy.inv hx.inv h at this
     exact symm this
 
@@ -678,7 +678,7 @@ noncomputable instance : LinearOrderedField Surreal where
   mul_inv_cancel := by
     rintro ⟨a, oa⟩
     intro nz
-    exact Quotient.sound (mul_inv_self oa (by
+    exact Quotient.sound (Surreal.Division.mul_inv_cancel oa (by
       change ¬ ⟦(⟨a, oa⟩ : Subtype Numeric)⟧ = ⟦⟨0, _⟩⟧ at nz
       simp only [Quotient.eq] at nz
       exact nz
