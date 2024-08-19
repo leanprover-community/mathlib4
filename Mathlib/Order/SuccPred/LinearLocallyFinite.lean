@@ -98,6 +98,12 @@ theorem succFn_le_of_lt (i j : ι) (hij : i < j) : succFn i ≤ j := by
   rw [IsGLB, IsGreatest, mem_lowerBounds] at h
   exact h.1 j hij
 
+theorem le_of_lt_succFn (j i : ι) (hij : j < succFn i) : j ≤ i := by
+  rw [lt_isGLB_iff (succFn_spec i)] at hij
+  obtain ⟨k, hk_lb, hk⟩ := hij
+  rw [mem_lowerBounds] at hk_lb
+  exact not_lt.mp fun hi_lt_j ↦ not_le.mpr hk (hk_lb j hi_lt_j)
+
 noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn

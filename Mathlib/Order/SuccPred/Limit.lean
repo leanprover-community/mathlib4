@@ -394,14 +394,10 @@ theorem isSuccLimitRecOn_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ 
     exact (succ_eq_succ_iff_of_not_isMax H.left hb).mp H.right |
     exact proof_irrel_heq H.left hb
 
-section limitRecOn
-
-variable [WellFoundedLT α]
-  (H_succ : ∀ a, ¬IsMax a → C a → C (succ a))
-  (H_lim : ∀ a, IsSuccLimit a → (∀ b < a, C b) → C a)
-
 @[simp]
-theorem _root_.SuccOrder.limitRecOn_succ (ha : ¬ IsMax a) :
+theorem _root_.SuccOrder.limitRecOn_succ [WellFoundedLT α]
+    (H_succ : ∀ a, ¬IsMax a → C a → C (succ a)) (H_lim : ∀ a, IsSuccLimit a → (∀ b < a, C b) → C a)
+    (ha : ¬ IsMax a) :
     SuccOrder.limitRecOn (succ a) H_succ H_lim
       = H_succ a ha (SuccOrder.limitRecOn a H_succ H_lim) := by
   have h := not_isSuccLimit_succ_of_not_isMax ha
@@ -411,18 +407,11 @@ theorem _root_.SuccOrder.limitRecOn_succ (ha : ¬ IsMax a) :
   let x := Classical.indefiniteDescription _ (not_isSuccLimit_iff.mp h)
   exact this ((succ_eq_succ_iff_of_not_isMax x.2.1 ha).mp x.2.2)
 
-end limitRecOn
-
-section NoMaxOrder
-
-variable [NoMaxOrder α]
-
 @[simp]
-theorem isSuccLimitRecOn_succ (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ a, IsSuccLimit a → C a)
-    (b : α) : @isSuccLimitRecOn α _ _ C (succ b) hs hl = hs b (not_isMax b) :=
+theorem isSuccLimitRecOn_succ [NoMaxOrder α] (hs : ∀ a, ¬IsMax a → C (succ a))
+    (hl : ∀ a, IsSuccLimit a → C a) (b : α) :
+    @isSuccLimitRecOn α _ _ C (succ b) hs hl = hs b (not_isMax b) :=
   isSuccLimitRecOn_succ' _ _ _
-
-end NoMaxOrder
 
 end Succ
 
@@ -434,14 +423,10 @@ theorem isPredLimitRecOn_pred' (hs : ∀ a, ¬IsMin a → C (pred a)) (hl : ∀ 
     {b : α} (hb : ¬IsMin b) : @isPredLimitRecOn α _ _ C (pred b) hs hl = hs b hb :=
   isSuccLimitRecOn_succ' _ _ _
 
-section limitRecOn
-
-variable [WellFoundedGT α]
-  (H_pred : ∀ a, ¬IsMin a → C a → C (pred a))
-  (H_lim : ∀ a, IsPredLimit a → (∀ b > a, C b) → C a)
-
 @[simp]
-theorem _root_.PredOrder.limitRecOn_pred (ha : ¬ IsMin a) :
+theorem _root_.PredOrder.limitRecOn_pred [WellFoundedGT α]
+  (H_pred : ∀ a, ¬IsMin a → C a → C (pred a)) (H_lim : ∀ a, IsPredLimit a → (∀ b > a, C b) → C a)
+  (ha : ¬ IsMin a) :
     PredOrder.limitRecOn (pred a) H_pred H_lim
       = H_pred a ha (PredOrder.limitRecOn a H_pred H_lim) := by
   have h := not_isPredLimit_pred_of_not_isMin ha
@@ -451,18 +436,11 @@ theorem _root_.PredOrder.limitRecOn_pred (ha : ¬ IsMin a) :
   let x := Classical.indefiniteDescription _ (not_isPredLimit_iff.mp h)
   exact this ((pred_eq_pred_iff_of_not_isMin x.2.1 ha).mp x.2.2)
 
-end limitRecOn
-
-section NoMinOrder
-
-variable [NoMinOrder α]
-
 @[simp]
-theorem isPredLimitRecOn_pred (hs : ∀ a, ¬IsMin a → C (pred a)) (hl : ∀ a, IsPredLimit a → C a)
-    (b : α) : @isPredLimitRecOn α _ _ C (pred b) hs hl = hs b (not_isMin b) :=
+theorem isPredLimitRecOn_pred [NoMinOrder α] (hs : ∀ a, ¬IsMin a → C (pred a))
+    (hl : ∀ a, IsPredLimit a → C a) (b : α) :
+    @isPredLimitRecOn α _ _ C (pred b) hs hl = hs b (not_isMin b) :=
   isSuccLimitRecOn_succ _ _ _
-
-end NoMinOrder
 
 end Pred
 
