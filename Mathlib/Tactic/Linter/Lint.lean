@@ -263,7 +263,7 @@ register_option linter.style.lambdaSyntax : Bool := {
   descr := "enable the `lambdaSyntax` linter"
 }
 
-namespace Style.lambdaSyntaxLinter
+namespace Style.lambdaSyntax
 
 /--
 `findLambdaSyntax stx` extracts from `stx` all syntax nodes of `kind` `Term.fun`. -/
@@ -290,7 +290,7 @@ def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter lambdaSyntaxLinter
 
-end Style.lambdaSyntaxLinter
+end Style.lambdaSyntax
 
 /-! # The "longLine linter" -/
 
