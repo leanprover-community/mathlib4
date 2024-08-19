@@ -5,8 +5,6 @@ Authors: Nicolò Cavalleri, Heather Macbeth, Winston Yin
 -/
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
-#align_import geometry.manifold.instances.units_of_normed_algebra from "leanprover-community/mathlib"@"ef901ea68d3bb1dd08f8bc3034ab6b32b2e6ecdf"
-
 /-!
 # Units of a normed algebra
 
@@ -20,8 +18,8 @@ over a field `𝕜`, the `𝕜`-linear endomorphisms of `V` are a normed `𝕜`-
 `ContinuousLinearMap.toNormedAlgebra`), so this construction provides a Lie group structure on
 its group of units, the general linear group GL(`𝕜`, `V`), as demonstrated by:
 ```
-example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] [Nontrivial V] :
-  LieGroup 𝓘(𝕜, V →L[𝕜] V) (V →L[𝕜] V)ˣ := by infer_instance
+example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] :
+    LieGroup 𝓘(𝕜, V →L[𝕜] V) (V →L[𝕜] V)ˣ := inferInstance
 ```
 -/
 
@@ -39,11 +37,9 @@ instance : ChartedSpace R Rˣ :=
 
 theorem chartAt_apply {a : Rˣ} {b : Rˣ} : chartAt R a b = b :=
   rfl
-#align units.chart_at_apply Units.chartAt_apply
 
 theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
-#align units.chart_at_source Units.chartAt_source
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
 

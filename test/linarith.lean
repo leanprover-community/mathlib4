@@ -189,7 +189,8 @@ example (a b c : Rat) (h2 : (2 : Rat) > 3) : a + b - c ≥ 3 := by
 
 -- Verify that we split conjunctions in hypotheses.
 example (x y : Rat)
-    (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False := by
+    (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) :
+    False := by
   fail_if_success
     linarith (config := {splitHypotheses := false})
   linarith
@@ -446,7 +447,7 @@ example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
 
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
-  nlinarith (config := { oracle := some .fourierMotzkin })
+  nlinarith (config := { oracle := .fourierMotzkin })
 
 section
 -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
@@ -669,8 +670,9 @@ example (a b c d e : ℚ)
     (hd : a + b + c + 2 * d + e = 7)
     (he : a + b + c + d + 2 * e = 8) :
     e = 3 := by
-  linarith (config := { oracle := some .fourierMotzkin })
+  linarith (config := { oracle := .fourierMotzkin })
 
+set_option linter.unusedTactic false in
 -- TODO: still broken with Fourier-Motzkin
 /--
 error: linarith failed to find a contradiction
@@ -702,4 +704,24 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     -x8 + x7 - x5 + x1 < 0 →
     x7 - x5 < 0 → False := by
   intros
-  linarith (config := { oracle := some .fourierMotzkin })
+  linarith (config := { oracle := .fourierMotzkin })
+
+section findSquares
+
+private abbrev wrapped (z : ℤ) : ℤ := z
+/-- the `findSquares` preprocessor can look through reducible defeq -/
+example (x : ℤ) : 0 ≤ x * wrapped x := by nlinarith
+
+private def tightlyWrapped (z : ℤ) : ℤ := z
+/--
+error: linarith failed to find a contradiction
+case a
+x : ℤ
+a✝ : 0 > x * tightlyWrapped x
+⊢ False
+failed
+-/
+#guard_msgs in
+example (x : ℤ) : 0 ≤ x * tightlyWrapped x := by nlinarith
+
+end findSquares
