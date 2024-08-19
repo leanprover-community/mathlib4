@@ -24,7 +24,7 @@ namespace Mathlib.Linter
 /-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option. -/
 register_option linter.setOption : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `setOption` linter"
 }
 
