@@ -50,7 +50,7 @@ variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
 namespace LieModule
 
-open Set Function  TensorProduct TensorProduct.LieModule
+open Set Function TensorProduct LieModule
 
 section notation_genWeightSpaceOf
 
