@@ -113,7 +113,6 @@ TODO: the mixin assumptiosn can be relaxed in most cases
 
 -/
 
-
 assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidHom
 
@@ -152,7 +151,7 @@ lemma pow_le_pow_of_le_one [ZeroLEOneClass α] [PosMulMono α] [MulPosMono α]
   | _, _, Nat.le.refl => le_rfl
   | _, _, Nat.le.step h => by
     rw [pow_succ']
-    exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans $ pow_le_pow_of_le_one ha₀ ha₁ h
+    exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans <| pow_le_pow_of_le_one ha₀ ha₁ h
 
 lemma pow_le_of_le_one [ZeroLEOneClass α] [PosMulMono α] [MulPosMono α]
     (h₀ : 0 ≤ a) (h₁ : a ≤ 1) {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ a :=
@@ -587,7 +586,7 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE α] [MulPosStrictMono α]
-    [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)]
+    [CovariantClass α α (· + ·) (· < ·)]
     (hba : b < a) (hdc : d < c) : a * d + b * c < a * c + b * d := by
   rw [add_comm (a * d), add_comm (a * c)]
   exact mul_add_mul_lt_mul_add_mul hba hdc
@@ -915,7 +914,7 @@ lemma mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]
     [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α]
     [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· < ·)] :
     a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
-  rw [add_eq_zero_iff', mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
+  rw [add_eq_zero_iff_of_nonneg, mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
     apply mul_self_nonneg
 
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]
@@ -1005,3 +1004,5 @@ end LinearOrderedRing
 @[deprecated (since := "2023-12-23")] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
+
+end OrderedCommRing

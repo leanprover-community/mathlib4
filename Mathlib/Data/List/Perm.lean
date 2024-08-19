@@ -570,7 +570,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   intro H
   obtain ⟨k, hk, hk'⟩ := nthLe_of_mem H
   rw [nodup_iff_nthLe_inj] at h
-  refine k.succ_ne_self.symm $ h k (k + 1) ?_ ?_ ?_
+  refine k.succ_ne_self.symm <| h k (k + 1) ?_ ?_ ?_
   · simpa [Nat.lt_succ_iff] using hk.le
   · simpa using hk
   rw [nthLe_permutations'Aux, nthLe_permutations'Aux]

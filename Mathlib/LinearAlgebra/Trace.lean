@@ -16,9 +16,7 @@ See also `LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 ## Tags
 
 linear_map, trace, diagonal
-
 -/
-
 
 noncomputable section
 
@@ -26,11 +24,8 @@ universe u v w
 
 namespace LinearMap
 
-open Matrix
-
-open FiniteDimensional
-
-open TensorProduct
+open scoped Matrix
+open FiniteDimensional TensorProduct
 
 section
 
@@ -64,16 +59,16 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
         rw [LinearMap.toMatrix_comp _ b, LinearMap.toMatrix_comp _ c]
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 
-open scoped Classical
-
 variable (M)
 
+open Classical in
 /-- Trace of an endomorphism independent of basis. -/
 def trace : (M →ₗ[R] M) →ₗ[R] R :=
   if H : ∃ s : Finset M, Nonempty (Basis s R M) then traceAux R H.choose_spec.some else 0
 
 variable {M}
 
+open Classical in
 /-- Auxiliary lemma for `trace_eq_matrix_trace`. -/
 theorem trace_eq_matrix_trace_of_finset {s : Finset M} (b : Basis s R M) (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
@@ -84,11 +79,13 @@ theorem trace_eq_matrix_trace_of_finset {s : Finset M} (b : Basis s R M) (f : M 
 
 theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
+  classical
   rw [trace_eq_matrix_trace_of_finset R b.reindexFinsetRange, ← traceAux_def, ← traceAux_def,
     traceAux_eq R b b.reindexFinsetRange]
 
-theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) :=
-  if H : ∃ s : Finset M, Nonempty (Basis s R M) then by
+theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
+  classical
+  exact if H : ∃ s : Finset M, Nonempty (Basis s R M) then by
     let ⟨s, ⟨b⟩⟩ := H
     simp_rw [trace_eq_matrix_trace R b, LinearMap.toMatrix_mul]
     apply Matrix.trace_mul_comm

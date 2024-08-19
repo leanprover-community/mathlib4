@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Lift
 import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Coe
-import Mathlib.Init.Set
+import Mathlib.Data.Set.Defs
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Data.Set.Image

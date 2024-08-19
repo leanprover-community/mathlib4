@@ -8,7 +8,7 @@ import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # (Semi-)linear isometries
@@ -640,8 +640,7 @@ theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
   e.toLinearEquiv.map_eq_zero_iff
 
 @[simp]
-theorem symm_symm : e.symm.symm = e :=
-  ext fun _ => rfl
+theorem symm_symm : e.symm.symm = e := rfl
 
 @[simp]
 theorem toLinearEquiv_symm : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=
@@ -733,7 +732,7 @@ instance instGroup : Group (E ≃ₗᵢ[R] E) where
   one_mul := trans_refl
   mul_one := refl_trans
   mul_assoc _ _ _ := trans_assoc _ _ _
-  mul_left_inv := self_trans_symm
+  inv_mul_cancel := self_trans_symm
 
 @[simp]
 theorem coe_one : ⇑(1 : E ≃ₗᵢ[R] E) = id :=
