@@ -286,13 +286,15 @@ lemma δ_snd :
 
 section
 
-variable {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain F K m)
-    (β : Cochain G K n) (h : m + 1 = n)
+variable {K : CochainComplex C ℤ} {n m : ℤ}
 
 /-- Given `φ : F ⟶ G`, this is the cochain in `Cochain (mappingCone φ) K n` that is
 constructed from two cochains `α : Cochain F K m` (with `m + 1 = n`) and `β : Cochain F K n`. -/
-noncomputable def descCochain : Cochain (mappingCone φ) K n :=
+noncomputable def descCochain (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n) :
+    Cochain (mappingCone φ) K n :=
   (fst φ).1.comp α (by rw [← h, add_comm]) + (snd φ).comp β (zero_add n)
+
+variable (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n)
 
 @[simp]
 lemma inl_descCochain :
@@ -346,14 +348,16 @@ noncomputable def descCocycle {K : CochainComplex C ℤ} {n m : ℤ}
 
 section
 
-variable {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
-  (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β))
+variable {K : CochainComplex C ℤ}
 
 /-- Given `φ : F ⟶ G`, this is the morphism `mappingCone φ ⟶ K` that is constructed
 from a cochain `α : Cochain F K (-1)` and a morphism `β : G ⟶ K` such that
 `δ (-1) 0 α = Cochain.ofHom (φ ≫ β)`. -/
-noncomputable def desc : mappingCone φ ⟶ K :=
+noncomputable def desc (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) : mappingCone φ ⟶ K :=
   Cocycle.homOf (descCocycle φ α (Cocycle.ofHom β) (neg_add_cancel 1) (by simp [eq]))
+
+variable (α : Cochain F K (-1)) (β : G ⟶ K) (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β))
 
 @[simp]
 lemma ofHom_desc :
@@ -400,12 +404,14 @@ noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCo
 section
 
 variable {K : CochainComplex C ℤ} {n m : ℤ}
-    (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m)
 
 /-- Given `φ : F ⟶ G`, this is the cochain in `Cochain (mappingCone φ) K n` that is
 constructed from two cochains `α : Cochain F K m` (with `m + 1 = n`) and `β : Cochain F K n`. -/
-noncomputable def liftCochain : Cochain K (mappingCone φ) n :=
+noncomputable def liftCochain (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m) :
+    Cochain K (mappingCone φ) n :=
   α.comp (inl φ) (by omega) + β.comp (Cochain.ofHom (inr φ)) (add_zero n)
+
+variable (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m)
 
 @[simp]
 lemma liftCochain_fst :

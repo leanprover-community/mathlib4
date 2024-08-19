@@ -210,7 +210,7 @@ theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
 
 @[simp]
 theorem exp_ne_zero : exp x ≠ 0 := fun h =>
-  zero_ne_one <| by rw [← exp_zero, ← add_neg_cancel x, exp_add, h]; simp
+  zero_ne_one (α := ℂ) <| by rw [← exp_zero, ← add_neg_cancel x, exp_add, h]; simp
 
 theorem exp_neg : exp (-x) = (exp x)⁻¹ := by
   rw [← mul_right_inj' (exp_ne_zero x), ← exp_add]; simp [mul_inv_cancel₀ (exp_ne_zero x)]

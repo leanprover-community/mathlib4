@@ -964,7 +964,7 @@ theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x :
 /-- One-dimensional formal multilinear series representing the same function are equal. -/
 theorem HasFPowerSeriesAt.eq_formalMultilinearSeries {p₁ p₂ : FormalMultilinearSeries 𝕜 𝕜 E}
     {f : 𝕜 → E} {x : 𝕜} (h₁ : HasFPowerSeriesAt f p₁ x) (h₂ : HasFPowerSeriesAt f p₂ x) : p₁ = p₂ :=
-  sub_eq_zero.mp (HasFPowerSeriesAt.eq_zero (by simpa only [sub_self] using h₁.sub h₂))
+  sub_eq_zero.mp (HasFPowerSeriesAt.eq_zero (x := x) (by simpa only [sub_self] using h₁.sub h₂))
 
 theorem HasFPowerSeriesAt.eq_formalMultilinearSeries_of_eventually
     {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {x : 𝕜} (hp : HasFPowerSeriesAt f p x)
@@ -1041,10 +1041,10 @@ The definition is such that `p.changeOriginSeriesTerm k l s hs (fun _ ↦ x) (fu
 p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 -/
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
-    E[×l]→L[𝕜] E[×k]→L[𝕜] F := by
+    E[×l]→L[𝕜] E[×k]→L[𝕜] F :=
   let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
     (by erw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
-  exact a (p (k + l))
+  a (p (k + l))
 
 theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l)
     (x y : E) :

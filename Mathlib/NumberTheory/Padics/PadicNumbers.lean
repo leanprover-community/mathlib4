@@ -149,7 +149,8 @@ theorem not_limZero_const_of_nonzero {q : ℚ} (hq : q ≠ 0) : ¬LimZero (const
   fun h' ↦ hq <| const_limZero.1 h'
 
 theorem not_equiv_zero_const_of_nonzero {q : ℚ} (hq : q ≠ 0) : ¬const (padicNorm p) q ≈ 0 :=
-  fun h : LimZero (const (padicNorm p) q - 0) ↦ not_limZero_const_of_nonzero hq <| by simpa using h
+  fun h : LimZero (const (padicNorm p) q - 0) ↦
+    not_limZero_const_of_nonzero (p := p) hq <| by simpa using h
 
 theorem norm_nonneg (f : PadicSeq p) : 0 ≤ f.norm := by
   classical exact if hf : f ≈ 0 then by simp [hf, norm] else by simp [norm, hf, padicNorm.nonneg]
