@@ -183,7 +183,6 @@ open IsScalarTower
 
 namespace AlgHom
 
-set_option debug.byAsSorry false in
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
   { (f : A →+* B) with

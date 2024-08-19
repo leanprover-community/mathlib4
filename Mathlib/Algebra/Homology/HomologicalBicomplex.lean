@@ -67,7 +67,6 @@ instance : (toGradedObjectFunctor C c₁ c₂).Faithful where
     exact congr_fun h ⟨i₁, i₂⟩
 
 section OfGradedObject
-set_option debug.byAsSorry false
 
 variable (c₁ c₂)
 variable (X : GradedObject (I₁ × I₂) C)

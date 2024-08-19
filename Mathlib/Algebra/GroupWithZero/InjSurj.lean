@@ -44,7 +44,6 @@ protected abbrev Function.Surjective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : 
 end MulZeroClass
 
 section NoZeroDivisors
-set_option debug.byAsSorry false
 
 variable [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
   (f : M₀ → M₀') (hf : Injective f) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
