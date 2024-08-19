@@ -18,57 +18,59 @@ We also provide two constructors,
 that turn these structures into instances of the corresponding typeclasses.
 -/
 
-universe u v w
-
 namespace AddCommGroup
 
-/-- A collection of elements in an `AddCommGroup` designated as "non-negative".
-This induces an `OrderedAddCommGroup`. -/
-class PositiveConeClass (S : Type u) (G : Type v) [AddCommGroup G] [SetLike S G]
+/-- `PositiveConeClass S G` says that `S` is a type of `PositiveCone`s in `G`. -/
+class PositiveConeClass (S G : Type*) [AddCommGroup G] [SetLike S G]
     extends AddSubmonoidClass S G : Prop where
   eq_zero_of_mem_of_neg_mem : ∀ {s : S} {a : G}, a ∈ s → -a ∈ s → a = 0
 
 export PositiveConeClass (eq_zero_of_mem_of_neg_mem)
 
-structure PositiveCone (G : Type u) [AddCommGroup G] extends AddSubmonoid G where
+/-- A positive cone in an `AddCommGroup` is a `AddSubmonoid` that
+does not contain both `a` and `-a` for any nonzero `a`.
+This is equivalent to being the set of non-negative elements of an `OrderedAddCommGroup`. -/
+structure PositiveCone (G : Type*) [AddCommGroup G] extends AddSubmonoid G where
   eq_zero_of_mem_of_neg_mem' : ∀ {a}, a ∈ carrier → -a ∈ carrier → a = 0
 
-instance PositiveCone.instSetLike (G : Type u) [AddCommGroup G] : SetLike (PositiveCone G) G where
+instance PositiveCone.instSetLike (G : Type*) [AddCommGroup G] : SetLike (PositiveCone G) G where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance PositiveCone.instAddSubmonoidClass (G : Type u) [AddCommGroup G] :
+instance PositiveCone.instAddSubmonoidClass (G : Type*) [AddCommGroup G] :
     AddSubmonoidClass (PositiveCone G) G where
   add_mem {s} := s.add_mem'
   zero_mem {s} := s.zero_mem'
 
-instance PositiveCone.instPositiveConeClass (G : Type u) [AddCommGroup G] :
+instance PositiveCone.instPositiveConeClass (G : Type*) [AddCommGroup G] :
     PositiveConeClass (PositiveCone G) G where
   eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
 
-/-- A positive cone such that, for every `a`, either `a` or `-a` is non-negative.
-This indices a `LinearOrderedAddCommGroup`. -/
-class TotalPositiveConeClass (S : Type u) (G : Type v) [AddCommGroup G] [SetLike S G]
+/-- `TotalPositiveConeClass S G` says that `S` is a type of `TotalPositiveCone`s in `G`. -/
+class TotalPositiveConeClass (S G : Type*) [AddCommGroup G] [SetLike S G]
     extends PositiveConeClass S G : Prop where
   mem_or_neg_mem : ∀ (s : S) (a : G), a ∈ s ∨ -a ∈ s
 
 export TotalPositiveConeClass (mem_or_neg_mem)
 
-structure TotalPositiveCone (G : Type u) [AddCommGroup G] extends PositiveCone G where
+/-- A total positive cone in an `AddCommGroup` is a `PositiveCone` containing
+either `a` or `-a` for every `a`.
+This is equivalent to being the set of non-negative elements of an `LinearOrderedAddCommGroup`. -/
+structure TotalPositiveCone (G : Type*) [AddCommGroup G] extends PositiveCone G where
   mem_or_neg_mem' : ∀ a, a ∈ carrier ∨ -a ∈ carrier
 
-instance TotalPositiveCone.instSetLike (G : Type u) [AddCommGroup G] :
+instance TotalPositiveCone.instSetLike (G : Type*) [AddCommGroup G] :
   SetLike (TotalPositiveCone G) G where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance TotalPositiveCone.instPositiveConeClass (G : Type u) [AddCommGroup G] :
+instance TotalPositiveCone.instPositiveConeClass (G : Type*) [AddCommGroup G] :
     PositiveConeClass (TotalPositiveCone G) G where
   add_mem {s} := s.add_mem'
   zero_mem {s} := s.zero_mem'
   eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
 
-instance TotalPositiveCone.instTotalPositiveConeClass (G : Type u) [AddCommGroup G] :
+instance TotalPositiveCone.instTotalPositiveConeClass (G : Type*) [AddCommGroup G] :
     TotalPositiveConeClass (TotalPositiveCone G) G where
   mem_or_neg_mem {s} := s.mem_or_neg_mem'
 
@@ -80,8 +82,7 @@ open AddCommGroup
 
 /-- Construct an `OrderedAddCommGroup` by
 designating a positive cone in an existing `AddCommGroup`. -/
-def mkOfPositiveCone {S : Type u} {G : Type v}
-    [AddCommGroup G] [SetLike S G] [PositiveConeClass S G] (C : S) :
+def mkOfPositiveCone {S G : Type*} [AddCommGroup G] [SetLike S G] [PositiveConeClass S G] (C : S) :
     OrderedAddCommGroup G :=
   { ‹AddCommGroup G› with
     le := fun a b => a - b ∈ C,
@@ -91,6 +92,15 @@ def mkOfPositiveCone {S : Type u} {G : Type v}
       by apply eq_of_sub_eq_zero; simp at nba; simpa [nba] using eq_zero_of_mem_of_neg_mem nab,
     add_le_add_left := fun a b nab c => by simpa using nab }
 
+/-- Construct a `PositiveCone` from
+the set of positive elements of an existing `OrderedAddCommGroup` -/
+def mkOfOrderedAddCommGroup (G : Type*) [OrderedAddCommGroup G] : (PositiveCone G) where
+  carrier := {x | x ≥ 0}
+  add_mem' := add_nonneg
+  zero_mem' := by simp
+  eq_zero_of_mem_of_neg_mem' := by simp; intro a ap an; apply (le_antisymm ap an).symm
+
+
 end OrderedAddCommGroup
 
 namespace LinearOrderedAddCommGroup
@@ -99,12 +109,18 @@ open AddCommGroup
 
 /-- Construct a `LinearOrderedAddCommGroup` by
 designating a total positive cone in an existing `AddCommGroup`. -/
-def mkOfPositiveCone {S : Type u} {G : Type v}
-    [AddCommGroup G] [SetLike S G] [TotalPositiveConeClass S G]
-    (C : S) (dec : DecidablePred (fun x => x ∈ C)) :
-    LinearOrderedAddCommGroup G :=
+def mkOfPositiveCone {S G : Type*} [AddCommGroup G] [SetLike S G] [TotalPositiveConeClass S G]
+    (C : S) (dec : DecidablePred (fun x => x ∈ C)) : LinearOrderedAddCommGroup G :=
   { OrderedAddCommGroup.mkOfPositiveCone C with
     le_total := fun a b => by simpa using mem_or_neg_mem C (a - b)
     decidableLE := fun a b => dec _ }
+
+/-- Construct a `TotalPositiveCone` from
+the set of positive elements of an existing `LinearOrderedAddCommGroup` -/
+def mkOfLinearOrderedAddCommGroup (G : Type*) [LinearOrderedAddCommGroup G] :
+    (TotalPositiveCone G) :=
+  { OrderedAddCommGroup.mkOfOrderedAddCommGroup G with
+    mem_or_neg_mem' :=
+      by simp; unfold OrderedAddCommGroup.mkOfOrderedAddCommGroup; simpa using le_total 0 }
 
 end LinearOrderedAddCommGroup
