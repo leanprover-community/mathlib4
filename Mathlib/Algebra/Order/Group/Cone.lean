@@ -37,10 +37,13 @@ instance PositiveCone.instSetLike (G : Type u) [AddCommGroup G] : SetLike (Posit
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance PositiveCone.instPositiveConeClass (G : Type u) [AddCommGroup G] :
-    PositiveConeClass (PositiveCone G) G where
+instance PositiveCone.instAddSubmonoidClass (G : Type u) [AddCommGroup G] :
+    AddSubmonoidClass (PositiveCone G) G where
   add_mem {s} := s.add_mem'
   zero_mem {s} := s.zero_mem'
+
+instance PositiveCone.instPositiveConeClass (G : Type u) [AddCommGroup G] :
+    PositiveConeClass (PositiveCone G) G where
   eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
 
 /-- A positive cone such that, for every `a`, either `a` or `-a` is non-negative.
@@ -59,11 +62,14 @@ instance TotalPositiveCone.instSetLike (G : Type u) [AddCommGroup G] :
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance TotalPositiveCone.instTotalPositiveConeClass (G : Type u) [AddCommGroup G] :
-    TotalPositiveConeClass (TotalPositiveCone G) G where
+instance TotalPositiveCone.instPositiveConeClass (G : Type u) [AddCommGroup G] :
+    PositiveConeClass (TotalPositiveCone G) G where
   add_mem {s} := s.add_mem'
   zero_mem {s} := s.zero_mem'
   eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
+
+instance TotalPositiveCone.instTotalPositiveConeClass (G : Type u) [AddCommGroup G] :
+    TotalPositiveConeClass (TotalPositiveCone G) G where
   mem_or_neg_mem {s} := s.mem_or_neg_mem'
 
 end AddCommGroup
