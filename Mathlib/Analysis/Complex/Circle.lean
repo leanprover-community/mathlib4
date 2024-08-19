@@ -34,7 +34,7 @@ is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 noncomputable section
 
-open Complex Metric
+open Complex Function Metric
 
 open ComplexConjugate
 
@@ -60,16 +60,26 @@ def Circle : Type := Submonoid.unitSphere ℂ
 deriving TopologicalSpace
 
 namespace Circle
+variable {x y : Circle}
 
 instance instCoeOut : CoeOut Circle ℂ := subtypeCoe
 
 instance instCommGroup : CommGroup Circle := Metric.sphere.commGroup
 instance instMetricSpace : MetricSpace Circle := Subtype.metricSpace
 
+@[ext] lemma ext : (x : ℂ) = y → x = y := Subtype.ext
+
+lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
+
+-- Not simp because `SetLike.coe_eq_coe` already proves it
+lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
+
 @[simp] lemma abs_coe (z : Circle) : abs z = 1 := mem_sphere_zero_iff_norm.1 z.2
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_abs]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
 @[simp, norm_cast] lemma coe_one : ↑(1 : Circle) = (1 : ℂ) := rfl
+-- Not simp because `OneMemClass.coe_eq_one` already proves it
+@[norm_cast] lemma coe_eq_one : (x : ℂ) = 1 ↔ x = 1 := by rw [← coe_inj, coe_one]
 @[simp, norm_cast] lemma coe_mul (z w : Circle) : ↑(z * w) = (z : ℂ) * w := rfl
 @[simp, norm_cast] lemma coe_inv (z : Circle) : ↑z⁻¹ = (z : ℂ)⁻¹ := rfl
 lemma coe_inv_eq_conj (z : Circle) : ↑z⁻¹ = conj (z : ℂ) := by
@@ -117,17 +127,17 @@ def exp : C(ℝ, Circle) where
   continuous_toFun := Continuous.subtype_mk (by fun_prop)
     (by simp [Submonoid.unitSphere, exp_mul_I, abs_cos_add_sin_mul_I])
 
-@[simp]
-theorem exp_apply (t : ℝ) : ↑(exp t) = Complex.exp (t * Complex.I) := rfl
+@[simp, norm_cast]
+theorem coe_exp (t : ℝ) : exp t = Complex.exp (t * Complex.I) := rfl
 
 @[simp]
 theorem exp_zero : exp 0 = 1 :=
-  Subtype.ext <| by rw [exp_apply, ofReal_zero, zero_mul, Complex.exp_zero, coe_one]
+  Subtype.ext <| by rw [coe_exp, ofReal_zero, zero_mul, Complex.exp_zero, coe_one]
 
 @[simp]
 theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y :=
   Subtype.ext <| by
-    simp only [exp_apply, Submonoid.coe_mul, ofReal_add, add_mul, Complex.exp_add, coe_mul]
+    simp only [coe_exp, Submonoid.coe_mul, ofReal_add, add_mul, Complex.exp_add, coe_mul]
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
@@ -170,7 +180,7 @@ protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace �
   rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
 
 @[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle := exp
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_apply := exp_apply
+@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_apply := coe_exp
 @[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_zero := exp_zero
 @[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_sub := exp_sub
 @[deprecated (since := "2024-07-24")] noncomputable alias _root_.norm_circle_smul :=
