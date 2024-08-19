@@ -39,9 +39,8 @@ def Booleanisation (α : Type*) := α ⊕ α
 
 namespace Booleanisation
 
-instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) := Sum.instDecidableEqSum
-
-variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
+instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) :=
+  inferInstanceAs <| DecidableEq (α ⊕ α)
 
 /-- The natural inclusion `a ↦ a` from a generalized Boolean algebra to its generated Boolean
 algebra. -/
@@ -49,6 +48,17 @@ algebra. -/
 
 /-- The inclusion `a ↦ aᶜ from a generalized Boolean algebra to its generated Boolean algebra. -/
 @[match_pattern] def comp : α → Booleanisation α := Sum.inr
+
+/-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
+instance instCompl : HasCompl (Booleanisation α) where
+  compl x := match x with
+    | lift a => comp a
+    | comp a => lift a
+
+@[simp] lemma compl_lift (a : α) : (lift a)ᶜ = comp a := rfl
+@[simp] lemma compl_comp (a : α) : (comp a)ᶜ = lift a := rfl
+
+variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
 
 /-- The order on `Booleanisation α` is as follows: For `a b : α`,
 * `a ≤ b` iff `a ≤ b` in `α`
@@ -110,12 +120,6 @@ instance instBot : Bot (Booleanisation α) where
 instance instTop : Top (Booleanisation α) where
   top := comp ⊥
 
-/-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
-instance instCompl : HasCompl (Booleanisation α) where
-  compl x := match x with
-    | lift a => comp a
-    | comp a => lift a
-
 /-- The difference operator on `Booleanisation α` is as follows: For `a b : α`,
 * `a \ b` is `a \ b`
 * `a \ bᶜ` is `a ⊓ b`
@@ -150,9 +154,6 @@ instance instSDiff : SDiff (Booleanisation α) where
 
 @[simp] lemma lift_bot : lift (⊥ : α) = ⊥ := rfl
 @[simp] lemma comp_bot : comp (⊥ : α) = ⊤ := rfl
-
-@[simp] lemma compl_lift (a : α) : (lift a)ᶜ = comp a := rfl
-@[simp] lemma compl_comp (a : α) : (comp a)ᶜ = lift a := rfl
 
 @[simp] lemma lift_sdiff_lift (a b : α) : lift a \ lift b = lift (a \ b) := rfl
 @[simp] lemma lift_sdiff_comp (a b : α) : lift a \ comp b = lift (a ⊓ b) := rfl

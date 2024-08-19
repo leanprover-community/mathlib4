@@ -35,8 +35,9 @@ open Function
 /-- A continuous affine equivalence, denoted `P₁ ≃ᵃL[k] P₂`, between two affine topological spaces
 is an affine equivalence such that forward and inverse maps are continuous. -/
 structure ContinuousAffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k]
-  [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
-  [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂] extends P₁ ≃ᵃ[k] P₂ where
+    [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
+    [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
+    extends P₁ ≃ᵃ[k] P₂ where
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
@@ -48,8 +49,8 @@ variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
   [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
   [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃]
   [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄]
-  [TopologicalSpace P₁] [AddCommMonoid P₁] [Module k P₁]
-  [TopologicalSpace P₂] [AddCommMonoid P₂] [Module k P₂]
+  [TopologicalSpace P₁]
+  [TopologicalSpace P₂]
   [TopologicalSpace P₃] [TopologicalSpace P₄]
 
 namespace ContinuousAffineEquiv
@@ -104,7 +105,7 @@ def Simps.apply (e : P₁ ≃ᵃL[k] P₂) : P₁ → P₂ :=
   e
 
 /-- See Note [custom simps projection]. -/
-def Simps.coe (e: P₁ ≃ᵃL[k] P₂) : P₁ ≃ᵃ[k] P₂ :=
+def Simps.coe (e : P₁ ≃ᵃL[k] P₂) : P₁ ≃ᵃ[k] P₂ :=
   e
 
 initialize_simps_projections ContinuousLinearMap (toAffineEquiv_toFun → apply, toAffineEquiv → coe)
@@ -112,9 +113,6 @@ initialize_simps_projections ContinuousLinearMap (toAffineEquiv_toFun → apply,
 @[ext]
 theorem ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
-
-theorem ext_iff {e e' : P₁ ≃ᵃL[k] P₂} : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
 
 @[continuity]
 protected theorem continuous (e : P₁ ≃ᵃL[k] P₂) : Continuous e :=
@@ -176,9 +174,7 @@ theorem apply_eq_iff_eq (e : P₁ ≃ᵃL[k] P₂) {p₁ p₂ : P₁} : e p₁ =
   e.toEquiv.apply_eq_iff_eq
 
 @[simp]
-theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := by
-  ext x
-  rfl
+theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := rfl
 
 theorem symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
   rfl

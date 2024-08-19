@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, Stanislas Polu
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Analysis.NormedSpace.Basic
-
-#align_import imo.imo1972_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # IMO 1972 Q5
@@ -41,8 +39,8 @@ theorem imo1972_q5 (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y
     calc
       2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [abs_mul, mul_assoc]
       _ = ‖f (x + y) + f (x - y)‖ := by rw [hf1]
-      _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := (norm_add_le _ _)
-      _ ≤ k + k := (add_le_add (hk₁ _) (hk₁ _))
+      _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := norm_add_le _ _
+      _ ≤ k + k := add_le_add (hk₁ _) (hk₁ _)
       _ = 2 * k := (two_mul _).symm
   set k' := k / ‖g y‖
   -- Demonstrate that `k' < k` using `hneg`.
@@ -53,8 +51,8 @@ theorem imo1972_q5 (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y
         0 < ‖f x‖ := norm_pos_iff.mpr hx
         _ ≤ k := hk₁ x
     rw [div_lt_iff]
-    apply lt_mul_of_one_lt_right h₁ hneg
-    exact zero_lt_one.trans hneg
+    · apply lt_mul_of_one_lt_right h₁ hneg
+    · exact zero_lt_one.trans hneg
   -- Demonstrate that `k ≤ k'` using `hk₂`.
   have H₂ : k ≤ k' := by
     have h₁ : ∃ x : ℝ, x ∈ S := by use ‖f 0‖; exact Set.mem_range_self 0
@@ -98,6 +96,6 @@ theorem imo1972_q5' (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - 
     calc
       2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [abs_mul, mul_assoc]
       _ = ‖f (x + y) + f (x - y)‖ := by rw [hf1]
-      _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := (abs_add _ _)
+      _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := abs_add _ _
       _ ≤ 2 * k := by linarith [h (x + y), h (x - y)]
   linarith

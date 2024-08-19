@@ -20,7 +20,7 @@ We show that the following are analytic:
 noncomputable section
 
 open scoped Classical
-open Topology BigOperators NNReal Filter ENNReal
+open Topology NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
@@ -183,7 +183,7 @@ lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) 
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
   induction n with
   | zero =>
-    simp only [Nat.zero_eq, pow_zero]
+    simp only [pow_zero]
     apply analyticAt_const
   | succ m hm =>
     simp only [pow_succ]
@@ -205,7 +205,7 @@ def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
 
 lemma formalMultilinearSeries_geometric_apply_norm (n : ℕ) :
     ‖formalMultilinearSeries_geometric 𝕜 A n‖ = 1 :=
-  ContinuousMultilinearMap.norm_mkPiAlgebraFin (Ei := fun _ ↦ A)
+  ContinuousMultilinearMap.norm_mkPiAlgebraFin
 
 end Geometric
 
@@ -221,7 +221,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     simp_rw [IsLittleO, IsBigOWith, not_forall, norm_one, mul_one,
       not_eventually]
     refine ⟨1, one_pos, ?_⟩
-    refine ((eventually_ne_atTop 0).mp (eventually_of_forall ?_)).frequently
+    refine ((eventually_ne_atTop 0).mp (Eventually.of_forall ?_)).frequently
     intro n hn
     push_neg
     rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,
@@ -233,7 +233,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
     refine isBigO_of_le atTop (fun n ↦ ?_)
     rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
-    exact (pow_le_one _ (coe_nonneg r) hr.le)
+    exact pow_le_one _ (coe_nonneg r) hr.le
 
 lemma hasFPowerSeriesOnBall_inv_one_sub
     (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
@@ -304,7 +304,7 @@ theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}
 /-- Finite sums of analytic functions are analytic -/
 theorem Finset.analyticAt_sum {f : α → E → F} {c : E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
-    AnalyticAt 𝕜 (fun z ↦ ∑ n in N, f n z) c := by
+    AnalyticAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) c := by
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.sum_empty]
     exact analyticAt_const
@@ -315,13 +315,13 @@ theorem Finset.analyticAt_sum {f : α → E → F} {c : E}
 /-- Finite sums of analytic functions are analytic -/
 theorem Finset.analyticOn_sum {f : α → E → F} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∑ n in N, f n z) s :=
+    AnalyticOn 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
 theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
-    AnalyticAt 𝕜 (fun z ↦ ∏ n in N, f n z) c := by
+    AnalyticAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) c := by
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.prod_empty]
     exact analyticAt_const
@@ -332,5 +332,5 @@ theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra �
 /-- Finite products of analytic functions are analytic -/
 theorem Finset.analyticOn_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∏ n in N, f n z) s :=
+    AnalyticOn 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)

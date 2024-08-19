@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
@@ -138,14 +138,14 @@ lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : Meas
   have A : ∀ x, M x ∈ s ↔ x ∈ M ⁻¹' s := fun x ↦ Iff.rfl
   simp_rw [← ae_comp_linearMap_mem_iff M (ν.prod μ) ν hM hs, A]
   rw [Measure.ae_prod_mem_iff_ae_ae_mem]
-  simp only [M, mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
-  exact M_cont.measurable hs
+  · simp only [M, mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
+  · exact M_cont.measurable hs
 
 /-- To check that a property holds almost everywhere with respect to an additive Haar measure, it
 suffices to check it almost everywhere along all translates of a given vector subspace. This is an
 instance of a disintegration argument for additive Haar measures. -/
 lemma ae_mem_of_ae_add_linearMap_mem [LocallyCompactSpace F] {s : Set F} (hs : MeasurableSet s)
     (h : ∀ y, ∀ᵐ x ∂μ, y + L x ∈ s) : ∀ᵐ y ∂ν, y ∈ s :=
-  (ae_ae_add_linearMap_mem_iff L μ ν hs).1 (Filter.eventually_of_forall h)
+  (ae_ae_add_linearMap_mem_iff L μ ν hs).1 (Filter.Eventually.of_forall h)
 
 end MeasureTheory

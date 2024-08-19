@@ -3,11 +3,17 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Lean.Parser.Term
-import Std.Util.ExtendedBinder
-import Mathlib.Mathport.Rename
+import Mathlib.Init
+import Batteries.Util.ExtendedBinder
+import Lean.Elab.Term
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
 
 # Sets
 
@@ -34,9 +40,10 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 -/
 
-open Std.ExtendedBinder
+open Lean Elab Term Meta Batteries.ExtendedBinder
 
-set_option autoImplicit true
+universe u
+variable {α : Type u}
 
 /-- A set is a collection of elements of some type `α`.
 
@@ -45,12 +52,10 @@ relied on. Instead, `setOf` and membership of a set (`∈`) should be used to co
 and predicates.
 -/
 def Set (α : Type u) := α → Prop
-#align set Set
 
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
-#align set_of setOf
 
 namespace Set
 
@@ -82,21 +87,64 @@ instance : HasSubset (Set α) :=
 instance : EmptyCollection (Set α) :=
   ⟨fun _ ↦ False⟩
 
-syntax "{" extBinder " | " term "}" : term
+end Set
 
-macro_rules
-  | `({ $x:ident | $p }) => `(setOf fun $x:ident ↦ $p)
-  | `({ $x:ident : $t | $p }) => `(setOf fun $x:ident : $t ↦ $p)
-  | `({ $x:ident $b:binderPred | $p }) =>
-    `(setOf fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)
+namespace Mathlib.Meta
 
+/-- Set builder syntax. This can be elaborated to either a `Set` or a `Finset` depending on context.
+
+The elaborators for this syntax are located in:
+* `Init.Set` for the `Set` builder notation elaborator for syntax of the form `{x | p x}`,
+  `{x : α | p x}`, `{binder x | p x}`.
+* `Data.Finset.Basic` for the `Finset` builder notation elaborator for syntax of the form
+  `{x ∈ s | p x}`.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator for syntax of the form
+  `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator for syntax of the form
+  `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
+-/
+syntax (name := setBuilder) "{" extBinder " | " term "}" : term
+
+/-- Elaborate set builder notation for `Set`.
+
+* `{x | p x}` is elaborated as `Set.setOf fun x ↦ p x`
+* `{x : α | p x}` is elaborated as `Set.setOf fun x : α ↦ p x`
+* `{binder x | p x}`, where `x` is bound by the `binder` binder, is elaborated as
+  `{x | binder x ∧ p x}`. The typical example is `{x ∈ s | p x}`, which is elaborated as
+  `{x | x ∈ s ∧ p x}`. The possible binders are
+  * `· ∈ s`, `· ∉ s`
+  * `· ⊆ s`, `· ⊂ s`, `· ⊇ s`, `· ⊃ s`
+  * `· ≤ a`, `· ≥ a`, `· < a`, `· > a`, `· ≠ a`
+
+  More binders can be declared using the `binder_predicate` command, see `Init.BinderPredicates` for
+  more info.
+
+See also
+* `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+  syntax of the form `{x ∈ s | p x}`.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+  syntax of the form `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator partly overriding this
+  one for syntax of the form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
+-/
+@[term_elab setBuilder]
+def elabSetBuilder : TermElab
+  | `({ $x:ident | $p }), expectedType? => do
+    elabTerm (← `(setOf fun $x:ident ↦ $p)) expectedType?
+  | `({ $x:ident : $t | $p }), expectedType? => do
+    elabTerm (← `(setOf fun $x:ident : $t ↦ $p)) expectedType?
+  | `({ $x:ident $b:binderPred | $p }), expectedType? => do
+    elabTerm (← `(setOf fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+/-- Unexpander for set builder notation. -/
 @[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
   | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
-open Std.ExtendedBinder in
+open Batteries.ExtendedBinder in
 /--
 `{ f x y | (x : X) (y : Y) }` is notation for the set of elements `f x y` constructed from the
 binders `x` and `y`, equivalent to `{z : Z | ∃ x y, f x y = z}`.
@@ -145,13 +193,16 @@ def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
         throw ()
   | _ => throw ()
 
+end Mathlib.Meta
+
+namespace Set
+
 /-- The universal set on a type `α` is the set containing all elements of `α`.
 
 This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory
 makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can
 itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. -/
 def univ : Set α := {_a | True}
-#align set.univ Set.univ
 
 /-- `Set.insert a s` is the set `{a} ∪ s`.
 
@@ -199,9 +250,10 @@ def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
 @[inherit_doc] prefix:100 "𝒫" => powerset
 
+universe v in
 /-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that
 `f a = b` for some `a ∈ s`. -/
-def image (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
+def image {β : Type v} (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 
 instance : Functor Set where map := @Set.image
 
@@ -217,6 +269,5 @@ in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives ac
 to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
-#align set.nonempty Set.Nonempty
 
 end Set

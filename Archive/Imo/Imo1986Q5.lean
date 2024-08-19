@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Real.NNReal
+import Mathlib.Data.NNReal.Basic
 
 /-!
 # IMO 1986 Q5
@@ -26,7 +26,7 @@ Formalization is based on
 with minor modifications.
 -/
 
-open Set NNReal Classical
+open NNReal
 
 namespace Imo1986Q5
 
@@ -38,6 +38,7 @@ structure IsGood (f : ℝ≥0 → ℝ≥0) : Prop where
 namespace IsGood
 
 variable {f : ℝ≥0 → ℝ≥0} (hf : IsGood f) {x y : ℝ≥0}
+include hf
 
 theorem map_add (x y : ℝ≥0) : f (x + y) = f (x * f y) * f y :=
   (hf.map_add_rev x y).symm
@@ -82,3 +83,5 @@ theorem isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2
     | inr hy =>
       have : 2 ≤ x + y := le_add_left hy
       simp [tsub_eq_zero_of_le, *]
+
+end Imo1986Q5

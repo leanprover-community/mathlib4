@@ -7,13 +7,15 @@ on: pull_request
 jobs:
   label-and-report-new-contributor:
     runs-on: ubuntu-latest
+    # Don't run on forks, where we wouldn't have permissions to add the label anyway.
+    if: github.repository == 'leanprover-community/mathlib4'
     permissions:
       checks: write
       pull-requests: write
       contents: read
     steps:
       - name: Label PR and report count
-        uses: actions/github-script@v5
+        uses: actions/github-script@v7
         with:
           script: |
             const creator = context.payload.sender.login
@@ -40,7 +42,7 @@ jobs:
             }
 
             // Create a check run with a message about the PR count by this author
-            const message = `Found ${pullRequestCount} PRs by this author.`;
+            const message = `Found ${pullRequestCount} PRs by ${creator}.`;
             await github.rest.checks.create({
               owner,
               repo,
