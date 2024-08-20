@@ -388,7 +388,6 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
       image_univ, ← hausdorffDist_optimal]
     exact (hausdorffDist_image (kuratowskiEmbedding.isometry _)).symm
 
-
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
 instance : MetricSpace GHSpace where
   dist := dist

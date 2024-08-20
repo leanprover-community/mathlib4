@@ -239,7 +239,6 @@ namespace SubmodulesBasis
 
 variable [TopologicalSpace R] [Nonempty ι] {B : ι → Submodule R M} (hB : SubmodulesBasis B)
 
-
 /-- The image of a submodules basis is a module filter basis. -/
 def toModuleFilterBasis : ModuleFilterBasis R M where
   sets := { U | ∃ i, U = B i }

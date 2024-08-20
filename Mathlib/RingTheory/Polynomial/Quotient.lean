@@ -46,7 +46,6 @@ theorem quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
     (quotientSpanXSubCAlgEquiv x).symm y = algebraMap R _ y :=
   rfl
 
-
 /-- For a commutative ring $R$, evaluating a polynomial at an element $y \in R$ induces an
 isomorphism of $R$-algebras $R[X] / \langle x, X - y \rangle \cong R / \langle x \rangle$. -/
 noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :

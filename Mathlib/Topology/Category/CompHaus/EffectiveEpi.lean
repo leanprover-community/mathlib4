@@ -49,7 +49,6 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨effectiveEpiStruct π hπ⟩⟩
   tfae_finish
 
-
 instance : Preregular CompHaus :=
   preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp
 

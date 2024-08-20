@@ -122,7 +122,6 @@ namespace Submodule
 
 variable {α β : Type*} [TopologicalSpace β]
 
-
 instance topologicalAddGroup [Ring α] [AddCommGroup β] [Module α β] [TopologicalAddGroup β]
     (S : Submodule α β) : TopologicalAddGroup S :=
   inferInstanceAs (TopologicalAddGroup S.toAddSubgroup)

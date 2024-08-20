@@ -118,8 +118,6 @@ end ofSection
 
 section ofRetraction
 
-
-
 variable (l : S ⊗[P] Ω[P⁄R] →ₗ[P] RingHom.ker (algebraMap P S))
 variable (hl : l.comp (kerToTensor R P S) = LinearMap.id)
 include hl

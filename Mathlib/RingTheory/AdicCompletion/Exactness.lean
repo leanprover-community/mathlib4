@@ -26,8 +26,6 @@ All results are proven directly without using Mittag-Leffler systems.
 
 -/
 
-
-
 universe u v w t
 
 open LinearMap

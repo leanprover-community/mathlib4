@@ -187,7 +187,6 @@ exists a submersive presentation.
 class IsStandardSmooth : Prop where
   out : Nonempty (SubmersivePresentation.{t, w} R S)
 
-
 /--
 The relative dimension of a standard smooth `R`-algebra `S` is
 the dimension of an arbitrarily chosen submersive `R`-presentation of `S`.

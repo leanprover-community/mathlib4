@@ -57,7 +57,7 @@ namespace Mathlib.Linter
 
 /-- The unused tactic linter makes sure that every tactic call actually changes *something*. -/
 register_option linter.unusedTactic : Bool := {
-  defValue := false -- disabled for the byAsSorry branch
+  defValue := true
   descr := "enable the unused tactic linter"
 }
 

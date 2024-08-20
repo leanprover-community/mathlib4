@@ -32,7 +32,6 @@ p-adic, p adic, padic, p-adic integer
 -/
 
 
-
 noncomputable section
 
 open Topology

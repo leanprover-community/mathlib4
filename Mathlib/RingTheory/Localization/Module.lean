@@ -188,8 +188,6 @@ variable {M N : Type*}
 
 open IsLocalization
 
--- This one is tricky to remove but preserve the argument order:
-
 /-- An `R`-linear map between two `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
 def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N where
   toFun := f
