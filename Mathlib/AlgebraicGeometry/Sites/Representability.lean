@@ -65,24 +65,12 @@ noncomputable abbrev p₁ : V hf i j ⟶ X i := (hf i).rep.fst' (f j)
 /-- Let `p₂` denote the projection `V ⟶ X j` in the category `Sch`. -/
 noncomputable abbrev p₂ : V hf i j ⟶ X j := (hf i).rep.snd (f j)
 
-/-- The natural isomorphism `V i j ≅ V j i`. -/
-noncomputable abbrev symmetryIso : V hf i j ≅ V hf j i :=
-  ((hf i).rep.symmetryIso (hf j).rep)
-
 lemma isOpenImmersion_p₂ (i j : ι) : IsOpenImmersion (p₂ hf i j) :=
   (hf i).property_snd (f j)
 
-lemma symmetryIso_hom_comp_p₂ (i j : ι) :
-    (symmetryIso hf i j).hom ≫ p₂ hf j i = p₁ hf i j := by
-  simp
-
--- TODO: this should also follow from a general statement about pulling back property
--- through any choice pullback (no need to go through symmetryIso)
 lemma isOpenImmersion_p₁ (i j : ι) :
-    IsOpenImmersion (p₁ hf i j) := by
-  have := isOpenImmersion_p₂ hf j i
-  rw [← symmetryIso_hom_comp_p₂ hf]
-  infer_instance
+    IsOpenImmersion (p₁ hf i j) :=
+  (hf j).property _ _ _ ((hf i).1.isPullback' (f j)).flip
 
 -- TODO: this should be a general statement about pullbacks of monomorphisms (might already be)
 -- add in terms of both PullbackCone and CommSq API
