@@ -47,6 +47,7 @@ noncomputable section
 
 /-! ### Basic casts between `Ordinal` and `NatOrdinal` -/
 
+
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
   -- Porting note: used to derive LinearOrder & SuccOrder but need to manually define
@@ -199,6 +200,7 @@ scoped[NaturalOps] infixl:70 " ⨳ " => Ordinal.nmul
 
 /-! ### Natural addition -/
 
+
 theorem nadd_def (a b : Ordinal) :
     a ♯ b = max (blsub.{u, u} a fun a' _ => a' ♯ b) (blsub.{u, u} b fun b' _ => a ♯ b') := by
   rw [nadd]
@@ -232,7 +234,7 @@ variable (a b)
 theorem nadd_comm (a b) : a ♯ b = b ♯ a := by
   rw [nadd_def, nadd_def, max_comm]
   congr <;> ext <;> apply nadd_comm
-termination_by (a,b)
+termination_by (a, b)
 
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
@@ -429,6 +431,7 @@ theorem nadd_right_comm : ∀ a b c, a ♯ b ♯ c = a ♯ c ♯ b :=
 
 /-! ### Natural multiplication -/
 
+
 variable {a b c d : Ordinal.{u}}
 
 theorem nmul_def (a b : Ordinal) :
@@ -507,14 +510,20 @@ theorem nmul_lt_nmul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c ⨳ a < c ⨳
 theorem nmul_lt_nmul_of_pos_right (h₁ : a < b) (h₂ : 0 < c) : a ⨳ c < b ⨳ c :=
   lt_nmul_iff.2 ⟨a, h₁, 0, h₂, by simp⟩
 
-theorem nmul_le_nmul_of_nonneg_left (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c ⨳ a ≤ c ⨳ b := by
-  rcases lt_or_eq_of_le h₁ with (h₁ | rfl) <;> rcases lt_or_eq_of_le h₂ with (h₂ | rfl)
+theorem nmul_le_nmul_left (h : a ≤ b) (c) : c ⨳ a ≤ c ⨳ b := by
+  rcases lt_or_eq_of_le h with (h₁ | rfl) <;> rcases (eq_zero_or_pos c).symm with (h₂ | rfl)
   · exact (nmul_lt_nmul_of_pos_left h₁ h₂).le
   all_goals simp
 
-theorem nmul_le_nmul_of_nonneg_right (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a ⨳ c ≤ b ⨳ c := by
+@[deprecated nmul_le_nmul_left (since := "2024-08-20")]
+alias nmul_le_nmul_of_nonneg_left := nmul_le_nmul_left
+
+theorem nmul_le_nmul_right (h : a ≤ b) (c) : a ⨳ c ≤ b ⨳ c := by
   rw [nmul_comm, nmul_comm b]
-  exact nmul_le_nmul_of_nonneg_left h₁ h₂
+  exact nmul_le_nmul_left h c
+
+@[deprecated nmul_le_nmul_left (since := "2024-08-20")]
+alias nmul_le_nmul_of_nonneg_right := nmul_le_nmul_right
 
 theorem nmul_nadd (a b c : Ordinal) : a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c := by
   refine le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_)
@@ -671,8 +680,8 @@ instance : OrderedCommSemiring NatOrdinal.{u} :=
     mul_one := nmul_one
     mul_comm := nmul_comm
     zero_le_one := @zero_le_one Ordinal _ _ _ _
-    mul_le_mul_of_nonneg_left := fun a b c => nmul_le_nmul_of_nonneg_left
-    mul_le_mul_of_nonneg_right := fun a b c => nmul_le_nmul_of_nonneg_right }
+    mul_le_mul_of_nonneg_left := fun a b c h _ => nmul_le_nmul_left h c
+    mul_le_mul_of_nonneg_right := fun a b c h _ => nmul_le_nmul_right h c }
 
 namespace Ordinal
 
@@ -695,12 +704,6 @@ theorem nmul_add_one : ∀ a b, a ⨳ (b + 1) = a ⨳ b ♯ a :=
 theorem add_one_nmul : ∀ a b, (a + 1) ⨳ b = a ⨳ b ♯ b :=
   succ_nmul
 
-end Ordinal
-
-namespace NatOrdinal
-
-open Ordinal
-
 theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   refine b.limitRecOn ?_ ?_ ?_
   · simp
@@ -713,4 +716,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
     · rw [← IsNormal.blsub_eq.{u, u} (mul_isNormal ha) hc, blsub_le_iff]
       exact fun i hi => (H i hi).trans_lt (nmul_lt_nmul_of_pos_left hi ha)
 
-end NatOrdinal
+@[deprecated mul_le_nmul (since := "2024-08-20")]
+alias _root_.NatOrdinal.mul_le_nmul := mul_le_nmul
+
+end Ordinal
