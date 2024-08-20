@@ -428,7 +428,7 @@ theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order
   · rw [h, leadingCoeff_zero, zero_coeff]
   · rw [leadingCoeff_of_ne h, order_of_ne h]
 
-theorem leadingTerm_eq [Zero Γ] {x : HahnSeries Γ R} :
+theorem leadingTerm_eq {x : HahnSeries Γ R} :
     x.leadingTerm = single x.order (x.coeff x.order) := by
   by_cases h : x = 0
   · rw [h, leadingTerm_zero, order_zero, zero_coeff, single_eq_zero]
