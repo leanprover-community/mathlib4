@@ -352,6 +352,12 @@ theorem mem_insert_iff : ∀ {x y z : PSet.{u}}, x ∈ insert y z ↔ Equiv x y 
         | Or.inr ⟨a, ha⟩ => ⟨some a, ha⟩
         | Or.inl h => ⟨none, h⟩⟩
 
+theorem mem_insert (x y : PSet) : x ∈ insert x y :=
+  mem_insert_iff.2 <| Or.inl Equiv.rfl
+
+theorem mem_insert_of_mem {y z : PSet} (x) (h : z ∈ y) : z ∈ insert x y :=
+  mem_insert_iff.2 <| Or.inr h
+
 @[simp]
 theorem mem_singleton {x y : PSet} : x ∈ ({y} : PSet) ↔ Equiv x y :=
   mem_insert_iff.trans
