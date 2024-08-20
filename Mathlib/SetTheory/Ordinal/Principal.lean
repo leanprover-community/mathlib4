@@ -83,6 +83,15 @@ theorem nfp_le_of_principal {a o : Ordinal} (hao : a < o) (ho : Principal op o) 
     nfp (op a) a ≤ o :=
   nfp_le fun n => (ho.iterate_lt hao n).le
 
+theorem is_principal_mono_iff {o : Ordinal}
+    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.swap op a)):
+    Principal op o ↔ ∀ a < o, op a a < o := by
+  use fun h a ha => h ha ha
+  intro H a b ha hb
+  obtain hab | hba := le_or_lt a b
+  · exact (h₂ b hab).trans_lt <| H b hb
+  · exact (h₁ a hba.le).trans_lt <| H a ha
+
 end Arbitrary
 
 /-! ### Principal ordinals are unbounded -/
@@ -193,19 +202,17 @@ theorem lt_omega_opow_mul_nat (a : Ordinal) (n : ℕ) : ω ^ a * n < ω ^ succ a
   rw [opow_succ]
   exact mul_lt_mul_of_pos_left (nat_lt_omega n) (opow_pos a omega_pos)
 
-theorem principal_add_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
+theorem principal_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
   obtain rfl | ha' := eq_or_ne x 0
-  · rw [opow_zero, principal_one_iff, zero_add]
-  · intro a b ha hb
+  · rw [opow_zero, principal_one_iff, add_zero]
+  · rw [is_principal_mono_iff
+      (fun a b c h => add_le_add_left h a) (fun a b c h => add_le_add_right h a)]
+    intro a ha
     obtain ⟨c, hc, m, hm⟩ := lt_omega_opow ha ha'
-    obtain ⟨d, hd, n, hn⟩ := lt_omega_opow hb ha'
-    have H₁ := mul_le_mul_right' (opow_le_opow_right omega_pos (le_max_left c d)) m
-    have H₂ := mul_le_mul_right' (opow_le_opow_right omega_pos (le_max_right c d)) n
-    apply (add_lt_add_of_le_of_lt hm.le hn).trans_le <| (add_le_add H₁ H₂).trans _
+    apply (add_lt_add_of_le_of_lt hm.le hm).trans_le
     rw [← mul_add, ← Nat.cast_add]
-    apply (lt_omega_opow_mul_nat _ _).le.trans
-    rw [succ_max, opow_le_opow_iff_right one_lt_omega, max_le_iff]
-    constructor <;> rwa [succ_le_iff]
+    apply (omega_opow_mul_nat_lt _ _).le.trans
+    rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff]
 
 theorem add_omega_opow {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
   (principal_add_omega_opow b).add_absorp
