@@ -193,7 +193,7 @@ theorem lt_omega_opow_mul_nat (a : Ordinal) (n : ℕ) : ω ^ a * n < ω ^ succ a
   rw [opow_succ]
   exact mul_lt_mul_of_pos_left (nat_lt_omega n) (opow_pos a omega_pos)
 
-theorem principal_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
+theorem principal_add_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
   obtain rfl | ha' := eq_or_ne x 0
   · rw [opow_zero, principal_one_iff, zero_add]
   · intro a b ha hb
@@ -208,10 +208,7 @@ theorem principal_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
     constructor <;> rwa [succ_le_iff]
 
 theorem add_omega_opow {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
-  (principal_omega_opow b).add_absorp
-
-theorem principal_add_omega_opow (o : Ordinal) : Principal (· + ·) (ω ^ o) :=
-  principal_add_iff_add_left_eq_self.2 fun _ => add_omega_opow
+  (principal_add_omega_opow b).add_absorp
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
