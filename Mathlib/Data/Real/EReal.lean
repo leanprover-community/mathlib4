@@ -935,16 +935,13 @@ lemma le_forall_real_gt_iff_le {x y : EReal} : (∀ z : ℝ, x < z → y ≤ z) 
   refine ⟨fun h ↦ WithBot.le_forall_gt_iff_le_of_withBot.1 ?_,
     fun h z x_z ↦ le_trans h (le_of_lt x_z)⟩
   rw [WithTop.forall]
-  apply And.intro (fun _ ↦ le_top)
-  norm_cast
+  aesop
 
 lemma ge_forall_real_lt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
-  refine ⟨fun h ↦ ?_, fun h z z_y ↦ le_trans (le_of_lt z_y) h⟩
-  rw [← neg_le_neg_iff]
-  refine (@le_forall_real_gt_iff_le (-y) (-x)).1 fun z y_z ↦ ?_
-  specialize h (-z)
-  rw [coe_neg, neg_lt_iff_neg_lt] at h
-  exact EReal.neg_le_of_neg_le (h y_z)
+  refine ⟨fun h ↦ WithBot.ge_forall_lt_iff_ge_of_withBot.1 ?_,
+    fun h z x_z ↦ le_trans (le_of_lt x_z) h⟩
+  rw [WithTop.forall]
+  aesop
 
 /-- This lemma is superseded by `add_le_of_forall_add_le`. -/
 private lemma top_add_le_of_forall_add_le {a b : EReal} (h : ∀ c < ⊤, ∀ d < a, c + d ≤ b) :
