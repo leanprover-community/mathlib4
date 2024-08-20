@@ -18,8 +18,7 @@ A graph-specialized version is in development and will hopefully be added under 
 sometime soon.
 -/
 
--- Make sure we haven't imported `Data.Nat.Order.Basic`
-assert_not_exists OrderedSub
+assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 universe u v
 
@@ -284,7 +283,7 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
   | [] => iff_of_true (by simp) (fun _ h => by simp at h)
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
-    rw [← and_forall_succ, chain'_cons, chain'_iff_get]
+    rw [← and_forall_add_one, chain'_cons, chain'_iff_get]
     simp
 
 /-- If `l₁ l₂` and `l₃` are lists and `l₁ ++ l₂` and `l₂ ++ l₃` both satisfy
@@ -351,8 +350,7 @@ reflexive transitive closure of `r`. The converse of `exists_chain_of_relationRe
 -/
 theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     (hl₂ : getLast (a :: l) (cons_ne_nil _ _) = b) : Relation.ReflTransGen r a b :=
--- Porting note: `p` behaves like an implicit argument to `Chain.induction_head` but it is explicit.
-  Chain.induction_head l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
+  Chain.induction_head _ l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 
 theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}

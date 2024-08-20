@@ -255,7 +255,7 @@ theorem map_nontrivial : (s.map f).Nontrivial ↔ s.Nontrivial :=
 theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s :=
   eq_of_veq <| by rw [map_val, attach_val]; exact Multiset.attach_map_val _
 
-theorem disjoint_range_addLeftEmbedding (a : ℕ) (s : Finset ℕ):
+theorem disjoint_range_addLeftEmbedding (a : ℕ) (s : Finset ℕ) :
     Disjoint (range a) (map (addLeftEmbedding a) s) := by
   simp_rw [disjoint_left, mem_map, mem_range, addLeftEmbedding_apply]
   rintro _ h ⟨l, -, rfl⟩
@@ -633,7 +633,7 @@ theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
   | ⟨a, ha⟩ => by simp [Finset.subtype, ha]
 
 theorem subtype_eq_empty {p : α → Prop} [DecidablePred p] {s : Finset α} :
-    s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [ext_iff, Subtype.forall, Subtype.coe_mk]
+    s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [Finset.ext_iff, Subtype.forall, Subtype.coe_mk]
 
 @[mono]
 theorem subtype_mono {p : α → Prop} [DecidablePred p] : Monotone (Finset.subtype p) :=

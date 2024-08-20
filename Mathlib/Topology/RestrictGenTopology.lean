@@ -83,7 +83,7 @@ lemma of_seq [SequentialSpace X]
   rcases isClosed_induced_iff.1 (ht _ (h hux)) with ⟨s, hsc, hst⟩
   rw [Subtype.preimage_val_eq_preimage_val_iff, Set.ext_iff] at hst
   suffices x ∈ s by specialize hst x; simp_all
-  refine hsc.mem_of_tendsto hux <| eventually_of_forall fun k ↦ ?_
+  refine hsc.mem_of_tendsto hux <| Eventually.of_forall fun k ↦ ?_
   specialize hst (u k)
   simp_all
 

@@ -59,9 +59,7 @@ assert_not_exists Field
 noncomputable section
 
 open Function Cardinal Set Equiv Order
-
-open scoped Classical
-open Cardinal InitialSeg
+open scoped Cardinal InitialSeg
 
 universe u v w
 
@@ -868,7 +866,7 @@ instance wellFoundedLT : WellFoundedLT Ordinal :=
 instance isWellOrder : IsWellOrder Ordinal (· < ·) where
 
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
-  IsWellOrder.conditionallyCompleteLinearOrderBot _
+  WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
   max_bot_left

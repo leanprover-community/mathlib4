@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Analysis.SpecificLimits.Basic
@@ -115,7 +115,6 @@ Here are some short-term goals.
 circle homeomorphism, rotation number
 -/
 
-
 open Filter Set Int Topology
 open Function hiding Commute
 
@@ -159,9 +158,6 @@ theorem map_one_add (x : ℝ) : f (1 + x) = 1 + f x := by rw [add_comm, map_add_
 @[ext]
 theorem ext ⦃f g : CircleDeg1Lift⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-protected theorem ext_iff {f g : CircleDeg1Lift} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 instance : Monoid CircleDeg1Lift where
   mul f g :=
@@ -589,11 +585,11 @@ theorem transnumAuxSeq_dist_lt (n : ℕ) :
     pow_mul, sq, mul_apply]
 
 theorem tendsto_translationNumber_aux : Tendsto f.transnumAuxSeq atTop (𝓝 <| τ f) :=
-  (cauchySeq_of_le_geometric_two 1 fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
+  (cauchySeq_of_le_geometric_two fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
 
 theorem dist_map_zero_translationNumber_le : dist (f 0) (τ f) ≤ 1 :=
   f.transnumAuxSeq_zero ▸
-    dist_le_of_le_geometric_two_of_tendsto₀ 1 (fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n)
+    dist_le_of_le_geometric_two_of_tendsto₀ (fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n)
       f.tendsto_translationNumber_aux
 
 theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ)

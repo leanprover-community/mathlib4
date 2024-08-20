@@ -22,7 +22,6 @@ to clopen sets.
 -/
 
 open Set Function Topology TopologicalSpace Relation
-open scoped Classical
 
 universe u v
 
@@ -136,6 +135,7 @@ section disjoint_subsets
 
 variable [PreconnectedSpace α]
   {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
+include h_nonempty h_disj
 
 /-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
 element. -/
@@ -255,7 +255,7 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
   · intro u v hu hv hs huv
     specialize h u v hu hv hs
     contrapose! huv
-    simp [not_subset] at huv
+    simp only [not_subset] at huv
     rcases huv with ⟨⟨x, hxs, hxu⟩, ⟨y, hys, hyv⟩⟩
     have hxv : x ∈ v := or_iff_not_imp_left.mp (hs hxs) hxu
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv
@@ -278,6 +278,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
       ∀ U : Finset (Set α), (∀ u v : Set α, u ∈ U → v ∈ U → (s ∩ (u ∩ v)).Nonempty → u = v) →
         (∀ u ∈ U, IsOpen u) → (s ⊆ ⋃₀ ↑U) → ∃ u ∈ U, s ⊆ u := by
   rw [IsConnected, isPreconnected_iff_subset_of_disjoint]
+  classical
   refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h => ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
@@ -311,7 +312,7 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     rw [isPreconnected_closed_iff] at h
     specialize h u v hu hv hs
     contrapose! huv
-    simp [not_subset] at huv
+    simp only [not_subset] at huv
     rcases huv with ⟨⟨x, hxs, hxu⟩, ⟨y, hys, hyv⟩⟩
     have hxv : x ∈ v := or_iff_not_imp_left.mp (hs hxs) hxu
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv
