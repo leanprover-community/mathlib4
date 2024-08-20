@@ -242,30 +242,26 @@ lemma presheaf.property_snd {f : F ⟶ G} (hf : P.presheaf f) {X : C} (g : yoned
     P (hf.rep.snd g) :=
   hf.property g _ _ (hf.rep.isPullback g)
 
-lemma presheaf_of_exists (hP : P.RespectsIso) {f : F ⟶ G} (hf : Presheaf.representable f)
+lemma presheaf_of_exists [P.RespectsIso] {f : F ⟶ G} (hf : Presheaf.representable f)
     (h₀ : ∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), ∃ (Y : C) (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X)
     (_ : IsPullback fst (yoneda.map snd) f g), P snd) : P.presheaf f := by
   refine ⟨hf, fun X Y g fst snd h ↦ ?_⟩
   obtain ⟨Y, g_fst, g_snd, BC, H⟩ := h₀ g
+  refine (P.arrow_mk_iso_iff ?_).2 H
+  exact Arrow.isoMk (Yoneda.fullyFaithful.preimageIso (h.isoIsPullback BC)) (Iso.refl _)
+    (yoneda.map_injective (by simp))
 
-  have comp := h.isoIsPullback_hom_snd <| BC
-  apply congr_arg Yoneda.fullyFaithful.preimage at comp
-  rw [Yoneda.fullyFaithful.preimage_map] at comp
-  rw [← comp, Yoneda.fullyFaithful.preimage_comp]
-
-  simpa using hP.1 (Yoneda.fullyFaithful.preimageIso <|
-    h.isoIsPullback BC) _ H
-
-lemma presheaf_of_snd (hP : P.RespectsIso) {f : F ⟶ G} (hf : Presheaf.representable f)
+lemma presheaf_of_snd [P.RespectsIso] {f : F ⟶ G} (hf : Presheaf.representable f)
     (h : ∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), P (hf.snd g)) : P.presheaf f :=
-  presheaf_of_exists hP hf (fun _ g ↦ ⟨hf.pullback g, hf.fst g, hf.snd g, hf.isPullback g, h g⟩)
+  presheaf_of_exists hf (fun _ g ↦ ⟨hf.pullback g, hf.fst g, hf.snd g, hf.isPullback g, h g⟩)
 
 /-- If `P : MorphismProperty C` is stable under base change, then for any `f : X ⟶ Y` in `C`,
 `yoneda.map f` satisfies `P.presheaf` if `f` does. -/
 -- TODO: converse!
 lemma presheaf_yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y}
     (hf : P f) : P.presheaf (yoneda.map f) := by
-  apply presheaf_of_snd (StableUnderBaseChange.respectsIso hP) (Presheaf.representable.yoneda_map f)
+  have := StableUnderBaseChange.respectsIso hP
+  apply presheaf_of_snd (Presheaf.representable.yoneda_map f)
   intro Z g
   apply hP (f := (Yoneda.fullyFaithful.preimage g))
     (f' := (Presheaf.representable.yoneda_map f).fst' g)  _ hf
@@ -298,13 +294,13 @@ lemma presheaf_monotone {P' : MorphismProperty C} (h : P ≤ P') :
   ⟨hf.rep, fun _ _ g fst snd BC ↦ h _ (hf.property g fst snd BC)⟩
 
 instance representable_isStableUnderComposition :
-    IsStableUnderComposition (Presheaf.representable (C:=C)) where
+    IsStableUnderComposition (Presheaf.representable (C := C)) where
   comp_mem {F G H} f g hf hg := fun X h ↦
     ⟨hf.pullback (hg.fst h), hf.snd (hg.fst h) ≫ hg.snd h, hf.fst (hg.fst h),
       by simpa using IsPullback.paste_vert (hf.isPullback (hg.fst h)) (hg.isPullback h)⟩
 
 lemma representable_stableUnderBaseChange :
-    StableUnderBaseChange (Presheaf.representable (C:=C)) := by
+    StableUnderBaseChange (Presheaf.representable (C := C)) := by
   intro F G G' H f g f' g' P₁ hg X h
   refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
   apply P₁.lift (hg.fst (h ≫ f)) (yoneda.map (hg.snd (h ≫ f)) ≫ h) (hg.isPullback (h ≫ f)).w
@@ -323,26 +319,27 @@ lemma representable_respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
 
 section
 
-variable (hP₀ : P.RespectsIso)
+variable (P)
 
-lemma presheaf_stableUnderBaseChange : StableUnderBaseChange (MorphismProperty.presheaf P) :=
+lemma presheaf_stableUnderBaseChange : StableUnderBaseChange P.presheaf :=
   fun _ _ _ _ _ _ _ _ hfBC hg ↦
   ⟨representable_stableUnderBaseChange hfBC hg.rep,
     fun _ _ _ _ _ BC ↦ hg.property _ _ _ (IsPullback.paste_horiz BC hfBC)⟩
 
--- if P.presheaf assumes `StableUnderBaseChange`, this could be maybe an instance?
-lemma presheaf_isStableUnderComp [P.IsStableUnderComposition] :
-    IsStableUnderComposition (P.presheaf) where
+instance presheaf_isStableUnderComposition' [P.IsStableUnderComposition] :
+    IsStableUnderComposition P.presheaf where
   comp_mem {F G H} f g hf hg := by
-    -- TODO: should hP₀ really be used here?
-    apply presheaf_of_exists hP₀ (Presheaf.representable.comp_mem f g hf.rep hg.rep)
-    intro X h
-    refine ⟨_, (hf.rep.fst (hg.rep.fst h)), hf.rep.snd (hg.rep.fst h) ≫ (hg.rep.snd h), ?_, ?_⟩
-    · simpa using IsPullback.paste_vert (hf.rep.isPullback (hg.rep.fst h)) (hg.rep.isPullback h)
-    apply P.comp_mem _ _ (hf.property_snd _) (hg.property_snd _)
+    refine ⟨comp_mem _ _ _ hf.1 hg.1, fun Z X p fst snd h ↦ ?_⟩
+    rw [← hg.1.lift_snd (fst ≫ f) snd (by simpa using h.w)]
+    refine comp_mem _ _ _ (hf.property (hg.1.fst p) fst _
+      (IsPullback.of_bot ?_ ?_ (hg.1.isPullback p))) (hg.property_snd p)
+    · rw [← Functor.map_comp, Presheaf.representable.lift_snd]
+      exact h
+    · symm
+      apply hg.1.lift_fst
 
-lemma presheaf_respectsIso : RespectsIso P.presheaf :=
-  presheaf_stableUnderBaseChange.respectsIso
+instance presheaf_respectsIso : RespectsIso P.presheaf :=
+  (presheaf_stableUnderBaseChange P).respectsIso
 
 end
 
