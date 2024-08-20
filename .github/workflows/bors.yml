@@ -200,6 +200,11 @@ jobs:
             lake build --no-build
           fi
 
+      - name: check assertions
+        run: |
+          printf 'import Mathlib\n\n#check_assertions\n' > Mathlib/CheckAssertionsTemp.lean
+          lake build Mathlib.CheckAssertionsTemp
+
       - name: build archive
         id: archive
         run: |
