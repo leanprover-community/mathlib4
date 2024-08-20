@@ -3,7 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Data.Finite.Card
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
 
@@ -150,7 +152,7 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
     ⟨fun ha b => ⟨fun hba hb => ?_, fun hb => ?_⟩, fun ha => ⟨?_, fun b hb => ?_⟩⟩
   · exact ha.1 ((mul_mem_cancel_left hb).1 hba)
   · exact inv_inv b ▸ ha.2 _ (mt (inv_mem_iff (x := b)).1 hb)
-  · rw [← inv_mem_iff (x := a), ← ha, inv_mul_self]
+  · rw [← inv_mem_iff (x := a), ← ha, inv_mul_cancel]
     exact one_mem _
   · rwa [ha, inv_mem_iff (x := b)]
 
@@ -375,9 +377,96 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
   @Fintype.ofFinite _ (Nat.finite_of_card_ne_zero hH)
 
+@[to_additive]
+lemma index_eq_zero_iff_infinite : H.index = 0 ↔ Infinite (G ⧸ H) := by
+  simp [index_eq_card, Nat.card_eq_zero]
+
 @[to_additive one_lt_index_of_ne_top]
 theorem one_lt_index_of_ne_top [Finite (G ⧸ H)] (hH : H ≠ ⊤) : 1 < H.index :=
   Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨index_ne_zero_of_finite, mt index_eq_one.mp hH⟩
+
+@[to_additive]
+lemma finite_quotient_of_finite_quotient_of_index_ne_zero {X : Type*} [MulAction G X]
+    [Finite <| MulAction.orbitRel.Quotient G X] (hi : H.index ≠ 0) :
+    Finite <| MulAction.orbitRel.Quotient H X := by
+  have := fintypeOfIndexNeZero hi
+  exact MulAction.finite_quotient_of_finite_quotient_of_finite_quotient
+
+@[to_additive]
+lemma finite_quotient_of_pretransitive_of_index_ne_zero {X : Type*} [MulAction G X]
+    [MulAction.IsPretransitive G X] (hi : H.index ≠ 0) :
+    Finite <| MulAction.orbitRel.Quotient H X := by
+  have := (MulAction.pretransitive_iff_subsingleton_quotient G X).1 inferInstance
+  exact finite_quotient_of_finite_quotient_of_index_ne_zero hi
+
+@[to_additive]
+lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
+    ∃ n, 0 < n ∧ n ≤ H.index ∧ a ^ n ∈ H := by
+  suffices ∃ n₁ n₂, n₁ < n₂ ∧ n₂ ≤ H.index ∧ ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
+    rcases this with ⟨n₁, n₂, hlt, hle, he⟩
+    refine ⟨n₂ - n₁, by omega, by omega, ?_⟩
+    rw [eq_comm, QuotientGroup.eq, ← zpow_natCast, ← zpow_natCast, ← zpow_neg, ← zpow_add,
+        add_comm] at he
+    rw [← zpow_natCast]
+    convert he
+    omega
+  suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
+      ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
+    rcases this with ⟨n₁, n₂, hne, hle₁, hle₂, he⟩
+    rcases hne.lt_or_lt with hlt | hlt
+    · exact ⟨n₁, n₂, hlt, hle₂, he⟩
+    · exact ⟨n₂, n₁, hlt, hle₁, he.symm⟩
+  by_contra hc
+  simp_rw [not_exists] at hc
+  let f : (Set.Icc 0 H.index) → G ⧸ H := fun n ↦ (a ^ (n : ℕ) : G)
+  have hf : Function.Injective f := by
+    rintro ⟨n₁, h₁, hle₁⟩ ⟨n₂, h₂, hle₂⟩ he
+    have hc' := hc n₁ n₂
+    dsimp only [f] at he
+    simpa [hle₁, hle₂, he] using hc'
+  have := (fintypeOfIndexNeZero h).finite
+  have hcard := Finite.card_le_of_injective f hf
+  simp [← index_eq_card] at hcard
+
+@[to_additive]
+lemma exists_pow_mem_of_relindex_ne_zero (h : H.relindex K ≠ 0) {a : G} (ha : a ∈ K) :
+    ∃ n, 0 < n ∧ n ≤ H.relindex K ∧ a ^ n ∈ H ⊓ K := by
+  rcases exists_pow_mem_of_index_ne_zero h ⟨a, ha⟩ with ⟨n, hlt, hle, he⟩
+  refine ⟨n, hlt, hle, ?_⟩
+  simpa [pow_mem ha, mem_subgroupOf] using he
+
+@[to_additive]
+lemma pow_mem_of_index_ne_zero_of_dvd (h : H.index ≠ 0) (a : G) {n : ℕ}
+    (hn : ∀ m, 0 < m → m ≤ H.index → m ∣ n) : a ^ n ∈ H := by
+  rcases exists_pow_mem_of_index_ne_zero h a with ⟨m, hlt, hle, he⟩
+  rcases hn m hlt hle with ⟨k, rfl⟩
+  rw [pow_mul]
+  exact pow_mem he _
+
+@[to_additive]
+lemma pow_mem_of_relindex_ne_zero_of_dvd (h : H.relindex K ≠ 0) {a : G} (ha : a ∈ K) {n : ℕ}
+    (hn : ∀ m, 0 < m → m ≤ H.relindex K → m ∣ n) : a ^ n ∈ H ⊓ K := by
+  convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
+  simp [pow_mem ha, mem_subgroupOf]
+
+@[simp]
+lemma index_toAddSubgroup : (Subgroup.toAddSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.index_toSubgroup {G : Type*} [AddGroup G] (H : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma relindex_toAddSubgroup :
+    (Subgroup.toAddSubgroup H).relindex (Subgroup.toAddSubgroup K) = H.relindex K :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.relindex_toSubgroup {G : Type*} [AddGroup G] (H K : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).relindex (AddSubgroup.toSubgroup K) = H.relindex K :=
+  rfl
 
 section FiniteIndex
 

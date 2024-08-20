@@ -123,21 +123,9 @@ theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length}
     r (l.get a) (l.get b) :=
   List.pairwise_iff_get.1 h _ _ hab
 
-set_option linter.deprecated false in
-@[deprecated Sorted.rel_get_of_lt (since := "2024-05-08")]
-theorem Sorted.rel_nthLe_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : a < l.length)
-    (hb : b < l.length) (hab : a < b) : r (l.nthLe a ha) (l.nthLe b hb) :=
-  List.pairwise_iff_get.1 h ⟨a, ha⟩ ⟨b, hb⟩ hab
-
 theorem Sorted.rel_get_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : Fin l.length}
     (hab : a ≤ b) : r (l.get a) (l.get b) := by
   obtain rfl | hlt := Fin.eq_or_lt_of_le hab; exacts [refl _, h.rel_get_of_lt hlt]
-
-set_option linter.deprecated false in
-@[deprecated Sorted.rel_get_of_le (since := "2024-05-08")]
-theorem Sorted.rel_nthLe_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : ℕ}
-    (ha : a < l.length) (hb : b < l.length) (hab : a ≤ b) : r (l.nthLe a ha) (l.nthLe b hb) :=
-  h.rel_get_of_le hab
 
 theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {k : ℕ} {x y : α}
     (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y := by
@@ -151,11 +139,13 @@ end Sorted
 
 section Monotone
 
-variable {n : ℕ} {α : Type u} [Preorder α] {f : Fin n → α}
+variable {n : ℕ} {α : Type u} {f : Fin n → α}
 
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
   exact Iff.symm (Fin.rightInverse_cast _).surjective.forall₂
+
+variable [Preorder α]
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
 strictly monotone. -/
@@ -164,10 +154,6 @@ strictly monotone. -/
 /-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
 @[simp] theorem sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
-
-/-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-@[deprecated sorted_le_ofFn_iff (since := "2023-01-10")]
-theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
 
 /-- The list obtained from a monotone tuple is sorted. -/
 alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
@@ -246,8 +232,9 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
     · simpa [orderedInsert, h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
 
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
-    count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
+    count a (L.orderedInsert r b) = count a L + if b = a then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
+  simp
 
 theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
   | [] => Perm.nil
@@ -298,7 +285,7 @@ theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : Li
         rw [orderedInsert, if_pos (hxs.1 _ (.head zs))]
     · rw [mem_cons] at hx
       replace hx := hx.resolve_left hxy
-      rw [erase_cons_tail _ (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
+      rw [erase_cons_tail (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
       refine mt (fun hrxy => ?_) hxy
       exact antisymm hrxy (hxs.1 _ hx)
 

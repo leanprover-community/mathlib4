@@ -430,7 +430,7 @@ theorem sSup_eq_bot : sSup s = ⊥ ↔ ∀ a ∈ s, a = ⊥ :=
 theorem sInf_eq_top : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
   @sSup_eq_bot αᵒᵈ _ _
 
-lemma sSup_eq_bot' [CompleteLattice α] {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
+lemma sSup_eq_bot' {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
   rw [sSup_eq_bot, ← subset_singleton_iff_eq, subset_singleton_iff]
 
 theorem eq_singleton_bot_of_sSup_eq_bot_of_nonempty {s : Set α} (h_sup : sSup s = ⊥)
