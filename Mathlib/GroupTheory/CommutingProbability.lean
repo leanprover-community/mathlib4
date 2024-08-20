@@ -6,6 +6,7 @@ Authors: Thomas Browning
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.CardCommute
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Qify
 
