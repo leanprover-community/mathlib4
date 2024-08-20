@@ -434,9 +434,9 @@ open Tree
 
 /-- Convert a Dyck word to a binary rooted tree.
 
-`f(0) = nil`. For a nonzero word find the `D` that matches the initial `U` –
-which has index `p.firstReturn` – then let `x` be everything strictly between said `U` and `D`,
-and `y` be everything strictly after said `D`. `p = U x D y` and `x` and `y` are (possibly empty)
+`f(0) = nil`. For a nonzero word find the `D` that matches the initial `U`,
+which has index `p.firstReturn`, then let `x` be everything strictly between said `U` and `D`,
+and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
 Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib.Data.Tree`) joins two subtrees
 to a new root node. -/
 def treeEquivToFun (p : DyckWord) : Tree Unit :=
@@ -449,7 +449,7 @@ termination_by p.semilength
 /-- Convert a binary rooted tree to a Dyck word.
 
 `g(nil) = 0`. A nonempty tree with left subtree `l` and right subtree `r`
-is sent to `U g(l) D g(r)`. -/
+is sent to `g(l).nest + g(r)`. -/
 def treeEquivInvFun (t : Tree Unit) : DyckWord :=
   match t with
   | Tree.nil => 0
