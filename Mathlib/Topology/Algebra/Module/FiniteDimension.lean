@@ -42,12 +42,11 @@ result follows as `continuous_equivFun_basis`.
 
 -/
 
+open Filter Module Set TopologicalSpace Topology
 
 universe u v w x
 
 noncomputable section
-
-open Filter Module Set TopologicalSpace
 
 section Field
 
@@ -490,7 +489,7 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
 include 𝕜 in
 theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E := by
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  have : IsUniformEmbedding e.toEquiv.symm := e.symm.isUniformEmbedding
+  have : IsUniformEmbedding e.toLinearEquiv.toEquiv.symm := e.symm.isUniformEmbedding
   exact (completeSpace_congr this).1 inferInstance
 
 variable {𝕜 E}
@@ -521,7 +520,7 @@ theorem Submodule.closed_of_finiteDimensional
 theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
     (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
-  { embedding_subtype_val.comp g.toContinuousLinearEquiv.toHomeomorph.embedding with
+  { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
     isClosed_range := by
       haveI := f.finiteDimensional_range
       simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }

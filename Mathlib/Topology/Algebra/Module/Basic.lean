@@ -102,7 +102,7 @@ variable {ι R M₁ M₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMono
 
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
   let _ : TopologicalSpace M₁ := t.induced f
-  Inducing.continuousSMul ⟨rfl⟩ continuous_id (map_smul f _ _)
+  IsInducing.continuousSMul ⟨rfl⟩ continuous_id (map_smul f _ _)
 
 end LatticeOps
 

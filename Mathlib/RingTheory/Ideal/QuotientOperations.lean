@@ -528,7 +528,7 @@ theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : 
   rw [quotientMap_mk, Quotient.eq_zero_iff_mem] at ha
   exact Quotient.eq_zero_iff_mem.mpr (h ha)
 
-/-- If we take `J = I.comap f` then `QuotientMap` is injective automatically. -/
+/-- If we take `J = I.comap f` then `quotientMap` is injective automatically. -/
 theorem quotientMap_injective {I : Ideal S} {f : R →+* S} :
     Function.Injective (quotientMap I f le_rfl) :=
   quotientMap_injective' le_rfl

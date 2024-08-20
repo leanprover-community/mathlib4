@@ -21,7 +21,7 @@ noncomputable section
 universe v u v' u'
 
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
-  AlgebraicGeometry TopologicalSpace
+  AlgebraicGeometry TopologicalSpace Topology
 
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 

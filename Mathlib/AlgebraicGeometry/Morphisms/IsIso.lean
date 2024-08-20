@@ -30,7 +30,7 @@ lemma isomorphisms_eq_stalkwise :
   congr 1
   ext X Y f
   exact ⟨fun H ↦ inferInstanceAs (IsIso (TopCat.isoOfHomeo
-    (H.1.1.toHomeomeomorph_of_surjective H.2)).hom), fun (_ : IsIso f.base) ↦
+    (H.1.1.toHomeomorph_of_surjective H.2)).hom), fun (_ : IsIso f.base) ↦
     let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
 instance : IsLocalAtTarget (isomorphisms Scheme) :=

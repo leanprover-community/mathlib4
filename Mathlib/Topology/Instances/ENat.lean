@@ -12,8 +12,7 @@ import Mathlib.Order.Interval.Set.WithBotTop
 # Topology on extended natural numbers
 -/
 
-open Set Filter
-open scoped Topology
+open Filter Set Topology
 
 namespace ENat
 
@@ -30,11 +29,11 @@ instance : OrderTopology ℕ∞ := ⟨rfl⟩
 @[simp] theorem range_natCast : range ((↑) : ℕ → ℕ∞) = Iio ⊤ :=
   WithTop.range_coe
 
-theorem embedding_natCast : Embedding ((↑) : ℕ → ℕ∞) :=
+theorem isEmbedding_natCast : IsEmbedding ((↑) : ℕ → ℕ∞) :=
   Nat.strictMono_cast.embedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
 
 theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
-  ⟨embedding_natCast, range_natCast ▸ isOpen_Iio⟩
+  ⟨isEmbedding_natCast, range_natCast ▸ isOpen_Iio⟩
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_natCast := isOpenEmbedding_natCast

@@ -20,7 +20,7 @@ the purpose of this type.
 
 assert_not_exists StarOrderedRing
 
-open Set Function
+open Function Set Topology
 
 /-- The type of continuous maps which map zero to zero.
 
@@ -80,8 +80,8 @@ lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g 
 protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
   TopologicalSpace.induced ((↑) : C(X, R)₀ → C(X, R)) inferInstance
 
-lemma embedding_toContinuousMap : Embedding ((↑) : C(X, R)₀ → C(X, R)) where
-  induced := rfl
+lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+  eq_induced := rfl
   inj _ _ h := ext fun x ↦ congr($(h) x)
 
 instance [T0Space R] : T0Space C(X, R)₀ := embedding_toContinuousMap.t0Space
@@ -100,7 +100,7 @@ instance instContinuousEval [LocallyCompactPair X R] : ContinuousEval C(X, R)₀
 
 lemma isClosedEmbedding_toContinuousMap [T1Space R] :
     IsClosedEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
-  toEmbedding := embedding_toContinuousMap
+  toIsEmbedding := embedding_toContinuousMap
   isClosed_range := by
     rw [range_toContinuousMap]
     exact isClosed_singleton.preimage <| continuous_eval_const 0
