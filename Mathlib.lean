@@ -1402,6 +1402,7 @@ import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Functor
@@ -3419,7 +3420,8 @@ import Mathlib.NumberTheory.Padics.Hensel
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.NumberTheory.Padics.PadicVal.Defs
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.NumberTheory.Pell
 import Mathlib.NumberTheory.PellMatiyasevic
