@@ -158,7 +158,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   have hJu_sUnion : ∀ (u) (hu : u ∈ C), ⋃₀ (Ju u hu : Set (Set α)) = u \ t :=
     fun u hu ↦ hC.sUnion_diffFinset hu ht
   have hJu_disj' : ∀ (u) (hu : u ∈ C) (v) (hv : v ∈ C) (_h_dis : Disjoint u v),
-      Disjoint (⋃₀ (Ju u hu : Set (Set α))) (⋃₀ ↑(Ju v hv)) :=by
+      Disjoint (⋃₀ (Ju u hu : Set (Set α))) (⋃₀ ↑(Ju v hv)) := by
     intro u hu v hv huv_disj
     rw [hJu_sUnion, hJu_sUnion]
     exact disjoint_of_subset Set.diff_subset Set.diff_subset huv_disj
@@ -319,6 +319,17 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     simp only [cons_eq_insert, Finset.mem_insert, forall_eq_or_imp] at hs
     refine hC.inter_mem hs.1 ?_
     exact h (fun n hnS ↦ hs.2 n hnS)
+
+lemma partialSups_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
+    partialSups s n ∈ C := by
+  rw [partialSups_eq_biUnion_range]
+  exact hC.biUnion_mem _ (fun n _ ↦ hs n)
+
+lemma disjointed_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
+    disjointed s n ∈ C := by
+  cases n with
+  | zero => exact hs 0
+  | succ n => exact hC.diff_mem (hs n.succ) (hC.partialSups_mem hs n)
 
 end IsSetRing
 

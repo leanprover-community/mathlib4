@@ -32,7 +32,9 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
-variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+variable {C D : Type*} [Category C] [Category D]
+  [Preadditive C] [HasBinaryBiproducts C]
+  [Preadditive D] [HasBinaryBiproducts D]
   {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 namespace CochainComplex
@@ -123,13 +125,14 @@ end mapOfHomotopy
 section map
 
 variable {K₁ L₁ K₂ L₂ K₃ L₃ : CochainComplex C ℤ} (φ₁ : K₁ ⟶ L₁) (φ₂ : K₂ ⟶ L₂) (φ₃ : K₃ ⟶ L₃)
-  (a : K₁ ⟶ K₂) (b : L₁ ⟶ L₂) (comm : φ₁ ≫ b = a ≫ φ₂)
-  (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃) (comm' : φ₂ ≫ b' = a' ≫ φ₃)
+  (a : K₁ ⟶ K₂) (b : L₁ ⟶ L₂)
 
 /-- The morphism `mappingCone φ₁ ⟶ mappingCone φ₂` that is induced by a commutative square. -/
-noncomputable def map : mappingCone φ₁ ⟶ mappingCone φ₂ :=
+noncomputable def map (comm : φ₁ ≫ b = a ≫ φ₂) : mappingCone φ₁ ⟶ mappingCone φ₂ :=
   desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _)) (b ≫ inr φ₂)
     (by simp [reassoc_of% comm])
+
+variable (comm : φ₁ ≫ b = a ≫ φ₂)
 
 lemma map_eq_mapOfHomotopy : map φ₁ φ₂ a b comm = mapOfHomotopy (Homotopy.ofEq comm) := by
   simp [map, mapOfHomotopy]
@@ -138,9 +141,12 @@ lemma map_id : map φ φ (𝟙 _) (𝟙 _) (by rw [id_comp, comp_id]) = 𝟙 _ :
   ext n
   simp [ext_from_iff _ (n + 1) n rfl, map]
 
+variable (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃)
+
 @[reassoc]
-lemma map_comp : map φ₁ φ₃ (a ≫ a') (b ≫ b') (by rw [reassoc_of% comm, comm', assoc]) =
-    map φ₁ φ₂ a b comm ≫ map φ₂ φ₃ a' b' comm' := by
+lemma map_comp (comm' : φ₂ ≫ b' = a' ≫ φ₃) :
+    map φ₁ φ₃ (a ≫ a') (b ≫ b') (by rw [reassoc_of% comm, comm', assoc]) =
+      map φ₁ φ₂ a b comm ≫ map φ₂ φ₃ a' b' comm' := by
   ext n
   simp [ext_from_iff _ (n+1) n rfl, map]
 
@@ -181,13 +187,13 @@ the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
     HomotopyEquiv (K⟦(1 : ℤ)⟧) (mappingCone (inr φ)) where
   hom := lift (inr φ) (-(Cocycle.ofHom φ).leftShift 1 1 (zero_add 1))
-    (-(inl φ).leftShift 1 0 (neg_add_self 1)) (by
-      simp? [Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1)] says
+    (-(inl φ).leftShift 1 0 (neg_add_cancel 1)) (by
+      simp? [Cochain.δ_leftShift _ 1 0 1 (neg_add_cancel 1) 0 (zero_add 1)] says
         simp only [Int.reduceNeg, δ_neg,
-          Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1),
+          Cochain.δ_leftShift _ 1 0 1 (neg_add_cancel 1) 0 (zero_add 1),
           Int.negOnePow_one, δ_inl, Cochain.ofHom_comp, Cochain.leftShift_comp_zero_cochain,
           Units.neg_smul, one_smul, neg_neg, Cocycle.coe_neg, Cocycle.leftShift_coe,
-          Cocycle.ofHom_coe, Cochain.neg_comp, add_right_neg])
+          Cocycle.ofHom_coe, Cochain.neg_comp, add_neg_cancel])
   inv := desc (inr φ) 0 (triangle φ).mor₃
     (by simp only [δ_zero, inr_triangleδ, Cochain.ofHom_zero])
   homotopyHomInvId := Homotopy.ofEq (by
@@ -206,17 +212,17 @@ noncomputable def rotateHomotopyEquiv :
     ⟨-(snd (inr φ)).comp ((snd φ).comp (inl (inr φ)) (zero_add (-1))) (zero_add (-1)), by
       ext n
       simp? [ext_to_iff _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl,
-        δ_zero_cochain_comp _ _ _ (neg_add_self 1),
-        (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega),
+        δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
+        (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by omega),
         (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
-        Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by omega)] says
+        Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by omega)] says
         simp only [Int.reduceNeg, Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
           Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
-          shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_self 1), δ_inl,
+          shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1), δ_inl,
           Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
           Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
           neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
-          Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by omega),
+          Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by omega),
           Cochain.zero_cochain_comp_v, Cochain.ofHom_v, HomologicalComplex.id_f,
           ext_to_iff _ _ (n + 1) rfl, assoc, liftCochain_v_fst_v,
           (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
@@ -228,9 +234,9 @@ noncomputable def rotateHomotopyEquiv :
           inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_triangle_mor₃_f_assoc, triangle_obj₁,
           Iso.refl_inv, inl_v_fst_v_assoc, inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, and_self,
           liftCochain_v_snd_v,
-          (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega),
+          (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by omega),
           Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
-          inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, add_left_neg]⟩
+          inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, neg_add_cancel]⟩
 
 /-- Auxiliary definition for `rotateTrianglehIso`. -/
 noncomputable def rotateHomotopyEquivComm₂Homotopy :
@@ -240,9 +246,9 @@ noncomputable def rotateHomotopyEquivComm₂Homotopy :
         ext p
         dsimp [rotateHomotopyEquiv]
         simp [ext_from_iff _ _ _ rfl, ext_to_iff _ _ _ rfl,
-          (inl φ).leftShift_v 1 0 (neg_add_self 1) p p (add_zero p) (p + 1) (by omega),
-          δ_zero_cochain_comp _ _ _ (neg_add_self 1),
-          Cochain.comp_v _ _ (add_neg_self 1) p (p + 1) p rfl (by omega),
+          (inl φ).leftShift_v 1 0 (neg_add_cancel 1) p p (add_zero p) (p + 1) (by omega),
+          δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
+          Cochain.comp_v _ _ (add_neg_cancel 1) p (p + 1) p rfl (by omega),
           (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega)]⟩
 
 @[reassoc (attr := simp)]
@@ -284,7 +290,7 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
     dsimp
     simp only [Cochain.δ_shift, δ_snd, Cochain.shift_neg, smul_neg, Cochain.neg_v,
       shiftFunctor_obj_X', Cochain.units_smul_v, Cochain.shift_v', Cochain.comp_zero_cochain_v,
-      Cochain.ofHom_v, Cochain.units_smul_comp, shiftFunctor_map_f', add_left_neg])
+      Cochain.ofHom_v, Cochain.units_smul_comp, shiftFunctor_map_f', neg_add_cancel])
   inv := desc _ (n.negOnePow • (inl φ).shift n) ((inr φ)⟦n⟧') (by
     ext p
     dsimp
@@ -344,6 +350,55 @@ noncomputable def shiftTrianglehIso (n : ℤ) :
 
 end Shift
 
+
+section
+
+open Preadditive
+
+variable (G : C ⥤ D) [G.Additive]
+
+lemma map_δ :
+    (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangle φ).mor₃ ≫
+      NatTrans.app ((Functor.mapHomologicalComplex G (ComplexShape.up ℤ)).commShiftIso  1).hom K =
+    (mapHomologicalComplexIso φ G).hom ≫
+      (triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).mor₃ := by
+  ext n
+  dsimp [mapHomologicalComplexIso]
+  rw [mapHomologicalComplexXIso_eq φ G n (n+1) rfl, mapHomologicalComplexXIso'_hom]
+  simp only [Functor.mapHomologicalComplex_obj_X, add_comp, assoc, inl_v_triangle_mor₃_f,
+    shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv,
+    comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero, add_zero]
+  dsimp [triangle]
+  rw [Cochain.rightShift_v _ 1 0 (by omega) n n (by omega) (n + 1) (by omega)]
+  simp
+
+/-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
+additive functor, then the image by `G` of the triangle `triangle φ` identifies to
+the triangle associated to the image of `φ` by `G`. -/
+noncomputable def mapTriangleIso :
+    (G.mapHomologicalComplex (ComplexShape.up ℤ)).mapTriangle.obj (triangle φ) ≅
+      triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) := by
+  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapHomologicalComplexIso φ G)
+    (by aesop_cat) ?_ ?_
+  · dsimp
+    rw [map_inr, id_comp]
+  · dsimp
+    simp only [CategoryTheory.Functor.map_id, comp_id, map_δ]
+
+/-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
+additive functor, then the image by `G` of the triangle `triangleh φ` identifies to
+the triangle associated to the image of `φ` by `G`. -/
+noncomputable def mapTrianglehIso :
+    (G.mapHomotopyCategory (ComplexShape.up ℤ)).mapTriangle.obj (triangleh φ) ≅
+      triangleh ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) :=
+  (Functor.mapTriangleCompIso _ _).symm.app _ ≪≫
+    (Functor.mapTriangleIso (G.mapHomotopyCategoryFactors (ComplexShape.up ℤ))).app _ ≪≫
+    (Functor.mapTriangleCompIso _ _).app _ ≪≫
+    (HomotopyCategory.quotient D (ComplexShape.up ℤ)).mapTriangle.mapIso
+      (CochainComplex.mappingCone.mapTriangleIso φ G)
+
+end
+
 end mappingCone
 
 end CochainComplex
@@ -369,6 +424,7 @@ lemma isomorphic_distinguished (T₁ : Triangle (HomotopyCategory C (ComplexShap
   obtain ⟨X, Y, f, ⟨e'⟩⟩ := hT₁
   exact ⟨X, Y, f, ⟨e ≪≫ e'⟩⟩
 
+variable [HasZeroObject C] in
 lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) :
     Pretriangulated.contractibleTriangle X ∈ distinguishedTriangles C := by
   obtain ⟨X⟩ := X
@@ -440,6 +496,8 @@ lemma complete_distinguished_triangle_morphism
 
 end Pretriangulated
 
+variable [HasZeroObject C]
+
 instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   distinguishedTriangles := Pretriangulated.distinguishedTriangles C
   isomorphic_distinguished := Pretriangulated.isomorphic_distinguished
@@ -454,5 +512,14 @@ variable {C}
 lemma mappingCone_triangleh_distinguished {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
     CochainComplex.mappingCone.triangleh f ∈ distTriang (HomotopyCategory _ _) :=
   ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
+variable [HasZeroObject D]
+
+instance (G : C ⥤ D) [G.Additive] :
+    (G.mapHomotopyCategory (ComplexShape.up ℤ)).IsTriangulated where
+  map_distinguished := by
+    rintro T ⟨K, L, f, ⟨e⟩⟩
+    exact ⟨_, _, _, ⟨(G.mapHomotopyCategory (ComplexShape.up ℤ)).mapTriangle.mapIso e ≪≫
+      CochainComplex.mappingCone.mapTrianglehIso f G⟩⟩
 
 end HomotopyCategory

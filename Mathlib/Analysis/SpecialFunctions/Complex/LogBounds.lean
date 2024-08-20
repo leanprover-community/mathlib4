@@ -17,7 +17,7 @@ To this end, we derive the representation of `log (1+z)` as the integral of `1/(
 over the unit interval (`Complex.log_eq_integral`) and introduce notation
 `Complex.logTaylor n` for the Taylor polynomial up to degree `n-1`.
 
-### TODO
+## TODO
 
 Refactor using general Taylor series theory, once this exists in Mathlib.
 -/
@@ -100,7 +100,7 @@ lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane
   have hz' : -z ≠ 1 := by
     intro H
     rw [neg_eq_iff_eq_neg] at H
-    simp only [H, add_right_neg] at hz
+    simp only [H, add_neg_cancel] at hz
     exact slitPlane_ne_zero hz rfl
   simp_rw [← mul_pow, neg_one_mul, geom_sum_eq hz', ← neg_add', div_neg, add_comm z]
   field_simp [slitPlane_ne_zero hz]
@@ -115,7 +115,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
     _ ≤ 1 - t * ‖z‖ := by
       nlinarith [norm_nonneg z]
     _ = 1 - ‖t * z‖ := by
-      rw [norm_mul, norm_eq_abs (t :ℂ), abs_of_nonneg ht.1]
+      rw [norm_mul, norm_eq_abs (t : ℂ), abs_of_nonneg ht.1]
     _ ≤ ‖1 + t * z‖ := by
       rw [← norm_neg (t * z), ← sub_neg_eq_add]
       convert norm_sub_norm_le 1 (-(t * z))
@@ -177,6 +177,31 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
   convert norm_log_sub_logTaylor_le 1 hz using 2
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
+
+lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
+    ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
+  rw [Eq.symm (sub_add_cancel (log (1 + z)) z)]
+  apply le_trans (norm_add_le _ _)
+  exact add_le_add_right (Complex.norm_log_one_add_sub_self_le hz) ‖z‖
+
+/--For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
+lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
+  apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
+  have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
+    rw [inv_eq_one_div, div_le_iff]
+    · linarith
+    · linarith
+  have hz4 : ‖z‖^2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖/2 * 2 / 2 := by
+    gcongr
+    · rw [inv_nonneg]
+      linarith
+    · rw [sq, div_eq_mul_one_div]
+      apply mul_le_mul (by simp only [norm_eq_abs, mul_one, le_refl])
+        (by simpa only [norm_eq_abs, one_div] using hz) (norm_nonneg z)
+        (by simp only [norm_eq_abs, mul_one, apply_nonneg])
+  simp only [isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+    IsUnit.div_mul_cancel] at hz4
+  linarith
 
 /-- The difference of `log (1-z)⁻¹` and its `(n+1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/

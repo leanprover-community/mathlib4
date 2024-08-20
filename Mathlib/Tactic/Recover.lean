@@ -3,12 +3,22 @@ Copyright (c) 2022 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
+import Mathlib.Init
 import Lean
+
+/-!
+# The `recover` tactic modifier
+
+This defines the `recover` tactic modifier, which can be used to debug cases where goals
+are not closed correctly. `recover tacs` for a tactic (or tactic sequence) `tacs`
+applies the tactics and then adds goals
+that are not closed, starting from the original goal.
+-/
+
+namespace Mathlib.Tactic
 
 open Lean (HashSet)
 open Lean Meta Elab Tactic
-
-namespace Mathlib.Tactic
 
 /--
 Get all metavariables which `mvarId` depends on. These are the metavariables
@@ -45,8 +55,8 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
           go pendingMVarId
 
 /-- Modifier `recover` for a tactic (sequence) to debug cases where goals are closed incorrectly.
-The tactic `recover tacs` for a tactic (sequence) tacs applies the tactics and then adds goals
-that are not closed starting from the original -/
+The tactic `recover tacs` for a tactic (sequence) `tacs` applies the tactics and then adds goals
+that are not closed, starting from the original goal. -/
 elab "recover " tacs:tacticSeq : tactic => do
   let originalGoals ← getGoals
   evalTactic tacs
@@ -57,3 +67,5 @@ elab "recover " tacs:tacticSeq : tactic => do
     let unassignedMVarDependencies ← getUnassignedGoalMVarDependencies mvarId
     unassigned := unassigned.insertMany unassignedMVarDependencies.toList
   setGoals <| ((← getGoals) ++ unassigned.toList).eraseDups
+
+end Mathlib.Tactic
