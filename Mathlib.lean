@@ -923,6 +923,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
 import Mathlib.Analysis.CStarAlgebra.Exponential
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 import Mathlib.Analysis.CStarAlgebra.Matrix
+import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 import Mathlib.Analysis.CStarAlgebra.Module.Defs
 import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 import Mathlib.Analysis.CStarAlgebra.Multiplier
@@ -1700,6 +1701,7 @@ import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 import Mathlib.CategoryTheory.Monoidal.Opposite
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
 import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 import Mathlib.CategoryTheory.Monoidal.Skeleton
@@ -2464,6 +2466,7 @@ import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
+import Mathlib.Data.Set.Defs
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Equitable
 import Mathlib.Data.Set.Finite
@@ -2815,7 +2818,6 @@ import Mathlib.Init.Data.Quot
 import Mathlib.Init.Logic
 import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Quot
-import Mathlib.Init.Set
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Term
@@ -2884,6 +2886,7 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 import Mathlib.LinearAlgebra.CliffordAlgebra.Prod
+import Mathlib.LinearAlgebra.CliffordAlgebra.SpinGroup
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.Contraction
