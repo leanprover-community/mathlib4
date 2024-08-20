@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Basic lemmas on prime factorizations
