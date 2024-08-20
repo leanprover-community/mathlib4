@@ -60,8 +60,8 @@ noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem
 
-theorem rank_le_of_forall_mem_rank_lt {o : Ordinal}
-    : (∀ y ∈ x, rank y < o) → rank x ≤ o :=
+theorem rank_le_of_forall_mem_rank_lt {o : Ordinal} :
+    (∀ y ∈ x, rank y < o) → rank x ≤ o :=
   Quotient.inductionOn x fun _ h =>
     PSet.rank_le_of_forall_mem_rank_lt fun y h' => h ⟦y⟧ h'
 
@@ -103,7 +103,7 @@ theorem rank_sUnion_le : rank (⋃₀ x : ZFSet) ≤ rank x := by
   apply rank_le_of_forall_mem_rank_lt
   simp; intros; trans <;> apply rank_lt_of_mem <;> assumption
 
-theorem succ_rank_sUnion_ge : rank (⋃₀ x : ZFSet) + 1 ≥ rank x := by
+theorem succ_rank_sUnion_ge : rank x ≤ succ (rank (⋃₀ x : ZFSet)) := by
   rw [← rank_powerset]
   apply rank_le_of_subset
   intro z _; simp; intro _ _; simp; exists z
@@ -115,7 +115,7 @@ theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
   · apply lsub_le; intro; apply rank_lt_of_mem; simp
 
 /-- `ZFSet.rank` is equal to the `WellFounded.rank` over `∈`. -/
-theorem rank_eq_wf_rank : lift.{u+1,u} (rank x) = mem_wf.rank x := by
+theorem rank_eq_wf_rank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   induction' x using inductionOn with x ih
   rw [mem_wf.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
