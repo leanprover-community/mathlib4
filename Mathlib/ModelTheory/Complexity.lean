@@ -82,6 +82,14 @@ theorem isQF_bot : IsQF (⊥ : L.BoundedFormula α n) :=
 theorem IsQF.not {φ : L.BoundedFormula α n} (h : IsQF φ) : IsQF φ.not :=
   h.imp isQF_bot
 
+theorem IsQF.top : IsQF (⊤ : L.BoundedFormula α n) := isQF_bot.not
+
+theorem IsQF.sup {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : IsQF (φ ⊔ ψ) :=
+  hφ.not.imp hψ
+
+theorem IsQF.inf {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : IsQF (φ ⊓ ψ) :=
+  (hφ.imp hψ.not).not
+
 theorem IsQF.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → β ⊕ (Fin n)) :
     (φ.relabel f).IsQF :=
   IsQF.recOn h isQF_bot (fun h => (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
@@ -315,7 +323,127 @@ theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (�
     (fun {_ φ} hφ => (hse φ.all_semanticallyEquivalent_not_ex_not).2 (hnot (hex (hnot hφ))))
     (fun {_ _} => hex) fun {_ _ _} => hse
 
+lemma IsAtomic.realize_hom_of_injective {φ : L.BoundedFormula α n} (hA : φ.IsAtomic)
+    {M : Type*} [L.Structure M] {N : Type*} [L.Structure N] {f : M →[L] N}
+    (hInj : Function.Injective f) {v : α → M} {xs : Fin n → M} :
+    φ.Realize v xs → φ.Realize (f ∘ v) (f ∘ xs) := by
+  induction hA with
+  | equal t₁ t₂ => simp only [realize_bdEqual, ← Sum.comp_elim, Hom.realize_term, hInj.eq_iff,
+    imp_self]
+  | rel R ts =>
+    simp only [realize_rel, ← Sum.comp_elim, Hom.realize_term]
+    exact f.map_rel R (fun i => Term.realize (Sum.elim v xs) (ts i))
+
+lemma IsQF.realize_embedding {φ : L.BoundedFormula α n} (hQF : φ.IsQF)
+    {M : Type*} [L.Structure M] {N : Type*} [L.Structure N]
+    (f : M ↪[L] N) {v : α → M} {xs : Fin n → M} :
+    φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
+  induction hQF with
+  | falsum => rfl
+  | of_isAtomic hA => induction hA with
+    | equal t₁ t₂ => simp only [realize_bdEqual, ← Sum.comp_elim, Embedding.realize_term,
+        f.injective.eq_iff]
+    | rel R ts =>
+      simp only [realize_rel, ← Sum.comp_elim, Embedding.realize_term]
+      exact f.map_rel R (fun i => Term.realize (Sum.elim v xs) (ts i))
+  | imp _ _ ihφ ihψ => simp only [realize_imp, ihφ, ihψ]
+
+lemma IsQF.realize_equiv {φ : L.BoundedFormula α n} (hQF : φ.IsQF)
+    {M : Type*} [L.Structure M] {N : Type*} [L.Structure N]
+    (f : M ≃[L] N) {v : α → M} {xs : Fin n → M} :
+    φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := hQF.realize_embedding f.toEmbedding
+
+/-- A universal formula is a formula defined by applying only universal quantifiers to a
+quantifier-free formula. -/
+inductive IsUniversal : ∀ {n}, L.BoundedFormula α n → Prop
+  | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsUniversal φ
+  | all {n} {φ : L.BoundedFormula α (n + 1)} (h : IsUniversal φ) : IsUniversal φ.all
+
+lemma IsUniversal.realize_embedding {φ : L.BoundedFormula α n} (hU : φ.IsUniversal)
+    {M : Type*} [L.Structure M] {N : Type*} [L.Structure N]
+    (f : M ↪[L] N) {v : α → M} {xs : Fin n → M} :
+    φ.Realize (f ∘ v) (f ∘ xs) → φ.Realize v xs := by
+  induction hU with
+  | of_isQF hQF => simp [hQF.realize_embedding]
+  | all _ ih =>
+    simp only [realize_all, Nat.succ_eq_add_one]
+    refine fun h a => ih ?_
+    rw [Fin.comp_snoc]
+    exact h (f a)
+
+lemma IsQF.isUniversal {φ : L.BoundedFormula α n} : IsQF φ → IsUniversal φ :=
+  IsUniversal.of_isQF
+
+lemma IsAtomic.isUniversal {φ : L.BoundedFormula α n} (h : IsAtomic φ) : IsUniversal φ :=
+  h.isQF.isUniversal
+
+/-- An existential formula is a formula defined by applying only existential quantifiers to a
+quantifier-free formula. -/
+inductive IsExistential : ∀ {n}, L.BoundedFormula α n → Prop
+  | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsExistential φ
+  | ex {n} {φ : L.BoundedFormula α (n + 1)} (h : IsExistential φ) : IsExistential φ.ex
+
+lemma IsExistential.realize_embedding {φ : L.BoundedFormula α n} (hE : φ.IsExistential)
+    {M : Type*} [L.Structure M] {N : Type*} [L.Structure N]
+    (f : M ↪[L] N) {v : α → M} {xs : Fin n → M} :
+    φ.Realize v xs → φ.Realize (f ∘ v) (f ∘ xs) := by
+  induction hE with
+  | of_isQF hQF => simp [hQF.realize_embedding]
+  | ex _ ih =>
+    simp only [realize_ex, Nat.succ_eq_add_one]
+    refine fun ⟨a, ha⟩ => ⟨f a, ?_⟩
+    rw [← Fin.comp_snoc]
+    exact ih ha
+
 end BoundedFormula
+
+/-- A theory is universal when it is comprised only of universal sentences - these theories apply
+also to substructures. -/
+class Theory.IsUniversal (T : L.Theory) : Prop where
+  isUniversal_of_mem : ∀ {φ}, φ ∈ T → φ.IsUniversal
+
+lemma Theory.IsUniversal.models_of_embedding {T : L.Theory} [hT : T.IsUniversal]
+    {N : Type*} [L.Structure N] [N ⊨ T] (f : M ↪[L] N) : M ⊨ T := by
+  simp only [model_iff]
+  refine fun φ hφ => (hT.isUniversal_of_mem hφ).realize_embedding f (?_)
+  rw [Subsingleton.elim (f ∘ default) default, Subsingleton.elim (f ∘ default) default]
+  exact Theory.realize_sentence_of_mem T hφ
+
+instance Substructure.models_of_isUniversal
+    (S : L.Substructure M) (T : L.Theory) [T.IsUniversal] [M ⊨ T] : S ⊨ T :=
+  Theory.IsUniversal.models_of_embedding (Substructure.subtype S)
+
+namespace Relations
+
+open BoundedFormula
+
+lemma isAtomic (r : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) :
+    IsAtomic (r.boundedFormula ts) := IsAtomic.rel r ts
+
+lemma isQF (r : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) :
+    IsQF (r.boundedFormula ts) := (r.isAtomic ts).isQF
+
+variable (r : L.Relations 2)
+
+protected lemma reflexive_isUniversal : r.reflexive.IsUniversal :=
+  (r.isQF _).isUniversal.all
+
+protected lemma irreflexive_isUniversal : r.irreflexive.IsUniversal :=
+  (r.isAtomic _).isQF.not.isUniversal.all
+
+protected lemma symmetric_isUniversal : r.symmetric.IsUniversal :=
+  ((r.isQF _).imp (r.isQF _)).isUniversal.all.all
+
+protected lemma antisymmetric_isUniversal : r.antisymmetric.IsUniversal :=
+  ((r.isQF _).imp ((r.isQF _).imp (IsAtomic.equal _ _).isQF)).isUniversal.all.all
+
+protected lemma transitive_isUniversal : r.transitive.IsUniversal :=
+  ((r.isQF _).imp ((r.isQF _).imp (r.isQF _))).isUniversal.all.all.all
+
+protected lemma total_isUniversal : r.total.IsUniversal :=
+  ((r.isQF _).sup (r.isQF _)).isUniversal.all.all
+
+end Relations
 
 theorem Formula.isAtomic_graph (f : L.Functions n) : (Formula.graph f).IsAtomic :=
   BoundedFormula.IsAtomic.equal _ _
