@@ -29,8 +29,8 @@ variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [Topolog
 theorem continuous_projIcc : Continuous (projIcc a b h) :=
   (continuous_const.max <| continuous_const.min continuous_id).subtype_mk _
 
-theorem quotientMap_projIcc : QuotientMap (projIcc a b h) :=
-  quotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
+theorem quotientMap_projIcc : IsQuotientMap (projIcc a b h) :=
+  isQuotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
     ⟨fun hs => hs.preimage continuous_projIcc, fun hs => ⟨_, hs, by ext; simp⟩⟩⟩
 
 @[simp]

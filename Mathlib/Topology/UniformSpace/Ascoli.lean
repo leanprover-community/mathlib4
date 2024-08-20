@@ -21,14 +21,14 @@ a family of compact subsets of `X`, and `α` is a uniform space.
   important in functional analysis. We state various versions of it:
   - as an equality of `UniformSpace`s: `Equicontinuous.comap_uniformFun_eq`
   - in terms of `IsUniformInducing`: `Equicontinuous.isUniformInducing_uniformFun_iff_pi`
-  - in terms of `Inducing`: `Equicontinuous.inducing_uniformFun_iff_pi`
+  - in terms of `IsInducing`: `Equicontinuous.inducing_uniformFun_iff_pi`
   - in terms of convergence along a filter: `Equicontinuous.tendsto_uniformFun_iff_pi`
 * As a consequence, if `𝔖` is a family of compact subsets of `X`, then the uniform structures of
   uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` coincide on equicontinuous
   subsets. Again, we prove multiple variations:
   - as an equality of `UniformSpace`s: `EquicontinuousOn.comap_uniformOnFun_eq`
   - in terms of `IsUniformInducing`: `EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi'`
-  - in terms of `Inducing`: `EquicontinuousOn.inducing_uniformOnFun_iff_pi'`
+  - in terms of `IsInducing`: `EquicontinuousOn.inducing_uniformOnFun_iff_pi'`
   - in terms of convergence along a filter: `EquicontinuousOn.tendsto_uniformOnFun_iff_pi'`
 * The **Arzela-Ascoli theorem** follows from the previous fact and Tykhonov's theorem.
   All of its variations can be found under the `ArzelaAscoli` namespace.
@@ -150,12 +150,12 @@ the same topology on `ι`.
 In other words, pointwise convergence and uniform convergence coincide on an equicontinuous
 subset of `X → α`.
 
-This is a consequence of `Equicontinuous.comap_uniformFun_eq`, stated in terms of `Inducing`
+This is a consequence of `Equicontinuous.comap_uniformFun_eq`, stated in terms of `IsInducing`
 for convenuence. -/
 lemma Equicontinuous.inducing_uniformFun_iff_pi [TopologicalSpace ι] [CompactSpace X]
     (F_eqcont : Equicontinuous F) :
-    Inducing (UniformFun.ofFun ∘ F) ↔ Inducing F := by
-  rw [inducing_iff, inducing_iff]
+    IsInducing (UniformFun.ofFun ∘ F) ↔ IsInducing F := by
+  rw [isInducing_iff, isInducing_iff]
   change (_ = (UniformFun.uniformSpace X α |>.comap F |>.toTopologicalSpace)) ↔
          (_ = (Pi.uniformSpace _ |>.comap F |>.toTopologicalSpace))
   rw [F_eqcont.comap_uniformFun_eq]
@@ -185,7 +185,7 @@ theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
       continuous_id
     -- ... hence, as announced, the product topology and uniform convergence topology
     -- coincide on `S`.
-    have ind : Inducing (UniformFun.ofFun ∘ (↑) : S → X →ᵤ α) :=
+    have ind : IsInducing (UniformFun.ofFun ∘ (↑) : S → X →ᵤ α) :=
       hS.inducing_uniformFun_iff_pi.mpr ⟨rfl⟩
     -- By construction, `f` is in `S`.
     have f_mem : f ∈ S := mem_closure_of_tendsto H range_mem_map
@@ -297,14 +297,14 @@ of uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` indu
 In particular, pointwise convergence and compact convergence coincide on an equicontinuous
 subset of `X → α`.
 
-This is a consequence of `EquicontinuousOn.comap_uniformOnFun_eq` stated in terms of `Inducing`
+This is a consequence of `EquicontinuousOn.comap_uniformOnFun_eq` stated in terms of `IsInducing`
 for convenuence. -/
 lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi' [TopologicalSpace ι]
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
-    Inducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
-    Inducing ((⋃₀ 𝔖).restrict ∘ F) := by
-  rw [inducing_iff, inducing_iff]
+    IsInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
+    IsInducing ((⋃₀ 𝔖).restrict ∘ F) := by
+  rw [isInducing_iff, isInducing_iff]
   change (_ = ((UniformOnFun.uniformSpace X α 𝔖).comap F).toTopologicalSpace) ↔
     (_ = ((Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F)).toTopologicalSpace)
   rw [← EquicontinuousOn.comap_uniformOnFun_eq 𝔖_compact F_eqcont]
@@ -315,11 +315,11 @@ of uniform convergence on `𝔖` and pointwise convergence induce the same topol
 
 This is a specialization of `EquicontinuousOn.inducing_uniformOnFun_iff_pi'` to
 the case where `𝔖` covers `X`. -/
-lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi [TopologicalSpace ι]
+lemma EquicontinuousOn.isInducing_uniformOnFun_iff_pi [TopologicalSpace ι]
     {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
-    Inducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
-    Inducing F := by
+    IsInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
+    IsInducing F := by
   rw [eq_univ_iff_forall] at 𝔖_covers
   -- This obviously follows from the previous lemma, we formalize it by going through the
   -- homeomorphism between `(⋃₀ 𝔖) → α` and `X → α`.
@@ -327,7 +327,7 @@ lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi [TopologicalSpace ι]
     (Equiv.subtypeUnivEquiv 𝔖_covers)
   rw [EquicontinuousOn.inducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
-  exact ⟨fun H ↦ φ.inducing.comp H, fun H ↦ φ.symm.inducing.comp H⟩
+  exact ⟨fun H ↦ φ.isInducing.comp H, fun H ↦ φ.symm.isInducing.comp H⟩
 
 -- TODO: find a way to factor common elements of this proof and the proof of
 -- `EquicontinuousOn.comap_uniformOnFun_eq`
@@ -372,7 +372,7 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi
     (Equiv.subtypeUnivEquiv 𝔖_covers)
   rw [EquicontinuousOn.tendsto_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl, show restrict (⋃₀ 𝔖) f = φ.symm f by rfl,
-      φ.symm.inducing.tendsto_nhds_iff]
+      φ.symm.isInducing.tendsto_nhds_iff]
 
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X` and
 `α` a uniform space. An equicontinuous subset of `X → α` is closed in the topology of uniform
@@ -422,14 +422,14 @@ and `F : ι → (X → α)`. Assume that:
 
 Then `ι` is compact. -/
 theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {𝔖 : Set (Set X)}
-    (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F))
+    (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (F_ind : IsInducing (UniformOnFun.ofFun 𝔖 ∘ F))
     (F_cl : IsClosed <| range <| UniformOnFun.ofFun 𝔖 ∘ F)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
     (F_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i, F i x ∈ Q) :
     CompactSpace ι := by
   -- By equicontinuity, we know that the topology on `ι` is also the one induced by
   -- `restrict (⋃₀ 𝔖) ∘ F`.
-  have : Inducing (restrict (⋃₀ 𝔖) ∘ F) := by
+  have : IsInducing (restrict (⋃₀ 𝔖) ∘ F) := by
     rwa [EquicontinuousOn.inducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont] at F_ind
   -- Thus, we just have to check that the range of this map is compact.
   rw [← isCompact_univ_iff, this.isCompact_iff, image_univ]
@@ -456,12 +456,12 @@ and `F : ι → (X → α)`. Assume that:
 * For all `x`, the range of `i ↦ F i x` is contained in some fixed compact subset.
 
 Then `ι` is compact. -/
-theorem ArzelaAscoli.compactSpace_of_closedEmbedding [TopologicalSpace ι] {𝔖 : Set (Set X)}
-    (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (F_clemb : ClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
+theorem ArzelaAscoli.compactSpace_of_isClosedEmbedding [TopologicalSpace ι] {𝔖 : Set (Set X)}
+    (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (F_clemb : IsClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
     (F_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i, F i x ∈ Q) :
     CompactSpace ι :=
-  compactSpace_of_closed_inducing' 𝔖_compact F_clemb.toInducing F_clemb.isClosed_range
+  compactSpace_of_closed_inducing' 𝔖_compact F_clemb.isInducing F_clemb.isClosed_range
     F_eqcont F_pointwiseCompact
 
 /-- A version of the **Arzela-Ascoli theorem**.
@@ -474,13 +474,13 @@ Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, 
 * For all `x ∈ ⋃₀ 𝔖`, the image of `s` under `i ↦ F i x` is contained in some fixed compact subset.
 
 Then `s` has compact closure in `ι`. -/
-theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] [T2Space α]
+theorem ArzelaAscoli.isCompact_closure_of_isClosedEmbedding [TopologicalSpace ι] [T2Space α]
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
-    (F_clemb : ClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
+    (F_clemb : IsClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
     {s : Set ι} (s_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn (F ∘ ((↑) : s → ι)) K)
     (s_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i ∈ s, F i x ∈ Q) :
     IsCompact (closure s) := by
-  -- We apply `ArzelaAscoli.compactSpace_of_closedEmbedding` to the map
+  -- We apply `ArzelaAscoli.compactSpace_of_isClosedEmbedding` to the map
   -- `F ∘ (↑) : closure s → (X → α)`, for which all the hypotheses are easily verified.
   rw [isCompact_iff_compactSpace]
   have : ∀ K ∈ 𝔖, ∀ x ∈ K, Continuous (eval x ∘ F) := fun K hK x hx ↦
@@ -491,8 +491,8 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
   have cls_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i ∈ closure s, F i x ∈ Q :=
     fun K hK x hx ↦ (s_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, closure_minimal hQ.2 <|
       hQ.1.isClosed.preimage (this K hK x hx)⟩
-  exact ArzelaAscoli.compactSpace_of_closedEmbedding 𝔖_compact
-    (F_clemb.comp isClosed_closure.closedEmbedding_subtype_val) cls_eqcont
+  exact ArzelaAscoli.compactSpace_of_isClosedEmbedding 𝔖_compact
+    (F_clemb.comp isClosed_closure.isClosedEmbedding_subtype_val) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
 
 /-- A version of the **Arzela-Ascoli theorem**.
@@ -502,12 +502,11 @@ is compact in the compact open topology. -/
 theorem ArzelaAscoli.isCompact_of_equicontinuous
     (S : Set C(X, α)) (hS1 : IsCompact (ContinuousMap.toFun '' S))
     (hS2 : Equicontinuous ((↑) : S → X → α)) : IsCompact S := by
-  suffices h : Inducing (Equiv.Set.image (↑) S DFunLike.coe_injective) by
+  suffices h : IsInducing (Equiv.Set.image (↑) S DFunLike.coe_injective) by
     rw [isCompact_iff_compactSpace] at hS1 ⊢
     exact (Equiv.toHomeomorphOfInducing _ h).symm.compactSpace
-  rw [← inducing_subtype_val.of_comp_iff, ← EquicontinuousOn.inducing_uniformOnFun_iff_pi _ _ _]
-  · exact ContinuousMap.isUniformEmbedding_toUniformOnFunIsCompact.inducing.comp
-      inducing_subtype_val
+  rw [← IsInducing.subtypeVal.of_comp_iff, ← EquicontinuousOn.isInducing_uniformOnFun_iff_pi _ _ _]
+  · exact ContinuousMap.isUniformEmbedding_toUniformOnFunIsCompact.isInducing.comp .subtypeVal
   · exact eq_univ_iff_forall.mpr (fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
   · exact fun _ ↦ id
   · exact fun K _ ↦ hS2.equicontinuousOn K

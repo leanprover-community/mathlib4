@@ -20,7 +20,7 @@ the purpose of this type.
 
 assert_not_exists StarOrderedRing
 
-open Set Function
+open Function Set Topology
 
 /-- The type of continuous maps which map zero to zero.
 
@@ -80,17 +80,17 @@ lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g 
 protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
   TopologicalSpace.induced ((↑) : C(X, R)₀ → C(X, R)) inferInstance
 
-lemma embedding_toContinuousMap : Embedding ((↑) : C(X, R)₀ → C(X, R)) where
-  induced := rfl
+lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+  eq_induced := rfl
   inj _ _ h := ext fun x ↦ congr($(h) x)
 
-instance [T0Space R] : T0Space C(X, R)₀ := embedding_toContinuousMap.t0Space
-instance [T1Space R] : T1Space C(X, R)₀ := embedding_toContinuousMap.t1Space
-instance [T2Space R] : T2Space C(X, R)₀ := embedding_toContinuousMap.t2Space
+instance [T0Space R] : T0Space C(X, R)₀ := isEmbedding_toContinuousMap.t0Space
+instance [T1Space R] : T1Space C(X, R)₀ := isEmbedding_toContinuousMap.t1Space
+instance [T2Space R] : T2Space C(X, R)₀ := isEmbedding_toContinuousMap.t2Space
 
-lemma closedEmbedding_toContinuousMap [T1Space R] :
-    ClosedEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
-  toEmbedding := embedding_toContinuousMap
+lemma isClosedEmbedding_toContinuousMap [T1Space R] :
+    IsClosedEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+  toIsEmbedding := isEmbedding_toContinuousMap
   isClosed_range := by
     rw [range_toContinuousMap]
     exact isClosed_singleton.preimage <| ContinuousMap.continuous_eval_const 0
@@ -278,7 +278,7 @@ alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap
 
 instance [T1Space R] [CompleteSpace C(X, R)] : CompleteSpace C(X, R)₀ :=
   completeSpace_iff_isComplete_range isUniformEmbedding_toContinuousMap.isUniformInducing
-    |>.mpr closedEmbedding_toContinuousMap.isClosed_range.isComplete
+    |>.mpr isClosedEmbedding_toContinuousMap.isClosed_range.isComplete
 
 lemma isUniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)₀)
     (hg : IsUniformEmbedding g) : IsUniformEmbedding (g.comp · : C(X, Y)₀ → C(X, R)₀) :=

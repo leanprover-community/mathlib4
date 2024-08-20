@@ -684,14 +684,14 @@ lemma _root_.HasCompactSupport.stronglyMeasurable_of_prod {X Y : Type*} [Zero α
 /-- If `g` is a topological embedding, then `f` is strongly measurable iff `g ∘ f` is. -/
 theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [TopologicalSpace β]
     [PseudoMetrizableSpace β] [TopologicalSpace γ] [PseudoMetrizableSpace γ] {g : β → γ} {f : α → β}
-    (hg : Embedding g) : (StronglyMeasurable fun x => g (f x)) ↔ StronglyMeasurable f := by
+    (hg : IsEmbedding g) : (StronglyMeasurable fun x => g (f x)) ↔ StronglyMeasurable f := by
   letI := pseudoMetrizableSpacePseudoMetric γ
   borelize β γ
   refine
     ⟨fun H => stronglyMeasurable_iff_measurable_separable.2 ⟨?_, ?_⟩, fun H =>
       hg.continuous.comp_stronglyMeasurable H⟩
   · let G : β → range g := rangeFactorization g
-    have hG : ClosedEmbedding G :=
+    have hG : IsClosedEmbedding G :=
       { hg.codRestrict _ _ with
         isClosed_range := by
           rw [surjective_onto_range.range_eq]
@@ -1504,8 +1504,8 @@ theorem _root_.MeasurableEmbedding.aestronglyMeasurable_map_iff {γ : Type*}
   rcases hf.exists_stronglyMeasurable_extend hgm₁ fun x => ⟨g x⟩ with ⟨g₂, hgm₂, rfl⟩
   exact ⟨g₂, hgm₂, hf.ae_map_iff.2 heq⟩
 
-theorem _root_.Embedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β]
-    [PseudoMetrizableSpace γ] {g : β → γ} {f : α → β} (hg : Embedding g) :
+theorem _root_.Topology.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β]
+    [PseudoMetrizableSpace γ] {g : β → γ} {f : α → β} (hg : IsEmbedding g) :
     AEStronglyMeasurable (fun x => g (f x)) μ ↔ AEStronglyMeasurable f μ := by
   letI := pseudoMetrizableSpacePseudoMetric γ
   borelize β γ
@@ -1513,7 +1513,7 @@ theorem _root_.Embedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β
     ⟨fun H => aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨?_, ?_⟩, fun H =>
       hg.continuous.comp_aestronglyMeasurable H⟩
   · let G : β → range g := rangeFactorization g
-    have hG : ClosedEmbedding G :=
+    have hG : IsClosedEmbedding G :=
       { hg.codRestrict _ _ with
         isClosed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
     have : AEMeasurable (G ∘ f) μ := AEMeasurable.subtype_mk H.aemeasurable

@@ -133,8 +133,8 @@ uniform convergence
 
 noncomputable section
 
-open scoped Topology Uniformity
-open Set Filter
+open Filter Set Topology
+open scoped Uniformity
 
 section TypeAlias
 
@@ -380,7 +380,7 @@ a uniform embedding for the uniform structures of uniform convergence.
 
 More precisely, if `f : γ → β` is a uniform embedding,
 then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is a uniform embedding. -/
-protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
+protected lemma postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) :
  IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toIsUniformInducing := UniformFun.postcomp_isUniformInducing hf.isUniformInducing
@@ -887,7 +887,7 @@ uniform structures of `𝔖`-convergence.
 
 More precisely, if `f : γ → β` is a uniform embedding, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform embedding. -/
-protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
+protected lemma postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toIsUniformInducing := UniformOnFun.postcomp_isUniformInducing hf.isUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
@@ -1060,7 +1060,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ 
 
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
-theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology 𝔖) :
+theorem isClosed_setOf_continuous [TopologicalSpace α] (h : IsRestrictGen 𝔖) :
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf

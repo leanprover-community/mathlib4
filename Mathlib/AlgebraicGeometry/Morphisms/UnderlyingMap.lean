@@ -17,13 +17,13 @@ of the underlying map of topological spaces, including
 - `Surjective`
 - `IsOpenMap`
 - `IsClosedMap`
-- `Embedding`
-- `OpenEmbedding`
-- `ClosedEmbedding`
+- `IsEmbedding`
+- `IsOpenEmbedding`
+- `IsClosedEmbedding`
 
 -/
 
-open CategoryTheory
+open CategoryTheory Topology
 
 namespace AlgebraicGeometry
 
@@ -107,40 +107,40 @@ instance isClosedMap_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedMa
 
 end IsClosedMap
 
-section Embedding
+section IsEmbedding
 
-instance : (topologically Embedding).RespectsIso :=
-  topologically_respectsIso _ (fun e ↦ e.embedding) (fun _ _ hf hg ↦ hg.comp hf)
+instance : (topologically IsEmbedding).RespectsIso :=
+  topologically_respectsIso _ (fun e ↦ e.isEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance embedding_isLocalAtTarget : IsLocalAtTarget (topologically Embedding) :=
+instance isEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsEmbedding) :=
   topologically_isLocalAtTarget _
     (fun _ s hf ↦ hf.restrictPreimage s)
-    (fun _ _ _ hU hfcont hf ↦ (embedding_iff_embedding_of_iSup_eq_top hU hfcont).mpr hf)
+    (fun _ _ _ hU hfcont hf ↦ (isEmbedding_iff_isEmbedding_of_iSup_eq_top hU hfcont).mpr hf)
 
-end Embedding
+end IsEmbedding
 
-section OpenEmbedding
+section IsOpenEmbedding
 
-instance : (topologically OpenEmbedding).RespectsIso :=
-  topologically_respectsIso _ (fun e ↦ e.openEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
+instance : (topologically IsOpenEmbedding).RespectsIso :=
+  topologically_respectsIso _ (fun e ↦ e.isOpenEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance openEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically OpenEmbedding) :=
+instance isOpenEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenEmbedding) :=
   topologically_isLocalAtTarget _
     (fun _ s hf ↦ hf.restrictPreimage s)
-    (fun _ _ _ hU hfcont hf ↦ (openEmbedding_iff_openEmbedding_of_iSup_eq_top hU hfcont).mpr hf)
+    (fun _ _ _ hU hfcont hf ↦ (isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top hU hfcont).mpr hf)
 
-end OpenEmbedding
+end IsOpenEmbedding
 
-section ClosedEmbedding
+section IsClosedEmbedding
 
-instance : (topologically ClosedEmbedding).RespectsIso :=
-  topologically_respectsIso _ (fun e ↦ e.closedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
+instance : (topologically IsClosedEmbedding).RespectsIso :=
+  topologically_respectsIso _ (fun e ↦ e.isClosedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance closedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically ClosedEmbedding) :=
+instance isClosedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedEmbedding) :=
   topologically_isLocalAtTarget _
     (fun _ s hf ↦ hf.restrictPreimage s)
-    (fun _ _ _ hU hfcont hf ↦ (closedEmbedding_iff_closedEmbedding_of_iSup_eq_top hU hfcont).mpr hf)
+    fun _ _ _ hU hfcont ↦ (isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top hU hfcont).2
 
-end ClosedEmbedding
+end IsClosedEmbedding
 
 end AlgebraicGeometry

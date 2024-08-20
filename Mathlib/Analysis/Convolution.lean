@@ -90,9 +90,8 @@ The following notations are localized in the locale `Convolution`:
 -/
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open ContinuousLinearMap Metric Bornology
-
-open scoped Pointwise Topology NNReal Filter
+open Bornology ContinuousLinearMap Metric Topology
+open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 
@@ -1239,7 +1238,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
       ((ContinuousLinearEquiv.arrowCongr isoE' isoF).symm : (E' →L[𝕜] F) →L[𝕜] eE' →L[𝕜] eF) L
   let R := fun q : eP × eG => (ef ⋆[eL, eμ] eg q.1) q.2
   have R_contdiff : ContDiffOn 𝕜 n R ((isoP ⁻¹' s) ×ˢ univ) := by
-    have hek : IsCompact (isoG ⁻¹' k) := isoG.toHomeomorph.closedEmbedding.isCompact_preimage hk
+    have hek : IsCompact (isoG ⁻¹' k) := isoG.toHomeomorph.isClosedEmbedding.isCompact_preimage hk
     have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.isOpen_preimage _ hs
     refine contDiffOn_convolution_right_with_param_aux eL hes hek ?_ ?_ ?_
     · intro p x hp hx
@@ -1264,9 +1263,9 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     simp only [LinearIsometryEquiv.coe_coe, (· ∘ ·), ContinuousLinearEquiv.prod_symm,
       ContinuousLinearEquiv.prod_apply]
     simp only [R, convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
-    rw [ClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
+    rw [IsClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
     · rfl
-    · exact isoG.symm.toHomeomorph.closedEmbedding
+    · exact isoG.symm.toHomeomorph.isClosedEmbedding
   simp_rw [this] at A
   exact A
 

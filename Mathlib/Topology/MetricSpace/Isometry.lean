@@ -16,6 +16,7 @@ Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start
 theory for `PseudoMetricSpace` and we specialize to `MetricSpace` when needed.
 -/
 
+open Topology
 
 noncomputable section
 
@@ -108,7 +109,7 @@ alias uniformInducing := isUniformInducing
 
 theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
-  hf.isUniformInducing.inducing.tendsto_nhds_iff
+  hf.isUniformInducing.isInducing.tendsto_nhds_iff
 
 /-- An isometry is continuous. -/
 protected theorem continuous (hf : Isometry f) : Continuous f :=
@@ -149,11 +150,11 @@ theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) :
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} {s : Set γ} :
     ContinuousOn (f ∘ g) s ↔ ContinuousOn g s :=
-  hf.isUniformInducing.inducing.continuousOn_iff.symm
+  hf.isUniformInducing.isInducing.continuousOn_iff.symm
 
 theorem comp_continuous_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} :
     Continuous (f ∘ g) ↔ Continuous g :=
-  hf.isUniformInducing.inducing.continuous_iff.symm
+  hf.isUniformInducing.isInducing.continuous_iff.symm
 
 end PseudoEmetricIsometry
 
@@ -173,13 +174,12 @@ lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
 @[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 /-- An isometry from an emetric space is an embedding -/
-protected theorem embedding (hf : Isometry f) : Embedding f :=
-  hf.isUniformEmbedding.embedding
+protected theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.isEmbedding
 
 /-- An isometry from a complete emetric space is a closed embedding -/
-theorem closedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
-    ClosedEmbedding f :=
-  hf.antilipschitz.closedEmbedding hf.lipschitz.uniformContinuous
+theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
+    IsClosedEmbedding f :=
+  hf.antilipschitz.isClosedEmbedding hf.lipschitz.uniformContinuous
 
 end EmetricIsometry
 
@@ -243,8 +243,8 @@ alias UniformEmbedding.to_isometry := IsUniformEmbedding.to_isometry
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
-    (h : Embedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
+theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
+    (h : IsEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
 
