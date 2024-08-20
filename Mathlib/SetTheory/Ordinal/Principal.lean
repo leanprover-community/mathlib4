@@ -202,7 +202,7 @@ theorem lt_omega_opow_mul_nat (a : Ordinal) (n : ℕ) : ω ^ a * n < ω ^ succ a
   rw [opow_succ]
   exact mul_lt_mul_of_pos_left (nat_lt_omega n) (opow_pos a omega_pos)
 
-theorem principal_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
+theorem principal_add_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
   obtain rfl | ha' := eq_or_ne x 0
   · rw [opow_zero, principal_one_iff, add_zero]
   · rw [is_principal_mono_iff
