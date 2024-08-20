@@ -5,11 +5,8 @@ Authors: Mario Carneiro
 -/
 import Batteries.Data.List.Pairwise
 import Mathlib.Data.Fin.Tuple.Basic
-<<<<<<< HEAD
 import Mathlib.Data.List.Basic
 import Batteries.Data.List.Pairwise
-=======
->>>>>>> origin/master
 
 /-!
 # Lists from functions
