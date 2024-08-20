@@ -39,93 +39,49 @@ lemma pepin_primality (n : ℕ) (h : 3 ^ (2 ^ (2 ^ n - 1)) = (-1 : ZMod (2 ^ (2 
         key, pow_succ, Nat.mul_div_cancel _ two_pos, ← pow_succ, ← key, h]
     exact ZMod.neg_one_ne_one
 
-/- Prime factors of `Fₙ = 2 ^ (2 ^ n) + 1`, `1 < n`, are of form `k * 2 ^ (n + 2) + 1`. -/
-lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hP : p.Prime) (hp' : p ≠ 2)
+/-- Prime factors of `a ^ (2 ^ n) + 1`, `1 < n`, are of form `k * 2 ^ (n + 2) + 1`. -/
+lemma pow_pow_add_primeFactors_one_lt {a n p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2)
+    (hpdvd : p ∣ a ^ (2 ^ n) + 1) :
+    ∃ k, p = k * 2 ^ (n + 1) + 1 := by
+  have : Fact (2 < p) := Fact.mk (lt_of_le_of_ne hp.two_le hp2.symm)
+  have : Fact p.Prime := Fact.mk hp
+  have ha1 : (a : ZMod p) ^ (2 ^ n) = -1 := by
+    rw [eq_neg_iff_add_eq_zero]
+    exact_mod_cast (natCast_zmod_eq_zero_iff_dvd (a ^ (2 ^ n) + 1) p).mpr hpdvd
+  have ha0 : (a : ZMod p) ≠ 0 := by
+    intro h
+    rw [h, zero_pow (pow_ne_zero n two_ne_zero), zero_eq_neg] at ha1
+    exact one_ne_zero ha1
+  have ha : orderOf (a : ZMod p) = 2 ^ (n + 1) := by
+    apply orderOf_eq_prime_pow
+    · rw [ha1]
+      exact ZMod.neg_one_ne_one
+    · rw [pow_succ, pow_mul, ha1, neg_one_sq]
+  simpa [ha, dvd_def, Nat.sub_eq_iff_eq_add hp.one_le, mul_comm] using orderOf_dvd_card_sub_one ha0
+
+/-- Prime factors of `Fₙ = 2 ^ (2 ^ n) + 1`, `1 < n`, are of form `k * 2 ^ (n + 2) + 1`. -/
+lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
     (hpdvd : p ∣ 2 ^ (2 ^ n) + 1) :
     ∃ k, p = k * 2 ^ (n + 2) + 1 := by
-  haveI hp := Fact.mk hP
-  have h₀ : 2 ^ (2 ^ n) = (-1 : ZMod p) := by
-    have : 2 ^ (2 ^ n) + 1 = (0 : ZMod p) := by
-      exact_mod_cast (natCast_zmod_eq_zero_iff_dvd (2 ^ (2 ^ n) + 1) p).mpr hpdvd
-    exact Eq.symm (neg_eq_of_add_eq_zero_left this)
-  have h₁ : 2 ^ (2 ^ (n + 1)) = (1 : ZMod p) := by
-    exact Mathlib.Tactic.Ring.pow_nat rfl h₀ neg_one_sq
-  have h2ne0 : (0 : ZMod p) ≠ (2 : ZMod p) := by
-    let h' := intCast_eq_intCast_iff_dvd_sub 0 2 p
-    norm_cast at h'
-    rw [ne_eq, h']
-    have : Int.subNatNat 2 0 = 2 := rfl
-    rw [this]
-    norm_cast
-    by_contra h''
-    apply le_of_dvd at h''
-    · have : 2 ≤ p := Prime.two_le hP
-      omega
-    · norm_num
-  have h1neneg : (1 : ZMod p) ≠ (-1 : ZMod p) := by
-    by_contra h'
-    rcases (neg_eq_self_iff (1 : ZMod p)).mp h'.symm with h | h
-    · absurd h
-      exact one_ne_zero
-    · absurd h
-      exact val_one p ▸ Ne.symm hp'
-  have h₂ : 2 ^ (n + 1) ∣ p - 1 := by
-    have : orderOf (2 : ZMod p) = 2 ^ (n + 1) := by
-      apply orderOf_eq_prime_pow
-      · rw [h₀, ← ne_eq]
-        exact Ne.symm h1neneg
-      · exact h₁
-    exact this ▸ orderOf_dvd_card_sub_one h2ne0.symm
-  have hpmod8 : p % 8 = 1 := by
-    have : 8 ∣ p - 1 := by
-      apply dvd_trans (a := 8) (b := 2 ^ (n + 1)) (c := p - 1)
-      · use 2 ^ (n - 2)
-        have : 8 = 2 ^ 3 := by norm_num
-        rw [this, Eq.symm (pow_add 2 3 (n - 2)), pow_right_inj]
-        all_goals omega
-      · exact h₂
-    have : 1 ≤ p := NeZero.one_le
-    omega
-  have hsq : IsSquare (2 : ZMod p) :=
-      (exists_sq_eq_two_iff hp').mpr (Or.intro_left (p % 8 = 7) hpmod8)
-  have hsqex : ∃ m : ZMod p, m ^ 2 = (2 : ZMod p) := by
-    obtain ⟨c, hsq'⟩ := IsSquare.exists_sq (2 : ZMod p) hsq
-    use c
-    exact Eq.symm hsq'
-  have hOrd_dvd (a : ZMod p) (ha : a ^ 2 = (2 : ZMod p)) : 2 ^ (n + 2) ∣ p - 1 := by
-    have hOrd : orderOf (a : ZMod p) = 2 ^ (n + 2) := by
-      have : a ^ (2 ^ (n + 2)) = (1 : ZMod p) := by
-        have : 2 = 1 + 1 := rfl
-        nth_rw 2 [this]
-        rw [← add_assoc, pow_succ', pow_mul a 2]
-        exact ha ▸ h₁
-      apply orderOf_eq_prime_pow
-      · rw [← ha] at h₀
-        rw [pow_succ', pow_mul a 2, h₀]
-        exact Ne.symm h1neneg
-      · exact this
-    rw [← hOrd]
-    apply orderOf_dvd_card_sub_one
-    contrapose! ha
-    rw [ha, ne_eq, zero_pow]
-    · exact h2ne0
-    · norm_num
-  have : ∃ k : ℕ, p - 1 = k * 2 ^ (n + 2) := by
-    apply exists_eq_mul_left_of_dvd
-    obtain ⟨w, h⟩ := hsqex
-    apply hOrd_dvd
-    · exact h
-  rcases this with ⟨k', h'⟩
-  use k'
-  rw [← h']
-  omega
+  have : Fact p.Prime := Fact.mk hp
+  have hp2 : p ≠ 2 := by
+    exact ((even_pow.mpr ⟨even_two, pow_ne_zero n two_ne_zero⟩).add_one).ne_two_of_dvd_nat hpdvd
+  have hp8 : p % 8 = 1 := by
+    obtain ⟨k, rfl⟩ := pow_pow_add_primeFactors_one_lt hp hp2 hpdvd
+    obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn
+    rw [add_assoc, pow_add, ← mul_assoc, ← mod_add_mod, mul_mod]
+    norm_num
+  obtain ⟨a, ha⟩ := (exists_sq_eq_two_iff hp2).mpr (Or.inl hp8)
+  suffices h : p ∣ a.val ^ (2 ^ (n + 1)) + 1 by
+    exact pow_pow_add_primeFactors_one_lt hp hp2 h
+  rw [← natCast_zmod_eq_zero_iff_dvd, Nat.cast_add, Nat.cast_one, Nat.cast_pow] at hpdvd ⊢
+  rwa [ZMod.natCast_val, ZMod.cast_id, pow_succ', pow_mul, sq, ← ha]
 
 /-- Prime factors of `Fₙ = 2 ^ (2 ^ n) + 1` are either 3, 5, or of form `k * 2 ^ (n + 2) + 1`. -/
-lemma fermat_primeFactors (n p : ℕ) (hP : p.Prime) (hp' : p ≠ 2)
+lemma fermat_primeFactors (n p : ℕ) (hP : p.Prime)
     (hpdvd : p ∣ 2 ^ (2 ^ n) + 1) :
     p = 3 ∨ p = 5 ∨ ∃ k, p = k * 2 ^ (n + 2) + 1 := by
-  have : n = 0 ∨ n = 1 ∨ 1 < n := by omega
-  rcases this with h | ⟨h | h⟩
+  obtain h | ⟨h | h⟩ : n = 0 ∨ n = 1 ∨ 1 < n := by omega
   · left
     rw [h] at hpdvd
     exact (prime_dvd_prime_iff_eq hP prime_three).mp hpdvd
@@ -134,7 +90,7 @@ lemma fermat_primeFactors (n p : ℕ) (hP : p.Prime) (hp' : p ≠ 2)
     norm_num at hpdvd
     exact (prime_dvd_prime_iff_eq hP prime_five).mp hpdvd
   · right; right
-    exact fermat_primeFactors_one_lt n p h hP hp' hpdvd
+    exact fermat_primeFactors_one_lt n p h hP hpdvd
 
 /-!
 # Primality of Mersenne numbers `Mₙ = a ^ n - 1`
