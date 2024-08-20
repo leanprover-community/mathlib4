@@ -106,7 +106,7 @@ end Ring
 open Ring
 
 /-- Construct an `OrderedRing` by designating a positive cone in an existing `Ring`. -/
-@[reducible] def OrderedRing.mkOfPositiveCone [Ring.PositiveConeClass S R] : OrderedRing R where
+@[reducible] def OrderedRing.mkOfPositiveCone [PositiveConeClass S R] : OrderedRing R where
   __ := ‹Ring R›
   __ := OrderedAddCommGroup.mkOfPositiveCone C
   zero_le_one := by simpa using one_mem C
@@ -124,6 +124,6 @@ def StrictOrderedRing.mkOfOrderedRingAndDomain (α : Type*) [OrderedRing α] [Is
 
 /-- Construct a `LinearOrderedRing` by
 designating a positive cone in an existing `Ring`. -/
-@[reducible] def LinearOrderedRing.mkOfPositiveCone (C : TotalPositiveCone α) : LinearOrderedRing α :=
-  { LinearOrderedAddCommGroup.mkOfPositiveCone C.toTotalPositiveCone,
-    StrictOrderedRing.mkOfPositiveCone C.toPositiveCone_1 with }
+@[reducible] def LinearOrderedRing.mkOfPositiveCone [IsDomain R] [TotalPositiveConeClass S R] :
+    LinearOrderedRing R where
+  __ := OrderedRing.mkOfPositiveCone C

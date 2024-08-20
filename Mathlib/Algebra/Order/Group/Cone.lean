@@ -115,11 +115,11 @@ open AddCommGroup
 designating a positive cone in an existing `AddCommGroup`. -/
 @[reducible] def OrderedAddCommGroup.mkOfPositiveCone [PositiveConeClass S G] :
     OrderedAddCommGroup G where
-  le a b := a - b ∈ C
+  le a b := b - a ∈ C
   le_refl a := by simp [zero_mem]
   le_trans a b c nab nbc := by simpa using add_mem nbc nab
   le_antisymm a b nab nba := by
-    apply eq_of_sub_eq_zero; simp at nba; simpa [nba] using eq_zero_of_mem_of_neg_mem nab
+    apply eq_of_sub_eq_zero; simp at nab; simpa [nab] using eq_zero_of_mem_of_neg_mem nba
   add_le_add_left a b nab c := by simpa using nab
 
 /-- Construct a `LinearOrderedAddCommGroup` by
@@ -128,5 +128,5 @@ designating a total positive cone in an existing `AddCommGroup`. -/
     [TotalPositiveConeClass S G] (dec : DecidablePred (fun x => x ∈ C)) :
     LinearOrderedAddCommGroup G where
   __ := OrderedAddCommGroup.mkOfPositiveCone C
-  le_total a b := by simpa using mem_or_neg_mem C (a - b)
+  le_total a b := by simpa using mem_or_neg_mem C (b - a)
   decidableLE a b := dec _
