@@ -232,6 +232,12 @@ theorem equiv_iff_mem {x y : PSet.{u}} : Equiv x y ↔ ∀ {w : PSet.{u}}, w ∈
 theorem Mem.congr_left : ∀ {x y : PSet.{u}}, Equiv x y → ∀ {w : PSet.{u}}, x ∈ w ↔ y ∈ w
   | _, _, h, ⟨_, _⟩ => ⟨fun ⟨a, ha⟩ => ⟨a, h.symm.trans ha⟩, fun ⟨a, ha⟩ => ⟨a, h.trans ha⟩⟩
 
+theorem mem_of_subset {x y z : PSet} : x ⊆ y → z ∈ x → z ∈ y
+  | h₁, ⟨a, h₂⟩ => (h₁ a).elim fun b h₃ => ⟨b, h₂.trans h₃⟩
+
+theorem subset_iff {x y : PSet} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
+  ⟨fun h _ => mem_of_subset h, fun h a => h (Mem.mk _ a)⟩
+
 private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·) y
   | ⟨α, A⟩, ⟨β, B⟩, H =>
     ⟨_, by
@@ -351,6 +357,12 @@ theorem mem_insert_iff : ∀ {x y z : PSet.{u}}, x ∈ insert y z ↔ Equiv x y 
         match m with
         | Or.inr ⟨a, ha⟩ => ⟨some a, ha⟩
         | Or.inl h => ⟨none, h⟩⟩
+
+theorem mem_insert (x y : PSet) : x ∈ insert x y :=
+  mem_insert_iff.2 <| Or.inl Equiv.rfl
+
+theorem mem_insert_of_mem {y z : PSet} (x) (h : z ∈ y) : z ∈ insert x y :=
+  mem_insert_iff.2 <| Or.inr h
 
 @[simp]
 theorem mem_singleton {x y : PSet} : x ∈ ({y} : PSet) ↔ Equiv x y :=
