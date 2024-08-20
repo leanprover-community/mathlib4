@@ -37,8 +37,8 @@ is used, typically once all of `Mathlib` has been built.
 If all declarations and imports are available when `#check_assertions` is used,
 then the command logs an info. Otherwise, it emits a warning.
 
-The variant `#check_assertions!` is silent if everything is imported and only emits the report
-if something is missing from the environment.
+The variant `#check_assertions!` only prints declarations/imports that are not present in the
+environment.  In particular, it is silent if everything is imported, making it useful for testing.
 -/
 elab "#check_assertions" tk:("!")?: command => do
   let env ← getEnv
@@ -57,7 +57,8 @@ elab "#check_assertions" tk:("!")?: command => do
       cond := allMods.contains d.givenName
     outcome := if cond then m!"{checkEmoji}" else m!"{crossEmoji}"
     allExist? := allExist? && cond
-    msgs := msgs.push m!"{outcome} '{d.givenName}' ({type}) asserted in '{d.modName}'."
+    if tk.isNone || !cond then
+      msgs := msgs.push m!"{outcome} '{d.givenName}' ({type}) asserted in '{d.modName}'."
   msgs := msgs.push m!"---"
     |>.push m!"{checkEmoji} means the declaration or import exists."
     |>.push m!"{crossEmoji} means the declaration or import does not exist."

@@ -10,6 +10,16 @@ assert_not_exists Nats
 
 theorem Nats : True := .intro
 
+/--
+info:
+✅ 'Nats' (declaration) asserted in 'test.AssertExists'.
+---
+✅ means the declaration or import exists.
+❌ means the declaration or import does not exist.
+-/
+#guard_msgs in
+#check_assertions
+
 #check_assertions!
 
 /-- warning: the module 'Lean.Elab.Command' is (transitively) imported -/
@@ -33,7 +43,6 @@ warning:
 
 /--
 warning:
-✅ 'Nats' (declaration) asserted in 'test.AssertExists'.
 ❌ 'I_do_not_exist' (module) asserted in 'test.AssertExists'.
 ❌ 'Mathlib.Tactic.Common' (module) asserted in 'test.AssertExists'.
 ---
