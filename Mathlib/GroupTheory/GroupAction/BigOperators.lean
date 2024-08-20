@@ -52,6 +52,7 @@ end
 section
 
 variable [Monoid α] [CommMonoid β] [MulDistribMulAction α β]
+
 theorem Multiset.smul_prod {r : α} {s : Multiset β} : r • s.prod = (s.map (r • ·)).prod :=
   (MulDistribMulAction.toMonoidHom β r).map_multiset_prod s
 
