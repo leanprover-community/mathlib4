@@ -116,12 +116,6 @@ lemma isPullback_of_yoneda_map {X Y Z : C} {f : X ⟶ Z}
     IsPullback (hf.fst' (yoneda.map g)) (hf.snd (yoneda.map g)) f g :=
   IsPullback.of_map yoneda (hf.w' g) (hf.isPullback' (yoneda.map g))
 
---@[reassoc]
---lemma w' {X Y Z : C} {f : X ⟶ Z} (g : yoneda.obj Y ⟶ yoneda.obj Z)
---    (hf : Presheaf.representable (yoneda.map f)) :
---      hf.fst' g ≫ f = hf.snd g ≫ (Yoneda.fullyFaithful.preimage g) :=
---  yoneda.map_injective <| by simp [(hf.isPullback g).w]
-
 variable {g}
 
 /-- Two morphisms `a b : Z ⟶ hf.pullback g` are equal if
@@ -269,7 +263,7 @@ lemma presheaf_yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y :
   apply presheaf_of_exists (Presheaf.representable.yoneda_map f)
   intro Y' g
   obtain ⟨g, rfl⟩ := yoneda.map_surjective g
-  refine ⟨_, _, _, (IsPullback.of_hasPullback f g).map yoneda, hP.snd _ _ hf⟩
+  exact ⟨_, _, _, (IsPullback.of_hasPullback f g).map yoneda, hP.snd _ _ hf⟩
 
 lemma of_presheaf_yoneda {X Y : C} {f : X ⟶ Y} (hf : P.presheaf (yoneda.map f)) : P f :=
   hf.property (𝟙 _) (𝟙 _) f (IsPullback.id_horiz (yoneda.map f))
@@ -329,7 +323,7 @@ lemma presheaf_stableUnderBaseChange : StableUnderBaseChange P.presheaf :=
   ⟨representable_stableUnderBaseChange hfBC hg.rep,
     fun _ _ _ _ _ BC ↦ hg.property _ _ _ (IsPullback.paste_horiz BC hfBC)⟩
 
-instance presheaf_isStableUnderComposition' [P.IsStableUnderComposition] :
+instance presheaf_isStableUnderComposition [P.IsStableUnderComposition] :
     IsStableUnderComposition P.presheaf where
   comp_mem {F G H} f g hf hg := by
     refine ⟨comp_mem _ _ _ hf.1 hg.1, fun Z X p fst snd h ↦ ?_⟩
