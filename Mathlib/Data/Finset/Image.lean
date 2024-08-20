@@ -277,7 +277,7 @@ theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h
       s.disjiUnion (fun a => (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
   eq_of_veq <| Multiset.map_bind _ _ _
 
-theorem list_map_toFinset [DecidableEq α] [DecidableEq β] {l : List α} :
+theorem list_map_toFinset [DecidableEq α] [DecidableEq β] (l : List α) :
     Finset.map f (List.toFinset l) = List.toFinset (List.map (↑f) l) := by
   match l with
   | [] => simp

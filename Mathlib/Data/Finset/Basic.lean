@@ -2847,23 +2847,8 @@ theorem toFinset_filter (s : List α) (p : α → Bool) :
 
 theorem toFinset_is_singleton_implies_replicate {l : List α} {a : α}
     (h : l.toFinset ⊆ {a}) : l = List.replicate l.length a := by
-  match l with
-  | [] => simp
-  | x :: xs =>
-    have h₁ : x = a := by
-      have : x ∈ (x::xs).toFinset := by
-        rw [List.mem_toFinset]; simp
-      have : x ∈ {a} := by exact h this
-      simp at this
-      exact this
-    have h₂ : xs.toFinset ⊆ {a} := by
-      simp at h
-      rw [← h]
-      exact Finset.subset_insert x xs.toFinset
-    have ih : xs = List.replicate xs.length a :=
-      toFinset_is_singleton_implies_replicate h₂
-    rw [h₁, ih]
-    simp
+  rw [Finset.subset_singleton_iff'] at h
+  exact List.eq_replicate_of_mem fun x hx => h _ <| mem_toFinset.mpr hx
 
 end List
 
