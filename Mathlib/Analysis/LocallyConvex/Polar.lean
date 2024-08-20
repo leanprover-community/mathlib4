@@ -121,15 +121,10 @@ theorem mem_polar_singleton {a : E} (y : F) : y ∈ B.polar {a} ↔ ‖B a y‖ 
 
 theorem sInter_polar_finite_subset_eq_polar (U : Set E) :
     ⋂₀ (B.polar '' { F | F.Finite ∧ F ⊆ U }) = B.polar U := by
-  apply le_antisymm _ _
-  · intro x hx
-    simp only [Set.sInter_image, Set.mem_setOf_eq, Set.mem_iInter, and_imp] at hx
-    intro a ha
-    rw [← mem_polar_singleton]
-    apply hx _ (Set.finite_singleton a) (Set.singleton_subset_iff.mpr ha)
-  · simp only [Set.sInter_image, Set.mem_setOf_eq, Set.le_eq_subset, Set.subset_iInter_iff,
-    and_imp]
-    exact fun F _ hF₂ => polar_antitone _ hF₂
+  ext x
+  simp only [Set.sInter_image, Set.mem_setOf_eq, Set.mem_iInter, and_imp]
+  refine ⟨fun hx a ha ↦ ?_, fun hx F _ hF₂ => polar_antitone _ hF₂ hx⟩
+  simpa [mem_polar_singleton] using hx _ (Set.finite_singleton a) (Set.singleton_subset_iff.mpr ha)
 
 end NormedRing
 
