@@ -213,12 +213,12 @@ instance : Decidable G.Connected := by
 
 open Finset in
 instance Path.instFintype {u v : V} : Fintype (G.Path u v) where
-  elems := (univ (α := { p : G.Walk u v // p.IsPath ∧ p.length < Fintype.card V })).map
+  elems := (univ (α := { p : G.Walk u v | p.IsPath ∧ p.length < Fintype.card V })).map
     ⟨fun p ↦ { val := p.val, property := p.prop.left },
      fun _ _ h ↦ SetCoe.ext <| Subtype.mk.injEq .. ▸ h⟩
   complete p := mem_map.mpr ⟨
     ⟨p.val, ⟨p.prop, p.prop.length_lt⟩⟩,
-    ⟨@mem_univ _ (fintypeSubtypePathLengthLT ..) _, rfl⟩⟩
+    ⟨mem_univ _, rfl⟩⟩
 
 instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp)
