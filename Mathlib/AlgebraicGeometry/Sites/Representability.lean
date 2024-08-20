@@ -52,7 +52,6 @@ Consider the following setup:
 variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u)) {ι : Type u}
   {X : ι → Scheme.{u}} (f : (i : ι) → yoneda.obj (X i) ⟶ F.1)
   (hf : ∀ i, openImmersion.presheaf (f i))
-  [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)]
 
 namespace Representability
 
@@ -101,11 +100,11 @@ lemma condition (i j : ι) : yoneda.map (p₁ hf i j) ≫ f i = yoneda.map (p₂
 -- again this should be a general lemma in terms of both PullbackCone and CommSq API
 lemma isIso_p₁_self (i : ι) :
     IsIso (p₁ hf i i) := by
-  sorry
-  -- refine ⟨(hf i).rep.lift' (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩
-  -- ext1
-  -- · simp
-  -- · simp [p₁_self_eq_p₂ hf i]
+  refine ⟨(hf i).rep.lift' (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩
+  dsimp
+  apply Presheaf.representable.hom_ext'
+  · simp
+  · simp [p₁_self_eq_p₂ hf i]
 
 -- the "triple" intersections of `X i`, `X j` and `X k`,
 -- defined as a fibre product over `X i` of `V hf i j` and `V hf i k`
@@ -241,7 +240,8 @@ lemma fac' {i : ι} {V : Scheme.{u}} (a : V ⟶ X i) :
   rw [← fac hf i]
   rfl
 
-instance : Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
+instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
+    Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
   Presheaf.isLocallySurjective_of_isLocallySurjective_fac _
     (show Sigma.desc (fun i ↦ yoneda.map (toGlued hf i)) ≫
       (yonedaGluedToSheaf hf).val = Sigma.desc f by aesop_cat)
@@ -280,6 +280,8 @@ instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
     · erw [← eq₂, ← fac₂, ← fac' hf]
       rfl
 
+variable [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)]
+
 instance : IsIso (yonedaGluedToSheaf hf) := by
   rw [← Sheaf.isLocallyBijective_iff_isIso (yonedaGluedToSheaf hf)]
   constructor <;> infer_instance
@@ -291,8 +293,10 @@ noncomputable def yonedaIsoSheaf :
 
 end Representability
 
+include hf in
 open Representability in
-theorem representability : F.1.Representable where
+theorem representability [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
+    F.1.Representable where
   has_representation := ⟨(glueData hf).glued,
     ⟨(sheafToPresheaf _ _).mapIso (yonedaIsoSheaf hf)⟩⟩
 
