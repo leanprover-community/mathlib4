@@ -75,14 +75,12 @@ has some further discusion.
 quadratic map, homogeneous polynomial, quadratic polynomial
 -/
 
-
 universe u v w
 
 variable {S T : Type*}
 variable {R : Type*} {M N P A : Type*}
 
-open LinearMap (BilinMap)
-open LinearMap (BilinForm)
+open LinearMap (BilinMap BilinForm)
 
 section Polar
 

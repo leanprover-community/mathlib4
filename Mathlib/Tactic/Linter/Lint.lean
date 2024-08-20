@@ -131,9 +131,6 @@ namespace MissingEnd
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
-    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
-      return
     if Linter.getLinterValue linter.missingEnd (← getOptions) &&
         !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
@@ -221,11 +218,11 @@ These are disallowed by the mathlib style guide, as using `<|` pairs better with
 /-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`. -/
 register_option linter.dollarSyntax : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `dollarSyntax` linter"
 }
 
-namespace DollarSyntaxLinter
+namespace Style.dollarSyntax
 
 /-- `findDollarSyntax stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
 partial
@@ -248,7 +245,7 @@ def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter dollarSyntaxLinter
 
-end DollarSyntaxLinter
+end Style.dollarSyntax
 
 /-! # The "longLine linter" -/
 
@@ -266,9 +263,6 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.longLine (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
-      return
-    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
-    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
     -- The linter ignores the `#guard_msgs` command, in particular its doc-string.
     -- The linter still lints the message guarded by `#guard_msgs`.

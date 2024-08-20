@@ -123,21 +123,9 @@ theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length}
     r (l.get a) (l.get b) :=
   List.pairwise_iff_get.1 h _ _ hab
 
-set_option linter.deprecated false in
-@[deprecated Sorted.rel_get_of_lt (since := "2024-05-08")]
-theorem Sorted.rel_nthLe_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : a < l.length)
-    (hb : b < l.length) (hab : a < b) : r (l.nthLe a ha) (l.nthLe b hb) :=
-  List.pairwise_iff_get.1 h ⟨a, ha⟩ ⟨b, hb⟩ hab
-
 theorem Sorted.rel_get_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : Fin l.length}
     (hab : a ≤ b) : r (l.get a) (l.get b) := by
   obtain rfl | hlt := Fin.eq_or_lt_of_le hab; exacts [refl _, h.rel_get_of_lt hlt]
-
-set_option linter.deprecated false in
-@[deprecated Sorted.rel_get_of_le (since := "2024-05-08")]
-theorem Sorted.rel_nthLe_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : ℕ}
-    (ha : a < l.length) (hb : b < l.length) (hab : a ≤ b) : r (l.nthLe a ha) (l.nthLe b hb) :=
-  h.rel_get_of_le hab
 
 theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {k : ℕ} {x y : α}
     (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y := by
@@ -166,10 +154,6 @@ strictly monotone. -/
 /-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
 @[simp] theorem sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
-
-/-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-@[deprecated sorted_le_ofFn_iff (since := "2023-01-10")]
-theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
 
 /-- The list obtained from a monotone tuple is sorted. -/
 alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
