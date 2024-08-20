@@ -116,7 +116,7 @@ theorem Walk.mem_finsetWalkLength_iff_length_eq {n : ℕ} {u v : V} (p : G.Walk 
 variable (G)
 
 /-- The `Finset` of walks from `u` to `v` with length less than `n`. See `finsetWalkLength`. --/
-def finsetWalkLengthLt (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
+def finsetWalkLengthLT (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
   (Finset.range n).disjiUnion
     (fun l ↦ G.finsetWalkLength l u v)
     (fun l _ l' _ hne _ hsl hsl' p hp ↦
@@ -125,16 +125,16 @@ def finsetWalkLengthLt (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
       False.elim <| hne <| hl.symm.trans hl')
 
 open Finset in
-theorem coe_finsetWalkLengthLt_eq (n : ℕ) (u v : V) :
-    (G.finsetWalkLengthLt n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
+theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
+    (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLt, mem_coe, mem_disjiUnion, Walk.mem_finsetWalkLength_iff_length_eq]
+  simp [finsetWalkLengthLT, mem_coe, mem_disjiUnion, Walk.mem_finsetWalkLength_iff_length_eq]
 
 variable {G}
 
-theorem Walk.mem_finsetWalkLengthLt_iff_length_lt {n : ℕ} {u v : V} (p : G.Walk u v) :
-    p ∈ G.finsetWalkLengthLt n u v ↔ p.length < n :=
-  Set.ext_iff.mp (G.coe_finsetWalkLengthLt_eq n u v) p
+theorem Walk.mem_finsetWalkLengthLT_iff_length_lt {n : ℕ} {u v : V} (p : G.Walk u v) :
+    p ∈ G.finsetWalkLengthLT n u v ↔ p.length < n :=
+  Set.ext_iff.mp (G.coe_finsetWalkLengthLT_eq n u v) p
 
 variable (G)
 
@@ -157,12 +157,12 @@ theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
   Fintype.card_ofFinset (G.finsetWalkLength n u v) fun p => by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 
-instance fintypeSetWalkLengthLt (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length < n} :=
-  Fintype.ofFinset (G.finsetWalkLengthLt n u v) fun p ↦ by
-    rw [← Finset.mem_coe, coe_finsetWalkLengthLt_eq]
+instance fintypeSetWalkLengthLT (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length < n} :=
+  Fintype.ofFinset (G.finsetWalkLengthLT n u v) fun p ↦ by
+    rw [← Finset.mem_coe, coe_finsetWalkLengthLT_eq]
 
-instance fintypeSubtypeWalkLengthLt (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length < n} :=
-  fintypeSetWalkLengthLt G u v n
+instance fintypeSubtypeWalkLengthLT (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length < n} :=
+  fintypeSetWalkLengthLT G u v n
 
 instance fintypeSetPathLength (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length = n} :=
@@ -173,14 +173,14 @@ instance fintypeSubtypePathLength (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v // p.IsPath ∧ p.length = n} :=
   fintypeSetPathLength G u v n
 
-instance fintypeSetPathLengthLt (u v : V) (n : ℕ) :
+instance fintypeSetPathLengthLT (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length < n} :=
-  Fintype.ofFinset ((G.finsetWalkLengthLt n u v).filter Walk.IsPath) <| by
-    simp [Walk.mem_finsetWalkLengthLt_iff_length_lt, and_comm]
+  Fintype.ofFinset ((G.finsetWalkLengthLT n u v).filter Walk.IsPath) <| by
+    simp [Walk.mem_finsetWalkLengthLT_iff_length_lt, and_comm]
 
-instance fintypeSubtypePathLengthLt (u v : V) (n : ℕ) :
+instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v // p.IsPath ∧ p.length < n} :=
-  fintypeSetPathLengthLt G u v n
+  fintypeSetPathLengthLT G u v n
 
 end LocallyFinite
 
@@ -218,7 +218,7 @@ instance Path.instFintype {u v : V} : Fintype (G.Path u v) where
      fun _ _ h ↦ SetCoe.ext <| Subtype.mk.injEq .. ▸ h⟩
   complete p := mem_map.mpr ⟨
     ⟨p.val, ⟨p.prop, p.prop.length_lt⟩⟩,
-    ⟨@mem_univ _ (fintypeSubtypePathLengthLt ..) _, rfl⟩⟩
+    ⟨@mem_univ _ (fintypeSubtypePathLengthLT ..) _, rfl⟩⟩
 
 instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp)
