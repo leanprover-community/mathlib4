@@ -91,16 +91,6 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
     apply h <;> try (apply hab.subset; simp)
     exact heq
 
-theorem pairwise_concat {l : List α}{l' : List α}:
-    Pairwise R (l++l') ↔ (Pairwise R l) ∧ (Pairwise R l') ∧
-      (∀ x ∈ l, ∀ y ∈ l', R x y) := by
-  match l with
-  | [] => simp
-  | x :: xs =>
-    simp [Pairwise]
-    simp_rw [pairwise_concat]
-    aesop
-
 
 /-! ### Pairwise filtering -/
 
