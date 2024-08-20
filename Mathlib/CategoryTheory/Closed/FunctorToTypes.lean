@@ -3,8 +3,7 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
-import Mathlib.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
@@ -62,7 +61,7 @@ lemma congr_app {f g : HomObj F G A} (h : f = g) (X : C)
 
 /-- Given a natural transformation `F ⟶ G`, get a term of `HomObj F G A` by "ignoring" `A`. -/
 @[simps]
-def ofNatTrans {A : C ⥤ Type w} (f : F ⟶ G) : HomObj F G A where
+def ofNatTrans (f : F ⟶ G) : HomObj F G A where
   app X _ := f.app X
 
 /-- The identity `HomObj F F A`. -/
@@ -75,7 +74,7 @@ def comp {M : C ⥤ D} (f : HomObj F G A) (g : HomObj G M A) : HomObj F M A wher
 
 /-- Given a morphism `A' ⟶ A`, send a term of `HomObj F G A` to a term of `HomObj F G A'`. -/
 @[simps]
-def map (x : HomObj F G A) {A' : C ⥤ Type w} (f : A' ⟶ A) : HomObj F G A' where
+def map {A' : C ⥤ Type w} (f : A' ⟶ A) (x : HomObj F G A) : HomObj F G A' where
   app Δ a := x.app Δ (f.app Δ a)
   naturality {Δ Δ'} φ a := by
     dsimp
