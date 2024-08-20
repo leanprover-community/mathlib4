@@ -355,7 +355,7 @@ theorem insidePart_nest_add : (p.nest + q).insidePart = p := by
 
 theorem outsidePart_nest_add : (p.nest + q).outsidePart = q := by
   have : p.toList.length + 1 + 1 = p.nest.toList.length := by simp [nest]
-  simp_rw [outsidePart, AddLeftCancelMonoid.add_eq_zero, nest_ne_zero, false_and, dite_false,
+  simp_rw [outsidePart, add_eq_zero', nest_ne_zero, false_and, dite_false,
     firstReturn_nest_add, drop, show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl,
     drop_append_eq_append_drop, this, drop_length, nil_append, tsub_self, drop_zero]
 
