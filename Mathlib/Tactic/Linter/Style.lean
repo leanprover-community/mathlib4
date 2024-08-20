@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Linter.Util
 
@@ -23,7 +24,7 @@ namespace Mathlib.Linter
 /-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option. -/
 register_option linter.setOption : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `setOption` linter"
 }
 
@@ -42,9 +43,6 @@ def parse_set_option : Syntax → Option Name
 def is_set_option : Syntax → Bool :=
   fun stx ↦ parse_set_option stx matches some _name
 
-/-- Gets the value of the `linter.setOption` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.setOption o
-
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option.
 
@@ -54,14 +52,19 @@ used in production code.
 (Some tests will intentionally use one of these options; in this case, simply allow the linter.)
 -/
 def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterHash (← getOptions) do
+    unless Linter.getLinterValue linter.setOption (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if let some (head) := stx.find? is_set_option then
-      if let some (name) := parse_set_option head then
-        if #[`pp, `profiler, `trace, `debug].contains name.getRoot then
-          Linter.logLint linter.setOption head m!"Forbidden set_option `{name}`; please remove"
+    if let some head := stx.find? is_set_option then
+      if let some name := parse_set_option head then
+        let forbidden := [`debug, `pp, `profiler, `trace]
+        if forbidden.contains name.getRoot then
+          Linter.logLint linter.setOption head
+            m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
+               is only intended for development and not for final code. \
+               If you intend to submit this contribution to the Mathlib project, \
+               please remove 'set_option {name}'."
 
 initialize addLinter setOptionLinter
 
