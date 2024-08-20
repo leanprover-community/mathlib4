@@ -82,6 +82,7 @@ the second approach only when you need to weaken a condition on either `R` or `A
 -/
 
 assert_not_exists Field
+assert_not_exists Module.End
 
 universe u v w u₁ v₁
 
@@ -380,5 +381,3 @@ theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semirin
   ((a • b : B) : C) = (a • b) • 1 := Algebra.algebraMap_eq_smul_one _
   _ = a • (b • 1) := smul_assoc ..
   _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
-
-assert_not_exists Module.End

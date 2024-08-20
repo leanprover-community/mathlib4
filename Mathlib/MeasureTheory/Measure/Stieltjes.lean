@@ -24,7 +24,6 @@ a Borel measure `f.measure`.
 
 noncomputable section
 
-open scoped Classical
 open Set Filter Function ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
@@ -384,7 +383,7 @@ theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a)
       apply (f.mono.tendsto_leftLim a).comp
       exact
         tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ u_lim
-          (eventually_of_forall fun n => u_lt_a n)
+          (Eventually.of_forall fun n => u_lt_a n)
     exact ENNReal.continuous_ofReal.continuousAt.tendsto.comp (tendsto_const_nhds.sub this)
   exact tendsto_nhds_unique L1 L2
 

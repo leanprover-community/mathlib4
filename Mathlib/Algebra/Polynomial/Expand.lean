@@ -214,7 +214,7 @@ theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomi
     rw [hf, coeff_zero, zero_eq_mul] at this
     cases' this with h'
     · rw [h']
-    rename_i _ _ _ _ h'
+    rename_i _ _ _ h'
     rw [← Nat.cast_succ, CharP.cast_eq_zero_iff R p] at h'
     exact absurd h' h
 
@@ -235,11 +235,12 @@ theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := b
 
 theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
     map (frobenius R p ^ n) (expand R (p ^ n) f) = f ^ p ^ n := by
-  induction' n with _ n_ih
-  · simp [RingHom.one_def]
-  symm
-  rw [pow_succ, pow_mul, ← n_ih, ← expand_char, pow_succ', RingHom.mul_def, ← map_map, mul_comm,
-    expand_mul, ← map_expand]
+  induction n with
+  | zero => simp [RingHom.one_def]
+  | succ _ n_ih =>
+    symm
+    rw [pow_succ, pow_mul, ← n_ih, ← expand_char, pow_succ', RingHom.mul_def, ← map_map, mul_comm,
+      expand_mul, ← map_expand]
 
 end ExpChar
 
