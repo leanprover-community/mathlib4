@@ -3,8 +3,8 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.List.Indexes
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Dyck words
@@ -78,6 +78,14 @@ instance : AddCancelMonoid DyckWord where
   nsmul := nsmulRec
   add_left_cancel p q r h := by rw [DyckWord.ext_iff] at *; exact append_cancel_left h
   add_right_cancel p q r h := by rw [DyckWord.ext_iff] at *; exact append_cancel_right h
+
+/-- We define a partial order on Dyck words by writing `p ≤ q` if `p` is a suffix of `q`. -/
+instance : PartialOrder DyckWord where
+  le p q := p.toList <:+ q.toList
+  le_refl p := suffix_rfl
+  le_trans p q r := IsSuffix.trans
+  le_antisymm p q pq qp :=
+    DyckWord.ext_iff.mpr <| eq_of_suffix_of_length_eq pq <| pq.length_le.antisymm qp.length_le
 
 namespace DyckWord
 
@@ -344,14 +352,14 @@ theorem semilength_outsidePart_lt : p.outsidePart.semilength < p.semilength := b
   have := semilength_insidePart_add_semilength_outsidePart_add_one h
   omega
 
-theorem nest_add_insidePart_eq : (p.nest + q).insidePart = p := by
+theorem insidePart_nest_add : (p.nest + q).insidePart = p := by
   have : p.toList.length + 1 + 1 = p.nest.toList.length := by simp [nest]
   simp_rw [insidePart, firstReturn_nest_add, take,
     show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl, take_append_eq_append_take,
     this, take_length, tsub_self, take_zero, append_nil, denest, nest, dropLast_concat]
   rfl
 
-theorem nest_add_outsidePart_eq : (p.nest + q).outsidePart = q := by
+theorem outsidePart_nest_add : (p.nest + q).outsidePart = q := by
   have : p.toList.length + 1 + 1 = p.nest.toList.length := by simp [nest]
   simp_rw [outsidePart, AddLeftCancelMonoid.add_eq_zero, nest_ne_zero, false_and, dite_false,
     firstReturn_nest_add, drop, show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl,
@@ -360,3 +368,24 @@ theorem nest_add_outsidePart_eq : (p.nest + q).outsidePart = q := by
 end FirstReturn
 
 end DyckWord
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic:
+`p.firstReturn` is nonnegative, and is positive if `p` is nonzero. -/
+@[positivity DyckWord.firstReturn _]
+def evalFirstReturn : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(DyckWord.firstReturn $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .nonzero pa => pure (.positive q(DyckWord.firstReturn_pos $pa))
+    | _ => pure (.nonnegative q(Nat.zero_le ($a).firstReturn))
+  | _, _, _ => throwError "not DyckWord.firstReturn"
+
+end Mathlib.Meta.Positivity
+
+example (p : DyckWord) (h : p ≠ 0) : 0 < p.firstReturn := by positivity
