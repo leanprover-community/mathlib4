@@ -234,8 +234,6 @@
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
-  "Mathlib.Tactic.Linter.AssertNot":
-  ["Batteries.Tactic.Lint.Basic", "Lean.Elab.Command"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto":
@@ -402,7 +400,6 @@
   ["Mathlib.Algebra.Ring.Action.Group"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":
   ["Mathlib.Algebra.Module.Submodule.Order"],
-  "Mathlib.AEtest": ["Mathlib.Util.AssertExistsCopy"],
   "Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
   "Batteries.Tactic.Omega.OmegaM": ["Batteries.Tactic.Omega.Int"],
   "Batteries.Tactic.Omega.Frontend": ["Batteries.Tactic.Omega.Logic"],
