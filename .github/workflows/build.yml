@@ -166,11 +166,11 @@ jobs:
           rm -rf .lake/packages/proofwidgets/.lake/build/lib
           rm -rf .lake/packages/proofwidgets/.lake/build/ir
 
-      - name: get cache
-        id: get
-        run: |
-          lake exe cache clean
-          lake exe cache get
+      #- name: get cache
+      #  id: get
+      #  run: |
+      #    lake exe cache clean
+      #    lake exe cache get
 
       - name: build mathlib
         id: build
