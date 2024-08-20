@@ -292,7 +292,7 @@ theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
       show s = a :: t ∨ s <:+ t ↔ s <:+ a :: t from
         ⟨fun o =>
           match s, t, o with
-          | _, t, Or.inl rfl => suffix_refl _
+          | _, t, Or.inl rfl => suffix_rfl
           | s, _, Or.inr ⟨l, rfl⟩ => ⟨a :: l, rfl⟩,
           fun e =>
           match s, t, e with
