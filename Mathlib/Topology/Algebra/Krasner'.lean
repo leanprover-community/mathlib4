@@ -61,6 +61,18 @@ theorem exist_algEquiv [Normal K L] {x x': L} (h : IsConjRoot K x x') :
     exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x')
   exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ.symm⟩
 
+variable {K} in
+theorem not_mem_iff_exist_ne {x : L} (sep : (minpoly K x).Separable) :
+    x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := sorry
+
+variable (R) in
+theorem of_isScalarTower {S : Type*} [CommRing S] [Algebra R S] [Algebra S A]
+    [IsScalarTower R S A] {x x' : A} (h : IsConjRoot S x x') : IsConjRoot R x x' := sorry
+
+theorem add_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
+    IsConjRoot R (x + algebraMap R A r) (x' + algebraMap R A r) := sorry
+--  minpoly.add_algebraMap
+/-
 theorem eq_of_degree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
     (g : degree (minpoly R x) = 1) : x = x' := by
   sorry
@@ -73,21 +85,11 @@ theorem eq_of_isConjRoot_algebraMap {r : R} {x : A} (h : IsConjRoot R x (algebra
 
 theorem neg {x x' : A} (r : R) (h : IsConjRoot R x x') :  IsConjRoot R (-x) (-x') := sorry
 
-theorem add_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
-    IsConjRoot R (x + algebraMap R A r) (x' + algebraMap R A r) := sorry
 
 theorem sub_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
     IsConjRoot R (x - algebraMap R A r) (x' - algebraMap R A r) := sorry
 
 theorem smul {x x' : A} (r : R) (h : IsConjRoot R x x') :  IsConjRoot R (r • x) (r • x') := sorry
-
-variable (R) in
-theorem of_isScalarTower {S : Type*} [CommRing S] [Algebra R S] [Algebra S A]
-    [IsScalarTower R S A] {x x' : A} (h : IsConjRoot S x x') : IsConjRoot R x x' := sorry
-
-variable {K} in
-theorem not_mem_iff_exist_ne {x : L} (sep : (minpoly K x).Separable) :
-    x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := sorry
 
 variable {K} in
 theorem isIntegral {x x' : L} (hx : IsIntegral K x) (h : IsConjRoot K x x') :
@@ -96,7 +98,7 @@ theorem isIntegral {x x' : L} (hx : IsIntegral K x) (h : IsConjRoot K x x') :
 theorem iff_eq_zero {x : A} : IsConjRoot R 0 x ↔ x = 0 := sorry
 
 theorem ne_zero {x x' : A} (hx : x ≠ 0) (h : IsConjRoot R x x') : x' ≠ 0 := sorry
-
+-/
 end IsConjRoot
 
 end conj
@@ -129,7 +131,7 @@ theorem Polynomial.minpoly_separable_of_isScalarTower {x : B} (h : (minpoly R x)
 
 end Separable
 
-section NormValued
+section NormedValued
 
 @[simp]
 theorem Valued.toNormedField.norm_le_iff [vL.v.RankOne] {x x' : L} :
@@ -178,7 +180,14 @@ def Valued.toNontriviallyNormedField [vL.v.RankOne] : NontriviallyNormedField L 
       simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
 }
 
-end NormValued
+theorem Valued.toNormedField.isNonarchimedean [vL.v.RankOne] :
+    letI := vL.toNormedField
+    IsNonarchimedean (norm : L → ℝ) := by
+  intro x y
+  simp only [norm, le_max_iff, NNReal.coe_le_coe, (Valuation.RankOne.strictMono vL.v).le_iff_le,
+    Valuation.map_add']
+
+end NormedValued
 
 section ContinuousSMul
 
@@ -358,10 +367,33 @@ section Valued
 
 variable {Γ Γ' : Type*} [LinearOrderedCommGroupWithZero Γ] [LinearOrderedCommGroupWithZero Γ']
     {vK : Valued K Γ} {vK' : Valued K Γ'}
+
+variable {K} in
 /-- Equivalent valuations induces the same topology -/
 theorem Valued.toUniformSpace_eq_of_isEquiv (h : vK.v.IsEquiv vK'.v) :
   vK.toUniformSpace = vK'.toUniformSpace := by
-  sorry -- must use new definition of is_topological_valuation
+  sorry -- `must use new definition of is_topological_valuation`
+
+variable {A B : Type*} [CommRing A] [Ring B] {Γ : Type*}
+  [LinearOrderedCommGroupWithZero Γ]
+  [Algebra A B]
+
+def Valued.comap (vB : Valued B Γ) : Valued A Γ := {
+  vB.toUniformSpace.comap (algebraMap A B), vB.toUniformAddGroup.comap (algebraMap A B) with
+  v := vB.v.comap (algebraMap A B)
+  is_topological_valuation := by
+    intro U
+    have teq := UniformSpace.toTopologicalSpace_comap (u := vB.toUniformSpace) (f := algebraMap A B)
+    rw [(@induced_iff_nhds_eq _ _ _ (vB.toUniformSpace.comap (algebraMap A B)).toTopologicalSpace
+        (algebraMap A B)).mp teq 0]
+    simp only [map_zero, Filter.mem_comap, Valuation.comap_apply]
+    constructor
+    · rintro ⟨V, hV⟩
+      obtain ⟨γ, hγ⟩ := (vB.is_topological_valuation V).mp hV.1
+      exact ⟨γ, subset_trans (fun _ h ↦ hγ h) hV.2⟩
+    · rintro ⟨γ, hγ⟩
+      exact ⟨{x | vB.v x < γ}, ⟨(vB.is_topological_valuation _).mpr ⟨γ, subset_refl _⟩, hγ⟩⟩
+}
 
 end Valued
 
@@ -376,14 +408,17 @@ theorem of_completeSpace [rk1L : vL.v.RankOne] {ΓK : outParam Type*}
     (h : vK.v.IsEquiv <| vL.v.comap (algebraMap K L)): IsKrasner K L := by
   constructor
   intro x y xsep hyK hxy
-  -- translate between vL.v.comap (algebraMap K L) and vL
   letI := vL.toNormedField
   letI vK' : Valued K ΓL := {
     vK.toUniformSpace with
     v := (vL.v.comap (algebraMap K L))
-    is_topological_valuation := sorry
+    is_topological_valuation := by
+      have useq : vL.comap.toUniformSpace = vK.toUniformSpace :=
+        (Valued.toUniformSpace_eq_of_isEquiv h).symm
+      simp only [Valuation.comap_apply]
+      exact useq ▸ vL.comap.is_topological_valuation
   }
-  letI : (vL.v.comap (algebraMap K L)).RankOne := {
+  letI : vK'.v.RankOne := {
     hom := rk1L.hom
     strictMono' := rk1L.strictMono'
     nontrivial' := by
@@ -392,69 +427,10 @@ theorem of_completeSpace [rk1L : vL.v.RankOne] {ΓK : outParam Type*}
       exact ⟨h.ne_zero.mp hx0 , ((Valuation.isEquiv_iff_val_eq_one _ _).mp h).not.mp hx1⟩
   }
   letI := vK'.toNontriviallyNormedField
-  refine (IsKrasnerNorm.of_completeSpace (K := K) (L := L) ?_ ?_).krasner_norm xsep hyK ?_
-  · sorry -- isNonArch
-  · sorry -- FunctionExtends
-  · sorry -- translation
-  -- let z := x - y
-  -- let M := K⟮y⟯
-  -- let FDM := IntermediateField.adjoin.finiteDimensional hyK
-  -- let I'' : UniformAddGroup M := inferInstanceAs (UniformAddGroup M.toSubfield.toSubring)
-  -- let NNFK : NontriviallyNormedField K := vK.toNontriviallyNormedField
-  -- have : ContinuousSMul K M := by -- decompose as `ContinuousSMul K L implies ContinuousSMul K M`
-  --   apply Inducing.continuousSMul (N := K) (M := (⊥ : IntermediateField K L)) (X := M)
-  --    (Y := M) (f := (IntermediateField.botEquiv K L).symm) inducing_id
-  --   · simpa only [bot_toSubalgebra] using
-  --     (continuous_induced_rng (f := (Subtype.val : (⊥ : IntermediateField K L) → L)) (g :=
-  --           (IntermediateField.botEquiv K L).symm)).mpr <|
-  --       h.toUniformInducing.inducing.continuous
-  --   · intro r m
-  --     ext
-  --     simp
-  -- -- have : u = NNFK.toUniformSpace := by
-  -- --   rw [Valued.toNormedField.toUniformSpace_eq]
-  -- --   rw [Valued.toUniformSpace_eq_of_isEquiv_comap (vK := vK) (Valuation.IsEquiv.refl)]
-  -- --   ext
-  --   -- rw [← h.comap_uniformity]
-  --   -- rfl
-  -- -- subst this
-  -- let hM : Embedding (algebraMap M L) := Function.Injective.embedding_induced
-  --    Subtype.val_injective
-  -- -- M with UniformSpace already, as subspace of L
-  -- letI : CompleteSpace M := FiniteDimensional.complete K M
-  -- -- @FiniteDimensional.complete K M sorry sorry _ _ _ sorry _ _ _
-  -- -- this need all topology on M is the same and complete?
-  -- have hy : y ∈ K⟮y⟯ := IntermediateField.subset_adjoin K {y} rfl
-  -- have zsep : (minpoly M z).Separable := by
-  --   apply Polynomial.Separable.minpoly_sub (Polynomial.minpoly_separable_of_isScalarTower M xsep)
-  --   simpa only using
-  --     minpoly.eq_X_sub_C_of_algebraMap_inj (⟨y, hy⟩ : M)
-  --         (NoZeroSMulDivisors.algebraMap_injective (↥M) L) ▸
-  --       Polynomial.separable_X_sub_C (x := (⟨y, hy⟩ : M))
-  -- suffices z ∈ K⟮y⟯ by simpa [z] using add_mem this hy
-  -- by_contra hnin
-  -- have : z ∈ K⟮y⟯ ↔ z ∈ (⊥ : Subalgebra M L) := by simp [Algebra.mem_bot]
-  -- rw [this.not] at hnin
-  -- obtain ⟨z', hne, h1⟩ := (IsConjRoot.not_mem_iff_exist_ne zsep).mp hnin
-  -- -- this is where the separablity is used.
-  -- -- rw [not_mem_iff_nontrvial zsep] at hnin
-  -- -- obtain ⟨⟨z', h1⟩, hne⟩ := exists_ne (⟨z, conjRootSet.self_mem z⟩ :
-  --    { x // x ∈ conjRootSet M z })
-  -- simp only [ne_eq, Subtype.mk.injEq] at hne
-  -- -- simp only [conjRootSet, Set.coe_setOf, Set.mem_toFinset, Set.mem_setOf_eq] at h1
-  -- -- let vM : Valued M NNReal := sorry
-  -- have : vL.v z = vL.v z' := IsConjRoot.val_eq M hM (Polynomial.Separable.isIntegral zsep) h1
-  -- -- need rank one
-  -- have : vL.v (z - z') < vL.v (z - z') := by
-  --   calc
-  --     _ ≤ vL.v (x - y) := by simpa only [max_self, ← this] using Valuation.map_sub vL.v z z'
-  --     _ < vL.v (x - (z' + y)) := by
-  --       apply hxy (z' + y)
-  --       · apply IsConjRoot.of_isScalarTower (S := M) K
-  --         simpa only [IntermediateField.algebraMap_apply, sub_add_cancel, z] using
-  --           IsConjRoot.add_algebraMap ⟨y, hy⟩ h1
-  --       · simpa [z, sub_eq_iff_eq_add] using hne
-  --     _ = vL.v (z - z') := by congr 1; ring
-  -- simp only [lt_self_iff_false] at this
+  refine (IsKrasnerNorm.of_completeSpace (K := K) (L := L) ?_ (fun _ ↦ rfl)).krasner_norm
+    xsep hyK ?_
+  · exact Valued.toNormedField.isNonarchimedean
+  · intros x' hx' hne
+    exact Valued.toNormedField.norm_lt_iff.mpr (hxy x' hx' hne)
 
 end IsKrasner
