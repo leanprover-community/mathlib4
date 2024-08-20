@@ -281,9 +281,7 @@ theorem list_map_toFinset [DecidableEq α] [DecidableEq β] (l : List α) :
     Finset.map f (List.toFinset l) = List.toFinset (List.map (↑f) l) := by
   match l with
   | [] => simp
-  | x :: xs =>
-    simp
-    rw [list_map_toFinset]
+  | x :: xs => simp [list_map_toFinset]
 
 end Map
 

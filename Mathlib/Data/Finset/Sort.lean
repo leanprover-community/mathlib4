@@ -87,28 +87,16 @@ theorem filter_sort_commute [DecidableEq α](f : α → Prop) [DecidablePred f] 
 theorem sort_monotone_map [DecidableEq α] [DecidableEq β]
     (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
     (f : α ↪ β) (preserve_le : {x : α} → {y : α} → (h : r x y) → (r' (f x) (f y)))
-    (s : Finset α): sort r' (map f s) = List.map f (sort r s) := by
-  have LHS_sorted : List.Sorted r' (sort r' (map f s)) :=
-    sort_sorted r' (map f s)
-  let lst := sort r s
-  have lst_sorted : List.Sorted r lst := sort_sorted r s
-  have RHS_sorted : List.Sorted r' (List.map f lst) := by
-    apply List.pairwise_map.mpr
-    unfold List.Sorted at lst_sorted
-    exact List.Pairwise.imp preserve_le lst_sorted
-  have LHS_nodup :
-  List.Nodup (sort r' (map f s)) := sort_nodup r' (map f s)
-  have RHS_nodup : List.Nodup (List.map f (sort r s)) := by
-    apply List.Nodup.map
-    exact Function.Embedding.injective f
-    exact sort_nodup r s
-  have h :
-      (sort r' (map f s)).toFinset = (List.map f (sort r s)).toFinset := by
-    simp
-    rw [← list_map_toFinset]
-    simp
-  rw [List.toFinset_eq_iff_perm_dedup,List.Nodup.dedup LHS_nodup,List.Nodup.dedup RHS_nodup] at h
-  exact List.eq_of_perm_of_sorted h LHS_sorted RHS_sorted
+    (s : Finset α) : sort r' (map f s) = List.map f (sort r s) := by
+  -- injectivity lets us promote `preserve_le` to an `Iff`.
+  replace preserve_le {a b} : r a b ↔ r' (f a) (f b) := by
+    refine ⟨preserve_le, fun h => ?_⟩
+    obtain hab | hba := total_of r a b
+    · exact hab
+    · have : a = b := f.injective <| antisymm_of r' h (preserve_le hba)
+      cases this
+      exact hba
+  exact (Multiset.map_sort r r' f s.1 fun a _ha b _hb => preserve_le).symm
 
 theorem sort_insert_largest [DecidableEq α](s : Finset α)
     (x : α) (h : ∀ y ∈ s, r y x) (hx : x ∉ s) :
