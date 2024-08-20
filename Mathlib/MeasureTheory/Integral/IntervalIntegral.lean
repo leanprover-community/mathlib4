@@ -620,12 +620,7 @@ section Comp
 
 variable {a b c d : ℝ} (f : ℝ → E)
 
-/-!
-Porting note: some `@[simp]` attributes in this section were removed to make the `simpNF` linter
-happy. TODO: find out if these lemmas are actually good or bad `simp` lemmas.
--/
-
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_mul_right (hc : c ≠ 0) :
     (∫ x in a..b, f (x * c)) = c⁻¹ • ∫ x in a * c..b * c, f x := by
   have A : MeasurableEmbedding fun x => x * c :=
@@ -638,32 +633,32 @@ theorem integral_comp_mul_right (hc : c ≠ 0) :
       Measure.restrict_congr_set (α := ℝ) (μ := volume) Ico_ae_eq_Ioc]
   · simp [h, mul_div_cancel_right₀, hc, abs_of_pos]
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem smul_integral_comp_mul_right (c) :
     (c • ∫ x in a..b, f (x * c)) = ∫ x in a * c..b * c, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_right]
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_mul_left (hc : c ≠ 0) :
     (∫ x in a..b, f (c * x)) = c⁻¹ • ∫ x in c * a..c * b, f x := by
   simpa only [mul_comm c] using integral_comp_mul_right f hc
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem smul_integral_comp_mul_left (c) :
     (c • ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_left]
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_div (hc : c ≠ 0) :
     (∫ x in a..b, f (x / c)) = c • ∫ x in a / c..b / c, f x := by
   simpa only [inv_inv] using integral_comp_mul_right f (inv_ne_zero hc)
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_smul_integral_comp_div (c) :
     (c⁻¹ • ∫ x in a..b, f (x / c)) = ∫ x in a / c..b / c, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_div]
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_add_right (d) : (∫ x in a..b, f (x + d)) = ∫ x in a + d..b + d, f x :=
   have A : MeasurableEmbedding fun x => x + d :=
     (Homeomorph.addRight d).closedEmbedding.measurableEmbedding
@@ -672,102 +667,102 @@ theorem integral_comp_add_right (d) : (∫ x in a..b, f (x + d)) = ∫ x in a + 
       simp [intervalIntegral, A.setIntegral_map]
     _ = ∫ x in a + d..b + d, f x := by rw [map_add_right_eq_self]
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 nonrec theorem integral_comp_add_left (d) :
     (∫ x in a..b, f (d + x)) = ∫ x in d + a..d + b, f x := by
   simpa only [add_comm d] using integral_comp_add_right f d
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_mul_add (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (c * x + d)) = c⁻¹ • ∫ x in c * a + d..c * b + d, f x := by
   rw [← integral_comp_add_right, ← integral_comp_mul_left _ hc]
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem smul_integral_comp_mul_add (c d) :
     (c • ∫ x in a..b, f (c * x + d)) = ∫ x in c * a + d..c * b + d, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_add]
 
-@[simp] -- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_add_mul (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (d + c * x)) = c⁻¹ • ∫ x in d + c * a..d + c * b, f x := by
   rw [← integral_comp_add_left, ← integral_comp_mul_left _ hc]
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem smul_integral_comp_add_mul (c d) :
     (c • ∫ x in a..b, f (d + c * x)) = ∫ x in d + c * a..d + c * b, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_add_mul]
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_div_add (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (x / c + d)) = c • ∫ x in a / c + d..b / c + d, f x := by
   simpa only [div_eq_inv_mul, inv_inv] using integral_comp_mul_add f (inv_ne_zero hc) d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_smul_integral_comp_div_add (c d) :
     (c⁻¹ • ∫ x in a..b, f (x / c + d)) = ∫ x in a / c + d..b / c + d, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_div_add]
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_add_div (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (d + x / c)) = c • ∫ x in d + a / c..d + b / c, f x := by
   simpa only [div_eq_inv_mul, inv_inv] using integral_comp_add_mul f (inv_ne_zero hc) d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_smul_integral_comp_add_div (c d) :
     (c⁻¹ • ∫ x in a..b, f (d + x / c)) = ∫ x in d + a / c..d + b / c, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_add_div]
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_mul_sub (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (c * x - d)) = c⁻¹ • ∫ x in c * a - d..c * b - d, f x := by
   simpa only [sub_eq_add_neg] using integral_comp_mul_add f hc (-d)
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem smul_integral_comp_mul_sub (c d) :
     (c • ∫ x in a..b, f (c * x - d)) = ∫ x in c * a - d..c * b - d, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_sub]
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_sub_mul (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (d - c * x)) = c⁻¹ • ∫ x in d - c * b..d - c * a, f x := by
   simp only [sub_eq_add_neg, neg_mul_eq_neg_mul]
   rw [integral_comp_add_mul f (neg_ne_zero.mpr hc) d, integral_symm]
   simp only [inv_neg, smul_neg, neg_neg, neg_smul]
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem smul_integral_comp_sub_mul (c d) :
     (c • ∫ x in a..b, f (d - c * x)) = ∫ x in d - c * b..d - c * a, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_sub_mul]
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_div_sub (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (x / c - d)) = c • ∫ x in a / c - d..b / c - d, f x := by
   simpa only [div_eq_inv_mul, inv_inv] using integral_comp_mul_sub f (inv_ne_zero hc) d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_smul_integral_comp_div_sub (c d) :
     (c⁻¹ • ∫ x in a..b, f (x / c - d)) = ∫ x in a / c - d..b / c - d, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_div_sub]
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_sub_div (hc : c ≠ 0) (d) :
     (∫ x in a..b, f (d - x / c)) = c • ∫ x in d - b / c..d - a / c, f x := by
   simpa only [div_eq_inv_mul, inv_inv] using integral_comp_sub_mul f (inv_ne_zero hc) d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_smul_integral_comp_sub_div (c d) :
     (c⁻¹ • ∫ x in a..b, f (d - x / c)) = ∫ x in d - b / c..d - a / c, f x := by
   by_cases hc : c = 0 <;> simp [hc, integral_comp_sub_div]
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_sub_right (d) : (∫ x in a..b, f (x - d)) = ∫ x in a - d..b - d, f x := by
   simpa only [sub_eq_add_neg] using integral_comp_add_right f (-d)
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_sub_left (d) : (∫ x in a..b, f (d - x)) = ∫ x in d - b..d - a, f x := by
   simpa only [one_mul, one_smul, inv_one] using integral_comp_sub_mul f one_ne_zero d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem integral_comp_neg : (∫ x in a..b, f (-x)) = ∫ x in -b..-a, f x := by
   simpa only [zero_sub] using integral_comp_sub_left f 0
 
