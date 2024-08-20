@@ -360,7 +360,7 @@ theorem insidePart_nest_add : (p.nest + q).insidePart = p := by
 
 theorem outsidePart_nest_add : (p.nest + q).outsidePart = q := by
   have : p.toList.length + 1 + 1 = p.nest.toList.length := by simp [nest]
-  simp_rw [outsidePart, AddLeftCancelMonoid.add_eq_zero, nest_ne_zero, false_and, dite_false,
+  simp_rw [outsidePart, add_eq_zero', nest_ne_zero, false_and, dite_false,
     firstReturn_nest_add, drop, show (p.nest + q).toList = p.nest.toList ++ q.toList by rfl,
     drop_append_eq_append_drop, this, drop_length, nil_append, tsub_self, drop_zero]
 
@@ -435,59 +435,57 @@ open Tree
 /-- Convert a Dyck word to a binary rooted tree.
 
 `f(0) = nil`. For a nonzero word find the `D` that matches the initial `U` –
-which has index `w.firstReturn` – then let `x` be everything strictly between said `U` and `D`,
-and `y` be everything strictly after said `D`. `w = U x D y` and `x` and `y` are (possibly empty)
-Dyck words. `f(w) = f(x) △ f(y)`, where △ (defined in `Mathlib.Data.Tree`) joins two subtrees
+which has index `p.firstReturn` – then let `x` be everything strictly between said `U` and `D`,
+and `y` be everything strictly after said `D`. `p = U x D y` and `x` and `y` are (possibly empty)
+Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib.Data.Tree`) joins two subtrees
 to a new root node. -/
-def treeEquivToFun (w : DyckWord) : Tree Unit :=
-  if e : w = 0 then nil else by
-    have := w.semilength_insidePart_lt e
-    have := w.semilength_outsidePart_lt e
-    exact treeEquivToFun w.insidePart △ treeEquivToFun w.outsidePart
-termination_by w.semilength
+def treeEquivToFun (p : DyckWord) : Tree Unit :=
+  if h : p = 0 then nil else
+    have := semilength_insidePart_lt h
+    have := semilength_outsidePart_lt h
+    treeEquivToFun p.insidePart △ treeEquivToFun p.outsidePart
+termination_by p.semilength
 
 /-- Convert a binary rooted tree to a Dyck word.
 
-`g(nil) = 0`. A nonempty tree with left subtree `x` and right subtree `y`
-is sent to `U g(x) D g(y)`. -/
-def treeEquivInvFun (tr : Tree Unit) : DyckWord :=
-  match tr with
+`g(nil) = 0`. A nonempty tree with left subtree `l` and right subtree `r`
+is sent to `U g(l) D g(r)`. -/
+def treeEquivInvFun (t : Tree Unit) : DyckWord :=
+  match t with
   | Tree.nil => 0
   | Tree.node _ l r => (treeEquivInvFun l).nest + treeEquivInvFun r
 
 @[nolint unusedHavesSuffices]
-theorem treeEquiv_left_inv {n : ℕ} (hs : p.semilength = n) :
-    treeEquivInvFun (treeEquivToFun p) = p := by
-  induction' n using Nat.strongInductionOn with n ih generalizing p
+lemma treeEquiv_left_inv (p) : treeEquivInvFun (treeEquivToFun p) = p := by
   by_cases h : p = 0
   · simp [h, treeEquivToFun, treeEquivInvFun]
   · rw [treeEquivToFun]
     simp_rw [h, dite_false, treeEquivInvFun]
-    convert p.nest_insidePart_add_outsidePart h
-    · exact ih _ (hs ▸ semilength_insidePart_lt h) rfl
-    · exact ih _ (hs ▸ semilength_outsidePart_lt h) rfl
+    have := semilength_insidePart_lt h
+    have := semilength_outsidePart_lt h
+    rw [treeEquiv_left_inv p.insidePart, treeEquiv_left_inv p.outsidePart]
+    exact nest_insidePart_add_outsidePart h
+termination_by p.semilength
 
 @[nolint unusedHavesSuffices]
-theorem treeEquiv_right_inv (tr : Tree Unit) : treeEquivToFun (treeEquivInvFun tr) = tr := by
-  induction' tr with _ l r ttl ttr
-  · simp [treeEquivInvFun, treeEquivToFun]
-  rw [treeEquivInvFun, treeEquivToFun]
-  have pp : (treeEquivInvFun l).nest + treeEquivInvFun r ≠ 0 := (ne_of_beq_false rfl).symm
-  simp_rw [pp, dite_false, node.injEq, true_and]
-  constructor
-  · convert ttl; apply insidePart_nest_add
-  · convert ttr; apply outsidePart_nest_add
+lemma treeEquiv_right_inv (t) : treeEquivToFun (treeEquivInvFun t) = t := by
+  induction t with
+  | nil => simp [treeEquivInvFun, treeEquivToFun]
+  | node =>
+    rw [treeEquivInvFun, treeEquivToFun]
+    simp_rw [add_eq_zero', nest_ne_zero, false_and, dite_false, node.injEq]
+    rw [true_and, insidePart_nest_add, outsidePart_nest_add]; tauto
 
 /-- Equivalence between Dyck words and rooted binary trees. -/
 def treeEquiv : DyckWord ≃ Tree Unit where
   toFun := treeEquivToFun
   invFun := treeEquivInvFun
-  left_inv _ := treeEquiv_left_inv rfl
+  left_inv := treeEquiv_left_inv
   right_inv := treeEquiv_right_inv
 
 @[nolint unusedHavesSuffices]
-theorem semilength_eq_treeEquiv_numNodes (p) : p.semilength = (treeEquiv p).numNodes := by
-  rcases eq_or_ne p 0 with h | h
+lemma semilength_eq_treeEquiv_numNodes (p) : p.semilength = (treeEquiv p).numNodes := by
+  by_cases h : p = 0
   · simp [h, treeEquiv, treeEquivToFun]
   · rw [treeEquiv, Equiv.coe_fn_mk, treeEquivToFun]
     simp_rw [h, dite_false, numNodes]
