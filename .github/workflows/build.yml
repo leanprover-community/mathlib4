@@ -207,6 +207,17 @@ jobs:
             lake build --no-build
           fi
 
+      - name: check assertions
+        run: |
+          printf 'import Mathlib\n\n#check_assertions\n' > Mathlib/CheckAssertionsTemp.lean
+          lake build Mathlib.CheckAssertionsTemp
+          var="$(lake build Mathlib.CheckAssertionsTemp | grep "^warning")"
+          if [ -n "${var}" ]
+          then
+            printf $'Some `assert_not_exists` or `assert_not_imported` does not exist in mathlib\n'
+            exit 1
+          fi
+
       - name: build archive
         id: archive
         run: |
