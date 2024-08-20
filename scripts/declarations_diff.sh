@@ -52,7 +52,6 @@ begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
 if [ "${1:-}" == "long" ]
 then
   short=0
-  shift
 else short=1
 fi
 
