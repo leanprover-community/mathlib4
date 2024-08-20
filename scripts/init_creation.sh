@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
  : <<'BASH_MODULE_DOC'
 
 These are the commands to generate a "root" `Mathlib/Init.lean` file, imported by all the

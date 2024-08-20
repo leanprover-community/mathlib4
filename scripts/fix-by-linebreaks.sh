@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
 # Modify all lean files in mathlib to put the "by" in lines that only contain "  by" at the end of the previous line,
 # when the previous line with " by" appended is not longer than 100 characters.
 

@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
  : <<'BASH_MODULE_DOCS'
 `scripts/import_trans_difference.sh <opt all> <opt_commit1> <opt_commit2>` outputs a full diff
 of the change of transitive imports in all the files between `<opt_commit1>` and `<opt_commit2>`.

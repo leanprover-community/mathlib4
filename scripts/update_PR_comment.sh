@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
  : <<BASH_DOC_MODULE
 This script takes care of maintaining and updating the first message that starts with a given string in a PR.
 It takes 3 inputs:
