@@ -292,7 +292,7 @@ theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem symm_eq_self_of_involution (f : Equiv.Perm α) (h : Function.Involutive f) : f.symm = f := by
+theorem symm_eq_self_of_involutive (f : Equiv.Perm α) (h : Function.Involutive f) : f.symm = f := by
   ext x
   rw [← h x, symm_apply_apply, h]
 
