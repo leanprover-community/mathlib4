@@ -79,8 +79,6 @@ instance instCanLiftSubmoduleLieSubmodule : CanLift (Submodule R M) (LieSubmodul
     (fun N ↦ ∀ {x : L} {m : M}, m ∈ N → ⁅x, m⁆ ∈ N) where
   prf N hN := ⟨⟨N, hN⟩, rfl⟩
 
--- Syntactic tautology
-
 @[norm_cast]
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl

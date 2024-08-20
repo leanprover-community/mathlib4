@@ -531,8 +531,6 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
     x ^ n ∈ S :=
   pow_mem hx n
 
--- Porting note: coe_pow removed, syntactic tautology
-
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
 instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
