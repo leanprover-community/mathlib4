@@ -155,13 +155,13 @@ lemma curry₃_map_app_app_app {F G : C₁ × C₂ × C₃ ⥤ E} (f : F ⟶ G)
 lemma currying₃_unitIso_hom_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
     (((currying₃.unitIso.hom.app F).app X₁).app X₂).app X₃ = 𝟙 _ := by
-  simp [currying₃]
+  simp [currying₃, Equivalence.unit]
 
 @[simp]
 lemma currying₃_unitIso_inv_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
     (((currying₃.unitIso.inv.app F).app X₁).app X₂).app X₃ = 𝟙 _ := by
-  simp [currying₃]
+  simp [currying₃, Equivalence.unitInv]
 
 namespace MorphismProperty
 

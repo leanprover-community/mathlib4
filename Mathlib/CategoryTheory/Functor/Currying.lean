@@ -79,13 +79,13 @@ def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
 def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
   functor := uncurry
   inverse := curry
-  unitIso := NatIso.ofComponents (fun F ↦ NatIso.ofComponents
-    (fun X ↦ (NatIso.ofComponents (fun Y ↦ Iso.refl _))))
-  counitIso := NatIso.ofComponents (fun F ↦ NatIso.ofComponents
-    (fun _ ↦ Iso.refl _) (by
+  unitIso := NatIso.ofComponents (fun _ ↦ NatIso.ofComponents
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _)))
+  counitIso := NatIso.ofComponents
+    (fun F ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _) (by
       rintro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ ⟨f₁, f₂⟩
-      dsimp
-      simp only [← F.map_comp, Category.comp_id, Category.id_comp, prod_comp]))
+      dsimp at f₁ f₂ ⊢
+      simp only [← F.map_comp, prod_comp, Category.comp_id, Category.id_comp]))
 
 def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
   (currying).fullyFaithfulFunctor

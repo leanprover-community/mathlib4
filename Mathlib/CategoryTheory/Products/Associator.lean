@@ -35,7 +35,7 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E where
 
 /-- The equivalence of categories expressing associativity of products of categories.
 -/
-@[simps!]
+@[simps]
 def associativity : (C × D) × E ≌ C × D × E where
   functor := associator C D E
   inverse := inverseAssociator C D E
