@@ -260,7 +260,6 @@ lemma coreflection_same (x : N) :
     P.coreflection i (P.coreflection i x) = x :=
   Module.involutive_reflection (P.flip.coroot_root_two i) x
 
-
 @[simp]
 lemma coreflection_inv :
     (P.coreflection i)⁻¹ = P.coreflection i :=
@@ -411,11 +410,10 @@ def weylGroupToPerm : P.weylGroup →* Equiv.Perm ι where
   map_mul' x y := by
     obtain ⟨x, hx⟩ := x
     obtain ⟨y, hy⟩ := y
-    have hxy : x * y ∈ P.weylGroup := (Subgroup.mul_mem_cancel_right P.weylGroup hy).mpr hx
     ext i
     apply P.root.injective
     simp only [Equiv.coe_fn_mk, Equiv.Perm.coe_mul, comp_apply]
-    rw [(P.exists_root_eq_smul_of_mem_weylGroup hxy i).choose_spec,
+    rw [(P.exists_root_eq_smul_of_mem_weylGroup (mul_mem hx hy) i).choose_spec,
       (P.exists_root_eq_smul_of_mem_weylGroup hx
         ((P.exists_root_eq_smul_of_mem_weylGroup hy i).choose)).choose_spec,
       (P.exists_root_eq_smul_of_mem_weylGroup hy i).choose_spec, mul_smul]
@@ -505,8 +503,7 @@ lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem �
     P.reflection_perm i = P.reflection_perm j ↔ P.reflection i = P.reflection j := by
   refine ⟨fun h ↦ ?_, fun h ↦ Equiv.ext fun k ↦ P.root.injective <| by simp [h]⟩
   ext x
-  have hx : x ∈ span R (range P.root) := by simp [P.span_eq_top]
-  exact (reflection_perm_eq_reflection_perm_iff_of_span P.toRootPairing i j).mp h x hx
+  exact (reflection_perm_eq_reflection_perm_iff_of_span P.toRootPairing i j).mp h x <| by simp
 
 section pairs
 
