@@ -291,6 +291,13 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃ α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
+@[simp]
+theorem symm_eq_self_of_involution (f : Equiv.Perm α) (h : Function.Involutive f) : f.symm = f := by
+  ext x
+  calc f.symm x = f.symm (f (f x)) := by rw [h x]
+              _ = (f.symm ∘ f) (f x) := rfl
+              _ = id (f x) := by rw [symm_comp_self]
+
 @[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
 
 @[simp] theorem refl_symm : (Equiv.refl α).symm = Equiv.refl α := rfl
