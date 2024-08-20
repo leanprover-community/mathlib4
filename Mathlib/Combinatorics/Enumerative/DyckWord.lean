@@ -79,14 +79,6 @@ instance : AddCancelMonoid DyckWord where
   add_left_cancel p q r h := by rw [DyckWord.ext_iff] at *; exact append_cancel_left h
   add_right_cancel p q r h := by rw [DyckWord.ext_iff] at *; exact append_cancel_right h
 
-/-- We define a partial order on Dyck words by writing `p ≤ q` if `p` is a suffix of `q`. -/
-instance : PartialOrder DyckWord where
-  le p q := p.toList <:+ q.toList
-  le_refl p := suffix_rfl
-  le_trans p q r := IsSuffix.trans
-  le_antisymm p q pq qp :=
-    DyckWord.ext_iff.mpr <| eq_of_suffix_of_length_eq pq <| pq.length_le.antisymm qp.length_le
-
 namespace DyckWord
 
 variable {p q : DyckWord}
@@ -366,6 +358,68 @@ theorem outsidePart_nest_add : (p.nest + q).outsidePart = q := by
     drop_append_eq_append_drop, this, drop_length, nil_append, tsub_self, drop_zero]
 
 end FirstReturn
+
+section Order
+
+instance : Preorder DyckWord where
+  le := Relation.ReflTransGen (fun p q ↦ p = q.insidePart ∨ p = q.outsidePart)
+  le_refl p := Relation.ReflTransGen.refl
+  le_trans p q r := Relation.ReflTransGen.trans
+
+lemma zero_le (p : DyckWord) : 0 ≤ p := by
+  by_cases h : p = 0
+  · simp [h]
+  · have := semilength_insidePart_lt h
+    exact (zero_le _).trans (Relation.ReflTransGen.single (Or.inl rfl))
+termination_by p.semilength
+
+lemma infix_of_le (h : p ≤ q) : p.toList <:+: q.toList := by
+  induction h with
+  | refl => exact infix_refl _
+  | tail _pm mq ih =>
+    rename_i m r
+    rcases eq_or_ne r 0 with rfl | hr
+    · rw [insidePart_zero, outsidePart_zero, or_self] at mq
+      rwa [mq] at ih
+    · have : [U] ++ r.insidePart ++ [D] ++ r.outsidePart = r :=
+        DyckWord.ext_iff.mp (nest_insidePart_add_outsidePart hr)
+      rcases mq with hm | hm
+      · have : r.insidePart <:+: r.toList := by
+          use [U], [D] ++ r.outsidePart; rwa [← append_assoc]
+        exact ih.trans (hm ▸ this)
+      · have : r.outsidePart <:+: r.toList := by
+          use [U] ++ r.insidePart ++ [D], []; rwa [append_nil]
+        exact ih.trans (hm ▸ this)
+
+/-- Partial order on Dyck words: `p ≤ q` if a (possibly empty) sequence of
+`insidePart` and `outsidePart` operations can turn `q` into `p`. -/
+instance : PartialOrder DyckWord where
+  le_antisymm p q pq qp := by
+    have h₁ := infix_of_le pq
+    have h₂ := infix_of_le qp
+    exact DyckWord.ext <| eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
+
+lemma monotone_semilength : Monotone semilength := fun p q pq ↦ by
+  induction pq with
+  | refl => rfl
+  | tail _ mq ih =>
+    rename_i m r _
+    rcases eq_or_ne r 0 with rfl | hr
+    · rw [insidePart_zero, outsidePart_zero, or_self] at mq
+      rwa [mq] at ih
+    · rcases mq with hm | hm
+      · exact ih.trans (hm ▸ semilength_insidePart_lt hr).le
+      · exact ih.trans (hm ▸ semilength_outsidePart_lt hr).le
+
+lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
+  obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
+  apply lt_of_le_of_ne (monotone_semilength plq)
+  contrapose! pnq
+  replace pnq := congr(2 * $(pnq))
+  simp_rw [two_mul_semilength_eq_length] at pnq
+  exact DyckWord.ext (eq_of_infix_of_length_eq (infix_of_le plq) pnq)
+
+end Order
 
 end DyckWord
 
