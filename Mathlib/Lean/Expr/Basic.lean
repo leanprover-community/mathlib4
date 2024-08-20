@@ -8,6 +8,7 @@ import Mathlib.Init
 import Lean.Meta.Tactic.Rewrite
 import Batteries.Lean.Expr
 import Batteries.Data.Rat.Basic
+import Batteries.Tactic.Alias
 import Lean.Elab.Binders
 
 /-!
