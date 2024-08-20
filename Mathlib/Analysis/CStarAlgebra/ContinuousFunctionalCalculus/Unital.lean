@@ -260,6 +260,18 @@ theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a
 
 end cfcHom
 
+section cfcCLM
+
+noncomputable def cfcCLM {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
+  { cfcHom ha with
+    map_smul' := fun c f => by
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe,
+        OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_coe,
+        LinearMapClass.map_smul, StarAlgHom.coe_toAlgHom, RingHom.id_apply]
+    cont := (cfcHom_closedEmbedding ha).continuous }
+
+end cfcCLM
+
 section CFC
 
 open scoped Classical in
@@ -309,6 +321,14 @@ lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a,
     continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
   rw [cfc_apply ..]
   congr!
+
+lemma cfc_eq_cfcCLM {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
+    cfc f a = cfcCLM ha ⟨_, hf.restrict⟩ := by
+  rw [cfc_def, dif_pos ⟨ha, hf⟩]
+  rfl
+
+lemma cfcHom_eq_cfcCLM {a : A} {f : C(spectrum R a, R)} (ha : p a) :
+    cfcHom ha f = cfcCLM ha f := rfl
 
 lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.restrict⟩)) :
