@@ -3,7 +3,7 @@
 # Make this script robust against unintentional errors.
 # See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
 set -euo pipefail
-IFS=$'\n\t'
+## IFS=$'\n\t' # what is this?
 
  : <<'BASH_DOC_MODULE'
 
