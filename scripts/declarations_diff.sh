@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
  : <<'BASH_DOC_MODULE'
 
 #  The `declarations_diff` script
@@ -40,11 +45,6 @@ The script uses some heuristics to guide this process.
   in this case records the whole line `instance ...`.
 
 BASH_DOC_MODULE
-
-# Make this script robust against unintentional errors.
-# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
-set -euo pipefail
-IFS=$'\n\t'
 
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
 begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
