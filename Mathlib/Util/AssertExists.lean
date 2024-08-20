@@ -36,11 +36,14 @@ is used, typically once all of `Mathlib` has been built.
 
 If all declarations and imports are available when `#check_assertions` is used,
 then the command logs an info. Otherwise, it emits a warning.
+
+The variant `#check_assertions!` is silent if everything is imported and only emits the report
+if something is missing from the environment.
 -/
-elab "#check_assertions" : command => do
+elab "#check_assertions" tk:("!")?: command => do
   let env ← getEnv
   let ext := assertExistsExt.getState env
-  if ext.isEmpty then logInfo "No assertions made." else
+  if ext.isEmpty && tk.isNone then logInfo "No assertions made." else
   let allMods := env.allImportedModuleNames
   let mut msgs := #[m!""]
   let mut outcome := m!""
@@ -59,9 +62,9 @@ elab "#check_assertions" : command => do
     |>.push m!"{checkEmoji} means the declaration or import exists."
     |>.push m!"{crossEmoji} means the declaration or import does not exist."
   let msg := MessageData.joinSep msgs.toList "\n"
-  if allExist? then
+  if allExist? && tk.isNone then
     logInfo msg
-  else
+  if !allExist? then
     logWarning msg
 
 /--
