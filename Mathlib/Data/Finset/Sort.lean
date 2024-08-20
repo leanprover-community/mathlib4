@@ -69,20 +69,16 @@ theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
   simp only [coe_toList, sort_eq]
 
-theorem filter_sort_commute [DecidableEq α](f : α → Prop) [DecidablePred f] (s : Finset α) :
-    sort r (filter (f .) s) = List.filter f (sort r s) := by
-  have h₁: List.Sorted r (sort r (filter (f .) s)) := by simp
-  have h₂: List.Sorted r (List.filter f (sort r s)) := by
-    apply List.Sorted.filter
-    exact sort_sorted r s
+theorem filter_sort_commute [DecidableEq α] (f : α → Prop) [DecidablePred f] (s : Finset α) :
+    sort r (filter (f ·) s) = List.filter f (sort r s) := by
+  have h₁ : List.Sorted r (sort r (filter (f ·) s)) := by simp
+  have h₂ : List.Sorted r (List.filter f (sort r s)) := (sort_sorted r s).filter _
   apply List.eq_of_perm_of_sorted _ h₁ h₂
   apply List.perm_of_nodup_nodup_toFinset_eq
-  exact sort_nodup r (Finset.filter f s)
-  apply List.Nodup.filter
-  exact sort_nodup r s
-  rw [sort_toFinset]
-  rw [List.toFinset_filter]
-  simp
+  · exact sort_nodup r (Finset.filter f s)
+  · exact (sort_nodup r s).filter _
+  · rw [sort_toFinset, List.toFinset_filter]
+    simp
 
 theorem sort_monotone_map [DecidableEq α] [DecidableEq β]
     (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
@@ -114,18 +110,14 @@ theorem sort_insert_largest [DecidableEq α](s : Finset α)
   rw [List.perm_cons]
   apply (sort_perm_toList _ _).symm
 
-theorem sort_range {k : ℕ} :
-    (sort (. ≤ .) (range k)) = List.range k := by
+theorem sort_range (k : ℕ) : sort (· ≤ ·) (range k) = List.range k := by
   induction k with
   | zero => simp
   | succ n ih =>
-  rw [@range_succ]
-  rw [List.range_succ]
-  rw [← ih]
-  rw [sort_insert_largest]
-  intro y
-  simpa using le_of_lt
-  simp
+    rw [range_succ, List.range_succ, ← ih, sort_insert_largest]
+    · intro y
+      simpa using le_of_lt
+    · simp
 
 end sort
 
