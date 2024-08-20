@@ -55,7 +55,7 @@ variable {x y : ZFSet.{u}}
 
 /-- The ordinal rank of a ZFC set -/
 noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
-  Quotient.lift PSet.rank PSet.rank_eq_of_equiv
+  Quotient.lift _ PSet.rank_eq_of_equiv
 
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem
@@ -68,10 +68,12 @@ theorem rank_le_of_forall_mem_rank_lt {o : Ordinal} :
 theorem rank_le_of_subset (h : x ⊆ y) : rank x ≤ rank y :=
   rank_le_of_forall_mem_rank_lt fun _ h₁ => rank_lt_of_mem (h h₁)
 
-@[simp] theorem rank_empty : rank ∅ = 0 := by
+@[simp]
+theorem rank_empty : rank ∅ = 0 := by
   rw [← Ordinal.le_zero]; apply rank_le_of_forall_mem_rank_lt; simp
 
-@[simp] theorem rank_insert : rank (insert x y) = max (succ (rank x)) (rank y) := by
+@[simp]
+theorem rank_insert : rank (insert x y) = max (succ (rank x)) (rank y) := by
   apply le_antisymm
   · apply rank_le_of_forall_mem_rank_lt; simp
     intro _ h; exact Or.inr (rank_lt_of_mem h)
@@ -79,19 +81,22 @@ theorem rank_le_of_subset (h : x ⊆ y) : rank x ≤ rank y :=
     · apply rank_lt_of_mem; simp
     · apply rank_le_of_subset; intro; apply mem_insert_of_mem
 
-@[simp] theorem rank_singleton : rank {x} = succ (rank x) :=
+@[simp]
+theorem rank_singleton : rank {x} = succ (rank x) :=
   rank_insert.trans (by simp)
 
-theorem rank_pair : rank {x, y} = succ (max (rank x) (rank y)) := by
-  simp [succ_max]
+theorem rank_pair : rank {x, y} = max (succ (rank x)) (succ (rank y)) := by
+  simp
 
-@[simp] theorem rank_union : rank (x ∪ y) = max (rank x) (rank y) := by
+@[simp]
+theorem rank_union : rank (x ∪ y) = max (rank x) (rank y) := by
   apply le_antisymm
   · apply rank_le_of_forall_mem_rank_lt; simp
     intro; exact Or.imp rank_lt_of_mem rank_lt_of_mem
   · simp; constructor <;> apply rank_le_of_subset <;> intro _ h <;> simp [h]
 
-@[simp] theorem rank_powerset : rank (powerset x) = succ (rank x) := by
+@[simp]
+theorem rank_powerset : rank (powerset x) = succ (rank x) := by
   apply le_antisymm
   · apply rank_le_of_forall_mem_rank_lt; simp
     intro; exact rank_le_of_subset
@@ -108,7 +113,8 @@ theorem succ_rank_sUnion_ge : rank x ≤ succ (rank (⋃₀ x : ZFSet)) := by
   apply rank_le_of_subset
   intro z _; simp; intro _ _; simp; exists z
 
-@[simp] theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
+@[simp]
+theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
     rank (range f) = lsub fun i => rank (f i) := by
   apply le_antisymm
   · apply rank_le_of_forall_mem_rank_lt; simp; apply lt_lsub
