@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.Tactic.Positivity.Finset
@@ -10,9 +11,9 @@ import Mathlib.Tactic.Positivity.Finset
 /-!
 # The Marcinkiewicz-Zygmund inequality
 
-This file proves the Marcinkiewicz-Zygmund inequality. This is the statement that, for a real- or
-complex-valued random variable `f`, the $$L^p$$-norm of the sum of `n` samples of `f` is bounded
-by the $$L^p$$-norm of `f` up to some multiplicative constant.
+This file proves the Marcinkiewicz-Zygmund inequality. This is the statement that, for a random
+variable `f` valued in a real inner product space, the $$L^p$$-norm of the sum of `n` samples of `f`
+is bounded by the $$L^p$$-norm of `f` up to some multiplicative constant.
 
 ## TODO
 
@@ -187,8 +188,8 @@ theorem marcinkiewicz_zygmund' (m : ℕ) (f : α → ℝ) (hf : ∀ i, ∑ a in 
 /-- The **Marcinkiewicz-Zygmund inequality** for real-valued functions, with a slightly easier to
 bound constant than `Real.marcinkiewicz_zygmund'`.
 
-Note that `RCLike.marcinkiewicz_zygmund` is another version that works for both `ℝ` and `ℂ` at the
-expense of a slightly worse constant. -/
+Note that `InnerProductSpace.marcinkiewicz_zygmund` and `RCLike.marcinkiewicz_zygmund` are other
+versions that works for more general target spaces, at the expense of a slightly worse constant. -/
 theorem marcinkiewicz_zygmund (hm : m ≠ 0) (f : α → ℝ) (hf : ∀ i, ∑ a in A ^^ n, f (a i) = 0) :
     ∑ a in A ^^ n, (∑ i, f (a i)) ^ (2 * m) ≤
       (4 * m) ^ m * card n ^ (m - 1) * ∑ a in A ^^ n, ∑ i, f (a i) ^ (2 * m) := by
@@ -210,6 +211,57 @@ theorem marcinkiewicz_zygmund (hm : m ≠ 0) (f : α → ℝ) (hf : ∀ i, ∑ a
 
 end Real
 
+namespace InnerProductSpace
+variable {𝕜 : Type*} [NormedAddCommGroup 𝕜] [InnerProductSpace ℝ 𝕜] [FiniteDimensional ℝ 𝕜]
+
+open FiniteDimensional in
+/-- The **Marcinkiewicz-Zygmund inequality** for functions valued in a real inner product space.
+
+TODO remove dimension restriction (at the cost of a more complicated constant). -/
+lemma marcinkiewicz_zygmund (h𝕜 : finrank ℝ 𝕜 ≤ 2)
+    (hm : m ≠ 0) (f : α → 𝕜) (hf : ∀ i, ∑ a in A ^^ n, f (a i) = 0) :
+    ∑ a in A ^^ n, ‖∑ i, f (a i)‖ ^ (2 * m) ≤
+      (8 * m) ^ m * card n ^ (m - 1) * ∑ a in A ^^ n, ∑ i, ‖f (a i)‖ ^ (2 * m) := by
+  let b := stdOrthonormalBasis ℝ 𝕜; clear_value b
+  let F (t : Fin (finrank ℝ 𝕜)) x : ℝ := b.repr (f x) t
+  set B := A ^^ n
+  have hF (t : Fin (finrank ℝ 𝕜)) i : ∑ a in B, F t (a i) = 0 := by
+    rw [← Finset.sum_apply, ← map_sum (g := b.repr), hf, map_zero, PiLp.zero_apply]
+  have h (t : Fin (finrank ℝ 𝕜)) := Real.marcinkiewicz_zygmund hm _ (hF t)
+  simp only [pow_mul, ← b.repr.norm_map, PiLp.norm_sq_eq_of_L2, map_sum, norm_eq_abs, sq_abs,
+    ge_iff_le, Fintype.sum_apply (γ := n)]
+  interval_cases finrank ℝ 𝕜
+  · simp [Fin.sum_univ_zero, zero_pow hm]
+  · simp only [Fin.sum_univ_one, Fin.isValue]
+    simp [pow_mul] at h
+    refine le_trans (h 0) ?_
+    gcongr
+    norm_num
+  simp only [Fin.sum_univ_two, Fin.isValue]
+  calc
+    ∑ a in B, ((∑ i, b.repr (f (a i)) 0) ^ 2 + (∑ i, b.repr (f (a i)) 1) ^ 2) ^ m ≤
+        ∑ a in B, 2 ^ (m - 1) *
+          (((∑ i, b.repr (f (a i)) 0) ^ 2) ^ m + ((∑ i, b.repr (f (a i)) 1) ^ 2) ^ m) := by
+      gcongr with a; apply add_pow_le <;> positivity
+    _ = 2 ^ (m - 1) * (∑ a in B, (∑ i, b.repr (f (a i)) 0) ^ (2 * m) +
+          ∑ a in B, (∑ i, b.repr (f (a i)) 1) ^ (2 * m)) := by
+      simp only [← sum_add_distrib, mul_sum, pow_mul]
+    _ ≤ 2 ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
+          ∑ a in B, ∑ i, b.repr (f (a i)) 0 ^ (2 * m) + (4 * m) ^ m * card n ^ (m - 1) *
+          ∑ a in B, ∑ i, b.repr (f (a i)) 1 ^ (2 * m)) := by gcongr <;> apply h
+    _ = 2 ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
+          ∑ a in B, ∑ i, (b.repr (f (a i)) 0 ^ (2 * m) + b.repr (f (a i)) 1 ^ (2 * m))) := by
+      simp_rw [sum_add_distrib, mul_add]
+    _ ≤ 2 ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
+          ∑ a in B, ∑ i, 2 * (b.repr (f (a i)) 0 ^ 2 + b.repr (f (a i)) 1 ^ 2) ^ m) := by
+      simp_rw [pow_mul]; gcongr; apply pow_add_pow_le' <;> positivity
+    _ = (8 * m) ^ m * _ ^ (m - 1) *
+        ∑ a in B, ∑ i, (b.repr (f (a i)) 0 ^ 2 + b.repr (f (a i)) 1 ^ 2) ^ m := by
+      simp_rw [← mul_sum, show (8 : ℝ) = 2 * 4 by norm_num, mul_pow, ← pow_sub_one_mul hm (2 : ℝ)]
+      ring
+
+end InnerProductSpace
+
 namespace RCLike
 variable {𝕜 : Type*} [RCLike 𝕜]
 
@@ -217,34 +269,7 @@ variable {𝕜 : Type*} [RCLike 𝕜]
 lemma marcinkiewicz_zygmund (hm : m ≠ 0) (f : α → 𝕜) (hf : ∀ i, ∑ a in A ^^ n, f (a i) = 0) :
     ∑ a in A ^^ n, ‖∑ i, f (a i)‖ ^ (2 * m) ≤
       (8 * m) ^ m * card n ^ (m - 1) * ∑ a in A ^^ n, ∑ i, ‖f (a i)‖ ^ (2 * m) := by
-  let f₁ x : ℝ := re (f x)
-  let f₂ x : ℝ := im (f x)
-  let B := A ^^ n
-  have hf₁ i : ∑ a in B, f₁ (a i) = 0 := by rw [← map_sum, hf, map_zero]
-  have hf₂ i : ∑ a in B, f₂ (a i) = 0 := by rw [← map_sum, hf, map_zero]
-  have h₁ := Real.marcinkiewicz_zygmund hm _ hf₁
-  have h₂ := Real.marcinkiewicz_zygmund hm _ hf₂
-  simp only [pow_mul, RCLike.norm_sq_eq_def]
-  simp only [← sq, map_sum, map_sum]
-  calc
-    ∑ a in B, ((∑ i, re (f (a i))) ^ 2 + (∑ i, im (f (a i))) ^ 2) ^ m ≤
-        ∑ a in B,
-          2 ^ (m - 1) * (((∑ i, re (f (a i))) ^ 2) ^ m + ((∑ i, im (f (a i))) ^ 2) ^ m) := by
-      gcongr with a; apply add_pow_le <;> positivity
-    _ = 2 ^ (m - 1) * (∑ a in B, (∑ i, re (f (a i))) ^ (2 * m) +
-          ∑ a in B, (∑ i, im (f (a i))) ^ (2 * m)) := by
-      simp only [← sum_add_distrib, mul_sum, pow_mul]
-    _ ≤ 2 ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
-          ∑ a in B, ∑ i, re (f (a i)) ^ (2 * m) + (4 * m) ^ m * card n ^ (m - 1) *
-          ∑ a in B, ∑ i, im (f (a i)) ^ (2 * m)) := by gcongr
-    _ = 2 ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
-          ∑ a in B, ∑ i, (re (f (a i)) ^ (2 * m) + im (f (a i)) ^ (2 * m))) := by
-      simp_rw [sum_add_distrib, mul_add]
-    _ ≤ 2 ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
-          ∑ a in B, ∑ i, 2 * (re (f (a i)) ^ 2 + im (f (a i)) ^ 2) ^ m) := by
-      simp_rw [pow_mul]; gcongr; apply pow_add_pow_le' <;> positivity
-    _ = (8 * m) ^ m * _ ^ (m - 1) * ∑ a in B, ∑ i, (re (f (a i)) ^ 2 + im (f (a i)) ^ 2) ^ m := by
-      simp_rw [← mul_sum, show (8 : ℝ) = 2 * 4 by norm_num, mul_pow, ← pow_sub_one_mul hm (2 : ℝ)]
-      ring
+  let _ : InnerProductSpace ℝ 𝕜 := RCLike.innerProductSpaceReal
+  exact InnerProductSpace.marcinkiewicz_zygmund (finrank_le_two 𝕜) hm f hf
 
 end RCLike
