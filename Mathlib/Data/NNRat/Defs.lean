@@ -55,8 +55,6 @@ instance Rat.instPosMulMono : PosMulMono ℚ where
     simpa [sub_mul, sub_nonneg] using Rat.mul_nonneg (sub_nonneg.2 h) r.2
 
 deriving instance CommSemiring for NNRat
--- deriving instance CanonicallyOrderedCommSemiring for NNRat
--- deriving instance CanonicallyLinearOrderedAddCommMonoid for NNRat
 deriving instance LinearOrder for NNRat
 deriving instance Sub for NNRat
 deriving instance Inhabited for NNRat
