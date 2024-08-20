@@ -7,8 +7,6 @@ import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Probability.CondCount
 import Mathlib.Probability.Notation
 
-#align_import wiedijk_100_theorems.birthday_problem from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Birthday Problem
 
@@ -29,14 +27,8 @@ local notation "‖" x "‖" => Fintype.card x
 /-- **Birthday Problem**: set cardinality interpretation. -/
 theorem birthday :
     2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by
-  -- This used to be
-  -- `simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]`
-  -- but after leanprover/lean4#2790 that triggers a max recursion depth exception.
-  -- As a workaround, we make some of the reduction steps more explicit.
-  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
-  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
+  simp only [Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
   decide
-#align theorems_100.birthday Theorems100.birthday
 
 section MeasureTheory
 
@@ -69,7 +61,6 @@ instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
 theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
     ℙ s = |s.toFinite.toFinset| / ‖Fin n → Fin m‖ := by
   erw [condCount_univ, Measure.count_apply_finite]
-#align theorems_100.fin_fin.measure_apply Theorems100.FinFin.measure_apply
 
 /-- **Birthday Problem**: first probabilistic interpretation. -/
 theorem birthday_measure :
@@ -85,10 +76,12 @@ theorem birthday_measure :
     · rw [Fintype.card_embedding_eq, Fintype.card_fin, Fintype.card_fin]
       rfl
   rw [this, ENNReal.lt_div_iff_mul_lt, mul_comm, mul_div, ENNReal.div_lt_iff]
-  rotate_left; (iterate 2 right; norm_num); decide; (iterate 2 left; norm_num)
+  rotate_left
+  iterate 2 right; norm_num
+  · decide
+  iterate 2 left; norm_num
   simp only [Fintype.card_pi]
   norm_num
-#align theorems_100.birthday_measure Theorems100.birthday_measure
 
 end MeasureTheory
 

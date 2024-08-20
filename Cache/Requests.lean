@@ -41,9 +41,7 @@ section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded -/
 def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
-  -- We sort the list so that the large files in `MathlibExtras` are requested first.
-  hashMap.toArray.qsort (fun ⟨p₁, _⟩ ⟨_, _⟩ => p₁.components.head? = "MathlibExtras")
-    |>.foldlM (init := "") fun acc ⟨_, hash⟩ => do
+  hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
     -- this does not exactly match the requirements for quoting for curl:
@@ -77,7 +75,8 @@ def downloadFile (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
-/-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
+/-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
+Exit the process with exit code 1 if any files failed to download. -/
 def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
@@ -141,7 +140,9 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
       IO.Process.exit 1
   else IO.println "No files to download"
 
-def checkForToolchainMismatch : IO Unit := do
+/-- Check if the project's `lean-toolchain` file matches mathlib's.
+Print and error and exit the process with error code 1 otherwise. -/
+def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← IO.mathlibDepPath) / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
@@ -162,12 +163,14 @@ into the `lean-toolchain` file at the root directory of your project"
 
 /-- Downloads missing files, and unpacks files. -/
 def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
-    IO Unit := do
+    IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   if !isMathlibRoot then checkForToolchainMismatch
   downloadFiles hashMap forceDownload parallel
   if decompress then
     IO.unpackCache hashMap forceUnpack
+  else
+    IO.println "Downloaded all files successfully!"
 
 end Get
 
