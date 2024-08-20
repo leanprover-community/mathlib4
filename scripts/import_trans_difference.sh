@@ -46,7 +46,7 @@ fi
 getTransImports () {
   python3 scripts/count-trans-deps.py Mathlib |
     # produce lines of the form `Mathlib.ModelTheory.Algebra.Ring.Basic,-582`
-    sed 's=\([0-9]*\)[},]=,'"${1}"'\1\n=g' |
+    sed 's=\([0-9]*\)[},]=,'"${1:-}"'\1\n=g' |
     tr -d ' "{}:'
 }
 
