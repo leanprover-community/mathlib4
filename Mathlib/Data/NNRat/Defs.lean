@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
@@ -28,6 +30,17 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 
 Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean inserts `NNRat.cast`, not
 `Subtype.val`. Else your lemma will never apply.
+-/
+
+library_note "specialised high priority simp lemma" /--
+It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
+using later, more general simp lemmas. In that case, the following reasons might be arguments for
+the early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or
+un``@[simp]``ed):
+1. There is a significant portion of the library which needs the early lemma to be available via
+  `simp` and which doesn't have access to the more general lemmas.
+2. The more general lemmas have more complicated typeclass assumptions, causing rewrites with them
+  to be slower.
 -/
 
 open Function
@@ -56,7 +69,8 @@ theorem ext : (p : ℚ) = (q : ℚ) → p = q :=
 protected theorem coe_injective : Injective ((↑) : ℚ≥0 → ℚ) :=
   Subtype.coe_injective
 
-@[simp, norm_cast]
+-- See note [specialised high priority simp lemma]
+@[simp high, norm_cast]
 theorem coe_inj : (p : ℚ) = q ↔ p = q :=
   Subtype.coe_inj
 
@@ -109,7 +123,8 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
   max_eq_left <| le_sub_comm.2 <| by rwa [sub_zero]
 
-@[simp]
+-- See note [specialised high priority simp lemma]
+@[simp high]
 theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
 
 theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
@@ -283,7 +298,7 @@ namespace NNRat
 variable {p q : ℚ≥0}
 
 @[norm_cast] lemma num_coe (q : ℚ≥0) : (q : ℚ).num = q.num := by
-  simp [num, abs_of_nonneg, Rat.num_nonneg, q.2]
+  simp only [num, Int.natCast_natAbs, Rat.num_nonneg, coe_nonneg, abs_of_nonneg]
 
 theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 
@@ -315,14 +330,15 @@ theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
 /-- Form the quotient `n / d` where `n d : ℕ`.
 
 See also `Rat.divInt` and `mkRat`. -/
-def divNat (n d : ℕ) : ℚ≥0 := ⟨.divInt n d, Rat.divInt_nonneg n.cast_nonneg d.cast_nonneg⟩
+def divNat (n d : ℕ) : ℚ≥0 :=
+  ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩
 
 variable {n₁ n₂ d₁ d₂ d : ℕ}
 
 @[simp, norm_cast] lemma coe_divNat (n d : ℕ) : (divNat n d : ℚ) = .divInt n d := rfl
 
 lemma mk_divInt (n d : ℕ) :
-    ⟨.divInt n d, Rat.divInt_nonneg n.cast_nonneg d.cast_nonneg⟩ = divNat n d := rfl
+    ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩ = divNat n d := rfl
 
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
@@ -330,7 +346,7 @@ lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = di
 @[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]; rfl
 
 @[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=
-  ext $ by rw [← (q : ℚ).mkRat_num_den']; simp [num_coe, den_coe]
+  ext <| by rw [← (q : ℚ).mkRat_num_den']; simp [num_coe, den_coe]
 
 lemma natCast_eq_divNat (n : ℕ) : (n : ℚ≥0) = divNat n 1 := (num_divNat_den _).symm
 

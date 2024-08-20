@@ -148,7 +148,7 @@ def preservesProductOfIsSheafFor
   have : HasCoproduct X := ⟨⟨c, hc⟩⟩
   refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
   rw [piComparison_fac (hc := hc)]
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
+  refine IsIso.comp_isIso' inferInstance ?_
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
   exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI c hd) b)

@@ -338,7 +338,7 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
 def linearMapOfTendsto (f : M₁ → M₂) (g : α → M₁ →ₛₗ[σ] M₂) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →ₛₗ[σ] M₂ :=
   linearMapOfMemClosureRangeCoe f <|
-    mem_closure_of_tendsto h <| eventually_of_forall fun _ => Set.mem_range_self _
+    mem_closure_of_tendsto h <| Eventually.of_forall fun _ => Set.mem_range_self _
 
 variable (M₁ M₂ σ)
 
@@ -1315,10 +1315,9 @@ theorem intCast_apply [TopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L
 
 theorem smulRight_one_pow [TopologicalSpace R] [TopologicalRing R] (c : R) (n : ℕ) :
     smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
-  induction' n with n ihn
-  · ext
-    simp
-  · rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
+  induction n with
+  | zero => ext; simp
+  | succ n ihn => rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
 
 section
 
@@ -1903,9 +1902,7 @@ theorem self_comp_symm (e : M₁ ≃SL[σ₁₂] M₂) : (e : M₁ → M₂) ∘
   exact apply_symm_apply e x
 
 @[simp]
-theorem symm_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.symm = e := by
-  ext x
-  rfl
+theorem symm_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.symm = e := rfl
 
 @[simp]
 theorem refl_symm : (ContinuousLinearEquiv.refl R₁ M₁).symm = ContinuousLinearEquiv.refl R₁ M₁ :=
@@ -2235,8 +2232,6 @@ end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
 
-open scoped Classical
-
 variable {R : Type*} {M : Type*} {M₂ : Type*} [TopologicalSpace M] [TopologicalSpace M₂]
 
 section
@@ -2245,6 +2240,7 @@ variable [Semiring R]
 variable [AddCommMonoid M₂] [Module R M₂]
 variable [AddCommMonoid M] [Module R M]
 
+open Classical in
 /-- Introduce a function `inverse` from `M →L[R] M₂` to `M₂ →L[R] M`, which sends `f` to `f.symm` if
 `f` is a continuous linear equivalence and to `0` otherwise.  This definition is somewhat ad hoc,
 but one needs a fully (rather than partially) defined inverse function for some purposes, including
