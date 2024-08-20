@@ -124,6 +124,9 @@ def StrictOrderedRing.mkOfOrderedRingAndDomain (α : Type*) [OrderedRing α] [Is
 
 /-- Construct a `LinearOrderedRing` by
 designating a positive cone in an existing `Ring`. -/
-@[reducible] def LinearOrderedRing.mkOfPositiveCone [IsDomain R] [TotalPositiveConeClass S R] :
+@[reducible] def LinearOrderedRing.mkOfPositiveCone
+    [IsDomain R] [TotalPositiveConeClass S R] (dec : DecidablePred (fun x => x ∈ C)) :
     LinearOrderedRing R where
   __ := OrderedRing.mkOfPositiveCone C
+  le_total a b := by simpa using mem_or_neg_mem C (b - a)
+  decidableLE a b := dec _
