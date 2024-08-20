@@ -536,6 +536,65 @@ lemma support_truncGE (X : C) (n : ℤ) :
 
 /- The functor forgetting filtrations on the subcategory of objects `X` such that `IsLE X 0`.-/
 
+/- First we do the case where the support is a singleton.-/
+
+/-- The morphism "`αⁿ`"" from `X` to `X⟪n⟫`, if `n` is a natural number.-/
+noncomputable def power_of_alpha (X : C) (n : ℕ) :
+    X ⟶ (@shiftFunctor C _ _ _ Shift₂ (n : ℤ)).obj X := by
+  induction' n with n fn
+  · exact ((@shiftFunctorZero C ℤ _ _ Shift₂).symm.app X).hom
+  · exact fn ≫ α.app _ ≫ ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).symm.app X).hom
+
+/-- The morphism "`αⁿ` from `X⟪m⟫` to `X⟪m+n⟫`, if `m` is an integer and `n` is a natural number.-/
+noncomputable def power_of_alpha' (X : C) (m : ℤ) (n : ℕ) :
+    (@shiftFunctor C _ _ _ Shift₂ m).obj X ⟶ (@shiftFunctor C _ _ _ Shift₂ (m + n)).obj X := by
+  induction' n with n fn
+  · exact ((@shiftFunctorZero C ℤ _ _ Shift₂).symm.app ((@shiftFunctor C _ _ _ Shift₂ m).obj X)≪≫
+      (@shiftFunctorAdd C _ _ _ Shift₂ m 0).symm.app X).hom
+  · refine fn ≫ ?_
+    refine ?_ ≫ ((@shiftFunctorAdd' C _ _ _ Shift₂ (m + n) 1 (m + ↑(n + 1))
+      (by simp only [Nat.cast_add, Nat.cast_one]; linarith)).symm.app X).hom
+    exact hP.α.app _
+
+@[simp]
+lemma power_of_alpha_zero (X : C) : power_of_alpha X 0 = (shiftFunctorZero C ℤ).inv.app X := by
+  dsimp [power_of_alpha]; rfl
+
+@[simp]
+lemma power_of_alpha_plus_one (X : C) (n : ℕ) :
+    power_of_alpha X (n + 1) = power_of_alpha X n ≫ α.app _ ≫
+    ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).symm.app X).hom := by
+  dsimp [power_of_alpha]
+
+lemma adj_left_shift (X Y : C) (p q : ℤ) (hpq : p + 1 ≤ q) [IsLE X p] [IsGE Y q] :
+    Function.Bijective (fun (f : (@shiftFunctor C _ _ _ Shift₂ 1).obj X ⟶ Y) ↦ α.app X ≫ f) := by
+  set e : ((@shiftFunctor C _ _ _ Shift₂ 1).obj X ⟶ Y) → ((@shiftFunctor C _ _ _ Shift₂ 1).obj
+      ((@shiftFunctor C _ _ _ Shift₂ (-p)).obj X) ⟶ (@shiftFunctor C _ _ _ Shift₂ (-p)).obj Y) :=
+    Function.comp (CategoryStruct.comp (@shiftComm C _ _ _ Shift₂ _ _ _).hom)
+    (@shiftFunctor C _ _ _ Shift₂ (-p)).map
+  
+
+lemma adj_left_extended (n : ℕ) : ∀ (X Y : C) (m : ℤ) [IsLE X m] [IsGE Y (m + n)],
+    Function.Bijective
+    (fun (f : (@shiftFunctor C _ _ _ Shift₂ n).obj X ⟶ Y) ↦ (power_of_alpha X n ≫ f)) := by
+  induction' n with n fn
+  · intro X Y m _ _
+    simp only [Int.Nat.cast_ofNat_Int, power_of_alpha_zero]
+    exact IsIso.comp_left_bijective _
+  · intro X Y m _ _
+    simp only [power_of_alpha_plus_one, Functor.comp_obj, Iso.app_hom, Iso.symm_hom, assoc]
+    refine Function.Bijective.comp ?_ (Function.Bijective.comp ?_ ?_)
+    · have : IsGE Y (m + n) := isGE_of_GE Y (m + n) (m + ↑(n + 1)) (by simp only [Nat.cast_add,
+      Nat.cast_one, add_le_add_iff_left, le_add_iff_nonneg_right, zero_le_one])
+      exact fn X Y m
+    · have : IsLE ((@shiftFunctor C _ _ _ Shift₂ n).obj X) (m + ↑n) := by
+        exact isLE_shift X m n (m + n) (by linarith)
+      exact adj_left_shift _ _ (m + n) (m + ↑(n + 1))
+        (by simp only [Nat.cast_add, Nat.cast_one]; linarith)
+    · exact IsIso.comp_left_bijective _
+
+/- Then the general case, by induction on the size of the support.-/
+
 lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (support X) = n →
     ∃ (Y : hP.Core') (s : X ⟶ Y.1),
     ∀ (Z : C), IsGE Z 0 → IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) := by

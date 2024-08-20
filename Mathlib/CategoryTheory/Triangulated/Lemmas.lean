@@ -6,6 +6,24 @@ universe u v
 
 namespace CategoryTheory
 
+section
+
+variable {C : Type u} [Category.{v,u} C]
+
+lemma IsIso.comp_left_bijective {X Y Z : C} (f : X ⟶ Y) [IsIso f] :
+    Function.Bijective (fun (g : Y ⟶ Z) ↦ f ≫ g) := by
+  constructor
+  · exact Epi.left_cancellation
+  · intro g; existsi inv f ≫ g; simp only [hom_inv_id_assoc]
+
+lemma IsIso.comp_right_bijective {X Y Z : C} (f : X ⟶ Y) [IsIso f] :
+    Function.Bijective (fun (g : Z ⟶ X) ↦ g ≫ f) := by
+  constructor
+  · exact Mono.right_cancellation
+  · intro g; existsi g ≫ inv f; simp only [Category.assoc, inv_hom_id, Category.comp_id]
+
+end
+
 open Limits Category Functor Pretriangulated
 
 namespace Triangulated
