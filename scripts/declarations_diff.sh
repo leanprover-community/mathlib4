@@ -52,8 +52,8 @@ else short=1
 fi
 
 ## if an input commit is given, compute the diff with that, otherwise, use the git-magic `...`
-full_output=$(if [ -n "${1}" ]; then
-  git diff --unified=0 "${1}"
+full_output=$(if [ -n "${2}" ]; then
+  git diff --unified=0 "${2}"
 else
   git diff origin/master...HEAD
 fi |
