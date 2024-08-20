@@ -40,21 +40,28 @@ elab "#check_assertions" : command => do
   let env ← getEnv
   let ext := assertExistsExt.getState env
   if ext.isEmpty then logInfo "No assertions made." else
-  let mut results : HashMap AssertExists Bool := default
-  for d in ext do
-    results := results.insert d <|
-      if d.isDecl
-      then env.contains d.givenName
-      else env.allImportedModuleNames.contains d.givenName
-  results.forM fun d exists? => do
+  let allMods := env.allImportedModuleNames
+  let mut msgs := #[m!""]
+  let mut outcome := m!""
+  let mut (allExist?, cond) := (true, false)
+  for d in ext.toArray.qsort fun d e =>
+    (e.isDecl ≤ d.isDecl) && (d.givenName.toString < e.givenName.toString) do
     let type := if d.isDecl then "declaration" else "module"
-    let msg := s!"'{d.givenName}' ({type}) asserted in '{d.modName}'."
-    if exists? then
-      logInfo m!"{checkEmoji} {msg}"
+    if d.isDecl then
+      cond := env.contains d.givenName
     else
-      logWarning m!"{crossEmoji} {msg}"
-  logInfo m!"{checkEmoji} means the declaration or import exists.\n\
-            {crossEmoji} means the declaration or import does not exist."
+      cond := allMods.contains d.givenName
+    outcome := if cond then m!"{checkEmoji}" else m!"{crossEmoji}"
+    allExist? := allExist? && cond
+    msgs := msgs.push m!"{outcome} '{d.givenName}' ({type}) asserted in '{d.modName}'."
+  msgs := msgs.push m!"---"
+    |>.push m!"{checkEmoji} means the declaration or import exists."
+    |>.push m!"{crossEmoji} means the declaration or import does not exist."
+  let msg := MessageData.joinSep msgs.toList "\n"
+  if allExist? then
+    logInfo msg
+  else
+    logWarning msg
 
 /--
 `addDeclEntry isDecl declName` takes as input the `Bool`ean `isDecl` and the `Name` `declName`.
