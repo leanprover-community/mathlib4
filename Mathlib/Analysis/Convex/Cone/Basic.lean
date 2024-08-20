@@ -37,8 +37,9 @@ While `Convex 𝕜` is a predicate on sets, `ConvexCone 𝕜 E` is a bundled con
 -/
 
 
-assert_not_exists NormedSpace
-assert_not_exists Real
+assert_not_exists
+  NormedSpace
+  Real
 
 open Set LinearMap
 

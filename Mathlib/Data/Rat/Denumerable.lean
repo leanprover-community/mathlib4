@@ -12,8 +12,9 @@ import Mathlib.SetTheory.Cardinal.Basic
 This file proves that ℚ is infinite, denumerable, and deduces that it has cardinality `omega`.
 -/
 
-assert_not_exists Module
-assert_not_exists Field
+assert_not_exists
+  Module
+  Field
 
 namespace Rat
 

@@ -13,8 +13,9 @@ import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 -/
 
 -- Guard against import creep.
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidHom
+assert_not_exists
+  OrderedCommMonoid
+  MonoidHom
 
 variable {α : Type*}
 

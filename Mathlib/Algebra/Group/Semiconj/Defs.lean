@@ -28,8 +28,9 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists
+  MonoidWithZero
+  DenselyOrdered
 
 variable {S M G : Type*}
 

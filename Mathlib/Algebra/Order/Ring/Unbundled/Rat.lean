@@ -21,11 +21,12 @@ see `Algebra.Order.Ring.Rat`.
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Field
-assert_not_exists Finset
-assert_not_exists Set.Icc
-assert_not_exists GaloisConnection
+assert_not_exists
+  OrderedCommMonoid
+  Field
+  Finset
+  Set.Icc
+  GaloisConnection
 
 namespace Rat
 
