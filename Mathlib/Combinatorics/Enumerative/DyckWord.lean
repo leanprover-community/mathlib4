@@ -429,7 +429,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `p.firstReturn` is positive if `p` is nonzero. -/
 @[positivity DyckWord.firstReturn _]
-def evalFirstReturn : PositivityExt where eval {u α} _zα _pα e := do
+def evalDyckWordFirstReturn : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(DyckWord.firstReturn $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
