@@ -21,23 +21,21 @@ various instances.
 
 noncomputable section
 
-open Set Filter Function TopologicalSpace Complex
-
-open scoped Filter Topology UpperHalfPlane
+open Complex Filter Function Set TopologicalSpace Topology
 
 namespace UpperHalfPlane
 
 instance : TopologicalSpace ℍ :=
   instTopologicalSpaceSubtype
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : ℍ → ℂ) :=
-  IsOpen.openEmbedding_subtype_val <| isOpen_lt continuous_const Complex.continuous_im
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
+  IsOpen.isOpenEmbedding_subtype_val <| isOpen_lt continuous_const Complex.continuous_im
 
-theorem embedding_coe : Embedding ((↑) : ℍ → ℂ) :=
-  embedding_subtype_val
+theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
+  IsEmbedding.subtypeVal
 
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
-  embedding_coe.continuous
+  isEmbedding_coe.continuous
 
 theorem continuous_re : Continuous re :=
   Complex.continuous_re.comp continuous_coe
@@ -66,7 +64,7 @@ instance : NoncompactSpace ℍ := by
   exact absurd ((this 0).1 (@left_mem_Ici ℝ _ 0)) (@lt_irrefl ℝ _ 0)
 
 instance : LocallyCompactSpace ℍ :=
-  openEmbedding_coe.locallyCompactSpace
+  isOpenEmbedding_coe.locallyCompactSpace
 
 section strips
 
@@ -119,13 +117,13 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
 end strips
 
 /-- A continuous section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
-def ofComplex : PartialHomeomorph ℂ ℍ := (openEmbedding_coe.toPartialHomeomorph _).symm
+def ofComplex : PartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
 scoped notation "↑ₕ" f => f ∘ ofComplex
 
 lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
-  OpenEmbedding.toPartialHomeomorph_left_inv ..
+  IsOpenEmbedding.toPartialHomeomorph_left_inv ..
 
 lemma ofComplex_apply_eq_ite (w : ℂ) :
     ofComplex w = if hw : 0 < w.im then ⟨w, hw⟩ else Classical.choice inferInstance := by

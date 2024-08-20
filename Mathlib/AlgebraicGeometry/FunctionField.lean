@@ -135,7 +135,7 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
   delta IsAffineOpen.primeIdealOf
   convert
     genericPoint_eq_of_isOpenImmersion
-      (U.toScheme.isoSpec.hom ≫ Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op))
+      (U.toScheme.isoSpec.hom ≫ Spec.map (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top).op))
   -- Porting note: this was `ext1`
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion U.ι).symm
@@ -146,7 +146,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
   haveI : IsAffine _ := hU
   haveI : IsIntegral U :=
     @isIntegral_of_isAffine_of_isDomain _ _ _
-      (by rw [Scheme.Opens.toScheme_presheaf_obj, Opens.openEmbedding_obj_top]; infer_instance)
+      (by rw [Scheme.Opens.toScheme_presheaf_obj, Opens.isOpenEmbedding_obj_top]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X,
     (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using 1

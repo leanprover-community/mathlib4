@@ -21,6 +21,8 @@ Finally, we construct a section of the quotient map
 which is a continuous linear map `SeparationQuotient E →L[K] E`.
 -/
 
+open Topology
+
 namespace SeparationQuotient
 
 section SMul
@@ -439,11 +441,10 @@ theorem postcomp_mkCLM_surjective {L : Type*} [Semiring L] (σ : L →+* K)
   rw [← ContinuousLinearMap.comp_assoc, mkCLM_comp_outCLM, ContinuousLinearMap.id_comp]
 
 /-- The `SeparationQuotient.outCLM K E` map is a topological embedding. -/
-theorem outCLM_embedding : Embedding (outCLM K E) :=
-  Function.LeftInverse.embedding (mk_outCLM K) continuous_mk (map_continuous _)
+theorem outCLM_isEmbedding : IsEmbedding (outCLM K E) :=
+  Function.LeftInverse.isEmbedding (mk_outCLM K) continuous_mk (map_continuous _)
 
-theorem outCLM_injective : Function.Injective (outCLM K E) :=
-  (outCLM_embedding K E).injective
+theorem outCLM_injective : Function.Injective (outCLM K E) := (outCLM_isEmbedding K E).injective
 
 end VectorSpace
 

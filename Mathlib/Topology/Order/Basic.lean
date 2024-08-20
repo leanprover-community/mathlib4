@@ -234,7 +234,7 @@ nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type*} [LinearOr
 embedding provided that the range of `f` is order-connected. -/
 theorem StrictMono.embedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
+    (hf : StrictMono f) (hc : OrdConnected (range f)) : IsEmbedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
 
 /-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the

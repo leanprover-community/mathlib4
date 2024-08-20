@@ -43,9 +43,7 @@ The main results are:
 * `x ∈ s → y ∈ intrinsicInterior 𝕜 s → openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 s`
 -/
 
-
-open AffineSubspace Set
-
+open AffineSubspace Set Topology
 open scoped Pointwise
 
 variable {𝕜 V W Q P : Type*}
@@ -176,11 +174,11 @@ theorem intrinsicFrontier_union_intrinsicInterior (s : Set P) :
 
 theorem isClosed_intrinsicClosure (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicClosure 𝕜 s) :=
-  (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_closure
+  (IsClosedEmbedding.subtypeVal hs).isClosedMap _ isClosed_closure
 
 theorem isClosed_intrinsicFrontier (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicFrontier 𝕜 s) :=
-  (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_frontier
+  (IsClosedEmbedding.subtypeVal hs).isClosedMap _ isClosed_frontier
 
 @[simp]
 theorem affineSpan_intrinsicClosure (s : Set P) :

@@ -30,7 +30,7 @@ is a closed immersion and the induced morphisms of stalks are all surjective.
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory Topology
 
 namespace AlgebraicGeometry
 
@@ -38,16 +38,16 @@ namespace AlgebraicGeometry
 topological map is a closed embedding and the induced stalk maps are surjective. -/
 @[mk_iff]
 class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
-  base_closed : ClosedEmbedding f.base
+  base_closed : IsClosedEmbedding f.base
   surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 namespace IsClosedImmersion
 
 lemma closedEmbedding {X Y : Scheme} (f : X ⟶ Y)
-    [IsClosedImmersion f] : ClosedEmbedding f.base :=
+    [IsClosedImmersion f] : IsClosedEmbedding f.base :=
   IsClosedImmersion.base_closed
 
-lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
+lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
     stalkwise (fun f ↦ Function.Surjective f) := by
   ext X Y f
   rw [isClosedImmersion_iff]
@@ -55,8 +55,8 @@ lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
 
 lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
     IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.base) := by
-  rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, closedEmbedding_iff,
-    @and_comm (Embedding _)]
+  rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, isClosedEmbedding_iff,
+    @and_comm (IsEmbedding _)]
 
 lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
     (hf : IsClosed (Set.range f.base)) : IsClosedImmersion f :=
@@ -67,7 +67,7 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : 
 
 /-- Isomorphisms are closed immersions. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
-  base_closed := Homeomorph.closedEmbedding <| TopCat.homeoOfIso (asIso f.base)
+  base_closed := Homeomorph.isClosedEmbedding <| TopCat.homeoOfIso (asIso f.base)
   surj_on_stalks := fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2
 
 instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
@@ -91,7 +91,7 @@ instance respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
 closed immersion. -/
 theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surjective f) :
     IsClosedImmersion (Spec.map f) where
-  base_closed := PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ h
+  base_closed := PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _ h
   surj_on_stalks x := by
     haveI : (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
       rw [← RingHom.toMorphismProperty_respectsIso_iff]
@@ -119,14 +119,14 @@ lemma of_surjective_of_isAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion g]
     [IsClosedImmersion (f ≫ g)] : IsClosedImmersion f where
   base_closed := by
-    have h := closedEmbedding (f ≫ g)
+    have h := isClosedEmbedding (f ≫ g)
     rw [Scheme.comp_base] at h
-    apply closedEmbedding_of_continuous_injective_closed (Scheme.Hom.continuous f)
+    apply IsClosedEmbedding.of_continuous_injective_isClosedMap (Scheme.Hom.continuous f)
     · exact Function.Injective.of_comp h.inj
     · intro Z hZ
-      rw [ClosedEmbedding.closed_iff_image_closed (closedEmbedding g),
+      rw [IsClosedEmbedding.isClosed_iff_image_isClosed (isClosedEmbedding g),
         ← Set.image_comp]
-      exact ClosedEmbedding.isClosedMap h _ hZ
+      exact IsClosedEmbedding.isClosedMap h _ hZ
   surj_on_stalks x := by
     have h := (f ≫ g).stalkMap_surjective x
     simp_rw [Scheme.stalkMap_comp] at h
