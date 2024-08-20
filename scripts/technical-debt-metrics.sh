@@ -13,17 +13,10 @@ IFS=$'\n\t'
 # and tallies the same technical debts on `<optCurrCommit>` using `<optReferenceCommit>`
 # as a reference.
 
-if [ -n "${1}" ]; then
-  currCommit="${1}"
-else
-  currCommit="$(git rev-parse HEAD)"
-fi
+# If $1 is supplied, we use it; otherwise, we fall back to $(git rev-parse HEAD).
+currCommit = ${1:-$(git rev-parse HEAD)}
 
-if [ -n "${2}" ]; then
-  refCommit="${2}"
-else
-  refCommit="$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"
-fi
+refCommit = ${2:-$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)}
 
 # `tdc` produces a semi-formatted output of the form
 # ...

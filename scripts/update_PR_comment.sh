@@ -14,12 +14,17 @@ It takes 3 inputs:
 3. the PR number.
 BASH_DOC_MODULE
 
-  # the text of the message that will replace the current one
-  message="${1}"
-  # the start of the message to locate it among all messages in the PR
-  comment_init="${2}"
-  # the PR number
-  PR="${3}"
+# If the first two arguments are missing, use the empty string as default value.
+
+# the text of the message that will replace the current one
+message="${1:-}"
+# the start of the message to locate it among all messages in the PR
+comment_init="${2:-}"
+# But we do complain if the PR number is missing.
+PR="${3:-}"
+if [[ -z $PR ]]; then
+  echo "Usage: <new_message> <beginning of message> <pr_number>"
+  exit 1
 
   data=$(jq -n --arg msg "$message" '{"body": $msg}')
   baseURL="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
