@@ -155,10 +155,6 @@ strictly monotone. -/
 @[simp] theorem sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
 
-/-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-@[deprecated sorted_le_ofFn_iff (since := "2023-01-10")]
-theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
-
 /-- The list obtained from a monotone tuple is sorted. -/
 alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 
