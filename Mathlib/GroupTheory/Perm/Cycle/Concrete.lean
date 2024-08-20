@@ -39,8 +39,6 @@ The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uni
 result, relying on the `Fintype` instance of a `Cycle.nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
-Running `#eval` on even a simple noncyclic permutation `c[(1 : Fin 7), 2, 3] * c[0, 5]`
-to show it takes a long time. TODO: is this because computing the cycle factors is slow?
 
 -/
 
@@ -194,7 +192,7 @@ variable [Fintype α] [DecidableEq α] (p : Equiv.Perm α) (x : α)
 until looping. That means when `f x = x`, `toList f x = []`.
 -/
 def toList : List α :=
-  (List.range (cycleOf p x).support.card).map fun k => (p ^ k) x
+  List.iterate p x (cycleOf p x).support.card
 
 @[simp]
 theorem toList_one : toList (1 : Perm α) x = [] := by simp [toList, cycleOf_one]
@@ -215,8 +213,8 @@ theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
 theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toList p x) :=
   zero_lt_two.trans_le (two_le_length_toList_iff_mem_support.mpr h)
 
-theorem get_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x).get ⟨n, hn⟩ = (p ^ n) x := by simp [toList]
+theorem get_toList (i : Fin (length (toList p x))) : (toList p x).get i = (p ^ i.1) x :=  by
+  simp [toList]
 
 theorem toList_get_zero (h : x ∈ p.support) :
     (toList p x).get ⟨0, (length_toList_pos_of_mem_support _ _ h)⟩ = x := by simp [toList]
@@ -224,17 +222,17 @@ theorem toList_get_zero (h : x ∈ p.support) :
 set_option linter.deprecated false in
 @[deprecated get_toList (since := "2024-05-08")]
 theorem nthLe_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x).nthLe n hn = (p ^ n) x := by simp [toList]
+    (toList p x).nthLe n hn = (p ^ n) x := by simp [nthLe, toList]
 
 set_option linter.deprecated false in
 @[deprecated toList_get_zero (since := "2024-05-08")]
 theorem toList_nthLe_zero (h : x ∈ p.support) :
-    (toList p x).nthLe 0 (length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]
+    (toList p x).nthLe 0 (length_toList_pos_of_mem_support _ _ h) = x := by simp [nthLe, toList]
 
 variable {p} {x}
 
 theorem mem_toList_iff {y : α} : y ∈ toList p x ↔ SameCycle p x y ∧ x ∈ p.support := by
-  simp only [toList, mem_range, mem_map]
+  simp only [toList, mem_iterate, iterate_eq_pow, eq_comm (a := y)]
   constructor
   · rintro ⟨n, hx, rfl⟩
     refine ⟨⟨n, rfl⟩, ?_⟩
@@ -244,17 +242,16 @@ theorem mem_toList_iff {y : α} : y ∈ toList p x ↔ SameCycle p x y ∧ x ∈
   · rintro ⟨h, hx⟩
     simpa using h.exists_pow_eq_of_mem_support hx
 
-set_option linter.deprecated false in
 theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
   by_cases hx : p x = x
   · rw [← not_mem_support, ← toList_eq_nil_iff] at hx
     simp [hx]
   have hc : IsCycle (cycleOf p x) := isCycle_cycleOf p hx
-  rw [nodup_iff_nthLe_inj]
-  rintro n m hn hm
+  rw [nodup_iff_injective_get]
+  rintro ⟨n, hn⟩ ⟨m, hm⟩
   rw [length_toList, ← hc.orderOf] at hm hn
   rw [← cycleOf_apply_self, ← Ne, ← mem_support] at hx
-  rw [nthLe_toList, nthLe_toList, ← cycleOf_pow_apply_self p x n, ←
+  rw [Fin.mk.inj_iff, get_toList, get_toList, ← cycleOf_pow_apply_self p x n, ←
     cycleOf_pow_apply_self p x m]
   cases' n with n <;> cases' m with m
   · simp
@@ -277,24 +274,22 @@ theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
     rw [← mul_apply, (Commute.pow_pow_self _ _ _).eq, mul_apply, h, ← mul_apply, ← mul_apply,
       (Commute.pow_pow_self _ _ _).eq]
 
-set_option linter.deprecated false in
 theorem next_toList_eq_apply (p : Perm α) (x y : α) (hy : y ∈ toList p x) :
     next (toList p x) y hy = p y := by
   rw [mem_toList_iff] at hy
   obtain ⟨k, hk, hk'⟩ := hy.left.exists_pow_eq_of_mem_support hy.right
-  rw [← nthLe_toList p x k (by simpa using hk)] at hk'
+  rw [← get_toList p x ⟨k, by simpa using hk⟩] at hk'
   simp_rw [← hk']
-  rw [next_nthLe _ (nodup_toList _ _), nthLe_toList, nthLe_toList, ← mul_apply, ← pow_succ',
-    length_toList, ← pow_mod_orderOf_cycleOf_apply p (k + 1), IsCycle.orderOf]
+  rw [next_get _ (nodup_toList _ _), get_toList, Fin.val_mk, get_toList, Fin.val_mk, ← mul_apply,
+    ← pow_succ', length_toList, ← pow_mod_orderOf_cycleOf_apply p (k + 1), IsCycle.orderOf]
   exact isCycle_cycleOf _ (mem_support.mp hy.right)
 
-set_option linter.deprecated false in
 theorem toList_pow_apply_eq_rotate (p : Perm α) (x : α) (k : ℕ) :
     p.toList ((p ^ k) x) = (p.toList x).rotate k := by
-  apply ext_nthLe
+  apply ext_get
   · simp only [length_toList, cycleOf_self_apply_pow, length_rotate]
   · intro n hn hn'
-    rw [nthLe_toList, nthLe_rotate, nthLe_toList, length_toList,
+    rw [get_toList, Fin.val_mk, get_rotate, get_toList, Fin.val_mk, length_toList,
       pow_mod_card_support_cycleOf_self_apply, pow_add, mul_apply]
 
 theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y) :
@@ -326,9 +321,9 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
     rintro _ rfl
     simp [Nat.succ_le_succ_iff] at hl
   rw [toList, hc.cycleOf_eq (mem_support.mp _), hs, card_toFinset, dedup_eq_self.mpr hn]
-  · refine ext_getElem (by simp) fun k hk hk' => ?_
-    simp only [get_eq_getElem, formPerm_pow_apply_getElem _ hn, zero_add, getElem_map,
-      getElem_range, Nat.mod_eq_of_lt hk']
+  · refine ext_get (by simp) fun k hk hk' => ?_
+    simp only [Nat.zero_eq, get_iterate, iterate_eq_pow, formPerm_pow_apply_get _ hn, zero_add,
+      Nat.mod_eq_of_lt hk']
   · simpa [hs] using get_mem _ _ _
 
 theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn : Nodup l) (x : α)
@@ -481,9 +476,18 @@ set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
-unsafe instance repr_perm [Repr α] : Repr (Perm α) :=
-  ⟨fun f _ => repr (Multiset.pmap (fun (g : Perm α) (hg : g.IsCycle) => isoCycle ⟨g, hg⟩)
-    (Perm.cycleFactorsFinset f).val -- toCycle is faster?
-    fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left)⟩
+unsafe instance instRepr [Repr α] : Repr (Perm α) where
+  reprPrec f prec :=
+    letI l := Quot.unquot <| Multiset.map repr <| Multiset.pmap toCycle
+      (Perm.cycleFactorsFinset f).val
+      fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left
+    match l with
+    | []  => "1"
+    | [f] => f
+    | l   =>
+      -- multiple terms, use `*` precedence
+      (if prec ≥ 70 then Lean.Format.paren else id)
+      (Lean.Format.fill
+        (Lean.Format.joinSep l (" *" ++ Lean.Format.line)))
 
 end Equiv.Perm
