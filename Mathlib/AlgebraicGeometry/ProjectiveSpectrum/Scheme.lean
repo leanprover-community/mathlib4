@@ -68,7 +68,7 @@ For a homogeneous element `f` of degree `m`
   defined by sending `x : Proj| (pbo f)` to `A⁰_f ∩ span {g / 1 | g ∈ x}`. We also denote this map
   as `ψ`.
 * `ProjIsoSpecTopComponent.ToSpec.preimage_eq`: for any `a: A`, if `a/f^m` has degree zero,
-  then the preimage of `sbo a/f^m` under `to_Spec f` is `pbo f ∩ pbo a`.
+  then the preimage of `sbo a/f^m` under `toSpec f` is `pbo f ∩ pbo a`.
 
 If we further assume `m` is positive
 * `ProjIsoSpecTopComponent.fromSpec`: the continuous map between `Spec.T A⁰_f` and `Proj.T| pbo f`
@@ -87,7 +87,6 @@ Finally,
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
-
 
 noncomputable section
 
@@ -377,6 +376,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   · simp_rw [pow_add]; rfl
 
 variable (hm : 0 < m) (q : Spec.T A⁰_ f)
+include hm
 
 theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
   convert Submodule.zero_mem q.1 using 1
@@ -522,6 +522,7 @@ end fromSpecToSpec
 namespace toSpec
 
 variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
+include hm
 
 variable {𝒜} in
 lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
