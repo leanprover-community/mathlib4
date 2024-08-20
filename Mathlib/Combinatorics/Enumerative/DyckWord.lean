@@ -441,5 +441,3 @@ def evalFirstReturn : PositivityExt where eval {u α} _zα _pα e := do
   | _, _, _ => throwError "not DyckWord.firstReturn"
 
 end Mathlib.Meta.Positivity
-
-example (p : DyckWord) (h : 0 < p) : 0 < p.firstReturn := by positivity
