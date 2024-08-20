@@ -47,6 +47,8 @@ class PositiveConeWithSquaresClass (S R : Type*) [Ring R] [SetLike S R]
     extends PositiveConeClass S R : Prop where
   square_mem : ∀ (s : S) (a : R), a * a ∈ s
 
+export PositiveConeWithSquaresClass (square_mem)
+
 /-- A positive cone with squares in a `Ring` is a `PositiveCone` containing all squares. -/
 structure PositiveConeWithSquares (R : Type*) [Ring R] extends PositiveCone R where
   square_mem' : ∀ a, a * a ∈ carrier
@@ -89,9 +91,12 @@ instance TotalPositiveCone.instTotalPositiveConeClass (R : Type*) [Ring R] [IsDo
   eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
   mem_or_neg_mem {s} := s.mem_or_neg_mem'
 
-instance TotalPositiveCone.instPositiveConeWithSquaresClass (R : Type*) [Ring R] [IsDomain R] :
-    PositiveConeWithSquaresClass (TotalPositiveCone R) R where
-  square_mem := by
+instance TotalPositiveConeClass.instPositiveConeWithSquaresClass (S R : Type*)
+    [Ring R] [IsDomain R] [SetLike S R] [TotalPositiveConeClass S R] :
+    PositiveConeWithSquaresClass S R where
+  square_mem s a := Or.elim (AddCommGroup.mem_or_neg_mem s a)
+                            (fun a_mem => mul_mem a_mem a_mem)
+                            (fun na_mem => by simpa using mul_mem na_mem na_mem)
 
 end Ring
 
