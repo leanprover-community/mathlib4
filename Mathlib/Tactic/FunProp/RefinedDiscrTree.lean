@@ -530,7 +530,6 @@ def etaExpand (args : Array Expr) (type : Expr) (lambdas : List FVarId) (goalAri
       etaExpand (args.push fvar) type (fvar.fvarId! :: lambdas) goalArity k
   else
     k args lambdas
-termination_by goalArity - args.size
 
 
 /-- Normalize an application of a heterogenous binary operator like `HAdd.hAdd`, using:
@@ -883,7 +882,6 @@ where
         loop (i+1)
     else
       vs.push v
-termination_by vs.size - i
 
 /-- Insert the value `v` at index `keys : Array Key` in a `Trie`. -/
 partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie α → Trie α
