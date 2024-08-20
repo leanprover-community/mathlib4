@@ -113,7 +113,9 @@ You should *not* delete the `assert_not_exists` statement without careful discus
 `assert_not_exists` statements should generally live at the top of the file, after the module doc.
 -/
 elab "assert_not_exists " n:ident : command => do
-  let decl ← ((liftCoreM <| realizeGlobalConstNoOverloadWithInfo n) <|> return .anonymous)
+  let decl ←
+    try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
+    catch _ => return .anonymous
   if decl == .anonymous then
     Mathlib.AssertNotExist.addDeclEntry true n.getId
   else
