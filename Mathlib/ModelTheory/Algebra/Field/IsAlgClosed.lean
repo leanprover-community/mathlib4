@@ -57,60 +57,17 @@ of the `n` non-leading coefficients of the polynomial and one variable (`Fin.las
 for `X`.  -/
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
+#print degreeLTEquiv
 
-/-- Monic polynomials of degree `n` over `K` are equivalent to functions `Fin n → K`  -/
-noncomputable def monicPolyEquivFin [CommRing K] [Nontrivial K] (n : ℕ) :
-    { p : K[X] // p.Monic ∧ p.natDegree = n } ≃ (Fin n → K) :=
-  { toFun := fun p i => p.1.coeff i
-    invFun := fun v =>
-      let p := Polynomial.ofFinsupp <|
-        Finsupp.ofSupportFinite
-          (fun i =>
-            if h : i < n then v ⟨i, h⟩
-            else if i = n then 1 else 0)
-          (Set.Finite.subset (Set.finite_le_nat n) <| by
-              intro i
-              simp only [Function.mem_support, ne_eq, Set.mem_setOf_eq]
-              split_ifs <;> simp_all [le_iff_lt_or_eq])
-      have hpn : p.natDegree = n := by
-        refine le_antisymm ?_ ?_
-        · refine natDegree_le_iff_coeff_eq_zero.2 ?_
-          intro i hi
-          simp only [Finsupp.ofSupportFinite, coeff_ofFinsupp, Finsupp.coe_mk, not_lt_of_gt hi,
-            ↓reduceDIte, ne_of_gt hi, ↓reduceIte, p]
-        · refine le_natDegree_of_ne_zero ?_
-          simp only [Finsupp.ofSupportFinite, coeff_ofFinsupp, Finsupp.coe_mk, lt_self_iff_false,
-            ↓reduceDIte, ↓reduceIte, ne_eq, one_ne_zero, not_false_eq_true, p]
-      have hpm : p.Monic := by
-        rw [Monic.def, leadingCoeff, hpn]
-        simp only [Finsupp.ofSupportFinite, coeff_ofFinsupp, Finsupp.coe_mk, lt_self_iff_false,
-          ↓reduceDIte, ↓reduceIte, p]
-      ⟨p, hpm, hpn⟩
-    left_inv := by
-      intro p
-      ext i
-      simp only [ne_eq, Finset.mem_range, dite_eq_ite, coeff_ofFinsupp,
-        Finsupp.coe_mk, ite_eq_left_iff, not_lt, Finsupp.ofSupportFinite]
-      intro hni
-      cases lt_or_eq_of_le hni with
-      | inr =>
-        subst n
-        have := p.2.1
-        simp [Monic.def, leadingCoeff, p.2.2] at this
-        simp [this]
-      | inl h =>
-        rw [eq_comm, if_neg (ne_of_gt h)]
-        exact coeff_eq_zero_of_natDegree_lt (p.2.2.symm ▸ h)
-    right_inv := fun _ => by simp [Finsupp.ofSupportFinite] }
 
 theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n+1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
-    ((monicPolyEquivFin n).symm (v ∘ Fin.castSucc)).1.eval (v (Fin.last _)) := by
-  let p := (monicPolyEquivFin n).symm (v ∘ Fin.castSucc)
-  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul,
-    eval_eq_sum_range, p.2.2]
-  simp [monicPolyEquivFin, Finset.sum_range_succ, add_comm, Finsupp.ofSupportFinite,
-    Finset.sum_range, Fin.castSucc, Fin.castAdd, Fin.castLE]
+    ((degreeLTEquiv K n).symm (v ∘ Fin.castSucc)).1.eval (v (Fin.last _)) := by
+  let p := (degreeLTEquiv K n).symm (v ∘ Fin.castSucc)
+  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul, degreeLTEquiv,
+    LinearEquiv.coe_symm_mk, Function.comp_apply, eval_finset_sum, eval_monomial, add_left_eq_self]
+
+
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=

@@ -172,6 +172,23 @@ theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n 
   · simp_rw [x_zero, Submodule.zero_mem]
   · rw [mem_degreeLT, mem_degreeLE, ← natDegree_lt_iff_degree_lt (by rwa [ne_eq]),
       ← natDegree_le_iff_degree_le, Nat.lt_succ]
+#print eraseLead
+/-- Monic polynomials of degree `n` over `K` are equivalent to functions `Fin n → K`  -/
+noncomputable def monicEquiv (n : ℕ) :
+    { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ (Fin n → R) :=
+  (Equiv.trans
+    { toFun := fun p => ⟨p.1.eraseLead, by
+        simp only [degreeLT, ge_iff_le, Submodule.mem_iInf, LinearMap.mem_ker, lcoeff_apply]
+        intro i hi
+        rcases p with ⟨p, hp, rfl⟩
+        simp only [eraseLead_coeff, ite_eq_left_iff]
+        intro hip
+        exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne hi (Ne.symm hip))⟩,
+      invFun := fun p =>
+        ⟨X^n + p.1, monic_X_pow_add _, _⟩,
+      left_inv := _,
+      right_inv := _, }
+     ↑(degreeLTEquiv R n).toEquiv)
 
 /-- For every polynomial `p` in the span of a set `s : Set R[X]`, there exists a polynomial of
   `p' ∈ s` with higher degree. See also `Polynomial.exists_degree_le_of_mem_span_of_finite`. -/
