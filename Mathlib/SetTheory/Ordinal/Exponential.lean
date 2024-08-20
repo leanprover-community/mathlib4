@@ -344,12 +344,6 @@ theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
     · exact log_one_left o
   · rwa [← Ordinal.le_zero, ← lt_succ_iff, succ_zero, ← lt_opow_iff_log_lt hb ho, opow_one]
 
-@[simp]
-theorem log_one_right (b : Ordinal) : log b 1 = 0 := by
-  obtain hb | hb := lt_or_le 1 b
-  · exact log_eq_zero hb
-  · exact log_of_left_le_one hb 1
-
 @[mono]
 theorem log_mono_right (b : Ordinal) {x y : Ordinal} (xy : x ≤ y) : log b x ≤ log b y :=
   if hx : x = 0 then by simp only [hx, log_zero_right, Ordinal.zero_le]
