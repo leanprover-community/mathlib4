@@ -116,11 +116,11 @@ def OrderedRing.toStrictOrderedRing (α : Type*) [OrderedRing α] [IsDomain α] 
     StrictOrderedRing α where
   __ := ‹OrderedRing α›
   __ := ‹IsDomain α›
-  mul_pos a b ap bp := by have := (mul_ne_zero_iff (M₀ := α) (a := a) (b := b)).mpr; positivity
-
-/-  lt_of_le_of_ne
+  mul_pos a b ap bp := lt_of_le_of_ne
                        (mul_nonneg (le_of_lt ap) (le_of_lt bp))
-                       (mul_ne_zero_iff.mpr ⟨ne_of_gt ap, ne_of_gt bp⟩).symm -/
+                       (mul_ne_zero_iff.mpr ⟨ne_of_gt ap, ne_of_gt bp⟩).symm
+
+/- by have := (mul_ne_zero_iff (M₀ := α) (a := a) (b := b)).mpr; positivity -/
 
 /-- Construct a `LinearOrderedRing` by
 designating a positive cone in an existing `Ring`. -/
@@ -128,5 +128,6 @@ designating a positive cone in an existing `Ring`. -/
     [IsDomain R] [TotalPositiveConeClass S R] (dec : DecidablePred (fun x => x ∈ C)) :
     LinearOrderedRing R where
   __ := OrderedRing.mkOfPositiveCone C
+  __ := OrderedRing.toStrictOrderedRing R
   le_total a b := by simpa using mem_or_neg_mem C (b - a)
   decidableLE a b := dec _
