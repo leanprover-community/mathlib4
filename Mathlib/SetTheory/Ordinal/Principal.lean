@@ -83,7 +83,7 @@ theorem nfp_le_of_principal {a o : Ordinal} (hao : a < o) (ho : Principal op o) 
     nfp (op a) a ≤ o :=
   nfp_le fun n => (ho.iterate_lt hao n).le
 
-theorem is_principal_mono_iff {o : Ordinal}
+theorem principal_mono_iff {o : Ordinal}
     (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.swap op a)):
     Principal op o ↔ ∀ a < o, op a a < o := by
   use fun h a ha => h ha ha
@@ -205,7 +205,7 @@ theorem lt_omega_opow_mul_nat (a : Ordinal) (n : ℕ) : ω ^ a * n < ω ^ succ a
 theorem principal_add_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
   obtain rfl | ha' := eq_or_ne x 0
   · rw [opow_zero, principal_one_iff, add_zero]
-  · rw [is_principal_mono_iff
+  · rw [principal_mono_iff
       (fun a b c h => add_le_add_left h a) (fun a b c h => add_le_add_right h a)]
     intro a ha
     obtain ⟨c, hc, m, hm⟩ := lt_omega_opow ha ha'
