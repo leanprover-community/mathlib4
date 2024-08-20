@@ -1,8 +1,11 @@
 ## Create comments and labels on a Lean 4 PR after CI has finished on a `lean-pr-testing-NNNN` branch.
 ##
 ## See https://leanprover-community.github.io/contribute/tags_and_branches.html
-set -e
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
 
 # TODO: The whole script ought to be rewritten in javascript, to avoid having to use curl for API calls.
 #

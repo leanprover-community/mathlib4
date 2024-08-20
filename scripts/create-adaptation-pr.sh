@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-set -e # abort whenever a command in the script fails
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
 
 # We need to make the script robust against changes on disk
 # that might have happened during the script execution, e.g. from switching branches.
@@ -71,7 +74,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### In this case, the newer branch is 'bump/$BUMPVERSION'"
   git checkout bump/$BUMPVERSION -- lean-toolchain lake-manifest.json
   git add lean-toolchain lake-manifest.json
-  
+
   # Check if there are more merge conflicts after auto-resolution
   if ! git diff --name-only --diff-filter=U | grep -q .; then
     # Auto-commit the resolved conflicts if no other conflicts remain
@@ -150,13 +153,13 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   	# Extract the PR number from the output
   	pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
   fi
-  
+
   echo
   echo "### [user] post a link to the PR on Zulip"
-  
+
   zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
   zulip_body="> $pr_title #$pr_number"
-  
+
   echo "Post the link to the PR in a new thread on the #nightly-testing channel on Zulip"
   echo "Here is a suggested message:"
   echo "Title: $zulip_title"
@@ -187,7 +190,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### In this case, the newer branch is 'bump/nightly-$NIGHTLYDATE'"
   git checkout bump/nightly-$NIGHTLYDATE -- lean-toolchain lake-manifest.json
   git add lean-toolchain lake-manifest.json
-  
+
   # Check if there are more merge conflicts after auto-resolution
   if ! git diff --name-only --diff-filter=U | grep -q .; then
     # Auto-commit the resolved conflicts if no other conflicts remain
