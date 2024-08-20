@@ -45,8 +45,8 @@ elab "#check_assertions" : command => do
   let mut msgs := #[m!""]
   let mut outcome := m!""
   let mut (allExist?, cond) := (true, false)
-  for d in ext.toArray.qsort fun d e =>
-    (e.isDecl ≤ d.isDecl) && (d.givenName.toString < e.givenName.toString) do
+  for d in ext.toArray.qsort fun d e => (e.isDecl < d.isDecl) ||
+      (e.isDecl == d.isDecl && (d.givenName.toString < e.givenName.toString)) do
     let type := if d.isDecl then "declaration" else "module"
     if d.isDecl then
       cond := env.contains d.givenName
