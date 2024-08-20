@@ -199,7 +199,7 @@ theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     rw [length_drop, Nat.lt_sub_iff_add_lt] at hm
     rw [mod_eq_of_lt hm, Nat.add_comm]
   · have hlt : n % length l < length l := mod_lt _ (m.zero_le.trans_lt hml)
-    rw [getElem?_append_right hm, getElem?_take, length_drop]
+    rw [getElem?_append_right hm, getElem?_take_of_lt, length_drop]
     · congr 1
       rw [length_drop] at hm
       have hm' := Nat.sub_le_iff_le_add'.1 hm
