@@ -165,7 +165,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   intro H
   obtain ⟨⟨_ | k, hk⟩, hk'⟩ := get_of_mem H
   · rw [← Option.some_inj] at hk'
-    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take, getElem?_cons_zero,
+    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take_of_lt, getElem?_cons_zero,
       Option.some_inj] at hk'
     · exact hy (Eq.symm hk')
     rw [length_cons]
@@ -178,7 +178,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
       ⟨tl.length, by simp⟩ ?_
     rw [← Option.some_inj] at hk'
-    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take, getElem?_cons_succ,
+    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take_of_lt, getElem?_cons_succ,
       getElem?_eq_getElem, Option.some_inj] at hk'
     · rw [get_eq_getElem, hk']
       simp only [getLast_eq_getElem, length_cons, Nat.succ_eq_add_one, Nat.succ_sub_succ_eq_sub,
