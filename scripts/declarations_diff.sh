@@ -44,7 +44,7 @@ BASH_DOC_MODULE
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
 begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
 
-if [ "${1}" == "long" ]
+if [ "${1:-}" == "long" ]
 then
   short=0
   shift
