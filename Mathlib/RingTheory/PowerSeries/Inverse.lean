@@ -8,8 +8,7 @@ import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Order
-
-
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-! # Formal power series - Inverses
 
@@ -149,7 +148,6 @@ theorem constantCoeff_inv (φ : k⟦X⟧) : constantCoeff k φ⁻¹ = (constantC
 theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff k φ = 0 :=
   MvPowerSeries.inv_eq_zero
 
-@[simp]
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
   MvPowerSeries.zero_inv
 
@@ -184,7 +182,6 @@ theorem inv_eq_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff k ψ ≠ 0) 
     ψ⁻¹ = φ ↔ φ * ψ = 1 :=
   MvPowerSeries.inv_eq_iff_mul_eq_one h
 
-@[simp]
 protected theorem mul_inv_rev (φ ψ : k⟦X⟧) : (φ * ψ)⁻¹ = ψ⁻¹ * φ⁻¹ :=
   MvPowerSeries.mul_inv_rev _ _
 
@@ -199,7 +196,6 @@ theorem C_inv (r : k) : (C k r)⁻¹ = C k r⁻¹ :=
 theorem X_inv : (X : k⟦X⟧)⁻¹ = 0 :=
   MvPowerSeries.X_inv _
 
-@[simp]
 theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ :=
   MvPowerSeries.smul_inv _ _
 

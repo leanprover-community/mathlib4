@@ -118,7 +118,6 @@ end Semigroup
 @[to_additive]
 protected theorem all [CommMagma S] (a b : S) : Commute a b :=
   mul_comm a b
--- not sure why this needs an `ₓ`, maybe instance names not aligned?
 
 section MulOneClass
 

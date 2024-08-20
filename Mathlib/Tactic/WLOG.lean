@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Murrills
 -/
 import Mathlib.Tactic.Core
+import Lean.Meta.Tactic.Cases
 
 /-!
 
@@ -137,3 +138,5 @@ elab_rules : tactic
   let goal ← getMainGoal
   let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
   replaceMainGoal [reductionGoal, hypothesisGoal]
+
+end Mathlib.Tactic

@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Dual vector spaces
@@ -718,6 +718,7 @@ theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.total _ _ R e
 open Module
 
 variable [DecidableEq ι] (h : DualBases e ε)
+include h
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
   rw [lc, _root_.map_finsupp_sum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
@@ -1126,7 +1127,7 @@ variable (f : M₁ →ₗ[R] M₂)
 theorem ker_dualMap_eq_dualAnnihilator_range :
     LinearMap.ker f.dualMap = f.range.dualAnnihilator := by
   ext
-  simp_rw [mem_ker, ext_iff, Submodule.mem_dualAnnihilator,
+  simp_rw [mem_ker, LinearMap.ext_iff, Submodule.mem_dualAnnihilator,
     ← SetLike.mem_coe, range_coe, Set.forall_mem_range]
   rfl
 
@@ -1288,12 +1289,12 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
 
 theorem ker_dualMap_eq_dualCoannihilator_range (f : M →ₗ[R] M') :
     LinearMap.ker f.dualMap = (Dual.eval R M' ∘ₗ f).range.dualCoannihilator := by
-  ext x; simp [ext_iff (f := dualMap f x)]
+  ext x; simp [LinearMap.ext_iff (f := dualMap f x)]
 
 @[simp]
 lemma dualCoannihilator_range_eq_ker_flip (B : M →ₗ[R] M' →ₗ[R] R) :
     (range B).dualCoannihilator = LinearMap.ker B.flip := by
-  ext x; simp [ext_iff (f := B.flip x)]
+  ext x; simp [LinearMap.ext_iff (f := B.flip x)]
 
 end LinearMap
 
@@ -1308,15 +1309,20 @@ variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 namespace Module.Dual
 
-variable [FiniteDimensional K V₁] {f : Module.Dual K V₁} (hf : f ≠ 0)
+variable {f : Module.Dual K V₁}
 
-open FiniteDimensional
+section
+variable (hf : f ≠ 0)
+include hf
 
 lemma range_eq_top_of_ne_zero :
     LinearMap.range f = ⊤ := by
   obtain ⟨v, hv⟩ : ∃ v, f v ≠ 0 := by contrapose! hf; ext v; simpa using hf v
   rw [eq_top_iff]
-  exact fun x _ ↦ ⟨x • (f v)⁻¹ • v, by simp [inv_mul_cancel hv]⟩
+  exact fun x _ ↦ ⟨x • (f v)⁻¹ • v, by simp [inv_mul_cancel₀ hv]⟩
+
+open FiniteDimensional
+variable [FiniteDimensional K V₁]
 
 lemma finrank_ker_add_one_of_ne_zero :
     finrank K (LinearMap.ker f) + 1 = finrank K V₁ := by
@@ -1334,7 +1340,9 @@ lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
   rwa [finrank_top, this, ← finrank_ker_add_one_of_ne_zero hf, add_le_add_iff_left,
     Submodule.one_le_finrank_iff]
 
-lemma eq_of_ker_eq_of_apply_eq {f g : Module.Dual K V₁} (x : V₁)
+end
+
+lemma eq_of_ker_eq_of_apply_eq [FiniteDimensional K V₁] {f g : Module.Dual K V₁} (x : V₁)
     (h : LinearMap.ker f = LinearMap.ker g) (h' : f x = g x) (hx : f x ≠ 0) :
     f = g := by
   let p := K ∙ x
@@ -1697,7 +1705,7 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
     Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simp
+  · simpa using mul_comm _ _
   all_goals { intros; simp [*] at * }
 
 -- Porting note: introduced to help with timeout in dualDistribEquivOfBasis

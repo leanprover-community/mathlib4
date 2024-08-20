@@ -27,9 +27,8 @@ Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 
 noncomputable section
 
-open scoped Classical
 open Set Filter Metric TopologicalSpace Topology
-open scoped ENNReal NNReal Filter
+open scoped ENNReal
 
 variable {α : Type*} [TopologicalSpace α]
 
@@ -166,7 +165,7 @@ private lemma limsup_add_le_of_lt (ha : limsup u f < a) (hb : limsup v f < b) :
   · simp only [limsup_bot, bot_le]
   rw [← @limsup_const EReal α _ f _ (a + b)]
   apply limsup_le_limsup (Eventually.mp (Eventually.and (eventually_lt_of_limsup_lt ha)
-    (eventually_lt_of_limsup_lt hb)) (eventually_of_forall _))
+    (eventually_lt_of_limsup_lt hb)) (Eventually.of_forall _))
   simp only [Pi.add_apply, and_imp]
   intro x
   exact fun ux_lt_a vx_lt_b ↦ add_le_add (le_of_lt ux_lt_a) (le_of_lt vx_lt_b)
@@ -219,7 +218,8 @@ lemma limsup_add_le_of_le (ha : limsup u f < a) (hb : limsup v f ≤ b) :
   · exact limsup_add_le_of_lt ha hb
   by_cases hb' : b = ⊤
   · convert le_top
-    rw [hb']
+    on_goal 1 => rw [hb']
+    -- This closes both remaining goals at once.
     exact add_top_of_ne_bot ha.ne_bot
   exact (limsup_add_le_add_limsup (hb ▸ Or.inr hb') (Or.inl ha.ne_top)).trans
     (add_le_add ha.le hb.le)

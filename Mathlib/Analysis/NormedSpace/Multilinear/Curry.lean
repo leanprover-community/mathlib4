@@ -504,13 +504,13 @@ section
 /-- A continuous multilinear map with variables indexed by `ι ⊕ ι'` defines a continuous
 multilinear map with variables indexed by `ι` taking values in the space of continuous multilinear
 maps with variables indexed by `ι'`. -/
-def currySum (f : ContinuousMultilinearMap 𝕜 (fun _ : Sum ι ι' => G) G') :
+def currySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') :
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G') :=
   MultilinearMap.mkContinuousMultilinear (MultilinearMap.currySum f.toMultilinearMap) ‖f‖
     fun m m' => by simpa [Fintype.prod_sum_type, mul_assoc] using f.le_opNorm (Sum.elim m m')
 
 @[simp]
-theorem currySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : Sum ι ι' => G) G') (m : ι → G)
+theorem currySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') (m : ι → G)
     (m' : ι' → G) : f.currySum m m' = f (Sum.elim m m') :=
   rfl
 
@@ -519,7 +519,7 @@ continuous multilinear maps with variables indexed by `ι'` defines a continuous
 variables indexed by `ι ⊕ ι'`. -/
 def uncurrySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
     (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G')) :
-    ContinuousMultilinearMap 𝕜 (fun _ : Sum ι ι' => G) G' :=
+    ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' :=
   MultilinearMap.mkContinuous
     (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap).uncurrySum ‖f‖ fun m => by
     simpa [Fintype.prod_sum_type, mul_assoc] using
@@ -528,7 +528,7 @@ def uncurrySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
 @[simp]
 theorem uncurrySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
     (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G'))
-    (m : Sum ι ι' → G) : f.uncurrySum m = f (m ∘ Sum.inl) (m ∘ Sum.inr) :=
+    (m : ι ⊕ ι' → G) : f.uncurrySum m = f (m ∘ Sum.inl) (m ∘ Sum.inr) :=
   rfl
 
 variable (𝕜 ι ι' G G')
@@ -540,7 +540,7 @@ taking values in the space of continuous multilinear maps with variables indexed
 The forward and inverse functions are `ContinuousMultilinearMap.currySum`
 and `ContinuousMultilinearMap.uncurrySum`. Use this definition only if you need
 some properties of `LinearIsometryEquiv`. -/
-def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : Sum ι ι' => G) G' ≃ₗᵢ[𝕜]
+def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' ≃ₗᵢ[𝕜]
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G') :=
   LinearIsometryEquiv.ofBounds
     { toFun := currySum

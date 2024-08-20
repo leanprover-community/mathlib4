@@ -247,6 +247,9 @@ end NonUnitalSemiring
 section Semiring
 variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
+instance : ZeroLEOneClass R where
+  zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+
 @[simp]
 lemma one_le_star_iff {x : R} : 1 ≤ star x ↔ 1 ≤ x := by
   simpa using star_le_star_iff (x := 1) (y := x)
@@ -315,8 +318,8 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   rw [StarOrderedRing.le_iff] at hxy ⊢
   obtain ⟨p, hp, rfl⟩ := hxy
   refine ⟨f p, ?_, map_add f _ _⟩
-  induction hp using AddSubmonoid.closure_induction'
   have hf : ∀ r, f (star r) = star (f r) := map_star _
+  induction hp using AddSubmonoid.closure_induction'
   all_goals aesop
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]

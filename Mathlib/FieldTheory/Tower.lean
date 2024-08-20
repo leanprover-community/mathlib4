@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Tower of field extensions

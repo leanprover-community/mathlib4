@@ -1,12 +1,12 @@
 /-
 Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
+Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.IsEmpty
-import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
+import Mathlib.Tactic.MkIffOfInductiveProp
 import Batteries.WF
 
 /-!
@@ -243,6 +243,31 @@ termination_by a
 lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
     (hb : WellFounded rb) : WellFounded (Prod.Lex ra rb) :=
   (Prod.lex ⟨_, ha⟩ ⟨_, hb⟩).wf
+
+section PSigma
+
+open PSigma
+
+/-- The lexicographical order of well-founded relations is well-founded. -/
+theorem WellFounded.psigma_lex
+    {α : Sort*} {β : α → Sort*} {r : α → α → Prop} {s : ∀ a : α, β a → β a → Prop}
+    (ha : WellFounded r) (hb : ∀ x, WellFounded (s x)) : WellFounded (Lex r s) :=
+  WellFounded.intro fun ⟨a, b⟩ => lexAccessible (WellFounded.apply ha a) hb b
+
+theorem WellFounded.psigma_revLex
+    {α : Sort*} {β : Sort*} {r : α → α → Prop} {s : β → β → Prop}
+    (ha : WellFounded r) (hb : WellFounded s) : WellFounded (RevLex r s) :=
+  WellFounded.intro fun ⟨a, b⟩ => revLexAccessible (apply hb b) (WellFounded.apply ha) a
+
+theorem WellFounded.psigma_skipLeft (α : Type u) {β : Type v} {s : β → β → Prop}
+    (hb : WellFounded s) : WellFounded (SkipLeft α s) :=
+  psigma_revLex emptyWf.wf hb
+
+@[deprecated (since := "2024-07-24")] alias PSigma.lex_wf := WellFounded.psigma_lex
+@[deprecated (since := "2024-07-24")] alias PSigma.revLex_wf := WellFounded.psigma_revLex
+@[deprecated (since := "2024-07-24")] alias PSigma.skipLeft_wf := WellFounded.psigma_skipLeft
+
+end PSigma
 
 namespace IsWellFounded
 
@@ -529,7 +554,7 @@ lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [
 
 lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
 
-@[refl]
+@[refl, simp]
 lemma subset_refl [IsRefl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
 
 lemma subset_rfl [IsRefl α (· ⊆ ·)] : a ⊆ a := refl _

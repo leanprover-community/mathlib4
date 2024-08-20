@@ -6,6 +6,7 @@ Authors: Simon Hudon, Yaël Dillies
 import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -51,6 +52,7 @@ theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n) : log b n = 0 :=
 theorem log_pos_iff {b n : ℕ} : 0 < log b n ↔ b ≤ n ∧ 1 < b := by
   rw [Nat.pos_iff_ne_zero, Ne, log_eq_zero_iff, not_or, not_lt, not_le]
 
+@[bound]
 theorem log_pos {b n : ℕ} (hb : 1 < b) (hbn : b ≤ n) : 0 < log b n :=
   log_pos_iff.2 ⟨hbn, hb⟩
 
@@ -58,7 +60,7 @@ theorem log_of_one_lt_of_le {b n : ℕ} (h : 1 < b) (hn : b ≤ n) : log b n = l
   rw [log]
   exact if_pos ⟨hn, h⟩
 
-@[simp] lemma log_zero_left : ∀ n, log 0 n = 0 := log_of_left_le_one $ Nat.zero_le _
+@[simp] lemma log_zero_left : ∀ n, log 0 n = 0 := log_of_left_le_one <| Nat.zero_le _
 
 @[simp]
 theorem log_zero_right (b : ℕ) : log b 0 = 0 :=
@@ -196,8 +198,6 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
   rw [div_lt_iff_lt_mul (by omega), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (by omega)]
   exact Nat.add_le_mul hn hb
--- Porting note: Was private in mathlib 3
--- #align nat.add_pred_div_lt Nat.add_pred_div_lt
 
 /-! ### Ceil logarithm -/
 

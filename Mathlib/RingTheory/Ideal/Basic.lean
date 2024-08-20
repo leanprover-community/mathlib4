@@ -221,10 +221,12 @@ theorem IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y :
 
 theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (H : r ^ n ∈ I) :
     r ∈ I := by
-  induction' n with n ih
-  · rw [pow_zero] at H
+  induction n with
+  | zero =>
+    rw [pow_zero] at H
     exact (mt (eq_top_iff_one _).2 hI.1).elim H
-  · rw [pow_succ] at H
+  | succ n ih =>
+    rw [pow_succ] at H
     exact Or.casesOn (hI.mem_or_mem H) ih id
 
 theorem not_isPrime_iff {I : Ideal α} :
@@ -239,7 +241,7 @@ theorem zero_ne_one_of_proper {I : Ideal α} (h : I ≠ ⊤) : (0 : α) ≠ 1 :=
   I.ne_top_iff_one.1 h <| hz ▸ I.zero_mem
 
 theorem bot_prime [IsDomain α] : (⊥ : Ideal α).IsPrime :=
-  ⟨fun h => one_ne_zero (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
+  ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals. -/

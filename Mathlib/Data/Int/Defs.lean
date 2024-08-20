@@ -349,12 +349,6 @@ alias natAbs_pow_two := natAbs_sq
 
 /-! ### `/`  -/
 
--- Porting note: Many of the lemmas in this section are dubious alignments because the default
--- division on `Int` has changed from the E-rounding convention to the T-rounding convention
--- (see `Int.ediv`). We have attempted to align the lemmas to continue to use the `/` symbol
--- where possible, but some lemmas fail to hold on T-rounding division and have been aligned to
--- `Int.ediv` instead.
-
 @[simp, norm_cast] lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
 
 lemma natCast_ediv (m n : ℕ) : ((m / n : ℕ) : ℤ) = ediv m n := rfl
@@ -365,9 +359,6 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
     rw [show (- -[m+1] : ℤ) = (m + 1 : ℤ) by rfl]; rw [Int.add_sub_cancel]; rfl
 
 /-! ### mod -/
-
--- Porting note: this should be a doc comment, but the lemma isn't here any more!
-/- See also `Int.divModEquiv` for a similar statement as an `Equiv`. -/
 
 @[simp, norm_cast] lemma natCast_mod (m n : ℕ) : (↑(m % n) : ℤ) = ↑m % ↑n := rfl
 
@@ -613,3 +604,5 @@ attribute [simp] natCast_pow
 @[deprecated (since := "2024-04-02")] alias sign_coe_nat_of_nonzero := sign_natCast_of_ne_zero
 @[deprecated (since := "2024-04-02")] alias toNat_coe_nat := toNat_natCast
 @[deprecated (since := "2024-04-02")] alias toNat_coe_nat_add_one := toNat_natCast_add_one
+
+end Int

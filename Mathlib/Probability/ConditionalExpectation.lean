@@ -44,7 +44,7 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
       stronglyMeasurable_const.aeStronglyMeasurable').symm
   rw [setIntegral_const]
   rw [← memℒp_one_iff_integrable] at hfint
-  refine Memℒp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top ?_ ?_ ?_ ?_ hfint ?_
+  refine Memℒp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top _ ?_ ?_ ?_ ?_ hfint ?_
   · exact ⟨f, hf, EventuallyEq.rfl⟩
   · intro c t hmt _
     rw [Indep_iff] at hindp
@@ -63,7 +63,7 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
         (fun f : Lp E 1 μ => ∫ x in s, f x ∂μ) ∘ Submodule.subtypeL _ := by
       refine funext fun f => integral_congr_ae (ae_restrict_of_ae ?_)
       simp_rw [Submodule.coe_subtypeL', Submodule.coeSubtype]
-      exact eventually_of_forall fun _ => (by trivial)
+      exact Eventually.of_forall fun _ => (by trivial)
     refine isClosed_eq (Continuous.const_smul ?_ _) ?_
     · rw [heq₁]
       exact continuous_integral.comp (ContinuousLinearMap.continuous _)

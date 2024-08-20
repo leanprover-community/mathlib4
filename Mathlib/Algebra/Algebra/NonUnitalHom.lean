@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.Hom
-import Mathlib.GroupTheory.GroupAction.Prod
+import Mathlib.Algebra.GroupWithZero.Action.Prod
 
 /-!
 # Morphisms of non-unital algebras
@@ -197,11 +197,6 @@ instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
 @[ext]
 theorem ext {f g : A →ₛₙₐ[φ] B} (h : ∀ x, f x = g x) : f = g :=
   coe_injective <| funext h
-
-theorem ext_iff {f g : A →ₛₙₐ[φ] B} : f = g ↔ ∀ x, f x = g x :=
-  ⟨by
-    rintro rfl x
-    rfl, ext⟩
 
 theorem congr_fun {f g : A →ₛₙₐ[φ] B} (h : f = g) (x : A) : f x = g x :=
   h ▸ rfl

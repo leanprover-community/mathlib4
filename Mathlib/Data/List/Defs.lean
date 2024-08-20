@@ -18,12 +18,6 @@ This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
 
--- Porting note
--- Many of the definitions in `Data.List.Defs` were already defined upstream in `Batteries`
--- These have been annotated with `#align`s
--- To make this easier for review, the `#align`s have been placed in order of occurrence
--- in `mathlib`
-
 namespace List
 
 open Function Nat
@@ -35,14 +29,29 @@ variable {α β γ δ ε ζ : Type*}
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
--- mathlib3 `array` is not ported.
--- Porting note: see
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
--- for the fooI naming convention.
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
+
+/-- The head of a list, or the default element of the type is the list is `nil`. -/
+def headI [Inhabited α] : List α → α
+  | []       => default
+  | (a :: _) => a
+
+@[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
+@[simp] theorem headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
+
+/-- The last element of a list, with the default if list empty -/
+def getLastI [Inhabited α] : List α → α
+  | [] => default
+  | [a] => a
+  | [_, b] => b
+  | _ :: _ :: l => getLastI l
+
+/-- List with a single given element. -/
+@[inline, deprecated List.pure (since := "2024-03-24")]
+protected def ret {α : Type u} (a : α) : List α := [a]
 
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
   elements, append `n - length l` elements `default`. -/
@@ -108,13 +117,6 @@ end foldIdxM
 
 
 section mapIdxM
-
--- Porting note: This was defined in `mathlib` with an `Applicative`
--- constraint on `m` and have been `#align`ed to the `Batteries` versions defined
--- with a `Monad` typeclass constraint.
--- Since all `Monad`s are `Applicative` this won't cause issues
--- downstream & `Monad`ic code is more performant per Mario C
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Applicative.20variants.20of.20Monadic.20functions/near/313213172
 
 variable {m : Type v → Type w} [Monad m]
 

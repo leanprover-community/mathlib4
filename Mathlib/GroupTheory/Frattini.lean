@@ -3,8 +3,6 @@ Copyright (c) 2024 Colva Roney-Dougal. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colva Roney-Dougal, Inna Capdeboscq, Susanna Fishel, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Nilpotent
 import Mathlib.Order.Radical
 
@@ -22,14 +20,15 @@ the Frattini subgroup consists of the non-generating elements of the group.
 def frattini (G : Type*) [Group G] : Subgroup G :=
   Order.radical (Subgroup G)
 
-variable {G H : Type*} [Group G] [Group H] {φ : G →* H} (hφ : Function.Surjective φ)
+variable {G H : Type*} [Group G] [Group H] {φ : G →* H}
 
 lemma frattini_le_coatom {K : Subgroup G} (h : IsCoatom K) : frattini G ≤ K :=
   Order.radical_le_coatom h
 
 open Subgroup
 
-lemma frattini_le_comap_frattini_of_surjective : frattini G ≤ (frattini H).comap φ := by
+lemma frattini_le_comap_frattini_of_surjective (hφ : Function.Surjective φ) :
+    frattini G ≤ (frattini H).comap φ := by
   simp_rw [frattini, Order.radical, comap_iInf, le_iInf_iff]
   intro M hM
   apply biInf_le
@@ -50,10 +49,6 @@ then the subgroup is already the whole group.
 theorem frattini_nongenerating [IsCoatomic (Subgroup G)] {K : Subgroup G}
     (h : K ⊔ frattini G = ⊤) : K = ⊤ :=
   Order.radical_nongenerating h
-
--- The Sylow files unnecessarily use `Fintype` (computable) where often `Finite` would suffice,
--- so we need this:
-attribute [local instance] Fintype.ofFinite
 
 /-- When `G` is finite, the Frattini subgroup is nilpotent. -/
 theorem frattini_nilpotent [Finite G] : Group.IsNilpotent (frattini G) := by

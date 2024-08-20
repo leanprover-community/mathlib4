@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Data.DFinsupp.Basic
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
@@ -376,8 +376,8 @@ open MulOpposite in
     let C := A.map ⟨_, mul_right_injective a⁻¹⟩ -- C = a⁻¹A
     let D := B.map ⟨_, mul_left_injective b⁻¹⟩  -- D = Bb⁻¹
     have hcard : 1 < C.card ∨ 1 < D.card := by simp_rw [C, D, card_map]; exact hc.2.2
-    have hC : 1 ∈ C := mem_map.mpr ⟨a, ha, inv_mul_self a⟩
-    have hD : 1 ∈ D := mem_map.mpr ⟨b, hb, mul_inv_self b⟩
+    have hC : 1 ∈ C := mem_map.mpr ⟨a, ha, inv_mul_cancel a⟩
+    have hD : 1 ∈ D := mem_map.mpr ⟨b, hb, mul_inv_cancel b⟩
     suffices ∃ c ∈ C, ∃ d ∈ D, (c ≠ 1 ∨ d ≠ 1) ∧ UniqueMul C D c d by
       simp_rw [mem_product]
       obtain ⟨c, hc, d, hd, hne, hu'⟩ := this

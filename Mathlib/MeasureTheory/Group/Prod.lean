@@ -46,7 +46,7 @@ open Function MeasureTheory
 
 open Filter hiding map
 
-open scoped Classical ENNReal Pointwise MeasureTheory
+open scoped ENNReal Pointwise MeasureTheory
 
 variable (G : Type*) [MeasurableSpace G]
 variable [Group G] [MeasurableMul₂ G]
@@ -83,7 +83,7 @@ There, the map in this lemma is called `S`. -/
 theorem measurePreserving_prod_mul [IsMulLeftInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.1 * z.2)) (μ.prod ν) (μ.prod ν) :=
   (MeasurePreserving.id μ).skew_product measurable_mul <|
-    Filter.eventually_of_forall <| map_mul_left_eq_self ν
+    Filter.Eventually.of_forall <| map_mul_left_eq_self ν
 
 /-- The map `(x, y) ↦ (y, yx)` sends the measure `μ × ν` to `ν × μ`.
 This is the map `SR` in [Halmos, §59].
@@ -164,6 +164,11 @@ theorem inv_ae : (ae μ)⁻¹ = ae μ := by
   refine le_antisymm (quasiMeasurePreserving_inv μ).tendsto_ae ?_
   nth_rewrite 1 [← inv_inv (ae μ)]
   exact Filter.map_mono (quasiMeasurePreserving_inv μ).tendsto_ae
+
+@[to_additive (attr := simp)]
+theorem eventuallyConst_inv_set_ae :
+    EventuallyConst (s⁻¹ : Set G) (ae μ) ↔ EventuallyConst s (ae μ) := by
+  rw [← inv_preimage, eventuallyConst_preimage, Filter.map_inv, inv_ae]
 
 @[to_additive]
 theorem inv_absolutelyContinuous : μ.inv ≪ μ :=
@@ -337,7 +342,7 @@ section RightInvariant
 theorem measurePreserving_prod_mul_right [IsMulRightInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.2 * z.1)) (μ.prod ν) (μ.prod ν) :=
   MeasurePreserving.skew_product (g := fun x y => y * x) (MeasurePreserving.id μ)
-    (measurable_snd.mul measurable_fst) <| Filter.eventually_of_forall <| map_mul_right_eq_self ν
+    (measurable_snd.mul measurable_fst) <| Filter.Eventually.of_forall <| map_mul_right_eq_self ν
 
 /-- The map `(x, y) ↦ (y, xy)` sends the measure `μ × ν` to `ν × μ`. -/
 @[to_additive measurePreserving_prod_add_swap_right
@@ -417,7 +422,7 @@ theorem quasiMeasurePreserving_div_left_of_right_invariant [IsMulRightInvariant 
 @[to_additive]
 theorem quasiMeasurePreserving_div_of_right_invariant [IsMulRightInvariant μ] :
     QuasiMeasurePreserving (fun p : G × G => p.1 / p.2) (μ.prod ν) μ := by
-  refine QuasiMeasurePreserving.prod_of_left measurable_div (eventually_of_forall fun y => ?_)
+  refine QuasiMeasurePreserving.prod_of_left measurable_div (Eventually.of_forall fun y => ?_)
   exact (measurePreserving_div_right μ y).quasiMeasurePreserving
 
 @[to_additive]

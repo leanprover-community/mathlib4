@@ -116,6 +116,11 @@ theorem rpow_natCast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
 @[deprecated (since := "2024-04-17")]
 alias rpow_nat_cast := rpow_natCast
 
+@[simp, norm_cast]
+lemma rpow_intCast (x : ℝ≥0) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
+  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
+    Int.cast_negSucc, rpow_neg, zpow_negSucc]
+
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n : ℕ) :=
@@ -286,7 +291,7 @@ theorem rpow_eq_rpow_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ z = y ^ 
   (rpow_left_injective hz).eq_iff
 
 theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun y : ℝ≥0 => y ^ x :=
-  fun y => ⟨y ^ x⁻¹, by simp_rw [← rpow_mul, _root_.inv_mul_cancel hx, rpow_one]⟩
+  fun y => ⟨y ^ x⁻¹, by simp_rw [← rpow_mul, inv_mul_cancel₀ hx, rpow_one]⟩
 
 theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0 => y ^ x :=
   ⟨rpow_left_injective hx, rpow_left_surjective hx⟩
@@ -306,10 +311,10 @@ theorem rpow_one_div_eq_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ (1 / 
   rw [← rpow_eq_rpow_iff hz, rpow_self_rpow_inv hz]
 
 @[simp] lemma rpow_rpow_inv {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y) ^ y⁻¹ = x := by
-  rw [← rpow_mul, mul_inv_cancel hy, rpow_one]
+  rw [← rpow_mul, mul_inv_cancel₀ hy, rpow_one]
 
 @[simp] lemma rpow_inv_rpow {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y⁻¹) ^ y = x := by
-  rw [← rpow_mul, inv_mul_cancel hy, rpow_one]
+  rw [← rpow_mul, inv_mul_cancel₀ hy, rpow_one]
 
 theorem pow_rpow_inv_natCast (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   rw [← NNReal.coe_inj, coe_rpow, NNReal.coe_pow]
@@ -655,13 +660,13 @@ theorem rpow_lt_rpow_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z < y ^
 
 theorem le_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y := by
   nth_rw 1 [← rpow_one x]
-  nth_rw 1 [← @_root_.mul_inv_cancel _ _ z hz.ne']
+  nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne']
   rw [rpow_mul, @rpow_le_rpow_iff _ _ z⁻¹ (by simp [hz])]
 
 @[deprecated le_rpow_inv_iff (since := "2024-07-10")]
 theorem le_rpow_one_div_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ≤ y ^ (1 / z) ↔ x ^ z ≤ y := by
   nth_rw 1 [← rpow_one x]
-  nth_rw 1 [← @_root_.mul_inv_cancel _ _ z hz.ne']
+  nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne']
   rw [rpow_mul, ← one_div, @rpow_le_rpow_iff _ _ (1 / z) (by simp [hz])]
 
 theorem rpow_inv_lt_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
@@ -669,24 +674,24 @@ theorem rpow_inv_lt_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ <
 
 theorem lt_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y := by
   nth_rw 1 [← rpow_one x]
-  nth_rw 1 [← @_root_.mul_inv_cancel _ _ z (ne_of_lt hz).symm]
+  nth_rw 1 [← @mul_inv_cancel₀ _ _ z (ne_of_lt hz).symm]
   rw [rpow_mul, @rpow_lt_rpow_iff _ _ z⁻¹ (by simp [hz])]
 
 @[deprecated lt_rpow_inv_iff (since := "2024-07-10")]
 theorem lt_rpow_one_div_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ (1 / z) ↔ x ^ z < y := by
   nth_rw 1 [← rpow_one x]
-  nth_rw 1 [← @_root_.mul_inv_cancel _ _ z (ne_of_lt hz).symm]
+  nth_rw 1 [← @mul_inv_cancel₀ _ _ z (ne_of_lt hz).symm]
   rw [rpow_mul, ← one_div, @rpow_lt_rpow_iff _ _ (1 / z) (by simp [hz])]
 
 theorem rpow_inv_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
   nth_rw 1 [← ENNReal.rpow_one y]
-  nth_rw 1 [← @_root_.mul_inv_cancel _ _ z hz.ne.symm]
+  nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne.symm]
   rw [ENNReal.rpow_mul, ENNReal.rpow_le_rpow_iff (inv_pos.2 hz)]
 
 @[deprecated rpow_inv_le_iff (since := "2024-07-10")]
 theorem rpow_one_div_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ (1 / z) ≤ y ↔ x ≤ y ^ z := by
   nth_rw 1 [← ENNReal.rpow_one y]
-  nth_rw 2 [← @_root_.mul_inv_cancel _ _ z hz.ne.symm]
+  nth_rw 2 [← @mul_inv_cancel₀ _ _ z hz.ne.symm]
   rw [ENNReal.rpow_mul, ← one_div, ENNReal.rpow_le_rpow_iff (one_div_pos.2 hz)]
 
 theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (hx' : x ≠ ⊤) (hyz : y < z) :
@@ -829,16 +834,16 @@ theorem ofReal_rpow_of_nonneg {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp_nonneg : 0 �
   exact ofReal_rpow_of_pos (hx_nonneg.lt_of_ne hx0.symm)
 
 @[simp] lemma rpow_rpow_inv {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0∞) : (x ^ y) ^ y⁻¹ = x := by
-  rw [← rpow_mul, mul_inv_cancel hy, rpow_one]
+  rw [← rpow_mul, mul_inv_cancel₀ hy, rpow_one]
 
 @[simp] lemma rpow_inv_rpow {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0∞) : (x ^ y⁻¹) ^ y = x := by
-  rw [← rpow_mul, inv_mul_cancel hy, rpow_one]
+  rw [← rpow_mul, inv_mul_cancel₀ hy, rpow_one]
 
 lemma pow_rpow_inv_natCast {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
-  rw [← rpow_natCast, ← rpow_mul, mul_inv_cancel (by positivity), rpow_one]
+  rw [← rpow_natCast, ← rpow_mul, mul_inv_cancel₀ (by positivity), rpow_one]
 
 lemma rpow_inv_natCast_pow {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
-  rw [← rpow_natCast, ← rpow_mul, inv_mul_cancel (by positivity), rpow_one]
+  rw [← rpow_natCast, ← rpow_mul, inv_mul_cancel₀ (by positivity), rpow_one]
 
 lemma rpow_natCast_mul (x : ℝ≥0∞) (n : ℕ) (z : ℝ) : x ^ (n * z) = (x ^ n) ^ z := by
   rw [rpow_mul, rpow_natCast]
@@ -875,31 +880,25 @@ end ENNReal
 
 -- theorem nnrpow_pos (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c : ℝ≥0) (hb : b = b') (h : a ^ b' = c) :
 --     a ^ b = c := by rw [← h, hb, NNReal.rpow_natCast]
--- #align norm_num.nnrpow_pos NormNum.nnrpow_pos
 
 -- theorem nnrpow_neg (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0) (hb : b = b') (h : a ^ b' = c)
 --     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
 --   rw [← hc, ← h, hb, NNReal.rpow_neg, NNReal.rpow_natCast]
--- #align norm_num.nnrpow_neg NormNum.nnrpow_neg
 
 -- theorem ennrpow_pos (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c) :
 --     a ^ b = c := by rw [← h, hb, ENNReal.rpow_natCast]
--- #align norm_num.ennrpow_pos NormNum.ennrpow_pos
 
 -- theorem ennrpow_neg (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c)
 --     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
 --   rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_natCast]
--- #align norm_num.ennrpow_neg NormNum.ennrpow_neg
 
 -- /-- Evaluate `NNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_nnrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` nnrpow_pos `` nnrpow_neg `` NNReal.rpow_zero q(ℝ≥0) q(ℝ) q((1 : ℝ≥0))
--- #align norm_num.prove_nnrpow norm_num.prove_nnrpow
 
 -- /-- Evaluate `ENNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_ennrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` ennrpow_pos `` ennrpow_neg `` ENNReal.rpow_zero q(ℝ≥0∞) q(ℝ) q((1 : ℝ≥0∞))
--- #align norm_num.prove_ennrpow norm_num.prove_ennrpow
 
 -- /-- Evaluates expressions of the form `rpow a b` and `a ^ b` in the special case where
 -- `b` is an integer and `a` is a positive rational (so it's really just a rational power). -/
@@ -910,7 +909,6 @@ end ENNReal
 --   | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => b.to_int >> prove_ennrpow a b
 --   | q(ENNReal.rpow $(a) $(b)) => b.to_int >> prove_ennrpow a b
 --   | _ => tactic.failed
--- #align norm_num.eval_nnrpow_ennrpow norm_num.eval_nnrpow_ennrpow
 
 -- end NormNum
 
@@ -920,7 +918,6 @@ end ENNReal
 
 -- private theorem nnrpow_pos {a : ℝ≥0} (ha : 0 < a) (b : ℝ) : 0 < a ^ b :=
 --   NNReal.rpow_pos ha
--- #align tactic.positivity.nnrpow_pos tactic.positivity.nnrpow_pos
 
 -- /-- Auxiliary definition for the `positivity` tactic to handle real powers of nonnegative reals.
 -- -/
@@ -929,12 +926,10 @@ end ENNReal
 --   match strictness_a with
 --     | positive p => positive <$> mk_app `` nnrpow_pos [p, b]
 --     | _ => failed
--- #align tactic.positivity.prove_nnrpow tactic.positivity.prove_nnrpow
 
 -- -- We already know `0 ≤ x` for all `x : ℝ≥0`
 -- private theorem ennrpow_pos {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b :=
 --   ENNReal.rpow_pos_of_nonneg ha hb.le
--- #align tactic.positivity.ennrpow_pos tactic.positivity.ennrpow_pos
 
 -- /-- Auxiliary definition for the `positivity` tactic to handle real powers of extended
 -- nonnegative reals. -/
@@ -945,7 +940,6 @@ end ENNReal
 --     | positive pa, positive pb => positive <$> mk_app `` ennrpow_pos [pa, pb]
 --     | positive pa, nonnegative pb => positive <$> mk_app `` ENNReal.rpow_pos_of_nonneg [pa, pb]
 --     | _, _ => failed
--- #align tactic.positivity.prove_ennrpow tactic.positivity.prove_ennrpow
 
 -- -- We already know `0 ≤ x` for all `x : ℝ≥0∞`
 -- end Positivity
@@ -961,7 +955,6 @@ end ENNReal
 --   | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => prove_ennrpow a b
 --   | q(ENNReal.rpow $(a) $(b)) => prove_ennrpow a b
 --   | _ => failed
--- #align tactic.positivity_nnrpow_ennrpow tactic.positivity_nnrpow_ennrpow
 
 -- end Tactic
 
