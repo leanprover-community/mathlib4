@@ -390,20 +390,18 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
   simp only [log_of_not_one_lt_left hb, zero_add, le_refl]
 
 theorem sub_opow_log_omega_lt {a : Ordinal} (ha : a ≠ 0) : a - ω ^ log ω a < a := by
-  conv_lhs => left; rw [← div_add_mod a (ω ^ log ω a)]
-  conv_rhs => rw [← div_add_mod a (ω ^ log ω a)]
+  have H := div_add_mod a (ω ^ log ω a)
+  conv_lhs => left; rw [← H]
+  conv_rhs => rw [← H]
   obtain ⟨n, hn⟩ := lt_omega.1 (div_opow_log_lt a one_lt_omega)
-  rw [hn]
   obtain rfl | n := n
   · have := div_opow_log_pos ω ha
     rw [hn, Nat.cast_zero] at this
     exact (irrefl 0 this).elim
-  · conv_lhs => rw [add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, add_assoc,
-      Ordinal.add_sub_cancel]
-    conv_rhs => rw [Nat.cast_succ, mul_add_one, add_assoc]
-    rw [add_lt_add_iff_left]
-    apply (mod_lt _ _).trans_le (le_add_right _ _)
-    apply opow_ne_zero _ omega_ne_zero
+  · rw [hn]
+    conv_lhs => rw [add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, add_assoc, add_sub_cancel]
+    rw [Nat.cast_succ, mul_add_one, add_assoc, add_lt_add_iff_left]
+    exact (mod_lt a (opow_ne_zero _ omega_ne_zero)).trans_le <| le_add_right _ _
 
 theorem add_sub_cancel_omega_opow_log {a : Ordinal} (ha : a ≠ 0) :
     ω ^ log ω a + (a - ω ^ log ω a) = a := by
