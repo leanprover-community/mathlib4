@@ -309,7 +309,7 @@ def doubleDualEmb : A →+ AddChar (AddChar A M) M where
 end toCommMonoid
 
 section CommSemiring
-variable {A R : Type*} [AddGroup A] [Fintype A] [CommSemiring R] [IsDomain R] [CharZero R]
+variable {A R : Type*} [AddGroup A] [Fintype A] [CommSemiring R] [IsDomain R]
   [DecidableEq (AddChar A R)] {ψ : AddChar A R}
 
 lemma sum_eq_ite (ψ : AddChar A R) : ∑ a, ψ a = if ψ = 0 then ↑(card A) else 0 := by
@@ -319,6 +319,8 @@ lemma sum_eq_ite (ψ : AddChar A R) : ∑ a, ψ a = if ψ = 0 then ↑(card A) e
   refine eq_zero_of_mul_eq_self_left hx ?_
   rw [Finset.mul_sum]
   exact Fintype.sum_equiv (Equiv.addLeft x) _ _ fun y ↦ (map_add_eq_mul ..).symm
+
+variable [CharZero R]
 
 lemma sum_eq_zero_iff_ne_zero : ∑ x, ψ x = 0 ↔ ψ ≠ 0 := by
   rw [sum_eq_ite, Ne.ite_eq_right_iff]; exact Nat.cast_ne_zero.2 Fintype.card_ne_zero
