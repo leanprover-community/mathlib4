@@ -19,12 +19,14 @@ We also provide two constructors,
 that turn these structures into instances of the corresponding typeclasses.
 -/
 
+variable {S G : Type*} [AddCommGroup G] [SetLike S G] (C : S)
+
 namespace AddCommGroup
 
 /-- `PositiveConeClass S G` says that `S` is a type of `PositiveCone`s in `G`. -/
 class PositiveConeClass (S G : Type*) [AddCommGroup G] [SetLike S G]
     extends AddSubmonoidClass S G : Prop where
-  eq_zero_of_mem_of_neg_mem : ∀ {s : S} {a : G}, a ∈ s → -a ∈ s → a = 0
+  eq_zero_of_mem_of_neg_mem : ∀ {C : S} {a : G}, a ∈ C → -a ∈ C → a = 0
 
 export PositiveConeClass (eq_zero_of_mem_of_neg_mem)
 
@@ -35,19 +37,19 @@ structure PositiveCone (G : Type*) [AddCommGroup G] extends AddSubmonoid G where
   eq_zero_of_mem_of_neg_mem' : ∀ {a}, a ∈ carrier → -a ∈ carrier → a = 0
 
 instance PositiveCone.instSetLike (G : Type*) [AddCommGroup G] : SetLike (PositiveCone G) G where
-  coe s := s.carrier
+  coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 instance PositiveCone.instPositiveConeClass (G : Type*) [AddCommGroup G] :
     PositiveConeClass (PositiveCone G) G where
-  add_mem {s} := s.add_mem'
-  zero_mem {s} := s.zero_mem'
-  eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
+  add_mem {C} := C.add_mem'
+  zero_mem {C} := C.zero_mem'
+  eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
 
 /-- `TotalPositiveConeClass S G` says that `S` is a type of `TotalPositiveCone`s in `G`. -/
 class TotalPositiveConeClass (S G : Type*) [AddCommGroup G] [SetLike S G]
     extends PositiveConeClass S G : Prop where
-  mem_or_neg_mem : ∀ (s : S) (a : G), a ∈ s ∨ -a ∈ s
+  mem_or_neg_mem : ∀ (C : S) (a : G), a ∈ C ∨ -a ∈ C
 
 export TotalPositiveConeClass (mem_or_neg_mem)
 
@@ -59,57 +61,59 @@ structure TotalPositiveCone (G : Type*) [AddCommGroup G] extends PositiveCone G 
 
 instance TotalPositiveCone.instSetLike (G : Type*) [AddCommGroup G] :
   SetLike (TotalPositiveCone G) G where
-  coe s := s.carrier
+  coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 instance TotalPositiveCone.instPositiveConeClass (G : Type*) [AddCommGroup G] :
     PositiveConeClass (TotalPositiveCone G) G where
-  add_mem {s} := s.add_mem'
-  zero_mem {s} := s.zero_mem'
-  eq_zero_of_mem_of_neg_mem {s} := s.eq_zero_of_mem_of_neg_mem'
+  add_mem {C} := C.add_mem'
+  zero_mem {C} := C.zero_mem'
+  eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
 
 instance TotalPositiveCone.instTotalPositiveConeClass (G : Type*) [AddCommGroup G] :
     TotalPositiveConeClass (TotalPositiveCone G) G where
-  mem_or_neg_mem {s} := s.mem_or_neg_mem'
+  mem_or_neg_mem {C} := C.mem_or_neg_mem'
 
 namespace PositiveCone
-variable {G : Type*} [OrderedAddCommGroup G] {a : G}
+variable {H : Type*} [OrderedAddCommGroup H] {a : H}
 
-variable (G) in
+variable (H) in
 /-- Construct a `PositiveCone` from
 the set of positive elements of an existing `OrderedAddCommGroup`. -/
-def nonneg : PositiveCone G where
-  __ := AddSubmonoid.nonneg G
+def nonneg : PositiveCone H where
+  __ := AddSubmonoid.nonneg H
   eq_zero_of_mem_of_neg_mem' {a} := by simpa using ge_antisymm
 
-@[simp] lemma nonneg_toAddSubmonoid : (nonneg G).toAddSubmonoid = .nonneg G := rfl
-@[simp] lemma mem_nonneg : a ∈ nonneg G ↔ 0 ≤ a := Iff.rfl
-@[simp, norm_cast] lemma coe_nonneg : nonneg G = {x : G | 0 ≤ x} := rfl
+@[simp] lemma nonneg_toAddSubmonoid : (nonneg H).toAddSubmonoid = .nonneg H := rfl
+@[simp] lemma mem_nonneg : a ∈ nonneg H ↔ 0 ≤ a := Iff.rfl
+@[simp, norm_cast] lemma coe_nonneg : nonneg H = {x : H | 0 ≤ x} := rfl
 
 end PositiveCone
 
 namespace TotalPositiveCone
-variable {G : Type*} [LinearOrderedAddCommGroup G] {a : G}
+variable {H : Type*} [LinearOrderedAddCommGroup H] {a : H}
 
-variable (G) in
+variable (H) in
 /-- Construct a `TotalPositiveCone` from
 the set of positive elements of an existing `LinearOrderedAddCommGroup`. -/
-def nonneg : TotalPositiveCone G where
-  __ := PositiveCone.nonneg G
+def nonneg : TotalPositiveCone H where
+  __ := PositiveCone.nonneg H
   mem_or_neg_mem' := by simpa using le_total 0
 
-@[simp] lemma nonneg_toAddSubmonoid : (nonneg G).toAddSubmonoid = .nonneg G := rfl
-@[simp] lemma mem_nonneg : a ∈ nonneg G ↔ 0 ≤ a := Iff.rfl
-@[simp, norm_cast] lemma coe_nonneg : nonneg G = {x : G | 0 ≤ x} := rfl
+@[simp] lemma nonneg_toAddSubmonoid : (nonneg H).toAddSubmonoid = .nonneg H := rfl
+@[simp] lemma mem_nonneg : a ∈ nonneg H ↔ 0 ≤ a := Iff.rfl
+@[simp, norm_cast] lemma coe_nonneg : nonneg H = {x : H | 0 ≤ x} := rfl
 
 end AddCommGroup.TotalPositiveCone
+
+export AddCommGroup (eq_zero_of_mem_of_neg_mem)
+export AddCommGroup (mem_or_neg_mem)
 
 open AddCommGroup
 
 /-- Construct an `OrderedAddCommGroup` by
 designating a positive cone in an existing `AddCommGroup`. -/
-def OrderedAddCommGroup.mkOfPositiveCone {S G : Type*}
-    [AddCommGroup G] [SetLike S G] [PositiveConeClass S G] (C : S) :
+@[reducible] def OrderedAddCommGroup.mkOfPositiveCone [PositiveConeClass S G] :
     OrderedAddCommGroup G where
   le a b := a - b ∈ C
   le_refl a := by simp [zero_mem]
@@ -120,9 +124,9 @@ def OrderedAddCommGroup.mkOfPositiveCone {S G : Type*}
 
 /-- Construct a `LinearOrderedAddCommGroup` by
 designating a total positive cone in an existing `AddCommGroup`. -/
-def LinearOrderedAddCommGroup.mkOfPositiveCone {S G : Type*}
-    [AddCommGroup G] [SetLike S G] [TotalPositiveConeClass S G]
-    (C : S) (dec : DecidablePred (fun x => x ∈ C)) : LinearOrderedAddCommGroup G where
+@[reducible] def LinearOrderedAddCommGroup.mkOfPositiveCone
+    [TotalPositiveConeClass S G] (dec : DecidablePred (fun x => x ∈ C)) :
+    LinearOrderedAddCommGroup G where
   __ := OrderedAddCommGroup.mkOfPositiveCone C
   le_total a b := by simpa using mem_or_neg_mem C (a - b)
   decidableLE a b := dec _
