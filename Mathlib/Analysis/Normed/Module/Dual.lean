@@ -247,7 +247,7 @@ theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔
   rw [polar_singleton]
   exact mem_setOf
 
-theorem sInter_polar_finite_reciprocal_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+theorem sInter_polar_finite_reciprocal_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
     ⋂₀ (polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
   conv_rhs => rw [← inv_inv r]
