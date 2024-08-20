@@ -427,6 +427,10 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
   -- Porting note: `le_refl` is required.
   simp only [log_of_not_one_lt_left hb, zero_add, le_refl]
 
+theorem omega_opow_mul_nat_lt (a : Ordinal) (n : ℕ) : ω ^ a * n < ω ^ succ a := by
+  rw [opow_succ]
+  exact mul_lt_mul_of_pos_left (nat_lt_omega n) (opow_pos a omega_pos)
+
 /-! ### Interaction with `Nat.cast` -/
 
 @[simp, norm_cast]
