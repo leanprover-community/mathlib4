@@ -112,12 +112,11 @@ open Ring
   zero_le_one := by simpa using one_mem C
   mul_nonneg x y xnn ynn := by simpa using mul_mem xnn ynn
 
-def StrictOrderedRing. (α : Type*) [OrderedRing α] [IsDomain α] : StrictOrderedRing α where
+def StrictOrderedRing.mkOfOrderedRingAndDomain (α : Type*) [OrderedRing α] [IsDomain α] :
+    StrictOrderedRing α where
   __ := ‹OrderedRing α›
   __ := ‹IsDomain α›
-  mul_pos a b ap bp := by positivity
-
-
+  mul_pos a b ap bp := by have := (mul_ne_zero_iff (M₀ := α) (a := a) (b := b)).mpr; positivity
 
 /-  lt_of_le_of_ne
                        (mul_nonneg (le_of_lt ap) (le_of_lt bp))
