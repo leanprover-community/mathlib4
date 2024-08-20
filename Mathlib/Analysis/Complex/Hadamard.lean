@@ -307,10 +307,8 @@ lemma diffContOnCl_interpStrip :
       · apply differentiableAt_id'
       · left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
 
-variable [NormedSpace ℂ E]
-
-lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
-    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
+lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps [NormedSpace ℂ E] (ε : ℝ) (hε : ε > 0)
+    (z : ℂ) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
     ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1-z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
   simp only [F, abs_invInterpStrip _ _ hε, norm_smul, norm_mul, norm_eq_abs,
@@ -324,7 +322,8 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1-z.re)]
 
-lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
+lemma eventuallyle [NormedSpace ℂ E] (z : ℂ)
+    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
     (fun _ : ℝ ↦ ‖f z‖) ≤ᶠ[𝓝[>] 0]
     (fun ε ↦ ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖) := by
@@ -332,7 +331,7 @@ lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStri
     norm_le_interpStrip_of_mem_verticalClosedStrip_eps f ε hε z hB hd
       (mem_of_mem_of_subset hz (preimage_mono Ioo_subset_Icc_self))
 
-lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
+lemma norm_le_interpStrip_of_mem_verticalStrip_zero [NormedSpace ℂ E] (z : ℂ)
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) (hz : z ∈ verticalStrip 0 1) :
     ‖f z‖ ≤ ‖interpStrip f z‖ := by
@@ -375,7 +374,7 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
 closed strip `re ⁻¹' [0,1]` and differentiable on open strip `re ⁻¹' (0,1)`, then for
 `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
 `re ⁻¹' [0,1]` the inequality `‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. -/
-lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ (f : ℂ → E) {z : ℂ}
+lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ [NormedSpace ℂ E] (f : ℂ → E) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
     ‖f z‖ ≤ ‖interpStrip f z‖ := by
@@ -389,7 +388,7 @@ bounded function, continuous on the closed strip `re ⁻¹' [0,1]` and different
 `re ⁻¹' (0,1)`. If, for all `z.re = 0`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
 `z.re = 1`, `‖f z‖ ≤ b` for some `b ∈ ℝ` then for all `z` in the closed strip
 `re ⁻¹' [0,1]` the inequality `‖f(z)‖ ≤ a ^ (1 - z.re) * b ^ z.re` holds. -/
-lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ} {a b : ℝ}
+lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' [NormedSpace ℂ E] (f : ℂ → E) {z : ℂ} {a b : ℝ}
     (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
     (ha : ∀ z ∈ re ⁻¹' {0}, ‖f z‖ ≤ a) (hb : ∀ z ∈ re ⁻¹' {1}, ‖f z‖ ≤ b) :
@@ -490,7 +489,7 @@ lemma scale_mem_strip {z : ℂ} {l u : ℝ} (hul: l < u) (hz: z ∈ verticalClos
 }
 
 /-- The function `scale f l u` is `diffContOnCl`. -/
-lemma scale_diffContOnCl {f: ℂ → E} {l u : ℝ} (hul: l < u)
+lemma scale_diffContOnCl [NormedSpace ℂ E] {f: ℂ → E} {l u : ℝ} (hul: l < u)
     (hd : DiffContOnCl ℂ f (verticalStrip l u)) : DiffContOnCl ℂ (scale f l u)
     (verticalStrip 0 1) := by{
   unfold scale
@@ -637,7 +636,8 @@ closed strip `re ⁻¹' [l,u]` and differentiable on open strip `re ⁻¹' (l,u)
 `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
 `re ⁻¹' [a,b]` the inequality `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re-l)/(u-l))) * M(1) ^ ((z.re-l)/(u-l))`
 holds. -/
-lemma norm_le_interpStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul: l < u) {f : ℂ → E} {z : ℂ}
+lemma norm_le_interpStrip_of_mem_verticalClosedStrip [NormedSpace ℂ E] {l u : ℝ} (hul: l < u)
+    {f : ℂ → E} {z : ℂ}
     (hz : z ∈ verticalClosedStrip l u) (hd : DiffContOnCl ℂ f (verticalStrip l u))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip l u))) :
     ‖f z‖ ≤ ‖interpStrip' f l u z‖ := by{
@@ -654,8 +654,8 @@ bounded function, continuous on the closed strip `re ⁻¹' [l,u]` and different
 `re ⁻¹' (l,u)`. If, for all `z.re = l`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
 `z.re = u`, `‖f z‖ ≤ b` for some `b ∈ ℝ` then for all `z` in the closed strip
 `re ⁻¹' [l,u]` the inequality `‖f(z)‖ ≤ a ^ (1 - (z.re-l)/(u-l)) * b ^ ((z.re-l)/(u-l))` holds. -/
-lemma norm_le_interp_of_mem_verticalClosedStrip' {f : ℂ → E} {z : ℂ} {a b l u : ℝ} (hul: l < u)
-    (hz : z ∈ verticalClosedStrip l u) (hd : DiffContOnCl ℂ f (verticalStrip l u))
+lemma norm_le_interp_of_mem_verticalClosedStrip' [NormedSpace ℂ E] {f : ℂ → E} {z : ℂ} {a b l u : ℝ}
+    (hul: l < u) (hz : z ∈ verticalClosedStrip l u) (hd : DiffContOnCl ℂ f (verticalStrip l u))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip l u)))
     (ha : ∀ z ∈ re ⁻¹' {l}, ‖f z‖ ≤ a) (hb : ∀ z ∈ re ⁻¹' {u}, ‖f z‖ ≤ b) :
     ‖f z‖ ≤ a ^ (1 - (z.re-l)/(u-l)) * b ^ ((z.re-l)/(u-l)) := by{
