@@ -214,7 +214,7 @@ macro_rules (kind := bigprodin)
   | `(∏ $x:ident : $t in $s, $r) => `(∏ $x:ident ∈ ($s : Finset $t), $r)
 
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
-open Batteries.ExtendedBinder
+open scoped Batteries.ExtendedBinder
 
 /-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
