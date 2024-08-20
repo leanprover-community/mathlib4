@@ -440,8 +440,6 @@ noncomputable def map [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j}))
   obj X := X.mapObj p
   map φ := mapMap φ p
 
-
-
 variable {C} (X Y)
 variable (q : J → K) (r : I → K) (hpqr : ∀ i, q (p i) = r i)
 

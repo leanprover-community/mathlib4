@@ -783,7 +783,6 @@ theorem strongDownwardInductionOn_eq {p : Multiset α → Sort*} (s : Multiset �
   dsimp only [strongDownwardInductionOn]
   rw [strongDownwardInduction]
 
-
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
   ⟨Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2⟩

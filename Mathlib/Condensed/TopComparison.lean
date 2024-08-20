@@ -128,8 +128,6 @@ noncomputable def topCatToSheafCompHausLike :
 
 end
 
-
-
 /--
 Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.

@@ -176,6 +176,7 @@ lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W.CoordinateRing) + q • mk W
     exact AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [polynomial]; ring1⟩
   simp only [smul, add_mul, mul_assoc, ← sq, Y_sq, C_sub, map_sub, C_mul, _root_.map_mul]
   ring1
+
 /-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
 noncomputable def map : W.CoordinateRing →+* (W.map f).toAffine.CoordinateRing :=
   AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f)

@@ -38,7 +38,6 @@ arc-length, parameterization
 -/
 
 
-
 open scoped NNReal ENNReal
 
 open Set MeasureTheory

@@ -48,7 +48,6 @@ variable {F : Type*} (h : F)
 
 section MulActionSemiHomClass
 
-
 variable [FunLike F M N] [MulActionSemiHomClass F σ M N]
     (c : R) (s : Set M) (t : Set N)
 

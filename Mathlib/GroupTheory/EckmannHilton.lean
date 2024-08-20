@@ -23,8 +23,6 @@ The main application lies in proving that higher homotopy groups (`πₙ` for `n
 
 universe u
 
-
-
 namespace EckmannHilton
 
 variable {X : Type u}
