@@ -233,10 +233,10 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_self _ _
       · exact mem_cons_of_mem _ (hl _ _)
 
-theorem next_get (l : List α) (_h : Nodup l) (i : Fin l.length) :
+theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
     next l (l.get i) (get_mem _ _ _) =
       l.get ⟨(i + 1) % l.length, Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩ :=
-  match l, _h, i with
+  match l, h, i with
   | [], _, i => by simpa using i.2
   | [_], _, _ => by simp
   | x::y::l, _h, ⟨0, h0⟩ => by
@@ -274,7 +274,9 @@ theorem next_get (l : List α) (_h : Nodup l) (i : Fin l.length) :
         simp at this; simp [this] at hi'
       · rw [get_cons_succ]; exact get_mem _ _ _
 
-theorem prev_get (l : List α) (_h : Nodup l) (i : Fin l.length) :
+-- Unused variable linter incorrectly reports that `h` is unused here.
+set_option linter.unusedVariables false in
+theorem prev_get (l : List α) (h : Nodup l) (i : Fin l.length) :
     prev l (l.get i) (get_mem _ _ _) =
       l.get ⟨(i + (l.length - 1)) % l.length, Nat.mod_lt _ i.pos⟩ :=
   match l with
@@ -286,12 +288,12 @@ theorem prev_get (l : List α) (_h : Nodup l) (i : Fin l.length) :
     | cons y l hl =>
       rcases n with (_ | _ | n)
       · simp [getLast_eq_getElem]
-      · simp only [mem_cons, nodup_cons] at _h
-        push_neg at _h
-        simp only [List.prev_cons_cons_of_ne _ _ _ _ _h.left.left.symm, List.length,
+      · simp only [mem_cons, nodup_cons] at h
+        push_neg at h
+        simp only [List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, List.length,
           List.get, add_comm, Nat.succ_add_sub_one, Nat.mod_self, zero_add]
       · rw [prev_ne_cons_cons]
-        · convert hl y _h.of_cons n.succ (Nat.le_of_succ_le_succ hn) using 1
+        · convert hl y h.of_cons n.succ (Nat.le_of_succ_le_succ hn) using 1
           have : ∀ k hk, (y :: l).get ⟨k, hk⟩ = (x :: y :: l).get ⟨k + 1, Nat.succ_lt_succ hk⟩ := by
             simp [List.get]
           rw [this]
@@ -306,15 +308,13 @@ theorem prev_get (l : List α) (_h : Nodup l) (i : Fin l.length) :
         · intro H
           suffices n.succ.succ = 0 by simpa
           suffices Fin.mk _ hn = ⟨0, by omega⟩ by rwa [Fin.mk.inj_iff] at this
-          rw [nodup_iff_injective_get] at _h
-          apply _h; rw [← H]; simp
+          rw [nodup_iff_injective_get] at h
+          apply h; rw [← H]; simp
         · intro H
           suffices n.succ.succ = 1 by simpa
           suffices Fin.mk _ hn = ⟨1, by omega⟩ by rwa [Fin.mk.inj_iff] at this
-          rw [nodup_iff_injective_get] at _h
-          apply _h; rw [← H]; simp
-
-@[deprecated (since := "2024-08-19")] alias prev_nthLe := nthLe_tail
+          rw [nodup_iff_injective_get] at h
+          apply h; rw [← H]; simp
 
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
   apply List.ext_get
