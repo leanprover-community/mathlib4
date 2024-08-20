@@ -298,7 +298,6 @@ end Ideal
 
 section reverse
 
-open Polynomial
 open LaurentPolynomial hiding C
 
 /-- The reverse of the characteristic polynomial of a matrix.
