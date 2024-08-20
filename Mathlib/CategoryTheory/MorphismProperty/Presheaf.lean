@@ -26,17 +26,17 @@ In this file we define and develop basic results on the representability of morp
 
 
 ## Main results
-* `representable_isStableUnderComposition`: Being representable is stable under composition.
+* `representable_isMultiplicative`: The classe of representable morphisms is multiplicative.
 * `representable_stableUnderBaseChange`: Being representable is stable under base change.
-* `representable_ofIso`: Isomorphisms are representable
+* `representable_of_isIso`: Isomorphisms are representable
 
 * `presheaf_yoneda_map`: If `f : X ⟶ Y` satisfies `P`, and `P` is stable under compostions,
   then `yoneda.map f` satisfies `P.presheaf`.
 
-For the following results, we assume that `P : MorphismProperty C` is stable under base change:
 * `presheaf_stableUnderBaseChange`: `P.presheaf` is stable under base change
 * `presheaf_respectsIso`: `P.presheaf` respects isomorphisms
-* `presheaf_isStableUnderComp`: If `P` is stable under composition, then so is `P.presheaf`
+* `presheaf_isStableUnderComposition`: If `P` is stable under composition, then so is `P.presheaf`
+* `presheaf_isMultiplicative`: If `P` is multiplicative and respects isos, so is `P.presheaf`
 
 -/
 
@@ -101,15 +101,18 @@ lemma yoneda_map_fst' : yoneda.map (hf'.fst' g) = hf'.fst g :=
 lemma isPullback : IsPullback (hf.fst g) (yoneda.map (hf.snd g)) f g :=
   (hf g).choose_spec.choose_spec.choose_spec
 
+@[reassoc]
+lemma w : hf.fst g ≫ f = yoneda.map (hf.snd g) ≫ g := (hf.isPullback g).w
+
 /-- Variant of the pullback square when the first projection lies in the image of yoneda. -/
 lemma isPullback' : IsPullback (yoneda.map (hf'.fst' g)) (yoneda.map (hf'.snd g)) f' g :=
   (hf'.yoneda_map_fst' _) ▸ (hf' g).choose_spec.choose_spec.choose_spec
 
 @[reassoc]
-lemma w' {X Y Z : C} {f : X ⟶ Z} (g : Y ⟶ Z)
-    (hf : Presheaf.representable (yoneda.map f)) :
+lemma w' {X Y Z : C} {f : X ⟶ Z}
+    (hf : Presheaf.representable (yoneda.map f)) (g : Y ⟶ Z) :
       hf.fst' (yoneda.map g) ≫ f = hf.snd (yoneda.map g) ≫ g :=
-  yoneda.map_injective <| by simp [(hf.isPullback (yoneda.map g)).w]
+  yoneda.map_injective <| by simp [(hf.w (yoneda.map g))]
 
 lemma isPullback_of_yoneda_map {X Y Z : C} {f : X ⟶ Z}
     (hf : Presheaf.representable (yoneda.map f)) (g : Y ⟶ Z) :
@@ -256,7 +259,6 @@ lemma presheaf_of_snd [P.RespectsIso] {f : F ⟶ G} (hf : Presheaf.representable
 
 /-- If `P : MorphismProperty C` is stable under base change, then for any `f : X ⟶ Y` in `C`,
 `yoneda.map f` satisfies `P.presheaf` if `f` does. -/
--- TODO: converse!
 lemma presheaf_yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y}
     (hf : P f) : P.presheaf (yoneda.map f) := by
   have := StableUnderBaseChange.respectsIso hP
@@ -267,6 +269,10 @@ lemma presheaf_yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y :
 
 lemma of_presheaf_yoneda {X Y : C} {f : X ⟶ Y} (hf : P.presheaf (yoneda.map f)) : P f :=
   hf.property (𝟙 _) (𝟙 _) f (IsPullback.id_horiz (yoneda.map f))
+
+lemma presheaf_yoneda_map_iff [HasPullbacks C] (hP : StableUnderBaseChange P)
+    {X Y : C} {f : X ⟶ Y} : P.presheaf (yoneda.map f) ↔ P f :=
+  ⟨fun hf ↦ of_presheaf_yoneda hf, fun hf ↦ presheaf_yoneda_map hP hf⟩
 
 /-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms.-/
 lemma presheaf_monomorphisms_le_monomorphisms :
@@ -279,7 +285,7 @@ lemma presheaf_monomorphisms_le_monomorphisms :
   suffices hf.rep.lift (g := a ≫ f) a (𝟙 X) (by simp) =
       hf.rep.lift b (𝟙 X) (by simp [← h]) by
     simpa using yoneda.congr_map this =≫ (hf.rep.fst (a ≫ f))
-  -- This follows from the fact that the induced maps `hf.rep.pullback g ⟶ X` are Mono.
+  -- This follows from the fact that the induced maps `hf.rep.pullback g ⟶ X` are mono.
   have : Mono (hf.rep.snd (a ≫ f)) := hf.property_snd (a ≫ f)
   simp only [← cancel_mono (hf.rep.snd (a ≫ f)),
     Presheaf.representable.lift_snd]
@@ -290,8 +296,17 @@ lemma presheaf_monotone {P' : MorphismProperty C} (h : P ≤ P') :
     P.presheaf ≤ P'.presheaf := fun _ _ _ hf ↦
   ⟨hf.rep, fun _ _ g fst snd BC ↦ h _ (hf.property g fst snd BC)⟩
 
-instance representable_isStableUnderComposition :
-    IsStableUnderComposition (Presheaf.representable (C := C)) where
+lemma representable_of_isIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] :
+    Presheaf.representable f :=
+  fun X g ↦ ⟨X, 𝟙 X, g ≫ inv f, IsPullback.of_vert_isIso ⟨by simp⟩⟩
+
+lemma representable_isomorphisms_le :
+    MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
+  fun _ _ f hf ↦ letI : IsIso f := hf; representable_of_isIso f
+
+instance representable_isMultiplicative :
+    IsMultiplicative (Presheaf.representable (C := C)) where
+  id_mem _ := representable_of_isIso _
   comp_mem {F G H} f g hf hg := fun X h ↦
     ⟨hf.pullback (hg.fst h), hf.snd (hg.fst h) ≫ hg.snd h, hf.fst (hg.fst h),
       by simpa using IsPullback.paste_vert (hf.isPullback (hg.fst h)) (hg.isPullback h)⟩
@@ -300,18 +315,10 @@ lemma representable_stableUnderBaseChange :
     StableUnderBaseChange (Presheaf.representable (C := C)) := by
   intro F G G' H f g f' g' P₁ hg X h
   refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
-  apply P₁.lift (hg.fst (h ≫ f)) (yoneda.map (hg.snd (h ≫ f)) ≫ h) (hg.isPullback (h ≫ f)).w
+  apply P₁.lift (hg.fst (h ≫ f)) (yoneda.map (hg.snd (h ≫ f)) ≫ h) (hg.w (h ≫ f))
   apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
 
-lemma representable_ofIsIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] :
-    Presheaf.representable f :=
-  fun X g ↦ ⟨X, 𝟙 X, g ≫ inv f, IsPullback.of_vert_isIso ⟨by simp⟩⟩
-
-lemma representable_isomorphisms_le :
-    MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
-  fun _ _ f hf ↦ letI : IsIso f := hf; representable_ofIsIso f
-
-lemma representable_respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
+lemma representable_respectsIso : RespectsIso (Presheaf.representable (C := C)) :=
   representable_stableUnderBaseChange.respectsIso
 
 section
@@ -338,8 +345,93 @@ instance presheaf_isStableUnderComposition [P.IsStableUnderComposition] :
 instance presheaf_respectsIso : RespectsIso P.presheaf :=
   (presheaf_stableUnderBaseChange P).respectsIso
 
+instance presheaf_isMultiplicative [P.IsMultiplicative] [P.RespectsIso] :
+    IsMultiplicative P.presheaf where
+  id_mem X := presheaf_of_exists (id_mem _ _)
+    (fun Y g ↦ ⟨Y, g, 𝟙 Y, by simpa using IsPullback.of_id_snd, id_mem _ _⟩)
+
 end
 
 end MorphismProperty
+
+namespace Presheaf.representable
+
+section Pullbacks₃
+
+variable {X₁ X₂ X₃ : C} {F : Cᵒᵖ ⥤ Type v}
+  {f₁ : yoneda.obj X₁ ⟶ F} (hf₁ : Presheaf.representable f₁)
+  (f₂ : yoneda.obj X₂ ⟶ F) (f₃ : yoneda.obj X₃ ⟶ F)
+  [HasPullback (hf₁.fst' f₂) (hf₁.fst' f₃)]
+
+noncomputable def pullback₃ := Limits.pullback (hf₁.fst' f₂) (hf₁.fst' f₃)
+
+noncomputable def pullback₃.p₁ : pullback₃ hf₁ f₂ f₃ ⟶ X₁ := pullback.fst _ _ ≫ hf₁.fst' f₂
+noncomputable def pullback₃.p₂ : pullback₃ hf₁ f₂ f₃ ⟶ X₂ := pullback.fst _ _ ≫ hf₁.snd f₂
+noncomputable def pullback₃.p₃ : pullback₃ hf₁ f₂ f₃ ⟶ X₃ := pullback.snd _ _ ≫ hf₁.snd f₃
+
+noncomputable def pullback₃.π : yoneda.obj (pullback₃ hf₁ f₂ f₃) ⟶ F :=
+  yoneda.map (p₁ hf₁ f₂ f₃) ≫ f₁
+
+@[reassoc (attr := simp)]
+lemma pullback₃.yoneda_map_p₁_comp : yoneda.map (p₁ hf₁ f₂ f₃) ≫ f₁ = π _ _ _ :=
+  rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.yoneda_map_p₂_comp : yoneda.map (p₂ hf₁ f₂ f₃) ≫ f₂ = π _ _ _ := by
+  simp [π, p₁, p₂, ← hf₁.w f₂]
+
+@[reassoc (attr := simp)]
+lemma pullback₃.yoneda_map_p₃_comp : yoneda.map (p₃ hf₁ f₂ f₃) ≫ f₃ = π _ _ _ := by
+  simp [π, p₁, p₃, ← hf₁.w f₃, pullback.condition]
+
+section
+
+variable {Z : C} (x₁ : Z ⟶ X₁) (x₂ : Z ⟶ X₂) (x₃ : Z ⟶ X₃)
+  (h₁₂ : yoneda.map x₁ ≫ f₁ = yoneda.map x₂ ≫ f₂)
+  (h₁₃ : yoneda.map x₁ ≫ f₁ = yoneda.map x₃ ≫ f₃)
+
+noncomputable def lift₃ : Z ⟶ pullback₃ hf₁ f₂ f₃ :=
+  pullback.lift (hf₁.lift' x₁ x₂ h₁₂)
+    (hf₁.lift' x₁ x₃ h₁₃) (by simp)
+
+@[reassoc (attr := simp)]
+lemma lift₃_p₁ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₁ hf₁ f₂ f₃ = x₁ := by
+  simp [lift₃, pullback₃.p₁]
+
+@[reassoc (attr := simp)]
+lemma lift₃_p₂ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₂ hf₁ f₂ f₃ = x₂ := by
+  simp [lift₃, pullback₃.p₂]
+
+@[reassoc (attr := simp)]
+lemma lift₃_p₃ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₃ hf₁ f₂ f₃ = x₃ := by
+  simp [lift₃, pullback₃.p₃]
+
+end
+
+@[reassoc (attr := simp)]
+lemma pullback₃.fst_fst' : pullback.fst _ _ ≫ hf₁.fst' f₂ = pullback₃.p₁ hf₁ f₂ f₃ := rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.fst_snd : pullback.fst _ _ ≫ hf₁.snd f₂ = pullback₃.p₂ hf₁ f₂ f₃ := rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.snd_snd : pullback.snd _ _ ≫ hf₁.snd f₃ = pullback₃.p₃ hf₁ f₂ f₃ := rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.snd_fst' :
+    pullback.snd (hf₁.fst' f₂) (hf₁.fst' f₃) ≫ hf₁.fst' f₃ = pullback₃.p₁ hf₁ f₂ f₃ :=
+  pullback.condition.symm
+
+variable {hf₁ f₂ f₃} in
+@[ext]
+lemma pullback₃.hom_ext {Z : C} {φ φ' : Z ⟶ pullback₃ hf₁ f₂ f₃}
+    (h₁ : φ ≫ pullback₃.p₁ hf₁ f₂ f₃ = φ' ≫ pullback₃.p₁ hf₁ f₂ f₃)
+    (h₂ : φ ≫ pullback₃.p₂ hf₁ f₂ f₃ = φ' ≫ pullback₃.p₂ hf₁ f₂ f₃)
+    (h₃ : φ ≫ pullback₃.p₃ hf₁ f₂ f₃ = φ' ≫ pullback₃.p₃ hf₁ f₂ f₃) : φ = φ' := by
+  apply pullback.hom_ext <;> ext <;> simpa
+
+end Pullbacks₃
+
+end Presheaf.representable
 
 end CategoryTheory
