@@ -294,9 +294,7 @@ theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃
 @[simp]
 theorem symm_eq_self_of_involution (f : Equiv.Perm α) (h : Function.Involutive f) : f.symm = f := by
   ext x
-  calc f.symm x = f.symm (f (f x)) := by rw [h x]
-              _ = (f.symm ∘ f) (f x) := rfl
-              _ = id (f x) := by rw [symm_comp_self]
+  rw [← h x, symm_apply_apply, h]
 
 @[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
 
