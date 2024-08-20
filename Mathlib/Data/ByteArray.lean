@@ -27,6 +27,7 @@ theorem Up.WF (ub) : WellFounded (Up ub) :=
   Subrelation.wf (h₂ := (measure (ub - ·)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
+@[deprecated (since := "2024-08-19")]
 def upRel (ub : Nat) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩
 
 end Nat
