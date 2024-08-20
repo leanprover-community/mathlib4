@@ -32,9 +32,11 @@ status:
 * ✓ means the declaration or import exists,
 * × means the declaration or import does not exist.
 
-This means that the expectation is that all checks *fail* at the time where
-`assert_not_exists` or `assert_not_imported` is called, and that they all *succeed*
-by the time all of `Mathlib` has been built.
+This means that the expectation is that all checks *succeed* by the time `#check_assertions`
+is used, typically once all of `Mathlib` has been built.
+
+If all declarations and imports are available when `#check_assertions` is used,
+then the command logs an info. Otherwise, it emits a warning.
 -/
 elab "#check_assertions" : command => do
   let env ← getEnv
