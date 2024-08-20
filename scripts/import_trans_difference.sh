@@ -23,25 +23,15 @@ BASH_MODULE_DOCS
 
 # `all=1` is the flag to print all import changes, without cut-off
 all=0
-if [ "${1}" == "all" ]
+if [ "${1:-}" == "all" ]
 then
   all=1
   shift
 fi
 
-if [ -n "${1}" ]
-then
-  commit1="${1}"
-else
-  commit1="$(git rev-parse HEAD)"
-fi
+commit1=${1:-$(git rev-parse HEAD)}
 
-if [ -n "${2}" ]
-then
-  commit2="${2}"
-else
-  commit2="$(git merge-base master ${commit1})"
-fi
+commit2=${2:-$(git merge-base master ${commit1})}
 
 #printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
 
