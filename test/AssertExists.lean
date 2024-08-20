@@ -1,5 +1,9 @@
 import Mathlib.Util.AssertExists
 
+/-- info: No assertions made. -/
+#guard_msgs in
+#check_assertions
+
 /-- warning: the module 'Lean.Elab.Command' is (transitively) imported -/
 #guard_msgs in
 assert_not_imported
