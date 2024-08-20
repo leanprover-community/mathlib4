@@ -169,7 +169,7 @@ section Lattice
 /-- Partial order instance on the type of abstract simplicial complex on `α`: we say that `K` is a
 subcomplex of `L` if every face of `K` is also a face of `L`.
 -/
-instance instPartialOrderFaces : PartialOrder.{u} (AbstractSimplicialComplex α) :=
+instance instPartialOrderFaces : PartialOrder (AbstractSimplicialComplex α) :=
   PartialOrder.lift faces (fun _ _ heq => by ext; rw [heq])
 
 variable {L}
@@ -183,7 +183,7 @@ lemma Facets_subcomplex (hKL : K ≤ L) {s : Finset α} (hsK : s ∈ K.faces) (h
 
 /-- The `Inf` of two abstract simplicial complexes `K` and `L` on `α` is the abstract simplicial
 complex whose  set of faces is the intersection of the sets of faces of `K` and `L`.-/
-instance Inf : Inf.{u} (AbstractSimplicialComplex α) :=
+instance Inf : Inf (AbstractSimplicialComplex α) :=
   ⟨fun K L =>
    { faces := K.faces ⊓ L.faces
      nonempty_of_mem := fun hs => K.nonempty_of_mem hs.1
@@ -194,21 +194,21 @@ lemma inf_faces : (K ⊓ L).faces = K.faces ⊓ L.faces := rfl
 
 /- The `Sup` of two abstract simplicial complexes `K` and `L` on `α` is the abstract simplicial
 complex whose  set of faces is the union of the sets of faces of `K` and `L`.-/
-instance Sup : Sup.{u} (AbstractSimplicialComplex α) :=
+instance Sup : Sup (AbstractSimplicialComplex α) :=
   ⟨fun K L =>
   { faces := K.faces ⊔ L.faces
     nonempty_of_mem := fun hs => by cases hs with
                                   | inl h => exact K.nonempty_of_mem h
                                   | inr h => exact L.nonempty_of_mem h
     down_closed := fun hs hts ht => by cases hs with
-                                     | inl hsK => exact Or.inl $ K.down_closed hsK hts ht
-                                     | inr hsL => exact Or.inr $ L.down_closed hsL hts ht}⟩
+                                     | inl hsK => exact Or.inl <| K.down_closed hsK hts ht
+                                     | inr hsL => exact Or.inr <| L.down_closed hsL hts ht}⟩
 
 /-- The set of faces of `K ⊔ L` is the union of the sets of faces of `K` and `L`.-/
 lemma sup_faces : (K ⊔ L).faces = K.faces ⊔ L.faces := rfl
 
 /- `DistribLattice` instance on the type of absract simplicial complexes on `α`.-/
-instance DistribLattice : DistribLattice.{u} (AbstractSimplicialComplex α) :=
+instance DistribLattice : DistribLattice (AbstractSimplicialComplex α) :=
 { AbstractSimplicialComplex.instPartialOrderFaces,
   AbstractSimplicialComplex.Inf,
   AbstractSimplicialComplex.Sup with
@@ -222,14 +222,14 @@ instance DistribLattice : DistribLattice.{u} (AbstractSimplicialComplex α) :=
 
 /- `Top` instance on the type of abstract simplicial complexes on `α`: this is the abstract
 simplicial complex whose set of faces is the set of all nonempty finsets of `α`.-/
-instance Top : Top.{u} (AbstractSimplicialComplex α) :=
+instance Top : Top (AbstractSimplicialComplex α) :=
   ⟨{faces := {s : Finset α | s.Nonempty}
     nonempty_of_mem := fun hs => hs
     down_closed := fun _ _ ht => ht}⟩
 
 /-- Proof that `AbstractSimplicialComplex.Top` is the biggest abstract simplicial complex
 on `α`.-/
-instance OrderTop : OrderTop.{u} (AbstractSimplicialComplex α) :=
+instance OrderTop : OrderTop (AbstractSimplicialComplex α) :=
 { AbstractSimplicialComplex.Top with
   le_top := fun K _ hσ => K.nonempty_of_mem hσ
 }
@@ -248,21 +248,21 @@ lemma vertices_top : (⊤ : AbstractSimplicialComplex α).vertices = ⊤ := by
 
 /-- `Bot` instance on the type of abstract simplicial complexes on `α`: this is the abstract
 simplicial complex whose set of faces is empty.-/
-instance Bot : Bot.{u} (AbstractSimplicialComplex α) :=
+instance Bot : Bot (AbstractSimplicialComplex α) :=
   ⟨{faces := (∅ : Set (Finset α))
     nonempty_of_mem := fun hs => False.elim (Set.not_mem_empty _ hs)
     down_closed := fun hs => False.elim (Set.not_mem_empty _ hs)}⟩
 
 /-- Proof that `AbstractSimplicialComplex.Bot` is the smallest abstract simplicial complex
 on `α`.-/
-instance OrderBot : OrderBot.{u} (AbstractSimplicialComplex α) :=
+instance OrderBot : OrderBot (AbstractSimplicialComplex α) :=
 { AbstractSimplicialComplex.Bot with
   bot_le := fun _ _ hσ => False.elim (Set.not_mem_empty _ hσ)}
 
 /-- `Supset` instance on the type of abstract simplicial complexes on `α`.-/
-instance SupSet : SupSet.{u} (AbstractSimplicialComplex α) :=
+instance SupSet : SupSet (AbstractSimplicialComplex α) :=
   ⟨fun S =>
-   { faces := sSup $ faces '' S
+   { faces := sSup <| faces '' S
      nonempty_of_mem := fun ⟨k, ⟨K, _, hkK⟩, h⟩ => by rw [← hkK] at h; exact K.nonempty_of_mem h
      down_closed := fun ⟨_, ⟨K, hKs, rfl⟩, hk⟩ hlk hl =>
        ⟨K.faces, ⟨K, hKs, rfl⟩, K.down_closed hk hlk hl⟩}⟩
@@ -273,9 +273,9 @@ lemma sSup_faces (S : Set (AbstractSimplicialComplex α)) : (sSup S).faces = sSu
   rfl
 
 /- `Infset` instance on the type of abstract simplicial complexes on `α`.-/
-instance InfSet : InfSet.{u} (AbstractSimplicialComplex α) :=
+instance InfSet : InfSet (AbstractSimplicialComplex α) :=
   ⟨fun S =>
-  { faces := {t ∈ sInf $ faces '' S | t.Nonempty}
+  { faces := {t ∈ sInf <| faces '' S | t.Nonempty}
     nonempty_of_mem := fun ⟨_, hσ⟩ => hσ
     down_closed := fun ⟨hk₁, _⟩ hlk hl =>
       ⟨fun m ⟨M, hM, hmM⟩ ↦ by rw [← hmM]; exact M.down_closed (hk₁ M.faces ⟨M, hM, rfl⟩) hlk hl,
@@ -284,7 +284,7 @@ instance InfSet : InfSet.{u} (AbstractSimplicialComplex α) :=
 /-- If `S` is a set of abstract simplicial complexes on `α`, then the set of faces of
 `sInf S` is the set of nonempty finsets of `α` that are faces of every element of `S`.-/
 lemma sInf_faces (S : Set (AbstractSimplicialComplex α)) :
-    (sInf S).faces = {t ∈ sInf $ faces '' S | t.Nonempty} := rfl
+    (sInf S).faces = {t ∈ sInf <| faces '' S | t.Nonempty} := rfl
 
 /-- If `S` is a nonempty set of abstract simplicial complexes on `α`, then the set of faces of
 `sInf S` is the intersection of the sets of faces of elements of `S`.-/
@@ -298,10 +298,11 @@ lemma sInf_faces_of_nonempty {S : Set (AbstractSimplicialComplex α)} (h : S.Non
   exact fun hσ ↦ K.nonempty_of_mem (hσ K hK)
 
 /-- `CompleteLattice` instance on the type of abstract simplicial complexes on `α`.-/
-instance CompleteLattice  : CompleteLattice.{u} (AbstractSimplicialComplex α) :=
+instance : CompleteLattice
+    (AbstractSimplicialComplex α) :=
 { AbstractSimplicialComplex.DistribLattice.toLattice,
-  AbstractSimplicialComplex.SupSet.{u},
-  AbstractSimplicialComplex.InfSet.{u},
+  AbstractSimplicialComplex.SupSet,
+  AbstractSimplicialComplex.InfSet,
   AbstractSimplicialComplex.OrderTop,
   AbstractSimplicialComplex.OrderBot with
   sInf_le := fun _ K hK _ hσ ↦
@@ -315,22 +316,27 @@ instance CompleteLattice  : CompleteLattice.{u} (AbstractSimplicialComplex α) :
   }
 
 /-- `CompleteDistribLattice` instance on the type of abstract simplicial complexes on `α`.-/
-instance CompleteDistribLattice : CompleteDistribLattice.{u} (AbstractSimplicialComplex α) :=
-{ AbstractSimplicialComplex.CompleteLattice.{u} with
-  iInf_sup_le_sup_sInf := by classical
-                             intro K s σ hσ
-                             rw [iInf, sInf_faces] at hσ
+def CompleteDistribLatticeMinialAxioms :
+    CompleteDistribLattice.MinimalAxioms (AbstractSimplicialComplex α) :=
+{ instCompleteLattice with
+  iInf_sup_le_sup_sInf := by intro K s σ hσ
+                             dsimp [iInf] at hσ
+                             rw [sInf_faces] at hσ
                              obtain ⟨hσ₁, hσ₂ : σ.Nonempty⟩ := hσ
+                             dsimp [Sup]
                              rw [sup_faces, sInf_faces]
                              by_cases hσK : σ ∈ K
                              · exact Or.inl hσK
                              · refine Or.inr ⟨?_, hσ₂⟩
                                intro l ⟨L,hL,hlL⟩
                                rw [← hlL]
-                               specialize hσ₁ (K ⊔ L).faces ⟨K ⊔ L, ⟨L, _⟩, rfl⟩
-                               simp only
-                               rw [iInf_eq_if, if_pos hL]
-                               exact Or.resolve_left hσ₁ hσK
+                               simp only [sInf, Set.mem_image, Set.mem_range, exists_prop,
+                                 forall_exists_index, and_imp, forall_apply_eq_imp_iff,
+                                 Set.mem_setOf_eq, exists_exists_eq_and] at hσ₁
+                               have := (hσ₁ L).1 hL
+                               rw [sup_faces] at this
+                               simp only [Set.sup_eq_union, Set.mem_union] at this
+                               exact Or.resolve_left this hσK
   inf_sSup_le_iSup_inf := by classical
                              intro K s σ hσ
                              obtain ⟨hσ₁, l, ⟨L, hL, hlL⟩, hσ₂⟩ := hσ
@@ -340,6 +346,9 @@ instance CompleteDistribLattice : CompleteDistribLattice.{u} (AbstractSimplicial
                              simp only
                              rw [iSup_eq_if, if_pos hL]
   }
+
+instance : CompleteDistribLattice (AbstractSimplicialComplex α) :=
+  CompleteDistribLattice.ofMinimalAxioms CompleteDistribLatticeMinialAxioms
 
 end Lattice
 
@@ -408,7 +417,7 @@ def link [DecidableEq α] (s : Finset α) : AbstractSimplicialComplex α :=
 { faces := {t ∈ K.faces | s ∩ t = ∅ ∧ s ∪ t ∈ K}
   nonempty_of_mem := fun hσ => K.nonempty_of_mem hσ.1
   down_closed := fun ⟨hσK, hσint, hσunion⟩ hτσ hτ => ⟨K.down_closed hσK hτσ hτ,
-    eq_bot_iff.2 $ le_trans (Finset.inter_subset_inter_left hτσ) (eq_bot_iff.1 hσint),
+    eq_bot_iff.2 <| le_trans (Finset.inter_subset_inter_left hτσ) (eq_bot_iff.1 hσint),
     K.down_closed hσunion (Finset.union_subset_union (Finset.Subset.refl _) hτσ)
       (by rw [Finset.nonempty_iff_ne_empty, ne_eq, Finset.union_eq_empty, not_and_or, ← ne_eq,
               ← ne_eq, ← Finset.nonempty_iff_ne_empty, ← Finset.nonempty_iff_ne_empty]
@@ -449,7 +458,7 @@ namespace SimplicialMap
 /-- Two simplicial maps with the same `vertex_map` (i.e. that are equal on vertices) are equal.-/
 @[ext]
 lemma ext_vertex {f g : SimplicialMap K L} (heq : f.vertex_map = g.vertex_map) : f = g :=
-  SimplicialMap.ext _ _ heq (by ext s a; rw [f.face_vertex, g.face_vertex, heq])
+  SimplicialMap.ext heq (by ext s a; rw [f.face_vertex, g.face_vertex, heq])
 
 /-- If `f` is a map from `α` to `β` such that, for every face `s` of `K`, `f s` is a face of `L`,
 then `f` defines a simplicial map from `K` to `L`.-/
@@ -552,7 +561,7 @@ lemma faces_subcomplexGenerated (F : Set (Finset α)) (s : Finset α) :
 
 /-! Boundary of a face.-/
 
-variable {K} (s : K.faces)
+variable (s : K.faces) {K}
 
 /-- The boundary of a face of `K` is the set of subfaces of `s` that are different from `s`.-/
 def boundaryFace : AbstractSimplicialComplex α :=
