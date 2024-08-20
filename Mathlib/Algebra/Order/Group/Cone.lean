@@ -119,7 +119,7 @@ designating a positive cone in an existing `AddCommGroup`. -/
   le_refl a := by simp [zero_mem]
   le_trans a b c nab nbc := by simpa using add_mem nbc nab
   le_antisymm a b nab nba := by
-    apply eq_of_sub_eq_zero; simp at nab; simpa [nab] using eq_zero_of_mem_of_neg_mem nba
+    simpa [sub_eq_zero, eq_comm] using eq_zero_of_mem_of_neg_mem nab (by simpa using nba)
   add_le_add_left a b nab c := by simpa using nab
 
 /-- Construct a `LinearOrderedAddCommGroup` by

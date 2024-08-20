@@ -109,10 +109,10 @@ open Ring
 @[reducible] def OrderedRing.mkOfPositiveCone [PositiveConeClass S R] : OrderedRing R where
   __ := ‹Ring R›
   __ := OrderedAddCommGroup.mkOfPositiveCone C
-  zero_le_one := by simpa using one_mem C
-  mul_nonneg x y xnn ynn := by simpa using mul_mem xnn ynn
+  zero_le_one := show _ ∈ C by simpa using one_mem C
+  mul_nonneg x y xnn ynn := show _ ∈ C by simpa using mul_mem xnn ynn
 
-def StrictOrderedRing.mkOfOrderedRingAndDomain (α : Type*) [OrderedRing α] [IsDomain α] :
+def OrderedRing.toStrictOrderedRing (α : Type*) [OrderedRing α] [IsDomain α] :
     StrictOrderedRing α where
   __ := ‹OrderedRing α›
   __ := ‹IsDomain α›
