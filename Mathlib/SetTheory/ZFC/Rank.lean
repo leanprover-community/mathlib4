@@ -82,7 +82,7 @@ theorem rank_le_of_subset (h : x ⊆ y) : rank x ≤ rank y :=
 @[simp] theorem rank_singleton : rank {x} = succ (rank x) :=
   rank_insert.trans (by simp)
 
-@[simp] theorem rank_pair : rank {x, y} = succ (max (rank x) (rank y)) := by
+theorem rank_pair : rank {x, y} = succ (max (rank x) (rank y)) := by
   simp [succ_max]
 
 @[simp] theorem rank_union : rank (x ∪ y) = max (rank x) (rank y) := by
