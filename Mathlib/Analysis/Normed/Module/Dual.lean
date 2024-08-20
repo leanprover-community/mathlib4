@@ -239,13 +239,12 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
     (((dualPairing 𝕜 E).flip.polar_antitone r_ball).trans <|
       polar_ball_subset_closedBall_div ha r_pos)
 
-theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := le_antisymm
-  (fun _ hx => hx _ rfl)
-  (fun x hx => (mem_polar_iff _ _).mpr (fun _ hb => by rw [mem_singleton_iff.mp hb]; exact hx))
+@[simp]
+theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
+  simp only [polar, LinearMap.polar_singleton, LinearMap.flip_apply, dualPairing_apply]
 
 theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
-  rw [polar_singleton]
-  exact mem_setOf
+  simp only [polar_singleton, mem_setOf_eq]
 
 theorem sInter_polar_finite_reciprocal_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
