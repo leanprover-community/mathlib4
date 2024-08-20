@@ -195,6 +195,8 @@ jobs:
           then
             printf $'Some `assert_not_exists` or `assert_not_imported` does not exist in mathlib\n'
             exit 1
+          else
+            printf 'All good!\n'
           fi
 
       - name: build archive
