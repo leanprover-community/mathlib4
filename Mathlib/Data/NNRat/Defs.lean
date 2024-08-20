@@ -59,8 +59,6 @@ deriving instance LinearOrder for NNRat
 deriving instance Sub for NNRat
 deriving instance Inhabited for NNRat
 
--- instance NNRat.instOrderedSub : OrderedSub ℚ≥0 := Nonneg.orderedSub
-
 namespace NNRat
 
 variable {α : Type*} {p q : ℚ≥0}
