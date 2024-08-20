@@ -272,9 +272,9 @@ theorem add_mod_of_lt_of_principal_add {a b c : Ordinal} (hc : Principal (· + �
   apply sub_eq_of_add_eq
   rw [← add_assoc, div_add_mod]
 
-@[deprecated Principal.add_absorp (since := "2024-08-19")]
-theorem add_absorp {a b c : Ordinal} (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c := by
-  rw [← Ordinal.add_sub_cancel_of_le h₂, ← add_assoc, add_omega_opow h₁]
+@[deprecated Principal.add_absorp_of_ge (since := "2024-08-19")]
+theorem add_absorp {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
+  (principal_add_omega_opow b).add_absorp_of_ge
 
 theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : Principal (· + ·) b) : Principal (· + ·) (a * b) := by
