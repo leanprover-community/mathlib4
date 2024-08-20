@@ -49,7 +49,7 @@ end ByteSliceT
 def ByteArray.toSliceT (arr : ByteArray) : ByteSliceT := ⟨arr, 0⟩
 
 /-- A byte slice, given by a backing byte array, and an offset and length. -/
-@[deprecated (since := "2024-08-19")]
+@[deprecated Batteries.ByteSubarray (since := "2024-08-19")]
 structure ByteSlice := (arr : ByteArray) (off len : Nat)
 
 namespace ByteSlice
