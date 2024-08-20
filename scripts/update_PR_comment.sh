@@ -25,21 +25,21 @@ PR="${3:-}"
 if [[ -z $PR ]]; then
   echo "Usage: <new_message> <beginning of message> <pr_number>"
   exit 1
-
-  data=$(jq -n --arg msg "$message" '{"body": $msg}')
-  baseURL="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
-  printf 'Base url: %s\n' "${baseURL}"
-  method="POST"
-  if [[ -n "$message" ]]; then
-      url="${baseURL}/${PR}/comments"
-      printf 'Base url: %s\n' "${url}"
-      headers="Authorization: token ${GITHUB_TOKEN}"
-      comment_id=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url" |
-        jq --arg cID "${comment_init}" -r '.[] | select(.body | startswith($cID)) | .id' | head -1)
-      echo "Comment id: '${comment_id}'"
-      if [[ -n "$comment_id" ]]; then
-          url="${baseURL}/comments/${comment_id}"
-          method="PATCH"
-      fi
-      curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
-  fi
+fi
+data=$(jq -n --arg msg "$message" '{"body": $msg}')
+baseURL="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
+printf 'Base url: %s\n' "${baseURL}"
+method="POST"
+if [[ -n "$message" ]]; then
+    url="${baseURL}/${PR}/comments"
+    printf 'Base url: %s\n' "${url}"
+    headers="Authorization: token ${GITHUB_TOKEN}"
+    comment_id=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url" |
+      jq --arg cID "${comment_init}" -r '.[] | select(.body | startswith($cID)) | .id' | head -1)
+    echo "Comment id: '${comment_id}'"
+    if [[ -n "$comment_id" ]]; then
+        url="${baseURL}/comments/${comment_id}"
+        method="PATCH"
+    fi
+    curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
+fi
