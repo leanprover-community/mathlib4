@@ -1637,8 +1637,6 @@ instance continuousSemilinearEquivClass :
 -- instance : CoeFun (M₁ ≃SL[σ₁₂] M₂) fun _ => M₁ → M₂ :=
 -- ⟨fun f => f⟩
 
--- Porting note: Syntactic tautology.
-
 theorem coe_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : (e : M₁ →SL[σ₁₂] M₂) b = e b :=
   rfl
 
