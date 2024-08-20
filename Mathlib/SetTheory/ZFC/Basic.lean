@@ -339,6 +339,27 @@ instance : LawfulSingleton PSet PSet :=
 instance (x y : PSet) : Inhabited (insert x y).Type :=
   inferInstanceAs (Inhabited <| Option y.Type)
 
+@[simp]
+theorem mem_insert_iff : ∀ {x y z : PSet.{u}}, x ∈ insert y z ↔ Equiv x y ∨ x ∈ z
+  | x, y, ⟨α, A⟩ =>
+    show (x ∈ PSet.mk (Option α) fun o => Option.rec y A o) ↔ Equiv x y ∨ x ∈ PSet.mk α A from
+      ⟨fun m =>
+        match m with
+        | ⟨some a, ha⟩ => Or.inr ⟨a, ha⟩
+        | ⟨none, h⟩ => Or.inl h,
+        fun m =>
+        match m with
+        | Or.inr ⟨a, ha⟩ => ⟨some a, ha⟩
+        | Or.inl h => ⟨none, h⟩⟩
+
+@[simp]
+theorem mem_singleton {x y : PSet} : x ∈ ({y} : PSet) ↔ Equiv x y :=
+  mem_insert_iff.trans
+    ⟨fun o => Or.rec (fun h => h) (fun n => absurd n (not_mem_empty _)) o, Or.inl⟩
+
+theorem mem_pair {x y z : PSet} : x ∈ ({y, z} : PSet) ↔ Equiv x y ∨ Equiv x z := by
+  simp
+
 /-- The n-th von Neumann ordinal -/
 def ofNat : ℕ → PSet
   | 0 => ∅
@@ -354,6 +375,12 @@ protected def sep (p : PSet → Prop) (x : PSet) : PSet :=
 
 instance : Sep PSet PSet :=
   ⟨PSet.sep⟩
+
+theorem mem_sep {p : PSet → Prop} (H : ∀ x y, Equiv x y → p x → p y) :
+    ∀ {x y : PSet}, y ∈ PSet.sep p x ↔ y ∈ x ∧ p y
+  | ⟨_, _⟩, _ =>
+    ⟨fun ⟨⟨a, pa⟩, h⟩ => ⟨⟨a, h⟩, H _ _ h.symm pa⟩, fun ⟨⟨a, h⟩, pa⟩ =>
+      ⟨⟨a, H _ _ h pa⟩, h⟩⟩
 
 /-- The pre-set powerset operator -/
 def powerset (x : PSet) : PSet :=
@@ -726,16 +753,7 @@ instance : LawfulSingleton ZFSet ZFSet :=
 
 @[simp]
 theorem mem_insert_iff {x y z : ZFSet.{u}} : x ∈ insert y z ↔ x = y ∨ x ∈ z :=
-  Quotient.inductionOn₃ x y z fun x y ⟨α, A⟩ =>
-    show (x ∈ PSet.mk (Option α) fun o => Option.rec y A o) ↔ mk x = mk y ∨ x ∈ PSet.mk α A from
-      ⟨fun m =>
-        match m with
-        | ⟨some a, ha⟩ => Or.inr ⟨a, ha⟩
-        | ⟨none, h⟩ => Or.inl (Quotient.sound h),
-        fun m =>
-        match m with
-        | Or.inr ⟨a, ha⟩ => ⟨some a, ha⟩
-        | Or.inl h => ⟨none, Quotient.exact h⟩⟩
+  Quotient.inductionOn₃ x y z fun _ _ _ => PSet.mem_insert_iff.trans (or_congr_left eq.symm)
 
 theorem mem_insert (x y : ZFSet) : x ∈ insert x y :=
   mem_insert_iff.2 <| Or.inl rfl
@@ -750,8 +768,7 @@ theorem toSet_insert (x y : ZFSet) : (insert x y).toSet = insert x y.toSet := by
 
 @[simp]
 theorem mem_singleton {x y : ZFSet.{u}} : x ∈ @singleton ZFSet.{u} ZFSet.{u} _ y ↔ x = y :=
-  Iff.trans mem_insert_iff
-    ⟨fun o => Or.rec (fun h => h) (fun n => absurd n (not_mem_empty _)) o, Or.inl⟩
+  Quotient.inductionOn₂ x y fun _ _ => PSet.mem_singleton.trans eq.symm
 
 @[simp]
 theorem toSet_singleton (x : ZFSet) : ({x} : ZFSet).toSet = {x} := by
@@ -802,12 +819,8 @@ instance : Sep ZFSet ZFSet :=
 @[simp]
 theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
     y ∈ ZFSet.sep p x ↔ y ∈ x ∧ p y :=
-  Quotient.inductionOn₂ x y fun ⟨α, A⟩ y =>
-    ⟨fun ⟨⟨a, pa⟩, h⟩ => ⟨⟨a, h⟩, by rwa [@Quotient.sound PSet _ _ _ h]⟩, fun ⟨⟨a, h⟩, pa⟩ =>
-      ⟨⟨a, by
-          rw [mk_func] at h
-          rwa [mk_func, ← ZFSet.sound h]⟩,
-        h⟩⟩
+  Quotient.inductionOn₂ x y fun _ _ =>
+    PSet.mem_sep (p := p ∘ mk) fun _ _ h => (Quotient.sound h).subst
 
 @[simp]
 theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
@@ -831,8 +844,7 @@ def powerset : ZFSet → ZFSet :=
 
 @[simp]
 theorem mem_powerset {x y : ZFSet.{u}} : y ∈ powerset x ↔ y ⊆ x :=
-  Quotient.inductionOn₂ x y fun ⟨α, A⟩ ⟨β, B⟩ =>
-    show (⟨β, B⟩ : PSet.{u}) ∈ PSet.powerset.{u} ⟨α, A⟩ ↔ _ by simp [mem_powerset, subset_iff]
+  Quotient.inductionOn₂ x y fun _ _ => PSet.mem_powerset.trans subset_iff.symm
 
 theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : ∀ a, ∃ b, Equiv (A a) (B b)) :
     ∀ a, ∃ b, Equiv ((sUnion ⟨α, A⟩).Func a) ((sUnion ⟨β, B⟩).Func b)
@@ -871,9 +883,8 @@ prefix:110 "⋂₀ " => ZFSet.sInter
 
 @[simp]
 theorem mem_sUnion {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z :=
-  Quotient.inductionOn₂ x y fun _ _ =>
-    Iff.trans PSet.mem_sUnion
-      ⟨fun ⟨z, h⟩ => ⟨⟦z⟧, h⟩, fun ⟨z, h⟩ => Quotient.inductionOn z (fun z h => ⟨z, h⟩) h⟩
+  Quotient.inductionOn₂ x y fun _ _ => PSet.mem_sUnion.trans
+    ⟨fun ⟨z, h⟩ => ⟨⟦z⟧, h⟩, fun ⟨z, h⟩ => Quotient.inductionOn z (fun z h => ⟨z, h⟩) h⟩
 
 theorem mem_sInter {x y : ZFSet} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z ∈ x, y ∈ z := by
   rw [sInter, dif_pos h]
