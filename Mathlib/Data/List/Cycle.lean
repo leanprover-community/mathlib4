@@ -357,14 +357,13 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
   have lpos : 0 < l.length := k.zero_le.trans_lt hk
   have key : l.length - 1 - k < l.length := by omega
   rw [← getElem_pmap l.next (fun _ h => h) (by simpa using hk)]
-  simp_rw [← getElem_reverse l k (key.trans_le (by simp)), pmap_next_eq_rotate_one _ h]
+  simp_rw [getElem_eq_getElem_reverse (l := l), pmap_next_eq_rotate_one _ h]
   rw [← getElem_pmap l.reverse.prev fun _ h => h]
   · simp_rw [pmap_prev_eq_rotate_length_sub_one _ (nodup_reverse.mpr h), rotate_reverse,
       length_reverse, Nat.mod_eq_of_lt (Nat.sub_lt lpos Nat.succ_pos'),
       Nat.sub_sub_self (Nat.succ_le_of_lt lpos)]
-    rw [← getElem_reverse]
+    rw [getElem_eq_getElem_reverse]
     · simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
-    · simpa using (Nat.sub_le _ _).trans_lt (Nat.sub_lt lpos Nat.succ_pos')
   · simpa
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
