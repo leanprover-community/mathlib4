@@ -77,14 +77,6 @@ theorem nodup_iff_injective_get {l : List α} :
   change _ ↔ Injective (fun i => l.get i)
   simp
 
-set_option linter.deprecated false in
-@[deprecated nodup_iff_injective_get (since := "2023-01-10")]
-theorem nodup_iff_nthLe_inj {l : List α} :
-    Nodup l ↔ ∀ i j h₁ h₂, nthLe l i h₁ = nthLe l j h₂ → i = j :=
-  nodup_iff_injective_get.trans
-    ⟨fun hinj _ _ _ _ h => congr_arg Fin.val (hinj h),
-     fun hinj i j h => Fin.eq_of_val_eq (hinj i j i.2 j.2 h)⟩
-
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
     l.get i = l.get j ↔ i = j :=
   (nodup_iff_injective_get.1 h).eq_iff
@@ -94,12 +86,6 @@ theorem Nodup.getElem_inj_iff {l : List α} (h : Nodup l)
     l[i] = l[j] ↔ i = j := by
   have := @Nodup.get_inj_iff _ _ h ⟨i, hi⟩ ⟨j, hj⟩
   simpa
-
-set_option linter.deprecated false in
-@[deprecated Nodup.get_inj_iff (since := "2023-01-10")]
-theorem Nodup.nthLe_inj_iff {l : List α} (h : Nodup l) {i j : ℕ} (hi : i < l.length)
-    (hj : j < l.length) : l.nthLe i hi = l.nthLe j hj ↔ i = j :=
-  ⟨nodup_iff_nthLe_inj.mp h _ _ _ _, by simp (config := { contextual := true })⟩
 
 theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l[i]? ≠ l[j]? := by
