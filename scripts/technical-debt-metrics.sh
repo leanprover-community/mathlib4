@@ -14,9 +14,9 @@ IFS=$'\n\t'
 # as a reference.
 
 # If $1 is supplied, we use it; otherwise, we fall back to $(git rev-parse HEAD).
-currCommit = ${1:-$(git rev-parse HEAD)}
-
-refCommit = ${2:-$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)}
+currCommit=${1:-$(git rev-parse HEAD)}
+# Similarly for the second argument.
+refCommit=${2:-$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)}
 
 # `tdc` produces a semi-formatted output of the form
 # ...
