@@ -119,8 +119,8 @@ theorem polar_singleton {a : E} : B.polar {a} = { y | ‖B a y‖ ≤ 1 } := le_
 theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ ≤ 1 := by
   simp only [polar_singleton, Set.mem_setOf_eq]
 
-theorem sInter_polar_finite_subset_eq_polar (U : Set E) :
-    ⋂₀ (B.polar '' { F | F.Finite ∧ F ⊆ U }) = B.polar U := by
+theorem sInter_polar_finite_subset_eq_polar (s : Set E) :
+    ⋂₀ (B.polar '' { F | F.Finite ∧ F ⊆ s }) = B.polar s := by
   ext x
   simp only [Set.sInter_image, Set.mem_setOf_eq, Set.mem_iInter, and_imp]
   refine ⟨fun hx a ha ↦ ?_, fun hx F _ hF₂ => polar_antitone _ hF₂ hx⟩
