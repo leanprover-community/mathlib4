@@ -48,7 +48,7 @@ theorem rank_le_iff {o : Ordinal} : {x : PSet} → rank x ≤ o ↔ ∀ y ∈ x,
     lsub_le fun a => h (A a) (Mem.mk A a)⟩
 
 theorem lt_rank_iff {o : Ordinal} {x : PSet} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
-  rw [←not_iff_not, not_lt, rank_le_iff]
+  rw [← not_iff_not, not_lt, rank_le_iff]
   simp
 
 variable {x y : PSet.{u}}
@@ -103,7 +103,7 @@ theorem rank_le_iff {o : Ordinal} : rank x ≤ o ↔ (∀ y ∈ x, rank y < o) :
       PSet.rank_le_iff.2 fun y h' => h ⟦y⟧ h'⟩
 
 theorem lt_rank_iff {o : Ordinal} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
-  rw [←not_iff_not, not_lt, rank_le_iff]
+  rw [← not_iff_not, not_lt, rank_le_iff]
   simp
 
 theorem rank_mono (h : x ⊆ y) : rank x ≤ rank y :=
