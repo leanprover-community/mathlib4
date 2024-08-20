@@ -315,7 +315,7 @@ theorem principal_mul_of_le_two {o : Ordinal} (ho : o ≤ 2) : Principal (· * �
 theorem principal_add_of_principal_mul {o : Ordinal} (ho : Principal (· * ·) o) (ho₂ : o ≠ 2) :
     Principal (· + ·) o := by
   cases' lt_or_gt_of_ne ho₂ with ho₁ ho₂
-  · replace ho₁ : o < succ 1 := by simpa using ho₁
+  · replace ho₁ : o < succ 1 := by rwa [succ_one]
     rw [lt_succ_iff] at ho₁
     exact principal_add_of_le_one ho₁
   · refine fun a b hao hbo => lt_of_le_of_lt ?_ (ho (max_lt hao hbo) ho₂)
