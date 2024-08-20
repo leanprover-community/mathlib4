@@ -22,8 +22,6 @@ open Limits
 /-- The chosen terminal object in `Cat`. -/
 abbrev chosenTerminal : Cat := Cat.of (ULift (ULiftHom (Discrete Unit)))
 
-example : chosenTerminal := ⟨⟨⟨⟩⟩⟩
-
 /-- The chosen terminal object in `Cat` is terminal. -/
 def chosenTerminalIsTerminal : IsTerminal chosenTerminal :=
   IsTerminal.ofUniqueHom (fun _ ↦ (Functor.const _).obj ⟨⟨⟨⟩⟩⟩) fun _ _ ↦ rfl
@@ -43,8 +41,10 @@ instance : ChosenFiniteProducts Cat where
   product (X Y : Cat) := { isLimit := isLimitProdCone X Y }
   terminal  := { isLimit := chosenTerminalIsTerminal }
 
+/-- A monoidal instance for Cat is provided through monoidalOfChosenFiniteProducts -/
 example : MonoidalCategory Cat := by infer_instance
 
+/-- A symmetric monoidal instance for Cat is provided through symmetricOfChosenFiniteProducts -/
 example : SymmetricCategory Cat := by infer_instance
 
 end Cat
