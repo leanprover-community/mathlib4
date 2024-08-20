@@ -111,11 +111,11 @@ theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace 
   refine isClosed_iInter fun x => isClosed_iInter fun _ => ?_
   exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
 
-theorem polar_singleton {a : E} : B.polar {a} = { x | ‖B a x‖ ≤ 1 } := le_antisymm
-  (fun _ hx => hx _ rfl)
-  (fun x hx => (polar_mem_iff _ _ _).mp (fun _ hb => by rw [Set.mem_singleton_iff.mp hb]; exact hx))
+theorem polar_singleton {a : E} : B.polar {a} = { y | ‖B a y‖ ≤ 1 } := le_antisymm
+  (fun _ hy => hy _ rfl)
+  (fun y hy => (polar_mem_iff _ _ _).mp (fun _ hb => by rw [Set.mem_singleton_iff.mp hb]; exact hy))
 
-theorem mem_polar_singleton {a : E} (y : F) : y ∈ B.polar {a} ↔ ‖B a y‖ ≤ 1 := by
+theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ ≤ 1 := by
   rw [polar_singleton]
   exact Set.mem_setOf
 
