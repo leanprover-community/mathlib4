@@ -2718,13 +2718,12 @@ end Choose
 
 variable (α)
 
-set_option linter.deprecated false in
 /-- The equivalence between lists and multisets of a subsingleton type. -/
 def subsingletonEquiv [Subsingleton α] : List α ≃ Multiset α where
   toFun := ofList
   invFun :=
     (Quot.lift id) fun (a b : List α) (h : a ~ b) =>
-      (List.ext_nthLe h.length_eq) fun _ _ _ => Subsingleton.elim _ _
+      (List.ext_get h.length_eq) fun _ _ _ => Subsingleton.elim _ _
   left_inv _ := rfl
   right_inv m := Quot.inductionOn m fun _ => rfl
 
