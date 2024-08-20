@@ -43,9 +43,46 @@ theorem rank_lt_of_mem : {x y : PSet} → y ∈ x → rank y < rank x
     rw [rank_eq_of_equiv _ _ h]
     apply lt_lsub
 
-theorem rank_le_of_forall_mem_rank_lt {o : Ordinal} :
-    {x : PSet} → (∀ y ∈ x, rank y < o) → rank x ≤ o
-  | ⟨_, A⟩, h => lsub_le fun a => h (A a) (Mem.mk A a)
+theorem rank_le_iff {o : Ordinal} : {x : PSet} → rank x ≤ o ↔ ∀ y ∈ x, rank y < o
+  | ⟨_, A⟩ => ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h, fun h =>
+    lsub_le fun a => h (A a) (Mem.mk A a)⟩
+
+theorem lt_rank_iff {o : Ordinal} {x : PSet} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
+  rw [←not_iff_not, not_lt, rank_le_iff]
+  simp
+
+variable {x y : PSet.{u}}
+
+theorem rank_mono (h : x ⊆ y) : rank x ≤ rank y :=
+  rank_le_iff.2 fun _ h₁ => rank_lt_of_mem (mem_of_subset h h₁)
+
+@[simp]
+theorem rank_empty : rank ∅ = 0 := by simp [rank]
+
+@[simp]
+theorem rank_insert : rank (insert x y) = max (succ (rank x)) (rank y) := by
+  apply le_antisymm
+  · simp_rw [rank_le_iff, mem_insert_iff]
+    rintro _ (h | h)
+    · simp [rank_eq_of_equiv _ _ h]
+    · simp [rank_lt_of_mem h]
+  · apply max_le
+    · exact (rank_lt_of_mem (mem_insert x y)).succ_le
+    · exact rank_mono (subset_iff.2 fun z => mem_insert_of_mem x)
+
+@[simp]
+theorem rank_singleton : rank {x} = succ (rank x) :=
+  rank_insert.trans (by simp)
+
+theorem rank_pair : rank {x, y} = max (succ (rank x)) (succ (rank y)) := by
+  simp
+
+@[simp]
+theorem rank_powerset : rank (powerset x) = succ (rank x) := by
+  apply le_antisymm
+  · simp_rw [rank_le_iff, mem_powerset, lt_succ_iff]
+    intro; exact rank_mono
+  · rw [succ_le_iff]; apply rank_lt_of_mem; simp
 
 end PSet
 
@@ -60,26 +97,24 @@ noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem
 
-theorem rank_le_of_forall_mem_rank_lt {o : Ordinal} :
-    (∀ y ∈ x, rank y < o) → rank x ≤ o :=
-  Quotient.inductionOn x fun _ h =>
-    PSet.rank_le_of_forall_mem_rank_lt fun y h' => h ⟦y⟧ h'
+theorem rank_le_iff {o : Ordinal} : rank x ≤ o ↔ (∀ y ∈ x, rank y < o) :=
+  ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h,
+    Quotient.inductionOn x fun _ h =>
+      PSet.rank_le_iff.2 fun y h' => h ⟦y⟧ h'⟩
 
-theorem rank_le_of_subset (h : x ⊆ y) : rank x ≤ rank y :=
-  rank_le_of_forall_mem_rank_lt fun _ h₁ => rank_lt_of_mem (h h₁)
+theorem lt_rank_iff {o : Ordinal} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
+  rw [←not_iff_not, not_lt, rank_le_iff]
+  simp
+
+theorem rank_mono (h : x ⊆ y) : rank x ≤ rank y :=
+  rank_le_iff.2 fun _ h₁ => rank_lt_of_mem (h h₁)
 
 @[simp]
-theorem rank_empty : rank ∅ = 0 := by
-  rw [← Ordinal.le_zero]; apply rank_le_of_forall_mem_rank_lt; simp
+theorem rank_empty : rank ∅ = 0 := PSet.rank_empty
 
 @[simp]
-theorem rank_insert : rank (insert x y) = max (succ (rank x)) (rank y) := by
-  apply le_antisymm
-  · apply rank_le_of_forall_mem_rank_lt; simp
-    intro _ h; exact Or.inr (rank_lt_of_mem h)
-  · simp; constructor
-    · apply rank_lt_of_mem; simp
-    · apply rank_le_of_subset; intro; apply mem_insert_of_mem
+theorem rank_insert : rank (insert x y) = max (succ (rank x)) (rank y) :=
+  Quotient.inductionOn₂ x y fun _ _ => PSet.rank_insert
 
 @[simp]
 theorem rank_singleton : rank {x} = succ (rank x) :=
@@ -91,48 +126,50 @@ theorem rank_pair : rank {x, y} = max (succ (rank x)) (succ (rank y)) := by
 @[simp]
 theorem rank_union : rank (x ∪ y) = max (rank x) (rank y) := by
   apply le_antisymm
-  · apply rank_le_of_forall_mem_rank_lt; simp
-    intro; exact Or.imp rank_lt_of_mem rank_lt_of_mem
-  · simp; constructor <;> apply rank_le_of_subset <;> intro _ h <;> simp [h]
+  · simp_rw [rank_le_iff, mem_union, lt_max_iff]
+    intro; apply Or.imp <;> apply rank_lt_of_mem
+  · apply max_le <;> apply rank_mono <;> intro _ h <;> simp [h]
 
 @[simp]
-theorem rank_powerset : rank (powerset x) = succ (rank x) := by
-  apply le_antisymm
-  · apply rank_le_of_forall_mem_rank_lt; simp
-    intro; exact rank_le_of_subset
-  · simp; apply rank_lt_of_mem; simp
+theorem rank_powerset : rank (powerset x) = succ (rank x) :=
+  Quotient.inductionOn x fun _ => PSet.rank_powerset
 
 /-- For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
     This inequality is splitted into `rank_sUnion_le` and `succ_rank_sUnion_ge`. -/
-theorem rank_sUnion_le : rank (⋃₀ x : ZFSet) ≤ rank x := by
-  apply rank_le_of_forall_mem_rank_lt
-  simp; intros; trans <;> apply rank_lt_of_mem <;> assumption
+theorem rank_sUnion_le : rank (⋃₀ x) ≤ rank x := by
+  simp_rw [rank_le_iff, mem_sUnion]
+  intro _ ⟨_, _, _⟩
+  trans <;> apply rank_lt_of_mem <;> assumption
 
-theorem succ_rank_sUnion_ge : rank x ≤ succ (rank (⋃₀ x : ZFSet)) := by
+theorem succ_rank_sUnion_ge : rank x ≤ succ (rank (⋃₀ x)) := by
   rw [← rank_powerset]
-  apply rank_le_of_subset
-  intro z _; simp; intro _ _; simp; exists z
+  apply rank_mono
+  intro z _
+  rw [mem_powerset]
+  intro _ _
+  rw [mem_sUnion]
+  exists z
 
 @[simp]
 theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
     rank (range f) = lsub fun i => rank (f i) := by
-  apply le_antisymm
-  · apply rank_le_of_forall_mem_rank_lt; simp; apply lt_lsub
-  · apply lsub_le; intro; apply rank_lt_of_mem; simp
+  apply (lsub_le _).antisymm'
+  · apply rank_le_iff.2
+    simpa using lt_lsub _
+  · intro
+    apply rank_lt_of_mem
+    simp
 
 /-- `ZFSet.rank` is equal to the `WellFounded.rank` over `∈`. -/
 theorem rank_eq_wf_rank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   induction' x using inductionOn with x ih
   rw [mem_wf.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
-  apply le_antisymm
-  · apply le_of_forall_lt
-    intro _ h
-    rw [lt_lift_iff] at h
-    rcases h with ⟨o, h₁, h₂⟩
-    by_contra h₃; simp [sup_le_iff, ← h₁] at h₃
-    exact not_le_of_lt h₂ (rank_le_of_forall_mem_rank_lt h₃)
-  · apply Ordinal.sup_le
-    intro ⟨_, h⟩; simp; exact rank_lt_of_mem h
+  apply (le_of_forall_lt _).antisymm (Ordinal.sup_le _) <;> intro h
+  · rw [lt_lift_iff]
+    rintro ⟨o, rfl, h⟩
+    rw [Ordinal.lt_sup]
+    simpa using lt_rank_iff.1 h
+  · simpa using rank_lt_of_mem h.2
 
 end ZFSet
