@@ -26,7 +26,7 @@ Formalization is based on
 with minor modifications.
 -/
 
-open Set NNReal Classical
+open NNReal
 
 namespace Imo1986Q5
 

@@ -9,7 +9,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Basic properties of group actions

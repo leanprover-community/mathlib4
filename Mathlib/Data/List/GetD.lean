@@ -6,7 +6,6 @@ Mario Carneiro
 -/
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Option.Basic
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Util.AssertExists
 
 /-! # getD and getI
@@ -14,11 +13,9 @@ import Mathlib.Util.AssertExists
 This file provides theorems for working with the `getD` and `getI` functions. These are used to
 access an element of a list by numerical index, with a default value as a fallback when the index
 is out of range.
-
 -/
 
--- Make sure we haven't imported `Data.Nat.Order.Basic`
-assert_not_exists OrderedSub
+assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 namespace List
 
@@ -113,11 +110,11 @@ theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
   rfl
 
 theorem getI_eq_getElem {n : ℕ} (hn : n < l.length) : l.getI n = l[n] :=
-  getD_eq_getElem ..
+  getD_eq_getElem l default hn
 
 @[deprecated getI_eq_getElem (since := "2024-08-02")]
 theorem getI_eq_get {n : ℕ} (hn : n < l.length) : l.getI n = l.get ⟨n, hn⟩ :=
-  getD_eq_getElem ..
+  getD_eq_getElem l default hn
 
 theorem getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=
   getD_eq_default _ _ hn
@@ -138,3 +135,5 @@ theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 
 end getI
+
+end List
