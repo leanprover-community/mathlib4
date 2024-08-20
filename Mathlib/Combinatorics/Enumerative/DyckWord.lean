@@ -373,8 +373,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq
 
-/-- Extension for the `positivity` tactic:
-`p.firstReturn` is nonnegative, and is positive if `p` is nonzero. -/
+/-- Extension for the `positivity` tactic: `p.firstReturn` is positive if `p` is nonzero. -/
 @[positivity DyckWord.firstReturn _]
 def evalFirstReturn : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
@@ -382,10 +381,11 @@ def evalFirstReturn : PositivityExt where eval {u α} _zα _pα e := do
     let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
     match ra with
+    | .positive pa => pure (.positive q(DyckWord.firstReturn_pos ($pa).ne'))
     | .nonzero pa => pure (.positive q(DyckWord.firstReturn_pos $pa))
-    | _ => pure (.nonnegative q(Nat.zero_le ($a).firstReturn))
+    | _ => pure .none
   | _, _, _ => throwError "not DyckWord.firstReturn"
 
 end Mathlib.Meta.Positivity
 
-example (p : DyckWord) (h : p ≠ 0) : 0 < p.firstReturn := by positivity
+example (p : DyckWord) (h : 0 < p) : 0 < p.firstReturn := by positivity
