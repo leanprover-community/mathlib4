@@ -105,17 +105,22 @@ lemma isPullback : IsPullback (hf.fst g) (yoneda.map (hf.snd g)) f g :=
 lemma isPullback' : IsPullback (yoneda.map (hf'.fst' g)) (yoneda.map (hf'.snd g)) f' g :=
   (hf'.yoneda_map_fst' _) ▸ (hf' g).choose_spec.choose_spec.choose_spec
 
-
--- TODO should be isPullbackPre (& then get w from IsPullback.w?).
-/-- Given a representable morphism `f' :  yoneda.obj Y ⟶ yoneda.obj Z`, and a morphism
-`g : ....`, this is a .....
-
-Variant of `hf'.i` when all vertices of the pullback square lie in the image of yoneda. -/
 @[reassoc]
-lemma w' {X Y Z : C} {f : X ⟶ Z} (g : yoneda.obj Y ⟶ yoneda.obj Z)
+lemma w' {X Y Z : C} {f : X ⟶ Z} (g : Y ⟶ Z)
     (hf : Presheaf.representable (yoneda.map f)) :
-      hf.fst' g ≫ f = hf.snd g ≫ (Yoneda.fullyFaithful.preimage g) :=
-  yoneda.map_injective <| by simp [(hf.isPullback g).w]
+      hf.fst' (yoneda.map g) ≫ f = hf.snd (yoneda.map g) ≫ g :=
+  yoneda.map_injective <| by simp [(hf.isPullback (yoneda.map g)).w]
+
+lemma isPullback_of_yoneda_map {X Y Z : C} {f : X ⟶ Z}
+    (hf : Presheaf.representable (yoneda.map f)) (g : Y ⟶ Z) :
+    IsPullback (hf.fst' (yoneda.map g)) (hf.snd (yoneda.map g)) f g :=
+  IsPullback.of_map yoneda (hf.w' g) (hf.isPullback' (yoneda.map g))
+
+--@[reassoc]
+--lemma w' {X Y Z : C} {f : X ⟶ Z} (g : yoneda.obj Y ⟶ yoneda.obj Z)
+--    (hf : Presheaf.representable (yoneda.map f)) :
+--      hf.fst' g ≫ f = hf.snd g ≫ (Yoneda.fullyFaithful.preimage g) :=
+--  yoneda.map_injective <| by simp [(hf.isPullback g).w]
 
 variable {g}
 
@@ -261,14 +266,12 @@ lemma presheaf_of_snd [P.RespectsIso] {f : F ⟶ G} (hf : Presheaf.representable
 lemma presheaf_yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y}
     (hf : P f) : P.presheaf (yoneda.map f) := by
   have := StableUnderBaseChange.respectsIso hP
-  apply presheaf_of_snd (Presheaf.representable.yoneda_map f)
-  intro Z g
-  apply hP (f := (Yoneda.fullyFaithful.preimage g))
-    (f' := (Presheaf.representable.yoneda_map f).fst' g)  _ hf
-  apply IsPullback.of_map yoneda ((Presheaf.representable.yoneda_map f).w' g)
-  simpa using (Presheaf.representable.yoneda_map f).isPullback g
+  apply presheaf_of_exists (Presheaf.representable.yoneda_map f)
+  intro Y' g
+  obtain ⟨g, rfl⟩ := yoneda.map_surjective g
+  refine ⟨_, _, _, (IsPullback.of_hasPullback f g).map yoneda, hP.snd _ _ hf⟩
 
-lemma presheaf_of_yoneda {X Y : C} {f : X ⟶ Y} (hf : P.presheaf (yoneda.map f)) : P f :=
+lemma of_presheaf_yoneda {X Y : C} {f : X ⟶ Y} (hf : P.presheaf (yoneda.map f)) : P f :=
   hf.property (𝟙 _) (𝟙 _) f (IsPullback.id_horiz (yoneda.map f))
 
 /-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms.-/
