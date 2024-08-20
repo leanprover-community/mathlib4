@@ -82,11 +82,7 @@ theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (r : ℂ) :
     fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f := by
   ext1 w
-  -- Porting note: was
-  -- simp only [Pi.smul_apply, fourierIntegral, smul_comm _ r, integral_smul]
-  simp only [Pi.smul_apply, fourierIntegral, ← integral_smul]
-  congr 1 with v
-  rw [smul_comm]
+  simp only [Pi.smul_apply, fourierIntegral, smul_comm _ r, integral_smul]
 
 /-- The uniform norm of the Fourier integral of `f` is bounded by the `L¹` norm of `f`. -/
 theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure V)
