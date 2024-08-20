@@ -796,7 +796,7 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
         simp only [LinearIsometryEquiv.comp_fderivWithin _
           (f := iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) (hs x hx)]
         ```
-        -/
+       -/
         set_option maxSynthPendingDepth 2 in
           simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
         rfl

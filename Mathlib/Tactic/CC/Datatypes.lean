@@ -667,7 +667,7 @@ end CCState
 
 /-- The congruence closure module (optionally) uses a normalizer.
     The idea is to use it (if available) to normalize auxiliary expressions
-    produced by internal propagation rules (e.g., subsingleton propagator).  -/
+    produced by internal propagation rules (e.g., subsingleton propagator). -/
 structure CCNormalizer where
   normalize : Expr → MetaM Expr
 

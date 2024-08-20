@@ -89,7 +89,7 @@ instance : Nontrivial (𝓞 K) :=
   inferInstanceAs (Nontrivial (integralClosure _ _))
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
-instance {L : Type*} [Ring L] [Algebra K L] :  IsScalarTower (𝓞 K) K L :=
+instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
 
 variable {K}

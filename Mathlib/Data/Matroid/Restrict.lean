@@ -115,7 +115,7 @@ section restrict
 
 /-- Change the ground set of a matroid to some `R : Set α`. The independent sets of the restriction
   are the independent subsets of the new ground set. Most commonly used when `R ⊆ M.E`,
-  but it is convenient not to require this. The elements of `R \ M.E` become 'loops'.  -/
+  but it is convenient not to require this. The elements of `R \ M.E` become 'loops'. -/
 def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatroid R).matroid
 
 /-- `M ↾ R` means `M.restrict R`. -/
@@ -222,7 +222,7 @@ scoped infix:50  " ≤r " => Restriction
 scoped infix:50  " <r " => StrictRestriction
 
 /-- A type synonym for matroids with the restriction order.
-  (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
+  (The `PartialOrder` on `Matroid α` is reserved for the minor order) -/
 @[ext] structure Matroidᵣ (α : Type*) where ofMatroid ::
   /-- The underlying `Matroid`.-/
   toMatroid : Matroid α

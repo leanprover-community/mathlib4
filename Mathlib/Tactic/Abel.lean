@@ -453,7 +453,7 @@ partial def abelNFCore
     * `parent`: The input expression to simplify. In `pre` we make use of both `parent` and `e`
       to determine if we are at the top level in order to prevent a loop
       `go -> eval -> evalAtom -> go` which makes no progress.
-    -/
+   -/
     go root parent :=
       let pre : Simp.Simproc := fun e =>
         try

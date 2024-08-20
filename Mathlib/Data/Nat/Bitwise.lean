@@ -83,7 +83,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
-    <;> simp_all (config := {decide := true}) [two_mul]
+    <;> simp_all (config := { decide := true }) [two_mul]
 
 lemma bit_mod_two (a : Bool) (x : ℕ) :
     bit a x % 2 = if a then 1 else 0 := by
@@ -277,7 +277,7 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   cases' m with m
   <;> cases' n with n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]
-  · specialize ih ((m+1) / 2) (div_lt_self' ..)
+  · specialize ih ((m + 1) / 2) (div_lt_self' ..)
     simp [bitwise_of_ne_zero, ih]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`

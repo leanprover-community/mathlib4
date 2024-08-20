@@ -76,7 +76,7 @@ structure Config where
   Setting `maxTransitionDepth` to zero will disable all transition theorems. This can be very
   useful when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
   `simp`.
-  -/
+ -/
   maxTransitionDepth := 1
   /-- Maximum number of steps `fun_prop` can take. -/
   maxSteps := 100000
@@ -153,7 +153,7 @@ function property like continuity from another property like differentiability.
 The main reason is that if the user forgets to add a continuity theorem for function `foo` then
 `fun_prop` should report that there is a continuity theorem for `foo` missing. If we would log
 messages `transitionDepth > 0` then user will see messages saying that there is a missing theorem
-for differentiability, smoothness, ... for `foo`.  -/
+for differentiability, smoothness, ... for `foo`. -/
 def logError (msg : String) : FunPropM Unit := do
   if (← read).transitionDepth = 0 then
     modify fun s =>

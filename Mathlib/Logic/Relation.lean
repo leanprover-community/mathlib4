@@ -32,7 +32,7 @@ the bundled version, see `Rel`.
   the reflexive closure of the transitive closure, or the transitive closure of the reflexive
   closure. In terms of rewriting systems, this means that `a` can be rewritten to `b` in a number of
   rewrites.
-* `Relation.Comp`:  Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
+* `Relation.Comp`: Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
   `s : β → γ → Prop`, `r ∘r s`relates `a : α` and `c : γ` iff there exists `b : β` that's related to
   both.
 * `Relation.Map`: Image of a relation under a pair of maps. For `r : α → β → Prop`, `f : α → γ`,

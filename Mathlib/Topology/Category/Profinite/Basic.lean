@@ -46,8 +46,8 @@ abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
 
-instance  (X : Type*) [TopologicalSpace X]
-    [TotallyDisconnectedSpace X] :  HasProp (fun Y ↦ TotallyDisconnectedSpace Y) X :=
+instance (X : Type*) [TopologicalSpace X]
+    [TotallyDisconnectedSpace X] : HasProp (fun Y ↦ TotallyDisconnectedSpace Y) X :=
   ⟨(inferInstance : TotallyDisconnectedSpace X)⟩
 
 /-- Construct a term of `Profinite` from a type endowed with the structure of a

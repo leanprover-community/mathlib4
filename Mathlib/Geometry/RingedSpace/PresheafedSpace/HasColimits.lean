@@ -97,7 +97,7 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
   obj j := op (colimit.ι (F ⋙ PresheafedSpace.forget C) j _* (F.obj j).presheaf)
   map {j j'} f :=
     ((pushforward C (colimit.ι (F ⋙ PresheafedSpace.forget C) j')).map (F.map f).c ≫
-      (Pushforward.comp  ((F ⋙ PresheafedSpace.forget C).map f)
+      (Pushforward.comp ((F ⋙ PresheafedSpace.forget C).map f)
         (colimit.ι (F ⋙ PresheafedSpace.forget C) j') (F.obj j).presheaf).inv ≫
       (pushforwardEq (colimit.w (F ⋙ PresheafedSpace.forget C) f) (F.obj j).presheaf).hom).op
   map_id j := by

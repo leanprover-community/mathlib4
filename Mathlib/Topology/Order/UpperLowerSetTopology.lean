@@ -54,7 +54,7 @@ namespace Topology
 /-- Topology whose open sets are upper sets.
 
 Note: In general the upper set topology does not coincide with the upper topology. -/
-def upperSet (α :  Type*) [Preorder α] : TopologicalSpace α where
+def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsUpperSet
   isOpen_univ := isUpperSet_univ
   isOpen_inter _ _ := IsUpperSet.inter
@@ -63,7 +63,7 @@ def upperSet (α :  Type*) [Preorder α] : TopologicalSpace α where
 /-- Topology whose open sets are lower sets.
 
 Note: In general the lower set topology does not coincide with the lower topology. -/
-def lowerSet (α :  Type*) [Preorder α] : TopologicalSpace α where
+def lowerSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsLowerSet
   isOpen_univ := isLowerSet_univ
   isOpen_inter _ _ := IsLowerSet.inter
@@ -74,10 +74,10 @@ def WithUpperSet (α : Type*) := α
 
 namespace WithUpperSet
 
-/-- `toUpperSet` is the identity function to the `WithUpperSet` of a type.  -/
+/-- `toUpperSet` is the identity function to the `WithUpperSet` of a type. -/
 @[match_pattern] def toUpperSet : α ≃ WithUpperSet α := Equiv.refl _
 
-/-- `ofUpperSet` is the identity function from the `WithUpperSet` of a type.  -/
+/-- `ofUpperSet` is the identity function from the `WithUpperSet` of a type. -/
 @[match_pattern] def ofUpperSet : WithUpperSet α ≃ α := Equiv.refl _
 
 @[simp] lemma to_WithUpperSet_symm_eq : (@toUpperSet α).symm = ofUpperSet := rfl
@@ -120,10 +120,10 @@ def WithLowerSet (α : Type*) := α
 
 namespace WithLowerSet
 
-/-- `toLowerSet` is the identity function to the `WithLowerSet` of a type.  -/
+/-- `toLowerSet` is the identity function to the `WithLowerSet` of a type. -/
 @[match_pattern] def toLowerSet : α ≃ WithLowerSet α := Equiv.refl _
 
-/-- `ofLowerSet` is the identity function from the `WithLowerSet` of a type.  -/
+/-- `ofLowerSet` is the identity function from the `WithLowerSet` of a type. -/
 @[match_pattern] def ofLowerSet : WithLowerSet α ≃ α := Equiv.refl _
 
 @[simp] lemma to_WithLowerSet_symm_eq : (@toLowerSet α).symm = ofLowerSet := rfl

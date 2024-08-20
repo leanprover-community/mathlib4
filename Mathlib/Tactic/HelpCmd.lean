@@ -99,7 +99,7 @@ private def elabHelpAttr (id : Option Ident) : CommandElabM Unit := do
   #adaptation_note
   On nightly-2024-06-21, added the `.toList` here:
   without it the requisite `ForIn` instance can't be found.
-  -/
+ -/
   for (name, decl) in (← attributeMapRef.get).toList do
     let name := name.toString false
     if let some id := id then

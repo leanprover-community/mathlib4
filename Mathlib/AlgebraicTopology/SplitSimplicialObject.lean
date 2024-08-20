@@ -208,14 +208,14 @@ structure Splitting (X : SimplicialObject C) where
   /-- The "inclusion" `N n ⟶ X _[n]` for all `n : ℕ`. -/
   ι : ∀ n, N n ⟶ X _[n]
   /-- For each `Δ`, `X.obj Δ` identifies to the coproduct of the objects `N A.1.unop.len`
-  for all `A : IndexSet Δ`.  -/
+  for all `A : IndexSet Δ`. -/
   isColimit' : ∀ Δ : SimplexCategoryᵒᵖ, IsColimit (Splitting.cofan' N X ι Δ)
 
 namespace Splitting
 
 variable {X Y : SimplicialObject C} (s : Splitting X)
 
-/-- The cofan for `summand s.N Δ` induced by a splitting of a simplicial object.  -/
+/-- The cofan for `summand s.N Δ` induced by a splitting of a simplicial object. -/
 def cofan (Δ : SimplexCategoryᵒᵖ) : Cofan (summand s.N Δ) :=
   Cofan.mk (X.obj Δ) (fun A => s.ι A.1.unop.len ≫ X.map A.e.op)
 
@@ -257,7 +257,7 @@ theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g :
   simp only [s.cofan_inj_comp_app, h]
 
 /-- The map `X.obj Δ ⟶ Z` obtained by providing a family of morphisms on all the
-terms of decomposition given by a splitting `s : Splitting X`  -/
+terms of decomposition given by a splitting `s : Splitting X` -/
 def desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s.N A.1.unop.len ⟶ Z) :
     X.obj Δ ⟶ Z :=
   Cofan.IsColimit.desc (s.isColimit Δ) F

@@ -59,7 +59,7 @@ variable (Z : Type*) [SMul P Z]
 
 /-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
-a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`.  -/
+a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`. -/
 -- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where
@@ -205,7 +205,7 @@ def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
       g (f (m • x)) = g (φ m • f x) := by rw [map_smulₛₗ]
       _ = ψ (φ m) • g (f x) := by rw [map_smulₛₗ]
       _ = (ψ ∘ φ) m • g (f x) := rfl
-      _ = χ m • g (f x) := by rw [κ.comp_eq] ⟩
+      _ = χ m • g (f x) := by rw [κ.comp_eq]⟩
 
 @[simp]
 theorem comp_apply
@@ -392,7 +392,7 @@ see also Algebra.Hom.Group -/
 def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
     [DistribMulActionSemiHomClass F φ A B]
     (f : F) : A →ₑ+[φ] B :=
-  { (f : A →+ B),  (f : A →ₑ[φ] B) with }
+  { (f : A →+ B), (f : A →ₑ[φ] B) with }
 
 /-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
 via `MulActionHomClass.toMulActionHom`. -/
@@ -463,7 +463,7 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 
 variable {M C ψ χ}
 
--- porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
+-- porting note: `simp` used to prove this, but now `change` is needed to push past the coercions
 instance : Zero (A →ₑ+[φ] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by change (0 : B) = (φ m) • (0 : B); rw [smul_zero]}⟩
 
@@ -647,7 +647,7 @@ see also Algebra.Hom.Group -/
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
     [MulSemiringActionSemiHomClass F φ R S]
     (f : F) : R →ₑ+*[φ] S :=
- { (f : R →+* S),  (f : R →ₑ+[φ] S) with }
+ { (f : R →+* S), (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/

@@ -95,7 +95,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     let b := fun n : ℕ => 8 * δ * (1 / (n + 1)) + 4 * (1 / (n + 1)) * (1 / (n + 1))
     use fun n => √(b n)
     constructor
-    -- first goal :  `∀ (n : ℕ), 0 ≤ √(b n)`
+    -- first goal : `∀ (n : ℕ), 0 ≤ √(b n)`
     · intro n
       exact sqrt_nonneg _
     constructor
@@ -471,13 +471,13 @@ theorem orthogonalProjectionFn_eq (v : E) :
     orthogonalProjectionFn K v = (orthogonalProjection K v : E) :=
   rfl
 
-/-- The characterization of the orthogonal projection.  -/
+/-- The characterization of the orthogonal projection. -/
 @[simp]
 theorem orthogonalProjection_inner_eq_zero (v : E) :
     ∀ w ∈ K, ⟪v - orthogonalProjection K v, w⟫ = 0 :=
   orthogonalProjectionFn_inner_eq_zero v
 
-/-- The difference of `v` from its orthogonal projection onto `K` is in `Kᗮ`.  -/
+/-- The difference of `v` from its orthogonal projection onto `K` is in `Kᗮ`. -/
 @[simp]
 theorem sub_orthogonalProjection_mem_orthogonal (v : E) : v - orthogonalProjection K v ∈ Kᗮ := by
   intro w hw
@@ -780,7 +780,7 @@ is the topological closure of `K`.
 
 Note that the completeness assumption is necessary. Let `E` be the space `ℕ →₀ ℝ` with inner space
 structure inherited from `PiLp 2 (fun _ : ℕ ↦ ℝ)`. Let `K` be the subspace of sequences with the sum
-of all elements equal to zero. Then `Kᗮ = ⊥`, `Kᗮᗮ = ⊤`.  -/
+of all elements equal to zero. Then `Kᗮ = ⊥`, `Kᗮᗮ = ⊤`. -/
 theorem Submodule.orthogonal_orthogonal_eq_closure [CompleteSpace E] :
     Kᗮᗮ = K.topologicalClosure := by
   refine le_antisymm ?_ ?_

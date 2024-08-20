@@ -59,7 +59,7 @@ theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π
 iff this number is equal to `k * π / 2` for an integer `k`.
 
 Note that this lemma takes into account that we use zero as the junk value for division by zero.
-See also `Complex.tan_eq_zero_iff'`.  -/
+See also `Complex.tan_eq_zero_iff'`. -/
 theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ := by
   rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← mul_right_inj' two_ne_zero, mul_zero,
     ← mul_assoc, ← sin_two_mul, sin_eq_zero_iff]

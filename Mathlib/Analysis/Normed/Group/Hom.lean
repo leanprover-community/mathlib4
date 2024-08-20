@@ -532,7 +532,7 @@ instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [Nor
       add_le' := opNorm_add_le
       eq_zero_of_map_eq_zero' := fun _f => opNorm_zero_iff.1 }
 
-/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`.  -/
+/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
 def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
   toFun := DFunLike.coe

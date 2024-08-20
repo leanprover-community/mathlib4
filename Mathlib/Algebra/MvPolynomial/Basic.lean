@@ -152,7 +152,7 @@ end Instances
 
 variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
 
-/-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s`  -/
+/-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s` -/
 def monomial (s : σ →₀ ℕ) : R →ₗ[R] MvPolynomial σ R :=
   lsingle s
 
@@ -461,7 +461,7 @@ theorem linearMap_ext {M : Type*} [AddCommMonoid M] [Module R M] {f g : MvPolyno
 
 section Support
 
-/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient.  -/
+/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient. -/
 def support (p : MvPolynomial σ R) : Finset (σ →₀ ℕ) :=
   Finsupp.support p
 

@@ -426,7 +426,7 @@ def coeFnHom : (α →o β) →o α → β where
   monotone' _ _ h := h
 
 /-- Function application `fun f => f a` (for fixed `a`) is a monotone function from the
-monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`.  -/
+monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`. -/
 @[simps! (config := .asFn)]
 def apply (x : α) : (α →o β) →o β :=
   (Pi.evalOrderHom x).comp coeFnHom
@@ -447,7 +447,7 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   right_inv _ := rfl
   map_rel_iff' := forall_swap
 
-/-- `Subtype.val` as a bundled monotone function.  -/
+/-- `Subtype.val` as a bundled monotone function. -/
 @[simps (config := .asFn)]
 def Subtype.val (p : α → Prop) : Subtype p →o α :=
   ⟨_root_.Subtype.val, fun _ _ h => h⟩

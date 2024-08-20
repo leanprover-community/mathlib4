@@ -1076,7 +1076,7 @@ theorem dualAnnihilator_dualAnnihilator_eq (W : Subspace K V) :
   rw [dualCoannihilator, ← Module.mapEvalEquiv_symm_apply] at this
   rwa [← OrderIso.symm_apply_eq]
 
-/-- The quotient by the dual is isomorphic to its dual annihilator.  -/
+/-- The quotient by the dual is isomorphic to its dual annihilator. -/
 -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 noncomputable def quotDualEquivAnnihilator (W : Subspace K V) :
     (Module.Dual K V ⧸ LinearMap.range W.dualLift) ≃ₗ[K] W.dualAnnihilator :=
@@ -1570,7 +1570,7 @@ theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)
       have := Free.of_divisionRing K ↥W
       have := Basis.dual_finite (R := K) (M := W)
       ```
-      -/
+     -/
       set_option maxSynthPendingDepth 2 in
       exact FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 

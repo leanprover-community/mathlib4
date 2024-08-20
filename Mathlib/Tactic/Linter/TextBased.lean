@@ -391,7 +391,7 @@ inductive OutputSetting : Type
   This adds entries for any new exceptions, removes any entries which are no longer necessary,
   and tries to not modify exception entries unless necessary.
   To fully regenerate the exceptions file, delete `style-exceptions.txt` and run again in this mode.
-  -/
+ -/
   | update
   deriving BEq
 

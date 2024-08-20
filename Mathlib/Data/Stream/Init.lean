@@ -12,7 +12,7 @@ import Mathlib.Data.List.Basic
 
 Porting note:
 This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
-name clashes.  -/
+name clashes. -/
 
 open Nat Function Option
 

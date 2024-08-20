@@ -240,7 +240,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
        case, the induced "distance" on `X ⊕ Y` belongs to the candidates family introduced in the
        definition of the optimal coupling, and the conclusion follows from the optimality
        of the optimal coupling within this family.
-    -/
+   -/
   have A :
     ∀ p q : NonemptyCompacts ℓ_infty_ℝ,
       ⟦p⟧ = toGHSpace X →
@@ -940,7 +940,7 @@ limit of the `Y n`, and finally let `Z` be the completion of `Z0`.
 The images `X2 n` of `X n` in `Z` are at Hausdorff distance `< 1/2^n` by construction, hence they
 form a Cauchy sequence for the Hausdorff distance. By completeness (of `Z`, and therefore of its
 set of nonempty compact subsets), they converge to a limit `L`. This is the nonempty
-compact metric space we are looking for.  -/
+compact metric space we are looking for. -/
 variable (X : ℕ → Type) [∀ n, MetricSpace (X n)] [∀ n, CompactSpace (X n)] [∀ n, Nonempty (X n)]
 
 /-- Auxiliary structure used to glue metric spaces below, recording an isometric embedding

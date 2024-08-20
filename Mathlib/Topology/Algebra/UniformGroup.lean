@@ -850,7 +850,7 @@ already equipped with a uniform structure.
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
 uniform structure, so it is still provided manually via `TopologicalGroup.toUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
-quotient obtained via other means.  -/
+quotient obtained via other means. -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
 subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in this version

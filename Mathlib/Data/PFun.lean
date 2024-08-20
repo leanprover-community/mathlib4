@@ -58,7 +58,7 @@ open Function
 def PFun (α β : Type*) :=
   α → Part β
 
-/-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
+/-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`. -/
 infixr:25 " →. " => PFun
 
 namespace PFun

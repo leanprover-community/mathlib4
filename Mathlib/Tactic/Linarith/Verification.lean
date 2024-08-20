@@ -115,7 +115,7 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
     `step c pf npf coeff` assumes that `pf` is a proof of `t1 R1 0` and `npf` is a proof
     of `t2 R2 0`. It uses `mkSingleCompZeroOf` to prove `t1 + coeff*t2 R 0`, and returns `R`
     along with this proof.
-    -/
+   -/
     step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
       let (iq, h') ← mkSingleCompZeroOf coeff npf
       let (nm, niq) := addIneq c iq

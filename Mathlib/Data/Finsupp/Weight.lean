@@ -40,7 +40,7 @@ for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
 
 ## Degree
 
-- `Finsupp.degree`:  the weight when all components of `w` are equal to `1 : ℕ`.
+- `Finsupp.degree`: the weight when all components of `w` are equal to `1 : ℕ`.
 The present choice is to have it defined as a plain function.
 
 - `Finsupp.degree_eq_zero_iff` says that `f.degree = 0` iff `f = 0`.

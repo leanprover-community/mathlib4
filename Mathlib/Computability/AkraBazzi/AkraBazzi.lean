@@ -508,7 +508,7 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
 Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
 `∑ a_i b_i^p = 1`.  This section shows the existence and uniqueness of this exponent `p` for any
 `R : AkraBazziRecurrence`, and defines `R.asympBound` to be the asymptotic bound satisfied by `R`,
-namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`.  -/
+namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 
 @[continuity]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by

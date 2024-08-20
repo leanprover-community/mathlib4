@@ -12,7 +12,7 @@ This file implements diffeomorphisms.
 
 ## Definitions
 
-* `Diffeomorph I I' M M' n`:  `n`-times continuously differentiable diffeomorphism between
+* `Diffeomorph I I' M M' n`: `n`-times continuously differentiable diffeomorphism between
   `M` and `M'` with respect to I and I'; we do not introduce a separate definition for the case
   `n = ∞`; we use notation instead.
 * `Diffeomorph.toHomeomorph`: reinterpret a diffeomorphism as a homeomorphism.

@@ -39,7 +39,7 @@ compact assumption and give only approximation by a bounded continuous function.
 * `ContinuousMap.toLp_denseRange`: For compact `α` and finite-measure `μ`, the continuous linear
   map `ContinuousMap.toLp p μ 𝕜` from `C(α, E)` to `Lp E p μ` has dense range.
 
-Note that for `p = ∞` this result is not true:  the characteristic function of the set `[0, ∞)` in
+Note that for `p = ∞` this result is not true: the characteristic function of the set `[0, ∞)` in
 `ℝ` cannot be continuously approximated in `L∞`.
 
 The proof is in three steps.  First, since simple functions are dense in `Lp`, it suffices to prove
@@ -366,7 +366,7 @@ namespace ContinuousMap
 
 /-- Continuous functions are dense in `MeasureTheory.Lp`, `1 ≤ p < ∞`. This theorem assumes that
 the domain is a compact space because otherwise `ContinuousMap.toLp` is undefined. Use
-`BoundedContinuousFunction.toLp_denseRange` if the domain is not a compact space.  -/
+`BoundedContinuousFunction.toLp_denseRange` if the domain is not a compact space. -/
 theorem toLp_denseRange [CompactSpace α] [μ.WeaklyRegular] [IsFiniteMeasure μ] (hp : p ≠ ∞) :
     DenseRange (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ) := by
   refine (BoundedContinuousFunction.toLp_denseRange _ _ 𝕜 hp).mono ?_

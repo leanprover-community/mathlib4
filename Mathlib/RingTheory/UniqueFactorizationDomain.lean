@@ -33,7 +33,7 @@ local infixl:50 " ~ᵤ " => Associated
 /-- Well-foundedness of the strict version of |, which is equivalent to the descending chain
 condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
-  -/
+ -/
 class WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop where
   wellFounded_dvdNotUnit : WellFounded (@DvdNotUnit α _)
 

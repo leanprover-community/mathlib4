@@ -892,7 +892,7 @@ theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (mem : ∀ 
     (mul : ∀ x y, p x → p y → p (x * y)) (inv : ∀ x, p x → p x⁻¹) : p x :=
   (@closure_le _ _ ⟨⟨⟨setOf p, fun {x y} ↦ mul x y⟩, one⟩, fun {x} ↦ inv x⟩ k).2 mem h
 
-/-- A dependent version of `Subgroup.closure_induction`.  -/
+/-- A dependent version of `Subgroup.closure_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.closure_induction`. "]
 theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
     (mem : ∀ (x) (h : x ∈ k), p x (subset_closure h)) (one : p 1 (one_mem _))
@@ -1709,7 +1709,7 @@ def _root_.NormalizerCondition :=
 variable {G}
 
 /-- Alternative phrasing of the normalizer condition: Only the full group is self-normalizing.
-This may be easier to work with, as it avoids inequalities and negations.  -/
+This may be easier to work with, as it avoids inequalities and negations. -/
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, H.normalizer = H → H = ⊤ := by
   apply forall_congr'; intro H

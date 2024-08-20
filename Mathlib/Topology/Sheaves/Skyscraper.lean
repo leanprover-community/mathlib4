@@ -359,7 +359,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
       colimit.ι_desc]
     rfl
 
-instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint :=
   (skyscraperPresheafStalkAdjunction _).isRightAdjoint
 
 instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint  :=
@@ -383,7 +383,7 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   homEquiv_unit {𝓐} c f := Sheaf.Hom.ext (skyscraperPresheafStalkAdjunction p₀).homEquiv_unit
   homEquiv_counit {𝓐} c f := (skyscraperPresheafStalkAdjunction p₀).homEquiv_counit
 
-instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
 
 end

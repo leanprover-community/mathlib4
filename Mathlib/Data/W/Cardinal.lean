@@ -50,7 +50,7 @@ theorem cardinal_mk_le_of_le' {κ : Cardinal.{max u v}}
   exact Cardinal.mk_le_of_injective (elim_injective _ hκ.1 hκ.2)
 
 /-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`
-  is at most the maximum of the cardinality of `α` and `ℵ₀`  -/
+  is at most the maximum of the cardinality of `α` and `ℵ₀` -/
 theorem cardinal_mk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
     #(WType β) ≤ max (lift.{v} #α) ℵ₀ :=
   (isEmpty_or_nonempty α).elim
@@ -89,7 +89,7 @@ theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ 
     #(WType β) ≤ κ := cardinal_mk_le_of_le' <| by simp_rw [lift_id]; exact hκ
 
 /-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`
-  is at most the maximum of the cardinality of `α` and `ℵ₀`  -/
+  is at most the maximum of the cardinality of `α` and `ℵ₀` -/
 theorem cardinal_mk_le_max_aleph0_of_finite [∀ a, Finite (β a)] : #(WType β) ≤ max #α ℵ₀ :=
   cardinal_mk_le_max_aleph0_of_finite'.trans_eq <| by rw [lift_id]
 

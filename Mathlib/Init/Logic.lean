@@ -417,7 +417,7 @@ theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
 
 theorem right_comm : Commutative f → Associative f → RightCommutative f :=
   fun hcomm hassoc a b c ↦
-    calc  (a*b)*c
+    calc (a*b)*c
       _ = a*(b*c) := hassoc a b c
       _ = a*(c*b) := hcomm b c ▸ rfl
       _ = (a*c)*b := Eq.symm (hassoc a c b)

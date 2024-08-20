@@ -219,7 +219,7 @@ theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
   exact ⟨n + 1, by rwa [degreeLT_succ_eq_degreeLE]⟩
 
 /-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
-a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
+a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`. -/
 theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [Module.finite_def, Submodule.fg_def]
   push_neg

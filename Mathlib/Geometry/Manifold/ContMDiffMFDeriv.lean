@@ -355,7 +355,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
     composition of charts (called `Dl` and `il` for `l` and `Dr` and `ir` in the proof below), it
     follows that they are smooth. The composition of all these maps is `Tf`, and is therefore smooth
     as a composition of smooth maps.
-    -/
+   -/
   have one_le_n : 1 ≤ n := (le_add_left le_rfl).trans hmn
   -- First step: local reduction on the space, to a set `s'` which is contained in chart domains.
   refine contMDiffOn_of_locally_contMDiffOn fun p hp => ?_

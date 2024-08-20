@@ -241,7 +241,7 @@ lemma Solution.exists_minimal : ∃ (S₁ : Solution hζ), S₁.isMinimal := by
 end DecidableRel
 
 /-- Given `S' : Solution'`, then `S'.a` and `S'.b` are both congruent to `1` modulo `λ ^ 4` or are
-both congruent to `-1`.  -/
+both congruent to `-1`. -/
 lemma a_cube_b_cube_congr_one_or_neg_one :
     λ ^ 4 ∣ S'.a ^ 3 - 1 ∧ λ ^ 4 ∣ S'.b ^ 3 + 1 ∨ λ ^ 4 ∣ S'.a ^ 3 + 1 ∧ λ ^ 4 ∣ S'.b ^ 3 - 1 := by
   obtain ⟨z, hz⟩ := S'.hcdvd

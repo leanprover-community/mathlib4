@@ -166,7 +166,7 @@ lemma lawson_le_scott : lawson α ≤ scott α := inf_le_right
 
 lemma lawson_le_lower : lawson α ≤ lower α := inf_le_left
 
-lemma scottHausdorff_le_lawson : scottHausdorff α  ≤ lawson α :=
+lemma scottHausdorff_le_lawson : scottHausdorff α ≤ lawson α :=
   le_inf scottHausdorff_le_lower scottHausdorff_le_scott
 
 lemma lawsonClosed_of_scottClosed (s : Set α) (h : IsClosed (WithScott.ofScott ⁻¹' s)) :

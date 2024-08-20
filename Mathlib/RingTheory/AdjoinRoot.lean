@@ -736,7 +736,7 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk,
     quotMapOfEquivQuotMapCMapSpanMk_symm_mk]
 
-/-- Promote `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot` to an alg_equiv.  -/
+/-- Promote `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot` to an alg_equiv. -/
 @[simps!]
 noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
     (AdjoinRoot f ⧸ Ideal.map (of f) I) ≃ₐ[R]

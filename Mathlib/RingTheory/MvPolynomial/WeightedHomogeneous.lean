@@ -582,7 +582,7 @@ theorem weightedHomogeneousComponent_eq_zero_of_not_mem [DecidableEq M]
 
 variable (R)
 
-/-- The `decompose'` argument of `weightedDecomposition`.  -/
+/-- The `decompose'` argument of `weightedDecomposition`. -/
 def decompose' [DecidableEq M] := fun φ : MvPolynomial σ R =>
   DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
     (Finset.image (weight w) φ.support) fun m =>

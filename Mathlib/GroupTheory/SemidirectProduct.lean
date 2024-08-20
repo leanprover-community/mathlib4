@@ -179,7 +179,7 @@ section lift
 variable (f₁ : N →* H) (f₂ : G →* H)
   (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁)
 
-/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H`  -/
+/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H` -/
 def lift (f₁ : N →* H) (f₂ : G →* H)
     (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁) :
     N ⋊[φ] G →* H where
@@ -222,7 +222,7 @@ section Map
 variable {N₁ : Type*} {G₁ : Type*} [Group N₁] [Group G₁] {φ₁ : G₁ →* MulAut N₁}
 
 /-- Define a map from `N ⋊[φ] G` to `N₁ ⋊[φ₁] G₁` given maps `N →* N₁` and `G →* G₁` that
-  satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`.  -/
+  satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`. -/
 def map (f₁ : N →* N₁) (f₂ : G →* G₁)
     (h : ∀ g : G, f₁.comp (φ g).toMonoidHom = (φ₁ (f₂ g)).toMonoidHom.comp f₁) :
     N ⋊[φ] G →* N₁ ⋊[φ₁] G₁ where

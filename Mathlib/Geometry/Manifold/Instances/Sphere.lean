@@ -417,11 +417,11 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
       rfl)
 
 instance (n : ℕ) :
-    SmoothManifoldWithCorners (𝓡 n) (sphere (0 :  EuclideanSpace ℝ (Fin (n + 1))) 1) :=
+    SmoothManifoldWithCorners (𝓡 n) (sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1) :=
   haveI := Fact.mk (@finrank_euclideanSpace_fin ℝ _ (n + 1))
   EuclideanSpace.instSmoothManifoldWithCornersSphere
 
-/-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth.  -/
+/-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth. -/
 theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ ((↑) : sphere (0 : E) 1 → E) := by
   -- Porting note: trouble with filling these implicit variables in the instance

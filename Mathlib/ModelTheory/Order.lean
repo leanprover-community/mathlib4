@@ -117,7 +117,7 @@ def linearOrderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive, leSymb.total}
 
 /-- A sentence indicating that an order has no top element:
-$\forall x, \exists y, \neg y \le x$.   -/
+$\forall x, \exists y, \neg y \le x$.  -/
 def noTopOrderSentence : L.Sentence :=
   ∀'∃'∼((&1).le &0)
 

@@ -743,7 +743,7 @@ theorem mem_closure_iff {s : Set R} {x} :
           mul_mem hx hy)
       (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring.  -/
+/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
 def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
     (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (closure s) :=
   { (closure s).toNonUnitalRing with

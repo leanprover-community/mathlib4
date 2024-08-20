@@ -278,7 +278,7 @@ def normAtPlace (w : InfinitePlace K) : (E K) →*₀ ℝ where
   map_one' := by simp
   map_mul' x y := by split_ifs <;> simp
 
-theorem normAtPlace_nonneg  (w : InfinitePlace K) (x : E K) :
+theorem normAtPlace_nonneg (w : InfinitePlace K) (x : E K) :
     0 ≤ normAtPlace w x := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> exact norm_nonneg _

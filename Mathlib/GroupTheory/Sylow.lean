@@ -458,7 +458,7 @@ def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] 
       rfl)
 
 /-- If `H` is a `p`-subgroup of `G`, then the index of `H` inside its normalizer is congruent
-  mod `p` to the index of `H`.  -/
+  mod `p` to the index of `H`. -/
 theorem card_quotient_normalizer_modEq_card_quotient [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
     {H : Subgroup G} (hH : Nat.card H = p ^ n) :
     Nat.card (normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H) ≡
@@ -467,7 +467,7 @@ theorem card_quotient_normalizer_modEq_card_quotient [Finite G] {p : ℕ} {n : �
   exact ((IsPGroup.of_card hH).card_modEq_card_fixedPoints _).symm
 
 /-- If `H` is a subgroup of `G` of cardinality `p ^ n`, then the cardinality of the
-  normalizer of `H` is congruent mod `p ^ (n + 1)` to the cardinality of `G`.  -/
+  normalizer of `H` is congruent mod `p ^ (n + 1)` to the cardinality of `G`. -/
 theorem card_normalizer_modEq_card [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime] {H : Subgroup G}
     (hH : Nat.card H = p ^ n) : Nat.card (normalizer H) ≡ Nat.card G [MOD p ^ (n + 1)] := by
   have : H.subgroupOf (normalizer H) ≃ H := (subgroupOfEquivOfLe le_normalizer).toEquiv

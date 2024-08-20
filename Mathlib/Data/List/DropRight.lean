@@ -16,7 +16,7 @@ Taking or removing element from the tail end of a list
 - `rtake n`: take `n : ℕ` elements from the tail
 - `rdropWhile p`: remove all the elements from the tail of a list until it finds the first element
   for which `p : α → Bool` returns false. This element and everything before is returned.
-- `rtakeWhile p`:  Returns the longest terminal segment of a list for which `p : α → Bool` returns
+- `rtakeWhile p`: Returns the longest terminal segment of a list for which `p : α → Bool` returns
   true.
 
 ## Implementation detail
@@ -199,7 +199,7 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
     intro f; contradiction
   · simp only [rtakeWhile, reverse_append, takeWhile, ne_eq, not_false_eq_true,
       getLast_append_of_ne_nil, getLast_singleton]
-    refine ⟨fun h => ?_ , fun h => ?_⟩
+    refine ⟨fun h => ?_, fun h => ?_⟩
     · split at h <;> simp_all
     · simp [h]
 

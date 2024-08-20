@@ -125,7 +125,7 @@ variable {Q}
 namespace even.lift
 
 /-- An auxiliary submodule used to store the half-applied values of `f`.
-This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`.  -/
+This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`. -/
 private def S : Submodule R (M →ₗ[R] A) :=
   Submodule.span R
     {f' | ∃ x m₂, f' = LinearMap.lcomp R _ (f.bilin.flip m₂) (LinearMap.mulRight R x)}
@@ -142,7 +142,7 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
         (LinearMap.lcomp R _ (Algebra.lmul R A).to_linear_map.flip).comp <|
           (LinearMap.llcomp R M A A).flip.comp f.flip : M →ₗ[R] A →ₗ[R] M →ₗ[R] A)
         ```
-        -/
+       -/
       (acc.2.val m,
         ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span <| ⟨_, _, rfl⟩⟩))
     (fun m₁ m₂ a =>

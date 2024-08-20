@@ -30,7 +30,7 @@ point of view are in the `Zlattice` namespace.
 the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
 * `Zlattice.module_free`: an AddSubgroup of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module
-* `Zlattice.rank`:  an AddSubgroup of `E` that is discrete and spans `E` over `K` is a free
+* `Zlattice.rank`: an AddSubgroup of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module of `ℤ`-rank equal to the `K`-rank of `E`
 -/
 

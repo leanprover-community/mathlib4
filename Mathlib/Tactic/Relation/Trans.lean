@@ -199,8 +199,8 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
           let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar none)
           trace[Tactic.trans]"obtained y: {y}"
           trace[Tactic.trans]"rel: {indentExpr rel}"
-          trace[Tactic.trans]"x:{indentExpr x}"
-          trace[Tactic.trans]"z:  {indentExpr z}"
+          trace[Tactic.trans]"x: {indentExpr x}"
+          trace[Tactic.trans]"z: {indentExpr z}"
           let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
           trace[Tactic.trans]"obtained g₂: {g₂}"
           let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic

@@ -152,7 +152,7 @@ def appArgExpectedTypes (f : Expr) (args : Array Expr) (ty? : Option Expr) :
     -- Try using the expected type, but (*) below might find a bad solution
     (guard ty?.isSome *> go f args ty?) <|> go f args none
 where
-  /-- Core implementation for `appArgExpectedTypes`.  -/
+  /-- Core implementation for `appArgExpectedTypes`. -/
   go (f : Expr) (args : Array Expr) (ty? : Option Expr) : MetaM (Array (Option Expr)) := do
     -- Metavariables for each argument to `f`:
     let mut margs := #[]
@@ -227,7 +227,7 @@ partial def abstractProofs (e : Expr) (ty? : Option Expr) : MAbs Expr := do
 where
   /--
   Core implementation of `abstractProofs`.
-  -/
+ -/
   visit (e : Expr) (ty? : Option Expr) : MAbs Expr := do
     trace[Tactic.generalize_proofs] "visit (fvars := {(← read).fvars}) e is {e}"
     if (← read).config.debug then
@@ -273,7 +273,7 @@ where
           | _           => unreachable!
   /--
   Core implementation of abstracting a proof.
-  -/
+ -/
   visitProof (e : Expr) (ty? : Option Expr) : MAbs Expr := do
     let eOrig := e
     let fvars := (← read).fvars

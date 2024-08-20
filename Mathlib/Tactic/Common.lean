@@ -17,6 +17,8 @@ import Batteries.Tactic.Where
 -- Import Mathlib-specific linters.
 import Mathlib.Tactic.Linter.Lint
 
+import Mathlib.Tactic.Linter.PedanticLinter -- EXPERIMENT, see what happens now!
+
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Tactic.ApplyCongr
 -- ApplyFun imports `Mathlib.Order.Monotone.Basic`

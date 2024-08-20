@@ -28,11 +28,11 @@ definition in the `AddSubmonoid` namespace.
 
 * `Submonoid.copy` : copy of a submonoid with `carrier` replaced by a set that is equal but possibly
   not definitionally equal to the carrier of the original `Submonoid`.
-* `Submonoid.closure` :  monoid closure of a set, i.e., the least submonoid that includes the set.
+* `Submonoid.closure` : monoid closure of a set, i.e., the least submonoid that includes the set.
 * `Submonoid.gi` : `closure : Set M → Submonoid M` and coercion `coe : Submonoid M → Set M`
   form a `GaloisInsertion`;
 * `MonoidHom.eqLocus`: the submonoid of elements `x : M` such that `f x = g x`;
-* `MonoidHom.ofClosureEqTopRight`:  if a map `f : M → N` between two monoids satisfies
+* `MonoidHom.ofClosureEqTopRight`: if a map `f : M → N` between two monoids satisfies
   `f 1 = 1` and `f (x * y) = f x * f y` for `y` from some dense set `s`, then `f` is a monoid
   homomorphism. E.g., if `f : ℕ → M` satisfies `f 0 = 0` and `f (x + 1) = f x + f 1`, then `f` is
   an additive monoid homomorphism.
@@ -376,7 +376,7 @@ theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ 
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
   (@closure_le _ _ _ ⟨⟨p, mul _ _⟩, one⟩).2 mem h
 
-/-- A dependent version of `Submonoid.closure_induction`.  -/
+/-- A dependent version of `Submonoid.closure_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.closure_induction`. "]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (one : p 1 (one_mem _))
@@ -387,7 +387,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩ fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
       ⟨_, mul _ _ _ _ hx hy⟩
 
-/-- An induction principle for closure membership for predicates with two arguments.  -/
+/-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]
 theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)

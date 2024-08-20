@@ -454,7 +454,7 @@ lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
 
 lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
     χ.ringHomComp f = 1 ↔ χ = 1 := by
-  conv_lhs => rw [← (show  (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
+  conv_lhs => rw [← (show (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
   exact (injective_ringHomComp hf).eq_iff
 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
@@ -477,7 +477,7 @@ theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+
   intro a
   rcases hχ a with (ha | ha | ha) <;> simp [ha]
 
-/-- The inverse of a quadratic character is itself. →  -/
+/-- The inverse of a quadratic character is itself. → -/
 theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = χ := by
   ext x
   rw [inv_apply_eq_inv]

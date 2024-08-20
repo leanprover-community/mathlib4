@@ -169,7 +169,7 @@ theorem exists_goodδ :
   /- This follows from a compactness argument: otherwise, one could extract a converging
     subsequence, to obtain a `1`-separated set in the ball of radius `2` with cardinality
     `N = multiplicity E + 1`. To formalize this, we work with functions `Fin N → E`.
-     -/
+    -/
   by_contra! h
   set N := multiplicity E + 1 with hN
   have :

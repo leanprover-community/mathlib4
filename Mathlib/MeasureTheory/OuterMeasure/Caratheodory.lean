@@ -148,7 +148,7 @@ theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : 
   simp only [inter_comm, inter_univ, univ_inter] at this; simp only [this]
   exact m.mono (iUnion₂_subset fun i _ => subset_iUnion _ i)
 
-/-- The Carathéodory-measurable sets for an outer measure `m` form a Dynkin system.  -/
+/-- The Carathéodory-measurable sets for an outer measure `m` form a Dynkin system. -/
 def caratheodoryDynkin : MeasurableSpace.DynkinSystem α where
   Has := IsCaratheodory m
   has_empty := isCaratheodory_empty m

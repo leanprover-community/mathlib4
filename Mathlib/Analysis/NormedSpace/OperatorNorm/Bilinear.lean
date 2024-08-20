@@ -154,7 +154,7 @@ private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f�
   /--
   After https://github.com/leanprover/lean4/pull/4119 we either need
   to specify the `f.flip` argument, or use `set_option maxSynthPendingDepth 2 in`.
-  -/
+ -/
   f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_opNorm₂ y x
@@ -382,7 +382,7 @@ variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'
   [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃'] [RingHomIsometric σ₂₃']
 
 /-- Compose a bilinear map `E →SL[σ₁₃] F →SL[σ₂₃] G` with two linear maps
-`E' →SL[σ₁'] E` and `F' →SL[σ₂'] F`.  -/
+`E' →SL[σ₁'] E` and `F' →SL[σ₂'] F`. -/
 def bilinearComp (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ₁'] E) (gF : F' →SL[σ₂'] F) :
     E' →SL[σ₁₃'] F' →SL[σ₂₃'] G :=
   ((f.comp gE).flip.comp gF).flip

@@ -668,7 +668,7 @@ end Fold
 
 end List
 
-/-! ### Monotonicity in linear orders  -/
+/-! ### Monotonicity in linear orders -/
 
 
 section LinearOrder

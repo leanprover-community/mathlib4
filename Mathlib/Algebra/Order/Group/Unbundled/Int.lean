@@ -82,7 +82,7 @@ theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := b
 theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
   add_one_le_iff.mpr (abs_pos.mpr h₀)
 
-/-! #### `/`  -/
+/-! #### `/` -/
 
 theorem ediv_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b = 0 :=
   match b, |b|, abs_eq_natAbs b, H2 with

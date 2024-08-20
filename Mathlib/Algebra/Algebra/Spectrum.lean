@@ -53,7 +53,7 @@ local notation "↑ₐ" => algebraMap R A
 -- definition and basic properties
 /-- Given a commutative ring `R` and an `R`-algebra `A`, the *resolvent set* of `a : A`
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is a unit of the
-algebra `A`.  -/
+algebra `A`. -/
 def resolventSet (a : A) : Set R :=
   {r : R | IsUnit (↑ₐ r - a)}
 
@@ -61,7 +61,7 @@ def resolventSet (a : A) : Set R :=
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is not a unit of the
 algebra `A`.
 
-The spectrum is simply the complement of the resolvent set.  -/
+The spectrum is simply the complement of the resolvent set. -/
 def spectrum (a : A) : Set R :=
   (resolventSet R a)ᶜ
 

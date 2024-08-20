@@ -198,7 +198,7 @@ elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   trace[slim_check.decoration] "[testable decoration]\n  {tgt'}"
   -- Porting note: I have not ported support for `trace.slim_check.instance`.
   -- See the commented out code below from mathlib3 if you would like to implement this.
-  --   when_tracing `slim_check.instance   <| do
+  --   when_tracing `slim_check.instance <| do
   --   { inst ← summarize_instance inst >>= pp,
   --     trace!"\n[testable instance]{format.indent inst 2}" },
   let code ← unsafe evalExpr (CoreM PUnit) q(CoreM PUnit) e

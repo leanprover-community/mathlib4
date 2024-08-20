@@ -381,7 +381,7 @@ main point is that the new series `p.changeOrigin x` is still finite, with the s
 variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
-`p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`.  -/
+`p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`. -/
 lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
     (hs : s.card = l) (hkl : n ≤ k + l) :
@@ -393,7 +393,7 @@ lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : �
 
 /-- If `p` is a finite formal multilinear series, then so is `p.changeOriginSeries k` for every
 `k` in `ℕ`. More precisely, if `p m = 0` for `n ≤ m`, then `p.changeOriginSeries k m = 0` for
-`n ≤ k + m`.  -/
+`n ≤ k + m`. -/
 lemma changeOriginSeries_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) : ∀ {m : ℕ}, n ≤ k + m →
     p.changeOriginSeries k m = 0 := by
@@ -413,7 +413,7 @@ lemma changeOriginSeries_sum_eq_partialSum_of_finite (p : FormalMultilinearSerie
     ContinuousMultilinearMap.zero_apply]
 
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
-`p.changeOrigin x k = 0` for `n ≤ k`.  -/
+`p.changeOrigin x k = 0` for `n ≤ k`. -/
 lemma changeOrigin_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) {k : ℕ} (hk : n ≤ k) :
     p.changeOrigin x k = 0 := by

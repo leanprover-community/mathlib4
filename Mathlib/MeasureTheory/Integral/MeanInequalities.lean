@@ -168,7 +168,7 @@ theorem lintegral_mul_le_Lp_mul_Lq (μ : Measure α) {p q : ℝ} (hpq : p.IsConj
   exact ENNReal.lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top hpq hf hf_top hg_top hf_zero hg_zero
 
 /-- A different formulation of Hölder's inequality for two functions, with two exponents that sum to
-1, instead of reciprocals of  -/
+1, instead of reciprocals of -/
 theorem lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p + q = 1) :
@@ -243,7 +243,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
 theorem lintegral_mul_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
     (s : Finset ι) {g : α →  ℝ≥0∞} {f : ι → α → ℝ≥0∞} (hg : AEMeasurable g μ)
     (hf : ∀ i ∈ s, AEMeasurable (f i) μ) (q : ℝ) {p : ι → ℝ} (hpq : q + ∑ i ∈ s, p i = 1)
-    (hq :  0 ≤ q) (hp : ∀ i ∈ s, 0 ≤ p i) :
+    (hq : 0 ≤ q) (hp : ∀ i ∈ s, 0 ≤ p i) :
     ∫⁻ a, g a ^ q * ∏ i ∈ s, f i a ^ p i ∂μ ≤
       (∫⁻ a, g a ∂μ) ^ q * ∏ i ∈ s, (∫⁻ a, f i a ∂μ) ^ p i := by
   suffices

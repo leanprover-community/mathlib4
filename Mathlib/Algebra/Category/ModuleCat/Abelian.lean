@@ -41,7 +41,7 @@ def normalMono (hf : Mono f) : NormalMono f where
         ... ≃ₗ[R] f.range         : LinearMap.quotKerEquivRange f
         ... ≃ₗ[R] r.range.mkQ.ker : LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm
         ```
-      -/
+     -/
         IsKernel.isoKernel _ _ (kernelIsLimit _)
           (LinearEquiv.toModuleIso'
             ((Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm ≪≫ₗ
@@ -61,7 +61,7 @@ def normalEpi (hf : Epi f) : NormalEpi f where
         ... ≃ₗ[R] f.range        : LinearMap.quotKerEquivRange f
         ... ≃ₗ[R] N              : LinearEquiv.ofTop _ (range_eq_top_of_epi _)
         ```
-      -/
+     -/
         IsCokernel.cokernelIso _ _ (cokernelIsColimit _)
           (LinearEquiv.toModuleIso'
             (Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _) ≪≫ₗ
