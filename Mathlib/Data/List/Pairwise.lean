@@ -91,8 +91,8 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
     apply h <;> try (apply hab.subset; simp)
     exact heq
 
-
 /-! ### Pairwise filtering -/
+
 
 variable [DecidableRel R]
 
