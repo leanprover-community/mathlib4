@@ -5,7 +5,7 @@ Authors: Patrick Massot, Scott Morrison
 -/
 import Mathlib.Init
 import Lean.Elab.Command
-import Mathlib.Util.Attr
+import Mathlib.Util.AssertExistsExt
 
 /-!
 # User commands for assert the (non-)existence of declaration or instances.
@@ -26,27 +26,42 @@ open Lean Elab Meta Command
 namespace Mathlib.AssertNotExist
 
 open Lean Elab Command
-elab "finalize_assertions" : command => do
+/-- `#check_assertions` retrieves all declarations and all imports that were declared
+not to exist so far (including in transitively imported files) and reports their current
+status:
+* ✓ means the declaration or import exists,
+* × means the declaration or import does not exist.
+
+This means that the expectation is that all checks *fail* at the time where
+`assert_not_exists` or `assert_not_imported` is called, and that they all *succeed*
+by the time all of `Mathlib` has been built.
+-/
+elab "#check_assertions" : command => do
   let env ← getEnv
   let ext := assertExistsExt.getState env
-  let mut msgs : HashSet String := {}
+  if ext.isEmpty then logInfo "No assertions made." else
+  let mut results : HashMap AssertExists Bool := default
   for d in ext do
-    let msg (txt : String) :=
-      s!"The {txt} '{d.givenName}' was required to not exist in '{d.modName}'.\n\
-        This message means that the {txt} actually *never* exists."
-    if d.isDecl && !env.contains d.givenName then
-      msgs := msgs.insert (msg "declaration")
-    else if !d.isDecl && !env.allImportedModuleNames.contains d.givenName then
-      msgs := msgs.insert (msg "module")
-  for msg in msgs do
-    logWarning m!"{msg}"
+    results := results.insert d <|
+      if d.isDecl
+      then env.contains d.givenName
+      else env.allImportedModuleNames.contains d.givenName
+  results.forM fun d exists? => do
+    let type := if d.isDecl then "declaration" else "module"
+    let msg := s!"'{d.givenName}' ({type}) asserted in '{d.modName}'."
+    if exists? then
+      logInfo m!"{checkEmoji} {msg}"
+    else
+      logWarning m!"{crossEmoji} {msg}"
+  logInfo m!"{checkEmoji} means the declaration or import exists.\n\
+            {crossEmoji} means the declaration or import does not exist."
 
 /--
 `addDeclEntry isDecl declName` takes as input the `Bool`ean `isDecl` and the `Name` `declName`.
-It adds to the environment a new private declaration with a fresh name `freshName` and extends the
-`AssertExists` environment extension with the data `isDecl, freshName, declName, currentModuleName`.
-This information is used by the `assertExists` linter to capture declarations and modules that
-are required to now exist/be imported at some point, but should eventually exist/be imported.
+It extends the `AssertExists` environment extension with the data
+`isDecl, declName, currentModuleName`.
+This information is used to capture declarations and modules that are required to not
+exist/be imported at some point, but should eventually exist/be imported.
 -/
 def addDeclEntry (isDecl : Bool) (declName : Name) : CommandElabM Unit := do
   let modName ← getMainModule
@@ -56,7 +71,6 @@ def addDeclEntry (isDecl : Bool) (declName : Name) : CommandElabM Unit := do
 
 end Mathlib.AssertNotExist
 
-open Mathlib.AssertNotExist
 /--
 `assert_exists n` is a user command that asserts that a declaration named `n` exists
 in the current import scope.
@@ -89,7 +103,7 @@ You should *not* delete the `assert_not_exists` statement without careful discus
 elab "assert_not_exists " n:ident : command => do
   let decl ← ((liftCoreM <| realizeGlobalConstNoOverloadWithInfo n) <|> return .anonymous)
   if decl == .anonymous then
-    addDeclEntry true n.getId
+    Mathlib.AssertNotExist.addDeclEntry true n.getId
   else
   let env ← getEnv
   let c ← mkConstWithLevelParams decl
@@ -120,6 +134,6 @@ elab "assert_not_imported " ids:ident+ : command => do
     if mods.contains id.getId then
       logWarningAt id m!"the module '{id}' is (transitively) imported"
     else
-      addDeclEntry false id.getId
+      Mathlib.AssertNotExist.addDeclEntry false id.getId
 
 end
