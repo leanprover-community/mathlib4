@@ -218,7 +218,8 @@ theorem sub_def (p q : ℚ≥0) : p - q = toNNRat (p - q) :=
 theorem abs_coe (q : ℚ≥0) : |(q : ℚ)| = q :=
   abs_of_nonneg q.2
 
-@[simp 1100]
+-- See note [specialised high priority simp lemma]
+@[simp high]
 theorem nonpos_iff_eq_zero (q : ℚ≥0) : q ≤ 0 ↔ q = 0 :=
   ⟨fun h => le_antisymm h q.2, fun h => h.symm ▸ q.2⟩
 
