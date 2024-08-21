@@ -3,9 +3,9 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Order.BoundedOrder
 
 /-!
 # Lemma about subtraction in ordered monoids with a top element adjoined.
@@ -20,6 +20,8 @@ of the usual convention `0⁻¹ = 0` and is relevant in valuation theory. Since 
 is only registered for `LinearOrderedAddCommGroup α` (which doesn't have a bottom element, unless
 the group is trivial), this shouldn't create diamonds.
 -/
+
+assert_not_exists OrderedCommMonoid
 
 variable {α β : Type*}
 
@@ -63,7 +65,7 @@ theorem map_sub [Sub β] [Bot β] {f : α → β} (h : ∀ x y, f (x - y) = f x 
 
 end
 
-variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
+variable [Add α] [Sub α] [LE α] [OrderBot α] [OrderedSub α]
 
 instance : OrderedSub (WithTop α) := by
   constructor

@@ -272,7 +272,7 @@ theorem card_compress (huv : u.card = v.card) (a : Finset α) : (compress u v a)
   unfold compress
   split_ifs with h
   · rw [card_sdiff (h.2.trans le_sup_left), sup_eq_union, card_union_of_disjoint h.1.symm, huv,
-      add_tsub_cancel_right]
+      Nat.add_sub_cancel]
   · rfl
 
 lemma _root_.Set.Sized.uvCompression (huv : u.card = v.card) (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
