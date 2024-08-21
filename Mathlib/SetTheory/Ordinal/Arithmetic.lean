@@ -2219,6 +2219,45 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
     exact sup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
   · exact (mul_isNormal ho).apply_omega
 
+/-- Converts an ordinal less than `ω` into a natural number, sending all infinite ordinals to zero.
+-/
+def toNat (o : Ordinal) : ℕ :=
+  if h : o < ω then Classical.choose (lt_omega.1 h) else 0
+
+@[simp]
+theorem toNat_natCast (n : ℕ) : toNat n = n := by
+  have h := nat_lt_omega n
+  rw [toNat, dif_pos h, ← @Nat.cast_inj Ordinal, ← Classical.choose_spec (lt_omega.1 h)]
+
+theorem toNat_of_omega_le {o : Ordinal} (h : ω ≤ o) : toNat o = 0 :=
+  dif_neg h.not_lt
+
+@[simp]
+theorem toNat_zero : toNat 0 = 0 :=
+  toNat_natCast 0
+
+@[simp]
+theorem toNat_one : toNat 1 = 1 := by
+  conv_lhs => rw [← Nat.cast_one, toNat_natCast]
+
+@[simp]
+theorem toNat_omega : toNat ω = 0 :=
+  toNat_of_omega_le le_rfl
+
+theorem toNat_mul (a b : Ordinal) : toNat (a * b) = toNat a * toNat b := by
+  obtain rfl | ha := Ordinal.eq_zero_or_pos a; simp
+  obtain rfl | hb := Ordinal.eq_zero_or_pos b; simp
+  obtain ha' | ha' := lt_or_le a ω
+  · obtain hb' | hb' := lt_or_le b ω
+    · obtain ⟨m, rfl⟩ := lt_omega.1 ha'
+      obtain ⟨n, rfl⟩ := lt_omega.1 hb'
+      rw [← natCast_mul]
+      iterate 3 rw [toNat_natCast]
+    · rw [toNat_of_omega_le, toNat_of_omega_le hb', mul_zero]
+      exact hb'.trans <| le_mul_right b ha
+  · rw [toNat_of_omega_le, toNat_of_omega_le ha', zero_mul]
+    exact ha'.trans <| le_mul_left a hb
+
 end Ordinal
 
 variable {α : Type u} {r : α → α → Prop} {a b : α}
