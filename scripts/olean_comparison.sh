@@ -4,13 +4,6 @@ getCacheSize () {
   rm -rf .lake/build/lib/Mathlib
   >&2 lake exe cache clean!
   >&2 lake exe cache get
-  du --summarize --human-readable .lake
-}
-
-getCacheSize () {
-  rm -rf .lake/build/lib/Mathlib
-  >&2 lake exe cache clean!
-  >&2 lake exe cache get
   du .lake/build/lib/Mathlib | sed "s=^=${1} =; s=\t= =g"
 }
 
@@ -46,6 +39,3 @@ if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+
     '
   #printf '.lake size\nmaster: %s\nthis PR: %s' "${masterOleans}" "${newOleans}"
 fi
-
-masterOleans="$(getCacheSize master | sed 's=1=2=; s=4=3=')"
-newOleans="$(getCacheSize branch)"
