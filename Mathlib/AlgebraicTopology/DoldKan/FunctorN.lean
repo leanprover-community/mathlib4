@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
-#align_import algebraic_topology.dold_kan.functor_n from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
-
 /-!
 
 # Construction of functors N for the Dold-Kan correspondence
@@ -53,19 +51,23 @@ def N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ) where
       idem := PInfty_idem }
   map f :=
     { f := PInfty ≫ AlternatingFaceMapComplex.map f }
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.N₁ AlgebraicTopology.DoldKan.N₁
 
 /-- The extension of `N₁` to the Karoubi envelope of `SimplicialObject C`. -/
 @[simps!]
 def N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
   (functorExtension₁ _ _).obj N₁
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.N₂ AlgebraicTopology.DoldKan.N₂
 
--- porting note: added to ease the port of `AlgebraicTopology.DoldKan.NCompGamma`
-lemma compatibility_N₁_N₂ : toKaroubi (SimplicialObject C) ⋙ N₂ = N₁ :=
-  Functor.congr_obj (functorExtension₁_comp_whiskeringLeft_toKaroubi _ _) N₁
+/-- The canonical isomorphism `toKaroubi (SimplicialObject C) ⋙ N₂ ≅ N₁`. -/
+def toKaroubiCompN₂IsoN₁ : toKaroubi (SimplicialObject C) ⋙ N₂ ≅ N₁ :=
+  (functorExtension₁CompWhiskeringLeftToKaroubiIso _ _).app N₁
+
+@[simp]
+lemma toKaroubiCompN₂IsoN₁_hom_app (X : SimplicialObject C) :
+    (toKaroubiCompN₂IsoN₁.hom.app X).f = PInfty := rfl
+
+@[simp]
+lemma toKaroubiCompN₂IsoN₁_inv_app (X : SimplicialObject C) :
+    (toKaroubiCompN₂IsoN₁.inv.app X).f = PInfty := rfl
 
 end DoldKan
 

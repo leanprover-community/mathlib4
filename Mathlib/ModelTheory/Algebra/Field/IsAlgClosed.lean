@@ -35,6 +35,7 @@ assumption `Field K`, `CharP K p`, `IsAlgClosed K` and `CompatibleRing K` and th
 defined saying that these assumption imply `Theory.field.Model K` and `(Theory.ACF p).Model K`
 
 ## References
+
 The first order theory of algebraically closed fields, along with the Lefschetz Principle and
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
@@ -57,56 +58,14 @@ for `X`.  -/
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-/-- Monic polynomials of degree `n` over `K` are equivalent to functions `Fin n → K`  -/
-noncomputable def monicPolyEquivFin [CommRing K] [Nontrivial K] (n : ℕ) :
-    { p : K[X] // p.Monic ∧ p.natDegree = n } ≃ (Fin n → K) :=
-  { toFun := fun p i => p.1.coeff i
-    invFun := fun v =>
-      let p := Polynomial.ofFinsupp <|
-        Finsupp.ofSupportFinite
-          (fun i =>
-            if h : i < n then v ⟨i, h⟩
-            else if i = n then 1 else 0)
-          (Set.Finite.subset (Set.finite_le_nat n) <| by
-              intro i
-              simp
-              split_ifs <;> simp_all [le_iff_lt_or_eq])
-      have hpn : p.natDegree = n := by
-        refine le_antisymm ?_ ?_
-        · refine natDegree_le_iff_coeff_eq_zero.2 ?_
-          intro i hi
-          simp [not_lt_of_gt hi, ne_of_gt hi, Finsupp.ofSupportFinite]
-        · refine le_natDegree_of_ne_zero ?_
-          simp [Finsupp.ofSupportFinite]
-      have hpm : p.Monic := by
-        rw [Monic.def, leadingCoeff, hpn]
-        simp [Finsupp.ofSupportFinite]
-      ⟨p, hpm, hpn⟩
-    left_inv := by
-      intro p
-      ext i
-      simp only [ne_eq, Finset.mem_range, dite_eq_ite, coeff_ofFinsupp,
-        Finsupp.coe_mk, ite_eq_left_iff, not_lt, Finsupp.ofSupportFinite]
-      intro hni
-      cases lt_or_eq_of_le hni with
-      | inr =>
-        subst n
-        have := p.2.1
-        simp [Monic.def, leadingCoeff, p.2.2] at this
-        simp [this]
-      | inl h =>
-        rw [eq_comm, if_neg (ne_of_gt h)]
-        exact coeff_eq_zero_of_natDegree_lt (p.2.2.symm ▸ h)
-    right_inv := fun _ => by simp [Finsupp.ofSupportFinite] }
-
 theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n+1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
-    ((monicPolyEquivFin n).symm (v ∘ Fin.castSucc)).1.eval (v (Fin.last _)) := by
-  let p := (monicPolyEquivFin n).symm (v ∘ Fin.castSucc)
-  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul,
-    eval_eq_sum_range, p.2.2]
-  simp [monicPolyEquivFin, Finset.sum_range_succ, add_comm, Finsupp.ofSupportFinite,
-    Finset.sum_range, Fin.castSucc, Fin.castAdd, Fin.castLE]
+    (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
+      (v (Fin.last _)) := by
+  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul, monicEquivDegreeLT,
+    degreeLTEquiv, Equiv.symm_trans_apply, LinearEquiv.coe_toEquiv_symm, EquivLike.coe_coe,
+    LinearEquiv.coe_symm_mk, Function.comp_apply, Equiv.coe_fn_symm_mk, eval_add, eval_pow, eval_X,
+    eval_finset_sum, eval_monomial]
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
@@ -116,7 +75,7 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
     K ⊨ genericMonicPolyHasRoot n ↔
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
   let _ := Classical.decEq K
-  rw [Equiv.forall_congr_left' (monicPolyEquivFin n)]
+  rw [Equiv.forall_congr_left ((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, lift_genericMonicPoly]
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
@@ -126,7 +85,7 @@ def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory Language.ring :=
 
 instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
     (Theory.fieldOfChar p).Model K :=
-  Theory.Model.mono h (Set.subset_union_left _ _)
+  Theory.Model.mono h Set.subset_union_left
 
 instance [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
@@ -141,7 +100,7 @@ instance [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
 
 theorem modelField_of_modelACF (p : ℕ) (K : Type*) [Language.ring.Structure K]
     [h : (Theory.ACF p).Model K] : Theory.field.Model K :=
-  Theory.Model.mono h (Set.subset_union_of_subset_left (Set.subset_union_left _ _) _)
+  Theory.Model.mono h (Set.subset_union_of_subset_left Set.subset_union_left _)
 
 /-- A model for the Theory of algebraically closed fields is a Field. After introducing
 this as a local instance on a particular Type, you should usually also introduce
@@ -167,9 +126,6 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (K : Type*)
   rw [realize_genericMonicPolyHasRoot] at this
   exact this ⟨_, hpm, rfl⟩
 
-/- Note this is caused by `AlgebraicClosure ℚ`. We don't need to increase heartbeats for
-`AlgebraicClosure (ZMod p)` for some reason -/
-set_option synthInstance.maxHeartbeats 50000 in
 theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsSatisfiable := by
   cases hp with
@@ -190,7 +146,7 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
 
 open Cardinal
 
-/-- The Theory `Theory.ACF p` is `κ` Categorical whenever `κ` is an uncountable cardinal.
+/-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal.
 At the moment this is not as universe polymorphic as it could be,
 it currently requires `κ : Cardinal.{0}`, but it is true for any universe.    -/
 theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
@@ -261,14 +217,14 @@ theorem finite_ACF_prime_not_realize_of_ACF0_realize
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by
     intro p ψ hψ hpψ
-    simp only [Finset.mem_biUnion, Finset.mem_attach, true_and,
+    simp only [s, Finset.mem_biUnion, Finset.mem_attach, true_and,
       Subtype.exists, not_exists] at hpψ
     exact (f ψ (hT0 hψ)).2 p (hpψ _ hψ)
   refine Set.Finite.subset (Finset.finite_toSet s) (Set.compl_subset_comm.2 ?_)
   intro p hp
   exact Theory.models_of_models_theory (fun ψ hψ => hs p ψ hψ hp) h
 
-/-- The Lefschetz principle. A first order sentence is modeled by the theory
+/-- The **Lefschetz principle**. A first order sentence is modeled by the theory
 of algebraically closed fields of characteristic zero if and only if it is modeled by
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :

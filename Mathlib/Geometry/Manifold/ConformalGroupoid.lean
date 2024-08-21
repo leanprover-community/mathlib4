@@ -6,8 +6,6 @@ Authors: Yourong Zang
 import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 import Mathlib.Geometry.Manifold.ChartedSpace
 
-#align_import geometry.manifold.conformal_groupoid from "leanprover-community/mathlib"@"d1bd9c5df2867c1cb463bc6364446d57bdd9f7f1"
-
 /-!
 # Conformal Groupoid
 
@@ -15,7 +13,7 @@ In this file we define the groupoid of conformal maps on normed spaces.
 
 ## Main definitions
 
-* `conformalGroupoid`: the groupoid of conformal local homeomorphisms.
+* `conformalGroupoid`: the groupoid of conformal partial homeomorphisms.
 
 ## Tags
 
@@ -34,9 +32,7 @@ def conformalPregroupoid : Pregroupoid X where
     let ⟨_, _, h₂, h₃⟩ := h x hx
     h₃ x ⟨hx, h₂⟩
   congr hu h hf x hx := (hf x hx).congr hx hu h
-#align conformal_pregroupoid conformalPregroupoid
 
 /-- The groupoid of conformal maps. -/
 def conformalGroupoid : StructureGroupoid X :=
   conformalPregroupoid.groupoid
-#align conformal_groupoid conformalGroupoid

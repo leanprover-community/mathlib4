@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2022 Alice Laroche. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
+Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
+import Mathlib.Order.Defs
 import Mathlib.Tactic.PushNeg
-import Mathlib.Init.Order.Defs
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
@@ -156,6 +156,22 @@ example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get 
   push_neg at h
   exact h
 
+example (s : Set α) (h : ¬s.Nonempty) : s = ∅ := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ¬ s = ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : s ≠ ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ∅ ≠ s) : s.Nonempty := by
+  push_neg at h
+  exact h
+
 namespace no_proj
 
 structure G (V : Type) where
@@ -167,7 +183,7 @@ def g : G Nat where
 example {p q : Nat} : ¬ g.Adj p q := by
   rw [g]
   guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
-  push_neg
+  fail_if_success push_neg
   guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
   dsimp only
   guard_target =ₛ ¬ ((p ≠ q) ∧ ((p ∣ q) ∨ (q ∣ p)))
