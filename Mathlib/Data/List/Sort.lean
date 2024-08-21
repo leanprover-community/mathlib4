@@ -470,6 +470,10 @@ theorem perm_mergeSort' : ∀ l : List α, mergeSort' r l ~ l
   termination_by l => length l
 
 @[simp]
+theorem mem_mergeSort' {l : List α} {x : α} : x ∈ l.mergeSort' r ↔ x ∈ l :=
+  (perm_mergeSort' r l).mem_iff
+
+@[simp]
 theorem length_mergeSort' (l : List α) : (mergeSort' r l).length = l.length :=
   (perm_mergeSort' r _).length_eq
 
@@ -552,8 +556,8 @@ theorem map_merge (f : α → β) (r : α → α → Bool) (s : β → β → Bo
       simp_rw [List.forall_mem_cons]
       exact ⟨hl.1.2, hl.2.2⟩
 
-theorem map_mergeSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
-    (l.mergeSort r).map f = (l.map f).mergeSort s :=
+theorem map_mergeSort' (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
+    (l.mergeSort' r).map f = (l.map f).mergeSort' s :=
   match l with
   | [] => by simp
   | [x] => by simp
@@ -567,9 +571,9 @@ theorem map_mergeSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈
     have := length_split_fst_le l
     have := length_split_snd_le l
     simp_rw [List.map]
-    rw [List.mergeSort_cons_cons _ e, List.mergeSort_cons_cons _ fe,
-      map_merge _ (r · ·) (s · ·), map_mergeSort _ l₁ hl.1.1, map_mergeSort _ l₂ hl.2.2]
-    simp_rw [mem_mergeSort, decide_eq_decide]
+    rw [List.mergeSort'_cons_cons _ e, List.mergeSort'_cons_cons _ fe,
+      map_merge _ (r · ·) (s · ·), map_mergeSort' _ l₁ hl.1.1, map_mergeSort' _ l₂ hl.2.2]
+    simp_rw [mem_mergeSort', decide_eq_decide]
     exact hl.1.2
   termination_by length l
 
