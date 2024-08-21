@@ -253,6 +253,81 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
   rw [← polar_closedBall (inv_pos_of_pos hr), polar,
     (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
 
+
+theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
+  use (fun n => Nat.recOn n {(0 : E)} (fun m v => {(0 : E)}))
+  intro n
+  cases n
+  · simp only [Nat.rec_zero, finite_singleton]
+  · simp only [finite_singleton]
+
+#check (⊥ : Set E)
+
+variable (g : ℕ → Set ℕ) (m : ℕ)
+
+#check ⋃₀ {g k | k < m}
+
+
+def myF : ℕ → Set ℕ
+  | 0 => {0}
+  | n =>  ⋃₀ {myF j | j : { j // j < n } }
+  termination_by n => n
+  decreasing_by
+    exact j.2
+
+theorem finite_subsets3 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
+  use (fun m =>
+    | 0 => {0}
+    | n =>  ⋃₀ {myF2 j | j : { j // j < n } }
+    termination_by n => n
+    decreasing_by
+      exact j.2
+  )
+
+
+/-
+decreasing_by
+  simp only [Nat.succ_eq_add_one]-/
+
+/-
+inductive F : ℕ → Set E
+  | F 0 : (⊥ : Set E)
+  | Fn : ∀ n : ℕ, F (n+1) = F n
+-/
+--def F (n : ℕ) : (F n).Finite :=
+
+/-
+theorem finite_subsets2 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
+  use (induction n with
+        | zero => sorry
+  )
+  intro n
+  cases n
+  · simp only [Nat.rec_zero, finite_singleton]
+  · simp only [finite_singleton]
+-/
+
+/-
+theorem finite_subsets (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite ∧
+    F n ⊆ ball (0 : E) n⁻¹ ∧ polar 𝕜 (⋃₀ {F k | k < n }) ∩ ball 0 n  ⊆ U := by
+  use (fun n => Nat.recOn n {(0 : E)} (fun n v => {(0 : E)}))
+  intro n
+  constructor
+  · simp only
+    cases n
+    · simp only [Nat.rec_zero, finite_singleton]
+    · simp only [finite_singleton]
+  · cases n
+    · constructor
+      · simp only [Nat.rec_zero, CharP.cast_eq_zero, inv_zero, ball_zero, subset_empty_iff,
+        singleton_ne_empty]
+
+
+  --apply Exists.intro
+  --induction n using by exact 𝕜
+  --intro n
+-/
+
 end PolarSets
 
 end NormedSpace
