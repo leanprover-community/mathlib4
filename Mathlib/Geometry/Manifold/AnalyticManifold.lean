@@ -60,8 +60,7 @@ def analyticPregroupoid : Pregroupoid H where
     apply (analyticOn_id 𝕜).analyticWithinOn.congr
     rintro x ⟨_, hx2⟩
     rcases mem_range.1 hx2 with ⟨y, hy⟩
-    rw [← hy]
-    simp only [mfld_simps]
+    simp only [mfld_simps, ← hy]
   locality {f u} _ H := by
     apply analyticWithinOn_of_locally_analyticWithinOn
     rintro y ⟨hy1, hy2⟩
