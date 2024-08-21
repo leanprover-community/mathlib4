@@ -145,13 +145,16 @@ theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
   (opow_pos (repr e) omega_pos).trans_le (omega_le_oadd e n a)
 
-/-- Compare ordinal notations -/
+/-- Compare ordinal notations.
+
+`ω ^ e₁ * n₁ + a₁` is less than `ω ^ e₂ * n₂ + a₂` when either `e₁ < e₂`, or `e₁ = e₂` and
+`n₁ < n₂`, or `e₁ = e₂`, `n₁ = n₂`, and `a₁ < a₂`. -/
 def cmp : ONote → ONote → Ordering
   | 0, 0 => Ordering.eq
   | _, 0 => Ordering.gt
   | 0, _ => Ordering.lt
   | _o₁@(oadd e₁ n₁ a₁), _o₂@(oadd e₂ n₂ a₂) =>
-    (cmp e₁ e₂).orElse <| (_root_.cmp (n₁ : ℕ) n₂).orElse (cmp a₁ a₂)
+    (cmp e₁ e₂).orElse <| (_root_.cmp n₁ n₂).orElse (cmp a₁ a₂)
 
 theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o₂
   | 0, 0, _ => rfl
@@ -161,10 +164,10 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
     revert h; simp only [cmp]
     cases h₁ : cmp e₁ e₂ <;> intro h <;> try cases h
     obtain rfl := eq_of_cmp_eq h₁
-    revert h; cases h₂ : _root_.cmp (n₁ : ℕ) n₂ <;> intro h <;> try cases h
+    revert h; cases h₂ : _root_.cmp n₁ n₂ <;> intro h <;> try cases h
     obtain rfl := eq_of_cmp_eq h
-    rw [_root_.cmp, cmpUsing_eq_eq] at h₂
-    obtain rfl := Subtype.eq (eq_of_incomp h₂)
+    rw [_root_.cmp, cmpUsing_eq_eq, not_lt, not_lt, ← le_antisymm_iff] at h₂
+    obtain rfl := h₂
     simp
 
 protected theorem zero_lt_one : (0 : ONote) < 1 := by
@@ -289,7 +292,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
     case gt => intro IHe; exact oadd_lt_oadd_1 h₂ IHe
     case eq =>
       intro IHe; dsimp at IHe; subst IHe
-      unfold _root_.cmp; cases nh : cmpUsing (· < ·) (n₁ : ℕ) n₂ <;>
+      unfold _root_.cmp; cases nh : cmpUsing (· < ·) n₁ n₂ <;>
       rw [cmpUsing, ite_eq_iff, not_lt] at nh
       case lt =>
         cases' nh with nh nh
@@ -308,7 +311,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       rw [ite_eq_iff] at nhr
       cases' nhr with nhr nhr
       · cases nhr; contradiction
-      obtain rfl := Subtype.eq (eq_of_incomp ⟨(not_lt_of_ge nhl), nhr.left⟩)
+      obtain rfl := nhl.eq_of_not_lt nhr.1
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
       revert IHa; cases cmp a₁ a₂ <;> intro IHa <;> dsimp at IHa
       case lt => exact oadd_lt_oadd_3 IHa
@@ -435,7 +438,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he : cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
         Ordering.compares_eq, repr, gt_iff_lt, PNat.add_coe, Nat.cast_add] at ee ⊢
-    · rw [← add_assoc, @add_absorp_of_ge _ (repr e') (ω ^ repr e' * (n' : ℕ))]
+    · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
       · have := (h₁.below_of_lt ee).repr_lt
         unfold repr at this
         cases he' : e' <;> simp only [he', zero_def, opow_zero, repr, gt_iff_lt] at this ⊢ <;>
@@ -496,11 +499,11 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine
           (Ordinal.sub_eq_of_add_eq <|
-              add_absorp_of_ge h₂.snd'.repr_lt <| le_trans ?_ (le_add_right _ _)).symm
+              add_absorp h₂.snd'.repr_lt <| le_trans ?_ (le_add_right _ _)).symm
         simpa using mul_le_mul_left' (natCast_le.2 <| Nat.succ_pos _) _
     · exact
         (Ordinal.sub_eq_of_add_eq <|
-            add_absorp_of_ge (h₂.below_of_lt ee).repr_lt <| omega_le_oadd _ _ _).symm
+            add_absorp (h₂.below_of_lt ee).repr_lt <| omega_le_oadd _ _ _).symm
 
 /-- Multiplication of ordinal notations (correct only for normal input) -/
 def mul : ONote → ONote → ONote
@@ -553,7 +556,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       lhs
       simp [(· * ·)]
     have ao : repr a₁ + ω ^ repr e₁ * (n₁ : ℕ) = ω ^ repr e₁ * (n₁ : ℕ) := by
-      apply add_absorp_of_ge h₁.snd'.repr_lt
+      apply add_absorp h₁.snd'.repr_lt
       simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos _ omega_pos).2 (natCast_le.2 n₁.2)
     by_cases e0 : e₂ = 0
     · cases' Nat.exists_eq_succ_of_ne_zero n₂.ne_zero with x xe
@@ -862,7 +865,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,
       add_mul_limit _ (isLimit_iff_omega_dvd.2 ⟨ne_of_gt α0, αd⟩), mul_assoc,
       @mul_omega_dvd n (natCast_pos.2 n.pos) (nat_lt_omega _) _ αd]
-    apply add_absorp_of_ge
+    apply add_absorp
     · refine principal_add_omega_opow _ ?_ Rl
       rw [opow_mul, opow_succ, Ordinal.mul_lt_mul_iff_left ω00]
       exact No.snd'.repr_lt
@@ -873,7 +876,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · have : R = 0 := by cases k <;> simp [R, opowAux]
       simp [this]
     · rw [natCast_succ, add_mul_succ]
-      apply add_absorp_of_ge Rl
+      apply add_absorp Rl
       rw [opow_mul, opow_succ]
       apply mul_le_mul_left'
       simpa [repr] using omega_le_oadd a0 n a'
