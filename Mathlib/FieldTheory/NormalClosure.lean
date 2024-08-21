@@ -98,8 +98,8 @@ lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) 
       SetLike.coe_subset_coe.mpr <| by apply le_iSup _ x)
   simp_rw [normalClosure, ← top_le_iff]
   refine fun x _ ↦ (IntermediateField.val _).injective.mem_set_image.mp ?_
-  change x.val ∈ IntermediateField.map (IntermediateField.val _) _
-  rw [IntermediateField.map_iSup]
+  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_val, ← IntermediateField.coe_val,
+    ← IntermediateField.coe_map, IntermediateField.map_iSup]
   refine (iSup_le fun f ↦ ?_ : normalClosure F K L ≤ _) x.2
   refine le_iSup_of_le (f.codRestrict _ fun x ↦ f.fieldRange_le_normalClosure ⟨x, rfl⟩) ?_
   rw [AlgHom.map_fieldRange, val, AlgHom.val_comp_codRestrict]
