@@ -58,7 +58,7 @@ def analyticPregroupoid : Pregroupoid H where
       simp only [mfld_simps] at hx1 ⊢
       exact hx1.2
   id_mem := by
-    apply AnalyticWithinOn.congr (analyticOn_id 𝕜).analyticWithinOn
+    apply (analyticOn_id 𝕜).analyticWithinOn.congr
     rintro x ⟨_, hx2⟩
     rcases mem_range.1 hx2 with ⟨y, hy⟩
     rw [← hy]
