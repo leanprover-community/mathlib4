@@ -11,17 +11,19 @@ if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+
   mv .lake .lakeBranch
   git fetch origin master --depth 1
   git checkout origin/master
-  echo "get master's oleans"
+  echo "* Get master's oleans"
   masterOleans="$(getCacheSize master)"
   git checkout -
   mv -f .lakeBranch .lake
-  echo "get branch's oleans"
+  echo "* Get branch's oleans"
   newOleans="$(getCacheSize branch)"
-  pctgs="$(printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
+  printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
     awk 'function format(percent,diff,fname) {
       return sprintf("| %4.2f%% | %s | %s |\n", percent, diff, fname)
     }
-    BEGIN{ pctBound=5 }
+    BEGIN{
+      pctBound=5
+      printf("oleans folders whose size differs by more than %s%% from the corresponding master'"'"'s oleans.\nThe whole oleans folder is always reported.\n\n", pctBound) }
       { gsub(/\.lake\/build\/lib\//, "") }
       /master/ { size[$3]=$2; difference[$3]-=$2 }
       /branch/ { if(size[$3] == "") {size[$3]=$2} difference[$3]+=+$2 }
@@ -38,8 +40,5 @@ if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+
       }
       print mathlib
     }
-    ')"
-  printf '%s\n' "${pctgs}"
-  printf '%s\n' "${pctgs}" >> "${GITHUB_OUTPUT}"
-  #printf '.lake size\nmaster: %s\nthis PR: %s' "${masterOleans}" "${newOleans}"
+    '
 fi
