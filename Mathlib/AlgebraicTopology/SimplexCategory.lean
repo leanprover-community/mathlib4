@@ -652,7 +652,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
       cases' Nat.le.dest h' with c hc
       cases c
       · exfalso
-        simp only [Nat.zero_eq, add_zero, len_mk, Fin.coe_pred] at hc
+        simp only [add_zero, len_mk, Fin.coe_pred] at hc
         rw [hc] at h''
         exact h'' rfl
       · rw [← hc]

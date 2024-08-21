@@ -312,7 +312,7 @@ variable [MulOneClass M] [MulOneClass N]
 /-- `M →* N` is the type of functions `M → N` that preserve the `Monoid` structure.
 `MonoidHom` is also used for group homomorphisms.
 
-When possible, instead of parametrizing results over `(f : M →+ N)`,
+When possible, instead of parametrizing results over `(f : M →* N)`,
 you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidHomClass`.
@@ -395,7 +395,7 @@ lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f 
 @[to_additive (attr := simp) "Additive group homomorphisms preserve negation."]
 theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
-  eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_self _
+  eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_cancel _
 
 @[to_additive (attr := simp)]
 lemma map_comp_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) :
@@ -837,8 +837,8 @@ instance : Monoid (Monoid.End M) where
   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
-  npow n f := (npowRec n f).copy f^[n] $ by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
+  npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *] <;> rfl
+  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 instance : Inhabited (Monoid.End M) := ⟨1⟩
 
@@ -878,8 +878,8 @@ instance monoid : Monoid (AddMonoid.End A) where
   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
   mul_one := AddMonoidHom.comp_id
   one_mul := AddMonoidHom.id_comp
-  npow n f := (npowRec n f).copy (Nat.iterate f n) $ by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
+  npow n f := (npowRec n f).copy (Nat.iterate f n) <| by induction n <;> simp [npowRec, *] <;> rfl
+  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : AddMonoid.End A) (n : ℕ) : (↑(f ^ n) : A → A) = f^[n] := rfl
 
