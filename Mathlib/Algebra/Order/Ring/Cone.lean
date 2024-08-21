@@ -18,13 +18,11 @@ We also provide constructors that convert between
 cones in rings and the corresponding ordered rings.
 -/
 
-variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
-
 namespace Ring
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
 class RingConeClass (S R : Type*) [Ring R] [SetLike S R]
-    extends AddCommGroup.GroupConeClass S R, SubsemiringClass S R : Prop
+    extends AddCommGroup.AddGroupConeClass S R, SubsemiringClass S R : Prop
 
 /-- A (positive) cone in a ring is a subsemiring that
 does not contain both `a` and `-a` for any nonzero `a`.
@@ -44,9 +42,6 @@ instance RingCone.instRingConeClass (R : Type*) [Ring R] :
   mul_mem {C} := C.mul_mem'
   one_mem {C} := C.one_mem'
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
-
-theorem RingConeClass.neg_one_not_mem [Nontrivial R] [RingConeClass S R] : -1 ∉ C :=
-  fun neg_one_mem => zero_ne_one' R (eq_zero_of_mem_of_neg_mem (one_mem C) neg_one_mem).symm
 
 /-- `RingConeWithSquaresClass S R` says that `S` is
 a type of cones with squares in `R`. -/
@@ -76,7 +71,7 @@ instance RingConeWithSquares.instRingConeWithSquaresClass (R : Type*) [Ring R] :
 
 /-- `MaximalRingConeClass S R` says that `S` is a type of maximal cones in `R`. -/
 class MaximalRingConeClass (S R : Type*) [Ring R] [IsDomain R] [SetLike S R]
-    extends AddCommGroup.MaximalGroupConeClass S R, RingConeClass S R : Prop
+    extends AddCommGroup.MaximalAddGroupConeClass S R, RingConeClass S R : Prop
 
 /-- A maximal (positive) cone in a domain is a cone containing
 either `a` or `-a` for every `a`.
@@ -136,20 +131,26 @@ def nonneg : MaximalRingCone T where
 
 end Ring.MaximalRingCone
 
+variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
+
 open Ring
 
+/-- A cone over a nontrivial ring does not conain -1. -/
+theorem RingConeClass.neg_one_not_mem [Nontrivial R] [RingConeClass S R] : -1 ∉ C :=
+  fun neg_one_mem => zero_ne_one' R (eq_zero_of_mem_of_neg_mem (one_mem C) neg_one_mem).symm
+
 /-- Construct a partially ordered ring by designating a positive cone in a ring. -/
-@[reducible] def OrderedRing.mkOfPositiveCone [RingConeClass S R] : OrderedRing R where
+@[reducible] def OrderedRing.mkOfCone [RingConeClass S R] : OrderedRing R where
   __ := ‹Ring R›
-  __ := OrderedAddCommGroup.mkOfPositiveCone C
+  __ := OrderedAddCommGroup.mkOfCone C
   zero_le_one := show _ ∈ C by simpa using one_mem C
   mul_nonneg x y xnn ynn := show _ ∈ C by simpa using mul_mem xnn ynn
 
 /-- Construct a linearly ordered domain by designating a positive cone in a domain. -/
-@[reducible] def LinearOrderedRing.mkOfPositiveCone
+@[reducible] def LinearOrderedRing.mkOfCone
     [IsDomain R] [MaximalRingConeClass S R] (dec : DecidablePred (· ∈ C)) :
     LinearOrderedRing R where
-  __ := OrderedRing.mkOfPositiveCone C
+  __ := OrderedRing.mkOfCone C
   __ := OrderedRing.toStrictOrderedRing R
   le_total a b := by simpa using mem_or_neg_mem C (b - a)
   decidableLE a b := dec _
