@@ -46,7 +46,7 @@ def tgtExprOfIso (η : Expr) : MetaM Expr := do
 initialize registerTraceClass `monoidal
 
 /-- The context for evaluating expressions. -/
-structure Context where
+structure Context' where
   /-- The level for morphisms. -/
   level₂ : Level
   /-- The level for objects. -/
@@ -59,7 +59,7 @@ structure Context where
   instMonoidal? : Option Q(MonoidalCategory.{level₂, level₁} $C)
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext? (e : Expr) : MetaM (Option Context) := do
+def mkContext? (e : Expr) : MetaM (Option Context') := do
   let e ← instantiateMVars e
   let ⟨.succ level₂, type, _⟩ ← inferTypeQ e | return none
   let type ← instantiateMVars type
@@ -71,11 +71,11 @@ def mkContext? (e : Expr) : MetaM (Option Context) := do
     return some ⟨level₂, level₁, C, instCat, instMonoidal⟩
   | _ => return none
 
-instance : BicategoryLike.Context Monoidal.Context where
+instance : BicategoryLike.Context Monoidal.Context' where
   mkContext? := Monoidal.mkContext?
 
 /-- The monad for the normalization of 2-morphisms. -/
-abbrev MonoidalM := CoherenceM Context
+abbrev MonoidalM := CoherenceM Context'
 
 /-- Throw an error if the monoidal category instance is not found. -/
 def synthMonoidalError {α : Type} : MetaM α := do
@@ -763,7 +763,7 @@ example {C : Type} [Category C] [MonoidalCategory C] :
 ```
 -/
 def pureCoherence (mvarId : MVarId) : MetaM (List MVarId) :=
-  BicategoryLike.pureCoherence Monoidal.Context `monoidal mvarId
+  BicategoryLike.pureCoherence Monoidal.Context' `monoidal mvarId
 
 @[inherit_doc pureCoherence]
 elab "monoidal_coherence" : tactic => withMainContext do
