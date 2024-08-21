@@ -35,10 +35,12 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E where
 
 /-- The equivalence of categories expressing associativity of products of categories.
 -/
-def associativity : (C × D) × E ≌ C × D × E :=
-  Equivalence.mk (associator C D E) (inverseAssociator C D E)
-    (NatIso.ofComponents fun X => eqToIso (by simp))
-    (NatIso.ofComponents fun X => eqToIso (by simp))
+@[simps]
+def associativity : (C × D) × E ≌ C × D × E where
+  functor := associator C D E
+  inverse := inverseAssociator C D E
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
   (by infer_instance : (associativity C D E).functor.IsEquivalence)

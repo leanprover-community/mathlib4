@@ -319,7 +319,7 @@ namespace Fin
 variable {k m n : ℕ}
 
 private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
-  Nat.lt_succ_iff.2 $ le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
+  Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
 
 /-- **No wrap-around principle**.
 
@@ -335,7 +335,7 @@ lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     have (u : Multiset (Fin (n + 1))) : Nat.castRingHom _ (u.map val).sum = u.sum := by simp
     rw [← this, ← this]
     have {u : Multiset (Fin (n + 1))} (huk : ∀ x ∈ u, x ≤ k) (hu : card u = m) :
-        (u.map val).sum < (n + 1) := Nat.lt_succ_iff.2 $ hkmn.trans' $ by
+        (u.map val).sum < (n + 1) := Nat.lt_succ_iff.2 <| hkmn.trans' <| by
       rw [← hu, ← card_map]
       refine sum_le_card_nsmul (u.map val) k ?_
       simpa [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, aux hm hkmn] using huk
