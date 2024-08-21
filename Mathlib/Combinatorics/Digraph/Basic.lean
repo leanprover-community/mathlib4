@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Kyle Miller, Jeremy Tan. All rights reserved.
+Copyright (c) 2024 Kyle Miller, Jack Cheverton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Jeremy Tan
+Authors: Kyle Miller, Jack Cheverton, Jeremy Tan
 -/
 import Mathlib.Data.Set.Finite
 
