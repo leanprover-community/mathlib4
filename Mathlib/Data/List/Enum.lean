@@ -35,21 +35,21 @@ theorem get_enum (l : List α) (i : Fin l.enum.length) :
   simp
 
 @[deprecated mk_add_mem_enumFrom_iff_getElem? (since := "2024-08-12")]
-theorem mk_add_mem_enumFrom_iff_get? {n i : Nat} {x : α} {l : List α} :
+theorem mk_add_mem_enumFrom_iff_get? {n i : ℕ} {x : α} {l : List α} :
     (n + i, x) ∈ enumFrom n l ↔ l.get? i = x := by
   simp [mem_iff_get?]
 
 @[deprecated mk_mem_enumFrom_iff_le_and_getElem?_sub (since := "2024-08-12")]
-theorem mk_mem_enumFrom_iff_le_and_get?_sub {n i : Nat} {x : α} {l : List α} :
+theorem mk_mem_enumFrom_iff_le_and_get?_sub {n i : ℕ} {x : α} {l : List α} :
     (i, x) ∈ enumFrom n l ↔ n ≤ i ∧ l.get? (i - n) = x := by
   simp [mk_mem_enumFrom_iff_le_and_getElem?_sub]
 
 @[deprecated mem_enum_iff_getElem? (since := "2024-08-12")]
-theorem mk_mem_enum_iff_get? {i : Nat} {x : α} {l : List α} : (i, x) ∈ enum l ↔ l.get? i = x := by
+theorem mk_mem_enum_iff_get? {i : ℕ} {x : α} {l : List α} : (i, x) ∈ enum l ↔ l.get? i = x := by
   simp [enum, mk_mem_enumFrom_iff_le_and_getElem?_sub]
 
 @[deprecated mk_mem_enum_iff_getElem? (since := "2024-08-12")]
-theorem mem_enum_iff_get? {x : Nat × α} {l : List α} : x ∈ enum l ↔ l.get? x.1 = x.2 := by
+theorem mem_enum_iff_get? {x : ℕ × α} {l : List α} : x ∈ enum l ↔ l.get? x.1 = x.2 := by
   simp [mem_enum_iff_getElem?]
 
 end List
