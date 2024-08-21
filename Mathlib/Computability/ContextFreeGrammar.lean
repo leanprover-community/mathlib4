@@ -363,48 +363,49 @@ lemma EmbeddedContextFreeGrammar.produces_filterMap {w₁ w₂ : List (Symbol T 
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
-  obtain ⟨n₀, hn₀⟩ : Good (Symbol.nonterminal r.input) := by apply hw₁; simp
-  rcases G.preimage_of_rules r rin n₀ (by
-    simpa [G.projectNT_inverse_embedNT hn₀, Option.map_some'] using
-      congr_arg (Option.map G.embedNT) hn₀.symm)
-    with ⟨r₀, hr₀, hrr₀⟩
-  constructor
-  · refine ⟨r₀, hr₀, ?_⟩
-    rw [ContextFreeRule.rewrites_iff]
-    use u.filterMap (Symbol.filterMap G.projectNT), v.filterMap (Symbol.filterMap G.projectNT)
-    have correct_inverse : Symbol.filterMap (T := T) G.projectNT ∘ Symbol.map G.embedNT =
-        Option.some := by
-      ext1 x
-      cases x
-      · rfl
-      rw [Function.comp_apply]
-      simp only [Symbol.filterMap, Symbol.map, Option.map_eq_some', Symbol.nonterminal.injEq]
-      rw [exists_eq_right]
-      apply G.projectNT_embedNT
+  cases (show Good (Symbol.nonterminal r.input) by apply hw₁; simp) with
+  | nonterminal hn =>
+    rcases G.preimage_of_rules r rin _ (by
+      simpa [G.projectNT_inverse_embedNT hn₀, Option.map_some'] using
+        congr_arg (Option.map G.embedNT) hn₀.symm)
+      with ⟨r₀, hr₀, hrr₀⟩
     constructor
-    · have middle :
-        List.filterMap (Symbol.filterMap (T := T) G.projectNT)
-          [Symbol.nonterminal (G.embedNT r₀.input)] =
-          [Symbol.nonterminal r₀.input] := by
-        simp [Symbol.filterMap, G.projectNT_embedNT]
-      simpa only [List.filterMap_append, ContextFreeRule.map, ← hrr₀, middle]
-        using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) bef
-    · simpa only [List.filterMap_append, ContextFreeRule.map,
-          List.filterMap_map, List.filterMap_some, ← hrr₀, correct_inverse]
-        using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) aft
-  · rw [aft, ← hrr₀]
-    simp only [GoodString, List.forall_mem_append] at hw₁ ⊢
-    refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
-    intro a ha
-    cases a
-    · constructor
-    dsimp only [ContextFreeRule.map] at ha
-    rw [List.mem_map] at ha
-    rcases ha with ⟨s, -, hs⟩
-    rw [← hs]
-    cases s with
-    | terminal _ => exact False.elim (Symbol.noConfusion hs)
-    | nonterminal s' => exact Good.nonterminal (G.projectNT_embedNT s')
+    · refine ⟨r₀, hr₀, ?_⟩
+      rw [ContextFreeRule.rewrites_iff]
+      use u.filterMap (Symbol.filterMap G.projectNT), v.filterMap (Symbol.filterMap G.projectNT)
+      have correct_inverse : Symbol.filterMap (T := T) G.projectNT ∘ Symbol.map G.embedNT =
+          Option.some := by
+        ext1 x
+        cases x
+        · rfl
+        rw [Function.comp_apply]
+        simp only [Symbol.filterMap, Symbol.map, Option.map_eq_some', Symbol.nonterminal.injEq]
+        rw [exists_eq_right]
+        apply G.projectNT_embedNT
+      constructor
+      · have middle :
+          List.filterMap (Symbol.filterMap (T := T) G.projectNT)
+            [Symbol.nonterminal (G.embedNT r₀.input)] =
+            [Symbol.nonterminal r₀.input] := by
+          simp [Symbol.filterMap, G.projectNT_embedNT]
+        simpa only [List.filterMap_append, ContextFreeRule.map, ← hrr₀, middle]
+          using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) bef
+      · simpa only [List.filterMap_append, ContextFreeRule.map,
+            List.filterMap_map, List.filterMap_some, ← hrr₀, correct_inverse]
+          using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) aft
+    · rw [aft, ← hrr₀]
+      simp only [GoodString, List.forall_mem_append] at hw₁ ⊢
+      refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
+      intro a ha
+      cases a
+      · constructor
+      dsimp only [ContextFreeRule.map] at ha
+      rw [List.mem_map] at ha
+      rcases ha with ⟨s, -, hs⟩
+      rw [← hs]
+      cases s with
+      | terminal _ => exact False.elim (Symbol.noConfusion hs)
+      | nonterminal s' => exact Good.nonterminal (G.projectNT_embedNT s')
 
 lemma EmbeddedContextFreeGrammar.derives_filterMap_aux {w₁ w₂ : List (Symbol T G.g.NT)}
     (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
