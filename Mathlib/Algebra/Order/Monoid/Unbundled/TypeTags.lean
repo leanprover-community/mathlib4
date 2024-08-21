@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Order.Bounded
+import Mathlib.Order.BoundedOrder
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 
