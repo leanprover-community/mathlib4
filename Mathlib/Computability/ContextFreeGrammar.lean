@@ -319,7 +319,7 @@ lemma projectNT_inverse_embedNT {n : G.g.NT} {n₀ : G.g₀.NT}
   | inr case_none => exact Option.noConfusion (hn ▸ case_none)
 
 /-- Production by `G.g₀` can be mirrored by production by `G.g`. -/
-lemma EmbeddedContextFreeGrammar.produces_map {w₁ w₂ : List (Symbol T G.g₀.NT)}
+lemma produces_map {w₁ w₂ : List (Symbol T G.g₀.NT)}
     (hG : G.g₀.Produces w₁ w₂) :
     G.g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
   rcases hG with ⟨r, rin, hr⟩
@@ -332,7 +332,7 @@ lemma EmbeddedContextFreeGrammar.produces_map {w₁ w₂ : List (Symbol T G.g₀
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
 /-- Derivation by `G.g₀` can be mirrored by derivation by `G.g`. -/
-lemma EmbeddedContextFreeGrammar.derives_map {w₁ w₂ : List (Symbol T G.g₀.NT)}
+lemma derives_map {w₁ w₂ : List (Symbol T G.g₀.NT)}
     (hG : G.g₀.Derives w₁ w₂) :
     G.g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
   induction hG with
@@ -341,21 +341,21 @@ lemma EmbeddedContextFreeGrammar.derives_map {w₁ w₂ : List (Symbol T G.g₀.
 
 /-- A `Symbol` is good iff it is one of those nonterminals that result from projecting or it is any
 terminal. -/
-inductive EmbeddedContextFreeGrammar.Good : Symbol T G.g.NT → Prop
+inductive Good : Symbol T G.g.NT → Prop
   | terminal (t : T) : Good (.terminal t)
   | nonterminal {n : G.g.NT} {n₀ : G.g₀.NT} (hn : G.projectNT n = n₀) : Good (.nonterminal n)
 
 /-- A string is good iff every `Symbol` in it is good. -/
-def EmbeddedContextFreeGrammar.GoodString (s : List (Symbol T G.g.NT)) : Prop :=
+def GoodString (s : List (Symbol T G.g.NT)) : Prop :=
   ∀ ⦃a : Symbol T G.g.NT⦄, a ∈ s → Good a
 
-lemma EmbeddedContextFreeGrammar.goodString_singleton {G : EmbeddedContextFreeGrammar T}
+lemma goodString_singleton {G : EmbeddedContextFreeGrammar T}
     {s : Symbol T G.g.NT} (hs : G.Good s) : G.GoodString [s] := by
   simpa [GoodString] using hs
 
 /-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain
 any nonterminals that `G.g₀` lacks. -/
-lemma EmbeddedContextFreeGrammar.produces_filterMap {w₁ w₂ : List (Symbol T G.g.NT)}
+lemma produces_filterMap {w₁ w₂ : List (Symbol T G.g.NT)}
     (hG : G.g.Produces w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Produces
       (w₁.filterMap (Symbol.filterMap G.projectNT))
@@ -408,7 +408,7 @@ lemma EmbeddedContextFreeGrammar.produces_filterMap {w₁ w₂ : List (Symbol T 
       | terminal _ => exact False.elim (Symbol.noConfusion hs)
       | nonterminal s' => exact Good.nonterminal (G.projectNT_embedNT s')
 
-lemma EmbeddedContextFreeGrammar.derives_filterMap_aux {w₁ w₂ : List (Symbol T G.g.NT)}
+lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T G.g.NT)}
     (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
@@ -422,11 +422,12 @@ lemma EmbeddedContextFreeGrammar.derives_filterMap_aux {w₁ w₂ : List (Symbol
 
 /-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
 any nonterminals that `G.g₀` lacks. -/
-lemma EmbeddedContextFreeGrammar.derives_filterMap {w₁ w₂ : List (Symbol T G.g.NT)}
+lemma derives_filterMap {w₁ w₂ : List (Symbol T G.g.NT)}
     (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) :=
   (derives_filterMap_aux hG hw₁).left
 
+end EmbeddedContextFreeGrammar
 end embed_project
