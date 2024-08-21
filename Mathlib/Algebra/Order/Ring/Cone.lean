@@ -164,13 +164,3 @@ designating a positive cone in an existing `Ring`. -/
   __ := OrderedRing.toStrictOrderedRing R
   le_total a b := by simpa using mem_or_neg_mem C (b - a)
   decidableLE a b := dec _
-
-/- TODO : relax typeclass (should really be in SumOfSquares file)-/
-def sumSqIn' (T : Type*) [Ring T] : Subsemiring T where
-  __ := sumSqIn T
-  mul_mem' := sorry
-  one_mem' := by simp; apply mem_sumSqIn_of_isSquare; simp
-
-def SemirealRing.sumSqIn [IsSemireal R] : PositiveCone R where
-  __ := sumSqIn' R
-  eq_zero_of_mem_of_neg_mem' := sorry
