@@ -51,7 +51,7 @@ lemma cfcHom_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Inte
 open ContinuousMap in
 /-- The continuous functional calculus commutes with integration. -/
 lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(↑(spectrum 𝕜 a), 𝕜)]
+    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
     (hf : Continuous (fun x => (spectrum 𝕜 a).restrict (f x)).uncurry)
     (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_integrable : Integrable bound μ) (ha : p a := by cfc_tac) :
@@ -76,22 +76,17 @@ lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜
     exact hbound x z.1 z.2
   have hcont₂ : ContinuousOn (fun r => ∫ x, f x r ∂μ) (spectrum 𝕜 a) := by
     have h₁ : (spectrum 𝕜 a).restrict (fun r => ∫ x, f x r ∂μ) = fun r => (∫ x, fc x ∂μ) r := by
-      ext r
-      rw [integral_apply fc_integrable]
-      simp [fc]
+      ext
+      simp only [integral_apply fc_integrable, Set.restrict_apply, coe_mk, fc]
     rw [continuousOn_iff_continuous_restrict, h₁]
-    exact ContinuousMap.continuous (∫ (x : X), fc x ∂μ)
+    exact ContinuousMap.continuous _
   have hrw : (fun x => cfc (f x) a) =ᵐ[μ] fun x => cfcHom ha (fc x) := by
-    apply Filter.Eventually.of_forall
-    intro x
+    refine Filter.Eventually.of_forall fun x => ?_
     simp only
     rw [cfc_apply ..]
-  rw [integral_congr_ae hrw, cfc_apply ..]
-  rw [cfcHom_integral _ _ fc_integrable]
+  rw [integral_congr_ae hrw, cfc_apply .., cfcHom_integral _ _ fc_integrable]
   congr 1
-  ext t
-  simp only [coe_mk, restrict_apply]
-  rw [integral_apply fc_integrable]
-  simp [fc]
+  ext
+  simp only [coe_mk, restrict_apply, integral_apply fc_integrable, Set.restrict_apply, coe_mk, fc]
 
 end unital
