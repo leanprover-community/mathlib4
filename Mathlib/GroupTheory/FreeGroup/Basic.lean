@@ -312,8 +312,8 @@ theorem inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
 open List -- for <+ notation
 
 @[to_additive]
-theorem Step.sublist (H : Red.Step L₁ L₂) : Sublist L₂ L₁ := by
-  cases H; simp; constructor; constructor; rfl
+theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
+  cases H; simp
 
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/
 @[to_additive "If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of
