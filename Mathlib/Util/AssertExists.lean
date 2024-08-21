@@ -42,7 +42,7 @@ environment.  In particular, it is silent if everything is imported, making it u
 -/
 elab "#check_assertions" tk:("!")?: command => do
   let env ← getEnv
-  let entries := getSortedAssertExists env
+  let entries := env.getSortedAssertExists
   if entries.isEmpty && tk.isNone then logInfo "No assertions made." else
   let allMods := env.allImportedModuleNames
   let mut msgs := #[m!""]

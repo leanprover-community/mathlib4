@@ -48,7 +48,7 @@ def addDeclEntry {m : Type → Type} [MonadEnv m] (isDecl : Bool) (declName mod 
 
 /-- `getSortedAssertExists env` returns the array of `AssertExists`, placing first all declarations,
 in alphabetical order, and then all modules, also in alphabetical order. -/
-def getSortedAssertExists (env : Environment) : Array AssertExists :=
+def _root_.Lean.Environment.getSortedAssertExists (env : Environment) : Array AssertExists :=
   assertExistsExt.getState env |>.toArray.qsort fun d e => (e.isDecl < d.isDecl) ||
     (e.isDecl == d.isDecl && (d.givenName.toString < e.givenName.toString))
 
