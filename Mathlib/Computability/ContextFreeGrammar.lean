@@ -353,8 +353,8 @@ lemma goodString_singleton {G : EmbeddedContextFreeGrammar T}
     {s : Symbol T G.g.NT} (hs : G.Good s) : G.GoodString [s] := by
   simpa [GoodString] using hs
 
-/-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain
-any nonterminals that `G.g₀` lacks. -/
+/-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain any
+nonterminals that `G.g₀` lacks. -/
 lemma produces_filterMap {w₁ w₂ : List (Symbol T G.g.NT)}
     (hG : G.g.Produces w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Produces
