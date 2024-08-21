@@ -42,10 +42,10 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
         simpa only [eq_comm] using h
       · have hcos1 : |cos x| < 1 := by
           rw [abs_cos_eq_sqrt_one_sub_sin_sq, sqrt_lt' one_pos]
-          simp [sq_pos_of_ne_zero _ hsinx]
+          simp [sq_pos_of_ne_zero hsinx]
         have hsin1 : |sin x| < 1 := by
           rw [abs_sin_eq_sqrt_one_sub_cos_sq, sqrt_lt' one_pos]
-          simp [sq_pos_of_ne_zero _ hcosx]
+          simp [sq_pos_of_ne_zero hcosx]
         match n with
         | 1 =>
           rw [pow_one, pow_one, sub_eq_iff_eq_add] at h
@@ -54,7 +54,7 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
               using cos_sq_add_sin_sq x
           simp [hsinx, hcosx] at this
         | 2 =>
-          rw [← cos_sq_add_sin_sq x, sub_eq_add_neg, add_right_inj, neg_eq_self_iff] at h
+          rw [← cos_sq_add_sin_sq x, sub_eq_add_neg, add_right_inj, neg_eq_self ℝ] at h
           exact absurd (pow_eq_zero h) hsinx
         | (n + 1 + 2) =>
           set m := n + 1
