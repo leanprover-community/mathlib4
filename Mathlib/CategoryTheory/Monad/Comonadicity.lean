@@ -63,7 +63,7 @@ instance main_pair_coreflexive (A : adj.toComonad.Coalgebra) :
   · rw [adj.right_triangle_components]
     rfl
 
-/-- The "main pair" for a coalgebra `(A, α)` is the pair of morphisms `(F α, ε_FA)`. It is always a
+/-- The "main pair" for a coalgebra `(A, α)` is the pair of morphisms `(G α, η_GA)`. It is always a
 `G`-cosplit pair, and will be used to construct the right adjoint to the comparison functor and show
 it is an equivalence.
 -/
@@ -229,7 +229,6 @@ def createsFSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g :
 
 section BeckComonadicity
 
--- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCosplitPair f g], HasEqualizer f g]
 /-- Dual to `Monad.HasCoequalizerOfIsSplitPair`. -/
 class HasEqualizerOfIsCosplitPair (F : C ⥤ D) : Prop where
   /-- If `f, g` is an `F`-cosplit pair, then they have an equalizer. -/
@@ -240,7 +239,6 @@ instance [HasEqualizerOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
       (adj.unit.app (G.obj A.A)) :=
   fun _ => HasEqualizerOfIsCosplitPair.out F _ _
 
--- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCosplitPair f g], PreservesLimit (parallelPair f g) F]
 /-- Dual to `Monad.PreservesColimitOfIsSplitPair`. -/
 class PreservesLimitOfIsCosplitPair (F : C ⥤ D) where
   /-- If `f, g` is an `F`-cosplit pair, then `F` preserves limits of `parallelPair f g`. -/
@@ -254,7 +252,6 @@ instance [PreservesLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
       (NatTrans.app adj.unit (G.obj A.A))) F :=
   fun _ => PreservesLimitOfIsCosplitPair.out _ _
 
--- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCosplitPair f g], ReflectsLimit (parallelPair f g) F] :
 /-- Dual to `Monad.ReflectsColimitOfIsSplitPair`. -/
 class ReflectsLimitOfIsCosplitPair (F : C ⥤ D) where
   /-- If `f, g` is an `F`-cosplit pair, then `F` reflects limits for `parallelPair f g`. -/
@@ -299,7 +296,6 @@ def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair
       infer_instance
     exact (comparisonAdjunction adj).toEquivalence.symm.isEquivalence_inverse
 
--- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCosplitPair f g], CreatesLimit (parallelPair f g) F] :
 /-- Dual to `Monad.CreatesColimitOfIsSplitPair`. -/
 class CreatesLimitOfIsCosplitPair (F : C ⥤ D) where
   /-- If `f, g` is an `F`-cosplit pair, then `F` creates limits of `parallelPair f g`. -/
@@ -345,7 +341,6 @@ section CoreflexiveComonadicity
 
 variable [HasCoreflexiveEqualizers C] [F.ReflectsIsomorphisms]
 
--- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCoreflexivePair f g], PreservesLimit (parallelPair f g) F] :
 /-- Dual to `Monad.PreservesColimitOfIsReflexivePair`. -/
 class PreservesLimitOfIsCoreflexivePair (F : C ⥤ D) where
   /-- `f, g` is a coreflexive pair, then `F` preserves limits of `parallelPair f g`. -/
