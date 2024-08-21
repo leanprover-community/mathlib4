@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Algebra.Group.ZeroOne
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.SymmDiff
 import Mathlib.Tactic.Tauto

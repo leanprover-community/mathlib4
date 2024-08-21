@@ -347,8 +347,8 @@ theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set �
       (s (k + 1)).indicator (1 : Ω → ℝ) ω) atTop atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
-  have := tendsto_sum_indicator_atTop_iff (eventually_of_forall fun ω n => ?_) (adapted_process hs)
-    (integrable_process μ hs) (eventually_of_forall <| process_difference_le s)
+  have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_) (adapted_process hs)
+    (integrable_process μ hs) (Eventually.of_forall <| process_difference_le s)
   swap
   · rw [process, process, ← sub_nonneg, Finset.sum_apply, Finset.sum_apply,
       Finset.sum_range_succ_sub_sum]

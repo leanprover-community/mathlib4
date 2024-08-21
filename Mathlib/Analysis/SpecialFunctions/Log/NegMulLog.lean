@@ -23,6 +23,7 @@ open scoped Topology
 
 namespace Real
 
+@[fun_prop]
 lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   rw [continuous_iff_continuousAt]
   intro x
@@ -38,6 +39,10 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   · simpa only [rpow_one] using tendsto_log_mul_rpow_nhds_zero zero_lt_one
   · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
     simp
+
+@[fun_prop]
+lemma Continuous.mul_log {α : Type*} [TopologicalSpace α] {f : α → ℝ} (hf : Continuous f) :
+    Continuous fun a ↦ f a * log (f a) := continuous_mul_log.comp hf
 
 lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
   differentiable_id'.differentiableOn.mul differentiableOn_log
@@ -131,7 +136,7 @@ lemma negMulLog_mul (x y : ℝ) : negMulLog (x * y) = y * negMulLog x + x * negM
   rw [log_mul hx hy]
   ring
 
-lemma continuous_negMulLog : Continuous negMulLog := by
+@[fun_prop] lemma continuous_negMulLog : Continuous negMulLog := by
   simpa only [negMulLog_eq_neg] using continuous_mul_log.neg
 
 lemma differentiableOn_negMulLog : DifferentiableOn ℝ negMulLog {0}ᶜ := by
@@ -150,6 +155,8 @@ lemma differentiableAt_negMulLog_iff {x : ℝ} : DifferentiableAt ℝ negMulLog 
     apply DifferentiableWithinAt.differentiableAt (s := {0}ᶜ)
     <;> simp_all only [ne_eq, Set.mem_compl_iff, Set.mem_singleton_iff, not_false_eq_true,
         compl_singleton_mem_nhds_iff]
+
+@[fun_prop] alias ⟨_, differentiableAt_negMulLog⟩ := differentiableAt_negMulLog_iff
 
 lemma deriv_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv negMulLog x = - log x - 1 := by
   rw [negMulLog_eq_neg, deriv.neg, deriv_mul_log hx]

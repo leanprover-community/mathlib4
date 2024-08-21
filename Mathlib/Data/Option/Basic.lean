@@ -355,7 +355,6 @@ theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : �
 
 @[simp]
 lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by
-  funext
   cases a <;> simp
 
 @[simp]
@@ -365,7 +364,6 @@ lemma bnot_comp_isSome : (! ·) ∘ @Option.isSome α = Option.isNone := by
 
 @[simp]
 lemma bnot_isNone (a : Option α) : (! a.isNone) = a.isSome := by
-  funext
   cases a <;> simp
 
 @[simp]

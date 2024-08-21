@@ -208,7 +208,7 @@ theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s}
     AEMeasurable (codRestrict f s hfs) μ := by
   nontriviality α; inhabit α
   obtain ⟨g, g_meas, hg, fg⟩ : ∃ g : α → β, Measurable g ∧ range g ⊆ s ∧ f =ᵐ[μ] g :=
-    h.exists_ae_eq_range_subset (eventually_of_forall hfs) ⟨_, hfs default⟩
+    h.exists_ae_eq_range_subset (Eventually.of_forall hfs) ⟨_, hfs default⟩
   refine ⟨codRestrict g s fun x => hg (mem_range_self _), Measurable.subtype_mk g_meas, ?_⟩
   filter_upwards [fg] with x hx
   simpa [Subtype.ext_iff]

@@ -22,3 +22,5 @@ def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := 
       let t ← elabTerm patt expectedType?
       synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
       instantiateMVars t
+
+end Lean.Elab.Term

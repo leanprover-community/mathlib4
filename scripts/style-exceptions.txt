@@ -55,6 +55,7 @@ Mathlib/SetTheory/Game/PGame.lean : line 1 : ERR_NUM_LIN : 1900 file contains 17
 Mathlib/SetTheory/Ordinal/Arithmetic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2269 lines, try to split it up
 Mathlib/SetTheory/ZFC/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1549 lines, try to split it up
 Mathlib/Tactic/CC/Addition.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2100 lines, try to split it up
+Mathlib/Tactic/ToAdditive/Frontend.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1502 lines, try to split it up
 Mathlib/Topology/Algebra/Group/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1932 lines, try to split it up
 Mathlib/Topology/Algebra/Module/Basic.lean : line 1 : ERR_NUM_LIN : 2600 file contains 2405 lines, try to split it up
 Mathlib/Topology/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1731 lines, try to split it up

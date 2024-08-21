@@ -76,7 +76,7 @@ theorem stoppedValue_ae_eq_restrict_eq (h : Martingale f ℱ μ) (hτ : IsStoppi
   refine Filter.EventuallyEq.trans ?_
     (condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const h hτ hτ_le i).symm
   rw [Filter.EventuallyEq, ae_restrict_iff' (ℱ.le _ _ (hτ.measurableSet_eq i))]
-  refine Filter.eventually_of_forall fun x hx => ?_
+  refine Filter.Eventually.of_forall fun x hx => ?_
   rw [Set.mem_setOf_eq] at hx
   simp_rw [stoppedValue, hx]
 
