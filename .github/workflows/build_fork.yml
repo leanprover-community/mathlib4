@@ -167,7 +167,9 @@ jobs:
         id: get
         run: |
           lake exe cache clean
-          lake exe cache get
+          # Fail quickly if the cache is completely cold, by checking for Batteries.WF
+          lake exe cache get Batteries.WF
+          ! test -e ./.lake/packages/batteries/.lake/build/lib/Batteries/WF.olean || lake exe cache get
 
       - name: build mathlib
         id: build
