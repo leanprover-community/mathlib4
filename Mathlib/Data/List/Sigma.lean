@@ -282,6 +282,16 @@ theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodu
     (p : l₁ ~ l₂) : lookupAll a l₁ = lookupAll a l₂ := by
   simp [lookupAll_eq_dlookup, nd₁, nd₂, perm_dlookup a nd₁ nd₂ p]
 
+theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
+    (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
+  induction l₁ with
+  | nil => rfl
+  | cons x l₁ IH =>
+    rw [cons_append]
+    obtain rfl | hb := Decidable.eq_or_ne a x.1
+    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.or]
+    · rw [dlookup_cons_ne _ _ hb, dlookup_cons_ne _ _ hb, IH]
+
 /-! ### `kreplace` -/
 
 
