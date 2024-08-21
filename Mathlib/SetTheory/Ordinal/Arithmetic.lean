@@ -2244,6 +2244,13 @@ theorem toNat_one : toNat 1 = 1 := by
 theorem toNat_omega : toNat ω = 0 :=
   toNat_of_omega_le le_rfl
 
+theorem toNat_le_self (o : Ordinal) : toNat o ≤ o := by
+  obtain ho | ho := lt_or_le o ω
+  · obtain ⟨n, rfl⟩ := lt_omega.1 ho
+    rw [toNat_natCast]
+  · rw [toNat_of_omega_le ho]
+    exact Ordinal.zero_le o
+
 theorem toNat_mul (a b : Ordinal) : toNat (a * b) = toNat a * toNat b := by
   obtain rfl | ha := Ordinal.eq_zero_or_pos a; simp
   obtain rfl | hb := Ordinal.eq_zero_or_pos b; simp
