@@ -43,7 +43,7 @@ if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+
       }
       print mathlib
     }
-    ' | column -t
+    '
   #printf '.lake size\nmaster: %s\nthis PR: %s' "${masterOleans}" "${newOleans}"
 fi
 
