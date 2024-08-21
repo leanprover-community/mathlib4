@@ -96,7 +96,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     intro m
     induction m with
     | zero =>
-      simp only [Nat.zero_eq, CharP.cast_eq_zero, neg_zero, zero_sub, zpow_zero, one_mul] at *
+      simp only [CharP.cast_eq_zero, neg_zero, zero_sub, zpow_zero, one_mul] at *
       specialize hx x₀ (le_of_max_le_left hx₀_ge)
       simp only [hx₀, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine fun z _ hz => hx _ ?_
@@ -675,8 +675,8 @@ lemma GrowsPolynomially.of_isTheta {f g : ℝ → ℝ} (hg : GrowsPolynomially g
   have h_ub_pos : 0 < c₂ * c₄ * c₁⁻¹ := by positivity
   refine ⟨c₁ * c₂⁻¹ * c₃, h_lb_pos, ?_⟩
   refine ⟨c₂ * c₄ * c₁⁻¹, h_ub_pos, ?_⟩
-  have c₂_cancel : c₂⁻¹ * c₂ = 1 := inv_mul_cancel (by positivity)
-  have c₁_cancel : c₁⁻¹ * c₁ = 1 := inv_mul_cancel (by positivity)
+  have c₂_cancel : c₂⁻¹ * c₂ = 1 := inv_mul_cancel₀ (by positivity)
+  have c₁_cancel : c₁⁻¹ * c₁ = 1 := inv_mul_cancel₀ (by positivity)
   filter_upwards [(tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf',
                   (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf_lb,
                   (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf_ub,

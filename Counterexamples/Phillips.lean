@@ -132,7 +132,7 @@ def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α)
       intro f
       rw [mul_comm]
       apply norm_integral_le_of_norm_le_const
-      apply Filter.eventually_of_forall
+      apply Filter.Eventually.of_forall
       intro x
       exact BoundedContinuousFunction.norm_coe_le_norm f.1 x)
 
@@ -293,11 +293,13 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
-    induction' n with n IH
-    · simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
-        Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
+    induction n with
+    | zero =>
+      simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
+        Function.iterate_zero, Subtype.coe_mk]
       rfl
-    · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
+    | succ n IH =>
+      have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]
           using (diff_union_of_subset subset_union_left).symm
       rw [this, f.additive]
@@ -432,7 +434,7 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
     have : Integrable (fun _ => (1 : ℝ)) μ := integrable_const (1 : ℝ)
     apply
       this.mono' (Measurable.indicator (@measurable_const _ _ _ _ (1 : ℝ)) hs).aestronglyMeasurable
-    apply Filter.eventually_of_forall
+    apply Filter.Eventually.of_forall
     exact norm_indicator_le_one _
 
 theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]

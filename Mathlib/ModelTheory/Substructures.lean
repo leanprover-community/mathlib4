@@ -3,37 +3,41 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
+import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Closure
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Encoding
 
 /-!
 # First-Order Substructures
+
 This file defines substructures of first-order structures in a similar manner to the various
 substructures appearing in the algebra library.
 
 ## Main Definitions
-* A `FirstOrder.Language.Substructure` is defined so that `L.Substructure M` is the type of all
-substructures of the `L`-structure `M`.
-* `FirstOrder.Language.Substructure.closure` is defined so that if `s : Set M`, `closure L s` is
-the least substructure of `M` containing `s`.
-* `FirstOrder.Language.Substructure.comap` is defined so that `s.comap f` is the preimage of the
-substructure `s` under the homomorphism `f`, as a substructure.
-* `FirstOrder.Language.Substructure.map` is defined so that `s.map f` is the image of the
-substructure `s` under the homomorphism `f`, as a substructure.
-* `FirstOrder.Language.Hom.range` is defined so that `f.range` is the range of the
-homomorphism `f`, as a substructure.
-* `FirstOrder.Language.Hom.domRestrict` and `FirstOrder.Language.Hom.codRestrict` restrict
-the domain and codomain respectively of first-order homomorphisms to substructures.
-* `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`
-restrict the domain and codomain respectively of first-order embeddings to substructures.
-* `FirstOrder.Language.Substructure.inclusion` is the inclusion embedding between substructures.
+
+- A `FirstOrder.Language.Substructure` is defined so that `L.Substructure M` is the type of all
+    substructures of the `L`-structure `M`.
+- `FirstOrder.Language.Substructure.closure` is defined so that if `s : Set M`, `closure L s` is
+    the least substructure of `M` containing `s`.
+- `FirstOrder.Language.Substructure.comap` is defined so that `s.comap f` is the preimage of the
+    substructure `s` under the homomorphism `f`, as a substructure.
+- `FirstOrder.Language.Substructure.map` is defined so that `s.map f` is the image of the
+    substructure `s` under the homomorphism `f`, as a substructure.
+- `FirstOrder.Language.Hom.range` is defined so that `f.range` is the range of the
+    homomorphism `f`, as a substructure.
+- `FirstOrder.Language.Hom.domRestrict` and `FirstOrder.Language.Hom.codRestrict` restrict
+    the domain and codomain respectively of first-order homomorphisms to substructures.
+- `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`
+    restrict the domain and codomain respectively of first-order embeddings to substructures.
+- `FirstOrder.Language.Substructure.inclusion` is the inclusion embedding between substructures.
+- `FirstOrder.Language.Substructure.PartialEquiv` is defined so that `PartialEquiv L M N` is
+  the type of equivalences between substructures of `M` and `N`.
 
 ## Main Results
-* `L.Substructure M` forms a `CompleteLattice`.
 
+- `L.Substructure M` forms a `CompleteLattice`.
 -/
-
 
 universe u v w
 
@@ -338,7 +342,7 @@ theorem closure_univ : closure L (univ : Set M) = ⊤ :=
 theorem closure_union (s t : Set M) : closure L (s ∪ t) = closure L s ⊔ closure L t :=
   (Substructure.gi L M).gc.l_sup
 
-theorem closure_unionᵢ {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ i, closure L (s i) :=
+theorem closure_iUnion {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ i, closure L (s i) :=
   (Substructure.gi L M).gc.l_iSup
 
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
@@ -346,9 +350,31 @@ instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   haveI : Small.{u} (∅ : Set M) := small_subsingleton _
   exact Substructure.small_closure
 
+theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
+    ⨆ i, S i = closure L (⋃ i, (S i : Set M)) := by simp_rw [closure_iUnion, closure_eq]
+
+-- This proof uses the fact that `Substructure.closure` is finitary.
+theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Substructure M}
+    (hS : Directed (· ≤ ·) S) {x : M} :
+    x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
+  suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
+    simpa only [closure_iUnion, closure_eq (S _)] using this
+  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) (fun f v hC ↦ ?_)
+  simp_rw [Set.mem_setOf] at *
+  have ⟨i, hi⟩ := hS.finite_le (fun i ↦ Classical.choose (hC i))
+  refine ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
+
+-- This proof uses the fact that `Substructure.closure` is finitary.
+theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
+    (hS : DirectedOn (· ≤ ·) S) {x : M} :
+    x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
+  haveI : Nonempty S := Sne.to_subtype
+  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
+
 /-!
 ### `comap` and `map`
--/
+ -/
 
 
 /-- The preimage of a substructure along a homomorphism is a substructure. -/
@@ -434,7 +460,7 @@ theorem map_sup (S T : L.Substructure M) (f : M →[L] N) : (S ⊔ T).map f = S.
   (gc_map_comap f).l_sup
 
 theorem map_iSup {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure M) :
-    (iSup s).map f = ⨆ i, (s i).map f :=
+    (⨆ i, s i).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 
 theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
@@ -442,7 +468,7 @@ theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
   (gc_map_comap f).u_inf
 
 theorem comap_iInf {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure N) :
-    (iInf s).comap f = ⨅ i, (s i).comap f :=
+    (⨅ i, s i).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
 @[simp]
@@ -468,11 +494,14 @@ theorem closure_image (f : M →[L] N) : closure L (f '' s) = map f (closure L s
 
 section GaloisCoinsertion
 
-variable {ι : Type*} {f : M →[L] N} (hf : Function.Injective f)
+variable {ι : Type*} {f : M →[L] N}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
-def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
+def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
+
+variable (hf : Function.Injective f)
+include hf
 
 theorem comap_map_eq_of_injective (S : L.Substructure M) : (S.map f).comap f = S :=
   (gciMapComap hf).u_l_eq _
@@ -487,14 +516,14 @@ theorem comap_inf_map_of_injective (S T : L.Substructure M) : (S.map f ⊓ T.map
   (gciMapComap hf).u_inf_l _ _
 
 theorem comap_iInf_map_of_injective (S : ι → L.Substructure M) :
-    (⨅ i, (S i).map f).comap f = iInf S :=
+    (⨅ i, (S i).map f).comap f = ⨅ i, S i :=
   (gciMapComap hf).u_iInf_l _
 
 theorem comap_sup_map_of_injective (S T : L.Substructure M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
   (gciMapComap hf).u_sup_l _ _
 
 theorem comap_iSup_map_of_injective (S : ι → L.Substructure M) :
-    (⨆ i, (S i).map f).comap f = iSup S :=
+    (⨆ i, (S i).map f).comap f = ⨆ i, S i :=
   (gciMapComap hf).u_iSup_l _
 
 theorem map_le_map_iff_of_injective {S T : L.Substructure M} : S.map f ≤ T.map f ↔ S ≤ T :=
@@ -508,6 +537,7 @@ end GaloisCoinsertion
 section GaloisInsertion
 
 variable {ι : Type*} {f : M →[L] N} (hf : Function.Surjective f)
+include hf
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=
@@ -529,7 +559,7 @@ theorem map_inf_comap_of_surjective (S T : L.Substructure N) :
   (giMapComap hf).l_inf_u _ _
 
 theorem map_iInf_comap_of_surjective (S : ι → L.Substructure N) :
-    (⨅ i, (S i).comap f).map f = iInf S :=
+    (⨅ i, (S i).comap f).map f = ⨅ i, S i :=
   (giMapComap hf).l_iInf_u _
 
 theorem map_sup_comap_of_surjective (S T : L.Substructure N) :
@@ -537,7 +567,7 @@ theorem map_sup_comap_of_surjective (S T : L.Substructure N) :
   (giMapComap hf).l_sup_u _ _
 
 theorem map_iSup_comap_of_surjective (S : ι → L.Substructure N) :
-    (⨆ i, (S i).comap f).map f = iSup S :=
+    (⨆ i, (S i).comap f).map f = ⨆ i, S i :=
   (giMapComap hf).l_iSup_u _
 
 theorem comap_le_comap_iff_of_surjective {S T : L.Substructure N} : S.comap f ≤ T.comap f ↔ S ≤ T :=
@@ -597,15 +627,15 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}
 
 end Substructure
 
-namespace LHom
-
-
 open Substructure
 
-variable {L' : Language} [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
+namespace LHom
+
+variable {L' : Language} [L'.Structure M]
 
 /-- Reduces the language of a substructure along a language hom. -/
-def substructureReduct : L'.Substructure M ↪o L.Substructure M where
+def substructureReduct (φ : L →ᴸ L') [φ.IsExpansionOn M] :
+    L'.Substructure M ↪o L.Substructure M where
   toFun S :=
     { carrier := S
       fun_mem := fun {n} f x hx => by
@@ -616,6 +646,8 @@ def substructureReduct : L'.Substructure M ↪o L.Substructure M where
     simp only [SetLike.coe_set_eq, Substructure.mk.injEq] at h
     exact h
   map_rel_iff' {S T} := Iff.rfl
+
+variable (φ : L →ᴸ L') [φ.IsExpansionOn M]
 
 @[simp]
 theorem mem_substructureReduct {x : M} {S : L'.Substructure M} :
@@ -674,8 +706,6 @@ theorem closure_withConstants_eq :
 end Substructure
 
 namespace Hom
-
-open Substructure
 
 /-- The restriction of a first-order hom to a substructure `s ⊆ M` gives a hom `s → N`. -/
 @[simps!]
@@ -764,8 +794,6 @@ theorem eq_of_eqOn_dense (hs : closure L s = ⊤) {f g : M →[L] N} (h : s.EqOn
 end Hom
 
 namespace Embedding
-
-open Substructure
 
 /-- The restriction of a first-order embedding to a substructure `s ⊆ M` gives an embedding `s → N`.
 -/
@@ -884,6 +912,10 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   refine ⟨?_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy
+
+@[simp]
+lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
+    T.subtype.comp (inclusion h) = S.subtype := rfl
 
 end Substructure
 
