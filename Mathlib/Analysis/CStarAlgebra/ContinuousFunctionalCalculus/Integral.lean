@@ -30,10 +30,10 @@ open MeasureTheory
 
 section unital
 
-variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜] [MeasurableSpace X]
-  [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
-  [NormedAlgebra ℝ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus 𝕜 p] {μ : MeasureTheory.Measure X}
+variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
+  [MeasurableSpace X] {μ : Measure X}
+  [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A] [NormedAlgebra ℝ A] [CompleteSpace A]
+  [ContinuousFunctionalCalculus 𝕜 p]
 
 variable {b : A}
 
@@ -51,12 +51,14 @@ lemma cfcHom_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Inte
   exact cfcCLM_integral a (fun x ↦ f x) hf₁ ha
 
 open ContinuousMap in
-lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] {μ : Measure X} (f : X → 𝕜 → 𝕜)
+/-- The continuous functional calculus commutes with integration. -/
+lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(↑(spectrum 𝕜 a), 𝕜)]
     (hf : Continuous (fun x => (spectrum 𝕜 a).restrict (f x)).uncurry)
     (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
-    (hbound_integrable : Integrable bound μ) (ha : p a) :
+    (hbound_integrable : Integrable bound μ) (ha : p a := by cfc_tac) :
     cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
+  have ha : p a := ha   -- Needed due to weird autoparam bug
   have hcont : ∀ x, ContinuousOn (f x) (spectrum 𝕜 a) := by
     intro x
     rw [continuousOn_iff_continuous_restrict]

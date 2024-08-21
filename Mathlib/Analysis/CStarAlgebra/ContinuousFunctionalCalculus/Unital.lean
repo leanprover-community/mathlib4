@@ -262,6 +262,7 @@ end cfcHom
 
 section cfcCLM
 
+/-- `cfcHom` bundled as a continuous linear map. -/
 noncomputable def cfcCLM {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
   { cfcHom ha with
     map_smul' := fun c f => by
