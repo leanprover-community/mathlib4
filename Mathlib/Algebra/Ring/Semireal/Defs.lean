@@ -40,6 +40,8 @@ class IsSemireal [Add R] [Mul R] [One R] [Zero R]: Prop where
 @[deprecated (since := "2024-08-09")] alias isSemireal.neg_one_not_SumSq :=
   IsSemireal.not_isSumSq_neg_one
 
+/-- Nontrivial linearly ordered semirings
+in which a ≤ b → ∃ c, a + c = b holds are semireal. -/
 instance [LinearOrderedSemiring R] [ExistsAddOfLE R] : IsSemireal R where
   not_isSumSq_neg_one ex :=
   Exists.elim ex (fun _ hyp ↦ zero_ne_one' R
