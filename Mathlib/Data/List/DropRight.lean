@@ -155,7 +155,7 @@ variable (p) (l)
 
 theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
-  exact fun h => dropWhile_nthLe_zero_not p l h
+  exact fun h => dropWhile_get_zero_not p l h
 
 theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)

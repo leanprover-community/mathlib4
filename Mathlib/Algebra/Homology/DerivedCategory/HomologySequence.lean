@@ -54,15 +54,14 @@ variable {C}
 
 namespace HomologySequence
 
-variable (T : Triangle (DerivedCategory C)) (hT : T ∈ distTriang _)
-  (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
-include hT
-
 /-- The connecting homomorphism on the homology sequence attached to a distinguished
 triangle in the derived category. -/
-noncomputable def δ : (homologyFunctor C n₀).obj T.obj₃ ⟶ (homologyFunctor C n₁).obj T.obj₁ :=
+noncomputable def δ (T : Triangle (DerivedCategory C))
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    (homologyFunctor C n₀).obj T.obj₃ ⟶ (homologyFunctor C n₁).obj T.obj₁ :=
   (homologyFunctor C 0).shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
 
+variable (T : Triangle (DerivedCategory C)) (hT : T ∈ distTriang _) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 include hT
 
 @[reassoc (attr := simp)]

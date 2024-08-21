@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Linter.Util
 import Batteries.Lean.HashSet
@@ -29,7 +30,7 @@ For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a me
 There is a list of silent `#`-command that are allowed.
 -/
 register_option linter.hashCommand : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `#`-command linter"
 }
 
