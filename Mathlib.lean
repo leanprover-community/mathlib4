@@ -4050,8 +4050,11 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Monoidal
+import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
