@@ -591,6 +591,18 @@ protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
 
+/-- Coercion `α → WithBot α` as an `OrderEmbedding`. -/
+@[simps (config := .asFn)]
+protected def withBotCoe : α ↪o WithBot α where
+  toFun := .some
+  inj' := Option.some_injective _
+  map_rel_iff' := WithBot.coe_le_coe
+
+/-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
+@[simps (config := .asFn)]
+protected def withTopCoe : α ↪o WithTop α :=
+  { (OrderEmbedding.withBotCoe (α := αᵒᵈ)).dual with toFun := .some }
+
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
 -/
