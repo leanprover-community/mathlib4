@@ -65,6 +65,8 @@ instance Walk.instInhabited (v : V) : Inhabited (G.Walk v v) := ⟨Walk.nil⟩
 def Adj.toWalk {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : G.Walk u v :=
   Walk.cons h Walk.nil
 
+alias _root_.Digraph.Adj.toWalk := Adj.toWalk
+
 namespace Walk
 
 variable {G}

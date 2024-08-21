@@ -651,6 +651,8 @@ protected theorem Walk.reachable {G : SimpleGraph V} {u v : V} (p : G.Walk u v) 
 protected theorem Adj.reachable {u v : V} (h : G.Adj u v) : G.Reachable u v :=
   h.toWalk.reachable
 
+alias _root_.Digraph.Adj.reachable := Adj.reachable
+
 @[refl]
 protected theorem Reachable.refl (u : V) : G.Reachable u u := ⟨Walk.nil⟩
 

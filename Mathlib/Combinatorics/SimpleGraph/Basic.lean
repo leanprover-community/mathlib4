@@ -3,9 +3,9 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
+import Mathlib.Combinatorics.Digraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Rel
-import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2
 
 /-!
@@ -15,7 +15,7 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
 
 ## Main definitions
 
-* `SimpleGraph` is a structure for symmetric, irreflexive relations
+* `SimpleGraph` is a structure for symmetric, irreflexive relations, extending `Digraph`
 
 * `SimpleGraph.neighborSet` is the `Set` of vertices adjacent to a given vertex
 
@@ -88,9 +88,7 @@ There is exactly one edge for every pair of adjacent vertices;
 see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
 @[ext, aesop safe constructors (rule_sets := [SimpleGraph])]
-structure SimpleGraph (V : Type u) where
-  /-- The adjacency relation of a simple graph. -/
-  Adj : V → V → Prop
+structure SimpleGraph (V : Type u) extends Digraph V where
   symm : Symmetric Adj := by aesop_graph
   loopless : Irreflexive Adj := by aesop_graph
 -- Porting note: changed `obviously` to `aesop` in the `structure`
@@ -98,16 +96,13 @@ structure SimpleGraph (V : Type u) where
 initialize_simps_projections SimpleGraph (Adj → adj)
 
 /-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
-@[simps]
+@[simps!]
 def SimpleGraph.mk' {V : Type u} :
-    {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
-  toFun x := ⟨fun v w ↦ x.1 v w, fun v w ↦ by simp [x.2.1], fun v ↦ by simp [x.2.2]⟩
+    {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬adj x x)} ↪ SimpleGraph V where
+  toFun x := ⟨Digraph.mk' x.1, fun v w ↦ by simp [x.2.1], fun v ↦ by simp [x.2.2]⟩
   inj' := by
     rintro ⟨adj, _⟩ ⟨adj', _⟩
-    simp only [mk.injEq, Subtype.mk.injEq]
-    intro h
-    funext v w
-    simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
+    simp_rw [mk.injEq, Subtype.mk.injEq, EmbeddingLike.apply_eq_iff_eq, imp_self]
 
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
@@ -115,13 +110,12 @@ instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) wher
   elems := Finset.univ.map SimpleGraph.mk'
   complete := by
     classical
-    rintro ⟨Adj, hs, hi⟩
+    rintro ⟨D, hs, hi⟩
     simp only [mem_map, mem_univ, true_and, Subtype.exists, Bool.not_eq_true]
-    refine ⟨fun v w ↦ Adj v w, ⟨?_, ?_⟩, ?_⟩
+    refine ⟨fun v w ↦ D.Adj v w, ⟨?_, ?_⟩, ?_⟩
     · simp [hs.iff]
     · intro v; simp [hi v]
-    · ext
-      simp
+    · ext; simp
 
 /-- Construct the simple graph induced by the given relation. It
 symmetrizes the relation and makes it irreflexive. -/
@@ -173,6 +167,8 @@ theorem adj_symm (h : G.Adj u v) : G.Adj v u :=
 theorem Adj.symm {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : G.Adj v u :=
   G.symm h
 
+alias _root_.Digraph.Adj.symm := Adj.symm
+
 theorem ne_of_adj (h : G.Adj a b) : a ≠ b := by
   rintro rfl
   exact G.irrefl h
@@ -180,13 +176,17 @@ theorem ne_of_adj (h : G.Adj a b) : a ≠ b := by
 protected theorem Adj.ne {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : a ≠ b :=
   G.ne_of_adj h
 
+alias _root_.Digraph.Adj.ne := Adj.ne
+
 protected theorem Adj.ne' {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : b ≠ a :=
   h.ne.symm
+
+alias _root_.Digraph.Adj.ne' := Adj.ne'
 
 theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v ≠ w := fun h' =>
   hn (h' ▸ h)
 
-theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
+theorem adj_injective : Injective (fun G : SimpleGraph V ↦ G.Adj) :=
   fun _ _ => SimpleGraph.ext
 
 @[simp]
@@ -211,7 +211,7 @@ theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Pro
 instance : Sup (SimpleGraph V) where
   sup x y :=
     { Adj := x.Adj ⊔ y.Adj
-      symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
+      symm := fun v w h => by simpa [x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
@@ -221,7 +221,7 @@ theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v 
 instance : Inf (SimpleGraph V) where
   inf x y :=
     { Adj := x.Adj ⊓ y.Adj
-      symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }
+      symm := fun v w h => by simpa [x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w :=
@@ -252,24 +252,24 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
 
 instance supSet : SupSet (SimpleGraph V) where
   sSup s :=
-    { Adj := fun a b => ∃ G ∈ s, Adj G a b
+    { Adj := fun a b => ∃ G ∈ s, G.Adj a b
       symm := fun a b => Exists.imp fun _ => And.imp_right Adj.symm
       loopless := by
         rintro a ⟨G, _, ha⟩
-        exact ha.ne rfl }
+        exact G.loopless a ha }
 
 instance infSet : InfSet (SimpleGraph V) where
   sInf s :=
-    { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
+    { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → G.Adj a b) ∧ a ≠ b
       symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
       loopless := fun _ h => h.2 rfl }
 
 @[simp]
-theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
+theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, G.Adj a b :=
   Iff.rfl
 
 @[simp]
-theorem sInf_adj {s : Set (SimpleGraph V)} : (sInf s).Adj a b ↔ (∀ G ∈ s, Adj G a b) ∧ a ≠ b :=
+theorem sInf_adj {s : Set (SimpleGraph V)} : (sInf s).Adj a b ↔ (∀ G ∈ s, G.Adj a b) ∧ a ≠ b :=
   Iff.rfl
 
 @[simp]
@@ -280,7 +280,7 @@ theorem iInf_adj {f : ι → SimpleGraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (
   simp [iInf]
 
 theorem sInf_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
-    (sInf s).Adj a b ↔ ∀ G ∈ s, Adj G a b :=
+    (sInf s).Adj a b ↔ ∀ G ∈ s, G.Adj a b :=
   sInf_adj.trans <|
     and_iff_left_of_imp <| by
       obtain ⟨G, hG⟩ := hs
@@ -398,7 +398,7 @@ def neighborSet (v : V) : Set V := {w | G.Adj v w}
 
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
-  inferInstanceAs <| DecidablePred (Adj G v)
+  inferInstanceAs <| DecidablePred (G.Adj v)
 
 section EdgeSet
 
