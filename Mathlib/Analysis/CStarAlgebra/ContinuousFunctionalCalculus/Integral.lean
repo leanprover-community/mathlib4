@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
@@ -46,7 +47,7 @@ lemma cfcHom_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Inte
     filter_upwards with x
     simp only [cfcHom_eq_cfcCLM ha]
   rw [h₁, cfcHom_eq_cfcCLM ha]
-  exact cfcCLM_integral a (fun x ↦ f x) hf₁ ha
+  exact cfcCLM_integral a f hf₁ ha
 
 open ContinuousMap in
 /-- The continuous functional calculus commutes with integration. -/
