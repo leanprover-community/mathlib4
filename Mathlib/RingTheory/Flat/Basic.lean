@@ -15,8 +15,6 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.Algebra.Exact
 
-#align_import ring_theory.flat from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
-
 /-!
 # Flat modules
 
@@ -73,7 +71,6 @@ the canonical map `I ⊗ M →ₗ M` is injective. -/
 @[mk_iff] class Flat : Prop where
   out : ∀ ⦃I : Ideal R⦄ (_ : I.FG),
     Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
-#align module.flat Module.Flat
 
 namespace Flat
 
@@ -85,7 +82,6 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
     ext x
     simp only [Function.comp_apply, LinearEquiv.coe_toEquiv, rid_symm_apply, comp_apply, mul_one,
       lift.tmul, Submodule.subtype_apply, Algebra.id.smul_eq_mul, lsmul_apply]⟩
-#align module.flat.self Module.Flat.self
 
 /-- An `R`-module `M` is flat iff for all finitely generated ideals `I` of `R`, the
 tensor product of the inclusion `I → R` and the identity `M → M` is injective. See
@@ -285,7 +281,7 @@ lemma lTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
   suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
     rw [show g = ι.comp π by aesop, lTensor_comp]
     exact exact1.comp_injective
-      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ $ by
+      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ <| by
         simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 
@@ -305,7 +301,7 @@ lemma rTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
   suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
     rw [show g = ι.comp π by aesop, rTensor_comp]
     exact exact1.comp_injective
-      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ $ by
+      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ <| by
         simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 

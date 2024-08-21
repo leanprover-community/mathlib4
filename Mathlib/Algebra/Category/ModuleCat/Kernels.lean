@@ -6,13 +6,10 @@ Authors: Markus Himmel
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
-#align_import algebra.category.Module.kernels from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # The concrete (co)kernels in the category of modules are (co)kernels in the categorical sense.
 -/
 
-set_option linter.uppercaseLean3 false
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -30,7 +27,6 @@ variable {M N : ModuleCat.{v} R} (f : M ⟶ N)
 def kernelCone : KernelFork f :=
   -- Porting note: previously proven by tidy
   KernelFork.ofι (asHom f.ker.subtype) <| by ext x; cases x; assumption
-#align Module.kernel_cone ModuleCat.kernelCone
 
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit (kernelCone f) :=
@@ -45,12 +41,10 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
           rfl)
     (fun s => LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
     LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simp [← h]; rfl)
-#align Module.kernel_is_limit ModuleCat.kernelIsLimit
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
   CokernelCofork.ofπ (asHom f.range.mkQ) <| LinearMap.range_mkQ_comp _
-#align Module.cokernel_cocone ModuleCat.cokernelCocone
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit (cokernelCocone f) :=
@@ -66,19 +60,16 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
     convert h
     -- Porting note: no longer necessary
     -- exact Submodule.liftQ_mkQ _ _ _
-#align Module.cokernel_is_colimit ModuleCat.cokernelIsColimit
 
 end
 
 /-- The category of R-modules has kernels, given by the inclusion of the kernel submodule. -/
 theorem hasKernels_moduleCat : HasKernels (ModuleCat R) :=
   ⟨fun f => HasLimit.mk ⟨_, kernelIsLimit f⟩⟩
-#align Module.has_kernels_Module ModuleCat.hasKernels_moduleCat
 
 /-- The category of R-modules has cokernels, given by the projection onto the quotient. -/
 theorem hasCokernels_moduleCat : HasCokernels (ModuleCat R) :=
   ⟨fun f => HasColimit.mk ⟨_, cokernelIsColimit f⟩⟩
-#align Module.has_cokernels_Module ModuleCat.hasCokernels_moduleCat
 
 open ModuleCat
 
@@ -95,7 +86,6 @@ noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     -- Porting note (#11036): broken dot notation
     kernel f ≅ ModuleCat.of R (LinearMap.ker f) :=
   limit.isoLimitCone ⟨_, kernelIsLimit f⟩
-#align Module.kernel_iso_ker ModuleCat.kernelIsoKer
 
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
 @[simp, elementwise]
@@ -103,14 +93,12 @@ noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
 theorem kernelIsoKer_inv_kernel_ι : (kernelIsoKer f).inv ≫ kernel.ι f =
     (LinearMap.ker f).subtype :=
   limit.isoLimitCone_inv_π _ _
-#align Module.kernel_iso_ker_inv_kernel_ι ModuleCat.kernelIsoKer_inv_kernel_ι
 
 @[simp, elementwise]
 theorem kernelIsoKer_hom_ker_subtype :
     -- Porting note (#11036): broken dot notation
     (kernelIsoKer f).hom ≫ (LinearMap.ker f).subtype = kernel.ι f :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ (limit.isLimit _) WalkingParallelPair.zero
-#align Module.kernel_iso_ker_hom_ker_subtype ModuleCat.kernelIsoKer_hom_ker_subtype
 
 /-- The categorical cokernel of a morphism in `ModuleCat`
 agrees with the usual module-theoretical quotient.
@@ -119,25 +107,21 @@ noncomputable def cokernelIsoRangeQuotient {G H : ModuleCat.{v} R} (f : G ⟶ H)
     -- Porting note (#11036): broken dot notation
     cokernel f ≅ ModuleCat.of R (H ⧸ LinearMap.range f) :=
   colimit.isoColimitCocone ⟨_, cokernelIsColimit f⟩
-#align Module.cokernel_iso_range_quotient ModuleCat.cokernelIsoRangeQuotient
 
 -- We now show this isomorphism commutes with the projection of target to the cokernel.
 @[simp, elementwise]
 theorem cokernel_π_cokernelIsoRangeQuotient_hom :
     cokernel.π f ≫ (cokernelIsoRangeQuotient f).hom = f.range.mkQ :=
   colimit.isoColimitCocone_ι_hom _ _
-#align Module.cokernel_π_cokernel_iso_range_quotient_hom ModuleCat.cokernel_π_cokernelIsoRangeQuotient_hom
 
 @[simp, elementwise]
 theorem range_mkQ_cokernelIsoRangeQuotient_inv :
     ↿f.range.mkQ ≫ (cokernelIsoRangeQuotient f).inv = cokernel.π f :=
   colimit.isoColimitCocone_ι_inv ⟨_, cokernelIsColimit f⟩ WalkingParallelPair.one
-#align Module.range_mkq_cokernel_iso_range_quotient_inv ModuleCat.range_mkQ_cokernelIsoRangeQuotient_inv
 
 theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :
     cokernel.π f x = cokernel.π f y := by
   subst w
   simpa only [map_add, add_right_eq_self] using cokernel.condition_apply f m
-#align Module.cokernel_π_ext ModuleCat.cokernel_π_ext
 
 end ModuleCat

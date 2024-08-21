@@ -29,13 +29,13 @@ namespace SimpleGraph
 
 /-- The vertices of `s` whose density in `t` is `ε` less than expected. -/
 private noncomputable def badVertices (ε : ℝ) (s t : Finset α) : Finset α :=
-  s.filter fun x ↦ (t.filter $ G.Adj x).card < (G.edgeDensity s t - ε) * t.card
+  s.filter fun x ↦ (t.filter <| G.Adj x).card < (G.edgeDensity s t - ε) * t.card
 
 private lemma card_interedges_badVertices_le :
     (Rel.interedges G.Adj (badVertices G ε s t) t).card ≤
       (badVertices G ε s t).card * t.card * (G.edgeDensity s t - ε) := by
   classical
-  refine (Nat.cast_le.2 $ (card_le_card $ subset_of_eq (Rel.interedges_eq_biUnion _)).trans
+  refine (Nat.cast_le.2 <| (card_le_card <| subset_of_eq (Rel.interedges_eq_biUnion _)).trans
     card_biUnion_le).trans ?_
   simp_rw [Nat.cast_sum, card_map, ← nsmul_eq_mul, smul_mul_assoc, mul_comm (t.card : ℝ)]
   exact sum_le_card_nsmul _ _ _ fun x hx ↦ (mem_filter.1 hx).2.le
@@ -44,14 +44,14 @@ private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.ed
     G.edgeDensity (badVertices G ε s t) t ≤ G.edgeDensity s t - ε := by
   rw [edgeDensity_def]
   push_cast
-  refine div_le_of_nonneg_of_le_mul (by positivity) (sub_nonneg_of_le $ by linarith) ?_
+  refine div_le_of_nonneg_of_le_mul (by positivity) (sub_nonneg_of_le <| by linarith) ?_
   rw [mul_comm]
   exact G.card_interedges_badVertices_le
 
 private lemma card_badVertices_le (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t) :
     (badVertices G ε s t).card ≤ s.card * ε := by
   have hε : ε ≤ 1 := (le_mul_of_one_le_of_le_of_nonneg (by norm_num) le_rfl hst.pos.le).trans
-    (dst.trans $ by exact_mod_cast edgeDensity_le_one _ _ _)
+    (dst.trans <| by exact_mod_cast edgeDensity_le_one _ _ _)
   by_contra! h
   have : |(G.edgeDensity (badVertices G ε s t) t - G.edgeDensity s t : ℝ)| < ε :=
     hst (filter_subset _ _) Subset.rfl h.le (mul_le_of_le_one_right (Nat.cast_nonneg _) hε)
@@ -61,7 +61,7 @@ private lemma card_badVertices_le (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.
 /-- A subset of the triangles constructed in a weird way to make them easy to count. -/
 private lemma triangle_split_helper [DecidableEq α] :
     (s \ (badVertices G ε s t ∪ badVertices G ε s u)).biUnion
-      (fun x ↦ (G.interedges (t.filter $ G.Adj x) (u.filter $ G.Adj x)).image (x, ·)) ⊆
+      (fun x ↦ (G.interedges (t.filter <| G.Adj x) (u.filter <| G.Adj x)).image (x, ·)) ⊆
       (s ×ˢ t ×ˢ u).filter (fun (x, y, z) ↦ G.Adj x y ∧ G.Adj x z ∧ G.Adj y z) := by
   rintro ⟨x, y, z⟩
   simp only [mem_filter, mem_product, mem_biUnion, mem_sdiff, exists_prop, mem_union,
@@ -109,18 +109,18 @@ lemma triangle_counting'
   let X' := s \ (badVertices G ε s t ∪ badVertices G ε s u)
   have : X'.biUnion _ ⊆ (s ×ˢ t ×ˢ u).filter fun (a, b, c) ↦ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c :=
     triangle_split_helper _
-  refine le_trans ?_ (Nat.cast_le.2 $ card_le_card this)
+  refine le_trans ?_ (Nat.cast_le.2 <| card_le_card this)
   rw [card_biUnion, Nat.cast_sum]
-  · apply le_trans _ (card_nsmul_le_sum X' _ _ $ G.good_vertices_triangle_card dst dsu dtu utu)
+  · apply le_trans _ (card_nsmul_le_sum X' _ _ <| G.good_vertices_triangle_card dst dsu dtu utu)
     rw [nsmul_eq_mul]
     have := hst.pos.le
     suffices hX' : (1 - 2 * ε) * s.card ≤ X'.card by
-      exact Eq.trans_le (by ring) (mul_le_mul_of_nonneg_right hX' $ by positivity)
+      exact Eq.trans_le (by ring) (mul_le_mul_of_nonneg_right hX' <| by positivity)
     have i : badVertices G ε s t ∪ badVertices G ε s u ⊆ s :=
       union_subset (filter_subset _ _) (filter_subset _ _)
     rw [sub_mul, one_mul, card_sdiff i, Nat.cast_sub (card_le_card i), sub_le_sub_iff_left,
       mul_assoc, mul_comm ε, two_mul]
-    refine (Nat.cast_le.2 $ card_union_le _ _).trans ?_
+    refine (Nat.cast_le.2 <| card_union_le _ _).trans ?_
     rw [Nat.cast_add]
     exact add_le_add h₁ h₂
   rintro a _ b _ t
