@@ -175,7 +175,7 @@ theorem IsSRGWith.param_eq
     simp_rw [bipartiteAbove]
     -- This used to be part of the enclosing `simp_rw` chain,
     -- but after leanprover/lean4#3124 it caused a maximum recursion depth error.
-    change Finset.card (filter (fun a => Adj G w a) _) = _
+    change Finset.card (filter (fun a => G.Adj w a) _) = _
     simp_rw [← mem_neighborFinset, filter_mem_eq_inter]
     have s : {v} ⊆ G.neighborFinset w \ G.neighborFinset v := by
       rw [singleton_subset_iff, mem_sdiff, mem_neighborFinset]
