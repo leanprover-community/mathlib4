@@ -65,13 +65,9 @@ private noncomputable def mapPreimage (hf : Function.Surjective f) (x : AdicCauc
       let ⟨⟨d, _⟩, (p : f d = f (yₙ - y))⟩ := mapPreimageDelta hf x hy hyₙ
       ⟨yₙ - d, by simpa [p]⟩
 
-variable (hf : Function.Surjective f)
-include hf
-
-variable (I)
-
+variable (I) in
 /-- Adic completion preserves surjectivity -/
-theorem map_surjective : Function.Surjective (map I f) := fun y ↦ by
+theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map I f) := fun y ↦ by
   apply AdicCompletion.induction_on I N y (fun b ↦ ?_)
   let a := mapPreimage hf b
   refine ⟨AdicCompletion.mk I M (AdicCauchySequence.mk I M (fun n ↦ (a n : M)) ?_), ?_⟩

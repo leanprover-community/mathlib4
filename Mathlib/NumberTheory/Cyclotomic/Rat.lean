@@ -244,15 +244,12 @@ noncomputable def integralPowerBasis' [hcycl : IsCyclotomicExtension {p} ℚ K]
 @[simp]
 theorem integralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     hζ.integralPowerBasis'.gen = hζ.toInteger :=
-  have : IsCyclotomicExtension {p ^ 1} ℚ K := by convert hcycl; rw [pow_one]
-  integralPowerBasis_gen (by rwa [pow_one])
+  integralPowerBasis_gen (hcycl := by rwa [pow_one]) (by rwa [pow_one])
 
 @[simp]
 theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     hζ.integralPowerBasis'.dim = φ p := by
-  have : IsCyclotomicExtension {p ^ 1} ℚ K := by convert hcycl; rw [pow_one]
-  erw [integralPowerBasis_dim (by rwa [pow_one]),
-    pow_one]
+  erw [integralPowerBasis_dim (hcycl := by rwa [pow_one]) (by rwa [pow_one]), pow_one]
 
 set_option debug.byAsSorry false in
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic
@@ -278,16 +275,17 @@ theorem subOneIntegralPowerBasis_gen [IsCyclotomicExtension {p ^ k} ℚ K]
 
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p`-th cyclotomic
 extension of `ℚ`. -/
-noncomputable def subOneIntegralPowerBasis' [hcycl : IsCyclotomicExtension {p} ℚ K]
+noncomputable def subOneIntegralPowerBasis' [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) : PowerBasis ℤ (𝓞 K) :=
-  have : IsCyclotomicExtension {p ^ 1} ℚ K := by convert hcycl; rw [pow_one]
-  subOneIntegralPowerBasis (p := p) (k := 1) (ζ := ζ)  (by rwa [pow_one])
+  have : IsCyclotomicExtension {p ^ 1} ℚ K := by rwa [pow_one]
+  subOneIntegralPowerBasis (p := p) (k := 1) (ζ := ζ) (by rwa [pow_one])
 
-@[simp]
-theorem subOneIntegralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K]
+@[simp, nolint unusedHavesSuffices]
+theorem subOneIntegralPowerBasis'_gen [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) :
     hζ.subOneIntegralPowerBasis'.gen = hζ.toInteger - 1 :=
-  have : IsCyclotomicExtension {p ^ 1} ℚ K := by convert hcycl; rw [pow_one]
+  -- The `unusedHavesSuffices` linter incorrectly thinks this `have` is unnecessary.
+  have : IsCyclotomicExtension {p ^ 1} ℚ K := by rwa [pow_one]
   subOneIntegralPowerBasis_gen (by rwa [pow_one])
 
 /-- `ζ - 1` is prime if `p ≠ 2` and `ζ` is a primitive `p ^ (k + 1)`-th root of unity.
