@@ -387,7 +387,7 @@ lemma EmbeddedContextFreeGrammar.produces_filterMap {w₁ w₂ : List (Symbol T 
           List.filterMap (Symbol.filterMap (T := T) G.projectNT)
             [Symbol.nonterminal (G.embedNT r₀.input)] =
             [Symbol.nonterminal r₀.input] := by
-          simp [Symbol.filterMap, G.projectNT_embedNT]
+          simp [List.filterMap, Symbol.filterMap, G.projectNT_embedNT]
         simpa only [List.filterMap_append, ContextFreeRule.map, ← hrr₀, middle]
           using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) bef
       · simpa only [List.filterMap_append, ContextFreeRule.map,
