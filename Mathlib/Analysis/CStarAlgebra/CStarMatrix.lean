@@ -11,26 +11,27 @@ import Mathlib.Topology.UniformSpace.Matrix
 /-!
 # Matrices with entries in a C⋆-algebra
 
-This file creates a type copy of `Matrix m n A` called `CstarMatrix m n A` meant for vectors with
-entries in a C⋆-algebra `A`. Its action on `CstarVec n A` (via `Matrix.mulVec`) gives it the
-operator norm, and this norm makes `CstarMatrix n n A` a C⋆-algebra.
+This file creates a type copy of `Matrix m n A` called `CStarMatrix m n A` meant for vectors with
+entries in a C⋆-algebra `A`. Its action on `WithCStarModule (n → A)` (via `Matrix.mulVec`) gives
+it the operator norm, and this norm makes `CStarMatrix n n A` a C⋆-algebra.
 
 ## Main declarations
 
-+ `CstarMatrix m n A`: the type copy
-+ `CstarMatrix.instCstarRing`: square matrices with entries in a C⋆-algebra form a C⋆-algebra
++ `CStarMatrix m n A`: the type copy
++ `CStarMatrix.instCStarRing`: square matrices with entries in a C⋆-algebra form a C⋆-algebra
 
 ## Implementation notes
 
 The norm on this type induces the product uniformity and bornology, but these are not defeq to
 `Pi.uniformSpace` and `Pi.instBornology`. Hence, we prove the equality to the Pi instances and
 replace the uniformity and bornology by the Pi ones when registering the
-`NormedAddCommGroup (CstarMatrix m n A)` instance. See the docstring of the `TopologyAux` section
+`NormedAddCommGroup (CStarMatrix m n A)` instance. See the docstring of the `TopologyAux` section
 below for more details.
-
 -/
 
 open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal
+
+local notation:25 n " →C⋆ " A:0 => WithCStarModule (n → (WithCStarModule A))
 
 /-- Type copy `Matrix m n A` meant for matrices with entries in a C⋆-algebra. This is
 a C⋆-algebra when `m = n`. This is an abbrev in order to inherit all instances from `Matrix`,
@@ -39,23 +40,33 @@ abbrev CStarMatrix (m : Type*) (n : Type*) (A : Type*) := Matrix m n A
 
 namespace CStarMatrix
 
-variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [PartialOrder A]
-  [CompleteSpace A] [StarOrderedRing A] [NormedSpace ℂ A]
-  [StarModule ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+variable {m n A : Type*}
 
-variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq n]
+--variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [PartialOrder A]
+--  [CompleteSpace A] [StarOrderedRing A] [NormedSpace ℂ A]
+--  [StarModule ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+--
+--variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq n]
 
+variable (m n A) in
 /-- The equivalence between `CStarMatrix m n A` and `Matrix m n A`. -/
-def ofMatrix : (Matrix m n A) ≃ CStarMatrix m n A := Equiv.refl _
+def equiv {m n A : Type*} : CStarMatrix m n A ≃ Matrix m n A := Equiv.refl _
 
-lemma ofMatrix_symm_apply {M : Matrix m n A} {i : m} : (ofMatrix.symm M) i = M i := rfl
+lemma equiv_apply {M : Matrix m n A} {i : m} : (equiv M) i = M i := rfl
 
 @[ext]
 lemma ext {M₁ M₂ : CStarMatrix m n A} (h : ∀ i j, M₁ i j = M₂ i j) : M₁ = M₂ := Matrix.ext h
 
+variable [Fintype m] [Fintype n] [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℂ A]
+  [PartialOrder A] [CStarRing A] [StarOrderedRing A] [SMulCommClass ℂ A A] [StarModule ℂ A]
+  [IsScalarTower ℂ A A] [CompleteSpace A]
+
+#synth AddCommMonoid ((n →C⋆ A) →L[ℂ] (m →C⋆ A))
+
 variable (A) in
-/-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `CStarVec n A`. -/
-def toCLM : CStarMatrix m n A →ₗ[ℂ] CStarVec n A →L[ℂ] CStarVec m A where
+/-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on
+`WithCStarModule (n → A)`. -/
+def toCLM : CStarMatrix m n A →ₗ[ℂ] (n →C⋆ A) →L[ℂ] (m →C⋆ A) where
   toFun M := { toFun := M.mulVec
                map_add' := M.mulVec_add
                map_smul' := M.mulVec_smul
@@ -224,7 +235,7 @@ the product topology and use this fact to properly set up the
 To do this, we first set up another type copy `CStarMatrixAux` to host the "bad"
 `NormedAddCommGroup (CStarMatrix m n A)` instance and locally use the matrix norm
 `Matrix.normedAddCommGroup` (which takes the norm of the biggest entry as the norm of the matrix)
-in order to show that the map `ofMatrix.symm : CStarMatrix n A → Matrix m n A` is both Lipschitz
+in order to show that the map `equiv : CStarMatrix n A → Matrix m n A` is both Lipschitz
 and Antilipschitz.  We then finally register the `NormedAddCommGroup (CStarVec n A)` instance via
 `NormedAddCommGroup.ofCoreReplaceAll`.
 -/
@@ -270,20 +281,20 @@ private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrixAux m n A} {C : ℝ�
   CStarMatrix.norm_le_of_forall_inner_le fun v w => h v w
 
 open Finset in
-private lemma lipschitzWith_ofMatrix_symm_aux :
-    LipschitzWith 1 (ofMatrix.symm : CStarMatrixAux m n A → Matrix m n A) := by
+private lemma lipschitzWith_equiv_aux :
+    LipschitzWith 1 (equiv : CStarMatrixAux m n A → Matrix m n A) := by
   refine LipschitzWith.of_dist_le_mul fun M₁ M₂ => ?_
   simp only [dist_eq_norm, NNReal.coe_one, one_mul]
   simp [← map_sub]
   set M := M₁ - M₂
-  change ‖ofMatrix.symm M‖₊ ≤ ‖M‖₊
+  change ‖equiv M‖₊ ≤ ‖M‖₊
   simp_rw [Matrix.nnnorm_def, Pi.nnnorm_def]
   by_cases hm_triv : Nonempty m
   · by_cases hn_triv : Nonempty n
     · obtain ⟨i, _, hi⟩ := exists_mem_eq_sup (univ : Finset m) (univ_nonempty_iff.mpr hm_triv)
-        fun b => Finset.univ.sup fun b_1 => ‖ofMatrix.symm M b b_1‖₊
+        fun b => Finset.univ.sup fun b_1 => ‖equiv M b b_1‖₊
       obtain ⟨j, _, hj⟩ := exists_mem_eq_sup (univ : Finset n) (univ_nonempty_iff.mpr hn_triv)
-        fun b_1 => ‖ofMatrix.symm M i b_1‖₊
+        fun b_1 => ‖equiv M i b_1‖₊
       rw [hi, hj]
       exact CStarMatrix.norm_entry_le_norm
     · simp only [not_nonempty_iff] at hn_triv
@@ -292,22 +303,22 @@ private lemma lipschitzWith_ofMatrix_symm_aux :
     simp [Finset.sup_eq_bot_of_isEmpty, bot_eq_zero]
 
 open Finset in
-private lemma antilipschitzWith_ofMatrix_symm_aux :
+private lemma antilipschitzWith_equiv_aux :
     AntilipschitzWith (Fintype.card n * Fintype.card m)
-      (ofMatrix.symm : CStarMatrixAux m n A → Matrix m n A) := by
+      (equiv : CStarMatrixAux m n A → Matrix m n A) := by
   refine AntilipschitzWith.of_le_mul_dist fun M₁ M₂ => ?_
   set Dn := Fintype.card n
   set Dm := Fintype.card m
   simp only [dist_eq_norm, ← map_sub]
   set M := M₁ - M₂
-  change ‖M‖₊ ≤ Dn * Dm * ‖ofMatrix.symm M‖₊
+  change ‖M‖₊ ≤ Dn * Dm * ‖equiv M‖₊
   simp_rw [Matrix.nnnorm_def, Pi.nnnorm_def]
   by_cases hm_triv : Nonempty m
   · by_cases hn_triv : Nonempty n
     · obtain ⟨i, _, hi⟩ := exists_mem_eq_sup (univ : Finset m) (univ_nonempty_iff.mpr hm_triv)
-        fun b => Finset.univ.sup fun b_1 => ‖ofMatrix.symm M b b_1‖₊
+        fun b => Finset.univ.sup fun b_1 => ‖equiv M b b_1‖₊
       obtain ⟨j, _, hj⟩ := exists_mem_eq_sup (univ : Finset n) (univ_nonempty_iff.mpr hn_triv)
-        fun b_1 => ‖ofMatrix.symm M i b_1‖₊
+        fun b_1 => ‖equiv M i b_1‖₊
       rw [hi, hj]
       change ‖M‖₊ ≤ ↑Dn * ↑Dm * ‖M i j‖₊
       refine nnnorm_le_of_forall_inner_le fun v w => ?_
@@ -353,28 +364,28 @@ private lemma antilipschitzWith_ofMatrix_symm_aux :
     ext i j
     exact False.elim <| IsEmpty.false i
 
-private lemma uniformInducing_ofMatrix_symm_aux :
-    UniformInducing (ofMatrix.symm : CStarMatrixAux m n A → Matrix m n A) :=
-  AntilipschitzWith.uniformInducing antilipschitzWith_ofMatrix_symm_aux
-    lipschitzWith_ofMatrix_symm_aux.uniformContinuous
+private lemma uniformInducing_equiv_aux :
+    UniformInducing (equiv : CStarMatrixAux m n A → Matrix m n A) :=
+  AntilipschitzWith.uniformInducing antilipschitzWith_equiv_aux
+    lipschitzWith_equiv_aux.uniformContinuous
 
 private lemma uniformity_eq_aux :
     𝓤 (CStarMatrixAux m n A) = (𝓤[Pi.uniformSpace _] :
     Filter (CStarMatrixAux m n A × CStarMatrixAux m n A)) := by
   have :
-    (fun x : CStarMatrixAux m n A × CStarMatrixAux m n A => ⟨ofMatrix.symm x.1, ofMatrix.symm x.2⟩)
+    (fun x : CStarMatrixAux m n A × CStarMatrixAux m n A => ⟨equiv x.1, equiv x.2⟩)
       = id := by
     ext i <;> rfl
-  rw [← uniformInducing_ofMatrix_symm_aux.comap_uniformity, this, Filter.comap_id]
+  rw [← uniformInducing_equiv_aux.comap_uniformity, this, Filter.comap_id]
   rfl
 
 open Bornology in
 private lemma cobounded_eq_aux :
     cobounded (CStarMatrixAux m n A) = @cobounded _ Pi.instBornology := by
-  have : cobounded (CStarMatrixAux m n A) = Filter.comap ofMatrix.symm (cobounded _) := by
+  have : cobounded (CStarMatrixAux m n A) = Filter.comap equiv (cobounded _) := by
     refine le_antisymm ?_ ?_
-    · exact antilipschitzWith_ofMatrix_symm_aux.tendsto_cobounded.le_comap
-    · exact lipschitzWith_ofMatrix_symm_aux.comap_cobounded_le
+    · exact antilipschitzWith_equiv_aux.tendsto_cobounded.le_comap
+    · exact lipschitzWith_equiv_aux.comap_cobounded_le
   exact this.trans Filter.comap_id
 
 end CStarMatrixAux
