@@ -57,17 +57,15 @@ of the `n` non-leading coefficients of the polynomial and one variable (`Fin.las
 for `X`.  -/
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
-#print degreeLTEquiv
-
 
 theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n+1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
-    ((degreeLTEquiv K n).symm (v ∘ Fin.castSucc)).1.eval (v (Fin.last _)) := by
-  let p := (degreeLTEquiv K n).symm (v ∘ Fin.castSucc)
-  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul, degreeLTEquiv,
-    LinearEquiv.coe_symm_mk, Function.comp_apply, eval_finset_sum, eval_monomial, add_left_eq_self]
-
-
+    (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
+      (v (Fin.last _)) := by
+  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul, monicEquivDegreeLT,
+    degreeLTEquiv, Equiv.symm_trans_apply, LinearEquiv.coe_toEquiv_symm, EquivLike.coe_coe,
+    LinearEquiv.coe_symm_mk, Function.comp_apply, Equiv.coe_fn_symm_mk, eval_add, eval_pow, eval_X,
+    eval_finset_sum, eval_monomial]
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
@@ -77,7 +75,7 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
     K ⊨ genericMonicPolyHasRoot n ↔
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
   let _ := Classical.decEq K
-  rw [Equiv.forall_congr_left (monicPolyEquivFin n)]
+  rw [Equiv.forall_congr_left ((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, lift_genericMonicPoly]
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
@@ -128,9 +126,6 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (K : Type*)
   rw [realize_genericMonicPolyHasRoot] at this
   exact this ⟨_, hpm, rfl⟩
 
-/- Note this is caused by `AlgebraicClosure ℚ`. We don't need to increase heartbeats for
-`AlgebraicClosure (ZMod p)` for some reason -/
-set_option synthInstance.maxHeartbeats 50000 in
 theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsSatisfiable := by
   cases hp with
