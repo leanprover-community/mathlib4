@@ -42,7 +42,7 @@ package mathlib where
 ## Mathlib dependencies on upstream projects.
 -/
 
-require "leanprover-community" / "batteries" @ git "nightly-testing-2024-08-20"
+require "leanprover-community" / "batteries" @ git "lean-pr-testing-5104"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
 require "leanprover-community" / "aesop" @ git "nightly-testing"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.42-pre2"
