@@ -70,7 +70,11 @@ def toCLM : CStarMatrix m n A →ₗ[ℂ] (n →C⋆ A) →L[ℂ] (m →C⋆ A) 
   toFun M := { toFun := M.mulVec
                map_add' := M.mulVec_add
                map_smul' := M.mulVec_smul
-               cont := by simp only [LinearMap.coe_mk, AddHom.coe_mk]; fun_prop }
+               cont := by
+                 simp only [LinearMap.coe_mk, AddHom.coe_mk]
+                 change Continuous (fun v => Matrix.mulVec M v)
+
+                 sorry }
   map_add' M₁ M₂ := by ext; simp [Matrix.add_mulVec]
   map_smul' c M := by
     ext i j
