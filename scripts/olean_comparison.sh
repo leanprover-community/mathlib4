@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 getCacheSize () {
-  >&2 lake exe cache clean!
   >&2 lake exe cache get
   du .lake/build/lib/Mathlib | sed "s=^=${1} =; s=\t= =g"
 }
