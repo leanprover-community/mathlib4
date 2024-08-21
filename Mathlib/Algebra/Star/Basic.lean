@@ -91,6 +91,7 @@ theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
   star_injective.eq_iff
 
 /-- `star` as an equivalence when it is involutive. -/
+@[simps!]
 protected def Equiv.star [InvolutiveStar R] : Equiv.Perm R :=
   star_involutive.toPerm _
 
