@@ -3,8 +3,9 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-
+import Batteries.Data.ByteSubarray -- Only needed for the deprecation.
 import Mathlib.Init
+
 /-!
 # Main result
 Introduce main properties of `Up` (well-ordered relation for "upwards" induction on `ℕ`) and of
