@@ -242,6 +242,29 @@ alias Principal.opow := opow_principal_add_of_principal_add
 theorem add_absorp {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
   (principal_add_omega_opow b).add_absorp_of_ge
 
+theorem add_div_of_lt_of_principal_add {a b c : Ordinal} (hc : Principal (· + ·) c) (hbc : b < c) :
+    (a + b) / c = a / c := by
+  have hc' := ((Ordinal.zero_le _).trans_lt hbc).ne'
+  apply (div_le_left (le_add_right _ _) _).antisymm'
+  rw [← Order.lt_succ_iff, div_lt hc', mul_succ]
+  conv_lhs => rw [← div_add_mod a c]
+  rw [add_assoc]
+  exact add_lt_add_left (hc (mod_lt _ hc') hbc) _
+
+theorem add_div_of_ge_of_principal_add {a b c : Ordinal} (hc : Principal (· + ·) c)
+    (hcb : c ≤ b) : (a + b) / c = a / c + b / c := by
+  obtain rfl | hc₀ := eq_or_ne c 0
+  · iterate 3 rw [div_zero]
+    rw [add_zero]
+  · conv_lhs => rw [← div_add_mod a c]
+    rw [add_assoc, mul_add_div _ hc₀, add_left_cancel, hc.add_absorp_of_ge (mod_lt a hc₀) hcb]
+
+theorem add_mod_of_lt_of_principal_add {a b c : Ordinal} (hc : Principal (· + ·) c)
+    (hbc : b < c) : (a + b) % c = a % c + b := by
+  rw [mod_def, add_div_of_lt_of_principal_add hc hbc]
+  apply sub_eq_of_add_eq
+  rw [← add_assoc, div_add_mod]
+
 theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : Principal (· + ·) b) : Principal (· + ·) (a * b) := by
   rcases eq_zero_or_pos a with (rfl | _)
