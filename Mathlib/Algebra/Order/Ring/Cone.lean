@@ -4,11 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Artie Khovanov
 -/
 import Mathlib.Algebra.Order.Group.Cone
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Order
-import Mathlib.Algebra.Ring.Semireal.Defs
 
 /-!
 # Constructing an ordered ring from a ring with a specified positive cone.
@@ -143,17 +140,6 @@ open Ring
   __ := OrderedAddCommGroup.mkOfPositiveCone C
   zero_le_one := show _ ∈ C by simpa using one_mem C
   mul_nonneg x y xnn ynn := show _ ∈ C by simpa using mul_mem xnn ynn
-
-def OrderedRing.toStrictOrderedRing (α : Type*) [OrderedRing α] [IsDomain α] :
-    StrictOrderedRing α where
-  __ := ‹OrderedRing α›
-  __ := ‹IsDomain α›
-  mul_pos a b ap bp := lt_of_le_of_ne
-                       (mul_nonneg (le_of_lt ap) (le_of_lt bp))
-                       (mul_ne_zero_iff.mpr ⟨ne_of_gt ap, ne_of_gt bp⟩).symm
-
-/- this should work but it doesn't -/
-/- by have := (mul_ne_zero_iff (M₀ := α) (a := a) (b := b)).mpr; positivity -/
 
 /-- Construct a `LinearOrderedRing` by
 designating a positive cone in an existing `Ring`. -/
