@@ -531,7 +531,7 @@ theorem top_prod_top : (⊤ : Subsemigroup M).prod (⊤ : Subsemigroup N) = ⊤ 
 
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ :=
-  SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
+  SetLike.coe_injective <| by simp [coe_prod]
 
 /-- The product of subsemigroups is isomorphic to their product as semigroups. -/
 @[to_additive prodEquiv

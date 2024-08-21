@@ -224,12 +224,17 @@ instance instZero : Zero (PerfectClosure K p) :=
 theorem zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
   rfl
 
+/-- Prior to #15862, this lemma was called `mk_zero_zero`.
+See `mk_zero_right` for the lemma used to be called `mk_zero`. -/
 @[simp]
-theorem mk_zero_zero : mk K p (0, 0) = 0 :=
+theorem mk_zero : mk K p 0 = 0 :=
   rfl
 
+@[deprecated (since := "2024-08-16")] alias mk_zero_zero := mk_zero
+
 -- Porting note: improved proof structure
-theorem mk_zero (n : ℕ) : mk K p (n, 0) = 0 := by
+@[simp]
+theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
   induction' n with n ih
   · rfl
   rw [← ih]
@@ -270,7 +275,7 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
     sub_eq_add_neg := fun a b => rfl
     neg_add_cancel := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ => by
-        simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, neg_add_cancel, mk_zero]
+        simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, neg_add_cancel, mk_zero_right]
     add_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm]
@@ -284,11 +289,11 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
     zero_mul := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
-      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, zero_mul, mk_zero]
+      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, zero_mul, mk_zero_right]
     mul_zero := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
-      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero]
+      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero_right]
     left_distrib := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
