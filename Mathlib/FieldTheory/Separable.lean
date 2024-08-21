@@ -503,7 +503,7 @@ open Polynomial
 
 section CommRing
 
-variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
+variable (F L K : Type*) [CommRing F] [Ring K] [Algebra F K]
 
 -- TODO: refactor to allow transcendental extensions?
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
@@ -584,11 +584,11 @@ end
 
 section
 
-variable (L : Type*) [Field L] [CommRing E] [Algebra F L]
+variable [Field L] [CommRing E] [Algebra F L]
     [Algebra F E] [Algebra L E] [IsScalarTower F L E]
 
 /-- If `E / L / F` is an extension tower, `x : E` is separable over `F`, then it's also separable
-over `K`. -/
+over `L`. -/
 theorem IsSeparable.tower_top
     {x : E} (h : IsSeparable F x) : IsSeparable L x :=
   h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
