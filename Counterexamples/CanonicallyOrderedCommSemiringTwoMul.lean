@@ -140,8 +140,8 @@ theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a 
     exact hb rfl
   cases a
   · rcases mem_zmod_2 b2 with (rfl | rfl) <;> rcases mem_zmod_2 a2 with (rfl | rfl) <;>
-      simp only [Prod.mk_mul_mk, mul_zero, zero_mul, mul_one, ne_eq, Prod.mk.injEq, zero_ne_one, and_false,
-        not_false_eq_true, not_true_eq_false]
+      simp only [Prod.mk_mul_mk, mul_zero, zero_mul, mul_one, ne_eq, Prod.mk.injEq, zero_ne_one,
+        and_false, not_false_eq_true, not_true_eq_false]
     exact ha rfl
   · simp [mul_ne_zero _ _, Nat.succ_ne_zero _]
 
