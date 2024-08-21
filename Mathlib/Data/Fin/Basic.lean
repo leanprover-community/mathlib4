@@ -194,8 +194,6 @@ section Order
 ### order
 -/
 
-
-
 theorem le_iff_val_le_val {a b : Fin n} : a ≤ b ↔ (a : ℕ) ≤ b :=
   Iff.rfl
 
@@ -758,8 +756,6 @@ section Pred
 /-!
 ### pred
 -/
-
-
 
 theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
     Fin.pred (1 : Fin (n + 1)) h = 0 := by
