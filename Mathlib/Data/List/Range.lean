@@ -80,7 +80,7 @@ theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
 @[simp]
 theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
-  simp only [finRange, getElem_range, getElem_pmap]
+  simp [finRange, getElem_range, getElem_pmap]
 
 -- Porting note (#10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
