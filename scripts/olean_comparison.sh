@@ -11,9 +11,11 @@ if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+
   mv .lake .lakeBranch
   git fetch origin master --depth 1
   git checkout origin/master
+  echo "get master's oleans"
   masterOleans="$(getCacheSize master)"
   git checkout -
   mv -f .lakeBranch .lake
+  echo "get branch's oleans"
   newOleans="$(getCacheSize branch)"
   pctgs="$(printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
     awk 'function format(percent,diff,fname) {
