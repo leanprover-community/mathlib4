@@ -29,18 +29,18 @@ namespace PSet
 noncomputable def rank : PSet.{u} → Ordinal.{u}
   | ⟨_, A⟩ => lsub fun a => rank (A a)
 
-theorem rank_eq_of_equiv : (x y : PSet) → Equiv x y → rank x = rank y
+theorem rank_eq_of_equiv : {x y : PSet} → Equiv x y → rank x = rank y
   | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
     lsub_eq_of_range_eq (by
       ext; constructor <;> simp <;> intro a h
       · obtain ⟨b, h'⟩ := αβ a
-        exists b; rw [← h, rank_eq_of_equiv _ _ h']
+        exists b; rw [← h, rank_eq_of_equiv h']
       · obtain ⟨b, h'⟩ := βα a
-        exists b; rw [← h, rank_eq_of_equiv _ _ h'])
+        exists b; rw [← h, rank_eq_of_equiv h'])
 
 theorem rank_lt_of_mem : {x y : PSet} → y ∈ x → rank y < rank x
   | ⟨_, _⟩, _, ⟨_, h⟩ => by
-    rw [rank_eq_of_equiv _ _ h]
+    rw [rank_eq_of_equiv h]
     apply lt_lsub
 
 theorem rank_le_iff {o : Ordinal} : {x : PSet} → rank x ≤ o ↔ ∀ y ∈ x, rank y < o
@@ -64,7 +64,7 @@ theorem rank_insert : rank (insert x y) = max (succ (rank x)) (rank y) := by
   apply le_antisymm
   · simp_rw [rank_le_iff, mem_insert_iff]
     rintro _ (h | h)
-    · simp [rank_eq_of_equiv _ _ h]
+    · simp [rank_eq_of_equiv h]
     · simp [rank_lt_of_mem h]
   · apply max_le
     · exact (rank_lt_of_mem (mem_insert x y)).succ_le
@@ -95,7 +95,7 @@ variable {x y : ZFSet.{u}}
 
 /-- The ordinal rank of a ZFC set -/
 noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
-  Quotient.lift _ PSet.rank_eq_of_equiv
+  Quotient.lift _ fun _ _ => PSet.rank_eq_of_equiv
 
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem
