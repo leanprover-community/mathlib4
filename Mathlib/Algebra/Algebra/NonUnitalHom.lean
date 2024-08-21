@@ -383,7 +383,7 @@ variable [DistribMulAction R C]
 @[simps]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
   toFun := Pi.prod f g
-  map_zero' := by simp only [Pi.prod, Prod.zero_eq_mk, map_zero]
+  map_zero' := by simp only [Pi.prod, Prod.mk_zero_zero, map_zero]
   map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
   map_mul' x y := by simp only [Pi.prod, Prod.mk_mul_mk, map_mul]
   map_smul' c x := by simp only [Pi.prod, map_smul, MonoidHom.id_apply, id_eq, Prod.smul_mk]
