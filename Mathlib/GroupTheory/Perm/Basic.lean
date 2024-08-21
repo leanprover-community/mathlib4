@@ -157,10 +157,10 @@ theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
 theorem trans_eq_one_iff_eq_symm (e₁ e₂ : Equiv.Perm α) : e₁.trans e₂ = 1 ↔ e₁ = e₂.symm := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext x
-    have : e₁.trans e₂ x = x := by rw [h, coe_one, id_eq]
-    apply congrArg (⇑(e₂.symm)) at this
-    rw [trans_apply, symm_apply_apply] at this
-    exact this
+    replace h : e₁.trans e₂ x = x := by rw [h, coe_one, id_eq]
+    apply congrArg (⇑(e₂.symm)) at h
+    rw [trans_apply, symm_apply_apply] at h
+    exact h
   · rw [h, ← symm_mul]
     rfl
 
