@@ -222,8 +222,6 @@ instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
 instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
   inferInstanceAs <| DecidableRel fun v w ↦ G.Adj v w ∧ ¬H.Adj v w
 
-variable [DecidableEq V]
-
 instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
