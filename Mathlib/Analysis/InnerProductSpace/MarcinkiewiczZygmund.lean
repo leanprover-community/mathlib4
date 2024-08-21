@@ -215,50 +215,60 @@ namespace InnerProductSpace
 variable {𝕜 : Type*} [NormedAddCommGroup 𝕜] [InnerProductSpace ℝ 𝕜] [FiniteDimensional ℝ 𝕜]
 
 open FiniteDimensional in
-/-- The **Marcinkiewicz-Zygmund inequality** for functions valued in a real inner product space.
-
-TODO remove dimension restriction (at the cost of a more complicated constant). -/
-lemma marcinkiewicz_zygmund (h𝕜 : finrank ℝ 𝕜 ≤ 2)
-    (hm : m ≠ 0) (f : α → 𝕜) (hf : ∀ i, ∑ a in A ^^ n, f (a i) = 0) :
+/-- The **Marcinkiewicz-Zygmund inequality** for functions valued in a real inner product space. -/
+lemma marcinkiewicz_zygmund (hm : m ≠ 0) (f : α → 𝕜) (hf : ∀ i, ∑ a in A ^^ n, f (a i) = 0) :
     ∑ a in A ^^ n, ‖∑ i, f (a i)‖ ^ (2 * m) ≤
-      (8 * m) ^ m * card n ^ (m - 1) * ∑ a in A ^^ n, ∑ i, ‖f (a i)‖ ^ (2 * m) := by
+      (4 * finrank ℝ 𝕜 * m) ^ m * card n ^ (m - 1) * ∑ a in A ^^ n, ∑ i, ‖f (a i)‖ ^ (2 * m) := by
+  obtain ht | ht := Nat.eq_zero_or_pos (finrank ℝ 𝕜)
+  · rw [FiniteDimensional.finrank_zero_iff] at ht
+    have : 2 * m ≠ 0 := by positivity
+    simp [norm_of_subsingleton, zero_pow this]
   let b := stdOrthonormalBasis ℝ 𝕜; clear_value b
-  let F (t : Fin (finrank ℝ 𝕜)) x : ℝ := b.repr (f x) t
   set B := A ^^ n
-  have hF (t : Fin (finrank ℝ 𝕜)) i : ∑ a in B, F t (a i) = 0 := by
-    rw [← Finset.sum_apply, ← map_sum (g := b.repr), hf, map_zero, PiLp.zero_apply]
-  have h (t : Fin (finrank ℝ 𝕜)) := Real.marcinkiewicz_zygmund hm _ (hF t)
   simp only [pow_mul, ← b.repr.norm_map, PiLp.norm_sq_eq_of_L2, map_sum, norm_eq_abs, sq_abs,
-    ge_iff_le, Fintype.sum_apply (γ := n)]
-  interval_cases finrank ℝ 𝕜
-  · simp [Fin.sum_univ_zero, zero_pow hm]
-  · simp only [Fin.sum_univ_one, Fin.isValue]
-    simp [pow_mul] at h
-    refine le_trans (h 0) ?_
-    gcongr
-    norm_num
-  simp only [Fin.sum_univ_two, Fin.isValue]
+    Fintype.sum_apply (γ := n)]
+  set T := Fin (finrank ℝ 𝕜)
   calc
-    ∑ a in B, ((∑ i, b.repr (f (a i)) 0) ^ 2 + (∑ i, b.repr (f (a i)) 1) ^ 2) ^ m ≤
-        ∑ a in B, 2 ^ (m - 1) *
-          (((∑ i, b.repr (f (a i)) 0) ^ 2) ^ m + ((∑ i, b.repr (f (a i)) 1) ^ 2) ^ m) := by
-      gcongr with a; apply add_pow_le <;> positivity
-    _ = 2 ^ (m - 1) * (∑ a in B, (∑ i, b.repr (f (a i)) 0) ^ (2 * m) +
-          ∑ a in B, (∑ i, b.repr (f (a i)) 1) ^ (2 * m)) := by
+    ∑ a in B, (∑ t : T, (∑ i, b.repr (f (a i)) t) ^ 2) ^ m
+      = ∑ a in B, card T ^ (m - 1)
+          * ((∑ t : T, (∑ i, b.repr (f (a i)) t) ^ 2) ^ m / card T ^ (m - 1)) := by
+      congr! with a
+      have : 0 < card T := by simpa [T] using ht
+      field_simp
+    _ ≤ ∑ a in B, card T ^ (m - 1) * (∑ t : T, ((∑ i, b.repr (f (a i)) t) ^ 2) ^ m) := by
+      gcongr with a
+      convert pow_sum_div_card_le_sum_pow (s := Finset.univ) (n := m - 1) ?_
+      · rw [sub_one_add_one hm]
+      · rw [sub_one_add_one hm]
+      · intros; positivity
+    _ = card T ^ (m - 1) * (∑ t : T, ∑ a in B, (∑ i, b.repr (f (a i)) t) ^ (2 * m)) := by
       simp only [← sum_add_distrib, mul_sum, pow_mul]
-    _ ≤ 2 ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
-          ∑ a in B, ∑ i, b.repr (f (a i)) 0 ^ (2 * m) + (4 * m) ^ m * card n ^ (m - 1) *
-          ∑ a in B, ∑ i, b.repr (f (a i)) 1 ^ (2 * m)) := by gcongr <;> apply h
-    _ = 2 ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
-          ∑ a in B, ∑ i, (b.repr (f (a i)) 0 ^ (2 * m) + b.repr (f (a i)) 1 ^ (2 * m))) := by
-      simp_rw [sum_add_distrib, mul_add]
-    _ ≤ 2 ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
-          ∑ a in B, ∑ i, 2 * (b.repr (f (a i)) 0 ^ 2 + b.repr (f (a i)) 1 ^ 2) ^ m) := by
-      simp_rw [pow_mul]; gcongr; apply pow_add_pow_le' <;> positivity
-    _ = (8 * m) ^ m * _ ^ (m - 1) *
-        ∑ a in B, ∑ i, (b.repr (f (a i)) 0 ^ 2 + b.repr (f (a i)) 1 ^ 2) ^ m := by
-      simp_rw [← mul_sum, show (8 : ℝ) = 2 * 4 by norm_num, mul_pow, ← pow_sub_one_mul hm (2 : ℝ)]
+      rw [sum_comm]
+    _ ≤ card T ^ (m - 1) * (∑ t : T, (4 * m) ^ m * card n ^ (m - 1) *
+          ∑ a in B, ∑ i, b.repr (f (a i)) t ^ (2 * m)) := by
+      gcongr with t
+      apply Real.marcinkiewicz_zygmund hm (f := fun x ↦ b.repr (f x) t)
+      intro i
+      rw [← Finset.sum_apply, ← map_sum (g := b.repr), hf, map_zero, PiLp.zero_apply]
+    _ = card T ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
+          ∑ a in B, ∑ i, ∑ t : T, (b.repr (f (a i)) t ^ (2 * m))) := by
+      simp only [Finset.mul_sum, sum_comm (γ := T)]
+    _ ≤ card T ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
+          ∑ a in B, ∑ i, ∑ t' : T, (∑ t : T, b.repr (f (a i)) t ^ 2) ^ m) := by
+      simp_rw [pow_mul]
+      gcongr with a _ i _ t' ht'
+      apply single_le_sum (s := Finset.univ) (f := fun t ↦ (b.repr (f (a i)) t) ^ 2) ?_ ht'
+      intros
+      positivity
+    _ = card T ^ (m - 1) * ((4 * m) ^ m * card n ^ (m - 1) *
+          ∑ a in B, ∑ i, card T * (∑ t : T, b.repr (f (a i)) t ^ 2) ^ m) := by simp
+    _ = (4 * card T * m) ^ m * (card n) ^ (m - 1) *
+        ∑ a in B, ∑ i, (∑ t : T, b.repr (f (a i)) t ^ 2) ^ m := by
+      simp_rw [← mul_sum, ← mul_assoc]
+      congrm ?_ * _
+      nth_rw 3 6 [← sub_one_add_one hm]
       ring
+    _ = _ := by simp [T]
 
 end InnerProductSpace
 
@@ -270,6 +280,9 @@ lemma marcinkiewicz_zygmund (hm : m ≠ 0) (f : α → 𝕜) (hf : ∀ i, ∑ a 
     ∑ a in A ^^ n, ‖∑ i, f (a i)‖ ^ (2 * m) ≤
       (8 * m) ^ m * card n ^ (m - 1) * ∑ a in A ^^ n, ∑ i, ‖f (a i)‖ ^ (2 * m) := by
   let _ : InnerProductSpace ℝ 𝕜 := RCLike.innerProductSpaceReal
-  exact InnerProductSpace.marcinkiewicz_zygmund (finrank_le_two 𝕜) hm f hf
+  refine le_trans (InnerProductSpace.marcinkiewicz_zygmund hm f hf) ?_
+  gcongr
+  norm_cast
+  linarith [RCLike.finrank_le_two 𝕜]
 
 end RCLike
