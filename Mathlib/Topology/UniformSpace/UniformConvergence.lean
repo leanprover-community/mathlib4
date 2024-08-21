@@ -239,14 +239,6 @@ theorem UniformContinuous.comp_tendstoUniformly [UniformSpace γ] {g : β → γ
     (hg : UniformContinuous g) (h : TendstoUniformly F f p) :
     TendstoUniformly (fun i => g ∘ F i) (g ∘ f) p := fun _u hu => h _ (hg hu)
 
-/-- Composing on the left by a uniformly continuous on the codomain function preserves uniform
-  convergence -/
-theorem UniformContinuousOn.comp_tendstoUniformly (s : Set β) (F : ι → γ → s) (f : γ → s)
-    {g : β → β} (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
-    TendstoUniformly (fun i => fun x =>  g  (F i x)) (fun x => g (f x)) p := by
-  rw [uniformContinuousOn_iff_restrict] at hg
-  apply (UniformContinuous.comp_tendstoUniformly hg h)
-
 theorem TendstoUniformlyOnFilter.prod_map {ι' α' β' : Type*} [UniformSpace β'] {F' : ι' → α' → β'}
     {f' : α' → β'} {q : Filter ι'} {q' : Filter α'} (h : TendstoUniformlyOnFilter F f p p')
     (h' : TendstoUniformlyOnFilter F' f' q q') :
