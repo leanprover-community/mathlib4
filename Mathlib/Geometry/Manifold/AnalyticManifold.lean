@@ -55,8 +55,7 @@ def analyticPregroupoid : Pregroupoid H where
     apply hg.comp
     · exact hf.mono fun _ ⟨hx1, hx2⟩ ↦ ⟨hx1.1, hx2⟩
     · rintro x ⟨hx1, _⟩
-      simp only [mfld_simps] at hx1 ⊢
-      exact hx1.2
+      simpa only [mfld_simps] using hx1.2
   id_mem := by
     apply (analyticOn_id 𝕜).analyticWithinOn.congr
     rintro x ⟨_, hx2⟩
