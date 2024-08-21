@@ -2,8 +2,8 @@
 
 getCacheSize () {
   rm -rf .lake/build/lib/Mathlib
-  lake exe cache clean!
-  lake exe cache get
+  >&2 lake exe cache clean!
+  >&2 lake exe cache get
   du --summarize --human-readable .lake
 }
 
