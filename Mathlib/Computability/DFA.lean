@@ -246,6 +246,6 @@ end Maps
 
 end DFA
 
-/-- Regular languages are defined by DFAs with finite states. -/
+/-- A regular language is a language that is defined by a DFA with finite states. -/
 def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
   ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
