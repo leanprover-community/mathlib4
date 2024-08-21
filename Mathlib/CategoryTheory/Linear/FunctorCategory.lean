@@ -3,16 +3,11 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Aesop
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Defs
-import Mathlib.Data.Int.Defs
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Cases
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.SplitIfs
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Opposites
+import Mathlib.Logic.Embedding.Basic
 
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Nat.Cast.Defs
 
@@ -25,16 +20,128 @@ import Mathlib.Util.AssertExists
 
 universe x w v u v' u' v₁ v₂ v₃ u₁ u₂ u₃
 
+section Mathlib.Algebra.Group.Action.Defs
+
+open Function (Injective Surjective)
+
+variable {M N G H A B α β γ δ : Type*}
+
+/-! ### Faithful actions -/
+
+/-- Typeclass for faithful actions. -/
+class FaithfulVAdd (G : Type*) (P : Type*) [VAdd G P] : Prop where
+  /-- Two elements `g₁` and `g₂` are equal whenever they act in the same way on all points. -/
+  eq_of_vadd_eq_vadd : ∀ {g₁ g₂ : G}, (∀ p : P, g₁ +ᵥ p = g₂ +ᵥ p) → g₁ = g₂
+
+/-- Typeclass for faithful actions. -/
+@[to_additive]
+class FaithfulSMul (M : Type*) (α : Type*) [SMul M α] : Prop where
+  /-- Two elements `m₁` and `m₂` are equal whenever they act in the same way on all points. -/
+  eq_of_smul_eq_smul : ∀ {m₁ m₂ : M}, (∀ a : α, m₁ • a = m₂ • a) → m₁ = m₂
+
+export FaithfulSMul (eq_of_smul_eq_smul)
+export FaithfulVAdd (eq_of_vadd_eq_vadd)
+
+@[to_additive]
+lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] : Injective ((· • ·) : M → α → α) :=
+  fun _ _ h ↦ FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
+
+-- see Note [lower instance priority]
+/-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
+@[to_additive "See also `AddMonoid.toAddAction`"]
+instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
+
+@[to_additive (attr := simp)]
+lemma smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' := rfl
+
+/-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
+@[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
+instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
+  ⟨fun h ↦ mul_right_cancel (h 1)⟩
+
+/-- Type class for additive monoid actions. -/
+class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
+  /-- Zero is a neutral element for `+ᵥ` -/
+  protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
+  /-- Associativity of `+` and `+ᵥ` -/
+  add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
+
+/-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
+@[to_additive]
+class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
+  /-- One is the neutral element for `•` -/
+  protected one_smul : ∀ b : β, (1 : α) • b = b
+  /-- Associativity of `•` and `*` -/
+  mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
+
+variable [Monoid M] [MulAction M α]
+
+variable (M)
+
+lemma one_smul (b : α) : (1 : M) • b = b := MulAction.one_smul _
+
+end Mathlib.Algebra.Group.Action.Defs
+
+
+section Mathlib.Algebra.GroupWithZero.Action.Defs
+
+variable {M N G A B α β γ δ : Type*}
+
+open Function (Injective Surjective)
+
+/-- Typeclass for scalar multiplication that preserves `0` on the right. -/
+class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
+  /-- Multiplying `0` by a scalar gives `0` -/
+  smul_zero : ∀ a : M, a • (0 : A) = 0
+
+section smul_zero
+
+variable [Zero A] [SMulZeroClass M A]
+
+@[simp]
+theorem smul_zero (a : M) : a • (0 : A) = 0 :=
+  SMulZeroClass.smul_zero _
+
+end smul_zero
+
+/-- Typeclass for scalar multiplication that preserves `0` and `+` on the right.
+
+This is exactly `DistribMulAction` without the `MulAction` part.
+-/
+class DistribSMul (M A : Type*) [AddZeroClass A] extends SMulZeroClass M A where
+  /-- Scalar multiplication distributes across addition -/
+  smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+
+section DistribSMul
+
+variable [AddZeroClass A] [DistribSMul M A]
+
+theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a • b₂ :=
+  DistribSMul.smul_add _ _ _
+
+end DistribSMul
+
+/-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
+class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
+  /-- Multiplying `0` by a scalar gives `0` -/
+  smul_zero : ∀ a : M, a • (0 : A) = 0
+  /-- Scalar multiplication distributes across addition -/
+  smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+
+variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
+
+-- See note [lower instance priority]
+instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
+  { ‹DistribMulAction M A› with }
+
+end Mathlib.Algebra.GroupWithZero.Action.Defs
+
+
 section Mathlib.Algebra.Ring.Defs
 
 variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
 
 open Function
-
-/-!
-### `Distrib` class
--/
-
 
 /-- A typeclass stating that multiplication is left and right distributive
 over addition. -/
@@ -43,20 +150,6 @@ class Distrib (R : Type*) extends Mul R, Add R where
   protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
   /-- Multiplication is right distributive over addition -/
   protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
-
-/-!
-### Classes of semirings and rings
-
-We make sure that the canonical path from `NonAssocSemiring` to `Ring` passes through `Semiring`,
-as this is a path which is followed all the time in linear algebra where the defining semilinear map
-`σ : R →+* S` depends on the `NonAssocSemiring` structure of `R` and `S` while the module
-definition depends on the `Semiring` structure.
-
-It is not currently possible to adjust priorities by hand (see lean4#2115). Instead, the last
-declared instance is used, so we make sure that `Semiring` is declared after `NonAssocRing`, so
-that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSemiring`.
-TODO: clean this once lean4#2115 is fixed
--/
 
 /-- A not-necessarily-unital, not-necessarily-associative semiring. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
@@ -624,13 +717,6 @@ open CategoryTheory.Linear
 variable {R : Type*} [Semiring R]
 variable {C D : Type*} [Category C] [Category D] [Preadditive D] [Linear R D]
 
-instance functorCategorySMul (F G : C ⥤ D) : SMul R (F ⟶ G) where
-  smul r α := 
-    { app := fun X => r • α.app X
-      naturality := by
-        intros
-        rw [Linear.comp_smul, Linear.smul_comp, α.naturality] }
-
 #adaptation_note
 /--
 At nightly-2024-08-08 we needed to significantly increase the maxHeartbeats here.
@@ -639,11 +725,11 @@ count_heartbeats in
 instance functorCategoryLinear : Linear R (C ⥤ D) where
   homModule F G :=
     { 
-      /- smul := fun r α ↦ -/ 
-      /-   { app := fun X ↦ r • α.app X -/
-      /-     naturality := by -/
-      /-       intros -/
-      /-       rw [Linear.comp_smul, Linear.smul_comp, α.naturality] } -/
+      smul := fun r α ↦ 
+        { app := fun X ↦ r • α.app X
+          naturality := by
+            intros
+            rw [Linear.comp_smul, Linear.smul_comp, α.naturality] }
       one_smul := by
         intros
         ext
@@ -667,7 +753,7 @@ instance functorCategoryLinear : Linear R (C ⥤ D) where
       mul_smul := by
         intros
         ext
-        apply mul_smul
+        apply MulAction.mul_smul
         }
   smul_comp := by
     intros
@@ -677,6 +763,13 @@ instance functorCategoryLinear : Linear R (C ⥤ D) where
     intros
     ext
     apply Linear.comp_smul
+
+instance functorCategorySMul (F G : C ⥤ D) : SMul R (F ⟶ G) where
+  smul r α := 
+    { app := fun X => r • α.app X
+      naturality := by
+        intros
+        rw [Linear.comp_smul, Linear.smul_comp, α.naturality] }
 
 instance functorCategoryLinear' : Linear R (C ⥤ D) where
   homModule F G :=
@@ -703,7 +796,7 @@ instance functorCategoryLinear' : Linear R (C ⥤ D) where
       mul_smul := by
         intros
         ext
-        apply mul_smul
+        apply MulAction.mul_smul
         }
   smul_comp := by
     intros
