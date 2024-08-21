@@ -340,9 +340,9 @@ lemma EmbeddedContextFreeGrammar.derives_map {w₁ w₂ : List (Symbol T G.g₀.
 
 /-- A `Symbol` is good iff it is one of those nonterminals that result from projecting or it is any
 terminal. -/
-def EmbeddedContextFreeGrammar.Good : Symbol T G.g.NT → Prop
-  | Symbol.terminal _ => True
-  | Symbol.nonterminal n => ∃ n₀ : G.g₀.NT, G.projectNT n = n₀
+inductive EmbeddedContextFreeGrammar.Good : Symbol T G.g.NT → Prop
+  | terminal (t : T) : Good (.terminal t)
+  | nonterminal (n : G.g.NT) (n₀ : G.g₀.NT) (hn : G.projectNT n = n₀) : Good (.nonterminal n)
 
 /-- A string is good iff every `Symbol` in it is good. -/
 def EmbeddedContextFreeGrammar.GoodString (s : List (Symbol T G.g.NT)) : Prop :=
