@@ -8,6 +8,7 @@ import Mathlib.RingTheory.Henselian
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Connected.Separation
 import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.SeparableDegree
 
 
 import Mathlib.Topology.Algebra.KrasnerDependency
@@ -64,14 +65,18 @@ theorem exist_algEquiv [Normal K L] {x x': L} (h : IsConjRoot K x x') :
 variable {K} in
 theorem not_mem_iff_exist_ne {x : L} (sep : (minpoly K x).Separable) :
     x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := sorry
+-- `should decide what is the definition when both x, x' are trancendental over R`
 
 variable (R) in
 theorem of_isScalarTower {S : Type*} [CommRing S] [Algebra R S] [Algebra S A]
     [IsScalarTower R S A] {x x' : A} (h : IsConjRoot S x x') : IsConjRoot R x x' := sorry
+-- minpoly.aeval_of_isScalarTower
 
 theorem add_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
     IsConjRoot R (x + algebraMap R A r) (x' + algebraMap R A r) := sorry
---  minpoly.add_algebraMap
+-- minpoly.add_algebraMap
+-- `should decide what is the definition when both x, x' are trancendental over R`
+
 /-
 theorem eq_of_degree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
     (g : degree (minpoly R x) = 1) : x = x' := by
@@ -109,11 +114,6 @@ section Separable
 --`separable_mul`
 --`Field.separable_add`
 --`Field.separable_inv`
-theorem Polynomial.Separable.minpoly_add {x y : A} (hx : (minpoly R x).Separable) (hy : (minpoly R y).Separable) : (minpoly R (x + y)).Separable := sorry
-
-theorem Polynomial.Separable.minpoly_neg {x : A} (hx : (minpoly R x).Separable) : (minpoly R (-x)).Separable := sorry
-
-theorem Polynomial.Separable.minpoly_sub {x y : A} (hx : (minpoly R x).Separable) (hy : (minpoly R y).Separable) : (minpoly R (x - y)).Separable := sorry
 
 -- theorem Polymonial.Separable.minpoly_mul
 
@@ -305,7 +305,8 @@ theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
   letI : CompleteSpace M := FiniteDimensional.complete K M
   have hy : y ∈ K⟮y⟯ := IntermediateField.subset_adjoin K {y} rfl
   have zsep : (minpoly M z).Separable := by
-    apply Polynomial.Separable.minpoly_sub (Polynomial.minpoly_separable_of_isScalarTower M xsep)
+    apply Field.isSeparable_sub (Polynomial.minpoly_separable_of_isScalarTower M xsep)
+    simp only [IsSeparable]
     exact
       minpoly.eq_X_sub_C_of_algebraMap_inj (⟨y, hy⟩ : M)
           (NoZeroSMulDivisors.algebraMap_injective (↥M) L) ▸
