@@ -317,7 +317,7 @@ lemma EmbeddedContextFreeGrammar.projectNT_inverse_embedNT {n : G.g.NT} {n₀ : 
   | inl case_valu => exact hnx case_valu.symm
   | inr case_none => exact Option.noConfusion (hn ▸ case_none)
 
-/-- Production by `G.g₀` can be mirrored by `G.g` production. -/
+/-- Production by `G.g₀` can be mirrored by production by `G.g`. -/
 lemma EmbeddedContextFreeGrammar.produces_map {w₁ w₂ : List (Symbol T G.g₀.NT)}
     (hG : G.g₀.Produces w₁ w₂) :
     G.g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
