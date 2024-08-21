@@ -11,9 +11,8 @@ import Mathlib.Algebra.Order.Ring.Defs
 
 A semireal ring is a commutative ring (with unit) in which `-1` is *not* a sum of squares.
 
-For instance, linearly ordered fields are semireal, because sums of squares are positive and `-1` is
-not. More generally, (nontrivial) linearly ordered semirings
-in which a ≤ b → ∃ c, a + c = b holds are semireal.
+For instance, linearly ordered rings are semireal, because sums of squares are positive and `-1` is
+not.
 
 ## Main declaration
 
