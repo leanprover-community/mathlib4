@@ -183,6 +183,7 @@ jobs:
             lake exe cache clean!
             rm -rf .lake/build/lib/Mathlib
             lake exe cache get || (sleep 1; lake exe cache get)
+            git fetch origin master --depth 1
             git checkout origin/master
             lake exe cache get
             masterOleans="$(du --summarize --human-readable .lake)"
