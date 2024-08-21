@@ -8,60 +8,65 @@ import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
-# Constructing an ordered ring from a ring with a specified positive cone.
--/
+# Construct an ordered rings from rings with a specified positive cone.
 
-/-! ### Positive cones -/
+In this file we provide structures `RingCone` and `MaximalRingCone`
+that encode axioms of `OrderedRing` and `LinearOrderedRing`
+in terms of the subset of non-negative elements.
+
+We also provide constructors that convert between
+cones in rings and the corresponding ordered rings.
+-/
 
 variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
 
 namespace Ring
 
-/-- `PositiveConeClass S R` says that `S` is a type of `PositiveCone`s in `R`. -/
-class PositiveConeClass (S R : Type*) [Ring R] [SetLike S R]
-    extends AddCommGroup.PositiveConeClass S R, SubsemiringClass S R : Prop
+/-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
+class RingConeClass (S R : Type*) [Ring R] [SetLike S R]
+    extends AddCommGroup.GroupConeClass S R, SubsemiringClass S R : Prop
 
-/-- A positive cone in a `Ring` is a `Subsemiring` that
+/-- A (positive) cone in a ring is a subsemiring that
 does not contain both `a` and `-a` for any nonzero `a`.
-This is equivalent to being the set of non-negative elements of an `OrderedRing`. -/
-structure PositiveCone (R : Type*) [Ring R] extends Subsemiring R where
-  eq_zero_of_mem_of_neg_mem' : ∀ {a}, a ∈ carrier → -a ∈ carrier → a = 0
+This is equivalent to being the set of non-negative elements of
+some order making the ring into a partially ordered ring. -/
+structure RingCone (R : Type*) [Ring R] extends Subsemiring R where
+  eq_zero_of_mem_of_neg_mem' {a} : a ∈ carrier → -a ∈ carrier → a = 0
 
-instance PositiveCone.instSetLike (R : Type*) [Ring R] : SetLike (PositiveCone R) R where
+instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance PositiveCone.instPositiveConeClass (R : Type*) [Ring R] :
-    PositiveConeClass (PositiveCone R) R where
+instance RingCone.instRingConeClass (R : Type*) [Ring R] :
+    RingConeClass (RingCone R) R where
   add_mem {C} := C.add_mem'
   zero_mem {C} := C.zero_mem'
   mul_mem {C} := C.mul_mem'
   one_mem {C} := C.one_mem'
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
 
-theorem PositiveConeClass.minus_one_not_mem [Nontrivial R] [PositiveConeClass S R] : -1 ∉ C :=
-  fun minus_one_mem =>
-  have := eq_zero_of_mem_of_neg_mem (one_mem C) minus_one_mem; zero_ne_one' R this.symm
+theorem RingConeClass.neg_one_not_mem [Nontrivial R] [RingConeClass S R] : -1 ∉ C :=
+  fun neg_one_mem => zero_ne_one' R (eq_zero_of_mem_of_neg_mem (one_mem C) neg_one_mem).symm
 
-/-- `PositiveConeWithSquaresClass S R` says that `S` is
-a type of positive cones with squares in `R`. -/
-class PositiveConeWithSquaresClass (S R : Type*) [Ring R] [SetLike S R]
-    extends PositiveConeClass S R : Prop where
-  square_mem : ∀ (C : S) (a : R), a * a ∈ C
+/-- `RingConeWithSquaresClass S R` says that `S` is
+a type of cones with squares in `R`. -/
+class RingConeWithSquaresClass (S R : Type*) [Ring R] [SetLike S R]
+    extends RingConeClass S R : Prop where
+  square_mem (C : S) (a : R) : a * a ∈ C
 
-export Ring.PositiveConeWithSquaresClass (square_mem)
+export Ring.RingConeWithSquaresClass (square_mem)
 
-/-- A positive cone with squares in a `Ring` is a `PositiveCone` containing all squares. -/
-structure PositiveConeWithSquares (R : Type*) [Ring R] extends PositiveCone R where
-  square_mem' : ∀ a, a * a ∈ carrier
+/-- A (positive) cone with squares in a ring is a cone containing all squares. -/
+structure RingConeWithSquares (R : Type*) [Ring R] extends RingCone R where
+  square_mem' a : a * a ∈ carrier
 
 instance PositiveConeWithSquares.instSetLike (R : Type*) [Ring R] :
-    SetLike (PositiveConeWithSquares R) R where
+    SetLike (RingConeWithSquares R) R where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance PositiveConeWithSquares.instPositiveConeWithSquaresClass (R : Type*) [Ring R] :
-    PositiveConeWithSquaresClass (PositiveConeWithSquares R) R where
+instance RingConeWithSquares.instRingConeWithSquaresClass (R : Type*) [Ring R] :
+    RingConeWithSquaresClass (RingConeWithSquares R) R where
   add_mem {C} := C.add_mem'
   zero_mem {C} := C.zero_mem'
   mul_mem {C} := C.mul_mem'
@@ -69,23 +74,24 @@ instance PositiveConeWithSquares.instPositiveConeWithSquaresClass (R : Type*) [R
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
   square_mem {C} := C.square_mem'
 
-/-- `TotalPositiveConeClass S R` says that `S` is a type of `TotalPositiveCone`s in `R`. -/
-class TotalPositiveConeClass (S R : Type*) [Ring R] [IsDomain R] [SetLike S R]
-    extends AddCommGroup.TotalPositiveConeClass S R, PositiveConeClass S R : Prop
+/-- `MaximalRingConeClass S R` says that `S` is a type of maximal cones in `R`. -/
+class MaximalRingConeClass (S R : Type*) [Ring R] [IsDomain R] [SetLike S R]
+    extends AddCommGroup.MaximalGroupConeClass S R, RingConeClass S R : Prop
 
-/-- A total positive cone in a domain is a `PositiveCone` containing
+/-- A maximal (positive) cone in a domain is a cone containing
 either `a` or `-a` for every `a`.
-This is equivalent to being the set of non-negative elements of a `LinearOrderedRing`. -/
-structure TotalPositiveCone (R : Type*) [Ring R] [IsDomain R] extends PositiveCone R where
-  mem_or_neg_mem' : ∀ a, a ∈ carrier ∨ -a ∈ carrier
+This is equivalent to being the set of non-negative elements of
+some order making the domain into a linearly ordered domain. -/
+structure MaximalRingCone (R : Type*) [Ring R] [IsDomain R] extends RingCone R where
+  mem_or_neg_mem' a : a ∈ carrier ∨ -a ∈ carrier
 
-instance TotalPositiveCone.instSetLike (R : Type*) [Ring R] [IsDomain R] :
-    SetLike (TotalPositiveCone R) R where
+instance MaximalRingCone.instSetLike (R : Type*) [Ring R] [IsDomain R] :
+    SetLike (MaximalRingCone R) R where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance TotalPositiveCone.instTotalPositiveConeClass (R : Type*) [Ring R] [IsDomain R] :
-    TotalPositiveConeClass (TotalPositiveCone R) R where
+instance MaximalRingCone.instMaximalRingConeClass (R : Type*) [Ring R] [IsDomain R] :
+    MaximalRingConeClass (MaximalRingCone R) R where
   add_mem {C} := C.add_mem'
   zero_mem {C} := C.zero_mem'
   mul_mem {C} := C.mul_mem'
@@ -93,20 +99,19 @@ instance TotalPositiveCone.instTotalPositiveConeClass (R : Type*) [Ring R] [IsDo
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
   mem_or_neg_mem {C} := C.mem_or_neg_mem'
 
-instance TotalPositiveConeClass.instPositiveConeWithSquaresClass (S R : Type*)
-    [Ring R] [IsDomain R] [SetLike S R] [TotalPositiveConeClass S R] :
-    PositiveConeWithSquaresClass S R where
+instance MaximalRingConeClass.instRingConeWithSquaresClass (S R : Type*)
+    [Ring R] [IsDomain R] [SetLike S R] [MaximalRingConeClass S R] :
+    RingConeWithSquaresClass S R where
   square_mem C a := Or.elim (mem_or_neg_mem C a)
                             (fun a_mem => mul_mem a_mem a_mem)
                             (fun na_mem => by simpa using mul_mem na_mem na_mem)
 
-namespace PositiveCone
+namespace RingCone
 variable {T : Type*} [OrderedRing T] {a : T}
 
 variable (T) in
-/-- Construct a `PositiveCone` from
-the set of positive elements of an existing `OrderedRing`. -/
-def nonneg : PositiveCone T where
+/-- Construct a cone from the set of non-negative elements of a partially ordered ring. -/
+def nonneg : RingCone T where
   __ := Subsemiring.nonneg T
   eq_zero_of_mem_of_neg_mem' {a} := by simpa using ge_antisymm
 
@@ -114,37 +119,35 @@ def nonneg : PositiveCone T where
 @[simp] lemma mem_nonneg : a ∈ nonneg T ↔ 0 ≤ a := Iff.rfl
 @[simp, norm_cast] lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
-end PositiveCone
+end RingCone
 
-namespace TotalPositiveCone
+namespace MaximalRingCone
 variable {T : Type*} [LinearOrderedRing T] {a : T}
 
 variable (T) in
-/-- Construct a `TotalPositiveCone` from
-the set of positive elements of an existing `LinearOrderedRing`. -/
-def nonneg : TotalPositiveCone T where
-  __ := PositiveCone.nonneg T
+/-- Construct a maximal cone from the set of non-negative elements of a linearly ordered ring. -/
+def nonneg : MaximalRingCone T where
+  __ := RingCone.nonneg T
   mem_or_neg_mem' := by simpa using le_total 0
 
 @[simp] lemma nonneg_toSubsemiring : (nonneg T).toSubsemiring = .nonneg T := rfl
 @[simp] lemma mem_nonneg : a ∈ nonneg T ↔ 0 ≤ a := Iff.rfl
 @[simp, norm_cast] lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
-end Ring.TotalPositiveCone
+end Ring.MaximalRingCone
 
 open Ring
 
-/-- Construct an `OrderedRing` by designating a positive cone in an existing `Ring`. -/
-@[reducible] def OrderedRing.mkOfPositiveCone [PositiveConeClass S R] : OrderedRing R where
+/-- Construct a partially ordered ring by designating a positive cone in a ring. -/
+@[reducible] def OrderedRing.mkOfPositiveCone [RingConeClass S R] : OrderedRing R where
   __ := ‹Ring R›
   __ := OrderedAddCommGroup.mkOfPositiveCone C
   zero_le_one := show _ ∈ C by simpa using one_mem C
   mul_nonneg x y xnn ynn := show _ ∈ C by simpa using mul_mem xnn ynn
 
-/-- Construct a `LinearOrderedRing` by
-designating a positive cone in an existing `Ring`. -/
+/-- Construct a linearly ordered domain by designating a positive cone in a domain. -/
 @[reducible] def LinearOrderedRing.mkOfPositiveCone
-    [IsDomain R] [TotalPositiveConeClass S R] (dec : DecidablePred (fun x => x ∈ C)) :
+    [IsDomain R] [MaximalRingConeClass S R] (dec : DecidablePred (· ∈ C)) :
     LinearOrderedRing R where
   __ := OrderedRing.mkOfPositiveCone C
   __ := OrderedRing.toStrictOrderedRing R
