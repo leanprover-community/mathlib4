@@ -111,10 +111,10 @@ theorem choose_middle_le_pow (n : ℕ) : (2 * n + 1).choose n ≤ 4 ^ n := by
 theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * (2 * n).choose n :=
   calc
-    _ = (1 + 1) ^ (2 * n) := by norm_num [pow_mul]
+    4 ^ n = (1 + 1) ^ (2 * n) := by norm_num [pow_mul]
     _ = ∑ m ∈ range (2 * n + 1), (2 * n).choose m := by set_option simprocs false in simp [add_pow]
     _ ≤ ∑ m ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
-    _ = _ := by simp
+    _ = (2 * n + 1) * choose (2 * n) n := by simp
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
@@ -163,7 +163,8 @@ theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset 
 
 theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (h0 : x.Nonempty) :
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
-  classical rw [sum_powerset_neg_one_pow_card]
+  classical
+  rw [sum_powerset_neg_one_pow_card]
   exact if_neg (nonempty_iff_ne_empty.mp h0)
 
 variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
@@ -209,7 +210,7 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
 
 theorem sum_antidiagonal_choose_add (d n : ℕ) :
-    (∑ ij ∈ antidiagonal n, (d + ij.2).choose d) = (d + n).choose d + (d + n).choose d.succ := by
+    (∑ ij ∈ antidiagonal n, (d + ij.2).choose d) = (d + n).choose d + (d + n).choose (d + 1) := by
   induction n with
   | zero => simp
   | succ n hn => simpa [Nat.sum_antidiagonal_succ] using hn
