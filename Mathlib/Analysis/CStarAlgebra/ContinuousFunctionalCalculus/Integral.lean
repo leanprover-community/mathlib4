@@ -35,8 +35,6 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus 𝕜 p]
 
-variable {b : A}
-
 lemma cfcCLM_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ) (ha : p a) :
     ∫ x, cfcCLM ha (f x) ∂μ = cfcCLM ha (∫ x, f x ∂μ) := by
   rw [ContinuousLinearMap.integral_comp_comm _ hf₁]
