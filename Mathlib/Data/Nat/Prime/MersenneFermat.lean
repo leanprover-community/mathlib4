@@ -39,7 +39,7 @@ lemma pepin_primality (n : ℕ) (h : 3 ^ (2 ^ (2 ^ n - 1)) = (-1 : ZMod (2 ^ (2 
         key, pow_succ, Nat.mul_div_cancel _ two_pos, ← pow_succ, ← key, h]
     exact ZMod.neg_one_ne_one
 
-/-- Prime factors of `a ^ (2 ^ n) + 1`, `1 < n`, are of form `k * 2 ^ (n + 1) + 1`. -/
+/-- Prime factors of `a ^ (2 ^ n) + 1` are of form `k * 2 ^ (n + 1) + 1`. -/
 lemma pow_pow_add_primeFactors_one_lt {a n p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2)
     (hpdvd : p ∣ a ^ (2 ^ n) + 1) :
     ∃ k, p = k * 2 ^ (n + 1) + 1 := by
