@@ -12,7 +12,8 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 In this file, we introduce the concept of the `l₁` space,
 specifically constructed over finite-dimensional real vector spaces,
 using the `PiLp` type with p = 1.
-This file contains several key definitions and theorems that involve continuous linear maps and their properties in this space.
+This file contains several key definitions and theorems that involve continuous linear maps
+and their properties in this space.
 
 ## Main Definitions
 
@@ -54,6 +55,7 @@ open scoped Pointwise
 noncomputable def f : Fin (finrank ℝ α) → PiLp 1 (fun _ : Fin (finrank ℝ α) => ℝ) :=
   fun i j => if i = j then ‖(finBasis ℝ α) i‖ else 0
 
+/-- Use f to define σ as a continuous linar map -/
 noncomputable def σ := Basis.constrL (finBasis ℝ α) f
 
 theorem continuous_map_sigma : Continuous (σ (α := α)):= by exact ContinuousLinearMap.continuous σ
@@ -105,7 +107,8 @@ theorem sigma_decompose_apply : ∀ x , ∀ j , (σ x) j =
 For any element x in the vector space α, the norm of the image of x
 under the map σ can be expressed as a weighted sum.
 Specifically, it is the sum of the norms of the coefficients
-in the finite basis representation of x, each multiplied by the norm of the corresponding basis vector.
+in the finite basis representation of x, each multiplied by the norm of
+the corresponding basis vector.
 -/
 theorem l1_norm_eq : ∀ x , ‖σ x‖ =  ∑ i , ‖((finBasis ℝ α).repr x) i‖ * ‖(finBasis ℝ α) i‖ := by
   intro x
@@ -127,8 +130,8 @@ b i, including both positive and negative scalings.
 -/
 local notation "b" => (finBasis ℝ α)
 theorem l1Ball_sub_convexHull{x : α}{r : ℝ}(hr : r > 0)(hn : finrank ℝ α ≠ 0):
-    σ.toFun ⁻¹' (Metric.ball (σ.toFun x) r) ⊆
-    convexHull ℝ (({x} : Set α) + ((⋃ i , {(r / ‖b i‖) • (b i)})  ∪  (⋃ i ,{- (r / ‖b i‖) • (b i)}))):= by
+    σ.toFun ⁻¹' (Metric.ball (σ.toFun x) r) ⊆ convexHull ℝ
+    (({x} : Set α) + ((⋃ i , {(r / ‖b i‖) • (b i)})  ∪  (⋃ i ,{- (r / ‖b i‖) • (b i)}))):= by
   intro x₀ hx₀
   simp[dist_eq_norm] at hx₀
   rw[← map_sub] at hx₀
@@ -194,7 +197,8 @@ theorem l1Ball_sub_convexHull{x : α}{r : ℝ}(hr : r > 0)(hn : finrank ℝ α �
     rw[this]
     linarith
 
-  have hz : ∀ (i : ι₀), z i ∈ ((⋃ i , {(r / ‖b i‖) • (b i)})  ∪  (⋃ i ,{- (r / ‖b i‖) • (b i)})) := by --sorry
+  have hz : ∀ (i : ι₀), z i ∈
+      ((⋃ i , {(r / ‖b i‖) • (b i)})  ∪  (⋃ i ,{- (r / ‖b i‖) • (b i)})) := by
     intro i
     simp only [dite_eq_ite, z]
     by_cases h₁ : (i : ℕ) = n + 1
@@ -244,10 +248,12 @@ theorem l1Ball_sub_convexHull{x : α}{r : ℝ}(hr : r > 0)(hn : finrank ℝ α �
     have : w₁ i • ((SignType.sign ((b).equivFun (x₀ - x) i)) * (r / ‖b i‖)) = w₀ i := by
       simp only [Pi.sub_apply, smul_eq_mul, w₁, w₀]
       calc
-        _ = |(b).equivFun (x₀ - x) i| * (‖b i‖ / r) * (SignType.sign ((b).equivFun (x₀ - x) i)) * (r / ‖b i‖) := by
+        _ = |(b).equivFun (x₀ - x) i| * (‖b i‖ / r) * (SignType.sign ((b).equivFun (x₀ - x) i))
+            * (r / ‖b i‖) := by
           rw[← mul_div]
           linarith
-        _ = ((SignType.sign ((b).equivFun (x₀ - x) i)) * |(b).equivFun (x₀ - x) i|) * ((‖b i‖ / r) * (r / ‖b i‖)) := by
+        _ = ((SignType.sign ((b).equivFun (x₀ - x) i)) * |(b).equivFun (x₀ - x) i|) * ((‖b i‖ / r)
+            * (r / ‖b i‖)) := by
           linarith
         _ = _ :=by
           rw[sign_mul_abs]
@@ -289,7 +295,7 @@ theorem sigma_is_injective : Function.Injective σ (α := α) := by
   intro i
   rw[smul_eq_zero]
   left
-  have : ‖(finBasis ℝ α) i‖ ≠ 0:= norm_ne_zero_iff.mpr $ Basis.ne_zero (finBasis ℝ α) i
+  have : ‖(finBasis ℝ α) i‖ ≠ 0:= norm_ne_zero_iff.mpr <| Basis.ne_zero (finBasis ℝ α) i
   have h1 : (bs.repr z) i * ‖(finBasis ℝ α) i‖ = 0 := by
     rw[← hi , h, PiLp.zero_apply]
   apply eq_zero_of_ne_zero_of_mul_right_eq_zero this h1

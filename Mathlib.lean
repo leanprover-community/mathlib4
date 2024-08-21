@@ -1061,6 +1061,7 @@ import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
+import Mathlib.Analysis.Convex.FiniteDimensionalConvexFunctionsLocallyLipschitz
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Analysis.Convex.GaugeRescale
@@ -1228,6 +1229,7 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
+import Mathlib.Analysis.NormedSpace.l1Space
 import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.NormedSpace.Multilinear.Curry
