@@ -15,7 +15,7 @@ if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+
   masterOleans="$(getCacheSize master)"
   git checkout -
   newOleans="$(getCacheSize branch)"
-  printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
+  pctgs="$(printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
     awk 'function format(percent,diff,fname) {
       return sprintf("| %4.2f%% | %s | %s |\n", percent, diff, fname)
     }
@@ -36,6 +36,8 @@ if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+
       }
       print mathlib
     }
-    '
+    ')"
+  printf '%s\n' "${pctgs}"
+  printf '%s\n' "${pctgs}" >> "${GITHUB_OUTPUT}"
   #printf '.lake size\nmaster: %s\nthis PR: %s' "${masterOleans}" "${newOleans}"
 fi
