@@ -60,6 +60,7 @@ lemma condition_toIcoMod_iff {α : ℝ} :
 namespace Condition
 
 variable {α : ℝ} (hc : Condition α)
+include hc
 
 lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
   rcases h with ⟨h0, h2⟩

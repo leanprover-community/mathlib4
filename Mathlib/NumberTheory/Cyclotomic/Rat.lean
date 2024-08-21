@@ -28,9 +28,11 @@ open Algebra IsCyclotomicExtension Polynomial NumberField
 
 open scoped Cyclotomic Nat
 
-variable {p : ℕ+} {k : ℕ} {K : Type u} [Field K] [CharZero K] {ζ : K} [hp : Fact (p : ℕ).Prime]
+variable {p : ℕ+} {k : ℕ} {K : Type u} [Field K] {ζ : K} [hp : Fact (p : ℕ).Prime]
 
 namespace IsCyclotomicExtension.Rat
+
+variable [CharZero K]
 
 /-- The discriminant of the power basis given by `ζ - 1`. -/
 theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -145,6 +147,10 @@ open IsCyclotomicExtension.Rat
 
 namespace IsPrimitiveRoot
 
+section CharZero
+
+variable [CharZero K]
+
 /-- The algebra isomorphism `adjoin ℤ {ζ} ≃ₐ[ℤ] (𝓞 K)`, where `ζ` is a primitive `p ^ k`-th root of
 unity and `K` is a `p ^ k`-th cyclotomic extension of `ℚ`. -/
 @[simps!]
@@ -168,6 +174,8 @@ noncomputable def integralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
 
 /-- Abbreviation to see a primitive root of unity as a member of the ring of integers. -/
 abbrev toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : 𝓞 K := ⟨ζ, hζ.isIntegral k.pos⟩
+
+end CharZero
 
 lemma coe_toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = ζ := rfl
 
@@ -194,6 +202,8 @@ lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
     IsPrimitiveRoot hζ.toInteger k :=
   IsPrimitiveRoot.of_map_of_injective (by exact hζ) RingOfIntegers.coe_injective
 
+variable [CharZero K]
+
 -- Porting note: the proof changed because `simp` unfolds too much.
 @[simp]
 theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
@@ -215,7 +225,8 @@ unity and `K` is a `p`-th cyclotomic extension of `ℚ`. -/
 noncomputable def _root_.IsPrimitiveRoot.adjoinEquivRingOfIntegers'
     [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     adjoin ℤ ({ζ} : Set K) ≃ₐ[ℤ] 𝓞 K :=
-  @adjoinEquivRingOfIntegers p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
+  have : IsCyclotomicExtension {p ^ 1} ℚ K := by convert hcycl; rw [pow_one]
+  adjoinEquivRingOfIntegers (p := p) (k := 1) (ζ := ζ) (by rwa [pow_one])
 
 /-- The ring of integers of a `p`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
 instance _root_.IsCyclotomicExtension.ring_of_integers' [IsCyclotomicExtension {p} ℚ K] :
@@ -227,18 +238,19 @@ instance _root_.IsCyclotomicExtension.ring_of_integers' [IsCyclotomicExtension {
 cyclotomic extension of `ℚ`. -/
 noncomputable def integralPowerBasis' [hcycl : IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) : PowerBasis ℤ (𝓞 K) :=
-  @integralPowerBasis p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
+  have : IsCyclotomicExtension {p ^ 1} ℚ K := by convert hcycl; rw [pow_one]
+  integralPowerBasis (p := p) (k := 1) (ζ := ζ) (by rwa [pow_one])
 
 @[simp]
 theorem integralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     hζ.integralPowerBasis'.gen = hζ.toInteger :=
-  @integralPowerBasis_gen p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
+  integralPowerBasis_gen (hcycl := by rwa [pow_one]) (by rwa [pow_one])
 
 @[simp]
 theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     hζ.integralPowerBasis'.dim = φ p := by
-  erw [@integralPowerBasis_dim p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one]),
-    pow_one]
+  erw [integralPowerBasis_dim (hcycl := by rwa [pow_one]) (by rwa [pow_one]), pow_one]
+
 
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic
 extension of `ℚ`. -/
@@ -263,15 +275,18 @@ theorem subOneIntegralPowerBasis_gen [IsCyclotomicExtension {p ^ k} ℚ K]
 
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p`-th cyclotomic
 extension of `ℚ`. -/
-noncomputable def subOneIntegralPowerBasis' [hcycl : IsCyclotomicExtension {p} ℚ K]
+noncomputable def subOneIntegralPowerBasis' [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) : PowerBasis ℤ (𝓞 K) :=
-  @subOneIntegralPowerBasis p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
+  have : IsCyclotomicExtension {p ^ 1} ℚ K := by rwa [pow_one]
+  subOneIntegralPowerBasis (p := p) (k := 1) (ζ := ζ) (by rwa [pow_one])
 
-@[simp]
-theorem subOneIntegralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K]
+@[simp, nolint unusedHavesSuffices]
+theorem subOneIntegralPowerBasis'_gen [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) :
     hζ.subOneIntegralPowerBasis'.gen = hζ.toInteger - 1 :=
-  @subOneIntegralPowerBasis_gen p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
+  -- The `unusedHavesSuffices` linter incorrectly thinks this `have` is unnecessary.
+  have : IsCyclotomicExtension {p ^ 1} ℚ K := by rwa [pow_one]
+  subOneIntegralPowerBasis_gen (by rwa [pow_one])
 
 /-- `ζ - 1` is prime if `p ≠ 2` and `ζ` is a primitive `p ^ (k + 1)`-th root of unity.
   See `zeta_sub_one_prime` for a general statement. -/
@@ -308,12 +323,12 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 
   · convert Prime.neg Int.prime_two
     apply RingHom.injective_int (algebraMap ℤ ℚ)
     rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ)]
-    simp only [Nat.zero_eq, PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
+    simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
       Subalgebra.coe_val, algebraMap_int_eq, map_neg, map_ofNat]
-    simpa only [zero_add, pow_one, AddSubgroupClass.coe_sub, OneMemClass.coe_one, Nat.zero_eq,
+    simpa only [zero_add, pow_one, AddSubgroupClass.coe_sub, OneMemClass.coe_one,
         pow_zero]
       using hζ.norm_pow_sub_one_two (cyclotomic.irreducible_rat
-        (by simp only [Nat.zero_eq, zero_add, pow_one, Nat.ofNat_pos]))
+        (by simp only [zero_add, pow_one, Nat.ofNat_pos]))
   convert Int.prime_two
   apply RingHom.injective_int (algebraMap ℤ ℚ)
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ)]
@@ -547,6 +562,7 @@ namespace IsCyclotomicExtension.Rat
 open nonZeroDivisors IsPrimitiveRoot
 
 variable (K p k)
+variable [CharZero K]
 
 /-- We compute the absolute discriminant of a `p ^ k`-th cyclotomic field.
   Beware that in the cases `p ^ k = 1` and `p ^ k = 2` the formula uses `1 / 2 = 0` and `0 - 1 = 0`.

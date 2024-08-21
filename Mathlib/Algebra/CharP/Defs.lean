@@ -366,7 +366,7 @@ instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
 end Prod
 
 instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift R) p where
-  cast_eq_zero_iff' n := Iff.trans (ULift.ext_iff _ _) <| CharP.cast_eq_zero_iff R p n
+  cast_eq_zero_iff' n := Iff.trans ULift.ext_iff <| CharP.cast_eq_zero_iff R p n
 
 instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p where
   cast_eq_zero_iff' n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n

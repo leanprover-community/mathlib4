@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Logic.Relation
 
 /-!
 # Special shapes for limits in `Type`.
@@ -657,6 +658,7 @@ lemma equivPullbackObj_symm_apply_snd (x : Types.PullbackObj f g) :
   obtain ⟨x, rfl⟩ := (equivPullbackObj hc).surjective x
   simp
 
+include hc in
 lemma type_ext {x y : c.pt} (h₁ : c.fst x = c.fst y) (h₂ : c.snd x = c.snd y) : x = y :=
   (equivPullbackObj hc).injective (by ext <;> assumption)
 
