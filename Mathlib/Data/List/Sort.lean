@@ -14,7 +14,25 @@ import Batteries.Data.List.Perm
 In this file we define `List.Sorted r l` to be an alias for `List.Pairwise r l`.
 This alias is preferred in the case that `r` is a `<` or `≤`-like relation.
 Then we define two sorting algorithms:
-`List.insertionSort` and `List.mergeSort`, and prove their correctness.
+`List.insertionSort` and `List.mergeSort'`, and prove their correctness.
+
+## Adaptation note
+
+`List.mergeSort` has now been implemented in Lean4.
+It improves on the one here by being a "stable" sort
+(in the sense that a sorted sublist of the original list remains a sublist of the result),
+and is also marginally faster.
+
+However we haven't yet replaced `List.mergeSort'` here.
+The obstacle is that `mergeSort'` is written using `r : α → α → Prop` with `[DecidableRel r]`,
+while `mergeSort` uses `r : α → α → Bool`. This is hardly insurmountable,
+but it's a bit of work that hasn't been done yet.
+
+`List.mergeSort'` is only used in Mathlib to sort multisets for printing, so this is not critical.
+
+A pull request cleaning up here, and ideally deprecating or deleting `List.mergeSort'`,
+would be welcome.
+
 -/
 
 
