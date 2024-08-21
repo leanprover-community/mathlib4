@@ -188,7 +188,7 @@ jobs:
 
       - name: compare oleans
         run: |
-        ./scripts/olean_comparison.sh
+          ./scripts/olean_comparison.sh
 
       - name: build archive
         id: archive
