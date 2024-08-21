@@ -29,6 +29,10 @@ theorem ite_eq_gt_distrib (c : Prop) [Decidable c] (a b : Ordering) :
     ((if c then a else b) = Ordering.gt) = if c then a = Ordering.gt else b = Ordering.gt := by
   by_cases c <;> simp [*]
 
+theorem orElse_eq_eq (a b : Ordering) :
+    orElse a b = Ordering.eq ↔ a = Ordering.eq ∧ b = Ordering.eq := by
+  cases a <;> cases b <;> decide
+
 end Ordering
 
 section

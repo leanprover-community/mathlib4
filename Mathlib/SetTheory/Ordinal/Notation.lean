@@ -153,7 +153,7 @@ def cmp : ONote → ONote → Ordering
   | 0, 0 => Ordering.eq
   | _, 0 => Ordering.gt
   | 0, _ => Ordering.lt
-  | _o₁@(oadd e₁ n₁ a₁), _o₂@(oadd e₂ n₂ a₂) =>
+  | oadd e₁ n₁ a₁, oadd e₂ n₂ a₂ =>
     (cmp e₁ e₂).orElse <| (_root_.cmp n₁ n₂).orElse (cmp a₁ a₂)
 
 theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o₂
@@ -161,21 +161,14 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
   | oadd e n a, 0, h => by injection h
   | 0, oadd e n a, h => by injection h
   | oadd e₁ n₁ a₁, oadd e₂ n₂ a₂, h => by
-    revert h; simp only [cmp]
-    cases h₁ : cmp e₁ e₂ <;> intro h <;> try cases h
-    obtain rfl := eq_of_cmp_eq h₁
-    revert h; cases h₂ : _root_.cmp n₁ n₂ <;> intro h <;> try cases h
-    obtain rfl := eq_of_cmp_eq h
-    rw [_root_.cmp, cmpUsing_eq_eq, not_lt, not_lt, ← le_antisymm_iff] at h₂
-    obtain rfl := h₂
-    simp
+    rw [cmp, Ordering.orElse_eq_eq, Ordering.orElse_eq_eq] at h
+    rw [eq_of_cmp_eq h.1, (cmp_eq_eq_iff _ _).1 h.2.1, eq_of_cmp_eq h.2.2]
 
 protected theorem zero_lt_one : (0 : ONote) < 1 := by
   simp only [lt_def, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
     zero_lt_one]
 
-/-- `NFBelow o b` says that `o` is a normal form ordinal notation
-  satisfying `repr o < ω ^ b`. -/
+/-- `NFBelow o b` says that `o` is a normal form ordinal notation satisfying `repr o < ω ^ b`. -/
 inductive NFBelow : ONote → Ordinal.{0} → Prop
   | zero {b} : NFBelow 0 b
   | oadd' {e n a eb b} : NFBelow e eb → NFBelow a (repr e) → repr e < b → NFBelow (oadd e n a) b
