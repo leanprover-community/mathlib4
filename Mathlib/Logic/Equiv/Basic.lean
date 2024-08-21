@@ -1533,9 +1533,8 @@ theorem toPerm_involutive {f : α → α} (h : Involutive f) : Involutive (h.toP
   h
 
 @[simp]
-theorem symm_eq_self_of_involutive (f : Equiv.Perm α) (h : Involutive f) : f.symm = f := by
-  ext x
-  exact congrFun (h.leftInverse_iff.mp f.left_inv) x
+theorem symm_eq_self_of_involutive (f : Equiv.Perm α) (h : Involutive f) : f.symm = f :=
+  DFunLike.coe_injective (h.leftInverse_iff.mp f.left_inv)
 
 end Function.Involutive
 
