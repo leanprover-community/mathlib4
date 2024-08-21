@@ -35,18 +35,21 @@ variable {l l₁ l₂ l₃ : List α} {a b : α} {m n : ℕ}
 
 section Fix
 
-@[deprecated (since := "2024-08-15")] alias isSuffix.reverse := IsSuffix.reverse
-@[deprecated (since := "2024-08-15")] alias isPrefix.reverse := IsPrefix.reverse
-@[deprecated (since := "2024-08-15")] alias isInfix.reverse := IsInfix.reverse
+@[deprecated IsSuffix.reverse (since := "2024-08-12")] alias isSuffix.reverse := IsSuffix.reverse
+@[deprecated IsPrefix.reverse (since := "2024-08-12")] alias isPrefix.reverse := IsPrefix.reverse
+@[deprecated IsInfix.reverse (since := "2024-08-12")] alias isInfix.reverse := IsInfix.reverse
 
+@[deprecated IsInfix.eq_of_length (since := "2024-08-12")]
 theorem eq_of_infix_of_length_eq (h : l₁ <:+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.sublist.eq_of_length
+  h.eq_of_length
 
+@[deprecated IsPrefix.eq_of_length (since := "2024-08-12")]
 theorem eq_of_prefix_of_length_eq (h : l₁ <+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.sublist.eq_of_length
+  h.eq_of_length
 
+@[deprecated IsSuffix.eq_of_length (since := "2024-08-12")]
 theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.sublist.eq_of_length
+  h.eq_of_length
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
   calc
@@ -93,17 +96,17 @@ protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl _ := prefix_rfl
   trans _ _ _ := IsPrefix.trans
-  antisymm _ _ h₁ h₂ := eq_of_prefix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
+  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
 
 instance : IsPartialOrder (List α) (· <:+ ·) where
   refl _ := suffix_rfl
   trans _ _ _ := IsSuffix.trans
-  antisymm _ _ h₁ h₂ := eq_of_suffix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
+  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
 
 instance : IsPartialOrder (List α) (· <:+: ·) where
   refl _ := infix_rfl
   trans _ _ _ := IsInfix.trans
-  antisymm _ _ h₁ h₂ := eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
+  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
 
 end Fix
 

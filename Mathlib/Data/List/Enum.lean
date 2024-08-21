@@ -45,12 +45,12 @@ theorem get_enum (l : List α) (i : Fin l.enum.length) :
     l.enum.get i = (i.1, l.get (i.cast enum_length)) := by
   simp
 
-@[deprecated mk_add_mem_enumFrom_iff_getElem? (since := "2024-08-15")]
+@[deprecated mk_add_mem_enumFrom_iff_getElem? (since := "2024-08-12")]
 theorem mk_add_mem_enumFrom_iff_get? {n i : ℕ} {x : α} {l : List α} :
     (n + i, x) ∈ enumFrom n l ↔ l.get? i = x := by
   simp [mem_iff_get?]
 
-@[deprecated mk_mem_enumFrom_iff_le_and_getElem?_sub (since := "2024-08-15")]
+@[deprecated mk_mem_enumFrom_iff_le_and_getElem?_sub (since := "2024-08-12")]
 theorem mk_mem_enumFrom_iff_le_and_get?_sub {n i : ℕ} {x : α} {l : List α} :
     (i, x) ∈ enumFrom n l ↔ n ≤ i ∧ l.get? (i - n) = x := by
   simp [mk_mem_enumFrom_iff_le_and_getElem?_sub]
