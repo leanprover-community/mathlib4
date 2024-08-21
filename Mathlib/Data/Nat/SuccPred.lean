@@ -3,8 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Nat
+-- import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fin.Basic
+import Mathlib.Order.Nat
 import Mathlib.Order.SuccPred.Basic
 
 /-!
@@ -13,6 +14,7 @@ import Mathlib.Order.SuccPred.Basic
 In this file, we show that `ℕ` is both an archimedean `succOrder` and an archimedean `predOrder`.
 -/
 
+assert_not_exists OrderedCommMonoid
 
 open Function Order
 
@@ -63,10 +65,10 @@ theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
 lemma le_succ_iff_eq_or_le : m ≤ n.succ ↔ m = n.succ ∨ m ≤ n := Order.le_succ_iff_eq_or_le
 
 instance : IsSuccArchimedean ℕ :=
-  ⟨fun {a} {b} h => ⟨b - a, by rw [succ_eq_succ, succ_iterate, add_tsub_cancel_of_le h]⟩⟩
+  ⟨fun {a} {b} h => ⟨b - a, by rw [succ_eq_succ, succ_iterate, Nat.add_sub_cancel' h]⟩⟩
 
 instance : IsPredArchimedean ℕ :=
-  ⟨fun {a} {b} h => ⟨b - a, by rw [pred_eq_pred, pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
+  ⟨fun {a} {b} h => ⟨b - a, by rw [pred_eq_pred, pred_iterate, Nat.sub_sub_self h]⟩⟩
 
 lemma forall_ne_zero_iff (P : ℕ → Prop) :
     (∀ i, i ≠ 0 → P i) ↔ (∀ i, P (i + 1)) :=
@@ -74,6 +76,8 @@ lemma forall_ne_zero_iff (P : ℕ → Prop) :
 
 /-! ### Covering relation -/
 
+instance : NoMaxOrder ℕ where
+  exists_gt n := ⟨n + 1, Nat.lt_add_one n⟩
 
 protected theorem covBy_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
   succ_eq_iff_covBy.symm
