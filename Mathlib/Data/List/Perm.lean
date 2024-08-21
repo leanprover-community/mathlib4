@@ -336,10 +336,9 @@ theorem Perm.drop_inter [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ y
   by_cases h'' : n ≤ xs.length
   · let n' := xs.length - n
     have h₀ : n = xs.length - n' := by rwa [Nat.sub_sub_self]
-    have h₁ : n' ≤ xs.length := Nat.sub_le ..
-    have h₂ : xs.drop n = (xs.reverse.take n').reverse := by
-      rw [take_reverse h₁, h₀, reverse_reverse]
-    rw [h₂]
+    have h₁ : xs.drop n = (xs.reverse.take n').reverse := by
+      rw [take_reverse, h₀, reverse_reverse]
+    rw [h₁]
     apply (reverse_perm _).trans
     rw [inter_reverse]
     apply Perm.take_inter _ _ h'

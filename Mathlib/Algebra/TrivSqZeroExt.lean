@@ -647,8 +647,8 @@ theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐ�
   · simp
   · rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
     simp_rw [List.map_cons, List.map_map, Function.comp, Prod.map_snd, Prod.map_fst, id,
-      List.take_zero, List.take_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul, List.drop,
-      mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,
+      List.take_zero, List.take_succ_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul,
+      List.drop, mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,
       ← smul_comm (_ : R) (_ : Rᵐᵒᵖ)]
     exact add_comm _ _
 
