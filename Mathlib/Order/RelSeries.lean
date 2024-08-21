@@ -734,7 +734,7 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
-/-- The strict series `0 < … < n` in ℕ. -/
+/-- The strict series `0 < … < n` in `ℕ`. -/
 def iota (n : ℕ) : LTSeries ℕ where
   length := n
   toFun := (↑)
