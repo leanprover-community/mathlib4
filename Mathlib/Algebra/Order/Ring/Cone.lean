@@ -18,11 +18,9 @@ We also provide constructors that convert between
 cones in rings and the corresponding ordered rings.
 -/
 
-namespace Ring
-
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
 class RingConeClass (S R : Type*) [Ring R] [SetLike S R]
-    extends AddCommGroup.AddGroupConeClass S R, SubsemiringClass S R : Prop
+    extends AddGroupConeClass S R, SubsemiringClass S R : Prop
 
 /-- A (positive) cone in a ring is a subsemiring that
 does not contain both `a` and `-a` for any nonzero `a`.
@@ -49,7 +47,7 @@ class RingConeWithSquaresClass (S R : Type*) [Ring R] [SetLike S R]
     extends RingConeClass S R : Prop where
   square_mem (C : S) (a : R) : a * a ∈ C
 
-export Ring.RingConeWithSquaresClass (square_mem)
+export RingConeWithSquaresClass (square_mem)
 
 /-- A (positive) cone with squares in a ring is a cone containing all squares. -/
 structure RingConeWithSquares (R : Type*) [Ring R] extends RingCone R where
@@ -71,7 +69,7 @@ instance RingConeWithSquares.instRingConeWithSquaresClass (R : Type*) [Ring R] :
 
 /-- `MaximalRingConeClass S R` says that `S` is a type of maximal cones in `R`. -/
 class MaximalRingConeClass (S R : Type*) [Ring R] [IsDomain R] [SetLike S R]
-    extends AddCommGroup.MaximalAddGroupConeClass S R, RingConeClass S R : Prop
+    extends MaximalAddGroupConeClass S R, RingConeClass S R : Prop
 
 /-- A maximal (positive) cone in a domain is a cone containing
 either `a` or `-a` for every `a`.
@@ -129,11 +127,9 @@ def nonneg : MaximalRingCone T where
 @[simp] lemma mem_nonneg : a ∈ nonneg T ↔ 0 ≤ a := Iff.rfl
 @[simp, norm_cast] lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
-end Ring.MaximalRingCone
+end MaximalRingCone
 
 variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
-
-open Ring
 
 /-- A cone over a nontrivial ring does not conain -1. -/
 theorem RingConeClass.neg_one_not_mem [Nontrivial R] [RingConeClass S R] : -1 ∉ C :=

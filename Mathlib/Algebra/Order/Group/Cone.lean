@@ -18,99 +18,97 @@ cones in groups and the corresponding ordered groups.
 -/
 
 /-- `GroupConeClass S G` says that `S` is a type of cones in `G`. -/
-class CommGroup.GroupConeClass (S G : Type*) [CommGroup G] [SetLike S G] extends
+class GroupConeClass (S G : Type*) [CommGroup G] [SetLike S G] extends
     SubmonoidClass S G : Prop where
   eq_one_of_mem_of_inv_mem {C : S} {a : G} : a ∈ C → a⁻¹ ∈ C → a = 1
 
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
-class AddCommGroup.AddGroupConeClass (S G : Type*) [AddCommGroup G] [SetLike S G] extends
+class AddGroupConeClass (S G : Type*) [AddCommGroup G] [SetLike S G] extends
     AddSubmonoidClass S G : Prop where
   eq_zero_of_mem_of_neg_mem {C : S} {a : G} : a ∈ C → -a ∈ C → a = 0
 
-attribute [to_additive] CommGroup.GroupConeClass
-
-export CommGroup.GroupConeClass (eq_one_of_mem_of_inv_mem)
-export AddCommGroup.AddGroupConeClass (eq_zero_of_mem_of_neg_mem)
+attribute [to_additive] GroupConeClass
+export GroupConeClass (eq_one_of_mem_of_inv_mem)
+export AddGroupConeClass (eq_zero_of_mem_of_neg_mem)
 
 /-- A (positive) cone in an abelian group is a submonoid that
 does not contain both `a` and `a⁻¹` for any non-identity `a`.
 This is equivalent to being the set of elements that are at least 1 in
 some order making the group into a partially ordered group. -/
-structure CommGroup.GroupCone (G : Type*) [CommGroup G] extends Submonoid G where
+structure GroupCone (G : Type*) [CommGroup G] extends Submonoid G where
   eq_one_of_mem_of_inv_mem' {a} : a ∈ carrier → a⁻¹ ∈ carrier → a = 1
 
 /-- A (positive) cone in an abelian group is a submonoid that
 does not contain both `a` and `-a` for any nonzero `a`.
 This is equivalent to being the set of non-negative elements of
 some order making the group into a partially ordered group. -/
-structure AddCommGroup.AddGroupCone (G : Type*) [AddCommGroup G] extends AddSubmonoid G where
+structure AddGroupCone (G : Type*) [AddCommGroup G] extends AddSubmonoid G where
   eq_zero_of_mem_of_neg_mem' {a} : a ∈ carrier → -a ∈ carrier → a = 0
 
-attribute [to_additive] CommGroup.GroupCone
+attribute [to_additive] GroupCone
 
 @[to_additive]
-instance CommGroup.GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G) G where
+instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G) G where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 @[to_additive]
-instance CommGroup.GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
+instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
     GroupConeClass (GroupCone G) G where
   mul_mem {C} := C.mul_mem'
   one_mem {C} := C.one_mem'
   eq_one_of_mem_of_inv_mem {C} := C.eq_one_of_mem_of_inv_mem'
 
 /-- `MaximalGroupConeClass S G` says that `S` is a type of maximal cones in `G`. -/
-class CommGroup.MaximalGroupConeClass (S G : Type*) [CommGroup G] [SetLike S G]
+class MaximalGroupConeClass (S G : Type*) [CommGroup G] [SetLike S G]
     extends GroupConeClass S G : Prop where
   mem_or_inv_mem (C : S) (a : G) : a ∈ C ∨ a⁻¹ ∈ C
 
 /-- `MaximalAddGroupConeClass S G` says that `S` is a type of maximal cones in `G`. -/
-class AddCommGroup.MaximalAddGroupConeClass (S G : Type*) [AddCommGroup G] [SetLike S G]
+class MaximalAddGroupConeClass (S G : Type*) [AddCommGroup G] [SetLike S G]
     extends AddGroupConeClass S G : Prop where
   mem_or_neg_mem (C : S) (a : G) : a ∈ C ∨ -a ∈ C
 
-attribute [to_additive] CommGroup.MaximalGroupConeClass
-
-export CommGroup.MaximalGroupConeClass (mem_or_inv_mem)
-export AddCommGroup.MaximalAddGroupConeClass (mem_or_neg_mem)
+attribute [to_additive] MaximalGroupConeClass
+export MaximalGroupConeClass (mem_or_inv_mem)
+export MaximalAddGroupConeClass (mem_or_neg_mem)
 
 /-- A maximal (positive) cone in an abelian group is a cone containing
 either `a` or `a⁻¹` for every `a`.
 This is equivalent to being the set of elements that are at least 1 in
 some order making the group into a linearly ordered group. -/
-structure CommGroup.MaximalGroupCone (G : Type*) [CommGroup G] extends GroupCone G where
+structure MaximalGroupCone (G : Type*) [CommGroup G] extends GroupCone G where
   mem_or_inv_mem' a : a ∈ carrier ∨ a⁻¹ ∈ carrier
 
 /-- A maximal (positive) cone in an abelian group is a cone containing
 either `a` or `-a` for every `a`.
 This is equivalent to being the set of non-negative elements of
 some order making the group into a linearly ordered group. -/
-structure AddCommGroup.MaximalAddGroupCone (G : Type*) [AddCommGroup G]
-    extends AddCommGroup.AddGroupCone G where
+structure MaximalAddGroupCone (G : Type*) [AddCommGroup G]
+    extends AddGroupCone G where
   mem_or_neg_mem' a : a ∈ carrier ∨ -a ∈ carrier
 
-attribute [to_additive] CommGroup.MaximalGroupCone
+attribute [to_additive] MaximalGroupCone
 
 @[to_additive]
-instance CommGroup.MaximalGroupCone.instSetLike (G : Type*) [CommGroup G] :
+instance MaximalGroupCone.instSetLike (G : Type*) [CommGroup G] :
   SetLike (MaximalGroupCone G) G where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 @[to_additive]
-instance CommGroup.MaximalGroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
+instance MaximalGroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
     GroupConeClass (MaximalGroupCone G) G where
   mul_mem {C} := C.mul_mem'
   one_mem {C} := C.one_mem'
   eq_one_of_mem_of_inv_mem {C} := C.eq_one_of_mem_of_inv_mem'
 
 @[to_additive]
-instance CommGroup.MaximalGroupCone.instMaximalGroupConeClass (G : Type*) [CommGroup G] :
+instance MaximalGroupCone.instMaximalGroupConeClass (G : Type*) [CommGroup G] :
     MaximalGroupConeClass (MaximalGroupCone G) G where
   mem_or_inv_mem {C} := C.mem_or_inv_mem'
 
-namespace CommGroup.GroupCone
+namespace GroupCone
 variable {H : Type*} [OrderedCommGroup H] {a : H}
 
 variable (H) in
@@ -151,11 +149,9 @@ lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
-end CommGroup.MaximalGroupCone
+end MaximalGroupCone
 
 variable {S G : Type*} [CommGroup G] [SetLike S G] (C : S)
-
-open CommGroup
 
 /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
 @[to_additive (attr := reducible)
