@@ -15,9 +15,10 @@ In this file we define `List.Sorted r l` to be an alias for `List.Pairwise r l`.
 This alias is preferred in the case that `r` is a `<` or `≤`-like relation.
 Then we define two sorting algorithms:
 `List.insertionSort` and `List.mergeSort'`, and prove their correctness.
+-/
 
-## Adaptation note
-
+#adaptation_note
+/--
 `List.mergeSort` has now been implemented in Lean4.
 It improves on the one here by being a "stable" sort
 (in the sense that a sorted sublist of the original list remains a sublist of the result),
@@ -32,7 +33,6 @@ but it's a bit of work that hasn't been done yet.
 
 A pull request cleaning up here, and ideally deprecating or deleting `List.mergeSort'`,
 would be welcome.
-
 -/
 
 
