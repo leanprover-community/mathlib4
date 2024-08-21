@@ -53,29 +53,35 @@ def zeroAtImInftySubmodule (α : Type*) [NormedField α] : Submodule α (ℍ →
 def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (ℍ → α) :=
   boundedFilterSubalgebra _ atImInfty
 
-nonrec theorem IsBoundedAtImInfty.add {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
+namespace IsBoundedAtImInfty
+
+variable {α : Type*} {f g : ℍ → α}
+
+nonrec theorem add [SeminormedAddCommGroup α] (hf : IsBoundedAtImInfty f)
     (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f + g) := by
   simpa only using hf.add hg
 
-nonrec theorem IsBoundedAtImInfty.sub {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
+nonrec theorem sub [SeminormedAddCommGroup α] (hf : IsBoundedAtImInfty f)
     (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f - g) := by
   simpa only using hf.sub hg
 
-nonrec theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
+nonrec theorem mul [SeminormedRing α] (hf : IsBoundedAtImInfty f)
     (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f * g) := by
   simpa only using hf.mul hg
 
-theorem bounded_mem {α : Type*} [Norm α] {f : ℍ → α} :
+end IsBoundedAtImInfty
+
+theorem isBoundedAtImInfty_iff {α : Type*} [Norm α] {f : ℍ → α} :
     IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ M := by
   simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
     atImInfty_mem]
 
-theorem zero_at_im_infty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
+theorem isZeroAtImInfty_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ ε :=
   (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by simp
 
 theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
-  bounded_mem.mpr ⟨1, (zero_at_im_infty.mp hf) 1 zero_lt_one⟩
+  isBoundedAtImInfty_iff.mpr ⟨1, (isZeroAtImInfty_iff.mp hf) 1 zero_lt_one⟩
 
 end UpperHalfPlane
