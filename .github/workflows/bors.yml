@@ -198,7 +198,7 @@ jobs:
             rm -rf .lake/build/lib/Mathlib
             lake exe cache get || (sleep 1; lake exe cache get)
             lake build --no-build
-            printf '.lake size: %s\n' "$(du -d0 -h .lake)"
+            printf '.lake size: %s\n' "$(du --summarize --human-readable .lake)"
           fi
 
       - name: build archive
