@@ -59,27 +59,22 @@ def analyticPregroupoid : Pregroupoid H where
   id_mem := by
     apply (analyticOn_id 𝕜).analyticWithinOn.congr
     rintro x ⟨_, hx2⟩
-    rcases mem_range.1 hx2 with ⟨y, hy⟩
+    obtain ⟨y, hy⟩ := mem_range.1 hx2
     simp only [mfld_simps, ← hy]
   locality {f u} _ H := by
     apply analyticWithinOn_of_locally_analyticWithinOn
     rintro y ⟨hy1, hy2⟩
-    rcases mem_range.1 hy2 with ⟨x, hx⟩
-    rw [← hx] at hy1 ⊢
-    simp only [mfld_simps] at hy1 ⊢
-    rcases H x hy1 with ⟨v, v_open, xv, hv⟩
+    obtain ⟨x, hx⟩ := mem_range.1 hy2
+    simp only [mfld_simps, ← hx] at hy1 ⊢
+    obtain ⟨v, v_open, xv, hv⟩ := H x hy1
     have : I.symm ⁻¹' (u ∩ v) ∩ range I = I.symm ⁻¹' u ∩ range I ∩ I.symm ⁻¹' v := by
-      rw [preimage_inter, inter_assoc, inter_assoc]
-      congr 1
-      rw [inter_comm]
-    rw [this] at hv
-    exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, hv⟩
+      rw [preimage_inter, inter_assoc, inter_assoc, inter_comm _ (range I)]
+    exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, this ▸ hv⟩
   congr {f g u} _ fg hf := by
     apply hf.congr
     rintro y ⟨hy1, hy2⟩
-    rcases mem_range.1 hy2 with ⟨x, hx⟩
-    rw [← hx] at hy1 ⊢
-    simp only [mfld_simps] at hy1 ⊢
+    obtain ⟨x, hx⟩ := mem_range.1 hy2
+    simp only [mfld_simps, ← hx] at hy1 ⊢
     rw [fg _ hy1]
 
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of
@@ -109,10 +104,9 @@ theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
 instance : ClosedUnderRestriction (analyticGroupoid I) :=
   (closedUnderRestriction_iff_id_le _).mpr
     (by
-      apply StructureGroupoid.le_iff.mpr
+      rw [StructureGroupoid.le_iff]
       rintro e ⟨s, hs, hes⟩
-      apply (analyticGroupoid I).mem_of_eqOnSource' _ _ _ hes
-      exact ofSet_mem_analyticGroupoid I hs)
+      exact (analyticGroupoid I).mem_of_eqOnSource' _ _ (ofSet_mem_analyticGroupoid I hs) hes)
 
 /-- `f ∈ analyticGroupoid` iff it and its inverse are analytic within `range I`. -/
 lemma mem_analyticGroupoid {I : ModelWithCorners 𝕜 E H} {f : PartialHomeomorph H H} :
@@ -123,8 +117,7 @@ lemma mem_analyticGroupoid {I : ModelWithCorners 𝕜 E H} {f : PartialHomeomorp
 
 /-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
 consists of the partial homeomorphisms which are analytic and have analytic inverse. -/
-theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
-    (e : PartialHomeomorph H H) :
+theorem mem_analyticGroupoid_of_boundaryless [I.Boundaryless] (e : PartialHomeomorph H H) :
     e ∈ analyticGroupoid I ↔ AnalyticOn 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
       AnalyticOn 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
   simp only [mem_analyticGroupoid, I.range_eq_univ, inter_univ, I.image_eq]
@@ -141,13 +134,12 @@ theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace �
     f.prod g ∈ analyticGroupoid (I.prod J) := by
   have pe : range (I.prod J) = (range I).prod (range J) := I.range_prod
   simp only [mem_analyticGroupoid, Function.comp, image_subset_iff] at fa ga ⊢
-  constructor
-  · apply AnalyticWithinOn.prod
-    · exact fa.1.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe.subst m.2).1⟩
-    · exact ga.1.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe.subst m.2).2⟩
-  · apply AnalyticWithinOn.prod
-    · exact fa.2.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe.subst m.2).1⟩
-    · exact ga.2.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe.subst m.2).2⟩
+  exact ⟨AnalyticWithinOn.prod
+      (fa.1.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe.subst m.2).1⟩)
+      (ga.1.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe.subst m.2).2⟩),
+    AnalyticWithinOn.prod
+      (fa.2.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe.subst m.2).1⟩)
+      (ga.2.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe.subst m.2).2⟩)⟩
 
 end analyticGroupoid
 
@@ -155,7 +147,6 @@ section AnalyticManifold
 
 /-- An analytic manifold w.r.t. a model `I : ModelWithCorners 𝕜 E H` is a charted space over `H`
 s.t. all extended chart conversion maps are analytic. -/
-    s.t. all extended chart conversion maps are analytic. -/
 class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
   [ChartedSpace H M] extends HasGroupoid M (analyticGroupoid I) : Prop
 
