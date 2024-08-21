@@ -54,7 +54,6 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab
 open CategoryTheory
-open Mathlib.Tactic.Coherence
 
 open Mathlib.Tactic.Monoidal
 
@@ -288,7 +287,7 @@ def fromExpr (e : Expr) : MonoidalM Html := do
 def stringM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
   let some ctx ← mkContext? e | return none
-  return some <| ← MonoidalM.run ctx <| fromExpr e
+  return some <| ← BicategoryLike.CoherenceM.run (ctx := ctx) <| fromExpr e
 
 open scoped Jsx in
 /-- Help function for displaying two string diagrams in an equality. -/
