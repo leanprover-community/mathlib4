@@ -384,10 +384,6 @@ lemma getLast_filter {p : α → Bool} :
 /-! ### getLast? -/
 
 @[simp]
-theorem getLast?_cons_cons (a b : α) (l : List α) :
-    getLast? (a :: b :: l) = getLast? (b :: l) := rfl
-
-@[simp]
 theorem getLast?_eq_none : ∀ {l : List α}, getLast? l = none ↔ l = []
   | [] => by simp
   | [a] => by simp
