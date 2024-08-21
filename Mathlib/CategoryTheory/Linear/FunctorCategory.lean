@@ -3,27 +3,982 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Group.Hom.End
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Ring.Invertible
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.SMulWithZero
-import Mathlib.Data.Int.Cast.Lemmas
+import Aesop
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Int.Defs
+import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
 
-
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Data.Nat.Cast.Defs
 
 import Batteries.Tactic.ShowUnused
 import Mathlib.Tactic.Linter.MinImports
+import Mathlib.Util.CountHeartbeats
+import Mathlib.Tactic.Spread
+import Mathlib.Util.AssertExists
+
+
+universe x w v u v' u' v₁ v₂ v₃ u₁ u₂ u₃
+
+section Mathlib.Algebra.Group.Basic
+
+open Function
+
+universe u
+
+variable {α β G M : Type*}
+
+section ite
+variable [Pow α β]
+
+@[to_additive (attr := simp) dite_smul]
+lemma pow_dite (p : Prop) [Decidable p] (a : α) (b : p → β) (c : ¬ p → β) :
+    a ^ (if h : p then b h else c h) = if h : p then a ^ b h else a ^ c h := by split_ifs <;> rfl
+
+@[to_additive (attr := simp) smul_dite]
+lemma dite_pow (p : Prop) [Decidable p] (a : p → α) (b : ¬ p → α) (c : β) :
+    (if h : p then a h else b h) ^ c = if h : p then a h ^ c else b h ^ c := by split_ifs <;> rfl
+
+@[to_additive (attr := simp) ite_smul]
+lemma pow_ite (p : Prop) [Decidable p] (a : α) (b c : β) :
+    a ^ (if p then b else c) = if p then a ^ b else a ^ c := pow_dite _ _ _ _
+
+@[to_additive (attr := simp) smul_ite]
+lemma ite_pow (p : Prop) [Decidable p] (a b : α) (c : β) :
+    (if p then a else b) ^ c = if p then a ^ c else b ^ c := dite_pow _ _ _ _
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
+
+end ite
+
+section IsLeftCancelMul
+
+variable [Mul G] [IsLeftCancelMul G]
+
+@[to_additive]
+theorem mul_right_injective (a : G) : Injective (a * ·) := fun _ _ ↦ mul_left_cancel
+
+@[to_additive (attr := simp)]
+theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
+  (mul_right_injective a).eq_iff
+
+@[to_additive]
+theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
+  (mul_right_injective a).ne_iff
+
+end IsLeftCancelMul
+
+section IsRightCancelMul
+
+variable [Mul G] [IsRightCancelMul G]
+
+@[to_additive]
+theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
+
+@[to_additive (attr := simp)]
+theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
+  (mul_left_injective a).eq_iff
+
+@[to_additive]
+theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
+  (mul_left_injective a).ne_iff
+
+end IsRightCancelMul
+
+section Semigroup
+variable [Semigroup α]
+
+@[to_additive]
+instance Semigroup.to_isAssociative : Std.Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
+
+/-- Composing two multiplications on the left by `y` then `x`
+is equal to a multiplication on the left by `x * y`.
+-/
+@[to_additive (attr := simp) "Composing two additions on the left by `y` then `x`
+is equal to an addition on the left by `x + y`."]
+theorem comp_mul_left (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
+  ext z
+  simp [mul_assoc]
+
+/-- Composing two multiplications on the right by `y` and `x`
+is equal to a multiplication on the right by `y * x`.
+-/
+@[to_additive (attr := simp) "Composing two additions on the right by `y` and `x`
+is equal to an addition on the right by `y + x`."]
+theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
+  ext z
+  simp [mul_assoc]
+
+end Semigroup
+
+@[to_additive]
+instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+
+section MulOneClass
+
+variable {M : Type u} [MulOneClass M]
+
+@[to_additive]
+theorem ite_mul_one {P : Prop} [Decidable P] {a b : M} :
+    ite P (a * b) 1 = ite P a 1 * ite P b 1 := by
+  by_cases h : P <;> simp [h]
+
+@[to_additive]
+theorem ite_one_mul {P : Prop} [Decidable P] {a b : M} :
+    ite P 1 (a * b) = ite P 1 a * ite P 1 b := by
+  by_cases h : P <;> simp [h]
+
+@[to_additive]
+theorem eq_one_iff_eq_one_of_mul_eq_one {a b : M} (h : a * b = 1) : a = 1 ↔ b = 1 := by
+  constructor <;> (rintro rfl; simpa using h)
+
+@[to_additive]
+theorem one_mul_eq_id : ((1 : M) * ·) = id :=
+  funext one_mul
+
+@[to_additive]
+theorem mul_one_eq_id : (· * (1 : M)) = id :=
+  funext mul_one
+
+end MulOneClass
+
+section CommSemigroup
+
+variable [CommSemigroup G]
+
+@[to_additive]
+theorem mul_left_comm : ∀ a b c : G, a * (b * c) = b * (a * c) :=
+  left_comm Mul.mul mul_comm mul_assoc
+
+@[to_additive]
+theorem mul_right_comm : ∀ a b c : G, a * b * c = a * c * b :=
+  right_comm Mul.mul mul_comm mul_assoc
+
+@[to_additive]
+theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
+  simp only [mul_left_comm, mul_assoc]
+
+@[to_additive]
+theorem mul_rotate (a b c : G) : a * b * c = b * c * a := by
+  simp only [mul_left_comm, mul_comm]
+
+@[to_additive]
+theorem mul_rotate' (a b c : G) : a * (b * c) = b * (c * a) := by
+  simp only [mul_left_comm, mul_comm]
+
+end CommSemigroup
+
+attribute [local simp] mul_assoc sub_eq_add_neg
+
+section Monoid
+variable [Monoid M] {a b c : M} {m n : ℕ}
+
+@[to_additive boole_nsmul]
+lemma pow_boole (P : Prop) [Decidable P] (a : M) :
+    (a ^ if P then 1 else 0) = if P then a else 1 := by simp only [pow_ite, pow_one, pow_zero]
+
+@[to_additive nsmul_add_sub_nsmul]
+lemma pow_mul_pow_sub (a : M) (h : m ≤ n) : a ^ m * a ^ (n - m) = a ^ n := by
+  rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]
+
+@[to_additive sub_nsmul_nsmul_add]
+lemma pow_sub_mul_pow (a : M) (h : m ≤ n) : a ^ (n - m) * a ^ m = a ^ n := by
+  rw [← pow_add, Nat.sub_add_cancel h]
+
+@[to_additive sub_one_nsmul_add]
+lemma mul_pow_sub_one (hn : n ≠ 0) (a : M) : a * a ^ (n - 1) = a ^ n := by
+  rw [← pow_succ', Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.2 hn]
+
+@[to_additive add_sub_one_nsmul]
+lemma pow_sub_one_mul (hn : n ≠ 0) (a : M) : a ^ (n - 1) * a = a ^ n := by
+  rw [← pow_succ, Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.2 hn]
+
+/-- If `x ^ n = 1`, then `x ^ m` is the same as `x ^ (m % n)` -/
+@[to_additive nsmul_eq_mod_nsmul "If `n • x = 0`, then `m • x` is the same as `(m % n) • x`"]
+lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
+  calc
+    a ^ m = a ^ (m % n + n * (m / n)) := by rw [Nat.mod_add_div]
+    _ = a ^ (m % n) := by simp [pow_add, pow_mul, ha]
+
+@[to_additive] lemma pow_mul_pow_eq_one : ∀ n, a * b = 1 → a ^ n * b ^ n = 1
+  | 0, _ => by simp
+  | n + 1, h =>
+    calc
+      a ^ n.succ * b ^ n.succ = a ^ n * a * (b * b ^ n) := by rw [pow_succ, pow_succ']
+      _ = a ^ n * (a * b) * b ^ n := by simp only [mul_assoc]
+      _ = 1 := by simp [h, pow_mul_pow_eq_one]
+
+end Monoid
+
+section CommMonoid
+variable [CommMonoid M] {x y z : M}
+
+@[to_additive]
+theorem inv_unique (hy : x * y = 1) (hz : x * z = 1) : y = z :=
+  left_inv_eq_right_inv (Trans.trans (mul_comm _ _) hy) hz
+
+@[to_additive nsmul_add] lemma mul_pow (a b : M) : ∀ n, (a * b) ^ n = a ^ n * b ^ n
+  | 0 => by rw [pow_zero, pow_zero, pow_zero, one_mul]
+  | n + 1 => by rw [pow_succ', pow_succ', pow_succ', mul_pow, mul_mul_mul_comm]
+
+end CommMonoid
+
+section LeftCancelMonoid
+
+variable {M : Type u} [LeftCancelMonoid M] {a b : M}
+
+@[to_additive (attr := simp)]
+theorem mul_right_eq_self : a * b = a ↔ b = 1 := calc
+  a * b = a ↔ a * b = a * 1 := by rw [mul_one]
+  _ ↔ b = 1 := mul_left_cancel_iff
+
+@[to_additive (attr := simp)]
+theorem self_eq_mul_right : a = a * b ↔ b = 1 :=
+  eq_comm.trans mul_right_eq_self
+
+@[to_additive]
+theorem mul_right_ne_self : a * b ≠ a ↔ b ≠ 1 := mul_right_eq_self.not
+
+@[to_additive]
+theorem self_ne_mul_right : a ≠ a * b ↔ b ≠ 1 := self_eq_mul_right.not
+
+end LeftCancelMonoid
+
+section RightCancelMonoid
+
+variable {M : Type u} [RightCancelMonoid M] {a b : M}
+
+@[to_additive (attr := simp)]
+theorem mul_left_eq_self : a * b = b ↔ a = 1 := calc
+  a * b = b ↔ a * b = 1 * b := by rw [one_mul]
+  _ ↔ a = 1 := mul_right_cancel_iff
+
+@[to_additive (attr := simp)]
+theorem self_eq_mul_left : b = a * b ↔ a = 1 :=
+  eq_comm.trans mul_left_eq_self
+
+@[to_additive]
+theorem mul_left_ne_self : a * b ≠ b ↔ a ≠ 1 := mul_left_eq_self.not
+
+@[to_additive]
+theorem self_ne_mul_left : b ≠ a * b ↔ a ≠ 1 := self_eq_mul_left.not
+
+end RightCancelMonoid
+
+section CancelCommMonoid
+variable [CancelCommMonoid α] {a b c d : α}
+
+@[to_additive] lemma eq_iff_eq_of_mul_eq_mul (h : a * b = c * d) : a = c ↔ b = d := by aesop
+@[to_additive] lemma ne_iff_ne_of_mul_eq_mul (h : a * b = c * d) : a ≠ c ↔ b ≠ d := by aesop
+
+end CancelCommMonoid
+
+section InvolutiveInv
+
+variable [InvolutiveInv G] {a b : G}
+
+@[to_additive (attr := simp)]
+theorem inv_involutive : Function.Involutive (Inv.inv : G → G) :=
+  inv_inv
+
+@[to_additive (attr := simp)]
+theorem inv_surjective : Function.Surjective (Inv.inv : G → G) :=
+  inv_involutive.surjective
+
+@[to_additive]
+theorem inv_injective : Function.Injective (Inv.inv : G → G) :=
+  inv_involutive.injective
+
+@[to_additive (attr := simp)]
+theorem inv_inj : a⁻¹ = b⁻¹ ↔ a = b :=
+  inv_injective.eq_iff
+
+@[to_additive]
+theorem inv_eq_iff_eq_inv : a⁻¹ = b ↔ a = b⁻¹ :=
+  ⟨fun h => h ▸ (inv_inv a).symm, fun h => h.symm ▸ inv_inv b⟩
+
+variable (G)
+
+@[to_additive]
+theorem inv_comp_inv : Inv.inv ∘ Inv.inv = @id G :=
+  inv_involutive.comp_self
+
+@[to_additive]
+theorem leftInverse_inv : LeftInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
+  inv_inv
+
+@[to_additive]
+theorem rightInverse_inv : RightInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
+  inv_inv
+
+end InvolutiveInv
+
+section DivInvMonoid
+
+variable [DivInvMonoid G] {a b c : G}
+
+@[to_additive, field_simps] -- The attributes are out of order on purpose
+theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
+
+@[to_additive]
+theorem mul_one_div (x y : G) : x * (1 / y) = x / y := by
+  rw [div_eq_mul_inv, one_mul, div_eq_mul_inv]
+
+@[to_additive]
+theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
+
+@[to_additive, field_simps] -- The attributes are out of order on purpose
+theorem mul_div_assoc' (a b c : G) : a * (b / c) = a * b / c :=
+  (mul_div_assoc _ _ _).symm
+
+@[to_additive (attr := simp)]
+theorem one_div (a : G) : 1 / a = a⁻¹ :=
+  (inv_eq_one_div a).symm
+
+@[to_additive]
+theorem mul_div (a b c : G) : a * (b / c) = a * b / c := by simp only [mul_assoc, div_eq_mul_inv]
+
+@[to_additive]
+theorem div_eq_mul_one_div (a b : G) : a / b = a * (1 / b) := by rw [div_eq_mul_inv, one_div]
+
+end DivInvMonoid
+
+section DivInvOneMonoid
+
+variable [DivInvOneMonoid G]
+
+@[to_additive (attr := simp)]
+theorem div_one (a : G) : a / 1 = a := by simp [div_eq_mul_inv]
+
+@[to_additive]
+theorem one_div_one : (1 : G) / 1 = 1 :=
+  div_one _
+
+end DivInvOneMonoid
+
+section DivisionMonoid
+
+variable [DivisionMonoid α] {a b c d : α}
+
+attribute [local simp] mul_assoc div_eq_mul_inv
+
+@[to_additive]
+theorem eq_inv_of_mul_eq_one_right (h : a * b = 1) : b = a⁻¹ :=
+  (inv_eq_of_mul_eq_one_right h).symm
+
+@[to_additive]
+theorem eq_one_div_of_mul_eq_one_left (h : b * a = 1) : b = 1 / a := by
+  rw [eq_inv_of_mul_eq_one_left h, one_div]
+
+@[to_additive]
+theorem eq_one_div_of_mul_eq_one_right (h : a * b = 1) : b = 1 / a := by
+  rw [eq_inv_of_mul_eq_one_right h, one_div]
+
+@[to_additive]
+theorem eq_of_div_eq_one (h : a / b = 1) : a = b :=
+  inv_injective <| inv_eq_of_mul_eq_one_right <| by rwa [← div_eq_mul_inv]
+
+lemma eq_of_inv_mul_eq_one (h : a⁻¹ * b = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
+lemma eq_of_mul_inv_eq_one (h : a * b⁻¹ = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
+
+@[to_additive]
+theorem div_ne_one_of_ne : a ≠ b → a / b ≠ 1 :=
+  mt eq_of_div_eq_one
+
+variable (a b c)
+
+@[to_additive]
+theorem one_div_mul_one_div_rev : 1 / a * (1 / b) = 1 / (b * a) := by simp
+
+@[to_additive]
+theorem inv_div_left : a⁻¹ / b = (b * a)⁻¹ := by simp
+
+@[to_additive (attr := simp)]
+theorem inv_div : (a / b)⁻¹ = b / a := by simp
+
+@[to_additive]
+theorem one_div_div : 1 / (a / b) = b / a := by simp
+
+@[to_additive]
+theorem one_div_one_div : 1 / (1 / a) = a := by simp
+
+@[to_additive]
+theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
+  inv_inj.symm.trans <| by simp only [inv_div]
+
+@[to_additive]
+instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
+  { DivisionMonoid.toDivInvMonoid with
+    inv_one := by simpa only [one_div, inv_inv] using (inv_div (1 : α) 1).symm }
+
+@[to_additive (attr := simp)]
+lemma inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
+  | 0 => by rw [pow_zero, pow_zero, inv_one]
+  | n + 1 => by rw [pow_succ', pow_succ, inv_pow _ n, mul_inv_rev]
+
+-- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
+@[to_additive zsmul_zero, simp]
+lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
+  | (n : ℕ)    => by rw [zpow_natCast, one_pow]
+  | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
+
+@[to_additive (attr := simp) neg_zsmul]
+lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
+  | (n + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
+  | 0 => by
+    change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
+    simp
+  | Int.negSucc n => by
+    rw [zpow_negSucc, inv_inv, ← zpow_natCast]
+    rfl
+
+@[to_additive neg_one_zsmul_add]
+lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ (-1 : ℤ) := by
+  simp only [zpow_neg, zpow_one, mul_inv_rev]
+
+@[to_additive zsmul_neg]
+lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
+  | (n : ℕ)    => by rw [zpow_natCast, zpow_natCast, inv_pow]
+  | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
+
+@[to_additive (attr := simp) zsmul_neg']
+lemma inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow, zpow_neg]
+
+@[to_additive nsmul_zero_sub]
+lemma one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_pow]
+
+@[to_additive zsmul_zero_sub]
+lemma one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
+
+variable {a b c}
+
+@[to_additive (attr := simp)]
+theorem inv_eq_one : a⁻¹ = 1 ↔ a = 1 :=
+  inv_injective.eq_iff' inv_one
+
+@[to_additive (attr := simp)]
+theorem one_eq_inv : 1 = a⁻¹ ↔ a = 1 :=
+  eq_comm.trans inv_eq_one
+
+@[to_additive]
+theorem inv_ne_one : a⁻¹ ≠ 1 ↔ a ≠ 1 :=
+  inv_eq_one.not
+
+@[to_additive]
+theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b := by
+  rw [← one_div_one_div a, h, one_div_one_div]
+
+-- Note that `mul_zsmul` and `zpow_mul` have the primes swapped
+-- when additivised since their argument order,
+-- and therefore the more "natural" choice of lemma, is reversed.
+@[to_additive mul_zsmul'] lemma zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
+  | (m : ℕ), (n : ℕ) => by
+    rw [zpow_natCast, zpow_natCast, ← pow_mul, ← zpow_natCast]
+    rfl
+  | (m : ℕ), .negSucc n => by
+    rw [zpow_natCast, zpow_negSucc, ← pow_mul, Int.ofNat_mul_negSucc, zpow_neg, inv_inj,
+      ← zpow_natCast]
+  | .negSucc m, (n : ℕ) => by
+    rw [zpow_natCast, zpow_negSucc, ← inv_pow, ← pow_mul, Int.negSucc_mul_ofNat, zpow_neg, inv_pow,
+      inv_inj, ← zpow_natCast]
+  | .negSucc m, .negSucc n => by
+    rw [zpow_negSucc, zpow_negSucc, Int.negSucc_mul_negSucc, inv_pow, inv_inv, ← pow_mul, ←
+      zpow_natCast]
+    rfl
+
+@[to_additive mul_zsmul]
+lemma zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Int.mul_comm, zpow_mul]
+
+variable (a b c)
+
+@[to_additive, field_simps] -- The attributes are out of order on purpose
+theorem div_div_eq_mul_div : a / (b / c) = a * c / b := by simp
+
+@[to_additive (attr := simp)]
+theorem div_inv_eq_mul : a / b⁻¹ = a * b := by simp
+
+@[to_additive]
+theorem div_mul_eq_div_div_swap : a / (b * c) = a / c / b := by
+  simp only [mul_assoc, mul_inv_rev, div_eq_mul_inv]
+
+end DivisionMonoid
+
+section DivisionCommMonoid
+
+variable [DivisionCommMonoid α] (a b c d : α)
+
+attribute [local simp] mul_assoc mul_comm mul_left_comm div_eq_mul_inv
+
+@[to_additive neg_add]
+theorem mul_inv : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by simp
+
+@[to_additive]
+theorem inv_div' : (a / b)⁻¹ = a⁻¹ / b⁻¹ := by simp
+
+@[to_additive]
+theorem div_eq_inv_mul : a / b = b⁻¹ * a := by simp
+
+@[to_additive]
+theorem inv_mul_eq_div : a⁻¹ * b = b / a := by simp
+
+@[to_additive] lemma inv_div_comm (a b : α) : a⁻¹ / b = b⁻¹ / a := by simp
+
+@[to_additive]
+theorem inv_mul' : (a * b)⁻¹ = a⁻¹ / b := by simp
+
+@[to_additive]
+theorem inv_div_inv : a⁻¹ / b⁻¹ = b / a := by simp
+
+@[to_additive]
+theorem inv_inv_div_inv : (a⁻¹ / b⁻¹)⁻¹ = a / b := by simp
+
+@[to_additive]
+theorem one_div_mul_one_div : 1 / a * (1 / b) = 1 / (a * b) := by simp
+
+@[to_additive]
+theorem div_right_comm : a / b / c = a / c / b := by simp
+
+@[to_additive, field_simps]
+theorem div_div : a / b / c = a / (b * c) := by simp
+
+@[to_additive]
+theorem div_mul : a / b * c = a / (b / c) := by simp
+
+@[to_additive]
+theorem mul_div_left_comm : a * (b / c) = b * (a / c) := by simp
+
+@[to_additive]
+theorem mul_div_right_comm : a * b / c = a / c * b := by simp
+
+@[to_additive]
+theorem div_mul_eq_div_div : a / (b * c) = a / b / c := by simp
+
+@[to_additive, field_simps]
+theorem div_mul_eq_mul_div : a / b * c = a * c / b := by simp
+
+@[to_additive]
+theorem one_div_mul_eq_div : 1 / a * b = b / a := by simp
+
+@[to_additive]
+theorem mul_comm_div : a / b * c = a * (c / b) := by simp
+
+@[to_additive]
+theorem div_mul_comm : a / b * c = c / b * a := by simp
+
+@[to_additive]
+theorem div_mul_eq_div_mul_one_div : a / (b * c) = a / b * (1 / c) := by simp
+
+@[to_additive]
+theorem div_div_div_eq : a / b / (c / d) = a * d / (b * c) := by simp
+
+@[to_additive]
+theorem div_div_div_comm : a / b / (c / d) = a / c / (b / d) := by simp
+
+@[to_additive]
+theorem div_mul_div_comm : a / b * (c / d) = a * c / (b * d) := by simp
+
+@[to_additive]
+theorem mul_div_mul_comm : a * b / (c * d) = a / c * (b / d) := by simp
+
+@[to_additive zsmul_add] lemma mul_zpow : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n
+  | (n : ℕ) => by simp_rw [zpow_natCast, mul_pow]
+  | .negSucc n => by simp_rw [zpow_negSucc, ← inv_pow, mul_inv, mul_pow]
+
+@[to_additive (attr := simp) nsmul_sub]
+lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
+  simp only [div_eq_mul_inv, mul_pow, inv_pow]
+
+@[to_additive (attr := simp) zsmul_sub]
+lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
+  simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
+
+end DivisionCommMonoid
+
+section Group
+
+variable [Group G] {a b c d : G} {n : ℤ}
+
+@[to_additive (attr := simp)]
+theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_left_eq_self]
+
+@[to_additive]
+theorem mul_left_surjective (a : G) : Surjective (a * ·) :=
+  fun x ↦ ⟨a⁻¹ * x, mul_inv_cancel_left a x⟩
+
+@[to_additive]
+theorem mul_right_surjective (a : G) : Function.Surjective fun x ↦ x * a := fun x ↦
+  ⟨x * a⁻¹, inv_mul_cancel_right x a⟩
+
+@[to_additive]
+theorem eq_mul_inv_of_mul_eq (h : a * c = b) : a = b * c⁻¹ := by simp [h.symm]
+
+@[to_additive]
+theorem eq_inv_mul_of_mul_eq (h : b * a = c) : a = b⁻¹ * c := by simp [h.symm]
+
+@[to_additive]
+theorem inv_mul_eq_of_eq_mul (h : b = a * c) : a⁻¹ * b = c := by simp [h]
+
+@[to_additive]
+theorem mul_inv_eq_of_eq_mul (h : a = c * b) : a * b⁻¹ = c := by simp [h]
+
+@[to_additive]
+theorem eq_mul_of_mul_inv_eq (h : a * c⁻¹ = b) : a = b * c := by simp [h.symm]
+
+@[to_additive]
+theorem eq_mul_of_inv_mul_eq (h : b⁻¹ * a = c) : a = b * c := by simp [h.symm, mul_inv_cancel_left]
+
+@[to_additive]
+theorem mul_eq_of_eq_inv_mul (h : b = a⁻¹ * c) : a * b = c := by rw [h, mul_inv_cancel_left]
+
+@[to_additive]
+theorem mul_eq_of_eq_mul_inv (h : a = c * b⁻¹) : a * b = c := by simp [h]
+
+@[to_additive]
+theorem mul_eq_one_iff_eq_inv : a * b = 1 ↔ a = b⁻¹ :=
+  ⟨eq_inv_of_mul_eq_one_left, fun h ↦ by rw [h, inv_mul_cancel]⟩
+
+@[to_additive]
+theorem mul_eq_one_iff_inv_eq : a * b = 1 ↔ a⁻¹ = b := by
+  rw [mul_eq_one_iff_eq_inv, inv_eq_iff_eq_inv]
+
+@[to_additive]
+theorem eq_inv_iff_mul_eq_one : a = b⁻¹ ↔ a * b = 1 :=
+  mul_eq_one_iff_eq_inv.symm
+
+@[to_additive]
+theorem inv_eq_iff_mul_eq_one : a⁻¹ = b ↔ a * b = 1 :=
+  mul_eq_one_iff_inv_eq.symm
+
+@[to_additive]
+theorem eq_mul_inv_iff_mul_eq : a = b * c⁻¹ ↔ a * c = b :=
+  ⟨fun h ↦ by rw [h, inv_mul_cancel_right], fun h ↦ by rw [← h, mul_inv_cancel_right]⟩
+
+@[to_additive]
+theorem eq_inv_mul_iff_mul_eq : a = b⁻¹ * c ↔ b * a = c :=
+  ⟨fun h ↦ by rw [h, mul_inv_cancel_left], fun h ↦ by rw [← h, inv_mul_cancel_left]⟩
+
+@[to_additive]
+theorem inv_mul_eq_iff_eq_mul : a⁻¹ * b = c ↔ b = a * c :=
+  ⟨fun h ↦ by rw [← h, mul_inv_cancel_left], fun h ↦ by rw [h, inv_mul_cancel_left]⟩
+
+@[to_additive]
+theorem mul_inv_eq_iff_eq_mul : a * b⁻¹ = c ↔ a = c * b :=
+  ⟨fun h ↦ by rw [← h, inv_mul_cancel_right], fun h ↦ by rw [h, mul_inv_cancel_right]⟩
+
+@[to_additive]
+theorem mul_inv_eq_one : a * b⁻¹ = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_inv, inv_inv]
+
+@[to_additive]
+theorem inv_mul_eq_one : a⁻¹ * b = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_inv, inv_inj]
+
+@[to_additive (attr := simp)]
+theorem conj_eq_one_iff : a * b * a⁻¹ = 1 ↔ b = 1 := by
+  rw [mul_inv_eq_one, mul_right_eq_self]
+
+@[to_additive]
+theorem div_left_injective : Function.Injective fun a ↦ a / b := by
+  -- FIXME this could be by `simpa`, but it fails. This is probably a bug in `simpa`.
+  simp only [div_eq_mul_inv]
+  exact fun a a' h ↦ mul_left_injective b⁻¹ h
+
+@[to_additive]
+theorem div_right_injective : Function.Injective fun a ↦ b / a := by
+  -- FIXME see above
+  simp only [div_eq_mul_inv]
+  exact fun a a' h ↦ inv_injective (mul_right_injective b h)
+
+@[to_additive (attr := simp)]
+theorem div_mul_cancel (a b : G) : a / b * b = a := by
+  rw [div_eq_mul_inv, inv_mul_cancel_right a b]
+
+@[to_additive (attr := simp) sub_self]
+theorem div_self' (a : G) : a / a = 1 := by rw [div_eq_mul_inv, mul_inv_cancel a]
+
+@[to_additive (attr := simp)]
+theorem mul_div_cancel_right (a b : G) : a * b / b = a := by
+  rw [div_eq_mul_inv, mul_inv_cancel_right a b]
+
+@[to_additive (attr := simp)]
+lemma div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_div, mul_div_cancel_right]
+
+@[to_additive (attr := simp)]
+theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
+  rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel_right]
+
+@[to_additive eq_sub_of_add_eq]
+theorem eq_div_of_mul_eq' (h : a * c = b) : a = b / c := by simp [← h]
+
+@[to_additive sub_eq_of_eq_add]
+theorem div_eq_of_eq_mul'' (h : a = c * b) : a / b = c := by simp [h]
+
+@[to_additive]
+theorem eq_mul_of_div_eq (h : a / c = b) : a = b * c := by simp [← h]
+
+@[to_additive]
+theorem mul_eq_of_eq_div (h : a = c / b) : a * b = c := by simp [h]
+
+@[to_additive (attr := simp)]
+theorem div_right_inj : a / b = a / c ↔ b = c :=
+  div_right_injective.eq_iff
+
+@[to_additive (attr := simp)]
+theorem div_left_inj : b / a = c / a ↔ b = c := by
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  exact mul_left_inj _
+
+@[to_additive (attr := simp) sub_add_sub_cancel]
+theorem div_mul_div_cancel' (a b c : G) : a / b * (b / c) = a / c := by
+  rw [← mul_div_assoc, div_mul_cancel]
+
+@[to_additive (attr := simp) sub_sub_sub_cancel_right]
+theorem div_div_div_cancel_right' (a b c : G) : a / c / (b / c) = a / b := by
+  rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel']
+
+@[to_additive]
+theorem div_eq_one : a / b = 1 ↔ a = b :=
+  ⟨eq_of_div_eq_one, fun h ↦ by rw [h, div_self']⟩
+
+alias ⟨_, div_eq_one_of_eq⟩ := div_eq_one
+
+alias ⟨_, sub_eq_zero_of_eq⟩ := sub_eq_zero
+
+@[to_additive]
+theorem div_ne_one : a / b ≠ 1 ↔ a ≠ b :=
+  not_congr div_eq_one
+
+@[to_additive (attr := simp)]
+theorem div_eq_self : a / b = a ↔ b = 1 := by rw [div_eq_mul_inv, mul_right_eq_self, inv_eq_one]
+
+@[to_additive eq_sub_iff_add_eq]
+theorem eq_div_iff_mul_eq' : a = b / c ↔ a * c = b := by rw [div_eq_mul_inv, eq_mul_inv_iff_mul_eq]
+
+@[to_additive]
+theorem div_eq_iff_eq_mul : a / b = c ↔ a = c * b := by rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul]
+
+@[to_additive]
+theorem eq_iff_eq_of_div_eq_div (H : a / b = c / d) : a = b ↔ c = d := by
+  rw [← div_eq_one, H, div_eq_one]
+
+@[to_additive]
+theorem leftInverse_div_mul_left (c : G) : Function.LeftInverse (fun x ↦ x / c) fun x ↦ x * c :=
+  fun x ↦ mul_div_cancel_right x c
+
+@[to_additive]
+theorem leftInverse_mul_left_div (c : G) : Function.LeftInverse (fun x ↦ x * c) fun x ↦ x / c :=
+  fun x ↦ div_mul_cancel x c
+
+@[to_additive]
+theorem leftInverse_mul_right_inv_mul (c : G) :
+    Function.LeftInverse (fun x ↦ c * x) fun x ↦ c⁻¹ * x :=
+  fun x ↦ mul_inv_cancel_left c x
+
+@[to_additive]
+theorem leftInverse_inv_mul_mul_right (c : G) :
+    Function.LeftInverse (fun x ↦ c⁻¹ * x) fun x ↦ c * x :=
+  fun x ↦ inv_mul_cancel_left c x
+
+@[to_additive (attr := simp) natAbs_nsmul_eq_zero]
+lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
+
+set_option linter.existingAttributeWarning false in
+@[to_additive, deprecated pow_natAbs_eq_one (since := "2024-02-14")]
+lemma exists_pow_eq_one_of_zpow_eq_one (hn : n ≠ 0) (h : a ^ n = 1) :
+    ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hn, pow_natAbs_eq_one.2 h⟩
+
+attribute [deprecated natAbs_nsmul_eq_zero (since := "2024-02-14")]
+exists_nsmul_eq_zero_of_zsmul_eq_zero
+
+@[to_additive sub_nsmul]
+lemma pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=
+  eq_mul_inv_of_mul_eq <| by rw [← pow_add, Nat.sub_add_cancel h]
+
+@[to_additive sub_nsmul_neg]
+theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
+  rw [pow_sub a⁻¹ h, inv_pow, inv_pow, inv_inv]
+
+@[to_additive add_one_zsmul]
+lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
+  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
+  | .negSucc 0 => by simp [Int.negSucc_eq', Int.add_left_neg]
+  | .negSucc (n + 1) => by
+    rw [zpow_negSucc, pow_succ', mul_inv_rev, inv_mul_cancel_right]
+    rw [Int.negSucc_eq, Int.neg_add, Int.neg_add_cancel_right]
+    exact zpow_negSucc _ _
+
+@[to_additive sub_one_zsmul]
+lemma zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
+  calc
+    a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := (mul_inv_cancel_right _ _).symm
+    _ = a ^ n * a⁻¹ := by rw [← zpow_add_one, Int.sub_add_cancel]
+
+@[to_additive add_zsmul]
+lemma zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
+  induction n using Int.induction_on with
+  | hz => simp
+  | hp n ihn => simp only [← Int.add_assoc, zpow_add_one, ihn, mul_assoc]
+  | hn n ihn => rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, Int.add_sub_assoc]
+
+@[to_additive one_add_zsmul]
+lemma zpow_one_add (a : G) (n : ℤ) : a ^ (1 + n) = a * a ^ n := by rw [zpow_add, zpow_one]
+
+@[to_additive add_zsmul_self]
+lemma mul_self_zpow (a : G) (n : ℤ) : a * a ^ n = a ^ (n + 1) := by
+  rw [Int.add_comm, zpow_add, zpow_one]
+
+@[to_additive add_self_zsmul]
+lemma mul_zpow_self (a : G) (n : ℤ) : a ^ n * a = a ^ (n + 1) := (zpow_add_one ..).symm
+
+@[to_additive sub_zsmul] lemma zpow_sub (a : G) (m n : ℤ) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
+  rw [Int.sub_eq_add_neg, zpow_add, zpow_neg]
+
+@[to_additive] lemma zpow_mul_comm (a : G) (m n : ℤ) : a ^ m * a ^ n = a ^ n * a ^ m := by
+  rw [← zpow_add, Int.add_comm, zpow_add]
+
+theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
+    x ^ m = x ^ (m % n) :=
+  calc
+    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
+    _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
+
+theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
+    x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_emod m (by simpa)
+
+/-- To show a property of all powers of `g` it suffices to show it is closed under multiplication
+by `g` and `g⁻¹` on the left. For subgroups generated by more than one element, see
+`Subgroup.closure_induction_left`. -/
+@[to_additive "To show a property of all multiples of `g` it suffices to show it is closed under
+addition by `g` and `-g` on the left. For additive subgroups generated by more than one element, see
+`AddSubgroup.closure_induction_left`."]
+lemma zpow_induction_left {g : G} {P : G → Prop} (h_one : P (1 : G))
+    (h_mul : ∀ a, P a → P (g * a)) (h_inv : ∀ a, P a → P (g⁻¹ * a)) (n : ℤ) : P (g ^ n) := by
+  induction n using Int.induction_on with
+  | hz => rwa [zpow_zero]
+  | hp n ih =>
+    rw [Int.add_comm, zpow_add, zpow_one]
+    exact h_mul _ ih
+  | hn n ih =>
+    rw [Int.sub_eq_add_neg, Int.add_comm, zpow_add, zpow_neg_one]
+    exact h_inv _ ih
+
+/-- To show a property of all powers of `g` it suffices to show it is closed under multiplication
+by `g` and `g⁻¹` on the right. For subgroups generated by more than one element, see
+`Subgroup.closure_induction_right`. -/
+@[to_additive "To show a property of all multiples of `g` it suffices to show it is closed under
+addition by `g` and `-g` on the right. For additive subgroups generated by more than one element,
+see `AddSubgroup.closure_induction_right`."]
+lemma zpow_induction_right {g : G} {P : G → Prop} (h_one : P (1 : G))
+    (h_mul : ∀ a, P a → P (a * g)) (h_inv : ∀ a, P a → P (a * g⁻¹)) (n : ℤ) : P (g ^ n) := by
+  induction n using Int.induction_on with
+  | hz => rwa [zpow_zero]
+  | hp n ih =>
+    rw [zpow_add_one]
+    exact h_mul _ ih
+  | hn n ih =>
+    rw [zpow_sub_one]
+    exact h_inv _ ih
+
+end Group
+
+end Mathlib.Algebra.Group.Basic
+
+
+section Mathlib.Algebra.Ring.Defs
+
+variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+
+open Function
 
 /-!
-# Linear structure on functor categories
-
-If `C` and `D` are categories and `D` is `R`-linear,
-then `C ⥤ D` is also `R`-linear.
-
+### `Distrib` class
 -/
 
-universe w v u v' u' v₁ v₂ v₃ u₁ u₂ u₃
+
+/-- A typeclass stating that multiplication is left and right distributive
+over addition. -/
+class Distrib (R : Type*) extends Mul R, Add R where
+  /-- Multiplication is left distributive over addition -/
+  protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
+  /-- Multiplication is right distributive over addition -/
+  protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
+
+/-!
+### Classes of semirings and rings
+
+We make sure that the canonical path from `NonAssocSemiring` to `Ring` passes through `Semiring`,
+as this is a path which is followed all the time in linear algebra where the defining semilinear map
+`σ : R →+* S` depends on the `NonAssocSemiring` structure of `R` and `S` while the module
+definition depends on the `Semiring` structure.
+
+It is not currently possible to adjust priorities by hand (see lean4#2115). Instead, the last
+declared instance is used, so we make sure that `Semiring` is declared after `NonAssocRing`, so
+that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSemiring`.
+TODO: clean this once lean4#2115 is fixed
+-/
+
+/-- A not-necessarily-unital, not-necessarily-associative semiring. -/
+class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
+
+/-- An associative but not-necessarily unital semiring. -/
+class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
+
+/-- A unital but not-necessarily-associative semiring. -/
+class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
+    AddCommMonoidWithOne α
+
+/-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
+commutative and associative, multiplication is associative and left and right distributive over
+addition, and `0` and `1` are additive and multiplicative identities. -/
+class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
+
+end Mathlib.Algebra.Ring.Defs
+
+
+section Mathlib.Algebra.SMulWithZero
+
+variable {R R' M M' : Type*}
+
+variable (R M)
+
+/-- `SMulWithZero` is a class consisting of a Type `R` with `0 ∈ R` and a scalar multiplication
+of `R` on a Type `M` with `0`, such that the equality `r • m = 0` holds if at least one among `r`
+or `m` equals `0`. -/
+class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
+  /-- Scalar multiplication by the scalar `0` is `0`. -/
+  zero_smul : ∀ m : M, (0 : R) • m = 0
+
+variable {M} [Zero R] [Zero M] [SMulWithZero R M]
+
+@[simp]
+theorem zero_smul (m : M) : (0 : R) • m = 0 :=
+  SMulWithZero.zero_smul m
+
+variable [MonoidWithZero R] [MonoidWithZero R'] [Zero M]
+variable (M)
+
+/-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `MulAction` and
+is compatible with `0` (both in `R` and in `M`), with `1 ∈ R`, and with associativity of
+multiplication on the monoid `M`. -/
+class MulActionWithZero extends MulAction R M where
+  -- these fields are copied from `SMulWithZero`, as `extends` behaves poorly
+  /-- Scalar multiplication by any element send `0` to `0`. -/
+  smul_zero : ∀ r : R, r • (0 : M) = 0
+  /-- Scalar multiplication by the scalar `0` is `0`. -/
+  zero_smul : ∀ m : M, (0 : R) • m = 0
+
+-- see Note [lower instance priority]
+instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZero R M] :
+    SMulWithZero R M :=
+  { m with }
+
+end Mathlib.Algebra.SMulWithZero
+
 
 section Mathlib.Algebra.Module.Defs
 
@@ -36,7 +991,6 @@ variable {α R k S M M₂ M₃ ι : Type*}
   connected by a "scalar multiplication" operation `r • x : M`
   (where `r : R` and `x : M`) with some natural associativity and
   distributivity axioms similar to those on a ring. -/
-@[ext]
 class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   DistribMulAction R M where
   /-- Scalar multiplication distributes over addition from the right. -/
@@ -44,7 +998,7 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
 
-section AddCommMonoid
+export Module (add_smul zero_smul)
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
@@ -54,481 +1008,6 @@ instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
-
-instance AddCommGroup.toNatModule : Module ℕ M where
-  one_smul := one_nsmul
-  mul_smul m n a := mul_nsmul' a m n
-  smul_add n a b := nsmul_add a b n
-  smul_zero := nsmul_zero
-  zero_smul := zero_nsmul
-  add_smul r s x := add_nsmul x r s
-
-theorem AddMonoid.End.natCast_def (n : ℕ) :
-    (↑n : AddMonoid.End M) = DistribMulAction.toAddMonoidEnd ℕ M n :=
-  rfl
-
-theorem add_smul : (r + s) • x = r • x + s • x :=
-  Module.add_smul r s x
-
-theorem Convex.combo_self {a b : R} (h : a + b = 1) (x : M) : a • x + b • x = x := by
-  rw [← add_smul, h, one_smul]
-
-variable (R)
-
--- Porting note: this is the letter of the mathlib3 version, but not really the spirit
-theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
-
-set_option linter.deprecated false in
-@[deprecated (since := "2022-12-31")]
-theorem two_smul' : (2 : R) • x = (2 : ℕ) • x := by
-  rw [two_smul, two_nsmul]
-
-@[simp]
-theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
-    (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
-  Convex.combo_self invOf_two_add_invOf_two _
-
-/-- Pullback a `Module` structure along an injective additive monoid homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : M₂ →+ M)
-    (hf : Injective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
-  { hf.distribMulAction f smul with
-    add_smul := fun c₁ c₂ x => hf <| by simp only [smul, f.map_add, add_smul]
-    zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
-
-/-- Pushforward a `Module` structure along a surjective additive monoid homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
-    (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
-  { toDistribMulAction := hf.distribMulAction f smul
-    add_smul := fun c₁ c₂ x => by
-      rcases hf x with ⟨x, rfl⟩
-      simp only [add_smul, ← smul, ← f.map_add]
-    zero_smul := fun x => by
-      rcases hf x with ⟨x, rfl⟩
-      rw [← f.map_zero, ← smul, zero_smul] }
-
-/-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+* S`.
-
-See also `Function.Surjective.mulActionLeft` and `Function.Surjective.distribMulActionLeft`.
--/
-abbrev Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)
-    (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
-  { hf.distribMulActionLeft f.toMonoidHom hsmul with
-    zero_smul := fun x => by rw [← f.map_zero, hsmul, zero_smul]
-    add_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_add, hsmul, add_smul] }
-
-variable {R} (M)
-
-/-- Compose a `Module` with a `RingHom`, with action `f s • m`.
-
-See note [reducible non-instances]. -/
-abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
-  { MulActionWithZero.compHom M f.toMonoidWithZeroHom, DistribMulAction.compHom M (f : S →* R) with
-    -- Porting note: the `show f (r + s) • x = f r • x + f s • x` wasn't needed in mathlib3.
-    -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
-    -- use in later fields.  See
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
-    add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
-
-variable (R)
-
-/-- `(•)` as an `AddMonoidHom`.
-
-This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/
-@[simps! apply_apply]
-def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
-  { DistribMulAction.toAddMonoidEnd R M with
-    -- Porting note: the two `show`s weren't needed in mathlib3.
-    -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
-    -- use in later fields.  See
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
-    map_zero' := AddMonoidHom.ext fun r => show (0 : R) • r = 0 by simp
-    map_add' := fun x y =>
-      AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
-
-/-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
-use of `AddMonoidHom.flip`. -/
-def smulAddHom : R →+ M →+ M :=
-  (Module.toAddMonoidEnd R M).toAddMonoidHom
-
-variable {R M}
-
-@[simp]
-theorem smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
-  rfl
-
-theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
-  rw [← one_smul R x, ← zero_eq_one, zero_smul]
-
-@[simp]
-theorem smul_add_one_sub_smul {R : Type*} [Ring R] [Module R M] {r : R} {m : M} :
-    r • m + (1 - r) • m = m := by rw [← add_smul, add_sub_cancel, one_smul]
-
-end AddCommMonoid
-
-
-section AddCommGroup
-
-variable (R M) [Semiring R] [AddCommGroup M]
-
-instance AddCommGroup.toIntModule : Module ℤ M where
-  one_smul := one_zsmul
-  mul_smul m n a := mul_zsmul a m n
-  smul_add n a b := zsmul_add a b n
-  smul_zero := zsmul_zero
-  zero_smul := zero_zsmul
-  add_smul r s x := add_zsmul x r s
-
-theorem AddMonoid.End.intCast_def (z : ℤ) :
-    (↑z : AddMonoid.End M) = DistribMulAction.toAddMonoidEnd ℤ M z :=
-  rfl
-
-variable {R M}
-
-theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b = 1) :
-    a • x + b • y = b • (y - x) + x :=
-  calc
-    a • x + b • y = b • y - b • x + (a • x + b • x) := by rw [sub_add_add_cancel, add_comm]
-    _ = b • (y - x) + x := by rw [smul_sub, Convex.combo_self h]
-
-end AddCommGroup
-
--- We'll later use this to show `Module ℕ M` and `Module ℤ M` are subsingletons.
-/-- A variant of `Module.ext` that's convenient for term-mode. -/
-theorem Module.ext' {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] (P Q : Module R M)
-    (w : ∀ (r : R) (m : M), (haveI := P; r • m) = (haveI := Q; r • m)) :
-    P = Q := by
-  ext
-  exact w _ _
-
-section Module
-
-variable [Ring R] [AddCommGroup M] [Module R M] (r s : R) (x y : M)
-
-@[simp]
-theorem neg_smul : -r • x = -(r • x) :=
-  eq_neg_of_add_eq_zero_left <| by rw [← add_smul, neg_add_cancel, zero_smul]
-
--- Porting note (#10618): simp can prove this
---@[simp]
-theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
-
-@[simp]
-theorem Units.neg_smul (u : Rˣ) (x : M) : -u • x = -(u • x) := by
-  rw [Units.smul_def, Units.val_neg, _root_.neg_smul, Units.smul_def]
-
-variable (R)
-
-theorem neg_one_smul (x : M) : (-1 : R) • x = -x := by simp
-
-variable {R}
-
-theorem sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
-  simp [add_smul, sub_eq_add_neg]
-
-end Module
-
-variable (R)
-
-/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
-structure.
-See note [reducible non-instances]. -/
-abbrev Module.addCommMonoidToAddCommGroup
-    [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
-  { (inferInstance : AddCommMonoid M) with
-    neg := fun a => (-1 : R) • a
-    neg_add_cancel := fun a =>
-      show (-1 : R) • a + a = 0 by
-        nth_rw 2 [← one_smul R a]
-        rw [← add_smul, neg_add_cancel, zero_smul]
-    zsmul := fun z a => (z : R) • a
-    zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
-    zsmul_succ' := fun z a => by simp [add_comm, add_smul]
-    zsmul_neg' := fun z a => by simp [← smul_assoc, neg_one_smul] }
-
-variable {R}
-
-/-- A module over a `Subsingleton` semiring is a `Subsingleton`. We cannot register this
-as an instance because Lean has no way to guess `R`. -/
-protected theorem Module.subsingleton (R M : Type*) [Semiring R] [Subsingleton R] [AddCommMonoid M]
-    [Module R M] : Subsingleton M :=
-  MulActionWithZero.subsingleton R M
-
-/-- A semiring is `Nontrivial` provided that there exists a nontrivial module over this semiring. -/
-protected theorem Module.nontrivial (R M : Type*) [Semiring R] [Nontrivial M] [AddCommMonoid M]
-    [Module R M] : Nontrivial R :=
-  MulActionWithZero.nontrivial R M
-
--- see Note [lower instance priority]
-instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where
-  smul_add := mul_add
-  add_smul := add_mul
-  zero_smul := zero_mul
-  smul_zero := mul_zero
-
--- see Note [lower instance priority]
-/-- Like `Semiring.toModule`, but multiplies on the right. -/
-instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐᵒᵖ R :=
-  { MonoidWithZero.toOppositeMulActionWithZero R with
-    smul_add := fun _ _ _ => add_mul _ _ _
-    add_smul := fun _ _ _ => mul_add _ _ _ }
-
-/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
-def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
-  Module.compHom S f
-
-/-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
-`fun x ↦ x • 1` is a ring homomorphism from `R` to `S`.
-
-This is the `RingHom` version of `MonoidHom.smulOneHom`.
-
-When `R` is commutative, usually `algebraMap` should be preferred. -/
-@[simps!] def RingHom.smulOneHom
-    [Semiring R] [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] : R →+* S where
-  __ := MonoidHom.smulOneHom
-  map_zero' := zero_smul R 1
-  map_add' := (add_smul · · 1)
-
-/-- A homomorphism between semirings R and S can be equivalently specified by a R-module
-structure on S such that S/S/R is a scalar tower. -/
-def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
-    (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where
-  toFun f := ⟨Module.compHom S f, SMul.comp.isScalarTower _⟩
-  invFun := fun ⟨_, _⟩ ↦ RingHom.smulOneHom
-  left_inv f := RingHom.ext fun r ↦ mul_one (f r)
-  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext <| funext₂ <| smul_one_smul S
-
-section AddCommMonoid
-
-variable [Semiring R] [AddCommMonoid M] [Module R M]
-
-section
-
-variable (R)
-
-/-- `nsmul` is equal to any other module structure via a cast. -/
-lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
-  induction n with
-  | zero => rw [Nat.cast_zero, zero_smul, zero_smul]
-  | succ n ih => rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
-
-/-- `nsmul` is equal to any other module structure via a cast. -/
--- See note [no_index around OfNat.ofNat]
-lemma ofNat_smul_eq_nsmul (n : ℕ) [n.AtLeastTwo] (b : M) :
-    (no_index OfNat.ofNat n : R) • b = OfNat.ofNat n • b := Nat.cast_smul_eq_nsmul ..
-
-/-- `nsmul` is equal to any other module structure via a cast. -/
-@[deprecated Nat.cast_smul_eq_nsmul (since := "2024-07-23")]
-lemma nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := (Nat.cast_smul_eq_nsmul ..).symm
-
-end
-
-/-- Convert back any exotic `ℕ`-smul to the canonical instance. This should not be needed since in
-mathlib all `AddCommMonoid`s should normally have exactly one `ℕ`-module structure by design.
--/
-theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) : @SMul.smul ℕ M h.toSMul n x = n • x :=
-  Nat.cast_smul_eq_nsmul ..
-
-/-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `AddCommMonoid`
-should normally have exactly one `ℕ`-module structure by design. -/
-def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
-  default := by infer_instance
-  uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
-
-instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
-  smul_assoc n x y := by
-    induction n with
-    | zero => simp only [zero_smul]
-    | succ n ih => simp only [add_smul, one_smul, ih]
-
-end AddCommMonoid
-
-section AddCommGroup
-
-variable [Semiring S] [Ring R] [AddCommGroup M] [Module S M] [Module R M]
-
-section
-
-variable (R)
-
-/-- `zsmul` is equal to any other module structure via a cast. -/
-lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
-  have : ((smulAddHom R M).flip b).comp (Int.castAddHom R) = (smulAddHom ℤ M).flip b := by
-    apply AddMonoidHom.ext_int
-    simp
-  DFunLike.congr_fun this n
-
-@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_zsmul
-
-/-- `zsmul` is equal to any other module structure via a cast. -/
-@[deprecated Int.cast_smul_eq_zsmul (since := "2024-07-23")]
-theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_zsmul ..).symm
-
-end
-
-/-- Convert back any exotic `ℤ`-smul to the canonical instance. This should not be needed since in
-mathlib all `AddCommGroup`s should normally have exactly one `ℤ`-module structure by design. -/
-theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ M h.toSMul n x = n • x :=
-  Int.cast_smul_eq_zsmul ..
-
-/-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
-should normally have exactly one `ℤ`-module structure by design. -/
-def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
-  default := by infer_instance
-  uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
-
-end AddCommGroup
-
-theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
-    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
-    (x : ℤ) (a : M) :
-    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
-
-theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
-    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
-    [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
-  simp only [Nat.cast_smul_eq_nsmul, AddMonoidHom.map_nsmul, map_nsmul]
-
-instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
-    [Module R M] : IsScalarTower ℤ R M where
-  smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n
-
-section NoZeroSMulDivisors
-
-/-! ### `NoZeroSMulDivisors`
-
-This section defines the `NoZeroSMulDivisors` class, and includes some tests
-for the vanishing of elements (especially in modules over division rings).
--/
-
-
-/-- `NoZeroSMulDivisors R M` states that a scalar multiple is `0` only if either argument is `0`.
-This is a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
-
-The main application of `NoZeroSMulDivisors R M`, when `M` is a module,
-is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0`.
-
-It is a generalization of the `NoZeroDivisors` class to heterogeneous multiplication.
--/
-@[mk_iff]
-class NoZeroSMulDivisors (R M : Type*) [Zero R] [Zero M] [SMul R M] : Prop where
-  /-- If scalar multiplication yields zero, either the scalar or the vector was zero. -/
-  eq_zero_or_eq_zero_of_smul_eq_zero : ∀ {c : R} {x : M}, c • x = 0 → c = 0 ∨ x = 0
-
-export NoZeroSMulDivisors (eq_zero_or_eq_zero_of_smul_eq_zero)
-
-/-- Pullback a `NoZeroSMulDivisors` instance along an injective function. -/
-theorem Function.Injective.noZeroSMulDivisors {R M N : Type*} [Zero R] [Zero M] [Zero N]
-    [SMul R M] [SMul R N] [NoZeroSMulDivisors R N] (f : M → N) (hf : Function.Injective f)
-    (h0 : f 0 = 0) (hs : ∀ (c : R) (x : M), f (c • x) = c • f x) : NoZeroSMulDivisors R M :=
-  ⟨fun {_ _} h =>
-    Or.imp_right (@hf _ _) <| h0.symm ▸ eq_zero_or_eq_zero_of_smul_eq_zero (by rw [← hs, h, h0])⟩
-
--- See note [lower instance priority]
-instance (priority := 100) NoZeroDivisors.toNoZeroSMulDivisors [Zero R] [Mul R]
-    [NoZeroDivisors R] : NoZeroSMulDivisors R R :=
-  ⟨fun {_ _} => eq_zero_or_eq_zero_of_mul_eq_zero⟩
-
-theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
-    (hc : c ≠ 0) (hx : x ≠ 0) : c • x ≠ 0 := fun h =>
-  (eq_zero_or_eq_zero_of_smul_eq_zero h).elim hc hx
-
-section SMulWithZero
-
-variable [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
-
-@[simp]
-theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
-  ⟨eq_zero_or_eq_zero_of_smul_eq_zero, fun h =>
-    h.elim (fun h => h.symm ▸ zero_smul R x) fun h => h.symm ▸ smul_zero c⟩
-
-theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne, smul_eq_zero, not_or]
-
-lemma smul_eq_zero_iff_left (hx : x ≠ 0) : c • x = 0 ↔ c = 0 := by simp [hx]
-lemma smul_eq_zero_iff_right (hc : c ≠ 0) : c • x = 0 ↔ x = 0 := by simp [hc]
-lemma smul_ne_zero_iff_left (hx : x ≠ 0) : c • x ≠ 0 ↔ c ≠ 0 := by simp [hx]
-lemma smul_ne_zero_iff_right (hc : c ≠ 0) : c • x ≠ 0 ↔ x ≠ 0 := by simp [hc]
-
-end SMulWithZero
-
-section Module
-
-section Nat
-
-theorem Nat.noZeroSMulDivisors
-    (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] :
-    NoZeroSMulDivisors ℕ M where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by rw [← Nat.cast_smul_eq_nsmul R, smul_eq_zero]; simp
-
-theorem two_nsmul_eq_zero
-    (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : 2 • v = 0 ↔ v = 0 := by
-  haveI := Nat.noZeroSMulDivisors R M
-  simp [smul_eq_zero]
-
-end Nat
-
-variable [Semiring R] [AddCommMonoid M] [Module R M]
-variable (R M)
-
-/-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
-zero as well. Usually `M` is an `R`-algebra. -/
-theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
-  refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
-  rw [← nsmul_one, ← nsmul_one, ← Nat.cast_smul_eq_nsmul R, ← Nat.cast_smul_eq_nsmul R, h]
-
-end Module
-
-section AddCommGroup
-
--- `R` can still be a semiring here
-variable [Semiring R] [AddCommGroup M] [Module R M]
-
-section SMulInjective
-
-variable (M)
-
-theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
-    Function.Injective (c • · : M → M) :=
-  (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
-
-variable {M}
-
-theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
-    c • x = c • y ↔ x = y :=
-  (smul_right_injective M hc).eq_iff
-
-end SMulInjective
-
-section Nat
-
-theorem self_eq_neg
-    (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : v = -v ↔ v = 0 := by
-  rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]
-
-theorem neg_eq_self
-    (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : -v = v ↔ v = 0 := by
-  rw [eq_comm, self_eq_neg R M]
-
-theorem self_ne_neg
-    (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : v ≠ -v ↔ v ≠ 0 :=
-  (self_eq_neg R M).not
-
-theorem neg_ne_self
-    (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : -v ≠ v ↔ v ≠ 0 :=
-  (neg_eq_self R M).not
-
-end Nat
-
-end AddCommGroup
-
-end NoZeroSMulDivisors
 
 end Mathlib.Algebra.Module.Defs
 
@@ -1009,19 +1488,26 @@ open CategoryTheory.Linear
 variable {R : Type*} [Semiring R]
 variable {C D : Type*} [Category C] [Category D] [Preadditive D] [Linear R D]
 
+instance functorCategorySMul (F G : C ⥤ D) : SMul R (F ⟶ G) where
+  smul r α := 
+    { app := fun X => r • α.app X
+      naturality := by
+        intros
+        rw [Linear.comp_smul, Linear.smul_comp, α.naturality] }
+
 #adaptation_note
 /--
 At nightly-2024-08-08 we needed to significantly increase the maxHeartbeats here.
 -/
-set_option maxHeartbeats 8000000 in
+count_heartbeats in
 instance functorCategoryLinear : Linear R (C ⥤ D) where
   homModule F G :=
     { 
-      smul := fun r α ↦ 
-        { app := fun X ↦ r • α.app X
-          naturality := by
-            intros
-            rw [Linear.comp_smul, Linear.smul_comp, α.naturality] }
+      /- smul := fun r α ↦ -/ 
+      /-   { app := fun X ↦ r • α.app X -/
+      /-     naturality := by -/
+      /-       intros -/
+      /-       rw [Linear.comp_smul, Linear.smul_comp, α.naturality] } -/
       one_smul := by
         intros
         ext
@@ -1037,7 +1523,7 @@ instance functorCategoryLinear : Linear R (C ⥤ D) where
       add_smul := by
         intros
         ext
-        apply add_smul
+        apply Module.add_smul
       smul_add := by
         intros
         ext
@@ -1056,13 +1542,6 @@ instance functorCategoryLinear : Linear R (C ⥤ D) where
     ext
     apply Linear.comp_smul
 
-instance functorCategorySMul (F G : C ⥤ D) : SMul R (F ⟶ G) where
-  smul r α := 
-    { app := fun X => r • α.app X
-      naturality := by
-        intros
-        rw [Linear.comp_smul, Linear.smul_comp, α.naturality] }
-
 instance functorCategoryLinear' : Linear R (C ⥤ D) where
   homModule F G :=
     { one_smul := by
@@ -1080,7 +1559,7 @@ instance functorCategoryLinear' : Linear R (C ⥤ D) where
       add_smul := by
         intros
         ext
-        apply add_smul
+        apply Module.add_smul
       smul_add := by
         intros
         ext
