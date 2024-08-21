@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Instances related to the discrete topology
@@ -110,8 +109,3 @@ theorem discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOr
 instance (priority := 100) DiscreteTopology.orderTopology_of_pred_succ [h : DiscreteTopology α]
     [LinearOrder α] [PredOrder α] [SuccOrder α] : OrderTopology α :=
   discreteTopology_iff_orderTopology_of_pred_succ.mp h
-
-instance (priority := 100) DiscreteTopology.metrizableSpace [DiscreteTopology α] :
-    MetrizableSpace α := by
-  obtain rfl := DiscreteTopology.eq_bot (α := α)
-  exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _

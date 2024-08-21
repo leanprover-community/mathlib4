@@ -63,7 +63,7 @@ lemma root_X_pow_sub_C_ne_zero {n : ℕ} (hn : 1 < n) (a : K) :
 lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 := by
   obtain (rfl|hn) := (Nat.succ_le_iff.mpr hn).eq_or_lt
-  · rw [← Nat.one_eq_succ_zero, pow_one]
+  · rw [pow_one]
     intro e
     refine mk_ne_zero_of_natDegree_lt (monic_X_sub_C a) (C_ne_zero.mpr ha) (by simp) ?_
     trans AdjoinRoot.mk (X - C a) (X - (X - C a))
@@ -412,8 +412,8 @@ variable {α : L} (hα : α ^ n = algebraMap K L a)
 /-- Suppose `L/K` is the splitting field of `Xⁿ - a`, then a choice of `ⁿ√a` gives an equivalence of
 `L` with `K[n√a]`. -/
 noncomputable
-def adjoinRootXPowSubCEquiv :
-    K[n√a] ≃ₐ[K] L :=
+def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducible (X ^ n - C a))
+    (hα : α ^ n = algebraMap K L a) : K[n√a] ≃ₐ[K] L :=
   AlgEquiv.ofBijective (AdjoinRoot.liftHom (X ^ n - C a) α (by simp [hα])) <| by
     haveI := Fact.mk H
     letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
@@ -450,7 +450,8 @@ variable (a) (L)
 
 /-- An arbitrary choice of `ⁿ√a` in the splitting field of `Xⁿ - a`. -/
 noncomputable
-abbrev rootOfSplitsXPowSubC : L :=
+abbrev rootOfSplitsXPowSubC (hn : 0 < n) (a : K)
+    (L) [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)] : L :=
   (rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
       (by simpa [degree_X_pow_sub_C hn] using Nat.pos_iff_ne_zero.mp hn))
 

@@ -3,6 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jannis Limperg
 -/
+import Mathlib.Init
 import Lean.MetavarContext
 
 /-!
@@ -71,3 +72,5 @@ exist in the local context of `mvarId`, nothing happens.
 def modifyLocalDecl [MonadMCtx m] (mvarId : MVarId) (fvarId : FVarId)
     (f : LocalDecl → LocalDecl) : m Unit :=
   modifyLocalContext mvarId fun lctx ↦ lctx.modifyLocalDecl fvarId f
+
+end Mathlib.Tactic

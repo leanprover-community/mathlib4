@@ -1,4 +1,4 @@
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /--
 info: 100000
