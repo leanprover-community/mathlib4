@@ -79,6 +79,18 @@ variable {L}
 
 namespace Term
 
+instance instDecidableEq [DecidableEq α] [∀ n, DecidableEq (L.Functions n)] : DecidableEq (L.Term α)
+  | .var a, .var b => decidable_of_iff (a = b) <| by simp
+  | @Term.func _ _ m f xs, @Term.func _ _ n g ys =>
+      if h : m = n then
+        letI : DecidableEq (L.Term α) := instDecidableEq
+        decidable_of_iff (f = h ▸ g ∧ ∀ i : Fin m, xs i = ys (Fin.cast h i)) <| by
+          subst h
+          simp [Function.funext_iff]
+      else
+        .isFalse <| by simp [h]
+  | .var _, .func _ _ | .func _ _, .var _ => .isFalse <| by simp
+
 open Finset
 
 /-- The `Finset` of variables used in a given term. -/

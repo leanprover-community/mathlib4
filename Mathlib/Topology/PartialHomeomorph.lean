@@ -210,11 +210,6 @@ theorem replaceEquiv_eq_self (e' : PartialEquiv X Y)
 theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
   e.mapsTo
 
-@[deprecated toPartialEquiv_injective (since := "2023-02-18")]
-theorem eq_of_partialEquiv_eq {e e' : PartialHomeomorph X Y}
-    (h : e.toPartialEquiv = e'.toPartialEquiv) : e = e' :=
-  toPartialEquiv_injective h
-
 theorem eventually_left_inverse {x} (hx : x ∈ e.source) :
     ∀ᶠ y in 𝓝 x, e.symm (e y) = y :=
   (e.open_source.eventually_mem hx).mono e.left_inv'
