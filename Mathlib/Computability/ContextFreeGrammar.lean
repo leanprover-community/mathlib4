@@ -305,9 +305,10 @@ structure EmbeddedContextFreeGrammar (T : Type uT) where
       r ∈ g.rules → ∀ n₀ : g₀.NT,
         embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
 
+namespace EmbeddedContextFreeGrammar
 variable {G : EmbeddedContextFreeGrammar T}
 
-lemma EmbeddedContextFreeGrammar.projectNT_inverse_embedNT {n : G.g.NT} {n₀ : G.g₀.NT}
+lemma projectNT_inverse_embedNT {n : G.g.NT} {n₀ : G.g₀.NT}
     (hn : G.projectNT n = some n₀) :
     Option.map G.embedNT (G.projectNT n) = n := by
   rw [hn, Option.map_some']
