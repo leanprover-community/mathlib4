@@ -153,7 +153,8 @@ end analyticGroupoid
 
 section AnalyticManifold
 
-/-- An analytic manifold w.r.t. a model `I : ModelWithCorners 𝕜 E H` is a charted space over H
+/-- An analytic manifold w.r.t. a model `I : ModelWithCorners 𝕜 E H` is a charted space over `H`
+s.t. all extended chart conversion maps are analytic. -/
     s.t. all extended chart conversion maps are analytic. -/
 class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
   [ChartedSpace H M] extends HasGroupoid M (analyticGroupoid I) : Prop
