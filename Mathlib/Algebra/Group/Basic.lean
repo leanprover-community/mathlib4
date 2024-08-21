@@ -834,6 +834,18 @@ lemma mul_zpow_self (a : G) (n : ℤ) : a ^ n * a = a ^ (n + 1) := (zpow_add_one
 @[to_additive sub_zsmul] lemma zpow_sub (a : G) (m n : ℤ) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   rw [Int.sub_eq_add_neg, zpow_add, zpow_neg]
 
+@[to_additive natCast_sub_natCast_zsmul]
+lemma zpow_natCast_sub_natCast (a : G) (m n : ℕ) : a ^ (m - n : ℤ) = a ^ m / a ^ n := by
+  simpa [div_eq_mul_inv] using zpow_sub a m n
+
+@[to_additive natCast_sub_one_zsmul]
+lemma zpow_natCast_sub_one (a : G) (n : ℕ) : a ^ (n - 1 : ℤ) = a ^ n / a := by
+  simpa [div_eq_mul_inv] using zpow_sub a n 1
+
+@[to_additive one_sub_natCast_zsmul]
+lemma zpow_one_sub_natCast (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := by
+  simpa [div_eq_mul_inv] using zpow_sub a 1 n
+
 @[to_additive] lemma zpow_mul_comm (a : G) (m n : ℤ) : a ^ m * a ^ n = a ^ n * a ^ m := by
   rw [← zpow_add, Int.add_comm, zpow_add]
 
