@@ -42,14 +42,14 @@ environment.  In particular, it is silent if everything is imported, making it u
 -/
 elab "#check_assertions" tk:("!")?: command => do
   let env ← getEnv
-  let ext := assertExistsExt.getState env
-  if ext.isEmpty && tk.isNone then logInfo "No assertions made." else
+  let entries := assertExistsExt.getState env |>.toArray.qsort fun d e => (e.isDecl < d.isDecl) ||
+      (e.isDecl == d.isDecl && (d.givenName.toString < e.givenName.toString))
+  if entries.isEmpty && tk.isNone then logInfo "No assertions made." else
   let allMods := env.allImportedModuleNames
   let mut msgs := #[m!""]
   let mut outcome := m!""
   let mut allExist? := true
-  for d in ext.toArray.qsort fun d e => (e.isDecl < d.isDecl) ||
-      (e.isDecl == d.isDecl && (d.givenName.toString < e.givenName.toString)) do
+  for d in entries do
     let type := if d.isDecl then "declaration" else "module"
     let cond := if d.isDecl then env.contains d.givenName else allMods.contains d.givenName
     outcome := if cond then m!"{checkEmoji}" else m!"{crossEmoji}"
