@@ -25,18 +25,14 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   (I' : ModelWithCorners 𝕜 E' H') {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {M' : Type*}
   [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
   [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] [SmoothManifoldWithCorners I M]
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
   (n : ℕ∞)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
   -- `V` vector bundle
-  [∀ x, AddCommGroup (V x)]
-  [∀ x, Module 𝕜 (V x)]
-
-variable [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V] [VectorBundle 𝕜 F V]
-  [SmoothVectorBundle F V I]
+  [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle. -/
 structure ContMDiffSection where
@@ -76,18 +72,6 @@ protected theorem smooth (s : Cₛ^∞⟮I; F, V⟯) :
     Smooth I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff_toFun
 
-protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
-  s.contMDiff.mdifferentiable hn
-
-protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
-  s.contMDiff.mdifferentiable le_top
-
-protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
-    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=
-  s.mdifferentiable x
-
 theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
   DFunLike.ext' h
 
@@ -96,6 +80,9 @@ theorem coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :
 
 @[ext]
 theorem ext (h : ∀ x, s x = t x) : s = t := DFunLike.ext _ _ h
+
+section
+variable [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
 
 instance instAdd : Add Cₛ^n⟮I; F, V⟯ := by
   refine ⟨fun s t => ⟨s + t, ?_⟩⟩
@@ -139,21 +126,6 @@ instance inhabited : Inhabited Cₛ^n⟮I; F, V⟯ :=
 theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
   rfl
 
-instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
-  refine ⟨fun c s => ⟨c • ⇑s, ?_⟩⟩
-  intro x₀
-  have hs := s.contMDiff x₀
-  rw [contMDiffAt_section] at hs ⊢
-  set e := trivializationAt F V x₀
-  refine ((contMDiffAt_const (c := c)).smul hs).congr_of_eventuallyEq ?_
-  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
-  intro x hx
-  apply (e.linear 𝕜 hx).2
-
-@[simp]
-theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I; F, V⟯) = r • ⇑s :=
-  rfl
-
 instance instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
   refine ⟨fun s => ⟨-s, ?_⟩⟩
   intro x₀
@@ -192,17 +164,43 @@ theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I
 instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
-variable (I F V n)
+instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
+  refine ⟨fun c s => ⟨c • ⇑s, ?_⟩⟩
+  intro x₀
+  have hs := s.contMDiff x₀
+  rw [contMDiffAt_section] at hs ⊢
+  set e := trivializationAt F V x₀
+  refine ((contMDiffAt_const (c := c)).smul hs).congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
+  intro x hx
+  apply (e.linear 𝕜 hx).2
 
+@[simp]
+theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I; F, V⟯) = r • ⇑s :=
+  rfl
+
+variable (I F V n) in
 /-- The additive morphism from smooth sections to dependent maps. -/
 def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
   toFun := (↑)
   map_zero' := coe_zero
   map_add' := coe_add
 
-variable {I F V n}
-
 instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
   coe_injective.module 𝕜 (coeAddHom I F n V) coe_smul
+
+end
+
+protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) :
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+  s.contMDiff.mdifferentiable hn
+
+protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+  s.contMDiff.mdifferentiable le_top
+
+protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=
+  s.mdifferentiable x
 
 end ContMDiffSection

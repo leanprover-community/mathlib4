@@ -249,7 +249,7 @@ instance : MulDistribMulAction (ConjAct G) G where
   smul_mul := by
     simp only [smul_def]
     simp only [mul_assoc, inv_mul_cancel_left, forall_const, «forall»]
-  smul_one := by simp only [smul_def, mul_one, mul_right_inv, «forall», forall_const]
+  smul_one := by simp only [smul_def, mul_one, mul_inv_cancel, «forall», forall_const]
   one_smul := by simp only [smul_def, ofConjAct_one, one_mul, inv_one, mul_one, forall_const]
   mul_smul := by
     simp only [smul_def]

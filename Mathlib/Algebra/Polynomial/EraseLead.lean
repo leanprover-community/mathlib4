@@ -202,7 +202,7 @@ theorem eraseLead_natDegree_le (f : R[X]) : (eraseLead f).natDegree ≤ f.natDeg
 
 lemma natDegree_eraseLead (h : f.nextCoeff ≠ 0) : f.eraseLead.natDegree = f.natDegree - 1 := by
   have := natDegree_pos_of_nextCoeff_ne_zero h
-  refine f.eraseLead_natDegree_le.antisymm $ le_natDegree_of_ne_zero ?_
+  refine f.eraseLead_natDegree_le.antisymm <| le_natDegree_of_ne_zero ?_
   rwa [eraseLead_coeff_of_ne _ (tsub_lt_self _ _).ne, ← nextCoeff_of_natDegree_pos]
   all_goals positivity
 
@@ -220,8 +220,8 @@ theorem natDegree_eraseLead_le_of_nextCoeff_eq_zero (h : f.nextCoeff = 0) :
   rw [eraseLead_coeff_of_ne _ (tsub_lt_self hf zero_lt_one).ne, ← nextCoeff_of_natDegree_pos hf]
   simp [nextCoeff_eq_zero, h, eq_zero_or_pos]
 
-lemma two_le_natDegree_of_nextCoeff_eraseLead (hlead : f.eraseLead ≠ 0) (hnext : f.nextCoeff = 0) :
-    2 ≤ f.natDegree := by
+lemma two_le_natDegree_of_nextCoeff_eraseLead (hlead : f.eraseLead ≠ 0)
+    (hnext : f.nextCoeff = 0) : 2 ≤ f.natDegree := by
   contrapose! hlead
   rw [Nat.lt_succ_iff, Nat.le_one_iff_eq_zero_or_eq_one, natDegree_eq_zero, natDegree_eq_one]
     at hlead
@@ -339,9 +339,10 @@ theorem card_support_eq {n : ℕ} :
       ∃ (k : Fin n → ℕ) (x : Fin n → R) (hk : StrictMono k) (hx : ∀ i, x i ≠ 0),
         f = ∑ i, C (x i) * X ^ k i := by
   refine ⟨?_, fun ⟨k, x, hk, hx, hf⟩ => hf.symm ▸ card_support_eq' k x hk.injective hx⟩
-  induction' n with n hn generalizing f
-  · exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
-  · intro h
+  induction n generalizing f with
+  | zero => exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
+  | succ n hn =>
+    intro h
     obtain ⟨k, x, hk, hx, hf⟩ := hn (card_support_eraseLead' h)
     have H : ¬∃ k : Fin n, Fin.castSucc k = Fin.last n := by
       rintro ⟨i, hi⟩
