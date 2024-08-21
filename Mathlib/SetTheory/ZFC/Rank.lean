@@ -81,8 +81,11 @@ theorem rank_pair : rank {x, y} = max (succ (rank x)) (succ (rank y)) := by
 theorem rank_powerset : rank (powerset x) = succ (rank x) := by
   apply le_antisymm
   · simp_rw [rank_le_iff, mem_powerset, lt_succ_iff]
-    intro; exact rank_mono
-  · rw [succ_le_iff]; apply rank_lt_of_mem; simp
+    intro
+    exact rank_mono
+  · rw [succ_le_iff]
+    apply rank_lt_of_mem
+    simp
 
 end PSet
 
