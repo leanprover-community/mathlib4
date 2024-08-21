@@ -229,4 +229,25 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : Dual 𝕜 E) (r : ℝ) :
     IsCompact (toNormedDual ⁻¹' closedBall x' r) :=
   isCompact_of_bounded_of_closed isBounded_closedBall (isClosed_closedBall x' r)
 
+/- More generally could consider a decreasing sequence of fundamental neighbourhoods of 0 -/
+def U : ℕ → Set E
+  | 0 => univ
+  | n => ball 0 n⁻¹
+
+/- Lean would interpret `ball 0 n⁻¹` as ∅, so we set it to univ above -/
+lemma U0 : ball (0 : E) 0⁻¹ = ∅ := by
+  simp only [U, CharP.cast_eq_zero, inv_zero, ball_zero]
+
+lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E := E) n)) := by
+  apply isCompact_polar
+  rw [U]
+  cases' n with m
+  · simp only [univ_mem]
+  · simp only [Nat.cast_add, Nat.cast_one]
+    rw [Metric.mem_nhds_iff]
+    use (↑m + 1)⁻¹
+    simp only [gt_iff_lt, inv_pos, subset_refl, and_true]
+    exact Nat.cast_add_one_pos m
+
+
 end WeakDual

@@ -275,6 +275,7 @@ def myF : ℕ → Set ℕ
   decreasing_by
     exact j.2
 
+/-
 theorem finite_subsets3 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
   use (fun m =>
     | 0 => {0}
@@ -283,7 +284,7 @@ theorem finite_subsets3 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n :
     decreasing_by
       exact j.2
   )
-
+-/
 
 /-
 decreasing_by
