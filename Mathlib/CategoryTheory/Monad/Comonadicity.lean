@@ -230,7 +230,9 @@ def createsFSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g :
 section BeckComonadicity
 
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCosplitPair f g], HasEqualizer f g]
+/-- Dual to `Monad.HasCoequalizerOfIsSplitPair`. -/
 class HasEqualizerOfIsCosplitPair (F : C ⥤ D) : Prop where
+  /-- If `f, g` is an `F`-cosplit pair, then they have an equalizer. -/
   out : ∀ {A B} (f g : A ⟶ B) [F.IsCosplitPair f g], HasEqualizer f g
 
 instance [HasEqualizerOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
@@ -239,7 +241,9 @@ instance [HasEqualizerOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
   fun _ => HasEqualizerOfIsCosplitPair.out F _ _
 
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCosplitPair f g], PreservesLimit (parallelPair f g) F]
+/-- Dual to `Monad.PreservesColimitOfIsSplitPair`. -/
 class PreservesLimitOfIsCosplitPair (F : C ⥤ D) where
+  /-- If `f, g` is an `F`-cosplit pair, then `F` preserves limits of `parallelPair f g`. -/
   out : ∀ {A B} (f g : A ⟶ B) [F.IsCosplitPair f g], PreservesLimit (parallelPair f g) F
 
 instance {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] [PreservesLimitOfIsCosplitPair F] :
@@ -251,7 +255,9 @@ instance [PreservesLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
   fun _ => PreservesLimitOfIsCosplitPair.out _ _
 
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCosplitPair f g], ReflectsLimit (parallelPair f g) F] :
+/-- Dual to `Monad.ReflectsColimitOfIsSplitPair`. -/
 class ReflectsLimitOfIsCosplitPair (F : C ⥤ D) where
+  /-- If `f, g` is an `F`-cosplit pair, then `F` reflects limits for `parallelPair f g`. -/
   out : ∀ {A B} (f g : A ⟶ B) [F.IsCosplitPair f g], ReflectsLimit (parallelPair f g) F
 
 instance {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] [ReflectsLimitOfIsCosplitPair F] :
@@ -294,7 +300,9 @@ def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair
     exact (comparisonAdjunction adj).toEquivalence.symm.isEquivalence_inverse
 
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCosplitPair f g], CreatesLimit (parallelPair f g) F] :
+/-- Dual to `Monad.CreatesColimitOfIsSplitPair`. -/
 class CreatesLimitOfIsCosplitPair (F : C ⥤ D) where
+  /-- If `f, g` is an `F`-cosplit pair, then `F` creates limits of `parallelPair f g`. -/
   out : ∀ {A B} (f g : A ⟶ B) [F.IsCosplitPair f g], CreatesLimit (parallelPair f g) F
 
 instance {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] [CreatesLimitOfIsCosplitPair F] :
@@ -338,7 +346,9 @@ section CoreflexiveComonadicity
 variable [HasCoreflexiveEqualizers C] [F.ReflectsIsomorphisms]
 
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [F.IsCoreflexivePair f g], PreservesLimit (parallelPair f g) F] :
+/-- Dual to `Monad.PreservesColimitOfIsReflexivePair`. -/
 class PreservesLimitOfIsCoreflexivePair (F : C ⥤ D) where
+  /-- `f, g` is a coreflexive pair, then `F` preserves limits of `parallelPair f g`. -/
   out : ∀ ⦃A B⦄ (f g : A ⟶ B) [IsCoreflexivePair f g], PreservesLimit (parallelPair f g) F
 
 instance {A B} (f g : A ⟶ B) [IsCoreflexivePair f g] [PreservesLimitOfIsCoreflexivePair F] :
@@ -351,7 +361,7 @@ instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 
-/-- Reflexive (crude) monadicity theorem. If `F` has a right adjoint, `C` has and `F` preserves
+/-- Coreflexive (crude) comonadicity theorem. If `F` has a right adjoint, `C` has and `F` preserves
 coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/
 def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
