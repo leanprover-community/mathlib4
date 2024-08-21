@@ -46,10 +46,12 @@ exist/be imported at some point, but should eventually exist/be imported.
 def addDeclEntry {m : Type → Type} [MonadEnv m] (isDecl : Bool) (declName mod : Name) : m Unit :=
   modifyEnv (assertExistsExt.addEntry · { isDecl := isDecl, givenName := declName, modName := mod })
 
+end Mathlib.AssertNotExist
+
+open Mathlib.AssertNotExist
+
 /-- `getSortedAssertExists env` returns the array of `AssertExists`, placing first all declarations,
 in alphabetical order, and then all modules, also in alphabetical order. -/
-def _root_.Lean.Environment.getSortedAssertExists (env : Environment) : Array AssertExists :=
+def Lean.Environment.getSortedAssertExists (env : Environment) : Array AssertExists :=
   assertExistsExt.getState env |>.toArray.qsort fun d e => (e.isDecl < d.isDecl) ||
     (e.isDecl == d.isDecl && (d.givenName.toString < e.givenName.toString))
-
-end Mathlib.AssertNotExist
