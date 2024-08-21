@@ -1,39 +1,55 @@
+import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+import Mathlib.Algebra.Category.ModuleCat.Colimits
+import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Localization.Monoidal
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Sites.Equivalence
 
-open CategoryTheory Localization MonoidalCategory
+universe v u w
+
+open CategoryTheory Localization MonoidalCategory Opposite MonoidalClosed
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
-  [MonoidalCategory A] [ConcreteCategory A]
-  [HasWeakSheafify J A] [J.WEqualsLocallyBijective A]
+variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
+
+variable (A : Type*) [Category A] [MonoidalCategory A]
 
 instance : (J.W (A := A)).Monoidal where
-  whiskerLeft F G₁ G₂ g h := by
-    simp only [GrothendieckTopology.W, LeftBousfield.W] at h ⊢
-    intro Z hZ
+  whiskerLeft P G₁ G₂ g h := by
+    intro F hF
+    -- This needs some more assumptions on `A`:
+    let _ : MonoidalClosed (Cᵒᵖ ⥤ A) := sorry
+    have hP : ∀ (P : Cᵒᵖ ⥤ A), Presheaf.IsSheaf J ((ihom P).obj F) := sorry
     constructor
     · intro a b hh
-      simp at hh
-      ext W w
-      have hhh := congrFun ((forget A).congr_map (NatTrans.congr_app hh W))
-      simp at hhh
-      sorry
-    · sorry
-    -- rw [J.W_iff_isLocallyBijective] at *
-    -- constructor
-    -- · constructor
-    --   intro X x y hh
-    --   simp only [Monoidal.tensorObj_obj] at x y
-    --   have := h.1
-    --   have : ∀ (x y : G₁.obj X) (_ : g.app X x = g.app X y),
-    --     Presheaf.equalizerSieve x y ∈ J.sieves X.unop := fun x y h ↦ this.1 x y h
+      let a' : G₂ ⟶ (ihom P).obj F := (ihom.adjunction P).homEquiv _ _ a
+      let b' : G₂ ⟶ (ihom P).obj F := (ihom.adjunction P).homEquiv _ _ b
+      have : g ≫ a' = g ≫ b' := by
+        simp only [Adjunction.homEquiv_unit, Functor.id_obj, Functor.comp_obj, tensorLeft_obj,
+          ihom.ihom_adjunction_unit, ihom.coev_naturality_assoc, a', b']
+        simp only [← (ihom P).map_comp, hh]
+      apply ((ihom.adjunction P).homEquiv _ _).injective
+      exact (h ((ihom P).obj F) (hP P)).1 this
+    · intro a
+      let a' : G₁ ⟶ (ihom P).obj F := (ihom.adjunction P).homEquiv _ _ a
+      obtain ⟨b, hb⟩ := (h ((ihom P).obj F) (hP P)).2 a'
+      refine ⟨(ihom.adjunction P).homEquiv _ _|>.symm b, ?_⟩
+      simp only [Adjunction.homEquiv_unit, Functor.id_obj, Functor.comp_obj, tensorLeft_obj,
+        ihom.ihom_adjunction_unit, a'] at hb
+      erw [Adjunction.homEquiv_counit]
+      simp only [← id_tensorHom, tensorLeft_obj, Functor.id_obj, tensorLeft_map,
+        ihom.ihom_adjunction_counit, ← tensor_comp_assoc, Category.comp_id, hb]
+      simp
+  whiskerRight {G₁ G₂} g h P := by
+    -- We need symmetric monoidal here, or at least `tensorRight` to have a right adjoint.
+    sorry
 
-    --   simp? [Presheaf.equalizerSieve]
-    -- · sorry
-  whiskerRight := sorry
+variable [HasWeakSheafify J A]
 
 noncomputable instance : MonoidalCategory (Sheaf J A) :=
     inferInstanceAs (MonoidalCategory ((LocalizedMonoidal (presheafToSheaf J A) J.W (Iso.refl _))))
