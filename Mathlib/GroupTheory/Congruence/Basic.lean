@@ -171,11 +171,6 @@ relation is injective."]
 theorem toSetoid_inj {c d : Con M} (H : c.toSetoid = d.toSetoid) : c = d :=
   ext <| ext_iff.1 H
 
-/-- Iff version of extensionality rule for congruence relations. -/
-@[to_additive "Iff version of extensionality rule for additive congruence relations."]
-protected theorem ext_iff {c d : Con M} : c = d ↔ (∀ x y, c x y ↔ d x y) :=
-  ⟨fun h _ _ => h ▸ Iff.rfl, ext⟩
-
 /-- Two congruence relations are equal iff their underlying binary relations are equal. -/
 @[to_additive "Two additive congruence relations are equal iff their underlying binary relations
 are equal."]
@@ -1045,7 +1040,7 @@ variable [Group M] [Group N] [Group P] (c : Con M)
 /-- Multiplicative congruence relations preserve inversion. -/
 @[to_additive "Additive congruence relations preserve negation."]
 protected theorem inv {x y} (h : c x y) : c x⁻¹ y⁻¹ :=
-  c.map_of_mul_left_rel_one Inv.inv (fun x => by simp only [mul_left_inv, c.refl 1]) h
+  c.map_of_mul_left_rel_one Inv.inv (fun x => by simp only [inv_mul_cancel, c.refl 1]) h
 
 /-- Multiplicative congruence relations preserve division. -/
 @[to_additive "Additive congruence relations preserve subtraction."]

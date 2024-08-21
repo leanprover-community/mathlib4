@@ -18,7 +18,7 @@ import Mathlib.Data.Nat.Choose.Multinomial
 
 noncomputable section
 
-open scoped Classical NNReal Nat
+open scoped NNReal Nat
 
 universe u uD uE uF uG
 
@@ -50,7 +50,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     original spaces, which explains why we assume in the lemma that all spaces live in the same
     universe. -/
   induction' n with n IH generalizing Eu Fu Gu
-  · simp only [Nat.zero_eq, norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
+  · simp only [norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
       Finset.sum_singleton, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_zero, ← mul_assoc]
     apply B.le_opNorm₂
   · have In : (n : ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
@@ -441,7 +441,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
       ring
     _ = ∑ i ∈ Finset.range (n + 1), (n ! : ℝ) * 1 * C * D ^ (n + 1) * ((n - i)! : ℝ)⁻¹ := by
       congr! with i hi
-      · apply inv_mul_cancel
+      · apply inv_mul_cancel₀
         simpa only [Ne, Nat.cast_eq_zero] using i.factorial_ne_zero
       · rw [← pow_add]
         congr 1

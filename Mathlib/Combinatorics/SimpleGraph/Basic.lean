@@ -187,7 +187,7 @@ theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v 
   hn (h' ▸ h)
 
 theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
-  SimpleGraph.ext
+  fun _ _ => SimpleGraph.ext
 
 @[simp]
 theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
@@ -816,7 +816,7 @@ theorem deleteEdges_deleteEdges (s s' : Set (Sym2 V)) :
 lemma deleteEdges_le (s : Set (Sym2 V)) : G.deleteEdges s ≤ G := sdiff_le
 
 lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdges s₁ :=
-  sdiff_le_sdiff_left $ fromEdgeSet_mono h
+  sdiff_le_sdiff_left <| fromEdgeSet_mono h
 
 lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
 
