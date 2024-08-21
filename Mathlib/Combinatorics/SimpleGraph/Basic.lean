@@ -189,7 +189,6 @@ theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v 
 theorem adj_injective : Injective (fun G : SimpleGraph V ↦ G.Adj) :=
   fun _ _ => SimpleGraph.ext
 
-@[simp]
 theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
   adj_injective.eq_iff
 
@@ -837,3 +836,5 @@ theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.e
 
 end deleteEdges
 end SimpleGraph
+
+#lint
