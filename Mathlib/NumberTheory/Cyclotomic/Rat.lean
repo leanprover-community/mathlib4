@@ -267,7 +267,7 @@ noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
       · exact Subalgebra.sub_mem _ (hζ.isIntegral (by simp)) (Subalgebra.one_mem _))
 
 @[simp]
-theorem subOneIntegralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
+theorem subOneIntegralPowerBasis_gen [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
     hζ.subOneIntegralPowerBasis.gen =
       ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (p ^ k).pos) (Subalgebra.one_mem _)⟩ := by
@@ -275,16 +275,17 @@ theorem subOneIntegralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ 
 
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p`-th cyclotomic
 extension of `ℚ`. -/
-noncomputable def subOneIntegralPowerBasis' [hcycl : IsCyclotomicExtension {p} ℚ K]
+noncomputable def subOneIntegralPowerBasis' [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) : PowerBasis ℤ (𝓞 K) :=
-  have : IsCyclotomicExtension {p ^ 1} ℚ K := by convert hcycl; rw [pow_one]
-  subOneIntegralPowerBasis (p := p) (k := 1) (ζ := ζ)  (by rwa [pow_one])
+  have : IsCyclotomicExtension {p ^ 1} ℚ K := by rwa [pow_one]
+  subOneIntegralPowerBasis (p := p) (k := 1) (ζ := ζ) (by rwa [pow_one])
 
 @[simp]
-theorem subOneIntegralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K]
+theorem subOneIntegralPowerBasis'_gen [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) :
     hζ.subOneIntegralPowerBasis'.gen = hζ.toInteger - 1 :=
-  subOneIntegralPowerBasis_gen (hcycl := by rwa [pow_one]) (by rwa [pow_one])
+  have : IsCyclotomicExtension {p ^ 1} ℚ K := by rwa [pow_one]
+  subOneIntegralPowerBasis_gen (by rwa [pow_one])
 
 /-- `ζ - 1` is prime if `p ≠ 2` and `ζ` is a primitive `p ^ (k + 1)`-th root of unity.
   See `zeta_sub_one_prime` for a general statement. -/

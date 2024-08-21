@@ -1132,7 +1132,7 @@ end Set
 /-! ### `invFunOn` is a left/right inverse -/
 namespace Function
 
-variable [Nonempty α] {s : Set α} {f : α → β} {a : α} {b : β}
+variable {s : Set α} {f : α → β} {a : α} {b : β}
 
 attribute [local instance] Classical.propDecidable
 
@@ -1140,6 +1140,8 @@ attribute [local instance] Classical.propDecidable
 on `f '' s`. For a computable version, see `Function.Embedding.invOfMemRange`. -/
 noncomputable def invFunOn [Nonempty α] (f : α → β) (s : Set α) (b : β) : α :=
   if h : ∃ a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice ‹Nonempty α›
+
+variable [Nonempty α]
 
 theorem invFunOn_pos (h : ∃ a ∈ s, f a = b) : invFunOn f s b ∈ s ∧ f (invFunOn f s b) = b := by
   rw [invFunOn, dif_pos h]
