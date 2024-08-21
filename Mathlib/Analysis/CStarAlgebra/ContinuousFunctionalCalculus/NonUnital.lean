@@ -266,6 +266,23 @@ lemma cfcₙ_predicate_zero : p 0 :=
 lemma cfcₙ_predicate (f : R → R) (a : A) : p (cfcₙ f a) :=
   cfcₙ_cases p a f (cfcₙ_predicate_zero R) fun _ _ _ ↦ cfcₙHom_predicate ..
 
+-- The following three lemmas are just `cfcₙ_predicate`, but specific enough for the `@[simp]` tag.
+@[simp]
+lemma isStarNormal_cfcₙ [NonUnitalContinuousFunctionalCalculus R (IsStarNormal : A → Prop)]
+    {f : R → R} {a : A} : IsStarNormal (cfcₙ f a) :=
+  cfcₙ_predicate _ _
+
+@[simp]
+lemma isSelfAdjoint_cfcₙ [NonUnitalContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)]
+    {f : R → R} {a : A} : IsSelfAdjoint (cfcₙ f a) :=
+  cfcₙ_predicate _ _
+
+@[simp]
+lemma cfcₙ_nonneg_of_predicate [PartialOrder A]
+    [NonUnitalContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} :
+    0 ≤ cfcₙ f a :=
+  cfcₙ_predicate _ _
+
 lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     cfcₙ f a = cfcₙ g a := by
   by_cases h : p a ∧ ContinuousOn g (σₙ R a) ∧ g 0 = 0

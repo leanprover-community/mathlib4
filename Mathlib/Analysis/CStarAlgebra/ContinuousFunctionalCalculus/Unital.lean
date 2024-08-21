@@ -347,6 +347,22 @@ lemma cfc_predicate_zero : p 0 :=
 lemma cfc_predicate (f : R → R) (a : A) : p (cfc f a) :=
   cfc_cases p a f (cfc_predicate_zero R) fun _ _ ↦ cfcHom_predicate ..
 
+-- The following three lemmas are just `cfc_predicate`, but specific enough for the `@[simp]` tag.
+@[simp]
+lemma isStarNormal_cfc [ContinuousFunctionalCalculus R (IsStarNormal : A → Prop)]
+    {f : R → R} {a : A} : IsStarNormal (cfc f a) :=
+  cfc_predicate _ _
+
+@[simp]
+lemma isSelfAdjoint_cfc [ContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)]
+    {f : R → R} {a : A} : IsSelfAdjoint (cfc f a) :=
+  cfc_predicate _ _
+
+@[simp]
+lemma cfc_nonneg_of_predicate [PartialOrder A]
+    [ContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} : 0 ≤ cfc f a :=
+  cfc_predicate _ _
+
 lemma cfc_predicate_algebraMap (r : R) : p (algebraMap R A r) :=
   cfc_const r (0 : A) (cfc_predicate_zero R) ▸ cfc_predicate (fun _ ↦ r) 0
 
