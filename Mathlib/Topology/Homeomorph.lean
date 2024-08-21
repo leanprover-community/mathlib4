@@ -770,7 +770,15 @@ end Continuous
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   {W : Type*} [TopologicalSpace W] {f : X → Y}
 
-/-- Predicate saying that `f` is a homeomorphism. -/
+/-- Predicate saying that `f` is a homeomorphism.
+
+This should be used only when `f` is a concrete function whose continuous inverse is not easy to
+write down. Otherwise, `Homeomorph` should be preferred as it bundles the continuous inverse.
+
+Having both `Homeomorph` and `IsHomeomorph` is justified by the fact that so many function
+properties are unbundled in the topology part of the library, and by the fact that a homeomorphism
+is not merely a continuous bijection, that is `IsHomeomorph f` is not equivalent to
+`Continuous f ∧ Bijective f` but to `Continuous f ∧ Bijective f ∧ IsOpenMap f`. -/
 structure IsHomeomorph (f : X → Y) : Prop where
   continuous : Continuous f
   isOpenMap : IsOpenMap f
@@ -788,6 +796,7 @@ protected lemma surjective : Function.Surjective f := hf.bijective.surjective
 
 variable (f) in
 /-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
+@[simps! toEquiv apply symm_apply]
 noncomputable def homeomorph : X ≃ₜ Y where
   continuous_toFun := hf.1
   continuous_invFun := by
@@ -824,7 +833,7 @@ lemma isHomeomorph_iff_embedding_surjective : IsHomeomorph f ↔ Embedding f ∧
     h.1.inj, h.2⟩
 
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
-lemma isHomeomorph_iff_closed_bijective : IsHomeomorph f ↔
+lemma isHomeomorph_iff_continuous_isClosedMap_bijective  : IsHomeomorph f ↔
     Continuous f ∧ IsClosedMap f ∧ Function.Bijective f :=
   ⟨fun hf => ⟨hf.continuous, hf.isClosedMap, hf.bijective⟩, fun ⟨hf, hf', hf''⟩ =>
     ⟨hf, fun _ hu => isClosed_compl_iff.1 (image_compl_eq hf'' ▸ hf' _ hu.isClosed_compl), hf''⟩⟩
