@@ -7,6 +7,7 @@ import Mathlib.Computability.Language
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.Indexes
 import Mathlib.Tactic.NormNum
+import Mathlib.Data.Countable.Small
 
 /-!
 # Deterministic Finite Automata
@@ -250,5 +251,6 @@ end DFA
 def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
   ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
 
-lemma Language.isRegular_iff {T : Type u} {L : Language T}
-    L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L := sorry
+lemma Language.isRegular_iff {T : Type u} {L : Language T} :
+    L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L := by
+  sorry
