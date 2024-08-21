@@ -58,8 +58,6 @@ namespace Nat
 @[simp, reducible]
 def unpaired {α} (f : ℕ → ℕ → α) (n : ℕ) : α :=
   f n.unpair.1 n.unpair.2
-attribute [nolint simpVarHead] unpaired.eq_1
-
 
 /-- The primitive recursive functions `ℕ → ℕ`. -/
 protected inductive Primrec : (ℕ → ℕ) → Prop
