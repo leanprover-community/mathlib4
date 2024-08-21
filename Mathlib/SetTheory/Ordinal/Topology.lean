@@ -132,7 +132,10 @@ theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
         (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a :=
-  ((mem_closure_tfae a s).out 0 4).trans <| by simp only [exists_prop]
+  calc
+    _ ↔ ∃ o, o ≠ 0 ∧ ∃ f, (∀ (x : Ordinal.{u}) (hx : x < o), f x hx ∈ s) ∧ o.bsup f = a :=
+             (mem_closure_tfae a s).out 0 4
+    _ ↔ _ := by simp only [exists_prop]
 
 theorem mem_closed_iff_bsup (hs : IsClosed s) :
     a ∈ s ↔

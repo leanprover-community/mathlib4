@@ -641,7 +641,7 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   let t := max b y
   have hsa : s ≤ a := min_le_left a x
   have hbt : b ≤ t := le_max_left b y
-  have hst : s ≤ t := hsa.trans $ hbt.trans' hab.le
+  have hst : s ≤ t := hsa.trans <| hbt.trans' hab.le
   have hf_mono_st : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := by
     letI := Icc.completeLinearOrder hst
     have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.restrict (Icc s t) f)

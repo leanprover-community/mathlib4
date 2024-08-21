@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Linter.Util
 
@@ -23,7 +24,7 @@ namespace Mathlib.Linter
 /-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option. -/
 register_option linter.setOption : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `setOption` linter"
 }
 
@@ -54,9 +55,6 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
     unless Linter.getLinterValue linter.setOption (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
-      return
-    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
-    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
     if let some head := stx.find? is_set_option then
       if let some name := parse_set_option head then

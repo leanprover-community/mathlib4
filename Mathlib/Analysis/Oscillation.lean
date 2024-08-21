@@ -3,7 +3,7 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
 -/
-import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Topology.EMetricSpace.Diam
 import Mathlib.Order.WellFoundedSet
 
 /-!
