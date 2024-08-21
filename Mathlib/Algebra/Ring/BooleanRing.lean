@@ -70,7 +70,7 @@ theorem add_self : a + a = 0 := by
 theorem neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
-    _ = -a + -a + a := by rw [← neg_add_self, add_assoc]
+    _ = -a + -a + a := by rw [← neg_add_cancel, add_assoc]
     _ = a := by rw [add_self, zero_add]
 
 theorem add_eq_zero' : a + b = 0 ↔ a = b :=
@@ -385,7 +385,7 @@ abbrev GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra 
   zero_mul := bot_inf_eq
   mul_zero := inf_bot_eq
   neg := id
-  add_left_neg := symmDiff_self
+  neg_add_cancel := symmDiff_self
   add_comm := symmDiff_comm
   mul := (· ⊓ ·)
   mul_assoc := inf_assoc
@@ -526,7 +526,7 @@ instance : BooleanRing Bool where
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
   sub_eq_add_neg _ _ := rfl
-  add_left_neg := Bool.xor_self
+  neg_add_cancel := Bool.xor_self
   add_comm := xor_comm
   mul_assoc := and_assoc
   one_mul := Bool.true_and

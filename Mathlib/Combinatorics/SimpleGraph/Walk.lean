@@ -791,13 +791,13 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 
 lemma firstDart_mem_darts {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) :
     p.firstDart hp ∈ p.darts := by
-  induction p <;> simp [Walk.firstDart, Walk.sndOfNotNil, Walk.notNilRec] at hp |-
+  induction p <;> simp [Walk.firstDart, Walk.sndOfNotNil, Walk.notNilRec] at hp ⊢
 
 lemma darts_getElem_zero {u v} {p : G.Walk u v} (hi : 0 < p.length) :
     (p.darts[0]'(by simp; omega)).fst = u := by
   induction p with
   | nil => simp at hi
-  | @cons u' v' w' adj tail _ => simp
+  | cons => simp
 
 theorem darts_getElem_fst
     {u v : V} {p : G.Walk u v} (i : ℕ) (hi : i < p.length) :
@@ -840,8 +840,8 @@ lemma support_getElem_eq_getVert {u v} {p : G.Walk u v} {i} (hi : i < p.length +
   induction p generalizing i with
   | nil => simp [Walk.getVert]
   | cons v p' ih =>
-    cases' i with j
-    · simp
+    cases i
+    · rfl
     · simp [Walk.getVert] at hi
       simpa [Walk.getVert] using ih (by omega)
 
@@ -976,7 +976,7 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
         simp
       · rw [edges_cons, List.count_cons]
         split_ifs with h''
-        · simp only [beq_iff_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h''
+        · simp only [beq_iff_eq, Sym2.eq, Sym2.rel_iff'] at h''
           obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h''
           · exact (h' rfl).elim
           · cases p' <;> simp!
@@ -1039,10 +1039,10 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
 theorem dropUntil_not_nil {u v w : V} {p : G.Walk u v} (hw : w ∈ p.support) (ne : w ≠ v) :
     ¬(p.dropUntil w hw).Nil := by
   induction p with
-  | @nil u =>
+  | nil =>
     simp only [support_nil, List.mem_singleton] at hw
     exact False.elim (ne hw)
-  | @cons u' v' w' adj tail ih =>
+  | cons _ _ ih =>
     simp only [support_cons, List.mem_cons] at hw
     cases' hw with hw₁ hw₂
     · subst hw₁
@@ -1050,13 +1050,12 @@ theorem dropUntil_not_nil {u v w : V} {p : G.Walk u v} (hw : w ∈ p.support) (n
     · simp only [dropUntil, support_cons]
       split_ifs with hw₃
       · subst hw₃
-        simp
+        exact not_nil_cons
       · exact ih hw₂ ne
 
 lemma sum_takeUntil_dropUntil_length {u v w : V} {p : G.Walk u v} (hw : w ∈ p.support) :
     (p.takeUntil w hw).length + (p.dropUntil w hw).length = p.length := by
-  have := congr_arg (·.length) (p.take_spec hw)
-  simpa only [length_append] using this
+  simpa only [length_append] using congr_arg (·.length) (p.take_spec hw)
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
@@ -1177,7 +1176,7 @@ theorem map_copy (hu : u = u') (hv : v = v') :
 theorem map_id (p : G.Walk u v) : p.map Hom.id = p := by
   induction p with
   | nil => rfl
-  | cons _ p' ih => simp [ih p']
+  | cons _ p' ih => simp [ih]
 
 @[simp]
 theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
@@ -1346,13 +1345,7 @@ theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
   rw [edges_transfer]
   apply edges_subset_edgeSet p
 
-end Walk
-
-namespace Walk
-
-open Classical
-variable {G}
-
+open Classical in
 /-- Convert a list of vertices to a walk. -/
 noncomputable def fromList {l : List V} (ne : l ≠ []) (hl : l.Chain' (fun u v => G.Adj u v)) :
     G.Walk (l.head ne) (l.getLast ne) :=

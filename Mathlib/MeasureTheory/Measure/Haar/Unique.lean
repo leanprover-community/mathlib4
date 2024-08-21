@@ -81,7 +81,7 @@ lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
   · simp only [le_iInf_iff]
     intro f f_cont f_comp fk f_nonneg
     apply (f_cont.integrable_of_hasCompactSupport f_comp).measure_le_integral
-    · exact eventually_of_forall f_nonneg
+    · exact Eventually.of_forall f_nonneg
     · exact fun x hx ↦ by simp [fk hx]
   · apply le_of_forall_lt' (fun r hr ↦ ?_)
     simp only [iInf_lt_iff, exists_prop, exists_and_left]
@@ -167,7 +167,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
       exact h'g.comp_homeomorph ((Homeomorph.inv G).trans (Homeomorph.mulRight x))
   calc
   ∫ x, f x ∂μ = ∫ x, f x * (D x)⁻¹ * D x ∂μ := by
-    congr with x; rw [mul_assoc, inv_mul_cancel (D_pos x).ne', mul_one]
+    congr with x; rw [mul_assoc, inv_mul_cancel₀ (D_pos x).ne', mul_one]
   _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [integral_mul_left]
   _ = ∫ y, (∫ x, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂μ) ∂ν := by
       apply integral_integral_swap_of_hasCompactSupport
@@ -378,7 +378,7 @@ lemma haarScalarFactor_eq_mul (μ' μ ν : Measure G)
     · exact g_cont.integrable_of_hasCompactSupport g_comp
   change (haarScalarFactor μ' ν : ℝ) * ∫ (x : G), g x ∂ν =
     (haarScalarFactor μ' μ * haarScalarFactor μ ν : ℝ≥0) * ∫ (x : G), g x ∂ν at Z
-  simpa only [mul_eq_mul_right_iff (M₀ := ℝ), int_g_pos.ne', or_false, NNReal.eq_iff] using Z
+  simpa only [mul_eq_mul_right_iff (M₀ := ℝ), int_g_pos.ne', or_false, ← NNReal.eq_iff] using Z
 
 /-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
@@ -468,7 +468,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · exact fun n ↦ (vf_cont n).aestronglyMeasurable
     · apply IntegrableOn.integrable_indicator _ (isClosed_tsupport f).measurableSet
       simpa using IsCompact.measure_lt_top h'f
-    · refine fun n ↦ eventually_of_forall (fun x ↦ ?_)
+    · refine fun n ↦ Eventually.of_forall (fun x ↦ ?_)
       by_cases hx : x ∈ tsupport f
       · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, indicator_of_mem]
         norm_cast

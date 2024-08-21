@@ -42,7 +42,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     refine (IntegrableOn.congr_fun (this.const_mul (1 / p i ^ (s - 1)))
       (fun t (ht : 0 < t) ↦ ?_) measurableSet_Ioi).const_mul _
     simp_rw [mul_comm (↑(rexp _) : ℂ), ← mul_assoc, neg_mul, ofReal_mul]
-    rw [mul_cpow_ofReal_nonneg hpi.le ht.le, ← mul_assoc, one_div, inv_mul_cancel, one_mul]
+    rw [mul_cpow_ofReal_nonneg hpi.le ht.le, ← mul_assoc, one_div, inv_mul_cancel₀, one_mul]
     rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl (ofReal_ne_zero.mpr hpi.ne')
   · -- summability of integrals of norms
