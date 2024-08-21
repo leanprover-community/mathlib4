@@ -500,7 +500,7 @@ theorem measure_iInter_eq_iInf' {α ι : Type*} [MeasurableSpace α] {μ : Measu
     μ (⋂ i, f i) = ⨅ i, μ (⋂ j ≤ i, f j) := by
   let s := fun i ↦ ⋂ j ≤ i, f j
   have iInter_eq : ⋂ i, f i = ⋂ i, s i := by
-    ext x; simp [s]; constructor
+    ext x; simp only [mem_iInter, s]; constructor
     · exact fun h _ j _ ↦ h j
     · intro h i
       rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
@@ -603,7 +603,7 @@ theorem measure_limsup_eq_zero {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠
   suffices μ (limsup t atTop) = 0 by
     have A : s ≤ t := fun n => subset_toMeasurable μ (s n)
     -- TODO default args fail
-    exact measure_mono_null (limsup_le_limsup (eventually_of_forall (Pi.le_def.mp A))) this
+    exact measure_mono_null (limsup_le_limsup (Eventually.of_forall (Pi.le_def.mp A))) this
   -- Next we unfold `limsup` for sets and replace equality with an inequality
   simp only [limsup_eq_iInf_iSup_of_nat', Set.iInf_eq_iInter, Set.iSup_eq_iUnion, ←
     nonpos_iff_eq_zero]
@@ -1728,7 +1728,7 @@ theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G]
     exact hg.symm
   have : (g₂⁻¹ • ·) ⁻¹' (g • s ∩ s) = g₁ • s ∩ g₂ • s := by
     rw [preimage_eq_iff_eq_image (MulAction.bijective g₂⁻¹), image_smul, smul_set_inter, smul_smul,
-      smul_smul, inv_mul_self, one_smul]
+      smul_smul, inv_mul_cancel, one_smul]
   change μ (g₁ • s ∩ g₂ • s) = 0
   exact this ▸ (h_qmp g₂⁻¹).preimage_null (h_ae_disjoint g hg)
 

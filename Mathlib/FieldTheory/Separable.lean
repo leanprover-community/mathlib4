@@ -382,8 +382,6 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
     (g₁ : F[X]) (hg₁ : g₁.Separable) (hgf₁ : expand F (p ^ n₁) g₁ = f) (n₂ : ℕ) (g₂ : F[X])
     (hg₂ : g₂.Separable) (hgf₂ : expand F (p ^ n₂) g₂ = f) : n₁ = n₂ ∧ g₁ = g₂ := by
   revert g₁ g₂
-  -- Porting note: the variable `K` affects the `wlog` tactic.
-  clear! K
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
     simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_le hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
@@ -505,7 +503,7 @@ open Polynomial
 
 section CommRing
 
-variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
+variable (F L K : Type*) [CommRing F] [Ring K] [Algebra F K]
 
 -- TODO: refactor to allow transcendental extensions?
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
@@ -561,6 +559,7 @@ variable {E : Type*}
 section
 
 variable [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+include e
 
 /-- Transfer `IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F x := by
@@ -585,19 +584,18 @@ end
 
 section
 
-variable [Field K] [CommRing E] [Algebra F K]
-    [Algebra F E] [Algebra K E] [IsScalarTower F K E]
+variable [Field L] [CommRing E] [Algebra F L]
+    [Algebra F E] [Algebra L E] [IsScalarTower F L E]
 
-variable (K)
-/-- If `E / K / F` is an extension tower, `x : E` is separable over `F`, then it's also separable
-over `K`. -/
+/-- If `E / L / F` is an extension tower, `x : E` is separable over `F`, then it's also separable
+over `L`. -/
 theorem IsSeparable.tower_top
-    {x : E} (h : IsSeparable F x) : IsSeparable K x :=
+    {x : E} (h : IsSeparable F x) : IsSeparable L x :=
   h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
 
 variable (F E) in
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
-    Algebra.IsSeparable K E :=
+    Algebra.IsSeparable L E :=
   ⟨fun x ↦ IsSeparable.tower_top _ (Algebra.IsSeparable.isSeparable F x)⟩
 
 @[deprecated (since := "2024-08-06")]
@@ -660,7 +658,8 @@ end
 section
 
 variable [Field E] [Field E'] [Algebra F E] [Algebra F E']
-    (f : E →ₐ[F] E') [Algebra.IsSeparable F E']
+    (f : E →ₐ[F] E')
+include f
 
 variable {F} in
 theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
@@ -668,8 +667,9 @@ theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F 
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
   exact h.tower_bot
 
+
 variable (E') in
-theorem Algebra.IsSeparable.of_algHom : Algebra.IsSeparable F E :=
+theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSeparable F E :=
   ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
 
 end
@@ -681,6 +681,7 @@ section
 variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
     [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
+include e₁ e₂ he
 
 lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
   letI := e₁.toRingHom.toAlgebra
@@ -694,9 +695,7 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
   haveI := IsSeparable.tower_top A₂ h
   IsSeparable.of_algHom e.symm ((e₂.symm_apply_apply x).symm ▸ this)
 
-lemma Algebra.IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
-    [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
-    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
+lemma Algebra.IsSeparable.of_equiv_equiv
     [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩

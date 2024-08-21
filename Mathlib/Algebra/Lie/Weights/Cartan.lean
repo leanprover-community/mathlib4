@@ -42,38 +42,39 @@ open TensorProduct.LieModule LieModule
 /-- Given a nilpotent Lie subalgebra `H ⊆ L`, the root space of a map `χ : H → R` is the weight
 space of `L` regarded as a module of `H` via the adjoint action. -/
 abbrev rootSpace (χ : H → R) : LieSubmodule R H L :=
-  weightSpace L χ
+  genWeightSpace L χ
 
 theorem zero_rootSpace_eq_top_of_nilpotent [IsNilpotent R L] :
     rootSpace (⊤ : LieSubalgebra R L) 0 = ⊤ :=
-  zero_weightSpace_eq_top_of_nilpotent L
+  zero_genWeightSpace_eq_top_of_nilpotent L
 
 @[simp]
-theorem rootSpace_comap_eq_weightSpace (χ : H → R) :
-    (rootSpace H χ).comap H.incl' = weightSpace H χ :=
-  comap_weightSpace_eq_of_injective Subtype.coe_injective
+theorem rootSpace_comap_eq_genWeightSpace (χ : H → R) :
+    (rootSpace H χ).comap H.incl' = genWeightSpace H χ :=
+  comap_genWeightSpace_eq_of_injective Subtype.coe_injective
 
 variable {H}
 
-theorem lie_mem_weightSpace_of_mem_weightSpace {χ₁ χ₂ : H → R} {x : L} {m : M}
-    (hx : x ∈ rootSpace H χ₁) (hm : m ∈ weightSpace M χ₂) : ⁅x, m⁆ ∈ weightSpace M (χ₁ + χ₂) := by
-  rw [weightSpace, LieSubmodule.mem_iInf]
+theorem lie_mem_genWeightSpace_of_mem_genWeightSpace {χ₁ χ₂ : H → R} {x : L} {m : M}
+    (hx : x ∈ rootSpace H χ₁) (hm : m ∈ genWeightSpace M χ₂) :
+    ⁅x, m⁆ ∈ genWeightSpace M (χ₁ + χ₂) := by
+  rw [genWeightSpace, LieSubmodule.mem_iInf]
   intro y
-  replace hx : x ∈ weightSpaceOf L (χ₁ y) y := by
-    rw [rootSpace, weightSpace, LieSubmodule.mem_iInf] at hx; exact hx y
-  replace hm : m ∈ weightSpaceOf M (χ₂ y) y := by
-    rw [weightSpace, LieSubmodule.mem_iInf] at hm; exact hm y
+  replace hx : x ∈ genWeightSpaceOf L (χ₁ y) y := by
+    rw [rootSpace, genWeightSpace, LieSubmodule.mem_iInf] at hx; exact hx y
+  replace hm : m ∈ genWeightSpaceOf M (χ₂ y) y := by
+    rw [genWeightSpace, LieSubmodule.mem_iInf] at hm; exact hm y
   exact lie_mem_maxGenEigenspace_toEnd hx hm
 
 lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
-    (hx : x ∈ rootSpace H χ₁) (hm : m ∈ weightSpace M χ₂) (n) :
-    (toEnd R L M x ^ n : Module.End R M) m ∈ weightSpace M (n • χ₁ + χ₂) := by
+    (hx : x ∈ rootSpace H χ₁) (hm : m ∈ genWeightSpace M χ₂) (n) :
+    (toEnd R L M x ^ n : Module.End R M) m ∈ genWeightSpace M (n • χ₁ + χ₂) := by
   induction n with
   | zero => simpa using hm
   | succ n IH =>
     simp only [pow_succ', LinearMap.mul_apply, toEnd_apply_apply,
       Nat.cast_add, Nat.cast_one, rootSpace]
-    convert lie_mem_weightSpace_of_mem_weightSpace hx IH using 2
+    convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
     rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
 
 variable (R L H M)
@@ -82,10 +83,11 @@ variable (R L H M)
 which is close to the deterministic timeout limit.
 -/
 def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + χ₂ = χ₃) :
-    rootSpace H χ₁ →ₗ[R] weightSpace M χ₂ →ₗ[R] weightSpace M χ₃ where
+    rootSpace H χ₁ →ₗ[R] genWeightSpace M χ₂ →ₗ[R] genWeightSpace M χ₃ where
   toFun x :=
     { toFun := fun m =>
-        ⟨⁅(x : L), (m : M)⁆, hχ ▸ lie_mem_weightSpace_of_mem_weightSpace x.property m.property⟩
+        ⟨⁅(x : L), (m : M)⁆,
+          hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
       map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add]; rfl
       map_smul' := fun t m => by
         dsimp only
@@ -108,8 +110,8 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural
 `R`-bilinear product of root vectors and weight vectors, compatible with the actions of `H`. -/
 def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) :
-    rootSpace H χ₁ ⊗[R] weightSpace M χ₂ →ₗ⁅R,H⁆ weightSpace M χ₃ :=
-  liftLie R H (rootSpace H χ₁) (weightSpace M χ₂) (weightSpace M χ₃)
+    rootSpace H χ₁ ⊗[R] genWeightSpace M χ₂ →ₗ⁅R,H⁆ genWeightSpace M χ₃ :=
+  liftLie R H (rootSpace H χ₁) (genWeightSpace M χ₂) (genWeightSpace M χ₃)
     { toLinearMap := rootSpaceWeightSpaceProductAux R L H M hχ
       map_lie' := fun {x y} => by
         ext m
@@ -119,18 +121,18 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
 
 @[simp]
 theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
-    (x : rootSpace H χ₁) (m : weightSpace M χ₂) :
+    (x : rootSpace H χ₁) (m : genWeightSpace M χ₂) :
     (rootSpaceWeightSpaceProduct R L H M χ₁ χ₂ χ₃ hχ (x ⊗ₜ m) : M) = ⁅(x : L), (m : M)⁆ := by
   simp only [rootSpaceWeightSpaceProduct, rootSpaceWeightSpaceProductAux, coe_liftLie_eq_lift_coe,
     AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, lift_apply, LinearMap.coe_mk, AddHom.coe_mk,
     Submodule.coe_mk]
 
-theorem mapsTo_toEnd_weightSpace_add_of_mem_rootSpace (α χ : H → R)
+theorem mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace (α χ : H → R)
     {x : L} (hx : x ∈ rootSpace H α) :
-    MapsTo (toEnd R L M x) (weightSpace M χ) (weightSpace M (α + χ)) := by
+    MapsTo (toEnd R L M x) (genWeightSpace M χ) (genWeightSpace M (α + χ)) := by
   intro m hm
   let x' : rootSpace H α := ⟨x, hx⟩
-  let m' : weightSpace M χ := ⟨m, hm⟩
+  let m' : genWeightSpace M χ := ⟨m, hm⟩
   exact (rootSpaceWeightSpaceProduct R L H M α χ (α + χ) rfl (x' ⊗ₜ m')).property
 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural
@@ -163,12 +165,12 @@ theorem coe_zeroRootSubalgebra : (zeroRootSubalgebra R L H : Submodule R L) = ro
 theorem mem_zeroRootSubalgebra (x : L) :
     x ∈ zeroRootSubalgebra R L H ↔ ∀ y : H, ∃ k : ℕ, (toEnd R H L y ^ k) x = 0 := by
   change x ∈ rootSpace H 0 ↔ _
-  simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero]
+  simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero]
 
 theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 := by
   intro x hx
   simp only [LieSubalgebra.mem_toLieSubmodule] at hx
-  simp only [mem_weightSpace, Pi.zero_apply, sub_zero, zero_smul]
+  simp only [mem_genWeightSpace, Pi.zero_apply, sub_zero, zero_smul]
   intro y
   obtain ⟨k, hk⟩ := (inferInstance : IsNilpotent R H)
   use k
@@ -189,7 +191,7 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   exact h
 
 /-- This enables the instance `Zero (Weight R H L)`. -/
-instance [Nontrivial H] : Nontrivial (weightSpace L (0 : H → R)) := by
+instance [Nontrivial H] : Nontrivial (genWeightSpace L (0 : H → R)) := by
   obtain ⟨⟨x, hx⟩, ⟨y, hy⟩, e⟩ := exists_pair_ne H
   exact ⟨⟨x, toLieSubmodule_le_rootSpace_zero R L H hx⟩,
     ⟨y, toLieSubmodule_le_rootSpace_zero R L H hy⟩, by simpa using e⟩
@@ -258,9 +260,9 @@ Note that the name "coroot space" is not standard as this space does not seem to
 informal literature. -/
 def corootSpace : LieIdeal R H :=
   LieModuleHom.range <| ((rootSpace H 0).incl.comp <|
-    rootSpaceProduct R L H α (-α) 0 (add_neg_self α)).codRestrict H.toLieSubmodule (by
+    rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α)).codRestrict H.toLieSubmodule (by
   rw [← rootSpace_zero_eq]
-  exact fun p ↦ (rootSpaceProduct R L H α (-α) 0 (add_neg_self α) p).property)
+  exact fun p ↦ (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) p).property)
 
 lemma mem_corootSpace {x : H} :
     x ∈ corootSpace α ↔
@@ -291,7 +293,7 @@ lemma mem_corootSpace' {x : H} :
     exists_and_right, exists_eq_right, mem_setOf_eq, s]
   refine ⟨fun ⟨_, y, hy, z, hz, hyz⟩ ↦ ⟨y, hy, z, hz, hyz⟩,
     fun ⟨y, hy, z, hz, hyz⟩ ↦ ⟨?_, y, hy, z, hz, hyz⟩⟩
-  convert (rootSpaceProduct R L H α (-α) 0 (add_neg_self α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property
+  convert (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property
   simp [hyz]
 
 end LieAlgebra
