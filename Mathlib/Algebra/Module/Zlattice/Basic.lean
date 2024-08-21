@@ -200,11 +200,13 @@ variable [Unique ι]
 
 @[simp]
 theorem coe_floor_self (k : K) : (floor (Basis.singleton ι K) k : K) = ⌊k⌋ :=
-  Basis.ext_elem _ fun _ => by rw [repr_floor_apply, Basis.singleton_repr, Basis.singleton_repr]
+  Basis.ext_elem (Basis.singleton ι K) fun _ => by
+    rw [repr_floor_apply, Basis.singleton_repr, Basis.singleton_repr]
 
 @[simp]
 theorem coe_fract_self (k : K) : (fract (Basis.singleton ι K) k : K) = Int.fract k :=
-  Basis.ext_elem _ fun _ => by rw [repr_fract_apply, Basis.singleton_repr, Basis.singleton_repr]
+  Basis.ext_elem (Basis.singleton ι K) fun _ => by
+    rw [repr_fract_apply, Basis.singleton_repr, Basis.singleton_repr]
 
 end Unique
 

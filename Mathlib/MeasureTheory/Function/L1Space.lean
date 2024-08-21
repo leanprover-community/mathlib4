@@ -1182,7 +1182,8 @@ theorem integrable_of_forall_fin_meas_le [SigmaFinite μ] (C : ℝ≥0∞) (hC :
     (hf_meas : AEStronglyMeasurable f μ)
     (hf : ∀ s : Set α, MeasurableSet[m] s → μ s ≠ ∞ → (∫⁻ x in s, ‖f x‖₊ ∂μ) ≤ C) :
     Integrable f μ :=
-  @integrable_of_forall_fin_meas_le' _ m _ m _ _ _ (by rwa [@trim_eq_self _ m]) C hC _ hf_meas hf
+  have : SigmaFinite (μ.trim le_rfl) := by rwa [@trim_eq_self _ m]
+  integrable_of_forall_fin_meas_le' le_rfl C hC hf_meas hf
 
 end SigmaFinite
 
