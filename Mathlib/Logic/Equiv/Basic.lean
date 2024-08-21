@@ -904,6 +904,7 @@ def sigmaSumDistrib (α β : ι → Type*) :
 
 /-- The product of an indexed sum of types (formally, a `Sigma`-type `Σ i, α i`) by a type `β` is
 equivalent to the sum of products `Σ i, (α i × β)`. -/
+@[simps apply symm_apply]
 def sigmaProdDistrib (α : ι → Type*) (β : Type*) : (Σ i, α i) × β ≃ Σ i, α i × β :=
   ⟨fun p => ⟨p.1.1, (p.1.2, p.2)⟩, fun p => (⟨p.1, p.2.1⟩, p.2.2), fun p => by
     rcases p with ⟨⟨_, _⟩, _⟩
@@ -1554,7 +1555,7 @@ variable (P : α → Sort w) (e : α ≃ β)
 
 /-- Transport dependent functions through an equivalence of the base space.
 -/
-@[simps]
+@[simps apply, simps (config := .lemmasOnly) symm_apply]
 def piCongrLeft' (P : α → Sort*) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P (e.symm b) where
   toFun f x := f (e.symm x)
   invFun f x := (e.symm_apply_apply x).ndrec (f (e x))
@@ -1578,13 +1579,11 @@ theorem piCongrLeft'_symm (P : Sort*) (e : α ≃ β) :
 LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. This lemma is a way
 around it in the case where `a` is of the form `e.symm b`, so we can use `g b` instead of
 `g (e (e.symm b))`. -/
+@[simp]
 lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ b, P (e.symm b)) (b : β) :
     (piCongrLeft' P e).symm g (e.symm b) = g b := by
-  change Eq.ndrec _ _ = _
-  generalize_proofs hZa
-  revert hZa
-  rw [e.apply_symm_apply b]
-  simp
+  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, rec_heq_iff_heq]
+  exact congr_arg_heq _ (e.apply_symm_apply _)
 
 end
 

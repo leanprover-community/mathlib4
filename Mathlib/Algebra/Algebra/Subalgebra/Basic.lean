@@ -1127,10 +1127,10 @@ section Equalizer
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
+variable {F : Type*}
 
 /-- The equalizer of two R-algebra homomorphisms -/
-def equalizer (ϕ ψ : F) : Subalgebra R A where
+def equalizer (ϕ ψ : F) [FunLike F A B] [AlgHomClass F R A B] : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
   zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
   one_mem' := by simp only [Set.mem_setOf_eq, map_one]
@@ -1140,6 +1140,8 @@ def equalizer (ϕ ψ : F) : Subalgebra R A where
     rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
   algebraMap_mem' x := by
     simp only [Set.mem_setOf_eq, AlgHomClass.commutes]
+
+variable [FunLike F A B] [AlgHomClass F R A B]
 
 @[simp]
 theorem mem_equalizer (φ ψ : F) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=

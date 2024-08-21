@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Density of a finite set
@@ -102,6 +103,32 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   · exact mod_cast Fintype.card_pos
   · exact Fintype.card_le_of_injective _ f.2
 
+@[simp] lemma dens_map_equiv [Fintype β] (e : α ≃ β) : (s.map e.toEmbedding).dens = s.dens := by
+  simp [dens, Fintype.card_congr e]
+
+lemma card_mul_dens (s : Finset α) : Fintype.card α * s.dens = s.card := by
+  cases isEmpty_or_nonempty α
+  · simp [Subsingleton.elim s ∅]
+  rw [dens, mul_div_cancel₀]
+  exact mod_cast Fintype.card_ne_zero
+
+lemma dens_mul_card (s : Finset α) : s.dens * Fintype.card α = s.card := by
+  rw [mul_comm, card_mul_dens]
+
+section Semifield
+variable [Semifield 𝕜] [CharZero 𝕜]
+
+lemma natCast_card_mul_nnratCast_dens (s : Finset α) : (Fintype.card α * s.dens : 𝕜) = s.card :=
+  mod_cast s.card_mul_dens
+
+lemma nnratCast_dens_mul_natCast_card (s : Finset α) : s.dens * Fintype.card α = s.card :=
+  mod_cast s.dens_mul_card
+
+@[norm_cast] lemma nnratCast_dens (s : Finset α) : (s.dens : 𝕜) = s.card / Fintype.card α := by
+  simp [dens]
+
+end Semifield
+
 section Nonempty
 variable [Nonempty α]
 
@@ -113,6 +140,11 @@ variable [Nonempty α]
 lemma dens_ne_one : dens s ≠ 1 ↔ s ≠ univ := dens_eq_one.not
 
 end Nonempty
+
+@[simp] lemma dens_le_one : s.dens ≤ 1 := by
+  cases isEmpty_or_nonempty α
+  · simp [Subsingleton.elim s ∅]
+  · simpa using dens_le_dens s.subset_univ
 
 section Lattice
 variable [DecidableEq α]
