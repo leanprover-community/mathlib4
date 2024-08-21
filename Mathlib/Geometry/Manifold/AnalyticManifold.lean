@@ -127,8 +127,7 @@ theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
     (e : PartialHomeomorph H H) :
     e ∈ analyticGroupoid I ↔ AnalyticOn 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
       AnalyticOn 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
-  rw [mem_analyticGroupoid]
-  simp only [I.range_eq_univ, inter_univ, I.image_eq]
+  simp only [mem_analyticGroupoid, I.range_eq_univ, inter_univ, I.image_eq]
   rw [IsOpen.analyticWithinOn_iff_analyticOn, IsOpen.analyticWithinOn_iff_analyticOn]
   · exact I.continuous_symm.isOpen_preimage _ e.open_target
   · exact I.continuous_symm.isOpen_preimage _ e.open_source
