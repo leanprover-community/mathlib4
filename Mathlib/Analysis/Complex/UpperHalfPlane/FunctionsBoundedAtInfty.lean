@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck, David Loeffler, Gareth Ma
+Authors: Chris Birkbeck, David Loeffler
 -/
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
@@ -57,18 +57,6 @@ namespace IsBoundedAtImInfty
 
 variable {α : Type*} {f g : ℍ → α}
 
-nonrec theorem add [SeminormedAddCommGroup α] (hf : IsBoundedAtImInfty f)
-    (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f + g) := by
-  simpa only using hf.add hg
-
-nonrec theorem sub [SeminormedAddCommGroup α] (hf : IsBoundedAtImInfty f)
-    (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f - g) := by
-  simpa only using hf.sub hg
-
-nonrec theorem mul [SeminormedRing α] (hf : IsBoundedAtImInfty f)
-    (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f * g) := by
-  simpa only using hf.mul hg
-
 end IsBoundedAtImInfty
 
 theorem isBoundedAtImInfty_iff {α : Type*} [Norm α] {f : ℍ → α} :
@@ -82,6 +70,7 @@ theorem isZeroAtImInfty_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α
 
 theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
+  -- hf.boundedAtFilter requires a stronger condition than we do :)
   isBoundedAtImInfty_iff.mpr ⟨1, (isZeroAtImInfty_iff.mp hf) 1 zero_lt_one⟩
 
 end UpperHalfPlane

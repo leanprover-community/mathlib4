@@ -128,11 +128,6 @@ protected def CuspForm.copy (f : CuspForm Γ k) (f' : ℍ → ℂ) (h : f' = ⇑
   holo' := h.symm ▸ f.holo'
   zero_at_infty' A := h.symm ▸ f.zero_at_infty' A
 
-def CuspForm.toModularForm (f : CuspForm Γ k) : ModularForm Γ k :=
-  { f.toSlashInvariantForm with
-    holo' := f.holo'
-    bdd_at_infty' := fun γ ↦ (f.zero_at_infty' γ).isBoundedAtImInfty }
-
 end ModularForm
 
 namespace ModularForm
