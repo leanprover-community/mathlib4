@@ -3,10 +3,6 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Function.Iterate
-
 import Mathlib.Data.Nat.Cast.Defs
 
 import Batteries.Tactic.ShowUnused
@@ -18,270 +14,58 @@ import Mathlib.Util.AssertExists
 
 universe x w v u v' u' v₁ v₂ v₃ u₁ u₂ u₃
 
-section Mathlib.Algebra.Group.Hom.Defs
+section Mathlib.Algebra.Group.Hom.Defs.Modified
 
-variable {ι α β M N P : Type*}
+structure AddMonoidHom (M : Type*) (N : Type*) [AddZeroClass M] [AddZeroClass N] where
+  toFun : M → N
+  map_zero' : toFun 0 = 0
+  map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
 
--- monoids
-variable {G : Type*} {H : Type*}
-
--- groups
-variable {F : Type*}
-
--- homs
-section Zero
-
-/-- `ZeroHom M N` is the type of functions `M → N` that preserve zero.
-
-When possible, instead of parametrizing results over `(f : ZeroHom M N)`,
-you should parametrize over `(F : Type*) [ZeroHomClass F M N] (f : F)`.
-
-When you extend this structure, make sure to also extend `ZeroHomClass`.
--/
-structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
-  /-- The underlying function -/
-  protected toFun : M → N
-  /-- The proposition that the function preserves 0 -/
-  protected map_zero' : toFun 0 = 0
-
-/-- `ZeroHomClass F M N` states that `F` is a type of zero-preserving homomorphisms.
-
-You should extend this typeclass when you extend `ZeroHom`.
--/
-class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [FunLike F M N] :
-    Prop where
-  /-- The proposition that the function preserves 0 -/
-  map_zero : ∀ f : F, f 0 = 0
-
--- Instances and lemmas are defined below through `@[to_additive]`.
-end Zero
-
-section Add
-
-/-- `AddHom M N` is the type of functions `M → N` that preserve addition.
-
-When possible, instead of parametrizing results over `(f : AddHom M N)`,
-you should parametrize over `(F : Type*) [AddHomClass F M N] (f : F)`.
-
-When you extend this structure, make sure to extend `AddHomClass`.
--/
-structure AddHom (M : Type*) (N : Type*) [Add M] [Add N] where
-  /-- The underlying function -/
-  protected toFun : M → N
-  /-- The proposition that the function preserves addition -/
-  protected map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
-
-/-- `AddHomClass F M N` states that `F` is a type of addition-preserving homomorphisms.
-You should declare an instance of this typeclass when you extend `AddHom`.
--/
-class AddHomClass (F : Type*) (M N : outParam Type*) [Add M] [Add N] [FunLike F M N] : Prop where
-  /-- The proposition that the function preserves addition -/
-  map_add : ∀ (f : F) (x y : M), f (x + y) = f x + f y
-
--- Instances and lemmas are defined below through `@[to_additive]`.
-end Add
-
-section add_zero
-
-/-- `M →+ N` is the type of functions `M → N` that preserve the `AddZeroClass` structure.
-
-`AddMonoidHom` is also used for group homomorphisms.
-
-When possible, instead of parametrizing results over `(f : M →+ N)`,
-you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.
-
-When you extend this structure, make sure to extend `AddMonoidHomClass`.
--/
-structure AddMonoidHom (M : Type*) (N : Type*) [AddZeroClass M] [AddZeroClass N] extends
-  ZeroHom M N, AddHom M N
-
-attribute [nolint docBlame] AddMonoidHom.toAddHom
-attribute [nolint docBlame] AddMonoidHom.toZeroHom
-
-/-- `M →+ N` denotes the type of additive monoid homomorphisms from `M` to `N`. -/
 infixr:25 " →+ " => AddMonoidHom
 
-/-- `AddMonoidHomClass F M N` states that `F` is a type of `AddZeroClass`-preserving
-homomorphisms.
+namespace AddMonoidHom
 
-You should also extend this typeclass when you extend `AddMonoidHom`.
--/
-class AddMonoidHomClass (F M N : Type*) [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
-  extends AddHomClass F M N, ZeroHomClass F M N : Prop
+variable {M : Type*} {N : Type*}
 
--- Instances and lemmas are defined below through `@[to_additive]`.
-end add_zero
+instance [AddZeroClass M] [AddZeroClass N] : CoeFun (M →+ N) (fun _ => M → N) where
+  coe := toFun
 
-section One
+section
 
-variable [One M] [One N]
-
-/-- `OneHom M N` is the type of functions `M → N` that preserve one.
-
-When possible, instead of parametrizing results over `(f : OneHom M N)`,
-you should parametrize over `(F : Type*) [OneHomClass F M N] (f : F)`.
-
-When you extend this structure, make sure to also extend `OneHomClass`.
--/
-@[to_additive]
-structure OneHom (M : Type*) (N : Type*) [One M] [One N] where
-  /-- The underlying function -/
-  protected toFun : M → N
-  /-- The proposition that the function preserves 1 -/
-  protected map_one' : toFun 1 = 1
-
-/-- `OneHomClass F M N` states that `F` is a type of one-preserving homomorphisms.
-You should extend this typeclass when you extend `OneHom`.
--/
-@[to_additive]
-class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F M N] : Prop where
-  /-- The proposition that the function preserves 1 -/
-  map_one : ∀ f : F, f 1 = 1
-
-@[to_additive]
-instance OneHom.funLike : FunLike (OneHom M N) M N where
-  coe := OneHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
-
-variable [FunLike F M N]
-
-@[to_additive (attr := simp)]
-theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
-  OneHomClass.map_one f
-
-end One
-
-section Mul
-
-variable [Mul M] [Mul N]
-
-/-- `M →ₙ* N` is the type of functions `M → N` that preserve multiplication. The `ₙ` in the notation
-stands for "non-unital" because it is intended to match the notation for `NonUnitalAlgHom` and
-`NonUnitalRingHom`, so a `MulHom` is a non-unital monoid hom.
-
-When possible, instead of parametrizing results over `(f : M →ₙ* N)`,
-you should parametrize over `(F : Type*) [MulHomClass F M N] (f : F)`.
-When you extend this structure, make sure to extend `MulHomClass`.
--/
-@[to_additive]
-structure MulHom (M : Type*) (N : Type*) [Mul M] [Mul N] where
-  /-- The underlying function -/
-  protected toFun : M → N
-  /-- The proposition that the function preserves multiplication -/
-  protected map_mul' : ∀ x y, toFun (x * y) = toFun x * toFun y
-
-/-- `M →ₙ* N` denotes the type of multiplication-preserving maps from `M` to `N`. -/
-infixr:25 " →ₙ* " => MulHom
-
-/-- `MulHomClass F M N` states that `F` is a type of multiplication-preserving homomorphisms.
-
-You should declare an instance of this typeclass when you extend `MulHom`.
--/
-@[to_additive]
-class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F M N] : Prop where
-  /-- The proposition that the function preserves multiplication -/
-  map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
-
-variable [FunLike F M N]
-
-@[to_additive (attr := simp)]
-theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
-  MulHomClass.map_mul f x y
-
-end Mul
-
-section mul_one
-
-variable [MulOneClass M] [MulOneClass N]
-
-/-- `M →* N` is the type of functions `M → N` that preserve the `Monoid` structure.
-`MonoidHom` is also used for group homomorphisms.
-
-When possible, instead of parametrizing results over `(f : M →* N)`,
-you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
-
-When you extend this structure, make sure to extend `MonoidHomClass`.
--/
-@[to_additive]
-structure MonoidHom (M : Type*) (N : Type*) [MulOneClass M] [MulOneClass N] extends
-  OneHom M N, M →ₙ* N
--- Porting note: remove once `to_additive` is updated
--- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] MonoidHom.toMulHom
-
-/-- `M →* N` denotes the type of monoid homomorphisms from `M` to `N`. -/
-infixr:25 " →* " => MonoidHom
-
-/-- `MonoidHomClass F M N` states that `F` is a type of `Monoid`-preserving homomorphisms.
-You should also extend this typeclass when you extend `MonoidHom`. -/
-@[to_additive]
-class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneClass N]
-  [FunLike F M N]
-  extends MulHomClass F M N, OneHomClass F M N : Prop
-
-@[to_additive]
-instance MonoidHom.instFunLike : FunLike (M →* N) M N where
-  coe f := f.toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr
-    apply DFunLike.coe_injective'
-    exact h
-
-@[to_additive]
-instance MonoidHom.instMonoidHomClass : MonoidHomClass (M →* N) M N where
-  map_mul := MonoidHom.map_mul'
-  map_one f := f.toOneHom.map_one'
-
-variable [FunLike F M N]
-
-@[to_additive]
-theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) :
-    f a * f b = 1 := by
-  rw [← map_mul, h, map_one]
-
-variable [FunLike F G H]
-
-@[to_additive]
-theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
-    (f : F) (hf : ∀ a, f a⁻¹ = (f a)⁻¹) (a b : G) : f (a / b) = f a / f b := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
-
-/-- Group homomorphisms preserve inverse. -/
-@[to_additive (attr := simp) "Additive group homomorphisms preserve negation."]
-theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
-    (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
-  eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_cancel _
-
-/-- Group homomorphisms preserve division. -/
-@[to_additive (attr := simp) "Additive group homomorphisms preserve subtraction."]
-theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
-    ∀ a b, f (a / b) = f a / f b := map_div' _ <| map_inv f
-
-end mul_one
-
--- completely uninteresting lemmas about coercion to function, that all homs need
-section Coes
-
-namespace MonoidHom
-
-variable [Group G]
-variable [MulOneClass M]
+variable [AddZeroClass M] [AddGroup N]
 
 /-- Makes a group homomorphism from a proof that the map preserves multiplication. -/
-@[to_additive]
-def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G where
+def mk' (f : M → N) (map_add : ∀ a b : M, f (a + b) = f a + f b) : M →+ N where
   toFun := f
-  map_mul' := map_mul
-  map_one' := by rw [← mul_right_cancel_iff, ← map_mul _ 1, one_mul, one_mul]
+  map_add' := map_add
+  map_zero' := by rw [← add_right_cancel_iff, ← map_add _ 0, zero_add, zero_add]
 
-end MonoidHom
+end
 
-end Coes
+section
 
-end Mathlib.Algebra.Group.Hom.Defs
+variable [AddGroup M] [AddGroup N]
 
+theorem map_zero (f : M →+ N) : f 0 = 0 := by
+  have := calc 0 + f 0
+            = f (0 + 0) := by simp
+          _ = f 0 + f 0 := by rw [f.map_add']
+  rw [add_right_cancel_iff] at this
+  exact this.symm
+
+theorem map_neg (f : M →+ N) (m : M) : f (-m) = - (f m) := by
+  apply eq_neg_of_add_eq_zero_left
+  rw [← f.map_add']
+  simp [f.map_zero]
+
+theorem map_sub (f : M →+ N) (m n : M) : f (m - n) = f m - f n := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, f.map_add', f.map_neg]
+
+end
+
+end AddMonoidHom
+
+end Mathlib.Algebra.Group.Hom.Defs.Modified
 
 section Mathlib.Algebra.GroupWithZero.Defs
 
@@ -462,7 +246,7 @@ end Mathlib.Algebra.SMulWithZero
 
 section Mathlib.Algebra.Module.Defs
 
-open Function Set
+open Function
 
 variable {α R k S M M₂ M₃ ι : Type*}
 
@@ -531,7 +315,6 @@ namespace CategoryTheory
 
 /-- A preliminary structure on the way to defining a category,
 containing the data, but none of the axioms. -/
-@[pp_with_univ]
 class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
@@ -550,7 +333,6 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 
 See <https://stacks.math.columbia.edu/tag/0014>.
 -/
-@[pp_with_univ]
 class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f
