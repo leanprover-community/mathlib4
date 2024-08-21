@@ -3,11 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Ordering.Lemmas
+import Mathlib.Data.PNat.Basic
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.NormNum
-import Mathlib.Data.PNat.Basic
 
 /-!
 # Ordinal notation
@@ -15,13 +14,11 @@ import Mathlib.Data.PNat.Basic
 Constructive ordinal arithmetic for ordinals below `ε₀`.
 
 We define a type `ONote`, with constructors `0 : ONote` and `ONote.oadd e n a` representing
-`ω ^ e * n + a`.
-We say that `o` is in Cantor normal form - `ONote.NF o` - if either `o = 0` or
+`ω ^ e * n + a`. We say that `o` is in Cantor normal form - `ONote.NF o` - if either `o = 0` or
 `o = ω ^ e * n + a` with `a < ω ^ e` and `a` in Cantor normal form.
 
-The type `NONote` is the type of ordinals below `ε₀` in Cantor normal form.
-Various operations (addition, subtraction, multiplication, power function)
-are defined on `ONote` and `NONote`.
+The type `NONote` is the type of ordinals below `ε₀` in Cantor normal form. Various operations
+(addition, subtraction, multiplication, exponentiation) are defined on `ONote` and `NONote`.
 -/
 
 
@@ -30,11 +27,10 @@ open Ordinal Order
 
 -- Porting note: the generated theorem is warned by `simpNF`.
 set_option genSizeOfSpec false in
-/-- Recursive definition of an ordinal notation. `zero` denotes the
-  ordinal 0, and `oadd e n a` is intended to refer to `ω^e * n + a`.
-  For this to be valid Cantor normal form, we must have the exponents
-  decrease to the right, but we can't state this condition until we've
-  defined `repr`, so it is a separate definition `NF`. -/
+/-- Recursive definition of an ordinal notation. `zero` denotes the ordinal 0, and `oadd e n a` is
+intended to refer to `ω ^ e * n + a`. For this to be a valid Cantor normal form, we must have the
+exponents decrease to the right, but we can't state this condition until we've defined `repr`, so we
+make it a separate definition `NF`. -/
 inductive ONote : Type
   | zero : ONote
   | oadd : ONote → ℕ+ → ONote → ONote
@@ -44,7 +40,7 @@ compile_inductive% ONote
 
 namespace ONote
 
-/-- Notation for 0 -/
+/-- Notation for 0. -/
 instance : Zero ONote :=
   ⟨zero⟩
 
@@ -55,11 +51,11 @@ theorem zero_def : zero = 0 :=
 instance : Inhabited ONote :=
   ⟨0⟩
 
-/-- Notation for 1 -/
+/-- Notation for 1. -/
 instance : One ONote :=
   ⟨oadd 0 1 0⟩
 
-/-- Notation for ω -/
+/-- Notation for ω. -/
 def omega : ONote :=
   oadd 1 1 0
 
@@ -69,19 +65,19 @@ noncomputable def repr : ONote → Ordinal.{0}
   | 0 => 0
   | oadd e n a => ω ^ repr e * n + repr a
 
-/-- Auxiliary definition to print an ordinal notation -/
-def toStringAux1 (e : ONote) (n : ℕ) (s : String) : String :=
+/-- Prints `ω^s*n`, omitting `s` if `e = 0` or `e = 1`, and omitting `n` if `n = 1`. -/
+private def toString_aux (e : ONote) (n : ℕ) (s : String) : String :=
   if e = 0 then toString n
   else (if e = 1 then "ω" else "ω^(" ++ s ++ ")") ++ if n = 1 then "" else "*" ++ toString n
 
-/-- Print an ordinal notation -/
+/-- Print an ordinal notation. -/
 def toString : ONote → String
   | zero => "0"
-  | oadd e n 0 => toStringAux1 e n (toString e)
-  | oadd e n a => toStringAux1 e n (toString e) ++ " + " ++ toString a
+  | oadd e n 0 => toString_aux e n (toString e)
+  | oadd e n a => toString_aux e n (toString e) ++ " + " ++ toString a
 
 open Lean in
-/-- Print an ordinal notation -/
+/-- Print an ordinal notation. -/
 def repr' (prec : ℕ) : ONote → Format
   | zero => "0"
   | oadd e n a =>
@@ -95,12 +91,8 @@ instance : ToString ONote :=
 instance : Repr ONote where
   reprPrec o prec := repr' prec o
 
-instance : Preorder ONote where
-  le x y := repr x ≤ repr y
-  lt x y := repr x < repr y
-  le_refl _ := @le_refl Ordinal _ _
-  le_trans _ _ _ := @le_trans Ordinal _ _ _ _
-  lt_iff_le_not_le _ _ := @lt_iff_le_not_le Ordinal _ _ _
+instance : Preorder ONote :=
+  Preorder.lift repr
 
 theorem lt_def {x y : ONote} : x < y ↔ repr x < repr y :=
   Iff.rfl
@@ -111,6 +103,9 @@ theorem le_def {x y : ONote} : x ≤ y ↔ repr x ≤ repr y :=
 instance : WellFoundedRelation ONote :=
   ⟨(· < ·), InvImage.wf repr Ordinal.lt_wf⟩
 
+instance : WellFoundedLT ONote :=
+  WellFoundedRelation.isWellFounded
+
 /-- Convert a `Nat` into an ordinal -/
 @[coe]
 def ofNat : ℕ → ONote
@@ -120,10 +115,12 @@ def ofNat : ℕ → ONote
 -- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
 -- to emulate the old Lean 3 behaviour.
 
-@[simp] theorem ofNat_zero : ofNat 0 = 0 :=
+@[simp]
+theorem ofNat_zero : ofNat 0 = 0 :=
   rfl
 
-@[simp] theorem ofNat_succ (n) : ofNat (Nat.succ n) = oadd 0 n.succPNat 0 :=
+@[simp]
+theorem ofNat_succ (n) : ofNat (Nat.succ n) = oadd 0 n.succPNat 0 :=
   rfl
 
 instance nat (n : ℕ) : OfNat ONote n where
@@ -134,17 +131,19 @@ theorem ofNat_one : ofNat 1 = 1 :=
   rfl
 
 @[simp]
-theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by cases n <;> simp
+theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by
+  cases n <;> simp
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem repr_one : repr (ofNat 1) = (1 : ℕ) := repr_ofNat 1
+theorem repr_one : repr (ofNat 1) = (1 : ℕ) :=
+  repr_ofNat 1
 
 theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ (le_add_right _ _)
   simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e) omega_pos).2 (natCast_le.2 n.2)
 
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
-  @lt_of_lt_of_le _ _ _ (ω ^ repr e) _ (opow_pos (repr e) omega_pos) (omega_le_oadd e n a)
+  (opow_pos (repr e) omega_pos).trans_le (omega_le_oadd e n a)
 
 /-- Compare ordinal notations -/
 def cmp : ONote → ONote → Ordering
@@ -164,8 +163,8 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
     obtain rfl := eq_of_cmp_eq h₁
     revert h; cases h₂ : _root_.cmp (n₁ : ℕ) n₂ <;> intro h <;> try cases h
     obtain rfl := eq_of_cmp_eq h
-    rw [_root_.cmp, cmpUsing_eq_eq, not_lt, not_lt, ← le_antisymm_iff] at h₂
-    obtain rfl := Subtype.eq h₂
+    rw [_root_.cmp, cmpUsing_eq_eq] at h₂
+    obtain rfl := Subtype.eq (eq_of_incomp h₂)
     simp
 
 protected theorem zero_lt_one : (0 : ONote) < 1 := by
@@ -309,7 +308,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       rw [ite_eq_iff] at nhr
       cases' nhr with nhr nhr
       · cases nhr; contradiction
-      obtain rfl := Subtype.eq (nhl.eq_of_not_lt nhr.1)
+      obtain rfl := Subtype.eq (eq_of_incomp ⟨(not_lt_of_ge nhl), nhr.left⟩)
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
       revert IHa; cases cmp a₁ a₂ <;> intro IHa <;> dsimp at IHa
       case lt => exact oadd_lt_oadd_3 IHa
@@ -436,7 +435,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he : cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
         Ordering.compares_eq, repr, gt_iff_lt, PNat.add_coe, Nat.cast_add] at ee ⊢
-    · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
+    · rw [← add_assoc, @add_absorp_of_ge _ (repr e') (ω ^ repr e' * (n' : ℕ))]
       · have := (h₁.below_of_lt ee).repr_lt
         unfold repr at this
         cases he' : e' <;> simp only [he', zero_def, opow_zero, repr, gt_iff_lt] at this ⊢ <;>
@@ -497,11 +496,11 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine
           (Ordinal.sub_eq_of_add_eq <|
-              add_absorp h₂.snd'.repr_lt <| le_trans ?_ (le_add_right _ _)).symm
+              add_absorp_of_ge h₂.snd'.repr_lt <| le_trans ?_ (le_add_right _ _)).symm
         simpa using mul_le_mul_left' (natCast_le.2 <| Nat.succ_pos _) _
     · exact
         (Ordinal.sub_eq_of_add_eq <|
-            add_absorp (h₂.below_of_lt ee).repr_lt <| omega_le_oadd _ _ _).symm
+            add_absorp_of_ge (h₂.below_of_lt ee).repr_lt <| omega_le_oadd _ _ _).symm
 
 /-- Multiplication of ordinal notations (correct only for normal input) -/
 def mul : ONote → ONote → ONote
@@ -554,7 +553,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       lhs
       simp [(· * ·)]
     have ao : repr a₁ + ω ^ repr e₁ * (n₁ : ℕ) = ω ^ repr e₁ * (n₁ : ℕ) := by
-      apply add_absorp h₁.snd'.repr_lt
+      apply add_absorp_of_ge h₁.snd'.repr_lt
       simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos _ omega_pos).2 (natCast_le.2 n₁.2)
     by_cases e0 : e₂ = 0
     · cases' Nat.exists_eq_succ_of_ne_zero n₂.ne_zero with x xe
@@ -863,7 +862,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,
       add_mul_limit _ (isLimit_iff_omega_dvd.2 ⟨ne_of_gt α0, αd⟩), mul_assoc,
       @mul_omega_dvd n (natCast_pos.2 n.pos) (nat_lt_omega _) _ αd]
-    apply @add_absorp _ (repr a0 * succ ↑k)
+    apply add_absorp_of_ge
     · refine principal_add_omega_opow _ ?_ Rl
       rw [opow_mul, opow_succ, Ordinal.mul_lt_mul_iff_left ω00]
       exact No.snd'.repr_lt
@@ -874,7 +873,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · have : R = 0 := by cases k <;> simp [R, opowAux]
       simp [this]
     · rw [natCast_succ, add_mul_succ]
-      apply add_absorp Rl
+      apply add_absorp_of_ge Rl
       rw [opow_mul, opow_succ]
       apply mul_le_mul_left'
       simpa [repr] using omega_le_oadd a0 n a'
