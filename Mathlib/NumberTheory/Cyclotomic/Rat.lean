@@ -280,10 +280,11 @@ noncomputable def subOneIntegralPowerBasis' [IsCyclotomicExtension {p} ℚ K]
   have : IsCyclotomicExtension {p ^ 1} ℚ K := by rwa [pow_one]
   subOneIntegralPowerBasis (p := p) (k := 1) (ζ := ζ) (by rwa [pow_one])
 
-@[simp]
+@[simp, nolint unusedHavesSuffices]
 theorem subOneIntegralPowerBasis'_gen [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) :
     hζ.subOneIntegralPowerBasis'.gen = hζ.toInteger - 1 :=
+  -- The `unusedHavesSuffices` linter incorrectly thinks this `have` is unnecessary.
   have : IsCyclotomicExtension {p ^ 1} ℚ K := by rwa [pow_one]
   subOneIntegralPowerBasis_gen (by rwa [pow_one])
 
