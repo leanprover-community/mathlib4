@@ -436,9 +436,8 @@ theorem lt_omega_opow {a b : Ordinal} (ha : a < ω ^ b) (hb : b ≠ 0) :
   exact lt_mul_succ_div a (opow_ne_zero _ omega_ne_zero)
 
 theorem lt_omega_opow_succ {a b : Ordinal} (ha : a < ω ^ succ b) : ∃ n : ℕ, a < ω ^ b * n := by
-  obtain ⟨c, hc, n, hn⟩ := lt_omega_opow ha (succ_ne_zero _)
-  use n
-  apply hn.trans_le (mul_le_mul_right' _ _)
+  obtain ⟨c, hc, n, hn⟩ := lt_omega_opow ha (succ_ne_zero b)
+  refine ⟨n, hn.trans_le (mul_le_mul_right' ?_ _)⟩
   rwa [opow_le_opow_iff_right one_lt_omega, ← lt_succ_iff]
 
 theorem omega_opow_mul_nat_lt (a : Ordinal) (n : ℕ) : ω ^ a * n < ω ^ succ a := by
