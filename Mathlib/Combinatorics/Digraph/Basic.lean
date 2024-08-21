@@ -12,7 +12,9 @@ import Mathlib.Data.Fintype.Pi
 This module defines directed graphs on a vertex type `V`,
 which is the same notion as a relation `V → V → Prop`.
 While this might be too simple of a notion to deserve the grandeur of a new definition,
-the intention here is to develop relations using the lanugage of graph theory.
+the intention here is to develop relations using the language of graph theory.
+
+Note that in this treatment, a digraph may have self loops.
 
 The type `Digraph V` is structurally equivalent to `Quiver.{0} V`,
 but a difference between these is that `Quiver` is a class —
@@ -147,7 +149,7 @@ instance infSet : InfSet (Digraph V) where
   sInf s := { Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b) }
 
 @[simp]
-theorem sSup_adj {s : Set (Digraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
+theorem sSup_adj {s : Set (Digraph V)} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
 
 @[simp]
 theorem sInf_adj {s : Set (Digraph V)} : (sInf s).Adj a b ↔ ∀ G ∈ s, Adj G a b := Iff.rfl
