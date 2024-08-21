@@ -366,8 +366,8 @@ lemma EmbeddedContextFreeGrammar.produces_filterMap {w₁ w₂ : List (Symbol T 
   cases (show Good (Symbol.nonterminal r.input) by apply hw₁; simp) with
   | nonterminal hn =>
     rcases G.preimage_of_rules r rin _ (by
-      simpa [G.projectNT_inverse_embedNT hn₀, Option.map_some'] using
-        congr_arg (Option.map G.embedNT) hn₀.symm)
+      simpa [G.projectNT_inverse_embedNT hn, Option.map_some'] using
+        congr_arg (Option.map G.embedNT) hn.symm)
       with ⟨r₀, hr₀, hrr₀⟩
     constructor
     · refine ⟨r₀, hr₀, ?_⟩
