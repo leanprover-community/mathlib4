@@ -292,13 +292,13 @@ structure EmbeddedContextFreeGrammar (T : Type uT) where
   projectNT : g.NT → Option g₀.NT
   /-- The embedding map is injective. -/
   embed_inj : Function.Injective embedNT
-  /-- The latter map is injective where defined. -/
+  /-- The projecting map is injective where defined. -/
   project_inj : ∀ x y : g.NT, projectNT x = projectNT y → x = y ∨ projectNT x = none
   /-- The two mappings are essentially inverses. -/
   projectNT_embedNT : ∀ n₀ : g₀.NT, projectNT (embedNT n₀) = some n₀
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
   embed_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.map embedNT ∈ g.rules
-  /-- Each rule of the bigger grammar whose input nonterminal the smaller grammar recognizes
+  /-- Each rule of the bigger grammar whose input nonterminal is recognized by the smaller grammar
   has a corresponding rule in the smaller grammar. -/
   preimage_of_rules :
     ∀ r : ContextFreeRule T g.NT,
@@ -330,7 +330,7 @@ lemma EmbeddedContextFreeGrammar.produces_map {w₁ w₂ : List (Symbol T G.g₀
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) bef
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
-/-- Derivation by `G.g₀` can be mirrored by `G.g` derivation. -/
+/-- Derivation by `G.g₀` can be mirrored by derivation by `G.g`. -/
 lemma EmbeddedContextFreeGrammar.derives_map {w₁ w₂ : List (Symbol T G.g₀.NT)}
     (hG : G.g₀.Derives w₁ w₂) :
     G.g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
@@ -342,7 +342,7 @@ lemma EmbeddedContextFreeGrammar.derives_map {w₁ w₂ : List (Symbol T G.g₀.
 terminal. -/
 inductive EmbeddedContextFreeGrammar.Good : Symbol T G.g.NT → Prop
   | terminal (t : T) : Good (.terminal t)
-  | nonterminal (n : G.g.NT) (n₀ : G.g₀.NT) (hn : G.projectNT n = n₀) : Good (.nonterminal n)
+  | nonterminal {n : G.g.NT} {n₀ : G.g₀.NT} (hn : G.projectNT n = n₀) : Good (.nonterminal n)
 
 /-- A string is good iff every `Symbol` in it is good. -/
 def EmbeddedContextFreeGrammar.GoodString (s : List (Symbol T G.g.NT)) : Prop :=
@@ -397,14 +397,14 @@ lemma EmbeddedContextFreeGrammar.produces_filterMap {w₁ w₂ : List (Symbol T 
     refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
     intro a ha
     cases a
-    · simp [Good]
+    · constructor
     dsimp only [ContextFreeRule.map] at ha
     rw [List.mem_map] at ha
     rcases ha with ⟨s, -, hs⟩
     rw [← hs]
     cases s with
     | terminal _ => exact False.elim (Symbol.noConfusion hs)
-    | nonterminal s' => exact ⟨s', G.projectNT_embedNT s'⟩
+    | nonterminal s' => exact Good.nonterminal (G.projectNT_embedNT s')
 
 lemma EmbeddedContextFreeGrammar.derives_filterMap_aux {w₁ w₂ : List (Symbol T G.g.NT)}
     (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
