@@ -80,8 +80,8 @@ lemma binEntropy_two_inv_add (p : ℝ) : binEntropy (2⁻¹ + p) = binEntropy (2
 lemma binEntropy_pos (hp₀ : 0 < p) (hp₁ : p < 1) : 0 < binEntropy p := by
   unfold binEntropy
   have : 0 < 1 - p := sub_pos.2 hp₁
-  have : 0 < log p⁻¹ := log_pos $ one_lt_inv hp₀ hp₁
-  have : 0 < log (1 - p)⁻¹ := log_pos $ one_lt_inv ‹_› (sub_lt_self _ hp₀)
+  have : 0 < log p⁻¹ := log_pos <| one_lt_inv hp₀ hp₁
+  have : 0 < log (1 - p)⁻¹ := log_pos <| one_lt_inv ‹_› (sub_lt_self _ hp₀)
   positivity
 
 lemma binEntropy_nonneg (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) : 0 ≤ binEntropy p := by
@@ -140,8 +140,8 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
   obtain hp₀ | hp₀ := le_or_lt p 0
-  · exact (binEntropy_nonpos_of_nonpos hp₀).trans_lt $ log_pos $ by norm_num
-  have hp₁ : 0 < 1 - p := sub_pos.2 $ hp.trans $ by norm_num
+  · exact (binEntropy_nonpos_of_nonpos hp₀).trans_lt <| log_pos <| by norm_num
+  have hp₁ : 0 < 1 - p := sub_pos.2 <| hp.trans <| by norm_num
   calc
   _ < log (p * p⁻¹ + (1 - p) * (1 - p)⁻¹) :=
     strictConcaveOn_log_Ioi.2 (inv_pos.2 hp₀) (inv_pos.2 hp₁)

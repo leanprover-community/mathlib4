@@ -86,7 +86,7 @@ assert_not_exists Multiset
 assert_not_exists Ring
 
 open Function
-open Int
+open scoped Int
 
 variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
 variable {A : Type*} [AddGroup A]
