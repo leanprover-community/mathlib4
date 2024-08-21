@@ -249,5 +249,9 @@ lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E :
     simp only [gt_iff_lt, inv_pos, subset_refl, and_true]
     exact Nat.cast_add_one_pos m
 
+lemma test (C : Set (Dual 𝕜 E)) (s : Set E) (n : ℕ)
+    (h : (polar 𝕜 s) ∩ (polar 𝕜 (U (n+1))) ∩ C = ∅) :
+    ∃ (F : Set E), Finite F ∧ F ⊆ (U (n+1))∧ (polar 𝕜 (s ∪ F)) ∩ (polar 𝕜 (U (n+1))) ∩ C = ∅ :=
+  sorry
 
 end WeakDual
