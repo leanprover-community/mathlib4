@@ -32,11 +32,14 @@ noncomputable def rank : PSet.{u} → Ordinal.{u}
 theorem rank_eq_of_equiv : {x y : PSet} → Equiv x y → rank x = rank y
   | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
     lsub_eq_of_range_eq (by
-      ext; constructor <;> simp <;> intro a h
+      ext
+      constructor <;> simp <;> intro a h
       · obtain ⟨b, h'⟩ := αβ a
-        exists b; rw [← h, rank_eq_of_equiv h']
+        exists b
+        rw [← h, rank_eq_of_equiv h']
       · obtain ⟨b, h'⟩ := βα a
-        exists b; rw [← h, rank_eq_of_equiv h'])
+        exists b
+        rw [← h, rank_eq_of_equiv h'])
 
 theorem rank_lt_of_mem : {x y : PSet} → y ∈ x → rank y < rank x
   | ⟨_, _⟩, _, ⟨_, h⟩ => by
@@ -131,7 +134,8 @@ theorem rank_pair : rank {x, y} = max (succ (rank x)) (succ (rank y)) := by
 theorem rank_union : rank (x ∪ y) = max (rank x) (rank y) := by
   apply le_antisymm
   · simp_rw [rank_le_iff, mem_union, lt_max_iff]
-    intro; apply Or.imp <;> apply rank_lt_of_mem
+    intro
+    apply Or.imp <;> apply rank_lt_of_mem
   · apply max_le <;> apply rank_mono <;> intro _ h <;> simp [h]
 
 @[simp]
