@@ -159,7 +159,7 @@ s.t. all extended chart conversion maps are analytic. -/
 class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
   [ChartedSpace H M] extends HasGroupoid M (analyticGroupoid I) : Prop
 
-/-- Normed spaces are analytic manifolds over themselves -/
+/-- Normed spaces are analytic manifolds over themselves. -/
 instance AnalyticManifold.self : AnalyticManifold 𝓘(𝕜, E) E where
 
 /-- `M × N` is an analytic manifold if `M` and `N` are -/
