@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck, David Loeffler
+Authors: Chris Birkbeck, David Loeffler, Gareth Ma
 -/
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
@@ -53,18 +53,29 @@ def zeroAtImInftySubmodule (α : Type*) [NormedField α] : Submodule α (ℍ →
 def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (ℍ → α) :=
   boundedFilterSubalgebra _ atImInfty
 
+nonrec theorem IsBoundedAtImInfty.add {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
+    (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f + g) := by
+  simpa only using hf.add hg
+
+nonrec theorem IsBoundedAtImInfty.sub {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
+    (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f - g) := by
+  simpa only using hf.sub hg
+
 nonrec theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
     (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f * g) := by
-  simpa only [Pi.one_apply, mul_one, norm_eq_abs] using hf.mul hg
+  simpa only using hf.mul hg
 
-theorem bounded_mem (f : ℍ → ℂ) :
-    IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ M := by
+theorem bounded_mem {α : Type*} [Norm α] {f : ℍ → α} :
+    IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ M := by
   simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
     atImInfty_mem]
 
-theorem zero_at_im_infty (f : ℍ → ℂ) :
-    IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ ε :=
-  (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by
-    simp only [true_and, mem_closedBall_zero_iff]; rfl
+theorem zero_at_im_infty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
+    IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ ε :=
+  (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by simp
+
+theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
+    (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
+  bounded_mem.mpr ⟨1, (zero_at_im_infty.mp hf) 1 zero_lt_one⟩
 
 end UpperHalfPlane
