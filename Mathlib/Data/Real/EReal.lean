@@ -931,15 +931,13 @@ lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y
 
 /-! ### Addition and order -/
 
-lemma le_forall_real_gt_iff_le {x y : EReal} : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
-  refine ⟨fun h ↦ WithBot.le_forall_gt_iff_le_of_withBot.1 ?_,
-    fun h z x_z ↦ le_trans h (le_of_lt x_z)⟩
+lemma le_of_forall_lt_iff_le {x y : EReal} : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
+  refine ⟨fun h ↦ WithBot.le_of_forall_lt_iff_le.1 ?_, fun h _ x_z ↦ h.trans x_z.le⟩
   rw [WithTop.forall]
   aesop
 
-lemma ge_forall_real_lt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
-  refine ⟨fun h ↦ WithBot.ge_forall_lt_iff_ge_of_withBot.1 ?_,
-    fun h z x_z ↦ le_trans (le_of_lt x_z) h⟩
+lemma ge_of_forall_gt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
+  refine ⟨fun h ↦ WithBot.ge_of_forall_gt_iff_ge.1 ?_, fun h _ x_z ↦ x_z.le.trans h⟩
   rw [WithTop.forall]
   aesop
 
@@ -949,13 +947,13 @@ private lemma top_add_le_of_forall_add_le {a b : EReal} (h : ∀ c < ⊤, ∀ d 
   induction a with
   | h_bot => exact add_bot ⊤ ▸ bot_le
   | h_real a =>
-    refine top_add_coe a ▸ le_forall_real_gt_iff_le.1 fun c b_c ↦ ?_
+    refine top_add_coe a ▸ le_of_forall_lt_iff_le.1 fun c b_c ↦ ?_
     specialize h (c - a + 1) (coe_lt_top (c - a + 1)) (a - 1)
     rw [← coe_one, ← coe_sub, ← coe_sub, ← coe_add, ← coe_add, add_add_sub_cancel, sub_add_cancel,
       EReal.coe_lt_coe_iff] at h
     exact (not_le_of_lt b_c (h (sub_one_lt a))).rec
   | h_top =>
-    refine top_add_top ▸ le_forall_real_gt_iff_le.1 fun c b_c ↦ ?_
+    refine top_add_top ▸ le_of_forall_lt_iff_le.1 fun c b_c ↦ ?_
     specialize h c (coe_lt_top c) 0 zero_lt_top
     rw [add_zero] at h
     exact (not_le_of_lt b_c h).rec
@@ -966,7 +964,7 @@ lemma add_le_of_forall_add_le {a b c : EReal} (h : ∀ d < a, ∀ e < b, d + e �
   | h_real a => induction b with
     | h_bot => exact add_bot (a : EReal) ▸ bot_le
     | h_real b =>
-      refine (@ge_forall_real_lt_iff_ge c (a+b)).1 fun d d_ab ↦ ?_
+      refine (@ge_of_forall_gt_iff_ge c (a+b)).1 fun d d_ab ↦ ?_
       rw [← coe_add, EReal.coe_lt_coe_iff] at d_ab
       rcases exists_between d_ab with ⟨e, e_d, e_ab⟩
       have key₁ : (a + d - e : ℝ) < (a : EReal) := by apply EReal.coe_lt_coe_iff.2; linarith
