@@ -37,6 +37,8 @@ open Finset Function
 /--
 A digraph is a relation `Adj` on a vertex type `V`.
 The relation describes which pairs of vertices are adjacent.
+
+In this treatment, a digraph may have self-loops.
 -/
 @[ext]
 structure Digraph (V : Type*) where
