@@ -1532,6 +1532,15 @@ theorem toPerm_symm {f : α → α} (h : Involutive f) : (h.toPerm f).symm = h.t
 theorem toPerm_involutive {f : α → α} (h : Involutive f) : Involutive (h.toPerm f) :=
   h
 
+theorem leftInverse_iff {f g : α → α} (h : Involutive f) :
+    g.LeftInverse f ↔ g = f :=
+  ⟨fun hg ↦ funext fun x ↦ by rw [← h x, hg, h], fun he ↦ he ▸ h.leftInverse⟩
+
+@[simp]
+theorem symm_eq_self_of_involutive (f : Equiv.Perm α) (h : Involutive f) : f.symm = f := by
+  ext x
+  exact congrFun (h.leftInverse_iff.mp f.left_inv) x
+
 end Function.Involutive
 
 theorem PLift.eq_up_iff_down_eq {x : PLift α} {y : α} : x = PLift.up y ↔ x.down = y :=
