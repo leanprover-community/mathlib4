@@ -52,8 +52,8 @@ variable [Category.{v₁} C] [Category.{v₁} D]
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
 /-- The "main pair" for a coalgebra `(A, α)` is the pair of morphisms `(G α, η_GA)`. It is always a
-coreflexive pair, and will be used to construct the left adjoint to the comparison functor and show it
-is an equivalence.
+coreflexive pair, and will be used to construct the left adjoint to the comparison functor and show
+it is an equivalence.
 -/
 instance main_pair_coreflexive (A : adj.toComonad.Coalgebra) :
     IsCoreflexivePair (G.map A.a) (adj.unit.app (G.obj A.A)) := by
