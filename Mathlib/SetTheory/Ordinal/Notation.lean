@@ -112,31 +112,49 @@ def ofNat : ℕ → ONote
   | 0 => 0
   | Nat.succ n => oadd 0 n.succPNat 0
 
--- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
-
-@[simp]
-theorem ofNat_zero : ofNat 0 = 0 :=
-  rfl
-
-@[simp]
-theorem ofNat_succ (n) : ofNat (Nat.succ n) = oadd 0 n.succPNat 0 :=
-  rfl
+instance : NatCast ONote where
+  natCast n := ofNat n
 
 instance nat (n : ℕ) : OfNat ONote n where
   ofNat := ofNat n
 
-@[simp 1200]
-theorem ofNat_one : ofNat 1 = 1 :=
-  rfl
+-- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
 
 @[simp]
-theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by
+theorem natCast_zero : (0 : ℕ) = (0 : ONote) :=
+  rfl
+
+@[deprecated natCast_zero (since := "2024-08-21")]
+alias ofNat_zero := natCast_zero
+
+@[simp]
+theorem natCast_succ (n : ℕ) : n.succ = oadd 0 n.succPNat 0 :=
+  rfl
+
+@[deprecated natCast_succ (since := "2024-08-21")]
+alias ofNat_succ := natCast_succ
+
+@[simp 1200]
+theorem natCast_one : (1 : ℕ) = (1 : ONote) :=
+  rfl
+
+@[deprecated natCast_one (since := "2024-08-21")]
+alias ofNat_one := natCast_one
+
+@[simp]
+theorem repr_natCast (n : ℕ) : repr n = n := by
   cases n <;> simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem repr_one : repr (ofNat 1) = (1 : ℕ) :=
-  repr_ofNat 1
+@[deprecated repr_natCast (since := "2024-08-21")]
+alias repr_ofNat := repr_natCast
+
+@[simp]
+theorem repr_zero : repr 0 = 0 :=
+  repr_natCast 0
+
+theorem repr_one : repr 1 = (1 : ℕ) :=
+  repr_natCast 1
 
 theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ (le_add_right _ _)
@@ -165,8 +183,8 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
     rw [eq_of_cmp_eq h.1, (cmp_eq_eq_iff _ _).1 h.2.1, eq_of_cmp_eq h.2.2]
 
 protected theorem zero_lt_one : (0 : ONote) < 1 := by
-  simp only [lt_def, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
-    zero_lt_one]
+  rw [lt_def, repr_zero, repr_one, Nat.cast_one]
+  exact zero_lt_one
 
 /-- `NFBelow o b` says that `o` is a normal form ordinal notation satisfying `repr o < ω ^ b`. -/
 inductive NFBelow : ONote → Ordinal.{0} → Prop
