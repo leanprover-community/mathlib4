@@ -188,19 +188,19 @@ lemma limsup_add_le_add_limsup (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤)
     limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
   refine le_add_of_forall_le_add h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
-  exact lt_trans (add_lt_add a_x b_x) c_ab
+  exact (add_lt_add a_x b_x).trans c_ab
 
 lemma limsup_add_liminf_le_limsup_add : (limsup u f) + (liminf v f) ≤ limsup (u + v) f :=
   add_le_of_forall_add_le fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
-      ((eventually_lt_of_lt_liminf) b_v)) fun x ab_x ↦ lt_trans c_ab (add_lt_add ab_x.1 ab_x.2)
+    ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (add_lt_add ab_x.1 ab_x.2)
 
 lemma liminf_add_le_limsup_add_liminf (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤)
     (h' : limsup u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
     liminf (u + v) f ≤ (limsup u f) + (liminf v f) :=
   le_add_of_forall_le_add h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_liminf_lt) b_v)
-     ((eventually_lt_of_limsup_lt) a_u)) fun x ab_x ↦ lt_trans (add_lt_add ab_x.2 ab_x.1) c_ab
+    ((eventually_lt_of_limsup_lt) a_u)) fun _ ab_x ↦ (add_lt_add ab_x.2 ab_x.1).trans c_ab
 
 variable {a b : EReal}
 
@@ -227,18 +227,15 @@ lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) 
   rw [h, top_add_of_ne_bot h']
 
 lemma limsup_le_iff {b : EReal} : limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
-  rw [← le_forall_real_gt_iff_le]
-  refine ⟨?_, ?_⟩ <;> intro h c b_lt_c
-  · rcases exists_between_coe_real b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
-    specialize h d b_lt_d
-    have key := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt h d_lt_c)
-    apply Filter.mem_of_superset key
+  rw [← le_of_forall_lt_iff_le]
+  refine ⟨?_, ?_⟩ <;> intro h c b_c
+  · rcases exists_between_coe_real b_c with ⟨d, b_d, d_c⟩
+    apply mem_of_superset (eventually_lt_of_limsup_lt (lt_of_le_of_lt (h d b_d) d_c))
     rw [Set.setOf_subset_setOf]
-    exact fun a h' ↦ le_of_lt h'
-  · rcases eq_or_neBot f with (rfl | _)
+    exact fun _ h' ↦ h'.le
+  · rcases eq_or_neBot f with rfl | _
     · simp only [limsup_bot, bot_le]
-    · specialize h c b_lt_c
-      exact @Filter.limsup_const EReal α _ f _ (c : EReal) ▸ limsup_le_limsup h
+    · exact (limsup_le_of_le) (h c b_c)
 
 end LimInfSup
 
