@@ -48,11 +48,9 @@ a few of which rely on the fact that subtraction is continuous.
 
 -/
 
-
 noncomputable section
 
 open Set TopologicalSpace Metric Filter
-
 open scoped Topology
 
 namespace NNReal
@@ -76,6 +74,9 @@ instance : CompleteSpace ℝ≥0 :=
 instance : ContinuousStar ℝ≥0 where
   continuous_star := continuous_id
 section coe
+
+lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
+  Ico_bot (a := x) ▸ isOpen_Iio
 
 variable {α : Type*}
 
@@ -185,11 +186,10 @@ theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
     (@Summable ℝ≥0 _ _ _ fun n => ⟨f n, hf n⟩) ↔ Summable f :=
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 
-open scoped Classical
-
 @[norm_cast]
-theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :=
-  if hf : Summable f then Eq.symm <| (hasSum_coe.2 <| hf.hasSum).tsum_eq
+theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) := by
+  classical
+  exact if hf : Summable f then Eq.symm <| (hasSum_coe.2 <| hf.hasSum).tsum_eq
   else by simp [tsum_def, hf, mt summable_coe.1 hf]
 
 theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :

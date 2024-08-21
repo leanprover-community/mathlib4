@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Data.List.Infix
+
 /-!
 
 # Dropping or taking from lists on the right
@@ -106,8 +107,8 @@ theorem rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [
 
 theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l).getLast hl) := by
   simp_rw [rdropWhile]
-  rw [getLast_reverse]
-  exact dropWhile_nthLe_zero_not _ _ _
+  rw [getLast_reverse, head_dropWhile_not p]
+  simp
 
 theorem rdropWhile_prefix : l.rdropWhile p <+: l := by
   rw [← reverse_suffix, rdropWhile, reverse_reverse]
@@ -130,7 +131,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
     refine ⟨fun h => ?_, fun h => ?_⟩
     · intro _ H
       rw [get] at H
-      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons _ _))
+      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons_self _ _))
       rw [← h]
       simp only [H]
       exact List.IsSuffix.sublist (dropWhile_suffix p)
@@ -142,7 +143,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
  the `l ≠ []` condition if `hl` is not `intro`'d yet -/
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  simp only [rdropWhile, reverse_eq_iff, dropWhile_eq_self_iff, getLast_eq_get]
+  simp only [rdropWhile, reverse_eq_iff, dropWhile_eq_self_iff, getLast_eq_getElem]
   refine ⟨fun h hl => ?_, fun h hl => ?_⟩
   · rw [← length_pos, ← length_reverse] at hl
     have := h hl
@@ -155,7 +156,7 @@ variable (p) (l)
 
 theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
-  exact fun h => dropWhile_nthLe_zero_not p l h
+  exact fun h => dropWhile_get_zero_not p l h
 
 theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
@@ -197,10 +198,10 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
   induction' l using List.reverseRecOn with l a
   · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
     intro f; contradiction
-  · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil_iff, getLast_append, ne_eq,
-      append_eq_nil, and_false, not_false_eq_true, forall_true_left]
+  · simp only [rtakeWhile, reverse_append, takeWhile, ne_eq, not_false_eq_true,
+      getLast_append_of_ne_nil, getLast_singleton]
     refine ⟨fun h => ?_ , fun h => ?_⟩
-    · intro pa; simp [pa] at h
+    · split at h <;> simp_all
     · simp [h]
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
