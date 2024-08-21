@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.Module.LinearMap.Defs
@@ -1039,7 +1040,7 @@ instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β 
         case neg => exact (s.prop i).resolve_left hs₂
 
 theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s ↔ ∀ i ∉ s, f i = 0 := by
-  simp [Set.subset_def]; exact forall_congr' fun i => not_imp_comm
+  simpa [Set.subset_def] using forall_congr' fun i => not_imp_comm
 
 theorem support_single_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
   ext j; by_cases h : i = j
@@ -1834,12 +1835,12 @@ theorem comp_liftAddHom {δ : Type*} [∀ i, AddZeroClass (β i)] [AddCommMonoid
 @[simp]
 theorem sumAddHom_zero [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
     (sumAddHom fun i => (0 : β i →+ γ)) = 0 :=
-  (liftAddHom (β := β) : (∀ i, β i →+ γ) ≃+ _).map_zero
+  map_zero (liftAddHom (β := β))
 
 @[simp]
 theorem sumAddHom_add [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (g : ∀ i, β i →+ γ)
     (h : ∀ i, β i →+ γ) : (sumAddHom fun i => g i + h i) = sumAddHom g + sumAddHom h :=
-  (liftAddHom (β := β)).map_add _ _
+  map_add (liftAddHom (β := β)) _ _
 
 @[simp]
 theorem sumAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :

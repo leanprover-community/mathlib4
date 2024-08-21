@@ -293,6 +293,7 @@ section ExistsPrimeFactors
 
 variable [CancelCommMonoidWithZero α]
 variable (pf : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a)
+include pf
 
 theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
   ⟨by
@@ -374,7 +375,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
         he ▸ e.prime_iff.1 (hp c hc),
         Units.map e.toMonoidHom u,
       by
-        erw [Multiset.prod_hom, ← e.map_mul, h]
+        erw [Multiset.prod_hom, ← map_mul e, h]
         simp⟩
 
 theorem MulEquiv.uniqueFactorizationMonoid_iff (e : α ≃* β) :
@@ -914,9 +915,11 @@ theorem pow_eq_pow_iff {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) {i j : ℕ} : 
 section multiplicity
 
 variable [NormalizationMonoid R]
-variable [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 open multiplicity Multiset
+
+section
+variable [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 theorem le_multiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (ha : Irreducible a)
     (hb : b ≠ 0) :
@@ -951,6 +954,7 @@ theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : 
     simp
   rw [le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
 
+end
 
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`.
@@ -984,12 +988,12 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 
+end multiplicity
+
 /-- Deprecated. Use `WfDvdMonoid.max_power_factor` instead. -/
 @[deprecated WfDvdMonoid.max_power_factor (since := "2024-03-01")]
 theorem max_power_factor {a₀ x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
     ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := WfDvdMonoid.max_power_factor h hx
-
-end multiplicity
 
 section Multiplicative
 
@@ -1762,7 +1766,7 @@ theorem eq_pow_of_mul_eq_pow {a b c : Associates α} (ha : a ≠ 0) (hb : b ≠ 
   by_cases hk0 : k = 0
   · use 1
     rw [hk0, pow_zero] at h ⊢
-    apply (mul_eq_one_iff.1 h).1
+    apply (mul_eq_one.1 h).1
   · refine is_pow_of_dvd_count ha fun p hp ↦ ?_
     apply dvd_count_of_dvd_count_mul hb hp hab
     rw [h]
@@ -1845,7 +1849,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
   haveI : NormalizationMonoid M := UniqueFactorizationMonoid.normalizationMonoid
   haveI := Classical.decEq M
   haveI := Classical.decEq (Associates M)
-  -- We'll show `λ (u : Mˣ) (f ⊆ factors y) → u * Π f` is injective
+  -- We'll show `fun (u : Mˣ) (f ⊆ factors y) ↦ u * Π f` is injective
   -- and has image exactly the divisors of `y`.
   refine
     Fintype.ofFinset

@@ -152,7 +152,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
   suffices
     Tendsto (fun x : ℝ => ((x : ℂ) ^ (a + 1) - (c : ℂ) ^ (a + 1)) / (a + 1)) atTop
       (𝓝 <| -c ^ (a + 1) / (a + 1)) by
-    refine this.congr' ((eventually_gt_atTop 0).mp (eventually_of_forall fun x hx => ?_))
+    refine this.congr' ((eventually_gt_atTop 0).mp (Eventually.of_forall fun x hx => ?_))
     dsimp only
     rw [integral_cpow, id]
     refine Or.inr ⟨?_, not_mem_uIcc_of_lt hc hx⟩
@@ -164,7 +164,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
   rw [tendsto_zero_iff_norm_tendsto_zero]
   refine
     (tendsto_rpow_neg_atTop (by linarith : 0 < -(a.re + 1))).congr'
-      ((eventually_gt_atTop 0).mp (eventually_of_forall fun x hx => ?_))
+      ((eventually_gt_atTop 0).mp (Eventually.of_forall fun x hx => ?_))
   simp_rw [neg_neg, Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx, Complex.add_re,
     Complex.one_re]
 
