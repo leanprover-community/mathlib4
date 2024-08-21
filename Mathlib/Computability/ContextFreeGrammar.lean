@@ -266,8 +266,8 @@ The projection operation must be injective on those symbols where it is defined.
 
 /-- Mapping `Symbol` when it is a nonterminal. -/
 def Symbol.map {N₀ N : Type*} (f : N₀ → N) : Symbol T N₀ → Symbol T N
-  | Symbol.terminal t => Symbol.terminal t
-  | Symbol.nonterminal n => Symbol.nonterminal (f n)
+  | .terminal t => .terminal t
+  | .nonterminal n => .nonterminal (f n)
 
 /-- Mapping `Symbol` when it is a nonterminal; may return `none`. -/
 def Symbol.filterMap {N₀ N : Type*} (f : N → Option N₀) : Symbol T N → Option (Symbol T N₀)
