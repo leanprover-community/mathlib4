@@ -167,7 +167,9 @@ jobs:
         id: get
         run: |
           lake exe cache clean
-          lake exe cache get
+          # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
+          lake exe cache get Mathlib.Init
+          ! test -e .lake/build/lib/Mathlib/Init.olean || lake exe cache get
 
       - name: build mathlib
         id: build
