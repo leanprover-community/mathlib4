@@ -320,19 +320,23 @@ def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
 
 /-- Construct a `Structural` expression from a Lean expression for a structural 2-morphism. -/
 partial def structural? (e : Expr) : MetaM Structural := do
-  match (← whnfR e).getAppFnArgs with
-  | (``CategoryStruct.comp, #[_, _, _, α, β]) =>
-    return .comp (← structural? α) (← structural? β)
-  | (``CategoryStruct.id, #[_, f]) => return .id (← toMor₁ f)
-  | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) =>
-    return .whiskerLeft (← toMor₁ f) (← structural? η)
-  | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) =>
-    return .whiskerRight (← structural? η) (← toMor₁ f)
-  | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
-    return .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
-  | _ => match ← structuralAtom? e with
-    | some η => return .atom η
-    | none => throwError "not a structural 2-morphism"
+  match (← whnfR e) with
+  | .proj ``Iso 0 η => match η.getAppFnArgs with
+    | (``MonoidalCoherence.iso, #[_, _, f, g, inst]) =>
+      return .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
+    | _ => throwError "not a structural 2-morphism"
+  | .app .. => match (← whnfR e).getAppFnArgs with
+    | (``CategoryStruct.comp, #[_, _, _, _, _, α, β]) =>
+      return .comp (← structural? α) (← structural? β)
+    | (``CategoryStruct.id, #[_, _, f]) => return .id (← toMor₁ f)
+    | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
+      return .whiskerLeft (← toMor₁ f) (← structural? η)
+    | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, f]) =>
+      return .whiskerRight (← structural? η) (← toMor₁ f)
+    | _ => match ← structuralAtom? e with
+      | some η => return .atom η
+      | none => throwError "not a structural 2-morphism"
+  | _ => throwError "not a structural 2-morphism"
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
 def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do

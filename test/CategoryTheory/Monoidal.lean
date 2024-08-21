@@ -31,14 +31,14 @@ example (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
     f ⊗≫ g = f ≫ 𝟙 _ ≫ (α_ _ _ _).inv ≫ g := by
   monoidal_nf
   repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
-  all_goals simp
+  all_goals monoidal_coherence
 
 example : (X ⊗ Y) ◁ f = (α_ _ _ _).hom ≫ X ◁ Y ◁ f ≫ (α_ _ _ _).inv := by
   monoidal_nf
   repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
-  all_goals simp
+  all_goals monoidal_coherence
 
 example : f ≫ g = f ≫ g := by
   monoidal_nf
   repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
-  all_goals simp
+  all_goals monoidal_coherence
