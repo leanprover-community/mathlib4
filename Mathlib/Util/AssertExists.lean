@@ -42,8 +42,7 @@ environment.  In particular, it is silent if everything is imported, making it u
 -/
 elab "#check_assertions" tk:("!")?: command => do
   let env ← getEnv
-  let entries := assertExistsExt.getState env |>.toArray.qsort fun d e => (e.isDecl < d.isDecl) ||
-      (e.isDecl == d.isDecl && (d.givenName.toString < e.givenName.toString))
+  let entries := getSortedAssertExists env
   if entries.isEmpty && tk.isNone then logInfo "No assertions made." else
   let allMods := env.allImportedModuleNames
   let mut msgs := #[m!""]
@@ -64,19 +63,6 @@ elab "#check_assertions" tk:("!")?: command => do
     logInfo msg
   if !allExist? then
     logWarning msg
-
-/--
-`addDeclEntry isDecl declName` takes as input the `Bool`ean `isDecl` and the `Name` `declName`.
-It extends the `AssertExists` environment extension with the data
-`isDecl, declName, currentModuleName`.
-This information is used to capture declarations and modules that are required to not
-exist/be imported at some point, but should eventually exist/be imported.
--/
-def addDeclEntry (isDecl : Bool) (declName : Name) : CommandElabM Unit := do
-  let modName ← getMainModule
-  modifyEnv fun env =>
-    assertExistsExt.addEntry env
-      { isDecl := isDecl, givenName := declName, modName := modName }
 
 end Mathlib.AssertNotExist
 
@@ -113,7 +99,7 @@ elab "assert_not_exists " n:ident : command => do
   let decl ←
     try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
     catch _ =>
-      Mathlib.AssertNotExist.addDeclEntry true n.getId
+      Mathlib.AssertNotExist.addDeclEntry true n.getId (← getMainModule)
       return
   let env ← getEnv
   let c ← mkConstWithLevelParams decl
@@ -144,6 +130,6 @@ elab "assert_not_imported " ids:ident+ : command => do
     if mods.contains id.getId then
       logWarningAt id m!"the module '{id}' is (transitively) imported"
     else
-      Mathlib.AssertNotExist.addDeclEntry false id.getId
+      Mathlib.AssertNotExist.addDeclEntry false id.getId (← getMainModule)
 
 end
