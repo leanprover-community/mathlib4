@@ -290,7 +290,7 @@ structure EmbeddedContextFreeGrammar (T : Type uT) where
   embedNT : g₀.NT → g.NT
   /-- Mapping nonterminals from the bigger type to the smaller type. -/
   projectNT : g.NT → Option g₀.NT
-  /-- The former map is injective. -/
+  /-- The embedding map is injective. -/
   embed_inj : Function.Injective embedNT
   /-- The latter map is injective where defined. -/
   project_inj : ∀ x y : g.NT, projectNT x = projectNT y → x = y ∨ projectNT x = none
