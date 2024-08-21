@@ -556,71 +556,133 @@ theorem Algebra.isSeparable_iff :
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
     fun h => ⟨fun x => (h x).2⟩⟩
 
-variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+variable {E : Type*}
+
+section
+
+variable [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+
+/-- Transfer `IsSeparable` across an `AlgEquiv`. -/
+theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F x := by
+  simp only [IsSeparable, minpoly.algEquiv_eq e x]
 
 /-- Transfer `Algebra.IsSeparable` across an `AlgEquiv`. -/
-theorem AlgEquiv.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
-  ⟨fun _ ↦
-    by rw [IsSeparable, ← minpoly.algEquiv_eq e.symm]; exact Algebra.IsSeparable.isSeparable F _⟩
+theorem AlgEquiv.Algrebra.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
+  ⟨fun _ ↦ e.symm.isSeparable_iff.mp (Algebra.IsSeparable.isSeparable _ _)⟩
 
-theorem AlgEquiv.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
-  ⟨fun _ ↦ e.isSeparable, fun _ ↦ e.symm.isSeparable⟩
+@[deprecated (since := "2024-08-06")]
+alias AlgEquiv.isSeparable := AlgEquiv.Algrebra.isSeparable
 
-variable (F K)
+theorem AlgEquiv.Algebra.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
+  ⟨fun _ ↦ AlgEquiv.Algrebra.isSeparable e, fun _ ↦ AlgEquiv.Algrebra.isSeparable e.symm⟩
 
+variable (F K) in
 instance Algebra.IsSeparable.isAlgebraic [Nontrivial F] [Algebra.IsSeparable F K] :
     Algebra.IsAlgebraic F K :=
   ⟨fun x ↦ (Algebra.IsSeparable.isIntegral F x).isAlgebraic⟩
 
-end CommRing
+end
 
-instance Algebra.isSeparable_self (F : Type*) [Field F] : Algebra.IsSeparable F F :=
-  ⟨fun x => by
-    rw [IsSeparable, minpoly.eq_X_sub_C']
-    exact separable_X_sub_C⟩
+section
 
--- See note [lower instance priority]
-/-- A finite field extension in characteristic 0 is separable. -/
-instance (priority := 100) Algebra.IsSeparable.of_finite (F K : Type*) [Field F] [Field K]
-    [Algebra F K] [FiniteDimensional F K] [CharZero F] : Algebra.IsSeparable F K :=
-  ⟨fun x => (minpoly.irreducible <| .of_finite F x).separable⟩
+variable [Field K] [CommRing E] [Algebra F K]
+    [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
-section IsSeparableTower
-
-/-- If `R / K / A` is an extension tower, `x : R` is separable over `A`, then it's also separable
+variable (K)
+/-- If `E / K / F` is an extension tower, `x : E` is separable over `F`, then it's also separable
 over `K`. -/
-theorem IsSeparable.of_isScalarTower {A : Type*} [CommRing A]
-    (K : Type*) [Field K] [Algebra A K] {R : Type*} [CommRing R] [Algebra A R] [Algebra K R]
-    [IsScalarTower A K R] {x : R} (h : IsSeparable A x) : IsSeparable K x :=
+theorem IsSeparable.tower_top
+    {x : E} (h : IsSeparable F x) : IsSeparable K x :=
   h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
 
-variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
-  [IsScalarTower F K E]
-
+variable (F E) in
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable K E :=
-  ⟨fun x ↦ IsSeparable.of_isScalarTower _ (Algebra.IsSeparable.isSeparable F x)⟩
+  ⟨fun x ↦ IsSeparable.tower_top _ (Algebra.IsSeparable.isSeparable F x)⟩
 
-theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
-    Algebra.IsSeparable F K :=
-  ⟨fun x ↦
+@[deprecated (since := "2024-08-06")]
+alias IsSeparable.of_isScalarTower := Algebra.isSeparable_tower_top_of_isSeparable
+
+end
+
+end CommRing
+
+section Field
+
+variable (F : Type*) [Field F] {K E E' : Type*}
+
+section
+
+variable [Ring K] [Algebra F K]
+
+variable {F} in
+theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
+  Polynomial.Separable.of_dvd (Polynomial.separable_X_sub_C (x := x))
+    (minpoly.dvd F (algebraMap F K x) (by simp only [map_sub, aeval_X, aeval_C, sub_self]))
+
+instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
+  ⟨fun _ => isSeparable_algebraMap _⟩
+
+variable [IsDomain K] [FiniteDimensional F K] [CharZero F]
+
+theorem IsSeparable.of_finite (x : K) : IsSeparable F x :=
+  (minpoly.irreducible <| .of_finite F x).separable
+
+variable (K) in
+-- See note [lower instance priority]
+/-- A finite field extension in characteristic 0 is separable. -/
+protected instance (priority := 100) Algebra.IsSeparable.of_finite : Algebra.IsSeparable F K :=
+  ⟨fun _ => _root_.IsSeparable.of_finite _ _⟩
+
+end
+
+section
+
+variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Algebra K E]
+  [Nontrivial E] [IsScalarTower F K E]
+
+variable {F} in
+/-- If `E / K / F` is an extension tower, `algebraMap K E x` is separable over `F`, then `x` is
+also separable over `F`. -/
+theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : IsSeparable F x :=
     have ⟨_q, hq⟩ :=
       minpoly.dvd F x
         ((aeval_algebraMap_eq_zero_iff _ _ _).mp (minpoly.aeval F ((algebraMap K E) x)))
-    (Eq.mp (congrArg Separable hq) (h.isSeparable _)).of_mul_left⟩
+    (Eq.mp (congrArg Separable hq) h).of_mul_left
 
-variable {E}
+variable (K E) in
+theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
+    Algebra.IsSeparable F K :=
+  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _)⟩
 
-theorem Algebra.IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
-    [Algebra.IsSeparable F E'] : Algebra.IsSeparable F E := by
+end
+
+section
+
+variable [Field E] [Field E'] [Algebra F E] [Algebra F E']
+    (f : E →ₐ[F] E') [Algebra.IsSeparable F E']
+
+variable {F} in
+theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
   letI : Algebra E E' := RingHom.toAlgebra f.toRingHom
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
-  exact Algebra.isSeparable_tower_bot_of_isSeparable F E E'
+  exact h.tower_bot
 
-lemma Algebra.IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
+variable (E') in
+theorem Algebra.IsSeparable.of_algHom : Algebra.IsSeparable F E :=
+  ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
+
+end
+
+end Field
+
+section
+
+variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
     [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
-    [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ := by
+
+lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
   letI := e₁.toRingHom.toAlgebra
   letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
@@ -629,10 +691,17 @@ lemma Algebra.IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A�
     { e₂ with
       commutes' := fun r ↦ by
         simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
-  haveI := Algebra.isSeparable_tower_top_of_isSeparable A₁ A₂ B₁
-  exact Algebra.IsSeparable.of_algHom _ _ e.symm.toAlgHom
+  haveI := IsSeparable.tower_top A₂ h
+  IsSeparable.of_algHom e.symm ((e₂.symm_apply_apply x).symm ▸ this)
 
-end IsSeparableTower
+lemma Algebra.IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
+    [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
+    [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
+  ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
+    (Algebra.IsSeparable.isSeparable _ _)⟩
+
+end
 
 section CardAlgHom
 
