@@ -3,14 +3,11 @@ import Mathlib.CategoryTheory.Localization.Monoidal
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Sites.Localization
 
-universe v u w
+open CategoryTheory MonoidalCategory MonoidalClosed
 
-open CategoryTheory Localization MonoidalCategory Opposite MonoidalClosed
+namespace CategoryTheory
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
-
-variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
+variable {C : Type*} [Category C] (J : GrothendieckTopology C)
 variable (A : Type*) [Category A] [MonoidalCategory A]
 
 instance : (J.W (A := A)).Monoidal where
@@ -47,3 +44,5 @@ variable [HasWeakSheafify J A]
 
 noncomputable instance : MonoidalCategory (Sheaf J A) :=
     inferInstanceAs (MonoidalCategory ((LocalizedMonoidal (presheafToSheaf J A) J.W (Iso.refl _))))
+
+end CategoryTheory
