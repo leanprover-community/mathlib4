@@ -168,7 +168,6 @@ initialize_simps_projections PartialEquiv (toFun → apply, invFun → symm_appl
 -- @[simp, mfld_simps]
 -- theorem coe_mk (f : α → β) (g s t ml mr il ir) :
 --  (PartialEquiv.mk f g s t ml mr il ir : α → β) = f := by dsimp only
--- #align local_equiv.coe_mk PartialEquiv.coe_mk
 
 @[simp, mfld_simps]
 theorem coe_symm_mk (f : α → β) (g s t ml mr il ir) :
@@ -178,7 +177,6 @@ theorem coe_symm_mk (f : α → β) (g s t ml mr il ir) :
 -- Porting note: this is now a syntactic tautology
 -- @[simp, mfld_simps]
 -- theorem toFun_as_coe : e.toFun = e := rfl
--- #align local_equiv.to_fun_as_coe PartialEquiv.toFun_as_coe
 
 @[simp, mfld_simps]
 theorem invFun_as_coe : e.invFun = e.symm :=
