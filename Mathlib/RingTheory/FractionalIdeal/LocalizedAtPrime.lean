@@ -54,7 +54,6 @@ abbrev localizedAtPrime : FractionalIdeal Aₚ⁰ K :=
   I.extended K hf
 
 theorem coe_localizedAtPrime : (I.localizedAtPrime P).coeToSubmodule = Submodule.span Aₚ I := by
-  rw [extended_eq]
   simp [map_unique hf (RingHom.id K) (fun a ↦ IsScalarTower.algebraMap_apply A Aₚ K a)]
 
 theorem mem_localizedAtPrime_iff (x : K) : x ∈ I.localizedAtPrime P ↔ x ∈ Submodule.span Aₚ I := by
