@@ -173,6 +173,9 @@ theorem eraseLead_add_of_natDegree_lt_right {p q : R[X]} (pq : p.natDegree < q.n
 theorem eraseLead_degree_le : (eraseLead f).degree ≤ f.degree :=
   f.degree_erase_le _
 
+theorem degree_eraseLead_lt (hf : f ≠ 0) : (eraseLead f).degree < f.degree :=
+  f.degree_erase_lt hf
+
 theorem eraseLead_natDegree_le_aux : (eraseLead f).natDegree ≤ f.natDegree :=
   natDegree_le_natDegree eraseLead_degree_le
 
