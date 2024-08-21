@@ -113,8 +113,8 @@ def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSe
         apply continuous_coinduced_rng }
     naturality := fun _ _ _ ↦ by
       ext
-      simp only [TopCat.toCondensedSet_val_obj, CompHausLike.compHausLikeToTop_obj,
-        Opposite.op_unop, types_comp_apply, TopCat.toCondensedSet_val_map,
+      simp only [TopCat.toSheafCompHausLike_val_obj, CompHausLike.compHausLikeToTop_obj,
+        Opposite.op_unop, types_comp_apply, TopCat.toSheafCompHausLike_val_map,
         ← FunctorToTypes.map_comp_apply]
       rfl }
 

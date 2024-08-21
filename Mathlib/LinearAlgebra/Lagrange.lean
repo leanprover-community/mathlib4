@@ -176,7 +176,7 @@ theorem eval_basisDivisor_right : eval y (basisDivisor x y) = 0 := by
 
 theorem eval_basisDivisor_left_of_ne (hxy : x ≠ y) : eval x (basisDivisor x y) = 1 := by
   simp only [basisDivisor, eval_mul, eval_C, eval_sub, eval_X]
-  exact inv_mul_cancel (sub_ne_zero_of_ne hxy)
+  exact inv_mul_cancel₀ (sub_ne_zero_of_ne hxy)
 
 end BasisDivisor
 
@@ -504,8 +504,9 @@ theorem nodal_eq_mul_nodal_erase [DecidableEq ι] {i : ι} (hi : i ∈ s) :
     nodal s v = (X - C (v i)) * nodal (s.erase i) v := by
     simp_rw [nodal, Finset.mul_prod_erase _ (fun x => X - C (v x)) hi]
 
-theorem X_sub_C_dvd_nodal (v : ι → R) {i : ι} (hi : i ∈ s) : X - C (v i) ∣ nodal s v :=
-  ⟨_, by classical exact nodal_eq_mul_nodal_erase hi⟩
+theorem X_sub_C_dvd_nodal (v : ι → R) {i : ι} (hi : i ∈ s) : X - C (v i) ∣ nodal s v := by
+  classical
+  exact ⟨nodal (s.erase i) v, nodal_eq_mul_nodal_erase hi⟩
 
 theorem nodal_insert_eq_nodal [DecidableEq ι] {i : ι} (hi : i ∉ s) :
     nodal (insert i s) v = (X - C (v i)) * nodal s v := by
@@ -594,7 +595,7 @@ theorem eval_basis_not_at_node (hi : i ∈ s) (hxi : x ≠ v i) :
     eval x (Lagrange.basis s v i) = eval x (nodal s v) * (nodalWeight s v i * (x - v i)⁻¹) := by
   rw [mul_comm, basis_eq_prod_sub_inv_mul_nodal_div hi, eval_mul, eval_C, ←
     nodal_erase_eq_nodal_div hi, eval_nodal, eval_nodal, mul_assoc, ← mul_prod_erase _ _ hi, ←
-    mul_assoc (x - v i)⁻¹, inv_mul_cancel (sub_ne_zero_of_ne hxi), one_mul]
+    mul_assoc (x - v i)⁻¹, inv_mul_cancel₀ (sub_ne_zero_of_ne hxi), one_mul]
 
 theorem interpolate_eq_nodalWeight_mul_nodal_div_X_sub_C :
     interpolate s v r = ∑ i ∈ s, C (nodalWeight s v i) * (nodal s v / (X - C (v i))) * C (r i) :=
