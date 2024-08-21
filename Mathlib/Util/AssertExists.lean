@@ -47,14 +47,11 @@ elab "#check_assertions" tk:("!")?: command => do
   let allMods := env.allImportedModuleNames
   let mut msgs := #[m!""]
   let mut outcome := m!""
-  let mut (allExist?, cond) := (true, false)
+  let mut allExist? := true
   for d in ext.toArray.qsort fun d e => (e.isDecl < d.isDecl) ||
       (e.isDecl == d.isDecl && (d.givenName.toString < e.givenName.toString)) do
     let type := if d.isDecl then "declaration" else "module"
-    if d.isDecl then
-      cond := env.contains d.givenName
-    else
-      cond := allMods.contains d.givenName
+    let cond := if d.isDecl then env.contains d.givenName else allMods.contains d.givenName
     outcome := if cond then m!"{checkEmoji}" else m!"{crossEmoji}"
     allExist? := allExist? && cond
     if tk.isNone || !cond then
