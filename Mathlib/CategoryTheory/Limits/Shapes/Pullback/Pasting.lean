@@ -55,18 +55,21 @@ where `t₁` denotes the cone corresponding to the left square, and `t₂` denot
 corresponding to the right square.
 -/
 
-variable {X₃ Y₁ Y₂ Y₃ : C} {g₁ : Y₁ ⟶ Y₂} {g₂ : Y₂ ⟶ Y₃} {i₃ : X₃ ⟶ Y₃} (t₂ : PullbackCone g₂ i₃)
-variable {i₂ : t₂.pt ⟶ Y₂} (t₁ : PullbackCone g₁ i₂) (hi₂ : i₂ = t₂.fst)
+variable {X₃ Y₁ Y₂ Y₃ : C} {g₁ : Y₁ ⟶ Y₂} {g₂ : Y₂ ⟶ Y₃} {i₃ : X₃ ⟶ Y₃}
+
+/-- The `PullbackCone` obtained by pasting two `PullbackCone`'s horizontally -/
+abbrev PullbackCone.pasteHoriz
+    (t₂ : PullbackCone g₂ i₃) {i₂ : t₂.pt ⟶ Y₂} (t₁ : PullbackCone g₁ i₂) (hi₂ : i₂ = t₂.fst) :
+    PullbackCone (g₁ ≫ g₂) i₃ :=
+  PullbackCone.mk t₁.fst (t₁.snd ≫ t₂.snd)
+    (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition, ← hi₂])
+
+variable (t₂ : PullbackCone g₂ i₃) {i₂ : t₂.pt ⟶ Y₂} (t₁ : PullbackCone g₁ i₂) (hi₂ : i₂ = t₂.fst)
 
 local notation "f₂" => t₂.snd
 local notation "X₁" => t₁.pt
 local notation "i₁" => t₁.fst
 local notation "f₁" => t₁.snd
-
-/-- The `PullbackCone` obtained by pasting two `PullbackCone`'s horizontally -/
-abbrev PullbackCone.pasteHoriz : PullbackCone (g₁ ≫ g₂) i₃ :=
-  PullbackCone.mk i₁ (f₁ ≫ f₂)
-    (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition, ← hi₂])
 
 variable {t₁} {t₂}
 
@@ -154,8 +157,15 @@ to the top square.
 
 -/
 variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₂ ⟶ X₁} {f₂ : X₃ ⟶ X₂} {i₁ : Y₁ ⟶ X₁}
-variable (t₁ : PullbackCone i₁ f₁) {i₂ : t₁.pt ⟶ X₂} (t₂ : PullbackCone i₂ f₂)
-  (hi₂ : i₂ = t₁.snd)
+
+/-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
+abbrev PullbackCone.pasteVert
+    (t₁ : PullbackCone i₁ f₁) {i₂ : t₁.pt ⟶ X₂} (t₂ : PullbackCone i₂ f₂) (hi₂ : i₂ = t₁.snd) :
+    PullbackCone i₁ (f₂ ≫ f₁) :=
+  PullbackCone.mk (t₂.fst ≫ t₁.fst) t₂.snd
+    (by rw [← reassoc_of% t₂.condition, Category.assoc, t₁.condition, ← hi₂])
+
+variable (t₁ : PullbackCone i₁ f₁) {i₂ : t₁.pt ⟶ X₂} (t₂ : PullbackCone i₂ f₂) (hi₂ : i₂ = t₁.snd)
 
 local notation "Y₂" => t₁.pt
 local notation "g₁" => t₁.fst
@@ -163,11 +173,6 @@ local notation "i₂" => t₁.snd
 local notation "Y₃" => t₂.pt
 local notation "g₂" => t₂.fst
 local notation "i₃" => t₂.snd
-
-/-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
-abbrev PullbackCone.pasteVert : PullbackCone i₁ (f₂ ≫ f₁) :=
-  PullbackCone.mk (g₂ ≫ g₁) i₃
-    (by rw [← reassoc_of% t₂.condition, Category.assoc, t₁.condition, ← hi₂])
 
 /-- Pasting two pullback cones vertically is isomorphic to the pullback cone obtained by flipping
 them, pasting horizontally, and then flipping the result again. -/
@@ -237,8 +242,15 @@ Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 where `t₁` denotes the left pushout cocone, and `t₂` denotes the right pushout cocone.
 -/
 variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₁ ⟶ X₂} {f₂ : X₂ ⟶ X₃} {i₁ : X₁ ⟶ Y₁}
-variable (t₁ : PushoutCocone i₁ f₁) {i₂ : X₂ ⟶ t₁.pt} (t₂ : PushoutCocone i₂ f₂)
-variable (hi₂ : i₂ = t₁.inr)
+
+/-- The pushout cocone obtained by pasting two pushout cocones horizontally. -/
+abbrev PushoutCocone.pasteHoriz
+    (t₁ : PushoutCocone i₁ f₁) {i₂ : X₂ ⟶ t₁.pt} (t₂ : PushoutCocone i₂ f₂) (hi₂ : i₂ = t₁.inr) :
+    PushoutCocone i₁ (f₁ ≫ f₂) :=
+  PushoutCocone.mk (t₁.inl ≫ t₂.inl) t₂.inr
+    (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition, ← hi₂])
+
+variable (t₁ : PushoutCocone i₁ f₁) {i₂ : X₂ ⟶ t₁.pt} (t₂ : PushoutCocone i₂ f₂) (hi₂ : i₂ = t₁.inr)
 
 local notation "Y₂" => t₁.pt
 local notation "g₁" => t₁.inl
@@ -246,11 +258,6 @@ local notation "i₂" => t₁.inr
 local notation "Y₃" => t₂.pt
 local notation "g₂" => t₂.inl
 local notation "i₃" => t₂.inr
-
-/-- The pushout cocone obtained by pasting two pushout cocones horizontally. -/
-abbrev PushoutCocone.pasteHoriz : PushoutCocone i₁ (f₁ ≫ f₂) :=
-  PushoutCocone.mk (g₁ ≫ g₂) i₃
-    (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition, ← hi₂])
 
 variable {t₁} {t₂}
 
@@ -343,17 +350,19 @@ variable {Y₃ Y₂ Y₁ X₃ : C} {g₂ : Y₃ ⟶ Y₂} {g₁ : Y₂ ⟶ Y₁}
 variable (t₁ : PushoutCocone g₂ i₃) {i₂ : Y₂ ⟶ t₁.pt} (t₂ : PushoutCocone g₁ i₂)
   (hi₂ : i₂ = t₁.inl)
 
+/-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
+abbrev PushoutCocone.pasteVert
+    (t₁ : PushoutCocone g₂ i₃) {i₂ : Y₂ ⟶ t₁.pt} (t₂ : PushoutCocone g₁ i₂) (hi₂ : i₂ = t₁.inl) :
+    PushoutCocone (g₂ ≫ g₁) i₃ :=
+  PushoutCocone.mk t₂.inl (t₁.inr ≫ t₂.inr)
+    (by rw [← reassoc_of% t₁.condition, Category.assoc, t₂.condition, ← hi₂])
+
 local notation "X₂" => t₁.pt
 local notation "f₂" => t₁.inr
 local notation "i₂" => t₁.inl
 local notation "X₁" => t₂.pt
 local notation "f₁" => t₂.inr
 local notation "i₁" => t₂.inl
-
-/-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
-abbrev PushoutCocone.pasteVert : PushoutCocone (g₂ ≫ g₁) i₃ :=
-  PushoutCocone.mk i₁ (f₂ ≫ f₁)
-    (by rw [← reassoc_of% t₁.condition, Category.assoc, t₂.condition, ← hi₂])
 
 /-- Pasting two pushout cocones vertically is isomorphic to the pushout cocone obtained by flipping
 them, pasting horizontally, and then flipping the result again. -/

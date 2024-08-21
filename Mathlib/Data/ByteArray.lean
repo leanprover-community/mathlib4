@@ -73,7 +73,6 @@ def forIn.loop {m : Type u → Type v} {β : Type u} [Monad m] (f : UInt8 → β
     | ForInStep.done b => pure b
     | ForInStep.yield b => have := Nat.Up.next h; loop f arr off _end (i+1) b
   else pure b
-termination_by _end - i
 
 @[deprecated (since := "2024-08-19")]
 instance {m : Type u → Type v} : ForIn m ByteSlice UInt8 :=

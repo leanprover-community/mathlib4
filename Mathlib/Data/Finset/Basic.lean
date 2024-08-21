@@ -2175,7 +2175,7 @@ def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
 `Finset ?α` or the expected type is not `Set ?α` and `s` has expected type `Finset ?α`.
 
 See also
-* `Init.Set` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
 * `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the

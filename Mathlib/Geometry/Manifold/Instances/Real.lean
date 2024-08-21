@@ -180,7 +180,7 @@ scoped[Manifold]
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
-  range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
+    range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
 
 lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     interior (range (𝓡∂ n)) = { y | 0 < y 0 } := by
