@@ -44,8 +44,9 @@ theorem rank_lt_of_mem : {x y : PSet} → y ∈ x → rank y < rank x
     apply lt_lsub
 
 theorem rank_le_iff {o : Ordinal} : {x : PSet} → rank x ≤ o ↔ ∀ y ∈ x, rank y < o
-  | ⟨_, A⟩ => ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h, fun h =>
-    lsub_le fun a => h (A a) (Mem.mk A a)⟩
+  | ⟨_, A⟩ =>
+    ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h, fun h =>
+      lsub_le fun a => h (A a) (Mem.mk A a)⟩
 
 theorem lt_rank_iff {o : Ordinal} {x : PSet} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
   rw [← not_iff_not, not_lt, rank_le_iff]
@@ -157,11 +158,8 @@ theorem succ_rank_sUnion_ge : rank x ≤ succ (rank (⋃₀ x)) := by
 theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
     rank (range f) = lsub fun i => rank (f i) := by
   apply (lsub_le _).antisymm'
-  · apply rank_le_iff.2
-    simpa using lt_lsub _
-  · intro
-    apply rank_lt_of_mem
-    simp
+  · simpa [rank_le_iff] using lt_lsub _
+  · simp [rank_lt_of_mem]
 
 /-- `ZFSet.rank` is equal to the `WellFounded.rank` over `∈`. -/
 theorem rank_eq_wf_rank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
@@ -171,8 +169,7 @@ theorem rank_eq_wf_rank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   apply (le_of_forall_lt _).antisymm (Ordinal.sup_le _) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, rfl, h⟩
-    rw [Ordinal.lt_sup]
-    simpa using lt_rank_iff.1 h
+    simpa [Ordinal.lt_sup] using lt_rank_iff.1 h
   · simpa using rank_lt_of_mem h.2
 
 end ZFSet
