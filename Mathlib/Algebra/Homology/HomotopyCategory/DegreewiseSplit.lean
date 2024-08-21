@@ -43,7 +43,7 @@ def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
         sub_comp, comp_sub, comp_sub, assoc, id_comp, d_comp_d, comp_zero, zero_sub,
         ← S.g.comm_assoc, reassoc_of% (s_g p), r_f (p + 2), comp_sub, comp_sub, comp_id,
         comp_sub, ← S.g.comm_assoc, reassoc_of% (s_g (p + 1)), d_comp_d_assoc, zero_comp,
-        sub_zero, add_left_neg])
+        sub_zero, neg_add_cancel])
 
 /-- The canonical morphism `S.X₃ ⟶ S.X₁⟦(1 : ℤ)⟧` attached to a degreewise split
 short exact sequence of cochain complexes. -/
@@ -87,9 +87,9 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
     have f_r := (σ (p + 1)).f_r
     dsimp at s_g f_r ⊢
     simp? [mappingCone.ext_from_iff _ (p + 1) _ rfl, reassoc_of% f_r, reassoc_of% s_g] says
-      simp only [Cochain.ofHom_v, id_comp, comp_sub, sub_comp, assoc, reassoc_of% s_g,
-        ShortComplex.Splitting.s_r_assoc, ShortComplex.map_X₃, eval_obj, ShortComplex.map_X₁,
-        zero_comp, comp_zero, reassoc_of% f_r, zero_sub, sub_neg_eq_add,
+      simp only [Cochain.ofHom_v, Int.reduceNeg, id_comp, comp_sub, sub_comp, assoc,
+        reassoc_of% s_g, ShortComplex.Splitting.s_r_assoc, ShortComplex.map_X₃, eval_obj,
+        ShortComplex.map_X₁, zero_comp, comp_zero, reassoc_of% f_r, zero_sub, sub_neg_eq_add,
         mappingCone.ext_from_iff _ (p + 1) _ rfl, comp_add, mappingCone.inl_v_fst_v_assoc,
         mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X', sub_zero, add_zero, comp_id,
         mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc, add_left_eq_self, neg_eq_zero,
@@ -104,6 +104,7 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
       mappingCone.inl_v_snd_v_assoc, mappingCone.inr_f_snd_v_assoc, zero_sub, sub_neg_eq_add, ← h]
     abel
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The canonical isomorphism `mappingCone (homOfDegreewiseSplit S σ) ≅ S.X₂⟦(1 : ℤ)⟧`. -/
 @[simps!]
 noncomputable def mappingConeHomOfDegreewiseSplitIso :

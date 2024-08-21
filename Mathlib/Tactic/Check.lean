@@ -3,6 +3,7 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Init
 import Lean.Elab.Tactic.Basic
 import Lean.PrettyPrinter
 import Lean.Elab.SyntheticMVars
@@ -30,12 +31,9 @@ def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM
     if let `($_:ident) := term then
       -- show signature for `#check ident`
       try
-        for c in (← resolveGlobalConstWithInfos term) do
+        for c in (← realizeGlobalConstWithInfos term) do
           addCompletionInfo <| .id term c (danglingDot := false) {} none
-          logInfoAt tk <| .ofPPFormat { pp := fun
-            | some ctx => ctx.runMetaM <| PrettyPrinter.ppSignature c
-            | none     => return f!"{c}"  -- should never happen
-          }
+          logInfoAt tk <| MessageData.signature c
           return
       catch _ => pure ()  -- identifier might not be a constant but constant + projection
     let e ← Term.elabTerm term none
@@ -57,3 +55,5 @@ Like the `#check` command, the `#check` tactic allows stuck typeclass instance p
 These become metavariables in the output.
 -/
 elab tk:"#check " colGt term:term : tactic => elabCheckTactic tk true term
+
+end Mathlib.Tactic

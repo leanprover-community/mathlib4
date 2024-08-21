@@ -8,7 +8,7 @@ import Mathlib.Tactic.Have
 /-!
 # Extending `replace`
 
-This file extends the `replace` tactic from `Std` to allow the addition of hypotheses to
+This file extends the `replace` tactic from `Batteries` to allow the addition of hypotheses to
 the context without requiring their proofs to be provided immediately.
 
 As a style choice, this should not be used in mathlib; but is provided for downstream users who
@@ -60,3 +60,5 @@ elab_rules : tactic
     match hId? with
     | some hId => replaceMainGoal [goal1, (← observing? <| goal2.clear hId).getD goal2]
     | none     => replaceMainGoal [goal1, goal2]
+
+end Mathlib.Tactic

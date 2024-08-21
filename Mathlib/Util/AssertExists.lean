@@ -3,6 +3,7 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
+import Mathlib.Init
 import Lean.Elab.Command
 
 /-!
@@ -19,7 +20,7 @@ Implement `assert_instance` and `assert_no_instance`
 -/
 
 section
-open Lean Elab Meta
+open Lean Elab Meta Command
 
 /--
 `assert_exists n` is a user command that asserts that a declaration named `n` exists
@@ -30,7 +31,7 @@ Be careful to use names (e.g. `Rat`) rather than notations (e.g. `ℚ`).
 elab "assert_exists " n:ident : command => do
   -- this throws an error if the user types something ambiguous or
   -- something that doesn't exist, otherwise succeeds
-  let _ ← resolveGlobalConstNoOverloadWithInfo n
+  let _ ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
 
 /--
 `assert_not_exists n` is a user command that asserts that a declaration named `n` *does not exist*
@@ -47,9 +48,11 @@ it is probably because you have introduced new import dependencies to a file.
 In this case, you should refactor your work
 (for example by creating new files rather than adding imports to existing files).
 You should *not* delete the `assert_not_exists` statement without careful discussion ahead of time.
+
+`assert_not_exists` statements should generally live at the top of the file, after the module doc.
 -/
 elab "assert_not_exists " n:ident : command => do
-  let decl ← try resolveGlobalConstNoOverloadWithInfo n catch _ => return
+  let decl ← try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n catch _ => return
   let env ← getEnv
   let c ← mkConstWithLevelParams decl
   let msg ← (do
@@ -66,3 +69,16 @@ elab "assert_not_exists " n:ident : command => do
     These invariants are maintained by `assert_not_exists` statements, \
     and exist in order to ensure that \"complicated\" parts of the library \
     are not accidentally introduced as dependencies of \"simple\" parts of the library."
+
+/-- `assert_not_imported m₁ m₂ ... mₙ` checks that each one of the modules `m₁ m₂ ... mₙ` is not
+among the transitive imports of the current file.
+
+The command does not currently check whether the modules `m₁ m₂ ... mₙ` actually exist.
+-/
+-- TODO: make sure that each one of `m₁ m₂ ... mₙ` is the name of an actually existing module!
+elab "assert_not_imported " ids:ident+ : command => do
+  let mods := (← getEnv).allImportedModuleNames
+  for id in ids do
+    if mods.contains id.getId then logWarningAt id m!"the module '{id}' is (transitively) imported"
+
+end
