@@ -76,7 +76,7 @@ abbrev obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by omega⟩
 
 /-- The map `F.obj' i ⟶ F.obj' j` when `F : ComposableArrows C n`, and `i` and `j`
 are natural numbers such that `i ≤ j ≤ n`. -/
--- @[simp]: Simp and reducible don't go together nicely with `#4154`
+@[simp]
 abbrev map' (i j : ℕ) (hij : i ≤ j := by valid) (hjn : j ≤ n := by valid) :
   F.obj ⟨i, by omega⟩ ⟶ F.obj ⟨j, by omega⟩ := F.map (homOfLE (by
     simp only [Fin.mk_le_mk]
@@ -279,7 +279,7 @@ lemma map'_eq_hom₁ (F : ComposableArrows C 1) : F.map' 0 1 = F.hom := rfl
 lemma ext₁ {F G : ComposableArrows C 1}
     (left : F.left = G.left) (right : F.right = G.right)
     (w : F.hom = eqToHom left ≫ G.hom ≫ eqToHom right.symm) : F = G :=
-  Functor.ext_of_iso (isoMk₁ (eqToIso left) (eqToIso right) (by rw [map'_eq_hom₁, w]; simp))
+  Functor.ext_of_iso (isoMk₁ (eqToIso left) (eqToIso right) (by simp [map'_eq_hom₁, w]))
     (fun i => by fin_cases i <;> assumption)
     (fun i => by fin_cases i <;> rfl)
 
@@ -359,7 +359,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
       rw [id_comp]
     · obtain _ | _ | k := k
       · simp [Nat.succ.injEq] at hjk
-      · simp [map'.eq_1]
+      · simp
       · rfl
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk
