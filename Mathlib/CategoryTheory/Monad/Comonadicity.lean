@@ -28,6 +28,9 @@ comonadicity theorem:
 * `C` has and `F` preserves coreflexive equalizers, and `F` reflects isomorphisms, see
   `CategoryTheory.Monad.comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms`
 
+This file has been adapted from `Mathlib.CategoryTheory.Monad.Monadicity`.
+Please try to keep them in sync.
+
 ## Tags
 
 Beck, comonadicity, descent
