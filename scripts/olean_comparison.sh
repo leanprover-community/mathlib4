@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 getCacheSize () {
-  rm -rf .lake/build/lib/Mathlib
   >&2 lake exe cache clean!
   >&2 lake exe cache get
   du .lake/build/lib/Mathlib | sed "s=^=${1} =; s=\t= =g"
@@ -10,10 +9,12 @@ getCacheSize () {
 # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
 # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
 if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+  mv .lake .lakeBranch
   git fetch origin master --depth 1
   git checkout origin/master
   masterOleans="$(getCacheSize master)"
   git checkout -
+  mv -f .lakeBranch .lake
   newOleans="$(getCacheSize branch)"
   pctgs="$(printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
     awk 'function format(percent,diff,fname) {
