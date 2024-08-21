@@ -1441,9 +1441,6 @@ theorem toTopologicalSpace_prod {α} {β} [u : UniformSpace α] [v : UniformSpac
       @instTopologicalSpaceProd α β u.toTopologicalSpace v.toTopologicalSpace :=
   rfl
 
-theorem uniformContinuous_swap : UniformContinuous (Prod.swap : α × β → β × α) :=
-  uniformContinuous_snd.prod_mk uniformContinuous_fst
-
 /-- A version of `UniformContinuous.inf_dom_left` for binary functions -/
 theorem uniformContinuous_inf_dom_left₂ {α β γ} {f : α → β → γ} {ua1 ua2 : UniformSpace α}
     {ub1 ub2 : UniformSpace β} {uc1 : UniformSpace γ}
