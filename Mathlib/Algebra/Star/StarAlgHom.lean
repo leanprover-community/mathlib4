@@ -819,7 +819,7 @@ theorem coe_mk (e h₁ h₂) : ⇑(⟨e, h₁, h₂⟩ : A ≃⋆ₐ[R] B) = e :
 theorem mk_coe (e : A ≃⋆ₐ[R] B) (e' h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B) = e := ext fun _ => rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
+/-- Auxiliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
 protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :=
   (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm
 
