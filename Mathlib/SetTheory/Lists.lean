@@ -299,16 +299,6 @@ instance instSetoidLists : Setoid (Lists α) :=
 
 section Decidable
 
-/-- Auxiliary function to prove termination of decidability checking -/
-@[simp, deprecated (since := "2023-06-24")]
-def Equiv.decidableMeas :
-    ((Σ' _l₁ : Lists α, Lists α) ⊕'
-        ((Σ' _l₁ : Lists' α true, Lists' α true) ⊕' (Σ' _a : Lists α, Lists' α true))) →
-      ℕ
-  | PSum.inl ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
-  | PSum.inr <| PSum.inl ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
-  | PSum.inr <| PSum.inr ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
-
 theorem sizeof_pos {b} (l : Lists' α b) : 0 < SizeOf.sizeOf l := by
   cases l <;> simp only [Lists'.atom.sizeOf_spec, Lists'.nil.sizeOf_spec, Lists'.cons'.sizeOf_spec,
     true_or, add_pos_iff, zero_lt_one]

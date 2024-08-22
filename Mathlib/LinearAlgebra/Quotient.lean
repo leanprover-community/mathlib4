@@ -3,9 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.LinearAlgebra.Span
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Quotients by submodules
@@ -53,16 +54,13 @@ def mk {p : Submodule R M} : M → M ⧸ p :=
 /- porting note: here and throughout elaboration is sped up *tremendously* (in some cases even
 avoiding timeouts) by providing type ascriptions to `mk` (or `mk x`) and its variants. Lean 3
 didn't need this help. -/
-@[simp]
 theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
     @Quotient.mk' _ (quotientRel p) x = (mk : M → M ⧸ p) x :=
   rfl
 
-@[simp]
 theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mk : M → M ⧸ p) x :=
   rfl
 
-@[simp]
 theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = (mk : M → M ⧸ p) x :=
   rfl
 
@@ -463,8 +461,8 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
-    left_inv := fun x => Quotient.inductionOn' x (by simp)
-    right_inv := fun x => Quotient.inductionOn' x (by simp) }
+    left_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk])
+    right_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk]) }
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]

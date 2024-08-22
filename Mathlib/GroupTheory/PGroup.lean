@@ -37,7 +37,7 @@ theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G := fun g =>
   ⟨n, by rw [← hG, pow_card_eq_one']⟩
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
-  of_card (by rw [Subgroup.card_bot, pow_zero])
+  of_card (n := 0) (by rw [Subgroup.card_bot, pow_zero])
 
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
   have hG : Nat.card G ≠ 0 := Nat.card_pos.ne'
@@ -57,6 +57,7 @@ alias ⟨exists_card_eq, _⟩ := iff_card
 section GIsPGroup
 
 variable (hG : IsPGroup p G)
+include hG
 
 theorem of_injective {H : Type*} [Group H] (ϕ : H →* G) (hϕ : Function.Injective ϕ) :
     IsPGroup p H := by
@@ -176,21 +177,16 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     rw [Nat.card_eq_fintype_card] at hk
-    have : k = 0 :=
-      Nat.le_zero.1
-        (Nat.le_of_lt_succ
-          (lt_of_not_ge
-            (mt (pow_dvd_pow p)
-              (by
-                rwa [pow_one, ← hk, ← Nat.modEq_zero_iff_dvd, ← ZMod.eq_iff_modEq_nat, ← key,
-                  Nat.cast_zero]))))
+    have : k = 0 := by
+      contrapose! hb
+      simp [-Quotient.eq'', key, hk, hb]
     exact
       ⟨⟨b, mem_fixedPoints_iff_card_orbit_eq_one.2 <| by rw [hk, this, pow_zero]⟩,
         Finset.mem_univ _, ne_of_eq_of_ne Nat.cast_one one_ne_zero, rfl⟩
 
 /-- If a p-group acts on `α` and the cardinality of `α` is not a multiple
   of `p` then the action has a fixed point. -/
-theorem nonempty_fixed_point_of_prime_not_dvd_card (hpα : ¬p ∣ Nat.card α) :
+theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα : ¬p ∣ Nat.card α) :
     (fixedPoints G α).Nonempty :=
   have : Finite α := Nat.finite_of_card_ne_zero (fun h ↦ (h ▸ hpα) (dvd_zero p))
   @Set.nonempty_of_nonempty_subtype _ _
@@ -315,12 +311,12 @@ theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact
 
 section P2comm
 
-variable [Fact p.Prime] {n : ℕ} (hGpn : Nat.card G = p ^ n)
+variable [Fact p.Prime] {n : ℕ}
 
 open Subgroup
 
 /-- The cardinality of the `center` of a `p`-group is `p ^ k` where `k` is positive. -/
-theorem card_center_eq_prime_pow (hn : 0 < n) :
+theorem card_center_eq_prime_pow (hGpn : Nat.card G = p ^ n) (hn : 0 < n) :
     ∃ k > 0, Nat.card (center G) = p ^ k := by
   have : Finite G := Nat.finite_of_card_ne_zero (hGpn ▸ pow_ne_zero n (NeZero.ne p))
   have hcG := to_subgroup (of_card hGpn) (center G)

@@ -173,10 +173,9 @@ to normal ordinal addition, it is commutative.
 
 Natural addition can equivalently be characterized as the ordinal resulting from adding up
 corresponding coefficients in the Cantor normal forms of `a` and `b`. -/
-noncomputable def nadd : Ordinal → Ordinal → Ordinal
-  | a, b =>
-    max (blsub.{u, u} a fun a' _ => nadd a' b) (blsub.{u, u} b fun b' _ => nadd a b')
-  termination_by o₁ o₂ => (o₁, o₂)
+noncomputable def nadd (a b : Ordinal) : Ordinal :=
+  max (blsub.{u, u} a fun a' _ => nadd a' b) (blsub.{u, u} b fun b' _ => nadd a b')
+termination_by (a, b)
 
 @[inherit_doc]
 scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
@@ -191,9 +190,9 @@ distributive (over natural addition).
 Natural multiplication can equivalently be characterized as the ordinal resulting from multiplying
 the Cantor normal forms of `a` and `b` as if they were polynomials in `ω`. Addition of exponents is
 done via natural addition. -/
-noncomputable def nmul : Ordinal.{u} → Ordinal.{u} → Ordinal.{u}
-  | a, b => sInf {c | ∀ a' < a, ∀ b' < b, nmul a' b ♯ nmul a b' < c ♯ nmul a' b'}
-termination_by a b => (a, b)
+noncomputable def nmul (a b : Ordinal.{u}) : Ordinal.{u} :=
+  sInf {c | ∀ a' < a, ∀ b' < b, nmul a' b ♯ nmul a b' < c ♯ nmul a' b'}
+termination_by (a, b)
 
 @[inherit_doc]
 scoped[NaturalOps] infixl:70 " ⨳ " => Ordinal.nmul
@@ -230,11 +229,10 @@ theorem nadd_le_nadd_right (h : b ≤ c) (a) : b ♯ a ≤ c ♯ a := by
 
 variable (a b)
 
-theorem nadd_comm : ∀ a b, a ♯ b = b ♯ a
-  | a, b => by
-    rw [nadd_def, nadd_def, max_comm]
-    congr <;> ext <;> apply nadd_comm
-  termination_by a b => (a,b)
+theorem nadd_comm (a b) : a ♯ b = b ♯ a := by
+  rw [nadd_def, nadd_def, max_comm]
+  congr <;> ext <;> apply nadd_comm
+termination_by (a,b)
 
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
@@ -465,17 +463,16 @@ theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' �
 theorem nmul_le_iff : a ⨳ b ≤ c ↔ ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b' := by
   rw [← not_iff_not]; simp [lt_nmul_iff]
 
-theorem nmul_comm : ∀ a b, a ⨳ b = b ⨳ a
-  | a, b => by
-    rw [nmul, nmul]
-    congr; ext x; constructor <;> intro H c hc d hd
-    -- Porting note: had to add additional arguments to `nmul_comm` here
-    -- for the termination checker.
-    · rw [nadd_comm, ← nmul_comm d b, ← nmul_comm a c, ← nmul_comm d]
-      exact H _ hd _ hc
-    · rw [nadd_comm, nmul_comm a d, nmul_comm c, nmul_comm c]
-      exact H _ hd _ hc
-termination_by a b => (a, b)
+theorem nmul_comm (a b) : a ⨳ b = b ⨳ a := by
+  rw [nmul, nmul]
+  congr; ext x; constructor <;> intro H c hc d hd
+  -- Porting note: had to add additional arguments to `nmul_comm` here
+  -- for the termination checker.
+  · rw [nadd_comm, ← nmul_comm d b, ← nmul_comm a c, ← nmul_comm d]
+    exact H _ hd _ hc
+  · rw [nadd_comm, nmul_comm a d, nmul_comm c, nmul_comm c]
+    exact H _ hd _ hc
+termination_by (a, b)
 
 @[simp]
 theorem nmul_zero (a) : a ⨳ 0 = 0 := by
@@ -519,47 +516,46 @@ theorem nmul_le_nmul_of_nonneg_right (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a ⨳ c
   rw [nmul_comm, nmul_comm b]
   exact nmul_le_nmul_of_nonneg_left h₁ h₂
 
-theorem nmul_nadd : ∀ a b c, a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c
-  | a, b, c => by
-    refine le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_)
-      (nadd_le_iff.2 ⟨fun d hd => ?_, fun d hd => ?_⟩)
-    · -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
-      rw [nmul_nadd a' b c]
-      rcases lt_nadd_iff.1 hd with (⟨b', hb, hd⟩ | ⟨c', hc, hd⟩)
-      · have := nadd_lt_nadd_of_lt_of_le (nmul_nadd_lt ha hb) (nmul_nadd_le ha.le hd)
-        -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
-        rw [nmul_nadd a' b' c, nmul_nadd a b' c] at this
-        simp only [nadd_assoc] at this
-        rwa [nadd_left_comm, nadd_left_comm _ (a ⨳ b'), nadd_left_comm (a ⨳ b),
-          nadd_lt_nadd_iff_left, nadd_left_comm (a' ⨳ b), nadd_left_comm (a ⨳ b),
-          nadd_lt_nadd_iff_left, ← nadd_assoc, ← nadd_assoc] at this
-      · have := nadd_lt_nadd_of_le_of_lt (nmul_nadd_le ha.le hd) (nmul_nadd_lt ha hc)
-        -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
-        rw [nmul_nadd a' b c', nmul_nadd a b c'] at this
-        simp only [nadd_assoc] at this
-        rwa [nadd_left_comm, nadd_comm (a ⨳ c), nadd_left_comm (a' ⨳ d), nadd_left_comm (a ⨳ c'),
-          nadd_left_comm (a ⨳ b), nadd_lt_nadd_iff_left, nadd_comm (a' ⨳ c), nadd_left_comm (a ⨳ d),
-          nadd_left_comm (a' ⨳ b), nadd_left_comm (a ⨳ b), nadd_lt_nadd_iff_left, nadd_comm (a ⨳ d),
-          nadd_comm (a' ⨳ d), ← nadd_assoc, ← nadd_assoc] at this
-    · rcases lt_nmul_iff.1 hd with ⟨a', ha, b', hb, hd⟩
-      have := nadd_lt_nadd_of_le_of_lt hd (nmul_nadd_lt ha (nadd_lt_nadd_right hb c))
+theorem nmul_nadd (a b c : Ordinal) : a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c := by
+  refine le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_)
+    (nadd_le_iff.2 ⟨fun d hd => ?_, fun d hd => ?_⟩)
+  · -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
+    rw [nmul_nadd a' b c]
+    rcases lt_nadd_iff.1 hd with (⟨b', hb, hd⟩ | ⟨c', hc, hd⟩)
+    · have := nadd_lt_nadd_of_lt_of_le (nmul_nadd_lt ha hb) (nmul_nadd_le ha.le hd)
       -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
-      rw [nmul_nadd a' b c, nmul_nadd a b' c, nmul_nadd a'] at this
+      rw [nmul_nadd a' b' c, nmul_nadd a b' c] at this
       simp only [nadd_assoc] at this
-      rwa [nadd_left_comm (a' ⨳ b'), nadd_left_comm, nadd_lt_nadd_iff_left, nadd_left_comm,
-        nadd_left_comm _ (a' ⨳ b'), nadd_left_comm (a ⨳ b'), nadd_lt_nadd_iff_left,
-        nadd_left_comm (a' ⨳ c), nadd_left_comm, nadd_lt_nadd_iff_left, nadd_left_comm,
-        nadd_comm _ (a' ⨳ c), nadd_lt_nadd_iff_left] at this
-    · rcases lt_nmul_iff.1 hd with ⟨a', ha, c', hc, hd⟩
-      have := nadd_lt_nadd_of_lt_of_le (nmul_nadd_lt ha (nadd_lt_nadd_left hc b)) hd
+      rwa [nadd_left_comm, nadd_left_comm _ (a ⨳ b'), nadd_left_comm (a ⨳ b),
+        nadd_lt_nadd_iff_left, nadd_left_comm (a' ⨳ b), nadd_left_comm (a ⨳ b),
+        nadd_lt_nadd_iff_left, ← nadd_assoc, ← nadd_assoc] at this
+    · have := nadd_lt_nadd_of_le_of_lt (nmul_nadd_le ha.le hd) (nmul_nadd_lt ha hc)
       -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
-      rw [nmul_nadd a' b c, nmul_nadd a b c', nmul_nadd a'] at this
+      rw [nmul_nadd a' b c', nmul_nadd a b c'] at this
       simp only [nadd_assoc] at this
-      rwa [nadd_left_comm _ (a' ⨳ b), nadd_lt_nadd_iff_left, nadd_left_comm (a' ⨳ c'),
-        nadd_left_comm _ (a' ⨳ c), nadd_lt_nadd_iff_left, nadd_left_comm, nadd_comm (a' ⨳ c'),
-        nadd_left_comm _ (a ⨳ c'), nadd_lt_nadd_iff_left, nadd_comm _ (a' ⨳ c'),
-        nadd_comm _ (a' ⨳ c'), nadd_left_comm, nadd_lt_nadd_iff_left] at this
-termination_by a b c => (a, b, c)
+      rwa [nadd_left_comm, nadd_comm (a ⨳ c), nadd_left_comm (a' ⨳ d), nadd_left_comm (a ⨳ c'),
+        nadd_left_comm (a ⨳ b), nadd_lt_nadd_iff_left, nadd_comm (a' ⨳ c), nadd_left_comm (a ⨳ d),
+        nadd_left_comm (a' ⨳ b), nadd_left_comm (a ⨳ b), nadd_lt_nadd_iff_left, nadd_comm (a ⨳ d),
+        nadd_comm (a' ⨳ d), ← nadd_assoc, ← nadd_assoc] at this
+  · rcases lt_nmul_iff.1 hd with ⟨a', ha, b', hb, hd⟩
+    have := nadd_lt_nadd_of_le_of_lt hd (nmul_nadd_lt ha (nadd_lt_nadd_right hb c))
+    -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
+    rw [nmul_nadd a' b c, nmul_nadd a b' c, nmul_nadd a'] at this
+    simp only [nadd_assoc] at this
+    rwa [nadd_left_comm (a' ⨳ b'), nadd_left_comm, nadd_lt_nadd_iff_left, nadd_left_comm,
+      nadd_left_comm _ (a' ⨳ b'), nadd_left_comm (a ⨳ b'), nadd_lt_nadd_iff_left,
+      nadd_left_comm (a' ⨳ c), nadd_left_comm, nadd_lt_nadd_iff_left, nadd_left_comm,
+      nadd_comm _ (a' ⨳ c), nadd_lt_nadd_iff_left] at this
+  · rcases lt_nmul_iff.1 hd with ⟨a', ha, c', hc, hd⟩
+    have := nadd_lt_nadd_of_lt_of_le (nmul_nadd_lt ha (nadd_lt_nadd_left hc b)) hd
+    -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
+    rw [nmul_nadd a' b c, nmul_nadd a b c', nmul_nadd a'] at this
+    simp only [nadd_assoc] at this
+    rwa [nadd_left_comm _ (a' ⨳ b), nadd_lt_nadd_iff_left, nadd_left_comm (a' ⨳ c'),
+      nadd_left_comm _ (a' ⨳ c), nadd_lt_nadd_iff_left, nadd_left_comm, nadd_comm (a' ⨳ c'),
+      nadd_left_comm _ (a ⨳ c'), nadd_lt_nadd_iff_left, nadd_comm _ (a' ⨳ c'),
+      nadd_comm _ (a' ⨳ c'), nadd_left_comm, nadd_lt_nadd_iff_left] at this
+termination_by (a, b, c)
 
 theorem nadd_nmul (a b c) : (a ♯ b) ⨳ c = a ⨳ c ♯ b ⨳ c := by
   rw [nmul_comm, nmul_nadd, nmul_comm, nmul_comm c]
@@ -632,26 +628,25 @@ theorem nmul_le_iff₃' :
           d ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') := by
   rw [← not_iff_not]; simp [lt_nmul_iff₃']
 
-theorem nmul_assoc : ∀ a b c, a ⨳ b ⨳ c = a ⨳ (b ⨳ c)
-  | a, b, c => by
-    apply le_antisymm
-    · rw [nmul_le_iff₃]
-      intro a' ha b' hb c' hc
-      -- Porting note: the next line was just
-      -- repeat' rw [nmul_assoc]
-      -- but we need to spell out the arguments for the termination checker.
-      rw [nmul_assoc a' b c, nmul_assoc a b' c, nmul_assoc a b c', nmul_assoc a' b' c',
-        nmul_assoc a' b' c, nmul_assoc a' b c', nmul_assoc a b' c']
-      exact nmul_nadd_lt₃' ha hb hc
-    · rw [nmul_le_iff₃']
-      intro a' ha b' hb c' hc
-      -- Porting note: the next line was just
-      -- repeat' rw [← nmul_assoc]
-      -- but we need to spell out the arguments for the termination checker.
-      rw [← nmul_assoc a' b c, ← nmul_assoc a b' c, ← nmul_assoc a b c', ← nmul_assoc a' b' c',
-        ← nmul_assoc a' b' c, ← nmul_assoc a' b c', ← nmul_assoc a b' c']
-      exact nmul_nadd_lt₃ ha hb hc
-termination_by a b c => (a, b, c)
+theorem nmul_assoc (a b c : Ordinal) : a ⨳ b ⨳ c = a ⨳ (b ⨳ c) := by
+  apply le_antisymm
+  · rw [nmul_le_iff₃]
+    intro a' ha b' hb c' hc
+    -- Porting note: the next line was just
+    -- repeat' rw [nmul_assoc]
+    -- but we need to spell out the arguments for the termination checker.
+    rw [nmul_assoc a' b c, nmul_assoc a b' c, nmul_assoc a b c', nmul_assoc a' b' c',
+      nmul_assoc a' b' c, nmul_assoc a' b c', nmul_assoc a b' c']
+    exact nmul_nadd_lt₃' ha hb hc
+  · rw [nmul_le_iff₃']
+    intro a' ha b' hb c' hc
+    -- Porting note: the next line was just
+    -- repeat' rw [← nmul_assoc]
+    -- but we need to spell out the arguments for the termination checker.
+    rw [← nmul_assoc a' b c, ← nmul_assoc a b' c, ← nmul_assoc a b c', ← nmul_assoc a' b' c',
+      ← nmul_assoc a' b' c, ← nmul_assoc a' b c', ← nmul_assoc a b' c']
+    exact nmul_nadd_lt₃ ha hb hc
+termination_by (a, b, c)
 
 end Ordinal
 
