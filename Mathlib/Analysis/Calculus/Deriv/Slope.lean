@@ -95,8 +95,7 @@ theorem range_derivWithin_subset_closure_span_image
     range (derivWithin f s) ⊆ closure (Submodule.span 𝕜 (f '' t)) := by
   rintro - ⟨x, rfl⟩
   rcases eq_or_neBot (𝓝[s \ {x}] x) with H|H
-  · simp [derivWithin, fderivWithin, H]
-    exact subset_closure (zero_mem _)
+  · simpa [derivWithin, fderivWithin, H] using subset_closure (zero_mem _)
   by_cases H' : DifferentiableWithinAt 𝕜 f s x; swap
   · rw [derivWithin_zero_of_not_differentiableWithinAt H']
     exact subset_closure (zero_mem _)

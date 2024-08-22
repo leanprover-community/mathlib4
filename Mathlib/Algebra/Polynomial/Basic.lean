@@ -49,8 +49,6 @@ equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. The
 in general not be used once the basic API for polynomials is constructed.
 -/
 
-
-
 noncomputable section
 
 /-- `Polynomial R` is the type of univariate polynomials over `R`.
@@ -65,8 +63,6 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute
-
-open Polynomial
 
 namespace Polynomial
 
@@ -478,9 +474,9 @@ theorem monomial_one_one_eq_X : monomial 1 (1 : R) = X :=
   rfl
 
 theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
-  induction' n with n ih
-  · simp [monomial_zero_one]
-  · rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, mul_one]
+  induction n with
+  | zero => simp [monomial_zero_one]
+  | succ n ih => rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, mul_one]
 
 @[simp]
 theorem toFinsupp_X : X.toFinsupp = Finsupp.single 1 (1 : R) :=
@@ -496,9 +492,10 @@ theorem X_mul : X * p = p * X := by
   simp [AddMonoidAlgebra.mul_apply, AddMonoidAlgebra.sum_single_index, add_comm]
 
 theorem X_pow_mul {n : ℕ} : X ^ n * p = p * X ^ n := by
-  induction' n with n ih
-  · simp
-  · conv_lhs => rw [pow_succ]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    conv_lhs => rw [pow_succ]
     rw [mul_assoc, X_mul, ← mul_assoc, ih, mul_assoc, ← pow_succ]
 
 /-- Prefer putting constants to the left of `X`.
@@ -771,9 +768,9 @@ theorem support_trinomial' (k m n : ℕ) (x y z : R) :
 end Fewnomials
 
 theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) := by
-  induction' n with n hn
-  · rw [pow_zero, monomial_zero_one]
-  · rw [pow_succ, hn, X, monomial_mul_monomial, one_mul]
+  induction n with
+  | zero => rw [pow_zero, monomial_zero_one]
+  | succ n hn => rw [pow_succ, hn, X, monomial_mul_monomial, one_mul]
 
 @[simp high]
 theorem toFinsupp_X_pow (n : ℕ) : (X ^ n).toFinsupp = Finsupp.single n (1 : R) := by
@@ -1018,7 +1015,7 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
-  rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_self, monomial_zero_right]
+  rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
 
 theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
  rw [sub_eq_add_neg, monomial_add, monomial_neg]
@@ -1050,16 +1047,16 @@ instance commRing [CommRing R] : CommRing R[X] :=
 
 section NonzeroSemiring
 
-variable [Semiring R] [Nontrivial R]
+variable [Semiring R]
 
-instance nontrivial : Nontrivial R[X] := by
+instance nontrivial [Nontrivial R] : Nontrivial R[X] := by
   have h : Nontrivial R[ℕ] := by infer_instance
   rcases h.exists_pair_ne with ⟨x, y, hxy⟩
   refine ⟨⟨⟨x⟩, ⟨y⟩, ?_⟩⟩
   simp [hxy]
 
 @[simp]
-theorem X_ne_zero : (X : R[X]) ≠ 0 :=
+theorem X_ne_zero [Nontrivial R] : (X : R[X]) ≠ 0 :=
   mt (congr_arg fun p => coeff p 1) (by simp)
 
 end NonzeroSemiring

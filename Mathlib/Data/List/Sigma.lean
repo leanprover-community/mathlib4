@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
-import Mathlib.Data.List.Range
 import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Pairwise
 
 /-!
 # Utilities for lists of sigmas
@@ -282,6 +282,16 @@ theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodu
     (p : l₁ ~ l₂) : lookupAll a l₁ = lookupAll a l₂ := by
   simp [lookupAll_eq_dlookup, nd₁, nd₂, perm_dlookup a nd₁ nd₂ p]
 
+theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
+    (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
+  induction l₁ with
+  | nil => rfl
+  | cons x l₁ IH =>
+    rw [cons_append]
+    obtain rfl | hb := Decidable.eq_or_ne a x.1
+    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.or]
+    · rw [dlookup_cons_ne _ _ hb, dlookup_cons_ne _ _ hb, IH]
+
 /-! ### `kreplace` -/
 
 
@@ -481,7 +491,7 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
       else by simp [ha₂, mt mem_keys_of_mem_keys_kerase ha₂]
     else by simp [ha₁, mt mem_keys_of_mem_keys_kerase ha₁]
 
-theorem sizeOf_kerase [DecidableEq α] [SizeOf (Sigma β)] (x : α)
+theorem sizeOf_kerase [SizeOf (Sigma β)] (x : α)
     (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with y ys
@@ -578,7 +588,7 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
   · rw [dedupKeys_cons, dlookup_kinsert_ne h, l_ih, dlookup_cons_ne]
     exact h
 
-theorem sizeOf_dedupKeys [DecidableEq α] [SizeOf (Sigma β)]
+theorem sizeOf_dedupKeys [SizeOf (Sigma β)]
     (xs : List (Sigma β)) : SizeOf.sizeOf (dedupKeys xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with x xs

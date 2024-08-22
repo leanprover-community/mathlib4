@@ -19,8 +19,8 @@ presentation, if its jacobian is invertible.
 Finally, a standard smooth algebra is an algebra that admits a submersive presentation.
 
 While every standard smooth algebra is smooth, the converse does not hold. But if `S` is `R`-smooth,
-then `S` is `R`-standard smooth locally on `S`, i.e. there exists a set `{ t }` of `S` that generates
-the unit ideal, such that `Sₜ` is `R`-standard smooth for every `t` (TODO, see below).
+then `S` is `R`-standard smooth locally on `S`, i.e. there exists a set `{ t }` of `S` that
+generates the unit ideal, such that `Sₜ` is `R`-standard smooth for every `t` (TODO, see below).
 
 ## Main definitions
 

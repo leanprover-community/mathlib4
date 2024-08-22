@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Order.Hom.Order
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Fixed point construction on complete lattices
@@ -274,5 +275,22 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
   bot := ⟨lfp f, f.isFixedPt_lfp⟩
   le_top x := f.le_gfp x.2.ge
   bot_le x := f.lfp_le x.2.le
+
+open OmegaCompletePartialOrder fixedPoints
+
+/-- **Kleene's fixed point Theorem**: The least fixed point in a complete lattice is
+the supremum of iterating a function on bottom arbitrary often. -/
+theorem lfp_eq_sSup_iterate (h : Continuous f) :
+    lfp f = ⨆ n, f^[n] ⊥ := by
+  apply le_antisymm
+  · apply lfp_le_fixed
+    exact Function.mem_fixedPoints.mp (ωSup_iterate_mem_fixedPoint ⟨f, h⟩ ⊥ bot_le)
+  · apply le_lfp
+    intro a h_a
+    exact ωSup_iterate_le_prefixedPoint ⟨f, h⟩ ⊥ bot_le h_a bot_le
+
+theorem gfp_eq_sInf_iterate (h : Continuous (OrderHom.dual f)) :
+    gfp f = ⨅ n, f^[n] ⊤ :=
+  lfp_eq_sSup_iterate (OrderHom.dual f) h
 
 end fixedPoints

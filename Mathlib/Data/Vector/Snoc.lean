@@ -55,7 +55,6 @@ theorem reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
 
 theorem replicate_succ_to_snoc (val : α) :
     replicate (n+1) val = (replicate n val).snoc val := by
-  clear xs
   induction n with
   | zero => rfl
   | succ n ih =>

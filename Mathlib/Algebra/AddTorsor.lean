@@ -146,7 +146,7 @@ theorem vadd_vsub_eq_sub_vsub (g : G) (p q : P) : g +ᵥ p -ᵥ q = g - (q -ᵥ 
 as subtracting the points and subtracting that group element. -/
 theorem vsub_vadd_eq_vsub_sub (p₁ p₂ : P) (g : G) : p₁ -ᵥ (g +ᵥ p₂) = p₁ -ᵥ p₂ - g := by
   rw [← add_right_inj (p₂ -ᵥ p₁ : G), vsub_add_vsub_cancel, ← neg_vsub_eq_vsub_rev, vadd_vsub, ←
-    add_sub_assoc, ← neg_vsub_eq_vsub_rev, neg_add_self, zero_sub]
+    add_sub_assoc, ← neg_vsub_eq_vsub_rev, neg_add_cancel, zero_sub]
 
 /-- Cancellation subtracting the results of two subtractions. -/
 @[simp]
