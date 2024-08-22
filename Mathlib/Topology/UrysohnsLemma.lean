@@ -465,9 +465,7 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
 -- separate `sᶜ` and `t` by `u` and `v`.
   obtain ⟨u, v, huv⟩ := t2_separation_IsOpen_IsCompact_closure_IsClosed_subset hs hscp ht hst
   rw [← subset_compl_iff_disjoint_right] at huv
-  have huvc : closure u ⊆ vᶜ := by
-    rw [← IsClosed.closure_eq (isClosed_compl_iff.mpr huv.2.1)]
-    exact closure_mono huv.2.2.2.2
+  have huvc : closure u ⊆ vᶜ := closure_minimal huv.2.2.2.2 huv.2.1.isClosed_compl
 -- although `sᶜ` is not compact, `closure s` is compact and we can apply
 -- `t2_separation_IsOpen_IsCompact_closure_IsClosed_subset`. To apply the condition recursively,
 -- we need to make sure that `sᶜ ⊆ C`.
