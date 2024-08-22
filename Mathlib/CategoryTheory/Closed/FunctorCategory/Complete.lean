@@ -23,7 +23,7 @@ namespace CategoryTheory.Functor
 section
 variable (I : Type u₂) [Category.{v₂} I]
 
-abbrev incl : Discrete I ⥤ I := Discrete.functor id
+private abbrev incl : Discrete I ⥤ I := Discrete.functor id
 
 instance : Groupoid (Discrete I) := { inv := fun h ↦ ⟨⟨h.1.1.symm⟩⟩ }
 
