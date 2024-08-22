@@ -19,8 +19,8 @@ This means that any morphism in the base `𝒮` can be lifted to a cartesian mor
 
 ## Implementation
 
-The constructor of `IsPreFibered` is called `has_pullbacks'`. The reason for the prime is that when
-wanting to apply this condition, it is recommended to instead use the lemma `has_pullbacks`
+The constructor of `IsPreFibered` is called `exists_isCartesian'`. The reason for the prime is that when
+wanting to apply this condition, it is recommended to instead use the lemma `exists_isCartesian`
 (without the prime), which is more applicable with respect to non-definitional equalities.
 
 ## References
@@ -40,11 +40,11 @@ variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.
 
 See SGA 1 VI.6.1. -/
 class Functor.IsPreFibered (p : 𝒳 ⥤ 𝒮) : Prop where
-  has_pullbacks' {a : 𝒳} {R : 𝒮} (f : R ⟶ p.obj a) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ
+  exists_isCartesian' {a : 𝒳} {R : 𝒮} (f : R ⟶ p.obj a) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ
 
-protected lemma IsPreFibered.has_pullbacks (p : 𝒳 ⥤ 𝒮) [p.IsPreFibered] {a : 𝒳} {R S : 𝒮}
+protected lemma IsPreFibered.exists_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsPreFibered] {a : 𝒳} {R S : 𝒮}
     (ha : p.obj a = S) (f : R ⟶ S) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ := by
-  subst ha; exact IsPreFibered.has_pullbacks' f
+  subst ha; exact IsPreFibered.exists_isCartesian' f
 
 namespace IsPreFibered
 
@@ -56,15 +56,15 @@ variable {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.ob
 then `pullbackObj` is the domain of some choice of a cartesian morphism lying over `f` with
 codomain `a`. -/
 noncomputable def pullbackObj : 𝒳 :=
-  Classical.choose (IsPreFibered.has_pullbacks p ha f)
+  Classical.choose (IsPreFibered.exists_isCartesian p ha f)
 
 /-- Given a fibered category `p : 𝒳 ⥤ 𝒫`, a morphism `f : R ⟶ S` and an object `a` lying over `S`,
 then `pullbackMap` is a choice of a cartesian morphism lying over `f` with codomain `a`. -/
 noncomputable def pullbackMap : pullbackObj ha f ⟶ a :=
-  Classical.choose (Classical.choose_spec (IsPreFibered.has_pullbacks p ha f))
+  Classical.choose (Classical.choose_spec (IsPreFibered.exists_isCartesian p ha f))
 
 instance pullbackMap.IsCartesian : IsCartesian p f (pullbackMap ha f) :=
-  Classical.choose_spec (Classical.choose_spec (IsPreFibered.has_pullbacks p ha f))
+  Classical.choose_spec (Classical.choose_spec (IsPreFibered.exists_isCartesian p ha f))
 
 lemma pullbackObj_proj : p.obj (pullbackObj ha f) = R :=
   domain_eq p f (pullbackMap ha f)
