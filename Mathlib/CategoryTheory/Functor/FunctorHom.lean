@@ -3,10 +3,8 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen, Joël Riou
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.CategoryTheory.Enriched.Basic
 
 /-!
 # Internal hom in functor categories
