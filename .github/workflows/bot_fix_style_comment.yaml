@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true  # do not annoy the user when linting fails, as expected
     steps:
+      - name: Add reaction
+        if: (steps.parse_user.outputs.permission == 'admin')
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: rocket
+
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
