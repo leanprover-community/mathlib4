@@ -36,7 +36,7 @@ of sums of squares in `R`.
 
 -/
 
-variable {R : Type*} [Mul R]
+variable {R : Type*}
 
 /--
 In a type `R` with an addition, a zero element and a multiplication, the property of being a sum of
@@ -44,29 +44,35 @@ squares is defined by an inductive predicate: `0 : R` is a sum of squares and if
 squares, then for all `a : R`, `a * a + S` is a sum of squares in `R`.
 -/
 @[mk_iff]
-inductive IsSumSq [Add R] [Zero R] : R → Prop
+inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
   | zero                              : IsSumSq 0
   | sq_add (a S : R) (pS : IsSumSq S) : IsSumSq (a * a + S)
 
 @[deprecated (since := "2024-08-09")] alias isSumSq := IsSumSq
 
 /--
-If `S1` and `S2` are sums of squares in a semiring `R`, then `S1 + S2` is a sum of squares in `R`.
+If `S1` and `S2` are sums of squares, then `S1 + S2` is a sum of squares.
 -/
-theorem IsSumSq.add [AddMonoid R] {S1 S2 : R} (p1 : IsSumSq S1)
-    (p2 : IsSumSq S2) : IsSumSq (S1 + S2) := by
+theorem IsSumSq.add [AddMonoid R] [Mul R] {S1 S2 : R}
+    (p1 : IsSumSq S1) (p2 : IsSumSq S2) : IsSumSq (S1 + S2) := by
   induction p1 with
   | zero             => rw [zero_add]; exact p2
   | sq_add a S pS ih => rw [add_assoc]; exact IsSumSq.sq_add a (S + S2) ih
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.add := IsSumSq.add
 
+/-- Squares are sums of squares. -/
+theorem IsSumSq.isSquare [AddZeroClass R] {x : R} (px : IsSquare x) : IsSumSq x := by
+  rcases px with ⟨y, py⟩
+  rw [py, ← add_zero (y * y)]
+  exact IsSumSq.sq_add _ _ IsSumSq.zero
+
 variable (R) in
 /--
 In an additive monoid with multiplication `R`, the type `sumSqIn R` is the submonoid of sums of
 squares in `R`.
 -/
-def sumSqIn [AddMonoid R] : AddSubmonoid R where
+def AddMonoid.sumSqIn [AddMonoid R] : AddSubmonoid R where
   carrier   := {S : R | IsSumSq S}
   zero_mem' := IsSumSq.zero
   add_mem'  := IsSumSq.add
