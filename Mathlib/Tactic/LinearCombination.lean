@@ -119,8 +119,7 @@ def elabLinearCombination
   | none => `(Eq.refl 0)
   | some e =>
     match ← expandLinearCombo ty e with
-    | .const _ => throwError "'linear_combination' expects a term which is a formal linear \
-        combination of hypotheses"
+    | .const _ => throwError "To run 'linear_combination' without hypotheses, call it without input"
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
   Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
