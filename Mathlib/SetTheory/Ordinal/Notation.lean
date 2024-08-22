@@ -112,9 +112,6 @@ def ofNat : ℕ → ONote
   | 0 => 0
   | Nat.succ n => oadd 0 n.succPNat 0
 
-instance : NatCast ONote where
-  natCast n := ofNat n
-
 instance nat (n : ℕ) : OfNat ONote n where
   ofNat := ofNat n
 
@@ -122,39 +119,27 @@ instance nat (n : ℕ) : OfNat ONote n where
 -- to emulate the old Lean 3 behaviour.
 
 @[simp]
-theorem natCast_zero : (0 : ℕ) = (0 : ONote) :=
+theorem ofNat_zero : ofNat 0 = 0 :=
   rfl
-
-@[deprecated natCast_zero (since := "2024-08-21")]
-alias ofNat_zero := natCast_zero
 
 @[simp]
-theorem natCast_succ (n : ℕ) : n.succ = oadd 0 n.succPNat 0 :=
+theorem ofNat_succ (n : ℕ) : ofNat n.succ = oadd 0 n.succPNat 0 :=
   rfl
-
-@[deprecated natCast_succ (since := "2024-08-21")]
-alias ofNat_succ := natCast_succ
-
-@[simp 1200]
-theorem natCast_one : (1 : ℕ) = (1 : ONote) :=
-  rfl
-
-@[deprecated natCast_one (since := "2024-08-21")]
-alias ofNat_one := natCast_one
 
 @[simp]
-theorem repr_natCast (n : ℕ) : repr n = n := by
+theorem ofNat_one : ofNat 1 = 1 :=
+  rfl
+
+@[simp]
+theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by
   cases n <;> simp
-
-@[deprecated repr_natCast (since := "2024-08-21")]
-alias repr_ofNat := repr_natCast
 
 @[simp]
 theorem repr_zero : repr 0 = 0 :=
-  repr_natCast 0
+  repr_ofNat 0
 
 theorem repr_one : repr 1 = (1 : ℕ) :=
-  repr_natCast 1
+  repr_ofNat 1
 
 theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ (le_add_right _ _)
@@ -193,14 +178,13 @@ inductive NFBelow : ONote → Ordinal.{0} → Prop
 
 /-- A normal form ordinal notation has the form
 
-     ω ^ a₁ * n₁ + ω ^ a₂ * n₂ + ... ω ^ aₖ * nₖ
-  where `a₁ > a₂ > ... > aₖ` and all the `aᵢ` are
-  also in normal form.
+`ω ^ a₁ * n₁ + ω ^ a₂ * n₂ + ⋯ + ω ^ aₖ * nₖ`
 
-  We will essentially only be interested in normal form
-  ordinal notations, but to avoid complicating the algorithms
-  we define everything over general ordinal notations and
-  only prove correctness with normal form as an invariant. -/
+where `a₁ > a₂ > ⋯ > aₖ` and all the `aᵢ` are also in normal form.
+
+We will essentially only be interested in normal form ordinal notations, but to avoid complicating
+the algorithms, we define everything over general ordinal notations and only prove correctness with
+normal form as an invariant. -/
 class NF (o : ONote) : Prop where
   out : Exists (NFBelow o)
 
@@ -266,25 +250,25 @@ theorem NF.below_of_lt' : ∀ {o b}, repr o < ω ^ b → NF o → NFBelow o b
     h.below_of_lt <|
       (opow_lt_opow_iff_right one_lt_omega).1 <| lt_of_le_of_lt (omega_le_oadd _ _ _) H
 
-theorem nfBelow_ofNat : ∀ n, NFBelow (ofNat n) 1
+theorem nfBelow_ofNat : ∀ n : ℕ, NFBelow (ofNat n) 1
   | 0 => NFBelow.zero
   | Nat.succ _ => NFBelow.oadd NF.zero NFBelow.zero zero_lt_one
 
-instance nf_ofNat (n) : NF (ofNat n) :=
+instance nf_ofNat (n : ℕ) : NF (ofNat n) :=
   ⟨⟨_, nfBelow_ofNat n⟩⟩
 
-instance nf_one : NF 1 := by rw [← ofNat_one]; infer_instance
+instance nf_one : NF 1 :=
+  nf_ofNat 1
 
 theorem oadd_lt_oadd_1 {e₁ n₁ o₁ e₂ n₂ o₂} (h₁ : NF (oadd e₁ n₁ o₁)) (h : e₁ < e₂) :
     oadd e₁ n₁ o₁ < oadd e₂ n₂ o₂ :=
-  @lt_of_lt_of_le _ _ (repr (oadd e₁ n₁ o₁)) _ _
-    (NF.below_of_lt h h₁).repr_lt (omega_le_oadd e₂ n₂ o₂)
+  (NF.below_of_lt h h₁).repr_lt.trans_le (omega_le_oadd e₂ n₂ o₂)
 
 theorem oadd_lt_oadd_2 {e o₁ o₂ : ONote} {n₁ n₂ : ℕ+} (h₁ : NF (oadd e n₁ o₁)) (h : (n₁ : ℕ) < n₂) :
     oadd e n₁ o₁ < oadd e n₂ o₂ := by
   simp only [lt_def, repr]
-  refine lt_of_lt_of_le ((add_lt_add_iff_left _).2 h₁.snd'.repr_lt) (le_trans ?_ (le_add_right _ _))
-  rwa [← mul_succ,Ordinal.mul_le_mul_iff_left (opow_pos _ omega_pos), succ_le_iff, natCast_lt]
+  refine ((add_lt_add_iff_left _).2 h₁.snd'.repr_lt).trans_le (le_trans ?_ (le_add_right _ _))
+  rwa [← mul_succ, Ordinal.mul_le_mul_iff_left (opow_pos _ omega_pos), succ_le_iff, natCast_lt]
 
 theorem oadd_lt_oadd_3 {e n a₁ a₂} (h : a₁ < a₂) : oadd e n a₁ < oadd e n a₂ := by
   rw [lt_def]; unfold repr
@@ -573,7 +557,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
     · cases' Nat.exists_eq_succ_of_ne_zero n₂.ne_zero with x xe
       simp only [e0, repr, PNat.mul_coe, natCast_mul, opow_zero, one_mul]
       simp only [xe, h₂.zero_of_zero e0, repr, add_zero]
-      rw [natCast_succ x, add_mul_succ _ ao, mul_assoc]
+      rw [natCast_succ, add_mul_succ _ ao, mul_assoc]
     · simp only [repr]
       haveI := h₁.fst
       haveI := h₂.fst
@@ -753,7 +737,8 @@ instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a
   cases' k with k k
   · exact NF.oadd_zero _ _
   · haveI := nf_opowAux e a0 a k
-    simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul]; infer_instance
+    simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul];
+    infer_instance
 
 instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   cases' e₁ : split o₁ with a m
@@ -922,7 +907,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     cases' N₁.of_dvd_omega (split_dvd e₁) with a00 ad
     have al := split_add_lt e₁
     have aa : repr (a' + ofNat m) = repr a' + m := by
-      simp only [eq_self_iff_true, ONote.repr_ofNat, ONote.repr_add]
+      simp only [eq_self_iff_true, repr_ofNat, ONote.repr_add]
     cases' e₂ : split' o₂ with b' k
     cases' nf_repr_split' e₂ with _ r₂
     simp only [opow_def, opow, e₁, r₁, split_eq_scale_split' e₂, opowAux2, repr]
@@ -1035,13 +1020,13 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       refine
         ⟨mul_isLimit this omega_isLimit, fun i =>
           ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega'⟩
-      rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
+      rw [← mul_succ, ← Ordinal.natCast_succ, Ordinal.mul_lt_mul_iff_left this]
       apply nat_lt_omega
     · have := opow_pos (repr a') omega_pos
       refine
         ⟨add_isLimit _ (mul_isLimit this omega_isLimit), fun i => ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega'⟩
-      · rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
+      · rw [← mul_succ, ← Ordinal.natCast_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega
       · refine fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (iha.2 H.fst)))
         rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
@@ -1192,12 +1177,8 @@ instance : ToString NONote :=
 instance : Repr NONote :=
   ⟨fun x prec => x.1.repr' prec⟩
 
-instance : Preorder NONote where
-  le x y := repr x ≤ repr y
-  lt x y := repr x < repr y
-  le_refl _ := @le_refl Ordinal _ _
-  le_trans _ _ _ := @le_trans Ordinal _ _ _ _
-  lt_iff_le_not_le _ _ := @lt_iff_le_not_le Ordinal _ _ _
+instance : Preorder NONote :=
+  Preorder.lift repr
 
 instance : Zero NONote :=
   ⟨⟨0, NF.zero⟩⟩
@@ -1231,8 +1212,6 @@ theorem cmp_compares : ∀ a b : NONote, (cmp a b).Compares a b
 
 instance : LinearOrder NONote :=
   linearOrderOfCompares cmp cmp_compares
-
-instance : IsWellOrder NONote (· < ·) where
 
 /-- Asserts that `repr a < ω ^ repr b`. Used in `NONote.recOn` -/
 def below (a b : NONote) : Prop :=
