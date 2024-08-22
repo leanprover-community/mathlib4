@@ -591,14 +591,15 @@ variable {γ δ : Type*} [MeasurableSpace γ] {mδ : MeasurableSpace δ} {f : β
 
 /-- When a function is not measurable, the target space is not empty. Therefore, we can choose
 a point there. Useful for junk values when some maps are not measurable. -/
-noncomputable def _root_.defaultOfNotMeasurable [MeasurableSpace γ] [MeasurableSpace δ]
+noncomputable def _root_.defaultOfNotMeasurable [MeasurableSpace δ]
     (f : γ → δ) (hf : ¬(Measurable f)) : δ := by
   refine Classical.choice ?_
   contrapose! hf
   simp only [not_nonempty_iff] at hf
   exact measurable_of_empty_codomain f
 
-/-- The pushforward of a kernel along a measurable function. -/
+/-- The pushforward of a kernel along a measurable function. This is an implementation detail,
+use `map κ f` instead. -/
 noncomputable def mapOfMeasurable (κ : Kernel α β) (f : β → γ) (hf : Measurable f) :
     Kernel α γ where
   toFun a := (κ a).map f
