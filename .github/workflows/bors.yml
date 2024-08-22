@@ -201,6 +201,7 @@ jobs:
           fi
 
       - name: compare oleans
+        id: oleanData
         run: |
           ./scripts/olean_comparison.sh
 
