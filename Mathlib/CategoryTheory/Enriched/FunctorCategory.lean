@@ -101,14 +101,29 @@ lemma ihom.id_pre_app {X Y : D} (f : X ⟶ Y) :
   rw [← MonoidalClosed.curry_natural_right, ← MonoidalCategory.rightUnitor_naturality,
     ← MonoidalClosed.curry_natural_right']
 
--- is it what it actually needed?
 @[reassoc]
-lemma ihom.map_tensor_comp_pre_app {X₁ X₂ X₃ Y₁ Y₂ Y₃ : D}
-    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
-    ((ihom Y₁).map f₂ ⊗ (ihom Y₂).map f₃) ≫
-    ihom.comp Y₁ Y₂ Y₃ ≫ (MonoidalClosed.pre f₁).app Y₃ =
-      ((MonoidalClosed.pre f₁).app X₂ ⊗ (MonoidalClosed.pre f₂).app X₃) ≫
-        ihom.comp X₁ X₂ X₃ ≫ (ihom X₁).map f₃ :=
+lemma ihom.comp_naturality₁ {X₁ Y₁ : D} (f₁ : X₁ ⟶ Y₁) (X₂ X₃ : D) :
+    (MonoidalClosed.pre f₁).app X₂ ▷ _ ≫ ihom.comp X₁ X₂ X₃ =
+    ihom.comp Y₁ X₂ X₃ ≫ (MonoidalClosed.pre f₁).app X₃ := sorry
+
+@[reassoc]
+lemma ihom.comp_naturality₂ (X₁ : D) {X₂ Y₂ : D} (f₂ : X₂ ⟶ Y₂) (X₃ : D) :
+    _ ◁ (MonoidalClosed.pre f₂).app X₃ ≫ ihom.comp X₁ X₂ X₃ =
+      (ihom X₁).map f₂ ▷ _ ≫ ihom.comp X₁ Y₂ X₃ := sorry
+
+@[reassoc]
+lemma ihom.comp_naturality₃ (X₁ X₂ : D) {X₃ Y₃ : D} (f₃ : X₃ ⟶ Y₃) :
+    (_ ◁ (ihom X₂).map f₃) ≫ ihom.comp X₁ X₂ Y₃ =
+      ihom.comp X₁ X₂ X₃ ≫ (ihom X₁).map f₃ := sorry
+
+@[reassoc (attr := simp)]
+protected lemma ihom.id_comp (X₁ X₂ : D) :
+    ihom.id X₁ ▷ _ ≫ ihom.comp X₁ X₁ X₂ = (λ_ _).hom := by
+  sorry
+
+@[reassoc (attr := simp)]
+protected lemma ihom.comp_id (X₁ X₂ : D) :
+    _ ◁ ihom.id X₂ ≫ ihom.comp X₁ X₂ X₂ = (ρ_ _).hom := by
   sorry
 
 end
@@ -153,9 +168,19 @@ lemma hom_ext {Z : D} {φ φ' : Z ⟶ enrichedHom F G}
 
 end
 
-noncomputable def id (F : C ⥤ D) [HasEnrichedHom F F] : 𝟙_ D ⟶ enrichedHom F F :=
+section
+
+variable (F : C ⥤ D) [HasEnrichedHom F F]
+
+noncomputable def id : 𝟙_ D ⟶ enrichedHom F F :=
   end_.lift _ (fun X ↦ ihom.id (F.obj X))
     (by intros; dsimp; rw [ihom.id_pre_app])
+
+@[reassoc (attr := simp)]
+lemma id_app (X : C) : id F ≫ app F F X = ihom.id (F.obj X) := by
+  simp [id, app]
+
+end
 
 section
 
@@ -163,28 +188,40 @@ variable (F G H : C ⥤ D) [HasEnrichedHom F G] [HasEnrichedHom G H] [HasEnriche
 
 noncomputable def comp  :
     F.enrichedHom G ⊗ G.enrichedHom H ⟶ F.enrichedHom H :=
-  end_.lift _ (fun X ↦ (app F G X ⊗ app G H X) ≫ ihom.comp _ _ _) sorry
+  end_.lift _ (fun X ↦ (app F G X ⊗ app G H X) ≫ ihom.comp _ _ _) (fun X Y f ↦ by
+    dsimp
+    conv_lhs => rw [assoc,  ← ihom.comp_naturality₃,
+      tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+      ← naturality, MonoidalCategory.whiskerLeft_comp_assoc, ← tensorHom_def_assoc,
+      ihom.comp_naturality₂]
+    conv_rhs => rw [assoc, tensorHom_def_assoc, ← ihom.comp_naturality₁,
+      ← whisker_exchange_assoc, ← comp_whiskerRight_assoc,
+      naturality, comp_whiskerRight_assoc, whisker_exchange_assoc, ← tensorHom_def_assoc])
 
 @[reassoc (attr := simp)]
-lemma comp_π (X : C) : comp F G H ≫ app F H X = (app F G X ⊗ app G H X) ≫ ihom.comp _ _ _ := by
+lemma comp_app (X : C) : comp F G H ≫ app F H X = (app F G X ⊗ app G H X) ≫ ihom.comp _ _ _ := by
   simp [comp, app]
 
 end
 
 @[reassoc (attr := simp)]
-lemma id_comp (F G : C ⥤ D) [HasEnrichedHom F G] [HasEnrichedHom F F] :
+protected lemma id_comp (F G : C ⥤ D) [HasEnrichedHom F G] [HasEnrichedHom F F] :
     (λ_ _).inv ≫ enrichedHom.id F ▷ _ ≫ enrichedHom.comp F F G = 𝟙 (F.enrichedHom G) := by
   ext X
-  simp
-  sorry
+  rw [assoc, assoc, comp_app, id_comp, tensorHom_def_assoc,
+    ← comp_whiskerRight_assoc, id_app, ← whisker_exchange_assoc,
+    ← leftUnitor_inv_naturality_assoc, ihom.id_comp, Iso.inv_hom_id, comp_id]
 
 @[reassoc (attr := simp)]
-lemma comp_id (F G : C ⥤ D) [HasEnrichedHom F G] [HasEnrichedHom G G] :
+protected lemma comp_id (F G : C ⥤ D) [HasEnrichedHom F G] [HasEnrichedHom G G] :
     (ρ_ _).inv ≫ _ ◁ enrichedHom.id G ≫ enrichedHom.comp F G G = 𝟙 (F.enrichedHom G) := by
-  sorry
+  ext X
+  rw [assoc, assoc, comp_app, id_comp, tensorHom_def_assoc, ← whisker_exchange_assoc,
+    ← MonoidalCategory.whiskerLeft_comp_assoc, id_app, whisker_exchange_assoc,
+    ← rightUnitor_inv_naturality_assoc, ihom.comp_id, Iso.inv_hom_id, comp_id]
 
 @[reassoc (attr := simp)]
-lemma assoc (F₁ F₂ F₃ F₄ : C ⥤ D)
+protected lemma assoc (F₁ F₂ F₃ F₄ : C ⥤ D)
     [HasEnrichedHom F₁ F₂] [HasEnrichedHom F₂ F₃] [HasEnrichedHom F₃ F₄] [HasEnrichedHom F₁ F₃]
     [HasEnrichedHom F₁ F₄] [HasEnrichedHom F₂ F₄] :
     (α_ (F₁.enrichedHom F₂) (F₂.enrichedHom F₃) (F₃.enrichedHom F₄)).inv ≫
