@@ -268,7 +268,7 @@ from `C` to the category of Eilenberg-Moore algebras for the adjunction is an eq
 class ComonadicLeftAdjoint (L : C ⥤ D) where
   /-- a choice of right adjoint for `L` -/
   R : D ⥤ C
-  /-- `L` is a right adjoint -/
+  /-- `L` is a left adjoint -/
   adj : L ⊣ R
   eqv : (Comonad.comparison adj).IsEquivalence
 
