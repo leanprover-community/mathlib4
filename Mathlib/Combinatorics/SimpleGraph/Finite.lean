@@ -304,7 +304,7 @@ theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
   exact Finset.card_empty
 
 open Classical in
-lemma degree_mono [Fintype V] (u : V) : Monotone (fun G => degree G u) := by
+lemma degree_mono (u : V) : Monotone (fun G => degree G u) := by
   intro G H le
   simp only [← card_neighborFinset_eq_degree]
   apply Finset.card_le_card

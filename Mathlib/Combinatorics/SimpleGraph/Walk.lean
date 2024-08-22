@@ -1381,7 +1381,7 @@ lemma prev_unique {u v : V} {c : G.Walk u v} {d₁ d₂ : G.Dart} (nodup : c.sup
     contrapose h
     simp at h |-
     congr
-  exact ne $ List.inj_on_of_nodup_map (c.map_snd_darts ▸ nodup) hd₁ hd₂ eq
+  exact ne <| List.inj_on_of_nodup_map (c.map_snd_darts ▸ nodup) hd₁ hd₂ eq
 
 lemma next_unique {u v : V} {c : G.Walk u v} (nodup : c.support.dropLast.Nodup)
     {d₁ d₂ : G.Dart} (hd₁ : d₁ ∈ c.darts) (hd₂ : d₂ ∈ c.darts) (eq : d₁.fst = d₂.fst) :
@@ -1391,7 +1391,7 @@ lemma next_unique {u v : V} {c : G.Walk u v} (nodup : c.support.dropLast.Nodup)
     contrapose h
     simp at h |-
     congr
-  exact ne $ List.inj_on_of_nodup_map (c.map_fst_darts ▸ nodup) hd₁ hd₂ eq
+  exact ne <| List.inj_on_of_nodup_map (c.map_fst_darts ▸ nodup) hd₁ hd₂ eq
 
 end Walk
 
