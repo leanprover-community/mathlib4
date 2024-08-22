@@ -42,6 +42,24 @@ example (f : V →ₗ[K] V) (μ ν : K) (hμν : μ ≠ ν)
       _ = 0 := by simp [hab]
   simp_all [sub_eq_zero]
 
+-- minimal assumptions
+example
+  {R M : Type} [CommRing R] [AddCommGroup M] [Module R M]
+  [NoZeroSMulDivisors R M]
+  (f : M →ₗ[R] M) (μ ν : R) (hμν : μ ≠ ν)
+  (x y : M) (hx₀ : x ≠ 0) (hy₀ : y ≠ 0)
+  (hx : f x = μ • x) (hy : f y = ν • y) :
+  ∀ a b : R, a • x + b • y = 0 → a = 0 ∧ b = 0 := by
+  intro a b hab
+  have :=
+  calc (μ - ν) • a • x
+      = (a • μ • x + b • ν • y) -
+        ν • (a • x + b • y) := by module
+    _ = f (a • x + b • y) -
+        ν • (a • x + b • y) := by simp [hx, hy]
+    _ = 0 := by simp [hab]
+  simp_all [sub_eq_zero]
+
 /-- ### Ternary version -/
 
 example (f : V →ₗ[K] V) (μ ν ρ : K) (hμν : μ ≠ ν) (hμρ : μ ≠ ρ) (hνρ : ν ≠ ρ)
@@ -102,3 +120,23 @@ example (f : V →ₗ[K] V) (μ ν ρ : K) (hμν : μ ≠ ν) (hμρ : μ ≠ �
   obtain rfl : a = 0 := by simp_all [sub_eq_zero]
   have H2 : (ν - ρ) • b • y = 0 := by linear_combination (norm := module) habc' - ρ • habc
   simp_all [sub_eq_zero]
+
+section
+-- spelling out a simp step
+variable (f : V →ₗ[K] V)
+  (μ ν : K) (x y : V) (a b : K)
+
+example
+  (hx : f x = μ • x) (hy : f y = ν • y) :
+  f (a • x + b • y) =
+  (a • μ • x + b • ν • y) := by
+calc
+    f (a • x + b • y)
+    = f (a • x) + f (b • y) := by
+        rw [map_add]
+  _ = a • f x + b • f y := by
+        rw [map_smul, map_smul]
+  _ = (a • μ • x + b • ν • y) := by
+        rw [hx, hy]
+
+end
