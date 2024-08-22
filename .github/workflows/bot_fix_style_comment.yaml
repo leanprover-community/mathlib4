@@ -14,9 +14,9 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      # - uses: actions/checkout@v4
-      #   with:
-      #     token: ${{ secrets.NIGHTLY_TESTING }}
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.NIGHTLY_TESTING }}
 
       - name: Checkout PR branch
         run: |
