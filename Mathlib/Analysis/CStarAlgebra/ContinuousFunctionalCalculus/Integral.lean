@@ -36,18 +36,18 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus 𝕜 p]
 
-lemma cfcCLM_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ) (ha : p a) :
-    ∫ x, cfcCLM ha (f x) ∂μ = cfcCLM ha (∫ x, f x ∂μ) := by
+lemma cfcL_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ) (ha : p a) :
+    ∫ x, cfcL ha (f x) ∂μ = cfcL ha (∫ x, f x ∂μ) := by
   rw [ContinuousLinearMap.integral_comp_comm _ hf₁]
 
 lemma cfcHom_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ) (ha : p a) :
     ∫ x, cfcHom ha (f x) ∂μ = cfcHom ha (∫ x, f x ∂μ) := by
-  have h₁ : ∫ x, cfcHom ha (f x) ∂μ = ∫ x, cfcCLM ha (f x) ∂μ := by
+  have h₁ : ∫ x, cfcHom ha (f x) ∂μ = ∫ x, cfcL ha (f x) ∂μ := by
     refine integral_congr_ae ?_
     filter_upwards with x
-    simp only [cfcHom_eq_cfcCLM ha]
-  rw [h₁, cfcHom_eq_cfcCLM ha]
-  exact cfcCLM_integral a f hf₁ ha
+    simp only [cfcHom_eq_cfcL ha]
+  rw [h₁, cfcHom_eq_cfcL ha]
+  exact cfcL_integral a f hf₁ ha
 
 open ContinuousMap in
 /-- The continuous functional calculus commutes with integration. -/
