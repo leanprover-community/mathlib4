@@ -14,9 +14,15 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.NIGHTLY_TESTING }}
+      # - uses: actions/checkout@v4
+      #   with:
+      #     token: ${{ secrets.NIGHTLY_TESTING }}
+
+      - name: Checkout PR branch
+        run: |
+            gh pr checkout ${{ github.event.issue.number }}
+        env:
+            GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
 
       - name: install Python
         uses: actions/setup-python@v4
