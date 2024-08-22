@@ -100,7 +100,7 @@ theorem _root_.IsSMulRegular.skewMonoidAlgebra {S : Type*} [Monoid S] [DistribMu
     (ha : IsSMulRegular k a) : IsSMulRegular (SkewMonoidAlgebra k G) a
   | ⟨_⟩, ⟨_⟩, h => by
     simp only [← ofFinsupp_smul] at h
-    exact congr_arg _ <| ha.finsupp (ofFinsupp.inj (h))
+    exact congr_arg _ <| ha.finsupp (ofFinsupp.inj h)
 
 theorem toFinsupp_injective :
     Function.Injective (toFinsupp : SkewMonoidAlgebra k G → Finsupp _ _) :=
