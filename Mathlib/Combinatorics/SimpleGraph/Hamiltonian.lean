@@ -59,7 +59,7 @@ lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset
 
 /-- The length of a hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
-  eq_tsub_of_add_eq $ by
+  eq_tsub_of_add_eq <| by
     rw [← length_support, ← List.sum_toFinset_count_eq_length, Finset.sum_congr rfl fun _ _ ↦ hp _,
       ← card_eq_sum_ones, hp.support_toFinset, card_univ]
 
@@ -79,12 +79,12 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
   toIsCycle := hp.isCycle.map hf.injective
   isHamiltonian_tail := by
     simp only [IsHamiltonian, support_tail, support_map, ne_eq, List.map_eq_nil, support_ne_nil,
-      not_false_eq_true, List.count_tail, hf.surjective.forall, hf.injective,
-      List.count_map_of_injective]
+      not_false_eq_true, List.count_tail, List.head_map, beq_iff_eq, hf.surjective.forall,
+      hf.injective, List.count_map_of_injective]
     intro x
     rcases p with (_ | ⟨y, p⟩)
     · cases hp.ne_nil rfl
-    simp only [support_cons, List.count_cons, List.map_cons, List.head_cons, hf.injective.eq_iff,
+    simp only [support_cons, List.count_cons, beq_iff_eq, List.head_cons, hf.injective.eq_iff,
       add_tsub_cancel_right]
     exact hp.isHamiltonian_tail _
 
@@ -128,7 +128,7 @@ def IsHamiltonian (G : SimpleGraph α) : Prop :=
 
 lemma IsHamiltonian.mono {H : SimpleGraph α} (hGH : G ≤ H) (hG : G.IsHamiltonian) :
     H.IsHamiltonian :=
-  fun hα ↦ let ⟨_, p, hp⟩ := hG hα; ⟨_, p.map $ .ofLE hGH, hp.map _ bijective_id⟩
+  fun hα ↦ let ⟨_, p, hp⟩ := hG hα; ⟨_, p.map <| .ofLE hGH, hp.map _ bijective_id⟩
 
 lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
   preconnected a b := by
@@ -138,7 +138,7 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     obtain ⟨_, p, hp⟩ := hG Fintype.one_lt_card.ne'
     have a_mem := hp.mem_support a
     have b_mem := hp.mem_support b
-    exact ((p.takeUntil a a_mem).reverse.append $ p.takeUntil b b_mem).reachable
-  nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG $ by simp [@Fintype.card_eq_zero]
+    exact ((p.takeUntil a a_mem).reverse.append <| p.takeUntil b b_mem).reachable
+  nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG <| by simp [@Fintype.card_eq_zero]
 
 end SimpleGraph

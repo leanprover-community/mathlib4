@@ -107,11 +107,13 @@ theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScal
     span S (p : Set M) = p.restrictScalars S :=
   span_eq (p.restrictScalars S)
 
+include σ₁₂ in
 /-- A version of `Submodule.map_span_le` that does not require the `RingHomSurjective`
 assumption. -/
 theorem image_span_subset (f : F) (s : Set M) (N : Submodule R₂ M₂) :
     f '' span R s ⊆ N ↔ ∀ m ∈ s, f m ∈ N := image_subset_iff.trans <| span_le (p := N.comap f)
 
+include σ₁₂ in
 theorem image_span_subset_span (f : F) (s : Set M) : f '' span R s ⊆ span R₂ (f '' s) :=
   (image_span_subset f s _).2 fun x hx ↦ subset_span ⟨x, hx, rfl⟩
 
@@ -742,7 +744,7 @@ theorem span_prod_le (s : Set M) (t : Set M') : span R (s ×ˢ t) ≤ prod (span
 theorem prod_top : (prod ⊤ ⊤ : Submodule R (M × M')) = ⊤ := by ext; simp
 
 @[simp]
-theorem prod_bot : (prod ⊥ ⊥ : Submodule R (M × M')) = ⊥ := by ext ⟨x, y⟩; simp [Prod.zero_eq_mk]
+theorem prod_bot : (prod ⊥ ⊥ : Submodule R (M × M')) = ⊥ := by ext ⟨x, y⟩; simp
 
 theorem prod_mono {p p' : Submodule R M} {q q' : Submodule R M'} :
     p ≤ p' → q ≤ q' → prod p q ≤ prod p' q' :=
@@ -756,7 +758,7 @@ theorem prod_inf_prod : prod p q₁ ⊓ prod p' q₁' = prod (p ⊓ p') (q₁ �
 theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ ⊔ q₁') := by
   refine le_antisymm
     (sup_le (prod_mono le_sup_left le_sup_left) (prod_mono le_sup_right le_sup_right)) ?_
-  simp [SetLike.le_def]; intro xx yy hxx hyy
+  simp only [SetLike.le_def, mem_prod, and_imp, Prod.forall]; intro xx yy hxx hyy
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
   exact mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
@@ -968,6 +970,7 @@ section AddCommMonoid
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 variable {F : Type*} {σ₁₂ : R →+* R₂} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+include σ₁₂
 
 /-- Two linear maps are equal on `Submodule.span s` iff they are equal on `s`. -/
 theorem eqOn_span_iff {s : Set M} {f g : F} : Set.EqOn f g (span R s) ↔ Set.EqOn f g s := by

@@ -3,11 +3,10 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Field.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Further basic results about modules.
@@ -15,6 +14,7 @@ import Mathlib.GroupTheory.GroupAction.Group
 -/
 
 assert_not_exists Nonneg.inv
+assert_not_exists Multiset
 
 open Function Set
 
@@ -191,6 +191,14 @@ lemma indicator_smul_const (s : Set α) (r : α → R) (m : M) :
   funext <| indicator_smul_const_apply _ _ _
 
 end SMulWithZero
-end Set
 
-assert_not_exists Multiset
+section MulZeroOneClass
+
+variable [MulZeroOneClass R]
+
+lemma smul_indicator_one_apply (s : Set α) (r : R) (a : α) :
+    r • s.indicator (1 : α → R) a = s.indicator (fun _ ↦ r) a := by
+  simp_rw [← indicator_const_smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
+
+end MulZeroOneClass
+end Set
