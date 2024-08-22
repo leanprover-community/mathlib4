@@ -295,6 +295,18 @@ theorem equivMapDomain_trans' (f : α ≃ β) (g : β ≃ γ) :
     @equivMapDomain _ _ M _ (f.trans g) = equivMapDomain g ∘ equivMapDomain f := by ext x; rfl
 
 @[simp]
+theorem equivMapDomain_symm_comp (f : α ≃ β) (l : α →₀ M) :
+    equivMapDomain f.symm (equivMapDomain f l) = l := by
+  ext e
+  simp
+
+@[simp]
+theorem equivMapDomain_comp_symm (f : β ≃ α) (l : α →₀ M) :
+    equivMapDomain f (equivMapDomain f.symm l) = l := by
+  ext e
+  simp
+
+@[simp]
 theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
     equivMapDomain f (single a b) = single (f a) b := by
   classical
