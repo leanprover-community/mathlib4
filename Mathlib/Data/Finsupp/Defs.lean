@@ -1042,11 +1042,9 @@ theorem induction_on_max (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
     p f := by
   suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max ?_ ?_
-  · intro f h
-    rwa [support_eq_empty.1 h]
-  · intro a s hm hf f hs
-    have hs' : (erase a f).support = s := by
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
       rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
     rw [← single_add_erase a f]
     refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
@@ -1062,11 +1060,9 @@ theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
     p f := by
   suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max ?_ ?_
-  · intro f h
-    rwa [support_eq_empty.1 h]
-  · intro a s hm hf f hs
-    have hs' : (erase a f).support = s := by
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
       rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
     rw [← erase_add_single a f]
     refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
