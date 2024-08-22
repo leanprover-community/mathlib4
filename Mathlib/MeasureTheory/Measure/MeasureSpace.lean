@@ -1070,26 +1070,50 @@ theorem le_liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure
     f μ.toOuterMeasure s ≤ liftLinear f hf μ s :=
   le_toMeasure_apply _ (hf μ) s
 
+/-- When a function is not measurable, the target space is not empty. Therefore, we can choose
+a point there. Useful for junk values when some maps are not measurable. -/
+def default_of_not_measurable [MeasurableSpace α] (f : α → β) (hf : ¬(Measurable f)) : β := by
+  refine Classical.choice ?_
+  contrapose! hf
+  simp only [not_nonempty_iff] at hf
+  exact measurable_of_empty_codomain f
+
+def mapₗ_of_measurable [MeasurableSpace α] (f : α → β) (hf : Measurable f) :
+    Measure α →ₗ[ℝ≥0∞] Measure β :=
+  liftLinear (OuterMeasure.map f) fun μ _s hs t =>
+    le_toOuterMeasure_caratheodory μ _ (hf hs) (f ⁻¹' t)
+
 open Classical in
 /-- The pushforward of a measure as a linear map. It is defined to be `0` if `f` is not
 a measurable function. -/
 def mapₗ [MeasurableSpace α] (f : α → β) : Measure α →ₗ[ℝ≥0∞] Measure β :=
   if hf : Measurable f then
-    liftLinear (OuterMeasure.map f) fun μ _s hs t =>
-      le_toOuterMeasure_caratheodory μ _ (hf hs) (f ⁻¹' t)
-  else 0
+    mapₗ_of_measurable f hf
+  else mapₗ_of_measurable (fun _ ↦ default_of_not_measurable f hf) measurable_const
 
 theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (h : f =ᵐ[μ] g) :
     mapₗ f μ = mapₗ g μ := by
   ext1 s hs
-  simpa only [mapₗ, hf, hg, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply]
-    using measure_congr (h.preimage s)
+  simpa only [mapₗ, mapₗ_of_measurable, hf, hg, hs, dif_pos, liftLinear_apply,
+      OuterMeasure.map_apply] using measure_congr (h.preimage s)
+
+@[simp]
+theorem mapₗ_apply_univ (f : α → β) : mapₗ f μ univ = μ univ := by
+  by_cases hf : Measurable f <;> simp [mapₗ, hf, mapₗ_of_measurable]
+
+@[simp] lemma mapₗ_eq_zero_iff (f : α → β) : mapₗ f μ = 0 ↔ μ = 0 := by
+  simp_rw [← measure_univ_eq_zero, mapₗ_apply_univ]
+
+lemma mapₗ_ne_zero_iff (f : α → β) : mapₗ f μ ≠ 0 ↔ μ ≠ 0 :=
+  (mapₗ_eq_zero_iff f).not
 
 open Classical in
-/-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
-measurable function. -/
+/-- The pushforward of a measure. It is defined to be the pushforward by a constant if `f` is not
+an almost everywhere measurable function, to make sure that `map` sends finite measures to
+finite measures, and probability measures to probability measures -- which is handy for
+typeclass inference. -/
 irreducible_def map [MeasurableSpace α] (f : α → β) (μ : Measure α) : Measure β :=
-  if hf : AEMeasurable f μ then mapₗ (hf.mk f) μ else 0
+  if hf : AEMeasurable f μ then mapₗ (hf.mk f) μ else mapₗ f μ
 
 theorem mapₗ_mk_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) :
     mapₗ (hf.mk f) μ = map f μ := by simp [map, hf]
@@ -1107,9 +1131,10 @@ theorem map_add (μ ν : Measure α) {f : α → β} (hf : Measurable f) :
 theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
   by_cases hf : AEMeasurable f (0 : Measure α) <;> simp [map, hf]
 
-@[simp]
-theorem map_of_not_aemeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
-    μ.map f = 0 := by simp [map, hf]
+theorem map_of_not_aemeasurable {f : α → β} (hf : ¬AEMeasurable f μ) :
+    map f μ = mapₗ_of_measurable (fun _ ↦ default_of_not_measurable f
+      ((not_imp_not).2 Measurable.aemeasurable hf)) measurable_const μ := by
+  simp [map, hf, mapₗ, (not_imp_not).2 Measurable.aemeasurable hf]
 
 theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Measure.map g μ := by
   by_cases hf : AEMeasurable f μ
@@ -1118,7 +1143,8 @@ theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Meas
     exact
       mapₗ_congr hf.measurable_mk hg.measurable_mk (hf.ae_eq_mk.symm.trans (h.trans hg.ae_eq_mk))
   · have hg : ¬AEMeasurable g μ := by simpa [← aemeasurable_congr h] using hf
-    simp [map_of_not_aemeasurable, hf, hg]
+    simp only [map_of_not_aemeasurable hf, map_of_not_aemeasurable hg]
+    rfl
 
 @[simp]
 protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
@@ -1146,7 +1172,7 @@ variable {f : α → β}
 
 lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
     (hs : NullMeasurableSet s (map f μ)) : μ.map f s = μ (f ⁻¹' s) := by
-  rw [map, dif_pos hf, mapₗ, dif_pos hf.measurable_mk] at hs ⊢
+  rw [map, dif_pos hf, mapₗ, dif_pos hf.measurable_mk, mapₗ_of_measurable] at hs ⊢
   rw [liftLinear_apply₀ _ hs, measure_congr (hf.ae_eq_mk.preimage s)]
   rfl
 
@@ -1167,27 +1193,23 @@ theorem map_toOuterMeasure (hf : AEMeasurable f μ) :
   intro s hs
   simp [hf, hs]
 
-@[simp] lemma map_eq_zero_iff (hf : AEMeasurable f μ) : μ.map f = 0 ↔ μ = 0 := by
-  simp_rw [← measure_univ_eq_zero, map_apply_of_aemeasurable hf .univ, preimage_univ]
+@[simp]
+theorem map_apply_univ : μ.map f univ = μ univ := by
+  by_cases hf : AEMeasurable f μ
+  · simp [hf]
+  · simp [map_of_not_aemeasurable hf, mapₗ_of_measurable]
 
-@[simp] lemma mapₗ_eq_zero_iff (hf : Measurable f) : Measure.mapₗ f μ = 0 ↔ μ = 0 := by
-  rw [mapₗ_apply_of_measurable hf, map_eq_zero_iff hf.aemeasurable]
+@[simp] lemma map_eq_zero_iff (f : α → β) : μ.map f = 0 ↔ μ = 0 := by
+  simp_rw [← measure_univ_eq_zero, map_apply_univ]
 
 /-- If `map f μ = μ`, then the measure of the preimage of any null measurable set `s`
-is equal to the measure of `s`.
-Note that this lemma does not assume (a.e.) measurability of `f`. -/
+is equal to the measure of `s`. -/
 lemma measure_preimage_of_map_eq_self {f : α → α} (hf : map f μ = μ)
-    {s : Set α} (hs : NullMeasurableSet s μ) : μ (f ⁻¹' s) = μ s := by
-  if hfm : AEMeasurable f μ then
-    rw [← map_apply₀ hfm, hf]
-    rwa [hf]
-  else
-    rw [map_of_not_aemeasurable hfm] at hf
-    simp [← hf]
+    {s : Set α} (hfm : AEMeasurable f μ) (hs : NullMeasurableSet s μ) : μ (f ⁻¹' s) = μ s := by
+  rw [← map_apply₀ hfm, hf]
+  rwa [hf]
 
-lemma map_ne_zero_iff (hf : AEMeasurable f μ) : μ.map f ≠ 0 ↔ μ ≠ 0 := (map_eq_zero_iff hf).not
-lemma mapₗ_ne_zero_iff (hf : Measurable f) : Measure.mapₗ f μ ≠ 0 ↔ μ ≠ 0 :=
-  (mapₗ_eq_zero_iff hf).not
+lemma map_ne_zero_iff : μ.map f ≠ 0 ↔ μ ≠ 0 := (map_eq_zero_iff f).not
 
 @[simp]
 theorem map_id : map id μ = μ :=
@@ -1824,13 +1846,10 @@ theorem ae_of_ae_map {f : α → β} (hf : AEMeasurable f μ) {p : β → Prop} 
   mem_ae_of_mem_ae_map hf h
 
 theorem ae_map_mem_range {m0 : MeasurableSpace α} (f : α → β) (hf : MeasurableSet (range f))
-    (μ : Measure α) : ∀ᵐ x ∂μ.map f, x ∈ range f := by
-  by_cases h : AEMeasurable f μ
-  · change range f ∈ ae (μ.map f)
-    rw [mem_ae_map_iff h hf]
-    filter_upwards using mem_range_self
-  · simp [map_of_not_aemeasurable h]
-
+    (μ : Measure α) (h'f : AEMeasurable f μ) : ∀ᵐ x ∂μ.map f, x ∈ range f := by
+  change range f ∈ ae (μ.map f)
+  rw [mem_ae_map_iff h'f hf]
+  filter_upwards using mem_range_self
 
 section Intervals
 
