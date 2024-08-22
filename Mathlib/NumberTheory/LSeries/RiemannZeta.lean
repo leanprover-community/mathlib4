@@ -3,9 +3,7 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 import Mathlib.NumberTheory.LSeries.HurwitzZeta
-import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.PSeriesComplex
 
 /-!
@@ -45,7 +43,7 @@ proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
 -/
 
 
-open MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
+open CharZero MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
   Classical HurwitzZeta
 
 open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp

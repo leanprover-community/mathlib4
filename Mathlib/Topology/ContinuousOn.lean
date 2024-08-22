@@ -384,7 +384,7 @@ theorem tendsto_nhdsWithin_iff {a : α} {l : Filter β} {s : Set α} {f : β →
 theorem tendsto_nhdsWithin_range {a : α} {l : Filter β} {f : β → α} :
     Tendsto f l (𝓝[range f] a) ↔ Tendsto f l (𝓝 a) :=
   ⟨fun h => h.mono_right inf_le_left, fun h =>
-    tendsto_inf.2 ⟨h, tendsto_principal.2 <| eventually_of_forall mem_range_self⟩⟩
+    tendsto_inf.2 ⟨h, tendsto_principal.2 <| Eventually.of_forall mem_range_self⟩⟩
 
 theorem Filter.EventuallyEq.eq_of_nhdsWithin {s : Set α} {f g : α → β} {a : α} (h : f =ᶠ[𝓝[s] a] g)
     (hmem : a ∈ s) : f a = g a :=
@@ -711,7 +711,7 @@ theorem continuousWithinAt_update_same [DecidableEq α] {f : α → β} {s : Set
     ContinuousWithinAt (update f x y) s x ↔ Tendsto (update f x y) (𝓝[s \ {x}] x) (𝓝 y) := by
     { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_same] }
     _ ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
-      tendsto_congr' <| eventually_nhdsWithin_iff.2 <| eventually_of_forall
+      tendsto_congr' <| eventually_nhdsWithin_iff.2 <| Eventually.of_forall
         fun z hz => update_noteq hz.2 _ _
 
 @[simp]
@@ -903,6 +903,11 @@ theorem continuousOn_id' (s : Set α) : ContinuousOn (fun x : α => x) s := cont
 theorem continuousWithinAt_id {s : Set α} {x : α} : ContinuousWithinAt id s x :=
   continuous_id.continuousWithinAt
 
+protected theorem ContinuousOn.iterate {f : α → α} {s : Set α} (hcont : ContinuousOn f s)
+    (hmaps : MapsTo f s s) : ∀ n, ContinuousOn (f^[n]) s
+  | 0 => continuousOn_id
+  | (n + 1) => (hcont.iterate hmaps n).comp hcont hmaps
+
 theorem continuousOn_open_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     ContinuousOn f s ↔ ∀ t, IsOpen t → IsOpen (s ∩ f ⁻¹' t) := by
   rw [continuousOn_iff']
@@ -945,7 +950,7 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
   have := ct x ⟨xs, xt⟩
   rwa [ContinuousWithinAt, ← nhdsWithin_restrict _ xt open_t] at this
 
-theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
+theorem continuousOn_to_generateFrom_iff {β} {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
     delta ContinuousWithinAt
@@ -1088,7 +1093,7 @@ theorem continuous_if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a
     (hg : ContinuousOn g (closure { x | ¬p x })) :
     Continuous fun a => if p a then f a else g a := by
   rw [continuous_iff_continuousOn_univ]
-  apply ContinuousOn.if <;> simp <;> assumption
+  apply ContinuousOn.if <;> simpa
 
 theorem Continuous.if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : Continuous f) (hg : Continuous g) :
@@ -1139,7 +1144,7 @@ theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
 
 theorem IsOpen.ite {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
     (ht : s ∩ frontier t = s' ∩ frontier t) : IsOpen (t.ite s s') :=
-  hs.ite' hs' fun x hx => by simpa [hx] using ext_iff.1 ht x
+  hs.ite' hs' fun x hx => by simpa [hx] using Set.ext_iff.1 ht x
 
 theorem ite_inter_closure_eq_of_inter_frontier_eq {s s' t : Set α}
     (ht : s ∩ frontier t = s' ∩ frontier t) : t.ite s s' ∩ closure t = s ∩ closure t := by

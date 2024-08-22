@@ -3,9 +3,7 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Logic.Function.Basic
 
 /-!
 # Semidirect product
@@ -89,10 +87,10 @@ theorem inv_left (a : N ⋊[φ] G) : a⁻¹.left = φ a.right⁻¹ a.left⁻¹ :
 theorem inv_right (a : N ⋊[φ] G) : a⁻¹.right = a.right⁻¹ := rfl
 
 instance : Group (N ⋊[φ] G) where
-  mul_assoc a b c := SemidirectProduct.ext _ _ (by simp [mul_assoc]) (by simp [mul_assoc])
-  one_mul a := SemidirectProduct.ext _ _ (by simp) (one_mul a.2)
-  mul_one a := SemidirectProduct.ext _ _ (by simp) (mul_one _)
-  mul_left_inv a := SemidirectProduct.ext _ _ (by simp) (by simp)
+  mul_assoc a b c := SemidirectProduct.ext (by simp [mul_assoc]) (by simp [mul_assoc])
+  one_mul a := SemidirectProduct.ext (by simp) (one_mul a.2)
+  mul_one a := SemidirectProduct.ext (by simp) (mul_one _)
+  inv_mul_cancel a := SemidirectProduct.ext (by simp) (by simp)
 
 instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
 

@@ -208,7 +208,7 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
 @[simp] lemma tprod_noncommProd {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) (hx) :
     tprod R (s.noncommProd x hx) = s.noncommProd (fun k => tprod R (x k))
       (hx.imp fun _ _ => Commute.tprod) :=
-  Finset.noncommProd_map s x _ (tprodMonoidHom R)
+  Finset.map_noncommProd s x _ (tprodMonoidHom R)
 
 /-- To show two algebra morphisms from finite tensor products are equal, it suffices to show that
 they agree on elements of the form $1 ⊗ ⋯ ⊗ a ⊗ 1 ⊗ ⋯$. -/

@@ -6,14 +6,12 @@ Authors: Leonardo de Moura
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Tactic.Common
 
-
-
 /-!
 The type `Vector` represents lists with fixed length.
 -/
 
-namespace Mathlib
 assert_not_exists Monoid
+namespace Mathlib
 
 universe u v w
 /-- `Vector α n` is the type of lists of length `n` with elements of type `α`. -/

@@ -103,6 +103,8 @@ immediate predecessors and what conditions are added to each of them.
   - `CommRing` & `IsDomain` & linear order structure
 -/
 
+assert_not_exists MonoidHom
+
 open Function
 
 universe u
@@ -387,16 +389,11 @@ instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α where
     obtain ha | ha := ha.lt_or_lt
     exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
 
-end LinearOrderedSemiring
-
-section LinearOrderedCommSemiring
-variable [LinearOrderedCommSemiring α] {a b c d : α}
-
 -- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid :
-    LinearOrderedCancelAddCommMonoid α where __ := ‹LinearOrderedCommSemiring α›
+instance (priority := 100) LinearOrderedSemiring.toLinearOrderedCancelAddCommMonoid :
+    LinearOrderedCancelAddCommMonoid α where __ := ‹LinearOrderedSemiring α›
 
-end LinearOrderedCommSemiring
+end LinearOrderedSemiring
 
 section LinearOrderedRing
 variable [LinearOrderedRing α] {a b c : α}
@@ -422,5 +419,3 @@ instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
 instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
     [d : LinearOrderedCommRing α] : LinearOrderedCommSemiring α :=
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
-
-assert_not_exists MonoidHom

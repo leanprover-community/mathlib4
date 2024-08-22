@@ -90,12 +90,11 @@ theorem UniformInducing.uniformContinuous {f : α → β} (hf : UniformInducing 
 theorem UniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} (hg : UniformInducing g) :
     UniformContinuous f ↔ UniformContinuous (g ∘ f) := by
   dsimp only [UniformContinuous, Tendsto]
-  rw [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map]; rfl
+  simp only [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, Function.comp_def]
 
 protected theorem UniformInducing.uniformInducing_comp_iff {f : α → β} {g : β → γ}
     (hg : UniformInducing g) : UniformInducing (g ∘ f) ↔ UniformInducing f := by
-  simp only [uniformInducing_iff, ← hg.comap_uniformity, comap_comap]
-  rfl
+  simp only [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, Function.comp_def]
 
 theorem UniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
     (hg : UniformInducing g) :
@@ -396,6 +395,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} [UniformSpace α] [UniformSpace 
 
 local notation "ψ" => DenseInducing.extend (UniformInducing.denseInducing h_e h_dense) f
 
+include h_e h_dense h_f in
 theorem uniformly_extend_exists [CompleteSpace γ] (a : α) : ∃ c, Tendsto f (comap e (𝓝 a)) (𝓝 c) :=
   let de := h_e.denseInducing h_dense
   have : Cauchy (𝓝 a) := cauchy_nhds
@@ -420,10 +420,12 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
   rw [Subtype.range_coe_subtype]
   exact ⟨_, hb, by rwa [← de.toInducing.closure_eq_preimage_closure_image, hs.closure_eq]⟩
 
+include h_e h_f in
 theorem uniformly_extend_spec [CompleteSpace γ] (a : α) : Tendsto f (comap e (𝓝 a)) (𝓝 (ψ a)) := by
   simpa only [DenseInducing.extend] using
     tendsto_nhds_limUnder (uniformly_extend_exists h_e ‹_› h_f _)
 
+include h_f in
 theorem uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuous ψ := fun d hd =>
   let ⟨s, hs, hs_comp⟩ := comp3_mem_uniformity hd
   have h_pnt : ∀ {a m}, m ∈ 𝓝 a → ∃ c ∈ f '' (e ⁻¹' m), (c, ψ a) ∈ s ∧ (ψ a, c) ∈ s :=
@@ -452,6 +454,7 @@ theorem uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuou
 
 variable [T0Space γ]
 
+include h_f in
 theorem uniformly_extend_of_ind (b : β) : ψ (e b) = f b :=
   DenseInducing.extend_eq_at _ h_f.continuous.continuousAt
 
