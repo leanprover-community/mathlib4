@@ -7,7 +7,7 @@ on:
 jobs:
   fix_style:
     name: Fix style issues from lint
-    if: github.repository == 'leanprover-community/mathlib4' && (github.event.issue.pull_request != 'null') && github.event.pull_request.draft == false && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
+    if: (github.event.issue.pull_request != 'null') && github.event.pull_request.draft == false && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
     runs-on: ubuntu-latest
     steps:
       - name: cleanup
