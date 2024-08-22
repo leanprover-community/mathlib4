@@ -108,23 +108,12 @@ variable {α : Sort*} {r : α → α → Prop} {a b c : α}
 
 local infixl:50 " ≺ " => r
 
-lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a :=
-  IsIrrefl.irrefl a
-
-lemma refl [IsRefl α r] (a : α) : a ≺ a :=
-  IsRefl.refl a
-
-lemma trans [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c :=
-  IsTrans.trans _ _ _
-
-lemma symm [IsSymm α r] : a ≺ b → b ≺ a :=
-  IsSymm.symm _ _
-
-lemma antisymm [IsAntisymm α r] : a ≺ b → b ≺ a → a = b :=
-  IsAntisymm.antisymm _ _
-
-lemma asymm [IsAsymm α r] : a ≺ b → ¬b ≺ a :=
-  IsAsymm.asymm _ _
+lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a := IsIrrefl.irrefl a
+lemma refl [IsRefl α r] (a : α) : a ≺ a := IsRefl.refl a
+lemma trans [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := IsTrans.trans _ _ _
+lemma symm [IsSymm α r] : a ≺ b → b ≺ a := IsSymm.symm _ _
+lemma antisymm [IsAntisymm α r] : a ≺ b → b ≺ a → a = b := IsAntisymm.antisymm _ _
+lemma asymm [IsAsymm α r] : a ≺ b → ¬b ≺ a := IsAsymm.asymm _ _
 
 lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   IsTrichotomous.trichotomous
@@ -133,44 +122,23 @@ instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrref
     IsAsymm α r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
 
-section ExplicitRelationVariants
-
 variable (r)
 
-@[elab_without_expected_type]
-lemma irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a :=
-  irrefl a
+@[elab_without_expected_type] lemma irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a := irrefl a
+@[elab_without_expected_type] lemma refl_of [IsRefl α r] (a : α) : a ≺ a := refl a
+@[elab_without_expected_type] lemma trans_of [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := _root_.trans
+@[elab_without_expected_type] lemma symm_of [IsSymm α r] : a ≺ b → b ≺ a := symm
+@[elab_without_expected_type] lemma asymm_of [IsAsymm α r] : a ≺ b → ¬b ≺ a := asymm
 
 @[elab_without_expected_type]
-lemma refl_of [IsRefl α r] (a : α) : a ≺ a :=
-  refl a
+lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a := IsTotal.total _ _
 
 @[elab_without_expected_type]
-lemma trans_of [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c :=
-  _root_.trans
-
-@[elab_without_expected_type]
-lemma symm_of [IsSymm α r] : a ≺ b → b ≺ a :=
-  symm
-
-@[elab_without_expected_type]
-lemma asymm_of [IsAsymm α r] : a ≺ b → ¬b ≺ a :=
-  asymm
-
-@[elab_without_expected_type]
-lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a :=
-  IsTotal.total _ _
-
-@[elab_without_expected_type]
-lemma trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
-  trichotomous
-
-end ExplicitRelationVariants
+lemma trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
 
 end
 
 /-! ### Bundled classes -/
-
 
 section Preorder
 
@@ -179,7 +147,7 @@ section Preorder
 -/
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
-class Preorder (α : Type*) extends LE α, LT α where
+class Preorder (α : Type u) extends LE α, LT α where
   le_refl : ∀ a : α, a ≤ a
   le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
@@ -422,41 +390,41 @@ def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 
+theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
+    (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
+  le_of_not_lt fun h' => not_le_of_gt (H h') h
+
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
 
+-- Porting note: no `min_tac` tactic in the following series of lemmas
+
 lemma min_le_left (a b : α) : min a b ≤ a := by
-  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
   else simp [min_def, if_neg h]; exact le_of_not_le h
 
 lemma min_le_right (a b : α) : min a b ≤ b := by
-  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [min_def, if_pos h]; exact h
   else simp [min_def, if_neg h, le_refl]
 
 lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
-  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [min_def, if_pos h]; exact h₁
   else simp [min_def, if_neg h]; exact h₂
 
 lemma le_max_left (a b : α) : a ≤ max a b := by
-  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [max_def, if_pos h]; exact h
   else simp [max_def, if_neg h, le_refl]
 
 lemma le_max_right (a b : α) : b ≤ max a b := by
-  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [max_def, if_pos h, le_refl]
   else simp [max_def, if_neg h]; exact le_of_not_le h
 
 lemma max_le (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
-  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [max_def, if_pos h]; exact h₂
   else simp [max_def, if_neg h]; exact h₁
@@ -501,17 +469,12 @@ lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
 lemma max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
   left_comm (@max α _) (@max_comm α _) (@max_assoc α _)
 
-@[simp]
-lemma max_self (a : α) : max a a = a := by simp [max_def]
+@[simp] lemma max_self (a : α) : max a a = a := by simp [max_def]
 
 lemma max_eq_left (h : b ≤ a) : max a b = a := by
   apply Eq.symm; apply eq_max (le_refl _) h; intros; assumption
 
 lemma max_eq_right (h : a ≤ b) : max a b = b := max_comm b a ▸ max_eq_left h
-
-theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
-    (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
-  le_of_not_lt fun h' => not_le_of_gt (H h') h
 
 lemma min_eq_left_of_lt (h : a < b) : min a b = a := min_eq_left (le_of_lt h)
 lemma min_eq_right_of_lt (h : b < a) : min a b = b := min_eq_right (le_of_lt h)
@@ -574,4 +537,5 @@ instance : Batteries.TransCmp (compare (α := α)) where
     compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
 
 end Ord
+
 end LinearOrder
