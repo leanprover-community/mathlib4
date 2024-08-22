@@ -645,6 +645,14 @@ theorem mul_eq_one_iff_inv_eq : a * b = 1 ↔ a⁻¹ = b := by
   rw [mul_eq_one_iff_eq_inv, inv_eq_iff_eq_inv]
 
 @[to_additive]
+theorem mul_eq_one_iff_eq_inv' : a * b = 1 ↔ b = a⁻¹ := by
+  rw [mul_eq_one_iff_inv_eq, eq_comm]
+
+@[to_additive]
+theorem mul_eq_one_iff_inv_eq' : a * b = 1 ↔ b⁻¹ = a := by
+  rw [mul_eq_one_iff_eq_inv, eq_comm]
+
+@[to_additive]
 theorem eq_inv_iff_mul_eq_one : a = b⁻¹ ↔ a * b = 1 :=
   mul_eq_one_iff_eq_inv.symm
 
