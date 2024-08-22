@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 /-!
-# strong transformations
+# Strong transformations of pseudofunctors
 
 A strong transformation is an oplax transformation such that each component 2-cell
 is an isomorphism.
