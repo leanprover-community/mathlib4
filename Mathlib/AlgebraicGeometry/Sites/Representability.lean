@@ -61,21 +61,14 @@ variable (i j k : ι)
 lemma isOpenImmersion_snd (i j : ι) : IsOpenImmersion ((hf i).rep.snd (f j)) :=
   (hf i).property_snd (f j)
 
-lemma isOpenImmersion_fst' (i j : ι) :
-    IsOpenImmersion ((hf i).rep.fst' (f j)) :=
+lemma isOpenImmersion_fst' (i j : ι) : IsOpenImmersion ((hf i).rep.fst' (f j)) :=
   (hf j).property _ _ _ ((hf i).1.isPullback' (f j)).flip
 
-lemma fst'_self_eq_snd (i : ι) :
-    (hf i).rep.fst' (f i) = (hf i).rep.snd (f i) :=
+lemma fst'_self_eq_snd (i : ι) : (hf i).rep.fst' (f i) = (hf i).rep.snd (f i) :=
   openImmersion.fst'_self_eq_snd openImmersion_le_monomorphisms (hf i)
 
--- again this should be a general lemma in terms of both PullbackCone and CommSq API
-lemma isIso_fst'_self (i : ι) :
-    IsIso ((hf i).rep.fst' (f i)) := by
-  refine ⟨(hf i).rep.lift' (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩
-  apply Presheaf.representable.hom_ext'
-  · simp
-  · simp [fst'_self_eq_snd hf i]
+lemma isIso_fst'_self (i : ι) : IsIso ((hf i).rep.fst' (f i)) :=
+  openImmersion.isIso_fst'_self openImmersion_le_monomorphisms (hf i)
 
 open Presheaf.representable in
 @[simps]

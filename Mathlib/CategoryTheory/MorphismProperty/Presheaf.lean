@@ -354,8 +354,6 @@ end
 
 section
 
-variable (hP : P ≤ MorphismProperty.monomorphisms C)
-
 -- TODO: should make le_mono a class on morphism properties?
 lemma presheaf_mono_of_le (hP : P ≤ MorphismProperty.monomorphisms C)
     {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : Mono f :=
@@ -367,6 +365,12 @@ lemma fst'_self_eq_snd (hP : P ≤ MorphismProperty.monomorphisms C)
   have := P.presheaf_mono_of_le hP hf
   apply yoneda.map_injective
   rw [← cancel_mono f, (hf.rep.isPullback' f).w]
+
+lemma isIso_fst'_self (hP : P ≤ MorphismProperty.monomorphisms C)
+    {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : IsIso (hf.rep.fst' f) :=
+  have := P.presheaf_mono_of_le hP hf
+  have := (hf.rep.isPullback' f).fst_iso_of_mono_eq
+  Yoneda.fullyFaithful.isIso_of_isIso_map _
 
 end
 
