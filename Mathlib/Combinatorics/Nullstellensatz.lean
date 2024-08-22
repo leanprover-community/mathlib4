@@ -187,21 +187,37 @@ lemma prod_totalDegree_aux {ι : Type*} (i : ι) (s : Finset R) :
         · rfl
     infer_instance
 
-#check Finset.nonempty
-
+-- Ce n'est pas la bonne récurrence à faire…
 lemma euclDivd_aux (D : ℕ) (f : MvPolynomial (Fin n) R) (hD : f.totalDegree ≤ D) 
-    (S : Fin n → Finset R) (Sne : ∀ i, (S i).nonempty) :
+    (S : Fin n → Finset R) (Sne : ∀ i, (S i).Nonempty) :
     ∃ (h : Fin n → MvPolynomial (Fin n) R) (r : MvPolynomial (Fin n) R),
     f = Finset.univ.sum (fun i => (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) + r ∧
-    (∀ i w, (h i).weightedTotalDegree w + (S i).card * (w i) ≤ f.weightedTotalDegree w) ∧
-    (∀ i, r.weightedTotalDegree (Finsupp.single i 1) < (S i).card) := by  sorry
+    (∀ i (w : Fin n → ℕ),
+      (h i * (S i).prod (fun (s : R) ↦ (X i - C s))).weightedTotalDegree w 
+        ≤ f.weightedTotalDegree w) ∧
+    (∀ i, r.weightedTotalDegree (Finsupp.single i 1) < (S i).card) := by 
+  induction D using Nat.strong_induction_on with
+  | h D hrec => 
+    by_cases H : ∀ i, weightedTotalDegree (Finsupp.single i 1) f < (S i).card
+    · use fun _ ↦ 0, f
+      constructor
+      · simp
+      constructor
+      · intro i w 
+        simp only [zero_mul, weightedTotalDegree_zero, bot_le]
+      · exact H
+    · push_neg at H
+      obtain ⟨i, H⟩ := H
+      sorry
 
-lemma euclDivd (f : MvPolynomial (Fin n) R) (S : Fin n → Finset R) (Sne : ∀ i, (S i).nonempty) :
+lemma euclDivd (f : MvPolynomial (Fin n) R) (S : Fin n → Finset R) (Sne : ∀ i, (S i).Nonempty) :
     ∃ (h : Fin n → MvPolynomial (Fin n) R) (r : MvPolynomial (Fin n) R),
     f = Finset.univ.sum (fun i => (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) + r ∧
-    (∀ i w, (h i).weightedTotalDegree w + (S i).card * (w i) ≤ f.weightedTotalDegree w) ∧
+    (∀ i (w : Fin n → ℕ),
+      (h i * (S i).prod (fun (s : R) ↦ (X i - C s))).weightedTotalDegree w 
+        ≤ f.weightedTotalDegree w) ∧
     (∀ i, r.weightedTotalDegree (Finsupp.single i 1) < (S i).card) := 
-  euclDivd_aux f.totalDegree f le_refl S Sne
+  euclDivd_aux f.totalDegree f (le_refl f.totalDegree) S Sne
 
 
 theorem Alon1 (f : MvPolynomial (Fin n) R) (S : Fin n → Finset R)
