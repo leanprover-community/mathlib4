@@ -974,7 +974,8 @@ lemma fst_prodMkLeft (δ : Type*) [MeasurableSpace δ] (κ : Kernel α (β × γ
 lemma fst_prodMkRight (κ : Kernel α (β × γ)) (δ : Type*) [MeasurableSpace δ] :
     fst (prodMkRight δ κ) = prodMkRight δ (fst κ) := rfl
 
-/-- Define a `Kernel α γ` from a `Kernel α (β × γ)` by taking the map of the second projection. -/
+/-- Define a `Kernel α γ` from a `Kernel α (β × γ)` by taking the map of the second projection.
+We use `mapOfMeasurable` for better defeqs. -/
 noncomputable def snd (κ : Kernel α (β × γ)) : Kernel α γ :=
   mapOfMeasurable κ Prod.snd measurable_snd
 
