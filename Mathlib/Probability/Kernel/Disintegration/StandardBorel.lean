@@ -234,22 +234,19 @@ instance instIsMarkovKernelBorelMarkovFromReal (η : Kernel α ℝ) [IsMarkovKer
   · rw [deterministic_apply]
     simp [(range_nonempty (embeddingReal Ω)).choose_spec]
 
-/-- For `κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)`, the
+/-- For `κ' := map κ (Prod.map (id : β → β) e)`, the
 hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`. The conclusion of the lemma is
 `fst κ ⊗ₖ borelMarkovFromReal Ω η = comapRight (fst κ' ⊗ₖ η) _`. -/
 lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
     (κ : Kernel α (β × Ω)) [IsSFiniteKernel κ] (η : Kernel (α × β) ℝ) [IsSFiniteKernel η]
-    (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω))
-        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable))) ⊗ₖ η
-      = map κ (Prod.map (id : β → β) (embeddingReal Ω))
-        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)) :
+    (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω)))) ⊗ₖ η
+      = map κ (Prod.map (id : β → β) (embeddingReal Ω))) :
     fst κ ⊗ₖ borelMarkovFromReal Ω η
-      = comapRight (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω))
-          (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)) ⊗ₖ η)
+      = comapRight (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω))) ⊗ₖ η)
         (MeasurableEmbedding.id.prod_mk (measurableEmbedding_embeddingReal Ω)) := by
   let e := embeddingReal Ω
   let he := measurableEmbedding_embeddingReal Ω
-  let κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)
+  let κ' := map κ (Prod.map (id : β → β) e)
   have hη' : fst κ' ⊗ₖ η = κ' := hη
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=
     MeasurableEmbedding.id.prod_mk he
@@ -258,7 +255,8 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   have h_fst : fst κ' = fst κ := by
     ext a u
     unfold_let κ'
-    rw [fst_apply, map_apply, Measure.map_map measurable_fst h_prod_embed.measurable, fst_apply]
+    rw [fst_apply, map_apply _ (by fun_prop), Measure.map_map measurable_fst
+      h_prod_embed.measurable, fst_apply]
     congr
   rw [h_fst]
   ext a t ht : 2

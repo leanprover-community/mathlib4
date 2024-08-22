@@ -617,6 +617,10 @@ theorem map_of_not_measurable (κ : Kernel α β) {f : β → γ} (hf : ¬(Measu
     map κ f = map κ (fun _ ↦ defaultOfNotMeasurable f hf) := by
   simp [map, hf]
 
+@[simp] theorem mapOfMeasurable_eq_map (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :
+    mapOfMeasurable κ f hf = map κ f := by
+  simp [map, hf]
+
 theorem map_apply (κ : Kernel α β) (hf : Measurable f) (a : α) : map κ f a = (κ a).map f := by
   simp only [map, hf, ↓reduceDIte, mapOfMeasurable]
   rfl
@@ -897,13 +901,14 @@ instance IsFiniteKernel.swapRight (κ : Kernel α (β × γ)) [IsFiniteKernel κ
 instance IsSFiniteKernel.swapRight (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
     IsSFiniteKernel (swapRight κ) := by rw [Kernel.swapRight]; infer_instance
 
-/-- Define a `Kernel α β` from a `Kernel α (β × γ)` by taking the map of the first projection. -/
+/-- Define a `Kernel α β` from a `Kernel α (β × γ)` by taking the map of the first projection.
+We use `mapOfMeasurable` for better defeqs. -/
 noncomputable def fst (κ : Kernel α (β × γ)) : Kernel α β :=
-  map κ Prod.fst
+  mapOfMeasurable κ Prod.fst measurable_fst
 
-theorem fst_apply (κ : Kernel α (β × γ)) (a : α) : fst κ a = (κ a).map Prod.fst := by
-  simp only [fst, map, measurable_fst, ↓reduceDIte]
-  rfl
+theorem fst_eq (κ : Kernel α (β × γ)) : fst κ = map κ Prod.fst := by simp [fst]
+
+theorem fst_apply (κ : Kernel α (β × γ)) (a : α) : fst κ a = (κ a).map Prod.fst := rfl
 
 theorem fst_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set β} (hs : MeasurableSet s) :
     fst κ a s = κ a {p | p.1 ∈ s} := by rw [fst_apply, Measure.map_apply measurable_fst hs]; rfl
@@ -914,16 +919,16 @@ lemma fst_zero : fst (0 : Kernel α (β × γ)) = 0 := by
 
 theorem lintegral_fst (κ : Kernel α (β × γ)) (a : α) {g : β → ℝ≥0∞} (hg : Measurable g) :
     ∫⁻ c, g c ∂fst κ a = ∫⁻ bc : β × γ, g bc.fst ∂κ a := by
-  rw [fst, lintegral_map _ measurable_fst a hg]
+  rw [fst_eq, lintegral_map _ measurable_fst a hg]
 
 instance IsMarkovKernel.fst (κ : Kernel α (β × γ)) [IsMarkovKernel κ] : IsMarkovKernel (fst κ) := by
-  rw [Kernel.fst]; infer_instance
+  rw [Kernel.fst_eq]; infer_instance
 
 instance IsFiniteKernel.fst (κ : Kernel α (β × γ)) [IsFiniteKernel κ] : IsFiniteKernel (fst κ) := by
-  rw [Kernel.fst]; infer_instance
+  rw [Kernel.fst_eq]; infer_instance
 
 instance IsSFiniteKernel.fst (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
-    IsSFiniteKernel (fst κ) := by rw [Kernel.fst]; infer_instance
+    IsSFiniteKernel (fst κ) := by rw [Kernel.fst_eq]; infer_instance
 
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst {κ : Kernel α (β × γ)}
     [h : IsFiniteKernel (fst κ)] :
@@ -969,11 +974,12 @@ lemma fst_prodMkRight (κ : Kernel α (β × γ)) (δ : Type*) [MeasurableSpace 
 
 /-- Define a `Kernel α γ` from a `Kernel α (β × γ)` by taking the map of the second projection. -/
 noncomputable def snd (κ : Kernel α (β × γ)) : Kernel α γ :=
-  map κ Prod.snd
+  mapOfMeasurable κ Prod.snd measurable_snd
 
-theorem snd_apply (κ : Kernel α (β × γ)) (a : α) : snd κ a = (κ a).map Prod.snd := by
-  simp only [snd, map, measurable_snd, ↓reduceDIte]
-  rfl
+theorem snd_eq (κ : Kernel α (β × γ)) : snd κ = map κ Prod.snd := by
+  simp [snd]
+
+theorem snd_apply (κ : Kernel α (β × γ)) (a : α) : snd κ a = (κ a).map Prod.snd := rfl
 
 theorem snd_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set γ} (hs : MeasurableSet s) :
     snd κ a s = κ a {p | p.2 ∈ s} := by rw [snd_apply, Measure.map_apply measurable_snd hs]; rfl
@@ -983,16 +989,16 @@ lemma snd_zero : snd (0 : Kernel α (β × γ)) = 0 := by simp [snd]
 
 theorem lintegral_snd (κ : Kernel α (β × γ)) (a : α) {g : γ → ℝ≥0∞} (hg : Measurable g) :
     ∫⁻ c, g c ∂snd κ a = ∫⁻ bc : β × γ, g bc.snd ∂κ a := by
-  rw [snd, lintegral_map _ measurable_snd a hg]
+  rw [snd_eq, lintegral_map _ measurable_snd a hg]
 
 instance IsMarkovKernel.snd (κ : Kernel α (β × γ)) [IsMarkovKernel κ] : IsMarkovKernel (snd κ) := by
-  rw [Kernel.snd]; infer_instance
+  rw [Kernel.snd_eq]; infer_instance
 
 instance IsFiniteKernel.snd (κ : Kernel α (β × γ)) [IsFiniteKernel κ] : IsFiniteKernel (snd κ) := by
-  rw [Kernel.snd]; infer_instance
+  rw [Kernel.snd_eq]; infer_instance
 
 instance IsSFiniteKernel.snd (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
-    IsSFiniteKernel (snd κ) := by rw [Kernel.snd]; infer_instance
+    IsSFiniteKernel (snd κ) := by rw [Kernel.snd_eq]; infer_instance
 
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_snd {κ : Kernel α (β × γ)}
     [h : IsFiniteKernel (snd κ)] :
