@@ -23,19 +23,17 @@ a finite type, then the sequence `x, f(x), f(f(x)), ...` will eventually be a co
 namespace Function
 
 open Filter
-variable {α : Type*} [PartialOrder α] [Finite α] {f : α → α}
+variable {α : Type*} [PartialOrder α] [hα : WellFoundedGT α] {f : α → α}
 
-/-- The function `g : ι → α` will eventually be constant if `>` relation on `α` is well-ordered. -/
+/-- The function `g : ι → α` will eventually be constant if the `>` relation on `α`
+  is well-founded. -/
 lemma eventually_constant_monotone {ι : Type*}
-    [SemilatticeSup ι] [Nonempty ι] [hα : WellFoundedGT α] {g : ι → α} (hg : Monotone g) :
+    [SemilatticeSup ι] [Nonempty ι] {g : ι → α} (hg : Monotone g) :
     EventuallyConst g atTop := by
   rw [eventuallyConst_atTop]
-  let S := Set.range g
-  have hS : S.Nonempty := by simp [S, Set.range_nonempty]
-  let y := hα.wf.min S hS
-  obtain ⟨x, hx⟩ : ∃ x, g x = y := hα.wf.min_mem S hS
+  obtain ⟨x, hx⟩ : ∃ x, g x = _ := hα.wf.min_mem _ (Set.range_nonempty _)
   exact ⟨x, fun z hz =>
-    eq_of_ge_of_not_gt (hg hz) (hx ▸ hα.wf.not_lt_min S hS (by simp [S]))⟩
+    (hg hz).eq_of_not_gt (hx ▸ hα.wf.not_lt_min _ _ (Set.mem_range_self _))⟩
 
 /-- The theorem states that the iteration will eventually become a constant. -/
 lemma eventually_constant_iterate (hf : id ≤ f) (x : α) :
