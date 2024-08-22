@@ -177,6 +177,7 @@ jobs:
         id: oleanData
         run: |
           ./scripts/olean_comparison.sh
+        env: GH_TOKEN: ${{ github.token }}
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
