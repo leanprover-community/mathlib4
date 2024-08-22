@@ -536,6 +536,13 @@ variable [Preorder α] {a b : α}
   Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withTopCoe <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
+@[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
+  simp only [covBy_iff_Ioo_eq, ← image_coe_Ioi, coe_lt_top, image_eq_empty,
+    true_and, Ioi_eq_empty_iff]
+
+@[simp] lemma coe_wcovBy_top : (a : WithTop α) ⩿ ⊤ ↔ IsMax a := by
+  simp only [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
+
 end WithTop
 
 namespace WithBot
@@ -549,5 +556,12 @@ variable [Preorder α] {a b : α}
 @[simp] lemma coe_covBy_coe : (a : WithBot α) ⋖ b ↔ a ⋖ b :=
   Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withBotCoe <| by
     simp [WithBot.range_coe, ordConnected_Ioi]
+
+@[simp] lemma bot_covBy_coe : ⊥ ⋖ (a : WithBot α) ↔ IsMin a := by
+  simp only [covBy_iff_Ioo_eq, ← image_coe_Iio, bot_lt_coe, image_eq_empty,
+    true_and, Iio_eq_empty_iff]
+
+@[simp] lemma bot_wcovBy_coe : ⊥ ⩿ (a : WithBot α) ↔ IsMin a := by
+  simp only [wcovBy_iff_Ioo_eq, ← image_coe_Iio, bot_le, image_eq_empty, true_and, Iio_eq_empty_iff]
 
 end WithBot
