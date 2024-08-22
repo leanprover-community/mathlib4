@@ -1452,15 +1452,7 @@ lemma separation_of_isCompact_not_mem {X : Type u_1} [TopologicalSpace X] [T2Spa
   obtain ⟨U, hU⟩ := mem_nhds_iff.mp hu.1
   use U
   use V
-  constructor
-  exact hU.2.1
-  constructor
-  exact hV.1
-  constructor
-  exact hU.2.2
-  constructor
-  exact hV.2.1
-  exact Set.disjoint_of_subset hU.1 hV.2.2 (Disjoint.symm hu.2)
+  exact ⟨hU.2.1, hV.1, hU.2.2, hV.2.1, disjoint_of_subset hU.1 hV.2.2 (Disjoint.symm hu.2)⟩
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are neighbourhoods
 `U`, `V` that separate `t` and `x`.-/
@@ -1473,15 +1465,9 @@ lemma separation_of_isCompact_not_mem' {X : Type u_1} [TopologicalSpace X] [T2Sp
   constructor
   · rw [mem_nhds_iff]
     use U
-    constructor
-    exact subset_rfl
-    constructor
-    exact hV.1
-    exact hV.2.2.1
+    exact ⟨subset_rfl, hV.1, hV.2.2.1⟩
   · use V
-    constructor
-    · apply (IsOpen.mem_nhdsSet hV.2.1).mpr hV.2.2.2.1
-    · exact hV.2.2.2.2
+    exact ⟨(IsOpen.mem_nhdsSet hV.2.1).mpr hV.2.2.2.1, hV.2.2.2.2⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) T2Space.t1Space [T2Space X] : T1Space X :=
