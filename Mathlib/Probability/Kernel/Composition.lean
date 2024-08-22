@@ -876,12 +876,15 @@ instance IsSFiniteKernel.swapLeft (κ : Kernel (α × β) γ) [IsSFiniteKernel �
 @[simp] lemma swapLeft_prodMkRight (κ : Kernel α β) (γ : Type*) [MeasurableSpace γ] :
     swapLeft (prodMkRight γ κ) = prodMkLeft γ κ := rfl
 
-/-- Define a `Kernel α (γ × β)` from a `Kernel α (β × γ)` by taking the map of `Prod.swap`. -/
+/-- Define a `Kernel α (γ × β)` from a `Kernel α (β × γ)` by taking the map of `Prod.swap`.
+We use `mapOfMeasurable` in the definition for better defeqs. -/
 noncomputable def swapRight (κ : Kernel α (β × γ)) : Kernel α (γ × β) :=
-  map κ Prod.swap
+  mapOfMeasurable κ Prod.swap measurable_swap
 
-theorem swapRight_apply (κ : Kernel α (β × γ)) (a : α) : swapRight κ a = (κ a).map Prod.swap := by
-  simp only [swapRight, map, measurable_swap, ↓reduceDIte]
+lemma swapRight_eq (κ : Kernel α (β × γ)) : swapRight κ = map κ Prod.swap := by
+  simp [swapRight]
+
+theorem swapRight_apply (κ : Kernel α (β × γ)) (a : α) : swapRight κ a = (κ a).map Prod.swap :=
   rfl
 
 theorem swapRight_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set (γ × β)} (hs : MeasurableSet s) :
@@ -890,16 +893,16 @@ theorem swapRight_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set (γ × β
 
 theorem lintegral_swapRight (κ : Kernel α (β × γ)) (a : α) {g : γ × β → ℝ≥0∞} (hg : Measurable g) :
     ∫⁻ c, g c ∂swapRight κ a = ∫⁻ bc : β × γ, g bc.swap ∂κ a := by
-  rw [swapRight, lintegral_map _ measurable_swap a hg]
+  rw [swapRight_eq, lintegral_map _ measurable_swap a hg]
 
 instance IsMarkovKernel.swapRight (κ : Kernel α (β × γ)) [IsMarkovKernel κ] :
-    IsMarkovKernel (swapRight κ) := by rw [Kernel.swapRight]; infer_instance
+    IsMarkovKernel (swapRight κ) := by rw [Kernel.swapRight_eq]; infer_instance
 
 instance IsFiniteKernel.swapRight (κ : Kernel α (β × γ)) [IsFiniteKernel κ] :
-    IsFiniteKernel (swapRight κ) := by rw [Kernel.swapRight]; infer_instance
+    IsFiniteKernel (swapRight κ) := by rw [Kernel.swapRight_eq]; infer_instance
 
 instance IsSFiniteKernel.swapRight (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
-    IsSFiniteKernel (swapRight κ) := by rw [Kernel.swapRight]; infer_instance
+    IsSFiniteKernel (swapRight κ) := by rw [Kernel.swapRight_eq]; infer_instance
 
 /-- Define a `Kernel α β` from a `Kernel α (β × γ)` by taking the map of the first projection.
 We use `mapOfMeasurable` for better defeqs. -/
