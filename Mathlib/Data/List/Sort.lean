@@ -374,6 +374,52 @@ theorem sorted_insertionSort : ∀ l, Sorted r (insertionSort r l)
 
 end TotalAndTransitive
 
+theorem orderedInsert_stable {l c : List α} (a : α) (hl : c <+ l) : c <+ orderedInsert r a l := by
+  induction l generalizing c
+  case nil => simp_all
+  case cons b bs ih =>
+    unfold orderedInsert
+    split
+    case isTrue => exact .cons _ hl
+    case isFalse =>
+      cases hl
+      case cons  h => exact .cons _ (ih h)
+      case cons₂ h => exact .cons₂ _ (ih h)
+
+theorem orderedInsert_stable_cons {l c : List α} {a : α} (ha : ∀ a' ∈ c, r a a') (hl : c <+ l) :
+    a :: c <+ orderedInsert r a l := by
+  induction l
+  case nil => simp_all
+  case cons b bs ih =>
+    unfold orderedInsert
+    split
+    case isTrue => exact .cons₂ _ hl
+    case isFalse hr =>
+      cases hl
+      case cons    h => exact .cons _ (ih h)
+      case cons₂ l h => exact absurd (ha _ <| mem_cons_self ..) hr
+
+/--
+If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
+-/
+theorem insertionSort_stable {l c : List α} (hr : c.Pairwise r) (hc : c <+ l) :
+    c <+ insertionSort r l := by
+  induction l generalizing c
+  case nil => simp_all only [sublist_nil, insertionSort, Sublist.refl]
+  case cons a as ih =>
+    cases hc
+    case cons    hc => exact orderedInsert_stable a (ih hr hc)
+    case cons₂ c hc => cases hr; case cons hr ha => exact orderedInsert_stable_cons ha (ih hr hc)
+
+/--
+Another statement of stability of insertion sort.
+If a pair `[a, b]` is a sublist of `l` and `r a b`,
+then `[a, b]` is still a sublist of `insertionSort r l`.
+-/
+theorem insertionSort_stable_pair {a b : α} {l : List α} (hab : r a b) (h : [a, b] <+ l) :
+    [a, b] <+ insertionSort r l :=
+  insertionSort_stable (pairwise_pair.mpr hab) h
+
 end Correctness
 
 end InsertionSort
