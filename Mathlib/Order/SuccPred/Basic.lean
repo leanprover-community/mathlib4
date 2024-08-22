@@ -463,6 +463,7 @@ alias ⟨le_of_succ_le_succ, _⟩ := succ_le_succ_iff
 
 alias ⟨lt_of_succ_lt_succ, _⟩ := succ_lt_succ_iff
 
+-- TODO: prove for a succ-archimedean non-linear order with bottom
 @[simp]
 theorem Iio_succ (a : α) : Iio (succ a) = Iic a :=
   Iio_succ_of_not_isMax <| not_isMax _
@@ -471,6 +472,7 @@ theorem Iio_succ (a : α) : Iio (succ a) = Iic a :=
 theorem Ico_succ_right (a b : α) : Ico a (succ b) = Icc a b :=
   Ico_succ_right_of_not_isMax <| not_isMax _
 
+-- TODO: prove for a succ-archimedean non-linear order
 @[simp]
 theorem Ioo_succ_right (a b : α) : Ioo a (succ b) = Ioc a b :=
   Ioo_succ_right_of_not_isMax <| not_isMax _
@@ -824,6 +826,7 @@ alias ⟨le_of_pred_le_pred, _⟩ := pred_le_pred_iff
 
 alias ⟨lt_of_pred_lt_pred, _⟩ := pred_lt_pred_iff
 
+-- TODO: prove for a pred-archimedean non-linear order with top
 @[simp]
 theorem Ioi_pred (a : α) : Ioi (pred a) = Ici a :=
   Ioi_pred_of_not_isMin <| not_isMin a
@@ -832,6 +835,7 @@ theorem Ioi_pred (a : α) : Ioi (pred a) = Ici a :=
 theorem Ioc_pred_left (a b : α) : Ioc (pred a) b = Icc a b :=
   Ioc_pred_left_of_not_isMin <| not_isMin _
 
+-- TODO: prove for a pred-archimedean non-linear order
 @[simp]
 theorem Ioo_pred_left (a b : α) : Ioo (pred a) b = Ico a b :=
   Ioo_pred_left_of_not_isMin <| not_isMin _
