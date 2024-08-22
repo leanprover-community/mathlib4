@@ -301,7 +301,7 @@ theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃
 
 @[simp] theorem self_trans_symm (e : α ≃ β) : e.trans e.symm = Equiv.refl α := ext <| by simp
 
-theorem trans_eq_one_iff_eq_symm (f : α ≃ β) (g : β ≃ α) :
+theorem trans_eq_refl_iff_eq_symm (f : α ≃ β) (g : β ≃ α) :
     f.trans g = Equiv.refl α ↔ f = g.symm := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext x
