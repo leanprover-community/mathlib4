@@ -328,11 +328,15 @@ instance (priority := 900) (a b : α) : Decidable (a = b) :=
 theorem eq_or_lt_of_not_lt {a b : α} (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 
+set_option linter.deprecated false in
+@[deprecated (since := "2024-07-30")]
 instance : IsTotalPreorder α (· ≤ ·) where
   trans := @le_trans _ _
   total := le_total
 
 -- TODO(Leo): decide whether we should keep this instance or not
+set_option linter.deprecated false in
+@[deprecated (since := "2024-07-30")]
 instance isStrictWeakOrder_of_linearOrder : IsStrictWeakOrder α (· < ·) :=
   have : IsTotalPreorder α (· ≤ ·) := by infer_instance -- Porting note: added
   isStrictWeakOrder_of_isTotalPreorder lt_iff_not_ge
