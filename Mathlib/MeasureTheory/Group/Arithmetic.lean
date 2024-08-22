@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
+import Mathlib.MeasureTheory.Group.Defs
 
 /-!
 # Typeclasses for measurability of operations
@@ -90,18 +91,6 @@ section Mul
 variable {M α : Type*} [MeasurableSpace M] [Mul M] {m : MeasurableSpace α} {f g : α → M}
   {μ : Measure α}
 
-@[to_additive]
-instance IsMulLeftInvariant.smulInvariantMeasure
-    {μ : Measure M} [IsMulLeftInvariant μ] [MeasurableMul M] :
-    SMulInvariantMeasure M M μ :=
-  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_left_eq_self _) (by exact?) hs.nullMeasurableSet⟩
-
-@[to_additive]
-instance IsMulRightInvariant.toSMulInvariantMeasure_op
-    {μ : Measure M} [μ.IsMulRightInvariant] [MeasurableMul M] :
-    SMulInvariantMeasure Gᵐᵒᵖ G μ :=
-  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_right_eq_self _) hs.nullMeasurableSet⟩
-
 @[to_additive (attr := fun_prop, measurability)]
 theorem Measurable.const_mul [MeasurableMul M] (hf : Measurable f) (c : M) :
     Measurable fun x => c * f x :=
@@ -157,6 +146,23 @@ instance Pi.measurableMul {ι : Type*} {α : ι → Type*} [∀ i, Mul (α i)]
 instance Pi.measurableMul₂ {ι : Type*} {α : ι → Type*} [∀ i, Mul (α i)]
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableMul₂ (α i)] : MeasurableMul₂ (∀ i, α i) :=
   ⟨measurable_pi_iff.mpr fun _ => measurable_fst.eval.mul measurable_snd.eval⟩
+
+
+open Measure in
+@[to_additive]
+instance IsMulLeftInvariant.smulInvariantMeasure
+    {μ : Measure M} [IsMulLeftInvariant μ] [MeasurableMul M] :
+    SMulInvariantMeasure M M μ :=
+  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (IsMulLeftInvariant.map_mul_left_eq_self _)
+    (measurable_const_mul _).aemeasurable hs.nullMeasurableSet⟩
+
+open Measure in
+@[to_additive]
+instance IsMulRightInvariant.toSMulInvariantMeasure_op
+    {μ : Measure M} [μ.IsMulRightInvariant] [MeasurableMul M] :
+    SMulInvariantMeasure Mᵐᵒᵖ M μ :=
+  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (IsMulRightInvariant.map_mul_right_eq_self _)
+    (measurable_mul_const _).aemeasurable hs.nullMeasurableSet⟩
 
 end Mul
 
