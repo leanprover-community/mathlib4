@@ -300,7 +300,7 @@ theorem grundyValue_neg {G : PGame} (h : G.Impartial) : grundyValue (-G) = grund
   rw [grundyValue_eq_iff_equiv_nim h.neg, neg_equiv_iff, neg_nim, ← grundyValue_eq_iff_equiv_nim h]
 
 theorem grundyValue_eq_mex_right {G : PGame} (h : G.Impartial) :
-      grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) := by
+    grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) := by
   obtain ⟨l, r, L, R⟩ := G
   rw [← grundyValue_neg h, grundyValue_eq_mex_left]
   congr
