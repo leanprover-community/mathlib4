@@ -69,6 +69,8 @@ We also define two functions to convert other bundled maps to `α →o β`:
 monotone map, bundled morphism
 -/
 
+-- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+assert_not_exists Set.range
 
 open OrderDual
 
@@ -557,11 +559,11 @@ protected theorem strictMono : StrictMono f := fun _ _ => f.lt_iff_lt.2
 protected theorem acc (a : α) : Acc (· < ·) (f a) → Acc (· < ·) a :=
   f.ltEmbedding.acc a
 
-protected theorem wellFounded :
+protected theorem wellFounded (f : α ↪o β) :
     WellFounded ((· < ·) : β → β → Prop) → WellFounded ((· < ·) : α → α → Prop) :=
   f.ltEmbedding.wellFounded
 
-protected theorem isWellOrder [IsWellOrder β (· < ·)] : IsWellOrder α (· < ·) :=
+protected theorem isWellOrder [IsWellOrder β (· < ·)] (f : α ↪o β) : IsWellOrder α (· < ·) :=
   f.ltEmbedding.isWellOrder
 
 /-- An order embedding is also an order embedding between dual orders. -/
@@ -569,13 +571,13 @@ protected def dual : αᵒᵈ ↪o βᵒᵈ :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 
 /-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
-protected theorem wellFoundedLT [WellFoundedLT β] : WellFoundedLT α where
+protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α where
   wf := f.wellFounded IsWellFounded.wf
 
 /-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
 also has `(· > ·)` well-founded. -/
-protected theorem wellFoundedGT [WellFoundedGT β] : WellFoundedGT α :=
-  @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ f.dual _
+protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFoundedGT α :=
+  @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
 
 /-- A version of `WithBot.map` for order embeddings. -/
 @[simps (config := .asFn)]
@@ -588,6 +590,18 @@ protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=
 @[simps (config := .asFn)]
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
+
+/-- Coercion `α → WithBot α` as an `OrderEmbedding`. -/
+@[simps (config := .asFn)]
+protected def withBotCoe : α ↪o WithBot α where
+  toFun := .some
+  inj' := Option.some_injective _
+  map_rel_iff' := WithBot.coe_le_coe
+
+/-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
+@[simps (config := .asFn)]
+protected def withTopCoe : α ↪o WithTop α :=
+  { (OrderEmbedding.withBotCoe (α := αᵒᵈ)).dual with toFun := .some }
 
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
@@ -772,9 +786,7 @@ theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = 
   e.toEquiv.symm_apply_eq
 
 @[simp]
-theorem symm_symm (e : α ≃o β) : e.symm.symm = e := by
-  ext
-  rfl
+theorem symm_symm (e : α ≃o β) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (OrderIso.symm : (α ≃o β) → β ≃o α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
@@ -1225,19 +1237,17 @@ theorem OrderIso.isCompl {x y : α} (h : IsCompl x y) : IsCompl (f x) (f y) :=
 theorem OrderIso.isCompl_iff {x y : α} : IsCompl x y ↔ IsCompl (f x) (f y) :=
   ⟨f.isCompl, fun h => f.symm_apply_apply x ▸ f.symm_apply_apply y ▸ f.symm.isCompl h⟩
 
-theorem OrderIso.complementedLattice [ComplementedLattice α] : ComplementedLattice β :=
+theorem OrderIso.complementedLattice [ComplementedLattice α] (f : α ≃o β) : ComplementedLattice β :=
   ⟨fun x => by
     obtain ⟨y, hy⟩ := exists_isCompl (f.symm x)
     rw [← f.symm_apply_apply y] at hy
     exact ⟨f y, f.symm.isCompl_iff.2 hy⟩⟩
 
-theorem OrderIso.complementedLattice_iff : ComplementedLattice α ↔ ComplementedLattice β :=
+theorem OrderIso.complementedLattice_iff (f : α ≃o β) :
+    ComplementedLattice α ↔ ComplementedLattice β :=
   ⟨by intro; exact f.complementedLattice,
    by intro; exact f.symm.complementedLattice⟩
 
 end BoundedOrder
 
 end LatticeIsos
-
--- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
-assert_not_exists Set.range

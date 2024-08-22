@@ -601,12 +601,12 @@ theorem has_smallest_coproducts_of_hasCoproducts [HasCoproducts.{w} C] : HasCopr
   hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift : Discrete (ULift.{w} J) ≌ _)
 
 theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
-    (lf_is_limit : ∀ {J : Type w} (f : J → C), IsLimit (lf f)) : HasProducts.{w} C :=
+    (lf_isLimit : ∀ {J : Type w} (f : J → C), IsLimit (lf f)) : HasProducts.{w} C :=
   fun _ : Type w =>
   { has_limit := fun F =>
       HasLimit.mk
         ⟨(Cones.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
-          (IsLimit.postcomposeInvEquiv _ _).symm (lf_is_limit _)⟩ }
+          (IsLimit.postcomposeInvEquiv _ _).symm (lf_isLimit _)⟩ }
 
 /-!
 (Co)products over a type with a unique term.

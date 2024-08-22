@@ -73,7 +73,7 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
       · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
       · intro a₂ l₂
         simp only [← lie_skew l₂ l₁, mul_comm a₁ a₂, TensorProduct.tmul_neg, bracket'_tmul,
-          add_right_neg]
+          add_neg_cancel]
       · intro y₁ y₂ hy₁ hy₂
         simp only [hy₁, hy₂, add_add_add_comm, add_zero, LinearMap.add_apply, LinearMap.map_add]
     · intro y₁ y₂ hy₁ hy₂

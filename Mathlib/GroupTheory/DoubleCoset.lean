@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Double cosets
@@ -144,7 +144,7 @@ theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.un
   use mk H K x
   obtain ⟨h, k, h3, h4, h5⟩ := mk_out'_eq_mul H K x
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
-  simp only [h5, Subgroup.coe_mk, ← mul_assoc, one_mul, mul_left_inv, mul_inv_cancel_right]
+  simp only [h5, Subgroup.coe_mk, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
 
 theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doset a H K := by
@@ -166,10 +166,10 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
   constructor
   · rintro ⟨y, h_h⟩
     refine ⟨y, y.2, a⁻¹ * y⁻¹ * x, h_h, ?_⟩
-    simp only [← mul_assoc, one_mul, mul_right_inv, mul_inv_cancel_right, InvMemClass.coe_inv]
+    simp only [← mul_assoc, one_mul, mul_inv_cancel, mul_inv_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine ⟨⟨x, hx⟩, ?_⟩
-    simp only [hxy, ← mul_assoc, hy, one_mul, mul_left_inv, Subgroup.coe_mk, inv_mul_cancel_right]
+    simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, Subgroup.coe_mk, inv_mul_cancel_right]
 
 theorem left_bot_eq_left_quot (H : Subgroup G) :
     Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H) := by

@@ -74,9 +74,6 @@ theorem ext {x y : 𝕎 R} (h : ∀ n, x.coeff n = y.coeff n) : x = y := by
   simp only at h
   simp [Function.funext_iff, h]
 
-theorem ext_iff {x y : 𝕎 R} : x = y ↔ ∀ n, x.coeff n = y.coeff n :=
-  ⟨fun h n => by rw [h], ext⟩
-
 variable (p)
 
 theorem coeff_mk (x : ℕ → R) : (mk p x).coeff = x :=
@@ -339,10 +336,10 @@ theorem pow_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) :
   simp [(· ^ ·), Pow.pow, eval, Matrix.cons_fin_one, coeff_mk]
 
 theorem add_coeff_zero (x y : 𝕎 R) : (x + y).coeff 0 = x.coeff 0 + y.coeff 0 := by
-  simp [add_coeff, peval]
+  simp [add_coeff, peval, Function.uncurry]
 
 theorem mul_coeff_zero (x y : 𝕎 R) : (x * y).coeff 0 = x.coeff 0 * y.coeff 0 := by
-  simp [mul_coeff, peval]
+  simp [mul_coeff, peval, Function.uncurry]
 
 end Coeff
 

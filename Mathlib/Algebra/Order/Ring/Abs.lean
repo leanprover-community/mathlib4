@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Divisibility.Basic
@@ -110,13 +111,13 @@ lemma abs_lt_of_sq_lt_sq (h : a ^ 2 < b ^ 2) (hb : 0 ≤ b) : |a| < b := by
   rwa [← abs_of_nonneg hb, ← sq_lt_sq]
 
 lemma abs_lt_of_sq_lt_sq' (h : a ^ 2 < b ^ 2) (hb : 0 ≤ b) : -b < a ∧ a < b :=
-  abs_lt.1 $ abs_lt_of_sq_lt_sq h hb
+  abs_lt.1 <| abs_lt_of_sq_lt_sq h hb
 
 lemma abs_le_of_sq_le_sq (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : |a| ≤ b := by
   rwa [← abs_of_nonneg hb, ← sq_le_sq]
 
 lemma abs_le_of_sq_le_sq' (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : -b ≤ a ∧ a ≤ b :=
-  abs_le.1 $ abs_le_of_sq_le_sq h hb
+  abs_le.1 <| abs_le_of_sq_le_sq h hb
 
 lemma sq_eq_sq_iff_abs_eq_abs (a b : α) : a ^ 2 = b ^ 2 ↔ |a| = |b| := by
   simp only [le_antisymm_iff, sq_le_sq]
