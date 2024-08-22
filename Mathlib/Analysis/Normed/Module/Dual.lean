@@ -233,18 +233,16 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
     (hr : 0 < r) : polar 𝕜 (ball (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
   apply le_antisymm
   · intro x hx
-    rw [Metric.mem_closedBall, dist_zero_right]
+    rw [mem_closedBall_zero_iff]
     apply le_of_forall_le_of_dense
     intro a ha
-    rw [← dist_zero_right, ← mem_closedBall, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
-    have e3 {c : ℝ} (h : 1 < c) : ‖(RCLike.ofReal (K := 𝕜) c)‖ = c :=
-      RCLike.norm_of_nonneg (le_trans zero_le_one (le_of_lt h))
-    have e2 {c : ℝ} (hc : 1 < c) :
-      polar 𝕜 (ball (0 : E) r) ⊆ closedBall (0 : Dual 𝕜 E) (c / r) := by
-      rw [← (e3 hc)]
-      rw [← (e3 hc)] at hc
-      exact polar_ball_subset_closedBall_div (c := RCLike.ofReal c) hc hr
-    exact e2 ((inv_pos_lt_iff_one_lt_mul' hr).mp ha) hx
+    rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
+    rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
+      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
+    apply polar_ball_subset_closedBall_div _ hr hx
+    rw [RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
+      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
+    exact (inv_pos_lt_iff_one_lt_mul' hr).mp ha
   · rw [← polar_closedBall hr]
     exact LinearMap.polar_antitone _ ball_subset_closedBall
 
