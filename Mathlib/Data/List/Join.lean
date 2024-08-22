@@ -19,9 +19,6 @@ variable {α β : Type*}
 
 namespace List
 
-@[deprecated join_eq_nil_iff (since := "2024-07-10")]
-theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = [] := join_eq_nil_iff
-
 @[deprecated (since := "2024-02-25")] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
 
 /-- See `List.length_join` for the corresponding statement using `List.sum`. -/
