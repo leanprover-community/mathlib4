@@ -23,6 +23,7 @@ if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+
     awk -F'\t' '
       /compare oleans/ { last=$NF; sub(/[^ ]* /, "", last); printf("master %s\n", last) }
       /Compare to master/ { exit 0 }')"
+  printf 'Found oleans:\n%s\n' "$(echo "${masterOleans}" | head)"
   echo "* Get branch's oleans"
   newOleans="$(getCacheSize branch)"
   printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
