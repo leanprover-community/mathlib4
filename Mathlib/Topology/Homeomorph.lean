@@ -31,7 +31,7 @@ open Set Filter
 
 open Topology
 
-variable {X : Type*} {Y : Type*} {Z : Type*}
+variable {X Y W Z : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
@@ -47,7 +47,7 @@ infixl:25 " ≃ₜ " => Homeomorph
 
 namespace Homeomorph
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
   {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
 theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
@@ -510,7 +510,7 @@ theorem coe_prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : ⇑(h₁.prodC
 
 section
 
-variable (X Y Z)
+variable (X Y W Z)
 
 /-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
 def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
@@ -542,10 +542,6 @@ def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
 
 @[simp]
 lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
-
--- FIXME: move W further up...
-variable (X Y W Z : Type*)
-  [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
 
 /-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
 def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
