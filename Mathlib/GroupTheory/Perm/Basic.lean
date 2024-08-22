@@ -154,9 +154,6 @@ theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
 
-theorem trans_eq_one_iff_eq_symm (e₁ e₂ : Equiv.Perm α) : e₁.trans e₂ = 1 ↔ e₁ = e₂.symm :=
-  mul_eq_one_iff_eq_inv'
-
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
 
