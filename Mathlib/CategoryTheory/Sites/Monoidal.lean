@@ -33,8 +33,7 @@ instance : (J.W (A := A)).Monoidal where
       simp only [Adjunction.homEquiv_unit, Functor.id_obj, Functor.comp_obj, tensorLeft_obj,
         ihom.ihom_adjunction_unit, a'] at hb
       erw [Adjunction.homEquiv_counit]
-      simp only [← id_tensorHom, tensorLeft_obj, Functor.id_obj, tensorLeft_map,
-        ihom.ihom_adjunction_counit, ← tensor_comp_assoc, Category.comp_id, hb]
+      simp only [← id_tensorHom, tensorLeft_map, ← tensor_comp_assoc, hb]
       simp
   whiskerRight {G₁ G₂} g h P := by
     -- We need symmetric monoidal here, or at least `tensorRight` to have a right adjoint.
