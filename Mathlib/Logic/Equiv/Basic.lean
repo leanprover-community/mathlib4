@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Aesop
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod.Basic
@@ -379,8 +378,8 @@ def sumSumSumComm (α β γ δ) : (α ⊕ β) ⊕ γ ⊕ δ ≃ (α ⊕ γ) ⊕ 
       ∘ (Sum.map (Sum.map (@id α) (sumComm β γ).symm) (@id δ))
       ∘ (Sum.map (sumAssoc α γ β) (@id δ))
       ∘ (sumAssoc (α ⊕ γ) β δ).symm
-  left_inv x := by aesop
-  right_inv x := by aesop
+  left_inv x := by simp [Function.comp]
+  right_inv x := by simp [Function.comp]
 
 @[simp]
 theorem sumSumSumComm_symm (α β γ δ) : (sumSumSumComm α β γ δ).symm = sumSumSumComm α γ β δ :=
