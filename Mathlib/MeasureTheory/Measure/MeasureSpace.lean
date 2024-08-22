@@ -1136,6 +1136,12 @@ theorem map_of_not_aemeasurable {f : α → β} (hf : ¬AEMeasurable f μ) :
       ((not_imp_not).2 Measurable.aemeasurable hf)) measurable_const μ := by
   simp [map, hf, mapₗ, (not_imp_not).2 Measurable.aemeasurable hf]
 
+theorem map_of_not_aemeasurable' {f : α → β} (hf : ¬AEMeasurable f μ) :
+    map f μ = map (fun _ ↦ default_of_not_measurable f
+      ((not_imp_not).2 Measurable.aemeasurable hf)) μ := by
+  rw [map_of_not_aemeasurable hf, ← mapₗ_apply_of_measurable measurable_const, mapₗ]
+  simp
+
 theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Measure.map g μ := by
   by_cases hf : AEMeasurable f μ
   · have hg : AEMeasurable g μ := hf.congr h

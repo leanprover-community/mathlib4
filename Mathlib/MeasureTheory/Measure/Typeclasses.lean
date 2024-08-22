@@ -110,15 +110,9 @@ instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0�
 theorem isFiniteMeasure_of_le (μ : Measure α) [IsFiniteMeasure μ] (h : ν ≤ μ) : IsFiniteMeasure ν :=
   { measure_univ_lt_top := (h Set.univ).trans_lt (measure_lt_top _ _) }
 
-@[instance]
-theorem Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [IsFiniteMeasure μ]
-    (f : α → β) : IsFiniteMeasure (μ.map f) := by
-  by_cases hf : AEMeasurable f μ
-  · constructor
-    rw [map_apply_of_aemeasurable hf MeasurableSet.univ]
-    exact measure_lt_top μ _
-  · rw [map_of_not_aemeasurable hf]
-    exact MeasureTheory.isFiniteMeasureZero
+instance Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [IsFiniteMeasure μ]
+    (f : α → β) : IsFiniteMeasure (μ.map f) :=
+  ⟨by simpa using measure_lt_top μ univ⟩
 
 @[simp]
 theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 0 ↔ μ = 0 := by
@@ -240,9 +234,8 @@ instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
-theorem isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
-    IsProbabilityMeasure (map f μ) :=
-  ⟨by simp [map_apply_of_aemeasurable, hf]⟩
+instance isProbabilityMeasure_map {f : α → β} : IsProbabilityMeasure (map f μ) :=
+  ⟨by simp⟩
 
 @[simp]
 theorem one_le_prob_iff : 1 ≤ μ s ↔ μ s = 1 :=
@@ -303,13 +296,6 @@ lemma isProbabilityMeasure_comap (hf : Injective f) (hf' : ∀ᵐ a ∂μ, a ∈
 protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : MeasurableEmbedding f)
     (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
   isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
-
-instance isProbabilityMeasure_map_up :
-    IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
-
-instance isProbabilityMeasure_comap_down : IsProbabilityMeasure (μ.comap ULift.down) :=
-  MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
-    simp [Function.Surjective.range_eq <| EquivLike.surjective _]
 
 end IsProbabilityMeasure
 
