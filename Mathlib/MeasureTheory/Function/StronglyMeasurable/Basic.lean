@@ -54,6 +54,8 @@ measurable functions, as a basis for the Bochner integral.
 
 -/
 
+-- Guard against import creep
+assert_not_exists InnerProductSpace
 
 open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 
@@ -1105,6 +1107,9 @@ namespace AEStronglyMeasurable
 variable {m : MeasurableSpace α} {μ ν : Measure α} [TopologicalSpace β] [TopologicalSpace γ]
   {f g : α → β}
 
+lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ :=
+  ⟨_, .of_finite _, ae_eq_rfl⟩
+
 section Mk
 
 /-- A `StronglyMeasurable` function such that `f =ᵐ[μ] hf.mk f`. See lemmas
@@ -1750,7 +1755,7 @@ theorem exists_set_sigmaFinite (hf : AEFinStronglyMeasurable f μ) :
   refine ⟨t, ht, ?_, htμ⟩
   refine EventuallyEq.trans (ae_restrict_of_ae hfg) ?_
   rw [EventuallyEq, ae_restrict_iff' ht.compl]
-  exact eventually_of_forall hgt_zero
+  exact Eventually.of_forall hgt_zero
 
 /-- A measurable set `t` such that `f =ᵐ[μ.restrict tᶜ] 0` and `sigma_finite (μ.restrict t)`. -/
 def sigmaFiniteSet (hf : AEFinStronglyMeasurable f μ) : Set α :=
@@ -1875,6 +1880,3 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 
 end MeasureTheory
-
--- Guard against import creep
-assert_not_exists InnerProductSpace
