@@ -158,7 +158,7 @@ lemma act_idem (x : S) : (x ◃ x) = x := by rw [← act_one x, ← Shelf.self_d
 
 lemma act_self_act_eq (x y : S) : x ◃ (x ◃ y) = x ◃ y := by
   have h : x ◃ (x ◃ y) = (x ◃ 1) ◃ (x ◃ y) := by rw [act_one]
-  rw [h, ←Shelf.self_distrib, one_act]
+  rw [h, ← Shelf.self_distrib, one_act]
 
 /--
 The associativity of a unital shelf comes for free.
