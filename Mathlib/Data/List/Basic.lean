@@ -895,7 +895,7 @@ theorem getElem_reverse_aux₂ :
 @[deprecated (since := "2024-06-12")]
 theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
     get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
-  simp [getElem_reverse_aux₂, h1, h2]
+  simp only [get_eq_getElem, h2, getElem_reverse_aux₂]
 
 @[deprecated getElem_reverse (since := "2024-06-12")]
 theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
