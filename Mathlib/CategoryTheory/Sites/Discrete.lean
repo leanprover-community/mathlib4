@@ -9,31 +9,31 @@ import Mathlib.CategoryTheory.Sites.DenseSubsite
 import Mathlib.CategoryTheory.Sites.PreservesSheafification
 /-!
 
-# Discrete objects in sheaf categories.
+# Constant objects in sheaf categories.
 
-This file defines the notion of a discrete object in a sheaf category. A discrete sheaf in this
-context is a sheaf `F` such that the counit `(F(*))^cst ⟶ F` is an isomorphism. Here `*` denotes
-a particular chosen terminal object of the defining site, and `cst` denotes the constant sheaf.
+This file defines the notion `Sheaf.IsConstant`. A sheaf `F` *is constant* if the counit
+`(F(*))^cst ⟶ F` of the constant sheaf adjunction is an isomorphism at `F`. Here `*` denotes a
+particular chosen terminal object of the defining site, and `cst` denotes the constant sheaf.
 
 It is convenient to take an arbitrary terminal object; one might want to use this construction to
-talk about discrete sheaves on a site which has a particularly convenient terminal object, such as
-the one element space in `CompHaus`.
+talk about sheaves being constant when the defining site has a particularly convenient terminal
+object, such as the one element space in `CompHaus`.
 
 ## Main results
 
-* `isDiscrete_iff_mem_essImage` : A sheaf is discrete if and only if it is in the essential image
+* `isConstant_iff_mem_essImage` : A sheaf is constant if and only if it is in the essential image
 of the constant sheaf functor, if the constant sheaf functor is fully faithful.
-* `isDiscrete_iff_of_equivalence` : The property of a sheaf of being discrete is invariant under
+* `isConstant_iff_of_equivalence` : The property of a sheaf of being constant is invariant under
 equivalence of sheaf categories, if the constant sheaf functor is fully faithful (the assumption
 on the constant sheaf functor is probably unnecessary, but it's low priority to prove this in more
 generality, because in all cases of interest, the assumption holds).
-* `isDiscrete_iff_forget` : Given a "forgetful" functor `U : A ⥤ B` a sheaf `F : Sheaf J A` is
-discrete if and only if the sheaf given by postcomposition with `U` is discrete.
+* `isConstant_iff_forget` : Given a "forgetful" functor `U : A ⥤ B` a sheaf `F : Sheaf J A` is
+constant if and only if the sheaf given by postcomposition with `U` is constant.
 
 ## Future work
 
-* Use `isDiscrete_iff_forget` to prove that a condensed module is discrete if and only if its
-underlying condensed set is discrete.
+* (Dagur) Use `isConstant_iff_forget` to prove that a condensed module is discrete if and only if
+its underlying condensed set is discrete.
 -/
 
 open CategoryTheory Limits Functor Adjunction Opposite Category Functor
@@ -44,14 +44,12 @@ variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Cate
   [HasWeakSheafify J A] {t : C} (ht : IsTerminal t)
 
 /--
-A sheaf is discrete if it is a discrete object of the "underlying object" functor from the sheaf
-category to the target category.
+A sheaf is constant if the counit of the constant sheaf adjunction applied to it is an isomorphism.
 -/
-abbrev IsDiscrete (F : Sheaf J A) : Prop := IsIso ((constantSheafAdj J A ht).counit.app F)
+abbrev IsConstant (F : Sheaf J A) : Prop := IsIso ((constantSheafAdj J A ht).counit.app F)
 
-lemma isDiscrete_iff_isIso_counit_app {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
-    (F : Sheaf J A) :
-    IsDiscrete J ht F ↔ IsIso (adj.counit.app F) := by
+lemma isConstant_iff_isIso_counit_app {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
+    (F : Sheaf J A) : IsConstant J ht F ↔ IsIso (adj.counit.app F) := by
   let i : L ≅ constantSheaf J A := adj.leftAdjointUniq (constantSheafAdj _ _ ht)
   have h : adj.counit.app F = i.hom.app _ ≫ (constantSheafAdj J A ht).counit.app F := by
     rw [← leftAdjointUniq_hom_counit]
@@ -64,25 +62,24 @@ lemma isDiscrete_iff_isIso_counit_app {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafS
     rw [h] at hh
     exact IsIso.of_isIso_comp_left (i.hom.app _) ((constantSheafAdj J A ht).counit.app F)
 
-lemma isDiscrete_congr {F G : Sheaf J A} (i : F ≅ G) [IsDiscrete J ht F] : IsDiscrete J ht G := by
+lemma isConstant_congr {F G : Sheaf J A} (i : F ≅ G) [IsConstant J ht F] : IsConstant J ht G := by
   have : IsIso ((constantSheaf J A).map (((sheafSections J A).obj ⟨t⟩).map i.inv) ≫
     ((constantSheafAdj J A ht).counit.app F) ≫ i.hom) := inferInstance
   convert this
   simp [-flip_obj_obj, -flip_obj_map]
 
-section
-lemma isDiscrete_of_iso [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-    {F : Sheaf J A} {X : A} (i : F ≅ (constantSheaf J A).obj X) : IsDiscrete J ht F :=
+lemma isConstant_of_iso [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
+    {F : Sheaf J A} {X : A} (i : F ≅ (constantSheaf J A).obj X) : IsConstant J ht F :=
   isIso_counit_app_of_iso _ i
 
-lemma isDiscrete_iff_mem_essImage (F : Sheaf J A)
+lemma isConstant_iff_mem_essImage (F : Sheaf J A)
     [(constantSheaf J A).Faithful] [(constantSheaf J A).Full] :
-    F.IsDiscrete J ht ↔ F ∈ (constantSheaf J A).essImage :=
+    F.IsConstant J ht ↔ F ∈ (constantSheaf J A).essImage :=
   (constantSheafAdj J A ht).isIso_counit_app_iff_mem_essImage
 
-lemma isDiscrete_iff_mem_essImage' {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
-    [L.Faithful] [L.Full] (F : Sheaf J A) : IsDiscrete J ht F ↔ F ∈ L.essImage := by
-  rw [isDiscrete_iff_isIso_counit_app _ _ adj]
+lemma isConstant_iff_mem_essImage' {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
+    [L.Faithful] [L.Full] (F : Sheaf J A) : IsConstant J ht F ↔ F ∈ L.essImage := by
+  rw [isConstant_iff_isIso_counit_app _ _ adj]
   exact adj.isIso_counit_app_iff_mem_essImage
 
 section Equivalence
@@ -104,8 +101,8 @@ variable (A) in
 /--
 The constant sheaf functor commutes up to isomorphism with any equivalence of sheaf categories.
 
-This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalence` below, which
-says that the property of a sheaf of being a discrete object is invariant under equivalence of
+This is an auxiliary definition used to prove `Sheaf.isConstant_iff_of_equivalence` below, which
+says that the property of a sheaf of being constant is invariant under equivalence of
 sheaf categories.
 -/
 noncomputable def equivCommuteConstant : let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
@@ -118,8 +115,8 @@ variable (A) in
 /--
 The constant sheaf functor commutes up to isomorphism with any equivalence of sheaf categories.
 
-This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalence` below, which
-says that the property of a sheaf of being a discrete object is invariant under equivalence of
+This is an auxiliary definition used to prove `Sheaf.isConstant_iff_of_equivalence` below, which
+says that the property of a sheaf of being constant is invariant under equivalence of
 sheaf categories.
 -/
 noncomputable def equivCommuteConstant' : let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
@@ -129,19 +126,19 @@ noncomputable def equivCommuteConstant' : let e : Sheaf J A ≌ Sheaf K A := she
     isoWhiskerRight (equivCommuteConstant J A ht K G ht') e.inverse
 
 /--
-The property of a sheaf of being a discrete object is invariant under equivalence of sheaf
+The property of a sheaf of being constant is invariant under equivalence of sheaf
 categories.
 -/
 -- TODO: Remove the assumptions `[(constantSheaf J A).Faithful] [(constantSheaf J A).Full]` by
 -- proving the necessary lemmas about commuting the counit with the equivalences.
-lemma isDiscrete_iff_of_equivalence (F : Sheaf K A)
+lemma isConstant_iff_of_equivalence (F : Sheaf K A)
     [(constantSheaf J A).Faithful] [(constantSheaf J A).Full] :
     let e : Sheaf J A ≌ Sheaf K A := sheafEquiv G J K A
-    (e.inverse.obj F).IsDiscrete J ht ↔ IsDiscrete K ht' F := by
+    (e.inverse.obj F).IsConstant J ht ↔ IsConstant K ht' F := by
   intro e
   have := Functor.Faithful.of_iso (equivCommuteConstant J A ht K G ht')
   have := Functor.Full.of_iso (equivCommuteConstant J A ht K G ht')
-  simp only [isDiscrete_iff_mem_essImage]
+  simp only [isConstant_iff_mem_essImage]
   constructor
   · intro ⟨Y, ⟨i⟩⟩
     exact ⟨_, ⟨(equivCommuteConstant J A ht K G ht').symm.app _ ≪≫
@@ -150,8 +147,6 @@ lemma isDiscrete_iff_of_equivalence (F : Sheaf K A)
     exact ⟨_, ⟨(equivCommuteConstant' J A ht K G ht').app _ ≪≫ e.inverse.mapIso i⟩⟩
 
 end Equivalence
-
-end
 
 section Forget
 
@@ -188,21 +183,21 @@ lemma constantSheafAdj_counit_w :
       whiskerRight_app]
   simp [← map_comp, ← NatTrans.comp_app]
 
-lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
-    [((sheafCompose J U).obj F).IsDiscrete J ht] : F.IsDiscrete J ht := by
+lemma sheafCompose_reflects_constant [(sheafCompose J U).ReflectsIsomorphisms]
+    [((sheafCompose J U).obj F).IsConstant J ht] : F.IsConstant J ht := by
   have : IsIso ((sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F)) := by
     rw [← constantSheafAdj_counit_w]
     infer_instance
   exact isIso_of_reflects_iso _ (sheafCompose J U)
 
-instance [h : F.IsDiscrete J ht] : ((sheafCompose J U).obj F).IsDiscrete J ht := by
+instance [h : F.IsConstant J ht] : ((sheafCompose J U).obj F).IsConstant J ht := by
   have : IsIso ((sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F)) := inferInstance
   rw [← constantSheafAdj_counit_w] at this
   exact @IsIso.of_isIso_comp_left _ _ _ _ _ _ _ inferInstance this
 
-lemma isDiscrete_iff_forget [(sheafCompose J U).ReflectsIsomorphisms] : F.IsDiscrete J ht ↔
-    ((sheafCompose J U).obj F).IsDiscrete J ht :=
-  ⟨fun _ ↦ inferInstance, fun _ ↦ sheafCompose_reflects_discrete _ _ U F⟩
+lemma isConstant_iff_forget [(sheafCompose J U).ReflectsIsomorphisms] : F.IsConstant J ht ↔
+    ((sheafCompose J U).obj F).IsConstant J ht :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ sheafCompose_reflects_constant _ _ U F⟩
 
 end Forget
 
