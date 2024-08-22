@@ -234,6 +234,10 @@ theorem weightedTotalDegree_mul_le_add (w : σ → M) {φ ψ : MvPolynomial σ R
   · exact left_ne_zero_of_mul h
   · exact right_ne_zero_of_mul h
 
+/-- The opposite linear order to a given linear order -/
+def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
+  inferInstanceAs <| LinearOrder (OrderDual α)
+
 theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCancelAdd M] (w : σ → M)
     {φ ψ : MvPolynomial σ R} 
     (hφ : φ ≠ 0) (hψ : ψ ≠ 0) :
@@ -247,7 +251,6 @@ theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCanc
   letI : WellFoundedGT σ := by
     change IsWellFounded σ fun x y ↦ WellOrderingRel x y
     exact IsWellOrder.toIsWellFounded
-    simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, WithTop.add_eq_top] using h
   obtain ⟨d, hd, hd'⟩ := Finset.exists_max_image _ toLex hφ'
   have hψ' : (ψ.support.filter (fun d ↦ weight w d = ψ.weightedTotalDegree w)).Nonempty := by 
     simp only [Finset.Nonempty, mem_filter, mem_support_iff]
@@ -291,39 +294,7 @@ theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCanc
       exact hd'
   · simp 
  
-
-example (a b c d : ℤ) (h : a < b) (H : c ≤ d) : a + c < b + d := by 
-  exact add_lt_add_of_lt_of_le h H
-
-
-example :  CovariantClass ℤ ℤ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1 := by 
-  exact Int.instCovariantClassAddLE
-example : CovariantClass ℤ ℤ (swap fun x x_1 ↦ x + x_1) fun x x_1 ↦ x < x_1 := by 
-  exact IsRightCancelAdd.covariant_swap_add_lt_of_covariant_swap_add_le ℤ
-
 end  CanonicallyLinearOrderedAddCommMonoid
-
-
-  
-/-   rw [le_weightedTotalDegree_iff]
-  intro d hd
-  rw [mem_support_iff, coeff_mul] at hd
-  obtain ⟨⟨u,v⟩, huv, h⟩ := Finset.exists_ne_zero_of_sum_ne_zero hd
-  simp only [mem_antidiagonal] at huv
-  replace h : weight w u ≤ weightedTotalDegree w φ ∧ weight w v ≤ weightedTotalDegree w ψ := by
-    constructor
-    · apply le_weightedTotalDegree; rw [mem_support_iff] 
-      exact left_ne_zero_of_mul h
-    · apply le_weightedTotalDegree; rw [mem_support_iff] 
-      exact right_ne_zero_of_mul h
-  simp only [← huv, map_add, ge_iff_le]
-  apply add_le_add h.1 h.2
-
-end OrderBot
-
-end SemilatticeSup
-
--/
 
 /-- A multivariate polynomial `φ` is weighted homogeneous of weighted degree `m` if all monomials
   occurring in `φ` have weighted degree `m`. -/
