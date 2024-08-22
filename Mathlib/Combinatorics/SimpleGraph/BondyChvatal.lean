@@ -71,7 +71,7 @@ lemma closureStep_deleteEdge {u v : V} (huv : ¬G.Adj u v) (huv' : G.closureStep
     by_contra he₃
     have mem₁ : e ∈ (closureStep G \ G).edgeSet := by simpa using ⟨he₁, he₃⟩
     have mem₂ : s(u, v) ∈ (closureStep G \ G).edgeSet := by simpa using ⟨huv', huv⟩
-    exact he₂ $ (closureStep_diff_atmost_one G) mem₁ mem₂
+    exact he₂ <| (closureStep_diff_atmost_one G) mem₁ mem₂
   · intro he
     apply And.intro (edgeSet_mono (self_le_closureStep G) he)
     intro he'
@@ -143,7 +143,7 @@ private theorem from_ClosureStep_aux
   have snd_eq_v' : (p.dropUntil v hv).sndOfNotNil not_nil = v' := by
     rw [← hd₂]
     refine p.next_unique ?_
-      (p.darts_dropUntil_subset _ $ (p.dropUntil v hv).firstDart_mem_darts not_nil)
+      (p.darts_dropUntil_subset _ <| (p.dropUntil v hv).firstDart_mem_darts not_nil)
       hd (by simp [hd₁])
     have : p.support.Nodup := by
       rw [List.Perm.nodup_iff hp]
