@@ -35,7 +35,7 @@ lemma Monotone.eventuallyConst_atTop {ι : Type*}
   exact ⟨x, fun z hz =>
     (hg hz).eq_of_not_gt (hx ▸ hα.wf.not_lt_min _ _ (Set.mem_range_self _))⟩
 
-/-- The theorem states that the iteration will eventually become a constant. -/
+/-- Iterations of an inflationary endomorphisms of a cowell-founded order eventually stabilise. -/
 lemma eventually_constant_iterate (hf : id ≤ f) (x : α) :
     EventuallyConst (fun n => f^[n] x) atTop :=
   eventually_constant_monotone (fun _ _ h => monotone_iterate_of_id_le hf h x)
