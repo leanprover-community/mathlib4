@@ -229,31 +229,34 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
-theorem polar_ball_subset_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
-    polar 𝕜 (ball (0 : E) r) ⊆ closedBall (0 : Dual 𝕜 E) r⁻¹ := by
-  intro x hx
-  rw [Metric.mem_closedBall, dist_zero_right]
-  have e3 {c : ℝ} (h : 1 < c) : ‖(RCLike.ofReal (K := 𝕜) c)‖ = c :=
-    RCLike.norm_of_nonneg (le_trans zero_le_one (le_of_lt h))
-  have e2 {c : ℝ} (hc : 1 < c) : polar 𝕜 (ball (0 : E) r) ⊆ closedBall (0 : Dual 𝕜 E) (c / r) := by
-    rw [← (e3 hc)]
-    rw [← (e3 hc)] at hc
-    exact polar_ball_subset_closedBall_div (c := RCLike.ofReal c) hc hr
-  apply le_of_forall_le_of_dense
-  intro a ha
-  rw [← dist_zero_right, ← mem_closedBall]
-  have e4 : 1 < r * a := (inv_pos_lt_iff_one_lt_mul' hr).mp ha
-  have e6 : r ≠ 0 := Ne.symm (ne_of_lt hr)
-  have e5 : (r * a / r) = a := by
-    ring_nf
-    rw [mul_comm]
-    rw [← mul_assoc]
-    rw [mul_comm _ r]
-    rw [DivisionRing.mul_inv_cancel, one_mul]
-    exact e6
-  rw [← e5]
-  exact e2 e4 hx
+theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+    (hr : 0 < r) : polar 𝕜 (ball (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
+  apply le_antisymm
+  · intro x hx
+    rw [Metric.mem_closedBall, dist_zero_right]
+    have e3 {c : ℝ} (h : 1 < c) : ‖(RCLike.ofReal (K := 𝕜) c)‖ = c :=
+      RCLike.norm_of_nonneg (le_trans zero_le_one (le_of_lt h))
+    have e2 {c : ℝ} (hc : 1 < c) :
+      polar 𝕜 (ball (0 : E) r) ⊆ closedBall (0 : Dual 𝕜 E) (c / r) := by
+      rw [← (e3 hc)]
+      rw [← (e3 hc)] at hc
+      exact polar_ball_subset_closedBall_div (c := RCLike.ofReal c) hc hr
+    apply le_of_forall_le_of_dense
+    intro a ha
+    rw [← dist_zero_right, ← mem_closedBall]
+    have e4 : 1 < r * a := (inv_pos_lt_iff_one_lt_mul' hr).mp ha
+    have e6 : r ≠ 0 := Ne.symm (ne_of_lt hr)
+    have e5 : (r * a / r) = a := by
+      ring_nf
+      rw [mul_comm]
+      rw [← mul_assoc]
+      rw [mul_comm _ r]
+      rw [DivisionRing.mul_inv_cancel, one_mul]
+      exact e6
+    rw [← e5]
+    exact e2 e4 hx
+  · rw [← polar_closedBall hr]
+    exact LinearMap.polar_antitone _ ball_subset_closedBall
 
 /-- Given a neighborhood `s` of the origin in a normed space `E`, the dual norms
 of all elements of the polar `polar 𝕜 s` are bounded by a constant. -/
