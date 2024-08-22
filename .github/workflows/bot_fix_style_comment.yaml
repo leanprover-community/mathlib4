@@ -61,8 +61,8 @@ jobs:
       - name: Commit and push changes
         run: |
           # cleanup junk from build
-          git rm elan-init
-          git rm docs/references.bib.old
+          rm elan-init
+          rm docs/references.bib.old
           # setup commit and push
           git config user.name "leanprover-community-mathlib4-bot"
           git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
