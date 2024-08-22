@@ -164,7 +164,7 @@ private theorem from_ClosureStep_aux
     omega
   · assumption
   · simp only [tail_support_append, support_cons, support_nil, List.tail_cons, support_copy,
-      support_reverse, tail_support_eq_support_tail, List.reverse_tail_eq_dropLast_reverse,
+      support_reverse, tail_support_eq_support_tail, List.tails_reverse,
       List.append_assoc, List.singleton_append, List.cons_append, List.toFinset_append,
       List.toFinset_cons, List.toFinset_reverse, List.toFinset_nil, insert_emptyc_eq,
       Finset.union_insert, Finset.eq_univ_iff_forall, Finset.mem_insert, Finset.mem_union,
@@ -183,7 +183,8 @@ private theorem from_ClosureStep_aux
       have : (p.dropUntil v hv).support.tail.getLast tail_not_nil = u' := by
         rw [List.getLast_tail, support_getLast]
       rw [← List.dropLast_append_getLast tail_not_nil, this]
-      simpa only [List.mem_append, List.mem_singleton, not_or] using ⟨hw₃, hw₁⟩
+      rw [List.tail_reverse_eq_reverse_dropLast, List.mem_reverse] at hw₃
+      simpa using ⟨hw₃, hw₁⟩
     have append : p.support.tail =
         (p.takeUntil v hv).support.tail ++ (p.dropUntil v hv).support.tail := by
       rw [← tail_support_append, take_spec]
