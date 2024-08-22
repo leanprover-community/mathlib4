@@ -108,13 +108,13 @@ theorem eq_of_le_of_card_ge {H K : Subgroup G} [Finite K] (hle : H ≤ K)
   SetLike.coe_injective <| Set.Finite.eq_of_subset_of_card_le (Set.toFinite _) hle hcard
 
 @[to_additive]
-theorem eq_top_of_card_le [Finite G] (h : Nat.card G ≤ Nat.card H) : H = ⊤ :=
+theorem eq_top_of_le_card [Finite G] (h : Nat.card G ≤ Nat.card H) : H = ⊤ :=
   eq_of_le_of_card_ge le_top (Nat.card_congr (Equiv.Set.univ G) ▸ h)
 
 @[to_additive]
 theorem eq_top_of_card_eq [Finite H] (h : Nat.card H = Nat.card G) : H = ⊤ := by
   have : Finite G := Nat.finite_of_card_ne_zero (h ▸ Nat.card_pos.ne')
-  exact eq_top_of_card_le _ (Nat.le_of_eq h.symm)
+  exact eq_top_of_le_card _ (Nat.le_of_eq h.symm)
 
 @[to_additive (attr := simp)]
 theorem card_eq_iff_eq_top [Finite H] : Nat.card H = Nat.card G ↔ H = ⊤ :=
