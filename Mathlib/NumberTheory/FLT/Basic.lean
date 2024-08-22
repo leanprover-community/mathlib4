@@ -154,8 +154,8 @@ lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
   (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2
 
 /--
-A relaxed variant of Fermat's Last Theorem over a given semiring with a specific exponent,
-allowing nonzero solutions of units.
+A relaxed variant of Fermat's Last Theorem over a given commutative semiring with a specific
+exponent, allowing nonzero solutions of units and their common multiples.
 
 1. The variant `FermatLastTheoremWith' α` is weaker than `FermatLastTheoremWith α` in general.
    In particular, it holds trivially for `[Field α]`.
@@ -165,36 +165,36 @@ allowing nonzero solutions of units.
    variant `FermatLastTheoremWith' α` is true. This polynomial variant of Fermat's Last Theorem
    can be shown elementarily using Mason--Stothers theorem.
 -/
-def FermatLastTheoremWith' (α : Type*) [Semiring α] (n : ℕ) : Prop :=
-  ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n = c ^ n → IsUnit a ∧ IsUnit b ∧ IsUnit c
+def FermatLastTheoremWith' (α : Type*) [CommSemiring α] (n : ℕ) : Prop :=
+  ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n = c ^ n →
+    ∃ d a' b' c', (a = a' * d ∧ b = b' * d ∧ c = c' * d) ∧ (IsUnit a' ∧ IsUnit b' ∧ IsUnit c')
 
-lemma FermatLastTheoremWith'.mono (hmn : m ∣ n) (hn : n ≠ 0) (hm : FermatLastTheoremWith' α m) :
-    FermatLastTheoremWith' α n := by
-  rintro a b c ha hb hc heq
-  obtain ⟨k, rfl⟩ := hmn
-  obtain ⟨_, hk⟩ := mul_ne_zero_iff.mp hn
-  simp_rw [pow_mul'] at heq
-  have t := (hm _ _ _ ?_ ?_ ?_ heq) <;> try exact pow_ne_zero _ ‹_›
-  simp only [isUnit_pow_iff hk] at t
-  exact t
-
-lemma fermatLastTheoremWith'_of_fermatLastTheoremWith {α : Type*} [Semiring α] {n : ℕ}
+lemma fermatLastTheoremWith'_of_fermatLastTheoremWith {α : Type*} [CommSemiring α] {n : ℕ}
     (h : FermatLastTheoremWith α n) : FermatLastTheoremWith' α n :=
   fun a b c _ _ _ _ ↦ by exfalso; apply h a b c <;> assumption
 
 lemma fermatLastTheoremWith'_of_field (α : Type*) [Field α] (n : ℕ) : FermatLastTheoremWith' α n :=
-  fun _ _ _ ha hb hc _ ↦ ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩
+  fun a b c ha hb hc _ ↦
+    ⟨1, a, b, c,
+     ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
+     ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
 
-lemma fermatLastTheoremWith_of_fermatLastTheoremWith' {α : Type*} [Semiring α] {n : ℕ}
-    (h : FermatLastTheoremWith' α n)
+lemma fermatLastTheoremWith_of_fermatLastTheoremWith' {α : Type*} [CommSemiring α] [IsDomain α]
+    {n : ℕ} (h : FermatLastTheoremWith' α n)
     (hn : ∀ a b c : α, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith α n := by
   intro a b c ha hb hc heq
-  rcases h a b c ha hb hc heq with ⟨ua, ub, uc⟩
-  apply hn a b c <;> assumption
+  rcases h a b c ha hb hc heq with ⟨d, a', b', c', ⟨eq_a, eq_b, eq_c⟩, ⟨ua, ub, uc⟩⟩
+  rw [eq_a, eq_b, eq_c, mul_pow, mul_pow, mul_pow, ←add_mul, mul_eq_mul_right_iff] at heq
+  cases' heq with heq hd
+  · exact hn _ _ _ ua ub uc heq
+  · obtain ⟨hd, hn⟩ := pow_eq_zero_iff'.mp hd
+    rw [eq_a, hd, mul_zero] at ha
+    apply ha
+    rfl
 
-lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {α : Type*} [Semiring α] {n : ℕ}
-    (hn : ∀ a b c : α, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
+lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {α : Type*} [Semiring α]
+    {n : ℕ} (hn : ∀ a b c : α, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith' α n ↔ FermatLastTheoremWith α n :=
   Iff.intro
     (fun h ↦ fermatLastTheoremWith_of_fermatLastTheoremWith' h hn)
