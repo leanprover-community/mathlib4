@@ -13,6 +13,7 @@ import ImportGraph.Imports
 
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Where
+import Batteries.Tactic.Basic
 
 -- Import Mathlib-specific linters.
 import Mathlib.Tactic.Linter.Lint
