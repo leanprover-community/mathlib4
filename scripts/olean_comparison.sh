@@ -1,20 +1,28 @@
 #!/usr/bin/env bash
 
-getCacheSize () {
-  >&2 lake exe cache get
-  du .lake/build/lib/Mathlib | sed "s=^=${1} =; s=\t= =g"
-}
+oleansDir=.lake/build/lib/Mathlib
+# should be master
+branch=adomani/CI_olean_size
+
+du "${oleansDir}"
+
+printf 'Compare to master\n'
+
+## retrieve the job id of the latest master run
+jobID="$(curl https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml?query=branch%3A"${branch}+is%3Asuccess" |
+  sed -n 's=.*actions/runs/\([0-9]*\).*=\1=p' | head -1)"
+printf $'Latest `master`\'s job: %s\n' "${jobID}"
+
+getCacheSize () { du "${oleansDir}" | sed "s=^=${1} =; s=\t= =g" ; }
 
 # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
 # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
 if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-  mv .lake .lakeBranch
-  git fetch origin master --depth 1
-  git checkout origin/master
   echo "* Get master's oleans"
-  masterOleans="$(getCacheSize master)"
-  git checkout -
-  mv -f .lakeBranch .lake
+  masterOleans="$(gh run view "${jobID}" --log |
+    awk -F'\t' '
+      /compare oleans/ { last=$NF; sub(/[^ ]* /, "", last); printf("master %s\n", last) }
+      /Compare to master/ { exit 0 }')"
   echo "* Get branch's oleans"
   newOleans="$(getCacheSize branch)"
   printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
