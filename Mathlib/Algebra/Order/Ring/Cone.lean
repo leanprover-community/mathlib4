@@ -26,8 +26,7 @@ class RingConeClass (S R : Type*) [Ring R] [SetLike S R]
 does not contain both `a` and `-a` for any nonzero `a`.
 This is equivalent to being the set of non-negative elements of
 some order making the ring into a partially ordered ring. -/
-structure RingCone (R : Type*) [Ring R] extends Subsemiring R where
-  eq_zero_of_mem_of_neg_mem' {a} : a ∈ carrier → -a ∈ carrier → a = 0
+structure RingCone (R : Type*) [Ring R] extends Subsemiring R, AddGroupCone R
 
 instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R where
   coe C := C.carrier
