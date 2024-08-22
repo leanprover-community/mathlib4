@@ -736,7 +736,7 @@ instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a
   cases' k with k k
   · exact NF.oadd_zero _ _
   · haveI := nf_opowAux e a0 a k
-    simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul];
+    simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul]
     infer_instance
 
 instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
