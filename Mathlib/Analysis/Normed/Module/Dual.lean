@@ -234,6 +234,9 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
   apply le_antisymm
   · intro x hx
     rw [Metric.mem_closedBall, dist_zero_right]
+    apply le_of_forall_le_of_dense
+    intro a ha
+    rw [← dist_zero_right, ← mem_closedBall, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
     have e3 {c : ℝ} (h : 1 < c) : ‖(RCLike.ofReal (K := 𝕜) c)‖ = c :=
       RCLike.norm_of_nonneg (le_trans zero_le_one (le_of_lt h))
     have e2 {c : ℝ} (hc : 1 < c) :
@@ -241,20 +244,7 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
       rw [← (e3 hc)]
       rw [← (e3 hc)] at hc
       exact polar_ball_subset_closedBall_div (c := RCLike.ofReal c) hc hr
-    apply le_of_forall_le_of_dense
-    intro a ha
-    rw [← dist_zero_right, ← mem_closedBall]
-    have e4 : 1 < r * a := (inv_pos_lt_iff_one_lt_mul' hr).mp ha
-    have e6 : r ≠ 0 := Ne.symm (ne_of_lt hr)
-    have e5 : (r * a / r) = a := by
-      ring_nf
-      rw [mul_comm]
-      rw [← mul_assoc]
-      rw [mul_comm _ r]
-      rw [DivisionRing.mul_inv_cancel, one_mul]
-      exact e6
-    rw [← e5]
-    exact e2 e4 hx
+    exact e2 ((inv_pos_lt_iff_one_lt_mul' hr).mp ha) hx
   · rw [← polar_closedBall hr]
     exact LinearMap.polar_antitone _ ball_subset_closedBall
 
