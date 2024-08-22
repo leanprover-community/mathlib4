@@ -19,9 +19,10 @@ This means that any morphism in the base `𝒮` can be lifted to a cartesian mor
 
 ## Implementation
 
-The constructor of `IsPreFibered` is called `exists_isCartesian'`. The reason for the prime is that when
-wanting to apply this condition, it is recommended to instead use the lemma `exists_isCartesian`
-(without the prime), which is more applicable with respect to non-definitional equalities.
+The constructor of `IsPreFibered` is called `exists_isCartesian'`. The reason for the prime is that
+when wanting to apply this condition, it is recommended to instead use the lemma
+`exists_isCartesian` (without the prime), which is more applicable with respect to non-definitional
+equalities.
 
 ## References
 * [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
