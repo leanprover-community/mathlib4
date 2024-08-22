@@ -196,9 +196,11 @@ variable (f : X ⟶ Y)
 instance has_kernel_pair_of_mono [Mono f] : HasPullback f f :=
   ⟨⟨⟨_, PullbackCone.isLimitMkIdId f⟩⟩⟩
 
+theorem PullbackCone.fst_eq_snd_of_mono_eq [Mono f] (t : PullbackCone f f) : t.fst = t.snd :=
+  (cancel_mono f).1 t.condition
+
 theorem fst_eq_snd_of_mono_eq [Mono f] : pullback.fst f f = pullback.snd f f :=
-  ((PullbackCone.isLimitMkIdId f).fac (getLimitCone (cospan f f)).cone left).symm.trans
-    ((PullbackCone.isLimitMkIdId f).fac (getLimitCone (cospan f f)).cone right : _)
+  PullbackCone.fst_eq_snd_of_mono_eq f (getLimitCone (cospan f f)).cone
 
 @[simp]
 theorem pullbackSymmetry_hom_of_mono_eq [Mono f] : (pullbackSymmetry f f).hom = 𝟙 _ := by
@@ -362,9 +364,11 @@ variable (f : X ⟶ Y)
 instance has_cokernel_pair_of_epi [Epi f] : HasPushout f f :=
   ⟨⟨⟨_, PushoutCocone.isColimitMkIdId f⟩⟩⟩
 
-theorem inl_eq_inr_of_epi_eq [Epi f] : (pushout.inl _ _ : _ ⟶ pushout f f) = pushout.inr _ _ :=
-  ((PushoutCocone.isColimitMkIdId f).fac (getColimitCocone (span f f)).cocone left).symm.trans
-    ((PushoutCocone.isColimitMkIdId f).fac (getColimitCocone (span f f)).cocone right : _)
+theorem PushoutCocone.fst_eq_snd_of_mono_eq [Epi f] (t : PushoutCocone f f) : t.inl = t.inr :=
+  (cancel_epi f).1 t.condition
+
+theorem inl_eq_inr_of_epi_eq [Epi f] : pushout.inl f f = pushout.inr f f :=
+  PushoutCocone.fst_eq_snd_of_mono_eq f (getColimitCocone (span f f)).cocone
 
 @[simp]
 theorem pullback_symmetry_hom_of_epi_eq [Epi f] : (pushoutSymmetry f f).hom = 𝟙 _ := by

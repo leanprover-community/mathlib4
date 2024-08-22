@@ -65,13 +65,9 @@ lemma isOpenImmersion_fst' (i j : ι) :
     IsOpenImmersion ((hf i).rep.fst' (f j)) :=
   (hf j).property _ _ _ ((hf i).1.isPullback' (f j)).flip
 
--- TODO: this should be a general statement about pullbacks of monomorphisms (might already be)
--- add in terms of both PullbackCone and CommSq API
 lemma fst'_self_eq_snd (i : ι) :
-    (hf i).rep.fst' (f i) = (hf i).rep.snd (f i) := by
-  have := mono_of_openImmersion_presheaf (hf i)
-  apply yoneda.map_injective
-  rw [← cancel_mono (f i), ((hf i).rep.isPullback' (f i)).w]
+    (hf i).rep.fst' (f i) = (hf i).rep.snd (f i) :=
+  openImmersion.fst'_self_eq_snd openImmersion_le_monomorphisms (hf i)
 
 -- again this should be a general lemma in terms of both PullbackCone and CommSq API
 lemma isIso_fst'_self (i : ι) :

@@ -352,6 +352,24 @@ instance presheaf_isMultiplicative [P.IsMultiplicative] [P.RespectsIso] :
 
 end
 
+section
+
+variable (hP : P ≤ MorphismProperty.monomorphisms C)
+
+-- TODO: should make le_mono a class on morphism properties?
+lemma presheaf_mono_of_le (hP : P ≤ MorphismProperty.monomorphisms C)
+    {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : Mono f :=
+  MorphismProperty.presheaf_monomorphisms_le_monomorphisms _
+    (MorphismProperty.presheaf_monotone hP _ hf)
+
+lemma fst'_self_eq_snd (hP : P ≤ MorphismProperty.monomorphisms C)
+    {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : hf.rep.fst' f = hf.rep.snd f := by
+  have := P.presheaf_mono_of_le hP hf
+  apply yoneda.map_injective
+  rw [← cancel_mono f, (hf.rep.isPullback' f).w]
+
+end
+
 end MorphismProperty
 
 namespace Presheaf.representable
