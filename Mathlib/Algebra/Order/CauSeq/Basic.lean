@@ -35,6 +35,7 @@ assert_not_exists Finset
 assert_not_exists Module
 assert_not_exists Submonoid
 assert_not_exists FloorRing
+assert_not_exists Module
 
 variable {α β : Type*}
 
@@ -75,7 +76,7 @@ theorem rat_inv_continuous_lemma {β : Type*} [DivisionRing β] (abv : β → α
   rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv, abv_mul abv, abv_inv abv,
     abv_inv abv, abv_sub abv]
   refine lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right ?_ b0.le) a0.le
-  rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel a0.ne', one_mul]
+  rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel₀ a0.ne', one_mul]
   refine h.trans_le ?_
   gcongr
 
@@ -115,7 +116,7 @@ lemma bounded (hf : IsCauSeq abv f) : ∃ r, ∀ i, abv (f i) < r := by
   refine ⟨R i + 1, fun j ↦ ?_⟩
   obtain hji | hij := le_total j i
   · exact (this i _ hji).trans_lt (lt_add_one _)
-  · simpa using (abv_add abv _ _).trans_lt $ add_lt_add_of_le_of_lt (this i _ le_rfl) (h _ hij)
+  · simpa using (abv_add abv _ _).trans_lt <| add_lt_add_of_le_of_lt (this i _ le_rfl) (h _ hij)
 
 lemma bounded' (hf : IsCauSeq abv f) (x : α) : ∃ r > x, ∀ i, abv (f i) < r :=
   let ⟨r, h⟩ := hf.bounded
@@ -516,9 +517,9 @@ theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 :
     mul_equiv_mul (const_equiv.mpr <| Eq.refl <| c • (1 : β)) hf
 
 theorem pow_equiv_pow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ) : f1 ^ n ≈ f2 ^ n := by
-  induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero, Setoid.refl]
-  · simpa only [pow_succ'] using mul_equiv_mul hf ih
+  induction n with
+  | zero => simp only [pow_zero, Setoid.refl]
+  | succ n ih => simpa only [pow_succ'] using mul_equiv_mul hf ih
 
 end Ring
 
@@ -877,5 +878,3 @@ protected theorem sup_inf_distrib_right (a b c : CauSeq α abs) : a ⊓ b ⊔ c 
 end Abs
 
 end CauSeq
-
-assert_not_exists Module
