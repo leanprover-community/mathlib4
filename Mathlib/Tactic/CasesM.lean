@@ -164,3 +164,5 @@ constructorm* _ ∨ _, _ ∧ _, True
 elab (name := constructorM) "constructorm" recursive:"*"? ppSpace pats:term,+ : tactic => do
   let pats ← elabPatterns pats.getElems
   liftMetaTactic (constructorMatching · (matchPatterns pats) recursive.isSome)
+
+end Mathlib.Tactic

@@ -36,7 +36,7 @@ noncomputable section
 
 open scoped Classical
 
-open UniqueFactorizationMonoid
+namespace UniqueFactorizationMonoid
 
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
@@ -103,3 +103,5 @@ theorem radical_pow_of_prime {a : M} (ha : Prime a) {n : ℕ} (hn : 0 < n) :
     radical (a ^ n) = normalize a := by
   rw [radical_pow a hn]
   exact radical_of_prime ha
+
+end UniqueFactorizationMonoid

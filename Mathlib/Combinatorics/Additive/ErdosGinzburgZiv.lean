@@ -67,14 +67,14 @@ private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : s.card =
   have hpN : p ∣ N := char_dvd_card_solutions_of_add_lt p
     (totalDegree_f₁_add_totalDegree_f₂.trans_eq hs')
   -- Hence, `2 ≤ p ≤ N` and we can make a common root `x ≠ 0`.
-  obtain ⟨x, hx⟩ := Fintype.exists_ne_of_one_lt_card ((Fact.out : p.Prime).one_lt.trans_le $
+  obtain ⟨x, hx⟩ := Fintype.exists_ne_of_one_lt_card ((Fact.out : p.Prime).one_lt.trans_le <|
     Nat.le_of_dvd hN₀ hpN) zero_sol
   -- This common root gives us the required subsequence, namely the `i ∈ s` such that `x i ≠ 0`.
   refine ⟨(s.attach.filter fun a ↦ x.1 a ≠ 0).map ⟨(↑), Subtype.val_injective⟩, ?_, ?_, ?_⟩
   · simp (config := { contextual := true }) [subset_iff]
   -- From `f₁ x = 0`, we get that `p` divides the number of `a` such that `x a ≠ 0`.
   · rw [card_map]
-    refine Nat.eq_of_dvd_of_lt_two_mul (Finset.card_pos.2 ?_).ne' ?_ $
+    refine Nat.eq_of_dvd_of_lt_two_mul (Finset.card_pos.2 ?_).ne' ?_ <|
       (Finset.card_filter_le _ _).trans_lt ?_
     -- This number is nonzero because `x ≠ 0`.
     · rw [← Subtype.coe_ne_coe, Function.ne_iff] at hx
@@ -135,11 +135,11 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
       -- `t ∈ ℬ` of `(∑ i ∈ t, a i) / n` is divisible by `m`.
       obtain ⟨ℬ, hℬ𝒜, hℬcard, hℬ⟩ := ihm (fun t ↦ (∑ i ∈ t, a i) / n) h𝒜card.ge
       -- We are done.
-      refine ⟨ℬ.biUnion fun x ↦ x, biUnion_subset.2 fun t ht ↦ (h𝒜 $ hℬ𝒜 ht).1, ?_, ?_⟩
-      · rw [card_biUnion (h𝒜disj.mono hℬ𝒜), sum_const_nat fun t ht ↦ (h𝒜 $ hℬ𝒜 ht).2.1, hℬcard]
+      refine ⟨ℬ.biUnion fun x ↦ x, biUnion_subset.2 fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).1, ?_, ?_⟩
+      · rw [card_biUnion (h𝒜disj.mono hℬ𝒜), sum_const_nat fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).2.1, hℬcard]
       rwa [sum_biUnion, natCast_mul, mul_comm, ← Int.dvd_div_iff_mul_dvd, Int.sum_div]
-      · exact fun t ht ↦ (h𝒜 $ hℬ𝒜 ht).2.2
-      · exact dvd_sum fun t ht ↦ (h𝒜 $ hℬ𝒜 ht).2.2
+      · exact fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).2.2
+      · exact dvd_sum fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).2.2
       · exact h𝒜disj.mono hℬ𝒜
     -- Now, let's find those `2 * m - 1` sets.
     rintro k hk
@@ -165,12 +165,12 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
     have : t₀ ∉ 𝒜 := by
       rintro h
       obtain rfl : n = 0 := by
-        simpa [← card_eq_zero, ht₀card] using sdiff_disjoint.mono ht₀ $ subset_biUnion_of_mem id h
+        simpa [← card_eq_zero, ht₀card] using sdiff_disjoint.mono ht₀ <| subset_biUnion_of_mem id h
       omega
     refine ⟨𝒜.cons t₀ this, by rw [card_cons, h𝒜card], ?_, ?_⟩
     · simp only [cons_eq_insert, coe_insert, Set.pairwise_insert_of_symmetric symmetric_disjoint,
         mem_coe, ne_eq]
-      exact ⟨h𝒜disj, fun t ht _ ↦ sdiff_disjoint.mono ht₀ $ subset_biUnion_of_mem id ht⟩
+      exact ⟨h𝒜disj, fun t ht _ ↦ sdiff_disjoint.mono ht₀ <| subset_biUnion_of_mem id ht⟩
     · simp only [cons_eq_insert, mem_insert, forall_eq_or_imp, and_assoc]
       exact ⟨ht₀.trans sdiff_subset, ht₀card, ht₀sum, h𝒜⟩
 

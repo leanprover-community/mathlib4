@@ -146,3 +146,5 @@ macro (name := nthRwSeq) "nth_rw" c:(config)? ppSpace n:num+ s:rwRuleSeq l:(loca
     `(tactic| (nth_rewrite $(c)? $[$n]* [$rs,*] $(l)?; with_annotate_state $rbrak
       (try (with_reducible rfl))))
   | _ => Macro.throwUnsupported
+
+end Mathlib.Tactic

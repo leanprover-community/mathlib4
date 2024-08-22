@@ -330,7 +330,7 @@ theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries �
   apply le_radius_of_isBigO
   apply (IsBigO.trans_isLittleO _ (p.isLittleO_one_of_lt_radius hr)).isBigO
   refine IsBigO.mul (@IsBigOWith.isBigO _ _ _ _ _ ‖f‖ _ _ _ ?_) (isBigO_refl _ _)
-  refine IsBigOWith.of_bound (eventually_of_forall fun n => ?_)
+  refine IsBigOWith.of_bound (Eventually.of_forall fun n => ?_)
   simpa only [norm_norm] using f.norm_compContinuousMultilinearMap_le (p n)
 
 end FormalMultilinearSeries
@@ -829,7 +829,7 @@ theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn' (hf : HasFPowerSeriesOn
 protected theorem HasFPowerSeriesOnBall.continuousOn (hf : HasFPowerSeriesOnBall f p x r) :
     ContinuousOn f (EMetric.ball x r) :=
   hf.tendstoLocallyUniformlyOn'.continuousOn <|
-    eventually_of_forall fun n =>
+    Eventually.of_forall fun n =>
       ((p.partialSum_continuous n).comp (continuous_id.sub continuous_const)).continuousOn
 
 protected theorem HasFPowerSeriesAt.continuousAt (hf : HasFPowerSeriesAt f p x) :

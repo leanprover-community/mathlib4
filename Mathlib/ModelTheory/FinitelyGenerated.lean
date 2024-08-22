@@ -98,7 +98,7 @@ theorem fg_of_finite {s : L.Substructure M} [h : Finite s] : s.FG :=
 theorem finite_of_fg [L.IsRelational] {S : L.Substructure M} (h : S.FG) : Finite S := by
   obtain ⟨s, rfl⟩ := h
   have hs := s.finite_toSet
-  rw [← ((closure L).mem_closed_iff _).1 (closed_of_IsRelational L (↑s : Set M))] at hs
+  rw [← ((closure L).mem_closed_iff _).1 (mem_closed_of_IsRelational L (↑s : Set M))] at hs
   exact hs
 
 /-- A substructure of `M` is countably generated if it is the closure of a countable subset of `M`.
