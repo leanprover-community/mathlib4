@@ -376,7 +376,7 @@ end TotalAndTransitive
 
 theorem orderedInsert_stable {l c : List α} (a : α) (hl : c <+ l) : c <+ orderedInsert r a l := by
   induction l generalizing c
-  case nil => simp_all
+  case nil => simp_all only [sublist_nil, orderedInsert, sublist_cons_self]
   case cons b bs ih =>
     unfold orderedInsert
     split
@@ -389,7 +389,7 @@ theorem orderedInsert_stable {l c : List α} (a : α) (hl : c <+ l) : c <+ order
 theorem orderedInsert_stable_cons {l c : List α} {a : α} (ha : ∀ a' ∈ c, r a a') (hl : c <+ l) :
     a :: c <+ orderedInsert r a l := by
   induction l
-  case nil => simp_all
+  case nil => simp_all only [sublist_nil, orderedInsert, Sublist.refl]
   case cons b bs ih =>
     unfold orderedInsert
     split
