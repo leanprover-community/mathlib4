@@ -870,7 +870,7 @@ def torsionBy : AddSubgroup A :=
 @[inherit_doc]
 scoped notation:max (priority := high) A"["n"]" => torsionBy A n
 
-lemma torsionBy_neg : A[-n] = A[n] := by
+lemma torsionBy.neg : A[-n] = A[n] := by
   ext a
   simp
 
@@ -893,7 +893,7 @@ lemma torsionBy.mod_self_nsmul' (s : ℕ) {x : A} (h : x ∈ A[n]) :
   nsmul_eq_mod_nsmul s (torsionBy.nsmul_iff.mp h)
 
 /-- For a natural number `n`, the `n`-torsion subgroup of `A` is a `ZMod n` module. -/
-def moduleZModTorsionBy : Module (ZMod n) A[n] :=
+def torsionBy.zmodModule : Module (ZMod n) A[n] :=
   AddCommGroup.zmodModule torsionBy.nsmul
 
 end AddSubgroup
