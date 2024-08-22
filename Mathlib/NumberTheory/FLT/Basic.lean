@@ -215,7 +215,7 @@ lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :
     by_cases hn : n = 0
     · subst hn
       simp only [pow_zero, Int.reduceAdd, ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
-    · rw [←isUnit_pow_iff hn, Int.isUnit_iff] at ha hb hc
+    · rw [← isUnit_pow_iff hn, Int.isUnit_iff] at ha hb hc
       -- case division
       rcases ha with ha | ha <;> rcases hb with hb | hb <;> rcases hc with hc | hc <;>
         rw [ha, hb, hc] <;> decide
