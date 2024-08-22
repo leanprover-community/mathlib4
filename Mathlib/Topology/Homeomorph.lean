@@ -549,17 +549,13 @@ lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
 def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumSumSumComm X Y W Z
   continuous_toFun := by
-    show Continuous ((Equiv.sumAssoc (X ⊕ W) Y Z) ∘ (Sum.map (Equiv.sumAssoc X W Y).symm (@id Z))
-      ∘ (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W)) (@id Z))
-      ∘ (Sum.map (Equiv.sumAssoc X Y W) (@id Z))
-      ∘ (Equiv.sumAssoc (X ⊕ Y) W Z).symm)
+    unfold Equiv.sumSumSumComm
+    dsimp only
     have : Continuous (Sum.map (Sum.map (@id X) ⇑(Equiv.sumComm Y W)) (@id Z)) := by continuity
     fun_prop
   continuous_invFun := by
-    show Continuous ((Equiv.sumAssoc (X ⊕ Y) W Z) ∘ (Sum.map (Equiv.sumAssoc X Y W).symm (@id Z))
-      ∘ (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z))
-      ∘ (Sum.map (Equiv.sumAssoc X W Y) (@id Z))
-      ∘ (Equiv.sumAssoc (X ⊕ W) Y Z).symm)
+    unfold Equiv.sumSumSumComm
+    dsimp only
     have : Continuous (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z)) := by continuity
     fun_prop
 
@@ -607,6 +603,25 @@ def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
   continuous_toFun := continuous_fst.fst.prod_mk (continuous_fst.snd.prod_mk continuous_snd)
   continuous_invFun := (continuous_fst.prod_mk continuous_snd.fst).prod_mk continuous_snd.snd
   toEquiv := Equiv.prodAssoc X Y Z
+
+@[simp]
+lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := rfl
+
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
+  toEquiv := Equiv.prodProdProdComm X Y W Z
+  continuous_toFun := by
+    unfold Equiv.prodProdProdComm
+    dsimp only
+    fun_prop
+  continuous_invFun := by
+    unfold Equiv.prodProdProdComm
+    dsimp only
+    fun_prop
+
+@[simp]
+theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
+  rfl
 
 /-- `X × {*}` is homeomorphic to `X`. -/
 @[simps! (config := .asFn) apply]
