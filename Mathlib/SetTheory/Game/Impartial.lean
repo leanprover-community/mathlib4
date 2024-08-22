@@ -71,7 +71,7 @@ theorem congr {G H : PGame} (r : G ≡r H) (h : G.Impartial) : H.Impartial :=
       (fun j => congr (r.moveRightSymm j) (h.moveRight _))
 termination_by (G, H)
 
-instance add {G H : PGame} (hG : G.Impartial) (hH : H.Impartial) : (G + H).Impartial := by
+theorem add {G H : PGame} (hG : G.Impartial) (hH : H.Impartial) : (G + H).Impartial := by
   rw [impartial_def]
   refine ⟨Equiv.trans (add_congr (neg_equiv_self hG) (neg_equiv_self hH))
       (Equiv.symm (negAddRelabelling _ _).equiv), fun k => ?_, fun k => ?_⟩
@@ -85,7 +85,7 @@ instance add {G H : PGame} (hG : G.Impartial) (hH : H.Impartial) : (G + H).Impar
   exacts [hG.moveLeft _, hH.moveLeft _, hG.moveRight _, hH.moveRight _]
 termination_by (G, H)
 
-instance neg {G : PGame} (h : G.Impartial) : (-G).Impartial := by
+theorem neg {G : PGame} (h : G.Impartial) : (-G).Impartial := by
   apply impartial_mk
   · rw [neg_neg]
     exact Equiv.symm (neg_equiv_self h)
