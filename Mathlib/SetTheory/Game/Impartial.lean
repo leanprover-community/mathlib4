@@ -42,13 +42,13 @@ theorem impartial_mk {G : PGame} (he : G ≈ -G)
 
 namespace Impartial
 
-theorem impartial_zero : Impartial 0 := by
+theorem zero : Impartial 0 := by
   rw [impartial_def]
   simp
 
-theorem impartial_star : Impartial star := by
+theorem star : Impartial star := by
   rw [impartial_def]
-  simpa using Impartial.impartial_zero
+  simpa using Impartial.zero
 
 theorem neg_equiv_self {G : PGame} (h : G.Impartial) : G ≈ -G :=
   (impartial_def.1 h).1
