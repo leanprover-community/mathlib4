@@ -59,7 +59,7 @@ lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset
 
 /-- The length of a hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
-  eq_tsub_of_add_eq <| by
+  Nat.eq_sub_of_add_eq <| by
     rw [← length_support, ← List.sum_toFinset_count_eq_length, Finset.sum_congr rfl fun _ _ ↦ hp _,
       ← card_eq_sum_ones, hp.support_toFinset, card_univ]
 
@@ -85,7 +85,7 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     rcases p with (_ | ⟨y, p⟩)
     · cases hp.ne_nil rfl
     simp only [support_cons, List.count_cons, beq_iff_eq, List.head_cons, hf.injective.eq_iff,
-      add_tsub_cancel_right]
+      Nat.add_sub_cancel]
     exact hp.isHamiltonian_tail _
 
 lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :

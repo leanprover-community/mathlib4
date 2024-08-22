@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.ENat.Order
 
 /-!
 # Girth of a simple graph

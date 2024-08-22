@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.ENat.Order
+import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Tactic.TFAE
 
@@ -40,6 +42,7 @@ This is defined as the maximum of the lengths of `Set.subchain`s, valued in `ℕ
 
 -/
 
+-- TODO: assert_not_exists OrderedCommMonoid
 
 open List hiding le_antisymm
 open OrderDual

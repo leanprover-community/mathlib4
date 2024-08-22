@@ -658,12 +658,4 @@ protected theorem add_lt_add_of_lt_of_le [CovariantClass α α (· + ·) (· ≤
 
 end Add
 
--- instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
---   { WithBot.partialOrder, WithBot.addCommMonoid with
---     add_le_add_left := fun _ _ h c => add_le_add_left h c }
---
--- instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
---     LinearOrderedAddCommMonoid (WithBot α) :=
---   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
-
 end WithBot

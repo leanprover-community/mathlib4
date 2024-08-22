@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Data.ENat.Basic
+import Mathlib.Data.ENat.Order
 import Mathlib.Data.ENat.Lattice
 
 /-!

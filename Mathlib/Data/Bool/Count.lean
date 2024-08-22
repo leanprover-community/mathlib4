@@ -110,7 +110,7 @@ theorem length_sub_one_le_two_mul_count_bool (hl : Chain' (· ≠ ·) l) (b : Bo
 
 theorem length_div_two_le_count_bool (hl : Chain' (· ≠ ·) l) (b : Bool) :
     length l / 2 ≤ count b l := by
-  rw [Nat.div_le_iff_le_mul_add_pred two_pos, ← tsub_le_iff_right]
+  rw [Nat.div_le_iff_le_mul_add_pred two_pos, ← Nat.sub_le_iff_le_add]
   exact length_sub_one_le_two_mul_count_bool hl b
 
 theorem two_mul_count_bool_le_length_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :

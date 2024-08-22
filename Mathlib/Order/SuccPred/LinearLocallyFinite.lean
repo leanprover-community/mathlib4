@@ -158,7 +158,7 @@ instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [S
     induction' n with n
     · simp only [Function.iterate_zero, id]
     · rw [pred_succ_iterate_of_not_isMax]
-      rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
+      rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero]
       suffices succ^[n] i < succ^[n.succ] i from not_isMax_of_lt this
       refine lt_of_le_of_ne ?_ ?_
       · rw [Function.iterate_succ']

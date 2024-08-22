@@ -17,7 +17,6 @@ This file contains the commutative linear orderded semiring instance on the natu
 
 See note [foundational algebra order theory].
 -/
-
 namespace Nat
 
 /-! ### Instances -/

@@ -11,7 +11,6 @@ import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
 import Mathlib.Data.ULift
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Pointwise operations of finsets
@@ -807,13 +806,11 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  -- Also compiles without the option, but much slower.
-  set_option tactic.skipAssignedInstances false in
   simp [← mem_coe, coe_pow, Set.mem_pow]
 
 @[to_additive (attr := simp)]
 theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
+  rw [← Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
 
 @[to_additive]
 theorem mul_univ_of_one_mem [Fintype α] (hs : (1 : α) ∈ s) : s * univ = univ :=

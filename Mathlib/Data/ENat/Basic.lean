@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Algebra.Order.MonoidWithZero.WithTop
+import Mathlib.Algebra.Order.Sub.Unbundled.Nat
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.SuccPred
 
 /-!
@@ -25,18 +24,14 @@ and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may e
 and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
 -/
 
+assert_not_exists OrderedCommMonoid
+
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 def ENat : Type :=
   WithTop ℕ
-deriving Zero,
-  -- AddCommMonoidWithOne,
-  CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddCommMonoid, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
+deriving Zero,AddCommMonoidWithOne, CommMonoidWithZero, Nontrivial,
+  LinearOrder, Bot, Top, Sub, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
-
--- Porting Note: In `Data.Nat.ENatPart` proofs timed out when having
--- the `deriving AddCommMonoidWithOne`, and it seems to work without.
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 notation "ℕ∞" => ENat
@@ -211,7 +206,7 @@ theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + 
 theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
   lift n to ℕ using hn
   induction m
-  · rw [top_sub_coe, toNat_top, zero_tsub]
+  · rw [top_sub_coe, toNat_top, Nat.zero_sub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
@@ -219,7 +214,7 @@ theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m =
 
 lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n := by
   lift m to ℕ using ne_top_of_le_ne_top (coe_ne_top n) h
-  simpa using h
+  exact WithTop.coe_le_coe.mp h
 
 @[gcongr]
 lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
@@ -237,6 +232,14 @@ theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
 theorem one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
   add_one_le_iff WithTop.zero_ne_top
 
+@[simp high]
+theorem pos_iff_ne_zero : 0 < n ↔ n ≠ 0 := by
+  refine ⟨fun h => (ne_of_lt h).symm, fun h => ?_⟩
+  cases n
+  · simp
+  · norm_cast at h
+    exact WithTop.coe_lt_coe.mpr <| Nat.pos_iff_ne_zero.mpr h
+
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   one_le_iff_pos.trans pos_iff_ne_zero
 
@@ -251,6 +254,11 @@ theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
+
+-- See library note [specialised high priority simp lemma]
+@[simp high]
+theorem zero_le {n : ℕ∞} : 0 ≤ n := by
+  exact StrictMono.minimal_preimage_bot (fun ⦃a b⦄ a ↦ a) rfl n
 
 @[simp]
 lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
@@ -267,5 +275,17 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
   cases a
   · exact htop A
   · exact A _
+
+-- See library note [specialised high priority simp lemma]
+@[simp high]
+theorem add_eq_zero {m n : ℕ∞} : m + n = 0 ↔ m = 0 ∧ n = 0 := by
+  refine ⟨fun h => ?_, fun ⟨h₁, h₂⟩ => by simp [h₁, h₂]⟩
+  cases n <;> cases m
+  rotate_right
+  · norm_cast at *
+    exact Nat.eq_zero_of_add_eq_zero h
+  all_goals exact False.elim <| top_ne_zero h
+
+instance instCommSemiring : CommSemiring ℕ∞ := WithTop.commSemiringOfAddEqZero add_eq_zero.mp
 
 end ENat

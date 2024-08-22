@@ -2037,10 +2037,10 @@ alias nat_cast_pos := natCast_pos
 @[simp, norm_cast]
 theorem natCast_sub (m n : ℕ) : ((m - n : ℕ) : Ordinal) = m - n := by
   rcases le_total m n with h | h
-  · rw [tsub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (natCast_le.2 h)]
+  · rw [Nat.sub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (natCast_le.2 h)]
     rfl
   · apply (add_left_cancel n).1
-    rw [← Nat.cast_add, add_tsub_cancel_of_le h, Ordinal.add_sub_cancel_of_le (natCast_le.2 h)]
+    rw [← Nat.cast_add, Nat.add_sub_cancel' h, Ordinal.add_sub_cancel_of_le (natCast_le.2 h)]
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_sub := natCast_sub

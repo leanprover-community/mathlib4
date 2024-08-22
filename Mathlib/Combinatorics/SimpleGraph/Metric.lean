@@ -5,6 +5,7 @@ Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.ENat.Order
 
 /-!
 # Graph metric

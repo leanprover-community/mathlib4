@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.ENat.Order
 import Mathlib.Data.Part
 import Mathlib.Tactic.NormNum
 
@@ -563,11 +564,6 @@ theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {_ : Decidable (OfNat.ofNat n :
 -- @[simp] lemma to_with_top_le {x y : part_enat} :
 --   Π [decidable x.dom] [decidable y.dom], by exactI to_with_top x ≤ to_with_top y ↔ x ≤ y :=
 -- ```
--- This used to be really slow to typecheck when the definition of `ENat`
--- was still `deriving AddCommMonoidWithOne`. Now that I removed that it is fine.
--- (The problem was that the last `simp` got stuck at `CharZero ℕ∞ ≟ CharZero ℕ∞` where
--- one side used `instENatAddCommMonoidWithOne` and the other used
--- `NonAssocSemiring.toAddCommMonoidWithOne`. Now the former doesn't exist anymore.)
 @[simp]
 theorem toWithTop_le {x y : PartENat} [hx : Decidable x.Dom] [hy : Decidable y.Dom] :
     toWithTop x ≤ toWithTop y ↔ x ≤ y := by

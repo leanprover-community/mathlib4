@@ -1519,11 +1519,11 @@ theorem tendsto_comp_val_Iic_atBot [SemilatticeInf α] {a : α} {f : α → β} 
 
 theorem map_add_atTop_eq_nat (k : ℕ) : map (fun a => a + k) atTop = atTop :=
   map_atTop_eq_of_gc (fun a => a - k) k (fun a b h => add_le_add_right h k)
-    (fun a b h => (le_tsub_iff_right h).symm) fun a h => by rw [tsub_add_cancel_of_le h]
+    (fun a b h => (Nat.le_sub_iff_add_le h).symm) fun a h => by rw [Nat.sub_add_cancel h]
 
 theorem map_sub_atTop_eq_nat (k : ℕ) : map (fun a => a - k) atTop = atTop :=
-  map_atTop_eq_of_gc (fun a => a + k) 0 (fun a b h => tsub_le_tsub_right h _)
-    (fun a b _ => tsub_le_iff_right) fun b _ => by rw [add_tsub_cancel_right]
+  map_atTop_eq_of_gc (fun a => a + k) 0 (fun a b h => Nat.sub_le_sub_right h _)
+    (fun a b _ => Nat.sub_le_iff_le_add) fun b _ => by rw [Nat.add_sub_cancel]
 
 theorem tendsto_add_atTop_nat (k : ℕ) : Tendsto (fun a => a + k) atTop atTop :=
   le_of_eq (map_add_atTop_eq_nat k)
@@ -1540,7 +1540,7 @@ theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop
   map_atTop_eq_of_gc (fun b => b * k + (k - 1)) 1 (fun a b h => Nat.div_le_div_right h)
     -- Porting note: there was a parse error in `calc`, use `simp` instead
     (fun a b _ => by simp only [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul hk, Nat.succ_eq_add_one,
-      add_assoc, tsub_add_cancel_of_le (Nat.one_le_iff_ne_zero.2 hk.ne'), add_mul, one_mul])
+      add_assoc, Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.2 hk.ne'), add_mul, one_mul])
     fun b _ =>
     calc
       b = b * k / k := by rw [Nat.mul_div_cancel b hk]

@@ -29,7 +29,7 @@ instance instIsWellOrder : IsWellOrder ℕ+ (· < ·) where
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
-  rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.2]
+  rw [natPred, Nat.add_sub_cancel' <| show 1 ≤ (n : ℕ) from n.2]
 
 @[simp]
 theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
@@ -242,8 +242,8 @@ instance instSub : Sub ℕ+ :=
 theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
   change (toPNat' _ : ℕ) = ite _ _ _
   split_ifs with h
-  · exact toPNat'_coe (tsub_pos_of_lt h)
-  · rw [tsub_eq_zero_iff_le.mpr (le_of_not_gt h : (a : ℕ) ≤ b)]
+  · exact toPNat'_coe (Nat.sub_pos_of_lt h)
+  · rw [Nat.sub_eq_zero_iff_le.mpr (le_of_not_gt h : (a : ℕ) ≤ b)]
     rfl
 
 theorem sub_le (a b : ℕ+) : a - b ≤ a := by
@@ -262,7 +262,7 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>
     PNat.eq <| by
       rw [add_coe, sub_coe, if_pos h]
-      exact add_tsub_cancel_of_le h.le
+      exact Nat.add_sub_cancel' h.le
 
 /-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
 theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
