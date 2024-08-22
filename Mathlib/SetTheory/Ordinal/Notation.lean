@@ -1078,6 +1078,8 @@ def fastGrowing : ONote → ℕ → ℕ
       fastGrowing (f i) i
   termination_by o => o
 
+-- Porting note: the linter bug should be fixed.
+@[nolint unusedHavesSuffices]
 theorem fastGrowing_def {o : ONote} {x} (e : fundamentalSequence o = x) :
     fastGrowing o =
       match
@@ -1247,10 +1249,10 @@ theorem repr_mul (a b) : repr (a * b) = repr a * repr b :=
   ONote.repr_mul a.1 b.1
 
 /-- Exponentiation of ordinal notations. -/
-def opow (x y : NONote) :=
-  mk (x.1 ^ y.1)
+instance : Pow NONote NONote :=
+  ⟨fun x y => mk (x.1 ^ y.1)⟩
 
-theorem repr_opow (a b) : repr (opow a b) = repr a ^ repr b :=
+theorem repr_opow (a b) : repr (a ^ b) = repr a ^ repr b :=
   ONote.repr_opow a.1 b.1
 
 end NONote
