@@ -76,11 +76,12 @@ def to_appExpr (e : Expr) : MetaM Expr := do
   -- assign metavariables again
   let args2 := ← args.mapM instantiateMVars
   logInfo m!"args2_instatiated: {args2}"
-  let e ← instantiateMVars e
+  let applied ← instantiateMVars conclusion
   -- create the specialized term
-  let applied := (mkAppN e args2)
+  -- let applied := (mkAppN E args2)
+  -- logInfo m!"applied: {applied}"
   let applied2 ← mkLambdaFVars ((← Meta.getMVars applied).map (Expr.mvar)) applied
-  logInfo m!"e:{e}"
+  logInfo m!"E:{applied}"
   logInfo m!"APP: {applied2}"
   return applied2
 
