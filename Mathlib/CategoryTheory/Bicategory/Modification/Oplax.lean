@@ -19,14 +19,12 @@ for each 1-morphism `f : a ⟶ b`.
 * `Modification η θ` : modifications between oplax transformations `η` and `θ`
 * `Modification.vcomp η θ` : the vertical composition of oplax transformations `η`
   and `θ`
-* `OplaxNatTrans.category F G` : the category structure on the oplax transformations
+* `OplaxTrans.category F G` : the category structure on the oplax transformations
   between `F` and `G`
 
 -/
 
-namespace CategoryTheory
-
-namespace OplaxNatTrans
+namespace CategoryTheory.Oplax
 
 open Category Bicategory
 
@@ -92,15 +90,14 @@ end Modification
 
 /-- Category structure on the oplax transformations between OplaxFunctors. -/
 @[simps]
-instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
+instance homcategory (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
   id := Modification.id
   comp := Modification.vcomp
 
--- Porting note: duplicating the `ext` lemma.
 @[ext]
-lemma ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
-    m = n := by
+lemma homcategory.ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β}
+    (w : ∀ b, m.app b = n.app b) : m = n := by
   apply Modification.ext
   ext
   apply w
@@ -113,6 +110,8 @@ lemma Modification.id_app' {X : B} {F G : OplaxFunctor B C} (α : F ⟶ G) :
 lemma Modification.comp_app' {X : B} {F G : OplaxFunctor B C} {α β γ : F ⟶ G}
     (m : α ⟶ β) (n : β ⟶ γ) : (m ≫ n).app X = m.app X ≫ n.app X :=
   rfl
+
+variable {η θ}
 
 /-- Construct a modification isomorphism between oplax transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.
@@ -129,7 +128,4 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
       naturality := fun {a b} f => by
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
 
--- TODO: FIX NAMESPACE
-end OplaxNatTrans
-
-end CategoryTheory
+end CategoryTheory.Oplax

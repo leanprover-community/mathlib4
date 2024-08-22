@@ -210,8 +210,6 @@ end
 
 end StrongTrans
 
-open OplaxNatTrans
-
 variable (B C)
 
 @[simps id comp]
@@ -226,10 +224,5 @@ instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
 --   Hom η θ := Modification η.toOplax θ.toOplax
 --   id η := Modification.id η.toOplax
 --   comp := Modification.vcomp
-
--- @[ext]
--- lemma Pseudofunctor.homcategory.ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β}
---     (w : ∀ b, m.app b = n.app b) : m = n :=
---   OplaxNatTrans.ext w
 
 end CategoryTheory.Pseudofunctor

@@ -94,27 +94,29 @@ end Modification
 
 /-- Category structure on the strong transformations between pseudofunctors. -/
 @[simps]
-instance category (F G : Pseudofunctor B C) : Category (F ⟶ G) where
+instance homcategory (F G : Pseudofunctor B C) : Category (F ⟶ G) where
   Hom := Modification
   id := Modification.id
   comp := Modification.vcomp
 
--- Porting note: duplicating the `ext` lemma.
 @[ext]
-lemma ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
-    m = n := by
+lemma homcategory.ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β}
+    (w : ∀ b, m.app b = n.app b) : m = n := by
   apply Modification.ext
   ext
   apply w
 
 @[simp]
 lemma Modification.id_app' {X : B} {F G : Pseudofunctor B C} (α : F ⟶ G) :
-    Modification.app (𝟙 α) X = 𝟙 (α.app X) := rfl
+    Modification.app (𝟙 α) X = 𝟙 (α.app X) :=
+  rfl
 
 @[simp]
 lemma Modification.comp_app' {X : B} {F G : Pseudofunctor B C} {α β γ : F ⟶ G}
     (m : α ⟶ β) (n : β ⟶ γ) : (m ≫ n).app X = m.app X ≫ n.app X :=
   rfl
+
+variable {η θ}
 
 /-- Construct a modification isomorphism between strong transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.
