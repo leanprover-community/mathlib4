@@ -243,9 +243,6 @@ theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _
 theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = replicate n a := by
   simp only [eq_replicate, subset_def, mem_singleton, exists_eq_left']
 
-@[simp] theorem tail_replicate (a : α) (n) :
-    tail (replicate n a) = replicate (n - 1) a := by cases n <;> rfl
-
 theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
   fun _ _ h => (eq_replicate.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
 
@@ -382,10 +379,6 @@ lemma getLast_filter {p : α → Bool} :
       exact getLast_filter (b :: as) h h'
 
 /-! ### getLast? -/
-
-@[simp]
-theorem getLast?_cons_cons (a b : α) (l : List α) :
-    getLast? (a :: b :: l) = getLast? (b :: l) := rfl
 
 @[simp]
 theorem getLast?_eq_none : ∀ {l : List α}, getLast? l = none ↔ l = []
@@ -895,7 +888,7 @@ theorem getElem_reverse_aux₂ :
 @[deprecated (since := "2024-06-12")]
 theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
     get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
-  simp [getElem_reverse_aux₂, h1, h2]
+  simp only [get_eq_getElem, h2, getElem_reverse_aux₂]
 
 @[deprecated getElem_reverse (since := "2024-06-12")]
 theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
