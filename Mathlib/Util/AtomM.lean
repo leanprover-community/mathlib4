@@ -3,6 +3,7 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.Simp.Types
 
 /-!
@@ -46,3 +47,5 @@ def AtomM.addAtom (e : Expr) : AtomM Nat := do
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
       return i
   modifyGet fun c ↦ (c.atoms.size, { c with atoms := c.atoms.push e })
+
+end Mathlib.Tactic
