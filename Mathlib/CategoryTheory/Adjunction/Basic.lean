@@ -251,11 +251,6 @@ structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
 
 namespace CoreHomEquiv
 
--- Porting note: Workaround not needed in Lean 4.
--- restate_axiom homEquiv_naturality_left_symm'
-
--- restate_axiom homEquiv_naturality_right'
-
 attribute [simp] homEquiv_naturality_left_symm homEquiv_naturality_right
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : CoreHomEquiv F G) {X' X : C} {Y Y' : D}
