@@ -3,6 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
 
 /-!
@@ -108,13 +109,32 @@ variable (L) [IsOrdered L]
 def preorderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.transitive}
 
+instance : Theory.IsUniversal L.preorderTheory := ⟨by
+  simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  exact ⟨leSymb.reflexive_isUniversal, leSymb.transitive_isUniversal⟩⟩
+
 /-- The theory of partial orders. -/
 def partialOrderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive}
 
+instance : Theory.IsUniversal L.partialOrderTheory := ⟨by
+  simp only [partialOrderTheory,
+    Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  exact ⟨leSymb.reflexive_isUniversal, leSymb.antisymmetric_isUniversal,
+    leSymb.transitive_isUniversal⟩⟩
+
 /-- The theory of linear orders. -/
 def linearOrderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive, leSymb.total}
+
+instance : Theory.IsUniversal L.linearOrderTheory := ⟨by
+  simp only [linearOrderTheory,
+    Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  exact ⟨leSymb.reflexive_isUniversal, leSymb.antisymmetric_isUniversal,
+    leSymb.transitive_isUniversal, leSymb.total_isUniversal⟩⟩
+
+example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
+    S ⊨ L.linearOrderTheory := inferInstance
 
 /-- A sentence indicating that an order has no top element:
 $\forall x, \exists y, \neg y \le x$.   -/
@@ -258,7 +278,7 @@ lemma dlo_age (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dl
   refine ⟨⟨(f.toEmbedding.trans Fin.valEmbedding).trans (Infinite.natEmbedding M),
     (IsRelational.empty_functions _).elim, fun l R => ?_⟩⟩
   match R with
-  | leSymb => 
+  | leSymb =>
     simp only [Function.Embedding.toFun_eq_coe]
     sorry
 
