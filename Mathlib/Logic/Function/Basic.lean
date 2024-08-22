@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Nonempty
-import Mathlib.Init.Set
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Batteries.Tactic.Init
 
@@ -754,6 +754,8 @@ theorem _root_.Bool.involutive_not : Involutive not :=
 namespace Involutive
 
 variable {α : Sort u} {f : α → α} (h : Involutive f)
+
+include h
 
 @[simp]
 theorem comp_self : f ∘ f = id :=

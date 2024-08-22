@@ -21,9 +21,7 @@ of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their a
 counterparts.
 -/
 
--- Make sure we haven't imported `Data.Nat.Order.Basic`
-assert_not_exists OrderedSub
-assert_not_exists Ring
+assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
 
@@ -416,8 +414,8 @@ theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => 
 theorem prod_drop_succ :
     ∀ (L : List G) (i : ℕ) (p : i < L.length), (L.drop (i + 1)).prod = L[i]⁻¹ * (L.drop i).prod
   | [], i, p => False.elim (Nat.not_lt_zero _ p)
-  | x :: xs, 0, _ => by simp
-  | x :: xs, i + 1, p => prod_drop_succ xs i _
+  | _ :: _, 0, _ => by simp
+  | _ :: xs, i + 1, p => prod_drop_succ xs i (Nat.lt_of_succ_lt_succ p)
 
 /-- Cancellation of a telescoping product. -/
 @[to_additive "Cancellation of a telescoping sum."]
@@ -435,7 +433,7 @@ lemma prod_rotate_eq_one_of_prod_eq_one :
     have : n % List.length (a :: l) ≤ List.length (a :: l) := le_of_lt (Nat.mod_lt _ (by simp))
     rw [← List.take_append_drop (n % List.length (a :: l)) (a :: l)] at hl
     rw [← rotate_mod, rotate_eq_drop_append_take this, List.prod_append, mul_eq_one_iff_inv_eq,
-      ← one_mul (List.prod _)⁻¹, ← hl, List.prod_append, mul_assoc, mul_inv_self, mul_one]
+      ← one_mul (List.prod _)⁻¹, ← hl, List.prod_append, mul_assoc, mul_inv_cancel, mul_one]
 
 end Group
 
@@ -756,13 +754,4 @@ lemma unop_map_list_prod {F : Type*} [FunLike F M Nᵐᵒᵖ] [MonoidHomClass F 
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod := by
   rw [map_list_prod f l, MulOpposite.unop_list_prod, List.map_map]
 
-namespace MonoidHom
-
-/-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
-@[deprecated _root_.unop_map_list_prod (since := "2023-01-10")]
-protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
-    (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
-  unop_map_list_prod f l
-
-end MonoidHom
 end MonoidHom

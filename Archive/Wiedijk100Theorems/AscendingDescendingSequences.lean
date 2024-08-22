@@ -21,12 +21,9 @@ https://en.wikipedia.org/wiki/Erdos-Szekeres_theorem#Pigeonhole_principle.
 sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Erdős-Szekeres
 -/
 
-
 variable {α : Type*} [LinearOrder α] {β : Type*}
 
 open Function Finset
-
-open scoped Classical
 
 namespace Theorems100
 

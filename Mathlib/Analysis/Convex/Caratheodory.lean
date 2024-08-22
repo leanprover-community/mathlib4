@@ -95,13 +95,15 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
         simp only [sub_smul, mul_smul, sum_sub_distrib, ← smul_sum, gcombo, smul_zero, sub_zero,
           centerMass, fsum, inv_one, one_smul, id]
 
-variable {s : Set E} {x : E} (hx : x ∈ convexHull 𝕜 s)
+variable {s : Set E} {x : E}
 
 /-- Given a point `x` in the convex hull of a set `s`, this is a finite subset of `s` of minimum
 cardinality, whose convex hull contains `x`. -/
-noncomputable def minCardFinsetOfMemConvexHull : Finset E :=
+noncomputable def minCardFinsetOfMemConvexHull (hx : x ∈ convexHull 𝕜 s) : Finset E :=
   Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } <| by
     simpa only [convexHull_eq_union_convexHull_finite_subsets s, exists_prop, mem_iUnion] using hx
+
+variable (hx : x ∈ convexHull 𝕜 s)
 
 theorem minCardFinsetOfMemConvexHull_subseteq : ↑(minCardFinsetOfMemConvexHull hx) ⊆ s :=
   (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).1
