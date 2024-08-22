@@ -473,7 +473,7 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
   set c : Urysohns.CU P :=
   { C := closure u
     U := tᶜ
-    P_C := Set.Subset.trans huv.2.2.1 subset_closure
+    P_C := huv.2.2.1.trans subset_closure
     closed_C := isClosed_closure
     open_U := ht.isOpen_compl
     subset := Set.subset_compl_comm.mp
