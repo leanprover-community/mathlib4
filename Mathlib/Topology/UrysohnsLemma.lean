@@ -486,20 +486,10 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
         (isOpen_compl_iff.mpr cIsClosed) (IsCompact.of_isClosed_subset hscp isClosed_closure
         (closure_mono (Set.compl_subset_comm.mp Pc)))
         (isClosed_compl_iff.mpr uIsOpen) (Set.compl_subset_compl_of_subset csubu)
-      obtain ⟨v1, hv1⟩ := hu1
-      use u1
-      simp only [compl_compl] at hv1
-      rw [← Set.subset_compl_iff_disjoint_right] at hv1
-      constructor
-      · exact hv1.1
-      constructor
-      · exact hv1.2.2.1
-      constructor
-      · apply Set.Subset.trans _ (Set.compl_subset_comm.mp hv1.2.2.2.1)
-        rw [← IsClosed.closure_eq (isClosed_compl_iff.mpr hv1.2.1)]
-        exact closure_mono hv1.2.2.2.2
-      · exact Set.Subset.trans (Set.Subset.trans Pc hv1.2.2.1) subset_closure
-  }
+      simp_rw [compl_compl, ← subset_compl_iff_disjoint_right, compl_subset_comm (s := u)] at hu1
+      obtain ⟨v1, hu1, hv1, hcu1, hv1u, hu1v1⟩ := hu1
+      refine ⟨u1, hu1, hcu1, ?_, (Pc.trans hcu1).trans subset_closure⟩
+      exact closure_minimal hu1v1 hv1.isClosed_compl |>.trans hv1u }
 -- `c.lim = 0` on `closure u` and `c.lim = 1` on `t`, so that `tsupport c.lim ⊆ s`.
   use ⟨c.lim, c.continuous_lim⟩
   simp only [ContinuousMap.coe_mk]
