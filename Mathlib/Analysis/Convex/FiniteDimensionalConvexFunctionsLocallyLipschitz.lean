@@ -141,19 +141,16 @@ lemma Lipschitz_of_Bounded [T0Space X](hf : ConvexOn ℝ (ball x₀ r) f)
   use ⟨K , K_pos⟩
   dsimp [LipschitzOnWith]
   intro x hx y hy
-  --type conversion
   rw[edist_dist,edist_dist]
   rw[ENNReal.coe_nnreal_eq]
   simp only [NNReal.coe_mk, ge_iff_le]
   rw[← ENNReal.ofReal_mul K_pos]
   rw[ENNReal.ofReal_le_ofReal_iff (mul_nonneg K_pos dist_nonneg)]
-  --type conversion
   rw[Real.dist_eq,dist_eq_norm]
   rw[convexOn_iff_forall_pos] at hf
 
   have oneside {uy vx : X}(h : uy ≠ vx)
-      (hu : uy ∈ ball x₀ (r - ε))(hv : vx ∈ ball x₀ (r - ε))
-      :f uy - f vx ≤ K * ‖uy - vx‖ := by
+      (hu : uy ∈ ball x₀ (r - ε))(hv : vx ∈ ball x₀ (r - ε)) :f uy - f vx ≤ K * ‖uy - vx‖ := by
     have sub : ball x₀ (r - ε) ⊆ ball x₀ r := by
         apply ball_subset_ball
         linarith
@@ -436,8 +433,7 @@ lemma LocallyUpperBounded (hs_convex : Convex ℝ s)(hs_isopen : IsOpen s)
 
 lemma LocallyLipschitz_of_LocallyUpperBounded (hs : IsOpen s)
     (h : ∀ x ∈ s , ∃ t ∈ 𝓝[s] x , Convex ℝ t ∧ IsOpen t ∧ BddAbove (f '' t))
-    (hf : ConvexOn ℝ s f)
-    : LocallyLipschitzOn s f := by
+    (hf : ConvexOn ℝ s f) : LocallyLipschitzOn s f := by
   dsimp [LocallyLipschitzOn]
   intro x hx
   rcases h x hx with ⟨t , ht⟩
@@ -484,9 +480,8 @@ variable {α : Type*}{β : Type*}
 Each convex function on an open convex subset of FiniteDimensional space
 is locally Lipschitz
 -/
-theorem FiniDeimensionalConvexFunctionsLocallyLipschitz
-    (hs_convex : Convex ℝ s)(hs_isopen : IsOpen s)(hf : ConvexOn ℝ s f)
-    : LocallyLipschitzOn s f :=by
+theorem FiniDeimensionalConvexFunctionsLocallyLipschitz (hs_convex : Convex ℝ s)
+    (hs_isopen : IsOpen s)(hf : ConvexOn ℝ s f) : LocallyLipschitzOn s f :=by
   apply LocallyLipschitz_of_LocallyUpperBounded hs_isopen _ hf
   apply LocallyUpperBounded hs_convex hs_isopen hf
 
@@ -494,9 +489,8 @@ theorem FiniDeimensionalConvexFunctionsLocallyLipschitz
 Each convex function on an open convex subset of FiniteDimensional space
 is continuous
 -/
-theorem FiniDeimensionalConvexFunctionsContinous
-    (hs_convex : Convex ℝ s)(hs_isopen : IsOpen s)(hf : ConvexOn ℝ s f)
-    : ContinuousOn f s := by
+theorem FiniDeimensionalConvexFunctionsContinous (hs_convex : Convex ℝ s)
+    (hs_isopen : IsOpen s)(hf : ConvexOn ℝ s f) : ContinuousOn f s := by
   apply LocallyLipschitzOn.continuousOn
   apply FiniDeimensionalConvexFunctionsLocallyLipschitz hs_convex hs_isopen hf
 
