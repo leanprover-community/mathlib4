@@ -18,6 +18,8 @@ import Lean.Elab.Tactic.ElabTerm
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.BoundedOrder
+import Std.Data.DHashMap.Basic
+
 import Lean
 
 open Lean
@@ -37,37 +39,42 @@ class OfExpr? (α : Type) where
 class OfExpr (α : Type) where
   ofExpr : Expr → α
 
-structure VarExpr where
+
+structure VarContext where
+  /-- Mapping from variable `v` to its underlying expression `e` -/
+  var2Expr : Std.HashMap UInt64 Expr
+  /-- Mapping from variable `v` to a canonical variable `c`, and a proof that `v = c`. -/
+  var2canonical : Std.HashMap UInt64 (UInt64 × Expr)
+
+structure VarVal where
   e : Expr
 deriving BEq, Hashable
 
-def VarExpr.toExpr (v : VarExpr) : Expr := v.e
+def VarVal.toExpr (v : VarVal) : Expr := v.e
 
-instance : ToExprM VarExpr where
+instance : ToExprM VarVal where
   toExprM v := return v.e
 
-def VarExpr.ofExpr (e : Expr) : VarExpr := ⟨e⟩
+def VarExpr.ofExpr (e : Expr) : VarVal := ⟨e⟩
 
-structure EqExpr where
+structure EqTy where
   ty? : Option Expr := .none
-  lhs : VarExpr
-  rhs : VarExpr
-deriving BEq, Hashable
+  lhs : VarVal
+  rhs : VarVal
 
-def EqExpr.inferType (e : EqExpr) : MetaM Expr := do
-  match e.ty? with
-  | some ty => return ty
-  | none => do
-    let ty ← Meta.inferType e.lhs.e
-    return ty
+instance : BEq EqTy where
+  beq x y := x.lhs == y.lhs && x.rhs == y.rhs
 
-def EqExpr.toExprM (e : EqExpr) : MetaM Expr :=
+instance : Hashable EqTy where
+  hash x := hash (x.lhs, x.rhs)
+
+def EqTy.toExprM (e : EqTy) : MetaM Expr :=
   mkAppOptM `Eq #[e.ty?, e.lhs.toExpr, e.rhs.toExpr]
 
-instance : ToExprM EqExpr where
+instance : ToExprM EqTy where
   toExprM e := e.toExprM
 
-def EqExpr.ofExpr? (e : Expr) : Option EqExpr :=
+def EqTy.ofExpr? (e : Expr) : Option EqTy :=
   match_expr e with
   | Eq ty lhs rhs  => do
     let lhs := VarExpr.ofExpr lhs
@@ -75,39 +82,39 @@ def EqExpr.ofExpr? (e : Expr) : Option EqExpr :=
     some { ty? := ty, lhs := lhs, rhs := rhs }
   | _ => none
 
-structure NotExpr (α : Type) where
+structure NotTy (α : Type) where
   e : α
 deriving BEq, Hashable
 
 /-- info: Not (a : Prop) : Prop -/
 #guard_msgs in #check Not
 
-def NotExpr.toExpr {α : Type} [ToExprM α]
-    (n : NotExpr α) : MetaM Expr := do
+def NotTy.toExpr {α : Type} [ToExprM α]
+    (n : NotTy α) : MetaM Expr := do
   return mkApp (mkConst `Not) (← toExprM n.e)
 
-instance {α : Type} [ToExprM α] : ToExprM (NotExpr α) where
+instance {α : Type} [ToExprM α] : ToExprM (NotTy α) where
   toExprM n := do
     return mkApp (mkConst `NotExpr.mk) (← toExprM n.e)
 
-def NeqExpr.ofExpr? {α : Type} [E : OfExpr? α] (e : Expr): Option (NotExpr α) :=
+def NotTy.ofExpr? {α : Type} [E : OfExpr? α] (e : Expr): Option (NotTy α) :=
   match_expr e with
   | Not e' => do
     let e' ← E.ofExpr? e'
     some { e := e' }
   | _ => none
 
-abbrev NeqExpr := NotExpr EqExpr
+abbrev NeqTy := NotTy EqTy
 
-structure LeqExpr where
-  lhs : VarExpr
-  rhs : VarExpr
+structure LeqTy where
+  lhs : VarVal
+  rhs : VarVal
 deriving BEq, Hashable
 
 /-- info: LE.le.{u} {α : Type u} [self : LE α] : α → α → Prop -/
 #guard_msgs in #check LE.le
 
-def LeqExpr.ofExpr? (e : Expr) : Option LeqExpr :=
+def LeqTy.ofExpr? (e : Expr) : Option LeqTy :=
     match_expr e with
     | LE.le _α _self a b =>
       let lhs := VarExpr.ofExpr a
@@ -115,37 +122,51 @@ def LeqExpr.ofExpr? (e : Expr) : Option LeqExpr :=
       some { lhs := lhs, rhs := rhs }
     | _ => none
 
-def LeqExpr.toExpr (leq : LeqExpr) : MetaM Expr := do
+def LeqTy.toExpr (leq : LeqTy) : MetaM Expr := do
   mkAppOptM ``LE.le #[.none, .none, leq.lhs.toExpr, leq.rhs.toExpr]
 
-instance : ToExprM LeqExpr where
+instance : ToExprM LeqTy where
   toExprM e := e.toExpr
 
-instance : OfExpr? LeqExpr where
-  ofExpr? e := LeqExpr.ofExpr? e
+instance : OfExpr? LeqTy where
+  ofExpr? e := LeqTy.ofExpr? e
 
-abbrev NotLeqExpr := NotExpr LeqExpr
+abbrev NotLeqTy := NotTy LeqTy
 
 /-- info: Inf.inf.{u_1} {α : Type u_1} [self : Inf α] : α → α → α -/
 #guard_msgs in #check Inf.inf -- ⊓
 
-structure InfExpr where
-  ty : Expr
-  self : Expr
-  lhs : VarExpr
-  rhs : VarExpr
-deriving BEq, Hashable
+-- a ∩ b = c
+structure InfTy where
+  ty? : Option Expr
+  self? : Option Expr
+  lhs : VarVal
+  rhs : VarVal
 
-def InfExpr.toExpr (e : InfExpr) :=
-  mkApp4 (mkConst `Inf.inf) e.ty e.self e.lhs.toExpr e.rhs.toExpr
 
-def InfExpr.ofExpr? (e : Expr) : Option InfExpr :=
+instance : BEq InfTy where
+  beq x y := x.lhs == y.lhs && x.rhs == y.rhs
+
+instance : Hashable InfTy where
+  hash x := hash (x.lhs, x.rhs)
+
+def InfTy.toExpr (e : InfTy) : MetaM Expr :=
+  mkAppOptM ``Inf.inf #[e.ty?, e.self?, e.lhs.toExpr, e.rhs.toExpr]
+
+def InfTy.ofExpr? (e : Expr) : Option InfTy :=
   match_expr e with
   | Inf.inf α self a b =>
     let lhs := VarExpr.ofExpr a
     let rhs := VarExpr.ofExpr b
-    some { ty := α, self := self, lhs := lhs, rhs := rhs }
+    some { ty? := α, self? := self, lhs := lhs, rhs := rhs }
   | _ => none
+
+/-- A proof of some expressions α -/
+structure Proof {α : Type} (ty : α) where
+  proof : MetaM Expr
+
+instance {α : Type} (a : α) : ToExprM (Proof a) where
+  toExprM p := p.proof
 
 namespace Algorithm
 
@@ -155,12 +176,12 @@ namespace Algorithm
 structure State where
   /-- Current fuel available -/
   fuel : Nat
-  leqs : HashSet LeqExpr
-  nleqs : HashSet NotLeqExpr
-  neqs : HashSet NeqExpr
-  eqs : HashSet EqExpr
-  infs : HashSet InfExpr
-  vars : HashSet VarExpr
+  leqs : Std.DHashMap LeqTy Proof
+  nleqs : Std.DHashMap NotLeqTy Proof
+  neqs : Std.DHashMap NeqTy Proof
+  eqs : Std.DHashMap EqTy Proof
+  infs : Std.DHashMap InfTy Proof
+  vars : HashSet VarVal
 
 structure Config where
   /-- number of basic operations to perform before giving up. -/
@@ -189,18 +210,125 @@ def hasFuel? : LatticeM Bool := do
 def consumeFuel : LatticeM Unit := do
   modify fun s => { s with fuel := s.fuel - 1 }
 
-
-/-- returns if equation was new. -/
-def addEquality (lhs : VarExpr) (rhs : VarExpr) : LatticeM Bool := do
-  let refl := EqExpr.mk .none lhs rhs
+/--
+returns if equation was new.
+Proof is lazily computed as necessary
+-/
+def addEqualityProof (ty : EqTy)
+    (proof : Proof ty) : LatticeM Bool := do
   let s ← get
-  if s.eqs.contains refl then
+  if s.eqs.contains ty then
     return false
   else
-    modify fun s => { s with eqs := s.eqs.insert refl }
+    modify fun s => { s with eqs := s.eqs.insert ty proof }
     -- TODO: substitute all instances of lhs with rhs in all equations.
     return true
 
+def addEqRefl (v : VarVal) : LatticeM Bool := do
+  let eqTy : EqTy := { ty? := none, lhs := v, rhs := v }
+  let proof := mkEqRefl v.e
+
+  if (← get).eqs.contains eqTy then
+    return false
+  else
+    modify fun s => { s with eqs := s.eqs.insert eqTy ⟨proof⟩ }
+    return true
+
+def addLeqProof {ty : LeqTy}
+  (proof : Proof ty) : LatticeM Bool := do
+  let s ← get
+  if s.leqs.contains ty then
+    return false
+  else
+    modify fun s => { s with leqs := s.leqs.insert ty proof }
+    return true
+
+/-- info: le_refl.{u} {α : Type u} [Preorder α] (a : α) : a ≤ a -/
+#guard_msgs in #check le_refl
+
+def mkLERefl (e : Expr) : MetaM Expr := do
+  mkAppOptM ``le_refl #[none, none, e]
+
+def addLeqRefl (v : VarVal) : LatticeM Bool := do
+  let leqTy : LeqTy := { lhs := v, rhs := v }
+  let proof : Proof leqTy :=
+    Proof.mk <| mkLERefl v.e
+  addLeqProof proof
+
+def addVar (v : VarVal) : LatticeM Bool := do
+  return (← addEqRefl v) || (← addLeqRefl v)
+
+/--
+info: Preorder.le_trans.{u} {α : Type u} [self : Preorder α] (a b c : α) : a ≤ b → b ≤ c → a ≤ c
+-/
+#guard_msgs in #check Preorder.le_trans
+
+def mkLeqTransProof (a b c : Expr) (pab : Expr) (pbc : Expr) : MetaM Expr := do
+  return ← mkAppOptM ``Preorder.le_trans #[none, none, a, b, c, pab, pbc]
+
+def tryAddLeqTrans? {xy yz : LeqTy}
+    (pxy : Proof xy) (pyz : Proof yz) : LatticeM Bool := do
+  if ← isDefEq xy.rhs.e yz.lhs.e then
+    let outTy : LeqTy := { lhs := xy.lhs, rhs := yz.rhs }
+    if (← get).leqs.contains outTy then return false
+    let proof : Proof outTy := Proof.mk <| do
+      mkLeqTransProof xy.lhs.e xy.rhs.e yz.rhs.e (← pxy.proof) (← pyz.proof)
+    addLeqProof proof
+  else
+    return false
+
+/--
+info: PartialOrder.le_antisymm.{u} {α : Type u} [self : PartialOrder α] (a b : α) : a ≤ b → b ≤ a → a = b
+-/
+#guard_msgs in #check PartialOrder.le_antisymm
+
+def mkLeAntisymmProof (a b : Expr) (pab : Expr) (pba : Expr) : MetaM Expr := do
+  return ← mkAppOptM ``Preorder.le_trans #[none, none, a, b, pab, pba]
+
+def tryAddLeqAntiSymm? {xy yx : LeqTy}
+    (pxy : Proof xy) (pyx : Proof yx) : LatticeM Bool := do
+  if (← isDefEq xy.lhs.e yx.rhs.e) && (← isDefEq xy.rhs.e yx.lhs.e) then
+    let outTy : EqTy := { lhs := xy.lhs, rhs := xy.rhs }
+    if (← get).eqs.contains outTy then return false
+
+    let proof : Proof outTy := Proof.mk <| do
+      mkLeAntisymmProof xy.lhs.e xy.rhs.e (← pxy.proof) (← pyx.proof)
+    addEqualityProof outTy proof
+  else
+    return false
+
+/--
+info: SemilatticeInf.inf_le_left.{u} {α : Type u} [self : SemilatticeInf α] (a b : α) : a ⊓ b ≤ a
+-/
+#guard_msgs in #check SemilatticeInf.inf_le_left
+
+def mkInfLeLeftProof (a b : Expr) : MetaM Expr := do
+  mkAppOptM ``SemilatticeInf.inf_le_left #[none, none, a, b]
+
+/--
+info: SemilatticeInf.inf_le_right.{u} {α : Type u} [self : SemilatticeInf α] (a b : α) : a ⊓ b ≤ b
+-/
+#guard_msgs in #check SemilatticeInf.inf_le_right
+
+def mkInfLeRightProof (a b : Expr) : MetaM Expr := do
+  mkAppOptM ``SemilatticeInf.inf_le_right #[none, none, a, b]
+
+/--
+info: SemilatticeInf.le_inf.{u} {α : Type u} [self : SemilatticeInf α] (a b c : α) : a ≤ b → a ≤ c → a ≤ b ⊓ c
+-/
+#guard_msgs in #check SemilatticeInf.le_inf
+
+-- def tryAddInfLe? {xy : InfTy} (pxy : Proof xy) : LatticeM Bool := do
+--   let leLeftTy : LeqTy := { lhs := xy.lhs, rhs := ← xy.toExpr }
+--   if (← get).leqs.contains leLeftTy then return false
+--   let proof : Proof leLeftTy := Proof.mk <| mkInfLeLeftProof xy.lhs.e xy.rhs.e
+--   addLeqProof proof
+
+def tryAddLeInf? {ab : LeqTy} {bc : LeqTy} {abc : InfTy} (pab : Proof ab) (pbc : Proof bc) {pabc : Proof abc} : LatticeM Bool := do
+  return false
+
+
+def try
 
 /--
 Given the current set of derivations, perform a new derivation.
@@ -211,7 +339,12 @@ def doWork : LatticeM Bool := do
     return false
   let mut changed := false
   for v in (← get).vars do
-    changed := changed || (← addEquality v v)
+    changed := changed || (← addEqRefl v) || (← addLeqRefl v)
+
+  for xy in (← get).leqs do
+    for zw in (← get).leqs do
+      changed := changed || (← tryAddLeqAntiSymm? xy.snd zw.snd)
+      changed := changed || (← tryAddLeqTrans? xy.snd zw.snd)
 
   return changed
 
@@ -221,10 +354,15 @@ def falseFromPosNegLit  {P : Prop} (t : P) (f : ¬ P) : False := f t
 #guard_msgs in #check falseFromPosNegLit
 
 
-def tryUnsatFromEqNeq {α : Type} [ToExprM α]
-    (pos : α) (neg : NotExpr α) : LatticeM (Option Expr) := do
+/--
+example: α : EqTy, na : NotTy EqTy
+@bollu: I find the below very confusing to think about.
+  I need to ask Alex how to think about this.
+-/
+def tryUnsatFromEqNeq {τ : Type} [ToExprM τ] {prop : τ} {notProp : NotTy τ}
+    (pos : Proof prop) (neg : Proof notProp) : LatticeM (Option Expr) := do
   let epos ← toExprM pos
-  let eneg ← toExprM neg.e
+  let eneg ← toExprM neg
   if ← isDefEq epos eneg then
     let proof ← mkAppOptM ``falseFromPosNegLit
       #[none, epos, eneg]
@@ -235,12 +373,12 @@ def tryUnsatFromEqNeq {α : Type} [ToExprM α]
 def tryUnsat : LatticeM (Option Expr) := do
   for neq in (← get).neqs do
     for eq in (← get).eqs do
-      if let some proof ← tryUnsatFromEqNeq eq neq then
+      if let some proof ← tryUnsatFromEqNeq eq.snd neq.snd then
         return proof
 
   for nleq in (← get).nleqs do
     for leq in (← get).leqs do
-      if let some proof ← tryUnsatFromEqNeq leq nleq then
+      if let some proof ← tryUnsatFromEqNeq leq.snd nleq.snd then
         return proof
 
   return .none
