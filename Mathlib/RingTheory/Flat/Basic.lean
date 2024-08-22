@@ -74,6 +74,10 @@ the canonical map `I ⊗ M →ₗ M` is injective. -/
 
 namespace Flat
 
+variable {R} in
+instance instSubalgebraToSubmodule {S : Type v} [Ring S] [Algebra R S]
+    (A : Subalgebra R S) [Flat R A] : Flat R (Subalgebra.toSubmodule A) := ‹Flat R A›
+
 instance self (R : Type u) [CommRing R] : Flat R R :=
   ⟨by
     intro I _
