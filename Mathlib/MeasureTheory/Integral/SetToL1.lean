@@ -1384,7 +1384,7 @@ theorem tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive �
     Tendsto (fun n => setToFun μ T hT (SimpleFunc.approxOn f hfm s y₀ h₀ n)) atTop
       (𝓝 <| setToFun μ T hT f) :=
   tendsto_setToFun_of_L1 hT _ hfi
-    (eventually_of_forall (SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i))
+    (Eventually.of_forall (SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i))
     (SimpleFunc.tendsto_approxOn_L1_nnnorm hfm _ hs (hfi.sub h₀i).2)
 
 theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
@@ -1394,7 +1394,7 @@ theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
     Tendsto (fun n => setToFun μ T hT (SimpleFunc.approxOn f fmeas s 0 (hs <| by simp) n)) atTop
       (𝓝 <| setToFun μ T hT f) := by
   refine tendsto_setToFun_approxOn_of_measurable hT hf fmeas ?_ _ (integrable_zero _ _ _)
-  exact eventually_of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
+  exact Eventually.of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 
 /-- Auxiliary lemma for `setToFun_congr_measure`: the function sending `f : α →₁[μ] G` to
 `f : α →₁[μ'] G` is continuous when `μ' ≤ c' • μ` for `c' ≠ ∞`. -/
@@ -1639,8 +1639,8 @@ theorem continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) 
     (h_bound : ∀ x, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, Continuous fun x => fs x a) : Continuous fun x => setToFun μ T hT (fs x) :=
   continuous_iff_continuousAt.mpr fun x₀ =>
-    continuousAt_setToFun_of_dominated hT (eventually_of_forall hfs_meas)
-        (eventually_of_forall h_bound) ‹_› <|
+    continuousAt_setToFun_of_dominated hT (Eventually.of_forall hfs_meas)
+        (Eventually.of_forall h_bound) ‹_› <|
       h_cont.mono fun _ => Continuous.continuousAt
 
 end Function

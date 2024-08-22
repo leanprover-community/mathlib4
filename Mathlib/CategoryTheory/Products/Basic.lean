@@ -147,11 +147,12 @@ def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D) where
 
 /-- The equivalence, given by swapping factors, between `C × D` and `D × C`.
 -/
-@[simps!]
-def braiding : C × D ≌ D × C :=
-  Equivalence.mk (swap C D) (swap D C)
-    (NatIso.ofComponents fun X => eqToIso (by simp))
-    (NatIso.ofComponents fun X => eqToIso (by simp))
+@[simps]
+def braiding : C × D ≌ D × C where
+  functor := swap C D
+  inverse := swap D C
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 instance swapIsEquivalence : (swap C D).IsEquivalence :=
   (by infer_instance : (braiding C D).functor.IsEquivalence)
@@ -262,6 +263,12 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
    use instead `α.prod β` or `NatTrans.prod α β`. -/
 end NatTrans
+
+/-- The cartesian product functor between functor categories -/
+@[simps]
+def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
+  obj FG := FG.1.prod FG.2
+  map nm := NatTrans.prod nm.1 nm.2
 
 namespace NatIso
 

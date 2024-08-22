@@ -47,7 +47,7 @@ theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := b
 theorem hasDerivAt_log (hx : x ≠ 0) : HasDerivAt log x⁻¹ x :=
   (hasStrictDerivAt_log hx).hasDerivAt
 
-theorem differentiableAt_log (hx : x ≠ 0) : DifferentiableAt ℝ log x :=
+@[fun_prop] theorem differentiableAt_log (hx : x ≠ 0) : DifferentiableAt ℝ log x :=
   (hasDerivAt_log hx).differentiableAt
 
 theorem differentiableOn_log : DifferentiableOn ℝ log {0}ᶜ := fun _x hx =>
@@ -140,7 +140,7 @@ theorem DifferentiableWithinAt.log (hf : DifferentiableWithinAt ℝ f s x) (hx :
     DifferentiableWithinAt ℝ (fun x => log (f x)) s x :=
   (hf.hasFDerivWithinAt.log hx).differentiableWithinAt
 
-@[simp]
+@[simp, fun_prop]
 theorem DifferentiableAt.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
     DifferentiableAt ℝ (fun x => log (f x)) x :=
   (hf.hasFDerivAt.log hx).differentiableAt
@@ -160,10 +160,11 @@ theorem ContDiff.log {n} (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) :
     ContDiff ℝ n fun x => log (f x) :=
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.log (h x)
 
+@[fun_prop]
 theorem DifferentiableOn.log (hf : DifferentiableOn ℝ f s) (hx : ∀ x ∈ s, f x ≠ 0) :
     DifferentiableOn ℝ (fun x => log (f x)) s := fun x h => (hf x h).log (hx x h)
 
-@[simp]
+@[simp, fun_prop]
 theorem Differentiable.log (hf : Differentiable ℝ f) (hx : ∀ x, f x ≠ 0) :
     Differentiable ℝ fun x => log (f x) := fun x => (hf x).log (hx x)
 
@@ -287,15 +288,11 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
   · intro m hm
     rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm
     dsimp [term]
-    rw [Even.neg_pow hm, neg_one_mul, neg_add_self]
+    rw [Even.neg_pow hm, neg_one_mul, neg_add_cancel]
 
 @[deprecated (since := "2024-01-31")]
 alias hasSum_log_sub_log_of_abs_lt_1 := hasSum_log_sub_log_of_abs_lt_one
 
-#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
-(Part of the code was ignoring the `maxDischargeDepth` setting:
- now that we have to increase it, other paths becomes slow.) -/
-set_option maxHeartbeats 400000 in
 /-- Expansion of `log (1 + a⁻¹)` as a series in powers of `1 / (2 * a + 1)`. -/
 theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (1 / (2 * a + 1)) ^ (2 * k + 1))

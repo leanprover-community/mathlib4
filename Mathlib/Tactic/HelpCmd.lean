@@ -3,6 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Lean.Elab.Syntax
 import Lean.DocString
 
@@ -315,3 +316,5 @@ syntax withPosition("#help " colGt &"command" "+"?
 macro_rules
   | `(#help command%$tk $[+%$more]? $(id)?) =>
     `(#help cat$[+%$more]? $(mkIdentFrom tk `command) $(id)?)
+
+end Mathlib.Tactic

@@ -48,6 +48,8 @@ section NoZeroDivisors
 variable [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
   (f : M₀ → M₀') (hf : Injective f) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
 
+include hf zero mul
+
 /-- Pull back a `NoZeroDivisors` instance along an injective function. -/
 protected theorem Function.Injective.noZeroDivisors [NoZeroDivisors M₀'] : NoZeroDivisors M₀ :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} H ↦
@@ -193,7 +195,7 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
     pullback_nonzero f zero one with
     inv_zero := hf <| by erw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
-      erw [one, mul, inv, mul_inv_cancel ((hf.ne_iff' zero).2 hx)] }
+      erw [one, mul, inv, mul_inv_cancel₀ ((hf.ne_iff' zero).2 hx)] }
 
 /-- Push forward a `GroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
@@ -206,7 +208,7 @@ protected abbrev Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One
   { hf.monoidWithZero f zero one mul npow, hf.divInvMonoid f one mul inv div npow zpow with
     inv_zero := by erw [← zero, ← inv, inv_zero],
     mul_inv_cancel := hf.forall.2 fun x hx => by
-        erw [← inv, ← mul, mul_inv_cancel (mt (congr_arg f) fun h ↦ hx (h.trans zero)), one]
+        erw [← inv, ← mul, mul_inv_cancel₀ (mt (congr_arg f) fun h ↦ hx (h.trans zero)), one]
     exists_pair_ne := ⟨0, 1, h01⟩ }
 
 end GroupWithZero

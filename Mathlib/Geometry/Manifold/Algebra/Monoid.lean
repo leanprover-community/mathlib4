@@ -73,6 +73,7 @@ variable (I)
 theorem smooth_mul : Smooth (I.prod I) I fun p : G × G => p.1 * p.2 :=
   SmoothMul.smooth_mul
 
+include I in
 /-- If the multiplication is smooth, then it is continuous. This is not an instance for technical
 reasons, see note [Design choices about smooth algebraic structures]. -/
 @[to_additive "If the addition is smooth, then it is continuous. This is not an instance for

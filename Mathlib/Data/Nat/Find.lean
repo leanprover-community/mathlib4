@@ -200,7 +200,7 @@ lemma findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] {m n} (hmn : 
   · simp
   rw [findGreatest_succ]
   split_ifs
-  · exact le_trans ih $ le_trans (findGreatest_le _) (le_succ _)
+  · exact le_trans ih <| le_trans (findGreatest_le _) (le_succ _)
   · exact ih
 
 lemma findGreatest_mono_left [DecidablePred Q] (hPQ : ∀ n, P n → Q n) (n : ℕ) :
@@ -223,3 +223,5 @@ theorem findGreatest_of_ne_zero (h : Nat.findGreatest P n = m) (h0 : m ≠ 0) : 
   (findGreatest_eq_iff.1 h).2.1 h0
 
 end FindGreatest
+
+end Nat

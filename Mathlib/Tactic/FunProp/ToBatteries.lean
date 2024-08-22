@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomas Skrivan
+Authors: Tomáš Skřivan
 -/
+import Mathlib.Init
 import Lean
 
 /-!
@@ -34,7 +35,7 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
 
 private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
     MetaM α :=
-  lambdaLetTelescope e λ xs b => do
+  lambdaLetTelescope e fun xs b ↦ do
     if let .some i ← xs.findIdxM? (fun x ↦ do pure ¬(← x.fvarId!.isLetVar)) then
       k xs[0:i] (← mkLambdaFVars xs[i:] b)
     else
@@ -97,18 +98,18 @@ def mkProdProj (x : Expr) (i : Nat) (n : Nat) : MetaM Expr := do
 i.e. `#[xs.1, xs.2.1, xs.2.2.1, ..., xs.2..2]` -/
 def mkProdSplitElem (xs : Expr) (n : Nat) : MetaM (Array Expr) :=
   (Array.range n)
-    |>.mapM (λ i => mkProdProj xs i n)
+    |>.mapM (fun i ↦ mkProdProj xs i n)
 
 /-- Uncurry function `f` in `n` arguments. -/
 def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
   if n ≤ 1 then
     return f
-  forallBoundedTelescope (← inferType f) n λ xs _ => do
-    let xProdName : String ← xs.foldlM (init:="") λ n x =>
+  forallBoundedTelescope (← inferType f) n fun xs _ ↦ do
+    let xProdName : String ← xs.foldlM (init:="") fun n x ↦
       do return (n ++ toString (← x.fvarId!.getUserName).eraseMacroScopes)
     let xProdType ← inferType (← mkProdElem xs)
 
-    withLocalDecl (.mkSimple xProdName) default xProdType λ xProd => do
+    withLocalDecl (.mkSimple xProdName) default xProdType fun xProd ↦ do
       let xs' ← mkProdSplitElem xProd n
       mkLambdaFVars #[xProd] (← mkAppM' f xs').headBeta
 
@@ -129,3 +130,7 @@ def etaExpand1 (f : Expr) : MetaM Expr := do
   else
     withDefault do forallBoundedTelescope (← inferType f) (.some 1) fun xs _ => do
       mkLambdaFVars xs (mkAppN f xs)
+
+end Meta.FunProp
+
+end Mathlib

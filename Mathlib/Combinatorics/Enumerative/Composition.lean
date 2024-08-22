@@ -629,7 +629,7 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
   · rw [Nat.add_zero, List.take_zero, sum_nil]
     simp
   · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
-        sum_cons, Nat.add_eq, add_zero, splitAt_eq_take_drop, drop_take, drop_drop]
+        sum_cons, Nat.add_eq, add_zero, splitAt_eq, drop_take, drop_drop]
     rw [add_comm (sum _) n, Nat.add_sub_add_left]
 
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
@@ -758,11 +758,10 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       apply (Nat.succ_pred_eq_of_pos _).symm
       exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
-      Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero_iff, and_false,
+      Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
       add_left_inj, false_or, true_and]
     erw [Set.mem_setOf_eq]
-    simp [this, false_or_iff, add_right_inj, add_eq_zero_iff, one_ne_zero, false_and_iff,
-      Fin.val_mk]
+    simp only [Finset.mem_val]
     constructor
     · intro h
       cases' h with n h
