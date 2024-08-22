@@ -878,11 +878,11 @@ variable {A} {n : ℕ}
 
 @[simp]
 lemma torsionBy.nsmul (x : A[n]) : n • x = 0 :=
-  nsmul_eq_smul_cast ℤ n x ▸ Submodule.smul_torsionBy ..
+  Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.smul_torsionBy ..
 
 lemma torsionBy.nsmul_iff {x : A} :
     x ∈ A[n] ↔ n • x = 0 :=
-  nsmul_eq_smul_cast ℤ n x ▸ Submodule.mem_torsionBy_iff ..
+  Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.mem_torsionBy_iff ..
 
 lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n])  :
     s • x = (s % n) • x :=
