@@ -50,9 +50,7 @@ inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
 
 @[deprecated (since := "2024-08-09")] alias isSumSq := IsSumSq
 
-/--
-If `S1` and `S2` are sums of squares, then `S1 + S2` is a sum of squares.
--/
+/-- If `S1` and `S2` are sums of squares, then `S1 + S2` is a sum of squares. -/
 theorem IsSumSq.add [AddMonoid R] [Mul R] {S1 S2 : R}
     (p1 : IsSumSq S1) (p2 : IsSumSq S2) : IsSumSq (S1 + S2) := by
   induction p1 with
@@ -62,10 +60,12 @@ theorem IsSumSq.add [AddMonoid R] [Mul R] {S1 S2 : R}
 @[deprecated (since := "2024-08-09")] alias isSumSq.add := IsSumSq.add
 
 /-- Squares are sums of squares. -/
-theorem IsSumSq.isSquare [AddZeroClass R] {x : R} (px : IsSquare x) : IsSumSq x := by
+theorem isSumSq_isSquare [AddZeroClass R] [Mul R] {x : R} (px : IsSquare x) : IsSumSq x := by
   rcases px with ⟨y, py⟩
   rw [py, ← add_zero (y * y)]
   exact IsSumSq.sq_add _ _ IsSumSq.zero
+
+theorem IsSumSq.mul' [CommRing R] {S x : R} (pS : IsSumSq S) (px : IsSquare x) : IsSumSq (S * x)
 
 variable (R) in
 /--
