@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true  # do not annoy the user when linting fails, as expected
     steps:
+      - run: echo ${{ github.event.issue.pull_request }}
+
       - uses: octokit/request-action@v2.x
         name: Get comment author
         id: get_user
