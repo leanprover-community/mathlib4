@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Florent Schaffhauser
+Authors: Florent Schaffhauser, Artie Khovanov
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Submonoid.Basic
@@ -100,7 +100,7 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] : closure {x : R | IsSquare 
 /--
 Let `R` be a linearly ordered semiring in which the property `a ≤ b → ∃ c, a + c = b` holds
 (e.g. `R = ℕ`). If `S : R` is a sum of squares in `R`, then `0 ≤ S`. This is used in
-`Mathlib.Algebra.Ring.Semireal.Defs` to show that linearly ordered fields are semireal.
+`Mathlib.Algebra.Ring.Semireal.Defs` to show that such semirings are semireal.
 -/
 theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {S : R}
     (pS : IsSumSq S) : 0 ≤ S := by

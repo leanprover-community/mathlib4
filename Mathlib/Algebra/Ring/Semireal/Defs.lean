@@ -32,16 +32,14 @@ squares. We define the class `IsSemireal R` for all structures equipped with
 a multiplication, an addition, a multiplicative unit and an additive unit.
 -/
 @[mk_iff]
-class IsSemireal [Add R] [Mul R] [One R] [Zero R]: Prop where
-  not_isSumSq_neg_one : ¬ ∃ a : R, IsSumSq a ∧ a + 1 = 0
+class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
+  not_IsSumSq_neg_one (a : R) (ssa : IsSumSq a): ¬ (a + 1 = 0)
 
 @[deprecated (since := "2024-08-09")] alias isSemireal := IsSemireal
 @[deprecated (since := "2024-08-09")] alias isSemireal.neg_one_not_SumSq :=
-  IsSemireal.not_isSumSq_neg_one
+  IsSemireal.not_IsSumSq_neg_one
 
-/-- Nontrivial linearly ordered semirings
-in which a ≤ b → ∃ c, a + c = b holds are semireal. -/
+/-- Linearly ordered semirings in which the property `a ≤ b → ∃ c, a + c = b` holds are semireal. -/
 instance [LinearOrderedSemiring R] [ExistsAddOfLE R] : IsSemireal R where
-  not_isSumSq_neg_one ex :=
-  Exists.elim ex (fun _ hyp ↦ zero_ne_one' R
-    (le_antisymm zero_le_one (le_of_le_of_eq (le_add_of_nonneg_left hyp.1.nonneg) hyp.2)))
+  not_IsSumSq_neg_one _ ssa amo :=
+    zero_ne_one' R (le_antisymm zero_le_one (le_of_le_of_eq (le_add_of_nonneg_left ssa.nonneg) amo))
