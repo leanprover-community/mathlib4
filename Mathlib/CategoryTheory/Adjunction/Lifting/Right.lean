@@ -45,7 +45,9 @@ Please try to keep them in sync.
 
 ## TODO
 
-Dualise to lift left adjoints through comonads (by reversing 2-cells).
+- Dualise to lift left adjoints through comonads (by reversing 2-cells).
+- Investigate whether it is possible to give a more explicit description of the lifted adjoint,
+  especially in the case when the isomorphism `comm` is `Iso.refl _`
 
 ## References
 * https://ncatlab.org/nlab/show/adjoint+triangle+theorem
