@@ -137,9 +137,8 @@ theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by
 theorem repr_zero : repr 0 = 0 :=
   repr_ofNat 0
 
-@[simp]
-theorem repr_one : repr 1 = 1 :=
-  (repr_ofNat 1).trans Nat.cast_one
+theorem repr_one : repr 1 = 1 := by
+  simp
 
 theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ (le_add_right _ _)
