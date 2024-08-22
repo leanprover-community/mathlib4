@@ -1,6 +1,8 @@
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Tauto
 
+set_option linter.haveLet 1
+
 /--
 A tactic that adds a vacuous `sorry`. Useful for testing the chattiness of the `haveLet` linter.
 -/
