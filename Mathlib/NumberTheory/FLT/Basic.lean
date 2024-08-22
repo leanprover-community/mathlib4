@@ -185,7 +185,7 @@ lemma fermatLastTheoremWith_of_fermatLastTheoremWith' {α : Type*} [CommSemiring
     FermatLastTheoremWith α n := by
   intro a b c ha hb hc heq
   rcases h a b c ha hb hc heq with ⟨d, a', b', c', ⟨eq_a, eq_b, eq_c⟩, ⟨ua, ub, uc⟩⟩
-  rw [eq_a, eq_b, eq_c, mul_pow, mul_pow, mul_pow, ←add_mul, mul_eq_mul_right_iff] at heq
+  rw [eq_a, eq_b, eq_c, mul_pow, mul_pow, mul_pow, ← add_mul, mul_eq_mul_right_iff] at heq
   cases' heq with heq hd
   · exact hn _ _ _ ua ub uc heq
   · obtain ⟨hd, hn⟩ := pow_eq_zero_iff'.mp hd
@@ -193,7 +193,7 @@ lemma fermatLastTheoremWith_of_fermatLastTheoremWith' {α : Type*} [CommSemiring
     apply ha
     rfl
 
-lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {α : Type*} [Semiring α]
+lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {α : Type*} [CommSemiring α] [IsDomain α]
     {n : ℕ} (hn : ∀ a b c : α, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith' α n ↔ FermatLastTheoremWith α n :=
   Iff.intro
