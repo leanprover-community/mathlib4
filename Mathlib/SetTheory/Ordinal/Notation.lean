@@ -137,8 +137,9 @@ theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by
 theorem repr_zero : repr 0 = 0 :=
   repr_ofNat 0
 
-theorem repr_one : repr 1 = (1 : ℕ) :=
-  repr_ofNat 1
+@[simp]
+theorem repr_one : repr 1 = 1 :=
+  (repr_ofNat 1).trans Nat.cast_one
 
 theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ (le_add_right _ _)
@@ -167,7 +168,7 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
     rw [eq_of_cmp_eq h.1, (cmp_eq_eq_iff _ _).1 h.2.1, eq_of_cmp_eq h.2.2]
 
 protected theorem zero_lt_one : (0 : ONote) < 1 := by
-  rw [lt_def, repr_zero, repr_one, Nat.cast_one]
+  rw [lt_def, repr_zero, repr_one]
   exact zero_lt_one
 
 /-- `NFBelow o b` says that `o` is a normal form ordinal notation satisfying `repr o < ω ^ b`. -/
