@@ -204,5 +204,4 @@ instance Pseudofunctor.categoryStruct : CategoryStruct (Pseudofunctor B C) where
   id F := StrongPseudoNatTrans.id F
   comp := StrongPseudoNatTrans.vcomp
 
-
 end CategoryTheory

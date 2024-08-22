@@ -8,10 +8,20 @@ import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 /-!
 # Modifications between oplax natural transformations
+
 A modification `Γ` between oplax natural transformations `η` and `θ` consists of a family of
 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which satisfies the equation
 `(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ (app a ▷ G.map f)`
 for each 1-morphism `f : a ⟶ b`.
+
+## Main definitions
+
+* `Modification η θ` : modifications between oplax natural transformations `η` and `θ`
+* `Modification.vcomp η θ` : the vertical composition of oplax natural transformations `η`
+  and `θ`
+* `OplaxNatTrans.category F G` : the category structure on the oplax natural transformations
+  between `F` and `G`
+
 -/
 
 namespace CategoryTheory
