@@ -7,12 +7,10 @@ on:
 jobs:
   fix_style:
     name: Fix style issues from lint
-    if: (github.event.issue.pull_request != 'null') && github.event.pull_request.draft == false && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
+    if: (github.event.issue.pull_request) && github.event.pull_request.draft == false && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
     runs-on: ubuntu-latest
     continue-on-error: true  # do not annoy the user when linting fails, as expected
     steps:
-      - run: echo ${{ github.event.issue.pull_request }}
-
       - uses: octokit/request-action@v2.x
         name: Get comment author
         id: get_user
