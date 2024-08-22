@@ -494,7 +494,7 @@ where
 open Lean
 
 namespace Parser
-open Lean Parsec String
+open Lean Std.Internal.Parsec String
 
 /-- Parse a natural number -/
 def parseNat : String.Parser Nat := Json.Parser.natMaybeZero
@@ -533,6 +533,8 @@ def parseLRAT : String.Parser (Array LRATStep) := many do
   else ws; pure <| LRATStep.add step (← parseInts) (← parseInts)
 
 end Parser
+
+open Std.Internal
 
 /-- Core of `fromLRAT`. Constructs the context and main proof definitions,
 but not the reification theorem. Returns:

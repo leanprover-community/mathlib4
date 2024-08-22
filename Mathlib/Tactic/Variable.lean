@@ -270,7 +270,7 @@ where
       Term.withAutoBoundImplicit <| Term.elabBinders binders fun _ => pure ()
       -- Filter out omitted binders
       let binders' : TSyntaxArray ``bracketedBinder :=
-        (binders.zip toOmit).filterMap fun (b, omit) => if omit then none else some b
+        (binders.zip toOmit).filterMap fun (b, toOmit) => if toOmit then none else some b
       if let some expectedBinders := expectedBinders? then
         trace[«variable?»] "checking expected binders"
         /- We re-elaborate the binders to create an expression that represents the entire resulting
