@@ -137,7 +137,7 @@ def elabLinearCombination
     match ← expandLinearCombo ty e with
     | .const c => `(Eq.refl $c)
     | .proof p => pure p
-  let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
+  let norm := norm?.getD (Unhygienic.run <| withRef (← getRef) `(tactic| ring1))
   Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
   if twoGoals then
     `(tactic| (
