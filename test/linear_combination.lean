@@ -227,7 +227,7 @@ example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := b
 example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
   linear_combination h1 + 3
 
-/-- error: 'linear_combination' expects a term which is a formal linear combination of hypotheses -/
+/-- error: To run 'linear_combination' without hypotheses, call it without input -/
 #guard_msgs in
 example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
 
