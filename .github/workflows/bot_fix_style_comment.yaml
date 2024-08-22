@@ -9,6 +9,7 @@ jobs:
     name: Fix style issues from lint
     if: (github.event.issue.pull_request != 'null') && github.event.pull_request.draft == false && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
     runs-on: ubuntu-latest
+    continue-on-error: true  # do not annoy the user when linting fails, as expected
     steps:
       - name: cleanup
         run: |
@@ -59,6 +60,10 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          # cleanup junk from build
+          git rm elan-init
+          git rm docs/references.bib.old
+          # setup commit and push
           git config user.name "leanprover-community-mathlib4-bot"
           git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
           git add .
