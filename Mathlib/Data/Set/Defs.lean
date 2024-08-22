@@ -1,297 +1,263 @@
 /-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
+Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Scott Morrison, Patrick Massot, Kyle Miller,
-Minchao Wu, Yury Kudryashov, Floris van Doorn
+Authors: Leonardo de Moura
 -/
-import Mathlib.Data.SProd
-import Mathlib.Data.Subtype
-import Mathlib.Order.Notation
-import Mathlib.Util.CompileInductive
+import Mathlib.Init
+import Batteries.Util.ExtendedBinder
+import Lean.Elab.Term
 
 /-!
-# Basic definitions about sets
+# Sets
 
-In this file we define various operations on sets.
-We also provide basic lemmas needed to unfold the definitions.
-More advanced theorems about these definitions are located in other files in `Mathlib/Data/Set`.
+This file sets up the theory of sets whose elements have a given type.
 
 ## Main definitions
 
-- complement of a set and set difference;
-- `Set.Elem`: coercion of a set to a type; it is reducibly equal to `{x // x ∈ s}`;
-- `Set.preimage f s`, a.k.a. `f ⁻¹' s`: preimage of a set;
-- `Set.range f`: the range of a function;
-  it is more general than `f '' univ` because it allows functions from `Sort*`;
-- `s ×ˢ t`: product of `s : Set α` and `t : Set β` as a set in `α × β`;
-- `Set.diagonal`: the diagonal in `α × α`;
-- `Set.offDiag s`: the part of `s ×ˢ s` that is off the diagonal;
-- `Set.pi`: indexed product of a family of sets `∀ i, Set (α i)`,
-  as a set in `∀ i, α i`;
-- `Set.EqOn f g s`: the predicate saying that two functions are equal on a set;
-- `Set.MapsTo f s t`: the predicate syaing that `f` sends all points of `s` to `t;
-- `Set.MapsTo.restrict`: restrict `f : α → β` to `f' : s → t` provided that `Set.MapsTo f s t`;
-- `Set.restrictPreimage`: restrict `f : α → β` to `f' : (f ⁻¹' t) → t`;
-- `Set.InjOn`: the predicate saying that `f` is injective on a set;
-- `Set.SurjOn f s t`: the prediate saying that `t ⊆ f '' s`;
-- `Set.BijOn f s t`: the predicate saying that `f` is injective on `s` and `f '' s = t`;
-- `Set.graphOn`: the graph of a function on a set;
-- `Set.LeftInvOn`, `Set.RightInvOn`, `Set.InvOn`:
-  the predicates saying that `f'` is a left, right or two-sided inverse of `f` on `s`, `t`, or both;
-- `Set.image2`: the image of a pair of sets under a binary operation,
-  mostly useful to define pointwise algebraic operations on sets;
-- `Set.seq`: monadic `seq` operation on sets;
-  we don't use monadic notation to ensure support for maps between different universes;
+Given a type `X` and a predicate `p : X → Prop`:
 
-## Notations
+* `Set X` : the type of sets whose elements have type `X`
+* `{a : X | p a} : Set X` : the set of all elements of `X` satisfying `p`
+* `{a | p a} : Set X` : a more concise notation for `{a : X | p a}`
+* `{f x y | (x : X) (y : Y)} : Set Z` : a more concise notation for `{z : Z | ∃ x y, f x y = z}`
+* `{a ∈ S | p a} : Set X` : given `S : Set X`, the subset of `S` consisting of
+   its elements satisfying `p`.
 
-- `f '' s`: image of a set;
-- `f ⁻¹' s`: preimage of a set;
-- `s ×ˢ t`: the product of sets;
-- `s ∪ t`: the union of two sets;
-- `s ∩ t`: the intersection of two sets;
-- `sᶜ`: the complement of a set;
-- `s \ t`: the difference of two sets.
+## Implementation issues
 
-## Keywords
+As in Lean 3, `Set X := X → Prop`
+This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
-set, image, preimage
 -/
 
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% Union.union
-compile_def% Inter.inter
-compile_def% SDiff.sdiff
-compile_def% HasCompl.compl
-compile_def% EmptyCollection.emptyCollection
-compile_def% Insert.insert
-compile_def% Singleton.singleton
+open Lean Elab Term Meta Batteries.ExtendedBinder
 
-attribute [ext] Set.ext
+universe u
+variable {α : Type u}
 
-universe u v w
+/-- A set is a collection of elements of some type `α`.
+
+Although `Set` is defined as `α → Prop`, this is an implementation detail which should not be
+relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
+and predicates.
+-/
+def Set (α : Type u) := α → Prop
+
+/-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
+def setOf {α : Type u} (p : α → Prop) : Set α :=
+  p
 
 namespace Set
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+/-- Membership in a set -/
+protected def Mem (a : α) (s : Set α) : Prop :=
+  s a
+
+instance : Membership α (Set α) :=
+  ⟨Set.Mem⟩
+
+theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
+  funext (fun x ↦ propext (h x))
+
+
+/-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
+
+Note that you should **not** use this definition directly, but instead write `s ⊆ t`. -/
+protected def Subset (s₁ s₂ : Set α) :=
+  ∀ ⦃a⦄, a ∈ s₁ → a ∈ s₂
+
+/-- Porting note: we introduce `≤` before `⊆` to help the unifier when applying lattice theorems
+to subset hypotheses. -/
+instance : LE (Set α) :=
+  ⟨Set.Subset⟩
+
+instance : HasSubset (Set α) :=
+  ⟨(· ≤ ·)⟩
+
+instance : EmptyCollection (Set α) :=
+  ⟨fun _ ↦ False⟩
+
+end Set
+
+namespace Mathlib.Meta
+
+/-- Set builder syntax. This can be elaborated to either a `Set` or a `Finset` depending on context.
+
+The elaborators for this syntax are located in:
+* `Data.Set.Defs` for the `Set` builder notation elaborator for syntax of the form `{x | p x}`,
+  `{x : α | p x}`, `{binder x | p x}`.
+* `Data.Finset.Basic` for the `Finset` builder notation elaborator for syntax of the form
+  `{x ∈ s | p x}`.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator for syntax of the form
+  `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator for syntax of the form
+  `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
+-/
+syntax (name := setBuilder) "{" extBinder " | " term "}" : term
+
+/-- Elaborate set builder notation for `Set`.
+
+* `{x | p x}` is elaborated as `Set.setOf fun x ↦ p x`
+* `{x : α | p x}` is elaborated as `Set.setOf fun x : α ↦ p x`
+* `{binder x | p x}`, where `x` is bound by the `binder` binder, is elaborated as
+  `{x | binder x ∧ p x}`. The typical example is `{x ∈ s | p x}`, which is elaborated as
+  `{x | x ∈ s ∧ p x}`. The possible binders are
+  * `· ∈ s`, `· ∉ s`
+  * `· ⊆ s`, `· ⊂ s`, `· ⊇ s`, `· ⊃ s`
+  * `· ≤ a`, `· ≥ a`, `· < a`, `· > a`, `· ≠ a`
+
+  More binders can be declared using the `binder_predicate` command, see `Init.BinderPredicates` for
+  more info.
+
+See also
+* `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+  syntax of the form `{x ∈ s | p x}`.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+  syntax of the form `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator partly overriding this
+  one for syntax of the form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
+-/
+@[term_elab setBuilder]
+def elabSetBuilder : TermElab
+  | `({ $x:ident | $p }), expectedType? => do
+    elabTerm (← `(setOf fun $x:ident ↦ $p)) expectedType?
+  | `({ $x:ident : $t | $p }), expectedType? => do
+    elabTerm (← `(setOf fun $x:ident : $t ↦ $p)) expectedType?
+  | `({ $x:ident $b:binderPred | $p }), expectedType? => do
+    elabTerm (← `(setOf fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+/-- Unexpander for set builder notation. -/
+@[app_unexpander setOf]
+def setOf.unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
+  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
+  | _ => throw ()
+
+open Batteries.ExtendedBinder in
+/--
+`{ f x y | (x : X) (y : Y) }` is notation for the set of elements `f x y` constructed from the
+binders `x` and `y`, equivalent to `{z : Z | ∃ x y, f x y = z}`.
+
+If `f x y` is a single identifier, it must be parenthesized to avoid ambiguity with `{x | p x}`;
+for instance, `{(x) | (x : Nat) (y : Nat) (_hxy : x = y^2)}`.
+-/
+macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
+  `({x | ∃ᵉ $bs:extBinders, $t = x})
+
+/--
+* `{ pat : X | p }` is notation for pattern matching in set-builder notation,
+  where `pat` is a pattern that is matched by all objects of type `X`
+  and `p` is a proposition that can refer to variables in the pattern.
+  It is the set of all objects of type `X` which, when matched with the pattern `pat`,
+  make `p` come out true.
+* `{ pat | p }` is the same, but in the case when the type `X` can be inferred.
 
-@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+For example, `{ (m, n) : ℕ × ℕ | m * n = 12 }` denotes the set of all ordered pairs of
+natural numbers whose product is 12.
 
-@[simp, mfld_simps] theorem mem_univ (x : α) : x ∈ @univ α := trivial
+Note that if the type ascription is left out and `p` can be interpreted as an extended binder,
+then the extended binder interpretation will be used.  For example, `{ n + 1 | n < 3 }` will
+be interpreted as `{ x : Nat | ∃ n < 3, n + 1 = x }` rather than using pattern matching.
+-/
+macro (name := macroPattSetBuilder) (priority := low-1)
+  "{" pat:term " : " t:term " | " p:term "}" : term =>
+  `({ x : $t | match x with | $pat => $p })
 
-instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
+@[inherit_doc macroPattSetBuilder]
+macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
+  `({ x | match x with | $pat => $p })
 
-@[simp] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
+/-- Pretty printing for set-builder notation with pattern matching. -/
+@[app_unexpander setOf]
+def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
+      if x == y then
+        `({ $pat:term | $p:term })
+      else
+        throw ()
+  | `($_ fun ($x:ident : $ty:term) ↦ match $y:ident with | $pat => $p) =>
+      if x == y then
+        `({ $pat:term : $ty:term | $p:term })
+      else
+        throw ()
+  | _ => throw ()
 
-theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
+end Mathlib.Meta
 
-@[simp] theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
+namespace Set
 
-theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
+/-- The universal set on a type `α` is the set containing all elements of `α`.
 
--- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
--- so that `norm_cast` has something to index on.
--- It is currently an abbreviation so that instance coming from `Subtype` are available.
--- If you're interested in making it a `def`, as it probably should be,
--- you'll then need to create additional instances (and possibly prove lemmas about them).
--- The first error should appear below at `monotoneOn_iff_monotone`.
-/-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
-@[coe, reducible] def Elem (s : Set α) : Type u := {x // x ∈ s}
+This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory
+makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can
+itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. -/
+def univ : Set α := {_a | True}
 
-/-- Coercion from a set to the corresponding subtype. -/
-instance : CoeSort (Set α) (Type u) := ⟨Elem⟩
+/-- `Set.insert a s` is the set `{a} ∪ s`.
 
-/-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
-  is the set of `x : α` such that `f x ∈ s`. -/
-def preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
+Note that you should **not** use this definition directly, but instead write `insert a s` (which is
+mediated by the `Insert` typeclass). -/
+protected def insert (a : α) (s : Set α) : Set α := {b | b = a ∨ b ∈ s}
 
-/-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/
-infixl:80 " ⁻¹' " => preimage
+instance : Insert α (Set α) := ⟨Set.insert⟩
 
-@[simp, mfld_simps]
-theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s := Iff.rfl
+/-- The singleton of an element `a` is the set with `a` as a single element.
 
-/-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
-infixl:80 " '' " => image
+Note that you should **not** use this definition directly, but instead write `{a}`. -/
+protected def singleton (a : α) : Set α := {b | b = a}
 
-@[simp]
-theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
-  Iff.rfl
+instance instSingletonSet : Singleton α (Set α) := ⟨Set.singleton⟩
 
-@[mfld_simps]
-theorem mem_image_of_mem (f : α → β) {x : α} {a : Set α} (h : x ∈ a) : f x ∈ f '' a :=
-  ⟨_, h, rfl⟩
+/-- The union of two sets `s` and `t` is the set of elements contained in either `s` or `t`.
 
-/-- Restriction of `f` to `s` factors through `s.imageFactorization f : s → f '' s`. -/
-def imageFactorization (f : α → β) (s : Set α) : s → f '' s := fun p =>
-  ⟨f p.1, mem_image_of_mem f p.2⟩
+Note that you should **not** use this definition directly, but instead write `s ∪ t`. -/
+protected def union (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∨ a ∈ s₂}
 
-/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
-def kernImage (f : α → β) (s : Set α) : Set β := {y | ∀ ⦃x⦄, f x = y → x ∈ s}
+instance : Union (Set α) := ⟨Set.union⟩
 
-lemma subset_kernImage_iff {s : Set β} {t : Set α} {f : α → β} : s ⊆ kernImage f t ↔ f ⁻¹' s ⊆ t :=
-  ⟨fun h _ hx ↦ h hx rfl,
-    fun h _ hx y hy ↦ h (show f y ∈ s from hy.symm ▸ hx)⟩
+/-- The intersection of two sets `s` and `t` is the set of elements contained in both `s` and `t`.
 
-section Range
+Note that you should **not** use this definition directly, but instead write `s ∩ t`. -/
+protected def inter (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∧ a ∈ s₂}
 
-variable {ι : Sort*} {f : ι → α}
+instance : Inter (Set α) := ⟨Set.inter⟩
 
-/-- Range of a function.
+/-- The complement of a set `s` is the set of elements not contained in `s`.
 
-This function is more flexible than `f '' univ`, as the image requires that the domain is in Type
-and not an arbitrary Sort. -/
-def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
+Note that you should **not** use this definition directly, but instead write `sᶜ`. -/
+protected def compl (s : Set α) : Set α := {a | a ∉ s}
 
-@[simp] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
+/-- The difference of two sets `s` and `t` is the set of elements contained in `s` but not in `t`.
 
-@[mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
+Note that you should **not** use this definition directly, but instead write `s \ t`. -/
+protected def diff (s t : Set α) : Set α := {a ∈ s | a ∉ t}
 
-/-- Any map `f : ι → α` factors through a map `rangeFactorization f : ι → range f`. -/
-def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_range_self i⟩
+instance : SDiff (Set α) := ⟨Set.diff⟩
 
-end Range
+/-- `𝒫 s` is the set of all subsets of `s`. -/
+def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
-/-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
-noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.2.choose
+@[inherit_doc] prefix:100 "𝒫" => powerset
 
--- This can not be a `@[simp]` lemma because the head of the left hand side is a variable.
-theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
-  x.2.choose_spec
+universe v in
+/-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that
+`f a = b` for some `a ∈ s`. -/
+def image {β : Type v} (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 
-@[simp]
-theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.val := by
-  ext
-  simp only [Function.comp_apply]
-  apply apply_rangeSplitting
+instance : Functor Set where map := @Set.image
 
-section Prod
+instance : LawfulFunctor Set where
+  id_map _ := funext fun _ ↦ propext ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
+  comp_map g h _ := funext <| fun c ↦ propext
+    ⟨fun ⟨a, ⟨h₁, h₂⟩⟩ ↦ ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
+     fun ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ ↦ ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
+  map_const := rfl
 
-/-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
-def prod (s : Set α) (t : Set β) : Set (α × β) := {p | p.1 ∈ s ∧ p.2 ∈ t}
-
-@[default_instance]
-instance instSProd : SProd (Set α) (Set β) (Set (α × β)) where
-  sprod := Set.prod
-
-theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t := rfl
-
-variable {a : α} {b : β} {s : Set α} {t : Set β} {p : α × β}
-
-theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
-
-@[simp, mfld_simps]
-theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
-
-@[mfld_simps]
-theorem prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) := rfl
-
-theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
-
-end Prod
-
-section Diagonal
-
-/-- `diagonal α` is the set of `α × α` consisting of all pairs of the form `(a, a)`. -/
-def diagonal (α : Type*) : Set (α × α) := {p | p.1 = p.2}
-
-theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
-
-@[simp] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
-
-/-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
-def offDiag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
-
-@[simp]
-theorem mem_offDiag {x : α × α} {s : Set α} : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
-  Iff.rfl
-
-end Diagonal
-
-section Pi
-
-variable {ι : Type*} {α : ι → Type*}
-
-/-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
-is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
-whenever `a ∈ s`. -/
-def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) := {f | ∀ i ∈ s, f i ∈ t i}
-
-variable {s : Set ι} {t : ∀ i, Set (α i)} {f : ∀ i, α i}
-
-@[simp] theorem mem_pi : f ∈ s.pi t ↔ ∀ i ∈ s, f i ∈ t i := .rfl
-
-theorem mem_univ_pi : f ∈ pi univ t ↔ ∀ i, f i ∈ t i := by simp
-
-end Pi
-
-/-- Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. -/
-def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
-
-/-- `MapsTo f a b` means that the image of `a` is contained in `b`. -/
-def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → f x ∈ t
-
-theorem mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := fun _ ↦ mem_image_of_mem f
-
-theorem mapsTo_preimage (f : α → β) (t : Set β) : MapsTo f (f ⁻¹' t) t := fun _ ↦ id
-
-/-- Given a map `f` sending `s : Set α` into `t : Set β`, restrict domain of `f` to `s`
-and the codomain to `t`. Same as `Subtype.map`. -/
-def MapsTo.restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) : s → t :=
-  Subtype.map f h
-
-/-- The restriction of a function onto the preimage of a set. -/
-@[simps!]
-def restrictPreimage (t : Set β) (f : α → β) : f ⁻¹' t → t :=
-  (Set.mapsTo_preimage f t).restrict _ _ _
-
-/-- `f` is injective on `a` if the restriction of `f` to `a` is injective. -/
-def InjOn (f : α → β) (s : Set α) : Prop :=
-  ∀ ⦃x₁ : α⦄, x₁ ∈ s → ∀ ⦃x₂ : α⦄, x₂ ∈ s → f x₁ = f x₂ → x₁ = x₂
-
-/-- The graph of a function `f : α → β` on a set `s`. -/
-def graphOn (f : α → β) (s : Set α) : Set (α × β) := (fun x ↦ (x, f x)) '' s
-
-/-- `f` is surjective from `a` to `b` if `b` is contained in the image of `a`. -/
-def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop := t ⊆ f '' s
-
-/-- `f` is bijective from `s` to `t` if `f` is injective on `s` and `f '' s = t`. -/
-def BijOn (f : α → β) (s : Set α) (t : Set β) : Prop := MapsTo f s t ∧ InjOn f s ∧ SurjOn f s t
-
-/-- `g` is a left inverse to `f` on `a` means that `g (f x) = x` for all `x ∈ a`. -/
-def LeftInvOn (f' : β → α) (f : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f' (f x) = x
-
-/-- `g` is a right inverse to `f` on `b` if `f (g x) = x` for all `x ∈ b`. -/
-abbrev RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f f' t
-
-/-- `g` is an inverse to `f` viewed as a map from `a` to `b` -/
-def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=
-  LeftInvOn g f s ∧ RightInvOn g f t
-
-section image2
-
-/-- The image of a binary function `f : α → β → γ` as a function `Set α → Set β → Set γ`.
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ := {c | ∃ a ∈ s, ∃ b ∈ t, f a b = c}
-
-variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β} {c : γ}
-
-@[simp] theorem mem_image2 : c ∈ image2 f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := .rfl
-
-theorem mem_image2_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image2 f s t :=
-  ⟨a, ha, b, hb, rfl⟩
-
-end image2
-
-/-- Given a set `s` of functions `α → β` and `t : Set α`, `seq s t` is the union of `f '' t` over
-all `f ∈ s`. -/
-def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f ↦ f) s t
-
-@[simp]
-theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
-    b ∈ seq s t ↔ ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b :=
-  Iff.rfl
-
-lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := rfl
+/-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used
+in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
+to the dot notation. -/
+protected def Nonempty (s : Set α) : Prop :=
+  ∃ x, x ∈ s
 
 end Set
