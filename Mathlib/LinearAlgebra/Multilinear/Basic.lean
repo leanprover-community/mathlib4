@@ -797,7 +797,7 @@ theorem compMultilinearMap_apply (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R
 @[simp]
 theorem subtype_compMultilinearMap_codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂)
     (h) : p.subtype.compMultilinearMap (f.codRestrict p h) = f :=
-  MultilinearMap.ext fun _ => rfl
+  rfl
 
 /-- The multilinear version of `LinearMap.comp_codRestrict` -/
 @[simp]
@@ -805,7 +805,7 @@ theorem compMultilinearMap_codRestrict (g : M₂ →ₗ[R] M₃) (f : Multilinea
     (p : Submodule R M₃) (h) :
     (g.codRestrict p h).compMultilinearMap f =
       (g.compMultilinearMap f).codRestrict p fun v => h (f v) :=
-  MultilinearMap.ext fun _ => rfl
+  rfl
 
 variable {ι₁ ι₂ : Type*}
 
@@ -1213,7 +1213,7 @@ theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
 
 instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
   { MultilinearMap.addCommMonoid with
-    add_left_neg := fun a => MultilinearMap.ext fun v => add_left_neg _
+    neg_add_cancel := fun a => MultilinearMap.ext fun v => neg_add_cancel _
     sub_eq_add_neg := fun a b => MultilinearMap.ext fun v => sub_eq_add_neg _ _
     zsmul := fun n f =>
       { toFun := fun m => n • f m
@@ -1235,7 +1235,7 @@ variable [Semiring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i,
 theorem map_neg [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x : M₁ i) :
     f (update m i (-x)) = -f (update m i x) :=
   eq_neg_of_add_eq_zero_left <| by
-    rw [← MultilinearMap.map_add, add_left_neg, f.map_coord_zero i (update_same i 0 m)]
+    rw [← MultilinearMap.map_add, neg_add_cancel, f.map_coord_zero i (update_same i 0 m)]
 
 @[simp]
 theorem map_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :

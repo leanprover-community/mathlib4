@@ -23,7 +23,6 @@ See note [foundational algebra order theory].
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
-
 assert_not_exists Ring
 
 open Function Nat

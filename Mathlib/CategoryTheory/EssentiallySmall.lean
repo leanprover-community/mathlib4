@@ -164,11 +164,12 @@ noncomputable def inverse : ShrinkHoms C ⥤ C where
 
 /-- The categorical equivalence between `C` and `ShrinkHoms C`, when `C` is locally small.
 -/
-@[simps!]
-noncomputable def equivalence : C ≌ ShrinkHoms C :=
-  Equivalence.mk (functor C) (inverse C)
-    (NatIso.ofComponents fun X => Iso.refl X)
-    (NatIso.ofComponents fun X => Iso.refl X)
+@[simps]
+noncomputable def equivalence : C ≌ ShrinkHoms C where
+  functor := functor C
+  inverse := inverse C
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 end ShrinkHoms
 

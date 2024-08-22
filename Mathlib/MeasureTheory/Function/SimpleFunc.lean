@@ -767,7 +767,7 @@ def eapproxDiff (f : α → ℝ≥0∞) : ℕ → α →ₛ ℝ≥0
 theorem sum_eapproxDiff (f : α → ℝ≥0∞) (n : ℕ) (a : α) :
     (∑ k ∈ Finset.range (n + 1), (eapproxDiff f k a : ℝ≥0∞)) = eapprox f n a := by
   induction' n with n IH
-  · simp only [Nat.zero_eq, Nat.zero_add, Finset.sum_singleton, Finset.range_one]
+  · simp only [Nat.zero_add, Finset.sum_singleton, Finset.range_one]
     rfl
   · erw [Finset.sum_range_succ, IH, eapproxDiff, coe_map, Function.comp_apply,
       coe_sub, Pi.sub_apply, ENNReal.coe_toNNReal,
@@ -913,7 +913,8 @@ theorem const_lintegral (c : ℝ≥0∞) : (const α c).lintegral μ = c * μ un
   rw [lintegral]
   cases isEmpty_or_nonempty α
   · simp [μ.eq_zero_of_isEmpty]
-  · simp; unfold Function.const; rw [preimage_const_of_mem (mem_singleton c)]
+  · simp only [range_const, coe_const, Finset.sum_singleton]
+    unfold Function.const; rw [preimage_const_of_mem (mem_singleton c)]
 
 theorem const_lintegral_restrict (c : ℝ≥0∞) (s : Set α) :
     (const α c).lintegral (μ.restrict s) = c * μ s := by

@@ -92,14 +92,14 @@ theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F 
 @[to_additive]
 noncomputable instance colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
-    mul_left_inv := fun x => by
+    inv_mul_cancel := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
       cases' x with j x
       erw [colimit_inv_mk_eq,
         colimit_mul_mk_eq (F ⋙ forget₂ Grp MonCat.{max v u}) ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j),
         colimit_one_eq (F ⋙ forget₂ Grp MonCat.{max v u}) j]
       dsimp
-      erw [CategoryTheory.Functor.map_id, mul_left_inv] }
+      erw [CategoryTheory.Functor.map_id, inv_mul_cancel] }
 
 /-- The bundled group giving the filtered colimit of a diagram. -/
 @[to_additive "The bundled additive group giving the filtered colimit of a diagram."]
