@@ -11,33 +11,56 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true  # do not annoy the user when linting fails, as expected
     steps:
+      - uses: octokit/request-action@v2.x
+        name: Get comment author
+        id: get_user
+        with:
+          route: GET /repos/:repository/collaborators/:username/permission
+          repository: ${{ github.repository }}
+          username: ${{ github.event.comment.user.login }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Parse steps.get_user.outputs.data, since it is a string
+      - id: parse_user
+        name: Parse comment author permission
+        uses: gr2m/get-json-paths-action@v1.x
+        with:
+          json: ${{ steps.get_user.outputs.data }}
+          permission: 'permission'
+
       - name: Add reaction
-        if: (steps.parse_user.outputs.permission == 'admin')
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ github.event.comment.id }}
           reactions: rocket
 
       - name: cleanup
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
       - uses: actions/checkout@v4
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         with:
           token: ${{ secrets.NIGHTLY_TESTING }}
 
       - name: Checkout PR branch
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         run: |
             gh pr checkout ${{ github.event.issue.number }}
         env:
             GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
 
       - name: install Python
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
       - name: install elan
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         run: |
           set -o pipefail
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
@@ -47,25 +70,30 @@ jobs:
       # run the same linting steps as in lint_and_suggest_pr.yaml
 
       - name: lint
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           lake exe lint-style --fix
 
       - name: Install bibtool
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         run: |
           sudo apt-get update
           sudo apt-get install -y bibtool
 
       - name: lint references.bib
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           ./scripts/lint-bib.sh
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: lake exe mk_all
 
       - name: Commit and push changes
+        if: (steps.parse_user.outputs.permission == 'admin') || (steps.parse_user.outputs.permission == 'write')
         run: |
           # cleanup junk from build
           rm elan-init
