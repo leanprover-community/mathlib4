@@ -115,7 +115,6 @@ Here are some short-term goals.
 circle homeomorphism, rotation number
 -/
 
-
 open Filter Set Int Topology
 open Function hiding Commute
 

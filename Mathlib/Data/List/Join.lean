@@ -19,30 +19,7 @@ variable {α β : Type*}
 
 namespace List
 
--- Porting note (#10618): simp can prove this
--- @[simp]
-theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
-
-@[deprecated join_eq_nil_iff (since := "2024-07-10")]
-theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = [] := join_eq_nil_iff
-
-
-@[simp]
-theorem join_filter_not_isEmpty  :
-    ∀ {L : List (List α)}, join (L.filter fun l => !l.isEmpty) = L.join
-  | [] => rfl
-  | [] :: L => by
-      simp [join_filter_not_isEmpty (L := L)]
-  | (a :: l) :: L => by
-      simp [join_filter_not_isEmpty (L := L)]
-
 @[deprecated (since := "2024-02-25")] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
-
-@[simp]
-theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
-    join (L.filter fun l => l ≠ []) = L.join := by
-  simp only [ne_eq, ← isEmpty_iff, Bool.not_eq_true, Bool.decide_eq_false,
-    join_filter_not_isEmpty]
 
 /-- See `List.length_join` for the corresponding statement using `List.sum`. -/
 lemma length_join' (L : List (List α)) : length (join L) = Nat.sum (map length L) := by
@@ -69,11 +46,6 @@ lemma countP_bind' (p : β → Bool) (l : List α) (f : α → List β) :
 /-- See `List.count_bind` for the corresponding statement using `List.sum`. -/
 lemma count_bind' [BEq β] (l : List α) (f : α → List β) (x : β) :
     count x (l.bind f) = Nat.sum (map (count x ∘ f) l) := countP_bind' _ _ _
-
-@[simp]
-theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
-  join_eq_nil_iff.trans <| by
-    simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 
 /-- In a join, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join of the first `i` sublists.
@@ -110,22 +82,6 @@ theorem drop_take_succ_eq_cons_get (L : List α) (i : Fin L.length) :
     (L.take (i + 1)).drop i = [get L i] := by
   simp [drop_take_succ_eq_cons_getElem]
 
-set_option linter.deprecated false in
-/-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
-left with a list of length `1` made of the `i`-th element of the original list. -/
-@[deprecated drop_take_succ_eq_cons_get (since := "2023-01-10")]
-theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length) :
-    (L.take (i + 1)).drop i = [nthLe L i hi] := by
-  induction' L with head tail generalizing i
-  · simp only [length] at hi
-    exact (Nat.not_succ_le_zero i hi).elim
-  cases' i with i hi
-  · simp
-    rfl
-  have : i < tail.length := by simpa using hi
-  simp [*]
-  rfl
-
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`.
@@ -144,18 +100,6 @@ theorem drop_take_succ_join_eq_get' (L : List (List α)) (i : Fin L.length) :
     (L.join.take (Nat.sum ((L.map length).take (i + 1)))).drop (Nat.sum ((L.map length).take i)) =
       get L i := by
    simp [drop_take_succ_join_eq_getElem']
-
-/-- Two lists of sublists are equal iff their joins coincide, as well as the lengths of the
-sublists. -/
-theorem eq_iff_join_eq (L L' : List (List α)) :
-    L = L' ↔ L.join = L'.join ∧ map length L = map length L' := by
-  refine ⟨fun H => by simp [H], ?_⟩
-  rintro ⟨join_eq, length_eq⟩
-  apply ext_getElem
-  · have : length (map length L) = length (map length L') := by rw [length_eq]
-    simpa using this
-  · intro n h₁ h₂
-    rw [← drop_take_succ_join_eq_getElem', ← drop_take_succ_join_eq_getElem', join_eq, length_eq]
 
 theorem join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
     (L.drop (L.length - 1)).join = L.getLast h := by

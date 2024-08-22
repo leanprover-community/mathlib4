@@ -106,10 +106,10 @@ theorem inv_add_inv_conj_ennreal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)�
 end
 
 protected lemma inv_inv (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a⁻¹.IsConjExponent b⁻¹ :=
-  ⟨one_lt_inv ha $ by linarith, by simpa only [inv_inv]⟩
+  ⟨one_lt_inv ha <| by linarith, by simpa only [inv_inv]⟩
 
 lemma inv_one_sub_inv (ha₀ : 0 < a) (ha₁ : a < 1) : a⁻¹.IsConjExponent (1 - a)⁻¹ :=
-  .inv_inv ha₀ (sub_pos_of_lt ha₁) $ add_tsub_cancel_of_le ha₁.le
+  .inv_inv ha₀ (sub_pos_of_lt ha₁) <| add_tsub_cancel_of_le ha₁.le
 
 lemma one_sub_inv_inv (ha₀ : 0 < a) (ha₁ : a < 1) : (1 - a)⁻¹.IsConjExponent a⁻¹ :=
   (inv_one_sub_inv ha₀ ha₁).symm
@@ -195,11 +195,11 @@ end
 
 protected lemma inv_inv (ha : a ≠ 0) (hb : b ≠ 0) (hab : a + b = 1) :
     a⁻¹.IsConjExponent b⁻¹ :=
-  ⟨one_lt_inv ha.bot_lt $ by rw [← hab]; exact lt_add_of_pos_right _ hb.bot_lt, by
+  ⟨one_lt_inv ha.bot_lt <| by rw [← hab]; exact lt_add_of_pos_right _ hb.bot_lt, by
     simpa only [inv_inv] using hab⟩
 
 lemma inv_one_sub_inv (ha₀ : a ≠ 0) (ha₁ : a < 1) : a⁻¹.IsConjExponent (1 - a)⁻¹ :=
-  .inv_inv ha₀ (tsub_pos_of_lt ha₁).ne' $ add_tsub_cancel_of_le ha₁.le
+  .inv_inv ha₀ (tsub_pos_of_lt ha₁).ne' <| add_tsub_cancel_of_le ha₁.le
 
 lemma one_sub_inv_inv (ha₀ : a ≠ 0) (ha₁ : a < 1) : (1 - a)⁻¹.IsConjExponent a⁻¹ :=
   (inv_one_sub_inv ha₀ ha₁).symm

@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
-import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Measurable spaces and measurable functions

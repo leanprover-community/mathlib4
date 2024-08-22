@@ -161,8 +161,9 @@ theorem Valuation.mk_implies {p} {as ps} (as₁) : as = List.reverseAux as₁ ps
     subst e; clear ih H
     suffices ∀ n n', n' = List.length as₁ + n →
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
-    induction as₁ with simp
-    | cons b as₁ ih => exact fun n bs ↦ ih (n+1) _ (Nat.succ_add ..) _
+    induction as₁ with
+    | nil => simp
+    | cons b as₁ ih => simpa using fun n bs ↦ ih (n+1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
@@ -493,7 +494,7 @@ where
 open Lean
 
 namespace Parser
-open Lean Parsec String
+open Lean Std.Internal.Parsec String
 
 /-- Parse a natural number -/
 def parseNat : String.Parser Nat := Json.Parser.natMaybeZero
@@ -532,6 +533,8 @@ def parseLRAT : String.Parser (Array LRATStep) := many do
   else ws; pure <| LRATStep.add step (← parseInts) (← parseInts)
 
 end Parser
+
+open Std.Internal
 
 /-- Core of `fromLRAT`. Constructs the context and main proof definitions,
 but not the reification theorem. Returns:
@@ -669,3 +672,7 @@ elab "from_lrat " cnf:term:max ppSpace lrat:term:max : term => do
 example : ∀ (a b : Prop), (¬a ∧ ¬b ∨ a ∧ ¬b) ∨ ¬a ∧ b ∨ a ∧ b := from_lrat
   "p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0"
   "5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0"
+
+end Sat
+
+end Mathlib.Tactic

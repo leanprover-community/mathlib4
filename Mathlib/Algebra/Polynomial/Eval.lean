@@ -917,7 +917,7 @@ theorem eval₂_mul' :
 theorem eval₂_pow' (n : ℕ) :
     (p ^ n).eval₂ (algebraMap R S) x = (p.eval₂ (algebraMap R S) x) ^ n := by
   induction n with
-  | zero => simp only [Nat.zero_eq, pow_zero, eval₂_one]
+  | zero => simp only [pow_zero, eval₂_one]
   | succ n ih => rw [pow_succ, pow_succ, eval₂_mul', ih]
 
 @[simp]

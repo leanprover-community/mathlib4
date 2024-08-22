@@ -489,7 +489,7 @@ end Mul
 variable [Group H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H]
 
 lemma smul_inv (g : G) (a : H) : (g • a)⁻¹ = g⁻¹ • a⁻¹ :=
-  inv_eq_of_mul_eq_one_right $ by rw [smul_mul_smul, mul_inv_cancel, mul_inv_cancel, one_smul]
+  inv_eq_of_mul_eq_one_right <| by rw [smul_mul_smul, mul_inv_cancel, mul_inv_cancel, one_smul]
 
 lemma smul_zpow (g : G) (a : H) (n : ℤ) : (g • a) ^ n = g ^ n • a ^ n := by
   cases n <;> simp [smul_pow, smul_inv]
