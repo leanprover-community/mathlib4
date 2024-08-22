@@ -8,6 +8,7 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Tactic.Peel
+import Mathlib.Tactic.Recall
 
 /-!
 # IMO 2024 Q1
@@ -80,17 +81,17 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
     constructor
     · rw [Int.cast_one]
       calc 1 ≤ α⁻¹ * α := by simp [h0.ne']
-        _ ≤ ⌈α⁻¹⌉₊ * α := (mul_le_mul_right h0).2 (Nat.le_ceil α⁻¹)
+        _ ≤ ⌈α⁻¹⌉₊ * α := by gcongr; exact Nat.le_ceil α⁻¹
     · calc ⌈α⁻¹⌉₊ * α
-        _ < (α⁻¹ + 1) * α := (mul_lt_mul_right h0).2 (Nat.ceil_lt_add_one (inv_nonneg.2 h0.le))
+        _ < (α⁻¹ + 1) * α := by gcongr; exact Nat.ceil_lt_add_one (inv_nonneg.2 h0.le)
         _ = 1 + α := by field_simp [h0.ne']
-        _ ≤ (1 : ℕ) + 1 := add_le_add Nat.cast_one.symm.le hn.le
+        _ ≤ (1 : ℕ) + 1 := by gcongr; norm_cast
   · apply Finset.sum_eq_zero
     intro x hx
     rw [Int.floor_eq_zero_iff]
     refine ⟨by positivity, ?_⟩
     rw [Finset.mem_Ico, Nat.lt_ceil] at hx
-    calc x * α < α⁻¹ * α := (mul_lt_mul_right h0).2 hx.2
+    calc x * α < α⁻¹ * α := by gcongr; exact hx.2
       _ = 1 := inv_mul_cancel h0.ne'
 
 lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
@@ -164,6 +165,9 @@ lemma condition_iff_of_mem_Ico {α : ℝ} (h : α ∈ Set.Ico 0 2) : Condition �
   · rintro rfl
     convert condition_two_mul_int 0
     norm_num
+
+recall Imo2024Q1.Condition (α : ℝ) := (∀ n : ℕ, 0 < n → (n : ℤ) ∣ ∑ i ∈ Finset.Icc 1 n, ⌊i * α⌋)
+recall Imo2024Q1.solutionSet := {α : ℝ | ∃ m : ℤ, α = 2 * m}
 
 theorem result (α : ℝ) : Condition α ↔ α ∈ solutionSet := by
   refine ⟨fun h ↦ ?_, ?_⟩
