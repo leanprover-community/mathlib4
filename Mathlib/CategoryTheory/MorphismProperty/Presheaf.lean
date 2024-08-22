@@ -354,7 +354,7 @@ end
 
 section
 
--- TODO: should make le_mono a class on morphism properties?
+-- Note (Calle): Maybe one should make le_mono a class on morphism properties?
 lemma presheaf_mono_of_le (hP : P ≤ MorphismProperty.monomorphisms C)
     {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : Mono f :=
   MorphismProperty.presheaf_monomorphisms_le_monomorphisms _
