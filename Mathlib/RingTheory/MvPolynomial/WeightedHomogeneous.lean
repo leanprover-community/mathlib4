@@ -10,8 +10,8 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Data.Finsupp.WellFounded
 
-import Mathlib.Order.Extension.Linear
 
 /-!
 # Weighted homogeneous polynomials
@@ -243,7 +243,11 @@ theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCanc
   have hφ' : (φ.support.filter (fun d ↦ weight w d = φ.weightedTotalDegree w)).Nonempty := by 
     simp only [Finset.Nonempty, mem_filter, mem_support_iff]
     exact exists_coeff_ne_zero_and_weight_eq w hφ
-  haveI : LinearOrder σ := by sorry
+  letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
+  letI : WellFoundedGT σ := by
+    change IsWellFounded σ fun x y ↦ WellOrderingRel x y
+    exact IsWellOrder.toIsWellFounded
+    simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, WithTop.add_eq_top] using h
   obtain ⟨d, hd, hd'⟩ := Finset.exists_max_image _ toLex hφ'
   have hψ' : (ψ.support.filter (fun d ↦ weight w d = ψ.weightedTotalDegree w)).Nonempty := by 
     simp only [Finset.Nonempty, mem_filter, mem_support_iff]
