@@ -6,7 +6,7 @@ branch=adomani/CI_olean_size
 
 du "${oleansDir}"
 
-printf 'Compare to master\n'
+printf '\n\nCompare to master\n\n'
 
 ## retrieve the job id of the latest master run
 jobID="$(curl https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml?query=branch%3A"${branch}+is%3Asuccess" |
