@@ -90,6 +90,18 @@ section Mul
 variable {M α : Type*} [MeasurableSpace M] [Mul M] {m : MeasurableSpace α} {f g : α → M}
   {μ : Measure α}
 
+@[to_additive]
+instance IsMulLeftInvariant.smulInvariantMeasure
+    {μ : Measure M} [IsMulLeftInvariant μ] [MeasurableMul M] :
+    SMulInvariantMeasure M M μ :=
+  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_left_eq_self _) (by exact?) hs.nullMeasurableSet⟩
+
+@[to_additive]
+instance IsMulRightInvariant.toSMulInvariantMeasure_op
+    {μ : Measure M} [μ.IsMulRightInvariant] [MeasurableMul M] :
+    SMulInvariantMeasure Gᵐᵒᵖ G μ :=
+  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_right_eq_self _) hs.nullMeasurableSet⟩
+
 @[to_additive (attr := fun_prop, measurability)]
 theorem Measurable.const_mul [MeasurableMul M] (hf : Measurable f) (c : M) :
     Measurable fun x => c * f x :=
