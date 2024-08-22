@@ -998,19 +998,16 @@ lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   rw [fst_apply hs, ← prod_univ, prod_prod, measure_univ, mul_one]
 
 theorem fst_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
-    (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).fst = μ.map X := by
-  by_cases hX : AEMeasurable X μ
-  · ext1 s hs
-    rw [Measure.fst_apply hs, Measure.map_apply_of_aemeasurable (hX.prod_mk hY) (measurable_fst hs),
-      Measure.map_apply_of_aemeasurable hX hs, ← prod_univ, mk_preimage_prod, preimage_univ,
-      inter_univ]
-  · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hX; exact measurable_fst.comp_aemeasurable hX
-    simp [map_of_not_aemeasurable, hX, this]
+    (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
+    (μ.map fun a => (X a, Y a)).fst = μ.map X := by
+  ext1 s hs
+  rw [Measure.fst_apply hs, Measure.map_apply_of_aemeasurable (hX.prod_mk hY) (measurable_fst hs),
+    Measure.map_apply_of_aemeasurable hX hs, ← prod_univ, mk_preimage_prod, preimage_univ,
+    inter_univ]
 
 theorem fst_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
-    (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
-  fst_map_prod_mk₀ hY.aemeasurable
+    (hX : Measurable X) (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
+  fst_map_prod_mk₀ hX.aemeasurable hY.aemeasurable
 
 /-- Marginal measure on `β` obtained from a measure on `ρ` `α × β`, defined by `ρ.map Prod.snd`. -/
 noncomputable def snd (ρ : Measure (α × β)) : Measure β :=
@@ -1041,20 +1038,17 @@ lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by
   ext1 s hs
   rw [snd_apply hs, ← univ_prod, prod_prod, measure_univ, one_mul]
 
-theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX : AEMeasurable X μ) :
+theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
+    (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
     (μ.map fun a => (X a, Y a)).snd = μ.map Y := by
-  by_cases hY : AEMeasurable Y μ
-  · ext1 s hs
-    rw [Measure.snd_apply hs, Measure.map_apply_of_aemeasurable (hX.prod_mk hY) (measurable_snd hs),
-      Measure.map_apply_of_aemeasurable hY hs, ← univ_prod, mk_preimage_prod, preimage_univ,
-      univ_inter]
-  · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hY; exact measurable_snd.comp_aemeasurable hY
-    simp [map_of_not_aemeasurable, hY, this]
+  ext1 s hs
+  rw [Measure.snd_apply hs, Measure.map_apply_of_aemeasurable (hX.prod_mk hY) (measurable_snd hs),
+    Measure.map_apply_of_aemeasurable hY hs, ← univ_prod, mk_preimage_prod, preimage_univ,
+    univ_inter]
 
-theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X) :
-    (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
-  snd_map_prod_mk₀ hX.aemeasurable
+theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
+    (hX : Measurable X) (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
+  snd_map_prod_mk₀ hX.aemeasurable hY.aemeasurable
 
 @[simp] lemma fst_map_swap : (ρ.map Prod.swap).fst = ρ.snd := by
   rw [Measure.fst, Measure.map_map measurable_fst measurable_swap]
