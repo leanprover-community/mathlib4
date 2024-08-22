@@ -27,7 +27,7 @@ variable {α : Type*} [PartialOrder α] [hα : WellFoundedGT α] {f : α → α}
 
 /-- The function `g : ι → α` will eventually be constant if the `>` relation on `α`
   is well-founded. -/
-lemma eventually_constant_monotone {ι : Type*}
+lemma Monotone.eventuallyConst_atTop {ι : Type*}
     [SemilatticeSup ι] [Nonempty ι] {g : ι → α} (hg : Monotone g) :
     EventuallyConst g atTop := by
   rw [eventuallyConst_atTop]
