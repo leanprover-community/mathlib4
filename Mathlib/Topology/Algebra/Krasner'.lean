@@ -227,13 +227,25 @@ theorem functionExtends_of_functionExtends_of_functionExtends {A} [CommRing A] [
 
 end FunctionExtends
 
--- section AlgEquiv
--- -- a missing lemma
--- variable (R) in
--- @[simp]
--- theorem AlgEquiv.refl_apply (x : A) : (AlgEquiv.refl : A ≃ₐ[R] A) x = x := rfl
+section IntegralClosure
 
--- end AlgEquiv
+def IntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] : Subalgebra R A := sorry
+
+instance IntegralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A]:
+    IsIntegralClosure (IntegralClosure R A) R A := sorry
+
+instance IntermediateField.IntegralClosure (K L : Type*) [Field K] [Field L] [Algebra K L]
+    : IntermediateField K L where
+  toSubalgebra := _root_.IntegralClosure K L
+  inv_mem' := sorry
+#check integralClosure
+variable (R A) [CommRing R] [CommRing A] [Algebra R A]
+#synth IsIntegralClosure (integralClosure R A) R A
+theorem Algebra.IsAlgebraic.of_isIntegralClosure (A R B : Type*)
+    [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B] [Algebra A B]
+    [IsIntegralClosure A R B] : Algebra.IsAlgebraic R A := sorry
+
+end IntegralClosure
 
 
 open Algebra
@@ -244,18 +256,22 @@ class IsKrasner : Prop where
   krasner' : ∀ {x y : L}, (minpoly K x).Separable → IsIntegral K y →
     (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → vL.v (x - y) < vL.v (x - x')) →
       x ∈ K⟮y⟯
-
+-- `As an application of IsKrasner, prove that C_p is algebraically closed,`
+-- ` accelerating integrating into mathlib`
 class IsKrasnerNorm (K L : Type*) [Field K] [NormedField L] [Algebra K L] : Prop where
   krasner_norm' : ∀ {x y : L}, (minpoly K x).Separable → IsIntegral K y →
     (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → ‖x - y‖ < ‖x - x'‖) →
       x ∈ K⟮y⟯
 
+section
 variable [IsKrasner K L]
 
 theorem IsKrasner.krasner {x y : L} (hx : (minpoly K x).Separable) (hy : IsIntegral K y)
     (h : (∀ x' : L, IsConjRoot K x x' → x ≠ x' → vL.v (x - y) < vL.v (x - x'))) : x ∈ K⟮y⟯ :=
   IsKrasner.krasner' hx hy h
 -- Algebra.adjoin R {x} ≤ Algebra.adjoin R {y}
+
+end
 
 theorem IsKrasnerNorm.krasner_norm {K L : Type*} [Field K] [NormedField L] [Algebra K L]
     [IsKrasnerNorm K L] {x y : L} (hx : (minpoly K x).Separable) (hy : IsIntegral K y)
@@ -278,7 +294,9 @@ variable (M : IntermediateField K L)
 
 #check spectralNorm_aut_isom
 #check spectralNorm_unique_field_norm_ext
-theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
+
+include extd is_na
+theorem of_completeSpace [Algebra.IsAlgebraic K L] [CompleteSpace K] : IsKrasnerNorm K L := by
   constructor
   intro x y xsep hyK hxy
   let z := x - y
@@ -374,6 +392,7 @@ variable {K} in
 theorem Valued.toUniformSpace_eq_of_isEquiv (h : vK.v.IsEquiv vK'.v) :
   vK.toUniformSpace = vK'.toUniformSpace := by
   sorry -- `must use new definition of is_topological_valuation`
+-- `prove a copy of this using that the valuation is surjective`
 
 variable {A B : Type*} [CommRing A] [Ring B] {Γ : Type*}
   [LinearOrderedCommGroupWithZero Γ]
@@ -403,6 +422,7 @@ namespace IsKrasner
 -- TODO: it is possible to remove the condition `vL.v.RankOne`, since
 -- any algebraic extension of rank one valued field K is rank one valued.
 -- Just extract the maximal algebraic extension of K in L
+-- `show the existence of IsIntegralClosure, i.e. construct a maximal algebraic extension of K in L`
 -- it should be an instance after h is a type class
 theorem of_completeSpace [rk1L : vL.v.RankOne] {ΓK : outParam Type*}
     [LinearOrderedCommGroupWithZero ΓK] [vK : Valued K ΓK] [rk1K : vK.v.RankOne] [CompleteSpace K]
