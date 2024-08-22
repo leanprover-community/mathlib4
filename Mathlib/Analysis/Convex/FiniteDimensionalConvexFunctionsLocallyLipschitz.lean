@@ -7,11 +7,9 @@ import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Topology.MetricSpace.Sequences
-import Mathlib.Analysis.Convex.Caratheodory
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.NormedSpace.l1Space
 /-!
 # Finite-Dimensional Convex Functions and Their Lipschitz Properties
