@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
-# Construct an ordered rings from rings with a specified positive cone.
+# Construct ordered rings from rings with a specified positive cone.
 
 In this file we provide structures `RingCone` and `MaximalRingCone`
 that encode axioms of `OrderedRing` and `LinearOrderedRing`
