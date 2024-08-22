@@ -11,7 +11,7 @@ printf '\n\nCompare to master\n\n'
 ## retrieve the job id of the latest master run
 jobID="$(curl https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml?query=branch%3A"${branch}+is%3Asuccess" |
   sed -n 's=.*actions/runs/\([0-9]*\).*=\1=p' | head -1)"
-printf $'Latest `master`\'s job: %s\n' "${jobID}"
+printf $'Latest successful `%s`\'s job: %s\n' "${branch}" "${jobID}"
 
 getCacheSize () { du "${oleansDir}" | sed "s=^=${1} =; s=\t= =g" ; }
 
