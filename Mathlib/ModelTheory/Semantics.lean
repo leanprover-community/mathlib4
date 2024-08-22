@@ -876,6 +876,9 @@ theorem realize_sentence (g : M ≃[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨
 theorem theory_model (g : M ≃[L] N) [M ⊨ T] : N ⊨ T :=
   ⟨fun φ hφ => (g.realize_sentence φ).1 (Theory.realize_sentence_of_mem T hφ)⟩
 
+theorem theory_model_iff (g : M ≃[L] N) : M ⊨ T ↔ N ⊨ T :=
+  ⟨fun _ => g.theory_model, fun _ => g.symm.theory_model⟩
+
 theorem elementarilyEquivalent (g : M ≃[L] N) : M ≅[L] N :=
   elementarilyEquivalent_iff.2 g.realize_sentence
 

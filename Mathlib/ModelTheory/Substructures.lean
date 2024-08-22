@@ -289,7 +289,21 @@ theorem lift_card_closure_le :
   refine lift_card_closure_le_card_term.trans (Term.card_le.trans ?_)
   rw [mk_sum, lift_umax.{w, u}]
 
+lemma closed_iff (s : Set M) :
+    (closure L).closed s ↔ ∀ {n}, ∀ f : L.Functions n, ClosedUnder f s := by
+  refine ⟨fun h n f => ?_, fun h => ?_⟩
+  · rw [← h]
+    exact Substructure.fun_mem _ _
+  · change closure L s = s
+    have h' : closure L s = ⟨s, h⟩ := closure_eq_of_le (refl _) subset_closure
+    rw [h']
+    rfl
+
 variable (L)
+
+@[simp]
+lemma closed_of_IsRelational [L.IsRelational] (s : Set M) : (closure L).closed s :=
+  (closed_iff s).2 (IsRelational.empty_functions _).elim
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by

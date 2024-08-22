@@ -3,7 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Fraisse
 
 /-!
 # Ordered First-Ordered Structures
@@ -247,6 +247,41 @@ instance model_dlo [LinearOrder M] [DenselyOrdered M] [NoTopOrder M] [NoBotOrder
     true_and_iff]
   rw [← Theory.model_iff]
   infer_instance
+
+lemma dlo_age (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Infinite M] :
+    Language.order.age M = {M : CategoryTheory.Bundled.{w} Language.order.Structure |
+      Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
+  rw [age]
+  ext N
+  refine ⟨fun ⟨hF, h⟩ => ⟨finite_of_fg hF, sorry⟩, fun ⟨hF, h⟩ => ⟨fg_of_finite, ?_⟩⟩
+  obtain ⟨n, ⟨f⟩⟩ := finite_iff_exists_equiv_fin.1 hF
+  refine ⟨⟨(f.toEmbedding.trans Fin.valEmbedding).trans (Infinite.natEmbedding M),
+    (IsRelational.empty_functions _).elim, fun l R => ?_⟩⟩
+  match R with
+  | leSymb => 
+    simp only [Function.Embedding.toFun_eq_coe]
+    sorry
+
+lemma foo {M : Type w} [Language.order.Structure M] [M ⊨ Language.order.dlo] [Countable M]
+    [Infinite M] :
+    IsFraisseLimit {M : CategoryTheory.Bundled.{w} Language.order.Structure |
+      Finite M ∧ M ⊨ Language.order.linearOrderTheory} M := by
+  refine ⟨fun S S_fg f => ?_, ?_⟩
+  ·
+    sorry
+  · simp only [Theory.model_iff]
+    sorry
+
+lemma isFraisse_finite_linear_order :
+    IsFraisse {M : CategoryTheory.Bundled.{w} Language.order.Structure |
+      Finite M ∧ M ⊨ Language.order.linearOrderTheory} where
+  is_nonempty := ⟨⟨PUnit, inferInstance⟩, inferInstance, inferInstance⟩
+  FG := fun _ ⟨_, _⟩ => fg_of_finite
+  is_equiv_invariant := fun _ _ ⟨f⟩ => and_congr f.toEquiv.finite_iff f.theory_model_iff
+  is_essentially_countable := sorry
+  hereditary := sorry
+  jointEmbedding := sorry
+  amalgamation := sorry
 
 end Language
 
