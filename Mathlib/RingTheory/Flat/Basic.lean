@@ -74,6 +74,10 @@ the canonical map `I ⊗ M →ₗ M` is injective. -/
 
 namespace Flat
 
+variable {R} in
+instance instSubalgebraToSubmodule {S : Type v} [Ring S] [Algebra R S]
+    (A : Subalgebra R S) [Flat R A] : Flat R (Subalgebra.toSubmodule A) := ‹Flat R A›
+
 instance self (R : Type u) [CommRing R] : Flat R R :=
   ⟨by
     intro I _
@@ -281,7 +285,7 @@ lemma lTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
   suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
     rw [show g = ι.comp π by aesop, lTensor_comp]
     exact exact1.comp_injective
-      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ $ by
+      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ <| by
         simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 
@@ -301,7 +305,7 @@ lemma rTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
   suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
     rw [show g = ι.comp π by aesop, rTensor_comp]
     exact exact1.comp_injective
-      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ $ by
+      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ <| by
         simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 

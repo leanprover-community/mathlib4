@@ -22,12 +22,12 @@ that contain the relative path, whilst linting absolute paths (like
 ``/root/mathlib4/Mathlib/Foo/Bar.lean``) will produce errors with the
 absolute path.
 
-This script can also be used to regenerate the list of allowed / ignored style
-exceptions by redirecting the output to ``style-exceptions.txt``. Use:
+The linters in this script are gradually being rewritten in Lean.
+Do not add new linters here; please write them in Lean instead.
 
-    $ ./scripts/update-style-exceptions.sh
-
-to perform this update.
+To run all style linters, run `lake exe lint-style`.
+To update the list of allowed/ignored style exceptions, use
+    $ lake exe lint-style --update
 """
 
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
@@ -61,7 +61,7 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         path = ROOT_DIR / filename
         if errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path, None)]
-        elif errno in ["ERR_LIN", "ERR_ADN", "ERR_NUM_LIN"]:
+        elif errno in ["ERR_COP", "ERR_LIN", "ERR_ADN", "ERR_NUM_LIN"]:
             pass # maintained by the Lean style linter now
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
