@@ -36,7 +36,7 @@ lemma Monotone.eventuallyConst_atTop {ι : Type*}
     (hg hz).eq_of_not_gt (hx ▸ hα.wf.not_lt_min _ _ (Set.mem_range_self _))⟩
 
 /-- Iterations of an inflationary endomorphisms of a cowell-founded order eventually stabilise. -/
-lemma eventually_constant_iterate (hf : id ≤ f) (x : α) :
+lemma eventuallyConst_iterate_of_wellFoundedGT (hf : id ≤ f) (x : α) :
     EventuallyConst (fun n => f^[n] x) atTop :=
   eventually_constant_monotone (fun _ _ h => monotone_iterate_of_id_le hf h x)
 
