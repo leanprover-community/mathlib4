@@ -508,7 +508,9 @@ theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
 theorem coe_prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
   rfl
 
-section
+-- Commutativity and associativity of the disjoing union of topological spaces,
+-- and the sum with an empty space.
+section sum
 
 variable (X Y W Z)
 
@@ -579,6 +581,13 @@ def emptySum [IsEmpty Y] : Y ⊕ X ≃ₜ X := (sumComm Y X).trans (sumEmpty X Y
 
 @[simp] theorem coe_emptySum [IsEmpty Y] : (emptySum X Y).toEquiv = Equiv.emptySum Y X := rfl
 
+end sum
+
+-- Commutativity and associativity of the product of top. spaces, and the product with `PUnit`.
+section prod
+
+variable (X Y W Z)
+
 /-- `X × Y` is homeomorphic to `Y × X`. -/
 def prodComm : X × Y ≃ₜ Y × X where
   continuous_toFun := continuous_snd.prod_mk continuous_fst
@@ -619,7 +628,7 @@ def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
     continuous_toFun := continuous_const
     continuous_invFun := continuous_const }
 
-end
+end prod
 
 /-- `Equiv.piCongrLeft` as a homeomorphism: this is the natural homeomorphism
 `Π i, Y (e i) ≃ₜ Π j, Y j` obtained from a bijection `ι ≃ ι'`. -/
