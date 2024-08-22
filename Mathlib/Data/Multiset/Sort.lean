@@ -60,7 +60,7 @@ theorem map_sort (f : α → β) (s : Multiset α)
     (hs : ∀ a ∈ s, ∀ b ∈ s, r a b ↔ r' (f a) (f b)) :
     (s.sort r).map f = (s.map f).sort r' := by
   revert s
-  exact Quot.ind fun _ => List.map_mergeSort _ _ _ _
+  exact Quot.ind fun _ => List.map_mergeSort' _ _ _ _
 
 end sort
 
