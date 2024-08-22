@@ -7,7 +7,72 @@ universe v v' v'' u u' u''
 
 namespace CategoryTheory
 
-open Limits MonoidalCategory
+open Category Limits Opposite
+
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+
+namespace Functor
+
+namespace end_
+
+@[simps]
+def multicospanIndex (F : Cᵒᵖ ⥤ C ⥤ D) : MulticospanIndex D where
+  L := ULift C
+  R := Arrow C
+  fstTo f := ULift.up f.left
+  sndTo f := ULift.up f.right
+  left := fun ⟨X⟩ ↦ (F.obj (op X)).obj X
+  right f := (F.obj (op f.left)).obj f.right
+  fst f := (F.obj _).map f.hom
+  snd f := (F.map f.hom.op).app f.right
+
+end end_
+
+section
+
+variable (F : Cᵒᵖ ⥤ C ⥤ D)
+
+abbrev HasEnd := HasMultiequalizer (end_.multicospanIndex F)
+
+variable [F.HasEnd]
+
+noncomputable def end_ : D := multiequalizer (end_.multicospanIndex F)
+
+namespace end_
+
+noncomputable def π (X : C) : F.end_ ⟶ (F.obj (op X)).obj X :=
+  Multiequalizer.ι (end_.multicospanIndex F) ⟨X⟩
+
+@[reassoc]
+lemma condition {X Y : C} (f : X ⟶ Y) :
+    π F X ≫ (F.obj (op X)).map f = π F Y ≫ (F.map f.op).app Y :=
+  Multiequalizer.condition (end_.multicospanIndex F) (Arrow.mk f)
+
+variable {F} in
+lemma hom_ext {Z : D} {φ φ' : Z ⟶ F.end_} (h : ∀ (X : C), φ ≫ π F X = φ' ≫ π F X) :
+    φ = φ' :=
+  Multiequalizer.hom_ext _ _ _ (fun ⟨X⟩ ↦ h X)
+
+section
+
+variable {Z : D} (φ : ∀ (X : C), Z ⟶ (F.obj (op X)).obj X)
+  (hφ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), φ X ≫ (F.obj (op X)).map f = φ Y ≫ (F.map f.op).app Y)
+
+noncomputable def lift : Z ⟶ F.end_ :=
+  Multiequalizer.lift _ _ (fun ⟨X⟩ ↦ φ X) (fun f ↦ hφ f.hom)
+
+@[reassoc (attr := simp)]
+lemma lift_π (X : C) : lift F φ hφ ≫ π F X = φ X := by simp [lift, π]
+
+end
+
+end end_
+
+end
+
+end Functor
+
+open MonoidalCategory
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   [MonoidalCategory D] [MonoidalClosed D]
@@ -54,21 +119,12 @@ section
 
 variable (F G : C ⥤ D)
 
-@[simps]
-def enrichedHom.multicospanIndex : MulticospanIndex D where
-  L := ULift C
-  R := Arrow C
-  fstTo f := ULift.up f.left
-  sndTo f := ULift.up f.right
-  left := fun ⟨X⟩ ↦ (ihom (F.obj X)).obj (G.obj X)
-  right f := (ihom (F.obj f.left)).obj (G.obj f.right)
-  fst f := (ihom _).map (G.map f.hom)
-  snd f := (MonoidalClosed.pre (F.map f.hom)).app (G.obj f.right)
-
-abbrev HasEnrichedHom := HasMultiequalizer (enrichedHom.multicospanIndex F G)
+abbrev HasEnrichedHom := (F.op ⋙ ((whiskeringRight Dᵒᵖ _ _).obj
+      ((whiskeringLeft C D D).obj G)).obj MonoidalClosed.internalHom).HasEnd
 
 noncomputable def enrichedHom [HasEnrichedHom F G] : D :=
-  multiequalizer (enrichedHom.multicospanIndex F G)
+  (F.op ⋙ ((whiskeringRight Dᵒᵖ _ _).obj
+      ((whiskeringLeft C D D).obj G)).obj MonoidalClosed.internalHom).end_
 
 end
 
@@ -76,33 +132,50 @@ namespace enrichedHom
 
 section
 
-variable (F G : C ⥤ D) [HasEnrichedHom F G] (X : C)
+variable (F G : C ⥤ D) [HasEnrichedHom F G]
 
-noncomputable abbrev app : enrichedHom F G ⟶ (ihom (F.obj X)).obj (G.obj X) :=
-  Multiequalizer.ι (enrichedHom.multicospanIndex F G) (ULift.up X)
+noncomputable abbrev app (X : C) : enrichedHom F G ⟶ (ihom (F.obj X)).obj (G.obj X) :=
+  end_.π (F.op ⋙ ((whiskeringRight Dᵒᵖ _ _).obj
+      ((whiskeringLeft C D D).obj G)).obj MonoidalClosed.internalHom) X
+
+@[reassoc]
+lemma naturality {X Y : C} (f : X ⟶ Y) :
+    app F G Y ≫ (MonoidalClosed.pre (F.map f)).app (G.obj Y) =
+      app F G X ≫ (ihom (F.obj X)).map (G.map f) :=
+  (end_.condition (F.op ⋙ ((whiskeringRight Dᵒᵖ _ _).obj
+      ((whiskeringLeft C D D).obj G)).obj MonoidalClosed.internalHom) f).symm
+
+variable {F G} in
+@[ext]
+lemma hom_ext {Z : D} {φ φ' : Z ⟶ enrichedHom F G}
+    (h : ∀ (X : C), φ ≫ app _ _ X = φ' ≫ app _ _ X) : φ = φ' :=
+  end_.hom_ext h
 
 end
 
 noncomputable def id (F : C ⥤ D) [HasEnrichedHom F F] : 𝟙_ D ⟶ enrichedHom F F :=
-    Multiequalizer.lift _ _ (fun ⟨X⟩ ↦ ihom.id _)
-      (fun _ ↦ by dsimp; rw [ihom.id_pre_app])
+  end_.lift _ (fun X ↦ ihom.id (F.obj X))
+    (by intros; dsimp; rw [ihom.id_pre_app])
 
-noncomputable def comp (F G H : C ⥤ D)
-    [HasEnrichedHom F G] [HasEnrichedHom G H] [HasEnrichedHom F H] :
+section
+
+variable (F G H : C ⥤ D) [HasEnrichedHom F G] [HasEnrichedHom G H] [HasEnrichedHom F H]
+
+noncomputable def comp  :
     F.enrichedHom G ⊗ G.enrichedHom H ⟶ F.enrichedHom H :=
-  Multiequalizer.lift _ _ (fun ⟨X⟩ ↦ (app F G X ⊗ app G H X) ≫ ihom.comp _ _ _)
-    (fun a ↦ by
-      dsimp
-      simp only [Category.assoc]
-      have := ihom.map_tensor_comp_pre_app (F.map a.hom)
-        (G.map a.hom) (H.map a.hom)
-      dsimp at this
-      dsimp [app]
-      sorry)
+  end_.lift _ (fun X ↦ (app F G X ⊗ app G H X) ≫ ihom.comp _ _ _) sorry
+
+@[reassoc (attr := simp)]
+lemma comp_π (X : C) : comp F G H ≫ app F H X = (app F G X ⊗ app G H X) ≫ ihom.comp _ _ _ := by
+  simp [comp, app]
+
+end
 
 @[reassoc (attr := simp)]
 lemma id_comp (F G : C ⥤ D) [HasEnrichedHom F G] [HasEnrichedHom F F] :
     (λ_ _).inv ≫ enrichedHom.id F ▷ _ ≫ enrichedHom.comp F F G = 𝟙 (F.enrichedHom G) := by
+  ext X
+  simp
   sorry
 
 @[reassoc (attr := simp)]
