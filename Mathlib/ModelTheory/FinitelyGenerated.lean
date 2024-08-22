@@ -61,6 +61,8 @@ theorem fg_iff_exists_fin_generating_family {N : L.Substructure M} :
 theorem fg_bot : (⊥ : L.Substructure M).FG :=
   ⟨∅, by rw [Finset.coe_empty, closure_empty]⟩
 
+instance instInhabited_fg : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
+
 theorem fg_closure {s : Set M} (hs : s.Finite) : FG (closure L s) :=
   ⟨hs.toFinset, by rw [hs.coe_toFinset]⟩
 
@@ -161,6 +163,9 @@ theorem cg_iff_countable [Countable (Σl, L.Functions l)] {s : L.Substructure M}
   rintro ⟨s, h, rfl⟩
   exact h.substructure_closure L
 
+theorem cg_of_countable {s : L.Substructure M} [h : Countable s] : s.CG :=
+  ⟨s, h.to_set, s.closure_eq⟩
+
 end Substructure
 
 open Substructure
@@ -197,6 +202,31 @@ theorem FG.map_of_surjective {N : Type*} [L.Structure N] (h : FG L M) (f : M →
   rw [fg_def, ← hs]
   exact h.range f
 
+theorem FG.countable_hom (N : Type*) [L.Structure N] [Countable N] (h : FG L M) :
+    Countable (M →[L] N) := by
+  let ⟨S, finite_S, closure_S⟩ := fg_iff.1 h
+  let g : (M →[L] N) → (S → N) :=
+    fun f ↦ f ∘ (↑)
+  have g_inj : Function.Injective g := by
+    intro f f' h
+    apply Hom.eq_of_eqOn_dense closure_S
+    intro x x_in_S
+    exact congr_fun h ⟨x, x_in_S⟩
+  have : Finite ↑S := (S.finite_coe_iff).2 finite_S
+  exact Function.Embedding.countable ⟨g, g_inj⟩
+
+instance FG.instCountable_hom (N : Type*) [L.Structure N] [Countable N] [h : FG L M] :
+    Countable (M →[L] N) :=
+  FG.countable_hom N h
+
+theorem FG.countable_embedding (N : Type*) [L.Structure N] [Countable N] (_ : FG L M) :
+    Countable (M ↪[L] N) :=
+  Function.Embedding.countable ⟨Embedding.toHom, Embedding.toHom_injective⟩
+
+instance Fg.instCountable_embedding (N : Type*) [L.Structure N]
+    [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
+  FG.countable_embedding N h
+
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
@@ -216,6 +246,9 @@ theorem CG.map_of_surjective {N : Type*} [L.Structure N] (h : CG L M) (f : M →
 
 theorem cg_iff_countable [Countable (Σl, L.Functions l)] : CG L M ↔ Countable M := by
   rw [cg_def, Substructure.cg_iff_countable, topEquiv.toEquiv.countable_iff]
+
+theorem cg_of_countable [Countable M] : CG L M := by
+  simp only [cg_def, Substructure.cg_of_countable, topEquiv.toEquiv.countable_iff]
 
 theorem FG.cg (h : FG L M) : CG L M :=
   cg_def.2 (fg_def.1 h).cg
@@ -252,6 +285,21 @@ theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Struc
   · have h := h.map S.subtype.toHom
     rw [← Hom.range_eq_map, range_subtype] at h
     exact h
+
+theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
+    Countable { S : L.Substructure M // S.FG } := by
+  let g : { S : L.Substructure M // S.FG } → Finset M :=
+    fun S ↦ Exists.choose S.prop
+  have g_inj : Function.Injective g := by
+    intro S S' h
+    apply Subtype.eq
+    rw [(Exists.choose_spec S.prop).symm, (Exists.choose_spec S'.prop).symm]
+    exact congr_arg ((closure L) ∘ Finset.toSet) h
+  exact Function.Embedding.countable ⟨g, g_inj⟩
+
+instance Substructure.instCountable_fg_substructures_of_countable [Countable M] :
+    Countable { S : L.Substructure M // S.FG } :=
+  countable_fg_substructures_of_countable
 
 end Language
 

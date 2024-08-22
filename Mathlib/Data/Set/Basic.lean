@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Algebra.Group.ZeroOne
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.SymmDiff
 import Mathlib.Tactic.Tauto
@@ -198,6 +198,11 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
 
 theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
   Iff.rfl
+
+/-- This lemma is intended for use with `rw` where a membership predicate is needed,
+hence the explicit argument and the equality in the reverse direction from normal.
+See also `Set.mem_setOf_eq` for the reverse direction applied to an argument. -/
+theorem eq_mem_setOf (p : α → Prop) : p = (· ∈ {a | p a}) := rfl
 
 /-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
 nevertheless be useful for various reasons, e.g. to apply further projection notation or in an

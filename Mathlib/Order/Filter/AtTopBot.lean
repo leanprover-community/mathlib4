@@ -216,22 +216,37 @@ theorem tendsto_atBot_pure [PartialOrder α] [OrderBot α] (f : α → β) :
   @tendsto_atTop_pure αᵒᵈ _ _ _ _
 
 section IsDirected
-variable [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {p : α → Prop}
+variable [Preorder α] [IsDirected α (· ≤ ·)] {p : α → Prop}
 
-theorem hasAntitoneBasis_atTop : (@atTop α _).HasAntitoneBasis Ici :=
+theorem hasAntitoneBasis_atTop [Nonempty α] : (@atTop α _).HasAntitoneBasis Ici :=
   .iInf_principal fun _ _ ↦ Ici_subset_Ici.2
 
-theorem atTop_basis : (@atTop α _).HasBasis (fun _ => True) Ici := hasAntitoneBasis_atTop.1
+theorem atTop_basis [Nonempty α] : (@atTop α _).HasBasis (fun _ => True) Ici :=
+  hasAntitoneBasis_atTop.1
 
 theorem atTop_eq_generate_Ici : atTop = generate (range (Ici (α := α))) := by
   rcases isEmpty_or_nonempty α with hα|hα
   · simp only [eq_iff_true_of_subsingleton]
   · simp [(atTop_basis (α := α)).eq_generate, range]
 
+lemma atTop_basis_Ioi [Nonempty α] [NoMaxOrder α] : (@atTop α _).HasBasis (fun _ => True) Ioi :=
+  atTop_basis.to_hasBasis (fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩) fun a ha =>
+    (exists_gt a).imp fun _b hb => ⟨ha, Ici_subset_Ioi.2 hb⟩
+
+lemma atTop_basis_Ioi' [NoMaxOrder α] (a : α) : atTop.HasBasis (a < ·) Ioi := by
+  have : Nonempty α := ⟨a⟩
+  refine atTop_basis_Ioi.to_hasBasis (fun b _ ↦ ?_) fun b _ ↦ ⟨b, trivial, Subset.rfl⟩
+  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
+  obtain ⟨d, hcd⟩ := exists_gt c
+  exact ⟨d, hac.trans_lt hcd, Ioi_subset_Ioi (hbc.trans hcd.le)⟩
+
 theorem atTop_basis' (a : α) : (@atTop α _).HasBasis (fun x => a ≤ x) Ici := by
+  have : Nonempty α := ⟨a⟩
   refine atTop_basis.to_hasBasis (fun b _ ↦ ?_) fun b _ ↦ ⟨b, trivial, Subset.rfl⟩
   obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
   exact ⟨c, hac, Ici_subset_Ici.2 hbc⟩
+
+variable [Nonempty α]
 
 @[instance]
 lemma atTop_neBot : NeBot (atTop : Filter α) := atTop_basis.neBot_iff.2 fun _ => nonempty_Ici
@@ -256,17 +271,6 @@ lemma exists_eventually_atTop {r : α → β → Prop} :
 theorem map_atTop_eq {f : α → β} : atTop.map f = ⨅ a, 𝓟 (f '' { a' | a ≤ a' }) :=
   (atTop_basis.map f).eq_iInf
 
-lemma atTop_basis_Ioi [NoMaxOrder α] : (@atTop α _).HasBasis (fun _ => True) Ioi :=
-  atTop_basis.to_hasBasis (fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩) fun a ha =>
-    (exists_gt a).imp fun _b hb => ⟨ha, Ici_subset_Ioi.2 hb⟩
-
-lemma atTop_basis_Ioi' [NoMaxOrder α] (a : α) : atTop.HasBasis (a < ·) Ioi := by
-  have : Nonempty α := ⟨a⟩
-  refine atTop_basis_Ioi.to_hasBasis (fun b _ ↦ ?_) fun b _ ↦ ⟨b, trivial, Subset.rfl⟩
-  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
-  obtain ⟨d, hcd⟩ := exists_gt c
-  exact ⟨d, hac.trans_lt hcd, Ioi_subset_Ioi (hbc.trans hcd.le)⟩
-
 theorem frequently_atTop' [NoMaxOrder α] : (∃ᶠ x in atTop, p x) ↔ ∀ a, ∃ b > a, p b :=
   atTop_basis_Ioi.frequently_iff.trans <| by simp
 
@@ -277,11 +281,19 @@ lemma atTop_countable_basis [Countable α] :
 end IsDirected
 
 section IsCodirected
-variable [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {p : α → Prop}
+variable [Preorder α] [IsDirected α (· ≥ ·)] {p : α → Prop}
 
-lemma atBot_basis : (@atBot α _).HasBasis (fun _ => True) Iic := atTop_basis (α := αᵒᵈ)
+lemma atBot_basis_Iio [Nonempty α] [NoMinOrder α] : (@atBot α _).HasBasis (fun _ => True) Iio :=
+  atTop_basis_Ioi (α := αᵒᵈ)
+
+lemma atBot_basis_Iio' [NoMinOrder α] (a : α) : atBot.HasBasis (· < a) Iio :=
+  atTop_basis_Ioi' (α := αᵒᵈ) a
 
 lemma atBot_basis' (a : α) : (@atBot α _).HasBasis (fun x => x ≤ a) Iic := atTop_basis' (α := αᵒᵈ) _
+
+variable [Nonempty α]
+
+lemma atBot_basis : (@atBot α _).HasBasis (fun _ => True) Iic := atTop_basis (α := αᵒᵈ)
 
 @[instance] lemma atBot_neBot : NeBot (atBot : Filter α) := atTop_neBot (α := αᵒᵈ)
 
@@ -303,12 +315,6 @@ lemma exists_eventually_atBot {r : α → β → Prop} :
 
 theorem map_atBot_eq {f : α → β} : atBot.map f = ⨅ a, 𝓟 (f '' { a' | a' ≤ a }) :=
   map_atTop_eq (α := αᵒᵈ)
-
-lemma atBot_basis_Iio [NoMinOrder α] : (@atBot α _).HasBasis (fun _ => True) Iio :=
-  atTop_basis_Ioi (α := αᵒᵈ)
-
-lemma atBot_basis_Iio' [NoMinOrder α] (a : α) : atBot.HasBasis (· < a) Iio :=
-  atTop_basis_Ioi' (α := αᵒᵈ) a
 
 theorem frequently_atBot' [NoMinOrder α] : (∃ᶠ x in atBot, p x) ↔ ∀ a, ∃ b < a, p b :=
   frequently_atTop' (α := αᵒᵈ)
@@ -337,7 +343,7 @@ theorem tendsto_atBot_mono' [Preorder β] (l : Filter α) ⦃f₁ f₂ : α → 
 
 theorem tendsto_atTop_mono [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ n, f n ≤ g n) :
     Tendsto f l atTop → Tendsto g l atTop :=
-  tendsto_atTop_mono' l <| eventually_of_forall h
+  tendsto_atTop_mono' l <| Eventually.of_forall h
 
 theorem tendsto_atBot_mono [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ n, f n ≤ g n) :
     Tendsto g l atBot → Tendsto f l atBot :=
@@ -459,10 +465,13 @@ theorem Eventually.atTop_of_arithmetic {p : ℕ → Prop} {n : ℕ} (hn : n ≠ 
   exact (Finset.le_sup (f := (n * N ·)) (Finset.mem_range.2 hlt)).trans hb
 
 section IsDirected
-variable [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {F : Filter β} {u : α → β}
+variable [Preorder α] [IsDirected α (· ≤ ·)] {F : Filter β} {u : α → β}
 
-theorem inf_map_atTop_neBot_iff : NeBot (F ⊓ map u atTop) ↔ ∀ U ∈ F, ∀ N, ∃ n ≥ N, u n ∈ U := by
+theorem inf_map_atTop_neBot_iff [Nonempty α] :
+    NeBot (F ⊓ map u atTop) ↔ ∀ U ∈ F, ∀ N, ∃ n ≥ N, u n ∈ U := by
   simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop]; rfl
+
+variable [Preorder β]
 
 lemma exists_le_of_tendsto_atTop (h : Tendsto u atTop atTop) (a : α) (b : β) :
     ∃ a' ≥ a, b ≤ u a' := by
@@ -568,7 +577,7 @@ theorem tendsto_atBot_add_nonpos_left' (hf : ∀ᶠ x in l, f x ≤ 0) (hg : Ten
 
 theorem tendsto_atTop_add_nonneg_left (hf : ∀ x, 0 ≤ f x) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop :=
-  tendsto_atTop_add_nonneg_left' (eventually_of_forall hf) hg
+  tendsto_atTop_add_nonneg_left' (Eventually.of_forall hf) hg
 
 theorem tendsto_atBot_add_nonpos_left (hf : ∀ x, f x ≤ 0) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
@@ -584,7 +593,7 @@ theorem tendsto_atBot_add_nonpos_right' (hf : Tendsto f l atBot) (hg : ∀ᶠ x 
 
 theorem tendsto_atTop_add_nonneg_right (hf : Tendsto f l atTop) (hg : ∀ x, 0 ≤ g x) :
     Tendsto (fun x => f x + g x) l atTop :=
-  tendsto_atTop_add_nonneg_right' hf (eventually_of_forall hg)
+  tendsto_atTop_add_nonneg_right' hf (Eventually.of_forall hg)
 
 theorem tendsto_atBot_add_nonpos_right (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ 0) :
     Tendsto (fun x => f x + g x) l atBot :=
@@ -784,7 +793,7 @@ end OrderedSemiring
 
 theorem zero_pow_eventuallyEq [MonoidWithZero α] :
     (fun n : ℕ => (0 : α) ^ n) =ᶠ[atTop] fun _ => 0 :=
-  eventually_atTop.2 ⟨1, fun _n hn ↦ zero_pow $ Nat.one_le_iff_ne_zero.1 hn⟩
+  eventually_atTop.2 ⟨1, fun _n hn ↦ zero_pow <| Nat.one_le_iff_ne_zero.1 hn⟩
 
 section OrderedRing
 
@@ -1185,13 +1194,15 @@ theorem tendsto_atBot_atTop_of_antitone [Preorder α] [Preorder β] {f : α → 
   @tendsto_atBot_atBot_of_monotone _ βᵒᵈ _ _ _ hf h
 
 section IsDirected
-variable [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β} {l : Filter β}
+variable [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {f : α → β} {l : Filter β}
 
 theorem tendsto_atTop' : Tendsto f atTop l ↔ ∀ s ∈ l, ∃ a, ∀ b ≥ a, f b ∈ s := by
   simp only [tendsto_def, mem_atTop_sets, mem_preimage]
 
 theorem tendsto_atTop_principal {s : Set β} : Tendsto f atTop (𝓟 s) ↔ ∃ N, ∀ n ≥ N, f n ∈ s := by
   simp_rw [tendsto_iff_comap, comap_principal, le_principal_iff, mem_atTop_sets, mem_preimage]
+
+variable [Preorder β]
 
 /-- A function `f` grows to `+∞` independent of an order-preserving embedding `e`. -/
 theorem tendsto_atTop_atTop : Tendsto f atTop atTop ↔ ∀ b : β, ∃ i : α, ∀ a : α, i ≤ a → b ≤ f a :=
@@ -1212,13 +1223,15 @@ theorem tendsto_atTop_atBot_iff_of_antitone (hf : Antitone f) :
 end IsDirected
 
 section IsCodirected
-variable [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] [Preorder β] {f : α → β} {l : Filter β}
+variable [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {f : α → β} {l : Filter β}
 
 theorem tendsto_atBot' : Tendsto f atBot l ↔ ∀ s ∈ l, ∃ a, ∀ b ≤ a, f b ∈ s :=
   tendsto_atTop' (α := αᵒᵈ)
 
 theorem tendsto_atBot_principal {s : Set β} : Tendsto f atBot (𝓟 s) ↔ ∃ N, ∀ n ≤ N, f n ∈ s :=
   tendsto_atTop_principal (α := αᵒᵈ) (β := βᵒᵈ)
+
+variable [Preorder β]
 
 theorem tendsto_atBot_atTop : Tendsto f atBot atTop ↔ ∀ b : β, ∃ i : α, ∀ a : α, a ≤ i → b ≤ f a :=
   tendsto_atTop_atTop (α := αᵒᵈ)
@@ -1392,7 +1405,8 @@ theorem map_atTop_eq_of_gc [SemilatticeSup α] [SemilatticeSup β] {f : α → �
   refine
     le_antisymm
       (hf.tendsto_atTop_atTop fun b => ⟨g (b ⊔ b'), le_sup_left.trans <| hgi _ le_sup_right⟩) ?_
-  rw [@map_atTop_eq _ _ ⟨g b'⟩]
+  have : Nonempty α := ⟨g b'⟩
+  rw [map_atTop_eq]
   refine le_iInf fun a => iInf_le_of_le (f a ⊔ b') <| principal_mono.2 fun b hb => ?_
   rw [mem_Ici, sup_le_iff] at hb
   exact ⟨g b, (gc _ _ hb.2).1 hb.1, le_antisymm ((gc _ _ hb.2).2 le_rfl) (hgi _ hb.2)⟩
@@ -1723,7 +1737,7 @@ lemma frequently_iff_seq_forall {ι : Type*} {l : Filter ι} {p : ι → Prop}
     [l.IsCountablyGenerated] :
     (∃ᶠ n in l, p n) ↔ ∃ ns : ℕ → ι, Tendsto ns atTop l ∧ ∀ n, p (ns n) :=
   ⟨exists_seq_forall_of_frequently, fun ⟨_ns, hnsl, hpns⟩ ↦
-    hnsl.frequently <| frequently_of_forall hpns⟩
+    hnsl.frequently <| Frequently.of_forall hpns⟩
 
 /-- A sequence converges if every subsequence has a convergent subsequence. -/
 theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {l : Filter ι}

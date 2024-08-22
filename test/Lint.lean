@@ -60,13 +60,13 @@ end add
 
 set_option linter.cdot false in
 /--
-warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.cdot false`
 ---
-warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.cdot false`
 ---
-warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.cdot false`
 -/
 #guard_msgs in
@@ -80,12 +80,29 @@ instance : Inhabited Nat where
 
 set_option linter.cdot false in
 /--
-warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.cdot false`
 -/
 #guard_msgs in
 set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
+
+set_option linter.dollarSyntax false in
+/--
+warning: Please use '<|' instead of '$' for the pipe operator.
+note: this linter can be disabled with `set_option linter.dollarSyntax false`
+---
+warning: Please use '<|' instead of '$' for the pipe operator.
+note: this linter can be disabled with `set_option linter.dollarSyntax false`
+-/
+#guard_msgs in
+set_option linter.dollarSyntax true in
+attribute [instance] Int.add in
+instance (f g : Nat → Nat) : Inhabited Nat where
+  default := by
+    · have := 0
+      · have : Nat := f $ g $ 0
+        · exact 0
 
 set_option linter.longLine false
 /--

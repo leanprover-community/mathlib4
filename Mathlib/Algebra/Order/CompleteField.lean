@@ -3,7 +3,7 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Algebra.Order.Archimedean.Hom
 import Mathlib.Algebra.Order.Pointwise
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 

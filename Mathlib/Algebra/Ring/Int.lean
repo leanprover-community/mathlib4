@@ -123,11 +123,6 @@ instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ odd
 lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
   rw [even_add, even_iff_not_odd, even_iff_not_odd, not_iff_not]
 
-set_option linter.deprecated false in
-
-@[simp, deprecated (since := "2023-01-26")]
-lemma not_even_bit1 (n : ℤ) : ¬Even (2 * n + 1) := by simp [parity_simps]
-
 lemma not_even_two_mul_add_one (n : ℤ) : ¬ Even (2 * n + 1) :=
   odd_iff_not_even.1 <| odd_two_mul_add_one n
 

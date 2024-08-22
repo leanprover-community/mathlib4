@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Ella Yu
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 
 /-!
 # Additive energy
@@ -132,7 +132,7 @@ variable {s t}
 @[to_additive] lemma mulEnergy_eq_sum_sq [Fintype α] (s t : Finset α) :
     Eₘ[s, t] = ∑ a, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
   rw [mulEnergy_eq_sum_sq']
-  exact Fintype.sum_subset $ by aesop (add simp [filter_eq_empty_iff, mul_mem_mul])
+  exact Fintype.sum_subset <| by aesop (add simp [filter_eq_empty_iff, mul_mem_mul])
 
 @[to_additive card_sq_le_card_mul_addEnergy]
 lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
