@@ -67,6 +67,22 @@ instance : Inhabited (Modification η η) :=
 variable {η θ} {ι : F ⟶ G}
 variable (Γ : Modification η θ)
 
+-- TODO: add coercion for strong transformations? (or is it not infered here?)
+/-- The modification between the underlying oplax transformations of oplax functors -/
+@[simps]
+def toOplax : Oplax.Modification η.toOplax θ.toOplax where
+  app a := Γ.app a
+
+instance hasCoeToOplax : Coe (Modification η θ) (Oplax.Modification η.toOplax θ.toOplax) :=
+  ⟨toOplax⟩
+
+/-- The modification between strong transformations of pseudofunctors associated to a modification
+between the underlying oplax transformations of oplax functors. -/
+@[simps]
+def mkOfOplax (Γ : Oplax.Modification η.toOplax θ.toOplax) : Modification η θ where
+  app a := Γ.app a
+  naturality f := by simpa using Γ.naturality f
+
 section
 
 variable {a b c : B} {a' : C}
@@ -133,5 +149,9 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
       naturality := fun {a b} f => by
         simpa using
           congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
+
+-- open Oplax in
+-- def ModificationIso.ofOplax (Γ : η.toOplax ≅ θ.toOplax) : η ≅ θ :=
+--   ModificationIso.ofComponents (fun a => Γ.app a) Γ.naturality
 
 end CategoryTheory.Pseudofunctor
