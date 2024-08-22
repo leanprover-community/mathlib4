@@ -464,7 +464,7 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
 -- separate `sᶜ` and `t` by `u` and `v`.
   obtain ⟨u, v, huv⟩ := t2_separation_IsOpen_IsCompact_closure_IsClosed_subset hs hscp ht hst
-  rw [← Set.subset_compl_iff_disjoint_right] at huv
+  rw [← subset_compl_iff_disjoint_right] at huv
   have huvc : closure u ⊆ vᶜ := by
     rw [← IsClosed.closure_eq (isClosed_compl_iff.mpr huv.2.1)]
     exact closure_mono huv.2.2.2.2
