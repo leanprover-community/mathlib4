@@ -463,28 +463,31 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ),
     tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
 -- separate `sᶜ` and `t` by `u` and `v`.
-  obtain ⟨u, v, huv⟩ := t2_separation_IsOpen_IsCompact_closure_IsClosed_subset hs hscp ht hst
-  rw [← subset_compl_iff_disjoint_right] at huv
-  have huvc : closure u ⊆ vᶜ := closure_minimal huv.2.2.2.2 huv.2.1.isClosed_compl
+  rw [← compl_compl s] at hscp
+  obtain ⟨u, v, huIsOpen, hvIsOpen, hscompl_subset_u, ht_subset_v, hDjsjointuv⟩
+    := t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint (isClosed_compl_iff.mpr hs)
+    hscp ht (HasSubset.Subset.disjoint_compl_left hst)
+  rw [← subset_compl_iff_disjoint_right] at hDjsjointuv
+  have huvc : closure u ⊆ vᶜ := closure_minimal hDjsjointuv hvIsOpen.isClosed_compl
 -- although `sᶜ` is not compact, `closure s` is compact and we can apply
--- `t2_separation_IsOpen_IsCompact_closure_IsClosed_subset`. To apply the condition recursively,
--- we need to make sure that `sᶜ ⊆ C`.
+-- `t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint`. To apply the condition
+-- recursively, we need to make sure that `sᶜ ⊆ C`.
   let P : Set X → Prop := fun C => sᶜ ⊆ C
   set c : Urysohns.CU P :=
   { C := closure u
     U := tᶜ
-    P_C := huv.2.2.1.trans subset_closure
+    P_C := hscompl_subset_u.trans subset_closure
     closed_C := isClosed_closure
     open_U := ht.isOpen_compl
-    subset := Set.subset_compl_comm.mp
-      (Set.Subset.trans huv.2.2.2.1 (Set.subset_compl_comm.mp huvc))
+    subset := subset_compl_comm.mp
+      (Subset.trans ht_subset_v (subset_compl_comm.mp huvc))
     hP := by
-      intro c u cIsClosed Pc uIsOpen csubu
-      obtain ⟨u1, hu1⟩ := t2_separation_IsOpen_IsCompact_closure_IsClosed_subset
-        (isOpen_compl_iff.mpr cIsClosed) (IsCompact.of_isClosed_subset hscp isClosed_closure
-        (closure_mono (Set.compl_subset_comm.mp Pc)))
-        (isClosed_compl_iff.mpr uIsOpen) (Set.compl_subset_compl_of_subset csubu)
-      simp_rw [compl_compl, ← subset_compl_iff_disjoint_right, compl_subset_comm (s := u)] at hu1
+      intro c u0 cIsClosed Pc u0IsOpen csubu0
+      obtain ⟨u1, hu1⟩ := t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint
+        cIsClosed (IsCompact.of_isClosed_subset hscp isClosed_closure
+        (closure_mono (compl_subset_compl.mpr Pc)))
+        (isClosed_compl_iff.mpr u0IsOpen) (HasSubset.Subset.disjoint_compl_right csubu0)
+      simp_rw [← subset_compl_iff_disjoint_right, compl_subset_comm (s := u0)] at hu1
       obtain ⟨v1, hu1, hv1, hcu1, hv1u, hu1v1⟩ := hu1
       refine ⟨u1, hu1, hcu1, ?_, (Pc.trans hcu1).trans subset_closure⟩
       exact closure_minimal hu1v1 hv1.isClosed_compl |>.trans hv1u }
@@ -492,8 +495,8 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
   use ⟨c.lim, c.continuous_lim⟩
   simp only [ContinuousMap.coe_mk]
   constructor
-  · apply Set.Subset.trans _ (Set.compl_subset_comm.mp huv.2.2.1)
-    rw [← IsClosed.closure_eq (isClosed_compl_iff.mpr huv.1)]
+  · apply Subset.trans _ (compl_subset_comm.mp hscompl_subset_u)
+    rw [← IsClosed.closure_eq (isClosed_compl_iff.mpr huIsOpen)]
     apply closure_mono
     intro x hx
     simp only [Function.mem_support, ne_eq] at hx
@@ -502,11 +505,11 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     apply Not.intro
     intro hxu
     apply Ne.elim hx
-    exact Urysohns.CU.lim_of_mem_C c x (Set.mem_of_subset_of_mem subset_closure hxu)
+    exact Urysohns.CU.lim_of_mem_C c x (mem_of_subset_of_mem subset_closure hxu)
   constructor
   · intro x hx
     apply Urysohns.CU.lim_of_nmem_U
-    exact Set.not_mem_compl_iff.mpr hx
+    exact not_mem_compl_iff.mpr hx
   · exact Urysohns.CU.lim_mem_Icc c
 
 theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
