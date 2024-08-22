@@ -8,9 +8,9 @@ import Mathlib.Util.AddRelatedDecl
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
-# The `toCat` attribute
+# The `to_app` attribute
 
-Adding `@[toCat]` to a lemma named `F` of shape `∀ .., f = g`,
+Adding `@[to_app]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ⟶ Y` in some category
 will create a new lemma named `F_assoc` of shape
 `∀ .. {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h`
@@ -20,7 +20,7 @@ but with the conclusions simplified using the axioms for a category
 This is useful for automatically generating lemmas which the simplifier can use even on expressions
 .......
 
-There is also a term elaborator `toCat_of% t` for use within proofs.
+There is also a term elaborator `to_app_of% t` for use within proofs.
 -/
 
 open Lean Meta Elab Tactic
@@ -47,7 +47,7 @@ def catAppSimp (e : Expr) : MetaM Simp.Result :=
 /--
 Given an equation `f = g` between 2-morphisms `X ⟶ Y` in an arbitrary bicategory (possibly after a
 `∀` binder), get the corresponding equation in the bicategory `Cat`. -/
-def toCatExpr (e : Expr) : MetaM Expr := do
+def to_appExpr (e : Expr) : MetaM Expr := do
   logInfo m!"e at start: {e}"
   let (args, _, conclusion) ← forallMetaTelescope (← inferType e)
   logInfo m!"args at start: {args}"
@@ -128,7 +128,7 @@ initialize registerBuiltinAttribute {
       -- NOTE: value: fun {B} [Bicategory B] ... => mapComp ...
       -- NOTE: type: ∀ {B} [Bicategory B] ... => mapComp ...
       logInfo m!"TYPE: {← mkExpectedTypeHint value type}"
-      pure (← toAppExpr (← toCatExpr value), levels)
+      pure (← toAppExpr (← to_appExpr value), levels)
   | _ => throwUnsupportedSyntax }
 
 open Term in
@@ -142,7 +142,7 @@ elab "to_app_of% " t:term : term => do
   logInfo m!"CAT: {(← elabTerm t none)}"
   logInfo m!"eq_app : {(← mkAppM ``eq_app' #[(← elabTerm t none)])}"
   -- this might be hackier than I want later? (requires providing args explicitly..)
-  toCatExpr (← elabTerm t none)
+  to_appExpr (← elabTerm t none)
 
 
 end CategoryTheory
