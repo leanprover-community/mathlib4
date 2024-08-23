@@ -276,8 +276,13 @@ noncomputable def whiskeringLeftEnrichedFunctor :
     EnrichedFunctor D (C' ⥤ D) (C ⥤ D) where
   obj F := α ⋙ F
   map F G := enrichedHom.precomp α F G
-  map_id := sorry
-  map_comp := sorry
+  map_id F := enrichedHom.hom_ext (fun X ↦ by simp [eId, EnrichedCategory.id])
+  map_comp F₁ F₂ F₃ := enrichedHom.hom_ext (fun X ↦ by
+    dsimp [eComp, EnrichedCategory.comp]
+    rw [assoc, assoc, enrichedHom.precomp_app, enrichedHom.comp_app,
+      enrichedHom.comp_app, ← tensor_comp_assoc,
+      enrichedHom.precomp_app, enrichedHom.precomp_app]
+    dsimp)
 
 end Functor
 

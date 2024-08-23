@@ -41,14 +41,15 @@ noncomputable def internalHom : Cᵒᵖ ⥤ D where
     rintro ⟨π⟩
     obtain ⟨U, π, rfl⟩ := Over.mk_surjective π
     dsimp
-    simp
+    simp only [internalHom.map_app, unop_id, Category.id_comp]
     congr 1
     simp
   map_comp _ _ := by
     apply Functor.enrichedHom.hom_ext
     rintro ⟨π⟩
     obtain ⟨U, π, rfl⟩ := Over.mk_surjective π
-    simp
+    dsimp
+    simp only [internalHom.map_app, unop_comp, Category.assoc]
     congr 1
     simp
 
