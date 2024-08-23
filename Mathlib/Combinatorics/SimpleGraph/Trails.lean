@@ -135,7 +135,7 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v 
     (h : s = (Finset.univ : Finset V).filter fun v => Odd (G.degree v)) :
     s.card = 0 ∨ s.card = 2 := by
   subst s
-  simp only [Nat.odd_iff_not_even, Finset.card_eq_zero]
+  simp only [← Nat.not_even_iff_odd, Finset.card_eq_zero]
   simp only [ht.even_degree_iff, Ne, not_forall, not_and, Classical.not_not, exists_prop]
   obtain rfl | hn := eq_or_ne u v
   · left
