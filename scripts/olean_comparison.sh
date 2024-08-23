@@ -2,20 +2,32 @@
 
  : << 'BASH_MODULE_DOCS'
 
+# Change in size of the `.olean`s
+
 This is the main script for the `compare oleans` CI step.
 It should take place after `lake build` has taken place, since it computes sizes of the oleans.
 
-First, the script first prints the sizes of the oleans of the *current* branch.
+There are two CI steps involved:
+* `print the sizes of the oleans` that simply tallies the sizes of all the folders where the
+  `.olean`s are stored;
+* `compare oleans` that essentially uses the script below to find differences in size between
+  the `.olean`s on master and the ones in the current PR.
+
+## The script
+
+First, the script retrieves the log of the CI step `print the sizes of the oleans` from the
+latest master run.
+These are the "reference" `.olean`s against which the differences are computed.
+
+Next, the script first prints the sizes of the oleans of the *current* branch.
 This means that on a PR you see the sizes of the newly created oleans
 and on master you see the sizes of the "comparison" oleans.
 
-Next, the script retrieves the sizes from master (using the printout from the previous step in
-the logs of the latest CI run on master).
-
-Finally, the script runs the comparison between the two sizes, flagging every folder that had a
-percentage change of at least 5% (either positive or negative).
-The percentage difference for the full oleans folder is always printed, whether or not it exceeds
-the threshold.
+Finally, the script runs the comparison between the "`master`" sizes and the sizes
+of the newly created oleans.
+It flags every folder that has a percentage change of at least 5% (either positive or negative).
+The percentage difference for the full `.olean`s folder is always printed, whether or not it
+exceeds the threshold.
 
 BASH_MODULE_DOCS
 
@@ -30,16 +42,8 @@ oleansDir=.lake/build/lib/Mathlib
 # should be master
 branch=adomani/CI_olean_size
 
-# This string separates the printout of the oleans from their analysis
-separatorMessage='Compare to master'
-
 # the absolute difference, in %, that is significant for a folder being reported
 pctBound=5
-
-# print the sizes
-du "${oleansDir}"
-
-printf '\n\n%s\n\n' "${separatorMessage}"
 
 ## retrieve the job id of the latest master run -- could not find a good way to do it with `gh run list`
 jobID="$(curl --silent --show-error https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml?query=branch%3A"${branch}+is%3Asuccess" |
@@ -50,9 +54,7 @@ printf $'Job ID of the latest successful build on `%s`: %s\n' "${branch}" "${job
 ## log for the `compare oleans` job on master
 ## (also append `master ` at the beginning of each row)
 masterOleans="$(gh run view "${jobID}" --log |
-  awk -v sep="${separatorMessage}" 'BEGIN{ stop=0 }
-    ($0 ~ sep) { stop=1 }
-    ((stop == 0) && /compare oleans.*lake/) {
+  awk '/print the sizes of the oleans.*lake/ {
       printf("master %s %s\n", $(NF-1), $NF)
     }')"
 
@@ -70,8 +72,8 @@ printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
     { gsub(/\.lake\/build\/lib\//, "") }
     # size accumulates the absolute value of the folder sizes, using `master`s size if available
     # difference accumulates `branch size - master size`
-    /master/ { size[$3]=$2; difference[$3]-=$2 }
-    /branch/ { if(size[$3] == "") {size[$3]=$2} difference[$3]+=$2 }
+    ((!($2+0 == 0)) && /master/) { size[$3]=$2; difference[$3]-=$2 }
+    ((!($2+0 == 0)) && /branch/) { if(size[$3] == "") {size[$3]=$2} difference[$3]+=$2 }
   END {
     # final tally, the `Mathlib` folder is isolated and put at the bottom, no matter what
     printf("| %% | Difference | Folder |\n| -: | -: | - |\n")

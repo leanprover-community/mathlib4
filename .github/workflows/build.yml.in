@@ -161,6 +161,10 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
+      - name: print the sizes of the oleans
+        run: |
+          du .lake/build/lib/Mathlib
+
       - name: compare oleans
         run: |
           ./scripts/olean_comparison.sh
