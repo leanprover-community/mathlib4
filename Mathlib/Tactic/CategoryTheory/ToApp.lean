@@ -50,9 +50,7 @@ Given an equation `f = g` between 2-morphisms `X ⟶ Y` in an arbitrary bicatego
 
 -- Maybe let this take a list of levels?
 def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
-  logInfo m!"e at start: {e}"
   let (args, _, conclusion) ← forallMetaTelescope (← inferType e)
-  logInfo m!"args at start: {args}"
 
   -- Find bicategory metavariable
   let η := (Expr.getAppArgsN conclusion 2)[0]!
@@ -64,10 +62,13 @@ def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
   let CAT := B[0]!
   let some CATIdx := args.findIdx? (· == .mvar CAT)
     | throwError "TODO"
-  logInfo m!"cat: {CAT}"
 
-  let u ← Meta.getDecLevel B_pre
+  -- TODO: problem here?
+  let u ← mkFreshLevelMVar
+  --Meta.getDecLevel B_pre
   let v ← mkFreshLevelMVar
+  -- Assign level for the bicategory
+  let _ ← isLevelDefEq (← Meta.getDecLevel B_pre) (Level.max (Level.max (u.succ) u) (v.succ))
 
   CAT.assign (.const ``Cat [u, v])
   let some inst := args[CATIdx + 1]?
@@ -77,25 +78,13 @@ def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
   let instlvl ← Meta.getLevel (← inferType inst)
   let instlvlMVars := levelMVars.filter fun l => l.occurs instlvl && l != u
   forM instlvlMVars fun l => do
-    let junk ← isLevelDefEq l (Level.max u v)
-    logInfo m!"asdf: {l} {Level.max u v}"
-    logInfo m!"junk: {junk}"
-
-  logInfo m!"instmvars: {instlvl}"
-  logInfo m!"occurs: {instlvlMVars}"
-
-
+    let _ ← isLevelDefEq l (Level.max u v)
 
   inst.mvarId!.assign (← synthInstanceQ q(Bicategory.{max u v, max u v} Cat.{u, v}))
 
-  logInfo m!"args: {args}"
-
-  logInfo m!"args: {args}"
-
   let applied ← mkAppOptM' e (args.map some)
-  logInfo m!"applied: {applied}"
+  -- let applied := mkAppN e args
   let applied ← mkLambdaFVars ((← getMVars applied).map (Expr.mvar)) applied
-  logInfo m!"APP: {applied}"
   return applied
 
 /--
@@ -107,6 +96,40 @@ def toAppExpr (e : Expr) : MetaM Expr := do
     logInfo m!"e: {e}"
     logInfo m!"e type: {← inferType e}"
     simpType catAppSimp (← mkAppM ``eq_app' #[e])) e
+
+def addRelatedDecl2 (src : Name) (suffix : String) (ref : Syntax)
+    (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
+    (construct : Expr → Expr → List Name → MetaM (Expr × List Name)) :
+    MetaM Unit := do
+  let tgt := match src with
+    | Name.str n s => Name.mkStr n <| s ++ suffix
+    | x => x
+  addDeclarationRanges tgt {
+    range := ← getDeclarationRange (← getRef)
+    selectionRange := ← getDeclarationRange ref }
+  let info ← getConstInfo src
+  let (newValue, newLevels) ← construct info.type info.value! info.levelParams
+  let newValue ← instantiateMVars newValue
+  let newType ← instantiateMVars (← inferType newValue)
+  match info with
+  | ConstantInfo.thmInfo info =>
+    addAndCompile <| .thmDecl
+      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
+  | ConstantInfo.defnInfo info =>
+    -- Structure fields are created using `def`, even when they are propositional,
+    -- so we don't rely on this to decided whether we should be constructing a `theorem` or a `def`.
+    addAndCompile <| if ← isProp newType then .thmDecl
+      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
+      else .defnDecl
+      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
+  | _ => throwError "Constant {src} is not a theorem or definition."
+  if isProtected (← getEnv) src then
+    setEnv <| addProtected (← getEnv) tgt
+  let attrs := match attrs? with | some attrs => attrs | none => #[]
+  _ ← Term.TermElabM.run' <| do
+    let attrs ← elabAttrs attrs
+    Term.applyAttributes src attrs
+    Term.applyAttributes tgt attrs
 
 
 /--
@@ -137,18 +160,20 @@ initialize registerBuiltinAttribute {
   | `(attr| to_app $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
-    addRelatedDecl src "_app" ref stx? fun type value levels => do
+    addRelatedDecl2 src "_app" ref stx? fun type value levels => do
+      logInfo m!"tp: {type}"
+      logInfo m!"val: {value}"
+      logInfo m!"valtp: {← inferType value}"
       let levelMVars ← levels.mapM λ _ => mkFreshLevelMVar
       let value := value.instantiateLevelParams levels levelMVars
-      logInfo m!"TYPE: {← mkExpectedTypeHint value type}"
-      logInfo m!"levelMVars: {levelMVars}"
       let newValue ← to_appExpr value levelMVars
-      let newExpr ← toAppExpr newValue -- (← mkExpectedTypeHint newValue (← inferType newValue))
-      logInfo m!"newExpr {newExpr}"
-      let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newExpr
-      logInfo m!"hello"
-      --let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newExpr
-      pure (r.expr, r.newParamNames.toList)
+      logInfo m!"val: {newValue}"
+      logInfo m!"valtp: {← inferType newValue}"
+      let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newValue
+      let newExpr ← toAppExpr (← mkExpectedTypeHint r.expr (← inferType r.expr))
+      let output := (newExpr, r.newParamNames.toList)
+      logInfo m!"hello {output}"
+      pure output
   | _ => throwUnsupportedSyntax }
 
 open Term in
