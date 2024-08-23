@@ -384,8 +384,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   ext X
   apply yoneda.map_injective
   ext U
-  -- Porting note: didn't need to provide the input to `map_preimage` in Lean 3
-  erw [yoneda.map_preimage ((sheafYonedaHom α).app (G.op.obj X))]
+  erw [yoneda.map_preimage]
   symm
   change (show (ℱ'.val ⋙ coyoneda.obj (op (unop U))).obj (op (G.obj (unop X))) from _) = _
   apply sheaf_eq_amalgamation ℱ' (G.is_cover_of_isCoverDense _ _)
@@ -411,10 +410,8 @@ then the result `sheaf_hom (whisker_left G.op α)` is equal to `α`.
 theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom (whiskerLeft G.op α) = α := by
   ext X
   apply yoneda.map_injective
-  -- Porting note: deleted next line as it's not needed in Lean 4
   ext U
-  -- Porting note: Lean 3 didn't need to be told the explicit input to map_preimage
-  erw [yoneda.map_preimage ((sheafYonedaHom (whiskerLeft G.op α)).app X)]
+  erw [yoneda.map_preimage]
   symm
   change (show (ℱ'.val ⋙ coyoneda.obj (op (unop U))).obj (op (unop X)) from _) = _
   apply sheaf_eq_amalgamation ℱ' (G.is_cover_of_isCoverDense _ _)
