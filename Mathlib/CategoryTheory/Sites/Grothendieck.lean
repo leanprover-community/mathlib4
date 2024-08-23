@@ -409,6 +409,9 @@ instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
 instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
   ⟨fun S => S.sieve⟩
 
+-- instance : DFunLike (J.Cover X) C (fun (Y : C) ↦ (Y ⟶ X) → Prop) :=
+--   ⟨fun S => S.sieve⟩
+
 /-
 Porting note: This lemma was in mathlib 3, but doesn't compile anymore because of the removed
 coercion above.

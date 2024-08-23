@@ -80,7 +80,7 @@ A sieve belongs to the coherent topology if and only if it contains a finite
 `EffectiveEpiFamily`.
 -/
 theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
-    (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) ↔
+    (S ∈ (coherentTopology C) X) ↔
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor
