@@ -279,7 +279,7 @@ lemma coverMincard_univ (T : X → X) {F : Set X} (h : F.Nonempty) (n : ℕ) :
   apply le_of_le_of_eq (coverMincard_le_card this)
   rw [Finset.card_singleton, Nat.cast_one]
 
-lemma coverMincard_iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
+lemma coverMincard_mul_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) (m n : ℕ) :
     coverMincard T F (U ○ U) (m * n) ≤ coverMincard T F U m ^ n := by
   rcases F.eq_empty_or_nonempty with rfl | F_nonempty
@@ -293,11 +293,11 @@ lemma coverMincard_iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     rw [← s_coverMincard]
     exact le_trans (coverMincard_le_card t_cover) (WithTop.coe_le_coe.2 t_le_sn)
 
-lemma coverMincard_comp_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
+lemma coverMincard_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) {m : ℕ} (m_pos : 0 < m) (n : ℕ) :
     coverMincard T F (U ○ U) n ≤ coverMincard T F U m ^ (n / m + 1) :=
   le_trans (coverMincard_monotone T F (U ○ U) (le_of_lt (Nat.lt_mul_div_succ n m_pos)))
-    (coverMincard_iterate_le_pow F_inv U_symm m (n / m + 1))
+    (coverMincard_mul_le_pow F_inv U_symm m (n / m + 1))
 
 lemma coverMincard_finite_of_isCompact_uniformContinuous [UniformSpace X] {T : X → X}
     {F : Set X} (F_comp : IsCompact F) (h : UniformContinuous T) {U : Set (X × X)} (U_uni : U ∈ 𝓤 X)
@@ -348,7 +348,7 @@ lemma log_coverMincard_iterate_le {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   rw [← log_pow, StrictMono.le_iff_le log_strictMono]
   nth_rw 2 [← ENat.toENNRealRingHom_apply]
   rw [← RingHom.map_pow ENat.toENNRealRingHom _ n, ENat.toENNRealRingHom_apply, ENat.toENNReal_le]
-  exact coverMincard_iterate_le_pow F_inv U_symm m n
+  exact coverMincard_mul_le_pow F_inv U_symm m n
 
 lemma log_coverMincard_comp_le {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) {m n : ℕ} (m_pos : 0 < m) (n_pos : 0 < n) :
@@ -363,7 +363,7 @@ lemma log_coverMincard_comp_le {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
   have n_div_n := EReal.div_self (natCast_ne_bot n) (natCast_ne_top n)
     (ne_of_gt (Nat.cast_pos'.2 n_pos))
   apply le_trans <| div_le_div_right_of_nonneg (Nat.cast_pos'.2 n_pos).le
-    (log_monotone (ENat.toENNReal_le.2 (coverMincard_comp_le_pow F_inv U_symm m_pos n)))
+    (log_monotone (ENat.toENNReal_le.2 (coverMincard_le_pow F_inv U_symm m_pos n)))
   rw [ENat.toENNReal_pow, log_pow, Nat.cast_add, Nat.cast_one, right_distrib_of_nonneg h_nm
     zero_le_one, one_mul, div_right_distrib_of_nonneg (Left.mul_nonneg h_nm h_log) h_log, mul_comm,
     ← EReal.mul_div, div_eq_mul_inv _ (m : EReal)]
@@ -376,7 +376,7 @@ lemma log_coverMincard_comp_le {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
 open Filter
 
 /-- The entropy of an entourage `U`, defined as the exponential rate of growth of the size of the
-  smallest `(n, U)`-refined cover of `F`. Takes values in the space fo extended real numbers
+  smallest `(n, U)`-refined cover of `F`. Takes values in the space of extended real numbers
   `[-∞, +∞]`. This first version uses a `liminf`.-/
 noncomputable def coverEntropyInfUni (T : X → X) (F : Set X) (U : Set (X × X)) :=
   atTop.liminf fun n : ℕ ↦ log (coverMincard T F U n) / n
