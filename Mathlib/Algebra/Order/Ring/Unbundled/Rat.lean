@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Ring.Rat
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Data.Int.Order.Basic
 
 /-!
 # The rational numbers possess a linear order
