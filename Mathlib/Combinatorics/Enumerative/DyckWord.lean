@@ -399,7 +399,7 @@ instance : PartialOrder DyckWord where
   le_antisymm p q pq qp := by
     have h₁ := infix_of_le pq
     have h₂ := infix_of_le qp
-    exact DyckWord.ext <| eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
+    exact DyckWord.ext <| h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
 
 lemma monotone_semilength : Monotone semilength := fun p q pq ↦ by
   induction pq with
@@ -419,7 +419,7 @@ lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   contrapose! pnq
   replace pnq := congr(2 * $(pnq))
   simp_rw [two_mul_semilength_eq_length] at pnq
-  exact DyckWord.ext (eq_of_infix_of_length_eq (infix_of_le plq) pnq)
+  exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)
 
 end Order
 
