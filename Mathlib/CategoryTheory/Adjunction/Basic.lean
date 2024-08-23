@@ -64,7 +64,7 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   /-- The counit of an adjunction -/
   counit : G.comp F ⟶ 𝟭 D
   /-- The relationship between the unit and hom set equivalence of an adjunction -/
-  homEquiv_unit : ∀ {X Y f}, (homEquiv X Y) f = (unit : _ ⟶ _).app X ≫ G.map f := by aesop_cat
+  homEquiv_unit : ∀ {X Y f}, (homEquiv X Y) f = unit.app X ≫ G.map f := by aesop_cat
   /-- The relationship between the counit and hom set equivalence of an adjunction -/
   homEquiv_counit : ∀ {X Y g}, (homEquiv X Y).symm g = F.map g ≫ counit.app Y := by aesop_cat
 
