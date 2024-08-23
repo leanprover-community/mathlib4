@@ -607,13 +607,13 @@ theorem coe_topEquiv :
 theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
     {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
     φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
-  rw [← Substructure.topEquiv.realize_boundedFormula φ]
+  rw [← StrongHomClass.realize_boundedFormula Substructure.topEquiv φ]
   simp
 
 @[simp]
 theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
     φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
-  rw [← Substructure.topEquiv.realize_formula φ]
+  rw [← StrongHomClass.realize_formula Substructure.topEquiv φ]
   simp
 
 /-- A dependent version of `Substructure.closure_induction`. -/

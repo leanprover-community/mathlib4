@@ -571,7 +571,7 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     obtain ⟨TF⟩ := h (MNT.toModel T) (MNF.toModel T) hNT hNF
     exact
       ((MNT.realize_sentence φ).trans
-        ((TF.realize_sentence φ).trans (MNF.realize_sentence φ).symm)).1 hMT⟩
+        ((StrongHomClass.realize_sentence TF φ).trans (MNF.realize_sentence φ).symm)).1 hMT⟩
 
 theorem empty_theory_categorical (T : Language.empty.Theory) : κ.Categorical T := fun M N hM hN =>
   by rw [empty.nonempty_equiv_iff, hM, hN]
