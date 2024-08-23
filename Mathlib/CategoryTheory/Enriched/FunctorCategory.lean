@@ -113,12 +113,21 @@ lemma ihom.comp_naturality₁ {X₁ Y₁ : D} (f₁ : X₁ ⟶ Y₁) (X₂ X₃ 
 @[reassoc]
 lemma ihom.comp_naturality₂ (X₁ : D) {X₂ Y₂ : D} (f₂ : X₂ ⟶ Y₂) (X₃ : D) :
     _ ◁ (MonoidalClosed.pre f₂).app X₃ ≫ ihom.comp X₁ X₂ X₃ =
-      (ihom X₁).map f₂ ▷ _ ≫ ihom.comp X₁ Y₂ X₃ := sorry
+      (ihom X₁).map f₂ ▷ _ ≫ ihom.comp X₁ Y₂ X₃ := by
+  dsimp [comp]
+  rw [← MonoidalClosed.curry_natural_left, ← MonoidalClosed.curry_natural_left,
+    associator_inv_naturality_right_assoc, associator_inv_naturality_middle_assoc,
+    whisker_exchange_assoc, MonoidalClosed.id_tensor_pre_app_comp_ev,
+    ← comp_whiskerRight_assoc, ← ev_naturality, comp_whiskerRight_assoc]
 
 @[reassoc]
 lemma ihom.comp_naturality₃ (X₁ X₂ : D) {X₃ Y₃ : D} (f₃ : X₃ ⟶ Y₃) :
     (_ ◁ (ihom X₂).map f₃) ≫ ihom.comp X₁ X₂ Y₃ =
-      ihom.comp X₁ X₂ X₃ ≫ (ihom X₁).map f₃ := sorry
+      ihom.comp X₁ X₂ X₃ ≫ (ihom X₁).map f₃ := by
+  dsimp [comp]
+  rw [← MonoidalClosed.curry_natural_left, ← MonoidalClosed.curry_natural_right,
+    assoc, assoc, associator_inv_naturality_right_assoc,
+    whisker_exchange_assoc, ev_naturality]
 
 @[reassoc (attr := simp)]
 protected lemma ihom.id_comp (X₁ X₂ : D) :
