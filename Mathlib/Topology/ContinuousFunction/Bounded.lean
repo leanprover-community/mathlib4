@@ -1515,7 +1515,7 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 
 end
 
-section
+section CompactlySupported
 
 variable (α γ : Type*) [TopologicalSpace α] [NormedRing γ]
 
