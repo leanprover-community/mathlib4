@@ -9,7 +9,8 @@ namespace CategoryTheory
 
 open Category Limits Opposite
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+variable {C : Type u} [Category.{v} C] {C' : Type u'} [Category.{v'} C']
+  (α : C ⥤ C') {D : Type u''} [Category.{v''} D]
 
 namespace Functor
 
@@ -74,8 +75,7 @@ end Functor
 
 open MonoidalCategory
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-  [MonoidalCategory D] [MonoidalClosed D]
+variable [MonoidalCategory D] [MonoidalClosed D]
 
 section
 
@@ -230,18 +230,45 @@ protected lemma comp_id (F G : C ⥤ D) [HasEnrichedHom F G] [HasEnrichedHom G G
 protected lemma assoc (F₁ F₂ F₃ F₄ : C ⥤ D)
     [HasEnrichedHom F₁ F₂] [HasEnrichedHom F₂ F₃] [HasEnrichedHom F₃ F₄] [HasEnrichedHom F₁ F₃]
     [HasEnrichedHom F₁ F₄] [HasEnrichedHom F₂ F₄] :
-    (α_ (F₁.enrichedHom F₂) (F₂.enrichedHom F₃) (F₃.enrichedHom F₄)).inv ≫
-    enrichedHom.comp F₁ F₂ F₃ ▷ F₃.enrichedHom F₄ ≫ enrichedHom.comp F₁ F₃ F₄ =
+    (α_ (enrichedHom F₁ F₂) (enrichedHom F₂ F₃) (enrichedHom F₃ F₄)).inv ≫
+    enrichedHom.comp F₁ F₂ F₃ ▷ enrichedHom F₃ F₄ ≫ enrichedHom.comp F₁ F₃ F₄ =
   F₁.enrichedHom F₂ ◁ enrichedHom.comp F₂ F₃ F₄ ≫ enrichedHom.comp F₁ F₂ F₄ := sorry
+
+section
+
+variable (F G : C' ⥤ D) [HasEnrichedHom F G] [HasEnrichedHom (α ⋙ F) (α ⋙ G)]
+
+noncomputable def precomp  :
+    enrichedHom F G ⟶ enrichedHom (α ⋙ F) (α ⋙ G) :=
+  end_.lift _ (fun _ ↦ enrichedHom.app _ _ _) (fun X Y f ↦ by dsimp; rw [naturality])
+
+@[reassoc (attr := simp)]
+lemma precomp_app (X : C) : precomp α F G ≫ app _ _ X = app _ _ (α.obj X) := by
+  simp [precomp, app]
+
+end
 
 end enrichedHom
 
-variable [∀ (F G : C ⥤ D), HasEnrichedHom F G]
+variable (C D) in
+abbrev HasEnrichedHoms := ∀ (F G : C ⥤ D), HasEnrichedHom F G
+
+variable [HasEnrichedHoms C D]
 
 noncomputable instance : EnrichedCategory D (C ⥤ D) where
   Hom F G := enrichedHom F G
   id F := enrichedHom.id F
   comp F G H := enrichedHom.comp F G H
+
+variable [HasEnrichedHoms C' D]
+
+variable (D) in
+noncomputable def whiskeringLeftEnrichedFunctor :
+    EnrichedFunctor D (C' ⥤ D) (C ⥤ D) where
+  obj F := α ⋙ F
+  map F G := enrichedHom.precomp α F G
+  map_id := sorry
+  map_comp := sorry
 
 end Functor
 
