@@ -208,7 +208,7 @@ theorem add_def (a b : Nimber) :
 theorem add_nonempty (a b : Nimber) :
     {x | (∃ a' < a, a' + b = x) ∨ ∃ b' < b, a + b' = x}ᶜ.Nonempty := by
   use Ordinal.blsub₂ (succ a) (succ b) @fun x _ y _ => Nimber.add x y
-  simp
+  simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_or, not_exists, not_and]
   constructor <;>
   intro x hx <;>
   apply ne_of_lt <;>
