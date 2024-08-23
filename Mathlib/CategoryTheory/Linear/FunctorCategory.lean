@@ -11,314 +11,6 @@ import Batteries.Tactic.ShowUnused
 
 universe uvw -- leave this here to make some vim macros work
 
-section Batteries.Logic
-
-set_option autoImplicit true
-
-instance {f : α → β} [DecidablePred p] : DecidablePred (p ∘ f) :=
-  inferInstanceAs <| DecidablePred fun x => p (f x)
-
-
-/-! ## id -/
-
-theorem Function.id_def : @id α = fun x => x := rfl
-
-/-! ## decidable -/
-
-
-/-! ## classical logic -/
-
-namespace Classical
-
-
-end Classical
-
-/-! ## equality -/
-
-theorem heq_iff_eq : HEq a b ↔ a = b := ⟨eq_of_heq, heq_of_eq⟩
-
-@[simp] theorem eq_rec_constant {α : Sort _} {a a' : α} {β : Sort _} (y : β) (h : a = a') :
-    (@Eq.rec α a (fun α _ => β) y a' h) = y := by cases h; rfl
-
-theorem congrArg₂ (f : α → β → γ) {x x' : α} {y y' : β}
-    (hx : x = x') (hy : y = y') : f x y = f x' y' := by subst hx hy; rfl
-
-theorem congrFun₂ {β : α → Sort _} {γ : ∀ a, β a → Sort _}
-    {f g : ∀ a b, γ a b} (h : f = g) (a : α) (b : β a) :
-    f a b = g a b :=
-  congrFun (congrFun h _) _
-
-theorem congrFun₃ {β : α → Sort _} {γ : ∀ a, β a → Sort _} {δ : ∀ a b, γ a b → Sort _}
-      {f g : ∀ a b c, δ a b c} (h : f = g) (a : α) (b : β a) (c : γ a b) :
-    f a b c = g a b c :=
-  congrFun₂ (congrFun h _) _ _
-
-theorem funext₂ {β : α → Sort _} {γ : ∀ a, β a → Sort _}
-    {f g : ∀ a b, γ a b} (h : ∀ a b, f a b = g a b) : f = g :=
-  funext fun _ => funext <| h _
-
-theorem funext₃ {β : α → Sort _} {γ : ∀ a, β a → Sort _} {δ : ∀ a b, γ a b → Sort _}
-    {f g : ∀ a b c, δ a b c} (h : ∀ a b c, f a b c = g a b c) : f = g :=
-  funext fun _ => funext₂ <| h _
-
-
-theorem ne_of_apply_ne {α β : Sort _} (f : α → β) {x y : α} : f x ≠ f y → x ≠ y :=
-  mt <| congrArg _
-
-protected theorem Eq.congr (h₁ : x₁ = y₁) (h₂ : x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
-  subst h₁; subst h₂; rfl
-
-theorem Eq.congr_left {x y z : α} (h : x = y) : x = z ↔ y = z := by rw [h]
-
-theorem Eq.congr_right {x y z : α} (h : x = y) : z = x ↔ z = y := by rw [h]
-
-theorem heq_of_cast_eq : ∀ (e : α = β) (_ : cast e a = a'), HEq a a'
-  | rfl, rfl => .rfl
-
-theorem cast_eq_iff_heq : cast e a = a' ↔ HEq a a' :=
-  ⟨heq_of_cast_eq _, fun h => by cases h; rfl⟩
-
-theorem eqRec_eq_cast {α : Sort _} {a : α} {motive : (a' : α) → a = a' → Sort _}
-    (x : motive a (rfl : a = a)) {a' : α} (e : a = a') :
-    @Eq.rec α a motive x a' e = cast (e ▸ rfl) x := by
-  subst e; rfl
-
---Porting note: new theorem. More general version of `eqRec_heq`
-theorem eqRec_heq_self {α : Sort _} {a : α} {motive : (a' : α) → a = a' → Sort _}
-    (x : motive a (rfl : a = a)) {a' : α} (e : a = a') :
-    HEq (@Eq.rec α a motive x a' e) x := by
-  subst e; rfl
-
-@[simp]
-theorem eqRec_heq_iff_heq {α : Sort _} {a : α} {motive : (a' : α) → a = a' → Sort _}
-    (x : motive a (rfl : a = a)) {a' : α} (e : a = a') {β : Sort _} (y : β) :
-    HEq (@Eq.rec α a motive x a' e) y ↔ HEq x y := by
-  subst e; rfl
-
-@[simp]
-theorem heq_eqRec_iff_heq {α : Sort _} {a : α} {motive : (a' : α) → a = a' → Sort _}
-    (x : motive a (rfl : a = a)) {a' : α} (e : a = a') {β : Sort _} (y : β) :
-    HEq y (@Eq.rec α a motive x a' e) ↔ HEq y x := by
-  subst e; rfl
-
-/-! ## membership -/
-
-section Mem
-variable [Membership α β] {s t : β} {a b : α}
-
-theorem ne_of_mem_of_not_mem (h : a ∈ s) : b ∉ s → a ≠ b := mt fun e => e ▸ h
-
-theorem ne_of_mem_of_not_mem' (h : a ∈ s) : a ∉ t → s ≠ t := mt fun e => e ▸ h
-
-end Mem
-
-/-! ## miscellaneous -/
-
-@[simp] theorem not_nonempty_empty  : ¬Nonempty Empty := fun ⟨h⟩ => h.elim
-@[simp] theorem not_nonempty_pempty : ¬Nonempty PEmpty := fun ⟨h⟩ => h.elim
-
--- TODO(Mario): profile first, this is a dangerous instance
--- instance (priority := 10) {α} [Subsingleton α] : DecidableEq α
---   | a, b => isTrue (Subsingleton.elim a b)
-
--- TODO(Mario): profile adding `@[simp]` to `eq_iff_true_of_subsingleton`
-
-/-- If all points are equal to a given point `x`, then `α` is a subsingleton. -/
-theorem subsingleton_of_forall_eq (x : α) (h : ∀ y, y = x) : Subsingleton α :=
-  ⟨fun a b => h a ▸ h b ▸ rfl⟩
-
-theorem subsingleton_iff_forall_eq (x : α) : Subsingleton α ↔ ∀ y, y = x :=
-  ⟨fun _ y => Subsingleton.elim y x, subsingleton_of_forall_eq x⟩
-
-theorem congr_eqRec {β : α → Sort _} (f : (x : α) → β x → γ) (h : x = x') (y : β x) :
-  f x' (Eq.rec y h) = f x y := by cases h; rfl
-
-end Batteries.Logic
-
-
-section Mathlib.Logic.Function.Defs
-
-universe u₁ u₂ u₃ u₄ u₅
-
-namespace Function
-
--- Porting note: fix the universe of `ζ`, it used to be `u₁`
-variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
-
-attribute [eqns comp_def] comp
-
-theorem flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
-
--- attribute [eqns flip_def] flip
-
-/-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
-and type of `f (g x)` depends on `x` and `g x`. -/
-@[inline, reducible]
-def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : ∀ {x : α} (y : β x), φ y)
-    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
-
-infixr:80 " ∘' " => Function.dcomp
-
-@[reducible, deprecated (since := "2024-01-13")]
-def compRight (f : β → β → β) (g : α → β) : β → α → β := fun b a => f b (g a)
-
-@[reducible, deprecated (since := "2024-01-13")]
-def compLeft (f : β → β → β) (g : α → β) : α → β → β := fun a b => f (g a) b
-
-/-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
-`g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
-from `β` to `α`. -/
-abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
-
-@[inherit_doc onFun]
-infixl:2 " on " => onFun
-
-/-- Given functions `f : α → β → φ`, `g : α → β → δ` and a binary operator `op : φ → δ → ζ`,
-produce a function `α → β → ζ` that applies `f` and `g` on each argument and then applies
-`op` to the results.
--/
--- Porting note: the ζ variable was originally constrained to `Sort u₁`, but this seems to
--- have been an oversight.
-@[reducible, deprecated (since := "2024-01-13")]
-def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ) : α → β → ζ := fun x y =>
-  op (f x y) (g x y)
-
-abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
-
-theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
-
-@[reducible, deprecated (since := "2024-01-13")]
-def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
-  f x
-
--- Porting note: removed, it was never used
--- notation f " -[" op "]- " g => combine f op g
-
-@[simp]
-theorem id_comp (f : α → β) : id ∘ f = f := rfl
-
-@[simp]
-theorem comp_id (f : α → β) : f ∘ id = f := rfl
-
-theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
-  rfl
-
-@[simp] theorem const_comp {γ : Sort*} (f : α → β) (c : γ) : const β c ∘ f = const α c := rfl
-
-@[simp] theorem comp_const (f : β → φ) (b : β) : f ∘ const α b = const α (f b) := rfl
-
-
-/-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
-def Injective (f : α → β) : Prop :=
-  ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
-
-theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : Injective f) :
-    Injective (g ∘ f) := fun _a₁ _a₂ => fun h => hf (hg h)
-
-/-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
-for some `a : α`. -/
-def Surjective (f : α → β) : Prop :=
-  ∀ b, ∃ a, f a = b
-
-theorem Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf : Surjective f) :
-    Surjective (g ∘ f) := fun c : φ =>
-  Exists.elim (hg c) fun b hb =>
-    Exists.elim (hf b) fun a ha =>
-      Exists.intro a (show g (f a) = c from Eq.trans (congrArg g ha) hb)
-
-/-- A function is called bijective if it is both injective and surjective. -/
-def Bijective (f : α → β) :=
-  Injective f ∧ Surjective f
-
-theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
-  | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
-
-/-- `LeftInverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
-def LeftInverse (g : β → α) (f : α → β) : Prop :=
-  ∀ x, g (f x) = x
-
-/-- `HasLeftInverse f` means that `f` has an unspecified left inverse. -/
-def HasLeftInverse (f : α → β) : Prop :=
-  ∃ finv : β → α, LeftInverse finv f
-
-/-- `RightInverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
-def RightInverse (g : β → α) (f : α → β) : Prop :=
-  LeftInverse f g
-
-/-- `HasRightInverse f` means that `f` has an unspecified right inverse. -/
-def HasRightInverse (f : α → β) : Prop :=
-  ∃ finv : β → α, RightInverse finv f
-
-theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → Injective f :=
-  fun h a b faeqfb =>
-  calc
-    a = g (f a) := (h a).symm
-    _ = g (f b) := congrArg g faeqfb
-    _ = b := h b
-
-theorem HasLeftInverse.injective {f : α → β} : HasLeftInverse f → Injective f := fun h =>
-  Exists.elim h fun _finv inv => inv.injective
-
-theorem rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α} (injf : Injective f)
-    (lfg : LeftInverse f g) : RightInverse f g := fun x =>
-  have h : f (g (f x)) = f x := lfg (f x)
-  injf h
-
-theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : Surjective f :=
-  fun y => ⟨g y, h y⟩
-
-theorem HasRightInverse.surjective {f : α → β} : HasRightInverse f → Surjective f
-  | ⟨_finv, inv⟩ => inv.surjective
-
-theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
-    (rfg : RightInverse f g) : LeftInverse f g := fun y =>
-  Exists.elim (surjf y) fun x hx =>
-    calc
-      f (g y) = f (g (f x)) := hx ▸ rfl
-      _ = f x := Eq.symm (rfg x) ▸ rfl
-      _ = y := hx
-
-theorem injective_id : Injective (@id α) := fun _a₁ _a₂ h => h
-
-theorem surjective_id : Surjective (@id α) := fun a => ⟨a, rfl⟩
-
-theorem bijective_id : Bijective (@id α) :=
-  ⟨injective_id, surjective_id⟩
-
-end Function
-
-namespace Function
-
-variable {α : Type u₁} {β : Type u₂} {φ : Type u₃}
-
-/-- Interpret a function on `α × β` as a function with two arguments. -/
-@[inline]
-def curry : (α × β → φ) → α → β → φ := fun f a b => f (a, b)
-
-/-- Interpret a function with two arguments as a function on `α × β` -/
-@[inline]
-def uncurry : (α → β → φ) → α × β → φ := fun f a => f a.1 a.2
-
-@[simp]
-theorem curry_uncurry (f : α → β → φ) : curry (uncurry f) = f :=
-  rfl
-
-@[simp]
-theorem uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
-  funext fun ⟨_a, _b⟩ => rfl
-
-protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
-  funext h
-
-protected theorem RightInverse.id {g : β → α} {f : α → β} (h : RightInverse g f) : f ∘ g = id :=
-  funext h
-
-/-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
-def IsFixedPt (f : α → α) (x : α) := f x = x
-
-end Function
-
-end Mathlib.Logic.Function.Defs
 
 
 section Mathlib.Algebra.Group.ZeroOne
@@ -329,9 +21,6 @@ class Zero.{u} (α : Type u) where
 instance (priority := 300) Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
   ofNat := ‹Zero α›.1
 
-instance (priority := 200) Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
-  zero := 0
-
 universe u
 
 @[to_additive]
@@ -341,9 +30,6 @@ class One (α : Type u) where
 @[to_additive existing Zero.toOfNat0]
 instance (priority := 300) One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
   ofNat := ‹One α›.1
-@[to_additive existing Zero.ofOfNat0, to_additive_change_numeral 2]
-instance (priority := 200) One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
-  one := 1
 
 attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
 
@@ -740,85 +426,6 @@ attribute [to_additive existing] npowRec
 
 end
 
-library_note "forgetful inheritance"/--
-Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
-`P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
-forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
-implementation would be to have a type class `rich` containing a field `R`, a type class `poor`
-containing a field `P`, and an instance from `rich` to `poor`. However, this creates diamond
-problems, and a better approach is to let `rich` extend `poor` and have a field saying that
-`F R = P`.
-
-To illustrate this, consider the pair `MetricSpace` / `TopologicalSpace`. Consider the topology
-on a product of two metric spaces. With the first approach, it could be obtained by going first from
-each metric space to its topology, and then taking the product topology. But it could also be
-obtained by considering the product metric space (with its sup distance) and then the topology
-coming from this distance. These would be the same topology, but not definitionally, which means
-that from the point of view of Lean's kernel, there would be two different `TopologicalSpace`
-instances on the product. This is not compatible with the way instances are designed and used:
-there should be at most one instance of a kind on each type. This approach has created an instance
-diamond that does not commute definitionally.
-
-The second approach solves this issue. Now, a metric space contains both a distance, a topology, and
-a proof that the topology coincides with the one coming from the distance. When one defines the
-product of two metric spaces, one uses the sup distance and the product topology, and one has to
-give the proof that the sup distance induces the product topology. Following both sides of the
-instance diamond then gives rise (definitionally) to the product topology on the product space.
-
-Another approach would be to have the rich type class take the poor type class as an instance
-parameter. It would solve the diamond problem, but it would lead to a blow up of the number
-of type classes one would need to declare to work with complicated classes, say a real inner
-product space, and would create exponential complexity when working with products of
-such complicated spaces, that are avoided by bundling things carefully as above.
-
-Note that this description of this specific case of the product of metric spaces is oversimplified
-compared to mathlib, as there is an intermediate typeclass between `MetricSpace` and
-`TopologicalSpace` called `UniformSpace`. The above scheme is used at both levels, embedding a
-topology in the uniform space structure, and a uniform structure in the metric space structure.
-
-Note also that, when `P` is a proposition, there is no such issue as any two proofs of `P` are
-definitionally equivalent in Lean.
-
-To avoid boilerplate, there are some designs that can automatically fill the poor fields when
-creating a rich structure if one doesn't want to do something special about them. For instance,
-in the definition of metric spaces, default tactics fill the uniform space fields if they are
-not given explicitly. One can also have a helper function creating the rich structure from a
-structure with fewer fields, where the helper function fills the remaining fields. See for instance
-`UniformSpace.ofCore` or `RealInnerProduct.ofCore`.
-
-For more details on this question, called the forgetful inheritance pattern, see [Competing
-inheritance paths in dependent type theory: a case study in functional
-analysis](https://hal.inria.fr/hal-02463336).
--/
-
-
-/-!
-### Design note on `AddMonoid` and `Monoid`
-
-An `AddMonoid` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
-as an instance as it makes it possible to use the language of linear algebra. However, there are
-often other natural `ℕ`-actions. For instance, for any semiring `R`, the space of polynomials
-`Polynomial R` has a natural `R`-action defined by multiplication on the coefficients. This means
-that `Polynomial ℕ` would have two natural `ℕ`-actions, which are equal but not defeq. The same
-goes for linear maps, tensor products, and so on (and even for `ℕ` itself).
-
-To solve this issue, we embed an `ℕ`-action in the definition of an `AddMonoid` (which is by
-default equal to the naive action `a + ... + a`, but can be adjusted when needed), and declare
-a `SMul ℕ α` instance using this action. See Note [forgetful inheritance] for more
-explanations on this pattern.
-
-For example, when we define `Polynomial R`, then we declare the `ℕ`-action to be by multiplication
-on each coefficient (using the `ℕ`-action on `R` that comes from the fact that `R` is
-an `AddMonoid`). In this way, the two natural `SMul ℕ (Polynomial ℕ)` instances are defeq.
-
-The tactic `to_additive` transfers definitions and results from multiplicative monoids to additive
-monoids. To work, it has to map fields to fields. This means that we should also add corresponding
-fields to the multiplicative structure `Monoid`, which could solve defeq problems for powers if
-needed. These problems do not come up in practice, so most of the time we will not need to adjust
-the `npow` field when defining multiplicative objects.
--/
-
-
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number.
@@ -862,59 +469,6 @@ theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
 
 @[to_additive] theorem left_inv_eq_right_inv (hba : b * a = 1) (hac : a * c = 1) : b = c := by
   rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
-
--- the attributes are intentionally out of order. `zero_smul` proves `zero_nsmul`.
-@[to_additive zero_nsmul, simp]
-theorem pow_zero (a : M) : a ^ 0 = 1 :=
-  Monoid.npow_zero _
-
-@[to_additive succ_nsmul]
-theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
-  Monoid.npow_succ n a
-
-@[to_additive (attr := simp) one_nsmul]
-theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
-
-@[to_additive succ_nsmul'] theorem pow_succ' (a : M) : ∀ n, a ^ (n + 1) = a * a ^ n
-  | 0 => by simp
-  | n + 1 => by rw [pow_succ _ n, pow_succ, pow_succ', mul_assoc]
-
-@[to_additive]
-theorem pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']
-
-/-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
-@[to_additive two_nsmul] theorem pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
-
-
-@[to_additive three'_nsmul]
-theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
-
-@[to_additive three_nsmul]
-theorem pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ', pow_two]
-
--- the attributes are intentionally out of order.
-@[to_additive nsmul_zero, simp] theorem one_pow : ∀ n, (1 : M) ^ n = 1
-  | 0 => pow_zero _
-  | n + 1 => by rw [pow_succ, one_pow, one_mul]
-
-@[to_additive add_nsmul]
-theorem pow_add (a : M) (m : ℕ) : ∀ n, a ^ (m + n) = a ^ m * a ^ n
-  | 0 => by rw [Nat.add_zero, pow_zero, mul_one]
-  | n + 1 => by rw [pow_succ, ← mul_assoc, ← pow_add, ← pow_succ, Nat.add_assoc]
-
-@[to_additive] theorem pow_mul_comm (a : M) (m n : ℕ) : a ^ m * a ^ n = a ^ n * a ^ m := by
-  rw [← pow_add, ← pow_add, Nat.add_comm]
-
-@[to_additive mul_nsmul] theorem pow_mul (a : M) (m : ℕ) : ∀ n, a ^ (m * n) = (a ^ m) ^ n
-  | 0 => by rw [Nat.mul_zero, pow_zero, pow_zero]
-  | n + 1 => by rw [Nat.mul_succ, pow_add, pow_succ, pow_mul]
-
-@[to_additive mul_nsmul']
-theorem pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.mul_comm, pow_mul]
-
-@[to_additive nsmul_left_comm]
-theorem pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
-  rw [← pow_mul, Nat.mul_comm, pow_mul]
 
 end Monoid
 
@@ -978,24 +532,6 @@ class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 
 attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
 
-/-- Commutative version of `AddCancelMonoid`. -/
-class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
-
-attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower cancel priority]
-
-/-- Commutative version of `CancelMonoid`. -/
-@[to_additive]
-class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
-
-attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
-
-attribute [to_additive existing] CancelCommMonoid.toCommMonoid
-
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
-    CancelMonoid M :=
-  { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
 @[to_additive toIsCancelAdd "Any `AddCancelMonoid G` satisfies `IsCancelAdd G`."]
@@ -1038,38 +574,6 @@ theorem inv_inv (a : G) : a⁻¹⁻¹ = a :=
   InvolutiveInv.inv_inv _
 
 end InvolutiveInv
-
-/-!
-### Design note on `DivInvMonoid`/`SubNegMonoid` and `DivisionMonoid`/`SubtractionMonoid`
-
-Those two pairs of made-up classes fulfill slightly different roles.
-
-`DivInvMonoid`/`SubNegMonoid` provides the minimum amount of information to define the
-`Int` action (`zpow` or `zsmul`). Further, it provides a `div` field, matching the forgetful
-inheritance pattern. This is useful to shorten extension clauses of stronger structures (`Group`,
-`GroupWithZero`, `DivisionRing`, `Field`) and for a few structures with a rather weak
-pseudo-inverse (`Matrix`).
-
-`DivisionMonoid`/`SubtractionMonoid` is targeted at structures with stronger pseudo-inverses. It
-is an ad hoc collection of axioms that are mainly respected by three things:
-* Groups
-* Groups with zero
-* The pointwise monoids `Set α`, `Finset α`, `Filter α`
-
-It acts as a middle ground for structures with an inversion operator that plays well with
-multiplication, except for the fact that it might not be a true inverse (`a / a ≠ 1` in general).
-The axioms are pretty arbitrary (many other combinations are equivalent to it), but they are
-independent:
-* Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
-* Without `DivisionMonoid.inv_inv`, you can consider `WithTop Unit` with `a⁻¹ = ⊤` for all `a`.
-* Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
-  where `α` non commutative.
-* Without `DivisionMonoid.inv_eq_of_mul`, you can consider any `CommMonoid` with `a⁻¹ = a` for all
-  `a`.
-
-As a consequence, a few natural structures do not fit in this framework. For example, `ENNReal`
-respects everything except for the fact that `(0 * ∞)⁻¹ = 0⁻¹ = ∞` while `∞⁻¹ * 0⁻¹ = 0 * ∞ = 0`.
--/
 
 /-- In a class equipped with instances of both `Monoid` and `Inv`, this definition records what the
 default definition for `Div` would be: `a * b⁻¹`.  This is later provided as the default value for
@@ -1163,54 +667,9 @@ instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul Int M :=
 
 attribute [to_additive existing SubNegMonoid.SMulInt] DivInvMonoid.Pow
 
-/-- A group is called *cyclic* if it is generated by a single element. -/
-class IsAddCyclic (G : Type u) [SMul Int G] : Prop where
-  protected exists_zsmul_surjective : ∃ g : G, Function.Surjective (· • g : Int → G)
-
-/-- A group is called *cyclic* if it is generated by a single element. -/
-@[to_additive]
-class IsCyclic (G : Type u) [Pow G Int] : Prop where
-  protected exists_zpow_surjective : ∃ g : G, Function.Surjective (g ^ · : Int → G)
-
-@[to_additive]
-theorem exists_zpow_surjective (G : Type u) [Pow G Int] [IsCyclic G] :
-    ∃ g : G, Function.Surjective (g ^ · : Int → G) :=
-  IsCyclic.exists_zpow_surjective
-
 section DivInvMonoid
 
 variable [DivInvMonoid G] {a b : G}
-
-@[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : Int) (x : G) :
-    DivInvMonoid.zpow n x = x ^ n :=
-  rfl
-
-@[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : Int) = 1 :=
-  DivInvMonoid.zpow_zero' a
-
-@[to_additive (attr := simp, norm_cast) natCast_zsmul]
-theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : Int) = a ^ n
-  | 0 => (zpow_zero _).trans (pow_zero _).symm
-  | n + 1 => calc
-    a ^ (↑(n + 1) : Int) = a ^ (n : Int) * a := DivInvMonoid.zpow_succ' _ _
-    _ = a ^ n * a := congrArg (· * a) (zpow_natCast a n)
-    _ = a ^ (n + 1) := (pow_succ _ _).symm
-
--- See note [no_index around OfNat.ofNat]
-@[to_additive ofNat_zsmul]
-theorem zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : Int) = a ^ OfNat.ofNat n :=
-  zpow_natCast ..
-
-theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
-  rw [← zpow_natCast]
-  exact DivInvMonoid.zpow_neg' n a
-
-theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
-    Int.negSucc n • a = -((n + 1) • a) := by
-  rw [← natCast_zsmul]
-  exact SubNegMonoid.zsmul_neg' n a
-
-attribute [to_additive existing (attr := simp) negSucc_zsmul] zpow_negSucc
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 
@@ -1222,49 +681,7 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 
 
-@[to_additive (attr := simp) one_zsmul]
-theorem zpow_one (a : G) : a ^ (1 : Int) = a := by rw [zpow_ofNat, pow_one]
-
-@[to_additive two_zsmul] theorem zpow_two (a : G) : a ^ (2 : Int) = a * a := by rw [zpow_ofNat, pow_two]
-
-@[to_additive neg_one_zsmul]
-theorem zpow_neg_one (x : G) : x ^ (-1 : Int) = x⁻¹ :=
-  (zpow_negSucc x 0).trans <| congrArg Inv.inv (pow_one x)
-
-@[to_additive]
-theorem zpow_neg_coe_of_pos (a : G) : ∀ {n : ℕ}, 0 < n → a ^ (-(n : Int)) = (a ^ n)⁻¹
-  | _ + 1, _ => zpow_negSucc _ _
-
 end DivInvMonoid
-
-section InvOneClass
-
-/-- Typeclass for expressing that `-0 = 0`. -/
-class NegZeroClass (G : Type u) extends Zero G, Neg G where
-  protected neg_zero : -(0 : G) = 0
-
-/-- A `SubNegMonoid` where `-0 = 0`. -/
-class SubNegZeroMonoid (G : Type u) extends SubNegMonoid G, NegZeroClass G
-
-/-- Typeclass for expressing that `1⁻¹ = 1`. -/
-@[to_additive]
-class InvOneClass (G : Type u) extends One G, Inv G where
-  protected inv_one : (1 : G)⁻¹ = 1
-
-/-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
-@[to_additive]
-class DivInvOneMonoid (G : Type u) extends DivInvMonoid G, InvOneClass G
-
--- FIXME: `to_additive` is not operating on the second parent. (#660)
-attribute [to_additive existing] DivInvOneMonoid.toInvOneClass
-
-variable [InvOneClass G]
-
-@[to_additive (attr := simp)]
-theorem inv_one : (1 : G)⁻¹ = 1 :=
-  InvOneClass.inv_one
-
-end InvOneClass
 
 /-- A `SubtractionMonoid` is a `SubNegMonoid` with involutive negation and such that
 `-(a + b) = -b + -a` and `a + b = 0 → -a = b`. -/
@@ -1518,8 +935,6 @@ end Mathlib.Algebra.GroupWithZero.Defs
 
 
 section Mathlib.Algebra.Group.Action.Defs
-
-open Function (Injective Surjective)
 
 variable {M : Type u} {α : Type v}
 
@@ -2090,55 +1505,48 @@ open CategoryTheory.Linear
 variable {R : Type u₃} [Semiring R]
 variable {C : Type u₁} {D : Type u₂} [Category C] [Category D] [Preadditive D] [Linear R D]
 
-/-
-This file currently uses a modified version of `DistribMulAction`.
-That already creates quite a massive speed-up.
-jmc conjectures that the problem comes from a suboptimal path of first parents in the "action" hierarchy.
--/
-
-
-count_heartbeats in
-instance functorCategoryLinear : Linear R (C ⥤ D) where
-  homModule F G :=
-    { 
-      smul := fun r α ↦ 
-        { app := fun X ↦ r • α.app X
-          naturality := by
-            intros
-            rw [Linear.comp_smul, Linear.smul_comp, α.naturality] }
-      one_smul := by
-        intros
-        ext
-        apply MulAction.one_smul
-      zero_smul := by
-        intros
-        ext
-        apply Module.zero_smul
-      smul_zero := by
-        intros
-        ext
-        apply DistribMulAction.smul_zero
-      add_smul := by
-        intros
-        ext
-        apply Module.add_smul
-      smul_add := by
-        intros
-        ext
-        apply DistribMulAction.smul_add
-      mul_smul := by
-        intros
-        ext
-        apply MulAction.mul_smul
-        }
-  smul_comp := by
-    intros
-    ext
-    apply Linear.smul_comp
-  comp_smul := by
-    intros
-    ext
-    apply Linear.comp_smul
+/- count_heartbeats in -/
+/- instance functorCategoryLinear : Linear R (C ⥤ D) where -/
+/-   homModule F G := -/
+/-     { -/ 
+/-       smul := fun r α ↦ -/ 
+/-         { app := fun X ↦ r • α.app X -/
+/-           naturality := by -/
+/-             intros -/
+/-             rw [Linear.comp_smul, Linear.smul_comp, α.naturality] } -/
+/-       one_smul := by -/
+/-         intros -/
+/-         ext -/
+/-         apply MulAction.one_smul -/
+/-       zero_smul := by -/
+/-         intros -/
+/-         ext -/
+/-         apply Module.zero_smul -/
+/-       smul_zero := by -/
+/-         intros -/
+/-         ext -/
+/-         apply DistribMulAction.smul_zero -/
+/-       add_smul := by -/
+/-         intros -/
+/-         ext -/
+/-         apply Module.add_smul -/
+/-       smul_add := by -/
+/-         intros -/
+/-         ext -/
+/-         apply DistribMulAction.smul_add -/
+/-       mul_smul := by -/
+/-         intros -/
+/-         ext -/
+/-         apply MulAction.mul_smul -/
+/-         } -/
+/-   smul_comp := by -/
+/-     intros -/
+/-     ext -/
+/-     apply Linear.smul_comp -/
+/-   comp_smul := by -/
+/-     intros -/
+/-     ext -/
+/-     apply Linear.comp_smul -/
 
 instance functorCategorySMul (F G : C ⥤ D) : SMul R (F ⟶ G) where
   smul r α := 
@@ -2185,4 +1593,5 @@ instance functorCategoryLinear' : Linear R (C ⥤ D) where
 
 end CategoryTheory
 
-/- #show_unused  CategoryTheory.functorCategoryLinear CategoryTheory.functorCategoryLinear' -/
+/- #show_unused CategoryTheory.functorCategoryLinear -/
+#show_unused CategoryTheory.functorCategoryLinear'
