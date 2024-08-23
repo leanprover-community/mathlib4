@@ -4,13 +4,17 @@ universe v v' u u'
 
 namespace CategoryTheory
 
+open Category MonoidalCategory
+
 namespace Presheaf
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   [MonoidalCategory D] [MonoidalClosed D]
+  [∀ (X : C), Functor.HasEnrichedHoms (Over X)ᵒᵖ D]
+
+section
 
 variable (F G : Cᵒᵖ ⥤ D)
-  [∀ (X : C), Functor.HasEnrichedHoms (Over X)ᵒᵖ D]
 
 noncomputable def internalHom.obj (X : Cᵒᵖ) : D :=
   ((Over.forget X.unop).op ⋙ F) ⟶[D] ((Over.forget X.unop).op ⋙ G)
@@ -41,7 +45,7 @@ noncomputable def internalHom : Cᵒᵖ ⥤ D where
     rintro ⟨π⟩
     obtain ⟨U, π, rfl⟩ := Over.mk_surjective π
     dsimp
-    simp only [internalHom.map_app, unop_id, Category.id_comp]
+    simp only [internalHom.map_app, unop_id, id_comp]
     congr 1
     simp
   map_comp _ _ := by
@@ -49,15 +53,63 @@ noncomputable def internalHom : Cᵒᵖ ⥤ D where
     rintro ⟨π⟩
     obtain ⟨U, π, rfl⟩ := Over.mk_surjective π
     dsimp
-    simp only [internalHom.map_app, unop_comp, Category.assoc]
+    simp only [internalHom.map_app, unop_comp, assoc]
     congr 1
     simp
 
+end
+
 /-
 
-TODO: `K ⟶ internalHom F G ≃ (K ⊗ F ⟶ G)`
+TODO: `(K ⊗ F ⟶ G) ≃ K ⟶ internalHom F G`
 
 -/
+
+namespace internalHom
+
+variable {K F G : Cᵒᵖ ⥤ D}
+
+namespace homEquiv
+
+section
+
+variable (φ : F ⊗ K ⟶ G)
+
+noncomputable def toFunApp (X : Cᵒᵖ) : K.obj X ⟶ (internalHom F G).obj X :=
+  Functor.end_.lift _ (fun Y ↦ MonoidalClosed.curry
+    ((_ ◁ K.map Y.unop.hom.op) ≫ φ.app (Opposite.op Y.unop.left))) sorry
+
+@[simps]
+noncomputable def toFun : K ⟶ internalHom F G where
+  app := toFunApp φ
+  naturality := sorry
+
+end
+
+section
+
+variable (ψ : K ⟶ internalHom F G)
+
+noncomputable def invFunApp (X : Cᵒᵖ) : F.obj X ⊗ K.obj X ⟶ G.obj X :=
+  MonoidalClosed.uncurry
+    (ψ.app X ≫ Functor.enrichedHom.app _ _ (Opposite.op (Over.mk (𝟙 _))))
+
+noncomputable def invFun : F ⊗ K ⟶ G where
+  app := invFunApp ψ
+  naturality := sorry
+
+end
+
+end homEquiv
+
+noncomputable def homEquiv : (F ⊗ K ⟶ G) ≃ (K ⟶ internalHom F G) where
+  toFun := homEquiv.toFun
+  invFun := homEquiv.invFun
+  left_inv := sorry
+  right_inv := sorry
+
+end internalHom
+
 
 end Presheaf
 
