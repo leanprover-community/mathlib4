@@ -50,8 +50,8 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
   classical
   suffices HasSum (fun x : ι × ι' => f x.1 * g x.2) ((∑' i, f i) * (∑' j, g j)) from this.summable
   let s : Finset ι × Finset ι' → Finset (ι × ι') := fun p ↦ p.1 ×ˢ p.2
-  let p : Filter (Finset ι × Finset ι') := Filter.atTop ×ˢ Filter.atTop
-  apply hasSum_of_subseq_of_summable (s := s) (p := p) (hf.mul_norm hg) tendsto_finset_prod_atTop
+  apply hasSum_of_subseq_of_summable (hf.mul_norm hg) tendsto_finset_prod_atTop
+  rw [← prod_atTop_atTop_eq]
   have := Tendsto.prod_map h'f.hasSum h'g.hasSum
   rw [← nhds_prod_eq] at this
   convert ((continuous_mul (M := R)).continuousAt
