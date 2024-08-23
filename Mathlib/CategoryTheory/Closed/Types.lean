@@ -51,6 +51,8 @@ instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :
       have := Presheaf.isLeftAdjoint_of_preservesColimits (prod.functor.obj F)
       exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (prod.functor.obj F)))
 
+-- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
+-- closed categories, replace this with that, as it will be a more explicit construction.
 /-- This is not a good instance because of the universe levels. Below is the instance where the
 target category is `Type (max u₁ v₁)`. -/
 def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
@@ -61,9 +63,13 @@ def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
         (ULift.equivalence.trans ULiftHom.equiv).functor)
   cartesianClosedOfEquiv e
 
+-- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
+-- closed categories, replace this with that, as it will be a more explicit construction.
 instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max u₁ v₁)) :=
   cartesianClosedFunctorToTypes
 
+-- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
+-- closed categories, replace this with that, as it will be a more explicit construction.
 instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
     CartesianClosed (C ⥤ Type v₁) :=
   let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
