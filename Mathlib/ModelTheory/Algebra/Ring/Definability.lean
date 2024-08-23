@@ -39,8 +39,10 @@ theorem mvPolynomial_zeroLocus_definable {ι K : Type*} [Field K]
             exact ⟨p.1.1, p.1.2, Set.mem_image_of_mem _ p.2.2⟩⟩) id)) 0), ?_⟩
   simp only [Finset.mem_coe, Formula.Realize, Term.equal, Term.relabel_relabel, Function.comp,
     Term.relabel, realize_iInf, Finset.mem_attach, realize_bdEqual, Term.realize_relabel,
-    Sum.elim_inl, realize_termOfFreeCommRing, Term.realize_func, Sum.elim_comp_inl, p',
-    CompatibleRing.funMap_zero, true_implies, Subtype.forall, Set.ext_iff, Set.mem_setOf_eq]
+    Sum.elim_inl, realize_termOfFreeCommRing, lift_genericPolyMap, Sum.map_inr, id_eq, Sum.elim_inr,
+    Sum.map_inl, MvPolynomialSupportLEEquiv_symm_apply_coeff, Term.realize_func, Sum.elim_comp_inl,
+    CompatibleRing.funMap_zero, true_implies, Subtype.forall, p']
+
 
 end Ring
 
