@@ -25,7 +25,7 @@ This file contains basic results for root systems and root data.
 
 ## TODO
 
-* Properties of Weyl group (faithful action on roots, finiteness for finite `ι`)
+Properties of `ofBilinear`?
 
 -/
 
