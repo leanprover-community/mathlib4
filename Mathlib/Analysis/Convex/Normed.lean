@@ -161,19 +161,17 @@ lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
   have hc₀ : 0 ∈ interior (convexHull ℝ (range c) : Set E) := by
     simpa [c, convexHull_vadd, interior_vadd, range_add, Pi.vadd_def, mem_vadd_set_iff_neg_vadd_mem]
       using b.centroid_mem_interior_convexHull
-  have hcnorm :
-      range c ⊆ closedBall 0 (Finset.univ.sup' Finset.univ_nonempty (fun i ↦ ‖c i‖) + 1) := by
-    simp only [subset_def, Finset.mem_coe, mem_closedBall, dist_zero_right, ← sub_le_iff_le_add,
-      Finset.le_sup'_iff, forall_mem_range]
-    exact fun i ↦ ⟨i, by simp⟩
+  set cnorm := Finset.univ.sup' Finset.univ_nonempty (fun i ↦ ‖c i‖)
+  have hcnorm : range c ⊆ closedBall 0 (cnorm + 1) := by
+    simpa only [cnorm, subset_def, Finset.mem_coe, mem_closedBall, dist_zero_right,
+      ← sub_le_iff_le_add, Finset.le_sup'_iff, forall_mem_range] using fun i ↦ ⟨i, by simp⟩
   -- ... and finally scale it to fit inside the neighborhood `s`.
   obtain ⟨ε, hε, hεs⟩ := Metric.mem_nhds_iff.1 hs
-  set ε' : ℝ := ε / 2 / (Finset.univ.sup' Finset.univ_nonempty (fun i ↦ ‖c i‖) + 1)
-  have hc' : 0 < Finset.univ.sup' Finset.univ_nonempty (fun i ↦ ‖c i‖) + 1 := by
-    have : 0 ≤ Finset.univ.sup' Finset.univ_nonempty (fun i ↦ ‖c i‖) :=
-      Finset.le_sup'_of_le _ (Finset.mem_univ 0) (norm_nonneg _)
+  set ε' : ℝ := ε / 2 / (cnorm + 1)
+  have hc' : 0 < cnorm + 1 := by
+    have : 0 ≤ cnorm := Finset.le_sup'_of_le _ (Finset.mem_univ 0) (norm_nonneg _)
     positivity
-  have hε' : 0 < ε' := by dsimp [ε']; positivity
+  have hε' : 0 < ε' := by positivity
   set d : AffineBasis (Fin (finrank ℝ E + 1)) ℝ E := Units.mk0 ε' hε'.ne' • c
   have hε₀ : 0 < ε / 2 := by positivity
   have hdnorm : (range d : Set E) ⊆ closedBall 0 (ε / 2) := by
@@ -184,9 +182,9 @@ lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
   refine ⟨d, ?_, ?_⟩
   · simpa [d, Pi.smul_def, range_smul, interior_smul₀, convexHull_smul, zero_mem_smul_set_iff,
       hε'.ne']
-  calc
-    convexHull ℝ (range d) ⊆ closedBall 0 (ε / 2) := convexHull_min hdnorm (convex_closedBall ..)
-    _ ⊆ ball 0 ε := closedBall_subset_ball (by linarith)
-    _ ⊆ s := hεs
+  · calc
+      convexHull ℝ (range d) ⊆ closedBall 0 (ε / 2) := convexHull_min hdnorm (convex_closedBall ..)
+      _ ⊆ ball 0 ε := closedBall_subset_ball (by linarith)
+      _ ⊆ s := hεs
 
 end NormedAddCommGroup
