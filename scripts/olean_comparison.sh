@@ -30,16 +30,8 @@ oleansDir=.lake/build/lib/Mathlib
 # should be master
 branch=adomani/CI_olean_size
 
-# This string separates the printout of the oleans from their analysis
-separatorMessage='Compare to master'
-
 # the absolute difference, in %, that is significant for a folder being reported
 pctBound=5
-
-# print the sizes
-du "${oleansDir}"
-
-printf '\n\n%s\n\n' "${separatorMessage}"
 
 ## retrieve the job id of the latest master run -- could not find a good way to do it with `gh run list`
 jobID="$(curl --silent --show-error https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml?query=branch%3A"${branch}+is%3Asuccess" |
@@ -50,9 +42,7 @@ printf $'Job ID of the latest successful build on `%s`: %s\n' "${branch}" "${job
 ## log for the `compare oleans` job on master
 ## (also append `master ` at the beginning of each row)
 masterOleans="$(gh run view "${jobID}" --log |
-  awk -v sep="${separatorMessage}" 'BEGIN{ stop=0 }
-    ($0 ~ sep) { stop=1 }
-    ((stop == 0) && /compare oleans.*lake/) {
+  awk '/print the sizes of the oleans.*lake/ {
       printf("master %s %s\n", $(NF-1), $NF)
     }')"
 
