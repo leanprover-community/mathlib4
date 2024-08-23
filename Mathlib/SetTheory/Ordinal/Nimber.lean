@@ -186,6 +186,9 @@ namespace Nimber
 
 variable {a b c : Nimber.{u}}
 
+/-- Nimber addition is recursively defined so that `a + b` is the smallest number not equal to
+`a' + b` or `a + b'` for `a' < a` and `b' < b`. -/
+-- We write the binders like this so that the termination checker works.
 protected def add (a b : Nimber.{u}) : Nimber.{u} :=
   sInf {x | (∃ a', ∃ (_ : a' < a), Nimber.add a' b = x) ∨
     ∃ b', ∃ (_ : b' < b), Nimber.add a b' = x}ᶜ
@@ -299,7 +302,6 @@ protected theorem add_assoc (a b c : Nimber) : a + b + c = a + (b + c) := by
   all_goals apply ne_of_lt; assumption
 termination_by (a, b, c)
 
-@[simp]
 protected theorem add_zero (a : Nimber) : a + 0 = a := by
   apply le_antisymm
   · apply add_le_of_forall_ne
@@ -316,7 +318,6 @@ protected theorem add_zero (a : Nimber) : a + 0 = a := by
     exact this.not_lt h
 termination_by a
 
-@[simp]
 protected theorem zero_add (a : Nimber) : 0 + a = a := by
   rw [Nimber.add_comm, Nimber.add_zero]
 
