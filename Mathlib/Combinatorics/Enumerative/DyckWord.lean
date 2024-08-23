@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Data.List.Indexes
-import Mathlib.Data.List.Infix
 import Mathlib.Logic.Relation
 import Mathlib.Tactic.Positivity.Core
 
