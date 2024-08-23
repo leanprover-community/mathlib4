@@ -54,11 +54,15 @@ theorem prefix_concat_iff {l₁ l₂ : List α} {a : α} :
   simpa only [← reverse_concat', reverse_inj, reverse_suffix] using
     suffix_cons_iff (l₁ := l₁.reverse) (l₂ := l₂.reverse)
 
-protected alias ⟨_, isSuffix.reverse⟩ := reverse_prefix
+protected alias ⟨_, IsSuffix.reverse⟩ := reverse_prefix
 
-protected alias ⟨_, isPrefix.reverse⟩ := reverse_suffix
+protected alias ⟨_, IsPrefix.reverse⟩ := reverse_suffix
 
-protected alias ⟨_, isInfix.reverse⟩ := reverse_infix
+protected alias ⟨_, IsInfix.reverse⟩ := reverse_infix
+
+@[deprecated IsSuffix.reverse (since := "2024-08-12")] alias isSuffix.reverse := IsSuffix.reverse
+@[deprecated IsPrefix.reverse (since := "2024-08-12")] alias isPrefix.reverse := IsPrefix.reverse
+@[deprecated IsInfix.reverse (since := "2024-08-12")] alias isInfix.reverse := IsInfix.reverse
 
 alias ⟨eq_nil_of_infix_nil, _⟩ := infix_nil
 
@@ -66,14 +70,17 @@ alias ⟨eq_nil_of_prefix_nil, _⟩ := prefix_nil
 
 alias ⟨eq_nil_of_suffix_nil, _⟩ := suffix_nil
 
+@[deprecated IsInfix.eq_of_length (since := "2024-08-12")]
 theorem eq_of_infix_of_length_eq (h : l₁ <:+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.sublist.eq_of_length
+  h.eq_of_length
 
+@[deprecated IsPrefix.eq_of_length (since := "2024-08-12")]
 theorem eq_of_prefix_of_length_eq (h : l₁ <+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.sublist.eq_of_length
+  h.eq_of_length
 
+@[deprecated IsSuffix.eq_of_length (since := "2024-08-12")]
 theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.sublist.eq_of_length
+  h.eq_of_length
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
   calc
@@ -234,17 +241,17 @@ protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl := prefix_refl
   trans _ _ _ := IsPrefix.trans
-  antisymm _ _ h₁ h₂ := eq_of_prefix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
+  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
 
 instance : IsPartialOrder (List α) (· <:+ ·) where
   refl := suffix_refl
   trans _ _ _ := IsSuffix.trans
-  antisymm _ _ h₁ h₂ := eq_of_suffix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
+  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
 
 instance : IsPartialOrder (List α) (· <:+: ·) where
   refl := infix_refl
   trans _ _ _ := IsInfix.trans
-  antisymm _ _ h₁ h₂ := eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
+  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
 
 end Fix
 

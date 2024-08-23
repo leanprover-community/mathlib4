@@ -118,12 +118,11 @@ theorem toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
 end Preorder
 
 /-- Dictionary / lexicographic partial order for pairs. -/
-instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : PartialOrder (α ×ₗ β) :=
-  { Prod.Lex.preorder α β with
-    le_antisymm := by
-      haveI : IsStrictOrder α (· < ·) := { irrefl := lt_irrefl, trans := fun _ _ _ => lt_trans }
-      haveI : IsAntisymm β (· ≤ ·) := ⟨fun _ _ => le_antisymm⟩
-      exact @antisymm _ (Prod.Lex _ _) _ }
+instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : PartialOrder (α ×ₗ β) where
+  le_antisymm _ _ := by
+    haveI : IsStrictOrder α (· < ·) := { irrefl := lt_irrefl, trans := fun _ _ _ => lt_trans }
+    haveI : IsAntisymm β (· ≤ ·) := ⟨fun _ _ => le_antisymm⟩
+    exact antisymm (r := Prod.Lex _ _)
 
 /-- Dictionary / lexicographic linear order for pairs. -/
 instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
