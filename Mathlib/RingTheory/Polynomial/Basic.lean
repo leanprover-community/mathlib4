@@ -876,9 +876,7 @@ end Polynomial
 protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNoetherianRing R[X] :=
   isNoetherianRing_iff.2
     ⟨fun I : Ideal R[X] =>
-      let M :=
-        WellFounded.min (isNoetherian_iff_wellFounded.1 (by infer_instance))
-          (Set.range I.leadingCoeffNth) ⟨_, ⟨0, rfl⟩⟩
+      let M := inst.wf.min (Set.range I.leadingCoeffNth) ⟨_, ⟨0, rfl⟩⟩
       have hm : M ∈ Set.range I.leadingCoeffNth := WellFounded.min_mem _ _ _
       let ⟨N, HN⟩ := hm
       let ⟨s, hs⟩ := I.is_fg_degreeLE N
@@ -887,7 +885,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
           Classical.by_contradiction fun hxm =>
             haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by
-              refine WellFounded.not_lt_min (wellFounded_submodule_gt R R) _ _ ?_; exact ⟨k, rfl⟩
+              refine WellFounded.not_lt_min inst.wf _ _ ?_; exact ⟨k, rfl⟩
             this ⟨HN ▸ I.leadingCoeffNth_mono (le_of_lt h), fun H => hxm (H hx)⟩
       have hs2 : ∀ {x}, x ∈ I.degreeLE N → x ∈ Ideal.span (↑s : Set R[X]) :=
         hs ▸ fun hx =>
