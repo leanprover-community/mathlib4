@@ -234,7 +234,7 @@ instance : Semiring (FreeAlgebra R X) where
   __ := instDistrib R X
   natCast n := Quot.mk _ (n : R)
   natCast_zero := by simp; rfl
-  natCast_succ n := by simp; exact Quot.sound Rel.add_scalar
+  natCast_succ n := by simpa using Quot.sound Rel.add_scalar
 
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
@@ -255,7 +255,7 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
 -- verify there is no diamond at `default` transparency but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommSemiring S] in
-example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+example : (Semiring.toNatAlgebra : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
@@ -277,7 +277,7 @@ instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
 -- verify there is no diamond but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommRing S] in
-example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+example : (Ring.toIntAlgebra _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 variable {X}
 
@@ -340,7 +340,6 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
     rintro ⟨⟩ ⟨⟩
     rfl
   commutes' := by tauto
--- Porting note: removed #align declaration since it is a private lemma
 
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`.
@@ -527,7 +526,7 @@ namespace FreeAlgebra
 /-- An induction principle for the free algebra.
 
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
-preserved under addition and muliplication, then it holds for all of `FreeAlgebra R X`.
+preserved under addition and multiplication, then it holds for all of `FreeAlgebra R X`.
 -/
 @[elab_as_elim, induction_eliminator]
 theorem induction {C : FreeAlgebra R X → Prop}

@@ -312,7 +312,7 @@ retrieved via `head`, is the starting value `b : β`.
 @[simp]
 theorem scanl_head : (scanl f b v).head = b := by
   cases n
-  · have : v = nil := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]
+  · have : v = nil := by simp only [eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
     simp only [← get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
@@ -627,7 +627,7 @@ end
 
 open Function
 
-variable [LawfulApplicative F] [LawfulApplicative G]
+variable [LawfulApplicative G]
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
@@ -646,7 +646,7 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = (pure : _ → Id _) (map f x) := by
   rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm] <;> rfl
 
-variable (η : ApplicativeTransformation F G)
+variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
 protected theorem naturality {α β : Type u} (f : α → F β) (x : Vector α n) :
     η (x.traverse f) = x.traverse (@η _ ∘ f) := by
@@ -687,8 +687,6 @@ instance : LawfulTraversable.{u} (flip Vector n) where
 --              unsupported tactic `reflect_name #[]" :
 --           reflected _ @Vector.cons.{u}).subst₄
 --       q(α) q(n) q(x) ih
--- #align vector.reflect vector.reflect
-
 
 section Simp
 

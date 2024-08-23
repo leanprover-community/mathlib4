@@ -654,7 +654,7 @@ theorem InjOn.image_eq_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s�
 
 lemma InjOn.image_subset_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
     f '' s₁ ⊆ f '' s₂ ↔ s₁ ⊆ s₂ := by
-  refine' ⟨fun h' ↦ _, image_subset _⟩
+  refine ⟨fun h' ↦ ?_, image_subset _⟩
   rw [← h.preimage_image_inter h₁, ← h.preimage_image_inter h₂]
   exact inter_subset_inter_left _ (preimage_mono h')
 
@@ -929,7 +929,7 @@ theorem BijOn.image_eq (h : BijOn f s t) : f '' s = t :=
   h.surjOn.image_eq_of_mapsTo h.mapsTo
 
 lemma BijOn.forall {p : β → Prop} (hf : BijOn f s t) : (∀ b ∈ t, p b) ↔ ∀ a ∈ s, p (f a) where
-  mp h a ha := h _ $ hf.mapsTo ha
+  mp h a ha := h _ <| hf.mapsTo ha
   mpr h b hb := by obtain ⟨a, ha, rfl⟩ := hf.surjOn hb; exact h _ ha
 
 lemma BijOn.exists {p : β → Prop} (hf : BijOn f s t) : (∃ b ∈ t, p b) ↔ ∃ a ∈ s, p (f a) where
@@ -1132,14 +1132,16 @@ end Set
 /-! ### `invFunOn` is a left/right inverse -/
 namespace Function
 
-variable [Nonempty α] {s : Set α} {f : α → β} {a : α} {b : β}
+variable {s : Set α} {f : α → β} {a : α} {b : β}
 
 attribute [local instance] Classical.propDecidable
 
 /-- Construct the inverse for a function `f` on domain `s`. This function is a right inverse of `f`
 on `f '' s`. For a computable version, see `Function.Embedding.invOfMemRange`. -/
-noncomputable def invFunOn (f : α → β) (s : Set α) (b : β) : α :=
+noncomputable def invFunOn [Nonempty α] (f : α → β) (s : Set α) (b : β) : α :=
   if h : ∃ a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice ‹Nonempty α›
+
+variable [Nonempty α]
 
 theorem invFunOn_pos (h : ∃ a ∈ s, f a = b) : invFunOn f s b ∈ s ∧ f (invFunOn f s b) = b := by
   rw [invFunOn, dif_pos h]

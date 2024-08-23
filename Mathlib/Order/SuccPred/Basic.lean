@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Cover
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.Iterate
@@ -43,7 +43,6 @@ for all non maximal elements (enforced by the combination of `le_succ` and the c
 The stricter condition of every element having a sensible successor can be obtained through the
 combination of `SuccOrder α` and `NoMaxOrder α`.
 -/
-
 
 open Function OrderDual Set
 
@@ -170,10 +169,9 @@ def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pr
     le_pred_of_lt := fun h => hle_pred_iff.2 h
     le_of_pred_lt := fun {_ _} h => le_of_not_lt ((not_congr hle_pred_iff).1 h.not_le) }
 
-open scoped Classical
-
 variable (α)
 
+open Classical in
 /-- A well-order is a `SuccOrder`. -/
 noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder α :=
   ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
@@ -266,7 +264,7 @@ theorem succ_mono : Monotone (succ : α → α) := fun _ _ => succ_le_succ
 lemma le_succ_of_wcovBy (h : a ⩿ b) : b ≤ succ a := by
   obtain hab | ⟨-, hba⟩ := h.covBy_or_le_and_le
   · by_contra hba
-    exact h.2 (lt_succ_of_not_isMax hab.lt.not_isMax) $ hab.lt.succ_le.lt_of_not_le hba
+    exact h.2 (lt_succ_of_not_isMax hab.lt.not_isMax) <| hab.lt.succ_le.lt_of_not_le hba
   · exact hba.trans (le_succ _)
 
 alias _root_.WCovBy.le_succ := le_succ_of_wcovBy
@@ -505,18 +503,22 @@ instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
     · exact (@IsMax.succ_eq _ _ h₀ _ ha).trans ha.succ_eq.symm
     · exact @CovBy.succ_eq _ _ h₀ _ _ (covBy_succ_of_not_isMax ha)⟩
 
-section CompleteLattice
-
-variable [CompleteLattice α] [SuccOrder α]
-
-theorem succ_eq_iInf (a : α) : succ a = ⨅ (b) (_ : a < b), b := by
-  refine le_antisymm (le_iInf fun b => le_iInf succ_le_of_lt) ?_
+theorem succ_eq_sInf [CompleteLattice α] [SuccOrder α] (a : α) :
+    succ a = sInf (Set.Ioi a) := by
+  apply (le_sInf fun b => succ_le_of_lt).antisymm
   obtain rfl | ha := eq_or_ne a ⊤
   · rw [succ_top]
     exact le_top
-  exact iInf₂_le _ (lt_succ_iff_ne_top.2 ha)
+  · exact sInf_le (lt_succ_iff_ne_top.2 ha)
 
-end CompleteLattice
+theorem succ_eq_iInf [CompleteLattice α] [SuccOrder α] (a : α) : succ a = ⨅ b > a, b := by
+  rw [succ_eq_sInf, iInf_subtype', iInf, Subtype.range_coe_subtype]
+  rfl
+
+theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrder α] (a : α) :
+    succ a = sInf (Set.Ioi a) := by
+  apply (le_csInf nonempty_Ioi fun b => succ_le_of_lt).antisymm
+  exact csInf_le ⟨a, fun b => le_of_lt⟩ <| lt_succ a
 
 /-! ### Predecessor order -/
 
@@ -812,18 +814,16 @@ instance [PartialOrder α] : Subsingleton (PredOrder α) :=
     · exact (@IsMin.pred_eq _ _ h₀ _ ha).trans ha.pred_eq.symm
     · exact @CovBy.pred_eq _ _ h₀ _ _ (pred_covBy_of_not_isMin ha)⟩
 
-section CompleteLattice
+theorem pred_eq_sSup [CompleteLattice α] [PredOrder α] :
+    ∀ a : α, pred a = sSup (Set.Iio a) :=
+  succ_eq_sInf (α := αᵒᵈ)
 
-variable [CompleteLattice α] [PredOrder α]
+theorem pred_eq_iSup [CompleteLattice α] [PredOrder α] (a : α) : pred a = ⨆ b < a, b :=
+  succ_eq_iInf (α := αᵒᵈ) a
 
-theorem pred_eq_iSup (a : α) : pred a = ⨆ (b) (_ : b < a), b := by
-  refine le_antisymm ?_ (iSup_le fun b => iSup_le le_pred_of_lt)
-  obtain rfl | ha := eq_or_ne a ⊥
-  · rw [pred_bot]
-    exact bot_le
-  · exact @le_iSup₂ _ _ (fun b => b < a) _ (fun a _ => a) (pred a) (pred_lt_iff_ne_bot.2 ha)
-
-end CompleteLattice
+theorem pred_eq_csSup [ConditionallyCompleteLattice α] [PredOrder α] [NoMinOrder α] (a : α) :
+    pred a = sSup (Set.Iio a) :=
+  succ_eq_csInf (α := αᵒᵈ) a
 
 /-! ### Successor-predecessor orders -/
 
@@ -863,7 +863,7 @@ theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
 theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[n - 1] i)) :
     pred^[n] (succ^[n] i) = i := by
   induction' n with n hn
-  · simp only [Nat.zero_eq, Function.iterate_zero, id]
+  · simp only [Function.iterate_zero, id]
   rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
   have h_not_max : ¬IsMax (succ^[n - 1] i) := by
     cases' n with n
@@ -1298,11 +1298,11 @@ theorem exists_pred_iterate_iff_le : (∃ n, pred^[n] b = a) ↔ a ≤ b :=
 @[elab_as_elim]
 theorem Pred.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, n ≤ m → P n → P (pred n)) ⦃n : α⦄
     (hmn : n ≤ m) : P n :=
-  @Succ.rec αᵒᵈ _ _ _ _ _ h0 h1 _ hmn
+  Succ.rec (α := αᵒᵈ) (P := P) h0 h1 hmn
 
 theorem Pred.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (pred a)) {a b : α} (h : a ≤ b) :
     p a ↔ p b :=
-  (@Succ.rec_iff αᵒᵈ _ _ _ _ hsucc _ _ h).symm
+  (Succ.rec_iff (α := αᵒᵈ) hsucc h).symm
 
 end PredOrder
 

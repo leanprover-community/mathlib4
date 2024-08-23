@@ -427,8 +427,7 @@ section Field
 
 /-! ### Group operation polynomials over a field -/
 
-open scoped Classical
-
+open Classical in
 /-- The slope of the line through two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`.
 If $x_1 \ne x_2$, then this line is the secant of `W` through $(x_1, y_1)$ and $(x_2, y_2)$,
 and has slope $(y_1 - y_2) / (x_1 - x_2)$. Otherwise, if $y_1 \ne -y_1 - a_1x_1 - a_3$,
@@ -552,7 +551,7 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     W.Nonsingular (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
   nonsingular_neg <| nonsingular_negAdd h₁ h₂ hxy
 
-variable {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
+variable {x₁ x₂ : F} (y₁ y₂ : F)
 
 /-- The formula `x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²`,
 where `ψ(x,y) = 2y + a₁x + a₃`. -/
@@ -699,10 +698,9 @@ lemma neg_some {x y : R} (h : W.Nonsingular x y) : -some h = some (nonsingular_n
 instance : InvolutiveNeg W.Point :=
   ⟨by rintro (_ | _); rfl; simp only [neg_some, negY_negY]⟩
 
-open scoped Classical
-
 variable {F : Type u} [Field F] {W : Affine F}
 
+open Classical in
 /-- The addition of two nonsingular rational points on `W`.
 
 Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/

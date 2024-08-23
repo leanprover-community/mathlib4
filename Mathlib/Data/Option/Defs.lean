@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 
@@ -100,3 +99,5 @@ instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
   | .some a => some a
   | _ => none
+
+end Option

@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
@@ -256,7 +255,7 @@ instance groupWithZero : GroupWithZero (WithZero α) where
   __ := divInvMonoid
   __ := nontrivial
   inv_zero := WithZero.inv_zero
-  mul_inv_cancel a ha := by lift a to α using ha; norm_cast; apply mul_right_inv
+  mul_inv_cancel a ha := by lift a to α using ha; norm_cast; apply mul_inv_cancel
 
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/

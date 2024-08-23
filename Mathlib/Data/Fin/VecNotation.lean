@@ -208,8 +208,7 @@ theorem cons_val_fin_one (x : α) (u : Fin 0 → α) : ∀ (i : Fin 1), vecCons 
 theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 
-open Lean in
-open Qq in
+open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
@@ -229,7 +228,6 @@ protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToE
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
 --   | 0, v => ``(![])
 --   | n + 1, v => ``(vecCons $(v 0) $(_root_.pi_fin.to_pexpr <| vecTail v))
--- #align pi_fin.to_pexpr pi_fin.to_pexpr
 
 /-! ### `bit0` and `bit1` indices
 The following definitions and `simp` lemmas are used to allow
@@ -318,7 +316,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
   cases n with
   | zero =>
     cases' i with i hi
-    simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
+    simp only [Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> congr
     · simp [Nat.mod_eq_of_lt, h]

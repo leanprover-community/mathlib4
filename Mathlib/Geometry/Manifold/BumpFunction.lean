@@ -30,13 +30,13 @@ manifold, smooth bump function
 
 universe uE uF uH uM
 
-variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {H : Type uH} [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM} [TopologicalSpace M]
-  [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [TopologicalSpace M]
+  [ChartedSpace H M]
 
 open Function Filter FiniteDimensional Set Metric
 
-open scoped Topology Manifold Classical Filter
+open scoped Topology Manifold
 
 noncomputable section
 
@@ -46,6 +46,7 @@ noncomputable section
 In this section we define a structure for a bundled smooth bump function and prove its properties.
 -/
 
+variable (I) in
 /-- Given a smooth manifold modelled on a finite dimensional space `E`,
 `f : SmoothBumpFunction I M` is a smooth function on `M` such that in the extended chart `e` at
 `f.c`:
@@ -63,7 +64,11 @@ structure SmoothBumpFunction (c : M) extends ContDiffBump (extChartAt I c c) whe
 
 namespace SmoothBumpFunction
 
-variable {c : M} (f : SmoothBumpFunction I c) {x : M} {I}
+section FiniteDimensional
+
+variable [FiniteDimensional ℝ E]
+
+variable {c : M} (f : SmoothBumpFunction I c) {x : M}
 
 /-- The function defined by `f : SmoothBumpFunction c`. Use automatic coercion to function
 instead. -/
@@ -76,6 +81,10 @@ instance : CoeFun (SmoothBumpFunction I c) fun _ => M → ℝ :=
 theorem coe_def : ⇑f = indicator (chartAt H c).source (f.toContDiffBump ∘ extChartAt I c) :=
   rfl
 
+end FiniteDimensional
+
+variable {c : M} (f : SmoothBumpFunction I c) {x : M}
+
 theorem rOut_pos : 0 < f.rOut :=
   f.toContDiffBump.rOut_pos
 
@@ -87,6 +96,10 @@ theorem ball_inter_range_eq_ball_inter_target :
       ball (extChartAt I c c) f.rOut ∩ (extChartAt I c).target :=
   (subset_inter inter_subset_left f.ball_subset).antisymm <| inter_subset_inter_right _ <|
     extChartAt_target_subset_range _ _
+
+section FiniteDimensional
+
+variable [FiniteDimensional ℝ E]
 
 theorem eqOn_source : EqOn f (f.toContDiffBump ∘ extChartAt I c) (chartAt H c).source :=
   eqOn_indicator
@@ -172,6 +185,8 @@ theorem isCompact_symm_image_closedBall :
   ((isCompact_closedBall _ _).inter_right I.isClosed_range).image_of_continuousOn <|
     (continuousOn_extChartAt_symm _ _).mono f.closedBall_subset
 
+end FiniteDimensional
+
 /-- Given a smooth bump function `f : SmoothBumpFunction I c`, the closed ball of radius `f.R` is
 known to include the support of `f`. These closed balls (in the model normed space `E`) intersected
 with `Set.range I` form a basis of `𝓝[range I] (extChartAt I c c)`. -/
@@ -184,6 +199,8 @@ theorem nhdsWithin_range_basis :
     exact ⟨⟨⟨R / 2, R, half_pos hR0, half_lt_self hR0⟩, hsub⟩, trivial, Subset.rfl⟩
   · exact fun f _ => inter_mem (mem_nhdsWithin_of_mem_nhds <| closedBall_mem_nhds _ f.rOut_pos)
       self_mem_nhdsWithin
+
+variable [FiniteDimensional ℝ E]
 
 theorem isClosed_image_of_isClosed {s : Set M} (hsc : IsClosed s) (hs : s ⊆ support f) :
     IsClosed (extChartAt I c '' s) := by
@@ -243,8 +260,9 @@ protected theorem hasCompactSupport : HasCompactSupport f :=
   f.isCompact_symm_image_closedBall.of_isClosed_subset isClosed_closure
     f.tsupport_subset_symm_image_closedBall
 
-variable (I c)
+variable (I)
 
+variable (c) in
 /-- The closures of supports of smooth bump functions centered at `c` form a basis of `𝓝 c`.
 In other words, each of these closures is a neighborhood of `c` and each neighborhood of `c`
 includes `tsupport f` for some `f : SmoothBumpFunction I c`. -/
@@ -257,8 +275,6 @@ theorem nhds_basis_tsupport :
     exact nhdsWithin_range_basis.map _
   exact this.to_hasBasis' (fun f _ => ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
     fun f _ => f.tsupport_mem_nhds
-
-variable {c}
 
 /-- Given `s ∈ 𝓝 c`, the supports of smooth bump functions `f : SmoothBumpFunction I c` such that
 `tsupport f ⊆ s` form a basis of `𝓝 c`.  In other words, each of these supports is a

@@ -163,7 +163,6 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ 
   · intro i hi
     rw [(coeff _ _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H),
       zero_add]
--- #align power_series.order_add_of_order_eq.aux power_series.order_add_of_order_eq.aux
 
 /-- The order of the sum of two formal power series
  is the minimum of their orders if their orders differ. -/
@@ -297,7 +296,7 @@ theorem order_one : order (1 : R⟦X⟧) = 0 := by
 theorem order_zero_of_unit {f : PowerSeries R} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
   apply And.left
-  rw [← add_eq_zero_iff, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
+  rw [← add_eq_zero, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
   exact order_mul_ge _ _
 
 /-- The order of the formal power series `X` is `1`. -/
@@ -350,8 +349,8 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
       _ = X ^ (df + dg) * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [pow_add]
       _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
       _ = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by rw [mul_assoc]
-  simp [← hdfg, this] at H
   refine (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) ?_).symm
+  simp only [this] at H
   convert H
 
 end OrderIsDomain

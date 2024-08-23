@@ -76,7 +76,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = (∏ j, x₀ j ^ d j) * ∑ a : K, a ^ d i := by rw [mul_sum]
     _ = 0 := by rw [sum_pow_lt_card_sub_one K _ hi, mul_zero]
   intro a
-  let e' : Sum { j // j = i } { j // j ≠ i } ≃ σ := Equiv.sumCompl _
+  let e' : { j // j = i } ⊕ { j // j ≠ i } ≃ σ := Equiv.sumCompl _
   letI : Unique { j // j = i } :=
     { default := ⟨i, rfl⟩
       uniq := fun ⟨j, h⟩ => Subtype.val_injective h }
@@ -105,11 +105,9 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     (h : (∑ i ∈ s, (f i).totalDegree) < Fintype.card σ) :
     p ∣ Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 } := by
   have hq : 0 < q - 1 := by rw [← Fintype.card_units, Fintype.card_pos_iff]; exact ⟨1⟩
-  let S : Finset (σ → K) := { x ∈ univ | ∀ i ∈ s, eval x (f i) = 0 }.toFinset
-  have hS : ∀ x : σ → K, x ∈ S ↔ ∀ i : ι, i ∈ s → eval x (f i) = 0 := by
-    intro x
-    simp only [S, Set.toFinset_setOf, mem_univ, true_and, mem_filter]
-  /- The polynomial `F = ∏ i ∈ s, (1 - (f i)^(q - 1))` has the nice property
+  let S : Finset (σ → K) := {x | ∀ i ∈ s, eval x (f i) = 0}
+  have hS (x : σ → K) : x ∈ S ↔ ∀ i ∈ s, eval x (f i) = 0 := by simp [S]
+  /- The polynomial `F = ∏ i in s, (1 - (f i)^(q - 1))` has the nice property
     that it takes the value `1` on elements of `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}`
     while it is `0` outside that locus.
     Hence the sum of its values is equal to the cardinality of

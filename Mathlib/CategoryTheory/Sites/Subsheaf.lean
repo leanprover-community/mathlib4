@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Adjunction.Evaluation
+import Mathlib.CategoryTheory.Limits.FunctorCategoryEpiMono
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Adhesive
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
@@ -54,7 +54,7 @@ structure Subpresheaf (F : Cᵒᵖ ⥤ Type w) where
 variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
 instance : PartialOrder (Subpresheaf F) :=
-  PartialOrder.lift Subpresheaf.obj Subpresheaf.ext
+  PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
 
 instance : Top (Subpresheaf F) :=
   ⟨⟨fun U => ⊤, @fun U V _ x _ => by aesop_cat⟩⟩
@@ -84,8 +84,8 @@ instance {U} : CoeHead (G.toPresheaf.obj U) (F.obj U) where
 def Subpresheaf.ι : G.toPresheaf ⟶ F where app U x := x
 
 instance : Mono G.ι :=
-  ⟨@fun _ f₁ f₂ e =>
-    NatTrans.ext f₁ f₂ <|
+  ⟨@fun _ _ _ e =>
+    NatTrans.ext <|
       funext fun U => funext fun x => Subtype.ext <| congr_fun (congr_app e U) x⟩
 
 /-- The inclusion of a subpresheaf to a larger subpresheaf -/
@@ -94,8 +94,8 @@ def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶
   app U x := ⟨x, h U x.prop⟩
 
 instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
-  ⟨fun f₁ f₂ e =>
-    NatTrans.ext f₁ f₂ <|
+  ⟨fun _ _ e =>
+    NatTrans.ext <|
       funext fun U =>
         funext fun x =>
           Subtype.ext <| (congr_arg Subtype.val <| (congr_fun (congr_app e U) x : _) : _)⟩
@@ -210,7 +210,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
     intro s
     constructor
     · intro H V i hi
-      dsimp only [x'', show x'' = fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi)) from rfl]
+      dsimp only [x'']
       conv_lhs => rw [← h₂ _ _ hi]
       rw [← H _ (hi₂ _ _ hi)]
       exact FunctorToTypes.map_comp_apply F (i₂ _ _ hi).op (i₁ _ _ hi).op _
@@ -358,7 +358,7 @@ instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ TypeMax.{v, w}} (f : F ⟶ F'
     rw [isIso_iff_bijective]
     constructor
     · intro x y e
-      have := (NatTrans.mono_iff_mono_app _ _).mp hf X
+      have := (NatTrans.mono_iff_mono_app f).mp hf X
       rw [mono_iff_injective] at this
       exact this (congr_arg Subtype.val e : _)
     · rintro ⟨_, ⟨x, rfl⟩⟩

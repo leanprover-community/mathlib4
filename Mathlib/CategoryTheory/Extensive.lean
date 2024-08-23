@@ -279,7 +279,7 @@ section TopCat
 
 /-- (Implementation) An auxiliary lemma for the proof that `TopCat` is finitary extensive. -/
 noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
-    (f : Z ⟶ TopCat.of (Sum PUnit.{u + 1} PUnit.{u + 1})) :
+    (f : Z ⟶ TopCat.of (PUnit.{u + 1} ⊕ PUnit.{u + 1})) :
     IsColimit (BinaryCofan.mk
       (TopCat.pullbackFst f (TopCat.binaryCofan (TopCat.of PUnit) (TopCat.of PUnit)).inl)
       (TopCat.pullbackFst f (TopCat.binaryCofan (TopCat.of PUnit) (TopCat.of PUnit)).inr)) := by
@@ -426,15 +426,12 @@ theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtens
     Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
-  induction' n with n IH
-  · exact (isVanKampenColimit_of_isEmpty _ hc).isUniversal
-  · apply IsUniversalColimit.of_iso _
+  induction n with
+  | zero => exact (isVanKampenColimit_of_isEmpty _ hc).isUniversal
+  | succ n IH =>
+    refine IsUniversalColimit.of_iso (@isUniversalColimit_extendCofan _ _ _ _ _ _
+      (IH _ (coproductIsCoproduct _)) (FinitaryPreExtensive.universal' _ (coprodIsCoprod _ _)) ?_)
       ((extendCofanIsColimit f (coproductIsCoproduct _) (coprodIsCoprod _ _)).uniqueUpToIso hc)
-    apply @isUniversalColimit_extendCofan _ _ _ _ _ _ _ _ ?_
-    · apply IH
-      exact coproductIsCoproduct _
-    · apply FinitaryPreExtensive.universal'
-      exact coprodIsCoprod _ _
     · dsimp
       infer_instance
 

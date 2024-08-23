@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.WithBot
+import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
 
 /-!
@@ -174,7 +175,7 @@ section Image
 
 variable {f : α → β} {s t : Set α}
 
--- Porting note: `Set.image` is already defined in `Init.Set`
+-- Porting note: `Set.image` is already defined in `Data.Set.Defs`
 
 @[deprecated mem_image (since := "2024-03-23")]
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
@@ -190,7 +191,7 @@ theorem _root_.Function.Injective.mem_set_image {f : α → β} (hf : Injective 
 
 lemma preimage_subset_of_surjOn {t : Set β} (hf : Injective f) (h : SurjOn f s t) :
     f ⁻¹' t ⊆ s := fun _ hx ↦
-  hf.mem_set_image.1 $ h hx
+  hf.mem_set_image.1 <| h hx
 
 theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∀ y ∈ f '' s, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
@@ -298,7 +299,7 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_not_mem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
--- Porting note: `compl` is already defined in `Init.Set`
+-- Porting note: `compl` is already defined in `Data.Set.Defs`
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (S : Set α) :
     HasCompl.compl ⁻¹' S = HasCompl.compl '' S :=
   Set.ext fun x =>
@@ -759,19 +760,19 @@ theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range S
     (by rintro (x | y) - <;> [left; right] <;> exact mem_range_self _)
 
 @[simp]
-theorem range_inl_union_range_inr : range (Sum.inl : α → Sum α β) ∪ range Sum.inr = univ :=
+theorem range_inl_union_range_inr : range (Sum.inl : α → α ⊕ β) ∪ range Sum.inr = univ :=
   isCompl_range_inl_range_inr.sup_eq_top
 
 @[simp]
-theorem range_inl_inter_range_inr : range (Sum.inl : α → Sum α β) ∩ range Sum.inr = ∅ :=
+theorem range_inl_inter_range_inr : range (Sum.inl : α → α ⊕ β) ∩ range Sum.inr = ∅ :=
   isCompl_range_inl_range_inr.inf_eq_bot
 
 @[simp]
-theorem range_inr_union_range_inl : range (Sum.inr : β → Sum α β) ∪ range Sum.inl = univ :=
+theorem range_inr_union_range_inl : range (Sum.inr : β → α ⊕ β) ∪ range Sum.inl = univ :=
   isCompl_range_inl_range_inr.symm.sup_eq_top
 
 @[simp]
-theorem range_inr_inter_range_inl : range (Sum.inr : β → Sum α β) ∩ range Sum.inl = ∅ :=
+theorem range_inr_inter_range_inl : range (Sum.inr : β → α ⊕ β) ∩ range Sum.inl = ∅ :=
   isCompl_range_inl_range_inr.symm.inf_eq_bot
 
 @[simp]
@@ -785,22 +786,22 @@ theorem preimage_inr_image_inl (s : Set α) : Sum.inr ⁻¹' (@Sum.inl α β '' 
   simp
 
 @[simp]
-theorem preimage_inl_range_inr : Sum.inl ⁻¹' range (Sum.inr : β → Sum α β) = ∅ := by
+theorem preimage_inl_range_inr : Sum.inl ⁻¹' range (Sum.inr : β → α ⊕ β) = ∅ := by
   rw [← image_univ, preimage_inl_image_inr]
 
 @[simp]
-theorem preimage_inr_range_inl : Sum.inr ⁻¹' range (Sum.inl : α → Sum α β) = ∅ := by
+theorem preimage_inr_range_inl : Sum.inr ⁻¹' range (Sum.inl : α → α ⊕ β) = ∅ := by
   rw [← image_univ, preimage_inr_image_inl]
 
 @[simp]
-theorem compl_range_inl : (range (Sum.inl : α → Sum α β))ᶜ = range (Sum.inr : β → Sum α β) :=
+theorem compl_range_inl : (range (Sum.inl : α → α ⊕ β))ᶜ = range (Sum.inr : β → α ⊕ β) :=
   IsCompl.compl_eq isCompl_range_inl_range_inr
 
 @[simp]
-theorem compl_range_inr : (range (Sum.inr : β → Sum α β))ᶜ = range (Sum.inl : α → Sum α β) :=
+theorem compl_range_inr : (range (Sum.inr : β → α ⊕ β))ᶜ = range (Sum.inl : α → α ⊕ β) :=
   IsCompl.compl_eq isCompl_range_inl_range_inr.symm
 
-theorem image_preimage_inl_union_image_preimage_inr (s : Set (Sum α β)) :
+theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
     range_inl_union_range_inr, inter_univ]
@@ -890,7 +891,7 @@ theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s =
   · rintro ⟨⟨x, h1⟩, h2⟩
     exact ⟨x, h1, h2⟩
 
-theorem _root_.Sum.range_eq (f : Sum α β → γ) :
+theorem _root_.Sum.range_eq (f : α ⊕ β → γ) :
     range f = range (f ∘ Sum.inl) ∪ range (f ∘ Sum.inr) :=
   ext fun _ => Sum.exists
 
@@ -937,19 +938,7 @@ theorem range_diff_image {f : α → β} (H : Injective f) (s : Set α) : range 
 @[simp]
 theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α) ∈ s } := by
   ext ⟨x, hx⟩
-  -- Porting note: `simp [inclusion]` doesn't solve goal
-  apply Iff.intro
-  · rw [mem_range]
-    rintro ⟨a, ha⟩
-    rw [inclusion, Subtype.mk.injEq] at ha
-    rw [mem_setOf, Subtype.coe_mk, ← ha]
-    exact Subtype.coe_prop _
-  · rw [mem_setOf, Subtype.coe_mk, mem_range]
-    intro hx'
-    use ⟨x, hx'⟩
-    trivial
-  -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
-  -- rw [SetCoe.exists, Subtype.coe_mk, exists_prop, exists_eq_right, mem_set_of, Subtype.coe_mk]
+  simp
 
 -- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :

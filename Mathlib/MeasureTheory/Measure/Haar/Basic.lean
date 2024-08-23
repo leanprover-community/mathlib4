@@ -65,7 +65,7 @@ noncomputable section
 
 open Set Inv Function TopologicalSpace MeasurableSpace
 
-open scoped NNReal Classical ENNReal Pointwise Topology
+open scoped NNReal ENNReal Pointwise Topology
 
 namespace MeasureTheory
 
@@ -82,10 +82,6 @@ variable {G : Type*} [Group G]
 
 
 namespace haar
-
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
 
 /-- The index or Haar covering number or ratio of `K` w.r.t. `V`, denoted `(K : V)`:
   it is the smallest number of (left) translates of `V` that is necessary to cover `K`.
@@ -163,6 +159,7 @@ theorem index_elim {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty)
 theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
     (hV : (interior V).Nonempty) :
     index (K : Set G) V ≤ index (K : Set G) K₀ * index (K₀ : Set G) V := by
+  classical
   obtain ⟨s, h1s, h2s⟩ := index_elim K.isCompact K₀.interior_nonempty
   obtain ⟨t, h1t, h2t⟩ := index_elim K₀.isCompact hV
   rw [← h2s, ← h2t, mul_comm]
@@ -176,7 +173,8 @@ theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
 @[to_additive addIndex_pos]
 theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonempty) :
     0 < index (K : Set G) V := by
-  unfold index; rw [Nat.sInf_def, Nat.find_pos, mem_image]
+  classical
+  rw [index, Nat.sInf_def, Nat.find_pos, mem_image]
   · rintro ⟨t, h1t, h2t⟩; rw [Finset.card_eq_zero] at h2t; subst h2t
     obtain ⟨g, hg⟩ := K.interior_nonempty
     show g ∈ (∅ : Set G)
@@ -193,6 +191,7 @@ theorem index_mono {K K' V : Set G} (hK' : IsCompact K') (h : K ⊆ K') (hV : (i
 @[to_additive addIndex_union_le]
 theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty) :
     index (K₁.1 ∪ K₂.1) V ≤ index K₁.1 V + index K₂.1 V := by
+  classical
   rcases index_elim K₁.2 hV with ⟨s, h1s, h2s⟩
   rcases index_elim K₂.2 hV with ⟨t, h1t, h2t⟩
   rw [← h2s, ← h2t]
@@ -206,6 +205,7 @@ theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
 theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty)
     (h : Disjoint (K₁.1 * V⁻¹) (K₂.1 * V⁻¹)) :
     index (K₁.1 ∪ K₂.1) V = index K₁.1 V + index K₂.1 V := by
+  classical
   apply le_antisymm (index_union_le K₁ K₂ hV)
   rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   have :
@@ -341,11 +341,6 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
 ### Lemmas about `chaar`
 -/
 
-
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
-
 /-- This is the "limit" of `prehaar K₀ U K` as `U` becomes a smaller and smaller open
   neighborhood of `(1 : G)`. More precisely, it is defined to be an arbitrary element
   in the intersection of all the sets `clPrehaar K₀ V` in `haarProduct K₀`.
@@ -463,10 +458,6 @@ theorem is_left_invariant_chaar {K₀ : PositiveCompacts G} (g : G) (K : Compact
     apply is_left_invariant_prehaar; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
 
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
-
 /-- The function `chaar` interpreted in `ℝ≥0`, as a content -/
 @[to_additive "additive version of `MeasureTheory.Measure.haar.haarContent`"]
 noncomputable def haarContent (K₀ : PositiveCompacts G) : Content G where
@@ -518,12 +509,7 @@ open haar
 ### The Haar measure
 -/
 
-
 variable [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
-
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
 
 /-- The Haar measure on the locally compact group `G`, scaled so that `haarMeasure K₀ K₀ = 1`. -/
 @[to_additive
@@ -590,9 +576,9 @@ instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (
   · simp only [haarMeasure_self, ne_eq, ENNReal.one_ne_top, not_false_eq_true]
 
 /-- `haar` is some choice of a Haar measure, on a locally compact group. -/
-@[to_additive (attr := reducible)
+@[to_additive
 "`addHaar` is some choice of a Haar measure, on a locally compact additive group."]
-noncomputable def haar [LocallyCompactSpace G] : Measure G :=
+noncomputable abbrev haar [LocallyCompactSpace G] : Measure G :=
   haarMeasure <| Classical.arbitrary _
 
 /-! Steinhaus theorem: if `E` has positive measure, then `E / E` contains a neighborhood of zero.

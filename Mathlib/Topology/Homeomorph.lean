@@ -404,6 +404,7 @@ theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
     fun _ => h.closedEmbedding.locallyCompactSpace⟩
 
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
+@[simps toEquiv]
 def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
   continuous_toFun := h₁
   continuous_invFun := by
@@ -412,6 +413,14 @@ def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpe
     convert ← h₂ s hs using 1
     apply e.image_eq_preimage
   toEquiv := e
+
+@[simp]
+theorem homeomorphOfContinuousOpen_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
+    ⇑(homeomorphOfContinuousOpen e h₁ h₂) = e := rfl
+
+@[simp]
+theorem homeomorphOfContinuousOpen_symm_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
+    ⇑(homeomorphOfContinuousOpen e h₁ h₂).symm = e.symm := rfl
 
 @[simp]
 theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
@@ -479,7 +488,7 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   toEquiv := Equiv.setCongr h
 
 /-- Sum of two homeomorphisms. -/
-def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : Sum X Y ≃ₜ Sum X' Y' where
+def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
   continuous_toFun := h₁.continuous.sum_map h₂.continuous
   continuous_invFun := h₁.symm.continuous.sum_map h₂.symm.continuous
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
@@ -589,7 +598,8 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
 section Distrib
 
 /-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
-def sumProdDistrib : Sum X Y × Z ≃ₜ Sum (X × Z) (Y × Z) :=
+@[simps!]
+def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
         ((continuous_inl.prod_map continuous_id).sum_elim
@@ -597,13 +607,14 @@ def sumProdDistrib : Sum X Y × Z ≃ₜ Sum (X × Z) (Y × Z) :=
       (isOpenMap_inl.prod IsOpenMap.id).sum_elim (isOpenMap_inr.prod IsOpenMap.id)
 
 /-- `X × (Y ⊕ Z)` is homeomorphic to `X × Y ⊕ X × Z`. -/
-def prodSumDistrib : X × Sum Y Z ≃ₜ Sum (X × Y) (X × Z) :=
+def prodSumDistrib : X × (Y ⊕ Z) ≃ₜ (X × Y) ⊕ (X × Z) :=
   (prodComm _ _).trans <| sumProdDistrib.trans <| sumCongr (prodComm _ _) (prodComm _ _)
 
 variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 /-- `(Σ i, X i) × Y` is homeomorphic to `Σ i, (X i × Y)`. -/
-def sigmaProdDistrib : (Σi, X i) × Y ≃ₜ Σi, X i × Y :=
+@[simps! apply symm_apply toEquiv]
+def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib X Y).symm
       (continuous_sigma fun _ => continuous_sigmaMk.fst'.prod_mk continuous_snd)

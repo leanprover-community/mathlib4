@@ -294,9 +294,6 @@ theorem val_smul (n : ℕ) (r : R) (f : AdicCompletion I M) : (r • f).val n = 
 theorem ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y :=
   Subtype.eq <| funext h
 
-theorem ext_iff {x y : AdicCompletion I M} : x = y ↔ ∀ n, x.val n = y.val n :=
-  ⟨fun h n ↦ congrArg (eval I M n) h, ext⟩
-
 variable (I M)
 
 instance : IsHausdorff I (AdicCompletion I M) where
@@ -421,9 +418,6 @@ theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n 
 @[ext]
 theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
   Subtype.eq <| funext h
-
-theorem ext_iff {x y : AdicCauchySequence I M} : x = y ↔ ∀ n, x n = y n :=
-  ⟨fun h ↦ congrFun (congrArg Subtype.val h), ext⟩
 
 /-- The defining property of an adic cauchy sequence unwrapped. -/
 theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
@@ -560,7 +554,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
     convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
     ring
   cases n
-  · simp only [Ideal.one_eq_top, pow_zero, Nat.zero_eq, mem_top]
+  · simp only [Ideal.one_eq_top, pow_zero, mem_top]
   · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm, ← sub_sub,
       sub_self, zero_sub, @neg_mem_iff, mul_pow]
     exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)

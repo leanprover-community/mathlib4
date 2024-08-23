@@ -184,9 +184,9 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation.{w₁, w₂} R A]
   -- Porting note: use the same universe level
   obtain ⟨(ι' : Type v), _, f, hf_surj, hf_ker⟩ := hfp
   let g := (MvPolynomial.mapAlgHom f).comp (MvPolynomial.sumAlgEquiv R ι ι').toAlgHom
-  cases nonempty_fintype (Sum ι ι')
+  cases nonempty_fintype (ι ⊕ ι')
   refine
-    ⟨Sum ι ι', by infer_instance, g,
+    ⟨ι ⊕ ι', by infer_instance, g,
       (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
       Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
   · erw [RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv]
