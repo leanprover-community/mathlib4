@@ -113,6 +113,16 @@ theorem preimageIso_mapIso (f : X ≅ Y) : F.preimageIso (F.mapIso f) = f := by
   ext
   simp
 
+section NatIso
+variable {C' : Type*} [Category C'] (G H : C' ⥤ C)
+
+@[simps!]
+noncomputable def preimageNatIso (i : G ⋙ F ≅ H ⋙ F) : G ≅ H :=
+  NatIso.ofComponents (fun X => F.preimageIso (i.app X))
+    (fun _ ↦ F.map_injective (by simpa using i.hom.naturality _))
+
+end NatIso
+
 end
 
 variable (F) in
