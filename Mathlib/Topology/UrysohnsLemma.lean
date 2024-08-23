@@ -230,6 +230,9 @@ theorem tendsto_approx_atTop (c : CU P) (x : X) :
 theorem lim_of_mem_C (c : CU P) (x : X) (h : x ∈ c.C) : c.lim x = 0 := by
   simp only [CU.lim, approx_of_mem_C, h, ciSup_const]
 
+theorem disjoint_C_support_lim (c : CU P) : Disjoint c.C (Function.support c.lim) :=
+  Function.disjoint_support_iff.mpr (fun x hx => lim_of_mem_C c x hx)
+
 theorem lim_of_nmem_U (c : CU P) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
   simp only [CU.lim, approx_of_nmem_U c _ h, ciSup_const]
 
@@ -439,8 +442,8 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
 -- separate `sᶜ` and `t` by `u` and `v`.
   rw [← compl_compl s] at hscp
-  obtain ⟨u, v, huIsOpen, hvIsOpen, hscompl_subset_u, ht_subset_v, hDjsjointuv⟩
-    := t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint (isClosed_compl_iff.mpr hs)
+  obtain ⟨u, v, huIsOpen, hvIsOpen, hscompl_subset_u, ht_subset_v, hDjsjointuv⟩ :=
+    t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint (isClosed_compl_iff.mpr hs)
     hscp ht (HasSubset.Subset.disjoint_compl_left hst)
   rw [← subset_compl_iff_disjoint_right] at hDjsjointuv
   have huvc : closure u ⊆ vᶜ := closure_minimal hDjsjointuv hvIsOpen.isClosed_compl
@@ -469,23 +472,15 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
 -- `c.lim = 0` on `closure u` and `c.lim = 1` on `t`, so that `tsupport c.lim ⊆ s`.
   use ⟨c.lim, c.continuous_lim⟩
   simp only [ContinuousMap.coe_mk]
-  constructor
+  refine ⟨?_, ?_, Urysohns.CU.lim_mem_Icc c⟩
   · apply Subset.trans _ (compl_subset_comm.mp hscompl_subset_u)
     rw [← IsClosed.closure_eq (isClosed_compl_iff.mpr huIsOpen)]
     apply closure_mono
-    intro x hx
-    simp only [Function.mem_support, ne_eq] at hx
-    push_neg at hx
-    simp only [mem_compl_iff]
-    apply Not.intro
-    intro hxu
-    apply Ne.elim hx
-    exact Urysohns.CU.lim_of_mem_C c x (mem_of_subset_of_mem subset_closure hxu)
-  constructor
+    exact Disjoint.subset_compl_right (disjoint_of_subset_right subset_closure
+      (Disjoint.symm (Urysohns.CU.disjoint_C_support_lim c)))
   · intro x hx
     apply Urysohns.CU.lim_of_nmem_U
     exact not_mem_compl_iff.mpr hx
-  · exact Urysohns.CU.lim_mem_Icc c
 
 theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
     ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by
