@@ -6,7 +6,7 @@ Authors: Yuma Mizuno, Calle Sönne
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 
 /-!
-# Oplax transformations
+# Oplax transformations between oplax functors
 
 Just as there are natural transformations between functors, there are oplax transformations
 between oplax functors. The equality in the naturality of natural transformations is replaced by a
@@ -16,10 +16,16 @@ transformations.
 ## Main definitions
 
 * `OplaxTrans F G` : oplax transformations between oplax functors `F` and `G`
-* `OplaxTrans.vcomp η θ` : the vertical composition of oplax transformations `η`
-  and `θ`
-* `OplaxTrans.category F G` : the category structure on the oplax transformations
-  between `F` and `G`
+* `OplaxTrans.vcomp η θ` : the vertical composition of oplax transformations `η` and `θ`
+* `StrongCore F G`: a structure on an oplax transformation between pseudofunctors (TODO)
+that promotes it to a strong transformation (TODO: PUT IN OTHER FILE...!)
+
+NAMESPACES:
+* All of this should be in an oplax namespace
+
+# TODO
+This file could also include lax and strong transformations between oplax functors.
+
 -/
 
 namespace CategoryTheory
