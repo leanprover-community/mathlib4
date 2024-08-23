@@ -260,15 +260,6 @@ theorem pentagon :
         (associator F (G ⋙ H) K).hom ≫ whiskerLeft F (associator G H K).hom =
       (associator (F ⋙ G) H K).hom ≫ (associator F G (H ⋙ K)).hom := by aesop_cat
 
-section FullyFaithful
-variable [G.Full] [G.Faithful] (F' : A ⥤ B)
-
-@[simp]
-lemma preimageNatIso_whisker (i : F ≅ F') :
-    G.preimageNatIso _ _ (isoWhiskerRight i G) = i := by ext; simp
-
-end FullyFaithful
-
 end Functor
 
 end CategoryTheory

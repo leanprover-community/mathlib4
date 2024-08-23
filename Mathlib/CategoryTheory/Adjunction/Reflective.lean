@@ -160,7 +160,7 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
   functor := i.toEssImage
   inverse := i.essImageInclusion ⋙ reflector i
   unitIso := (asIso <| (reflectorAdjunction i).counit).symm
-  counitIso := i.essImageInclusion.preimageNatIso _ _ <|
+  counitIso := Functor.fullyFaithfulCancelRight i.essImageInclusion <|
     NatIso.ofComponents (fun X ↦ (asIso ((reflectorAdjunction i).unit.app X.obj)).symm)
 
 /--
