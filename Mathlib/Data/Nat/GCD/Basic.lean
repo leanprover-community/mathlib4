@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Data.Nat.GCD.Defs
+import Mathlib.Order.Basic
 
 /-!
 # Definitions and properties of `Nat.gcd`, `Nat.lcm`, and `Nat.coprime`
