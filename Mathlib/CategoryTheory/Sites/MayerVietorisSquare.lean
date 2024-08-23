@@ -54,6 +54,7 @@ open Limits Opposite
 variable {C : Type u} [Category.{v} C]
   {J : GrothendieckTopology C} [HasWeakSheafify J (Type v)]
 
+@[simp]
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     (F : Sheaf J (Type v)) (sq : Square C) :
     (sq.op.map ((yoneda ⋙ presheafToSheaf J _).op ⋙ yoneda.obj F)).IsPullback ↔
