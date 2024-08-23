@@ -75,6 +75,10 @@ instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 
 @[simp]
+theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
+  rfl
+
+@[simp]
 theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
   rfl
 
@@ -92,6 +96,13 @@ theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ 
   rfl
 
 @[simp]
+theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
+
+@[simp]
+theorem comp_app {C D : Cat} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
+    (α ≫ β).app X = α.app X ≫ β.app X := rfl
+
+@[simp]
 lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
     (F ◁ η).app X = η.app (F.obj X) :=
   rfl
@@ -100,13 +111,6 @@ lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H)
 lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
     (η ▷ H).app X = H.map (η.app X) :=
   rfl
-
-@[simp]
-theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
-
-@[simp]
-theorem comp_app {C D : Cat} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
-    (α ≫ β).app X = α.app X ≫ β.app X := rfl
 
 @[simp]
 theorem eqToHom_app {C D : Cat} (F G : C ⟶ D) (h : F = G) (X : C) :

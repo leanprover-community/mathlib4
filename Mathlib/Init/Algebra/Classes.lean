@@ -67,6 +67,8 @@ Mario made the following analysis of uses in mathlib3:
 * `is_strict_total_order`: looks like the only usage is in `rbmap` again
 -/
 
+set_option linter.deprecated false
+
 universe u v
 
 -- Porting note: removed `outParam`
@@ -192,6 +194,7 @@ and transitive. -/
 class IsPreorder (α : Sort u) (r : α → α → Prop) extends IsRefl α r, IsTrans α r : Prop
 
 /-- `IsTotalPreorder X r` means that the binary relation `r` on `X` is total and a preorder. -/
+@[deprecated (since := "2024-07-30")]
 class IsTotalPreorder (α : Sort u) (r : α → α → Prop) extends IsTrans α r, IsTotal α r : Prop
 
 /-- Every total pre-order is a pre-order. -/
@@ -222,6 +225,7 @@ class IsStrictOrder (α : Sort u) (r : α → α → Prop) extends IsIrrefl α r
 
 /-- `IsIncompTrans X lt` means that for `lt` a binary relation on `X`, the incomparable relation
 `fun a b => ¬ lt a b ∧ ¬ lt b a` is transitive. -/
+@[deprecated (since := "2024-07-30")]
 class IsIncompTrans (α : Sort u) (lt : α → α → Prop) : Prop where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
@@ -273,6 +277,7 @@ theorem asymm [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
 theorem trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   IsTrichotomous.trichotomous
 
+@[deprecated (since := "2024-07-30")]
 theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
     ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   IsIncompTrans.incomp_trans _ _ _
@@ -313,7 +318,7 @@ theorem total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a :=
 theorem trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   trichotomous
 
-@[elab_without_expected_type]
+@[elab_without_expected_type, deprecated (since := "2024-07-30")]
 theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} :
     ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   incomp_trans
@@ -330,25 +335,32 @@ variable {α : Sort u} {r : α → α → Prop}
 
 local infixl:50 " ≺ " => r
 
+@[deprecated (since := "2024-07-30")]
 def Equiv (a b : α) : Prop :=
   ¬a ≺ b ∧ ¬b ≺ a
 
 local infixl:50 " ≈ " => @Equiv _ r
 
+@[deprecated (since := "2024-07-30")]
 theorem esymm {a b : α} : a ≈ b → b ≈ a := fun ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩
 
+@[deprecated (since := "2024-07-30")]
 theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
 
+@[deprecated (since := "2024-07-30")]
 theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
 
 variable [IsStrictWeakOrder α r]
 
+@[deprecated (since := "2024-07-30")]
 theorem erefl (a : α) : a ≈ a :=
   ⟨irrefl a, irrefl a⟩
 
+@[deprecated (since := "2024-07-30")]
 theorem etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
   incomp_trans
 
+@[deprecated (since := "2024-07-30")]
 instance isEquiv : IsEquiv α (@Equiv _ r) where
   refl := erefl
   trans _ _ _ := etrans
@@ -361,6 +373,7 @@ notation:50 a " ≈[" lt "]" b:50 => @Equiv _ lt a b--Equiv (r := lt) a b
 
 end StrictWeakOrder
 
+@[deprecated (since := "2024-07-30")]
 theorem isStrictWeakOrder_of_isTotalPreorder {α : Sort u} {le : α → α → Prop} {lt : α → α → Prop}
     [DecidableRel le] [IsTotalPreorder α le] (h : ∀ a b, lt a b ↔ ¬le b a) :
     IsStrictWeakOrder α lt :=
@@ -382,6 +395,7 @@ theorem isStrictWeakOrder_of_isTotalPreorder {α : Sort u} {le : α → α → P
       have hca : le c a := trans_of le hcb hba
       And.intro (fun n => absurd hca (Iff.mp (h _ _) n)) fun n => absurd hac (Iff.mp (h _ _) n) }
 
+@[deprecated (since := "2024-07-30")]
 theorem lt_of_lt_of_incomp {α : Sort u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
     [DecidableRel lt] : ∀ {a b c}, lt a b → ¬lt b c ∧ ¬lt c b → lt a c :=
   @fun a b c hab ⟨nbc, ncb⟩ =>
@@ -390,6 +404,7 @@ theorem lt_of_lt_of_incomp {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     have : ¬lt a b ∧ ¬lt b a := incomp_trans_of lt ⟨nac, nca⟩ ⟨ncb, nbc⟩
     absurd hab this.1
 
+@[deprecated (since := "2024-07-30")]
 theorem lt_of_incomp_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
     [DecidableRel lt] : ∀ {a b c}, ¬lt a b ∧ ¬lt b a → lt b c → lt a c :=
   @fun a b c ⟨nab, nba⟩ hbc =>
@@ -398,6 +413,7 @@ theorem lt_of_incomp_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     have : ¬lt b c ∧ ¬lt c b := incomp_trans_of lt ⟨nba, nab⟩ ⟨nac, nca⟩
     absurd hbc this.1
 
+@[deprecated (since := "2024-07-30")]
 theorem eq_of_incomp {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] {a b} :
     ¬lt a b ∧ ¬lt b a → a = b := fun ⟨nab, nba⟩ =>
   match trichotomous_of lt a b with
@@ -413,6 +429,7 @@ theorem incomp_iff_eq {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α
     ¬lt a b ∧ ¬lt b a ↔ a = b :=
   Iff.intro eq_of_incomp fun hab => hab ▸ And.intro (irrefl_of lt a) (irrefl_of lt a)
 
+@[deprecated (since := "2024-07-30")]
 theorem eqv_lt_iff_eq {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
     a ≈[lt]b ↔ a = b :=
   incomp_iff_eq a b
