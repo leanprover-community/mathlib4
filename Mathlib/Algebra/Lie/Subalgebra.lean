@@ -507,14 +507,8 @@ theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
 
 variable (R L)
 
-theorem wellFounded_of_noetherian [IsNoetherian R L] :
-    WellFounded ((· > ·) : LieSubalgebra R L → LieSubalgebra R L → Prop) :=
-  let f :
-    ((· > ·) : LieSubalgebra R L → LieSubalgebra R L → Prop) →r
-      ((· > ·) : Submodule R L → Submodule R L → Prop) :=
-    { toFun := (↑)
-      map_rel' := @fun _ _ h ↦ h }
-  RelHomClass.wellFounded f (isNoetherian_iff_wellFounded.mp inferInstance)
+instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
+  RelHomClass.isWellFounded (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
 
 variable {R L K K' f}
 
