@@ -5,7 +5,6 @@ Authors: Jeremy Tan
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Order.Partition.Equipartition
-import Mathlib.Tactic.LintDecidable
 
 /-!
 # Turán's theorem
