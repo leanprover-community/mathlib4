@@ -55,7 +55,7 @@ export RingConeWithSquaresClass (square_mem)
 structure RingConeWithSquares (R : Type*) [Ring R] extends RingCone R where
   square_mem' a : a * a ∈ carrier
 
-instance PositiveConeWithSquares.instSetLike (R : Type*) [Ring R] :
+instance RingConeWithSquares.instSetLike (R : Type*) [Ring R] :
     SetLike (RingConeWithSquares R) R where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
