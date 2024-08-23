@@ -83,10 +83,6 @@ theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f 
   rfl
 
 @[simp]
-theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
-  rfl
-
-@[simp]
 theorem comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).obj X = G.obj (F.obj X) :=
   rfl
 
