@@ -80,13 +80,15 @@ theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
         (IsColimit <| (profiniteToCompHaus.op ⋙ X.val).mapCocone S.asLimitCone.op)
     ] := by
   tfae_have 1 ↔ 2
-  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _
+  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _ _
   tfae_have 1 ↔ 3
   · exact Sheaf.isConstant_iff_mem_essImage _ _ _
   tfae_have 1 ↔ 4
-  · exact Sheaf.isConstant_iff_mem_essImage' _ _ CondensedSet.LocallyConstant.adjunction _
+  · have : LocallyConstant.functor.Faithful := inferInstance
+    have : LocallyConstant.functor.Full := inferInstance
+    exact Sheaf.isConstant_iff_mem_essImage' _ _ CondensedSet.LocallyConstant.adjunction _
   tfae_have 1 ↔ 5
-  · exact Sheaf.isConstant_iff_isIso_counit_app' _ _ CondensedSet.LocallyConstant.adjunction _
+  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ CondensedSet.LocallyConstant.adjunction _
   tfae_have 1 ↔ 6
   · exact (Sheaf.isConstant_iff_of_equivalence (coherentTopology Profinite)
       Profinite.isTerminalPUnit  (coherentTopology CompHaus) profiniteToCompHaus
@@ -112,7 +114,7 @@ A condensed module is discrete if it is discrete as a sheaf with respect to the 
 `PUnit` in `CompHaus`.
 -/
 abbrev IsDiscrete (M : CondensedMod R) :=
-  Sheaf.IsDiscrete (coherentTopology CompHaus) CompHaus.isTerminalPUnit M
+  Sheaf.IsConstant (coherentTopology CompHaus) CompHaus.isTerminalPUnit M
 
 lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
     IsDiscrete R M ↔ CondensedSet.IsDiscrete ((Condensed.forget R).obj M) :=
@@ -152,7 +154,7 @@ A light condensed set is discrete if it is discrete as a sheaf with respect to t
 `PUnit` in `LightProfinite`.
 -/
 abbrev IsDiscrete (M : LightCondSet.{u}) :=
-  Sheaf.IsDiscrete (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
+  Sheaf.IsConstant (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
 
 open List in
 theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
@@ -166,13 +168,15 @@ theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
         (IsColimit <| X.val.mapCocone (coconeRightOpOfCone S.asLimitCone))
     ] := by
   tfae_have 1 ↔ 2
-  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _
+  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _ _
   tfae_have 1 ↔ 3
   · exact Sheaf.isConstant_iff_mem_essImage _ _ _
   tfae_have 1 ↔ 4
-  · exact Sheaf.isConstant_iff_mem_essImage' _ _ LightCondSet.LocallyConstant.adjunction X
+  · have : LocallyConstant.functor.Faithful := inferInstance
+    have : LocallyConstant.functor.Full := inferInstance
+    exact Sheaf.isConstant_iff_mem_essImage' _ _ LightCondSet.LocallyConstant.adjunction X
   tfae_have 1 ↔ 5
-  · exact Sheaf.isConstant_iff_isIso_counit_app' _ _ LightCondSet.LocallyConstant.adjunction X
+  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ LightCondSet.LocallyConstant.adjunction X
   tfae_have 6 → 4
   · intro h
     exact mem_locallyContant_essImage_of_isColimit_mapCocone X (fun S ↦ (h S).some)
@@ -193,7 +197,7 @@ A light condensed module is discrete if it is discrete as a sheaf with respect t
 object `PUnit` in `LightProfinite`.
 -/
 abbrev IsDiscrete (M : LightCondMod R) :=
-  Sheaf.IsDiscrete (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
+  Sheaf.IsConstant (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
 
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
     IsDiscrete R M ↔ LightCondSet.IsDiscrete ((LightCondensed.forget R).obj M) :=
