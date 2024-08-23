@@ -74,7 +74,7 @@ section NonUnitalPowAssoc
 
 variable {R : Type u} [Semiring R] {S : Type v}
 
-variable [NonUnitalNonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
+variable [NonUnitalNonAssocSemiring S] [Module R S]
 
 variable [Pow S ℕ+] [PNatPowAssoc S] (p: ℕ+ →₀ R) (x : S)
 
