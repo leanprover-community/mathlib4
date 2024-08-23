@@ -37,6 +37,8 @@ lemma choose_le_descFactorial (n k : ℕ) : n.choose k ≤ n.descFactorial k := 
   rw [choose_eq_descFactorial_div_factorial]
   exact Nat.div_le_self _ _
 
+/-- This lemma was changed on 2024/08/23, the old statement is available
+in `Nat.choose_le_pow_div`. -/
 lemma choose_le_pow (n k : ℕ) : n.choose k ≤ n ^ k :=
   (choose_le_descFactorial n k).trans (descFactorial_le_pow n k)
 

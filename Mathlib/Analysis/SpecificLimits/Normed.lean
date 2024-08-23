@@ -11,7 +11,6 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.RingTheory.Polynomial.Pochhammer
@@ -410,56 +409,29 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (
     using 2 with n
   simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
 
-#check ascPochhammer_nat_eq_descFactorial
-
-open Polynomial
-
-lemma foo {P : ℕ[X]} (hP : Monic P) (n : ℕ) :
-    eval P n = n ^ P.natDegree + ∑ i ∈ range P.natDegree, P.coeff i * n ^ i := by
-  sorry
-
 open Polynomial in
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n : 𝕜) ^ k * r ^ n : ℕ → 𝕜) := by
   refine Nat.strong_induction_on k fun k hk => ?_
-  obtain ⟨a, ha⟩ : ∃ (a : ℕ → ℕ), ∀ n, (n + k).descFactorial k =
-      n ^ k + ∑ i ∈ range k, a i * n ^ (i : ℕ) := by
+  obtain ⟨a, ha⟩ : ∃ (a : ℕ → ℕ), ∀ n, (n + k).descFactorial k
+      = n ^ k + ∑ i ∈ range k, a i * n ^ i := by
     let P : Polynomial ℕ := (ascPochhammer ℕ k).comp (Polynomial.X + C 1)
-    refine ⟨fun i ↦ P.eraseLead.coeff i, fun n ↦ ?_⟩
-    have : (n + k).descFactorial k = P.eval n := by
-      have : n + 1 + k - 1 = n + k := by omega
-      simp [P, ascPochhammer_nat_eq_descFactorial, this]
-    rw [this]
+    refine ⟨fun i ↦ P.coeff i, fun n ↦ ?_⟩
+    have mP : Monic P := Monic.comp_X_add_C (monic_ascPochhammer ℕ k) _
     have dP : P.natDegree = k := by
       simp only [P, natDegree_comp, ascPochhammer_natDegree, mul_one, natDegree_X_add_C]
-    have : P = X ^ k + P.eraseLead := by
-      have : P.leadingCoeff = 1 := Monic.comp_X_add_C (monic_ascPochhammer ℕ k) _
-      conv_lhs => rw [← eraseLead_add_C_mul_X_pow P]
-      simp [dP, this, add_comm]
-    conv_lhs => rw [this]
-    simp
-    apply eval_eq_sum_range'
-    rw [← dP]
-    refine eraseLead_natDegree_lt ?hn.f0
-
-
-
-
-
-
-
-
-
-
-#exit
-
-  obtain ⟨a, ha⟩ : ∃ (a : Fin k → ℕ), ∀ n, (n + k).descFactorial k =
-    n ^ k + ∑ i, a i * n ^ (i : ℕ) := exists_descFactorial_eq_polynomial (k : ℕ)
-  have : Summable (fun n ↦ (n + k).descFactorial k * r ^ n - ∑ i, a i * n ^ (i : ℕ) * r ^ n) := by
+    have A : (n + k).descFactorial k = P.eval n := by
+      have : n + 1 + k - 1 = n + k := by omega
+      simp [P, ascPochhammer_nat_eq_descFactorial, this]
+    conv_lhs => rw [A, mP.as_sum, dP]
+    simp [eval_finset_sum]
+  have : Summable (fun n ↦ (n + k).descFactorial k * r ^ n
+      - ∑ i ∈ range k, a i * n ^ (i : ℕ) * r ^ n) := by
     apply (summable_descFactorial_mul_geometric_of_norm_lt_one k hr).sub
-    apply summable_sum (fun i _ ↦ ?_)
+    apply summable_sum (fun i hi ↦ ?_)
     simp_rw [mul_assoc]
-    exact (hk _ i.2).mul_left _
+    simp at hi
+    exact (hk _ hi).mul_left _
   convert this using 1
   ext n
   simp [ha n, add_mul, sum_mul]

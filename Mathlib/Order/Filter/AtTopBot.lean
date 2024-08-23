@@ -1314,21 +1314,6 @@ theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injec
   (Finset.monotone_preimage hf).tendsto_atTop_finset fun x =>
     ⟨{f x}, Finset.mem_preimage.2 <| Finset.mem_singleton_self _⟩
 
-lemma tendsto_finset_prod_atTop :
-    Tendsto (fun (p : Finset ι × Finset ι') ↦ p.1 ×ˢ p.2) (atTop ×ˢ atTop) atTop := by
-  classical
-  simp only [tendsto_atTop]
-  intro c
-  have : {a : Finset ι | Finset.image Prod.fst c ⊆ a}
-      ×ˢ {b : Finset ι' | Finset.image Prod.snd c ⊆ b} ∈ atTop ×ˢ atTop :=
-    prod_mem_prod (mem_atTop _) (mem_atTop _)
-  filter_upwards [this]
-  rintro ⟨d1, d2⟩ ⟨hd1, hd2⟩
-  simp only [Set.mem_setOf_eq] at hd1 hd2
-  rintro ⟨u, v⟩ huv
-  simp only [Finset.mem_product]
-  exact ⟨hd1 (Finset.mem_image_of_mem Prod.fst huv), hd2 (Finset.mem_image_of_mem Prod.snd huv)⟩
-
 theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
     (atTop : Filter α) ×ˢ (atTop : Filter β) = (atTop : Filter (α × β)) := by
   cases isEmpty_or_nonempty α
@@ -1336,6 +1321,18 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
   cases isEmpty_or_nonempty β
   · subsingleton
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
+
+lemma tendsto_finset_prod_atTop :
+    Tendsto (fun (p : Finset ι × Finset ι') ↦ p.1 ×ˢ p.2) atTop atTop := by
+  classical
+  apply Monotone.tendsto_atTop_atTop
+  · intro p q hpq
+    simpa using Finset.product_subset_product hpq.1 hpq.2
+  · intro b
+    use (Finset.image Prod.fst b, Finset.image Prod.snd b)
+    rintro ⟨d1, d2⟩ hd
+    simp only [Finset.mem_product, Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right]
+    exact ⟨⟨d2, hd⟩, ⟨d1, hd⟩⟩
 
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
     (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
