@@ -80,11 +80,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
     intro Y l hl
     apply (hB' hf (l ≫ h)).ext
     intro M m hm
-    have : bind U B (m ≫ l ≫ h ≫ f) := by
-      -- Porting note: had to make explicit the parameter `((m ≫ l ≫ h) ≫ f)` and
-      -- using `by exact`
-      have : bind U B ((m ≫ l ≫ h) ≫ f) := by exact Presieve.bind_comp f hf hm
-      simpa using this
+    have : bind U B (m ≫ l ≫ h ≫ f) := by simpa using (Presieve.bind_comp f hf hm : bind U B _)
     trans s (m ≫ l ≫ h ≫ f) this
     · have := ht (U.downward_closed hf h) _ ((B _).downward_closed hl m)
       rw [op_comp, FunctorToTypes.map_comp_apply] at this
