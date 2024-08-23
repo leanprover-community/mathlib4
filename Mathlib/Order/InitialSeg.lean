@@ -364,24 +364,6 @@ theorem subrelIso_apply (f : r ≺i s) (a : α) :
     f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _
 
-/-- Any principal segment of a well order is order-isomorphic to a `Subrel` -/
-@[simps! symm_apply]
-noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
-  RelIso.symm
-  { toEquiv := ((Equiv.ofInjective f f.injective).trans (Equiv.setCongr
-      (funext fun _ ↦ propext f.down.symm))),
-    map_rel_iff' := f.map_rel_iff }
-
-@[simp]
-theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
-    f (f.subrelIso b) = b :=
-  Equiv.apply_ofInjective_symm f.injective _
-
-@[simp]
-theorem subrelIso_apply (f : r ≺i s) (a : α) :
-    f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
-  Equiv.ofInjective_symm_apply f.injective _
-
 /-- Restrict the codomain of a principal segment -/
 def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) : r ≺i Subrel s p :=
   ⟨RelEmbedding.codRestrict p f H, ⟨f.top, H₂⟩, fun ⟨_, _⟩ =>
