@@ -358,7 +358,7 @@ theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
   rw [List.nodup_cons] at hl
   have : ∀ b ∈ l, ¬a = b → r a b ↔ r a b := fun b hb =>
     imp_iff_right (ne_of_mem_of_not_mem hb hl.1).symm
-  simp [Set.setOf_or, Set.pairwise_insert_of_symmetric (@symm_of _ r _), ih hl.2, and_comm,
+  simp [Set.setOf_or, Set.pairwise_insert_of_symmetric fun _ _ ↦ symm_of r, ih hl.2, and_comm,
     forall₂_congr this]
 
 theorem Nodup.take_eq_filter_mem [DecidableEq α] :
