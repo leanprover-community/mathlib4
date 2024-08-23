@@ -1038,6 +1038,7 @@ section LinearOrder
 
 variable [LinearOrder α] {p : (α →₀ M) → Prop}
 
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`. -/
 theorem induction_on_max (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
     p f := by
@@ -1051,11 +1052,13 @@ theorem induction_on_max (f : α →₀ M) (h0 : p 0)
     rw [← mem_support_iff, hs]
     exact mem_insert_self a s
 
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`. -/
 theorem induction_on_min (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (single a b + f)) :
     p f :=
   induction_on_max (α := αᵒᵈ) f h0 ha
 
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`. -/
 theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
     p f := by
@@ -1069,6 +1072,7 @@ theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
     rw [← mem_support_iff, hs]
     exact mem_insert_self a s
 
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`. -/
 theorem induction_on_min₂ (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (f + single a b)) :
     p f :=
