@@ -20,6 +20,13 @@ Everything else is deduced from this:
 
 * `Adjunction.rightAdjointUniq` : If `G` and `G'` are both right adjoint to `F`, then they are
   naturally isomorphic.
+
+## TODO
+
+There some overlap with the file `Adjunction.Mates`. In particular, `natTransEquiv` is just a
+special case of `mateEquiv`. However, before removing `natTransEquiv`, in favour of `mateEquiv`,
+the latter needs some more API lemmas such as `natTransEquiv_apply_app`, `natTransEquiv_id`, etc.
+in order to make automation work better in the rest of this file.
 -/
 
 open CategoryTheory
@@ -47,7 +54,7 @@ def natTransEquiv {F F' : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' 
     app := fun X ↦ adj2.unit.app (G.obj X) ≫ G'.map (f.app (G.obj X) ≫ adj1.counit.app X)
     naturality := by
       intro X Y g
-      erw [← adj2.unit_naturality_assoc]
+      erw [← adj2.unit_naturality_assoc, ]
       simp only [← Functor.map_comp]
       simp
   }
