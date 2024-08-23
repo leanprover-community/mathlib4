@@ -85,6 +85,17 @@ structure StrongTrans (F G : Pseudofunctor B C) where
 attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
   StrongTrans.naturality_id StrongTrans.naturality_comp
 
+/-- A structure on an oplax transformation that promotes it to a strong transformation.
+
+See `Pseudofunctor.StrongTrans.mkOfOplax`. -/
+structure StrongCore {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G) where
+  /-- The underlying 2-isomorphisms of the naturality constraint. -/
+  naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
+  /-- The 2-isomorphisms agree with the underlying 2-morphism of the oplax transformation. -/
+  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
+
+attribute [simp] StrongCore.naturality_hom
+
 namespace StrongTrans
 
 section
@@ -103,11 +114,11 @@ instance hasCoeToOplax : Coe (StrongTrans F G) (OplaxTrans F.toOplax G) :=
 
 /-- Construct a strong transformation from an oplax transformation whose
 naturality 2-morphism is an isomorphism. -/
-def mkOfOplax {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G)
-    (η' : OplaxTrans.StrongCore η) : StrongTrans F G where
+def mkOfOplax {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G) (η' : StrongCore η) :
+    StrongTrans F G where
   app := η.app
   naturality := η'.naturality
-  -- TODO: why are these three not automatic?
+  -- Not automatic as simp must convert F.toOplax.map₂ to F.map₂ in η.naturality_naturality etc
   naturality_naturality θ := by simpa using η.naturality_naturality θ
   naturality_id a := by simpa using η.naturality_id a
   naturality_comp f g := by simpa using η.naturality_comp f g
@@ -118,7 +129,6 @@ noncomputable def mkOfOplax' {F G : Pseudofunctor B C} (η : OplaxTrans F.toOpla
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongTrans F G where
   app := η.app
   naturality := fun f => asIso (η.naturality _)
-  -- TODO: automatic...?
   naturality_naturality θ := by simpa using η.naturality_naturality θ
   naturality_id a := by simpa using η.naturality_id a
   naturality_comp f g := by simpa using η.naturality_comp f g
@@ -217,12 +227,5 @@ instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
   Hom F G := StrongTrans F G
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
-
--- /-- Category structure on the strong natural transformations between pseudofunctors. -/
--- @[simps]
--- instance Pseudofunctor.homcategory (F G : Pseudofunctor B C) : Category (F ⟶ G) where
---   Hom η θ := Modification η.toOplax θ.toOplax
---   id η := Modification.id η.toOplax
---   comp := Modification.vcomp
 
 end CategoryTheory.Pseudofunctor

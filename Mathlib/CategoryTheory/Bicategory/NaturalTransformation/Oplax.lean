@@ -172,17 +172,6 @@ instance : CategoryStruct (OplaxFunctor B C) where
 
 end
 
-/-- A structure on an oplax transformation that promotes it to a strong transformation.
-
-See `Pseudofunctor.StrongTrans.mkOfOplax`. -/
-structure StrongCore {F G : OplaxFunctor B C} (η : OplaxTrans F G) where
-  /-- The underlying 2-isomorphisms of the naturality constraint. -/
-  naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
-  /-- The 2-isomorphisms agree with the underlying 2-morphism of the oplax transformation. -/
-  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
-
-attribute [simp] StrongCore.naturality_hom
-
 end OplaxTrans
 
 end CategoryTheory

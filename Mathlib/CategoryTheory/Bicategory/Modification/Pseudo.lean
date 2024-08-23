@@ -66,7 +66,6 @@ instance : Inhabited (Modification η η) :=
 variable {η θ} {ι : F ⟶ G}
 variable (Γ : Modification η θ)
 
--- TODO: add coercion for strong transformations? (or is it not infered here?)
 /-- The modification between the underlying oplax transformations of oplax functors -/
 @[simps]
 def toOplax : Oplax.Modification η.toOplax θ.toOplax where
