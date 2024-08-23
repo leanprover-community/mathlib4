@@ -818,8 +818,7 @@ partial def transformDeclAux
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
   if let some matcherInfo ← getMatcherInfo? src then
-    #adaptation_note
-    /--
+    /-
     Use `Match.addMatcherInfo tgt matcherInfo`
     once https://github.com/leanprover/lean4/pull/5068 is in
     -/
