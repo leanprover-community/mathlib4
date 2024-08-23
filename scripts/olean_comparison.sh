@@ -2,20 +2,32 @@
 
  : << 'BASH_MODULE_DOCS'
 
+# Change in size of the `.olean`s
+
 This is the main script for the `compare oleans` CI step.
 It should take place after `lake build` has taken place, since it computes sizes of the oleans.
 
-First, the script first prints the sizes of the oleans of the *current* branch.
+There are two CI steps involved:
+* `print the sizes of the oleans` that simply tallies the sizes of all the folders where the
+  `.olean`s are stored;
+* `compare oleans` that essentially uses the script below to find differences in size between
+  the `.olean`s on master and the ones in the current PR.
+
+## The script
+
+First, the script retrieves the log of the CI step `print the sizes of the oleans` from the
+latest master run.
+These are the "reference" `.olean`s against which the differences are computed.
+
+Next, the script first prints the sizes of the oleans of the *current* branch.
 This means that on a PR you see the sizes of the newly created oleans
 and on master you see the sizes of the "comparison" oleans.
 
-Next, the script retrieves the sizes from master (using the printout from the previous step in
-the logs of the latest CI run on master).
-
-Finally, the script runs the comparison between the two sizes, flagging every folder that had a
-percentage change of at least 5% (either positive or negative).
-The percentage difference for the full oleans folder is always printed, whether or not it exceeds
-the threshold.
+Finally, the script runs the comparison between the "`master`" sizes and the sizes
+of the newly created oleans.
+It flags every folder that has a percentage change of at least 5% (either positive or negative).
+The percentage difference for the full `.olean`s folder is always printed, whether or not it
+exceeds the threshold.
 
 BASH_MODULE_DOCS
 
