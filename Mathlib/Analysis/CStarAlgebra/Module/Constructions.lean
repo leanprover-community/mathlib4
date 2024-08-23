@@ -10,14 +10,15 @@ import Mathlib.Topology.MetricSpace.Bilipschitz
 /-! # Constructions of Hilbert C⋆-modules
 
 In this file we define the following constructions of `CStarModule`s where `A` denotes a C⋆-algebra.
-Note that for each type `E` listed below, the instance is declared on the type synonym
-`WithCStarModule E` (with the notation `C⋆ᵐᵒᵈ E`), instead of on `E` itself; we explain the
-reasoning behind each decision below.
+For some of the types listed below, the instance is declared on the type synonym `WithCStarModule E`
+(with the notation `C⋆ᵐᵒᵈ E`), instead of on `E` itself; we explain the reasoning behind each
+decision below.
 
 1. `A` as a `CStarModule` over itself.
-2. `E × F` as a `CStarModule` over `A`, when `E` and `F` are themselves `CStarModule`s over `A`.
-3. `Π i : ι, E i` as a `CStarModule` over `A`, when each `E i` is a `CStarModule` over `A` and `ι`
-  is a `Fintype`.
+2. `C⋆ᵐᵒᵈ (E × F)` as a `CStarModule` over `A`, when `E` and `F` are themselves `CStarModule`s over
+  `A`.
+3. `C⋆ᵐᵒᵈ (Π i : ι, E i)` as a `CStarModule` over `A`, when each `E i` is a `CStarModule` over `A`
+  and `ι` is a `Fintype`.
 4. `E` as a `CStarModule` over `ℂ`, when `E` is an `InnerProductSpace` over `ℂ`.
 
 For `E × F` and `Π i : ι, E i`, we are required to declare the instance on a type synonym rather
@@ -26,28 +27,25 @@ the one induced by the C⋆-module structure. Moreover, the norm induced by the 
 doesn't agree with any other natural norm on these types (e.g., `WithLp 2 (E × F)` unless `A := ℂ`),
 so we need a new synonym.
 
-As for `A` as a C⋆-module over itself, or `E` as a C⋆-module over `ℂ` when `e` is an inner product
-space, we note while it is *possible* to declare the instances on `A` and `E` themselves without
-causing instance diamonds, we explicitly choose not to do so. To understand why first note that
-since `ℂ` is both a C⋆-algebra and an inner product space, whatever choice we make for one of these,
-we should make the same choice for the other, for otherwise we would be left with two different ways
-to view `ℂ` as a C⋆-module over itself. Moreover, note that if `F` is a C⋆-module over `A`, it will
-often be the case that we'll be considering expressions involving terms of `A` and terms of `F`
-simultaneously. If we were to declare the instance on `A` itself, rather than on `C⋆ᵐᵒᵈ A`, then
-any `rw` or `simp` lemmas about C⋆-modules would apply to both `A` and `F`, and we would therefore
-need all of these lemmas to take explicit arguments, and use them regularly, to avoid ambiguity.
-Not only would this be painful, our stance is that, when considering `F` as a C⋆-module over `A`, it
-is not usually the case that we are interested in the C⋆-module structure of `A` itself, but rather
-its C⋆-algebra structure.
+On `A` (a C⋆-algebra) and `E` (an inner product space), we declare the instances on the types
+themselves to ease the use of the C⋆-module structure. This does have the potential to cause
+inconvenience (as sometimes Lean will see terms of type `A` and apply lemmas pertaining to
+C⋆-modules to those terms, when the lemmas were actually intended for terms of some other
+C⋆-module in context, say `F`, in which case the arguments must be provided explicitly; see for
+instance the application of `CStarModule.norm_eq_sqrt_norm_inner_self` in the proof of
+`WithCStarModule.max_le_prod_norm` below). However, we believe that this, hopefully rare,
+inconvenience is outweighed by avoiding translating between type synonyms where possible.
 
 For more details on the importance of the `WithCStarModule` type synonym, see the module
 documentation for `Analysis.CStarAlgebra.Module.Synonym`.
 
 ## Implementation notes
 
-When `A := ℂ` and `E := ℂ`, then `E` is both a C⋆-algebra (so it inherits a `CStarModule` instance
+When `A := ℂ` and `E := ℂ`, then `ℂ` is both a C⋆-algebra (so it inherits a `CStarModule` instance
 via (1) above) and an inner product space (so it inherits a `CStarModule` instance via (4) above).
-We provide a sanity check ensuring that these two instances are definitionally equal.
+We provide a sanity check ensuring that these two instances are definitionally equal. We also ensure
+that the `Inner ℂ ℂ` instance from `InnerProductSpace` is definitionally equal to the one inherited
+from the `CStarModule` instances.
 
 Note that `C⋆ᵐᵒᵈ E` is *already* equipped with a bornology and uniformity whenever `E` is (namely,
 the pullback of the respective structures through `WithCStarModule.equiv`), so in each of the above
@@ -68,17 +66,11 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℂ A] [P
 
 section Self
 
-instance : Norm (C⋆ᵐᵒᵈ A) where
-  norm x := ‖equiv _ x‖
-
-lemma norm_equiv {A : Type*} [NonUnitalNormedRing A] (x : C⋆ᵐᵒᵈ A) : ‖equiv A x‖ = ‖x‖ :=
-  rfl
-
 variable [CStarRing A] [StarOrderedRing A] [SMulCommClass ℂ A A]
 
 /-- Reinterpret a C⋆-algebra `A` as a `CStarModule` over itself. -/
-instance : CStarModule A (C⋆ᵐᵒᵈ A) where
-  inner x y := star (equiv A x) * (equiv A y)
+instance : CStarModule A A where
+  inner x y := star x * y
   inner_add_right := mul_add ..
   inner_self_nonneg := star_mul_self_nonneg _
   inner_self := CStarRing.star_mul_self_eq_zero_iff _
@@ -86,49 +78,10 @@ instance : CStarModule A (C⋆ᵐᵒᵈ A) where
   inner_smul_right_complex := mul_smul_comm ..
   star_inner x y := by simp
   norm_eq_sqrt_norm_inner_self {x} := by
-    rw [← sq_eq_sq ?_ (by positivity)]
-    · simpa [sq] using Eq.symm <| CStarRing.norm_star_mul_self (x := equiv _ x)
-    · exact norm_nonneg (equiv A x)
+    rw [← sq_eq_sq (norm_nonneg _) (by positivity)]
+    simpa [sq] using Eq.symm <| CStarRing.norm_star_mul_self
 
-lemma inner_def (x y : C⋆ᵐᵒᵈ A) : ⟪x, y⟫_A = star (equiv A x) * (equiv A y) := rfl
-
-variable [StarModule ℂ A] [IsScalarTower ℂ A A] [CompleteSpace A]
-
-section Aux
-
--- We temporarily disable the uniform space and bornology on `C⋆ᵐᵒᵈ A` while proving
--- that those induced by the new norm are equal to the old ones.
-attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBornology
-attribute [local instance]  CStarModule.normedAddCommGroup
-
-/-- `WithCStarModule.linearEquiv` as a `ℂ`-linear isometric equivalence when viewing `A` as a
-`CStarModule` over itself. -/
-private def equivₗᵢAux : C⋆ᵐᵒᵈ A ≃ₗᵢ[ℂ] A where
-  toLinearEquiv := linearEquiv ℂ A
-  norm_map' := norm_equiv
-
-open Uniformity Bornology
-
-private lemma uniformity_eq_aux :
-    𝓤[(inferInstance : UniformSpace A).comap <| equiv A] = 𝓤 (C⋆ᵐᵒᵈ A) :=
-  equivₗᵢAux.isometry.uniformInducing.comap_uniformity
-
-private lemma isBounded_iff_aux (s : Set (C⋆ᵐᵒᵈ A)) :
-    @IsBounded _ (induced <| equiv A) s ↔ IsBounded s :=
-  isBounded_iff_of_bilipschitz equivₗᵢAux.isometry.antilipschitz equivₗᵢAux.isometry.lipschitz s
-
-end Aux
-
-instance : NormedAddCommGroup (C⋆ᵐᵒᵈ A) :=
-  .ofCoreReplaceAll normedSpaceCore uniformity_eq_aux isBounded_iff_aux
-
-instance : NormedSpace ℂ (C⋆ᵐᵒᵈ A) := .ofCore normedSpaceCore
-
-/-- `WithCStarModule.linearEquiv` as a `ℂ`-linear isometric equivalence when viewing `A` as a
-`CStarModule` over itself. -/
-def equivₗᵢ : C⋆ᵐᵒᵈ A ≃ₗᵢ[ℂ] A where
-  toLinearEquiv := linearEquiv ℂ A
-  norm_map' := norm_equiv
+lemma inner_def (x y : A) : ⟪x, y⟫_A = star x * y := rfl
 
 end Self
 
@@ -181,7 +134,8 @@ variable [CStarRing A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A] [Complete
 
 lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ (E × F)) : max ‖x.1‖ ‖x.2‖ ≤ ‖x‖ := by
   rw [prod_norm]
-  simp only [equiv_fst, norm_eq_sqrt_norm_inner_self, equiv_snd, max_le_iff, norm_nonneg,
+  simp only [equiv_fst, norm_eq_sqrt_norm_inner_self (E := E),
+    norm_eq_sqrt_norm_inner_self (E := F), equiv_snd, max_le_iff, norm_nonneg,
     Real.sqrt_le_sqrt_iff]
   constructor
   all_goals
@@ -358,85 +312,33 @@ variable {E : Type*}
 variable [NormedAddCommGroup E] [InnerProductSpace ℂ E]
 variable [instSMulOp : SMul ℂᵐᵒᵖ E] [instCentral : IsCentralScalar ℂ E]
 
--- we include the inner product space instance in order to guarantee that this instance isn't
--- triggered in other situations
-@[nolint unusedArguments]
-noncomputable instance {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] :
-    Norm (C⋆ᵐᵒᵈ E) where
-  norm x := ‖equiv _ x‖
-
-lemma norm_equiv_of_inner {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] (x : C⋆ᵐᵒᵈ E) :
-    ‖equiv E x‖ = ‖x‖ :=
-  rfl
-
 /-- Reinterpret an inner product space `E` over `ℂ` as a `CStarModule` over `ℂ`.
 
 Note: this instance requires `SMul ℂᵐᵒᵖ E` and `IsCentralScalar ℂ E` instances to exist on `E`,
 which is unlikely to occur in practice. However, in practice one could either add those instances
 to the type `E` in question, or else supply them to this instance manually, which is reason behind
 the naming of these two instance arguments. -/
-instance instCStarModuleComplex : CStarModule ℂ (C⋆ᵐᵒᵈ E) where
-  inner x y := ⟪equiv _ x, equiv _ y⟫_ℂ
-  inner_add_right {x y z} := by simp [_root_.inner_add_right]
+instance instCStarModuleComplex : CStarModule ℂ E where
+  inner x y := ⟪x, y⟫_ℂ
+  inner_add_right := _root_.inner_add_right ..
   inner_self_nonneg {x} := by
     simp only
     rw [← inner_self_ofReal_re, RCLike.ofReal_nonneg]
     exact inner_self_nonneg
-  inner_self {x} := by simpa only [inner_self_eq_zero] using (linearEquiv ℂ E).map_eq_zero_iff
+  inner_self := inner_self_eq_zero
   inner_op_smul_right := by simp [inner_smul_right, mul_comm]
-  inner_smul_right_complex := by simp [inner_smul_right]
-  star_inner x y := by simp [star_inner]
+  inner_smul_right_complex := inner_smul_right ..
+  star_inner _ _ := inner_conj_symm ..
   norm_eq_sqrt_norm_inner_self {x} := by
-    simpa only [← inner_self_re_eq_norm] using norm_eq_sqrt_inner (equiv E x)
+    simpa only [← inner_self_re_eq_norm] using norm_eq_sqrt_inner x
 
--- Ensures that the two ways to obtain `CStarModule ℂ (C⋆ᵐᵒᵈ ℂ)` are definitionally equal.
+-- Ensures that the two ways to obtain `CStarModule ℂ ℂ` are definitionally equal.
 example : instCStarModule (A := ℂ) = instCStarModuleComplex := by with_reducible_and_instances rfl
 
-lemma inner_eq_inner (x y : C⋆ᵐᵒᵈ E) : ⟪x, y⟫_ℂ = ⟪equiv E x, equiv E y⟫_ℂ := rfl
-
-section Aux
-
--- We temporarily disable the uniform space and bornology on `C⋆ᵐᵒᵈ A` while proving
--- that those induced by the new norm are equal to the old ones.
-attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBornology
-attribute [local instance]  CStarModule.normedAddCommGroup
-
-/-- `WithCStarModule.linearEquiv` as a `ℂ`-linear isometric equivalence when viewing an inner
-product space `E` over `ℂ` as a `CStarModule` over `ℂ`.
-
-This is only an auxiliary definition and should not be used outside this file, as it incorporates
-the wrong `MetricSpace` instance on `C⋆ᵐᵒᵈ E`. -/
-private def equivₗᵢOfInnerAux : C⋆ᵐᵒᵈ E ≃ₗᵢ[ℂ] E where
-  toLinearEquiv := linearEquiv ℂ E
-  norm_map' := norm_equiv_of_inner
-
-open Uniformity Bornology
-
-private lemma uniformity_eq_of_inner_aux :
-    𝓤[(inferInstance : UniformSpace E).comap <| equiv E] = 𝓤 (C⋆ᵐᵒᵈ E) :=
-  equivₗᵢOfInnerAux.isometry.uniformInducing.comap_uniformity
-
-private lemma isBounded_iff_of_inner_aux (s : Set (C⋆ᵐᵒᵈ E)) :
-    @IsBounded _ (induced <| equiv E) s ↔ IsBounded s :=
-  isBounded_iff_of_bilipschitz equivₗᵢOfInnerAux.isometry.antilipschitz
-    equivₗᵢOfInnerAux.isometry.lipschitz s
-
-end Aux
-
-noncomputable instance instNormedAddCommGroupOfInner : NormedAddCommGroup (C⋆ᵐᵒᵈ E) :=
-  .ofCoreReplaceAll normedSpaceCore uniformity_eq_of_inner_aux isBounded_iff_of_inner_aux
-
--- Ensures that the two ways to obtain `NormedAddCommGroup (C⋆ᵐᵒᵈ ℂ)` are definitionally equal.
-example : instNormedAddCommGroup (A := ℂ) = instNormedAddCommGroupOfInner := by
-  with_reducible_and_instances rfl
-
-instance : NormedSpace ℂ (C⋆ᵐᵒᵈ E) := .ofCore normedSpaceCore
-
-/-- `WithCStarModule.linearEquiv` as a `ℂ`-linear isometric equivalence when viewing an inner
-product space `E` over `ℂ` as a `CStarModule` over `ℂ`. -/
-def equivOfInnerₗᵢ : C⋆ᵐᵒᵈ E ≃ₗᵢ[ℂ] E where
-  toLinearEquiv := linearEquiv ℂ E
-  norm_map' := norm_equiv_of_inner
+/- Ensures that the two `Inner ℂ ℂ` instances are definitionally equal. Note that this cannot be at
+reducible and instances transparency because the one from `InnerProductSpace` uses `StarRingEnd`
+whereas `WithCStarModule.instCStarModule.toInner` uses `star` since `A` may not be commutative. -/
+example : (toInner : Inner ℂ ℂ) = WithCStarModule.instCStarModule.toInner := rfl
 
 end InnerProductSpace
 
