@@ -31,7 +31,7 @@ for closed monoidal categories, and these could be generalised.
 -/
 
 
-universe v u u₂
+universe v v₂ u u₂
 
 noncomputable section
 
@@ -353,7 +353,7 @@ theorem initial_mono {I : C} (B : C) (t : IsInitial I) [CartesianClosed C] : Mon
 instance Initial.mono_to [HasInitial C] (B : C) [CartesianClosed C] : Mono (initial.to B) :=
   initial_mono B initialIsInitial
 
-variable {D : Type u₂} [Category.{v} D]
+variable {D : Type u₂} [Category.{v₂} D]
 
 section Functor
 
