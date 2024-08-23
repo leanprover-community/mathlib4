@@ -2557,6 +2557,7 @@ import Mathlib.Data.ZMod.Quotient
 import Mathlib.Data.ZMod.Parity
 import Mathlib.Data.ZMod.Units
 import Mathlib.Deprecated.Aliases
+import Mathlib.Data.ZMod.Units
 import Mathlib.Deprecated.Combinator
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.HashMap
