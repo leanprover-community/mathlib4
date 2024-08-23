@@ -13,6 +13,7 @@ import Mathlib.Lean.Name
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
+import Lean.Meta.Match.MatcherInfo
 import Batteries.Lean.NameMapAttribute
 import Batteries.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
@@ -816,6 +817,11 @@ partial def transformDeclAux
     selectionRange := ← getDeclarationRange cfg.ref }
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  if let some matcherInfo ← getMatcherInfo? src then
+    -- Use
+    --   Match.addMatcherInfo tgt matcherInfo
+    -- once on lean 4.13.
+    modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
 
 /-- Copy the instance attribute in a `to_additive`
 
