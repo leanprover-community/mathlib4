@@ -177,7 +177,7 @@ lemma LFunction_dft (Φ : ZMod N → ℂ) {s : ℂ} (hs : s ≠ 1) :
     LFunction (𝓕 Φ) s = ∑ j : ZMod N, Φ j * expZeta (toAddCircle (-j)) s := by
   simp only [← LFunction_stdAddChar_eq_expZeta _ _ (Or.inr hs), LFunction, mul_sum]
   rw [sum_comm, dft_def]
-  simp only [sum_mul, mul_sum, Submonoid.smul_def, smul_eq_mul, stdAddChar_apply, ← mul_assoc]
+  simp only [sum_mul, mul_sum, Circle.smul_def, smul_eq_mul, stdAddChar_apply, ← mul_assoc]
   congr 1 with j
   congr 1 with k
   rw [mul_assoc (Φ _), mul_comm (Φ _), neg_mul]
