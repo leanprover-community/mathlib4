@@ -264,13 +264,15 @@ end Fin
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * m ^ (i : ℕ), by
-      induction' n with n ih
-      · simp
-      cases m
-      · exact isEmptyElim (f <| Fin.last _)
-      simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
-      refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _ (Fin.is_le _)).trans_eq ?_
-      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
+      induction n with
+      | zero => simp
+      | succ n ih =>
+        cases m
+        · exact isEmptyElim (f <| Fin.last _)
+        simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
+        refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _
+          (Fin.is_le _)).trans_eq ?_
+        rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
     (fun a b => ⟨a / m ^ (b : ℕ) % m, by
       cases' n with n
       · exact b.elim0
@@ -280,16 +282,17 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       · exact Nat.mod_lt _ m.succ_pos⟩)
     fun a => by
       dsimp
-      induction' n with n ih
-      · subsingleton [(finCongr <| pow_zero _).subsingleton]
-      simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
-      ext
-      simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
-        mul_one, pow_succ', ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
-      rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
-      -- Porting note: replaces `a.is_lt` in the wildcard above. Caused by a refactor of the `npow`
-      -- instance for `Fin`.
-      exact a.is_lt.trans_eq (pow_succ' _ _)
+      induction n with
+      | zero => subsingleton [(finCongr <| pow_zero _).subsingleton]
+      | succ n ih =>
+        simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
+        ext
+        simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
+          mul_one, pow_succ', ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
+        rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
+        -- Porting note: replaces `a.is_lt` in the wildcard above.
+        -- Caused by a refactor of the `npow` instance for `Fin`.
+        exact a.is_lt.trans_eq (pow_succ' _ _)
 
 theorem finFunctionFinEquiv_apply {m n : ℕ} (f : Fin n → Fin m) :
     (finFunctionFinEquiv f : ℕ) = ∑ i : Fin n, ↑(f i) * m ^ (i : ℕ) :=

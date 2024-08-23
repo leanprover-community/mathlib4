@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Topological groups

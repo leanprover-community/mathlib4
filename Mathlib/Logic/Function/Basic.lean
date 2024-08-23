@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Nonempty
-import Mathlib.Init.Set
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Batteries.Tactic.Init
 
