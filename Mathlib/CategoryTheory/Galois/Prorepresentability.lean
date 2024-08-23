@@ -6,7 +6,7 @@ Authors: Christian Merten
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.Galois.Decomposition
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
