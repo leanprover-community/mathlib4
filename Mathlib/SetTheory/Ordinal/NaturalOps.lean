@@ -27,13 +27,13 @@ The natural addition of two ordinals corresponds to adding their Cantor normal f
 polynomials in `ω`. Likewise, their natural multiplication corresponds to multiplying the Cantor
 normal forms as polynomials.
 
-# Implementation notes
+## Implementation notes
 
 Given the rich algebraic structure of these two operations, we choose to create a type synonym
 `NatOrdinal`, where we provide the appropriate instances. However, to avoid casting back and forth
 between both types, we attempt to prove and state most results on `Ordinal`.
 
-# Todo
+## Todo
 
 - Prove the characterizations of natural addition and multiplication in terms of the Cantor normal
   form.
