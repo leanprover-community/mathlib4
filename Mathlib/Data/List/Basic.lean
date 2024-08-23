@@ -543,7 +543,16 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
-  simp [getElem_eq_iff]
+  simp
+
+@[simp]
+theorem getElem_tail {l : List α} {i : ℕ} (h : i < l.tail.length) :
+    l.tail[i] = l[i + 1]'(by rw [length_tail] at h; omega) := by
+  cases l <;> [cases h; rfl]
+
+theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
+    (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
+  cases n <;> simp
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
@@ -1365,24 +1374,29 @@ theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
     · simp
     · simp only [hl, get?]
 
-theorem get_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
-    (scanl f b l).get ⟨i + 1, h⟩ =
-      f ((scanl f b l).get ⟨i, Nat.lt_of_succ_lt h⟩)
-        (l.get ⟨i, Nat.lt_of_succ_lt_succ (lt_of_lt_of_le h (le_of_eq (length_scanl b l)))⟩) := by
+theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
+    (scanl f b l)[i + 1] =
+      f ((scanl f b l)[i]'(Nat.lt_of_succ_lt h))
+        (l[i]'(Nat.lt_of_succ_lt_succ (h.trans_eq (length_scanl b l)))) := by
   induction i generalizing b l with
   | zero =>
     cases l
     · simp only [length, zero_eq, lt_self_iff_false] at h
     · simp
   | succ i hi =>
-    cases l with
-    | nil =>
-      simp only [length] at h
+    cases l
+    · simp only [length] at h
       exact absurd h (by omega)
-    | cons head tail =>
-      simp_rw [get_of_eq scanl_cons, get_eq_getElem]; rw [getElem_append_right']
-      · simp_rw [length_singleton, Nat.add_one_sub_one]; exact hi
-      · rw [length_singleton]; omega
+    · simp_rw [scanl_cons]
+      rw [getElem_append_right]
+      · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
+      · simp only [length_singleton]; omega
+
+theorem get_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
+    (scanl f b l).get ⟨i + 1, h⟩ =
+      f ((scanl f b l).get ⟨i, Nat.lt_of_succ_lt h⟩)
+        (l.get ⟨i, Nat.lt_of_succ_lt_succ (lt_of_lt_of_le h (le_of_eq (length_scanl b l)))⟩) :=
+  getElem_succ_scanl h
 
 end Scanl
 
