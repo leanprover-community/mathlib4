@@ -446,15 +446,16 @@ theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
 
 /-! ### Enumerating elements in a well-order with ordinals. -/
 
-/--
-A well order `r` is order isomorphic to the set of ordinals smaller than `type r`.
+/-- A well order `r` is order isomorphic to the set of ordinals smaller than `type r`.
 `enum r ⟨o, h⟩` is the `o`-th element of `α` ordered by `r`.
-That is, `enum` maps an initial segment of the ordinals, those
-less than the order type of `r`, to the elements of `α`.
--/
+
+That is, `enum` maps an initial segment of the ordinals, those less than the order type of `r`, to
+the elements of `α`. -/
+-- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply_coe]
-def enum (r : α → α → Prop) [IsWellOrder α r] : Subrel (· < ·) {o | o < type r} ≃r r :=
-(typein.principalSeg r).subrelIso
+def enum (r : α → α → Prop) [IsWellOrder α r] :
+    @RelIso (Subtype fun o => o < type r) α (Subrel (· < · ) _) r :=
+  (typein.principalSeg r).subrelIso
 
 @[simp]
 theorem typein_enum (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < type r) :
@@ -486,8 +487,8 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
   relIso_enum' _ _ _ _
 
 theorem lt_wf : @WellFounded Ordinal (· < ·) :=
-  wellFounded_iff_wellFounded_subrel.mpr (·.induction_on fun ⟨_, r, wo⟩ ↦
-    RelHomClass.wellFounded (typein.principalSeg r).subrelIso wo.wf)
+  wellFounded_iff_wellFounded_subrel.mpr (·.induction_on fun ⟨_, _, wo⟩ ↦
+    RelHomClass.wellFounded (enum _) wo.wf)
 
 instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩
@@ -991,7 +992,6 @@ theorem enum_le_enum' (a : Ordinal) {o o' : Ordinal} (ho : o < type (· < ·))
     (ho' : o' < type (· < ·)) :
     enum (· < ·) ⟨o, ho⟩ ≤ @enum a.out.α (· < ·) _ ⟨o', ho'⟩ ↔ o ≤ o' := by
   rw [← @enum_le_enum _ (· < ·) (isWellOrder_out_lt _), ← not_lt]
-#align ordinal.enum_le_enum' Ordinal.enum_le_enum'
 
 theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type r) (a : α) :
     ¬r a (enum r ⟨0, h0⟩) := by
@@ -1012,10 +1012,9 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).out.α) :
   rw [← @enum_typein _ (· < ·) (isWellOrder_out_lt _) a, enum_le_enum', ← lt_succ_iff]
   apply typein_lt_self
 
-@[simp]
 theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordinal} (h₁ : o₁ < type r)
     (h₂ : o₂ < type r) : enum r ⟨o₁, h₁⟩ = enum r ⟨o₂, h₂⟩ ↔ o₁ = o₂ :=
-  (typein.principalSeg r).subrelIso.injective.eq_iff.trans Subtype.mk_eq_mk
+  by rw [EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]
 
 /-- The order isomorphism between ordinals less than `o` and `o.out.α`. -/
 @[simps!]
@@ -1077,7 +1076,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       intro α r _ hf
       refine
         lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
-          ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone _ _) _).symm⟩
+          ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
       · exact fun b => enum r ⟨f b, (hf _).2 ⟨_, rfl⟩⟩
       · refine fun a b h => (typein_lt_typein r).1 ?_
         rw [typein_enum, typein_enum]

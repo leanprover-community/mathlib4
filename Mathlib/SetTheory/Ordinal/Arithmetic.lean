@@ -329,7 +329,6 @@ theorem type_subrel_lt (o : Ordinal.{u}) :
       = Ordinal.lift.{u + 1} o := by
   refine Quotient.inductionOn o ?_
   rintro ⟨α, r, wo⟩; apply Quotient.sound
-  -- Porting note: `symm; refine' [term]` → `refine' [term].symm`
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
 
 theorem mk_initialSeg (o : Ordinal.{u}) :
@@ -1715,8 +1714,8 @@ def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : O
 theorem lt_blsub₂ {o₁ o₂ : Ordinal}
     (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
     (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
-  convert lt_lsub _ (Prod.mk (enum (· < ·) a (by rwa [type_lt]))
-    (enum (· < ·) b (by rwa [type_lt])))
+  convert lt_lsub _ (Prod.mk (enum (· < ·) ⟨a, by rwa [type_lt]⟩)
+    (enum (· < ·) ⟨b, by rwa [type_lt]⟩))
   simp only [typein_enum]
 
 /-! ### Minimum excluded ordinals -/
