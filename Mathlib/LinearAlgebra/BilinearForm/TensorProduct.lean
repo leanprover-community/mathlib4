@@ -30,8 +30,7 @@ namespace LinearMap
 
 namespace BilinMap
 
-open LinearMap (BilinMap)
-open LinearMap (BilinForm)
+open LinearMap (BilinMap BilinForm)
 
 section CommSemiring
 variable [CommSemiring R] [CommSemiring A]

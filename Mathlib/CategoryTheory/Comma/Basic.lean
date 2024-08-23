@@ -50,12 +50,14 @@ namespace CategoryTheory
 open Category
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
+universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
-variable {A' B' T' : Type*} [Category A'] [Category B'] [Category T']
+variable {A' : Type u₄} [Category.{v₄} A']
+variable {B' : Type u₅} [Category.{v₅} B']
+variable {T' : Type u₆} [Category.{v₆} T']
 
 /-- The objects of the comma category are triples of an object `left : A`, an object
    `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`.  -/
@@ -251,6 +253,30 @@ noncomputable instance isEquivalenceMap
     [F₁.IsEquivalence] [F₂.IsEquivalence] [F.Faithful] [F.Full] [IsIso α] [IsIso β] :
     (map α β).IsEquivalence where
 
+/-- The equality between `map α β ⋙ fst L' R'` and `fst L R ⋙ F₁`,
+where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
+@[simp]
+theorem map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ :=
+  rfl
+
+/-- The isomorphism between `map α β ⋙ fst L' R'` and `fst L R ⋙ F₁`,
+where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
+@[simps!]
+def mapFst : map α β ⋙ fst L' R' ≅ fst L R ⋙ F₁ :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+
+/-- The equality between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
+where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
+@[simp]
+theorem map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ :=
+  rfl
+
+/-- The isomorphism between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
+where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
+@[simps!]
+def mapSnd : map α β ⋙ snd L' R' ≅ snd L R ⋙ F₂ :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+
 end
 
 /-- A natural transformation `L₁ ⟶ L₂` induces a functor `Comma L₂ R ⥤ Comma L₁ R`. -/
@@ -287,10 +313,11 @@ def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l'
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
     `Comma L₁ R ≌ Comma L₂ R`. -/
 @[simps!]
-def mapLeftIso (i : L₁ ≅ L₂) : Comma L₁ R ≌ Comma L₂ R :=
-  Equivalence.mk (mapLeft _ i.inv) (mapLeft _ i.hom)
-    ((mapLeftId _ _).symm ≪≫ mapLeftEq _ _ _ i.hom_inv_id.symm ≪≫ mapLeftComp _ _ _)
-    ((mapLeftComp _ _ _).symm ≪≫ mapLeftEq _ _ _ i.inv_hom_id ≪≫ mapLeftId _ _)
+def mapLeftIso (i : L₁ ≅ L₂) : Comma L₁ R ≌ Comma L₂ R where
+  functor := mapLeft _ i.inv
+  inverse := mapLeft _ i.hom
+  unitIso := (mapLeftId _ _).symm ≪≫ mapLeftEq _ _ _ i.hom_inv_id.symm ≪≫ mapLeftComp _ _ _
+  counitIso := (mapLeftComp _ _ _).symm ≪≫ mapLeftEq _ _ _ i.inv_hom_id ≪≫ mapLeftId _ _
 
 /-- A natural transformation `R₁ ⟶ R₂` induces a functor `Comma L R₁ ⥤ Comma L R₂`. -/
 @[simps]
@@ -326,10 +353,11 @@ def mapRightEq (r r' : R₁ ⟶ R₂) (h : r = r') : mapRight L r ≅ mapRight L
 /-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
     `Comma L R₁ ≌ Comma L R₂`. -/
 @[simps!]
-def mapRightIso (i : R₁ ≅ R₂) : Comma L R₁ ≌ Comma L R₂ :=
-  Equivalence.mk (mapRight _ i.hom) (mapRight _ i.inv)
-    ((mapRightId _ _).symm ≪≫ mapRightEq _ _ _ i.hom_inv_id.symm ≪≫ mapRightComp _ _ _)
-    ((mapRightComp _ _ _).symm ≪≫ mapRightEq _ _ _ i.inv_hom_id ≪≫ mapRightId _ _)
+def mapRightIso (i : R₁ ≅ R₂) : Comma L R₁ ≌ Comma L R₂ where
+  functor := mapRight _ i.hom
+  inverse := mapRight _ i.inv
+  unitIso := (mapRightId _ _).symm ≪≫ mapRightEq _ _ _ i.hom_inv_id.symm ≪≫ mapRightComp _ _ _
+  counitIso := (mapRightComp _ _ _).symm ≪≫ mapRightEq _ _ _ i.inv_hom_id ≪≫ mapRightId _ _
 
 end
 
@@ -427,10 +455,11 @@ def fromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
 is equivalent to their product. -/
 @[simps!]
 def equivProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
-    Comma L R ≌ A × B :=
-  Equivalence.mk ((fst L R).prod' (snd L R)) (fromProd L R)
-    { hom := 𝟙 _, inv := 𝟙 _ }
-    { hom := 𝟙 _, inv := 𝟙 _ }
+    Comma L R ≌ A × B where
+  functor := (fst L R).prod' (snd L R)
+  inverse := fromProd L R
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 /-- Taking the comma category of a functor into `A ⥤ Discrete PUnit` and the identity
 `Discrete PUnit ⥤ Discrete PUnit` results in a category equivalent to `A`. -/

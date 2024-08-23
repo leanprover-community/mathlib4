@@ -157,7 +157,7 @@ variable [LieModule R L M]
 theorem iterate_toEnd_mem_lowerCentralSeries (x : L) (m : M) (k : ℕ) :
     (toEnd R L M x)^[k] m ∈ lowerCentralSeries R L M k := by
   induction' k with k ih
-  · simp only [Nat.zero_eq, Function.iterate_zero, lowerCentralSeries_zero, LieSubmodule.mem_top]
+  · simp only [Function.iterate_zero, lowerCentralSeries_zero, LieSubmodule.mem_top]
   · simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ',
       toEnd_apply_apply]
     exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
@@ -178,7 +178,7 @@ variable {R L M}
 theorem map_lowerCentralSeries_le (f : M →ₗ⁅R,L⁆ M₂) :
     (lowerCentralSeries R L M k).map f ≤ lowerCentralSeries R L M₂ k := by
   induction' k with k ih
-  · simp only [Nat.zero_eq, lowerCentralSeries_zero, le_top]
+  · simp only [lowerCentralSeries_zero, le_top]
   · simp only [LieModule.lowerCentralSeries_succ, LieSubmodule.map_bracket_eq]
     exact LieSubmodule.mono_lie_right ⊤ ih
 
@@ -527,6 +527,7 @@ variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModul
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
 variable (hf : Surjective f) (hg : Surjective g) (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
 
+include hf hg hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
     (lowerCentralSeries R L M k : Submodule R M).map g = lowerCentralSeries R L₂ M₂ k := by
   induction' k with k ih
@@ -550,6 +551,7 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
       obtain ⟨y, rfl⟩ := hf x
       exact ⟨⁅y, n⁆, ⟨y, n, hn, rfl⟩, (hfg y n).symm⟩
 
+include hf hg hfg in
 theorem Function.Surjective.lieModuleIsNilpotent [IsNilpotent R L M] : IsNilpotent R L₂ M₂ := by
   obtain ⟨k, hk⟩ := id (by infer_instance : IsNilpotent R L M)
   use k
@@ -619,7 +621,7 @@ theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
     LieSubmodule.toSubmodule (lowerCentralSeries R L (L ⧸ I) k) =
       LieSubmodule.toSubmodule (lowerCentralSeries R (L ⧸ I) (L ⧸ I) k) := by
   induction' k with k ih
-  · simp only [Nat.zero_eq, LieModule.lowerCentralSeries_zero, LieSubmodule.top_coeSubmodule,
+  · simp only [LieModule.lowerCentralSeries_zero, LieSubmodule.top_coeSubmodule,
       LieIdeal.top_coe_lieSubalgebra, LieSubalgebra.top_coe_submodule]
   · simp only [LieModule.lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span]
     congr
@@ -660,7 +662,7 @@ theorem LieAlgebra.non_trivial_center_of_isNilpotent [Nontrivial L] [IsNilpotent
 theorem LieIdeal.map_lowerCentralSeries_le (k : ℕ) {f : L →ₗ⁅R⁆ L'} :
     LieIdeal.map f (lowerCentralSeries R L L k) ≤ lowerCentralSeries R L' L' k := by
   induction' k with k ih
-  · simp only [Nat.zero_eq, LieModule.lowerCentralSeries_zero, le_top]
+  · simp only [LieModule.lowerCentralSeries_zero, le_top]
   · simp only [LieModule.lowerCentralSeries_succ]
     exact le_trans (LieIdeal.map_bracket_le f) (LieSubmodule.mono_lie le_top ih)
 

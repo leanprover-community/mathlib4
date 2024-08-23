@@ -3,7 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Data.Finite.Card
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
 
@@ -150,7 +152,7 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
     ⟨fun ha b => ⟨fun hba hb => ?_, fun hb => ?_⟩, fun ha => ⟨?_, fun b hb => ?_⟩⟩
   · exact ha.1 ((mul_mem_cancel_left hb).1 hba)
   · exact inv_inv b ▸ ha.2 _ (mt (inv_mem_iff (x := b)).1 hb)
-  · rw [← inv_mem_iff (x := a), ← ha, inv_mul_self]
+  · rw [← inv_mem_iff (x := a), ← ha, inv_mul_cancel]
     exact one_mem _
   · rwa [ha, inv_mem_iff (x := b)]
 
@@ -446,6 +448,25 @@ lemma pow_mem_of_relindex_ne_zero_of_dvd (h : H.relindex K ≠ 0) {a : G} (ha : 
     (hn : ∀ m, 0 < m → m ≤ H.relindex K → m ∣ n) : a ^ n ∈ H ⊓ K := by
   convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
   simp [pow_mem ha, mem_subgroupOf]
+
+@[simp]
+lemma index_toAddSubgroup : (Subgroup.toAddSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.index_toSubgroup {G : Type*} [AddGroup G] (H : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma relindex_toAddSubgroup :
+    (Subgroup.toAddSubgroup H).relindex (Subgroup.toAddSubgroup K) = H.relindex K :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.relindex_toSubgroup {G : Type*} [AddGroup G] (H K : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).relindex (AddSubgroup.toSubgroup K) = H.relindex K :=
+  rfl
 
 section FiniteIndex
 
