@@ -169,7 +169,7 @@ theorem toNatOrdinal_max (a b : Ordinal) :
 
 @[simp]
 theorem toNatOrdinal_min (a b : Ordinal) :
-    toNatOrdinal (linearOrder.min a b) = linearOrder.min (toNatOrdinal a) (toNatOrdinal b) :=
+    toNatOrdinal (min a b) = min (toNatOrdinal a) (toNatOrdinal b) :=
   rfl
 
 /-! We place the definitions of `nadd` and `nmul` before actually developing their API, as this
