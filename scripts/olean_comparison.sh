@@ -60,8 +60,8 @@ printf '%s\n%s\n' "${masterOleans}" "${newOleans}" |
     { gsub(/\.lake\/build\/lib\//, "") }
     # size accumulates the absolute value of the folder sizes, using `master`s size if available
     # difference accumulates `branch size - master size`
-    /master/ { size[$3]=$2; difference[$3]-=$2 }
-    /branch/ { if(size[$3] == "") {size[$3]=$2} difference[$3]+=$2 }
+    ((!($2+0 == 0)) && /master/) { size[$3]=$2; difference[$3]-=$2 }
+    ((!($2+0 == 0)) && /branch/) { if(size[$3] == "") {size[$3]=$2} difference[$3]+=$2 }
   END {
     # final tally, the `Mathlib` folder is isolated and put at the bottom, no matter what
     printf("| %% | Difference | Folder |\n| -: | -: | - |\n")
