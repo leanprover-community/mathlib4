@@ -120,8 +120,6 @@ example {α} [h : CommRing α] {a b c d e f : α} (h1 : a * d = b * c) (h2 : c *
 example (x y z w : ℚ) (hzw : z = w) : x * z + 2 * y * z = x * w + 2 * y * w := by
   linear_combination (x + 2 * y) * hzw
 
-example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
-
 example (x y : ℤ) (h : x = 0) : y ^ 2 * x = 0 := by linear_combination y ^ 2 * h
 
 /-! ### Tests in semirings -/
@@ -164,6 +162,8 @@ example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
 -- the corner case is "just apply the normalization procedure".
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
   linear_combination
+
+example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination
 
 -- this interacts as expected with options
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
@@ -222,19 +222,17 @@ but is expected to have type
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by
   linear_combination h1 + (0 : ℝ) * h2
 
-<<<<<<< HEAD
--- This fails because the linear_combination tactic requires the equations
---   and coefficients to use a type that fulfills the add_group condition,
---   and ℕ does not.
-example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
-  fail_if_success linear_combination h1
-  linear_combination2 h1
-
-=======
->>>>>>> df19f9a4c1 (semiring)
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy
+
+/-- error: 'linear_combination' is agnostic to the addition of constants -/
+#guard_msgs in
+example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
+  linear_combination h1 + 3
+/-- error: To run 'linear_combination' without hypotheses, call it without input -/
+#guard_msgs in
+example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
 
 /-! ### Cases with exponent -/
 

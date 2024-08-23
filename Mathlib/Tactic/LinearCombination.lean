@@ -70,9 +70,8 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
   | `($e₁ + $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
-    | .proof p₁, .const c₂ => .proof <$> ``(pf_add_c $p₁ $c₂)
-    | .const c₁, .proof p₂ => .proof <$> ``(c_add_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ $p₂)
+    | _, _ => throwError "'linear_combination' is agnostic to the addition of constants"
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂) -- will behave badly in semirings
@@ -125,7 +124,7 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
-/-- Implementation of `linear_combination` and `linear_combination2`. -/
+/-- Implementation of `linear_combination`. -/
 def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
     Tactic.TacticM Unit := Tactic.withMainContext do
@@ -135,7 +134,7 @@ def elabLinearCombination (tk : Syntax)
   | none => `(Eq.refl 0)
   | some e =>
     match ← expandLinearCombo ty e with
-    | .const c => `(Eq.refl $c)
+    | .const _ => throwError "To run 'linear_combination' without hypotheses, call it without input"
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run <| withRef tk `(tactic| ring1))
   let lem : Ident ← mkIdent <$> do
@@ -180,7 +179,8 @@ syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
 
 Note: The left and right sides of all the equalities should have the same
   type, and the coefficients should also have this type.  There must be
-  instances of `Mul` and `AddGroup` for this type.
+  an instance of `IsRightCancelAdd` for this type, and also instances of `Mul`,
+  `Sub`, etc. if these operations are used.
 
 * The input `e` in `linear_combination e` is a linear combination of proofs of equalities,
   given as a sum/difference of coefficients multiplied by expressions.
@@ -196,17 +196,6 @@ Note: The left and right sides of all the equalities should have the same
 * `linear_combination (exp := n) e` will take the goal to the `n`th power before subtracting the
   combination `e`. In other words, if the goal is `t1 = t2`, `linear_combination (exp := n) e`
   will change the goal to `(t1 - t2)^n = 0` before proceeding as above.
-  This feature is not supported for `linear_combination2`.
-* `linear_combination2 e` is the same as `linear_combination e` but it produces two
-  subgoals instead of one: rather than proving that `(a - b) - (a' - b') = 0` where
-  `a' = b'` is the linear combination from `e` and `a = b` is the goal,
-  it instead attempts to prove `a = a'` and `b = b'`.
-  Because it does not use subtraction, this form is applicable also to semirings.
-  * Note that a goal which is provable by `linear_combination e` may not be provable
-    by `linear_combination2 e`; in general you may need to add a coefficient to `e`
-    to make both sides match, as in `linear_combination2 e + c`.
-  * You can also reverse equalities using `← h`, so for example if `h₁ : a = b`
-    then `2 * (← h)` is a proof of `2 * b = 2 * a`.
 
 Example Usage:
 ```
