@@ -102,9 +102,9 @@ instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [Subsemiring
 @[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := by
-  induction' n with n ih
-  · simp
-  · simp [pow_succ, ih]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ, ih]
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
@@ -314,9 +314,9 @@ instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
 @[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := by
-  induction' n with n ih
-  · simp
-  · simp [pow_succ, ih]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ, ih]
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
@@ -532,7 +532,7 @@ theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
 
 section NonAssocSemiring
 
-variable (R) [NonAssocSemiring R]
+variable (R)
 
 /-- The center of a non-associative semiring `R` is the set of elements that commute and associate
 with everything in `R` -/

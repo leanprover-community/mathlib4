@@ -23,12 +23,10 @@ We define the notation `ℍ` for the upper half plane available in the locale
 `UpperHalfPlane` so as not to conflict with the quaternions.
 -/
 
-
 noncomputable section
 
 open Matrix Matrix.SpecialLinearGroup
-
-open scoped Classical MatrixGroups
+open scoped MatrixGroups
 
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/
@@ -62,7 +60,6 @@ instance : Inhabited ℍ :=
 
 @[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
 
-protected theorem ext_iff {a b : ℍ} : a = b ↔ (a : ℂ) = b := Subtype.coe_inj.symm
 @[simp, norm_cast] theorem ext_iff' {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=

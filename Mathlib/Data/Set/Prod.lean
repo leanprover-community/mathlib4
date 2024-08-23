@@ -802,6 +802,23 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
     (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
   eval_image_pi (mem_univ i) ht
 
+theorem dcomp_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
+    (f _ ∘' ·) '' s.pi t = s.pi fun i ↦ f i '' t i := by
+  refine Subset.antisymm (image_subset_iff.2 fun a ha i hi ↦ mem_image_of_mem _ (ha _ hi)) ?_
+  intro b hb
+  have : ∀ i, ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
+    intro i
+    if hi : i ∈ s then
+      exact (hb i hi).imp fun a ⟨hat, hab⟩ ↦ ⟨hab, fun _ ↦ hat⟩
+    else
+      exact (hf i hi (b i)).imp fun a ha ↦ ⟨ha, (absurd · hi)⟩
+  choose a hab hat using this
+  exact ⟨a, hat, funext hab⟩
+
+theorem dcomp_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
+    (f _ ∘' ·) '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
+  dcomp_image_pi (by simp) t
+
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
     ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩

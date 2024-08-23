@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Filipo A. E. Nuccio, Sam van Gool
+Authors: Yaël Dillies, Filippo A. E. Nuccio, Sam van Gool
 -/
 import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.Order
@@ -178,12 +178,12 @@ end SemilatticeInf
 end OrderIso
 
 section DistribLattice
-variable [DistribLattice α] [OrderBot α] [Fintype α] [@DecidablePred α SupIrred]
+variable [DistribLattice α] [Fintype α] [@DecidablePred α SupIrred]
 
 open Classical in
 /-- **Birkhoff Representation for finite distributive lattices**. Any nonempty finite distributive
 lattice is isomorphic to the lattice of lower sets of its sup-irreducible elements. -/
-noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrred a} :=
+noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a : α // SupIrred a} :=
   Equiv.toOrderIso
     { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun b c hcb hba ↦ hba.trans' hcb⟩
       invFun := fun s ↦ (s : Set {a : α // SupIrred a}).toFinset.sup (↑)
@@ -232,6 +232,10 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
 @[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
+@[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
+    birkhoffSet a = OrderIso.lowerSetSupIrred a := by
+  simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl
+
 variable [DecidableEq α]
 
 @[simp] lemma birkhoffFinset_sup (a b : α) :
@@ -247,10 +251,6 @@ variable [DecidableEq α]
   dsimp [OrderEmbedding.birkhoffFinset]
   rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
   simp
-
-@[simp] lemma birkhoffSet_apply (a : α) :
-    birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl
 
 end OrderEmbedding
 

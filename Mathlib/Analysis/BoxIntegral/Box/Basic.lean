@@ -8,7 +8,7 @@ import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Topology.Order.MonotoneConvergence
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.MetricSpace.Pseudo.Real
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -51,13 +51,11 @@ that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
 rectangular box
 -/
 
-
 open Set Function Metric Filter
 
 noncomputable section
 
-open scoped Classical
-open NNReal Topology
+open scoped Classical NNReal Topology
 
 namespace BoxIntegral
 

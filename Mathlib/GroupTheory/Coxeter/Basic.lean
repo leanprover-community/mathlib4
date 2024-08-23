@@ -6,6 +6,9 @@ Authors: Newell Jensen, Mitchell Lee
 import Mathlib.Algebra.Ring.Int
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.Coxeter.Matrix
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Use
+import Mathlib.Tactic.NormNum.DivMod
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -396,7 +399,7 @@ theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
   · rw [alternatingWord]
     nth_rw 1 [ih i' i]
     rw [alternatingWord]
-    simp [Nat.even_add_one]
+    simp [Nat.even_add_one, ← Nat.not_even_iff_odd]
 
 @[simp]
 theorem length_alternatingWord (i i' : B) (m : ℕ) :
@@ -434,10 +437,10 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
     repeat rw [Int.mul_ediv_cancel _ (by norm_num)]
     rw [zpow_sub, zpow_natCast, simple_mul_simple_pow' cs i i', ← inv_zpow]
     simp
-  · have : ¬Even (2 * k + 1) := Int.odd_iff_not_even.mp ⟨k, rfl⟩
+  · have : ¬Even (2 * k + 1) := Int.not_even_iff_odd.2 ⟨k, rfl⟩
     rw [if_neg this]
     have : ¬Even (↑(M i i') * 2 - (2 * k + 1)) :=
-      Int.odd_iff_not_even.mp ⟨↑(M i i') - k - 1, by ring⟩
+      Int.not_even_iff_odd.2 ⟨↑(M i i') - k - 1, by ring⟩
     rw [if_neg this]
 
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),

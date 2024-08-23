@@ -6,11 +6,10 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.LinearAlgebra.Prod
 import Mathlib.Algebra.Module.Submodule.EqLocus
+import Mathlib.LinearAlgebra.Basis.Defs
 /-!
 # Adjoining elements to form subalgebras
 
@@ -319,7 +318,7 @@ theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adj
     exact subset_adjoin
 
 @[simp]
-theorem adjoin_top :
+theorem adjoin_top {A} [Semiring A] [Algebra S A] (t : Set A) :
     adjoin (⊤ : Subalgebra R S) t = (adjoin S t).restrictScalars (⊤ : Subalgebra R S) :=
   let equivTop : Subalgebra (⊤ : Subalgebra R S) A ≃o Subalgebra S A :=
     { toFun := fun s => { s with algebraMap_mem' := fun r => s.algebraMap_mem ⟨r, trivial⟩ }

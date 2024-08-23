@@ -23,7 +23,7 @@ See `RingTheory.Derivation.Lie` for
 - `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
 
 and `RingTheory.Derivation.ToSquareZero` for
-- `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
+- `derivationToSquareZeroEquivLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
 ## Future project
@@ -344,7 +344,8 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A]
 rule. -/
 def mk' (D : A →ₗ[R] M) (h : ∀ a b, D (a * b) = a • D b + b • D a) : Derivation R A M where
   toLinearMap := D
-  map_one_eq_zero' := add_right_eq_self.1 <| by simpa only [one_smul, one_mul] using (h 1 1).symm
+  map_one_eq_zero' := (add_right_eq_self (a := D 1)).1 <| by
+    simpa only [one_smul, one_mul] using (h 1 1).symm
   leibniz' := h
 
 @[simp]
@@ -398,7 +399,7 @@ variable {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
 theorem leibniz_inv (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
-  · exact D.leibniz_of_mul_eq_one (inv_mul_cancel ha)
+  · exact D.leibniz_of_mul_eq_one (inv_mul_cancel₀ ha)
 
 theorem leibniz_div (a b : K) : D (a / b) = b⁻¹ ^ 2 • (b • D a - a • D b) := by
   simp only [div_eq_mul_inv, leibniz, leibniz_inv, inv_pow, neg_smul, smul_neg, smul_smul, add_comm,
@@ -423,7 +424,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     congr
     omega
   · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
-      ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_nsmul K, smul_smul, smul_smul,
+      ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_zsmul K, smul_smul, smul_smul,
       smul_smul]
     trans (-n.natAbs * (a ^ ((n.natAbs - 1 : ℕ) : ℤ) / (a ^ ((n.natAbs * 2 : ℕ) : ℤ)))) • D a
     · ring_nf
@@ -472,6 +473,5 @@ instance : AddCommGroup (Derivation R A M) :=
 end
 
 end
-
 
 end Derivation
