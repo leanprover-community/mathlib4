@@ -42,4 +42,5 @@ class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
 /-- Linearly ordered semirings in which the property `a ≤ b → ∃ c, a + c = b` holds are semireal. -/
 instance [LinearOrderedSemiring R] [ExistsAddOfLE R] : IsSemireal R where
   not_IsSumSq_neg_one _ ssa amo :=
-    zero_ne_one' R (le_antisymm zero_le_one (le_of_le_of_eq (le_add_of_nonneg_right ssa.nonneg) amo))
+    zero_ne_one' R (le_antisymm zero_le_one
+      (le_of_le_of_eq (le_add_of_nonneg_right ssa.nonneg) amo))
