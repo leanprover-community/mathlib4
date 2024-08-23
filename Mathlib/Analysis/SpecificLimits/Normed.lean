@@ -412,13 +412,42 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (
 
 #check ascPochhammer_nat_eq_descFactorial
 
+open Polynomial
+
+lemma foo {P : ℕ[X]} (hP : Monic P) (n : ℕ) :
+    eval P n = n ^ P.natDegree + ∑ i ∈ range P.natDegree, P.coeff i * n ^ i := by
+  sorry
+
 open Polynomial in
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n : 𝕜) ^ k * r ^ n : ℕ → 𝕜) := by
   refine Nat.strong_induction_on k fun k hk => ?_
-  let P : Polynomial ℕ := (ascPochhammer ℕ k).comp (Polynomial.X + 1)
-  have : Monic P := by
-    apply Monic.comp_X_add_C
+  obtain ⟨a, ha⟩ : ∃ (a : ℕ → ℕ), ∀ n, (n + k).descFactorial k =
+      n ^ k + ∑ i ∈ range k, a i * n ^ (i : ℕ) := by
+    let P : Polynomial ℕ := (ascPochhammer ℕ k).comp (Polynomial.X + C 1)
+    refine ⟨fun i ↦ P.eraseLead.coeff i, fun n ↦ ?_⟩
+    have : (n + k).descFactorial k = P.eval n := by
+      have : n + 1 + k - 1 = n + k := by omega
+      simp [P, ascPochhammer_nat_eq_descFactorial, this]
+    rw [this]
+    have dP : P.natDegree = k := by
+      simp only [P, natDegree_comp, ascPochhammer_natDegree, mul_one, natDegree_X_add_C]
+    have : P = X ^ k + P.eraseLead := by
+      have : P.leadingCoeff = 1 := Monic.comp_X_add_C (monic_ascPochhammer ℕ k) _
+      conv_lhs => rw [← eraseLead_add_C_mul_X_pow P]
+      simp [dP, this, add_comm]
+    conv_lhs => rw [this]
+    simp
+    apply eval_eq_sum_range'
+    rw [← dP]
+    refine eraseLead_natDegree_lt ?hn.f0
+
+
+
+
+
+
+
 
 
 
