@@ -120,6 +120,9 @@ theorem mem_range_succ_of_not_isSuccLimit (h : ¬IsSuccLimit a) : a ∈ range (@
   cases' not_isSuccLimit_iff.1 h with b hb
   exact ⟨b, hb.2⟩
 
+theorem mem_range_succ_or_isSuccLimit (a) : a ∈ range (@succ α _ _) ∨ IsSuccLimit a :=
+  or_iff_not_imp_right.2 <| mem_range_succ_of_not_isSuccLimit
+
 theorem isSuccLimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccLimit b := fun a hab =>
   (H a hab.lt).ne (CovBy.succ_eq hab)
 
@@ -334,6 +337,9 @@ than itself. -/
 theorem mem_range_pred_of_not_isPredLimit (h : ¬IsPredLimit a) : a ∈ range (@pred α _ _) := by
   cases' not_isPredLimit_iff.1 h with b hb
   exact ⟨b, hb.2⟩
+
+theorem mem_range_pred_or_isPredLimit (a) : a ∈ range (@pred α _ _) ∨ IsPredLimit a :=
+  or_iff_not_imp_right.2 <| mem_range_pred_of_not_isPredLimit
 
 theorem isPredLimit_of_pred_lt (H : ∀ a > b, pred a < b) : IsPredLimit b := fun a hab =>
   (H a hab.lt).ne (CovBy.pred_eq hab)
