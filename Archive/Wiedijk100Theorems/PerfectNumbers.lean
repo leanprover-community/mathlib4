@@ -29,9 +29,6 @@ https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
 
 namespace Theorems100
 
-theorem odd_mersenne_succ (k : ℕ) : ¬2 ∣ mersenne (k + 1) := by
-  simp [← even_iff_two_dvd, ← Nat.even_add_one, parity_simps]
-
 namespace Nat
 
 open ArithmeticFunction Finset
@@ -43,10 +40,9 @@ theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/
 theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Prime) :
     Nat.Perfect (2 ^ k * mersenne (k + 1)) := by
-  rw [Nat.perfect_iff_sum_divisors_eq_two_mul, ← mul_assoc, ← pow_succ',
-    ← sigma_one_apply, mul_comm,
-    isMultiplicative_sigma.map_mul_of_coprime
-      (Nat.prime_two.coprime_pow_of_not_dvd (odd_mersenne_succ _)),
+  rw [Nat.perfect_iff_sum_divisors_eq_two_mul, ← mul_assoc, ← pow_succ', ← sigma_one_apply,
+    mul_comm,
+    isMultiplicative_sigma.map_mul_of_coprime ((Odd.coprime_two_right (by simp)).pow_right _),
     sigma_two_pow_eq_mersenne_succ]
   · simp [pr, Nat.prime_two, sigma_one_apply]
   · positivity
@@ -81,9 +77,8 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
   rw [Nat.perfect_iff_sum_divisors_eq_two_mul hpos, ← sigma_one_apply,
     isMultiplicative_sigma.map_mul_of_coprime (Nat.prime_two.coprime_pow_of_not_dvd hm).symm,
     sigma_two_pow_eq_mersenne_succ, ← mul_assoc, ← pow_succ'] at perf
-  rcases Nat.Coprime.dvd_of_dvd_mul_left
-      (Nat.prime_two.coprime_pow_of_not_dvd (odd_mersenne_succ _)) (Dvd.intro _ perf) with
-    ⟨j, rfl⟩
+  obtain ⟨j, rfl⟩ := ((Odd.coprime_two_right (by simp)).pow_right _).dvd_of_dvd_mul_left
+    (Dvd.intro _ perf)
   rw [← mul_assoc, mul_comm _ (mersenne _), mul_assoc] at perf
   have h := mul_left_cancel₀ (by positivity) perf
   rw [sigma_one_apply, Nat.sum_divisors_eq_sum_properDivisors_add_self, ← succ_mersenne, add_mul,

@@ -92,7 +92,7 @@ def oneOf (xs : Array (Gen α)) (pos : 0 < xs.size := by decide) : Gen α := do
 /-- Given a list of examples, choose one to create an example. -/
 def elements (xs : List α) (pos : 0 < xs.length) : Gen α := do
   let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.length pos
-  pure <| xs.get ⟨x, h2⟩
+  pure <| xs[x]
 
 open List in
 /-- Generate a random permutation of a given list. -/

@@ -255,8 +255,7 @@ theorem equiv_nim_grundyValue : ∀ (G : PGame.{u}) [G.Impartial], G ≈ nim (gr
         revert i₂
         rw [grundyValue_eq_mex_left]
         intro i₂
-        have hnotin : _ ∉ _ := fun hin =>
-          (le_not_le_of_lt (Ordinal.typein_lt_self i₂)).2 (csInf_le' hin)
+        have hnotin : _ ∉ _ := fun hin => not_le_of_lt (Ordinal.typein_lt_self i₂) (csInf_le' hin)
         simpa using hnotin
       cases' h' with i hi
       use toLeftMovesAdd (Sum.inl i)

@@ -27,7 +27,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 -/
 
-open Set Filter
+open Set Filter Function
 
 open Topology
 
@@ -766,3 +766,105 @@ def homeoOfEquivCompactToT2 [CompactSpace X] [T2Space Y] {f : X ≃ Y} (hf : Con
     continuous_invFun := hf.continuous_symm_of_equiv_compact_to_t2 }
 
 end Continuous
+
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+  {W : Type*} [TopologicalSpace W] {f : X → Y}
+
+/-- Predicate saying that `f` is a homeomorphism.
+
+This should be used only when `f` is a concrete function whose continuous inverse is not easy to
+write down. Otherwise, `Homeomorph` should be preferred as it bundles the continuous inverse.
+
+Having both `Homeomorph` and `IsHomeomorph` is justified by the fact that so many function
+properties are unbundled in the topology part of the library, and by the fact that a homeomorphism
+is not merely a continuous bijection, that is `IsHomeomorph f` is not equivalent to
+`Continuous f ∧ Bijective f` but to `Continuous f ∧ Bijective f ∧ IsOpenMap f`. -/
+structure IsHomeomorph (f : X → Y) : Prop where
+  continuous : Continuous f
+  isOpenMap : IsOpenMap f
+  bijective : Bijective f
+
+protected theorem Homeomorph.isHomeomorph (h : X ≃ₜ Y) : IsHomeomorph h :=
+  ⟨h.continuous, h.isOpenMap, h.bijective⟩
+
+namespace IsHomeomorph
+variable (hf : IsHomeomorph f)
+include hf
+
+protected lemma injective : Function.Injective f := hf.bijective.injective
+protected lemma surjective : Function.Surjective f := hf.bijective.surjective
+
+variable (f) in
+/-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
+@[simps! toEquiv apply symm_apply]
+noncomputable def homeomorph : X ≃ₜ Y where
+  continuous_toFun := hf.1
+  continuous_invFun := by
+    rw [continuous_iff_continuousOn_univ, ← hf.bijective.2.range_eq]
+    exact hf.isOpenMap.continuousOn_range_of_leftInverse (leftInverse_surjInv hf.bijective)
+  toEquiv := Equiv.ofBijective f hf.bijective
+
+protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
+protected lemma inducing : Inducing f := (hf.homeomorph f).inducing
+protected lemma quotientMap : QuotientMap f := (hf.homeomorph f).quotientMap
+protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
+protected lemma openEmbedding : OpenEmbedding f := (hf.homeomorph f).openEmbedding
+protected lemma closedEmbedding : ClosedEmbedding f := (hf.homeomorph f).closedEmbedding
+protected lemma denseEmbedding : DenseEmbedding f := (hf.homeomorph f).denseEmbedding
+
+end IsHomeomorph
+
+/-- A map is a homeomorphism iff it is the map underlying a bundled homeomorphism `h : X ≃ₜ Y`. -/
+lemma isHomeomorph_iff_exists_homeomorph : IsHomeomorph f ↔ ∃ h : X ≃ₜ Y, h = f :=
+  ⟨fun hf => ⟨hf.homeomorph f, rfl⟩, fun ⟨h, h'⟩ => h' ▸ h.isHomeomorph⟩
+
+/-- A map is a homeomorphism iff it is continuous and has a continuous inverse. -/
+lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ g : Y → X,
+    LeftInverse g f ∧ RightInverse g f ∧ Continuous g := by
+  refine ⟨fun hf ↦ ⟨hf.continuous, ?_⟩, fun ⟨hf, g, hg⟩ ↦ ?_⟩
+  let h := hf.homeomorph f
+  exact ⟨h.symm, h.left_inv, h.right_inv, h.continuous_invFun⟩
+  exact (Homeomorph.mk ⟨f, g, hg.1, hg.2.1⟩ hf hg.2.2).isHomeomorph
+
+/-- A map is a homeomorphism iff it is a surjective embedding. -/
+lemma isHomeomorph_iff_embedding_surjective : IsHomeomorph f ↔ Embedding f ∧ Surjective f where
+  mp hf := ⟨hf.embedding, hf.surjective⟩
+  mpr h := ⟨h.1.continuous, ((openEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
+    h.1.inj, h.2⟩
+
+/-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
+lemma isHomeomorph_iff_continuous_isClosedMap_bijective  : IsHomeomorph f ↔
+    Continuous f ∧ IsClosedMap f ∧ Function.Bijective f :=
+  ⟨fun hf => ⟨hf.continuous, hf.isClosedMap, hf.bijective⟩, fun ⟨hf, hf', hf''⟩ =>
+    ⟨hf, fun _ hu => isClosed_compl_iff.1 (image_compl_eq hf'' ▸ hf' _ hu.isClosed_compl), hf''⟩⟩
+
+/-- A map from a compact space to a T2 space is a homeomorphism iff it is continuous and
+  bijective. -/
+lemma isHomeomorph_iff_continuous_bijective [CompactSpace X] [T2Space Y] :
+    IsHomeomorph f ↔ Continuous f ∧ Bijective f := by
+  rw [isHomeomorph_iff_continuous_isClosedMap_bijective]
+  refine and_congr_right fun hf ↦ ?_
+  rw [eq_true hf.isClosedMap, true_and]
+
+protected lemma IsHomeomorph.id : IsHomeomorph (@id X) := ⟨continuous_id, .id, bijective_id⟩
+
+lemma IsHomeomorph.comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f) :
+    IsHomeomorph (g ∘ f) := ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
+
+lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
+    IsHomeomorph (Sum.map f g) := ⟨hf.1.sum_map hg.1, hf.2.sumMap hg.2, hf.3.sum_map hg.3⟩
+
+lemma IsHomeomorph.prodMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
+    IsHomeomorph (Prod.map f g) := ⟨hf.1.prod_map hg.1, hf.2.prod hg.2, hf.3.prodMap hg.3⟩
+
+lemma IsHomeomorph.sigmaMap {ι κ : Type*} {X : ι → Type*} {Y : κ → Type*}
+    [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)] {f : ι → κ}
+    (hf : Bijective f) {g : (i : ι) → X i → Y (f i)} (hg : ∀ i, IsHomeomorph (g i)) :
+    IsHomeomorph (Sigma.map f g) := by
+  simp_rw [isHomeomorph_iff_embedding_surjective,] at hg ⊢
+  exact ⟨(embedding_sigma_map hf.1).2 fun i ↦ (hg i).1, hf.2.sigma_map fun i ↦ (hg i).2⟩
+
+lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsHomeomorph (f i)) :
+    IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
+  (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
