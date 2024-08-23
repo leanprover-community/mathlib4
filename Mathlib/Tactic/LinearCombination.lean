@@ -37,8 +37,6 @@ open Elab Meta Term
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
 
 theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
-theorem sub_pf [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
-theorem neg_pf [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
 theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
 theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
 theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
@@ -68,16 +66,16 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     | _ , _ => throwError "'linear_combination' is agnostic to the addition of constants"
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
-    | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
+    | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂) -- will behave badly in semirings
     | .proof _, .const _ =>
       throwError "'linear_combination' is agnostic to the subtraction of constants"
     | .const _, .proof _ =>
       throwError "'linear_combination' is agnostic to the addition of constants"
-    | .proof p₁, .proof p₂ => .proof <$> ``(sub_pf $p₁ $p₂)
+    | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ (Eq.symm $p₂))
   | `(-$e) => do
     match ← expandLinearCombo ty e with
-    | .const c => .const <$> `(-$c)
-    | .proof p => .proof <$> ``(neg_pf $p)
+    | .const c => .const <$> `(-$c) -- will behave badly in semirings
+    | .proof p => .proof <$> ``(Eq.symm $p)
   | `($e₁ * $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
@@ -102,8 +100,12 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
-theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
+theorem eq_of_sub [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
+
+theorem eq_of_add [Add α] [IsRightCancelAdd α] (p : (a:α) = b) (H : a' + b = b' + a) : a' = b' := by
+  rw [p] at H
+  exact add_right_cancel H
 
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
@@ -122,12 +124,23 @@ def elabLinearCombination (tk : Syntax)
     | .const _ => throwError "To run 'linear_combination' without hypotheses, call it without input"
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run <| withRef tk `(tactic| ring1))
+  let lem : Ident ← mkIdent <$> do
+    try
+      -- if we are in a "true" ring, with well-behaved negation, it is better to present the
+      -- normalization tactic with a goal of the form `[stuff] = 0`, because this gives more useful
+      -- error messages on failure
+      let _ ← synthInstance (← mkAppM ``Neg #[ty])
+      pure ``eq_of_sub
+    catch _ =>
+      -- but otherwise (for example over `ℕ` or `ℝ≥0`) we can solve the problem by presenting the
+      -- normalization tactic with a goal of the form `[stuff] = [stuff]`
+      pure ``eq_of_add
   Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
   match exp? with
   | some n =>
-    if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+    if n.getNat = 1 then `(tactic| (refine $lem $p ?a; case' a => $norm:tactic))
     else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-  | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+  | _ => `(tactic| (refine $lem $p ?a; case' a => $norm:tactic))
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
