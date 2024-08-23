@@ -104,6 +104,17 @@ theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Si
   cases J₂
   congr
 
+/-
+Porting note: This is now a syntactic tautology.
+@[simp]
+theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
+  Iff.rfl
+-/
+
+@[simp]
+theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
+  Iff.rfl
+
 /-- Also known as the maximality axiom. -/
 @[simp]
 theorem top_mem (X : C) : ⊤ ∈ J X :=
@@ -400,6 +411,15 @@ instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
 
 instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
   ⟨fun S => S.sieve⟩
+
+/-
+Porting note: This lemma was in mathlib 3, but doesn't compile anymore because of the removed
+coercion above.
+
+@[simp]
+theorem coe_fun_coe (S : J.Cover X) (f : Y ⟶ X) : (S : Sieve X) f = S f :=
+  rfl
+-/
 
 theorem condition (S : J.Cover X) : S.sieve ∈ J X :=
   S.2
