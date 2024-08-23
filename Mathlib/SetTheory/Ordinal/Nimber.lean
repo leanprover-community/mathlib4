@@ -159,13 +159,21 @@ namespace Nimber
 
 variable {a b c : Nimber.{u}}
 
-protected def add (a b : Nimber) : Nimber :=
+protected def add (a b : Nimber.{u}) : Nimber.{u} :=
   sInf {x | (∃ a', ∃ (_ : a' < a), x = Nimber.add a' b) ∨
     ∃ b', ∃ (_ : b' < b), x = Nimber.add a b'}ᶜ
 termination_by (a, b)
 
 instance : Add Nimber :=
   ⟨Nimber.add⟩
+
+/-- The extra binders in this definition can help the termination checker figure out an induction is
+well-founded. -/
+/-theorem add_def' (a b : Nimber) :
+    a + b = sInf {x | (∃ a', ∃ (_ : a' < a), x = a' + b) ∨ ∃ b', ∃ (_ : b' < b), x = a + b'}ᶜ := by
+  change Nimber.add a b = _
+  rw [Nimber.add]
+  rfl-/
 
 theorem add_def (a b : Nimber) :
     a + b = sInf {x | (∃ a' < a, x = a' + b) ∨ ∃ b' < b, x = a + b'}ᶜ := by
@@ -174,31 +182,73 @@ theorem add_def (a b : Nimber) :
   simp_rw [exists_prop]
   rfl
 
-theorem exists_of_lt_add (a : Nimber) (h : a < b + c) :
-    (∃ b' < b, a = b' + c) ∨ ∃ c' < c, a = b + c' := by
+/-- The set in the definition of `Nimber.add` is nonempty. -/
+theorem add_nonempty (a b : Nimber) :
+    {x | (∃ a' < a, x = a' + b) ∨ ∃ b' < b, x = a + b'}ᶜ.Nonempty := by
+  use Ordinal.blsub₂ (succ a) (succ b) @fun x _ y _ => Nimber.add x y
+  simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_or, not_exists, not_and]
+  constructor <;>
+  intro x hx <;>
+  apply (Ordinal.lt_blsub₂ _ _ _).ne'
+  exacts [hx.trans <| lt_succ _, lt_succ _, lt_succ _, hx.trans <| lt_succ _]
+
+theorem exists_of_lt_add (h : a < b + c) : (∃ b' < b, a = b' + c) ∨ ∃ c' < c, a = b + c' := by
   rw [add_def] at h
-  have := not_mem_of_lt_csInf
+  have := not_mem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
+  rwa [Set.mem_compl_iff, not_not] at this
 
-private theorem add_left_inj'
+theorem add_le_of_forall_ne (h₁ : ∀ b' < b, a ≠ b' + c) (h₂ : ∀ c' < c, a ≠ b + c') :
+    b + c ≤ a := by
+  by_contra! h
+  have := exists_of_lt_add h
+  tauto
 
-theorem add_left_inj : a + b = a + c ↔ b = c := by
-  refine ⟨?_, congr_arg _⟩
+private theorem add_ne_of_lt (a b : Nimber) :
+    (∀ a' < a, a + b ≠ a' + b) ∧ ∀ b' < b, a + b ≠ a + b' := by
+  have H := csInf_mem (add_nonempty a b)
+  rw [← add_def] at H
+  simpa using H
 
+theorem add_left_injective : Injective (a + ·) := by
+  intro b c h
+  apply le_antisymm <;>
+  apply le_of_not_lt
+  · exact fun hc => (add_ne_of_lt a b).2 c hc h
+  · exact fun hb => (add_ne_of_lt a c).2 b hb h.symm
 
+@[simp]
+theorem add_left_inj : a + b = a + c ↔ b = c :=
+  add_left_injective.eq_iff
+
+theorem add_left_ne_iff : a + b ≠ a + c ↔ b ≠ c :=
+  add_left_inj.not
+
+@[simp]
+theorem add_right_injective : Injective (· + a) := by
+  intro b c h
+  apply le_antisymm <;>
+  apply le_of_not_lt
+  · exact fun hc => (add_ne_of_lt b a).1 c hc h
+  · exact fun hb => (add_ne_of_lt c a).1 b hb h.symm
+
+@[simp]
+theorem add_right_inj : a + c = b + c ↔ a = b :=
+  add_right_injective.eq_iff
+
+theorem add_right_ne_iff : a + c ≠ b + c ↔ a ≠ b :=
+  add_right_inj.not
+
+-- Ideally the proof would be an easy induction on `add_def`, but rewriting under binders trips up
+-- the termination checker.
 theorem add_comm (a b : Nimber) : a + b = b + a := by
-  rw [add_def, add_def]
-  simp_rw [or_comm, ← add_comm _ b, add_comm a]
+  apply le_antisymm <;>
+  apply add_le_of_forall_ne <;>
+  intro x hx
+  on_goal 1 => rw [add_comm x, add_left_ne_iff]
+  on_goal 2 => rw [add_comm a, add_right_ne_iff]
+  on_goal 3 => rw [← add_comm a, add_left_ne_iff]
+  on_goal 4 => rw [← add_comm x, add_right_ne_iff]
+  all_goals exact hx.ne'
 termination_by (a, b)
-
-
-
-
-theorem lt_add_iff : a < b + c ↔ (∃ b' < b, a = b' + c) ∨ ∃ c' < c, a = b + c' := by
-  rw [add_def]
-  simp [lt_sInf_iff]
-
-theorem nadd_le_iff : b ♯ c ≤ a ↔ (∀ b' < b, b' ♯ c < a) ∧ ∀ c' < c, b ♯ c' < a := by
-  rw [nadd_def]
-  simp [blsub_le_iff]
 
 end Nimber
