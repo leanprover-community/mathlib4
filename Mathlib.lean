@@ -2820,7 +2820,6 @@ import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Quot
 import Mathlib.Init.Logic
-import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Quot
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
@@ -4343,6 +4342,7 @@ import Mathlib.Topology.Algebra.ProperConstSMul
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.Semigroup
+import Mathlib.Topology.Algebra.SeparationQuotient
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.UniformConvergence
