@@ -131,12 +131,12 @@ initialize registerBuiltinAttribute {
       logInfo m!"valtp: {← inferType value}"
       let levelMVars ← levels.mapM λ _ => mkFreshLevelMVar
       let value := value.instantiateLevelParams levels levelMVars
-      let newValue ← to_appExpr value levelMVars
+      let newValue ←toAppExpr (← to_appExpr value levelMVars)
       logInfo m!"val: {newValue}"
       logInfo m!"valtp: {← inferType newValue}"
       let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newValue
-      let newExpr ← toAppExpr (← mkExpectedTypeHint r.expr (← inferType r.expr))
-      let output := (newExpr, r.newParamNames.toList)
+      -- let newExpr ← toAppExpr r.expr --(← mkExpectedTypeHint r.expr (← inferType r.expr))
+      let output := (r.expr, r.newParamNames.toList)
       logInfo m!"hello {output}"
       pure output
   | _ => throwUnsupportedSyntax }
