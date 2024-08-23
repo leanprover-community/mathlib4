@@ -101,10 +101,14 @@ lemma ihom.id_pre_app {X Y : D} (f : X ⟶ Y) :
   rw [← MonoidalClosed.curry_natural_right, ← MonoidalCategory.rightUnitor_naturality,
     ← MonoidalClosed.curry_natural_right']
 
-@[reassoc]
 lemma ihom.comp_naturality₁ {X₁ Y₁ : D} (f₁ : X₁ ⟶ Y₁) (X₂ X₃ : D) :
     (MonoidalClosed.pre f₁).app X₂ ▷ _ ≫ ihom.comp X₁ X₂ X₃ =
-    ihom.comp Y₁ X₂ X₃ ≫ (MonoidalClosed.pre f₁).app X₃ := sorry
+    ihom.comp Y₁ X₂ X₃ ≫ (MonoidalClosed.pre f₁).app X₃ := by
+  dsimp [comp]
+  rw [← MonoidalClosed.curry_natural_left, ← MonoidalClosed.curry_natural_right',
+    associator_inv_naturality_left_assoc, associator_inv_naturality_middle_assoc,
+    ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc,
+    MonoidalClosed.id_tensor_pre_app_comp_ev]
 
 @[reassoc]
 lemma ihom.comp_naturality₂ (X₁ : D) {X₂ Y₂ : D} (f₂ : X₂ ⟶ Y₂) (X₃ : D) :
@@ -119,11 +123,13 @@ lemma ihom.comp_naturality₃ (X₁ X₂ : D) {X₃ Y₃ : D} (f₃ : X₃ ⟶ Y
 @[reassoc (attr := simp)]
 protected lemma ihom.id_comp (X₁ X₂ : D) :
     ihom.id X₁ ▷ _ ≫ ihom.comp X₁ X₁ X₂ = (λ_ _).hom := by
+  dsimp [id, comp]
   sorry
 
 @[reassoc (attr := simp)]
 protected lemma ihom.comp_id (X₁ X₂ : D) :
     _ ◁ ihom.id X₂ ≫ ihom.comp X₁ X₂ X₂ = (ρ_ _).hom := by
+  dsimp [id, comp]
   sorry
 
 end
