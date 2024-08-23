@@ -1013,8 +1013,8 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).out.α) :
   apply typein_lt_self
 
 theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordinal} (h₁ : o₁ < type r)
-    (h₂ : o₂ < type r) : enum r ⟨o₁, h₁⟩ = enum r ⟨o₂, h₂⟩ ↔ o₁ = o₂ :=
-  by rw [EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]
+    (h₂ : o₂ < type r) : enum r ⟨o₁, h₁⟩ = enum r ⟨o₂, h₂⟩ ↔ o₁ = o₂ := by
+  rw [EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]
 
 /-- The order isomorphism between ordinals less than `o` and `o.out.α`. -/
 @[simps!]
