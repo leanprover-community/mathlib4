@@ -97,41 +97,6 @@ def toAppExpr (e : Expr) : MetaM Expr := do
     logInfo m!"e type: {← inferType e}"
     simpType catAppSimp (← mkAppM ``eq_app' #[e])) e
 
-def addRelatedDecl2 (src : Name) (suffix : String) (ref : Syntax)
-    (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
-    (construct : Expr → Expr → List Name → MetaM (Expr × List Name)) :
-    MetaM Unit := do
-  let tgt := match src with
-    | Name.str n s => Name.mkStr n <| s ++ suffix
-    | x => x
-  addDeclarationRanges tgt {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange ref }
-  let info ← getConstInfo src
-  let (newValue, newLevels) ← construct info.type info.value! info.levelParams
-  let newValue ← instantiateMVars newValue
-  let newType ← instantiateMVars (← inferType newValue)
-  match info with
-  | ConstantInfo.thmInfo info =>
-    addAndCompile <| .thmDecl
-      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
-  | ConstantInfo.defnInfo info =>
-    -- Structure fields are created using `def`, even when they are propositional,
-    -- so we don't rely on this to decided whether we should be constructing a `theorem` or a `def`.
-    addAndCompile <| if ← isProp newType then .thmDecl
-      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
-      else .defnDecl
-      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
-  | _ => throwError "Constant {src} is not a theorem or definition."
-  if isProtected (← getEnv) src then
-    setEnv <| addProtected (← getEnv) tgt
-  let attrs := match attrs? with | some attrs => attrs | none => #[]
-  _ ← Term.TermElabM.run' <| do
-    let attrs ← elabAttrs attrs
-    Term.applyAttributes src attrs
-    Term.applyAttributes tgt attrs
-
-
 /--
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` are
 morphisms in some category, will create a new lemma named `F_assoc` of shape
@@ -160,7 +125,7 @@ initialize registerBuiltinAttribute {
   | `(attr| to_app $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
-    addRelatedDecl2 src "_app" ref stx? fun type value levels => do
+    addRelatedDecl src "_app" ref stx? fun type value levels => do
       logInfo m!"tp: {type}"
       logInfo m!"val: {value}"
       logInfo m!"valtp: {← inferType value}"
