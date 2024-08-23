@@ -64,10 +64,23 @@ theorem sort_empty : sort r ∅ = [] :=
 theorem sort_singleton (a : α) : sort r {a} = [a] :=
   Multiset.sort_singleton r a
 
+theorem sort_insert [DecidableEq α] {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
+    sort r (insert a s) = a :: sort r s := by
+  rw [sort, insert_val, ndinsert_of_not_mem h₂]
+  exact Multiset.sort_insert r a _ h₁
+
 open scoped List in
 theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
   simp only [coe_toList, sort_eq]
+
+theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
+    sort r l.toFinset = l ↔ l.Sorted r := by
+  refine ⟨?_, List.eq_of_perm_of_sorted ((sort_perm_toList r _).trans (List.toFinset_toList hl))
+    (sort_sorted r _)⟩
+  intro h
+  rw [← h]
+  exact sort_sorted r _
 
 end sort
 
