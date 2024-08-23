@@ -377,26 +377,7 @@ variable {J}
 
 instance : CoeOut (J.Cover X) (Sieve X) := ⟨fun S => S.1⟩
 
-/-
-Porting note: This somehow yields different behavior than the better instance below. Why?!
-
-With this instance, we have to write `S _ f` but with the uncommented one, we can write `S f`
-as expected.
-
-instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
-  ⟨fun S _ f => (S : Sieve X) f⟩
--/
-
 instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop := ⟨fun S => (S : Sieve X)⟩
-
-/-
-Porting note: this is a syntactic tautology:
-
-@[simp]
-theorem coe_fun_coe (S : J.Cover X) (f : Y ⟶ X) : (S : Sieve X) f = S f :=
-  rfl
-
--/
 
 theorem condition (S : J.Cover X) : (S : Sieve X) ∈ J X := S.2
 
