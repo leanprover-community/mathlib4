@@ -25,7 +25,7 @@ noncomputable def internalHom.map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
 lemma internalHom.map_app {X Y : Cᵒᵖ} (f : X ⟶ Y) {U : C} (φ : U ⟶ Y.unop) :
     map F G f ≫ Functor.enrichedHom.app _ _ (Opposite.op (Over.mk φ)) =
       Functor.enrichedHom.app _ _ (Opposite.op (Over.mk (φ ≫ f.unop))) := by
-  sorry
+  apply Functor.enrichedHom.precomp_app
 
 end
 
@@ -44,7 +44,7 @@ noncomputable def internalHom : Cᵒᵖ ⥤ D where
     simp
     congr 1
     simp
-  map_comp {F₁ F₂ F₃} f g := by
+  map_comp _ _ := by
     apply Functor.enrichedHom.hom_ext
     rintro ⟨π⟩
     obtain ⟨U, π, rfl⟩ := Over.mk_surjective π
