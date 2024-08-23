@@ -215,11 +215,11 @@ lemma coverMincard_le_card {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ
     (h : IsDynCoverOf T F U n s) :
     coverMincard T F U n ≤ s.card := iInf₂_le s h
 
-lemma coverMincard_monotone_time (T : X → X) (F : Set X) (U : Set (X × X)) :
+lemma coverMincard_monotone (T : X → X) (F : Set X) (U : Set (X × X)) :
     Monotone (fun n : ℕ ↦ coverMincard T F U n) :=
   fun _ _ m_n ↦ biInf_mono fun _ h ↦ h.of_le m_n
 
-lemma coverMincard_antitone_entourage (T : X → X) (F : Set X) (n : ℕ) :
+lemma coverMincard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone (fun U : Set (X × X) ↦ coverMincard T F U n) :=
   fun _ _ U_V ↦ biInf_mono fun _ h ↦ h.of_entourage_subset U_V
 
@@ -296,7 +296,7 @@ lemma coverMincard_iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
 lemma coverMincard_comp_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) {m : ℕ} (m_pos : 0 < m) (n : ℕ) :
     coverMincard T F (U ○ U) n ≤ coverMincard T F U m ^ (n / m + 1) :=
-  le_trans (coverMincard_monotone_time T F (U ○ U) (le_of_lt (Nat.lt_mul_div_succ n m_pos)))
+  le_trans (coverMincard_monotone T F (U ○ U) (le_of_lt (Nat.lt_mul_div_succ n m_pos)))
     (coverMincard_iterate_le_pow F_inv U_symm m (n / m + 1))
 
 lemma coverMincard_finite_of_isCompact_uniformContinuous [UniformSpace X] {T : X → X}
@@ -391,13 +391,13 @@ lemma coverEntropyInfUni_antitone (T : X → X) (F : Set X) :
     Antitone (fun U : Set (X × X) ↦ coverEntropyInfUni T F U) :=
   fun _ _ U_V ↦ (liminf_le_liminf) <| Eventually.of_forall
     fun n ↦ monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-    <| log_monotone (ENat.toENNReal_mono (coverMincard_antitone_entourage T F n U_V))
+    <| log_monotone (ENat.toENNReal_mono (coverMincard_antitone T F n U_V))
 
 lemma coverEntropySupUni_antitone (T : X → X) (F : Set X) :
     Antitone (fun U : Set (X × X) ↦ coverEntropySupUni T F U) :=
   fun _ _ U_V ↦ (limsup_le_limsup) <| Eventually.of_forall
     fun n ↦ monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-    <| log_monotone (ENat.toENNReal_mono (coverMincard_antitone_entourage T F n U_V))
+    <| log_monotone (ENat.toENNReal_mono (coverMincard_antitone T F n U_V))
 
 lemma coverEntropyInfUni_le_coverEntropySupUni (T : X → X) (F : Set X) (U : Set (X × X)) :
     coverEntropyInfUni T F U ≤ coverEntropySupUni T F U := liminf_le_limsup
