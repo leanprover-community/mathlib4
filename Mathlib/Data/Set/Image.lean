@@ -175,7 +175,7 @@ section Image
 
 variable {f : α → β} {s t : Set α}
 
--- Porting note: `Set.image` is already defined in `Init.Set`
+-- Porting note: `Set.image` is already defined in `Data.Set.Defs`
 
 @[deprecated mem_image (since := "2024-03-23")]
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
@@ -191,7 +191,7 @@ theorem _root_.Function.Injective.mem_set_image {f : α → β} (hf : Injective 
 
 lemma preimage_subset_of_surjOn {t : Set β} (hf : Injective f) (h : SurjOn f s t) :
     f ⁻¹' t ⊆ s := fun _ hx ↦
-  hf.mem_set_image.1 $ h hx
+  hf.mem_set_image.1 <| h hx
 
 theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∀ y ∈ f '' s, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
@@ -299,7 +299,7 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_not_mem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
--- Porting note: `compl` is already defined in `Init.Set`
+-- Porting note: `compl` is already defined in `Data.Set.Defs`
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (S : Set α) :
     HasCompl.compl ⁻¹' S = HasCompl.compl '' S :=
   Set.ext fun x =>

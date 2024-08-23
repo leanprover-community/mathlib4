@@ -332,7 +332,7 @@ class LeftCancelSemigroup (G : Type u) extends Semigroup G where
 
 library_note "lower cancel priority" /--
 We lower the priority of inheriting from cancellative structures.
-This attemts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
+This attempts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
 Zulip discussion: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Why.20is.20.60simpNF.60.20complaining.20here.3F
 -/
@@ -1031,7 +1031,7 @@ There is also a division operation `/` such that `a / b = a * b⁻¹`,
 with a default so that `a / b = a * b⁻¹` holds by definition.
 
 Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure
-on a type with the minumum proof obligations.
+on a type with the minimum proof obligations.
 -/
 class Group (G : Type u) extends DivInvMonoid G where
   protected inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
@@ -1042,7 +1042,7 @@ There is also a binary operation `-` such that `a - b = a + -b`,
 with a default so that `a - b = a + -b` holds by definition.
 
 Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an
-additive group structure on a type with the minumum proof obligations.
+additive group structure on a type with the minimum proof obligations.
 -/
 class AddGroup (A : Type u) extends SubNegMonoid A where
   protected neg_add_cancel : ∀ a : A, -a + a = 0

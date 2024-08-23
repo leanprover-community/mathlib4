@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Digits
+import Mathlib.NumberTheory.Padics.PadicVal.Defs
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Tactic.IntervalCases
 
 /-!
 # `p`-adic Valuation
@@ -68,28 +67,11 @@ open Rat
 
 open multiplicity
 
-/-- For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such
-that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
-def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
-  if h : p ≠ 1 ∧ 0 < n then (multiplicity p n).get (multiplicity.finite_nat_iff.2 h) else 0
-
 namespace padicValNat
 
 open multiplicity
 
 variable {p : ℕ}
-
-/-- `padicValNat p 0` is `0` for any `p`. -/
-@[simp]
-protected theorem zero : padicValNat p 0 = 0 := by simp [padicValNat]
-
-/-- `padicValNat p 1` is `0` for any `p`. -/
-@[simp]
-protected theorem one : padicValNat p 1 = 0 := by
-  unfold padicValNat
-  split_ifs
-  · simp
-  · rfl
 
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValNat p p` is `1`. -/
 @[simp]
@@ -97,11 +79,6 @@ theorem self (hp : 1 < p) : padicValNat p p = 1 := by
   have neq_one : ¬p = 1 ↔ True := iff_of_true hp.ne' trivial
   have eq_zero_false : p = 0 ↔ False := iff_false_intro (zero_lt_one.trans hp).ne'
   simp [padicValNat, neq_one, eq_zero_false]
-
-@[simp]
-theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
-  simp only [padicValNat, dite_eq_right_iff, PartENat.get_eq_iff_eq_coe, Nat.cast_zero,
-    multiplicity_eq_zero, and_imp, pos_iff_ne_zero, Ne, ← or_iff_not_imp_left]
 
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
@@ -247,15 +224,6 @@ theorem zero_le_padicValRat_of_nat (n : ℕ) : 0 ≤ padicValRat p n := by simp
 @[norm_cast]
 theorem padicValRat_of_nat (n : ℕ) : ↑(padicValNat p n) = padicValRat p n := by simp
 
-/-- A simplification of `padicValNat` when one input is prime, by analogy with
-`padicValRat_def`. -/
-theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : 0 < n) :
-    padicValNat p n = (multiplicity p n).get (multiplicity.finite_nat_iff.2 ⟨hp.out.ne_one, hn⟩) :=
-  dif_pos ⟨hp.out.ne_one, hn⟩
-
-theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : 0 < n) :
-    ↑(padicValNat p n) = multiplicity p n := by simp [padicValNat, hp, hn]
-
 @[simp]
 theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 := by
   rw [padicValNat_def (@Fact.out p.Prime).pos]
@@ -270,28 +238,6 @@ theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     p ∣ n ↔ padicValNat p n ≠ 0 :=
   ⟨fun h => one_le_iff_ne_zero.mp (one_le_padicValNat_of_dvd hn0.bot_lt h), fun h =>
     Classical.not_not.1 (mt padicValNat.eq_zero_of_not_dvd h)⟩
-
-open List
-
-theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
-    (hb : b ≠ 0) :
-    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.primeFactorsList :=
-  (replicate_subperm_primeFactorsList_iff ha hb).trans
-    multiplicity.pow_dvd_iff_le_multiplicity |>.symm
-
-@[deprecated (since := "2024-07-17")]
-alias le_multiplicity_iff_replicate_subperm_factors :=
-  le_multiplicity_iff_replicate_subperm_primeFactorsList
-
-theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
-    (hb : b ≠ 0) :
-    n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by
-  rw [← le_multiplicity_iff_replicate_subperm_primeFactorsList ha hb,
-    ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb), Nat.cast_le]
-
-@[deprecated (since := "2024-07-17")]
-alias le_padicValNat_iff_replicate_subperm_factors :=
-  le_padicValNat_iff_replicate_subperm_primeFactorsList
 
 end padicValNat
 

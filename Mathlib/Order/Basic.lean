@@ -3,14 +3,14 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Init.Order.LinearOrder
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
+import Mathlib.Order.Defs
+import Mathlib.Order.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Cases
-import Mathlib.Order.Notation
 import Batteries.Data.Sum.Lemmas
 import Batteries.Tactic.Classical
 
@@ -287,15 +287,6 @@ protected theorem GT.gt.lt [LT α] {x y : α} (h : x > y) : y < x :=
 theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
   h.ge
 
-theorem not_le_of_lt [Preorder α] {a b : α} (h : a < b) : ¬b ≤ a :=
-  (le_not_le_of_lt h).right
-
-alias LT.lt.not_le := not_le_of_lt
-
-theorem not_lt_of_le [Preorder α] {a b : α} (h : a ≤ b) : ¬b < a := fun hba ↦ hba.not_le h
-
-alias LE.le.not_lt := not_lt_of_le
-
 theorem ne_of_not_le [Preorder α] {a b : α} (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
 section PartialOrder
@@ -400,7 +391,7 @@ lemma exists_forall_ge_and [LinearOrder α] {p q : α → Prop} :
     (∃ i, ∀ j ≥ i, p j) → (∃ i, ∀ j ≥ i, q j) → ∃ i, ∀ j ≥ i, p j ∧ q j
   | ⟨a, ha⟩, ⟨b, hb⟩ =>
     let ⟨c, hac, hbc⟩ := exists_ge_of_linear a b
-    ⟨c, fun _d hcd ↦ ⟨ha _ $ hac.trans hcd, hb _ $ hbc.trans hcd⟩⟩
+    ⟨c, fun _d hcd ↦ ⟨ha _ <| hac.trans hcd, hb _ <| hbc.trans hcd⟩⟩
 
 theorem lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b → c ≤ d) (h : d < c) : b < a :=

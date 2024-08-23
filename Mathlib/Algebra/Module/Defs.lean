@@ -95,11 +95,6 @@ variable (R)
 -- Porting note: this is the letter of the mathlib3 version, but not really the spirit
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
 
-set_option linter.deprecated false in
-@[deprecated (since := "2022-12-31")]
-theorem two_smul' : (2 : R) • x = (2 : ℕ) • x := by
-  rw [two_smul, two_nsmul]
-
 @[simp]
 theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
     (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=

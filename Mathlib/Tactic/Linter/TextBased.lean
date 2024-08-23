@@ -410,7 +410,8 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
-  errors := errors.append (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
+  errors := errors.append
+    (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return errors
 
 /-- Lint a collection of modules for style violations.
@@ -456,10 +457,12 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool)
     -- or wait until lint-style.py is fully rewritten in Lean.
     let args := if fix then #["--fix"] else #[]
     let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh", args := args }
-    if pythonOutput != "" then IO.println pythonOutput
+    if pythonOutput != "" then
+      numberErrorFiles := numberErrorFiles + 1
+      IO.print pythonOutput
     formatErrors allUnexpectedErrors style
-    if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
-      IO.println s!"error: found {allUnexpectedErrors.size} new style errors\n\
+    if allUnexpectedErrors.size > 0 && mode matches OutputSetting.print _ then
+      IO.println s!"error: found {allUnexpectedErrors.size} new style error(s)\n\
         run `lake exe lint-style --update` to ignore all of them"
   | OutputSetting.update =>
     formatErrors allUnexpectedErrors ErrorFormat.humanReadable

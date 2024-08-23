@@ -362,13 +362,12 @@ variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrp.{v}}
   (φ' : M₀'.presheaf ⟶ A'.val)
   [Presheaf.IsLocallyInjective J φ'] [Presheaf.IsLocallySurjective J φ']
   (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')
-  (fac : τ₀.hom ≫ φ' = φ ≫ τ.val)
 
 /-- The morphism of sheaves of modules `sheafify α φ ⟶ sheafify α φ'`
 induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
 which satisfy `τ₀.hom ≫ φ' = φ ≫ τ.val`. -/
 @[simps]
-def sheafifyMap : sheafify α φ ⟶ sheafify α φ' where
+def sheafifyMap (fac : τ₀.hom ≫ φ' = φ ≫ τ.val) : sheafify α φ ⟶ sheafify α φ' where
   val :=
     { hom := τ.val
       map_smul := by
