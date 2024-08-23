@@ -43,15 +43,6 @@ universe u v w
 open Function
 
 /--
-The notation typeclass for heterogeneous additive actions.
-This enables the notation `a +ᵥ b : γ` where `a : α`, `b : β`.
--/
-class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
-  /-- `a +ᵥ b` computes the sum of `a` and `b`.
-  The meaning of this notation is type-dependent. -/
-  hVAdd : α → β → γ
-
-/--
 The notation typeclass for heterogeneous scalar multiplication.
 This enables the notation `a • b : γ` where `a : α`, `b : β`.
 
@@ -68,69 +59,18 @@ class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   The meaning of this notation is type-dependent, but it is intended to be used for left actions. -/
   hSMul : α → β → γ
 
-attribute [notation_class  smul Simps.copySecond] HSMul
-attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
-attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
-
-/-- Type class for the `+ᵥ` notation. -/
-class VAdd (G : Type u) (P : Type v) where
-  /-- `a +ᵥ b` computes the sum of `a` and `b`. The meaning of this notation is type-dependent,
-  but it is intended to be used for left actions. -/
-  vadd : G → P → P
-
-/-- Type class for the `-ᵥ` notation. -/
-class VSub (G : outParam <| Type u) (P : Type v) where
-  /-- `a -ᵥ b` computes the difference of `a` and `b`. The meaning of this notation is
-  type-dependent, but it is intended to be used for additive torsors. -/
-  vsub : P → P → G
-
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
-@[to_additive (attr := ext)]
 class SMul (M : Type u) (α : Type v) where
   /-- `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent,
   but it is intended to be used for left actions. -/
   smul : M → α → α
 
-@[inherit_doc] infixl:65 " +ᵥ " => HVAdd.hVAdd
-@[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
 @[inherit_doc] infixr:73 " • " => HSMul.hSMul
-
-/-!
-We have a macro to make `x • y` notation participate in the expression tree elaborator,
-like other arithmetic expressions such as `+`, `*`, `/`, `^`, `=`, inequalities, etc.
-The macro is using the `leftact%` elaborator introduced in
-[this RFC](https://github.com/leanprover/lean4/issues/2854).
-
-As a concrete example of the effect of this macro, consider
-```lean
-variable [Ring R] [AddCommMonoid M] [Module R M] (r : R) (N : Submodule R M) (m : M) (n : N)
-#check m + r • n
-```
-Without the macro, the expression would elaborate as `m + ↑(r • n : ↑N) : M`.
-With the macro, the expression elaborates as `m + r • (↑n : M) : M`.
-To get the first interpretation, one can write `m + (r • n :)`.
-
-Here is a quick review of the expression tree elaborator:
-1. It builds up an expression tree of all the immediately accessible operations
-   that are marked with `binop%`, `unop%`, `leftact%`, `rightact%`, `binrel%`, etc.
-2. It elaborates every leaf term of this tree
-   (without an expected type, so as if it were temporarily wrapped in `(... :)`).
-3. Using the types of each elaborated leaf, it computes a supremum type they can all be
-   coerced to, if such a supremum exists.
-4. It inserts coercions around leaf terms wherever needed.
-
-The hypothesis is that individual expression trees tend to be calculations with respect
-to a single algebraic structure.
-
-Note(kmill): If we were to remove `HSMul` and switch to using `SMul` directly,
-then the expression tree elaborator would not be able to insert coercions within the right operand;
-they would likely appear as `↑(x • y)` rather than `x • ↑y`, unlike other arithmetic operations.
--/
 
 @[inherit_doc HSMul.hSMul]
 macro_rules | `($x • $y) => `(leftact% HSMul.hSMul $x $y)
 
-attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
+attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv
 attribute [to_additive (reorder := 1 2) SMul] Pow
 attribute [to_additive (reorder := 1 2)] HPow
 attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
@@ -159,14 +99,6 @@ postfix:max "⁻¹" => Inv.inv
 section Mul
 
 variable [Mul G]
-
-/-- `leftMul g` denotes left multiplication by `g` -/
-@[to_additive "`leftAdd g` denotes left addition by `g`"]
-def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
-
-/-- `rightMul g` denotes right multiplication by `g` -/
-@[to_additive "`rightAdd g` denotes right addition by `g`"]
-def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 
 /-- A mixin for left cancellative multiplication. -/
 class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
@@ -202,14 +134,6 @@ section IsLeftCancelMul
 
 variable [IsLeftCancelMul G] {a b c : G}
 
-@[to_additive]
-theorem mul_left_cancel : a * b = a * c → b = c :=
-  IsLeftCancelMul.mul_left_cancel a b c
-
-@[to_additive]
-theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
-  ⟨mul_left_cancel, congrArg _⟩
-
 end IsLeftCancelMul
 
 section IsRightCancelMul
@@ -229,13 +153,11 @@ end IsRightCancelMul
 end Mul
 
 /-- A semigroup is a type with an associative `(*)`. -/
-@[ext]
 class Semigroup (G : Type u) extends Mul G where
   /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
-@[ext]
 class AddSemigroup (G : Type u) extends Add G where
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
@@ -253,13 +175,11 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
 end Semigroup
 
 /-- A commutative additive magma is a type with an addition which commutes. -/
-@[ext]
 class AddCommMagma (G : Type u) extends Add G where
   /-- Addition is commutative in an commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
 /-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
-@[ext]
 class CommMagma (G : Type u) extends Mul G where
   /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
@@ -267,11 +187,9 @@ class CommMagma (G : Type u) extends Mul G where
 attribute [to_additive] CommMagma
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
-@[ext]
 class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
-@[ext]
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
 
 attribute [to_additive] CommSemigroup
@@ -284,50 +202,16 @@ variable [CommMagma G]
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
-/-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
-@[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd "Any `AddCommMagma G` that satisfies
-`IsRightCancelAdd G` also satisfies `IsLeftCancelAdd G`."]
-theorem CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
-    IsLeftCancelMul G :=
-  ⟨fun _ _ _ h => mul_right_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
-
-/-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
-@[to_additive AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd "Any `AddCommMagma G` that satisfies
-`IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`."]
-theorem CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
-    IsRightCancelMul G :=
-  ⟨fun _ _ _ h => mul_left_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
-
-/-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsCancelMul G`. -/
-@[to_additive AddCommMagma.IsLeftCancelAdd.toIsCancelAdd "Any `AddCommMagma G` that satisfies
-`IsLeftCancelAdd G` also satisfies `IsCancelAdd G`."]
-theorem CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
-    IsCancelMul G := { CommMagma.IsLeftCancelMul.toIsRightCancelMul G with }
-
-/-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsCancelMul G`. -/
-@[to_additive AddCommMagma.IsRightCancelAdd.toIsCancelAdd "Any `AddCommMagma G` that satisfies
-`IsRightCancelAdd G` also satisfies `IsCancelAdd G`."]
-theorem CommMagma.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
-    IsCancelMul G := { CommMagma.IsRightCancelMul.toIsLeftCancelMul G with }
-
 end CommMagma
 
 /-- A `LeftCancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`. -/
-@[ext]
 class LeftCancelSemigroup (G : Type u) extends Semigroup G where
   protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
 
-library_note "lower cancel priority" /--
-We lower the priority of inheriting from cancellative structures.
-This attemts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
-since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
-Zulip discussion: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Why.20is.20.60simpNF.60.20complaining.20here.3F
--/
 attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lower cancel priority]
 
 /-- An `AddLeftCancelSemigroup` is an additive semigroup such that
 `a + b = a + c` implies `b = c`. -/
-@[ext]
 class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
   protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 
@@ -335,15 +219,7 @@ attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower
 
 attribute [to_additive] LeftCancelSemigroup
 
-/-- Any `LeftCancelSemigroup` satisfies `IsLeftCancelMul`. -/
-@[to_additive AddLeftCancelSemigroup.toIsLeftCancelAdd "Any `AddLeftCancelSemigroup` satisfies
-`IsLeftCancelAdd`."]
-instance (priority := 100) LeftCancelSemigroup.toIsLeftCancelMul (G : Type u)
-    [LeftCancelSemigroup G] : IsLeftCancelMul G :=
-  { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel }
-
 /-- A `RightCancelSemigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
-@[ext]
 class RightCancelSemigroup (G : Type u) extends Semigroup G where
   protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
 
@@ -351,20 +227,12 @@ attribute [instance 75] RightCancelSemigroup.toSemigroup -- See note [lower canc
 
 /-- An `AddRightCancelSemigroup` is an additive semigroup such that
 `a + b = c + b` implies `a = c`. -/
-@[ext]
 class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
   protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 
 attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
 attribute [to_additive] RightCancelSemigroup
-
-/-- Any `RightCancelSemigroup` satisfies `IsRightCancelMul`. -/
-@[to_additive AddRightCancelSemigroup.toIsRightCancelAdd "Any `AddRightCancelSemigroup` satisfies
-`IsRightCancelAdd`."]
-instance (priority := 100) RightCancelSemigroup.toIsRightCancelMul (G : Type u)
-    [RightCancelSemigroup G] : IsRightCancelMul G :=
-  { mul_right_cancel := RightCancelSemigroup.mul_right_cancel }
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
@@ -383,14 +251,6 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
   protected add_zero : ∀ a : M, a + 0 = a
 
 attribute [to_additive] MulOneClass
-
-@[to_additive (attr := ext)]
-theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
-  rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
-  -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
-  -- congr
-  suffices one₁ = one₂ by cases this; rfl
-  exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
 
 section MulOneClass
 
@@ -452,20 +312,8 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
-@[default_instance high] instance Monoid.toNatPow {M : Type u} [Monoid M] : Pow M ℕ :=
-  ⟨fun x n ↦ Monoid.npow n x⟩
-
-instance AddMonoid.toNatSMul {M : Type u} [AddMonoid M] : SMul ℕ M :=
-  ⟨AddMonoid.nsmul⟩
-
-attribute [to_additive existing toNatSMul] Monoid.toNatPow
-
 section Monoid
 variable {M : Type u} [Monoid M] {a b c : M} {m n : ℕ}
-
-@[to_additive (attr := simp) nsmul_eq_smul]
-theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
-  rfl
 
 @[to_additive] theorem left_inv_eq_right_inv (hba : b * a = 1) (hac : a * c = 1) : b = c := by
   rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
@@ -1505,48 +1353,48 @@ open CategoryTheory.Linear
 variable {R : Type u₃} [Semiring R]
 variable {C : Type u₁} {D : Type u₂} [Category C] [Category D] [Preadditive D] [Linear R D]
 
-/- count_heartbeats in -/
-/- instance functorCategoryLinear : Linear R (C ⥤ D) where -/
-/-   homModule F G := -/
-/-     { -/ 
-/-       smul := fun r α ↦ -/ 
-/-         { app := fun X ↦ r • α.app X -/
-/-           naturality := by -/
-/-             intros -/
-/-             rw [Linear.comp_smul, Linear.smul_comp, α.naturality] } -/
-/-       one_smul := by -/
-/-         intros -/
-/-         ext -/
-/-         apply MulAction.one_smul -/
-/-       zero_smul := by -/
-/-         intros -/
-/-         ext -/
-/-         apply Module.zero_smul -/
-/-       smul_zero := by -/
-/-         intros -/
-/-         ext -/
-/-         apply DistribMulAction.smul_zero -/
-/-       add_smul := by -/
-/-         intros -/
-/-         ext -/
-/-         apply Module.add_smul -/
-/-       smul_add := by -/
-/-         intros -/
-/-         ext -/
-/-         apply DistribMulAction.smul_add -/
-/-       mul_smul := by -/
-/-         intros -/
-/-         ext -/
-/-         apply MulAction.mul_smul -/
-/-         } -/
-/-   smul_comp := by -/
-/-     intros -/
-/-     ext -/
-/-     apply Linear.smul_comp -/
-/-   comp_smul := by -/
-/-     intros -/
-/-     ext -/
-/-     apply Linear.comp_smul -/
+count_heartbeats in
+instance functorCategoryLinear : Linear R (C ⥤ D) where
+  homModule F G :=
+    { 
+      smul := fun r α ↦ 
+        { app := fun X ↦ r • α.app X
+          naturality := by
+            intros
+            rw [Linear.comp_smul, Linear.smul_comp, α.naturality] }
+      one_smul := by
+        intros
+        ext
+        apply MulAction.one_smul
+      zero_smul := by
+        intros
+        ext
+        apply Module.zero_smul
+      smul_zero := by
+        intros
+        ext
+        apply DistribMulAction.smul_zero
+      add_smul := by
+        intros
+        ext
+        apply Module.add_smul
+      smul_add := by
+        intros
+        ext
+        apply DistribMulAction.smul_add
+      mul_smul := by
+        intros
+        ext
+        apply MulAction.mul_smul
+        }
+  smul_comp := by
+    intros
+    ext
+    apply Linear.smul_comp
+  comp_smul := by
+    intros
+    ext
+    apply Linear.comp_smul
 
 instance functorCategorySMul (F G : C ⥤ D) : SMul R (F ⟶ G) where
   smul r α := 
