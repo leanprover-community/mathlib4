@@ -47,7 +47,9 @@ def catAppSimp (e : Expr) : MetaM Simp.Result :=
 /--
 Given an equation `f = g` between 2-morphisms `X ⟶ Y` in an arbitrary bicategory (possibly after a
 `∀` binder), get the corresponding equation in the bicategory `Cat`. -/
-def to_appExpr (e : Expr) : MetaM Expr := do
+
+-- Maybe let this take a list of levels?
+def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
   logInfo m!"e at start: {e}"
   let (args, _, conclusion) ← forallMetaTelescope (← inferType e)
   logInfo m!"args at start: {args}"
@@ -63,14 +65,33 @@ def to_appExpr (e : Expr) : MetaM Expr := do
   let some CATIdx := args.findIdx? (· == .mvar CAT)
     | throwError "TODO"
   logInfo m!"cat: {CAT}"
-  logInfo m!"catlvl: {← Meta.getDecLevel B_pre}"
-  let u ← mkFreshLevelMVar
+
+  let u ← Meta.getDecLevel B_pre
   let v ← mkFreshLevelMVar
+
   CAT.assign (.const ``Cat [u, v])
   let some inst := args[CATIdx + 1]?
     | throwError "TODO"
+
+  -- Assign levels for the bicategory instance
+  let instlvl ← Meta.getLevel (← inferType inst)
+  let instlvlMVars := levelMVars.filter fun l => l.occurs instlvl && l != u
+  forM instlvlMVars fun l => do
+    let junk ← isLevelDefEq l (Level.max u v)
+    logInfo m!"asdf: {l} {Level.max u v}"
+    logInfo m!"junk: {junk}"
+
+  logInfo m!"instmvars: {instlvl}"
+  logInfo m!"occurs: {instlvlMVars}"
+
+
+
   inst.mvarId!.assign (← synthInstanceQ q(Bicategory.{max u v, max u v} Cat.{u, v}))
+
   logInfo m!"args: {args}"
+
+  logInfo m!"args: {args}"
+
   let applied ← mkAppOptM' e (args.map some)
   logInfo m!"applied: {applied}"
   let applied ← mkLambdaFVars ((← getMVars applied).map (Expr.mvar)) applied
@@ -120,8 +141,13 @@ initialize registerBuiltinAttribute {
       let levelMVars ← levels.mapM λ _ => mkFreshLevelMVar
       let value := value.instantiateLevelParams levels levelMVars
       logInfo m!"TYPE: {← mkExpectedTypeHint value type}"
-      let newExpr ← toAppExpr (← to_appExpr value)
+      logInfo m!"levelMVars: {levelMVars}"
+      let newValue ← to_appExpr value levelMVars
+      let newExpr ← toAppExpr newValue -- (← mkExpectedTypeHint newValue (← inferType newValue))
+      logInfo m!"newExpr {newExpr}"
       let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newExpr
+      logInfo m!"hello"
+      --let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newExpr
       pure (r.expr, r.newParamNames.toList)
   | _ => throwUnsupportedSyntax }
 
@@ -136,7 +162,7 @@ elab "to_app_of% " t:term : term => do
   logInfo m!"CAT: {(← elabTerm t none)}"
   logInfo m!"eq_app : {(← mkAppM ``eq_app' #[(← elabTerm t none)])}"
   -- this might be hackier than I want later? (requires providing args explicitly..)
-  to_appExpr (← elabTerm t none)
+  to_appExpr (← elabTerm t none) sorry
 
 
 end CategoryTheory
