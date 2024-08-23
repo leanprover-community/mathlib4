@@ -86,8 +86,12 @@ structure GrothendieckTopology where
 
 namespace GrothendieckTopology
 
-instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
-  ⟨sieves⟩
+-- instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
+--   ⟨sieves⟩
+
+instance : DFunLike (GrothendieckTopology C) C (fun X ↦ Set (Sieve X)) where
+  coe J X := sieves J X
+  coe_injective' J₁ J₂ h := by cases J₁; cases J₂; congr
 
 variable {C}
 variable {X Y : C} {S R : Sieve X}
@@ -104,12 +108,9 @@ theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Si
   cases J₂
   congr
 
-/-
-Porting note: This is now a syntactic tautology.
 @[simp]
 theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
   Iff.rfl
--/
 
 /-- Also known as the maximality axiom. -/
 @[simp]
