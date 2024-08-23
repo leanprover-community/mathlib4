@@ -98,7 +98,6 @@ def toAppExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do
     logInfo m!"e: {e}"
     logInfo m!"e type: {← inferType e}"
-    -- NOW IM HAVING A UNIVERSE ISSUE!!!
     simpType catAppSimp (← mkAppM ``eq_app' #[e])) e
 
 
@@ -131,15 +130,13 @@ initialize registerBuiltinAttribute {
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
     addRelatedDecl src "_app" ref stx? fun type value levels => do
-      -- NOTE: value: fun {B} [Bicategory B] ... => mapComp ...
-      -- NOTE: type: ∀ {B} [Bicategory B] ... => mapComp ...
       logInfo m!"TYPE: {← mkExpectedTypeHint value type}"
       pure (← toAppExpr (← to_appExpr value), levels)
   | _ => throwUnsupportedSyntax }
 
 open Term in
 /--
-`reassoc_of% t`, where `t` is
+`to_app_of% t`, where `t` is
 an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
 produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
