@@ -111,6 +111,9 @@ protected def rec {β : Nimber → Sort*} (h : ∀ a, β (toNimber a)) : ∀ a, 
 theorem induction {p : Nimber → Prop} : ∀ (i) (_ : ∀ j, (∀ k, k < j → p k) → p j), p i :=
   Ordinal.induction
 
+theorem le_zero {a : Nimber} : a ≤ 0 ↔ a = 0 :=
+  Ordinal.le_zero
+
 end Nimber
 
 namespace Ordinal
@@ -250,5 +253,43 @@ theorem add_comm (a b : Nimber) : a + b = b + a := by
   on_goal 4 => rw [← add_comm x, add_right_ne_iff]
   all_goals exact hx.ne'
 termination_by (a, b)
+
+@[simp]
+theorem add_eq_zero_iff {a b : Nimber} : a + b = 0 ↔ a = b := by
+  constructor <;>
+  intro hab
+  · obtain h | rfl | h := lt_trichotomy a b
+    · have ha : a + a = 0 := add_eq_zero_iff.2 rfl
+      rwa [← ha, add_left_inj, eq_comm] at hab
+    · rfl
+    · have hb : b + b = 0 := add_eq_zero_iff.2 rfl
+      rwa [← hb, add_right_inj] at hab
+  · rw [← le_zero]
+    apply add_le_of_forall_ne <;>
+    simp_rw [ne_eq, eq_comm] <;>
+    intro x hx
+    · rw [add_eq_zero_iff, ← hab]
+      exact hx.ne
+    · rw [add_eq_zero_iff, hab]
+      exact hx.ne'
+termination_by (a, b)
+
+@[simp]
+theorem add_self (a : Nimber) : a + a = 0 :=
+  add_eq_zero_iff.2 rfl
+
+theorem add_assoc (a b c : Nimber) : a + b + c = a + (b + c) := by
+  apply le_antisymm <;>
+  apply add_le_of_forall_ne <;>
+  intro x hx <;>
+  try obtain ⟨y, hy, rfl⟩ | ⟨y, hy, rfl⟩ := exists_of_lt_add hx
+  on_goal 1 => rw [add_assoc y, add_right_ne_iff]
+  on_goal 2 => rw [add_assoc _ y, add_left_ne_iff, add_right_ne_iff]
+  on_goal 3 => rw [add_assoc _ _ x, add_left_ne_iff, add_left_ne_iff]
+  on_goal 4 => rw [← add_assoc x, add_right_ne_iff, add_right_ne_iff]
+  on_goal 5 => rw [← add_assoc _ y, add_right_ne_iff, add_left_ne_iff]
+  on_goal 6 => rw [← add_assoc _ _ y, add_left_ne_iff]
+  all_goals apply ne_of_gt; assumption
+termination_by (a, b, c)
 
 end Nimber
