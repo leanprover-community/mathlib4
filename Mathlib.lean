@@ -4603,7 +4603,7 @@ import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.RestrictGenTopology
+import Mathlib.Topology.RestrictGen
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.SeparatedMap
 import Mathlib.Topology.Separation
