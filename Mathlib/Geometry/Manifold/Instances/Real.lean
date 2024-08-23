@@ -47,7 +47,7 @@ open scoped Manifold
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
 -/
-def EuclideanHalfSpace (n : ℕ) [Zero (Fin n)] : Type :=
+def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
   { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
 
 /--
@@ -64,13 +64,13 @@ without the following reducibility attribute (which is only set in this section)
 
 variable {n : ℕ}
 
-instance [Zero (Fin n)] : TopologicalSpace (EuclideanHalfSpace n) :=
+instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n) :=
   instTopologicalSpaceSubtype
 
 instance : TopologicalSpace (EuclideanQuadrant n) :=
   instTopologicalSpaceSubtype
 
-instance [Zero (Fin n)] : Inhabited (EuclideanHalfSpace n) :=
+instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
   ⟨⟨0, le_rfl⟩⟩
 
 instance : Inhabited (EuclideanQuadrant n) :=
@@ -81,14 +81,36 @@ theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = 
   Subtype.eq h
 
 @[ext]
-theorem EuclideanHalfSpace.ext [Zero (Fin n)] (x y : EuclideanHalfSpace n)
+theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
-theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
 @[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
+
+open ENNReal in
+@[simp]
+theorem interior_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+    interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
+  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  simpa [interior_Ici] using f.interior_preimage (Function.surjective_eval _) (Ici a)
+
+open ENNReal in
+@[simp]
+theorem closure_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+    closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
+  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  simpa [closure_Ici] using f.closure_preimage (Function.surjective_eval _) (Ici a)
+
+open ENNReal in
+@[simp]
+theorem frontier_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+    frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
+  rw [frontier, closure_halfspace, interior_halfspace]
+  ext y
+  simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
 
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
@@ -101,7 +123,7 @@ end
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the locale `Manifold`, use the shortcut `𝓡∂ n`.
 -/
-def modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
+def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
   toFun := Subtype.val
   invFun x := ⟨update x 0 (max (x 0) 0), by simp [le_refl]⟩
@@ -156,6 +178,25 @@ scoped[Manifold]
   notation "𝓡∂ " n =>
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
+
+lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
+    range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
+
+lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
+    interior (range (𝓡∂ n)) = { y | 0 < y 0 } := by
+  calc interior (range (𝓡∂ n))
+    _ = interior ({ y | 0 ≤ y 0}) := by
+      congr!
+      apply range_euclideanHalfSpace
+    _ = { y | 0 < y 0 } := interior_halfspace _ _ _
+
+lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
+    frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
+  calc frontier (range (𝓡∂ n))
+    _ = frontier ({ y | 0 ≤ y 0 }) := by
+      congr!
+      apply range_euclideanHalfSpace
+    _ = { y | 0 = y 0 } := frontier_halfspace 2 _ _
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
