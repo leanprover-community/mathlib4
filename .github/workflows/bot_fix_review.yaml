@@ -14,6 +14,7 @@ jobs:
     steps:
       - id: user_permission
         uses: actions-cool/check-user-permission@v2
+        with:
           require: 'write'
 
       - name: Add reaction
