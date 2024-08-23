@@ -10,7 +10,7 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory
 
 -- #check Lean.Elab.Term.elabTermAndSynthesize
 
-@[reassoc, to_app]
+@[to_app]
 lemma mapComp_assoc_right_hom (F : Pseudofunctor B C) {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom = F.map₂ (α_ f g h).inv ≫
     (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h ≫
