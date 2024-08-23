@@ -55,10 +55,9 @@ theorem lex_lt_of_lt [PartialOrder N] (r) [IsStrictOrder α r] {x y : α →₀ 
   DFinsupp.lex_lt_of_lt r (id hlt : x.toDFinsupp < y.toDFinsupp)
 
 instance Lex.isStrictOrder [LinearOrder α] [PartialOrder N] :
-    IsStrictOrder (Lex (α →₀ N)) (· < ·) :=
-  let i : IsStrictOrder (Lex (α → N)) (· < ·) := Pi.Lex.isStrictOrder
-  { irrefl := toLex.surjective.forall.2 fun _ ↦ @irrefl _ _ i.toIsIrrefl _
-    trans := toLex.surjective.forall₃.2 fun _ _ _ ↦ @trans _ _ i.toIsTrans _ _ _ }
+    IsStrictOrder (Lex (α →₀ N)) (· < ·) where
+  irrefl _ := lt_irrefl (α := Lex (α → N)) _
+  trans _ _ _ := lt_trans (α := Lex (α → N))
 
 variable [LinearOrder α]
 
