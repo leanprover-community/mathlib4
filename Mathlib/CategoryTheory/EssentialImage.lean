@@ -83,7 +83,7 @@ def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
 
 @[simp 900]
 lemma essImageInclusion_map (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f : X ⟶ Y) :
-  F.essImageInclusion.map f = f := rfl
+    F.essImageInclusion.map f = f := rfl
 
 -- Porting note: `deriving Full` is not able to derive this instance
 instance : Full (essImageInclusion F) :=
