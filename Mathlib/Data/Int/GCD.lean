@@ -5,9 +5,9 @@ Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupWithZero.Semiconj
-import Mathlib.Order.Bounds.Basic
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Order.Bounds.Basic
 
 /-!
 # Extended GCD and divisibility over ℤ

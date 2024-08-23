@@ -314,7 +314,7 @@ theorem mk_coe' (e : A₁ ≃ₐ[R] A₂) (f h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨f, e, h₁, h₂⟩, h₃, h₄, h₅⟩ : A₂ ≃ₐ[R] A₁) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `AlgEquiv.symm_mk`. -/
+/-- Auxiliary definition to avoid looping in `dsimp` with `AlgEquiv.symm_mk`. -/
 protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅) :=
   (⟨⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂).symm
 
@@ -552,7 +552,7 @@ def ofLinearEquiv : A₁ ≃ₐ[R] A₂ :=
     map_mul' := map_mul
     commutes' := (AlgHom.ofLinearMap l map_one map_mul : A₁ →ₐ[R] A₂).commutes }
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `AlgEquiv.ofLinearEquiv_symm`. -/
+/-- Auxiliary definition to avoid looping in `dsimp` with `AlgEquiv.ofLinearEquiv_symm`. -/
 protected def ofLinearEquiv_symm.aux := (ofLinearEquiv l map_one map_mul).symm
 
 @[simp]

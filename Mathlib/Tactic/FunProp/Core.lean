@@ -31,7 +31,7 @@ def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
     else
       trace[Meta.Tactic.fun_prop]
 "{← ppOrigin thmId}, failed to assign instance{indentExpr type}
-sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
+synthesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
       return false
   | _ =>
     trace[Meta.Tactic.fun_prop]
@@ -324,7 +324,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   trace[Debug.Meta.Tactic.fun_prop] "applying morphism theorems to {← ppExpr e}"
 
   match ← fData.isMorApplication with
-  | .none => throwError "fun_prop bug: ivalid use of mor rules on {← ppExpr e}"
+  | .none => throwError "fun_prop bug: invalid use of mor rules on {← ppExpr e}"
   | .underApplied =>
     applyPiRule funPropDecl e funProp
   | .overApplied =>
