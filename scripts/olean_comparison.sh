@@ -28,7 +28,7 @@ fi
 oleansDir=.lake/build/lib/Mathlib
 
 # should be master
-branch=test/CI_olean_size
+branch=adomani/CI_olean_size
 
 # This string separates the printout of the oleans from their analysis
 separatorMessage='Compare to master'
