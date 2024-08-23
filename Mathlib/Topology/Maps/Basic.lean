@@ -233,7 +233,7 @@ section QuotientMap
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem quotientMap_iff : QuotientMap f ↔ Surjective f ∧ ∀ s : Set Y, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
-  and_congr Iff.rfl TopologicalSpace.ext_iff
+  (quotientMap_iff' _).trans <| and_congr Iff.rfl TopologicalSpace.ext_iff
 
 theorem quotientMap_iff_closed :
     QuotientMap f ↔ Surjective f ∧ ∀ s : Set Y, IsClosed s ↔ IsClosed (f ⁻¹' s) :=
@@ -246,13 +246,13 @@ protected theorem id : QuotientMap (@id X) :=
   ⟨fun x => ⟨x, rfl⟩, coinduced_id.symm⟩
 
 protected theorem comp (hg : QuotientMap g) (hf : QuotientMap f) : QuotientMap (g ∘ f) :=
-  ⟨hg.left.comp hf.left, by rw [hg.right, hf.right, coinduced_compose]⟩
+  ⟨hg.surjective.comp hf.surjective, by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]⟩
 
 protected theorem of_quotientMap_compose (hf : Continuous f) (hg : Continuous g)
     (hgf : QuotientMap (g ∘ f)) : QuotientMap g :=
   ⟨hgf.1.of_comp,
     le_antisymm
-      (by rw [hgf.right, ← coinduced_compose]; exact coinduced_mono hf.coinduced_le)
+      (by rw [hgf.eq_coinduced, ← coinduced_compose]; exact coinduced_mono hf.coinduced_le)
       hg.coinduced_le⟩
 
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
@@ -260,13 +260,10 @@ theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : Le
   QuotientMap.of_quotientMap_compose hf hg <| h.comp_eq_id.symm ▸ QuotientMap.id
 
 protected theorem continuous_iff (hf : QuotientMap f) : Continuous g ↔ Continuous (g ∘ f) := by
-  rw [continuous_iff_coinduced_le, continuous_iff_coinduced_le, hf.right, coinduced_compose]
+  rw [continuous_iff_coinduced_le, continuous_iff_coinduced_le, hf.eq_coinduced, coinduced_compose]
 
 protected theorem continuous (hf : QuotientMap f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
-
-protected theorem surjective (hf : QuotientMap f) : Surjective f :=
-  hf.1
 
 protected theorem isOpen_preimage (hf : QuotientMap f) {s : Set Y} : IsOpen (f ⁻¹' s) ↔ IsOpen s :=
   ((quotientMap_iff.1 hf).2 s).symm

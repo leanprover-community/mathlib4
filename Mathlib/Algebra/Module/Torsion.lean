@@ -3,13 +3,10 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.GroupTheory.Torsion
 import Mathlib.RingTheory.Coprime.Ideal
-import Mathlib.RingTheory.Finiteness
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.ZMod.Module
 
 /-!
 # Torsion submodules
@@ -860,6 +857,46 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     exact ⟨_, Int.natAbs_pos.2 (nonZeroDivisors.coe_ne_zero n), natAbs_nsmul_eq_zero.2 hn⟩
 
 end AddMonoid
+
+namespace AddSubgroup
+
+variable (A : Type*) [AddCommGroup A] (n : ℤ)
+
+/-- The additive `n`-torsion subgroup for an integer `n`. -/
+@[reducible]
+def torsionBy : AddSubgroup A :=
+  (Submodule.torsionBy ℤ A n).toAddSubgroup
+
+@[inherit_doc]
+scoped notation:max (priority := high) A"["n"]" => torsionBy A n
+
+lemma torsionBy.neg : A[-n] = A[n] := by
+  ext a
+  simp
+
+variable {A} {n : ℕ}
+
+@[simp]
+lemma torsionBy.nsmul (x : A[n]) : n • x = 0 :=
+  Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.smul_torsionBy ..
+
+lemma torsionBy.nsmul_iff {x : A} :
+    x ∈ A[n] ↔ n • x = 0 :=
+  Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.mem_torsionBy_iff ..
+
+lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n])  :
+    s • x = (s % n) • x :=
+  nsmul_eq_mod_nsmul s (torsionBy.nsmul x)
+
+lemma torsionBy.mod_self_nsmul' (s : ℕ) {x : A} (h : x ∈ A[n]) :
+    s • x = (s % n) • x :=
+  nsmul_eq_mod_nsmul s (torsionBy.nsmul_iff.mp h)
+
+/-- For a natural number `n`, the `n`-torsion subgroup of `A` is a `ZMod n` module. -/
+def torsionBy.zmodModule : Module (ZMod n) A[n] :=
+  AddCommGroup.zmodModule torsionBy.nsmul
+
+end AddSubgroup
 
 section InfiniteRange
 

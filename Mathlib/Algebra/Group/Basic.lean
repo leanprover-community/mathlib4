@@ -189,11 +189,11 @@ lemma pow_sub_mul_pow (a : M) (h : m ≤ n) : a ^ (n - m) * a ^ m = a ^ n := by
 
 @[to_additive sub_one_nsmul_add]
 lemma mul_pow_sub_one (hn : n ≠ 0) (a : M) : a * a ^ (n - 1) = a ^ n := by
-  rw [← pow_succ', Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
+  rw [← pow_succ', Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.2 hn]
 
 @[to_additive add_sub_one_nsmul]
 lemma pow_sub_one_mul (hn : n ≠ 0) (a : M) : a ^ (n - 1) * a = a ^ n := by
-  rw [← pow_succ, Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
+  rw [← pow_succ, Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.2 hn]
 
 /-- If `x ^ n = 1`, then `x ^ m` is the same as `x ^ (m % n)` -/
 @[to_additive nsmul_eq_mod_nsmul "If `n • x = 0`, then `m • x` is the same as `(m % n) • x`"]
@@ -524,6 +524,8 @@ theorem div_eq_inv_mul : a / b = b⁻¹ * a := by simp
 @[to_additive]
 theorem inv_mul_eq_div : a⁻¹ * b = b / a := by simp
 
+@[to_additive] lemma inv_div_comm (a b : α) : a⁻¹ / b = b⁻¹ / a := by simp
+
 @[to_additive]
 theorem inv_mul' : (a * b)⁻¹ = a⁻¹ / b := by simp
 
@@ -831,6 +833,18 @@ lemma mul_zpow_self (a : G) (n : ℤ) : a ^ n * a = a ^ (n + 1) := (zpow_add_one
 
 @[to_additive sub_zsmul] lemma zpow_sub (a : G) (m n : ℤ) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   rw [Int.sub_eq_add_neg, zpow_add, zpow_neg]
+
+@[to_additive natCast_sub_natCast_zsmul]
+lemma zpow_natCast_sub_natCast (a : G) (m n : ℕ) : a ^ (m - n : ℤ) = a ^ m / a ^ n := by
+  simpa [div_eq_mul_inv] using zpow_sub a m n
+
+@[to_additive natCast_sub_one_zsmul]
+lemma zpow_natCast_sub_one (a : G) (n : ℕ) : a ^ (n - 1 : ℤ) = a ^ n / a := by
+  simpa [div_eq_mul_inv] using zpow_sub a n 1
+
+@[to_additive one_sub_natCast_zsmul]
+lemma zpow_one_sub_natCast (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := by
+  simpa [div_eq_mul_inv] using zpow_sub a 1 n
 
 @[to_additive] lemma zpow_mul_comm (a : G) (m n : ℤ) : a ^ m * a ^ n = a ^ n * a ^ m := by
   rw [← zpow_add, Int.add_comm, zpow_add]

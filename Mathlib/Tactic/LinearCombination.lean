@@ -110,7 +110,7 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
-def elabLinearCombination
+def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
     Tactic.TacticM Unit := Tactic.withMainContext do
   let some (ty, _) := (← (← Tactic.getMainGoal).getType').eq? |
@@ -121,7 +121,7 @@ def elabLinearCombination
     match ← expandLinearCombo ty e with
     | .const _ => throwError "To run 'linear_combination' without hypotheses, call it without input"
     | .proof p => pure p
-  let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
+  let norm := norm?.getD (Unhygienic.run <| withRef tk `(tactic| ring1))
   Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
   match exp? with
   | some n =>
@@ -205,7 +205,7 @@ example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc := by
 syntax (name := linearCombination) "linear_combination"
   (normStx)? (expStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
-  | `(tactic| linear_combination $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
-    elabLinearCombination tac n e
+  | `(tactic| linear_combination%$tk $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
+    elabLinearCombination tk tac n e
 
 end Mathlib.Tactic.LinearCombination

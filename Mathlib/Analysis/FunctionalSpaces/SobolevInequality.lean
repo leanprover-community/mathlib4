@@ -637,11 +637,11 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
       = eLpNorm (e.symm ∘ v) p' μ := by simp_rw [v, Function.comp, e.symm_apply_apply]
     _ ≤ C₁ • eLpNorm v p' μ := by
       apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
-      exact eventually_of_forall (fun x ↦ (e.symm : F' →L[ℝ] F).le_opNNNorm _)
+      exact Eventually.of_forall (fun x ↦ (e.symm : F' →L[ℝ] F).le_opNNNorm _)
     _ = C₁ * eLpNorm v p' μ := rfl
     _ ≤ C₁ * C * eLpNorm (fderiv ℝ v) p μ := by rw [mul_assoc]; gcongr
     _ ≤ C₁ * C * (C₂ * eLpNorm (fderiv ℝ u) p μ) := by
-      gcongr; exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (eventually_of_forall h4v) p
+      gcongr; exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (Eventually.of_forall h4v) p
     _ = SNormLESNormFDerivOfEqConst F μ p * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [SNormLESNormFDerivOfEqConst]
       push_cast

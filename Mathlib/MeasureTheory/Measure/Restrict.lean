@@ -570,7 +570,7 @@ theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg 
   exact Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 
 theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
-  (ae_restrict_iff'₀ hs).2 (Filter.eventually_of_forall fun _ => id)
+  (ae_restrict_iff'₀ hs).2 (Filter.Eventually.of_forall fun _ => id)
 
 theorem ae_restrict_mem (hs : MeasurableSet s) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
   ae_restrict_mem₀ hs.nullMeasurableSet
