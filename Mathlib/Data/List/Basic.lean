@@ -545,11 +545,6 @@ theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
   simp
 
-@[simp]
-theorem getElem_tail {l : List α} {i : ℕ} (h : i < l.tail.length) :
-    l.tail[i] = l[i + 1]'(by rw [length_tail] at h; omega) := by
-  cases l <;> [cases h; rfl]
-
 theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
     (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
   cases n <;> simp
@@ -561,15 +556,8 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
 
 theorem get_cons {l : List α} {a : α} {n} (hl) :
     (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
-      l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ := by
-  split_ifs with h
-  · simp [h]
-  cases l
-  · rw [length_singleton, Nat.lt_succ_iff] at hl
-    omega
-  cases n
-  · contradiction
-  rfl
+      l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
+  getElem_cons hl
 
 @[simp 1100]
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
