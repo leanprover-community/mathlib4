@@ -5,6 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Order.Basic
 
+/-!
+# Definition of `Nat.Coprime`
+-/
+
 namespace Nat
 
 /-!
