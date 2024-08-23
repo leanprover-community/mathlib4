@@ -27,8 +27,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
 
-attribute [local simp 2000] homEquiv_unit homEquiv_counit
-
 lemma functor_comp_op {E : Type*} [Category E] {F : C ⥤ D} {G : D ⥤ E} :
     F.op ⋙ G.op = (F ⋙ G).op := by rfl
 
