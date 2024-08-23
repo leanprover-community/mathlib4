@@ -432,8 +432,8 @@ theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective
 theorem typein_inj (r : α → α → Prop) [IsWellOrder α r] {a b} : typein r a = typein r b ↔ a = b :=
   (typein_injective r).eq_iff
 
-/-- Principal segment version of the `typein` function, embedding a well order into
-  ordinals as a principal segment. -/
+/-- Principal segment version of the `typein` function, embedding a well order into ordinals as a
+principal segment. -/
 def typein.principalSeg {α : Type u} (r : α → α → Prop) [IsWellOrder α r] :
     @PrincipalSeg α Ordinal.{u} r (· < ·) :=
   ⟨⟨⟨typein r, typein_injective r⟩, typein_lt_typein r⟩, type r,
@@ -443,20 +443,6 @@ def typein.principalSeg {α : Type u} (r : α → α → Prop) [IsWellOrder α r
 theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
     (typein.principalSeg r : α → Ordinal) = typein r :=
   rfl
-
-/-- Principal segment version of the `typein` function, embedding a well order into
-  ordinals as a principal segment. -/
-def typein.principalSeg {α : Type u} (r : α → α → Prop) [IsWellOrder α r] :
-    @PrincipalSeg α Ordinal.{u} r (· < ·) :=
-  ⟨⟨⟨typein r, typein_injective r⟩, typein_lt_typein r⟩, type r,
-    fun _ ↦ ⟨typein_surj r, fun ⟨a, h⟩ ↦ h ▸ typein_lt_type r a⟩⟩
-#align ordinal.typein.principal_seg Ordinal.typein.principalSeg
-
-@[simp]
-theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
-    (typein.principalSeg r : α → Ordinal) = typein r :=
-  rfl
-#align ordinal.typein.principal_seg_coe Ordinal.typein.principalSeg_coe
 
 /-! ### Enumerating elements in a well-order with ordinals. -/
 
