@@ -20,6 +20,13 @@ Everything else is deduced from this:
 
 * `Adjunction.rightAdjointUniq` : If `G` and `G'` are both right adjoint to `F`, then they are
   naturally isomorphic.
+
+## TODO
+
+There some overlap with the file `Adjunction.Mates`. In particular, `natTransEquiv` is just a
+special case of `mateEquiv`. However, before removing `natTransEquiv`, in favour of `mateEquiv`,
+the latter needs some more API lemmas such as `natTransEquiv_apply_app`, `natTransEquiv_id`, etc.
+in order to make automation work better in the rest of this file.
 -/
 
 open CategoryTheory
