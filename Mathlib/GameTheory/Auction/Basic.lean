@@ -58,8 +58,6 @@ logic to handle potential non-constructive cases effectively.
 auction, game theory, economics, bidding, valuation
 -/
 
-open Classical
-
 /- `v` is the valuation for participants `I` -/
 variable {I : Type*} [Fintype I] [Nontrivial I] (v : I → ℝ)
 
@@ -94,6 +92,8 @@ lemma eq_winner_of_bid_gt (i : I) (H : ∀ j , j ≠ i → b j < b i) : i = winn
   contrapose! H
   exact ⟨winner b, H.symm, bid_le_bid_winner b i⟩
 
+variable [DecidableEq I]
+
 /-- A strategy is dominant if bidding `bi` ensures that
 `i`'s utility is maximized relative to any other bids `b'` where `b i = bi`. -/
 def Dominant (utility : (I → ℝ) → I → ℝ) (i : I) (bi : ℝ) : Prop :=
@@ -105,7 +105,8 @@ namespace Firstprice
 
 /-- Computes the utility for a first price auction where the winner pays their bid. -/
 @[simp]
-noncomputable def utility (i : I) : ℝ := if i = winner b then v i - b i else 0
+noncomputable def utility [DecidableEq I] (v b : I → ℝ) (i : I) : ℝ :=
+    if i = winner b then v i - b i else 0
 
 /-- If `i` is the winner in a first price auction, utility is their valuation minus their bid. -/
 lemma utility_winner (i : I) (H : i = winner b) : utility v b i = v i - b i := by
@@ -153,7 +154,8 @@ lemma maxBidExcluding_eq_maxBid_if_loser {i : I} (H : i ≠ winner b) :
 
 /-- Defines the utility of participant `i`,
 which is their valuation minus the second highest bid if `i` is the winner, otherwise, it's 0. -/
-noncomputable def utility (i : I) : ℝ := if i = winner b then v i - secondPrice b else 0
+noncomputable def utility [DecidableEq I] (v b : I → ℝ) (i : I) : ℝ :=
+    if i = winner b then v i - secondPrice b else 0
 
 variable {i : I}
 
