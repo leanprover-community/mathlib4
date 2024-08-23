@@ -393,12 +393,10 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
         rw [(Polynomial.modByMonic_eq_self_iff h.Monic).mpr, Polynomial.coeff]
-        · dsimp only -- Porting note (#10752): added `dsimp only`
-          rw [Finsupp.mapDomain_apply Fin.val_injective]
+        · rw [Finsupp.mapDomain_apply Fin.val_injective]
         rw [degree_eq_natDegree h.Monic.ne_zero, degree_lt_iff_coeff_zero]
         intro m hm
         rw [Polynomial.coeff]
-        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [Finsupp.mapDomain_notin_range]
         rw [Set.mem_range, not_exists]
         rintro i rfl

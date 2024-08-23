@@ -818,10 +818,7 @@ partial def transformDeclAux
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
   if let some matcherInfo ← getMatcherInfo? src then
-    -- Use
-    --   Match.addMatcherInfo tgt matcherInfo
-    -- once on lean 4.13.
-    modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
+    Match.addMatcherInfo tgt matcherInfo
 
 /-- Copy the instance attribute in a `to_additive`
 
