@@ -33,7 +33,7 @@ a multiplication, an addition, a multiplicative unit and an additive unit.
 -/
 @[mk_iff]
 class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
-  not_IsSumSq_neg_one (a : R) (ssa : IsSumSq a): ¬ (a + 1 = 0)
+  not_IsSumSq_neg_one (a : R) (ssa : IsSumSq a) : ¬ (a + 1 = 0)
 
 @[deprecated (since := "2024-08-09")] alias isSemireal := IsSemireal
 @[deprecated (since := "2024-08-09")] alias isSemireal.neg_one_not_SumSq :=
