@@ -54,7 +54,7 @@ def natTransEquiv {F F' : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' 
     app := fun X ↦ adj2.unit.app (G.obj X) ≫ G'.map (f.app (G.obj X) ≫ adj1.counit.app X)
     naturality := by
       intro X Y g
-      erw [← adj2.unit_naturality_assoc, ]
+      erw [← adj2.unit_naturality_assoc]
       simp only [← Functor.map_comp]
       simp
   }
