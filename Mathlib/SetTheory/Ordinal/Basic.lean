@@ -446,7 +446,7 @@ theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
 
 /-! ### Enumerating elements in a well-order with ordinals. -/
 
-/-- A well order `r` is order isomorphic to the set of ordinals smaller than `type r`.
+/-- A well order `r` is order-isomorphic to the set of ordinals smaller than `type r`.
 `enum r ⟨o, h⟩` is the `o`-th element of `α` ordered by `r`.
 
 That is, `enum` maps an initial segment of the ordinals, those less than the order type of `r`, to
