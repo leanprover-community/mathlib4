@@ -7,6 +7,7 @@ import Mathlib.Order.Lattice
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Order.Basic
 
 /-!
 # Definitions and properties of `Nat.gcd`, `Nat.lcm`, and `Nat.coprime`
@@ -18,6 +19,8 @@ Note that the global `IsCoprime` is not a straightforward generalization of `Nat
 `Nat.isCoprime_iff_coprime` for the connection between the two.
 
 -/
+
+assert_not_exists OrderedCommMonoid
 
 namespace Nat
 
@@ -270,7 +273,7 @@ theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣
   · simp [eq_zero_of_gcd_eq_zero_right g0]
   rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩
   rw [mul_pow, mul_pow] at h
-  replace h := Nat.dvd_of_mul_dvd_mul_right (Nat.pos_pow_of_pos _ g0') h
+  replace h := Nat.dvd_of_mul_dvd_mul_right (Nat.pow_pos g0') h
   have := pow_dvd_pow a' <| Nat.pos_of_ne_zero n0
   rw [pow_one, (co.pow n n).eq_one_of_dvd h] at this
   simp [eq_one_of_dvd_one this]

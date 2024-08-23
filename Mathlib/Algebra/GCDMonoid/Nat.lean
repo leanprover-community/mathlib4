@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Int.GCD
 
 /-!
@@ -22,6 +22,8 @@ import Mathlib.Data.Int.GCD
 ## Tags
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
+
+assert_not_exists OrderedCommMonoid
 
 /-- `ℕ` is a gcd_monoid. -/
 instance : GCDMonoid ℕ where
@@ -55,9 +57,9 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
   normUnit_zero := if_pos le_rfl
   normUnit_mul {a b} hna hnb := by
     cases' hna.lt_or_lt with ha ha <;> cases' hnb.lt_or_lt with hb hb <;>
-      simp [mul_nonneg_iff, ha.le, ha.not_le, hb.le, hb.not_le]
+      simp [Int.mul_nonneg_iff, ha.le, ha.not_le, hb.le, hb.not_le]
   normUnit_coe_units u :=
-    (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos zero_le_one) fun eq =>
+    (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>
       eq.symm ▸ if_neg (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
 
 -- Porting note: added
@@ -76,10 +78,14 @@ theorem normalize_coe_nat (n : ℕ) : normalize (n : ℤ) = n :=
   normalize_of_nonneg (ofNat_le_ofNat_of_le <| Nat.zero_le n)
 
 theorem abs_eq_normalize (z : ℤ) : |z| = normalize z := by
-  cases le_total 0 z <;> simp [-normalize_apply, normalize_of_nonneg, normalize_of_nonpos, *]
+  cases le_total 0 z <;>
+  simp [-normalize_apply, abs_of_nonneg, abs_of_nonpos, normalize_of_nonneg, normalize_of_nonpos, *]
 
-theorem nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z :=
-  abs_eq_self.1 <| by rw [abs_eq_normalize, hz]
+theorem nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z := by
+  by_cases h : 0 ≤ z
+  · exact h
+  · rw [normalize_of_nonpos (le_of_not_le h)] at hz
+    omega
 
 theorem nonneg_iff_normalize_eq_self (z : ℤ) : normalize z = z ↔ 0 ≤ z :=
   ⟨nonneg_of_normalize_eq_self, normalize_of_nonneg⟩

@@ -179,6 +179,10 @@ is equal to the composition of `Prod.swap` with `Prod.map g f`.-/
 theorem map_comp_swap (f : α → β) (g : γ → δ) :
     Prod.map f g ∘ Prod.swap = Prod.swap ∘ Prod.map g f := rfl
 
+theorem _root_.Function.Semiconj.swap_map (f : α → α) (g : β → β) :
+    Function.Semiconj swap (map f g) (map g f) :=
+  Function.semiconj_iff_comp_eq.2 (map_comp_swap g f).symm
+
 theorem eq_iff_fst_eq_snd_eq : ∀ {p q : α × β}, p = q ↔ p.1 = q.1 ∧ p.2 = q.2
   | ⟨p₁, p₂⟩, ⟨q₁, q₂⟩ => by simp
 

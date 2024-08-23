@@ -170,14 +170,15 @@ variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     (hfg : Exact f g) (hg : Function.Surjective g)
 
 /-- The direct map in `lTensor.equiv` -/
-noncomputable def lTensor.toFun :
+noncomputable def lTensor.toFun (hfg : Exact f g) :
     Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) →ₗ[R] Q ⊗[R] P :=
   Submodule.liftQ _ (lTensor Q g) <| by
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
 /-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse)-/
-noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
+    (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
   TensorProduct.lift <| LinearMap.flip <| {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ ((TensorProduct.mk R _ _).flip (h p))
@@ -276,14 +277,15 @@ lemma lTensor_mkQ (N : Submodule R M) :
   exact lTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
 /-- The direct map in `rTensor.equiv` -/
-noncomputable def rTensor.toFun :
+noncomputable def rTensor.toFun (hfg : Exact f g) :
     N ⊗[R] Q ⧸ range (rTensor Q f) →ₗ[R] P ⊗[R] Q :=
   Submodule.liftQ _ (rTensor Q g) <| by
     rw [range_le_iff_comap, ← ker_comp, ← rTensor_comp,
       hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
 
 /-- The inverse map in `rTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
-noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
+    (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
   TensorProduct.lift  {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ TensorProduct.mk R _ _ (h p)
