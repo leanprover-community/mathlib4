@@ -923,6 +923,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
 import Mathlib.Analysis.CStarAlgebra.Exponential
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 import Mathlib.Analysis.CStarAlgebra.Matrix
+import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 import Mathlib.Analysis.CStarAlgebra.Module.Defs
 import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 import Mathlib.Analysis.CStarAlgebra.Multiplier
@@ -1401,6 +1402,7 @@ import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Functor
@@ -1549,6 +1551,7 @@ import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategoryEpiMono
 import Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IndYoneda
@@ -1658,6 +1661,7 @@ import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monad.Coequalizer
+import Mathlib.CategoryTheory.Monad.Comonadicity
 import Mathlib.CategoryTheory.Monad.Equalizer
 import Mathlib.CategoryTheory.Monad.EquivMon
 import Mathlib.CategoryTheory.Monad.Kleisli
@@ -1699,6 +1703,7 @@ import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 import Mathlib.CategoryTheory.Monoidal.Opposite
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
 import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 import Mathlib.CategoryTheory.Monoidal.Skeleton
@@ -2193,6 +2198,7 @@ import Mathlib.Data.Int.Log
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.Int.Notation
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Range
@@ -2304,6 +2310,7 @@ import Mathlib.Data.Multiset.Sym
 import Mathlib.Data.NNRat.BigOperators
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.NNRat.Lemmas
+import Mathlib.Data.NNRat.Order
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Data.NNReal.Star
 import Mathlib.Data.Nat.BitIndices
@@ -2476,6 +2483,7 @@ import Mathlib.Data.Set.MemPartition
 import Mathlib.Data.Set.MulAntidiagonal
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Notation
+import Mathlib.Data.Set.Operations
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
@@ -2589,7 +2597,8 @@ import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Fixed
 import Mathlib.FieldTheory.Galois
-import Mathlib.FieldTheory.IntermediateField
+import Mathlib.FieldTheory.IntermediateField.Algebraic
+import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Classification
@@ -2741,7 +2750,6 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.IterateAct
 import Mathlib.GroupTheory.GroupAction.Period
@@ -2808,14 +2816,12 @@ import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Init
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Quot
 import Mathlib.Init.Logic
 import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Quot
-import Mathlib.Init.Set
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Term
@@ -2884,6 +2890,7 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 import Mathlib.LinearAlgebra.CliffordAlgebra.Prod
+import Mathlib.LinearAlgebra.CliffordAlgebra.SpinGroup
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.Contraction
@@ -3416,7 +3423,8 @@ import Mathlib.NumberTheory.Padics.Hensel
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.NumberTheory.Padics.PadicVal.Defs
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.NumberTheory.Pell
 import Mathlib.NumberTheory.PellMatiyasevic
@@ -3745,6 +3753,7 @@ import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.DedekindDomain.SInteger
 import Mathlib.RingTheory.DedekindDomain.SelmerGroup
 import Mathlib.RingTheory.Derivation.Basic
+import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.RingTheory.Derivation.Lie
 import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
@@ -3766,6 +3775,7 @@ import Mathlib.RingTheory.Flat.CategoryTheory
 import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.Flat.Stability
 import Mathlib.RingTheory.FractionalIdeal.Basic
+import Mathlib.RingTheory.FractionalIdeal.Extended
 import Mathlib.RingTheory.FractionalIdeal.Norm
 import Mathlib.RingTheory.FractionalIdeal.Operations
 import Mathlib.RingTheory.FreeCommRing
@@ -4656,6 +4666,7 @@ import Mathlib.Topology.VectorBundle.Constructions
 import Mathlib.Topology.VectorBundle.Hom
 import Mathlib.Util.AddRelatedDecl
 import Mathlib.Util.AssertExists
+import Mathlib.Util.AssertExistsExt
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
 import Mathlib.Util.CompileInductive

@@ -354,11 +354,31 @@ theorem factorial_mul_descFactorial : ∀ {n k : ℕ}, k ≤ n → (n - k)! * n.
     rw [succ_descFactorial_succ, succ_sub_succ, ← Nat.mul_assoc, Nat.mul_comm (n - k)!,
       Nat.mul_assoc, factorial_mul_descFactorial (Nat.succ_le_succ_iff.1 h), factorial_succ]
 
+theorem descFactorial_mul_descFactorial {k m n : ℕ} (hkm : k ≤ m) :
+    (n - k).descFactorial (m - k) * n.descFactorial k = n.descFactorial m := by
+  by_cases hmn : m ≤ n
+  · apply Nat.mul_left_cancel (n - m).factorial_pos
+    rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by omega, ← Nat.mul_assoc,
+      factorial_mul_descFactorial (show m - k ≤ n - k by omega),
+      factorial_mul_descFactorial (le_trans hkm hmn)]
+  · rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by omega)]
+    by_cases hkn : k ≤ n
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by omega), Nat.zero_mul]
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by omega), Nat.mul_zero]
+
 /-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
 theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n ! / (n - k)! := by
   apply Nat.mul_left_cancel (n - k).factorial_pos
   rw [factorial_mul_descFactorial h]
   exact (Nat.mul_div_cancel' <| factorial_dvd_factorial <| Nat.sub_le n k).symm
+
+theorem descFactorial_le (n : ℕ) {k m : ℕ} (h : k ≤ m) :
+    k.descFactorial n ≤ m.descFactorial n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [descFactorial_succ, descFactorial_succ]
+    exact Nat.mul_le_mul (Nat.sub_le_sub_right h n) ih
 
 theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.descFactorial k
   | 0 => by rw [descFactorial_zero, Nat.pow_zero]

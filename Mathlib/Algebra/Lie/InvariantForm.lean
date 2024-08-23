@@ -61,14 +61,12 @@ lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieAlgebra R L] [LieModule R 
       LinearMap.zero_apply, sub_eq_zero] at h
     simp [← h]
 
-variable (hΦ_inv : Φ.lieInvariant L)
-
 /--
 The orthogonal complement of a Lie submodule `N` with respect to an invariant bilinear form `Φ` is
 the Lie submodule of elements `y` such that `Φ x y = 0` for all `x ∈ N`.
 -/
 @[simps!]
-def orthogonal (N : LieSubmodule R L M) : LieSubmodule R L M where
+def orthogonal (hΦ_inv : Φ.lieInvariant L) (N : LieSubmodule R L M) : LieSubmodule R L M where
   __ := Φ.orthogonal N
   lie_mem {x y} := by
     suffices (∀ n ∈ N, Φ n y = 0) → ∀ n ∈ N, Φ n ⁅x, y⁆ = 0 by
@@ -78,6 +76,8 @@ def orthogonal (N : LieSubmodule R L M) : LieSubmodule R L M where
     intro H a ha
     rw [← neg_eq_zero, ← hΦ_inv]
     exact H _ <| N.lie_mem ha
+
+variable (hΦ_inv : Φ.lieInvariant L)
 
 @[simp]
 lemma orthogonal_toSubmodule (N : LieSubmodule R L M) :

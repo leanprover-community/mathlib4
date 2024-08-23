@@ -3,13 +3,11 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.Ring.Int
-import Mathlib.Data.List.Chain
-import Mathlib.Data.List.OfFn
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
-import Mathlib.Order.Fin.Basic
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linarith
 
 /-!
 # Series of a relation
@@ -237,7 +235,7 @@ such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
 @[simps length]
 def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   length := p.length + q.length + 1
-  toFun := Fin.append p q ∘ Fin.cast (by abel)
+  toFun := Fin.append p q ∘ Fin.cast (by omega)
   step i := by
     obtain hi | rfl | hi :=
       lt_trichotomy i (Fin.castLE (by omega) (Fin.last _ : Fin (p.length + 1)))
@@ -259,14 +257,14 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
         rfl
       rw [hx, Fin.append_right, hy, Fin.append_right]
       convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-        by convert i.2 using 1; abel⟩
+        by convert i.2 using 1; exact Nat.add_right_comm ..⟩
       rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
         Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
       exact hi
 
 lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
     (i : Fin (p.length + 1)) :
-    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; abel)) = p i := by
+    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; omega)) = p i := by
   delta append
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
@@ -692,6 +690,22 @@ def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono
   toFun := toFun
   step i := strictMono <| lt_add_one i.1
 
+/-- An injection from the type of strictly monotone functions with limited length to `LTSeries`. -/
+def injStrictMono (n : ℕ) :
+    {f : (l : Fin n) × (Fin (l + 1) → α) // StrictMono f.2} ↪ LTSeries α where
+  toFun f := mk f.1.1 f.1.2 f.2
+  inj' f g e := by
+    obtain ⟨⟨lf, f⟩, mf⟩ := f
+    obtain ⟨⟨lg, g⟩, mg⟩ := g
+    dsimp only at mf mg e
+    have leq := congr($(e).length)
+    rw [mk_length lf f mf, mk_length lg g mg, Fin.val_eq_val] at leq
+    subst leq
+    simp_rw [Subtype.mk_eq_mk, Sigma.mk.inj_iff, heq_eq_eq, true_and]
+    have feq := fun i ↦ congr($(e).toFun i)
+    simp_rw [mk_toFun lf f mf, mk_toFun lf g mg, mk_length lf f mf] at feq
+    rwa [Function.funext_iff]
+
 /--
 For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
 can be pushed out to a strict chain of `β` by
@@ -719,6 +733,23 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   (surjective : Function.Surjective f) :
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
+
+variable [Fintype α]
+
+lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
+  by_contra! h
+  obtain ⟨i, j, hn, he⟩ := Fintype.exists_ne_map_eq_of_card_lt s (by rw [Fintype.card_fin]; omega)
+  wlog hl : i < j generalizing i j
+  · exact this j i hn.symm he.symm (by omega)
+  exact absurd he (s.strictMono hl).ne
+
+instance [DecidableRel ((· < ·) : α → α → Prop)] : Fintype (LTSeries α) where
+  elems := Finset.univ.map (injStrictMono (Fintype.card α))
+  complete s := by
+    have bl := s.length_lt_card
+    obtain ⟨l, f, mf⟩ := s
+    simp_rw [Finset.mem_map, Finset.mem_univ, true_and, Subtype.exists]
+    use ⟨⟨l, bl⟩, f⟩, Fin.strictMono_iff_lt_succ.mpr mf; rfl
 
 end LTSeries
 
