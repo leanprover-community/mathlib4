@@ -351,7 +351,12 @@ lemma iterate_eq_id (hf : Involutive f) (hne : f ≠ id) : f^[n] = id ↔ Even n
 end Involutive
 end Function
 
+lemma neg_one_pow_eq_ite {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ} :
+    (-1 : R) ^ n = ite (Even n) 1 (-1) := by
+  cases even_or_odd n with
+  | inl h => rw [h.neg_one_pow, if_pos h]
+  | inr h => rw [h.neg_one_pow, if_neg (by simpa using h)]
+
 lemma neg_one_pow_eq_one_iff_even {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
-    (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n where
-  mp h' := of_not_not fun hn ↦ h <| (Odd.neg_one_pow <| odd_iff_not_even.mpr hn).symm.trans h'
-  mpr := Even.neg_one_pow
+    (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n := by
+  simp [neg_one_pow_eq_ite, h]

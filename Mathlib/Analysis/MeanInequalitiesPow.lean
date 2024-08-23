@@ -65,18 +65,13 @@ theorem pow_arith_mean_le_arith_mean_pow_of_even (w z : ι → ℝ) (hw : ∀ i 
 theorem pow_sum_div_card_le_sum_pow {f : ι → ℝ} (n : ℕ) (hf : ∀ a ∈ s, 0 ≤ f a) :
     (∑ x ∈ s, f x) ^ (n + 1) / (s.card : ℝ) ^ n ≤ ∑ x ∈ s, f x ^ (n + 1) := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)
-  · simp_rw [Finset.sum_empty, zero_pow n.succ_ne_zero, zero_div]; rfl
+  · simp
   · have hs0 : 0 < (s.card : ℝ) := Nat.cast_pos.2 hs.card_pos
-    suffices (∑ x ∈ s, f x / s.card) ^ (n + 1) ≤ ∑ x ∈ s, f x ^ (n + 1) / s.card by
-      rwa [← Finset.sum_div, ← Finset.sum_div, div_pow, pow_succ (s.card : ℝ), ← div_div,
-        div_le_iff hs0, div_mul, div_self hs0.ne', div_one] at this
-    have :=
-      @ConvexOn.map_sum_le ℝ ℝ ℝ ι _ _ _ _ _ _ (Set.Ici 0) (fun x => x ^ (n + 1)) s
-        (fun _ => 1 / s.card) ((↑) ∘ f) (convexOn_pow (n + 1)) ?_ ?_ fun i hi =>
-        Set.mem_Ici.2 (hf i hi)
-    · simpa only [inv_mul_eq_div, one_div, Algebra.id.smul_eq_mul] using this
-    · simp only [one_div, inv_nonneg, Nat.cast_nonneg, imp_true_iff]
-    · simpa only [one_div, Finset.sum_const, nsmul_eq_mul] using mul_inv_cancel₀ hs0.ne'
+    suffices (∑ x ∈ s, (s.card : ℝ)⁻¹ * f x) ^ (n + 1) ≤ ∑ x ∈ s, (s.card : ℝ)⁻¹ * f x ^ (n + 1) by
+      rwa [← mul_sum, ← mul_sum, inv_mul_eq_div, inv_mul_eq_div, div_pow, pow_succ (s.card : ℝ),
+        ← div_div, div_le_iff hs0, div_mul, div_self hs0.ne', div_one] at this
+    refine pow_arith_mean_le_arith_mean_pow _ _ _ (by simp) ?_ hf _
+    field_simp [hs0]
 
 theorem zpow_arith_mean_le_arith_mean_zpow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) (m : ℤ) :
