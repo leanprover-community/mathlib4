@@ -159,7 +159,7 @@ open Ideal
 -- So for any `x` in `Proj| (pbo f)`, we need some point in `Spec A⁰_f`, i.e. a prime ideal,
 -- and we need this correspondence to be continuous in their Zariski topology.
 variable {𝒜}
-variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (x : Proj| (pbo f))
+variable {f : A} {m : ℕ} (x : Proj| (pbo f))
 
 /--
 For any `x` in `Proj| (pbo f)`, the corresponding ideal in `Spec A⁰_f`. This fact that this ideal
@@ -263,7 +263,7 @@ The set `{a | aᵢᵐ/fⁱ ∈ q}`
 * is prime, as proved in `carrier.asIdeal.prime`;
 * is relevant, as proved in `carrier.relevant`.
 -/
-def carrier (q : Spec.T A⁰_ f) : Set A :=
+def carrier (f_deg : f ∈ 𝒜 m) (q : Spec.T A⁰_ f) : Set A :=
   {a | ∀ i, (HomogeneousLocalization.mk ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
               ⟨f ^ i, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.1}
 
@@ -522,7 +522,7 @@ end fromSpecToSpec
 namespace toSpec
 
 variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
-include hm
+include hm f_deg
 
 variable {𝒜} in
 lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :

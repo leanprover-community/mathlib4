@@ -52,7 +52,7 @@ namespace ComplexShape
 
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
 `c' : ComplexShape ι'` consists of a injective map `f : ι → ι'` which satisfies
-a compatiblity with respect to the relations `c.Rel` and `c'.Rel`. -/
+a compatibility with respect to the relations `c.Rel` and `c'.Rel`. -/
 structure Embedding where
   /-- the map between the underlying types of indices -/
   f : ι → ι'

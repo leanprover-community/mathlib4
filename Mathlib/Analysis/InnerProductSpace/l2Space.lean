@@ -187,7 +187,7 @@ protected theorem summable_of_lp (f : lp G 2) :
 
 /-- A mutually orthogonal family of subspaces of `E` induce a linear isometry from `lp 2` of the
 subspaces into `E`. -/
-protected def linearIsometry : lp G 2 →ₗᵢ[𝕜] E where
+protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ[𝕜] E where
   toFun f := ∑' i, V i (f i)
   map_add' f g := by
     simp only [tsum_add (hV.summable_of_lp f) (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
