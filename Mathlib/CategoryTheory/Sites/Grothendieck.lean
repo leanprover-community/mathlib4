@@ -99,8 +99,8 @@ We prove this explicitly rather than deriving it so that it is in terms of the c
 the projection `.sieves`.
 -/
 @[ext]
-theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) :
-    J₁ = J₂ := DFunLike.coe_injective h
+theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) : J₁ = J₂ :=
+  DFunLike.coe_injective h
 
 @[simp]
 theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
@@ -392,8 +392,7 @@ instance : OrderTop (J.Cover X) :=
 
 instance : SemilatticeInf (J.Cover X) :=
   { (inferInstance : Preorder _) with
-    inf := fun S T => ⟨S ⊓ T,
-      J.intersection_covering S.condition T.condition⟩
+    inf := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
     le_antisymm := fun S T h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
     inf_le_left := fun S T Y f hf => hf.1
     inf_le_right := fun S T Y f hf => hf.2
