@@ -840,9 +840,9 @@ lemma isHomeomorph_iff_continuous_isClosedMap_bijective  : IsHomeomorph f ↔
 
 /-- A map from a compact space to a T2 space is a homeomorphism iff it is continuous and
   bijective. -/
-lemma isHomeomorph_iff_bijective [CompactSpace X] [T2Space Y] :
+lemma isHomeomorph_iff_continuous_bijective [CompactSpace X] [T2Space Y] :
     IsHomeomorph f ↔ Continuous f ∧ Bijective f := by
-  rw [isHomeomorph_iff_closed_bijective]
+  rw [isHomeomorph_iff_continuous_isClosedMap_bijective]
   refine and_congr_right fun hf ↦ ?_
   rw [eq_true hf.isClosedMap, true_and]
 
