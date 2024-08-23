@@ -3,13 +3,13 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Linter.Util
-import Batteries.Data.List.Basic
 import Batteries.Tactic.Unreachable
 
 /-!
-#  The unused tactic linter
+# The unused tactic linter
 
 The unused linter makes sure that every tactic call actually changes *something*.
 
@@ -29,7 +29,7 @@ The only tactic that has a bespoke criterion is `swap_var`: the reason is that t
 Thus, to check that `swap_var` was used, so we inspect the names of all the local declarations
 before and after and see if there is some change.
 
-###  Notable exclusions
+## Notable exclusions
 
 * `conv` is completely ignored by the linter.
 
@@ -43,7 +43,7 @@ before and after and see if there is some change.
   The main reason is that `skip` is a common discharger tactic and the linter would
   then always fail whenever the user explicitly chose to pass `skip` as a discharger tactic.
 
-###  TODO
+## TODO
 * The linter seems to be silenced by `set_option ... in`: maybe it should enter `in`s?
 
 ##  Implementation notes
@@ -197,12 +197,9 @@ partial def eraseUsedTactics : InfoTree → M Unit
 
 end
 
-/-- Gets the value of the `linter.unusedTactic` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.unusedTactic o
-
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
-  unless getLinterHash (← getOptions) && (← getInfoState).enabled do
+  unless Linter.getLinterValue linter.unusedTactic (← getOptions) && (← getInfoState).enabled do
     return
   if (← get).messages.hasErrors then
     return

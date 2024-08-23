@@ -49,7 +49,7 @@ instance : AddCommGroup (S₁ ⟶ S₂) where
   add_assoc := fun a b c => by ext <;> apply add_assoc
   add_zero := fun a => by ext <;> apply add_zero
   zero_add := fun a => by ext <;> apply zero_add
-  add_left_neg := fun a => by ext <;> apply add_left_neg
+  neg_add_cancel := fun a => by ext <;> apply neg_add_cancel
   add_comm := fun a b => by ext <;> apply add_comm
   sub_eq_add_neg := fun a b => by ext <;> apply sub_eq_add_neg
   nsmul := nsmulRec
@@ -451,7 +451,7 @@ def add (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁
   comm₂ := by rw [add_τ₂, add_τ₂, h.comm₂, h'.comm₂, comp_add, add_comp]; abel
   comm₃ := by rw [add_τ₃, add_τ₃, h.comm₃, h'.comm₃, add_comp]; abel
 
-/-- Homotopy between morphisms of short complexes is compatible with substraction. -/
+/-- Homotopy between morphisms of short complexes is compatible with subtraction. -/
 @[simps]
 def sub (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁ - φ₃) (φ₂ - φ₄) where
   h₀ := h.h₀ - h'.h₀

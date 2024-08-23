@@ -19,7 +19,7 @@ MDifferentiable.
 
 noncomputable section
 
-open UpperHalfPlane Filter Function Complex Manifold
+open UpperHalfPlane Filter Function Complex Manifold CongruenceSubgroup
 
 namespace EisensteinSeries
 
@@ -55,6 +55,8 @@ theorem eisensteinSeries_SIF_MDifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) 
   refine DifferentiableOn.differentiableAt ?_
     ((isOpen_lt continuous_const Complex.continuous_im).mem_nhds τ.2)
   exact (eisensteinSeries_tendstoLocallyUniformlyOn hk a).differentiableOn
-    (eventually_of_forall fun s ↦ DifferentiableOn.sum
+    (Eventually.of_forall fun s ↦ DifferentiableOn.sum
       fun _ _ ↦ eisSummand_extension_differentiableOn _ _)
         (isOpen_lt continuous_const continuous_im)
+
+end EisensteinSeries
