@@ -112,7 +112,7 @@ theorem bot_eq_one : (⊥ : α) = 1 :=
   le_antisymm bot_le (one_le ⊥)
 
 @[to_additive] instance CanonicallyOrderedCommMonoid.toUniqueUnits : Unique αˣ where
-  uniq a := Units.ext ((mul_eq_one_iff_of_one_le (α := α) (one_le _) $ one_le _).1 a.mul_inv).1
+  uniq a := Units.ext ((mul_eq_one_iff_of_one_le (α := α) (one_le _) <| one_le _).1 a.mul_inv).1
 
 @[deprecated (since := "2024-07-24")] alias mul_eq_one_iff := mul_eq_one
 @[deprecated (since := "2024-07-24")] alias add_eq_zero_iff := add_eq_zero
