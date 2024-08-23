@@ -29,6 +29,12 @@ It flags every folder that has a percentage change of at least 5% (either positi
 The percentage difference for the full `.olean`s folder is always printed, whether or not it
 exceeds the threshold.
 
+## Check
+
+When bors merges a batch into master, running this code show the net effect of the new code over
+the old one on the `.olean`s.
+Do the logs for the corresponding commit to `master` reproduce this data?
+
 BASH_MODULE_DOCS
 
 # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
