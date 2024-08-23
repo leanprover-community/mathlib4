@@ -1527,6 +1527,10 @@ def compactlySupported : TwoSidedIdeal (α →ᵇ γ) :=
 scoped[BoundedContinuousFunction] notation
   "C_cb(" α ", " γ ")" => compactlySupported α γ
 
-end
+lemma mem_compactlySupported {f : α →ᵇ γ} :
+    f ∈ C_cb(α, γ) ↔ HasCompactSupport f :=
+  TwoSidedIdeal.mem_mk' {z : α →ᵇ γ | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right f
+
+end CompactlySupported
 
 end BoundedContinuousFunction
