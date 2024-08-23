@@ -77,13 +77,9 @@ instance : Category (EssImageSubcategory F) :=
   (inferInstance : Category.{v₂} (FullSubcategory _))
 
 /-- The essential image as a subcategory has a fully faithful inclusion into the target category. -/
-@[simps! obj]
+@[simps!]
 def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
   fullSubcategoryInclusion _
-
-@[simp 900]
-lemma essImageInclusion_map (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f : X ⟶ Y) :
-  F.essImageInclusion.map f = f := rfl
 
 -- Porting note: `deriving Full` is not able to derive this instance
 instance : Full (essImageInclusion F) :=
@@ -92,11 +88,6 @@ instance : Full (essImageInclusion F) :=
 -- Porting note: `deriving Faithful` is not able to derive this instance
 instance : Faithful (essImageInclusion F) :=
   (inferInstance : Faithful (fullSubcategoryInclusion _))
-
-@[ext]
-lemma essImage_ext (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f g : X ⟶ Y)
-    (h : F.essImageInclusion.map f = F.essImageInclusion.map g) : f = g := by
-  simpa using h
 
 /--
 Given a functor `F : C ⥤ D`, we have an (essentially surjective) functor from `C` to the essential

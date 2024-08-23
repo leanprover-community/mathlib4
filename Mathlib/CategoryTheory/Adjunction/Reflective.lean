@@ -153,15 +153,60 @@ instance [Reflective i] (X : Functor.EssImageSubcategory i) :
   IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
 Functor.essImage.unit_isIso X.property
 
+-- Porting note: the following auxiliary definition and the next two lemmas were
+-- introduced in order to ease the port
+/-- The counit isomorphism of the equivalence `D ≌ i.EssImageSubcategory` given
+by `equivEssImageOfReflective` when the functor `i` is reflective. -/
+def equivEssImageOfReflective_counitIso_app [Reflective i] (X : Functor.EssImageSubcategory i) :
+    ((Functor.essImageInclusion i ⋙ reflector i) ⋙ Functor.toEssImage i).obj X ≅ X := by
+  refine Iso.symm (@asIso _ _ X _ ((reflectorAdjunction i).unit.app X.obj) ?_)
+  refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion ?_ _
+  dsimp
+  exact inferInstance
+
+lemma equivEssImageOfReflective_map_counitIso_app_hom [Reflective i]
+    (X : Functor.EssImageSubcategory i) :
+  (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).hom =
+    inv (NatTrans.app (reflectorAdjunction i).unit X.obj) := by
+    simp only [Functor.comp_obj, Functor.essImageInclusion_obj, Functor.toEssImage_obj_obj,
+      equivEssImageOfReflective_counitIso_app, asIso, Iso.symm_mk, Functor.essImageInclusion_map,
+      Functor.id_obj]
+    rfl
+
+lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]
+    (X : Functor.EssImageSubcategory i) :
+  (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).inv =
+    (NatTrans.app (reflectorAdjunction i).unit X.obj) := rfl
+
 /-- If `i : D ⥤ C` is reflective, the inverse functor of `i ≌ F.essImage` can be explicitly
 defined by the reflector. -/
 @[simps]
 def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
   functor := i.toEssImage
   inverse := i.essImageInclusion ⋙ reflector i
-  unitIso := (asIso <| (reflectorAdjunction i).counit).symm
-  counitIso := i.essImageInclusion.preimageNatIso _ _ <|
-    NatIso.ofComponents (fun X ↦ (asIso ((reflectorAdjunction i).unit.app X.obj)).symm)
+  unitIso :=
+    NatIso.ofComponents (fun X => (asIso <| (reflectorAdjunction i).counit.app X).symm)
+      (by
+        intro X Y f
+        dsimp
+        rw [IsIso.comp_inv_eq, Category.assoc, IsIso.eq_inv_comp]
+        exact ((reflectorAdjunction i).counit.naturality f).symm)
+  counitIso :=
+    NatIso.ofComponents equivEssImageOfReflective_counitIso_app
+      (by
+        intro X Y f
+        apply (Functor.essImageInclusion i).map_injective
+        have h := ((reflectorAdjunction i).unit.naturality f).symm
+        rw [Functor.id_map] at h
+        erw [Functor.map_comp, Functor.map_comp,
+          equivEssImageOfReflective_map_counitIso_app_hom,
+          equivEssImageOfReflective_map_counitIso_app_hom,
+          IsIso.comp_inv_eq, assoc, ← h, IsIso.inv_hom_id_assoc, Functor.comp_map])
+  functor_unitIso_comp := fun X => by
+    -- Porting note: this proof was automatically handled by the automation in mathlib
+    apply (Functor.essImageInclusion i).map_injective
+    erw [Functor.map_comp, equivEssImageOfReflective_map_counitIso_app_hom]
+    aesop_cat
 
 /--
 A functor is *coreflective*, or *a coreflective inclusion*, if it is fully faithful and left
