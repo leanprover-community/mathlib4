@@ -292,3 +292,7 @@ def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat)
       return (f,g)
   catch _ =>
     return none
+
+end Meta.FunProp
+
+end Mathlib

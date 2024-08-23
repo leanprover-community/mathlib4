@@ -30,22 +30,20 @@ open Category
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   (W : MorphismProperty C) {M : Type w'} [AddMonoid M] [HasShift C M] [HasShift D M]
-  [W.IsCompatibleWithShift M]
 
 namespace Localization
 
 section
 
 variable (X Y : C)
+variable (M)
 
-variable (M) in
 /-- Given objects `X` and `Y` in a category `C`, this is the property that
 all the types of morphisms from `X⟦a⟧` to `Y⟦b⟧` are `w`-small
 in the localized category with respect to a class of morphisms `W`. -/
 abbrev HasSmallLocalizedShiftedHom : Prop :=
   ∀ (a b : M), HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦b⟧)
 
-variable (M) in
 lemma hasSmallLocalizedShiftedHom_iff
     (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] (X Y : C) :
     HasSmallLocalizedShiftedHom.{w} W M X Y ↔
@@ -56,13 +54,29 @@ lemma hasSmallLocalizedShiftedHom_iff
   dsimp at eq
   simp only [hasSmallLocalizedHom_iff _ L, eq]
 
+variable {Y} in
+lemma hasSmallLocalizedShiftedHom_iff_target [W.IsCompatibleWithShift M]
+    {Y' : C} (f : Y ⟶  Y') (hf : W f) :
+    HasSmallLocalizedShiftedHom.{w} W M X Y ↔ HasSmallLocalizedShiftedHom.{w} W M X Y' :=
+  forall_congr' (fun a ↦ forall_congr' (fun b ↦
+    hasSmallLocalizedHom_iff_target W (X⟦a⟧) (f⟦b⟧') (W.shift hf b)))
+
+variable {X} in
+lemma hasSmallLocalizedShiftedHom_iff_source [W.IsCompatibleWithShift M]
+    {X' : C} (f : X ⟶  X') (hf : W f) (Y : C) :
+    HasSmallLocalizedShiftedHom.{w} W M X Y ↔ HasSmallLocalizedShiftedHom.{w} W M X' Y :=
+  forall_congr' (fun a ↦ forall_congr' (fun b ↦
+    hasSmallLocalizedHom_iff_source W (f⟦a⟧') (W.shift hf a) (Y⟦b⟧)))
+
 variable [HasSmallLocalizedShiftedHom.{w} W M X Y]
 
-variable (M) in
+include M in
 lemma hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ :
     HasSmallLocalizedHom.{w} W X Y :=
   (hasSmallLocalizedHom_iff_of_isos W
     ((shiftFunctorZero C M).app X) ((shiftFunctorZero C M).app Y)).1 inferInstance
+
+variable {M}
 
 instance (m : M) : HasSmallLocalizedHom.{w} W X (Y⟦m⟧) :=
   (hasSmallLocalizedHom_iff_of_isos W
@@ -85,7 +99,7 @@ end
 namespace SmallHom
 
 variable {W}
-variable (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
+variable [W.IsCompatibleWithShift M] (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
   {X Y : C} [HasSmallLocalizedHom.{w} W X Y]
   (f : SmallHom.{w} W X Y) (a : M) [HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦a⟧)]
 
@@ -111,6 +125,7 @@ namespace SmallShiftedHom
 section
 
 variable {W}
+variable [W.IsCompatibleWithShift M]
 variable {X Y Z : C}
 
 /-- Given `f : SmallShiftedHom.{w} W X Y a`, this is the element in
@@ -142,7 +157,7 @@ end
 
 section
 
-variable (L : C ⥤ D) [L.IsLocalization W] [HasShift D M] [L.CommShift M]
+variable (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
   {X Y Z T : C}
 
 /-- The bijection `SmallShiftedHom.{w} W X Y m ≃ ShiftedHom (L.obj X) (L.obj Y) m`
@@ -152,6 +167,9 @@ and `L` commutes with the shifts. -/
 noncomputable def equiv [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} :
     SmallShiftedHom.{w} W X Y m ≃ ShiftedHom (L.obj X) (L.obj Y) m :=
   (SmallHom.equiv W L).trans ((L.commShiftIso m).app Y).homToEquiv
+
+section
+variable [W.IsCompatibleWithShift M]
 
 lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
@@ -184,6 +202,8 @@ lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
     comp_id, Functor.map_comp]
   rfl
 
+end
+
 @[simp]
 lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
@@ -197,6 +217,8 @@ lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id, id_comp]
 
 end
+
+variable [W.IsCompatibleWithShift M]
 
 lemma comp_assoc {X Y Z T : C} {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
     [HasSmallLocalizedShiftedHom.{w} W M X Y] [HasSmallLocalizedShiftedHom.{w} W M X Z]

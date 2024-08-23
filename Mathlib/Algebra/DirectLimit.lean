@@ -137,20 +137,20 @@ protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : Di
   let ⟨i, x, h⟩ := exists_of z
   h ▸ ih i x
 
-variable {P : Type u₁} [AddCommGroup P] [Module R P] (g : ∀ i, G i →ₗ[R] P)
-variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-variable (R ι G f)
+variable {P : Type u₁} [AddCommGroup P] [Module R P]
 
+variable (R ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
-def lift : DirectLimit G f →ₗ[R] P :=
+def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →ₗ[R] P :=
   liftQ _ (DirectSum.toModule R ι P g)
     (span_le.2 fun a ⟨i, j, hij, x, hx⟩ => by
       rw [← hx, SetLike.mem_coe, LinearMap.sub_mem_ker_iff, DirectSum.toModule_lof,
         DirectSum.toModule_lof, Hg])
 
-variable {R ι G f}
+variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
   DirectSum.toModule_lof R _ _
@@ -790,18 +790,16 @@ theorem of_injective [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => 
   rw [hfx, (f' i j hij).map_zero]
 
 variable (P : Type u₁) [CommRing P]
-variable (g : ∀ i, G i →+* P)
-variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 open FreeCommRing
 
-variable (G f)
-
+variable (G f) in
 /-- The universal property of the direct limit: maps from the components to another ring
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
-def lift : DirectLimit G f →+* P :=
+def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →+* P :=
   Ideal.Quotient.lift _ (FreeCommRing.lift fun x : Σi, G i => g x.1 x.2)
     (by
       suffices Ideal.span _ ≤
@@ -815,7 +813,7 @@ def lift : DirectLimit G f →+* P :=
         simp only [RingHom.map_sub, lift_of, Hg, RingHom.map_one, RingHom.map_add, RingHom.map_mul,
           (g i).map_one, (g i).map_add, (g i).map_mul, sub_self])
 
-variable {G f}
+variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 -- Porting note: the @[simp] attribute would trigger a `simpNF` linter error:
 -- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
@@ -975,7 +973,9 @@ protected noncomputable abbrev field [DirectedSystem G fun i j h => f' i j h] :
   mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
   inv_zero := dif_pos rfl
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 end
 

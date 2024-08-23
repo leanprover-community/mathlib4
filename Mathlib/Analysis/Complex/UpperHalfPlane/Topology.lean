@@ -131,3 +131,17 @@ lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z := by
   rw [Function.comp_apply, ofComplex_apply]
 
 end UpperHalfPlane
+
+lemma Complex.isConnected_of_upperHalfPlane {s : Set ℂ} (hs₁ : {z | 0 < z.im} ⊆ s)
+    (hs₂ : s ⊆ {z | 0 ≤ z.im}) : IsConnected s := by
+  refine IsConnected.subset_closure ?_ hs₁ (by simpa using hs₂)
+  rw [isConnected_iff_connectedSpace]
+  exact inferInstanceAs (ConnectedSpace UpperHalfPlane)
+
+lemma Complex.isConnected_of_lowerHalfPlane {s : Set ℂ} (hs₁ : {z | z.im < 0} ⊆ s)
+    (hs₂ : s ⊆ {z | z.im ≤ 0}) : IsConnected s := by
+  rw [← Equiv.star.surjective.image_preimage s]
+  refine IsConnected.image (f := Equiv.star) ?_ continuous_star.continuousOn
+  apply Complex.isConnected_of_upperHalfPlane
+  · exact fun z hz ↦ hs₁ <| show star z ∈ _ by simpa
+  · exact fun z hz ↦ by simpa using show (star z).im ≤ 0 from hs₂ hz

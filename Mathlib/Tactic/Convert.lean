@@ -46,7 +46,8 @@ def Lean.MVarId.convertLocalDecl (g : MVarId) (fvarId : FVarId) (typeNew : Expr)
     (patterns : List (TSyntax `rcasesPat) := []) :
     MetaM (MVarId × List MVarId) := g.withContext do
   let typeOld ← fvarId.getType
-  let v ← mkFreshExprMVar (← mkAppM ``Eq (if symm then #[typeNew, typeOld] else #[typeOld, typeNew]))
+  let v ← mkFreshExprMVar (← mkAppM ``Eq
+    (if symm then #[typeNew, typeOld] else #[typeOld, typeNew]))
   let pf ← if symm then mkEqSymm v else pure v
   let res ← g.replaceLocalDecl fvarId typeNew pf
   let gs ← v.mvarId!.congrN! depth config patterns
