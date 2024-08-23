@@ -397,6 +397,4 @@ elab_rules : tactic
       cont x xs[1]? subst g e lbs ubs (mustUseBounds := false)
     | _, _, _ => throwUnsupportedSyntax
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

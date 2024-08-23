@@ -269,14 +269,14 @@ variable {f : α → β} {s : Set α}
 lemma constant_of_monotone_antitone [IsDirected α (· ≤ ·)] (hf : Monotone f) (hf' : Antitone f)
     (a b : α) : f a = f b := by
   obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
-  exact le_antisymm ((hf hac).trans $ hf' hbc) ((hf hbc).trans $ hf' hac)
+  exact le_antisymm ((hf hac).trans <| hf' hbc) ((hf hbc).trans <| hf' hac)
 
 /-- If `f` is monotone and antitone on a directed set `s`, then `f` is constant on `s`. -/
 lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
     (hs : DirectedOn (· ≤ ·) s) : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → f a = f b := by
   rintro a ha b hb
   obtain ⟨c, hc, hac, hbc⟩ := hs _ ha _ hb
-  exact le_antisymm ((hf ha hc hac).trans $ hf' hb hc hbc) ((hf hb hc hbc).trans $ hf' ha hc hac)
+  exact le_antisymm ((hf ha hc hac).trans <| hf' hb hc hbc) ((hf hb hc hbc).trans <| hf' ha hc hac)
 
 end Preorder
 

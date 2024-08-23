@@ -129,9 +129,6 @@ lemma comp_hom {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + 
 lemma ext {n : ℕ} {α β : Ext X Y n} (h : α.hom = β.hom) : α = β :=
   homEquiv.injective h
 
-lemma ext_iff {n : ℕ} {α β : Ext X Y n} : α = β ↔ α.hom = β.hom :=
-  ⟨fun h ↦ by rw [h], ext⟩
-
 end
 
 /-- The canonical map `(X ⟶ Y) → Ext X Y 0`. -/
@@ -241,6 +238,19 @@ lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
 
 section
 
+attribute [local instance] preservesBinaryBiproductsOfPreservesBiproducts in
+lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
+    (h₁ : (mk₀ biprod.inl).comp α (zero_add n) = (mk₀ biprod.inl).comp β (zero_add n))
+    (h₂ : (mk₀ biprod.inr).comp α (zero_add n) = (mk₀ biprod.inr).comp β (zero_add n)) :
+    α = β := by
+  letI := HasDerivedCategory.standard C
+  rw [Ext.ext_iff] at h₁ h₂ ⊢
+  simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp] at h₁ h₂
+  apply BinaryCofan.IsColimit.hom_ext
+    (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
+      (BinaryBiproduct.isBilimit X₁ X₂)).isColimit
+  all_goals assumption
+
 variable [HasDerivedCategory.{w'} C]
 
 variable (X Y n) in
@@ -250,20 +260,6 @@ lemma zero_hom : (0 : Ext X Y n).hom = 0 := by
   have hβ : β.hom = 0 := by apply (Functor.map_isZero _ (isZero_zero C)).eq_of_src
   have : (0 : Ext X Y n) = (0 : Ext X 0 0).comp β (zero_add n) := by simp [β]
   rw [this, comp_hom, hβ, ShiftedHom.comp_zero]
-
-attribute [local instance] preservesBinaryBiproductsOfPreservesBiproducts
-
-lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
-    (h₁ : (mk₀ biprod.inl).comp α (zero_add n) = (mk₀ biprod.inl).comp β (zero_add n))
-    (h₂ : (mk₀ biprod.inr).comp α (zero_add n) = (mk₀ biprod.inr).comp β (zero_add n)) :
-    α = β := by
-  letI := HasDerivedCategory.standard C
-  rw [ext_iff] at h₁ h₂ ⊢
-  simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp] at h₁ h₂
-  apply BinaryCofan.IsColimit.hom_ext
-    (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
-      (BinaryBiproduct.isBilimit X₁ X₂)).isColimit
-  all_goals assumption
 
 @[simp]
 lemma add_hom (α β : Ext X Y n) : (α + β).hom = α.hom + β.hom := by
@@ -288,7 +284,7 @@ lemma add_hom (α β : Ext X Y n) : (α + β).hom = α.hom + β.hom := by
       biprod.lift_snd, Functor.map_id, ShiftedHom.mk₀_id_comp]
 
 lemma neg_hom (α : Ext X Y n) : (-α).hom = -α.hom := by
-  rw [← add_right_inj α.hom, ← add_hom, add_right_neg, add_right_neg, zero_hom]
+  rw [← add_right_inj α.hom, ← add_hom, add_neg_cancel, add_neg_cancel, zero_hom]
 
 /-- When an instance of `[HasDerivedCategory.{w'} C]` is available, this is the additive
 bijection between `Ext.{w} X Y n` and a type of morphisms in the derived category. -/

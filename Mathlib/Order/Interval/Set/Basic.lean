@@ -967,8 +967,6 @@ lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
   rw [h, mem_singleton_iff] at this
   exact lt_irrefl y (this.le.trans_lt H)
 
-open scoped Classical
-
 @[simp]
 theorem Ioi_subset_Ioi_iff : Ioi b ⊆ Ioi a ↔ a ≤ b := by
   refine ⟨fun h => ?_, fun h => Ioi_subset_Ioi h⟩
