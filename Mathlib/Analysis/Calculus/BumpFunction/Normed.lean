@@ -63,7 +63,7 @@ theorem integral_pos : 0 < ∫ x, f x ∂μ := by
 
 theorem integral_normed : ∫ x, f.normed μ x ∂μ = 1 := by
   simp_rw [ContDiffBump.normed, div_eq_mul_inv, mul_comm (f _), ← smul_eq_mul, integral_smul]
-  exact inv_mul_cancel f.integral_pos.ne'
+  exact inv_mul_cancel₀ f.integral_pos.ne'
 
 theorem support_normed_eq : Function.support (f.normed μ) = Metric.ball c f.rOut := by
   unfold ContDiffBump.normed
@@ -99,7 +99,7 @@ theorem measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ �
   (μ (closedBall c f.rIn)).toReal = ∫ x in closedBall c f.rIn, 1 ∂μ := by simp
   _ = ∫ x in closedBall c f.rIn, f x ∂μ := setIntegral_congr measurableSet_closedBall
         (fun x hx ↦ (one_of_mem_closedBall f hx).symm)
-  _ ≤ ∫ x, f x ∂μ := setIntegral_le_integral f.integrable (eventually_of_forall (fun x ↦ f.nonneg))
+  _ ≤ ∫ x, f x ∂μ := setIntegral_le_integral f.integrable (Eventually.of_forall (fun x ↦ f.nonneg))
 
 theorem normed_le_div_measure_closedBall_rIn [μ.IsOpenPosMeasure] (x : E) :
     f.normed μ x ≤ 1 / (μ (closedBall c f.rIn)).toReal := by

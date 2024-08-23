@@ -173,7 +173,7 @@ theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c)
     fun x hx => by
     simpa only [coe_const, mul_apply, coe_mk, Pi.inv_apply, Pi.sup_apply,
       Function.const_apply, sup_eq_left.mpr (Set.mem_setOf.mp hx), ne_eq, Pi.one_apply]
-      using inv_mul_cancel (hc.trans_le hx).ne' ⟩
+      using inv_mul_cancel₀ (hc.trans_le hx).ne' ⟩
 
 variable [CompactSpace X] [T2Space X]
 

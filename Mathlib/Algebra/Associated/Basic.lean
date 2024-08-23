@@ -28,6 +28,8 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
+assert_not_exists OrderedCommMonoid
+assert_not_exists Multiset
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -43,6 +45,7 @@ def Prime (p : α) : Prop :=
 namespace Prime
 
 variable {p : α} (hp : Prime p)
+include hp
 
 theorem ne_zero : p ≠ 0 :=
   hp.1
@@ -55,19 +58,19 @@ theorem not_dvd_one : ¬p ∣ 1 :=
 
 theorem ne_one : p ≠ 1 := fun h => hp.2.1 (h.symm ▸ isUnit_one)
 
-theorem dvd_or_dvd (hp : Prime p) {a b : α} (h : p ∣ a * b) : p ∣ a ∨ p ∣ b :=
+theorem dvd_or_dvd {a b : α} (h : p ∣ a * b) : p ∣ a ∨ p ∣ b :=
   hp.2.2 a b h
 
 theorem dvd_mul {a b : α} : p ∣ a * b ↔ p ∣ a ∨ p ∣ b :=
   ⟨hp.dvd_or_dvd, (Or.elim · (dvd_mul_of_dvd_left · _) (dvd_mul_of_dvd_right · _))⟩
 
-theorem isPrimal (hp : Prime p) : IsPrimal p := fun _a _b dvd ↦ (hp.dvd_or_dvd dvd).elim
+theorem isPrimal : IsPrimal p := fun _a _b dvd ↦ (hp.dvd_or_dvd dvd).elim
   (fun h ↦ ⟨p, 1, h, one_dvd _, (mul_one p).symm⟩) fun h ↦ ⟨1, p, one_dvd _, h, (one_mul p).symm⟩
 
 theorem not_dvd_mul {a b : α} (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ a * b :=
   hp.dvd_mul.not.mpr <| not_or.mpr ⟨ha, hb⟩
 
-theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
+theorem dvd_of_dvd_pow {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
   induction n with
   | zero =>
     rw [pow_zero] at h
@@ -848,8 +851,8 @@ instance uniqueUnits : Unique (Associates α)ˣ where
   uniq := by
     rintro ⟨a, b, hab, hba⟩
     revert hab hba
-    exact Quotient.inductionOn₂ a b $ fun a b hab hba ↦ Units.ext $ Quotient.sound $
-      associated_one_of_associated_mul_one $ Quotient.exact hab
+    exact Quotient.inductionOn₂ a b <| fun a b hab hba ↦ Units.ext <| Quotient.sound <|
+      associated_one_of_associated_mul_one <| Quotient.exact hab
 
 @[deprecated (since := "2024-07-22")] alias mul_eq_one_iff := mul_eq_one
 @[deprecated (since := "2024-07-22")] protected alias units_eq_one := Subsingleton.elim
@@ -1144,6 +1147,3 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
       exact ⟨i, hi.trans n.le_succ, hq⟩
 
 end CancelCommMonoidWithZero
-
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset

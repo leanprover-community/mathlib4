@@ -49,8 +49,6 @@ equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. The
 in general not be used once the basic API for polynomials is constructed.
 -/
 
-
-
 noncomputable section
 
 /-- `Polynomial R` is the type of univariate polynomials over `R`.
@@ -65,8 +63,6 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute
-
-open Polynomial
 
 namespace Polynomial
 
@@ -772,9 +768,9 @@ theorem support_trinomial' (k m n : ℕ) (x y z : R) :
 end Fewnomials
 
 theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) := by
-  induction' n with n hn
-  · rw [pow_zero, monomial_zero_one]
-  · rw [pow_succ, hn, X, monomial_mul_monomial, one_mul]
+  induction n with
+  | zero => rw [pow_zero, monomial_zero_one]
+  | succ n hn => rw [pow_succ, hn, X, monomial_mul_monomial, one_mul]
 
 @[simp high]
 theorem toFinsupp_X_pow (n : ℕ) : (X ^ n).toFinsupp = Finsupp.single n (1 : R) := by
@@ -1019,7 +1015,7 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
-  rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_self, monomial_zero_right]
+  rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
 
 theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
  rw [sub_eq_add_neg, monomial_add, monomial_neg]

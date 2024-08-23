@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Fintype.Units
 
 
 /-!
@@ -100,7 +102,7 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff' := by
     intro k
     cases' n with n
-    · simp [zero_dvd_iff, Int.natCast_eq_zero, Nat.zero_eq]
+    · simp [zero_dvd_iff, Int.natCast_eq_zero]
     · exact Fin.natCast_eq_zero
 
 @[simp]
@@ -112,7 +114,7 @@ where `a ≠ 0` is `addOrderOf_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
   cases' a with a
-  · simp only [Nat.zero_eq, Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
+  · simp only [Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
       Nat.pos_of_ne_zero n0, Nat.div_self]
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
 
@@ -230,6 +232,9 @@ theorem intCast_surjective : Function.Surjective ((↑) : ℤ → ZMod n) :=
 
 @[deprecated (since := "2024-04-17")]
 alias int_cast_surjective := intCast_surjective
+
+lemma «forall» {P : ZMod n → Prop} : (∀ x, P x) ↔ ∀ x : ℤ, P x := intCast_surjective.forall
+lemma «exists» {P : ZMod n → Prop} : (∃ x, P x) ↔ ∃ x : ℤ, P x := intCast_surjective.exists
 
 theorem cast_id : ∀ (n) (i : ZMod n), (ZMod.cast i : ZMod n) = i
   | 0, _ => Int.cast_id
@@ -729,8 +734,8 @@ theorem val_add_of_le {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.v
 
 theorem val_add_le {n : ℕ} (a b : ZMod n) : (a + b).val ≤ a.val + b.val := by
   cases n
-  · simp [ZMod.val]; apply Int.natAbs_add_le
-  · simp [ZMod.val_add]; apply Nat.mod_le
+  · simpa [ZMod.val] using Int.natAbs_add_le _ _
+  · simpa [ZMod.val_add] using Nat.mod_le _ _
 
 theorem val_mul {n : ℕ} (a b : ZMod n) : (a * b).val = a.val * b.val % n := by
   cases n
@@ -843,7 +848,7 @@ theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod 
   cases' n with n
   · rcases Int.units_eq_one_or u with (rfl | rfl) <;> simp
   apply Nat.coprime_of_mul_modEq_one ((u⁻¹ : Units (ZMod (n + 1))) : ZMod (n + 1)).val
-  have := Units.ext_iff.1 (mul_right_inv u)
+  have := Units.ext_iff.1 (mul_inv_cancel u)
   rw [Units.val_one] at this
   rw [← eq_iff_modEq_nat, Nat.cast_one, ← this]; clear this
   rw [← natCast_zmod_val ((u * u⁻¹ : Units (ZMod (n + 1))) : ZMod (n + 1))]
@@ -1019,7 +1024,7 @@ theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n 
     _ = (n - val a) % n :=
       Nat.ModEq.add_right_cancel' (val a)
         (by
-          rw [Nat.ModEq, ← val_add, add_left_neg, tsub_add_cancel_of_le a.val_le, Nat.mod_self,
+          rw [Nat.ModEq, ← val_add, neg_add_cancel, tsub_add_cancel_of_le a.val_le, Nat.mod_self,
             val_zero])
 
 theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 else n - a.val := by
@@ -1368,6 +1373,29 @@ lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
 end lift
 
 end ZMod
+
+section Module
+variable {S G : Type*} [AddCommGroup G] {n : ℕ} [Module (ZMod n) G] [SetLike S G]
+  [AddSubgroupClass S G] {K : S} {x : G}
+
+lemma zmod_smul_mem (hx : x ∈ K) : ∀ a : ZMod n, a • x ∈ K := by
+  simpa [ZMod.forall, Int.cast_smul_eq_zsmul] using zsmul_mem hx
+
+/-- This cannot be made an instance because of the `[Module (ZMod n) G]` argument and the fact that
+`n` only appears in the second argument of `SMulMemClass`, which is an `OutParam`. -/
+lemma smulMemClass : SMulMemClass S (ZMod n) G where smul_mem _ _ {_x} hx := zmod_smul_mem hx _
+
+namespace AddSubgroupClass
+
+instance instZModSMul : SMul (ZMod n) K where smul a x := ⟨a • x, zmod_smul_mem x.2 _⟩
+
+@[simp, norm_cast] lemma coe_zmod_smul (a : ZMod n) (x : K) : ↑(a • x) = (a • x : G) := rfl
+
+instance instZModModule : Module (ZMod n) K :=
+  Subtype.coe_injective.module _ (AddSubmonoidClass.subtype K) coe_zmod_smul
+
+end AddSubgroupClass
+end Module
 
 section AddGroup
 variable {α : Type*} [AddGroup α] {n : ℕ}
