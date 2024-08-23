@@ -1619,8 +1619,8 @@ theorem blsub_type {α : Type u} (r : α → α → Prop) [IsWellOrder α r]
     (f : ∀ a < type r, Ordinal.{max u v}) :
     blsub.{_, v} (type r) f = lsub.{_, v} fun a => f (typein r a) (typein_lt_type _ _) :=
   eq_of_forall_ge_iff fun o => by
-    rw [blsub_le_iff, lsub_le_iff];
-      exact ⟨fun H b => H _ _, fun H i h => by simpa only [typein_enum] using H (enum r ⟨i, h⟩)⟩
+    rw [blsub_le_iff, lsub_le_iff]
+    exact ⟨fun H b => H _ _, fun H i h => by simpa only [typein_enum] using H (enum r ⟨i, h⟩)⟩
 
 theorem blsub_const {o : Ordinal} (ho : o ≠ 0) (a : Ordinal) :
     (blsub.{u, v} o fun _ _ => a) = succ a :=
