@@ -569,10 +569,9 @@ theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
 theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
   simp only [isMax_iff_forall_not_lt, eq_empty_iff_forall_not_mem, mem_Ioi]
 
-alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
-
 theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
 
+alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
 alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
 
 theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
