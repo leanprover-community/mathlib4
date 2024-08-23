@@ -28,7 +28,7 @@ fi
 oleansDir=.lake/build/lib/Mathlib
 
 # should be master
-branch=adomani/CI_olean_size
+branch=test/CI_olean_size
 
 # the absolute difference, in %, that is significant for a folder being reported
 pctBound=5
