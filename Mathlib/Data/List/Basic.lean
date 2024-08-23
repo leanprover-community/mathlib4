@@ -474,6 +474,10 @@ theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
 @[simp] theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by
   cases x <;> simp at h ⊢
 
+theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
+    l.head hl = l[0]'(length_pos.2 hl) :=
+  (getElem_zero _).symm
+
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 
 theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
