@@ -37,9 +37,6 @@ variable {α : Type u} {σ : Type v} {σ' : Type w} (M : NFA α σ)
 
 namespace NFA
 
-instance : Inhabited (NFA α σ) :=
-  ⟨NFA.mk (fun _ _ => ∅) ∅ ∅⟩
-
 /-- `M.stepSet S a` is the union of `M.step s a` for all `s ∈ S`. -/
 def stepSet (S : Set σ) (a : α) : Set σ :=
   ⋃ s ∈ S, M.step s a
@@ -134,7 +131,10 @@ Cf. <https://en.wikipedia.org/wiki/Thompson%27s_construction> for the basic idea
 permitting ε-moves.
 -/
 instance : Zero (NFA α σ) :=
-  ⟨default⟩
+  ⟨NFA.mk (fun _ _ ↦ ∅) ∅ ∅⟩
+
+instance : Inhabited (NFA α σ) :=
+  ⟨0⟩
 
 @[simp]
 theorem zero_correct : (0 : NFA α σ).accepts = 0 := by
@@ -159,7 +159,7 @@ theorem one_correct [Inhabited σ] :
     exact ⟨default, Set.mem_univ _, Set.mem_univ _⟩
 
 /-- An NFA accepting just a single word of length 1, given by the underlying character. -/
-def char (a : α) : (NFA α (σ ⊕ σ')) :=
+def char (a : α) : NFA α (σ ⊕ σ') :=
   ⟨fun p c q ↦ p.isLeft ∧ a = c ∧ q.isRight, (Sum.isLeft ·), (Sum.isRight ·)⟩
 
 @[simp]
