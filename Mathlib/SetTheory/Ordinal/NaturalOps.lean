@@ -56,6 +56,8 @@ instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder
 
 instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
+instance NatOrdinal.zeroLEOneClass : ZeroLEOneClass NatOrdinal := {Ordinal.zeroLEOneClass with}
+
 instance NatOrdinal.orderBot : OrderBot NatOrdinal := {Ordinal.orderBot with}
 
 instance NatOrdinal.noMaxOrder : NoMaxOrder NatOrdinal := {Ordinal.noMaxOrder with}
