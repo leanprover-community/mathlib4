@@ -210,7 +210,13 @@ theorem not_isUnit_of_natDegree_pos (p : R[X])
     (hpl : 0 < p.natDegree) : ¬ IsUnit p :=
   not_isUnit_of_degree_pos _ (natDegree_pos_iff_degree_pos.mp hpl)
 
-variable [CharZero R]
+theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
+  rw [Monic.def, leadingCoeff_comp h, Monic.def.1 hp, Monic.def.1 hq, one_pow, one_mul]
+
+theorem Monic.comp_X_add_C [Nontrivial R] (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
+  refine hp.comp (monic_X_add_C _) fun ha => ?_
+  rw [natDegree_X_add_C] at ha
+  exact one_ne_zero ha
 
 end NoZeroDivisors
 
@@ -653,14 +659,6 @@ theorem natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
   · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
       mul_one]
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
-
-theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
-  rw [Monic.def, leadingCoeff_comp h, Monic.def.1 hp, Monic.def.1 hq, one_pow, one_mul]
-
-theorem Monic.comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
-  refine hp.comp (monic_X_add_C _) fun ha => ?_
-  rw [natDegree_X_add_C] at ha
-  exact one_ne_zero ha
 
 theorem Monic.comp_X_sub_C (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
   simpa using hp.comp_X_add_C (-r)

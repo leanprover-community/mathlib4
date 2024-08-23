@@ -14,6 +14,7 @@ import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # A collection of specific limit computations
@@ -409,9 +410,20 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (
     using 2 with n
   simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
 
+#check ascPochhammer_nat_eq_descFactorial
+
+open Polynomial in
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n : 𝕜) ^ k * r ^ n : ℕ → 𝕜) := by
   refine Nat.strong_induction_on k fun k hk => ?_
+  let P : Polynomial ℕ := (ascPochhammer ℕ k).comp (Polynomial.X + 1)
+  have : Monic P := by
+    apply Monic.comp_X_add_C
+
+
+
+#exit
+
   obtain ⟨a, ha⟩ : ∃ (a : Fin k → ℕ), ∀ n, (n + k).descFactorial k =
     n ^ k + ∑ i, a i * n ^ (i : ℕ) := exists_descFactorial_eq_polynomial (k : ℕ)
   have : Summable (fun n ↦ (n + k).descFactorial k * r ^ n - ∑ i, a i * n ^ (i : ℕ) * r ^ n) := by
