@@ -18,37 +18,37 @@ jobs:
           require: 'write'
 
       - name: Add reaction
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ github.event.comment.id }}
           reactions: rocket
 
       - name: cleanup
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
       - uses: actions/checkout@v4
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         with:
           token: ${{ secrets.NIGHTLY_TESTING }}
 
       - name: Checkout PR branch
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         run: |
             gh pr checkout ${{ github.event.issue.number }}
         env:
             GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
 
       - name: install Python
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
       - name: install elan
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         run: |
           set -o pipefail
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
@@ -58,30 +58,30 @@ jobs:
       # run the same linting steps as in lint_and_suggest_pr.yaml
 
       - name: lint
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           lake exe lint-style --fix
 
       - name: Install bibtool
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y bibtool
 
       - name: lint references.bib
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           ./scripts/lint-bib.sh
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: lake exe mk_all
 
       - name: Commit and push changes
-        if: steps.user_permission.outputs.permission == 'true'
+        if: steps.user_permission.outputs.check-result == 'true'
         run: |
           # cleanup junk from build
           rm elan-init
