@@ -58,8 +58,10 @@ logic to handle potential non-constructive cases effectively.
 auction, game theory, economics, bidding, valuation
 -/
 
+open Classical
+
 /- `v` is the valuation for participants `I` -/
-variable {I : Type*} [DecidableEq I] [Fintype I] [Nontrivial I] (v : I → ℝ)
+variable {I : Type*} [Fintype I] [Nontrivial I] (v : I → ℝ)
 
 namespace Auction
 
