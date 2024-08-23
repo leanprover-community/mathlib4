@@ -8,13 +8,32 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 /-!
 # Nimbers
 
-The nimbers inherit the order from the ordinals - this makes definitions involving minimum excluded
-values more convenient. However, the fact that nimbers are of characteristic 2 prevents the order
-from interacting with the arithmetic in any nice way.
+The goal of this file is to define the field of nimbers, constructed as ordinals endowed with new
+arithmetical operations. The nim sum `a + b` is recursively defined as the least ordinal not equal
+to any `a' + b` or `a + b'` for `a' < a` and `b' < b`. The nim product `a * b` is likewise
+recursively defined as the least ordinal not equal to any `a' * b + a * b' + a' * b'` for `a' < a`
+and `b' < b`.
+
+Nim addition arises within the context of impartial games. By the Sprague-Grundy theorem, each
+impartial game is equivalent to some game of nim. If `x ≈ nim o₁` and `y ≈ nim o₂`, then
+`x + y ≈ nim (o₁ + o₂)`, where the ordinals are summed together as nimbers. Unfortunately, the
+nim product admits no such characterization.
+
+## Implementation notes
+
+The nimbers inherit the order from the ordinals - this makes working with minimum excluded values
+much more convenient. However, the fact that nimbers are of characteristic 2 prevents the order from
+interacting with the arithmetic in any nice way.
+
+To reduce API duplication, we opt not to implement operations on `Nimber` on `Ordinal`. The order
+isomorphisms `Ordinal.toNimber` and `Nimber.toOrdinal` allow us to cast between them whenever
+needed.
 
 ## Todo
 
-- Prove the characterization of nimber addition in terms of the Cantor normal form.
+- Define nim multiplication and prove nimbers are a commutative ring.
+- Define nim division and prove nimbers are a field.
+- Show the nimbers are algebraically closed.
 -/
 
 universe u v
@@ -35,7 +54,6 @@ instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.succOrder with}
 instance Nimber.orderBot : OrderBot Nimber := {Ordinal.orderBot with}
 instance Nimber.noMaxOrder : NoMaxOrder Nimber := {Ordinal.noMaxOrder with}
 instance Nimber.zeroLEOneClass : ZeroLEOneClass Nimber := {Ordinal.zeroLEOneClass with}
-instance Nimber.NeZero.one : NeZero (1 : Nimber) := {Ordinal.NeZero.one with}
 
 /-- The identity function between `Ordinal` and `Nimber`. -/
 @[match_pattern]
@@ -111,8 +129,14 @@ protected def rec {β : Nimber → Sort*} (h : ∀ a, β (toNimber a)) : ∀ a, 
 theorem induction {p : Nimber → Prop} : ∀ (i) (_ : ∀ j, (∀ k, k < j → p k) → p j), p i :=
   Ordinal.induction
 
-theorem le_zero {a : Nimber} : a ≤ 0 ↔ a = 0 :=
+protected theorem le_zero {a : Nimber} : a ≤ 0 ↔ a = 0 :=
   Ordinal.le_zero
+
+protected theorem not_lt_zero (a : Nimber) : ¬ a < 0 :=
+  Ordinal.not_lt_zero a
+
+protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
+  Ordinal.pos_iff_ne_zero
 
 end Nimber
 
@@ -163,23 +187,15 @@ namespace Nimber
 variable {a b c : Nimber.{u}}
 
 protected def add (a b : Nimber.{u}) : Nimber.{u} :=
-  sInf {x | (∃ a', ∃ (_ : a' < a), x = Nimber.add a' b) ∨
-    ∃ b', ∃ (_ : b' < b), x = Nimber.add a b'}ᶜ
+  sInf {x | (∃ a', ∃ (_ : a' < a), Nimber.add a' b = x) ∨
+    ∃ b', ∃ (_ : b' < b), Nimber.add a b' = x}ᶜ
 termination_by (a, b)
 
 instance : Add Nimber :=
   ⟨Nimber.add⟩
 
-/-- The extra binders in this definition can help the termination checker figure out an induction is
-well-founded. -/
-/-theorem add_def' (a b : Nimber) :
-    a + b = sInf {x | (∃ a', ∃ (_ : a' < a), x = a' + b) ∨ ∃ b', ∃ (_ : b' < b), x = a + b'}ᶜ := by
-  change Nimber.add a b = _
-  rw [Nimber.add]
-  rfl-/
-
 theorem add_def (a b : Nimber) :
-    a + b = sInf {x | (∃ a' < a, x = a' + b) ∨ ∃ b' < b, x = a + b'}ᶜ := by
+    a + b = sInf {x | (∃ a' < a, a' + b = x) ∨ ∃ b' < b, a + b' = x}ᶜ := by
   change Nimber.add a b = _
   rw [Nimber.add]
   simp_rw [exists_prop]
@@ -187,71 +203,59 @@ theorem add_def (a b : Nimber) :
 
 /-- The set in the definition of `Nimber.add` is nonempty. -/
 theorem add_nonempty (a b : Nimber) :
-    {x | (∃ a' < a, x = a' + b) ∨ ∃ b' < b, x = a + b'}ᶜ.Nonempty := by
+    {x | (∃ a' < a, a' + b = x) ∨ ∃ b' < b, a + b' = x}ᶜ.Nonempty := by
   use Ordinal.blsub₂ (succ a) (succ b) @fun x _ y _ => Nimber.add x y
-  simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_or, not_exists, not_and]
+  simp
   constructor <;>
   intro x hx <;>
-  apply (Ordinal.lt_blsub₂ _ _ _).ne'
+  apply ne_of_lt <;>
+  apply Ordinal.lt_blsub₂
   exacts [hx.trans <| lt_succ _, lt_succ _, lt_succ _, hx.trans <| lt_succ _]
 
-theorem exists_of_lt_add (h : a < b + c) : (∃ b' < b, a = b' + c) ∨ ∃ c' < c, a = b + c' := by
+theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
   have := not_mem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
   rwa [Set.mem_compl_iff, not_not] at this
 
-theorem add_le_of_forall_ne (h₁ : ∀ b' < b, a ≠ b' + c) (h₂ : ∀ c' < c, a ≠ b + c') :
-    b + c ≤ a := by
+theorem add_le_of_forall_ne (h₁ : ∀ a' < a, a' + b ≠ c) (h₂ : ∀ b' < b, a + b' ≠ c) :
+    a + b ≤ c := by
   by_contra! h
   have := exists_of_lt_add h
   tauto
 
 private theorem add_ne_of_lt (a b : Nimber) :
-    (∀ a' < a, a + b ≠ a' + b) ∧ ∀ b' < b, a + b ≠ a + b' := by
+    (∀ a' < a, a' + b ≠ a + b) ∧ ∀ b' < b, a + b' ≠ a + b := by
   have H := csInf_mem (add_nonempty a b)
   rw [← add_def] at H
   simpa using H
 
-theorem add_left_injective : Injective (a + ·) := by
-  intro b c h
+instance : IsLeftCancelAdd Nimber := by
+  constructor
+  intro a b c h
   apply le_antisymm <;>
   apply le_of_not_lt
-  · exact fun hc => (add_ne_of_lt a b).2 c hc h
-  · exact fun hb => (add_ne_of_lt a c).2 b hb h.symm
+  · exact fun hc => (add_ne_of_lt a b).2 c hc h.symm
+  · exact fun hb => (add_ne_of_lt a c).2 b hb h
 
-@[simp]
-theorem add_left_inj : a + b = a + c ↔ b = c :=
-  add_left_injective.eq_iff
-
-theorem add_left_ne_iff : a + b ≠ a + c ↔ b ≠ c :=
-  add_left_inj.not
-
-@[simp]
-theorem add_right_injective : Injective (· + a) := by
-  intro b c h
+instance : IsRightCancelAdd Nimber := by
+  constructor
+  intro a b c h
   apply le_antisymm <;>
   apply le_of_not_lt
-  · exact fun hc => (add_ne_of_lt b a).1 c hc h
-  · exact fun hb => (add_ne_of_lt c a).1 b hb h.symm
-
-@[simp]
-theorem add_right_inj : a + c = b + c ↔ a = b :=
-  add_right_injective.eq_iff
-
-theorem add_right_ne_iff : a + c ≠ b + c ↔ a ≠ b :=
-  add_right_inj.not
+  · exact fun hc => (add_ne_of_lt a b).1 c hc h.symm
+  · exact fun ha => (add_ne_of_lt c b).1 a ha h
 
 -- Ideally the proof would be an easy induction on `add_def`, but rewriting under binders trips up
 -- the termination checker.
-theorem add_comm (a b : Nimber) : a + b = b + a := by
+protected theorem add_comm (a b : Nimber) : a + b = b + a := by
   apply le_antisymm <;>
   apply add_le_of_forall_ne <;>
   intro x hx
-  on_goal 1 => rw [add_comm x, add_left_ne_iff]
-  on_goal 2 => rw [add_comm a, add_right_ne_iff]
-  on_goal 3 => rw [← add_comm a, add_left_ne_iff]
-  on_goal 4 => rw [← add_comm x, add_right_ne_iff]
-  all_goals exact hx.ne'
+  on_goal 1 => rw [Nimber.add_comm x, add_ne_add_right]
+  on_goal 2 => rw [Nimber.add_comm a, add_ne_add_left]
+  on_goal 3 => rw [← Nimber.add_comm a, add_ne_add_right]
+  on_goal 4 => rw [← Nimber.add_comm x, add_ne_add_left]
+  all_goals exact hx.ne
 termination_by (a, b)
 
 @[simp]
@@ -260,13 +264,13 @@ theorem add_eq_zero_iff {a b : Nimber} : a + b = 0 ↔ a = b := by
   intro hab
   · obtain h | rfl | h := lt_trichotomy a b
     · have ha : a + a = 0 := add_eq_zero_iff.2 rfl
-      rwa [← ha, add_left_inj, eq_comm] at hab
+      rwa [← ha, add_right_inj, eq_comm] at hab
     · rfl
     · have hb : b + b = 0 := add_eq_zero_iff.2 rfl
-      rwa [← hb, add_right_inj] at hab
-  · rw [← le_zero]
+      rwa [← hb, add_left_inj] at hab
+  · rw [← Nimber.le_zero]
     apply add_le_of_forall_ne <;>
-    simp_rw [ne_eq, eq_comm] <;>
+    simp_rw [ne_eq] <;>
     intro x hx
     · rw [add_eq_zero_iff, ← hab]
       exact hx.ne
@@ -274,22 +278,84 @@ theorem add_eq_zero_iff {a b : Nimber} : a + b = 0 ↔ a = b := by
       exact hx.ne'
 termination_by (a, b)
 
+theorem add_ne_zero_iff : a + b ≠ 0 ↔ a ≠ b :=
+  add_eq_zero_iff.not
+
 @[simp]
 theorem add_self (a : Nimber) : a + a = 0 :=
   add_eq_zero_iff.2 rfl
 
-theorem add_assoc (a b c : Nimber) : a + b + c = a + (b + c) := by
+protected theorem add_assoc (a b c : Nimber) : a + b + c = a + (b + c) := by
   apply le_antisymm <;>
   apply add_le_of_forall_ne <;>
   intro x hx <;>
   try obtain ⟨y, hy, rfl⟩ | ⟨y, hy, rfl⟩ := exists_of_lt_add hx
-  on_goal 1 => rw [add_assoc y, add_right_ne_iff]
-  on_goal 2 => rw [add_assoc _ y, add_left_ne_iff, add_right_ne_iff]
-  on_goal 3 => rw [add_assoc _ _ x, add_left_ne_iff, add_left_ne_iff]
-  on_goal 4 => rw [← add_assoc x, add_right_ne_iff, add_right_ne_iff]
-  on_goal 5 => rw [← add_assoc _ y, add_right_ne_iff, add_left_ne_iff]
-  on_goal 6 => rw [← add_assoc _ _ y, add_left_ne_iff]
-  all_goals apply ne_of_gt; assumption
+  on_goal 1 => rw [Nimber.add_assoc y, add_ne_add_left]
+  on_goal 2 => rw [Nimber.add_assoc _ y, add_ne_add_right, add_ne_add_left]
+  on_goal 3 => rw [Nimber.add_assoc _ _ x, add_ne_add_right, add_ne_add_right]
+  on_goal 4 => rw [← Nimber.add_assoc x, add_ne_add_left, add_ne_add_left]
+  on_goal 5 => rw [← Nimber.add_assoc _ y, add_ne_add_left, add_ne_add_right]
+  on_goal 6 => rw [← Nimber.add_assoc _ _ y, add_ne_add_right]
+  all_goals apply ne_of_lt; assumption
 termination_by (a, b, c)
+
+@[simp]
+protected theorem add_zero (a : Nimber) : a + 0 = a := by
+  apply le_antisymm
+  · apply add_le_of_forall_ne
+    · intro a' ha
+      rw [Nimber.add_zero]
+      exact ha.ne
+    · intro _ h
+      exact (Nimber.not_lt_zero _ h).elim
+  · -- by_contra! doesn't work for whatever reason.
+    by_contra h
+    replace h := lt_of_not_le h
+    have := Nimber.add_zero (a + 0)
+    rw [add_left_inj] at this
+    exact this.not_lt h
+termination_by a
+
+@[simp]
+protected theorem zero_add (a : Nimber) : 0 + a = a := by
+  rw [Nimber.add_comm, Nimber.add_zero]
+
+instance : Neg Nimber :=
+  ⟨id⟩
+
+@[simp]
+protected theorem neg_eq (a : Nimber) : -a = a :=
+  rfl
+
+instance : AddCommGroupWithOne Nimber where
+  add_assoc := Nimber.add_assoc
+  add_zero := Nimber.add_zero
+  zero_add := Nimber.zero_add
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+  neg_add_cancel := add_self
+  add_comm := Nimber.add_comm
+
+-- TODO: add CharP 2 instance
+
+theorem add_cancel_right (a b : Nimber) : a + b + b = a := by
+  rw [add_assoc, add_self, add_zero]
+
+theorem add_cancel_left (a b : Nimber) : a + (a + b) = b := by
+  rw [← add_assoc, add_self, zero_add]
+
+theorem add_trichotomy {a b c : Nimber} (h : a ≠ b + c) :
+    b + c < a ∨ a + c < b ∨ a + b < c := by
+  rw [← add_ne_zero_iff, ← Nimber.pos_iff_ne_zero] at h
+  obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add h <;>
+  rw [add_eq_zero_iff] at hx'
+  · exact Or.inl (hx' ▸ hx)
+  · rw [← hx'] at hx
+    obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add hx
+    · rw [← hx', add_cancel_right]
+      exact Or.inr <| Or.inl hx
+    · rw [add_comm] at hx'
+      rw [← hx', add_cancel_right]
+      exact Or.inr <| Or.inr hx
 
 end Nimber
