@@ -87,7 +87,7 @@ theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖
 theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
   let ⟨_r, hr₀, hr⟩ := exists_norm_lt_one 𝕜
   eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
-    eventually_of_forall fun _ ↦ mem_univ _
+    Eventually.of_forall fun _ ↦ mem_univ _
 
 theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
