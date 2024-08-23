@@ -28,6 +28,9 @@ This is equivalent to being the set of non-negative elements of
 some order making the ring into a partially ordered ring. -/
 structure RingCone (R : Type*) [Ring R] extends Subsemiring R, AddGroupCone R
 
+/-- Interpret a cone in a ring as a cone in the underlying additive group. -/
+add_decl_doc RingCone.toAddGroupCone
+
 instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
