@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.RingTheory.Finiteness
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.UniformSpace.Equiv
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-! # Type synonym for types with a `CStarModule` structure
 
@@ -168,6 +169,12 @@ instance [Bornology E] : Bornology (C⋆ᵐᵒᵈ E) := Bornology.induced <| equ
 
 /-- `WithCStarModule.equiv` as a uniform equivalence between `C⋆ᵐᵒᵈ E` and `E`. -/
 def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ E ≃ᵤ E := equiv E |>.toUniformEquivOfUniformInducing ⟨rfl⟩
+
+/-- `WithCStarModule.equiv` as a continuous linear equivalence between `C⋆ᵐᵒᵈ E` and `E`. -/
+def equivL [Semiring R] [AddCommGroup E] [UniformSpace E] [Module R E] : C⋆ᵐᵒᵈ E ≃L[R] E :=
+  { linearEquiv R E with
+    continuous_toFun := UniformEquiv.continuous uniformEquiv
+    continuous_invFun := UniformEquiv.continuous uniformEquiv.symm }
 
 instance [UniformSpace E] [CompleteSpace E] : CompleteSpace (C⋆ᵐᵒᵈ E) :=
   uniformEquiv.completeSpace_iff.mpr inferInstance

@@ -31,7 +31,7 @@ below for more details.
 
 open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal
 
-local notation:25 n " →C⋆ " A:0 => WithCStarModule (n → (WithCStarModule A))
+local notation:25 n " →C⋆ " A:0 => WithCStarModule (n → A)
 
 /-- Type copy `Matrix m n A` meant for matrices with entries in a C⋆-algebra. This is
 a C⋆-algebra when `m = n`. This is an abbrev in order to inherit all instances from `Matrix`,
@@ -61,35 +61,40 @@ variable [Fintype m] [Fintype n] [NonUnitalNormedRing A] [StarRing A] [NormedSpa
   [PartialOrder A] [CStarRing A] [StarOrderedRing A] [SMulCommClass ℂ A A] [StarModule ℂ A]
   [IsScalarTower ℂ A A] [CompleteSpace A]
 
-#synth AddCommMonoid ((n →C⋆ A) →L[ℂ] (m →C⋆ A))
+attribute [fun_prop] ContinuousLinearEquiv.continuous
 
 variable (A) in
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on
 `WithCStarModule (n → A)`. -/
 def toCLM : CStarMatrix m n A →ₗ[ℂ] (n →C⋆ A) →L[ℂ] (m →C⋆ A) where
-  toFun M := { toFun := M.mulVec
+  toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.mulVec ∘ WithCStarModule.equivL ℂ
                map_add' := M.mulVec_add
                map_smul' := M.mulVec_smul
                cont := by
                  simp only [LinearMap.coe_mk, AddHom.coe_mk]
-                 change Continuous (fun v => Matrix.mulVec M v)
-
-                 sorry }
+                 exact Continuous.comp (by fun_prop) (Continuous.comp (by fun_prop) (by fun_prop)) }
   map_add' M₁ M₂ := by ext; simp [Matrix.add_mulVec]
   map_smul' c M := by
     ext i j
-    simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Matrix.mulVec,
-      Matrix.dotProduct, Matrix.smul_apply, MonoidHom.id_apply, ContinuousLinearMap.coe_smul',
-      Pi.smul_apply]
+    unfold Matrix.mulVec
+    unfold Matrix.dotProduct
+    simp only [Matrix.smul_apply, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk,
+      Function.comp_apply, RingHom.id_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+      WithCStarModule.smul_apply]
+    change (fun x ↦ ∑ x_1 : n, c • M x x_1 * (WithCStarModule.equivL ℂ) i x_1) j
+        = c • (fun x ↦ ∑ x_1 : n, M x x_1 * (WithCStarModule.equivL ℂ) i x_1) j
     apply Eq.symm
     simp [Finset.smul_sum, smul_mul_assoc]
 
 variable (A) in
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `CStarVec n A`. This
 version is specialized to the case `m = n` and is bundled as a non-unital algebra homomorphism. -/
-def toCLMNonUnitalAlgHom : CStarMatrix n n A →ₙₐ[ℂ] CStarVec n A →L[ℂ] CStarVec n A :=
+def toCLMNonUnitalAlgHom : CStarMatrix n n A →ₙₐ[ℂ] (n →C⋆ A) →L[ℂ] (n →C⋆ A) :=
   { toCLM (n := n) (m := n) A with
-    map_zero' := by ext; simp [Matrix.mulVec]
+    map_zero' := by
+      ext1 x
+      dsimp only
+      sorry
     map_mul' := by intros; ext; simp [toCLM] }
 
 lemma toCLMNonUnitalAlgHom_eq_toCLM {M : CStarMatrix n n A} :
