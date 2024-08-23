@@ -85,6 +85,10 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 @[nolint defLemma, inherit_doc leOfHom]
 abbrev _root_.Quiver.Hom.le := @leOfHom
 
+@[simp]
+theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
+  rfl
+
 lemma homOfLE_isIso_of_eq {x y : X} (h : x ≤ y) (heq : x = y) :
     IsIso (homOfLE h) :=
   ⟨homOfLE (le_of_eq heq.symm), by simp⟩
