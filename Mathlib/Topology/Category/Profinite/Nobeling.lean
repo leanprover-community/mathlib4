@@ -711,7 +711,7 @@ def ord (i : I) : Ordinal := Ordinal.typein ((·<·) : I → I → Prop) i
 /-- An ordinal regarded as a term of `I`. -/
 noncomputable
 def term {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Prop)) : I :=
-  Ordinal.enum ((·<·) : I → I → Prop) o ho
+  Ordinal.enum ((·<·) : I → I → Prop) ⟨o, ho⟩
 
 variable {I}
 
