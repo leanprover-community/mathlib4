@@ -1307,13 +1307,13 @@ protected theorem min_eq_bot [OrderBot α] {s : Finset α} : s.min = ⊥ ↔ ⊥
   Finset.max_eq_top (α := αᵒᵈ)
 
 /-- Given a nonempty finset `s` in a linear order `α`, then `s.min' h` is its minimum, as an
-element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.min`,
+element of `α`, where `H` is a proof of nonemptiness. Without this assumption, use instead `s.min`,
 taking values in `WithTop α`. -/
 def min' (s : Finset α) (H : s.Nonempty) : α :=
   inf' s H id
 
 /-- Given a nonempty finset `s` in a linear order `α`, then `s.max' h` is its maximum, as an
-element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.max`,
+element of `α`, where `H` is a proof of nonemptiness. Without this assumption, use instead `s.max`,
 taking values in `WithBot α`. -/
 def max' (s : Finset α) (H : s.Nonempty) : α :=
   sup' s H id
