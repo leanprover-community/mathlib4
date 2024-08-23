@@ -168,7 +168,6 @@ theorem rotate_eq_nil_iff {l : List α} {n : ℕ} : l.rotate n = [] ↔ l = [] :
     · simp
     · simp [rotate_cons_succ, hn]
 
-@[simp]
 theorem nil_eq_rotate_iff {l : List α} {n : ℕ} : [] = l.rotate n ↔ [] = l := by
   rw [eq_comm, rotate_eq_nil_iff, eq_comm]
 
