@@ -130,6 +130,8 @@ example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
 example {a b : ℕ} (h1 : a = b + 4) (h2 : b = 2) : a = 6 := by
   linear_combination h1 + h2
 
+example {a : ℕ} (h : a = 3) : 3 = a := by linear_combination -h
+
 example {a b : ℕ} (h1 : 3 * a = b + 5) (h2 : 2 * a = b + 3) : a = 2 := by
   linear_combination h1 - h2
 

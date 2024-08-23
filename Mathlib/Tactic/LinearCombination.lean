@@ -75,13 +75,13 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ $p₂)
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
-    | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂) -- will behave badly in semirings
-    | .proof p₁, .const c₂ => .proof <$> ``(pf_sub_c $p₁ $c₂) -- will behave badly in semirings
-    | .const c₁, .proof p₂ => .proof <$> ``(c_sub_pf $p₂ $c₁) -- will behave badly in semirings
+    | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
+    | .proof p₁, .const c₂ => .proof <$> ``(pf_sub_c $p₁ $c₂)
+    | .const c₁, .proof p₂ => .proof <$> ``(c_sub_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ (Eq.symm $p₂))
   | `(-$e) => do
     match ← expandLinearCombo ty e with
-    | .const c => .const <$> `(-$c) -- will behave badly in semirings
+    | .const c => .const <$> `(-$c)
     | .proof p => .proof <$> ``(Eq.symm $p)
   | `($e₁ * $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
