@@ -245,11 +245,7 @@ instance preservesLimitsOfShape_presheafToSheaf :
   apply isLimitOfReflects (sheafToPresheaf J D)
   have : ReflectsLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) (forget D) :=
     reflectsLimitsOfShapeOfReflectsIsomorphisms
-  -- Porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
-  have : PreservesLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K))
-      (plusPlusSheaf J D ⋙ sheafToPresheaf J D) :=
-    preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
-  exact isLimitOfPreserves (plusPlusSheaf J D ⋙ sheafToPresheaf J D) hS
+  apply isLimitOfPreserves (J.sheafification D) hS
 
 instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
     PreservesFiniteLimits (plusPlusSheaf J D) := by

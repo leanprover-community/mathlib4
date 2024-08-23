@@ -589,12 +589,4 @@ instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f
 theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
   ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
 
--- Porting note: added to ease the port of CategoryTheory.Sites.LeftExact
--- in mathlib, this was `by refl`, but here it would timeout
-@[simps! hom_app inv_app]
-noncomputable
-def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
-    J.sheafification D ≅ plusPlusSheaf J D ⋙ sheafToPresheaf J D :=
-  NatIso.ofComponents fun P => Iso.refl _
-
 end CategoryTheory
