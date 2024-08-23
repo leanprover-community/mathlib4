@@ -3,7 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Discrete
+import Mathlib.CategoryTheory.Sites.IsConstant
 import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Module
@@ -88,15 +88,16 @@ noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
       (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
-instance (M : ModuleCat R) : IsIso ((Condensed.forget R).map
+instance (M : ModuleCat R) : IsIso ((forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
-  rw [discreteUnderlyingAdj, Condensed.forget, ← Sheaf.constantSheafAdj_counit_w]
-  refine IsIso.comp_isIso' inferInstance ?_
+  erw [← Sheaf.constantSheafAdj_counit_w]
+  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
+  change Sheaf.IsConstant _ _ _
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Full :=
     inferInstanceAs (discrete _).Full
-  rw [Adjunction.isIso_counit_app_iff_mem_essImage]
+  rw [Sheaf.isConstant_iff_mem_essImage]
   change _ ∈ (discrete _).essImage
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
@@ -197,15 +198,18 @@ noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
 instance : HasSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :=
   inferInstance
 
-instance (M : ModuleCat R) : IsIso ((LightCondensed.forget R).map
-    ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
-  rw [discreteUnderlyingAdj, LightCondensed.forget, ← Sheaf.constantSheafAdj_counit_w]
-  refine IsIso.comp_isIso' inferInstance ?_
+instance (M : ModuleCat R) :
+    IsIso ((LightCondensed.forget R).map
+    ((discreteUnderlyingAdj (ModuleCat R)).counit.app
+      ((functor R).obj M))) := by
+  erw [← Sheaf.constantSheafAdj_counit_w]
+  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
+  change Sheaf.IsConstant _ _ _
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
     inferInstanceAs (discrete _).Full
-  rw [Adjunction.isIso_counit_app_iff_mem_essImage]
+  rw [Sheaf.isConstant_iff_mem_essImage]
   change _ ∈ (discrete _).essImage
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage LightCondSet.LocallyConstant.functor M
