@@ -57,38 +57,25 @@ def to_appExpr (e : Expr) : MetaM Expr := do
   let f := (Expr.getAppArgsN (← inferType η) 2)[0]!
   let D := (Expr.getAppArgsN (← inferType f) 2)[1]!
   let B_pre ← inferType D
-  let B ← Meta.getMVars B_pre
+  let B ← getMVars B_pre
   -- assign bicategory metavariable
   let CAT := B[0]!
+  let some CATIdx := args.findIdx? (· == .mvar CAT)
+    | throwError "TODO"
   logInfo m!"cat: {CAT}"
   logInfo m!"catlvl: {← Meta.getDecLevel B_pre}"
-  let u ← Meta.mkFreshLevelMVar
-  let v ← Meta.mkFreshLevelMVar
-  CAT.assign q(Cat.{v, u})
-  -- Find & assign bicategory instance
-  let args2 ← args.mapM instantiateMVars
-  logInfo m!"args2: {args2}"
-  let i := args2.findIdx? fun x => !x.hasExprMVar
-  let inst := (← Meta.getMVars (args2.get! (i.get! + 1)))[0]!
-  inst.assign (← synthInstanceQ q(Bicategory.{max v u, max v u} Cat.{v, u}))
-  -- logInfo m!"mvars: {← Meta.getMVars (args2.get! (i.get! + 1))}"
-  -- logInfo m!"inst: {inst}"
-
-  -- assign metavariables again
-  let args2 := ← args.mapM instantiateMVars
-  logInfo m!"args2_instatiated: {args2}"
-  let args3 := args2.map fun e => if e.hasExprMVar then none else (pure e)
-  logInfo m!"args3: {args3}"
-  let applied2 ← mkAppOptM' e args3
+  let u ← mkFreshLevelMVar
+  let v ← mkFreshLevelMVar
+  CAT.assign (.const ``Cat [u, v])
+  let some inst := args[CATIdx + 1]?
+    | throwError "TODO"
+  inst.mvarId!.assign (← synthInstanceQ q(Bicategory.{max u v, max u v} Cat.{u, v}))
+  logInfo m!"args: {args}"
+  let applied2 ← mkAppOptM' e (args.map some)
   logInfo m!"applied2: {applied2}"
-  let applied ← instantiateMVars conclusion
-  -- create the specialized term
-  -- let applied := (mkAppN E args2)
-  -- logInfo m!"applied: {applied}"
-  let applied2 ← mkLambdaFVars ((← Meta.getMVars applied).map (Expr.mvar)) applied
-  logInfo m!"E:{applied}"
-  logInfo m!"APP: {applied2}"
-  return applied2
+  let applied ← mkLambdaFVars ((← getMVars conclusion).map (Expr.mvar)) conclusion
+  logInfo m!"APP: {applied}"
+  return applied
 
 /--
 Given morphisms `f g : C ⟶ D` in the bicategory `Cat`, and an equation `η = θ` between 2-morphisms
@@ -130,8 +117,12 @@ initialize registerBuiltinAttribute {
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
     addRelatedDecl src "_app" ref stx? fun type value levels => do
+      let levelMVars ← levels.mapM λ _ => mkFreshLevelMVar
+      let value := value.instantiateLevelParams levels levelMVars
       logInfo m!"TYPE: {← mkExpectedTypeHint value type}"
-      pure (← toAppExpr (← to_appExpr value), levels)
+      let newExpr ← toAppExpr (← to_appExpr value)
+      let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newExpr
+      pure (r.expr, r.newParamNames.toList)
   | _ => throwUnsupportedSyntax }
 
 open Term in
