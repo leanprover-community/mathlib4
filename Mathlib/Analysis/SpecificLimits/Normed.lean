@@ -367,6 +367,9 @@ alias summable_norm_pow_mul_geometric_of_norm_lt_1 := summable_norm_pow_mul_geom
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜]
 
+/-- The sum of `(n+k).choose k * r^n` is `1/(1-r)^{k+1}`.
+See also `PowerSeries.invOneSubPow_val_eq_mk_choose_add` for the corresponding statement in formal
+power series, without summability arguments. -/
 lemma hasSum_choose_mul_geometric_of_norm_lt_one
     (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n ↦ (n + k).choose k * r ^ n) (1 / (1 - r) ^ (k + 1)) := by
