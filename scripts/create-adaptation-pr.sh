@@ -16,7 +16,7 @@ set -e # abort whenever a command in the script fails
 
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <BUMPVERSION> <NIGHTLYDATE>"
-  echo "BUMPVERSION: The upcoming release that we are targetting, e.g., 'v4.10.0'"
+  echo "BUMPVERSION: The upcoming release that we are targeting, e.g., 'v4.10.0'"
   echo "NIGHTLYDATE: The date of the nightly toolchain currently used on 'nightly-testing'"
   exit 1
 fi
