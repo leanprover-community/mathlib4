@@ -2359,8 +2359,8 @@ import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.Fib.Zeckendorf
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.GCD.Defs
 import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Data.Nat.GCD.Defs
 import Mathlib.Data.Nat.Hyperoperation
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
@@ -2552,6 +2552,7 @@ import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.ZMod.Factorial
 import Mathlib.Data.ZMod.IntUnitsPower
+import Mathlib.Data.ZMod.ModEq
 import Mathlib.Data.ZMod.Module
 import Mathlib.Data.ZMod.Parity
 import Mathlib.Data.ZMod.Quotient
