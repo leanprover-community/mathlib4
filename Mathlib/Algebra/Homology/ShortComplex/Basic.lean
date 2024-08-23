@@ -12,11 +12,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 This file defines the category `ShortComplex C` of diagrams
 `X₁ ⟶ X₂ ⟶ X₃` such that the composition is zero.
 
-TODO: A homology API for these objects shall be developed
-in the folder `Algebra.Homology.ShortComplex` and eventually
-the homology of objects in `HomologicalComplex C c` shall be
-redefined using this.
-
 Note: This structure `ShortComplex C` was first introduced in
 the Liquid Tensor Experiment.
 
@@ -26,7 +21,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable (C D : Type _) [Category C] [Category D]
+variable (C D : Type*) [Category C] [Category D]
 
 /-- A short complex in a category `C` with zero morphisms is the datum
 of two composable morphisms `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that
@@ -92,7 +87,7 @@ instance : Category (ShortComplex C) where
 
 @[ext]
 lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂) (h₃ : f.τ₃ = g.τ₃) : f = g :=
-  Hom.ext _ _ h₁ h₂ h₃
+  Hom.ext h₁ h₂ h₃
 
 /-- A constructor for morphisms in `ShortComplex C` when the commutativity conditions
 are not obvious. -/
@@ -219,12 +214,12 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
           ← comm₂₃, e₂.inv_hom_id_assoc])
 
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
-  IsIso.of_iso (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃))
+  (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃)).isIso_hom
 
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]
 def op : ShortComplex Cᵒᵖ :=
-  mk S.g.op S.f.op (by simp only [← op_comp, S.zero] ; rfl)
+  mk S.g.op S.f.op (by simp only [← op_comp, S.zero]; rfl)
 
 /-- The opposite morphism in `ShortComplex Cᵒᵖ` associated to a morphism in `ShortComplex C` -/
 @[simps]
@@ -245,7 +240,7 @@ lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
 /-- The `ShortComplex` in `C` associated to a short complex in `Cᵒᵖ`. -/
 @[simps]
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
-  mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero] ; rfl)
+  mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero]; rfl)
 
 /-- The morphism in `ShortComplex C` associated to a morphism in `ShortComplex Cᵒᵖ` -/
 @[simps]

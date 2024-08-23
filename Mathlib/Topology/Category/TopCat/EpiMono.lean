@@ -2,13 +2,9 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
-
-! This file was ported from Lean 3 source module topology.category.Top.epi_mono
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.Adjunctions
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Epi- and monomorphisms in `Top`
@@ -35,8 +31,6 @@ theorem epi_iff_surjective {X Y : TopCat.{u}} (f : X ⟶ Y) : Epi f ↔ Function
   · intro
     infer_instance
   · apply Functor.epi_of_epi_map
-set_option linter.uppercaseLean3 false in
-#align Top.epi_iff_surjective TopCat.epi_iff_surjective
 
 theorem mono_iff_injective {X Y : TopCat.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   suffices Mono f ↔ Mono ((forget TopCat).map f) by
@@ -46,7 +40,5 @@ theorem mono_iff_injective {X Y : TopCat.{u}} (f : X ⟶ Y) : Mono f ↔ Functio
   · intro
     infer_instance
   · apply Functor.mono_of_mono_map
-set_option linter.uppercaseLean3 false in
-#align Top.mono_iff_injective TopCat.mono_iff_injective
 
 end TopCat

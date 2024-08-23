@@ -2,11 +2,6 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.option
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Option
@@ -15,6 +10,8 @@ import Mathlib.Data.Finset.Option
 # fintype instances for option
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists MulAction
 
 open Function
 
@@ -22,34 +19,30 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Finset Function
 
-instance {α : Type _} [Fintype α] : Fintype (Option α) :=
+instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
 
-theorem univ_option (α : Type _) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
+theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
-#align univ_option univ_option
 
 @[simp]
-theorem Fintype.card_option {α : Type _} [Fintype α] :
+theorem Fintype.card_option {α : Type*} [Fintype α] :
     Fintype.card (Option α) = Fintype.card α + 1 :=
   (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
-#align fintype.card_option Fintype.card_option
 
 /-- If `Option α` is a `Fintype` then so is `α` -/
-def fintypeOfOption {α : Type _} [Fintype (Option α)] : Fintype α :=
+def fintypeOfOption {α : Type*} [Fintype (Option α)] : Fintype α :=
   ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x =>
     mem_eraseNone.mpr (Fintype.complete (some x))⟩
-#align fintype_of_option fintypeOfOption
 
 /-- A type is a `Fintype` if its successor (using `Option`) is a `Fintype`. -/
 def fintypeOfOptionEquiv [Fintype α] (f : α ≃ Option β) : Fintype β :=
   haveI := Fintype.ofEquiv _ f
   fintypeOfOption
-#align fintype_of_option_equiv fintypeOfOptionEquiv
 
 namespace Fintype
 
@@ -65,7 +58,7 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
     intro e
     exact of_equiv (Equiv.ulift.trans e.symm) h
   apply ind where
-    -- porting note: do a manual recursion, instead of `induction` tactic,
+    -- Porting note: do a manual recursion, instead of `induction` tactic,
     -- to ensure the result is computable
     /-- Internal induction hypothesis -/
     ind : ∀ n : ℕ, Trunc (P (ULift <| Fin n))
@@ -75,7 +68,7 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
           apply Trunc.bind (truncEquivOfCardEq this)
           intro e
           apply Trunc.mk
-          refine' of_equiv e h_empty
+          exact of_equiv e h_empty
       | Nat.succ n => by
           have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
             simp only [card_fin, card_option, card_ulift]
@@ -83,8 +76,7 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
           intro e
           apply Trunc.map _ (ind n)
           intro ih
-          refine' of_equiv e (h_option ih)
-#align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
+          exact of_equiv e (h_option ih)
 
 -- Porting note: due to instance inference issues in `SetTheory.Cardinal.Basic`
 -- I had to explicitly name `h_fintype` in order to access it manually.
@@ -104,9 +96,8 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
       convert h_option α (Pα _)
     @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
-  · exact p _
+  exact p _
   -- ·
-#align fintype.induction_empty_option Fintype.induction_empty_option
 
 end Fintype
 
@@ -116,6 +107,5 @@ theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α 
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α], P α → P (Option α)) (α : Type u)
     [Finite α] : P α := by
   cases nonempty_fintype α
-  refine' Fintype.induction_empty_option _ _ _ α
+  refine Fintype.induction_empty_option ?_ ?_ ?_ α
   exacts [fun α β _ => of_equiv, h_empty, @h_option]
-#align finite.induction_empty_option Finite.induction_empty_option

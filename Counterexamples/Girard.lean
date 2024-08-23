@@ -2,14 +2,9 @@
 Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module girard
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Basic
-import Mathlib.Init.Set
+import Mathlib.Data.Set.Defs
 
 /-!
 # Girard's paradox
@@ -51,6 +46,5 @@ theorem girard.{u} (pi : (Type u → Type u) → Type u)
   let δ (S : Set (Set U)) := ∀ p, p ∈ S → τ S ∈ p
   have : δ ω := fun _p d => d (τ ω) <| στ.2 fun x h => d (τ (σ x)) (στ.2 h)
   this {y | ¬δ (σ y)} (fun _x e f => f _ e fun _p h => f _ (στ.1 h)) fun _p h => this _ (στ.1 h)
-#align counterexample.girard Counterexample.girard
 
 end Counterexample

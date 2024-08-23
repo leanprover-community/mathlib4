@@ -2,13 +2,8 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module analysis.normed.group.completion
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.MetricSpace.Completion
 
@@ -29,7 +24,7 @@ namespace UniformSpace
 
 namespace Completion
 
-variable (E : Type _)
+variable (E : Type*)
 
 instance [UniformSpace E] [Norm E] : Norm (Completion E) where
   norm := Completion.extension Norm.norm
@@ -37,14 +32,17 @@ instance [UniformSpace E] [Norm E] : Norm (Completion E) where
 @[simp]
 theorem norm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ = ‖x‖ :=
   Completion.extension_coe uniformContinuous_norm x
-#align uniform_space.completion.norm_coe UniformSpace.Completion.norm_coe
 
 instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
   dist_eq x y := by
     induction x, y using Completion.induction_on₂
-    · refine' isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous _
+    · refine isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous ?_
       exact Continuous.comp Completion.continuous_extension continuous_sub
     · rw [← Completion.coe_sub, norm_coe, Completion.dist_eq, dist_eq_norm]
+
+@[simp]
+theorem nnnorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
+  simp [nnnorm]
 
 end Completion
 

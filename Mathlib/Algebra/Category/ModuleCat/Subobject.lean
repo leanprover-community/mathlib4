@@ -2,11 +2,6 @@
 Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module algebra.category.Module.subobject
-! leanprover-community/mathlib commit 6d584f1709bedbed9175bd9350df46599bdd7213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Kernels
@@ -33,12 +28,11 @@ open ModuleCat
 universe v u
 
 namespace ModuleCat
-set_option linter.uppercaseLean3 false -- `Module`
 
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
 /-- The categorical subobjects of a module `M` are in one-to-one correspondence with its
-    submodules.-/
+    submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
     { invFun := fun S => LinearMap.range S.arrow
@@ -70,15 +64,13 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           rw [this, comp_def, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
-        refine' ⟨fun h => _, fun h => mk_le_mk_of_comm (↟(Submodule.ofLe h)) rfl⟩
+        refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
         convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h) (↾T.subtype)
         · simpa only [← comp_def, ofMkLEMk_comp] using (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }
-#align Module.subobject_Module ModuleCat.subobjectModule
 
 instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) :=
   ⟨fun M => ⟨⟨_, ⟨(subobjectModule M).toEquiv⟩⟩⟩⟩
-#align Module.well_powered_Module ModuleCat.wellPowered_moduleCat
 
 attribute [local instance] hasKernels_moduleCat
 
@@ -86,7 +78,6 @@ attribute [local instance] hasKernels_moduleCat
 noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
     LinearMap.ker f →ₗ[R] kernelSubobject f :=
   (kernelSubobjectIso f ≪≫ ModuleCat.kernelIsoKer f).inv
-#align Module.to_kernel_subobject ModuleCat.toKernelSubobject
 
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
@@ -97,7 +88,6 @@ theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap
   rw [Iso.trans_inv, ← coe_comp, Category.assoc]
   simp only [Category.assoc, kernelSubobject_arrow', kernelIsoKer_inv_kernel_ι]
   aesop_cat
-#align Module.to_kernel_subobject_arrow ModuleCat.toKernelSubobject_arrow
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
 are equal if they differ by an element of the image.
@@ -105,7 +95,8 @@ are equal if they differ by an element of the image.
 The application is for homology:
 two elements in homology are equal if they differ by a boundary.
 -/
--- Porting note: TODO compiler complains that this is marked with `@[ext]`. Should this be changed?
+-- Porting note (#11215): TODO compiler complains that this is marked with `@[ext]`.
+-- Should this be changed?
 -- @[ext] this is no longer an ext lemma under the current interpretation see eg
 -- the conversation beginning at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
@@ -120,6 +111,5 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
   rw [← coe_comp, ← coe_comp, Category.assoc]
   simp only [cokernel.condition, comp_zero]
   rfl
-#align Module.cokernel_π_image_subobject_ext ModuleCat.cokernel_π_imageSubobject_ext
 
 end ModuleCat

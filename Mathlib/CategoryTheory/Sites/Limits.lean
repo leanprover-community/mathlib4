@@ -2,14 +2,10 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.limits
-! leanprover-community/mathlib commit 95e83ced9542828815f53a1096a4d373c1b08a77
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 
@@ -40,15 +36,13 @@ open CategoryTheory.Limits
 
 open Opposite
 
-section Limits
-
-universe w v u z
+universe w w' v u z z' u₁ u₂
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
+variable {D : Type w} [Category.{w'} D]
+variable {K : Type z} [Category.{z'} K]
 
-variable {D : Type w} [Category.{max v u} D]
-
-variable {K : Type z} [SmallCategory K]
+section Limits
 
 noncomputable section
 
@@ -88,8 +82,6 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         dsimp [Multifork.ofι]
         erw [Category.assoc, ← E.w f]
         aesop_cat }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.multifork_evaluation_cone CategoryTheory.Sheaf.multiforkEvaluationCone
 
 variable [HasLimitsOfShape K D]
 
@@ -131,8 +123,6 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       change _ = S.ι i ≫ _
       erw [← hm, Category.assoc, ← (E.π.app k).naturality, Category.assoc]
       rfl)
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_limit_multifork_of_is_limit CategoryTheory.Sheaf.isLimitMultiforkOfIsLimit
 
 /-- If `E` is a cone which is a limit on the level of presheaves,
 then the limit presheaf is again a sheaf.
@@ -144,13 +134,11 @@ theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshea
   rw [Presheaf.isSheaf_iff_multifork]
   intro X S
   exact ⟨isLimitMultiforkOfIsLimit _ _ hE _ _⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_sheaf_of_is_limit CategoryTheory.Sheaf.isSheaf_of_isLimit
 
 instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
   createsLimitOfReflectsIso fun E hE =>
     { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
-        ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext _ _ <| E.π.naturality _⟩⟩
+        ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext <| E.π.naturality _⟩⟩
       validLift := Cones.ext (eqToIso rfl) fun j => by
         dsimp
         simp
@@ -169,13 +157,24 @@ instance createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) whe
 instance : HasLimitsOfShape K (Sheaf J D) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (sheafToPresheaf J D)
 
+instance [HasFiniteProducts D] : HasFiniteProducts (Sheaf J D) :=
+  ⟨inferInstance⟩
+
+instance [HasFiniteLimits D] : HasFiniteLimits (Sheaf J D) :=
+  ⟨fun _ ↦ inferInstance⟩
+
 end
 
-instance createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
+instance createsLimits [HasLimitsOfSize.{u₁, u₂} D] :
+    CreatesLimitsOfSize.{u₁, u₂} (sheafToPresheaf J D) :=
   ⟨createsLimitsOfShape⟩
 
-instance [HasLimits D] : HasLimits (Sheaf J D) :=
+instance hasLimitsOfSize [HasLimitsOfSize.{u₁, u₂} D] : HasLimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
+
+variable {D : Type w} [Category.{max v u} D]
+
+example [HasLimits D] : HasLimits (Sheaf J D) := inferInstance
 
 end
 
@@ -183,73 +182,40 @@ end Limits
 
 section Colimits
 
-universe w v u
-
-variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-
-variable {D : Type w} [Category.{max v u} D]
-
-variable {K : Type max v u} [SmallCategory K]
-
--- Now we need a handful of instances to obtain sheafification...
-variable [ConcreteCategory.{max v u} D]
-
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-
-variable [PreservesLimits (forget D)]
-
-variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
-variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-
-variable [ReflectsIsomorphisms (forget D)]
+variable [HasWeakSheafify J D]
 
 /-- Construct a cocone by sheafifying a cocone point of a cocone `E` of presheaves
 over a functor which factors through sheaves.
 In `isColimitSheafifyCocone`, we show that this is a colimit cocone when `E` is a colimit. -/
-@[simps]
 noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
-    (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F where
-  pt := ⟨J.sheafify E.pt, GrothendieckTopology.Plus.isSheaf_plus_plus _ _⟩
-  ι :=
-    { app := fun k => ⟨E.ι.app k ≫ J.toSheafify E.pt⟩
-      naturality := fun i j f => by
-        ext1
-        dsimp
-        erw [Category.comp_id, ← Category.assoc, E.w f] }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.sheafify_cocone CategoryTheory.Sheaf.sheafifyCocone
+    (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F :=
+  (Cocones.precompose
+    (isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
+    ((presheafToSheaf J D).mapCocone E)
 
 /-- If `E` is a colimit cocone of presheaves, over a diagram factoring through sheaves,
 then `sheafifyCocone E` is a colimit cocone. -/
-@[simps]
 noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
-    (E : Cocone (F ⋙ sheafToPresheaf J D)) (hE : IsColimit E) : IsColimit (sheafifyCocone E) where
-  desc S := ⟨J.sheafifyLift (hE.desc ((sheafToPresheaf J D).mapCocone S)) S.pt.2⟩
-  fac := by
-    intro S j
-    ext1
-    dsimp [sheafifyCocone]
-    erw [Category.assoc, J.toSheafify_sheafifyLift, hE.fac]
-    rfl
-  uniq := by
-    intro S m hm
-    ext1
-    apply J.sheafifyLift_unique
-    apply hE.uniq ((sheafToPresheaf J D).mapCocone S)
-    intro j
-    dsimp
-    simp only [← Category.assoc, ← hm] -- Porting note: was `simpa only [...]`
-    rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_colimit_sheafify_cocone CategoryTheory.Sheaf.isColimitSheafifyCocone
+    (E : Cocone (F ⋙ sheafToPresheaf J D)) (hE : IsColimit E) : IsColimit (sheafifyCocone E) :=
+  (IsColimit.precomposeHomEquiv _ ((presheafToSheaf J D).mapCocone E)).symm
+    (isColimitOfPreserves _ hE)
 
 instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
   ⟨fun _ => HasColimit.mk
     ⟨sheafifyCocone (colimit.cocone _), isColimitSheafifyCocone _ (colimit.isColimit _)⟩⟩
 
-instance [HasColimits D] : HasColimits (Sheaf J D) :=
+instance [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) :=
   ⟨inferInstance⟩
+
+instance [HasFiniteColimits D] : HasFiniteColimits (Sheaf J D) :=
+  ⟨fun _ ↦ inferInstance⟩
+
+instance [HasColimitsOfSize.{u₁, u₂} D] : HasColimitsOfSize.{u₁, u₂} (Sheaf J D) :=
+  ⟨inferInstance⟩
+
+variable {D : Type w} [Category.{max v u} D]
+
+example [HasLimits D] : HasLimits (Sheaf J D) := inferInstance
 
 end Colimits
 

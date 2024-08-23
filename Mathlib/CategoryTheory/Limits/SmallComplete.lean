@@ -2,11 +2,6 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.small_complete
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.SetTheory.Cardinal.Basic
@@ -50,20 +45,20 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
   ⟨fun r s => by
     classical
       by_contra r_ne_s
-      have z : (2 : Cardinal) ≤ (#X ⟶ Y) := by
+      have z : (2 : Cardinal) ≤ #(X ⟶ Y) := by
         rw [Cardinal.two_le_iff]
         exact ⟨_, _, r_ne_s⟩
       let md := ΣZ W : C, Z ⟶ W
       let α := #md
       apply not_le_of_lt (Cardinal.cantor α)
-      let yp : C := ∏ fun _ : md => Y
-      refine' _root_.trans _ _
-      · exact #X ⟶ yp
+      let yp : C := ∏ᶜ fun _ : md => Y
+      apply _root_.trans _ _
+      · exact #(X ⟶ yp)
       · apply le_trans (Cardinal.power_le_power_right z)
         rw [Cardinal.power_def]
         apply le_of_eq
         rw [Cardinal.eq]
-        refine' ⟨⟨Pi.lift, fun f k => f ≫ Pi.π _ k, _, _⟩⟩
+        refine ⟨⟨Pi.lift, fun f k => f ≫ Pi.π _ k, ?_, ?_⟩⟩
         · intro f
           ext k
           simp

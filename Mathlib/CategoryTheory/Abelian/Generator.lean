@@ -2,11 +2,6 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.abelian.generator
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
@@ -40,10 +35,10 @@ theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG
   haveI : WellPowered C := wellPowered_of_isDetector G hG.isDetector
   haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small _ _
   let T : C := Injective.under (piObj fun P : Subobject (op G) => unop P)
-  refine' ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => _⟩
-  refine' (Preadditive.isSeparator_iff _).1 hG _ fun h => _
-  suffices hh : factorThruImage (h ≫ f) = 0
-  · rw [← Limits.image.fac (h ≫ f), hh, zero_comp]
+  refine ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => ?_⟩
+  refine (Preadditive.isSeparator_iff _).1 hG _ fun h => ?_
+  suffices hh : factorThruImage (h ≫ f) = 0 by
+    rw [← Limits.image.fac (h ≫ f), hh, zero_comp]
   let R := Subobject.mk (factorThruImage (h ≫ f)).op
   let q₁ : image (h ≫ f) ⟶ unop R :=
     (Subobject.underlyingIso (factorThruImage (h ≫ f)).op).unop.hom
@@ -53,12 +48,10 @@ theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG
   exact zero_of_comp_mono q
     (by rw [← Injective.comp_factorThru q (Limits.image.ι (h ≫ f)), Limits.image.fac_assoc,
       Category.assoc, hf, comp_zero])
-#align category_theory.abelian.has_injective_coseparator CategoryTheory.Abelian.has_injective_coseparator
 
 theorem has_projective_separator [HasColimits C] [EnoughProjectives C] (G : C)
     (hG : IsCoseparator G) : ∃ G : C, Projective G ∧ IsSeparator G := by
   obtain ⟨T, hT₁, hT₂⟩ := has_injective_coseparator (op G) ((isSeparator_op_iff _).2 hG)
   exact ⟨unop T, inferInstance, (isSeparator_unop_iff _).2 hT₂⟩
-#align category_theory.abelian.has_projective_separator CategoryTheory.Abelian.has_projective_separator
 
 end CategoryTheory.Abelian

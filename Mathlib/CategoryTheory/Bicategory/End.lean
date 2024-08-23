@@ -2,11 +2,6 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.bicategory.End
-! leanprover-community/mathlib commit 6abb6de90754c5613a3aab6261eea9e5c72d539d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
@@ -18,12 +13,11 @@ import Mathlib.CategoryTheory.Monoidal.Category
 
 namespace CategoryTheory
 
-variable {C : Type _} [Bicategory C]
+variable {C : Type*} [Bicategory C]
 
 /-- The endomorphisms of an object in a bicategory can be considered as a monoidal category. -/
 def EndMonoidal (X : C) :=
   X ⟶ X -- deriving Category
-#align category_theory.End_monoidal CategoryTheory.EndMonoidal
 
 -- Porting note: Deriving this fails in the definition above.
 -- Adding category instance manually.
@@ -42,8 +36,9 @@ open Bicategory
 attribute [local simp] EndMonoidal in
 instance (X : C) : MonoidalCategory (EndMonoidal X) where
   tensorObj f g := f ≫ g
-  tensorHom {f g} h i η θ := η ▷ h ≫ g ◁ θ
-  tensorUnit' := 𝟙 _
+  whiskerLeft {f g h} η := f ◁ η
+  whiskerRight {f g} η h := η ▷ h
+  tensorUnit := 𝟙 _
   associator f g h := α_ f g h
   leftUnitor f := λ_ f
   rightUnitor f := ρ_ f

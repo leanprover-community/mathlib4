@@ -3,14 +3,18 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Lattice
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
+import Mathlib.Tactic.NormNum.OfScientific
 
+private axiom test_sorry : ∀ {α}, α
 /-! # Inequality tests for the `gcongr` tactic -/
 
-open Nat Finset BigOperators
+open Nat Finset
 
 -- We deliberately mock `ℝ` here so that we don't have to import the dependencies
 axiom Real : Type
@@ -42,7 +46,7 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) : x ^ 2 * a + c ≤ x ^ 
   rel [h1, h2]
 
 -- not solved by `nlinarith` because of the cube and the absolute value
-example {a b c x  y : ℤ} (hb : b ≥ 4) (hxy : x ≤ y) :
+example {a b c x y : ℤ} (hb : b ≥ 4) (hxy : x ≤ y) :
     c + (3 * |a| ^ 3 * b + b * 7 + 14) * x ≤ c + (3 * |a| ^ 3 * b + b * 7 + 14) * y := by
   gcongr
 
@@ -87,7 +91,7 @@ example (a b c d : ℕ) (h1 : a ≤ b) (h2 : c ≤ d) : a * c ≤ b * d := by gc
 example {a b : ℚ} (h : 0 ≤ a ^ 6) : 0 + b ≤ a ^ 6 + b := by gcongr
 
 -- another priority test
-example {k m n : ℤ}  (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by gcongr
+example {k m n : ℤ} (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by gcongr
 
 -- test of behaviour when no lemmas are applicable
 example (n k : ℕ) (H : n ^ k + 1 ≤ k ^ n + 1) : n ^ k ≤ k ^ n := by
@@ -102,17 +106,18 @@ example {x : ℤ} (hx : x ≥ 12) (h : Even x) : Even x := by
 
 example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 1 ≤ x + 1) : x * a + c ≤ x * b + d := by
   success_if_fail_with_msg
-    "rel failed, cannot prove goal by 'substituting' the listed relationships. The steps which could not be automatically justified were: \n0 ≤ x\nc ≤ d"
+    "rel failed, cannot prove goal by 'substituting' the listed relationships. \
+     The steps which could not be automatically justified were:\n0 ≤ x\nc ≤ d"
     (rel [h1])
   have : 0 ≤ x := by linarith
   rel [h1, h2]
 
 -- test for a missing `withContext`
 example {x y : ℚ} {n : ℕ} (hx : 0 ≤ x) (hn : 0 < n) : y ≤ x := by
-  have h : x < y := sorry
-  have : x ^ n < y ^ n
-  · rel [h] -- before bugfix: complained "unknown identifier 'h'"
-  sorry
+  have h : x < y := test_sorry
+  have _this : x ^ n < y ^ n := by
+    rel [h] -- before bugfix: complained "unknown identifier 'h'"
+  exact test_sorry
 
 /-! ## Non-finishing examples -/
 
@@ -150,7 +155,7 @@ example {F : ℕ → ℕ} (le_sum: ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : 
   exact le_sum hn'
 
 example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
-    ∏ i in range n, (a - 2 ^ i) ≤ ∏ _i in range n, a := by
+    ∏ i ∈ range n, (a - 2 ^ i) ≤ ∏ _i ∈ range n, a := by
   gcongr with i
   · intro i hi
     simp only [mem_range] at hi
@@ -165,16 +170,22 @@ example {a b c d e : ℝ} (_h1 : 0 ≤ b) (_h2 : 0 ≤ c) (hac : a * b + 1 ≤ c
   guard_target =ₛ a * b ≤ c * d
   linarith
 
+-- test big operators
+example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ g i) :
+    ∑ i ∈ s, (3 + f i ^ 2) ≤ ∑ i ∈ s, (3 + g i ^ 2) := by
+  gcongr with i hi
+  exact h i hi
+
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
-    ∑ i in s, f i ^ 2 ≤ ∑ i in s, g i ^ 2 := by
-  gcongr ∑ _i in s, ?_ with i hi
+    ∑ i ∈ s, f i ^ 2 ≤ ∑ i ∈ s, g i ^ 2 := by
+  gcongr ∑ _i ∈ s, ?_ with i hi
   linarith [h i hi]
 
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
-    ∑ i in s, (3 + f i ^ 2) ≤ ∑ i in s, (3 + g i ^ 2) := by
-  gcongr ∑ _i in s, (3 + ?_) with i hi
+    ∑ i ∈ s, (3 + f i ^ 2) ≤ ∑ i ∈ s, (3 + g i ^ 2) := by
+  gcongr ∑ _i ∈ s, (3 + ?_) with i hi
   linarith [h i hi]
 
 axiom f : ℕ → ℕ
@@ -191,7 +202,29 @@ example {x y : ℕ} (h : f x ≤ f y) : f x ^ 2 ≤ f y ^ 2 := by
     (gcongr (f ?a) ^ 2)
   gcongr
 
-example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i in s, f i ≤ ∑ i in s, f (2 * i) := by
+example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i ∈ s, f i ≤ ∑ i ∈ s, f (2 * i) := by
   gcongr
   apply h
   assumption
+
+def dontUnfoldMe : Nat → List Bool → Nat
+  | 0, _ => 0
+  | n+1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
+
+-- times out if a certain reducibility setting in `gcongr`'s implementation is not correct
+example {x y : ℕ} (h : x ≤ y) (l) : dontUnfoldMe 14 l + x ≤ 0 + y := by
+  gcongr
+  guard_target = dontUnfoldMe 14 l ≤ 0
+  apply test_sorry
+
+/-! Test that `gcongr` works well with proof arguments -/
+
+example {α β : Type*}  [SemilatticeSup α] (f : β → α)
+    {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
+    s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f := by
+  gcongr
+
+example {α β : Type*}  [SemilatticeSup α] (f : β → α)
+    {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
+    s₁.sup' h₁ f ≤ s₂.sup' h₂ f := by
+  gcongr

@@ -2,14 +2,10 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.class_number.admissible_abs
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+import Mathlib.Data.Real.Archimedean
 
 /-!
 # Admissible absolute value on the integers
@@ -39,7 +35,7 @@ theorem exists_partition_int (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : ℤ} (hb :
     exact mul_pos hb' hε
   have hfloor : ∀ i, 0 ≤ floor ((A i % b : ℤ) / abs b • ε : ℝ) :=
     fun _ ↦ floor_nonneg.mpr (div_nonneg (cast_nonneg.mpr (emod_nonneg _ hb)) hbε.le)
-  refine' ⟨fun i ↦ ⟨natAbs (floor ((A i % b : ℤ) / abs b • ε : ℝ)), _⟩, _⟩
+  refine ⟨fun i ↦ ⟨natAbs (floor ((A i % b : ℤ) / abs b • ε : ℝ)), ?_⟩, ?_⟩
   · rw [← ofNat_lt, natAbs_of_nonneg (hfloor i), floor_lt]
     apply lt_of_lt_of_le _ (Nat.le_ceil _)
     rw [Algebra.smul_def, eq_intCast, ← div_div, div_lt_div_right hε, div_lt_iff hb', one_mul,
@@ -52,14 +48,12 @@ theorem exists_partition_int (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : ℤ} (hb :
   have hi := abs_sub_lt_one_of_floor_eq_floor hi
   rw [abs_sub_comm, ← sub_div, abs_div, abs_of_nonneg hbε.le, div_lt_iff hbε, one_mul] at hi
   rwa [Int.cast_abs, Int.cast_sub]
-#align absolute_value.exists_partition_int AbsoluteValue.exists_partition_int
 
 /-- `abs : ℤ → ℤ` is an admissible absolute value. -/
 noncomputable def absIsAdmissible : IsAdmissible AbsoluteValue.abs :=
   { AbsoluteValue.abs_isEuclidean with
     card := fun ε ↦ ⌈1 / ε⌉₊
     exists_partition' := fun n _ hε _ hb ↦ exists_partition_int n hε hb }
-#align absolute_value.abs_is_admissible AbsoluteValue.absIsAdmissible
 
 noncomputable instance : Inhabited (IsAdmissible AbsoluteValue.abs) :=
   ⟨absIsAdmissible⟩

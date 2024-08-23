@@ -3,9 +3,9 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Tactic.RunCmd
+import Mathlib.Init
 import Lean.Elab.Tactic.Conv.Basic
-import Std.Lean.Parser
+import Lean.Elab.Command
 
 /-!
 Additional `conv` tactics.
@@ -25,6 +25,22 @@ macro_rules
     `(tactic| conv $[at $id]? $[in $[$occs]? $pat]? => rhs; ($seq:convSeq))
 
 macro "run_conv" e:doSeq : conv => `(conv| tactic' => run_tac $e)
+
+/--
+`conv in pat => cs` runs the `conv` tactic sequence `cs`
+on the first subexpression matching the pattern `pat` in the target.
+The converted expression becomes the new target subgoal, like `conv => cs`.
+
+The arguments `in` are the same as those as the in `pattern`.
+In fact, `conv in pat => cs` is a macro for `conv => pattern pat; cs`.
+
+The syntax also supports the `occs` clause. Example:
+```lean
+conv in (occs := *) x + y => rw [add_comm]
+```
+-/
+macro "conv" " in " occs?:(occs)? p:term " => " code:convSeq : conv =>
+  `(conv| conv => pattern $[$occs?]? $p; ($code:convSeq))
 
 /--
 * `discharge => tac` is a conv tactic which rewrites target `p` to `True` if `tac` is a tactic
@@ -57,7 +73,7 @@ open Elab Tactic
 /--
 The command `#conv tac => e` will run a conv tactic `tac` on `e`, and display the resulting
 expression (discarding the proof).
-For example, `#conv rw [true_and] => True ∧ False` displays `False`.
+For example, `#conv rw [true_and_iff] => True ∧ False` displays `False`.
 There are also shorthand commands for several common conv tactics:
 
 * `#whnf e` is short for `#conv whnf => e`
@@ -118,3 +134,5 @@ syntax "#simp" (&" only")? (simpArgs)? " =>"? ppSpace term : command
 macro_rules
   | `(#simp%$tk $[only%$o]? $[[$args,*]]? $[=>]? $e) =>
     `(#conv%$tk simp $[only%$o]? $[[$args,*]]? => $e)
+
+end Mathlib.Tactic.Conv

@@ -2,11 +2,6 @@
 Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.S_integer
-! leanprover-community/mathlib commit 00ab77614e085c9ef49479babba1a7d826d3232e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
@@ -56,7 +51,7 @@ open scoped nonZeroDivisors
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDomain R] [IsDedekindDomain R]
+variable {R : Type u} [CommRing R] [IsDedekindDomain R]
   (S : Set <| HeightOneSpectrum R) (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-! ## `S`-integers -/
@@ -70,7 +65,6 @@ def integer : Subalgebra R K :=
         {x : K | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation x ≤ 1} <|
       Set.ext fun _ => by simp [SetLike.mem_coe, Subring.mem_iInf] with
     algebraMap_mem' := fun x v _ => v.valuation_le_one x }
-#align set.integer Set.integer
 
 theorem integer_eq :
     (S.integer K).toSubring =
@@ -78,12 +72,10 @@ theorem integer_eq :
   SetLike.ext' <| by
     -- Porting note: was `simpa only [integer, Subring.copy_eq]`
     ext; simp
-#align set.integer_eq Set.integer_eq
 
 theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv : v ∉ S) :
     v.valuation (x : K) ≤ 1 :=
   x.property v hv
-#align set.integer_valuation_le_one Set.integer_valuation_le_one
 
 /-! ## `S`-units -/
 
@@ -97,17 +89,14 @@ def unit : Subgroup Kˣ :=
       -- Porting note: was
       -- simpa only [SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
       simp only [mem_setOf, SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
-#align set.unit Set.unit
 
 theorem unit_eq :
     S.unit K = ⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.unitGroup :=
   Subgroup.copy_eq _ _ _
-#align set.unit_eq Set.unit_eq
 
 theorem unit_valuation_eq_one (x : S.unit K) {v : HeightOneSpectrum R} (hv : v ∉ S) :
     v.valuation ((x : Kˣ) : K) = 1 :=
   x.property v hv
-#align set.unit_valuation_eq_one Set.unit_valuation_eq_one
 
 -- Porting note: `apply_inv_coe` fails the simpNF linter
 /-- The group of `S`-units is the group of units of the ring of `S`-integers. -/
@@ -128,7 +117,6 @@ def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl
-#align set.unit_equiv_units_integer Set.unitEquivUnitsInteger
 
 end
 

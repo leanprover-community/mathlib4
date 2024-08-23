@@ -2,11 +2,6 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.balanced
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 
@@ -35,17 +30,14 @@ variable (C)
 /-- A category is called balanced if any morphism that is both monic and epic is an isomorphism. -/
 class Balanced : Prop where
   isIso_of_mono_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Mono f] [Epi f], IsIso f
-#align category_theory.balanced CategoryTheory.Balanced
 
 end
 
 theorem isIso_of_mono_of_epi [Balanced C] {X Y : C} (f : X ⟶ Y) [Mono f] [Epi f] : IsIso f :=
   Balanced.isIso_of_mono_of_epi _
-#align category_theory.is_iso_of_mono_of_epi CategoryTheory.isIso_of_mono_of_epi
 
 theorem isIso_iff_mono_and_epi [Balanced C] {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Mono f ∧ Epi f :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => isIso_of_mono_of_epi _⟩
-#align category_theory.is_iso_iff_mono_and_epi CategoryTheory.isIso_iff_mono_and_epi
 
 section
 
@@ -55,7 +47,6 @@ theorem balanced_opposite [Balanced C] : Balanced Cᵒᵖ :=
   { isIso_of_mono_of_epi := fun f fmono fepi => by
       rw [← Quiver.Hom.op_unop f]
       exact isIso_of_op _ }
-#align category_theory.balanced_opposite CategoryTheory.balanced_opposite
 
 end
 

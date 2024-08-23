@@ -2,14 +2,9 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.nat.choose.bounds
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.Choose.Basic
 
 /-!
@@ -27,17 +22,16 @@ bounds `n^r/r^r ≤ n.choose r ≤ e^r n^r/r^r` in the future.
 
 open Nat
 
-variable {α : Type _} [LinearOrderedSemifield α]
+variable {α : Type*} [LinearOrderedSemifield α]
 
 namespace Nat
 
-theorem choose_le_pow (r n : ℕ) : (n.choose r : α)  ≤ (n ^ r : α) / r ! := by
+theorem choose_le_pow (r n : ℕ) : (n.choose r : α) ≤ (n ^ r : α) / r ! := by
   rw [le_div_iff']
   · norm_cast
     rw [← Nat.descFactorial_eq_factorial_mul_choose]
     exact n.descFactorial_le_pow r
-  exact_mod_cast r.factorial_pos
-#align nat.choose_le_pow Nat.choose_le_pow
+  exact mod_cast r.factorial_pos
 
 -- horrific casting is due to ℕ-subtraction
 theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.choose r := by
@@ -45,7 +39,6 @@ theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.cho
   · norm_cast
     rw [← Nat.descFactorial_eq_factorial_mul_choose]
     exact n.pow_sub_le_descFactorial r
-  exact_mod_cast r.factorial_pos
-#align nat.pow_le_choose Nat.pow_le_choose
+  exact mod_cast r.factorial_pos
 
 end Nat

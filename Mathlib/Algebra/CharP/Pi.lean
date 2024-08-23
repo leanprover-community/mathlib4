@@ -2,13 +2,8 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.char_p.pi
-! leanprover-community/mathlib commit 168ad7fc5d8173ad38be9767a22d50b8ecf1cd00
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Ring.Pi
 
 /-!
@@ -30,12 +25,10 @@ instance pi (ι : Type u) [hi : Nonempty ι] (R : Type v) [Semiring R] (p : ℕ)
           funext fun j =>
             show Pi.evalRingHom (fun _ => R) j (↑x : ι → R) = 0 by rw [map_natCast, h],
           fun h => map_natCast (Pi.evalRingHom (fun _ : ι => R) i) x ▸ by rw [h, RingHom.map_zero]⟩⟩
-#align char_p.pi CharP.pi
 
 -- diamonds
 instance pi' (ι : Type u) [Nonempty ι] (R : Type v) [CommRing R] (p : ℕ) [CharP R p] :
     CharP (ι → R) p :=
   CharP.pi ι R p
-#align char_p.pi' CharP.pi'
 
 end CharP

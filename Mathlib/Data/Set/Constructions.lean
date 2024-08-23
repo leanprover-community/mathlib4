@@ -2,13 +2,9 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module data.set.constructions
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Constructions involving sets of sets.
@@ -27,7 +23,7 @@ set of subsets of `α` which is closed under finite intersections.
 -/
 
 
-variable {α : Type _} (S : Set (Set α))
+variable {α : Type*} (S : Set (Set α))
 
 /-- A structure encapsulating the fact that a set of sets is closed under finite intersection. -/
 structure FiniteInter : Prop where
@@ -35,7 +31,6 @@ structure FiniteInter : Prop where
   univ_mem : Set.univ ∈ S
   /-- `inter_mem` states that any two intersections of sets in `S` is also in `S`. -/
   inter_mem : ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S
-#align has_finite_inter FiniteInter
 
 namespace FiniteInter
 
@@ -44,26 +39,23 @@ inductive finiteInterClosure : Set (Set α)
   | basic {s} : s ∈ S → finiteInterClosure s
   | univ : finiteInterClosure Set.univ
   | inter {s t} : finiteInterClosure s → finiteInterClosure t → finiteInterClosure (s ∩ t)
-#align has_finite_inter.finite_inter_closure FiniteInter.finiteInterClosure
 
 theorem finiteInterClosure_finiteInter : FiniteInter (finiteInterClosure S) :=
   { univ_mem := finiteInterClosure.univ
     inter_mem := fun _ h _ => finiteInterClosure.inter h }
-#align has_finite_inter.finite_inter_closure_has_finite_inter FiniteInter.finiteInterClosure_finiteInter
 
 variable {S}
 
 theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
     ↑F ⊆ S → ⋂₀ (↑F : Set (Set α)) ∈ S := by
   classical
-    refine' Finset.induction_on F (fun _ => _) _
+    refine Finset.induction_on F (fun _ => ?_) ?_
     · simp [cond.univ_mem]
     · intro a s _ h1 h2
       suffices a ∩ ⋂₀ ↑s ∈ S by simpa
       exact
         cond.inter_mem (h2 (Finset.mem_insert_self a s))
           (h1 fun x hx => h2 <| Finset.mem_insert_of_mem hx)
-#align has_finite_inter.finite_inter_mem FiniteInter.finiteInter_mem
 
 theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
@@ -82,6 +74,12 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
           ⟨Q ∩ R, cond.inter_mem hQ hR, by
             ext x
             constructor <;> simp (config := { contextual := true })⟩
-#align has_finite_inter.finite_inter_closure_insert FiniteInter.finiteInterClosure_insert
+
+open Set
+
+theorem mk₂ (h: ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) :
+    FiniteInter (insert (univ : Set α) S) where
+  univ_mem := Set.mem_insert Set.univ S
+  inter_mem s hs t ht := by aesop
 
 end FiniteInter

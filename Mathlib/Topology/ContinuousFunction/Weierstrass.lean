@@ -2,11 +2,6 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.continuous_function.weierstrass
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Topology.Algebra.Algebra
@@ -33,11 +28,11 @@ open scoped unitInterval
 This is just a matter of unravelling definitions and using the Bernstein approximations.
 -/
 theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤ := by
-  apply eq_top_iff.mpr
+  rw [eq_top_iff]
   rintro f -
-  refine' Filter.Frequently.mem_closure _
-  refine' Filter.Tendsto.frequently (bernsteinApproximation_uniform f) _
-  apply frequently_of_forall
+  refine Filter.Frequently.mem_closure ?_
+  refine Filter.Tendsto.frequently (bernsteinApproximation_uniform f) ?_
+  apply Frequently.of_forall
   intro n
   simp only [SetLike.mem_coe]
   apply Subalgebra.sum_mem
@@ -45,7 +40,6 @@ theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologica
   apply Subalgebra.smul_mem
   dsimp [bernstein, polynomialFunctions]
   simp
-#align polynomial_functions_closure_eq_top' polynomialFunctions_closure_eq_top'
 
 /-- The **Weierstrass Approximation Theorem**:
 polynomials functions on `[a, b] ⊆ ℝ` are dense in `C([a,b],ℝ)`
@@ -56,7 +50,7 @@ so we may as well get this done first.)
 -/
 theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤ := by
-  by_cases h : a < b
+  cases' lt_or_le a b with h h
   -- (Otherwise it's easy; we'll deal with that later.)
   · -- We can pullback continuous functions on `[a,b]` to continuous functions on `[0,1]`,
     -- by precomposing with an affine map.
@@ -78,13 +72,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     -- 🎉
     exact p
   · -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
-    -- so all subalgebras are the same anyway.
-    haveI : Subsingleton (Set.Icc a b) :=
-      ⟨fun x y =>
-        le_antisymm ((x.2.2.trans (not_lt.mp h)).trans y.2.1)
-          ((y.2.2.trans (not_lt.mp h)).trans x.2.1)⟩
-    apply Subsingleton.elim
-#align polynomial_functions_closure_eq_top polynomialFunctions_closure_eq_top
+    subsingleton [(Set.subsingleton_Icc_of_ge h).coe_sort]
 
 /-- An alternative statement of Weierstrass' theorem.
 
@@ -94,7 +82,6 @@ theorem continuousMap_mem_polynomialFunctions_closure (a b : ℝ) (f : C(Set.Icc
     f ∈ (polynomialFunctions (Set.Icc a b)).topologicalClosure := by
   rw [polynomialFunctions_closure_eq_top _ _]
   simp
-#align continuous_map_mem_polynomial_functions_closure continuousMap_mem_polynomialFunctions_closure
 
 open scoped Polynomial
 
@@ -110,7 +97,6 @@ theorem exists_polynomial_near_continuousMap (a b : ℝ) (f : C(Set.Icc a b, ℝ
   obtain ⟨-, H, ⟨m, ⟨-, rfl⟩⟩⟩ := w ε pos
   rw [Metric.mem_ball, dist_eq_norm] at H
   exact ⟨m, H⟩
-#align exists_polynomial_near_continuous_map exists_polynomial_near_continuousMap
 
 /-- Another alternative statement of Weierstrass's theorem,
 for those who like epsilons, but not bundled continuous functions.
@@ -127,4 +113,3 @@ theorem exists_polynomial_near_of_continuousOn (a b : ℝ) (f : ℝ → ℝ)
   rw [norm_lt_iff _ pos] at b
   intro x m
   exact b ⟨x, m⟩
-#align exists_polynomial_near_of_continuous_on exists_polynomial_near_of_continuousOn

@@ -1,12 +1,7 @@
 /-
-Copyright © 2023 Heather Macbeth. All rights reserved.
+Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.sheaf.basic
-! leanprover-community/mathlib commit 431589bce478b2229eba14b14a283250428217db
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 import Mathlib.Topology.Sheaves.LocalPredicate
@@ -40,20 +35,16 @@ open Set TopologicalSpace StructureGroupoid StructureGroupoid.LocalInvariantProp
 
 universe u
 
-variable {H : Type _} [TopologicalSpace H] {H' : Type _} [TopologicalSpace H']
+variable {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   {G : StructureGroupoid H} {G' : StructureGroupoid H'} {P : (H → H') → Set H → H → Prop}
   (M : Type u) [TopologicalSpace M] [ChartedSpace H M] (M' : Type u) [TopologicalSpace M']
   [ChartedSpace H' M']
 
 instance TopCat.of.chartedSpace : ChartedSpace H (TopCat.of M) :=
   (inferInstance : ChartedSpace H M)
-set_option linter.uppercaseLean3 false in
-#align Top.of.charted_space TopCat.of.chartedSpace
 
 instance TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G :=
   (inferInstance : HasGroupoid M G)
-set_option linter.uppercaseLean3 false in
-#align Top.of.has_groupoid TopCat.of.hasGroupoid
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
@@ -76,7 +67,6 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
       rw [hG.liftPropAt_iff_comp_inclusion hUV]
       exact hU x'
     convert this
-#align structure_groupoid.local_invariant_prop.local_predicate StructureGroupoid.LocalInvariantProp.localPredicate
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
@@ -85,14 +75,11 @@ functions from `U` to `M'` satisfying the lift of `P`. -/
 def StructureGroupoid.LocalInvariantProp.sheaf (hG : LocalInvariantProp G G' P) :
     TopCat.Sheaf (Type u) (TopCat.of M) :=
   TopCat.subsheafToTypes (hG.localPredicate M M')
-#align structure_groupoid.local_invariant_prop.sheaf StructureGroupoid.LocalInvariantProp.sheaf
 
 instance StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) : CoeFun ((hG.sheaf M M').val.obj U) fun _ => ↑(unop U) → M' where
   coe a := a.1
-#align structure_groupoid.local_invariant_prop.sheaf_has_coe_to_fun StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun
 
 theorem StructureGroupoid.LocalInvariantProp.section_spec (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) (f : (hG.sheaf M M').val.obj U) : ChartedSpace.LiftProp P f :=
   f.2
-#align structure_groupoid.local_invariant_prop.section_spec StructureGroupoid.LocalInvariantProp.section_spec

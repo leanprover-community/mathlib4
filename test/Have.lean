@@ -43,3 +43,10 @@ example : True := by
   have _q
   · exact 6
   simp
+
+/--
+error: type expected, got
+  (Nat.zero : Nat)
+-/
+#guard_msgs in
+example : True := by have h : Nat.zero

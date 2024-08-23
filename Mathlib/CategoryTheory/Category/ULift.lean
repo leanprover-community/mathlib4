@@ -2,11 +2,6 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.category.ulift
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Equivalence
@@ -19,8 +14,8 @@ import Mathlib.Data.ULift
 This file contains a very basic API for working with the categorical
 instance on `ULift C` where `C` is a type with a category instance.
 
-1. `CategoryTheory.ULift.up` is the functorial version of the usual `ULift.up`.
-2. `CategoryTheory.ULift.down` is the functorial version of the usual `ULift.down`.
+1. `CategoryTheory.ULift.upFunctor` is the functorial version of the usual `ULift.up`.
+2. `CategoryTheory.ULift.downFunctor` is the functorial version of the usual `ULift.down`.
 3. `CategoryTheory.ULift.equivalence` is the categorical equivalence between
   `C` and `ULift C`.
 
@@ -54,14 +49,12 @@ variable {C : Type u₁} [Category.{v₁} C]
 def ULift.upFunctor : C ⥤ ULift.{u₂} C where
   obj := ULift.up
   map f := f
-#align category_theory.ulift.up_functor CategoryTheory.ULift.upFunctor
 
 /-- The functorial version of `ULift.down`. -/
 @[simps]
 def ULift.downFunctor : ULift.{u₂} C ⥤ C where
   obj := ULift.down
   map f := f
-#align category_theory.ulift.down_functor CategoryTheory.ULift.downFunctor
 
 /-- The categorical equivalence between `C` and `ULift C`. -/
 @[simps]
@@ -93,7 +86,6 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
   functor_unitIso_comp X := by
     change 𝟙 X ≫ 𝟙 X = 𝟙 X
     simp
-#align category_theory.ulift.equivalence CategoryTheory.ULift.equivalence
 
 section ULiftHom
 /- Porting note: obviously we don't want code that looks like this long term
@@ -104,7 +96,6 @@ the ability to turn off unused universe parameter error is desirable -/
 def ULiftHom.{w,u} (C : Type u) : Type u :=
   let _ := ULift.{w} C
   C
-#align category_theory.ulift_hom CategoryTheory.ULiftHom
 
 instance {C} [Inhabited C] : Inhabited (ULiftHom C) :=
   ⟨(default : C)⟩
@@ -112,22 +103,18 @@ instance {C} [Inhabited C] : Inhabited (ULiftHom C) :=
 /-- The obvious function `ULiftHom C → C`. -/
 def ULiftHom.objDown {C} (A : ULiftHom C) : C :=
   A
-#align category_theory.ulift_hom.obj_down CategoryTheory.ULiftHom.objDown
 
 /-- The obvious function `C → ULiftHom C`. -/
 def ULiftHom.objUp {C} (A : C) : ULiftHom C :=
   A
-#align category_theory.ulift_hom.obj_up CategoryTheory.ULiftHom.objUp
 
 @[simp]
 theorem objDown_objUp {C} (A : C) : (ULiftHom.objUp A).objDown = A :=
   rfl
-#align category_theory.obj_down_obj_up CategoryTheory.objDown_objUp
 
 @[simp]
 theorem objUp_objDown {C} (A : ULiftHom C) : ULiftHom.objUp A.objDown = A :=
   rfl
-#align category_theory.obj_up_obj_down CategoryTheory.objUp_objDown
 
 instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   Hom A B := ULift.{v₂} <| A.objDown ⟶ B.objDown
@@ -139,14 +126,12 @@ instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
 def ULiftHom.up : C ⥤ ULiftHom C where
   obj := ULiftHom.objUp
   map f := ⟨f⟩
-#align category_theory.ulift_hom.up CategoryTheory.ULiftHom.up
 
 /-- One half of the quivalence between `C` and `ULiftHom C`. -/
 @[simps]
 def ULiftHom.down : ULiftHom C ⥤ C where
   obj := ULiftHom.objDown
   map f := f.down
-#align category_theory.ulift_hom.down CategoryTheory.ULiftHom.down
 
 /-- The equivalence between `C` and `ULiftHom C`. -/
 def ULiftHom.equiv : C ≌ ULiftHom C where
@@ -154,7 +139,6 @@ def ULiftHom.equiv : C ≌ ULiftHom C where
   inverse := ULiftHom.down
   unitIso := NatIso.ofComponents fun A => eqToIso rfl
   counitIso := NatIso.ofComponents fun A => eqToIso rfl
-#align category_theory.ulift_hom.equiv CategoryTheory.ULiftHom.equiv
 
 end ULiftHom
 /- Porting note: we want to keep around the category instance on `D`
@@ -172,7 +156,6 @@ nolinted. -/
 -/
 @[nolint unusedArguments]
 def AsSmall.{w, v, u} (D : Type u) [Category.{v} D] := ULift.{max w v} D
-#align category_theory.as_small CategoryTheory.AsSmall
 
 instance : SmallCategory (AsSmall.{w₁} C) where
   Hom X Y := ULift.{max w₁ u₁} <| X.down ⟶ Y.down
@@ -184,14 +167,12 @@ instance : SmallCategory (AsSmall.{w₁} C) where
 def AsSmall.up : C ⥤ AsSmall C where
   obj X := ⟨X⟩
   map f := ⟨f⟩
-#align category_theory.as_small.up CategoryTheory.AsSmall.up
 
 /-- One half of the equivalence between `C` and `AsSmall C`. -/
 @[simps]
 def AsSmall.down : AsSmall C ⥤ C where
   obj X := ULift.down X
   map f := f.down
-#align category_theory.as_small.down CategoryTheory.AsSmall.down
 
 /-- The equivalence between `C` and `AsSmall C`. -/
 @[simps]
@@ -200,7 +181,6 @@ def AsSmall.equiv : C ≌ AsSmall C where
   inverse := AsSmall.down
   unitIso := NatIso.ofComponents fun X => eqToIso rfl
   counitIso := NatIso.ofComponents fun X => eqToIso <| ULift.ext _ _ rfl
-#align category_theory.as_small.equiv CategoryTheory.AsSmall.equiv
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩
@@ -209,6 +189,5 @@ instance [Inhabited C] : Inhabited (AsSmall C) :=
 def ULiftHomULiftCategory.equiv.{v', u', v, u} (C : Type u) [Category.{v} C] :
     C ≌ ULiftHom.{v'} (ULift.{u'} C) :=
   ULift.equivalence.trans ULiftHom.equiv
-#align category_theory.ulift_hom_ulift_category.equiv CategoryTheory.ULiftHomULiftCategory.equiv
 
 end CategoryTheory

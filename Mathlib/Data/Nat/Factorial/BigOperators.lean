@@ -2,14 +2,9 @@
 Copyright (c) 2022 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
-
-! This file was ported from Lean 3 source module data.nat.factorial.big_operators
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Factorial with big operators
@@ -17,29 +12,29 @@ import Mathlib.Algebra.BigOperators.Order
 This file contains some lemmas on factorials in combination with big operators.
 
 While in terms of semantics they could be in the `Basic.lean` file, importing
-`Algebra.BigOperators.Basic` leads to a cyclic import.
+`Algebra.BigOperators.Group.Finset` leads to a cyclic import.
 
 -/
 
 
-open Nat
-open BigOperators
+open Finset Nat
 
 namespace Nat
 
-variable {α : Type _} (s : Finset α) (f : α → ℕ)
+lemma monotone_factorial : Monotone factorial := fun _ _ => factorial_le
 
-theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! :=
-  Finset.prod_pos fun i _ => factorial_pos (f i)
-#align nat.prod_factorial_pos Nat.prod_factorial_pos
+variable {α : Type*} (s : Finset α) (f : α → ℕ)
 
-theorem prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s, f i)! := by
-  classical
-    induction' s using Finset.induction with a' s' has ih
-    · simp only [Finset.sum_empty, Finset.prod_empty, factorial]
-    · simp only [Finset.prod_insert has, Finset.sum_insert has]
-      refine' dvd_trans (mul_dvd_mul_left (f a')! ih) _
-      apply Nat.factorial_mul_factorial_dvd_factorial_add
-#align nat.prod_factorial_dvd_factorial_sum Nat.prod_factorial_dvd_factorial_sum
+theorem prod_factorial_pos : 0 < ∏ i ∈ s, (f i)! := by positivity
+
+theorem prod_factorial_dvd_factorial_sum : (∏ i ∈ s, (f i)!) ∣ (∑ i ∈ s, f i)! := by
+  induction' s using Finset.cons_induction_on with a s has ih
+  · simp
+  · rw [prod_cons, Finset.sum_cons]
+    exact (mul_dvd_mul_left _ ih).trans (Nat.factorial_mul_factorial_dvd_factorial_add _ _)
+
+theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i ∈ range k, (n - i)
+  | 0 => rfl
+  | k + 1 => by rw [descFactorial, prod_range_succ, mul_comm, descFactorial_eq_prod_range n k]
 
 end Nat

@@ -2,11 +2,6 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.functor_category
-! leanprover-community/mathlib commit 39478763114722f0ec7613cb2f3f7701f9b86c8d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
@@ -33,7 +28,7 @@ https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_
 -/
 
 
-universe v₁ v₂ u u₂
+universe w w' v₁ v₂ u u₂
 
 noncomputable section
 
@@ -42,9 +37,7 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{u} D]
-
 variable {E : Type u} [Category.{v₂} E]
 
 /-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
@@ -60,8 +53,8 @@ work to convert to this version: namely, the natural isomorphism
 -/
 def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
     [∀ X : D, PreservesColimits (prod.functor.obj X)] (F : C ⥤ D) :
-    PreservesColimits (prod.functor.obj F)
-    where preservesColimitsOfShape {J : Type u} [Category.{u, u} J] :=
+    PreservesColimits (prod.functor.obj F) where
+  preservesColimitsOfShape {J : Type u} [Category.{u, u} J] :=
     {
       preservesColimit := fun {K : J ⥤ C ⥤ D} =>
         ( {
@@ -76,7 +69,6 @@ def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
               apply asIso (prodComparison ((evaluation C D).obj k) F G)
             · intro G G'
               apply prodComparison_natural ((evaluation C D).obj k) (𝟙 F) } ) }
-#align category_theory.functor_category.prod_preserves_colimits CategoryTheory.FunctorCategory.prodPreservesColimits
 
 instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
     PreservesLimits ((whiskeringLeft C E D).obj F) :=
@@ -87,10 +79,9 @@ instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
         intro Y
         change IsLimit (((evaluation E D).obj (F.obj Y)).mapCone c)
         exact PreservesLimit.preserves hc⟩⟩⟩
-#align category_theory.whiskering_left_preserves_limits CategoryTheory.whiskeringLeftPreservesLimits
 
-instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Type _}
-    [Category.{u} D] {E : Type _} [Category.{u} E] {J : Type u} [SmallCategory J]
+instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] :
     PreservesLimitsOfShape J ((whiskeringRight C D E).obj F) :=
   ⟨fun {K} =>
@@ -98,22 +89,19 @@ instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Ty
       apply evaluationJointlyReflectsLimits _ (fun k => ?_)
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact PreservesLimit.preserves hc⟩⟩
-#align category_theory.whiskering_right_preserves_limits_of_shape CategoryTheory.whiskeringRightPreservesLimitsOfShape
 
-instance whiskeringRightPreservesLimits {C : Type u} [Category C] {D : Type _} [Category.{u} D]
-    {E : Type _} [Category.{u} E] (F : D ⥤ E) [HasLimits D] [PreservesLimits F] :
-    PreservesLimits ((whiskeringRight C D E).obj F) :=
+instance whiskeringRightPreservesLimits {C : Type*} [Category C] {D : Type*} [Category D]
+    {E : Type*} [Category E] (F : D ⥤ E) [HasLimitsOfSize.{w, w'} D]
+    [PreservesLimitsOfSize.{w, w'} F] :
+    PreservesLimitsOfSize.{w, w'} ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
-#align category_theory.whiskering_right_preserves_limits CategoryTheory.whiskeringRightPreservesLimits
 
--- porting note: fixed spelling mistake in def
+-- Porting note: fixed spelling mistake in def
 /-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 noncomputable def preservesLimitOfLanPreservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
-    [PreservesLimitsOfShape J (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
+    [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
   apply @preservesLimitsOfShapeOfReflectsOfPreserves _ _ _ _ _ _ _ _ F yoneda ?_
-  exact preservesLimitsOfShapeOfNatIso (compYonedaIsoYonedaCompLan F).symm
-set_option linter.uppercaseLean3 false in
-#align category_theory.preserves_limit_of_Lan_preserves_limit CategoryTheory.preservesLimitOfLanPreservesLimit
+  exact preservesLimitsOfShapeOfNatIso (Presheaf.compYonedaIsoYonedaCompLan F).symm
 
 end CategoryTheory

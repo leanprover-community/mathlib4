@@ -2,11 +2,6 @@
 Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
-
-! This file was ported from Lean 3 source module category_theory.bicategory.strict
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Bicategory.Basic
@@ -54,9 +49,8 @@ class Bicategory.Strict : Prop where
   associator_eqToIso :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), α_ f g h = eqToIso (assoc f g h) := by
     aesop_cat
-#align category_theory.bicategory.strict CategoryTheory.Bicategory.Strict
 
--- porting note: not adding simp to:
+-- Porting note: not adding simp to:
 -- Bicategory.Strict.id_comp
 -- Bicategory.Strict.comp_id
 -- Bicategory.Strict.assoc
@@ -67,12 +61,10 @@ attribute [simp]
 
 -- see Note [lower instance priority]
 /-- Category structure on a strict bicategory -/
-instance (priority := 100) StrictBicategory.category [Bicategory.Strict B] : Category B
-    where
+instance (priority := 100) StrictBicategory.category [Bicategory.Strict B] : Category B where
   id_comp := Bicategory.Strict.id_comp
   comp_id := Bicategory.Strict.comp_id
   assoc := Bicategory.Strict.assoc
-#align category_theory.strict_bicategory.category CategoryTheory.StrictBicategory.category
 
 namespace Bicategory
 
@@ -83,14 +75,12 @@ theorem whiskerLeft_eqToHom {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g = 
     f ◁ eqToHom η = eqToHom (congr_arg₂ (· ≫ ·) rfl η) := by
   cases η
   simp only [whiskerLeft_id, eqToHom_refl]
-#align category_theory.bicategory.whisker_left_eq_to_hom CategoryTheory.Bicategory.whiskerLeft_eqToHom
 
 @[simp]
 theorem eqToHom_whiskerRight {a b c : B} {f g : a ⟶ b} (η : f = g) (h : b ⟶ c) :
     eqToHom η ▷ h = eqToHom (congr_arg₂ (· ≫ ·) η rfl) := by
   cases η
   simp only [id_whiskerRight, eqToHom_refl]
-#align category_theory.bicategory.eq_to_hom_whisker_right CategoryTheory.Bicategory.eqToHom_whiskerRight
 
 end Bicategory
 

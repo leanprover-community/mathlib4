@@ -2,15 +2,11 @@
 Copyright (c) 2022 Sam van Gool and Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sam van Gool, Jake Levinson
-
-! This file was ported from Lean 3 source module topology.sheaves.locally_surjective
-! leanprover-community/mathlib commit fb7698eb37544cbb66292b68b40e54d001f8d1a9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.CategoryTheory.Sites.Surjective
+import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 
@@ -33,6 +29,9 @@ We prove that these are equivalent.
 
 universe v u
 
+
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 noncomputable section
 
 open CategoryTheory
@@ -48,7 +47,6 @@ section LocallySurjective
 open scoped AlgebraicGeometry
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] {X : TopCat.{v}}
-
 variable {ℱ 𝒢 : X.Presheaf C}
 
 /-- A map of presheaves `T : ℱ ⟶ 𝒢` is **locally surjective** if for any open set `U`,
@@ -58,16 +56,12 @@ such that `$T_*(s_V) = t|_V$`.
 See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
 def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
-  CategoryTheory.IsLocallySurjective (Opens.grothendieckTopology X) T
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
+  CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
       ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
-  Iff.rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective_iff TopCat.Presheaf.isLocallySurjective_iff
+  ⟨fun h _ => h.imageSieve_mem, fun h => ⟨h _⟩⟩
 
 section SurjectiveOnStalks
 
@@ -89,7 +83,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     obtain ⟨U, hxU, t, rfl⟩ := 𝒢.germ_exist x g
     -- By local surjectivity, pass to a smaller open set V
     -- on which there exists s ∈ Γ_ ℱ V mapping to t |_ V.
-    rcases hT U t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
+    rcases hT.imageSieve_mem t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
     -- Then the germ of s maps to g.
     use ℱ.germ ⟨x, hxV⟩ s
     -- Porting note: `convert` went too deep and swapped LHS and RHS of the remaining goal relative
@@ -102,6 +96,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
         some germ f ∈ Γₛₜ ℱ x. Represent f on some open set V ⊆ X as ⟨s, V⟩.
         Then there is some possibly smaller open set x ∈ W ⊆ V ∩ U on which
         we have T(s) |_ W = t |_ W. -/
+    constructor
     intro U t x hxU
     set t_x := 𝒢.germ ⟨x, hxU⟩ t with ht_x
     obtain ⟨s_x, hs_x : ((stalkFunctor C x).map T) s_x = t_x⟩ := hT x t_x
@@ -112,11 +107,9 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
       symm
       convert stalkFunctor_map_germ_apply _ _ _ s
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
-    refine' ⟨W, hWU, ⟨ℱ.map hWV.op s, _⟩, hxW⟩
+    refine ⟨W, hWU, ⟨ℱ.map hWV.op s, ?_⟩, hxW⟩
     convert h_eq using 1
     simp only [← comp_apply, T.naturality]
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.locally_surjective_iff_surjective_on_stalks TopCat.Presheaf.locally_surjective_iff_surjective_on_stalks
 
 end SurjectiveOnStalks
 

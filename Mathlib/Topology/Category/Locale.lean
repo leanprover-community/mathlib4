@@ -2,13 +2,8 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.category.Locale
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.FrmCat
+import Mathlib.Order.Category.Frm
 
 /-!
 # The category of locales
@@ -21,30 +16,26 @@ universe u
 
 open CategoryTheory Opposite Order TopologicalSpace
 
-set_option linter.uppercaseLean3 false
 
 /-- The category of locales. -/
 def Locale :=
-  FrmCatᵒᵖ deriving LargeCategory
-#align Locale Locale
+  Frmᵒᵖ deriving LargeCategory
 
 namespace Locale
 
-instance : CoeSort Locale (Type _) :=
+instance : CoeSort Locale Type* :=
   ⟨fun X => X.unop⟩
 
 instance (X : Locale) : Frame X :=
   X.unop.str
 
 /-- Construct a bundled `Locale` from a `Frame`. -/
-def of (α : Type _) [Frame α] : Locale :=
-  op <| FrmCat.of α
-#align Locale.of Locale.of
+def of (α : Type*) [Frame α] : Locale :=
+  op <| Frm.of α
 
 @[simp]
-theorem coe_of (α : Type _) [Frame α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α :=
   rfl
-#align Locale.coe_of Locale.coe_of
 
 instance : Inhabited Locale :=
   ⟨of PUnit⟩
@@ -55,12 +46,10 @@ end Locale
 -/
 @[simps!]
 def topToLocale : TopCat ⥤ Locale :=
-  topCatOpToFrameCat.rightOp
-#align Top_to_Locale topToLocale
+  topCatOpToFrm.rightOp
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
-instance CompHausToLocale.faithful : Faithful (compHausToTop ⋙ topToLocale.{u}) :=
+instance CompHausToLocale.faithful : (compHausToTop ⋙ topToLocale.{u}).Faithful :=
   ⟨fun h => by
     dsimp at h
     exact Opens.comap_injective (Quiver.Hom.op_inj h)⟩
-#align CompHaus_to_Locale.faithful CompHausToLocale.faithful

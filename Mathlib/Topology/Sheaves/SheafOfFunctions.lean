@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.sheaf_of_functions
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.PresheafOfFunctions
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
@@ -51,7 +46,7 @@ In fact, the proof is identical when we do this for dependent functions to a typ
 so we do the more general case.
 -/
 theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
-  isSheaf_of_isSheafUniqueGluing_types _ fun ι U sf hsf => by
+  isSheaf_of_isSheafUniqueGluing_types.{u} _ fun ι U sf hsf => by
   -- We use the sheaf condition in terms of unique gluing
   -- U is a family of open sets, indexed by `ι` and `sf` is a compatible family of sections.
   -- In the informal comments below, I'll just write `U` to represent the union.
@@ -61,7 +56,7 @@ theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
     choose index index_spec using fun x : ↑(iSup U) => Opens.mem_iSup.mp x.2
     -- Using this data, we can glue our functions together to a single section
     let s : ∀ x : ↑(iSup U), T x := fun x => sf (index x) ⟨x.1, index_spec x⟩
-    refine' ⟨s, _, _⟩
+    refine ⟨s, ?_, ?_⟩
     · intro i
       funext x
       -- Now we need to verify that this lifted function restricts correctly to each set `U i`.
@@ -77,8 +72,6 @@ theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
       -- for each `x ∈ ↑(iSup U)`.
       funext x
       exact congr_fun (ht (index x)) ⟨x.1, index_spec x⟩
-set_option linter.uppercaseLean3 false
-#align Top.presheaf.to_Types_is_sheaf TopCat.Presheaf.toTypes_isSheaf
 
 -- We verify that the non-dependent version is an immediate consequence:
 /-- The presheaf of not-necessarily-continuous functions to
@@ -86,7 +79,6 @@ a target type `T` satsifies the sheaf condition.
 -/
 theorem toType_isSheaf (T : Type u) : (presheafToType X T).IsSheaf :=
   toTypes_isSheaf X fun _ => T
-#align Top.presheaf.to_Type_is_sheaf TopCat.Presheaf.toType_isSheaf
 
 end TopCat.Presheaf
 
@@ -97,14 +89,10 @@ namespace TopCat
 -/
 def sheafToTypes (T : X → Type u) : Sheaf (Type u) X :=
   ⟨presheafToTypes X T, Presheaf.toTypes_isSheaf _ _⟩
-set_option linter.uppercaseLean3 false
-#align Top.sheaf_to_Types TopCat.sheafToTypes
 
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in a type `T`.
 -/
 def sheafToType (T : Type u) : Sheaf (Type u) X :=
   ⟨presheafToType X T, Presheaf.toType_isSheaf _ _⟩
-set_option linter.uppercaseLean3 false
-#align Top.sheafToType TopCat.sheafToType
 
 end TopCat

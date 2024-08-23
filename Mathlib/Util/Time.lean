@@ -3,6 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Lean
 
 /-!
@@ -14,7 +15,7 @@ Time the elaboration of a command, and print the result (in milliseconds).
 section
 open Lean Elab Command
 
-syntax (name := timeCmd)  "#time " command : command
+syntax (name := timeCmd) "#time " command : command
 
 /--
 Time the elaboration of a command, and print the result (in milliseconds).
