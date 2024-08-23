@@ -27,9 +27,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
 
-lemma functor_comp_op {E : Type*} [Category E] {F : C ⥤ D} {G : D ⥤ E} :
-    F.op ⋙ G.op = (F ⋙ G).op := by rfl
-
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
 @[simps! unit_app counit_app]
 def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
