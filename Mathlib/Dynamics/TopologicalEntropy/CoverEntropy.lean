@@ -204,7 +204,7 @@ lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X] {T : X → X} 
   rw [one_mul n] at t_dyncover
   exact ⟨t, t_dyncover.of_entourage_subset V_U⟩
 
-/-! ### Minimal cardinal of dynamical covers -/
+/-! ### Minimal cardinality of dynamical covers -/
 
 /-- The smallest cardinal of a `(U, n)`-dynamical cover of `F`. Takes values in `ℕ∞`, and is
   infinite if and only if `F` admits no finite dynamical cover.-/
