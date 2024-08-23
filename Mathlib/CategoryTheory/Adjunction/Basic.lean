@@ -103,7 +103,7 @@ noncomputable def Adjunction.ofIsRightAdjoint (right : C ⥤ D) [right.IsRightAd
 
 namespace Adjunction
 
-attribute [simp] homEquiv_unit homEquiv_counit
+attribute [simp 1100] homEquiv_unit homEquiv_counit
 
 section
 

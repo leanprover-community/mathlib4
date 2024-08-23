@@ -28,10 +28,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 namespace CategoryTheory.Adjunction
 
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
--- Porting note: in mathlib3 we generated all the default `simps` lemmas.
--- However the `simpNF` linter correctly flags some of these as unsuitable simp lemmas.
--- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
--- See also the porting note on opAdjointOpOfAdjoint
 @[simps! unit_app counit_app]
 def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
   Adjunction.mkOfHomEquiv {
@@ -69,10 +65,6 @@ def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ)
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps! unit_app counit_app]
--- Porting note: in mathlib3 we generated all the default `simps` lemmas.
--- However the `simpNF` linter correctly flags some of these as unsuitable simp lemmas.
--- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
--- See also the porting note on adjointOfOpAdjointOp
 def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun X Y =>
