@@ -61,6 +61,7 @@ def to_appExpr (e : Expr) : MetaM Expr := do
   -- assign bicategory metavariable
   let CAT := B[0]!
   logInfo m!"cat: {CAT}"
+  logInfo m!"catlvl: {← Meta.getDecLevel B_pre}"
   let u ← Meta.mkFreshLevelMVar
   let v ← Meta.mkFreshLevelMVar
   CAT.assign q(Cat.{v, u})
@@ -70,12 +71,16 @@ def to_appExpr (e : Expr) : MetaM Expr := do
   let i := args2.findIdx? fun x => !x.hasExprMVar
   let inst := (← Meta.getMVars (args2.get! (i.get! + 1)))[0]!
   inst.assign (← synthInstanceQ q(Bicategory.{max v u, max v u} Cat.{v, u}))
-  logInfo m!"mvars: {← Meta.getMVars (args2.get! (i.get! + 1))}"
-  logInfo m!"inst: {inst}"
+  -- logInfo m!"mvars: {← Meta.getMVars (args2.get! (i.get! + 1))}"
+  -- logInfo m!"inst: {inst}"
 
   -- assign metavariables again
   let args2 := ← args.mapM instantiateMVars
   logInfo m!"args2_instatiated: {args2}"
+  let args3 := args2.map fun e => if e.hasExprMVar then none else (pure e)
+  logInfo m!"args3: {args3}"
+  let applied2 ← mkAppOptM' e args3
+  logInfo m!"applied2: {applied2}"
   let applied ← instantiateMVars conclusion
   -- create the specialized term
   -- let applied := (mkAppN E args2)
