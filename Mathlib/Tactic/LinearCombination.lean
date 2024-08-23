@@ -36,7 +36,11 @@ open Elab Meta Term
 
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
 
+theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
+theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
 theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
+theorem pf_sub_c [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
+theorem c_sub_pf [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
 theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
 theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
 theorem mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
@@ -66,15 +70,14 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
   | `($e₁ + $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
+    | .proof p₁, .const c₂ => .proof <$> ``(pf_add_c $p₁ $c₂)
+    | .const c₁, .proof p₂ => .proof <$> ``(c_add_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ $p₂)
-    | _, _ => throwError "'linear_combination' is agnostic to the addition of constants"
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂) -- will behave badly in semirings
-    | .proof _, .const _ =>
-      throwError "'linear_combination' is agnostic to the subtraction of constants"
-    | .const _, .proof _ =>
-      throwError "'linear_combination' is agnostic to the addition of constants"
+    | .proof p₁, .const c₂ => .proof <$> ``(pf_sub_c $p₁ $c₂) -- will behave badly in semirings
+    | .const c₁, .proof p₂ => .proof <$> ``(c_sub_pf $p₂ $c₁) -- will behave badly in semirings
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ (Eq.symm $p₂))
   | `(-$e) => do
     match ← expandLinearCombo ty e with
@@ -176,7 +179,7 @@ syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
 Note: The left and right sides of all the equalities should have the same
   type, and the coefficients should also have this type.  There must be
   an instance of `IsRightCancelAdd` for this type, and also instances of `Mul`,
-  `Sub`, etc. if these operations are used.
+  `Neg`, etc. if these operations are used.
 
 * The input `e` in `linear_combination e` is a linear combination of proofs of equalities,
   given as a sum/difference of coefficients multiplied by expressions.

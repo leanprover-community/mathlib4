@@ -258,10 +258,6 @@ example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := b
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy
 
-/-- error: 'linear_combination' is agnostic to the addition of constants -/
-#guard_msgs in
-example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
-  linear_combination h1 + 3
 /-- error: To run 'linear_combination' without hypotheses, call it without input -/
 #guard_msgs in
 example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
