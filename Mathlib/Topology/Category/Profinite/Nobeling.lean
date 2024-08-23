@@ -414,7 +414,7 @@ theorem evalFacProps {l : Products I} (J K : I → Prop)
     ext; simp [Homeomorph.setCongr, Products.eval_eq]
   rw [ProjRestricts, ← Function.comp.assoc, this, ← evalFacProp (π C K) J h]
 
-theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
+theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
     (h : l.isGood (π C J)) : ∀ a, a ∈ l.val → J a := by
   intro i hi
   by_contra h'
