@@ -74,7 +74,7 @@ end Ring
 section Field
 
 variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
-  [TopologicalRing R] [TopologicalAddGroup V] [Module R V] [SeparatingDual R V]
+  [TopologicalRing R] [Module R V]
 
 -- TODO (@alreadydone): this could generalize to CommRing R if we were to add a section
 theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
@@ -83,6 +83,8 @@ theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
   congrm ∀ v, ?_
   rw [not_imp_comm, LinearMap.ext_iff]
   push_neg; rfl
+
+variable [SeparatingDual R V]
 
 open Function in
 /-- Given a finite-dimensional subspace `W` of a space `V` with separating dual, any
@@ -110,6 +112,8 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
   rcases ne_or_eq (v x) 0 with vx|vx
   · exact ⟨(v x)⁻¹ • v, inv_mul_cancel vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
+
+variable [TopologicalAddGroup V]
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there

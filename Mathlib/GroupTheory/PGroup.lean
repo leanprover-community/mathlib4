@@ -176,14 +176,9 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     rw [Nat.card_eq_fintype_card] at hk
-    have : k = 0 :=
-      Nat.le_zero.1
-        (Nat.le_of_lt_succ
-          (lt_of_not_ge
-            (mt (pow_dvd_pow p)
-              (by
-                rwa [pow_one, ← hk, ← Nat.modEq_zero_iff_dvd, ← ZMod.eq_iff_modEq_nat, ← key,
-                  Nat.cast_zero]))))
+    have : k = 0 := by
+      contrapose! hb
+      simp [-Quotient.eq'', key, hk, hb]
     exact
       ⟨⟨b, mem_fixedPoints_iff_card_orbit_eq_one.2 <| by rw [hk, this, pow_zero]⟩,
         Finset.mem_univ _, ne_of_eq_of_ne Nat.cast_one one_ne_zero, rfl⟩
