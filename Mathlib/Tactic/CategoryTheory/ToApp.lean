@@ -71,9 +71,9 @@ def to_appExpr (e : Expr) : MetaM Expr := do
     | throwError "TODO"
   inst.mvarId!.assign (← synthInstanceQ q(Bicategory.{max u v, max u v} Cat.{u, v}))
   logInfo m!"args: {args}"
-  let applied2 ← mkAppOptM' e (args.map some)
-  logInfo m!"applied2: {applied2}"
-  let applied ← mkLambdaFVars ((← getMVars conclusion).map (Expr.mvar)) conclusion
+  let applied ← mkAppOptM' e (args.map some)
+  logInfo m!"applied: {applied}"
+  let applied ← mkLambdaFVars ((← getMVars applied).map (Expr.mvar)) applied
   logInfo m!"APP: {applied}"
   return applied
 
