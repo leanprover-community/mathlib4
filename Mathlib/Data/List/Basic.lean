@@ -554,6 +554,7 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   cases l <;> [cases h; rfl]
 
+@[deprecated (since := "2024-08-22")]
 theorem get_cons {l : List α} {a : α} {n} (hl) :
     (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
       l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
@@ -1380,6 +1381,7 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
       · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length_singleton]; omega
 
+@[deprecated getElem_succ_scanl (since := "2024-08-22")]
 theorem get_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
     (scanl f b l).get ⟨i + 1, h⟩ =
       f ((scanl f b l).get ⟨i, Nat.lt_of_succ_lt h⟩)
@@ -1930,8 +1932,7 @@ theorem dropWhile_get_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
       simp_all only [dropWhile_cons_of_pos]
     · simp [hp]
 
-@[deprecated (since := "2024-08-19")] alias nthLe_tail := get_tail
-@[deprecated (since := "2024-08-19")] alias nthLe_cons := get_cons
+@[deprecated (since := "2024-08-19")] alias nthLe_cons := getElem_cons
 @[deprecated (since := "2024-08-19")] alias dropWhile_nthLe_zero_not := dropWhile_get_zero_not
 
 variable {p} {l : List α}
