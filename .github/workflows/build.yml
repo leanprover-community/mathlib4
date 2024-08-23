@@ -183,7 +183,6 @@ jobs:
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: compare oleans
-        id: oleanData
         run: |
           ./scripts/olean_comparison.sh
         env:
