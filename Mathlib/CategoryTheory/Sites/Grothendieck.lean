@@ -111,10 +111,6 @@ theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
   Iff.rfl
 -/
 
-@[simp]
-theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
-  Iff.rfl
-
 /-- Also known as the maximality axiom. -/
 @[simp]
 theorem top_mem (X : C) : ⊤ ∈ J X :=
