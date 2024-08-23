@@ -3,9 +3,10 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Logic.Nonempty
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Nonempty
 import Batteries.Tactic.Init
 
 /-!
