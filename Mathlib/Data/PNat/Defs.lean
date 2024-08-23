@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Data.Int.Order.Basic
 
 /-!
 # The positive natural numbers

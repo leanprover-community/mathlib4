@@ -97,7 +97,7 @@ lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
       exact ⟨_, hy z, map_mul _ _ _⟩
     · intro H
       obtain ⟨y, _, e⟩ := H 1
-      rw [_root_.map_one, mul_one] at e
+      rw [map_one, mul_one] at e
       subst e
       simp only [← _root_.map_mul, (NoZeroSMulDivisors.algebraMap_injective S L).eq_iff,
         exists_eq_right] at H

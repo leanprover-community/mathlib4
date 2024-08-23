@@ -3,6 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Lean
 
 /-! # `simp_intro` tactic -/
@@ -73,3 +74,5 @@ elab "simp_intro" cfg:(config)? disch:(discharger)?
     g.withContext do
       let g? ← simpIntroCore g ctx (simprocs := simprocs) discharge? more.isSome ids.toList
       replaceMainGoal <| if let some g := g? then [g] else []
+
+end Mathlib.Tactic

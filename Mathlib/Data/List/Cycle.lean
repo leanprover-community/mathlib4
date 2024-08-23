@@ -175,7 +175,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take, getElem?_cons_zero,
       Option.some_inj] at hk'
     · exact hy (Eq.symm hk')
-    rw [length_cons, Nat.pred_succ]
+    rw [length_cons]
     exact length_pos_of_mem (by assumption)
   suffices k + 1 = l.length by simp [this] at hk
   cases' l with hd tl
@@ -188,7 +188,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take, getElem?_cons_succ,
       getElem?_eq_getElem, Option.some_inj] at hk'
     · rw [get_eq_getElem, hk']
-      simp only [getLast_eq_get, length_cons, Nat.succ_eq_add_one, Nat.succ_sub_succ_eq_sub,
+      simp only [getLast_eq_getElem, length_cons, Nat.succ_eq_add_one, Nat.succ_sub_succ_eq_sub,
         Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
     simpa using hk
 
@@ -262,7 +262,7 @@ theorem next_getElem : ∀ (l : List α) (_h : Nodup l) (i : ℕ) (hi : i < l.le
       · simp [hi', get]
       · rw [getElem_cons_succ]; exact get_mem _ _ _
       · exact hx'
-      · simp [getLast_eq_get]
+      · simp [getLast_eq_getElem]
       · exact hn.of_cons
     · rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
       · simp only [getElem_cons_succ]
@@ -273,7 +273,7 @@ theorem next_getElem : ∀ (l : List α) (_h : Nodup l) (i : ℕ) (hi : i < l.le
             Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
         · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), hi']
         · exact hn.of_cons
-      · rw [getLast_eq_get]
+      · rw [getLast_eq_getElem]
         intro h
         have := nodup_iff_injective_get.1 hn h
         simp at this; simp [this] at hi'
@@ -455,7 +455,7 @@ instance : Inhabited (Cycle α) :=
 theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
   Quotient.inductionOn' s fun l => by
-    refine List.recOn l ?_ ?_ <;> simp
+    refine List.recOn l ?_ ?_ <;> simp only [mk''_eq_coe, coe_nil]
     assumption'
 
 /-- For `x : α`, `s : Cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/
@@ -799,7 +799,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
       · dsimp only
         cases' hab with n hn
         induction' n with d hd generalizing a b l m
-        · simp only [Nat.zero_eq, rotate_zero, cons.injEq] at hn
+        · simp only [rotate_zero, cons.injEq] at hn
           rw [hn.1, hn.2]
         · cases' l with c s
           · simp only [rotate_cons_succ, nil_append, rotate_singleton, cons.injEq] at hn

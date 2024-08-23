@@ -43,10 +43,9 @@ This result proves Weierstrass' theorem that polynomials are dense in `C([0,1], 
 although we defer an abstract statement of this until later.
 -/
 
-
 noncomputable section
 
-open scoped Classical BoundedContinuousFunction unitInterval
+open scoped BoundedContinuousFunction unitInterval
 
 /-- The Bernstein polynomials, as continuous functions on `[0,1]`.
 -/

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Yury G. Kudryashov
+Authors: Andrew Yang, Yury Kudryashov
 -/
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.ContinuousOn
@@ -358,7 +358,7 @@ lemma specializingMap_iff_isClosed_image_closure_singleton (hf : Continuous f) :
   exact isClosed_closure
 
 lemma IsClosedMap.specializingMap (hf : IsClosedMap f) : SpecializingMap f :=
-  specializingMap_iff_stableUnderSpecialization_image_singleton.mpr $
+  specializingMap_iff_stableUnderSpecialization_image_singleton.mpr <|
     fun _ ↦ (hf _ isClosed_closure).stableUnderSpecialization
 
 lemma Inducing.specializingMap (hf : Inducing f) (h : StableUnderSpecialization (range f)) :

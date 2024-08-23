@@ -9,7 +9,6 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
-import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Coe
@@ -39,7 +38,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
     `eb : β₁ ≃ β₂` using `Prod.map`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Data/Equiv/TransferInstance.lean` does it for many algebraic type classes like
+  E.g., `Logic/Equiv/TransferInstance.lean` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
 ## Tags
@@ -905,6 +904,7 @@ def sigmaSumDistrib (α β : ι → Type*) :
 
 /-- The product of an indexed sum of types (formally, a `Sigma`-type `Σ i, α i`) by a type `β` is
 equivalent to the sum of products `Σ i, (α i × β)`. -/
+@[simps apply symm_apply]
 def sigmaProdDistrib (α : ι → Type*) (β : Type*) : (Σ i, α i) × β ≃ Σ i, α i × β :=
   ⟨fun p => ⟨p.1.1, (p.1.2, p.2)⟩, fun p => (⟨p.1, p.2.1⟩, p.2.2), fun p => by
     rcases p with ⟨⟨_, _⟩, _⟩
@@ -1341,7 +1341,7 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} 
     Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun a b hab =>
       Subtype.ext_val (Quotient.sound ((h _ _).1 hab))
   left_inv := by exact fun ⟨a, ha⟩ => Quotient.inductionOn a (fun b hb => rfl) ha
-  right_inv a := Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
+  right_inv a := by exact Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
 
 @[simp]
 theorem subtypeQuotientEquivQuotientSubtype_mk (p₁ : α → Prop)
@@ -1555,7 +1555,7 @@ variable (P : α → Sort w) (e : α ≃ β)
 
 /-- Transport dependent functions through an equivalence of the base space.
 -/
-@[simps]
+@[simps apply, simps (config := .lemmasOnly) symm_apply]
 def piCongrLeft' (P : α → Sort*) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P (e.symm b) where
   toFun f x := f (e.symm x)
   invFun f x := (e.symm_apply_apply x).ndrec (f (e x))
@@ -1579,13 +1579,11 @@ theorem piCongrLeft'_symm (P : Sort*) (e : α ≃ β) :
 LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. This lemma is a way
 around it in the case where `a` is of the form `e.symm b`, so we can use `g b` instead of
 `g (e (e.symm b))`. -/
+@[simp]
 lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ b, P (e.symm b)) (b : β) :
     (piCongrLeft' P e).symm g (e.symm b) = g b := by
-  change Eq.ndrec _ _ = _
-  generalize_proofs hZa
-  revert hZa
-  rw [e.apply_symm_apply b]
-  simp
+  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, rec_heq_iff_heq]
+  exact congr_arg_heq _ (e.apply_symm_apply _)
 
 end
 
