@@ -206,7 +206,7 @@ lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X] {T : X → X} 
 
 /-! ### Minimal cardinality of dynamical covers -/
 
-/-- The smallest cardinal of a `(U, n)`-dynamical cover of `F`. Takes values in `ℕ∞`, and is
+/-- The smallest cardinality of a `(U, n)`-dynamical cover of `F`. Takes values in `ℕ∞`, and is
   infinite if and only if `F` admits no finite dynamical cover.-/
 noncomputable def coverMincard (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) : ℕ∞ :=
   ⨅ (s : Finset X) (_ : IsDynCoverOf T F U n s), (s.card : ℕ∞)
