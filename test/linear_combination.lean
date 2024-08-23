@@ -124,6 +124,17 @@ example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
 
 example (x y : ℤ) (h : x = 0) : y ^ 2 * x = 0 := by linear_combination y ^ 2 * h
 
+/-! ### Tests in semirings -/
+
+example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
+  linear_combination h1
+
+example {a b : ℕ} (h1 : a = b + 4) (h2 : b = 2) : a = 6 := by
+  linear_combination h1 + h2
+
+example {a b : ℕ} (h1 : 3 * a = b + 5) (h2 : 2 * a = b + 3) : a = 2 := by
+  linear_combination h1 - h2
+
 /-! ### Cases that explicitly use a config -/
 
 example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y + 1 = 11 + 1 := by
@@ -211,6 +222,7 @@ but is expected to have type
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by
   linear_combination h1 + (0 : ℝ) * h2
 
+<<<<<<< HEAD
 -- This fails because the linear_combination tactic requires the equations
 --   and coefficients to use a type that fulfills the add_group condition,
 --   and ℕ does not.
@@ -218,6 +230,8 @@ example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
   fail_if_success linear_combination h1
   linear_combination2 h1
 
+=======
+>>>>>>> df19f9a4c1 (semiring)
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy
