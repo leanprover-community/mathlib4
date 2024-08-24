@@ -97,6 +97,11 @@ protected theorem div_mul_cancel (h0 : a ≠ 0) (hI : a ≠ ∞) : b / a * a = b
 protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) = b := by
   rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
 
+protected lemma eq_one_of_mul_eq
+    {a b : ℝ≥0∞} (h : a * b = a) (ha : a ≠ 0) (h'a : a ≠ ⊤) : b = 1 := by
+  have : a * b * a⁻¹ = a * a⁻¹ := by rw [h]
+  rwa [mul_assoc, mul_comm b, ← mul_assoc, ENNReal.mul_inv_cancel ha h'a, one_mul] at this
+
 -- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
   simp only [div_eq_mul_inv, mul_right_comm, ← mul_assoc]

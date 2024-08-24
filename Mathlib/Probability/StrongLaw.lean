@@ -597,58 +597,6 @@ theorem strong_law_aux7 :
 
 end StrongLawNonneg
 
-lemma _root_.ENNReal.eq_one_of_mul_eq
-    {a b : ℝ≥0∞} (h : a * b = a) (ha : a ≠ 0) (h'a : a ≠ ⊤) : b = 1 := by
-  have : a * b * a⁻¹ = a * a⁻¹ := by rw [h]
-  rwa [mul_assoc, mul_comm b, ← mul_assoc, ENNReal.mul_inv_cancel ha h'a, one_mul] at this
-
-#check meas_ge_le_mul_pow_eLpNorm
-
-/-- If a nonzero function belongs to `ℒ^p` and is independent of another function, then
-the space is a probability space. -/
-lemma _root_.MeasureTheory.Memℒp.isProbabilityMeasure_of_indepFun
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-    {F : Type*} [MeasurableSpace F]
-    (f : Ω → E) (g : Ω → F) {p : ℝ≥0∞} (hp : p ≠ 0) (hp' : p ≠ ∞)
-    (hℒp : Memℒp f p μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
-    IsProbabilityMeasure μ := by
-  obtain ⟨c, c_pos, hc⟩ : ∃ c, 0 < (c : ℝ≥0) ∧ 0 < μ {ω | c ≤ ‖f ω‖₊} := by
-    contrapose! h'f
-    have A (c : ℝ≥0) (hc : 0 < c) : ∀ᵐ ω ∂μ, ‖f ω‖₊ < c := by simpa [ae_iff] using h'f c hc
-    obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
-      ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ≥0)
-    filter_upwards [ae_all_iff.2 (fun n ↦ A (u n) (u_pos n))] with ω hω
-    simpa using ge_of_tendsto' u_lim (fun i ↦ (hω i).le)
-  have h'c : μ {ω | c ≤ ‖f ω‖₊} < ∞ := by
-    apply hℒp.meas_ge_lt_top
-
-
-
-
-
-  have Z := hindep.measure_inter_preimage_eq_mul {x | c < ‖x‖} Set.univ
-    sorry (MeasurableSet.univ)
-  simp at Z
-  exact ⟨ENNReal.eq_one_of_mul_eq Z.symm hc.ne' h'c.ne⟩
-
-#exit
-
-/-- If a nonzero function belongs to `ℒ^p` and is independent of another function, then
-the space is a probability space. -/
-lemma _root_.MeasureTheory.Integrable.isProbabilityMeasure_of_indepFun
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-    {F : Type*} [MeasurableSpace F]
-    (f : Ω → E) (g : Ω → F)
-    (hf : Integrable f μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
-    IsProbabilityMeasure μ :=
-  Memℒp.isProbabilityMeasure_of_indepFun f g le_rfl ENNReal.one_ne_top
-    (memℒp_one_iff_integrable.mpr hf) h'f hindep
-
-
-
-
 /-- **Strong law of large numbers**, almost sure version: if `X n` is a sequence of independent
 identically distributed integrable real-valued random variables, then `∑ i ∈ range n, X i / n`
 converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
@@ -898,8 +846,8 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
       simp [hω]
     simp [A]
   -- Then use ae convergence and uniform integrability
-  have : IsProbabilityMeasure (ℙ : Measure Ω) :=
-    Memℒp.isProbabilityMeasure_of_indepFun (X 0) (X 1) hp hp' hℒp h (hindep zero_ne_one)
+  have : IsProbabilityMeasure (ℙ : Measure Ω) := Memℒp.isProbabilityMeasure_of_indepFun
+    (X 0) (X 1) (zero_lt_one.trans_le hp).ne' hp' hℒp h (hindep zero_ne_one)
   have hmeas : ∀ i, AEStronglyMeasurable (X i) ℙ := fun i =>
     (hident i).aestronglyMeasurable_iff.2 hℒp.1
   have hint : Integrable (X 0) ℙ := hℒp.integrable hp
