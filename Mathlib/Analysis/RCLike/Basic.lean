@@ -668,7 +668,7 @@ end RCLike
 
 section Instances
 
-noncomputable instance Real.RCLike : RCLike ℝ where
+noncomputable instance Real.instRCLike : RCLike ℝ where
   re := AddMonoidHom.id ℝ
   im := 0
   I := 0
