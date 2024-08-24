@@ -79,10 +79,25 @@ noncomputable def toFunApp (X : Cᵒᵖ) : K.obj X ⟶ (internalHom F G).obj X :
   Functor.end_.lift _ (fun Y ↦ MonoidalClosed.curry
     ((_ ◁ K.map Y.unop.hom.op) ≫ φ.app (Opposite.op Y.unop.left))) sorry
 
+@[reassoc (attr := simp)]
+lemma toFunApp_app (X : Cᵒᵖ) {Y : C} (f : Y ⟶ X.unop) :
+    toFunApp φ X ≫ Functor.enrichedHom.app _ _ (Opposite.op (Over.mk f)) =
+      MonoidalClosed.curry
+        ((_ ◁ K.map f.op) ≫ φ.app (Opposite.op Y)) := by
+  simp [toFunApp, Functor.enrichedHom.app]
+
 @[simps]
 noncomputable def toFun : K ⟶ internalHom F G where
   app := toFunApp φ
-  naturality := sorry
+  naturality := fun X Y f ↦ Functor.enrichedHom.hom_ext (fun ⟨Z⟩ ↦ by
+    obtain ⟨Z, g, rfl⟩ := Over.mk_surjective Z
+    dsimp
+    rw [assoc, assoc, toFunApp_app]
+    dsimp
+    erw [internalHom.map_app]
+    rw [toFunApp_app, ← MonoidalClosed.curry_natural_left, op_comp, Functor.map_comp,
+      MonoidalCategory.whiskerLeft_comp, assoc]
+    dsimp)
 
 end
 
@@ -94,9 +109,18 @@ noncomputable def invFunApp (X : Cᵒᵖ) : F.obj X ⊗ K.obj X ⟶ G.obj X :=
   MonoidalClosed.uncurry
     (ψ.app X ≫ Functor.enrichedHom.app _ _ (Opposite.op (Over.mk (𝟙 _))))
 
+@[simp, reassoc]
+lemma curry_invFunApp (X : Cᵒᵖ) :
+    MonoidalClosed.curry (invFunApp ψ X) =
+      (ψ.app X ≫ Functor.enrichedHom.app _ _ (Opposite.op (Over.mk (𝟙 _)))) := by
+  simp [invFunApp]
+
 noncomputable def invFun : F ⊗ K ⟶ G where
   app := invFunApp ψ
-  naturality := sorry
+  naturality := fun X Y f ↦ by
+    dsimp [invFunApp]
+    apply MonoidalClosed.curry_injective
+    sorry
 
 end
 
