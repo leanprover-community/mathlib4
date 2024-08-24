@@ -346,6 +346,7 @@
   "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Option.NAry": ["Batteries.Tactic.Init"],
+  "Mathlib.Data.Nat.GCD.Defs": ["Mathlib.Order.Basic"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
   "Mathlib.Data.List.TFAE": ["Batteries.Tactic.Classical"],
