@@ -43,7 +43,7 @@ open MvPolynomial Finset Function
 
 /-- Any injective polynomial map over an algebraic extension of a finite field is surjective. -/
 theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] [CommRing R]
-    [Finite ι] [Algebra K R] (alg : Algebra.IsAlgebraic K R) (ps : ι → MvPolynomial ι R)
+    [Finite ι] [Algebra K R] [alg : Algebra.IsAlgebraic K R] (ps : ι → MvPolynomial ι R)
     (S : Set (ι → R))
     (hm : S.MapsTo (fun v i => eval v (ps i)) S)
     (hinj : S.InjOn (fun v i => eval v (ps i))) :
@@ -175,9 +175,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
   rw [← (ACF_isComplete (Or.inl hp)).realize_sentence_iff _
     (AlgebraicClosure (ZMod p)), realize_genericPolyMapSurjOnOfInjOn]
   rintro v ⟨f, _⟩
-  exact ax_grothendieck_of_locally_finite (K := ZMod p) (ι := ι)
-    (IsAlgClosure.algebraic (R := ZMod p)
-    (K := AlgebraicClosure (ZMod p))) f _
+  exact ax_grothendieck_of_locally_finite (K := ZMod p) (ι := ι) f _
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
     [Fintype ι] {p : ℕ} (hp : p.Prime ∨ p = 0)
