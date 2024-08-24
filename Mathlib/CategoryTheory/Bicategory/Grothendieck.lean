@@ -155,19 +155,16 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   map_id a := by
     ext1
     · dsimp
-    simp [StrongPseudoNatTrans.naturality_id_hom, ← Functor.map_comp_assoc]
-  -- TODO: golf this, then its all done!
+    -- todo: app version
+    simp [StrongPseudoNatTrans.naturality_id_hom_app, ← Functor.map_comp_assoc]
   map_comp {a b c} f g := by
     ext
     · dsimp
     dsimp
-    rw [StrongPseudoNatTrans.naturality_comp_hom]
-    simp only [map_comp, toOplax_toPrelaxFunctor, Strict.associator_eqToIso, eqToIso_refl,
-      Iso.refl_hom, Iso.refl_inv, id_comp, Cat.comp_app, Cat.comp_obj, Cat.whiskerRight_app,
-      Cat.whiskerLeft_app, Cat.id_app, assoc, comp_id]
-    slice_lhs 2 4 =>
-      repeat rw [← Functor.map_comp]
-      simp only [Iso.inv_hom_id_app, Cat.comp_obj, comp_id, assoc]
+    rw [StrongPseudoNatTrans.naturality_comp_hom_app]
+    simp only [map_comp, toOplax_toPrelaxFunctor, Cat.comp_obj, Strict.associator_eqToIso,
+      eqToIso_refl, Iso.refl_hom, Cat.id_app, Iso.refl_inv, id_comp, assoc, comp_id]
+    slice_lhs 2 4 => simp only [← Functor.map_comp, Iso.inv_hom_id_app, Cat.comp_obj, comp_id]
     slice_lhs 2 3 => rw [← Functor.comp_map, NatTrans.naturality]
     simp
 
@@ -175,7 +172,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
 
 theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
 
-/-- The underlying homomorphism of `mapIdIso`. This is done so that `mapIdIso` compiles. -/
+/-- The underlying homomorphism of `m4apIdIso`. This is done so that `mapIdIso` compiles. -/
 abbrev mapIdIso_hom : map (𝟙 F) ⟶ 𝟭 (∫ F) where
   app a := eqToHom (by aesop_cat)
 

@@ -202,6 +202,7 @@ instance Pseudofunctor.categoryStruct : CategoryStruct (Pseudofunctor B C) where
 variable {F G : Pseudofunctor B C}
 
 -- TODO: move after refactor
+@[reassoc, to_app]
 lemma StrongPseudoNatTrans.naturality_id_hom (α : F ⟶ G) (a : B) :
     (α.naturality (𝟙 a)).hom = (F.mapId a).hom ▷ α.app a ≫
       (λ_ (α.app a)).hom ≫ (ρ_ (α.app a)).inv ≫ α.app a ◁ (G.mapId a).inv := by
@@ -209,6 +210,7 @@ lemma StrongPseudoNatTrans.naturality_id_hom (α : F ⟶ G) (a : B) :
   simp
   sorry
 
+@[reassoc, to_app]
 lemma StrongPseudoNatTrans.naturality_naturality_hom (α : F ⟶ G) {a b : B}
     (f g : a ⟶ b) (η : f ≅ g):
       (α.naturality g).hom =
@@ -216,6 +218,7 @@ lemma StrongPseudoNatTrans.naturality_naturality_hom (α : F ⟶ G) {a b : B}
   simp [α.naturality_comp]
   sorry
 
+@[reassoc, to_app]
 lemma StrongPseudoNatTrans.naturality_comp_hom (α : F ⟶ G) {a b c : B}
     (f : a ⟶ b) (g : b ⟶ c) :
       (α.naturality (f ≫ g)).hom =
