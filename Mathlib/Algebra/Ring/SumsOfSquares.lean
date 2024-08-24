@@ -85,7 +85,7 @@ theorem IsSumSq.induction_alt [Mul R] [Add R] [Zero R]
   | sq_add a S hS hS_ih => apply sq_add (a * a) S hS _ hS_ih; use a
 
 /-- Helper lemma for `IsSumSq.mul`. -/
-theorem IsSumSq.mul_isSquare [NonUnitalCommSemiring R] {S x : R}
+private theorem IsSumSq.mul_isSquare [NonUnitalCommSemiring R] {S x : R}
     (hS : IsSumSq S) (hx : IsSquare x) : IsSumSq (S * x) := by
   induction' S, hS using IsSumSq.induction_alt
   case zero => simpa using zero
