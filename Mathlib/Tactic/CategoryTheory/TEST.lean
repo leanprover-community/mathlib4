@@ -22,7 +22,8 @@ lemma mapComp_assoc_right_hom (F : Pseudofunctor B C) {a b c d : B} (f : a ⟶ b
 
 example (F : Pseudofunctor B Cat.{v₂, u₂}) {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : True := by
   -- TODO: 1. why implicit args still? 2. why .toOplax?
-  -- let asdf := to_app_of% mapComp_assoc_right_hom
+  let asdf := to_app_of% mapComp_assoc_right_hom F f g h
+
   sorry
 
 #check mapComp_assoc_right_hom_app

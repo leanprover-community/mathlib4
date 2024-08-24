@@ -96,10 +96,7 @@ Given morphisms `f g : C ⟶ D` in the bicategory `Cat`, and an equation `η = �
 (possibly after a `∀` binder), produce the equation `∀ (X : C), f.app X = g.app X`, and simplify
 it using basic lemmas about `NatTrans.app`. -/
 def toAppExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do
-    logInfo m!"e: {e}"
-    logInfo m!"e type: {← inferType e}"
-    simpType catAppSimp (← mkAppM ``eq_app' #[e])) e
+  mapForallTelescope (fun e => do simpType catAppSimp (← mkAppM ``eq_app' #[e])) e
 
 /--
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms
@@ -135,6 +132,7 @@ initialize registerBuiltinAttribute {
       throwError "`to_app` can only be used as a global attribute"
     addRelatedDecl src "_app" ref stx? fun type value levels => do
       let levelMVars ← levels.mapM λ _ => mkFreshLevelMVar
+      let value ← mkExpectedTypeHint value type
       let value := value.instantiateLevelParams levels levelMVars
       let newValue ←toAppExpr (← to_appExpr value levelMVars)
       let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newValue
@@ -144,18 +142,12 @@ initialize registerBuiltinAttribute {
 
 open Term in
 /--
-`to_app_of% t`, where `t` is
-an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
-produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
-but with compositions fully right associated and identities removed.
+Given an equation `t` of the form `η = θ` between 2-morphisms `f ⟶ g` with `f g : C ⟶ D` in the
+bicategory `Cat` (possibly after a `∀` binder), `to_app_of% t` produces the equation
+`∀ (X : C), η.app X = θ.app X` (where `X` is an object in the domain of `f` and `g`), and simplifies
+it suitably using basic lemmas about `NatTrans.app`.
 -/
 elab "to_app_of% " t:term : term => do
-  let e ← elabTerm t none
-  let u := e.constLevels!
-  logInfo m!"e: {e}"
-  logInfo m!"u: {u}"
-  -- this might be hackier than I want later? (requires providing args explicitly..)
-  to_appExpr e []
-
+  toAppExpr (← elabTerm t none)
 
 end CategoryTheory
