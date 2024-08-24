@@ -105,7 +105,7 @@ instance : Category (Dial C) where
     ext <;> simp
 
 @[ext] theorem hom_ext {X Y : Dial C} {x y : X ⟶ Y} (hf : x.f = y.f) (hF : x.F = y.F) : x = y :=
-   Hom.ext x y hf hF
+   Hom.ext hf hF
 
 /--
 An isomorphism in `Dial C` can be induced by isomorphisms on the source and target,

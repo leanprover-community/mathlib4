@@ -14,7 +14,7 @@ and prove basic properties of this measure.
 -/
 
 open Set
-open scoped ENNReal Classical
+open scoped ENNReal
 
 variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
 
@@ -137,6 +137,7 @@ theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Se
 
 theorem count_injective_image' {f : β → α} (hf : Function.Injective f) {s : Set β}
     (s_mble : MeasurableSet s) (fs_mble : MeasurableSet (f '' s)) : count (f '' s) = count s := by
+  classical
   by_cases hs : s.Finite
   · lift s to Finset β using hs
     rw [← Finset.coe_image, count_apply_finset' _, count_apply_finset' s_mble,

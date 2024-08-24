@@ -99,6 +99,8 @@ theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 
 alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
+attribute [bound] sqrt_pos_of_pos
+
 end NNReal
 
 namespace Real
@@ -113,15 +115,6 @@ noncomputable def sqrt (x : ℝ) : ℝ :=
 @[inherit_doc]
 prefix:max "√" => Real.sqrt
 
-/- quotient.lift_on x
-  (λ f, mk ⟨sqrt_aux f, (sqrt_aux_converges f).fst⟩)
-  (λ f g e, begin
-    rcases sqrt_aux_converges f with ⟨hf, x, x0, xf, xs⟩,
-    rcases sqrt_aux_converges g with ⟨hg, y, y0, yg, ys⟩,
-    refine xs.trans (eq.trans _ ys.symm),
-    rw [← @mul_self_inj_of_nonneg ℝ _ x y x0 y0, xf, yg],
-    congr' 1, exact quotient.sound e
-  end)-/
 variable {x y : ℝ}
 
 @[simp, norm_cast]
@@ -197,12 +190,12 @@ theorem sqrt_lt_sqrt_iff (hx : 0 ≤ x) : √x < √y ↔ x < y :=
 theorem sqrt_lt_sqrt_iff_of_pos (hy : 0 < y) : √x < √y ↔ x < y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt, toNNReal_lt_toNNReal_iff hy]
 
-@[gcongr]
+@[gcongr, bound]
 theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
 
-@[gcongr]
+@[gcongr, bound]
 theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
   (sqrt_lt_sqrt_iff hx).2 h
 
@@ -265,7 +258,7 @@ alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
   obtain hy | hy := le_total y 0
-  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt $ sqrt_pos.2 hx).not_le
+  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt <| sqrt_pos.2 hx).not_le
       (hy.trans_lt hx).not_le
   · exact sqrt_le_sqrt_iff hy
 
@@ -431,7 +424,7 @@ open Finset
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ≥0) :
     ∑ i ∈ s, f i * g i ≤ sqrt (∑ i ∈ s, f i ^ 2) * sqrt (∑ i ∈ s, g i ^ 2) :=
-  (le_sqrt_iff_sq_le.2 $ sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul _ _
+  (le_sqrt_iff_sq_le.2 <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul _ _
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (f g : ι → ℝ≥0) :

@@ -50,8 +50,7 @@ non-Riemann filter (e.g., Henstock-Kurzweil and McShane).
 integral
 -/
 
-
-open scoped Classical Topology NNReal Filter Uniformity BoxIntegral
+open scoped Topology NNReal Filter Uniformity BoxIntegral
 
 open Set Finset Function Filter Metric BoxIntegral.IntegrationParams
 
@@ -101,6 +100,7 @@ theorem integralSum_inf_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[
     integralSum f vol (π.infPrepartition π') = integralSum f vol π :=
   integralSum_biUnion_partition f vol π _ fun _J hJ => h.restrict (Prepartition.le_of_mem _ hJ)
 
+open Classical in
 theorem integralSum_fiberwise {α} (g : Box ι → α) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
     (π : TaggedPrepartition I) :
     (∑ y ∈ π.boxes.image g, integralSum f vol (π.filter (g · = y))) = integralSum f vol π :=
@@ -159,6 +159,7 @@ predicate. -/
 def Integrable (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
   ∃ y, HasIntegral I l f vol y
 
+open Classical in
 /-- The integral of a function `f` over a box `I` along a filter `l` w.r.t. a volume `vol`.
 Returns zero on non-integrable functions. -/
 def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
@@ -260,8 +261,9 @@ theorem integrable_neg : Integrable I l (-f) vol ↔ Integrable I l f vol :=
   ⟨fun h => h.of_neg, fun h => h.neg⟩
 
 @[simp]
-theorem integral_neg : integral I l (-f) vol = -integral I l f vol :=
-  if h : Integrable I l f vol then h.hasIntegral.neg.integral_eq
+theorem integral_neg : integral I l (-f) vol = -integral I l f vol := by
+  classical
+  exact if h : Integrable I l f vol then h.hasIntegral.neg.integral_eq
   else by rw [integral, integral, dif_neg h, dif_neg (mt Integrable.of_neg h), neg_zero]
 
 theorem HasIntegral.sub (h : HasIntegral I l f vol y) (h' : HasIntegral I l g vol y') :
@@ -298,6 +300,7 @@ theorem integral_zero : integral I l (fun _ => (0 : E)) vol = 0 :=
 theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i ∈ s, f i x) vol (∑ i ∈ s, g i) := by
+  classical
   induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
   simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
   exact h.1.add (ihs h.2)
@@ -661,6 +664,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
   let t₁ (J : Box ι) : ℝⁿ := (π₁.infPrepartition π₂.toPrepartition).tag J
   let t₂ (J : Box ι) : ℝⁿ := (π₂.infPrepartition π₁.toPrepartition).tag J
   let B := (π₁.toPrepartition ⊓ π₂.toPrepartition).boxes
+  classical
   let B' := B.filter (fun J ↦ J.toSet ⊆ U)
   have hB' : B' ⊆ B := B.filter_subset (fun J ↦ J.toSet ⊆ U)
   have μJ_ne_top : ∀ J ∈ B, μ J ≠ ⊤ :=
@@ -777,6 +781,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   rcases hs.exists_pos_forall_sum_le (div_pos ε0' H0) with ⟨εs, hεs0, hεs⟩
   simp only [le_div_iff' H0, mul_sum] at hεs
   rcases exists_pos_mul_lt ε0' (B I) with ⟨ε', ε'0, hεI⟩
+  classical
   set δ : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) := fun c x => if x ∈ s then δ₁ c x (εs x) else (δ₂ c) x ε'
   refine ⟨δ, fun c => l.rCond_of_bRiemann_eq_false hl, ?_⟩
   simp only [Set.mem_iUnion, mem_inter_iff, mem_setOf_eq]

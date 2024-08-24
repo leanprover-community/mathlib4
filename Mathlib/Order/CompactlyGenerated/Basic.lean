@@ -317,7 +317,7 @@ class IsCompactlyGenerated (α : Type*) [CompleteLattice α] : Prop where
 
 section
 
-variable [CompleteLattice α] [IsCompactlyGenerated α] {a b : α} {s : Set α}
+variable [IsCompactlyGenerated α] {a b : α} {s : Set α}
 
 @[simp]
 theorem sSup_compact_le_eq (b) :
@@ -471,9 +471,9 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
   obtain rfl | H := eq_or_ne b k
   · left; ext; simp only [Set.Iic.coe_top, Subtype.coe_mk]
   right
-  have ⟨a, a₀, ba, h⟩ := zorn_nonempty_partialOrder₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
-  · refine ⟨⟨a, le_of_lt a₀⟩, ⟨ne_of_lt a₀, fun c hck => by_contradiction fun c₀ => ?_⟩, ba⟩
-    cases h c.1 (lt_of_le_of_ne c.2 fun con => c₀ (Subtype.ext con)) hck.le
+  have ⟨a, ba, h⟩ := zorn_le_nonempty₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
+  · refine ⟨⟨a, le_of_lt h.prop⟩, ⟨ne_of_lt h.prop, fun c hck => by_contradiction fun c₀ => ?_⟩, ba⟩
+    cases h.eq_of_le (y := c.1) (lt_of_le_of_ne c.2 fun con ↦ c₀ (Subtype.ext con)) hck.le
     exact lt_irrefl _ hck
   · intro S SC cC I _
     by_cases hS : S.Nonempty
@@ -542,8 +542,8 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
     IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
   -- porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
   -- `obtain` chokes on the placeholder.
-  have := zorn_subset
-    {s : Set α | CompleteLattice.SetIndependent s ∧ Disjoint b (sSup s) ∧ ∀ a ∈ s, IsAtom a}
+  have zorn := zorn_subset
+    (S := {s : Set α | CompleteLattice.SetIndependent s ∧ Disjoint b (sSup s) ∧ ∀ a ∈ s, IsAtom a})
     fun c hc1 hc2 =>
       ⟨⋃₀ c,
         ⟨CompleteLattice.independent_sUnion_of_directed hc2.directedOn fun s hs => (hc1 hs).1, ?_,
@@ -555,7 +555,8 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
       exact (hc1 hs).2.1
     · rw [directedOn_image]
       exact hc2.directedOn.mono @fun s t => sSup_le_sSup
-  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := this
+  simp_rw [maximal_subset_iff] at zorn
+  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := zorn
   refine ⟨s, s_ind, ⟨b_inf_Sup_s, ?_⟩, s_atoms⟩
   rw [codisjoint_iff_le_sup, ← h, sSup_le_iff]
   intro a ha
@@ -566,7 +567,7 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
   rw [← disjoint_iff] at con
   have a_dis_Sup_s : Disjoint a (sSup s) := con.mono_right le_sup_right
   -- Porting note: The two following `fun x hx => _` are no-op
-  rw [← s_max (s ∪ {a}) ⟨fun x hx => _, _, fun x hx => _⟩ Set.subset_union_left]
+  rw [@s_max (s ∪ {a}) ⟨fun x hx => _, _, fun x hx => _⟩ Set.subset_union_left]
   · exact Set.mem_union_right _ (Set.mem_singleton _)
   · intro x hx
     rw [Set.mem_union, Set.mem_singleton_iff] at hx
