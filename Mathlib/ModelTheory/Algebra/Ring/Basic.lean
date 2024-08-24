@@ -236,29 +236,10 @@ def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
     funMap_zero := fun _ => rfl,
     funMap_one := fun _ => rfl }
 
-/-- An isomorphism in the language of rings is a ring isomorphism -/
-def languageEquivEquivRingEquiv {R S : Type*}
-    [NonAssocRing R] [NonAssocRing S]
-    [CompatibleRing R] [CompatibleRing S] :
-    (Language.ring.Equiv R S) ≃ (R ≃+* S) :=
-  { toFun := fun f =>
-    { f with
-      map_add' := by
-        intro x y
-        simpa using f.map_fun addFunc ![x, y]
-      map_mul' := by
-        intro x y
-        simpa using f.map_fun mulFunc ![x, y] }
-    invFun := fun f =>
-    { f with
-      map_fun' := fun {n} f => by
-        cases f <;> simp
-      map_rel' := fun {n} f => by cases f },
-    left_inv := fun f => by ext; rfl
-    right_inv := fun f => by ext; rfl }
-
-instance {R : Type*} [Ring R] [CompatibleRing R] {S : Type*} [Ring S] [CompatibleRing S] :
-    Language.ring.StrongHomClass (R →+* S) R S where
+instance _root_.RingHomClass.strongHomClass {R : Type*} [NonAssocRing R] [CompatibleRing R]
+  {S : Type*} [NonAssocRing S] [CompatibleRing S]
+  {F : Type*} [FunLike F R S] [RingHomClass F R S] :
+    Language.ring.StrongHomClass F R S where
   map_fun := fun φ n f => match n, f with
     | _, .zero => fun x => by simp only [funMap_zero, map_zero]
     | _, .one => fun x => by simp only [funMap_one, map_one]
@@ -266,6 +247,32 @@ instance {R : Type*} [Ring R] [CompatibleRing R] {S : Type*} [Ring S] [Compatibl
     | _, .add => fun x => by simp only [funMap_add, Fin.isValue, map_add, Function.comp_apply]
     | _, .mul => fun x => by simp only [funMap_mul, Fin.isValue, map_mul, Function.comp_apply]
   map_rel := fun _ n => (IsAlgebraic.empty_relations n).elim
+
+instance ringHomClass_of_strongHomClass {R : Type*} [NonAssocRing R] [CompatibleRing R]
+  {S : Type*} [NonAssocRing S] [CompatibleRing S]
+  {F : Type*} [FunLike F R S] [Language.ring.StrongHomClass F R S] :
+    RingHomClass F R S where
+  map_zero := fun f => by rw [← funMap_zero, HomClass.map_fun f zero default, funMap_zero]
+  map_one := fun f => by rw [← funMap_one, HomClass.map_fun f one default, funMap_one]
+  map_add := fun f x y => by simpa using HomClass.map_fun f addFunc ![x, y]
+  map_mul := fun f x y => by simpa using HomClass.map_fun f mulFunc ![x, y]
+
+instance ringEquivClass_of_strongHomClass {R : Type*} [NonAssocRing R] [CompatibleRing R]
+  {S : Type*} [NonAssocRing S] [CompatibleRing S]
+  {F : Type*} [EquivLike F R S] [Language.ring.StrongHomClass F R S] :
+    RingEquivClass F R S where
+  map_add := map_add
+  map_mul := map_mul
+
+/-- An isomorphism in the language of rings is a ring isomorphism -/
+def languageEquivEquivRingEquiv {R S : Type*}
+    [NonAssocRing R] [NonAssocRing S]
+    [CompatibleRing R] [CompatibleRing S] :
+    (Language.ring.Equiv R S) ≃ (R ≃+* S) :=
+  { toFun := RingEquivClass.toRingEquiv
+    invFun := StrongHomClass.toEquiv,
+    left_inv := fun f => by ext; rfl
+    right_inv := fun f => by ext; rfl }
 
 variable (R : Type*) [Language.ring.Structure R]
 
