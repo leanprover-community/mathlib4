@@ -602,27 +602,37 @@ lemma _root_.ENNReal.eq_one_of_mul_eq
   have : a * b * a⁻¹ = a * a⁻¹ := by rw [h]
   rwa [mul_assoc, mul_comm b, ← mul_assoc, ENNReal.mul_inv_cancel ha h'a, one_mul] at this
 
+#check meas_ge_le_mul_pow_eLpNorm
+
 /-- If a nonzero function belongs to `ℒ^p` and is independent of another function, then
 the space is a probability space. -/
 lemma _root_.MeasureTheory.Memℒp.isProbabilityMeasure_of_indepFun
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
     {F : Type*} [MeasurableSpace F]
-    (f : Ω → E) (g : Ω → F) {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞)
+    (f : Ω → E) (g : Ω → F) {p : ℝ≥0∞} (hp : p ≠ 0) (hp' : p ≠ ∞)
     (hℒp : Memℒp f p μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
     IsProbabilityMeasure μ := by
-  obtain ⟨c, c_pos, hc⟩ : ∃ c, 0 < c ∧ 0 < μ {ω | c < ‖f ω‖} := by
+  obtain ⟨c, c_pos, hc⟩ : ∃ c, 0 < (c : ℝ≥0) ∧ 0 < μ {ω | c ≤ ‖f ω‖₊} := by
     contrapose! h'f
-    have A (c : ℝ) (hc : 0 < c) : ∀ᵐ ω ∂μ, ‖f ω‖ ≤ c := by sorry
+    have A (c : ℝ≥0) (hc : 0 < c) : ∀ᵐ ω ∂μ, ‖f ω‖₊ < c := by simpa [ae_iff] using h'f c hc
     obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
-      ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ)
+      ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ≥0)
     filter_upwards [ae_all_iff.2 (fun n ↦ A (u n) (u_pos n))] with ω hω
-    exact norm_le_zero_iff.mp (ge_of_tendsto' u_lim hω)
-  have h'c : μ {ω | c < ‖f ω‖} < ∞ := sorry
+    simpa using ge_of_tendsto' u_lim (fun i ↦ (hω i).le)
+  have h'c : μ {ω | c ≤ ‖f ω‖₊} < ∞ := by
+    apply hℒp.meas_ge_lt_top
+
+
+
+
+
   have Z := hindep.measure_inter_preimage_eq_mul {x | c < ‖x‖} Set.univ
     sorry (MeasurableSet.univ)
   simp at Z
   exact ⟨ENNReal.eq_one_of_mul_eq Z.symm hc.ne' h'c.ne⟩
+
+#exit
 
 /-- If a nonzero function belongs to `ℒ^p` and is independent of another function, then
 the space is a probability space. -/
@@ -841,7 +851,7 @@ theorem strong_law_ae {Ω : Type*} [MeasureSpace Ω]
     filter_upwards [I] with ω hω
     simpa [hω] using (integral_eq_zero_of_ae h).symm
   have : IsProbabilityMeasure (ℙ : Measure Ω) :=
-    isProbabilityMeasure_of_indepFun_integrable (X 0) (X 1) hint h (hindep zero_ne_one)
+    hint.isProbabilityMeasure_of_indepFun (X 0) (X 1) h (hindep zero_ne_one)
   -- we reduce to the case of strongly measurable random variables, by using `Y i` which is strongly
   -- measurable and ae equal to `X i`.
   have A : ∀ i, Integrable (X i) := fun i ↦ (hident i).integrable_iff.2 hint
@@ -886,8 +896,8 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
       apply eLpNorm_eq_zero_of_ae_zero
       filter_upwards [I] with ω hω
       simp [hω]
-      sorry
-    sorry
+    simp [A]
+  -- Then use ae convergence and uniform integrability
   have : IsProbabilityMeasure (ℙ : Measure Ω) :=
     Memℒp.isProbabilityMeasure_of_indepFun (X 0) (X 1) hp hp' hℒp h (hindep zero_ne_one)
   have hmeas : ∀ i, AEStronglyMeasurable (X i) ℙ := fun i =>
