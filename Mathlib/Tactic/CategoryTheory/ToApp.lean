@@ -132,6 +132,7 @@ initialize registerBuiltinAttribute {
       throwError "`to_app` can only be used as a global attribute"
     addRelatedDecl src "_app" ref stx? fun type value levels => do
       let levelMVars ← levels.mapM λ _ => mkFreshLevelMVar
+      let value ← mkExpectedTypeHint value type
       let value := value.instantiateLevelParams levels levelMVars
       let newValue ←toAppExpr (← to_appExpr value levelMVars)
       let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newValue

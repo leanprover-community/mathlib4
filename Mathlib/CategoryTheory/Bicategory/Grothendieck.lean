@@ -108,7 +108,8 @@ protected lemma id_comp : 𝟙 a ≫ f = f := by
 protected lemma comp_id : f ≫ 𝟙 b = f := by
   ext
   · simp
-  · simp [F.mapComp_id_left_inv f.base.op.toLoc, ← Cat.whiskerRight_app, ← Cat.comp_app]
+  -- TODO: these appear often, is there some lemma I can make from this?
+  · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
 
 end
 
@@ -118,8 +119,7 @@ protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   · simp
   dsimp
   slice_lhs 3 4 => rw [← (F.mapComp g.1.op.toLoc f.1.op.toLoc).inv.naturality h.2]
-  have := F.mapComp_assoc_right_inv_app h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc
-  simp [← F.mapComp_assoc_right_inv_app h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc]
+  simp [F.mapComp_assoc_right_inv_app]
 
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
@@ -155,9 +155,8 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   map_id a := by
     ext1
     · dsimp
-    dsimp
-    rw [StrongPseudoNatTrans.naturality_id_hom]
-    simp [← Cat.whiskerRight_app, ← whiskerRightIso_inv, ← whiskerRightIso_hom]
+    simp [StrongPseudoNatTrans.naturality_id_hom, ← Functor.map_comp_assoc]
+  -- TODO: golf this, then its all done!
   map_comp {a b c} f g := by
     ext
     · dsimp
@@ -192,12 +191,12 @@ def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
     dsimp
     ext
     · simp
-    simp [F.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
+    simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
   inv_hom_id := by
     dsimp
     ext
     · simp
-    simp [F.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
+    simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
   Functor.ext_of_iso (mapIdIso) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
@@ -215,12 +214,12 @@ def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ ma
     dsimp
     ext
     · simp
-    simp [H.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
+    simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
   inv_hom_id := by
     dsimp
     ext
     · simp
-    simp [H.mapComp_id_left_inv, ← Cat.whiskerRight_app, ← Cat.comp_app]
+    simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
 
 lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β := by
   apply Functor.ext_of_iso (mapCompIso α β)
