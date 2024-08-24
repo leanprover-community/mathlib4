@@ -139,6 +139,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     (U_symm : SymmetricRel U) {m : ℕ} (n : ℕ) {s : Finset X} (h : IsDynCoverOf T F U m s) :
     ∃ t : Finset X, IsDynCoverOf T F (U ○ U) (m * n) t ∧ t.card ≤ s.card ^ n := by
   classical
+  -- Deal with the edge cases: `F = ∅` or `m = 0`.
   rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · exact ⟨∅, by simp⟩
   have _ : Nonempty X := nonempty_of_exists F_nemp
@@ -149,6 +150,16 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     simp only [zero_mul, Finset.coe_singleton, Finset.card_singleton]
     exact And.intro (isDynCoverOf_zero T F (U ○ U) (singleton_nonempty x))
       <| one_le_pow_of_one_le' (Nat.one_le_of_lt (Finset.Nonempty.card_pos s_nemp)) n
+  -- The proof goes as follows. Given an orbit of length `(m * n)` starting from `y`, each of its
+  -- iterates `y`, `T^[m] y`, `T^[m]^[2] y` ... is `(dynEntourage T U m)`-close to a point of `s`.
+  -- Conversely, given a sequence `t 0`, `t 1`, `t 2` of points in `s`, we choose a point
+  -- `z = dyncover t` such that  `z`, `T^[m] z`, `T^[m]^[2] z` ... are `(dynEntourage T U m)`-close
+  --  to `t 0`, `t 1`, `t 2`... Then  `y`, `T^[m] y`, `T^[m]^[2] y` ... are
+  -- `(dynEntourage T (U ○ U) m)`-close to `z`, `T^[m] z`, `T^[m]^[2] z`, so that the union of such
+  -- `z` provides the desired cover. Since there are at most `s.card ^ n` sequences of
+  -- length `n` with values in `s`, we get the upper bound we want.
+  -- First step: construct `dyncover`. Given `t 0`, `t 1`, `t 2`, if we cannot find such a point
+  -- `dyncover t`, we use the dummy `x`.
   have (t : Fin n → s) : ∃ y : X, (⋂ k : Fin n, T^[m * k] ⁻¹' ball (t k) (dynEntourage T U m)) ⊆
       ball y (dynEntourage T (U ○ U) (m * n)) := by
     rcases (⋂ k : Fin n, T^[m * k] ⁻¹' ball (t k) (dynEntourage T U m)).eq_empty_or_nonempty
@@ -165,10 +176,17 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
       rw [← Function.iterate_add_apply T (k % m) (m * (k / m)), Nat.mod_add_div k m] at y_int z_int
       exact mem_comp_of_mem_ball U_symm y_int z_int
   choose! dyncover h_dyncover using this
+  -- The cover we want is the set of all `dyncover t`, that is, `range dyncover`. We need to check
+  -- that it is indeed a `(m * n, U ○ U)` cover, and that its cardinality is at most `card s ^ n`.
+  -- Only the first point requires significant work.
   let sn := range dyncover
   have := fintypeRange dyncover
   refine ⟨sn.toFinset, ?_, ?_⟩
-  · rw [Finset.coe_nonempty] at s_nemp
+  · -- We implement the argument at the beginning: given `y ∈ F`, we extract `t 0`, `t 1`, `t 2`
+    -- such that `y`, `T^[m] y`, `T^[m]^[2] y` ... is `(dynEntourage T U m)`-close to `t 0`, `t 1`,
+    -- `t 2`... Then `dyncover t` is a point of `range dyncover` which satisfies the conclusion
+    -- of the lemma.
+    rw [Finset.coe_nonempty] at s_nemp
     have _ : Nonempty s := Finset.Nonempty.coe_sort s_nemp
     intro y y_F
     have key : ∀ k : Fin n, ∃ z : s, y ∈ T^[m * k] ⁻¹' ball z (dynEntourage T U m) := by
@@ -178,15 +196,11 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
       rcases this with ⟨z, z_s, hz⟩
       exact ⟨⟨z, z_s⟩, hz⟩
     choose! t ht using key
-    specialize h_dyncover t
-    simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, toFinset_range,
-      Finset.mem_image, Finset.mem_univ, true_and, exists_prop, exists_exists_eq_and, sn]
-    simp only [mem_preimage, Subtype.forall, Finset.mem_range] at ht
-    use dyncover t
-    simp only [Finset.coe_image, Finset.coe_univ, image_univ, mem_range, exists_apply_eq_apply,
-      true_and]
-    apply h_dyncover
-    simp only [mem_iInter, mem_preimage, Finset.mem_range]
+    simp only [toFinset_range, Finset.coe_image, Finset.coe_univ, image_univ, mem_range,
+      iUnion_exists, iUnion_iUnion_eq', mem_iUnion, sn]
+    use t
+    apply h_dyncover t
+    simp only [mem_iInter, mem_preimage] at ht ⊢
     exact ht
   · rw [toFinset_card]
     apply (Fintype.card_range_le dyncover).trans
@@ -197,25 +211,18 @@ lemma exists_isDynCoverOf_of_isCompact_uniformContinuous [UniformSpace X] {T : X
     ∃ s : Finset X, IsDynCoverOf T F U n s := by
   have uni_ite := dynEntourage_mem_uniformity h U_uni n
   let open_cover := fun x : X ↦ ball x (dynEntourage T U n)
-  have := IsCompact.elim_nhds_subcover F_comp open_cover (fun (x : X) _ ↦ ball_mem_nhds x uni_ite)
-  rcases this with ⟨s, _, s_cover⟩
+  obtain ⟨s, _, s_cover⟩ := IsCompact.elim_nhds_subcover F_comp open_cover
+    (fun (x : X) _ ↦ ball_mem_nhds x uni_ite)
   exact ⟨s, s_cover⟩
 
 lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X] {T : X → X} {F : Set X}
     (F_comp : IsCompact F) (F_inv : MapsTo T F F) {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     ∃ s : Finset X, IsDynCoverOf T F U n s := by
   rcases comp_symm_mem_uniformity_sets U_uni with ⟨V, V_uni, V_symm, V_U⟩
-  let open_cover := fun x : X ↦ ball x V
-  have := IsCompact.elim_nhds_subcover F_comp open_cover (fun (x : X) _ ↦ ball_mem_nhds x V_uni)
-  rcases this with ⟨s, _, s_cover⟩
+  obtain ⟨s, _, s_cover⟩ := IsCompact.elim_nhds_subcover F_comp (fun x : X ↦ ball x V)
+    (fun (x : X) _ ↦ ball_mem_nhds x V_uni)
   have : IsDynCoverOf T F V 1 s := by
-    intro x x_F
-    specialize s_cover x_F
-    simp only [mem_iUnion, exists_prop] at s_cover
-    rcases s_cover with ⟨y, y_s, _⟩
-    simp only [dynEntourage, Nat.lt_one_iff, iInter_iInter_eq_left, Function.iterate_zero,
-      Prod.map_id, preimage_id_eq, id_eq, mem_iUnion]
-    use y, y_s
+    simp only [IsDynCoverOf, Finset.mem_coe, dynEntourage_one, s_cover]
   rcases this.iterate_le_pow F_inv V_symm n with ⟨t, t_dyncover, t_card⟩
   rw [one_mul n] at t_dyncover
   exact ⟨t, t_dyncover.of_entourage_subset V_U⟩
@@ -328,9 +335,13 @@ lemma coverMincard_finite_of_isCompact_invariant [UniformSpace X] {T : X → X} 
   rcases exists_isDynCoverOf_of_isCompact_invariant F_comp F_inv U_uni n with ⟨s, s_cover⟩
   exact (coverMincard_le_card s_cover).trans_lt (WithTop.coe_lt_top s.card)
 
+/-- All dynamical balls of a minimal dynamical cover of `F` intersect `F`. This lemma is the key
+  to relate Bowen-Dinaburg's definition of topological entropy with covers and their definition
+  of topological entropy with nets.-/
 lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ}
     {s : Finset X} (h : IsDynCoverOf T F U n s) (h' : s.card = coverMincard T F U n) :
     ∀ x ∈ s, (F ∩ ball x (dynEntourage T U n)).Nonempty := by
+  -- Otherwise, there is a ball which does not intersect `F`. Removing it yields a smaller cover.
   classical
   by_contra! hypo
   rcases hypo with ⟨x, x_s, ball_empt⟩
@@ -370,6 +381,9 @@ lemma log_coverMincard_le_add {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) {m n : ℕ} (m_pos : 0 < m) (n_pos : 0 < n) :
     log (coverMincard T F (U ○ U) n) / n
     ≤ log (coverMincard T F U m) / m + log (coverMincard T F U m) / n := by
+  -- If `n` is a multiple of `m`, this follows directly from `log_coverMincard_iterate_le`.
+  -- Otherwise, we bound the LHS by the smaller multiple of `m` larger than `n`, which gives the
+  -- error term `log (coverMincard T F U m) / n`.
   rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · rw [coverMincard_empty, ENat.toENNReal_zero, log_zero,
       bot_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)]
@@ -454,6 +468,7 @@ lemma coverEntropyInfEnt_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
 lemma coverEntropyEnt_le_log_coverMincard_div {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) {n : ℕ} (n_pos : 0 < n) :
     coverEntropyEnt T F (U ○ U) ≤ log (coverMincard T F U n) / n := by
+  -- Deal with the edge cases: `F = ∅` or `F` has no finite cover.
   rcases eq_or_ne (log (coverMincard T F U n)) ⊥ with logm_bot | logm_nneg
   · rw [log_eq_bot_iff, ← ENat.toENNReal_zero, ENat.toENNReal_coe_eq_iff,
       coverMincard_eq_zero_iff T F U n] at logm_bot
@@ -461,6 +476,7 @@ lemma coverEntropyEnt_le_log_coverMincard_div {T : X → X} {F : Set X} (F_inv :
   rcases eq_or_ne (log (coverMincard T F U n)) ⊤ with logm_top | logm_fin
   · rw [logm_top, top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)]
     exact le_top
+  -- The general case follows from `log_coverMincard_le_add`, with careful manipulation of limits.
   let u := fun _ : ℕ ↦ log (coverMincard T F U n) / n
   let v := fun m : ℕ ↦ log (coverMincard T F U n) / m
   let w := fun m : ℕ ↦ log (coverMincard T F (U ○ U) m) / m
