@@ -10,10 +10,10 @@ import Mathlib.Util.AddRelatedDecl
 # The `to_app` attribute
 
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms
-in some bicategory, create a new lemma named `F_app`. This lemma is obtained by specializing the
-bicategory in which the equality is taking place to `Cat`, then applying `NatTrans.app` to obtain
-a proof of `∀ ... (X : Cat), η.app X = θ.app X`, and finally simplifying the conclusion using the
-following basic lemmas about `NatTrans.app`:
+in some bicategory, create a new lemma named `F_app`. This lemma is obtained by first specializing
+the bicategory in which the equality is taking place to `Cat`, then applying `NatTrans.congr_app`
+to obtain a proof of `∀ ... (X : Cat), η.app X = θ.app X`, and finally simplifying the conclusion
+using some basic lemmas in the bicategory `Cat`:
 `Cat.whiskerLeft_app`, `Cat.whiskerRight_app`, `Cat.id_app`, `Cat.comp_app` and `Cat.eqToHom_app`
 
 So, for example, if the conclusion of `F` is `f ◁ η = θ` then the conclusion of `F_app` will be
@@ -107,11 +107,11 @@ def toAppExpr (e : Expr) : MetaM Expr := do
 
 /--
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms
-in some bicategory, create a new lemma named `F_app`. This lemma is obtained by specializing the
-bicategory in which the equality is taking place to `Cat`, then applying `NatTrans.app` to obtain
-a proof of `∀ ... (X : Cat), η.app X = θ.app X`, and finally simplifying the conclusion using some
-basic lemmas in the bicategory `Cat`:
-(`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
+in some bicategory, create a new lemma named `F_app`. This lemma is obtained by first specializing
+the bicategory in which the equality is taking place to `Cat`, then applying `NatTrans.congr_app`
+to obtain a proof of `∀ ... (X : Cat), η.app X = θ.app X`, and finally simplifying the conclusion
+using some basic lemmas in the bicategory `Cat`:
+`Cat.whiskerLeft_app`, `Cat.whiskerRight_app`, `Cat.id_app`, `Cat.comp_app` and `Cat.eqToHom_app`
 
 So, for example, if the conclusion of `F` is `f ◁ η = θ` then the conclusion of `F_app` will be
 `η.app (f.obj X) = θ.app X`.
