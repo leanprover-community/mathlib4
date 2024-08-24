@@ -835,7 +835,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     rw [KaehlerDifferential.ker_map_of_surjective R A B h] at hx
     obtain ⟨x, hx, rfl⟩ := hx
     simp only [TensorProduct.lid_symm_apply, LinearMap.rTensor_tmul,
-      Algebra.linearMap_apply, _root_.map_one]
+      Algebra.linearMap_apply, map_one]
     rw [← Finsupp.sum_single x, Finsupp.sum, ← Finset.sum_fiberwise_of_maps_to
       (fun _ ↦ Finset.mem_image_of_mem (algebraMap A B))]
     simp only [Function.comp_apply, map_sum (s := x.support.image (algebraMap A B)),
@@ -843,7 +843,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     apply sum_mem
     intro c _
     simp only [Finset.filter_congr_decidable, TensorProduct.lid_symm_apply, LinearMap.rTensor_tmul,
-      AlgHom.toLinearMap_apply, _root_.map_one, LinearMap.mem_range]
+      AlgHom.toLinearMap_apply, map_one, LinearMap.mem_range]
     simp only [map_sum, Finsupp.total_single]
     have : (x.support.filter (algebraMap A B · = c)).sum x ∈ RingHom.ker (algebraMap A B) := by
       simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,

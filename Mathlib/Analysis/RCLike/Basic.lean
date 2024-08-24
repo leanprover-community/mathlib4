@@ -333,7 +333,9 @@ theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(r
   tfae_finish
 
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
-  ((is_real_TFAE z).out 0 1).trans <| by simp only [eq_comm]
+  calc
+    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 0 1
+    _ ↔ _                    := by simp only [eq_comm]
 
 theorem conj_eq_iff_re {z : K} : conj z = z ↔ (re z : K) = z :=
   (is_real_TFAE z).out 0 2
@@ -418,7 +420,7 @@ theorem mul_conj (z : K) : z * conj z = ‖z‖ ^ 2 := by
 theorem conj_mul (z : K) : conj z * z = ‖z‖ ^ 2 := by rw [mul_comm, mul_conj]
 
 lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z :=
-  inv_eq_of_mul_eq_one_left $ by simp_rw [conj_mul, hz, algebraMap.coe_one, one_pow]
+  inv_eq_of_mul_eq_one_left <| by simp_rw [conj_mul, hz, algebraMap.coe_one, one_pow]
 
 theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z * conj w) := by
   simp only [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
@@ -436,7 +438,7 @@ theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
   rcases eq_or_ne z 0 with (rfl | h₀)
   · simp
   · apply inv_eq_of_mul_eq_one_right
-    rw [← mul_assoc, mul_conj, ofReal_inv, ofReal_pow, mul_inv_cancel]
+    rw [← mul_assoc, mul_conj, ofReal_inv, ofReal_pow, mul_inv_cancel₀]
     simpa
 
 @[simp, rclike_simps]
@@ -811,7 +813,7 @@ lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing 
   lt_of_smul_lt_smul_of_pos {x y c} hxy hc := by
     have : c⁻¹ • c • x < c⁻¹ • c • y :=
       StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)
-    simpa [smul_smul, inv_mul_cancel hc.ne'] using this
+    simpa [smul_smul, inv_mul_cancel₀ hc.ne'] using this
 
 instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
     [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :

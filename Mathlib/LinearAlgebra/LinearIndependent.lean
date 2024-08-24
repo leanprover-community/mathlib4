@@ -1276,7 +1276,7 @@ theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
     by_cases ht : t = 0
     · exact ⟨by simpa [ht, hx] using hst, ht⟩
     apply_fun (t⁻¹ • ·) at hst
-    simp only [smul_add, smul_smul, inv_mul_cancel ht, one_smul, smul_zero] at hst
+    simp only [smul_add, smul_smul, inv_mul_cancel₀ ht, one_smul, smul_zero] at hst
     cases H (-(t⁻¹ * s)) (by rwa [neg_smul, neg_eq_iff_eq_neg, eq_neg_iff_add_eq_zero])
 
 theorem linearIndependent_fin_cons {n} {v : Fin n → V} :

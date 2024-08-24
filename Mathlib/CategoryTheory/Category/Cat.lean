@@ -79,26 +79,27 @@ theorem ext' {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : α.app = β.app)
   NatTrans.ext w
 
 @[simp]
-theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
+theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
   rfl
 
 @[simp]
-theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
+theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
   rfl
 
 @[simp]
 theorem comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).obj X = G.obj (F.obj X) :=
   rfl
 
-@[simp]
-theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
-    (F ≫ G).map f = G.map (F.map f) :=
-  rfl
 
 @[reassoc (attr := simp)]
 theorem naturality {C D : Cat} {F G : C ⟶ D} (α : F ⟶ G) {X Y : C} (f : X ⟶ Y) :
     F.map f ≫ α.app Y = α.app X ≫ G.map f :=
   α.naturality f
+
+@[simp]
+theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
+    (F ≫ G).map f = G.map (F.map f) :=
+  rfl
 
 @[simp]
 theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl

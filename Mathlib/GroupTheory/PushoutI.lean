@@ -513,7 +513,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (h3 _ _ (List.mem_cons_self _ _))]
       · apply d.injective i
         simp only [cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
-          map_one, mul_one, mul_right_inv, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
+          map_one, mul_one, mul_inv_cancel, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
       · rwa [← SetLike.mem_coe,
           ← coe_equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),
@@ -684,7 +684,7 @@ theorem inf_of_range_eq_base_range
       have := hw.eq_empty_of_mem_range hφ (by
         simp only [Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
           List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
-          mul_inv_self, one_mem])
+          mul_inv_cancel, one_mem])
       simp [w, Word.empty] at this)
     (le_inf
       (by rw [← of_comp_eq_base i]

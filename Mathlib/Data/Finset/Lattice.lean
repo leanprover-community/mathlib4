@@ -19,7 +19,7 @@ import Mathlib.Order.Nat
 -/
 
 -- TODO:
--- assert_not_exists OrderedCommMonoid
+assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidWithZero
 
 open Function Multiset OrderDual
@@ -812,8 +812,9 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
     f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-lemma nsmul_sup' {α'} [LinearOrderedAddCommMonoid β] {s : Finset α'}
-    (hs : s.Nonempty) (f : α' → β) (n : ℕ) :
+lemma nsmul_sup' {α β : Type*} [AddMonoid β] [LinearOrder β]
+    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
   let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
   (map_finset_sup' ns hs _).symm
@@ -963,8 +964,9 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
     f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-lemma nsmul_inf' {α'} [LinearOrderedAddCommMonoid β] {s : Finset α'}
-    (hs : s.Nonempty) (f : α' → β) (n : ℕ) :
+lemma nsmul_inf' {α β : Type*} [AddMonoid β] [LinearOrder β]
+    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
   let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
   (map_finset_inf' ns hs _).symm
