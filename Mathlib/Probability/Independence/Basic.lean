@@ -734,7 +734,7 @@ lemma Memℒp.isProbabilityMeasure_of_indepFun
     IsProbabilityMeasure μ := by
   obtain ⟨c, c_pos, hc⟩ : ∃ (c : ℝ≥0), 0 < c ∧ 0 < μ {ω | c ≤ ‖f ω‖₊} := by
     contrapose! h'f
-    have A (c : ℝ≥0) (hc : 0 < c) : ∀ᵐ ω ∂μ, ‖f ω‖₊ < c := by simpa using h'f c hc
+    have A (c : ℝ≥0) (hc : 0 < c) : ∀ᵐ ω ∂μ, ‖f ω‖₊ < c := by simpa [ae_iff] using h'f c hc
     obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
       ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ≥0)
     filter_upwards [ae_all_iff.2 (fun n ↦ A (u n) (u_pos n))] with ω hω
@@ -743,7 +743,7 @@ lemma Memℒp.isProbabilityMeasure_of_indepFun
   have := hindep.measure_inter_preimage_eq_mul {x | c ≤ ‖x‖₊} Set.univ
     (isClosed_le continuous_const continuous_nnnorm).measurableSet MeasurableSet.univ
   simp only [Set.preimage_setOf_eq, Set.preimage_univ, Set.inter_univ] at this
-  exact ⟨ENNReal.eq_one_of_mul_eq this.symm hc.ne' h'c.ne⟩
+  exact ⟨(ENNReal.mul_eq_left hc.ne' h'c.ne).1 this.symm⟩
 
 /-- If a nonzero function is integrable and is independent of another function, then
 the space is a probability space. -/
@@ -757,4 +757,4 @@ lemma Integrable.isProbabilityMeasure_of_indepFun
   Memℒp.isProbabilityMeasure_of_indepFun f g one_ne_zero ENNReal.one_ne_top
     (memℒp_one_iff_integrable.mpr hf) h'f hindep
 
-end MeasureTheory.Memℒp
+end MeasureTheory
