@@ -84,9 +84,10 @@ def toCatExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
   -- Erease the binderinfos for the bicategory and the instance
   let binderInfos := binderInfos.eraseIdx BIdx
   let binderInfos := binderInfos.eraseIdx BIdx
-  -- Recursive function which applies `mkLambdaFVars` stepwise
-  -- (so that each step can have different binderinfos)
-  let rec apprec (i : Nat) (e : Expr) : MetaM Expr := do
+  let rec
+  /-- Recursive function which applies `mkLambdaFVars` stepwise
+  (so that each step can have different binderinfos) -/
+    apprec (i : Nat) (e : Expr) : MetaM Expr := do
     if i < mvars.size then
       let mvar := mvars[i]!
       let bi := binderInfos[i]!
@@ -136,7 +137,7 @@ initialize registerBuiltinAttribute {
       let levelMVars ← levels.mapM λ _ => mkFreshLevelMVar
       let value ← mkExpectedTypeHint value type
       let value := value.instantiateLevelParams levels levelMVars
-      let newValue ←toAppExpr (← toCatExpr value levelMVars)
+      let newValue ← toAppExpr (← toCatExpr value levelMVars)
       let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newValue
       let output := (r.expr, r.newParamNames.toList)
       pure output
