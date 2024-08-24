@@ -29,7 +29,7 @@ The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first
 
 ## TODO
 1. Implement more functoriality for the Grothendieck construction (make things into pseudofunctors).
-2. Obtain the results in `CategoryTheory.Grothendieck` as a specialization of these results.
+2. Obtain the results in `CategoryTheory.Grothendieck` as a specialization of these results?
 
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by

@@ -8,8 +8,6 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
--- #check Lean.Elab.Term.elabTermAndSynthesize
-
 /-
 Imports are out of date and should be rebuilt; use the "Restart File" command in your editor.
 -/
@@ -22,7 +20,8 @@ lemma mapComp_assoc_right_hom (F : Pseudofunctor B C) {a b c d : B} (f : a ⟶ b
 
 example (F : Pseudofunctor B Cat.{v₂, u₂}) {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : True := by
   -- TODO: 1. why implicit args still? 2. why .toOplax?
-  -- let asdf := to_app_of% mapComp_assoc_right_hom
+  let asdf := to_app_of% F.mapComp_assoc_right_hom f g h
+
   sorry
 
 #check mapComp_assoc_right_hom_app
