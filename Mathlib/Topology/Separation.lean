@@ -1769,7 +1769,7 @@ alias separatedNhds_of_isCompact_isCompact := SeparatedNhds.of_isCompact_isCompa
 
 /-- In a `T2Space X`, for disjoint closed sets `s t` such that `closure sᶜ` is compact,
 there are neighbourhoods that separate `s` and `t`.-/
-lemma t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint [T2Space X] {s : Set X}
+lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [T2Space X] {s : Set X}
     {t : Set X} (H1 : IsClosed s) (H2 : IsCompact (closure sᶜ)) (H3 : IsClosed t)
     (H4 : Disjoint s t) : SeparatedNhds s t := by
   -- Since `t` is a closed subset of the compact set `closure sᶜ`, it is compact.
