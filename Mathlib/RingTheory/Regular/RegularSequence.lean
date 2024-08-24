@@ -140,7 +140,7 @@ structure IsWeaklyRegular (rs : List R) : Prop where
 
 lemma isWeaklyRegular_iff_Fin (rs : List R) :
     IsWeaklyRegular M rs ↔ ∀ (i : Fin rs.length),
-      IsSMulRegular (M ⧸ (ofList (rs.take i) • ⊤ : Submodule R M)) (rs.get i) :=
+      IsSMulRegular (M ⧸ (ofList (rs.take i) • ⊤ : Submodule R M)) rs[i] :=
   Iff.trans (isWeaklyRegular_iff M rs) (Iff.symm Fin.forall_iff)
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/

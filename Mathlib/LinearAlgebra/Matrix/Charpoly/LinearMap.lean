@@ -23,7 +23,7 @@ This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbit
 
 variable {ι : Type*} [Fintype ι]
 variable {M : Type*} [AddCommGroup M] (R : Type*) [CommRing R] [Module R M] (I : Ideal R)
-variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
+variable (b : ι → M)
 
 open Polynomial Matrix
 
@@ -130,7 +130,8 @@ theorem Matrix.Represents.algebraMap (r : R) :
     (algebraMap _ (Matrix ι ι R) r).Represents b (algebraMap _ (Module.End R M) r) := by
   simpa only [Algebra.algebraMap_eq_smul_one] using Matrix.Represents.one.smul r
 
-theorem Matrix.Represents.eq {A : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
+theorem Matrix.Represents.eq (hb : Submodule.span R (Set.range b) = ⊤)
+    {A : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : A.Represents b f') : f = f' :=
   PiToModule.fromEnd_injective R b hb (h.symm.trans h')
 
@@ -145,6 +146,9 @@ def Matrix.isRepresentation : Subalgebra R (Matrix ι ι R) where
   add_mem' := fun ⟨f₁, e₁⟩ ⟨f₂, e₂⟩ => ⟨f₁ + f₂, e₁.add e₂⟩
   zero_mem' := ⟨0, Matrix.Represents.zero⟩
   algebraMap_mem' r := ⟨algebraMap _ _ r, .algebraMap _⟩
+
+variable (hb : Submodule.span R (Set.range b) = ⊤)
+include hb
 
 /-- The map sending a matrix to the endomorphism it represents. This is an `R`-algebra morphism. -/
 noncomputable def Matrix.isRepresentation.toEnd :

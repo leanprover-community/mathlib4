@@ -266,6 +266,7 @@ theorem preStoneCech_hom_ext {g₁ g₂ : PreStoneCech α → β} (h₁ : Contin
 
 variable [CompactSpace β]
 variable {g : α → β} (hg : Continuous g)
+include hg
 
 lemma preStoneCechCompat {F G : Ultrafilter α} {x : α} (hF : ↑F ≤ 𝓝 x) (hG : ↑G ≤ 𝓝 x) :
     Ultrafilter.extend g F = Ultrafilter.extend g G := by

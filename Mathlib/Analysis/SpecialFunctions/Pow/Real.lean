@@ -446,18 +446,18 @@ theorem mul_log_eq_log_iff {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
   by rintro rfl; rw [log_rpow hx]⟩
 
 @[simp] lemma rpow_rpow_inv (hx : 0 ≤ x) (hy : y ≠ 0) : (x ^ y) ^ y⁻¹ = x := by
-  rw [← rpow_mul hx, mul_inv_cancel hy, rpow_one]
+  rw [← rpow_mul hx, mul_inv_cancel₀ hy, rpow_one]
 
 @[simp] lemma rpow_inv_rpow (hx : 0 ≤ x) (hy : y ≠ 0) : (x ^ y⁻¹) ^ y = x := by
-  rw [← rpow_mul hx, inv_mul_cancel hy, rpow_one]
+  rw [← rpow_mul hx, inv_mul_cancel₀ hy, rpow_one]
 
 theorem pow_rpow_inv_natCast (hx : 0 ≤ x) (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.2 hn
-  rw [← rpow_natCast, ← rpow_mul hx, mul_inv_cancel hn0, rpow_one]
+  rw [← rpow_natCast, ← rpow_mul hx, mul_inv_cancel₀ hn0, rpow_one]
 
 theorem rpow_inv_natCast_pow (hx : 0 ≤ x) (hn : n ≠ 0) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.2 hn
-  rw [← rpow_natCast, ← rpow_mul hx, inv_mul_cancel hn0, rpow_one]
+  rw [← rpow_natCast, ← rpow_mul hx, inv_mul_cancel₀ hn0, rpow_one]
 
 lemma rpow_natCast_mul (hx : 0 ≤ x) (n : ℕ) (z : ℝ) : x ^ (n * z) = (x ^ n) ^ z := by
   rw [rpow_mul hx, rpow_natCast]
@@ -683,7 +683,7 @@ theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤
 
 theorem rpow_left_injOn {x : ℝ} (hx : x ≠ 0) : InjOn (fun y : ℝ => y ^ x) { y : ℝ | 0 ≤ y } := by
   rintro y hy z hz (hyz : y ^ x = z ^ x)
-  rw [← rpow_one y, ← rpow_one z, ← _root_.mul_inv_cancel hx, rpow_mul hy, rpow_mul hz, hyz]
+  rw [← rpow_one y, ← rpow_one z, ← mul_inv_cancel₀ hx, rpow_mul hy, rpow_mul hz, hyz]
 
 lemma rpow_left_inj (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : z ≠ 0) : x ^ z = y ^ z ↔ x = y :=
   (rpow_left_injOn hz).eq_iff hx hy

@@ -60,7 +60,7 @@ def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j ∈ Finset.range n, (-1
 
 lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
   funext
-  simp only [logTaylor, Finset.range_zero, Nat.odd_iff_not_even, Int.cast_pow, Int.cast_neg,
+  simp only [logTaylor, Finset.range_zero, ← Nat.not_even_iff_odd, Int.cast_pow, Int.cast_neg,
     Int.cast_one, Finset.sum_empty]
 
 lemma logTaylor_succ (n : ℕ) :
@@ -79,10 +79,10 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
   | zero => simp [logTaylor_succ, logTaylor_zero, Pi.add_def, hasDerivAt_const]
   | succ n ih =>
     rw [logTaylor_succ]
-    simp only [cpow_natCast, Nat.cast_add, Nat.cast_one, Nat.odd_iff_not_even,
+    simp only [cpow_natCast, Nat.cast_add, Nat.cast_one, ← Nat.not_even_iff_odd,
       Finset.sum_range_succ, (show (-1) ^ (n + 1 + 1) = (-1) ^ n by ring)]
     refine HasDerivAt.add ih ?_
-    simp only [Nat.odd_iff_not_even, Int.cast_pow, Int.cast_neg, Int.cast_one, mul_div_assoc]
+    simp only [← Nat.not_even_iff_odd, Int.cast_pow, Int.cast_neg, Int.cast_one, mul_div_assoc]
     have : HasDerivAt (fun x : ℂ ↦ (x ^ (n + 1) / (n + 1))) (z ^ n) z := by
       simp_rw [div_eq_mul_inv]
       convert HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
@@ -100,7 +100,7 @@ lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane
   have hz' : -z ≠ 1 := by
     intro H
     rw [neg_eq_iff_eq_neg] at H
-    simp only [H, add_right_neg] at hz
+    simp only [H, add_neg_cancel] at hz
     exact slitPlane_ne_zero hz rfl
   simp_rw [← mul_pow, neg_one_mul, geom_sum_eq hz', ← neg_add', div_neg, add_comm z]
   field_simp [slitPlane_ne_zero hz]
