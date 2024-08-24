@@ -354,5 +354,5 @@ theorem ODE_solution_unique
     (ha : f a = g a) :
     EqOn f g (Icc a b) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  ODE_solution_unique_of_mem_Icc_right (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg hg'
+  ODE_solution_unique_of_mem_Icc_right (fun t => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha
