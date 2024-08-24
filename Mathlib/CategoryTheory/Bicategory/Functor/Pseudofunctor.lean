@@ -95,7 +95,7 @@ initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map�
 
 namespace Pseudofunctor
 
-attribute [simp, reassoc]
+attribute [simp, reassoc, to_app]
   map₂_whisker_left map₂_whisker_right map₂_associator map₂_left_unitor map₂_right_unitor
 
 section
