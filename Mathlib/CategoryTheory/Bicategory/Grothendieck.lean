@@ -4,12 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
 
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
-
-import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # The Grothendieck construction
