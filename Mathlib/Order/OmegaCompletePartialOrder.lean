@@ -698,7 +698,8 @@ protected lemma ωScottContinuous (f : α →𝒄 β) : ωScottContinuous f :=
 -- Not a `simp` lemma because in many cases projection is simpler than a generic coercion
 theorem toOrderHom_eq_coe (f : α →𝒄 β) : f.1 = f := rfl
 
-@[simp] theorem coe_mk (f : α →o β) (hf) : ⇑(mk f hf) = f := rfl
+@[simp] theorem coe_mk (f : α →o β) (hf : ∀ (c : Chain α), f.toFun (ωSup c) = ωSup (c.map f)) :
+    ⇑(mk f hf) = f := rfl
 @[simp] theorem coe_toOrderHom (f : α →𝒄 β) : ⇑f.1 = f := rfl
 
 /-- See Note [custom simps projection]. We specify this explicitly because we don't have a DFunLike
