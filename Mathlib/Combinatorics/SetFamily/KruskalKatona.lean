@@ -163,8 +163,8 @@ private lemma compression_improved (𝒜 : Finset (Finset α)) (h₁ : UsefulCom
   · rw [card_erase_of_mem (min'_mem _ _), card_erase_of_mem Hx, same_size]
   · rwa [← card_pos, card_erase_of_mem Hx, tsub_pos_iff_lt]
   · rwa [← Finset.card_pos, card_erase_of_mem (min'_mem _ _), ← same_size, tsub_pos_iff_lt]
-  · exact (Finset.max'_subset _ <| erase_subset _ _).trans_lt (max_lt.trans_le <|
-      le_max' _ _ <| mem_erase.2 ⟨(min'_lt_max'_of_card _ (by rwa [← same_size])).ne', max'_mem _ _⟩)
+  · exact (Finset.max'_subset _ <| erase_subset _ _).trans_lt (max_lt.trans_le <| le_max' _ _ <|
+      mem_erase.2 ⟨(min'_lt_max'_of_card _ (by rwa [← same_size])).ne', max'_mem _ _⟩)
 
 /-- If we're compressed by all useful compressions, then we're an initial segment. This is the other
 key Kruskal-Katona part. -/
