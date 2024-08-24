@@ -157,7 +157,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   --  to `t 0`, `t 1`, `t 2`... Then  `y`, `T^[m] y`, `T^[m]^[2] y` ... are
   -- `(dynEntourage T (U ○ U) m)`-close to `z`, `T^[m] z`, `T^[m]^[2] z`, so that the union of such
   -- `z` provides the desired cover. Since there are at most `s.card ^ n` sequences of
-  -- length `n` with values in `s`, we get the upper bound we want.
+  -- length `n` with values in `s`, we get the upper bound we want on the cardinality.
   -- First step: construct `dyncover`. Given `t 0`, `t 1`, `t 2`, if we cannot find such a point
   -- `dyncover t`, we use the dummy `x`.
   have (t : Fin n → s) : ∃ y : X, (⋂ k : Fin n, T^[m * k] ⁻¹' ball (t k) (dynEntourage T U m)) ⊆
@@ -177,7 +177,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
       exact mem_comp_of_mem_ball U_symm y_int z_int
   choose! dyncover h_dyncover using this
   -- The cover we want is the set of all `dyncover t`, that is, `range dyncover`. We need to check
-  -- that it is indeed a `(m * n, U ○ U)` cover, and that its cardinality is at most `card s ^ n`.
+  -- that it is indeed a `(U ○ U, m * n)` cover, and that its cardinality is at most `card s ^ n`.
   -- Only the first point requires significant work.
   let sn := range dyncover
   have := fintypeRange dyncover
@@ -382,7 +382,7 @@ lemma log_coverMincard_le_add {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     log (coverMincard T F (U ○ U) n) / n
     ≤ log (coverMincard T F U m) / m + log (coverMincard T F U m) / n := by
   -- If `n` is a multiple of `m`, this follows directly from `log_coverMincard_iterate_le`.
-  -- Otherwise, we bound the LHS by the smaller multiple of `m` larger than `n`, which gives the
+  -- Otherwise, we bound the LHS by the smallest multiple of `m` larger than `n`, which gives the
   -- error term `log (coverMincard T F U m) / n`.
   rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · rw [coverMincard_empty, ENat.toENNReal_zero, log_zero,
@@ -406,14 +406,14 @@ lemma log_coverMincard_le_add {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
 open Filter
 
 /-- The entropy of an entourage `U` (`Ent` stands for "entourage"), defined as the exponential rate
-  of growth of the size of the smallest `(n, U)`-refined cover of `F`. Takes values in the space of
+  of growth of the size of the smallest `(U, n)`-refined cover of `F`. Takes values in the space of
   extended real numbers `[-∞, +∞]`. This first version uses a `limsup`, and is chosen as the
   default definition.-/
 noncomputable def coverEntropyEnt (T : X → X) (F : Set X) (U : Set (X × X)) :=
   atTop.limsup fun n : ℕ ↦ log (coverMincard T F U n) / n
 
 /-- The entropy of an entourage `U` (`Ent` stands for "entourage"), defined as the exponential rate
-  of growth of the size of the smallest `(n, U)`-refined cover of `F`. Takes values in the space of
+  of growth of the size of the smallest `(U, n)`-refined cover of `F`. Takes values in the space of
   extended real numbers `[-∞, +∞]`. This second version uses a `liminf`, and is chosen as an
   alternative definition.-/
 noncomputable def coverEntropyInfEnt (T : X → X) (F : Set X) (U : Set (X × X)) :=
