@@ -542,6 +542,8 @@ instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α w
 
 variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 
+-- TODO Prove this result for `ScottContinuousOn` and deduce this as a special case
+-- https://github.com/leanprover-community/mathlib4/pull/15412
 open Chain in
 lemma ωScottContinuous.prodMk (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
     ωScottContinuous fun x => (f x, g x) := ScottContinuousOn.prodMk (fun a b hab => by
@@ -618,6 +620,12 @@ namespace CompleteLattice
 
 variable [OmegaCompletePartialOrder α] [CompleteLinearOrder β] {f g : α → β}
 
+-- TODO Prove this result for `ScottContinuousOn` and deduce this as a special case
+-- Also consider if it holds in greater generality (e.g. finite sets)
+-- N.B. The Scott Topology coincides with the Upper Topology on a Complete Linear Order
+-- `Topology.IsScott.scott_eq_upper_of_completeLinearOrder`
+-- We have that the product topology coincides with the upper topology
+-- https://github.com/leanprover-community/mathlib4/pull/12133
 lemma ωScottContinuous.inf (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
     ωScottContinuous (f ⊓ g) := by
   refine ωScottContinuous.of_monotone_map_ωSup
