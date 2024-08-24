@@ -64,6 +64,10 @@ namespace Ring
 
 open ringFunc Language
 
+instance : IsAlgebraic (Language.ring) := by
+  unfold Language.ring
+  infer_instance
+
 /-- This instance does not get inferred without `instDecidableEqFunctions` in
 `ModelTheory/Basic`. -/
 example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
@@ -252,6 +256,16 @@ def languageEquivEquivRingEquiv {R S : Type*}
       map_rel' := fun {n} f => by cases f },
     left_inv := fun f => by ext; rfl
     right_inv := fun f => by ext; rfl }
+
+instance {R : Type*} [Ring R] [CompatibleRing R] {S : Type*} [Ring S] [CompatibleRing S] :
+    Language.ring.StrongHomClass (R →+* S) R S where
+  map_fun := fun φ n f => match n, f with
+    | _, .zero => fun x => by simp only [funMap_zero, map_zero]
+    | _, .one => fun x => by simp only [funMap_one, map_one]
+    | _, .neg => fun x => by simp only [funMap_neg, Fin.isValue, map_neg, Function.comp_apply]
+    | _, .add => fun x => by simp only [funMap_add, Fin.isValue, map_add, Function.comp_apply]
+    | _, .mul => fun x => by simp only [funMap_mul, Fin.isValue, map_mul, Function.comp_apply]
+  map_rel := fun _ n => (IsAlgebraic.empty_relations n).elim
 
 variable (R : Type*) [Language.ring.Structure R]
 
