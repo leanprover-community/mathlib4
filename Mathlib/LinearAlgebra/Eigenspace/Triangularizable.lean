@@ -73,7 +73,7 @@ linear endomorphism span the whole space. -/
 theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
     ⨆ (μ : K) (k : ℕ), f.genEigenspace μ k = ⊤ := by
   -- We prove the claim by strong induction on the dimension of the vector space.
-  induction' h_dim : finrank K V using Nat.strong_induction_on with n ih generalizing V
+  induction' h_dim : finrank K V using Nat.strongInductionOn with n ih generalizing V
   cases' n with n
   -- If the vector space is 0-dimensional, the result is trivial.
   · rw [← top_le_iff]

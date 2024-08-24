@@ -826,6 +826,13 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
     (succ : ∀ n hmn, P n hmn → P (n + 1) (le_succ_of_le hmn)) : ∀ n hmn, P n hmn :=
   @Nat.leRec (motive := P) base succ
 
+/-- Induction principle deriving the next case from the two previous ones. -/
+def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
+    (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a : ℕ, P a
+  | 0 => zero
+  | 1 => one
+  | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
+
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `k < n`, then `P n` implies `P m` for
 all `m ≤ n`.
 Also works for functions to `Sort*`.

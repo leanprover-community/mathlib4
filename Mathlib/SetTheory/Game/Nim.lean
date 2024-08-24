@@ -311,8 +311,8 @@ xor. -/
 theorem grundyValue_nim_add_nim (n m : ℕ) :
     grundyValue (nim.{u} n + nim.{u} m) = n ^^^ m := by
   -- We do strong induction on both variables.
-  induction' n using Nat.strong_induction_on with n hn generalizing m
-  induction' m using Nat.strong_induction_on with m hm
+  induction' n using Nat.strongInductionOn with n hn generalizing m
+  induction' m using Nat.strongInductionOn with m hm
   rw [grundyValue_eq_mex_left]
   refine (Ordinal.mex_le_of_ne.{u, u} fun i => ?_).antisymm
     (Ordinal.le_mex_of_forall fun ou hu => ?_)

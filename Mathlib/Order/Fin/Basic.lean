@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.Hom.Set
-import Mathlib.Init.Data.Nat.Lemmas
 
 /-!
 # `Fin n` forms a bounded linear order
@@ -269,7 +268,7 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
 @[simp] lemma coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i := by
   rcases i with ⟨i, hi⟩
   dsimp only
-  induction' i using Nat.strong_induction_on with i h
+  induction' i using Nat.strongInductionOn with i h
   refine le_antisymm (forall_lt_iff_le.1 fun j hj => ?_) (forall_lt_iff_le.1 fun j hj => ?_)
   · have := e.symm.lt_iff_lt.2 (mk_lt_of_lt_val hj)
     rw [e.symm_apply_apply] at this

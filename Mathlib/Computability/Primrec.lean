@@ -822,7 +822,7 @@ instance list : Primcodable (List α) :=
     nat_iff.1 <|
       (encode_iff.2 this).of_eq fun n => by
         rw [List.foldl_reverse]
-        apply Nat.case_strong_induction_on n; · simp
+        apply Nat.caseStrongInductionOn n; · simp
         intro n IH; simp
         cases' @decode α _ n.unpair.1 with a; · rfl
         simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some']

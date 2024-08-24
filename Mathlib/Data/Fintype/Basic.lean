@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
-import Mathlib.Init.Data.Nat.Lemmas
 
 /-!
 # Finite types
@@ -1148,7 +1147,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
     set f := seqOfForallFinsetExistsAux P r h' with hf
     have A : ∀ n : ℕ, P (f n) := by
       intro n
-      induction' n using Nat.strong_induction_on with n IH
+      induction' n using Nat.strongInductionOn with n IH
       have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.1 n.2
       rw [hf, seqOfForallFinsetExistsAux]
       exact

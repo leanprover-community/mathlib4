@@ -148,7 +148,7 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     ∃ q : R[X], map f q = p ∧ q.degree = p.degree := by
   generalize hd : p.natDegree = d
   revert hd p
-  induction' d using Nat.strong_induction_on with n hn
+  induction' d using Nat.strongInductionOn with n hn
   intros p hlifts hdeg
   by_cases erase_zero : p.eraseLead = 0
   · rw [← eraseLead_add_monomial_natDegree_leadingCoeff p, erase_zero, zero_add, leadingCoeff]

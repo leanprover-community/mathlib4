@@ -3,8 +3,6 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Defs
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Monotonicity.Attr
@@ -78,7 +76,7 @@ theorem log_one_right (b : ℕ) : log b 1 = 0 :=
 `Nat.le_log_of_pow_le` for individual implications under weaker assumptions. -/
 theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     b ^ x ≤ y ↔ x ≤ log b y := by
-  induction' y using Nat.strong_induction_on with y ih generalizing x
+  induction' y using Nat.strongInductionOn with y ih generalizing x
   cases x with
   | zero => dsimp; omega
   | succ x =>
@@ -244,7 +242,7 @@ theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := b
 
 /-- `clog b` and `pow b` form a Galois connection. -/
 theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ clog b x ≤ y := by
-  induction' x using Nat.strong_induction_on with x ih generalizing y
+  induction' x using Nat.strongInductionOn with x ih generalizing y
   cases y
   · rw [Nat.pow_zero]
     refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩

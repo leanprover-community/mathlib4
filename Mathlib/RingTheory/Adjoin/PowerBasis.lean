@@ -145,17 +145,16 @@ theorem repr_pow_isIntegral [IsDomain S] (hB : IsIntegral R B.gen) {x : A}
     ∀ i, IsIntegral R (B.basis.repr (x ^ n) i) := by
   nontriviality A using Subsingleton.elim (x ^ n) 0, isIntegral_zero
   revert hx
-  refine Nat.case_strong_induction_on
-    -- Porting note: had to hint what to induct on
-    (p := fun n ↦ _ → ∀ (i : Fin B.dim), IsIntegral R (B.basis.repr (x ^ n) i))
-    n ?_ fun n hn => ?_
-  · intro _ i
+  induction n using Nat.caseStrongInductionOn with
+  | zero =>
+    intro _ i
     rw [pow_zero, ← pow_zero B.gen, ← Fin.val_mk B.dim_pos, ← B.basis_eq_pow,
       B.basis.repr_self_apply]
     split_ifs
     · exact isIntegral_one
     · exact isIntegral_zero
-  · intro hx
+  | ind n hn =>
+    intro hx
     rw [pow_succ]
     exact repr_mul_isIntegral hB (fun _ => hn _ le_rfl (fun _ => hx _) _) hx hmin
 
