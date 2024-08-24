@@ -111,19 +111,21 @@ lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : n →C⋆ A} :
   simp [toCLM_apply, Matrix.mulVec, Matrix.dotProduct]
 
 lemma toCLM_apply_single [DecidableEq n] {M : CStarMatrix m n A} {j : n} (a : A) :
-    (toCLM A M) (Pi.single j a) = (WithCStarModule.equiv _).symm (fun i => M i j * a) := by
+    (toCLM A M) ((WithCStarModule.equiv _).symm <| Pi.single j a)
+      = (WithCStarModule.equiv _).symm (fun i => M i j * a) := by
   change M.mulVec (Pi.single j a) = (fun i => M i j * a)
   ext
   simp [toCLM]
 
 lemma toCLM_apply_single_apply [DecidableEq n] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
-    (toCLM A M) (Pi.single j a) i = M i j * a := by
+    (toCLM A M) ((WithCStarModule.equiv _).symm <| Pi.single j a) i = M i j * a := by
   simp [toCLM_apply_single]
 
 lemma mul_entry_mul_eq_inner_toCLM [DecidableEq m] [DecidableEq n] {M : CStarMatrix m n A}
     {i : m} {j : n} (a b : A) :
     star a * M i j * b
-      = ⟪(WithCStarModule.equiv _).symm (Pi.single i a), toCLM A M (Pi.single j b)⟫_A := by
+      = ⟪(WithCStarModule.equiv _).symm (Pi.single i a),
+          toCLM A M ((WithCStarModule.equiv _).symm <| Pi.single j b)⟫_A := by
   simp [toCLM_apply_single, mul_assoc]
 
 lemma toCLM_eq_zero_iff [DecidableEq n] {M : CStarMatrix m n A} : toCLM A M = 0 ↔ M = 0 := by
@@ -192,8 +194,10 @@ lemma norm_entry_le_norm [DecidableEq n] [DecidableEq m] {M : CStarMatrix m n A}
                 rw [CStarRing.norm_star_mul_self, CStarRing.norm_self_mul_star]
         _ = ‖⟪(WithCStarModule.equiv _).symm (Pi.single i (M i j * star (M i j))),
                   toCLM A M ((WithCStarModule.equiv _).symm <| Pi.single j (star (M i j)))⟫_A‖ := by
-                simp [← mul_entry_mul_eq_inner_toCLM, mul_assoc]
-                sorry
+                simp only [star_mul, star_star, mul_assoc, WithCStarModule.inner_single_left,
+                  WithCStarModule.inner_def]
+                rw [toCLM_apply_single]
+                congr
         _ ≤ ‖(WithCStarModule.equiv (m → A)).symm (Pi.single i (M i j * star (M i j)))‖
                   * ‖toCLM A M ((WithCStarModule.equiv _).symm <| Pi.single j (star (M i j)))‖ :=
                 norm_inner_le (m →C⋆ A)
@@ -277,7 +281,7 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [Partial
 
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 
-private instance : AddCommGroup (CStaCStarixAux m n A) :=
+private instance : AddCommGroup (CStarMatrixAux m n A) :=
   inferInstanceAs <| AddCommGroup (CStarMatrix m n A)
 private instance : Module ℂ (CStarMatrixAux m n A) :=
   inferInstanceAs <| Module ℂ (CStarMatrix m n A)
