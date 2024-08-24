@@ -234,12 +234,13 @@ theorem continuous_curry : ωScottContinuous <| monotoneCurry α β γ :=
     rw [map_comp, map_comp]
     rfl⟩
 
-theorem continuous_uncurry : ωScottContinuous <| monotoneUncurry α β γ :=
-  ωScottContinuous_iff_monotone_map_ωSup.mpr ⟨fun ⦃a b⦄ a i ↦ a i.fst i.snd, fun c ↦ by
-      ext ⟨x, y⟩
-      dsimp [uncurry, ωSup]
-      rw [map_comp, map_comp]
-      rfl⟩
+theorem continuous_uncurry : ωScottContinuous <| monotoneUncurry α β γ := by
+  rw [OrderHom.ωScottContinuous_iff_map_ωSup]
+  intro c
+  ext ⟨x, y⟩
+  dsimp [uncurry, ωSup]
+  rw [map_comp, map_comp]
+  rfl
 
 end Monotone
 
