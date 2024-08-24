@@ -20,10 +20,14 @@ jobs:
 
       - name: Add reaction
         if: steps.user_permission.outputs.require-result == 'true'
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          comment-id: ${{ github.event.comment.id }}
-          reactions: rocket
+        run: |
+            gh api --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28"
+              /repos/${{ github.repository_owner }}/${{ github.event.repository }}/pulls/comments/${{ github.event.comment.id }}/reactions \
+              -f "content=rocket"
+        env:
+            GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
 
       - name: cleanup
         if: steps.user_permission.outputs.require-result == 'true'
@@ -38,7 +42,7 @@ jobs:
       - name: Checkout PR branch
         if: steps.user_permission.outputs.require-result == 'true'
         run: |
-            gh pr checkout ${{ github.event.issue.number }}
+            gh pr checkout ${{ github.event.pull_request.number }}
         env:
             GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
 
