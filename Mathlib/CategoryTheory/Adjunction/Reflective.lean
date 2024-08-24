@@ -153,6 +153,12 @@ instance [Reflective i] (X : Functor.EssImageSubcategory i) :
   IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
 Functor.essImage.unit_isIso X.property
 
+-- These attributes are necessary to make automation work in `equivEssImageOfReflective`.
+-- Making them global doesn't break anything elsewhere, but this is enough for now.
+-- TODO: investigate further.
+attribute [local simp 900] Functor.essImageInclusion_map
+attribute [local ext] Functor.essImage_ext
+
 /-- If `i : D ⥤ C` is reflective, the inverse functor of `i ≌ F.essImage` can be explicitly
 defined by the reflector. -/
 @[simps]
