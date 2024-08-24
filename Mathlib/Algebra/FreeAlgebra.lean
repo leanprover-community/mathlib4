@@ -526,7 +526,7 @@ namespace FreeAlgebra
 /-- An induction principle for the free algebra.
 
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
-preserved under addition and muliplication, then it holds for all of `FreeAlgebra R X`.
+preserved under addition and multiplication, then it holds for all of `FreeAlgebra R X`.
 -/
 @[elab_as_elim, induction_eliminator]
 theorem induction {C : FreeAlgebra R X → Prop}

@@ -119,9 +119,10 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
 @[simps!]
-noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
-  CategoryTheory.Equivalence.mk partialFunToPointed pointedToPartialFun
-    (NatIso.ofComponents (fun X => PartialFun.Iso.mk
+noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
+  functor := partialFunToPointed
+  inverse := pointedToPartialFun
+  unitIso := NatIso.ofComponents (fun X => PartialFun.Iso.mk
       { toFun := fun a => ⟨some a, some_ne_none a⟩
         invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
         left_inv := fun a => Option.get_some _ _
@@ -145,13 +146,19 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
             · intro h
               split_ifs at h with ha
               rw [some_inj] at h
-              exact ⟨b, ⟨ha, h.symm⟩, rfl⟩) <|
+              exact ⟨b, ⟨ha, h.symm⟩, rfl⟩
+  counitIso :=
     NatIso.ofComponents
       (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
         simp_all [Option.casesOn'_eq_elim, Part.elim_toOption]
+  functor_unitIso_comp X := by
+    ext (_ | x)
+    · rfl
+    · simp
+      rfl
 
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
