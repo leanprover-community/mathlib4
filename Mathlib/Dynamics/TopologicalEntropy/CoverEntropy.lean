@@ -538,8 +538,7 @@ lemma coverEntropy_antitone (T : X → X) (F : Set X) :
 
 variable [UniformSpace X]
 
-lemma coverEntropyEnt_le_coverEntropy (T : X → X) (F : Set X) {U : Set (X × X)}
-    (h : U ∈ 𝓤 X) :
+lemma coverEntropyEnt_le_coverEntropy (T : X → X) (F : Set X) {U : Set (X × X)} (h : U ∈ 𝓤 X) :
     coverEntropyEnt T F U ≤ coverEntropy T F :=
   le_iSup₂ (f := fun (U : Set (X × X)) (_ : U ∈ 𝓤 X) ↦ coverEntropyEnt T F U) U h
 
@@ -583,7 +582,7 @@ lemma coverEntropyInf_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
   le_of_eq_of_le (coverEntropyInfEnt_univ T h).symm
     (coverEntropyInfEnt_le_coverEntropyInf T F univ_mem)
 
-lemma coverEntropySup_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
+lemma coverEntropy_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
     0 ≤ coverEntropy T F :=
   (coverEntropyInf_nonneg T h).trans (coverEntropyInf_le_coverEntropy T F)
 
