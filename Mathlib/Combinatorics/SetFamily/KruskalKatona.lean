@@ -55,7 +55,7 @@ variable {α : Type*} [LinearOrder α] {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α
 /-- This is important for iterating Kruskal-Katona: the shadow of an initial segment is also an
 initial segment. -/
 lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
-    ∂ (initSeg s) = initSeg (erase s $ min' s hs) := by
+    ∂ (initSeg s) = initSeg (erase s <| min' s hs) := by
   -- This is a pretty painful proof, with lots of cases.
   ext t
   simp only [mem_shadow_iff_insert_mem, mem_initSeg, exists_prop]
@@ -84,10 +84,10 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   -- Cases on j < k or j = k
   obtain hjk | r₁ := hjk.lt_or_eq
   -- if j < k, k is our colex witness for t ∪ {j} < s
-  · refine Or.inr ⟨k, mem_of_mem_erase ‹_›, fun hk ↦ hkt $ mem_of_mem_insert_of_ne hk hjk.ne',
+  · refine Or.inr ⟨k, mem_of_mem_erase ‹_›, fun hk ↦ hkt <| mem_of_mem_insert_of_ne hk hjk.ne',
       fun x hx ↦ ?_⟩
     simpa only [mem_insert, z hx, (hjk.trans hx).ne', mem_erase, Ne, false_or_iff,
-      and_iff_right_iff_imp] using fun _ ↦ ((min'_le _ _ $ mem_of_mem_erase hks).trans_lt hx).ne'
+      and_iff_right_iff_imp] using fun _ ↦ ((min'_le _ _ <| mem_of_mem_erase hks).trans_lt hx).ne'
   -- if j = k, all of range k is in t so by sizes t ∪ {j} = s
   refine Or.inl (eq_of_subset_of_card_le (fun a ha ↦ ?_) hcard.ge).symm
   rcases lt_trichotomy k a with (lt | rfl | gt)
@@ -132,7 +132,7 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
   rw [compress, ite_ne_right_iff] at hA
   rw [compress, if_pos hA.1, lt_iff_exists_filter_lt]
   simp_rw [mem_sdiff (s := s), filter_inj, and_assoc]
-  refine ⟨_, hA.1.2 $ max'_mem _ hV, not_mem_sdiff_of_mem_right $ max'_mem _ _, fun a ha ↦ ?_⟩
+  refine ⟨_, hA.1.2 <| max'_mem _ hV, not_mem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
   have : a ∉ V := fun H ↦ ha.not_le (le_max' _ _ H)
   have : a ∉ U := fun H ↦ ha.not_lt ((le_max' _ _ H).trans_lt h)
   simp [‹a ∉ U›, ‹a ∉ V›]
@@ -163,8 +163,8 @@ private lemma compression_improved (𝒜 : Finset (Finset α)) (h₁ : UsefulCom
   · rw [card_erase_of_mem (min'_mem _ _), card_erase_of_mem Hx, same_size]
   · rwa [← card_pos, card_erase_of_mem Hx, tsub_pos_iff_lt]
   · rwa [← Finset.card_pos, card_erase_of_mem (min'_mem _ _), ← same_size, tsub_pos_iff_lt]
-  · exact (Finset.max'_subset _ $ erase_subset _ _).trans_lt (max_lt.trans_le $
-      le_max' _ _ $ mem_erase.2 ⟨(min'_lt_max'_of_card _ (by rwa [← same_size])).ne', max'_mem _ _⟩)
+  · exact (Finset.max'_subset _ <| erase_subset _ _).trans_lt (max_lt.trans_le <|
+      le_max' _ _ <| mem_erase.2 ⟨(min'_lt_max'_of_card _ (by rwa [← same_size])).ne', max'_mem _ _⟩)
 
 /-- If we're compressed by all useful compressions, then we're an initial segment. This is the other
 key Kruskal-Katona part. -/
@@ -175,15 +175,15 @@ lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ 
   by_contra hB
   have hAB : A ≠ B := ne_of_mem_of_not_mem hA hB
   have hAB' : A.card = B.card := (h₁ hA).trans sizeA.symm
-  have hU : (A \ B).Nonempty := sdiff_nonempty.2 fun h ↦ hAB $ eq_of_subset_of_card_le h hAB'.ge
+  have hU : (A \ B).Nonempty := sdiff_nonempty.2 fun h ↦ hAB <| eq_of_subset_of_card_le h hAB'.ge
   have hV : (B \ A).Nonempty :=
-    sdiff_nonempty.2 fun h ↦ hAB.symm $ eq_of_subset_of_card_le h hAB'.le
+    sdiff_nonempty.2 fun h ↦ hAB.symm <| eq_of_subset_of_card_le h hAB'.le
   have disj : Disjoint (B \ A) (A \ B) := disjoint_sdiff.mono_left sdiff_subset
   have smaller : max' _ hV < max' _ hU := by
     obtain hlt | heq | hgt := lt_trichotomy (max' _ hU) (max' _ hV)
     · rw [← compress_sdiff_sdiff A B] at hAB hBA
-      cases hBA.not_lt $ toColex_compress_lt_toColex hlt hAB
-    · exact (disjoint_right.1 disj (max'_mem _ hU) $ heq.symm ▸ max'_mem _ _).elim
+      cases hBA.not_lt <| toColex_compress_lt_toColex hlt hAB
+    · exact (disjoint_right.1 disj (max'_mem _ hU) <| heq.symm ▸ max'_mem _ _).elim
     · assumption
   refine hB ?_
   rw [← (h₂ _ _ ⟨disj, card_sdiff_comm hAB'.symm, hV, hU, smaller⟩).eq]
@@ -222,7 +222,7 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
   simp_rw [← sum_image Fin.val_injective.injOn]
   rw [geomSum_lt_geomSum_iff_toColex_lt_toColex le_rfl,
     toColex_image_lt_toColex_image Fin.val_strictMono]
-  exact toColex_compress_lt_toColex h $ q _ hA
+  exact toColex_compress_lt_toColex h <| q _ hA
 
 /-- The main Kruskal-Katona helper: use induction with our measure to keep compressing until
 we can't any more, which gives a set family which is fully compressed and has the nice properties we
@@ -240,14 +240,14 @@ private lemma kruskal_katona_helper {r : ℕ} (𝒜 : Finset (Finset (Fin n)))
   · refine ⟨𝒜, le_rfl, rfl, h, fun U V hUV ↦ ?_⟩
     rw [eq_empty_iff_forall_not_mem] at husable
     by_contra h
-    exact husable ⟨U, V⟩ $ mem_filter.2 ⟨mem_univ _, hUV, h⟩
+    exact husable ⟨U, V⟩ <| mem_filter.2 ⟨mem_univ _, hUV, h⟩
   -- Yes. Then apply the smallest compression, then keep going
   obtain ⟨⟨U, V⟩, hUV, t⟩ := exists_min_image usable (fun t ↦ t.1.card) husable
   rw [mem_filter] at hUV
   have h₂ : ∀ U₁ V₁, UsefulCompression U₁ V₁ → U₁.card < U.card → IsCompressed U₁ V₁ 𝒜 := by
     rintro U₁ V₁ huseful hUcard
     by_contra h
-    exact hUcard.not_le $ t ⟨U₁, V₁⟩ $ mem_filter.2 ⟨mem_univ _, huseful, h⟩
+    exact hUcard.not_le <| t ⟨U₁, V₁⟩ <| mem_filter.2 ⟨mem_univ _, huseful, h⟩
   have p1 : (∂ (𝓒 U V 𝒜)).card ≤ (∂ 𝒜).card := compression_improved _ hUV.2.1 h₂
   obtain ⟨-, hUV', hu, hv, hmax⟩ := hUV.2.1
   have := familyMeasure_compression_lt_familyMeasure hmax hUV.2.2
@@ -259,7 +259,7 @@ end UV
 
 -- Finally we can prove Kruskal-Katona.
 section KK
-variable {r k i : ℕ} {𝒜 𝒞 : Finset $ Finset $ Fin n}
+variable {r k i : ℕ} {𝒜 𝒞 : Finset <| Finset <| Fin n}
 
 /-- The **Kruskal-Katona theorem**.
 
