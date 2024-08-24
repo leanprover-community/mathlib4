@@ -298,11 +298,7 @@ instance orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
 theorem enum_succ_eq_top {o : Ordinal} :
-    enum (· < ·) ⟨o,
-        by
-          rw [type_lt]
-          exact lt_succ o⟩ =
-      (⊤ : (succ o).out.α) :=
+    enum (· < ·) ⟨o, by rw [type_lt]; exact lt_succ o⟩ = (⊤ : (succ o).out.α) :=
   rfl
 
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]

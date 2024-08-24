@@ -471,9 +471,9 @@ theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
     enum r ⟨typein r a, typein_lt_type r a⟩ = a :=
   enum_type (PrincipalSeg.ofElement r a)
 
-theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordinal} (h₁ : o₁ < type r)
-    (h₂ : o₂ < type r) : r (enum r ⟨o₁, h₁⟩) (enum r ⟨o₂, h₂⟩) ↔ o₁ < o₂ := by
-  rw [← typein_lt_typein r, typein_enum, typein_enum]
+theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+    r (enum r o₁) (enum r o₂) ↔ o₁ < o₂ := by
+  rw [← typein_lt_typein r, typein_enum, typein_enum, Subtype.coe_lt_coe]
 
 theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
@@ -981,16 +981,13 @@ theorem typein_le_typein' (o : Ordinal) {x x' : o.out.α} :
   rw [typein_le_typein]
   exact not_lt
 
--- Porting note: added nolint, simpnf linter falsely claims it never applies
-@[simp, nolint simpNF]
-theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o o' : Ordinal} (ho : o < type r)
-    (ho' : o' < type r) : ¬r (enum r ⟨o', ho'⟩) (enum r ⟨o, ho⟩) ↔ o ≤ o' := by
-  rw [← @not_lt _ _ o' o, enum_lt_enum ho']
+theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+    ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
+  rw [← @not_lt _ _ o₁ o₂, enum_lt_enum (r := r)]
 
 @[simp]
-theorem enum_le_enum' (a : Ordinal) {o o' : Ordinal} (ho : o < type (· < ·))
-    (ho' : o' < type (· < ·)) :
-    enum (· < ·) ⟨o, ho⟩ ≤ @enum a.out.α (· < ·) _ ⟨o', ho'⟩ ↔ o ≤ o' := by
+theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : {o // o < type (· < ·)}} :
+    enum (· < ·) o₁ ≤ @enum a.out.α (· < ·) _ o₂ ↔ o₁ ≤ o₂ := by
   rw [← @enum_le_enum _ (· < ·) (isWellOrder_out_lt _), ← not_lt]
 
 theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type r) (a : α) :
@@ -1004,16 +1001,13 @@ theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.out.α) :
   apply enum_zero_le
 
 theorem le_enum_succ {o : Ordinal} (a : (succ o).out.α) :
-    a ≤
-      @enum (succ o).out.α (· < ·) _ ⟨o,
-        (by
-          rw [type_lt]
-          exact lt_succ o)⟩ := by
-  rw [← @enum_typein _ (· < ·) (isWellOrder_out_lt _) a, enum_le_enum', ← lt_succ_iff]
+    a ≤ @enum (succ o).out.α (· < ·) _ ⟨o, (by rw [type_lt]; exact lt_succ o)⟩ := by
+  rw [← @enum_typein _ (· < ·) (isWellOrder_out_lt _) a, enum_le_enum', Subtype.mk_le_mk,
+    ← lt_succ_iff]
   apply typein_lt_self
 
-theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordinal} (h₁ : o₁ < type r)
-    (h₂ : o₂ < type r) : enum r ⟨o₁, h₁⟩ = enum r ⟨o₂, h₂⟩ ↔ o₁ = o₂ := by
+theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+    enum r o₁ = enum r o₂ ↔ o₁ = o₂ := by
   rw [EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]
 
 /-- The order isomorphism between ordinals less than `o` and `o.out.α`. -/

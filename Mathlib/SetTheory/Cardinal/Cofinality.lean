@@ -219,7 +219,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     have := typein_lt_self a
     simp_rw [← hf, lt_lsub_iff] at this
     cases' this with i hi
-    refine ⟨@enum _ (· < ·) o.out.wo ⟨f i, ?_⟩, ?_, ?_⟩
+    refine ⟨enum (α := o.out.α) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
     · rw [type_lt, ← hf]
       apply lt_lsub
     · rw [mem_preimage, typein_enum]
