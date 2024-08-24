@@ -428,7 +428,7 @@ theorem inductionOn {motive : FreeProduct R A → Prop} (x : FreeProduct R A)
     ext
     simp_rw [AlgHom.id_comp, AlgHom.comp_toLinearMap, LinearMap.comp_apply,
              AlgHom.toLinearMap_apply, lift_apply, liftAlgHom_mkAlgHom_apply,
-             TensorAlgebra.lift_ι_apply, toModule_lof, AlgHom.toLinearMap_apply, ←AlgHom.comp_apply,
+             TensorAlgebra.lift_ι_apply, toModule_lof, AlgHom.toLinearMap_apply, ← AlgHom.comp_apply,
              of, AlgHom.val_comp_codRestrict, FreeProduct.of, ι, ι', mkAlgHom,
              AlgHom.ofLinearMap_apply, LinearMap.comp_apply, AlgHom.toLinearMap_apply]
   -- finding a proof is finding an element of the subalgebra
