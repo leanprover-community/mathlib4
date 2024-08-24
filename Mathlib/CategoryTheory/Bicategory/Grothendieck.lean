@@ -16,19 +16,16 @@ import Mathlib.Tactic.CategoryTheory.ToApp
 
 Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`, we associate to it a category
 `∫ F`, equipped with a functor `∫ F ⥤ 𝒮`.
+
 The category `∫ F` is defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
   morphism in `𝒮` and `h : b ⟶ F(f)(a)`
+
 The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
-
-## TODO
-
-1. Implement more functoriality for the Grothendieck construction (make things into pseudofunctors).
-2. Obtain the results in `CategoryTheory.Grothendieck` as a specialization of these results?
 
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
@@ -63,7 +60,7 @@ scoped prefix:75 "∫ " => Pseudofunctor.Grothendieck
 structure Hom (X Y : ∫ F) where
   /-- The morphism between base objects. -/
   base : X.base ⟶ Y.base
-  /-- TODO. -/
+  /-- The morphism in the fiber over the domain. -/
   fiber : X.fiber ⟶ (F.map base.op.toLoc).obj Y.fiber
 
 @[simps!]
@@ -81,8 +78,8 @@ section
 variable {a b : ∫ F} (f : a ⟶ b)
 
 @[ext (iff := false)]
-lemma Hom.ext' (g : a ⟶ b) (hfg₁ : f.1 = g.1)
-    (hfg₂ : f.2 = g.2 ≫ eqToHom (hfg₁ ▸ rfl)) : f = g := by
+lemma Hom.ext' (g : a ⟶ b) (hfg₁ : f.base = g.base)
+    (hfg₂ : f.fiber = g.fiber ≫ eqToHom (hfg₁ ▸ rfl)) : f = g := by
   cases f; cases g
   congr
   dsimp at hfg₁
@@ -90,33 +87,31 @@ lemma Hom.ext' (g : a ⟶ b) (hfg₁ : f.1 = g.1)
   simpa only [eqToHom_refl, id_comp] using hfg₂
 
 lemma Hom.ext'_iff (g : a ⟶ b) :
-    f = g ↔ ∃ (hfg : f.1 = g.1), f.2 = g.2 ≫ eqToHom (hfg ▸ rfl) where
+    f = g ↔ ∃ (hfg : f.base = g.base), f.fiber = g.fiber ≫ eqToHom (hfg ▸ rfl) where
   mp hfg := ⟨by rw [hfg], by simp [hfg]⟩
   mpr := fun ⟨hfg₁, hfg₂⟩ => Hom.ext' f g hfg₁ hfg₂
 
 lemma Hom.congr {a b : ∫ F} {f g : a ⟶ b} (h : f = g) :
-    f.2 = g.2 ≫ eqToHom (h ▸ rfl) := by
+    f.fiber = g.fiber ≫ eqToHom (h ▸ rfl) := by
   simp [h]
 
-protected lemma id_comp : 𝟙 a ≫ f = f := by
+lemma id_comp : 𝟙 a ≫ f = f := by
   ext
   · simp
-  · simp [F.mapComp_id_right_inv f.1.op.toLoc, ← (F.mapId ⟨op a.1⟩).inv.naturality_assoc f.2]
+  · simp [F.mapComp_id_right_inv f.base.op.toLoc, ← (F.mapId ⟨op a.1⟩).inv.naturality_assoc f.fiber]
 
-protected lemma comp_id : f ≫ 𝟙 b = f := by
+lemma comp_id : f ≫ 𝟙 b = f := by
   ext
   · simp
-  -- TODO: these appear often, is there some lemma I can make from this?
   · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
 
 end
 
-protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    (f ≫ g) ≫ h = f ≫ g ≫ h := by
+lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : (f ≫ g) ≫ h = f ≫ g ≫ h := by
   ext
   · simp
   dsimp
-  slice_lhs 3 4 => rw [← (F.mapComp g.1.op.toLoc f.1.op.toLoc).inv.naturality h.2]
+  slice_lhs 3 4 => rw [← (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.naturality h.fiber]
   simp [F.mapComp_assoc_right_inv_app]
 
 /-- The category structure on `∫ F`. -/
@@ -131,7 +126,7 @@ factor. -/
 @[simps]
 def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ F ⥤ 𝒮 where
   obj := fun X => X.base
-  map := fun f => f.1
+  map := fun f => f.base
 
 end Pseudofunctor.Grothendieck
 
