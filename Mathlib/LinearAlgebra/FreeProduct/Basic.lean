@@ -386,8 +386,8 @@ def TensorAlgebra.ofSubsingleton
   AlgEquiv.ofAlgHom algebraMapInv (Algebra.ofId R _)
     (by ext) (by ext m; simp [Subsingleton.allEq m 0])
 
-lemma empty_rel_false [inst : IsEmpty I] {x y} (h : rel R A x y) :
-  False := by cases h <;> exact inst.elim ‹_›
+lemma empty_rel_false [inst : IsEmpty I] {x y} (h : rel R A x y) : False 
+  := by cases h <;> exact inst.elim ‹_›
 
 @[simp↓] lemma empty_rel_false_iff [IsEmpty I] {x y}:
   rel R A x y ↔ False := ⟨empty_rel_false R A, False.elim⟩
