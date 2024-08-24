@@ -68,7 +68,7 @@ end OplaxTrans
 variable (B C)
 
 /-- A bicategory structure on the oplax functors between bicategories. -/
-@[simps!?]
+@[simps!]
 instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   whiskerLeft {F G H} η _ _ Γ := OplaxTrans.whiskerLeft η Γ
   whiskerRight {F G H} _ _ Γ η := OplaxTrans.whiskerRight Γ η
