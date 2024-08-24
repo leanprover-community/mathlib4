@@ -129,18 +129,40 @@ lemma finiteScalarRight_apply (t : M ⊗[R] (ι → R)) (i : ι) :
 
 variable (κ : Type*)
 
+variable (R N ι)
+
+/-- If `ι` is finite then `finiteTensorPiLid R N ι κ` is the natural isomorphism
+`(ι → R) ⊗[R] (κ → N) ≃ₗ[R] ι × κ → N`. -/
 noncomputable def finiteTensorPiLid : (ι → R) ⊗[R] (κ → N) ≃ₗ[R] ι × κ → N :=
   (finiteScalarLeft R (κ → N) ι :
     (ι → R) ⊗[R] (κ → N) ≃ₗ[R] (ι → κ → N)) ≪≫ₗ
-  (sorry) -- this is missing??
+  ((LinearEquiv.curry R N ι κ).symm :
+    (ι → κ → N) ≃ₗ[R] (ι × κ → N))
 
-noncomputable def isom'' {R : Type*} [CommRing R] {m n : Type*} [Finite m] [DecidableEq m] :
-    (m → R) ⊗[R] (n → R) ≃ₗ[R] (m × n → R) :=
-  (LinearEquiv.rTensor (n → R) (Finsupp.linearEquivFunOnFinite R R m).symm :
-    (m → R) ⊗[R] (n → R) ≃ₗ[R] ((m →₀ R) ⊗[R] (n → R))) ≪≫ₗ
-  (TensorProduct.finsuppScalarLeft R (n → R) m :
-    (m →₀ R) ⊗[R] (n → R) ≃ₗ[R] (m →₀ (n → R))) ≪≫ₗ
-  ((Finsupp.linearEquivFunOnFinite R (n → R) m :
-    (m →₀ (n → R)) ≃ₗ[R] m → n → R)) ≪≫ₗ
-  ((LinearEquiv.curry R m n).symm :
-    (m → n → R) ≃ₗ[R] (m × n → R))
+variable {R N ι κ}
+
+@[simp]
+theorem finiteTensorPiLid_apply_apply (f : ι → R) (g : κ → N) (a : ι) (b : κ) :
+    finiteTensorPiLid R N ι κ (f ⊗ₜ[R] g) (a, b) = f a • g b := by
+  simp [finiteTensorPiLid]
+
+variable (R M ι κ)
+
+/-- If `ι` is finite then `piTensorFiniteRid R M ι κ` is the natural isomorphism
+`(κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M`. -/
+noncomputable def piTensorFiniteRid : (κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M :=
+  (finiteScalarRight R (κ → M) ι :
+    (κ → M) ⊗[R] (ι → R) ≃ₗ[R] (ι → κ → M)) ≪≫ₗ
+  ((LinearEquiv.curry R M ι κ).symm :
+    (ι → κ → M) ≃ₗ[R] ι × κ → M) ≪≫ₗ
+  (LinearEquiv.funCongrLeft R M (Equiv.prodComm κ ι) :
+    (ι × κ → M) ≃ₗ[R] κ × ι → M)
+
+variable {R M ι κ}
+
+@[simp]
+theorem piTensorFiniteRid_apply_apply (f : κ → M) (g : ι → R) (a : κ) (b : ι) :
+    piTensorFiniteRid R M ι κ (f ⊗ₜ[R] g) (a, b) = g b • f a := by
+  simp [piTensorFiniteRid]
+
+end TensorProduct
