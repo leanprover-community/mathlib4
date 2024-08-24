@@ -243,7 +243,7 @@ theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
     mk K p (n, x) = mk K p (m + n, y) := by
   subst H
   induction' m with m ih
-  · simp only [Nat.zero_eq, zero_add, iterate_zero_apply]
+  · simp only [zero_add, iterate_zero_apply]
   rw [ih, Nat.succ_add, iterate_succ']
   apply Quot.sound
   apply R.intro

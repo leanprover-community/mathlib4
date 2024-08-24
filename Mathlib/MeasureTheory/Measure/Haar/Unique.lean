@@ -81,7 +81,7 @@ lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
   · simp only [le_iInf_iff]
     intro f f_cont f_comp fk f_nonneg
     apply (f_cont.integrable_of_hasCompactSupport f_comp).measure_le_integral
-    · exact eventually_of_forall f_nonneg
+    · exact Eventually.of_forall f_nonneg
     · exact fun x hx ↦ by simp [fk hx]
   · apply le_of_forall_lt' (fun r hr ↦ ?_)
     simp only [iInf_lt_iff, exists_prop, exists_and_left]
@@ -468,7 +468,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · exact fun n ↦ (vf_cont n).aestronglyMeasurable
     · apply IntegrableOn.integrable_indicator _ (isClosed_tsupport f).measurableSet
       simpa using IsCompact.measure_lt_top h'f
-    · refine fun n ↦ eventually_of_forall (fun x ↦ ?_)
+    · refine fun n ↦ Eventually.of_forall (fun x ↦ ?_)
       by_cases hx : x ∈ tsupport f
       · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, indicator_of_mem]
         norm_cast

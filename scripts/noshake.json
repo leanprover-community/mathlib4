@@ -48,6 +48,7 @@
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
   "Mathlib.Geometry.Manifold.Instances.Real",
+  "Mathlib.Init",
   "Mathlib.Init.Align",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
   "Mathlib.Mathport.Attributes",

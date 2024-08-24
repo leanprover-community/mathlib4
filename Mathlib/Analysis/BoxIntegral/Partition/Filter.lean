@@ -518,7 +518,7 @@ theorem eventually_isPartition (l : IntegrationParams) (I : Box ι) :
     ∀ᶠ π in l.toFilteriUnion I ⊤, TaggedPrepartition.IsPartition π :=
   eventually_iSup.2 fun _ =>
     eventually_inf_principal.2 <|
-      eventually_of_forall fun π h =>
+      Eventually.of_forall fun π h =>
         π.isPartition_iff_iUnion_eq.2 (h.trans Prepartition.iUnion_top)
 
 end IntegrationParams

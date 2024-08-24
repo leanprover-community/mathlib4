@@ -37,7 +37,10 @@ section Miscellany
 --   And.decidable Or.decidable Decidable.false Xor.decidable Iff.decidable Decidable.true
 --   Implies.decidable Not.decidable Ne.decidable Bool.decidableEq Decidable.toBool
 
-attribute [simp] cast_eq cast_heq imp_false
+attribute [simp] cast_heq
+
+-- This can be removed once we move to Lean v4.11
+attribute [simp] insert_emptyc_eq
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
@@ -746,6 +749,32 @@ def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) :
 @[simp]
 lemma choose_eq' (a : α) : @Exists.choose _ (a = ·) ⟨a, rfl⟩ = a :=
   (@choose_spec _ (a = ·) _).symm
+
+alias axiom_of_choice := axiomOfChoice -- TODO: remove? rename in core?
+alias by_cases := byCases -- TODO: remove? rename in core?
+alias by_contradiction := byContradiction -- TODO: remove? rename in core?
+
+-- The remaining theorems in this section were ported from Lean 3,
+-- but are currently unused in Mathlib, so have been deprecated.
+-- If any are being used downstream, please remove the deprecation.
+
+alias prop_complete := propComplete -- TODO: remove? rename in core?
+
+@[elab_as_elim, deprecated (since := "2024-07-27")] theorem cases_true_false (p : Prop → Prop)
+    (h1 : p True) (h2 : p False) (a : Prop) : p a :=
+  Or.elim (prop_complete a) (fun ht : a = True ↦ ht.symm ▸ h1) fun hf : a = False ↦ hf.symm ▸ h2
+
+@[deprecated (since := "2024-07-27")]
+theorem eq_false_or_eq_true (a : Prop) : a = False ∨ a = True := (prop_complete a).symm
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-07-27")]
+theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p a :=
+  @cases_true_false p h1 h2 a
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-07-27")]
+theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
 
 end Classical
 

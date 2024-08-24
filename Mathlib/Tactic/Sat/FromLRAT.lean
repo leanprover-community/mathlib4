@@ -669,3 +669,7 @@ elab "from_lrat " cnf:term:max ppSpace lrat:term:max : term => do
 example : ∀ (a b : Prop), (¬a ∧ ¬b ∨ a ∧ ¬b) ∨ ¬a ∧ b ∨ a ∧ b := from_lrat
   "p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0"
   "5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0"
+
+end Sat
+
+end Mathlib.Tactic

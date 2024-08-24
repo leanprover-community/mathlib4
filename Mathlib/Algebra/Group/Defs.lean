@@ -957,7 +957,7 @@ class InvOneClass (G : Type*) extends One G, Inv G where
   protected inv_one : (1 : G)⁻¹ = 1
 
 /-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
-@[to_additive SubNegZeroMonoid]
+@[to_additive]
 class DivInvOneMonoid (G : Type*) extends DivInvMonoid G, InvOneClass G
 
 -- FIXME: `to_additive` is not operating on the second parent. (#660)
@@ -983,7 +983,7 @@ class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G whe
 `(a * b)⁻¹ = b⁻¹ * a⁻¹` and `a * b = 1 → a⁻¹ = b`.
 
 This is the immediate common ancestor of `Group` and `GroupWithZero`. -/
-@[to_additive SubtractionMonoid]
+@[to_additive]
 class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
   protected mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹
   /-- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
@@ -1090,7 +1090,7 @@ theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a := by
 theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
   rw [mul_assoc, inv_mul_cancel, mul_one]
 
-@[to_additive AddGroup.toSubtractionMonoid]
+@[to_additive]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
   { inv_inv := fun a ↦ inv_eq_of_mul (inv_mul_cancel a)
     mul_inv_rev :=

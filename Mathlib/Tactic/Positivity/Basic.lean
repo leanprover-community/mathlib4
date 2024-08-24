@@ -484,9 +484,9 @@ def evalRatNum : PositivityExt where eval {u α} _ _ e := do
     let pα : Q(PartialOrder ℚ) := q(inferInstance)
     assumeInstancesCommute
     match ← core zα pα a with
-    | .positive pa => pure $ .positive q(num_pos_of_pos $pa)
-    | .nonnegative pa => pure $ .nonnegative q(num_nonneg_of_nonneg $pa)
-    | .nonzero pa => pure $ .nonzero q(num_ne_zero_of_ne_zero $pa)
+    | .positive pa => pure <| .positive q(num_pos_of_pos $pa)
+    | .nonnegative pa => pure <| .nonnegative q(num_nonneg_of_nonneg $pa)
+    | .nonzero pa => pure <| .nonzero q(num_ne_zero_of_ne_zero $pa)
     | .none => pure .none
   | _, _ => throwError "not Rat.num"
 
@@ -496,7 +496,7 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Rat.den $a) =>
     assumeInstancesCommute
-    pure $ .positive q(den_pos $a)
+    pure <| .positive q(den_pos $a)
   | _, _ => throwError "not Rat.num"
 
 /-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/

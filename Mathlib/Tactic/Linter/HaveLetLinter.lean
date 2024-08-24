@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Server.InfoUtils
 
@@ -128,3 +129,7 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
           You can disable this linter using `set_option linter.haveLet 0`"
 
 initialize addLinter haveLetLinter
+
+end haveLet
+
+end Mathlib.Linter

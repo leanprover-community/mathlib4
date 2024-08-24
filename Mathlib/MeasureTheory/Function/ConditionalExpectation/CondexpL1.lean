@@ -93,7 +93,7 @@ theorem condexpIndL1Fin_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : 
   refine EventuallyEq.trans ?_
     (EventuallyEq.add (Memℒp.coeFn_toLp q).symm (Memℒp.coeFn_toLp q).symm)
   rw [condexpIndSMul_add]
-  refine (Lp.coeFn_add _ _).trans (eventually_of_forall fun a => ?_)
+  refine (Lp.coeFn_add _ _).trans (Eventually.of_forall fun a => ?_)
   rfl
 
 theorem condexpIndL1Fin_smul (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : ℝ) (x : G) :

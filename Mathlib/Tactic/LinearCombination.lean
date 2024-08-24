@@ -138,7 +138,7 @@ def elabLinearCombination
     | .const c => `(Eq.refl $c)
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
-  Tactic.evalTactic <| ← withFreshMacroScope <|
+  Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
   if twoGoals then
     `(tactic| (
       refine eq_trans₃ $p ?a ?b
@@ -246,8 +246,4 @@ syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
   | `(tactic| linear_combination2 $[(norm := $tac)]? $(e)?) => elabLinearCombination tac none e true
 
-end LinearCombination
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.LinearCombination

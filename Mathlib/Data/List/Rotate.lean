@@ -374,7 +374,8 @@ def IsRotated : Prop :=
   ∃ n, l.rotate n = l'
 
 @[inherit_doc List.IsRotated]
-infixr:1000 " ~r " => IsRotated
+-- This matches the precedence of the infix `~` for `List.Perm`, and of other relation infixes
+infixr:50 " ~r " => IsRotated
 
 variable {l l'}
 

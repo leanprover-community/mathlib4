@@ -6,7 +6,6 @@ Mario Carneiro
 -/
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Option.Basic
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Util.AssertExists
 
 /-! # getD and getI
@@ -136,3 +135,5 @@ theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 
 end getI
+
+end List

@@ -68,7 +68,7 @@ For a homogeneous element `f` of degree `m`
   defined by sending `x : Proj| (pbo f)` to `A⁰_f ∩ span {g / 1 | g ∈ x}`. We also denote this map
   as `ψ`.
 * `ProjIsoSpecTopComponent.ToSpec.preimage_eq`: for any `a: A`, if `a/f^m` has degree zero,
-  then the preimage of `sbo a/f^m` under `to_Spec f` is `pbo f ∩ pbo a`.
+  then the preimage of `sbo a/f^m` under `toSpec f` is `pbo f ∩ pbo a`.
 
 If we further assume `m` is positive
 * `ProjIsoSpecTopComponent.fromSpec`: the continuous map between `Spec.T A⁰_f` and `Proj.T| pbo f`
@@ -87,7 +87,6 @@ Finally,
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
-
 
 noncomputable section
 

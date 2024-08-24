@@ -143,7 +143,7 @@ lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
   obtain ⟨k, rfl⟩ := hn
   induction' k with k ih
   · simpa
-  have : a ^ 2 = b ^ 2 := add_right_cancel $
+  have : a ^ 2 = b ^ 2 := add_right_cancel <|
     calc
       a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
       _ = b ^ 2 + a * b := by rw [sq, ← add_mul, add_comm, hab, zero_mul]

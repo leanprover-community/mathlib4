@@ -588,10 +588,8 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     apply (isPointwiseRightKanExtensionRanCounit G.op Y.1 (.op (G.obj U))).hom_ext
     rintro ⟨⟨⟨⟩⟩, ⟨W⟩, g⟩
     obtain ⟨g, rfl⟩ : ∃ g' : G.obj W ⟶ G.obj U, g = g'.op := ⟨g.unop, rfl⟩
-    simp only [id_obj, comp_obj, StructuredArrow.proj_obj, RightExtension.coneAt_pt,
-      RightExtension.mk_left, RightExtension.coneAt_π_app, const_obj_obj, op_obj,
-      whiskeringLeft_obj_obj, RightExtension.mk_hom]
     apply (Y.2 X _ (IsDenseSubsite.imageSieve_mem J K G g)).isSeparatedFor.ext
+    dsimp
     rintro V iVW ⟨iVU, e'⟩
     have := congr($e ≫ Y.1.map iVU.op)
     simp only [comp_obj, yoneda_map_app, Category.assoc, coyoneda_obj_obj, comp_map,
@@ -611,11 +609,16 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
         · simp only [const_obj_obj, op_obj, map_comp, hl]
           simp only [← map_comp_assoc, r.w]
         · simp [← map_comp, ← op_comp, hiUV]
-      · rintro ⟨⟨⟨⟩⟩, ⟨W₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨W₂⟩, g₂⟩ ⟨⟨⟨⟨⟩⟩⟩, i, hi⟩
+      · dsimp
+        rintro ⟨⟨⟨⟩⟩, ⟨W₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨W₂⟩, g₂⟩ ⟨⟨⟨⟨⟩⟩⟩, i, hi⟩
         dsimp at g₁ g₂ i hi
-        obtain rfl : g₂ = g₁ ≫ (G.map i.unop).op := by simpa only [Category.id_comp] using hi
-        obtain ⟨g, rfl⟩ : ∃ g' : G.obj W₁ ⟶ G.obj U, g₁ = g'.op := ⟨g₁.unop, rfl⟩
-        obtain ⟨i, rfl⟩ : ∃ i' : W₂ ⟶ W₁, i = i'.op := ⟨i.unop, rfl⟩
+        -- See issue #15781 for tracking performance regressions of `rintro` as here
+        have h : g₂ = g₁ ≫ (G.map i.unop).op := by simpa only [Category.id_comp] using hi
+        rcases h with ⟨rfl⟩
+        have h : ∃ g' : G.obj W₁ ⟶ G.obj U, g₁ = g'.op := ⟨g₁.unop, rfl⟩
+        rcases h with ⟨g, rfl⟩
+        have h : ∃ i' : W₂ ⟶ W₁, i = i'.op := ⟨i.unop, rfl⟩
+        rcases h with ⟨i, rfl⟩
         simp only [const_obj_obj, id_obj, comp_obj, StructuredArrow.proj_obj, const_obj_map, op_obj,
           unop_comp, Quiver.Hom.unop_op, Category.id_comp, comp_map, StructuredArrow.proj_map]
         apply Y.2.hom_ext ⟨_, IsDenseSubsite.imageSieve_mem J K G (G.map i ≫ g)⟩

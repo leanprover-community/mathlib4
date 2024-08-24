@@ -110,7 +110,7 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
     by simpa only [bot_sup_eq, LieIdeal.incl_coe, Submodule.map_zero, hxn] using this n
   intro l
   induction' l with l ih
-  · simp only [Nat.zero_eq, add_zero, LieIdeal.lcs_succ, pow_zero, LinearMap.one_eq_id,
+  · simp only [add_zero, LieIdeal.lcs_succ, pow_zero, LinearMap.one_eq_id,
       Submodule.map_id]
     exact le_sup_of_le_left hIM
   · simp only [LieIdeal.lcs_succ, i.add_succ l, lie_top_eq_of_span_sup_eq_top hxI, sup_le_iff]

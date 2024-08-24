@@ -222,7 +222,7 @@ theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
 
 theorem hasFiniteIntegral_norm_iff (f : α → β) :
     HasFiniteIntegral (fun a => ‖f a‖) μ ↔ HasFiniteIntegral f μ :=
-  hasFiniteIntegral_congr' <| eventually_of_forall fun x => norm_norm (f x)
+  hasFiniteIntegral_congr' <| Eventually.of_forall fun x => norm_norm (f x)
 
 theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : (∫⁻ x, f x ∂μ) ≠ ∞) :
     HasFiniteIntegral (fun x => (f x).toReal) μ := by
@@ -336,11 +336,11 @@ section PosPart
 
 theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => max (f a) 0) μ :=
-  hf.mono <| eventually_of_forall fun x => by simp [abs_le, le_abs_self]
+  hf.mono <| Eventually.of_forall fun x => by simp [abs_le, le_abs_self]
 
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => min (f a) 0) μ :=
-  hf.mono <| eventually_of_forall fun x => by simpa [abs_le] using neg_abs_le _
+  hf.mono <| Eventually.of_forall fun x => by simpa [abs_le] using neg_abs_le _
 
 end PosPart
 
@@ -745,7 +745,7 @@ theorem Integrable.prod_mk {f : α → β} {g : α → γ} (hf : Integrable f μ
     Integrable (fun x => (f x, g x)) μ :=
   ⟨hf.aestronglyMeasurable.prod_mk hg.aestronglyMeasurable,
     (hf.norm.add' hg.norm).mono <|
-      eventually_of_forall fun x =>
+      Eventually.of_forall fun x =>
         calc
           max ‖f x‖ ‖g x‖ ≤ ‖f x‖ + ‖g x‖ := max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)
           _ ≤ ‖‖f x‖ + ‖g x‖‖ := le_abs_self _⟩
@@ -983,7 +983,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
       one_ne_zero, ENNReal.one_ne_top, ENNReal.one_toReal, if_false, eLpNorm', ENNReal.rpow_one,
       _root_.div_one, Lp.norm_def]
     rw [lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas.coe_nnreal_ennreal
-        (Filter.eventually_of_forall fun x => ENNReal.coe_lt_top)]
+        (Filter.Eventually.of_forall fun x => ENNReal.coe_lt_top)]
     congr 1
     apply lintegral_congr_ae
     filter_upwards [(memℒ1_smul_of_L1_withDensity f_meas u).coeFn_toLp] with x hx
@@ -1419,7 +1419,7 @@ theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E)
     Integrable (fun a : α => L (φ a)) μ :=
   ((Integrable.norm φ_int).const_mul ‖L‖).mono'
     (L.continuous.comp_aestronglyMeasurable φ_int.aestronglyMeasurable)
-    (eventually_of_forall fun a => L.le_opNorm (φ a))
+    (Eventually.of_forall fun a => L.le_opNorm (φ a))
 
 @[simp]
 theorem ContinuousLinearEquiv.integrable_comp_iff {φ : α → H} (L : H ≃L[𝕜] E) :

@@ -877,11 +877,17 @@ theorem closure_eq_of_le (h₁ : k ⊆ K) (h₂ : K ≤ closure k) : closure k =
 
 /-- An induction principle for closure membership. If `p` holds for `1` and all elements of `k`, and
 is preserved under multiplication and inverse, then `p` holds for all elements of the closure
-of `k`. -/
+of `k`.
+
+See also `Subgroup.closure_induction_left` and `Subgroup.closure_induction_right` for versions that
+only require showing `p` is preserved by multiplication by elements in `k`. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership. If `p`
       holds for `0` and all elements of `k`, and is preserved under addition and inverses, then `p`
-      holds for all elements of the additive closure of `k`."]
+      holds for all elements of the additive closure of `k`.
+
+      See also `AddSubgroup.closure_induction_left` and `AddSubgroup.closure_induction_left` for
+      versions that only require showing `p` is preserved by addition by elements in `k`."]
 theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (mem : ∀ x ∈ k, p x) (one : p 1)
     (mul : ∀ x y, p x → p y → p (x * y)) (inv : ∀ x, p x → p x⁻¹) : p x :=
   (@closure_le _ _ ⟨⟨⟨setOf p, fun {x y} ↦ mul x y⟩, one⟩, fun {x} ↦ inv x⟩ k).2 mem h
