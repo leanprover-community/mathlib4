@@ -153,7 +153,18 @@ lemma toCLM_inner_conjTranspose_right_eq_left {M : CStarMatrix m n A} {v : n →
 noncomputable instance instNorm : Norm (CStarMatrix m n A) where
   norm M := ‖toCLM A M‖
 
-example : BoundedSMul ℂ ((n →C⋆ A) →L[ℂ] (m →C⋆ A)) := NormedSpace.boundedSMul
+example : @Zero.toOfNat0 ((n →C⋆ A) →L[ℂ] m →C⋆ A) AddMonoid.toZero
+  = @Zero.toOfNat0 ((n →C⋆ A) →L[ℂ] m →C⋆ A) ContinuousLinearMap.zero := rfl
+
+#synth SMulWithZero ℂ (n →C⋆ A)
+#synth SMulWithZero ℂ ((n →C⋆ A) →L[ℂ] (m →C⋆ A))
+
+set_option synthInstance.maxHeartbeats 2000000
+instance : SMulWithZero ℂ ((n →C⋆ A) →L[ℂ] (m →C⋆ A)) where
+  smul_zero a := DistribMulAction.smul_zero a
+
+example : @BoundedSMul ℂ ((n →C⋆ A) →L[ℂ] m →C⋆ A) SeminormedRing.toPseudoMetricSpace SeminormedAddCommGroup.toPseudoMetricSpace
+    CommMonoidWithZero.toZero NegZeroClass.toZero SMulZeroClass.toSMul := sorry
 
 lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM A M).opNorm_nonneg
