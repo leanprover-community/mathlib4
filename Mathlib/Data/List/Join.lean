@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
 import Mathlib.Data.List.Basic
-import Batteries.Data.Nat.Lemmas
 
 /-!
 # Join of a list of lists
@@ -24,18 +23,9 @@ namespace List
 -- @[simp]
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
 
-@[simp]
-theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = []
-  | [] => iff_of_true rfl (forall_mem_nil _)
-  | l :: L => by simp only [join, append_eq_nil, join_eq_nil, forall_mem_cons]
+@[deprecated join_eq_nil_iff (since := "2024-07-10")]
+theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = [] := join_eq_nil_iff
 
-@[simp]
-theorem join_append (L₁ L₂ : List (List α)) : join (L₁ ++ L₂) = join L₁ ++ join L₂ := by
-  induction L₁
-  · rfl
-  · simp [*]
-
-theorem join_concat (L : List (List α)) (l : List α) : join (L.concat l) = join L ++ l := by simp
 
 @[simp]
 theorem join_filter_not_isEmpty  :
@@ -51,10 +41,8 @@ theorem join_filter_not_isEmpty  :
 @[simp]
 theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
     join (L.filter fun l => l ≠ []) = L.join := by
-  simp [join_filter_not_isEmpty, ← isEmpty_iff_eq_nil]
-
-theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join := by
-  induction l <;> simp [*]
+  simp only [ne_eq, ← isEmpty_iff_eq_nil, Bool.not_eq_true, Bool.decide_eq_false,
+    join_filter_not_isEmpty]
 
 /-- See `List.length_join` for the corresponding statement using `List.sum`. -/
 lemma length_join' (L : List (List α)) : length (join L) = Nat.sum (map length L) := by
@@ -84,7 +72,7 @@ lemma count_bind' [BEq β] (l : List α) (f : α → List β) (x : β) :
 
 @[simp]
 theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
-  join_eq_nil.trans <| by
+  join_eq_nil_iff.trans <| by
     simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 
 /-- In a join, taking the first elements up to an index which is the sum of the lengths of the
@@ -121,22 +109,6 @@ theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length
 theorem drop_take_succ_eq_cons_get (L : List α) (i : Fin L.length) :
     (L.take (i + 1)).drop i = [get L i] := by
   simp [drop_take_succ_eq_cons_getElem]
-
-set_option linter.deprecated false in
-/-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
-left with a list of length `1` made of the `i`-th element of the original list. -/
-@[deprecated drop_take_succ_eq_cons_get (since := "2023-01-10")]
-theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length) :
-    (L.take (i + 1)).drop i = [nthLe L i hi] := by
-  induction' L with head tail generalizing i
-  · simp only [length] at hi
-    exact (Nat.not_succ_le_zero i hi).elim
-  cases' i with i hi
-  · simp
-    rfl
-  have : i < tail.length := by simpa using hi
-  simp [*]
-  rfl
 
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
@@ -183,17 +155,6 @@ theorem append_join_map_append (L : List (List α)) (x : List α) :
   · rw [map_nil, join, append_nil, map_nil, join, nil_append]
   · rw [map_cons, join, map_cons, join, append_assoc, ih, append_assoc, append_assoc]
 
-/-- Reversing a join is the same as reversing the order of parts and reversing all parts. -/
-theorem reverse_join (L : List (List α)) :
-    L.join.reverse = (L.map reverse).reverse.join := by
-  induction' L with _ _ ih
-  · rfl
-  · rw [join, reverse_append, ih, map_cons, reverse_cons', join_concat]
-
-/-- Joining a reverse is the same as reversing all parts and reversing the joined result. -/
-theorem join_reverse (L : List (List α)) :
-    L.reverse.join = (L.map reverse).join.reverse := by
-  simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
 
 /-- Any member of `L : List (List α))` is a sublist of `L.join` -/
 lemma sublist_join (L : List (List α)) {s : List α} (hs : s ∈ L) :

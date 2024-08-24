@@ -89,15 +89,22 @@ theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, - x ∈ 
 
 section ContinuousAdd
 
+instance : Zero (ConvexBody V) where
+  zero := ⟨0, convex_singleton 0, isCompact_singleton, Set.singleton_nonempty 0⟩
+
+@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
+  rfl
+
+instance : Inhabited (ConvexBody V) :=
+  ⟨0⟩
+
 variable [ContinuousAdd V]
 
 instance : Add (ConvexBody V) where
   add K L :=
     ⟨K + L, K.convex.add L.convex, K.isCompact.add L.isCompact,
       K.nonempty.add L.nonempty⟩
-
-instance : Zero (ConvexBody V) where
-  zero := ⟨0, convex_singleton 0, isCompact_singleton, Set.singleton_nonempty 0⟩
 
 instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
@@ -113,13 +120,6 @@ instance : AddMonoid (ConvexBody V) :=
 @[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
-
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
-theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
-  rfl
-
-instance : Inhabited (ConvexBody V) :=
-  ⟨0⟩
 
 instance : AddCommMonoid (ConvexBody V) :=
   SetLike.coe_injective.addCommMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _

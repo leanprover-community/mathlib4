@@ -52,7 +52,6 @@ only to prove the more general results:
 
 noncomputable section
 
-open scoped Classical
 open NNReal ENNReal MeasureTheory Finset
 
 
@@ -193,6 +192,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
     (s : Finset ι) {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
     {p : ι → ℝ} (hp : ∑ i ∈ s, p i = 1) (h2p : ∀ i ∈ s, 0 ≤ p i) :
     ∫⁻ a, ∏ i ∈ s, f i a ^ p i ∂μ ≤ ∏ i ∈ s, (∫⁻ a, f i a ∂μ) ^ p i := by
+  classical
   induction s using Finset.induction generalizing p with
   | empty =>
     simp at hp

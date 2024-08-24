@@ -37,7 +37,7 @@ formalise this as `Filter.codiscrete`.
 
 open Set Filter Function Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+variable {X Y : Type*} [TopologicalSpace Y] {f : X → Y}
 
 section cofinite_cocompact
 
@@ -46,6 +46,8 @@ lemma tendsto_cofinite_cocompact_iff :
   rw [hasBasis_cocompact.tendsto_right_iff]
   refine forall₂_congr (fun K _ ↦ ?_)
   simp only [mem_compl_iff, eventually_cofinite, not_not, preimage]
+
+variable [TopologicalSpace X]
 
 lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocallyCompactSpace Y]
     (hf' : Continuous f) (hf : Tendsto f cofinite (cocompact _)) :
@@ -77,6 +79,8 @@ lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X
 end cofinite_cocompact
 
 section codiscrete_filter
+
+variable [TopologicalSpace X]
 
 /-- Criterion for a subset `S ⊆ X` to be closed and discrete in terms of the punctured
 neighbourhood filter at an arbitrary point of `X`. (Compare `discreteTopology_subtype_iff`.) -/

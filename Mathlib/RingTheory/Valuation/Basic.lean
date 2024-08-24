@@ -3,7 +3,6 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
@@ -23,7 +22,7 @@ commutative monoid with zero, that in addition satisfies the following two axiom
 
 `Valuation R Γ₀`is the type of valuations `R → Γ₀`, with a coercion to the underlying
 function. If `v` is a valuation from `R` to `Γ₀` then the induced group
-homomorphism `units(R) → Γ₀` is called `unit_map v`.
+homomorphism `Units(R) → Γ₀` is called `unit_map v`.
 
 The equivalence "relation" `IsEquiv v₁ v₂ : Prop` defined in 1.27 of [wedhorn_adic] is not strictly
 speaking a relation, because `v₁ : Valuation R Γ₁` and `v₂ : Valuation R Γ₂` might
@@ -194,11 +193,6 @@ theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg 
 -- @[simp] Porting note (#10618): simp can prove this
 theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
-
-/-- Deprecated. Use `DFunLike.ext_iff`. -/
--- @[deprecated] Porting note: using `DFunLike.ext_iff` is not viable below for now
-theorem ext_iff {v₁ v₂ : Valuation R Γ₀} : v₁ = v₂ ↔ ∀ r, v₁ r = v₂ r :=
-  DFunLike.ext_iff
 
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
 -- In addition, type class inference would not be able to infer `v`.
@@ -680,9 +674,6 @@ theorem map_pow : ∀ (x : R) (n : ℕ), v (x ^ n) = n • (v x) :=
 @[ext]
 theorem ext {v₁ v₂ : AddValuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   Valuation.ext h
-
-theorem ext_iff {v₁ v₂ : AddValuation R Γ₀} : v₁ = v₂ ↔ ∀ (r : R), v₁ r = v₂ r :=
-  Valuation.ext_iff
 
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
 -- In addition, type class inference would not be able to infer `v`.

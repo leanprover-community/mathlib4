@@ -73,9 +73,9 @@ lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
 @[simp]
 theorem multinomial_insert_one [DecidableEq α] (h : a ∉ s) (h₁ : f a = 1) :
     multinomial (insert a s) f = (s.sum f).succ * multinomial s f := by
-  simp only [multinomial, one_mul, factorial]
+  simp only [multinomial]
   rw [Finset.sum_insert h, Finset.prod_insert h, h₁, add_comm, ← succ_eq_add_one, factorial_succ]
-  simp only [factorial_one, one_mul, Function.comp_apply, factorial, mul_one, ← one_eq_succ_zero]
+  simp only [factorial, succ_eq_add_one, zero_add, mul_one, one_mul]
   rw [Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum _ _)]
 
 theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
@@ -249,7 +249,7 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
   exact ne_of_mem_of_not_mem ht has
 
 /-- The **multinomial theorem**. -/
-theorem sum_pow_of_commute [Semiring R] (x : α → R) (s : Finset α)
+theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     (hc : (s : Set α).Pairwise fun i j => Commute (x i) (x j)) :
     ∀ n,
       s.sum x ^ n =
@@ -297,7 +297,7 @@ lemma sum_pow_eq_sum_piAntidiag (s : Finset α) (f : α → R) (n : ℕ) :
   simp_rw [← noncommProd_eq_prod]
   rw [← sum_pow_eq_sum_piAntidiag_of_commute _ _ fun _ _ _ _ _ ↦ Commute.all ..]
 
-theorem sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
+theorem sum_pow (x : α → R) (n : ℕ) :
     s.sum x ^ n = ∑ k ∈ s.sym n, k.val.multinomial * (k.val.map x).prod := by
   conv_rhs => rw [← sum_coe_sort]
   convert sum_pow_of_commute x s (fun _ _ _ _ _ ↦ Commute.all ..) n
