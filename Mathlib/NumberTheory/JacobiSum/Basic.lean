@@ -103,8 +103,8 @@ theorem jacobiSum_triv_triv : jacobiSum (1 : MulChar F R) 1 = Fintype.card F - 2
       exact mul_ne_zero hx.1 <| sub_ne_zero.mpr hx.2.symm
     rw [← map_mul, MulChar.trivial_apply, if_pos hx']
   calc ∑ x ∈ univ \ {0, 1}, (MulChar.trivial F R) x * (MulChar.trivial F R) (1 - x)
-  _ = ∑ _ ∈ @univ F _ \ {0, 1}, (1 : R) := sum_congr rfl this
-  _ = Finset.card (@univ F _ \ {0, 1}) := (cast_card _).symm
+  _ = ∑ _ ∈ univ \ {0, 1}, 1 := sum_congr rfl this
+  _ = Finset.card (univ \ {0, 1}) := (cast_card _).symm
   _ = Fintype.card F - 2 := by
     rw [card_sdiff (subset_univ _), card_univ, card_pair zero_ne_one]
     obtain ⟨m, hm⟩ : ∃ m : ℕ, Fintype.card F = 1 + m + 1 :=
