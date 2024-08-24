@@ -121,8 +121,9 @@ lemma Bound.pow_le_pow_right_of_le_one_or_one_le (h : 1 ≤ a ∧ n ≤ m ∨ 0 
 
 end OrderedSemiring
 
+-- See note [reducible non instances]
 /-- Turn an ordered domain into a strict ordered ring. -/
-def OrderedRing.toStrictOrderedRing (α : Type*) [OrderedRing α] [IsDomain α] :
+abbrev OrderedRing.toStrictOrderedRing (α : Type*) [OrderedRing α] [IsDomain α] :
     StrictOrderedRing α where
   __ := ‹OrderedRing α›
   __ := ‹IsDomain α›
