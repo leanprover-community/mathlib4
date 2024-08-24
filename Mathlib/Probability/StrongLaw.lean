@@ -597,15 +597,58 @@ theorem strong_law_aux7 :
 
 end StrongLawNonneg
 
+lemma _root_.ENNReal.eq_one_of_mul_eq
+    {a b : ℝ≥0∞} (h : a * b = a) (ha : a ≠ 0) (h'a : a ≠ ⊤) : b = 1 := by
+  have : a * b * a⁻¹ = a * a⁻¹ := by rw [h]
+  rwa [mul_assoc, mul_comm b, ← mul_assoc, ENNReal.mul_inv_cancel ha h'a, one_mul] at this
+
+/-- If a nonzero function belongs to `ℒ^p` and is independent of another function, then
+the space is a probability space. -/
+lemma _root_.MeasureTheory.Memℒp.isProbabilityMeasure_of_indepFun
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+    {F : Type*} [MeasurableSpace F]
+    (f : Ω → E) (g : Ω → F) {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞)
+    (hℒp : Memℒp f p μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
+    IsProbabilityMeasure μ := by
+  obtain ⟨c, c_pos, hc⟩ : ∃ c, 0 < c ∧ 0 < μ {ω | c < ‖f ω‖} := by
+    contrapose! h'f
+    have A (c : ℝ) (hc : 0 < c) : ∀ᵐ ω ∂μ, ‖f ω‖ ≤ c := by sorry
+    obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
+      ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ)
+    filter_upwards [ae_all_iff.2 (fun n ↦ A (u n) (u_pos n))] with ω hω
+    exact norm_le_zero_iff.mp (ge_of_tendsto' u_lim hω)
+  have h'c : μ {ω | c < ‖f ω‖} < ∞ := sorry
+  have Z := hindep.measure_inter_preimage_eq_mul {x | c < ‖x‖} Set.univ
+    sorry (MeasurableSet.univ)
+  simp at Z
+  exact ⟨ENNReal.eq_one_of_mul_eq Z.symm hc.ne' h'c.ne⟩
+
+/-- If a nonzero function belongs to `ℒ^p` and is independent of another function, then
+the space is a probability space. -/
+lemma _root_.MeasureTheory.Integrable.isProbabilityMeasure_of_indepFun
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+    {F : Type*} [MeasurableSpace F]
+    (f : Ω → E) (g : Ω → F)
+    (hf : Integrable f μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
+    IsProbabilityMeasure μ :=
+  Memℒp.isProbabilityMeasure_of_indepFun f g le_rfl ENNReal.one_ne_top
+    (memℒp_one_iff_integrable.mpr hf) h'f hindep
+
+
+
+
 /-- **Strong law of large numbers**, almost sure version: if `X n` is a sequence of independent
 identically distributed integrable real-valued random variables, then `∑ i ∈ range n, X i / n`
 converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
 requires pairwise independence. Superseded by `strong_law_ae`, which works for random variables
 taking values in any Banach space. -/
-theorem strong_law_ae_real {Ω : Type*} [MeasureSpace Ω] -- [IsZeroOrProbabilityMeasure (ℙ : Measure Ω)]
+theorem strong_law_ae_real {Ω : Type*} [MeasureSpace Ω]
     (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
     (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, X i ω) / n) atTop (𝓝 𝔼[X 0]) := by
+  -- first get rid of the trivial case where the space is not a probability space
   by_cases h : ∀ᵐ ω, X 0 ω = 0
   · have I : ∀ᵐ ω, ∀ i, X i ω = 0 := by
       rw [ae_all_iff]
@@ -613,28 +656,10 @@ theorem strong_law_ae_real {Ω : Type*} [MeasureSpace Ω] -- [IsZeroOrProbabilit
       exact (hident i).symm.ae_snd (p := fun x ↦ x = 0) measurableSet_eq h
     filter_upwards [I] with ω hω
     simpa [hω] using (integral_eq_zero_of_ae h).symm
-  obtain ⟨c, c_pos, hc⟩ : ∃ c, 0 < c ∧ 0 < ℙ {ω | c < |X 0 ω|} := by
-    contrapose! h
-    have A (c : ℝ) (hc : 0 < c) : ∀ᵐ ω, |X 0 ω| ≤ c := by sorry
-    obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
-      ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ)
-    filter_upwards [ae_all_iff.2 (fun n ↦ A (u n) (u_pos n))] with ω hω
-    exact abs_nonpos_iff.mp (ge_of_tendsto' u_lim hω)
-  have h'c : ℙ {ω | c < |X 0 ω|} < ∞ := sorry
-  have : IndepFun (X 0) (X 1) := hindep Nat.zero_ne_one
-  have : IndepSet {ω | c < |X 0 ω|} ((X 1) ⁻¹' univ) := by
-
-
-
-
-
-#exit
-
-
-
-
-  rcases eq_zero_or_isProbabilityMeasure (ℙ : Measure Ω) with h | h
-  · simp [h]
+  have : IsProbabilityMeasure (ℙ : Measure Ω) :=
+    hint.isProbabilityMeasure_of_indepFun (X 0) (X 1) h (hindep zero_ne_one)
+  -- then consider separately the positive and the negative part, and apply the result
+  -- for nonnegative functions to them.
   let pos : ℝ → ℝ := fun x => max x 0
   let neg : ℝ → ℝ := fun x => max (-x) 0
   have posm : Measurable pos := measurable_id'.max measurable_const
@@ -656,7 +681,7 @@ end StrongLawAeReal
 
 section StrongLawVectorSpace
 
-variable {Ω : Type*} [MeasureSpace Ω] [IsZeroOrProbabilityMeasure (ℙ : Measure Ω)]
+variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [MeasurableSpace E]
 
@@ -803,10 +828,20 @@ lemma strong_law_ae_of_measurable
 identically distributed integrable random variables taking values in a Banach space,
 then `n⁻¹ • ∑ i ∈ range n, X i` converges almost surely to `𝔼[X 0]`. We give here the strong
 version, due to Etemadi, that only requires pairwise independence. -/
-theorem strong_law_ae
+theorem strong_law_ae {Ω : Type*} [MeasureSpace Ω]
     (X : ℕ → Ω → E) (hint : Integrable (X 0))
     (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω)) atTop (𝓝 𝔼[X 0]) := by
+  -- First exclude the trivial case where the space is not a probability space
+  by_cases h : ∀ᵐ ω, X 0 ω = 0
+  · have I : ∀ᵐ ω, ∀ i, X i ω = 0 := by
+      rw [ae_all_iff]
+      intro i
+      exact (hident i).symm.ae_snd (p := fun x ↦ x = 0) measurableSet_eq h
+    filter_upwards [I] with ω hω
+    simpa [hω] using (integral_eq_zero_of_ae h).symm
+  have : IsProbabilityMeasure (ℙ : Measure Ω) :=
+    isProbabilityMeasure_of_indepFun_integrable (X 0) (X 1) hint h (hindep zero_ne_one)
   -- we reduce to the case of strongly measurable random variables, by using `Y i` which is strongly
   -- measurable and ae equal to `X i`.
   have A : ∀ i, Integrable (X i) := fun i ↦ (hident i).integrable_iff.2 hint
@@ -829,7 +864,7 @@ end StrongLawVectorSpace
 
 section StrongLawLp
 
-variable {Ω : Type*} [MeasureSpace Ω] [IsZeroOrProbabilityMeasure (ℙ : Measure Ω)]
+variable {Ω : Type*} [MeasureSpace Ω]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [MeasurableSpace E] [BorelSpace E]
 
@@ -840,6 +875,21 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
     (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     Tendsto (fun (n : ℕ) => eLpNorm (fun ω => (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω) - 𝔼[X 0]) p ℙ)
       atTop (𝓝 0) := by
+  -- First exclude the trivial case where the space is not a probability space
+  by_cases h : ∀ᵐ ω, X 0 ω = 0
+  · have I : ∀ᵐ ω, ∀ i, X i ω = 0 := by
+      rw [ae_all_iff]
+      intro i
+      exact (hident i).symm.ae_snd (p := fun x ↦ x = 0) measurableSet_eq h
+    have A (n : ℕ) : eLpNorm (fun ω => (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω) - 𝔼[X 0]) p ℙ = 0 := by
+      simp only [integral_eq_zero_of_ae h, sub_zero]
+      apply eLpNorm_eq_zero_of_ae_zero
+      filter_upwards [I] with ω hω
+      simp [hω]
+      sorry
+    sorry
+  have : IsProbabilityMeasure (ℙ : Measure Ω) :=
+    Memℒp.isProbabilityMeasure_of_indepFun (X 0) (X 1) hp hp' hℒp h (hindep zero_ne_one)
   have hmeas : ∀ i, AEStronglyMeasurable (X i) ℙ := fun i =>
     (hident i).aestronglyMeasurable_iff.2 hℒp.1
   have hint : Integrable (X 0) ℙ := hℒp.integrable hp
