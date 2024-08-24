@@ -1772,32 +1772,19 @@ there are neighbourhoods that separate `s` and `t`.-/
 lemma t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint [T2Space X] {s : Set X}
     {t : Set X} (H1 : IsClosed s) (H2 : IsCompact (closure sᶜ)) (H3 : IsClosed t)
     (H4 : Disjoint s t) : SeparatedNhds s t := by
--- separation of (closure sᶜ) ∩ s and t
-  obtain ⟨U, hU⟩ := SeparatedNhds.of_isCompact_isCompact
-    (IsCompact.of_isClosed_subset H2 (IsClosed.inter isClosed_closure H1) inter_subset_left)
-    (IsCompact.of_isClosed_subset H2 H3 (Subset.trans (Disjoint.subset_compl_left H4)
-    subset_closure))
-    (disjoint_of_subset_left inter_subset_right H4)
-  obtain ⟨V, hV⟩ := hU
--- `U` and `V` separate `(closure sᶜ) ∩ s` and `t`. We take  `U ∪ (closure sᶜ)ᶜ` and `V ∩ sᶜ`
--- that separate `s` and `t`.
-  use U ∪ (closure sᶜ)ᶜ
-  use V ∩ sᶜ
-  refine ⟨IsOpen.union hV.1 (isOpen_compl_iff.mpr isClosed_closure), IsOpen.inter hV.2.1
-  (isOpen_compl_iff.mpr H1), ?_, subset_inter_iff.mpr (And.intro hV.2.2.2.1
-  (Disjoint.subset_compl_left H4)), ?_⟩
-  · intro x hx
-    by_cases hxs : x ∈ (closure sᶜ)ᶜ
-    · right
-      exact hxs
-    · left
-      simp only [mem_compl_iff, not_not] at hxs
-      exact mem_of_subset_of_mem hV.2.2.1 (mem_inter hxs hx)
-  · rw [disjoint_union_left]
-    constructor
-    · exact disjoint_of_subset_right (inter_subset_left) hV.2.2.2.2
-    · rw [← interior_compl]
-      exact disjoint_of_subset interior_subset (inter_subset_right) disjoint_compl_left
+  -- Since `t` is a closed subset of the compact set `closure sᶜ`, it is compact.
+  have ht : IsCompact t := .of_isClosed_subset H2 H3 <| H4.subset_compl_left.trans subset_closure
+  -- we split `s` into its frontier and its interior.
+  rw [← diff_union_of_subset (interior_subset (s := s))]
+  -- since `t ⊆ sᶜ`, which is open, and `interior s` is open, we have
+  -- `SeparatedNhds (interior s) t`, which leaves us only with the frontier.
+  refine .union_left ?_ ⟨interior s, sᶜ, isOpen_interior, H1.isOpen_compl, le_rfl,
+    H4.subset_compl_left, disjoint_compl_right.mono_left interior_subset⟩
+  -- Since the frontier of `s` is compact (as it is a subset of `closure sᶜ`), we simply apply
+  -- `SeparatedNhds_of_isCompact_isCompact`.
+  rw [← H1.frontier_eq, frontier_eq_closure_inter_closure, H1.closure_eq]
+  refine .of_isCompact_isCompact ?_ ht (disjoint_of_subset_left inter_subset_left H4)
+  exact H2.of_isClosed_subset (H1.inter isClosed_closure) inter_subset_right
 
 section SeparatedFinset
 
