@@ -1322,35 +1322,6 @@ theorem Set.Finite.t2_separation [T2Space X] {s : Set X} (hs : s.Finite) :
     ∃ U : X → Set X, (∀ x, x ∈ U x ∧ IsOpen (U x)) ∧ s.PairwiseDisjoint U :=
   s.pairwiseDisjoint_nhds.exists_mem_filter_basis hs nhds_basis_opens
 
-/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
-`V` that separate `t` and `x`.-/
-lemma separation_of_isCompact_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
-    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
-    ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ t ⊆ V ∧ Disjoint U V := by
-  obtain ⟨v, hv⟩ := Filter.disjoint_iff.mp ((IsCompact.disjoint_nhdsSet_left H1).mpr
-    (fun (y : X) (p : y ∈ t) => disjoint_nhds_nhds.mpr (ne_of_mem_of_not_mem p H2)))
-  obtain ⟨u, hu⟩ := hv.2
-  obtain ⟨V, hV⟩ := mem_nhdsSet_iff_exists.mp hv.1
-  obtain ⟨U, hU⟩ := mem_nhds_iff.mp hu.1
-  use U
-  use V
-  exact ⟨hU.2.1, hV.1, hU.2.2, hV.2.1, disjoint_of_subset hU.1 hV.2.2 (Disjoint.symm hu.2)⟩
-
-/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are neighbourhoods
-`U`, `V` that separate `t` and `x`.-/
-lemma separation_of_isCompact_not_mem' {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
-    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
-    ∃ U ∈ nhds x,  ∃ V ∈ nhdsSet t, Disjoint U V := by
-  obtain ⟨U, hU⟩ := separation_of_isCompact_not_mem H1 H2
-  obtain ⟨V, hV⟩ := hU
-  use U
-  constructor
-  · rw [mem_nhds_iff]
-    use U
-    exact ⟨subset_rfl, hV.1, hV.2.2.1⟩
-  · use V
-    exact ⟨(IsOpen.mem_nhdsSet hV.2.1).mpr hV.2.2.2.1, hV.2.2.2.2⟩
-
 -- see Note [lower instance priority]
 instance (priority := 100) T2Space.t1Space [T2Space X] : T1Space X :=
   t1Space_iff_disjoint_pure_nhds.mpr fun _ _ hne =>
@@ -1438,6 +1409,22 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
   rcases eq_or_ne x y with (rfl|hne)
   · exact le_iSup₂_of_le x ⟨hxs, hyt⟩ (inf_idem _).le
   · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
+
+/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
+`V` that separate `t` and `x`.-/
+lemma IsCompact.separation_of_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
+    ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ t ⊆ U ∧ x ∈ V ∧ Disjoint U V := by
+  simpa [SeparatedNhds] using SeparatedNhds.of_isCompact_isCompact_isClosed H1 isCompact_singleton
+    isClosed_singleton <| disjoint_singleton_right.mpr H2
+
+/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, `𝓝ˢ t` and `𝓝 x` are
+disjoint. -/
+lemma IsCompact.disjoint_nhdsSet_nhds {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
+    Disjoint (𝓝ˢ t) (𝓝 x) := by
+  simpa using SeparatedNhds.disjoint_nhdsSet <| .of_isCompact_isCompact_isClosed H1
+    isCompact_singleton isClosed_singleton <| disjoint_singleton_right.mpr H2
 
 /-- If a function `f` is
 
