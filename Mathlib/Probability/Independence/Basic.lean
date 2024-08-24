@@ -471,6 +471,10 @@ theorem indepSet_iff_measure_inter_eq_mul (hs_meas : MeasurableSet s)
     [IsProbabilityMeasure μ] : IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t :=
   (indepSet_iff_indepSets_singleton hs_meas ht_meas μ).trans indepSets_singleton_iff
 
+lemma IndepSet.measure_inter_eq_mul {μ : Measure Ω} (h : IndepSet s t μ) :
+    μ (s ∩ t) = μ s * μ t := by
+  simpa using Kernel.IndepSet.measure_inter_eq_mul _ _ h
+
 theorem IndepSets.indepSet_of_mem (hs : s ∈ S) (ht : t ∈ T)
     (hs_meas : MeasurableSet s) (ht_meas : MeasurableSet t)
     (μ : Measure Ω := by volume_tac) [IsProbabilityMeasure μ]
@@ -498,6 +502,10 @@ theorem iIndepSets_singleton_iff {s : ι → Set Ω} :
   simp_rw [iIndepSets, Kernel.iIndepSets_singleton_iff, ae_dirac_eq, Filter.eventually_pure,
     Kernel.const_apply]
 
+theorem iIndepSet.meas_biInter {f : ι → Set Ω} (h : iIndepSet f μ) (s : Finset ι) :
+    μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
+  simpa using Kernel.iIndepSet.meas_biInter h s
+
 variable [IsProbabilityMeasure μ]
 
 theorem iIndepSet_iff_iIndepSets_singleton {f : ι → Set Ω} (hf : ∀ i, MeasurableSet (f i)) :
@@ -513,14 +521,6 @@ theorem iIndepSets.iIndepSet_of_mem {π : ι → Set (Set Ω)} {f : ι → Set �
     (hfπ : ∀ i, f i ∈ π i) (hf : ∀ i, MeasurableSet (f i))
     (hπ : iIndepSets π μ) : iIndepSet f μ :=
   Kernel.iIndepSets.iIndepSet_of_mem hfπ hf hπ
-
-lemma foo (hs_meas : MeasurableSet s)
-    (ht_meas : MeasurableSet t) (μ : Measure Ω := by volume_tac)
-    (h : IndepSet s t μ) :
-    μ (s ∩ t) = μ s * μ t := by
-  simp [IndepSet] at h
-
-#exit
 
 end IndepSet
 
@@ -541,13 +541,17 @@ theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
   simp only [IndepFun, Kernel.indepFun_iff_measure_inter_preimage_eq_mul, ae_dirac_eq,
     Filter.eventually_pure, Kernel.const_apply]
 
+alias ⟨IndepFun.measure_inter_preimage_eq_mul, _⟩ := indepFun_iff_measure_inter_preimage_eq_mul
+
 theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Type*}
-    (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) :
+    {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i} :
     iIndepFun m f μ ↔
       ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (_H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
         μ (⋂ i ∈ S, f i ⁻¹' sets i) = ∏ i ∈ S, μ (f i ⁻¹' sets i) := by
   simp only [iIndepFun, Kernel.iIndepFun_iff_measure_inter_preimage_eq_mul, ae_dirac_eq,
     Filter.eventually_pure, Kernel.const_apply]
+
+alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
