@@ -64,7 +64,7 @@ namespace Ring
 
 open ringFunc Language
 
-instance : IsAlgebraic (Language.ring) := by
+instance : IsAlgebraic Language.ring := by
   unfold Language.ring
   infer_instance
 
