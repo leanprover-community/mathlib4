@@ -1533,6 +1533,9 @@ theorem toPerm_symm {f : α → α} (h : Involutive f) : (h.toPerm f).symm = h.t
 theorem toPerm_involutive {f : α → α} (h : Involutive f) : Involutive (h.toPerm f) :=
   h
 
+theorem symm_eq_self_of_involutive (f : Equiv.Perm α) (h : Involutive f) : f.symm = f :=
+  DFunLike.coe_injective (h.leftInverse_iff.mp f.left_inv)
+
 end Function.Involutive
 
 theorem PLift.eq_up_iff_down_eq {x : PLift α} {y : α} : x = PLift.up y ↔ x.down = y :=

@@ -764,6 +764,10 @@ theorem comp_self : f ∘ f = id :=
 
 protected theorem leftInverse : LeftInverse f f := h
 
+theorem leftInverse_iff {g : α → α} :
+    g.LeftInverse f ↔ g = f :=
+  ⟨fun hg ↦ funext fun x ↦ by rw [← h x, hg, h], fun he ↦ he ▸ h.leftInverse⟩
+
 protected theorem rightInverse : RightInverse f f := h
 
 protected theorem injective : Injective f := h.leftInverse.injective
