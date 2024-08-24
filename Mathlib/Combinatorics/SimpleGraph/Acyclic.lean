@@ -170,12 +170,11 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     · exact (congrArg (·.fst) h)
     · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).snd = b :=
         congrArg (·.snd) h
-      have h3 := congrArg length (hf' _ ((f _).tail.copy h1 rfl) ?_)
-      · rw [length_copy, ← add_left_inj 1,
-          length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
+      have h3 := congrArg length (hf' _ (((f _).tail _).copy h1 rfl) ?_)
+      · rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
         omega
       · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
-        exact (hf _).tail (not_nil_of_ne (by simpa using ha))
+        exact (hf _).tail _
   case surj =>
     simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
     intros x y h
@@ -189,7 +188,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
           length_cons, length_nil] at h'
       simp [Nat.le_zero, Nat.one_ne_zero] at h'
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
-    · simp only [firstDart_toProd, getVert_cons_succ, getVert_zero, Prod.swap_prod_mk]
+    · rfl
     case contra =>
       suffices (f x).takeUntil y hy = .cons h .nil by
         rw [← take_spec _ hy] at h'

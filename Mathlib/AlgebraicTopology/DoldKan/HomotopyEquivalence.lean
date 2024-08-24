@@ -60,7 +60,7 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
   comm n := by
     rcases n with _|n
     · simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
-        PInfty_f, Nat.zero_eq, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
+        PInfty_f, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
     · simp only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
         HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1)]
       -- Porting note(lean4/2146): remaining proof was

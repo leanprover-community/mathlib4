@@ -82,6 +82,7 @@ example : True ∧ True ∧ True := by
 section AuxDecl
 variable {p q r : Prop}
 variable (h : p ∧ q ∨ p ∧ r)
+include h
 
 -- Make sure that we don't try to work on auxiliary declarations.
 -- In this case, there will be an auxiliary recursive declaration for

@@ -55,7 +55,7 @@ lemma negOnePow_two_mul_add_one (n : ℤ) : (2 * n + 1).negOnePow = -1 :=
 lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
   constructor
   · intro h
-    rw [Int.even_iff_not_odd]
+    rw [← Int.not_odd_iff_even]
     intro h'
     simp only [negOnePow_odd _ h'] at h
     contradiction
@@ -64,7 +64,7 @@ lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
 lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
   constructor
   · intro h
-    rw [Int.odd_iff_not_even]
+    rw [← Int.not_even_iff_odd]
     intro h'
     rw [negOnePow_even _ h'] at h
     contradiction
@@ -92,9 +92,9 @@ lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
   by_cases h₂ : Even n₂
   · rw [negOnePow_even _ h₂, Int.even_sub, negOnePow_eq_one_iff]
     tauto
-  · rw [← Int.odd_iff_not_even] at h₂
+  · rw [Int.not_even_iff_odd] at h₂
     rw [negOnePow_odd _ h₂, Int.even_sub, negOnePow_eq_neg_one_iff,
-      Int.even_iff_not_odd, Int.even_iff_not_odd]
+      ← Int.not_odd_iff_even, ← Int.not_odd_iff_even]
     tauto
 
 @[simp]

@@ -20,6 +20,10 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
+/-
+`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
+-/
+assert_not_exists NeZero
 
 open Function
 
@@ -194,8 +198,3 @@ theorem one_le_inv_of_le_one : a ≤ 1 → 1 ≤ a⁻¹ :=
   one_le_inv'.mpr
 
 end NormNumLemmas
-
-/-
-`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
--/
-assert_not_exists NeZero

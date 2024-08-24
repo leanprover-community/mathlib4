@@ -35,7 +35,7 @@ theorem volume_regionBetween_eq_integral [SigmaFinite μ] (f_int : IntegrableOn 
     (g_int : IntegrableOn g s μ) (hs : MeasurableSet s) (hfg : ∀ x ∈ s, f x ≤ g x) :
     μ.prod volume (regionBetween f g s) = ENNReal.ofReal (∫ y in s, (g - f) y ∂μ) :=
   volume_regionBetween_eq_integral' f_int g_int hs
-    ((ae_restrict_iff' hs).mpr (eventually_of_forall hfg))
+    ((ae_restrict_iff' hs).mpr (Eventually.of_forall hfg))
 
 end regionBetween
 
