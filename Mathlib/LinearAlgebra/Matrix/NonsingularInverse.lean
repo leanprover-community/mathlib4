@@ -501,7 +501,7 @@ lemma add_mul_mul_inv_mul_eq_one: (A+U*C*V)*(A⁻¹-A⁻¹*U*(C⁻¹+V*A⁻¹*U)
         rw [sub_right_inj, Matrix.add_mul,Matrix.add_mul,Matrix.add_mul]
       _ = 1+U*C*V*A⁻¹-U*C*(C⁻¹+V*A⁻¹*U)*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹ := by
         congr
-        simp only [Matrix.mul_add, Matrix.mul_inv_cancel_right_of_invertible, ←Matrix.mul_assoc]
+        simp only [Matrix.mul_add, Matrix.mul_inv_cancel_right_of_invertible, ← Matrix.mul_assoc]
       _ = 1 := by simp
 
 noncomputable def add_mul_mul_inv: Invertible (A+U*C*V) := by
