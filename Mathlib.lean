@@ -4071,6 +4071,7 @@ import Mathlib.Tactic.CategoryTheory.Monoidal
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
+import Mathlib.Tactic.CategoryTheory.ToApp
 import Mathlib.Tactic.Change
 import Mathlib.Tactic.Check
 import Mathlib.Tactic.Choose
