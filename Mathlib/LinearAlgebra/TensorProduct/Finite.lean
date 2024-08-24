@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.DirectSum.Finsupp
 We prove various results about tensoring over `R` with `Rⁿ`, if `n` is a finite type.
 
 This file contains variants of some results in `Mathlib/LinearAlgebra/DirectSum/Finsupp.lean`
-where `m →₀ R` in that file is replaced by `m → R` in this, under the hypothesis `[Finite m]`.
+where `n →₀ R` in that file is replaced by `n → R` in this, under the hypothesis `[Finite n]`.
 
 ## Main definitions
 
