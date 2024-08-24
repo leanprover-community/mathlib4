@@ -126,7 +126,6 @@ lemma mem_codiscrete' {S : Set X} :
   rw [mem_codiscrete, ← isClosed_compl_iff, isClosed_and_discrete_iff]
 
 lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
-    U ∈ codiscrete S ↔ Subtype.val '' U ∈ codiscreteWithin S := by
     U ∈ codiscrete S ↔ (↑) '' U ∈ codiscreteWithin S := by
   simp [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
     mem_codiscreteWithin]
