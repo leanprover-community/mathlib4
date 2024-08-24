@@ -149,7 +149,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
   -- hypothesis `(h : ContDiff ℝ ∞ f)` and assign `∞` to the mvar `?n`.
   --
   -- This could be problematic if there are two local hypothesis `(hinf : ContDiff ℝ ∞ f)` and
-  -- `(h1 : ContDiff ℝ 1 f)` and appart from solving `ContDiff ℝ ?n f` there is also a subgoal
+  -- `(h1 : ContDiff ℝ 1 f)` and apart from solving `ContDiff ℝ ?n f` there is also a subgoal
   -- `2 ≤ ?n`. If `fun_prop` decides to try `h1` first it would assign `1` to `?n` and then there
   -- is no hope solving `2 ≤ 1` and it won't be able to apply `hinf` after trying `h1` as `n?` is
   -- assigned already. Ideally `fun_prop` would roll back the `MetaM.State`. This issue did not
