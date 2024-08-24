@@ -612,7 +612,7 @@ lemma isCompl_genWeightSpace_zero_posFittingComp :
     let e := LieModuleEquiv.ofTop R L M
     rw [← map_genWeightSpace_eq e, ← map_posFittingComp_eq e]
     exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mp this
-  refine (LieSubmodule.wellFounded_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
+  refine (LieSubmodule.wellFoundedLT_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
   refine isCompl_genWeightSpace_zero_posFittingComp_aux R L N fun N' hN' ↦ ?_
   suffices IsCompl (genWeightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl)) by
     let e := LieSubmodule.equivMapOfInjective N' N.injective_incl
@@ -697,12 +697,12 @@ lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | genWeightSpaceOf M χ x ≠ ⊥}.Finite :=
   CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    (LieSubmodule.wellFounded_of_noetherian R L M) (independent_genWeightSpaceOf R L M x)
+    IsWellFounded.wf (independent_genWeightSpaceOf R L M x)
 
 lemma finite_genWeightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     {χ : L → R | genWeightSpace M χ ≠ ⊥}.Finite :=
   CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    (LieSubmodule.wellFounded_of_noetherian R L M) (independent_genWeightSpace R L M)
+    IsWellFounded.wf (independent_genWeightSpace R L M)
 
 instance Weight.instFinite [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     Finite (Weight R L M) := by
