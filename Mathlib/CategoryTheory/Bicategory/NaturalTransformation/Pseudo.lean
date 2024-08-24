@@ -104,8 +104,7 @@ variable {F G : Pseudofunctor B C}
 
 /-- The underlying oplax transformation of a strong transformation. -/
 @[simps]
-def toOplax (η : StrongTrans F G) :
-    OplaxTrans F.toOplax G.toOplax where
+def toOplax (η : StrongTrans F G) : OplaxTrans F.toOplax G.toOplax where
   app := η.app
   naturality f := (η.naturality f).hom
 
@@ -204,19 +203,34 @@ theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
 theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     (η.naturality (𝟙 a)).hom ▷ f ≫ (α_ _ _ _).hom ≫ η.app a ◁ (G.mapId a).hom ▷ f =
     (F.mapId a).hom ▷ η.app a ▷ f ≫ (λ_ (η.app a)).hom ▷ f ≫ (ρ_ (η.app a)).inv ▷ f ≫
-    (α_ _ _ _).hom := by
-  apply η.toOplax.whiskerRight_naturality_id
+    (α_ _ _ _).hom :=
+  η.toOplax.whiskerRight_naturality_id _
 
 end
 
 /-- Vertical composition of strong transformations. -/
 @[simps!]
 def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) :
-    StrongTrans F H :=
-  mkOfOplax (OplaxTrans.vcomp η.toOplax θ.toOplax)
-    { naturality := λ {a b} f ↦
-        (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
-        (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
+    StrongTrans F H where
+  app a := η.app a ≫ θ.app a
+  naturality {a b} f := (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
+    (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm
+  naturality_comp {a b c} f g := by
+    dsimp
+    exact calc
+      _ =
+        (α_ _ _ _).inv ≫
+          F.mapComp f g ▷ η.app c ▷ θ.app c ≫
+            (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom ≫
+              F.map f ◁ η.naturality g ▷ θ.app c ≫
+                _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
+                  (F.map f ≫ η.app b) ◁ θ.naturality g ≫
+                    η.naturality f ▷ (θ.app b ≫ H.map g) ≫
+                      (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv ≫
+                        η.app a ◁ θ.naturality f ▷ H.map g ≫
+                          _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv := by
+        rw [whisker_exchange_assoc]; simp
+      _ = _ := by simp
 
 end
 

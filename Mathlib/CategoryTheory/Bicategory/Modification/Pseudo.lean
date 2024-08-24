@@ -66,13 +66,13 @@ instance : Inhabited (Modification η η) :=
 variable {η θ} {ι : F ⟶ G}
 variable (Γ : Modification η θ)
 
-/-- The modification between the underlying oplax transformations of oplax functors -/
-@[simps]
-def toOplax : Oplax.Modification η.toOplax θ.toOplax where
-  app a := Γ.app a
+-- /-- The modification between the underlying oplax transformations of oplax functors -/
+-- @[simps]
+-- def toOplax : Oplax.Modification η.toOplax θ.toOplax where
+--   app a := Γ.app a
 
-instance hasCoeToOplax : Coe (Modification η θ) (Oplax.Modification η.toOplax θ.toOplax) :=
-  ⟨toOplax⟩
+-- instance hasCoeToOplax : Coe (Modification η θ) (Oplax.Modification η.toOplax θ.toOplax) :=
+--   ⟨toOplax⟩
 
 /-- The modification between strong transformations of pseudofunctors associated to a modification
 between the underlying oplax transformations of oplax functors. -/
