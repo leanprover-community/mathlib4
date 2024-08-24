@@ -46,7 +46,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
     exact fun m ↦ ne_of_gt (by linarith)
   -- Express derivative at general `n` in terms of value at `1` using recurrence relation
   have hder_rec (x : ℝ) (hx : 0 < x) : deriv f (x + 1) = deriv f x + 1 / x := by
-    rw [← deriv_comp_add_const _ _ (hder <| by positivity), one_div, ← deriv_log,
+    rw [← deriv_comp_add_const, one_div, ← deriv_log,
       ← deriv_add (hder <| by positivity) (differentiableAt_log hx.ne')]
     apply EventuallyEq.deriv_eq
     filter_upwards [eventually_gt_nhds hx] using h_rec
@@ -108,7 +108,6 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
       (by norm_num : 1/2 + 1/2 = (1 : ℝ)), Gamma_one, mul_one,
       eulerMascheroniConstant_eq_neg_deriv, add_neg_cancel, mul_zero, add_zero]
     · apply h_diff; norm_num -- s = 1
-    · apply h_diff; norm_num -- s = 1/2
     · exact ((h_diff (by norm_num)).hasDerivAt.comp_add_const).differentiableAt -- s = 1
   _ = (deriv (fun s ↦ Gamma (2 * s) * 2 ^ (1 - 2 * s) * √π) (1 / 2)) + √π * γ := by
     rw [funext Gamma_mul_Gamma_add_half]

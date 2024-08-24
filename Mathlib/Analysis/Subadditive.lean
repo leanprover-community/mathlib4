@@ -46,7 +46,7 @@ theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n 
 include h in
 theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
   induction k with
-  | zero => simp only [Nat.zero_eq, Nat.cast_zero, zero_mul, zero_add]; rfl
+  | zero => simp only [Nat.cast_zero, zero_mul, zero_add]; rfl
   | succ k IH =>
     calc
       u ((k + 1) * n + r) = u (n + (k * n + r)) := by congr 1; ring

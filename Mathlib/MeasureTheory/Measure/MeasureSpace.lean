@@ -603,7 +603,7 @@ theorem measure_limsup_eq_zero {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠
   suffices μ (limsup t atTop) = 0 by
     have A : s ≤ t := fun n => subset_toMeasurable μ (s n)
     -- TODO default args fail
-    exact measure_mono_null (limsup_le_limsup (eventually_of_forall (Pi.le_def.mp A))) this
+    exact measure_mono_null (limsup_le_limsup (Eventually.of_forall (Pi.le_def.mp A))) this
   -- Next we unfold `limsup` for sets and replace equality with an inequality
   simp only [limsup_eq_iInf_iSup_of_nat', Set.iInf_eq_iInter, Set.iSup_eq_iUnion, ←
     nonpos_iff_eq_zero]

@@ -130,7 +130,7 @@ namespace Multiset
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
     omega
-  exact Nat.le_of_pred_lt (han.trans_lt $ by simpa using hsm hn)
+  exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
 
 end Multiset
 
