@@ -6,7 +6,7 @@ Authors: Bhavik Mehta
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Subobject.Comma
 
 /-!
