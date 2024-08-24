@@ -3706,7 +3706,6 @@ import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
-import Mathlib.RepresentationTheory.GroupCohomology.scratch
 import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep
@@ -4687,14 +4686,3 @@ import Mathlib.Util.TermBeta
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
-import Mathlib.scratch.Profile
-import Mathlib.scratch.scratch1
-import Mathlib.scratch.scratch2
-import Mathlib.scratch.scratch3
-import Mathlib.scratch.scratch37
-import Mathlib.scratch.scratch4
-import Mathlib.scratch.scratch5
-import Mathlib.scratch.scratch6
-import Mathlib.scratch.scratch7
-import Mathlib.scratch.scratch8
-import Mathlib.scratch.spectral
