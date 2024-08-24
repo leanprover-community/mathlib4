@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 
-import Mathlib.Tactic.CategoryTheory.toCat
+import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # The Grothendieck construction
@@ -118,7 +118,8 @@ protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   · simp
   dsimp
   slice_lhs 3 4 => rw [← (F.mapComp g.1.op.toLoc f.1.op.toLoc).inv.naturality h.2]
-  simp [to_app_of% F.mapComp_assoc_right_inv h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc]
+  have := F.mapComp_assoc_right_inv_app h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc
+  simp [← F.mapComp_assoc_right_inv_app h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc]
 
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
