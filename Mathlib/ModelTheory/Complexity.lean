@@ -84,15 +84,15 @@ namespace IsQF
 theorem not {φ : L.BoundedFormula α n} (h : IsQF φ) : IsQF φ.not :=
   h.imp isQF_bot
 
-theorem IsQF.top : IsQF (⊤ : L.BoundedFormula α n) := isQF_bot.not
+theorem top : IsQF (⊤ : L.BoundedFormula α n) := isQF_bot.not
 
-theorem IsQF.sup {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : IsQF (φ ⊔ ψ) :=
+theorem sup {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : IsQF (φ ⊔ ψ) :=
   hφ.not.imp hψ
 
-theorem IsQF.inf {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : IsQF (φ ⊓ ψ) :=
+theorem inf {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : IsQF (φ ⊓ ψ) :=
   (hφ.imp hψ.not).not
 
-theorem IsQF.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → β ⊕ (Fin n)) :
+theorem relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → β ⊕ (Fin n)) :
     (φ.relabel f).IsQF :=
   IsQF.recOn h isQF_bot (fun h => (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
 
