@@ -323,16 +323,16 @@ the predicate is true everywhere in the chain and at `a`.
 That is, we can propagate the predicate up the chain.
 -/
 theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
+    (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : p a) : ∀ i ∈ l, p i := by
+  induction h with
+  | nil => simp
+  | @cons a b t hab _ h_ind =>
+    simp only [mem_cons, forall_eq_or_imp]
+    exact ⟨carries hab initial, h_ind (carries hab initial)⟩
+
+theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : ∀ i ∈ a :: l, p i := by
-  induction' l with _ _ l_ih generalizing a
-  · cases hb
-    simpa using final
-  · rw [chain_cons] at h
-    simp only [mem_cons]
-    rintro _ (rfl | H)
-    · apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
-    · apply l_ih h.2 hb _ (mem_cons.2 H)
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
 the predicate is true at `a`.
