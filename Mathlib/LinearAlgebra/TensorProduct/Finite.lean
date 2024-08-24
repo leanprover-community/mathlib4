@@ -20,12 +20,10 @@ where `m →₀ R` in that file is replaced by `m → R` in this, under the hypo
 * `TensorProduct.finiteRight R M N n` : If `n` is a finite type, `M ⊗[R] Nⁿ ≃ₗ[R] (M ⊗[R] N)ⁿ`.
 * `TensorProduct.finiteScalarLeft R N n` : If `n` is a finite type, `Rⁿ ⊗[R] N ≃ₗ[R] Nⁿ`.
 * `TensorProduct.finiteScalarRight R M n` : If `n` is a finite type, `M ⊗[R] Rⁿ ≃ₗ[R] Mⁿ`.
+* `TensorProduct.finiteTensorPiLid R N n m` : if `n` is a finite type, `Rⁿ ⊗[R] Nᵐ ≃ₗ[R] Nⁿˣᵐ`.
+* `TensorProduct.piTensorFiniteRid R M n m` : if `n` is a finite type, `Mᵐ ⊗[R] Rⁿ ≃ₗ[R] Mᵐˣⁿ`.
 
-
-
-If `n` is a finite type, then `Rⁿ ⊗[R] Rᵐ` is naturally isomorphic to `Rᵃˣᵐ`.
-If `m` is a finite type, then `Rⁿ ⊗[R] Rᵐ` is naturally isomorphic to `Rᵃˣᵐ`.
-
+Note that in the last two results, the type `m` is arbitrary and doesn't have to be finite.
 -/
 
 namespace TensorProduct
