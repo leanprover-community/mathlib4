@@ -109,12 +109,13 @@ noncomputable def invFunApp (X : Cᵒᵖ) : F.obj X ⊗ K.obj X ⟶ G.obj X :=
   MonoidalClosed.uncurry
     (ψ.app X ≫ Functor.enrichedHom.app _ _ (Opposite.op (Over.mk (𝟙 _))))
 
-@[simp, reassoc]
+@[simp]
 lemma curry_invFunApp (X : Cᵒᵖ) :
     MonoidalClosed.curry (invFunApp ψ X) =
-      (ψ.app X ≫ Functor.enrichedHom.app _ _ (Opposite.op (Over.mk (𝟙 _)))) := by
+      ψ.app X ≫ Functor.enrichedHom.app _ _ (Opposite.op (Over.mk (𝟙 _))) := by
   simp [invFunApp]
 
+@[simps]
 noncomputable def invFun : F ⊗ K ⟶ G where
   app := invFunApp ψ
   naturality := fun X Y f ↦ by
@@ -122,15 +123,36 @@ noncomputable def invFun : F ⊗ K ⟶ G where
     apply MonoidalClosed.curry_injective
     sorry
 
+@[simp]
+lemma toFun_invFun : toFun (invFun ψ) = ψ :=
+  NatTrans.ext (by
+    funext X
+    refine Functor.enrichedHom.hom_ext (fun ⟨Y⟩ ↦ ?_)
+    obtain ⟨Y, g, rfl⟩ := Over.mk_surjective Y
+    dsimp
+    rw [toFunApp_app, invFun_app]
+    dsimp
+    rw [MonoidalClosed.curry_natural_left, curry_invFunApp]
+    dsimp
+    rw [NatTrans.naturality_assoc]
+    erw [map_app]
+    congr 2
+    simp)
+
 end
+
+@[simp]
+lemma invFun_toFun (φ : F ⊗ K ⟶ G) : invFun (toFun φ) = φ := by
+  ext X
+  simp [invFunApp]
 
 end homEquiv
 
 noncomputable def homEquiv : (F ⊗ K ⟶ G) ≃ (K ⟶ internalHom F G) where
   toFun := homEquiv.toFun
   invFun := homEquiv.invFun
-  left_inv := sorry
-  right_inv := sorry
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 end internalHom
 
