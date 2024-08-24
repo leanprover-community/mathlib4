@@ -174,10 +174,13 @@ syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
   configuration is set to false, then the tactic will simply set the user up to
   prove their target using the linear combination instead of normalizing the subtraction.
 
-Note: The left and right sides of all the equalities should have the same
-  type, and the coefficients should also have this type.  There must be
-  an instance of `IsRightCancelAdd` for this type, and also instances of `Mul`,
-  `Neg`, etc. if these operations are used.
+Note: The left and right sides of all the equalities should have the same type `α`, and the
+coefficients should also have type `α`.  For full functionality `α` should be a commutative ring --
+strictly speaking, a commutative semiring with "cancellative" addition (in the semiring case,
+negation and subtraction will be handled "formally" as if operating in the enveloping ring). If a
+nonstandard normalization is used (for example `abel` or `skip`), the tactic will work over types
+`α` with less algebraic structure: the minimum is instances of `[Add α] [IsRightCancelAdd α]`
+together with instances of whatever operations are used in the tactic call.
 
 * The input `e` in `linear_combination e` is a linear combination of proofs of equalities,
   given as a sum/difference of coefficients multiplied by expressions.
