@@ -5,20 +5,20 @@ Authors: Calle Sönne
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.Util.AddRelatedDecl
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # The `to_app` attribute
 
-Adding `@[to_app]` to a lemma named `F` of shape `∀ .., f = g`,
-where `f g : X ⟶ Y` in some category
-will create a new lemma named `F_assoc` of shape
-`∀ .. {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h`
-but with the conclusions simplified using the axioms for a category
+Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms
+in some bicategory, create a new lemma named `F_app`. This lemma is obtained by specializing the
+bicategory in which the equality is taking place to `Cat`, then applying `NatTrans.app` to obtain
+a proof of `∀ ... (X : Cat), η.app X = θ.app X`, and finally simplifying the conclusion using some
+basic lemmas in the bicategory `Cat`:
 (`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
 
-This is useful for automatically generating lemmas which the simplifier can use even on expressions
-.......
+This is useful for automatically generating bicategorical lemmas about 2-morphisms which the
+simplifier can use in expressions that might involve both components of 2-morphisms,
+and 1-morphisms. (TODO: write more)
 
 There is also a term elaborator `to_app_of% t` for use within proofs.
 -/
@@ -30,67 +30,56 @@ open Qq
 namespace CategoryTheory
 
 /-- A variant of `eq_whisker` with a more convenient argument order for use in tactics.  -/
+-- TODO: is this even needed?
 theorem eq_app' {C D : Cat} {f g : C ⟶ D} {η θ : f ⟶ g} (w : η = θ) (X : C) :
     η.app X = θ.app X :=
   congrArg (NatTrans.app · X) w
 
-/-- Simplify an expression using only the axioms of a category. -/
+/-- Simplify an expression in `Cat` using basic properties of `NatTrans.app`. -/
 def catAppSimp (e : Expr) : MetaM Simp.Result :=
   -- TODO: figure out which ones are necessary
   simpOnlyNames [
-    --``Category.comp_id, ``Category.id_comp, ``Category.assoc,
-    ``Cat.id_obj, ``Cat.id_map, ``Cat.comp_obj, ``Cat.comp_map,
     ``Cat.whiskerLeft_app, ``Cat.whiskerRight_app, ``Cat.id_app, ``Cat.comp_app,
     ``Cat.eqToHom_app] e
     (config := { decide := false })
 
 /--
-Given an equation `f = g` between 2-morphisms `X ⟶ Y` in an arbitrary bicategory (possibly after a
-`∀` binder), get the corresponding equation in the bicategory `Cat`. -/
-
--- Maybe let this take a list of levels?
+Given a term of type `∀ ..., η = θ`, where `η θ : f ⟶ g` are 2-morphisms in some bicategory
+`B`, which is bound by the `∀` binder, get the corresponding equation in the bicategory `Cat`. -/
+-- TODO: mention levelMVars argument in docstring above
 def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
   let (args, binderInfos, conclusion) ← forallMetaTelescope (← inferType e)
-  -- Find bicategory metavariable
-  let η := (Expr.getAppArgsN conclusion 2)[0]!
-  let f := (Expr.getAppArgsN (← inferType η) 2)[0]!
-  let D := (Expr.getAppArgsN (← inferType f) 2)[1]!
-  let B_pre ← inferType D
-  let B ← getMVars B_pre
-  -- assign bicategory metavariable
-  let CAT := B[0]!
-  let some CATIdx := args.findIdx? (· == .mvar CAT)
+  -- Find the metavariable corresponding to the bicategory, by anylizing `η = θ` (i.e. conclusion)
+  let η := (Expr.getAppArgsN conclusion 2)[0]! -- `η` in the equality above
+  let f := (Expr.getAppArgsN (← inferType η) 2)[0]! -- the domain of `η`
+  let a := (Expr.getAppArgsN (← inferType f) 2)[1]! -- the domain of `f`
+  let B_pre ← inferType a -- the bicategory
+  let B := (← getMVars B_pre)[0]!
+  let some BIdx := args.findIdx? (· == .mvar B)
     | throwError "TODO"
-
-  -- TODO: problem here?
+  -- Create level metavariables to be used for `Cat.{v u}`
   let u ← mkFreshLevelMVar
-  --Meta.getDecLevel B_pre
   let v ← mkFreshLevelMVar
-  -- Assign level for the bicategory
+  -- Assign the right level of B, so that it corresponds to the level of `Cat`
   let _ ← isLevelDefEq (← Meta.getDecLevel B_pre) (Level.max (Level.max (u.succ) u) (v.succ))
-
-  CAT.assign (.const ``Cat [u, v])
-  let some inst := args[CATIdx + 1]?
+  B.assign (.const ``Cat [u, v])
+  let some inst := args[BIdx + 1]?
     | throwError "TODO"
-
-  -- TODO: remove binderInfo from CAT and inst here
-  let binderInfos := binderInfos.eraseIdx CATIdx
-  let binderInfos := binderInfos.eraseIdx CATIdx
-
-  -- Assign levels for the bicategory instance
+  -- Assign the right levels for the bicategory instance of `B`
   let instlvl ← Meta.getLevel (← inferType inst)
   let instlvlMVars := levelMVars.filter fun l => l.occurs instlvl && l != u
   forM instlvlMVars fun l => do
     let _ ← isLevelDefEq l (Level.max u v)
-
   inst.mvarId!.assign (← synthInstanceQ q(Bicategory.{max u v, max u v} Cat.{u, v}))
-  -- TODO: would want to end here without mkLambdaFVars, but that doesn't work
-  -- as it tries to initialize [Bicategory B]
-  let applied ← mkAppOptM' e (args.map some)
-
+  -- TODO: would be better if I could use `mkAppOptM'` straight away, but it
+  -- tries to initialize all instance arguments :(
+  let applied := mkAppN e args
   let mvars := (← getMVars applied).map (Expr.mvar)
-  logInfo m!"mvars: {mvars}"
-
+  -- Erease the binderinfos for the bicategory and the instance
+  let binderInfos := binderInfos.eraseIdx BIdx
+  let binderInfos := binderInfos.eraseIdx BIdx
+  -- Recursive function which applies `mkLambdaFVars` stepwise
+  -- (so that each step can have different binderinfos)
   let rec apprec (i : Nat) (e : Expr) : MetaM Expr := do
     if i < mvars.size then
       let mvar := mvars[i]!
@@ -99,17 +88,7 @@ def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
       return e
     else
       return e
-
-
-  -- TODO: now we need to apply mkLambdaFVars stepwise ... let rec (check foldrM mayeb)?
-
-  -- for mvar in mvars, bi in binderInfos do
-  --   let applied ← mkLambdaFVars #[mvar] (binderInfoForMVars := bi) applied
-  -- let applied := mkAppN e args
-  -- let applied ← mkLambdaFVars mvars (← apprec 0 applied)
   let applied ← apprec 0 applied
-  logInfo m!"applied: {applied}"
-    --(binderInfoForMVars := binderInfo)
   return applied
 
 /--
