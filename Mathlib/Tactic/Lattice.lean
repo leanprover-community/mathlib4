@@ -29,6 +29,7 @@ open Lean Elab Meta Tactic
 
 class BoundedLattice (A : Sort _) extends Lattice A, BoundedOrder A where
 
+/-
 structure VarVal where
   ix : UInt64
 deriving BEq, Hashable, Inhabited
@@ -134,13 +135,26 @@ def equate (v v' : VarVal) (v2v' : Expr): HashConsM Unit := do
   }
 
 end HashConsM
+-/
 
-def VarVal.toExprM (v : VarVal) : HashConsM Expr := do
-  let v2r ← HashConsM.getRoot v
-  return v2r.rExpr
+structure VarVal where
+  expr : Expr
+deriving BEq, Hashable
 
-instance : ToExprM VarVal where
-  toExprM v := v.toExprM
+instance : ToMessageData VarVal where
+  toMessageData v := m!"%{v.expr}"
+
+
+structure EqTy where
+  ty? : Option Expr := .none
+  lhs : VarVal
+  rhs : VarVal
+
+instance : BEq EqTy where
+  beq x y := x.lhs == y.lhs && x.rhs == y.rhs
+
+instance : Hashable EqTy where
+  hash x := hash (x.lhs, x.rhs)
 
 structure NotTy (α : Type) where
   e : α
@@ -214,7 +228,7 @@ def State.ofConfig (cfg : Config) : State :=
   }
 
 /-- Core monad that tactic runs in. -/
-abbrev LatticeM := StateRefT State (ReaderT Config (HashConsM))
+abbrev LatticeM := StateRefT State (ReaderT Config (MetaM))
 
 class ToExprM (α : Type) where
   toExprM : α → LatticeM Expr
@@ -227,6 +241,17 @@ open OfExpr?
 instance {α : Type} (a : α) : ToExprM (Proof a) where
   toExprM p := return p.proof
 
+def VarVal.toExprM (v : VarVal) : LatticeM Expr := do
+  return v.expr
+
+instance : ToExprM VarVal where
+  toExprM v := v.toExprM
+
+def VarVal.ofExpr (e : Expr) : LatticeM VarVal := do
+  return { expr := e }
+
+def VarVal.isEq? (v v' : VarVal) : LatticeM Bool := do
+  return ← isDefEq v.expr v'.expr
 
 def EqTy.toExprM (e : EqTy) : LatticeM Expr := do
   mkAppOptM `Eq #[e.ty?, ← e.lhs.toExprM, ← e.rhs.toExprM]
@@ -237,8 +262,8 @@ instance : ToExprM EqTy where
 def EqTy.ofExpr? (e : Expr) : LatticeM (Option EqTy) :=
   match_expr e with
   | Eq ty lhs rhs  => do
-    let lhs ← HashConsM.addVar lhs
-    let rhs ← HashConsM.addVar rhs
+    let lhs ← VarVal.ofExpr lhs
+    let rhs ← VarVal.ofExpr rhs
     return some { ty? := ty, lhs := lhs, rhs := rhs }
   | _ => return none
 
@@ -261,8 +286,8 @@ def NotTy.ofExpr? {α : Type} [E : OfExpr? α] (e : Expr): LatticeM (Option (Not
 def LeqTy.ofExpr? (e : Expr) : LatticeM <| Option LeqTy :=
     match_expr e with
     | LE.le _α _self lhs rhs => do
-      let lhs ← HashConsM.addVar lhs
-      let rhs ← HashConsM.addVar rhs
+      let lhs ← VarVal.ofExpr lhs
+      let rhs ← VarVal.ofExpr rhs
       return some { lhs := lhs, rhs := rhs }
     | _ => return none
 
@@ -281,8 +306,8 @@ def InfTy.toExpr (e : InfTy) : LatticeM Expr := do
 def InfTy.ofExpr? (e : Expr) : LatticeM <| Option InfTy :=
   match_expr e with
   | Inf.inf α self lhs rhs => do
-    let lhs ← HashConsM.addVar lhs
-    let rhs ← HashConsM.addVar rhs
+    let lhs ← VarVal.ofExpr lhs
+    let rhs ← VarVal.ofExpr rhs
     return some { ty? := α, self? := self, lhs := lhs, rhs := rhs }
   | _ => return none
 
@@ -356,11 +381,14 @@ def mkLeqTransProof (a b c : Expr) (pab : Expr) (pbc : Expr) : MetaM Expr := do
 
 def tryAddLeqTrans? {xy yz : LeqTy}
     (pxy : Proof xy) (pyz : Proof yz) : LatticeM Bool := do
-  if ← isDefEq (HashConsM.getRoot) yz.lhs.e then
+  if ← xy.rhs.isEq? yz.lhs then
     let outTy : LeqTy := { lhs := xy.lhs, rhs := yz.rhs }
     if (← get).leqs.contains outTy then return false
-    let proof : Proof outTy := Proof.mk <| do
-      mkLeqTransProof xy.lhs.e xy.rhs.e yz.rhs.e (← pxy.proof) (← pyz.proof)
+    let proof : Proof outTy := Proof.mk <|
+      ← mkLeqTransProof
+        xy.lhs.expr xy.rhs.expr yz.rhs.expr
+        pxy.proof
+        pyz.proof
     addLeqProof proof
   else
     return false
@@ -375,12 +403,13 @@ def mkLeAntisymmProof (a b : Expr) (pab : Expr) (pba : Expr) : MetaM Expr := do
 
 def tryAddLeqAntiSymm? {xy yx : LeqTy}
     (pxy : Proof xy) (pyx : Proof yx) : LatticeM Bool := do
-  if (← isDefEq xy.lhs.e yx.rhs.e) && (← isDefEq xy.rhs.e yx.lhs.e) then
+  if (← xy.lhs.isEq? yx.rhs) && (← xy.rhs.isEq? yx.lhs) then
     let outTy : EqTy := { lhs := xy.lhs, rhs := xy.rhs }
     if (← get).eqs.contains outTy then return false
 
-    let proof : Proof outTy := Proof.mk <| do
-      mkLeAntisymmProof xy.lhs.e xy.rhs.e (← pxy.proof) (← pyx.proof)
+    let proof : Proof outTy := Proof.mk <|
+      ← mkLeAntisymmProof xy.lhs.expr xy.rhs.expr
+        pxy.proof pyx.proof
     addEqualityProof outTy proof
   else
     return false
@@ -437,9 +466,8 @@ def doWork : LatticeM Bool := do
 
 def falseFromPosNegLit  {P : Prop} (t : P) (f : ¬ P) : False := f t
 
-/-- info: Lattice.Algorithm.LatticeM.falseFromPosNegLit {P : Prop} (t : P) (f : ¬P) : False -/
+/-- info: Lattice.LatticeM.falseFromPosNegLit {P : Prop} (t : P) (f : ¬P) : False -/
 #guard_msgs in #check falseFromPosNegLit
-
 
 /--
 example: α : EqTy, na : NotTy EqTy
