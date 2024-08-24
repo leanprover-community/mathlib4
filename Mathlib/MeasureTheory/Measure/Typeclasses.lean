@@ -12,6 +12,7 @@ We introduce the following typeclasses for measures:
 
 * `IsProbabilityMeasure μ`: `μ univ = 1`;
 * `IsFiniteMeasure μ`: `μ univ < ∞`;
+* `IsZeroOrProbabilityMeasure μ`: `μ univ = 0 ∨ μ univ = 1`;
 * `SigmaFinite μ`: there exists a countable collection of sets that cover `univ`
   where `μ` is finite;
 * `SFinite μ`: the measure `μ` can be written as a countable sum of finite measures;
@@ -203,11 +204,13 @@ end IsFiniteMeasure
 
 section IsZeroOrProbabilityMeasure
 
-/-- A measure `μ` is called a probability measure if `μ univ = 1`. -/
+/-- A measure `μ` is zero or a probability measure if `μ univ = 0` or `μ univ = 1`. This class
+of measures appears naturally when conditioning on events, and many results which are true for
+probability measures hold more generally over this class. -/
 class IsZeroOrProbabilityMeasure (μ : Measure α) : Prop where
-  measure_univ : μ univ = 1 ∨ μ univ = 0
+  measure_univ : μ univ = 0 ∨ μ univ = 1
 
-lemma isZeroOrProbabilityMeasure_iff : IsZeroOrProbabilityMeasure μ ↔ μ univ = 1 ∨ μ univ = 0 :=
+lemma isZeroOrProbabilityMeasure_iff : IsZeroOrProbabilityMeasure μ ↔ μ univ = 0 ∨ μ univ = 1 :=
   ⟨fun _ ↦ IsZeroOrProbabilityMeasure.measure_univ, IsZeroOrProbabilityMeasure.mk⟩
 
 lemma prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} : μ s ≤ 1 := by
@@ -223,7 +226,7 @@ instance (priority := 100) IsZeroOrProbabilityMeasure.toIsFiniteMeasure (μ : Me
   ⟨prob_le_one.trans_lt one_lt_top⟩
 
 instance : IsZeroOrProbabilityMeasure (0 : Measure α) :=
-  ⟨Or.inr rfl⟩
+  ⟨Or.inl rfl⟩
 
 end IsZeroOrProbabilityMeasure
 
@@ -242,7 +245,7 @@ lemma isProbabilityMeasure_iff : IsProbabilityMeasure μ ↔ μ univ = 1 :=
 
 instance (priority := 100) (μ : Measure α) [IsProbabilityMeasure μ] :
     IsZeroOrProbabilityMeasure μ :=
-  ⟨Or.inl measure_univ⟩
+  ⟨Or.inr measure_univ⟩
 
 theorem IsProbabilityMeasure.ne_zero (μ : Measure α) [IsProbabilityMeasure μ] : μ ≠ 0 :=
   mt measure_univ_eq_zero.2 <| by simp [measure_univ]
@@ -337,14 +340,13 @@ variable [IsZeroOrProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 variable (μ) in
 lemma eq_zero_or_isProbabilityMeasure : μ = 0 ∨ IsProbabilityMeasure μ := by
   rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with h | h
-  · exact Or.inr ⟨h⟩
   · apply Or.inl (measure_univ_eq_zero.mp h)
+  · exact Or.inr ⟨h⟩
 
 instance {f : α → β} : IsZeroOrProbabilityMeasure (map f μ) := by
   by_cases hf : AEMeasurable f μ
   · simpa [isZeroOrProbabilityMeasure_iff, hf] using IsZeroOrProbabilityMeasure.measure_univ
   · simp [isZeroOrProbabilityMeasure_iff, hf]
-
 
 lemma prob_compl_lt_one_sub_of_lt_prob {p : ℝ≥0∞} (hμs : p < μ s) (s_mble : MeasurableSet s) :
     μ sᶜ < 1 - p := by
@@ -361,27 +363,7 @@ lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_m
   · simp
   · simpa [prob_compl_eq_one_sub s_mble] using tsub_le_tsub_left hμs 1
 
-
-instance : IsZeroOrProbabilityMeasure (μ.comap f) := by
-  by_cases hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ
-  · rcases eq_zero_or_isProbabilityMeasure μ with rfl | h
-    · simp
-
-
-#exit
-
-protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : MeasurableEmbedding f)
-    (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
-  isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
-
-instance isProbabilityMeasure_map_up :
-    IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
-
-instance isProbabilityMeasure_comap_down : IsProbabilityMeasure (μ.comap ULift.down) :=
-  MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
-    simp [Function.Surjective.range_eq <| EquivLike.surjective _]
-
-end IsProbabilityMeasure
+end IsZeroOrProbabilityMeasure
 
 section NoAtoms
 
