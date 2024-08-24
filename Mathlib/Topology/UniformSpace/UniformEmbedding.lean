@@ -14,7 +14,7 @@ Extension of uniform continuous functions.
 -/
 
 
-open Filter Function Set Uniformity Topology
+open Filter Function Set Uniformity UniformSpace Topology
 
 section
 
@@ -61,12 +61,12 @@ theorem uniformInducing_id : UniformInducing (@id α) :=
 
 theorem UniformInducing.comp {g : β → γ} (hg : UniformInducing g) {f : α → β}
     (hf : UniformInducing f) : UniformInducing (g ∘ f) :=
-  ⟨by rw [← hf.1, ← hg.1, comap_comap]; rfl⟩
+  ⟨by rw [← hf.1, ← hg.1, Filter.comap_comap]; rfl⟩
 
 theorem UniformInducing.of_comp_iff {g : β → γ} (hg : UniformInducing g) {f : α → β} :
     UniformInducing (g ∘ f) ↔ UniformInducing f := by
   refine ⟨fun h ↦ ?_, hg.comp⟩
-  rw [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, ← h.comap_uniformity,
+  rw [uniformInducing_iff, ← hg.comap_uniformity, Filter.comap_comap, ← h.comap_uniformity,
     Function.comp, Function.comp]
 
 theorem UniformInducing.basis_uniformity {f : α → β} (hf : UniformInducing f) {ι : Sort*}
@@ -81,7 +81,7 @@ theorem UniformInducing.cauchy_map_iff {f : α → β} (hf : UniformInducing f) 
 theorem uniformInducing_of_compose {f : α → β} {g : β → γ} (hf : UniformContinuous f)
     (hg : UniformContinuous g) (hgf : UniformInducing (g ∘ f)) : UniformInducing f := by
   refine ⟨le_antisymm ?_ hf.le_comap⟩
-  rw [← hgf.1, ← Prod.map_def, ← Prod.map_def, ← Prod.map_comp_map f f g g, ← comap_comap]
+  rw [← hgf.1, ← Prod.map_def, ← Prod.map_def, ← Prod.map_comp_map f f g g, ← Filter.comap_comap]
   exact comap_mono hg.le_comap
 
 theorem UniformInducing.uniformContinuous {f : α → β} (hf : UniformInducing f) :
@@ -94,7 +94,7 @@ theorem UniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} (h
 
 protected theorem UniformInducing.uniformInducing_comp_iff {f : α → β} {g : β → γ}
     (hg : UniformInducing g) : UniformInducing (g ∘ f) ↔ UniformInducing f := by
-  simp only [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, Function.comp_def]
+  simp only [uniformInducing_iff, ← hg.comap_uniformity, Filter.comap_comap, Function.comp_def]
 
 theorem UniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
     (hg : UniformInducing g) :
@@ -109,7 +109,7 @@ theorem UniformInducing.inducing {f : α → β} (h : UniformInducing f) : Induc
 theorem UniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformInducing e₁) (h₂ : UniformInducing e₂) :
     UniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  ⟨by simp [(· ∘ ·), uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
+  ⟨by simp [(· ∘ ·), uniformity_prod, ← h₁.1, ← h₂.1, Filter.comap_inf, Filter.comap_comap]⟩
 
 theorem UniformInducing.denseInducing {f : α → β} (h : UniformInducing f) (hd : DenseRange f) :
     DenseInducing f :=
@@ -158,7 +158,7 @@ theorem uniformEmbedding_subtype_val {p : α → Prop} :
 
 theorem uniformEmbedding_set_inclusion {s t : Set α} (hst : s ⊆ t) :
     UniformEmbedding (inclusion hst) where
-  comap_uniformity := by rw [uniformity_subtype, uniformity_subtype, comap_comap]; rfl
+  comap_uniformity := by rw [uniformity_subtype, uniformity_subtype, Filter.comap_comap]; rfl
   inj := inclusion_injective hst
 
 theorem UniformEmbedding.comp {g : β → γ} (hg : UniformEmbedding g) {f : α → β}
@@ -248,7 +248,7 @@ theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α �
 theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : UniformEmbedding e)
     (de : DenseEmbedding e) : UniformEmbedding (DenseEmbedding.subtypeEmb p e) :=
   { comap_uniformity := by
-      simp [comap_comap, (· ∘ ·), DenseEmbedding.subtypeEmb, uniformity_subtype,
+      simp [Filter.comap_comap, (· ∘ ·), DenseEmbedding.subtypeEmb, uniformity_subtype,
         ue.comap_uniformity.symm]
     inj := (de.subtype p).inj }
 
@@ -415,7 +415,7 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
     (closure_mono <| monotone_image <| hp) (mem_of_mem_nhds hb)
   let ⟨c, hc⟩ := uniformly_extend_exists ue'.toUniformInducing de'.dense hf ⟨b, this⟩
   replace hc : Tendsto (f ∘ Subtype.val (p := p)) (((𝓝 b).comap e).comap Subtype.val) (𝓝 c) := by
-    simpa only [nhds_subtype_eq_comap, comap_comap, DenseEmbedding.subtypeEmb_coe] using hc
+    simpa only [nhds_subtype_eq_comap, Filter.comap_comap, DenseEmbedding.subtypeEmb_coe] using hc
   refine ⟨c, (tendsto_comap'_iff ?_).1 hc⟩
   rw [Subtype.range_coe_subtype]
   exact ⟨_, hb, by rwa [← de.toInducing.closure_eq_preimage_closure_image, hs.closure_eq]⟩
