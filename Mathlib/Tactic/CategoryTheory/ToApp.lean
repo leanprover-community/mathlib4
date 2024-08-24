@@ -94,7 +94,7 @@ def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
 /--
 Given morphisms `f g : C ⟶ D` in the bicategory `Cat`, and an equation `η = θ` between 2-morphisms
 (possibly after a `∀` binder), produce the equation `∀ (X : C), f.app X = g.app X`, and simplify
-it using basic lemmas in `Cat`. -/
+it using basic lemmas about `NatTrans.app`. -/
 def toAppExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do
     logInfo m!"e: {e}"
@@ -102,22 +102,26 @@ def toAppExpr (e : Expr) : MetaM Expr := do
     simpType catAppSimp (← mkAppM ``eq_app' #[e])) e
 
 /--
-Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` are
-morphisms in some category, will create a new lemma named `F_assoc` of shape
-`∀ .. {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h`
-but with the conclusions simplified using the axioms for a category
+Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms
+in some bicategory, create a new lemma named `F_app`. This lemma is obtained by specializing the
+bicategory in which the equality is taking place to `Cat`, then applying `NatTrans.app` to obtain
+a proof of `∀ ... (X : Cat), η.app X = θ.app X`, and finally simplifying the conclusion using some
+basic lemmas in the bicategory `Cat`:
 (`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
-So, for example, if the conclusion of `F` is `a ≫ b = g` then
+
+TODO: whiskering example
+So, for example, if the conclusion of `F` is `a ≫ f = g` then
 the conclusion of `F_assoc` will be `a ≫ (b ≫ h) = g ≫ h` (note that `≫` reassociates
 to the right so the brackets will not appear in the statement).
 
-This attribute is useful for generating lemmas which the simplifier can use even on expressions
-that are already right associated.
+This is useful for automatically generating bicategorical lemmas about 2-morphisms which the
+simplifier can use in expressions that might involve both components of 2-morphisms,
+and 1-morphisms. (TODO: write more)
 
-Note that if you want both the lemma and the reassociated lemma to be
-`simp` lemmas, you should tag the lemma `@[reassoc (attr := simp)]`.
-The variant `@[simp, reassoc]` on a lemma `F` will tag `F` with `@[simp]`,
-but not `F_apply` (this is sometimes useful).
+Note that if you want both the lemma and the new lemma to be
+`simp` lemmas, you should tag the lemma `@[to_app (attr := simp)]`.
+The variant `@[simp, to_app]` on a lemma `F` will tag `F` with `@[simp]`,
+but not `F_app` (this is sometimes useful).
 -/
 syntax (name := to_app) "to_app" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
@@ -130,18 +134,11 @@ initialize registerBuiltinAttribute {
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
     addRelatedDecl src "_app" ref stx? fun type value levels => do
-      logInfo m!"tp: {type}"
-      logInfo m!"val: {value}"
-      logInfo m!"valtp: {← inferType value}"
       let levelMVars ← levels.mapM λ _ => mkFreshLevelMVar
       let value := value.instantiateLevelParams levels levelMVars
       let newValue ←toAppExpr (← to_appExpr value levelMVars)
-      logInfo m!"val: {newValue}"
-      logInfo m!"valtp: {← inferType newValue}"
       let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newValue
-      -- let newExpr ← toAppExpr r.expr --(← mkExpectedTypeHint r.expr (← inferType r.expr))
       let output := (r.expr, r.newParamNames.toList)
-      logInfo m!"hello {output}"
       pure output
   | _ => throwUnsupportedSyntax }
 
