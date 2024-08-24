@@ -248,18 +248,18 @@ instance _root_.RingHomClass.strongHomClass {R : Type*} [NonAssocRing R] [Compat
     | _, .mul => fun x => by simp only [funMap_mul, Fin.isValue, map_mul, Function.comp_apply]
   map_rel := fun _ n => (IsAlgebraic.empty_relations n).elim
 
-instance ringHomClass_of_strongHomClass {R : Type*} [NonAssocRing R] [CompatibleRing R]
+instance ringHomClass_of_homClass {R : Type*} [NonAssocRing R] [CompatibleRing R]
   {S : Type*} [NonAssocRing S] [CompatibleRing S]
-  {F : Type*} [FunLike F R S] [Language.ring.StrongHomClass F R S] :
+  {F : Type*} [FunLike F R S] [Language.ring.HomClass F R S] :
     RingHomClass F R S where
   map_zero := fun f => by rw [← funMap_zero, HomClass.map_fun f zero default, funMap_zero]
   map_one := fun f => by rw [← funMap_one, HomClass.map_fun f one default, funMap_one]
   map_add := fun f x y => by simpa using HomClass.map_fun f addFunc ![x, y]
   map_mul := fun f x y => by simpa using HomClass.map_fun f mulFunc ![x, y]
 
-instance ringEquivClass_of_strongHomClass {R : Type*} [NonAssocRing R] [CompatibleRing R]
+instance ringEquivClass_of_HomClass {R : Type*} [NonAssocRing R] [CompatibleRing R]
   {S : Type*} [NonAssocRing S] [CompatibleRing S]
-  {F : Type*} [EquivLike F R S] [Language.ring.StrongHomClass F R S] :
+  {F : Type*} [EquivLike F R S] [Language.ring.HomClass F R S] :
     RingEquivClass F R S where
   map_add := map_add
   map_mul := map_mul
