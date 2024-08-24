@@ -764,7 +764,6 @@ theorem coe_basis : ⇑h.basis = e := by
   · simp [h.eval_same]
   · simp [hne, h.eval_of_ne hne.symm]
 
--- `convert` to get rid of a `DecidableEq` mismatch
 theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '' H)) :
     ∀ i : ι, ε i x ≠ 0 → i ∈ H := by
   intro i hi
