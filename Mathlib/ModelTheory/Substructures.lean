@@ -300,7 +300,7 @@ lemma mem_closed_iff (s : Set M) :
 variable (L)
 
 @[simp]
-lemma mem_closed_of_IsRelational [L.IsRelational] (s : Set M) : s ∈ (closure L).closed :=
+lemma mem_closed_of_isRelational [L.IsRelational] (s : Set M) : s ∈ (closure L).closed :=
   (mem_closed_iff s).2 (IsRelational.empty_functions _).elim
 
 theorem _root_.Set.Countable.substructure_closure
