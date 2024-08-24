@@ -1530,6 +1530,39 @@ lemma mem_compactlySupported {f : α →ᵇ γ} :
     f ∈ C_cb(α, γ) ↔ HasCompactSupport f :=
   TwoSidedIdeal.mem_mk' {z : α →ᵇ γ | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right f
 
+lemma exist_norm_eq {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) (hs : (tsupport f).Nonempty): ∃ (x : α), ‖f x‖ = ‖f‖ := by
+  have : Continuous (fun x => ‖f x‖) := by
+    have : (fun x => ‖f x‖) = (fun x => ((fun y => ‖y‖) ∘ f) x) := rfl
+    rw [this]
+    exact Continuous.comp continuous_norm f.1.2
+  obtain ⟨x, hx⟩ := IsCompact.exists_isMaxOn ((mem_compactlySupported α γ).mp h) hs (Continuous.continuousOn this)
+  use x
+  apply le_antisymm
+  · exact norm_coe_le_norm f x
+  · rw [norm_eq]
+    apply csInf_le
+    · use 0
+      rw [mem_lowerBounds]
+      intro z
+      simp only [mem_setOf_eq, and_imp]
+      exact fun a a_1 ↦ a
+    · simp only [mem_setOf_eq, norm_nonneg, true_and]
+      intro z
+      by_cases hz : z ∈ tsupport f
+      · exact (isMaxOn_iff.mp hx.2) z hz
+      · rw [image_eq_zero_of_nmem_tsupport hz]
+        simp only [norm_zero, norm_nonneg]
+
+theorem compactlySupported_eq_Bounded [CompactSpace α] : C_cb(α, γ) = (⊤ : Set (α →ᵇ γ)) := by
+  sorry
+
+theorem compactlySupported_eq_Bounded_IsCompact : C_cb(α, γ) = (⊤ : Set (α →ᵇ γ)) ↔
+    IsCompact (Set.univ : Set α) := by
+  sorry
+
+instance : SMul C(α, γ) C_cb(α, γ) where
+  smul := fun (g : C(α, γ)) => (fun (f : C_cb(α, γ)) => ⟨⟨g * f, by sorry⟩, by sorry⟩)
+
 end CompactlySupported
 
 end BoundedContinuousFunction
