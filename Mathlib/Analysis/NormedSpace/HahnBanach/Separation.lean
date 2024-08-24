@@ -75,8 +75,11 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [Topologi
       one_le_gauge_of_not_mem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
 
-variable [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E] [Module ℝ E]
-  [ContinuousSMul ℝ E] {s t : Set E} {x y : E}
+variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
+  {s t : Set E} {x y : E}
+section
+
+variable [TopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 /-- A version of the **Hahn-Banach theorem**: given disjoint convex sets `s`, `t` where `s` is open,
 there is a continuous linear functional which separates them. -/
@@ -203,6 +206,8 @@ theorem iInter_halfspaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).not_le le_rfl
 
+end
+
 namespace RCLike
 
 variable [RCLike 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
@@ -218,12 +223,12 @@ noncomputable def extendTo𝕜'ₗ : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜]
     map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
 
 @[simp]
-lemma re_extendTo𝕜'ₗ (g : E →L[ℝ] ℝ) (x : E) :  re ((extendTo𝕜'ₗ g) x : 𝕜) = g x := by
+lemma re_extendTo𝕜'ₗ (g : E →L[ℝ] ℝ) (x : E) : re ((extendTo𝕜'ₗ g) x : 𝕜) = g x := by
   have h g (x : E) : extendTo𝕜'ₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
   simp only [h , map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
     sub_self, sub_zero]
 
-variable [ContinuousSMul ℝ E]
+variable [TopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 theorem separate_convex_open_set {s : Set E}
     (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :

@@ -31,7 +31,7 @@ jobs:
       - name: lint
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
-          ./scripts/lint-style.sh --fix
+          lake exe lint-style --fix
 
       - name: suggester / lint-style
         uses: reviewdog/action-suggester@v1

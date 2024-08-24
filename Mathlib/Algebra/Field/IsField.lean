@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2014 Robert Lewis. All rights reserved.
+Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
+Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Tactic.Common
@@ -37,7 +37,7 @@ structure IsField (R : Type u) [Semiring R] : Prop where
 /-- Transferring from `Semifield` to `IsField`. -/
 theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R where
   __ := ‹Semifield R›
-  mul_inv_cancel {a} ha := ⟨a⁻¹, mul_inv_cancel ha⟩
+  mul_inv_cancel {a} ha := ⟨a⁻¹, mul_inv_cancel₀ ha⟩
 
 /-- Transferring from `Field` to `IsField`. -/
 theorem Field.toIsField (R : Type u) [Field R] : IsField R :=

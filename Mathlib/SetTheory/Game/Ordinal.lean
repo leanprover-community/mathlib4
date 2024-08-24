@@ -154,30 +154,57 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
   inj' := toPGame_injective
   map_rel_iff' := @toPGame_le_iff
 
-/-- The sum of ordinals as games corresponds to natural addition of ordinals. -/
-theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b).toPGame
-  | a, b => by
-    refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
-    · apply leftMoves_add_cases i <;>
-      intro i <;>
-      let wf := toLeftMovesToPGame_symm_lt i <;>
-      (try rw [add_moveLeft_inl]) <;>
-      (try rw [add_moveLeft_inr]) <;>
-      rw [toPGame_moveLeft', lf_congr_left (toPGame_add _ _), toPGame_lf_iff]
-      · exact nadd_lt_nadd_right wf _
-      · exact nadd_lt_nadd_left wf _
-    · rw [toPGame_moveLeft']
-      rcases lt_nadd_iff.1 (toLeftMovesToPGame_symm_lt i) with (⟨c, hc, hc'⟩ | ⟨c, hc, hc'⟩) <;>
-      rw [← toPGame_le_iff, ← le_congr_right (toPGame_add _ _)] at hc' <;>
-      apply lf_of_le_of_lf hc'
-      · apply add_lf_add_right
-        rwa [toPGame_lf_iff]
-      · apply add_lf_add_left
-        rwa [toPGame_lf_iff]
-termination_by a b => (a, b)
+/-- Converts an ordinal into the corresponding game. -/
+noncomputable abbrev toGame (o : Ordinal) : Game := ⟦o.toPGame⟧
 
-@[simp]
-theorem toPGame_add_mk' (a b : Ordinal) : (⟦a.toPGame⟧ + ⟦b.toPGame⟧ : Game) = ⟦(a ♯ b).toPGame⟧ :=
-  Quot.sound (toPGame_add a b)
+/-- The natural addition of ordinals corresponds to their sum as games. -/
+theorem toPGame_nadd (a b : Ordinal.{u}) : (a ♯ b).toPGame ≈ a.toPGame + b.toPGame := by
+  refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
+  · rw [toPGame_moveLeft']
+    rcases lt_nadd_iff.1 (toLeftMovesToPGame_symm_lt i) with (⟨c, hc, hc'⟩ | ⟨c, hc, hc'⟩) <;>
+    rw [← toPGame_le_iff, le_congr_right (toPGame_nadd _ _)] at hc' <;>
+    apply lf_of_le_of_lf hc'
+    · apply add_lf_add_right
+      rwa [toPGame_lf_iff]
+    · apply add_lf_add_left
+      rwa [toPGame_lf_iff]
+  · apply leftMoves_add_cases i <;>
+    intro i <;>
+    let wf := toLeftMovesToPGame_symm_lt i <;>
+    (try rw [add_moveLeft_inl]) <;>
+    (try rw [add_moveLeft_inr]) <;>
+    rw [toPGame_moveLeft', ← lf_congr_left (toPGame_nadd _ _), toPGame_lf_iff]
+    · exact nadd_lt_nadd_right wf _
+    · exact nadd_lt_nadd_left wf _
+termination_by (a, b)
+
+theorem toGame_nadd (a b : Ordinal) : (a ♯ b).toGame = a.toGame + b.toGame :=
+  Quot.sound (toPGame_nadd a b)
+
+/-- The natural multiplication of ordinals corresponds to their product as pre-games. -/
+theorem toPGame_nmul (a b : Ordinal.{u}) : (a ⨳ b).toPGame ≈ a.toPGame * b.toPGame := by
+  refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
+  · rw [toPGame_moveLeft']
+    rcases lt_nmul_iff.1 (toLeftMovesToPGame_symm_lt i) with ⟨c, hc, d, hd, h⟩
+    rw [← toPGame_le_iff, le_iff_game_le, ← toGame, ← toGame, toGame_nadd _ _, toGame_nadd _ _,
+      ← le_sub_iff_add_le] at h
+    refine lf_of_le_of_lf h <| (lf_congr_left ?_).1 <| moveLeft_lf <| toLeftMovesMul <| Sum.inl
+      ⟨toLeftMovesToPGame ⟨c, hc⟩, toLeftMovesToPGame ⟨d, hd⟩⟩
+    simp only [mul_moveLeft_inl, toPGame_moveLeft', Equiv.symm_apply_apply, equiv_iff_game_eq,
+      quot_sub, quot_add]
+    repeat rw [← game_eq (toPGame_nmul _ _)]
+    rfl
+  · apply leftMoves_mul_cases i ?_ isEmptyElim
+    intro i j
+    rw [mul_moveLeft_inl, toPGame_moveLeft', toPGame_moveLeft', lf_iff_game_lf,
+      quot_sub, quot_add, ← Game.not_le, le_sub_iff_add_le]
+    repeat rw [← game_eq (toPGame_nmul _ _)]
+    repeat rw [← toGame_nadd]
+    apply toPGame_lf (nmul_nadd_lt _ _) <;>
+    exact toLeftMovesToPGame_symm_lt _
+termination_by (a, b)
+
+theorem toGame_nmul (a b : Ordinal) : (a ⨳ b).toGame = ⟦a.toPGame * b.toPGame⟧ :=
+  Quot.sound (toPGame_nmul a b)
 
 end Ordinal

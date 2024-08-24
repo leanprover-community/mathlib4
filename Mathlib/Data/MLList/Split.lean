@@ -108,3 +108,5 @@ starting a new sublist each time a predicate changes from `false` to `true`.
 -/
 def splitAtBecomesTrue (L : MLList m α) (p : α → Bool) : MLList m (List α) :=
   L.splitAtBecomesTrueM fun a => pure (.up (p a))
+
+end MLList

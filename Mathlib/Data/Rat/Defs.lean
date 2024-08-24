@@ -268,7 +268,7 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
     congr 2
     ac_rfl
 
-protected lemma add_left_neg : -a + a = 0 := by
+protected lemma neg_add_cancel : -a + a = 0 := by
   simp [add_def, normalize_eq_mkRat, Int.neg_mul, Int.add_comm, ← Int.sub_eq_add_neg]
 
 @[deprecated zero_divInt (since := "2024-03-18")]
@@ -327,7 +327,7 @@ instance addCommGroup : AddCommGroup ℚ where
   add_zero := Rat.add_zero
   add_comm := Rat.add_comm
   add_assoc := Rat.add_assoc
-  add_left_neg := Rat.add_left_neg
+  neg_add_cancel := Rat.neg_add_cancel
   sub_eq_add_neg := Rat.sub_eq_add_neg
   nsmul := nsmulRec
   zsmul := zsmulRec

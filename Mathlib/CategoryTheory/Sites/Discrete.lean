@@ -94,8 +94,9 @@ variable (A) in
 /--
 The constant sheaf functor commutes up to isomorphism with any equivalence of sheaf categories.
 
-This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff` below, which says that the
-property of a sheaf of being a discrete object is invariant under equivalence of sheaf categories.
+This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalence` below, which
+says that the property of a sheaf of being a discrete object is invariant under equivalence of
+sheaf categories.
 -/
 noncomputable def equivCommuteConstant :
     let e : Sheaf J A ≌ Sheaf K A :=
@@ -110,8 +111,9 @@ variable (A) in
 /--
 The constant sheaf functor commutes up to isomorphism with any equivalence of sheaf categories.
 
-This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff` below, which says that the
-property of a sheaf of being a discrete object is invariant under equivalence of sheaf categories.
+This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalence` below, which
+says that the property of a sheaf of being a discrete object is invariant under equivalence of
+sheaf categories.
 -/
 noncomputable def equivCommuteConstant' :
     let e : Sheaf J A ≌ Sheaf K A :=
@@ -258,15 +260,13 @@ lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
       sheafToPresheaf_map, f, ← constantSheafAdj_counit_w]
     exact inferInstanceAs (IsIso (_ ≫ ((sheafToPresheaf J B).map
       ((constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F)))))
-  have : IsIso f := by
-    apply ReflectsIsomorphisms.reflects (sheafToPresheaf J B) _
-  apply ReflectsIsomorphisms.reflects (sheafCompose J U) _
+  have := isIso_of_reflects_iso f (sheafToPresheaf J B)
+  exact isIso_of_reflects_iso _ (sheafCompose J U)
 
 variable [(constantSheaf J A).Full] [(constantSheaf J A).Faithful]
   [(constantSheaf J B).Full] [(constantSheaf J B).Faithful]
 
-instance [h : F.IsDiscrete J ht] :
-    ((sheafCompose J U).obj F).IsDiscrete J ht := by
+instance [h : F.IsDiscrete J ht] : ((sheafCompose J U).obj F).IsDiscrete J ht := by
   rw [isDiscrete_iff_mem_essImage] at h ⊢
   obtain ⟨Y, ⟨i⟩⟩ := h
   exact ⟨U.obj Y, ⟨(fullyFaithfulSheafToPresheaf _ _).preimageIso

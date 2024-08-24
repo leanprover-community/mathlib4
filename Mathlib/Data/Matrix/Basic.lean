@@ -783,6 +783,14 @@ variable [NonAssocSemiring α]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
   simp [dotProduct]
 
+theorem dotProduct_single_one [DecidableEq n] (v : n → α) (i : n) :
+    dotProduct v (Pi.single i 1) = v i := by
+  rw [dotProduct_single, mul_one]
+
+theorem single_one_dotProduct [DecidableEq n] (i : n) (v : n → α) :
+    dotProduct (Pi.single i 1) v = v i := by
+  rw [single_dotProduct, one_mul]
+
 end NonAssocSemiring
 
 section NonUnitalNonAssocRing
@@ -1263,7 +1271,7 @@ def mapMatrix (f : α ≃+ β) : Matrix m n α ≃+ Matrix m n β :=
   { f.toEquiv.mapMatrix with
     toFun := fun M => M.map f
     invFun := fun M => M.map f.symm
-    map_add' := Matrix.map_add f f.map_add }
+    map_add' := Matrix.map_add f (map_add f) }
 
 @[simp]
 theorem mapMatrix_refl : (AddEquiv.refl α).mapMatrix = AddEquiv.refl (Matrix m n α) :=
@@ -1585,6 +1593,14 @@ theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] 
 theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
     (i : m) (x : R) : Pi.single i x ᵥ* M = fun j => x * M i j :=
   funext fun _ => single_dotProduct _ _ _
+
+theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
+    (M : Matrix m n R) (j : n) :
+    M *ᵥ Pi.single j 1 = Mᵀ j := by ext; simp
+
+theorem single_one_vecMul [Fintype m] [DecidableEq m] [NonAssocSemiring R]
+    (i : m) (M : Matrix m n R) :
+    Pi.single i 1 ᵥ* M = M i := by simp
 
 -- @[simp] -- Porting note: not in simpNF
 theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)

@@ -675,6 +675,7 @@ theorem KaehlerDifferential.kerTotal_map' [Algebra R B]
   refine congr_arg Set.range ?_
   ext; simp [IsScalarTower.algebraMap_eq R A B]
 
+section
 variable [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B] [SMulCommClass S A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
@@ -786,6 +787,8 @@ lemma KaehlerDifferential.exact_mapBaseChange_map :
     Function.Exact (mapBaseChange R A B) (map R A B B) :=
   SetLike.ext_iff.mp (range_mapBaseChange R A B).symm
 
+end
+
 /-- The map `I → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 @[simps]
 noncomputable
@@ -813,6 +816,8 @@ def KaehlerDifferential.kerCotangentToTensor :
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :
     kerCotangentToTensor R A B (Ideal.toCotangent _ x) = 1 ⊗ₜ D _ _ x.1 := rfl
 
+variable [Algebra R B] [IsScalarTower R A B]
+
 theorem KaehlerDifferential.range_kerCotangentToTensor
     (h : Function.Surjective (algebraMap A B)) :
     LinearMap.range (kerCotangentToTensor R A B) =
@@ -830,7 +835,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     rw [KaehlerDifferential.ker_map_of_surjective R A B h] at hx
     obtain ⟨x, hx, rfl⟩ := hx
     simp only [TensorProduct.lid_symm_apply, LinearMap.rTensor_tmul,
-      Algebra.linearMap_apply, _root_.map_one]
+      Algebra.linearMap_apply, map_one]
     rw [← Finsupp.sum_single x, Finsupp.sum, ← Finset.sum_fiberwise_of_maps_to
       (fun _ ↦ Finset.mem_image_of_mem (algebraMap A B))]
     simp only [Function.comp_apply, map_sum (s := x.support.image (algebraMap A B)),
@@ -838,7 +843,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     apply sum_mem
     intro c _
     simp only [Finset.filter_congr_decidable, TensorProduct.lid_symm_apply, LinearMap.rTensor_tmul,
-      AlgHom.toLinearMap_apply, _root_.map_one, LinearMap.mem_range]
+      AlgHom.toLinearMap_apply, map_one, LinearMap.mem_range]
     simp only [map_sum, Finsupp.total_single]
     have : (x.support.filter (algebraMap A B · = c)).sum x ∈ RingHom.ker (algebraMap A B) := by
       simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,

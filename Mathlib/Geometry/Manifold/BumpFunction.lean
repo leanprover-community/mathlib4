@@ -32,7 +32,7 @@ universe uE uF uH uM
 
 variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [TopologicalSpace M]
-  [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  [ChartedSpace H M]
 
 open Function Filter FiniteDimensional Set Metric
 
