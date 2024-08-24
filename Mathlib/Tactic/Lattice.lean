@@ -29,33 +29,10 @@ open Lean Elab Meta Tactic
 
 class BoundedLattice (A : Sort _) extends Lattice A, BoundedOrder A where
 
-class ToExprM (α : Type) where
-  toExprM : α → MetaM Expr
-open ToExprM
-
-class OfExpr? (α : Type) where
-  ofExpr? : Expr → Option α
-
-class OfExpr (α : Type) where
-  ofExpr : Expr → α
-
-
-structure VarContext where
-  /-- Mapping from variable `v` to its underlying expression `e` -/
-  var2Expr : Std.HashMap UInt64 Expr
-  /-- Mapping from variable `v` to a canonical variable `c`, and a proof that `v = c`. -/
-  var2canonical : Std.HashMap UInt64 (UInt64 × Expr)
-
 structure VarVal where
-  e : Expr
-deriving BEq, Hashable
+  ix : UInt64
+deriving BEq, Hashable, Inhabited
 
-def VarVal.toExpr (v : VarVal) : Expr := v.e
-
-instance : ToExprM VarVal where
-  toExprM v := return v.e
-
-def VarExpr.ofExpr (e : Expr) : VarVal := ⟨e⟩
 
 structure EqTy where
   ty? : Option Expr := .none
@@ -68,19 +45,102 @@ instance : BEq EqTy where
 instance : Hashable EqTy where
   hash x := hash (x.lhs, x.rhs)
 
-def EqTy.toExprM (e : EqTy) : MetaM Expr :=
-  mkAppOptM `Eq #[e.ty?, e.lhs.toExpr, e.rhs.toExpr]
 
-instance : ToExprM EqTy where
-  toExprM e := e.toExprM
+instance : ToMessageData VarVal where
+  toMessageData v := m!"%{toString v.ix}"
 
-def EqTy.ofExpr? (e : Expr) : Option EqTy :=
-  match_expr e with
-  | Eq ty lhs rhs  => do
-    let lhs := VarExpr.ofExpr lhs
-    let rhs := VarExpr.ofExpr rhs
-    some { ty? := ty, lhs := lhs, rhs := rhs }
-  | _ => none
+inductive VarValToExpr
+| canonical : (expr : Expr) → VarValToExpr
+| noncanonical : (parent : VarVal) → (eqProof : Expr) → VarValToExpr
+
+
+
+structure VarContext where
+  /-- Mapping from variable `v` to a parent `p`, and a proof that `v = p`. -/
+  var2parent : Std.HashMap VarVal VarValToExpr := {}
+  /-- mapping of expression `e` to its variable.
+  NOTE: The variable is not necessarily canonical, and may have a parent.
+  So we must canonicalize it.
+  -/
+  expr2var : Std.HashMap Expr VarVal := {}
+
+/-- Monad for hash-consing variables. -/
+abbrev HashConsM := StateRefT VarContext TacticM
+
+namespace HashConsM
+
+structure PathToRoot (v : VarVal) where
+  r : VarVal
+  tor : Expr
+  rExpr : Expr
+deriving Inhabited, BEq, Hashable
+
+partial def getRoot (v : VarVal) : HashConsM (PathToRoot v) := do
+  let ctx ← get
+  match ctx.var2parent.get? v with
+  | some (VarValToExpr.canonical e) => return {
+      r := v,
+      tor := ← mkEqRefl e,
+      rExpr := e
+  }
+  | some (VarValToExpr.noncanonical parent vEqParent) => do
+      let pathToRoot ← getRoot parent
+      -- path compression
+      let compressedProof ← mkEqTrans vEqParent pathToRoot.tor
+      modify fun ctx => {
+          ctx with var2parent := ctx.var2parent.insert v (.noncanonical pathToRoot.r compressedProof)
+      }
+      return {
+        r := pathToRoot.r,
+        tor := compressedProof,
+        rExpr := pathToRoot.rExpr
+      }
+  | none => throwError "internal error: variable '{v}' not found in map 'root2Expr'."
+
+/-- -/
+def HashConsM.isEq? (v v' : VarVal) : HashConsM Bool := do
+  let v2r ← getRoot v
+  let v'2r ← getRoot v'
+  return v2r.r == v'2r.r
+
+def addVar (e : Expr) : HashConsM VarVal := do
+  let ctx ← get
+  /- TODO: check upto defeq. -/
+  let e ← whnf e /- normalize upto whnf. -/
+  match ctx.expr2var.get? e with
+  | some v => return v
+  | none =>
+    let v := VarVal.mk <| UInt64.ofNat <| ctx.expr2var.size
+    modify fun ctx => { ctx with
+      expr2var := ctx.expr2var.insert e v
+    }
+    return v
+
+/-- equate the two variables together. -/
+def equate (v v' : VarVal) (v2v' : Expr): HashConsM Unit := do
+  let v2r ← getRoot v
+  let v'2r' ← getRoot v'
+  -- r = v; v = v'; v' = r'.
+  let r2v ← mkEqSymm v2r.tor
+  let r2v' ← mkEqTrans r2v v2v'
+  let v'2r ← mkEqSymm v'2r'.tor
+  let r2r' ← mkEqTrans r2v' v'2r
+  /-
+  over-write r to be pointing to r'.
+  TODO: use weight heuristic to decide which one to be parent.
+  -/
+  modify fun ctx => { ctx with
+    var2parent := ctx.var2parent.insert v2r.r (.noncanonical v'2r'.r r2r')
+  }
+
+end HashConsM
+
+def VarVal.toExprM (v : VarVal) : HashConsM Expr := do
+  let v2r ← HashConsM.getRoot v
+  return v2r.rExpr
+
+instance : ToExprM VarVal where
+  toExprM v := v.toExprM
 
 structure NotTy (α : Type) where
   e : α
@@ -89,20 +149,6 @@ deriving BEq, Hashable
 /-- info: Not (a : Prop) : Prop -/
 #guard_msgs in #check Not
 
-def NotTy.toExpr {α : Type} [ToExprM α]
-    (n : NotTy α) : MetaM Expr := do
-  return mkApp (mkConst `Not) (← toExprM n.e)
-
-instance {α : Type} [ToExprM α] : ToExprM (NotTy α) where
-  toExprM n := do
-    return mkApp (mkConst `NotExpr.mk) (← toExprM n.e)
-
-def NotTy.ofExpr? {α : Type} [E : OfExpr? α] (e : Expr): Option (NotTy α) :=
-  match_expr e with
-  | Not e' => do
-    let e' ← E.ofExpr? e'
-    some { e := e' }
-  | _ => none
 
 abbrev NeqTy := NotTy EqTy
 
@@ -114,22 +160,6 @@ deriving BEq, Hashable
 /-- info: LE.le.{u} {α : Type u} [self : LE α] : α → α → Prop -/
 #guard_msgs in #check LE.le
 
-def LeqTy.ofExpr? (e : Expr) : Option LeqTy :=
-    match_expr e with
-    | LE.le _α _self a b =>
-      let lhs := VarExpr.ofExpr a
-      let rhs := VarExpr.ofExpr b
-      some { lhs := lhs, rhs := rhs }
-    | _ => none
-
-def LeqTy.toExpr (leq : LeqTy) : MetaM Expr := do
-  mkAppOptM ``LE.le #[.none, .none, leq.lhs.toExpr, leq.rhs.toExpr]
-
-instance : ToExprM LeqTy where
-  toExprM e := e.toExpr
-
-instance : OfExpr? LeqTy where
-  ofExpr? e := LeqTy.ofExpr? e
 
 abbrev NotLeqTy := NotTy LeqTy
 
@@ -150,25 +180,11 @@ instance : BEq InfTy where
 instance : Hashable InfTy where
   hash x := hash (x.lhs, x.rhs)
 
-def InfTy.toExpr (e : InfTy) : MetaM Expr :=
-  mkAppOptM ``Inf.inf #[e.ty?, e.self?, e.lhs.toExpr, e.rhs.toExpr]
-
-def InfTy.ofExpr? (e : Expr) : Option InfTy :=
-  match_expr e with
-  | Inf.inf α self a b =>
-    let lhs := VarExpr.ofExpr a
-    let rhs := VarExpr.ofExpr b
-    some { ty? := α, self? := self, lhs := lhs, rhs := rhs }
-  | _ => none
 
 /-- A proof of some expressions α -/
 structure Proof {α : Type} (ty : α) where
-  proof : MetaM Expr
+  proof : Expr
 
-instance {α : Type} (a : α) : ToExprM (Proof a) where
-  toExprM p := p.proof
-
-namespace Algorithm
 
 /- TODO: Eventually use discrimination trees to store proofs. -/
 #check DiscrTree
@@ -198,7 +214,77 @@ def State.ofConfig (cfg : Config) : State :=
   }
 
 /-- Core monad that tactic runs in. -/
-abbrev LatticeM := StateRefT State (ReaderT Config TacticM)
+abbrev LatticeM := StateRefT State (ReaderT Config (HashConsM))
+
+class ToExprM (α : Type) where
+  toExprM : α → LatticeM Expr
+open ToExprM
+
+class OfExpr? (α : Type) where
+  ofExpr? : Expr → LatticeM (Option α)
+open OfExpr?
+
+instance {α : Type} (a : α) : ToExprM (Proof a) where
+  toExprM p := return p.proof
+
+
+def EqTy.toExprM (e : EqTy) : LatticeM Expr := do
+  mkAppOptM `Eq #[e.ty?, ← e.lhs.toExprM, ← e.rhs.toExprM]
+
+instance : ToExprM EqTy where
+  toExprM e := e.toExprM
+
+def EqTy.ofExpr? (e : Expr) : LatticeM (Option EqTy) :=
+  match_expr e with
+  | Eq ty lhs rhs  => do
+    let lhs ← HashConsM.addVar lhs
+    let rhs ← HashConsM.addVar rhs
+    return some { ty? := ty, lhs := lhs, rhs := rhs }
+  | _ => return none
+
+
+def NotTy.toExpr {α : Type} [ToExprM α]
+    (n : NotTy α) : LatticeM Expr := do
+  return mkApp (mkConst `Not) (← toExprM n.e)
+
+instance {α : Type} [ToExprM α] : ToExprM (NotTy α) where
+  toExprM n := do
+    return mkApp (mkConst `NotExpr.mk) (← toExprM n.e)
+
+def NotTy.ofExpr? {α : Type} [E : OfExpr? α] (e : Expr): LatticeM (Option (NotTy α)) :=
+  match_expr e with
+  | Not e' => do
+    let .some e' ← E.ofExpr? e' | return none
+    return some { e := e' }
+  | _ => return none
+
+def LeqTy.ofExpr? (e : Expr) : LatticeM <| Option LeqTy :=
+    match_expr e with
+    | LE.le _α _self lhs rhs => do
+      let lhs ← HashConsM.addVar lhs
+      let rhs ← HashConsM.addVar rhs
+      return some { lhs := lhs, rhs := rhs }
+    | _ => return none
+
+def LeqTy.toExpr (leq : LeqTy) : LatticeM Expr := do
+  mkAppOptM ``LE.le #[.none, .none, ← leq.lhs.toExprM, ← leq.rhs.toExprM]
+
+instance : ToExprM LeqTy where
+  toExprM e := e.toExpr
+
+instance : OfExpr? LeqTy where
+  ofExpr? e := LeqTy.ofExpr? e
+
+def InfTy.toExpr (e : InfTy) : LatticeM Expr := do
+  mkAppOptM ``Inf.inf #[e.ty?, e.self?, ← e.lhs.toExprM, ← e.rhs.toExprM]
+
+def InfTy.ofExpr? (e : Expr) : LatticeM <| Option InfTy :=
+  match_expr e with
+  | Inf.inf α self lhs rhs => do
+    let lhs ← HashConsM.addVar lhs
+    let rhs ← HashConsM.addVar rhs
+    return some { ty? := α, self? := self, lhs := lhs, rhs := rhs }
+  | _ => return none
 
 namespace LatticeM
 
@@ -226,7 +312,9 @@ def addEqualityProof (ty : EqTy)
 
 def addEqRefl (v : VarVal) : LatticeM Bool := do
   let eqTy : EqTy := { ty? := none, lhs := v, rhs := v }
-  let proof := mkEqRefl v.e
+  -- | TODO: is this how I need to do it? NO clue!
+  let proof ← mkEqRefl (← v.toExprM)
+
 
   if (← get).eqs.contains eqTy then
     return false
@@ -246,13 +334,13 @@ def addLeqProof {ty : LeqTy}
 /-- info: le_refl.{u} {α : Type u} [Preorder α] (a : α) : a ≤ a -/
 #guard_msgs in #check le_refl
 
-def mkLERefl (e : Expr) : MetaM Expr := do
+def mkLERefl (e : Expr) : LatticeM Expr := do
   mkAppOptM ``le_refl #[none, none, e]
 
 def addLeqRefl (v : VarVal) : LatticeM Bool := do
   let leqTy : LeqTy := { lhs := v, rhs := v }
   let proof : Proof leqTy :=
-    Proof.mk <| mkLERefl v.e
+    Proof.mk <| ← mkLERefl (← v.toExprM)
   addLeqProof proof
 
 def addVar (v : VarVal) : LatticeM Bool := do
@@ -268,7 +356,7 @@ def mkLeqTransProof (a b c : Expr) (pab : Expr) (pbc : Expr) : MetaM Expr := do
 
 def tryAddLeqTrans? {xy yz : LeqTy}
     (pxy : Proof xy) (pyz : Proof yz) : LatticeM Bool := do
-  if ← isDefEq xy.rhs.e yz.lhs.e then
+  if ← isDefEq (HashConsM.getRoot) yz.lhs.e then
     let outTy : LeqTy := { lhs := xy.lhs, rhs := yz.rhs }
     if (← get).leqs.contains outTy then return false
     let proof : Proof outTy := Proof.mk <| do
@@ -328,7 +416,6 @@ def tryAddLeInf? {ab : LeqTy} {bc : LeqTy} {abc : InfTy} (pab : Proof ab) (pbc :
   return false
 
 
-def try
 
 /--
 Given the current set of derivations, perform a new derivation.
@@ -384,8 +471,6 @@ def tryUnsat : LatticeM (Option Expr) := do
   return .none
 
 end LatticeM
-
-end Algorithm
 
 
 
