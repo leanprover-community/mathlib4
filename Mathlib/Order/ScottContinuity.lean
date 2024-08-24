@@ -7,6 +7,24 @@ import Mathlib.Order.Bounds.Basic
 
 /-!
 # Scott continuity
+
+A function `f : α → β` between preorders is Scott continuous (referring to Dana Scott) if it
+distributes over `IsLUB`. Scott continuity corresponds to continuity in Scott topological spaces
+(defined in `Mathlib/Topology/Order/ScottTopology.lean`). It is distinct from the (more commonly
+used) continuity from topology (see `Mathlib/Topology/Basic.lean`).
+
+## Implementation notes
+
+Given a set `D` of directed sets, we define say `f` is `ScottContinuousOn D` if it distributes over
+`IsLUB` for all elements of `D`. This allows us to consider Scott Continuity on all directed sets
+in this file, and ωScott Continuity on chains later in
+`Mathlib/Order/OmegaCompletePartialOrder.lean`.
+
+## References
+
+* [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
+* [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
+
 -/
 
 open Set
