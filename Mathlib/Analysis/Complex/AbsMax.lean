@@ -330,7 +330,7 @@ theorem eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
   refine or_iff_not_imp_right.mpr fun h => ?_
   have h1 : ∀ᶠ z in 𝓝 c, f z ≠ 0 := hf.self_of_nhds.continuousAt.eventually_ne h
   have h2 : IsLocalMax (norm ∘ f)⁻¹ c := hc.inv (h1.mono fun z => norm_pos_iff.mpr)
-  have h3 : IsLocalMax (norm ∘ f⁻¹) c := by refine h2.congr (eventually_of_forall ?_); simp
+  have h3 : IsLocalMax (norm ∘ f⁻¹) c := by refine h2.congr (Eventually.of_forall ?_); simp
   have h4 : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f⁻¹ z := by filter_upwards [hf, h1] with z h using h.inv
   filter_upwards [eventually_eq_of_isLocalMax_norm h4 h3] with z using inv_inj.mp
 

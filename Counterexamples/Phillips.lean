@@ -132,7 +132,7 @@ def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α)
       intro f
       rw [mul_comm]
       apply norm_integral_le_of_norm_le_const
-      apply Filter.eventually_of_forall
+      apply Filter.Eventually.of_forall
       intro x
       exact BoundedContinuousFunction.norm_coe_le_norm f.1 x)
 
@@ -296,7 +296,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     induction n with
     | zero =>
       simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
-        Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
+        Function.iterate_zero, Subtype.coe_mk]
       rfl
     | succ n IH =>
       have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
@@ -434,7 +434,7 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
     have : Integrable (fun _ => (1 : ℝ)) μ := integrable_const (1 : ℝ)
     apply
       this.mono' (Measurable.indicator (@measurable_const _ _ _ _ (1 : ℝ)) hs).aestronglyMeasurable
-    apply Filter.eventually_of_forall
+    apply Filter.Eventually.of_forall
     exact norm_indicator_le_one _
 
 theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]

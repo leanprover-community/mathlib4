@@ -148,7 +148,7 @@ lemma card_filter_piFinset_eq_of_mem [∀ i, DecidableEq (α i)]
 
 lemma card_filter_piFinset_const_eq_of_mem (s : Finset κ) (i : ι) {x : κ} (hx : x ∈ s) :
     ((piFinset fun _ ↦ s).filter fun f ↦ f i = x).card = s.card ^ (card ι - 1) :=
-  (card_filter_piFinset_eq_of_mem _ _ hx).trans $ by
+  (card_filter_piFinset_eq_of_mem _ _ hx).trans <| by
     rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
 
 lemma card_filter_piFinset_eq [∀ i, DecidableEq (α i)] (s : ∀ i, Finset (α i)) (i : ι) (a : α i) :
@@ -161,7 +161,7 @@ lemma card_filter_piFinset_eq [∀ i, DecidableEq (α i)] (s : ∀ i, Finset (α
 lemma card_filter_piFinset_const (s : Finset κ) (i : ι) (j : κ) :
     ((piFinset fun _ ↦ s).filter fun f ↦ f i = j).card =
       if j ∈ s then s.card ^ (card ι - 1) else 0 :=
-  (card_filter_piFinset_eq _ _ _).trans $ by
+  (card_filter_piFinset_eq _ _ _).trans <| by
     rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
 
 end Fintype

@@ -95,11 +95,6 @@ variable (R)
 -- Porting note: this is the letter of the mathlib3 version, but not really the spirit
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
 
-set_option linter.deprecated false in
-@[deprecated (since := "2022-12-31")]
-theorem two_smul' : (2 : R) • x = (2 : ℕ) • x := by
-  rw [two_smul, two_nsmul]
-
 @[simp]
 theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
     (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
@@ -355,9 +350,10 @@ def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
-  smul_assoc n x y :=
-    Nat.recOn n (by simp only [Nat.zero_eq, zero_smul])
-    fun n ih => by simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
+  smul_assoc n x y := by
+    induction n with
+    | zero => simp only [zero_smul]
+    | succ n ih => simp only [add_smul, one_smul, ih]
 
 end AddCommMonoid
 

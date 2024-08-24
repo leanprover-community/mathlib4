@@ -851,8 +851,8 @@ instance uniqueUnits : Unique (Associates α)ˣ where
   uniq := by
     rintro ⟨a, b, hab, hba⟩
     revert hab hba
-    exact Quotient.inductionOn₂ a b $ fun a b hab hba ↦ Units.ext $ Quotient.sound $
-      associated_one_of_associated_mul_one $ Quotient.exact hab
+    exact Quotient.inductionOn₂ a b <| fun a b hab hba ↦ Units.ext <| Quotient.sound <|
+      associated_one_of_associated_mul_one <| Quotient.exact hab
 
 @[deprecated (since := "2024-07-22")] alias mul_eq_one_iff := mul_eq_one
 @[deprecated (since := "2024-07-22")] protected alias units_eq_one := Subsingleton.elim
