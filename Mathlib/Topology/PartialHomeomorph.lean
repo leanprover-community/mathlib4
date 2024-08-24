@@ -1564,7 +1564,6 @@ theorem OpenEmbedding.prodMkRight [DiscreteTopology β] (b : β) :
   toEmbedding := Function.LeftInverse.embedding (f := Prod.fst) (by simp [LeftInverse])
     continuous_fst (by continuity)
 
-
 theorem OpenEmbedding.prodMkLeft [DiscreteTopology β] (b : β) :
     OpenEmbedding ((b, ·) : α → β × α) where
   open_range := by convert (isOpen_discrete {b}).prod isOpen_univ; ext; simp
