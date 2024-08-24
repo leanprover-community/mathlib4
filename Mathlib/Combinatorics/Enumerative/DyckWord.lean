@@ -5,6 +5,7 @@ Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.List.Nodup
+import Mathlib.Tactic.Positivity
 import Batteries.Data.List.Count
 
 /-!
@@ -236,11 +237,18 @@ include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
   by_contra! f
   rw [Nat.le_zero, firstReturn, findIdx_eq] at f
-  · simp only [get_eq_getElem, getElem_range] at f
-    rw [← p.cons_tail_dropLast_concat h] at f
-    simp at f
+  #adaptation_note
+  /--
+  If we don't swap, then the second goal is dropped after completing the first goal.
+  What's going on?
+  -/
+  swap
   · rw [length_range, length_pos]
     exact toList_ne_nil.mpr h
+  · rw [getElem_range] at f
+    simp at f
+    rw [← p.cons_tail_dropLast_concat h] at f
+    simp at f
 
 include h in
 lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
@@ -255,13 +263,13 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
 include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
-  have := findIdx_get (w := (length_range p.toList.length).symm ▸ firstReturn_lt_length h)
+  have := findIdx_getElem (w := (length_range p.toList.length).symm ▸ firstReturn_lt_length h)
   simpa using this
 
 lemma count_D_lt_count_U_of_lt_firstReturn {i : ℕ} (hi : i < p.firstReturn) :
     (p.toList.take (i + 1)).count D < (p.toList.take (i + 1)).count U := by
   have ne := not_of_lt_findIdx hi
-  rw [decide_eq_true_eq, ← ne_eq, get_eq_getElem, getElem_range] at ne
+  rw [decide_eq_true_eq, ← ne_eq, getElem_range] at ne
   exact lt_of_le_of_ne (p.count_D_le_count_U (i + 1)) ne.symm
 
 @[simp]
@@ -269,7 +277,7 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
   split_ifs with h; · simp [h]
   have u : (p + q).toList = p.toList ++ q.toList := rfl
   rw [firstReturn, findIdx_eq]
-  · simp_rw [get_eq_getElem, getElem_range, u, decide_eq_true_eq]
+  · simp_rw [u, decide_eq_true_eq, getElem_range]
     have v := firstReturn_lt_length h
     constructor
     · rw [take_append_eq_append_take, show p.firstReturn + 1 - p.toList.length = 0 by omega,
@@ -285,11 +293,11 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
 lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
   have u : p.nest.toList = U :: p.toList ++ [D] := rfl
   rw [firstReturn, findIdx_eq]
-  · simp_rw [get_eq_getElem, getElem_range, u, decide_eq_true_eq]
+  · simp_rw [u, decide_eq_true_eq, getElem_range]
     constructor
     · rw [take_of_length_le (by simp), ← u, p.nest.count_U_eq_count_D]
     · intro j hj
-      simp_rw [cons_append, take_cons, count_cons, beq_self_eq_true, ite_true,
+      simp_rw [cons_append, take_succ_cons, count_cons, beq_self_eq_true, ite_true,
         beq_iff_eq, ite_false, take_append_eq_append_take,
         show j - p.toList.length = 0 by omega, take_zero, append_nil]
       have := p.count_D_le_count_U j
