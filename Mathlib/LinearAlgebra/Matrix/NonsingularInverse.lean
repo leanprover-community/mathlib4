@@ -483,6 +483,36 @@ theorem inv_eq_left_inv (h : B * A = 1) : A⁻¹ = B :=
 theorem inv_eq_right_inv (h : A * B = 1) : A⁻¹ = B :=
   inv_eq_left_inv (mul_eq_one_comm.2 h)
 
+section Woodbury
+
+variable [Fintype m] [DecidableEq m]
+variable (A: Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
+variable [Invertible A] [Invertible C][Invertible (C⁻¹ + V * A⁻¹* U)]
+
+lemma add_mul_mul_inv_mul_eq_one: (A+U*C*V)*(A⁻¹-A⁻¹*U*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹) = 1 := by
+  calc
+      (A+U*C*V)*(A⁻¹-A⁻¹*U*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹)
+      _ = A*A⁻¹-A*A⁻¹*U*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹+U*C*V*A⁻¹-U*C*V*A⁻¹*U*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹ := by
+        simp_rw [add_sub_assoc, Matrix.add_mul, Matrix.mul_sub, Matrix.mul_assoc]
+      _ = (1+U*C*V*A⁻¹)-(U*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹+U*C*V*A⁻¹*U*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹) := by
+        rw [Matrix.mul_inv_of_invertible, Matrix.one_mul]
+        abel
+      _ = 1+U*C*V*A⁻¹-(U+U*C*V*A⁻¹*U)*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹ := by
+        rw [sub_right_inj, Matrix.add_mul,Matrix.add_mul,Matrix.add_mul]
+      _ = 1+U*C*V*A⁻¹-U*C*(C⁻¹+V*A⁻¹*U)*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹ := by
+        congr
+        simp only [Matrix.mul_add, Matrix.mul_inv_cancel_right_of_invertible, ←Matrix.mul_assoc]
+      _ = 1 := by simp
+
+noncomputable def add_mul_mul_inv: Invertible (A+U*C*V) := by
+  apply Matrix.invertibleOfRightInverse _ _ (add_mul_mul_inv_mul_eq_one A U C V)
+
+/-- **Woodbury Identity** -/
+theorem add_mul_mul_inv_eq_sub: (A+U*C*V)⁻¹=A⁻¹-A⁻¹*U*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹:=
+  Matrix.inv_eq_right_inv (add_mul_mul_inv_mul_eq_one _ _ _ _)
+
+end Woodbury
+
 section InvEqInv
 
 variable {C : Matrix n n α}
