@@ -199,7 +199,7 @@ instance instT2Space [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :
 
 section RestrictScalars
 
-variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 theorem embedding_restrictScalars :
@@ -213,8 +213,9 @@ theorem embedding_restrictScalars :
 theorem continuous_restrictScalars :
     Continuous
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
-   (embedding_restrictScalars _).continuous
+   embedding_restrictScalars.continuous
 
+variable (𝕜') in
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
 @[simps (config := .asFn) apply]
 def restrictScalarsLinear [ContinuousConstSMul 𝕜' F] :
