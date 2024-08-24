@@ -727,7 +727,7 @@ open scoped NNReal Topology
 the space is a probability space. -/
 lemma Memℒp.isProbabilityMeasure_of_indepFun
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
     {F : Type*} [MeasurableSpace F]
     (f : Ω → E) (g : Ω → F) {p : ℝ≥0∞} (hp : p ≠ 0) (hp' : p ≠ ∞)
     (hℒp : Memℒp f p μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
@@ -749,7 +749,7 @@ lemma Memℒp.isProbabilityMeasure_of_indepFun
 the space is a probability space. -/
 lemma Integrable.isProbabilityMeasure_of_indepFun
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
     {F : Type*} [MeasurableSpace F]
     (f : Ω → E) (g : Ω → F)
     (hf : Integrable f μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
