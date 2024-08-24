@@ -545,7 +545,7 @@ lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuo
 
 lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
     ωScottContinuous (sSup s) := by
-  rw [sSup_eq_iSup]; exact ωScottContinuous.iSup fun f ↦ ωScottContinuous.iSup $ hs f
+  rw [sSup_eq_iSup]; exact ωScottContinuous.iSup fun f ↦ ωScottContinuous.iSup <| hs f
 
 lemma ωScottContinuous.sup (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
     ωScottContinuous (f ⊔ g) := by
@@ -759,7 +759,7 @@ lemma ωScottContinuous.map {β γ} {f : β → γ} {g : α → Part β} (hg : �
 lemma ωScottContinuous.seq {β γ} {f : α → Part (β → γ)} {g : α → Part β} (hf : ωScottContinuous f)
     (hg : ωScottContinuous g) : ωScottContinuous fun x ↦ f x <*> g x := by
   simp only [seq_eq_bind_map]
-  exact ωScottContinuous.bind hf $ ωScottContinuous.of_apply₂ fun _ ↦ ωScottContinuous.map hg
+  exact ωScottContinuous.bind hf <| ωScottContinuous.of_apply₂ fun _ ↦ ωScottContinuous.map hg
 
 set_option linter.deprecated false
 
