@@ -89,7 +89,7 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory
 
 attribute [reassoc (attr := simp), to_app (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
-attribute [to_app (attr := simp), reassoc] map₂_leftUnitor map₂_rightUnitor
+attribute [simp, reassoc, to_app] map₂_leftUnitor map₂_rightUnitor
 
 /-- The underlying prelax functor. -/
 add_decl_doc LaxFunctor.toPrelaxFunctor
