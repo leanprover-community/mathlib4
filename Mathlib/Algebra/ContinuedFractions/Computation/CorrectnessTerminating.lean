@@ -102,7 +102,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
     -- Nat.zero
     have : IntFractPair.of v = ifp_zero := by
       have : IntFractPair.stream v 0 = some (IntFractPair.of v) := rfl
-      simpa only [Nat.zero_eq, this, Option.some.injEq] using stream_zero_eq
+      simpa only [this, Option.some.injEq] using stream_zero_eq
     cases this
     cases' Decidable.em (Int.fract v = 0) with fract_eq_zero fract_ne_zero
     -- Int.fract v = 0; we must then have `v = ⌊v⌋`

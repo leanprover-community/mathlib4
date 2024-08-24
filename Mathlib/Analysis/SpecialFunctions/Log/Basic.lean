@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Real logarithm

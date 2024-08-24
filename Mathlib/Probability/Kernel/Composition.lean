@@ -294,16 +294,21 @@ theorem ae_null_of_compProd_null (h : (κ ⊗ₖ η) a s = 0) :
   rw [Filter.eventuallyLE_antisymm_iff]
   exact
     ⟨Filter.EventuallyLE.trans_eq
-        (Filter.eventually_of_forall fun x => (measure_mono (Set.preimage_mono hst) : _)) ht,
-      Filter.eventually_of_forall fun x => zero_le _⟩
+        (Filter.Eventually.of_forall fun x => (measure_mono (Set.preimage_mono hst) : _)) ht,
+      Filter.Eventually.of_forall fun x => zero_le _⟩
 
 theorem ae_ae_of_ae_compProd {p : β × γ → Prop} (h : ∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc) :
     ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=
   ae_null_of_compProd_null h
 
-lemma ae_compProd_of_ae_ae {p : β × γ → Prop} (hp : MeasurableSet {x | p x})
+lemma ae_compProd_of_ae_ae {κ : Kernel α β} {η : Kernel (α × β) γ}
+    {p : β × γ → Prop} (hp : MeasurableSet {x | p x})
     (h : ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c)) :
     ∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [compProd_of_not_isSFiniteKernel_left _ _ hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [compProd_of_not_isSFiniteKernel_right _ _ hη]
   simp_rw [ae_iff] at h ⊢
   rw [compProd_null]
   · exact h

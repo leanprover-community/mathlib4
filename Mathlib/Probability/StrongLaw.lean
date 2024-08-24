@@ -119,7 +119,7 @@ theorem truncation_nonneg {f : α → ℝ} (A : ℝ) {x : α} (h : 0 ≤ f x) : 
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.memℒp_truncation [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) {A : ℝ} {p : ℝ≥0∞} : Memℒp (truncation f A) p μ :=
-  Memℒp.of_bound hf.truncation |A| (eventually_of_forall fun _ => abs_truncation_le_bound _ _ _)
+  Memℒp.of_bound hf.truncation |A| (Eventually.of_forall fun _ => abs_truncation_le_bound _ _ _)
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integrable_truncation [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) {A : ℝ} : Integrable (truncation f A) μ := by
@@ -153,7 +153,7 @@ theorem moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurab
         zero_eq_neg]
       apply integral_eq_zero_of_ae
       have : ∀ᵐ x ∂Measure.map f μ, (0 : ℝ) ≤ x :=
-        (ae_map_iff hf.aemeasurable measurableSet_Ici).2 (eventually_of_forall h'f)
+        (ae_map_iff hf.aemeasurable measurableSet_Ici).2 (Eventually.of_forall h'f)
       filter_upwards [this] with x hx
       simp only [indicator, Set.mem_Ioc, Pi.zero_apply, ite_eq_right_iff, and_imp]
       intro _ h''x
@@ -172,7 +172,7 @@ theorem integral_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasur
 theorem integral_truncation_le_integral_of_nonneg (hf : Integrable f μ) (h'f : 0 ≤ f) {A : ℝ} :
     ∫ x, truncation f A x ∂μ ≤ ∫ x, f x ∂μ := by
   apply integral_mono_of_nonneg
-    (eventually_of_forall fun x => ?_) hf (eventually_of_forall fun x => ?_)
+    (Eventually.of_forall fun x => ?_) hf (Eventually.of_forall fun x => ?_)
   · exact truncation_nonneg _ (h'f x)
   · calc
       truncation f A x ≤ |truncation f A x| := le_abs_self _
@@ -184,7 +184,7 @@ integral of the whole function. -/
 theorem tendsto_integral_truncation {f : α → ℝ} (hf : Integrable f μ) :
     Tendsto (fun A => ∫ x, truncation f A x ∂μ) atTop (𝓝 (∫ x, f x ∂μ)) := by
   refine tendsto_integral_filter_of_dominated_convergence (fun x => abs (f x)) ?_ ?_ ?_ ?_
-  · exact eventually_of_forall fun A ↦ hf.aestronglyMeasurable.truncation
+  · exact Eventually.of_forall fun A ↦ hf.aestronglyMeasurable.truncation
   · filter_upwards with A
     filter_upwards with x
     rw [Real.norm_eq_abs]
@@ -285,7 +285,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
     (∑' j : ℕ, ℙ {ω | X ω ∈ Set.Ioi (j : ℝ)}) < ∞ := by
   suffices ∀ K : ℕ, ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioi (j : ℝ)} ≤ ENNReal.ofReal (𝔼[X] + 1) from
     (le_of_tendsto_of_tendsto (ENNReal.tendsto_nat_tsum _) tendsto_const_nhds
-      (eventually_of_forall this)).trans_lt ENNReal.ofReal_lt_top
+      (Eventually.of_forall this)).trans_lt ENNReal.ofReal_lt_top
   intro K
   have A : Tendsto (fun N : ℕ => ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N}) atTop
       (𝓝 (∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioi (j : ℝ)})) := by
@@ -725,7 +725,7 @@ lemma strong_law_ae_of_measurable
   -- check that, when both convergences above hold, then the strong law is satisfied
   filter_upwards [A, B] with ω hω h'ω
   rw [tendsto_iff_norm_sub_tendsto_zero, tendsto_order]
-  refine ⟨fun c hc ↦ eventually_of_forall (fun n ↦ hc.trans_le (norm_nonneg _)), ?_⟩
+  refine ⟨fun c hc ↦ Eventually.of_forall (fun n ↦ hc.trans_le (norm_nonneg _)), ?_⟩
   -- start with some positive `ε` (the desired precision), and fix `δ` with `3 δ < ε`.
   intro ε (εpos : 0 < ε)
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ + δ + δ < ε := ⟨ε/4, by positivity, by linarith⟩

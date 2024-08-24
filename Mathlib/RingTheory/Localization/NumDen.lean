@@ -81,7 +81,7 @@ theorem num_mul_den_eq_num_mul_den_iff_eq {x y : K} :
   ⟨fun h ↦ by simpa only [mk'_num_den] using mk'_eq_of_eq' (S := K) h, fun h ↦ by rw [h]⟩
 
 theorem eq_zero_of_num_eq_zero {x : K} (h : num A x = 0) : x = 0 :=
-  num_mul_den_eq_num_iff_eq'.mp (by rw [zero_mul, h, RingHom.map_zero])
+  (num_mul_den_eq_num_iff_eq' (A := A)).mp (by rw [zero_mul, h, RingHom.map_zero])
 
 @[simp]
 lemma num_zero : IsFractionRing.num A (0 : K) = 0 := by

@@ -52,11 +52,9 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects where
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where
   obj C := ConnectedComponents C
-  map F :=
-    Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj)
-      (fun _ _ ↦ Quot.sound ∘ zigzag_obj_of_zigzag F)
-  map_id _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h ↦ by simp [<- h]; rfl)
-  map_comp _ _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h => by simp [<- h])
+  map F := Functor.mapConnectedComponents F
+  map_id _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h ↦ by subst h; rfl)
+  map_comp _ _ := funext fun x ↦ (Quotient.exists_rep x).elim (fun _ h => by subst h;rfl)
 
 /-- `typeToCat : Type ⥤ Cat` is right adjoint to `connectedComponents : Cat ⥤ Type` -/
 def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat where

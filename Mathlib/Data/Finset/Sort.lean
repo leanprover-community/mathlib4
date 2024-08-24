@@ -117,13 +117,13 @@ theorem sorted_last_eq_max' {s : Finset α}
     {h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length} :
     (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1] =
       s.max' (by rw [length_sort] at h; exact card_pos.1 (lt_of_le_of_lt bot_le h)) :=
-  sorted_last_eq_max'_aux _ _ _
+  sorted_last_eq_max'_aux _ h _
 
 theorem max'_eq_sorted_last {s : Finset α} {h : s.Nonempty} :
     s.max' h =
       (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1]'
         (by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one) :=
-  (sorted_last_eq_max'_aux _ _ _).symm
+  (sorted_last_eq_max'_aux _ (by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one) _).symm
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderIsoOfFin s h`
 is the increasing bijection between `Fin k` and `s` as an `OrderIso`. Here, `h` is a proof that
