@@ -279,7 +279,7 @@ theorem tendsto_pre (m : Set X → ℝ≥0∞) (s : Set X) :
 theorem tendsto_pre_nat (m : Set X → ℝ≥0∞) (s : Set X) :
     Tendsto (fun n : ℕ => pre m n⁻¹ s) atTop (𝓝 <| mkMetric' m s) := by
   refine (tendsto_pre m s).comp (tendsto_inf.2 ⟨ENNReal.tendsto_inv_nat_nhds_zero, ?_⟩)
-  refine tendsto_principal.2 (eventually_of_forall fun n => ?_)
+  refine tendsto_principal.2 (Eventually.of_forall fun n => ?_)
   simp
 
 theorem eq_iSup_nat (m : Set X → ℝ≥0∞) : mkMetric' m = ⨆ n : ℕ, mkMetric'.pre m n⁻¹ := by

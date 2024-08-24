@@ -135,3 +135,5 @@ elab "#find " t:term : tactic => do
   let t ← Term.elabTerm t none
   Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
   findType t
+
+end Mathlib.Tactic.Find

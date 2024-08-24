@@ -228,7 +228,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
   rw [haarMeasure_unique μ K']
   have finiteCovol : covolume Γ.op G ν ≠ ⊤ :=
-    ne_top_of_lt $ QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
+    ne_top_of_lt <| QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
   obtain ⟨s, fund_dom_s⟩ := i
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol
   -- TODO: why `rw` fails?

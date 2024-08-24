@@ -146,7 +146,7 @@ theorem tendsto_fract_left' [OrderClosedTopology α] [TopologicalAddGroup α] (n
 theorem tendsto_fract_left [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝[<] 1) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (tendsto_fract_left' _)
-    (eventually_of_forall fract_lt_one)
+    (Eventually.of_forall fract_lt_one)
 
 theorem tendsto_fract_right' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝 0) :=
@@ -155,7 +155,7 @@ theorem tendsto_fract_right' [OrderClosedTopology α] [TopologicalAddGroup α] (
 theorem tendsto_fract_right [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝[≥] 0) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (tendsto_fract_right' _)
-    (eventually_of_forall fract_nonneg)
+    (Eventually.of_forall fract_nonneg)
 
 local notation "I" => (Icc 0 1 : Set α)
 
