@@ -172,13 +172,22 @@ def nest : DyckWord where
 @[simp] lemma nest_ne_zero : p.nest ≠ 0 := by simp [← toList_ne_nil, nest]
 
 variable (p) in
-/-- A property stating that `p` is strictly positive in its interior. -/
-def HasPositiveInterior : Prop :=
+/-- A property stating that `p` is strictly positive in its interior, i.e. is of the form `(x)`
+with `x` a Dyck word. -/
+def IsNested : Prop :=
   ∀ i, 0 < i → i < p.toList.length → (p.toList.take i).count D < (p.toList.take i).count U
 
+lemma isNested_nest : p.nest.IsNested := fun i lb ub ↦ by
+  simp_rw [nest, length_append, length_singleton] at ub ⊢
+  rw [take_append_of_le_length (by rw [singleton_append, length_cons]; omega),
+    take_append_eq_append_take, take_of_length_le (by rw [length_singleton]; omega),
+    length_singleton, singleton_append, count_cons_of_ne (by simp), count_cons_self,
+    Nat.lt_add_one_iff]
+  exact p.count_D_le_count_U _
+
 variable (p) in
-/-- Denest `p`, i.e. `(x)` becomes `x`, given that `p.HasPositiveInterior`. -/
-def denest (pos : p.HasPositiveInterior) : DyckWord where
+/-- Denest `p`, i.e. `(x)` becomes `x`, given that `p.IsNested`. -/
+def denest (hn : p.IsNested) : DyckWord where
   toList := p.toList.dropLast.tail
   count_U_eq_count_D := by
     have := p.count_U_eq_count_D
@@ -198,25 +207,17 @@ def denest (pos : p.HasPositiveInterior) : DyckWord where
       (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr h').ne'))
     have lb : 0 < min (1 + i) (p.toList.length - 1) := by
       rw [l3, add_comm, min_add_add_right]; omega
-    have eq := pos _ lb ub
+    have eq := hn _ lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
       min_eq_left (by omega), l1, head_eq_U] at eq
     simp only [count_singleton', ite_true, ite_false] at eq
     omega
 
-lemma denest_nest (pos : p.HasPositiveInterior) : (p.denest h pos).nest = p := by
+lemma denest_nest (hn) : (p.denest h hn).nest = p := by
   simpa [DyckWord.ext_iff] using p.cons_tail_dropLast_concat h
 
-lemma hasPositiveInterior_nest : p.nest.HasPositiveInterior := fun i lb ub ↦ by
-  simp_rw [nest, length_append, length_singleton] at ub ⊢
-  rw [take_append_of_le_length (by rw [singleton_append, length_cons]; omega),
-    take_append_eq_append_take, take_of_length_le (by rw [length_singleton]; omega),
-    length_singleton, singleton_append, count_cons_of_ne (by simp), count_cons_self,
-    Nat.lt_add_one_iff]
-  exact p.count_D_le_count_U _
-
-lemma nest_denest : p.nest.denest nest_ne_zero hasPositiveInterior_nest = p := by
+lemma nest_denest : p.nest.denest nest_ne_zero isNested_nest = p := by
   simp_rw [nest, denest, DyckWord.ext_iff, dropLast_concat]; rfl
 
 section Semilength
@@ -398,6 +399,16 @@ instance : Preorder DyckWord where
   le_refl p := Relation.ReflTransGen.refl
   le_trans p q r := Relation.ReflTransGen.trans
 
+lemma le_add_self (p q : DyckWord) : q ≤ p + q := by
+  by_cases h : p = 0
+  · simp [h]
+  · have := semilength_outsidePart_lt h
+    exact (le_add_self p.outsidePart q).trans
+      (Relation.ReflTransGen.single (Or.inr (outsidePart_add h).symm))
+termination_by p.semilength
+
+variable (p) in lemma zero_le : 0 ≤ p := add_zero p ▸ le_add_self p 0
+
 lemma infix_of_le (h : p ≤ q) : p.toList <:+: q.toList := by
   induction h with
   | refl => exact infix_refl _
@@ -416,6 +427,19 @@ lemma infix_of_le (h : p ≤ q) : p.toList <:+: q.toList := by
           use [U] ++ r.insidePart ++ [D], []; rwa [append_nil]
         exact ih.trans (hm ▸ this)
 
+lemma le_of_suffix (h : p.toList <:+ q.toList) : p ≤ q := by
+  obtain ⟨r', h⟩ := h
+  have hc : (q.toList.take (q.toList.length - p.toList.length)).count U =
+      (q.toList.take (q.toList.length - p.toList.length)).count D := by
+    have hq := q.count_U_eq_count_D
+    rw [← h] at hq ⊢
+    rw [count_append, count_append, p.count_U_eq_count_D, Nat.add_right_cancel_iff] at hq
+    simp [hq]
+  let r : DyckWord := q.take _ hc
+  have e : r' = r := by
+    simp_rw [r, take, ← h, length_append, add_tsub_cancel_right, take_left']
+  rw [e] at h; replace h : r + p = q := DyckWord.ext h; rw [← h]; exact le_add_self ..
+
 /-- Partial order on Dyck words: `p ≤ q` if a (possibly empty) sequence of
 `insidePart` and `outsidePart` operations can turn `q` into `p`. -/
 instance : PartialOrder DyckWord where
@@ -423,16 +447,6 @@ instance : PartialOrder DyckWord where
     have h₁ := infix_of_le pq
     have h₂ := infix_of_le qp
     exact DyckWord.ext <| h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
-
-lemma le_add_self (p q : DyckWord) : q ≤ p + q := by
-  by_cases h : p = 0
-  · simp [h]
-  · have := semilength_outsidePart_lt h
-    exact (le_add_self p.outsidePart q).trans
-      (Relation.ReflTransGen.single (Or.inr (outsidePart_add h).symm))
-termination_by p.semilength
-
-variable (p) in lemma zero_le : 0 ≤ p := add_zero p ▸ le_add_self p 0
 
 lemma pos_iff_ne_zero : 0 < p ↔ p ≠ 0 := by
   rw [ne_comm, iff_comm, ne_iff_lt_iff_le]
