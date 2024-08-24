@@ -5,6 +5,8 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.SetFamily.Compression.UV
+import Mathlib.Combinatorics.SetFamily.Intersecting
+import Mathlib.Data.Finset.Fin
 
 /-!
 # Kruskal-Katona theorem
