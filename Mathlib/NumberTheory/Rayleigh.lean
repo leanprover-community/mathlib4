@@ -55,11 +55,12 @@ noncomputable def beattySeq' (r : ℝ) : ℤ → ℤ :=
 
 namespace Beatty
 
-variable {r s : ℝ} (hrs : r.IsConjExponent s) {j k : ℤ}
+variable {r s : ℝ} {j k : ℤ}
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Then `B_r` and `B'_s` are disjoint (i.e. no collision exists).
 -/
-private theorem no_collision : Disjoint {beattySeq r k | k} {beattySeq' s k | k} := by
+private theorem no_collision (hrs : r.IsConjExponent s) :
+    Disjoint {beattySeq r k | k} {beattySeq' s k | k} := by
   rw [Set.disjoint_left]
   intro j ⟨k, h₁⟩ ⟨m, h₂⟩
   rw [beattySeq, Int.floor_eq_iff, ← div_le_iff hrs.pos, ← lt_div_iff hrs.pos] at h₁
@@ -74,7 +75,7 @@ private theorem no_collision : Disjoint {beattySeq r k | k} {beattySeq' s k | k}
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Suppose there is an integer `j` where `B_r` and `B'_s` both
 jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
-private theorem no_anticollision :
+private theorem no_anticollision (hrs : r.IsConjExponent s) :
     ¬∃ j k m : ℤ, k < j / r ∧ (j + 1) / r ≤ k + 1 ∧ m ≤ j / s ∧ (j + 1) / s < m + 1 := by
   intro ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩
   have h₃ := add_lt_add_of_lt_of_le h₁₁ h₂₁

@@ -87,8 +87,7 @@ def MapToEqualizer (P : Cᵒᵖ ⥤ Type*) {W X B : C} (f : X ⟶ B)
 theorem EqualizerCondition.bijective_mapToEqualizer_pullback (P : Cᵒᵖ ⥤ Type*)
     (hP : EqualizerCondition P) : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π],
     Function.Bijective
-      (MapToEqualizer P π (pullback.fst (f := π) (g := π)) (pullback.snd (f := π) (g := π))
-        pullback.condition) := by
+      (MapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition) := by
   intro X B π _ _
   specialize hP π _ (pullbackIsPullback π π)
   rw [Types.type_equalizer_iff_unique] at hP
@@ -101,7 +100,7 @@ theorem EqualizerCondition.bijective_mapToEqualizer_pullback (P : Cᵒᵖ ⥤ Ty
 
 theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
     (hP : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], Function.Bijective
-    (MapToEqualizer P π (pullback.fst (f := π) (g := π)) (pullback.snd (f := π) (g := π))
+    (MapToEqualizer P π (pullback.fst π π) (pullback.snd π π)
     pullback.condition)) : EqualizerCondition P := by
   intro X B π _ c hc
   have : HasPullback π π := ⟨c, hc⟩
@@ -110,8 +109,8 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
   rw [Function.bijective_iff_existsUnique] at hP
   intro b hb
   have h₁ : ((pullbackIsPullback π π).conePointUniqueUpToIso hc).hom ≫ c.fst =
-    pullback.fst (f := π) (g := π) := by simp
-  have hb' : P.map (pullback.fst (f := π) (g := π)).op b = P.map pullback.snd.op b := by
+    pullback.fst π π := by simp
+  have hb' : P.map (pullback.fst π π).op b = P.map (pullback.snd _ _).op b := by
     rw [← h₁, op_comp, FunctorToTypes.map_comp_apply, hb]
     simp [← FunctorToTypes.map_comp_apply, ← op_comp]
   obtain ⟨a, ha₁, ha₂⟩ := hP ⟨b, hb'⟩
@@ -120,12 +119,12 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
   · simpa [MapToEqualizer] using ha₂
 
 lemma equalizerCondition_w' (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
-    [HasPullback π π] : P.map π.op ≫ P.map (pullback.fst (f := π) (g := π)).op =
-    P.map π.op ≫ P.map (pullback.snd).op := by
+    [HasPullback π π] : P.map π.op ≫ P.map (pullback.fst π π).op =
+    P.map π.op ≫ P.map (pullback.snd π π).op := by
   simp only [← Functor.map_comp, ← op_comp, pullback.condition]
 
-lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
-    [HasPullback π π] : MapToEqualizer P π pullback.fst pullback.snd pullback.condition =
+lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B) [HasPullback π π] :
+    MapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition =
     equalizer.lift (P.map π.op) (equalizerCondition_w' P π) ≫
     (Types.equalizerIso _ _).hom := by
   rw [← Iso.comp_inv_eq (α := Types.equalizerIso _ _)]

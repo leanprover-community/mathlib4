@@ -5,8 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 
-#align_import combinatorics.simple_graph.regularity.lemma from "leanprover-community/mathlib"@"1d4d3ca5ec44693640c4f5e407a6b611f77accc8"
-
 /-!
 # Szemerédi's Regularity Lemma
 
@@ -149,4 +147,3 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     exact stepBound_mono hP₃
   · rw [Nat.cast_succ, mul_add, mul_one]
     exact add_le_add_right hP₄ _
-#align szemeredi_regularity szemeredi_regularity

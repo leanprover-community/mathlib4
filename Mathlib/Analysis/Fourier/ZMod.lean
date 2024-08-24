@@ -3,6 +3,7 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.NumberTheory.DirichletCharacter.GaussSum
 
@@ -84,11 +85,11 @@ noncomputable def dft : (ZMod N → E) ≃ₗ[ℂ] (ZMod N → E) where
     ext; simp only [aux_dft, Pi.smul_apply, RingHom.id_apply, smul_sum, smul_comm c]
   invFun Φ k := (N : ℂ)⁻¹ • aux_dft Φ (-k)
   left_inv Φ := by
-    simp only [aux_dft_dft, neg_neg, ← mul_smul, inv_mul_cancel (NeZero.ne _), one_smul]
+    simp only [aux_dft_dft, neg_neg, ← mul_smul, inv_mul_cancel₀ (NeZero.ne _), one_smul]
   right_inv Φ := by
     ext1 j
     simp only [← Pi.smul_def, aux_dft_smul, aux_dft_neg, aux_dft_dft, neg_neg, ← mul_smul,
-      inv_mul_cancel (NeZero.ne _), one_smul]
+      inv_mul_cancel₀ (NeZero.ne _), one_smul]
 
 @[inherit_doc] scoped notation "𝓕" => dft
 
@@ -127,7 +128,7 @@ normed space).
 lemma dft_eq_fourier {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
     (Φ : ZMod N → E) (k : ZMod N) :
     𝓕 Φ k = Fourier.fourierIntegral toCircle Measure.count Φ k := by
-  simp only [dft_apply, stdAddChar_apply, Fourier.fourierIntegral_def, Submonoid.smul_def,
+  simp only [dft_apply, stdAddChar_apply, Fourier.fourierIntegral_def, Circle.smul_def,
     integral_countable' <| .of_finite .., Measure.count_singleton, ENNReal.one_toReal, one_smul,
     tsum_fintype]
 

@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
   Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Antidiag.Pi
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finsupp.Basic
 
 /-!
@@ -82,7 +83,7 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
       intro x hx
       rw [update_noteq (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
-theorem finsuppAntidiag_insert [DecidableEq μ] {a : ι} {s : Finset ι}
+theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :
     finsuppAntidiag (insert a s) n = (antidiagonal n).biUnion
       (fun p : μ × μ =>

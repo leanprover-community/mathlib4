@@ -10,8 +10,6 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.WLOG
 
-#align_import imo.imo1988_q6 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 1988 Q6 and constant descent Vieta jumping
 
@@ -189,7 +187,6 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     subst c
     simp [hV₁]
     -- Hence p' = (c, m_x) lies on the upper branch, and we are done.
-#align imo1988_q6.constant_descent_vieta_jumping Imo1988Q6.constant_descent_vieta_jumping
 
 end Imo1988Q6
 
@@ -250,7 +247,6 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
         _ ≥ x * x - k := sub_le_self _ (Int.ofNat_zero_le k)
   · -- There is no base case in this application of Vieta jumping.
     simp
-#align imo1988_q6 imo1988_q6
 
 /-
 The following example illustrates the use of constant descent Vieta jumping

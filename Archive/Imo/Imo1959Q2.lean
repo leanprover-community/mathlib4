@@ -110,3 +110,5 @@ theorem not_isGood_one : ¬IsGood x 1 := fun h ↦
 
 theorem isGood_two_iff : IsGood x 2 ↔ x = 3 / 2 :=
   (isGood_iff_of_sqrt_two_lt <| (sqrt_lt' two_pos).2 (by norm_num)).trans <| by norm_num
+
+end Imo1959Q2

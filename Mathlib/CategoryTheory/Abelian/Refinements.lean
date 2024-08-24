@@ -80,7 +80,7 @@ lemma epi_iff_surjective_up_to_refinements (f : X ⟶ Y) :
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ X), π ≫ y = x ≫ f := by
   constructor
   · intro _ A a
-    exact ⟨pullback a f, pullback.fst, inferInstance, pullback.snd, pullback.condition⟩
+    exact ⟨pullback a f, pullback.fst a f, inferInstance, pullback.snd a f, pullback.condition⟩
   · intro hf
     obtain ⟨A, π, hπ, a', fac⟩ := hf (𝟙 Y)
     rw [comp_id] at fac

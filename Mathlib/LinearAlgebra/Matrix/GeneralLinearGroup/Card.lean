@@ -24,7 +24,7 @@ open LinearMap
 section LinearIndependent
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
-variable [Fintype K] [Fintype V]
+variable [Fintype K] [Finite V]
 
 local notation "q" => Fintype.card K
 local notation "n" => FiniteDimensional.finrank K V
@@ -45,7 +45,7 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
           card ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set (V)) =
           (q) ^ n - (q) ^ k := by
             rw [card_compl_set, card_eq_pow_finrank (K := K)
-            (V:=((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
+            (V := ((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
             simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
             rw [card_eq_pow_finrank (K := K)]
       simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
@@ -72,10 +72,10 @@ noncomputable def equiv_GL_linearindependent (hn : 0 < n) :
     rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
   invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
     have : Nonempty (Fin n) := Fin.pos_iff_nonempty.1 hn
-    rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
-      ← coe_basisOfLinearIndependentOfCardEqFinrank M.2]
     let b := basisOfLinearIndependentOfCardEqFinrank M.2 (by simp)
     have := (Pi.basisFun 𝔽 (Fin n)).invertibleToMatrix b
+    rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
+      ← coe_basisOfLinearIndependentOfCardEqFinrank M.2]
     exact isUnit_det_of_invertible _
   left_inv := fun x ↦ Units.ext (ext fun i j ↦ rfl)
   right_inv := by exact congrFun rfl

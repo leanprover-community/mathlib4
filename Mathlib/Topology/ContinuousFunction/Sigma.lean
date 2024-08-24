@@ -79,3 +79,7 @@ def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
     (.ofBijective _ ⟨embedding_sigmaMk_comp.inj, fun f ↦
       let ⟨i, g, hg⟩ := f.exists_lift_sigma; ⟨⟨i, g⟩, hg.symm⟩⟩)
     embedding_sigmaMk_comp.toInducing
+
+end ConnectedSpace
+
+end ContinuousMap

@@ -27,7 +27,7 @@ powers are considered.
 
 - PNatPowAssoc for products and Pi types
 
-## Todo
+## TODO
 
 * `NatPowAssoc` for `MulOneClass` - more or less the same flow
 * It seems unlikely that anyone will want `NatSMulAssoc` and `PNatSMulAssoc` as additive versions of
