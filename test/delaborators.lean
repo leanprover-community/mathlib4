@@ -1,4 +1,3 @@
-import Std.Tactic.GuardMsgs
 import Mathlib.Util.Delaborators
 import Mathlib.Data.Set.Lattice
 

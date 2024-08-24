@@ -50,7 +50,7 @@ theorem embedding_sigmaMk_comp [Nonempty X] :
   inj := by
     · rintro ⟨i, g⟩ ⟨i', g'⟩ h
       obtain ⟨rfl, hg⟩ : i = i' ∧ HEq (⇑g) (⇑g') :=
-        Function.eq_of_sigmaMk_comp <| congr_arg FunLike.coe h
+        Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
       simpa using hg
 
 section ConnectedSpace
@@ -64,7 +64,7 @@ with unbundled functions and `ContinuousMap.sigmaCodHomeomorph` for a homeomorph
 this fact. -/
 theorem exists_lift_sigma (f : C(X, Σ i, Y i)) : ∃ i g, f = (sigmaMk i).comp g :=
   let ⟨i, g, hg, hfg⟩ := f.continuous.exists_lift_sigma
-  ⟨i, ⟨g, hg⟩, FunLike.ext' hfg⟩
+  ⟨i, ⟨g, hg⟩, DFunLike.ext' hfg⟩
 
 variable (X Y)
 
@@ -79,3 +79,7 @@ def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
     (.ofBijective _ ⟨embedding_sigmaMk_comp.inj, fun f ↦
       let ⟨i, g, hg⟩ := f.exists_lift_sigma; ⟨⟨i, g⟩, hg.symm⟩⟩)
     embedding_sigmaMk_comp.toInducing
+
+end ConnectedSpace
+
+end ContinuousMap

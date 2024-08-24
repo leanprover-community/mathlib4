@@ -6,7 +6,6 @@ set_option autoImplicit true
 section basic
 
 variable [TopologicalSpace W] [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
 variable {I : Type _} {X' : I → Type _} [∀ i, TopologicalSpace (X' i)]
 
 example : Continuous (id : X → X) := by continuity
@@ -28,8 +27,7 @@ example {g : X → X} (y : Y) : Continuous ((fun _ ↦ y) ∘ g) := by continuit
 
 example {f : X → Y} (x : X) : Continuous (fun (_ : X) ↦ f x) := by continuity
 
-example [TopologicalSpace X] [TopologicalSpace Y]
-    (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
+example (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
     (g : Y → ℝ) (hg : Continuous g) : Continuous (fun x => (max (g (f₁ x)) (g (f₂ x))) + 1) := by
   continuity
 
@@ -78,6 +76,6 @@ end basic
 
 example {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {x₀ : α} (f : α → α → β)
   (hf : ContinuousAt (Function.uncurry f) (x₀, x₀)) :
-  ContinuousAt (λ x ↦ f x x) x₀ := by
+  ContinuousAt (fun x ↦ f x x) x₀ := by
   fail_if_success { exact hf.comp (continuousAt_id.prod continuousAt_id) }
   exact hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl

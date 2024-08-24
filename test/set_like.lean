@@ -1,7 +1,7 @@
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.FieldTheory.Subfield
 
 set_option autoImplicit true
 
@@ -29,7 +29,7 @@ example [Ring R] (S : Set R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m :
 
 example [CommRing R] [Ring A] [Algebra R A] [StarRing R] [StarRing A] [StarModule R A]
     (r : R) (a b c : A) (n : ℕ) :
-    -b + star (algebraMap R A r) + a ^ n * c ∈ StarSubalgebra.adjoin R {a, b, c} := by
+    -b + star (algebraMap R A r) + a ^ n * c ∈ StarAlgebra.adjoin R {a, b, c} := by
   aesop
 
 example [Monoid M] (x : M) (n : ℕ) : x ^ n ∈ Submonoid.closure {x} := by

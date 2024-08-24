@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Says
-import Mathlib.Tactic.RunCmd
 import Aesop
 
 set_option autoImplicit true
