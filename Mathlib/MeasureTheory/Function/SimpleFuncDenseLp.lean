@@ -110,7 +110,7 @@ theorem tendsto_approxOn_Lp_eLpNorm [OpensMeasurableSpace E] {f : β → E} (hf 
     ∀ n, (fun x => (‖approxOn f hf s y₀ h₀ n x - f x‖₊ : ℝ≥0∞) ^ p.toReal) ≤ᵐ[μ] fun x =>
         (‖f x - y₀‖₊ : ℝ≥0∞) ^ p.toReal :=
     fun n =>
-    eventually_of_forall fun x =>
+    Eventually.of_forall fun x =>
       rpow_le_rpow (coe_mono (nnnorm_approxOn_le hf h₀ x n)) toReal_nonneg
   -- (3) The bounding function `fun x => ‖f x - y₀‖ ^ p.toReal` has finite integral
   have h_fin : (∫⁻ a : β, (‖f a - y₀‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ≠ ⊤ :=
@@ -275,7 +275,7 @@ theorem memℒp_zero (f : α →ₛ E) (μ : Measure α) : Memℒp f 0 μ :=
 
 theorem memℒp_top (f : α →ₛ E) (μ : Measure α) : Memℒp f ∞ μ :=
   let ⟨C, hfC⟩ := f.exists_forall_norm_le
-  memℒp_top_of_bound f.aestronglyMeasurable C <| eventually_of_forall hfC
+  memℒp_top_of_bound f.aestronglyMeasurable C <| Eventually.of_forall hfC
 
 protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
     eLpNorm' f p μ = (∑ y ∈ f.range, (‖y‖₊ : ℝ≥0∞) ^ p * μ (f ⁻¹' {y})) ^ (1 / p) := by
@@ -357,7 +357,7 @@ theorem integrable_pair {f : α →ₛ E} {g : α →ₛ F} :
 theorem memℒp_of_isFiniteMeasure (f : α →ₛ E) (p : ℝ≥0∞) (μ : Measure α) [IsFiniteMeasure μ] :
     Memℒp f p μ :=
   let ⟨C, hfC⟩ := f.exists_forall_norm_le
-  Memℒp.of_bound f.aestronglyMeasurable C <| eventually_of_forall hfC
+  Memℒp.of_bound f.aestronglyMeasurable C <| Eventually.of_forall hfC
 
 theorem integrable_of_isFiniteMeasure [IsFiniteMeasure μ] (f : α →ₛ E) : Integrable f μ :=
   memℒp_one_iff_integrable.mp (f.memℒp_of_isFiniteMeasure 1 μ)

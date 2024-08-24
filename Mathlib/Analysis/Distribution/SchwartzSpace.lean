@@ -1002,20 +1002,22 @@ theorem iteratedPDeriv_succ_left {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, 
 
 theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, F)) :
     iteratedPDeriv 𝕜 m f = iteratedPDeriv 𝕜 (Fin.init m) (pderivCLM 𝕜 (m (Fin.last n)) f) := by
-  induction' n with n IH
-  · rw [iteratedPDeriv_zero, iteratedPDeriv_one]
+  induction n with
+  | zero =>
+    rw [iteratedPDeriv_zero, iteratedPDeriv_one]
     rfl
   -- The proof is `∂^{n + 2} = ∂ ∂^{n + 1} = ∂ ∂^n ∂ = ∂^{n+1} ∂`
-  have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
-  have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by
-    simp only [Fin.tail_def, Fin.succ_last]
-  calc
-    _ = pderivCLM 𝕜 (m 0) (iteratedPDeriv 𝕜 _ f) := iteratedPDeriv_succ_left _ _ _
-    _ = pderivCLM 𝕜 (m 0) ((iteratedPDeriv 𝕜 _) ((pderivCLM 𝕜 _) f)) := by
-      congr 1
-      exact IH _
-    _ = _ := by
-      simp only [hmtail, iteratedPDeriv_succ_left, hmzero, Fin.tail_init_eq_init_tail]
+  | succ n IH =>
+    have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
+    have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by
+      simp only [Fin.tail_def, Fin.succ_last]
+    calc
+      _ = pderivCLM 𝕜 (m 0) (iteratedPDeriv 𝕜 _ f) := iteratedPDeriv_succ_left _ _ _
+      _ = pderivCLM 𝕜 (m 0) ((iteratedPDeriv 𝕜 _) ((pderivCLM 𝕜 _) f)) := by
+        congr 1
+        exact IH _
+      _ = _ := by
+        simp only [hmtail, iteratedPDeriv_succ_left, hmzero, Fin.tail_init_eq_init_tail]
 
 theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
     iteratedPDeriv 𝕜 m f x = iteratedFDeriv ℝ n f x m := by
@@ -1070,7 +1072,7 @@ lemma integrable_pow_mul (f : 𝓢(D, V))
 
 lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
-    (eventually_of_forall (fun _ ↦ by simp))
+    (Eventually.of_forall (fun _ ↦ by simp))
 
 variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/

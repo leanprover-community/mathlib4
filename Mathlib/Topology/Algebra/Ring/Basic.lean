@@ -25,6 +25,7 @@ of topological (semi)rings.
 - The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
 
+assert_not_exists Cardinal
 
 open Set Filter TopologicalSpace Function Topology Filter
 

@@ -302,6 +302,10 @@ theorem cos_periodic : Function.Periodic cos (2 * π) :=
   cos_antiperiodic.periodic_two_mul
 
 @[simp]
+theorem abs_cos_int_mul_pi (k : ℤ) : |cos (k * π)| = 1 := by
+  simp [abs_cos_eq_sqrt_one_sub_sin_sq]
+
+@[simp]
 theorem cos_add_pi (x : ℝ) : cos (x + π) = -cos x :=
   cos_antiperiodic x
 

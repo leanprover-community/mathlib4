@@ -99,7 +99,7 @@ statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
 theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
     [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [TopologicalDivisionRing 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
-  convert Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn ↦ _)) _
+  convert Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn ↦ _)) _
   · exact fun n : ℕ ↦ 1 / (1 + x / n)
   · field_simp [Nat.cast_ne_zero.mpr hn]
   · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
@@ -167,7 +167,7 @@ theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*} [LinearOrdere
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝[>] 0) :=
   tendsto_inf.2
     ⟨tendsto_pow_atTop_nhds_zero_of_lt_one h₁.le h₂,
-      tendsto_principal.2 <| eventually_of_forall fun _ ↦ pow_pos h₁ _⟩
+      tendsto_principal.2 <| Eventually.of_forall fun _ ↦ pow_pos h₁ _⟩
 
 @[deprecated (since := "2024-01-31")]
 alias tendsto_pow_atTop_nhdsWithin_0_of_lt_1 := tendsto_pow_atTop_nhdsWithin_zero_of_lt_one
@@ -605,7 +605,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
     Tendsto (fun n ↦ n ! / (n : ℝ) ^ n : ℕ → ℝ) atTop (𝓝 0) :=
   tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
     (tendsto_const_div_atTop_nhds_zero_nat 1)
-    (eventually_of_forall fun n ↦
+    (Eventually.of_forall fun n ↦
       div_nonneg (mod_cast n.factorial_pos.le)
         (pow_nonneg (mod_cast n.zero_le) _))
     (by
