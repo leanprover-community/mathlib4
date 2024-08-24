@@ -30,9 +30,9 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 
 ## Co-discrete open sets
 
-In a topological space the sets which are open with discrete complement form a filter. We
-formalise this as `Filter.codiscrete`. This is also the supremum of all punctured neighborhoods.
-We also define `Filter.codiscreteWithin`, which is a filter of codiscrete functions on a subset.
+We define the filter `Filter.codiscreteWithin S`, which is the supremum of all `𝓝[S \ {x}] x`.
+This is the filter of all open codiscrete sets within S. We also define `Filter.codiscrete` as
+`Filter.codiscreteWithin univ`, which is the filter of all open codiscrete sets in the space.
 
 -/
 
