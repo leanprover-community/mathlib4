@@ -46,8 +46,6 @@ instance : CoeSort PartialFun Type* :=
 def of : Type* → PartialFun :=
   id
 
--- Porting note: removed this lemma which is useless because of the expansion of coercions
-
 instance : Inhabited PartialFun :=
   ⟨Type*⟩
 
