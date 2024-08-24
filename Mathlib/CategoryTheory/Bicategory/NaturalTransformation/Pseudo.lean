@@ -114,6 +114,7 @@ instance hasCoeToOplax : Coe (StrongTrans F G) (OplaxTrans F.toOplax G) :=
 
 /-- Construct a strong transformation from an oplax transformation whose
 naturality 2-morphism is an isomorphism. -/
+@[simps]
 def mkOfOplax {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G) (η' : StrongCore η) :
     StrongTrans F G where
   app := η.app
@@ -125,6 +126,7 @@ def mkOfOplax {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G) (η' : Str
 
 /-- Construct a strong transformation from an oplax transformation whose
 naturality 2-morphism is an isomorphism. -/
+@[simps]
 noncomputable def mkOfOplax' {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongTrans F G where
   app := η.app

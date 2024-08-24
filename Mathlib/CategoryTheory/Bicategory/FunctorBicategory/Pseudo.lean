@@ -17,7 +17,7 @@ Given bicategories `B` and `C`, we give a bicategory structure on `Pseudofunctor
 -/
 
 
-namespace CategoryTheory
+namespace CategoryTheory.Pseudofunctor
 
 open Category Bicategory
 
@@ -27,21 +27,31 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-namespace Pseudofunctor.StrongTrans
+namespace StrongTrans
 
 variable {F G H I : Pseudofunctor B C}
 
 /-- Left whiskering of a strong natural transformation between pseudofunctors
 and a modification. -/
-@[simps!]
-def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι :=
-  Modification.mkOfOplax <| OplaxTrans.whiskerLeft η.toOplax Γ.toOplax
+@[simps]
+def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι where
+  app a := η.app a ◁ Γ.app a
+  naturality {a b} f := by
+    dsimp
+    rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]
+    simp
+  -- Modification.mkOfOplax <| OplaxTrans.whiskerLeft η.toOplax Γ.toOplax
 
 /-- Right whiskering of an strong natural transformation between pseudofunctors
 and a modification. -/
-@[simps!]
-def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι :=
-  Modification.mkOfOplax <| OplaxTrans.whiskerRight Γ.toOplax ι.toOplax
+@[simps]
+def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι where
+  app a := Γ.app a ▷ ι.app a
+  naturality {a b} f := by
+    dsimp
+    simp_rw [assoc, ← associator_inv_naturality_left, whisker_exchange_assoc]
+    simp
+  -- Modification.mkOfOplax <| OplaxTrans.whiskerRight Γ.toOplax ι.toOplax
 
 /-- Associator for the vertical composition of strong natural transformations
 between pseudofunctors. -/
@@ -63,20 +73,29 @@ def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
   ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by aesop_cat)
   -- { OplaxTrans.rightUnitor η.toOplax with }
 
-end Pseudofunctor.StrongTrans
+end StrongTrans
 
 variable (B C)
 
 /-- A bicategory structure on the pseudofunctors between two bicategories. -/
 @[simps!]
-instance Pseudofunctor.bicategory : Bicategory (Pseudofunctor B C) where
-  whiskerLeft {F G H} η _ _ Γ := Pseudofunctor.StrongTrans.whiskerLeft η Γ
-  whiskerRight {F G H} _ _ Γ η := Pseudofunctor.StrongTrans.whiskerRight Γ η
-  associator {F G H} I := Pseudofunctor.StrongTrans.associator
-  leftUnitor {F G} := Pseudofunctor.StrongTrans.leftUnitor
-  rightUnitor {F G} := Pseudofunctor.StrongTrans.rightUnitor
+instance bicategory : Bicategory (Pseudofunctor B C) where
+  whiskerLeft {F G H} η _ _ Γ := StrongTrans.whiskerLeft η Γ
+  whiskerRight {F G H} _ _ Γ η := StrongTrans.whiskerRight Γ η
+  associator {F G H} I := StrongTrans.associator
+  leftUnitor {F G} := StrongTrans.leftUnitor
+  rightUnitor {F G} := StrongTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
-  pentagon f g h i := by ext; exact pentagon _ _ _ _
-  triangle f g := by ext; exact triangle _ _
 
-end CategoryTheory
+-- example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
+--   [inst_1 : CategoryTheory.Bicategory C] {X Y Z : CategoryTheory.Pseudofunctor B C}
+--   (η : X ⟶ Y) (θ : Y ⟶ Z) {a b : B} (f : a ⟶ b) :
+--     ((η ≫ θ).naturality f).inv =
+--       (α_ (η.app a) (θ.app a) (Z.map f)).hom ≫
+--         η.app a ◁ (θ.naturality f).inv ≫
+--           (α_ (η.app a) (Y.map f) (θ.app b)).inv ≫
+--             (η.naturality f).inv ▷ θ.app b ≫ (α_ (X.map f) (η.app b) (θ.app b)).hom := by
+--   --apply bicategory_comp_naturality_inv _ _ _
+--   simp only [Pseudofunctor.categoryStruct_comp, Pseudofunctor.StrongTrans.vcomp_naturality_inv]
+
+end CategoryTheory.Pseudofunctor
