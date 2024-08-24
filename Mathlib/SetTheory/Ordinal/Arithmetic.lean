@@ -304,8 +304,9 @@ theorem enum_succ_eq_top {o : Ordinal} :
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
     (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
   use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
-  convert (enum_lt_enum (typein_lt_type r x)
-    (h _ (typein_lt_type r x))).mpr (lt_succ _); rw [enum_typein]
+  convert enum_lt_enum (o₁ := ⟨_, typein_lt_type r x⟩) (o₂ := ⟨_, h _ (typein_lt_type r x)⟩).mpr _
+  · rw [enum_typein]
+  · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
 theorem out_no_max_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.out.α :=
   ⟨has_succ_of_type_succ_lt (by rwa [type_lt])⟩
@@ -316,7 +317,7 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (typ
   intro b hb
   rw [mem_singleton_iff.1 hb]
   nth_rw 1 [← enum_typein r x]
-  rw [@enum_lt_enum _ r]
+  rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ
 
 -- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
