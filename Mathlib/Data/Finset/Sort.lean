@@ -242,11 +242,12 @@ theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = Li
 
 end Fin
 
-/-- Given a `Fintype` `α` of cardinality `k`, the map `orderIsoOfFin s h` is the increasing
+/-- Given a `Fintype` `α` of cardinality `k`, the map `orderIsoFinOfCardEq s h` is the increasing
 bijection between `Fin k` and `α` as an `OrderIso`. Here, `h` is a proof that the cardinality of `α`
 is `k`. We use this instead of an iso `Fin (Fintype.card α) ≃o α` to avoid casting issues in further
 uses of this function. -/
-def Fintype.orderIsoOfFin (α : Type*) [LinearOrder α] [Fintype α] {k : ℕ} (h : Fintype.card α = k) :
+def Fintype.orderIsoFinOfCardEq
+    (α : Type*) [LinearOrder α] [Fintype α] {k : ℕ} (h : Fintype.card α = k) :
     Fin k ≃o α :=
   (Finset.univ.orderIsoOfFin h).trans
     ((OrderIso.setCongr _ _ Finset.coe_univ).trans OrderIso.Set.univ)
@@ -257,4 +258,4 @@ lemma nonempty_orderEmbedding_of_finite_infinite
     (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
   haveI := Fintype.ofFinite α
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
-  exact ⟨((Fintype.orderIsoOfFin α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
+  exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
