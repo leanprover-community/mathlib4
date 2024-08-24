@@ -118,7 +118,7 @@ theorem symm_refl : (PEquiv.refl α).symm = PEquiv.refl α :=
   rfl
 
 @[simp]
-theorem symm_symm (f : α ≃. β) : f.symm.symm = f := by cases f; rfl
+theorem symm_symm (f : α ≃. β) : f.symm.symm = f := rfl
 
 theorem symm_bijective : Function.Bijective (PEquiv.symm : (α ≃. β) → β ≃. α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩

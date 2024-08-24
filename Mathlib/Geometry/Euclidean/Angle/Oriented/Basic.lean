@@ -236,13 +236,13 @@ theorem two_zsmul_oangle_neg_self_right (x : V) : (2 : ℤ) • o.oangle x (-x) 
 negated, results in 0. -/
 @[simp]
 theorem oangle_add_oangle_rev_neg_left (x y : V) : o.oangle (-x) y + o.oangle (-y) x = 0 := by
-  rw [oangle_neg_left_eq_neg_right, oangle_rev, add_left_neg]
+  rw [oangle_neg_left_eq_neg_right, oangle_rev, neg_add_cancel]
 
 /-- Adding the angles between two vectors in each order, with the second vector in each angle
 negated, results in 0. -/
 @[simp]
 theorem oangle_add_oangle_rev_neg_right (x y : V) : o.oangle x (-y) + o.oangle y (-x) = 0 := by
-  rw [o.oangle_rev (-x), oangle_neg_left_eq_neg_right, add_neg_self]
+  rw [o.oangle_rev (-x), oangle_neg_left_eq_neg_right, add_neg_cancel]
 
 /-- Multiplying the first vector passed to `oangle` by a positive real does not change the
 angle. -/
@@ -547,7 +547,10 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   have : ‖y‖ ≠ 0 := by simpa using hy
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    field_simp
+    -- TODO(#15486): used to be `field_simp`; replaced by `simp only ...` to speed up
+    -- Reinstate `field_simp` once it is faster.
+    simp (disch := field_simp_discharge) only [mul_zero, I_im, mul_one, sub_self, add_zero,
+      mul_div_assoc', mul_div_cancel_left₀]
   · exact o.kahler_ne_zero hx hy
 
 /-- The cosine of the oriented angle between two nonzero vectors is the inner product divided by

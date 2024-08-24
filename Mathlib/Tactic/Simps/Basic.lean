@@ -535,7 +535,7 @@ partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array
   initialize_simps_projections (toFun_toFun_toFun → myMul)
   ```
   we will be able to generate the "projection"
-    `λ {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
+    `fun {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
   which projection notation cannot do. -/
 def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr × Array Nat) := do
   let strExpr ← mkConstWithLevelParams structName

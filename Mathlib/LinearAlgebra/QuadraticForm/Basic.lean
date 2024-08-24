@@ -75,14 +75,12 @@ has some further discusion.
 quadratic map, homogeneous polynomial, quadratic polynomial
 -/
 
-
 universe u v w
 
 variable {S T : Type*}
 variable {R : Type*} {M N P A : Type*}
 
-open LinearMap (BilinMap)
-open LinearMap (BilinForm)
+open LinearMap (BilinMap BilinForm)
 
 section Polar
 
@@ -1275,7 +1273,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
         refine ⟨-B x y / B x x, fun z hz => ?_⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
         rw [IsOrtho, map_smul, smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
-          div_mul_cancel₀ _ hx, add_neg_self, mul_zero])
+          div_mul_cancel₀ _ hx, add_neg_cancel, mul_zero])
   refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]
   intro j i

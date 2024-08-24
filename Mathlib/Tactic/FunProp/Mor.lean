@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomas Skrivan
+Authors: Tomáš Skřivan
 -/
 import Lean
 import Mathlib.Data.FunLike.Basic
@@ -150,3 +150,9 @@ def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
     match x with
     | ⟨x, .none⟩ => (f.app x)
     | ⟨x, .some coe⟩ => (coe.app f).app x)
+
+end Mor
+
+end Meta.FunProp
+
+end Mathlib

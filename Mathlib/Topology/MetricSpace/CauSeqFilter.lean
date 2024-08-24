@@ -13,13 +13,9 @@ is complete in terms of `Cauchy` filter if and only if it is complete in terms
 of `CauSeq` Cauchy sequences.
 -/
 
-
 universe u v
 
-open Set Filter
-
-open scoped Classical
-open Topology
+open Set Filter Topology
 
 variable {β : Type v}
 

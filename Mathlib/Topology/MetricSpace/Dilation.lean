@@ -48,12 +48,10 @@ needed.
 - [Marcel Berger, *Geometry*][berger1987]
 -/
 
-
 noncomputable section
 
 open Function Set Bornology
-
-open scoped Topology ENNReal NNReal Classical
+open scoped Topology ENNReal NNReal
 
 section Defs
 
@@ -126,6 +124,7 @@ theorem copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f
 
 variable [FunLike F α β]
 
+open Classical in
 /-- The ratio of a dilation `f`. If the ratio is undefined (i.e., the distance between any two
 points in `α` is either zero or infinity), then we choose one as the ratio. -/
 def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=

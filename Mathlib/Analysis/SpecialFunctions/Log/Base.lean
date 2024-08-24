@@ -104,6 +104,7 @@ theorem logb_pow {k : ℕ} (hx : 0 < x) : logb b (x ^ k) = k * logb b x := by
 section BPosAndNeOne
 
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
+include b_pos b_ne_one
 
 private theorem log_b_ne_zero : log b ≠ 0 := by
   have b_ne_zero : b ≠ 0 := by linarith
@@ -159,6 +160,7 @@ end BPosAndNeOne
 section OneLtB
 
 variable (hb : 1 < b)
+include hb
 
 private theorem b_pos : 0 < b := by linarith
 
@@ -253,8 +255,11 @@ end OneLtB
 section BPosAndBLtOne
 
 variable (b_pos : 0 < b) (b_lt_one : b < 1)
+include b_lt_one
 
 private theorem b_ne_one : b ≠ 1 := by linarith
+
+include b_pos
 
 @[simp]
 theorem logb_le_logb_of_base_lt_one (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ y ≤ x := by
