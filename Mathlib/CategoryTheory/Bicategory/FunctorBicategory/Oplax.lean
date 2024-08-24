@@ -77,13 +77,15 @@ instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   rightUnitor {F G} := OplaxTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
 
--- example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂) [inst_1 : CategoryTheory.Bicategory C]
+-- example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
+-- [inst_1 : CategoryTheory.Bicategory C]
 --         {X Y Z : CategoryTheory.OplaxFunctor B C} (η : X ⟶ Y)
 --         (θ : CategoryTheory.OplaxTrans Y Z) {a b : B} (f : a ⟶ b) :
 --         (η ≫ θ).naturality f =
 --           (α_ (X.map f) (η.app b) (θ.app b)).inv ≫
 --             η.naturality f ▷ θ.app b ≫
---               (α_ (η.app a) (Y.map f) (θ.app b)).hom ≫ η.app a ◁ θ.naturality f ≫ (α_ (η.app a) (θ.app a) (Z.map f)).inv := by
+--               (α_ (η.app a) (Y.map f) (θ.app b)).hom ≫ η.app a ◁ θ.naturality f ≫
+-- (α_ (η.app a) (θ.app a) (Z.map f)).inv := by
 --   simp only [OplaxTrans.instCategoryStructOplaxFunctor_comp, OplaxTrans.vcomp_naturality]
 
 
