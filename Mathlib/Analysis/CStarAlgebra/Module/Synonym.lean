@@ -176,6 +176,12 @@ def equivL [Semiring R] [AddCommGroup E] [UniformSpace E] [Module R E] : C⋆ᵐ
     continuous_toFun := UniformEquiv.continuous uniformEquiv
     continuous_invFun := UniformEquiv.continuous uniformEquiv.symm }
 
+lemma equiv_eq_equivL (R : Type*) (E : Type*) [Semiring R] [AddCommGroup E] [UniformSpace E]
+    [Module R E] {x : E} : equiv E x = equivL R x := rfl
+
+lemma equiv_symm_eq_equivL (R : Type*) (E : Type*) [Semiring R] [AddCommGroup E] [UniformSpace E]
+    [Module R E] {x : E} : (equiv E).symm x = (equivL R).symm x := rfl
+
 instance [UniformSpace E] [CompleteSpace E] : CompleteSpace (C⋆ᵐᵒᵈ E) :=
   uniformEquiv.completeSpace_iff.mpr inferInstance
 

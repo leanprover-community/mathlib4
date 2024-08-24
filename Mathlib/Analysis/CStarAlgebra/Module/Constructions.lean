@@ -81,7 +81,7 @@ instance : CStarModule A A where
     rw [← sq_eq_sq (norm_nonneg _) (by positivity)]
     simpa [sq] using Eq.symm <| CStarRing.norm_star_mul_self
 
-lemma inner_def (x y : A) : ⟪x, y⟫_A = star x * y := rfl
+@[simp] lemma inner_def (x y : A) : ⟪x, y⟫_A = star x * y := rfl
 
 end Self
 
