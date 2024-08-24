@@ -20,7 +20,7 @@ is bounded by the $$L^p$$-norm of `f` up to some multiplicative constant.
 * We currently only prove the inequality for `p = 2 * m` an even natural number. The general `p`
   case can be obtained from this specific one by nesting of Lp norms.
 * We currently only prove the case of a uniformly distributed discrete random variable. This needs
-  to be generalised! (and when it is, this file should move out of the `Algebra.Discrete`) folder.
+  to be generalised! (and when it is, this file should move out of the `Analysis.Discrete`) folder.
 -/
 
 open Finset Fintype Nat Real

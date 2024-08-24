@@ -1154,6 +1154,7 @@ import Mathlib.Analysis.Convex.Strong
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Convolution
+import Mathlib.Analysis.Discrete.MarcinkiewiczZygmund
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.Analysis.Distribution.SchwartzSpace
@@ -1176,7 +1177,6 @@ import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.JointEigenspace
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.LinearPMap
-import Mathlib.Analysis.InnerProductSpace.MarcinkiewiczZygmund
 import Mathlib.Analysis.InnerProductSpace.MeanErgodic
 import Mathlib.Analysis.InnerProductSpace.NormPow
 import Mathlib.Analysis.InnerProductSpace.OfNorm
