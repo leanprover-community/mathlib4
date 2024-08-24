@@ -69,7 +69,8 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
 lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x ≤ sin x := by
   rw [← sub_nonneg]
   suffices ConcaveOn ℝ (Icc 0 (π / 2)) (fun x ↦ sin x - 2 / π * x) by
-    refine (le_min ?_ ?_).trans <| this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
+    refine (le_min ?_ ?_).trans <| this.min_le_of_mem_Icc (by simp [Real.pi_nonneg, div_nonneg])
+      (by simp [Real.pi_nonneg, div_nonneg]) ⟨hx₀, hx⟩ <;> field_simp
   exact concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
     (Continuous.continuousOn <| by fun_prop)
     (fun x _ ↦ ((hasDerivAt_sin ..).sub <| (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
@@ -126,7 +127,8 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   rw [← sub_nonneg]
   obtain hx' | hx' := le_total x (π / 2)
   · simpa using hmono (left_mem_Icc.2 <| by positivity) ⟨hx₀, hx'⟩ hx₀
-  · refine (le_min ?_ ?_).trans <| hconc.min_le_of_mem_Icc ⟨hx', hx⟩ <;> field_simp <;> norm_num
+  · refine (le_min ?_ ?_).trans <| hconc.min_le_of_mem_Icc (by simp [Real.pi_nonneg])
+      (by simp [Real.pi_nonneg]) ⟨hx', hx⟩ <;> field_simp <;> norm_num
 
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 
