@@ -92,32 +92,25 @@ theorem isClosed_and_discrete_iff {S : Set X} :
   · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
     simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
 
-/-- We can create a filter of sets with no accumulation points inside a subset. -/
+/-- The filter of sets with no accumulation points inside a set `S : Set X`, implemented
+as the supremum over all punctured neighborhoods within `S`.  -/
 def Filter.codiscreteWithin (S : Set X) : Filter X := ⨆ x ∈ S, 𝓝[S \ {x}] x
 
 lemma mem_codiscreteWithin {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, Disjoint (𝓝[≠] x) (𝓟 (T \ S)) := by
-  simp only [codiscreteWithin, mem_iSup, mem_nhdsWithin, disjoint_principal_right]
-  congr! 6 with x - u
-  constructor
-  · intro h _ _
-    simp only [mem_compl_iff, mem_diff, not_and, not_not]
-    intro _
-    apply h
-    simp_all
-  · intro h x hx
-    simp_all only [mem_inter_iff, mem_diff, mem_singleton_iff]
-    suffices x ∈ (T \ S)ᶜ by
-      simp only [mem_compl_iff, mem_diff, not_and, not_not] at this
-      exact this hx.2.1
-    apply h
-    simp_all
+  simp only [codiscreteWithin, mem_iSup, mem_nhdsWithin, disjoint_principal_right, subset_def,
+    mem_diff, mem_inter_iff, mem_compl_iff]
+  congr! 7 with x - u y
+  tauto
 
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
-/-- In any topological space, we form a filter from the supremum of all punctured neighborhoods. -/
+/-- In any topological space, the open sets with with discrete complement form a filter,
+defined as the supremum of all punctured neighborhoods.
+
+See `Filter.mem_codiscrete'` for the equivalence. -/
 def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteWithin Set.univ
 
 lemma mem_codiscrete {S : Set X} :
@@ -134,33 +127,19 @@ lemma mem_codiscrete' {S : Set X} :
 
 lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     U ∈ codiscrete S ↔ Subtype.val '' U ∈ codiscreteWithin S := by
+    U ∈ codiscrete S ↔ (↑) '' U ∈ codiscreteWithin S := by
   simp [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
     mem_codiscreteWithin]
   congr! with x hx
   constructor
-  · intro h
-    rw [nhdsWithin_subtype] at h
-    simp only [mem_comap] at h
-    obtain ⟨t, ht1, ht2⟩ := h
-    simp [mem_nhdsWithin] at ht1 ⊢
+  · rw [nhdsWithin_subtype, mem_comap]
+    rintro ⟨t, ht1, ht2⟩
+    rw [mem_nhdsWithin] at ht1 ⊢
     obtain ⟨u, hu1, hu2, hu3⟩ := ht1
-    use u, hu1, hu2
-    intro v hv
-    simp only [mem_compl_iff, mem_diff, mem_image, Subtype.exists, exists_and_right,
-      exists_eq_right, not_exists, not_and, not_forall, not_not]
-    intro hv2
-    use hv2
-    apply ht2
-    simp only [mem_preimage]
-    apply hu3
-    simpa [hv2]
-  · intro h
-    have : Tendsto Subtype.val (𝓝[≠] ⟨x, hx⟩) (𝓝[≠] x) :=
-      tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
+    refine ⟨u, hu1, hu2, fun v hv ↦ ?_⟩
+    simpa using fun hv2 ↦ ⟨hv2, ht2 <| hu3 <| by simpa [hv2]⟩
+  · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by convert tendsto_def.mp this _; ext; simp
+    exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
-    rw [tendsto_def] at this
-    convert this _ h
-    ext
-    simp
 
 end codiscrete_filter
