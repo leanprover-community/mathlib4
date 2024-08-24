@@ -236,7 +236,7 @@ def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
     funMap_zero := fun _ => rfl,
     funMap_one := fun _ => rfl }
 
-instance _root_.RingHomClass.strongHomClass {R : Type*} [NonAssocRing R] [CompatibleRing R]
+instance _root_.RingHomClass.toStrongHomClassRing {R : Type*} [NonAssocRing R] [CompatibleRing R]
   {S : Type*} [NonAssocRing S] [CompatibleRing S]
   {F : Type*} [FunLike F R S] [RingHomClass F R S] :
     Language.ring.StrongHomClass F R S where
