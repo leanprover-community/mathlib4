@@ -664,6 +664,11 @@ theorem iIndepSet_iff_iIndepSets_singleton {_mΩ : MeasurableSpace Ω} {κ : Ker
     iIndepSets.iIndep _ (fun i ↦ generateFrom_le <| by rintro t (rfl : t = _); exact hf _) _
       (fun _ ↦ IsPiSystem.singleton _) fun _ ↦ rfl⟩
 
+theorem iIndepSet.meas_biInter {_mΩ : MeasurableSpace Ω} {κ : Kernel α Ω}
+    {μ : Measure α} {f : ι → Set Ω} (h : iIndepSet f κ μ) (s : Finset ι) :
+    ∀ᵐ a ∂μ, κ a (⋂ i ∈ s, f i) = ∏ i ∈ s, κ a (f i) :=
+  iIndep.iIndepSets (fun _ ↦ rfl) h _ (by simp)
+
 theorem iIndepSet_iff_meas_biInter {_mΩ : MeasurableSpace Ω} {κ : Kernel α Ω}
     [IsMarkovKernel κ] {μ : Measure α} {f : ι → Set Ω} (hf : ∀ i, MeasurableSet (f i)) :
     iIndepSet f κ μ ↔ ∀ s, ∀ᵐ a ∂μ, κ a (⋂ i ∈ s, f i) = ∏ i ∈ s, κ a (f i) :=

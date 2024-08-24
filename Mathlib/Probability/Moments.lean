@@ -143,12 +143,11 @@ theorem mgf_zero' : mgf X μ 0 = (μ Set.univ).toReal := by
 theorem mgf_zero [IsProbabilityMeasure μ] : mgf X μ 0 = 1 := by
   simp only [mgf_zero', measure_univ, ENNReal.one_toReal]
 
-@[simp]
 theorem cgf_zero' : cgf X μ 0 = log (μ Set.univ).toReal := by simp only [cgf, mgf_zero']
 
 @[simp]
 theorem cgf_zero [IsZeroOrProbabilityMeasure μ] : cgf X μ 0 = 0 := by
-  rcases eq_zero_or_isProbabilityMeasure μ with rfl | h <;> simp
+  rcases eq_zero_or_isProbabilityMeasure μ with rfl | h <;> simp [cgf_zero']
 
 theorem mgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : mgf X μ t = 0 := by
   simp only [mgf, integral_undef hX]

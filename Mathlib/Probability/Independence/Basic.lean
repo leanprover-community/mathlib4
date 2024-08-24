@@ -514,6 +514,14 @@ theorem iIndepSets.iIndepSet_of_mem {π : ι → Set (Set Ω)} {f : ι → Set �
     (hπ : iIndepSets π μ) : iIndepSet f μ :=
   Kernel.iIndepSets.iIndepSet_of_mem hfπ hf hπ
 
+lemma foo (hs_meas : MeasurableSet s)
+    (ht_meas : MeasurableSet t) (μ : Measure Ω := by volume_tac)
+    (h : IndepSet s t μ) :
+    μ (s ∩ t) = μ s * μ t := by
+  simp [IndepSet] at h
+
+#exit
+
 end IndepSet
 
 section IndepFun

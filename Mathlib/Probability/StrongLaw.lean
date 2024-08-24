@@ -602,10 +602,37 @@ identically distributed integrable real-valued random variables, then `∑ i ∈
 converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
 requires pairwise independence. Superseded by `strong_law_ae`, which works for random variables
 taking values in any Banach space. -/
-theorem strong_law_ae_real {Ω : Type*} [MeasureSpace Ω] [IsZeroOrProbabilityMeasure (ℙ : Measure Ω)]
+theorem strong_law_ae_real {Ω : Type*} [MeasureSpace Ω] -- [IsZeroOrProbabilityMeasure (ℙ : Measure Ω)]
     (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
     (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, X i ω) / n) atTop (𝓝 𝔼[X 0]) := by
+  by_cases h : ∀ᵐ ω, X 0 ω = 0
+  · have I : ∀ᵐ ω, ∀ i, X i ω = 0 := by
+      rw [ae_all_iff]
+      intro i
+      exact (hident i).symm.ae_snd (p := fun x ↦ x = 0) measurableSet_eq h
+    filter_upwards [I] with ω hω
+    simpa [hω] using (integral_eq_zero_of_ae h).symm
+  obtain ⟨c, c_pos, hc⟩ : ∃ c, 0 < c ∧ 0 < ℙ {ω | c < |X 0 ω|} := by
+    contrapose! h
+    have A (c : ℝ) (hc : 0 < c) : ∀ᵐ ω, |X 0 ω| ≤ c := by sorry
+    obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
+      ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ)
+    filter_upwards [ae_all_iff.2 (fun n ↦ A (u n) (u_pos n))] with ω hω
+    exact abs_nonpos_iff.mp (ge_of_tendsto' u_lim hω)
+  have h'c : ℙ {ω | c < |X 0 ω|} < ∞ := sorry
+  have : IndepFun (X 0) (X 1) := hindep Nat.zero_ne_one
+  have : IndepSet {ω | c < |X 0 ω|} ((X 1) ⁻¹' univ) := by
+
+
+
+
+
+#exit
+
+
+
+
   rcases eq_zero_or_isProbabilityMeasure (ℙ : Measure Ω) with h | h
   · simp [h]
   let pos : ℝ → ℝ := fun x => max x 0
