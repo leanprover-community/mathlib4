@@ -443,12 +443,12 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
 -- separate `sᶜ` and `t` by `u` and `v`.
   rw [← compl_compl s] at hscp
   obtain ⟨u, v, huIsOpen, hvIsOpen, hscompl_subset_u, ht_subset_v, hDjsjointuv⟩ :=
-    t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint (isClosed_compl_iff.mpr hs)
+    SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed (isClosed_compl_iff.mpr hs)
     hscp ht (HasSubset.Subset.disjoint_compl_left hst)
   rw [← subset_compl_iff_disjoint_right] at hDjsjointuv
   have huvc : closure u ⊆ vᶜ := closure_minimal hDjsjointuv hvIsOpen.isClosed_compl
 -- although `sᶜ` is not compact, `closure s` is compact and we can apply
--- `t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint`. To apply the condition
+-- `SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed`. To apply the condition
 -- recursively, we need to make sure that `sᶜ ⊆ C`.
   let P : Set X → Prop := fun C => sᶜ ⊆ C
   set c : Urysohns.CU P :=
@@ -461,8 +461,8 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
       (Subset.trans ht_subset_v (subset_compl_comm.mp huvc))
     hP := by
       intro c u0 cIsClosed Pc u0IsOpen csubu0
-      obtain ⟨u1, hu1⟩ := t2_separation_IsClosed_IsCompact_closure_compl_IsClosed_Disjoint
-        cIsClosed (IsCompact.of_isClosed_subset hscp isClosed_closure
+      obtain ⟨u1, hu1⟩ := SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed cIsClosed
+        (IsCompact.of_isClosed_subset hscp isClosed_closure
         (closure_mono (compl_subset_compl.mpr Pc)))
         (isClosed_compl_iff.mpr u0IsOpen) (HasSubset.Subset.disjoint_compl_right csubu0)
       simp_rw [← subset_compl_iff_disjoint_right, compl_subset_comm (s := u0)] at hu1
