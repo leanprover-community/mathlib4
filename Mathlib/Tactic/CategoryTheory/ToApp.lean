@@ -150,10 +150,12 @@ produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
 -/
 elab "to_app_of% " t:term : term => do
-  logInfo m!"CAT: {(← elabTerm t none)}"
-  logInfo m!"eq_app : {(← mkAppM ``eq_app' #[(← elabTerm t none)])}"
+  let e ← elabTerm t none
+  let u := e.constLevels!
+  logInfo m!"e: {e}"
+  logInfo m!"u: {u}"
   -- this might be hackier than I want later? (requires providing args explicitly..)
-  to_appExpr (← elabTerm t none) sorry
+  to_appExpr e []
 
 
 end CategoryTheory
