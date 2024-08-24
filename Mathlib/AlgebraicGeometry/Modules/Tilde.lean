@@ -136,7 +136,7 @@ def tildeInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     AddCommGroup (M.tildeInType.1.obj U) :=
-  inferInstanceAs $ AddCommGroup (Tilde.sectionsSubmodule M U)
+  inferInstanceAs <| AddCommGroup (Tilde.sectionsSubmodule M U)
 
 /--
 `M^~` as a presheaf of abelian groups over `Spec R`
@@ -159,7 +159,7 @@ def tildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((Spec (.of R)).ringCatSheaf.1.obj U) (M.tildeInAddCommGrp.1.obj U) :=
-  inferInstanceAs $ Module _ (Tilde.sectionsSubmodule M U)
+  inferInstanceAs <| Module _ (Tilde.sectionsSubmodule M U)
 
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules

@@ -37,3 +37,5 @@ def OptionsPerPos.setBool (opts : OptionsPerPos) (p : SubExpr.Pos) (n : Name) (v
     OptionsPerPos :=
   let e := opts.findD p {} |>.setBool n v
   opts.insert p e
+
+end Lean.PrettyPrinter.Delaborator

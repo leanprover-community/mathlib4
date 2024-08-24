@@ -1493,7 +1493,7 @@ theorem iteratedFDerivWithin_of_isOpen (n : ℕ) (hs : IsOpen s) :
   | zero =>
     intro x _
     ext1
-    simp only [Nat.zero_eq, iteratedFDerivWithin_zero_apply, iteratedFDeriv_zero_apply]
+    simp only [iteratedFDerivWithin_zero_apply, iteratedFDeriv_zero_apply]
   | succ n IH =>
     intro x hx
     rw [iteratedFDeriv_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left]

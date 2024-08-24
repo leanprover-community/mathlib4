@@ -824,9 +824,9 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         refine Measurable.aemeasurable ?_
         convert (iSup_mem_measurableLE _ hf₁ n).1
         simp
-      · refine Filter.eventually_of_forall fun a ↦ ?_
+      · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [iSup_monotone' f _]
-      · refine Filter.eventually_of_forall fun a ↦ ?_
+      · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [tendsto_atTop_iSup (iSup_monotone' f a)]
     have hξm : Measurable ξ := by
       convert measurable_iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1

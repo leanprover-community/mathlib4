@@ -203,7 +203,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
             (tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support hg_cont
               hg_supp))
           _ (div_pos hε two_pos)).mp
-      (eventually_of_forall fun w hI => ?_)
+      (Eventually.of_forall fun w hI => ?_)
   rw [dist_eq_norm] at hI ⊢
   have : ‖(∫ v, 𝐞 (-⟪v, w⟫) • f v) - ∫ v, 𝐞 (-⟪v, w⟫) • g v‖ ≤ ε / 2 := by
     refine le_trans ?_ hfg

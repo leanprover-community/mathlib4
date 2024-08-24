@@ -12,6 +12,7 @@ import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Order.Bornology
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Topological properties of ℝ

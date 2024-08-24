@@ -129,7 +129,7 @@ instance {α : Sort u} [inst : FastIsEmpty α] {β : (x : α) → Sort v} :
 
 instance {α : Sort u} {β : (x : α) → Sort v} [inst : ∀ x, FastSubsingleton (β x)] :
     FastSubsingleton ((x : α) → β x) where
-  inst := have := λ x => (inst x).inst; inferInstance
+  inst := have := fun x ↦ (inst x).inst; inferInstance
 
 /--
 Runs `mx` in a context where all local `Subsingleton` and `IsEmpty` instances

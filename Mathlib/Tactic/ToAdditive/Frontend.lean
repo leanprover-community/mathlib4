@@ -13,6 +13,7 @@ import Mathlib.Lean.Name
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
+import Lean.Meta.Match.MatcherInfo
 import Batteries.Lean.NameMapAttribute
 import Batteries.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
@@ -816,6 +817,11 @@ partial def transformDeclAux
     selectionRange := ← getDeclarationRange cfg.ref }
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  if let some matcherInfo ← getMatcherInfo? src then
+    -- Use
+    --   Match.addMatcherInfo tgt matcherInfo
+    -- once on lean 4.13.
+    modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
 
 /-- Copy the instance attribute in a `to_additive`
 
@@ -1044,6 +1050,10 @@ def fixAbbreviation : List String → List String
   | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
   | "three" :: "GPFree" :: s         => "three" :: "APFree" :: fixAbbreviation s
   | "Three" :: "GPFree" :: s         => "Three" :: "APFree" :: fixAbbreviation s
+  | "Division" :: "Add" :: "Monoid" :: s => "SubtractionMonoid" :: fixAbbreviation s
+  | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
+  | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "SubNegZeroMonoid" :: fixAbbreviation s
+  | "sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "subNegZeroMonoid" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 

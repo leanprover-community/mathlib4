@@ -739,7 +739,7 @@ real function `a` which tends to `0`, then `f` tends to `0`. In this pair of lem
 theorem squeeze_one_norm' {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ᶠ n in t₀, ‖f n‖ ≤ a n)
     (h' : Tendsto a t₀ (𝓝 0)) : Tendsto f t₀ (𝓝 1) :=
   tendsto_one_iff_norm_tendsto_zero.2 <|
-    squeeze_zero' (eventually_of_forall fun _n => norm_nonneg' _) h h'
+    squeeze_zero' (Eventually.of_forall fun _n => norm_nonneg' _) h h'
 
 /-- Special case of the sandwich theorem: if the norm of `f` is bounded by a real function `a` which
 tends to `0`, then `f` tends to `1`. -/
@@ -747,7 +747,7 @@ tends to `0`, then `f` tends to `1`. -/
 function `a` which tends to `0`, then `f` tends to `0`."]
 theorem squeeze_one_norm {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ n, ‖f n‖ ≤ a n) :
     Tendsto a t₀ (𝓝 0) → Tendsto f t₀ (𝓝 1) :=
-  squeeze_one_norm' <| eventually_of_forall h
+  squeeze_one_norm' <| Eventually.of_forall h
 
 @[to_additive]
 theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) (𝓝 0) := by

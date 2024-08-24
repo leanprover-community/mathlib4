@@ -81,6 +81,12 @@ instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a�
 
 instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
 
+instance [DecidableEq a₀] [DecidableEq a₁] [DecidableEq a₂] {n : ℕ} :
+    DecidableEq (Sequence₂ a₀ a₁ a₂ n) :=
+  match n with
+  | 0 | 1 | 2 => ‹_›
+  | _ + 3 => inferInstance
+
 @[simp]
 theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
@@ -239,6 +245,18 @@ theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
       Cardinal.lift.{v} #c + Cardinal.lift.{v} #f₁ + Cardinal.lift.{v} #f₂ +
           Cardinal.lift.{u} #r₁ + Cardinal.lift.{u} #r₂ := by
   simp [card_eq_card_functions_add_card_relations, add_assoc]
+
+/-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
+constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
+see the `example`s in `ModelTheory/Ring/Basic`.  -/
+instance instDecidableEqFunctions {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (f n)] :
+    DecidableEq ((⟨f, R⟩ : Language).Functions n) := inferInstance
+
+/-- Passes a `DecidableEq` instance on a type of relation symbols through the  `Language`
+constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
+see the `example`s in `ModelTheory/Ring/Basic`.  -/
+instance instDecidableEqRelations {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (R n)] :
+    DecidableEq ((⟨f, R⟩ : Language).Relations n) := inferInstance
 
 variable (L) (M : Type w)
 

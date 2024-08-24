@@ -178,7 +178,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
     induction n with
-    | zero => simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
+    | zero => simp only [one_div, one_mul, iterate_zero_apply, pow_zero, le_rfl]
     | succ n IH =>
       rw [iterate_succ']
       apply le_trans (hle _) _

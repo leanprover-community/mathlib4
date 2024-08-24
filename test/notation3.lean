@@ -202,3 +202,5 @@ notation3 "δNat" => (default : Nat)
 #guard_msgs in #check (default : Nat)
 /-- info: δNat : ℕ -/
 #guard_msgs in #check @default Nat (Inhabited.mk 5)
+
+end Test
