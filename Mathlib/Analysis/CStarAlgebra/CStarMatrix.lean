@@ -29,6 +29,8 @@ replace the uniformity and bornology by the Pi ones when registering the
 below for more details.
 -/
 
+set_option maxSynthPendingDepth 2
+
 open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal
 
 local notation:25 n " →C⋆ " A:0 => WithCStarModule (n → A)
@@ -153,9 +155,21 @@ lemma toCLM_inner_conjTranspose_right_eq_left {M : CStarMatrix m n A} {v : n →
 noncomputable instance instNorm : Norm (CStarMatrix m n A) where
   norm M := ‖toCLM A M‖
 
-example : BoundedSMul ℂ ((n →C⋆ A) →L[ℂ] (m →C⋆ A)) := NormedSpace.boundedSMul
+--example : (ContinuousLinearMap.toPseudoMetricSpace : PseudoMetricSpace ((n →C⋆ A) →L[ℂ] m →C⋆ A))
+--    = SeminormedAddCommGroup.toPseudoMetricSpace := by with_reducible_and_instances rfl
+--
+--example : (ContinuousLinearMap.zero : Zero ((n →C⋆ A) →L[ℂ] m →C⋆ A))
+--    = NegZeroClass.toZero := by with_reducible_and_instances rfl
+--
+--example : (SMulZeroClass.toSMul : SMul ℂ ((n →C⋆ A) →L[ℂ] m →C⋆ A))
+--    = ContinuousLinearMap.instSMul := by with_reducible_and_instances rfl
+--
+--noncomputable example : NormedSpace ℂ ((n →C⋆ A) →L[ℂ] (m →C⋆ A)) := inferInstance
+--
+--set_option maxSynthPendingDepth 120000 in
+--example : BoundedSMul ℂ ((n →C⋆ A) →L[ℂ] (m →C⋆ A)) := NormedSpace.boundedSMul
 
-lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
+lemma normedSpaceCore [DecidableEq n]: NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM A M).opNorm_nonneg
   norm_smul c M := by
     let myinst : MulActionWithZero ℂ ((n →C⋆ A) →L[ℂ] (m →C⋆ A)) := Module.toMulActionWithZero
@@ -170,24 +184,24 @@ lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
     exact toCLM_eq_zero_iff
 
 open CStarModule in
-lemma norm_entry_le_norm [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} :
+lemma norm_entry_le_norm [DecidableEq n] [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} :
     ‖M i j‖ ≤ ‖M‖ := by
-  let instNACG : NormedAddCommGroup (CStarMatrix m n A) := NormedAddCommGroup.ofCore normedSpaceCore
   have hmain : ‖M i j‖ ^ 3 * ‖M i j‖ ≤ ‖M i j‖ ^ 3 * ‖M‖ := calc
         ‖M i j‖ ^ 4 = (‖M i j‖ * ‖M i j‖) * (‖M i j‖ * ‖M i j‖) := by ring
         _ = ‖star (M i j * star (M i j)) * (M i j * star (M i j))‖ := by
                 rw [CStarRing.norm_star_mul_self, CStarRing.norm_self_mul_star]
-        _ = ‖⟪CStarVec.ofFun (Pi.single i (M i j * star (M i j))),
-                  toCLM A M (Pi.single j (star (M i j)))⟫_A‖ := by
+        _ = ‖⟪(WithCStarModule.equiv _).symm (Pi.single i (M i j * star (M i j))),
+                  toCLM A M ((WithCStarModule.equiv _).symm <| Pi.single j (star (M i j)))⟫_A‖ := by
                 simp [← mul_entry_mul_eq_inner_toCLM, mul_assoc]
-        _ ≤ ‖CStarVec.ofFun (Pi.single i (M i j * star (M i j)))‖
-                  * ‖toCLM A M (Pi.single j (star (M i j)))‖ :=
-                norm_inner_le (CStarVec m A)
+                sorry
+        _ ≤ ‖(WithCStarModule.equiv (m → A)).symm (Pi.single i (M i j * star (M i j)))‖
+                  * ‖toCLM A M ((WithCStarModule.equiv _).symm <| Pi.single j (star (M i j)))‖ :=
+                norm_inner_le (m →C⋆ A)
         _ ≤ ‖M i j * star (M i j)‖ * ‖toCLM A M‖
-                  * ‖CStarVec.ofFun <| Pi.single j (star (M i j))‖ := by
+                  * ‖(WithCStarModule.equiv _).symm <| Pi.single j (star (M i j))‖ := by
                 rw [mul_assoc]
                 gcongr
-                · rw [CStarVec.norm_single]
+                · rw [WithCStarModule.norm_single]
                 · exact ContinuousLinearMap.le_opNorm (toCLM A M) _
         _ = ‖M i j‖ ^ 2 * ‖M‖ * ‖M i j‖ := by
                 congr
@@ -195,13 +209,15 @@ lemma norm_entry_le_norm [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n}
                 · simp
         _ = ‖M i j‖ ^ 3 * ‖M‖ := by ring
   by_cases htriv : M i j = 0
-  · simp [htriv]
+  · rw [htriv, norm_zero]
+    change 0 ≤ ‖toCLM A M‖
+    simp
   · have h₁ : 0 < ‖M i j‖ := by rwa [norm_pos_iff]
     have h₂ : 0 < ‖M i j‖ ^ 3 := by positivity
     rwa [← mul_le_mul_left h₂]
 
 open CStarModule in
-lemma norm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
+lemma norm_le_of_forall_inner_le [DecidableEq n] {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, toCLM A M v⟫_A‖ ≤ C * ‖v‖ * ‖w‖) : ‖M‖ ≤ C := by
   let instNACG : NormedAddCommGroup (CStarMatrix m n A) := NormedAddCommGroup.ofCore normedSpaceCore
   change ‖toCLM A M‖ ≤ C

@@ -96,6 +96,9 @@ instance instSubNegMonoid [SubNegMonoid E] : SubNegMonoid (WithCStarModule E) wh
   zsmul := zsmulRec
   sub_eq_add_neg a b := ‹SubNegMonoid E›.sub_eq_add_neg a b
 
+instance instSubNegZeroMonoid [SubNegZeroMonoid E] : SubNegZeroMonoid (WithCStarModule E) where
+  neg_zero := ‹SubNegZeroMonoid E›.neg_zero
+
 instance instAddCommGroup [AddCommGroup E] : AddCommGroup (WithCStarModule E) where
   neg_add_cancel a := ‹AddCommGroup E›.neg_add_cancel a
   add_comm a b := ‹AddCommGroup E›.add_comm a b
