@@ -691,7 +691,7 @@ instance : PartialOrder (α →𝒄 β) :=
 namespace ContinuousHom
 
 protected lemma ωScottContinuous (f : α →𝒄 β) : ωScottContinuous f :=
-  ωScottContinuous.of_monotone_map_ωSup ⟨f.monotone, f.map_ωSup'⟩
+  ωScottContinuous.of_map_ωSup_of_orderHom f.map_ωSup'
 
 -- Not a `simp` lemma because in many cases projection is simpler than a generic coercion
 theorem toOrderHom_eq_coe (f : α →𝒄 β) : f.1 = f := rfl

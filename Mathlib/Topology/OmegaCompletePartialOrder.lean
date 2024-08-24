@@ -106,7 +106,7 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     simpa only [mem_setOf_eq, le_refl, not_true, imp_false, not_not] using hf h
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
   rcases (notBelow_isOpen z).preimage hf with hf''
-  let hf' := (ωScottContinuous_iff_monotone_map_ωSup.mp hf'').2
+  let hf' := hf''.monotone_map_ωSup.2
   specialize hf' c
   simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'
   rw [← not_iff_not]

@@ -285,11 +285,10 @@ theorem lfp_eq_sSup_iterate (h : ωScottContinuous f) :
   apply le_antisymm
   · apply lfp_le_fixed
     exact Function.mem_fixedPoints.mp (ωSup_iterate_mem_fixedPoint
-      ⟨f, (ωScottContinuous_iff_monotone_map_ωSup.mp h).2⟩ ⊥ bot_le)
+      ⟨f, h.map_ωSup_of_orderHom⟩ ⊥ bot_le)
   · apply le_lfp
     intro a h_a
-    exact ωSup_iterate_le_prefixedPoint ⟨f, (ωScottContinuous_iff_monotone_map_ωSup.mp h).2⟩ ⊥
-      bot_le h_a bot_le
+    exact ωSup_iterate_le_prefixedPoint ⟨f, h.map_ωSup_of_orderHom⟩ ⊥ bot_le h_a bot_le
 
 theorem gfp_eq_sInf_iterate (h : ωScottContinuous (OrderHom.dual f)) :
     gfp f = ⨅ n, f^[n] ⊤ :=
