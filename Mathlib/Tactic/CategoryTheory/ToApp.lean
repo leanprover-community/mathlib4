@@ -50,8 +50,7 @@ Given an equation `f = g` between 2-morphisms `X ⟶ Y` in an arbitrary bicatego
 
 -- Maybe let this take a list of levels?
 def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
-  let (args, _, conclusion) ← forallMetaTelescope (← inferType e)
-
+  let (args, binderInfos, conclusion) ← forallMetaTelescope (← inferType e)
   -- Find bicategory metavariable
   let η := (Expr.getAppArgsN conclusion 2)[0]!
   let f := (Expr.getAppArgsN (← inferType η) 2)[0]!
@@ -74,6 +73,10 @@ def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
   let some inst := args[CATIdx + 1]?
     | throwError "TODO"
 
+  -- TODO: remove binderInfo from CAT and inst here
+  let binderInfos := binderInfos.eraseIdx CATIdx
+  let binderInfos := binderInfos.eraseIdx CATIdx
+
   -- Assign levels for the bicategory instance
   let instlvl ← Meta.getLevel (← inferType inst)
   let instlvlMVars := levelMVars.filter fun l => l.occurs instlvl && l != u
@@ -81,10 +84,32 @@ def to_appExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
     let _ ← isLevelDefEq l (Level.max u v)
 
   inst.mvarId!.assign (← synthInstanceQ q(Bicategory.{max u v, max u v} Cat.{u, v}))
-
+  -- TODO: would want to end here without mkLambdaFVars, but that doesn't work
+  -- as it tries to initialize [Bicategory B]
   let applied ← mkAppOptM' e (args.map some)
+
+  let mvars := (← getMVars applied).map (Expr.mvar)
+  logInfo m!"mvars: {mvars}"
+
+  let rec apprec (i : Nat) (e : Expr) : MetaM Expr := do
+    if i < mvars.size then
+      let mvar := mvars[i]!
+      let bi := binderInfos[i]!
+      let e ← mkLambdaFVars #[mvar] (← apprec (i + 1) e) (binderInfoForMVars := bi)
+      return e
+    else
+      return e
+
+
+  -- TODO: now we need to apply mkLambdaFVars stepwise ... let rec (check foldrM mayeb)?
+
+  -- for mvar in mvars, bi in binderInfos do
+  --   let applied ← mkLambdaFVars #[mvar] (binderInfoForMVars := bi) applied
   -- let applied := mkAppN e args
-  let applied ← mkLambdaFVars ((← getMVars applied).map (Expr.mvar)) applied
+  -- let applied ← mkLambdaFVars mvars (← apprec 0 applied)
+  let applied ← apprec 0 applied
+  logInfo m!"applied: {applied}"
+    --(binderInfoForMVars := binderInfo)
   return applied
 
 /--
