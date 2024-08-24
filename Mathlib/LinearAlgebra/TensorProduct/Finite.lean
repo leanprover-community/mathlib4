@@ -23,7 +23,7 @@ where `m →₀ R` in that file is replaced by `m → R` in this, under the hypo
 * `TensorProduct.finiteTensorPiLid R N n m` : if `n` is a finite type, `Rⁿ ⊗[R] Nᵐ ≃ₗ[R] Nⁿˣᵐ`.
 * `TensorProduct.piTensorFiniteRid R M n m` : if `n` is a finite type, `Mᵐ ⊗[R] Rⁿ ≃ₗ[R] Mᵐˣⁿ`.
 
-Note that in the last two results, the type `m` is arbitrary and doesn't have to be finite.
+Note that in the last two results, the type `m` is arbitrary and does not have to be finite.
 -/
 
 namespace TensorProduct
