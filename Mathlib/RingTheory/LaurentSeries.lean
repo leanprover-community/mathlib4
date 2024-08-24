@@ -4,13 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Data.Int.Interval
+import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Laurent Series
@@ -121,8 +119,7 @@ def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f := by
   exact rfl
 
-@[simp]
-theorem factorial_smul_hasseDeriv (k : ℕ) (f : LaurentSeries V) :
+theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
     (derivative R)^[k] f = k.factorial • (hasseDeriv R k f) := by
   ext n
   induction k generalizing f with
@@ -130,6 +127,12 @@ theorem factorial_smul_hasseDeriv (k : ℕ) (f : LaurentSeries V) :
   | succ k ih =>
     rw [Function.iterate_succ, Function.comp_apply, ih, derivative_apply, hasseDeriv_comp,
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
+
+@[simp]
+theorem derivative_iterate_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
+    ((derivative R)^[k] f).coeff n = (descPochhammer ℤ k).smeval (n + k) • f.coeff (n + k) := by
+  rw [derivative_iterate, nsmul_coeff, Pi.smul_apply, hasseDeriv_coeff,
+    Ring.descPochhammer_eq_factorial_smul_choose, smul_assoc]
 
 end HasseDeriv
 
