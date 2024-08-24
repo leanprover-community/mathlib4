@@ -40,7 +40,7 @@ class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
 
 theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
     (hf : ωScottContinuous f) : Fix.fix f = f (Fix.fix f) :=
-  LawfulFix.fix_eq (f := ⟨f,(ωScottContinuous_iff_monotone_map_ωSup.mp hf).1⟩) hf
+  LawfulFix.fix_eq (f := ⟨f, hf.monotone⟩) hf
 
 namespace Part
 
@@ -184,11 +184,11 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 
 theorem to_unit_cont (f : Part α →o Part α) (hc : ωScottContinuous f) :
-    ωScottContinuous (toUnitMono f) := ωScottContinuous_iff_monotone_map_ωSup.mpr ⟨
-  OrderHom.monotone (toUnitMono f), fun _ => by
+    ωScottContinuous (toUnitMono f) := ωScottContinuous.of_map_ωSup_of_orderHom (
+    fun _ => by
     ext ⟨⟩ : 1
     dsimp [OmegaCompletePartialOrder.ωSup]
-    erw [(ωScottContinuous_iff_monotone_map_ωSup.mp hc).2, Chain.map_comp]; rfl⟩
+    erw [hc.map_ωSup_of_orderHom, Chain.map_comp]; rfl)
 
 instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α →o Part α} hc ↦ show Part.fix (toUnitMono f) () = _ by
@@ -228,19 +228,18 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 open OmegaCompletePartialOrder.Chain
 
 theorem continuous_curry : ωScottContinuous <| monotoneCurry α β γ :=
-  ωScottContinuous_iff_monotone_map_ωSup.mpr ⟨OrderHom.monotone (monotoneCurry α β γ), fun c ↦ by
+  ωScottContinuous.of_map_ωSup_of_orderHom (fun c ↦ by
     ext x y
     dsimp [curry, ωSup]
     rw [map_comp, map_comp]
-    rfl⟩
+    rfl)
 
-theorem continuous_uncurry : ωScottContinuous <| monotoneUncurry α β γ := by
-  rw [OrderHom.ωScottContinuous_iff_map_ωSup]
-  intro c
+theorem continuous_uncurry : ωScottContinuous <| monotoneUncurry α β γ :=
+    ωScottContinuous.of_map_ωSup_of_orderHom (fun c ↦ by
   ext ⟨x, y⟩
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
-  rfl
+  rfl)
 
 end Monotone
 

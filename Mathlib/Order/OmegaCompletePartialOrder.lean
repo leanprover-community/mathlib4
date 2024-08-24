@@ -276,13 +276,16 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
   · rw [← hc] at hda
     rw [← hf.2 c, ωSup_eq_of_isLUB hda]
 
-lemma _root_.OrderHom.ωScottContinuous_iff_map_ωSup {f : α →o β} :
+alias ⟨ωScottContinuous.monotone_map_ωSup, ωScottContinuous.of_monotone_map_ωSup⟩ :=
+  ωScottContinuous_iff_monotone_map_ωSup
+
+lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
     ωScottContinuous f ↔ ∀ c : Chain α, f (ωSup c) = ωSup (c.map f) := by
   rw [ωScottContinuous_iff_monotone_map_ωSup]
   exact exists_prop_of_true f.monotone'
 
-alias ⟨ωScottContinuous.monotone_map_ωSup, ωScottContinuous.of_monotone_map_ωSup⟩ :=
-  ωScottContinuous_iff_monotone_map_ωSup
+alias ⟨ωScottContinuous.map_ωSup_of_orderHom, ωScottContinuous.of_map_ωSup_of_orderHom⟩ :=
+  ωScottContinuous_iff_map_ωSup_of_orderHom
 
 lemma ωScottContinuous.comp (hg : ωScottContinuous g) (hf : ωScottContinuous f) :
     ωScottContinuous (g.comp f) :=
