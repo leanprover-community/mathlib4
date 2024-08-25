@@ -298,7 +298,7 @@ lemma congr (h_eq : Set.EqOn f g U) (hu : IsOpen U) : MeromorphicOn g U := by
   refine fun x hx ↦ (hf x hx).congr (EventuallyEq.filter_mono ?_ nhdsWithin_le_nhds)
   exact eventually_of_mem (hu.mem_nhds hx) h_eq
 
-theorem eventually_codiscrete_analyticAt
+theorem eventually_codiscreteWithin_analyticAt
     [CompleteSpace E] (f : 𝕜 → E) (h : MeromorphicOn f U) :
     ∀ᶠ (y : 𝕜) in codiscreteWithin U, AnalyticAt 𝕜 f y := by
   rw [eventually_iff, mem_codiscreteWithin]
