@@ -304,5 +304,3 @@ lemma presheaf_yoneda_map_iff [HasPullbacks C] (hP : StableUnderBaseChange P)
 end MorphismProperty
 
 end CategoryTheory
-
-#min_imports
