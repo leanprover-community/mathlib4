@@ -300,14 +300,12 @@ lemma congr (h_eq : Set.EqOn f g U) (hu : IsOpen U) : MeromorphicOn g U := by
 
 theorem eventually_codiscrete_analyticAt
     [CompleteSpace E] (f : 𝕜 → E) (h : MeromorphicOn f U) :
-    ∀ᶠ (y : U) in codiscrete U, AnalyticAt 𝕜 f y := by
-  rw [eventually_iff, codiscrete, Filter.mem_mk, Set.mem_setOf_eq, ← isClosed_compl_iff,
-    isClosed_and_discrete_iff]
-  intro x
-  rw [disjoint_principal_right, compl_compl, ← eventually_iff]
-  exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
-      continuous_subtype_val.continuousWithinAt
-      (by simpa [Subtype.coe_inj] using eventually_mem_nhdsWithin)
-    |>.eventually (h x x.prop).eventually_analyticAt
+    ∀ᶠ (y : 𝕜) in codiscreteWithin U, AnalyticAt 𝕜 f y := by
+  rw [eventually_iff, mem_codiscreteWithin]
+  intro x hx
+  rw [disjoint_principal_right]
+  apply Filter.mem_of_superset ((h x hx).eventually_analyticAt)
+  intro x hx
+  simp [hx]
 
 end MeromorphicOn
