@@ -3,7 +3,6 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.RCLike.Basic
 
@@ -13,36 +12,6 @@ open Function
 open scoped ComplexConjugate
 
 variable {G K E : Type*}
-
-namespace AddChar
-section AddGroup
-variable [AddGroup G]
-
-section NormedDivisionRing
-variable [Finite G] [NormedDivisionRing K]
-
-@[simp] lemma norm_apply (ψ : AddChar G K) (x : G) : ‖ψ x‖ = 1 :=
-  (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
-
-end NormedDivisionRing
-
-section RCLike
-variable [RCLike K]
-
-lemma inv_apply_eq_conj [Finite G] (ψ : AddChar G K) (x : G) : (ψ x)⁻¹ = conj (ψ x) :=
-  RCLike.inv_eq_conj <| norm_apply _ _
-
-end RCLike
-end AddGroup
-
-section AddCommGroup
-variable [AddCommGroup G] [RCLike K] {ψ₁ ψ₂ : AddChar G K}
-
-lemma map_neg_eq_conj [Finite G] (ψ : AddChar G K) (x : G) : ψ (-x) = conj (ψ x) := by
-  rw [map_neg_eq_inv, inv_apply_eq_conj]
-
-end AddCommGroup
-end AddChar
 
 variable [RCLike K]
 
