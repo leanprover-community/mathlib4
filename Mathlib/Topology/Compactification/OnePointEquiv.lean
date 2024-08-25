@@ -57,9 +57,9 @@ the ordinary division `/` of a `DivisionRing`. -/
 infix:50 " ÷ " => divOnePoint
 
 /-- `div_onePoint` can be lifted to the projective line (see `divSlope`.) -/
-lemma divOnePoint_lifts {K : Type} [Field K] (a b : { v : Fin 2 → K // v ≠ 0 })
-  (h : ∃ c : Kˣ, (fun m : Kˣ ↦ m • b.1) c = a.1) :
-  (fun u ↦ u.1 0 ÷ u.1 1) a = (fun u ↦ u.1 0 ÷ u.1 1) b := by
+lemma divOnePoint_lifts {K : Type} [Field K] (a b : {v : Fin 2 → K // v ≠ 0})
+    (h : ∃ c : Kˣ, (fun m : Kˣ ↦ m • b.1) c = a.1) :
+    (fun u ↦ u.1 0 ÷ u.1 1) a = (fun u ↦ u.1 0 ÷ u.1 1) b := by
   obtain ⟨c,hc⟩ := h
   simp_all only
   rw [← hc]; unfold divOnePoint; simp only [ne_eq, Fin.isValue, Pi.smul_apply, ite_not]
@@ -83,7 +83,7 @@ We establish the equivalence between `OnePoint K` and `ℙ K (Fin 2 → K)` for 
 
 /-- In a nonzero pair, if one coordinate is 0 then the other is nonzero. -/
 lemma not_both_zero {K : Type} [Zero K]
-  (a : { v : Fin 2 → K // v ≠ 0}) (h : a.1 1 = 0) : a.1 0 ≠ 0 := by
+    (a : {v : Fin 2 → K // v ≠ 0}) (h : a.1 1 = 0) : a.1 0 ≠ 0 := by
   intro hc; apply a.2; ext s
   cases (Nat.le_one_iff_eq_zero_or_eq_one.mp (Fin.is_le s)) with
   |inl hl =>
@@ -98,42 +98,41 @@ instance {K : Type} [DivisionRing K] : Setoid ({v : Fin 2 → K // v ≠ 0}) :=
 
 /-- `divSlope` respects projective equivalence. -/
 lemma divSlope_inj_lifted {K : Type} [Field K]
-  (a b : { v : Fin 2 → K // v ≠ 0 }) :
-  divSlope ⟦a⟧ = divSlope ⟦b⟧ →
-  (⟦a⟧ : Quotient (projectivizationSetoid K (Fin 2 → K))) = ⟦b⟧ := by
-    unfold divSlope
-    intro h
-    repeat rw [Quotient.lift_mk] at h
-    apply Quotient.sound
-    unfold divOnePoint at h
-    split_ifs at h with g₀ g₁ g₂
-    · use Units.mk ((a.1 1) / (b.1 1)) ((b.1 1) / (a.1 1)) (by field_simp) (by field_simp)
-      ext s
-      cases (Nat.le_one_iff_eq_zero_or_eq_one.mp (Fin.is_le s)) with
-      |inl hl =>
-        have : s = 0 := Fin.eq_of_val_eq hl
-        subst this; simp_all only [ne_eq, Fin.val_zero, Pi.smul_apply, Units.smul_mk_apply,
-          smul_eq_mul];field_simp
-        have h' : (a.1 0 / a.1 1) = (b.1 0 / b.1 1) := by
-          apply Option.some_injective; tauto
-        field_simp at h';rw [h',mul_comm]
-      |inr hr =>
-        have : s = 1 := Fin.eq_of_val_eq hr
-        subst this; simp_all
-    · simp at h
-    · simp at h
-    · simp_all only [ne_eq, Decidable.not_not]
-      have h₀ : a.1 0 ≠ 0 := by apply not_both_zero;tauto
-      have h₁ : b.1 0 ≠ 0 := by apply not_both_zero;tauto
-      use Units.mk ((a.1 0) / (b.1 0)) ((b.1 0) / (a.1 0)) (by field_simp) (by field_simp)
-      simp only [ne_eq, Fin.isValue, Units.smul_mk_apply]
-      apply List.ofFn_inj.mp; simp only [Fin.isValue, List.ofFn_succ, Pi.smul_apply, smul_eq_mul,
-        Fin.succ_zero_eq_one, List.ofFn_zero, List.cons.injEq, and_true]
-      rw [g₀,g₂]; field_simp
+    (a b : {v : Fin 2 → K // v ≠ 0}) :
+    divSlope ⟦a⟧ = divSlope ⟦b⟧ →
+    (⟦a⟧ : Quotient (projectivizationSetoid K (Fin 2 → K))) = ⟦b⟧ := by
+  unfold divSlope
+  intro h
+  repeat rw [Quotient.lift_mk] at h
+  apply Quotient.sound
+  unfold divOnePoint at h
+  split_ifs at h with g₀ g₁ g₂
+  · use Units.mk ((a.1 1) / (b.1 1)) ((b.1 1) / (a.1 1)) (by field_simp) (by field_simp)
+    ext s
+    cases (Nat.le_one_iff_eq_zero_or_eq_one.mp (Fin.is_le s)) with
+    |inl hl =>
+      have : s = 0 := Fin.eq_of_val_eq hl
+      subst this; simp_all only [ne_eq, Fin.val_zero, Pi.smul_apply, Units.smul_mk_apply,
+        smul_eq_mul];field_simp
+      have h' : (a.1 0 / a.1 1) = (b.1 0 / b.1 1) := by
+        apply Option.some_injective; tauto
+      field_simp at h';rw [h',mul_comm]
+    |inr hr =>
+      have : s = 1 := Fin.eq_of_val_eq hr
+      subst this; simp_all
+  · simp at h
+  · simp at h
+  · simp_all only [ne_eq, Decidable.not_not]
+    have h₀ : a.1 0 ≠ 0 := by apply not_both_zero;tauto
+    have h₁ : b.1 0 ≠ 0 := by apply not_both_zero;tauto
+    use Units.mk ((a.1 0) / (b.1 0)) ((b.1 0) / (a.1 0)) (by field_simp) (by field_simp)
+    simp only [ne_eq, Fin.isValue, Units.smul_mk_apply]
+    apply List.ofFn_inj.mp; simp only [Fin.isValue, List.ofFn_succ, Pi.smul_apply, smul_eq_mul,
+      Fin.succ_zero_eq_one, List.ofFn_zero, List.cons.injEq, and_true]
+    rw [g₀,g₂]; field_simp
 
 /-- Over any field `K`, `divSlope` is injective. -/
-lemma divSlope_injective {K : Type} [Field K]  :
-  Function.Injective (@divSlope K _) :=
+lemma divSlope_injective {K : Type} [Field K] : Function.Injective (@divSlope K _) :=
   Quotient.ind (λ a ↦ Quotient.ind (divSlope_inj_lifted a))
 
 /-- An inverse of `divSlope`. -/
@@ -143,8 +142,7 @@ def slope_inv {K : Type} [DivisionRing K] (p : OnePoint K) : ℙ K (Fin 2 → K)
 
 
 /-- `slope_inv` is an inverse of `divSlope`. -/
-lemma divSlope_inv {K : Type} [Field K] :
-  Function.LeftInverse (@divSlope K _) (@slope_inv K _) := by
+lemma divSlope_inv {K : Type} [Field K] : Function.LeftInverse (@divSlope K _) slope_inv := by
   intro a
   have g₀ :       divOnePoint' ⟨![(1:K), 0], by simp⟩ = ∞  := by unfold divOnePoint';simp
   have g₁ (t:K) : divOnePoint' ⟨![t, 1], by simp⟩ = some t := by unfold divOnePoint';simp
@@ -154,7 +152,7 @@ lemma divSlope_inv {K : Type} [Field K] :
 
 /-- `divSlope` is surjective. -/
 lemma divSlope_surjective {K : Type} [Field K]:
-  Function.Surjective (@divSlope K _) :=
+    Function.Surjective (@divSlope K _) :=
   λ r ↦ ⟨slope_inv r, divSlope_inv r⟩
 
 /-- An equivalence between the one-point extension of a field `K`
