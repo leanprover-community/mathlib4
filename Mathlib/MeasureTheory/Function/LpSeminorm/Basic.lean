@@ -75,7 +75,8 @@ def eLpNormEssSup {_ : MeasurableSpace α} (f : α → F) (μ : Measure α) :=
 
 /-- `ℒp` seminorm, equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. -/
-def eLpNorm {_ : MeasurableSpace α} (f : α → F) (p : ℝ≥0∞) (μ : Measure α) : ℝ≥0∞ :=
+def eLpNorm {_ : MeasurableSpace α}
+    (f : α → F) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
 
 @[deprecated (since := "2024-07-26")] noncomputable alias snorm := eLpNorm
@@ -962,6 +963,10 @@ theorem eLpNorm_eq_zero_iff {f : α → E} (hf : AEStronglyMeasurable f μ) (h0 
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_eq_zero_iff := eLpNorm_eq_zero_iff
+
+theorem eLpNorm_eq_zero_of_ae_zero {f : α → E} (hf : f =ᵐ[μ] 0) : eLpNorm f p μ = 0 := by
+  rw [← eLpNorm_zero (p := p) (μ := μ) (α := α) (F := E)]
+  exact eLpNorm_congr_ae hf
 
 theorem ae_le_eLpNormEssSup {f : α → F} : ∀ᵐ y ∂μ, ‖f y‖₊ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
