@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Constructions
@@ -847,6 +848,9 @@ protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
 
 example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
     ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
+
+@[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
+    (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
 
 end NormedDivisionRing
 
