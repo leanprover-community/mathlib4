@@ -197,7 +197,7 @@ theorem coeff_hermite (n k : ℕ) :
       if Even (n + k) then (-1 : ℤ) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
   split_ifs with h
   · exact coeff_hermite_of_even_add h
-  · exact coeff_hermite_of_odd_add (Nat.odd_iff_not_even.mpr h)
+  · exact coeff_hermite_of_odd_add (Nat.not_even_iff_odd.1 h)
 
 end CoeffExplicit
 
