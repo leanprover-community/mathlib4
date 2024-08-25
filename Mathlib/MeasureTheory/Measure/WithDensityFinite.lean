@@ -37,78 +37,46 @@ In these definitions and the results below, `μ` is an s-finite measure (`SFinit
 
 -/
 
-open scoped ENNReal
+open Set
+open scoped ENNReal ProbabilityTheory
 
 namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α}
 
-/-- Auxiliary definition for `MeasureTheory.Measure.toFinite`. -/
-noncomputable def Measure.toFiniteAux (μ : Measure α) [SFinite μ] : Measure α :=
-  Measure.sum (fun n ↦ (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ • sFiniteSeq μ n)
-
 /-- A finite measure obtained from an s-finite measure `μ`, such that
 `μ = μ.toFinite.withDensity μ.densityToFinite` (see `withDensity_densitytoFinite`).
 If `μ` is non-zero, this is a probability measure. -/
 noncomputable def Measure.toFinite (μ : Measure α) [SFinite μ] : Measure α :=
-  ProbabilityTheory.cond μ.toFiniteAux Set.univ
-
-lemma toFiniteAux_apply (μ : Measure α) [SFinite μ] (s : Set α) :
-    μ.toFiniteAux s = ∑' n, (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ * sFiniteSeq μ n s := by
-  rw [Measure.toFiniteAux, Measure.sum_apply_of_countable]; rfl
-
-lemma toFinite_apply (μ : Measure α) [SFinite μ] (s : Set α) :
-    μ.toFinite s = (μ.toFiniteAux Set.univ)⁻¹ * μ.toFiniteAux s := by
-  rw [Measure.toFinite, ProbabilityTheory.cond_apply _ MeasurableSet.univ, Set.univ_inter]
-
-lemma toFiniteAux_zero : Measure.toFiniteAux (0 : Measure α) = 0 := by
-  ext s
-  simp [toFiniteAux_apply]
+  letI := Classical.dec
+  (if IsFiniteMeasure μ then μ else (exists_isFiniteMeasure_null_iff μ).choose)[|univ]
 
 @[simp]
-lemma toFinite_zero : Measure.toFinite (0 : Measure α) = 0 := by
-  simp [Measure.toFinite, toFiniteAux_zero]
+lemma toFinite_apply_eq_zero_iff [SFinite μ] {s : Set α} : μ.toFinite s = 0 ↔ μ s = 0 := by
+  rw [Measure.toFinite]
+  split_ifs
+  · simp [ProbabilityTheory.cond, measure_ne_top]
+  · obtain ⟨h₁, h₂⟩ := (exists_isFiniteMeasure_null_iff μ).choose_spec
+    simp [ProbabilityTheory.cond, measure_ne_top, *]
 
-lemma toFiniteAux_eq_zero_iff [SFinite μ] : μ.toFiniteAux = 0 ↔ μ = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h, toFiniteAux_zero]⟩
-  ext s hs
-  rw [Measure.ext_iff] at h
-  specialize h s hs
-  simp only [toFiniteAux_apply, Measure.coe_zero, Pi.zero_apply,
-    ENNReal.tsum_eq_zero, mul_eq_zero, ENNReal.inv_eq_zero] at h
-  rw [← sum_sFiniteSeq μ, Measure.sum_apply _ hs]
-  simp only [Measure.coe_zero, Pi.zero_apply, ENNReal.tsum_eq_zero]
-  intro n
-  specialize h n
-  simpa [ENNReal.mul_eq_top, measure_ne_top] using h
-
-lemma toFiniteAux_univ_le_one (μ : Measure α) [SFinite μ] : μ.toFiniteAux Set.univ ≤ 1 := by
-  rw [toFiniteAux_apply]
-  have h_le_pow : ∀ n, (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ * sFiniteSeq μ n Set.univ
-      ≤ (2 ^ (n + 1))⁻¹ := by
-    intro n
-    by_cases h_zero : sFiniteSeq μ n = 0
-    · simp [h_zero]
-    · rw [ENNReal.le_inv_iff_mul_le, mul_assoc, mul_comm (sFiniteSeq μ n Set.univ),
-        ENNReal.inv_mul_cancel]
-      · simp [h_zero]
-      · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
-  refine (tsum_le_tsum h_le_pow ENNReal.summable ENNReal.summable).trans ?_
-  simp [ENNReal.inv_pow, ENNReal.tsum_geometric_add_one, ENNReal.inv_mul_cancel]
-
-instance [SFinite μ] : IsFiniteMeasure μ.toFiniteAux :=
-  ⟨(toFiniteAux_univ_le_one μ).trans_lt ENNReal.one_lt_top⟩
+@[simp]
+lemma ae_toFinite [SFinite μ] : ae μ.toFinite = ae μ := by
+  ext s
+  apply toFinite_apply_eq_zero_iff
 
 @[simp]
 lemma toFinite_eq_zero_iff [SFinite μ] : μ.toFinite = 0 ↔ μ = 0 := by
-  simp [Measure.toFinite, measure_ne_top μ.toFiniteAux Set.univ, toFiniteAux_eq_zero_iff]
+  simp_rw [← Measure.measure_univ_eq_zero, toFinite_apply_eq_zero_iff]
+
+@[simp]
+lemma toFinite_zero : Measure.toFinite (0 : Measure α) = 0 := by simp
 
 instance [SFinite μ] : IsFiniteMeasure μ.toFinite := by
   rw [Measure.toFinite]
   infer_instance
 
 instance [SFinite μ] [h_zero : NeZero μ] : IsProbabilityMeasure μ.toFinite := by
-  refine ProbabilityTheory.cond_isProbabilityMeasure μ.toFiniteAux ?_
+  apply ProbabilityTheory.cond_isProbabilityMeasure
   simp [toFiniteAux_eq_zero_iff, h_zero.out]
 
 lemma sFiniteSeq_absolutelyContinuous_toFiniteAux (μ : Measure α) [SFinite μ] (n : ℕ) :
