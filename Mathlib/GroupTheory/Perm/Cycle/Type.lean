@@ -31,7 +31,6 @@ In this file we define the cycle type of a permutation.
   there exists an element of order `p` in `G`. This is known as Cauchy's theorem.
 -/
 
-
 namespace Equiv.Perm
 
 open Mathlib (Vector)
