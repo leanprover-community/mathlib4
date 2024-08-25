@@ -59,11 +59,11 @@ def LipschitzOnWith (K : ℝ≥0) (f : α → β) (s : Set α) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
 
 /-- `f : α → β` is called **locally Lipschitz continuous** iff every point `x`
-has a neighourhood on which `f` is Lipschitz. -/
+has a neighbourhood on which `f` is Lipschitz. -/
 def LocallyLipschitz (f : α → β) : Prop := ∀ x, ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t
 
 /-- `f : α → β` is called **locally Lipschitz continuous** on `s` iff every point `x` of `s`
-has a neighourhood within `s` on which `f` is Lipschitz. -/
+has a neighbourhood within `s` on which `f` is Lipschitz. -/
 def LocallyLipschitzOn (s : Set α) (f : α → β) : Prop :=
   ∀ ⦃x⦄, x ∈ s → ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t
 

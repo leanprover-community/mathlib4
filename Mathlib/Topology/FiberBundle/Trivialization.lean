@@ -418,7 +418,7 @@ theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj �
     e.preimageHomeomorph hb p = (⟨proj p, p.2⟩, (e p).2) :=
   Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp`
+/-- Auxiliary definition to avoid looping in `dsimp`
 with `Trivialization.preimageHomeomorph_symm_apply`. -/
 protected def preimageHomeomorph_symm_apply.aux {s : Set B} (hb : s ⊆ e.baseSet) :=
   (e.preimageHomeomorph hb).symm
@@ -438,7 +438,7 @@ theorem sourceHomeomorphBaseSetProd_apply (p : e.source) :
     e.sourceHomeomorphBaseSetProd p = (⟨proj p, e.mem_source.mp p.2⟩, (e p).2) :=
   e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.2⟩
 
-/-- Auxilliary definition to avoid looping in `dsimp`
+/-- Auxiliary definition to avoid looping in `dsimp`
 with `Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
 protected def sourceHomeomorphBaseSetProd_symm_apply.aux := e.sourceHomeomorphBaseSetProd.symm
 
