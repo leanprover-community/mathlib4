@@ -26,6 +26,8 @@ namespace MeasureTheory.Measure
 def count : Measure α :=
   sum dirac
 
+@[simp] lemma count_ne_zero'' [Nonempty α] : (count : Measure α) ≠ 0 := by simp [count]
+
 theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc
     (∑' _ : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
@@ -160,6 +162,9 @@ instance count.isFiniteMeasure [Finite α] :
   ⟨by
     cases nonempty_fintype α
     simpa [Measure.count_apply, tsum_fintype] using (ENNReal.natCast_ne_top _).lt_top⟩
+
+@[simp] lemma count_univ [Fintype α] : count (univ : Set α) = Fintype.card α := by
+  rw [count_apply .univ]; exact (tsum_univ 1).trans (by simp [tsum_fintype])
 
 end Measure
 
