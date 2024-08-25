@@ -150,7 +150,7 @@ theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
   refine (h.filter_mono ?_).mp ?_
   · simp [nhdsWithin]
   · rw [eventually_nhdsWithin_iff]
-    apply Filter.eventually_of_forall
+    apply Filter.Eventually.of_forall
     intro y hy hf
     rw [Set.mem_compl_iff, Set.mem_singleton_iff] at hy
     have := (((analyticAt_id 𝕜 y).sub analyticAt_const).pow n).inv
