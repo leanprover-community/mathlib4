@@ -38,7 +38,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
     `eb : β₁ ≃ β₂` using `Prod.map`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Data/Equiv/TransferInstance.lean` does it for many algebraic type classes like
+  E.g., `Logic/Equiv/TransferInstance.lean` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
 ## Tags
@@ -1532,6 +1532,9 @@ theorem toPerm_symm {f : α → α} (h : Involutive f) : (h.toPerm f).symm = h.t
 
 theorem toPerm_involutive {f : α → α} (h : Involutive f) : Involutive (h.toPerm f) :=
   h
+
+theorem symm_eq_self_of_involutive (f : Equiv.Perm α) (h : Involutive f) : f.symm = f :=
+  DFunLike.coe_injective (h.leftInverse_iff.mp f.left_inv)
 
 end Function.Involutive
 
