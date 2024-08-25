@@ -264,7 +264,7 @@ The set `{a | aᵢᵐ/fⁱ ∈ q}`
 * is relevant, as proved in `carrier.relevant`.
 -/
 def carrier (f_deg : f ∈ 𝒜 m) (q : Spec.T A⁰_ f) : Set A :=
-  {a | ∀ i, (HomogeneousLocalization.mk ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
+  {a | ∀ i, (HomogeneousLocalization.mk ⟨m * i, ⟨proj 𝒜 i a ^ m, by rw [← smul_eq_mul]; mem_tac⟩,
               ⟨f ^ i, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.1}
 
 theorem mem_carrier_iff (q : Spec.T A⁰_ f) (a : A) :
