@@ -215,7 +215,7 @@ instance [IsNoetherian R M] : IsNilpotent R L (shiftedGenWeightSpace R L M χ) :
 
 end shiftedGenWeightSpace
 
-open shiftedWeightSpace in
+open shiftedGenWeightSpace in
 /-- Given a Lie module `M` of a Lie algebra `L` with coefficients in `R`, if a function `χ : L → R`
 has a simultaneous generalized eigenvector for the action of `L` then it has a simultaneous true
 eigenvector, provided `M` is Noetherian and has linear weights. -/
