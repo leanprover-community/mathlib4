@@ -34,6 +34,13 @@ Given `hf : Presheaf.representable f`, with `f : F ⟶ G` and `g : yoneda.obj X 
 * `symmetry` and `symmetryIso` are variants of the fact that pullbacks are symmetric for
   representable morphisms, formulated internally to `C`.
 
+
+## Main results
+
+* `representable.isMultiplicative`: The class of representable morphisms is multiplicative.
+* `representable.stableUnderBaseChange`: Being representable is stable under base change.
+* `representable.of_isIso`: Isomorphisms are representable.
+
 -/
 
 
@@ -206,29 +213,25 @@ lemma yoneda_map [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
   refine ⟨Limits.pullback f g, Limits.pullback.snd f g, yoneda.map (Limits.pullback.fst f g), ?_⟩
   apply yoneda.map_isPullback <| IsPullback.of_hasPullback f g
 
-lemma of_isIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] :
-    Presheaf.representable f :=
+lemma of_isIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] : Presheaf.representable f :=
   fun X g ↦ ⟨X, 𝟙 X, g ≫ inv f, IsPullback.of_vert_isIso ⟨by simp⟩⟩
 
-lemma isomorphisms_le :
-    MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
+lemma isomorphisms_le : MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
   fun _ _ f hf ↦ letI : IsIso f := hf; of_isIso f
 
-instance isMultiplicative :
-    IsMultiplicative (Presheaf.representable (C := C)) where
+instance isMultiplicative : IsMultiplicative (Presheaf.representable (C := C)) where
   id_mem _ := of_isIso _
   comp_mem {F G H} f g hf hg := fun X h ↦
     ⟨hf.pullback (hg.fst h), hf.snd (hg.fst h) ≫ hg.snd h, hf.fst (hg.fst h),
       by simpa using IsPullback.paste_vert (hf.isPullback (hg.fst h)) (hg.isPullback h)⟩
 
-lemma stableUnderBaseChange :
-    StableUnderBaseChange (Presheaf.representable (C := C)) := by
+lemma stableUnderBaseChange : StableUnderBaseChange (Presheaf.representable (C := C)) := by
   intro F G G' H f g f' g' P₁ hg X h
   refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
   apply P₁.lift (hg.fst (h ≫ f)) (yoneda.map (hg.snd (h ≫ f)) ≫ h) (hg.w (h ≫ f))
   apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
 
-lemma respectsIso : RespectsIso (Presheaf.representable (C := C)) :=
+instance respectsIso : RespectsIso (Presheaf.representable (C := C)) :=
   stableUnderBaseChange.respectsIso
 
 end Presheaf.representable
