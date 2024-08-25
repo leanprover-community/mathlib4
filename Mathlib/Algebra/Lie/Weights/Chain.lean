@@ -214,6 +214,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   rw [← trace_toEnd_genWeightSpaceChain_eq_zero M α χ p q hp hq hx,
     ← LieSubmodule.toEnd_restrict_eq_toEnd,
     LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
+  dsimp [N]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd,
     trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
     Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
