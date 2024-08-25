@@ -121,7 +121,7 @@ lemma finiteScalarRight_apply (t : M ⊗[R] (ι → R)) (i : ι) :
   | add x y hx hy => simp [map_add, hx, hy]
 
 
-noncomputable def isom'' {R : Type*} [CommRing R] {m n : Type*} [Finite m] [DecidableEq m] :
+noncomputable def isom'' (R : Type*) [CommSemiring R] (m n : Type*) [Finite m] [DecidableEq m] :
     (m → R) ⊗[R] (n → R) ≃ₗ[R] (m × n → R) :=
   (LinearEquiv.rTensor (n → R) (Finsupp.linearEquivFunOnFinite R R m).symm :
     (m → R) ⊗[R] (n → R) ≃ₗ[R] ((m →₀ R) ⊗[R] (n → R))) ≪≫ₗ
@@ -131,3 +131,19 @@ noncomputable def isom'' {R : Type*} [CommRing R] {m n : Type*} [Finite m] [Deci
     (m →₀ (n → R)) ≃ₗ[R] m → n → R)) ≪≫ₗ
   ((LinearEquiv.curry R m n).symm :
     (m → n → R) ≃ₗ[R] (m × n → R))
+
+variable (m n : Type*) [Finite m] [Finite n] [DecidableEq m] [DecidableEq n] (a1 : m → R)
+    (b1 : n → R) (f : (m → R) →ₗ[R] M) (g : (n → R) →ₗ[R] N) in
+example : ((TensorProduct.map f g ∘ₗ
+    (isom'' R m n).symm.toLinearMap) fun mn ↦ a1 mn.1 * b1 mn.2) = f a1 ⊗ₜ[R] g b1 := by
+  suffices (isom'' R m n).symm.toLinearMap (fun mn ↦ a1 mn.1 * b1 mn.2) = a1 ⊗ₜ b1 by
+
+    apply_fun map f g at this
+    exact this
+  refine (Equiv.symm_apply_eq (isom'' R m n).toEquiv).2 ?_
+  simp [isom'']
+  ext mn
+  obtain ⟨m, n⟩ := mn
+  simp
+
+end TensorProduct
