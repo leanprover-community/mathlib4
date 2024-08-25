@@ -237,10 +237,9 @@ theorem equiv_nim_grundyValue {G : PGame.{u}} (hG : G.Impartial) : G ≈ nim (gr
   intro i
   apply leftMoves_add_cases i
   · intro i₁
-    rw [add_moveLeft_inl]
-    apply
-      (fuzzy_congr_left (add_congr_left (Equiv.symm (equiv_nim_grundyValue (hG.moveLeft i₁))))).1
-    rw [nim_add_fuzzy_zero_iff]
+    rw [add_moveLeft_inl,
+      ← fuzzy_congr_left (add_congr_left (Equiv.symm (equiv_nim_grundyValue (hG.moveLeft i₁)))),
+      nim_add_fuzzy_zero_iff]
     intro heq
     rw [eq_comm, grundyValue_eq_mex_left G] at heq
     -- Porting note: added universe annotation, argument
@@ -259,8 +258,7 @@ theorem equiv_nim_grundyValue {G : PGame.{u}} (hG : G.Impartial) : G ≈ nim (gr
       revert i₂
       rw [grundyValue_eq_mex_left]
       intro i₂
-      have hnotin : _ ∉ _ := fun hin =>
-        (le_not_le_of_lt (Ordinal.typein_lt_self i₂)).2 (csInf_le' hin)
+      have hnotin : _ ∉ _ := fun hin => (Ordinal.typein_lt_self i₂).not_le (csInf_le' hin)
       simpa using hnotin
     cases' h' with i hi
     use toLeftMovesAdd (Sum.inl i)
