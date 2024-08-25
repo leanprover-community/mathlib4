@@ -41,6 +41,14 @@ Given `hf : Presheaf.representable f`, with `f : F ⟶ G` and `g : yoneda.obj X 
 * `representable.stableUnderBaseChange`: Being representable is stable under base change.
 * `representable.of_isIso`: Isomorphisms are representable.
 
+* `presheaf_yoneda_map`: If `P : MorphismProperty C` is stable under base change, and `C` has all
+  pullbacks, then `yoneda.map f` satisfies `P.presheaf` if `f` satisfies `P`.
+
+* `presheaf_stableUnderBaseChange`: `P.presheaf` is stable under base change
+* `presheaf_respectsIso`: `P.presheaf` respects isomorphisms
+* `presheaf_isStableUnderComposition`: If `P` is stable under composition, then so is `P.presheaf`
+* `presheaf_isMultiplicative`: If `P` is multiplicative and respects isos, so is `P.presheaf`
+
 -/
 
 
@@ -238,6 +246,8 @@ end Presheaf.representable
 
 namespace MorphismProperty
 
+open Presheaf.representable
+
 variable {F G : Cᵒᵖ ⥤ Type v} (P : MorphismProperty C)
 
 /-- Given a morphism property `P` in a category `C`, a morphism `f : F ⟶ G` of presheaves in the
@@ -299,6 +309,59 @@ lemma of_presheaf_yoneda {X Y : C} {f : X ⟶ Y} (hf : P.presheaf (yoneda.map f)
 lemma presheaf_yoneda_map_iff [HasPullbacks C] (hP : StableUnderBaseChange P)
     {X Y : C} {f : X ⟶ Y} : P.presheaf (yoneda.map f) ↔ P f :=
   ⟨fun hf ↦ of_presheaf_yoneda hf, fun hf ↦ presheaf_yoneda_map hP hf⟩
+
+/-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms. -/
+lemma presheaf_monomorphisms_le_monomorphisms :
+    (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
+  suffices ∀ {X : C} {a b : yoneda.obj X ⟶ F}, a ≫ f = b ≫ f → a = b from
+    ⟨fun _ _ h ↦ hom_ext_yoneda (fun _ _ ↦ this (by simp only [assoc, h]))⟩
+  intro X a b h
+  /- It suffices to show that the lifts of `a` and `b` to morphisms
+  `X ⟶ hf.rep.pullback g` are equal, where `g = a ≫ f = a ≫ f`. -/
+  suffices hf.rep.lift (g := a ≫ f) a (𝟙 X) (by simp) =
+      hf.rep.lift b (𝟙 X) (by simp [← h]) by
+    simpa using yoneda.congr_map this =≫ (hf.rep.fst (a ≫ f))
+  -- This follows from the fact that the induced maps `hf.rep.pullback g ⟶ X` are mono.
+  have : Mono (hf.rep.snd (a ≫ f)) := hf.property_snd (a ≫ f)
+  simp only [← cancel_mono (hf.rep.snd (a ≫ f)),
+    Presheaf.representable.lift_snd]
+
+/-- If `P' : MorphismProperty C` is satisfied whenever `P` is, then also `P'.presheaf` is
+satisfied whenever `P.presheaf` is. -/
+lemma presheaf_monotone {P' : MorphismProperty C} (h : P ≤ P') :
+    P.presheaf ≤ P'.presheaf := fun _ _ _ hf ↦
+  ⟨hf.rep, fun _ _ g fst snd BC ↦ h _ (hf.property g fst snd BC)⟩
+
+section
+
+variable (P)
+
+lemma presheaf_stableUnderBaseChange : StableUnderBaseChange P.presheaf :=
+  fun _ _ _ _ _ _ _ _ hfBC hg ↦
+  ⟨stableUnderBaseChange hfBC hg.rep,
+    fun _ _ _ _ _ BC ↦ hg.property _ _ _ (IsPullback.paste_horiz BC hfBC)⟩
+
+instance presheaf_isStableUnderComposition [P.IsStableUnderComposition] :
+    IsStableUnderComposition P.presheaf where
+  comp_mem {F G H} f g hf hg := by
+    refine ⟨comp_mem _ _ _ hf.1 hg.1, fun Z X p fst snd h ↦ ?_⟩
+    rw [← hg.1.lift_snd (fst ≫ f) snd (by simpa using h.w)]
+    refine comp_mem _ _ _ (hf.property (hg.1.fst p) fst _
+      (IsPullback.of_bot ?_ ?_ (hg.1.isPullback p))) (hg.property_snd p)
+    · rw [← Functor.map_comp, Presheaf.representable.lift_snd]
+      exact h
+    · symm
+      apply hg.1.lift_fst
+
+instance presheaf_respectsIso : RespectsIso P.presheaf :=
+  (presheaf_stableUnderBaseChange P).respectsIso
+
+instance presheaf_isMultiplicative [P.IsMultiplicative] [P.RespectsIso] :
+    IsMultiplicative P.presheaf where
+  id_mem X := presheaf_of_exists (id_mem _ _)
+    (fun Y g ↦ ⟨Y, g, 𝟙 Y, by simpa using IsPullback.of_id_snd, id_mem _ _⟩)
+
+end
 
 end MorphismProperty
 
