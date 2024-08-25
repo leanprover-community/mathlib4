@@ -31,22 +31,21 @@ universe u
 namespace Scheme
 
 /-- Open immersions as a morphism property -/
+-- Note(Calle): Should this be incorporated into the `OpenImmersion` file?
+-- Furthermore, should this be an instance?
 abbrev openImmersion : MorphismProperty (Scheme.{u}) := @IsOpenImmersion
 
 lemma openImmersion_le_monomorphisms :
     openImmersion ≤ MorphismProperty.monomorphisms Scheme.{u} := fun _ _ _ _ ↦
   MorphismProperty.monomorphisms.infer_property _
 
-lemma mono_of_openImmersion_presheaf {F G : Scheme.{u}ᵒᵖ ⥤ Type u}
-    {f : F ⟶ G} (hf : openImmersion.presheaf f) : Mono f :=
-  MorphismProperty.presheaf_monomorphisms_le_monomorphisms _
-    (MorphismProperty.presheaf_monotone (openImmersion_le_monomorphisms) _ hf)
-
 /-
 Consider the following setup:
 * F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
 * X : ι → Sch is a family of schemes
 * f : Π i, yoneda.obj (X i) ⟶ F is a family relatively representable open immersions
+
+Later, we will also assume:
 * The family f is locally surjective with respect to the Zariski topology
 -/
 variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u)) {ι : Type u}
@@ -71,6 +70,7 @@ lemma isIso_fst'_self (i : ι) : IsIso ((hf i).rep.fst' (f i)) :=
   openImmersion.isIso_fst'_self openImmersion_le_monomorphisms (hf i)
 
 open Presheaf.representable in
+/-- We get a family of gluing data by taking `U i = X i` and `V i j = (hf i).rep.pullback (f j)`. -/
 @[simps]
 noncomputable def glueData : GlueData where
   J := ι
@@ -89,12 +89,16 @@ noncomputable def glueData : GlueData where
   cocycle i j k := by apply pullback₃.hom_ext <;> simp
   f_open := isOpenImmersion_fst' hf
 
+/-- The map from `X i` to the glued scheme `(glueData hf).glued` -/
 noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
   (glueData hf).ι i
 
+/-- The map from the glued scheme `(glueData hf).glued`, treated as a sheaf, to `F`. -/
 noncomputable def yonedaGluedToSheaf :
     subcanonical_zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F :=
+  -- The map is obtained by finding an object of `F((glueData hf).glued)`.
   Sheaf.homEquiv.symm (yonedaEquiv.symm
+  -- This section is obtained from gluing the section corresponding to `f i : X i ⟶ F`.
     ((glueData hf).sheafValGluedMk (fun i ↦ yonedaEquiv (f i)) (by
       intro i j
       dsimp

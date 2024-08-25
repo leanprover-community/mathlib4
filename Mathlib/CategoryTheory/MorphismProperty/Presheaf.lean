@@ -378,18 +378,32 @@ end MorphismProperty
 namespace Presheaf.representable
 
 section Pullbacks₃
+/-
+In this section we develop some basic API that help deal with pullbacks of pullbacks obtained
+from a relatively representable morphism `f₁ : X₁ ⟶ F`. This will be helpful when showing that
+representability is a local property in various settings.
 
+More precisely, given two objects `X₂` and `X₃` in `C`, and two morphisms `f₂ : X₂ ⟶ F` and
+`f₃ : X₃ ⟶ F`, we can consider the pullbacks `(X₁ ×_F X₂)` and `(X₁ ×_F X₃)` as objects in `C`.
+We can then consider the pullback, in `C`!, of these two pullbacks. This is the object
+`(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃)`. In this section we develop some basic API for dealing with this
+pullback.
+-/
 variable {X₁ X₂ X₃ : C} {F : Cᵒᵖ ⥤ Type v}
   {f₁ : yoneda.obj X₁ ⟶ F} (hf₁ : Presheaf.representable f₁)
   (f₂ : yoneda.obj X₂ ⟶ F) (f₃ : yoneda.obj X₃ ⟶ F)
   [HasPullback (hf₁.fst' f₂) (hf₁.fst' f₃)]
 
+/-- The pullback `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃)`. -/
 noncomputable def pullback₃ := Limits.pullback (hf₁.fst' f₂) (hf₁.fst' f₃)
-
+/-- The morphism `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃) ⟶ X₁`. -/
 noncomputable def pullback₃.p₁ : pullback₃ hf₁ f₂ f₃ ⟶ X₁ := pullback.fst _ _ ≫ hf₁.fst' f₂
+/-- The morphism `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃) ⟶ X₂`. -/
 noncomputable def pullback₃.p₂ : pullback₃ hf₁ f₂ f₃ ⟶ X₂ := pullback.fst _ _ ≫ hf₁.snd f₂
+/-- The morphism `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃) ⟶ X₃`. -/
 noncomputable def pullback₃.p₃ : pullback₃ hf₁ f₂ f₃ ⟶ X₃ := pullback.snd _ _ ≫ hf₁.snd f₃
 
+/-- The morphism `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃) ⟶ F` when the domain is treated as a presheaf. -/
 noncomputable def pullback₃.π : yoneda.obj (pullback₃ hf₁ f₂ f₃) ⟶ F :=
   yoneda.map (p₁ hf₁ f₂ f₃) ≫ f₁
 
@@ -411,6 +425,7 @@ variable {Z : C} (x₁ : Z ⟶ X₁) (x₂ : Z ⟶ X₂) (x₃ : Z ⟶ X₃)
   (h₁₂ : yoneda.map x₁ ≫ f₁ = yoneda.map x₂ ≫ f₂)
   (h₁₃ : yoneda.map x₁ ≫ f₁ = yoneda.map x₃ ≫ f₃)
 
+/-- The lift obtained from the universal property of `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃)`. -/
 noncomputable def lift₃ : Z ⟶ pullback₃ hf₁ f₂ f₃ :=
   pullback.lift (hf₁.lift' x₁ x₂ h₁₂)
     (hf₁.lift' x₁ x₃ h₁₃) (by simp)
