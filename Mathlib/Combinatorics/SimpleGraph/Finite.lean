@@ -307,10 +307,7 @@ open Classical in
 lemma degree_mono {u : V} : Monotone (fun G => degree G u) := by
   intro G H hGH
   simp only [← card_neighborFinset_eq_degree]
-  apply Finset.card_le_card
-  intro v hv
-  simp at hv
-  simpa using le hv
+  gcongr
 
 @[gcongr] protected lemma GCongr.degree_le_degree {G H : SimpleGraph V} {u : V} (hGH : G ≤ H) :
     degree G u ≤ degree G v := degree_mono h
