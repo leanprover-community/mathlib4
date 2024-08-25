@@ -963,10 +963,6 @@ theorem eLpNorm_eq_zero_iff {f : α → E} (hf : AEStronglyMeasurable f μ) (h0 
 @[deprecated (since := "2024-07-27")]
 alias snorm_eq_zero_iff := eLpNorm_eq_zero_iff
 
-theorem eLpNorm_eq_zero_of_ae_zero {f : α → E} (hf : f =ᵐ[μ] 0) : eLpNorm f p μ = 0 := by
-  rw [← eLpNorm_zero (p := p) (μ := μ) (α := α) (F := E)]
-  exact eLpNorm_congr_ae hf
-
 theorem ae_le_eLpNormEssSup {f : α → F} : ∀ᵐ y ∂μ, ‖f y‖₊ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
 
