@@ -312,19 +312,19 @@ private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrixAux m n A} {C : ℝ�
 
 open Finset in
 private lemma lipschitzWith_equiv_aux :
-    LipschitzWith 1 (equiv : CStarMatrixAux m n A → Matrix m n A) := by
+    LipschitzWith 1 (ofMatrix.symm : CStarMatrixAux m n A → Matrix m n A) := by
   refine LipschitzWith.of_dist_le_mul fun M₁ M₂ => ?_
   simp only [dist_eq_norm, NNReal.coe_one, one_mul]
   simp [← map_sub]
   set M := M₁ - M₂
-  change ‖equiv M‖₊ ≤ ‖M‖₊
+  change ‖ofMatrix.symm M‖₊ ≤ ‖M‖₊
   simp_rw [Matrix.nnnorm_def, Pi.nnnorm_def]
   by_cases hm_triv : Nonempty m
   · by_cases hn_triv : Nonempty n
     · obtain ⟨i, _, hi⟩ := exists_mem_eq_sup (univ : Finset m) (univ_nonempty_iff.mpr hm_triv)
-        fun b => Finset.univ.sup fun b_1 => ‖equiv M b b_1‖₊
+        fun b => Finset.univ.sup fun b_1 => ‖ofMatrix.symm M b b_1‖₊
       obtain ⟨j, _, hj⟩ := exists_mem_eq_sup (univ : Finset n) (univ_nonempty_iff.mpr hn_triv)
-        fun b_1 => ‖equiv M i b_1‖₊
+        fun b_1 => ‖ofMatrix.symm M i b_1‖₊
       rw [hi, hj]
       exact CStarMatrix.norm_entry_le_norm
     · simp only [not_nonempty_iff] at hn_triv
@@ -335,25 +335,24 @@ private lemma lipschitzWith_equiv_aux :
 open Finset in
 private lemma antilipschitzWith_equiv_aux :
     AntilipschitzWith (Fintype.card n * Fintype.card m)
-      (equiv : CStarMatrixAux m n A → Matrix m n A) := by
+      (ofMatrix.symm : CStarMatrixAux m n A → Matrix m n A) := by
   refine AntilipschitzWith.of_le_mul_dist fun M₁ M₂ => ?_
   set Dn := Fintype.card n
   set Dm := Fintype.card m
   simp only [dist_eq_norm, ← map_sub]
   set M := M₁ - M₂
-  change ‖M‖₊ ≤ Dn * Dm * ‖equiv M‖₊
+  change ‖M‖₊ ≤ Dn * Dm * ‖ofMatrix.symm M‖₊
   simp_rw [Matrix.nnnorm_def, Pi.nnnorm_def]
   by_cases hm_triv : Nonempty m
   · by_cases hn_triv : Nonempty n
     · obtain ⟨i, _, hi⟩ := exists_mem_eq_sup (univ : Finset m) (univ_nonempty_iff.mpr hm_triv)
-        fun b => Finset.univ.sup fun b_1 => ‖equiv M b b_1‖₊
+        fun b => Finset.univ.sup fun b_1 => ‖ofMatrix.symm M b b_1‖₊
       obtain ⟨j, _, hj⟩ := exists_mem_eq_sup (univ : Finset n) (univ_nonempty_iff.mpr hn_triv)
-        fun b_1 => ‖equiv M i b_1‖₊
+        fun b_1 => ‖ofMatrix.symm M i b_1‖₊
       rw [hi, hj]
       change ‖M‖₊ ≤ ↑Dn * ↑Dm * ‖M i j‖₊
       refine nnnorm_le_of_forall_inner_le fun v w => ?_
-      simp only [CStarVec.inner_eq_sum, CStarMatrix.toCLM_apply_eq_sum, CStarVec.ofFun_apply,
-                 mul_sum]
+      simp only [WithCStarModule.pi_inner, CStarMatrix.toCLM_apply_eq_sum, mul_sum]
       have hmax : ∀ k l, ‖M k l‖₊ ≤ ‖M i j‖₊ := fun k l => by
         change (univ.sup fun b => univ.sup fun b_1 => ‖M b b_1‖₊)
           = univ.sup fun b_1 => ‖M i b_1‖₊ at hi
@@ -364,7 +363,7 @@ private lemma antilipschitzWith_equiv_aux :
                   Finset.le_sup (f := fun k' => univ.sup fun l' => ‖M k' l'‖₊) (mem_univ k)
           _ = ‖M i j‖₊ := by rw [← hj, ← hi]
       calc _ ≤ ∑ k, ‖∑ l, star (w k) * M k l * v l‖₊ := by
-                  simp_rw [← mul_assoc]
+                  simp_rw [mul_assoc]
                   exact nnnorm_sum_le (E := A) _ _
         _ ≤ ∑ k, ∑ l, ‖star (w k) * M k l * v l‖₊ := by gcongr; exact nnnorm_sum_le _ _
         _ ≤ ∑ k, ∑ l, ‖star (w k) * M k l‖₊ * ‖v l‖₊ := by gcongr; exact nnnorm_mul_le _ _
@@ -380,7 +379,7 @@ private lemma antilipschitzWith_equiv_aux :
         _ = ‖M i j‖₊ * (∑ k, ∑ l, ‖w k‖₊ * ‖v l‖₊) := by simp [← mul_sum]
         _ = (∑ k, ∑ l, ‖w k‖₊ * ‖v l‖₊) * ‖M i j‖₊ := by rw [mul_comm]
         _ ≤ (∑ (_ : m), ∑ (_ : n), ‖w‖₊ * ‖v‖₊) * ‖M i j‖₊ := by
-                  gcongr <;> exact CStarVec.norm_entry_le_norm
+                  gcongr <;> exact WithCStarModule.norm_apply_le_norm _ _
         _ = (Dm * (Dn * (‖w‖₊ * ‖v‖₊))) * ‖M i j‖₊ := by congr; simp [sum_const]
         _ = Dn * Dm * ‖M i j‖₊ * ‖v‖₊ * ‖w‖₊ := by ring
     · simp only [not_nonempty_iff] at hn_triv
@@ -395,7 +394,7 @@ private lemma antilipschitzWith_equiv_aux :
     exact False.elim <| IsEmpty.false i
 
 private lemma uniformInducing_equiv_aux :
-    UniformInducing (equiv : CStarMatrixAux m n A → Matrix m n A) :=
+    UniformInducing (ofMatrix.symm : CStarMatrixAux m n A → Matrix m n A) :=
   AntilipschitzWith.uniformInducing antilipschitzWith_equiv_aux
     lipschitzWith_equiv_aux.uniformContinuous
 
@@ -403,7 +402,7 @@ private lemma uniformity_eq_aux :
     𝓤 (CStarMatrixAux m n A) = (𝓤[Pi.uniformSpace _] :
     Filter (CStarMatrixAux m n A × CStarMatrixAux m n A)) := by
   have :
-    (fun x : CStarMatrixAux m n A × CStarMatrixAux m n A => ⟨equiv x.1, equiv x.2⟩)
+    (fun x : CStarMatrixAux m n A × CStarMatrixAux m n A => ⟨ofMatrix.symm x.1, ofMatrix.symm x.2⟩)
       = id := by
     ext i <;> rfl
   rw [← uniformInducing_equiv_aux.comap_uniformity, this, Filter.comap_id]
@@ -412,7 +411,7 @@ private lemma uniformity_eq_aux :
 open Bornology in
 private lemma cobounded_eq_aux :
     cobounded (CStarMatrixAux m n A) = @cobounded _ Pi.instBornology := by
-  have : cobounded (CStarMatrixAux m n A) = Filter.comap equiv (cobounded _) := by
+  have : cobounded (CStarMatrixAux m n A) = Filter.comap ofMatrix.symm (cobounded _) := by
     refine le_antisymm ?_ ?_
     · exact antilipschitzWith_equiv_aux.tendsto_cobounded.le_comap
     · exact lipschitzWith_equiv_aux.comap_cobounded_le
