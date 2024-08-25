@@ -1655,6 +1655,13 @@ theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h
     f ⁻¹' s =ᵐ[μa] f ⁻¹' t :=
   EventuallyLE.antisymm (hf.preimage_mono_ae h.le) (hf.preimage_mono_ae h.symm.le)
 
+/-- The preimage of a null measurable set under a (quasi) measure preserving map is a null
+measurable set. -/
+theorem _root_.MeasureTheory.NullMeasurableSet.preimage {s : Set β} (hs : NullMeasurableSet s μb)
+    (hf : QuasiMeasurePreserving f μa μb) : NullMeasurableSet (f ⁻¹' s) μa :=
+  let ⟨t, htm, hst⟩ := hs
+  ⟨f ⁻¹' t, hf.measurable htm, hf.preimage_ae_eq hst⟩
+
 theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (k : ℕ)
     (hs : f ⁻¹' s =ᵐ[μ] s) : f^[k] ⁻¹' s =ᵐ[μ] s := by
   induction' k with k ih; · rfl
@@ -1676,37 +1683,31 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
     replace he : (⇑e)^[k] ⁻¹' s =ᵐ[μ] s := he.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e k] at he
 
--- Need to specify `α := Set α` below because of diamond; see #19041
+-- Need to specify `α := Set α` below because of diamond; see #10941
 theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) : limsup (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
-  haveI : ∀ n, (preimage f)^[n] s =ᵐ[μ] s := by
-    intro n
-    induction' n with n ih
-    · rfl
-    simpa only [iterate_succ', comp_apply] using ae_eq_trans (hf.ae_eq ih) hs
-  (limsup_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) this).trans (ae_eq_refl _)
+  limsup_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
+    simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
--- Need to specify `α := Set α` below because of diamond; see #19041
+-- Need to specify `α := Set α` below because of diamond; see #10941
 theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s := by
-  rw [← ae_eq_set_compl_compl, @Filter.liminf_compl (Set α)]
-  rw [← ae_eq_set_compl_compl, ← preimage_compl] at hs
-  convert hf.limsup_preimage_iterate_ae_eq hs
-  ext1 n
-  simp only [← Set.preimage_iterate_eq, comp_apply, preimage_compl]
+    (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
+  liminf_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
+    simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
-/-- By replacing a measurable set that is almost invariant with the `limsup` of its preimages, we
-obtain a measurable set that is almost equal and strictly invariant.
-
-(The `liminf` would work just as well.) -/
+/-- For a quasi measure preserving self-map `f`, if a null measurable set `s` is a.e. invariant,
+then it is a.e. equal to a measurable invariant set.
+-/
 theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePreserving f μ μ)
-    (hs : MeasurableSet s) (hs' : f ⁻¹' s =ᵐ[μ] s) :
-    ∃ t : Set α, MeasurableSet t ∧ t =ᵐ[μ] s ∧ f ⁻¹' t = t :=
-  ⟨limsup (fun n => (preimage f)^[n] s) atTop,
-    MeasurableSet.measurableSet_limsup fun n =>
-      preimage_iterate_eq ▸ h.measurable.iterate n hs,
-    h.limsup_preimage_iterate_ae_eq hs',
-    (CompleteLatticeHom.setPreimage f).apply_limsup_iterate s⟩
+    (hs : NullMeasurableSet s μ) (hs' : f ⁻¹' s =ᵐ[μ] s) :
+    ∃ t : Set α, MeasurableSet t ∧ t =ᵐ[μ] s ∧ f ⁻¹' t = t := by
+  obtain ⟨t, htm, ht⟩ := hs
+  refine ⟨limsup (f^[·] ⁻¹' t) atTop, ?_, ?_, ?_⟩
+  · exact .measurableSet_limsup fun n ↦ h.measurable.iterate n htm
+  · have : f ⁻¹' t =ᵐ[μ] t := (h.preimage_ae_eq ht.symm).trans (hs'.trans ht)
+    exact limsup_ae_eq_of_forall_ae_eq _ fun n ↦ .trans (h.preimage_iterate_ae_eq _ this) ht.symm
+  · simp only [Set.preimage_iterate_eq]
+    exact CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) t
 
 open Pointwise
 
@@ -1777,14 +1778,6 @@ protected theorem _root_.AEMeasurable.nullMeasurable {f : α → β} (h : AEMeas
 lemma _root_.AEMeasurable.nullMeasurableSet_preimage {f : α → β} {s : Set β}
     (hf : AEMeasurable f μ) (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
   hf.nullMeasurable hs
-
-/-- The preimage of a null measurable set under a (quasi) measure preserving map is a null
-measurable set. -/
-theorem NullMeasurableSet.preimage {ν : Measure β} {f : α → β} {t : Set β}
-    (ht : NullMeasurableSet t ν) (hf : QuasiMeasurePreserving f μ ν) :
-    NullMeasurableSet (f ⁻¹' t) μ :=
-  ⟨f ⁻¹' toMeasurable ν t, hf.measurable (measurableSet_toMeasurable _ _),
-    hf.ae_eq ht.toMeasurable_ae_eq.symm⟩
 
 theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
     NullMeasurableSet s ν :=
