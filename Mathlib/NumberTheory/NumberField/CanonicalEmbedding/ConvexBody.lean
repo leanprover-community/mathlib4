@@ -7,8 +7,6 @@ import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
-#align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
-
 /-!
 # Convex Bodies
 
@@ -142,8 +140,8 @@ theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁ 
   · exact fun w hw => Function.update_noteq hw _ f
   · rw [← Finset.mul_prod_erase Finset.univ _ (Finset.mem_univ w₁), Function.update_same,
       Finset.prod_congr rfl fun w hw => by rw [Function.update_noteq (Finset.ne_of_mem_erase hw)],
-      ← NNReal.rpow_natCast, ← NNReal.rpow_mul, inv_mul_cancel, NNReal.rpow_one, mul_assoc,
-      inv_mul_cancel, mul_one]
+      ← NNReal.rpow_natCast, ← NNReal.rpow_mul, inv_mul_cancel₀, NNReal.rpow_one, mul_assoc,
+      inv_mul_cancel₀, mul_one]
     · rw [Finset.prod_ne_zero_iff]
       exact fun w hw => pow_ne_zero _ (hf w (Finset.ne_of_mem_erase hw))
     · rw [mult]; split_ifs <;> norm_num
@@ -188,9 +186,8 @@ theorem convexBodyLT'_mem {x : K} :
 
 theorem convexBodyLT'_neg_mem (x : E K) (hx : x ∈ convexBodyLT' K f w₀) :
     -x ∈ convexBodyLT' K f w₀ := by
-  simp [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
-    mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
-    Prod.snd_neg, Complex.norm_eq_abs] at hx ⊢
+  simp only [Set.mem_prod, Set.mem_pi, Set.mem_univ, mem_ball, dist_zero_right, Real.norm_eq_abs,
+    true_implies, Subtype.forall, Prod.fst_neg, Pi.neg_apply, norm_neg, Prod.snd_neg] at hx ⊢
   convert hx using 3
   split_ifs <;> simp
 
@@ -231,7 +228,7 @@ theorem convexBodyLT'_volume :
       simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
         ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
         ofReal_coe_nnreal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by norm_num]
-    · refine MeasurableSet.inter ?_ ?_
+    · refine (MeasurableSet.inter ?_ ?_).nullMeasurableSet
       · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
       · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
   calc
@@ -618,7 +615,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨a, ha, by simpa using h_nz, ?_⟩
   rw [← rpow_natCast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
-      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
+      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
       (ne_of_gt finrank_pos)), rpow_one, le_div_iff' (Nat.cast_pos.mpr finrank_pos)]
   refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
   rw [← le_div_iff' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]

@@ -55,7 +55,7 @@ instance : F.IsCoverDense (coherentTopology _) := by
 theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
-    (S ∈ F.inducedTopologyOfIsCoverDense (coherentTopology _) X) := by
+    (S ∈ F.inducedTopology (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
   · apply (mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
     refine ⟨α, inferInstance, fun i => F.obj (Y i),
@@ -77,25 +77,19 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
 
 lemma eq_induced : haveI := F.reflects_precoherent
     coherentTopology C =
-      F.inducedTopologyOfIsCoverDense (coherentTopology _) := by
+      F.inducedTopology (coherentTopology _) := by
   ext X S
   have := F.reflects_precoherent
   rw [← exists_effectiveEpiFamily_iff_mem_induced F X]
   rw [← coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily S]
 
+instance : haveI := F.reflects_precoherent;
+    F.IsDenseSubsite (coherentTopology C) (coherentTopology D) where
+  functorPushforward_mem_iff := by simp_rw [eq_induced F]; rfl
+
 lemma coverPreserving : haveI := F.reflects_precoherent
-    CoverPreserving (coherentTopology _) (coherentTopology _) F := by
-  rw [eq_induced F]
-  apply LocallyCoverDense.inducedTopology_coverPreserving
-
-instance coverLifting : haveI := F.reflects_precoherent
-    F.IsCocontinuous (coherentTopology _) (coherentTopology _) := by
-  rw [eq_induced F]
-  apply LocallyCoverDense.inducedTopology_isCocontinuous
-
-instance isContinuous : haveI := F.reflects_precoherent
-    F.IsContinuous (coherentTopology _) (coherentTopology _) :=
-  Functor.IsCoverDense.isContinuous _ _ _ (coverPreserving F)
+    CoverPreserving (coherentTopology _) (coherentTopology _) F :=
+  IsDenseSubsite.coverPreserving _ _ _
 
 section SheafEquiv
 
@@ -114,7 +108,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv F _ _ _
 
 end SheafEquiv
 
@@ -138,7 +132,7 @@ def equivalence' (A : Type u₃) [Category.{v₃} A]
     [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv F _ _ _
 
 end RegularExtensive
 
@@ -161,7 +155,7 @@ instance : F.IsCoverDense (regularTopology _) := by
 theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X),
       EffectiveEpi π ∧ S.arrows π) ↔
-    (S ∈ F.inducedTopologyOfIsCoverDense (regularTopology _) X) := by
+    (S ∈ F.inducedTopology (regularTopology _) X) := by
   refine ⟨fun ⟨Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
   · apply (mem_sieves_iff_hasEffectiveEpi (Sieve.functorPushforward _ S)).mpr
     refine ⟨F.obj Y, F.map π, ⟨?_, Sieve.image_mem_functorPushforward F S H₂⟩⟩
@@ -179,25 +173,19 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
 
 lemma eq_induced : haveI := F.reflects_preregular
     regularTopology C =
-      F.inducedTopologyOfIsCoverDense (regularTopology _) := by
+      F.inducedTopology (regularTopology _) := by
   ext X S
   have := F.reflects_preregular
   rw [← exists_effectiveEpi_iff_mem_induced F X]
   rw [← mem_sieves_iff_hasEffectiveEpi S]
 
+instance : haveI := F.reflects_preregular;
+    F.IsDenseSubsite (regularTopology C) (regularTopology D) where
+  functorPushforward_mem_iff := by simp_rw [eq_induced F]; rfl
+
 lemma coverPreserving : haveI := F.reflects_preregular
-    CoverPreserving (regularTopology _) (regularTopology _) F := by
-  rw [eq_induced F]
-  apply LocallyCoverDense.inducedTopology_coverPreserving
-
-instance coverLifting : haveI := F.reflects_preregular
-    F.IsCocontinuous (regularTopology _) (regularTopology _) := by
-  rw [eq_induced F]
-  apply LocallyCoverDense.inducedTopology_isCocontinuous
-
-instance isContinuous : haveI := F.reflects_preregular
-    F.IsContinuous (regularTopology _) (regularTopology _) :=
-  Functor.IsCoverDense.isContinuous _ _ _ (coverPreserving F)
+    CoverPreserving (regularTopology _) (regularTopology _) F :=
+  IsDenseSubsite.coverPreserving _ _ _
 
 section SheafEquiv
 
@@ -216,7 +204,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
-  Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv F _ _ _
 
 end SheafEquiv
 

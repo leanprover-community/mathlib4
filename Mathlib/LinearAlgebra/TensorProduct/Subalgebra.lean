@@ -33,7 +33,7 @@ mainly used in the definition of linearly disjointness.
 
 -/
 
-open scoped Classical TensorProduct
+open scoped TensorProduct
 
 open FiniteDimensional
 

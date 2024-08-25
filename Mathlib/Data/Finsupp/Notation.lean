@@ -15,9 +15,7 @@ This file provides `fun₀ | 3 => a | 7 => b` notation for `Finsupp`, which desu
 
 namespace Finsupp
 
-open Lean
-open Lean.Parser
-open Lean.Parser.Term
+open Lean Parser Term
 
 -- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping.
 @[nolint docBlame] -- we do not want any doc hover on this notation.
@@ -89,7 +87,6 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
         Std.Format.join (f.support.val.unquot.map <|
           fun a => " | " ++ repr a ++ " => " ++ repr (f a))
       if p ≥ leadPrec then Format.paren ret else ret
-#align finsupp.has_repr Finsupp.instRepr
 
 -- This cannot be put in `Mathlib.Data.DFinsupp.Notation` where it belongs, since doc-strings
 -- can only be added/modified in the file where the corresponding declaration is defined.

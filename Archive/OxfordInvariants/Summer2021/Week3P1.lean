@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Cast.Order.Field
 
-#align_import oxford_invariants.«2021summer».week3_p1 from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 # The Oxford Invariants Puzzle Challenges - Summer 2021, Week 3, Problem 1
 
@@ -141,4 +139,3 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
   · rw [mul_tsub, ← mul_assoc, Nat.mul_div_cancel' ha, add_mul, Nat.mul_div_cancel' han,
       add_tsub_tsub_cancel ha₀, add_tsub_cancel_right]
     exact dvd_mul_right _ _
-#align oxford_invariants.week3_p1 OxfordInvariants.Week3P1

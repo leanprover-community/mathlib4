@@ -10,8 +10,6 @@ import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Set.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 
-#align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
-
 /-!
 # The natural numbers form an ordered semiring
 
@@ -61,7 +59,6 @@ instance instOrderedCommSemiring : OrderedCommSemiring ℕ :=
 /-! ### Miscellaneous lemmas -/
 
 lemma isCompl_even_odd : IsCompl { n : ℕ | Even n } { n | Odd n } := by
-  simp only [← Set.compl_setOf, isCompl_compl, odd_iff_not_even]
-#align nat.is_compl_even_odd Nat.isCompl_even_odd
+  simp only [← Set.compl_setOf, isCompl_compl, ← not_even_iff_odd]
 
 end Nat

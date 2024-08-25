@@ -1,5 +1,46 @@
 #!/usr/bin/env bash
 
+ : <<'BASH_DOC_MODULE'
+
+#  The `declarations_diff` script
+
+The `declarations_diff` script is a text-based script that attempts to find which declarations
+have been removed and which declarations have been added in the current PR with respect to `master`.
+
+In essence, it looks at the output of `git diff origin/master...HEAD`, extracts the lines that
+contain one of the keywords
+
+`theorem` `lemma` `inductive` `structure` `def` `class` `instance` `alias`
+
+and tries to find exact matches between a removed line and an added line
+(e.g. when moving a declaration from one file to another or restructuring within the same file).
+
+Exact matches are removed.
+Among the remaining unmatched lines, the script tries to extract the declaration ids and tries to
+find exact matches among those.
+No effort is made to keep track of namespaces: if the declaration is `theorem abc ...`, then
+`abc` is extracted, even if this happens inside `namespace xyz`.
+If a declaration id is added exactly once *and* removed exactly once,
+then they are again considered paired and are not shown.
+
+If a declaration id is either only added or removed or it is added or removed more than once, then
+the script will return a count such as
+
+++--+ thmName
+
+This means that a declaration `thmName` was added 3 times and removed twice: this can happen
+with namespacing, e.g. you could see it with `++-- map_zero`.
+
+The script uses some heuristics to guide this process.
+* It assumes that each keyword (as above) appears on the same line as the corresponding
+  declaration id --- a line break between `theorem` and `riemannHypothesis` fools the script.
+* It deals with declaration modifiers (such as `noncomputable`, `nonrec`, `protected`) and
+  attributes.
+* It is "aware" of "nameless" `instance`s and, rather than looking for a declaration id,
+  in this case records the whole line `instance ...`.
+
+BASH_DOC_MODULE
+
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
 begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
 
@@ -123,7 +164,10 @@ printf $'<details>
 ## more verbose report:
 ./scripts/declarations_diff.sh long <optional_commit>
 ```
-</details>'
+</details>
+
+The doc-module for `script/declarations_diff.sh` contains some details about this script.'
+
  : <<ReferenceTest
 theorem oh hello
 inductive triggers the count even if it is not lean code

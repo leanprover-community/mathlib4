@@ -54,11 +54,15 @@ for i in ${!titlesAndRegexes[@]}; do
 done
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
-printf '%s|%s\n' "$(grep -c 'ERR_MOD' scripts/style-exceptions.txt)" "missing module docstrings"
 printf '%s|%s\n' "$(grep -c 'ERR_NUM_LIN' scripts/style-exceptions.txt)" "large files"
+printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
 # We print the number of files, not the number of matches --- hence, the nested grep.
 printf '%s|%s\n' "$(git grep -c 'autoImplicit true' | grep -c -v 'test')" "non-test files with autoImplicit true"
-#printf '%s|%s\n' "$(git grep '@\[.*deprecated' | grep -c -v 'deprecated .*(since := "')" "deprecations without a date"
+
+deprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *==')"
+
+printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Deprecated\` files"
+printf '%s|%s\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
 
 initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l | sed 's=^ *==')"
 

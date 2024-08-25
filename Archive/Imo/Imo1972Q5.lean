@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, Stanislas Polu
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Analysis.NormedSpace.Basic
-
-#align_import imo.imo1972_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # IMO 1972 Q5
