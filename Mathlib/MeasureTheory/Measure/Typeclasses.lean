@@ -536,17 +536,22 @@ instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
     by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
 
 variable (μ) in
-/-- An s-finite measure is absolutely continuous with respect to some finite measure. -/
-theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
-    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν := by
+/-- For An s-finite measure, there exists a finite measure with the same null sets. -/
+theorem exists_isFiniteMeasure_null_iff [SFinite μ] :
+    ∃ ν : Measure α, IsFiniteMeasure ν ∧ ∀ s, ν s = 0 ↔ μ s = 0 := by
   rcases ENNReal.exists_pos_tsum_mul_lt_of_countable top_ne_zero (sFiniteSeq μ · univ)
     fun _ ↦ measure_ne_top _ _ with ⟨c, hc₀, hc⟩
-  refine ⟨.sum fun n ↦ c n • sFiniteSeq μ n, ⟨?_⟩, ?_⟩
-  · simpa [mul_comm] using hc
-  · refine AbsolutelyContinuous.mk fun s hsm hs ↦ ?_
-    have : ∀ n, (sFiniteSeq μ n) s = 0 := by simpa [hsm, (hc₀ _).ne'] using hs
-    rw [← sum_sFiniteSeq μ, sum_apply _ hsm]
-    simp [this]
+  refine ⟨.sum fun n ↦ c n • sFiniteSeq μ n, ⟨by simpa [mul_comm] using hc⟩, fun s ↦ ?_⟩
+  conv_rhs => rw [← sum_sFiniteSeq μ, sum_apply_of_countable]
+  simp [(hc₀ _).ne']
+
+variable (μ) in
+/-- An s-finite measure is absolutely continuous with respect to some finite measure. -/
+@[deprecated exists_isFiniteMeasure_null_iff (since := "2024-08-25")]
+theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
+    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν :=
+  let ⟨ν, hν, hμν⟩ := exists_isFiniteMeasure_null_iff μ
+  ⟨ν, hν, fun s ↦ (hμν s).1⟩
 
 end SFinite
 
