@@ -38,7 +38,7 @@ noncomputable def disk (n : ℤ) : TopCat.{u} :=
   TopCat.of <| ULift <| Metric.closedBall (0 : EuclideanSpace ℝ <| Fin <| Int.toNat n) 1
 
 /-- `𝕊 n` denotes the `n`-dimensional sphere. -/
-scoped notation "𝕊 " => sphere
+scoped notation "𝕊 "n => sphere n
 
 /-- `𝔻 n` denotes the `n`-dimensional closed disk. -/
 scoped notation "𝔻 "n => disk n
@@ -50,30 +50,44 @@ def sphereInclusion (n : ℤ) : (𝕊 n) ⟶ (𝔻 n + 1) where
     rw [isOpen_induced_iff, ← hst, ← hrt]
     tauto⟩
 
-/-- The inclusion map from the disjoint union of `n`-spheres to the disjoint union of `(n+1)`-disks,
-where both of the disjoint unions are indexed by `cells` -/
-def sigmaSphereInclusion (n : ℤ) (cells : Type) :
-    TopCat.of (Σ (_ : cells), 𝕊 n) ⟶ TopCat.of (Σ (_ : cells), 𝔻 n + 1) where
-  toFun := Sigma.map id fun _ x ↦ (sphereInclusion n).toFun x
-  continuous_toFun := Continuous.sigma_map fun _ ↦ (sphereInclusion n).continuous_toFun
+variable {S D : ℤ → TopCat.{u}} (f : ∀ n, S n ⟶ D (n + 1))
 
-/-- Given an attaching map for each `n`-sphere, we construct the attaching map for the disjoint
-union of the `n`-spheres. -/
-def sigmaAttachMap (X : TopCat.{u}) (n : ℤ) (cells : Type) (attach_maps : cells → C(𝕊 n, X)) :
-    TopCat.of (Σ (_ : cells), 𝕊 n) ⟶ X where
+/-- The inclusion map from the disjoint union of `S n` (boundary of generalized `(n+1)`-cells) to
+the disjoint union of `D (n + 1)` (generalized `(n+1)`-cells) where both of the disjoint unions are
+indexed by `cells` -/
+def generalizedSigmaSphereInclusion (n : ℤ) (cells : Type) :
+    TopCat.of (Σ (_ : cells), S n) ⟶ TopCat.of (Σ (_ : cells), D (n + 1)) where
+  toFun := Sigma.map id fun _ x ↦ (f n).toFun x
+  continuous_toFun := Continuous.sigma_map fun _ ↦ (f n).continuous_toFun
+
+/-- Given an attaching map for each `S n` (boundary of the generalized `(n+1)`-cell), we construct
+the attaching map for the disjoint union of all the `S n`. -/
+def generalizedSigmaAttachMap (X : TopCat.{u}) (n : ℤ) (cells : Type)
+    (attach_maps : cells → C(S n, X)) : TopCat.of (Σ (_ : cells), S n) ⟶ X where
   toFun := fun ⟨i, x⟩ ↦ attach_maps i x
   continuous_toFun := continuous_sigma fun i ↦ (attach_maps i).continuous_toFun
 
-/-- A type witnessing that `X'` is obtained from `X` by attaching `(n+1)`-disks -/
-structure AttachCells (X X' : TopCat.{u}) (n : ℤ) where
+/-- A type witnessing that `X'` is obtained from `X` by attaching generalized `(n+1)`-cells -/
+structure AttachGeneralizedCells (X X' : TopCat.{u}) (n : ℤ) where
   /-- The index type over the `(n+1)`-disks -/
   cells : Type
   /-- For each `(n+1)`-disk, we have an attaching map from its boundary, namely an `n`-sphere,
   to `X`. -/
-  attach_maps : cells → C(𝕊 n, X)
+  attach_maps : cells → C(S n, X)
   /-- `X'` is the pushout obtained from `X` along `sigmaAttachMap`. -/
-  iso_pushout : X' ≅ Limits.pushout
-    (sigmaSphereInclusion n cells) (sigmaAttachMap X n cells attach_maps)
+  iso_pushout : X' ≅ Limits.pushout (generalizedSigmaSphereInclusion f n cells)
+    (generalizedSigmaAttachMap X n cells attach_maps)
+
+/-- The inclusion map from the disjoint union of `n`-spheres to the disjoint union of `(n+1)`-disks,
+where both of the disjoint unions are indexed by `cells` -/
+noncomputable abbrev sigmaSphereInclusion := generalizedSigmaSphereInclusion sphereInclusion
+
+/-- Given an attaching map for each `n`-sphere, we construct the attaching map for the disjoint
+union of the `n`-spheres. -/
+abbrev sigmaAttachMap := @generalizedSigmaAttachMap sphere
+
+/-- A type witnessing that `X'` is obtained from `X` by attaching `(n+1)`-disks -/
+abbrev AttachCells := AttachGeneralizedCells sphereInclusion
 
 /-- The inclusion map from `X` to `X'`, given that `X'` is obtained from `X` by attaching
 `(n+1)`-disks -/
