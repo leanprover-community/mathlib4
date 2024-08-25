@@ -456,11 +456,9 @@ theorem lt_succ_iff : a < succ b ↔ a ≤ b :=
   lt_succ_iff_of_not_isMax <| not_isMax b
 
 theorem succ_le_succ_iff : succ a ≤ succ b ↔ a ≤ b := by simp
-
 theorem succ_lt_succ_iff : succ a < succ b ↔ a < b := by simp
 
 alias ⟨le_of_succ_le_succ, _⟩ := succ_le_succ_iff
-
 alias ⟨lt_of_succ_lt_succ, _⟩ := succ_lt_succ_iff
 
 -- TODO: prove for a succ-archimedean non-linear order with bottom
