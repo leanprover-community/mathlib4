@@ -299,7 +299,7 @@ is just all the subsets of `{0, ..., k - 1}` of size `r`. The `i`-th iterated sh
 the subsets of `{0, ..., k - 1}` of size `r - i`, so the `i`-th iterated shadow of `𝒜` has at least
 `k.choose (r - i)` elements. -/
 theorem lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ n)
-    (h₁ : (𝒜 : Set (Finset $ Fin n)).Sized r) (h₂ : k.choose r ≤ 𝒜.card) :
+    (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : k.choose r ≤ 𝒜.card) :
     k.choose (r - i) ≤ (∂^[i] 𝒜).card := by
   set range'k : Finset (Fin n) :=
     attachFin (range k) fun m ↦ by rw [mem_range]; apply forall_lt_iff_le.2 hkn
