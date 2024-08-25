@@ -624,7 +624,7 @@ theorem top_prod_top : (⊤ : Submonoid M).prod (⊤ : Submonoid N) = ⊤ :=
 
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Submonoid M).prod (⊥ : Submonoid N) = ⊥ :=
-  SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
+  SetLike.coe_injective <| by simp [coe_prod]
 -- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 /-- The product of submonoids is isomorphic to their product as monoids. -/

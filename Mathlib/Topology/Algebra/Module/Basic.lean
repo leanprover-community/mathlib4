@@ -44,8 +44,9 @@ theorem ContinuousSMul.of_nhds_zero [TopologicalRing R] [TopologicalAddGroup M]
     (hmulleft : ∀ m : M, Tendsto (fun a : R => a • m) (𝓝 0) (𝓝 0))
     (hmulright : ∀ a : R, Tendsto (fun m : M => a • m) (𝓝 0) (𝓝 0)) : ContinuousSMul R M where
   continuous_smul := by
+    rw [← nhds_prod_eq] at hmul
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.smul : R →+ M →+ M) ?_ ?_ ?_ <;>
-      simpa [ContinuousAt, nhds_prod_eq]
+      simpa [ContinuousAt]
 
 end
 

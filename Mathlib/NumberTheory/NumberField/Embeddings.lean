@@ -1021,11 +1021,11 @@ variable {K}
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K] [FiniteDimensional k K]
     (h : Odd (Fintype.card <| K ≃ₐ[k] K)) : IsUnramifiedAtInfinitePlaces k K :=
-  ⟨fun _ ↦ not_not.mp (Nat.odd_iff_not_even.mp h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
+  ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_finrank [IsGalois k K]
     (h : Odd (FiniteDimensional.finrank k K)) : IsUnramifiedAtInfinitePlaces k K :=
-  ⟨fun _ ↦ not_not.mp (Nat.odd_iff_not_even.mp h ∘ InfinitePlace.even_finrank_of_not_isUnramified)⟩
+  ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_finrank_of_not_isUnramified)⟩
 
 variable (k K)
 

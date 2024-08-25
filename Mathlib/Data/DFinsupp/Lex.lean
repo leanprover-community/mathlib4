@@ -60,10 +60,9 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
 variable [LinearOrder ι]
 
 instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
-    IsStrictOrder (Lex (Π₀ i, α i)) (· < ·) :=
-  let i : IsStrictOrder (Lex (∀ i, α i)) (· < ·) := Pi.Lex.isStrictOrder
-  { irrefl := toLex.surjective.forall.2 fun _ ↦ @irrefl _ _ i.toIsIrrefl _
-    trans := toLex.surjective.forall₃.2 fun _ _ _ ↦ @trans _ _ i.toIsTrans _ _ _ }
+    IsStrictOrder (Lex (Π₀ i, α i)) (· < ·) where
+  irrefl _ := lt_irrefl (α := Lex (∀ i, α i)) _
+  trans _ _ _ := lt_trans (α := Lex (∀ i, α i))
 
 /-- The partial order on `DFinsupp`s obtained by the lexicographic ordering.
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/

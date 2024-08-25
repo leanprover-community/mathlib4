@@ -12,14 +12,18 @@ import Mathlib.LinearAlgebra.DirectSum.Finsupp
 We prove various results about tensoring over `R` with `Rⁿ`, if `n` is a finite type.
 
 This file contains variants of some results in `Mathlib/LinearAlgebra/DirectSum/Finsupp.lean`
-where `m →₀ R` is replaced by `m → R` under the hypothesis `[Finite m]`.
+where `n →₀ R` in that file is replaced by `n → R` in this, under the hypothesis `[Finite n]`.
 
-## Main results
+## Main definitions
 
-**TODO name** If `n` is a finite type, then `Rⁿ ⊗[R] M` is naturally isomorphic to `Mⁿ`.
-If `n` is a finite type, then `Rⁿ ⊗[R] Rᵐ` is naturally isomorphic to `Rᵃˣᵐ`.
-If `m` is a finite type, then `Rⁿ ⊗[R] Rᵐ` is naturally isomorphic to `Rᵃˣᵐ`.
+* `TensorProduct.finiteLeft R M N n` : If `n` is a finite type, `Mⁿ ⊗[R] N ≃ₗ[R] (M ⊗[R] N)ⁿ`.
+* `TensorProduct.finiteRight R M N n` : If `n` is a finite type, `M ⊗[R] Nⁿ ≃ₗ[R] (M ⊗[R] N)ⁿ`.
+* `TensorProduct.finiteScalarLeft R N n` : If `n` is a finite type, `Rⁿ ⊗[R] N ≃ₗ[R] Nⁿ`.
+* `TensorProduct.finiteScalarRight R M n` : If `n` is a finite type, `M ⊗[R] Rⁿ ≃ₗ[R] Mⁿ`.
+* `TensorProduct.finiteTensorPiLid R N n m` : if `n` is a finite type, `Rⁿ ⊗[R] Nᵐ ≃ₗ[R] Nⁿˣᵐ`.
+* `TensorProduct.piTensorFiniteRid R M n m` : if `n` is a finite type, `Mᵐ ⊗[R] Rⁿ ≃ₗ[R] Mᵐˣⁿ`.
 
+Note that in the last two results, the type `m` is arbitrary and does not have to be finite.
 -/
 
 namespace TensorProduct
@@ -27,7 +31,7 @@ namespace TensorProduct
 variable (R : Type*) [CommSemiring R] (M : Type*) [AddCommMonoid M] [Module R M]
   (N : Type*) [AddCommMonoid N] [Module R N] (ι : Type*) [DecidableEq ι] [Finite ι]
 
-/-- `finiteLeft R M N n` is the natural R-module isomorphism `Mⁿ ⊗[R] N = (M ⊗[R] N)ⁿ`
+/-- `finiteLeft R M N n` is the natural `R`-module isomorphism `Mⁿ ⊗[R] N = (M ⊗[R] N)ⁿ`
 when `n` is a finite type. -/
 noncomputable def finiteLeft : (ι → M) ⊗[R] N ≃ₗ[R] ι → M ⊗[R] N :=
   (LinearEquiv.rTensor N (Finsupp.linearEquivFunOnFinite R M ι).symm :
@@ -53,7 +57,7 @@ theorem finiteLeft_apply (t : (ι → M) ⊗[R] N) (i : ι) :
 
 variable (R M N ι)
 
-/-- `finiteRight R M N n` is the natural R-module isomorphism `M ⊗[R] Nⁿ = (M ⊗[R] N)ⁿ`
+/-- `finiteRight R M N n` is the natural `R`-module isomorphism `M ⊗[R] Nⁿ = (M ⊗[R] N)ⁿ`
 when `n` is a finite type. -/
 noncomputable def finiteRight : M ⊗[R] (ι → N) ≃ₗ[R] ι → M ⊗[R] N :=
   (LinearEquiv.lTensor M (Finsupp.linearEquivFunOnFinite R N ι).symm :
@@ -79,8 +83,8 @@ theorem finiteRight_apply (t : M ⊗[R] (ι → N)) (i : ι) :
 
 variable (R N ι)
 
-/-- If `ι` is finite then the tensor product of `ι → R` and `N` is linearly equivalent
-to `ι → N`. -/
+/-- If `ι` is finite then `finiteScalarLeft R N ι` is the natural isomorphism
+`(ι → R) ⊗[R] N ≃ₗ[R] ι → N`. -/
 noncomputable def finiteScalarLeft :
     (ι → R) ⊗[R] N ≃ₗ[R] ι → N :=
   finiteLeft R R N ι ≪≫ₗ (LinearEquiv.piCongrRight (fun _ ↦ TensorProduct.lid R N))
@@ -101,7 +105,8 @@ lemma finiteScalarLeft_apply (pn : (ι → R) ⊗[R] N) (i : ι) :
 
 variable (R M ι)
 
-/-- The tensor product of `M` and `ι → R` is linearly equivalent to `ι → M` -/
+/-- If `ι` is finite then `finiteScalarLeft R M ι` is the natural isomorphism
+`M ⊗[R] (ι → R) ≃ₗ[R] ι → M`. -/
 noncomputable def finiteScalarRight :
     M ⊗[R] (ι → R) ≃ₗ[R] ι → M :=
   finiteRight R M R ι ≪≫ₗ LinearEquiv.piCongrRight (fun _ ↦ TensorProduct.rid R M)
@@ -120,30 +125,41 @@ lemma finiteScalarRight_apply (t : M ⊗[R] (ι → R)) (i : ι) :
   | tmul m f => simp
   | add x y hx hy => simp [map_add, hx, hy]
 
+variable (κ : Type*)
 
-noncomputable def isom'' (R : Type*) [CommSemiring R] (m n : Type*) [Finite m] [DecidableEq m] :
-    (m → R) ⊗[R] (n → R) ≃ₗ[R] (m × n → R) :=
-  (LinearEquiv.rTensor (n → R) (Finsupp.linearEquivFunOnFinite R R m).symm :
-    (m → R) ⊗[R] (n → R) ≃ₗ[R] ((m →₀ R) ⊗[R] (n → R))) ≪≫ₗ
-  (TensorProduct.finsuppScalarLeft R (n → R) m :
-    (m →₀ R) ⊗[R] (n → R) ≃ₗ[R] (m →₀ (n → R))) ≪≫ₗ
-  ((Finsupp.linearEquivFunOnFinite R (n → R) m :
-    (m →₀ (n → R)) ≃ₗ[R] m → n → R)) ≪≫ₗ
-  ((LinearEquiv.curry R m n).symm :
-    (m → n → R) ≃ₗ[R] (m × n → R))
+variable (R N ι)
+/-- If `ι` is finite then `finiteTensorPiLid R N ι κ` is the natural isomorphism
+`(ι → R) ⊗[R] (κ → N) ≃ₗ[R] ι × κ → N`. -/
+noncomputable def finiteTensorPiLid : (ι → R) ⊗[R] (κ → N) ≃ₗ[R] ι × κ → N :=
+  (finiteScalarLeft R (κ → N) ι :
+    (ι → R) ⊗[R] (κ → N) ≃ₗ[R] (ι → κ → N)) ≪≫ₗ
+  ((LinearEquiv.curry R N ι κ).symm :
+    (ι → κ → N) ≃ₗ[R] (ι × κ → N))
 
-variable (m n : Type*) [Finite m] [Finite n] [DecidableEq m] [DecidableEq n] (a1 : m → R)
-    (b1 : n → R) (f : (m → R) →ₗ[R] M) (g : (n → R) →ₗ[R] N) in
-example : ((TensorProduct.map f g ∘ₗ
-    (isom'' R m n).symm.toLinearMap) fun mn ↦ a1 mn.1 * b1 mn.2) = f a1 ⊗ₜ[R] g b1 := by
-  suffices (isom'' R m n).symm.toLinearMap (fun mn ↦ a1 mn.1 * b1 mn.2) = a1 ⊗ₜ b1 by
+variable {R N ι κ}
 
-    apply_fun map f g at this
-    exact this
-  refine (Equiv.symm_apply_eq (isom'' R m n).toEquiv).2 ?_
-  simp [isom'']
-  ext mn
-  obtain ⟨m, n⟩ := mn
-  simp
+@[simp]
+theorem finiteTensorPiLid_apply_apply (f : ι → R) (g : κ → N) (a : ι) (b : κ) :
+    finiteTensorPiLid R N ι κ (f ⊗ₜ[R] g) (a, b) = f a • g b := by
+  simp [finiteTensorPiLid]
+
+variable (R M ι κ)
+
+/-- If `ι` is finite then `piTensorFiniteRid R M ι κ` is the natural isomorphism
+`(κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M`. -/
+noncomputable def piTensorFiniteRid : (κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M :=
+  (finiteScalarRight R (κ → M) ι :
+    (κ → M) ⊗[R] (ι → R) ≃ₗ[R] (ι → κ → M)) ≪≫ₗ
+  ((LinearEquiv.curry R M ι κ).symm :
+    (ι → κ → M) ≃ₗ[R] ι × κ → M) ≪≫ₗ
+  (LinearEquiv.funCongrLeft R M (Equiv.prodComm κ ι) :
+    (ι × κ → M) ≃ₗ[R] κ × ι → M)
+
+variable {R M ι κ}
+
+@[simp]
+theorem piTensorFiniteRid_apply_apply (f : κ → M) (g : ι → R) (a : κ) (b : ι) :
+    piTensorFiniteRid R M ι κ (f ⊗ₜ[R] g) (a, b) = g b • f a := by
+  simp [piTensorFiniteRid]
 
 end TensorProduct

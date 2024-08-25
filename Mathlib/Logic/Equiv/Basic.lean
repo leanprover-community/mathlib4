@@ -38,7 +38,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
     `eb : β₁ ≃ β₂` using `Prod.map`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Data/Equiv/TransferInstance.lean` does it for many algebraic type classes like
+  E.g., `Logic/Equiv/TransferInstance.lean` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
 ## Tags
