@@ -75,7 +75,8 @@ def eLpNormEssSup {_ : MeasurableSpace α} (f : α → F) (μ : Measure α) :=
 
 /-- `ℒp` seminorm, equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. -/
-def eLpNorm {_ : MeasurableSpace α} (f : α → F) (p : ℝ≥0∞) (μ : Measure α) : ℝ≥0∞ :=
+def eLpNorm {_ : MeasurableSpace α}
+    (f : α → F) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
 
 @[deprecated (since := "2024-07-26")] noncomputable alias snorm := eLpNorm
