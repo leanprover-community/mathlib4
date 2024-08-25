@@ -940,7 +940,7 @@ theorem conjAe_coe : (conjAe : K → K) = conj :=
 
 /-- Conjugate as a linear isometry -/
 noncomputable def conjLIE : K ≃ₗᵢ[ℝ] K :=
-  ⟨conjAe.toLinearEquiv, fun _ => norm_conj⟩
+  ⟨conjAe.toLinearEquiv, norm_conj⟩
 
 @[simp, rclike_simps]
 theorem conjLIE_apply : (conjLIE : K → K) = conj :=
