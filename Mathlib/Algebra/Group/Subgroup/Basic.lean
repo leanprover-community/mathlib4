@@ -1009,8 +1009,7 @@ theorem closure_singleton_one : closure ({1} : Set G) = ⊥ := by
 
 @[to_additive (attr := simp)]
 lemma mem_closure_singleton_self (x : G) : x ∈ closure ({x} : Set G) := by
-  rw [mem_closure_singleton]
-  exact ⟨1, zpow_one _⟩
+  simpa [-subset_closure] using subset_closure (k := {x})
 
 @[to_additive]
 theorem le_closure_toSubmonoid (S : Set G) : Submonoid.closure S ≤ (closure S).toSubmonoid :=
@@ -1069,7 +1068,7 @@ lemma closure_preimage_inv : closure ((·⁻¹) ⁻¹' k) = closure k := by
   simp only [inv_surjective, image_preimage_eq]
 
 @[to_additive (attr := simp)]
-lemma closure_singleton_inv (x : G) : closure ({x⁻¹}) = closure {x} := by
+lemma closure_singleton_inv (x : G) : closure {x⁻¹} = closure {x} := by
   rw [← closure_image_inv]
   simp
 
