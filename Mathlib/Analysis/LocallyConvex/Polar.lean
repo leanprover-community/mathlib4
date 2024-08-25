@@ -153,7 +153,7 @@ theorem polar_subMulAction {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m 
     obtain ⟨r, hr⟩ := NormedField.exists_lt_norm 𝕜 ‖B x y‖⁻¹
     contrapose! hr
     rw [← one_div, le_div_iff (norm_pos_iff.2 hr)]
-    simpa using  hy _ (SMulMemClass.smul_mem r hx)
+    simpa using hy _ (SMulMemClass.smul_mem r hx)
   · intro h x hx
     simp [h x hx]
 
