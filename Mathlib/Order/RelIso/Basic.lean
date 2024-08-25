@@ -88,6 +88,10 @@ protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc
 protected theorem wellFounded [RelHomClass F r s] (f : F) : WellFounded s → WellFounded r
   | ⟨H⟩ => ⟨fun _ => RelHomClass.acc f _ (H _)⟩
 
+protected theorem isWellFounded [RelHomClass F r s] (f : F) [IsWellFounded β s] :
+    IsWellFounded α r :=
+  ⟨RelHomClass.wellFounded f IsWellFounded.wf⟩
+
 end RelHomClass
 
 namespace RelHom

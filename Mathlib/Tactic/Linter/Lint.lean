@@ -218,11 +218,11 @@ These are disallowed by the mathlib style guide, as using `<|` pairs better with
 /-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`. -/
 register_option linter.dollarSyntax : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `dollarSyntax` linter"
 }
 
-namespace DollarSyntaxLinter
+namespace Style.dollarSyntax
 
 /-- `findDollarSyntax stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
 partial
@@ -245,7 +245,7 @@ def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter dollarSyntaxLinter
 
-end DollarSyntaxLinter
+end Style.dollarSyntax
 
 /-! # The "longLine linter" -/
 
