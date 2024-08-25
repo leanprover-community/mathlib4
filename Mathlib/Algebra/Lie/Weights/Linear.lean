@@ -211,7 +211,14 @@ the spaces `genWeightSpace M χ` and `shiftedGenWeightSpace R L M χ` are equiva
 lemma toEnd_eq (x : L) :
     toEnd R L (shiftedGenWeightSpace R L M χ) x =
     (shift R L M χ).conj (toEnd R L (genWeightSpace M χ) x - χ x • LinearMap.id) := by
-  ext; simp [LinearEquiv.conj_apply]
+  ext
+  simp only [toEnd_apply_apply, map_sub, LinearEquiv.conj_apply, map_smul, LinearMap.comp_id,
+    LinearEquiv.comp_coe, LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap,
+    LinearMap.sub_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    shift_symm_apply, shift_apply, LinearMap.smul_apply, LinearMap.id_coe, id_eq,
+    AddSubgroupClass.coe_sub, SetLike.val_smul]
+  rw [LieSubmodule.coe_bracket]
+  rfl
 
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/
@@ -231,8 +238,10 @@ lemma exists_forall_lie_eq_smul [LinearWeights R L M] [IsNoetherian R M] (χ : W
   obtain ⟨⟨⟨m, _⟩, hm₁⟩, hm₂⟩ :=
     @exists_ne _ (nontrivial_max_triv_of_isNilpotent R L (shiftedGenWeightSpace R L M χ)) 0
   simp_rw [LieSubmodule.mem_coeSubmodule, mem_maxTrivSubmodule, Subtype.ext_iff,
-    shiftedGenWeightSpace.coe_lie_shiftedGenWeightSpace_apply,
-    ZeroMemClass.coe_zero, sub_eq_zero] at hm₁
-  exact ⟨m, by simpa using hm₂, hm₁⟩
+    ZeroMemClass.coe_zero] at hm₁
+  refine ⟨m, by simpa using hm₂, ?_⟩
+  intro x
+  have := hm₁ x
+  rwa [coe_lie_shiftedGenWeightSpace_apply, sub_eq_zero] at this
 
 end LieModule
