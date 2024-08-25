@@ -624,7 +624,7 @@ instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
-  constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, measurableSet_discrete]
+  constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
 
 protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
