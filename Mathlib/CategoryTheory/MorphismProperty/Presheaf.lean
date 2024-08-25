@@ -236,4 +236,70 @@ instance respectsIso : RespectsIso (Presheaf.representable (C := C)) :=
 
 end Presheaf.representable
 
+namespace MorphismProperty
+
+variable {F G : Cᵒᵖ ⥤ Type v} (P : MorphismProperty C)
+
+/-- Given a morphism property `P` in a category `C`, a morphism `f : F ⟶ G` of presheaves in the
+category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
+* The morphism is representable.
+* For any morphism `g : yoneda.obj X ⟶ G`, the property `P` holds for any represented pullback of
+  `f` by `g`. -/
+def presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v) :=
+  fun F G f ↦ Presheaf.representable f ∧
+    ∀ ⦃X Y : C⦄ (g : yoneda.obj X ⟶ G) (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X)
+      (_ : IsPullback fst (yoneda.map snd) f g), P snd
+
+variable {P}
+
+/-- A morphism satisfying `P.presheaf` is representable. -/
+lemma presheaf.rep {f : F ⟶ G} (hf : P.presheaf f) : Presheaf.representable f :=
+  hf.1
+
+lemma presheaf.property {f : F ⟶ G} (hf : P.presheaf f) :
+    ∀ ⦃X Y : C⦄ (g : yoneda.obj X ⟶ G) (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X)
+    (_ : IsPullback fst (yoneda.map snd) f g), P snd :=
+  hf.2
+
+lemma presheaf.property_snd {f : F ⟶ G} (hf : P.presheaf f) {X : C} (g : yoneda.obj X ⟶ G) :
+    P (hf.rep.snd g) :=
+  hf.property g _ _ (hf.rep.isPullback g)
+
+/-- Given a morphism property `P` which respects isomorphisms, then to show that a morphism
+`f : F ⟶ G` satisfies `P.presheaf` it suffices to show that:
+* The morphism is representable.
+* For any morphism `g : yoneda.obj X ⟶ G`, the property `P` holds for *some* represented pullback
+of `f` by `g`. -/
+lemma presheaf_of_exists [P.RespectsIso] {f : F ⟶ G} (hf : Presheaf.representable f)
+    (h₀ : ∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), ∃ (Y : C) (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X)
+    (_ : IsPullback fst (yoneda.map snd) f g), P snd) : P.presheaf f := by
+  refine ⟨hf, fun X Y g fst snd h ↦ ?_⟩
+  obtain ⟨Y, g_fst, g_snd, BC, H⟩ := h₀ g
+  refine (P.arrow_mk_iso_iff ?_).2 H
+  exact Arrow.isoMk (Yoneda.fullyFaithful.preimageIso (h.isoIsPullback BC)) (Iso.refl _)
+    (yoneda.map_injective (by simp))
+
+lemma presheaf_of_snd [P.RespectsIso] {f : F ⟶ G} (hf : Presheaf.representable f)
+    (h : ∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), P (hf.snd g)) : P.presheaf f :=
+  presheaf_of_exists hf (fun _ g ↦ ⟨hf.pullback g, hf.fst g, hf.snd g, hf.isPullback g, h g⟩)
+
+/-- If `P : MorphismProperty C` is stable under base change, and `C` has all pullbacks, then for any
+`f : X ⟶ Y` in `C`, `yoneda.map f` satisfies `P.presheaf` if `f` satisfies `P`. -/
+lemma presheaf_yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y}
+    (hf : P f) : P.presheaf (yoneda.map f) := by
+  have := StableUnderBaseChange.respectsIso hP
+  apply presheaf_of_exists (Presheaf.representable.yoneda_map f)
+  intro Y' g
+  obtain ⟨g, rfl⟩ := yoneda.map_surjective g
+  exact ⟨_, _, _, (IsPullback.of_hasPullback f g).map yoneda, hP.snd _ _ hf⟩
+
+lemma of_presheaf_yoneda {X Y : C} {f : X ⟶ Y} (hf : P.presheaf (yoneda.map f)) : P f :=
+  hf.property (𝟙 _) (𝟙 _) f (IsPullback.id_horiz (yoneda.map f))
+
+lemma presheaf_yoneda_map_iff [HasPullbacks C] (hP : StableUnderBaseChange P)
+    {X Y : C} {f : X ⟶ Y} : P.presheaf (yoneda.map f) ↔ P f :=
+  ⟨fun hf ↦ of_presheaf_yoneda hf, fun hf ↦ presheaf_yoneda_map hP hf⟩
+
+end MorphismProperty
+
 end CategoryTheory
