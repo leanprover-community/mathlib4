@@ -44,10 +44,8 @@ variable {D D' : Type} {M : CombinatorialMap D} {M' : CombinatorialMap D'}
 
 -- The next dart counter-clockwise around a face
 @[simp]
-lemma involutive_apply {x : D} : M.α (M.α x) = x := by
-  have := M.involutive
-  unfold Function.Involutive at this
-  apply this
+lemma involutive_apply {x : D} : M.α (M.α x) = x :=
+  M.involutive x
 
 -- The next dart counter-clockwise around a face
 @[simp]
@@ -157,7 +155,6 @@ structure CombinatorialMap' (D : Type) where
   σ : Equiv.Perm D
   α : Equiv.Perm D
   φ : Equiv.Perm D
-  transitivity {x y : D} : ∃ g : Subgroup.closure {σ, α, φ}, g • x = y
   composition : α.trans (σ.trans φ) = 1
   involutive : Function.Involutive α
   fixedPoints_isEmpty : IsEmpty (Function.fixedPoints α)
@@ -167,13 +164,16 @@ namespace CombinatorialMap'
 variable {D D' : Type} {M : CombinatorialMap' D} {M' : CombinatorialMap' D'}
 
 @[simp]
-lemma involutive_apply {x : D} : M.α (M.α x) = x := by
-  have := M.involutive
-  unfold Function.Involutive at this
-  apply this
+lemma involutive_trans : M.α.trans M.α = 1 := by
+  rw [Equiv.trans]
+  congr <;> simp [M.involutive]
 
 lemma composition' : M.φ * M.σ * M.α = 1 :=
   M.composition
+
+lemma composition_apply {x : D} : M.φ (M.σ (M.α x)) = x := by
+  convert_to M.α.trans (M.σ.trans M.φ) x = x
+  simp [M.composition]
 
 -- We only will care about the case of equivalences, but in this
 -- definition a homomorphism of combinatorial maps is sort of like a
@@ -182,6 +182,42 @@ def Hom (M : CombinatorialMap' D) (M' : CombinatorialMap' D') (f : D → D') : P
   f ∘ M.σ = M'.σ ∘ f ∧
   f ∘ M.α = M'.α ∘ f ∧
   f ∘ M.φ = M'.φ ∘ f
+
+lemma hom_inv_is_hom_aux {p₁ : Equiv.Perm D} {p₂ : Equiv.Perm D'} {f : Equiv D D'}
+    (h : f ∘ p₁ = p₂ ∘ f) : f.symm ∘ p₂ = p₁ ∘ f.symm :=
+  calc f.symm ∘ p₂ = f.symm ∘ p₂ ∘ id := rfl
+    _ = f.symm ∘ p₂ ∘ (f ∘ f.symm) := by rw [← Equiv.self_comp_symm]
+    _ = f.symm ∘ (p₂ ∘ f) ∘ f.symm := rfl
+    _ = f.symm ∘ (f ∘ p₁) ∘ f.symm := by rw [← h]
+    _ = (f.symm ∘ f) ∘ p₁ ∘ f.symm := rfl
+    _ = id ∘ p₁ ∘ f.symm := by rw [Equiv.symm_comp_self]
+
+lemma hom_inv_is_hom (M : CombinatorialMap' D) (M' : CombinatorialMap' D') (f : Equiv D D')
+    (h : Hom M M' f) : Hom M' M f.symm :=
+  ⟨hom_inv_is_hom_aux h.1, hom_inv_is_hom_aux h.2.1, hom_inv_is_hom_aux h.2.2⟩
+
+-- In light of `hom_inv_is_hom`, we define an equivalence of maps as
+-- an equivalence of their dart sets that is a homomorphism.
+def equiv_maps (M : CombinatorialMap' D) (M' : CombinatorialMap' D') (f : Equiv D D') :=
+  Hom M M' f
+
+-- We define the opposite of a map to be the one which reverses
+-- the identities of the darts on each edge
+def opp (M : CombinatorialMap' D) : CombinatorialMap' D where
+  σ := (M.α.trans M.σ).trans M.α
+  α := M.α
+  φ := (M.α.trans M.φ).trans M.α
+  involutive := M.involutive
+  fixedPoints_isEmpty := M.fixedPoints_isEmpty
+  composition := by
+    ext x
+    simp only [Equiv.trans_apply, Equiv.Perm.coe_one, id_eq]
+    rw [M.involutive, M.involutive]
+    have : ∀ x, (M.α * M.φ * M.σ) (M.α x) = M.α x := by simp [composition_apply]
+    have (y : D) : (M.α * M.φ * M.σ) y = y := by
+      obtain ⟨t, h⟩ := M.α.surjective y
+      rw [← h, this]
+    exact this x
 
 lemma φ_eq : M.φ = M.σ.symm.trans M.α := by
   apply_fun Equiv.trans M.σ
