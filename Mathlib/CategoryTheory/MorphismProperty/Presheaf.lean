@@ -41,6 +41,9 @@ Given `hf : Presheaf.representable f`, with `f : F ⟶ G` and `g : yoneda.obj X 
 * `representable.stableUnderBaseChange`: Being representable is stable under base change.
 * `representable.of_isIso`: Isomorphisms are representable.
 
+* `presheaf_yoneda_map`: If `P : MorphismProperty C` is stable under base change, and `C` has all
+  pullbacks, then `yoneda.map f` satisfies `P.presheaf` if `f` satisfies `P`.
+
 -/
 
 
