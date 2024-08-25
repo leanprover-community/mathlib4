@@ -241,7 +241,7 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
     neg_top := set_option backward.isDefEq.lazyProjDelta false in @inv_zero _ (_)
-    add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
+    add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
   rw [← one_mul (a ^ n), pow_succ']
@@ -309,7 +309,6 @@ instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ 
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
 
--- Porting note: same issue as `covariantClass_mul_le`
 protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (h : ∀ a : α, 0 ≤ a) : CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
@@ -321,9 +320,8 @@ protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (�
     · rw [add_zero]
     · rw [← coe_add, coe_le_coe]
       exact le_add_of_nonneg_right (h _)
-  · rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-    refine le_trans ?_ (le_of_eq <| coe_add _ _)
-    rw [← coe_add, coe_le_coe]
+  · rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
+    rw [← coe_add, ← coe_add _ c, coe_le_coe]
     exact add_le_add_left hbc' _
 
 instance existsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α) :=

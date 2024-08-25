@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.Util.AssertExists
 
@@ -15,6 +15,8 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
+
+assert_not_exists AddCommMonoid
 
 open Opposite CategoryTheory Limits
 
@@ -226,5 +228,3 @@ end Corepresentable
 end Functor
 
 end CategoryTheory
-
-assert_not_exists AddCommMonoid

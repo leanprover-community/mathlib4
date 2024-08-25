@@ -1036,6 +1036,17 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
         exact ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_spanningSets_lt_top μ i).ne
       spanning := iUnion_spanningSets μ }⟩
 
+instance [SigmaFinite (μ.restrict s)] [SigmaFinite (μ.restrict t)] :
+    SigmaFinite (μ.restrict (s ∪ t)) := sigmaFinite_of_le _ (restrict_union_le _ _)
+
+instance [h : SigmaFinite (μ.restrict s)] : SigmaFinite (μ.restrict (s ∩ t)) := by
+  convert sigmaFinite_of_le _ (restrict_mono_ae (ae_of_all _ Set.inter_subset_left))
+  exact h
+
+instance [h : SigmaFinite (μ.restrict t)] : SigmaFinite (μ.restrict (s ∩ t)) := by
+  convert sigmaFinite_of_le _ (restrict_mono_ae (ae_of_all _ Set.inter_subset_right))
+  exact h
+
 theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable f μ)
     (h : SigmaFinite (μ.map f)) : SigmaFinite μ :=
   ⟨⟨⟨fun n => f ⁻¹' spanningSets (μ.map f) n, fun _ => trivial, fun n => by

@@ -95,11 +95,6 @@ variable (R)
 -- Porting note: this is the letter of the mathlib3 version, but not really the spirit
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
 
-set_option linter.deprecated false in
-@[deprecated (since := "2022-12-31")]
-theorem two_smul' : (2 : R) • x = (2 : ℕ) • x := by
-  rw [two_smul, two_nsmul]
-
 @[simp]
 theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
     (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
@@ -226,7 +221,7 @@ variable [Ring R] [AddCommGroup M] [Module R M] (r s : R) (x y : M)
 
 @[simp]
 theorem neg_smul : -r • x = -(r • x) :=
-  eq_neg_of_add_eq_zero_left <| by rw [← add_smul, add_left_neg, zero_smul]
+  eq_neg_of_add_eq_zero_left <| by rw [← add_smul, neg_add_cancel, zero_smul]
 
 -- Porting note (#10618): simp can prove this
 --@[simp]
@@ -256,10 +251,10 @@ abbrev Module.addCommMonoidToAddCommGroup
     [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
   { (inferInstance : AddCommMonoid M) with
     neg := fun a => (-1 : R) • a
-    add_left_neg := fun a =>
+    neg_add_cancel := fun a =>
       show (-1 : R) • a + a = 0 by
         nth_rw 2 [← one_smul R a]
-        rw [← add_smul, add_left_neg, zero_smul]
+        rw [← add_smul, neg_add_cancel, zero_smul]
     zsmul := fun z a => (z : R) • a
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
@@ -327,9 +322,9 @@ variable (R)
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
 lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
-  induction' n with n ih
-  · rw [Nat.cast_zero, zero_smul, zero_smul]
-  · rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
+  induction n with
+  | zero => rw [Nat.cast_zero, zero_smul, zero_smul]
+  | succ n ih => rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
 -- See note [no_index around OfNat.ofNat]
@@ -355,9 +350,10 @@ def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
-  smul_assoc n x y :=
-    Nat.recOn n (by simp only [Nat.zero_eq, zero_smul])
-    fun n ih => by simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
+  smul_assoc n x y := by
+    induction n with
+    | zero => simp only [zero_smul]
+    | succ n ih => simp only [add_smul, one_smul, ih]
 
 end AddCommMonoid
 
@@ -370,24 +366,24 @@ section
 variable (R)
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
-lemma Int.cast_smul_eq_nsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
+lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
   have : ((smulAddHom R M).flip b).comp (Int.castAddHom R) = (smulAddHom ℤ M).flip b := by
     apply AddMonoidHom.ext_int
     simp
   DFunLike.congr_fun this n
 
-@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_nsmul
+@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_zsmul
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
-@[deprecated Int.cast_smul_eq_nsmul (since := "2024-07-23")]
-theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_nsmul ..).symm
+@[deprecated Int.cast_smul_eq_zsmul (since := "2024-07-23")]
+theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_zsmul ..).symm
 
 end
 
 /-- Convert back any exotic `ℤ`-smul to the canonical instance. This should not be needed since in
 mathlib all `AddCommGroup`s should normally have exactly one `ℤ`-module structure by design. -/
 theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ M h.toSMul n x = n • x :=
-  Int.cast_smul_eq_nsmul ..
+  Int.cast_smul_eq_zsmul ..
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
 should normally have exactly one `ℤ`-module structure by design. -/
@@ -400,7 +396,7 @@ end AddCommGroup
 theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
     (x : ℤ) (a : M) :
-    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_nsmul, map_zsmul]
+    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
 
 theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]

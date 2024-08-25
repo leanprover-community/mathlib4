@@ -263,7 +263,7 @@ instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
-      decay' := by simpa [← Int.cast_smul_eq_nsmul ℝ] using ((c : ℝ) • f).decay' }⟩
+      decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
 end SMul
 
@@ -573,8 +573,7 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] [FiniteDimensional ℝ D]
+variable [NormedAddCommGroup D] [MeasurableSpace D]
 
 open MeasureTheory FiniteDimensional
 
@@ -597,6 +596,7 @@ lemma integrable_pow_neg_integrablePower
 instance _root_.MeasureTheory.Measure.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
     [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩
 
+variable [NormedSpace ℝ D] [FiniteDimensional ℝ D] [BorelSpace D] in
 instance _root_.MeasureTheory.Measure.IsAddHaarMeasure.instHasTemperateGrowth {μ : Measure D}
     [h : μ.IsAddHaarMeasure] : μ.HasTemperateGrowth :=
   ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; norm_num⟩⟩
@@ -631,11 +631,14 @@ lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (
       · exact Real.rpow_le_rpow_of_nonpos (by linarith) (by linarith) (by simp)
       · exact h₂.trans (by linarith)
 
+variable [BorelSpace D] [SecondCountableTopology D] in
 /-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
 `x ^ k * f` is integrable. The bounds are not relevant for the integrability conclusion, but they
 are relevant for bounding the integral in `integral_pow_mul_le_of_le_of_pow_mul_le`. We formulate
 the two lemmas with the same set of assumptions for ease of applications. -/
+-- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
 lemma integrable_of_le_of_pow_mul_le
+    {E : Type*} [NormedAddCommGroup E]
     {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂)
     (h''f : AEStronglyMeasurable f μ) :
@@ -648,7 +651,9 @@ lemma integrable_of_le_of_pow_mul_le
 
 /-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
 one can bound explicitly the integral of `x ^ k * f`. -/
+-- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
 lemma integral_pow_mul_le_of_le_of_pow_mul_le
+    {E : Type*} [NormedAddCommGroup E]
     {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) :
     ∫ x, ‖x‖ ^ k * ‖f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
@@ -997,20 +1002,22 @@ theorem iteratedPDeriv_succ_left {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, 
 
 theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, F)) :
     iteratedPDeriv 𝕜 m f = iteratedPDeriv 𝕜 (Fin.init m) (pderivCLM 𝕜 (m (Fin.last n)) f) := by
-  induction' n with n IH
-  · rw [iteratedPDeriv_zero, iteratedPDeriv_one]
+  induction n with
+  | zero =>
+    rw [iteratedPDeriv_zero, iteratedPDeriv_one]
     rfl
   -- The proof is `∂^{n + 2} = ∂ ∂^{n + 1} = ∂ ∂^n ∂ = ∂^{n+1} ∂`
-  have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
-  have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by
-    simp only [Fin.tail_def, Fin.succ_last]
-  calc
-    _ = pderivCLM 𝕜 (m 0) (iteratedPDeriv 𝕜 _ f) := iteratedPDeriv_succ_left _ _ _
-    _ = pderivCLM 𝕜 (m 0) ((iteratedPDeriv 𝕜 _) ((pderivCLM 𝕜 _) f)) := by
-      congr 1
-      exact IH _
-    _ = _ := by
-      simp only [hmtail, iteratedPDeriv_succ_left, hmzero, Fin.tail_init_eq_init_tail]
+  | succ n IH =>
+    have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
+    have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by
+      simp only [Fin.tail_def, Fin.succ_last]
+    calc
+      _ = pderivCLM 𝕜 (m 0) (iteratedPDeriv 𝕜 _ f) := iteratedPDeriv_succ_left _ _ _
+      _ = pderivCLM 𝕜 (m 0) ((iteratedPDeriv 𝕜 _) ((pderivCLM 𝕜 _) f)) := by
+        congr 1
+        exact IH _
+      _ = _ := by
+        simp only [hmtail, iteratedPDeriv_succ_left, hmzero, Fin.tail_init_eq_init_tail]
 
 theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
     iteratedPDeriv 𝕜 m f x = iteratedFDeriv ℝ n f x m := by
@@ -1034,14 +1041,25 @@ open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
-variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D]
+variable [MeasurableSpace D]
 
 variable {μ : Measure D} [hμ : HasTemperateGrowth μ]
 
 attribute [local instance 101] secondCountableTopologyEither_of_left
 
+variable (𝕜 μ) in
+lemma integral_pow_mul_iteratedFDeriv_le (f : 𝓢(D, V)) (k n : ℕ) :
+    ∫ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
+      (∫ x, (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ)) ∂μ) *
+        (SchwartzMap.seminorm 𝕜 0 n f + SchwartzMap.seminorm 𝕜 (k + μ.integrablePower) n f) :=
+  integral_pow_mul_le_of_le_of_pow_mul_le (norm_iteratedFDeriv_le_seminorm ℝ _ _)
+    (le_seminorm ℝ _ _ _)
+
+variable [BorelSpace D] [SecondCountableTopology D]
+
 variable (μ) in
-lemma integrable_pow_mul_iteratedFDeriv (f : 𝓢(D, V))
+lemma integrable_pow_mul_iteratedFDeriv
+    (f : 𝓢(D, V))
     (k n : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖) μ :=
   integrable_of_le_of_pow_mul_le (norm_iteratedFDeriv_le_seminorm ℝ _ _) (le_seminorm ℝ _ _ _)
     ((f.smooth ⊤).continuous_iteratedFDeriv le_top).aestronglyMeasurable
@@ -1052,17 +1070,9 @@ lemma integrable_pow_mul (f : 𝓢(D, V))
   convert integrable_pow_mul_iteratedFDeriv μ f k 0 with x
   simp
 
-variable (𝕜 μ) in
-lemma integral_pow_mul_iteratedFDeriv_le (f : 𝓢(D, V)) (k n : ℕ) :
-    ∫ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
-      (∫ x, (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ)) ∂μ) *
-        (SchwartzMap.seminorm 𝕜 0 n f + SchwartzMap.seminorm 𝕜 (k + μ.integrablePower) n f) :=
-  integral_pow_mul_le_of_le_of_pow_mul_le (norm_iteratedFDeriv_le_seminorm ℝ _ _)
-    (le_seminorm ℝ _ _ _)
-
 lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
-    (eventually_of_forall (fun _ ↦ by simp))
+    (Eventually.of_forall (fun _ ↦ by simp))
 
 variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/

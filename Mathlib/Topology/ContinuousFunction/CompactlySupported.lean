@@ -437,8 +437,6 @@ theorem coe_comp_to_continuous_fun (f : C_c(γ, δ)) (g : β →co γ) : ((f.com
 theorem comp_id (f : C_c(γ, δ)) : f.comp (CocompactMap.id γ) = f :=
   ext fun _ => rfl
 
-variable [T2Space β]
-
 @[simp]
 theorem comp_assoc (f : C_c(γ, δ)) (g : β →co γ) (h : α →co β) :
     (f.comp g).comp h = f.comp (g.comp h) :=

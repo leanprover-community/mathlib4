@@ -11,6 +11,9 @@ import Mathlib.Data.Int.Cast.Lemmas
 
 -/
 
+-- Guard against import creep
+assert_not_exists Finset
+assert_not_exists Subsemigroup
 
 variable {M : Type*}
 
@@ -83,7 +86,3 @@ theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center 
   right_assoc _ _ := by rw [mul_neg, ha.right_assoc, mul_neg, mul_neg]
 
 end Set
-
--- Guard against import creep
-assert_not_exists Finset
-assert_not_exists Subsemigroup
