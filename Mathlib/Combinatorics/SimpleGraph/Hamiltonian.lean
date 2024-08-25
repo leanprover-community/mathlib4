@@ -148,7 +148,7 @@ lemma mem_dropLast_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.dropLas
   apply hp.mem_tail_support
 
 /-- The dart in the Hamiltonian cycle that starts at `b` -/
-noncomputable def dart_with_fst (hp : p.IsHamiltonianCycle) : G.Dart :=
+noncomputable def dartWithFst (hp : p.IsHamiltonianCycle) : G.Dart :=
   Exists.choose <| show ∃d ∈ p.darts, d.fst = b by
     simpa [← Walk.map_fst_darts] using hp.mem_dropLast_support b
 
