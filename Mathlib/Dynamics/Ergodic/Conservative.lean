@@ -73,7 +73,7 @@ theorem of_absolutelyContinuous {ν : Measure α} (h : Conservative f μ) (hν :
 
 /-- Restriction of a conservative system to an invariant set is a conservative system,
 formulated in terms of the restriction of the measure. -/
-protected theorem restrict (h : Conservative f μ) (hs : MapsTo f s s) :
+theorem measureRestrict (h : Conservative f μ) (hs : MapsTo f s s) :
     Conservative f (μ.restrict s) :=
   .of_absolutelyContinuous h (absolutelyContinuous_of_le restrict_le_self) <|
     h.toQuasiMeasurePreserving.restrict hs
