@@ -14,7 +14,7 @@ We show that `log (1+z)` differs from its Taylor polynomial up to degree `n` by 
 `‖z‖^(n+1)/((n+1)*(1-‖z‖))` when `‖z‖ < 1`; see `Complex.norm_log_sub_logTaylor_le`.
 
 To this end, we derive the representation of `log (1+z)` as the integral of `1/(1+tz)`
-over the unit interval (`Complex.log_eq_integral`) and introduce notation
+over the unit interval (`Complex.log_eq_integral`) and introduce notation<
 `Complex.logTaylor n` for the Taylor polynomial up to degree `n-1`.
 
 ## TODO
@@ -227,7 +227,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
   refine (hasSum_iff_tendsto_nat_of_summable_norm ?_).mpr ?_
   · refine (summable_geometric_of_norm_lt_one hz).norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) ?_
     intro n
-    simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_nat]
+    simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_natCast]
     rcases n.eq_zero_or_pos with rfl | hn
     · simp
     conv => enter [2]; rw [← div_one (‖z‖ ^ n)]
