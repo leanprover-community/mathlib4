@@ -219,6 +219,8 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
   ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
 
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
+  letI : Unique (⊥ : LieSubmodule R L M) := Submodule.uniqueBot
+  letI : Subsingleton (⊥ : LieSubmodule R L M) := Unique.instSubsingleton
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
 @[simp]
