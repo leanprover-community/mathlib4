@@ -1401,7 +1401,7 @@ theorem mem_uniformity_of_uniformContinuous_invariant [UniformSpace α] [Uniform
 /-- An entourage of the diagonal in `α` and an entourage in `β` yield an entourage in `α × β`
 once we permute coordinates.-/
 def entourageProd (u : Set (α × α)) (v : Set (β × β)) : Set ((α × β) × α × β) :=
-    {((a₁, b₁),(a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
+  {((a₁, b₁),(a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
 
 theorem mem_entourageProd {u : Set (α × α)} {v : Set (β × β)} {p : (α × β) × α × β} :
     p ∈ entourageProd u v ↔ (p.1.1, p.2.1) ∈ u ∧ (p.1.2, p.2.2) ∈ v := Iff.rfl
@@ -1420,7 +1420,7 @@ theorem Filter.HasBasis.uniformity_prod {ιa ιb : Type*} [UniformSpace α] [Uni
     (ha : (𝓤 α).HasBasis pa sa) (hb : (𝓤 β).HasBasis pb sb) :
     (𝓤 (α × β)).HasBasis (fun i : ιa × ιb ↦ pa i.1 ∧ pb i.2)
     (fun i ↦ entourageProd (sa i.1) (sb i.2)) :=
-    (ha.comap _).inf (hb.comap _)
+  (ha.comap _).inf (hb.comap _)
 
 theorem entourageProd_subset [UniformSpace α] [UniformSpace β]
     {s : Set ((α × β) × α × β)} (h : s ∈ 𝓤 (α × β)) :
