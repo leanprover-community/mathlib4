@@ -168,6 +168,9 @@ instance : IsIso (yonedaGluedToSheaf hf) := by
   rw [← Sheaf.isLocallyBijective_iff_isIso (yonedaGluedToSheaf hf)]
   constructor <;> infer_instance
 
+/-- The isomorphism between `yoneda.obj (glueData hf).glued` and `F`.
+
+This implies that `F` is representable. -/
 noncomputable def yonedaIsoSheaf :
     subcanonical_zariskiTopology.yoneda.obj (glueData hf).glued ≅ F :=
   asIso (yonedaGluedToSheaf hf)
