@@ -180,7 +180,7 @@ lemma self_next_in_darts (hp : p.IsHamiltonianCycle) :
   use d
   simpa using this
 
-lemma Adj_prev_self (hp : p.IsHamiltonianCycle) : G.Adj (hp.prev b) b := by
+lemma adj_prev_left (hp : p.IsHamiltonianCycle) : G.Adj (hp.prev b) b := by
   obtain ⟨d, _, hd'⟩ := hp.prev_self_in_darts b
   exact hd'.1 ▸ hd'.2 ▸ d.adj
 
