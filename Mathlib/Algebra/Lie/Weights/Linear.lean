@@ -184,6 +184,7 @@ instance : LieRingModule L (shiftedGenWeightSpace R L M χ) where
     abel
 
 @[simp] lemma coe_lie_shiftedGenWeightSpace_apply (x : L) (m : shiftedGenWeightSpace R L M χ) :
+    letI : Bracket L (shiftedGenWeightSpace R L M χ) := LieRingModule.toBracket
     ⁅x, m⁆ = ⁅x, (m : M)⁆ - χ x • m :=
   rfl
 
@@ -191,13 +192,17 @@ instance : LieModule R L (shiftedGenWeightSpace R L M χ) where
   smul_lie t x m := by
     nontriviality shiftedGenWeightSpace R L M χ
     apply Subtype.ext
-    simp only [coe_lie_shiftedGenWeightSpace_apply, smul_lie,
-      LinearWeights.map_smul χ (aux R L M χ), smul_assoc t, SetLike.val_smul, smul_sub]
+    rw [coe_lie_shiftedGenWeightSpace_apply]
+    simp only [smul_lie, LinearWeights.map_smul χ (aux R L M χ), smul_assoc t, SetLike.val_smul]
+    rw [← smul_sub]
+    congr
   lie_smul t x m := by
     nontriviality shiftedGenWeightSpace R L M χ
     apply Subtype.ext
-    simp only [coe_lie_shiftedGenWeightSpace_apply, SetLike.val_smul, lie_smul, smul_sub,
-      smul_comm t]
+    rw [coe_lie_shiftedGenWeightSpace_apply]
+    simp only [SetLike.val_smul, lie_smul]
+    rw [smul_comm (χ x), ← smul_sub]
+    congr
 
 /-- Forgetting the action of `L`,
 the spaces `genWeightSpace M χ` and `shiftedGenWeightSpace R L M χ` are equivalent. -/
