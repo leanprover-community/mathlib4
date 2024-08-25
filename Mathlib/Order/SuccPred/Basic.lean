@@ -69,7 +69,7 @@ class PredOrder (α : Type*) [Preorder α] where
   pred_le : ∀ a, pred a ≤ a
   /-- Proof of interaction between `pred` and minimal element-/
   min_of_le_pred {a} : a ≤ pred a → IsMin a
-  /-- Proof that `pred b` is the greatest element smaller than `b`-/
+  /-- Proof that `pred b` is the greatest element less than `b`-/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
 instance [Preorder α] [SuccOrder α] :
