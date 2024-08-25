@@ -171,6 +171,7 @@ import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.Translations
 import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Algebra.DirectLimit
+import Mathlib.Algebra.DirectSum.AddChar
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.Algebra.DirectSum.Decomposition
