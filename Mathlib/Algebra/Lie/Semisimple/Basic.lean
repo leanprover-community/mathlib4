@@ -11,7 +11,7 @@ import Mathlib.Order.BooleanGenerators
 
 The famous Cartan-Dynkin-Killing classification of semisimple Lie algebras renders them one of the
 most important classes of Lie algebras. In this file we prove basic results
-abot simple and semisimple Lie algebras.
+about simple and semisimple Lie algebras.
 
 ## Main declarations
 

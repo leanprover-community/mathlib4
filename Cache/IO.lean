@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
-import Lean.Data.HashMap
+import Std.Data.HashMap
 import Lean.Data.RBMap
 import Lean.Data.RBTree
 import Lean.Data.Json.Printer

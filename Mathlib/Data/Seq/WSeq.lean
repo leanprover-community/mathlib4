@@ -394,6 +394,7 @@ def LiftRelO (R : α → β → Prop) (C : WSeq α → WSeq β → Prop) :
   | none, none => True
   | some (a, s), some (b, t) => R a b ∧ C s t
   | _, _ => False
+attribute [nolint simpNF] LiftRelO.eq_3
 
 theorem LiftRelO.imp {R S : α → β → Prop} {C D : WSeq α → WSeq β → Prop} (H1 : ∀ a b, R a b → S a b)
     (H2 : ∀ s t, C s t → D s t) : ∀ {o p}, LiftRelO R C o p → LiftRelO S D o p

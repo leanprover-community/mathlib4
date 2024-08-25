@@ -359,12 +359,13 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         PFun.mem_fix_iff.2 (Or.inl (by simp [hf, hn]))
       generalize (n.succ :: v.1 : List ℕ) = w at this ⊢
       clear hn
-      induction' n with n IH
-      · exact this
-      refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
-        (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
-      simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, eq_self_iff_true, if_false,
-        Part.mem_some_iff, and_self_iff, List.tail_cons]
+      induction n with
+      | zero => exact this
+      | succ n IH =>
+        refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
+          (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
+        simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, eq_self_iff_true, if_false,
+          Part.mem_some_iff, and_self_iff, List.tail_cons]
 
 end Code
 
@@ -897,6 +898,7 @@ def natEnd : Γ' → Bool
   | Γ'.consₗ => true
   | Γ'.cons => true
   | _ => false
+attribute [nolint simpNF] natEnd.eq_3
 
 /-- Pop a value from the stack and place the result in local store. -/
 @[simp]
@@ -1404,7 +1406,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
         Reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (trPosNum a ++ [Γ'.cons]) l₁ c d⟩
           ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp? [List.reverseAux] at e says simp only [List.reverseAux] at e
+    simp? [List.reverseAux] at e says simp only [List.reverseAux, List.reverseAux_eq] at e
     refine h.trans ?_
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]

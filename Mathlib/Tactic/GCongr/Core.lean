@@ -527,3 +527,7 @@ elab_rules : tactic
       let g := Lean.MessageData.joinSep (unsolvedGoals.map Lean.MessageData.ofExpr) Format.line
       throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. \
         The steps which could not be automatically justified were:\n{g}"
+
+end GCongr
+
+end Mathlib.Tactic

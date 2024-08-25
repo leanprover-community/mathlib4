@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
 
+import Mathlib.Init
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 # Linter for `attribute [...] in` declarations

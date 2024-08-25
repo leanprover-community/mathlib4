@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
-import Mathlib.FieldTheory.IntermediateField
+import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.RingTheory.TensorProduct.Basic

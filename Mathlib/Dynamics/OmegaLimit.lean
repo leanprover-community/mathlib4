@@ -93,7 +93,7 @@ theorem mapsTo_omegaLimit {α' β' : Type*} [TopologicalSpace β'] {f : Filter �
     {ϕ' : τ → α' → β'} {ga : α → α'} {s' : Set α'} (hs : MapsTo ga s s') {gb : β → β'}
     (hg : ∀ t x, gb (ϕ t x) = ϕ' t (ga x)) (hgc : Continuous gb) :
     MapsTo gb (ω f ϕ s) (ω f ϕ' s') :=
-  mapsTo_omegaLimit' _ hs (eventually_of_forall fun t x _hx ↦ hg t x) hgc
+  mapsTo_omegaLimit' _ hs (Eventually.of_forall fun t x _hx ↦ hg t x) hgc
 
 theorem omegaLimit_image_eq {α' : Type*} (ϕ : τ → α' → β) (f : Filter τ) (g : α → α') :
     ω f ϕ (g '' s) = ω f (fun t x ↦ ϕ t (g x)) s := by simp only [omegaLimit, image2_image_right]

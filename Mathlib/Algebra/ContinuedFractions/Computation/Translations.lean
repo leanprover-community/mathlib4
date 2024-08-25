@@ -249,7 +249,7 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
   rw [of, IntFractPair.seq1]
   simp only [of, Stream'.Seq.map_tail, Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.head,
     Stream'.Seq.get?, Stream'.map]
-  rw [← Stream'.get_succ, Stream'.get, Option.map]
+  rw [← Stream'.get_succ, Stream'.get, Option.map.eq_def]
   split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
 
 /-- This gives the first pair of coefficients of the continued fraction of a non-integer `v`.
@@ -304,7 +304,7 @@ are all equal to `a`.
 -/
 theorem convs'_of_int (a : ℤ) : (of (a : K)).convs' n = a := by
   induction n with
-  | zero => simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast, Nat.zero_eq]
+  | zero => simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast]
   | succ =>
     rw [convs', of_h_eq_floor, floor_intCast, add_right_eq_self]
     exact convs'Aux_succ_none ((of_s_of_int K a).symm ▸ Stream'.Seq.get?_nil 0) _

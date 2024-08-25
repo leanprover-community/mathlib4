@@ -79,6 +79,11 @@ lemma weightedVSubOfPoint_vadd (s : Finset ι) (w : ι → k) (p : ι → P) (b 
     s.weightedVSubOfPoint (v +ᵥ p) b w = s.weightedVSubOfPoint p (-v +ᵥ b) w := by
   simp [vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, add_comm]
 
+lemma weightedVSubOfPoint_smul {G : Type*} [Group G] [DistribMulAction G V] [SMulCommClass G k V]
+    (s : Finset ι) (w : ι → k) (p : ι → V) (b : V) (a : G) :
+    s.weightedVSubOfPoint (a • p) b w = a • s.weightedVSubOfPoint p (a⁻¹ • b) w := by
+  simp [smul_sum, smul_sub, smul_comm a (w _)]
+
 /-- `weightedVSubOfPoint` gives equal results for two families of weights and two families of
 points that are equal on `s`. -/
 theorem weightedVSubOfPoint_congr {w₁ w₂ : ι → k} (hw : ∀ i ∈ s, w₁ i = w₂ i) {p₁ p₂ : ι → P}
@@ -259,6 +264,12 @@ theorem weightedVSub_empty (w : ι → k) (p : ι → P) : (∅ : Finset ι).wei
 lemma weightedVSub_vadd {s : Finset ι} {w : ι → k} (h : ∑ i ∈ s, w i = 0) (p : ι → P) (v : V) :
     s.weightedVSub (v +ᵥ p) w = s.weightedVSub p w := by
   rw [weightedVSub, weightedVSubOfPoint_vadd,
+    weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ h]
+
+lemma weightedVSub_smul {G : Type*} [Group G] [DistribMulAction G V] [SMulCommClass G k V]
+    {s : Finset ι} {w : ι → k} (h : ∑ i ∈ s, w i = 0) (p : ι → V) (a : G) :
+    s.weightedVSub (a • p) w = a • s.weightedVSub p w := by
+  rw [weightedVSub, weightedVSubOfPoint_smul,
     weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ h]
 
 /-- `weightedVSub` gives equal results for two families of weights and two families of points
@@ -772,7 +783,7 @@ theorem centroid_pair [DecidableEq ι] [Invertible (2 : k)] (p : ι → P) (i₁
   · have hc : (card ({i₁, i₂} : Finset ι) : k) ≠ 0 := by
       rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
       norm_num
-      exact nonzero_of_invertible _
+      exact Invertible.ne_zero _
     rw [centroid_def,
       affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _
         (sum_centroidWeights_eq_one_of_cast_card_ne_zero _ hc) (p i₁)]

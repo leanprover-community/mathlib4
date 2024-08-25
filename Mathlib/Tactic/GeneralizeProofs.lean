@@ -520,3 +520,5 @@ elab (name := generalizeProofsElab) "generalize_proofs" config?:(Parser.Tactic.c
         let g' ← mkFreshExprSyntheticOpaqueMVar (← g.getType) (← g.getTag)
         g.assign g'
         return g'.mvarId!
+
+end Mathlib.Tactic

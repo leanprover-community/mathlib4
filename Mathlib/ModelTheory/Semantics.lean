@@ -152,7 +152,7 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
   · simp
   · cases n
     · cases f
-      · simp only [realize, ih, Nat.zero_eq, constantsOn, mk₂_Functions]
+      · simp only [realize, ih, constantsOn, mk₂_Functions]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]

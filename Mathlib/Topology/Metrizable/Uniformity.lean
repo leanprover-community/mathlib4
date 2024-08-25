@@ -154,7 +154,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
-      rw [take_zipWith, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
+      rw [take_zipWith, take, take_succ, getElem?_append_left hMl, getElem?_eq_getElem hMl,
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
@@ -282,3 +282,10 @@ lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (�
     exact EMetric.ball_subset_closedBall
   obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
   exact ⟨t, htc, hts⟩
+
+open TopologicalSpace in
+instance (priority := 100) DiscreteTopology.metrizableSpace
+    {α} [TopologicalSpace α] [DiscreteTopology α] :
+    MetrizableSpace α := by
+  obtain rfl := DiscreteTopology.eq_bot (α := α)
+  exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _

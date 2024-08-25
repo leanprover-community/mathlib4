@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Infix
 
 /-!
 # Relation chain
@@ -18,8 +17,7 @@ A graph-specialized version is in development and will hopefully be added under 
 sometime soon.
 -/
 
--- Make sure we haven't imported `Data.Nat.Order.Basic`
-assert_not_exists OrderedSub
+assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 universe u v
 

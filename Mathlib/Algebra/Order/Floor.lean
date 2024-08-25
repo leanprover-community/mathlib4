@@ -54,7 +54,6 @@ many lemmas.
 rounding, floor, ceil
 -/
 
-
 open Set
 
 variable {F α β : Type*}
@@ -116,17 +115,24 @@ notation "⌊" a "⌋₊" => Nat.floor a
 @[inherit_doc]
 notation "⌈" a "⌉₊" => Nat.ceil a
 
-end OrderedSemiring
-
-section LinearOrderedSemiring
-
-variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
-
 theorem le_floor_iff (ha : 0 ≤ a) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a :=
   FloorSemiring.gc_floor ha
 
 theorem le_floor (h : (n : α) ≤ a) : n ≤ ⌊a⌋₊ :=
   (le_floor_iff <| n.cast_nonneg.trans h).2 h
+
+theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
+  FloorSemiring.gc_ceil
+
+@[simp]
+theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
+  gc_ceil_coe _ _
+
+end OrderedSemiring
+
+section LinearOrderedSemiring
+
+variable [LinearOrderedSemiring α] [FloorSemiring α] {a b : α} {n : ℕ}
 
 theorem floor_lt (ha : 0 ≤ a) : ⌊a⌋₊ < n ↔ a < n :=
   lt_iff_lt_of_le_iff_le <| le_floor_iff ha
@@ -177,8 +183,7 @@ theorem floor_mono : Monotone (floor : α → ℕ) := fun a b h => by
     exact Nat.zero_le _
   · exact le_floor ((floor_le ha).trans h)
 
-@[gcongr]
-theorem floor_le_floor : ∀ x y : α, x ≤ y → ⌊x⌋₊ ≤ ⌊y⌋₊ := floor_mono
+@[gcongr] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋₊ ≤ ⌊b⌋₊ := floor_mono hab
 
 theorem le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a := by
   obtain ha | ha := le_total a 0
@@ -242,14 +247,6 @@ theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
 
 /-! #### Ceil -/
 
-
-theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
-  FloorSemiring.gc_ceil
-
-@[simp]
-theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
-  gc_ceil_coe _ _
-
 theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
 
@@ -283,8 +280,7 @@ theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉₊ = n :=
 theorem ceil_mono : Monotone (ceil : α → ℕ) :=
   gc_ceil_coe.monotone_l
 
-@[gcongr]
-theorem ceil_le_ceil : ∀ x y : α, x ≤ y → ⌈x⌉₊ ≤ ⌈y⌉₊ := ceil_mono
+@[gcongr] lemma ceil_le_ceil (hab : a ≤ b) : ⌈a⌉₊ ≤ ⌈b⌉₊ := ceil_mono hab
 
 @[simp]
 theorem ceil_zero : ⌈(0 : α)⌉₊ = 0 := by rw [← Nat.cast_zero, ceil_natCast]
@@ -558,7 +554,7 @@ def FloorRing.ofCeil (α) [LinearOrderedRing α] (ceil : α → ℤ)
 
 namespace Int
 
-variable [LinearOrderedRing α] [FloorRing α] {z : ℤ} {a : α}
+variable [LinearOrderedRing α] [FloorRing α] {z : ℤ} {a b : α}
 
 /-- `Int.floor a` is the greatest integer `z` such that `z ≤ a`. It is denoted with `⌊a⌋`. -/
 def floor : α → ℤ :=
@@ -660,8 +656,7 @@ theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_intCast]
 theorem floor_mono : Monotone (floor : α → ℤ) :=
   gc_coe_floor.monotone_u
 
-@[gcongr]
-theorem floor_le_floor : ∀ x y : α, x ≤ y → ⌊x⌋ ≤ ⌊y⌋ := floor_mono
+@[gcongr] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
 
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
   -- Porting note: broken `convert le_floor`
@@ -1080,8 +1075,7 @@ theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(no_index (OfNat.ofNat n : α))
 theorem ceil_mono : Monotone (ceil : α → ℤ) :=
   gc_ceil_coe.monotone_l
 
-@[gcongr]
-theorem ceil_le_ceil : ∀ x y : α, x ≤ y → ⌈x⌉ ≤ ⌈y⌉ := ceil_mono
+@[gcongr] lemma ceil_le_ceil (hab : a ≤ b) : ⌈a⌉ ≤ ⌈b⌉ := ceil_mono hab
 
 @[simp]
 theorem ceil_add_int (a : α) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
@@ -1498,26 +1492,20 @@ theorem Nat.ceil_int : (Nat.ceil : ℤ → ℕ) = Int.toNat :=
 
 variable {a : α}
 
-theorem Int.ofNat_floor_eq_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ := by
+theorem Int.natCast_floor_eq_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ := by
   rw [← Int.floor_toNat, Int.toNat_of_nonneg (Int.floor_nonneg.2 ha)]
 
-theorem Int.ofNat_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
+theorem Int.natCast_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
   rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
 
 theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
-  rw [← Int.ofNat_floor_eq_floor ha, Int.cast_natCast]
+  rw [← Int.natCast_floor_eq_floor ha, Int.cast_natCast]
 
 theorem natCast_ceil_eq_intCast_ceil  (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
-  rw [← Int.ofNat_ceil_eq_ceil ha, Int.cast_natCast]
+  rw [← Int.natCast_ceil_eq_ceil ha, Int.cast_natCast]
 
-@[deprecated (since := "2024-02-14")] alias Nat.cast_floor_eq_int_floor := Int.ofNat_floor_eq_floor
-@[deprecated (since := "2024-02-14")] alias Nat.cast_ceil_eq_int_ceil := Int.ofNat_ceil_eq_ceil
-
-@[deprecated (since := "2024-02-14")]
-alias Nat.cast_floor_eq_cast_int_floor := natCast_floor_eq_intCast_floor
-
-@[deprecated (since := "2024-02-14")]
-alias Nat.cast_ceil_eq_cast_int_ceil := natCast_ceil_eq_intCast_ceil
+@[deprecated (since := "2024-08-20")] alias Int.ofNat_floor_eq_floor := natCast_floor_eq_floor
+@[deprecated (since := "2024-08-20")] alias Int.ofNat_ceil_eq_ceil := natCast_ceil_eq_ceil
 
 end FloorRingToSemiring
 

@@ -96,7 +96,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     intro m
     induction m with
     | zero =>
-      simp only [Nat.zero_eq, CharP.cast_eq_zero, neg_zero, zero_sub, zpow_zero, one_mul] at *
+      simp only [CharP.cast_eq_zero, neg_zero, zero_sub, zpow_zero, one_mul] at *
       specialize hx x₀ (le_of_max_le_left hx₀_ge)
       simp only [hx₀, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine fun z _ hz => hx _ ?_

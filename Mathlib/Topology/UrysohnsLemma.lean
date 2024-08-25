@@ -149,30 +149,35 @@ noncomputable def approx : ℕ → CU P → X → ℝ
   | n + 1, c, x => midpoint ℝ (approx n c.left x) (approx n c.right x)
 
 theorem approx_of_mem_C (c : CU P) (n : ℕ) {x : X} (hx : x ∈ c.C) : c.approx n x = 0 := by
-  induction' n with n ihn generalizing c
-  · exact indicator_of_not_mem (fun (hU : x ∈ c.Uᶜ) => hU <| c.subset hx) _
-  · simp only [approx]
+  induction n generalizing c with
+  | zero => exact indicator_of_not_mem (fun (hU : x ∈ c.Uᶜ) => hU <| c.subset hx) _
+  | succ n ihn =>
+    simp only [approx]
     rw [ihn, ihn, midpoint_self]
     exacts [c.subset_right_C hx, hx]
 
 theorem approx_of_nmem_U (c : CU P) (n : ℕ) {x : X} (hx : x ∉ c.U) : c.approx n x = 1 := by
-  induction' n with n ihn generalizing c
-  · rw [← mem_compl_iff] at hx
+  induction n generalizing c with
+  | zero =>
+    rw [← mem_compl_iff] at hx
     exact indicator_of_mem hx _
-  · simp only [approx]
+  | succ n ihn =>
+    simp only [approx]
     rw [ihn, ihn, midpoint_self]
     exacts [hx, fun hU => hx <| c.left_U_subset hU]
 
 theorem approx_nonneg (c : CU P) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
-  induction' n with n ihn generalizing c
-  · exact indicator_nonneg (fun _ _ => zero_le_one) _
-  · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv]
+  induction n generalizing c with
+  | zero => exact indicator_nonneg (fun _ _ => zero_le_one) _
+  | succ n ihn =>
+    simp only [approx, midpoint_eq_smul_add, invOf_eq_inv]
     refine mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg ?_ ?_) <;> apply ihn
 
 theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
-  induction' n with n ihn generalizing c
-  · exact indicator_apply_le' (fun _ => le_rfl) fun _ => zero_le_one
-  · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv, smul_eq_mul, ← div_eq_inv_mul]
+  induction n generalizing c with
+  | zero => exact indicator_apply_le' (fun _ => le_rfl) fun _ => zero_le_one
+  | succ n ihn =>
+    simp only [approx, midpoint_eq_smul_add, invOf_eq_inv, smul_eq_mul, ← div_eq_inv_mul]
     have := add_le_add (ihn (left c)) (ihn (right c))
     norm_num at this
     exact Iff.mpr (div_le_one zero_lt_two) this

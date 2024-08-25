@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kenny Lau, Scott Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Range
+import Batteries.Data.List.Perm
 
 /-!
 # Lists of elements of `Fin n`

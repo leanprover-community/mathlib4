@@ -227,3 +227,5 @@ example (h1 : 1 > 0) : ∃ (n : Nat) (_h : n > 0), n = n := by
 example : let P : Nat → Prop := fun _x => ∃ _n : Nat, True; P 1 := by
   intro P
   use 1
+
+end UseTests

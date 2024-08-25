@@ -242,7 +242,7 @@ theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
     congr_arg exp <| neg_neg x
 
 theorem tendsto_exp_atBot_nhdsWithin : Tendsto exp atBot (𝓝[>] 0) :=
-  tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| eventually_of_forall exp_pos⟩
+  tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩
 
 @[simp]
 theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
@@ -387,7 +387,7 @@ theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Rea
 @[simp]
 theorem isBigO_exp_comp_exp_comp {f g : α → ℝ} :
     ((fun x => exp (f x)) =O[l] fun x => exp (g x)) ↔ IsBoundedUnder (· ≤ ·) l (f - g) :=
-  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| eventually_of_forall fun x => exp_ne_zero _) <| by
+  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun x => exp_ne_zero _) <| by
     simp only [norm_eq_abs, abs_exp, ← exp_sub, isBoundedUnder_le_exp_comp, Pi.sub_def]
 
 @[simp]

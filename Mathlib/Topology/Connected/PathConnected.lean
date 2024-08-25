@@ -58,10 +58,8 @@ This is used to define `Path.extend` that turns `γ : Path x y` into a continuou
 on `(-∞, 0]` and to `y` on `[1, +∞)`.
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Topology Filter unitInterval Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
