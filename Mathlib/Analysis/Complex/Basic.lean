@@ -138,7 +138,7 @@ theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := 
 theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
   comap_norm_nhds_zero
 
-@[simp, norm_cast] lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := abs_ofReal _
+@[simp 1100, norm_cast] lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := abs_ofReal _
 @[simp, norm_cast] lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
 
 @[simp 1100] lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := abs_natCast _

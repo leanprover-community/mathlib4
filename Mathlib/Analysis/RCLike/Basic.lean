@@ -505,7 +505,7 @@ theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
 theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 
-@[simp, rclike_simps]
+@[simp 1100, rclike_simps]
 theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 
 @[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
