@@ -18,22 +18,19 @@ namespace AddChar
 section AddGroup
 variable [AddGroup G]
 
-section NormedField
-variable [Finite G] [NormedField K]
+section NormedDivisionRing
+variable [Finite G] [NormedDivisionRing K]
 
 @[simp] lemma norm_apply (ψ : AddChar G K) (x : G) : ‖ψ x‖ = 1 :=
-  (ψ.toMonoidHom.isOfFinOrder $ isOfFinOrder_of_finite _).norm_eq_one
+  (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
 
-@[simp] lemma coe_ne_zero (ψ : AddChar G K) : (ψ : G → K) ≠ 0 :=
-  ne_iff.2 ⟨0, fun h ↦ by simpa only [h, Pi.zero_apply, zero_ne_one] using map_zero_eq_one ψ⟩
-
-end NormedField
+end NormedDivisionRing
 
 section RCLike
 variable [RCLike K]
 
 lemma inv_apply_eq_conj [Finite G] (ψ : AddChar G K) (x : G) : (ψ x)⁻¹ = conj (ψ x) :=
-  RCLike.inv_eq_conj $ norm_apply _ _
+  RCLike.inv_eq_conj <| norm_apply _ _
 
 end RCLike
 end AddGroup
@@ -42,7 +39,7 @@ section AddCommGroup
 variable [AddCommGroup G] [RCLike K] {ψ₁ ψ₂ : AddChar G K}
 
 lemma map_neg_eq_conj [Finite G] (ψ : AddChar G K) (x : G) : ψ (-x) = conj (ψ x) := by
-  rw [map_neg_eq_inv, RCLike.inv_eq_conj $ norm_apply _ _]
+  rw [map_neg_eq_inv, inv_apply_eq_conj]
 
 end AddCommGroup
 end AddChar
