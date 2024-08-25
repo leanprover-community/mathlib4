@@ -71,7 +71,7 @@ instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
 lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
     K = e.inverse.inducedTopology J := by
   ext
-  simp [e.inverse.functorPushforward_mem_iff K J]
+  exact (e.inverse.functorPushforward_mem_iff K J).symm
 
 variable [e.inverse.IsDenseSubsite K J]
 
