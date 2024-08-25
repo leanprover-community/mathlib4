@@ -254,10 +254,16 @@ theorem ConvexOn.le_sup_of_mem_convexHull {t : Finset E} (hf : ConvexOn 𝕜 s f
   exact (hf.map_centerMass_le hw₀ (by positivity) hts).trans
     (centerMass_le_sup hw₀ <| by positivity)
 
-theorem inf_le_of_mem_convexHull {t : Finset E} (hf : ConcaveOn 𝕜 s f) (hts : ↑t ⊆ s)
+theorem ConvexOn.inf_le_of_mem_convexHull {t : Finset E} (hf : ConcaveOn 𝕜 s f) (hts : ↑t ⊆ s)
     (hx : x ∈ convexHull 𝕜 (t : Set E)) :
     t.inf' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f ≤ f x :=
   hf.dual.le_sup_of_mem_convexHull hts hx
+
+@[deprecated (since := "2024-08-25")]
+alias le_sup_of_mem_convexHull := ConvexOn.le_sup_of_mem_convexHull
+
+@[deprecated (since := "2024-08-25")]
+alias inf_le_of_mem_convexHull := ConvexOn.inf_le_of_mem_convexHull
 
 /-- If a function `f` is convex on `s`, then the value it takes at some center of mass of points of
 `s` is less than the value it takes on one of those points. -/
