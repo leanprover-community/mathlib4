@@ -312,6 +312,8 @@ lemma degree_mono {u : V} : Monotone (fun G => degree G u) := by
   simp at hv
   simpa using le hv
 
+@[gcongr] protected lemma GCongr.degree_le_degree {G H : SimpleGraph V} {u : V} (hGH : G ≤ H) :
+    degree G u ≤ degree G v := degree_mono h
 theorem IsRegularOfDegree.top [DecidableEq V] :
     (⊤ : SimpleGraph V).IsRegularOfDegree (Fintype.card V - 1) := by
   intro v
