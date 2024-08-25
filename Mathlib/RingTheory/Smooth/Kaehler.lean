@@ -55,7 +55,7 @@ def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 
       RingHom.id_apply, Submodule.coe_smul_of_tower]
     ring
   map_one_eq_zero' := by simp only [LinearMap.coe_mk, AddHom.coe_mk, map_one, sub_self,
-    AddSubmonoid.mk_eq_zero]
+    Submodule.mk_eq_zero]
   leibniz' a b := by
     have : (a - g (f a)) * (b - g (f b)) = 0 := by
       rw [← Ideal.mem_bot, ← hf', pow_two]
@@ -66,7 +66,7 @@ def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 
     rw [← sub_eq_zero]
     conv_rhs => rw [← neg_zero, ← this]
     simp only [LinearMap.coe_mk, AddHom.coe_mk, map_mul, SetLike.mk_smul_mk, smul_eq_mul, mul_sub,
-      AddSubmonoid.mk_add_mk, sub_mul, neg_sub]
+      AddMemClass.mk_add_mk, sub_mul, neg_sub]
     ring
 
 variable (hf' : (RingHom.ker (algebraMap P S)) ^ 2 = ⊥)
