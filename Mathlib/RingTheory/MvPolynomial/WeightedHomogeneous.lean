@@ -80,7 +80,6 @@ variable [AddCommMonoid M]
 
 /-! ### `weight` -/
 
-
 section SemilatticeSup
 
 variable [SemilatticeSup M]
@@ -120,6 +119,15 @@ theorem weightedTotalDegree'_add (w : σ → M) {φ ψ : MvPolynomial σ R} :
     exact le_trans (le_weightedTotalDegree' _ hd) (le_sup_right)
   · rw [← ne_eq, ← mem_support_iff] at h
     exact le_trans (le_weightedTotalDegree' _ h) (le_sup_left)
+
+theorem weightedTotalDegree'_mono {M : Type*} [CanonicallyLinearOrderedAddCommMonoid M]
+    {w w' : σ → M} (h : w ≤ w') (φ : MvPolynomial σ R) :
+    φ.weightedTotalDegree' w ≤ φ.weightedTotalDegree' w' := by
+  simp only [weightedTotalDegree']
+  apply Finset.sup_mono_fun
+  intro c _
+  simp only [WithBot.coe_le_coe, weight_apply]
+  exact Finset.sum_le_sum fun i _ ↦ nsmul_le_nsmul_right (h i) (c i)
 
 end SemilatticeSup
 
@@ -180,6 +188,7 @@ theorem weightedTotalDegree_coe (w : σ → M) (p : MvPolynomial σ R) (hp : p �
     simpa [weightedTotalDegree'] using hm'
 
 /-- The `weightedTotalDegree` of the zero polynomial is `⊥`. -/
+@[simp]
 theorem weightedTotalDegree_zero (w : σ → M) :
     weightedTotalDegree w (0 : MvPolynomial σ R) = ⊥ := by
   simp only [weightedTotalDegree, support_zero, Finset.sup_empty]
@@ -209,6 +218,15 @@ section CanonicallyLinearOrderedAddCommMonoid
 
 variable {M : Type*} [CanonicallyLinearOrderedAddCommMonoid M]
 
+theorem weightedTotalDegree_mono {w w' : σ → M} (h : w ≤ w') (φ : MvPolynomial σ R) :
+    φ.weightedTotalDegree w ≤ φ.weightedTotalDegree w' := by
+  by_cases hφ : φ = 0
+  · simp only [hφ, weightedTotalDegree_zero]
+    exact le_refl _
+  · rw [← WithBot.coe_le_coe]
+    simp only [← weightedTotalDegree_coe _ _ hφ]
+    apply weightedTotalDegree'_mono h
+
 theorem weightedTotalDegree_eq_zero_iff (w : σ → M) {φ : MvPolynomial σ R} :
     φ.weightedTotalDegree w = 0 ↔ ∀ d ∈ φ.support, weight w d = 0 := by 
   rw [← bot_eq_zero, eq_bot_iff]
@@ -221,7 +239,13 @@ theorem exists_coeff_ne_zero_and_weight_eq (w : σ → M) {φ : MvPolynomial σ 
   rw [weightedTotalDegree_coe w _ hφ, WithBot.coe_inj] at h
   exact ⟨d, hd, h⟩
 
-theorem weightedTotalDegree_mul_le_add (w : σ → M) {φ ψ : MvPolynomial σ R} :
+theorem weightedTotalDegree_monomial {w : σ → M} {c : σ →₀ ℕ} {r : R} [h : Decidable (r = 0)] :
+    weightedTotalDegree w (monomial c r) = if r = 0 then 0 else weight w c := by
+  split_ifs with hr
+  · simp [hr]
+  · simp [weightedTotalDegree, support_monomial, if_neg hr]
+
+theorem weightedTotalDegree_mul (w : σ → M) {φ ψ : MvPolynomial σ R} :
     (φ * ψ).weightedTotalDegree w ≤ (φ.weightedTotalDegree w) + (ψ.weightedTotalDegree w) := by
   classical
   rw [weightedTotalDegree_le_iff]
@@ -243,7 +267,7 @@ theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCanc
     (hφ : φ ≠ 0) (hψ : ψ ≠ 0) :
     (φ * ψ).weightedTotalDegree w = (φ.weightedTotalDegree w) + (ψ.weightedTotalDegree w) := by
   classical
-  apply le_antisymm (weightedTotalDegree_mul_le_add w)
+  apply le_antisymm (weightedTotalDegree_mul w)
   have hφ' : (φ.support.filter (fun d ↦ weight w d = φ.weightedTotalDegree w)).Nonempty := by 
     simp only [Finset.Nonempty, mem_filter, mem_support_iff]
     exact exists_coeff_ne_zero_and_weight_eq w hφ

@@ -52,6 +52,11 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     Finsupp.total, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id, Algebra.id.smul_eq_mul, mul_one]
 
+theorem totalDegree_mul_eq [IsDomain R] {φ ψ : MvPolynomial σ R} (hφ : φ ≠ 0) (hψ : ψ ≠ 0) :
+    (φ * ψ).totalDegree = φ.totalDegree + ψ.totalDegree := by 
+  simp only [← weightedTotalDegree_one]
+  exact weightedTotalDegree_mul_eq _ hφ hψ
+
 variable (σ R)
 
 /-- The submodule of homogeneous `MvPolynomial`s of degree `n`. -/
@@ -108,7 +113,7 @@ variable (σ)
 
 theorem totalDegree_eq_zero_iff (p : MvPolynomial σ R) :
     p.totalDegree = 0 ↔ ∀ (m : σ →₀ ℕ) (_ : m ∈ p.support) (x : σ), m x = 0 := by
-  rw [← weightedTotalDegree_one, weightedTotalDegree_eq_zero_iff _ p]
+  rw [← weightedTotalDegree_one, NonTorsionWeight.weightedTotalDegree_eq_zero_iff]
   exact nonTorsionWeight_of (Function.const σ one_ne_zero)
 
 theorem totalDegree_zero_iff_isHomogeneous {p : MvPolynomial σ R} :
