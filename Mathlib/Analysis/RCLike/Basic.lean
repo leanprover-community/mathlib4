@@ -505,11 +505,13 @@ theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
 theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 
-@[rclike_simps] -- porting note (#10618): was `simp`
-theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
+@[simp, rclike_simps]
+theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
+
+@[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
 
 instance (priority := 100) : CStarRing K where
-  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj).symm
+  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
 /-! ### Cast lemmas -/
 
@@ -577,13 +579,24 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 
+@[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
+
 @[simp, rclike_simps]
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
 
+@[simp, rclike_simps]
+lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖₊ = OfNat.ofNat n :=
+  nnnorm_natCast n
+
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   rw [← Nat.cast_smul_eq_nsmul K, norm_smul, RCLike.norm_natCast, nsmul_eq_mul]
+
+variable (K) in
+lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+    ‖n • x‖₊ = n • ‖x‖₊ := by
+  ext; simpa [nnnorm, norm_nsmul, Nat.cast_smul_eq_nsmul] using norm_nsmul K n x
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
@@ -591,6 +604,7 @@ attribute [rclike_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_
 
 -- Porting note: removed @[simp, rclike_simps], b/c generalized to `norm_ofNat`
 theorem norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
+theorem nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
 
 theorem abs_re_le_norm (z : K) : |re z| ≤ ‖z‖ := by
   rw [mul_self_le_mul_self_iff (abs_nonneg _) (norm_nonneg _), abs_mul_abs_self, mul_self_norm]
