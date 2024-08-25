@@ -1156,20 +1156,14 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 theorem norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n :=
   abs_of_nonneg n.cast_nonneg
 
-@[simp]
-theorem nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n :=
-  NNReal.eq <| norm_natCast _
+@[simp 1100] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
 
 @[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
 @[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
 -- Porting note (#10618): `simp` can prove this
-theorem norm_two : ‖(2 : ℝ)‖ = 2 :=
-  abs_of_pos zero_lt_two
-
-@[simp]
-theorem nnnorm_two : ‖(2 : ℝ)‖₊ = 2 :=
-  NNReal.eq <| by simp
+lemma norm_two : ‖(2 : ℝ)‖ = 2 := abs_of_pos zero_lt_two
+lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp
 
 theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
   NNReal.eq <| norm_of_nonneg hr
