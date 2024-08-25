@@ -132,10 +132,10 @@ def castOrderEmbedding : ℚ≥0 ↪o K :=
 @[simp] lemma cast_pos : (0 : K) < q ↔ 0 < q := by norm_cast
 @[norm_cast] lemma cast_lt_zero : (q : K) < 0 ↔ q < 0 := by norm_cast
 @[simp] lemma not_cast_lt_zero : ¬(q : K) < 0 := mod_cast not_lt_zero'
-@[simp, norm_cast] lemma cast_le_one : (p : K) ≤ 1 ↔ p ≤ 1 := by norm_cast
-@[simp, norm_cast] lemma one_le_cast : 1 ≤ (p : K) ↔ 1 ≤ p := by norm_cast
-@[simp, norm_cast] lemma cast_lt_one : (p : K) < 1 ↔ p < 1 := by norm_cast
-@[simp, norm_cast] lemma one_lt_cast : 1 < (p : K) ↔ 1 < p := by norm_cast
+@[simp] lemma cast_le_one : (p : K) ≤ 1 ↔ p ≤ 1 := by norm_cast
+@[simp] lemma one_le_cast : 1 ≤ (p : K) ↔ 1 ≤ p := by norm_cast
+@[simp] lemma cast_lt_one : (p : K) < 1 ↔ p < 1 := by norm_cast
+@[simp] lemma one_lt_cast : 1 < (p : K) ↔ 1 < p := by norm_cast
 
 @[simp, norm_cast] lemma cast_min (p q : ℚ≥0) : (↑(min p q) : K) = min (p : K) (q : K) :=
   (@cast_mono K _).map_min
