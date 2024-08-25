@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 
