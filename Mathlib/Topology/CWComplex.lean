@@ -23,20 +23,22 @@ https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/to
 
 open CategoryTheory
 
+universe u
+
 namespace RelativeCWComplex
 
 /-- The `n`-dimensional sphere is the set of points in ℝⁿ⁺¹ whose norm equals `1`, endowed with the
 subspace topology. -/
-noncomputable def sphere (n : ℤ) : TopCat :=
-  TopCat.of <| Metric.sphere (0 : EuclideanSpace ℝ <| Fin <| Int.toNat <| n + 1) 1
+noncomputable def sphere (n : ℤ) : TopCat.{u} :=
+  TopCat.of <| ULift <| Metric.sphere (0 : EuclideanSpace ℝ <| Fin <| Int.toNat <| n + 1) 1
 
 /-- The `n`-dimensional closed disk is the set of points in ℝⁿ whose norm is at most `1`, endowed
 with the subspace topology. -/
-noncomputable def disk (n : ℤ) : TopCat :=
-  TopCat.of <| Metric.closedBall (0 : EuclideanSpace ℝ <| Fin <| Int.toNat n) 1
+noncomputable def disk (n : ℤ) : TopCat.{u} :=
+  TopCat.of <| ULift <| Metric.closedBall (0 : EuclideanSpace ℝ <| Fin <| Int.toNat n) 1
 
 /-- `𝕊 n` denotes the `n`-dimensional sphere. -/
-scoped notation "𝕊 "n => sphere n
+scoped notation "𝕊 " => sphere
 
 /-- `𝔻 n` denotes the `n`-dimensional closed disk. -/
 scoped notation "𝔻 "n => disk n
@@ -44,8 +46,8 @@ scoped notation "𝔻 "n => disk n
 /-- The inclusion map from the `n`-sphere to the `(n+1)`-disk -/
 def sphereInclusion (n : ℤ) : (𝕊 n) ⟶ (𝔻 n + 1) where
   toFun := fun ⟨p, hp⟩ ↦ ⟨p, le_of_eq hp⟩
-  continuous_toFun := ⟨fun _ ⟨_, _, h⟩ ↦ by
-    rw [isOpen_induced_iff, ← h]
+  continuous_toFun := ⟨fun t ⟨s, ⟨r, hro, hrt⟩, hst⟩ ↦ by
+    rw [isOpen_induced_iff, ← hst, ← hrt]
     tauto⟩
 
 /-- The inclusion map from the disjoint union of `n`-spheres to the disjoint union of `(n+1)`-disks,
@@ -57,13 +59,13 @@ def sigmaSphereInclusion (n : ℤ) (cells : Type) :
 
 /-- Given an attaching map for each `n`-sphere, we construct the attaching map for the disjoint
 union of the `n`-spheres. -/
-def sigmaAttachMap (X : TopCat) (n : ℤ) (cells : Type) (attach_maps : cells → C(𝕊 n, X)) :
+def sigmaAttachMap (X : TopCat.{u}) (n : ℤ) (cells : Type) (attach_maps : cells → C(𝕊 n, X)) :
     TopCat.of (Σ (_ : cells), 𝕊 n) ⟶ X where
   toFun := fun ⟨i, x⟩ ↦ attach_maps i x
   continuous_toFun := continuous_sigma fun i ↦ (attach_maps i).continuous_toFun
 
 /-- A type witnessing that `X'` is obtained from `X` by attaching `(n+1)`-disks -/
-structure AttachCells (X X' : TopCat) (n : ℤ) where
+structure AttachCells (X X' : TopCat.{u}) (n : ℤ) where
   /-- The index type over the `(n+1)`-disks -/
   cells : Type
   /-- For each `(n+1)`-disk, we have an attaching map from its boundary, namely an `n`-sphere,
@@ -75,7 +77,7 @@ structure AttachCells (X X' : TopCat) (n : ℤ) where
 
 /-- The inclusion map from `X` to `X'`, given that `X'` is obtained from `X` by attaching
 `(n+1)`-disks -/
-noncomputable def AttachCells.inclusion (X X' : TopCat) (n : ℤ)
+noncomputable def AttachCells.inclusion (X X' : TopCat.{u}) (n : ℤ)
     (att : AttachCells X X' n) : X ⟶ X' :=
   @Limits.pushout.inr TopCat _ _ _ X
     (sigmaSphereInclusion n att.cells)
@@ -88,12 +90,16 @@ end RelativeCWComplex
 space, and each `sk (n+1)` (i.e., the `n`-skeleton) is obtained from `sk n` (i.e., the
 `(n-1)`-skeleton) by attaching `n`-disks. -/
 structure RelativeCWComplex where
-  sk : ℕ → TopCat
+  /-- The skeletons. Note: `sk i` is usually called the `(i-1)`-skeleton in the math literature. -/
+  sk : ℕ → TopCat.{u}
+  /-- Each `sk (n+1)` (i.e., the `n`-skeleton) is obtained from `sk n` (i.e., the
+  `(n-1)`-skeleton) by attaching `n`-disks. -/
   attach_cells : (n : ℕ) → RelativeCWComplex.AttachCells (sk n) (sk (n + 1)) (n - 1)
 
 /-- A CW-complex is a relative CW-complex whose `sk 0` (i.e., `(-1)`-skeleton) is empty. -/
-structure CWComplex extends RelativeCWComplex where
-  sk_zero_empty : sk 0 = TopCat.of Empty
+structure CWComplex extends RelativeCWComplex.{u} where
+  /-- `sk 0` (i.e., the `(-1)`-skeleton) is empty. -/
+  sk_zero_empty : sk 0 = TopCat.of (ULift Empty)
 
 namespace RelativeCWComplex
 
@@ -101,11 +107,11 @@ noncomputable section
 
 /-- The inclusion map from `sk n` (i.e., the `(n-1)`-skeleton) to `sk (n+1)` (i.e., the
 `n`-skeleton) of a relative CW-complex -/
-def inclusion (X : RelativeCWComplex) (n : ℕ) : X.sk n ⟶ X.sk (n + 1) :=
+def inclusion (X : RelativeCWComplex.{u}) (n : ℕ) : X.sk n ⟶ X.sk (n + 1) :=
   RelativeCWComplex.AttachCells.inclusion (X.sk n) (X.sk (n + 1)) (n - 1) (X.attach_cells n)
 
 /-- The topology on a relative CW-complex -/
-def toTopCat (X : RelativeCWComplex) : TopCat :=
+def toTopCat (X : RelativeCWComplex.{u}) : TopCat.{u} :=
   Limits.colimit <| Functor.ofSequence <| inclusion X
 
 instance : Coe RelativeCWComplex TopCat where coe X := toTopCat X
