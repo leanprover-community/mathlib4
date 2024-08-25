@@ -111,18 +111,16 @@ namespace QuasiErgodic
 
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
-theorem ae_empty_or_univ' (hf : QuasiErgodic f μ) (hs : MeasurableSet s) (hs' : f ⁻¹' s =ᵐ[μ] s) :
-    s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
-  obtain ⟨t, h₀, h₁, h₂⟩ := hf.toQuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae hs hs'
-  rcases hf.ae_empty_or_univ h₀ h₂ with (h₃ | h₃) <;> [left; right] <;> exact ae_eq_trans h₁.symm h₃
+theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
+    (hs : f ⁻¹' s =ᵐ[μ] s) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
+  let ⟨_t, h₀, h₁, h₂⟩ := hf.toQuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae hsm hs
+  (hf.ae_empty_or_univ h₀ h₂).imp h₁.symm.trans h₁.symm.trans
 
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
-theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
-  let ⟨t, htm, hst⟩ := hsm
-  have : f ⁻¹' t =ᵐ[μ] t := (hf.preimage_ae_eq hst.symm).trans <| hs.trans hst
-  (hf.ae_empty_or_univ' htm this).imp hst.trans hst.trans
+theorem ae_empty_or_univ' (hf : QuasiErgodic f μ) (hs : MeasurableSet s) (hs' : f ⁻¹' s =ᵐ[μ] s) :
+    s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
+  ae_empty_or_univ₀ hf hs.nullMeasurableSet hs'
 
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
