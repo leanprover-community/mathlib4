@@ -38,7 +38,7 @@ transformations:
 
 -/
 
-namespace CategoryTheory.Pseudofunctor
+namespace CategoryTheory
 
 open Category Bicategory
 
@@ -243,4 +243,4 @@ instance : CategoryStruct (Pseudofunctor B C) where
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
 
-end CategoryTheory.Pseudofunctor
+end CategoryTheory
