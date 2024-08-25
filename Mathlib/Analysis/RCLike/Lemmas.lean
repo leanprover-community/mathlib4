@@ -1,19 +1,15 @@
 /-
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis, Yaël Dillies
+Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.RCLike.Basic
 
 /-! # Further lemmas about `RCLike` -/
 
-open Function
-open scoped ComplexConjugate
 
-variable {G K E : Type*}
-
-variable [RCLike K]
+variable {K E : Type*} [RCLike K]
 
 namespace Polynomial
 
