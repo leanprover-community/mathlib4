@@ -584,7 +584,7 @@ private lemma isCompl_genWeightSpace_zero_posFittingComp_aux
   · suffices IsNilpotent R L M by simp [M₀, M₁, isCompl_top_bot]
     replace h : M₀ = ⊤ := by simpa [M₀, genWeightSpace]
     rw [← LieModule.isNilpotent_of_top_iff', ← h]
-    infer_instance
+    exact LieModule.instIsNilpotentSubtypeMemSubmoduleGenWeightSpaceOfNatForallOfIsNoetherian M
   · set M₀ₓ := genWeightSpaceOf M (0 : R) x
     set M₁ₓ := posFittingCompOf R M x
     set M₀ₓ₀ := genWeightSpace M₀ₓ (0 : L → R)
