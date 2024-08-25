@@ -44,24 +44,26 @@ section MulArchimedean
 
 /-- An ordered commutative monoid is called `MulArchimedean` if for any two elements `x`, `y`
 such that `1 < y`, there exists a natural number `n` such that `x ≤ y ^ n`. -/
+@[to_additive Archimedean]
 class MulArchimedean (α) [OrderedCommMonoid α] : Prop where
   /-- For any two elements `x`, `y` such that `1 < y`, there exists a natural number `n`
   such that `x ≤ y ^ n`. -/
   arch : ∀ (x : α) {y : α}, 1 < y → ∃ n : ℕ, x ≤ y ^ n
 
-attribute [to_additive Archimedean] MulArchimedean
 end MulArchimedean
 
 @[to_additive]
-instance OrderDual.mulArchimedean [OrderedCommGroup α] [MulArchimedean α] : MulArchimedean αᵒᵈ :=
+instance OrderDual.instMulArchimedean [OrderedCommGroup α] [MulArchimedean α] :
+    MulArchimedean αᵒᵈ :=
   ⟨fun x y hy =>
     let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (inv_lt_one_iff_one_lt.2 hy)
     ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
 
-instance Additive.Archimedean [OrderedCommGroup α] [MulArchimedean α] : Archimedean (Additive α) :=
+instance Additive.instArchimedean [OrderedCommGroup α] [MulArchimedean α] :
+    Archimedean (Additive α) :=
   ⟨fun x _ hy ↦ MulArchimedean.arch (toMul x) hy⟩
 
-instance Multiplicative.MulArchimedean [OrderedAddCommGroup α] [Archimedean α] :
+instance Multiplicative.instMulArchimedean [OrderedAddCommGroup α] [Archimedean α] :
     MulArchimedean (Multiplicative α) :=
   ⟨fun x _ hy ↦ Archimedean.arch (toAdd x) hy⟩
 
@@ -400,18 +402,18 @@ instance : Archimedean ℤ :=
 instance : Archimedean ℚ :=
   archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
 
-instance Nonneg.archimedean [OrderedAddCommMonoid α] [Archimedean α] :
+instance Nonneg.instArchimedean [OrderedAddCommMonoid α] [Archimedean α] :
     Archimedean { x : α // 0 ≤ x } :=
   ⟨fun x y hy =>
     let ⟨n, hr⟩ := Archimedean.arch (x : α) (hy : (0 : α) < y)
     ⟨n, show (x : α) ≤ (n • y : { x : α // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
 
-instance Nonneg.mulArchimedean [StrictOrderedCommSemiring α] [Archimedean α] [ExistsAddOfLE α] :
+instance Nonneg.instMulArchimedean [StrictOrderedCommSemiring α] [Archimedean α] [ExistsAddOfLE α] :
     MulArchimedean { x : α // 0 ≤ x } :=
   ⟨fun x _ hy ↦ (pow_unbounded_of_one_lt x hy).imp fun _ h ↦ h.le⟩
 
-instance : Archimedean NNRat := Nonneg.archimedean
-instance : MulArchimedean NNRat := Nonneg.mulArchimedean
+instance : Archimedean NNRat := Nonneg.instArchimedean
+instance : MulArchimedean NNRat := Nonneg.instMulArchimedean
 
 /-- A linear ordered archimedean ring is a floor ring. This is not an `instance` because in some
 cases we have a computable `floor` function. -/
