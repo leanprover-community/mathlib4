@@ -710,6 +710,8 @@ def ofDiagEquivalence (X : T × T) :
       symm
       apply eta) (by aesop_cat))
 
+/-- A version of `StructuredArrow.ofDiagEquivalence` with the roles of the first and second
+projection swapped. -/
 def ofDiagEquivalence' (X : T × T) :
     StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.1 (Under.forget X.2) :=
   (ofDiagEquivalence X).trans
@@ -771,6 +773,8 @@ def ofDiagEquivalence (X : T × T) :
       symm
       apply eta) (by aesop_cat))
 
+/-- A version of `CostructuredArrow.ofDiagEquivalence` with the roles of the first and second
+projection swapped. -/
 def ofDiagEquivalence' (X : T × T) :
     CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.2) X.1 :=
   (ofDiagEquivalence X).trans
