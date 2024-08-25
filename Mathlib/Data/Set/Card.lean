@@ -614,6 +614,16 @@ theorem ncard_exchange' {a b : α} (ha : a ∉ s) (hb : b ∈ s) :
   rw [← ncard_exchange ha hb, ← singleton_union, ← singleton_union, union_diff_distrib,
     @diff_singleton_eq_self _ b {a} fun h ↦ ha (by rwa [← mem_singleton_iff.mp h])]
 
+lemma odd_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a ∉ s) :
+    Odd (insert a s).ncard ↔ Even s.ncard := by
+  rw [ncard_insert_of_not_mem ha hs, Nat.odd_add]
+  simp only [Nat.odd_add, Nat.odd_iff_not_even, Nat.not_even_one, iff_false, Decidable.not_not]
+
+lemma even_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a ∉ s) :
+    Even (insert a s).ncard ↔ Odd s.ncard := by
+  rw [ncard_insert_of_not_mem ha hs, Nat.even_add]
+  simp only [Nat.not_even_one, iff_false, Nat.odd_iff_not_even]
+
 end InsertErase
 
 variable {f : α → β}
@@ -988,6 +998,15 @@ theorem one_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     1 < s.ncard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_ncard hs]
   simp only [exists_prop, exists_and_left]
+
+lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s := by toFinite_tac)
+    (he : Even (s.ncard)) : 1 < s.ncard := by
+  have : s.ncard ≠ 0 := by
+    intro h
+    rw [Set.nonempty_iff_ne_empty] at hn
+    exact hn <| (Set.ncard_eq_zero hs).mp h
+  have : s.ncard ≠ 1 := fun h ↦ by simp [h] at he
+  omega
 
 theorem two_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     2 < s.ncard ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
