@@ -37,6 +37,14 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup 
     simp only [map_zero] at hf
     exact ⟨f, hf.ne'⟩⟩
 
+instance {E 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
+    [Module ℝ E] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [ContinuousSMul ℝ E] [IsScalarTower ℝ 𝕜 E]
+    [LocallyConvexSpace ℝ E] [T1Space E] : SeparatingDual 𝕜 E :=
+  ⟨fun x hx ↦ by
+    rcases RCLike.geometric_hahn_banach_point_point hx.symm (𝕜 := 𝕜) with ⟨f, hf⟩
+    simp only [map_zero] at hf
+    exact ⟨f, hf.ne'⟩⟩
+
 instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
     rcases exists_dual_vector 𝕜 x hx with ⟨f, -, hf⟩
