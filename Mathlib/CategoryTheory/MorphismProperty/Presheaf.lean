@@ -39,7 +39,7 @@ Given `hf : Presheaf.representable f`, with `f : F ⟶ G` and `g : yoneda.obj X 
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits MorphismProperty
 
 universe v u
 
@@ -198,6 +198,38 @@ instance : IsIso (hf'.symmetry hg) :=
   (hf'.symmetryIso hg).isIso_hom
 
 end
+
+/-- When `C` has pullbacks, then `yoneda.map f` is representable for any `f : X ⟶ Y`. -/
+lemma yoneda_map [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    Presheaf.representable (yoneda.map f) := fun Z g ↦ by
+  obtain ⟨g, rfl⟩ := yoneda.map_surjective g
+  refine ⟨Limits.pullback f g, Limits.pullback.snd f g, yoneda.map (Limits.pullback.fst f g), ?_⟩
+  apply yoneda.map_isPullback <| IsPullback.of_hasPullback f g
+
+lemma of_isIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] :
+    Presheaf.representable f :=
+  fun X g ↦ ⟨X, 𝟙 X, g ≫ inv f, IsPullback.of_vert_isIso ⟨by simp⟩⟩
+
+lemma isomorphisms_le :
+    MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
+  fun _ _ f hf ↦ letI : IsIso f := hf; of_isIso f
+
+instance isMultiplicative :
+    IsMultiplicative (Presheaf.representable (C := C)) where
+  id_mem _ := of_isIso _
+  comp_mem {F G H} f g hf hg := fun X h ↦
+    ⟨hf.pullback (hg.fst h), hf.snd (hg.fst h) ≫ hg.snd h, hf.fst (hg.fst h),
+      by simpa using IsPullback.paste_vert (hf.isPullback (hg.fst h)) (hg.isPullback h)⟩
+
+lemma stableUnderBaseChange :
+    StableUnderBaseChange (Presheaf.representable (C := C)) := by
+  intro F G G' H f g f' g' P₁ hg X h
+  refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
+  apply P₁.lift (hg.fst (h ≫ f)) (yoneda.map (hg.snd (h ≫ f)) ≫ h) (hg.w (h ≫ f))
+  apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
+
+lemma respectsIso : RespectsIso (Presheaf.representable (C := C)) :=
+  stableUnderBaseChange.respectsIso
 
 end Presheaf.representable
 
