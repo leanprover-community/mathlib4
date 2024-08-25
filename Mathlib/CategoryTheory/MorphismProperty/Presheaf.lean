@@ -18,25 +18,21 @@ In this file we define and develop basic results on the representability of morp
 
 * `Presheaf.representable` is a `MorphismProperty` expressing the fact that a morphism of presheaves
   is representable.
-* `MorphismProperty.presheaf`: given a `P : MorphismProperty C`, we say that a morphism of
-  presheaves `f : F ⟶ G` satisfies `P.presheaf` if it is representable, and the property `P`
-  holds for the preimage under yoneda of pullbacks of `f` by morphisms `g : yoneda.obj X ⟶ G`.
 
 ## API
 
-## Main results
+Given `hf : Presheaf.representable f`, with `f : F ⟶ G` and `g : yoneda.obj X ⟶ G`, we provide:
+* `hf.pullback g` which is the object in `C` such that `yoneda.obj (hf.pullback g)` forms a
+  pullback square of `f` and `g`.
+* `hf.snd g` is the morphism `hf.pullback g ⟶ X`
+* `hf.fst g` is the morphism `yoneda.obj (hf.pullback g) ⟶ F`
+*  Whenever `f` is of type `yoneda.obj Y ⟶ G`, we also have `hf.fst' g` which is the preimage
+   under `yoneda` of `hf.fst g`.
+* `hom_ext`, `hom_ext'`, `lift`, `lift'` are variants of the universal property of
+  `yoneda.obj (hf.pullback g)`, where as much as possible have been formulated internally to `C`.
 
-* `representable_isMultiplicative`: The class of representable morphisms is multiplicative.
-* `representable_stableUnderBaseChange`: Being representable is stable under base change.
-* `representable_of_isIso`: Isomorphisms are representable
-
-* `presheaf_yoneda_map`: If `f : X ⟶ Y` satisfies `P`, and `P` is stable under compostions,
-  then `yoneda.map f` satisfies `P.presheaf`.
-
-* `presheaf_stableUnderBaseChange`: `P.presheaf` is stable under base change
-* `presheaf_respectsIso`: `P.presheaf` respects isomorphisms
-* `presheaf_isStableUnderComposition`: If `P` is stable under composition, then so is `P.presheaf`
-* `presheaf_isMultiplicative`: If `P` is multiplicative and respects isos, so is `P.presheaf`
+* `symmetry` and `symmetryIso` are variants of the fact that pullbacks are symmetric for
+  representable morphisms, formulated internally to `C`.
 
 -/
 
