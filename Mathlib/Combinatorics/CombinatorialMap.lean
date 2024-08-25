@@ -166,14 +166,23 @@ variable {D D' : Type} {M : CombinatorialMap' D} {M' : CombinatorialMap' D'}
 @[simp]
 lemma involutive_trans : M.α.trans M.α = 1 := by
   rw [Equiv.trans]
-  congr <;> simp [M.involutive]
-
-lemma composition' : M.φ * M.σ * M.α = 1 :=
-  M.composition
+  congr <;> simp [M.involutive, M.involutive.symm_eq_self_of_involutive]
 
 lemma composition_apply {x : D} : M.φ (M.σ (M.α x)) = x := by
   convert_to M.α.trans (M.σ.trans M.φ) x = x
   simp [M.composition]
+
+lemma composition' : M.α * M.φ * M.σ = 1 := by
+  have : ∀ x, (M.α * M.φ * M.σ) (M.α x) = M.α x := by simp [composition_apply]
+  have (y : D) : (M.α * M.φ * M.σ) y = y := by
+    obtain ⟨t, h⟩ := M.α.surjective y
+    rw [← h, this]
+  ext x
+  exact this x
+
+lemma composition'_apply {x : D} : M.α (M.φ (M.σ x)) = x := by
+  convert_to (M.α * M.φ * M.σ) x = x
+  simp [M.composition']
 
 -- We only will care about the case of equivalences, but in this
 -- definition a homomorphism of combinatorial maps is sort of like a
@@ -212,20 +221,13 @@ def opp (M : CombinatorialMap' D) : CombinatorialMap' D where
   composition := by
     ext x
     simp only [Equiv.trans_apply, Equiv.Perm.coe_one, id_eq]
-    rw [M.involutive, M.involutive]
-    have : ∀ x, (M.α * M.φ * M.σ) (M.α x) = M.α x := by simp [composition_apply]
-    have (y : D) : (M.α * M.φ * M.σ) y = y := by
-      obtain ⟨t, h⟩ := M.α.surjective y
-      rw [← h, this]
-    exact this x
+    rw [M.involutive, M.involutive, composition'_apply]
 
 lemma φ_eq : M.φ = M.σ.symm.trans M.α := by
-  apply_fun Equiv.trans M.σ
-  apply_fun Equiv.trans M.α
-  rw [composition]
-  ext x
-  simp
-  sorry
-  sorry
+  have h : M.φ * M.σ * M.α = 1 := M.composition
+  replace h := congr($h * M.α⁻¹ * M.σ⁻¹)
+  rw [mul_inv_cancel_right, mul_inv_cancel_right, one_mul] at h
+  rw [← M.involutive.symm_eq_self_of_involutive, h]
+  rfl
 
 end CombinatorialMap'
