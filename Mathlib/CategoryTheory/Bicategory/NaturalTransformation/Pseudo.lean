@@ -238,7 +238,7 @@ end StrongTrans
 variable (B C)
 
 @[simps id comp]
-instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
+instance : CategoryStruct (Pseudofunctor B C) where
   Hom F G := StrongTrans F G
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
