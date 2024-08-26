@@ -223,7 +223,7 @@ lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x => (κ x s).toReal) μ := by
   refine Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
-    ((κ.measurable_coe  hs).ennreal_toReal.aestronglyMeasurable)
+    ((κ.measurable_coe hs).ennreal_toReal.aestronglyMeasurable)
     (ae_of_all μ fun x => ?_)
   rw [Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg,
     ENNReal.toReal_le_toReal (measure_ne_top _ _) (IsFiniteKernel.bound_ne_top _)]

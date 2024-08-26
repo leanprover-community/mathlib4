@@ -1151,7 +1151,7 @@ The main definitions in the section `GoodProducts` are as follows:
 ### Main results
 
 * The main results in the section `ExactSequence` are `succ_mono` and `succ_exact` which together
-  say that the secuence given by `πs` and `Linear_CC'` is left exact:
+  say that the sequence given by `πs` and `Linear_CC'` is left exact:
   ```
                                               f                        g
   0 --→ LocallyConstant (π C (ord I · < o)) ℤ --→ LocallyConstant C ℤ --→ LocallyConstant C' ℤ
