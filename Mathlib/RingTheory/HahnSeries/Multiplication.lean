@@ -117,6 +117,7 @@ def rec [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → So
 theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
+/-- HahnModule coefficient-wise map. -/
 def map {U : Type*} [Zero U] [SMul R U] (x : HahnModule Γ R U) (f : ZeroHom U V) :
     HahnModule Γ R V := (of R) (HahnSeries.map ((of R).symm x) f)
 
