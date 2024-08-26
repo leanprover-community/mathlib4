@@ -14,8 +14,6 @@ This file concerns adjoint triples `F ⊣ G ⊣ H` of functors `F H : C ⥤ D`, 
 Currently, the only result is that `F` is fully faithful if and only if `H` is fully faithful.
 -/
 
-open CategoryTheory Adjunction
-
 namespace CategoryTheory.Adjunction
 
 variable {C D : Type*} [Category C] [Category D]
