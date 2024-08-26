@@ -155,15 +155,16 @@ theorem exists_hopf_decomposition [SFinite μ] {e : α ≃ α}
       Conservative e (μ.restrict (⋃ n : ℤ, (e^n) ⁻¹' s)ᶜ) := by
   have := hem.measurable
   wlog hμ : IsFiniteMeasure μ generalizing μ
-  · rcases exists_isFiniteMeasure_null_iff μ with ⟨ν, hfin, hν⟩
-    rcases this (hem.mono (fun s ↦ (hν s).2) (fun s ↦ (hν s).1)) hfin with ⟨s, hsm, hsd, hsc⟩
+  · rcases exists_isFiniteMeasure_absolutelyContinuous μ with ⟨ν, hfin, hμν, hνμ⟩
+    rcases this (hem.mono hνμ hμν) hfin with ⟨s, hsm, hsd, hsc⟩
     refine ⟨s, hsm, ?_, hsc.congr_ae ?_⟩
     -- TODO: move to a lemma
-    · exact ⟨fun n hn ↦ (hν _).1 <| hsd.1 hn⟩
+    · exact ⟨fun n hn ↦ hμν <| hsd.1 hn⟩
     -- TODO: move to a lemma
     · ext t
-      have : MeasurableSet (⋃ n : ℤ, (e^n) ⁻¹' s)ᶜ := .compl <| by measurability
-      simp only [mem_ae_iff, Measure.restrict_apply' this, hν]
+      have H₁ : MeasurableSet (⋃ n : ℤ, (e^n) ⁻¹' s)ᶜ := .compl <| by measurability
+      have H₂ {u : Set α} : μ u = 0 ↔ ν u = 0 := ⟨fun h ↦ hνμ h, fun h ↦ hμν h⟩
+      simp only [mem_ae_iff, Measure.restrict_apply' H₁, H₂]
   rcases IsDissipativeSet.exists_max_measure μ hem.measurable hem' with ⟨s, hsd, hsm, hs⟩
   refine ⟨s, hsm, hsd, IsDissipativeSet.conservative_compl_saturation hem ?_⟩
   intro t htd htm
