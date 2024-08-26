@@ -50,9 +50,9 @@ def jacobiSum (χ ψ : MulChar R R') : R' :=
   ∑ x : R, χ x * ψ (1 - x)
 
 lemma jacobiSum_comm (χ ψ : MulChar R R') : jacobiSum χ ψ = jacobiSum ψ χ := by
-  simp only [jacobiSum]
-  convert (sum_one_sub_eq_sum fun x ↦ χ x * ψ (1 - x)).symm using 2 with x
-  simp only [mul_comm, sub_sub_cancel]
+  simp only [jacobiSum, mul_comm (χ _)]
+  rw [← sum_one_sub_eq_sum]
+  simp only [sub_sub_cancel]
 
 /-- The Jacobi sum is compatible with ring homomorphisms. -/
 lemma jacobiSum_ringHomComp {R'' : Type*} [CommRing R''] (χ ψ : MulChar R R') (f : R' →+* R'') :
