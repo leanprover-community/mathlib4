@@ -300,6 +300,10 @@
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
   "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
+  "Mathlib.RepresentationTheory.FdRep":
+  ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
+  "Mathlib.RepresentationTheory.FDRep":
+  ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.Probability.Notation":
   ["Mathlib.MeasureTheory.Decomposition.Lebesgue",
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
@@ -323,12 +327,11 @@
   "Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional": ["Mathlib.Init.Core"],
   "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
-  "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
+  "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Init.Data.List.Lemmas": ["Batteries.Data.List.Lemmas"],
   "Mathlib.Init.Data.List.Basic": ["Batteries.Data.List.Basic"],
-  "Mathlib.Init.Data.Int.Order": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Init.Data.Int.Basic": ["Batteries.Data.Int.Order"],
   "Mathlib.Init.Data.Bool.Lemmas": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
@@ -353,10 +356,12 @@
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
+  "Mathlib.Data.Int.Order.Basic": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Data.DFinsupp.Notation": ["Mathlib.Data.Finsupp.Notation"],
+  "Mathlib.Data.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Bool.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Monad.Cont": ["Batteries.Tactic.Congr"],

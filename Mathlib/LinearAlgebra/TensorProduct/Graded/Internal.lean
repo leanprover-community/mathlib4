@@ -189,7 +189,6 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   simp_rw [← lof_eq_of R]
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
-  rw [LinearEquiv.symm_symm]
   -- Note: #8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
   rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, map_smul,
     Int.cast_smul_eq_zsmul R, ← @Units.smul_def _ _ (_) (_)]

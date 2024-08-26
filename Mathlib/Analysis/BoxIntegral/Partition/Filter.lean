@@ -163,11 +163,8 @@ prepartition (and consider the special case `π = ⊥` separately if needed).
 integral, rectangular box, partition, filter
 -/
 
-
 open Set Function Filter Metric Finset Bool
-
-open scoped Classical
-open Topology Filter NNReal
+open scoped Classical Topology Filter NNReal
 
 noncomputable section
 
