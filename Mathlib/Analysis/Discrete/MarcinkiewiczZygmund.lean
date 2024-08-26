@@ -3,8 +3,8 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.Tactic.Positivity.Finset
 
@@ -63,9 +63,10 @@ private lemma step_one (hA : A.Nonempty) (f : α → ℝ) (a : n → α)
     _ = (∑ b in B, |∑ i, (f (a i) - f (b i))|) ^ (m + 1) / B.card ^ m / B.card := by
       rw [div_div, ← pow_succ]
     _ ≤ (∑ b in B, |∑ i, (f (a i) - f (b i))| ^ (m + 1)) / B.card := by
-      gcongr; exact pow_sum_div_card_le_sum_pow _ _ fun _ _ ↦ abs_nonneg _
+      gcongr; exact pow_sum_div_card_le_sum_pow (fun _ _ ↦ abs_nonneg _) _
     _ = _ := by simp [B]
 
+set_option linter.docPrime false in
 private lemma step_one' (hA : A.Nonempty) (f : α → ℝ) (hf : ∀ i, ∑ a in A ^^ n, f (a i) = 0) (m : ℕ)
     (a : n → α) :
     |∑ i, f (a i)| ^ m ≤ (∑ b in A ^^ n, |∑ i, (f (a i) - f (b i))| ^ m) / A.card ^ card n := by
@@ -107,7 +108,7 @@ private lemma step_two (f : α → ℝ) :
     ∑ a in B, ∑ b in B, (∑ i, ε i * (f (a i) - f (b i))) ^ (2 * m) =
       ∑ a in B, ∑ b in B, (∑ i, (f (a i) - f (b i))) ^ (2 * m) :=
     fun ε hε ↦ step_two_aux A f _ hε fun z : n → ℝ ↦ univ.sum z ^ (2 * m)
-  rw [Finset.sum_congr rfl this, sum_const, card_piFinset, card_pair, prod_const, card_univ,
+  rw [Finset.sum_congr rfl this, sum_const, card_piFinset, card_pair, prod_const, Finset.card_univ,
     nsmul_eq_mul, Nat.cast_pow, Nat.cast_two, inv_pow, inv_mul_cancel_left₀]
   · positivity
   · norm_num
@@ -153,9 +154,9 @@ private lemma end_step {f : α → ℝ} (hm : 1 ≤ m) (hA : A.Nonempty) :
       gcongr; exact step_six.trans <| step_seven.trans step_eight
     _ = _ := by
       simp only [mul_add, sum_add_distrib, sum_const, nsmul_eq_mul, ← mul_sum]
-      rw [← mul_add, ← mul_add, ← two_mul, card_piFinset, prod_const, card_univ, Nat.cast_pow,
-        mul_div_cancel_left₀ _ (by positivity), ← mul_assoc, mul_assoc _ _ 2, mul_comm 4, mul_pow,
-        ← pow_succ, add_assoc, Nat.sub_add_cancel hm, ← two_mul, pow_mul]
+      rw [← mul_add, ← mul_add, ← two_mul, card_piFinset, prod_const, Finset.card_univ,
+        Nat.cast_pow, mul_div_cancel_left₀ _ (by positivity), ← mul_assoc, mul_assoc _ _ 2,
+        mul_comm 4, mul_pow, ← pow_succ, add_assoc, Nat.sub_add_cancel hm, ← two_mul, pow_mul]
       norm_num
 
 namespace Real
@@ -205,8 +206,9 @@ theorem marcinkiewicz_zygmund (hm : m ≠ 0) (f : α → ℝ) (hf : ∀ i, ∑ a
     _ ≤ (4 * ↑(m + 1)) ^ (m + 1) * card n ^ m * ∑ a in A ^^ n, ∑ i, f (a i) ^ (2 * (m + 1)) := by
       simp_rw [mul_assoc, mul_sum]; rfl
   gcongr with a
-  rw [← div_le_iff' (by positivity)]
-  have := Real.pow_sum_div_card_le_sum_pow (f := fun i ↦ f (a i) ^ 2) univ m fun i _ ↦ by positivity
+  rw [← div_le_iff₀' (by positivity)]
+  have := pow_sum_div_card_le_sum_pow (f := fun i ↦ f (a i) ^ 2) (s := univ)
+    (fun i _ ↦ by positivity)  m
   simpa only [Finset.card_fin, pow_mul] using this
 
 end Real
@@ -235,9 +237,9 @@ lemma marcinkiewicz_zygmund (hm : m ≠ 0) (f : α → 𝕜) (hf : ∀ i, ∑ a 
       congr! with a
       have : 0 < card T := by simpa [T] using ht
       field_simp
-    _ ≤ ∑ a in B, card T ^ (m - 1) * (∑ t : T, ((∑ i, b.repr (f (a i)) t) ^ 2) ^ m) := by
+    _ ≤ ∑ a in B, card T ^ (m - 1) * ∑ t, ((∑ i, b.repr (f (a i)) t) ^ 2) ^ m := by
       gcongr with a
-      convert pow_sum_div_card_le_sum_pow (s := Finset.univ) (n := m - 1) ?_
+      convert pow_sum_div_card_le_sum_pow (α := ℝ) (s := univ) ?_ (m - 1)
       · rw [sub_one_add_one hm]
       · rw [sub_one_add_one hm]
       · intros; positivity
