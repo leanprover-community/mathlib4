@@ -182,7 +182,7 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   toFun x u := f (x u)
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 
-theorem to_unit_cont (f : Part α →o Part α) (hc : ωScottContinuous f) :
+theorem ωScottContinuous_toUnitMono (f : Part α →o Part α) (hc : ωScottContinuous f) :
     ωScottContinuous (toUnitMono f) := ωScottContinuous.of_map_ωSup_of_orderHom (
     fun _ => by
     ext ⟨⟩ : 1
