@@ -199,7 +199,7 @@ def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
         simp only
         rw [eraseLead_add_of_degree_lt_left]
         · simp
-        · simp [mem_degreeLT.1 hp] }
+        · simp [mem_degreeLT.1 hp]
 
 /-- For every polynomial `p` in the span of a set `s : Set R[X]`, there exists a polynomial of
   `p' ∈ s` with higher degree. See also `Polynomial.exists_degree_le_of_mem_span_of_finite`. -/
