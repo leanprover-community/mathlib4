@@ -254,8 +254,8 @@ v          v
 R --f''--> S''
 ```
 such that `φ` and `φ'` are strongly cocartesian morphisms, and such that `f' = f ≫ g` and
-`f'' = f' ≫ g'`. Then composing the induced map from `a'' ⟶ a'` with the induced map from
-`a' ⟶ a` gives the induced map from `a'' ⟶ a`. -/
+`f'' = f' ≫ g'`. Then composing the induced map from `b ⟶ b'` with the induced map from
+`b' ⟶ b''` gives the induced map from `b ⟶ b''`. -/
 @[reassoc (attr := simp)]
 lemma map_comp_map {S' S'' : 𝒮} {b' b'' : 𝒳} {f' : R ⟶ S'} {f'' : R ⟶ S''} {g : S ⟶ S'}
     {g' : S' ⟶ S''} (H : f' = f ≫ g) (H' : f'' = f' ≫ g') (φ' : a ⟶ b') (φ'' : a ⟶ b'')
