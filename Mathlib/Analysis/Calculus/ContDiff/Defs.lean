@@ -158,7 +158,7 @@ noncomputable section
 open scoped Classical
 open NNReal Topology Filter
 
-local notation "∞" => (⊤ : ℕ∞)
+-- local notation "∞" => (⊤ : ℕ∞)
 
 /-
 Porting note: These lines are not required in Mathlib4.
@@ -211,38 +211,49 @@ theorem contDiffWithinAt_nat {n : ℕ} :
 theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ n) :
     ContDiffWithinAt 𝕜 m f s x := by
   match n with
-  | ω => sorry
-  | (n : ℕ∞) =>
-      match m with
-      | ω => simp at hmn
-      | (m : ℕ∞) =>
-          simp at hmn
-          exact fun k hk => h k (le_trans hk hmn)
+  | ω => match m with
+    | ω => exact h
+    | (m : ℕ∞) =>
+      simp [ContDiffWithinAt] at h
+      sorry
+
+  | (n : ℕ∞) => match m with
+    | ω => simp at hmn
+    | (m : ℕ∞) =>
+        simp at hmn
+        exact fun k hk => h k (le_trans hk hmn)
 
 
-#exit
-
-
-theorem contDiffWithinAt_iff_forall_nat_le :
+theorem contDiffWithinAt_iff_forall_nat_le {n : ℕ∞} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∀ m : ℕ, ↑m ≤ n → ContDiffWithinAt 𝕜 m f s x :=
-  ⟨fun H _m hm => H.of_le hm, fun H m hm => H m hm _ le_rfl⟩
-
-#exit
+  ⟨fun H m hm => H.of_le (by exact_mod_cast hm), fun H m hm => H m hm _ le_rfl⟩
 
 theorem contDiffWithinAt_top : ContDiffWithinAt 𝕜 ∞ f s x ↔ ∀ n : ℕ, ContDiffWithinAt 𝕜 n f s x :=
   contDiffWithinAt_iff_forall_nat_le.trans <| by simp only [forall_prop_of_true, le_top]
 
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
-  rcases h 0 bot_le with ⟨u, hu, p, H⟩
+  have := h.of_le (zero_le _)
+  simp only [ContDiffWithinAt, nonpos_iff_eq_zero, Nat.cast_eq_zero,
+    mem_pure, forall_eq, CharP.cast_eq_zero] at this
+  rcases this with ⟨u, hu, p, H⟩
   rw [mem_nhdsWithin_insert] at hu
   exact (H.continuousOn.continuousWithinAt hu.1).mono_of_mem hu.2
 
 theorem ContDiffWithinAt.congr_of_eventuallyEq (h : ContDiffWithinAt 𝕜 n f s x)
-    (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContDiffWithinAt 𝕜 n f₁ s x := fun m hm =>
-  let ⟨u, hu, p, H⟩ := h m hm
-  ⟨{ x ∈ u | f₁ x = f x }, Filter.inter_mem hu (mem_nhdsWithin_insert.2 ⟨hx, h₁⟩), p,
-    (H.mono (sep_subset _ _)).congr fun _ => And.right⟩
+    (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContDiffWithinAt 𝕜 n f₁ s x := by
+  match n with
+  | ω =>
+    simp [ContDiffWithinAt] at h ⊢
+
+
+  | (n : ℕ∞) =>
+    intro m hm
+    let ⟨u, hu, p, H⟩ := h m hm
+    exact ⟨{ x ∈ u | f₁ x = f x }, Filter.inter_mem hu (mem_nhdsWithin_insert.2 ⟨hx, h₁⟩), p,
+      (H.mono (sep_subset _ _)).congr fun _ => And.right⟩
+
+#exit
 
 theorem ContDiffWithinAt.congr_of_eventuallyEq_insert (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[insert x s] x] f) : ContDiffWithinAt 𝕜 n f₁ s x :=
