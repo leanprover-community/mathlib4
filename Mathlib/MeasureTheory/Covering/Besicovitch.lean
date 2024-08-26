@@ -808,7 +808,7 @@ theorem exists_disjoint_closedBall_covering_ae_aux (μ : Measure α) [SFinite μ
         t.PairwiseDisjoint fun p => closedBall p.1 p.2 := by
   /- This is deduced from the finite measure case, by using a finite measure with respect to which
     the initial sigma-finite measure is absolutely continuous. -/
-  rcases exists_absolutelyContinuous_isFiniteMeasure μ with ⟨ν, hν, hμν⟩
+  rcases exists_isFiniteMeasure_absolutelyContinuous μ with ⟨ν, hν, hμν, -⟩
   rcases exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux ν f s hf with
     ⟨t, t_count, ts, tr, tν, tdisj⟩
   exact ⟨t, t_count, ts, tr, hμν tν, tdisj⟩
