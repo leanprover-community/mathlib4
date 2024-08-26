@@ -163,6 +163,13 @@ namespace CombinatorialMap'
 
 variable {D D' : Type} {M : CombinatorialMap' D} {M' : CombinatorialMap' D'}
 
+lemma φ_eq : M.φ = M.σ.symm.trans M.α := by
+  have h : M.φ * M.σ * M.α = 1 := M.composition
+  replace h := congr($h * M.α⁻¹ * M.σ⁻¹)
+  rw [mul_inv_cancel_right, mul_inv_cancel_right, one_mul] at h
+  rw [← M.involutive.symm_eq_self_of_involutive, h]
+  rfl
+
 @[simp]
 lemma involutive_trans : M.α.trans M.α = 1 := by
   rw [Equiv.trans]
@@ -223,11 +230,22 @@ def opp (M : CombinatorialMap' D) : CombinatorialMap' D where
     simp only [Equiv.trans_apply, Equiv.Perm.coe_one, id_eq]
     rw [M.involutive, M.involutive, composition'_apply]
 
-lemma φ_eq : M.φ = M.σ.symm.trans M.α := by
-  have h : M.φ * M.σ * M.α = 1 := M.composition
-  replace h := congr($h * M.α⁻¹ * M.σ⁻¹)
-  rw [mul_inv_cancel_right, mul_inv_cancel_right, one_mul] at h
-  rw [← M.involutive.symm_eq_self_of_involutive, h]
-  rfl
+-- Form the dual map.  This swaps the roles of vertices and faces
+def dual (M : CombinatorialMap' D) : CombinatorialMap' D where
+  σ := M.φ.symm
+  α := M.α.symm
+  φ := M.σ.symm
+  composition := by
+    ext x
+    apply_fun M.α * M.φ * M.σ
+    simp [composition'_apply]
+  involutive := by
+    have : M.α.symm = M.α := M.involutive.symm_eq_self_of_involutive
+    simp [this, M.involutive]
+  fixedPoints_isEmpty := by
+    have : M.α.symm = M.α := M.involutive.symm_eq_self_of_involutive
+    simp [this, M.fixedPoints_isEmpty]
+
+lemma double_dual_eq (M : CombinatorialMap' D) : M.dual.dual = M := rfl
 
 end CombinatorialMap'
