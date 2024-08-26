@@ -35,14 +35,14 @@ theorem MonotoneOn.map_csSup_of_continuousWithinAt {f : α → β} {A B : Set α
   --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
   have Mf' : MonotoneOn f A := mono Mf hAB
   .symm <| ((isLUB_csSup A_nonemp A_bdd).isLUB_of_tendsto Mf' A_nonemp <|
-    Cf.mono_left fun ⦃U⦄ a ↦ a).csSup_eq (A_nonemp.image f)
+    Cf.mono_left fun ⦃_⦄ a ↦ a).csSup_eq (A_nonemp.image f)
 
 /-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
 the supremum of the image of this set. -/
 theorem Monotone.map_csSup_of_continuousAt {f : α → β} {A : Set α}
     (Cf : ContinuousAt f (sSup A)) (Mf : Monotone f) (A_nonemp : A.Nonempty)
     (A_bdd : BddAbove A := by bddDefault) : f (sSup A) = sSup (f '' A) :=
-  MonotoneOn.map_csSup_of_continuousWithinAt (B := A) (fun ⦃a⦄ a ↦ a) Cf.continuousWithinAt
+  MonotoneOn.map_csSup_of_continuousWithinAt (B := A) (fun ⦃_⦄ a ↦ a) Cf.continuousWithinAt
     (Mf.monotoneOn _) A_nonemp A_bdd
 
 @[deprecated (since := "2024-08-26")] alias Monotone.map_sSup_of_continuousAt' :=
