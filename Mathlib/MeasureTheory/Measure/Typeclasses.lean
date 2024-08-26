@@ -536,17 +536,24 @@ instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
     by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
 
 variable (μ) in
-/-- An s-finite measure is absolutely continuous with respect to some finite measure. -/
-theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
-    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν := by
+/-- For an s-finite measure `μ`, there exists a finite measure `ν`
+such that each of `μ` and `ν` is absolutely continuous with respect to the other.
+-/
+theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
+    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν ∧ ν ≪ μ := by
   rcases ENNReal.exists_pos_tsum_mul_lt_of_countable top_ne_zero (sFiniteSeq μ · univ)
     fun _ ↦ measure_ne_top _ _ with ⟨c, hc₀, hc⟩
-  refine ⟨.sum fun n ↦ c n • sFiniteSeq μ n, ⟨?_⟩, ?_⟩
-  · simpa [mul_comm] using hc
-  · refine AbsolutelyContinuous.mk fun s hsm hs ↦ ?_
-    have : ∀ n, (sFiniteSeq μ n) s = 0 := by simpa [hsm, (hc₀ _).ne'] using hs
-    rw [← sum_sFiniteSeq μ, sum_apply _ hsm]
-    simp [this]
+  have {s : Set α} : sum (fun n ↦ c n • sFiniteSeq μ n) s = 0 ↔ μ s = 0 := by
+    conv_rhs => rw [← sum_sFiniteSeq μ, sum_apply_of_countable]
+    simp [(hc₀ _).ne']
+  refine ⟨.sum fun n ↦ c n • sFiniteSeq μ n, ⟨?_⟩, fun _ ↦ this.1, fun _ ↦ this.2⟩
+  simpa [mul_comm] using hc
+
+variable (μ) in
+@[deprecated exists_isFiniteMeasure_absolutelyContinuous (since := "2024-08-25")]
+theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
+    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν :=
+  let ⟨ν, hfin, h, _⟩ := exists_isFiniteMeasure_absolutelyContinuous μ; ⟨ν, hfin, h⟩
 
 end SFinite
 

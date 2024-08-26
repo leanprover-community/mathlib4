@@ -252,9 +252,9 @@ section SFinite
 lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [SFinite ν]
     (hs_subset : s ⊆ (μ.sigmaFiniteSetWRT ν)ᶜ) (hνs : ν s ≠ 0) :
     μ s = ∞ := by
-  have ⟨ν', hν', hνν'⟩ := exists_absolutelyContinuous_isFiniteMeasure ν
+  have ⟨ν', hν', hνν', _⟩ := exists_isFiniteMeasure_absolutelyContinuous ν
   have h : ∃ s : Set α, MeasurableSet s ∧ SigmaFinite (μ.restrict s)
-      ∧ (∀ t (_ : t ⊆ sᶜ) (_ : ν t ≠ 0), μ t = ∞) := by
+      ∧ (∀ t ⊆ sᶜ, ν t ≠ 0 → μ t = ∞) := by
     refine ⟨μ.sigmaFiniteSetWRT' ν', measurableSet_sigmaFiniteSetWRT',
       sigmaFinite_restrict_sigmaFiniteSetWRT' _ _,
       fun t ht_subset hνt ↦ measure_eq_top_of_subset_compl_sigmaFiniteSetWRT' ht_subset ?_⟩
