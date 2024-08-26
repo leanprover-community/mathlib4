@@ -105,7 +105,7 @@ theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor
   simpa [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
     (sequentialFunctor_obj J m)).choose_spec.choose
 
-instance sequentialFunctor_initial : (sequentialFunctor J).Initial  where
+instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
   out d := by
     obtain ⟨n, (g : (sequentialFunctor J).obj ⟨n⟩ ≤ d)⟩ := sequentialFunctor_initial_aux J d
     have : Nonempty (CostructuredArrow (sequentialFunctor J) d) :=
