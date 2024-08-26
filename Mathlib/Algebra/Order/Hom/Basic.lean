@@ -126,12 +126,12 @@ theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHom
 @[to_additive]
 theorem le_map_div_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) * f (b / c) := by
-  simpa only [div_mul_div_cancel'] using map_mul_le_mul f (a / b) (b / c)
+  simpa only [div_mul_div_cancel] using map_mul_le_mul f (a / b) (b / c)
 
 @[to_additive existing]
 theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
-    simpa only [div_mul_div_cancel'] using map_mul_le_add f (a / b) (b / c)
+    simpa only [div_mul_div_cancel] using map_mul_le_add f (a / b) (b / c)
 
 namespace Mathlib.Meta.Positivity
 

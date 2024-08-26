@@ -116,7 +116,7 @@ As a nicety, `subsingleton` first runs the `intros` tactic.
 
 Techniques the `subsingleton` tactic can apply:
 - proof irrelevance
-- heterogenous proof irrelevance (via `proof_irrel_heq`)
+- heterogeneous proof irrelevance (via `proof_irrel_heq`)
 - using `Subsingleton` (via `Subsingleton.elim`)
 - proving `BEq` instances are equal if they are both lawful (via `lawful_beq_subsingleton`)
 
