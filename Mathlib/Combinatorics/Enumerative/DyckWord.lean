@@ -323,13 +323,13 @@ inside the `U, D` pair that `firstReturn` refers to. `insidePart 0 = 0`. -/
 def insidePart : DyckWord :=
   if h : p = 0 then 0 else
   (p.take (p.firstReturn + 1) (count_take_firstReturn_add_one h)).denest
-    (⟨by rw [← toList_ne_nil, take]; simpa using toList_ne_nil.mpr h, fun i lb ub ↦ by
+    ⟨by rw [← toList_ne_nil, take]; simpa using toList_ne_nil.mpr h, fun i lb ub ↦ by
       simp only [take, length_take, lt_min_iff] at ub ⊢
       replace ub := ub.1
       rw [take_take, min_eq_left ub.le]
       rw [show i = i - 1 + 1 by omega] at ub ⊢
       rw [Nat.add_lt_add_iff_right] at ub
-      exact count_D_lt_count_U_of_lt_firstReturn ub⟩)
+      exact count_D_lt_count_U_of_lt_firstReturn ub⟩
 
 variable (p) in
 /-- The right part of the Dyck word decomposition,
