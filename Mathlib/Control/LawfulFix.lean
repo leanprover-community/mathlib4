@@ -37,6 +37,7 @@ sense of `ω`-complete partial orders, which excludes the example because it is 
 class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α → α}, ωScottContinuous f → Fix.fix f = f (Fix.fix f)
 
+@[deprecated (since := "2024-08-26")]
 theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
     (hf : ωScottContinuous f) : Fix.fix f = f (Fix.fix f) :=
   LawfulFix.fix_eq hf
@@ -182,6 +183,7 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   toFun x u := f (x u)
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 
+@[deprecated (since := "2024-08-26")]
 theorem ωScottContinuous_toUnitMono (f : Part α →o Part α) (hc : ωScottContinuous f) :
     ωScottContinuous (toUnitMono f) := .of_map_ωSup_of_orderHom fun _ => by
     ext ⟨⟩ : 1
