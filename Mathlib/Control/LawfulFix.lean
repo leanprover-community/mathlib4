@@ -235,7 +235,7 @@ theorem ωScottContinuous_curry :
 
 theorem continuous_uncurry :
     ωScottContinuous (Sigma.curry : (∀ a b, γ a b) → ∀ ab : Σ a, β a, γ ab.1 ab.2)) :=
-    ωScottContinuous.of_map_ωSup_of_orderHom (fun c ↦ by
+    .of_map_ωSup_of_orderHom fun c ↦ by
   ext ⟨x, y⟩
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
