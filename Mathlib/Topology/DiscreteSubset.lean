@@ -111,7 +111,7 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
-/-- In any topological space, the open sets with with discrete complement form a filter,
+/-- In any topological space, the open sets with discrete complement form a filter,
 defined as the supremum of all punctured neighborhoods.
 
 See `Filter.mem_codiscrete'` for the equivalence. -/

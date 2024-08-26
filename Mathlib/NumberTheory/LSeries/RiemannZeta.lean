@@ -202,7 +202,7 @@ theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
 lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
   exact hurwitzZetaEven_residue_one 0
 
-/- naming scheme was changed from from `riemannCompletedZeta` to `completedRiemannZeta`; add
+/- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
 aliases for the old names -/
 section aliases
 
