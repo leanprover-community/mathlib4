@@ -663,4 +663,3 @@ theorem val_le_one_iff_eq_coe (f : LaurentSeries K) : Valued.v f ≤ (1 : ℤₘ
 end LaurentSeries
 
 end AdicValuation
-#min_imports
