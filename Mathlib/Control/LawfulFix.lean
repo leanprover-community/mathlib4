@@ -39,7 +39,7 @@ class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
 
 theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
     (hf : ωScottContinuous f) : Fix.fix f = f (Fix.fix f) :=
-  LawfulFix.fix_eq (f := ⟨f, hf.monotone⟩) hf
+  LawfulFix.fix_eq hf
 
 namespace Part
 
@@ -186,7 +186,7 @@ theorem ωScottContinuous_toUnitMono (f : Part α →o Part α) (hc : ωScottCon
     ωScottContinuous (toUnitMono f) := .of_map_ωSup_of_orderHom fun _ => by
     ext ⟨⟩ : 1
     dsimp [OmegaCompletePartialOrder.ωSup]
-    erw [hc.map_ωSup_of_orderHom, Chain.map_comp]; rfl)
+    erw [hc.map_ωSup_of_orderHom, Chain.map_comp]; rfl
 
 instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α →o Part α} hc ↦ show Part.fix (toUnitMono f) () = _ by
