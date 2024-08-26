@@ -316,70 +316,101 @@ lemma prod_totalDegree_le {ι : Type*} (i : ι) (s : Finset R) :
       exact nontrivial_of_ne (coeff m (X i)) 0 hm
   · simp only [smul_eq_mul, mul_one, le_refl]
 
-lemma prod_totalDegree_aux [Nontrivial R] {ι : Type*} (i : ι) (s : Finset R) :
+lemma support_monomial_mul {ι : Type*} (f : MvPolynomial ι R) (d : ι →₀ ℕ)  :
+    (monomial d 1 * f).support = f.support.map (addLeftEmbedding d) := by
+  ext m
+  simp only [mem_support_iff, ne_eq, Finset.mem_map, addLeftEmbedding_apply]
+  rw [not_iff_comm]
+  push_neg
+  simp_rw [not_imp_not]
+  classical
+  constructor
+  · intro H
+    rw [coeff_mul]
+    let n : (ι →₀ ℕ) × (ι →₀ ℕ) := ⟨d, m - d⟩
+    by_cases hn : n ∈ Finset.antidiagonal m
+    · rw [Finset.sum_eq_single (d, m - d)]
+      simp only [coeff_monomial, if_pos, one_mul]
+      apply H
+      simpa only [Finset.mem_antidiagonal] using hn
+      · rintro ⟨u, v⟩ h h'
+        rw [coeff_monomial, if_neg, zero_mul]
+        intro k
+        apply h'
+        simp only [Finset.mem_antidiagonal] at h
+        simp [k, ← h]
+      · intro h
+        simp only [coeff_monomial, ↓reduceIte, one_mul]
+        exfalso
+        exact h hn
+    · rw [Finset.sum_eq_zero]
+      rintro ⟨u, v⟩ h 
+      simp only [Finset.mem_antidiagonal] at h
+      simp only [coeff_monomial, ite_mul, one_mul, zero_mul, ite_eq_right_iff]
+      intro h'
+      apply H
+      rw [h', h]
+  · intro H e he
+    rwa [← he, coeff_monomial_mul, one_mul] at H
+
+lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →₀ ℕ) 
+    (hm : m ∈ (s.prod (fun r ↦ X i - C r)).support) : 
+    ∃ e ≤ s.card, m = single i e := by
+  classical
+  induction s using Finset.induction_on generalizing m with
+  | empty => 
+    simp only [Finset.prod_empty, mem_support_iff, ne_eq] at hm
+    use 0
+    simp only [Finset.card_empty, le_refl, single_zero, true_and]
+    by_contra h'
+    apply hm
+    rw [MvPolynomial.coeff_one, if_neg (Ne.symm h')]
+  | @insert a s has h => 
+    simp only [mem_support_iff, ne_eq] at hm
+    simp only [Finset.prod_insert has, sub_mul, coeff_sub, coeff_C_mul] at hm
+    by_cases hm' : m ∈ (s.prod fun r ↦ X i - C r).support
+    · obtain ⟨e, he, he'⟩ := h m hm'
+      refine ⟨e, ?_, he'⟩
+      apply le_trans he
+      rw [← Finset.cons_eq_insert _ _ has, Finset.card_cons]
+      exact Nat.le_add_right s.card 1
+    · simp only [not_mem_support_iff] at hm'
+      rw [hm', mul_zero, sub_zero, ← ne_eq, ← mem_support_iff] at hm
+      simp only [support_X_mul, Finset.mem_map, addLeftEmbedding_apply] at hm
+      obtain ⟨n, hn, hm⟩ := hm
+      obtain ⟨p, hp, hq⟩ := h n hn
+      use p + 1
+      constructor
+      · rw [← Finset.cons_eq_insert _ _ has, Finset.card_cons]
+        exact Nat.add_le_add_right hp 1
+      · rw [← hm, hq, add_comm, single_add]
+
+lemma prod_leadCoeff {ι : Type*} (i : ι) (s : Finset R) :
+    (s.prod (fun r ↦ X i - C r)).coeff (single i s.card) = 1 := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert a s has hrec =>
+    rw [Finset.prod_insert has, sub_mul, coeff_sub, coeff_C_mul]
+    rw [← Finset.cons_eq_insert _ _ has, Finset.card_cons, single_add, add_comm]
+    rw [coeff_X_mul, hrec]
+    simp only [sub_eq_self]
+    convert mul_zero _
+    rw [← not_mem_support_iff]
+    intro h
+    have h' := prod_support_le i s _ h
+    obtain ⟨e, he, he'⟩ := h'
+    rw [← single_add, (Finsupp.single_injective _).eq_iff] at he'
+    rw [← he'] at he
+    simp at he
+
+lemma prod_totalDegree [Nontrivial R] {ι : Type*} (i : ι) (s : Finset R) :
     (s.prod (fun r ↦ X i - C r)).totalDegree = s.card := by
   apply le_antisymm (prod_totalDegree_le i s)
-  apply le_trans _ (le_totalDegree (s := Finsupp.single i s.card) ?_)
-  · apply le_of_eq
-    simp only [sum_single_index]
-  · rw [mem_support_iff]
-    convert one_ne_zero
-    classical
-    induction s using Finset.induction_on with
-    | empty => simp
-    | @insert a s has hrec => 
-      have hs' : (insert a s).card = s.card + 1 := by
-        rw [← Finset.cons_eq_insert _ _ has, Finset.card_cons] 
-      rw [Finset.prod_insert has]
-      rw [coeff_mul]
-      rw [Finset.sum_eq_single ⟨single i 1, single i s.card⟩]
-      · simp only [hrec, mul_one]
-        simp only [coeff_sub, coeff_single_X, and_self, ↓reduceIte, coeff_C, sub_eq_self,
-          ite_eq_right_iff]
-        intro h
-        exfalso
-        apply zero_ne_one (α := R)
-        simp only [Finsupp.ext_iff] at h
-        simpa using h i
-      · rintro ⟨u, v⟩ h h'
-        simp only [antidiagonal_single, Finset.mem_map, Finset.mem_antidiagonal,
-          Function.Embedding.coe_prodMap, Function.Embedding.coeFn_mk, Prod.exists,
-          Prod.map_apply, Prod.mk.injEq] at h
-        obtain ⟨k, l, hkl, hu, hv⟩ := h
-        simp only [← hu, ← hv]
-        by_cases hk : k = 0
-        · rw [hk, zero_add, hs'] at hkl
-          convert mul_zero _
-          apply coeff_eq_zero_of_totalDegree_lt
-          apply lt_of_le_of_lt (prod_totalDegree_le _ _)
-          rw [Finset.sum_eq_single i]
-          · simp [hkl]
-          · intro b _ hb
-            rw [single_apply, if_neg hb.symm]
-          · simp
-        · convert zero_mul _
-          simp only [coeff_sub, coeff_single_X, and_true, coeff_C]
-          rw [if_neg, if_neg, sub_zero]
-          · intro h
-            apply hk
-            rw [Finsupp.ext_iff] at h
-            simpa [Ne.symm hk] using h i
-          · intro h
-            apply h'
-            simp only [← hu, ← hv, Prod.mk.injEq, congr_arg (single i) h, true_and]
-            apply congr_arg
-            rw [h, hs', add_comm] at hkl
-            simpa using hkl
-      · intro h
-        simp only [antidiagonal_single, Finset.mem_map, Finset.mem_antidiagonal,
-          Function.Embedding.coe_prodMap, Function.Embedding.coeFn_mk, Prod.exists, Prod.map_apply,
-          Prod.mk.injEq, not_exists, not_and] at h
-        exfalso
-        apply h 1 s.card
-        · rw [hs', add_comm]
-        · rfl
-        · rfl
-    infer_instance
+  apply le_of_eq_of_le _ (le_totalDegree (s := single i s.card) ?_)
+  simp only [sum_single_index]
+  rw [mem_support_iff, prod_leadCoeff]
+  exact one_ne_zero
 
 lemma euclDivd_aux {n : ℕ} 
     (S : Fin n → Finset R) (Sne : ∀ i, (S i).Nonempty) 
@@ -491,15 +522,25 @@ lemma euclDivd_aux {n : ℕ}
           rw [coeff_monomial_mul] at hb
           exfalso
           apply hb
-          rw [sub_eq_zero, eq_comm]
-          convert mul_one _
-          sorry -- prouver que le coefficient dominant est 1
+          rw [prod_leadCoeff, mul_one, sub_self]
         · rw [if_neg h, zero_sub, ne_eq, neg_eq_zero] at hb
           rw [coeff_mul] at hb
           by_cases h' : d' ≤ b 
           · rw [Finset.sum_eq_single (d', b-d')] at hb
-            simp only [coeff_monomial, ↓reduceIte] at hb
-            sorry -- prouver que les seuls coefficients non nuls sont des single i e
+            · simp only [coeff_monomial, ↓reduceIte] at hb
+              replace hb := right_ne_zero_of_mul hb
+              rw [← mem_support_iff] at hb
+              obtain ⟨e, he, he'⟩ := prod_support_le _ _ _ hb
+              use e
+              suffices b = d' + single i e by
+                refine ⟨?_, this⟩
+                apply lt_of_le_of_ne he
+                intro he
+                apply h
+                rw [this, ← hd', he]
+              rw [← he']
+              ext j
+              simp [Nat.add_sub_of_le (h' j)]
             · rintro ⟨u, v⟩ huv
               by_cases h : u = d'
               · intro k
@@ -602,7 +643,6 @@ lemma euclDivd {n : ℕ} (f : MvPolynomial (Fin n) R)
       (h i * (S i).prod (fun (s : R) ↦ (X i - C s))).totalDegree ≤ f.totalDegree) ∧
     (∀ i, r.weightedTotalDegree (Finsupp.single i 1) < (S i).card) := 
   euclDivd_aux S Sne _ f (le_refl _)
-
 
 theorem Alon1 {n : ℕ} [IsDomain R] (S : Fin n → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial (Fin n) R) (Heval : ∀ (x : Fin n → R), (∀ i, x i ∈ S i) → eval x f = 0) : 
