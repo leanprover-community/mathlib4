@@ -105,15 +105,28 @@ theorem IsBoundedUnder.comp {l : Filter γ} {q : β → β → Prop} {u : γ →
     (hv : ∀ a₀ a₁, r a₀ a₁ → q (v a₀) (v a₁)) : l.IsBoundedUnder r u → l.IsBoundedUnder q (v ∘ u)
   | ⟨a, h⟩ => ⟨v a, show ∀ᶠ x in map u l, q (v x) (v a) from h.mono fun x => hv x a⟩
 
-/-- A bounded above function `u` is in particular eventually bounded above. -/
-lemma _root_.BddAbove.isBoundedUnder [Preorder α] {f : Filter β} {u : β → α} :
-    BddAbove (Set.range u) → f.IsBoundedUnder (· ≤ ·) u
-  | ⟨b, hb⟩ => isBoundedUnder_of ⟨b, by simpa [mem_upperBounds] using hb⟩
+section Preorder
+variable [Preorder α] {f : Filter β} {u : β → α} {s : Set β}
 
-/-- A bounded below function `u` is in particular eventually bounded below. -/
-lemma _root_.BddBelow.isBoundedUnder [Preorder α] {f : Filter β} {u : β → α} :
-    BddBelow (Set.range u) → f.IsBoundedUnder (· ≥ ·) u
-  | ⟨b, hb⟩ => isBoundedUnder_of ⟨b, by simpa [mem_lowerBounds] using hb⟩
+lemma isBoundedUnder_iff_eventually_bddAbove :
+    f.IsBoundedUnder (· ≤ ·) u ↔ ∃ s, BddAbove (u '' s) ∧ ∀ᶠ x in f, x ∈ s := by
+  constructor
+  · rintro ⟨b, hb⟩
+    exact ⟨{a | u a ≤ b}, ⟨b, by rintro _ ⟨a, ha, rfl⟩; exact ha⟩, hb⟩
+  · rintro ⟨s, ⟨b, hb⟩, hs⟩
+    exact ⟨b, hs.mono <| by simpa [upperBounds] using hb⟩
+
+lemma isBoundedUnder_iff_eventually_bddBelow :
+    f.IsBoundedUnder (· ≥ ·) u ↔ ∃ s, BddBelow (u '' s) ∧ ∀ᶠ x in f, x ∈ s :=
+  isBoundedUnder_iff_eventually_bddAbove (α := αᵒᵈ)
+
+lemma _root_.BddAbove.isBoundedUnder (hs : s ∈ f) (hu : BddAbove (u '' s)) :
+    f.IsBoundedUnder (· ≤ ·) u := isBoundedUnder_iff_eventually_bddAbove.2 ⟨_, hu, hs⟩
+
+lemma _root_.BddBelow.isBoundedUnder (hs : s ∈ f) (hu : BddBelow (u '' s)) :
+    f.IsBoundedUnder (· ≥ ·) u := isBoundedUnder_iff_eventually_bddBelow.2 ⟨_, hu, hs⟩
+
+end Preorder
 
 theorem _root_.Monotone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
     {v : α → β} (hv : Monotone v) (hl : l.IsBoundedUnder (· ≤ ·) u) :
