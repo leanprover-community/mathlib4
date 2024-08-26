@@ -29,7 +29,7 @@ open scoped Classical
 
 noncomputable section
 
-variable {Γ R : Type*}
+variable {Γ Γ' R S U V : Type*}
 
 namespace HahnSeries
 
@@ -84,6 +84,11 @@ theorem add_coeffTop' {x y : HahnSeries Γ R} :
     (x + y).coeffTop = x.coeffTop + y.coeffTop := by
   ext
   exact add_coeffTop
+
+@[simp]
+protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
+    ((x + y).map f : HahnSeries Γ S) = x.map f + y.map f := by
+  ext; simp
 
 /--
 `addOppositeEquiv` is an additive monoid isomorphism between
@@ -229,7 +234,7 @@ def coeff.addMonoidHom (g : Γ) : HahnSeries Γ R →+ R where
 
 section Domain
 
-variable {Γ' : Type*} [PartialOrder Γ']
+variable [PartialOrder Γ']
 
 theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
     embDomain f (x + y) = embDomain f x + embDomain f y := by
@@ -299,6 +304,11 @@ theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
   simp
 
 @[simp]
+protected lemma map_neg [AddGroup S] (f : R →+ S) {x : HahnSeries Γ R} :
+    ((-x).map f : HahnSeries Γ S) = -(x.map f) := by
+  ext; simp
+
+@[simp]
 theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
   ext
   simp [sub_eq_add_neg]
@@ -311,6 +321,11 @@ theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.
   cases n with
   | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, nsmul_coeff]
   | negSucc _ => simp_all only [negSucc_zsmul, neg_coeff', nsmul_coeff]
+
+@[simp]
+protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
+    ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
+  ext; simp
 
 theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
   simp only [orderTop, support_neg, neg_eq_zero]
@@ -348,7 +363,7 @@ end Addition
 
 section SMulZeroClass
 
-variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
+variable [PartialOrder Γ] [Zero V] [SMulZeroClass R V]
 
 instance : SMul R (HahnSeries Γ V) :=
   ⟨fun r x =>
@@ -388,7 +403,7 @@ end SMulZeroClass
 
 section DistribMulAction
 
-variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulAction R V]
+variable [PartialOrder Γ] [Monoid R] [AddMonoid V] [DistribMulAction R V]
 
 instance : DistribMulAction R (HahnSeries Γ V) where
   smul := (· • ·)
@@ -421,7 +436,7 @@ end DistribMulAction
 
 section Module
 
-variable [PartialOrder Γ] [Semiring R] {V : Type*} [AddCommMonoid V] [Module R V]
+variable [PartialOrder Γ] [Semiring R] [AddCommMonoid V] [Module R V]
 
 instance : Module R (HahnSeries Γ V) :=
   { inferInstanceAs (DistribMulAction R (HahnSeries Γ V)) with
@@ -447,31 +462,24 @@ def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
 
 /-- `ofIterate` as a linear map. -/
 @[simps]
-def ofIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
+def ofIterate.linearMap [PartialOrder Γ'] :
     HahnSeries Γ (HahnSeries Γ' V) →ₗ[R] HahnSeries (Γ ×ₗ Γ') V where
   toFun := ofIterate
-  map_add' := by
-    intro _ _
-    ext _
-    simp only [ofIterate, add_coeff', Pi.add_apply]
-  map_smul' := by
-    intro _ _
-    ext _
-    simp only [ofIterate, RingHom.id_apply, smul_coeff]
+  map_add' _ _ := by ext; simp [ofIterate]
+  map_smul' _ _ := by ext; simp [ofIterate]
 
 /-- `toIterate` as a linear map. -/
 @[simps]
-def toIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
+def toIterate.linearMap [PartialOrder Γ'] :
     HahnSeries (Γ ×ₗ Γ') V →ₗ[R] HahnSeries Γ (HahnSeries Γ' V) where
   toFun := toIterate
-  map_add' := by
-    intro _ _
-    ext _
-    simp only [toIterate, add_coeff', Pi.add_apply]
-  map_smul' := by
-    intro _ _
-    ext _
-    simp only [toIterate, RingHom.id_apply, smul_coeff]
+  map_add' _ _ := by ext; simp [toIterate]
+  map_smul' _ _ := by ext; simp [toIterate]
+
+@[simp]
+protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}
+    {x : HahnSeries Γ U} : (r • x).map f = r • ((x.map f) : HahnSeries Γ V) := by
+  ext; simp
 
 section Domain
 

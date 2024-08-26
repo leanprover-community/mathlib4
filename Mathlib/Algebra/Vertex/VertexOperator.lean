@@ -8,7 +8,7 @@ import Mathlib.RingTheory.LaurentSeries
 
 /-!
 # Vertex operators
-In this file we introduce vertex operators as
+In this file we introduce vertex operators as linear maps to Laurent series.
 ## Definitions
 * VertexOperator : An `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
 * HasseDerivative : A divided-power derivative.
@@ -39,7 +39,7 @@ case. -/
 abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
     [Module R V] := HVertexOperator ℤ R V V
 
-namespace VertexAlg
+namespace VertexOperator
 
 open HVertexOperator
 
@@ -54,7 +54,7 @@ theorem coeff_eq_ncoef (A : VertexOperator R V)
 
 /-- The normal convention for the normalized coefficient of a vertex operator is either `Aₙ` or
 `A(n)`. -/
-scoped[VertexAlg] notation A "_[" n "]" => ncoef A n
+scoped[VertexOperator] notation A "_[" n "]" => ncoef A n
 
 theorem ncoef_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order (A x)) : ncoef R A n x = 0 := by
@@ -75,7 +75,7 @@ theorem ncoef_ofForallLTEqZero (f : ℤ → V) (n : ℤ) (h : ∀(m : ℤ), n < 
 /-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
 @[simps!]
-noncomputable def VertexOperator.of_coeff (f : ℤ → Module.End R V)
+noncomputable def of_coeff (f : ℤ → Module.End R V)
     (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) : VertexOperator R V :=
   HVertexOperator.of_coeff f
     (fun x => HahnSeries.suppBddBelow_supp_PWO (fun n => (f n) x)
@@ -500,4 +500,4 @@ theorem local_to_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m :
 
 end ResidueProduct
 
-end VertexAlg
+end VertexOperator

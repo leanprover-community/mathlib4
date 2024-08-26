@@ -58,7 +58,8 @@ variable {R : Type*} {V : Type*}
 
 namespace VertexAlg
 
-open HVertexOperator
+open HVertexOperator VertexOperator
+
 section VertexOperator
 
 variable [CommRing R] [AddCommGroup V] [Module R V]

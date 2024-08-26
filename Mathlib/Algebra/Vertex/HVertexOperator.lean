@@ -366,18 +366,14 @@ theorem subLeft_smul_eq_subRight_smul (A B : HVertexOperator (ℤ ×ₗ ℤ) R V
 
 end Binomial
 
-section StateFieldMap
-
-/-- A heterogeneous state-field map is a linear map from a vector space `U` to the space of
+/-! A heterogeneous state-field map is a linear map from a vector space `U` to the space of
 heterogeneous fields (or vertex operators) from `V` to `W`.  Equivalently, it is a bilinear map
 `U →ₗ[R] V →ₗ[R] HahnModule Γ R W`.  When `Γ = ℤ` and `U = V = W`, then the multiplication map in a
 vertex algebra has this form, but in other cases, we use this for module structures and intertwining
 operators. -/
-abbrev HStateFieldMap (Γ R U V W : Type*) [PartialOrder Γ] [CommRing R] [AddCommGroup U]
-    [Module R U] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
-  U →ₗ[R] HVertexOperator Γ R V W
 
--- Can I just use `curry` to say this is a HVertexOperator Γ R (U ⊗ V) W?
+-- Can I just use `curry` to say this is a HVertexOperator Γ R (U ⊗[R] V) W?  So, the multiplication
+-- in a vertex algebra is just HVertexOperator ℤ R (V ⊗[R] V) V?
 -- Then composition is easier.
 
 namespace VertexAlg
@@ -387,7 +383,7 @@ variable (R) {X Y : Type*}
 /-- The coefficient function of a heterogeneous state-field map. -/
 @[simps]
 def coeff [PartialOrder Γ] [CommRing R] [AddCommGroup U] [Module R U] [Module R V] [Module R W]
-    (A : HStateFieldMap Γ R U V W) (g : Γ) : U →ₗ[R] V →ₗ[R] W where
+    (A : U →ₗ[R] HVertexOperator Γ R V W) (g : Γ) : U →ₗ[R] V →ₗ[R] W where
   toFun u := (A u).coeff g
   map_add' a b := by simp
   map_smul' r a := by simp
@@ -397,12 +393,12 @@ open TensorProduct
 /-- The standard equivalence between heterogeneous state field maps and heterogeneous vertex
 operators on the tensor product. -/
 def uncurry [PartialOrder Γ] [AddCommGroup U] [Module R U] :
-    HStateFieldMap Γ R U V W ≃ₗ[R] HVertexOperator Γ R (U ⊗[R] V) W :=
+    (U →ₗ[R] HVertexOperator Γ R V W) ≃ₗ[R] HVertexOperator Γ R (U ⊗[R] V) W :=
   lift.equiv R U V (HahnModule Γ R W)
 
 @[simp]
-theorem uncurry_apply [PartialOrder Γ] [AddCommGroup U] [Module R U] (A : HStateFieldMap Γ R U V W)
-    (u : U) (v : V) : uncurry R A (u ⊗ₜ v) = A u v :=
+theorem uncurry_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
+    (A : U →ₗ[R] HVertexOperator Γ R V W) (u : U) (v : V) : uncurry R A (u ⊗ₜ v) = A u v :=
   rfl
 
 @[simp]
@@ -411,17 +407,19 @@ theorem uncurry_symm_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
   rfl
 
 /-! Iterate starting with `Y_{UV}^W : U ⊗ V → W((z))` and `Y_{WX}^Y : W ⊗ X → Y((w))`, make
-`Y_{UVX}^Y (t_1, t_2) : U ⊗ V ⊗ X → W((z)) ⊗ X → Y((w))((z))`.
-I need an operator on tensor products giving Lex Hahn series from Hahn Series inputs.
-So, define `W((z)) ⊗ X → (W ⊗ X)((z))` by coefficient-wise maps, then extend the `HVertexOperator`
-`Y_{WX}^Y` to `(W ⊗ X)((z)) → Y((w))((z))` coefficient-wise.
--/
--- Right composition: `Y_{XW}^Y (x, t_0) Y_{UV}^W (u, t_1) v`
+`leftTensorComp`: `Y_{UVX}^Y (t_1, t_2) : U ⊗ V ⊗ X → W((z)) ⊗ X → (W ⊗ X)((z)) → Y((w))((z))`.
+First: `Y_{UV}^W ⊗ id X : U ⊗ V ⊗ X → W((z)) ⊗ X`
+Second: `W((z)) ⊗ X → (W ⊗ X)((z))` is `HahnModule.rightTensorMap`.
+Third: `(W ⊗ X)((z)) → Y((w))((z))` is `HahnModule.map` applied to `Y_{WX}^Y`.
 
--- Define things like order of a pair, creativity?
+`rightTensorComp`: `Y_{XW}^Y (x, t_0) Y_{UV}^W (u, t_1) v`
+
+
+
+Define things like order of a pair, creativity?
+
+-/
 
 end VertexAlg
-
-end StateFieldMap
 
 end HVertexOperator

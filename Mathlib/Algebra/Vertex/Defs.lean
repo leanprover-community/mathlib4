@@ -43,7 +43,7 @@ class NonAssocNonUnitalVertexAlgebra (R : Type*) (V : Type*) [CommRing R] [AddCo
   Y: V →ₗ[R] VertexOperator R V
 
 namespace VertexAlg
-open HVertexOperator
+open HVertexOperator VertexOperator
 variable (R : Type*) {V : Type*} [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
 
 /-- The multiplication in a vertex algebra. -/
@@ -186,7 +186,7 @@ section Unital
 
 namespace VertexAlg
 
-open HVertexOperator
+open HVertexOperator VertexOperator
 
 variable (R : Type*) {V : Type*} [CommRing R] [AddCommGroupWithOne V] [Module R V]
 
