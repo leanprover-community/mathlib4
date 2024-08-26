@@ -35,7 +35,7 @@ We relate in this file `CoverEntropy` and `NetEntropy`. This file is downstream 
 defined with a `liminf`, the later with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
-As for the definition using covers, there are two competing definitions `netEntropyInfEnt` and
+As when using covers, there are two competing definitions `netEntropyInfEnt` and
 `netEntropyEnt` in this file: one uses a `liminf`, the other a `limsup`. When using covers, we chose
 the `limsup` definition as the default. Because of lemmas `coverEntropyInf_eq_iSup_netEntropyInfEnt`
 and `coverEntropy_eq_iSup_netEntropyEnt`, we make the same choice here. Theorems about the
@@ -60,7 +60,7 @@ variable {X : Type*}
 
 /-! ### Dynamical nets -/
 
-/-- Given a subset `F`, a uniform neighborhood `U` and an integer `n`, a subset `s` of `F` is a
+/-- Given a subset `F`, an entourage `U` and an integer `n`, a subset `s` of `F` is a
 `(U, n)`-dynamical net of `F` if no two orbits of length `n` of points in `s` shadow each other.-/
 def IsDynNetOf (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) (s : Set X) : Prop :=
     s ⊆ F ∧ s.PairwiseDisjoint (fun x : X ↦ ball x (dynEntourage T U n))
@@ -195,7 +195,7 @@ lemma netMaxcard_univ (T : X → X) {F : Set X} (h : F.Nonempty) (n : ℕ) :
   intro s ⟨_, s_net⟩
   simp only [ball, dynEntourage_univ, preimage_univ] at s_net
   norm_cast
-  refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
+  refine Finset.card_le_one.2 (fun x x_s y y_s ↦ ?_)
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 
 lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
@@ -407,5 +407,3 @@ lemma netEntropyEnt_le_coverEntropy {U : Set (X × X)} (h : U ∈ 𝓤 X) :
   exact le_iSup₂ (f := fun (U : Set (X × X)) (_ : U ∈ 𝓤 X) ↦ netEntropyEnt T F U) U h
 
 end Dynamics
-
-#lint
