@@ -864,8 +864,16 @@ theorem isOpen_iSup_iff {s : Set α} : IsOpen[⨆ i, t i] s ↔ ∀ i, IsOpen[t 
   show s ∈ {s | IsOpen[iSup t] s} ↔ s ∈ { x : Set α | ∀ i : ι, IsOpen[t i] x } by
     simp [setOf_isOpen_iSup]
 
+theorem isOpen_sSup_iff {s : Set α} {T : Set (TopologicalSpace α)} :
+    IsOpen[sSup T] s ↔ ∀ t ∈ T, IsOpen[t] s := by
+  simp only [sSup_eq_iSup, isOpen_iSup_iff]
+
 set_option tactic.skipAssignedInstances false in
 theorem isClosed_iSup_iff {s : Set α} : IsClosed[⨆ i, t i] s ↔ ∀ i, IsClosed[t i] s := by
   simp [← @isOpen_compl_iff _ _ (⨆ i, t i), ← @isOpen_compl_iff _ _ (t _), isOpen_iSup_iff]
+
+theorem isClosed_sSup_iff {s : Set α} {T : Set (TopologicalSpace α)} :
+    IsClosed[sSup T] s ↔ ∀ t ∈ T, IsClosed[t] s := by
+  simp only [sSup_eq_iSup, isClosed_iSup_iff]
 
 end iInf

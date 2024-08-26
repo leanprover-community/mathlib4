@@ -323,7 +323,7 @@ noncomputable instance commGroup : CommGroup (MulChar R R') :=
   { one := 1
     mul := (· * ·)
     inv := Inv.inv
-    mul_left_inv := inv_mul
+    inv_mul_cancel := inv_mul
     mul_assoc := by
       intro χ₁ χ₂ χ₃
       ext a
@@ -491,7 +491,7 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
 
 /-- The square of a quadratic character is the trivial character. -/
 theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by
-  rw [← mul_left_inv χ, pow_two, hχ.inv]
+  rw [← inv_mul_cancel χ, pow_two, hχ.inv]
 
 /-- The `p`th power of a quadratic character is itself, when `p` is the (prime) characteristic
 of the target ring. -/

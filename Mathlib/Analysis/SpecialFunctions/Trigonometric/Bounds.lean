@@ -56,7 +56,7 @@ lemma le_sin (hx : x ≤ 0) : x ≤ sin x := by simpa using sin_le <| neg_nonneg
 
 lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
   wlog hx₀ : 0 ≤ x
-  · simpa using this $ neg_nonneg.2 $ le_of_not_le hx₀
+  · simpa using this <| neg_nonneg.2 <| le_of_not_le hx₀
   suffices MonotoneOn (fun x ↦ cos x + x ^ 2 / 2) (Ici 0) by
     simpa using this left_mem_Ici hx₀ hx₀
   refine monotoneOn_of_hasDerivWithinAt_nonneg
@@ -69,12 +69,12 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
 lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x ≤ sin x := by
   rw [← sub_nonneg]
   suffices ConcaveOn ℝ (Icc 0 (π / 2)) (fun x ↦ sin x - 2 / π * x) by
-    refine (le_min ?_ ?_).trans $ this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
+    refine (le_min ?_ ?_).trans <| this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
   exact concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-    (Continuous.continuousOn $ by fun_prop)
-    (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
+    (Continuous.continuousOn <| by fun_prop)
+    (fun x _ ↦ ((hasDerivAt_sin ..).sub <| (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
     (fun x _ ↦ (hasDerivAt_cos ..).hasDerivWithinAt.sub_const _)
-    fun x hx ↦ neg_nonpos.2 $ sin_nonneg_of_mem_Icc $ Icc_subset_Icc_right (by linarith) $
+    fun x hx ↦ neg_nonpos.2 <| sin_nonneg_of_mem_Icc <| Icc_subset_Icc_right (by linarith) <|
     interior_subset hx
 
 /-- **Jordan's inequality** for negative values. -/
@@ -88,11 +88,11 @@ lemma one_sub_two_div_pi_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 
 
 lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
-  · simpa using this (by rwa [abs_neg]) $ neg_nonneg.2 $ le_of_not_le hx₀
+  · simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
   rw [abs_of_nonneg hx₀] at hx
   -- TODO: `compute_deriv` tactic?
   have hderiv (x) : HasDerivAt (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) _ x :=
-    (((hasDerivAt_pow ..).const_mul _).const_sub _).sub $ hasDerivAt_cos _
+    (((hasDerivAt_pow ..).const_mul _).const_sub _).sub <| hasDerivAt_cos _
   simp only [Nat.cast_ofNat, Nat.succ_sub_succ_eq_sub, tsub_zero, pow_one, ← neg_sub', neg_sub,
     ← mul_assoc] at hderiv
   have hmono : MonotoneOn (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) (Icc 0 (π / 2)) := by
@@ -100,7 +100,7 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
     set_option tactic.skipAssignedInstances false in
     refine monotoneOn_of_hasDerivWithinAt_nonneg
       (convex_Icc ..)
-      (Continuous.continuousOn $ by fun_prop)
+      (Continuous.continuousOn <| by fun_prop)
       (fun x _ ↦ (hderiv _).hasDerivWithinAt)
       fun x hx ↦ sub_nonneg.2 ?_
     have ⟨hx₀, hx⟩ := interior_subset hx
@@ -113,20 +113,20 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
     -- Compiles without this option, but somewhat slower.
     set_option tactic.skipAssignedInstances false in
     refine concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-      (Continuous.continuousOn $ by fun_prop) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
-      (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul _).hasDerivWithinAt)
+      (Continuous.continuousOn <| by fun_prop) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
+      (fun x _ ↦ ((hasDerivAt_sin ..).sub <| (hasDerivAt_id ..).const_mul _).hasDerivWithinAt)
       fun x hx ↦ ?_
     have ⟨hx, hx'⟩ := interior_subset hx
     calc
       _ ≤ (0 : ℝ) - 0 := by
           gcongr
-          · exact cos_nonpos_of_pi_div_two_le_of_le hx $ hx'.trans $ by linarith
+          · exact cos_nonpos_of_pi_div_two_le_of_le hx <| hx'.trans <| by linarith
           · positivity
       _ = 0 := sub_zero _
   rw [← sub_nonneg]
   obtain hx' | hx' := le_total x (π / 2)
-  · simpa using hmono (left_mem_Icc.2 $ by positivity) ⟨hx₀, hx'⟩ hx₀
-  · refine (le_min ?_ ?_).trans $ hconc.min_le_of_mem_Icc ⟨hx', hx⟩ <;> field_simp <;> norm_num
+  · simpa using hmono (left_mem_Icc.2 <| by positivity) ⟨hx₀, hx'⟩ hx₀
+  · refine (le_min ?_ ?_).trans <| hconc.min_le_of_mem_Icc ⟨hx', hx⟩ <;> field_simp <;> norm_num
 
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 

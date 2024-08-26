@@ -206,7 +206,7 @@ theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
     AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
   AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by
     rw [dist_lineMap_lineMap, NNReal.coe_inv, ← dist_nndist, mul_left_comm,
-      inv_mul_cancel (dist_ne_zero.2 h), mul_one]
+      inv_mul_cancel₀ (dist_ne_zero.2 h), mul_one]
 
 variable (𝕜)
 

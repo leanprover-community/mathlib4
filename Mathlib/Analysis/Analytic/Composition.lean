@@ -856,7 +856,7 @@ where `v' = (v_l, v_{l+1}, ..., v_{m-1})`. Therefore, we get
 r.comp (q.comp p) n v =
 ∑_{c : Composition n} ∑_{d₀ : Composition (c.blocksFun 0),
   ..., d_{c.length - 1} : Composition (c.blocksFun (c.length - 1))}
-  r c.length (λ i, q dᵢ.length (applyComposition p dᵢ v'ᵢ))
+  r c.length (fun i ↦ q dᵢ.length (applyComposition p dᵢ v'ᵢ))
 ```
 To show that these terms coincide, we need to explain how to reindex the sums to put them in
 bijection (and then the terms we are summing will correspond to each other). Suppose we have a

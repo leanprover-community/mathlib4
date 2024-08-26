@@ -594,10 +594,10 @@ variable [TopologicalSpace α] [Group α] [TopologicalGroup α]
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 variable [TopologicalSpace β] [Group β]
-variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom} (de : DenseInducing e)
+variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom}
 
 @[to_additive]
-theorem tendsto_div_comap_self (x₀ : α) :
+theorem tendsto_div_comap_self (de : DenseInducing e) (x₀ : α) :
     Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
       (𝓝 1) := by
   have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
@@ -619,16 +619,18 @@ variable {G : Type*}
 -- β is a dense subgroup of α, inclusion is denoted by e
 -- δ is a dense subgroup of γ, inclusion is denoted by f
 variable [TopologicalSpace α] [AddCommGroup α] [TopologicalAddGroup α]
-variable [TopologicalSpace β] [AddCommGroup β] [TopologicalAddGroup β]
+variable [TopologicalSpace β] [AddCommGroup β]
 variable [TopologicalSpace γ] [AddCommGroup γ] [TopologicalAddGroup γ]
-variable [TopologicalSpace δ] [AddCommGroup δ] [TopologicalAddGroup δ]
-variable [UniformSpace G] [AddCommGroup G] [UniformAddGroup G] [T0Space G] [CompleteSpace G]
+variable [TopologicalSpace δ] [AddCommGroup δ]
+variable [UniformSpace G] [AddCommGroup G]
 variable {e : β →+ α} (de : DenseInducing e)
 variable {f : δ →+ γ} (df : DenseInducing f)
 variable {φ : β →+ δ →+ G}
 variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
+include de hφ
 
+include W'_nhd in
 private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,
     (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
@@ -646,6 +648,9 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   simp_rw [forall_mem_comm]
   exact lim W' W'_nhd
 
+variable [UniformAddGroup G]
+
+include df W'_nhd in
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
     ∀ x ∈ U, ∀ x' ∈ U, ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
     (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
@@ -694,6 +699,8 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   exact W4 h₁ h₂ h₃ h₄
 
 open DenseInducing
+
+variable [T0Space G] [CompleteSpace G]
 
 /-- Bourbaki GT III.6.5 Theorem I:
 ℤ-bilinear continuous maps from dense images into a complete Hausdorff group extend by continuity.
