@@ -13,6 +13,8 @@ In this file we show that a T₀ topological space with second countable
 topology has a countable family of open (or closed) sets separating the points.
 -/
 
+variable {X : Type*}
+
 open Set TopologicalSpace
 
 /-- If `X` is a topological space, `s` is a set in `X` such that the induced topology is T₀ and is
@@ -30,5 +32,5 @@ a countable family of closed sets separating points of `s`. -/
 instance [TopologicalSpace X] {s : Set X} [h : HasCountableSeparatingOn X IsOpen s] :
     HasCountableSeparatingOn X IsClosed s :=
   let ⟨S, hSc, hSo, hS⟩ := h.1
-  ⟨compl '' S, hSc.image _, ball_image_iff.2 fun U hU ↦ (hSo U hU).isClosed_compl,
+  ⟨compl '' S, hSc.image _, forall_mem_image.2 fun U hU ↦ (hSo U hU).isClosed_compl,
     fun x hx y hy h ↦ hS x hx y hy fun _U hU ↦ not_iff_not.1 <| h _ (mem_image_of_mem _ hU)⟩

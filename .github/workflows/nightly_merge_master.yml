@@ -1,0 +1,44 @@
+# This job merges every commit to `master` into `nightly-testing`, resolving merge conflicts in favor of `nightly-testing`.
+
+name: Merge master to nightly
+
+on:
+  schedule:
+    - cron: '30 */3 * * *'  # 8AM CET/11PM PT
+
+jobs:
+  merge-to-nightly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.NIGHTLY_TESTING }}
+
+      - name: Configure Git User
+        run: |
+          git config user.name "leanprover-community-mathlib4-bot"
+          git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+
+      - name: Merge master to nightly favoring nightly changes
+        run: |
+          git checkout nightly-testing
+          # If the merge goes badly, we proceed anyway via '|| true'.
+          # CI will report failures on the 'nightly-testing' branch direct to Zulip.
+          git merge master --strategy-option ours --no-commit --allow-unrelated-histories || true
+          # We aggressively run `lake update`, to avoid having to do this by hand.
+          # When Batteries changes break Mathlib, this will likely show up on nightly-testing first.
+          lake update
+          git add .
+          # If there's nothing to do (because there are no new commits from master),
+          # that's okay, hence the '|| true'.
+          git commit -m "Merge master into nightly-testing" || true
+          git push origin nightly-testing

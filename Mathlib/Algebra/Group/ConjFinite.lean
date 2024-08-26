@@ -7,14 +7,14 @@ import Mathlib.Algebra.Group.Conj
 import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Fintype.Units
 
-#align_import algebra.group.conj_finite from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
-
 /-!
 # Conjugacy of elements of finite groups
 -/
 
+-- TODO: the following `assert_not_exists` should work, but does not
+-- assert_not_exists MonoidWithZero
 
-variable {α : Type _} [Monoid α]
+variable {α : Type*} [Monoid α]
 
 attribute [local instance] IsConj.setoid
 

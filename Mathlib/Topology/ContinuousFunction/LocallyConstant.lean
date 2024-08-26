@@ -7,8 +7,6 @@ import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
 
-#align_import topology.continuous_function.locally_constant from "leanprover-community/mathlib"@"f0339374016bccf700da0b2e0129d107c4346521"
-
 /-!
 # The algebra morphism from locally constant functions to continuous functions.
 
@@ -17,7 +15,7 @@ import Mathlib.Topology.ContinuousFunction.Algebra
 
 namespace LocallyConstant
 
-variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] (f : LocallyConstant X Y)
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : LocallyConstant X Y)
 
 /-- The inclusion of locally-constant functions into continuous functions as a multiplicative
 monoid hom. -/
@@ -31,12 +29,10 @@ def toContinuousMapMonoidHom [Monoid Y] [ContinuousMul Y] : LocallyConstant X Y 
   map_mul' x y := by
     ext
     simp
-#align locally_constant.to_continuous_map_monoid_hom LocallyConstant.toContinuousMapMonoidHom
-#align locally_constant.to_continuous_map_add_monoid_hom LocallyConstant.toContinuousMapAddMonoidHom
 
 /-- The inclusion of locally-constant functions into continuous functions as a linear map. -/
 @[simps]
-def toContinuousMapLinearMap (R : Type _) [Semiring R] [AddCommMonoid Y] [Module R Y]
+def toContinuousMapLinearMap (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
     [ContinuousAdd Y] [ContinuousConstSMul R Y] : LocallyConstant X Y →ₗ[R] C(X, Y) where
   toFun := (↑)
   map_add' x y := by
@@ -45,11 +41,10 @@ def toContinuousMapLinearMap (R : Type _) [Semiring R] [AddCommMonoid Y] [Module
   map_smul' x y := by
     ext
     simp
-#align locally_constant.to_continuous_map_linear_map LocallyConstant.toContinuousMapLinearMap
 
 /-- The inclusion of locally-constant functions into continuous functions as an algebra map. -/
 @[simps]
-def toContinuousMapAlgHom (R : Type _) [CommSemiring R] [Semiring Y] [Algebra R Y]
+def toContinuousMapAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y]
     [TopologicalSemiring Y] : LocallyConstant X Y →ₐ[R] C(X, Y) where
   toFun := (↑)
   map_one' := by
@@ -67,6 +62,5 @@ def toContinuousMapAlgHom (R : Type _) [CommSemiring R] [Semiring Y] [Algebra R 
   commutes' r := by
     ext x
     simp [Algebra.smul_def]
-#align locally_constant.to_continuous_map_alg_hom LocallyConstant.toContinuousMapAlgHom
 
 end LocallyConstant

@@ -5,7 +5,6 @@ Authors: Simon Hudon, Scott Morrison
 -/
 
 import Mathlib.Testing.SlimCheck.Testable
-import Mathlib.Data.List.Sort
 import Qq
 
 /-!
@@ -167,8 +166,9 @@ syntax (name := slimCheckSyntax) "slim_check" (config)? : tactic
 elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   let cfg ← elabConfig (mkOptionalNode cfg)
   let (_, g) ← (← getMainGoal).revert ((← getLocalHyps).map (Expr.fvarId!))
+  g.withContext do
   let tgt ← g.getType
-  let tgt' := addDecorations tgt
+  let tgt' ← addDecorations tgt
   let cfg := { cfg with
     traceDiscarded := cfg.traceDiscarded || (← isTracingEnabledFor `slim_check.discarded),
     traceSuccesses := cfg.traceSuccesses || (← isTracingEnabledFor `slim_check.success),
@@ -177,32 +177,33 @@ elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
       || (← isTracingEnabledFor `slim_check.shrink.candidates) }
   let inst ← try
     synthInstance (← mkAppM ``Testable #[tgt'])
-  catch _ => throwError "Failed to create a `testable` instance for `{tgt}`.
-What to do:
-1. make sure that the types you are using have `SlimCheck.SampleableExt` instances
-   (you can use `#sample my_type` if you are unsure);
-2. make sure that the relations and predicates that your proposition use are decidable;
-3. make sure that instances of `SlimCheck.Testable` exist that, when combined,
-   apply to your decorated proposition:
-```
-{tgt'}
-```
-
-Use `set_option trace.Meta.synthInstance true` to understand what instances are missing.
-
-Try this:
-set_option trace.Meta.synthInstance true
-#synth SlimCheck.Testable ({tgt'})"
+  catch _ => throwError "\
+      Failed to create a `testable` instance for `{tgt}`.\
+    \nWhat to do:\
+    \n1. make sure that the types you are using have `SlimCheck.SampleableExt` instances\
+    \n  (you can use `#sample my_type` if you are unsure);\
+    \n2. make sure that the relations and predicates that your proposition use are decidable;\
+    \n3. make sure that instances of `SlimCheck.Testable` exist that, when combined,\
+    \n  apply to your decorated proposition:\
+    \n```\
+    \n{tgt'}\
+    \n```\
+    \n\
+    \nUse `set_option trace.Meta.synthInstance true` to understand what instances are missing.\
+    \n\
+    \nTry this:\
+    \nset_option trace.Meta.synthInstance true\
+    \n#synth SlimCheck.Testable ({tgt'})"
   let e ← mkAppOptM ``Testable.check #[tgt, toExpr cfg, tgt', inst]
   trace[slim_check.decoration] "[testable decoration]\n  {tgt'}"
   -- Porting note: I have not ported support for `trace.slim_check.instance`.
   -- See the commented out code below from mathlib3 if you would like to implement this.
-  --   when_tracing `slim_check.instance   $ do
+  --   when_tracing `slim_check.instance   <| do
   --   { inst ← summarize_instance inst >>= pp,
   --     trace!"\n[testable instance]{format.indent inst 2}" },
-  let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) e
+  let code ← unsafe evalExpr (CoreM PUnit) q(CoreM PUnit) e
   _ ← code
-  admitGoal (← getMainGoal)
+  admitGoal g
 
 -- Porting note: below is the remaining code from mathlib3 which supports the
 -- `trace.slim_check.instance` trace option, and which has not been ported.
@@ -223,18 +224,18 @@ set_option trace.Meta.synthInstance true
 -- meta def summarize_instance : expr → tactic instance_tree
 -- | (lam n bi d b) := do
 --    v ← mk_local' n bi d,
---    summarize_instance $ b.instantiate_var v
+--    summarize_instance <| b.instantiate_var v
 -- | e@(app f x) := do
 --    `(testable %%p) ← infer_type e,
 --    xs ← e.get_app_args.mmap_filter (try_core ∘ summarize_instance),
---    pure $ instance_tree.node e.get_app_fn.const_name p xs
+--    pure <| instance_tree.node e.get_app_fn.const_name p xs
 -- | e := do
 --   failed
 
 -- /-- format an `instance_tree` -/
 -- meta def instance_tree.to_format : instance_tree → tactic format
 -- | (instance_tree.node n p xs) := do
---   xs ← format.join <$> (xs.mmap $ λ t, flip format.indent 2 <$> instance_tree.to_format t),
+--   xs ← format.join <$> (xs.mmap <| λ t, flip format.indent 2 <$> instance_tree.to_format t),
 --   ys ← pformat!"testable ({p})",
 --   pformat!"+ {n} :{format.indent ys 2}\n{xs}"
 

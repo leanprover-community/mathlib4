@@ -3,7 +3,8 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean
+import Mathlib.Init
+import Lean.Elab.Tactic.Conv.Pattern
 
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics
@@ -54,7 +55,7 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
       return (acc.push g)
 
 def casesType (heads : Array Name) (recursive := false) (allowSplit := true) :
-     MVarId → MetaM (List MVarId) :=
+    MVarId → MetaM (List MVarId) :=
   let matcher ty := pure <|
     if let .const n .. := ty.headBeta.getAppFn then heads.contains n else false
   casesMatching matcher recursive allowSplit
@@ -96,7 +97,7 @@ elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)
     (recursive := false) (allowSplit := true) : TacticM Unit := do
-  let heads ← heads.mapM resolveGlobalConstNoOverloadWithInfo
+  let heads ← heads.mapM (fun stx => realizeGlobalConstNoOverloadWithInfo stx)
   liftMetaTactic (casesType heads recursive allowSplit)
 
 /--
@@ -163,3 +164,5 @@ constructorm* _ ∨ _, _ ∧ _, True
 elab (name := constructorM) "constructorm" recursive:"*"? ppSpace pats:term,+ : tactic => do
   let pats ← elabPatterns pats.getElems
   liftMetaTactic (constructorMatching · (matchPatterns pats) recursive.isSome)
+
+end Mathlib.Tactic

@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Data.MLList.Basic
+import Batteries.Data.MLList.Basic
 import Mathlib.Data.ULift
 
 /-!
@@ -12,6 +12,7 @@ import Mathlib.Data.ULift
 
 namespace MLList
 
+universe u
 variable {α β : Type u} {m : Type u → Type u} [Monad m]
 
 /--
@@ -107,3 +108,5 @@ starting a new sublist each time a predicate changes from `false` to `true`.
 -/
 def splitAtBecomesTrue (L : MLList m α) (p : α → Bool) : MLList m (List α) :=
   L.splitAtBecomesTrueM fun a => pure (.up (p a))
+
+end MLList

@@ -6,8 +6,6 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
-#align_import algebra.tropical.lattice from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
-
 /-!
 
 # Order on tropical algebraic structure
@@ -27,7 +25,7 @@ constructions quicker to implement.
 -/
 
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 open Tropical
 
@@ -62,7 +60,7 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
     ConditionallyCompleteLattice (Tropical R) :=
   { @instInfTropical R _, @instSupTropical R _,
     instLatticeTropical with
-    le_csSup  := fun _s _x hs hx ↦
+    le_csSup := fun _s _x hs hx ↦
       le_csSup (untrop_monotone.map_bddAbove hs) (Set.mem_image_of_mem untrop hx)
     csSup_le := fun _s _x hs hx ↦
       csSup_le (hs.image untrop) (untrop_monotone.mem_upperBounds_image hx)
@@ -72,4 +70,20 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
       csInf_le (untrop_monotone.map_bddBelow hs) (Set.mem_image_of_mem untrop hx) }
 
 instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
-  { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with }
+  { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with
+    csSup_of_not_bddAbove := by
+      intro s hs
+      have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
+      simp only [sSup, Set.image_empty, trop_inj_iff]
+      apply csSup_of_not_bddAbove
+      contrapose! hs
+      change BddAbove (tropOrderIso.symm '' s) at hs
+      exact tropOrderIso.symm.bddAbove_image.1 hs
+    csInf_of_not_bddBelow := by
+      intro s hs
+      have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
+      simp only [sInf, Set.image_empty, trop_inj_iff]
+      apply csInf_of_not_bddBelow
+      contrapose! hs
+      change BddBelow (tropOrderIso.symm '' s) at hs
+      exact tropOrderIso.symm.bddBelow_image.1 hs }
