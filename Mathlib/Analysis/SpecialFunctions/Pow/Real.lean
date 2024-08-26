@@ -726,7 +726,7 @@ theorem abs_log_mul_self_rpow_lt (x t : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) (ht : 0
 lemma log_le_rpow_div {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : log x ≤ x ^ ε / ε := by
   rcases hx.eq_or_lt with rfl | h
   · rw [log_zero, zero_rpow hε.ne', zero_div]
-  rw [le_div_iff' hε]
+  rw [le_div_iff₀' hε]
   exact (log_rpow h ε).symm.trans_le <| (log_le_sub_one_of_pos <| rpow_pos_of_pos h ε).trans
     (sub_one_lt _).le
 
