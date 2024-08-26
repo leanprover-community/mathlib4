@@ -33,7 +33,7 @@ a multiplication, an addition, a multiplicative unit and an additive unit.
 -/
 @[mk_iff]
 class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
-  add_one_ne_zero_of_isSumSq (a : R) (ssa : IsSumSq a) : ¬ (1 + a = 0)
+  add_one_ne_zero_of_isSumSq (a : R) (ssa : IsSumSq a) : 1 + a ≠ 0
 
 /-- Linearly ordered semirings in which the property `a ≤ b → ∃ c, a + c = b` holds are semireal. -/
 instance [LinearOrderedSemiring R] [ExistsAddOfLE R] : IsSemireal R where
