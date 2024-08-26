@@ -46,7 +46,7 @@ theorem ruzsa_triangle_inequality_div_div_div (A B C : Finset α) :
   · obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
     refine card_le_card_of_injOn (fun b ↦ (a / b, b / c)) (fun b hb ↦ ?_) fun b₁ _ b₂ _ h ↦ ?_
     · rw [mem_bipartiteAbove]
-      exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel' _ _ _⟩
+      exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel _ _ _⟩
     · exact div_right_injective (Prod.ext_iff.1 h).1
   · exact ((mem_bipartiteBelow _).1 hv).2
 

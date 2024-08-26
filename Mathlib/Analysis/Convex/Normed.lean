@@ -76,7 +76,7 @@ theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthicken
 of `s` at distance at least `dist x y` from `y`. -/
 theorem convexHull_exists_dist_ge {s : Set E} {x : E} (hx : x ∈ convexHull ℝ s) (y : E) :
     ∃ x' ∈ s, dist x y ≤ dist x' y :=
-  (convexOn_dist y (convex_convexHull ℝ _)).exists_ge_of_mem_convexHull hx
+  (convexOn_dist y (convex_convexHull ℝ _)).exists_ge_of_mem_convexHull (subset_convexHull ..) hx
 
 /-- Given a point `x` in the convex hull of `s` and a point `y` in the convex hull of `t`,
 there exist points `x' ∈ s` and `y' ∈ t` at distance at least `dist x y`. -/
