@@ -12,7 +12,7 @@ import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β` be two finite kernels.
 A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with respect
-to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
+to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all measurable
 sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
 
@@ -24,7 +24,7 @@ denoted by `hf.toKernel f` such that `κ = ν ⊗ₖ hf.toKernel f`.
 Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 
 * `ProbabilityTheory.IsCondKernelCDF`: a function `f : α × β → StieltjesFunction` is called
-  a conditional kernel CDF of `κ` with respect to `ν` if it is measurable, tends to to 0 at -∞ and
+  a conditional kernel CDF of `κ` with respect to `ν` if it is measurable, tends to 0 at -∞ and
   to 1 at +∞ for all `p : α × β`, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and
   `x : ℝ` and for all measurable sets `s : Set β`,
   `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
@@ -420,7 +420,7 @@ section IsCondKernelCDF
 variable {f : α × β → StieltjesFunction}
 
 /-- A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with
-respect to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
+respect to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all
 measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`. -/
 structure IsCondKernelCDF (f : α × β → StieltjesFunction) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
