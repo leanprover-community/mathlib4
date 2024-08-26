@@ -279,10 +279,11 @@ is necessary since otherwise `n • v` refers to the multiplication defined
 using only the addition of `V`. -/
 
 
-theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
-  induction' n with n IH _ <;> intro v
-  · simp only [Nat.cast_zero, zero_smul]; rfl
-  · cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
+theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
+  induction n with
+  | zero =>  simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
+  | succ n IH =>
+    cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
 
 /-! We now compute the matrix of `f` in the `e` basis (`p` is the line index,
 `q` the column index). -/

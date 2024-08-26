@@ -61,7 +61,7 @@ theorem symm_apply (f : M ≃ₚ[L] N) (x : f.cod) : f.symm.toEquiv x = f.toEqui
   rfl
 
 instance : LE (M ≃ₚ[L] N) :=
-  ⟨fun f g ↦ ∃h : f.dom ≤ g.dom,
+  ⟨fun f g ↦ ∃ h : f.dom ≤ g.dom,
     (subtype _).comp (g.toEquiv.toEmbedding.comp (Substructure.inclusion h)) =
       (subtype _).comp f.toEquiv.toEmbedding⟩
 
@@ -282,13 +282,13 @@ open PartialEquiv
 variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
 variable (S : ι →o M ≃ₚ[L] N)
 
-instance : DirectedSystem (fun i ↦ (S i).dom) (fun _ _ h ↦
-  Substructure.inclusion (dom_le_dom (S.monotone h))) where
+instance : DirectedSystem (fun i ↦ (S i).dom)
+    (fun _ _ h ↦ Substructure.inclusion (dom_le_dom (S.monotone h))) where
   map_self' := fun _ _ _ ↦ rfl
   map_map' := fun _ _ _ ↦ rfl
 
-instance : DirectedSystem (fun i ↦ (S i).cod) (fun _ _ h ↦
-  Substructure.inclusion (cod_le_cod (S.monotone h))) where
+instance : DirectedSystem (fun i ↦ (S i).cod)
+    (fun _ _ h ↦ Substructure.inclusion (cod_le_cod (S.monotone h))) where
   map_self' := fun _ _ _ ↦ rfl
   map_map' := fun _ _ _ ↦ rfl
 
@@ -326,10 +326,10 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
   rw [Equiv_isup_symm_inclusion]
   congr
 
-theorem le_partialEquivLimit : ∀ i, S i ≤ partialEquivLimit S :=
-  fun i => ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    simp only [cod_partialEquivLimit, dom_partialEquivLimit, partialEquivLimit_comp_inclusion, ←
-      Embedding.comp_assoc, subtype_comp_inclusion]⟩
+theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
+  ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
+    simp only [cod_partialEquivLimit, dom_partialEquivLimit, partialEquivLimit_comp_inclusion,
+      ← Embedding.comp_assoc, subtype_comp_inclusion]⟩
 
 end DirectLimit
 
