@@ -165,7 +165,7 @@ def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim_def]
   refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
   any_goals dsimp; apply Equiv.equivOfUnique
-  all_goals simp; exact nimZeroRelabelling
+  all_goals simpa using nimZeroRelabelling
 
 theorem nim_one_equiv : nim 1 ≈ star :=
   nimOneRelabelling.equiv
@@ -255,8 +255,7 @@ theorem equiv_nim_grundyValue : ∀ (G : PGame.{u}) [G.Impartial], G ≈ nim (gr
         revert i₂
         rw [grundyValue_eq_mex_left]
         intro i₂
-        have hnotin : _ ∉ _ := fun hin =>
-          (le_not_le_of_lt (Ordinal.typein_lt_self i₂)).2 (csInf_le' hin)
+        have hnotin : _ ∉ _ := fun hin => not_le_of_lt (Ordinal.typein_lt_self i₂) (csInf_le' hin)
         simpa using hnotin
       cases' h' with i hi
       use toLeftMovesAdd (Sum.inl i)

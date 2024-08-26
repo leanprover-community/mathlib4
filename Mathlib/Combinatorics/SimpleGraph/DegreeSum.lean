@@ -48,9 +48,6 @@ section DegreeSum
 
 variable [Fintype V] [DecidableRel G.Adj]
 
--- Porting note: Changed to `Fintype (Sym2 V)` to match Combinatorics.SimpleGraph.Basic
-variable [Fintype (Sym2 V)]
-
 theorem dart_fst_fiber [DecidableEq V] (v : V) :
     (univ.filter fun d : G.Dart => d.fst = v) = univ.image (G.dartOfNeighborSet v) := by
   ext d
@@ -125,7 +122,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
       exact ZMod.ne_zero_iff_odd.symm
     · intro v
       simp only [true_and_iff, mem_filter, mem_univ, Ne]
-      rw [ZMod.eq_zero_iff_even, ZMod.eq_one_iff_odd, Nat.odd_iff_not_even, imp_self]
+      rw [ZMod.eq_zero_iff_even, ZMod.eq_one_iff_odd, ← Nat.not_even_iff_odd, imp_self]
       trivial
 
 theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRel G.Adj] (v : V)

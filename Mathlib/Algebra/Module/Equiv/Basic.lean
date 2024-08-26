@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.Pi
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Further results on (semi)linear equivalences.
@@ -81,7 +81,7 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul_assoc f g h := rfl
   mul_one f := ext fun x ↦ rfl
   one_mul f := ext fun x ↦ rfl
-  mul_left_inv f := ext <| f.left_inv
+  inv_mul_cancel f := ext <| f.left_inv
 
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
@@ -124,11 +124,13 @@ protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
 instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
   ⟨@fun _ _ ↦ LinearEquiv.ext⟩
 
-instance apply_smulCommClass : SMulCommClass R (M ≃ₗ[R] M) M where
-  smul_comm r e m := (e.map_smul r m).symm
+instance apply_smulCommClass [SMul S R] [SMul S M] [IsScalarTower S R M] :
+    SMulCommClass S (M ≃ₗ[R] M) M where
+  smul_comm r e m := (e.map_smul_of_tower r m).symm
 
-instance apply_smulCommClass' : SMulCommClass (M ≃ₗ[R] M) R M where
-  smul_comm := LinearEquiv.map_smul
+instance apply_smulCommClass' [SMul S R] [SMul S M] [IsScalarTower S R M] :
+    SMulCommClass (M ≃ₗ[R] M) S M :=
+  SMulCommClass.symm _ _ _
 
 end Automorphisms
 
@@ -401,23 +403,23 @@ end Subsingleton
 
 section Uncurry
 
-variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable (V V₂ R)
+variable [Semiring R]
+variable [AddCommMonoid M] [Module R M]
+variable (V V₂ R M)
 
 /-- Linear equivalence between a curried and uncurried function.
   Differs from `TensorProduct.curry`. -/
-protected def curry : (V × V₂ → R) ≃ₗ[R] V → V₂ → R :=
+protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M :=
   { Equiv.curry _ _ _ with
     map_add' := fun _ _ ↦ rfl
     map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
-theorem coe_curry : ⇑(LinearEquiv.curry R V V₂) = curry :=
+theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
   rfl
 
 @[simp]
-theorem coe_curry_symm : ⇑(LinearEquiv.curry R V V₂).symm = uncurry :=
+theorem coe_curry_symm : ⇑(LinearEquiv.curry R M V V₂).symm = uncurry :=
   rfl
 
 end Uncurry

@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.LinearAlgebra.Basis.Cardinality
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -226,7 +227,7 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb
     refine
-      ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
+      ⟨⋃ i, (LinearMap.single R _ i) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
     -- Note: #8386 changed `span_image` into `span_image _`
     simp_rw [span_iUnion, span_image _, hts, Submodule.iSup_map_single]
 
@@ -626,11 +627,11 @@ theorem Module.End.isNilpotent_iff_of_finite {R M : Type*} [CommSemiring R] [Add
   use Finset.sup S g
   ext m
   have hm : m ∈ Submodule.span R S := by simp [hS]
-  induction hm using Submodule.span_induction'
-  · next x hx => exact LinearMap.pow_map_zero_of_le (Finset.le_sup hx) (hg x)
-  · simp
-  · simp_all
-  · simp_all
+  induction hm using Submodule.span_induction' with
+  | mem x hx => exact LinearMap.pow_map_zero_of_le (Finset.le_sup hx) (hg x)
+  | zero => simp
+  | add => simp_all
+  | smul => simp_all
 
 variable {R}
 

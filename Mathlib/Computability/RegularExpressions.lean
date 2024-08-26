@@ -28,7 +28,7 @@ open Computability
 
 universe u
 
-variable {α β γ : Type*} [dec : DecidableEq α]
+variable {α β γ : Type*}
 
 /-- This is the definition of regular expressions. The names used here is to mirror the definition
 of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
@@ -153,6 +153,9 @@ def matchEpsilon : RegularExpression α → Bool
   | comp P Q => P.matchEpsilon && Q.matchEpsilon
   | star _P => true
 
+section DecidableEq
+variable [DecidableEq α]
+
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 /-- `P.deriv a` matches `x` if `P` matches `a :: x`, the Brzozowski derivative of `P` with respect
@@ -238,7 +241,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       subst hu
       repeat rw [rmatch] at h₂
       simp [h₂]
-  · rw [rmatch]; simp [deriv]
+  · rw [rmatch]; simp only [deriv]
     split_ifs with hepsilon
     · rw [add_rmatch_iff, ih]
       constructor
@@ -342,6 +345,8 @@ theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
 
 instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
   decidable_of_iff _ (rmatch_iff_matches' _ _)
+
+end DecidableEq
 
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/

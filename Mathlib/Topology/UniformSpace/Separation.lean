@@ -96,7 +96,6 @@ uniform space, separated space, Hausdorff space, separation quotient
 -/
 
 open Filter Set Function Topology Uniformity UniformSpace
-open scoped Classical
 
 noncomputable section
 
@@ -165,8 +164,8 @@ theorem eq_of_forall_symmetric {α : Type*} [UniformSpace α] [T0Space α] {x y 
 theorem eq_of_clusterPt_uniformity [T0Space α] {x y : α} (h : ClusterPt (x, y) (𝓤 α)) : x = y :=
   (inseparable_iff_clusterPt_uniformity.2 h).eq
 
-theorem Filter.Tendsto.inseparable_iff_uniformity {l : Filter β} [NeBot l] {f g : β → α} {a b : α}
-    (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) :
+theorem Filter.Tendsto.inseparable_iff_uniformity {β} {l : Filter β} [NeBot l] {f g : β → α}
+    {a b : α} (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) :
     Inseparable a b ↔ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α) := by
   refine ⟨fun h ↦ (ha.prod_mk_nhds hb).mono_right h.nhds_le_uniformity, fun h ↦ ?_⟩
   rw [inseparable_iff_clusterPt_uniformity]
@@ -248,6 +247,7 @@ theorem uniformContinuous_uncurry_lift₂ {f : α → β → γ}
 theorem comap_mk_uniformity : (𝓤 (SeparationQuotient α)).comap (Prod.map mk mk) = 𝓤 α :=
   comap_map_mk_uniformity
 
+open Classical in
 /-- Factoring functions to a separated space through the separation quotient.
 
 TODO: unify with `SeparationQuotient.lift`. -/

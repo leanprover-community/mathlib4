@@ -602,9 +602,9 @@ theorem destruct_flatten (c : Computation (WSeq α)) : destruct (flatten c) = c 
     match c1, c2, h with
     | c, _, Or.inl rfl => by cases c.destruct <;> simp
     | _, _, Or.inr ⟨c, rfl, rfl⟩ => by
-      induction' c using Computation.recOn with a c' <;> simp
-      · cases (destruct a).destruct <;> simp
-      · exact Or.inr ⟨c', rfl, rfl⟩
+      induction' c using Computation.recOn with a c'
+      · simp; cases (destruct a).destruct <;> simp
+      · simpa using Or.inr ⟨c', rfl, rfl⟩
 
 theorem head_terminates_iff (s : WSeq α) : Terminates (head s) ↔ Terminates (destruct s) :=
   terminates_map_iff _ (destruct s)
@@ -1174,7 +1174,9 @@ theorem toList_nil : toList (nil : WSeq α) = Computation.pure [] :=
   destruct_eq_pure rfl
 
 theorem toList_ofList (l : List α) : l ∈ toList (ofList l) := by
-  induction' l with a l IH <;> simp [ret_mem]; exact think_mem (Computation.mem_map _ IH)
+  induction' l with a l IH
+  · simp [ret_mem]
+  · simpa [ret_mem] using think_mem (Computation.mem_map _ IH)
 
 @[simp]
 theorem destruct_ofSeq (s : Seq α) :
