@@ -181,18 +181,18 @@ def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
     rcases p with ⟨p, hp, rfl⟩
     simp only [mem_degreeLT]
     refine lt_of_lt_of_le ?_ degree_le_natDegree
-    exact degree_eraseLead_lt (ne_zero_of_ne_zero_of_monic one_ne_zero hp)⟩,
+    exact degree_eraseLead_lt (ne_zero_of_ne_zero_of_monic one_ne_zero hp)⟩
   invFun := fun p =>
     ⟨X^n + p.1, monic_X_pow_add (mem_degreeLT.1 p.2), by
         rw [natDegree_add_eq_left_of_degree_lt]
         · simp
-        · simp [mem_degreeLT.1 p.2]⟩,
+        · simp [mem_degreeLT.1 p.2]⟩
   left_inv := by
     rintro ⟨p, hp, rfl⟩
     ext1
     simp only
     conv_rhs => rw [← eraseLead_add_C_mul_X_pow p]
-    simp [Monic.def.1 hp, add_comm],
+    simp [Monic.def.1 hp, add_comm]
   right_inv := by
     rintro ⟨p, hp⟩
     ext1
