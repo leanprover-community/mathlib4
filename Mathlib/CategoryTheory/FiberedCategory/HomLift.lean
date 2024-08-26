@@ -18,7 +18,7 @@ does not make sense when the domain and/or codomain of `φ` and `f` are not defi
 ## Main definition
 
 Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `p.IsHomLift f φ` is a class, defined
-using the auxillary inductive type `IsHomLiftAux` which expresses the fact that `f = p(φ)`.
+using the auxiliary inductive type `IsHomLiftAux` which expresses the fact that `f = p(φ)`.
 
 We also define a macro `subst_hom_lift p f φ` which can be used to substitute `f` with `p(φ)` in a
 goal, this tactic is just short for `obtain ⟨⟩ := Functor.IsHomLift.cond (p:=p) (f:=f) (φ:=φ)`, and

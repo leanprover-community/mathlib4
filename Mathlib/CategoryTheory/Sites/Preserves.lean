@@ -92,7 +92,7 @@ variable [(ofArrows X c.inj).hasPullbacks]
 
 include hc in
 /--
-If `F` preserves a particular product, then it `IsSheafFor` the corresponging presieve of arrows.
+If `F` preserves a particular product, then it `IsSheafFor` the corresponding presieve of arrows.
 -/
 theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F] :
     (ofArrows X c.inj).IsSheafFor F := by
