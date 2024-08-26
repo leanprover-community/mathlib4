@@ -9,7 +9,7 @@ import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.GroupTheory.GroupAction.BigOperators
 
-/-!
+/-!p
 # Average over a finset
 
 This file defines `Finset.expect`, the average (aka expectation) of a function over a finset.
@@ -102,8 +102,8 @@ variable [AddCommMonoid M] [Module ℚ≥0 M] [AddCommMonoid N] [Module ℚ≥0 
 lemma expect_univ [Fintype ι] : 𝔼 i, f i = (∑ i, f i) /ℚ Fintype.card ι := by
   rw [expect, card_univ]
 
-@[simp] lemma expect_empty (f : ι → M) : expect ∅ f = 0 := by simp [expect]
-@[simp] lemma expect_singleton (f : ι → M) (i : ι) : expect {i} f = f i := by simp [expect]
+@[simp] lemma expect_empty (f : ι → M) : 𝔼 i ∈ ∅, f i = 0 := by simp [expect]
+@[simp] lemma expect_singleton (f : ι → M) (i : ι) : 𝔼 j ∈ {i}, f j = f i := by simp [expect]
 @[simp] lemma expect_const_zero (s : Finset ι) : 𝔼 _i ∈ s, (0 : M) = 0 := by simp [expect]
 
 @[congr]
@@ -227,7 +227,10 @@ most arguments. -/
 lemma expect_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
     𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by simp_rw [expect, card_equiv e hst, sum_equiv e hst hfg]
 
-lemma expect_product' (f : ι → κ → M) : 𝔼 i ∈ s ×ˢ t, f i.1 i.2 = 𝔼 i ∈ s, 𝔼 y ∈ t, f i y := by
+lemma expect_product (f : ι × κ → M) : 𝔼 x ∈ s ×ˢ t, f x = 𝔼 i ∈ s, 𝔼 j ∈ t, f (i, j) := by
+  simp only [expect, card_product, sum_product, smul_sum, mul_inv, mul_smul, Nat.cast_mul]
+
+lemma expect_product' (f : ι → κ → M) : 𝔼 i ∈ s ×ˢ t, f i.1 i.2 = 𝔼 i ∈ s, 𝔼 j ∈ t, f i j := by
   simp only [expect, card_product, sum_product', smul_sum, mul_inv, mul_smul, Nat.cast_mul]
 
 @[simp]
@@ -305,10 +308,8 @@ end Semiring
 section CommSemiring
 variable [CommSemiring M] [Module ℚ≥0 M] [IsScalarTower ℚ≥0 M M] [SMulCommClass ℚ≥0 M M]
 
-local notation:70 s:70 " ^^ " n:71 => Fintype.piFinset fun _ : Fin n ↦ s
-
 lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
-    (𝔼 i ∈ s, f i) ^ n = 𝔼 p ∈ s ^^ n, ∏ i, f (p i) := by
+    (𝔼 i ∈ s, f i) ^ n = 𝔼 p ∈ Fintype.piFinset fun _ : Fin n ↦ s, ∏ i, f (p i) := by
   classical
   rw [expect, smul_pow, sum_pow', expect, Fintype.card_piFinset_const, inv_pow, Nat.cast_pow]
 
