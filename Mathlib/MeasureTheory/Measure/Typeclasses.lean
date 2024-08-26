@@ -536,17 +536,24 @@ instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
     by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
 
 variable (μ) in
-/-- An s-finite measure is absolutely continuous with respect to some finite measure. -/
-theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
-    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν := by
+/-- For an s-finite measure `μ`, there exists a finite measure `ν`
+such that each of `μ` and `ν` is absolutely continuous with respect to the other.
+-/
+theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
+    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν ∧ ν ≪ μ := by
   rcases ENNReal.exists_pos_tsum_mul_lt_of_countable top_ne_zero (sFiniteSeq μ · univ)
     fun _ ↦ measure_ne_top _ _ with ⟨c, hc₀, hc⟩
-  refine ⟨.sum fun n ↦ c n • sFiniteSeq μ n, ⟨?_⟩, ?_⟩
-  · simpa [mul_comm] using hc
-  · refine AbsolutelyContinuous.mk fun s hsm hs ↦ ?_
-    have : ∀ n, (sFiniteSeq μ n) s = 0 := by simpa [hsm, (hc₀ _).ne'] using hs
-    rw [← sum_sFiniteSeq μ, sum_apply _ hsm]
-    simp [this]
+  have {s : Set α} : sum (fun n ↦ c n • sFiniteSeq μ n) s = 0 ↔ μ s = 0 := by
+    conv_rhs => rw [← sum_sFiniteSeq μ, sum_apply_of_countable]
+    simp [(hc₀ _).ne']
+  refine ⟨.sum fun n ↦ c n • sFiniteSeq μ n, ⟨?_⟩, fun _ ↦ this.1, fun _ ↦ this.2⟩
+  simpa [mul_comm] using hc
+
+variable (μ) in
+@[deprecated exists_isFiniteMeasure_absolutelyContinuous (since := "2024-08-25")]
+theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
+    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν :=
+  let ⟨ν, hfin, h, _⟩ := exists_isFiniteMeasure_absolutelyContinuous μ; ⟨ν, hfin, h⟩
 
 end SFinite
 
@@ -1035,6 +1042,17 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
         simp only [Measure.coe_smul, Pi.smul_apply, nnreal_smul_coe_apply]
         exact ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_spanningSets_lt_top μ i).ne
       spanning := iUnion_spanningSets μ }⟩
+
+instance [SigmaFinite (μ.restrict s)] [SigmaFinite (μ.restrict t)] :
+    SigmaFinite (μ.restrict (s ∪ t)) := sigmaFinite_of_le _ (restrict_union_le _ _)
+
+instance [h : SigmaFinite (μ.restrict s)] : SigmaFinite (μ.restrict (s ∩ t)) := by
+  convert sigmaFinite_of_le _ (restrict_mono_ae (ae_of_all _ Set.inter_subset_left))
+  exact h
+
+instance [h : SigmaFinite (μ.restrict t)] : SigmaFinite (μ.restrict (s ∩ t)) := by
+  convert sigmaFinite_of_le _ (restrict_mono_ae (ae_of_all _ Set.inter_subset_right))
+  exact h
 
 theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable f μ)
     (h : SigmaFinite (μ.map f)) : SigmaFinite μ :=

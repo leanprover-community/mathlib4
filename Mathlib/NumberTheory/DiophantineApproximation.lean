@@ -341,14 +341,14 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, convergent_zero, floor_zero, cast_zero]
+  · simp only [convergent_zero, floor_zero, cast_zero]
   · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
 theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
   cases n
-  · simp only [Nat.zero_eq, convergent_zero, floor_intCast]
+  · simp only [convergent_zero, floor_intCast]
   · simp only [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
       inv_zero]
 
@@ -363,7 +363,7 @@ open GenContFract
 theorem convs_eq_convergent (ξ : ℝ) (n : ℕ) :
     (GenContFract.of ξ).convs n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
-  · simp only [Nat.zero_eq, zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
+  · simp only [zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
   · rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
     norm_cast
 
@@ -392,7 +392,11 @@ private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 
   ⟨cast_pos.mpr hv, by norm_cast; omega⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
-variable {ξ : ℝ} {u v : ℤ} (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
+variable {ξ : ℝ} {u v : ℤ}
+
+section
+variable (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
+include hv h
 
 -- The fractional part of `ξ` is positive.
 private theorem aux₁ : 0 < fract ξ := by
@@ -504,16 +508,16 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),
       lt_inv (div_pos hv₀' zero_lt_two) (aux₁ hv h), inv_div]
 
+end
+
 /-!
 ### The main result
 -/
 
 
 /-- The technical version of *Legendre's Theorem*. -/
-theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
+theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     ∃ n, (u / v : ℚ) = ξ.convergent n := by
-  -- Porting note: `induction` got in trouble because of the irrelevant hypothesis `h`
-  clear h; have h := h'; clear h'
   induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2

@@ -866,7 +866,7 @@ instance wellFoundedLT : WellFoundedLT Ordinal :=
 instance isWellOrder : IsWellOrder Ordinal (· < ·) where
 
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
-  IsWellOrder.conditionallyCompleteLinearOrderBot _
+  WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
   max_bot_left

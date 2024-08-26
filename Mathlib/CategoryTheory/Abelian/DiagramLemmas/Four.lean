@@ -128,6 +128,7 @@ end Four
 section Five
 
 variable {R₁ R₂ : ComposableArrows C 4} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+include hR₁ hR₂
 
 #adaptation_note /-- nightly-2024-03-11
 We turn off simprocs here.

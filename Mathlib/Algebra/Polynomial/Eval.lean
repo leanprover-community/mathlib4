@@ -917,7 +917,7 @@ theorem eval₂_mul' :
 theorem eval₂_pow' (n : ℕ) :
     (p ^ n).eval₂ (algebraMap R S) x = (p.eval₂ (algebraMap R S) x) ^ n := by
   induction n with
-  | zero => simp only [Nat.zero_eq, pow_zero, eval₂_one]
+  | zero => simp only [pow_zero, eval₂_one]
   | succ n ih => rw [pow_succ, pow_succ, eval₂_mul', ih]
 
 @[simp]
@@ -1103,7 +1103,7 @@ alias eval_int_cast := eval_intCast
 
 @[simp]
 theorem eval₂_neg {S} [Ring S] (f : R →+* S) {x : S} : (-p).eval₂ f x = -p.eval₂ f x := by
-  rw [eq_neg_iff_add_eq_zero, ← eval₂_add, add_left_neg, eval₂_zero]
+  rw [eq_neg_iff_add_eq_zero, ← eval₂_add, neg_add_cancel, eval₂_zero]
 
 @[simp]
 theorem eval₂_sub {S} [Ring S] (f : R →+* S) {x : S} :

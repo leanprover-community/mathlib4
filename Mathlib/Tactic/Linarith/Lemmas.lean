@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Data.Int.Order.Basic
 
 /-!
 # Lemmas for `linarith`.

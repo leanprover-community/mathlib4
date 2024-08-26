@@ -116,7 +116,7 @@ private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : �
 
 open Finset Int in
 /--
-  To prove Fermat's Last Theorem for `n = 3`, it is enough to show that that for all `a`, `b`, `c`
+  To prove Fermat's Last Theorem for `n = 3`, it is enough to show that for all `a`, `b`, `c`
   in `ℤ` such that `c ≠ 0`, `¬ 3 ∣ a`, `¬ 3 ∣ b`, `a` and `b` are coprime and `3 ∣ c`, we have
   `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 -/
@@ -230,6 +230,7 @@ def Solution.multiplicity := S.toSolution'.multiplicity
 `S.c` is less or equal than the multiplicity in `S₁.c`. -/
 def Solution.isMinimal : Prop := ∀ (S₁ : Solution hζ), S.multiplicity ≤ S₁.multiplicity
 
+include S in
 /-- If there is a solution then there is a minimal one. -/
 lemma Solution.exists_minimal : ∃ (S₁ : Solution hζ), S₁.isMinimal := by
   classical

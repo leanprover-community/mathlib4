@@ -78,7 +78,7 @@ instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵐᵒᵖ where
   __ := instMonoidWithZero
   __ := instNontrivial
   __ := instDivInvMonoid
-  mul_inv_cancel _ hx := unop_injective <| inv_mul_cancel <| unop_injective.ne hx
+  mul_inv_cancel _ hx := unop_injective <| inv_mul_cancel₀ <| unop_injective.ne hx
   inv_zero := unop_injective inv_zero
 
 end MulOpposite

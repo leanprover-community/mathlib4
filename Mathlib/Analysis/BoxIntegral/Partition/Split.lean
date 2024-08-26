@@ -35,12 +35,9 @@ is available as `BoxIntegral.Prepartition.compl`.
 rectangular box, partition, hyperplane
 -/
 
-
 noncomputable section
 
 open scoped Classical
-open Filter
-
 open Function Set Filter
 
 namespace BoxIntegral

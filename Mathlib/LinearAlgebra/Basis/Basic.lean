@@ -16,6 +16,7 @@ Further results on bases in modules and vector spaces.
 
 -/
 
+assert_not_exists Ordinal
 
 noncomputable section
 
@@ -559,5 +560,3 @@ theorem Basis.mem_span_iff_repr_mem (m : M) :
   exact smul_mem _ _ (subset_span (Set.mem_range_self i))
 
 end RestrictScalars
-
-assert_not_exists Ordinal
