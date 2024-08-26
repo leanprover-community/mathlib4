@@ -544,7 +544,7 @@ theorem norm_lt_of_mem_ball' (h : b ∈ ball a r) : ‖b‖ < ‖a‖ + r :=
 
 @[to_additive]
 theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w‖ ≤ ‖u / v‖ := by
-  simpa only [div_div_div_cancel_right'] using norm_sub_norm_le' (u / w) (v / w)
+  simpa only [div_div_div_cancel_right] using norm_sub_norm_le' (u / w) (v / w)
 
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
 -- Porting note: increase priority so the left-hand side doesn't reduce

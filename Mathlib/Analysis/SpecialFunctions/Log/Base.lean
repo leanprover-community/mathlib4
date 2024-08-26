@@ -89,7 +89,7 @@ theorem logb_div_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
 theorem mul_logb {a b c : ℝ} (h₁ : b ≠ 0) (h₂ : b ≠ 1) (h₃ : b ≠ -1) :
     logb a b * logb b c = logb a c := by
   unfold logb
-  rw [mul_comm, div_mul_div_cancel _ (log_ne_zero.mpr ⟨h₁, h₂, h₃⟩)]
+  rw [mul_comm, div_mul_div_cancel₀ (log_ne_zero.mpr ⟨h₁, h₂, h₃⟩)]
 
 theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -1) :
     logb a c / logb b c = logb a b :=

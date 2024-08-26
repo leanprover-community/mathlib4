@@ -424,7 +424,7 @@ theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
   induction n with
   | zero => exact (div_self' (f 0)).symm
   | succ n h =>
-    rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
+    rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel]
 
 lemma prod_rotate_eq_one_of_prod_eq_one :
     ∀ {l : List G} (_ : l.prod = 1) (n : ℕ), (l.rotate n).prod = 1
