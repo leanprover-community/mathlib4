@@ -8,7 +8,7 @@ variable {n 𝕜 : Type*} [Fintype n] [RCLike 𝕜] [DecidableEq n]
 
 -- test for custom elaborator
 /--
-info: (⋯ : PosSemidef A).sqrt : Matrix n n 𝕜
+info: (⋯ : A.PosSemidef).sqrt : Matrix n n 𝕜
 -/
 #guard_msgs in
 #check (id hA).sqrt

@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
 
-#align_import category_theory.bicategory.End from "leanprover-community/mathlib"@"6abb6de90754c5613a3aab6261eea9e5c72d539d"
-
 /-!
 # Endomorphisms of an object in a bicategory, as a monoidal category.
 -/
@@ -20,7 +18,6 @@ variable {C : Type*} [Bicategory C]
 /-- The endomorphisms of an object in a bicategory can be considered as a monoidal category. -/
 def EndMonoidal (X : C) :=
   X ⟶ X -- deriving Category
-#align category_theory.End_monoidal CategoryTheory.EndMonoidal
 
 -- Porting note: Deriving this fails in the definition above.
 -- Adding category instance manually.

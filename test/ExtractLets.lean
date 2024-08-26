@@ -78,3 +78,23 @@ example (h : let x := 1; let y := 2; x + 1 = y) : let _z := 3; ∀ (_ : Nat), Tr
   guard_hyp h : let x := 1; let y := 2; x + 1 = y
   intro
   trivial
+
+/-!
+Issue reported at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60extract_lets.60.20fails.20in.20a.20hypothesis.20if.20the.20name.20is.20unused/near/439675718
+Unused 'let' bindings were being miscounted.
+-/
+
+/--
+info: ok✝ : Prop := True
+_also_ok✝ : Prop := True
+_not_ok✝ : Prop := True
+h : ok✝
+⊢ True
+-/
+#guard_msgs in
+def a (h : let ok := True; let _not_ok := True; ok) : let _also_ok := True; True := by
+  extract_lets _ at h
+  extract_lets _
+  extract_lets _ at h
+  trace_state
+  trivial
