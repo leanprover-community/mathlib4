@@ -44,6 +44,10 @@ theorem isIntegral_of_mem_ringOfIntegers {x : L} (hx : x ∈ integralClosure v.v
   rw [← Polynomial.aeval_def, ← Subalgebra.coe_eq_zero, Polynomial.aeval_subalgebra_coe,
     Polynomial.aeval_def, Subtype.coe_mk, hP]
 
+theorem isIntegral_of_mem_ringOfIntegers' {x : (integralClosure v.valuationSubring L)} :
+    IsIntegral v.valuationSubring (x : integralClosure v.valuationSubring L) := by
+  apply isIntegral_of_mem_ringOfIntegers
+
 variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
 
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
