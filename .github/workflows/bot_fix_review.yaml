@@ -17,8 +17,6 @@ jobs:
         with:
           require: 'write'
 
-      - run: echo ${{ steps.user_permission.outputs.require-result }}
-
       # Maybe no API exists for this yet?
       # - name: Add reaction
       #   if: steps.user_permission.outputs.require-result == 'true'

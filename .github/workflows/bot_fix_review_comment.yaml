@@ -16,8 +16,6 @@ jobs:
         with:
           require: 'write'
 
-      - run: echo ${{ steps.user_permission.outputs.require-result }}
-
       - name: Add reaction
         if: steps.user_permission.outputs.require-result == 'true'
         run: |
