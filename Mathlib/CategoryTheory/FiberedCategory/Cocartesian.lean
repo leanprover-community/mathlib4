@@ -230,7 +230,32 @@ lemma map_self : map p f φ (comp_id f).symm φ = 𝟙 b := by
   apply map_uniq
   simp only [comp_id]
 
-/-- The composition of two `IsCocartesian.map` is also given by `IsCocartesian.map`. -/
+/-- When its possible to compare the two, the composition of two `IsStronglyCocartesian.map` will
+also be given by a `IsStronglyCocartesian.map`. In other words, given diagrams
+```
+a --φ--> b        b'         b''
+|        |        |          |
+v        v        v          v
+R --f--> S --g--> S' --g'--> S'
+```
+and
+```
+a --φ'--> b'
+|         |
+v         v
+R --f'--> S'
+
+```
+and
+```
+a --φ''--> b''
+|          |
+v          v
+R --f''--> S''
+```
+such that `φ` and `φ'` are strongly cocartesian morphisms, and such that `f' = f ≫ g` and
+`f'' = f' ≫ g'`. Then composing the induced map from `a'' ⟶ a'` with the induced map from
+`a' ⟶ a` gives the induced map from `a'' ⟶ a`. -/
 @[reassoc (attr := simp)]
 lemma map_comp_map {S' S'' : 𝒮} {b' b'' : 𝒳} {f' : R ⟶ S'} {f'' : R ⟶ S''} {g : S ⟶ S'}
     {g' : S' ⟶ S''} (H : f' = f ≫ g) (H' : f'' = f' ≫ g') (φ' : a ⟶ b') (φ'' : a ⟶ b'')
