@@ -87,6 +87,15 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
       dsimp at f₁ f₂ ⊢
       simp only [← F.map_comp, prod_comp, Category.comp_id, Category.id_comp]))
 
+def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
+  (currying).fullyFaithfulFunctor
+
+instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
+  fullyFaithfulUncurry.full
+
+instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Faithful :=
+  fullyFaithfulUncurry.faithful
+
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
 @[simps!]
 def flipIsoCurrySwapUncurry (F : C ⥤ D ⥤ E) : F.flip ≅ curry.obj (Prod.swap _ _ ⋙ uncurry.obj F) :=
