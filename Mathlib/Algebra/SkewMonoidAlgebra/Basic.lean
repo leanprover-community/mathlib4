@@ -34,12 +34,10 @@ structure SkewMonoidAlgebra (k : Type*) (G : Type*) [Zero k] where
   /-- Map **to** `G →₀ k`. -/
   toFinsupp : G →₀ k
 
-open Function hiding Commute
+open Function
 namespace SkewMonoidAlgebra
 
-universe u₁ u₂
-
-variable {k : Type u₁} {G : Type u₂} {H : Type*} {R : Type*}
+variable {k G : Type*}
 
 section AddCommMonoid
 
@@ -60,7 +58,7 @@ private def smul {S : Type*} [SMulZeroClass S k] :
 
 instance instZero : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
-instance instAdd' : Add (SkewMonoidAlgebra k G) := ⟨add⟩
+instance instAdd : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
 unseal smul in
 instance instSMulZeroClass {S : Type*} [SMulZeroClass S k] :
@@ -134,7 +132,7 @@ instance instNontrivial [Nontrivial k] [Nonempty G] :
 instance instAddCommMonoid : AddCommMonoid (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.addCommMonoid _ toFinsupp_zero toFinsupp_add
     (fun _ _ => toFinsupp_smul _ _)
-  toAdd  := SkewMonoidAlgebra.instAdd'
+  toAdd  := SkewMonoidAlgebra.instAdd
   toZero := SkewMonoidAlgebra.instZero
   nsmul  := (· • ·)
 
