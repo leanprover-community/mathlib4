@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 
+/-!
+# Blank docstring to be filled in
+
+-/
 
 open Filter Asymptotics
 
@@ -15,7 +25,6 @@ section fderiv
 
 variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞}
 variable {f : E → F} {x : E} {s : Set E}
-
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. -/
 theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n : ℕ) :
