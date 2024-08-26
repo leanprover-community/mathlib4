@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
+import Batteries.Tactic.Alias
 import Mathlib.Init
 /-!
 # Note about `Mathlib/Init/`
@@ -29,15 +30,7 @@ protected abbrev Quot.recOn'
     motive q :=
  q.rec f h
 
-/-- Version of `Quot.recOnSubsingleton` tagged with `elab_as_elim` -/
-@[elab_as_elim] -- Porting note: this attribute is missing in core
-protected abbrev Quot.recOnSubsingleton'
-    [h : (a : α) → Subsingleton (motive (Quot.mk r a))]
-    (q : Quot r)
-    (f : (a : α) → motive (Quot.mk r a)) :
-    motive q := by
-  induction q using Quot.rec
-  apply f
-  apply Subsingleton.elim
+@[deprecated (since := "2024-08-26")] alias Quot.recOnSubsingleton' := Quot.recOnSubsingleton
 
+@[deprecated (since := "2024-08-26")]
 theorem Quotient.mk'_eq_mk [s : Setoid α] : Quotient.mk' = Quotient.mk s := rfl
