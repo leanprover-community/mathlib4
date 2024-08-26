@@ -80,8 +80,12 @@ example : (mersenne 4253).Prime :=
 example : (mersenne 4423).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
--- First failure ("deep recursion detected")
-/-
 example : (mersenne 9689).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
--/
+
+example : (mersenne 9941).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+-- (kernel) deep recursion detected:
+-- example : (mersenne 11213).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
