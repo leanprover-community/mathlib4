@@ -729,13 +729,15 @@ theorem div_left_inj : b / a = c / a ↔ b = c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_left_inj _
 
-@[to_additive (attr := simp) sub_add_sub_cancel]
-theorem div_mul_div_cancel' (a b c : G) : a / b * (b / c) = a / c := by
+@[to_additive (attr := simp)]
+theorem div_mul_div_cancel (a b c : G) : a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, div_mul_cancel]
 
-@[to_additive (attr := simp) sub_sub_sub_cancel_right]
-theorem div_div_div_cancel_right' (a b c : G) : a / c / (b / c) = a / b := by
-  rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel']
+@[to_additive (attr := simp)]
+theorem div_div_div_cancel_right (a b c : G) : a / c / (b / c) = a / b := by
+  rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel]
+
+@[deprecated (since := "2024-08-24")] alias div_div_div_cancel_right' := div_div_div_cancel_right
 
 @[to_additive]
 theorem div_eq_one : a / b = 1 ↔ a = b :=
@@ -963,9 +965,11 @@ theorem mul_mul_div_cancel (a b c : G) : a * c * (b / c) = a * b := by
 theorem div_mul_mul_cancel (a b c : G) : a / c * (b * c) = a * b := by
   rw [mul_left_comm, div_mul_cancel, mul_comm]
 
-@[to_additive (attr := simp) sub_add_sub_cancel']
-theorem div_mul_div_cancel'' (a b c : G) : a / b * (c / a) = c / b := by
-  rw [mul_comm]; apply div_mul_div_cancel'
+@[to_additive (attr := simp)]
+theorem div_mul_div_cancel' (a b c : G) : a / b * (c / a) = c / b := by
+  rw [mul_comm]; apply div_mul_div_cancel
+
+@[deprecated (since := "2024-08-24")] alias div_mul_div_cancel'' := div_mul_div_cancel'
 
 @[to_additive (attr := simp)]
 theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c := by
@@ -973,7 +977,7 @@ theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c := by
 
 @[to_additive (attr := simp)]
 theorem div_div_div_cancel_left (a b c : G) : c / a / (c / b) = b / a := by
-  rw [← inv_div b c, div_inv_eq_mul, mul_comm, div_mul_div_cancel']
+  rw [← inv_div b c, div_inv_eq_mul, mul_comm, div_mul_div_cancel]
 
 @[to_additive]
 theorem div_eq_div_iff_mul_eq_mul : a / b = c / d ↔ a * d = c * b := by
