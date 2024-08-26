@@ -985,7 +985,7 @@ noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α
   apply Nonempty.some
   letI := upgradeStandardBorel α
   obtain ⟨f, -, fcts, finj⟩ :=
-    isClosed_univ.exists_nat_bool_injection_of_not_countable
+    isClosed_univ.exists_nat_bool_injection_of_not_countable (α := α)
       (by rwa [← countable_coe_iff, (Equiv.Set.univ _).countable_iff])
   obtain ⟨g, gmeas, ginj⟩ :=
     MeasurableSpace.measurable_injection_nat_bool_of_countablySeparated α

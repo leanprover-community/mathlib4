@@ -44,11 +44,8 @@ it suffices to assume that `f` is zero wherever `g` is. (This generalization is 
 the Fréchet derivative.)
 -/
 
-
-open Filter Set
-
 open scoped Classical
-open Topology Filter NNReal
+open Set Topology Filter NNReal
 
 namespace Asymptotics
 

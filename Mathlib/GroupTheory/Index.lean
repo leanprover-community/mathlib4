@@ -449,6 +449,25 @@ lemma pow_mem_of_relindex_ne_zero_of_dvd (h : H.relindex K ≠ 0) {a : G} (ha : 
   convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
   simp [pow_mem ha, mem_subgroupOf]
 
+@[simp]
+lemma index_toAddSubgroup : (Subgroup.toAddSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.index_toSubgroup {G : Type*} [AddGroup G] (H : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma relindex_toAddSubgroup :
+    (Subgroup.toAddSubgroup H).relindex (Subgroup.toAddSubgroup K) = H.relindex K :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.relindex_toSubgroup {G : Type*} [AddGroup G] (H K : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).relindex (AddSubgroup.toSubgroup K) = H.relindex K :=
+  rfl
+
 section FiniteIndex
 
 variable (H K)
