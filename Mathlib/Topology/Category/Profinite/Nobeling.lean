@@ -414,7 +414,7 @@ theorem evalFacProps {l : Products I} (J K : I → Prop)
     ext; simp [Homeomorph.setCongr, Products.eval_eq]
   rw [ProjRestricts, ← Function.comp.assoc, this, ← evalFacProp (π C K) J h]
 
-theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
+theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
     (h : l.isGood (π C J)) : ∀ a, a ∈ l.val → J a := by
   intro i hi
   by_contra h'
@@ -711,7 +711,7 @@ def ord (i : I) : Ordinal := Ordinal.typein ((·<·) : I → I → Prop) i
 /-- An ordinal regarded as a term of `I`. -/
 noncomputable
 def term {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Prop)) : I :=
-  Ordinal.enum ((·<·) : I → I → Prop) o ho
+  Ordinal.enum ((·<·) : I → I → Prop) ⟨o, ho⟩
 
 variable {I}
 
