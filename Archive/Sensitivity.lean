@@ -227,7 +227,8 @@ open Classical in
 /-- `e` and `ε` are dual families of vectors. It implies that `e` is indeed a basis
 and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
-  eval := duality
+  eval_same := by simp [duality]
+  eval_of_ne _ _ h := by simp [duality, h]
   total := @epsilon_total _
 
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
