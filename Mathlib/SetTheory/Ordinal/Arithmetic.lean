@@ -298,29 +298,26 @@ instance orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
 theorem enum_succ_eq_top {o : Ordinal} :
-    enum (· < ·) o
-        (by
-          rw [type_lt]
-          exact lt_succ o) =
-      (⊤ : (succ o).out.α) :=
+    enum (· < ·) ⟨o, by rw [type_lt]; exact lt_succ o⟩ = (⊤ : (succ o).out.α) :=
   rfl
 
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
     (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
-  use enum r (succ (typein r x)) (h _ (typein_lt_type r x))
-  convert (enum_lt_enum (typein_lt_type r x)
-    (h _ (typein_lt_type r x))).mpr (lt_succ _); rw [enum_typein]
+  use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
+  convert enum_lt_enum (o₁ := ⟨_, typein_lt_type r x⟩) (o₂ := ⟨_, h _ (typein_lt_type r x)⟩).mpr _
+  · rw [enum_typein]
+  · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
 theorem out_no_max_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.out.α :=
   ⟨has_succ_of_type_succ_lt (by rwa [type_lt])⟩
 
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (type r).IsLimit) (x) :
     Bounded r {x} := by
-  refine ⟨enum r (succ (typein r x)) (hr.2 _ (typein_lt_type r x)), ?_⟩
+  refine ⟨enum r ⟨succ (typein r x), hr.2 _ (typein_lt_type r x)⟩, ?_⟩
   intro b hb
   rw [mem_singleton_iff.1 hb]
   nth_rw 1 [← enum_typein r x]
-  rw [@enum_lt_enum _ r]
+  rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ
 
 -- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
@@ -329,8 +326,7 @@ theorem type_subrel_lt (o : Ordinal.{u}) :
       = Ordinal.lift.{u + 1} o := by
   refine Quotient.inductionOn o ?_
   rintro ⟨α, r, wo⟩; apply Quotient.sound
-  -- Porting note: `symm; refine' [term]` → `refine' [term].symm`
-  constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enumIso r).symm).symm
+  constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
 
 theorem mk_initialSeg (o : Ordinal.{u}) :
     #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := by
@@ -426,11 +422,11 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
         induction b using inductionOn with
         | H β s =>
           intro l
-          suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ _ l) by
+          suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ ⟨_, l⟩) by
             -- Porting note: `revert` & `intro` is required because `cases'` doesn't replace
             --               `enum _ _ l` in `this`.
-            revert this; cases' enum _ _ l with x x <;> intro this
-            · cases this (enum s 0 h.pos)
+            revert this; cases' enum _ ⟨_, l⟩ with x x <;> intro this
+            · cases this (enum s ⟨0, h.pos⟩)
             · exact irrefl _ (this _)
           intro x
           rw [← typein_lt_typein (Sum.Lex r s), typein_enum]
@@ -654,8 +650,8 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
     (h : IsLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
     False := by
-  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ _ l) by
-    cases' enum _ _ l with b a
+  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) by
+    cases' enum _ ⟨_, l⟩ with b a
     exact irrefl _ (this _ _)
   intro a b
   rw [← typein_lt_typein (Prod.Lex s r), typein_enum]
@@ -958,7 +954,7 @@ claim on the other. -/
 /-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a specified
 well-ordering. -/
 def bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) :
-    ∀ a < type r, α := fun a ha => f (enum r a ha)
+    ∀ a < type r, α := fun a ha => f (enum r ⟨a, ha⟩)
 
 /-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a well-ordering
 given by the axiom of choice. -/
@@ -992,16 +988,13 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
-    familyOfBFamily' r ho f (enum r i (by rwa [ho])) = f i hi := by
+    familyOfBFamily' r ho f (enum r ⟨i, by rwa [ho]⟩) = f i hi := by
   simp only [familyOfBFamily', typein_enum]
 
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily o f
-        (enum (· < ·) i
-          (by
-            convert hi
-            exact type_lt _)) =
+        (@enum _ (· < ·) o.out.wo ⟨i, hi.trans_eq (type_lt _).symm⟩) =
       f i hi :=
   familyOfBFamily'_enum _ (type_lt o) f _ _
 
@@ -1172,10 +1165,10 @@ instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
   let f : o.out.α → Set.Iio o :=
     fun x => ⟨typein ((· < ·) : o.out.α → o.out.α → Prop) x, typein_lt_self x⟩
   let hf : Surjective f := fun b =>
-    ⟨enum (· < ·) b.val
-        (by
+    ⟨@enum _ (· < ·) o.out.wo ⟨b.val,
+        by
           rw [type_lt]
-          exact b.prop),
+          exact b.prop⟩,
       Subtype.ext (typein_enum _ _)⟩
   small_of_surjective hf
 
@@ -1474,7 +1467,7 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein ((· < ·) : o.out.α �
       by_contra! h
       -- Porting note: `nth_rw` → `conv_rhs` & `rw`
       conv_rhs at h => rw [← type_lt o]
-      simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) _ h))
+      simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
 theorem sup_typein_limit {o : Ordinal} (ho : ∀ a, a < o → succ a < o) :
     sup.{u, u} (typein ((· < ·) : o.out.α → o.out.α → Prop)) = o := by
@@ -1624,7 +1617,7 @@ theorem blsub_type {α : Type u} (r : α → α → Prop) [IsWellOrder α r]
     blsub.{_, v} (type r) f = lsub.{_, v} fun a => f (typein r a) (typein_lt_type _ _) :=
   eq_of_forall_ge_iff fun o => by
     rw [blsub_le_iff, lsub_le_iff]
-    exact ⟨fun H b => H _ _, fun H i h => by simpa only [typein_enum] using H (enum r i h)⟩
+    exact ⟨fun H b => H _ _, fun H i h => by simpa only [typein_enum] using H (enum r ⟨i, h⟩)⟩
 
 theorem blsub_const {o : Ordinal} (ho : o ≠ 0) (a : Ordinal) :
     (blsub.{u, v} o fun _ _ => a) = succ a :=
@@ -1718,8 +1711,8 @@ def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : O
 theorem lt_blsub₂ {o₁ o₂ : Ordinal}
     (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
     (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
-  convert lt_lsub _ (Prod.mk (enum (· < ·) a (by rwa [type_lt]))
-    (enum (· < ·) b (by rwa [type_lt])))
+  convert lt_lsub _ (Prod.mk (enum (· < ·) ⟨a, by rwa [type_lt]⟩)
+    (enum (· < ·) ⟨b, by rwa [type_lt]⟩))
   simp only [typein_enum]
 
 /-! ### Minimum excluded ordinals -/
@@ -1792,7 +1785,7 @@ theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
 theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
     f i hi ≠ bmex.{_, v} o f := by
   convert (config := {transparency := .default})
-    ne_mex.{_, v} (familyOfBFamily o f) (enum (· < ·) i (by rwa [type_lt])) using 2
+    ne_mex.{_, v} (familyOfBFamily o f) (@enum _ (· < ·) o.out.wo ⟨i, by rwa [type_lt]⟩) using 2
   -- Porting note: `familyOfBFamily_enum` → `typein_enum`
   rw [typein_enum]
 
