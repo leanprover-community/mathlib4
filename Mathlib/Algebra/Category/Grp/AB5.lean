@@ -47,5 +47,8 @@ noncomputable instance :
     PreservesFiniteLimits <| colim (J := J) (C := AddCommGrp.{u}) := by
   apply Functor.preservesFiniteLimitsOfPreservesHomology
 
-instance : AB4 (AddCommGrp.{u}) where
-  preservesFiniteLimits := fun _ => sorry
+instance : HasFilteredColimits (AddCommGrp.{u}) where
+  HasColimitsOfShape := inferInstance
+
+noncomputable instance : AB5 (AddCommGrp.{u}) where
+  preservesFiniteLimits := fun _ => inferInstance
