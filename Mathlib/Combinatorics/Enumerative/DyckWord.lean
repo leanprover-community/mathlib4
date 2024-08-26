@@ -214,9 +214,11 @@ def denest (hn : p.IsNested) : DyckWord where
     simp only [count_singleton', ite_true, ite_false] at eq
     omega
 
+variable (p) in
 lemma nest_denest (hn) : (p.denest hn).nest = p := by
   simpa [DyckWord.ext_iff] using p.cons_tail_dropLast_concat hn.1
 
+variable (p) in
 lemma denest_nest : p.nest.denest .nest = p := by
   simp_rw [nest, denest, DyckWord.ext_iff, dropLast_concat]; rfl
 
@@ -358,7 +360,7 @@ lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
 @[simp]
 lemma insidePart_nest : p.nest.insidePart = p := by
   simp_rw [insidePart, nest_ne_zero, dite_false, firstReturn_nest]
-  convert denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
+  convert p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
   simp_rw [nest, length_append, length_singleton]; omega
 
 @[simp]
