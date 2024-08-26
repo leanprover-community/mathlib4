@@ -70,15 +70,19 @@ def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
             · intro G G'
               apply prodComparison_natural ((evaluation C D).obj k) (𝟙 F) } ) }
 
+instance whiskeringLeftPreservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
+    [HasLimitsOfShape J D] (F : C ⥤ E) :
+    PreservesLimitsOfShape J ((whiskeringLeft C E D).obj F) :=
+  ⟨fun {K} =>
+    ⟨fun c {hc} => by
+      apply evaluationJointlyReflectsLimits _ (fun k => ?_)
+      change IsLimit (((evaluation E D).obj (F.obj k)).mapCone c)
+      exact PreservesLimit.preserves hc⟩⟩
+
 instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
     PreservesLimits ((whiskeringLeft C E D).obj F) :=
-  ⟨fun {J} [hJ : Category J] =>
-    ⟨fun {K} =>
-      ⟨fun c {hc} => by
-        apply evaluationJointlyReflectsLimits
-        intro Y
-        change IsLimit (((evaluation E D).obj (F.obj Y)).mapCone c)
-        exact PreservesLimit.preserves hc⟩⟩⟩
+  ⟨inferInstance⟩
 
 instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
