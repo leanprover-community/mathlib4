@@ -35,14 +35,7 @@ open BigOperators Finset
 
 section Def
 
--- Is this useful enough to be non-private?
-private
-lemma Finset.sum_one_sub_eq_sum {R M : Type*} [Ring R] [Fintype R] [AddCommMonoid M] (f : R → M) :
-    Finset.sum univ (fun x ↦ f (1 - x)) = Finset.sum univ f := by
-  refine Fintype.sum_bijective (1 - ·) (Function.Involutive.bijective ?_) _ _ fun _ ↦ rfl
-  simp only [Function.Involutive, sub_sub_cancel, implies_true]
-
--- need `Fintype` instead of `Finite` for `Finset.sum` etc.
+-- need `Fintype` instead of `Finite` to make `jacobiSum` computable.
 variable {R R' : Type*} [CommRing R] [Fintype R] [CommRing R']
 
 /-- The *Jacobi sum* of two multiplicative characters on a finite commutative ring. -/
@@ -51,8 +44,8 @@ def jacobiSum (χ ψ : MulChar R R') : R' :=
 
 lemma jacobiSum_comm (χ ψ : MulChar R R') : jacobiSum χ ψ = jacobiSum ψ χ := by
   simp only [jacobiSum, mul_comm (χ _)]
-  rw [← sum_one_sub_eq_sum]
-  simp only [sub_sub_cancel]
+  rw [← (Equiv.subLeft 1).sum_comp]
+  simp only [Equiv.subLeft_apply, sub_sub_cancel]
 
 /-- The Jacobi sum is compatible with ring homomorphisms. -/
 lemma jacobiSum_ringHomComp {R'' : Type*} [CommRing R''] (χ ψ : MulChar R R') (f : R' →+* R'') :
@@ -86,9 +79,10 @@ private lemma jacobiSum_eq_aux (χ ψ : MulChar F R) :
   conv =>
     enter [1, 2, x]
     rw [show ∀ x y : R, x * y = x + y - 1 + (x - 1) * (y - 1) by intros; ring]
-  rw [sum_add_distrib, sum_sub_distrib, sum_add_distrib, sum_one_sub_eq_sum,
-    Fintype.card_eq_sum_ones, Nat.cast_sum, Nat.cast_one, sum_sdiff_eq_sub (subset_univ _),
-    ← sub_zero (_ - _ + _), add_sub_assoc]
+  rw [sum_add_distrib, sum_sub_distrib, sum_add_distrib]
+  conv => enter [1, 1, 1, 2, 2, x]; rw [← Equiv.subLeft_apply 1]
+  rw [(Equiv.subLeft 1).sum_comp ψ, Fintype.card_eq_sum_ones, Nat.cast_sum, Nat.cast_one,
+    sum_sdiff_eq_sub (subset_univ _), ← sub_zero (_ - _ + _), add_sub_assoc]
   congr
   rw [sum_pair zero_ne_one, sub_zero, ψ.map_one, χ.map_one, sub_self, mul_zero, zero_mul, add_zero]
 
