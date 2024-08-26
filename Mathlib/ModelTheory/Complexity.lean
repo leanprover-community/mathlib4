@@ -79,18 +79,30 @@ theorem IsAtomic.isQF {φ : L.BoundedFormula α n} : IsAtomic φ → IsQF φ :=
 theorem isQF_bot : IsQF (⊥ : L.BoundedFormula α n) :=
   IsQF.falsum
 
-theorem IsQF.not {φ : L.BoundedFormula α n} (h : IsQF φ) : IsQF φ.not :=
+namespace IsQF
+
+theorem not {φ : L.BoundedFormula α n} (h : IsQF φ) : IsQF φ.not :=
   h.imp isQF_bot
 
-theorem IsQF.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → β ⊕ (Fin n)) :
+theorem top : IsQF (⊤ : L.BoundedFormula α n) := isQF_bot.not
+
+theorem sup {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : IsQF (φ ⊔ ψ) :=
+  hφ.not.imp hψ
+
+theorem inf {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : IsQF (φ ⊓ ψ) :=
+  (hφ.imp hψ.not).not
+
+protected theorem relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → β ⊕ (Fin n)) :
     (φ.relabel f).IsQF :=
   IsQF.recOn h isQF_bot (fun h => (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
 
-theorem IsQF.liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
+protected theorem liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
   IsQF.recOn h isQF_bot (fun ih => ih.liftAt.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
 
-theorem IsQF.castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
+protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
   IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
+
+end IsQF
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
   cases' con with _ con
@@ -314,6 +326,41 @@ theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (�
   φ.induction_on_all_ex (fun {_ _} => hqf)
     (fun {_ φ} hφ => (hse φ.all_semanticallyEquivalent_not_ex_not).2 (hnot (hex (hnot hφ))))
     (fun {_ _} => hex) fun {_ _ _} => hse
+
+section Preservation
+
+variable {M : Type*} [L.Structure M] {N : Type*} [L.Structure N]
+variable {F : Type*} [FunLike F M N]
+
+lemma IsAtomic.realize_comp_of_injective {φ : L.BoundedFormula α n} (hA : φ.IsAtomic)
+    [L.HomClass F M N] {f : F} (hInj : Function.Injective f) {v : α → M} {xs : Fin n → M} :
+    φ.Realize v xs → φ.Realize (f ∘ v) (f ∘ xs) := by
+  induction hA with
+  | equal t₁ t₂ => simp only [realize_bdEqual, ← Sum.comp_elim, HomClass.realize_term, hInj.eq_iff,
+    imp_self]
+  | rel R ts =>
+    simp only [realize_rel, ← Sum.comp_elim, HomClass.realize_term]
+    exact HomClass.map_rel f R (fun i => Term.realize (Sum.elim v xs) (ts i))
+
+lemma IsAtomic.realize_comp {φ : L.BoundedFormula α n} (hA : φ.IsAtomic)
+    [EmbeddingLike F M N] [L.HomClass F M N] (f : F) {v : α → M} {xs : Fin n → M} :
+    φ.Realize v xs → φ.Realize (f ∘ v) (f ∘ xs) :=
+  hA.realize_comp_of_injective (EmbeddingLike.injective f)
+
+lemma IsQF.realize_embedding {φ : L.BoundedFormula α n} (hQF : φ.IsQF)
+    [EmbeddingLike F M N] [L.StrongHomClass F M N] (f : F) {v : α → M} {xs : Fin n → M} :
+    φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
+  induction hQF with
+  | falsum => rfl
+  | of_isAtomic hA => induction hA with
+    | equal t₁ t₂ => simp only [realize_bdEqual, ← Sum.comp_elim, HomClass.realize_term,
+        (EmbeddingLike.injective f).eq_iff]
+    | rel R ts =>
+      simp only [realize_rel, ← Sum.comp_elim, HomClass.realize_term]
+      exact StrongHomClass.map_rel f R (fun i => Term.realize (Sum.elim v xs) (ts i))
+  | imp _ _ ihφ ihψ => simp only [realize_imp, ihφ, ihψ]
+
+end Preservation
 
 end BoundedFormula
 
