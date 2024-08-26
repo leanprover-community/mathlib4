@@ -285,7 +285,7 @@ def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     for s in findLambdaSyntax stx do
       if let .atom _ "λ" := s[0] then
-        Linter.logLint linter.style.lambdaSyntax s m!"\
+        Linter.logLint linter.style.lambdaSyntax s[0] m!"\
         Please use 'fun' and not 'λ' to define anonymous functions.\n\
         The 'λ' syntax is deprecated in mathlib4."
 
