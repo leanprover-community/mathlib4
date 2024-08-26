@@ -164,6 +164,8 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   --   viewed as endomorphism of `E`. Note that `χ` is polynomial in its argument `r`.
   -- Similarly: `ψ r` is the characteristic polynomial of `⁅r • u + x, _⁆`
   --   viewed as endomorphism of `Q`. Note that `ψ` is polynomial in its argument `r`.
+  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+  longer found. -/
   letI := E.instLieRingModuleSubtypeMemSubmodule
   letI : LieModule K U E := LieSubmodule.instLieModule E
   let χ : Polynomial (K[X]) := lieCharpoly K E x' u
