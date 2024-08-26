@@ -5,8 +5,7 @@ open Lake DSL
 package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
-    ⟨`autoImplicit, false⟩,
-    ⟨`relaxedAutoImplicit, false⟩
+    ⟨`autoImplicit, false⟩
   ]
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
@@ -66,8 +65,8 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
-/-- `lake exe lint_style` runs text-based style linters. -/
-lean_exe lint_style where
+/-- `lake exe lint-style` runs text-based style linters. -/
+lean_exe «lint-style» where
   srcDir := "scripts"
 
 /--

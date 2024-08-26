@@ -120,7 +120,7 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarRing R] [StarOrderedRin
   have i₁ : 0 ≤ P := by
     have idem : P * P = 4 * P := CHSH_id T.A₀_inv T.A₁_inv T.B₀_inv T.B₁_inv
     have idem' : P = (1 / 4 : ℝ) • (P * P) := by
-      have h : 4 * P = (4 : ℝ) • P := by simp [Algebra.smul_def]
+      have h : 4 * P = (4 : ℝ) • P := by simp [map_ofNat, Algebra.smul_def]
       rw [idem, h, ← mul_smul]
       norm_num
     have sa : star P = P := by

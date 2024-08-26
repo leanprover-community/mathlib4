@@ -47,6 +47,8 @@ namespace Condition
 
 variable {a b : ℕ} (h : Condition a b)
 
+section
+
 lemma a_pos : 0 < a := h.1
 
 lemma b_pos : 0 < b := h.2.1
@@ -78,6 +80,8 @@ lemma dvd_g_of_le_N_of_dvd {n : ℕ} (hn : h.N ≤ n) {d : ℕ} (hab : d ∣ a ^
     (hba : d ∣ b ^ n + a) : d ∣ h.g := by
   rw [← h.gcd_eq_g hn, Nat.dvd_gcd_iff]
   exact ⟨hab, hba⟩
+
+end
 
 lemma a_coprime_ab_add_one : a.Coprime (a * b + 1) := by
   simp

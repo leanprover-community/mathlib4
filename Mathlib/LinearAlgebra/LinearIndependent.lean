@@ -1339,13 +1339,9 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
       · exact sUnion_subset fun x xc => (hc xc).1
       · exact linearIndependent_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
       · exact subset_sUnion_of_mem
-  rcases this with
-    ⟨b, ⟨bt, bi⟩, sb, h⟩
-  refine ⟨b, bt, sb, fun x xt => ?_, bi⟩
-  by_contra hn
-  apply hn
-  rw [← h _ ⟨insert_subset_iff.2 ⟨xt, bt⟩, bi.insert hn⟩ (subset_insert _ _)]
-  exact subset_span (mem_insert _ _)
+  obtain ⟨b, sb, h⟩ := this
+  refine ⟨b, h.prop.1, sb, fun x xt => by_contra fun hn ↦ hn ?_, h.prop.2⟩
+  exact subset_span <| h.mem_of_prop_insert ⟨insert_subset xt h.prop.1, h.prop.2.insert hn⟩
 
 variable (K t)
 
