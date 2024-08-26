@@ -43,7 +43,7 @@ structure HahnSeries (Γ : Type*) (R : Type*) [PartialOrder Γ] [Zero R] where
   coeff : Γ → R
   isPWO_support' : (Function.support coeff).IsPWO
 
-variable {Γ : Type*} {R : Type*}
+variable {Γ Γ' R S : Type*}
 
 namespace HahnSeries
 
@@ -108,8 +108,19 @@ nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty �
 theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :=
   Function.support_eq_empty_iff.trans coeff_fun_eq_zero_iff
 
+/-- The map of Hahn series induced by applying a zero-preserving map to each coefficient. -/
+@[simps]
+def map [Zero S] (x : HahnSeries Γ R) (f : ZeroHom R S) : HahnSeries Γ S where
+  coeff g := f (x.coeff g)
+  isPWO_support' := x.isPWO_support.mono <| Function.support_comp_subset (ZeroHom.map_zero f) _
+
+@[simp]
+protected lemma map_zero [Zero S] (f : ZeroHom R S) :
+    (0 : HahnSeries Γ R).map f = 0 := by
+  ext; simp
+
 /-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
-def ofIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
+def ofIterate [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
     HahnSeries (Γ ×ₗ Γ') R where
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
@@ -125,7 +136,7 @@ lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
   rfl
 
 /-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
-def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
+def toIterate [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
     HahnSeries Γ (HahnSeries Γ' R) where
   coeff := fun g => {
     coeff := fun g' => coeff x (g, g')
@@ -141,7 +152,7 @@ def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R)
 
 /-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
 @[simps]
-def iterateEquiv {Γ' : Type*} [PartialOrder Γ'] :
+def iterateEquiv [PartialOrder Γ'] :
     HahnSeries Γ (HahnSeries Γ' R) ≃ HahnSeries (Γ ×ₗ Γ') R where
   toFun := ofIterate
   invFun := toIterate
@@ -364,7 +375,7 @@ end Order
 
 section Domain
 
-variable {Γ' : Type*} [PartialOrder Γ']
+variable [PartialOrder Γ']
 
 open Classical in
 /-- Extends the domain of a `HahnSeries` by an `OrderEmbedding`. -/
