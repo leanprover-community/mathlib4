@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.BigOperators.Ring
 
 /-!
 # Sums of squares
@@ -51,6 +52,16 @@ squares, then for all `a : R`, `a * a + S` is a sum of squares in `R`.
 inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
   | zero                              : IsSumSq 0
   | sq_add (a S : R) (hS : IsSumSq S) : IsSumSq (a * a + S)
+
+/-- Alternative induction scheme for `IsSumSq` using `IsSquare`. -/
+theorem IsSumSq.induction_alt [Mul R] [Add R] [Zero R]
+    {p : (S : R) → (h : IsSumSq S) → Prop} (S : R) (hS : IsSumSq S)
+    (zero : p 0 zero)
+    (sq_add : ∀ x S, (hS : IsSumSq S) → (hx : IsSquare x) → p S hS →
+      p (x + S) (by rcases hx with ⟨y, hy⟩; rw [hy]; exact sq_add y S hS)) : p S hS := by
+  induction hS with
+  | zero => exact zero
+  | sq_add a S hS hS_ih => exact sq_add (a * a) S hS (isSquare_mul_self _) hS_ih
 
 /-- In an additive monoid with multiplication,
 if `S1` and `S2` are sums of squares, then `S1 + S2` is a sum of squares. -/
@@ -106,6 +117,7 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
   | sq_add a S _ ih  => exact AddSubmonoid.add_mem _ (subset_closure ⟨a, rfl⟩) ih
 
 open AddSubmonoid in
+/-- A term of `R` satisfies `IsSumSq` if and only if it can be written as `∑ i ∈ I, x i`. -/
 theorem isSumSq_iff_finsum [AddCommMonoid R] [Mul R] (a : R) :
     IsSumSq a ↔
     (∃ (α : Type) (I : Finset α) (x : α → R), a = ∑ i ∈ I, x i * x i) := by
@@ -123,31 +135,15 @@ theorem isSumSq_iff_finsum [AddCommMonoid R] [Mul R] (a : R) :
     simpa [eq] using sum_mem (closure {x : R | IsSquare x})
       (subset_closure <| (by simp : (∀ i ∈ I, y i * y i ∈ _)) · ·)
 
-/-- Alternative induction scheme for `IsSumSq` using `IsSquare`. -/
-theorem IsSumSq.induction_alt [Mul R] [Add R] [Zero R]
-    {p : (S : R) → (h : IsSumSq S) → Prop} (S : R) (hS : IsSumSq S)
-    (zero : p 0 zero)
-    (sq_add : ∀ x S, (hS : IsSumSq S) → (hx : IsSquare x) → p S hS →
-      p (x + S) (by rcases hx with ⟨y, hy⟩; rw [hy]; exact sq_add y S hS)) : p S hS := by
-  induction hS with
-  | zero => exact zero
-  | sq_add a S hS hS_ih => exact sq_add (a * a) S hS (isSquare_mul_self _) hS_ih
-
-private theorem IsSumSq.mul_isSquare [NonUnitalCommSemiring R] {S x : R}
-    (hS : IsSumSq S) (hx : IsSquare x) : IsSumSq (S * x) := by
-  induction' S, hS using IsSumSq.induction_alt
-  case zero => simpa using zero
-  case sq_add y T hT hy ih => rw [right_distrib]
-                              exact IsSumSq.add (IsSquare.isSumSq (IsSquare.mul hy hx)) ih
-
 /-- In a (not necessarily unital) commutative semiring,
 if `S1` and `S2` are sums of squares, then `S1 * S2` is a sum of squares. -/
 theorem IsSumSq.mul [NonUnitalCommSemiring R] {S1 S2 : R}
     (h1 : IsSumSq S1) (h2 : IsSumSq S2) : IsSumSq (S1 * S2) := by
-  induction' S2, h2 using IsSumSq.induction_alt
-  case zero => simpa using zero
-  case sq_add y T hT hy ih => rw [left_distrib]
-                              exact IsSumSq.add (IsSumSq.mul_isSquare h1 hy) ih
+  rw [isSumSq_iff_finsum] at *;
+  obtain ⟨α,I,x,hx⟩ := h1; obtain ⟨β,J,y,hy⟩ := h2;
+  rw [hx, hy, Finset.sum_mul_sum, ← Finset.sum_product'];
+  refine ⟨_, I ×ˢ J, fun ⟨i,j⟩ => x i * y j, ?_⟩;
+  simp [mul_assoc, mul_left_comm]
 
 namespace Subsemiring
 variable {T : Type*} [CommSemiring T] {a : T}
