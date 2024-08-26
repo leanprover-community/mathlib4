@@ -594,7 +594,7 @@ theorem Filter.comap_coLindelof_le {f : X → Y} (hf : Continuous f) :
   simpa using t.subset_preimage_image f
 
 theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) :
-    IsLindelof (range f) := by  rw [← image_univ]; exact isLindelof_univ.image hf
+    IsLindelof (range f) := by rw [← image_univ]; exact isLindelof_univ.image hf
 
 theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)
