@@ -512,8 +512,7 @@ theorem succ_eq_sInf [CompleteLattice α] [SuccOrder α] (a : α) :
   · exact sInf_le (lt_succ_iff_ne_top.2 ha)
 
 theorem succ_eq_iInf [CompleteLattice α] [SuccOrder α] (a : α) : succ a = ⨅ b > a, b := by
-  rw [succ_eq_sInf, iInf_subtype', iInf, Subtype.range_coe_subtype]
-  rfl
+  rw [succ_eq_sInf, iInf_subtype', iInf, Subtype.range_coe_subtype, Ioi]
 
 theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrder α] (a : α) :
     succ a = sInf (Set.Ioi a) := by
