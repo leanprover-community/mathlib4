@@ -31,7 +31,6 @@ variable {α : Type u}
 
 open Cardinal Set
 
--- Porting note: fix universe below, not here
 local notation "ω₁" => (Ordinal.toType <| Cardinal.ord (aleph 1))
 
 namespace MeasurableSpace
@@ -42,12 +41,11 @@ countable unions of already constructed sets. We index this construction by an o
 this will be enough to generate all sets in the sigma-algebra.
 
 This construction is very similar to that of the Borel hierarchy. -/
-def generateMeasurableRec (s : Set (Set α)) : (ω₁ : Type u) → Set (Set α)
-  | i =>
-    let S := ⋃ j : Iio i, generateMeasurableRec s (j.1)
-    s ∪ {∅} ∪ compl '' S ∪ Set.range fun f : ℕ → S => ⋃ n, (f n).1
-  termination_by i => i
-  decreasing_by exact j.2
+def generateMeasurableRec (s : Set (Set α)) (i : (ω₁ : Type u)) : Set (Set α) :=
+  let S := ⋃ j : Iio i, generateMeasurableRec s (j.1)
+  s ∪ {∅} ∪ compl '' S ∪ Set.range fun f : ℕ → S => ⋃ n, (f n).1
+termination_by i
+decreasing_by exact j.2
 
 theorem self_subset_generateMeasurableRec (s : Set (Set α)) (i : ω₁) :
     s ⊆ generateMeasurableRec s i := by
