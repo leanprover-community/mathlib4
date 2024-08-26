@@ -4,7 +4,7 @@ open Lake DSL
 
 
 /-!
-## Mathlib dependencies on upstream projects.
+## Mathlib dependencies on upstream projects
 -/
 
 require "leanprover-community" / "batteries" @ git "main"
