@@ -32,7 +32,7 @@ variable {α : Type u}
 open Cardinal Set
 
 -- Porting note: fix universe below, not here
-local notation "ω₁" => (WellOrder.α <| Quotient.out <| Cardinal.ord (aleph 1 : Cardinal))
+local notation "ω₁" => (Ordinal.toType <| Cardinal.ord (aleph 1))
 
 namespace MeasurableSpace
 
@@ -82,7 +82,7 @@ theorem generateMeasurableRec_subset (s : Set (Set α)) {i j : ω₁} (h : i ≤
 -/
 theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
     #(generateMeasurableRec s i) ≤ max #s 2 ^ aleph0.{u} := by
-  apply (aleph 1).ord.out.wo.wf.induction i
+  apply WellFoundedLT.induction i
   intro i IH
   have A := aleph0_le_aleph 1
   have B : aleph 1 ≤ max #s 2 ^ aleph0.{u} :=
@@ -91,7 +91,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
   have J : #(⋃ j : Iio i, generateMeasurableRec s j.1) ≤ max #s 2 ^ aleph0.{u} := by
     refine (mk_iUnion_le _).trans ?_
     have D : ⨆ j : Iio i, #(generateMeasurableRec s j) ≤ _ := ciSup_le' fun ⟨j, hj⟩ => IH j hj
-    apply (mul_le_mul' ((mk_subtype_le _).trans (aleph 1).mk_ord_out.le) D).trans
+    apply (mul_le_mul' ((mk_subtype_le _).trans (aleph 1).mk_ord_toType.le) D).trans
     rw [mul_eq_max A C]
     exact max_le B le_rfl
   rw [generateMeasurableRec]
@@ -107,7 +107,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
 /-- `generateMeasurableRec s` generates precisely the smallest sigma-algebra containing `s`. -/
 theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     { t | GenerateMeasurable s t } =
-        ⋃ (i : (Quotient.out (aleph 1).ord).α), generateMeasurableRec s i := by
+        ⋃ (i : (aleph 1).ord.toType), generateMeasurableRec s i := by
   ext t; refine ⟨fun ht => ?_, fun ht => ?_⟩
   · inhabit ω₁
     induction' ht with u hu u _ IH f _ IH
@@ -118,9 +118,8 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
       exact mem_iUnion.2 ⟨j, compl_mem_generateMeasurableRec hj hi⟩
     · have : ∀ n, ∃ i, f n ∈ generateMeasurableRec s i := fun n => by simpa using IH n
       choose I hI using this
-      have : IsWellOrder (ω₁ : Type u) (· < ·) := isWellOrder_out_lt _
-      refine mem_iUnion.2
-        ⟨Ordinal.enum (· < ·) ⟨Ordinal.lsub fun n => Ordinal.typein.{u} (· < ·) (I n), ?_⟩,
+      refine mem_iUnion.2 ⟨Ordinal.enum (α := ω₁) (· < ·)
+        ⟨Ordinal.lsub fun n => Ordinal.typein.{u} (α := ω₁) (· < ·) (I n), ?_⟩,
           iUnion_mem_generateMeasurableRec fun n => ⟨I n, ?_, hI n⟩⟩
       · rw [Ordinal.type_lt]
         refine Ordinal.lsub_lt_ord_lift ?_ fun i => Ordinal.typein_lt_self _
@@ -130,7 +129,7 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
         apply Ordinal.lt_lsub fun n : ℕ => _
   · rcases ht with ⟨t, ⟨i, rfl⟩, hx⟩
     revert t
-    apply (aleph 1).ord.out.wo.wf.induction i
+    apply WellFoundedLT.induction i
     intro j H t ht
     unfold generateMeasurableRec at ht
     rcases ht with (((h | (rfl : t = ∅)) | ⟨u, ⟨-, ⟨⟨k, hk⟩, rfl⟩, hu⟩, rfl⟩) | ⟨f, rfl⟩)
@@ -147,7 +146,7 @@ theorem cardinal_generateMeasurable_le (s : Set (Set α)) :
     #{ t | GenerateMeasurable s t } ≤ max #s 2 ^ aleph0.{u} := by
   rw [generateMeasurable_eq_rec]
   apply (mk_iUnion_le _).trans
-  rw [(aleph 1).mk_ord_out]
+  rw [(aleph 1).mk_ord_toType]
   refine le_trans (mul_le_mul' aleph_one_le_continuum
       (ciSup_le' fun i => cardinal_generateMeasurableRec_le s i)) ?_
   refine (mul_le_max_of_aleph0_le_left aleph0_le_continuum).trans (max_le ?_ le_rfl)
