@@ -15,18 +15,17 @@ Evaluate expressions in the language of multiplicative, commutative monoids and 
 
 -/
 
-set_option autoImplicit true
-
-namespace Mathlib.Tactic.Mabel
+namespace Mathlib.Tactic.MAbel
 open Lean Elab Meta Tactic Qq Expr PrettyPrinter
 
 initialize registerTraceClass `mabel
 initialize registerTraceClass `mabel.detail
 
-lemma Additive_identity : Additive x = x := by rfl
-lemma ofMul_identity (x : α) : Additive.ofMul x = x := by
-  unfold Additive.ofMul
-  rfl
+variable {α : Type*}
+
+lemma Additive_identity : Additive α = α := rfl
+
+lemma ofMul_identity (x : α) : Additive.ofMul x = x := rfl
 
 /-- Tactic for converting equations in the language of
 multiplicative, commutative monoids and groups to those in the language
@@ -41,7 +40,7 @@ elab_rules : tactic | `(tactic| to_additive) => withMainContext do
     | throwError "to_additive requires an equality goal"
   let lhs ← delab e₁
   let rhs ← delab e₂
-  evalTactic $ ← `(tactic|
+  evalTactic <| ← `(tactic|
     conv => {
       lhs
       rw [← ofMul_identity $lhs];
@@ -64,6 +63,7 @@ Tactic for evaluating expressions in multiplicative abelian groups.
 * `mabel1` fails if the target is not an equality.
 
 For example:
+
 ```
 example [CommMonoid α] (a b : α) : a * (b * a) = a * a * b := by mabel
 example [CommGroup α] (a : α) : a^(3 : ℤ) = a * a^(2 : ℤ) := by mabel
@@ -92,3 +92,5 @@ macro (name := abelConv) "mabel" : conv =>
   `(conv| discharge => (to_additive <;> abel))
 @[inherit_doc abelConv] macro "mabel!" : conv =>
   `(conv| discharge => (to_additive <;> abel!))
+
+end Mathlib.Tactic.MAbel
