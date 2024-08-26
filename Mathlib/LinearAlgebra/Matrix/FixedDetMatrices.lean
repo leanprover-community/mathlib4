@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Data.Int.Interval
 
 /-!
 # Matrices with fixed determinant
@@ -33,7 +34,7 @@ lemma ext (m : R) {A B : FixedDetMatrices n R m} (h : ∀ i j , A.1 i j = B.1 i 
   apply h
 
 instance (m : R) : HSMul (SpecialLinearGroup n R) (FixedDetMatrices n R m)
-  ((FixedDetMatrices n R m)) :=
+    ((FixedDetMatrices n R m)) :=
 { hSMul := fun g A => ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩}
 
 lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrices n R m)) : g • A =
@@ -41,7 +42,7 @@ lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrices n R m
 
 instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrices n R m) where
   smul := fun g A => g • A
-  one_smul := by intro b; rw [smul_def]; simp
+  one_smul := by intro b; rw [smul_def]; simp only [coe_one, one_mul, Subtype.coe_eta]
   mul_smul := by
       intro x y b
       simp_rw [smul_def, ← mul_assoc]
@@ -61,14 +62,14 @@ lemma S_mul_self : (S.1 * S.1) = -1 := by
     empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
   exact Eq.symm (eta_fin_two (-1))
 
-variable (m : ℤ) (A : Δ m)
+variable (m : ℤ)
 
 /--Set of representatives for the orbits under `S` and `T`. -/
 def reps : Set (Δ m) :=
   { A : Δ m | (A.1 1 0) = 0 ∧ 0 < A.1 0 0 ∧ 0 ≤ A.1 0 1 ∧ |(A.1 0 1)| < |(A.1 1 1)|}
 
 /--Reduction step for matrices in `Δ m` which moves the matrices towards `reps`.-/
-def reduce_step (A : Δ m) : Δ m := S • (T ^ (-((A.1 0 0)/(A.1 1 0)))) • A
+def reduce_step (A : Δ m) : Δ m := S • (T ^ (-(A.1 0 0 / A.1 1 0))) • A
 
 lemma reduce_aux (m : ℤ) (A : Δ m) (h : Int.natAbs (A.1 1 0) ≠ 0) :
     Int.natAbs ((reduce_step m A).1 1 0) < Int.natAbs (A.1 1 0) := by
@@ -153,52 +154,78 @@ lemma A_c_eq_zero (A : Δ m) (ha : A.1 1 0 = 0) : A.1 0 0 * A.1 1 1 = m := by
   simp only [Int.cast_id, Fin.isValue, mul_zero, sub_zero] at this
   aesop
 
+lemma reps_entries_le_m' (hm: m ≠ 0) (A : Δ m) (h : A ∈ reps m) (i j : Fin 2) :
+    A.1 i j ∈ (Finset.Icc (-|m|) |m|):= by
+  have h1 : 0 < |A.1 1 1| := Eq.mpr (id (congrArg (fun _a ↦ _a) (propext abs_pos)))
+    (A_d_ne_zero m A h.left hm)
+  have h2 : 0 < |A.1 0 0| := Eq.mpr (id (congrArg (fun _a ↦ _a) (propext abs_pos)))
+    (A_a_ne_zero m A h.left hm)
+  fin_cases i <;> fin_cases j
+  simp only [← A_c_eq_zero m A h.1, Fin.zero_eta, Fin.isValue, Finset.mem_Icc, abs_mul]
+  refine ⟨by nlinarith [ neg_le_abs (A.1 0 0)], by nlinarith [le_abs_self (A.1 0 0)]⟩
+  · simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Finset.mem_Icc]
+    have h22 := h.2.2
+    refine ⟨by linarith [abs_pos.mpr hm], ?_⟩
+    simp_rw [← A_c_eq_zero m A h.1, abs_mul]
+    nlinarith [(le_abs_self (A.1 0 1))]
+  · simp only [Fin.mk_one, Fin.isValue, Fin.zero_eta, h.1, Finset.mem_Icc, Left.neg_nonpos_iff,
+    abs_nonneg, and_self]
+  · simp only [Fin.mk_one, Fin.isValue, ← A_c_eq_zero m A h.1, abs_mul, Finset.mem_Icc]
+    refine ⟨by nlinarith [neg_le_abs (A.1 1 1)], by nlinarith [le_abs_self (A.1 1 1)]⟩
+
+noncomputable instance reps.fintype (k : ℤ) (hk : k ≠ 0) : Fintype (reps k) := by
+  let H := (Finset.Icc (-|k|) |k|)
+  let H4 :=  H × H × H × H
+  apply Fintype.ofInjective (β := H4) (f := fun (M : reps k) =>
+    ⟨⟨M.1.1 0 0,  reps_entries_le_m' k hk M M.2 0 0 ⟩,
+      ⟨M.1.1 0 1, reps_entries_le_m' k hk M M.2 _ _⟩,
+        ⟨M.1.1 1 0, reps_entries_le_m' k hk M M.2 _ _⟩,
+          ⟨M.1.1 1 1, reps_entries_le_m' k hk M M.2 _ _⟩⟩)
+  intro M N h
+  ext i j
+  fin_cases i <;> fin_cases j <;> aesop
+
 lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0) : ∀ A : Δ m, reduce m A ∈ reps m := by
   apply reduce_rec
   · intro A h
     by_cases h1 : 0 < A.1 0 0
-    rw [reduce_eqn1 _ _ h h1, reps]
-    simp only [Int.cast_id, Fin.isValue, zpow_neg, Set.mem_setOf_eq]
-    rw [smul_coe]
-    simp [coe_T_zpow, vecMul, vecHead, vecTail]
-    refine ⟨ Int.natAbs_eq_zero.mp h, by simp at h; rw [h]; simp [h1], by
-      apply Int.ediv_mul_le; apply A_d_ne_zero _ _ (by simpa using h) hm, by
-      rw [mul_comm, ← @Int.sub_eq_add_neg, (Int.emod_def (A.1 0 1) (A.1 1 1)).symm]
-      apply le_trans _ (Int.emod_lt (A.1 0 1) (by apply A_d_ne_zero _ _ (by simpa using h) hm))
-      rw [abs_eq_self.mpr (Int.emod_nonneg (A.1 0 1) (A_d_ne_zero _ _ (by simpa using h) hm))]⟩
-    rw [reduce_eqn2 _ _ h h1, reps]
-    simp only [Fin.isValue, Int.ediv_neg, neg_neg, smul_def, ← mul_assoc, S_mul_self, neg_mul,
-      one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul,
-      Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty, Set.mem_setOf_eq, of_apply, cons_val',
-      Pi.neg_apply, vecMul, cons_dotProduct, vecHead, vecTail, Function.comp_apply,
-      Fin.succ_zero_eq_one, dotProduct_empty, add_zero, neg_add_rev, zero_mul, zero_add, empty_val',
-      cons_val_fin_one, cons_val_one, neg_eq_zero, cons_val_zero, lt_add_neg_iff_add_lt,
-      le_add_neg_iff_add_le, abs_neg]
-    refine ⟨Int.natAbs_eq_zero.mp h, by
-        simp only [ne_eq, Int.cast_id, Fin.isValue, Int.natAbs_eq_zero, not_lt] at *
-        rw [h]
-        simp only [Fin.isValue, mul_zero, Left.neg_pos_iff]
-        rw [Int.lt_iff_le_and_ne]
-        refine ⟨h1, by apply A_a_ne_zero _ _ (by simpa using h) hm⟩, by
-        rw [le_neg]
-        apply Int.ediv_mul_le; apply A_d_ne_zero _ _ (by simpa using h) hm, by
-        rw [mul_comm, add_comm, ← @Int.sub_eq_add_neg, (Int.emod_def (-A.1 0 1) (A.1 1 1)).symm]
+    · simp only [reduce_eqn1 _ _ h h1, zpow_neg, reps, Set.mem_setOf_eq, smul_coe,
+        coe_inv, coe_T_zpow, adjugate_fin_two_of, neg_zero, cons_mul, Nat.succ_eq_add_one,
+        Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, of_apply, cons_val', vecMul,
+        cons_dotProduct, vecHead, one_mul, vecTail, Function.comp_apply, Fin.succ_zero_eq_one,
+        neg_mul, dotProduct_empty, add_zero, zero_mul, zero_add, empty_val', cons_val_fin_one,
+        cons_val_one, cons_val_zero, lt_add_neg_iff_add_lt, le_add_neg_iff_add_le]
+      refine ⟨ Int.natAbs_eq_zero.mp h, ?_, ?_, ?_⟩
+      · rw [Int.natAbs_eq_zero.mp h]; simp only [Fin.isValue, mul_zero, h1]
+      · apply Int.ediv_mul_le; apply A_d_ne_zero _ _ (by simpa only [Int.natAbs_eq_zero] using h) hm
+      · rw [mul_comm, ← @Int.sub_eq_add_neg, (Int.emod_def (A.1 0 1) (A.1 1 1)).symm]
+        apply le_trans _ (Int.emod_lt (A.1 0 1) ( A_d_ne_zero _ _ (by simpa using h) hm))
+        rw [abs_eq_self.mpr (Int.emod_nonneg (A.1 0 1) (A_d_ne_zero _ _ (by simpa using h) hm))]
+    · simp only [reduce_eqn2 _ _ h h1, Fin.isValue, Int.ediv_neg, neg_neg, smul_def, ← mul_assoc,
+      S_mul_self, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
+      Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty, reps,
+      Set.mem_setOf_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
+      vecTail, Function.comp_apply, Fin.succ_zero_eq_one, dotProduct_empty, add_zero, neg_add_rev,
+      zero_mul, zero_add, empty_val', cons_val_fin_one, cons_val_one, neg_eq_zero, cons_val_zero,
+      lt_add_neg_iff_add_lt, le_add_neg_iff_add_le, abs_neg]
+      refine ⟨Int.natAbs_eq_zero.mp h, ?_, ?_,?_⟩
+      · simp only [Fin.isValue, Int.natAbs_eq_zero.mp h, mul_zero, neg_zero, Int.lt_iff_le_and_ne]
+        refine ⟨not_lt.mp h1,  A_a_ne_zero _ _ (by simpa using h) hm⟩
+      · rw [le_neg]
+        apply Int.ediv_mul_le; apply A_d_ne_zero _ _ (by simpa using h) hm
+      · rw [mul_comm, add_comm, ← @Int.sub_eq_add_neg, (Int.emod_def (-A.1 0 1) (A.1 1 1)).symm]
         apply le_trans _ (Int.emod_lt (-A.1 0 1) (by apply A_d_ne_zero _ _ (by simpa using h) hm))
-        rw [abs_eq_self.mpr (Int.emod_nonneg (-A.1 0 1) (A_d_ne_zero _ _ (by simpa using h) hm))]⟩
+        rw [abs_eq_self.mpr (Int.emod_nonneg (-A.1 0 1) (A_d_ne_zero _ _ (by simpa using h) hm))]
   · exact fun A h1 h2 ↦ Eq.mpr (id (congrArg (fun _a ↦ _a ∈ reps m) (reduce_eqn3 m A h1))) h2
 
 lemma S_smul_four (A : Δ m) : (S • ( S • (S • ( S • A)))) = A := by
-  simp_rw [smul_def, ← mul_assoc, S_mul_self]
-  simp only [Int.cast_id, neg_mul, one_mul]
-  simp_rw [S_mul_self]
-  simp only [neg_mul, one_mul, neg_neg, Subtype.coe_eta]
+  simp only [smul_def, ← mul_assoc, S_mul_self, neg_mul, one_mul, mul_neg, neg_neg, Subtype.coe_eta]
 
 lemma T_S_rel (A : Δ m) : (S • S • S • T • S • T • S • A) = T⁻¹ • A := by
   have : S • S • S • T • S • T • S = T⁻¹ := by
     simp_rw [smul_eq_mul]
     ext i j
-    fin_cases i <;> fin_cases j
-    all_goals {rfl}
+    fin_cases i <;> fin_cases j <;> rfl
   simp_rw [← this, ← smul_assoc]
 
 @[elab_as_elim]
@@ -222,11 +249,9 @@ theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
   have hT_pow' : ∀ B (n : ℤ), C ((T^n) • B) → C B := by
     intro B n
     induction' n using Int.induction_on with n hn m hm
-    · simp only [ne_eq, Int.cast_id, Fin.isValue, zpow_zero, one_smul, imp_self] at *
+    · simp only [zpow_zero, one_smul, imp_self]
     ·   intro h
-        rw [add_comm, zpow_add, ← smul_eq_mul] at h
-        simp only [zpow_one] at h
-        rw [smul_assoc] at h
+        rw [add_comm, zpow_add, ← smul_eq_mul, zpow_one, smul_assoc] at h
         exact hn $ hT' _ h
     · rw [sub_eq_neg_add, zpow_add, zpow_neg_one]
       intro h
@@ -256,46 +281,7 @@ theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
   rw [reduce_eqn3 _ _ hc] at hA
   exact hT_pow' _ _ $ hS' _ (ih hA)
 
-instance reps.fintype (k : ℤ) (hk : k ≠ 0) : Fintype (reps m) := by
-  let m := Int.natAbs k
-  apply Fintype.ofEquiv
-    {v : Fin (m+1) × Fin (m+1) × Fin (m+1) // v.1.1 * v.2.2.1 = m ∧ v.2.1.1 < v.2.2.1}
-  refine ⟨?_,?_,?_, ?_⟩
-  · intro v
-    use ⟨!![v.1.1, v.1.2.1.1; 0, v.1.2.2.1], by
-      rw [det_fin_two]
-      simp only [Fin.isValue, of_apply, cons_val', cons_val_zero, empty_val', cons_val_fin_one,
-        cons_val_one, head_cons, head_fin_const, mul_zero, sub_zero]
-      have := v.2.1
-      norm_cast⟩
-    rw [reps]
-    simp
-    constructor
-    refine Nat.zero_lt_of_ne_zero ?property.left.h
-    have := v.2.1
-    have hm : m ≠ 0 := by sorry
-    rw [← this] at hm
-    rw [@Nat.mul_ne_zero_iff] at hm
-    exact hm.1
-    exact v.2.2
-  · intro M
-    use ⟨M.1.1 0 0,|M.1.1 0 1|, |M.1.1 1 1|⟩
-    simp
-    have hM := M.2.2
-
-    refine ⟨?_, ?_⟩
-
-    sorry
-    have hM := hM.2.2
-
-    sorry
-  sorry
-  sorry
-
-/- instance reps.fintype_pos (m:ℕ+) : fintype (reps m) :=
-fintype.of_equiv {v : fin (m+1) × fin (m+1) × fin (m+1) // v.1.1 * v.2.2.1 = m ∧ v.2.1.1 < v.2.2.1} -/
-
-/--The subngroup of `SL(2,ℤ)` generated by `S` and `T`-/
+/--The subgroup of `SL(2,ℤ)` generated by `S` and `T`. -/
 def S_T_subgroup := Subgroup.closure {S, T}
 
 lemma S_mem_S_T_subgroup : S ∈ S_T_subgroup := by
@@ -306,35 +292,26 @@ lemma T_mem_S_T_subgroup : T ∈ S_T_subgroup := by
   apply Subgroup.subset_closure
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_true]
 
-lemma det_one_mem_S_T_subgroup : ∀ A : Δ 1, A ∈ S_T_subgroup := by
-  intro A
-  induction A using (induction_on 1 _  Int.one_ne_zero)
-  next A a1 a2 a4 a5 a6 =>
-    have : A = (1 : SL(2,ℤ)) := by
-      ext i j
-      fin_cases i <;> fin_cases j
-      · simp only [Int.cast_id, Fin.zero_eta, Fin.isValue, coe_one, one_apply_eq]
-        have := Int.mul_eq_one_iff_eq_one_or_neg_one.mp (A_c_eq_zero 1 A a1)
-        aesop
-      · simp only [Int.cast_id, Fin.zero_eta, Fin.isValue, Fin.mk_one, coe_one, ne_eq, zero_ne_one,
-        not_false_eq_true, one_apply_ne]
-        have := Int.mul_eq_one_iff_eq_one_or_neg_one.mp (A_c_eq_zero 1 A a1)
-        aesop
-      · simp only [Int.cast_id, Fin.mk_one, Fin.isValue, Fin.zero_eta, a1, coe_one, ne_eq,
-        one_ne_zero, not_false_eq_true, one_apply_ne]
-      · simp only [Int.cast_id, Fin.mk_one, Fin.isValue, coe_one, one_apply_eq]
-        have := Int.mul_eq_one_iff_eq_one_or_neg_one.mp (A_c_eq_zero 1 A a1)
-        aesop
-    rw [this]
+lemma reps_one_id (A : FixedDetMatrices (Fin 2) ℤ 1) (a1 : A.1 1 0 = 0)
+    (a2 : A.1 0 0 * A.1 1 1 = 1) (a4 : 0 < A.1 0 0) (a5 : 0 ≤ A.1 0 1)
+      (a6 : (A.1 0 1).natAbs < (A.1 1 1).natAbs) : A = (1 : SL(2, ℤ)) := by
+  have := Int.mul_eq_one_iff_eq_one_or_neg_one.mp (A_c_eq_zero 1 A a1)
+  ext i j
+  fin_cases i <;> fin_cases j <;> aesop
+
+lemma det_one_mem_S_T_subgroup (A : Δ 1) : A ∈ S_T_subgroup := by
+  induction A using (induction_on 1 _  Int.one_ne_zero) with
+  | h0 A a1 a2 a4 a5 a6 =>
+    rw [reps_one_id A a1 a2 a4 a5 a6]
     exact Subgroup.one_mem S_T_subgroup
-  next B hb =>
+  | hS B hb =>
     rw [smul_eq_mul]
     apply Subgroup.mul_mem _ (S_mem_S_T_subgroup) (hb)
-  next B hb =>
+  | hT B hb =>
     rw [smul_eq_mul]
     apply Subgroup.mul_mem _ (T_mem_S_T_subgroup) (hb)
 
-lemma SL2Z_generators : S_T_subgroup = (⊤ : Subgroup (SL(2,ℤ))) := by
+lemma SpecialLinearGroup.SL2Z_generators : S_T_subgroup = (⊤ : Subgroup (SL(2,ℤ))) := by
     refine (Subgroup.eq_top_iff' S_T_subgroup).mpr (fun _ => det_one_mem_S_T_subgroup _)
 
 end IntegralFixedDetMatrices
