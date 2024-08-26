@@ -694,23 +694,103 @@ lemma rpow_inv_eq (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : z ≠ 0) : x ^ z⁻¹ = y 
 lemma eq_rpow_inv (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : z ≠ 0) : x = y ^ z⁻¹ ↔ x ^ z = y := by
   rw [← rpow_left_inj hx _ hz, rpow_inv_rpow hy hz]; positivity
 
-theorem le_rpow_iff_log_le (hx : 0 < x) (hy : 0 < y) : x ≤ y ^ z ↔ Real.log x ≤ z * Real.log y := by
-  rw [← Real.log_le_log_iff hx (Real.rpow_pos_of_pos hy z), Real.log_rpow hy]
+theorem le_rpow_iff_log_le (hx : 0 < x) (hy : 0 < y) : x ≤ y ^ z ↔ log x ≤ z * log y := by
+  rw [← log_le_log_iff hx (rpow_pos_of_pos hy z), log_rpow hy]
 
-theorem le_rpow_of_log_le (hx : 0 ≤ x) (hy : 0 < y) (h : Real.log x ≤ z * Real.log y) :
-    x ≤ y ^ z := by
-  obtain hx | rfl := hx.lt_or_eq
+lemma le_pow_iff_log_le (hx : 0 < x) (hy : 0 < y) : x ≤ y ^ n ↔ log x ≤ n * log y :=
+  rpow_natCast _ _ ▸ le_rpow_iff_log_le hx hy
+
+lemma le_zpow_iff_log_le {n : ℤ} (hx : 0 < x) (hy : 0 < y) : x ≤ y ^ n ↔ log x ≤ n * log y :=
+  rpow_intCast _ _ ▸ le_rpow_iff_log_le hx hy
+
+lemma le_rpow_of_log_le (hy : 0 < y) (h : log x ≤ z * log y) : x ≤ y ^ z := by
+  obtain hx | hx := le_or_lt x 0
+  · exact hx.trans (rpow_pos_of_pos hy _).le
   · exact (le_rpow_iff_log_le hx hy).2 h
-  exact (Real.rpow_pos_of_pos hy z).le
 
-theorem lt_rpow_iff_log_lt (hx : 0 < x) (hy : 0 < y) : x < y ^ z ↔ Real.log x < z * Real.log y := by
-  rw [← Real.log_lt_log_iff hx (Real.rpow_pos_of_pos hy z), Real.log_rpow hy]
+lemma le_pow_of_log_le (hy : 0 < y) (h : log x ≤ n * log y) : x ≤ y ^ n :=
+  rpow_natCast _ _ ▸ le_rpow_of_log_le hy h
 
-theorem lt_rpow_of_log_lt (hx : 0 ≤ x) (hy : 0 < y) (h : Real.log x < z * Real.log y) :
-    x < y ^ z := by
-  obtain hx | rfl := hx.lt_or_eq
+lemma le_zpow_of_log_le {n : ℤ} (hy : 0 < y) (h : log x ≤ n * log y) : x ≤ y ^ n :=
+  rpow_intCast _ _ ▸ le_rpow_of_log_le hy h
+
+theorem lt_rpow_iff_log_lt (hx : 0 < x) (hy : 0 < y) : x < y ^ z ↔ log x < z * log y := by
+  rw [← log_lt_log_iff hx (rpow_pos_of_pos hy z), log_rpow hy]
+
+lemma lt_pow_iff_log_lt (hx : 0 < x) (hy : 0 < y) : x < y ^ n ↔ log x < n * log y :=
+  rpow_natCast _ _ ▸ lt_rpow_iff_log_lt hx hy
+
+lemma lt_zpow_iff_log_lt {n : ℤ} (hx : 0 < x) (hy : 0 < y) : x < y ^ n ↔ log x < n * log y :=
+  rpow_intCast _ _ ▸ lt_rpow_iff_log_lt hx hy
+
+lemma lt_rpow_of_log_lt (hy : 0 < y) (h : log x < z * log y) : x < y ^ z := by
+  obtain hx | hx := le_or_lt x 0
+  · exact hx.trans_lt (rpow_pos_of_pos hy _)
   · exact (lt_rpow_iff_log_lt hx hy).2 h
-  exact Real.rpow_pos_of_pos hy z
+
+lemma lt_pow_of_log_lt (hy : 0 < y) (h : log x < n * log y) : x < y ^ n :=
+  rpow_natCast _ _ ▸ lt_rpow_of_log_lt hy h
+
+lemma lt_zpow_of_log_lt {n : ℤ} (hy : 0 < y) (h : log x < n * log y) : x < y ^ n :=
+  rpow_intCast _ _ ▸ lt_rpow_of_log_lt hy h
+
+lemma rpow_le_iff_le_log (hx : 0 < x) (hy : 0 < y) : x ^ z ≤ y ↔ z * log x ≤ log y := by
+  rw [← log_le_log_iff (rpow_pos_of_pos hx _) hy, log_rpow hx]
+
+lemma pow_le_iff_le_log (hx : 0 < x) (hy : 0 < y) : x ^ n ≤ y ↔ n * log x ≤ log y := by
+  rw [← rpow_le_iff_le_log hx hy, rpow_natCast]
+
+lemma zpow_le_iff_le_log {n : ℤ} (hx : 0 < x) (hy : 0 < y) : x ^ n ≤ y ↔ n * log x ≤ log y := by
+  rw [← rpow_le_iff_le_log hx hy, rpow_intCast]
+
+lemma le_log_of_rpow_le (hx : 0 < x) (h : x ^ z ≤ y) : z * log x ≤ log y :=
+  log_rpow hx _ ▸ log_le_log (by positivity) h
+
+lemma le_log_of_pow_le (hx : 0 < x) (h : x ^ n ≤ y) : n * log x ≤ log y :=
+  le_log_of_rpow_le hx (rpow_natCast _ _ ▸ h)
+
+lemma le_log_of_zpow_le {n : ℤ} (hx : 0 < x) (h : x ^ n ≤ y) : n * log x ≤ log y :=
+  le_log_of_rpow_le hx (rpow_intCast _ _ ▸ h)
+
+lemma rpow_le_of_le_log (hy : 0 < y) (h : log x ≤ z * log y) : x ≤ y ^ z := by
+  obtain hx | hx := le_or_lt x 0
+  · exact hx.trans (rpow_pos_of_pos hy _).le
+  · exact (le_rpow_iff_log_le hx hy).2 h
+
+lemma pow_le_of_le_log (hy : 0 < y) (h : log x ≤ n * log y) : x ≤ y ^ n :=
+  rpow_natCast _ _ ▸ rpow_le_of_le_log hy h
+
+lemma zpow_le_of_le_log {n : ℤ} (hy : 0 < y) (h : log x ≤ n * log y) : x ≤ y ^ n :=
+  rpow_intCast _ _ ▸ rpow_le_of_le_log hy h
+
+lemma rpow_lt_iff_lt_log (hx : 0 < x) (hy : 0 < y) : x ^ z < y ↔ z * log x < log y := by
+  rw [← log_lt_log_iff (rpow_pos_of_pos hx _) hy, log_rpow hx]
+
+lemma pow_lt_iff_lt_log  (hx : 0 < x) (hy : 0 < y) : x ^ n < y ↔ n * log x < log y := by
+  rw [← rpow_lt_iff_lt_log hx hy, rpow_natCast]
+
+lemma zpow_lt_iff_lt_log {n : ℤ} (hx : 0 < x) (hy : 0 < y) : x ^ n < y ↔ n * log x < log y := by
+  rw [← rpow_lt_iff_lt_log hx hy, rpow_intCast]
+
+lemma lt_log_of_rpow_lt (hx : 0 < x) (h : x ^ z < y) : z * log x < log y :=
+  log_rpow hx _ ▸ log_lt_log (by positivity) h
+
+lemma lt_log_of_pow_lt (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
+  lt_log_of_rpow_lt hx (rpow_natCast _ _ ▸ h)
+
+lemma lt_log_of_zpow_lt {n : ℤ} (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
+  lt_log_of_rpow_lt hx (rpow_intCast _ _ ▸ h)
+
+lemma rpow_lt_of_lt_log (hy : 0 < y) (h : log x < z * log y) : x < y ^ z := by
+  obtain hx | hx := le_or_lt x 0
+  · exact hx.trans_lt (rpow_pos_of_pos hy _)
+  · exact (lt_rpow_iff_log_lt hx hy).2 h
+
+lemma pow_lt_of_lt_log (hy : 0 < y) (h : log x < n * log y) : x < y ^ n :=
+  rpow_natCast _ _ ▸ rpow_lt_of_lt_log hy h
+
+lemma zpow_lt_of_lt_log {n : ℤ} (hy : 0 < y) (h : log x < n * log y) : x < y ^ n :=
+  rpow_intCast _ _ ▸ rpow_lt_of_lt_log hy h
 
 theorem rpow_le_one_iff_of_pos (hx : 0 < x) : x ^ y ≤ 1 ↔ 1 ≤ x ∧ y ≤ 0 ∨ x ≤ 1 ∧ 0 ≤ y := by
   rw [rpow_def_of_pos hx, exp_le_one_iff, mul_nonpos_iff, log_nonneg_iff hx, log_nonpos_iff hx]
