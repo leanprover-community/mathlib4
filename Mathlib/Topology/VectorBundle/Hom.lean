@@ -97,15 +97,9 @@ theorem continuousOn_continuousLinearMapCoordChange [RingHomIsometric σ]
   refine ((h₁.comp_continuousOn (h₄.mono ?_)).clm_comp (h₂.comp_continuousOn (h₃.mono ?_))).congr ?_
   · mfld_set_tac
   · mfld_set_tac
-  · intro b _; ext L v
-    -- Porting note: was
-    -- simp only [continuousLinearMapCoordChange, ContinuousLinearEquiv.coe_coe,
-    --   ContinuousLinearEquiv.arrowCongrₛₗ_apply, LinearEquiv.toFun_eq_coe, coe_comp',
-    --   ContinuousLinearEquiv.arrowCongrSL_apply, comp_apply, Function.comp, compSL_apply,
-    --   flip_apply, ContinuousLinearEquiv.symm_symm]
-    -- Now `simp` fails to use `ContinuousLinearMap.comp_apply` in this case
+  · intro b _
+    ext L v
     dsimp [continuousLinearMapCoordChange]
-    rw [ContinuousLinearEquiv.symm_symm]
 
 variable (σ e₁ e₁' e₂ e₂')
 variable [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜₁] [e₂.IsLinear 𝕜₂] [e₂'.IsLinear 𝕜₂]

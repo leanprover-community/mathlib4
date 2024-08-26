@@ -251,8 +251,8 @@ instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrde
 
 open scoped Classical in
 /-- A well founded linear order is conditionally complete, with a bottom element. -/
-noncomputable abbrev IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*)
-  [i₁ : _root_.LinearOrder α] [i₂ : OrderBot α] [h : IsWellOrder α (· < ·)] :
+noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
+  [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
     ConditionallyCompleteLinearOrderBot α :=
   { i₁, i₂, LinearOrder.toLattice with
     sInf := fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥
@@ -1106,7 +1106,7 @@ theorem cbiInf_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
 
 open Function
 
-variable [IsWellOrder α (· < ·)]
+variable [WellFoundedLT α]
 
 theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id wellFounded_lt s hs :=
   IsLeast.csInf_eq ⟨argminOn_mem _ _ _ _, fun _ ha => argminOn_le id _ _ ha⟩

@@ -856,37 +856,37 @@ end CostructuredArrow
 is contravariantly equivalent to the category of costructured arrows `F.op.obj c ⟶ op d`.
 -/
 def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
-    (StructuredArrow d F)ᵒᵖ ≌ CostructuredArrow F.op (op d) :=
-  Equivalence.mk (StructuredArrow.toCostructuredArrow F d)
-    (CostructuredArrow.toStructuredArrow' F d).rightOp
-    (NatIso.ofComponents
+    (StructuredArrow d F)ᵒᵖ ≌ CostructuredArrow F.op (op d) where
+  functor := StructuredArrow.toCostructuredArrow F d
+  inverse := (CostructuredArrow.toStructuredArrow' F d).rightOp
+  unitIso := NatIso.ofComponents
       (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp)
-    (NatIso.ofComponents
+          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp
+  counitIso := NatIso.ofComponents
       (fun X => CostructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp)
+          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
 `F.obj c ⟶ d` is contravariantly equivalent to the category of structured arrows
 `op d ⟶ F.op.obj c`.
 -/
 def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
-    (CostructuredArrow F d)ᵒᵖ ≌ StructuredArrow (op d) F.op :=
-  Equivalence.mk (CostructuredArrow.toStructuredArrow F d)
-    (StructuredArrow.toCostructuredArrow' F d).rightOp
-    (NatIso.ofComponents
+    (CostructuredArrow F d)ᵒᵖ ≌ StructuredArrow (op d) F.op where
+  functor := CostructuredArrow.toStructuredArrow F d
+  inverse := (StructuredArrow.toCostructuredArrow' F d).rightOp
+  unitIso := NatIso.ofComponents
       (fun X => (CostructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp)
-    (NatIso.ofComponents
+          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp
+  counitIso := NatIso.ofComponents
       (fun X => StructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp)
+          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp
 
 end CategoryTheory

@@ -182,7 +182,7 @@ theorem pellZd_im (n : ℕ) : (pellZd a1 n).im = yn a1 n :=
 
 theorem isPell_nat {x y : ℕ} : IsPell (⟨x, y⟩ : ℤ√(d a1)) ↔ x * x - d a1 * y * y = 1 :=
   ⟨fun h =>
-    Nat.cast_inj.1
+    (Nat.cast_inj (R := ℤ)).1
       (by rw [Int.ofNat_sub (Int.le_of_ofNat_le_ofNat <| Int.le.intro_sub _ h)]; exact h),
     fun h =>
     show ((x * x : ℕ) - (d a1 * y * y : ℕ) : ℤ) = 1 by
@@ -211,7 +211,7 @@ theorem pell_eq (n : ℕ) : xn a1 n * xn a1 n - d a1 * yn a1 n * yn a1 n = 1 :=
     repeat' rw [Int.ofNat_mul]; exact pn
   have hl : d a1 * yn a1 n * yn a1 n ≤ xn a1 n * xn a1 n :=
     Nat.cast_le.1 <| Int.le.intro _ <| add_eq_of_eq_sub' <| Eq.symm h
-  Nat.cast_inj.1 (by rw [Int.ofNat_sub hl]; exact h)
+  (Nat.cast_inj (R := ℤ)).1 (by rw [Int.ofNat_sub hl]; exact h)
 
 instance dnsq : Zsqrtd.Nonsquare (d a1) :=
   ⟨fun n h =>
@@ -708,10 +708,7 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
           _root_.ne_of_gt ipos i0⟩)
     fun j2n : 2 * n < j =>
     suffices i = 4 * n - j by rw [this, add_tsub_cancel_of_le j4n]
-    have j42n : 4 * n - j ≤ 2 * n :=
-      Nat.le_of_add_le_add_right <| by
-        rw [tsub_add_cancel_of_le j4n, show 4 * n = 2 * n + 2 * n from right_distrib 2 2 n]
-        exact Nat.add_le_add_left (le_of_lt j2n) _
+    have j42n : 4 * n - j ≤ 2 * n := by omega
     eq_of_xn_modEq a1 i2n j42n
       (h.symm.trans <| by
         let t := xn_modEq_x4n_sub a1 j42n
@@ -753,7 +750,7 @@ theorem xy_modEq_of_modEq {a b c} (a1 : 1 < a) (b1 : 1 < b) (h : a ≡ b [MOD c]
     ⟨(xy_modEq_of_modEq a1 b1 h n).left.add_right_cancel <| by
         rw [xn_succ_succ a1, xn_succ_succ b1]
         exact (h.mul_left _).mul (xy_modEq_of_modEq _ _ h (n + 1)).left,
-      (xy_modEq_of_modEq _ _ h n).right.add_right_cancel <| by
+      (xy_modEq_of_modEq a1 b1 h n).right.add_right_cancel <| by
         rw [yn_succ_succ a1, yn_succ_succ b1]
         exact (h.mul_left _).mul (xy_modEq_of_modEq _ _ h (n + 1)).right⟩
 
