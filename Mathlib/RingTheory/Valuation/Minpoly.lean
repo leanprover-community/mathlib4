@@ -30,6 +30,7 @@ namespace Valuation
 
 /-- For `x ∈ K` the valuation of the zeroth coefficient of the minimal polynomial
 of `algebra_map K L x` over `K` is equal to the valuation of `x`.-/
+@[simp]
 theorem coeff_zero_minpoly (x : K) : v ((minpoly K (algebraMap K L x)).coeff 0) = v x := by
   rw [minpoly.eq_X_sub_C, coeff_sub, coeff_X_zero, coeff_C_zero, zero_sub, Valuation.map_neg]
 
