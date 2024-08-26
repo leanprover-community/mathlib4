@@ -21,7 +21,7 @@ it is required for composition and smoothness to follow without extra hypotheses
 alternately require convergence at `x` even if `x ∉ s`).
 
 Here we prove basic properties of these definitions. Where convenient we assume completeness of the
-ambient space, which allows us to related `AnalyticWithinAt` to analyticity of a local extension.
+ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a local extension.
 -/
 
 noncomputable section
