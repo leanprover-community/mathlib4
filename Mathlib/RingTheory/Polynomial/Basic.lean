@@ -176,8 +176,8 @@ theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n 
 /-- The equivalence between monic polynomials of degree `n` and polynomials of degree less than
 `n`, formed by adding a term `X ^ n`. -/
 def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
-    { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ degreeLT R n :=
-  { toFun := fun p => ⟨p.1.eraseLead, by
+    { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ degreeLT R n where
+  toFun p := ⟨p.1.eraseLead, by
         rcases p with ⟨p, hp, rfl⟩
         simp only [mem_degreeLT]
         refine lt_of_lt_of_le ?_ degree_le_natDegree
