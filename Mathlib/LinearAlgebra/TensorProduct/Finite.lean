@@ -87,7 +87,9 @@ variable (R N ι)
 `(ι → R) ⊗[R] N ≃ₗ[R] ι → N`. -/
 noncomputable def finiteScalarLeft :
     (ι → R) ⊗[R] N ≃ₗ[R] ι → N :=
-  finiteLeft R R N ι ≪≫ₗ (LinearEquiv.piCongrRight (fun _ ↦ TensorProduct.lid R N))
+  (finiteLeft R R N ι :  (ι → R) ⊗[R] N ≃ₗ[R] ι → R ⊗[R] N) ≪≫ₗ
+  (LinearEquiv.piCongrRight (fun _ ↦ TensorProduct.lid R N) :
+    (ι → R ⊗[R] N) ≃ₗ[R] ι → N)
 
 variable {R N ι}
 
@@ -109,7 +111,9 @@ variable (R M ι)
 `M ⊗[R] (ι → R) ≃ₗ[R] ι → M`. -/
 noncomputable def finiteScalarRight :
     M ⊗[R] (ι → R) ≃ₗ[R] ι → M :=
-  finiteRight R M R ι ≪≫ₗ LinearEquiv.piCongrRight (fun _ ↦ TensorProduct.rid R M)
+  (finiteRight R M R ι : M ⊗[R] (ι → R) ≃ₗ[R] ι → (M ⊗[R] R)) ≪≫ₗ
+  (LinearEquiv.piCongrRight (fun _ ↦ TensorProduct.rid R M) :
+    (ι → (M ⊗[R] R)) ≃ₗ[R] ι → M)
 
 variable {R M ι}
 
@@ -143,11 +147,12 @@ theorem finiteTensorPiLid_apply_apply (f : ι → R) (g : κ → N) (a : ι) (b 
     finiteTensorPiLid R N ι κ (f ⊗ₜ[R] g) (a, b) = f a • g b := by
   simp [finiteTensorPiLid]
 
-variable (R M ι κ)
+variable (R M)
 
-/-- If `ι` is finite then `piTensorFiniteRid R M ι κ` is the natural isomorphism
+/-- If `ι` is finite then `piTensorFiniteRid R M κ ι` is the natural isomorphism
 `(κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M`. -/
-noncomputable def piTensorFiniteRid : (κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M :=
+noncomputable def piTensorFiniteRid (κ ι : Type*) [Finite ι] [DecidableEq ι]:
+    (κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M :=
   (finiteScalarRight R (κ → M) ι :
     (κ → M) ⊗[R] (ι → R) ≃ₗ[R] (ι → κ → M)) ≪≫ₗ
   ((LinearEquiv.curry R M ι κ).symm :
@@ -155,11 +160,11 @@ noncomputable def piTensorFiniteRid : (κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ 
   (LinearEquiv.funCongrLeft R M (Equiv.prodComm κ ι) :
     (ι × κ → M) ≃ₗ[R] κ × ι → M)
 
-variable {R M ι κ}
+variable {R M}
 
 @[simp]
 theorem piTensorFiniteRid_apply_apply (f : κ → M) (g : ι → R) (a : κ) (b : ι) :
-    piTensorFiniteRid R M ι κ (f ⊗ₜ[R] g) (a, b) = g b • f a := by
+    piTensorFiniteRid R M κ ι (f ⊗ₜ[R] g) (a, b) = g b • f a := by
   simp [piTensorFiniteRid]
 
 end TensorProduct
