@@ -20,8 +20,7 @@ variable {C D : Type*} [Category C] [Category D]
 variable {F H : C ⥤ D} {G : D ⥤ C}
 variable (adj₁ : F ⊣ G) (adj₂ : G ⊣ H)
 
-lemma isIso_unit_iff_isIso_counit  :
-    IsIso adj₁.unit ↔ IsIso adj₂.counit := by
+lemma isIso_unit_iff_isIso_counit : IsIso adj₁.unit ↔ IsIso adj₂.counit := by
   let adj : F ⋙ G ⊣ H ⋙ G := adj₁.comp adj₂
   constructor
   · intro h
