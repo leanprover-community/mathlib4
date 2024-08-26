@@ -83,7 +83,7 @@ lemma sin_le_two_div_pi_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤
 
 /-- **Jordan's inequality** for `cos`. -/
 lemma one_sub_two_div_pi_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x ≤ cos x := by
-  simpa [sin_pi_div_two_sub, mul_sub, div_mul_div_comm, mul_comm π, div_self two_pi_pos.ne']
+  simpa [sin_pi_div_two_sub, mul_sub, div_mul_div_comm, mul_comm π, pi_pos.ne']
     using two_div_pi_mul_le_sin (x := π / 2 - x) (by simpa) (by simpa)
 
 lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
