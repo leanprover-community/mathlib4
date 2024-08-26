@@ -83,7 +83,8 @@ theorem isIso_tfae : List.TFAE
     [ ∀ (c : C) (d : D), IsIso (adj.unit.app ((ihom d).obj (R.obj c)))
     , ∀ (c : C) (d : D), IsIso ((pre (adj.unit.app d)).app (R.obj c))
     , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ▷ d'))
-    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))] := by
+    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))
+    , ∀ (d d' : D), IsIso (L.map (d ◁ (adj.unit.app d')))] := by
   tfae_have 3 → 4
   · intro h
     -- We can commute the tensor product in the condition that `L.map ((adj.unit.app d) ▷ d')` is
@@ -183,6 +184,20 @@ theorem isIso_tfae : List.TFAE
       simp
     rw [w₂, w₁, isIso_iff_bijective, isIso_iff_bijective]
     simp
+  tfae_have 3 → 5
+  · intro h d d'
+    have := braiding_naturality (𝟙 d) (adj.unit.app d')
+    rw [← Iso.eq_comp_inv, id_tensorHom] at this
+    rw [this]
+    simp only [map_comp, id_obj, comp_obj, tensorHom_id, assoc]
+    infer_instance
+  tfae_have 5 → 3
+  · intro h d d'
+    have := braiding_naturality (adj.unit.app d) (𝟙 d')
+    rw [← Iso.eq_comp_inv, tensorHom_id] at this
+    rw [this]
+    simp only [id_obj, comp_obj, id_tensorHom, assoc, map_comp]
+    infer_instance
   tfae_finish
 
 end
