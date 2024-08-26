@@ -305,7 +305,7 @@ lemma T_mem_S_T_subgroup : T ∈ S_T_subgroup := by
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_true]
 
 lemma reps_one_id (A : FixedDetMatrices (Fin 2) ℤ 1) (a1 : A.1 1 0 = 0) (a4 : 0 < A.1 0 0)
-      (a6 : (A.1 0 1).natAbs < (A.1 1 1).natAbs) : A = (1 : SL(2, ℤ)) := by
+    (a6 : (A.1 0 1).natAbs < (A.1 1 1).natAbs) : A = (1 : SL(2, ℤ)) := by
   have := Int.mul_eq_one_iff_eq_one_or_neg_one.mp (A_c_eq_zero 1 A a1)
   ext i j
   fin_cases i <;> fin_cases j <;> aesop
