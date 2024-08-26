@@ -9,7 +9,7 @@ import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.GroupTheory.GroupAction.BigOperators
 
-/-!p
+/-!
 # Average over a finset
 
 This file defines `Finset.expect`, the average (aka expectation) of a function over a finset.
