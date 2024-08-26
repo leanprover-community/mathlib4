@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
@@ -347,6 +348,14 @@ theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x
     (hx : x ∈ closure s) : ∃ l : Multiset M, (∀ y ∈ l, y ∈ s) ∧ l.prod = x := by
   obtain ⟨l, h1, h2⟩ := exists_list_of_mem_closure hx
   exact ⟨l, h1, (Multiset.prod_coe l).trans h2⟩
+
+@[to_additive]
+theorem exists_finset_prod_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x : M}
+    (hx : x ∈ closure s) :
+    ∃ (α : Type) (I : Finset α) (f : α → M), (∀ i ∈ I, f i ∈ s) ∧ ∏ i ∈ I, f i = x :=
+  let ⟨l, l_s, h_prod⟩ := exists_list_of_mem_closure hx
+  ⟨_, Finset.univ, l.get, (fun _ _ => l_s (l.get _) (l.get_mem _ _)),
+    (Fin.prod_univ_get _).trans h_prod⟩
 
 @[to_additive (attr := elab_as_elim)]
 theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → Prop}
