@@ -183,8 +183,7 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 
 theorem ωScottContinuous_toUnitMono (f : Part α →o Part α) (hc : ωScottContinuous f) :
-    ωScottContinuous (toUnitMono f) := ωScottContinuous.of_map_ωSup_of_orderHom (
-    fun _ => by
+    ωScottContinuous (toUnitMono f) := .of_map_ωSup_of_orderHom fun _ => by
     ext ⟨⟩ : 1
     dsimp [OmegaCompletePartialOrder.ωSup]
     erw [hc.map_ωSup_of_orderHom, Chain.map_comp]; rfl)
