@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
+-- import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
 # Properties of analyticity restricted to a set
@@ -66,6 +66,58 @@ lemma HasFPowerSeriesWithinAt.continuousWithinAt {f : E → F} {p : FormalMultil
     {s : Set E} {x : E} (h : HasFPowerSeriesWithinAt f p s x) : ContinuousWithinAt f s x := by
   rcases h with ⟨r, h⟩
   exact h.continuousWithinAt
+
+lemma HasFPowerSeriesOnBall.union {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s t : Set E} {x : E} {r : ℝ≥0∞}
+    (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : HasFPowerSeriesWithinOnBall f p t x r) :
+    HasFPowerSeriesWithinOnBall f p (s ∪ t) x r := by
+  refine ⟨h.r_le, h.r_pos, fun {y} hy h'y ↦ ?_, h.continuousWithinAt.union h'.continuousWithinAt⟩
+  rcases hy with hy | hy
+  · exact h.hasSum hy h'y
+  · exact h'.hasSum hy h'y
+
+lemma HasFPowerSeriesOnBall.insert {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s t : Set E} {x : E} {r : ℝ≥0∞}
+    (h : HasFPowerSeriesWithinOnBall f p s x r) :
+    HasFPowerSeriesWithinOnBall f p (insert x s) x r := by
+  sorry
+
+
+#exit
+
+
+lemma HasFPowerSeriesWithinOnBall.of_le {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s : Set E} {x : E} {r r' : ℝ≥0∞}
+    (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : r' ≤ r) (h'' : 0 < r') :
+    HasFPowerSeriesWithinOnBall f p s x r' :=
+  ⟨h'.trans h.r_le, h'', fun hy h'y ↦ h.hasSum hy (EMetric.ball_subset_ball h' h'y),
+    h.continuousWithinAt⟩
+
+lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
+    (h' : EqOn g f (s ∩ EMetric.ball x r)) (h'' : g x = f x) :
+    HasFPowerSeriesWithinOnBall g p s x r := by
+  refine ⟨h.r_le, h.r_pos, ?_, ?_⟩
+  · intro y hy h'y
+    convert h.hasSum hy h'y using 1
+    apply h'
+    refine ⟨hy, ?_⟩
+    simpa [edist_eq_coe_nnnorm_sub] using h'y
+  · apply h.continuousWithinAt.congr_of_eventuallyEq ?_ h''
+    filter_upwards [inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds x h.r_pos)] using h'
+
+lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
+    {x : E} (h : HasFPowerSeriesWithinAt f p s x) (h' : g =ᶠ[𝓝[s] x] f) (h'' : g x = f x) :
+    HasFPowerSeriesWithinAt g p s x := by
+  rcases h with ⟨r, hr⟩
+  obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, EMetric.ball x ε ∩ s ⊆ {y | g y = f y} :=
+    EMetric.mem_nhdsWithin_iff.1 h'
+  let r' := min r ε
+  refine ⟨r', ?_⟩
+  have := hr.of_le (r' := r') (min_le_left _ _) (by simp [r', εpos, hr.r_pos])
+  apply this.congr _ h''
+  intro z hz
+  exact hε ⟨EMetric.ball_subset_ball (min_le_right _ _) hz.2, hz.1⟩
 
 lemma AnalyticWithinAt.continuousWithinAt {f : E → F} {s : Set E} {x : E}
     (h : AnalyticWithinAt 𝕜 f s x) : ContinuousWithinAt f s x := by
@@ -236,26 +288,21 @@ lemma AnalyticWithinAt.exists_analyticAt [CompleteSpace F] {f : E → F} {s : Se
 
 /-!
 ### Congruence
-
-We require completeness to use equivalence to locally extensions, but this is nonessential.
 -/
 
-lemma AnalyticWithinAt.congr_of_eventuallyEq [CompleteSpace F] {f g : E → F} {s : Set E} {x : E}
-    (hf : AnalyticWithinAt 𝕜 f s x) (hs : f =ᶠ[𝓝[s] x] g) (hx : f x = g x) :
+lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
+    (hf : AnalyticWithinAt 𝕜 f s x) (hs : g =ᶠ[𝓝[s] x] f) (hx : g x = f x) :
     AnalyticWithinAt 𝕜 g s x := by
-  rcases hf.exists_analyticAt with ⟨f', fx, ef, hf'⟩
-  rw [analyticWithinAt_iff_exists_analyticAt]
-  have eg := hs.symm.trans ef
-  refine ⟨?_, f', eg, hf'⟩
-  exact hf'.continuousAt.continuousWithinAt.congr_of_eventuallyEq eg (hx.symm.trans fx)
+  rcases hf with ⟨p, hp⟩
+  exact ⟨p, hp.congr hs hx⟩
 
-lemma AnalyticWithinAt.congr [CompleteSpace F] {f g : E → F} {s : Set E} {x : E}
-    (hf : AnalyticWithinAt 𝕜 f s x) (hs : EqOn f g s) (hx : f x = g x) :
+lemma AnalyticWithinAt.congr {f g : E → F} {s : Set E} {x : E}
+    (hf : AnalyticWithinAt 𝕜 f s x) (hs : EqOn g f s) (hx : g x = f x) :
     AnalyticWithinAt 𝕜 g s x :=
   hf.congr_of_eventuallyEq hs.eventuallyEq_nhdsWithin hx
 
-lemma AnalyticWithinOn.congr [CompleteSpace F] {f g : E → F} {s : Set E}
-    (hf : AnalyticWithinOn 𝕜 f s) (hs : EqOn f g s) :
+lemma AnalyticWithinOn.congr {f g : E → F} {s : Set E}
+    (hf : AnalyticWithinOn 𝕜 f s) (hs : EqOn g f s) :
     AnalyticWithinOn 𝕜 g s :=
   fun x m ↦ (hf x m).congr hs (hs m)
 
@@ -282,9 +329,32 @@ lemma AnalyticWithinAt.mono {f : E → F} {s t : Set E} {x : E} (h : AnalyticWit
   rcases h with ⟨p, hp⟩
   exact ⟨p, hp.mono hs⟩
 
+theorem AnalyticWithinAt.mono_of_mem {f : E → F} {s t : Set E} {x : E}
+    (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
+  rcases h with ⟨p, r, hr⟩
+  rcases EMetric.mem_nhdsWithin_iff.1 hst with ⟨r', r'_pos, hr'⟩
+  refine ⟨p, min r r', ?_⟩
+  have Z := hr.of_le (min_le_left r r') (by simp [r'_pos, hr.r_pos])
+  refine ⟨Z.r_le, Z.r_pos, fun hy h'y ↦ ?_, Z.continuousWithinAt.mono_of_mem hst⟩
+  apply Z.hasSum (hr' ?_ ) h'y
+  simp only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, sub_zero, lt_min_iff, mem_inter_iff,
+    add_sub_cancel_left, hy, and_true] at h'y ⊢
+  exact h'y.2
+
 lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticWithinOn 𝕜 f s :=
   fun _ m ↦ (h _ (hs m)).mono hs
+
+theorem analyticWithinAt_insert_self  {f : E → F} {s : Set E} {x : E} :
+    AnalyticWithinAt 𝕜 f (insert x s) x ↔ AnalyticWithinAt 𝕜 f s x := by
+  refine ⟨fun h ↦ h.mono (by simp), fun h ↦ ?_⟩
+  by_cases hx : {x} ∈ 𝓝[insert x s] x
+  · exact analyticWithinAt_of_singleton_mem hx
+  · rcases h with ⟨p, hp⟩
+
+
+
+
 
 /-!
 ### Analyticity within respects composition
@@ -315,6 +385,7 @@ lemma AnalyticWithinOn.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g
 ### Analyticity within implies smoothness
 -/
 
+/-
 lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
     (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
   rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
@@ -323,6 +394,8 @@ lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set
 lemma AnalyticWithinOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
     (h : AnalyticWithinOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
   fun x m ↦ (h x m).contDiffWithinAt
+-/
+
 
 /-!
 ### Analyticity within respects products

@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-
+import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.ContDiff.HasFTaylorSeries
 
@@ -243,17 +243,12 @@ theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) 
 theorem ContDiffWithinAt.congr_of_eventuallyEq (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContDiffWithinAt 𝕜 n f₁ s x := by
   match n with
-  | ω =>
-    simp [ContDiffWithinAt] at h ⊢
-
-
+  | ω => exact AnalyticWithinAt.congr_of_eventuallyEq h h₁ hx
   | (n : ℕ∞) =>
     intro m hm
     let ⟨u, hu, p, H⟩ := h m hm
     exact ⟨{ x ∈ u | f₁ x = f x }, Filter.inter_mem hu (mem_nhdsWithin_insert.2 ⟨hx, h₁⟩), p,
       (H.mono (sep_subset _ _)).congr fun _ => And.right⟩
-
-#exit
 
 theorem ContDiffWithinAt.congr_of_eventuallyEq_insert (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[insert x s] x] f) : ContDiffWithinAt 𝕜 n f₁ s x :=
@@ -279,9 +274,12 @@ theorem ContDiffWithinAt.congr' (h : ContDiffWithinAt 𝕜 n f s x) (h₁ : ∀ 
 
 theorem ContDiffWithinAt.mono_of_mem (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E}
     (hst : s ∈ 𝓝[t] x) : ContDiffWithinAt 𝕜 n f t x := by
-  intro m hm
-  rcases h m hm with ⟨u, hu, p, H⟩
-  exact ⟨u, nhdsWithin_le_of_mem (insert_mem_nhdsWithin_insert hst) hu, p, H⟩
+  match n with
+  | ω => exact AnalyticWithinAt.mono_of_mem h hst
+  | (n : ℕ∞) =>
+    intro m hm
+    rcases h m hm with ⟨u, hu, p, H⟩
+    exact ⟨u, nhdsWithin_le_of_mem (insert_mem_nhdsWithin_insert hst) hu, p, H⟩
 
 theorem ContDiffWithinAt.mono (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E} (hst : t ⊆ s) :
     ContDiffWithinAt 𝕜 n f t x :=
@@ -306,6 +304,8 @@ theorem contDiffWithinAt_inter (h : t ∈ 𝓝 x) :
 theorem contDiffWithinAt_insert_self :
     ContDiffWithinAt 𝕜 n f (insert x s) x ↔ ContDiffWithinAt 𝕜 n f s x := by
   simp_rw [ContDiffWithinAt, insert_idem]
+
+#exit
 
 theorem contDiffWithinAt_insert {y : E} :
     ContDiffWithinAt 𝕜 n f (insert y s) x ↔ ContDiffWithinAt 𝕜 n f s x := by
