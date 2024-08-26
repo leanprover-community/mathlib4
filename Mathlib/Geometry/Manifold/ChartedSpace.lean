@@ -968,15 +968,14 @@ theorem StructureGroupoid.trans_restricted {e e' : PartialHomeomorph M H} {G : S
 
 section MaximalAtlas
 
-variable (M) (G : StructureGroupoid H)
+variable (G : StructureGroupoid H)
 
+variable (M) in
 /-- Given a charted space admitting a structure groupoid, the maximal atlas associated to this
 structure groupoid is the set of all charts that are compatible with the atlas, i.e., such
 that changing coordinates with an atlas member gives an element of the groupoid. -/
 def StructureGroupoid.maximalAtlas : Set (PartialHomeomorph M H) :=
   { e | ∀ e' ∈ atlas H M, e.symm ≫ₕ e' ∈ G ∧ e'.symm ≫ₕ e ∈ G }
-
-variable {M}
 
 /-- The elements of the atlas belong to the maximal atlas for any structure groupoid. -/
 theorem StructureGroupoid.subset_maximalAtlas [HasGroupoid M G] : atlas H M ⊆ G.maximalAtlas M :=

@@ -97,7 +97,7 @@ end FilteredClosureSmall
 theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (FullSubcategory (FilteredClosure f)) := by
   refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
-    FullSubcategory.ext ?_
+    (fun _ _ => FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
@@ -232,7 +232,8 @@ end CofilteredClosureSmall
 theorem small_fullSubcategory_cofilteredClosure :
     Small.{max v w} (FullSubcategory (CofilteredClosure f)) := by
   refine small_of_injective_of_exists
-    (CofilteredClosureSmall.abstractCofilteredClosureRealization f) FullSubcategory.ext ?_
+    (CofilteredClosureSmall.abstractCofilteredClosureRealization f)
+    (fun _ _ => FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩

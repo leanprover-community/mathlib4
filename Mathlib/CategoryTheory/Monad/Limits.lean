@@ -478,7 +478,6 @@ def newCone : Cone ((D ⋙ forget T) ⋙ (T : C ⥤ C)) where
   π := c.π ≫ γ
 
 variable [PreservesLimit (D ⋙ forget T) (T : C ⥤ C)]
-  [PreservesLimit ((D ⋙ forget T) ⋙ T.toFunctor) T.toFunctor]
 
 /-- (Impl)
 Define the map `λ : L ⟶ TL`, which will serve as the structure of the algebra on `L`, and
@@ -492,6 +491,7 @@ abbrev lambda : c.pt ⟶ ((T : C ⥤ C).mapCone c).pt :=
 theorem commuting (j : J) : lambda c t ≫ (T : C ⥤ C).map (c.π.app j) = c.π.app j ≫ (D.obj j).a :=
   (isLimitOfPreserves _ t).fac (newCone c) j
 
+variable [PreservesLimit ((D ⋙ forget T) ⋙ T.toFunctor) T.toFunctor]
 variable [PreservesColimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)]
 
 /-- (Impl)

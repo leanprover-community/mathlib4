@@ -3,8 +3,8 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Init
 import Lean.Linter.Util
-import Batteries.Data.Array.Basic
 import Batteries.Data.String.Matcher
 import Batteries.Tactic.Lint
 
@@ -30,7 +30,7 @@ Linter that checks whether a structure should be in Prop.
     -- remark: using `Lean.Meta.isProp` doesn't suffice here, because it doesn't (always?)
     -- recognize predicates as propositional.
     let isProp ← forallTelescopeReducing (← inferType (← mkConstWithLevelParams declName))
-      fun _ ty => return ty == .sort .zero
+      fun _ ty ↦ return ty == .sort .zero
     if isProp then return none
     let projs := (getStructureInfo? (← getEnv) declName).get!.fieldNames
     if projs.isEmpty then return none -- don't flag empty structures
@@ -80,9 +80,6 @@ namespace DupNamespaceLinter
 
 open Lean Parser Elab Command Meta
 
-/-- Gets the value of the `linter.dupNamespace` option. -/
-def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
-
 /-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`.
 If `stx` is an `alias` or an `export`, then it extracts an `ident`, instead of a `declId`. -/
 partial
@@ -90,18 +87,18 @@ def getIds : Syntax → Array Syntax
   | .node _ `Batteries.Tactic.Alias.alias args => args[2:3]
   | .node _ ``Lean.Parser.Command.export args => (args[3:4] : Array Syntax).map (·[0])
   | stx@(.node _ _ args) =>
-    ((args.attach.map fun ⟨a, _⟩ => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
+    ((args.attach.map fun ⟨a, _⟩ ↦ getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
 
 @[inherit_doc linter.dupNamespace]
-def dupNamespace : Linter where run := withSetOptionIn fun stx => do
-  if getLinterDupNamespace (← getOptions) then
+def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
+  if Linter.getLinterValue linter.dupNamespace (← getOptions) then
     match getIds stx with
       | #[id] =>
         let ns := (← getScope).currNamespace
         let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
         let nm := declName.components
-        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
+        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
           | return
         Linter.logLint linter.dupNamespace id
           m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
@@ -124,23 +121,18 @@ open Lean Elab Command
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 register_option linter.missingEnd : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the missing end linter"
 }
 
 namespace MissingEnd
 
-/-- Gets the value of the `linter.missingEnd` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
-
 @[inherit_doc Mathlib.Linter.linter.missingEnd]
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
-    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
-      return
-    if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
+    if Linter.getLinterValue linter.missingEnd (← getOptions) &&
+        !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
       -- `namespace`s. We are interested in any *other* unclosed scopes.
@@ -172,7 +164,7 @@ The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a ch
 different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
 register_option linter.cdot : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `cdot` linter"
 }
 
@@ -190,7 +182,7 @@ def findCDot : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
     let dargs := (args.map findCDot).flatten
     match kind with
-      | ``Lean.Parser.Term.cdot | ``cdotTk=> dargs.push stx
+      | ``Lean.Parser.Term.cdot | ``cdotTk => dargs.push stx
       | _ =>  dargs
   |_ => #[]
 
@@ -203,37 +195,118 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 
 namespace CDotLinter
 
-/-- Gets the value of the `linter.generic` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.cdot o
-
 @[inherit_doc linter.cdot]
-def cdotLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterHash (← getOptions) do
+def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless Linter.getLinterValue linter.cdot (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     for s in unwanted_cdot stx do
-      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\·`) instead of '{s}' as 'cdot'."
+      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
 
 initialize addLinter cdotLinter
 
 end CDotLinter
 
+/-!
+# The `dollarSyntax` linter
+
+The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
+These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`.
+-/
+
+/-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
+These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`. -/
+register_option linter.dollarSyntax : Bool := {
+  defValue := false
+  descr := "enable the `dollarSyntax` linter"
+}
+
+namespace Style.dollarSyntax
+
+/-- `findDollarSyntax stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
+partial
+def findDollarSyntax : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let dargs := (args.map findDollarSyntax).flatten
+    match kind with
+      | ``«term_$__» => dargs.push stx
+      | _ => dargs
+  |_ => #[]
+
+@[inherit_doc linter.dollarSyntax]
+def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless Linter.getLinterValue linter.dollarSyntax (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for s in findDollarSyntax stx do
+      Linter.logLint linter.dollarSyntax s m!"Please use '<|' instead of '$' for the pipe operator."
+
+initialize addLinter dollarSyntaxLinter
+
+end Style.dollarSyntax
+
+/-!
+# The `lambdaSyntax` linter
+
+The `lambdaSyntax` linter is a syntax linter that flags uses of the symbol `λ` to define anonymous
+functions, as opposed to the `fun` keyword. These are syntactically equivalent; mathlib style
+prefers the latter as it is considered more readable.
+-/
+
+/--
+The `lambdaSyntax` linter flags uses of the symbol `λ` to define anonymous functions.
+This is syntactically equivalent to the `fun` keyword; mathlib style prefers using the latter.
+-/
+register_option linter.style.lambdaSyntax : Bool := {
+  defValue := false
+  descr := "enable the `lambdaSyntax` linter"
+}
+
+namespace Style.lambdaSyntax
+
+/--
+`findLambdaSyntax stx` extracts from `stx` all syntax nodes of `kind` `Term.fun`. -/
+partial
+def findLambdaSyntax : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let dargs := (args.map findLambdaSyntax).flatten
+    match kind with
+      | ``Parser.Term.fun => dargs.push stx
+      | _ =>  dargs
+  |_ => #[]
+
+@[inherit_doc linter.style.lambdaSyntax]
+def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for s in findLambdaSyntax stx do
+      if let .atom _ "λ" := s[0] then
+        Linter.logLint linter.style.lambdaSyntax s[0] m!"\
+        Please use 'fun' and not 'λ' to define anonymous functions.\n\
+        The 'λ' syntax is deprecated in mathlib4."
+
+initialize addLinter lambdaSyntaxLinter
+
+end Style.lambdaSyntax
+
+/-! # The "longLine linter" -/
+
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
 register_option linter.longLine : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the longLine linter"
 }
 
 namespace LongLine
 
-/-- Gets the value of the `linter.longLine` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.longLine o
-
 @[inherit_doc Mathlib.Linter.linter.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterHash (← getOptions) do
+    unless Linter.getLinterValue linter.longLine (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -244,16 +317,15 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- if the linter reached the end of the file, then we scan the `import` syntax instead
     let stx := ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
-        let fname ← getFileName
-        if !(← System.FilePath.pathExists fname) then return default
-        let contents ← IO.FS.readFile fname
+        let fileMap ← getFileMap
         -- `impMods` is the syntax for the modules imported in the current file
-        let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
+        let (impMods, _) ← Parser.parseHeader
+          { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
         return impMods
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
-    let longLines := ((sstr.getD default).splitOn "\n").filter fun line =>
+    let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if !(line.containsSubstr "http") then

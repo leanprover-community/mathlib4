@@ -112,7 +112,7 @@ def metricSpaceAux : MetricSpace ℍ where
   dist_comm := UpperHalfPlane.dist_comm
   dist_triangle := UpperHalfPlane.dist_triangle
   eq_of_dist_eq_zero {z w} h := by
-    simpa [dist_eq, Real.sqrt_eq_zero', (mul_pos z.im_pos w.im_pos).not_le, ext_iff] using h
+    simpa [dist_eq, Real.sqrt_eq_zero', (mul_pos z.im_pos w.im_pos).not_le, Set.ext_iff] using h
 
 open Complex
 

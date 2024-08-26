@@ -23,13 +23,13 @@ variable {K : Type*} [DivisionRing K] [TopologicalSpace K]
 inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => a * x) (Filter.cocompact K) (Filter.cocompact K) :=
-  Filter.tendsto_cocompact_mul_left (inv_mul_cancel ha)
+  Filter.tendsto_cocompact_mul_left (inv_mul_cancel₀ ha)
 
 /-- Right-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
-  Filter.tendsto_cocompact_mul_right (mul_inv_cancel ha)
+  Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
 variable (K)
 

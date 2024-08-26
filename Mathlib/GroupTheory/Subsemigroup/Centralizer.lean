@@ -18,6 +18,8 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 `AddSubgroup.centralizer` in other files.
 -/
 
+-- Guard against import creep
+assert_not_exists Finset
 
 variable {M : Type*} {S T : Set M}
 namespace Subsemigroup
@@ -67,6 +69,3 @@ theorem centralizer_univ : centralizer Set.univ = center M :=
 end
 
 end Subsemigroup
-
--- Guard against import creep
-assert_not_exists Finset

@@ -221,10 +221,12 @@ theorem IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y :
 
 theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (H : r ^ n ∈ I) :
     r ∈ I := by
-  induction' n with n ih
-  · rw [pow_zero] at H
+  induction n with
+  | zero =>
+    rw [pow_zero] at H
     exact (mt (eq_top_iff_one _).2 hI.1).elim H
-  · rw [pow_succ] at H
+  | succ n ih =>
+    rw [pow_succ] at H
     exact Or.casesOn (hI.mem_or_mem H) ih id
 
 theorem not_isPrime_iff {I : Ideal α} :

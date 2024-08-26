@@ -54,15 +54,16 @@ variable {ι : Type*}
 theorem row_apply (v : n → α) (i : ι) (j) : row ι v i j = v j :=
   rfl
 
-theorem col_injective [Inhabited ι] : Function.Injective (col ι : (m → α) → Matrix m ι α) :=
-  fun _x _y h => funext fun i => congr_fun₂ h i default
+theorem col_injective [Nonempty ι] : Function.Injective (col ι : (m → α) → Matrix m ι α) := by
+  inhabit ι
+  exact fun _x _y h => funext fun i => congr_fun₂ h i default
 
-@[simp] theorem col_inj [Inhabited ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
+@[simp] theorem col_inj [Nonempty ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
   col_injective.eq_iff
 
 @[simp] theorem col_zero [Zero α] : col ι (0 : m → α) = 0 := rfl
 
-@[simp] theorem col_eq_zero [Zero α] [Inhabited ι] (v : m → α) : col ι v = 0 ↔ v = 0 := col_inj
+@[simp] theorem col_eq_zero [Zero α] [Nonempty ι] (v : m → α) : col ι v = 0 ↔ v = 0 := col_inj
 
 @[simp]
 theorem col_add [Add α] (v w : m → α) : col ι (v + w) = col ι v + col ι w := by
@@ -74,15 +75,16 @@ theorem col_smul [SMul R α] (x : R) (v : m → α) : col ι (x • v) = x • c
   ext
   rfl
 
-theorem row_injective [Inhabited ι] : Function.Injective (row ι : (n → α) → Matrix ι n α) :=
-  fun _x _y h => funext fun j => congr_fun₂ h default j
+theorem row_injective [Nonempty ι] : Function.Injective (row ι : (n → α) → Matrix ι n α) := by
+  inhabit ι
+  exact fun _x _y h => funext fun j => congr_fun₂ h default j
 
-@[simp] theorem row_inj [Inhabited ι] {v w : n → α} : row ι v = row ι w ↔ v = w :=
+@[simp] theorem row_inj [Nonempty ι] {v w : n → α} : row ι v = row ι w ↔ v = w :=
   row_injective.eq_iff
 
 @[simp] theorem row_zero [Zero α] : row ι (0 : n → α) = 0 := rfl
 
-@[simp] theorem row_eq_zero [Zero α] [Inhabited ι] (v : n → α) : row ι v = 0 ↔ v = 0 := row_inj
+@[simp] theorem row_eq_zero [Zero α] [Nonempty ι] (v : n → α) : row ι v = 0 ↔ v = 0 := row_inj
 
 @[simp]
 theorem row_add [Add α] (v w : m → α) : row ι (v + w) = row ι v + row ι w := by
