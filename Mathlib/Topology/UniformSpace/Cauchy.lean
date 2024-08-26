@@ -563,8 +563,8 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
       preimage_iUnion, preimage_setOf_eq]
     simp? [subset_def] at hct says
       simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop] at hct
-    intro x hx; simp
-    exact hct x hx⟩
+    intro x hx
+    simpa using hct x hx⟩
 
 theorem Ultrafilter.cauchy_of_totallyBounded {s : Set α} (f : Ultrafilter α) (hs : TotallyBounded s)
     (h : ↑f ≤ 𝓟 s) : Cauchy (f : Filter α) :=

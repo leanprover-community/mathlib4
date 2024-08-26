@@ -38,6 +38,9 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, not 
 Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
 
+-- guard against import creep
+assert_not_exists Field
+assert_not_exists Fintype
 
 variable {F α β R S S' : Type*}
 
@@ -243,8 +246,7 @@ theorem invFun_eq_symm (f : R ≃+* S) : EquivLike.inv f = f.symm :=
   rfl
 
 @[simp]
-theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
-  ext fun _ => rfl
+theorem symm_symm (e : R ≃+* S) : e.symm.symm = e := rfl
 
 @[simp]
 theorem symm_refl : (RingEquiv.refl R).symm = RingEquiv.refl R :=
@@ -262,7 +264,7 @@ theorem mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
     (⟨⟨f, ⇑e, h₁, h₂⟩, h₃, h₄⟩ : S ≃+* R) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `RingEquiv.symm_mk`. -/
+/-- Auxiliary definition to avoid looping in `dsimp` with `RingEquiv.symm_mk`. -/
 protected def symm_mk.aux (f : R → S) (g h₁ h₂ h₃ h₄) := (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm
 
 @[simp]
@@ -828,7 +830,3 @@ protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [Is
     exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
 
 end MulEquiv
-
--- guard against import creep
-assert_not_exists Field
-assert_not_exists Fintype

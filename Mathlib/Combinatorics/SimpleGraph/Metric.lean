@@ -142,7 +142,8 @@ lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v th
   by_cases h : u = v <;> simp [h]
 
 /-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
-theorem edist_le_subgraph_edist {G' : SimpleGraph V} (h : G ≤ G') :
+@[gcongr]
+theorem edist_anti {G' : SimpleGraph V} (h : G ≤ G') :
     G'.edist u v ≤ G.edist u v := by
   by_cases hr : G.Reachable u v
   · obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_edist
@@ -267,7 +268,8 @@ lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then
   by_cases h : u = v <;> simp [h]
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
-theorem dist_le_subgraph_dist {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
+@[gcongr]
+protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
     G'.dist u v ≤ G.dist u v := by
   obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
   rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]

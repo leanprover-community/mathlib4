@@ -167,7 +167,7 @@ theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
   unfold modByMonic divModByMonicAux
   dsimp
   by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
+  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl)), Prod.snd_zero]
   · rw [dif_neg hp]
 
 @[simp]
@@ -176,7 +176,7 @@ theorem zero_divByMonic (p : R[X]) : 0 /ₘ p = 0 := by
   unfold divByMonic divModByMonicAux
   dsimp
   by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
+  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl)), Prod.fst_zero]
   · rw [dif_neg hp]
 
 @[simp]
@@ -504,7 +504,7 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R] [@DecidableRel R[X] (·
     (p : R[X]) (a : R) :
     rootMultiplicity a p =
       if h0 : p = 0 then 0 else (multiplicity (X - C a) p).get (multiplicity_X_sub_C_finite a h0) :=
-  by simp [multiplicity, rootMultiplicity, Part.Dom]; congr; funext; congr
+  by simp only [rootMultiplicity, multiplicity, PartENat.find_get]; congr; funext; congr
 
 @[simp]
 theorem rootMultiplicity_zero {x : R} : rootMultiplicity x 0 = 0 :=

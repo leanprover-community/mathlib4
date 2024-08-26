@@ -58,7 +58,7 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
   suffices v j * v j = w j ^ (-(1 / 2 : ℂ)) * w j ^ (-(1 / 2 : ℂ)) * w j * v j * v j by
     rw [this]; ring
   rw [← Complex.cpow_add _ _ (w j).ne_zero, show -(1 / 2 : ℂ) + -(1 / 2) = -1 by simp [← two_mul],
-    Complex.cpow_neg_one, inv_mul_cancel (w j).ne_zero, one_mul]
+    Complex.cpow_neg_one, inv_mul_cancel₀ (w j).ne_zero, one_mul]
 
 /-- The isometry between a weighted sum of squares on the complex numbers and the
 sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/

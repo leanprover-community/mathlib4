@@ -76,7 +76,7 @@ theorem pow_sum_div_card_le_sum_pow {f : ι → ℝ} (n : ℕ) (hf : ∀ a ∈ s
         Set.mem_Ici.2 (hf i hi)
     · simpa only [inv_mul_eq_div, one_div, Algebra.id.smul_eq_mul] using this
     · simp only [one_div, inv_nonneg, Nat.cast_nonneg, imp_true_iff]
-    · simpa only [one_div, Finset.sum_const, nsmul_eq_mul] using mul_inv_cancel hs0.ne'
+    · simpa only [one_div, Finset.sum_const, nsmul_eq_mul] using mul_inv_cancel₀ hs0.ne'
 
 theorem zpow_arith_mean_le_arith_mean_zpow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) (m : ℤ) :
@@ -173,7 +173,7 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) : a ^ p +
     nth_rw 4 [← mul_one ((a + b) ^ p)]
     exact (mul_le_mul_left hab_0').mpr h
   rwa [div_eq_mul_inv, div_eq_mul_inv, mul_add, mul_comm (a ^ p), mul_comm (b ^ p), ← mul_assoc, ←
-    mul_assoc, mul_inv_cancel hab_0, one_mul, one_mul] at h_mul
+    mul_assoc, mul_inv_cancel₀ hab_0, one_mul, one_mul] at h_mul
 
 theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) :
     (a ^ p + b ^ p) ^ (1 / p) ≤ a + b := by
@@ -185,7 +185,7 @@ theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) :
 theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0) (hp_pos : 0 < p) (hpq : p ≤ q) :
     (a ^ q + b ^ q) ^ (1 / q) ≤ (a ^ p + b ^ p) ^ (1 / p) := by
   have h_rpow : ∀ a : ℝ≥0, a ^ q = (a ^ p) ^ (q / p) := fun a => by
-    rw [← NNReal.rpow_mul, div_eq_inv_mul, ← mul_assoc, _root_.mul_inv_cancel hp_pos.ne.symm,
+    rw [← NNReal.rpow_mul, div_eq_inv_mul, ← mul_assoc, mul_inv_cancel₀ hp_pos.ne.symm,
       one_mul]
   have h_rpow_add_rpow_le_add :
     ((a ^ p) ^ (q / p) + (b ^ p) ^ (q / p)) ^ (1 / (q / p)) ≤ a ^ p + b ^ p := by

@@ -200,6 +200,7 @@ theorem app_top (H : P f) [IsAffine X] [IsAffine Y] : Q (f.app ⊤) := by
   rw [Scheme.Hom.app_eq_appLE]
   exact appLE P f H ⟨_, isAffineOpen_top _⟩ ⟨_, isAffineOpen_top _⟩ _
 
+include Q in
 theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
     P (f ≫ g) := by
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le] at H ⊢
@@ -340,6 +341,7 @@ theorem of_comp
 
 instance : P.IsMultiplicative where
 
+include Q in
 lemma of_isOpenImmersion [IsOpenImmersion f] : P f := IsLocalAtSource.of_isOpenImmersion f
 
 lemma stableUnderBaseChange (hP : RingHom.StableUnderBaseChange Q) : P.StableUnderBaseChange := by

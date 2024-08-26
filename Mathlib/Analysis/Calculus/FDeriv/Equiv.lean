@@ -349,10 +349,10 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
   refine this.trans_isLittleO ?_
   clear this
   refine ((hf.comp_tendsto hg).symm.congr'
-    (hfg.mono ?_) (eventually_of_forall fun _ => rfl)).trans_isBigO ?_
+    (hfg.mono ?_) (Eventually.of_forall fun _ => rfl)).trans_isBigO ?_
   · rintro p ⟨hp1, hp2⟩
     simp [hp1, hp2]
-  · refine (hf.isBigO_sub_rev.comp_tendsto hg).congr' (eventually_of_forall fun _ => rfl)
+  · refine (hf.isBigO_sub_rev.comp_tendsto hg).congr' (Eventually.of_forall fun _ => rfl)
       (hfg.mono ?_)
     rintro p ⟨hp1, hp2⟩
     simp only [(· ∘ ·), hp1, hp2]
@@ -375,7 +375,7 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
   · intro p hp
     simp [hp, hfg.self_of_nhds]
   · refine ((hf.isBigO_sub_rev f'.antilipschitz).comp_tendsto hg).congr'
-      (eventually_of_forall fun _ => rfl) (hfg.mono ?_)
+      (Eventually.of_forall fun _ => rfl) (hfg.mono ?_)
     rintro p hp
     simp only [(· ∘ ·), hp, hfg.self_of_nhds]
 
@@ -404,7 +404,7 @@ theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ f x := by
   rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
   have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
-    isBigO_iff.2 <| hf'.imp fun C hC => eventually_of_forall fun z => hC _
+    isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z => hC _
   have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.isLittleO.trans_isBigO A
   simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
 

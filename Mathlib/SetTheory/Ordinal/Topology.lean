@@ -122,7 +122,10 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
 theorem mem_closure_iff_sup :
     a ∈ closure s ↔
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ sup.{u, u} f = a :=
-  ((mem_closure_tfae a s).out 0 5).trans <| by simp only [exists_prop]
+  calc
+    _ ↔ (∃ (ι : Type u), Nonempty ι ∧ ∃ f, (∀ (i : ι), f i ∈ s) ∧ sup f = a) :=
+             (mem_closure_tfae a s).out 0 5
+    _ ↔ _ := by simp only [exists_prop]
 
 theorem mem_closed_iff_sup (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
@@ -133,7 +136,10 @@ theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
         (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a :=
-  ((mem_closure_tfae a s).out 0 4).trans <| by simp only [exists_prop]
+  calc
+    _ ↔ ∃ o, o ≠ 0 ∧ ∃ f, (∀ (x : Ordinal.{u}) (hx : x < o), f x hx ∈ s) ∧ o.bsup f = a :=
+             (mem_closure_tfae a s).out 0 4
+    _ ↔ _ := by simp only [exists_prop]
 
 theorem mem_closed_iff_bsup (hs : IsClosed s) :
     a ∈ s ↔

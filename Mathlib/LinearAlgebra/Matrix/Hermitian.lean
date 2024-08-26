@@ -210,10 +210,23 @@ require `Fintype n`, which is necessary for `Monoid (Matrix n n R)`. -/
 theorem isHermitian_one [DecidableEq n] : (1 : Matrix n n α).IsHermitian :=
   conjTranspose_one
 
+@[simp]
+theorem isHermitian_natCast [DecidableEq n] (d : ℕ) : (d : Matrix n n α).IsHermitian :=
+  conjTranspose_natCast _
+
 theorem IsHermitian.pow [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsHermitian) (k : ℕ) :
     (A ^ k).IsHermitian := IsSelfAdjoint.pow h _
 
 end Semiring
+
+section Ring
+variable [Ring α] [StarRing α]
+
+@[simp]
+theorem isHermitian_intCast [DecidableEq n] (d : ℤ) : (d : Matrix n n α).IsHermitian :=
+  conjTranspose_intCast _
+
+end Ring
 
 section CommRing
 

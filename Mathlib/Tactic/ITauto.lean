@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Batteries.Logic
 import Batteries.Tactic.Exact
+import Batteries.Tactic.Init
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Util.AtomM
@@ -731,3 +732,5 @@ macro_rules
 --     category := DocCategory.tactic
 --     declNames := [`tactic.interactive.itauto]
 --     tags := ["logic", "propositional logic", "intuitionistic logic", "decision procedure"] }
+
+end Mathlib.Tactic.ITauto
