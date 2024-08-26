@@ -14,7 +14,6 @@ import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Filter.Bases
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Field.Unbundled.Basic
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on preorders, monoids and groups.
