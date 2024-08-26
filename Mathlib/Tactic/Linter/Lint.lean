@@ -30,7 +30,7 @@ Linter that checks whether a structure should be in Prop.
     -- remark: using `Lean.Meta.isProp` doesn't suffice here, because it doesn't (always?)
     -- recognize predicates as propositional.
     let isProp ← forallTelescopeReducing (← inferType (← mkConstWithLevelParams declName))
-      fun _ ty => return ty == .sort .zero
+      fun _ ty ↦ return ty == .sort .zero
     if isProp then return none
     let projs := (getStructureInfo? (← getEnv) declName).get!.fieldNames
     if projs.isEmpty then return none -- don't flag empty structures
@@ -87,18 +87,18 @@ def getIds : Syntax → Array Syntax
   | .node _ `Batteries.Tactic.Alias.alias args => args[2:3]
   | .node _ ``Lean.Parser.Command.export args => (args[3:4] : Array Syntax).map (·[0])
   | stx@(.node _ _ args) =>
-    ((args.attach.map fun ⟨a, _⟩ => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
+    ((args.attach.map fun ⟨a, _⟩ ↦ getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
 
 @[inherit_doc linter.dupNamespace]
-def dupNamespace : Linter where run := withSetOptionIn fun stx => do
+def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
     match getIds stx with
       | #[id] =>
         let ns := (← getScope).currNamespace
         let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
         let nm := declName.components
-        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
+        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
           | return
         Linter.logLint linter.dupNamespace id
           m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
@@ -182,7 +182,7 @@ def findCDot : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
     let dargs := (args.map findCDot).flatten
     match kind with
-      | ``Lean.Parser.Term.cdot | ``cdotTk=> dargs.push stx
+      | ``Lean.Parser.Term.cdot | ``cdotTk => dargs.push stx
       | _ =>  dargs
   |_ => #[]
 
@@ -196,7 +196,7 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 namespace CDotLinter
 
 @[inherit_doc linter.cdot]
-def cdotLinter : Linter where run := withSetOptionIn fun stx => do
+def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.cdot (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
@@ -247,6 +247,52 @@ initialize addLinter dollarSyntaxLinter
 
 end Style.dollarSyntax
 
+/-!
+# The `lambdaSyntax` linter
+
+The `lambdaSyntax` linter is a syntax linter that flags uses of the symbol `λ` to define anonymous
+functions, as opposed to the `fun` keyword. These are syntactically equivalent; mathlib style
+prefers the latter as it is considered more readable.
+-/
+
+/--
+The `lambdaSyntax` linter flags uses of the symbol `λ` to define anonymous functions.
+This is syntactically equivalent to the `fun` keyword; mathlib style prefers using the latter.
+-/
+register_option linter.style.lambdaSyntax : Bool := {
+  defValue := false
+  descr := "enable the `lambdaSyntax` linter"
+}
+
+namespace Style.lambdaSyntax
+
+/--
+`findLambdaSyntax stx` extracts from `stx` all syntax nodes of `kind` `Term.fun`. -/
+partial
+def findLambdaSyntax : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let dargs := (args.map findLambdaSyntax).flatten
+    match kind with
+      | ``Parser.Term.fun => dargs.push stx
+      | _ =>  dargs
+  |_ => #[]
+
+@[inherit_doc linter.style.lambdaSyntax]
+def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for s in findLambdaSyntax stx do
+      if let .atom _ "λ" := s[0] then
+        Linter.logLint linter.style.lambdaSyntax s[0] m!"\
+        Please use 'fun' and not 'λ' to define anonymous functions.\n\
+        The 'λ' syntax is deprecated in mathlib4."
+
+initialize addLinter lambdaSyntaxLinter
+
+end Style.lambdaSyntax
+
 /-! # The "longLine linter" -/
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
@@ -279,7 +325,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
-    let longLines := ((sstr.getD default).splitOn "\n").filter fun line =>
+    let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if !(line.containsSubstr "http") then
