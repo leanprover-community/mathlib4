@@ -9,10 +9,10 @@ import Mathlib.CategoryTheory.FiberedCategory.HomLift
 /-!
 # Cocartesian morphisms
 
-This file defines cartesian resp. strongly cartesian morphisms with respect to a functor
+This file defines cocartesian resp. strongly cocartesian morphisms with respect to a functor
 `p : 𝒳 ⥤ 𝒮`.
 
-All definitions in this file are opposites of the results in `FiberedCategory/Cartesian`.
+This file has been adapted from `FiberedCategory/Cartesian`, please try to change them in sync.
 
 ## Main definitions
 
@@ -20,7 +20,7 @@ All definitions in this file are opposites of the results in `FiberedCategory/Ca
 respect to `p`. This means that for any morphism `φ' : a ⟶ b'` lying over `f` there
 is a unique morphism `τ : b ⟶ b'` lying over `𝟙 S`, such that `φ' = φ ≫ τ`.
 
-`IsStronglyCocartesian p f φ` expresses that `φ` is a strongly cartesian morphism lying over `f`
+`IsStronglyCocartesian p f φ` expresses that `φ` is a strongly cocartesian morphism lying over `f`
 with respect to `p`.
 
 ## Implementation
@@ -45,14 +45,24 @@ section
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
 
-/-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
-cocartesian morphism. -/
+/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is cocartesian if for all
+morphisms `φ' : a ⟶ b'`, also lying over `f`, there exists a unique morphism `χ : b ⟶ b'` lifting
+`𝟙 S` such that `φ' = φ ≫ χ`. -/
 class IsCocartesian extends IsHomLift p f φ : Prop where
   universal_property {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ'] :
       ∃! χ : b ⟶ b', IsHomLift p (𝟙 S) χ ∧ φ ≫ χ = φ'
 
-/-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
-strongly cocartesian morphism. -/
+/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly cocartesian if for
+all morphisms `φ' : a ⟶ b'` and all diagrams of the form
+```
+a --φ--> b        b'
+|        |        |
+v        v        v
+R --f--> S --g--> S'
+```
+such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`.
+
+See <https://stacks.math.columbia.edu/tag/02XK>. -/
 class IsStronglyCocartesian extends IsHomLift p f φ : Prop where
   universal_property' {b' : 𝒳} (g : S ⟶ p.obj b') (φ' : a ⟶ b') [IsHomLift p (f ≫ g) φ'] :
       ∃! χ : b ⟶ b', IsHomLift p g χ ∧ φ ≫ χ = φ'
@@ -117,7 +127,7 @@ noncomputable def codomainUniqueUpToIso {b' : 𝒳} (φ' : a ⟶ b') [IsCocartes
     apply IsCocartesian.ext p (p.map φ') φ'
     simp only [fac_assoc, fac, comp_id]
 
-/-- Postcomposing a cocartesian morphism with an isomorphism lifting the identity is cartesian. -/
+/-- Postcomposing a cocartesian morphism with an isomorphism lifting the identity is cocartesian. -/
 instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
     IsCocartesian p f (φ ≫ φ'.hom) where
   universal_property := by
@@ -129,7 +139,7 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
     apply map_uniq
     exact ((assoc φ _ _) ▸ hτ₂)
 
-/-- Precomposing a cocartesian morphism with an isomorphism lifting the identity is cartesian. -/
+/-- Precomposing a cocartesian morphism with an isomorphism lifting the identity is cocartesian. -/
 instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
     IsCocartesian p f (φ'.hom ≫ φ) where
   universal_property := by

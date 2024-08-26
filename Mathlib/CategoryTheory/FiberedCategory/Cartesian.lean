@@ -12,6 +12,8 @@ import Mathlib.CategoryTheory.FiberedCategory.HomLift
 This file defines cartesian resp. strongly cartesian morphisms with respect to a functor
 `p : 𝒳 ⥤ 𝒮`.
 
+This file has been adapted to `FiberedCategory/Cocartesian`, please try to change them in sync.
+
 ## Main definitions
 
 `IsCartesian p f φ` expresses that `φ` is a cartesian morphism lying over `f` with respect to `p` in
@@ -46,18 +48,26 @@ section
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
 
-/-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
-cartesian morphism.
+/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is cartesian if for all
+morphisms `φ' : a' ⟶ b`, also lying over `f`, there exists a unique morphism `χ : a' ⟶ a` lifting
+`𝟙 R` such that `φ' = χ ≫ φ`.
 
 See SGA 1 VI 5.1. -/
 class IsCartesian extends IsHomLift p f φ : Prop where
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
 
-/-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
-strongly cartesian morphism.
+/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly cartesian if for
+all morphisms `φ' : a' ⟶ b` and all diagrams of the form
+```
+a'        a --φ--> b
+|         |        |
+v         v        v
+R' --g--> R --f--> S
+```
+such that `φ'` lifts `g ≫ f`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`.
 
-See <https://stacks.math.columbia.edu/tag/02XK> -/
+See <https://stacks.math.columbia.edu/tag/02XK>. -/
 class IsStronglyCartesian extends IsHomLift p f φ : Prop where
   universal_property' {a' : 𝒳} (g : p.obj a' ⟶ R) (φ' : a' ⟶ b) [IsHomLift p (g ≫ f) φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
