@@ -192,7 +192,7 @@ theorem arg_neg_I : arg (-I) = -(π / 2) := by simp [arg, le_refl]
 theorem tan_arg (x : ℂ) : Real.tan (arg x) = x.im / x.re := by
   by_cases h : x = 0
   · simp only [h, zero_div, Complex.zero_im, Complex.arg_zero, Real.tan_zero, Complex.zero_re]
-  rw [Real.tan_eq_sin_div_cos, sin_arg, cos_arg h, div_div_div_cancel_right _ (abs.ne_zero h)]
+  rw [Real.tan_eq_sin_div_cos, sin_arg, cos_arg h, div_div_div_cancel_right₀ (abs.ne_zero h)]
 
 theorem arg_ofReal_of_nonneg {x : ℝ} (hx : 0 ≤ x) : arg x = 0 := by simp [arg, hx]
 
