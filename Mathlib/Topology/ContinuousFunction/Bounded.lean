@@ -1530,38 +1530,117 @@ lemma mem_compactlySupported {f : α →ᵇ γ} :
     f ∈ C_cb(α, γ) ↔ HasCompactSupport f :=
   TwoSidedIdeal.mem_mk' {z : α →ᵇ γ | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right f
 
-lemma exist_norm_eq {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) (hs : (tsupport f).Nonempty): ∃ (x : α), ‖f x‖ = ‖f‖ := by
-  have : Continuous (fun x => ‖f x‖) := by
-    have : (fun x => ‖f x‖) = (fun x => ((fun y => ‖y‖) ∘ f) x) := rfl
-    rw [this]
-    exact Continuous.comp continuous_norm f.1.2
-  obtain ⟨x, hx⟩ := IsCompact.exists_isMaxOn ((mem_compactlySupported α γ).mp h) hs (Continuous.continuousOn this)
-  use x
-  apply le_antisymm
-  · exact norm_coe_le_norm f x
-  · rw [norm_eq]
-    apply csInf_le
-    · use 0
-      rw [mem_lowerBounds]
-      intro z
-      simp only [mem_setOf_eq, and_imp]
-      exact fun a a_1 ↦ a
-    · simp only [mem_setOf_eq, norm_nonneg, true_and]
-      intro z
-      by_cases hz : z ∈ tsupport f
-      · exact (isMaxOn_iff.mp hx.2) z hz
-      · rw [image_eq_zero_of_nmem_tsupport hz]
-        simp only [norm_zero, norm_nonneg]
+lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) : ∃ (x : α),
+    ‖f x‖ = ‖f‖ := by
+  by_cases hs : (tsupport f).Nonempty
+  · have : Continuous (fun x => ‖f x‖) := by
+      have : (fun x => ‖f x‖) = (fun x => ((fun y => ‖y‖) ∘ f) x) := rfl
+      rw [this]
+      exact Continuous.comp continuous_norm f.1.2
+    obtain ⟨x, hx⟩ := IsCompact.exists_isMaxOn ((mem_compactlySupported α γ).mp h) hs
+      (Continuous.continuousOn this)
+    use x
+    apply le_antisymm
+    · exact norm_coe_le_norm f x
+    · rw [norm_eq]
+      apply csInf_le
+      · use 0
+        rw [mem_lowerBounds]
+        intro z
+        simp only [mem_setOf_eq, and_imp]
+        exact fun a _ ↦ a
+      · simp only [mem_setOf_eq, norm_nonneg, true_and]
+        intro z
+        by_cases hz : z ∈ tsupport f
+        · exact (isMaxOn_iff.mp hx.2) z hz
+        · rw [image_eq_zero_of_nmem_tsupport hz]
+          simp only [norm_zero, norm_nonneg]
+  · push_neg at hs
+    obtain hex := (exists_true_iff_nonempty.mpr c)
+    obtain ⟨x, _⟩ := hex
+    use x
+    rw [tsupport_eq_empty_iff.mp hs]
+    simp only [Pi.zero_apply, norm_zero]
+    apply Eq.symm
+    apply norm_eq_zero.mpr
+    rw [DFunLike.ext'_iff]
+    simp only [coe_zero]
+    exact tsupport_eq_empty_iff.mp hs
 
-theorem compactlySupported_eq_Bounded [CompactSpace α] : C_cb(α, γ) = (⊤ : Set (α →ᵇ γ)) := by
-  sorry
+theorem compactlySupported_eq_Bounded (h : IsCompact (Set.univ : Set α)) : C_cb(α, γ) =
+    (⊤ : Set (α →ᵇ γ)) := by
+  ext f
+  constructor
+  · intro _
+    trivial
+  · intro _
+    simp only [SetLike.mem_coe]
+    apply (mem_compactlySupported α γ).mpr
+    exact IsCompact.of_isClosed_subset h (isClosed_tsupport f) (subset_univ _)
 
-theorem compactlySupported_eq_Bounded_IsCompact : C_cb(α, γ) = (⊤ : Set (α →ᵇ γ)) ↔
+theorem compactlySupported_eq_Bounded' [CompactSpace α] : C_cb(α, γ) =
+    (⊤ : Set (α →ᵇ γ)) := by
+    apply compactlySupported_eq_Bounded
+    exact CompactSpace.isCompact_univ
+
+theorem compactlySupported_eq_Bounded_IsCompact [NeZero (1 : γ)] : C_cb(α, γ) = (⊤ : Set (α →ᵇ γ)) ↔
     IsCompact (Set.univ : Set α) := by
-  sorry
+  constructor
+  · intro h
+    have : 1 ∈ (⊤ : Set (α →ᵇ γ)) := by
+      exact trivial
+    have : 1 ∈ C_cb(α, γ) := by
+      rw [← h] at this
+      exact this
+    rw [mem_compactlySupported α γ, HasCompactSupport, tsupport, coe_one] at this
+    rw [← closure_univ]
+    rw [Function.support_one] at this
+    exact this
+  · exact compactlySupported_eq_Bounded α γ
+
+lemma HasCompactSupport_mul_continuous_compactlySupported (g : C(α, γ)) (f : C_cb(α ,γ)) :
+    HasCompactSupport (g * f : C(α, γ)) := HasCompactSupport.mul_left
+  ((mem_compactlySupported α γ).mp f.2)
+
+lemma Bounded_of_compactlySupported (g : C(α, γ)) (h : HasCompactSupport g) : ∃ (C : ℝ),
+    ∀ (x y : α), dist (g x) (g y) ≤ C := by
+  by_cases hs : (tsupport g).Nonempty
+  · have : Continuous (fun x => ‖g x‖) := by
+      have : (fun x => ‖g x‖) = (fun x => ((fun y => ‖y‖) ∘ g) x) := rfl
+      rw [this]
+      exact Continuous.comp continuous_norm g.2
+    obtain ⟨z, hz⟩ := IsCompact.exists_isMaxOn h hs (Continuous.continuousOn this)
+    have : ∀ (x : α), ‖g x‖ ≤ ‖g z‖ := by
+      intro x
+      by_cases hx : x ∈ tsupport g
+      · exact isMaxOn_iff.mp hz.2 x hx
+      · rw [image_eq_zero_of_nmem_tsupport hx]
+        simp only [norm_zero, norm_nonneg]
+    use 2 * ‖g z‖
+    intro x y
+    rw [dist_eq_norm]
+    apply le_trans (norm_sub_le _ _)
+    calc ‖g x‖ + ‖g y‖ ≤ ‖g z‖ + ‖g y‖ := by exact add_le_add_right (this x) ‖g y‖
+    _ ≤ ‖g z‖ + ‖g z‖ := by exact (add_le_add_iff_left ‖g z‖).mpr (this y)
+    _ = 2 * ‖g z‖ := by exact Eq.symm (two_mul ‖g z‖)
+  · push_neg at hs
+    use 0
+    intro x y
+    rw [dist_eq_norm]
+    simp only [norm_le_zero_iff]
+    rw [tsupport_eq_empty_iff.mp hs]
+    simp only [Pi.zero_apply, sub_self]
 
 instance : SMul C(α, γ) C_cb(α, γ) where
-  smul := fun (g : C(α, γ)) => (fun (f : C_cb(α, γ)) => ⟨⟨g * f, by sorry⟩, by sorry⟩)
+  smul := fun (g : C(α, γ)) => (fun (f : C_cb(α, γ)) =>
+    ⟨⟨g * f,
+    Bounded_of_compactlySupported α γ (g * f)
+      (HasCompactSupport_mul_continuous_compactlySupported α γ g f)⟩,
+    by apply (mem_compactlySupported α γ).mpr
+       rw [← BoundedContinuousFunction.coe_to_continuous_fun]
+       simp only [ContinuousMap.coe_mul, ContinuousMap.coe_coe]
+       exact HasCompactSupport_mul_continuous_compactlySupported α γ g f
+    ⟩)
 
 end CompactlySupported
 
