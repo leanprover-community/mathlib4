@@ -247,7 +247,7 @@ theorem dist_le_mul (x y : α) : dist (f x) (f y) ≤ K * dist x y :=
 
 theorem dist_inequality (x y) : dist x y ≤ (dist x (f x) + dist y (f y)) / (1 - K) :=
   suffices dist x y ≤ dist x (f x) + dist y (f y) + K * dist x y by
-    rwa [le_div_iff hf.one_sub_K_pos, mul_comm, _root_.sub_mul, one_mul, sub_le_iff_le_add]
+    rwa [le_div_iff₀ hf.one_sub_K_pos, mul_comm, _root_.sub_mul, one_mul, sub_le_iff_le_add]
   calc
     dist x y ≤ dist x (f x) + dist y (f y) + dist (f x) (f y) := dist_triangle4_right _ _ _ _
     _ ≤ dist x (f x) + dist y (f y) + K * dist x y := add_le_add_left (hf.dist_le_mul _ _) _

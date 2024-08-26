@@ -548,7 +548,7 @@ theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup �
   rcases exists_between hl₁ with ⟨r, hr₀, hr₁⟩
   refine summable_of_ratio_norm_eventually_le hr₁ ?_
   filter_upwards [eventually_le_of_tendsto_lt hr₀ h, hf] with _ _ h₁
-  rwa [← div_le_iff (norm_pos_iff.mpr h₁)]
+  rwa [← div_le_iff₀ (norm_pos_iff.mpr h₁)]
 
 theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddCommGroup α] {f : ℕ → α}
     {r : ℝ} (hr : 1 < r) (hf : ∃ᶠ n in atTop, ‖f n‖ ≠ 0)
@@ -581,7 +581,7 @@ theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCom
   rcases exists_between hl with ⟨r, hr₀, hr₁⟩
   refine not_summable_of_ratio_norm_eventually_ge hr₀ key.frequently ?_
   filter_upwards [eventually_ge_of_tendsto_gt hr₁ h, key] with _ _ h₁
-  rwa [← le_div_iff (lt_of_le_of_ne (norm_nonneg _) h₁.symm)]
+  rwa [← le_div_iff₀ (lt_of_le_of_ne (norm_nonneg _) h₁.symm)]
 
 section NormedDivisionRing
 
@@ -597,7 +597,7 @@ theorem summable_powerSeries_of_norm_lt {w z : α}
   refine cauchySeq_finset_of_geometric_bound (r := ‖z‖ / ‖w‖) (C := C) ((div_lt_one hw).mpr hz)
     (fun n ↦ ?_)
   rw [norm_mul, norm_pow, div_pow, ← mul_comm_div]
-  conv at hC => enter [n]; rw [norm_mul, norm_pow, ← _root_.le_div_iff (by positivity)]
+  conv at hC => enter [n]; rw [norm_mul, norm_pow, ← _root_.le_div_iff₀ (by positivity)]
   exact mul_le_mul_of_nonneg_right (hC n) (pow_nonneg (norm_nonneg z) n)
 
 /-- If a power series converges at 1, it converges absolutely at all `z` of smaller norm. -/

@@ -223,7 +223,7 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
   norm_cast at this
   rw [← ENNReal.coe_lt_coe] at this
   refine this.trans_le (p.le_radius_of_bound C fun n => ?_)
-  rw [NNReal.coe_div, div_pow, ← mul_div_assoc, div_le_iff (pow_pos ha.1 n)]
+  rw [NNReal.coe_div, div_pow, ← mul_div_assoc, div_le_iff₀ (pow_pos ha.1 n)]
   exact (le_abs_self _).trans (hp n)
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
@@ -236,7 +236,7 @@ theorem norm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r :
 theorem norm_le_div_pow_of_pos_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h0 : 0 < r) (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖ ≤ C / (r : ℝ) ^ n :=
   let ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
-  ⟨C, hC, fun n => Iff.mpr (le_div_iff (pow_pos h0 _)) (hp n)⟩
+  ⟨C, hC, fun n => Iff.mpr (le_div_iff₀ (pow_pos h0 _)) (hp n)⟩
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
 theorem nnnorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
@@ -696,7 +696,7 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
   obtain ⟨a, ha, C, hC : 0 < C, hp⟩ :
       ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ n : ℕ, ‖p n‖ * (r' : ℝ) ^ n ≤ C * a ^ n :=
     p.norm_mul_pow_le_mul_pow_of_lt_radius (hr.trans_le hf.r_le)
-  simp only [← le_div_iff (pow_pos (NNReal.coe_pos.2 hr'0) _)] at hp
+  simp only [← le_div_iff₀ (pow_pos (NNReal.coe_pos.2 hr'0) _)] at hp
   set L : E × E → ℝ := fun y =>
     C * (a / r') ^ 2 * (‖y - (x, x)‖ * ‖y.1 - y.2‖) * (a / (1 - a) ^ 2 + 2 / (1 - a))
   have hL : ∀ y ∈ EMetric.ball (x, x) r', ‖f y.1 - f y.2 - p 1 fun _ => y.1 - y.2‖ ≤ L y := by

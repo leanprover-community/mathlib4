@@ -373,17 +373,15 @@ namespace NNReal
 private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : ℝ}
     (hpq : p.IsConjExponent q) (hf : ∑ i ∈ s, f i ^ p ≤ 1) (hg : ∑ i ∈ s, g i ^ q ≤ 1) :
     ∑ i ∈ s, f i * g i ≤ 1 := by
-  have hp_ne_zero : Real.toNNReal p ≠ 0 := (zero_lt_one.trans hpq.toNNReal.one_lt).ne.symm
-  have hq_ne_zero : Real.toNNReal q ≠ 0 := (zero_lt_one.trans hpq.toNNReal.symm.one_lt).ne.symm
+  have hp : 0 < p.toNNReal := zero_lt_one.trans hpq.toNNReal.one_lt
+  have hq : 0 < q.toNNReal := zero_lt_one.trans hpq.toNNReal.symm.one_lt
   calc
     ∑ i ∈ s, f i * g i ≤ ∑ i ∈ s, (f i ^ p / Real.toNNReal p + g i ^ q / Real.toNNReal q) :=
       Finset.sum_le_sum fun i _ => young_inequality_real (f i) (g i) hpq
     _ = (∑ i ∈ s, f i ^ p) / Real.toNNReal p + (∑ i ∈ s, g i ^ q) / Real.toNNReal q := by
       rw [sum_add_distrib, sum_div, sum_div]
     _ ≤ 1 / Real.toNNReal p + 1 / Real.toNNReal q := by
-      refine add_le_add ?_ ?_
-      · rwa [div_le_iff hp_ne_zero, div_mul_cancel₀ _ hp_ne_zero]
-      · rwa [div_le_iff hq_ne_zero, div_mul_cancel₀ _ hq_ne_zero]
+      refine add_le_add ?_ ?_ <;> rwa [div_le_iff₀, div_mul_cancel₀] <;> positivity
     _ = 1 := by simp_rw [one_div, hpq.toNNReal.inv_add_inv_conj]
 
 private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q : ℝ}
@@ -401,31 +399,28 @@ private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q :
 with `ℝ≥0`-valued functions. -/
 theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q) :
     ∑ i ∈ s, f i * g i ≤ (∑ i ∈ s, f i ^ p) ^ (1 / p) * (∑ i ∈ s, g i ^ q) ^ (1 / q) := by
-  by_cases hF_zero : ∑ i ∈ s, f i ^ p = 0
-  · exact inner_le_Lp_mul_Lp_of_norm_eq_zero s f g hpq hF_zero
-  by_cases hG_zero : ∑ i ∈ s, g i ^ q = 0
+  obtain hf | hf := eq_zero_or_pos (∑ i ∈ s, f i ^ p)
+  · exact inner_le_Lp_mul_Lp_of_norm_eq_zero s f g hpq hf
+  obtain hg | hg := eq_zero_or_pos (∑ i ∈ s, g i ^ q)
   · calc
       ∑ i ∈ s, f i * g i = ∑ i ∈ s, g i * f i := by
         congr with i
         rw [mul_comm]
       _ ≤ (∑ i ∈ s, g i ^ q) ^ (1 / q) * (∑ i ∈ s, f i ^ p) ^ (1 / p) :=
-        (inner_le_Lp_mul_Lp_of_norm_eq_zero s g f hpq.symm hG_zero)
+        (inner_le_Lp_mul_Lp_of_norm_eq_zero s g f hpq.symm hg)
       _ = (∑ i ∈ s, f i ^ p) ^ (1 / p) * (∑ i ∈ s, g i ^ q) ^ (1 / q) := mul_comm _ _
   let f' i := f i / (∑ i ∈ s, f i ^ p) ^ (1 / p)
   let g' i := g i / (∑ i ∈ s, g i ^ q) ^ (1 / q)
   suffices (∑ i ∈ s, f' i * g' i) ≤ 1 by
     simp_rw [f', g', div_mul_div_comm, ← sum_div] at this
-    rwa [div_le_iff, one_mul] at this
-    refine mul_ne_zero ?_ ?_
-    · rw [Ne, rpow_eq_zero_iff, not_and_or]
-      exact Or.inl hF_zero
-    · rw [Ne, rpow_eq_zero_iff, not_and_or]
-      exact Or.inl hG_zero
+    rwa [div_le_iff₀, one_mul] at this
+    -- TODO: We are missing a positivity  extension here
+    exact mul_pos (rpow_pos hf) (rpow_pos hg)
   refine inner_le_Lp_mul_Lp_of_norm_le_one s f' g' hpq (le_of_eq ?_) (le_of_eq ?_)
   · simp_rw [f', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel₀ hpq.ne_zero, rpow_one,
-      div_self hF_zero]
+      div_self hf.ne']
   · simp_rw [g', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel₀ hpq.symm.ne_zero,
-      rpow_one, div_self hG_zero]
+      rpow_one, div_self hg.ne']
 
 /-- **Weighted Hölder inequality**. -/
 lemma inner_le_weight_mul_Lp (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι → ℝ≥0) :
@@ -517,17 +512,17 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
       ((∑ i ∈ s, f i ^ p) ^ (1 / p)) := by
   constructor
   · use fun i => f i ^ p / f i / (∑ i ∈ s, f i ^ p) ^ (1 / q)
-    by_cases hf : ∑ i ∈ s, f i ^ p = 0
+    obtain hf | hf := eq_zero_or_pos (∑ i ∈ s, f i ^ p)
     · simp [hf, hpq.ne_zero, hpq.symm.ne_zero]
     · have A : p + q - q ≠ 0 := by simp [hpq.ne_zero]
       have B : ∀ y : ℝ≥0, y * y ^ p / y = y ^ p := by
         refine fun y => mul_div_cancel_left_of_imp fun h => ?_
         simp [h, hpq.ne_zero]
       simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
-        div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff hf, one_mul, hpq.mul_eq_add, ←
+        div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff₀ hf, one_mul, hpq.mul_eq_add, ←
         rpow_sub' _ A, add_sub_cancel_right, le_refl, true_and_iff, ← mul_div_assoc, B]
-      rw [div_eq_iff, ← rpow_add hf, one_div, one_div, hpq.inv_add_inv_conj, rpow_one]
-      simpa [hpq.symm.ne_zero] using hf
+      rw [div_eq_iff, ← rpow_add hf.ne', one_div, one_div, hpq.inv_add_inv_conj, rpow_one]
+      simpa [hpq.symm.ne_zero] using hf.ne'
   · rintro _ ⟨g, hg, rfl⟩
     apply le_trans (inner_le_Lp_mul_Lq s f g hpq)
     simpa only [mul_one] using

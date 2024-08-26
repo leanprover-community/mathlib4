@@ -202,12 +202,12 @@ theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max 
 theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs,
-    div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_re_le_abs]
+    div_le_iff₀ (AbsoluteValue.pos Complex.abs hz), one_mul, abs_re_le_abs]
 
 theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs,
-    div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
+    div_le_iff₀ (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
 
 @[simp, norm_cast] lemma abs_intCast (n : ℤ) : abs n = |↑n| := by rw [← ofReal_intCast, abs_ofReal]
 

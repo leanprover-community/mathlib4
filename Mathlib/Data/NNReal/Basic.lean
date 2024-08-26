@@ -811,42 +811,46 @@ theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
   rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
-theorem mul_le_iff_le_inv {a b r : ℝ≥0} (hr : r ≠ 0) : r * a ≤ b ↔ a ≤ r⁻¹ * b := by
-  have : 0 < r := lt_of_le_of_ne (zero_le r) hr.symm
-  rw [← mul_le_mul_left (inv_pos.mpr this), ← mul_assoc, inv_mul_cancel₀ hr, one_mul]
+@[deprecated le_inv_mul_iff₀ (since := "2024-08-21")]
+theorem mul_le_iff_le_inv {a b r : ℝ≥0} (hr : r ≠ 0) : r * a ≤ b ↔ a ≤ r⁻¹ * b :=
+  (le_inv_mul_iff₀ (pos_iff_ne_zero.2 hr)).symm
 
+@[deprecated le_div_iff₀ (since := "2024-08-21")]
 theorem le_div_iff_mul_le {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
-  le_div_iff₀ hr
+  le_div_iff₀ (pos_iff_ne_zero.2 hr)
 
-theorem div_le_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ b * r :=
-  div_le_iff₀ hr
+@[deprecated div_le_iff₀ (since := "2024-08-21")]
+protected lemma div_le_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ b * r :=
+  div_le_iff₀ (pos_iff_ne_zero.2 hr)
 
-nonrec theorem div_le_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ r * b :=
-  @div_le_iff' ℝ _ a r b <| pos_iff_ne_zero.2 hr
+@[deprecated div_le_iff₀' (since := "2024-08-21")]
+protected lemma div_le_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ r * b :=
+  div_le_iff₀' (pos_iff_ne_zero.2 hr)
 
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
-  if h0 : c = 0 then by simp [h0] else (div_le_iff h0).2 h
+  if h0 : c = 0 then by simp [h0] else (div_le_iff₀ (pos_iff_ne_zero.2 h0)).2 h
 
 theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
 
-nonrec theorem le_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
-  @le_div_iff ℝ _ a b r <| pos_iff_ne_zero.2 hr
+@[deprecated le_div_iff₀ (since := "2024-08-21")]
+protected lemma le_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
+  le_div_iff₀ <| pos_iff_ne_zero.2 hr
 
 nonrec theorem le_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ r * a ≤ b :=
-  @le_div_iff' ℝ _ a b r <| pos_iff_ne_zero.2 hr
+  le_div_iff₀' <| pos_iff_ne_zero.2 hr
 
 theorem div_lt_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < b * r :=
-  lt_iff_lt_of_le_iff_le (le_div_iff hr)
+  lt_iff_lt_of_le_iff_le (le_div_iff₀ (pos_iff_ne_zero.2 hr))
 
 theorem div_lt_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < r * b :=
-  lt_iff_lt_of_le_iff_le (le_div_iff' hr)
+  lt_iff_lt_of_le_iff_le (le_div_iff₀' (pos_iff_ne_zero.2 hr))
 
 theorem lt_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ a * r < b :=
-  lt_iff_lt_of_le_iff_le (div_le_iff hr)
+  lt_iff_lt_of_le_iff_le (div_le_iff₀ (pos_iff_ne_zero.2 hr))
 
 theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b :=
-  lt_iff_lt_of_le_iff_le (div_le_iff' hr)
+  lt_iff_lt_of_le_iff_le (div_le_iff₀' (pos_iff_ne_zero.2 hr))
 
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff fun hr => False.elim <| by simp [hr] at h).1 h

@@ -779,7 +779,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   choose! δ₂ Hδ₂ using H₂
   have ε0' := half_pos ε0; have H0 : 0 < (2 : ℝ) ^ Fintype.card ι := pow_pos zero_lt_two _
   rcases hs.exists_pos_forall_sum_le (div_pos ε0' H0) with ⟨εs, hεs0, hεs⟩
-  simp only [le_div_iff' H0, mul_sum] at hεs
+  simp only [le_div_iff₀' H0, mul_sum] at hεs
   rcases exists_pos_mul_lt ε0' (B I) with ⟨ε', ε'0, hεI⟩
   classical
   set δ : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) := fun c x => if x ∈ s then δ₁ c x (εs x) else (δ₂ c) x ε'
