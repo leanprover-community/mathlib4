@@ -9,12 +9,16 @@ import Mathlib.Order.MinMax
 
 /-!
 # Unbundled and weaker forms of canonically ordered monoids
+
+This file provides a Prop-valued mixin for monoids satisfying a one-sided cancellativity property,
+namely that there is some `c` such that `b = a + c` if `a ≤ b`. This is particularly useful for
+generalising statements from groups/rings/fields that don't mention negation or subtraction to
+monoids/semirings/semifields.
 -/
 
 universe u
-
-
 variable {α : Type u}
+
 /-- An `OrderedAddCommMonoid` with one-sided 'subtraction' in the sense that
 if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedAddCommMonoid`. -/
@@ -30,44 +34,8 @@ class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
   /-- For `a ≤ b`, `a` left divides `b` -/
   exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a * c
 
-/-- Prop-valued mixin for the condition that either `α` or `αᵒᵈ` respects `ExistsAddOfLE`.
-
-This is useful to dualise results. -/
-class ExistsAddOfLEOrGE (α : Type u) [Add α] [LE α] : Prop where
-  exists_add_of_le_or_ge :
-    (∀ {a b : α}, a ≤ b → ∃ c, b = a + c) ∨ ∀ {a b : α}, b ≤ a → ∃ c, b = a + c
-
-/-- Prop-valued mixin for the condition that either `α` or `αᵒᵈ` respects `ExistsMulOfLE`.
-
-This is useful to dualise results. -/
-@[to_additive]
-class ExistsMulOfLEOrGE (α : Type u) [Mul α] [LE α] : Prop where
-  exists_mul_of_le_or_ge :
-    (∀ {a b : α}, a ≤ b → ∃ c, b = a * c) ∨ ∀ {a b : α}, b ≤ a → ∃ c, b = a * c
-
 export ExistsMulOfLE (exists_mul_of_le)
 export ExistsAddOfLE (exists_add_of_le)
-export ExistsMulOfLEOrGE (exists_mul_of_le_or_ge)
-export ExistsAddOfLEOrGE (exists_add_of_le_or_ge)
-
-section Mul
-variable [Mul α] [LE α]
-
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) ExistsMulOfLE.toExistsMulOfLEOrGE [ExistsMulOfLE α] :
-    ExistsMulOfLEOrGE α where
-  exists_mul_of_le_or_ge := .inl exists_mul_of_le
-
-@[to_additive] instance OrderDual.instExistsMulOfLEOrGE [ExistsMulOfLEOrGE α] :
-    ExistsMulOfLEOrGE αᵒᵈ where
-  exists_mul_of_le_or_ge := (exists_mul_of_le_or_ge (α := α)).symm
-
-variable (α) in
-@[to_additive] lemma existsMulOfLE_or_existsMulOfLE_orderDual [ExistsMulOfLEOrGE α] :
-    ExistsMulOfLE α ∨ ExistsMulOfLE αᵒᵈ := exists_mul_of_le_or_ge.imp (⟨·⟩) (⟨·⟩)
-
-end Mul
 
 -- See note [lower instance priority]
 @[to_additive]
