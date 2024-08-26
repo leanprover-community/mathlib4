@@ -238,7 +238,7 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
     {𝔖 : Set (Set E)} {S : Set (UniformConvergenceCLM σ F 𝔖)} :
     IsVonNBounded R S ↔ ∀ s ∈ 𝔖, IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) := by
   refine ⟨fun hS s hs ↦ isVonNBounded_image2_apply hS hs, fun h ↦ ?_⟩
-  simp_rw [isVonNBounded_iff_absorbs_le, nhds_zero_eq, le_iInf_iff, le_principal_iff]
+  simp_rw [isVonNBounded_iff_absorbing_le, nhds_zero_eq, le_iInf_iff, le_principal_iff]
   intro s hs U hU
   rw [Filter.mem_absorbs]
   filter_upwards [h s hs hU, eventually_ne_cobounded 0] with c hc hc₀ f hf
