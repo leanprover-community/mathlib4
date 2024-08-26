@@ -24,10 +24,10 @@ Given `hf : Presheaf.representable f`, with `f : F ⟶ G` and `g : yoneda.obj X 
   pullback square of `f` and `g`.
 * `hf.snd g` is the morphism `hf.pullback g ⟶ X`
 * `hf.fst g` is the morphism `yoneda.obj (hf.pullback g) ⟶ F`
-*  Whenever `f` is of type `yoneda.obj Y ⟶ G`, we also have `hf.fst' g` which is the preimage
-   under `yoneda` of `hf.fst g`.
+*  Whenever `f` is of type `yoneda.obj Y ⟶ G`, we also have `hf.fst' g : hf.pullback g ⟶ Y`
+which is the preimage under `yoneda` of `hf.fst g`.
 * `hom_ext`, `hom_ext'`, `lift`, `lift'` are variants of the universal property of
-  `yoneda.obj (hf.pullback g)`, where as much as possible have been formulated internally to `C`.
+  `yoneda.obj (hf.pullback g)`, where as much as possible has been formulated internally to `C`.
 
 * `symmetry` and `symmetryIso` are variants of the fact that pullbacks are symmetric for
   representable morphisms, formulated internally to `C`.
@@ -100,7 +100,7 @@ lemma w : hf.fst g ≫ f = yoneda.map (hf.snd g) ≫ g := (hf.isPullback g).w
 
 /-- Variant of the pullback square when the first projection lies in the image of yoneda. -/
 lemma isPullback' : IsPullback (yoneda.map (hf'.fst' g)) (yoneda.map (hf'.snd g)) f' g :=
-  (hf'.yoneda_map_fst' _) ▸ (hf' g).choose_spec.choose_spec.choose_spec
+  (hf'.yoneda_map_fst' _) ▸ hf'.isPullback g
 
 @[reassoc]
 lemma w' {X Y Z : C} {f : X ⟶ Z}
@@ -147,7 +147,6 @@ noncomputable def lift : Z ⟶ hf.pullback g :=
 lemma lift_fst : yoneda.map (hf.lift i h hi) ≫ hf.fst g = i := by
   simpa [lift] using PullbackCone.IsLimit.lift_fst _ _ _ _
 
-
 @[reassoc (attr := simp)]
 lemma lift_snd : hf.lift i h hi ≫ hf.snd g = h :=
   yoneda.map_injective <| by simpa [lift] using PullbackCone.IsLimit.lift_snd _ _ _ _
@@ -156,7 +155,7 @@ end
 
 section
 
-variable {Z : C} (i : Z ⟶ Y) (h : Z ⟶ X) (hi : (yoneda.map i) ≫ f' = yoneda.map h ≫ g)
+variable {Z : C} (i : Z ⟶ Y) (h : Z ⟶ X) (hi : yoneda.map i ≫ f' = yoneda.map h ≫ g)
 
 /-- Variant of `lift` in the case when the domain of `f` lies in the image of `yoneda.obj`. Thus,
 in this case, one can obtain the lift directly by giving two morphisms in `C`. -/
