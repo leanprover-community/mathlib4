@@ -368,7 +368,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       · push_neg at hep
         by_cases hw : w.toList = []
         · simp [hw, Word.fstIdx]
-        · simp [head?_eq_head hw, Word.fstIdx, hep hw]
+        · simp [head?_eq_head hw, Word.fstIdx, hep hw, -head_eq_iff_head?_eq_some]
 
 theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
     (h : CoprodI.of (φ i w₁.head) • w₁.toWord =
