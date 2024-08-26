@@ -253,11 +253,6 @@ theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases
 theorem exists_ne_none {p : Option α → Prop} : (∃ x ≠ none, p x) ↔ (∃ x : α, p x) := by
   simp only [← exists_prop, bex_ne_none]
 
-@[simp]
-theorem get_map (f : α → β) {o : Option α} (h : isSome (o.map f)) :
-    (o.map f).get h = f (o.get (by rwa [← isSome_map'])) := by
-  cases o <;> [simp at h; rfl]
-
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl
 
