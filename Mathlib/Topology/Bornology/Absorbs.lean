@@ -160,31 +160,31 @@ protected lemma Absorbs.inter (hs : Absorbs G₀ s u) (ht : Absorbs G₀ t u) : 
 
 variable (G₀ u) in
 /-- The filter of sets `s` that absorb `u`. -/
-protected def Filter.absorbs : Filter α where
+protected def Filter.absorbing : Filter α where
   sets := {s | Absorbs G₀ s u}
   univ_sets := .univ
   sets_of_superset h := h.mono_left
   inter_sets := .inter
 
 @[simp]
-lemma Filter.mem_absorbs : s ∈ Filter.absorbs G₀ u ↔ Absorbs G₀ s u := .rfl
+lemma Filter.mem_absorbs : s ∈ Filter.absorbing G₀ u ↔ Absorbs G₀ s u := .rfl
 
 lemma Set.Finite.absorbs_sInter (hS : S.Finite) :
     Absorbs G₀ (⋂₀ S) t ↔ ∀ s ∈ S, Absorbs G₀ s t :=
-  sInter_mem (f := Filter.absorbs G₀ t) hS
+  sInter_mem (f := Filter.absorbing G₀ t) hS
 
 protected alias ⟨_, Absorbs.sInter⟩ := Set.Finite.absorbs_sInter
 
 @[simp]
 lemma absorbs_iInter {ι : Sort*} [Finite ι] {s : ι → Set α} :
     Absorbs G₀ (⋂ i, s i) t ↔ ∀ i, Absorbs G₀ (s i) t :=
-  iInter_mem (f := Filter.absorbs G₀ t)
+  iInter_mem (f := Filter.absorbing G₀ t)
 
 protected alias ⟨_, Absorbs.iInter⟩ := absorbs_iInter
 
 lemma Set.Finite.absorbs_biInter {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set α} :
     Absorbs G₀ (⋂ i ∈ I, s i) t ↔ ∀ i ∈ I, Absorbs G₀ (s i) t :=
-  biInter_mem (f := Filter.absorbs G₀ t) hI
+  biInter_mem (f := Filter.absorbing G₀ t) hI
 
 protected alias ⟨_, Absorbs.biInter⟩ := Set.Finite.absorbs_biInter
 
