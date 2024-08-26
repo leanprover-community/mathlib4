@@ -31,7 +31,6 @@ lemma isIso_unit_iff_isIso_counit  :
     let adjId : F ⋙ G ⊣ 𝟭 C := adj.ofNatIsoRight (asIso adj₂.counit)
     exact adj₁.isIso_unit_of_iso (adjId.leftAdjointUniq id)
 
-
 /--
 Given an adjoint triple `F ⊣ G ⊣ H`, the left adjoint `F` is fully faithful if and only if the
 right adjoint `H` is fully faithful.
