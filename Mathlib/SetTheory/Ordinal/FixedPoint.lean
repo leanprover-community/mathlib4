@@ -263,7 +263,7 @@ theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nf
 theorem apply_lt_nfpBFamily_iff (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
     (∀ i hi, f i hi b < nfpBFamily.{u, v} o f a) ↔ b < nfpBFamily.{u, v} o f a :=
   ⟨fun h => by
-    haveI := out_nonempty_iff_ne_zero.2 ho
+    haveI := toType_nonempty_iff_ne_zero.2 ho
     refine (apply_lt_nfpFamily_iff.{u, v} ?_).1 fun _ => h _ _
     exact fun _ => H _ _, apply_lt_nfpBFamily H⟩
 
