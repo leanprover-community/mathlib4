@@ -205,6 +205,11 @@ theorem single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
 theorem single_eq_zero_iff {a : Γ} {r : R} : single a r = 0 ↔ r = 0 :=
   map_eq_zero_iff _ <| single_injective a
 
+@[simp]
+protected lemma map_single [Zero S] (f : ZeroHom R S) : (single a r).map f = single a (f r) := by
+  ext g
+  by_cases h : g = a <;> simp [h]
+
 instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
   ⟨by
     obtain ⟨r, s, rs⟩ := exists_pair_ne R

@@ -660,7 +660,6 @@ theorem C_zero : C (0 : R) = (0 : HahnSeries Γ R) :=
 theorem C_one : C (1 : R) = (1 : HahnSeries Γ R) :=
   C.map_one
 
-@[simp]
 theorem map_C [NonAssocSemiring S] (a : R) (f : R →+* S) :
     ((C a).map f : HahnSeries Γ S) = C (f a) := by
   ext g
