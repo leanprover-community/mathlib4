@@ -766,12 +766,12 @@ theorem LipschitzOnWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥
 
 theorem LipschitzWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} (hf : LipschitzWith C f)
     {g : α → E} {s : Set α} (h : BoundedVariationOn g s) : BoundedVariationOn (f ∘ g) s :=
-  (hf.lipschitzOnWith univ).comp_boundedVariationOn (mapsTo_univ _ _) h
+  hf.lipschitzOnWith.comp_boundedVariationOn (mapsTo_univ _ _) h
 
 theorem LipschitzWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥0}
     (hf : LipschitzWith C f) {g : α → E} {s : Set α} (h : LocallyBoundedVariationOn g s) :
     LocallyBoundedVariationOn (f ∘ g) s :=
-  (hf.lipschitzOnWith univ).comp_locallyBoundedVariationOn (mapsTo_univ _ _) h
+  hf.lipschitzOnWith.comp_locallyBoundedVariationOn (mapsTo_univ _ _) h
 
 theorem LipschitzOnWith.locallyBoundedVariationOn {f : ℝ → E} {C : ℝ≥0} {s : Set ℝ}
     (hf : LipschitzOnWith C f s) : LocallyBoundedVariationOn f s :=
@@ -780,7 +780,7 @@ theorem LipschitzOnWith.locallyBoundedVariationOn {f : ℝ → E} {C : ℝ≥0} 
 
 theorem LipschitzWith.locallyBoundedVariationOn {f : ℝ → E} {C : ℝ≥0} (hf : LipschitzWith C f)
     (s : Set ℝ) : LocallyBoundedVariationOn f s :=
-  (hf.lipschitzOnWith s).locallyBoundedVariationOn
+  hf.lipschitzOnWith.locallyBoundedVariationOn
 
 end LipschitzOnWith
 

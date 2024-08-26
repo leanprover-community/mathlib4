@@ -6,6 +6,7 @@ Authors: Johan Commelin, Eric Rodriguez
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Wedderburn's Little Theorem
