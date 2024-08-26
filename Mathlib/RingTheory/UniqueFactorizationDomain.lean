@@ -1572,21 +1572,21 @@ theorem coprime_iff_inf_one {a b : α} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
 theorem factors_self [Nontrivial α] {p : Associates α} (hp : Irreducible p) :
     p.factors = WithTop.some {⟨p, hp⟩} :=
   eq_of_prod_eq_prod
-    (by rw [factors_prod, FactorSet.prod]; dsimp; rw [prod_singleton])
+    (by rw [factors_prod, FactorSet.prod.eq_def]; dsimp; rw [prod_singleton])
 
 theorem factors_prime_pow [Nontrivial α] {p : Associates α} (hp : Irreducible p) (k : ℕ) :
     factors (p ^ k) = WithTop.some (Multiset.replicate k ⟨p, hp⟩) :=
   eq_of_prod_eq_prod
     (by
-      rw [Associates.factors_prod, FactorSet.prod]
+      rw [Associates.factors_prod, FactorSet.prod.eq_def]
       dsimp; rw [Multiset.map_replicate, Multiset.prod_replicate, Subtype.coe_mk])
 
 theorem prime_pow_le_iff_le_bcount [DecidableEq (Associates α)] {m p : Associates α}
     (h₁ : m ≠ 0) (h₂ : Irreducible p) {k : ℕ} : p ^ k ≤ m ↔ k ≤ bcount ⟨p, h₂⟩ m.factors := by
   rcases Associates.exists_non_zero_rep h₁ with ⟨m, hm, rfl⟩
   have := nontrivial_of_ne _ _ hm
-  rw [bcount, factors_mk, Multiset.le_count_iff_replicate_le, ← factors_le, factors_prime_pow,
-    factors_mk, WithTop.coe_le_coe] <;> assumption
+  rw [bcount.eq_def, factors_mk, Multiset.le_count_iff_replicate_le, ← factors_le,
+    factors_prime_pow, factors_mk, WithTop.coe_le_coe] <;> assumption
 
 @[simp]
 theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by

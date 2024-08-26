@@ -207,18 +207,6 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
 
 @[deprecated (since := "2024-01-18")] alias append_right_cancel := append_cancel_right
 
-@[simp] theorem append_left_eq_self {x y : List α} : x ++ y = y ↔ x = [] := by
-  rw [← append_left_inj (s₁ := x), nil_append]
-
-@[simp] theorem self_eq_append_left {x y : List α} : y = x ++ y ↔ x = [] := by
-  rw [eq_comm, append_left_eq_self]
-
-@[simp] theorem append_right_eq_self {x y : List α} : x ++ y = x ↔ y = [] := by
-  rw [← append_right_inj (t₁ := y), append_nil]
-
-@[simp] theorem self_eq_append_right {x y : List α} : x = x ++ y ↔ y = [] := by
-  rw [eq_comm, append_right_eq_self]
-
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
   fun _ _ ↦ append_cancel_left
 
@@ -300,10 +288,6 @@ theorem reverse_surjective : Surjective (@reverse α) :=
 theorem reverse_bijective : Bijective (@reverse α) :=
   reverse_involutive.bijective
 
-@[simp]
-theorem reverse_inj {l₁ l₂ : List α} : reverse l₁ = reverse l₂ ↔ l₁ = l₂ :=
-  reverse_injective.eq_iff
-
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
   simp only [concat_eq_append, reverse_cons, reverse_reverse]
 
@@ -380,6 +364,8 @@ lemma getLast_filter {p : α → Bool} :
 
 /-! ### getLast? -/
 
+-- This is a duplicate of `getLast?_eq_none_iff`.
+-- We should remove one of them.
 @[simp]
 theorem getLast?_eq_none : ∀ {l : List α}, getLast? l = none ↔ l = []
   | [] => by simp
@@ -521,11 +507,6 @@ theorem cons_head!_tail [Inhabited α] {l : List α} (h : l ≠ []) : head! l ::
 theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! ∈ l := by
   have h' := mem_cons_self l.head! l.tail
   rwa [cons_head!_tail h] at h'
-
-theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail = l.tail ++ l' := by
-  cases l
-  · contradiction
-  · simp
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
@@ -1188,11 +1169,10 @@ theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
 -- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem foldr_eta : ∀ l : List α, foldr cons [] l = l := by
-  simp only [foldr_self_append, append_nil, forall_const]
+  simp only [foldr_cons_eq_append, append_nil, forall_const]
 
-@[simp]
 theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) = l := by
-  rw [← foldr_reverse]; simp only [foldr_self_append, append_nil, reverse_reverse]
+  rw [← foldr_reverse]; simp only [foldr_cons_eq_append, append_nil, reverse_reverse]
 
 theorem foldl_hom₂ (l : List ι) (f : α → β → γ) (op₁ : α → ι → α) (op₂ : β → ι → β)
     (op₃ : γ → ι → γ) (a : α) (b : β) (h : ∀ a b i, f (op₁ a i) (op₂ b i) = op₃ (f a b) i) :

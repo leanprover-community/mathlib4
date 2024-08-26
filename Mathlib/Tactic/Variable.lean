@@ -250,7 +250,7 @@ def elabVariables : CommandElab := fun stx =>
 where
   extendScope (binders : TSyntaxArray ``bracketedBinder) : CommandElabM Unit := do
     for binder in binders do
-      let varUIds ← getBracketedBinderIds binder |>.mapM
+      let varUIds ← (← getBracketedBinderIds binder) |>.mapM
         (withFreshMacroScope ∘ MonadQuotation.addMacroScope)
       modifyScope fun scope =>
         { scope with varDecls := scope.varDecls.push binder, varUIds := scope.varUIds ++ varUIds }

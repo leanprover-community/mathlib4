@@ -217,7 +217,7 @@ theorem dlookup_map (l : List (Sigma β))
 theorem dlookup_map₁ {β : Type v} (l : List (Σ _ : α, β))
     {f : α → α'} (hf : Function.Injective f) (a : α) :
     (l.map fun x => ⟨f x.1, x.2⟩ : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
-  rw [dlookup_map (β' := fun _ => β) l hf (fun _ x => x) a, Option.map_id'']
+  rw [dlookup_map (β' := fun _ => β) l hf (fun _ x => x) a, Option.map_id']
 
 theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a, γ a → δ a} (a : α) :
     (l.map fun x => ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=

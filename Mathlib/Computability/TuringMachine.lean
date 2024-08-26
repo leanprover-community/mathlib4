@@ -2353,7 +2353,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
     · refine
         ⟨_, fun k' ↦ ?_, by
           erw [List.length_cons, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_succ_fst,
-            cond, iterate_succ', Function.comp, Tape.move_right_left, Tape.move_right_n_head,
+            cond_false, iterate_succ', Function.comp, Tape.move_right_left, Tape.move_right_n_head,
             Tape.mk'_nth_nat, Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k none),
             addBottom_modifyNth fun a ↦ update a k none, addBottom_nth_snd,
             stk_nth_val _ (hL k), e,
@@ -2487,7 +2487,6 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
       rw [ListBlank.nth_mk, List.getI_eq_iget_get?, List.map, List.reverse_nil]
       cases L.reverse.get? i <;> rfl
   · rw [trInit, TM1.init]
-    dsimp only
     congr <;> cases L.reverse <;> try rfl
     simp only [List.map_map, List.tail_cons, List.map]
     rfl
