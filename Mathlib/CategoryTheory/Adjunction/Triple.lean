@@ -1,5 +1,18 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Monad.Adjunction
+/-!
+
+# Adjoint triples
+
+This file concerns adjoint triples `F ⊣ G ⊣ H` of functors `F H : C ⥤ D`, `G : D ⥤ C`.
+
+Currently, the only result is that `F` is fully faithful if and only if `H` is fully faithful.
+-/
 
 open CategoryTheory Adjunction
 
@@ -14,12 +27,17 @@ lemma isIso_unit_iff_isIso_counit  :
   let adj : F ⋙ G ⊣ H ⋙ G := adj₁.comp adj₂
   constructor
   · intro h
-    let adjId₂ : 𝟭 C ⊣ H ⋙ G := adj.ofNatIsoLeft (asIso adj₁.unit).symm
-    exact adj₂.isIso_counit_of_iso (adjId₂.rightAdjointUniq id)
+    let idAdj : 𝟭 C ⊣ H ⋙ G := adj.ofNatIsoLeft (asIso adj₁.unit).symm
+    exact adj₂.isIso_counit_of_iso (idAdj.rightAdjointUniq id)
   · intro h
-    let adjId₁ : F ⋙ G ⊣ 𝟭 C := adj.ofNatIsoRight (asIso adj₂.counit)
-    exact adj₁.isIso_unit_of_iso (adjId₁.leftAdjointUniq id)
+    let adjId : F ⋙ G ⊣ 𝟭 C := adj.ofNatIsoRight (asIso adj₂.counit)
+    exact adj₁.isIso_unit_of_iso (adjId.leftAdjointUniq id)
 
+
+/--
+Given an adjoint triple `F ⊣ G ⊣ H`, the left adjoint `F` is fully faithful if and only if the
+right adjoint `H` is fully faithful.
+-/
 noncomputable def fullyFaithfulEquiv : F.FullyFaithful ≃ H.FullyFaithful where
   toFun h :=
     haveI := h.full
@@ -35,7 +53,7 @@ noncomputable def fullyFaithfulEquiv : F.FullyFaithful ≃ H.FullyFaithful where
       rw [adj₁.isIso_unit_iff_isIso_counit adj₂]
       infer_instance
     adj₁.fullyFaithfulLOfIsIsoUnit
-  left_inv h := by apply Subsingleton.elim
-  right_inv h := by apply Subsingleton.elim
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
 
 end CategoryTheory.Adjunction
