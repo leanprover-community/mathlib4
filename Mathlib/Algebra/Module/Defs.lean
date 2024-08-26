@@ -571,7 +571,7 @@ theorem NoZeroSMulDivisors.int_of_charZero
     NoZeroSMulDivisors ℤ M :=
   ⟨fun {z x} h ↦ by simpa [← smul_one_smul R z x] using h⟩
 
-/-- Only a ring of characteristic zero can can have a non-trivial module without additive or
+/-- Only a ring of characteristic zero can have a non-trivial module without additive or
 scalar torsion. -/
 theorem CharZero.of_noZeroSMulDivisors [Nontrivial M] [NoZeroSMulDivisors ℤ M] : CharZero R := by
   refine ⟨fun {n m h} ↦ ?_⟩

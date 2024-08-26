@@ -348,7 +348,7 @@ theorem unitsSMulGroup_snd (u : ℤˣ) (g : G) :
 variable {d}
 
 /-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurence
-of `t^-u` when when we multiply `t^u` by `w`. -/
+of `t^-u` when we multiply `t^u` by `w`. -/
 def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
   (w.head ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head?.map Prod.fst = some (-u)
 

@@ -1346,7 +1346,7 @@ theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
 theorem sum_apply₀ (f : ι → Measure α) {s : Set α} (hs : NullMeasurableSet s (sum f)) :
     sum f s = ∑' i, f i s := by
   apply le_antisymm ?_ (le_sum_apply _ _)
-  rcases hs.exists_measurable_subset_ae_eq  with ⟨t, ts, t_meas, ht⟩
+  rcases hs.exists_measurable_subset_ae_eq with ⟨t, ts, t_meas, ht⟩
   calc
   sum f s = sum f t := measure_congr ht.symm
   _ = ∑' i, f i t := sum_apply _ t_meas
