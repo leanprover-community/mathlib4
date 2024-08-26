@@ -243,13 +243,13 @@ example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc := by
   linear_combination' 3 * h a b + hqc
 ```
 -/
-syntax (name := linearCombination) "linear_combination'"
+syntax (name := linearCombination') "linear_combination'"
   (normStx)? (expStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
   | `(tactic| linear_combination'%$tk $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
     elabLinearCombination' tk tac n e
 
-@[inherit_doc linearCombination]
+@[inherit_doc linearCombination']
 syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
   | `(tactic| linear_combination2%$tk $[(norm := $tac)]? $(e)?) =>

@@ -140,10 +140,12 @@ example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
 
 /-! ### Cases that have linear_combination' skip normalization -/
 
+set_option linter.unusedTactic false in
 example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
   linear_combination' (norm := skip) 1 / 6 * ha + 1 / 3 * hab
   linarith
 
+set_option linter.unusedTactic false in
 example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
   linear_combination' (norm := skip) 2 * h1
   simp (config := {decide := true})
@@ -155,6 +157,7 @@ example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w 
   linear_combination'
 
 -- this interacts as expected with options
+set_option linter.unusedTactic false in
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
   linear_combination' (norm := skip)
   guard_target = z + w - (w + z) - (0 - 0) = 0
@@ -227,6 +230,7 @@ example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := b
 example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : x + y*z = 0 := by
   linear_combination' (exp := 2) (-y * z ^ 2 + x) * h + (z ^ 2 + 2 * z + 1) * h2
 
+set_option linter.unusedTactic false in
 example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : y*z = -x := by
   linear_combination' (norm := skip) (exp := 2) (-y * z ^ 2 + x) * h + (z ^ 2 + 2 * z + 1) * h2
   ring
@@ -259,6 +263,7 @@ example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
 -- Implementation at the time of the port (Nov 2022) was 110,000 heartbeats.
 -- Eagerly elaborating leaf nodes brings this to 7,540 heartbeats.
 set_option maxHeartbeats 8000 in
+set_option linter.unusedTactic false in
 example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
     (h₀ : 3 * x ^ 2 + z ^ 2 * p = 0)
     (h₁ : z * (2 * y) = 0)
