@@ -92,17 +92,17 @@ theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
   rw [h] at h'
   exact Hom.map_le_range h'
 
-theorem fg_of_finite {s : L.Substructure M} [h : Finite s] : s.FG :=
+theorem FG.of_finite {s : L.Substructure M} [h : Finite s] : s.FG :=
   ⟨Set.Finite.toFinset h, by simp only [Finite.coe_toFinset, closure_eq]⟩
 
-theorem finite_of_fg [L.IsRelational] {S : L.Substructure M} (h : S.FG) : Finite S := by
+theorem FG.finite [L.IsRelational] {S : L.Substructure M} (h : S.FG) : Finite S := by
   obtain ⟨s, rfl⟩ := h
   have hs := s.finite_toSet
   rw [← ((closure L).mem_closed_iff _).1 (mem_closed_of_isRelational L (↑s : Set M))] at hs
   exact hs
 
 theorem fg_iff_finite [L.IsRelational] {S : L.Substructure M} : S.FG ↔ Finite S :=
-  ⟨finite_of_fg, fun _ => fg_of_finite⟩
+  ⟨FG.finite, fun _ => FG.of_finite⟩
 
 /-- A substructure of `M` is countably generated if it is the closure of a countable subset of `M`.
 -/
@@ -238,14 +238,14 @@ instance Fg.instCountable_embedding (N : Type*) [L.Structure N]
     [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
   FG.countable_embedding N h
 
-theorem fg_of_finite [Finite M] : FG L M := by
-  simp only [fg_def, Substructure.fg_of_finite, topEquiv.toEquiv.finite_iff]
+theorem FG.of_finite [Finite M] : FG L M := by
+  simp only [fg_def, Substructure.FG.of_finite, topEquiv.toEquiv.finite_iff]
 
-theorem finite_of_fg [L.IsRelational] (h : FG L M) : Finite M :=
-  Finite.of_finite_univ (Substructure.finite_of_fg (fg_def.1 h))
+theorem FG.finite [L.IsRelational] (h : FG L M) : Finite M :=
+  Finite.of_finite_univ (Substructure.FG.finite (fg_def.1 h))
 
 theorem fg_iff_finite [L.IsRelational] : FG L M ↔ Finite M :=
-  ⟨finite_of_fg, fun _ => fg_of_finite⟩
+  ⟨FG.finite, fun _ => FG.of_finite⟩
 
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
