@@ -288,10 +288,6 @@ theorem reverse_surjective : Surjective (@reverse α) :=
 theorem reverse_bijective : Bijective (@reverse α) :=
   reverse_involutive.bijective
 
-@[simp]
-theorem reverse_inj {l₁ l₂ : List α} : reverse l₁ = reverse l₂ ↔ l₁ = l₂ :=
-  reverse_injective.eq_iff
-
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
   simp only [concat_eq_append, reverse_cons, reverse_reverse]
 
