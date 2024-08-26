@@ -132,11 +132,17 @@ theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa 
     μa (f ⁻¹' s) = μb s :=
   measure_preimage_emb hf f.measurableEmbedding s
 
+theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : MeasurePreserving f μa μb)
+    {g : β → γ} (hg : NullMeasurable g μb) :
+    EventuallyConst (g ∘ f) (ae μa) ↔ EventuallyConst g (ae μb) :=
+  exists_congr fun s ↦ and_congr_left fun hs ↦ by
+    simp only [mem_map, mem_ae_iff, ← hf.measure_preimage₀ (hg hs.measurableSet).compl,
+      preimage_comp, preimage_compl]
+
 theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) :
-    EventuallyConst (f ⁻¹' s) (ae μa) ↔ EventuallyConst s (ae μb) := by
-  simp only [eventuallyConst_set', ae_eq_empty, ae_eq_univ, ← preimage_compl]
-  rw [hf.measure_preimage₀ hs, hf.measure_preimage₀ hs.compl]
+    EventuallyConst (f ⁻¹' s) (ae μa) ↔ EventuallyConst s (ae μb) :=
+  aeconst_comp hf hs.mem
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 
