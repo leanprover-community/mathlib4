@@ -254,7 +254,7 @@ section Curry
 
 variable {f : (∀ a b, γ a b) → ∀ a b, γ a b}
 
-theorem uncurry_curry_continuous (hc : ωScottContinuous f) :
+theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
     ωScottContinuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
   (continuous_uncurry _ _ _).comp (hc.comp (continuous_curry _ _ _))
 
