@@ -143,14 +143,17 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
 
 section
 
-variable {R : Type u₁} [Ring R] (f : R →+* R) (hf : f = RingHom.id R)
+variable {R : Type u₁} [Ring R] (f : R →+* R)
 
 /-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphisms identifies
 to `M`. -/
-def restrictScalarsId'App (M : ModuleCat R) : (restrictScalars f).obj M ≅ M :=
+def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
+    (restrictScalars f).obj M ≅ M :=
   LinearEquiv.toModuleIso' <|
     @AddEquiv.toLinearEquiv _ _ _ _ _ _ (((restrictScalars f).obj M).isModule) _
       (by rfl) (fun r x ↦ by subst hf; rfl)
+
+variable (hf : f = RingHom.id R)
 
 lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId'App f hf M).hom x = x :=
@@ -189,13 +192,15 @@ end
 section
 
 variable {R₁ : Type u₁} {R₂ : Type u₂} {R₃ : Type u₃} [Ring R₁] [Ring R₂] [Ring R₃]
-  (f : R₁ →+* R₂) (g : R₂ →+* R₃) (gf : R₁ →+* R₃) (hgf : gf = g.comp f)
+  (f : R₁ →+* R₂) (g : R₂ →+* R₃) (gf : R₁ →+* R₃)
 
 /-- For each `R₃`-module `M`, restriction of scalars of `M` by a composition of ring morphisms
 identifies to successively restricting scalars. -/
-def restrictScalarsComp'App (M : ModuleCat R₃) :
+def restrictScalarsComp'App (hgf : gf = g.comp f) (M : ModuleCat R₃) :
     (restrictScalars gf).obj M ≅ (restrictScalars f).obj ((restrictScalars g).obj M) :=
   (AddEquiv.toLinearEquiv (by rfl) (fun r x ↦ by subst hgf; rfl)).toModuleIso'
+
+variable (hgf : gf = g.comp f)
 
 lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp'App f g gf hgf M).hom x = x :=

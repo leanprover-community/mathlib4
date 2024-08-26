@@ -295,6 +295,27 @@ theorem sub_singleton_eq (a : A) (r : R) : σ a - {r} = σ (a - ↑ₐ r) := by
 
 end ScalarRing
 
+section ScalarSemifield
+
+variable {R : Type u} {A : Type v} [Semifield R] [Ring A] [Algebra R A]
+
+@[simp]
+lemma inv₀_mem_iff {r : R} {a : Aˣ} :
+    r⁻¹ ∈ spectrum R (a : A) ↔ r ∈ spectrum R (↑a⁻¹ : A) := by
+  obtain (rfl | hr) := eq_or_ne r 0
+  · simp [zero_mem_iff]
+  · lift r to Rˣ using hr.isUnit
+    simp [inv_mem_iff]
+
+lemma inv₀_mem_inv_iff {r : R} {a : Aˣ} :
+    r⁻¹ ∈ spectrum R (↑a⁻¹ : A) ↔ r ∈ spectrum R (a : A) := by
+  simp
+
+alias ⟨of_inv₀_mem, inv₀_mem⟩ := inv₀_mem_iff
+alias ⟨of_inv₀_mem_inv, inv₀_mem_inv⟩ := inv₀_mem_inv_iff
+
+end ScalarSemifield
+
 section ScalarField
 
 variable {𝕜 : Type u} {A : Type v}

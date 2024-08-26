@@ -34,8 +34,6 @@ noncomputable section
 
 open CategoryTheory ModuleCat.monoidalCategory
 
-open scoped Classical
-
 universe u
 
 section Ring
