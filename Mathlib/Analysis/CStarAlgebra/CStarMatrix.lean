@@ -364,7 +364,9 @@ private lemma antilipschitzWith_equiv_aux :
           _ = ‖M i j‖₊ := by rw [← hj, ← hi]
       calc _ ≤ ∑ k, ‖∑ l, star (w k) * M k l * v l‖₊ := by
                   simp_rw [mul_assoc]
-                  exact nnnorm_sum_le (E := A) _ _
+                  refine (nnnorm_sum_le (E := A) _ _).trans ?_
+                  gcongr
+                  simp [WithCStarModule.inner_def, mul_sum]
         _ ≤ ∑ k, ∑ l, ‖star (w k) * M k l * v l‖₊ := by gcongr; exact nnnorm_sum_le _ _
         _ ≤ ∑ k, ∑ l, ‖star (w k) * M k l‖₊ * ‖v l‖₊ := by gcongr; exact nnnorm_mul_le _ _
         _ ≤ ∑ k, ∑ l, ‖w k‖₊ * ‖M k l‖₊ * ‖v l‖₊ := by
