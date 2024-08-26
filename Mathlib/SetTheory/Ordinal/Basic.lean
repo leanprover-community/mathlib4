@@ -987,8 +987,8 @@ alias one_out_eq := one_toType_eq
 
 /-! ### Extra properties of typein and enum -/
 
--- TODO: move this with the other properties of `typein` and `enum`.
--- TODO: use `enumIsoToType` for the lemmas on `toType` rather than `enum` and `typein`.
+-- TODO: move this section with the other properties of `typein` and `enum`.
+-- TODO: use `enumIsoToType` for lemmas on `toType` rather than `enum` and `typein`.
 
 @[simp]
 theorem typein_one_toType (x : toType 1) : typein (α := toType 1) (· < ·) x = 0 := by
