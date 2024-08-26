@@ -17,13 +17,13 @@ import Batteries.Data.RBMap.Basic
 These should be replaced by proper implementations in Batteries.
 -/
 
-set_option autoImplicit true
+universe u v
 
 namespace Batteries.HashMap
 
 -- not an exact match, the Lean3 version was dependently-typed
 
-variable [BEq α] [Hashable α]
+variable {α : Type u} {β : Type v} [BEq α] [Hashable α]
 
 /-- The list of keys in a `HashMap`. -/
 @[deprecated "This declaration is unused in Mathlib: if you need it, \
@@ -52,7 +52,7 @@ namespace Batteries.RBSet
 /-- Insert all elements of a list into an `RBSet`. -/
 @[deprecated "This declaration is unused in Mathlib: if you need it, \
   please file an issue in the Batteries repository." (since := "2024-06-12")]
-def insertList {cmp} (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
+def insertList {α : Type u} {cmp} (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
   L.foldl (fun m a => m.insert a) m
 
 end Batteries.RBSet

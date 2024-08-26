@@ -46,11 +46,11 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
 equivalence, congruence, bijective map
 -/
 
-set_option autoImplicit true
-
-universe u
+universe u v
 
 open Function
+
+variable {α α₁ α₂ β β₁ β₂ γ γ₁ γ₂ δ ε ι ι' ι'': Type*}
 
 namespace Equiv
 
@@ -66,7 +66,7 @@ def pprodEquivProd : PProd α β ≃ α × β where
 `PProd α γ ≃ PProd β δ`. -/
 -- Porting note: in Lean 3 this had `@[congr]`
 @[simps apply]
-def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
+def pprodCongr {α β γ δ : Sort*} (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
   invFun x := ⟨e₁.symm x.1, e₂.symm x.2⟩
   left_inv := fun ⟨x, y⟩ => by simp
@@ -74,19 +74,19 @@ def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β 
 
 /-- Combine two equivalences using `PProd` in the domain and `Prod` in the codomain. -/
 @[simps! apply symm_apply]
-def pprodProd (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+def pprodProd {α₁ β₁ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     PProd α₁ β₁ ≃ α₂ × β₂ :=
   (ea.pprodCongr eb).trans pprodEquivProd
 
 /-- Combine two equivalences using `PProd` in the codomain and `Prod` in the domain. -/
 @[simps! apply symm_apply]
-def prodPProd (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+def prodPProd {α₂ β₂ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     α₁ × β₁ ≃ PProd α₂ β₂ :=
   (ea.symm.pprodProd eb.symm).symm
 
 /-- `PProd α β` is equivalent to `PLift α × PLift β` -/
 @[simps! apply symm_apply]
-def pprodEquivProdPLift : PProd α β ≃ PLift α × PLift β :=
+def pprodEquivProdPLift {α β : Sort*} : PProd α β ≃ PLift α × PLift β :=
   Equiv.plift.symm.pprodProd Equiv.plift.symm
 
 /-- Product of two equivalences. If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then `α₁ × β₁ ≃ α₂ × β₂`. This is
@@ -250,19 +250,19 @@ def sumCongr (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃
   ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
 
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
-def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
+def psumCongr {α β γ δ : Sort*} (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
   toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)
   invFun x := PSum.casesOn x (PSum.inl ∘ e₁.symm) (PSum.inr ∘ e₂.symm)
   left_inv := by rintro (x | x) <;> simp
   right_inv := by rintro (x | x) <;> simp
 
 /-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
-def psumSum (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+def psumSum {α₁ β₁ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
   (ea.psumCongr eb).trans (psumEquivSum _ _)
 
 /-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
-def sumPSum (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+def sumPSum {α₂ β₂ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
   (ea.symm.psumSum eb.symm).symm
 
@@ -605,7 +605,8 @@ section
 
 /-- A family of equivalences `∀ a, β₁ a ≃ β₂ a` generates an equivalence between `∀ a, β₁ a` and
 `∀ a, β₂ a`. -/
-def piCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) : (∀ a, β₁ a) ≃ (∀ a, β₂ a) :=
+def piCongrRight {α : Sort*} {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) :
+    (∀ a, β₁ a) ≃ (∀ a, β₂ a) :=
   ⟨fun H a => F a (H a), fun H a => (F a).symm (H a), fun H => funext <| by simp,
     fun H => funext <| by simp⟩
 
@@ -978,10 +979,10 @@ def uniqueCongr (e : α ≃ β) : Unique α ≃ Unique β where
   right_inv _ := Subsingleton.elim _ _
 
 /-- If `α` is equivalent to `β`, then `IsEmpty α` is equivalent to `IsEmpty β`. -/
-theorem isEmpty_congr (e : α ≃ β) : IsEmpty α ↔ IsEmpty β :=
+theorem isEmpty_congr {α β : Sort*} (e : α ≃ β) : IsEmpty α ↔ IsEmpty β :=
   ⟨fun h => @Function.isEmpty _ _ h e.symm, fun h => @Function.isEmpty _ _ h e⟩
 
-protected theorem isEmpty (e : α ≃ β) [IsEmpty β] : IsEmpty α :=
+protected theorem isEmpty {α β : Sort*} (e : α ≃ β) [IsEmpty β] : IsEmpty α :=
   e.isEmpty_congr.mpr ‹_›
 
 section
@@ -1233,7 +1234,7 @@ end
 
 section subtypeEquivCodomain
 
-variable [DecidableEq X] {x : X}
+variable {X Y : Type*} [DecidableEq X] {x : X}
 
 /-- The type of all functions `X → Y` with prescribed values for all `x' ≠ x`
 is equivalent to the codomain `Y`. -/
@@ -1359,7 +1360,7 @@ theorem subtypeQuotientEquivQuotientSubtype_symm_mk (p₁ : α → Prop)
 
 section Swap
 
-variable [DecidableEq α]
+variable {α β : Sort*} [DecidableEq α]
 
 /-- A helper function for `Equiv.swap`. -/
 def swapCore (a b r : α) : α :=
@@ -1518,6 +1519,8 @@ end Equiv
 
 namespace Function.Involutive
 
+variable {α : Sort*}
+
 /-- Convert an involutive function `f` to a permutation with `toFun = invFun = f`. -/
 def toPerm (f : α → α) (h : Involutive f) : Equiv.Perm α :=
   ⟨f, f, h.leftInverse, h.rightInverse⟩
@@ -1538,10 +1541,10 @@ theorem symm_eq_self_of_involutive (f : Equiv.Perm α) (h : Involutive f) : f.sy
 
 end Function.Involutive
 
-theorem PLift.eq_up_iff_down_eq {x : PLift α} {y : α} : x = PLift.up y ↔ x.down = y :=
+theorem PLift.eq_up_iff_down_eq {α : Sort*} {x : PLift α} {y : α} : x = PLift.up y ↔ x.down = y :=
   Equiv.plift.eq_symm_apply
 
-theorem Function.Injective.map_swap [DecidableEq α] [DecidableEq β] {f : α → β}
+theorem Function.Injective.map_swap {α β : Sort*} [DecidableEq α] [DecidableEq β] {f : α → β}
     (hf : Function.Injective f) (x y z : α) :
     f (Equiv.swap x y z) = Equiv.swap (f x) (f y) (f z) := by
   conv_rhs => rw [Equiv.swap_apply_def]
@@ -1554,7 +1557,7 @@ namespace Equiv
 
 section
 
-variable (P : α → Sort w) (e : α ≃ β)
+variable {α β : Sort*} (P : α → Sort*) (e : α ≃ β)
 
 /-- Transport dependent functions through an equivalence of the base space.
 -/
@@ -1592,7 +1595,7 @@ end
 
 section
 
-variable (P : β → Sort w) (e : α ≃ β)
+variable {α β : Sort*} (P : β → Sort*) (e : α ≃ β)
 
 /-- Transporting dependent functions through an equivalence of the base,
 expressed as a "simplification".
@@ -1644,7 +1647,7 @@ end
 
 section
 
-variable {W : α → Sort w} {Z : β → Sort z} (h₁ : α ≃ β) (h₂ : ∀ a : α, W a ≃ Z (h₁ a))
+variable {α β : Sort*} {W : α → Sort*} {Z : β → Sort*} (h₁ : α ≃ β) (h₂ : ∀ a : α, W a ≃ Z (h₁ a))
 
 /-- Transport dependent functions through
 an equivalence of the base spaces and a family
@@ -1670,7 +1673,8 @@ end
 
 section
 
-variable {W : α → Sort w} {Z : β → Sort z} (h₁ : α ≃ β) (h₂ : ∀ b : β, W (h₁.symm b) ≃ Z b)
+variable {α β : Sort*} {W : α → Sort*} {Z : β → Sort*} (h₁ : α ≃ β)
+  (h₂ : ∀ b : β, W (h₁.symm b) ≃ Z b)
 
 /-- Transport dependent functions through
 an equivalence of the base spaces and a family
@@ -1718,9 +1722,7 @@ end BinaryOp
 
 section ULift
 
-@[simp]
-theorem ulift_symm_down (x : α) : (Equiv.ulift.{u, v}.symm x).down = x :=
-  rfl
+@[simp] theorem ulift_symm_down (x : α) : (Equiv.ulift.symm x).down = x := rfl
 
 end ULift
 
@@ -1751,8 +1753,8 @@ def subsingletonProdSelfEquiv [Subsingleton α] : α × α ≃ α where
 
 /-- To give an equivalence between two subsingleton types, it is sufficient to give any two
     functions between them. -/
-def equivOfSubsingletonOfSubsingleton [Subsingleton α] [Subsingleton β] (f : α → β) (g : β → α) :
-    α ≃ β where
+def equivOfSubsingletonOfSubsingleton {α β : Sort*} [Subsingleton α] [Subsingleton β]
+    (f : α → β) (g : β → α) : α ≃ β where
   toFun := f
   invFun := g
   left_inv _ := Subsingleton.elim _ _
@@ -1769,10 +1771,12 @@ def uniqueUniqueEquiv : Unique (Unique α) ≃ Unique α :=
     { default := h, uniq := fun _ => Subsingleton.elim _ _ }
 
 /-- If `Unique β`, then `Unique α` is equivalent to `α ≃ β`. -/
-def uniqueEquivEquivUnique (α : Sort u) (β : Sort v) [Unique β] : Unique α ≃ (α ≃ β) :=
+def uniqueEquivEquivUnique (α β : Sort*) [Unique β] : Unique α ≃ (α ≃ β) :=
   equivOfSubsingletonOfSubsingleton (fun _ => Equiv.equivOfUnique _ _) Equiv.unique
 
 namespace Function
+
+variable {α α' β : Sort*}
 
 theorem update_comp_equiv [DecidableEq α'] [DecidableEq α] (f : α → β)
     (g : α' ≃ α) (a : α) (v : β) :
