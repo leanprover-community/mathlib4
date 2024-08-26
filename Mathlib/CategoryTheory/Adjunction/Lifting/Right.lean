@@ -22,13 +22,15 @@ does.
 
 The adjoint lifting theorem says that given a commutative square of functors (up to isomorphism):
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       L
+```
 
-where `V` is comonadic, `U` has a right adjoint and `A` has coreflexive equalizers, then if `L` has
+where `V` is comonadic, `U` has a right adjoint, and `A` has coreflexive equalizers, then if `L` has
 a right adjoint then `Q` has a right adjoint.
 
 ## Implementation
@@ -157,8 +159,8 @@ noncomputable def constructRightAdjoint [∀ X : B, RegularMono (adj₁.unit.app
 
 end LiftRightAdjoint
 
-/-- The adjoint triangle theorem: Suppose `U : A ⥤ B` has a left adjoint `F` such that each counit
-`ε_X : FUX ⟶ X` is a regular epimorphism. Then if a category `C` has equalizers of coreflexive
+/-- The adjoint triangle theorem: Suppose `U : A ⥤ B` has a left adjoint `F` such that each unit
+`η_X : X ⟶ UFX` is a regular monomorphism. Then if a category `C` has equalizers of coreflexive
 pairs, then a functor `L : C ⥤ B` has a right adjoint if the composite `L ⋙ F` does.
 
 Note the converse is true (with weaker assumptions), by `Adjunction.comp`.
@@ -171,7 +173,7 @@ lemma isLeftAdjoint_triangle_lift {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (adj
     ⟨LiftRightAdjoint.constructRightAdjoint L _ adj₁ (Adjunction.ofIsLeftAdjoint _),
       ⟨Adjunction.adjunctionOfEquivRight _ _⟩⟩
 
-/-- If `L ⋙ U` has a right adjoint, the domain of `R` has coreflexive equalizers and `U` is a
+/-- If `L ⋙ F` has a right adjoint, the domain of `L` has coreflexive equalizers and `F` is a
 comonadic functor, then `L` has a right adjoint.
 This is a special case of `isLeftAdjoint_triangle_lift` which is often more useful in practice.
 -/
@@ -198,11 +200,13 @@ variable [Category.{v₄} D]
 
 /-- Suppose we have a commutative square of functors
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
 where `U` has a right adjoint, `A` has coreflexive equalizers and `V` has a right adjoint such that
 each component of the counit is a regular mono.
@@ -219,11 +223,13 @@ lemma isLeftAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (L : C
 
 /-- Suppose we have a commutative square of functors
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
 where `U` has a right adjoint, `A` has reflexive equalizers and `V` is comonadic.
 Then `Q` has a right adjoint if `L` has a right adjoint.
