@@ -12,6 +12,8 @@ import Mathlib.Data.Int.Interval
 
 This file defines the type of matrices with fixed determinant `m` and proves some basic results
 about them.
+
+Note: Some of this was done originally in Lean 3 in the kbb repository, so credit to those authors.
 -/
 
 variable (n : Type*) [DecidableEq n] [Fintype n] (R : Type*) [CommRing R]
