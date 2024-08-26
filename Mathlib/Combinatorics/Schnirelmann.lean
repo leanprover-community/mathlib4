@@ -274,9 +274,6 @@ lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ :
 
 open scoped Pointwise
 
-#check biUnion_smul_finset
-#check biUnion_vadd_finset
-
 instance {α : Type*} [CanonicallyOrderedAddCommMonoid α]
     [ContravariantClass α α (· + ·) (· ≤ ·)]
     [Sub α] [OrderedSub α] [DecidableRel (· ≤ · : α → α → Prop)]
@@ -304,10 +301,9 @@ instance {α : Type*} [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrderBo
       exact ⟨b, le_add_self, hb, rfl⟩
 
 instance {α : Type*} [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrderBot α]
-    [DecidableEq α]
-    {A B : Set α} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] :
-    DecidablePred (· ∈ A + B) := fun x => by
-  have : x ∈ A + B ↔ ∃ a ∈ Finset.Iic x, a ∈ A ∧ x ∈ a +ᵥ B := by
+    [DecidableEq α] {A B : Set α} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] :
+    DecidablePred (· ∈ A + B) := fun x =>
+  decidable_of_iff' (∃ a ∈ Finset.Iic x, a ∈ A ∧ x ∈ a +ᵥ B) <| by
     simp only [←vadd_eq_add, ←Set.iUnion_vadd_set, Set.mem_iUnion₂, exists_prop, mem_Iic]
     constructor
     case mp =>
@@ -316,9 +312,6 @@ instance {α : Type*} [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrderBo
     case mpr =>
       rintro ⟨a, _, ha', ha''⟩
       exact ⟨a, ha', ha''⟩
-  dsimp
-  rw [this]
-  infer_instance
 
 lemma Set.diff_nonempty {α : Type*} {s t : Set α} :
     (s \ t).Nonempty ↔ ¬ s ⊆ t := by
@@ -329,28 +322,6 @@ lemma Finset.singleton_inter {α : Type*} [DecidableEq α] {a : α} {s : Finset 
   split_ifs
   case pos h => exact singleton_inter_of_mem h
   case neg h => exact singleton_inter_of_not_mem h
-
-theorem dyson_mann_base' {σ : ℝ} {A B : Finset ℕ}
-    (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1)
-    (hA0 : 0 ∈ A) (hB0 : 0 ∈ B)
-    (h : ∀ m, m = 1 → σ * (m : ℕ) ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card)
-    {m : ℕ} (hm : m ∈ Ioc 0 1) :
-    σ * m ≤ (Ioc 0 m ∩ (A + B)).card := by
-  simp only [Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hm
-  cases hm
-  simp only [Nat.Ioc_succ_singleton, zero_add, mem_singleton, forall_eq, Nat.cast_one, mul_one,
-    filter_singleton, apply_ite Finset.card, card_singleton, card_empty, Nat.cast_ite,
-    Nat.cast_zero, Finset.singleton_inter] at h ⊢
-  have : 1 ∈ A ∨ 1 ∈ B := by
-    by_contra!
-    simp [this] at h
-    exact h.not_lt hσ₀
-  have : 1 ∈ A + B := by
-    rw [Finset.mem_add]
-    cases this
-    case inl hA1 => exact ⟨1, hA1, 0, hB0, by simp⟩
-    case inr hB1 => exact ⟨0, hA0, 1, hB1, by simp⟩
-  rwa [if_pos this]
 
 lemma add_max {α : Type*} [LinearOrderedAddCommMonoid α]
     {A B : Finset α} (hA : A.Nonempty) (hB : B.Nonempty) :
@@ -388,59 +359,10 @@ lemma add_diff_nonempty_iff {A B : Finset ℕ} :
   refine ⟨?_, fun h => add_diff_nonempty h.1 h.2⟩
   aesop (add simp [mem_add, Finset.Nonempty])
 
-theorem extracted_2 {σ : ℝ} (n : ℕ)
-    {A A' B B' B'' : Finset ℕ} (hAn : A ⊆ Icc 0 n) (hBn : B ⊆ Icc 0 n)
-    (m : ℕ) (h : σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card)
-    (hA' : A' = Icc 0 n ∩ (A ∪ (0 +ᵥ B'')))
-    (hB' : B' = B.filter (0 + · ∈ A))
-    (hB'' : B'' = B \ B') :
-    σ * m ≤ (Ioc 0 m ∩ A').card + (Ioc 0 m ∩ B').card := by
-  have hB' : B' = B ∩ A := by simp [hB', filter_mem_eq_inter]
-  have hA' : A' = A ∪ B := by simp [hA', hB'', hB', union_subset_iff, hAn, hBn]
-  rw [hB', hA', inter_comm B, inter_union_distrib_left, inter_inter_distrib_left]
-  refine h.trans_eq ?_
-  norm_cast
-  rw [card_union_add_card_inter]
-
-theorem extracted_3 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
-    (hn : 1 < n) {A A' B B' B'' : Finset ℕ} (hA0 : 0 ∈ A)
-    (a : ℕ) (ha'' : ∀ a' ∈ A, ¬a' +ᵥ B ⊆ A → a ≤ a')
-    (m : ℕ) (hm : m ∈ Ioc 0 n)
-    (h : σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card)
-    (hA' : A' = Icc 0 n ∩ (A ∪ (a +ᵥ B'')))
-    (ha : a ≠ 0) (hm' : m ≤ 1) :
-    σ * m ≤ (Ioc 0 m ∩ A').card + (Ioc 0 m ∩ B').card := by
-  have : m = 1 := by
-    simp only [mem_Ioc] at hm
-    omega
-  simp only [this, Nat.cast_one, mul_one, Nat.Ioc_succ_singleton, zero_add, singleton_inter,
-    apply_ite Finset.card, card_singleton, card_empty, Nat.cast_ite, Nat.cast_one,
-    Nat.cast_zero] at h ⊢
-  have : 1 ∈ A ∨ 1 ∈ B := by
-    by_contra!
-    simp [this] at h
-    exact h.not_lt hσ₀
-  by_cases 1 ∈ A
-  case pos h =>
-    have : 1 ∈ A' := by simp [hA', hA0, h, hn.le]
-    rw [if_pos this]
-    refine hσ₁.trans ?_
-    split_ifs <;> simp
-  case neg h =>
-    have : ¬ B ⊆ A := by
-      rw [not_subset]
-      exact ⟨1, this.resolve_left h, h⟩
-    have := ha'' 0 hA0 (by simpa)
-    omega
-
 @[to_additive]
 lemma Finset.card_smul_finset' {α : Type*} [DecidableEq α] [Monoid α] [IsLeftCancelMul α]
     (a : α) (s : Finset α) : (a • s).card = s.card :=
   card_image_of_injective _ <| fun _ _ h => mul_left_cancel h
-
--- lemma inter_left_comm {α : Type*} {A B C : Finset α} [DecidableEq α] :
---     A ∩ (B ∩ C) = B ∩ (A ∩ C) := by
---   rw [←inter_assoc, ←inter_assoc, inter_comm A]
 
 theorem extracted_4 {σ : ℝ} (n : ℕ) {A A' B B' B'' : Finset ℕ}
     (h : ∀ m ∈ Ioc 0 n, σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card) (a : ℕ)
@@ -452,14 +374,13 @@ theorem extracted_4 {σ : ℝ} (n : ℕ) {A A' B B' B'' : Finset ℕ}
     (h' : Ioc 0 m ∩ B ∩ Ioc (m - a) m = ∅) :
     σ * m ≤ (Ioc 0 m ∩ A').card + (Ioc 0 m ∩ B').card := by
   have : a +ᵥ (Ioc 0 m ∩ B'') ⊆ Ioc 0 m ∩ (a +ᵥ B'') := by
-    simp only [subset_iff, mem_vadd_finset, mem_inter, mem_Ioc, vadd_eq_add, forall_exists_index,
-      and_imp, hB'', mem_sdiff]
+    simp only [hB'', subset_iff, mem_vadd_finset, mem_inter, mem_Ioc, mem_sdiff, vadd_eq_add,
+      forall_exists_index, and_imp]
     rintro _ b hb0 hbm hb hb' rfl
     refine ⟨⟨by omega, ?_⟩, b, ⟨hb, hb'⟩, rfl⟩
     simp only [eq_empty_iff_forall_not_mem, mem_inter, not_and, and_imp, mem_Ioc] at h'
     by_contra! h''
-    refine h' b hb0 hbm hb ?_ hbm
-    omega
+    exact h' b hb0 hbm hb (by omega) hbm
   calc σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card := h _ hm
     _ = (Ioc 0 m ∩ A).card + ((Ioc 0 m ∩ B').card + (Ioc 0 m ∩ B'').card) := ?g1
     _ = (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B'').card + (Ioc 0 m ∩ B').card := by ring
@@ -479,8 +400,8 @@ theorem extracted_4 {σ : ℝ} (n : ℕ) {A A' B B' B'' : Finset ℕ}
       rintro i hi₁ hi₂ -
       omega
     · have : Disjoint A (a +ᵥ B'') := by
-        simp only [Finset.disjoint_left, mem_vadd_finset, hB'', hB', ←filter_not, mem_filter,
-          vadd_eq_add, not_exists, and_imp, not_and]
+        simp only [hB'', hB', ← filter_not, disjoint_left, mem_vadd_finset, mem_filter, vadd_eq_add,
+          not_exists, not_and, and_imp]
         rintro _ ha' b _ hab rfl
         exact hab ha'
       exact this.mono inter_subset_right inter_subset_right
@@ -509,12 +430,12 @@ lemma disjoint_Ioo_Icc {α : Type*} [LinearOrder α] [LocallyFiniteOrder α] {a 
 theorem extracted_5 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
     (ih : ∀ n' < n, ∀ {A B : Finset ℕ},
       A ⊆ Icc 0 n' → B ⊆ Icc 0 n' → 0 ∈ A → 0 ∈ B →
-      (∀ m ∈ Ioc 0 n', σ * ↑m ≤ ↑(Ioc 0 m ∩ A).card + ↑(Ioc 0 m ∩ B).card) →
-      ∀ {m : ℕ}, m ∈ Ioc 0 n' → σ * ↑m ≤ ↑(Ioc 0 m ∩ (A + B)).card)
-     {A A' B B' B'' : Finset ℕ}
-    (hAn : A ⊆ Icc 0 n)  (hA0 : 0 ∈ A) (hB0 : 0 ∈ B)
+      (∀ m ∈ Ioc 0 n', σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card) →
+      ∀ {m : ℕ}, m ∈ Ioc 0 n' → σ * m ≤ (Ioc 0 m ∩ (A + B)).card)
+    {A A' B B' B'' : Finset ℕ}
+    (hAn : A ⊆ Icc 0 n) (hA0 : 0 ∈ A) (hB0 : 0 ∈ B)
     (h : ∀ m ∈ Ioc 0 n, σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card)
-    (hB : ∃ b ∈ B, b ≠ 0) (a : ℕ)
+     (a : ℕ)
     (ha''' : ∀ a' ∈ A, a' < a → a' +ᵥ B ⊆ A)
     (hA' : A' = Icc 0 n ∩ (A ∪ (a +ᵥ B'')))
     (m : ℕ)
@@ -536,8 +457,7 @@ theorem extracted_5 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
     rcases le_or_lt m b with h1 | h1
     · simp [h1]
     refine ih _ (by omega) inter_subset_left inter_subset_left (by simp [hA0])
-      (by simp [hB0]) ?_ (by simp [h1])
-    intro m' hm'
+      (by simp [hB0]) (fun m' hm' => ?_) (by simp [h1])
     simp only [mem_Ioc] at hm'
     have : Ioc 0 m' ∩ Icc 0 (m - b) = Ioc 0 m' :=
       inter_eq_left.2 (Ioc_subset_Icc_self.trans (Icc_subset_Icc_right hm'.2))
@@ -605,8 +525,7 @@ theorem extracted_5 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
     rw [←Nat.cast_add, Nat.Ioc_sub_one_left, ←card_union_of_disjoint, ←union_inter_distrib_right]
     · congr 3
       rw [Ioo_union_Icc_eq_Ioc (by omega) (by omega)]
-    · refine Disjoint.mono inter_subset_left inter_subset_left ?_
-      exact disjoint_Ioo_Icc
+    · exact Disjoint.mono inter_subset_left inter_subset_left disjoint_Ioo_Icc
   rw [this, this]
   linarith
 
@@ -617,7 +536,7 @@ theorem extracted_1 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
       ∀ {m : ℕ}, m ∈ Ioc 0 n' → σ * ↑m ≤ ↑(Ioc 0 m ∩ (A + B)).card)
      {A A' B B' B'' : Finset ℕ}
     (hAn : A ⊆ Icc 0 n)  (hA0 : 0 ∈ A) (hB0 : 0 ∈ B)
-    (h : ∀ m ∈ Ioc 0 n, σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card) (hB : ∃ b ∈ B, b ≠ 0)
+    (h : ∀ m ∈ Ioc 0 n, σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card)
     (a : ℕ)
     (ha''' : ∀ a' ∈ A, a' < a → a' +ᵥ B ⊆ A)
     (hA' : A' = Icc 0 n ∩ (A ∪ (a +ᵥ B'')))
@@ -629,7 +548,7 @@ theorem extracted_1 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
   case ind m ih' =>
   rcases eq_empty_or_nonempty (Ioc 0 m ∩ B ∩ Ioc (m - a) m)
   case inl h' => exact extracted_4 n h a hA' hB' hB'' m hm h'
-  case inr h' => exact extracted_5 hσ₀ hσ₁ _ ih hAn hA0 hB0 h hB _ ha''' hA' _ ih' hm h'
+  case inr h' => exact extracted_5 hσ₀ hσ₁ _ ih hAn hA0 hB0 h _ ha''' hA' _ ih' hm h'
 
 theorem dyson_mann' {σ : ℝ} {n : ℕ} {A B : Finset ℕ}
     (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1)
@@ -644,55 +563,40 @@ theorem dyson_mann' {σ : ℝ} {n : ℕ} {A B : Finset ℕ}
   generalize hb : B.card = b
   induction b using Nat.strongInductionOn generalizing A B
   case ind b ih' =>
-  have hb₁ : 1 ≤ b := by
-    rw [←hb, one_le_card]
-    exact ⟨0, by simp [hB0]⟩
   wlog hB : ∃ b ∈ B, b ≠ 0 generalizing
   · have : B ⊆ {0} := by simpa [-subset_singleton_iff, subset_iff] using hB
     obtain rfl : B = {0} := this.antisymm (by simp [hB0])
     rw [singleton_zero]
-    simpa [Finset.filter_eq'] using h m hm
-  have : (A.filter (¬ · +ᵥ B ⊆ A)).Nonempty := by
-    refine ⟨A.max' ⟨0, hA0⟩, ?_⟩
-    simp only [mem_filter]
-    exact ⟨max'_mem _ _, max'_vadd_finset_not_subset _ hB⟩
-  let a := Finset.min' _ this
+    simpa [filter_eq'] using h m hm
+  have : (A.filter (¬ · +ᵥ B ⊆ A)).Nonempty :=
+    ⟨A.max' ⟨0, hA0⟩, mem_filter.2 ⟨max'_mem _ _, max'_vadd_finset_not_subset _ hB⟩⟩
+  let a := min' _ this
   obtain ⟨ha, ha'⟩ : a ∈ A ∧ ¬ a +ᵥ B ⊆ A := by simpa using Finset.min'_mem _ this
-  have ha'' : ∀ a' ∈ A, ¬ (a' +ᵥ B ⊆ A) → a ≤ a' := fun a' ha' ha'' =>
-    Finset.min'_le _ a' (by simp [*])
-  have ha''' : ∀ a' ∈ A, a' < a → a' +ᵥ B ⊆ A := by
+  have ha'' : ∀ a' ∈ A, a' < a → a' +ᵥ B ⊆ A := by
     intro a' ha ha'
     contrapose! ha'
-    exact ha'' _ ha ha'
+    exact min'_le _ _ (by simp [ha, ha'])
   let B' := B.filter (a + · ∈ A)
-  let B'' := B \ B'
-  let A' := Icc 0 n ∩ (A ∪ (a +ᵥ B''))
+  let A' := Icc 0 n ∩ (A ∪ (a +ᵥ B \ B'))
   have hA' : 0 ∈ A' := by simp [A', hA0]
   have hB' : 0 ∈ B' := by simp [B', hB0, ha]
   have : B'.card < B.card := by
     refine card_lt_card ?_
     rw [filter_ssubset]
-    simp only [Finset.subset_iff, Finset.mem_vadd_finset, vadd_eq_add, not_forall] at ha'
+    simp only [subset_iff, Finset.mem_vadd_finset, vadd_eq_add, not_forall] at ha'
     obtain ⟨a, ⟨b, hb, rfl⟩, hab⟩ := ha'
     exact ⟨b, hb, hab⟩
   have : A' + B' ⊆ A + B := by
-    simp only [A', B', B'', ←filter_not, inter_union_distrib_left, union_add, union_subset_iff]
-    constructor
-    case left =>
-      refine add_subset_add inter_subset_right (filter_subset _ _)
-    case right =>
-      simp only [Finset.subset_iff, mem_add, mem_inter, mem_Icc, zero_le, true_and, mem_filter,
-        forall_exists_index, and_imp, mem_vadd_finset, vadd_eq_add]
-      rintro _ a' ha b hb _ rfl b' _ hab' rfl
-      exact ⟨a + b', hab', b, hb, add_right_comm _ _ _⟩
+    simp only [inter_union_distrib_left, ← filter_not, union_add, union_subset_iff,
+      inter_subset_right, filter_subset, add_subset_add, true_and, A', B']
+    simp only [subset_iff, mem_add, mem_inter, mem_Icc, zero_le, true_and, mem_vadd_finset,
+      mem_filter, vadd_eq_add, forall_exists_index, and_imp]
+    rintro _ a' ha b hb _ rfl b' _ hab' rfl
+    exact ⟨a + b', hab', b, hb, add_right_comm _ _ _⟩
   have : ((Ioc 0 m ∩ (A' + B')).card : ℝ) ≤ (Ioc 0 m ∩ (A + B)).card := by gcongr
   refine this.trans' ?_
-  refine ih' (A := A') (B := B') B'.card (by omega) inter_subset_left
-    ((filter_subset _ _).trans hBn) hA' hB' ?_ rfl
-  clear_value a
-  clear hm ih' this m hb₁
-  subst hb
-  exact extracted_1 hσ₀ hσ₁ n ih hAn hA0 hB0 h hB _ ha''' rfl rfl rfl
+  refine ih' B'.card (by omega) inter_subset_left ((filter_subset _ _).trans hBn) hA' hB' ?_ rfl
+  exact extracted_1 hσ₀ hσ₁ n ih hAn hA0 hB0 h _ ha'' rfl rfl rfl
 
 theorem dyson_mann {σ : ℝ} {n : ℕ} {A B : Set ℕ} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)]
     (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1)
@@ -748,13 +652,13 @@ theorem mann_aux {σA σB : ℝ} {A B : Set ℕ} [DecidablePred (· ∈ A)] [Dec
 
 theorem mann {A B : Set ℕ} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)]
     (hA0 : 0 ∈ A) (hB0 : 0 ∈ B) :
-    min (schnirelmannDensity A + schnirelmannDensity B) 1 ≤ schnirelmannDensity (A + B) := by
-  refine le_schnirelmannDensity_iff.2 fun n hn => ?_
-  rw [le_div_iff (by positivity)]
-  exact mann_aux schnirelmannDensity_nonneg schnirelmannDensity_le_one
-    schnirelmannDensity_nonneg schnirelmannDensity_le_one hA0 hB0
-    (fun n _ => schnirelmannDensity_mul_le_card_filter)
-    (fun n _ => schnirelmannDensity_mul_le_card_filter) _ hn
+    min (schnirelmannDensity A + schnirelmannDensity B) 1 ≤ schnirelmannDensity (A + B) :=
+  le_schnirelmannDensity_iff.2 fun n hn =>
+    (le_div_iff (by positivity)).2 <|
+      mann_aux schnirelmannDensity_nonneg schnirelmannDensity_le_one
+        schnirelmannDensity_nonneg schnirelmannDensity_le_one hA0 hB0
+        (fun n _ => schnirelmannDensity_mul_le_card_filter)
+        (fun n _ => schnirelmannDensity_mul_le_card_filter) _ hn
 
 theorem large_of_add_large_aux {A B : Set ℕ} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)]
     (hA : 0 ∈ A) (hB : 0 ∈ B)
