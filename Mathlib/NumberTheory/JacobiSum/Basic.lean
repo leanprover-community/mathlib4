@@ -87,7 +87,7 @@ private lemma jacobiSum_eq_aux (χ ψ : MulChar F R) :
   rw [sum_pair zero_ne_one, sub_zero, ψ.map_one, χ.map_one, sub_self, mul_zero, zero_mul, add_zero]
 
 /-- If `1` is the trivial multiplicative character on a finite field `F`, then `J(1,1) = #F-2`. -/
-theorem jacobiSum_triv_triv : jacobiSum (1 : MulChar F R) 1 = Fintype.card F - 2 := by
+theorem jacobiSum_one_one : jacobiSum (1 : MulChar F R) 1 = Fintype.card F - 2 := by
   rw [show 1 = MulChar.trivial F R from rfl, jacobiSum_eq_sum_sdiff]
   have : ∀ x ∈ univ \ {0, 1}, (MulChar.trivial F R) x * (MulChar.trivial F R) (1 - x) = 1 := by
     intros x hx
@@ -106,5 +106,11 @@ theorem jacobiSum_triv_triv : jacobiSum (1 : MulChar F R) 1 = Fintype.card F - 2
     rw [show 1 + m + 1 = m + 2 by ring] at hm
     simp only [hm, add_tsub_cancel_right (α := ℕ), Nat.cast_add, Nat.cast_ofNat,
       add_sub_cancel_right]
+
+/-- The Jacobi sum of twice the trivial multiplicative character on a finite field `F`
+equals `#F-2`. -/
+theorem jacobiSum_trivial_trivial :
+    jacobiSum (MulChar.trivial F R) (MulChar.trivial F R) = Fintype.card F - 2 :=
+  jacobiSum_one_one ..
 
 end FiniteField
