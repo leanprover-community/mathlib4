@@ -55,6 +55,7 @@ A category `C` which has coproducts is said to have `AB4` provided that
 coproducts are exact.
 -/
 class AB4 [HasCoproducts C] where
+  /-- Exactness of coproducts stated as `colim : (Discrete α ⥤ C) ⥤ C` preserving limits. -/
   preservesFiniteLimits (α : Type v) :
     PreservesFiniteLimits (colim (J := Discrete α) (C := C))
 
@@ -67,6 +68,8 @@ A category `C` which has filtered colimits is said to have `AB5` provided that
 filtered colimits are exact.
 -/
 class AB5 [HasFilteredColimits C] where
+  /-- Exactness of filtered colimites stated as `colim : (J ⥤ C) ⥤ C` on filtered `J`
+  preserving limits. -/
   preservesFiniteLimits (J : Type v) [SmallCategory J] [IsFiltered J] :
     PreservesFiniteLimits (colim (J := J) (C := C))
 
