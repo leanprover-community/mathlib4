@@ -43,7 +43,8 @@ instance {E 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace E] [AddCommGroup E] [T
   ⟨fun x hx ↦ by
     rcases RCLike.geometric_hahn_banach_point_point hx.symm (𝕜 := 𝕜) with ⟨f, hf⟩
     simp only [map_zero] at hf
-    exact ⟨f, hf.ne'⟩⟩
+    use f
+    exact ne_zero_of_map (ne_of_lt hf).symm⟩
 
 instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
