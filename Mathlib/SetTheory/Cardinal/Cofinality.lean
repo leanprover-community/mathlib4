@@ -219,7 +219,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     have := typein_lt_self a
     simp_rw [← hf, lt_lsub_iff] at this
     cases' this with i hi
-    refine ⟨enum (· < ·) (f i) ?_, ?_, ?_⟩
+    refine ⟨enum (α := o.out.α) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
     · rw [type_lt, ← hf]
       apply lt_lsub
     · rw [mem_preimage, typein_enum]
@@ -230,7 +230,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
       (le_of_forall_lt fun a ha => ?_), by rwa [type_lt o] at hS'⟩
     rw [← type_lt o] at ha
-    rcases hS (enum (· < ·) a ha) with ⟨b, hb, hb'⟩
+    rcases hS (enum (· < ·) ⟨a, ha⟩) with ⟨b, hb, hb'⟩
     rw [← typein_le_typein, typein_enum] at hb'
     exact hb'.trans_lt (lt_lsub.{u, u} f ⟨b, hb⟩)
 
@@ -553,7 +553,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
   let hrr' : r' ↪r r := Subrel.relEmbedding _ _
   haveI := hrr'.isWellOrder
   refine
-    ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' j h).prop _ ?_,
+    ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' ⟨j, h⟩).prop _ ?_,
       le_antisymm (blsub_le fun i hi => lsub_le_iff.1 hf.le _) ?_⟩
   · rw [← hι, hr]
   · change r (hrr'.1 _) (hrr'.1 _)
@@ -660,7 +660,7 @@ theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
   let ⟨S, H, e⟩ := cof_eq r
   ⟨S, fun a =>
-    let a' := enum r _ (h.2 _ (typein_lt_type r a))
+    let a' := enum r ⟨_, h.2 _ (typein_lt_type r a)⟩
     let ⟨b, h, ab⟩ := H a'
     ⟨b, h,
       (IsOrderConnected.conn a b a' <|
