@@ -124,7 +124,7 @@ def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
       simpa only [typein_enum, leftInverse_invFun I (succ s)] using
         le_ciSup
           (Cardinal.bddAbove_range.{u, u} fun a : α => invFun alephIdx (Ordinal.typein r a))
-          (Ordinal.enum r _ (h (succ s)))
+          (Ordinal.enum r ⟨_, h (succ s)⟩)
 
 @[simp]
 theorem alephIdx.relIso_coe : (alephIdx.relIso : Cardinal → Ordinal) = alephIdx :=
