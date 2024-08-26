@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Algebra.Order.Field.Unbundled.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Tactic.Positivity.Core
@@ -953,13 +952,13 @@ variable [LinearOrderedSemifield α] [AddCommGroup β] [PartialOrder β]
 instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction α β] [PosSMulMono α β] :
     PosSMulReflectLE α β where
   elim _a ha b₁ b₂ h := by
-    simpa [ha.ne'] using smul_le_smul_of_nonneg_left h <| inv_nonneg (α := α) |>.2 ha.le
+    simpa [ha.ne'] using smul_le_smul_of_nonneg_left h <| inv_nonneg.2 ha.le
 
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZero α β]
     [PosSMulStrictMono α β] : PosSMulReflectLT α β :=
   PosSMulReflectLT.of_pos fun a ha b₁ b₂ h ↦ by
-    simpa [ha.ne'] using smul_lt_smul_of_pos_left h <| inv_pos (α := α) |>.2 ha
+    simpa [ha.ne'] using smul_lt_smul_of_pos_left h <| inv_pos.2 ha
 
 end LinearOrderedSemifield
 

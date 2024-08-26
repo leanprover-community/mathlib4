@@ -654,12 +654,12 @@ theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :
   rw [sub_zero] at A
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' A tendsto_const_nhds
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    simp only [le_div_iff (zero_lt_one.trans_le hx), _root_.sub_mul,
+    simp only [le_div_iff₀ (zero_lt_one.trans_le hx), _root_.sub_mul,
       inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne']
     have := Nat.lt_floor_add_one (a * x)
     linarith
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    rw [div_le_iff (zero_lt_one.trans_le hx)]
+    rw [div_le_iff₀ (zero_lt_one.trans_le hx)]
     simp [Nat.floor_le (mul_nonneg ha (zero_le_one.trans hx))]
 
 theorem tendsto_nat_floor_div_atTop : Tendsto (fun x ↦ (⌊x⌋₊ : R) / x) atTop (𝓝 1) := by
@@ -672,10 +672,10 @@ theorem tendsto_nat_ceil_mul_div_atTop {a : R} (ha : 0 ≤ a) :
   rw [add_zero] at A
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds A
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    rw [le_div_iff (zero_lt_one.trans_le hx)]
+    rw [le_div_iff₀ (zero_lt_one.trans_le hx)]
     exact Nat.le_ceil _
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    simp [div_le_iff (zero_lt_one.trans_le hx), inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne',
+    simp [div_le_iff₀ (zero_lt_one.trans_le hx), inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne',
       (Nat.ceil_lt_add_one (mul_nonneg ha (zero_le_one.trans hx))).le, add_mul]
 
 theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x ↦ (⌈x⌉₊ : R) / x) atTop (𝓝 1) := by

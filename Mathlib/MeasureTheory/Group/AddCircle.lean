@@ -70,7 +70,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     rw [hBg]
     apply ball_disjoint_ball
     rw [dist_eq_norm, add_sub_cancel_right, div_mul_eq_div_div, ← add_div, ← add_div,
-      add_self_div_two, div_le_iff' (by positivity : 0 < (n : ℝ)), ← nsmul_eq_mul]
+      add_self_div_two, div_le_iff₀' (by positivity : 0 < (n : ℝ)), ← nsmul_eq_mul]
     refine (le_add_order_smul_norm_of_isOfFinAddOrder (hu.of_mem_zmultiples hg) hg').trans
       (nsmul_le_nsmul_left (norm_nonneg g) ?_)
     exact Nat.le_of_dvd (addOrderOf_pos_iff.mpr hu) (addOrderOf_dvd_of_mem_zmultiples hg)

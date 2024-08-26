@@ -635,10 +635,10 @@ theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (f i - (limSeq f i : ℚ_[p]) : ℚ_[p]) < ε := by
   refine (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ ?_
   have h := Classical.choose_spec (rat_dense' (f i) (div_nat_pos i))
-  refine lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr ?_)
+  refine lt_of_lt_of_le h ((div_le_iff₀' <| mod_cast succ_pos _).mpr ?_)
   rw [right_distrib]
   apply le_add_of_le_of_nonneg
-  · exact (div_le_iff hε).mp (le_trans (le_of_lt hN) (mod_cast hi))
+  · exact (div_le_iff₀ hε).mp (le_trans (le_of_lt hN) (mod_cast hi))
   · apply le_of_lt
     simpa
 
