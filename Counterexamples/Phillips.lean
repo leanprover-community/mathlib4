@@ -269,7 +269,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     refine ⟨t, fun u => ?_⟩
     calc
       f (↑u \ ↑s) ≤ S := le_ciSup B _
-      _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff' two_pos).1 ht.le
+      _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff₀' two_pos).1 ht.le
   choose! F hF using this
   -- iterate the above construction, by adding at each step a set with measure close to maximal in
   -- the complement of already chosen points. This is the set `s n` at step `n`.
@@ -283,7 +283,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have ε_pos : 0 < ε := ht
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
-    rw [div_le_iff' (show (0 : ℝ) < 2 by norm_num), hε]
+    rw [div_le_iff₀' (show (0 : ℝ) < 2 by norm_num), hε]
     convert hF (s n) u using 2
     · dsimp
       ext x
@@ -308,7 +308,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
         _ ≤ f (↑(s (n + 1 : ℕ)) \ ↑(s n)) + f ↑(s n) := add_le_add (I1 n) IH
   rcases exists_nat_gt (f.C / (ε / 2)) with ⟨n, hn⟩
   have : (n : ℝ) ≤ f.C / (ε / 2) := by
-    rw [le_div_iff (half_pos ε_pos)]; exact (I2 n).trans (f.le_bound _)
+    rw [le_div_iff₀ (half_pos ε_pos)]; exact (I2 n).trans (f.le_bound _)
   exact lt_irrefl _ (this.trans_lt hn)
 
 theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
