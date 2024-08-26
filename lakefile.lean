@@ -2,6 +2,18 @@ import Lake
 
 open Lake DSL
 
+/-!
+Aesop evaluation options
+-/
+abbrev aesopOptions : Array LeanOption := #[
+  ⟨`weak.aesop.collectStats, true⟩,
+  ⟨`weak.aesop.dev.generateScript, true⟩,
+  ⟨`weak.aesop.dev.dynamicStructuring, true⟩,
+  ⟨`weak.aesop.dev.optimizedDynamicStructuring, false⟩,
+  ⟨`weak.aesop.check.script, true⟩,
+  ⟨`weak.aesop.check.script.steps, true⟩,
+  ⟨`maxHeartbeats, (1000000000 : Nat)⟩
+]
 
 /-!
 ## Mathlib dependencies on upstream projects
@@ -44,9 +56,9 @@ abbrev mathlibLeanOptions := #[
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
 package mathlib where
-  leanOptions := mathlibLeanOptions
+  leanOptions := mathlibLeanOptions ++ aesopOptions
   -- Mathlib also enforces these linter options, which are not active by default.
-  moreServerOptions := mathlibOnlyLinters
+  moreServerOptions := mathlibOnlyLinters ++ aesopOptions
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,

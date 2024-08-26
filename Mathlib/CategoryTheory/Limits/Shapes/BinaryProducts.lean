@@ -133,8 +133,7 @@ local add_aesop_rules (rule_sets := [CategoryTheory]) safe
  walking pair, specified by its components. -/
 def mapPair : F ⟶ G where
   app j := Discrete.recOn j fun j => WalkingPair.casesOn j f g
-  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by
-    aesop_cat
+  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by aesop_cat
 
 @[simp]
 theorem mapPair_left : (mapPair f g).app ⟨left⟩ = f :=

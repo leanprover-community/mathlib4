@@ -370,12 +370,16 @@ lemma d₂_mapMap (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
   · simp [totalAux.d₂_eq' _ c₁₂ i₁ h]
   · simp [d₂_eq_zero _ c₁₂ i₁ i₂ i₁₂ h]
 
+-- Divergence between core subst and Aesop subst.
+set_option aesop.check.script false in
 @[reassoc]
 lemma mapMap_D₁ (i₁₂ i₁₂' : I₁₂) :
     GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ ≫ L.D₁ c₁₂ i₁₂ i₁₂' =
       K.D₁ c₁₂ i₁₂ i₁₂' ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂' := by
   aesop_cat
 
+-- Divergence between core subst and Aesop subst.
+set_option aesop.check.script false in
 @[reassoc]
 lemma mapMap_D₂ (i₁₂ i₁₂' : I₁₂) :
     GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ ≫ L.D₂ c₁₂ i₁₂ i₁₂' =

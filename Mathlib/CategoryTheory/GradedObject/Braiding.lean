@@ -34,6 +34,8 @@ section Braided
 
 variable [BraidedCategory C]
 
+-- Divergence between core subst and Aesop subst.
+set_option aesop.check.script false in
 /-- The braiding `tensorObj X Y ≅ tensorObj Y X` when `X` and `Y` are graded objects
 indexed by a commutative additive monoid. -/
 noncomputable def braiding [HasTensor X Y] [HasTensor Y X] : tensorObj X Y ≅ tensorObj Y X where
@@ -42,6 +44,8 @@ noncomputable def braiding [HasTensor X Y] [HasTensor Y X] : tensorObj X Y ≅ t
   inv k := tensorObjDesc (fun i j hij => (β_ _ _).inv ≫
     ιTensorObj X Y j i k (by simpa only [add_comm j i] using hij))
 
+-- Divergence between core subst and Aesop subst.
+set_option aesop.check.script false in
 variable {Y Z} in
 lemma braiding_naturality_right [HasTensor X Y] [HasTensor Y X] [HasTensor X Z] [HasTensor Z X]
     (f : Y ⟶ Z) :
@@ -49,6 +53,8 @@ lemma braiding_naturality_right [HasTensor X Y] [HasTensor Y X] [HasTensor X Z] 
   dsimp [braiding]
   aesop_cat
 
+-- Divergence between core subst and Aesop subst.
+set_option aesop.check.script false in
 variable {X Y} in
 lemma braiding_naturality_left [HasTensor Y Z] [HasTensor Z Y] [HasTensor X Z] [HasTensor Z X]
     (f : X ⟶ Y) :
@@ -132,6 +138,8 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
 
 end Braided
 
+-- Divergence between core subst and Aesop subst.
+set_option aesop.check.script false in
 @[reassoc (attr := simp)]
 lemma symmetry [SymmetricCategory C] [HasTensor X Y] [HasTensor Y X] :
     (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 _ := by

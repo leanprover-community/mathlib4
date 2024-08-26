@@ -369,6 +369,8 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   refine Asymptotics.isLittleO_of_tendsto' ?_
     <| Tendsto.div_atTop (a := c) (by simp) tendsto_log_atTop
   filter_upwards [eventually_gt_atTop 1] with x hx
+  -- Divergence between core subst and Aesop subst
+  set_option aesop.check.script.steps false in
   aesop (add safe forward log_pos)
 
 end Real

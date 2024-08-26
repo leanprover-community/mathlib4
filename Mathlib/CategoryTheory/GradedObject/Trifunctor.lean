@@ -215,6 +215,13 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
       NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app,
       id_comp, assoc, ι_mapTrifunctorMapMap_assoc]
 
+section
+
+-- Unknown issue
+set_option aesop.check.script false
+set_option aesop.check.script.steps false
+set_option aesop.dev.generateScript false
+
 #adaptation_note
 /--
 At nightly-2024-08-08 we needed to significantly increase the maxHeartbeats here.
@@ -249,6 +256,7 @@ noncomputable def mapTrifunctorMap
 
 attribute [simps] mapTrifunctorMap
 
+end
 end
 
 section

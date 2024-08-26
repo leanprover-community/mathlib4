@@ -106,7 +106,12 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         simp only [id, Set.image_id']
         rfl ⟩
     convert DenseRange.comp (Function.Surjective.denseRange _)
-        (DenseEmbedding.subtype denseEmbedding_id (K : Set ℂ)).dense (by continuity : Continuous j)
+        (DenseEmbedding.subtype denseEmbedding_id (K : Set ℂ)).dense
+          (show Continuous j by
+            -- Bug in simp?
+            set_option aesop.check.script.steps false in
+            set_option aesop.check.script false in
+            continuity)
     rintro ⟨y, hy⟩
     use
       ⟨y, by
