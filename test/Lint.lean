@@ -111,7 +111,7 @@ set_option linter.style.lambdaSyntax false
 
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
@@ -120,7 +120,7 @@ example : ℕ → ℕ := λ _ ↦ 0
 
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
@@ -133,7 +133,7 @@ example : ℕ → ℕ := fun n ↦ n - 1
 
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
@@ -144,15 +144,15 @@ example : ℕ → ℕ := by exact λ n ↦ 3 * n + 1
 warning: declaration uses 'sorry'
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
@@ -165,15 +165,15 @@ example : ℕ → ℕ → ℕ → ℕ := by
 
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
@@ -195,7 +195,7 @@ example : True := by
 -- As this seems unlikely to occur by accident and its use is dubious, we don't worry about this.
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The latter syntax has been deprecated in mathlib 4.
+The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
