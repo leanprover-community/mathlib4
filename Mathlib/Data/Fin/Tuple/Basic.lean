@@ -272,7 +272,7 @@ theorem comp_tail {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → 
 
 theorem le_cons [∀ i, Preorder (α i)] {x : α 0} {q : ∀ i, α i} {p : ∀ i : Fin n, α i.succ} :
     q ≤ cons x p ↔ q 0 ≤ x ∧ tail q ≤ p :=
-  forall_iff_succ.trans <| and_congr Iff.rfl <| forall_congr' fun j ↦ by simp [tail]
+  forall_fin_succ.trans <| and_congr Iff.rfl <| forall_congr' fun j ↦ by simp [tail]
 
 theorem cons_le [∀ i, Preorder (α i)] {x : α 0} {q : ∀ i, α i} {p : ∀ i : Fin n, α i.succ} :
     cons x p ≤ q ↔ x ≤ q 0 ∧ p ≤ tail q :=
@@ -280,7 +280,7 @@ theorem cons_le [∀ i, Preorder (α i)] {x : α 0} {q : ∀ i, α i} {p : ∀ i
 
 theorem cons_le_cons [∀ i, Preorder (α i)] {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
     cons x₀ x ≤ cons y₀ y ↔ x₀ ≤ y₀ ∧ x ≤ y :=
-  forall_iff_succ.trans <| and_congr_right' <| by simp only [cons_succ, Pi.le_def]
+  forall_fin_succ.trans <| and_congr_right' <| by simp only [cons_succ, Pi.le_def]
 
 theorem range_fin_succ {α} (f : Fin (n + 1) → α) :
     Set.range f = insert (f 0) (Set.range (Fin.tail f)) :=
