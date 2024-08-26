@@ -100,12 +100,8 @@ theorem jacobiSum_trivial_trivial :
   _ = ∑ _ ∈ univ \ {0, 1}, 1 := sum_congr rfl this
   _ = Finset.card (univ \ {0, 1}) := (cast_card _).symm
   _ = Fintype.card F - 2 := by
-    rw [card_sdiff (subset_univ _), card_univ, card_pair zero_ne_one]
-    obtain ⟨m, hm⟩ : ∃ m : ℕ, Fintype.card F = 1 + m + 1 :=
-      Nat.exists_eq_add_of_lt Fintype.one_lt_card
-    rw [show 1 + m + 1 = m + 2 by ring] at hm
-    simp only [hm, add_tsub_cancel_right (α := ℕ), Nat.cast_add, Nat.cast_ofNat,
-      add_sub_cancel_right]
+    rw [card_sdiff (subset_univ _), card_univ, card_pair zero_ne_one,
+      Nat.cast_sub <| Nat.add_one_le_of_lt Fintype.one_lt_card, Nat.cast_two]
 
 /-- If `1` is the trivial multiplicative character on a finite field `F`, then `J(1,1) = #F-2`. -/
 theorem jacobiSum_one_one : jacobiSum (1 : MulChar F R) 1 = Fintype.card F - 2 :=
