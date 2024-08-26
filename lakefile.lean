@@ -2,6 +2,21 @@ import Lake
 
 open Lake DSL
 
+
+/-!
+## Mathlib dependencies on upstream projects
+-/
+
+require "leanprover-community" / "batteries" @ git "main"
+require "leanprover-community" / "Qq" @ git "master"
+require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.41"
+require "leanprover-community" / "importGraph" @ git "main"
+
+/-!
+## Options for building mathlib
+-/
+
 /-- These options are used
 * as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
 * as `moreServerArgs`, to set their default value in mathlib
@@ -35,18 +50,6 @@ package mathlib where
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
   -- weakLeanArgs := #[]
-
-
-
-/-!
-## Mathlib dependencies on upstream projects.
--/
-
-require "leanprover-community" / "batteries" @ git "main"
-require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.41"
-require "leanprover-community" / "importGraph" @ git "main"
 
 /-!
 ## Mathlib libraries
