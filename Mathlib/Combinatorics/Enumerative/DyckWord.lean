@@ -27,9 +27,9 @@ at least as many `U`s as `D`s.
 
 ## Main results
 
-* `DyckWord.treeEquiv`: equivalence between Dyck words and rooted binary trees.
-  See the docstrings of `DyckWord.treeEquivToFun` and `DyckWord.treeEquivInvFun` for details.
-* `DyckWord.finiteTreeEquiv`: equivalence between Dyck words of length `2 * n` and
+* `DyckWord.equivTree`: equivalence between Dyck words and rooted binary trees.
+  See the docstrings of `DyckWord.equivTreeToFun` and `DyckWord.equivTreeInvFun` for details.
+* `DyckWord.equivTreesOfNumNodesEq`: equivalence between Dyck words of length `2 * n` and
   rooted binary trees with `n` internal nodes.
 * `DyckWord.card_dyckWord_semilength_eq_catalan`:
   there are `catalan n` Dyck words of length `2 * n` or semilength `n`.
@@ -486,75 +486,76 @@ which has index `p.firstReturn`, then let `x` be everything strictly between sai
 and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
 Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib.Data.Tree`) joins two subtrees
 to a new root node. -/
-def treeEquivToFun (p : DyckWord) : Tree Unit :=
+private def equivTreeToFun (p : DyckWord) : Tree Unit :=
   if h : p = 0 then nil else
     have := semilength_insidePart_lt h
     have := semilength_outsidePart_lt h
-    treeEquivToFun p.insidePart △ treeEquivToFun p.outsidePart
+    equivTreeToFun p.insidePart △ equivTreeToFun p.outsidePart
 termination_by p.semilength
 
 /-- Convert a binary rooted tree to a Dyck word.
 
 `g(nil) = 0`. A nonempty tree with left subtree `l` and right subtree `r`
 is sent to `g(l).nest + g(r)`. -/
-def treeEquivInvFun : Tree Unit → DyckWord
+private def equivTreeInvFun : Tree Unit → DyckWord
   | Tree.nil => 0
-  | Tree.node _ l r => (treeEquivInvFun l).nest + treeEquivInvFun r
+  | Tree.node _ l r => (equivTreeInvFun l).nest + equivTreeInvFun r
 
 @[nolint unusedHavesSuffices]
-lemma treeEquiv_left_inv (p) : treeEquivInvFun (treeEquivToFun p) = p := by
+private lemma equivTree_left_inv (p) : equivTreeInvFun (equivTreeToFun p) = p := by
   by_cases h : p = 0
-  · simp [h, treeEquivToFun, treeEquivInvFun]
-  · rw [treeEquivToFun]
-    simp_rw [h, dite_false, treeEquivInvFun]
+  · simp [h, equivTreeToFun, equivTreeInvFun]
+  · rw [equivTreeToFun]
+    simp_rw [h, dite_false, equivTreeInvFun]
     have := semilength_insidePart_lt h
     have := semilength_outsidePart_lt h
-    rw [treeEquiv_left_inv p.insidePart, treeEquiv_left_inv p.outsidePart]
+    rw [equivTree_left_inv p.insidePart, equivTree_left_inv p.outsidePart]
     exact nest_insidePart_add_outsidePart h
 termination_by p.semilength
 
 @[nolint unusedHavesSuffices]
-lemma treeEquiv_right_inv : ∀ t, treeEquivToFun (treeEquivInvFun t) = t
-  | Tree.nil => by simp [treeEquivInvFun, treeEquivToFun]
-  | Tree.node _ _ _ => by simp [treeEquivInvFun, treeEquivToFun, treeEquiv_right_inv]
+private lemma equivTree_right_inv : ∀ t, equivTreeToFun (equivTreeInvFun t) = t
+  | Tree.nil => by simp [equivTreeInvFun, equivTreeToFun]
+  | Tree.node _ _ _ => by simp [equivTreeInvFun, equivTreeToFun, equivTree_right_inv]
 
 /-- Equivalence between Dyck words and rooted binary trees. -/
-def treeEquiv : DyckWord ≃ Tree Unit where
-  toFun := treeEquivToFun
-  invFun := treeEquivInvFun
-  left_inv := treeEquiv_left_inv
-  right_inv := treeEquiv_right_inv
+def equivTree : DyckWord ≃ Tree Unit where
+  toFun := equivTreeToFun
+  invFun := equivTreeInvFun
+  left_inv := equivTree_left_inv
+  right_inv := equivTree_right_inv
 
 @[nolint unusedHavesSuffices]
-lemma semilength_eq_numNodes_treeEquiv (p) : p.semilength = (treeEquiv p).numNodes := by
+lemma semilength_eq_numNodes_equivTree (p) : p.semilength = (equivTree p).numNodes := by
   by_cases h : p = 0
-  · simp [h, treeEquiv, treeEquivToFun]
-  · rw [treeEquiv, Equiv.coe_fn_mk, treeEquivToFun]
+  · simp [h, equivTree, equivTreeToFun]
+  · rw [equivTree, Equiv.coe_fn_mk, equivTreeToFun]
     simp_rw [h, dite_false, numNodes]
     have := semilength_insidePart_lt h
     have := semilength_outsidePart_lt h
     rw [← semilength_insidePart_add_semilength_outsidePart_add_one h,
-      semilength_eq_numNodes_treeEquiv p.insidePart,
-      semilength_eq_numNodes_treeEquiv p.outsidePart]; rfl
+      semilength_eq_numNodes_equivTree p.insidePart,
+      semilength_eq_numNodes_equivTree p.outsidePart]; rfl
 termination_by p.semilength
 
 /-- Equivalence between Dyck words of semilength `n` and rooted binary trees with
 `n` internal nodes. -/
-def finiteTreeEquiv (n : ℕ) : { p : DyckWord // p.semilength = n } ≃ treesOfNumNodesEq n where
-  toFun := fun ⟨p, _⟩ ↦ ⟨treeEquiv p, by
-    rwa [mem_treesOfNumNodesEq, ← semilength_eq_numNodes_treeEquiv]⟩
-  invFun := fun ⟨tr, _⟩ ↦ ⟨treeEquiv.symm tr, by
-    rwa [semilength_eq_numNodes_treeEquiv, ← mem_treesOfNumNodesEq, Equiv.apply_symm_apply]⟩
+def equivTreesOfNumNodesEq (n : ℕ) :
+    { p : DyckWord // p.semilength = n } ≃ treesOfNumNodesEq n where
+  toFun := fun ⟨p, _⟩ ↦ ⟨equivTree p, by
+    rwa [mem_treesOfNumNodesEq, ← semilength_eq_numNodes_equivTree]⟩
+  invFun := fun ⟨tr, _⟩ ↦ ⟨equivTree.symm tr, by
+    rwa [semilength_eq_numNodes_equivTree, ← mem_treesOfNumNodesEq, Equiv.apply_symm_apply]⟩
   left_inv _ := by simp only [Equiv.symm_apply_apply]
   right_inv _ := by simp only [Equiv.apply_symm_apply]
 
 instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
-  Fintype.ofEquiv _ (finiteTreeEquiv n).symm
+  Fintype.ofEquiv _ (equivTreesOfNumNodesEq n).symm
 
 /-- There are `catalan n` Dyck words of semilength `n` (or length `2 * n`). -/
 theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckWord // p.semilength = n } = catalan n := by
-  rw [← Fintype.ofEquiv_card (finiteTreeEquiv n), ← treesOfNumNodesEq_card_eq_catalan]
+  rw [← Fintype.ofEquiv_card (equivTreesOfNumNodesEq n), ← treesOfNumNodesEq_card_eq_catalan]
   convert Fintype.card_coe _
 
 end Tree
