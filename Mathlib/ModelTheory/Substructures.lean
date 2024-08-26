@@ -481,7 +481,7 @@ theorem comap_top (f : M →[L] N) : (⊤ : L.Substructure N).comap f = ⊤ :=
 
 @[simp]
 theorem map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
-  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
+  SetLike.coe_injective <| Set.image_id _
 
 theorem map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=
   Eq.symm <|
@@ -607,13 +607,13 @@ theorem coe_topEquiv :
 theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
     {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
     φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
-  rw [← Substructure.topEquiv.realize_boundedFormula φ]
+  rw [← StrongHomClass.realize_boundedFormula Substructure.topEquiv φ]
   simp
 
 @[simp]
 theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
     φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
-  rw [← Substructure.topEquiv.realize_formula φ]
+  rw [← StrongHomClass.realize_formula Substructure.topEquiv φ]
   simp
 
 /-- A dependent version of `Substructure.closure_induction`. -/

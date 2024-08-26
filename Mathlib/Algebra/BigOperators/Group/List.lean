@@ -424,7 +424,7 @@ theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
   induction n with
   | zero => exact (div_self' (f 0)).symm
   | succ n h =>
-    rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
+    rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel]
 
 lemma prod_rotate_eq_one_of_prod_eq_one :
     ∀ {l : List G} (_ : l.prod = 1) (n : ℕ), (l.rotate n).prod = 1
@@ -754,13 +754,4 @@ lemma unop_map_list_prod {F : Type*} [FunLike F M Nᵐᵒᵖ] [MonoidHomClass F 
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod := by
   rw [map_list_prod f l, MulOpposite.unop_list_prod, List.map_map]
 
-namespace MonoidHom
-
-/-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
-@[deprecated _root_.unop_map_list_prod (since := "2023-01-10")]
-protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
-    (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
-  unop_map_list_prod f l
-
-end MonoidHom
 end MonoidHom

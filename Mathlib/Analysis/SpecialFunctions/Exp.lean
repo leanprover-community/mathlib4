@@ -213,7 +213,7 @@ namespace Real
 variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
 theorem exp_half (x : ℝ) : exp (x / 2) = √(exp x) := by
-  rw [eq_comm, sqrt_eq_iff_sq_eq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
+  rw [eq_comm, sqrt_eq_iff_eq_sq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
 
 /-- The real exponential function tends to `+∞` at `+∞`. -/
 theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
