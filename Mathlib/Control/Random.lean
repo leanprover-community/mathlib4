@@ -30,8 +30,6 @@ defining objects that can be created randomly.
 
 universe u v
 
--- set_option autoImplicit true
-
 /-- A monad transformer to generate random objects using the generic generator type `g` -/
 abbrev RandGT (g : Type) := StateT (ULift g)
 /-- A monad to generate random objects using the generator type `g`.  -/

@@ -36,7 +36,7 @@ theorem mapAccumr_mapAccumr :
   induction xs using Vector.revInductionOn generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr_map {s : σ₁}  (f₂ : α → β) :
+theorem mapAccumr_map {s : σ₁} (f₂ : α → β) :
     (mapAccumr f₁ (map f₂ xs) s) = (mapAccumr (fun x s => f₁ (f₂ x) s) xs s) := by
   induction xs using Vector.revInductionOn generalizing s <;> simp_all
 
