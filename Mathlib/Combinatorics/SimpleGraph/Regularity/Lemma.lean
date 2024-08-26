@@ -133,7 +133,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     have hi : ε ^ 5 / 4 * ↑i ≤ 1 := hP₄.trans (mod_cast P.energy_le_one G)
     rw [div_mul_eq_mul_div, div_le_iff₀ (show (0 : ℝ) < 4 by norm_num)] at hi
     norm_num at hi
-    rwa [le_div_iff'₀ (pow_pos hε _)]
+    rwa [le_div_iff₀' (pow_pos hε _)]
   have hsize : P.parts.card ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
     hP₃.trans (monotone_iterate_of_id_le le_stepBound (Nat.le_floor hi) _)
   have hPα : P.parts.card * 16 ^ P.parts.card ≤ card α :=

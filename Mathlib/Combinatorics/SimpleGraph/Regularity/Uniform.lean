@@ -337,7 +337,7 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
     rw [mul_left_comm, ← sq]
     convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (A.card : 𝕜))
       using 1 <;> ring
-  rwa [← div_le_iff'₀, one_div_div]
+  rwa [← div_le_iff₀', one_div_div]
   positivity
 
 lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP : P.IsEquipartition)

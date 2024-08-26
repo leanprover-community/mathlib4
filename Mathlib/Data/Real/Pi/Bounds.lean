@@ -42,7 +42,7 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     rw [← div_lt_iff (by norm_num), ← sin_pi_over_two_pow_succ]
     refine lt_of_lt_of_le (lt_add_of_sub_right_lt (sin_gt_sub_cube ?_ ?_)) ?_
     · apply div_pos pi_pos; apply pow_pos; norm_num
-    · rw [div_le_iff'₀]
+    · rw [div_le_iff₀']
       · refine le_trans pi_le_four ?_
         simp only [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, mul_one]
         apply pow_le_pow_right (by norm_num)
@@ -124,7 +124,7 @@ theorem pi_upper_bound_start (n : ℕ) {a}
         sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n)
     (h₂ : (1 : ℝ) / (4 : ℝ) ^ n ≤ a) : π < a := by
   refine lt_of_lt_of_le (pi_lt_sqrtTwoAddSeries n) ?_
-  rw [← le_sub_iff_add_le, ← le_div_iff'₀, sqrt_le_left, sub_le_comm]
+  rw [← le_sub_iff_add_le, ← le_div_iff₀', sqrt_le_left, sub_le_comm]
   · rwa [Nat.cast_zero, zero_div] at h
   · exact div_nonneg (sub_nonneg.2 h₂) (pow_nonneg (le_of_lt zero_lt_two) _)
   · exact pow_pos zero_lt_two _

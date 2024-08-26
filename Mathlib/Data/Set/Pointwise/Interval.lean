@@ -590,11 +590,11 @@ theorem preimage_const_mul_Ioi (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' I
 
 @[simp]
 theorem preimage_const_mul_Iic (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Iic a = Iic (a / c) :=
-  ext fun _x => (le_div_iff'₀ h).symm
+  ext fun _x => (le_div_iff₀' h).symm
 
 @[simp]
 theorem preimage_const_mul_Ici (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Ici a = Ici (a / c) :=
-  ext fun _x => (div_le_iff'₀ h).symm
+  ext fun _x => (div_le_iff₀' h).symm
 
 @[simp]
 theorem preimage_const_mul_Ioo (a b : α) {c : α} (h : 0 < c) :

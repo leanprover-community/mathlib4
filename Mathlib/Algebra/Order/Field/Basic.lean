@@ -52,7 +52,7 @@ lemma div_lt_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b < c ↔ a / c < b := by
 
 theorem inv_mul_le_iff (h : 0 < b) : b⁻¹ * a ≤ c ↔ a ≤ b * c := by
   rw [inv_eq_one_div, mul_comm, ← div_eq_mul_one_div]
-  exact div_le_iff'₀ h
+  exact div_le_iff₀' h
 
 theorem inv_mul_le_iff' (h : 0 < b) : b⁻¹ * a ≤ c ↔ a ≤ c * b := by rw [inv_mul_le_iff h, mul_comm]
 
@@ -79,7 +79,7 @@ theorem inv_pos_le_iff_one_le_mul (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ b * a :=
 
 theorem inv_pos_le_iff_one_le_mul' (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [inv_eq_one_div]
-  exact div_le_iff'₀ ha
+  exact div_le_iff₀' ha
 
 theorem inv_pos_lt_iff_one_lt_mul (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := by
   rw [inv_eq_one_div]
@@ -119,7 +119,7 @@ lemma inv_mul_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 := by
 
 @[gcongr, bound]
 theorem inv_le_inv_of_le (ha : 0 < a) (h : a ≤ b) : b⁻¹ ≤ a⁻¹ := by
-  rwa [← one_div a, le_div_iff'₀ ha, ← div_eq_mul_inv, div_le_iff₀ (ha.trans_le h), one_mul]
+  rwa [← one_div a, le_div_iff₀' ha, ← div_eq_mul_inv, div_le_iff₀ (ha.trans_le h), one_mul]
 
 /-- See `inv_le_inv_of_le` for the implication from right-to-left with one fewer assumption. -/
 theorem inv_le_inv (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by

@@ -221,7 +221,7 @@ theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
   have hxy' : 0 < y - x := by linarith
   have hyz' : 0 < z - y := by linarith
   have hxz' : 0 < z - x := by linarith
-  rw [← le_div_iff'₀ hxz']
+  rw [← le_div_iff₀' hxz']
   have ha : 0 ≤ (z - y) / (z - x) := by positivity
   have hb : 0 ≤ (y - x) / (z - x) := by positivity
   calc

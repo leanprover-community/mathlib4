@@ -56,7 +56,7 @@ theorem map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
   apply le_antisymm
   · rw [le_div_iff₀ hx', ← NNReal.le_div_iff' hfx, tsub_le_iff_right, ← hf.map_eq_zero,
      hf.map_add, div_mul_cancel₀ _ hfx, hf.map_two, zero_mul]
-  · rw [div_le_iff'₀ hx', ← hf.map_eq_zero]
+  · rw [div_le_iff₀' hx', ← hf.map_eq_zero]
     refine (mul_eq_zero.1 ?_).resolve_right hfx
     rw [hf.map_add_rev, hf.map_eq_zero, tsub_add_cancel_of_le hx.le]
 

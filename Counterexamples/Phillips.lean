@@ -269,7 +269,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     refine ⟨t, fun u => ?_⟩
     calc
       f (↑u \ ↑s) ≤ S := le_ciSup B _
-      _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff'₀ two_pos).1 ht.le
+      _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff₀' two_pos).1 ht.le
   choose! F hF using this
   -- iterate the above construction, by adding at each step a set with measure close to maximal in
   -- the complement of already chosen points. This is the set `s n` at step `n`.
@@ -283,7 +283,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have ε_pos : 0 < ε := ht
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
-    rw [div_le_iff'₀ (show (0 : ℝ) < 2 by norm_num), hε]
+    rw [div_le_iff₀' (show (0 : ℝ) < 2 by norm_num), hε]
     convert hF (s n) u using 2
     · dsimp
       ext x

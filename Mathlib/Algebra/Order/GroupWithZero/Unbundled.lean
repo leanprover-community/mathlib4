@@ -1222,16 +1222,16 @@ lemma div_le_div₀ (hb : 0 < b) (hd : 0 < d) :
     a / b ≤ c / d ↔ a * d ≤ c * b := by
   rw [div_le_iff₀ hb, ← mul_div_right_comm, le_div_iff₀ hd]
 
-lemma le_div_iff'₀ (hc : 0 < c) : a ≤ b / c ↔ c * a ≤ b := by rw [le_div_iff₀ hc, mul_comm]
-lemma div_le_iff'₀ (hc : 0 < c) : b / c ≤ a ↔ b ≤ c * a := by rw [div_le_iff₀ hc, mul_comm]
+lemma le_div_iff₀' (hc : 0 < c) : a ≤ b / c ↔ c * a ≤ b := by rw [le_div_iff₀ hc, mul_comm]
+lemma div_le_iff₀' (hc : 0 < c) : b / c ≤ a ↔ b ≤ c * a := by rw [div_le_iff₀ hc, mul_comm]
 
 lemma le_div_comm₀ (ha : 0 < a) (hc : 0 < c) : a ≤ b / c ↔ c ≤ b / a := by
-  rw [le_div_iff₀ ha, le_div_iff'₀ hc]
+  rw [le_div_iff₀ ha, le_div_iff₀' hc]
 
 lemma div_le_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b ≤ c ↔ a / c ≤ b := by
-  rw [div_le_iff₀ hb, div_le_iff'₀ hc]
+  rw [div_le_iff₀ hb, div_le_iff₀' hc]
 
-@[deprecated (since := "2024-08-21")] alias le_div_iff' := le_div_iff'₀
-@[deprecated (since := "2024-08-21")] alias div_le_iff' := div_le_iff'₀
+@[deprecated (since := "2024-08-21")] alias le_div_iff' := le_div_iff₀'
+@[deprecated (since := "2024-08-21")] alias div_le_iff' := div_le_iff₀'
 
 end CommGroupWithZero

@@ -160,7 +160,7 @@ theorem exists_bound_of_continuous (hf : Continuous f) :
   refine ⟨_, this, ?_⟩
   refine f.bound_of_shell_of_continuous hf (fun _ => ε0) (fun _ => hc) fun m hcm hm => ?_
   refine (hε m ((pi_norm_lt_iff ε0).2 hm)).le.trans ?_
-  rw [← div_le_iff'₀ this, one_div, ← inv_pow, inv_div, Fintype.card, ← prod_const]
+  rw [← div_le_iff₀' this, one_div, ← inv_pow, inv_div, Fintype.card, ← prod_const]
   exact prod_le_prod (fun _ _ => div_nonneg ε0.le (norm_nonneg _)) fun i _ => hcm i
 
 /-- If `f` satisfies a boundedness property around `0`, one can deduce a bound on `f m₁ - f m₂`

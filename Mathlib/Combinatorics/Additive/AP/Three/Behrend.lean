@@ -304,7 +304,7 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
   apply le_sqrt_of_sq_le (le_trans _ this)
   rw [mul_right_comm, mul_pow, sq (log 2), ← mul_assoc]
   apply mul_le_mul_of_nonneg_right _ (log_nonneg one_le_two)
-  rw [← le_div_iff'₀]
+  rw [← le_div_iff₀']
   · exact log_two_lt_d9.le.trans (by norm_num1)
   exact sq_pos_of_ne_zero (by norm_num1)
 
@@ -315,7 +315,7 @@ theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x
     _ ≤ exp (1 - x) / (x + 1) := ?_
     _ ≤ exp (2 - ⌈x⌉₊) / (x + 1) := by gcongr
     _ < _ := by gcongr
-  rw [le_div_iff₀  (add_pos hx zero_lt_one), ← le_div_iff'₀ (exp_pos _), ← exp_sub, neg_mul,
+  rw [le_div_iff₀  (add_pos hx zero_lt_one), ← le_div_iff₀' (exp_pos _), ← exp_sub, neg_mul,
     sub_neg_eq_add, two_mul, sub_add_add_cancel, add_comm _ x]
   exact le_trans (le_add_of_nonneg_right zero_le_one) (add_one_le_exp _)
 
@@ -391,7 +391,7 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
     rw [← rpow_mul (cast_nonneg _), inv_mul_cancel₀, rpow_one]
     rw [cast_ne_zero]
     apply (nValue_pos hN).ne'
-  rw [← le_div_iff'₀]
+  rw [← le_div_iff₀']
   · exact floor_le (div_nonneg (rpow_nonneg (cast_nonneg _) _) zero_le_two)
   apply zero_lt_two
 
@@ -414,7 +414,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
       rw [← log_rpow zero_lt_two, rpow_natCast]
       exact log_le_log (by positivity) (mod_cast hN)
     refine le_trans ?_ this
-    rw [← div_le_iff'₀]
+    rw [← div_le_iff₀']
     · exact log_two_gt_d9.le.trans' (by norm_num1)
     · norm_num1
   · rw [cast_pos]

@@ -233,7 +233,7 @@ theorem IsBigO.exists_mem_basis {ι} {p : ι → Prop} {s : ι → Set α} (h : 
     simpa only [isBigOWith_iff, hb.eventually_iff, exists_prop] using h
 
 theorem isBigOWith_inv (hc : 0 < c) : IsBigOWith c⁻¹ l f g ↔ ∀ᶠ x in l, c * ‖f x‖ ≤ ‖g x‖ := by
-  simp only [IsBigOWith_def, ← div_eq_inv_mul, le_div_iff'₀ hc]
+  simp only [IsBigOWith_def, ← div_eq_inv_mul, le_div_iff₀' hc]
 
 -- We prove this lemma with strange assumptions to get two lemmas below automatically
 theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x, 0 ≤ ‖g x‖) :
@@ -1196,7 +1196,7 @@ theorem isBigO_const_left_iff_pos_le_norm {c : E''} (hc : c ≠ 0) :
   · intro h
     rcases h.exists_pos with ⟨C, hC₀, hC⟩
     refine ⟨‖c‖ / C, div_pos (norm_pos_iff.2 hc) hC₀, ?_⟩
-    exact hC.bound.mono fun x => (div_le_iff'₀ hC₀).2
+    exact hC.bound.mono fun x => (div_le_iff₀' hC₀).2
   · rintro ⟨b, hb₀, hb⟩
     refine IsBigO.of_bound (‖c‖ / b) (hb.mono fun x hx => ?_)
     rw [div_mul_eq_mul_div, mul_div_assoc]

@@ -123,7 +123,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
     (1 - ε / 10) * (G.nonuniformWitness ε U V).card ≤ ((star hP G ε hU V).biUnion id).card := by
   have hP₁ : 0 < P.parts.card := Finset.card_pos.2 ⟨_, hU⟩
   have : (↑2 ^ P.parts.card : ℝ) * m / (U.card * ε) ≤ ε / 10 := by
-    rw [← div_div, div_le_iff'₀]
+    rw [← div_div, div_le_iff₀']
     swap
     · sz_positivity
     refine le_of_mul_le_mul_left ?_ (pow_pos zero_lt_two P.parts.card)
@@ -219,7 +219,7 @@ private theorem one_sub_le_m_div_m_add_one_sq [Nonempty α]
     rw [one_sub_div coe_m_add_one_pos.ne', add_sub_cancel_right]
   rw [this, sub_sq, one_pow, mul_one]
   refine le_trans ?_ (le_add_of_nonneg_right <| sq_nonneg _)
-  rw [sub_le_sub_iff_left, ← le_div_iff'₀ (show (0 : ℝ) < 2 by norm_num), div_div,
+  rw [sub_le_sub_iff_left, ← le_div_iff₀' (show (0 : ℝ) < 2 by norm_num), div_div,
     one_div_le coe_m_add_one_pos, one_div_div]
   · refine le_trans ?_ (le_add_of_nonneg_right zero_le_one)
     norm_num
@@ -388,7 +388,7 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : P.parts.card * 16 ^ P
     _ ≤ (1 - ε / 10) * (1 - (↑m)⁻¹) * ((G.nonuniformWitness ε U V).card / U.card) := by
         gcongr
         exacts [mod_cast (show 9 ≤ 100 by norm_num).trans (hundred_le_m hPα hPε hε₁),
-          (le_div_iff'₀ <| cast_pos.2 (P.nonempty_of_mem_parts hU).card_pos).2 <|
+          (le_div_iff₀' <| cast_pos.2 (P.nonempty_of_mem_parts hU).card_pos).2 <|
            G.le_card_nonuniformWitness hunif]
     _ = (1 - ε / 10) * (G.nonuniformWitness ε U V).card * ((1 - (↑m)⁻¹) / U.card) := by
       rw [mul_assoc, mul_assoc, mul_div_left_comm]
