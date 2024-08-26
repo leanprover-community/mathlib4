@@ -240,7 +240,7 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
   refine ⟨fun hS s hs ↦ isVonNBounded_image2_apply hS hs, fun h ↦ ?_⟩
   simp_rw [isVonNBounded_iff_absorbing_le, nhds_zero_eq, le_iInf_iff, le_principal_iff]
   intro s hs U hU
-  rw [Filter.mem_absorbs]
+  rw [Filter.mem_absorbing, Absorbs]
   filter_upwards [h s hs hU, eventually_ne_cobounded 0] with c hc hc₀ f hf
   rw [mem_smul_set_iff_inv_smul_mem₀ hc₀]
   intro x hx
