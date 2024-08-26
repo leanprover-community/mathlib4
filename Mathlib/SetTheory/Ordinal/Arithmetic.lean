@@ -1356,7 +1356,7 @@ theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Or
 
 /-- The least strict upper bound of a family of ordinals. -/
 def lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
-  iSup (succ ∘ f)
+  ⨆ i, succ (f i)
 
 @[simp]
 theorem sup_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
