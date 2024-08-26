@@ -252,7 +252,7 @@ variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 
 section Curry
 
-variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
+variable {f : (∀ a b, γ a b) → ∀ a b, γ a b}
 
 theorem uncurry_curry_continuous (hc : ωScottContinuous f) :
     ωScottContinuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
