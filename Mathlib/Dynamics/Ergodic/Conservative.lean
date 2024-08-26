@@ -78,6 +78,15 @@ theorem measureRestrict (h : Conservative f μ) (hs : MapsTo f s s) :
   .of_absolutelyContinuous h (absolutelyContinuous_of_le restrict_le_self) <|
     h.toQuasiMeasurePreserving.restrict hs
 
+theorem congr_ae {ν : Measure α} (hf : Conservative f μ) (h : ae μ = ae ν) :
+    Conservative f ν :=
+  .of_absolutelyContinuous hf h.ge.absolutelyContinuous_of_ae <|
+    hf.toQuasiMeasurePreserving.mono h.ge.absolutelyContinuous_of_ae h.le.absolutelyContinuous_of_ae
+
+theorem _root_.MeasureTheory.conservative_congr {ν : Measure α} (h : ae μ = ae ν) :
+    Conservative f μ ↔ Conservative f ν :=
+  ⟨(congr_ae · h), (congr_ae · h.symm)⟩
+
 /-- If `f` is a conservative self-map and `s` is a null measurable set of nonzero measure,
 then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
 theorem exists_mem_iterate_mem (hf : Conservative f μ)

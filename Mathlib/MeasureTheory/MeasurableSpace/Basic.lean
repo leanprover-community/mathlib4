@@ -273,6 +273,12 @@ theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurab
   | 0 => measurable_id
   | n + 1 => (Measurable.iterate hf n).comp hf
 
+@[measurability]
+theorem Measurable.equivZPow {f : α ≃ α} (hf : Measurable f) (hf' : Measurable f.symm) :
+    ∀ n : ℤ, Measurable (f^n)
+  | (n : ℕ) => hf.iterate n
+  | Int.negSucc n => hf'.iterate (n + 1)
+
 variable {mβ : MeasurableSpace β}
 
 @[measurability]
