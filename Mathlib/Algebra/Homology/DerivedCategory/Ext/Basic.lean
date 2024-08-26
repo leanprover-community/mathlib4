@@ -36,8 +36,8 @@ sheaves over `X` shall be in `Type u`.
 
 ## TODO
 * compute `Ext X Y 0`
-* define the class in `Ext S.X₃ S.X₁ 1` of a short exact short complex `S`
-* construct the long exact sequences of `Ext`.
+* construct the covariant long exact sequences of `Ext`.
+* construct the contravariant long exact sequences of `Ext`.
 
 -/
 
@@ -47,7 +47,7 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
 
-open Localization Limits ZeroObject
+open Localization Limits ZeroObject DerivedCategory Pretriangulated
 
 /-- The property that morphisms between single complexes in arbitrary degrees are `w`-small
 in the derived category. -/
@@ -58,14 +58,14 @@ abbrev HasExt : Prop :=
 -- TODO: when the canonical t-structure is formalized, replace `n : ℤ` by `n : ℕ`
 lemma hasExt_iff [HasDerivedCategory.{w'} C] :
     HasExt.{w} C ↔ ∀ (X Y : C) (n : ℤ), Small.{w}
-      ((DerivedCategory.singleFunctor C 0).obj X ⟶
-        (((DerivedCategory.singleFunctor C 0).obj Y)⟦n⟧)) := by
+      ((singleFunctor C 0).obj X ⟶
+        (((singleFunctor C 0).obj Y)⟦n⟧)) := by
   dsimp [HasExt]
-  simp only [hasSmallLocalizedShiftedHom_iff _ _ DerivedCategory.Q]
+  simp only [hasSmallLocalizedShiftedHom_iff _ _ Q]
   constructor
   · intro h X Y n
     exact (small_congr ((shiftFunctorZero _ ℤ).app
-      ((DerivedCategory.singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
+      ((singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
   · intro h X Y a b
     refine (small_congr ?_).1 (h X Y (b - a))
     exact (Functor.FullyFaithful.ofFullyFaithful
@@ -103,6 +103,22 @@ lemma comp_assoc {a₁ a₂ a₃ a₁₂ a₂₃ a : ℕ} (α : Ext X Y a₁) (�
       α.comp (β.comp γ h₂₃) (by omega) :=
   SmallShiftedHom.comp_assoc _ _ _ _ _ _ (by omega)
 
+@[simp]
+lemma comp_assoc_of_second_deg_zero
+    {a₁ a₃ a₁₃ : ℕ} (α : Ext X Y a₁) (β : Ext Y Z 0) (γ : Ext Z T a₃)
+    (h₁₃ : a₁ + a₃ = a₁₃) :
+    (α.comp β (add_zero _)).comp γ h₁₃ = α.comp (β.comp γ (zero_add _)) h₁₃ := by
+  apply comp_assoc
+  omega
+
+@[simp]
+lemma comp_assoc_of_third_deg_zero
+    {a₁ a₂ a₁₂ : ℕ} (α : Ext X Y a₁) (β : Ext Y Z a₂) (γ : Ext Z T 0)
+    (h₁₂ : a₁ + a₂ = a₁₂) :
+    (α.comp β h₁₂).comp γ (add_zero _) = α.comp (β.comp γ (add_zero _)) h₁₂ := by
+  apply comp_assoc
+  omega
+
 section
 
 variable [HasDerivedCategory.{w'} C]
@@ -110,14 +126,13 @@ variable [HasDerivedCategory.{w'} C]
 /-- When an instance of `[HasDerivedCategory.{w'} C]` is available, this is the bijection
 between `Ext.{w} X Y n` and a type of morphisms in the derived category. -/
 noncomputable def homEquiv {n : ℕ} :
-    Ext.{w} X Y n ≃ ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
-      ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ) :=
-  SmallShiftedHom.equiv (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) DerivedCategory.Q
+    Ext.{w} X Y n ≃ ShiftedHom ((singleFunctor C 0).obj X)
+      ((singleFunctor C 0).obj Y) (n : ℤ) :=
+  SmallShiftedHom.equiv (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) Q
 
 /-- The morphism in the derived category which corresponds to an element in `Ext X Y a`. -/
 noncomputable abbrev hom {a : ℕ} (α : Ext X Y a) :
-    ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
-      ((DerivedCategory.singleFunctor C 0).obj Y) (a : ℤ) :=
+    ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) (a : ℤ) :=
   homEquiv α
 
 @[simp]
@@ -137,7 +152,7 @@ noncomputable def mk₀ (f : X ⟶ Y) : Ext X Y 0 := SmallShiftedHom.mk₀ _ _ (
 
 @[simp]
 lemma mk₀_hom [HasDerivedCategory.{w'} C] (f : X ⟶ Y) :
-    (mk₀ f).hom = ShiftedHom.mk₀ _ (by simp) ((DerivedCategory.singleFunctor C 0).map f) := by
+    (mk₀ f).hom = ShiftedHom.mk₀ _ (by simp) ((singleFunctor C 0).map f) := by
   apply SmallShiftedHom.equiv_mk₀
 
 @[simp 1100]
@@ -172,8 +187,7 @@ only in order to prove properties of the abelian group structure on `Ext`-groups
 Do not use this definition: use the more general `hom` instead. -/
 noncomputable abbrev hom' (α : Ext X Y n) :
   letI := HasDerivedCategory.standard C
-  ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
-      ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ) :=
+  ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) (n : ℤ) :=
   letI := HasDerivedCategory.standard C
   α.hom
 
@@ -247,7 +261,7 @@ lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
   rw [Ext.ext_iff] at h₁ h₂ ⊢
   simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp] at h₁ h₂
   apply BinaryCofan.IsColimit.hom_ext
-    (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
+    (isBinaryBilimitOfPreserves (singleFunctor C 0)
       (BinaryBiproduct.isBilimit X₁ X₂)).isColimit
   all_goals assumption
 
@@ -289,8 +303,8 @@ lemma neg_hom (α : Ext X Y n) : (-α).hom = -α.hom := by
 /-- When an instance of `[HasDerivedCategory.{w'} C]` is available, this is the additive
 bijection between `Ext.{w} X Y n` and a type of morphisms in the derived category. -/
 noncomputable def homAddEquiv {n : ℕ} :
-    Ext.{w} X Y n ≃+ ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
-      ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ) where
+    Ext.{w} X Y n ≃+
+      ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) (n : ℤ) where
   toEquiv := homEquiv
   map_add' := by simp
 

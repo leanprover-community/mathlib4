@@ -109,15 +109,11 @@ def diagramMap : ∀ {o₁ o₂ : Pairwise ι} (_ : o₁ ⟶ o₂), diagramObj U
   | _, _, left _ _ => homOfLE inf_le_left
   | _, _, right _ _ => homOfLE inf_le_right
 
--- Porting note: the fields map_id and map_comp were filled by hand, as generating them by `aesop`
--- causes a PANIC.
 /-- Given a function `U : ι → α` for `[SemilatticeInf α]`, we obtain a functor `Pairwise ι ⥤ α`,
 sending `single i` to `U i` and `pair i j` to `U i ⊓ U j`,
 and the morphisms to the obvious inequalities.
 -/
--- Porting note: We want `@[simps]` here, but this causes a PANIC in the linter.
--- (Which, worryingly, does not cause a linter failure!)
--- @[simps]
+@[simps]
 def diagram : Pairwise ι ⥤ α where
   obj := diagramObj U
   map := diagramMap U
