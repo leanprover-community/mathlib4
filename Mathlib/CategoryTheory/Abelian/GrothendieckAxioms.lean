@@ -8,9 +8,7 @@ import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
-
 /-!
-
 # Grothendieck Axioms
 
 This file defines some of the Grothendieck Axioms for abelian categories, and proves
@@ -174,7 +172,7 @@ def coproductFunctorIso [HasCoproducts C] [HasColimitsOfShape (Finset α) C] :
   NatIso.ofComponents
     (fun F =>
       HasColimit.isoOfNatIso (Discrete.natIsoFunctor (F := F)) ≪≫
-      coproductIsoColimitFinsetBiproductDiagram (F.obj ⟨·⟩) ) <| by
+      coproductIsoColimitFinsetBiproductDiagram (F.obj ⟨·⟩)) <| by
         intro x y f
         dsimp
         ext ⟨⟩
@@ -246,7 +244,7 @@ instance [HasLimits C] : PreservesLimits (discreteDiagramToFinsetBiproductDiagra
 noncomputable
 instance [HasFiniteLimits C] :
     PreservesFiniteLimits (discreteDiagramToFinsetBiproductDiagram C α) where
-  preservesFiniteLimits _ _ _ := ⟨ @fun _ => inferInstance ⟩
+  preservesFiniteLimits _ _ _ := ⟨@fun _ => inferInstance⟩
 
 noncomputable
 instance [HasCoproducts C] [HasFilteredColimits C] [HasFiniteLimits C] [AB5 C] : AB4 C where
