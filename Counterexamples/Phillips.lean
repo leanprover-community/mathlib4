@@ -296,8 +296,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     induction n with
     | zero =>
       simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
-        Function.iterate_zero, Subtype.coe_mk]
-      rfl
+        Function.iterate_zero, Subtype.coe_mk, le_rfl]
     | succ n IH =>
       have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]

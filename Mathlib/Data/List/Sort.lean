@@ -256,7 +256,7 @@ theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
     simpa [insertionSort] using (perm_orderedInsert _ _ _).trans ((perm_insertionSort l).cons b)
 
 @[simp]
-theorem mem_insertionSort  {l : List α} {x : α} : x ∈ l.insertionSort r ↔ x ∈ l :=
+theorem mem_insertionSort {l : List α} {x : α} : x ∈ l.insertionSort r ↔ x ∈ l :=
   (perm_insertionSort r l).mem_iff
 
 @[simp]

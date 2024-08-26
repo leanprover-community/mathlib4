@@ -210,10 +210,11 @@ theorem tendsto_of_le_liminf_of_limsup_le {f : Filter β} {u : β → α} {a : �
     (hsup : limsup u f ≤ a) (h : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h' : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) : Tendsto u f (𝓝 a) := by
   classical
-  exact if hf : f = ⊥ then hf.symm ▸ tendsto_bot
-  else
-    haveI : NeBot f := ⟨hf⟩
-    tendsto_of_liminf_eq_limsup (le_antisymm (le_trans (liminf_le_limsup h h') hsup) hinf)
+  by_cases hf : f = ⊥
+  · rw [hf]
+    exact tendsto_bot
+  · haveI : NeBot f := ⟨hf⟩
+    exact tendsto_of_liminf_eq_limsup (le_antisymm (le_trans (liminf_le_limsup h h') hsup) hinf)
       (le_antisymm hsup (le_trans hinf (liminf_le_limsup h h'))) h h'
 
 /-- Assume that, for any `a < b`, a sequence can not be infinitely many times below `a` and
