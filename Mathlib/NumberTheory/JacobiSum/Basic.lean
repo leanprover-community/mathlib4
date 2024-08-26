@@ -86,16 +86,16 @@ private lemma jacobiSum_eq_aux (χ ψ : MulChar F R) :
   congr
   rw [sum_pair zero_ne_one, sub_zero, ψ.map_one, χ.map_one, sub_self, mul_zero, zero_mul, add_zero]
 
-/-- If `1` is the trivial multiplicative character on a finite field `F`, then `J(1,1) = #F-2`. -/
-theorem jacobiSum_one_one : jacobiSum (1 : MulChar F R) 1 = Fintype.card F - 2 := by
-  rw [show 1 = MulChar.trivial F R from rfl, jacobiSum_eq_sum_sdiff]
+/-- The Jacobi sum of twice the trivial multiplicative character on a finite field `F`
+equals `#F-2`. -/
+theorem jacobiSum_trivial_trivial :
+    jacobiSum (MulChar.trivial F R) (MulChar.trivial F R) = Fintype.card F - 2 := by
+  rw [jacobiSum_eq_sum_sdiff]
   have : ∀ x ∈ univ \ {0, 1}, (MulChar.trivial F R) x * (MulChar.trivial F R) (1 - x) = 1 := by
     intros x hx
-    have hx' : IsUnit (x * (1 - x)) := by
-      simp only [mem_sdiff, mem_univ, mem_insert, mem_singleton, not_or, ← ne_eq, true_and] at hx
-      simp only [isUnit_iff_ne_zero]
-      exact mul_ne_zero hx.1 <| sub_ne_zero.mpr hx.2.symm
-    rw [← map_mul, MulChar.trivial_apply, if_pos hx']
+    rw [← map_mul, MulChar.trivial_apply, if_pos]
+    simp only [mem_sdiff, mem_univ, mem_insert, mem_singleton, not_or, ← ne_eq, true_and] at hx
+    simpa only [isUnit_iff_ne_zero, mul_ne_zero_iff, ne_eq, sub_eq_zero, @eq_comm _ _ x] using hx
   calc ∑ x ∈ univ \ {0, 1}, (MulChar.trivial F R) x * (MulChar.trivial F R) (1 - x)
   _ = ∑ _ ∈ univ \ {0, 1}, 1 := sum_congr rfl this
   _ = Finset.card (univ \ {0, 1}) := (cast_card _).symm
@@ -107,10 +107,8 @@ theorem jacobiSum_one_one : jacobiSum (1 : MulChar F R) 1 = Fintype.card F - 2 :
     simp only [hm, add_tsub_cancel_right (α := ℕ), Nat.cast_add, Nat.cast_ofNat,
       add_sub_cancel_right]
 
-/-- The Jacobi sum of twice the trivial multiplicative character on a finite field `F`
-equals `#F-2`. -/
-theorem jacobiSum_trivial_trivial :
-    jacobiSum (MulChar.trivial F R) (MulChar.trivial F R) = Fintype.card F - 2 :=
-  jacobiSum_one_one ..
+/-- If `1` is the trivial multiplicative character on a finite field `F`, then `J(1,1) = #F-2`. -/
+theorem jacobiSum_one_one : jacobiSum (1 : MulChar F R) 1 = Fintype.card F - 2 :=
+  jacobiSum_trivial_trivial
 
 end FiniteField
