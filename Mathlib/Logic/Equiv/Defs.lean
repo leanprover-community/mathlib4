@@ -301,15 +301,6 @@ theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃
 
 @[simp] theorem self_trans_symm (e : α ≃ β) : e.trans e.symm = Equiv.refl α := ext <| by simp
 
-theorem trans_eq_refl_iff_eq_symm (f : α ≃ β) (g : β ≃ α) :
-    f.trans g = Equiv.refl α ↔ f = g.symm := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · ext x
-    apply g.injective
-    rw [← trans_apply, h, refl_apply, apply_symm_apply]
-  · rw [h, ← self_trans_symm]
-    rfl
-
 theorem trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) :
     (ab.trans bc).trans cd = ab.trans (bc.trans cd) := Equiv.ext fun _ => rfl
 
@@ -502,6 +493,10 @@ theorem eq_symm_comp {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) 
 
 theorem symm_comp_eq {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) : e.symm ∘ g = f ↔ g = e ∘ f :=
   ((Equiv.refl γ).arrowCongr e).symm_apply_eq
+
+theorem trans_eq_refl_iff_eq_symm (f : α ≃ β) (g : β ≃ α) :
+    f.trans g = Equiv.refl α ↔ f = g.symm := by
+  rw [← Equiv.coe_inj, coe_trans, coe_refl, ← eq_symm_comp, comp_id, Equiv.coe_inj]
 
 /-- `PUnit` sorts in any two universes are equivalent. -/
 def punitEquivPUnit : PUnit.{v} ≃ PUnit.{w} :=
