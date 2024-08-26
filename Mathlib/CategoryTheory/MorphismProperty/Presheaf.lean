@@ -14,8 +14,17 @@ In this file we define and develop basic results on the representability of morp
 
 ## Main definitions
 
-* `Presheaf.representable` is a `MorphismProperty` expressing the fact that a morphism of presheaves
-  is representable.
+* `Presheaf.representable` is a `MorphismProperty` expressing the fact that a morphism `f : F ⟶ G`
+  of presheaves is representable, i.e. for any `g : yoneda.obj X ⟶ G`, there exists a pullback
+  square of the following form
+```
+  yoneda.obj Y --yoneda.map snd--> yoneda.obj X
+      |                                |
+     fst                               g
+      |                                |
+      v                                v
+      F ------------ f --------------> G
+```
 
 ## API
 
@@ -28,7 +37,6 @@ Given `hf : Presheaf.representable f`, with `f : F ⟶ G` and `g : yoneda.obj X 
 which is the preimage under `yoneda` of `hf.fst g`.
 * `hom_ext`, `hom_ext'`, `lift`, `lift'` are variants of the universal property of
   `yoneda.obj (hf.pullback g)`, where as much as possible has been formulated internally to `C`.
-
 * `symmetry` and `symmetryIso` are variants of the fact that pullbacks are symmetric for
   representable morphisms, formulated internally to `C`.
 
