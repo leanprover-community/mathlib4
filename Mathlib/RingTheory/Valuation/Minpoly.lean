@@ -39,12 +39,12 @@ variable {L}
 /- For any unit `x : Lˣ`, we prove that a certain power of the valuation of zeroth coefficient of
 the minimal polynomial of `x` over `K` is nonzero. This lemma is helpful for defining the valuation
 on `L` inducing `v`.-/
-theorem pow_coeff_zero_ne_zero_of_unit [FiniteDimensional K L] (x : Lˣ) :
-    v ((minpoly K x.1).coeff 0) ^ (finrank K L / (minpoly K x.1).natDegree) ≠ (0 : Γ₀) := by
+theorem pow_coeff_zero_ne_zero_of_unit [FiniteDimensional K L] (x : L) (hx : IsUnit x):
+    v ((minpoly K x).coeff 0) ^ (finrank K L / (minpoly K x).natDegree) ≠ (0 : Γ₀) := by
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
-  have hx : IsIntegral K x.val := (Algebra.IsAlgebraic.isAlgebraic x.val).isIntegral
-  have hdeg := Nat.div_pos (natDegree_le x.val) (natDegree_pos hx)
+  have hx₀ : IsIntegral K x := (Algebra.IsAlgebraic.isAlgebraic x).isIntegral
+  have hdeg := Nat.div_pos (natDegree_le x) (natDegree_pos hx₀)
   rw [ne_eq, pow_eq_zero_iff hdeg.ne.symm, Valuation.zero_iff]
-  exact coeff_zero_ne_zero hx (Units.ne_zero x)
+  exact coeff_zero_ne_zero hx₀ hx.ne_zero
 
 end Valuation
