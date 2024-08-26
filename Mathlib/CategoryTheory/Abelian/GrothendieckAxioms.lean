@@ -4,11 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
 
-import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+
 /-!
+
 # Grothendieck Axioms
 
 This file defines some of the Grothendieck Axioms for abelian categories, and proves
@@ -192,42 +195,41 @@ noncomputable
 instance (A : Finset α)
     (J : Type u') [Category.{v'} J] [HasLimitsOfShape J C] (K : J ⥤ Discrete α ⥤ C) :
     PreservesLimit K (discreteDiagramToBiproduct C α A) where
-  preserves {S} hS := {
-    lift := fun E => biproduct.lift fun ⟨a,ha⟩ =>
-      let K' := K ⋙ (evaluation _ _).obj ⟨a⟩
-      let S' : Cone K' := Functor.mapCone _ S
-      let hS' : IsLimit S' := isLimitOfPreserves _ hS
-      hS'.lift ⟨_, fun j => E.π.app _ ≫
-        biproduct.π (fun a : A => (K.obj j).obj ⟨a⟩) ⟨a, ha⟩, by
-          intro i j f
-          simp only [Functor.const_obj_obj, Functor.comp_obj, evaluation_obj_obj,
-            Functor.const_obj_map, discreteDiagramToBiproduct_obj, ← E.w f, Functor.comp_map,
-            discreteDiagramToBiproduct_map, Category.assoc, biproduct.map_π, Category.id_comp,
-            evaluation_obj_map, K']⟩
-    fac := by
-      intro E j
-      dsimp
-      ext ⟨a, ha⟩
-      let K' := K ⋙ (evaluation _ _).obj ⟨a⟩
-      let S' : Cone K' := Functor.mapCone _ S
-      let hS' : IsLimit S' := isLimitOfPreserves _ hS
-      simp only [biproduct.lift_map, biproduct.lift_π]
-      apply hS'.fac
-    uniq := by
-      intro E m hm
-      dsimp
-      ext ⟨a,ha⟩
-      let K' := K ⋙ (evaluation _ _).obj ⟨a⟩
-      let S' : Cone K' := Functor.mapCone _ S
-      let hS' : IsLimit S' := isLimitOfPreserves _ hS
-      simp only [biproduct.lift_π]
-      apply hS'.hom_ext
-      intro j
-      rw [hS'.fac]
-      simp only [Functor.comp_obj, evaluation_obj_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
-        evaluation_obj_map, Category.assoc, ← (hm j), discreteDiagramToBiproduct_obj,
-        discreteDiagramToBiproduct_map, biproduct.map_π, K', S']
-  }
+  preserves {S} hS :=
+    { lift := fun E => biproduct.lift fun ⟨a,ha⟩ =>
+        let K' := K ⋙ (evaluation _ _).obj ⟨a⟩
+        let S' : Cone K' := Functor.mapCone _ S
+        let hS' : IsLimit S' := isLimitOfPreserves _ hS
+        hS'.lift ⟨_, fun j => E.π.app _ ≫
+          biproduct.π (fun a : A => (K.obj j).obj ⟨a⟩) ⟨a, ha⟩, by
+            intro i j f
+            simp only [Functor.const_obj_obj, Functor.comp_obj, evaluation_obj_obj,
+              Functor.const_obj_map, discreteDiagramToBiproduct_obj, ← E.w f, Functor.comp_map,
+              discreteDiagramToBiproduct_map, Category.assoc, biproduct.map_π, Category.id_comp,
+              evaluation_obj_map, K']⟩
+      fac := by
+        intro E j
+        dsimp
+        ext ⟨a, ha⟩
+        let K' := K ⋙ (evaluation _ _).obj ⟨a⟩
+        let S' : Cone K' := Functor.mapCone _ S
+        let hS' : IsLimit S' := isLimitOfPreserves _ hS
+        simp only [biproduct.lift_map, biproduct.lift_π]
+        apply hS'.fac
+      uniq := by
+        intro E m hm
+        dsimp
+        ext ⟨a,ha⟩
+        let K' := K ⋙ (evaluation _ _).obj ⟨a⟩
+        let S' : Cone K' := Functor.mapCone _ S
+        let hS' : IsLimit S' := isLimitOfPreserves _ hS
+        simp only [biproduct.lift_π]
+        apply hS'.hom_ext
+        intro j
+        rw [hS'.fac]
+        simp only [Functor.comp_obj, evaluation_obj_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+          evaluation_obj_map, Category.assoc, ← (hm j), discreteDiagramToBiproduct_obj,
+          discreteDiagramToBiproduct_map, biproduct.map_π, K', S'] }
 
 noncomputable
 instance (J : Type u') [Category.{v'} J] [HasLimitsOfShape J C] (K : J ⥤ Discrete α ⥤ C) :
