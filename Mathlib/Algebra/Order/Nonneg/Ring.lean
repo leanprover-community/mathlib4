@@ -78,6 +78,9 @@ instance orderedCommSemiring [OrderedCommSemiring α] : OrderedCommSemiring { x 
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
+instance orderedCommMonoid [OrderedCommSemiring α] : OrderedCommMonoid { x : α // 0 ≤ x } where
+  mul_le_mul_left a _ h c := mul_le_mul le_rfl h a.prop c.prop
+
 instance strictOrderedCommSemiring [StrictOrderedCommSemiring α] :
     StrictOrderedCommSemiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.strictOrderedCommSemiring _ Nonneg.coe_zero Nonneg.coe_one
