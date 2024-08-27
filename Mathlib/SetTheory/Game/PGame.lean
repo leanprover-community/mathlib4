@@ -1338,60 +1338,34 @@ between them. -/
 def toRightMovesNeg {x : PGame} : x.LeftMoves ≃ (-x).RightMoves :=
   Equiv.cast (rightMoves_neg x).symm
 
-@[simp]
-theorem neg_moveLeft {x : PGame} {i} :
-    (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
-  cases x
-  rfl
-
-@[simp]
-theorem neg_moveRight {x : PGame} {i} :
-    (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) := by
-  cases x
-  rfl
-
-theorem neg_moveLeft' {x : PGame} {i} :
-    (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by
-  simp [neg_moveLeft]
-
-theorem neg_moveRight' {x : PGame} {i} :
-    (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by
-  simp [neg_moveRight]
-
-@[deprecated neg_moveLeft' (since := "2024-08-27")]
 theorem moveLeft_neg {x : PGame} (i) : (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by
   cases x
   rfl
 
-@[deprecated neg_moveLeft (since := "2024-08-27")]
+@[simp]
 theorem moveLeft_neg' {x : PGame} (i) : (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
   cases x
   rfl
 
-@[deprecated neg_moveRight' (since := "2024-08-27")]
 theorem moveRight_neg {x : PGame} (i) : (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by
   cases x
   rfl
 
-@[deprecated neg_moveRight (since := "2024-08-27")]
+@[simp]
 theorem moveRight_neg' {x : PGame} (i) :
     (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) := by
   cases x
   rfl
 
-@[deprecated (since := "2024-08-27")]
 theorem moveLeft_neg_symm {x : PGame} (i) :
     x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
 
-@[deprecated (since := "2024-08-27")]
 theorem moveLeft_neg_symm' {x : PGame} (i) :
     x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
 
-@[deprecated (since := "2024-08-27")]
 theorem moveRight_neg_symm {x : PGame} (i) :
     x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
 
-@[deprecated (since := "2024-08-27")]
 theorem moveRight_neg_symm' {x : PGame} (i) :
     x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 
@@ -1418,12 +1392,12 @@ lemma Identical.of_neg : ∀ {x₁ x₂ : PGame}, -x₁ ≡ -x₂ → x₁ ≡ x
   | mk x₁l x₁r x₁L x₁R, mk x₂l x₂r x₂L x₂R => by
     simpa using Identical.neg (x₁ := mk _ _ (-x₁R ·) (-x₁L ·)) (x₂ := mk _ _ (-x₂R ·) (-x₂L ·))
 
-lemma memₗ_neg_iff' : ∀ {x y : PGame},
+lemma memₗ_neg_iff : ∀ {x y : PGame},
     x ∈ₗ -y ↔ ∃ z ∈ᵣ y, x ≡ -z
   | mk _ _ _ _, mk _ _ _ _ =>
     ⟨fun ⟨_i, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.neg⟩⟩
 
-lemma memᵣ_neg_iff' : ∀ {x y : PGame},
+lemma memᵣ_neg_iff : ∀ {x y : PGame},
     x ∈ᵣ -y ↔ ∃ z ∈ₗ y, x ≡ -z
   | mk _ _ _ _, mk _ _ _ _ =>
     ⟨fun ⟨_i, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.neg⟩⟩
