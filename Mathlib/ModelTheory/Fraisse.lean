@@ -42,8 +42,12 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
   essentially countable.
 - `FirstOrder.Language.exists_countable_is_age_of_iff` gives necessary and sufficient conditions
   for a class to be the age of a countable structure in a language with countably many functions.
-- `FirstOrder.Language.IsFraisseLimit.nonempty_equiv` shows that any class which is Fraïsse has
-  at most one Fraïsse limit up to equivalence.
+- `FirstOrder.Language.IsFraisseLimit.nonempty_equiv` shows that any class which is Fraïssé has
+  at most one Fraïssé limit up to equivalence.
+- `FirstOrder.Language.empty.isFraisseLimit_of_countable_infinite` shows that any countably infinite
+  structure in the empty language is a Fraïssé limit of the class of finite structures.
+- `FirstOrder.Language.empty.isFraisse_finite` shows that the class of finite structures in the
+  empty language is Fraïssé.
 
 ## Implementation Notes
 
@@ -402,6 +406,42 @@ theorem nonempty_equiv : Nonempty (M ≃[L] N) := by
       (hN.isExtensionPair hM))⟩
 
 end IsFraisseLimit
+
+namespace empty
+
+/-- Any countable infinite structure in the empty language is a Fraïssé limit of the class of finite
+structures. -/
+theorem isFraisseLimit_of_countable_infinite
+    (M : Type*) [Countable M] [Infinite M] [Language.empty.Structure M] :
+    IsFraisseLimit { S : Bundled Language.empty.Structure | Finite S } M where
+  age := by
+    ext S
+    simp only [age, Structure.fg_iff_finite, empty.nonempty_embedding_iff, Cardinal.lift_id,
+      Cardinal.mk_eq_aleph0, mem_setOf_eq, and_iff_left_iff_imp]
+    exact fun hS => Cardinal.mk_le_aleph0
+  ultrahomogeneous := by
+    intro S hS f
+    haveI : Finite S := hS.finite
+    haveI : Infinite { x // x ∉ S } := (Set.Finite.infinite_compl (Set.toFinite _)).to_subtype
+    haveI : Finite f.toHom.range :=
+      (Structure.FG.range ((Substructure.fg_iff_structure_fg S).1 hS) _).finite
+    haveI : Infinite { x // x ∉ f.toHom.range } :=
+      (Set.Finite.infinite_compl (Set.toFinite _)).to_subtype
+    refine ⟨StrongHomClass.toEquiv (@Equiv.subtypeCongr _ _ _ (Classical.decPred _)
+      (Classical.decPred _) f.equivRange.toEquiv (nonempty_equiv_of_countable).some), ?_⟩
+    ext x
+    simp only [Equiv.subtypeCongr, Embedding.comp_apply, coeSubtype, Equiv.coe_toEmbedding,
+      StrongHomClass.toEquiv_toFun, Equiv.trans_apply, SetLike.coe_mem,
+      Equiv.sumCompl_apply_symm_of_pos, Subtype.coe_eta, Equiv.sumCongr_apply, Sum.map_inl,
+      Equiv.sumCompl_apply_inl]
+    rfl
+
+/-- The class of finite structures in the empty language is Fraïssé. -/
+theorem isFraisse_finite : IsFraisse { S : Bundled.{w} Language.empty.Structure | Finite S } := by
+  haveI : Language.empty.Structure (ULift ℕ : Type w) := emptyStructure
+  exact (isFraisseLimit_of_countable_infinite (ULift ℕ)).isFraisse
+
+end empty
 
 end Language
 
