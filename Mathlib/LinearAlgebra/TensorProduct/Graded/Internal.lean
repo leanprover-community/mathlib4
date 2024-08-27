@@ -150,7 +150,7 @@ theorem mulHom_apply (x y : 𝒜 ᵍ⊗[R] ℬ) :
       = (auxEquiv R 𝒜 ℬ).symm (gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y)) :=
   rfl
 
-/-- The multipication on the graded tensor product.
+/-- The multiplication on the graded tensor product.
 
 See `GradedTensorProduct.coe_mul_coe` for a characterization on pure tensors. -/
 instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
@@ -179,7 +179,7 @@ instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
   mul_zero x := by simp_rw [mul_def, map_zero]
   zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
-/-- The characterization of this multiplication on partially homogenous elements. -/
+/-- The characterization of this multiplication on partially homogeneous elements. -/
 theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) =
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ᵍ⊗ₜ (b₁ * b₂ : B)) := by
@@ -295,7 +295,7 @@ lemma algebraMap_def' (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = 1 ᵍ⊗�
 variable {C} [Ring C] [Algebra R C]
 
 /-- The forwards direction of the universal property; an algebra morphism out of the graded tensor
-product can be assembed from maps on each component that (anti)commute on pure elements of the
+product can be assembled from maps on each component that (anti)commute on pure elements of the
 corresponding graded algebras. -/
 def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a)) :
