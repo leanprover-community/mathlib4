@@ -25,6 +25,8 @@ in the file `RingTheory/LaurentSeries`.
   coefficient if `x ≠ 0`, and is `⊤` when `x = 0`.
 * `order x` is a minimal element of `Γ` where `x` has a nonzero coefficient if `x ≠ 0`, and is zero
   when `x = 0`.
+* `map` takes each coefficient of a Hahn series to its target under a zero-preserving map.
+* `embDomain` preserves coefficients, but embeds the index set `Γ` in a larger poset.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -110,9 +112,10 @@ theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :
 
 /-- The map of Hahn series induced by applying a zero-preserving map to each coefficient. -/
 @[simps]
-def map [Zero S] (x : HahnSeries Γ R) (f : ZeroHom R S) : HahnSeries Γ S where
+def map [Zero S] (x : HahnSeries Γ R) {F : Type*} [FunLike F R S] [ZeroHomClass F R S] (f : F) :
+    HahnSeries Γ S where
   coeff g := f (x.coeff g)
-  isPWO_support' := x.isPWO_support.mono <| Function.support_comp_subset (ZeroHom.map_zero f) _
+  isPWO_support' := x.isPWO_support.mono <| Function.support_comp_subset (ZeroHomClass.map_zero f) _
 
 @[simp]
 protected lemma map_zero [Zero S] (f : ZeroHom R S) :
