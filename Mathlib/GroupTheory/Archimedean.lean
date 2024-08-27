@@ -169,7 +169,7 @@ lemma AddSubgroup.isLeast_closure_iff_eq_max {a b : G} :
     simp only [mem_closure_singleton, mem_setOf_eq, ← mul_zsmul] at this
     obtain ⟨m, hm⟩ := this.left
     have key : m * n = 1 := by
-      rw [← (zsmul_strictMono_left this.right).injective.eq_iff, hm, one_zsmul]
+      rw [← zsmul_right_inj, hm, one_zsmul]
     rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
     rw [eq_comm]
     rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
