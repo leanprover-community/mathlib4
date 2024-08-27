@@ -66,9 +66,10 @@ protected theorem Periodic.div [Add α] [Div β] (hf : Periodic f c) (hg : Perio
 @[to_additive]
 theorem _root_.List.periodic_prod [Add α] [Monoid β] (l : List (α → β))
     (hl : ∀ f ∈ l, Periodic f c) : Periodic l.prod c := by
-  induction' l with g l ih hl
-  · simp
-  · rw [List.forall_mem_cons] at hl
+  induction l with
+  | nil => simp
+  | cons g l ih =>
+    rw [List.forall_mem_cons] at hl
     simpa only [List.prod_cons] using hl.1.mul (ih hl.2)
 
 @[to_additive]

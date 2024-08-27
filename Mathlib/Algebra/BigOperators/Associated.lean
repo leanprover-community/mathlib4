@@ -77,9 +77,10 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
 theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     [∀ a : α, DecidablePred (Associated a)] {s : Multiset α} (n : α) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
-  induction' s using Multiset.induction_on with a s induct n primes divs generalizing n
-  · simp only [Multiset.prod_zero, one_dvd]
-  · rw [Multiset.prod_cons]
+  induction s using Multiset.induction_on generalizing n with
+  | empty => simp only [Multiset.prod_zero, one_dvd]
+  | cons a s induct =>
+    rw [Multiset.prod_cons]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)
     apply mul_dvd_mul_left a
     refine induct _ (fun a ha => h a (Multiset.mem_cons_of_mem ha)) (fun b b_in_s => ?_)

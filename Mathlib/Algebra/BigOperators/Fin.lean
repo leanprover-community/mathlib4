@@ -308,8 +308,9 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
-      induction' m with m ih
-      · simp
+      induction m with
+      | zero => simp
+      | succ m ih =>
       rw [Fin.prod_univ_castSucc, Fin.sum_univ_castSucc]
       suffices
         ∀ (n : Fin m → ℕ) (nn : ℕ) (f : ∀ i : Fin m, Fin (n i)) (fn : Fin nn),

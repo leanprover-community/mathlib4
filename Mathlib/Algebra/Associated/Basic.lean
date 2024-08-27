@@ -165,13 +165,13 @@ theorem prime_pow_succ_dvd_mul {α : Type*} [CancelCommMonoidWithZero α] {p x y
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
   rw [or_iff_not_imp_right]
   intro hy
-  induction' i with i ih generalizing x
-  · rw [pow_one] at hxy ⊢
-    exact (h.dvd_or_dvd hxy).resolve_right hy
-  rw [pow_succ'] at hxy ⊢
-  obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
-  rw [mul_assoc] at hxy
-  exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
+  induction i generalizing x with
+  | zero => rw [pow_one] at hxy ⊢; exact (h.dvd_or_dvd hxy).resolve_right hy
+  | succ i ih =>
+    rw [pow_succ'] at hxy ⊢
+    obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
+    rw [mul_assoc] at hxy
+    exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
 
 /-- `Irreducible p` states that `p` is non-unit and only factors into units.
 
