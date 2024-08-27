@@ -50,13 +50,14 @@ universe u v
 
 open Function
 
+-- Unless required to be `Type*`, all variables in this file are `Sort*`
 variable {α α₁ α₂ β β₁ β₂ γ γ₁ γ₂ δ ε ι ι' ι'' : Sort*}
 
 namespace Equiv
 
 /-- `PProd α β` is equivalent to `α × β` -/
 @[simps apply symm_apply]
-def pprodEquivProd {α β : Type*} : PProd α β ≃ α × β where
+def pprodEquivProd {α β} : PProd α β ≃ α × β where
   toFun x := (x.1, x.2)
   invFun x := ⟨x.1, x.2⟩
   left_inv := fun _ => rfl
@@ -74,13 +75,13 @@ def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β 
 
 /-- Combine two equivalences using `PProd` in the domain and `Prod` in the codomain. -/
 @[simps! apply symm_apply]
-def pprodProd {α₂ β₂ : Type*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+def pprodProd {α₂ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     PProd α₁ β₁ ≃ α₂ × β₂ :=
   (ea.pprodCongr eb).trans pprodEquivProd
 
 /-- Combine two equivalences using `PProd` in the codomain and `Prod` in the domain. -/
 @[simps! apply symm_apply]
-def prodPProd {α₁ β₁ : Type*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+def prodPProd {α₁ β₁} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     α₁ × β₁ ≃ PProd α₂ β₂ :=
   (ea.symm.pprodProd eb.symm).symm
 
@@ -93,11 +94,11 @@ def pprodEquivProdPLift : PProd α β ≃ PLift α × PLift β :=
 `Prod.map` as an equivalence. -/
 -- Porting note: in Lean 3 there was also a @[congr] tag
 @[simps (config := .asFn) apply]
-def prodCongr {α₁ α₂ β₁ β₂ : Type*} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ :=
+def prodCongr {α₁ α₂ β₁ β₂} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ :=
   ⟨Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm, fun ⟨a, b⟩ => by simp, fun ⟨a, b⟩ => by simp⟩
 
 @[simp]
-theorem prodCongr_symm {α₁ α₂ β₁ β₂ : Type*} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+theorem prodCongr_symm {α₁ α₂ β₁ β₂} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
     (prodCongr e₁ e₂).symm = prodCongr e₁.symm e₂.symm :=
   rfl
 
@@ -111,7 +112,7 @@ theorem coe_prodComm (α β) : (⇑(prodComm α β) : α × β → β × α) = P
   rfl
 
 @[simp]
-theorem prodComm_apply {α β : Type*} (x : α × β) : prodComm α β x = x.swap :=
+theorem prodComm_apply {α β} (x : α × β) : prodComm α β x = x.swap :=
   rfl
 
 @[simp]
@@ -126,14 +127,14 @@ def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
 
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
 @[simps apply]
-def prodProdProdComm (α β γ δ : Type*) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
+def prodProdProdComm (α β γ δ) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
   toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))
   invFun acbd := ((acbd.1.1, acbd.2.1), (acbd.1.2, acbd.2.2))
   left_inv := fun ⟨⟨_a, _b⟩, ⟨_c, _d⟩⟩ => rfl
   right_inv := fun ⟨⟨_a, _c⟩, ⟨_b, _d⟩⟩ => rfl
 
 @[simp]
-theorem prodProdProdComm_symm (α β γ δ : Type*) :
+theorem prodProdProdComm_symm (α β γ δ) :
     (prodProdProdComm α β γ δ).symm = prodProdProdComm α γ β δ :=
   rfl
 
@@ -169,15 +170,14 @@ def prodUnique (α β) [Unique β] : α × β ≃ α :=
   ((Equiv.refl α).prodCongr <| equivPUnit.{_,1} β).trans <| prodPUnit α
 
 @[simp]
-theorem coe_prodUnique {α β : Type*} [Unique β] : (⇑(prodUnique α β) : α × β → α) = Prod.fst :=
+theorem coe_prodUnique {α β} [Unique β] : (⇑(prodUnique α β) : α × β → α) = Prod.fst :=
   rfl
 
-theorem prodUnique_apply {α β : Type*} [Unique β] (x : α × β) : prodUnique α β x = x.1 :=
+theorem prodUnique_apply {α β} [Unique β] (x : α × β) : prodUnique α β x = x.1 :=
   rfl
 
 @[simp]
-theorem prodUnique_symm_apply {α β : Type*} [Unique β] (x : α) :
-    (prodUnique α β).symm x = (x, default) :=
+theorem prodUnique_symm_apply {α β} [Unique β] (x : α) : (prodUnique α β).symm x = (x, default) :=
   rfl
 
 /-- Any `Unique` type is a left identity for type product up to equivalence. -/
@@ -185,14 +185,14 @@ def uniqueProd (α β) [Unique β] : β × α ≃ α :=
   ((equivPUnit.{_,1} β).prodCongr <| Equiv.refl α).trans <| punitProd α
 
 @[simp]
-theorem coe_uniqueProd {α β : Type*} [Unique β] : (⇑(uniqueProd α β) : β × α → α) = Prod.snd :=
+theorem coe_uniqueProd {α β} [Unique β] : (⇑(uniqueProd α β) : β × α → α) = Prod.snd :=
   rfl
 
-theorem uniqueProd_apply {α β : Type*} [Unique β] (x : β × α) : uniqueProd α β x = x.2 :=
+theorem uniqueProd_apply {α β} [Unique β] (x : β × α) : uniqueProd α β x = x.2 :=
   rfl
 
 @[simp]
-theorem uniqueProd_symm_apply {α β : Type*} [Unique β] (x : α) :
+theorem uniqueProd_symm_apply {α β} [Unique β] (x : α) :
     (uniqueProd α β).symm x = (default, x) :=
   rfl
 
@@ -202,16 +202,16 @@ def sigmaUnique (α) (β : α → Type*) [∀ a, Unique (β a)] : (a : α) × (�
   (Equiv.sigmaCongrRight fun a ↦ equivPUnit.{_,1} (β a)).trans <| sigmaPUnit α
 
 @[simp]
-theorem coe_sigmaUnique {α : Type*} {β : α → Type*} [∀ a, Unique (β a)] :
+theorem coe_sigmaUnique {α} {β : α → Type*} [∀ a, Unique (β a)] :
     (⇑(sigmaUnique α β) : (a : α) × (β a) → α) = Sigma.fst :=
   rfl
 
-theorem sigmaUnique_apply {α : Type*} {β : α → Type*} [∀ a, Unique (β a)] (x : (a : α) × β a) :
+theorem sigmaUnique_apply {α} {β : α → Type*} [∀ a, Unique (β a)] (x : (a : α) × β a) :
     sigmaUnique α β x = x.1 :=
   rfl
 
 @[simp]
-theorem sigmaUnique_symm_apply {α : Type*} {β : α → Type*} [∀ a, Unique (β a)] (x : α) :
+theorem sigmaUnique_symm_apply {α} {β : α → Type*} [∀ a, Unique (β a)] (x : α) :
     (sigmaUnique α β).symm x = ⟨x, default⟩ :=
   rfl
 
@@ -246,7 +246,7 @@ def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
 
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕ β ≃ α' ⊕ β'`. This is `Sum.map` as an equivalence. -/
 @[simps apply]
-def sumCongr (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
+def sumCongr {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
   ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
 
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
@@ -257,33 +257,35 @@ def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ 
   right_inv := by rintro (x | x) <;> simp
 
 /-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
-def psumSum (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+def psumSum {α₂ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
   (ea.psumCongr eb).trans (psumEquivSum _ _)
 
 /-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
-def sumPSum (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+def sumPSum {α₁ β₁} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
   (ea.symm.psumSum eb.symm).symm
 
 @[simp]
-theorem sumCongr_trans (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
+theorem sumCongr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂} (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
     (Equiv.sumCongr e f).trans (Equiv.sumCongr g h) = Equiv.sumCongr (e.trans g) (f.trans h) := by
   ext i
   cases i <;> rfl
 
 @[simp]
-theorem sumCongr_symm (e : α ≃ β) (f : γ ≃ δ) :
+theorem sumCongr_symm {α β γ δ} (e : α ≃ β) (f : γ ≃ δ) :
     (Equiv.sumCongr e f).symm = Equiv.sumCongr e.symm f.symm :=
   rfl
 
 @[simp]
-theorem sumCongr_refl : Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ⊕ β) := by
+theorem sumCongr_refl {α β} :
+    Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ⊕ β) := by
   ext i
   cases i <;> rfl
 
 /-- A subtype of a sum is equivalent to a sum of subtypes. -/
-def subtypeSum {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} ⊕ {b // p (Sum.inr b)} where
+def subtypeSum {α β} {p : α ⊕ β → Prop} :
+    {c // p c} ≃ {a // p (Sum.inl a)} ⊕ {b // p (Sum.inr b)} where
   toFun c := match h : c.1 with
     | Sum.inl a => Sum.inl ⟨a, h ▸ c.2⟩
     | Sum.inr b => Sum.inr ⟨b, h ▸ c.2⟩
@@ -296,25 +298,25 @@ def subtypeSum {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} �
 namespace Perm
 
 /-- Combine a permutation of `α` and of `β` into a permutation of `α ⊕ β`. -/
-abbrev sumCongr (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (α ⊕ β) :=
+abbrev sumCongr {α β} (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (α ⊕ β) :=
   Equiv.sumCongr ea eb
 
 @[simp]
-theorem sumCongr_apply (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : α ⊕ β) :
+theorem sumCongr_apply {α β} (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : α ⊕ β) :
     sumCongr ea eb x = Sum.map (⇑ea) (⇑eb) x :=
   Equiv.sumCongr_apply ea eb x
 
 -- Porting note: it seems the general theorem about `Equiv` is now applied, so there's no need
 -- to have this version also have `@[simp]`. Similarly for below.
-theorem sumCongr_trans (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α)
+theorem sumCongr_trans {α β} (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α)
     (h : Equiv.Perm β) : (sumCongr e f).trans (sumCongr g h) = sumCongr (e.trans g) (f.trans h) :=
   Equiv.sumCongr_trans e f g h
 
-theorem sumCongr_symm (e : Equiv.Perm α) (f : Equiv.Perm β) :
+theorem sumCongr_symm {α β} (e : Equiv.Perm α) (f : Equiv.Perm β) :
     (sumCongr e f).symm = sumCongr e.symm f.symm :=
   Equiv.sumCongr_symm e f
 
-theorem sumCongr_refl : sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ⊕ β) :=
+theorem sumCongr_refl {α β} : sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ⊕ β) :=
   Equiv.sumCongr_refl
 
 end Perm
@@ -341,15 +343,15 @@ def sumAssoc (α β γ) : (α ⊕ β) ⊕ γ ≃ α ⊕ (β ⊕ γ) :=
     rintro (_ | ⟨_ | _⟩) <;> rfl⟩
 
 @[simp]
-theorem sumAssoc_apply_inl_inl (a) : sumAssoc α β γ (inl (inl a)) = inl a :=
+theorem sumAssoc_apply_inl_inl {α β γ} (a) : sumAssoc α β γ (inl (inl a)) = inl a :=
   rfl
 
 @[simp]
-theorem sumAssoc_apply_inl_inr (b) : sumAssoc α β γ (inl (inr b)) = inr (inl b) :=
+theorem sumAssoc_apply_inl_inr {α β γ} (b) : sumAssoc α β γ (inl (inr b)) = inr (inl b) :=
   rfl
 
 @[simp]
-theorem sumAssoc_apply_inr (c) : sumAssoc α β γ (inr c) = inr (inr c) :=
+theorem sumAssoc_apply_inr {α β γ} (c) : sumAssoc α β γ (inr c) = inr (inr c) :=
   rfl
 
 @[simp]
@@ -377,7 +379,7 @@ def sumEmpty (α β) [IsEmpty β] : α ⊕ β ≃ α where
   right_inv _ := rfl
 
 @[simp]
-theorem sumEmpty_apply_inl [IsEmpty β] (a : α) : sumEmpty α β (Sum.inl a) = a :=
+theorem sumEmpty_apply_inl {α β} [IsEmpty β] (a : α) : sumEmpty α β (Sum.inl a) = a :=
   rfl
 
 /-- The sum of `IsEmpty` with any type is equivalent to that type. -/
@@ -386,7 +388,7 @@ def emptySum (α β) [IsEmpty α] : α ⊕ β ≃ β :=
   (sumComm _ _).trans <| sumEmpty _ _
 
 @[simp]
-theorem emptySum_apply_inr [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = b :=
+theorem emptySum_apply_inr {α β} [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = b :=
   rfl
 
 /-- `Option α` is equivalent to `α ⊕ PUnit` -/
@@ -396,23 +398,23 @@ def optionEquivSumPUnit (α) : Option α ≃ α ⊕ PUnit :=
     fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
 
 @[simp]
-theorem optionEquivSumPUnit_none : optionEquivSumPUnit α none = Sum.inr PUnit.unit :=
+theorem optionEquivSumPUnit_none {α} : optionEquivSumPUnit α none = Sum.inr PUnit.unit :=
   rfl
 
 @[simp]
-theorem optionEquivSumPUnit_some (a) : optionEquivSumPUnit α (some a) = Sum.inl a :=
+theorem optionEquivSumPUnit_some {α} (a) : optionEquivSumPUnit α (some a) = Sum.inl a :=
   rfl
 
 @[simp]
-theorem optionEquivSumPUnit_coe (a : α) : optionEquivSumPUnit α a = Sum.inl a :=
+theorem optionEquivSumPUnit_coe {α} (a : α) : optionEquivSumPUnit α a = Sum.inl a :=
   rfl
 
 @[simp]
-theorem optionEquivSumPUnit_symm_inl (a) : (optionEquivSumPUnit α).symm (Sum.inl a) = a :=
+theorem optionEquivSumPUnit_symm_inl {α} (a) : (optionEquivSumPUnit α).symm (Sum.inl a) = a :=
   rfl
 
 @[simp]
-theorem optionEquivSumPUnit_symm_inr (a) : (optionEquivSumPUnit α).symm (Sum.inr a) = none :=
+theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (Sum.inr a) = none :=
   rfl
 
 /-- The set of `x : Option α` such that `isSome x` is equivalent to `α`. -/
@@ -426,7 +428,7 @@ def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
 /-- The product over `Option α` of `β a` is the binary product of the
 product over `α` of `β (some α)` and `β none` -/
 @[simps]
-def piOptionEquivProd {β : Option α → Type*} :
+def piOptionEquivProd {α} {β : Option α → Type*} :
     (∀ a : Option α, β a) ≃ β none × ∀ a : α, β (some a) where
   toFun f := (f none, fun a => f (some a))
   invFun x a := Option.casesOn a x.fst x.snd
@@ -437,7 +439,7 @@ def piOptionEquivProd {β : Option α → Type*} :
 `β` to be types from the same universe, so it cannot be used directly to transfer theorems about
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
-def sumEquivSigmaBool (α β : Type u) : α ⊕ β ≃ Σ b : Bool, b.casesOn α β :=
+def sumEquivSigmaBool (α β) : α ⊕ β ≃ Σ b : Bool, b.casesOn α β :=
   ⟨fun s => s.elim (fun x => ⟨false, x⟩) fun x => ⟨true, x⟩, fun s =>
     match s with
     | ⟨false, a⟩ => inl a
