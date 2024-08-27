@@ -31,11 +31,9 @@ syntax (name := stacks) "stacks " (stackTags)? (str)? : attr
 initialize Lean.registerBuiltinAttribute {
   name := `stacks
   descr := "Apply a Stacks project tag to a theorem."
-  applicationTime := .afterCompilation
   add := fun _decl stx _attrKind => Lean.withRef stx do
     match stx with
       | `(attr| stacks $_:stackTags $_:str) => return
       | `(attr| stacks $_:stackTags) => return
       | _ => logWarning "Please, enter a Tag after `stacks`."
-  erase := fun _decl => return
 }
