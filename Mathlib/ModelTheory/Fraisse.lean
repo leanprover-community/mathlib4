@@ -443,17 +443,21 @@ theorem ess_surj_sequence_is_ess_surj : ∀ V : K, ∃ n,
   convert (congr_arg (Subtype.val) n_prop).symm
   apply Quot.out_eq
 
+
+include K_fraisse in
+
 theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ _ : f.dom.FG,
     ∃ T : K, ∃ incl : S ↪[L] T, ∃ g : T ≃ₚ[L] T,
     f.map incl ≤ g ∧ incl.toHom.range ≤ g.dom := by
   rintro ⟨S, S_in_K⟩ f f_fg
+  have x := K_fraisse
   obtain ⟨R, g₁, g₂, R_in_K, eq⟩ := K_fraisse.amalgamation (Bundled.mk f.dom) S S
-    (subtype _) ((subtype _).comp f.equiv.toEmbedding) (K_fraisse.hereditary S S_in_K
+    (subtype _) ((subtype _).comp f.toEquiv.toEmbedding) (K_fraisse.hereditary S S_in_K
       (age.fg_substructure f_fg)) S_in_K S_in_K
   use ⟨R, R_in_K⟩
   use g₂
   use ⟨g₂.toHom.range, g₁.toHom.range, g₁.equivRange.comp g₂.equivRange.symm⟩
-  simp only [le_refl, and_true, SubEquivalence.le_def, SubEquivalence.map_dom]
+  simp only [le_refl, and_true, PartialEquiv.le_def, PartialEquiv.map_dom]
   use Hom.map_le_range
   ext ⟨x, x_prop⟩
   let ⟨y, y_in_dom_f, eq_xy⟩ := Substructure.mem_map.1 x_prop
@@ -461,10 +465,10 @@ theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ 
   simp only [Embedding.comp_apply, coeSubtype, Equiv.coe_toEmbedding] at eq
   cases eq_xy
   change g₁ ((g₂.equivRange.symm (g₂.equivRange y))) = _
-  simp only [Equiv.symm_apply_apply, eq, SubEquivalence.map_cod, Embedding.coe_toHom,
+  simp only [Equiv.symm_apply_apply, eq, PartialEquiv.map_cod, Embedding.coe_toHom,
     Embedding.comp_apply, Equiv.coe_toEmbedding, coeSubtype, map_coe]
-  have := SubEquivalence.map_commutes_apply g₂ f ⟨y, y_in_dom_f⟩
-  simp only [SubEquivalence.map_cod, SubEquivalence.map_dom] at this
+  have := PartialEquiv.map_commutes_apply g₂ f ⟨y, y_in_dom_f⟩
+  simp only [PartialEquiv.map_cod, PartialEquiv.map_dom] at this
   rw [this]
 
 noncomputable def extend_finiteEquiv_in_class (S : K) (f : S ≃ₚ[L] S) (f_fg : f.dom.FG) :
@@ -486,9 +490,9 @@ noncomputable def init_system : (n : ℕ) →
     let A0 := (init_system 0).1
     let id_A0 := Embedding.refl L A0
     let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
-      (Substructure.countable_self_finiteEquiv_of_countable (L := L) (M := A0))).choose 0
+      (countable_self_fgequiv_of_countable (L := L) (M := A0))).choose 0
     let ⟨A, A0_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse A0 (f.map id_A0)
-      (SubEquivalence.map_dom id_A0 f ▸ FG.map _ f_fg)
+      (PartialEquiv.map_dom id_A0 f ▸ FG.map _ f_fg)
     let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse 1)
     exact ⟨A', fun _ ↦ ⟨A0, A_to_A'.comp A0_to_A⟩⟩
   | n + 2 => by
@@ -499,9 +503,9 @@ noncomputable def init_system : (n : ℕ) →
     let B := (Sn ⟨m1, Nat.unpair_lt NeZero.one_le⟩).1
     let B_to_An := (Sn ⟨m1, Nat.unpair_lt NeZero.one_le⟩).2
     let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
-      (Substructure.countable_self_finiteEquiv_of_countable (L := L) (M := B))).choose m2
+      (countable_self_fgequiv_of_countable (L := L) (M := B))).choose m2
     let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
-      (SubEquivalence.map_dom B_to_An f ▸ FG.map _ f_fg)
+      (PartialEquiv.map_dom B_to_An f ▸ FG.map _ f_fg)
     let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
     exact ⟨A', fun m ↦ ⟨(Sn m).1, A_to_A'.comp (An_to_A.comp ((Sn m).2))⟩⟩
   decreasing_by · sorry
@@ -546,7 +550,7 @@ theorem init_system_succ (n : ℕ) :
   let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
     (Substructure.countable_self_finiteEquiv_if_countable (L := L) (M := B))).choose m2
   let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
-    (SubEquivalence.map_dom B_to_An f ▸ FG.map _ f_fg)
+    (PartialEquiv.map_dom B_to_An f ▸ FG.map _ f_fg)
   let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
   have eq1 : ((init_system K_fraisse (n + 1)).2 (n + 1)) =
     if n + 1 ≤ n then ⟨(Sn (n + 1)).1, A_to_A'.comp (An_to_A.comp (Sn (n + 1)).2)⟩
